@@ -1,369 +1,235 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f11.google.com (mail-pj2-f11.google.com [74.125.227.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A9C84F7CA4
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 07:11:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61ECC519DE7
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 08:43:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790061071; cv=none; b=EFMcvPY7D35nvmvVAtYtegO/PDvU+Xs6E/QULOglYQvLRebTTmHhBgNr29U8/ZsUOmrsrYgd8hHpMNDrqPrgROMtJR1g6WaTOtp+EqEaceQHkSgpyhocS6rFL4ofjfeZ8IyviyIb0dP2HuC2G8UOzTg7Z64bd0PUE5K1eNS3dIY=
+	t=1790066595; cv=none; b=LBlF9Pojr2NlO7CVCo2FTxwahiFVbZgTXs94D8/Zj7bussgEhpZMeJPFomdmQYxTwp7ftBwjZMLH4zOPEaNVNBQKPp91/+UtVBVbsX3TboLXwoNXo2J1T7iz6tVtYTZTCrRqGacd3nWNve23R7yTG1FzMOAdXZ9RVPHBIJhth40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790061071; c=relaxed/simple;
-	bh=FfsB0XUmoGGa7n8kwH1vAtypa2+/GT+qXUQgKp0PDTA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=P9JRlT40Rqv3KPylCXkvHV+n/9ePhKNn1M1tQPyvwo9kTg9g76x72256TMT21KRNlAHdw5qIF3GP4w/kuwJ1lCaf5fRzYSK2afBq6iuL0M53VRpQzZ3BAA0/7OOox/W7pvnoWWshpiW9w/8croYvSSWfdPR5ivd6qf04yoYXcFU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=vvWSSYwq; arc=none smtp.client-ip=115.124.30.110
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1790066595; c=relaxed/simple;
+	bh=7cjsUBv8hgI4oUGBx2XTEPgSKQM575FA4pH4DaXNaDU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qR0GW+ca1PZQx9HKMnXUqw3AN54H/WmSIrzZDK8XcF88RYkCgTMZ7KCexivrFZkeTCnTE1EC53iH+NR70hiiLjp76PNX3KdV2KRAt7233R3l5BpcN+D0YFCaAlqebjMnipWloo25ZmRJ437vAE45/bcmcRtnyXcXVE0Cz+/vnTI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=agg8s5xU; arc=none smtp.client-ip=74.125.227.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="vvWSSYwq"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1790061065; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=kazTSKk2mO7WKQIyzJ78Q9Go0YwvZK23jXqXE5gbuLs=;
-	b=vvWSSYwqHOayYh4wiXj4Q7x74mqZJM0FzafW3vKCZ8F3jv/5KKz0lAlfAZhatmmzllRtNwnRbBfQ5ps4D5Vbr4NPYdoglFCqGFO8bE8PgE+EecGOxa3V9BQgivYbDDxKXPzrhn4a9VRUvNP98BfoRjycjR+4JBeRnjo4J56helQ=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=kanie@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0XBT-CpR_1790061061;
-Received: from 30.178.81.152(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0XBT-CpR_1790061061 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Tue, 22 Sep 2026 15:11:03 +0800
-Message-ID: <a9465515-de05-4b85-891d-6cdbbd793195@linux.alibaba.com>
-Date: Tue, 22 Sep 2026 15:11:01 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="agg8s5xU"
+Received: by mail-pj2-f11.google.com with SMTP id 98e67ed59e1d1-398a384b5f7so2319979a91.0
+        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 01:43:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1790066592; x=1790671392; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=9UsbLRFUse88WvBnvQ2Q7a6jE7KnWiu4inPojM0/Ln8=;
+        b=agg8s5xUyNncNhSiAerd3MUSoui2L8kZt7Napc+7CNosMOlkPINFk86Nc8yHypRLRw
+         ddM83FSFUq5sYoe9/9tyWnX7bKRTI5ubGOnYAaTXPp+BcURvjYaIhWJJUM+xAIwBXgh8
+         OudmGng4cwv07T7POCgvVBqVG5p4Fd0aZzvPJH7CRbseFwfV0OQBr1OIem95ifwbOfho
+         M4+K3Rf/Xp8zvMHJULH88gJz1SWrUjqntOFuqe4oOiZ8ihWY7QRf8leNFOP0og0vhDah
+         NouRl9chEK2WJDRjH3p1UWkA3scrZ+Fl8xtAHc5ELNAHlDM1z6MO/Bv1/ky69aFGkSxw
+         2YVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790066592; x=1790671392;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=9UsbLRFUse88WvBnvQ2Q7a6jE7KnWiu4inPojM0/Ln8=;
+        b=seSabrsLapmLUDTSBLiHzi0nhn3thK/xLVOR8axf8cCxftOveDfxq6etQqFPwRRrVT
+         IhTjj8wyBeC3o+doxvUxJXL/mbp4WDBFeJTl0V4dwV3b75+9E7X6NK6dyu+r0z0CjcWr
+         S4bnnplKGkD3VgKrq1sMcBi9Ppx/2otv96RXJm3/xjvdxD16q0AYJ0TOus1PRMY0sIuY
+         eS0M3RWpZlHmF2t47YN7orVx0Ir5aCcbFp0NpFnM/36eD1QiGcZ9g4pijeUu36PRCDvS
+         eUNJMJUcWlzBms7L8lniCEoBSFVxFQ3PmJtJGXvEQf2yNciFLD05MwYC0TQrIyLEyxeG
+         WCaA==
+X-Forwarded-Encrypted: i=1; AKwUvBxkjfQsgNdRCtv/aYgxdYDtyrwG8XHKrRdRGQatcMa2DWq8HT+wviEa5EUS7rXlvc/hWxebWA==@lists.linux.dev
+X-Gm-Message-State: AFuF++kBysnDlMQRnuaJKbBV+zWOZp7cHNIAhpa53Mk/vtIyu26C7R1Q
+	OuqH3IuaLljWvWVT4+J3ijv+DRNpR7TJnYiFBQupjMFGU7GftI95+mvY
+X-Gm-Gg: AYBFou3TP+u2opsCLt4QvUKvxNOGlzbLknFB7kewzmMlFv9ZcRFNdezqagmSS/AJT8s
+	MKDZpKGXPV4hcBcu+aZutaPqRG5qER9FhffAkjWQArGkIRGZBPnDyMyso020N4JCzBCSV/wdLw6
+	1GkTFwcGLfxv0Dna9PeVjlbfcqfyPAGtmFksGvaP+7QMnvLTFepWPTpWWENnjIV45j9H0BeyqhJ
+	ms55c11FDWPOaE9SEeJgEX72bWymYrtWiYJ8dbskfqSRvMOh6gAj4gepHAzI38zESEZRtHazhR0
+	lQjCPTyolsq/e6Sz4jz6LTe4+HHTnDmBBU79eg/97nV52fn2Vxk51VIv8IeZcj0FmE4XMrzGGI7
+	61dH2SEAkF2LaAQHIgnup5H6KHI1bnv6G7aeDnzmsFTBybCOGxuL5B04IEbnoVYO6LinxRY1uQ1
+	GT42ZKSOCxnt629xglpp5rhONIyFSrQVAbD+EZ7ZQpDMMwakBhnYcOLPFpiCQiVIUDGOu+umtvx
+	dhhUUYCFrJ26tAaKBvHFg==
+X-Received: by 2002:a17:90b:4cca:b0:39e:423:bb8f with SMTP id 98e67ed59e1d1-3a0730988bdmr477897a91.1.1790066591638;
+        Tue, 22 Sep 2026 01:43:11 -0700 (PDT)
+Received: from intel.company.local ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a0674a5ae4sm3670016a91.12.2026.09.22.01.43.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Sep 2026 01:43:10 -0700 (PDT)
+From: Wandun Chen <chenwandun1@gmail.com>
+To: robh@kernel.org,
+	baoquan.he@linux.dev,
+	rppt@kernel.org,
+	m.szyprowski@samsung.com
+Cc: catalin.marinas@arm.com,
+	will@kernel.org,
+	mark.rutland@arm.com,
+	chenhuacai@kernel.org,
+	kernel@xen0n.name,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	saravanak@kernel.org,
+	akpm@linux-foundation.org,
+	pasha.tatashin@soleen.com,
+	pratyush@kernel.org,
+	ruirui.yang@linux.dev,
+	robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	kexec@lists.infradead.org,
+	linux-mm@kvack.org,
+	iommu@lists.linux.dev
+Subject: [PATCH v7 0/9] kdump: reduce vmcore size and capture time
+Date: Tue, 22 Sep 2026 16:42:47 +0800
+Message-ID: <20260922084256.1515554-1-chenwandun1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 17/24] iommu/amd: Program nested DTE and DomID map on
- attach
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- jgg@nvidia.com
-Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
- vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
- Sairaj.K@amd.com, jay.chen@amd.com, Ming.Shu@amd.com, SooJin.Tan@amd.com,
- wvw@google.com, wnliu@google.com, dantuluris@google.com,
- chriscli@google.com, kpsingh@google.com, alejandro.j.jimenez@oracle.com,
- joao.m.martins@oracle.com, guanghuifeng@linux.alibaba.com
-References: <20260914184750.222939-1-suravee.suthikulpanit@amd.com>
- <20260914184750.222939-18-suravee.suthikulpanit@amd.com>
-From: Guixin Liu <kanie@linux.alibaba.com>
-In-Reply-To: <20260914184750.222939-18-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
+From: Wandun Chen <chenwandun@lixiang.com>
+
+On SoCs that carve out large firmware-owned reserved memory (GPU,
+camera ISP, ...), kdump currently dumps those carveouts as part of
+system RAM even though their contents are firmware state that is not
+useful for kernel crash analysis.
+
+This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
+reserved memory on DT-based architectures (arm64, riscv, loongarch).
+Reserved regions are marked MEMBLOCK_NODUMP by default so kdump omits
+them; reusable CMA regions are different because their pages are handed
+back to the buddy allocator and may carry crash-relevant data.
+
+ACPI systems already filter reserved memory out of the vmcore through
+their existing path; only DT-based systems currently fail to filter these
+regions, which is what this series addresses. The flag lives in memblock
+itself rather than in a DT-only structure, so both ACPI and DT systems
+can benefit from it (suggested by Rob, thanks).
+
+Since the reserved memory regions are filtered out, the vmcore is
+smaller in size and faster to produce.
+
+The series is based on linux-next and is organized as follows:
+
+Patches 1-3: Preparation and bugfixes: switch riscv crash_mem to memblock,
+	     fold the duplicated per-arch memblock walks into the weak
+             defaults, and serialize crash header preparation against
+             memory hotplug.
+Patches 4-8: NODUMP infrastructure: switch crash_core to
+             for_each_mem_region(), introduce the MEMBLOCK_NODUMP flag,
+	     add a dumpable flag to struct reserved_mem, and mark
+	     /reserved-memory and /memreserve/ entries with MEMBLOCK_NODUMP
+	     flag.
+Patch 9:     Exclude MEMBLOCK_NODUMP regions from the vmcore ELF
+             header.
+
+v6 --> v7:
+1. Fix a stale MEMBLOCK_NODUMP flag issue [1]. Memory reserved and
+   marked as NODUMP may later be freed (the initrd, for example),
+   so the NODUMP flag must be cleared accordingly. Since the fix is
+   part of the NODUMP infrastructure introduced by patch 5, it has
+   been folded into that patch.
+
+2. Drop the "generic" related description in the cover letter.
+
+3. Collect the Acked-by and Reviewed-by tags received during the v6
+   review (thanks to Baoquan, Mike, Rob and Marek). Patch 5 is the
+   only one without a tag, as its Reviewed-by was dropped when the
+   fix was folded in.
+
+4. Drop patch 1 of v6, which has been merged separately.
 
 
-在 2026/9/15 02:47, Suravee Suthikulpanit 写道:
-> On nested attach, the host DTE must enable vIOMMU and carry the guest
-> device and guest IDs from the vDevice. Look up gdev_id with
-> iommufd_viommu_get_vdev_id() and fail the attach if that lookup fails.
->
-> Program the Domain ID mapping table through VFCTRL so hardware can
-> translate gdom_id to hdom_id. Write CONTROL1 before the DTE is live
-> with DTE_VIOMMU_EN so guest DMA cannot resolve against the idle
-> nest-parent map.
->
-> DomID CONTROL1 uses the same per-vIOMMU vfctrl_lock as DevID CONTROL0.
-> Hold that lock across CONTROL1 and the DTE commit, and on last-ref
-> nested_domain_free() take it before gdomid_array so idle restore
-> cannot clobber a concurrent alloc+attach.
->
-> CONTROL1 WRITE uses the same doorbell as CONTROL0. Poll WRITE until
-> it clears; iommu_completion_wait() does not drain the table DMA.
->
-> On the last nested_domain_free() for a gdom_id, restore the idle
-> DomID map (nest parent, V=1) before returning hdom_id to the IDA.
->
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> ---
->  drivers/iommu/amd/amd_iommu_types.h | 10 ++++
->  drivers/iommu/amd/amd_viommu.h      | 15 ++++++
->  drivers/iommu/amd/nested.c          | 74 +++++++++++++++++++++++++----
->  drivers/iommu/amd/viommu.c          | 49 +++++++++++++++++++
->  4 files changed, 140 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index 07eaeeb72e38..b5d1b23791da 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -382,6 +382,11 @@
->  #define DTE_GPT_LEVEL_SHIFT	54
->  #define DTE_GPT_LEVEL_MASK	GENMASK_ULL(55, 54)
->  
-> +/* vIOMMU bit fields */
-> +#define DTE_VIOMMU_EN_SHIFT		15
-> +#define DTE_VIOMMU_GDEVICEID_MASK	GENMASK_ULL(31, 16)
-> +#define DTE_VIOMMU_GUESTID_MASK		GENMASK_ULL(47, 32)
-> +
->  #define GCR3_VALID		0x01ULL
->  
->  /* DTE[128:179] | DTE[184:191] */
-> @@ -552,6 +557,11 @@ struct amd_iommu_viommu {
->  	 * (DevID and DomID table updates) for this gid. Those registers
->  	 * are shared by every vDevice on this vIOMMU; igroup locks are
->  	 * not. Do not nest with trans_devid_lock.
-> +	 *
-> +	 * nested_domain_free() last-ref takes this before
-> +	 * gdomid_array's xa_lock so CONTROL1 idle restore cannot race
-> +	 * a concurrent alloc+attach. Attach holds it across CONTROL1
-> +	 * and the DTE commit.
->  	 */
->  	struct mutex vfctrl_lock;
->  
-> diff --git a/drivers/iommu/amd/amd_viommu.h b/drivers/iommu/amd/amd_viommu.h
-> index 1022ae20c170..f17ac13da213 100644
-> --- a/drivers/iommu/amd/amd_viommu.h
-> +++ b/drivers/iommu/amd/amd_viommu.h
-> @@ -23,6 +23,11 @@ int amd_viommu_init_one(struct amd_iommu *iommu, struct amd_iommu_viommu *viommu
->  
->  void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iommu_viommu *viommu);
->  
-> +void amd_viommu_domain_id_update(struct amd_iommu_viommu *aviommu,
-> +				 u16 hdom_id, u16 gdom_id);
-No one call amd_viommu_domain_id_update, should removed?
+v5 --> v6:
+1. Serialize crash header preparation against memory hotplug to avoid
+   out-of-bounds or use-after-free issues.
+2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
+   avoiding a panic from too few regions before resize is permitted.
+3. Reordered the patches, put pre-existing bugfixes earlier in the series.
 
-Best Regards,
-Guixin Liu
-> +void amd_viommu_domain_id_update_locked(struct amd_iommu_viommu *aviommu,
-> +					u16 hdom_id, u16 gdom_id);
-> +
->  void amd_viommu_set_device_mapping(struct amd_iommu_viommu *aviommu,
->  				   u16 hdev_id, u16 gdev_id);
->  #else
-> @@ -51,6 +56,16 @@ static inline void amd_viommu_set_device_mapping(struct amd_iommu_viommu *aviomm
->  {
->  }
->  
-> +static inline void amd_viommu_domain_id_update(struct amd_iommu_viommu *aviommu,
-> +					       u16 hdom_id, u16 gdom_id)
-> +{
-> +}
-> +
-> +static inline void amd_viommu_domain_id_update_locked(struct amd_iommu_viommu *aviommu,
-> +						      u16 hdom_id, u16 gdom_id)
-> +{
-> +}
-> +
->  #endif /* CONFIG_AMD_IOMMU_IOMMUFD */
->  
->  #endif /* AMD_VIOMMU_H */
-> diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
-> index 8bb0d1596c6c..ecdcecdc0bb7 100644
-> --- a/drivers/iommu/amd/nested.c
-> +++ b/drivers/iommu/amd/nested.c
-> @@ -10,6 +10,7 @@
->  #include <uapi/linux/iommufd.h>
->  
->  #include "amd_iommu.h"
-> +#include "amd_viommu.h"
->  
->  static const struct iommu_domain_ops nested_domain_ops;
->  
-> @@ -188,13 +189,16 @@ amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
->  	return ERR_PTR(ret);
->  }
->  
-> -static void set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
-> -			   struct iommu_dev_data *dev_data, struct dev_table_entry *new)
-> +static int set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
-> +			  struct iommu_dev_data *dev_data, struct dev_table_entry *new)
->  {
-> +	int ret;
-> +	u16 gid;
->  	struct protection_domain *parent;
->  	struct nested_domain *ndom = to_ndomain(dom);
->  	struct iommu_hwpt_amd_guest *gdte = &ndom->gdte;
->  	struct pt_iommu_amdv1_hw_info pt_info;
-> +	unsigned long gdev_id;
->  
->  	/*
->  	 * The nest parent domain is attached during the call to the
-> @@ -202,9 +206,15 @@ static void set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
->  	 * of the struct amd_iommu_viommu.parent.
->  	 */
->  	if (WARN_ON(!ndom->viommu || !ndom->viommu->parent))
-> -		return;
-> +		return -EINVAL;
->  
-> +	gid = ndom->viommu->gid;
->  	parent = ndom->viommu->parent;
-> +
-> +	ret = iommufd_viommu_get_vdev_id(&ndom->viommu->core, dev_data->dev, &gdev_id);
-> +	if (ret)
-> +		return ret;
-> +
->  	amd_iommu_make_clear_dte(iommu, dev_data->devid, new);
->  
->  	/* Retrieve the current pagetable info via the IOMMU PT API. */
-> @@ -232,12 +242,19 @@ static void set_dte_nested(struct amd_iommu *iommu, struct iommu_domain *dom,
->  
->  	/* Guest paging mode */
->  	new->data[2] |= gdte->dte[2] & DTE_GPT_LEVEL_MASK;
-> +
-> +	new->data[3] |= 1ULL << DTE_VIOMMU_EN_SHIFT;
-> +	new->data[3] |= FIELD_PREP(DTE_VIOMMU_GDEVICEID_MASK, gdev_id);
-> +	new->data[3] |= FIELD_PREP(DTE_VIOMMU_GUESTID_MASK, gid);
-> +
-> +	return 0;
->  }
->  
->  static int nested_attach_device(struct iommu_domain *dom, struct device *dev,
->  				struct iommu_domain *old)
->  {
->  	struct dev_table_entry new = {0};
-> +	struct nested_domain *ndom = to_ndomain(dom);
->  	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
->  	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
->  	int ret = 0;
-> @@ -251,10 +268,23 @@ static int nested_attach_device(struct iommu_domain *dom, struct device *dev,
->  
->  	mutex_lock(&dev_data->mutex);
->  
-> -	set_dte_nested(iommu, dom, dev_data, &new);
-> +	ret = set_dte_nested(iommu, dom, dev_data, &new);
-> +	if (ret)
-> +		goto out_err;
->  
-> +	/*
-> +	 * Program gdom_id -> hdom_id before the DTE is live with
-> +	 * DTE_VIOMMU_EN. Hold vfctrl_lock across both so a concurrent
-> +	 * last-ref free cannot restore the idle map in between.
-> +	 */
-> +	mutex_lock(&ndom->viommu->vfctrl_lock);
-> +	amd_viommu_domain_id_update_locked(ndom->viommu,
-> +					   ndom->gdom_info->hdom_id,
-> +					   ndom->gdom_id);
->  	amd_iommu_update_dte(iommu, dev_data, &new);
-> +	mutex_unlock(&ndom->viommu->vfctrl_lock);
->  
-> +out_err:
->  	mutex_unlock(&dev_data->mutex);
->  
->  	return ret;
-> @@ -267,10 +297,18 @@ static void nested_domain_free(struct iommu_domain *dom)
->  	struct nested_domain *ndom __free(kfree) = to_ndomain(dom);
->  	struct amd_iommu_viommu *aviommu = ndom->viommu;
->  
-> +	/*
-> +	 * vfctrl_lock then gdomid_array: keep the slot empty in the
-> +	 * xarray until CONTROL1 is idle so a concurrent alloc+attach
-> +	 * for this gdom_id cannot publish H2 and then lose it to this
-> +	 * restore. Attach takes the same lock around CONTROL1 + DTE.
-> +	 */
-> +	mutex_lock(&aviommu->vfctrl_lock);
->  	xa_lock_irqsave(&aviommu->gdomid_array, irqflags);
->  
->  	if (!refcount_dec_and_test(&ndom->gdom_info->users)) {
->  		xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
-> +		mutex_unlock(&aviommu->vfctrl_lock);
->  		return;
->  	}
->  
-> @@ -282,14 +320,34 @@ static void nested_domain_free(struct iommu_domain *dom)
->  			    ndom->gdom_info, NULL, GFP_ATOMIC);
->  
->  	xa_unlock_irqrestore(&aviommu->gdomid_array, irqflags);
-> -	if (WARN_ON(!curr || xa_err(curr)))
-> +	if (WARN_ON(!curr || xa_err(curr))) {
-> +		mutex_unlock(&aviommu->vfctrl_lock);
->  		return;
-> +	}
->  
-> -	/* success */
->  	pr_debug("%s: Free gdom_id=%#x, hdom_id=%#x\n",
-> -		__func__, ndom->gdom_id, curr->hdom_id);
-> +		 __func__, ndom->gdom_id, curr->hdom_id);
-> +
-> +	/*
-> +	 * Restore the idle DomID map before releasing hdom_id. Every
-> +	 * slot stays V=1; unknown mapping raises an event. Idle is the
-> +	 * nest parent CONTROL1 map, same as vIOMMU init prefill.
-> +	 * amd_iommu_reset_vmmio() only resets guest MMIO.
-> +	 *
-> +	 * Guest INVALIDATE_IOMMU_ALL walks the HW table, not
-> +	 * gdomid_array. The pdom_ids IDA is global, so a stale V=1
-> +	 * entry can invalidate a recycled hdom_id that now belongs to
-> +	 * another domain.
-> +	 *
-> +	 * Detach does not clear this slot: hdom_id stays allocated
-> +	 * until this last free, so a lingering gdom_id -> hdom_id
-> +	 * map cannot point at a recycled ID.
-> +	 */
-> +	amd_viommu_domain_id_update_locked(aviommu, aviommu->parent->id,
-> +					   ndom->gdom_id);
-> +	mutex_unlock(&aviommu->vfctrl_lock);
->  
-> -	amd_iommu_pdom_id_free(ndom->gdom_info->hdom_id);
-> +	amd_iommu_pdom_id_free(curr->hdom_id);
->  	kfree(curr);
->  }
->  
-> diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-> index 556864eaaa0d..7521f470e5d4 100644
-> --- a/drivers/iommu/amd/viommu.c
-> +++ b/drivers/iommu/amd/viommu.c
-> @@ -46,6 +46,7 @@ static_assert(VIOMMU_DOMID_MAPPING_ENTRY_SIZE >=
->  	      (VIOMMU_MAX_GDOMID + 1ULL) * sizeof(u64));
->  
->  #define VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL0_OFFSET	0x00
-> +#define VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL1_OFFSET	0x08
->  
->  static void __init amd_viommu_vf_vfcntl_unmap(struct amd_iommu *iommu)
->  {
-> @@ -510,6 +511,54 @@ void amd_viommu_set_device_mapping(struct amd_iommu_viommu *aviommu,
->  	mutex_unlock(&aviommu->vfctrl_lock);
->  }
->  
-> +#define DOMID_ENTRY_GDOMID_MASK	GENMASK_ULL(61, 46)
-> +#define DOMID_ENTRY_HDOMID_MASK	GENMASK_ULL(29, 14)
-> +#define DOMID_ENTRY_VALID		BIT_ULL(0)
-> +#define DOMID_ENTRY_WRITE		BIT_ULL(63)
-> +
-> +/*
-> + * Guest DomID table update via VFCTRL CONTROL1. Same WRITE-bit
-> + * doorbell as CONTROL0.
-> + */
-> +static void domain_id_update_unlocked(struct amd_iommu *iommu, u16 gid,
-> +				      u16 hdom_id, u16 gdom_id)
-> +{
-> +	u64 val;
-> +	u8 __iomem *vfctrl = VIOMMU_VFCTRL_MMIO_BASE(iommu, gid);
-> +
-> +	val = FIELD_PREP(DOMID_ENTRY_GDOMID_MASK, gdom_id) |
-> +	      FIELD_PREP(DOMID_ENTRY_HDOMID_MASK, hdom_id) |
-> +	      DOMID_ENTRY_WRITE | DOMID_ENTRY_VALID;
-> +
-> +	vfctrl_wait_write_clear(iommu, gid,
-> +			VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL1_OFFSET);
-> +	writeq(val, vfctrl + VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL1_OFFSET);
-> +	vfctrl_wait_write_clear(iommu, gid,
-> +			VIOMMU_VFCTRL_GUEST_DID_MAP_CONTROL1_OFFSET);
-> +}
-> +
-> +/*
-> + * Program a gdom_id -> hdom_id entry through VFCTRL CONTROL1.
-> + * Caller must hold aviommu->vfctrl_lock.
-> + */
-> +void amd_viommu_domain_id_update_locked(struct amd_iommu_viommu *aviommu,
-> +					u16 hdom_id, u16 gdom_id)
-> +{
-> +	struct amd_iommu *iommu =
-> +		container_of(aviommu->core.iommu_dev, struct amd_iommu, iommu);
-> +
-> +	lockdep_assert_held(&aviommu->vfctrl_lock);
-> +	domain_id_update_unlocked(iommu, aviommu->gid, hdom_id, gdom_id);
-> +}
-> +
-> +void amd_viommu_domain_id_update(struct amd_iommu_viommu *aviommu,
-> +				 u16 hdom_id, u16 gdom_id)
-> +{
-> +	mutex_lock(&aviommu->vfctrl_lock);
-> +	amd_viommu_domain_id_update_locked(aviommu, hdom_id, gdom_id);
-> +	mutex_unlock(&aviommu->vfctrl_lock);
-> +}
-> +
->  void amd_viommu_uninit_one(struct amd_iommu *iommu, struct amd_iommu_viommu *aviommu)
->  {
->  	pr_debug("%s: gid=%u\n", __func__, aviommu->gid);
+
+v4 --> v5:
+1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
+   (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
+   DT-only struct reserved_mem [2].
+2. Switch the riscv vmcore elf header preparation to use memblock
+   instead of the resource tree, aligning it with arm64 and loongarch,
+   so riscv also can exclude reserved memory from vmcore.
+3. Deduplicate the vmcore elf header preparation: arm64, riscv and
+   loongarch open-coded the same logic, so fold it into shared
+    __weak defaults in crash_core.
+4.  Drop the v4 patch that saved /memreserve/ entries into the
+    reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
+    directly.
+
+v3 --> v4:
+1. Rebase this series on v7.2-rc1.
+2. Add two cleanup patches (patch 02/03).
+3. Simplify patch 03 to avoid checking whether initial_boot_params is
+   NULL multiple times, suggested by Rob.
+
+v2 --> v3:
+1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.
+2. Fix UAF issue when alloc_reserved_mem_array() fails.
+3. Add some prepare patches.
+
+v1 --> v2:
+1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+   feedback [3], v2 drop that property and exclude reserve memory
+   by default.
+2. Split some prepared patches from the original patches.
+3. Address coding-style comments on patch 5 from Rob.
+
+[1] https://sashiko.dev/#/message/20260917220750.GA4013814-robh%40kernel.org
+[2] https://lore.kernel.org/lkml/20260723234126.GA3253409-robh@kernel.org/
+[3] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
+
+
+
+Wandun Chen (9):
+  riscv: build crash_mem ranges from memblock instead of resource tree
+  crash_core: fold duplicated memblock arch hooks into the weak default
+  crash_core: serialize crash header preparation against hotplug
+  crash_core: replace for_each_mem_range() with for_each_mem_region()
+  memblock: introduce MEMBLOCK_NODUMP flag
+  of: reserved_mem: add dumpable flag to opt-in vmcore
+  of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+  of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
+  crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+    header
+
+ arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
+ arch/loongarch/kernel/machine_kexec_file.c | 27 ------------
+ arch/riscv/Kconfig                         |  2 +-
+ arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
+ arch/x86/kernel/crash.c                    |  2 +-
+ drivers/of/fdt.c                           |  2 +
+ drivers/of/of_private.h                    |  2 +
+ drivers/of/of_reserved_mem.c               | 48 ++++++++++++++++++++
+ include/linux/crash_core.h                 |  2 +
+ include/linux/memblock.h                   |  9 ++++
+ include/linux/of_reserved_mem.h            |  1 +
+ kernel/crash_core.c                        | 51 ++++++++++++++++++++--
+ kernel/dma/contiguous.c                    |  1 +
+ mm/memblock.c                              | 43 +++++++++++++++++-
+ 14 files changed, 155 insertions(+), 97 deletions(-)
+
+-- 
+2.43.0
 
