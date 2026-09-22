@@ -1,84 +1,51 @@
-Received: from mail-pj2-f13.google.com (mail-pj2-f13.google.com [74.125.227.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ADF955C30F
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 15:58:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.141
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2EBBD5678EC;
+	Tue, 22 Sep 2026 16:26:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790092740; cv=none; b=Sxzf33aYT5RD7xGTTM8BKf/JK6YiQP4M3Hm7WCWD2NbJ/FxybbxxOl9jun/mvUtfqX2lPG3ssOki++anMSIe8h/eOKBYH36J88S5p3YUk14odRiCgm36p6/Rh933z0kpFId+rNxXxsVfY3/9edfBliUEqQDqbJJd9w6xLgFN59g=
+	t=1790094372; cv=none; b=U93aPJx46RjoI//Rudj7i7rNJbsXq08XRNYKqTFvyHf+O0PyVyeaWdyitladpEkHOkTKj2q8MiIGujJA2NQV5HYhwGOBqdtKuTc9PKm0vQeE+vJHFJFGlK9D9PzJq9okZZH9kxtQltwl/o5KkIlwu4n6+rLqymYeEB+CnKdxDCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790092740; c=relaxed/simple;
-	bh=gG7zDAdUxNJ/zpdch7xDafxgraNooHMFV+xhtJLfxfw=;
+	s=arc-20240116; t=1790094372; c=relaxed/simple;
+	bh=ayic+nVzRT7jF2h19D33qb2NxY0nfyFpS1c2IauCEkw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZuIX0pg5H2p01zECQ+DH21i1Vwp4+2wlCyLxC3WZZTU+c3ywIcmyY86MGl5S3yD6ArRxgtNHBJr3OzpF74rX0zJeD4Q1RgmC+ydq/q/GU5wUeQaVoRyH4WDWFNSzrpeXBd+DDMqmPf7WANHhooHpGh7wBb21ZvFJEYUoeG0yMxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=IUkZ0Wlg; arc=none smtp.client-ip=74.125.227.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=qtvoCghwzwLfdukLQx0rv2f3QpVmBL5TmduFl+//n+A6pmYmxw4v9swJgQmBVvyBqnYJWLzgnuYT7wincQJ/y+ueQRNx5Ly+haKtLzsMFq7zOhTvHGIMJZ50Asbbo+2ApmBFKf6Twsne2ePQuM6askMzrBSJeOcwo1gSeKpCaaQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=vLKpHlXy; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IUkZ0Wlg"
-Received: by mail-pj2-f13.google.com with SMTP id d9443c01a7336-2d91a931f66so60405ad.0
-        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 08:58:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1790092737; x=1790697537; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Ne0KgVwwcVPPJwmaYq2AHxStqJShN32EZv44sO80Yy0=;
-        b=IUkZ0WlgPiR8vVN/m6xnAVoKtQWEAzVo2+rGgNPPhl/ZVPGBVbJ21gwFJukOKWPqpz
-         yKm5GVvhpq1geOautp+ImFdm3osrCTdWAttVoNF0pr3eLQR6jZackb21X7qgRaVSIfOO
-         Ue/hCSqRGWP6bkY/7OXP008zweXHYDQlIMcrJ9B1Xz1J58niQXAW+LTQaju9ieVpKf8j
-         IjvYHean9XdvMrHP3V4BYPf6sUX2lq/4GhPg5Iaq6mjnUCnL18nBcm5H64NY6C6Q1/Qy
-         3wywbe3USXm7Bh4vslIMxwBNLoHpLv2Wx3FrK0LOotzIWuNvfacWHXci+48j5EBD5sAB
-         SyBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790092737; x=1790697537;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Ne0KgVwwcVPPJwmaYq2AHxStqJShN32EZv44sO80Yy0=;
-        b=Qqyi7qnKpc+M+WwvvFHKNlS58nawbU1XiLtbd8Vu699YNu9WNHu+GrfJ9St4lukDpV
-         ZQpmFAhCKohdIs+yyuFJ/Je3TAIwKu/RZw8VoOG6mJQAAsoaIJDnlvUdALTEB78WC0Ha
-         nl9pv8GHbKlXq/kEkVYWpsYBwNnzgGUFMNrx9SNYTpbNmSThbQFOfzfgxSGDtVKdFkC4
-         DVV4RiyoHuSaPneIYtPBFrdRdVQjOBp5kNbPl3aDq3IG3AIdvvIi2iLW01DtAjIwhod8
-         +u1xQst9cYFTv6PiK7fQUQZS09DtieumQVmfuhys17sgKHKqcUT/Cs+hzKn/vuBE/SHB
-         EYsw==
-X-Forwarded-Encrypted: i=1; AKwUvByps89VbY0VVvwQ4As9EB0xFMBpKdHqZmXZW9PUaLc2/KLnuNd0tZfmfUH4Gl2VedBm1tyT5Q==@lists.linux.dev
-X-Gm-Message-State: AFuF++l93A6MdiHqcxoCN+PQS6FUa8fF78nKFkOP8dnWP7XfuBet9V87
-	NdfsKXcdBne96ELiro5tbtSWfNDrv/oH0ifhCt2tjTQbglnWMVm79ntPJgSBk7MHgk0=
-X-Gm-Gg: AYBFou0Xwldus7Cqq/IFIoCZA8SLcg64Dohwgj46osh+fjHHSiNjvPaHwEId7Q3oSbt
-	2JQ+VOuaMvG0XUUoIAe2OL3MPGMNBpvrG32zZBoogrKGEKXWmT1plqQaNDHc+qP66hnYDodXHl9
-	qG1dZ4uEhYQ+DHwnftLFJFALdB2+6JQ2mAFB7yy5zclWqc+TFOEYK4hPsxc70bNUcx1/aHfCq4y
-	Lgf7LFxA5PscBOIfnYhQOCSSwm0UbowKzQ2E0XEZPS6DpY94iR6nDeqC0Z/IdkKb6dFXdDBMEwN
-	c+jh7iMu8SbATBXvpIqS7owXU6XUrvPiZ394HoudU8vnWQOu3YwT8WZAGoEY+EhjK1KRHWy1KEJ
-	81iXyt0qeiFFVzQFiEWp3JBWnGMf/lIf/20GROkj/vxzytoEzhQZ1Nr0D3cmL5jrjI8qLLMfduW
-	xK9aAZujpMkWAKAcKlxTEB1RuNvQSymrn9gxRYJzzqu1OiH9t+c7BahkEgnZLKt+2GLFidy1Wi
-X-Received: by 2002:a17:903:3886:b0:2dd:c053:d73e with SMTP id d9443c01a7336-2df60b31a8amr22799845ad.37.1790092736751;
-        Tue, 22 Sep 2026 08:58:56 -0700 (PDT)
-Received: from p14s ([2604:3d09:148c:c800:1046:ab8:737c:d2e2])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2df5d055a1fsm12812715ad.64.2026.09.22.08.58.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 08:58:56 -0700 (PDT)
-Date: Tue, 22 Sep 2026 09:58:53 -0600
-From: Mathieu Poirier <mathieu.poirier@linaro.org>
-To: Francesco Valla <francesco@valla.it>
-Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="vLKpHlXy"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 177FF1576;
+	Tue, 22 Sep 2026 09:26:00 -0700 (PDT)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 06CF23F632;
+	Tue, 22 Sep 2026 09:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1790094363; bh=ayic+nVzRT7jF2h19D33qb2NxY0nfyFpS1c2IauCEkw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=vLKpHlXy9TeAxplzn8LuOxnhs+NZZT08I8jSb7+j1I6L64gZFqCGnchXfZ3Dqibh8
+	 eQMv80pCWNlnv73z0GmxiYSywlJm2UuyVrhWN9MyheshF5MMnKprwZkReiNsEO3hTc
+	 KddnGGEGanHe0MFeVvE3aGvk5G7QNuyyTWu9q8xw=
+Date: Tue, 22 Sep 2026 17:25:58 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
+	christian.koenig@amd.com, Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>, Marc Zyngier <maz@kernel.org>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>,
-	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	imx@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFC 06/12] remoteproc: virtio: add bounce buffering for
- data buffers
-Message-ID: <arKlvZGqu2nt6Ci0@p14s>
-References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <20260916-remoteproc_virtio_map-v1-6-dac8c5eb4aa9@valla.it>
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH v7 02/13] mm: Add an allocator for CoCo shared memory
+Message-ID: <arKsFofudnTYpXj1@arm.com>
+References: <20260921144847.501151-1-aneesh.kumar@kernel.org>
+ <20260921144847.501151-3-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,319 +54,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260916-remoteproc_virtio_map-v1-6-dac8c5eb4aa9@valla.it>
+In-Reply-To: <20260921144847.501151-3-aneesh.kumar@kernel.org>
 
-On Wed, Sep 16, 2026 at 11:10:51PM +0200, Francesco Valla wrote:
-> Depending on the driver originating them, data buffers used for virtio
-> communication can either:
-> 
->   - already be allocated from the coherent memory area that is
->     accessible by the remote processor; this is the case of rpmsg
->     and the rproc flavor of virtio-console;
->   - be allocated from generic kmem, and thus not accessible directly by
->     the remote processor.
-> 
-> Exploiting the map operations, which are used by the virtio framework
-> when VIRTIO_F_ACCESS_PLATFORM is part of a vdev's feature flags, add
-> bounce buffering for the second case: when the map() callback is called
-> for a buffer, one or more pages of coherent memory are allocated and
-> data is copied to them, then they are exposed to the remote processor;
-> the data is  then bounced back on unmap().
-> 
-> The first case is not impacted, since buffers already suitable for
-> remote transmission are passed through.
-> 
-> With the bounce buffering in place, any kind of virtio device can be
-> supported through the remoteproc-virtio transport, at least from a
-> data exchange standpoint.
-
-Is this _necessary_ for the imx93 platform you are implementing feature for?
-
-> 
-> Signed-off-by: Francesco Valla <francesco@valla.it>
-> ---
->  drivers/remoteproc/remoteproc_virtio.c | 182 +++++++++++++++++++++++++++++++--
->  include/linux/remoteproc.h             |  14 +++
->  2 files changed, 190 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-> index cfd66d9d1c9e..d21b3b8044df 100644
-> --- a/drivers/remoteproc/remoteproc_virtio.c
-> +++ b/drivers/remoteproc/remoteproc_virtio.c
-> @@ -241,7 +241,14 @@ static void rproc_virtio_reset(struct virtio_device *vdev)
->  	dev_dbg(&vdev->dev, "reset !\n");
->  }
->  
-> -/* provide the vdev features as retrieved from the firmware */
-> +/* Provide the vdev features as retrieved from the firmware, plus the following
-> + * additional ones:
-> + *   - VIRTIO_F_VERSION_1 that is required by some non-rpmsg virtio devices
-> + *   - VIRTIO_F_ACCESS_PLATFORM to force usage of the map operations
-> + */
-> +#define RPROC_VIRTIO_STATIC_FEATURES \
-> +	((1ULL << VIRTIO_F_VERSION_1) | (1ULL << VIRTIO_F_ACCESS_PLATFORM))
-> +
->  static u64 rproc_virtio_get_features(struct virtio_device *vdev)
->  {
->  	struct rproc_vdev *rvdev = vdev_to_rvdev(vdev);
-> @@ -249,7 +256,7 @@ static u64 rproc_virtio_get_features(struct virtio_device *vdev)
->  
->  	rsc = (void *)rvdev->rproc->table_ptr + rvdev->rsc_offset;
->  
-> -	return rsc->dfeatures | (1ULL << VIRTIO_F_VERSION_1);
-> +	return rsc->dfeatures | RPROC_VIRTIO_STATIC_FEATURES;
->  }
->  
->  static void rproc_transport_features(struct virtio_device *vdev)
-> @@ -275,16 +282,16 @@ static int rproc_virtio_finalize_features(struct virtio_device *vdev)
->  	/* Give virtio_rproc a chance to accept features. */
->  	rproc_transport_features(vdev);
->  
-> -	/* Make sure we don't have any features > 32 bits except VIRTIO_F_VERSION_1 */
-> +	/* Make sure we don't have any features > 32 bits */
->  	if (WARN_ON_ONCE((u32)vdev->features !=
-> -			 (vdev->features & ~(1ULL << VIRTIO_F_VERSION_1))))
-> +			 (vdev->features & ~RPROC_VIRTIO_STATIC_FEATURES)))
->  		return -1;
->  
->  	/*
->  	 * Remember the finalized features of our vdev, and provide it
->  	 * to the remote processor once it is powered on.
->  	 */
-> -	rsc->gfeatures = vdev->features & ~(1ULL << VIRTIO_F_VERSION_1);
-> +	rsc->gfeatures = vdev->features & ~RPROC_VIRTIO_STATIC_FEATURES;
->  
->  	return 0;
->  }
-> @@ -337,6 +344,151 @@ static const struct virtio_config_ops rproc_virtio_config_ops = {
->  	.set		= rproc_virtio_set,
->  };
->  
-> +static inline unsigned int rproc_virtio_bounce_slot(struct device *dma_dev,
-> +						    dma_addr_t dma_handle)
+On Mon, Sep 21, 2026 at 08:18:36PM +0530, Aneesh Kumar K.V (Arm) wrote:
+> +int alloc_cc_shared_pages_node(int nid, gfp_t gfp,
+> +		size_t requested, struct cc_shared_pages *mem)
 > +{
-> +	const dma_addr_t dma_base = dma_dev_coherent_base(dma_dev);
+> +	struct cc_shared_layout layout;
+> +	struct page *page;
+> +	unsigned int order;
+> +	bool zero = gfp & __GFP_ZERO;
+> +	int ret;
 > +
-> +	return (dma_handle - dma_base) >> PAGE_SHIFT;
-> +}
+> +	if (!mem)
+> +		return -EINVAL;
 > +
-> +static dma_addr_t rproc_virtio_map_page(union virtio_map map, struct page *page,
-> +					unsigned long offset, size_t size,
-> +					enum dma_data_direction dir,
-> +					unsigned long attrs)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +	struct rproc_vdev *rvdev = dev_get_drvdata(dev);
-> +	dma_addr_t dma_base = dma_dev_coherent_base(dev);
-> +	size_t dma_size = dma_dev_coherent_size(dev);
-> +	phys_addr_t paddr = page_to_phys(page) + offset;
-> +	void *vaddr = page_to_virt(page) + offset;
-> +	struct rproc_map_record *record;
-> +	dma_addr_t map_handle;
-> +	void *bounce;
+> +	ret = cc_shared_calc_layout(requested, &layout);
+> +	if (ret)
+> +		return ret;
 > +
-> +	// No need to allocate a bounce buffer if the memory to map is already
-> +	// part of the device's coherent pool.
-> +	if (paddr >= dma_base && paddr < (dma_base + dma_size)) {
-> +		// The allocation details will be recorded also in this case,
-> +		// indicating that no bounce buffer was allocated.
-> +		map_handle = (dma_addr_t)paddr;
-> +		bounce = NULL;
-> +	} else {
-> +		// Allocate bounce buffer from device coherent memory
-> +		bounce = dma_alloc_coherent(dev, size, &map_handle, GFP_KERNEL | __GFP_ZERO);
-> +		if (!bounce)
-> +			return DMA_MAPPING_ERROR;
+> +	order = get_order(layout.shared_size);
+> +	if (order > MAX_PAGE_ORDER)
+> +		return -EINVAL;
 > +
-> +		// Copy data to bounce buffer
-> +		memcpy(bounce, vaddr, size);
-> +	}
-> +
-> +	// Save bounce details
-> +	record = &rvdev->map_records[rproc_virtio_bounce_slot(dev, map_handle)];
-> +
-> +	record->original = vaddr;
-> +	record->size = size;
-> +	record->bounce = bounce;
-> +
-> +	return map_handle;
-> +}
-> +
-> +static void rproc_virtio_unmap_page(union virtio_map map, dma_addr_t map_handle,
-> +				    size_t size, enum dma_data_direction dir,
-> +				    unsigned long attrs)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +	struct rproc_vdev *rvdev = dev_get_drvdata(dev);
-> +	unsigned int slot = rproc_virtio_bounce_slot(dev, map_handle);
-> +	struct rproc_map_record *record = &rvdev->map_records[slot];
-> +
-> +	WARN_ON(size != record->size);
-> +
-> +	// If a bounce buffer was used, copy data back to original one
-> +	if (record->bounce) {
-> +		memcpy(record->original, record->bounce, record->size);
-> +
-> +		dma_free_coherent(dev, record->size, record->bounce, map_handle);
-> +	}
-> +
-> +	record->original = NULL;
-> +	record->size = 0;
-> +	record->bounce = NULL;
-> +}
-> +
-> +static void rproc_virtio_sync_single_for_cpu(union virtio_map map,
-> +					     dma_addr_t map_handle,
-> +					     size_t size,
-> +					     enum dma_data_direction dir)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +
-> +	dma_sync_single_range_for_cpu(dev, (map_handle & PAGE_MASK),
-> +				      offset_in_page(map_handle), size, dir);
-> +}
-> +
-> +static void rproc_virtio_sync_single_for_device(union virtio_map map,
-> +						dma_addr_t map_handle,
-> +						size_t size,
-> +						enum dma_data_direction dir)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +
-> +	dma_sync_single_range_for_device(dev, (map_handle & PAGE_MASK),
-> +					 offset_in_page(map_handle), size, dir);
-> +}
-> +
-> +static void *rproc_virtio_alloc(union virtio_map map, size_t size,
-> +				dma_addr_t *map_handle, gfp_t gfp)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +
-> +	return dma_alloc_coherent(dev, size, map_handle, gfp);
-> +}
-> +
-> +static void rproc_virtio_free(union virtio_map map, size_t size, void *vaddr,
-> +			      dma_addr_t map_handle, unsigned long attrs)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +
-> +	dma_free_coherent(dev, size, vaddr, map_handle);
-> +}
-> +
-> +static bool rproc_virtio_need_sync(union virtio_map map, dma_addr_t map_handle)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +
-> +	return dma_need_sync(dev, map_handle);
-> +}
-> +
-> +static int rproc_virtio_mapping_error(union virtio_map map, dma_addr_t map_handle)
-> +{
-> +	if (unlikely(map_handle == DMA_MAPPING_ERROR))
-> +		return -ENOMEM;
-> +
-> +	return 0;
-> +}
-> +
-> +static inline size_t rproc_virtio_max_mapping_size(union virtio_map map)
-> +{
-> +	struct device *dev = map.dma_dev;
-> +
-> +	return dma_dev_coherent_size(dev);
-> +}
-> +
-> +static const struct virtio_map_ops rproc_virtio_map_ops = {
-> +	.map_page = rproc_virtio_map_page,
-> +	.unmap_page = rproc_virtio_unmap_page,
-> +	.sync_single_for_cpu = rproc_virtio_sync_single_for_cpu,
-> +	.sync_single_for_device = rproc_virtio_sync_single_for_device,
-> +	.alloc = rproc_virtio_alloc,
-> +	.free = rproc_virtio_free,
-> +	.need_sync = rproc_virtio_need_sync,
-> +	.mapping_error = rproc_virtio_mapping_error,
-> +	.max_mapping_size = rproc_virtio_max_mapping_size,
-> +};
-> +
->  /*
->   * This function is called whenever vdev is released, and is responsible
->   * to decrement the remote processor's refcount which was taken when vdev was
-> @@ -355,6 +507,8 @@ static void rproc_virtio_dev_release(struct device *dev)
->  	of_reserved_mem_device_release(&rvdev->pdev->dev);
->  	dma_release_coherent_memory(&rvdev->pdev->dev);
->  
-> +	kvfree(rvdev->map_records);
-> +
->  	put_device(&rvdev->pdev->dev);
->  }
->  
-> @@ -429,13 +583,29 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
->  		of_reserved_mem_device_init_by_idx(dev, np, 0);
->  	}
->  
-> +	/* Allocate one tracking record for each page of the device reserved
-> +	 * memory. Contiguous memory is not required for this array, which can
-> +	 * also be quite big (depending on the size of the coherent memory), so
-> +	 * let's use vmalloc for this allocation.
+> +	/*
+> +	 * State transitions require a linear-map address and may modify memory.
+> +	 * Allocate from low memory and defer requested zeroing until afterwards.
 > +	 */
-> +	rvdev->map_records = kvcalloc(dma_dev_coherent_size(dev) >> PAGE_SHIFT,
-> +				      sizeof(*rvdev->map_records),
-> +				      GFP_KERNEL);
-> +	if (!rvdev->map_records) {
-> +		dev_err(dev, "failed to allocate memory for map records\n");
+> +	gfp &= ~(__GFP_HIGHMEM | __GFP_ZERO);
+> +	if (nid == NUMA_NO_NODE)
+> +		page = alloc_pages(gfp, order);
+> +	else
+> +		page = alloc_pages_node(nid, gfp, order);
+> +	if (!page)
 > +		return -ENOMEM;
+> +
+> +	ret = cc_make_shared(page_address(page), layout.shared_size);
+> +	if (ret) {
+> +		if (!cc_make_private(page_address(page), layout.shared_size))
+> +			__free_pages(page, order);
+> +		else
+> +			pr_warn_ratelimited("leaking %zu bytes with uncertain shared state\n",
+> +					    layout.shared_size);
+> +		return ret;
 > +	}
 > +
->  	/* Allocate virtio device */
->  	vdev = kzalloc_obj(*vdev);
-> -	if (!vdev)
-> +	if (!vdev) {
-> +		kvfree(rvdev->map_records);
->  		return -ENOMEM;
-> +	}
->  
->  	vdev->id.device = id;
->  	vdev->config = &rproc_virtio_config_ops;
-> +	vdev->map = &rproc_virtio_map_ops;
->  	vdev->dev.parent = dev;
->  	vdev->dev.release = rproc_virtio_dev_release;
->  
-> diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
-> index c3ba51fe9e54..2ff48b505ac0 100644
-> --- a/include/linux/remoteproc.h
-> +++ b/include/linux/remoteproc.h
-> @@ -339,10 +339,23 @@ struct rproc_vring {
->  	struct virtqueue *vq;
->  };
->  
-> +/**
-> + * struct rproc_map_record - remoteproc map record
-> + * @original:	original virtual address
-> + * @num: allocation size
-> + * @bounce: bounce buffer virtual address (NULL if not used)
-> + */
-> +struct rproc_map_record {
-> +	void *original;
-> +	size_t size;
-> +	void *bounce;
-> +};
-> +
->  /**
->   * struct rproc_vdev - remoteproc state for a supported virtio device
->   * @subdev: handle for registering the vdev as a rproc subdevice
->   * @pdev: remoteproc virtio platform device
-> + * @map_records: array of map records
->   * @id: virtio device id (as in virtio_ids.h)
->   * @node: list node
->   * @rproc: the rproc handle
-> @@ -358,6 +371,7 @@ struct rproc_vdev {
->  	unsigned int id;
->  	struct list_head node;
->  	struct rproc *rproc;
-> +	struct rproc_map_record *map_records;
->  	u32 rsc_offset;
->  	u32 index;
->  	unsigned int num_vrings;
-> 
-> -- 
-> 2.55.0
-> 
+> +	if (zero)
+> +		memset(page_address(page), 0, layout.shared_size);
+
+Does the memset() post sharing logic work for pKVM as well? If nothing
+clears it, we have a small window where guest data is leaked to the
+host.
+
+Is there a case where we *do not* need the memory cleared? If not, maybe
+we can move the logic in the arch set_memory_decrypted().
+
+-- 
+Catalin
