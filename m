@@ -1,179 +1,226 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56BB3414A1D
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 20:36:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5089846C823
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 21:11:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790109392; cv=none; b=b8LGoRIW6LnYjO5U7hxtD7EtnbAq+QS4Gym9rBT0VyxHi5oGEsCTp2ZT6mwgcrx8a3OR8EkoRXy9zlN9gnG7fl0Stwuxrk+8ylC9aDX+rUueV+4d9eucLN472GQ7ZGNjSV04GZTQd5kfJapYKWAaESef9drd9PVWu7QKKJoiMcc=
+	t=1790111468; cv=none; b=nkHz283rKCWTXB/Qw3crt7VriAtqzugVJ5B8ICJ0yE9j4e6C0SXmajhYMB1UPTwVsGuEb9OhO47Nx1KrO2NSQY/FHxbX5J3IcMbIcYAE7vTEFTrIxPB9Tt7GoH1O1Wly34f5Ejv52MZ8oAw4S5VXBj+6PWBYZZXyCRhl8rF69T0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790109392; c=relaxed/simple;
-	bh=F2Rmub3kqynxFCpMUaKCzbW3Wn9kxlczWQbB/Q64QTc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t5ThvcA8vwEUZnCVXJIE1Scpq00Bpn7W4Hcc5+4pJ6PGnsNaJQzxamdb7zrlL4gtS7j8uccG5cGJjpSu7dIv2T+fQKjAdFI8ai4EunEQxe2RZ1JKc0ZxvZqIQM1iKh/tU20FEtnMkhaUX55umQMJlsVWKa+4rbRDJotf9A8orDA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=gq1bXgXF; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=aPQ7o3f9; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1790111468; c=relaxed/simple;
+	bh=phFQKAmd8PZp5IEcEIl4n5t+Nhm90bkDehflIIAjUI4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NJcqO2vp/JaoGF+b7ZZk7SiTZ9YiuEPkidPiTPGKxHZ7fAncpMb1i53ZY57fwJdI7NJn2z8EO0GjGY+iSbdWsjlbxSEOAZDyKLrjI/x4vSSBS7GY+qWjGWvFt8oh6zmScjVb55Qsi72Jz7Kv/z2SFqXRY7I5NfOgJn6c42PaX8w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=lznS7Iu7; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="gq1bXgXF";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="aPQ7o3f9"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68MI72wR1153696
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 20:36:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=+hpos+oDMvB//kGlWtIFvFC8
-	JGuO25mX9RiSy0nVVWI=; b=gq1bXgXF3s8Ra4n02W3SuuXBHDj7XCY1aL1sxa9c
-	u2ix9mNTUjoYemXIUH9MUJBag6g96s+TaF3H4UV4X0Wwh4Jp4C+bT1bvRGIefFf/
-	evLcj9iy5K80G4tgUlTNm0+6PM8pnK+UlIK/rQHU6HORQq1dobQdsAQc0sOs2yVP
-	l6barOdQ00KSB1x/v5eVSy6TCD2xX5HcAR6wERBje5qrpc8jf9qzQK1pZrDDPGLL
-	RPaiXl66re5XrVB2T0JhfiWpX/Geoo/8x+tGZHhuAEDzeSmfJIODDBAb9vTknyUK
-	jnvkqMl1sq27dq08hW6w+a7KwE/1SdLH0GWY6i24Cmp4Cw==
-Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com [209.85.221.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4guvw7hft3-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 20:36:12 +0000 (GMT)
-Received: by mail-vk1-f200.google.com with SMTP id 71dfb90a1353d-5c8323b8464so353032e0c.3
-        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 13:36:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1790109372; x=1790714172; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+hpos+oDMvB//kGlWtIFvFC8JGuO25mX9RiSy0nVVWI=;
-        b=aPQ7o3f9iOKkBbHh6ELHrtq0VfUCixltXhnw8EQezupMhAnml4WOn56w4SHz5ICyz7
-         4igPVQ4BTgMxwi7WDr9d5l6cA0JbTmZ0lx5Ngntj7yoPZ4B0GDwYF/2B6GGNAhLkXTHL
-         f6T4NUwRqoOrdhOqwmUqzdh5xFSFgBtudB/yXBkc6as8pYOltMTV+5r0kdj1+HtS59PY
-         rYSqHa43nQh2HqARkjfo89t8P6PvlePJeh9t+Dvq9gb25xzd5o7OKynE9ZzJIZ7nn2dr
-         v0QXliLz+tUz7OvycgnDSmtaEB+9lvLUIevWNyb5mH/tB6jlQCt4uaspk8Z4UwvN0BIr
-         dQQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790109372; x=1790714172;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+hpos+oDMvB//kGlWtIFvFC8JGuO25mX9RiSy0nVVWI=;
-        b=aX+3h1P1Fdlx4Ojat1hs2Q4ebP3x20u6phFZQsjqugWGE4GPV74VnyD3QW4xkhgorD
-         jhOYAM7WQ3/QLE62nKcad9k8c0Yd3z1PjEjLZD1wkNbmvw69VgLPbOgo5tk9U9unB0q8
-         f2gqwakmBkpDuOjSPgdEHT7yHyVACgmp+q5JUmS4tlTWyhwDezQ8nCq2/SZBzMW/OLuV
-         HYdxNxB1ykTR3A7neES+8pRNvzpK6yLH/udUMZqkmzW1M4J4orc/wU1S9IBGM71N25VW
-         Ca7tC8nNgUTh+VJfcU//ELRjRVexpv4bBgltqO10LIOfPbka7XHzQnLgHpfP03/1YI4x
-         l2cg==
-X-Forwarded-Encrypted: i=1; AKwUvBwLULm1Un82dZBwp5JwPOQryfL8jYIq3lg8traPdzEZvrTms5/WLxl3EhXZ5Ff+rh+HrYUhOw==@lists.linux.dev
-X-Gm-Message-State: AFuF++komj4rw/2MC3zLI/XThToP9mt1Wwn9SL2X2PvHzQXgzr4N1d9E
-	3zvnVtg/cIDajrEeXWtq/j6yK58GdCaAxezL7buPLEnRbmOeGFG2OwR/SilbXF63QqIJ2YeoXN7
-	uRzKcXPYzkg8lRhmFXLxnmD6puSL2K+xLFLEcwyBJK5aGSUIXo85zQuTwgw==
-X-Gm-Gg: AYBFou1+aIy9oPvMNy79+oGUbI6gB17gJu+2Ny2Cf73QiTAIq1aifVVQ3LDBU6MmWWk
-	3ZRQvWPfv/pVnDOvOmEnNUG9rYgEvn4sO/kx45pyhXyvTgSC0MNTUnmGZiX8eWt4F/H/Uoe/Neu
-	R2J3Q5SWkcfeDmcUjXC02RB0G9z2ZZYVxjWn8yzP4mWY9VnBqqcf685NGMJkq5I6XqT6u7n/mrk
-	dkYAfBU1z6JdzSrdaklnx5XWkNMsuUApv7DtRcTlilpf5as+RQ72g4esA85HQzVyeQ6SpSfN7yS
-	83l3Aogqt/krjc0gcEfge1C84G52yyhXsjqkugHUJcWgt5X76IQyOzYzkJKiZvdjyf1pJuuVI4A
-	LdVLS/k39jltUuw==
-X-Received: by 2002:a05:6122:21a1:b0:5c9:a7af:8178 with SMTP id 71dfb90a1353d-5c9f1597c52mr1337343e0c.2.1790109371751;
-        Tue, 22 Sep 2026 13:36:11 -0700 (PDT)
-X-Received: by 2002:a05:6122:21a1:b0:5c9:a7af:8178 with SMTP id 71dfb90a1353d-5c9f1597c52mr1337277e0c.2.1790109371230;
-        Tue, 22 Sep 2026 13:36:11 -0700 (PDT)
-Received: from oss.qualcomm.com ([86.121.170.232])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4886876c267sm965996f8f.16.2026.09.22.13.36.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 13:36:10 -0700 (PDT)
-Date: Tue, 22 Sep 2026 23:36:06 +0300
-From: Abel Vesa <abel.vesa@oss.qualcomm.com>
-To: muzafferkadir@mainlining.org
-Cc: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
-        Jerome Brunet <jbrunet+clk@baylibre.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Srinivas Kandagatla <srini@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Robert Marko <robimarko@gmail.com>,
-        Guru Das Srinagesh <linux@gurudas.dev>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, iommu@lists.linux.dev, mfd@lists.linux.dev,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org,
-        linux-input@vger.kernel.org
-Subject: Re: [PATCH v3 02/19] clk: qcom: Add global clock controller driver
- for MSM8952
-Message-ID: <c2jt5rpbmys2fguk6ui7e4lwzp55vio3vf73akeiega2wqb5pf@ewp6wsvtxm3n>
-References: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
- <20260921-msm8952-initial-support-v3-2-b96fd3fe298b@mainlining.org>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="lznS7Iu7"
+Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 492D920B7168;
+	Tue, 22 Sep 2026 14:10:11 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 492D920B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790111411;
+	bh=eZicChKoJTjR/A7vBb/SAhHxATpY05vM08b6UBH+Z7M=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=lznS7Iu7rVBHW+vgs50a5lCSNCjZutEXNNJ2ArVtsoSXOOrkd3zFSiuV35I4a9wfm
+	 AlmnCCCSTDsa8pRuzSFZ6jpTyohPPOp7y/C/cTHUnYsX10gycZYTjUEGRQ4lSvA8RV
+	 jRrQ6/kUwQMCNONbK8TxaKnhVSWb6ePRiVEDkN4g=
+Message-ID: <c75bbe43-d6cc-25d2-d45e-6b85bebd6562@linux.microsoft.com>
+Date: Tue, 22 Sep 2026 14:10:58 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260921-msm8952-initial-support-v3-2-b96fd3fe298b@mainlining.org>
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTIyMDI5NSBTYWx0ZWRfXymFwV3HV1NHI
- 2gGr5kgQQaJNCvTLU/8Uo9dGI+m6P68uiBAL7pi982AxkUYPeZQrW8zr/JolfVdid6ozi15hp5J
- rPI+J9VdWQM6zjpJm/hz/FYOitKs55Y=
-X-Authority-Analysis: v=2.4 cv=ZYqIpcVA c=1 sm=1 tr=0 ts=6ab2e6bc cx=c_pps
- a=wuOIiItHwq1biOnFUQQHKA==:117 a=po8fGBi+ks8MzcVQGuqtFQ==:17
- a=kj9zAlcOel0A:10 a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=Oh2cFVv5AAAA:8 a=OuZLqq7tAAAA:8 a=EUspDBNiAAAA:8 a=n1RHFZ1giDiXVFLDIJ0A:9
- a=CjuIK1q_8ugA:10 a=XD7yVLdPMpWraOa8Un9W:22 a=7KeoIwV6GZqOttXkcoxL:22
- a=AKGiAy9iJ-JzxKVHQNES:22
-X-Proofpoint-ORIG-GUID: CGt67jwB16b_weX2B17-QLXvDzn9vKU9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTIyMDI5NSBTYWx0ZWRfX5I5gnq+Oe41V
- SBAyvpJFP/4NeVMwit+/VVNUx694z0kFs+6Zr7qbnMShP6NzIIKIK/8pML9Wpyvy9FQSvFSjVcH
- 5iTffraBNVU7taSBvNi3Eci+clsRU1I2qvzUqxF7/yBkU7cMUeLCv7UEReUUnac7R7/9izOTQeM
- GyEIK0MHMli2CVNY4ejjFspdHlimqBBXnW7cwJPm4o1AkJtx5vEdKMKdA4D4EXvB/rLYBPj5T9D
- 5lyLKlmH9iT6a5q/J84EC2ch1lNCcrRRBlYrYmQH325GUwmzyGYE03CiNAIuq63zXQId8mEqxhh
- UiU7SMQDPqkRFXS1NFwrOLmOvX2dZM6li1BXW3QOs7RplERqJTYgDhKFLEYzCIE3YSbMfSRy+Xj
- YVtYQauQPFBnBq9wFD1f+OIuk0R8VtTaWD0xca+aDDjjyu6+1JLvj6cGnPPXjHAgBQCdxiDAizJ
- rNSI+/E9KBOl4diZG9w==
-X-Proofpoint-GUID: CGt67jwB16b_weX2B17-QLXvDzn9vKU9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-22_03,2026-09-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 priorityscore=1501 malwarescore=0 spamscore=0 impostorscore=0
- phishscore=0 lowpriorityscore=0 suspectscore=0 clxscore=1015 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609220295
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH V0 2/3] mshv: Import data structs around device domains
+ from hyperv headers
+Content-Language: en-US
+To: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org, jgg@nvidia.com,
+ jacob.pan@linux.microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+ bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, arnd@arndb.de
+References: <20260921225028.4007330-1-mrathor@linux.microsoft.com>
+ <20260921225028.4007330-3-mrathor@linux.microsoft.com>
+ <5b292db7-1d55-4aef-9053-be2156c6e886@linux.microsoft.com>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <5b292db7-1d55-4aef-9053-be2156c6e886@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 26-09-21 21:18:53, Muzaffer Kadir via B4 Relay wrote:
-> From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+On 9/22/26 10:48, Easwar Hariharan wrote:
+> On 9/21/2026 15:50, Mukesh R wrote:
+>> Copy/import from Hyper-V public headers, definitions and declarations that
+>> are related to creating iommu domains in the hypervisor, attaching devices
+>> to them, doing the reverse, etc.
+>>
+>> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+>> ---
+>>   include/hyperv/hvgdk_mini.h |  9 ++++
+>>   include/hyperv/hvhdk_mini.h | 90 +++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 99 insertions(+)
+>>
+>> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
+>> index 6a4e8b9d570f..3b74f3c0229d 100644
+>> --- a/include/hyperv/hvgdk_mini.h
+>> +++ b/include/hyperv/hvgdk_mini.h
+>> @@ -326,6 +326,8 @@ union hv_hypervisor_version_info {
+>>   /* stimer Direct Mode is available */
+>>   #define HV_STIMER_DIRECT_MODE_AVAILABLE			BIT(19)
+>>   
+>> +#define HV_DEVICE_DOMAIN_AVAILABLE			BIT(24)
+>> +
 > 
-> This driver provides clocks, resets and power domains needed for various
-> components of the MSM8952.
-> 
-> Some downstreams merge MSM8952 to MSM8917 and MSM8937. But upstreamed
-> GCC driver for 8917 series has different pll structure and ported from
-> different GCC driver.
-> 
-> MSM8952 GCC driver is mainly based on MSM8939 GCC driver, with
-> some parts added from existing other GCC drivers.
-> 
-> Link: https://android.googlesource.com/kernel/msm.git/+/refs/tags/android-wear-7.0.0_r0.3/drivers/clk/qcom/clock-gcc-8952.c
-> Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
+> For my understanding, how is ms_hyperv.misc_features.HV_DEVICE_DOMAIN_AVAILABLE = 1
+> different from HV_IOMMU_CAP_PRESENT = 1 combined with HV_IOMMU_CAP_S2 = 1?
+> It seems like there is room to combine forces with the guest driver and just go with
+> the latter.
 
-Reviewed-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+It's different. we want to make sure the version of the hypervisor
+supports creating device domains. see: HVCALL_CREATE_DEVICE_DOMAIN
+
+Thanks,
+-Mukesh
+
+>>   /*
+>>    * Implementation recommendations. Indicates which behaviors the hypervisor
+>>    * recommends the OS implement for optimal performance.
+>> @@ -486,9 +488,15 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+>>   #define HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a
+>>   #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af
+>>   #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0
+>> +#define HVCALL_CREATE_DEVICE_DOMAIN                     0x00b1
+>> +#define HVCALL_ATTACH_DEVICE_DOMAIN                     0x00b2
+>> +#define HVCALL_MAP_DEVICE_GPA_PAGES                     0x00b3
+>> +#define HVCALL_UNMAP_DEVICE_GPA_PAGES                   0x00b4
+>>   #define HVCALL_SIGNAL_EVENT_DIRECT			0x00c0
+>>   #define HVCALL_POST_MESSAGE_DIRECT			0x00c1
+>>   #define HVCALL_DISPATCH_VP				0x00c2
+>> +#define HVCALL_DETACH_DEVICE_DOMAIN                     0x00c4
+>> +#define HVCALL_DELETE_DEVICE_DOMAIN                     0x00c5
+>>   #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
+>>   #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
+>>   #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
+>> @@ -502,6 +510,7 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+>>   #define HVCALL_MMIO_READ				0x0106
+>>   #define HVCALL_MMIO_WRITE				0x0107
+>>   #define HVCALL_DISABLE_HYP_EX                           0x010f
+>> +#define HVCALL_GET_IOMMU_CAPABILITIES			0x0125
+>>   #define HVCALL_MAP_STATS_PAGE2				0x0131
+>>   
+>>   /* HV_HYPERCALL_INPUT */
+>> diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
+>> index 035ba20870f7..3bb052fd6e06 100644
+>> --- a/include/hyperv/hvhdk_mini.h
+>> +++ b/include/hyperv/hvhdk_mini.h
+>> @@ -548,4 +548,94 @@ union hv_device_id {		/* HV_DEVICE_ID */
+>>   	} acpi;
+>>   } __packed;
+>>   
+>> +/* 3 domain types: stage 1, stage 2, and SOC */
+>> +#define HV_DEVICE_DOMAIN_TYPE_S2  0 /* HV_DEVICE_DOMAIN_ID_TYPE_S2 */
+>> +#define HV_DEVICE_DOMAIN_TYPE_S1  1 /* HV_DEVICE_DOMAIN_ID_TYPE_S1 */
+> 
+> 
+>> +#define HV_DEVICE_DOMAIN_TYPE_SOC 2 /* HV_DEVICE_DOMAIN_ID_TYPE_SOC */
+> 
+> I don't think this domain type is used in patch 3, perhaps we bring it in when needed?
+> 
+>> +
+>> +/* ID for stage 2 default domain and NULL domain */
+> 
+> I think this comment would be more useful if it related the MSHV default and NULL domains to
+> the Linux equivalents of identity and blocking respectively. As it stands, it just repeats the
+> names of the defines it is a comment for.
+> 
+>> +#define HV_DEVICE_DOMAIN_ID_S2_DEFAULT 0
+>> +#define HV_DEVICE_DOMAIN_ID_S2_NULL    0xFFFFFFFFULL
+>> +
+>> +union hv_device_domain_id {
+>> +	u64 as_uint64;
+>> +	struct {
+>> +		u32 type : 4;
+>> +		u32 reserved : 28;
+>> +		u32 id;
+>> +	};
+>> +} __packed;
+>> +
+>> +struct hv_input_device_domain { /* HV_INPUT_DEVICE_DOMAIN */
+>> +	u64 partition_id;
+>> +	union hv_input_vtl owner_vtl;
+>> +	u8 padding[7];
+>> +	union hv_device_domain_id domain_id;
+>> +} __packed;
+>> +
+>> +union hv_create_device_domain_flags {	/* HV_CREATE_DEVICE_DOMAIN_FLAGS */
+>> +	u32 as_uint32;
+>> +	struct {
+>> +		u32 forward_progress_required : 1;
+>> +		u32 inherit_owning_vtl : 1;
+>> +		u32 reserved : 30;
+>> +	} __packed;
+>> +} __packed;
+>> +
+>> +struct hv_input_create_device_domain {	/* HV_INPUT_CREATE_DEVICE_DOMAIN */
+>> +	struct hv_input_device_domain device_domain;
+>> +	union hv_create_device_domain_flags create_device_domain_flags;
+>> +} __packed;
+>> +
+>> +struct hv_input_delete_device_domain {	/* HV_INPUT_DELETE_DEVICE_DOMAIN */
+>> +	struct hv_input_device_domain device_domain;
+>> +} __packed;
+>> +
+>> +struct hv_input_attach_device_domain {	/* HV_INPUT_ATTACH_DEVICE_DOMAIN */
+>> +	struct hv_input_device_domain device_domain;
+>> +	union hv_device_id device_id;
+>> +} __packed;
+>> +
+>> +struct hv_input_detach_device_domain {	/* HV_INPUT_DETACH_DEVICE_DOMAIN */
+>> +	u64 partition_id;
+>> +	union hv_device_id device_id;
+>> +} __packed;
+>> +
+>> +/* HV_INPUT_GET_IOMMU_CAPABILITIES */
+>> +struct hv_input_get_iommu_capabilities {
+>> +	u64 partition_id;
+>> +	u64 reserved;
+>> +} __packed;
+>> +
+>> +#define HV_IOMMU_CAP_PRESENT    BIT_ULL(0)
+>> +#define HV_IOMMU_CAP_S2         BIT_ULL(1)
+>> +#define HV_IOMMU_CAP_S1         BIT_ULL(2)
+>> +#define HV_IOMMU_CAP_S1_5LVL    BIT_ULL(3)
+>> +#define HV_IOMMU_CAP_PASID      BIT_ULL(4)
+>> +#define HV_IOMMU_CAP_ATS        BIT_ULL(5)
+>> +#define HV_IOMMU_CAP_PRI        BIT_ULL(6)
+>> +
+>> +struct hv_output_get_iommu_capabilities { /* HV_OUTPUT_GET_IOMMU_CAPABILITIES */
+>> +	u32 size;
+>> +	u16 reserved;
+>> +	u8  max_iova_width;
+>> +	u8  max_pasid_width;
+>> +	u64 iommu_cap;          /* HV_IOMMU_CAP_* above */
+>> +	u64 pgsize_bitmap;
+>> +} __packed;
+>> +
+>> +struct hv_input_map_device_gpa_pages {	/* HV_INPUT_MAP_DEVICE_GPA_PAGES */
+>> +	struct hv_input_device_domain device_domain;
+>> +	union hv_input_vtl target_vtl;
+>> +	u8 padding[3];
+>> +	u32 map_flags;
+>> +	u64 target_device_va_base;
+>> +	u64 gpa_page_list[];
+>> +} __packed;
+>> +
+>> +struct hv_input_unmap_device_gpa_pages {  /* HV_INPUT_UNMAP_DEVICE_GPA_PAGES */
+>> +	struct hv_input_device_domain device_domain;
+>> +	u64 target_device_va_base;
+>> +} __packed;
+>> +
+>>   #endif /* _HV_HVHDK_MINI_H */
+
