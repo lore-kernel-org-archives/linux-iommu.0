@@ -1,144 +1,218 @@
-Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010015.outbound.protection.outlook.com [52.101.46.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80B823F9F5C
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 17:47:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790099260; cv=fail; b=Ujcn/xsPYl0kz23kGGB+LeEUNH/+1/COpXKLaimaovvio+c63LvSStDUUYi2nysmz/yDW8imCtiGHQSKI6M7GZtwG0Mq2p2B7BnFJTosJeTAxrFIJRnjRvQOMwnYay98ii7+YJpdlxuRr0ni5z8l0hiieUzZ5go6vnqMicKJ7TI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790099260; c=relaxed/simple;
-	bh=BwjAP/WcvpjBcVtKgmX2x//iH7ebBAXxvSDUbPor2gM=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Xyg2BpyMfFJmBycR9kZsDLgvykGzNJso1OuyzeARIbRY0fJzPuLb7qTDXz9mh5Z4G+szrPOCxj/WcGFACuPbn5Hl7c7iocA2G/xO3PlwaMjXGS2qC90HgyIBZNhedFW2sxyBOc03LQTDVwm8oirN2u0u38TzL3CHiktEo38ur2c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=AuMsi9uW; arc=fail smtp.client-ip=52.101.46.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 326A33EFFBD
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 17:48:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790099319; cv=none; b=uT5h6cd48UCgLN7s3xKvB5S0lNsbZDXfFb8Qo/5HRUTQlE4eL7bNQlIoP/7QBZeCwC1DRKr6WqSQJZUXNeBs2jW5ePSBFVzB85lhHSaWLfcrEYeNJexKT8az6ZXZLOAPVR6XtvY/vpiabAu5+HtcgtuP8PcQeXGqalBbwQUOJQc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790099319; c=relaxed/simple;
+	bh=kTMLjMI+3oMuAoDSiZMej474ZxKZI3kbzbymSlScGsM=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=DLgAsu+tQ1VDzkxRlyP/6iAjScyUtjNHL0Uycd69/byUR34rbPzjeRReMnjZDu/P6FOQw++wSSfSfwiLFdjnXwZvgulhZOwZR/cw5+kBiWUFr2rAtcqzN0j2BElf/mi3u4ZnhvgMhMYnfOZQCTpwc3GsyuHIwO0Iq7hwI1Z+Os8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=KxMELhnc; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="AuMsi9uW"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CZr3Bc4sbq6vZnJA7rU8vnHhpb8DGLp+x++AvU/7uJk8eg3V/7+80MzTDgSswdW3gedYruhlNFRhwgcpUpPEhWvqhHMdVo+rgH5uUGxaK7U92CJRLBpFjVuS1hFdQ8vRrjemxM2o5XHV3iKJg7NNH3loo0FJ5yoFS9vmstVUdlS7948xWOQ1zJKzi62QlB8524Ywnxj7QZyhPrWDzW3/AcLJD7sqcInaWXb/d5VE73mzTtujkbVcLFrxPF5Ww88qlznLPqfHScFouW9HxuDbWHfBWd9sW9sMRm0JGggN32gZXf03QG4kahKyZSljRiVj6vNwJ1MEvlMsfpQVpiyrGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IYy57RCaIbH8AQuOVsCUXkefx88wksD4vGg45jgoXOE=;
- b=fbWnBt+G7LPNN0oM35mnEzHxbSupyI9Ftj16M1j6MeV/a0ffb3+sUCld0fzC7tpYRebfS0ht+0l/qBjjhkSwNJdsvAAD573C/T2suVTqZl68JukZfALOVXMgHamhZu0BsY238Cz2ESJUQJotRE0uUS8fzbA6/SJtA5GmOmE7OO36Qisuu0/3cxZXwEtWd78FOkve6VQ3nakcEiWwECg84bRjia/kN+3S45WufCoYZR+irNI/HbBCVNZMI7iYPy4k8+KZz7ioh9IEY5mRs1NRxw0xCKevUPjEfxMPzx3OWY8UskcrwXGhfhhL3x8ROV2VxNe7uSK8P8GjmSKewPA2dg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IYy57RCaIbH8AQuOVsCUXkefx88wksD4vGg45jgoXOE=;
- b=AuMsi9uWVMVXopwKrttUrZuGxljdXC7XIr/FWTqMGO+p68Fy6HQxQRl7/I2NwK8jJ71zLlvu6+lb2rCTUFNDg8y2KoaytW2/hltCdw5cnTVg7SUnSV7FYhF74L4dyCVnL+/Ml42k+011lcgBysmgFnIFQ2gHcu005C2rUR3e3OJRJqBsgn7Wkz//HYjFDtlQoLWhfTWLncwCycMd+EjBOQCpbwwnHNt8AHDFeo49ItWHR9rOcP0J9hzVVFWUVv0eSLeItylfV7zeeN+7UJm1oYQJAToV/bP0epBfQ6JFgFS0p4UfmYEkyQGGgwnIoTaXPO68QE3W4UqOmrlCaIyfQw==
-Received: from DS7PR03CA0280.namprd03.prod.outlook.com (2603:10b6:5:3ad::15)
- by CH0PR12MB8531.namprd12.prod.outlook.com (2603:10b6:610:181::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.14; Tue, 22 Sep
- 2026 17:47:31 +0000
-Received: from CH1PEPF0000AD80.namprd04.prod.outlook.com
- (2603:10b6:5:3ad:cafe::51) by DS7PR03CA0280.outlook.office365.com
- (2603:10b6:5:3ad::15) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.428.16 via Frontend Transport; Tue,
- 22 Sep 2026 17:47:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CH1PEPF0000AD80.mail.protection.outlook.com (10.167.244.90) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.8 via Frontend Transport; Tue, 22 Sep 2026 17:47:30 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 22 Sep
- 2026 10:47:06 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 22 Sep
- 2026 10:47:06 -0700
-Received: from nvidia.com (10.127.8.12) by mail.nvidia.com (10.129.68.7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Tue, 22 Sep 2026 10:47:04 -0700
-Date: Tue, 22 Sep 2026 10:47:02 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: Peng Fan <peng.fan@oss.nxp.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<jpb@kernel.org>, <jgg@ziepe.ca>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC v2 2/4] iommu/arm-smmu-v3: Support shared SIDs in
- insert/remove_master
-Message-ID: <arK/FoWsg5qJ7G3T@nvidia.com>
-References: <20260921-smmu-shared-sid-v2-0-4b656ce68178@nxp.com>
- <20260921123846.1663580-1-peng.fan@oss.nxp.com>
- <arG6hmng3NddGEHm@nvidia.com>
- <arKNJH2YWQT9KL7x@shlinux89>
- <31be5621-92f6-4101-898f-806335d56155@arm.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="KxMELhnc"
+Received: from [100.64.33.11] (unknown [52.148.140.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 5FD1D20B7168;
+	Tue, 22 Sep 2026 10:47:49 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5FD1D20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790099269;
+	bh=wsgw9fWrjcXbBDbnqUOexzVuRcPNKuwRNMM/Jpa/tZ0=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=KxMELhncJzXbLhooDXbbKXhkD6UEFuwfgozmzuvWomrQKtpw0PAVPn+v+CfEsEMyH
+	 RvQ4YmHtEnAhrKgIMWH8KcWad/pxWNHaFxWxknl1p8tg5MW35pawt9mX0XYSu/07TB
+	 gcuXyrJ4CmF/uBm3AbJjm3yfkfBBTz52vEO7Bm1Y=
+Message-ID: <5b292db7-1d55-4aef-9053-be2156c6e886@linux.microsoft.com>
+Date: Tue, 22 Sep 2026 10:48:36 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <31be5621-92f6-4101-898f-806335d56155@arm.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD80:EE_|CH0PR12MB8531:EE_
-X-MS-Office365-Filtering-Correlation-Id: c5a5f58d-e3a4-4051-dc30-08df18d1932f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|7416014|376014|23010399003|18002099003|22082099003|11063799006|10067099003|4143699003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	PGUi9Uz2mmJ5ioLn7xC8wJJ+2HgB1kQCbVpoQIitJyLhgTsr91cNPcwA2dqxW/LeCCqHG3AI3+up103mpwmidCyb0kCrcEx1vBPbzHR4Td3VA9G4elZoGYzPai9d3oo9eY0weJ5BNw6QhhyTMHN6I+VbpbmKycAej+qKcpn9wzRATlm0S2UO7hMfyGIGuuFFgBbwcj5TBiqatDIyEEUbExRy1lL6hZDWKNy0vFeXEa2poiVkekDjSE1wPTr42/FZ7QSOINq7xciM+abUzeJghhS3yi9NqAanYo2NHQEzNO4PB7xrwVXBux+DRF+8Au5nfdVaLAzLffmTHMeNoiSzqkBRTJdpJtF6IHIs0VQgbtfR2/C4myPh1+twc9KDSokIcC5PYsgFQR7q3/qCaUKHAfvuz8y3wBT8oELbfKhA+B1bajQRrOkwQ5Bg+X42o8Ai5Sd6kGnvpUtKVqLBvtIm7dSKrwxTVIAHOLN4KIBX29COyP02tvbsN7tSJeY80r/NoLO+hI3KB/YAqadLcD6COu+QVfMXShcR6JX7HygXcRf5J9ibH1N+D33w03EJitBs+Y8OVxX3Gz9RcbAkyT3Nf2J+aB8BY6c5mpSxDuEobkWTJr/VZMJ/mH2kyVQBaaE2BQn/gT63e61bBmlj47FzVQxYhwlMTe8RZm+UVVmWWexpfr+DYTBc2GHHFNoVEYyMpcGSpxQac7MSjFtngwnTRA==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(7416014)(376014)(23010399003)(18002099003)(22082099003)(11063799006)(10067099003)(4143699003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	5OD6U2uFaYWqZF0A8wRHkY5Z6wyrrR+nB5Q5lUfW4b+BpC9uDu9DNgaKz1CSqP7LKGcvCVWnw1qJjoKCNVavzRmnzEigkDX02D5ygxkJcjoxcQBytLZpOSs2iG8ki6RAWknMvIkWe3RbyuSgiTMgtgpFqtPxX4LsztF8/tC1zC4n6UqmZ2r56K9lST2M9JhdQCUmN5zhtdJpByGmR/qSWFx9naIFwzQqxp2P6yzImd3QSpyAYQ2HW7jAiPw/bFMhEJOtNKuxCzyfLgEi8EY+iDMunfljfQwa9eZKWkex+GheNRv//L+mZ5TwM91RF7HqRhOtzG2o/HS3fS6SvVx0AYkuvV3HYpbdIbk8+A8sDNRGko8ck2IJ+q3tCo2JlgmAH4GA46SKJTHQQeAY30dfAFzBW4DGEe9v6z7Q207fiH1rC+cNuPWH3pfRl+M33ydp
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2026 17:47:30.4864
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c5a5f58d-e3a4-4051-dc30-08df18d1932f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH1PEPF0000AD80.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB8531
+User-Agent: Mozilla Thunderbird
+Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ easwar.hariharan@linux.microsoft.com, jgg@nvidia.com,
+ jacob.pan@linux.microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+ bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, arnd@arndb.de
+Subject: Re: [PATCH V0 2/3] mshv: Import data structs around device domains
+ from hyperv headers
+To: Mukesh R <mrathor@linux.microsoft.com>
+References: <20260921225028.4007330-1-mrathor@linux.microsoft.com>
+ <20260921225028.4007330-3-mrathor@linux.microsoft.com>
+From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+Content-Language: en-US
+In-Reply-To: <20260921225028.4007330-3-mrathor@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Sep 22, 2026 at 04:52:35PM +0100, Robin Murphy wrote:
-> On 22/09/2026 3:13 pm, Peng Fan wrote:
-> > On Mon, Sep 21, 2026 at 04:15:18PM -0700, Nicolin Chen wrote:
-> > > Does i.MX need to support SID-sharing with multi-SD device? If not,
-> > > the master could have only a simple shared_masters_elm:
-> > 
-> > For i.MX, there is no need to support SID sharing for multi-SID device for now.
-> > Not sure, in future there are cases that needs SID sharing for multi-SID device.
+On 9/21/2026 15:50, Mukesh R wrote:
+> Copy/import from Hyper-V public headers, definitions and declarations that
+> are related to creating iommu domains in the hypervisor, attaching devices
+> to them, doing the reverse, etc.
 > 
-> I have a system meeting those conditions :)
+> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+> ---
+>  include/hyperv/hvgdk_mini.h |  9 ++++
+>  include/hyperv/hvhdk_mini.h | 90 +++++++++++++++++++++++++++++++++++++
+>  2 files changed, 99 insertions(+)
 > 
-> Specifically, I have a physical PCIe-to-PCI bridge board with a couple of
-> ancient cards plugged into it (such that they each end up with their own RID
-> plus the common bridge alias RID) just in case I ever got round to looking
-> at this myself...
+> diff --git a/include/hyperv/hvgdk_mini.h b/include/hyperv/hvgdk_mini.h
+> index 6a4e8b9d570f..3b74f3c0229d 100644
+> --- a/include/hyperv/hvgdk_mini.h
+> +++ b/include/hyperv/hvgdk_mini.h
+> @@ -326,6 +326,8 @@ union hv_hypervisor_version_info {
+>  /* stimer Direct Mode is available */
+>  #define HV_STIMER_DIRECT_MODE_AVAILABLE			BIT(19)
+>  
+> +#define HV_DEVICE_DOMAIN_AVAILABLE			BIT(24)
+> +
 
-Though in such cases we cannot reject num_streams != 1 any more,
-that bridge can still end up with one single shared stream, e.g.
- alias  = PCI_DEVID(0x02, PCI_DEVFN(0,0)) = 0x0200
- Card A = 02:01.0 -> sorted SIDs { 0x0200, 0x0208 }
- Card B = 02:02.0 -> sorted SIDs { 0x0200, 0x0210 }
-?
+For my understanding, how is ms_hyperv.misc_features.HV_DEVICE_DOMAIN_AVAILABLE = 1
+different from HV_IOMMU_CAP_PRESENT = 1 combined with HV_IOMMU_CAP_S2 = 1?
+It seems like there is room to combine forces with the guest driver and just go with
+the latter.
 
-Hopefully, we won't have to support an ancient PCIe-to-PCI bridge
-connecting with another ancient PCI-to-PCI bridge...
+>  /*
+>   * Implementation recommendations. Indicates which behaviors the hypervisor
+>   * recommends the OS implement for optimal performance.
+> @@ -486,9 +488,15 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+>  #define HVCALL_GET_VP_INDEX_FROM_APIC_ID		0x009a
+>  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE	0x00af
+>  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST	0x00b0
+> +#define HVCALL_CREATE_DEVICE_DOMAIN                     0x00b1
+> +#define HVCALL_ATTACH_DEVICE_DOMAIN                     0x00b2
+> +#define HVCALL_MAP_DEVICE_GPA_PAGES                     0x00b3
+> +#define HVCALL_UNMAP_DEVICE_GPA_PAGES                   0x00b4
+>  #define HVCALL_SIGNAL_EVENT_DIRECT			0x00c0
+>  #define HVCALL_POST_MESSAGE_DIRECT			0x00c1
+>  #define HVCALL_DISPATCH_VP				0x00c2
+> +#define HVCALL_DETACH_DEVICE_DOMAIN                     0x00c4
+> +#define HVCALL_DELETE_DEVICE_DOMAIN                     0x00c5
+>  #define HVCALL_GET_GPA_PAGES_ACCESS_STATES		0x00c9
+>  #define HVCALL_ACQUIRE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d7
+>  #define HVCALL_RELEASE_SPARSE_SPA_PAGE_HOST_ACCESS	0x00d8
+> @@ -502,6 +510,7 @@ union hv_vp_assist_msr_contents {	 /* HV_REGISTER_VP_ASSIST_PAGE */
+>  #define HVCALL_MMIO_READ				0x0106
+>  #define HVCALL_MMIO_WRITE				0x0107
+>  #define HVCALL_DISABLE_HYP_EX                           0x010f
+> +#define HVCALL_GET_IOMMU_CAPABILITIES			0x0125
+>  #define HVCALL_MAP_STATS_PAGE2				0x0131
+>  
+>  /* HV_HYPERCALL_INPUT */
+> diff --git a/include/hyperv/hvhdk_mini.h b/include/hyperv/hvhdk_mini.h
+> index 035ba20870f7..3bb052fd6e06 100644
+> --- a/include/hyperv/hvhdk_mini.h
+> +++ b/include/hyperv/hvhdk_mini.h
+> @@ -548,4 +548,94 @@ union hv_device_id {		/* HV_DEVICE_ID */
+>  	} acpi;
+>  } __packed;
+>  
+> +/* 3 domain types: stage 1, stage 2, and SOC */
+> +#define HV_DEVICE_DOMAIN_TYPE_S2  0 /* HV_DEVICE_DOMAIN_ID_TYPE_S2 */
+> +#define HV_DEVICE_DOMAIN_TYPE_S1  1 /* HV_DEVICE_DOMAIN_ID_TYPE_S1 */
 
-Nicolin
+
+> +#define HV_DEVICE_DOMAIN_TYPE_SOC 2 /* HV_DEVICE_DOMAIN_ID_TYPE_SOC */
+
+I don't think this domain type is used in patch 3, perhaps we bring it in when needed?
+
+> +
+> +/* ID for stage 2 default domain and NULL domain */
+
+I think this comment would be more useful if it related the MSHV default and NULL domains to
+the Linux equivalents of identity and blocking respectively. As it stands, it just repeats the
+names of the defines it is a comment for.
+
+> +#define HV_DEVICE_DOMAIN_ID_S2_DEFAULT 0
+> +#define HV_DEVICE_DOMAIN_ID_S2_NULL    0xFFFFFFFFULL
+> +
+> +union hv_device_domain_id {
+> +	u64 as_uint64;
+> +	struct {
+> +		u32 type : 4;
+> +		u32 reserved : 28;
+> +		u32 id;
+> +	};
+> +} __packed;
+> +
+> +struct hv_input_device_domain { /* HV_INPUT_DEVICE_DOMAIN */
+> +	u64 partition_id;
+> +	union hv_input_vtl owner_vtl;
+> +	u8 padding[7];
+> +	union hv_device_domain_id domain_id;
+> +} __packed;
+> +
+> +union hv_create_device_domain_flags {	/* HV_CREATE_DEVICE_DOMAIN_FLAGS */
+> +	u32 as_uint32;
+> +	struct {
+> +		u32 forward_progress_required : 1;
+> +		u32 inherit_owning_vtl : 1;
+> +		u32 reserved : 30;
+> +	} __packed;
+> +} __packed;
+> +
+> +struct hv_input_create_device_domain {	/* HV_INPUT_CREATE_DEVICE_DOMAIN */
+> +	struct hv_input_device_domain device_domain;
+> +	union hv_create_device_domain_flags create_device_domain_flags;
+> +} __packed;
+> +
+> +struct hv_input_delete_device_domain {	/* HV_INPUT_DELETE_DEVICE_DOMAIN */
+> +	struct hv_input_device_domain device_domain;
+> +} __packed;
+> +
+> +struct hv_input_attach_device_domain {	/* HV_INPUT_ATTACH_DEVICE_DOMAIN */
+> +	struct hv_input_device_domain device_domain;
+> +	union hv_device_id device_id;
+> +} __packed;
+> +
+> +struct hv_input_detach_device_domain {	/* HV_INPUT_DETACH_DEVICE_DOMAIN */
+> +	u64 partition_id;
+> +	union hv_device_id device_id;
+> +} __packed;
+> +
+> +/* HV_INPUT_GET_IOMMU_CAPABILITIES */
+> +struct hv_input_get_iommu_capabilities {
+> +	u64 partition_id;
+> +	u64 reserved;
+> +} __packed;
+> +
+> +#define HV_IOMMU_CAP_PRESENT    BIT_ULL(0)
+> +#define HV_IOMMU_CAP_S2         BIT_ULL(1)
+> +#define HV_IOMMU_CAP_S1         BIT_ULL(2)
+> +#define HV_IOMMU_CAP_S1_5LVL    BIT_ULL(3)
+> +#define HV_IOMMU_CAP_PASID      BIT_ULL(4)
+> +#define HV_IOMMU_CAP_ATS        BIT_ULL(5)
+> +#define HV_IOMMU_CAP_PRI        BIT_ULL(6)
+> +
+> +struct hv_output_get_iommu_capabilities { /* HV_OUTPUT_GET_IOMMU_CAPABILITIES */
+> +	u32 size;
+> +	u16 reserved;
+> +	u8  max_iova_width;
+> +	u8  max_pasid_width;
+> +	u64 iommu_cap;          /* HV_IOMMU_CAP_* above */
+> +	u64 pgsize_bitmap;
+> +} __packed;
+> +
+> +struct hv_input_map_device_gpa_pages {	/* HV_INPUT_MAP_DEVICE_GPA_PAGES */
+> +	struct hv_input_device_domain device_domain;
+> +	union hv_input_vtl target_vtl;
+> +	u8 padding[3];
+> +	u32 map_flags;
+> +	u64 target_device_va_base;
+> +	u64 gpa_page_list[];
+> +} __packed;
+> +
+> +struct hv_input_unmap_device_gpa_pages {  /* HV_INPUT_UNMAP_DEVICE_GPA_PAGES */
+> +	struct hv_input_device_domain device_domain;
+> +	u64 target_device_va_base;
+> +} __packed;
+> +
+>  #endif /* _HV_HVHDK_MINI_H */
+
