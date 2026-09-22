@@ -1,184 +1,306 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66C8E53D0D2
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 13:03:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE4B151AFC6
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 13:13:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790082220; cv=none; b=TPoJuZzeCcIk2xyHdIQbFrgimvdHq6HIBlfQcSNUBmcYIxG28xEVVaYQey/t5VFeB390AEldfRGOdjPebs1Qm4TFZEq9nLNczgIBGMkEE/qz0nYxq4y1B/b9PAUDMWZ3RXfsJMRlKYE2tvEa5X+C3k/8vLlV2cjPlTWx2GUDLv4=
+	t=1790082786; cv=none; b=akKyfuZP+y+qEyhHj3z/STiQ0OnpFcqTEhhG/IS+7JxmCiYRmtwlLj2rsHFXluFAQp3fumrJKML/4/PjLXprML6VzfoE8fZACR7NddK61GYL/W5blrY6QAji4DNED3y+Qn9QDl4IZQgesp+BJ/3+GDgEoL/qqwhmHQdNOss9y0I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790082220; c=relaxed/simple;
-	bh=bxddnFMM40rZJyomJz2B+9UVeiJC1/Kposg8e7UdqeI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AXnUrGwZbXrNUWDqV4DSUqFM3Sd0lXtzQ/LUUlz1TSlzPUMakfJ+vtqMKtzDislsM3ZDSEp6wYdGo73QPQZ9oWoZ9vnh+Ui2OACfw+Ltp+THQcDXid6e3NXWzkz+6SGQYnj20klbyfdCdomr04XPhoP8p0FUDN6Ayksx395cnCQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ajAwFPjs; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=EJRvCsXV; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1790082786; c=relaxed/simple;
+	bh=pVjyIu0kXnDhjx3DniHHtuHEwZ3F8cMzRKvHX5tGWdY=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=KOa3OjjtsqnEcWiWcHkuoB4dc4xeEENcYgd6zH3n2NsgFKJoo5JcsluNwUSP5S3Y4NZn45dEj8gOzPAwr3ulzXtJRks/MLmi9/5FfD12qSWv/YFGkuSLrURWl0uvhStOMBVGzpHAzwHQ8oPq00sE8sEYS40LxaUts/pdSSI/paE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Waker2by; arc=none smtp.client-ip=209.85.218.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ajAwFPjs";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="EJRvCsXV"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 68MBPMa0620264
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 13:03:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=8/QTObLMZagqKCMz1L71lAYH
-	9ufZSbJaeEUf+dsnNk0=; b=ajAwFPjsQRe4rAVQcqrY6nP4OItBpLYKICHCIbfm
-	QLhshKjxnxKRRnuJgjQZEEEbYZ97koOLodlsL1Iiz8wXbdY7xwfuR+w8xmedu+qZ
-	h2vINZK7Jed0op0dBHIvDEoCmNw6Rbjd/WE53WkzPqNbHc2Bq3fIV3/eHTkFUGBt
-	LKMYbZQ61hzxibu494ftwJCE3hxMFFcprdHwM1X18LXfPDxN1+WD6NuscQdjLzSV
-	IpYUc17QjgIVy3IClqhlNC48+jHHzLvPbIIn0Zj4DDSZW9YOCTJhIsrYg5LdWSD7
-	eQYtvCeO6JXyQI4eHmCKp81yiiDUD+Z80/o1aKdVCuTVhg==
-Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com [209.85.221.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4guha5temn-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 13:03:35 +0000 (GMT)
-Received: by mail-vk1-f200.google.com with SMTP id 71dfb90a1353d-5c83124d530so5335008e0c.2
-        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 06:03:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Waker2by"
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-c2945f5e851so332184166b.1
+        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 06:13:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1790082215; x=1790687015; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=8/QTObLMZagqKCMz1L71lAYH9ufZSbJaeEUf+dsnNk0=;
-        b=EJRvCsXVVLl2DR9QNR0br02KA+s8MTqR1AXst2ZiFweIPWUoqdsexFxyKr0Cs8Z94J
-         iZgFEnwQEXuPUDNsyYgc2h1QkrGxgYe57kucOl9CoMGxvAn4tB6/LOD+LZkXWKkrGDNb
-         S99vBI6QiHAjAC6/hA0Rf4mitBhzWk9Jk9Vqlvo02ni84JS3/1My3vHG7+R92AP8dvas
-         mVB3eQ80F1MGB5rK5DH0LoCRbN7AUJf/puhRAwi60HVkcYECHi89LTABMzvuIcMuxb36
-         /WzJ5ru/iaWWcOQm7qmAsxfEGsw2okxhDHIbd+RcLAUbySL6wUl5UT1gIDuiNYGwCr7Y
-         zxtA==
+        d=google.com; s=20251104; t=1790082783; x=1790687583; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:mime-version:date:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=eWCrskNiAleudFFxBYgMjk1A9BS0wLHQijBLHdv5uys=;
+        b=Waker2by1rw84zBwFe+9BUj85rF6n9DXRjMDy08375xZXj5dK+KxpvDI1IMY9XsH1j
+         FpEAHJ9r8C5tMP5pqceXvLHYSwa7AxwkwwjgxK1+1trnxqI3Mpl0UXlbIGtf48lSx0Vq
+         9UoDmMAAseu6ao7OsSooTTmwOpiWOjVn0KPNchbSz97dGrsxBJerWPvz57fbW4p7iill
+         xCwClMZtCZUUhUAtZgLyVTfVXctHxclpiCm1rxjHSjbx/FQgCZo36NdvKsVkboaOcJ+m
+         q4YuSkKdt/bV3I2stgg719SM8ZiUA3HVlWlaEIqUrAIfIdVsMSet+TGetKNdZgWDYB/O
+         IkMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790082215; x=1790687015;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=8/QTObLMZagqKCMz1L71lAYH9ufZSbJaeEUf+dsnNk0=;
-        b=KqO54aJgoBdhFW4ZGEgqt7r1ZHfM7NWysQuI2mKptp5iw1nZy63pZpTy9rZcN2HyH1
-         8SMdxXtA08/1oeKvnZmMFYGIq8IfKNFERe8p4OibQHOSNXdzEI3wFUonwlWXTz6xCEB2
-         A9AJEmhF/yMSYdV9bFBowq71hUgpkmnq3sE0FBiye/WkW5Pq6Qppsmf9kVUjc3cOTqHl
-         jtoNzgE5jBt7dfq1SuWYIFNX4NA8cZIFA85Xr17YT9cEipxM3H82pEIkoy7AFpWlskkY
-         +pYZeOVgAv6WeTfp6a2cmIoW02TJFa+uA95mGCkB3FSfnUHiaxQE0V2AA0HYalHDQLV2
-         WpPw==
-X-Forwarded-Encrypted: i=1; AKwUvBzIAMzKfvWciDnoNfvrky/r6crQW6GJg9BOKCt4CnH0ISQ/RyJG6Lnp6NBgmuulZkGRweX43A==@lists.linux.dev
-X-Gm-Message-State: AFuF++ka7P4+7d/2HvyJ0DY0c67tOSkpYukpLfgjsHEjtLl3eqp5nZPR
-	HrMDd6Ft0sMtNxAdEeGUvegrRF5wSNCqGxLpLCanmNAfXKPadst9NVMKhrGGLlvTdkvq4a/wKvB
-	W8EzxScWB++xuQguqQWNeCGnflbwohZr8ZwS0/SAI3mbCdigbgdosCZNy/g==
-X-Gm-Gg: AYBFou3Ws+kTO1NdqAuGWaFqCjDtVBXW73MQKTwj+Be5nCkRnoTqieQSuKPE9Afpl9r
-	328HwquAjwQHbgvhtezOaSGc3MyscsvM45K+5GZddSMkCS3XK1DZTr7VU8D03TsaWvz5iHRHyxe
-	ePsrRzbyIu/EFHHto3VYKagvLkhKkRQroErXgMXceL2txd7Y+OI27n+TLXYRK005MTfEfd3eblt
-	r0fPHKtXbXor/3MdICiGdZmN/dTmcJZzhdNqiH0jWmgaILM+FebVCqQrNpEti9sy30F1PUHYTBI
-	Tiy6P9zBTQpsJ2Q9uaB9d4e9dFTx3xI26Aqs2osLEMAFRaF3wO5gmXVHMjQ8pnMqIqds6HxNIhP
-	cOUGj6hbyyaSHVDVmy1s0OpjqkrMETEda5VJAlXF6fLtofX+RdY9Xa6UM8vLxJVOoYoJvdu5yo8
-	GgqVaaf4mgJbhN
-X-Received: by 2002:a05:6122:1b8c:b0:5c9:a60b:e5b8 with SMTP id 71dfb90a1353d-5c9b599c8c3mr8828557e0c.17.1790082215145;
-        Tue, 22 Sep 2026 06:03:35 -0700 (PDT)
-X-Received: by 2002:a05:6122:1b8c:b0:5c9:a60b:e5b8 with SMTP id 71dfb90a1353d-5c9b599c8c3mr8828507e0c.17.1790082214701;
-        Tue, 22 Sep 2026 06:03:34 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5b8d46dfd50sm470532e87.45.2026.09.22.06.03.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2026 06:03:33 -0700 (PDT)
-Date: Tue, 22 Sep 2026 16:03:31 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Cc: Bryan O'Donoghue <bod@kernel.org>,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Stanimir Varbanov <stanimir.k.varbanov@gmail.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Abel Vesa <abelvesa@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        iommu@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v11 3/9] media: iris: Replace enum-indexed clock and
- power domain tables with per-block structures
-Message-ID: <zwqr6biua7ft6fkcgloqucthevvtp4viupyhrloc35lkqo7azh@4o722xibsjmk>
-References: <20260917-glymur-v11-0-e0c8bc914742@oss.qualcomm.com>
- <20260917-glymur-v11-3-e0c8bc914742@oss.qualcomm.com>
+        d=1e100.net; s=20260707; t=1790082783; x=1790687583;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:mime-version:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=eWCrskNiAleudFFxBYgMjk1A9BS0wLHQijBLHdv5uys=;
+        b=fOtcM5N4CBF2wJDxU7yhZ7IJXqpuZkXmS7GGOuRyNItePPOaS8tSbsYtpP0yXh2Pnh
+         3jcB3YuWqMlLLnA5qtQwTx4OhEyx59mRWlgsTv3A9dygpC2yEu4XnX0CskXojjh2KL4y
+         0bWsa0jv4PZ8SgFdtIVrwWvFRRi1MHGhbaNl+W6BtYD1a5BvJyC1TlrfhUs5bgdUwLOG
+         c+Ok4Im8iP5tv2Tm1r0sAdqTm7I3AY7JlcorfECXcU9+UpQIrwvWBhyKKdBOXnXqg4L5
+         IGYcA12L5QSNY2svst4CoAM1sz90T0mZcH+EcbTuGu3KUKzDDUihXBw0dvG03eOaaJ2o
+         z/TA==
+X-Forwarded-Encrypted: i=1; AKwUvByUwCNiFE37/0GvZM+4J7olmLW38QziuhFuMd+4aQvLIWmrlnz0krJGgsgGycPtc4eUWLwi8w==@lists.linux.dev
+X-Gm-Message-State: AFuF++lLqz6YWesrsFkPWgMrOaFFvxpA4GGyXFiKwvKS4hMCKljI8hBV
+	raSk6Nnvd/DTbdXKr8alYtyDtkDjOSm+BP+K1pb5tdeyYg79ZNmsqQSfVT3xXEq9qh7VbrA66YL
+	u3PQF0rHeucbPUw==
+X-Received: from edvt20.prod.google.com ([2002:a05:6402:214:b0:6a3:64db:ff2])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6402:5003:b0:6a9:dfd4:811f with SMTP id 4fb4d7f45d1cf-6aa579997a6mr11277387a12.42.1790082782443;
+ Tue, 22 Sep 2026 06:13:02 -0700 (PDT)
+Date: Tue, 22 Sep 2026 13:12:33 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260917-glymur-v11-3-e0c8bc914742@oss.qualcomm.com>
-X-Proofpoint-GUID: pKo12p_96PP7FClYNpvFbUtZFdDfUW0W
-X-Proofpoint-Spam-Info: AW1haW4tMjYwOTIyMDE4OSBTYWx0ZWRfX2oAm/byvmpAL
- zuAx60udoWdN5IGrVlyeBLPx2IHFIqgYlp7CWQO1Cb6wmAkoiM0FBAZ7ST91L8rvyfU7vHRPCfw
- AHEqYcb0Rn5GzC2jxtaval9alaevNIc=
-X-Authority-Analysis: v=2.4 cv=U+4Hnuru c=1 sm=1 tr=0 ts=6ab27ca7 cx=c_pps
- a=wuOIiItHwq1biOnFUQQHKA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=VdqzKS8jKosA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22 a=EUspDBNiAAAA:8
- a=cQsnMm6kD37X6GfbhGIA:9 a=CjuIK1q_8ugA:10 a=XD7yVLdPMpWraOa8Un9W:22
-X-Proofpoint-ORIG-GUID: pKo12p_96PP7FClYNpvFbUtZFdDfUW0W
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwOTIyMDE4OSBTYWx0ZWRfX2vxFQfMjAYKK
- swYCRnhW4WBuM/oaf6FQ+L0B5fQ8STAb71vBpHxqUbgT1cPzZwtqrVikk9N2fs7qUoP+iHvIohE
- /5okF4YXkBGE/Ys9zD5+Z3ODYFun0f+1gBRj0hnC2ONgZBmYaUUyOmWRNh3JIZdQAZEYLBaEW5E
- QBUIZ+OR4hQdLqNYLUwyFPKUxm5Q0w65XDwuCLhwYQyvtQdS/Ef6Tj4EO9OSEmSYwK7AOUR0f83
- 2Bvno0+JEafSDfg1qvVMmgp7VS7xfnQnUCrdtksfbRYiM4CTuqffNz0KOrF00dnmMVX4HBqZPvJ
- wz5KmE/bnm0bv6alDs5Ny8ruRR14q0NvaYcyHPvy8cXfnxjds9Yh3aDqP4tPQPvulOqeO5KPrJE
- gRLAgKq9G3YW2uXkXOGuZTYQfnGcbjSRnFV+FHUDJ0BGTnYzUWYiyBixboPO8hCkGO+JadYhepW
- DpRf/D5mOofFGNz87Sw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-09-22_01,2026-09-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 adultscore=0 phishscore=0 lowpriorityscore=0
- priorityscore=1501 suspectscore=0 bulkscore=0 spamscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2609220189
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.55.0.1082.g2b9226bbc0-goog
+Message-ID: <20260922131259.2975334-1-smostafa@google.com>
+Subject: [PATCH v8 00/25] KVM: arm64: SMMUv3 driver for pKVM (trap and emulate)
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev
+Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org, 
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com, 
+	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca, mark.rutland@arm.com, 
+	qperret@google.com, tabba@google.com, vdonnefort@google.com, 
+	sebastianene@google.com, keirf@google.com, 
+	Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Sep 17, 2026 at 10:30:22AM +0530, Vishnu Reddy wrote:
-> As new platforms are added, the platform_clk_type and
-> platform_pm_domain_type enums keep growing. Every new clock or
-> power domain requires a new enum entry, and every enable/disable
-> path has to loop through the clock table to find the right clock
-> by enum value, adding overhead and boilerplate on each path.
-> The enum index space is also shared across all hardware blocks.
-> On the Glymur platform, the VPP0 index for VPU4x and the VCODEC1
-> index clash, making it error-prone to extend support without
-> breaking existing platforms.
-> Replace the flat tables and enum-based lookups with
-> iris_power_domain, which bundles a power domain device and its
-> associated clocks together per hardware block. Platform data
-> describes each block via iris_power_domain_data, and the enable
-> and disable helpers operate directly on an iris_power_domain
-> instance, removing the need for any index lookup at runtime.
-> 
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> ---
->  drivers/media/platform/qcom/iris/iris_core.h       |  23 +++-
->  .../platform/qcom/iris/iris_platform_common.h      |  41 ++----
->  .../platform/qcom/iris/iris_platform_sc7280.h      |  28 ++++-
->  .../platform/qcom/iris/iris_platform_sm8250.h      |  26 +++-
->  .../platform/qcom/iris/iris_platform_sm8550.h      |  26 +++-
->  .../platform/qcom/iris/iris_platform_sm8750.h      |  29 +++--
->  .../media/platform/qcom/iris/iris_platform_vpu2.c  |  20 +--
->  .../media/platform/qcom/iris/iris_platform_vpu3x.c |  32 ++---
->  .../platform/qcom/iris/iris_platform_x1p42100.h    |  27 +++-
->  drivers/media/platform/qcom/iris/iris_probe.c      | 137 +++++++++++++++++++--
->  drivers/media/platform/qcom/iris/iris_resources.c  |  81 ++++++------
->  drivers/media/platform/qcom/iris/iris_resources.h  |   8 +-
->  drivers/media/platform/qcom/iris/iris_vpu3x.c      |  37 +-----
->  drivers/media/platform/qcom/iris/iris_vpu4x.c      | 137 +++------------------
->  drivers/media/platform/qcom/iris/iris_vpu_common.c |  98 ++-------------
->  15 files changed, 347 insertions(+), 403 deletions(-)
-> 
+Changes from v7:
+v7: https://lore.kernel.org/all/20260715115906.2664882-1-smostafa@google.co=
+m/
+- Use pfn, nr_pages instead of addr, size in MMIO functions [Vincent]
+- Inline system timer handling in the driver [Vincent]
+- Update comments [Fuad]
+- Remove TLB invalidation re-use and introduce helpers instead [Jason]
+- Implement  a different TLB algorithm for the hypervisor based on 2
+  overlapping commands as currently on the list.
+- Rely on macro tricks to reuse more functions between drivers [Jason]
+- Use the hitless machinery for the hypervisor STE updates [Jason]
+- Fixed an issue with small command queue sizes.
+- Update and rename patches message to be more clear.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Notes about Sashiko
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+I ran Sashiko locally and it was helpful in discovering problems in
+the series. However, it still shows large number of critical and high
+severity issues, I went through them and I believe they are false
+positives, mainly because (in the order of frequently reported):
+- It doesn't understand WARNs are fatal in the hypervisor.
+- It doesn't understand that a malicious host can DoS the system and
+  pKVM doesn't guarantee availability
+- It doesn't understand the SMMUv3 spec and makes stuff up (eg. about
+  CMD_SYC CS field it makes up an non-existent encoding or wrong
+  semantics for the gbpa register)
+- It seems to look at one patch at a time and not the whole series, and
+  as the series is written in a way to be bisectable that confuses it.
+
+Design:
+=3D=3D=3D=3D=3D=3D=3D
+Assumptions:
+------------
+One of the important points, is that this doesn=E2=80=99t emulate the full
+SMMUv3 architecture, but only the parts used by Linux kernel.
+That=E2=80=99s why enablement of this (ARM_SMMU_V3_PKVM) depends on
+(ARM_SMMU_V3=3Dy) so we are sure of the driver behaviour.
+
+Any new change in the driver will likely trigger a WARN_ON ending up
+in panic, that will require to support also in the hypervisor.
+
+Most notable assumptions:
+- Changing of stream table format/size or l2 pointers is not allowed
+  after initialization.
+- leaf=3D0 CFGI is not allowed.
+- CFGI_ALL with any value but 31 is not allowed.
+- Some commands which are not used are not allowed.
+- Values set in ARM_SMMU_CR1 are hardcoded and don't change.
+
+Emulation logic mainly targets:
+
+1) Command Queue
+----------------
+At boot time, the hypervisor will allocate a shadow command queue
+(doesn't need to match the host size) which then sets up in HW, then
+it will trap access to
+
+i) ARM_SMMU_CMDQ_BASE
+That can only be written when the cmdq is disabled. Then on enable,
+the hypervisor will put the host command queue in a shared state to
+avoid transition into the hypervisor or VMs. It will be unshared with
+the cmdq is disabled
+
+ii) ARM_SMMU_CMDQ_PROD
+Trigger emulation code, where the hypervisor will copy the commands
+between cons and prod, of the host queue and sanitise them (mostly
+WARNs if the host is malicious and issuing commands it shouldn't)
+then eagerly consume them, updating the host cons.
+
+iii) ARM_SMMU_CMDQ_CONS
+No much logic, just return the emulated cons + error bits.
+
+2) Stream table
+---------------
+Similar to the command queue, the first level is allocated at boot
+with max possible size, then the hypervisor  will trap access to:
+i) ARM_SMMU_STRTAB_BASE/ARM_SMMU_STRTAB_BASE_CFG: Keep track of
+   the stream table to put it in a shared state.
+
+On CFGI_STE, the hypervisor will read the STE in scope from the host
+copy, shadow L2 pointers if needed and attach stage-2.
+
+3) GBPA
+-------
+The hypervisor will set GBPA to abort at boot, then any read from the
+host will return ABORT and writes are ignored.
+If the host tries to clear GBPA, it will look like GBPA is refusing
+to update and time out.
+
+4) EVTQ and PRIDQ
+No shadowing needed for those queues, but the hypervisor needs to keep
+track of them to put them in a shared state so they can=E2=80=99t be used b=
+y
+the host or the hypervisor.
+
+Bisectibility:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+I wrote the patches where most of them are bisectable at run time (so
+we can run with a prefix of the series till MMIO emulation, cmdq
+emulation, STE or full nested) that was very helpful in debugging,
+and I kept it like this to make debugging easier.
+
+Constraints:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+1) Discovery:
+-------------
+Only device trees are supported at the moment.
+I don=E2=80=99t usually use ACPI, but I can look into adding that later.
+(not make this series bigger)
+
+2) Shadow page table
+--------------------
+Uses page granularity (leaf) for memory, that's because of the lack
+of split_block_unmap() logic.
+
+Boot and Probe ordering:
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+The main SMMUv3 MUST be only bound/probed after KVM fully initialises
+so it can set up the MMIO emulation.
+
+The KVM SMMUv3 driver is loaded early before KVM init so it can
+register itself, during that point it will probe all the SMMUs from the
+platform bus and bind them to the driver.
+
+Then at a later init call it will create an auxiliary device per SMMU,
+that the main driver will probe. The main driver still relies on this
+device(parent) for all driver activity. (Check comment in patch 14.
+
+Future work
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+1) Sharing page tables will be an interesting optimization, but
+   has many challenges, I have a prototype for that I plan to send
+   it will be group related series, starting with BBML3 which is
+   already posted [1]. I also have a talk in the KVM MC in LPC 2026
+   about this.
+
+2) There is currently ongoing work to enable RPM, that will possibly
+   enable/disable the SMMU frequently, we might need some optimizations
+   to avoid re-shadowing the CMDQ/STE unnecessarily.
+
+3) Add support for non-coherent SMMUs.
+
+4) Optimizations (as using block mappings for memory).
+
+Patches overview
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+The patches are split as follows:
+
+Patches 01: Core hypervisor: Dealing with MMIO and timers.
+Patches 02-05: Refactoring of io-pgtable-arm and SMMUv3 driver.
+Patches 06-09: Hypervisor IOMMU core: pagetable management, dabts.
+Patches 10-25: KVM SMMUv3 code.
+
+Tested on Lenovo IdeaCentre mini X and Qemu.
+
+A development branch can be found at [2]
+
+[1] https://lore.kernel.org/all/20260904132855.638117-1-smostafa@google.com=
+/
+[2] https://android-kvm.googlesource.com/linux/+/refs/heads/kvm-smmu-v8
+
+Jean-Philippe Brucker (1):
+  iommu/arm-smmu-v3-kvm: Add SMMUv3 driver
+
+Mostafa Saleh (24):
+  KVM: arm64: Donate MMIO to the hypervisor
+  iommu/arm-smmu-v3: Move Queue and STE functions to header
+  iommu/arm-smmu-v3: Introduce RangeInval encoding helpers
+  iommu/arm-smmu-v3: Move IDR parsing to common functions
+  iommu/arm-smmu-v3: Move hitless machinery to common code
+  KVM: arm64: iommu: Introduce IOMMU driver infrastructure
+  KVM: arm64: iommu: Shadow host stage-2 page table
+  KVM: arm64: iommu: Add memory pool
+  KVM: arm64: iommu: Support DABT for IOMMU
+  iommu/arm-smmu-v3-kvm: Add the kernel driver
+  iommu/arm-smmu-v3-kvm: Probe SMMU HW
+  iommu/arm-smmu-v3-kvm: Add MMIO emulation
+  iommu/arm-smmu-v3-kvm: Shadow the command queue
+  iommu/arm-smmu-v3-kvm: Add CMDQ functions
+  iommu/arm-smmu-v3-kvm: Emulate CMDQ for host
+  iommu/arm-smmu-v3-kvm: Shadow stream table
+  iommu/arm-smmu-v3-kvm: Shadow STEs
+  iommu/arm-smmu-v3-kvm: Share other queues
+  iommu/arm-smmu-v3-kvm: Emulate GBPA
+  iommu/io-pgtable-arm: Support io-pgtable-arm in the hypervisor
+  iommu/arm-smmu-v3-kvm: Shadow the CPU stage-2 page table
+  iommu/arm-smmu-v3-kvm: Invalidate the SMMU TLBs
+  iommu/arm-smmu-v3-kvm: Enable nesting
+  KVM: arm64: Add documentation for pKVM DMA isolation
+
+ .../admin-guide/kernel-parameters.txt         |    5 +
+ Documentation/virt/kvm/arm/pkvm.rst           |   23 +-
+ arch/arm64/include/asm/kvm_host.h             |    6 +
+ arch/arm64/include/asm/kvm_pgtable.h          |    1 +
+ arch/arm64/kvm/Makefile                       |    2 +-
+ arch/arm64/kvm/hyp/include/nvhe/iommu.h       |   24 +
+ arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |    7 +
+ arch/arm64/kvm/hyp/nvhe/Makefile              |    9 +-
+ arch/arm64/kvm/hyp/nvhe/iommu.c               |  174 ++
+ arch/arm64/kvm/hyp/nvhe/mem_protect.c         |  135 +-
+ arch/arm64/kvm/hyp/nvhe/setup.c               |   19 +
+ arch/arm64/kvm/hyp/pgtable.c                  |   11 +-
+ arch/arm64/kvm/iommu.c                        |   64 +
+ arch/arm64/kvm/pkvm.c                         |    1 +
+ drivers/iommu/arm/Kconfig                     |   12 +
+ drivers/iommu/arm/arm-smmu-v3/Makefile        |    3 +-
+ .../arm/arm-smmu-v3/arm-smmu-v3-common-lib.c  |  416 +++++
+ .../arm/arm-smmu-v3/arm-smmu-v3-common-lib.h  |   41 +
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   |  231 +++
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  |    1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  561 +------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  107 +-
+ .../arm/arm-smmu-v3/pkvm/arm-smmu-v3-hyp.h    |   79 +
+ .../iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c  | 1430 +++++++++++++++++
+ .../arm/arm-smmu-v3/pkvm/io-pgtable-arm-hyp.h |   86 +
+ drivers/iommu/io-pgtable-arm.c                |   14 +-
+ drivers/iommu/io-pgtable-arm.h                |    9 +
+ 27 files changed, 2960 insertions(+), 511 deletions(-)
+ create mode 100644 arch/arm64/kvm/hyp/include/nvhe/iommu.h
+ create mode 100644 arch/arm64/kvm/hyp/nvhe/iommu.c
+ create mode 100644 arch/arm64/kvm/iommu.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-lib.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-lib.h
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3-hyp.h
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/io-pgtable-arm-hyp.h
 
 
--- 
-With best wishes
-Dmitry
+base-commit: f0100363d8c374bd8e9ea7c9ba02744f0b802ca4
+--=20
+2.55.0.1082.g2b9226bbc0-goog
+
