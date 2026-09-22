@@ -1,120 +1,137 @@
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+Received: from mail-ed2-f12.google.com (mail-ed2-f12.google.com [74.125.228.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD66D559310
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 13:13:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.72
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790082818; cv=none; b=cJakocyf1Ab0QMg1s5mwIKru/CMNRz3AgUFX9fltB6R9vSNALIhbkRLpDxJHDdNYf+JPgreOZVYzkqtQez9rSL2kn41UZ5ndBpCulrofrEfRucrlCLw2s/aD/kiF3hn1KUHsdzx+mFk3H4aDmu4npJVG+4euZLtMA0op01afWi0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790082818; c=relaxed/simple;
-	bh=w0v4/Cc0aZSRCWoynVPgXYj7n1ayw0SGNTNFER2zP+8=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=enweZfS/9ABxdHr/7O3+v62r1Z5lZH7fx9pv/O8psAK0oF9pf3qTluz/V+CqKVYJUon+qhjTMGnYjJvn1J6cJCzNBJ0SxTOkWol3zaz59MRNpSuXiIukFA7SxsxZyD+yY2YqlWuD1TSabyN0I+V1acWcGj0XbRaxq6hhfkUww5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vVpMJAPy; arc=none smtp.client-ip=209.85.208.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0C4F54B1A7
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 13:53:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.76
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790085203; cv=pass; b=sPde6rQy278smc0H0DFXzPAyuJqjw6r4xf00qHsYuun6eLhLCXc+9sf20rJ4A8Q+819EIoykge62ZUZTtjuFMz4fcvELrBDFmDNOLMSbvcF3m09Lay4e7cZCPCI4/YkSJ82Lp6seguvYfcb9rO02nh5nWMzKHQr9a2cQN8tQhx4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790085203; c=relaxed/simple;
+	bh=0hurBNTkrVz1B/9TW5ipWegr4/ZEEZE2GB3faJsOdT4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rveZ5qudHfNHc8PBETWiX+y3rAadG0G95jfJrv4JAmujlWEkQStxLeAu0M4wYv+6GPJY8Xjy4UrKnAFtmSj4H4uU8RSMPW9bnS3HQegkUl3VMWA/YZWkWF6CYywSCOvPZeTRpH/ImlvCgFohRUbX0V52SqvfmOo02tNWPRyIxng=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xJfQrXKj; arc=pass smtp.client-ip=74.125.228.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vVpMJAPy"
-Received: by mail-ed1-f72.google.com with SMTP id 4fb4d7f45d1cf-6a5d7e3ac13so4717052a12.3
-        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 06:13:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xJfQrXKj"
+Received: by mail-ed2-f12.google.com with SMTP id 4fb4d7f45d1cf-6a985fba28bso5089703a12.3
+        for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 06:53:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790085200; cv=none;
+        d=google.com; s=arc-20260327;
+        b=ZG5u11jyQnTaZFR/7/YYGGmJzpUq1DzhAtCoN4qQxtWcevVKuNvqkk4GEbNl+Js1Pb
+         9M9p6jF3F6pn6fRspUwIt6RZnCltcKs5fgkdQdkDBMWZfbKtlq5s5I72RX+XiTMITpBW
+         L5uKqNw8VG4HD69oIusXS9XA1P8N5b2QjxH+il8rwEHslKlHGPDCAI/kSIDLccFpexcE
+         YEsOey3JOQUyxsVJghtVG0BBDvIX5hXxR8hXx40mDkLAZNPfmxXwMdcJcn0PHqflP1ok
+         LozJtwMZZdhAyLkBPoE8x0Ix4MXyePTQMSCFo2d8BlsJUfmWaRRX7fGPuO7BYMgAyHdN
+         2oPw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=awCRBzfBSO0cm9zEvmZIeCCRXLT0QzBOpw1tpjmmlbQ=;
+        fh=bkbECWSFozWEZlU76xQPg/IFQ1PDSXsyL+QvGLxvZL0=;
+        b=e4PGMhkwcz0cLT3p+qDJFAPbgEroGJrn2LSa0kmqyqEwP1t4Z4P4PCnwz3QA7ORZau
+         IwClRw3buB3M5wg5TUBzH1h4V/ol6N0969xPhJZtUd7xW5AToo/0DBC++4fBKtBLhJCZ
+         yM0H7/cahdN0kNrN7vpC6iUqiWrko+9U40uvdn1U2MQIZSvYrrd/TvjI2UUPndZ1upGR
+         tCMXXHdrcHq2J0DspvDpXJMI4ELyhurLjLBiOjnwgdUkDteP7tX0u7w4uw03V6EBB+tz
+         PDmyQXetoq5GXZ+rdwBW0H/HVtJi2kbtCJo3/KKgX/aaUGPy0n7mpf0Q9EwJ09eMvpIN
+         bKqg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790082813; x=1790687613; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+        d=linaro.org; s=google; t=1790085200; x=1790690000; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=jVQjAaBFFW3dvBW1v+aV1twyKPPe74xtBKnCer/p5k0=;
-        b=vVpMJAPySApLlBOGl+Gz0isZz3maQXsamXepc/LxOZeCDYKBKybDg06ovYcjSDIV/Z
-         qWVAhybBoMO3FXaAv/uehvio3PwNUMsY7jURyxdmmEERnX6RD8JnKQqA1aGk1fWNiZBd
-         8xC1WmqQ3NFV8PtguJZGk+XIONGy/MQv61hzuF2wTZH5eR5DH7Qzi5d3LB1X7obBXHMt
-         inZoSmtJY4aOWGYeNUyVuHAPaqmnQQ61HIp7+5ykkz6p68nAXWxLAM3NRn59OzgcTLy5
-         +KHWP7k/0b8CUdPLizEkBJC+fMOarpm96ezPhZF5dBfuwVNG0lHtJLDUMX6nfNT6biOc
-         PG4g==
+        bh=awCRBzfBSO0cm9zEvmZIeCCRXLT0QzBOpw1tpjmmlbQ=;
+        b=xJfQrXKjUWONG38womQya5smAp9gsRcpsxsyRwgvpI5Dp7ZDiAkkzhfhHut7wFte5B
+         vQdLlY797vE0NiHcp7Y35lRyoX1wo+MTiIN/rdxz6CfM3J8VNvty72SPio8AFDVBzwtt
+         BscQFUVPPVojZdoPhHUwDSyS6OYnVOUkLIZCS67aPx1uYCD1YPVUGkaoqPaYqjPZ3igp
+         AqQTgK3EhsTKkNywF3NQRTaobCOmXVWantfAtBgIo9TiOY/5HUx3kLdx3v1v1zanCfet
+         kCeqGTws8GhEDy/4evDN5CNx8PM9QuvWGdT+culDnAwwW1Cqvu6e2RPdBe03ClsLJsRc
+         VDNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790082813; x=1790687613;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=jVQjAaBFFW3dvBW1v+aV1twyKPPe74xtBKnCer/p5k0=;
-        b=zapjWE3UPvNzN+fjzuTTl1mpKP3PFZX3f5SKFKLD8wdCgpw+Cw4ct8FnnmESWRvxD1
-         eDUffX4uHUZAeDoYXgXW+TZt5XPfzd5ErdxxnOgklcnCQ6tEiyXoDPSL9mA8FBLFYGQy
-         A7pvu+V++7HTLumjgVGYy8PU2E8LqkmnlWjlwPkNfzLxXhi5tec3WaQei9eiHw7z6/xG
-         lXBYliayqGVPHAAhLunV/JZKEGCNpinWx8iO2hpg3l5MUPkwGqmS4DJ9AYr4JM0WaOiM
-         F/ZUEMzA/G6u9znO9Z6o5aemh7vKu5BepQMmI939FRsOjIbNec2LMRbxoj8xtpCAgkpV
-         AcxQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwL0FZ8s0E/VT/7REff3ZjPT8kcXMmw6y8QB0MHlafPrVUks2Ebijn8hgZtLbgUxTukYL7YLw==@lists.linux.dev
-X-Gm-Message-State: AFuF++m7YDoSWgautEoW/64l66SaaF4SSZ81JHOtxOl7j3rlQGb5EfnP
-	h2g4SKm9cqlhqsQiAOYDKn3WOL/WbBt5pRJ49bPYmOsZvx2kSzaILCIOxLW5hIMz6ZQVRtlLvdL
-	Gjn+5Mo/xtwgGHg==
-X-Received: from edqt6.prod.google.com ([2002:aa7:d706:0:b0:6a9:c0e0:494d])
- (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6402:52ca:b0:6aa:734b:1a1d with SMTP id 4fb4d7f45d1cf-6aa734b1b6bmr7367534a12.23.1790082812533;
- Tue, 22 Sep 2026 06:13:32 -0700 (PDT)
-Date: Tue, 22 Sep 2026 13:12:58 +0000
-In-Reply-To: <20260922131259.2975334-1-smostafa@google.com>
+        d=1e100.net; s=20260707; t=1790085200; x=1790690000;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=awCRBzfBSO0cm9zEvmZIeCCRXLT0QzBOpw1tpjmmlbQ=;
+        b=CuQTqAAf/C9bV0jU8UWBbQrdOdWCaoVD+TGLDQHIilT7Ng5zL1FzCChte5zsIBkvLY
+         j29XGQ7duzO0aMAX2hjKdvaIGUeyCXaTMeAaPgyka1AlP2opk6Ce0XCkGIr69a7iXfAO
+         AGskGvwUfgzHlmwiDSrxvjzHSU8lVBxrg8WYa1TxjZWkIBLXXQAPVGE6Lfbph9colKMd
+         15QQevNqcSpWJrKZ97SGDoNTSr5hdS1gEP2ZPv49Wp6RFQXg01R8StISYON0g+CunHrb
+         t4slVhsJNe0shhhj44tnREr7Y7dJWhyrvQaC+YXvbtuFNLs1Mfwm6b0hdHAG8XBqqNH/
+         aloQ==
+X-Forwarded-Encrypted: i=1; AKwUvBz2pwpxCBv8Hbz1Z2MJHkyGO3siYxwYaaJJsL/LMj/dZrcrIydYT9J8iWCg8V8eXag39SkQVA==@lists.linux.dev
+X-Gm-Message-State: AFuF++mYxUfs7MWzJkQPT7gxehHFLHH4QnTGHgt7n6KPCLjBOJcb5gY1
+	OQb9M6lPApTkzijmiPNg35EtI65NEk6PQGSXtj49QF8659OW6D8BP7du3GevCkuuefBHnYb1FZf
+	AYzne2n/s3Xh08uSwGozo5CvP5rx6nlYBw0qL2kDxhg==
+X-Gm-Gg: AYBFou2adWFZa0YqDo7ULKK29bXa0N5AQifP9RGQudzUYXycFIiQ35xA7FQr0tSA1Jd
+	/Vm1MdHlA4N5HBhiRNiXr7qNdTMLtQuDxhWJjzEhWfPMlayoRXnldZqjauaWpyQ0N2c+PVpk3Tp
+	qLss8kKLhpqsFHFYa1NlDjjhBp1L0klqlhcT/qj6dSIzMqdZYRphOoYfA8MGT6pLPg0vAEs/Asu
+	Tlpmnkzncfhee1BrVDwmmHah4BoZgPzoTZwMALTWyG6u95XEEWzDr8gz9PnPpWl+zP1FXVNxhru
+	5ENgGddHx3xmMubpP0pPWVrY+PLkROLBsI3OGh69ya3ikTUDqmREEe3CLKBtMCWh3x+atHV2lBu
+	aEgmP9WAqQrvq
+X-Received: by 2002:a05:6402:20c3:20b0:6aa:9210:262 with SMTP id
+ 4fb4d7f45d1cf-6aa92100342mr3351155a12.22.1790085199929; Tue, 22 Sep 2026
+ 06:53:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260922131259.2975334-1-smostafa@google.com>
-X-Mailer: git-send-email 2.55.0.1082.g2b9226bbc0-goog
-Message-ID: <20260922131259.2975334-26-smostafa@google.com>
-Subject: [PATCH v8 25/25] KVM: arm64: Add documentation for pKVM DMA isolation
-From: Mostafa Saleh <smostafa@google.com>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev
-Cc: catalin.marinas@arm.com, will@kernel.org, maz@kernel.org, 
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com, 
-	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca, mark.rutland@arm.com, 
-	qperret@google.com, tabba@google.com, vdonnefort@google.com, 
-	sebastianene@google.com, keirf@google.com, 
-	Mostafa Saleh <smostafa@google.com>
+MIME-Version: 1.0
+References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
+ <aq1sooGCYUiWbhMH@p14s> <aq453yukMHiNb1jp@bywater> <CANLsYkySF+eF-FURnnT6UJv7P5Sg2HdfMSBZnZy_BLyCMvuofw@mail.gmail.com>
+ <arIfj-1Ji6HEBHLJ@bywater>
+In-Reply-To: <arIfj-1Ji6HEBHLJ@bywater>
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+Date: Tue, 22 Sep 2026 07:53:08 -0600
+X-Gm-Features: AcwNN1V0zenE0U1QivuzVoqHQLJIIYIxl9SSuy2ocYOHZBqajP-1AfG4uh0OqKk
+Message-ID: <CANLsYkzaxwx8NJAOki_wkzauL68ourd12qF8PzzVKW++PJXZfw@mail.gmail.com>
+Subject: Re: [PATCH RFC 00/12] remoteproc: add support for any virtio device
+To: Francesco Valla <francesco@valla.it>
+Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev, 
+	imx@lists.linux.dev, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
 Content-Type: text/plain; charset="UTF-8"
 
-Populate the section for DMA isolation in pKVM with the newly
-added KVM IOMMU and pKVM SMMUv3 driver details.
+On Tue, 22 Sept 2026 at 00:29, Francesco Valla <francesco@valla.it> wrote:
+>
+> On Sun, Sep 20, 2026 at 09:31:11PM -0600, Mathieu Poirier wrote:
+> > On Sat, 19 Sept 2026 at 01:33, Francesco Valla <francesco@valla.it> wrote:
+> > >
+> > > Hi Mathieu,
+> > >
+> > > On Fri, Sep 18, 2026 at 10:53:54AM -0600, Mathieu Poirier wrote:
+> > > > Hi Francesco,
+> > > >
+> > > > I have started reviewing this set but given the size and implications, it will
+> > > > take me a few days to get through.
+> > >
+> > > I'm going through the review done by sashiko - would you prefer me
+> > > sending a v2 with the trivial errors already ironed out before doing
+> > > a complete review?
+> > >
+> >
+> > We can wait if the errors are trivial.
+> >
+>
+> Not all of them are. I have been a bit to naive about the bounce buffer
+> management w.r.t. what can happen if a memory area is not specified and
+> I will need to rethink/rework that part.
+>
 
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
----
- Documentation/virt/kvm/arm/pkvm.rst | 23 ++++++++++++++++++++++-
- 1 file changed, 22 insertions(+), 1 deletion(-)
+Ok, I'll keep an eye out for that.  I'm already halfway through your
+work, so there's no need for a new version now.
 
-diff --git a/Documentation/virt/kvm/arm/pkvm.rst b/Documentation/virt/kvm/arm/pkvm.rst
-index 514992a79a83..ce67e2ae1f9a 100644
---- a/Documentation/virt/kvm/arm/pkvm.rst
-+++ b/Documentation/virt/kvm/arm/pkvm.rst
-@@ -77,7 +77,28 @@ Status: **Unimplemented.**
- DMA isolation using an IOMMU
- ----------------------------
- 
--Status: **Unimplemented.**
-+Status: Supported for devices behind SMMUv3 supporting dual stages
-+of translation.
-+
-+With ``CONFIG_ARM_SMMU_V3_PKVM``, the hypervisor will take over the SMMUs
-+on the system and provide an architectural emulation to the kernel SMMUv3
-+driver.
-+
-+If some devices are not behind an IOMMU or behind another IOMMU architecture,
-+DMA isolation is not supported, as a driver must be provided for that.
-+
-+DMA isolation is enforced by dual stages of translation; similar to the CPU
-+where a driver can register their ops through ``kvm_iommu_register_driver``
-+and implement ``host_stage2_idmap`` to shadow the CPU page table.
-+
-+The page tables for the stage-2 SMMUv3 will be allocated from a pool created
-+at boot with size configured from the command line "kvm-arm.iommu_pgt_mem"
-+The size must cover the worst case scenario for leaf mappings of system memory.
-+
-+This implementation trusts the system firmware not to allow the untrusted
-+host kernel to bypass the SMMUv3.
-+For example, by resetting the power. In that case, it is the firmware's
-+responsibility to save/restore the SMMUv3 state.
- 
- Proxying of Trustzone services
- ------------------------------
--- 
-2.55.0.1082.g2b9226bbc0-goog
-
+> Regrads,
+> Francesco
+>
