@@ -1,32 +1,32 @@
-Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 038DF37267E
-	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 06:57:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3750950129B
+	for <iommu@lists.linux.dev>; Tue, 22 Sep 2026 07:10:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790060241; cv=none; b=un3nOGHlFrdR+NipNgTFWwwT+d6mKrzvunKl2sjCfnxgv7X77LiZCkzVOQk5Qj/iAQgD05xRMVsUOGSru3LJkFEDlVIYcYns4lfpIDURQjKldRlZHUhAfWjAJtodAkunDQh10+i2Vrj0IB8RfWLTrkv014iAMiVjEUW60zM0nFM=
+	t=1790061008; cv=none; b=sryRdZLYj2Q4vHw23VO4dTPmq6xaU9DCf26r24ARve56z7gtrcrkOzaGEbX4+CC8/tbVPVlLoy/1NKXNIhXytXKiRI8C4YCQxnOwbX7vxPOU673cUYHze64oZgotm28CCgghioIlaVUh988U2dPzXTqIcBv5L8pDvktqUrjsup4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790060241; c=relaxed/simple;
-	bh=Kz9XeK25k841297cPqD210/bA3iaqEXTDrvRnP+1/yI=;
+	s=arc-20240116; t=1790061008; c=relaxed/simple;
+	bh=l4ETgjoi9sLVdEUOvHOO9DwcohkqbndYpHAAUEXbE6k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qHpX9WYjsSNWar+B3JSM/MQt1Gqw3sP8YidsYi7bn4Aq1qEAA2MIw65R/HiBHr4U62TRVIyUl4vwiA7yYoZ5y4x57c2ik94Z8KbggThUORAUXyoAAirPkjoi4V4ZFr9UohSCWqp/Z+Z8tefvlIk6eWVNeb7Xy4PJ3nF7QSHeG20=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=OXjZvtoz; arc=none smtp.client-ip=115.124.30.110
+	 In-Reply-To:Content-Type; b=YFWzmgDtXuGBjPwcI8OKGhWNHAKIk3DY9hzsLOSL5DvIx1fGVVAPdAT14VB5Hvt28bmH6qVMiCwiKi534S7H9hsl4qLoJvtKK8vAVXHDtAew5QcJuKYcA+OoExWIW/60M65Z9cG4Y+w0KtMLnNUnhbRuK8aykLNGDk4jXn6RxCw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=FB5q73m4; arc=none smtp.client-ip=115.124.30.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="OXjZvtoz"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="FB5q73m4"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1790060228; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=wsj0O5bkjoy8IbmWNVJCqX6+ZVUE5t5Oc6nFsv1ksXk=;
-	b=OXjZvtoz9v2IqmixerJlfp8i6dy9vMa5DiQ0k6I6fGPoFpata4fZDGMklgjBjEE7TTN4r5bTjGHrJD6FNltV+KNXW3T3Jj31smZja/yWWOS8D6NGG0zxVR86qa//VJBYGlw6KDlv7l5rbJb5uUx6+V2m/VGWDAg2NLR4qHzvz3w=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=kanie@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0XBT.zS4_1790060225;
-Received: from 30.178.81.152(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0XBT.zS4_1790060225 cluster:ay36)
+	t=1790060992; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
+	bh=Oo8Dq0mN2ZDYBVRnEYfmR+J/FTRcTErPirL0m9RByFs=;
+	b=FB5q73m45h9jMtb+8GYSGSTE/vO9DD4LM/XyfFax/WyuCcND0L0OYi6ZYK4iSkd2jiK/CgPML/ZnLaGYuoUUvFHPoaF2xPZhj4C8vBjElJA7FUQwOzqwoFO0N4TLke7ybMmzKwrvtvXwKxWL4iIhnGdxBS3woVhriCAGWqlRoqU=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=kanie@linux.alibaba.com;NM=1;PH=DS;RN=23;SR=0;TI=SMTPD_---0XBT-CI9_1790060989;
+Received: from 30.178.81.152(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0XBT-CI9_1790060989 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 22 Sep 2026 14:57:06 +0800
-Message-ID: <a999cd33-c857-4c3a-9643-4c0add9679ae@linux.alibaba.com>
-Date: Tue, 22 Sep 2026 14:57:04 +0800
+          Tue, 22 Sep 2026 15:09:51 +0800
+Message-ID: <d4a0360a-fae1-484d-81ca-c926e4450265@linux.alibaba.com>
+Date: Tue, 22 Sep 2026 15:09:49 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -34,8 +34,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 13/24] iommu/amd: Program IOMMU DTE with the private
- IPA domain
+Subject: Re: [PATCH v5 23/24] iommu/amd: Assign per-vIOMMU translate device ID
 To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
  jgg@nvidia.com
@@ -46,297 +45,177 @@ Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
  chriscli@google.com, kpsingh@google.com, alejandro.j.jimenez@oracle.com,
  joao.m.martins@oracle.com, guanghuifeng@linux.alibaba.com
 References: <20260914184750.222939-1-suravee.suthikulpanit@amd.com>
- <20260914184750.222939-14-suravee.suthikulpanit@amd.com>
+ <20260914184750.222939-24-suravee.suthikulpanit@amd.com>
 From: Guixin Liu <kanie@linux.alibaba.com>
-In-Reply-To: <20260914184750.222939-14-suravee.suthikulpanit@amd.com>
+In-Reply-To: <20260914184750.222939-24-suravee.suthikulpanit@amd.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 
 
 在 2026/9/15 02:47, Suravee Suthikulpanit 写道:
-> The IOMMU PCI function does not go through the normal device attach
-> path, so it has no iommu_dev_data. Add amd_iommu_alloc_dev_data()
-> and amd_iommu_free_dev_data() for a synthetic object that is not
-> interned in pci_seg->dev_data_xa. Program that DTE with the private
-> IPA domain's v1 page table so the IOMMU can DMA to its own vIOMMU
-> backing store.
+> Allocate one translate-device-id per IOMMUFD vIOMMU instance from the
+> per-segment pool on init.  Reset MMIO first, then program translation
+> DTE and VFctrl TransDevID under trans_devid_lock so PCI-probe relocate
+> cannot interleave.  Clear both on init error and destroy, and drop the
+> id before amd_viommu_uninit_one().
 >
-> Leave the synthetic DTE off pdom->dev_list and with no struct
-> device so clone_aliases() is skipped; it is only iommu->devid.
-> Rewrite it from amd_iommu_change_top() when the IPA table grows
-> so later high maps remain reachable.
+> Initialize pdom_list before set_translate_dte() so list_empty() is
+> valid. Drop the late list_add; set_translate_dte() already publishes
+> the vIOMMU on viommu_list under pdom->lock. list_del_init() on init
+> error if that add ran.
 >
-> Do this after viommu_private_space_init() so viommu_pdom exists.
-> Clear the DTE and free the object on teardown. Failed self DTE
-> allocation unwinds through amd_viommu_uninit().
+> Free the synthetic translate-device-id DTE object on init error and
+> destroy; it is not stored in the per-segment xarray.
+>
+> Add per-vIOMMU trans_devid_lock to serialize DTE and VFctrl TransDevID
+> updates on init and teardown.  VFctrl TransDevID is not written from
+> amd_viommu_uninit_one().
 >
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
->  drivers/iommu/amd/amd_iommu.h       |   4 ++
->  drivers/iommu/amd/amd_iommu_types.h |   2 +
->  drivers/iommu/amd/iommu.c           | 102 +++++++++++++++++++++++++---
->  drivers/iommu/amd/viommu.c          |  48 +++++++++++++
->  4 files changed, 148 insertions(+), 8 deletions(-)
+>  drivers/iommu/amd/amd_iommu_types.h | 10 +++++
+>  drivers/iommu/amd/iommufd.c         | 66 +++++++++++++++++++++++++----
+>  2 files changed, 67 insertions(+), 9 deletions(-)
 >
-> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-> index 9cc5da745a73..6ac64524208b 100644
-> --- a/drivers/iommu/amd/amd_iommu.h
-> +++ b/drivers/iommu/amd/amd_iommu.h
-> @@ -50,6 +50,10 @@ extern u8 amd_iommu_hpt_vasize;
->  extern unsigned long amd_iommu_pgsize_bitmap;
->  extern bool amd_iommu_hatdis;
->  
-> +struct iommu_dev_data *amd_iommu_alloc_dev_data(u16 devid);
-> +void amd_iommu_free_dev_data(struct amd_iommu *iommu,
-> +			     struct iommu_dev_data *dev_data);
-> +
->  /* Protection domain ops */
->  void amd_iommu_init_identity_domain(void);
->  struct protection_domain *protection_domain_alloc(void);
 > diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index d02f49a39a90..4b48ec8bacd6 100644
+> index 5f84f25e3f37..c748bab27509 100644
 > --- a/drivers/iommu/amd/amd_iommu_types.h
 > +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -814,6 +814,8 @@ struct amd_iommu {
->  	struct ida gid_ida;		 /* guest IDs for this IOMMU */
+> @@ -556,6 +556,16 @@ struct amd_iommu_viommu {
+>  	/* Synthetic DTE; not stored in pci_seg->dev_data_xa */
+>  	struct iommu_dev_data *trans_dev_data;
 >  
->  	/* HW vIOMMU support */
-> +	/* Synthetic IOMMU-self DTE; not in pci_seg->dev_data_xa or pdom->dev_list */
-> +	struct iommu_dev_data *viommu_dev_data;
->  	struct protection_domain *viommu_pdom;
->  	void *viommu_priv_region[VIOMMU_PRIV_SUBREGION_CNT];
->  };
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 2b039f38f9ef..bcbd5af75d00 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -217,7 +217,12 @@ void amd_iommu_update_dte(struct amd_iommu *iommu,
->  			     struct dev_table_entry *new)
->  {
->  	update_dte256(iommu, dev_data, new);
-> -	clone_aliases(iommu, dev_data->dev);
 > +	/*
-> +	 * Synthetic DTEs (vIOMMU self, translate-device-id) leave
-> +	 * dev_data->dev NULL so clone_aliases() is skipped.
+> +	 * Serializes this vIOMMU's translation DTE and VFctrl TransDevID
+> +	 * updates on init and teardown. VFctrl TransDevID is not written
+> +	 * from amd_viommu_uninit_one().
+> +	 *
+> +	 * Nested lock order: trans_devid_lock, then
+> +	 * pci_seg->trans_devid_mutex.
 > +	 */
-> +	if (dev_data->dev)
-> +		clone_aliases(iommu, dev_data->dev);
->  	device_flush_dte(iommu, dev_data);
->  	iommu_completion_wait(iommu);
->  }
-> @@ -391,14 +396,13 @@ static struct amd_iommu *rlookup_amd_iommu(struct device *dev)
->  }
->  
->  /*
-> - * Allocate an immortal per-devid object stored in pci_seg->dev_data_xa.
-> - * These are never erased: amd_iommu_release_device() keeps them for
-> - * replug, and IRQ/DTE paths look them up locklessly via xa_load().
-> + * Allocate a synthetic DTE object that is not inserted into
-> + * pci_seg->dev_data_xa. Lifetime is owned by the caller (vIOMMU
-> + * self DTE or translate-device-id).
->   */
-> -static struct iommu_dev_data *alloc_dev_data(struct amd_iommu *iommu, u16 devid)
-> +struct iommu_dev_data *amd_iommu_alloc_dev_data(u16 devid)
->  {
-> -	struct iommu_dev_data *dev_data, *old;
-> -	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
-> +	struct iommu_dev_data *dev_data;
->  
->  	dev_data = kzalloc_obj(*dev_data);
->  	if (!dev_data)
-> @@ -408,6 +412,22 @@ static struct iommu_dev_data *alloc_dev_data(struct amd_iommu *iommu, u16 devid)
->  	spin_lock_init(&dev_data->dte_lock);
->  	dev_data->devid = devid;
->  	ratelimit_default_init(&dev_data->rs);
-> +	return dev_data;
-> +}
+> +	struct mutex trans_devid_lock;
 > +
-> +/*
-> + * Allocate an immortal per-devid object stored in pci_seg->dev_data_xa.
-> + * These are never erased: amd_iommu_release_device() keeps them for
-> + * replug, and IRQ/DTE paths look them up locklessly via xa_load().
-> + */
-> +static struct iommu_dev_data *alloc_dev_data(struct amd_iommu *iommu, u16 devid)
-> +{
-> +	struct iommu_dev_data *dev_data, *old;
-> +	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
-> +
-> +	dev_data = amd_iommu_alloc_dev_data(devid);
-> +	if (!dev_data)
-> +		return NULL;
->  
->  	old = xa_cmpxchg(&pci_seg->dev_data_xa, devid, NULL, dev_data,
->  			 GFP_KERNEL);
-> @@ -428,6 +448,22 @@ struct iommu_dev_data *search_dev_data(struct amd_iommu *iommu, u16 devid)
->  	return xa_load(&iommu->pci_seg->dev_data_xa, devid);
->  }
->  
-> +void amd_iommu_free_dev_data(struct amd_iommu *iommu,
-> +			     struct iommu_dev_data *dev_data)
-> +{
-> +	if (!dev_data)
-> +		return;
-> +
-> +	/*
-> +	 * PCI/alias objects in the xarray are immortal. Never kfree
-> +	 * those; synthetics must not be stored there.
-> +	 */
-> +	if (WARN_ON_ONCE(search_dev_data(iommu, dev_data->devid) == dev_data))
-> +		return;
-> +
-> +	kfree(dev_data);
-> +}
-> +
->  static int clone_alias(struct pci_dev *pdev_origin, u16 alias, void *data)
->  {
->  	struct dev_table_entry new;
-> @@ -1826,7 +1862,11 @@ static int device_flush_dte(struct amd_iommu *iommu, struct iommu_dev_data *dev_
->  	u16 alias;
+>  	/*
+>  	 * Serializes VFCTRL Guest DID map CONTROL0/CONTROL1 doorbells
+>  	 * (DevID and DomID table updates) for this gid. Those registers
+> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
+> index 5760b183ce62..1c29d846beed 100644
+> --- a/drivers/iommu/amd/iommufd.c
+> +++ b/drivers/iommu/amd/iommufd.c
+> @@ -53,6 +53,9 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
 >  	int ret;
+>  	unsigned long flags;
+>  	phys_addr_t page_base;
+> +	bool trans_devid_allocated = false;
+> +	bool trans_dte_set = false;
+> +	bool uninit_on_err = false;
+>  	struct iommu_viommu_amd data = {};
+>  	struct protection_domain *pdom = to_pdomain(parent);
+>  	struct amd_iommu_viommu *aviommu = container_of(viommu, struct amd_iommu_viommu, core);
+> @@ -70,7 +73,9 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
+>  	if (ret)
+>  		return ret;
 >  
-> -	if (dev_is_pci(dev_data->dev))
-> +	/*
-> +	 * Synthetic DTEs leave dev_data->dev NULL; flush iommu->devid
-> +	 * rather than walking PCI DMA aliases.
-> +	 */
-> +	if (dev_data->dev && dev_is_pci(dev_data->dev))
->  		pdev = to_pci_dev(dev_data->dev);
+> +	mutex_init(&aviommu->trans_devid_lock);
+>  	mutex_init(&aviommu->vfctrl_lock);
+> +	INIT_LIST_HEAD(&aviommu->pdom_list);
+>  	xa_init_flags(&aviommu->gdomid_array, XA_FLAGS_ALLOC1);
+>  	aviommu->parent = pdom;
 >  
->  	if (pdev)
-> @@ -2770,6 +2810,51 @@ static spinlock_t *amd_iommu_get_top_lock(struct pt_iommu *iommupt)
->  	return &pdom->lock;
->  }
+> @@ -93,31 +98,63 @@ int amd_iommufd_viommu_init(struct iommufd_viommu *viommu, struct iommu_domain *
 >  
-> +#if IS_ENABLED(CONFIG_AMD_IOMMU_IOMMUFD)
-> +/*
-> + * The vIOMMU private IPA domain programs a synthetic DTE for the
-> + * IOMMU's own requester ID so hardware can DMA to backing store.
-> + * That object is not on pdom->dev_list: it is not an IOMMU-API
-> + * attach, and walkers such as rlookup and clone_aliases assume a
-> + * real struct device.
-> + *
-> + * amd_iommu_change_top() therefore misses it. Early maps fit under
-> + * the initial page-table top (PT_FEAT_DYNAMIC_TOP). Later DevID and
-> + * DomID maps at high IPA call increase_top(); the old root stays
-> + * live as a child of the new one, but the self DTE still holds the
-> + * old MODE and would not translate those IOVAs.
-> + *
-> + * Walk iommu_array (from amd_iommu_pdom_bind_iommu()) and rewrite
-> + * iommu->viommu_dev_data when this domain is that IOMMU's private
-> + * IPA table. set_dte_entry() skips clone_aliases() because the
-> + * synthetic DTE has no struct device.
-> + */
-> +static void update_viommu_self_dte(struct protection_domain *pdom,
-> +				   phys_addr_t top_paddr,
-> +				   unsigned int top_level)
-> +{
-> +	struct pdom_iommu_info *pdom_iommu_info;
-> +	unsigned long i;
+>  	data.out_vfmmio_mmap_offset = aviommu->vfmmio_mmap_offset;
+>  
+> -	/* Reset vIOMMU MMIOs to initialize the vIOMMU */
+> +	/* Reset vIOMMU MMIOs before the trans_devid is visible in the pool. */
+>  	ret = amd_iommu_reset_vmmio(iommu, aviommu->gid);
+>  	if (ret)
+> -		goto err_init;
+> +		goto err_trans_devid;
 > +
-> +	lockdep_assert_held(&pdom->lock);
-> +
-> +	xa_for_each(&pdom->iommu_array, i, pdom_iommu_info) {
-> +		struct amd_iommu *iommu = pdom_iommu_info->iommu;
-> +
-> +		if (iommu->viommu_pdom != pdom || !iommu->viommu_dev_data)
-> +			continue;
-> +		set_dte_entry(iommu, iommu->viommu_dev_data, top_paddr,
-> +			      top_level);
+> +	mutex_lock(&aviommu->trans_devid_lock);
+> +	ret = amd_iommu_trans_devid_alloc(iommu->pci_seg, aviommu);
+> +	if (ret < 0) {
+> +		mutex_unlock(&aviommu->trans_devid_lock);
+> +		goto err_trans_devid;
 > +	}
-> +}
-> +#else
-> +static inline void update_viommu_self_dte(struct protection_domain *pdom,
-> +					  phys_addr_t top_paddr,
-> +					  unsigned int top_level)
-> +{
-> +}
-> +#endif
+> +	trans_devid_allocated = true;
+> +	aviommu->trans_devid = ret;
 > +
->  /*
->   * Update all HW references to the domain with a new pgtable configuration.
->   */
-> @@ -2792,6 +2877,7 @@ static void amd_iommu_change_top(struct pt_iommu *iommu_table,
->  		device_flush_dte(iommu, dev_data);
->  	}
+> +	ret = amd_iommu_set_translate_dte(viommu);
+> +	if (ret)
+> +		goto err_init_unlock;
+> +	trans_dte_set = true;
+> +	amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid,
+> +						     aviommu->trans_devid);
+> +	mutex_unlock(&aviommu->trans_devid_lock);
 >  
-> +	update_viommu_self_dte(pdom, top_paddr, top_level);
->  	domain_flush_complete(pdom);
->  }
+>  	ret = amd_viommu_init_one(iommu, aviommu);
+>  	if (ret)
+>  		goto err_init;
+> +	uninit_on_err = true;
 >  
-> diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
-> index 89d6dc520b2c..3ec907a498c2 100644
-> --- a/drivers/iommu/amd/viommu.c
-> +++ b/drivers/iommu/amd/viommu.c
-> @@ -40,11 +40,55 @@ static void __init amd_viommu_vf_vfcntl_unmap(struct amd_iommu *iommu)
->  	}
->  }
+>  	ret = iommu_copy_struct_to_user(user_data, &data,
+>  					IOMMU_VIOMMU_TYPE_AMD,
+>  					out_vfmmio_mmap_offset);
+>  	if (ret)
+> -		goto err_init_one;
+> +		goto err_init;
 >  
+>  	viommu->ops = &amd_viommu_ops;
+>  
+> -	spin_lock_irqsave(&pdom->lock, flags);
+> -	list_add(&aviommu->pdom_list, &pdom->viommu_list);
+> -	spin_unlock_irqrestore(&pdom->lock, flags);
+> -
+>  	return 0;
+> -err_init_one:
+> -	amd_viommu_uninit_one(iommu, aviommu);
+>  err_init:
+> +	mutex_lock(&aviommu->trans_devid_lock);
+> +err_init_unlock:
+> +	if (trans_dte_set) {
+> +		spin_lock_irqsave(&pdom->lock, flags);
+> +		if (!list_empty(&aviommu->pdom_list))
+> +			list_del_init(&aviommu->pdom_list);
+> +		spin_unlock_irqrestore(&pdom->lock, flags);
+> +		amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid, 0);
+> +		amd_iommu_clear_translate_dte(iommu, aviommu->trans_dev_data,
+> +					      aviommu->trans_devid);
+> +		amd_iommu_free_dev_data(iommu, aviommu->trans_dev_data);
+> +		aviommu->trans_dev_data = NULL;
+> +	}
+> +	if (trans_devid_allocated)
+> +		amd_iommu_trans_devid_free(iommu->pci_seg, aviommu->trans_devid,
+> +					   aviommu);
+> +	mutex_unlock(&aviommu->trans_devid_lock);
+> +	if (uninit_on_err)
+> +		amd_viommu_uninit_one(iommu, aviommu);
+> +err_trans_devid:
+>  	iommufd_viommu_destroy_mmap(&aviommu->core, aviommu->vfmmio_mmap_offset);
+>  err_mmap:
+>  	amd_iommu_gid_free(iommu, aviommu->gid);
+> @@ -140,6 +177,17 @@ static void amd_iommufd_viommu_destroy(struct iommufd_viommu *viommu)
+>  	spin_unlock_irqrestore(&pdom->lock, flags);
+>  	xa_destroy(&aviommu->gdomid_array);
+>  	iommufd_viommu_destroy_mmap(&aviommu->core, aviommu->vfmmio_mmap_offset);
 > +
-> +static void viommu_free_self_dev_data(struct amd_iommu *iommu)
-> +{
-> +	struct iommu_dev_data *dev_data = iommu->viommu_dev_data;
-> +	struct dev_table_entry new = {};
+> +	mutex_lock(&aviommu->trans_devid_lock);
+> +	amd_iommu_update_vfctrl_mmio_translate_devid(iommu, aviommu->gid, 0);
+> +	amd_iommu_clear_translate_dte(iommu, aviommu->trans_dev_data,
+> +				      aviommu->trans_devid);
+> +	amd_iommu_free_dev_data(iommu, aviommu->trans_dev_data);
+> +	aviommu->trans_dev_data = NULL;
+> +	amd_iommu_trans_devid_free(iommu->pci_seg, aviommu->trans_devid,
+> +				   aviommu);
+> +	mutex_unlock(&aviommu->trans_devid_lock);
 > +
-> +	if (!dev_data)
-> +		return;
-> +
-> +	amd_iommu_make_clear_dte(iommu, dev_data->devid, &new);
-> +	amd_iommu_update_dte(iommu, dev_data, &new);
-Should check viommu_cmdbuf_enabled() first? If enabled then update dte.
+>  	amd_viommu_uninit_one(iommu, aviommu);
+>  	amd_iommu_gid_free(iommu, aviommu->gid);
+>  	mutex_destroy(&aviommu->vfctrl_lock);
+Should destroy trans_devid_lock too.
 
 Best Regards,
 Guixin Liu
-> +	amd_iommu_free_dev_data(iommu, dev_data);
-> +	iommu->viommu_dev_data = NULL;
-> +}
-> +
-> +static int viommu_alloc_self_dev_data(struct amd_iommu *iommu)
-> +{
-> +	struct protection_domain *pdom = iommu->viommu_pdom;
-> +	struct pt_iommu_amdv1_hw_info pt_info;
-> +	struct iommu_dev_data *dev_data;
-> +	struct dev_table_entry new = {};
-> +
-> +	dev_data = amd_iommu_alloc_dev_data(iommu->devid);
-> +	if (!dev_data) {
-> +		pr_err("%s: Failed to allocate dev_data\n", __func__);
-> +		return -ENOMEM;
-> +	}
-> +	/*
-> +	 * Synthetic DTE for iommu->devid only: no struct device, so
-> +	 * amd_iommu_update_dte() skips clone_aliases(), and not on
-> +	 * pdom->dev_list (not an IOMMU-API attach).
-> +	 */
-> +	dev_data->dev = NULL;
-> +	dev_data->domain = pdom;
-> +	iommu->viommu_dev_data = dev_data;
-> +
-> +	amd_iommu_make_clear_dte(iommu, iommu->devid, &new);
-> +	pt_iommu_amdv1_hw_info(&pdom->amdv1, &pt_info);
-> +	amd_iommu_set_dte_v1(dev_data, pdom, pdom->id, &pt_info, &new);
-> +	amd_iommu_update_dte(iommu, dev_data, &new);
-> +	return 0;
-> +}
-> +
->  static void viommu_private_space_uninit(struct amd_iommu *iommu);
->  
->  void __init amd_viommu_uninit(struct amd_iommu *iommu)
->  {
->  	iommu->flags &= ~AMD_IOMMU_FLAG_VIOMMU_EN;
-> +	viommu_free_self_dev_data(iommu);
->  	viommu_private_space_uninit(iommu);
->  	amd_viommu_vf_vfcntl_unmap(iommu);
->  }
-> @@ -319,6 +363,10 @@ int __init amd_viommu_init(struct amd_iommu *iommu)
->  	if (ret)
->  		goto err;
->  
-> +	ret = viommu_alloc_self_dev_data(iommu);
-> +	if (ret)
-> +		goto err;
-> +
->  	iommu->flags |= AMD_IOMMU_FLAG_VIOMMU_EN;
->  	return 0;
->  err:
 
