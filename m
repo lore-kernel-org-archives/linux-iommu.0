@@ -1,140 +1,148 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 127CE47FAF3
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 10:15:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A574718D7;
+	Wed, 23 Sep 2026 10:28:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790158556; cv=none; b=FhKjqQQQM1RpGDoVfUXOVNj8accBt0R1WQcy44TiO2GJ8b8Npw+8Un47rv2zZwpHKvfNYo+CasJAQnqNvhdFaTnDu+RTwKRsUdPiyda31/QuJbC72YFznsL0iyNWFnB1A+aSsvaYeBxZyJPBXrEDRDM0N0kB//wEdZDdC6vz9QE=
+	t=1790159329; cv=none; b=tCaAqQuxmglMXfdb90xTnPXFLhIJ/vOB48WbMsrC6+mJTPo31VjMSJTtcp9VvBAcbj+oip7xjNqOdwHQ5CPFLWNUrHvz/ZWBS+fpESGOZ2gf1zOul44kX+iblJMCJr4vQEQr9Q5f+wF7AQmRba9RDrPYfESIqkCOdlA4hnIFLM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790158556; c=relaxed/simple;
-	bh=EIUUzLZaMLycy3iJsghOslrbsHk9RROoG95frX8jYxE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=auTpktRgElCBmK3KKul13X0naOIh6vz48cpfCs2AHxJpztR99VAg/I+rWAnUMLsdrelbGH21vn2lk/4e6WtiRzfDhVBcmvf188C4+zrsNNGpTXSgXarMfDiXJAfLW1OpJHsvA6QTIS76AJAwcF8mqumrznnKLk9ATRGPhein3i8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=umivEjJA; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1790159329; c=relaxed/simple;
+	bh=ykhV2yYRbKnz9dLHP70QvxnNkLVjPCv8Rq6GYFSCfxs=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=ujfRaIFniTfNHok7fHX+t6cOB6g53mmoHXEPnpqlJ5Hy2NzWkH8vvfC+sb251CDf3Qx9nLjubkY9u6BJQNHzKggncOojgS8oYPYyaQi7W695gr9zLM5V4F9b/8K2pegunQqX5QKLxVnNOQWLY2cP7sy8eFd/JK3XgO5bidlPE3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gfeKGD7Z; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="umivEjJA"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-49e65a8f70eso30995e9.0
-        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 03:15:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790158543; x=1790763343; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=yZHQHfq1ph65L7qxzKlrPBl8SiUbUAuTYjQIuazmnA4=;
-        b=umivEjJAnhnqbgxild7Z2GEz2mRFzjkU0qjw9B+uUclS8jt+IaovCEoh0ZNFMRAFdw
-         PMcbPqfKkxZHy0dsY+ZicXl+MKOWkOWK/iO1tTmzp3WP38D6Wzj8TduQd5pnqIomQTJl
-         2Ad82Wt3sNg+Zsc5w7ZwtE6rKiPRZIGMMndojscj79QZG+RYa9FpY+i4OAEVT/WRJwxW
-         ZG7J9ZDJ5N/407mAm/v7j2TBaztxB8ffnkCcn9VqcqzDODQyqvCpGpLC/GR+2yi3Wga3
-         fAi7kjSDuRd7n8cJEwUAhPxXMTKC3/PNkmJgaPMEHwDIVvK5o32s9niVTYxiO/7kGIne
-         vIqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790158543; x=1790763343;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=yZHQHfq1ph65L7qxzKlrPBl8SiUbUAuTYjQIuazmnA4=;
-        b=CseqO8xixptKJwTUvbuHdkbKmR7+gJvRuVz/nQTp67jY/1yMfD7NBXJY7+ts812CNo
-         bNIKB1vrkbZgu+6W0X013y5S/EwmkcxapVIlAs8EspctJmqyOmSnk0bjtsrhu0PYa+VZ
-         6O+IesWlzNEV5OkQS3dNDAmS6XZG/clC8+Huf/pqexe4R9vc+7N1m8bijgWZCU00gmwf
-         /Jr6HeBd+hvad1NGAefxTvt01dG2GNsrRs49DiZQfYJACi+2nJXghPBTbaWqf+cdaTII
-         Zq1MPcacAJ9Vy0kJAugig1TJr3BsJQbciRjb6V0XAmZBzSCbh8qyz5wLl0PmmhJOu4qZ
-         QYOQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwoFELlvxF1Kln5LelB4sqQsy9srZFvb6R/J/f5USTZWPZ1G5JktEaVS4QJtI4eamnWvdLM4A==@lists.linux.dev
-X-Gm-Message-State: AFuF++kEUHMvPZ4j5cz3rhVkbM1wBWlJuSfv/aZymsvNsV5EZZIOrXl9
-	zRR67tzF8iQDMY4su4frMxn/b1XRP/C1/euxx5aQNw51VJvfV9jBBuP8QfALXQ/Se2yFE4x2n6d
-	lazCM7g==
-X-Gm-Gg: AYBFou3pZ1Oykmv9IrmWGlRRTjTjxjIu9ejX7O2l/Y0RGuscrE1KrxLdCxk/U7q62ET
-	Q5GAwK9r7kdjiELjGUimKL1VRpjPDq0mI+VWMNnnxBEaJgf6FMeBhDKfumBT/BpfyC4qxQeZnDS
-	RWTN/eOOIHB9N9Okkl/j5qGG4ypfrezr/qew+2lHw6DxubjEpxs1b8abAI9ykAZMUdwzTRcPbT4
-	LKypH43KgKCMMKUZWtu0+njM6Zfju/YH0dJr/3nItk6xZxGo46d/zRh2nLS+fAjoW3JYcRaMHFV
-	MrS4J4IEMcT7TMuatDO3SgXShP70OK4X8GuKUMPZxL6UtfkgT3ZSqBIW3R+cIfJi7F3NCh6O3RY
-	ou9ALSyOgWSteMHHEaZSUA8eqBt+w9iTPPWtGHG2N078T8QGzmUEPaXfNmT+L++crKx3WrogCY2
-	Xh/+e18HBpusX0NUj+bY6D2fYO5tXDGNAK5ZtVKN44V48WKSeEopqVtyBcVi/IJqU35mn1N5+SF
-	Tf4JlGVnX54RBpfFKidnzpc9YcF8CtZtcC9OQHK
-X-Received: by 2002:a05:600c:379a:b0:49f:c6ca:42d2 with SMTP id 5b1f17b1804b1-49fe0c0bad5mr679925e9.1.1790158543084;
-        Wed, 23 Sep 2026 03:15:43 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fde1e975asm71831925e9.14.2026.09.23.03.15.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2026 03:15:42 -0700 (PDT)
-Date: Wed, 23 Sep 2026 10:15:38 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
-	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
-	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v8 05/25] iommu/arm-smmu-v3: Move hitless machinery to
- common code
-Message-ID: <arOmyuQwuWkynORS@google.com>
-References: <20260922131259.2975334-1-smostafa@google.com>
- <20260922131259.2975334-6-smostafa@google.com>
- <arLeIO20VQZD80nr@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gfeKGD7Z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7196B1F000FF;
+	Wed, 23 Sep 2026 10:28:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790159314;
+	bh=Tw+YzFR1Q3RDJ/ocFl7RH+C/kpA7xkpXpKPh0rT8+YE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=gfeKGD7Zx1t68oVKPD3pJdIls6095LdyIYbLzcbi2lWu0uZc4Ag6czwUu/3rMOVvu
+	 5DkKG7QVnUdoUJyu1nzlZlhO5qsE27dTDKv4KVUeUxS/0fGMmnV48ACdIVTacKhMLM
+	 Kp2Etb2iursi6SlXAk2q9a0Y6ZYslY12NqaBGyj2gFaxqHvu92+46mMlc5J8MMsSdD
+	 HGiK3yV1AdehOFvWHLjpPcT/57yOMwlxfev62t4C+oD/yqe8IWaG9c7HzZhanNfFx0
+	 V7SG8BRuoVDTolq0VsrAo7+8om8W5vw2V1IN/4OrxXJcM2FyWTn+Eqh0SDfkr9xU/H
+	 iMGeRqREn7XNA==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	christian.koenig@amd.com, Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: Re: [RFC PATCH v7 02/13] mm: Add an allocator for CoCo shared memory
+In-Reply-To: <arOfD6syXOgQhZYA@arm.com>
+References: <20260921144847.501151-1-aneesh.kumar@kernel.org>
+ <20260921144847.501151-3-aneesh.kumar@kernel.org>
+ <arKsFofudnTYpXj1@arm.com> <yq5aik3w344o.fsf@kernel.org>
+ <arOfD6syXOgQhZYA@arm.com>
+Date: Wed, 23 Sep 2026 15:58:25 +0530
+Message-ID: <yq5a5wzw2ree.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <arLeIO20VQZD80nr@nvidia.com>
+Content-Type: text/plain
 
-On Tue, Sep 22, 2026 at 12:59:28PM -0700, Nicolin Chen wrote:
-> On Tue, Sep 22, 2026 at 01:12:38PM +0000, Mostafa Saleh wrote:
-> > Move the hitless STE functions to the common file so it can be
-> > reused by the hypervisor.
-> 
-> s/it/they
+Catalin Marinas <catalin.marinas@arm.com> writes:
 
-Will do.
+> On Wed, Sep 23, 2026 at 11:23:27AM +0530, Aneesh Kumar K.V wrote:
+>> Catalin Marinas <catalin.marinas@arm.com> writes:
+>> > On Mon, Sep 21, 2026 at 08:18:36PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> >> +int alloc_cc_shared_pages_node(int nid, gfp_t gfp,
+>> >> +		size_t requested, struct cc_shared_pages *mem)
+>> >> +{
+>> >> +	struct cc_shared_layout layout;
+>> >> +	struct page *page;
+>> >> +	unsigned int order;
+>> >> +	bool zero = gfp & __GFP_ZERO;
+>> >> +	int ret;
+>> >> +
+>> >> +	if (!mem)
+>> >> +		return -EINVAL;
+>> >> +
+>> >> +	ret = cc_shared_calc_layout(requested, &layout);
+>> >> +	if (ret)
+>> >> +		return ret;
+>> >> +
+>> >> +	order = get_order(layout.shared_size);
+>> >> +	if (order > MAX_PAGE_ORDER)
+>> >> +		return -EINVAL;
+>> >> +
+>> >> +	/*
+>> >> +	 * State transitions require a linear-map address and may modify memory.
+>> >> +	 * Allocate from low memory and defer requested zeroing until afterwards.
+>> >> +	 */
+>> >> +	gfp &= ~(__GFP_HIGHMEM | __GFP_ZERO);
+>> >> +	if (nid == NUMA_NO_NODE)
+>> >> +		page = alloc_pages(gfp, order);
+>> >> +	else
+>> >> +		page = alloc_pages_node(nid, gfp, order);
+>> >> +	if (!page)
+>> >> +		return -ENOMEM;
+>> >> +
+>> >> +	ret = cc_make_shared(page_address(page), layout.shared_size);
+>> >> +	if (ret) {
+>> >> +		if (!cc_make_private(page_address(page), layout.shared_size))
+>> >> +			__free_pages(page, order);
+>> >> +		else
+>> >> +			pr_warn_ratelimited("leaking %zu bytes with uncertain shared state\n",
+>> >> +					    layout.shared_size);
+>> >> +		return ret;
+>> >> +	}
+>> >> +
+>> >> +	if (zero)
+>> >> +		memset(page_address(page), 0, layout.shared_size);
+>> >
+>> > Does the memset() post sharing logic work for pKVM as well? If nothing
+>> > clears it, we have a small window where guest data is leaked to the
+>> > host.
+>> >
+>> > Is there a case where we *do not* need the memory cleared? If not, maybe
+>> > we can move the logic in the arch set_memory_decrypted().
+>> >
+>> 
+>> I don't think every architecture or platform can unconditionally zero
+>> memory in set_memory_decrypted(). Some callers may need to share valid
+>> contents with the host.
+>
+> Is there any? That would be a bad assumptions in the caller. Most
+> set_memory_* backends don't preserve the content as they change the
+> encryption key. So properly written code shouldn't rely on this unless
+> it knows specifically it's only running on pKVM for example. The only
+> use-case I see to avoid explicit zeroing is when the caller doesn't care
+> about the page initialisation and wants to save some cycles. The
+> encryption key change would take care of the security aspect.
+>
 
-> 
-> > No functional change.
-> > 
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> 
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> 
-> With some nits:
-> 
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -59,10 +59,8 @@ enum arm_smmu_msi_index {
-> >  	ARM_SMMU_MAX_MSIS,
-> >  };
-> >  
-> > -#define NUM_ENTRY_QWORDS 8
-> >  static_assert(sizeof(struct arm_smmu_ste) == NUM_ENTRY_QWORDS * sizeof(u64));
-> >  static_assert(sizeof(struct arm_smmu_cd) == NUM_ENTRY_QWORDS * sizeof(u64));
-> > -
-> >  static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
-> 
-> This line removal seems unnecessary.
+I checked this, and you are right. We cannot expect the contents to
+remain valid across sharing; set_memory_decrypted() is destructive in
+that sense. Since pKVM does not rely on memory encryption, it needs to
+zero the memory unconditionally in set_memory_decrypted() to avoid
+exposing existing guest data. Other CoCo implementations may omit the
+memset(0). We still need to zero the memory when the caller requests
+__GFP_ZERO, where the memory location is expected to be zero.
 
-Yes, I will fix it.
+We could either zero the memory unconditionally or pass a flag to allow
+this micro-optimization. We would also need to audit all call paths to
+avoid redundant zeroing after set_memory_decrypted(). Let me know if you
+have a preference for either approach.
 
-> 
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > @@ -1321,6 +1316,8 @@ static inline u64 arm_smmu_tlb_inv_range_enc(u8 num, u8 scale)
-> >  		FIELD_PREP(CMDQ_TLBI_0_SCALE, scale & 0x1f);
-> >  }
-> >  
-> > +#define NUM_ENTRY_QWORDS 8
-> > +
-> 
-> Maybe we should drop the duplicated define in arm-smmu-v3-test.c?
-
-Makes sense, will do.
-
-Thanks,
-Mostafa
-
-> 
-> Nicolin
+-aneesh
