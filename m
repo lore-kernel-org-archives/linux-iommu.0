@@ -1,83 +1,82 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8A4481224
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 10:13:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 127CE47FAF3
+	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 10:15:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790158439; cv=none; b=k91JiknH+ZzQA3QYZvtYJ4wC3d+Nu9CVMVoB2Dr+b7XVlmUrYyhAeGc4LTs83K7iSm/Rv0dJ77N9avNpOumCXzVy9eW8/rJG9J2ZWCju94GJOpDacIJB8yDjXfY64+Oh0AL2lPazOw6xLKpK2XcV+yB2oveUQ9XFt1W5Sxlt07U=
+	t=1790158556; cv=none; b=FhKjqQQQM1RpGDoVfUXOVNj8accBt0R1WQcy44TiO2GJ8b8Npw+8Un47rv2zZwpHKvfNYo+CasJAQnqNvhdFaTnDu+RTwKRsUdPiyda31/QuJbC72YFznsL0iyNWFnB1A+aSsvaYeBxZyJPBXrEDRDM0N0kB//wEdZDdC6vz9QE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790158439; c=relaxed/simple;
-	bh=86tGOrPEB/iivl/l0MEf2yHA5M2eh28fX8Zw5dM3jqY=;
+	s=arc-20240116; t=1790158556; c=relaxed/simple;
+	bh=EIUUzLZaMLycy3iJsghOslrbsHk9RROoG95frX8jYxE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cNs32kk9sGNsGsFLWwFPLl70+THUkorTe/EeizoTf143uj/QNJkywn+6GE4Z/tSMqJFYLOeCzmduTO1CQsq36FXSjzpKpEJdI9E6qzUubngtM9195DARH/ns5SVtHtMmKhKaM8wKoeS2FwBGcue+vPFLjEv/+kFq60rjWVfJLS4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ln02HIXw; arc=none smtp.client-ip=209.85.128.46
+	 Content-Type:Content-Disposition:In-Reply-To; b=auTpktRgElCBmK3KKul13X0naOIh6vz48cpfCs2AHxJpztR99VAg/I+rWAnUMLsdrelbGH21vn2lk/4e6WtiRzfDhVBcmvf188C4+zrsNNGpTXSgXarMfDiXJAfLW1OpJHsvA6QTIS76AJAwcF8mqumrznnKLk9ATRGPhein3i8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=umivEjJA; arc=none smtp.client-ip=209.85.128.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ln02HIXw"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-49e6425f96eso35765e9.1
-        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 03:13:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="umivEjJA"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-49e65a8f70eso30995e9.0
+        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 03:15:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790158416; x=1790763216; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1790158543; x=1790763343; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=vdEIBnHA/8T+E7XayOUCjgaZYlTP8ZfuwSF0Dftqz2M=;
-        b=Ln02HIXwsbl8xs9zc124170piWgfJpsk5IRhLVrSa4G82/QME7/uTQTHqHDWZpOs0q
-         gaH5eltfXC4S3wJIR/p+a1WcZNpHkSurpfvZmAPTPLqkHhAZ1mW6W0Bf5YRNTgLKItBF
-         pqDOpGTEioBYD6T+pqd8/QFPg0Bz8/IgUAU3eTjQIQUiUCEOuNsEomMdUTHTbQwHy4gS
-         inHctEnc1aNHb+KozRNZ02PF4VJI619t/NaLhhWcDxIJk2tb8gMQtX+rFHfVu7o+Xj73
-         QmbsfHsPTwWrX0VSzcNFKK8cGmFiAAr+nQn0cEE8C/6/2ycHUobsrQF03LhhLj4Qh+NO
-         bMKQ==
+        bh=yZHQHfq1ph65L7qxzKlrPBl8SiUbUAuTYjQIuazmnA4=;
+        b=umivEjJAnhnqbgxild7Z2GEz2mRFzjkU0qjw9B+uUclS8jt+IaovCEoh0ZNFMRAFdw
+         PMcbPqfKkxZHy0dsY+ZicXl+MKOWkOWK/iO1tTmzp3WP38D6Wzj8TduQd5pnqIomQTJl
+         2Ad82Wt3sNg+Zsc5w7ZwtE6rKiPRZIGMMndojscj79QZG+RYa9FpY+i4OAEVT/WRJwxW
+         ZG7J9ZDJ5N/407mAm/v7j2TBaztxB8ffnkCcn9VqcqzDODQyqvCpGpLC/GR+2yi3Wga3
+         fAi7kjSDuRd7n8cJEwUAhPxXMTKC3/PNkmJgaPMEHwDIVvK5o32s9niVTYxiO/7kGIne
+         vIqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790158416; x=1790763216;
+        d=1e100.net; s=20260707; t=1790158543; x=1790763343;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=vdEIBnHA/8T+E7XayOUCjgaZYlTP8ZfuwSF0Dftqz2M=;
-        b=0fnYQoruEdjLkU1rVBN4hWZ5RlmZi2mS0TXJwIJAScr2lG+aRxm57SksR9xBBYo3/M
-         y3YP24+d2DE6flwNiaqkkBwqJpmGdsFxn7SSxHXm1+upCrKXo9jOJmuv9HJme3o4KT4e
-         sP22ddSrkBgDGCzDWxE6a2Seo7JBlzfgzd3/oOTYEHmNpeMNqzjFs1D280bOmcaMf3pQ
-         hcaplw/Q4CWTDC4vOkzHzqxTfshFxa9N7wgnPnzOA4cXkqnqCxbd8m+QM47ewM/RtZWo
-         pb5idYMcKaFmGGrz15z4E8aEv2EoJ1hY4X1EuYYdCUdEFszFGs2djeiZkkeAfu+bAvYf
-         i/cA==
-X-Forwarded-Encrypted: i=1; AKwUvBzEPK2GMxVL3qXM2PDvxhQqmcFxv+LHiS/de2wTy+LsLEG7EurYzQw/OESO91NwysL5Y4aInw==@lists.linux.dev
-X-Gm-Message-State: AFuF++nvs0n16cerooy5qMDOCJ+EvfHqvposy+KoLyBFZDF2zCt5Ulew
-	M8F4eVfxY+lg2xjqWfWY7CPuKHINKWcZl+GiGZCxQIGSSId28oLyuGEPXAjhdBzhrw==
-X-Gm-Gg: AYBFou1SZEDxap21KJFoamiFZh3xXu/lSpycXnHteuNmMSoVIZvHHnlntqjyQ51HXgM
-	ogfXu8ifPhG+8bLBdqNScDWL3j4Pqv4YkBHWE1afgszc8zVGvHhQgoJRfq0zbLztP4PuPPP8xrI
-	i9WaBzbw05TvYhuHGtZktORPYIJec4GMZ142tt5QHzJzX7I3lBZUncJXvJw8dl7ZUHuy/+Dguea
-	uTk17NlZPwqGbV341ChNW4saAyxDAcZ6sxrsleyhMQwTED8fyk6tfnfH8FQvAogdRYLhpIEILuQ
-	aksLaGuow+Q7qTODx3qVEti4VhfBsi/PbKZ+Oowh+ilhfdAy2eRF3D9IQH6h6U2ahQ78tXxAYuz
-	kR/WawBV++IgeFnY2Zkc0lAOXhLJ+f1gMUjRWUGK+ZWdMDgMmiV/8flji5+FThyRDOGplP4NUCP
-	KrY6Olr28nSXLKrG9Z2/Wqg0aZ1Uw6KaHIPnxxLoezobe9f1EKM+hpxSB3ZAVAsyQIePoz9JGo/
-	/RXGaMimM+pOvFQAUbJ8zGjES0gfLZwG9xLpiwVOQ==
-X-Received: by 2002:a05:600d:8653:20b0:49f:e0f7:257e with SMTP id 5b1f17b1804b1-49fe0f725e4mr416395e9.6.1790158415606;
-        Wed, 23 Sep 2026 03:13:35 -0700 (PDT)
+        bh=yZHQHfq1ph65L7qxzKlrPBl8SiUbUAuTYjQIuazmnA4=;
+        b=CseqO8xixptKJwTUvbuHdkbKmR7+gJvRuVz/nQTp67jY/1yMfD7NBXJY7+ts812CNo
+         bNIKB1vrkbZgu+6W0X013y5S/EwmkcxapVIlAs8EspctJmqyOmSnk0bjtsrhu0PYa+VZ
+         6O+IesWlzNEV5OkQS3dNDAmS6XZG/clC8+Huf/pqexe4R9vc+7N1m8bijgWZCU00gmwf
+         /Jr6HeBd+hvad1NGAefxTvt01dG2GNsrRs49DiZQfYJACi+2nJXghPBTbaWqf+cdaTII
+         Zq1MPcacAJ9Vy0kJAugig1TJr3BsJQbciRjb6V0XAmZBzSCbh8qyz5wLl0PmmhJOu4qZ
+         QYOQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwoFELlvxF1Kln5LelB4sqQsy9srZFvb6R/J/f5USTZWPZ1G5JktEaVS4QJtI4eamnWvdLM4A==@lists.linux.dev
+X-Gm-Message-State: AFuF++kEUHMvPZ4j5cz3rhVkbM1wBWlJuSfv/aZymsvNsV5EZZIOrXl9
+	zRR67tzF8iQDMY4su4frMxn/b1XRP/C1/euxx5aQNw51VJvfV9jBBuP8QfALXQ/Se2yFE4x2n6d
+	lazCM7g==
+X-Gm-Gg: AYBFou3pZ1Oykmv9IrmWGlRRTjTjxjIu9ejX7O2l/Y0RGuscrE1KrxLdCxk/U7q62ET
+	Q5GAwK9r7kdjiELjGUimKL1VRpjPDq0mI+VWMNnnxBEaJgf6FMeBhDKfumBT/BpfyC4qxQeZnDS
+	RWTN/eOOIHB9N9Okkl/j5qGG4ypfrezr/qew+2lHw6DxubjEpxs1b8abAI9ykAZMUdwzTRcPbT4
+	LKypH43KgKCMMKUZWtu0+njM6Zfju/YH0dJr/3nItk6xZxGo46d/zRh2nLS+fAjoW3JYcRaMHFV
+	MrS4J4IEMcT7TMuatDO3SgXShP70OK4X8GuKUMPZxL6UtfkgT3ZSqBIW3R+cIfJi7F3NCh6O3RY
+	ou9ALSyOgWSteMHHEaZSUA8eqBt+w9iTPPWtGHG2N078T8QGzmUEPaXfNmT+L++crKx3WrogCY2
+	Xh/+e18HBpusX0NUj+bY6D2fYO5tXDGNAK5ZtVKN44V48WKSeEopqVtyBcVi/IJqU35mn1N5+SF
+	Tf4JlGVnX54RBpfFKidnzpc9YcF8CtZtcC9OQHK
+X-Received: by 2002:a05:600c:379a:b0:49f:c6ca:42d2 with SMTP id 5b1f17b1804b1-49fe0c0bad5mr679925e9.1.1790158543084;
+        Wed, 23 Sep 2026 03:15:43 -0700 (PDT)
 Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48868486408sm5194076f8f.9.2026.09.23.03.13.34
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fde1e975asm71831925e9.14.2026.09.23.03.15.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2026 03:13:34 -0700 (PDT)
-Date: Wed, 23 Sep 2026 10:13:31 +0000
+        Wed, 23 Sep 2026 03:15:42 -0700 (PDT)
+Date: Wed, 23 Sep 2026 10:15:38 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
 	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
 	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, mark.rutland@arm.com,
-	qperret@google.com, tabba@google.com, vdonnefort@google.com,
-	sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v8 04/25] iommu/arm-smmu-v3: Move IDR parsing to common
- functions
-Message-ID: <arOmSxqRxhd717Xy@google.com>
+	yuzenghui@huawei.com, joro@8bytes.org, jgg@ziepe.ca,
+	mark.rutland@arm.com, qperret@google.com, tabba@google.com,
+	vdonnefort@google.com, sebastianene@google.com, keirf@google.com
+Subject: Re: [PATCH v8 05/25] iommu/arm-smmu-v3: Move hitless machinery to
+ common code
+Message-ID: <arOmyuQwuWkynORS@google.com>
 References: <20260922131259.2975334-1-smostafa@google.com>
- <20260922131259.2975334-5-smostafa@google.com>
- <arLa0E3xq5dGuPpd@nvidia.com>
- <20260922214818.GA2545495@nvidia.com>
+ <20260922131259.2975334-6-smostafa@google.com>
+ <arLeIO20VQZD80nr@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,55 +85,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260922214818.GA2545495@nvidia.com>
+In-Reply-To: <arLeIO20VQZD80nr@nvidia.com>
 
-On Tue, Sep 22, 2026 at 06:48:18PM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 22, 2026 at 12:45:20PM -0700, Nicolin Chen wrote:
+On Tue, Sep 22, 2026 at 12:59:28PM -0700, Nicolin Chen wrote:
+> On Tue, Sep 22, 2026 at 01:12:38PM +0000, Mostafa Saleh wrote:
+> > Move the hitless STE functions to the common file so it can be
+> > reused by the hypervisor.
 > 
-> > Also, Jason's suggestion in v7 was hyp_arm_smmu_v3_device, which
-> > looks nicer than ARM_SMMU_OBJ...
+> s/it/they
+
+Will do.
+
 > 
-> I guess the point is to emphasis the substition technique, I don't
-> mind.
-> 
-> > > +	if (coherent && !disable_msipolling &&
-> > > +	    smmu->features & ARM_SMMU_FEAT_MSI)
-> > > +		smmu->options |= ARM_SMMU_OPT_MSIPOLL;
+> > No functional change.
 > > 
-> > Will pKVM ever use MSIPOLL?
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > 
-> Not sure I understood the approach in this patch, why was anything
-> left behind? I imagined everything would be moved?
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 > 
-> Maybe a few more remarks in the commit message?
+> With some nits:
+> 
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -59,10 +59,8 @@ enum arm_smmu_msi_index {
+> >  	ARM_SMMU_MAX_MSIS,
+> >  };
+> >  
+> > -#define NUM_ENTRY_QWORDS 8
+> >  static_assert(sizeof(struct arm_smmu_ste) == NUM_ENTRY_QWORDS * sizeof(u64));
+> >  static_assert(sizeof(struct arm_smmu_cd) == NUM_ENTRY_QWORDS * sizeof(u64));
+> > -
+> >  static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
+> 
+> This line removal seems unnecessary.
 
-As replied to Nicolin, because it is a module param, I am ok with
-adding this in the commit message, or passing disable_msipolling
-as a function arg and moving the logic.
+Yes, I will fix it.
 
 > 
-> > > +	if (smmu->features & ARM_SMMU_FEAT_HYP &&
-> > > +	    cpus_have_cap(ARM64_HAS_VIRT_HOST_EXTN))
-> > > +		smmu->features |= ARM_SMMU_FEAT_E2H;
-> > 
-> > Why is ARM64_HAS_VIRT_HOST_EXTN left behind?
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> > @@ -1321,6 +1316,8 @@ static inline u64 arm_smmu_tlb_inv_range_enc(u8 num, u8 scale)
+> >  		FIELD_PREP(CMDQ_TLBI_0_SCALE, scale & 0x1f);
+> >  }
+> >  
+> > +#define NUM_ENTRY_QWORDS 8
+> > +
 > 
-> +1
-> 
-> And the TT_LE/BE and S1/S2 checks, and ...
-> 
-> If kvm doesn't want to dev_err log that's fine, we should able to
-> #define that away too shouldn't we? And maybe it does want to log?
+> Maybe we should drop the duplicated define in arm-smmu-v3-test.c?
 
-The hypervisor can not print to the kernel console, so dev_err()
-will not compile, I'd rather keep that outside and let the caller
-decide what is a probe failure and print it's own message that keeping
-the code and stubbing dev_err().
+Makes sense, will do.
 
 Thanks,
 Mostafa
 
 > 
-> This seems pretty close otherwise
-> 
-> Jason
+> Nicolin
