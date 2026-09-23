@@ -1,263 +1,452 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azolkn19012053.outbound.protection.outlook.com [52.103.10.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed2-f35.google.com (mail-ed2-f35.google.com [74.125.228.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7554639F190
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 14:33:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.10.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1461C53B34C
+	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 14:44:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.228.99
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790173999; cv=fail; b=Rh2gsdJFTRWLZqkE8YWentgJE/sdaLdZzeBMhV8s2CFwK/UIBvDup/Gom603/qK2kBkfprlKqDbPveMbqMoMc7POiPP0qZsC9DFByNRXGjzY7WGACIo52i6+0ioxKtfoP2UwIIxAwDAfUDuK2IKeCZ8eK/Bq2VSfByV5Xx0c57g=
+	t=1790174699; cv=pass; b=XJgzpkrE11gyzmaShBhMdD5jjUOqMHX58TOz/dHzR2UN5Brq+NGH5QZZbOMsXnzYJX3Ut4zvRL5xKY6A9oEchaZSS7Zy0EW5F0d15HBge5qWVMxWR6eav6Lwz0jtykGTGY6HO8tdFcltWHDuwZHhZkp3ZDzxEJCdRE+Vam2JU6A=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790173999; c=relaxed/simple;
-	bh=0526UyRy2ztBut68mcGo/yJwVohM23RFsJX9pywgkmw=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=XelHbVIAls3Lhz8TTXgZ3QHjn7jYqhKMjkgl0NyNuCLlYjONVU1IAskzkCWWtnC8Jlz/iC6qG+qqg5mb+ltdFA+E6rsrqbPLh0Tyh1v3VeHxI06oQmcCEcTWZxMo/jyoGhVm8HPwzsqqu6zCtq4qDNBe4BXq+ZGGSvQE1CStuw8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=bkqKHSPu; arc=fail smtp.client-ip=52.103.10.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	s=arc-20240116; t=1790174699; c=relaxed/simple;
+	bh=I4CXC8CBXPsAi9J4cmSHK94u4GgKkC4ll7iirgr4BVU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=mDnJGjvVh+EjjWcijREr+qoDH/nOooNWVT3Qmf8wxMn3gMSilyuWjpFaYWWnmJTvVBE3AGoSSnpWR47pQLPyEaUmL0RZCuuOhMQRPQbnnkVdwtA4cIT5f4bW/jHg1Of4pCR+ZI8R968ZyIcJa+z2lL888SPu1t9JKYJfyw9VVrc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=jWR6db+e; arc=pass smtp.client-ip=74.125.228.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="bkqKHSPu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uNOKvxazFqhr7VJS6qwdKpLI3vjRSWPlVOPdmDP8Z2o5h+Q5a+665JBT4KzUJuRO3jTc4Xt7b9j1JU7CcxPSQlhaL8vsjyZJHnCKxd5HIo1/tZ1AsJULXaZ4abAEzL6efrd6e4bY7WWqDIlx6jWinbYHa1i3bmZymfq00tCWXIWaZYaUIFlBFw4hRqLQBhSlEpz2HDFN4PRbau/8yEDRj71vtsc9OSpKn8s/sf0CHpK3ZeIp2w+f9CjcnOC9407MCcpnr2GhAkOhoOA6PwIZwTaATdE6vlsbIGNi8GwgxYqyi9M3y/Pj6bLvgIrxmkMQ1xlYhEmyGm4JGjlsrPQSIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0526UyRy2ztBut68mcGo/yJwVohM23RFsJX9pywgkmw=;
- b=o6e0yOmzrGMfIDgLje5i/HACrFCS/ebdQKgIABOshJCamu4PqZ3TbFFI5h8SyFrjsstmXOZcmPXTgY6hDBGenTLBpwOum4B5E+ZwFipdZXNXi5yn9QkU89USkB2ptKILEnE6xoangaU8bmrNkAKG/cLVPVn197k7y9ll5HEXTfz4aG9ZODWnYDPG05TzK3IskXvAvwmTHa1t9IOt+c41VSWXwlvmjMsx91zGt8yrsHDXQ/grtv+P0aBYgsz7vtisCGEGIrzZLfQphSzwAtoE8VWdoWYkobHrobyDQP7Y+1x5L6/MIVww0tw1Fc4yH6a3P/jrBNEs/e/1+bIPcDZFBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0526UyRy2ztBut68mcGo/yJwVohM23RFsJX9pywgkmw=;
- b=bkqKHSPuNkxnDhn/RPKqin50m91dnBxiOVtvcvINNTZHa8LTLCIzfMrY8T5sSPCSQ8aBK6/IAoubCwAXrKQTz2nxv113S4bmy7Aq+PQNSCwPK7EQnfbjt5vnOhXsgb3LhD2LkonNzkxG/MQ+bCIFN3HiuouEzZGUAIHv4kAsEz0okTgqmvggUBiVx/iQlrrQfCw1hIyJT1rNQNyhJYJuwfPMvWN4Yf+76b2Lu5qVDO/NWiwiGwKeC4gvoBFAxoJ5prxd/Mf3zO3ECOYgTIDzjQwq6/nZB0Tl8Jqjun8jOQneyQgfRxacIHMTbW/X0TF6D7/9ujzMxicBpZx2dAVegA==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by SA3PR02MB10163.namprd02.prod.outlook.com (2603:10b6:806:398::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.14; Wed, 23 Sep
- 2026 14:33:04 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::900:1ccf:2b1e:52b6%5]) with mapi id 15.21.0451.014; Wed, 23 Sep 2026
- 14:33:01 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Naman Jain <namjain@linux.microsoft.com>, Thomas Gleixner
-	<tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
-	<bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, "x86@kernel.org"
-	<x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>, Wei Liu
-	<wei.liu@kernel.org>, "K . Y . Srinivasan" <kys@microsoft.com>, Haiyang Zhang
-	<haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, Michael Kelley
-	<mhklinux@outlook.com>
-CC: Nam Cao <namcao@linutronix.de>, Joerg Roedel <joro@8bytes.org>, Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde
-	<vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	=?utf-8?B?S3J6eXN6dG9mIFdpbGN6ecWEc2tp?= <kwilczynski@kernel.org>, Manivannan
- Sadhasivam <mani@kernel.org>, Rob Herring <robh@kernel.org>, Bjorn Helgaas
-	<bhelgaas@google.com>, Kees Cook <kees@kernel.org>, "Rafael J . Wysocki"
-	<rafael@kernel.org>, Radu Rendec <radu@rendec.net>, Sean Christopherson
-	<seanjc@google.com>, Kai Huang <kai.huang@intel.com>, Dmitry Ilvokhin
-	<d@ilvokhin.com>, Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>, Thierry Reding
-	<treding@nvidia.com>, Jiri Wiesner <jwiesner@suse.de>, Daniel J Blueman
-	<daniel@quora.org>, "linux-hyperv@vger.kernel.org"
-	<linux-hyperv@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>
-Subject: RE: [PATCH v6 4/4] x86/irq, iommu/amd, x86/hyperv, PCI: Drop
- redundant irq_retrigger inits
-Thread-Topic: [PATCH v6 4/4] x86/irq, iommu/amd, x86/hyperv, PCI: Drop
- redundant irq_retrigger inits
-Thread-Index: AQHdSxRgSMV93Wah8UeJDMFZyXK4F7bcOrTA
-Date: Wed, 23 Sep 2026 14:33:01 +0000
-Message-ID:
- <SN6PR02MB41575EBF93A8C1DD8144F5DFD4822@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20260923043023.3150498-1-namjain@linux.microsoft.com>
- <20260923043023.3150498-5-namjain@linux.microsoft.com>
-In-Reply-To: <20260923043023.3150498-5-namjain@linux.microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SA3PR02MB10163:EE_
-x-ms-office365-filtering-correlation-id: 3a81277f-f346-41a5-70f1-08df197f9261
-x-ms-exchange-slblob-mailprops:
- znQPCv1HvwUXBahuwteIkQeW30lJPuxOt/PRcfPHcKa4eatUDZJoq1l7e1DGWkBtPSHbUWR9gdYBmzMT1f95dR+wPqV+f0LmDnoHIlp0iEmXC9mvuMDSmgjQobWe99unGS6XHQ/ZOPGYeqDMGls9HXJT0+aiCXK3tzS2/YaW9tYVOrEb6VFSkiHmpMByjsW3lDgFUKJE5mjaPtRQvwv0iQsHpz49IyPouDTg0PPsNFPXppzideRVwEyMut+bpd808A8dEU1zlkFv7CKILYsGQydKBCy54991b2eLvMSyjqy2q1WNQP9N6acJXGs1ALlKzE7Z6U5MHN/eC65YXoBr/pf7+cU74bXwWIbFYmiw/1gTB6jcz9ewcq5dPVLTyMhYZW7uCJ5e1n3Tpl4mwQ/P7j2sEfjWA+09eJUclT//kvLay3IHL228UOzTvOcvcVFJha8uX4fvZGHCm4lqE04QNRXypAAAEcmfzomoBgUN8w5gR8Jg1EE8Plruefba90n2CWPkdK1sI9hu6IKkBuAkbjwEYLY7wp+aMGNF62ruxRBBKWhrw0X+aJjNegfMMSj/vtG3S2wsZV/unQGx+JXhLtrQN5nvspi9tp4McO7fLs/Wimj0phRRW5NZFJU9qAQHq4Im+b+mlVKUt5x8j9szESoCLe8TlQQpW0U2BEwkaJJv3lbDFRrHRqh7i6FsGBoARQxO2dIIbmXutEX8qhISRV6O9gkRHTMvNaNrytnFsri90mRb5SytdO9OjN6Ed7IQfcpkmPH6qHs=
-x-microsoft-antispam:
- BCL:0;ARA:14566002|37011999003|8062599012|8060799015|51005399006|25010399006|15080799012|19110799012|55001999006|41001999006|24021099003|31061999003|13091999003|3412199025|440099028|102099032|40105399003|2607281247196008|1710799026;
-x-microsoft-antispam-message-info:
- =?utf-8?B?MEZrdWZrbDdqVitYdnV6WmpVK2djWWxVQkk0TWh5TzJON0kzRGJtTGFSSXN3?=
- =?utf-8?B?bDJ3OC9UVThJL2daSnRoS3dGZ05FSUNTS1BvVHRhNWhPcFpQKy8wdi8vbFlj?=
- =?utf-8?B?Q0dRR3pXK1AxTWlpVi9Ic0ViV1ZmeThDTklxWmhaZDNXRkFLeXZtMy9ZNlZt?=
- =?utf-8?B?czdYblljT2FvUm5RRW9xdEpyaElRTmN4cTIxRE9SeERnZW9uVVZWazBIdjJL?=
- =?utf-8?B?WkU5VzJ3WllIa3o3aVBGTC8rNWQ0SWtOMmFpQzlsQVNOTzA3TUFEV01ZeCsr?=
- =?utf-8?B?a2NicTdmMHRxT0g0cmpzaVJhaE5GZ3JVd2diUUIxQ2ovTG9LaVhGWUY0bmps?=
- =?utf-8?B?MVQzWkdXY1htN011ZXpSTHFvcnlyZE9zT3dCbEFoczRsWXpZZ2dlQTY4c3U5?=
- =?utf-8?B?WEgrRVcxK2R3MTh0bFdVVkxtb09wUjNGMjBEVXpvcWNxQkh6c2w3YXMxQXI0?=
- =?utf-8?B?NGRlNHNFMEttZVo2WURuMFV0RkZaamFPeWlSOHZoQXhuOTZ5WVg3d01QY1ZR?=
- =?utf-8?B?TGM4L011d0YzMkJjUFdUcUlGczNjWU1BdzUxbW4reVNRSmxaTUhKYVQ1RlhE?=
- =?utf-8?B?YWZ2TTViM3MxKzFHMWJ6MTdYRVBLb2NkejRNWkt6RzFpbmNncHJ3dXpsbDR6?=
- =?utf-8?B?Q0orN1NFRkdoMVRQZEVOMVNoek9QbjFCUGxqY1ZVbGNIWUMrZXJhbUVuOFUz?=
- =?utf-8?B?VjFEMHl6dlppR3BZMTB6KzE1VFBwelJIUFBXejA2MTFVOVhUaGNiWjJiQkQz?=
- =?utf-8?B?SHUrUG9xcUpBOEMzck0wd1h2WUJNbVZDcEc5MXpTdlUxY0ZuZ09GTWRROEVt?=
- =?utf-8?B?LzZaMUwxam1EVUtSbFV6ODh6RU51OWlkZTMrbld1UTYrUGU5ZHBTcDNzUHRs?=
- =?utf-8?B?S1dvT3JQOGFCSEhMZnpvYXM4elVOQkV3eFJ2dG5MbFFjZjhod1YvNm5ZQkxw?=
- =?utf-8?B?bHJxcS85YWVDcDJkakk1QmtOYzRKdCthMjBVZHJnSjNPTjAyMkNVbG9FcWRP?=
- =?utf-8?B?NVV5WU1aQ1BscUt4eDRiUjRBVTQ3TU1kbTdQaDVqckZKdGpKbi96WW1JSDdP?=
- =?utf-8?B?MjBzRE1nUUY3V04yRkxYWEE5Zm5KWnNsNmM0SnRQSHNhR2xJdUtnOVNrSG5w?=
- =?utf-8?B?N3p1Nk96MXpPRk5FQzNieCtvNWROdFlPdWhQanUweXlvQ0w1YmZ3UmNobWFr?=
- =?utf-8?B?M3RLQ3NxWWlnS1RCQW9rVlh6L3ZSNzI4Ym4wUFdaK1FGSkZ1djRSZ2hZZUY2?=
- =?utf-8?B?NzNnaFdZZXNLYVgwMjdLcGtUNU5MTjhicklWQTlGZ1FYUXlRdjgxWUpjY0tw?=
- =?utf-8?B?QjN1WW5hYkNpS3BQQ1NnelN5MkdudlZLendOSEEwQUZCMkdGYVZjVmRIRkMv?=
- =?utf-8?B?Q25XWGRDeFl4bmhQcXV0ZWFLV0RKQmdLV3FROWdDSUZZTkxJOXByY0tMdXNR?=
- =?utf-8?B?QlZ1Y3BxbndkOUVyMlpLQVRwZCtwTGNtcFc4YWF3PT0=?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?S2RiUmcyaE8yZytKR2JTY2dkb2FYR1dSczdNVVMwdUdiT0FUTktTS2xRY05I?=
- =?utf-8?B?OFBBeDVUZmk1b2hHdGVaQ2E4NEI5Z0JLMHRZdm5iSzJyazFXQUpFaDZjWmRi?=
- =?utf-8?B?L283ZGlRaVlhT3liT08zU3BzTlBCdlp2L1ZQWCtZNitXQnluQzlCajhpdHRo?=
- =?utf-8?B?SnRZcjF4RkVWLzBRRFdSQzgyWW1KRVk4cjJqaGI1bzZnbmp6djJSdXUrQnBm?=
- =?utf-8?B?ejI1NnBsQnZTbzhmbHE4SlNCSEpUQmg2OVlhUlNUUEpXT3VrREtmVlV4TEZt?=
- =?utf-8?B?Zjhsb05hb2tjZjRxeWI2ZlFNUkxyMEVQMWwzSWNROVprLzFzT0wzeW9zM0lC?=
- =?utf-8?B?V0dJNUlEY2RuN0FRalNnS0tPZ21hRkk4OWFTbDBzZFU0SGRyNUlrREpxZzk0?=
- =?utf-8?B?WnVQR2ZsYkE5Ryt0TGk2dyt6RnNYZkY0ZDV0aHdFUy9oRS9xWno0M0dKK3Br?=
- =?utf-8?B?NTBWZGZoQUR6SEZ6QlNROWJXblZVSGY5Z3lsS0RqUGlOU3J0a1FzMUNIWnRo?=
- =?utf-8?B?QzN6YURmcENacExIaW9FU21jY2NmU3VrenA1R0lvRnNsUUlnYnIxUndXWjRi?=
- =?utf-8?B?dm5Faml1TDlveU53WmQ3N0ZDbnJvL21leDdMRHhnNC8rMXcxOXRYMW05UFJv?=
- =?utf-8?B?aUwvM2IzRVFMdnJha3BhZ21YUzdWTUlhQ0c1WTNvWmMxSHlrQW00d0xXcmNH?=
- =?utf-8?B?b3JaWGlqYWZJNG10L3Y2SndoKzVzUlVnT1hLeTlhYmIyeGZidHNlYmM5MW9E?=
- =?utf-8?B?cHBKMGJRMThUdCtmL09BbS8xeU8vQkVraTFGZUdxcnpiOXJDSHovSktYdys4?=
- =?utf-8?B?Q3BHU0ZXd2dWbFduWHVPbzdBTzJNOWpMblJ1WGEwUUJUc2g4Z1ozZE1mVmdk?=
- =?utf-8?B?U3ZHTzdET1BnVVpNaWRseldxd01RWjBaSGNZMkFUeFk2UVdDYmp1Sk5TRmFG?=
- =?utf-8?B?eGlVRU1wOGs5c1krVmZ6UDRQYW9VV085b2lSTFJzRk9peDUxcStkRE1zZjhx?=
- =?utf-8?B?Z2l3WXBKK1g5YjFvRHdEWFptQWU1R2FvRi9YOUo4Tlh4QWR5QTF6WTZGdWhK?=
- =?utf-8?B?ZGVDK25SSWNqeHdkakhYWWF6MWFpMmlMaDQzWklBeFhGRitaNDNocDNEQVE4?=
- =?utf-8?B?UnlpcDhBRlF5TWQ5ZjU1RHlvWEMwVWU5TWdSaFVKdjczenVEYU0xZkdNNDc5?=
- =?utf-8?B?TTRDOWIvS2ZzUVVZamRtZU9YeWIycVhiTzBacHhGSUtvZ29tdFBNdkU4Wm5U?=
- =?utf-8?B?T2pUcVFCZkJkbUVRWTRxKzFPNlkyZ3pSS1VtTnBTamRjeEQ0VWFSYXJVODN2?=
- =?utf-8?B?WVpUQXM3dVRIR1Axa25NM2g3Ly95MDk4SVpPRWZTQm90eWNWUnVWV3hPY3Ft?=
- =?utf-8?B?bG9QL2dNZDNkdXNYSVZDWWFxQVVHS1lTbXBTUS9kTlZ5L21ESG85eWtiYWZh?=
- =?utf-8?B?eXZSQ25FaFh6TmRvY0crOE96RmllUHhCcEdKRE9QbCtKcFpySmNjMUVlYXFL?=
- =?utf-8?B?a1I3QmlWM000Rm0wKzhYK1gzZ2VwOWxVTE5NZVdialVVTnhkRlJZbmRvWjdz?=
- =?utf-8?B?RThjMkxXSW8wU2JteXUrNCtOYlMzNW11ejNxalhXOFJLWHhELzVZWjkxYnpL?=
- =?utf-8?B?TEREQ1hGSXJhdE5Ma1RwSUkwM1U0N3pHSUNRVzJvR2FTQnoyL2J5b3FxRENx?=
- =?utf-8?B?TThvbFRDYU9CN3VXeXkrL3JpaURzVC8yR0U2TVkyRGVlZVRJa0RuZy9waHRG?=
- =?utf-8?B?a3Q1SzVTdG5BTmNlQ1pRQ3FHQ05LVlhLc05nQ24zRDNvMHdzK0hYN1p5UVVE?=
- =?utf-8?Q?eu3lmZgeyp1ipT9Fx9Yya9O5G23YS7N4434lM=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jWR6db+e"
+Received: by mail-ed2-f35.google.com with SMTP id 4fb4d7f45d1cf-6aab226e7c8so1857601a12.2
+        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 07:44:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790174695; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Mzzc/0qk/I9F2hegeFSlfCMrgj50K+SOM+PQMvnHLpfjIi4wLUnohXXrKIlgSii7KS
+         WirgBTaldFVclzl5y5cyWIZT41wTWxdmGjSlav8Kf3bhrp28yKOP/urVVc4SGI4+Fm01
+         85QMRTsWvAqZxCBY3P3JF+SM4i3g2jzyp5aYiKz4EdIGMmdweoQdpJy936rIp7ld8+Wa
+         /JhxxcjnvP5aTUHMRjt+4QDgcKmTbWTZd1xPvfeE/E/0oWsFWHP9a/B3fQem+6TQnlvS
+         qRnVvdeiTP1rq4WPQgH4/AD9HOfinAsy4uobBc9Pbo0FWqrBCC8w7iJq3cR9PuMiAM7v
+         /cpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=M4aBOtPsfRM3OiglhHgFceP8oaWfGnoSKrcjXOznF1Q=;
+        fh=oX6TFeJPnF51ttB5Ht1JUboukh02sBTNXZy/dIz5+z0=;
+        b=j3QLKdtgBZyBYTjmNYqdyoHQCBaLt8cBAjvu1oSdK1NvK2YVkzd8I5hRYQWT/lPvkp
+         Ng4hBno2utBf8s2tCciUPdE5vXXN4MMBvTLmbz0V/ZsdyK1viUT6JWaOcbdqqCaE6JxG
+         s7+5wrOsVos1DwIz2hy0D+B85RIIDvMm4QLaS8xpXsP7e56vfUgbMmw+aYGWn66CAuHc
+         3+2n4jjXpZzLaLIuOlmooD8Yef1iXHqGrxQj40XUli7rchi22IDEi4TlciU/oKV74Hwu
+         wWPCiF+msKjH0L1l5B/3SEeXqGM62HZhPY1C8lDTcjfRmhw2y/Pg+7EFRQ3tw1YVqRTo
+         txUg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1790174695; x=1790779495; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=M4aBOtPsfRM3OiglhHgFceP8oaWfGnoSKrcjXOznF1Q=;
+        b=jWR6db+ebQKcLO9lauw8yoYCYQxh0vf9MCDt5IzAgoY1qWAMpPyHpko+4MgpHgFj+5
+         ZfTfZmuRwLqLG9a9ZPfpIpIbN6WkhfuyIdPvo1FxLrycM2zGAe/yHBVMDLQVvh8fLUre
+         lxTUrqyyn7MmdltJUUbWCxdJ6d/wrgML5qnd2VVa9/RJCCBZcVwo8ZiUteEOy+oLx4vC
+         QJcyjs+Ju9ZKaO+u4v9vViFG60028eLAZT7C+fJ2URQoZmYGcZ1RrThZC2odldv2gp5t
+         U97sUHtjX7/HMLlwJNh6tPKNYTsQ2DOgsCTJ5gRQXZ7S4dFSOIk0qjeYsffRQZXSSPvj
+         kq0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790174695; x=1790779495;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=M4aBOtPsfRM3OiglhHgFceP8oaWfGnoSKrcjXOznF1Q=;
+        b=p6XeMwjMnmPDmPy3RwRRWjlRVuEvUobfGuZgq3R0Ax6RnJfWIW+F+CTeK1+rFxWTQV
+         S8Trkh2f2UDmPOYeFbidXTqRUArzxFtuTD5OVYCSMR3Kxi5RanCnAS5FeD4W0x+EtQkF
+         tzIVHH3fr9FjXka6nHGq9WDthzQB0Js8UNkNexH1U+lzMRVz4XF1c9w9Ld/zmZ3fR4br
+         i09KhwMSGAiNSVBeAwitUzWo+4f96vqe2Bu9aoKF5S8m8dqNNqAPidZN5yRkCkTD7bHO
+         9HI0W59RRmnulMrQ5obS+Zdq4FPQbGWL/oXRjC4ygyeAsyuEa9eTyuBrGmH/ro6/Re6U
+         Ny1w==
+X-Forwarded-Encrypted: i=1; AKwUvByYhSP0WTjHc0z5tdUi/ZDKMddY/CMCntn8bjXWV0pRvc+pW3Fblxy3K8SLNylWB/oV5uaUeQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++kmEIcY+iByRga+6KF8H9w93xUWkRgWeJ0ICYEXxLdxJOQnRHJs
+	B08+xTUT19wmqnWCaEAZ0h1pmlzt02ArZHOAF1oINBIFXYSKeEr+Ywyx5xyDeydilI8n3UCqD7h
+	hG/okTPL9s1W++SFYwo/kRKFAdNSgLTuPdE34VyHP9A==
+X-Gm-Gg: AYBFou2jx1ojnCv6GuyJm0x8qxndqdODIw37gKoYTcic8I8gye4PHFPVilbOCG+aBH5
+	3pyu1sGGnHwxTTH8Gxf0uSBI84c9nSJQ5uv0DZBLcaFSi5pPoe8qY3M8WcbXzAyG5g/MgJzM8rc
+	KdfEc4Joy1pMkU/KMnNthsy3dfPJ7OmLRjOGrSul/UgSrm2yAUsXmy3sceIsUgFU8itY/jjhvSM
+	FK3ll0yHy0ROSmXt1kng/SGjfW7S2rwB7kJGtqL5jOq1gPyAUSk1BO8SgRoq2oQftOo1FU7wBNe
+	bhGnzz/IPbfN1vQOdcpuPyat0ChtPkv6zQCLmKpm0QxIXIzud1F85cvl9aiXIEhpIGBgBAA32ZY
+	vuoLSVTFKMUs=
+X-Received: by 2002:a05:6402:378a:b0:6aa:9851:6d5c with SMTP id
+ 4fb4d7f45d1cf-6aab3b2954fmr2562437a12.19.1790174694197; Wed, 23 Sep 2026
+ 07:44:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a81277f-f346-41a5-70f1-08df197f9261
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2026 14:33:01.6978
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR02MB10163
+References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
+ <20260916-remoteproc_virtio_map-v1-6-dac8c5eb4aa9@valla.it>
+ <arKlvZGqu2nt6Ci0@p14s> <arLXthhYbKkwZ9zY@bywater>
+In-Reply-To: <arLXthhYbKkwZ9zY@bywater>
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+Date: Wed, 23 Sep 2026 08:44:41 -0600
+X-Gm-Features: AclHuK98k2uTxSqJLFP90Hvvkb8R20Qb9iAi3e_cMJ5VQjy6TOoZ99TlQSDABtg
+Message-ID: <CANLsYkwNOukGX68=NVvwNP7iudP3EcKN6C2L2o9nVCTRxFVxFg@mail.gmail.com>
+Subject: Re: [PATCH RFC 06/12] remoteproc: virtio: add bounce buffering for
+ data buffers
+To: Francesco Valla <francesco@valla.it>
+Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev, 
+	imx@lists.linux.dev, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 
-RnJvbTogTmFtYW4gSmFpbiA8bmFtamFpbkBsaW51eC5taWNyb3NvZnQuY29tPiBTZW50OiBUdWVz
-ZGF5LCBTZXB0ZW1iZXIgMjIsIDIwMjYgOTozMCBQTQ0KPiANCj4gV2l0aCBmaXh1cF9pcnFzKCkg
-YW5kIG1zaV9zZXRfYWZmaW5pdHkoKSBub3cgdXNpbmcNCj4gaXJxX2NoaXBfcmV0cmlnZ2VyX2hp
-ZXJhcmNoeSgpLCB0aGUgb3V0ZXJtb3N0IGRvbWFpbiBjaGlwcyBubyBsb25nZXIgbmVlZA0KPiB0
-aGUgaGVscGVyIGFzIHRoZWlyIGlycV9yZXRyaWdnZXIoKSBjYWxsYmFjay4gVGhlIGdlbmVyaWMg
-cmVzZW5kIHBhdGgNCj4gYWxyZWFkeSB1c2VzIHRoZSBoaWVyYXJjaHkgaGVscGVyLg0KPiANCj4g
-VGhlIGhpZXJhcmNoeSB3YWxrIHJlYWNoZXMgdGhlIHg4NiB2ZWN0b3IgZG9tYWluJ3MgYXBpY19y
-ZXRyaWdnZXJfaXJxKCkgZm9yDQo+IGFsbCBvZiB0aGVzZSBzdGFja2VkIGRvbWFpbiBjaGlwcy4N
-Cj4gDQo+IFJlbW92ZSB0aGUgbm93IHJlZHVuZGFudCBpcnFfcmV0cmlnZ2VyKCkgaW5pdGlhbGl6
-YXRpb25zIGZyb20gdGhlIG91dGVybW9zdA0KPiBkb21haW4gaW50ZXJydXB0IGNoaXBzLCBpbmNs
-dWRpbmcgdGhlIEh5cGVyLVYgcm9vdCBwYXJ0aXRpb24gUENJL01TSSBjaGlwLg0KPiANCj4gTm8g
-ZnVuY3Rpb25hbCBjaGFuZ2UgaW50ZW5kZWQuDQo+IA0KPiBTdWdnZXN0ZWQtYnk6IFRob21hcyBH
-bGVpeG5lciA8dGdseEBrZXJuZWwub3JnPg0KPiBSZXZpZXdlZC1ieTogU2hyYWRoYSBHdXB0YSA8
-c2hyYWRoYWd1cHRhQGxpbnV4Lm1pY3Jvc29mdC5jb20+DQo+IFJldmlld2VkLWJ5OiBUaG9tYXMg
-R2xlaXhuZXIgPHRnbHhAa2VybmVsLm9yZz4NCj4gU2lnbmVkLW9mZi1ieTogTmFtYW4gSmFpbiA8
-bmFtamFpbkBsaW51eC5taWNyb3NvZnQuY29tPg0KDQpSZXZpZXdlZC1ieTogTWljaGFlbCBLZWxs
-ZXkgPG1oa2xpbnV4QG91dGxvb2suY29tPg0KDQo+IC0tLQ0KPiAgYXJjaC94ODYvaHlwZXJ2L2ly
-cWRvbWFpbi5jICAgICAgICAgfCAxIC0NCj4gIGFyY2gveDg2L2tlcm5lbC9hcGljL2lvX2FwaWMu
-YyAgICAgIHwgMiAtLQ0KPiAgYXJjaC94ODYva2VybmVsL2FwaWMvbXNpLmMgICAgICAgICAgfCAy
-IC0tDQo+ICBhcmNoL3g4Ni9rZXJuZWwvaHBldC5jICAgICAgICAgICAgICB8IDEgLQ0KPiAgZHJp
-dmVycy9pb21tdS9hbWQvaW5pdC5jICAgICAgICAgICAgfCAxIC0NCj4gIGRyaXZlcnMvcGNpL2Nv
-bnRyb2xsZXIvcGNpLWh5cGVydi5jIHwgMSAtDQo+ICA2IGZpbGVzIGNoYW5nZWQsIDggZGVsZXRp
-b25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC94ODYvaHlwZXJ2L2lycWRvbWFpbi5jIGIv
-YXJjaC94ODYvaHlwZXJ2L2lycWRvbWFpbi5jDQo+IGluZGV4IDZkNzkwNjM2YzhiOTUuLmIzYWQ1
-MGE4NzRkY2EgMTAwNjQ0DQo+IC0tLSBhL2FyY2gveDg2L2h5cGVydi9pcnFkb21haW4uYw0KPiAr
-KysgYi9hcmNoL3g4Ni9oeXBlcnYvaXJxZG9tYWluLmMNCj4gQEAgLTMxNiw3ICszMTYsNiBAQCBz
-dGF0aWMgYm9vbCBodl9pbml0X2Rldl9tc2lfaW5mbyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVj
-dCBpcnFfZG9tYWluICpkb21haW4sDQo+ICAJCXJldHVybiBmYWxzZTsNCj4gDQo+ICAJY2hpcC0+
-ZmxhZ3MgfD0gSVJRQ0hJUF9TS0lQX1NFVF9XQUtFIHwgSVJRQ0hJUF9NT1ZFX0RFRkVSUkVEOw0K
-PiAtCWNoaXAtPmlycV9yZXRyaWdnZXIgPSBpcnFfY2hpcF9yZXRyaWdnZXJfaGllcmFyY2h5Ow0K
-PiANCj4gIAlpbmZvLT5vcHMtPm1zaV9wcmVwYXJlID0gcGNpX21zaV9wcmVwYXJlOw0KPiANCj4g
-ZGlmZiAtLWdpdCBhL2FyY2gveDg2L2tlcm5lbC9hcGljL2lvX2FwaWMuYyBiL2FyY2gveDg2L2tl
-cm5lbC9hcGljL2lvX2FwaWMuYw0KPiBpbmRleCA3ZDcxNzVkMDEyMjg4Li4xOGY0OWEyNTFmMjNi
-IDEwMDY0NA0KPiAtLS0gYS9hcmNoL3g4Ni9rZXJuZWwvYXBpYy9pb19hcGljLmMNCj4gKysrIGIv
-YXJjaC94ODYva2VybmVsL2FwaWMvaW9fYXBpYy5jDQo+IEBAIC0xODU3LDcgKzE4NTcsNiBAQCBz
-dGF0aWMgc3RydWN0IGlycV9jaGlwIGlvYXBpY19jaGlwIF9fcmVhZF9tb3N0bHkgPSB7DQo+ICAJ
-LmlycV9hY2sJCT0gaXJxX2NoaXBfYWNrX3BhcmVudCwNCj4gIAkuaXJxX2VvaQkJPSBpb2FwaWNf
-YWNrX2xldmVsLA0KPiAgCS5pcnFfc2V0X2FmZmluaXR5CT0gaW9hcGljX3NldF9hZmZpbml0eSwN
-Cj4gLQkuaXJxX3JldHJpZ2dlcgkJPSBpcnFfY2hpcF9yZXRyaWdnZXJfaGllcmFyY2h5LA0KPiAg
-CS5pcnFfZ2V0X2lycWNoaXBfc3RhdGUJPSBpb2FwaWNfaXJxX2dldF9jaGlwX3N0YXRlLA0KPiAg
-CS5mbGFncwkJCT0gSVJRQ0hJUF9TS0lQX1NFVF9XQUtFIHwgSVJRQ0hJUF9NT1ZFX0RFRkVSUkVE
-IHwNCj4gIAkJCQkgIElSUUNISVBfQUZGSU5JVFlfUFJFX1NUQVJUVVAsDQo+IEBAIC0xODcxLDcg
-KzE4NzAsNiBAQCBzdGF0aWMgc3RydWN0IGlycV9jaGlwIGlvYXBpY19pcl9jaGlwIF9fcmVhZF9t
-b3N0bHkgPSB7DQo+ICAJLmlycV9hY2sJCT0gaXJxX2NoaXBfYWNrX3BhcmVudCwNCj4gIAkuaXJx
-X2VvaQkJPSBpb2FwaWNfaXJfYWNrX2xldmVsLA0KPiAgCS5pcnFfc2V0X2FmZmluaXR5CT0gaW9h
-cGljX3NldF9hZmZpbml0eSwNCj4gLQkuaXJxX3JldHJpZ2dlcgkJPSBpcnFfY2hpcF9yZXRyaWdn
-ZXJfaGllcmFyY2h5LA0KPiAgCS5pcnFfZ2V0X2lycWNoaXBfc3RhdGUJPSBpb2FwaWNfaXJxX2dl
-dF9jaGlwX3N0YXRlLA0KPiAgCS5mbGFncwkJCT0gSVJRQ0hJUF9TS0lQX1NFVF9XQUtFIHwNCj4g
-IAkJCQkgIElSUUNISVBfQUZGSU5JVFlfUFJFX1NUQVJUVVAsDQo+IGRpZmYgLS1naXQgYS9hcmNo
-L3g4Ni9rZXJuZWwvYXBpYy9tc2kuYyBiL2FyY2gveDg2L2tlcm5lbC9hcGljL21zaS5jDQo+IGlu
-ZGV4IDkxNjAyMjdiOWIzMmEuLmFhZDJmMTVlYjIxNzYgMTAwNjQ0DQo+IC0tLSBhL2FyY2gveDg2
-L2tlcm5lbC9hcGljL21zaS5jDQo+ICsrKyBiL2FyY2gveDg2L2tlcm5lbC9hcGljL21zaS5jDQo+
-IEBAIC0yNDYsNyArMjQ2LDYgQEAgc3RhdGljIGJvb2wgeDg2X2luaXRfZGV2X21zaV9pbmZvKHN0
-cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGlycV9kb21haW4gKmRvbWFpbiwNCj4gIAlpbmZvLT5v
-cHMtPm1zaV9wcmVwYXJlCQk9IHg4Nl9tc2lfcHJlcGFyZTsNCj4gDQo+ICAJaW5mby0+Y2hpcC0+
-aXJxX2FjawkJPSBpcnFfY2hpcF9hY2tfcGFyZW50Ow0KPiAtCWluZm8tPmNoaXAtPmlycV9yZXRy
-aWdnZXIJPSBpcnFfY2hpcF9yZXRyaWdnZXJfaGllcmFyY2h5Ow0KPiAgCWluZm8tPmNoaXAtPmZs
-YWdzCQl8PSBJUlFDSElQX1NLSVBfU0VUX1dBS0UgfA0KPiAgCQkJCQkgICBJUlFDSElQX0FGRklO
-SVRZX1BSRV9TVEFSVFVQOw0KPiANCj4gQEAgLTMxMyw3ICszMTIsNiBAQCBzdGF0aWMgc3RydWN0
-IGlycV9jaGlwIGRtYXJfbXNpX2NvbnRyb2xsZXIgPSB7DQo+ICAJLmlycV9tYXNrCQk9IGRtYXJf
-bXNpX21hc2ssDQo+ICAJLmlycV9hY2sJCT0gaXJxX2NoaXBfYWNrX3BhcmVudCwNCj4gIAkuaXJx
-X3NldF9hZmZpbml0eQk9IG1zaV9kb21haW5fc2V0X2FmZmluaXR5LA0KPiAtCS5pcnFfcmV0cmln
-Z2VyCQk9IGlycV9jaGlwX3JldHJpZ2dlcl9oaWVyYXJjaHksDQo+ICAJLmlycV9jb21wb3NlX21z
-aV9tc2cJPSBkbWFyX21zaV9jb21wb3NlX21zZywNCj4gIAkuaXJxX3dyaXRlX21zaV9tc2cJPSBk
-bWFyX21zaV93cml0ZV9tc2csDQo+ICAJLmZsYWdzCQkJPSBJUlFDSElQX1NLSVBfU0VUX1dBS0Ug
-fCBJUlFDSElQX01PVkVfREVGRVJSRUQgfA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC94ODYva2VybmVs
-L2hwZXQuYyBiL2FyY2gveDg2L2tlcm5lbC9ocGV0LmMNCj4gaW5kZXggOGRjN2I3MTBlMTI1MC4u
-MmJiN2E2ZjQ2NmFmMyAxMDA2NDQNCj4gLS0tIGEvYXJjaC94ODYva2VybmVsL2hwZXQuYw0KPiAr
-KysgYi9hcmNoL3g4Ni9rZXJuZWwvaHBldC5jDQo+IEBAIC01MDksNyArNTA5LDYgQEAgc3RhdGlj
-IHN0cnVjdCBpcnFfY2hpcCBocGV0X21zaV9jb250cm9sbGVyIF9fcm9fYWZ0ZXJfaW5pdCA9IHsN
-Cj4gIAkuaXJxX21hc2sgPSBocGV0X21zaV9tYXNrLA0KPiAgCS5pcnFfYWNrID0gaXJxX2NoaXBf
-YWNrX3BhcmVudCwNCj4gIAkuaXJxX3NldF9hZmZpbml0eSA9IG1zaV9kb21haW5fc2V0X2FmZmlu
-aXR5LA0KPiAtCS5pcnFfcmV0cmlnZ2VyID0gaXJxX2NoaXBfcmV0cmlnZ2VyX2hpZXJhcmNoeSwN
-Cj4gIAkuaXJxX3dyaXRlX21zaV9tc2cgPSBocGV0X21zaV93cml0ZV9tc2csDQo+ICAJLmZsYWdz
-ID0gSVJRQ0hJUF9TS0lQX1NFVF9XQUtFIHwgSVJRQ0hJUF9BRkZJTklUWV9QUkVfU1RBUlRVUCwN
-Cj4gIH07DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZC9pbml0LmMgYi9kcml2ZXJz
-L2lvbW11L2FtZC9pbml0LmMNCj4gaW5kZXggOGE0MTBkNGFhMzcwNC4uMGQyMjMyNDU2ODkxMSAx
-MDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9hbWQvaW5pdC5jDQo+ICsrKyBiL2RyaXZlcnMv
-aW9tbXUvYW1kL2luaXQuYw0KPiBAQCAtMjQ3Nyw3ICsyNDc3LDYgQEAgc3RhdGljIHN0cnVjdCBp
-cnFfY2hpcCBpbnRjYXB4dF9jb250cm9sbGVyID0gew0KPiAgCS5pcnFfdW5tYXNrCQk9IGludGNh
-cHh0X3VubWFza19pcnEsDQo+ICAJLmlycV9tYXNrCQk9IGludGNhcHh0X21hc2tfaXJxLA0KPiAg
-CS5pcnFfYWNrCQk9IGlycV9jaGlwX2Fja19wYXJlbnQsDQo+IC0JLmlycV9yZXRyaWdnZXIJCT0g
-aXJxX2NoaXBfcmV0cmlnZ2VyX2hpZXJhcmNoeSwNCj4gIAkuaXJxX3NldF9hZmZpbml0eSAgICAg
-ICA9IGludGNhcHh0X3NldF9hZmZpbml0eSwNCj4gIAkuaXJxX3NldF93YWtlCQk9IGludGNhcHh0
-X3NldF93YWtlLA0KPiAgCS5mbGFncwkJCT0gSVJRQ0hJUF9NQVNLX09OX1NVU1BFTkQgfCBJUlFD
-SElQX01PVkVfREVGRVJSRUQsDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3BjaS9jb250cm9sbGVy
-L3BjaS1oeXBlcnYuYyBiL2RyaXZlcnMvcGNpL2NvbnRyb2xsZXIvcGNpLWh5cGVydi5jDQo+IGlu
-ZGV4IDA1NmQzNzliM2NlZTQuLmEwMDRiMDhkNjhmZTkgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMv
-cGNpL2NvbnRyb2xsZXIvcGNpLWh5cGVydi5jDQo+ICsrKyBiL2RyaXZlcnMvcGNpL2NvbnRyb2xs
-ZXIvcGNpLWh5cGVydi5jDQo+IEBAIC0yMTE5LDcgKzIxMTksNiBAQCBzdGF0aWMgYm9vbCBodl9w
-Y2llX2luaXRfZGV2X21zaV9pbmZvKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGlycV9kb21h
-aW4gKmRvbQ0KPiAgCWluZm8tPm9wcy0+bXNpX3ByZXBhcmUgPSBodl9tc2lfcHJlcGFyZTsNCj4g
-DQo+ICAJY2hpcC0+aXJxX3NldF9hZmZpbml0eSA9IGlycV9jaGlwX3NldF9hZmZpbml0eV9wYXJl
-bnQ7DQo+IC0JY2hpcC0+aXJxX3JldHJpZ2dlciA9IGlycV9jaGlwX3JldHJpZ2dlcl9oaWVyYXJj
-aHk7DQo+IA0KPiAgCWlmIChJU19FTkFCTEVEKENPTkZJR19YODYpKQ0KPiAgCQljaGlwLT5mbGFn
-cyB8PSBJUlFDSElQX01PVkVfREVGRVJSRUQ7DQo+IC0tDQo+IDIuNDMuMA0KPiANCg0K
+On Tue, 22 Sept 2026 at 13:39, Francesco Valla <francesco@valla.it> wrote:
+>
+> On Tue, Sep 22, 2026 at 09:58:53AM -0600, Mathieu Poirier wrote:
+> > On Wed, Sep 16, 2026 at 11:10:51PM +0200, Francesco Valla wrote:
+> > > Depending on the driver originating them, data buffers used for virtio
+> > > communication can either:
+> > >
+> > >   - already be allocated from the coherent memory area that is
+> > >     accessible by the remote processor; this is the case of rpmsg
+> > >     and the rproc flavor of virtio-console;
+> > >   - be allocated from generic kmem, and thus not accessible directly by
+> > >     the remote processor.
+> > >
+> > > Exploiting the map operations, which are used by the virtio framework
+> > > when VIRTIO_F_ACCESS_PLATFORM is part of a vdev's feature flags, add
+> > > bounce buffering for the second case: when the map() callback is called
+> > > for a buffer, one or more pages of coherent memory are allocated and
+> > > data is copied to them, then they are exposed to the remote processor;
+> > > the data is  then bounced back on unmap().
+> > >
+> > > The first case is not impacted, since buffers already suitable for
+> > > remote transmission are passed through.
+> > >
+> > > With the bounce buffering in place, any kind of virtio device can be
+> > > supported through the remoteproc-virtio transport, at least from a
+> > > data exchange standpoint.
+> >
+> > Is this _necessary_ for the imx93 platform you are implementing feature for?
+> >
+>
+> If I don't want to fundamentally change how the remoteproc integration
+> works (i.e.: using buffers only from a pre-shared area), yes. While in
+> my test environment the Cortex-M33 serving as remoteproc is able to
+> access the whole RAM space, that is not always the case.
+
+The first sentence tells me it is mandatory while the second says it
+is not.  I understand the use case but don't want to bloat the
+subsystem with code that is trying to address a problem you currently
+don't have.
+
+
+> This is even more important for mixed-criticality-ready processors (say:
+> i.MX95), where access to different memory areas si defined even before
+> the various application cores are started.
+>
+> For the sake of completeness, there *might be* a completely different
+> approach that would work: modify every virtio driver to make sure they
+> allocate buffers from the pre-shared memory area (that is, the coherent
+> memory pool). That approach would even avoid the bounce buffering and
+> allow for zero-copy transmission. I even started working on that,
+> defining virtio helpers to do the allocations instead of using raw
+> kmallocs, but then I dropped the idea because of the magnitude of the
+> changes required.
+>
+> > >
+> > > Signed-off-by: Francesco Valla <francesco@valla.it>
+> > > ---
+> > >  drivers/remoteproc/remoteproc_virtio.c | 182 +++++++++++++++++++++++++++++++--
+> > >  include/linux/remoteproc.h             |  14 +++
+> > >  2 files changed, 190 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
+> > > index cfd66d9d1c9e..d21b3b8044df 100644
+> > > --- a/drivers/remoteproc/remoteproc_virtio.c
+> > > +++ b/drivers/remoteproc/remoteproc_virtio.c
+> > > @@ -241,7 +241,14 @@ static void rproc_virtio_reset(struct virtio_device *vdev)
+> > >     dev_dbg(&vdev->dev, "reset !\n");
+> > >  }
+> > >
+> > > -/* provide the vdev features as retrieved from the firmware */
+> > > +/* Provide the vdev features as retrieved from the firmware, plus the following
+> > > + * additional ones:
+> > > + *   - VIRTIO_F_VERSION_1 that is required by some non-rpmsg virtio devices
+> > > + *   - VIRTIO_F_ACCESS_PLATFORM to force usage of the map operations
+> > > + */
+> > > +#define RPROC_VIRTIO_STATIC_FEATURES \
+> > > +   ((1ULL << VIRTIO_F_VERSION_1) | (1ULL << VIRTIO_F_ACCESS_PLATFORM))
+> > > +
+> > >  static u64 rproc_virtio_get_features(struct virtio_device *vdev)
+> > >  {
+> > >     struct rproc_vdev *rvdev = vdev_to_rvdev(vdev);
+> > > @@ -249,7 +256,7 @@ static u64 rproc_virtio_get_features(struct virtio_device *vdev)
+> > >
+> > >     rsc = (void *)rvdev->rproc->table_ptr + rvdev->rsc_offset;
+> > >
+> > > -   return rsc->dfeatures | (1ULL << VIRTIO_F_VERSION_1);
+> > > +   return rsc->dfeatures | RPROC_VIRTIO_STATIC_FEATURES;
+> > >  }
+> > >
+> > >  static void rproc_transport_features(struct virtio_device *vdev)
+> > > @@ -275,16 +282,16 @@ static int rproc_virtio_finalize_features(struct virtio_device *vdev)
+> > >     /* Give virtio_rproc a chance to accept features. */
+> > >     rproc_transport_features(vdev);
+> > >
+> > > -   /* Make sure we don't have any features > 32 bits except VIRTIO_F_VERSION_1 */
+> > > +   /* Make sure we don't have any features > 32 bits */
+> > >     if (WARN_ON_ONCE((u32)vdev->features !=
+> > > -                    (vdev->features & ~(1ULL << VIRTIO_F_VERSION_1))))
+> > > +                    (vdev->features & ~RPROC_VIRTIO_STATIC_FEATURES)))
+> > >             return -1;
+> > >
+> > >     /*
+> > >      * Remember the finalized features of our vdev, and provide it
+> > >      * to the remote processor once it is powered on.
+> > >      */
+> > > -   rsc->gfeatures = vdev->features & ~(1ULL << VIRTIO_F_VERSION_1);
+> > > +   rsc->gfeatures = vdev->features & ~RPROC_VIRTIO_STATIC_FEATURES;
+> > >
+> > >     return 0;
+> > >  }
+> > > @@ -337,6 +344,151 @@ static const struct virtio_config_ops rproc_virtio_config_ops = {
+> > >     .set            = rproc_virtio_set,
+> > >  };
+> > >
+> > > +static inline unsigned int rproc_virtio_bounce_slot(struct device *dma_dev,
+> > > +                                               dma_addr_t dma_handle)
+> > > +{
+> > > +   const dma_addr_t dma_base = dma_dev_coherent_base(dma_dev);
+> > > +
+> > > +   return (dma_handle - dma_base) >> PAGE_SHIFT;
+> > > +}
+> > > +
+> > > +static dma_addr_t rproc_virtio_map_page(union virtio_map map, struct page *page,
+> > > +                                   unsigned long offset, size_t size,
+> > > +                                   enum dma_data_direction dir,
+> > > +                                   unsigned long attrs)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +   struct rproc_vdev *rvdev = dev_get_drvdata(dev);
+> > > +   dma_addr_t dma_base = dma_dev_coherent_base(dev);
+> > > +   size_t dma_size = dma_dev_coherent_size(dev);
+> > > +   phys_addr_t paddr = page_to_phys(page) + offset;
+> > > +   void *vaddr = page_to_virt(page) + offset;
+> > > +   struct rproc_map_record *record;
+> > > +   dma_addr_t map_handle;
+> > > +   void *bounce;
+> > > +
+> > > +   // No need to allocate a bounce buffer if the memory to map is already
+> > > +   // part of the device's coherent pool.
+> > > +   if (paddr >= dma_base && paddr < (dma_base + dma_size)) {
+> > > +           // The allocation details will be recorded also in this case,
+> > > +           // indicating that no bounce buffer was allocated.
+> > > +           map_handle = (dma_addr_t)paddr;
+> > > +           bounce = NULL;
+> > > +   } else {
+> > > +           // Allocate bounce buffer from device coherent memory
+> > > +           bounce = dma_alloc_coherent(dev, size, &map_handle, GFP_KERNEL | __GFP_ZERO);
+> > > +           if (!bounce)
+> > > +                   return DMA_MAPPING_ERROR;
+> > > +
+> > > +           // Copy data to bounce buffer
+> > > +           memcpy(bounce, vaddr, size);
+> > > +   }
+> > > +
+> > > +   // Save bounce details
+> > > +   record = &rvdev->map_records[rproc_virtio_bounce_slot(dev, map_handle)];
+> > > +
+> > > +   record->original = vaddr;
+> > > +   record->size = size;
+> > > +   record->bounce = bounce;
+> > > +
+> > > +   return map_handle;
+> > > +}
+> > > +
+> > > +static void rproc_virtio_unmap_page(union virtio_map map, dma_addr_t map_handle,
+> > > +                               size_t size, enum dma_data_direction dir,
+> > > +                               unsigned long attrs)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +   struct rproc_vdev *rvdev = dev_get_drvdata(dev);
+> > > +   unsigned int slot = rproc_virtio_bounce_slot(dev, map_handle);
+> > > +   struct rproc_map_record *record = &rvdev->map_records[slot];
+> > > +
+> > > +   WARN_ON(size != record->size);
+> > > +
+> > > +   // If a bounce buffer was used, copy data back to original one
+> > > +   if (record->bounce) {
+> > > +           memcpy(record->original, record->bounce, record->size);
+> > > +
+> > > +           dma_free_coherent(dev, record->size, record->bounce, map_handle);
+> > > +   }
+> > > +
+> > > +   record->original = NULL;
+> > > +   record->size = 0;
+> > > +   record->bounce = NULL;
+> > > +}
+> > > +
+> > > +static void rproc_virtio_sync_single_for_cpu(union virtio_map map,
+> > > +                                        dma_addr_t map_handle,
+> > > +                                        size_t size,
+> > > +                                        enum dma_data_direction dir)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +
+> > > +   dma_sync_single_range_for_cpu(dev, (map_handle & PAGE_MASK),
+> > > +                                 offset_in_page(map_handle), size, dir);
+> > > +}
+> > > +
+> > > +static void rproc_virtio_sync_single_for_device(union virtio_map map,
+> > > +                                           dma_addr_t map_handle,
+> > > +                                           size_t size,
+> > > +                                           enum dma_data_direction dir)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +
+> > > +   dma_sync_single_range_for_device(dev, (map_handle & PAGE_MASK),
+> > > +                                    offset_in_page(map_handle), size, dir);
+> > > +}
+> > > +
+> > > +static void *rproc_virtio_alloc(union virtio_map map, size_t size,
+> > > +                           dma_addr_t *map_handle, gfp_t gfp)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +
+> > > +   return dma_alloc_coherent(dev, size, map_handle, gfp);
+> > > +}
+> > > +
+> > > +static void rproc_virtio_free(union virtio_map map, size_t size, void *vaddr,
+> > > +                         dma_addr_t map_handle, unsigned long attrs)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +
+> > > +   dma_free_coherent(dev, size, vaddr, map_handle);
+> > > +}
+> > > +
+> > > +static bool rproc_virtio_need_sync(union virtio_map map, dma_addr_t map_handle)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +
+> > > +   return dma_need_sync(dev, map_handle);
+> > > +}
+> > > +
+> > > +static int rproc_virtio_mapping_error(union virtio_map map, dma_addr_t map_handle)
+> > > +{
+> > > +   if (unlikely(map_handle == DMA_MAPPING_ERROR))
+> > > +           return -ENOMEM;
+> > > +
+> > > +   return 0;
+> > > +}
+> > > +
+> > > +static inline size_t rproc_virtio_max_mapping_size(union virtio_map map)
+> > > +{
+> > > +   struct device *dev = map.dma_dev;
+> > > +
+> > > +   return dma_dev_coherent_size(dev);
+> > > +}
+> > > +
+> > > +static const struct virtio_map_ops rproc_virtio_map_ops = {
+> > > +   .map_page = rproc_virtio_map_page,
+> > > +   .unmap_page = rproc_virtio_unmap_page,
+> > > +   .sync_single_for_cpu = rproc_virtio_sync_single_for_cpu,
+> > > +   .sync_single_for_device = rproc_virtio_sync_single_for_device,
+> > > +   .alloc = rproc_virtio_alloc,
+> > > +   .free = rproc_virtio_free,
+> > > +   .need_sync = rproc_virtio_need_sync,
+> > > +   .mapping_error = rproc_virtio_mapping_error,
+> > > +   .max_mapping_size = rproc_virtio_max_mapping_size,
+> > > +};
+> > > +
+> > >  /*
+> > >   * This function is called whenever vdev is released, and is responsible
+> > >   * to decrement the remote processor's refcount which was taken when vdev was
+> > > @@ -355,6 +507,8 @@ static void rproc_virtio_dev_release(struct device *dev)
+> > >     of_reserved_mem_device_release(&rvdev->pdev->dev);
+> > >     dma_release_coherent_memory(&rvdev->pdev->dev);
+> > >
+> > > +   kvfree(rvdev->map_records);
+> > > +
+> > >     put_device(&rvdev->pdev->dev);
+> > >  }
+> > >
+> > > @@ -429,13 +583,29 @@ static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+> > >             of_reserved_mem_device_init_by_idx(dev, np, 0);
+> > >     }
+> > >
+> > > +   /* Allocate one tracking record for each page of the device reserved
+> > > +    * memory. Contiguous memory is not required for this array, which can
+> > > +    * also be quite big (depending on the size of the coherent memory), so
+> > > +    * let's use vmalloc for this allocation.
+> > > +    */
+> > > +   rvdev->map_records = kvcalloc(dma_dev_coherent_size(dev) >> PAGE_SHIFT,
+> > > +                                 sizeof(*rvdev->map_records),
+> > > +                                 GFP_KERNEL);
+> > > +   if (!rvdev->map_records) {
+> > > +           dev_err(dev, "failed to allocate memory for map records\n");
+> > > +           return -ENOMEM;
+> > > +   }
+> > > +
+> > >     /* Allocate virtio device */
+> > >     vdev = kzalloc_obj(*vdev);
+> > > -   if (!vdev)
+> > > +   if (!vdev) {
+> > > +           kvfree(rvdev->map_records);
+> > >             return -ENOMEM;
+> > > +   }
+> > >
+> > >     vdev->id.device = id;
+> > >     vdev->config = &rproc_virtio_config_ops;
+> > > +   vdev->map = &rproc_virtio_map_ops;
+> > >     vdev->dev.parent = dev;
+> > >     vdev->dev.release = rproc_virtio_dev_release;
+> > >
+> > > diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+> > > index c3ba51fe9e54..2ff48b505ac0 100644
+> > > --- a/include/linux/remoteproc.h
+> > > +++ b/include/linux/remoteproc.h
+> > > @@ -339,10 +339,23 @@ struct rproc_vring {
+> > >     struct virtqueue *vq;
+> > >  };
+> > >
+> > > +/**
+> > > + * struct rproc_map_record - remoteproc map record
+> > > + * @original:      original virtual address
+> > > + * @num: allocation size
+> > > + * @bounce: bounce buffer virtual address (NULL if not used)
+> > > + */
+> > > +struct rproc_map_record {
+> > > +   void *original;
+> > > +   size_t size;
+> > > +   void *bounce;
+> > > +};
+> > > +
+> > >  /**
+> > >   * struct rproc_vdev - remoteproc state for a supported virtio device
+> > >   * @subdev: handle for registering the vdev as a rproc subdevice
+> > >   * @pdev: remoteproc virtio platform device
+> > > + * @map_records: array of map records
+> > >   * @id: virtio device id (as in virtio_ids.h)
+> > >   * @node: list node
+> > >   * @rproc: the rproc handle
+> > > @@ -358,6 +371,7 @@ struct rproc_vdev {
+> > >     unsigned int id;
+> > >     struct list_head node;
+> > >     struct rproc *rproc;
+> > > +   struct rproc_map_record *map_records;
+> > >     u32 rsc_offset;
+> > >     u32 index;
+> > >     unsigned int num_vrings;
+> > >
+> > > --
+> > > 2.55.0
+> > >
+>
+> Regards,
+> Francesco
+>
