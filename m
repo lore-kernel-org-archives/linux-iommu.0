@@ -1,179 +1,239 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 154444E73C5
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 17:08:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A470357D18
+	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 17:13:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790183285; cv=none; b=KZ9wzzUFtEQT0h2mcGdumwTK70+T8209XtCQSyLHMbkNkuUsUzwv8Q/RdHCkM1aPvzzfN0A2/qr8veweIP9ocm08gh0VDFRK0i+r/ORIXL0wm68ezffsMzhEiGcCvc3mFQegwznoaRfPYqo+LjIb7R5NkgbGezq1k2LIj8+T4xg=
+	t=1790183617; cv=none; b=WvcSUCXj7/Xw1VoxzCeQAQ1kyWmSwKFgrcRgywI/bbAemyToLdJM6AdzrgmhGpEufcJEYkLnRwDZZ9HgOpUl7GWfm6aLOHYgWkrtwM02G5qMTjv83BL51DoetahHSRGfSjx6jD0Z11rj5Y+Qu/PsaEtqJaYeWuRjsHrgx7qEUD4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790183285; c=relaxed/simple;
-	bh=cNl6b6j0ZD9iEUUf0B0ghdkeaT66llrYIqOEGQey0qQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=elTIDraMjLN7yBUvgETfnQXzzj7KiRnksS1XabaG5r0Kx1NtcPmGa0xfUk9lGf4gSDUxOBq4m8PLgNyanazxBvSCFNVA3mBMAynf/p9yQcJ2yTDEYG0gJiQNcdMCh8L0FgZ+DMXjfrkFC/xHlSc8Zyx47W1HXoNQZjYcpyFoHn4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SVZi0vuM; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1790183617; c=relaxed/simple;
+	bh=kKcD10YfKOjOhO9AKT3lVc0OW49OXp0A436pFWlkGLI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OrnzZrDFj68Ywp3P26yxOqLXk10EDtrbocCua+rT+QIIjr1x7ue+rcdiaC7ke0nnuMhFEX8s1nFzpussPpSXZeX6e7w707EgSPYzIMKcAqzsRHUsJ9cXY1cWem9himQaJERO14DlsQxV+snd0/yD9+u5BWPDxE3c94MBaSyKnHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=BiP5lkrw; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SVZi0vuM"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-49e65a8f70eso1255e9.0
-        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 10:08:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790183282; x=1790788082; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+sWyggwBV1D9IUYjZa6aLkPXJtAz+OTvh2XpzdjOSmY=;
-        b=SVZi0vuMGx3BobVbLY8KLjNIzeFZzkiDkQQ+U1RzSVfJYUw6ERltw4dgxeKC48W98r
-         Fjn+60ltX3rIrID+u3JOExY8oCIxQTPu8izWMyWmsHZaqi7q92DSVOeTbwm1V5E2ipU1
-         O+PpPJUZHS24SkWOfEWfrETxL8BsfrE7jCtUiR/fhDOTXFXV+cEMUP3ju8pvA/A8PO14
-         r+bU83eiycbgPQpqhZi/Pf50w04hfqGl7x1UNsevurqNJPJSmNIi7gl30jHACOFlIJtF
-         gioo7BD1dyGwCyP/6MmcoXu85x4poEa24MUsGdK/R0FvYrKpzTovp1wHCMFQWqYOzb6e
-         eaHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790183282; x=1790788082;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+sWyggwBV1D9IUYjZa6aLkPXJtAz+OTvh2XpzdjOSmY=;
-        b=XCHhReiEhyaxq7stUlUF+HpOjEg0UdcHoYYSXLswd1az3/j/YrsvdqcAZnaYN1zi4s
-         eobPLTCgzWTVmaOxoGLo8dFYs/QYyXTXN0Bd2mOtDx2yEesaqXOS0MHl6elahu0bDU9O
-         b54kd89ge5pdCP7YGDb9ROdO+0YixJrdQcrxPr8v9qfLrz4c76vdOcIK88TM3mfG25EK
-         W4SS0aPjg4086Quh75x3EXbFpH4U+yQPnu4Ib4awHzOdL8s1gdnvWT5sxE3vNuMMSAbW
-         XpjSH/yhyJ11IQsyrdcr5Q1FbhezF5pf5GcI1pxUwabRTn9E1/upBB0f1QSnxY14QA5g
-         EmbA==
-X-Forwarded-Encrypted: i=1; AKwUvBy7AoEmNFQ71jJH7cnuHREcLgpDrlwXIId82sc5eqFE/Sh+toHwZqXZkJCZcNl2YYDceGkILw==@lists.linux.dev
-X-Gm-Message-State: AFuF++lFas6savxp/TgscKTswoKi/mmqhp9eohWir1Sve/qpRfe6kNvH
-	lkZa+d6oryUu7ayo7o9JPTgkxPYNCFYivY+pwf2rOrqVHHriPoDi3h1FWqiDmWjY+Q==
-X-Gm-Gg: AYBFou0Q1oNHbTS+EM8tad8jRG6yz+QJnerLFRYFhrIFgrNqiDqCbKjNeDLYjcx9bmy
-	kdz9huPi1YWYOpZA5fk86xqS4tYRlsCDCLwYysWAbEIGZ3kN2SzEyLGYGl7asAm9NcJddFNRpJd
-	d2l3orkFjW+rPNztn8u1NNOGURVCut1ma+oX6ES50/3ab0Yz1BmGfDEn21P8r230//btOgsTlJH
-	/qWw5cjd1B+4iTKatNZx8JxD3iELpBjhahSg8+TFdzkQdN+QmbRRfbiSd307tZaHnXy6bPa6svK
-	22W/b5PbRh0BUt98X4+OFqxNGYY09V8ifyyETZ1x2ELaQ0oYhd67FUJEWX8XjW+ri7et4tkF5+K
-	rdBbzEtoAjTml1nyljdlP/njyuZgX5t/Ezfi7cxHnpbY47xs3baHlj+gPAdXMYUs3ySq0QhHxq3
-	nWiW5uuh2TETOXX71nSJVPmuiUl+esQiCBzbbtLKaQAogWwwB3IAua9y9gKbX44QmKGBjFY5cwX
-	hP769P8LN4VFN0blNS+BCeOcpyPzvCh8qGTBoyR
-X-Received: by 2002:a05:600c:4e8a:b0:49f:e185:f3ae with SMTP id 5b1f17b1804b1-49fe55e13a1mr140635e9.2.1790183281720;
-        Wed, 23 Sep 2026 10:08:01 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-49fe5bae53dsm575695e9.4.2026.09.23.10.07.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Sep 2026 10:08:00 -0700 (PDT)
-Date: Wed, 23 Sep 2026 17:07:54 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	catalin.marinas@arm.com, will@kernel.org, maz@kernel.org,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, joro@8bytes.org, mark.rutland@arm.com,
-	qperret@google.com, tabba@google.com, vdonnefort@google.com,
-	sebastianene@google.com, keirf@google.com
-Subject: Re: [PATCH v8 11/25] iommu/arm-smmu-v3-kvm: Add the kernel driver
-Message-ID: <arQHamIHuaUqlJyy@google.com>
-References: <20260922131259.2975334-1-smostafa@google.com>
- <20260922131259.2975334-12-smostafa@google.com>
- <arMbxX+sqTS3gByB@nvidia.com>
- <arO9hGmEx7c9mZAj@google.com>
- <20260923155507.GJ1540250@ziepe.ca>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="BiP5lkrw"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5F8A81516;
+	Wed, 23 Sep 2026 10:13:31 -0700 (PDT)
+Received: from [10.2.212.14] (eglon.cambridge.arm.com [10.2.212.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA8BD3F86F;
+	Wed, 23 Sep 2026 10:13:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1790183614; bh=kKcD10YfKOjOhO9AKT3lVc0OW49OXp0A436pFWlkGLI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=BiP5lkrwxmpdxyCbk6P86k78M9Kgakg9p+nsaf8PZq4oMzj2ad2rt5NQahRnjGXXZ
+	 V3xG7GTOgW1/4Er2gN9+bcdck3szQz//EpUmB8jwKqEGSmYSPq4JAyR3XIIe3Inxtw
+	 6lfn/OBUESxDFn5SNVMOtLj+aP3Ld8710wcNABjE=
+Message-ID: <8557363f-c051-4267-9fbc-f4cbb13ac35e@arm.com>
+Date: Wed, 23 Sep 2026 18:13:27 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260923155507.GJ1540250@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: Resctrl and I/O
+To: "Luck, Tony" <tony.luck@intel.com>, alex@ghiti.fr, aou@eecs.berkeley.edu,
+ babu.moger@amd.com, baolin.wang@linux.alibaba.com, ben.horgan@arm.com,
+ corbet@lwn.net, cuiyunhui@bytedance.com, Dave.Martin@arm.com,
+ fustini@kernel.org, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com,
+ palmer@dabbelt.com, pjw@kernel.org, reinette.chatre@intel.com,
+ robin.murphy@arm.com, shuah@kernel.org, tomasz.jeznach@linux.dev,
+ wangzhou1@hisilicon.com, will@kernel.org, xiaqinxin@huawei.com,
+ yuanzhu@bytedance.com, zengheng4@huawei.com,
+ zhangzhanpeng.jasper@bytedance.com
+Cc: x86@kernel.org, iommu@lists.linux.dev, linuxarm@huawei.com,
+ linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+References: <arKx__kOPe4B5gDW@agluck-desk3>
+Content-Language: en-GB
+From: James Morse <james.morse@arm.com>
+In-Reply-To: <arKx__kOPe4B5gDW@agluck-desk3>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 23, 2026 at 12:55:07PM -0300, Jason Gunthorpe wrote:
-> On Wed, Sep 23, 2026 at 11:52:36AM +0000, Mostafa Saleh wrote:
-> > I can add more info in the cover letter about the code split. Mainly:
-> > - arm-smmu-v3-kvm.c: Is the kernel driver for KVM SMMUv3 (this runs in
-> >   EL1 and can use all the kernel functions).
-> >   The main job of this driver is for discovery, it doesn't do anything
-> >   else in the runtime.
+Hi Tony,
+
+On 22/09/2026 17:51, Luck, Tony wrote:
+> Patches for ARM[1] and RISC-V[2] are both at RFC status.
 > 
-> Maybe call this el1 stub or something like that?
+> They appear to be based on similar h/w capabilities where architecture
+> specific tags can be added to transactions from I/O devices by the IOMMU
+> servicing the device. Device enumeration is handled outside of the resctrl
+> file system.
 > 
-> guest_pkvm_stub.c
-> pkvm/hyp.c
+> ARM docs say "the device name is the one listed under /sys/kernel/iommu_groups/<id>/devices/"
+
+I think using existing stuff in sysfs is a good idea.
+(Creating new things in sysfs fills me with dread!)
+
+ARM/MPAM also has platform devices that can add the CLOSID/RMID metadata.
+e.g. the GIC ITS [4] - a kind of translator for MSIs.
+
+For these we considered just using the device name as found in /sys/bus/platform/devices/,
+in the hope that can be tied back to a struct device - and we could add a callback for
+resctrl to configure the device with a CLOSID/RMID.
+(but - I've not seen a use-case for this yet - those devices generate very little traffic)
+
+
+Robin M set me straight on the iommu_group:
+Strictly that is the wrong abstraction as devices are in the same group if the
+driver can't stop them communicating, e.g. PCIe peer2peer. This doesn't mean it
+can't tell the traffic apart for CLOSID/RMID labelling.
+I picked this because its the device granularity VFIO works with.
+
+Equally, a device may create multiple streams of traffic, where only the driver
+will know what each one corresponds to.
+
+
+Using iommu_group like this may need a bit more thinking....
+If we can fall back to using a device as seen by sysfs, then the arch differences
+here could be invisible to user-space.
+
+
+> RISC-V says architecture specific device tokens are "devices or device groups"
 > 
-
-It is not really a stub and I was following the convention of
-arm-smmu-v3-(iommufd/test/sva) I think for the pkvm/ one it can be:
-- pkvm/arm-smmu-v3-pkvm.c
-- pkvm/arm-smmu-v3-nested.c
-- pkvm/arm-smmu-v3-el2.c
-- pkvm/arm-smmu-v3-hyp.c
-
-All of those are fine and for the other one:
-- arm-smmu-v3-{pkvm, nested, el2, hyp}-init.c
-- arm-smmu-v3-pkvm-el1.c
-
-Anything along this lines, otherwise it's too vague IMHO.
-
-> ?
+> In both cases assignments are made with:
 > 
-> > > > +extern struct pkvm_iommu_ops kvm_nvhe_sym(smmu_ops);
-> > > > +
-> > > > +static size_t				kvm_arm_smmu_count;
-> > > > +static struct hyp_arm_smmu_v3_device	*kvm_arm_smmu_array;
-> > > > +static size_t				kvm_arm_smmu_cur;
-> > > 
-> > > That spaces/tabs in those two lines look a bit odd..
-> > > 
-> > 
-> > These are tabs to indent the variables, similar cases exist in the
-> > SMMUv3 driver, check arm_smmu_cmdq and friends for example.
+> 	# echo {device} > {group}/devices
 > 
-> Personally I hate this style, it is a huge PITA for maintenance and
-> makes diffs bigger than they need to do. I remove it whenever I have
-> the chance :)
+> So now I'm looking at the capabilities of Intel RDT hardware. I'm ignoring
+> the implementation on the Granite Rapids CPU, and looking at what is described
+> in the RDT Architecture Specification[3]. Here are the highlights:
 
-No strong opinion I can change it.
 
+> 1) Enumeration is split between two ACPI tables. IRDT enumerates device groups
+> and provides MMIO addresses to assign CLOSID/RMID to each group.
+
+For ARM/MPAM - this would always be driver specific. The fields may be share a register
+with other things the driver needs to consider.
+The IOMMU abstracts this for its devices, but this is still something the IOMMU driver
+needs to know about.
+
+A driver hook, with a drivers/acpi fallback would be ideal.
+
+
+Do you have arbitrary grouping of devices? e.g. a USB controller and the UART.
+Or would the grouping make some sense to the OS. e.g. all the USB devices behind
+this port.
+
+Having the UART show up when you add a USB controller to a control group is a bit odd.
+
+
+> ERDT provides
+> MMIO addresses to read event counts for RMIDs and to configure cache allocation
+> bit masks and memory bandwidth limits.
+
+Arm's IOMMU does have controls/monitors that match the spec the MPAM driver needs,
+but we currently have no way to expose them through resctrl.
+The caches on the IOMMU are also relatively small - I've not yet seen anyone show that
+setting the controls there makes a big difference.
+
+
+> 2) All I/O monitoring and control is with respect to I/O caches, not to the L3
+> caches that legacy RDT features operate on.
+
+Do you have I/O traffic that can turn up in the CPU L3 cache? I think PCIe calls
+this 'cache stashing'.
+
+Arm's IOMMU is the same - but the traffic may also show up in the L3 depending on how
+the system is put together.
+
+
+> 3) The number of RMIDs supported for I/O is lower (maybe considearbly lower)
+> than the number supported for CPU monitoring.
+
+MPAM can have this happen - and today it will sanitise the values to the lowest
+common value. Considerably lower becomes considerably upsetting!
+
+I'd be interested if we have an approach for this - the IOMMU designers would argue
+they only need one RMID per device - but the system wide sanitised value means they
+have to match the rest of the system.
+
+
+For MPAM systems this shape is a big headache because on the platforms we've seen,
+the monitoring is done at the memory-controllers - so any RMID spaces get joined
+up eventually.
+
+
+> 4) Monitoring events are I/O cache occupancy, total i/o bandwidth, and i/o miss
+> bandwidth.
 > 
-> > TBH, this is a bit of a hack. The hypervisor can not allocate memory
-> > at the runtime. All of the hypervisor memory comes from a carveout
-> > allocated at boot (see kvm_hyp_reserve())
-> > 
-> > So we allocate the worst case for memory mapping with leaf granule. But
-> > the hypervisor also need to allocate L2 pointers and the SID space can
-> > be massive making the upper limit for this too large.
-> > 
-> > However, smmu_hyp_pgt_pages() defines the minimum pages required,
-> > actual allocation comes from the command line, so it is possible to
-> > tune the system without re-compiling the kernel.
-> > 
-> > Thinking about it now, we can just drop the 500 as this is the lower
-> > bound, earlier versions of this series would allocate the carveout
-> > based on this size, but it is not needed anymore.
+> 5) Current revision (1.4) of the specification doesn't include details of
+> I/O memory bandwidth control (The "IBAD" subtable of ERDT is reserved for this).
 > 
-> I see, and you can't scan the ACPI to figure out all the SIDs used at
-> this point to get an exact estimation?
-
-I thought about it, but it is complicated to scan the DT/ACPI/platform
-bus and I don't think a driver should be doing that; going through each
-device with IOMMUs, duplicating existing logic...
-
-And even with that, things as PCI won't be there as they are dynamic.
-
-I think the best way is to remove the 500 as it is hacky, and rely
-on the command line option.
-
 > 
-> Not being able to manage memory after boot is rather an extreme
-> limitation.. But a huge amount of RMM's API complexity comes from its
-> granular memory management so I can't really fault that..
+> Fitting this into resctrl
+> -------------------------
 > 
+> RISC-V description of "architecture specific device tokens" sounds great.
+> I'll have to find some ares of /sys to provide the mapping of tokens to
+> "device groups".
+> There's no association with IOMMUs, so this will be some
+> other path in /sys. Perhaps under /sys/firmware/acpi since the data comes
+> from ACPI IRDT table.
 
-Yes, that was one of the main sources of complexity with the
-para-virtual approach also.
+What about using the device behind the IOMMU instead? Presumably the kernel
+could allocate ids that don't clash with those in the IRDT, and use those
+for the IOMMU.
+
+
+> Need an info file to tell users the format and source for device tokens.
+
+I'd prefer we have one consistent way of doing this across architectures.
+Especially if we're going to add something new to sysfs.
+
+
+The sysfs path probably covers all bases - but I wouldn't want to parse that
+in the kernel.
+
+
+> I'd like to avoid limiting resctrl monitoring of CPU activity due to the small
+> number of I/O RMIDs. Perhaps don't include a "devices" file or mon_data/{i/o
+> events} files in resctrl group directories when rdtgroup::mon::rmid >=
+> num_io_rmids? But that feels clumsy.
+
+I had a half baked idea on how to do this. (which Ben has poked some holes in)
+
+Assigning a device to a ctrl/mon group needs to be able to fail. We can use this
+to re-allocate the RMID into the range the new device can use. The CPU tasks can
+be repainted to use the new value - but the obvious problem is the old data in
+the caches that uses the old RMID.
+As no new traffic will be generated for that RMID, it might be possible to keep
+it associated with the ctrl/mon group (which would now have two RMID) to keep the
+user-space view of the counters correct until the old RMID falls below the
+reallocation threshold, and it can be free'd.
+
+It's worse if we ever needed/wanted to do this with CLOSID. Two CAT bitmaps
+can be configured the same - but MBA doesn't alias in the same way. Tasks would
+be able to burst higher than the configured limit - but the size is limited by
+the size of the caches. And if no new traffic can be generated with the old
+CLOSID/RMID, then the effect can't be made to last forever.
+
+
+For a totally wild suggestion (that I don't think works here) - I had
+mooted having a second mount of resctrl for islands of the SoC where the
+properties are different. I don't think it works in this case as the IO-RMID
+presumably gets seen by some other monitors later.
+
+
+> Domains are based on I/O L3 cache instances. So a new rdt_resource with
+> new line in the schemata file for IOL3 cache masks per domain. In the
+> future when there are I/O MBA controls, new line(s) for those too.
+
 
 Thanks,
-Mostafa
 
-> Jason
+James
+
+
+[4] https://support.arm.com/documentation/ihi0069/hb/?lang=en search for "MPAM" in the pdf.
+
+> 
+> [1] https://lore.kernel.org/linux-iommu/20260901140802.1215508-1-xiaqinxin@huawei.com/
+> [2] https://lore.kernel.org/lkml/20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com/
+> [3] Linked from the bottom of https://www.intel.com/sdm under "Related Specifications", or
+> direct link: https://cdrdv2.intel.com/v1/dl/getContent/789566?erpm_id=1158389_ts1790091453223
+
