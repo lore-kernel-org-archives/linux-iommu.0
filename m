@@ -1,92 +1,157 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C2B7352C52
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 07:58:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E65DE1C695;
+	Wed, 23 Sep 2026 08:31:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790150323; cv=none; b=cELCl32UL3zJvSX+lNUXoK0brdxXSprueFLDu4kmkDImKjGkFQbMun3gxXhWWoiYi11mmwquioS/kjS5+yafEuq1CvK13n1+vD20lsxAO1pAf2dwPBRO7r2BI5pG8yayXtdFu8eP37Cd0g/+R+B7HXerCy8V/408fsanoiMItbU=
+	t=1790152283; cv=none; b=mmvoUaD+W8DBkHSTKIFmMCzLcnHvy1aoO0/aavdEU6HONEKFB4IBIE56d3RfI0CidWd3mZMRMxwTYA9E1GuqDghKglwx4Z6Z9dhQA0VCq9UlpvSobkr7IFzq1kac6geJINBD7RkjAZQGyui5yY49l+26yKsJf+RB4Tx15SYJeck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790150323; c=relaxed/simple;
-	bh=Dk4ell1sggcPNMor+D+EIrp0EtboUTwYE7AbGXYU1fI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=TO1HvFg2id2tAiQibbNCPs+DtF5To7xocAe3UqqC2JBtaJBOEuWrIX2O4EFtG7yWWRfz0gX7S81ahrWacRA88RyZ/qj9YeGa6lvq9bfbKwSVJSE7ifLjQPD3QldqycF7Zm9v40kefiPP8rwFBEcqe2C9bXnY18Ou860aTxOcqEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=jli3Jpy6; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1790152283; c=relaxed/simple;
+	bh=paNO5eY1DEgK8W03rG7sbOrBlMZLVg8sLc5gM/Q+wQQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=EdzOMN9n7DHG/EbxEX47/MWsGC+a6HOtaEegg/Lj+7XJ03H/GSYzmGUsNMYYcVEU2n4fqluH3tYhV70+7IDwM8O8ZfWmH/irM+mrqF/F7b65PKp4rBUJ0X7P9biJ77pWMFm+QmEzpyyZpR7v2xBJ/r8NIPsmdvyhdW2vXPsyTZw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OTkYlM77; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="jli3Jpy6"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20260923075831euoutp01602a469f8e410af4f7fecb243368ea85~X5DlM5fHU2782927829euoutp01P
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 07:58:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20260923075831euoutp01602a469f8e410af4f7fecb243368ea85~X5DlM5fHU2782927829euoutp01P
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1790150311;
-	bh=NLHiHP9oES0/4v1znH/+Y+tVY/g8uuZAdpV7fjYmUCs=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=jli3Jpy6XpcTkS5JhomWNFcZYqqd60JWnlK27Wva6vrjXd+FMvwgRrzLVv+yc44We
-	 VYH/3djBt0jSf4mcP8x1Z4Yg9J8tHUwZXXCnohqlEpvwRIlOCX+6sToJtLv7AgvxLW
-	 Q3yi+6gtak2IK395VrmKfP1pJ9IapUp5wuBrk8Uw=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260923075831eucas1p10e4827538fd7f70f278f11157225c07a~X5Dk9kAZT1276212762eucas1p1Y;
-	Wed, 23 Sep 2026 07:58:31 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260923075830eusmtip24d59db8c7701f60d390302eb88d1b12c~X5Dka9FWj3018730187eusmtip2B;
-	Wed, 23 Sep 2026 07:58:30 +0000 (GMT)
-Message-ID: <dcd1f1d2-a15e-4998-b57c-6f4de21ebf6f@samsung.com>
-Date: Wed, 23 Sep 2026 09:58:30 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OTkYlM77"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C62941F000FF;
+	Wed, 23 Sep 2026 08:31:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790152278;
+	bh=XxmbCQ7HTgeDaajizNY6/YBNTKC18nSpZXzsHrNVM84=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=OTkYlM77Ug42qVxwfxT90vI8uqJaGZuINeDuY7JZQ7999GuMgboyvG3xtQK4xUOl6
+	 zd/wjFpIioagBtMBTbIRO4+LWzQDIAK3I7vBM0rpdAp3+D48idK6/rLGv/wp810wau
+	 kBIp+Yuzbff5wJbTofP8TTmKYmwVjL0T+CpHEPlOh1dCtBCBbY6Li6SfZcSRBy1ZqV
+	 6HKD6TB9iq8dr86QgVxPCe/DU6JyTmmONL36429SSJxW5oOsL1SHztUpZ/FQDboYkM
+	 lciZ4ZYh3Nxzy1apRUyFKvXJd6RsZiuZRR7Ov/HZwLWG+HsGzKjqSxB30w84hYznIo
+	 wOWxilA16da9A==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	christian.koenig@amd.com, Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>, dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: Re: [RFC PATCH v7 02/13] mm: Add an allocator for CoCo shared memory
+In-Reply-To: <yq5aik3w344o.fsf@kernel.org>
+References: <20260921144847.501151-1-aneesh.kumar@kernel.org>
+ <20260921144847.501151-3-aneesh.kumar@kernel.org>
+ <arKsFofudnTYpXj1@arm.com> <yq5aik3w344o.fsf@kernel.org>
+Date: Wed, 23 Sep 2026 14:01:08 +0530
+Message-ID: <yq5afqz02wtv.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH RFC 1/2] iommu/dma: skip swiotlb bounce for
- DMA_ATTR_MMIO in iommu_dma_map_phys
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Robin Murphy
-	<robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Leon Romanovsky <leon@kernel.org>, Jason Gunthorpe
-	<jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Peng Fan
-	<peng.fan@nxp.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260916-iommu-dma-fix-v1-1-a59a0c45ec5b@nxp.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20260923075831eucas1p10e4827538fd7f70f278f11157225c07a
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260916151931eucas1p2f69ddb55e61c8455dedb946b319fb938
-X-EPHeader: CA
-X-CMS-RootMailID: 20260916151931eucas1p2f69ddb55e61c8455dedb946b319fb938
-References: <20260916-iommu-dma-fix-v1-0-a59a0c45ec5b@nxp.com>
-	<CGME20260916151931eucas1p2f69ddb55e61c8455dedb946b319fb938@eucas1p2.samsung.com>
-	<20260916-iommu-dma-fix-v1-1-a59a0c45ec5b@nxp.com>
+Content-Type: text/plain
 
-On 16.09.2026 17:23, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+
+> Catalin Marinas <catalin.marinas@arm.com> writes:
 >
-> MMIO resources mapped via dma_map_resource() carry DMA_ATTR_MMIO. These
-> never need swiotlb bounce buffering, but the current code enters the
-> swiotlb path when the physical address is not page-aligned, then rejects
-> the mapping because MMIO cannot be bounced.
+>> On Mon, Sep 21, 2026 at 08:18:36PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>>> +int alloc_cc_shared_pages_node(int nid, gfp_t gfp,
+>>> +		size_t requested, struct cc_shared_pages *mem)
+>>> +{
+>>> +	struct cc_shared_layout layout;
+>>> +	struct page *page;
+>>> +	unsigned int order;
+>>> +	bool zero = gfp & __GFP_ZERO;
+>>> +	int ret;
+>>> +
+>>> +	if (!mem)
+>>> +		return -EINVAL;
+>>> +
+>>> +	ret = cc_shared_calc_layout(requested, &layout);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	order = get_order(layout.shared_size);
+>>> +	if (order > MAX_PAGE_ORDER)
+>>> +		return -EINVAL;
+>>> +
+>>> +	/*
+>>> +	 * State transitions require a linear-map address and may modify memory.
+>>> +	 * Allocate from low memory and defer requested zeroing until afterwards.
+>>> +	 */
+>>> +	gfp &= ~(__GFP_HIGHMEM | __GFP_ZERO);
+>>> +	if (nid == NUMA_NO_NODE)
+>>> +		page = alloc_pages(gfp, order);
+>>> +	else
+>>> +		page = alloc_pages_node(nid, gfp, order);
+>>> +	if (!page)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	ret = cc_make_shared(page_address(page), layout.shared_size);
+>>> +	if (ret) {
+>>> +		if (!cc_make_private(page_address(page), layout.shared_size))
+>>> +			__free_pages(page, order);
+>>> +		else
+>>> +			pr_warn_ratelimited("leaking %zu bytes with uncertain shared state\n",
+>>> +					    layout.shared_size);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	if (zero)
+>>> +		memset(page_address(page), 0, layout.shared_size);
+>>
+>> Does the memset() post sharing logic work for pKVM as well? If nothing
+>> clears it, we have a small window where guest data is leaked to the
+>> host.
+>>
+>> Is there a case where we *do not* need the memory cleared? If not, maybe
+>> we can move the logic in the arch set_memory_decrypted().
+>>
 >
-> Move the DMA_ATTR_MMIO check before the swiotlb block so the entire bounce
-> path is skipped for MMIO, falling through directly to __iommu_dma_map()
-> which creates the IOVA mapping.
+> I don't think every architecture or platform can unconditionally zero
+> memory in set_memory_decrypted(). Some callers may need to share valid
+> contents with the host.
 >
-> Fixes: f9374de14c0e8 ("iommu/dma: implement DMA_ATTR_MMIO for iommu_dma_(un)map_phys()")
-> Assisted-by: Claude:claude-opus-4-6
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> Also, if zeroing is added only to the CCA implementation, the allocator
+> must retain __GFP_ZERO for platforms such as pKVM. This would cause the
+> memory to be zeroed twice on CCA.
+>
+> How about extending cc_make_shared() with a flag indicating that the
+> memory must be zeroed, and passing that requirement down to the
+> architecture-specific implementation? The implementation could then zero
+> the memory at the appropriate point: before sharing for pKVM and after
+> the destructive transition for CCA.
+>
+> The allocator could derive this flag from __GFP_ZERO, remove __GFP_ZERO
+> before calling alloc_pages(), and let the sharing operation perform the
+> requested zeroing with the correct ordering.
+>
 
+I was pointed to this email thread:
 
-Applied only this patch to dma-mapping-fixes. Thanks!
+https://lore.kernel.org/all/c25502d3-35c6-4281-a9ec-856f789fb1b4@arm.com
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+This makes a stronger case for having a CoCo shared memory allocator
+that captures all these restrictions. It also means that
+alloc_cc_shared_pages_node() needs:
+
+	if (WARN_ON_ONCE(!gfpflags_allow_blocking(gfp)))
+		return -EINVAL;
+
+	might_sleep();
+
+I guess this also requires the VPE L1 tables to be preallocated from a sleepable context.
+
+-aneesh
+
 
