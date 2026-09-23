@@ -1,96 +1,96 @@
-Received: from mail-wr2-f12.google.com (mail-wr2-f12.google.com [74.125.225.76])
+Received: from mail-wr2-f14.google.com (mail-wr2-f14.google.com [74.125.225.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 690F24EC64E
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 11:55:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.225.76
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E7D485924
+	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 12:01:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.225.78
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790164543; cv=pass; b=fVYaplCVqSDxho/ajCc1qhHbGWc47mC6v605Qi0iS7KcVwnNj5jVofuG4rfhpxcLM5OA8iXP/EkeXpCs6KFnuMewn3oL1JdAYBpBYLWm4H6Fu8vZj9UQelKDW2Vgzr/KEpLHVjY79KsoaYCYhYOHwpK5xuiIRdBxjiWuYNO2FDk=
+	t=1790164883; cv=pass; b=idyKwlf4DqCUnDZjk3noE6/fe9IKUsswa81/epPoFPguwumEk/3Ao33mxjXkNt3Sn3hlwOBD09uJ1g6nbIFwvNAh6WuuYnDnx4939qNJCUf6kXA/m8hruYN1n5vWJWHd3yri8TMOqrgA1eWIn6OUK3lXkcmXvYr3zzt3EUFoo+o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790164543; c=relaxed/simple;
-	bh=nm2A3E+U5TTONx7bskhFhE5Ow4/TVEhF235l9tbEgwY=;
+	s=arc-20240116; t=1790164883; c=relaxed/simple;
+	bh=UciKY87OJuo05x9eA/7imt88rzW35xEJOjxrzxqe9Co=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YDaxux0fcR4OG37i2+/1CDwYJcrQDa19MWV0rcWS8RpCJ43UU/FCD8Lrdw0hWBySKV2o7hYkjGXA3mMABLPVh+lvK9SmliReZqKe+b1vBAj1AKU+S+0+0OAhxw24iGdhqaAiEOsANm3AQ2vuQ2AtzbSo+d9opBWlckTu8Xz1UNs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault.org header.i=@brainfault.org header.b=B1Xcjtna; arc=pass smtp.client-ip=74.125.225.76
+	 To:Cc:Content-Type; b=GAMwVhRtV5c/49edTVnscG98RTQ8IKsOeTT9FmtxNwphGCaKNExhcTfeGwYTRlj8FFOqlG71/MtC4vM6rPk6kAtkHytJ/KUR54d6sOYH39Avh8gCruzBZwJQJ/GgXcKOIGFWpUFftnITWRDYtzFty7dsp359xdQbyhaXuZsHBaw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org; spf=none smtp.mailfrom=brainfault.org; dkim=pass (2048-bit key) header.d=brainfault.org header.i=@brainfault.org header.b=t7h7hrgL; arc=pass smtp.client-ip=74.125.225.78
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=brainfault.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=brainfault.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=brainfault.org header.i=@brainfault.org header.b="B1Xcjtna"
-Received: by mail-wr2-f12.google.com with SMTP id ffacd0b85a97d-485b1d2874aso697544f8f.1
-        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 04:55:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790164524; cv=none;
+	dkim=pass (2048-bit key) header.d=brainfault.org header.i=@brainfault.org header.b="t7h7hrgL"
+Received: by mail-wr2-f14.google.com with SMTP id ffacd0b85a97d-482f6350f88so609510f8f.2
+        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 05:01:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790164878; cv=none;
         d=google.com; s=arc-20260327;
-        b=CdHkSG/W8Mq55YONRffcgrAXUvtOaq9lQxSZw5+xPo5WoylPfnQ6P4+D0Mnl8eh34d
-         K2g1RzG8OgK0UDBSdj65faRbVbRwMoJLSELMri/2dU4A2QETkRU31Gteoc63A9rOQddZ
-         gH6flV9NJe2oRD0UUANmzRbtslb8600xTemhONFoZXnkvpAijP6cflUiT3gp4Pnj1FHW
-         utRJiZO1kNvbSyLNEQ+WwaqAy5Uu1nXPRSe5Bkv+JDKNa2mni+VBKpiIyBAnJQfQpwt6
-         PksUoZ2QouC1FphIwDM1aCA0xT2kUAnhMWuKlqDu2crrjiJ6E0WMoIEic453GM5Nne8F
-         VmeA==
+        b=LCtbKUdp4z3ISQB5oisEyaJGLxlga1tX57vsxOdGeOeTrlF3/tqWuVPPl/Jwsg7G6W
+         Tda406bgxI44GBihruiHIVq6XKNAgioqi3LukNtZuIxQMXugKZNLNY7s5iwlark74Hq5
+         VZDF2fwOJ77rwQxcQSW21gdcSN8p4v1M3NBRCqXe8O5YPop3tuFHn4i4zUfize4JuaA4
+         YxJGRv5bG74r/dS4Gw8OECsBWcl+TyHM+C9l31qF7mNd1M2V07bSKMC3z0e/Gz+HnPJk
+         N5IrN+qKdo9knn+r8v/lrdRaS9vMJvHPLtuUMkuvzUFHYh7S9oN3qhC+gnVe7/IYR8GM
+         KGSw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=HVdhMrrjS3oE1TYac2kH0SXF1gwoyCJ45igZqsjG9/w=;
-        fh=swgPSxMjf7d8cNxaPZdtkX66kWqO3uqT5dKa9TC8ZcI=;
-        b=FO0LDB63FCAKeCFtegr2VoF/W/k8B9sU4flYsxjLN2H4x38Mz1rwTHBi3H499F3Q47
-         q4I/A1Pq0vuSah8iYq9+NF93mQ9RYrqa2gpiJgLdQyop5Oy/s7Z369zG7vCP/mHfI9gY
-         E5okvvyEkwMpRZONXeh3tnLMPq1BMgPCYXEngJU79Z5L0Biyv3rT3vXiGTAzlZckPEcz
-         lI64KPeexPmpyo4r5rsDFjwEFS4EsOLhlYa2hirXMQAjTqVQ6h3EHknqHeHfJpAIR5wc
-         lhpeZG7Anv9QrguB2g51VfxdwwwzTo98fJaeuVCUvZeqWHhgkUiYgEK1L4SFPzRsBndB
-         pKNA==;
+        bh=7oV5NhC84tix+b+JvApE1dpYWTnu/MAWxqkNt5esyEI=;
+        fh=XXlRhcRzr4+3Te0Jmw2Cpdpzc3Bqqp8zncLjIUu5jQg=;
+        b=cs0FKFrrqv/flX8bZmYZlibHkOLSiIUTx6wnz4Z24Tv3hUnQT7t4rZ3TXnsxjSid2Y
+         wstWEBRCvaaTUgnNyGr/JMa4VPXJQ+1UJ17kK0FenUyNOnV7KrEfQOONCy2iEUf6byYx
+         zmgJbCjoZikpgoysk5a/I45wOc9Iya/BSNKhc993wKSujkC5iWWq36S9dQNTdB93t1po
+         2g/pX/iNmrl0Y/ZRS5HZ2m7IOaa/Z3PD1+hB/moZU9rZEAHpaF8gOBkXuMPZ+SLceFTf
+         eStpsVk6uvwwMx/H9NDUJErUPINrG4pY7wzRXwqnZCacPxz5JP1hU/72g3IWadsW1yDf
+         tSOA==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault.org; s=google; t=1790164524; x=1790769324; darn=lists.linux.dev;
+        d=brainfault.org; s=google; t=1790164878; x=1790769678; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=HVdhMrrjS3oE1TYac2kH0SXF1gwoyCJ45igZqsjG9/w=;
-        b=B1XcjtnaaGBanBjXm7Vjp2XS5aa46zFVx36sCkR/XaPoTzbwrBrZkVE/wgUwIQA60e
-         TaUZmGv0Det4GNA15FKjzVuxVX9CLDbunAY9pBhfPgCDCjwHc0TyD8TVWorlYbOTnOcf
-         BhE3OW3AgxGTj8IG6JfOToHsiDMfdiANx2CEa/5gYepX60p8M+R/nmj1yv8IJSPgk0om
-         QuphvPnVn713SiF8vbgvkwKjIJgkQd0qD1p5UlmRo6TI4fpUVJAx7ZJPn9paFybc8ktP
-         p7GurOHpSyAsJZjWoBzVb4ov+L5ZcC5pL678gLZ2X5Ys5+TUb3msO+kxXeLQGjd183Ao
-         SH2w==
+        bh=7oV5NhC84tix+b+JvApE1dpYWTnu/MAWxqkNt5esyEI=;
+        b=t7h7hrgLCuUXWd65ylaPtinpC9SnXRIe0jvaox9EpgH1vSo9oWynNc1KmYLDd9dhTp
+         vnQWVI9E61mn4AgQGM4iz3I29zpv/vyPiUvhr9sxTJTiJOg/OaXCzPu1eABb333ECskP
+         lPfLiPhPfMGFsdtqIi8Q4aYRXMTujyDoMnizHa8P39+QeUgHM4gKn+5ih5F/Jcr80BOI
+         IYNR1pk2ZeCpcPiEikmJgo+FcaJCiZhT/p5SuDJ1s8DX7Q/h/JYUc4Y7dw0d4lsQ4B3v
+         LhuN+nz5R4eTWpwDFIZ2sj+AAVv6ZrwbpwlVNaKV8BAqNvbSPdgp2ab/+4fAfx1Gqx37
+         wWLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790164524; x=1790769324;
+        d=1e100.net; s=20260707; t=1790164878; x=1790769678;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=HVdhMrrjS3oE1TYac2kH0SXF1gwoyCJ45igZqsjG9/w=;
-        b=V/Qnj5hV2vo23yMUTJMk7o6JRdlNlWDI/PxjEkLFCz/QIcUTH5RD6NWrobImST/BTk
-         gguZLH4DLQ/UvBIrgBduBqp1rDp/bp0RM08ziSeP1dfpiXmaF7H7lwz8gjHrVHgL3kKl
-         iWJ6P1AHSVpqc7tUV7Vsc9Ja+sCq13WCNPprqgINMQldzhXWkID7Si0GYxMXAx0pfNQR
-         hw5X5NfJgrEFNcZc2lkF2ah9GF7mfX5yauc5PVQo/gOrXpKDg6iNox37HjafRlOA3Xf3
-         64/jA1m6Mi6/PEeffliWzU0Ta+J4NiKyMOwE6zCORU5kxEruk/PXkQEsCxEAQZXP6YYK
-         Xs+Q==
-X-Forwarded-Encrypted: i=1; AKwUvBxH8+LGS9NL7/ujcdmYZ6NozSRiHf43qV1S0lIOyPGnoMNf+xp09xRYUnofzYn8FQ6VOBLkjA==@lists.linux.dev
-X-Gm-Message-State: AFuF++lBi6NhheyHrR+L9Qt4rtBEiTB3n/wQUeq1HG+V6PJng78vmVUX
-	l1FHZTdnkc+3HUg6ZhZp7KJQfDWMmxsCPNqcJc2KHhohaDaiwsrfcMCn1M0ws9p+TbC2lWDJ8OL
-	sncYlqQlGXSeYDUKzskPZVv37Dvo3FzMec4cFnYG+mw==
-X-Gm-Gg: AYBFou3UNCCfUtLgkARDHEA63lRjjhgdkFXuyGzjEzt2LXrvexLuUiGmP2TuBxlUbwl
-	xSatHMvUWehyhFJjTBccJ3mSHM+h1UbBqtqXtEd3S4RGZookhUVsjqecIX8OuqS2pijj68tGkDJ
-	9kzM0IIEqQ5YnniaEUoD7m9x7Kt8+fyy0b7FqYtg1wVWdjbHBFMZaRKbDnWN4+DEV401CLIP+5y
-	aMKSwZCqs8RBvdw4SWAG44ck4ZM+FKliC+Id4u4zdBNMLHab6rHO7owq8sUnIWTgb+eE9cN0+Vx
-	t8M3hOLyy1PWL7nRD/lgHCn+K99JSzHIxlU+Ie8iYOEJn/tIZLDe/GqUl+b/OgNHdsO0Bc42922
-	9h2mSmSCcnkex6iZQDKQhrtQWGgA9XT/CYiXozcp903XXQzewLRun3HFGQnQWbNvd9pDJ0J1Paa
-	ER
-X-Received: by 2002:a05:6000:4023:b0:486:f17d:14dc with SMTP id
- ffacd0b85a97d-4886705f8fdmr4136204f8f.12.1790164523026; Wed, 23 Sep 2026
- 04:55:23 -0700 (PDT)
+        bh=7oV5NhC84tix+b+JvApE1dpYWTnu/MAWxqkNt5esyEI=;
+        b=ZyvseCj6xU9ud9czgU84ZxHzorokdjMRTll+Q2bffxV5nX5iTn3vi+wLAhqLpCC+sa
+         SlTZoiWn12mMQkut/Fuz7QZ+UEy5LQxQ3kEq9YUfp6IycKhF2rLiP3zftanU5AADE2YX
+         wjVaG7dw0UZ6+eBz6gkO9rKmq3zbAkTKSd0LojigcULJD0mUhOyj/Ph6jFeACYjuu523
+         IZ5q5IpI5wEjsS15ShsFBwaWRVPhgoHi5jONUg4lWVyzSUSvs4JOfzXHOOV/DKCBfEYN
+         ClkLuFzohZq7CiVXSfnEoYyLBYn8tE+7GuMk231HaR2YNCroBXi6GNVGh7T8XT+mmVrv
+         /70A==
+X-Forwarded-Encrypted: i=1; AKwUvBxcnYD1Ikb9A+8taQvYL2NfXWEqK4KSU+Hcp3RhYd1s7DWgbtbdsAl302lSzNggUDoXkH2MXw==@lists.linux.dev
+X-Gm-Message-State: AFuF++l13TUyZhFo0pjVdCmvRbK2/xaTLbYoPt75rUn3DEWNiUzLAO6S
+	PAlIBZevs/eF0Gzdl5ewMgtBIWEUjFTd/MD0PSTI72rUrpwVSKR4ikVKK73qZMCWoJdpGWt2OWG
+	zLi/jeMfntFxV83dIxVtKzp9smoUmTXsiHqyiiiGvJA==
+X-Gm-Gg: AYBFou0vOTWqYHFqB9nRs6bJ8jtAF781B2l6x/utwuoJpQjCxcgH1RRBkiD+r1frK4l
+	DWiMNwRmA84+EL8gKW1g7ClNRS8vkM/KQtzEFUckRPshjrpyEd/nsNojsRlVfThFKyuqzX4VjNb
+	njTZAomf/E2tjdJsH00fau7f9ebT5y8MmcGy5W3ml8qYySD7TxRWXeu18xh4P84H/jMx+sOyKoS
+	JBJNvoqIpJ0DaAu+/+V/H22vaTb3nfioJ2vwaWcV5tllarMdK1xZjXP6IWwE/ZurzQCHKzR605A
+	iedWaPJhc1hPzk3Zp+VOJflOwaKs415TambTr96+TCRgAlJYCSlodA9dPV3hCo9pwv/UeD280IK
+	02G3ED7PjXmPBcUT59pzgOsV7U60ZTnCMSfpaK7yYsJa/KBjiTOSUSuDB+ja5YsgxM3nwdh+TXa
+	s=
+X-Received: by 2002:a05:6000:70b:b0:487:81c:183f with SMTP id
+ ffacd0b85a97d-4886704926dmr3859972f8f.10.1790164877652; Wed, 23 Sep 2026
+ 05:01:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260831145943.313726-1-andrew.jones@oss.qualcomm.com> <20260831145943.313726-12-andrew.jones@oss.qualcomm.com>
-In-Reply-To: <20260831145943.313726-12-andrew.jones@oss.qualcomm.com>
+References: <20260831145943.313726-1-andrew.jones@oss.qualcomm.com> <20260831145943.313726-13-andrew.jones@oss.qualcomm.com>
+In-Reply-To: <20260831145943.313726-13-andrew.jones@oss.qualcomm.com>
 From: Anup Patel <anup@brainfault.org>
-Date: Wed, 23 Sep 2026 17:25:11 +0530
-X-Gm-Features: AclHuK_zLIl-mrpS78xV6vRgDB9dAAUf9QhniI9fOC93j9unzeVYyRI1tSChnzo
-Message-ID: <CAAhSdy3o=JtEXnFANPdNn3E3XuKk2wUwXwrekQ+1ropJWnrYGA@mail.gmail.com>
-Subject: Re: [PATCH v5 11/17] irqchip/riscv-imsic: Add S-mode MSI address list
+Date: Wed, 23 Sep 2026 17:31:05 +0530
+X-Gm-Features: AclHuK-2ObkketlET_SBsJ58iMsfQLM0zUzwlh7sLplMTaBDRnaBDkNaFuzixnM
+Message-ID: <CAAhSdy36ZUbJ5OetQ0n7C8UYYBVhqUsbHc3+XMDOfXX2O9ZjmA@mail.gmail.com>
+Subject: Re: [PATCH v5 12/17] irqchip/riscv-imsic: Support IOMMU MSI address lists
 To: Andrew Jones <andrew.jones@oss.qualcomm.com>
 Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev, 
 	linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev, tjeznach@rivosinc.com, 
@@ -103,104 +103,143 @@ Content-Transfer-Encoding: quoted-printable
 On Mon, Aug 31, 2026 at 8:30=E2=80=AFPM Andrew Jones
 <andrew.jones@oss.qualcomm.com> wrote:
 >
-> Upcoming RISC-V IOMMU interrupt remapping needs to map every possible
-> host IMSIC target into one contiguous MSI IOVA range. MSI message
-> composition then uses the target CPU's position within that range.
+> RISC-V IOMMU host interrupt remapping maps every possible host IMSIC
+> target into one contiguous IOVA range. MSI message composition therefore
+> needs each target's position within that range.
 >
-> Build an S-mode IMSIC physical address array indexed by logical CPU.
-> Require every possible CPU to have an initialized IMSIC page before
-> publishing the array. This preserves physical address zero as a valid
-> target and guarantees the array has num_possible_cpus() entries.
+> When the S-mode IMSIC address list is available, prepare the complete
+> list while allocating an IRQ. This allows the IOMMU backend to map the
+> pages and cache the contiguous base IOVA in the MSI descriptor. Skip the
+> optional preparation when no list is available, allowing devices which
+> do not need IOMMU MSI translation to keep using physical MSI messages.
 >
-> The array size and each target's index can therefore be derived
-> directly, without storing duplicate count or per-CPU index metadata.
+> When the descriptor has an IOMMU MSI mapping, use the selected logical
+> CPU directly as the page index within the IOVA range. Use the same path
+> for initial composition and affinity updates. Messages remain physical
+> when no IOMMU MSI mapping is required.
 >
 > Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
 > ---
->  drivers/irqchip/irq-riscv-imsic-state.c | 32 +++++++++++++++++++++++++
->  drivers/irqchip/irq-riscv-imsic-state.h |  1 +
->  2 files changed, 33 insertions(+)
+>  drivers/irqchip/Kconfig                    |  1 +
+>  drivers/irqchip/irq-riscv-imsic-platform.c | 25 +++++++++++++++++++---
+>  2 files changed, 23 insertions(+), 3 deletions(-)
 >
-> diff --git a/drivers/irqchip/irq-riscv-imsic-state.c b/drivers/irqchip/ir=
-q-riscv-imsic-state.c
-> index df38a7670a89..c7ebddd308ec 100644
-> --- a/drivers/irqchip/irq-riscv-imsic-state.c
-> +++ b/drivers/irqchip/irq-riscv-imsic-state.c
-> @@ -709,6 +709,31 @@ static int __init imsic_get_mmio_resource(struct fwn=
-ode_handle *fwnode,
->         return of_address_to_resource(to_of_node(fwnode), index, res);
+> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> index 42f2278a702d..c7cda52b21eb 100644
+> --- a/drivers/irqchip/Kconfig
+> +++ b/drivers/irqchip/Kconfig
+> @@ -656,6 +656,7 @@ config RISCV_IMSIC
+>         select IRQ_DOMAIN_HIERARCHY
+>         select GENERIC_IRQ_MATRIX_ALLOCATOR
+>         select GENERIC_MSI_IRQ
+> +       select IRQ_MSI_IOMMU
+>         select IRQ_MSI_LIB
+>
+>  config RISCV_RPMI_SYSMSI
+> diff --git a/drivers/irqchip/irq-riscv-imsic-platform.c b/drivers/irqchip=
+/irq-riscv-imsic-platform.c
+> index 643c8e459611..6e26a31f7503 100644
+> --- a/drivers/irqchip/irq-riscv-imsic-platform.c
+> +++ b/drivers/irqchip/irq-riscv-imsic-platform.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/cpu.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+> +#include <linux/iommu.h>
+>  #include <linux/irq.h>
+>  #include <linux/irqchip.h>
+>  #include <linux/irqdomain.h>
+> @@ -69,8 +70,10 @@ static void imsic_irq_ack(struct irq_data *d)
+>         irq_move_irq(d);
 >  }
 >
-> +static int __init imsic_init_smode_msi_pa(void)
-> +{
-> +       struct imsic_global_config *global =3D &imsic->global;
-> +       phys_addr_t *smode_msi_pa;
-> +       unsigned int cpu;
+> -static void imsic_irq_compose_vector_msg(struct imsic_vector *vec, struc=
+t msi_msg *msg)
+> +static void imsic_irq_compose_vector_msg(struct irq_data *d, struct imsi=
+c_vector *vec,
+> +                                        struct msi_msg *msg)
+>  {
+> +       struct msi_desc *desc =3D irq_data_get_msi_desc(d);
+>         phys_addr_t msi_addr;
+>
+>         if (WARN_ON(!vec))
+> @@ -79,6 +82,11 @@ static void imsic_irq_compose_vector_msg(struct imsic_=
+vector *vec, struct msi_ms
+>         if (WARN_ON(!imsic_cpu_page_phys(vec->cpu, 0, &msi_addr)))
+>                 return;
+>
+> +       if (desc->iommu_msi_shift) {
+
+Is it expected that iommu_msi_shift =3D=3D 0 means no IOMMU in the path?
+
+> +               msi_addr =3D (desc->iommu_msi_iova << desc->iommu_msi_shi=
+ft) +
+> +                          vec->cpu * IMSIC_MMIO_PAGE_SZ;
+> +       }
 > +
-> +       smode_msi_pa =3D kcalloc(num_possible_cpus(), sizeof(*smode_msi_p=
-a), GFP_KERNEL);
-> +       if (!smode_msi_pa)
-> +               return -ENOMEM;
-> +
-> +       for_each_possible_cpu(cpu) {
-> +               struct imsic_local_config *local =3D per_cpu_ptr(global->=
-local, cpu);
-> +
-> +               if (!local->msi_va) {
-> +                       kfree(smode_msi_pa);
-> +                       return -ENODEV;
+>         msg->address_hi =3D upper_32_bits(msi_addr);
+>         msg->address_lo =3D lower_32_bits(msi_addr);
+>         msg->data =3D vec->local_id;
+> @@ -86,7 +94,7 @@ static void imsic_irq_compose_vector_msg(struct imsic_v=
+ector *vec, struct msi_ms
+>
+>  static void imsic_irq_compose_msg(struct irq_data *d, struct msi_msg *ms=
+g)
+>  {
+> -       imsic_irq_compose_vector_msg(irq_data_get_irq_chip_data(d), msg);
+> +       imsic_irq_compose_vector_msg(d, irq_data_get_irq_chip_data(d), ms=
+g);
+>  }
+>
+>  #ifdef CONFIG_SMP
+> @@ -94,7 +102,7 @@ static void imsic_msi_update_msg(struct irq_data *d, s=
+truct imsic_vector *vec)
+>  {
+>         struct msi_msg msg =3D { };
+>
+> -       imsic_irq_compose_vector_msg(vec, &msg);
+> +       imsic_irq_compose_vector_msg(d, vec, &msg);
+>         irq_data_get_irq_chip(d)->irq_write_msi_msg(d, &msg);
+>  }
+>
+> @@ -225,7 +233,9 @@ static struct irq_chip imsic_irq_base_chip =3D {
+>  static int imsic_irq_domain_alloc(struct irq_domain *domain, unsigned in=
+t virq,
+>                                   unsigned int nr_irqs, void *args)
+>  {
+> +       msi_alloc_info_t *info =3D args;
+>         struct imsic_vector *vec;
+> +       int ret;
+>
+>         /* Multi-MSI is not supported yet. */
+>         if (nr_irqs > 1)
+> @@ -235,6 +245,15 @@ static int imsic_irq_domain_alloc(struct irq_domain =
+*domain, unsigned int virq,
+>         if (!vec)
+>                 return -ENOSPC;
+>
+> +       if (imsic->smode_msi_pa) {
+
+The imsic_setup_state() will fail if smode_msi_pa creation fails at
+boot time so this looks like a paranoid check.
+
+> +               ret =3D iommu_dma_prepare_msi_list(info->desc, imsic->smo=
+de_msi_pa,
+> +                                                num_possible_cpus(), IMS=
+IC_MMIO_PAGE_SZ);
+> +               if (ret) {
+> +                       imsic_vector_free(vec);
+> +                       return ret;
 > +               }
-> +
-> +               smode_msi_pa[cpu] =3D local->msi_pa;
 > +       }
 > +
-> +       imsic->smode_msi_pa =3D smode_msi_pa;
-> +       return 0;
-> +}
-> +
->  static int __init imsic_parse_fwnode(struct fwnode_handle *fwnode,
->                                      struct imsic_global_config *global,
->                                      u32 *nr_parent_irqs,
-> @@ -959,6 +984,12 @@ int __init imsic_setup_state(struct fwnode_handle *f=
-wnode, void *opaque)
->                 goto out_local_cleanup;
->         }
+>         irq_domain_set_info(domain, virq, virq, &imsic_irq_base_chip, vec=
+,
+>                             handle_edge_irq, NULL, NULL);
+>         irq_set_noprobe(virq);
+> --
+> 2.43.0
 >
-> +       rc =3D imsic_init_smode_msi_pa();
-> +       if (rc) {
-> +               pr_err("%pfwP: failed to initialize S-mode MSI addresses\=
-n", fwnode);
-> +               goto out_local_cleanup;
-> +       }
-> +
->         /* Initialize matrix allocator */
->         rc =3D imsic_matrix_init();
->         if (rc) {
-> @@ -984,6 +1015,7 @@ int __init imsic_setup_state(struct fwnode_handle *f=
-wnode, void *opaque)
->  out_free_local:
->         free_percpu(imsic->global.local);
->  out_free_priv:
-> +       kfree(imsic->smode_msi_pa);
->         kfree(imsic);
->         imsic =3D NULL;
->         return rc;
-> diff --git a/drivers/irqchip/irq-riscv-imsic-state.h b/drivers/irqchip/ir=
-q-riscv-imsic-state.h
-> index c42ee180b305..11352f14e32d 100644
-> --- a/drivers/irqchip/irq-riscv-imsic-state.h
-> +++ b/drivers/irqchip/irq-riscv-imsic-state.h
-> @@ -49,6 +49,7 @@ struct imsic_priv {
->
->         /* Global configuration common for all HARTs */
->         struct imsic_global_config              global;
-> +       phys_addr_t                             *smode_msi_pa;
-
-Please a comment over here about what this is for.
-
-I also suggest renaming "smode_msi_pa" to "msi_pa_list" because
-theoritically IMSIC driver can work for M-mode as well although
-we have not tried it for M-mode.
 
 Regards,
 Anup
