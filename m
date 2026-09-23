@@ -1,190 +1,124 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9FCA24DD3B4;
-	Wed, 23 Sep 2026 13:04:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-dl2-f42.google.com (mail-dl2-f42.google.com [74.125.229.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E60B34F55BE
+	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 13:06:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790168668; cv=none; b=YlNAKtnZDCmi2SaowKC1qY8Cck7gmPwalZkW/u8JbgJKqeR/xVWDiWkzLSwV6RE7dNK+G2q0WpGS1X0efZVt3C4c7emCiVajI9UjPrHAFmo5ZMvqblfxAIY3P8qneQNVr5j4is8DJmEbim8py5wM+z9pUDF6Zydxxfqr4zmAy6Y=
+	t=1790168776; cv=none; b=HgJAlRZ/d/HDezsKYCPxWQvbowo0cfuASNZ7cMfqJcTz9QQejWOhP2SxXL5RcsbueYNdFs36afcb0urAvR8t0xgworETmysCYbhSeDMoQ85uDDmobEoejEVXDZYbACu+vd4F9c3SlNOqc7jGslE7FnF/Iv6Yvk53je6oJeUIXfQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790168668; c=relaxed/simple;
-	bh=V2eG6fezUymbQQ69ZuSww8KCP/5bN/QHpNMXTsYSPOw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fE8jdQcgaamktJYs+Fh0DfQ2jyc00UJpQxxsfsn75cuZs7AjO6hrrNS01ncSgje+0ns1Hk93YSZ8647xvRXlsHIsDr1Cd9hbiYwfGmW+ofXUBvnxnvPBacCYrMkL2FwvQOJePq0x3ZdQGkggTzFr5nZo5QwBWnxeBacdise1h8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=ZvqzetxD; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1790168776; c=relaxed/simple;
+	bh=ih23spaVgrDHOFSey9aqnpQ7LFap1dWio/xJjG+h0zE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L8ZowKXtLOuMFFERxvY7dG6IeItPutozM0WvQcf7RCdnvkSq96kF3mh7Gk8e1d4sfqfK6p9f6QEwPgiXcu+kwZ36dIAUsR6zVb2PyaSxxIeBjIO2IQ3SVYthhbxe+V9eKVhPuk4y9rXESpGYSSyoB93YpDpCSuv+nzeFYHsFWco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=eCTbKQBv; arc=none smtp.client-ip=74.125.229.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="ZvqzetxD"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A0231570;
-	Wed, 23 Sep 2026 06:04:22 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A1A663F86F;
-	Wed, 23 Sep 2026 06:04:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1790168665; bh=V2eG6fezUymbQQ69ZuSww8KCP/5bN/QHpNMXTsYSPOw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ZvqzetxDsEV+z9y8tgXSp1WMJmVGbPD4FFevEiSlqja3DG2IGWuF2b73OrQ3DI5PP
-	 ebwj8SPEQZ4BaUOAgvsq/NUWIH7HsMxifQ4aW+kmBXBfzWreFCdx8DwnXmCnT2MCb1
-	 pQF5HqiW/0gA6vvYspF/vjHUh2HXW5nKxCvWawCQ=
-Message-ID: <8c9c04ae-cba7-4096-a7d1-70b90a46c161@arm.com>
-Date: Wed, 23 Sep 2026 14:04:00 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="eCTbKQBv"
+Received: by mail-dl2-f42.google.com with SMTP id a92af1059eb24-144f47a9b57so943676c88.2
+        for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 06:06:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1790168774; x=1790773574; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ih23spaVgrDHOFSey9aqnpQ7LFap1dWio/xJjG+h0zE=;
+        b=eCTbKQBvSxJTopQ7hizAXUgVCSMoLgzGCIJznBHhD+Pk9lhzW/XqpaLX0bpveLpW0R
+         dzwOYriXIBzERszea2HrTy/4EeDDapgBnTFWIQ2YOsCaW3vo2dNUyQTzTQ02wZC2kIDY
+         WsI2f1GZ5vF9oSTJcjKvc2o1vY+JOBCqUcsvPZnr/hFWzA6vbbzsE/1SIinmlcQ4yRSN
+         xpy0iZ0Qk5UFIQsj8H3hWBpHBKp+fMu9FEO67WldVjLTeY4xCMk2NNEUYwDjkBzRcu1T
+         ll0xuOGg1tfwvr6tT9PPSkaNq7E825yvN1F+kKE77AMpsvSXxb3asoUI6FQRCzCrLFny
+         HmHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790168774; x=1790773574;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ih23spaVgrDHOFSey9aqnpQ7LFap1dWio/xJjG+h0zE=;
+        b=hvMU/WTFrXokKKCkdGq8uF8n6gFUBjXIsGp/zwvOsAZGHX9FQEA5ogMwgV2vx/LYRd
+         BXTaa8Z8OeNBNrvwfOwFTtW8QirYtW9QaDtd/5EfVQlGVS40Vx+nPJUsqQ9DURdt5HI/
+         2BzodAzSXN+hCOlnF5BeWLU4lntwHEEUUsn1ziFfDmFPoH0QpkK1zZoA5EBS1/pI+fSd
+         mpBF3aTBKjYUcJXHX9khB1Gh7JGrBJHeEUIwrlabSp7ym532taLiw4KfMDmkLtlpYwwN
+         Ss25o8ciCsGqRm+6DsVfaLtNw/7xuCHlqW/K8H8aoZVIWFirZCO1eUP5CvU6rTGopALD
+         QS4w==
+X-Forwarded-Encrypted: i=1; AKwUvBwb+gwLpYZyJVZ1slI3Xj0GiB1Obf++ppgRJ1aMmSnPLh5+VBrJpn4x2bOwL1AJSt6ADapp4g==@lists.linux.dev
+X-Gm-Message-State: AFuF++nY9GQqT2CyzgKxpgL6LG3mcicxmovx73ksHjrRp5iYK43+uyAj
+	j8dMfjizNtLqnfyaMhuVqiLAuk+2YADc17Utav+GpgvU/nYDjEGEo+RzVGGvwBxpHec=
+X-Gm-Gg: AYBFou2uLaHOxwk2c/ZOKngxB8SHIVu151wPxECTuF7qEzZyLTf9TBC3CRu51J1lw3I
+	2SDT1PnhdY3/KTDloPVFx+efuBKxwFHNxlvBKpv4OVFUc2Izq6IGrDfSuTad2gkKqFdGhMwmsIS
+	4/V4nVsBIZIHAeO18KsGiCwJGsh77S2gQw7GFdmWI/HkAyXnH+y7vPJnQ69qGKDdNA+ICrNe1Ju
+	1y9hkrWXpD4g14s75B1WYKbmrq/leflivpKz5pxmAgOezU/bkQ4DPiw8tVUVvb0KsYTSkdiFfrp
+	VU1jio173l14eXUHzw7pZzhK2jfzPV3Ka8HF3admaiSs5KFzkwbWS/9LEesyJnjltIhqOPfYCgd
+	FIFONJ20T311rE3JHR5TUYdfeREOHjSNQ/3q6f07ZGeEEwUyFcBE2+6RQpmk+8joySjQGx+Q9o8
+	CS8SbsOB+ClGt0kqYqiVQPCxf3jxVnh0fv6diQhv4e2XXq
+X-Received: by 2002:a05:7022:1402:b0:143:2719:566c with SMTP id a92af1059eb24-144f9198b49mr2872815c88.40.1790168773123;
+        Wed, 23 Sep 2026 06:06:13 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-144f98a288esm10833873c88.13.2026.09.23.06.06.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Sep 2026 06:06:12 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1x9Mfr-0000000DZ6d-2NEP;
+	Wed, 23 Sep 2026 10:06:11 -0300
+Date: Wed, 23 Sep 2026 10:06:11 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
+	christian.koenig@amd.com, Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [RFC PATCH v7 02/13] mm: Add an allocator for CoCo shared memory
+Message-ID: <20260923130611.GF1540250@ziepe.ca>
+References: <20260921144847.501151-1-aneesh.kumar@kernel.org>
+ <20260921144847.501151-3-aneesh.kumar@kernel.org>
+ <arKsFofudnTYpXj1@arm.com>
+ <yq5aik3w344o.fsf@kernel.org>
+ <arOfD6syXOgQhZYA@arm.com>
+ <yq5a5wzw2ree.fsf@kernel.org>
+ <arOspFxWZ1DjgcAr@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 5/6] dma: swiotlb: Add an overridable architecture pool
- opt-out
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon
- <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Steven Price <steven.price@arm.com>,
- Suzuki K Poulose <Suzuki.Poulose@arm.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>,
- Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
- Petr Tesarik <ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>,
- Dan Williams <dan.j.williams@intel.com>, Xu Yilun
- <yilun.xu@linux.intel.com>, Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- "Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, Russell King <linux@armlinux.org.uk>,
- Huacai Chen <chenhuacai@kernel.org>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Jiaxun Yang <jiaxun.yang@flygoat.com>, Paul Walmsley <pjw@kernel.org>,
- Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
- linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, x86@kernel.org
-References: <20260921063628.362078-1-aneesh.kumar@kernel.org>
- <20260921063628.362078-6-aneesh.kumar@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260921063628.362078-6-aneesh.kumar@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <arOspFxWZ1DjgcAr@arm.com>
 
-On 21/09/2026 7:36 am, Aneesh Kumar K.V (Arm) wrote:
-> On x86, iommu=off historically prevented SWIOTLB initialization by not
-> setting SWIOTLB_INIT_ADDRESSING_LIMIT. This overloads that flag: it
-> controls both whether a pool is selected and where the pool is
-> allocated. If another requirement, swiotlb=force selects a pool
-> independently, omitting SWIOTLB_INIT_ADDRESSING_LIMIT may place it above
-> the addressable range of devices which need bounce buffering.
+On Wed, Sep 23, 2026 at 11:40:36AM +0100, Catalin Marinas wrote:
 
-Well then surely something is wrong with the design? If 
-SWIOTLB_INIT_ADDRESSING_LIMIT is set then SWIOTLB still needs to respect 
-it irrespective of any *additional* reasons for activating (either from 
-arch code or internally). And conversely, if devices have addressing 
-limits but SWIOTLB_INIT_ADDRESSING_LIMIT is *not* set, then the arch 
-code has clearly gone wrong or made a bad assumption, but that doesn't 
-seem like SWIOTLB's problem to worry about.
+> The simplest is probably to always zero in the backend and ignore
+> __GFP_ZERO to the allocator. But it's probably only marginally smaller
+> than passing a CC_SHARED_ZERO flag down. Get codex to try this as well
+> and compare the diffstat.
 
-> Add SWIOTLB_INIT_FORCE_DISABLE to let an architecture opt out of normal
-> pool initialization without discarding the pool placement constraints.
-> 
-> Unlike swiotlb_force_disable, which is set by swiotlb=noforce and
-> unconditionally prevents pool initialization, the new flag is an
-> architecture default. Explicit requirements such as memory encryption,
-> architecture remapping, or swiotlb=force take precedence over it.
+For patch ordering I would convert to use the allocator first
 
-Logically, that should already be implied by the architecture passing no 
-SWIOTLB_INIT flags.
+The semantics of the new API should be clear
 
-Thanks,
-Robin.
+If you pass GFP_ZERO then the resulting allocated memory is zero
 
-> iommu=soft retains SWIOTLB_INIT_ADDRESSING_LIMIT because it requests
-> software bounce buffering for devices whose DMA masks cannot address all
-> system memory. Such devices must be able to reach the bounce pool.
-> 
-> Clear both flags for Xen because Xen explicitly requires a remapped
-> SWIOTLB pool and may allocate it anywhere in directly mapped memory.
-> 
-> With no override, iommu=off disables both hardware IOMMU translation and
-> SWIOTLB bouncing. Direct DMA remains available; mappings outside a
-> device's addressable range fail instead of being bounced.
-> 
-> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
->   arch/x86/kernel/pci-dma.c | 11 ++++++++---
->   include/linux/swiotlb.h   |  2 ++
->   kernel/dma/swiotlb.c      | 10 ++++++++--
->   3 files changed, 18 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/x86/kernel/pci-dma.c b/arch/x86/kernel/pci-dma.c
-> index 0cff255827ba..ce257b20ea9c 100644
-> --- a/arch/x86/kernel/pci-dma.c
-> +++ b/arch/x86/kernel/pci-dma.c
-> @@ -44,9 +44,13 @@ static unsigned int x86_swiotlb_flags;
->   static void __init pci_swiotlb_detect(void)
->   {
->   	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
-> -	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN) {
-> -		x86_swiotlb_enable = true;
-> +	if (no_iommu)
-> +		x86_swiotlb_flags |= SWIOTLB_INIT_DEFAULT_OFF;
-> +
-> +	if (max_possible_pfn > MAX_DMA32_PFN) {
->   		x86_swiotlb_flags |= SWIOTLB_INIT_ADDRESSING_LIMIT;
-> +		if (!no_iommu)
-> +			x86_swiotlb_enable = true;
->   	}
->   
->   	/*
-> @@ -84,7 +88,8 @@ static void __init pci_xen_swiotlb_init(void)
->   		return;
->   	x86_swiotlb_enable = true;
->   	/* Xen can use a SWIOTLB pool anywhere in directly mapped memory. */
-> -	x86_swiotlb_flags &= ~SWIOTLB_INIT_ADDRESSING_LIMIT;
-> +	x86_swiotlb_flags &= ~(SWIOTLB_INIT_ADDRESSING_LIMIT |
-> +			       SWIOTLB_INIT_DEFAULT_OFF);
->   	x86_swiotlb_flags |= SWIOTLB_INIT_REMAP | SWIOTLB_ANY;
->   	swiotlb_init_remap(x86_swiotlb_flags, xen_swiotlb_fixup);
->   	dma_ops = &xen_swiotlb_dma_ops;
-> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-> index be3962a33fc6..466c33795db0 100644
-> --- a/include/linux/swiotlb.h
-> +++ b/include/linux/swiotlb.h
-> @@ -20,6 +20,8 @@ struct scatterlist;
->   #define SWIOTLB_INIT_ADDRESSING_LIMIT	(1 << 2)
->   /* Initialize a default-sized pool that requires architecture remapping. */
->   #define SWIOTLB_INIT_REMAP		(1 << 3)
-> +/* Do not initialize a pool unless SWIOTLB is explicitly required. */
-> +#define SWIOTLB_INIT_DEFAULT_OFF		(1 << 4)
->   
->   /*
->    * Maximum allowable number of contiguous slabs to map,
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index c19675846fc1..46b789eb0806 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -563,10 +563,16 @@ swiotlb_select_pool_policy(unsigned int flags)
->   	if (flags & SWIOTLB_INIT_REMAP)
->   		return SWIOTLB_POOL_DEFAULT;
->   
-> -	if (flags & SWIOTLB_INIT_ADDRESSING_LIMIT)
-> +	if (swiotlb_force_bounce)
->   		return SWIOTLB_POOL_DEFAULT;
->   
-> -	if (swiotlb_force_bounce)
-> +	/*
-> +	 * Explicit requirements above override an architecture's default opt-out.
-> +	 */
-> +	if (flags & SWIOTLB_INIT_DEFAULT_OFF)
-> +		return SWIOTLB_POOL_NONE;
-> +
-> +	if (flags & SWIOTLB_INIT_ADDRESSING_LIMIT)
->   		return SWIOTLB_POOL_DEFAULT;
->   
->   	if (swiotlb_kmalloc_needs_bounce())
+Otherwise the allocator does Whatever The Arch Needs to not leak
+private data out.
 
+Once places are converted to the allocator lets go see what is left
+and ask why it is left and what API it actually needs.
+
+I think HCH was right that nobody should be calling this in driver
+code, lets aim to unexport set_memory_decrypted as an ideal goal
+
+Jason
