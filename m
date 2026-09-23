@@ -1,179 +1,428 @@
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012013.outbound.protection.outlook.com [40.93.195.13])
+Received: from delivery.antispam.mailspamprotection.com (delivery.antispam.mailspamprotection.com [185.56.87.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E47934F7CC2
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 18:37:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A77421EF4;
+	Wed, 23 Sep 2026 18:42:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.56.87.13
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790188652; cv=fail; b=TMCaP7acRN7m2alq2+Z+PihuY5D4Ea77Bjm6q5ErI2qnleIPIeJsbLoIkjWOOqSueKfgTYOEORepY7fpm6+XGjqQBavZZS9KF5Af3sqgy1EpXrWpniEnEfnG0b/2NyJ4z95tgR3CKVUOlpCXiBU5WOGsr9FWhMxwaguzW2HHnnI=
+	t=1790188979; cv=pass; b=d1j3BhBMR9OMnmtIOuIQPwGyllvECZhQNJk+tsnGsvqr25g9DnvRCoZ4c1GsONzzfkt9Rd4nSJGwvHC9A2NXymbuYZ+ep1djv7ltoLggI0Wt7n67Oit4+RGHILMueZbkSpxlUtQ2jlRdNIH+7KjqrgKGDFyW0npL2LD/oS4C6N8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790188652; c=relaxed/simple;
-	bh=BcEr/cxcScdiU7VGdHua7H3pm+VfBSnHawpXrNUw/f8=;
-	h=Content-Type:Subject:From:To:Cc:In-Reply-To:References:Date:
-	 Message-Id:MIME-Version; b=F0m5WGEqetymNhYHWblfDLZDREXFithBHEIAWTx9klVasJLZ/9Z7C0lgJ5AMiqrzWadi1XAMmQSPrYaZwL4kb2EKwx/jOlKkflzIZo+tLg5FVjKhyj7y6Q7tsmfoOb3PCL93BY87QqVpEnVElT3gCN4VOsY5aZSZXRcI5hKU9jY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dyw0e0lW; arc=fail smtp.client-ip=40.93.195.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1790188979; c=relaxed/simple;
+	bh=j9dZdSTSxaYDMqzUODCHJRq16xiMdrtyG+eoFAibOg4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ra8kzeh/VHuYeBBMOeTxhDSqXjyGrogdK/ylm3FrMmp0Sro3yLCnrA0fTgr4bYZpota1dw4Ui9/wp1GIoJXrEvh+pFuqPa9Fp3CrtRZKEuB4gJ0nQrpovsDWRS3FX9l4G/cWfoBlfSdgFXzHW7qnZDs6k5TxBtbN03Vg9HRTVuM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it; spf=pass smtp.mailfrom=valla.it; dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b=pPzfXeLN; dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b=erovEHfr; arc=pass smtp.client-ip=185.56.87.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valla.it
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dyw0e0lW"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cCmrFmzh9owBrx1XODSBvfKQZjWsMjVnfNPUN3n0RG1kGccnxW0PYWdDh5yeQO8MYQU8FgXMrRdK3kJgCSNIUQcEYnBT5B7ZTSL7r+fb3MT2iRUMqqw8ml52gxR/IOcXh3KbTu2rtD6+IbaCxHQ4LaMk3rwfeL6wRJoUNMbpIvJEQtCxvsyaowumLjXAuR4RWHqAimycoxbFon6TWsKeZF//1d2jRsSaDY63BWKgeaKZKwVOEy3XYC+khOfEwwvnG6V7LLyv/wJ2q24V7IUnpWuTp9bIpz9E9cTa5xgBbPANHKUxUuTTdMcZ4uxy6jMt7qUx05EYwyihzPa+1YAyKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EJVvaQc0RjCVZD+k6uSuShDdvFi9eEPjLbIuWUDiee8=;
- b=hhyDmlqM0kFh6bTxG4VvvDDsu0CdnWABx5rgC1RSGnezKPghp9XfwlrJzgcvD5anozZ0OmwquZuY1H+ZMtR4ZQExE/g8GSVXVDwdlle4AUe59qeS41NhvjTFOdleccyHhj6GkMETaQ4nmIE5IIdB5nksGuW9wONsXUOYRL63iaGyyJYzGolQa+6JQ+lOgEa+sMBFDsSvLWSPKLPwD/BZAJOU9oeK7p6FKcQye/4INU4tAJDyZn7JPkki6MsosWj2WnuZw9pprGdNLqteZCmrdNjkHFEmnJh9gtJ1eIXxVls5xapPu3BIaYyaIImTwOm66JBqfGor9nhgj6B0EtyRoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EJVvaQc0RjCVZD+k6uSuShDdvFi9eEPjLbIuWUDiee8=;
- b=dyw0e0lW8XkneAeUJMWSeG0akHZ8qQqNRNjWIFD6BgiFytWQaW6gPtgh6/NLUlkq/lZDddsB7y74Jo4KPdMDWXOWYEoZbcqYq74Qq0mgzuw22V73IUIuHK59jXyTCevbGbaRQeiubBizKWSzAn9yXXeK1kQSW25VCK3Rb0TRZ68Ydp2pkIB7fH+jnN0OTWdVcVS5eIs5hGRxZvm930/IyPVQPFf+Rn4siPTXu39ellpodE7SHgZzefWIEWPJisLCKNLeHHXD8ugkq+XyqGigRLJv5iQa5XbFfUb5d4UUFrTaQq+74rDdVn13o1N+8EtbIo803WOiskZNytc/W2jZ9w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LY0PR12MB325698.namprd12.prod.outlook.com
- (2603:10b6:408:3bb::14) by CH1PR12MB9646.namprd12.prod.outlook.com
- (2603:10b6:610:2af::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.17; Wed, 23 Sep
- 2026 18:37:14 +0000
-Received: from LY0PR12MB325698.namprd12.prod.outlook.com
- ([fe80::b65f:1548:5b35:e2b5]) by LY0PR12MB325698.namprd12.prod.outlook.com
- ([fe80::b65f:1548:5b35:e2b5%5]) with mapi id 15.21.0451.014; Wed, 23 Sep 2026
- 18:37:13 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v5 07/15] iommu/arm-smmu-v3: Submit CMDQ_OP_PRI_RESP
- for IOPF event
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, jgg@nvidia.com, 
- Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>, joro@8bytes.org, 
- bhelgaas@google.com, praan@google.com, kevin.tian@intel.com, 
- kees@kernel.org, smostafa@google.com, baolu.lu@linux.intel.com, 
- Jean-Philippe Brucker <jpb@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, 
- skaestle@nvidia.com, mmarrid@nvidia.com, skolothumtho@nvidia.com, 
- bbiber@nvidia.com, harsha.v@oss.qualcomm.com
-In-Reply-To: <45d72c3be850a5dc29f7695b244ce0da97f97f9e.1789446520.git.nicolinc@nvidia.com>
-References: <cover.1789446520.git.nicolinc@nvidia.com>
- <45d72c3be850a5dc29f7695b244ce0da97f97f9e.1789446520.git.nicolinc@nvidia.com>
-Date: Wed, 23 Sep 2026 15:37:05 -0300
-Message-Id: <179018862539.3334538.7687027019477095209.b4-review@b4>
-X-Mailer: b4 0.17-dev
-X-ClientProxiedBy: MN0P222CA0011.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:208:531::17) To LY0PR12MB325698.namprd12.prod.outlook.com
- (2603:10b6:408:3bb::14)
+	dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b="pPzfXeLN";
+	dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b="erovEHfr"
+ARC-Seal: i=1; cv=none; a=rsa-sha256; d=outgoing.instance-europe-west4-fjbh.prod.antispam.mailspamprotection.com; s=arckey; t=1790188977;
+	 b=OwEobckuD1m9Hr+BtL1eP1cjWzKT2xrjTiWMnFmzIIbckbG6bN1IjEDgYvwu9GBZXGhAMnmUlV
+	  dUXSe7BnGkw+YeMU3TY6KbB+kCttJp6BS90t4z7CbHNeFttuscIleZyK8aII6hNEYzJVM/GPo0
+	  310f+rBva/lXt8WODBgyY0Qc3JIJGSo0pW/z7gio5yt65r9XZfBLpuqV1VO/J1awGs9/gRB6Zf
+	  piClWfAjs3hxd9+TfysVLb40hgeMU0YXnvai8q4bl7ryc5w9NdzscaTgIV2gYZCO44+bsWrOYY
+	  kzijDhcml4zignlCz4UYf34koIdj7m9qWjy2qW0G3iS2Ew==;
+ARC-Authentication-Results: i=1; outgoing.instance-europe-west4-fjbh.prod.antispam.mailspamprotection.com; smtp.remote-ip=35.214.173.214;
+	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
+	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
+	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
+	arc=none
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=outgoing.instance-europe-west4-fjbh.prod.antispam.mailspamprotection.com; s=arckey; t=1790188977;
+	bh=j9dZdSTSxaYDMqzUODCHJRq16xiMdrtyG+eoFAibOg4=;
+	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:
+	  From:Date:DKIM-Signature:DKIM-Signature;
+	b=i0aEPzv0lnf0lOtylnri1suEROe19TQtX5lBL3kjrSnxYL6XeB1h1D5D+sqk4lXjBmvWw2yKF8
+	  cLjUokTF28tbar25CKiUc6PDTCZktLUtqirXgsI0HwMTnEwx+Au6EMWKurO+D+1gklgPfMruAD
+	  VRQSoy1SvyMFGSHKegEgeR76K9IDCJQ7CfsYrfd1r7ELivf8647vowP/tsVJvDIL/jnX7Z/t1a
+	  cHRwPfppURoNhDXiiKX3wZLCPJZqtCNHF8HqJFg3FMwtOSZf8wfCg+NPCcUQVxpXMDRYLRBym3
+	  qNEkyPLf0YReaWMfB+WHhTFhFffWf/lBLoozGdbAq+GycA==;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=antispam.mailspamprotection.com; s=default; h=CFBL-Feedback-ID:CFBL-Address
+	:Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+	List-Unsubscribe:Content-Transfer-Encoding;
+	bh=TTFa+4iSF+2rRPsv1XVNqEG3YD/5TbmvxW/wccxckJ0=; b=pPzfXeLNC7QLjVGrSeRKd9B5gB
+	2JgAnBMKpvA/48Imod0wCElyg93x41f+fqfzMuVsrX573Tl6sQenOXADkOV+xTrB86WR+8IFU3YcY
+	kOaSVpmGJ9XBk5LXDrzbdXiiPzpJxmF7BjZy6/GdxfnroAzW90wX8ksmT+1eSCwsnrFs=;
+Received: from 214.173.214.35.bc.googleusercontent.com ([35.214.173.214] helo=esm19.siteground.biz)
+	by instance-europe-west4-fjbh.prod.antispam.mailspamprotection.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.100.1)
+	(envelope-from <francesco@valla.it>)
+	id 1x9Rvb-000000065gT-3FnM;
+	Wed, 23 Sep 2026 18:42:48 +0000
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=valla.it;
+	s=default; h=Subject:Cc:To:From:Date:list-help:list-unsubscribe:
+	list-subscribe:list-post:list-owner:list-archive;
+	bh=TTFa+4iSF+2rRPsv1XVNqEG3YD/5TbmvxW/wccxckJ0=; b=erovEHfrwiVjs6db7clhZWgHKr
+	6ePKwQ5dNEKEz+MrT3+BX+d9uRHYQeHDbvnh84YIbungUgI12aH/r75TNn8sfZxC6iKflYy6xeJxK
+	qrk9CvDXRJly/xVYVJEVnYVRODo+kZrA51xsWwKUh+SNeNJq1CbMrlVONb8OsHIFp8v8=;
+Received: from [79.45.60.29] (port=60504 helo=bywater)
+	by esm19.siteground.biz with essmtpa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.100.1)
+	(envelope-from <francesco@valla.it>)
+	id 1x9RvF-00000000Eam-2iOy;
+	Wed, 23 Sep 2026 18:42:25 +0000
+Date: Wed, 23 Sep 2026 20:42:23 +0200
+From: Francesco Valla <francesco@valla.it>
+To: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
+	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
+	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	virtualization@lists.linux.dev, imx@lists.linux.dev, iommu@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH RFC 12/12] PoC: arm64: dts: imx93-11x11-frdm: add
+ multiple vdevs
+Message-ID: <arP5AvA51GHrI8aN@bywater>
+References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
+ <20260916-remoteproc_virtio_map-v1-12-dac8c5eb4aa9@valla.it>
+ <arKiOCGrWAKyc-bc@p14s>
+ <arLawAw6kgFT2e0W@bywater>
+ <arP06mWDehsIDh5s@p14s>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LY0PR12MB325698:EE_|CH1PR12MB9646:EE_
-X-MS-Office365-Filtering-Correlation-Id: a7ed8fad-e3f8-489f-5b1d-08df19a1ae35
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|1800799024|7416014|376014|10067099003|11063799006|56012099006|4143699003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	RYyfJUfBd39+VESXaD0foPKKrJ9hySUKxFwQsdzQIgbXPgrIYgnEpgXVFa00qf1bG8rYNRRDNxSldcDtJfsukGjrE0C67eomiSu3mD7O7pkS++FIqj+kTw9Oa+EXM2p7r3p4AKvBu9gcrsXSuvo8bbaEiPJqf0FLFK1KRv90ES7+IcD8HDmi1ZwmVdXlq+rAGVHdAqttLVcknF0IC3/Ye73RJdHaj1s7YLAaqCxn0GkVuqRwASe4qi5l8fSgAQRM8XIf32ApVEmnf3kk6pkmaaX3LY8e3qVJ0PPhPaJnb+Iwb7I6GI5DxZwS+ANvCtyThcVlU1H7BqHC1uDOy+MSCPHTPoC4Yy/kf6IAY9ubob5H4y3JPVwqSuanvxhp7cpulQiPCbUicx1v+6B2h83JktlpKYZssycYw6ukVEngEgl+g+qWU4M2u3LC9Dtka5HIDo2UoJr2kERLF304CDS612f1Ie/zSwN+FBpRnymZN0Pfzs2lTW0J8p9enirzjPBbCuMztU3biGuWu7IcvOBNJj/iebxX0baRwoVgjy5GEx+Am8mlFcn35azDsabJDgaGFbadWwOALrPx+bU+2eL01sqsSnd5mecr0QpfZ2egrGXCYu7mnJUlon1EkQQR8ruWzDt0bYwzltjUoir7OhV58UE2qMu4sL5ftUOg2Y5SpM0=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LY0PR12MB325698.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(7416014)(376014)(10067099003)(11063799006)(56012099006)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Y2Jub1dqbmx4T2Q5ZDVVUDZZam43UklmM0JHemVWWXNyazQwNXBETG1GWE5U?=
- =?utf-8?B?TGxkTnAwZHh5ZVRDY2tXYzFYS256ZCs5WTNuL1M3ckFsb1E4UnlueWNybHVI?=
- =?utf-8?B?Y1RZOWcrc0s5Q1NPdjFjQnVLZ3lzQmRDTER4cUI5WDBJOGQ0NEdLYUxlejZj?=
- =?utf-8?B?R1RQZko1WkJUeGZKTE9QUHhsdU83NTFGVGpLQWlsZGpxMzd5N29yU3N6N1NP?=
- =?utf-8?B?VHI1VUw1cm1aWitwOG5Pa0dkRjhWY3doTS9CS1IvQ2hNODFpb3NlYVpFR1Vi?=
- =?utf-8?B?cTZheUlsSFRjOWhCaTErREc1OUlIQlJWenlRMHBIMkRFdUMwZ2p2SG8xZS9R?=
- =?utf-8?B?akVPeUFVRGUzRTVXVkJGUTM2K3AwS0JUaWdYTFEvL3hGRFE0dVdsdmNuRHR6?=
- =?utf-8?B?Z00wQ1A3NWJsOEZjTzBzZ3FUMitzMG1SNGY1cHRlcWltMk5pSVNFd0drb05T?=
- =?utf-8?B?bzRBTVFKemUrZDc2ZDMvZUtrNjlycWtQM1Z4QmJ0M3JSUi81aiswbmRzcWx5?=
- =?utf-8?B?Mk5WbGxOUVQwYWJwamdXL3FaSmlNNGR6RHluUkh0eVBvSjVxNGwzNVg4UHpY?=
- =?utf-8?B?KzgrMm5GWG1SKzdHeFUwZWtJRHNTYzdHaHNRYzlHTkJhVUNaYnBrSnFMbDlW?=
- =?utf-8?B?QXVDL0tFbE9VM0dETXJLYUdldnZRNXFkSCtESldDWFlRdUJMRFg0VGpxR0FO?=
- =?utf-8?B?c094Q1RLZ1VZZnVtKzhzL09LZXo4L3M2SGY0ODdVVnBTVlNqbTFBQjd0Mk5O?=
- =?utf-8?B?Zjlpd0l5eWtyaWxvSE01RktCVHhMRGFBTzRJZDhSeG1lT0N2K3MzT0pnSUdP?=
- =?utf-8?B?RXdtcE5meHFKU09DamtwRzFQZ2YvZCtXNndtUGdVdzRrbTdpWXpSWnBwdVZE?=
- =?utf-8?B?YlQxeE9VVTZsQUdkWVdPM00vYzVwdEZsYUZub2c1ME9jUVJUVWo4ZnN4UHUz?=
- =?utf-8?B?OVRqZG1DcHNyVU83ODMvN2VpcmtsZmxqSkdrREZBVVB0QWlHdldHOFFqdXVR?=
- =?utf-8?B?anpNdU42NjQyYU5MR28wSzhPd1R6bHBOSCtIMi9DZlhKTFlNSGJkemYyZ2hE?=
- =?utf-8?B?anYwZDV1MzRSazNYaHRTM1c2eC8wbFpZakI5a0o3WFcybHRTZklSQnc2aUs1?=
- =?utf-8?B?ekJRM3pYa1d6STRRTlpuRExPMFhZY1diVkFrQVg0MUs4SmN5Yk9SOUZrNm50?=
- =?utf-8?B?d1BxMDlIdEdVcGlJM1k4NEE5bkNWWDh2VXBZSkRtZ3dwNTRTSnk5dlhWZWNv?=
- =?utf-8?B?b3ROSDIyWXFMbDBJd3JVRTJEMkZKZU5qZC80ZUNVa20vK0NWT1Jvc2R4YUp1?=
- =?utf-8?B?Z1pVYzlqdGV5VXVJaytrNWdKMWcrb3NhQ3krYzJ0bmtmc3d1Q3IyTEs0KzVv?=
- =?utf-8?B?bVpVZ1hYMDhXbEVLdHJtRHI2Qy83eUxSSmlTZS90c2NaMEhlaFpCeGZ4dlhk?=
- =?utf-8?B?YXFFUVF0ek83a3ZTbEM4OFdFb01aWmpKYW1aK0Evcit4UnJhOXFXR1V0bmd5?=
- =?utf-8?B?VS9wNHFCWnVndGRac3NRbjBLNWQ4Q21DWStlVlVrSGRqdXoyeTg3OEhXTWJy?=
- =?utf-8?B?aTdjNTc0ekplQVYwOGtkdVVnOUwvK2hHL1I3R1BBL0lMd2w0YzRaU25HTndI?=
- =?utf-8?B?RTRmV3BJNGFkOUplWTBnNjZ6czdHcUk2SzY0SXpnaUJDZEhxNmpackw2Vmsw?=
- =?utf-8?B?T0w0UjZ3NjhyM3lSaFArRWM2M2RySGhBNUQ5ODNjNG5SSCtma0N5cEhhMUxs?=
- =?utf-8?B?dnB6a0lZejJGK2JtZ2xmbFpHZkx2ekFaSzlsM2NRcWQvR0RCdFB0VXRhamNl?=
- =?utf-8?B?MzdEczhNNG5XNEF2OUlLeXh1UU9HWjFkYVZXVzNMTVBDOTVTVEhqSVRxaHRP?=
- =?utf-8?B?Vk8zVlZkc0Q5bkRBOTZobHdlNGRpY0o4Y3ZHcWtLL3A5VUxUQ2VVUzFRL1Js?=
- =?utf-8?B?TWl3ZFVSR0gzYnM4bEpUOWtEZkdFbDQydGNNa2FYdjZOSnNtQzNObUJxRXd4?=
- =?utf-8?B?a2JJdENXa2hGUmhRRlI2dWVsbk1jWFNmcFp4OUtFaFEwN1g4OTM1REFxZlV6?=
- =?utf-8?B?QlpMOTMxM0I3RW9xT2M2NytaUzFOSnZVSG9oeXBZRlVmLy9GNEs1RThDNm9Z?=
- =?utf-8?B?NFF1RlhuQmF6VVIxL1Z1RDhSWlducGlGSnFONmFiZCtuNGY0OHpqbEQyaElP?=
- =?utf-8?B?UWtTTFVHeWdqQXNjQjFEeEM5d00vbUR5bCtYZksxa3NINzNoUFp0cVBUMGhx?=
- =?utf-8?B?b3FIaENMUW9GUDhwRTQ0cXJsNjQxS254Vk5MbTltZEVDMWlUVEg5RFliRnht?=
- =?utf-8?Q?2LaqP5gT9vs7Kq7Wqm?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a7ed8fad-e3f8-489f-5b1d-08df19a1ae35
-X-MS-Exchange-CrossTenant-AuthSource: LY0PR12MB325698.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2026 18:37:11.3784
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GN8o7JfsA2ZQXLmF4NT793Q1dngP30HUZqVtb1wS9aYT/5liJFTgwP4XEy04+bAU
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PR12MB9646
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <arP06mWDehsIDh5s@p14s>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - esm19.siteground.biz
+X-AntiAbuse: Original Domain - lists.linux.dev
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - valla.it
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-SGantispam-id: 442b37c6f320d51931536ce9c167821c
+X-AntiAbuse: ID - 442b37c6f320d51931536ce9c167821c
+AntiSpam-DLS: false
+AntiSpam-DLSP: 
+AntiSpam-DLSRS: 
+AntiSpam-TS: 1.0
+CFBL-Address: feedback@antispam.mailspamprotection.com; report=arf
+CFBL-Feedback-ID: 1x9Rvb-000000065gT-3FnM-feedback@antispam.mailspamprotection.com
+Authentication-Results: outgoing.instance-europe-west4-fjbh.prod.antispam.mailspamprotection.com;
+	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
+	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
+	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
+	arc=none
 
-> [ ... 66 lines skipped ... ]
-> +	/* IOPF is gated to num_streams == 1 in arm_smmu_enable_iopf() */
-> +	sid = master->streams[0].id;
-> +
-> +	if (master->stall_enabled) {
-> +		u8 resume_resp;
-> +
-> +		switch (resp->code) {
-> +		case IOMMU_PAGE_RESP_INVALID:
-> +		case IOMMU_PAGE_RESP_FAILURE:
-> +			resume_resp = CMDQ_RESUME_0_RESP_ABORT;
-> +			break;
-> +		case IOMMU_PAGE_RESP_SUCCESS:
-> +			resume_resp = CMDQ_RESUME_0_RESP_RETRY;
-> +			break;
-> +		default:
-> +			resume_resp = CMDQ_RESUME_0_RESP_TERM;
-> +			break;
-> +		}
-> +		cmd = arm_smmu_make_cmd_resume(sid, resp->grpid, resume_resp);
- [Severity: Medium]
- This is a pre-existing issue, but does hardcoding the SID to streams[0].id
- cause the wrong stream to be resumed on multi-SID devices?
+On Wed, Sep 23, 2026 at 09:48:58AM -0600, Mathieu Poirier wrote:
+> On Tue, Sep 22, 2026 at 10:19:48PM +0200, Francesco Valla wrote:
+> > On Tue, Sep 22, 2026 at 09:43:52AM -0600, Mathieu Poirier wrote:
+> > > On Wed, Sep 16, 2026 at 11:10:57PM +0200, Francesco Valla wrote:
+> > > > Add rings for multiple vdevs, as well as the required virtio nodes for
+> > > > I2C, SPI and GPIO functionalities. On top of that, add example
+> > > > peripherals using all of them.
+> > > > 
+> > > > NOTE: this is a Proof-Of-Concept, not meant to be integrated!
+> > > > 
+> > > > Signed-off-by: Francesco Valla <francesco@valla.it>
+> > > > ---
+> > > >  arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts | 128 +++++++++++++++++++--
+> > > >  1 file changed, 119 insertions(+), 9 deletions(-)
+> > > > 
+> > > > diff --git a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+> > > > index bd14ba28690c..dfa3b122ac5f 100644
+> > > > --- a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+> > > > +++ b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
+> > > > @@ -53,6 +53,32 @@ button-k3 {
+> > > >  		};
+> > > >  	};
+> > > >  
+> > > > +	gpio-keys-virtio {
+> > > > +		compatible = "gpio-keys-polled";
+> > > > +		poll-interval = <100>;
+> > > > +
+> > > > +		button-v1 {
+> > > > +			label = "Button V1";
+> > > > +			linux,code = <BTN_3>;
+> > > > +			gpios = <&v_gpio 23 GPIO_ACTIVE_LOW>;
+> > > > +		};
+> > > > +
+> > > > +		button-v2 {
+> > > > +			label = "Button V2";
+> > > > +			linux,code = <BTN_4>;
+> > > > +			gpios = <&v_gpio 24 GPIO_ACTIVE_LOW>;
+> > > > +		};
+> > > > +	};
+> > > > +
+> > > > +	leds {
+> > > > +		compatible = "gpio-leds";
+> > > > +
+> > > > +		led {
+> > > > +			gpios = <&v_gpio 18 GPIO_ACTIVE_HIGH>;
+> > > > +			label = "LED V";
+> > > > +		};
+> > > > +	};
+> > > > +
+> > > >  	reg_usdhc2_vmmc: regulator-usdhc2 {
+> > > >  		compatible = "regulator-fixed";
+> > > >  		off-on-delay-us = <12000>;
+> > > > @@ -89,11 +115,6 @@ linux,cma {
+> > > >  			linux,cma-default;
+> > > >  		};
+> > > >  
+> > > > -		rsc_table: rsc-table@2021e000 {
+> > > > -			reg = <0 0x2021e000 0 0x1000>;
+> > > > -			no-map;
+> > > > -		};
+> > > > -
+> > > 
+> > > Why is the resource table removed?  There is no mention of that in the
+> > > changelog...
+> > >
+> > 
+> > You are obviously right, the commit message here should have been a
+> > poem, not a form of hermetic poetry. My bad.
+> > 
+> > The resource table here is causing problems with how Zephyr is managing
+> > it at its side. If it is kept in a separate memory location and copied
+> > there at runtime by the remote processor firmware during its startup
+> > (which is the current Zephyr behavior), then there might be a race
+> > condition when the aforesaid firmware is loaded and started by Linux
+> > *and* at least one of the vdev drivers (here including rpmsg_bus) is
+> > built-in. In this case, the copy of the resource table done by the
+> > remote processor might - depending on the async execution of the two
+> > processors - overwrite the status bit set by the Linux driver:
+> > 
+> >   Firmware load and startup (echo start > /sys/.../state)
+> >                            |
+> > 			   |
+> > 			   V
+> >   The vdev devices get registered (by register_virtio_device())
+> >                            |
+> > 			   |
+> > 			   V
+> >   If a driver is built-in, it probes and sets the vdev status
+> >   inside the resource table @rsc-table.
+> >                            .
+> > 			   . (in the mean time)
+> > 			   .
+> >   The remote processor starts up and copies the resource table from its
+> >   dedicated section to @rsc-table.
+> > 
+> > Depending on the system load and the complexity of the firmware, the two
+> > operations can happen in whatever sequence, causing a race condition.
+> 
+> This would happen regardless of this patchset.
+>
 
-This seems right. Stall mode should encode the SID in the iopf_fault
-event, maybe in the private data and recover it here.
+Correct, *if* the remote processor is copying the resource table to a
+specific location and expects the host to use that. On Zephyr (which is
+clearly outside the scope here) this can be enabled through the
+CONFIG_OPENAMP_COPY_RSC_TABLE option. I am keeping that disabled, and
+removing the rsc-table node here.
 
-> [ ... 20 lines skipped ... ]
-> +		default:
-> +			WARN_ON(true);
-> +			return;
-> +		}
-> +		ssv = !!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID);
+I am planning to reason on this and propose a proper fix in a separate
+patchset.
 
-No need for !! when asigning or casting through a bool type. Compiler
-does it automatically.
+> > 
+> > This is somewhat masked if vdev drivers are built as modules, as the
+> > devices does not probe immediately but only after the modules have been
+> > loaded, giving the remote processor time to start. Note that this is not
+> > a solution! but a workaround.
+> > 
+> > If the rsc-table node is not there, the startup logic falls back to the
+> > classic rproc_elf_find_loaded_rsc_table().
+> 
+> We can't remove @rsc-table to make a problem go away.  
+> 
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+I need to re-take a look at the NXP SDK to understand what's the real
+purpose of having the rsc-table here. Judging from the commit message
+that introduced support for such facility [1], it seems the SDK is not
+really using it.
 
--- 
-Jason
+Maybe someone from NXP can comment on this?
+
+> > 
+> > This is specific to i.MX platforms [1] and is probably not normally an
+> > issue because - as stated in [1] - the offical SDK from NXP seems not
+> > to check the status inside the resource table.
+> > 
+> > > >  		vdev0vring0: vdev0vring0@a4000000 {
+> > > >  			reg = <0 0xa4000000 0 0x8000>;
+> > > >  			no-map;
+> > > > @@ -105,12 +126,42 @@ vdev0vring1: vdev0vring1@a4008000 {
+> > > >  		};
+> > > >  
+> > > >  		vdev1vring0: vdev1vring0@a4010000 {
+> > > > -			reg = <0 0xa4010000 0 0x8000>;
+> > > > +			reg = <0 0xa4010000 0 0x1000>;
+> > > > +			no-map;
+> > > > +		};
+> > > > +
+> > > > +		vdev2vring0: vdev2vring0@a4011000 {
+> > > > +			reg = <0 0xa4011000 0 0x2000>;
+> > > > +			no-map;
+> > > > +		};
+> > > > +
+> > > > +		vdev2vring1: vdev2vring1@a4013000 {
+> > > > +			reg = <0 0xa4013000 0 0x2000>;
+> > > > +			no-map;
+> > > > +		};
+> > > > +
+> > > > +		vdev3vring0: vdev3vring0@a4015000 {
+> > > > +			reg = <0 0xa4015000 0 0x2000>;
+> > > > +			no-map;
+> > > > +		};
+> > > > +
+> > > > +		vdev4vring0: vdev4vring0@a4017000 {
+> > > > +			reg = <0 0xa4017000 0 0x4000>;
+> > > > +			no-map;
+> > > > +		};
+> > > > +
+> > > > +		vdev5vring0: vdev5vring0@a401B000 {
+> > > > +			reg = <0 0xa401B000 0 0x2000>;
+> > > > +			no-map;
+> > > > +		};
+> > > > +
+> > > > +		vdev5vring1: vdev5vring1@a401D000 {
+> > > > +			reg = <0 0xa401D000 0 0x2000>;
+> > > >  			no-map;
+> > > >  		};
+> > > >  
+> > > > -		vdev1vring1: vdev1vring1@a4018000 {
+> > > > -			reg = <0 0xa4018000 0 0x8000>;
+> > > > +		vdev5vring2: vdev5vring2@a401F000 {
+> > > > +			reg = <0 0xa401F000 0 0x1000>;
+> > > >  			no-map;
+> > > >  		};
+> > > >  
+> > > > @@ -149,8 +200,67 @@ &cm33 {
+> > > >  		 <&mu1 3 1>;
+> > > >  	mbox-names = "tx", "rx", "rxdb";
+> > > >  	memory-region = <&vdevbuffer>, <&vdev0vring0>, <&vdev0vring1>,
+> > > > -			<&vdev1vring0>, <&vdev1vring1>, <&rsc_table>;
+> > > > +			<&vdev1vring0>, <&vdev2vring0>, <&vdev2vring1>,
+> > > > +			<&vdev3vring0>, <&vdev4vring0>,
+> > > > +			<&vdev5vring0>, <&vdev5vring1>, <&vdev5vring2>;
+> > > 
+> > > Who is using vdev5 vrings?  
+> > > 
+> > 
+> > Another thing that should have been in the commit message. Vdevs are
+> > defined, in the Zephyr application I am using as PoC, as follows:
+> > 
+> >  - vdev0: RPMSG (tx and rx vrings)
+> 
+> To be backward compatible, there has to be a way to make vdev0 defaulting to
+> RPMSG.  It would also be nice if bindings were define for RPMSG so that it can
+> show up in the list of remoteproc-virtio devices like i2c, gpio and others.
+>
+
+What vdev type is inside vdev0 is up to the resource table (i.e., to the
+firmware running on the remote processor), not the remoteproc-virtio
+framework.
+
+Defining bindings for rpmsg would today be... pointless? Since no
+hardware needs to be described for it. The same goes for virtio-can and
+virtio-entropy.
+
+> 
+> >  - vdev1: entropy (single request vring)
+> >  - vdev2: GPIO (request and event vrings)
+> >  - vdev3: I2C (single request vring)
+> >  - vdev4: SPI (single request vring)
+> >  - vdev5: CAN (tx, rx and control vrings)
+> > 
+> > vdev5 is not represented inside the devicetree because the can-virtio
+> > driver registers a single CAN network device and has thus no need for
+> > such representation.
+> 
+> Then why is it part of the remoteproc's memory-regions?
+> 
+
+Because a vring description needs to be present for it, or the
+remoteproc-virtio won't be able to fill the entry inside the resource
+table.
+
+> > 
+> > > >  	status = "okay";
+> > > > +
+> > > > +	virtio {
+> > > > +		#address-cells = <1>;
+> > > > +		#size-cells = <0>;
+> > > > +
+> > > > +		vdev@2 {
+> > > > +			reg = <2>;
+> > > > +
+> > > > +			v_gpio: gpio {
+> > > > +				compatible = "virtio,device29";
+> > > > +				gpio-controller;
+> > > > +				#gpio-cells = <2>;
+> > > > +				interrupt-controller;
+> > > > +				#interrupt-cells = <2>;
+> > > > +			};
+> > > > +		};
+> > > > +
+> > > > +		vdev@3 {
+> > > > +			reg = <3>;
+> > > > +
+> > > > +			i2c {
+> > > > +				compatible = "virtio,device22";
+> > > > +				#address-cells = <1>;
+> > > > +				#size-cells = <0>;
+> > > > +
+> > > > +				eeprom@50 {
+> > > > +					compatible = "atmel,24c1025";
+> > > > +					reg = <0x50>;
+> > > > +				};
+> > > > +			};
+> > > > +		};
+> > > > +
+> > > > +		vdev@4 {
+> > > > +			reg = <4>;
+> > > > +
+> > > > +			spi {
+> > > > +				compatible = "virtio,device2d";
+> > > > +				#address-cells = <1>;
+> > > > +				#size-cells = <0>;
+> > > > +
+> > > > +				sram@0 {
+> > > > +					compatible = "microchip,mchp23k256";
+> > > > +					reg = <0>;
+> > > > +					spi-max-frequency = <20000000>;
+> > > > +				};
+> > > > +
+> > > > +				lcd@1 {
+> > > > +					compatible = "adafruit,yx240qv29", "ilitek,ili9341";
+> > > > +					reg = <1>;
+> > > > +					spi-max-frequency = <10000000>;
+> > > > +					dc-gpios = <&v_gpio 21 GPIO_ACTIVE_HIGH>;
+> > > > +					reset-gpios = <&v_gpio 20 GPIO_ACTIVE_HIGH>;
+> > > > +					rotation = <90>;
+> > > > +				};
+> > > > +			};
+> > > > +		};
+> > > > +	};
+> > > >  };
+> > > >  
+> > > >  &eqos {
+> > > > 
+> > > > -- 
+> > > > 2.55.0
+> > > >
+> > 
+> > Thank you!
+> > 
+> > Regards,
+> > Francesco
+> > 
+> > 
+
+Thank you for the discussion - is helping in defining further
+requirements and constraints.
+
+Regards,
+Francesco
+
+[1] https://lore.kernel.org/all/20240719-imx_rproc-v2-2-10d0268c7eb1@nxp.com/
+
+
