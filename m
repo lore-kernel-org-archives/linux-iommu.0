@@ -1,40 +1,72 @@
-Received: from mail-m49198.qiye.163.com (mail-m49198.qiye.163.com [45.254.49.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6023F361953
-	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 01:50:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.49.198
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E1F78188005
+	for <iommu@lists.linux.dev>; Wed, 23 Sep 2026 04:30:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790128254; cv=none; b=JD7tjTk4k631llClmWjshDhxP+LBpNwpl8DJZCmmeeNuxPqhfgm1J+CBOUNTRwfb3rRLe8M87xuhLQ4pTQXwlxxJnw9/YGSFQ4y4wLumKN8ui0bEmFywg4a5vOMAtg8yEDGJ79e79Z2SbvjOg03DQrOR0BBXgCdJu97vLhTTBFo=
+	t=1790137840; cv=none; b=OoI+U/f4EHfirdFx2UOZT3aHg6zFgrHqme9xP9xeE+qU0MDFwAj3AWpdHyY4MeJGwzbgLIDhpoC/os0ppgZ26CCzKyT3QbrqZVBf42dk9vwSa4VR3NQiDSCfE8hXQBkjMxpyzOjpaD3X8zP4S3B9Mode1QF9s6kO9f3nzji2Q60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790128254; c=relaxed/simple;
-	bh=OwBa6xGvfl7idKdaXvc7TVtZKDhmNSCK1vcoHvvXPP4=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Hk0AVFUg3MyvEtJuVTpA2KsQQcSGK/zJYibd4CET4N7qU+iHkQlDf8+DXgUwcIXXLNFzNH9XwUoZYVPkndp89N34ICeiKZsT8PlK3UqvRR4O7J89YfLLrAnsrrB5lepfEiQV1BWMULEUBxR9+PyDN2Vhs+pLUlTeBKcfoQDo2YE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn; spf=pass smtp.mailfrom=seu.edu.cn; dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b=LTXAls5C; arc=none smtp.client-ip=45.254.49.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=seu.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=seu.edu.cn
+	s=arc-20240116; t=1790137840; c=relaxed/simple;
+	bh=vg9uaYXmSxJRqtgdteG4ad23jorXd9SvQNq5JmvOsrY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Gl7s1YI+xg8VqPndiLSmj2828rbh9ftCBxLx01QGWGm+to/NOPbgUOEyDsdmkLBuZBDXqGNDhF/btAoS6ztTBrQweHAyatijiR7ufJg75bEFn7m9T6svpolne0R5S2YEnqndc9lzOU7FXsFQG+OdL3w9UCMbZxx+GVIHqosK1mw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=m6Y2h91c; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=seu.edu.cn header.i=@seu.edu.cn header.b="LTXAls5C"
-Received: from PC-202605011814.localdomain (unknown [222.191.246.242])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 4ecb22f1b;
-	Wed, 23 Sep 2026 09:50:45 +0800 (GMT+08:00)
-From: Runyu Xiao <runyu.xiao@seu.edu.cn>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="m6Y2h91c"
+Received: from CPC-namja-026ON.localdomain (unknown [4.213.232.23])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 7D7AC20B7167;
+	Tue, 22 Sep 2026 21:29:41 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7D7AC20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790137790;
+	bh=aQReAO0PaLkNvXEhlkkcXHEpAn5VPDQu8Pd8CslTL90=;
+	h=From:To:Cc:Subject:Date:From;
+	b=m6Y2h91cP6uLX+qIVNw14KrOjlbQxwDfkTsuFZFYruq8pVgEOy570bLc+vRiX8mFi
+	 qVV6oxTIer9fjwZ4iyhtVjNzs154sKZ+bfhX0pW/i+rW6t+Qz/0RRVvrJgmehYYlOk
+	 Meh81Y5JCLUISbugqORBFgMIWDeqr57CwFBG4yAY=
+From: Naman Jain <namjain@linux.microsoft.com>
+To: Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Cc: Long Li <longli@microsoft.com>,
+	Nam Cao <namcao@linutronix.de>,
 	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
 	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Jiang Liu <jiang.liu@linux.intel.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	iommu@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Kees Cook <kees@kernel.org>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Radu Rendec <radu@rendec.net>,
+	Sean Christopherson <seanjc@google.com>,
+	Kai Huang <kai.huang@intel.com>,
+	Dmitry Ilvokhin <d@ilvokhin.com>,
+	Shradha Gupta <shradhagupta@linux.microsoft.com>,
+	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+	Thierry Reding <treding@nvidia.com>,
+	Jiri Wiesner <jwiesner@suse.de>,
+	Daniel J Blueman <daniel@quora.org>,
+	linux-hyperv@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Runyu Xiao <runyu.xiao@seu.edu.cn>,
-	Jianhao Xu <jianhao.xu@seu.edu.cn>
-Subject: [PATCH] iommu/vt-d: release IRQ vector after request failure
-Date: Wed, 23 Sep 2026 09:50:39 +0800
-Message-Id: <20260923015039.1884067-1-runyu.xiao@seu.edu.cn>
-X-Mailer: git-send-email 2.34.1
+	iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org
+Subject: [PATCH v6 0/4] x86/irq: Fix lost interrupts on CPU hot-unplug
+Date: Wed, 23 Sep 2026 04:30:19 +0000
+Message-ID: <20260923043023.3150498-1-namjain@linux.microsoft.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,58 +74,82 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-HM-Tid: 0aa0cbf54aa503a1kunm70634b72b0f7f
-X-HM-MType: 10
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVlCTE4YVhofGEkYTk5DSEsaGFYeHw
-	5VEwETFhoSFyQUDg9ZV1kYEgtZQVlJSUlVSkJKVUlPTVVJT0lZV1kWGg8SFR0UWUFZT0tIVUpLSE
-	pPSExVSktLVUpCS0tZBg++
-DKIM-Signature: a=rsa-sha256;
-	b=LTXAls5CjRoUF8hxynE36n2EnX0gN/EfGNgeISNKl9aOK/UX4GElttYBikzqqqt/N8eOBx9SrESA+0ojgwe4GoCS6YGg94e20fH9/ao7TZtGqyXI63M5XMUmWd6EGAHjhdJLgsMuJ6oWamcuWhHEPVyfhxpQgKlc2x4hTdrYR3E=; c=relaxed/relaxed; s=default; d=seu.edu.cn; v=1;
-	bh=UjfQwllVPeSsMmKu1Wr1AVRaxMNq/L5K8NDTvYarh+Y=;
-	h=date:mime-version:subject:message-id:from;
 
-When request_irq() fails, iommu->irq remains set, so later teardown
-attempts to free an IRQ that was never registered.
+On CPU hot-unplug, fixup_irqs() re-injects interrupts that are still
+pending in the outgoing CPU's IRR via the irqchip's irq_retrigger()
+callback. The Hyper-V root partition PCI/MSI irqchip lost that callback
+when it was converted to msi_create_parent_irq_domain(), so such a
+pending interrupt is silently dropped, leading to lost interrupts, stalls
+and "No irq handler for vector" messages.
 
-Release the reserved vector and clear iommu->irq on the failure path.
+Patch 1 is the minimal, backportable fix (Fixes:/Cc: stable) that restores
+irq_chip_retrigger_hierarchy() on the Hyper-V root partition PCI/MSI chip.
+The equivalent guest pci-hyperv.c fix from the previous version is already
+merged, so it is dropped here.
 
-The failure path was reproduced with an x86_64 kernel under QEMU using a
-q35 machine and an Intel IOMMU with interrupt remapping enabled. A
-test-only failure injection makes request_irq() return -EBUSY after
-dmar_alloc_hwirq() assigns a vector, then attempts to allocate the same
-vector again.
+Patch 2 then switches fixup_irqs() to call irq_chip_retrigger_hierarchy()
+directly which ensures that this issue does not occur for chips that
+miss adding this initialization.
 
-On the unfixed kernel, the failed request leaves iommu->irq set and the
-second allocation returns -EEXIST. With this change, iommu->irq is cleared
-and the second allocation reuses the vector. The failure is deliberately
-injected to exercise this error path and is not expected during normal
-QEMU operation.
+Patch 3 makes a similar change in msi_set_affinity()
 
-Fixes: 34742db8eaf9 ("iommu/vt-d: Refine the interfaces to create IRQ for DMAR unit")
-Cc: stable@vger.kernel.org
-Assisted-by: LLM
-Signed-off-by: Runyu Xiao <runyu.xiao@seu.edu.cn>
----
- drivers/iommu/intel/dmar.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Patch 4 then drops the now-redundant irq_retrigger() initializations.
+This way, patch 2-4 do not need to be backported.
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index ba675b08c..d479e70c5 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -2098,8 +2098,11 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
- 	}
- 
- 	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
--	if (ret)
-+	if (ret) {
- 		pr_err("Can't request irq\n");
-+		dmar_free_hwirq(iommu->irq);
-+		iommu->irq = 0;
-+	}
- 	return ret;
- }
- 
+Changes since v5:
+https://lore.kernel.org/all/20260914111836.2119301-1-namjain@linux.microsoft.com/
+* Commit messages refinement/correction (Michael)
+
+Changes since v4:
+https://lore.kernel.org/all/20260909064448.1004-1-namjain@linux.microsoft.com/
+* Discussion between Thomas and Michael concluded that if-else check for
+  irq_retrigger callback is not required, and
+  irq_chip_retrigger_hierarchy() can safely replace all irq_retrigger
+  invocations. Make the change to remove if-else blocks and update commit
+  msg accordingly. Older series could not be picked because there was a
+  genuine change in patch 1 of this series.
+
+Changes since v3:
+https://lore.kernel.org/all/20260907065129.269262-1-namjain@linux.microsoft.com/
+* Move irq_retrigger setting to hv_init_dev_msi_info() in patch 1
+  (Michael, Nam)
+* Add if-else fallback check in msi_set_affinity() in patch 3 (Michael)
+* Break patch 3 into two separate patches, while *keeping review tags*.
+
+Changes since v2:
+https://lore.kernel.org/all/20260810090716.2325295-1-namjain@linux.microsoft.com/
+* Add a backportable fix for Hyper-V root partition irqchip (Wei)
+* Add a check for custom irq_retrigger implementations and add direct
+  irq_chip_retrigger_hierarchy() calls as a fallback if it is not
+  defined by a chip. (Sashiko, Michael)
+* Removed local loop variable change, and continue using the irq_desc
+  accessor function (Michael)
+* Did not pick "Acked-by: Manivannan Sadhasivam" as it was on v1, and v3
+  is a functionally different to some extent, specially patch 2.
+  Requesting you to please review again.
+
+Changes since v1:
+https://lore.kernel.org/all/20260728135117.2888175-1-namjain@linux.microsoft.com/#t
+* Added Review tags
+* Adding minor clarification in commit msg of patch 2 (Shradha)
+
+Original RFC: https://lore.kernel.org/all/87y0f3jhd6.ffs@fw13/
+
+Naman Jain (4):
+  x86/hyperv: Set irq_retrigger for root partition PCI/MSI irqchip
+  x86/irq: Use irq_chip_retrigger_hierarchy() in fixup_irqs()
+  x86/irq: Use irq_chip_retrigger_hierarchy() in msi_set_affinity()
+  x86/irq, iommu/amd, x86/hyperv, PCI: Drop redundant irq_retrigger
+    inits
+
+ arch/x86/kernel/apic/io_apic.c      |  2 --
+ arch/x86/kernel/apic/msi.c          |  4 +---
+ arch/x86/kernel/hpet.c              |  1 -
+ arch/x86/kernel/irq.c               | 18 ++++++++----------
+ drivers/iommu/amd/init.c            |  1 -
+ drivers/pci/controller/pci-hyperv.c |  1 -
+ 6 files changed, 9 insertions(+), 18 deletions(-)
+
 -- 
-2.34.1
+2.43.0
+
