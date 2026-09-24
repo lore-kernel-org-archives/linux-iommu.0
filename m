@@ -1,128 +1,116 @@
-Received: from out16-185.antispamcloud.com (out16-185.antispamcloud.com [185.201.18.185])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy2-f16.google.com (mail-dy2-f16.google.com [74.125.229.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0030409273;
-	Thu, 24 Sep 2026 22:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.18.185
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1DC23E0749
+	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 22:50:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790289891; cv=none; b=YHlzXRhplC/EyD/HkusACFJj/L+65EbBJC6rt05QkTMLLea5UPjOVEi8wMxwDPCRiFsEiGymC6+XvqkmmnWbwQfAwx0sbcYi88eGh0lzlz43tMxx7fdMfY0+GJD/a+d0hldb+mapurBl9GU4uXpCgr8w0k0j2XviUROwCqxnGVg=
+	t=1790290223; cv=none; b=dvTNXenBawYQzg5MxVoQl85qcW/PPWU0h5i2EduJmFvu6EIjYF62YSvNxuo7jssRAHHY8Bc/8/MP6H7OHCYPWJRbFSgMqlveZ733FmW/XbD/LIXvJe6135Q+ky6fK5Uxv5zk7G4rIDnjLoSPe93FDyj+i32+wu39qQRiSyIw75o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790289891; c=relaxed/simple;
-	bh=3gUNdeM74TIZEnSxvWNY4vU2DDg8+Lyg7o4USgxAy1Q=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rKujMbTLc6gbNDoxadg8CCfnV+dFS7pC05CAjql3QY5rWRD4PWytwt3E17C8nG4iH+1WS0SLPPLBEGvZybLIegaREcz7hToz5fZVqzimcGDGQnmg5xoRv3cICEhdwTP1r2SO0egUe3fmXj3RovyRf5+X0sCbVMNTYX+xHE/xn2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=L7H03mcF; arc=none smtp.client-ip=185.201.18.185
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
+	s=arc-20240116; t=1790290223; c=relaxed/simple;
+	bh=Jb6vc6BOQznPAYX80+SRk6VItp9GXPoNisyCk2caNW4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BX41IdR3YMToUSi9HMoeqkV50dG2haPECzPGAp2IRrQ/hmaAW2owdKk7vx/G2cB9dzTGdqGxhD8EibxUNb4o+efcHNVuX3hNfrL7GIqJCpuR/WVgqAFKWV2fOV/lvCB8Gj6+K3MLMHj0bTEjj3IoifD4nLWmUn2W5+yIVJn4qbQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=bMepoXj0; arc=none smtp.client-ip=74.125.229.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="L7H03mcF"
-Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
-	by mx320.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <dan@reactivated.net>)
-	id 1x9qjQ-004qWk-Cf; Thu, 24 Sep 2026 23:11:54 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=reactivated.net; s=default; h=Cc:To:In-Reply-To:References:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=C1HITtr+aqcZ8nFC5kDWRbi3sk+xXAlik1wHbVlwcQk=; b=L7H03mcFPZ0n9WqOJxcaksQ4+/
-	n/LRugw54a8O7mlOKcMXeoob5IvaXuG6ZRp9pGeR8IdaaPGRY2fWiq8ocJIqPxceNiLVJNM9Gc/k7
-	sHKZlNRu6pmFjAgO/cb0bDsrNPMiU0W0AoPtRR3MqTzp8bwiOlTCfMZt6YsqN+thDt66JXStzLNL/
-	Qh2rIn6JM91NbJS7h+5YXoRIXQjL/2GYb0DhjvF0N2PWEHKMnIujWAPYJZ34WMZdXFOdSwk5OHdNB
-	tfnntZBazfAiHSR2m1Xv91Zzu7rIyphaotLMkS/n3WDlOMWvzrMfn8x32i+K3duQ4Knx8PMM62yb9
-	jpmkzUpQ==;
-Received: from [188.251.249.2] (port=56840 helo=[192.168.1.123])
-	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <dan@reactivated.net>)
-	id 1x9qjN-00000006M7u-0TIO;
-	Thu, 24 Sep 2026 21:11:49 +0000
-From: Daniel Drake <dan@reactivated.net>
-Date: Thu, 24 Sep 2026 22:10:53 +0100
-Subject: [PATCH v6 3/6] dt-bindings: display: brcm,bcm2835-hvs: Document
- iommus property
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bMepoXj0"
+Received: by mail-dy2-f16.google.com with SMTP id 5a478bee46e88-341027843a5so150057eec.2
+        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 15:50:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1790290221; x=1790895021; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=iN3QgyvzfZDTdr6KkDKa56Csi5I9mIhZDrQiq00doWs=;
+        b=bMepoXj0n2ExAqPE7eYsTiC5vw6EGTlJU5GUZ5y0/x2AlAR8FXqCSFDgavGsVjhg6B
+         Fp+GujYsWhdZYD8Q1ySr3cOc2AgqDhLSeUpogZINT8RYaqpMTxla10UUPdljcGt2X1bU
+         a1CFh6UotkWjAKElQ3XfR+1kTJy3cSC8bHQTM6nKbOhjIP6uu2xreiWwZG1bcNGJ3aOQ
+         Wt6wQ3+gEsAJ+HWWtulS7SwC5FjCGV9dZ5+FNAqUA2a5/f7shBVbw8qH/SPTRqyw+19E
+         cr8yLhVCB5q1MVBdTh6Fjh0WLA/yXbto2SbUrFBAaWlUOY6lYA97YuoKNWpGZ8+u25o9
+         FBNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790290221; x=1790895021;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=iN3QgyvzfZDTdr6KkDKa56Csi5I9mIhZDrQiq00doWs=;
+        b=beaA4Udi+AsPPV0+CBgqmrZpeDz8mX3gxosJviqg112P5NIApxEk2HF+8+udeC8Tah
+         Wljb3hNjpcnezW7BSERtds3p2OBIrxdHByBQNUKHR7BKxj4GaZ4fFoxUsd6NO4cwEVOh
+         b5Pb1jCE3/+6Bz9w1ehFQE/C1sXnVpHT7oXaPBvWFTddkR/kKLcKwF2AWl9j54M2M4Q3
+         4UX2i/uK7OOTt1f8pdkWutsDIzmTEIG3TIOHcX8DRc3gDLtjghzBtc8NmIZhaDRE4MG8
+         Wos0ngJqumJdqyGrh+PtC2jlxbPQdTKFsM9UunIPaGD3V7h9okxsmVibX0w03nvxZyUK
+         aeEw==
+X-Forwarded-Encrypted: i=1; AKwUvBw9f0dN87Az1PH590FIKcAPylOYuy5K4O2d+CNWNNfZg2RzbwemmMwUO9iIE/gPEcB32lPKJQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++lFXnaMM81+G8GjhvNyMN8735WWgnCltD/7dtAsjKBQKOE87TwN
+	qdM4Yqz8ETvAwztWaEQl0l5reDb/wcL9o03lFx+GgfLdXmtZLdyWGdtzNze84tl3FPo=
+X-Gm-Gg: AYBFou2Rj1ZTTl7iPM07bBDE3+GoAOyrCFrqe/Go8xsSslu+x0r5XNqMnPD0TsWXjTp
+	jmCY2QaLN7vPJegjt2mJnM9h8MaMn+3zr5SfxqMbj1XA0XiNX+LwaTEqWT81qXp7NUBal2pmthY
+	SEh0jzFd+z16Z8ynP8h1LBOE2qQSHUODn16UOy4dedUvdAKYKbgcjiIOdC5b6r3yK2/ij0sphZX
+	muzIGHzPYH5mHslc13LLKlnb192orAuELyGMxbIS+f4zSFtVTqqlG96XXTtbu0vgtu1LuqgGTAG
+	ZmQxBQN/UJotA1g8SDbhiBrdv1Df95vdnaXf3kYtqbhLZNALaJTOBwMYF8UfDuNR+uUCBtPZpEV
+	2SrbL6hNH1AT6jRu5vKWWyVoyEDQ85d7KZ0J+As6vz+K4UWr5FIi6R/YcEomRih5HSi2qzQyQIX
+	BGfuWW7I2U7340utxpRhAfTW+WtyetHIscDY1ZXq1mKBBq
+X-Received: by 2002:a05:7301:18ab:b0:33c:3134:1055 with SMTP id 5a478bee46e88-340032c267emr3017847eec.12.1790290220645;
+        Thu, 24 Sep 2026 15:50:20 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-34144173a2asm1592472eec.6.2026.09.24.15.50.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Sep 2026 15:50:20 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1x9sGg-00000000eVK-3LHc;
+	Thu, 24 Sep 2026 19:50:18 -0300
+Date: Thu, 24 Sep 2026 19:50:18 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mario Limonciello <mario.limonciello@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+	Joerg Roedel <joro@8bytes.org>, amd-gfx@lists.freedesktop.org,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux.dev>,
+	Jatin Kataria <jkataria@netflix.com>,
+	Boqun Feng <boqunf@netflix.com>,
+	"Derek J . Clark" <derekjohn.clark@gmail.com>
+Subject: Re: [PATCH v2 1/2] iommu/amd: Add PerfOpt IOMMU performance
+ optimization support
+Message-ID: <20260924225018.GB16465@ziepe.ca>
+References: <20260908041207.38113-1-mario.limonciello@amd.com>
+ <20260908041207.38113-2-mario.limonciello@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260924-bcm2712-iommu-submit-v6-3-7b3cace86973@reactivated.net>
-References: <20260924-bcm2712-iommu-submit-v6-0-7b3cace86973@reactivated.net>
-In-Reply-To: <20260924-bcm2712-iommu-submit-v6-0-7b3cace86973@reactivated.net>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Daniel Drake <dan@reactivated.net>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
- james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>
-X-Mailer: b4 0.14.3
-X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
-X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
-X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
-X-Spampanel-Username: 192.250.231.249
-Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
-X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: Combined (0.02)
-X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuUDtRfT7lYBuECIPudT1XzSU7TacCi0f13j
- GhHdsSURRiu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVIPqgfNcPdJXvbyUpLgnF1F3GnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
- EetczWCfZW7a9uhvfuE0J/hsBuu+eB7itP8hgjDRserKv4bhb4rodgkl+wsfxZHakHKRaVZWBb39
- uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKclZzoe+TZdeH39wA4E
- grA4pE2PuLHIFQdBY9qb1rRWgyz0f29FZkQs6Ir87R/YNAvXNJYSPALjIk1CrW/D5KV6hhIoFK2v
- s7u+GDFagW/56hdY10KWDe11L7IcB8KIVAX0ddipzuikhovwj3ZhlauoCGpSQ3YDiIuyc1oArSHW
- Z6JhwV5av+XQyyDMu89o9uPImyvadeKGjjJQWSFqkLDz7r2on3wj0x4ezS7JTqLnJdXFqoCaPGhq
- xOsFLn6FXrHoC90VuIq/wzRJuNyYmlcf2wvHbfwld3xCwVQvwEuT7xKb56pfSTPBxlVrsnJIzhEd
- i2dtActm1pKPAAGnfdVyej30Z3Gx8hXfff5gZXHdar2zTZYKe+y4VTLHb4QDZyhuR1U+n91YVqlR
- fRjPErXQYEWFSqUNAzHMtoQ0XumDZdCnPPqcrsJCa26g+1p6dnGqlgoL2vPcxoHP5fYm77ZLajhI
- /osHQYQOY9tKQuYhV2zSuqRaCWd5p5K78Cq+W1w0y2KsRWBIPw9nLpbNGPtYpG55mqwMpI5BYS8G
- lSNI2Ca/iJPEUj1bN/5NYVGLsL5Qw4IB9ToecrbmmnKjrsPhPgoNgiFdcZakx1C6U9RI/f+76sU8
- wGmOnLcaeINlh4D7gY7cv0cTP3w7F74GIfFgGZTlEmqqp+HcDRtShrxrNA4br2+mEmVJrJM4fd19
- PqjIyvGxWL1rN3cWjPD5viEZJolz8ClgrSFC0qV2pwUtO92lcKbdXd1aPKEJfyZsBP+3ojxAc8lp
- 0sobbdB+F7B3Y8TjGBGmQjnZT0wGxghmQiiyHai0+C+cV2SwXGGBGRJoh9VoIekQHpwUfpYnEThm
- JIBq/vl4T589Eoyw88oKKzL2dp7mRKD4sMOHD4kTUbW5J5QyAL9UV03N5ANlY/XP/nvATdPRNfRC
- ogKUBoiGk7+7TY+LxsYMBY14CoC2k4ZFj2kpuIv/9gSqTljzmaSLiwQzKw+6v3CaIMG6s7LqJEBr
- r4RYD5fnTwa0tMnLz6SKQpgZ8zVbGmL5ozttECcg597p245AIcvvY28Ycjy4wUtEPn8DyQjjJgJw
- lknA97Qqa21qj9TEJmQFcQejLm6N02F0dRgAVZw81E22mZaseAdYAUt3zF2gN7skM/50TVH1H/aA
- warQpYDOYx/6JtUORHHV0k7mR0VPG9HQWV7dXfBjXbvxH2nMLfV+SMGovieHnQDrcLDN17YMjSrM
- Y2oTcPJOcrZu7OKsSObGAqhi7iERbInMiTBIUBbQ/Dy6Ip5s2Cc9h6F0bzi9eJvFy172Pif4H4Ku
- 78pBi/ZAqnPyI/BjXbvxH2nMLfV+SMGovie1ATPpp8i1sHWZQrJ+tLuI
-X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
-X-Complaints-To: abuse@master.antispamcloud.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260908041207.38113-2-mario.limonciello@amd.com>
 
-On BCM2712, the Hardware Video Scaler (HVS) is connected behind an IOMMU.
-Add the optional iommus property to allow describing this connection.
+On Mon, Sep 07, 2026 at 11:12:06PM -0500, Mario Limonciello wrote:
+> +EXPORT_SYMBOL_GPL(amd_iommu_enable_perfopt);
 
-Signed-off-by: Daniel Drake <dan@reactivated.net>
----
- Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+Last time we hardwired the GPU and IOMMU drivers together it was a
+huge mess to undo.
 
-diff --git a/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml b/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml
-index 9aca38a58a16..8f8aae9f3788 100644
---- a/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml
-+++ b/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml
-@@ -35,6 +35,9 @@ properties:
-     minItems: 1
-     maxItems: 2
- 
-+  iommus:
-+    maxItems: 1
-+
- required:
-   - compatible
-   - reg
+Why does the GPU driver have to request this? Why can't the iommu
+driver know that this is a special device that can use this magic fast
+path and then auto set it when identity is asked for?
 
--- 
-2.55.0
+How does the GPU driver even know it is magic special?
 
+> +	/*
+> +	 * Restore ATS/PRI/PASID (and thus SVA) by re-homing the device onto its
+> +	 * identity domain with the flag cleared, so a later bind without PerfOpt
+> +	 * sees a normally-capable device. See the locking note in
+> +	 * amd_iommu_enable_perfopt().
+> +	 */
+
+And this is sort of a wrong thing in the driver, it shouldn't have ATS
+turned on for identitiy mappings, and it certainly shouldn't have PRI
+turned on until a PRI capable domain is attached.
+
+Jason
