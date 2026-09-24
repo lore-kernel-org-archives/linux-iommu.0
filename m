@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01CBA3D25D2;
-	Thu, 24 Sep 2026 06:08:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3533A3F4DD2;
+	Thu, 24 Sep 2026 06:09:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790230134; cv=none; b=Ysu/Kt0Du05EMah97JHkiCp/2d2c+m6cOycdzCVVFlvGkuVak4ThMdTph+7Ootd6CGwzAvBga3mKa7mwRiIeerF+/4m9EALV1eIBSjyuVN8Kw64lGxjSoAyCJqx7mpYPTTPXc2qMeYFdHm4cmTRF8L0QNSdQpJLhTp6m+g27iZ4=
+	t=1790230151; cv=none; b=Eow9qAuEnKiQ0eiiIgqZyMKPn/PKGUlNnsWWjyIebtSfOq9Hv7lvzKT/3P098YZhVJLlUERXyO8bBNovobKcqunuelUtvZhN/fJ2s/UJFaL/ivYOVVnZ78CQSxti0zBs86AfCU2ykq3pl/5okwdZqzkzj85O4HWQvZ30c5Rf99M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790230134; c=relaxed/simple;
-	bh=09mPp9QX3cV5CNigZJnjhYofuzJkVGyc6AFcGbQxlhw=;
+	s=arc-20240116; t=1790230151; c=relaxed/simple;
+	bh=4CJEyVcs1k79aNGKjlS207vQIHEMmJ4tXfjSXmeKvKc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=c0y+G83DZs7O+3HE6umOmk2sh9xzKaZhKqsOTuC5cjEC60u0DlN/sT63QTqD0zINq1HOyh9S89B9NV4wdP72wp/h/NduA/Mylr95UMV2I4Md9KMTwwbE6RvGF8G3Rbj+p+shnp1A9uwRKWHl1dXXXpIet9v8LOVXgLjDtnwW78A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dNlQSxkP; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version; b=khm5VYKpKCejmtyoFy+6yAcaSk8qTo2F20jo4bHSNZ6ohwpYFEJEMNtEDyKTvWL6eM2dYa8QCpysD7A0Ql2dFFHEnl60RBVq9Bnu2Nva3hr1hAl1k1PU38fTBR3fhyQcKmUvMUiNwxnWQg57LXuXv1XWprINUYPley1Qqy4ay4E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MPNqW2n3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dNlQSxkP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A3B1F00898;
-	Thu, 24 Sep 2026 06:08:35 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MPNqW2n3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F8231F000FF;
+	Thu, 24 Sep 2026 06:08:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790230132;
-	bh=bZdtkw5xik3/AxZvbApIZ+mvQYUki7df1BjpPFZ+vJQ=;
+	s=k20260515; t=1790230149;
+	bh=scK31GWR2h/dTmEm9pgXi3rZWUkl7hz/7+eEu9rpbOk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=dNlQSxkP4yr5E+y/jSc5A9piYh3waKMTK0o2RQ+KX4Px78mVUyWMVx9iaSjIaJGK5
-	 gJ4g5j1TZLpkHcvb7fbxl2m79KMOHT/PLr8y8EE+3Xo74V9mRwOllpaIDtPQzMilZu
-	 hW/LtqZgULKhwFgn7FREEl00TZL1WXDzIg794JfVn8f8BXQ6TWKb89GOY6eGIOuQfB
-	 BjgoA8DlLQJaarw5tulyvD0To6GNn2KQSrFmUqCKcJq96LCUq7AOzKBJxwqJ4GQbx3
-	 lg+P62RmSv1/u1y+wVlTSzM3VhJYReFL4IRgUYIyL3IZWk9iEoNixE5/tp+C4Ns+2B
-	 SxOHv5AMKOVww==
+	b=MPNqW2n3xQPMHb3zk4FZ6ncKB0hS41jziOySyXRP85orS2goMtQH2mm/0L9yaZxJ7
+	 uyfxEYDfSKu8jV+fdC4+eGcFWr353MFkOwEd70Y7yLG+AbSEyBgtn2ckcyeoRzGBD+
+	 I2tflAOZ4Q1fn7RbuaEgmuUo+/QGXFno6TJ+hS3dXjCIRl3cw4GGfgWF+2qH69vs2P
+	 MwZo6Xz45RCXfRm9huH6Y7sEvvHmd8YWAtVSH/kZU0DX+sGsu33lFAv7L2p9isA4MW
+	 5TroSKQNx8yklWoYeiNZ44FrEEEF8XAaphtrhBdD4Jpm+EP38YK8c58oQMes/CsBtO
+	 qlrJqSzruzYKg==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
@@ -84,9 +84,9 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	linux-riscv@lists.infradead.org,
 	linux-s390@vger.kernel.org,
 	x86@kernel.org
-Subject: [PATCH v6 2/8] dma: swiotlb: Consolidate slab rounding
-Date: Thu, 24 Sep 2026 11:37:50 +0530
-Message-ID: <20260924060756.1325156-3-aneesh.kumar@kernel.org>
+Subject: [PATCH v6 3/8] dma: swiotlb: Track whether the pool size was explicitly set
+Date: Thu, 24 Sep 2026 11:37:51 +0530
+Message-ID: <20260924060756.1325156-4-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
 References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
@@ -98,102 +98,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Pass the area count explicitly to swiotlb_calc_nslabs() and keep the
-calculation separate from updates to the default_nslabs . Move the
-default_nslabs update into swiotlb_adjust_nareas().
+swiotlb_adjust_size() must not override a pool size supplied through the
+swiotlb= command-line parameter.
 
-Round slabs to a power of two even before the area count is initialized.
-For early swiotlb_adjust_size() calls, this moves rounding from area
-initialization to size adjustment, so early queries see the rounded
-size.
+Currently, it determines whether a size was supplied by comparing
+default_nslabs with IO_TLB_DEFAULT_SIZE. This fails when the user
+explicitly requests the compiled-in default size, allowing the request
+to be overwritten by automatic pool sizing.
 
+Record whether swiotlb= supplied a numeric size in swiotlb_cmdline_size_set
+and check that flag directly before adjusting the pool size.
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>
 Cc: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- kernel/dma/swiotlb.c | 44 ++++++++++++++++++++------------------------
- 1 file changed, 20 insertions(+), 24 deletions(-)
+ kernel/dma/swiotlb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 42c51fb57e12..b59dd2a5984e 100644
+index b59dd2a5984e..61efa3244daa 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -117,27 +117,20 @@ struct io_tlb_area {
- 	spinlock_t lock;
- };
+@@ -100,6 +100,7 @@ static struct io_tlb_mem io_tlb_default_mem;
  
--/*
-- * Round up number of slabs to the next power of 2. The last area is going
-- * be smaller than the rest if default_nslabs is not power of two.
-- * The number of slot in an area should be a multiple of IO_TLB_SEGSIZE,
-- * otherwise a segment may span two or more areas. It conflicts with free
-- * contiguous slots tracking: free slots are treated contiguous no matter
-- * whether they cross an area boundary.
-- *
-- * Return true if default_nslabs is rounded up.
-- */
--static bool round_up_default_nslabs(void)
-+/* Return a power-of-two number of slabs that can be split between areas. */
-+static unsigned long swiotlb_calc_nslabs(unsigned long size,
-+		unsigned long nareas)
- {
--	if (!default_nareas)
--		return false;
-+	unsigned long nslabs;
- 
--	if (default_nslabs < IO_TLB_SEGSIZE * default_nareas)
--		default_nslabs = IO_TLB_SEGSIZE * default_nareas;
--	else if (is_power_of_2(default_nslabs))
--		return false;
--	default_nslabs = roundup_pow_of_two(default_nslabs);
--	return true;
-+	nslabs = ALIGN(DIV_ROUND_UP(size, IO_TLB_SIZE), IO_TLB_SEGSIZE);
-+	if (nareas && nslabs < IO_TLB_SEGSIZE * nareas)
-+		nslabs = IO_TLB_SEGSIZE * nareas;
-+
-+	if (!is_power_of_2(nslabs))
-+		nslabs = roundup_pow_of_two(nslabs);
-+
-+	return nslabs;
- }
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ static unsigned long default_nareas;
++static bool swiotlb_cmdline_size_set __initdata;
  
  /**
-@@ -150,6 +143,8 @@ static bool round_up_default_nslabs(void)
-  */
- static void swiotlb_adjust_nareas(unsigned int nareas)
- {
-+	unsigned long nslabs;
-+
- 	if (!nareas)
- 		nareas = 1;
- 	else if (!is_power_of_2(nareas))
-@@ -158,9 +153,12 @@ static void swiotlb_adjust_nareas(unsigned int nareas)
- 	default_nareas = nareas;
- 
- 	pr_info("area num %d.\n", nareas);
--	if (round_up_default_nslabs())
-+	nslabs = swiotlb_calc_nslabs(default_nslabs << IO_TLB_SHIFT, nareas);
-+	if (nslabs != default_nslabs) {
-+		default_nslabs = nslabs;
- 		pr_info("SWIOTLB bounce buffer size roundup to %luMB",
- 			(default_nslabs << IO_TLB_SHIFT) >> 20);
-+	}
- }
- 
- /**
-@@ -300,10 +298,8 @@ void __init swiotlb_adjust_size(unsigned long size)
- 	if (default_nslabs != IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT)
+  * struct io_tlb_area - IO TLB memory area descriptor
+@@ -253,6 +254,7 @@ setup_io_tlb_npages(char *str)
+ 		/* avoid tail segment of size < IO_TLB_SEGSIZE */
+ 		default_nslabs =
+ 			ALIGN(simple_strtoul(str, &str, 0), IO_TLB_SEGSIZE);
++		swiotlb_cmdline_size_set = true;
+ 	}
+ 	if (*str == ',')
+ 		++str;
+@@ -295,7 +297,7 @@ void __init swiotlb_adjust_size(unsigned long size)
+ 	 * architectures such as those supporting memory encryption to
+ 	 * adjust/expand SWIOTLB size for their use.
+ 	 */
+-	if (default_nslabs != IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT)
++	if (swiotlb_cmdline_size_set)
  		return;
  
--	size = ALIGN(size, IO_TLB_SIZE);
--	default_nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
--	if (round_up_default_nslabs())
--		size = default_nslabs << IO_TLB_SHIFT;
-+	default_nslabs = swiotlb_calc_nslabs(size, default_nareas);
-+	size = default_nslabs << IO_TLB_SHIFT;
- 	pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
- }
- 
+ 	default_nslabs = swiotlb_calc_nslabs(size, default_nareas);
 -- 
 2.43.0
 
