@@ -1,93 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7ADB135BDC2
-	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 06:46:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+Received: from outbound.baidu.com (mx14.baidu.com [220.181.3.101])
+	by smtp.subspace.kernel.org (Postfix) with SMTP id A602F34D926
+	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 06:47:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.181.3.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790232372; cv=none; b=OOHmqgpFA3MVGI7kXrT8gwjwxvUOZ+gqSqQO5/L1C4UB5LKsTTdEf1xPD6ocP4nGb7FaZNq/+aA0r8a9nu83retlQN5kqP4xL+tgQ0l462ihWvzPBVKyOa1XvaNJEVbRBFrcJ4gsEScn0CmsXpgoBnpt5Y4i4Jj4wYtNx84rWZE=
+	t=1790232449; cv=none; b=srggza5YwwEmvv7hhaAbniKCF4idRqsd7x0TkRJHVqRyPHncg4FrzkJ2F5CJDS/n/uuCdwQzBHtmsCcYDngv7Ql2vUt2nQ9jnxt51KORkyrr/x3KW/llWvX8nNVV90jHUgYLBtusfuLajAH4K06Ccp6FIL+7AN6uCD48dPBhAIs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790232372; c=relaxed/simple;
-	bh=9X93mEba9oJz1t1ROXsa1+RcvpmXZTLshz2qV8yUV/E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jiSZbyu5lNIft9s8OYqEEsuJ0JXX63w2AJ9On4xQDJXvVaXXu2uc/f06o4AdMiRGDuimUxER5DIqvHu7/UjJUVKUSfcwNzxa8Hsat1zLjw8+SZn/8mZSbB9+QZ/f9giAhBvPKliGq8NFilEIeeml5p4gMtU23tQVgl8Vuh4Ub58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gf7GLcfg; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790232449; c=relaxed/simple;
+	bh=Zlpu0K1WgMqcj6t/bYJhYwZv1GKcvCObCFxMVSWl0Zs=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Z31F98t0dnTTExTN8O9QF0Dt0bsStZzASy9FJcntk7aDV0dfCVnp8Fkfo1zmP/zPLpqbh/Jpo3P8PhwNgGzCLUDeqVmUrNAtkeemq7+BZgNTK6VkbYCHgTw4VOZ8ng1Gy+32XftxNR5/giT5GQBJuxv4+ltzZemgyLFBYbe4Px4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b=f+ExBF2g; arc=none smtp.client-ip=220.181.3.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gf7GLcfg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790232371; x=1821768371;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9X93mEba9oJz1t1ROXsa1+RcvpmXZTLshz2qV8yUV/E=;
-  b=gf7GLcfgjPlFqqraXY2MOXZrk01OeHrdaMBy/1fN2Hw7IaWnamdXZtUR
-   ch55MLRxX13CnFZmQSZ/cRKAVwtIRv4iGOAuZkq61MwOl8atNiM3tszom
-   hES0aUB4ULjXubvJIrWKOekz48dUrOlxeuJJb15yIk3U+uNB53vlBBg6B
-   oVTO3ro9GCJveUT4/YEVSGG7peuB3D6ZV4p1IcXjaMzkdQklNtDGcI7HH
-   evYoBAcSkFTY5AyFCa2BDHk+R4s+38eW9SnfFtUw35Hk8nJtqyNMGRjBR
-   /azFNaxxnrMXQrt8ozXkaokYn3Ry3vYMm9O5oIodZyBxw4JEo/V6p7cb5
-   A==;
-X-CSE-ConnectionGUID: rRptGqqdR1KyyPFu27tb9g==
-X-CSE-MsgGUID: ZBa/ZTAEQcSPDcYXq9NUmg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11914"; a="89855275"
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="89855275"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 23:46:11 -0700
-X-CSE-ConnectionGUID: FohIE5vdQyaSwy7rUuhtAQ==
-X-CSE-MsgGUID: PXe9kUHUTVK+4B0IbOpYbQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,120,1787036400"; 
-   d="scan'208";a="274108640"
-Received: from blu2-desk.sh.intel.com (HELO [10.239.156.26]) ([10.239.156.26])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Sep 2026 23:46:09 -0700
-Message-ID: <534bb225-4a3a-4a7e-9a89-c6ca4d383ecb@linux.intel.com>
-Date: Thu, 24 Sep 2026 14:46:07 +0800
+	dkim=pass (2048-bit key) header.d=baidu.com header.i=@baidu.com header.b="f+ExBF2g"
+X-MD-Sfrom: lirongqing@baidu.com
+X-MD-SrcIP: 172.31.50.47
+From: lirongqing <lirongqing@baidu.com>
+To: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC: Li RongQing <lirongqing@baidu.com>
+Subject: [PATCH] iommu/amd: RCU-protect iommu_ga_log_notifier
+Date: Thu, 24 Sep 2026 14:47:09 +0800
+Message-ID: <20260924064709.2194-1-lirongqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/7] iommu/vt-d: Fix issues reported by Sashiko
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20260909075106.738691-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260909075106.738691-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ClientProxiedBy: bjkjy-exc5.internal.baidu.com (172.31.50.49) To
+ bjkjy-exc3.internal.baidu.com (172.31.50.47)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=baidu.com;
+	s=selector1; t=1790232439;
+	bh=r2zz97bAUXGhfmlXsFoLlOLLnieQurAEkz2wsJ0Hed8=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type;
+	b=f+ExBF2gk1na3JBst6rNG4FW+mh57dNwALfacB4K/Wfa3hKnwMidvn5VndE2m2809
+	 N7Pf8So6N9z9y56IJpvPAENZMG+1UpSHLqDeFjzTCMK+/Pz24a5xn/u91nOtRXXHP9
+	 kNOIEfmDtv4V6kfS9eaeoZDICBI6nXrceXp71kYZhEL6o+xL742/RJ+e0VlDZJvCIZ
+	 nYGC5ZOzQbFWRXNNEUkA7v9P9igJ831XUORSURWZwLVLSUAF/h6wfEkaKiyjdd290g
+	 x/aD9v90iTx+HP/az2XHMoALd6uU0wm4Q3sGo1pLFSOANHWPBfsFnD+ysCkxHdctyc
+	 rTAxbuy1bfD8Q==
 
-On 9/9/26 15:50, Lu Baolu wrote:
-> Hi,
-> 
-> This collects a number of pre-existing issues that were reported by
-> Sashiko while reviewing recent VT-d patches. None of them are
-> regressions from the patches under review; they are latent problems in
-> code those patches happened to touch.
-> 
-> Thanks,
-> baolu
-> 
-> Lu Baolu (7):
->    iommu/vt-d: Avoid out-of-range shift in qi_desc_dev_iotlb_pasid()
->    iommu/vt-d: Do not ignore context table copy failures
->    iommu/vt-d: Handle DID reservation errors when copying context tables
->    iommu/vt-d: Reserve scalable-mode DIDs from PASID entries during copy
->    iommu/vt-d: Use old domain parameter when attaching the blocking
->      domain
->    iommu/vt-d: Fix iopf refcount leak in nested attach
->    iommu/vt-d: Drop old iopf ref only after attach succeeds
-> 
->   drivers/iommu/intel/iommu.h  |  17 +++-
->   drivers/iommu/intel/iommu.c  | 152 ++++++++++++++++++++++++++++++-----
->   drivers/iommu/intel/nested.c |   2 +
->   3 files changed, 149 insertions(+), 22 deletions(-)
+From: Li RongQing <lirongqing@baidu.com>
 
-Queued for iommu/next.
+iommu_poll_ga_log() accesses iommu_ga_log_notifier without an RCU
+read-side critical section, so synchronize_rcu() in the unregister
+path does not wait for an in-flight notifier callback.
+
+Use rcu_assign_pointer() when updating the notifier and
+rcu_dereference() under scoped_guard(rcu) when invoking it. Load the
+pointer once to close the race with unregister.
+
+Keep the RCU read-side critical section minimal: only the pointer load
+and the indirect notifier call stay inside scoped_guard(rcu). Move
+pr_debug and pr_err outside the section so that logging does not extend
+the window that synchronize_rcu() must wait for.
+
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+ drivers/iommu/amd/iommu.c | 30 +++++++++++++++++++-----------
+ 1 file changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a06cd61..a31464a 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1054,11 +1054,11 @@ static void iommu_poll_events(struct amd_iommu *iommu)
+ }
+ 
+ #ifdef CONFIG_IRQ_REMAP
+-static int (*iommu_ga_log_notifier)(u32);
++static int (__rcu *iommu_ga_log_notifier)(u32 ga_tag);
+ 
+ int amd_iommu_register_ga_log_notifier(int (*notifier)(u32))
+ {
+-	iommu_ga_log_notifier = notifier;
++	rcu_assign_pointer(iommu_ga_log_notifier, notifier);
+ 
+ 	/*
+ 	 * Ensure all in-flight IRQ handlers run to completion before returning
+@@ -1094,17 +1094,25 @@ static void iommu_poll_ga_log(struct amd_iommu *iommu)
+ 
+ 		/* Handle GA entry */
+ 		switch (GA_REQ_TYPE(log_entry)) {
+-		case GA_GUEST_NR:
+-			if (!iommu_ga_log_notifier)
+-				break;
+-
+-			pr_debug("%s: devid=%#x, ga_tag=%#x\n",
+-				 __func__, GA_DEVID(log_entry),
+-				 GA_TAG(log_entry));
++		case GA_GUEST_NR: {
++			int (*notifier)(u32 ga_tag);
++			int ret = 0;
++
++			scoped_guard(rcu) {
++				notifier = rcu_dereference(iommu_ga_log_notifier);
++				if (notifier)
++					ret = notifier(GA_TAG(log_entry));
++			}
+ 
+-			if (iommu_ga_log_notifier(GA_TAG(log_entry)) != 0)
+-				pr_err("GA log notifier failed.\n");
++			if (notifier) {
++				pr_debug("%s: devid=%#x, ga_tag=%#x\n",
++					 __func__, GA_DEVID(log_entry),
++					 GA_TAG(log_entry));
++				if (ret)
++					pr_err("GA log notifier failed.\n");
++			}
+ 			break;
++		}
+ 		default:
+ 			break;
+ 		}
+-- 
+2.9.4
+
