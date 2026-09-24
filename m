@@ -1,189 +1,233 @@
-Received: from mail-lr2-f12.google.com (mail-lr2-f12.google.com [74.125.230.76])
+Received: from mail-dy2-f31.google.com (mail-dy2-f31.google.com [74.125.229.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F7A2443E5E
-	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 09:51:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.230.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790243511; cv=pass; b=dDxdnbSGr3CW640B2nMJpKieP4NQp29VvQnakhlLcAxGynr66RSZ0c5pqfNa1f2MXnXd3/iBI9mfeV3FtSKwaXhZCjDjkHBSVsdyJ+79H4PfeD4kfDegAbhUiM0WZJ4olsPQuMulMaXasFX+/MTmIk7dgzfnLfWbh/OPpHNYfpg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790243511; c=relaxed/simple;
-	bh=iiELtgm1yAzuWo2qXQiNnvZmI2a28WotDb7qzo11MD8=;
-	h=In-Reply-To:References:Mime-Version:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Bn0RU/JuGE9KE4o0UFIJavmwmkbudB5Zrkmom3im/WATWf4lbg51AcAULhfSzoQFWqQP1eWHs1Hw414hOOiHJYkqGHRsXSI6Q0JRLdhI6yZ85hOoRwBbYLkYSjTAZWGeIBmzHWQAy2QqZbhssjfXvxGqKRiaVlqhiED6fch39/I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com; spf=pass smtp.mailfrom=bytedance.com; dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b=UF8ma5N0; arc=pass smtp.client-ip=74.125.230.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bytedance.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bytedance.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D108745C700
+	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 10:01:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.31
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790244087; cv=none; b=eyqdq9BgOKYvsW8y63dSDhGfX1X3/ld4EMa6yTv2oxeziR5guaB7OA1aD2Cx2xYq5QEv453NiiHBmN6oE0XEZxf//pTLaNoCFMuodrJv1RS0FfPYjuG72jnbGRNgsnknrtSz4mHyNbDTnDErmggWy2IsKWbje8Y03gn4rXYT6w8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790244087; c=relaxed/simple;
+	bh=jodBbkvPA0Tk/y9h6SJNWm6ZLaJKUz5cCBJdy8OssNM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OuH2yl0NFmk0/62KmEh6mCc5EGDIoMXVqZrgmM5izt2iUd7p2oJ/xnuNyCQTVCXjhUAnPNN28UBZTTkccTLCelRap7OP2yEr3K0w5PYK2QikEKlUgz+46QV79/BFft8J5KuyKS1FaSBjNL5OmB/nA7VrkN6wmDOcptSR8NDcUhM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=iSODEkj4; arc=none smtp.client-ip=74.125.229.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bytedance.com header.i=@bytedance.com header.b="UF8ma5N0"
-Received: by mail-lr2-f12.google.com with SMTP id 38308e7fff4ca-3a2ff17443dso19535901fa.1
-        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 02:51:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790243494; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Y+SpHOeNj+OCzlgAMmtKkOR+P3E9xt40MunavWsHSKmi1RUsOly34SyCwQWe6oSE1t
-         kxt4jI8pAPAqyq3FIzl4R//4Td1PhHuKmM4unkoc46NQgeOP/b6tua7wvkZlt09l6hhO
-         FL49W0sVvL4JCt3Xr7YD3nNgb9DHuoMlv0Z0eT6qct/mtXfGUdxzawUIA+FYQJJGQ1he
-         p+f313FeUUMvvFvXAPOwRf2OZG9oVriYxEC9n90XGL0FlEkGMu6G/8VCkn78Fl4tksbu
-         Virfy38IY/k4uvnHI+ScheK9hOxFzDvxSbibJTmJ7RbuWwG3X1dG8wZI+vv713Njxct8
-         7z+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:user-agent:mime-version
-         :references:in-reply-to:dkim-signature;
-        bh=eisBXp/pRzcQ5EL8prBSUE7T1+X/ln778vZdJ9nZQMg=;
-        fh=tnn1GfCwV71G/FSlzg6DWPsdva4hGp4ntRHuJ9tMJTo=;
-        b=YiRQsVF1YX176yYf6b54QUd66J63o5wlvTKCvJHb2p3b4FTJVQMEIlzBp7twRiEKyH
-         NXjrCrL5MVv/F0M770Xm8l4cCmFBDo6SW6bdUzvZjfeOuRD1G+rkfAndk0TEaXWsoBBd
-         kRtQOA0XAeHRydDb6GfoR++SLJZn6PC2Hhl/D187go4MTKeobCL6bFs8qYG8+MdrqWgA
-         uKdimCqBYtfhRfLy+J2cUEEsUEKRBPwk2ONEsCk4DIewCJRKYEnb/BjnP75NVfyJtqnX
-         GokzF4jNrpMlSmbffqwHDZF4yu9kkRHarAYWWg3iJVhAnLWaVGKO/4YfTTmbMX+yPHrd
-         j/PA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="iSODEkj4"
+Received: by mail-dy2-f31.google.com with SMTP id 5a478bee46e88-33c11ef641aso2152466eec.1
+        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 03:01:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance.com; s=google; t=1790243494; x=1790848294; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:user-agent
-         :mime-version:references:in-reply-to:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=eisBXp/pRzcQ5EL8prBSUE7T1+X/ln778vZdJ9nZQMg=;
-        b=UF8ma5N09kMt7YEOU233CSlnLRT+DjP4KBhgEGxlMQS0LahI1SxaL57zVHb7pubOPf
-         b4MOJqqSTSKGjzsAyoyzjJnZn9k3OqXOr6w3dQKQYuG6eZh0c8HWP/ACNDSrA2KG0cln
-         0pXZ3niCPjLSixcdYbnX8Nza0f4K25zqCMyKAxbrMuq36KDAtWP4XTI10BA9qAyeoFHF
-         o7Ti1mJ9B2/1x/VonYyNs44WvaikqyWpyRfzlQTFY4bnveXm1rVQZ9p2pkREZ+uGHAXK
-         f2YL8Lw9un80n41C8n0LOrByXqX3YcBFnUNHaxBC1NWYSvq0yMgRU0LLhQ1kjZSUp9tb
-         7pMw==
+        d=sifive.com; s=google; t=1790244070; x=1790848870; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=T7LuCKXGDjbZFiX4G8+riT24rAGxjFj+z2Uy0TMvuv8=;
+        b=iSODEkj4q11816sVc17QeUCFuzB4tz1xaWLUipHjTCGeDoNeOAQyiyyOCwQTXkeM/t
+         SWuz7N0TgZAxjSeC0+7AJFuNA8hGnQ8V9qAr1lkCAlbhX/iO9g4zKa2gEokmQW7KndgS
+         ONVDy+Vfm6h2/1//TIZo4KYtu6JbtKR4zht4PPXWZIWC2Zq16KXwe819CuqDpN+VaSWK
+         xAFEMzJQPMh5tODJ7XlwWBmnAJhJOnWpmJXZkEM4nxyyoIjfu8/MNyko5eMHJVgmHKUm
+         DZkLjigQeVWtg21rxH+Nivw7JR+PUBjkMh+CJ85h7RlxT4xHzSzrwjWUgqT0hmYgJqOY
+         yB5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790243494; x=1790848294;
-        h=content-type:cc:to:subject:message-id:date:from:user-agent
-         :mime-version:references:in-reply-to:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=eisBXp/pRzcQ5EL8prBSUE7T1+X/ln778vZdJ9nZQMg=;
-        b=PrR7eDhaedJwtX6A7ZyPsc4LglcIkviQRw6cBwAtn+YQAYvLvLDJtZi5Ahr4xAJzKg
-         DhdWXGOX4AVmP8woEAeEV3OY1MlRqH7EB/CRR6DloVtXdxmKeMQ4NvgqnIabsR4Enpqt
-         okZ8Tz9c6nDbO5BUzoTxVhiyKzUMvR93IepCM6tLHv3IiRDWw/Z7KYzT3zE/vmBEhGr+
-         IElW4fs0jnTN7TOF8hcBkv1zZ+ziG3l4FT9AQIRPLV4OtbN3QRGSEQ0iSPnPgP8A4JWP
-         ZGcbuAisjuwquDFziFHNHkhC/SW9fnA9luAMUlhnVBMwd1qEiPUkiihJP/tshFSFoUvv
-         VqcA==
-X-Forwarded-Encrypted: i=1; AKwUvByaGidfH7N/HVl87R96mvTENbqQ4QiYfhoiEelPgUtCmIDHBLEmFSYYgdsAdgqbcsRPErD2OA==@lists.linux.dev
-X-Gm-Message-State: AFuF++mEgtBKnFUeYHKo1/NBmGN/XLUT5+Wsh2Q7Ln3vvY/eAepMoYD2
-	Veb5jHG4Wkg+wP771Q++nA3yJ3H0WnyyyWgh61XBNk2SVZgMPLm08UNb2V0JvXZQzANRX0bkjnA
-	IfzeEOp2fWZIr0I7GyH2NtEy6z0Jj5yoIOTceWsHBMw==
-X-Gm-Gg: AYBFou1B1T79tnYvP2Rw2lkSodSmBez9GX3URZy6aIarPWCUnRQhSSe4WP6dIUt68Qt
-	bKBhfxMHWaGT+gUtotYBkfFSLNqA9zBzq1yk6aFyedoOBswZCixiLH43ND9UL4DCBgddm6SINfO
-	LDFOXcNGcgVqkFrXEqkpxb6tKSVttJ/R6xdXLHWxk9xetQWRWKWPwfUCd0Vnre5lDWedED9DHV6
-	F/9hk8zrRPeBc2AM6ah6vqY25IWgA5A7Wlapt/Uw4O6qf779+5zrjUt/vy8mi+O3g4dIUG7VfMp
-	5mRi84E9DBO81Y3y4aTwTbQPidYBrHH5FI9tV85d2iW7nxAbQnnSrbQ=
-X-Received: by 2002:a05:651c:b1e:b0:3a5:f041:d7c9 with SMTP id
- 38308e7fff4ca-3a63c2fbe45mr4361511fa.22.1790243494487; Thu, 24 Sep 2026
- 02:51:34 -0700 (PDT)
-Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Thu, 24 Sep 2026 02:51:33 -0700
-Received: from 44278815321 named unknown by gmailapi.google.com with HTTPREST;
- Thu, 24 Sep 2026 02:51:33 -0700
-In-Reply-To: <arKx__kOPe4B5gDW@agluck-desk3>
-References: <arKx__kOPe4B5gDW@agluck-desk3>
+        d=1e100.net; s=20260707; t=1790244070; x=1790848870;
+        h=content-transfer-encoding:content-type:mime-version:message-id:date
+         :subject:cc:to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=T7LuCKXGDjbZFiX4G8+riT24rAGxjFj+z2Uy0TMvuv8=;
+        b=FFfHIKhGufAhMwRurhSxrenEBQ5kzylGl5GHV1Gm92zYRTBaAUYgx4JGRE+P2SIKJZ
+         og41fYgutB09BHu2mdtTSpgcqZCn1fr8sKirYRQl2Ob6BTE0W+Ty3tOu95eyLW1mtssb
+         emEivFQkgUcjFr1+AgrqQxvoxszFkAOWYCVrN9AdKc5BZFRy19WFFHabWQ0dj8E4G9JW
+         ElylF5/D059H6RrOg24xYkbWII3PhcXtSAUguHKm2b6ym+3XfNzWQh1n8ThEDFD6OdwM
+         W21ibypGAWdhO/VMGHJay4AjuZGh094mlTqBYYj+1WIgqEGQ3BV1fvyqIwgUL64Ognr9
+         yu4g==
+X-Forwarded-Encrypted: i=1; AKwUvBypkPqG4jpURM0zDaQyvhVuy4Mc3lLll1C45h4Y7d1wWvCDeZm2a3U24vftD3fYN+r8Y6IttQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++n+Ovo+Zanu9NiZ9jcIAW2o3lmH0b1vIsy8EO1xY5Swou7BVxtV
+	7+JGZnvYOUjf3/FQVie1zyFvHDHachg3Cw4BpiGK634PFwa2P+GC0LDYBqcVO6vv6wA=
+X-Gm-Gg: AYBFou1QvPnbj5WavMgwyAYm3RQVxBlpFU/XVHalJVKIeo93lceWLYOyV5/uWiA3Kqx
+	KxnEcN+WTTJIwFQTSfdiv02I/7/FWzMeI9qgNfTTQo3zYKCSw7zqXYJTOaZXCMCgJG5bC9iALJd
+	RRoF+ypbEcFf9c3X40AlRassQWglgOkmHyF9BOMMG7O6xCeeeDWRlZJTyA6PPogk9/YuqAFF+WL
+	x9rlt/m86RlO6CRKk8kdcJ85f2GS3bw05cxR5MUYI6FR1pEsspiBUAeKslId0xtTzxR/rj6LmqL
+	T2UCgp7H8sWjDhlUC4UbDCGjs4yPxFDxs4GMVkjIrKIBUEIssJ1eHIuZosqSWgpvdaut9+6yncF
+	LuKF8igO6nFdZIWS48r8GFVzjszUdyo2AHXDk4Z/LXCdd914RETt97zze4WAx70I6FnfedsDxBz
+	C4wmWjtMTEOE5SH4C8mPiHIXiIhyYZY+cY4v2cnPwsz1bBBdh9AWl4dLoopW7nc3WcOuUQ3pFuR
+	PnomriFFYQ=
+X-Received: by 2002:a05:693c:829b:10b0:33f:3ad7:fe5b with SMTP id 5a478bee46e88-34004592b23mr1653984eec.3.1790244069709;
+        Thu, 24 Sep 2026 03:01:09 -0700 (PDT)
+Received: from sw04.internal.sifive.com ([4.53.31.132])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-33e96e498f0sm11649975eec.27.2026.09.24.03.01.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Sep 2026 03:01:09 -0700 (PDT)
+From: Zong Li <zong.li@sifive.com>
+To: tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	mark.rutland@arm.com,
+	andrew.jones@oss.qualcomm.com,
+	guoren@kernel.org,
+	david.laight.linux@gmail.com,
+	zhangzhanpeng.jasper@bytedance.com,
+	yang.yicong@picoheart.com,
+	nutty.liu@hotmail.com,
+	iommu@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-perf-users@vger.kernel.org
+Cc: Zong Li <zong.li@sifive.com>
+Subject: [PATCH v14 0/2] RISC-V IOMMU HPM support
+Date: Thu, 24 Sep 2026 03:01:03 -0700
+Message-ID: <20260924100106.2054127-1-zong.li@sifive.com>
+X-Mailer: git-send-email @GIT_VERSION@
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-X-Original-From: Zhanpeng Zhang <zhangzhanpeng.jasper@bytedance.com>
-Date: Thu, 24 Sep 2026 02:51:33 -0700
-X-Gm-Features: AclHuK8hLnUXrqZJavVwd1RFJSGYNAQLudfmbLvNFp-j_eu9SV3bDABt6ZKV-Fg
-Message-ID: <CACnXVne=bK9sESdsFS6kbtYJuirqFoqTckuSjJuk0NYyByLM7Q@mail.gmail.com>
-Subject: Re: Resctrl and I/O
-To: "Luck, Tony" <tony.luck@intel.com>, alex@ghiti.fr, fustini@kernel.org, 
-	aou@eecs.berkeley.edu, babu.moger@amd.com, baolin.wang@linux.alibaba.com, 
-	ben.horgan@arm.com, corbet@lwn.net, cuiyunhui@bytedance.com, 
-	Dave.Martin@arm.com, james.morse@arm.com, jgg@ziepe.ca, joro@8bytes.org, 
-	kevin.tian@intel.com, palmer@dabbelt.com, pjw@kernel.org, 
-	reinette.chatre@intel.com, robin.murphy@arm.com, shuah@kernel.org, 
-	tomasz.jeznach@linux.dev, wangzhou1@hisilicon.com, will@kernel.org, 
-	xiaqinxin@huawei.com, yuanzhu@bytedance.com, zengheng4@huawei.com
-Cc: x86@kernel.org, iommu@lists.linux.dev, linuxarm@huawei.com, 
-	linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi all,
+This series implements support for the RISC-V IOMMU hardware performance
+monitor.
 
-On 9/23/26 12:51 AM, Luck, Tony wrote:
-> Patches for ARM[1] and RISC-V[2] are both at RFC status.
->
-> They appear to be based on similar h/w capabilities where architecture
-> specific tags can be added to transactions from I/O devices by the IOMMU
-> servicing the device. Device enumeration is handled outside of the resctrl
-> file system.
->
-> ARM docs say "the device name is the one listed under /sys/kernel/iommu_groups/<id>/devices/"
->
-> RISC-V says architecture specific device tokens are "devices or device groups"
->
-> In both cases assignments are made with:
->
-> 	# echo {device} > {group}/devices
->
-> So now I'm looking at the capabilities of Intel RDT hardware. I'm ignoring
-> the implementation on the Granite Rapids CPU, and looking at what is described
-> in the RDT Architecture Specification[3]. Here are the highlights:
->
-> 1) Enumeration is split between two ACPI tables. IRDT enumerates device groups
-> and provides MMIO addresses to assign CLOSID/RMID to each group. ERDT provides
-> MMIO addresses to read event counts for RMIDs and to configure cache allocation
-> bit masks and memory bandwidth limits.
->
-> 2) All I/O monitoring and control is with respect to I/O caches, not to the L3
-> caches that legacy RDT features operate on.
->
-> 3) The number of RMIDs supported for I/O is lower (maybe considearbly lower)
-> than the number supported for CPU monitoring.
->
-> 4) Monitoring events are I/O cache occupancy, total i/o bandwidth, and i/o miss
-> bandwidth.
->
-> 5) Current revision (1.4) of the specification doesn't include details of
-> I/O memory bandwidth control (The "IBAD" subtable of ERDT is reserved for this).
->
->
-> Fitting this into resctrl
-> -------------------------
->
-> RISC-V description of "architecture specific device tokens" sounds great.
-> I'll have to find some ares of /sys to provide the mapping of tokens to
-> "device groups". There's no association with IOMMUs, so this will be some
-> other path in /sys. Perhaps under /sys/firmware/acpi since the data comes
-> from ACPI IRDT table.
->
-> Need an info file to tell users the format and source for device tokens.
->
-> I'd like to avoid limiting resctrl monitoring of CPU activity due to the small
-> number of I/O RMIDs. Perhaps don't include a "devices" file or mon_data/{i/o
-> events} files in resctrl group directories when rdtgroup::mon::rmid >=
-> num_io_rmids? But that feels clumsy.
->
-> Domains are based on I/O L3 cache instances. So a new rdt_resource with
-> new line in the schemata file for IOL3 cache masks per domain. In the
-> future when there are I/O MBA controls, new line(s) for those too.
+The RISC-V IOMMU PMU driver is implemented as an auxiliary device driver
+created by the parent RISC-V IOMMU driver. Therefore, the child driver
+can obtain resources and information from the parent device, such as
+the MMIO base address and IRQ number.
 
-Thanks for the feedback and the detailed discussion.
+Sashiko-bot reported that writing RISCV_IOMMU_IPSR_PMIP will trigger a
+bus access fault on strict hardware implementations in v13 series.
+But this follows the exact same pattern already used elsewhere in
+drivers/iommu/riscv/iommu.c for the other three interrupt causes (CQ, FQ,
+PQ), all of which write their own bit to this same IPSR register to clear
+the pending flag.
 
-I have been occupied with some other work recently and have not had
-enough time to follow all the replies closely. I will catch up on the
-discussion and take the feedback into account before posting the next
-version of the RISC-V patchset.
+In each of these existing call sites, the IPSR write is performed as an
+explicit, separate step from clearing the underlying per-queue CSR
+error/status bits (CQCSR/FQCSR/PQCSR). If IPSR were purely a read-only,
+combinatorial mirror of those CSR bits, these writes would be
+unnecessary — clearing the CSR would be sufficient on its own. The fact
+that the driver has always written IPSR independently at every one of
+these sites indicates each IPSR bit has its own write-1-to-clear latch,
+not a live combinatorial output.
+Given that, the PMIP write in the PMU handler is consistent with an
+established, already-in-tree convention for this same register rather
+than a new pattern introduced by this series.
 
-Thanks again for all the comments and suggestions.
+Changed in v13:
+- Reorder the registration of cpuhp action
 
->
-> -Tony
->
->
-> [1] https://lore.kernel.org/linux-iommu/20260901140802.1215508-1-xiaqinxin@huawei.com/
-> [2] https://lore.kernel.org/lkml/20260714130657.46963-1-zhangzhanpeng.jasper@bytedance.com/
-> [3] Linked from the bottom of https://www.intel.com/sdm under "Related Specifications", or
-> direct link: https://cdrdv2.intel.com/v1/dl/getContent/789566?erpm_id=1158389_ts1790091453223
+Changed in v12:
+- Rebased onto v7.3-rc4
+- Add raw_spin_trylock_irqsave for ->read() flow
 
+Changed in v11:
+- Rebased onto v7.3-rc3
+- Add riscv_iommu_hpm_disaable to destroy aux dev before MSI is freed
+- Fix CPU hotplug race risks reported by sashiko-bot as follows
+- Re-validate pre_count after reading hw counter
+- Move hwc-state into atomic critical section (pmu->lock)
 
-Best regards,
-Zhanpeng
+Changed in v10:
+- Optimize hi-lo-hi by do while for hypervisor case
+- Add raw spinlock for cpu hotplug race and IRQCHIP_MOVE_DEFERRED
+- Remove irq work mechanism for IRQCHIP_MOVE_DEFERRED
+
+Changed in v9:
+- Clear PMIP in irq handler on wrong CPU for re-triggering IRQ
+- Add a lock in offline_cpu to avoid cpu hotplug race condition
+
+Changed in v8:
+- Rebased onto v7.3-rc2
+- Add irq work mechanism for IRQCHIP_MOVE_DEFERRED case
+- Filter multiple cycle event case
+
+Changed in v7:
+- Rebased onto the v7.3-rc1
+- Remove raw spinlock
+- Check CPU matching at the beginning of irq handler
+- Add PERF_HES_STOPPED check before overflow handling
+
+Changed in v6:
+- Rebased onto the latest v7.3-rc
+- Use sysfs_emit instead of cpumap_print_to_pagebuf
+- Set up on_cpu and irq affinity by cpuhp callbacks
+- Change type of on_cpu from unsigned int to int
+- Reject filter operands of cycle event in event_init
+- Check return value of counter number and  masks in probe
+- Add raw spinlock for race condition (third commit)
+
+Changed in v5:
+- Pick up suggestions from sashiko-bot as follows
+- Fix event group validation for sw event
+- Bind IRQ to aux PMU dev instead of parent IOMMU dev
+- Clear OF bit when event is NULL
+- Improve hi-lo-hi patten
+- Add back IRQF_SHARED flag due to mismatch
+- Manage cpuhp and pmu register by devre
+
+Changed in v4:
+- Rebased onto v7.3-rc
+- Use is_sampling_event() instead of accessing vairable directly
+- Rename the matching name from "iommu.pmu" to "riscv-iommu.pmu"
+- Change the naming of PMU device for avoid ":" in PCIe case
+- Add suppress_bind_attrs attribute
+- Remove IRQF_SHARED flag
+- Set irq affinity to local CPU of IOMMU
+- Allocate ID by IDA for auxiliary device
+- Pick up suggestions from sashiko-bot
+
+Changed in v3:
+- Rebased onto v7.2-rc3
+- Use hi_lo_writeq/readq to access register
+- Pick comments from sashiko-bot as follows
+- Set IRQ CPU affinity
+- Remove IRQF_ONESHOT flag when request irq
+- Adjust cycle event check by checking event_id field only
+- Fix bug for group events verificaiton
+- Fix KASAN issue about casting 32-bit variable to unsigned long pointer
+- Clear IPSR pending bit before starting counter
+- Clear OF bit in event selector register in irq handler
+- Release irq by devm instead of explicit free_irq
+
+Changed in v2:
+- Rebased onto v7.2-rc1
+- Use hi-lo-hi mechanism to read counter.
+  Suggested by Guo Ren and David Laight
+
+Changed in v1:
+- Rebased onto v6.19-rc8
+- Pick all suggestions and feedbacks from v1 series
+- Add cpu hotplug implementation to avoid race enablement
+- Move PMU-related definition from header to c file
+- Change PMU driver to auxiliary device driver
+
+Changed in RFC:
+- Rebase onto v6.13-rc7
+- Clear interrupt pending before handling interrupt
+- Fix the counter value issue caused by OF bit in the cycle counter.
+- Invoke riscv_iommu_hpm_disable() instead of riscv_iommu_pmu_uninit()
+  in riscv_iommu_remove()
+
+Zong Li (2):
+  drivers/perf: riscv-iommu: add risc-v iommu pmu driver
+  iommu/riscv: create a auxiliary device for HPM
+
+ drivers/iommu/riscv/Kconfig      |    1 +
+ drivers/iommu/riscv/iommu-bits.h |   61 --
+ drivers/iommu/riscv/iommu.c      |   48 ++
+ drivers/iommu/riscv/iommu.h      |    4 +
+ drivers/perf/Kconfig             |   12 +
+ drivers/perf/Makefile            |    1 +
+ drivers/perf/riscv_iommu_pmu.c   | 1012 ++++++++++++++++++++++++++++++
+ 7 files changed, 1078 insertions(+), 61 deletions(-)
+ create mode 100644 drivers/perf/riscv_iommu_pmu.c
+
+-- 
+2.43.7
+
