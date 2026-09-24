@@ -1,222 +1,145 @@
-Received: from out12-31.antispamcloud.com (out12-31.antispamcloud.com [185.201.16.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f98.google.com (mail-ua1-f98.google.com [209.85.222.98])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7612F4C752C;
-	Thu, 24 Sep 2026 21:12:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.201.16.31
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0E3B4D4868
+	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 21:12:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790284325; cv=none; b=hakuyQlGdJwLlnzjUNbJxevNXvY4e0pZa04c/qQN13AbBh8BxlEOqefhu7AIlCcXZ3cvabRwAZaOud9AjD3MtQDzu7tbXkjcmCwFPxjJK6mdGhG/KB92zUjbeBRGlYiL1bRFN9O8fXJq2Nhc5Vg9aA7yigmcXgJlws+9LtztR3w=
+	t=1790284373; cv=none; b=iZDxhFOVVdOicqU6GLn1Q+pC/hUKfzaEz/F/fkTAMQIshdK6BkLDR1PW+1vreRKu8H/0KDYx9OWUrqAxPXwRh0IOePtNDdct+ee4ND05FGJY3wkrNFkYyr0Ha/jXFV+TD7G10doB2oCo9UZdwMtwjyDfwBXFuDZWY4VR36VZhn4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790284325; c=relaxed/simple;
-	bh=u7rJyBVNS3KWB72oeww+xedcyOSO1pu/9F/9FnMv+ZQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BoYkAHHujnPhJSjG4q/AAmMorkBZeEUDtPzvGPzg/6pkPsO7h8bnjcGMEea9InkZBhxQ6SPcDJUTSzb17hP+vioLnzeWtHbbocoeunjs2qun0WqgeQoXKK4atxmL6aqvQpd8X8lKZZFS+YyY+utpmLhKyv7mcTknckge682a5yU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net; spf=pass smtp.mailfrom=reactivated.net; dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b=pnO28DoN; arc=none smtp.client-ip=185.201.16.31
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=reactivated.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=reactivated.net
+	s=arc-20240116; t=1790284373; c=relaxed/simple;
+	bh=rlPdolT+Chhji/nEjBLdBkwo9wL9te5/uKOfpt6lX1E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IhlnpAP0miFnefjfYcvc9tMda0beuFBCkjtvuOWFkdD7P8/mVDZI0Tsra1w0rK6KFd/6n4g0s+Hw/p9j1iQExopkXzc2vP5rLiGwCaLsZwmHh0OKZ3r8i1DW9JxsshgQFU+m4ub/yr16rF+TIXkvEdO96gGpYr7rxJx7oMg2EWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=AV9lK9Up; arc=none smtp.client-ip=209.85.222.98
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=reactivated.net header.i=@reactivated.net header.b="pnO28DoN"
-Received: from s1041.use1.mysecurecloudhost.com ([192.250.231.249])
-	by mx320.antispamcloud.com with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <dan@reactivated.net>)
-	id 1x9qjM-004qU0-O2; Thu, 24 Sep 2026 23:11:52 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=reactivated.net; s=default; h=Cc:To:In-Reply-To:References:Message-Id:
-	Content-Transfer-Encoding:Content-Type:MIME-Version:Subject:Date:From:Sender:
-	Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender
-	:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-	List-Unsubscribe-Post:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=P67qbos3D+tWJec3niEbndAJClHMkcSjY99grIP5ELc=; b=pnO28DoNeALoJOZXbM7IG9xVbM
-	3SddwvOnvrlSlE44aU7oiJGsGh3Jk77loWHGdWTSjOu+uPxnRtsyldG4BHifG4OLd58edpSzZTVOw
-	ogDvPiBfnPFdLX8qLYZej8bwtCpvJFt0MHXBWCUTDbmaK276MOVElhCqt6UrZ5ngxZfej4JbcA3uj
-	EFG8q7/qysdfIdBQmFqJHTAIT9JExW4lycZB9wRpvwLidXiKe6kpGyPvxD4MSdVlJk3GdBY5CCN3X
-	Hw54x8b1yeCcruxGNlfwUeM8fXWAZtN+Ypp9CsRM6W1+rnp2xAIXue+zkTQ21ghu4oVQCmn2uHxDK
-	vbxxMzjg==;
-Received: from [188.251.249.2] (port=56840 helo=[192.168.1.123])
-	by s1041.use1.mysecurecloudhost.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <dan@reactivated.net>)
-	id 1x9qjI-00000006M7u-48vf;
-	Thu, 24 Sep 2026 21:11:45 +0000
-From: Daniel Drake <dan@reactivated.net>
-Date: Thu, 24 Sep 2026 22:10:52 +0100
-Subject: [PATCH v6 2/6] dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="AV9lK9Up"
+Received: by mail-ua1-f98.google.com with SMTP id a1e0cc1a2514c-98534213173so29080241.0
+        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 14:12:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790284370; x=1790889170;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:dkim-signature:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=skcWtpxGtZJwW4Q1vAThTtylvAwrMeApRCrXkDCWfgY=;
+        b=DFQnUxbz4TcUmdPcLEXzduTEMGfTxMul8Y08fu0EbnhaDifa/CfhITI4XaiId39gRm
+         2lsFSeTGCoISM0rriJcFWF+fHwt7Q8ESrGz5+pHGA1NWH81QOc4FW/+bX9OIS/EhSRCZ
+         ImbjoGPpsF0pDUwFaPOP7dsl/sNl/JLrAz/ayY7qrnwQr6M0RqHiKom/6Bjsd3yBDkA7
+         jiyGl5Z3RIBcpHp+igzJfJ8Yw0NfG6nmGKeotNI6XoA8Rq4a7CjK8pX5vfUTz2LGGWSl
+         BdKlB5EvtX50EEWJqDG6p8r3Qi0WB8UDx/ueDP8xmdDletFEuZQfy7+0SvK+UPIAxXLN
+         UODg==
+X-Gm-Message-State: AFuF++l10nmrYCoc3VvnBdUbo1wjAau7aFlPMEiKa4HH2+2/pppS5Ify
+	qfdIxKNEZJP20ziMZfeGfXv9JPa6vLjwECnf/Bi/rVNNCNIuL4xn8nzCVitbFocUbO05CBsBxYp
+	nlFfqPBZertB2q1+hQiV/ma2jYIKkwkWN/8zjQvej/QK43yD9coIgUV98PYaNAqdoRWBFNEY8OA
+	FPK0HgUXSqFbSBPVarWNgSp8HuevzftOEfvuwPB/DnMPaC7eL6ZEmPLe8ZV7lNXeeS04hz5rsX8
+	QiKM8qACgcYmr4=
+X-Gm-Gg: AYBFou1fDFGHbLx/xBk22J7ofmTW2VSNjUU0r0jYo67SdpI3hOUcwVJpbJFwTQB5Inh
+	zjpcsWZzDE9uEgl7AA0HpSQrGrNxVixye1f4Y5qFuS6xppI2IMqfrsormWHoD2vnkHcjJ7e20wV
+	qbGlnu46whAb7Sbx72eeqpQl2Ss2uyXecSl4gxrkKdOUk2LZ3tFZ70jdvcvpaSwizjSMlEBNo5s
+	GQG/mmukJehicOCRBrxbjt6tzrLMN3ZT5F/R1VpR3DJWfcbbPSLjfgN9mWedFyZNVCSvMwE3cbT
+	6zsCofBBarhsakqEDusqvhUMj6Th5EeyfYQry11EgA1LRtdzsUz7uo/nbUdqTWjzgno1AToduVb
+	7wMyACuGmHo7awh8D2rCedVL67C7QU8cHuwZRw0/DEJu5G6rFJ18PNzBKWJ+qVC010J+/CxKvSo
+	u880ieg45Q5ON6NLgRTqQDWUtdBtG9PA01aQLzrjSS
+X-Received: by 2002:a05:6102:a4c:b0:7a1:f7d2:e832 with SMTP id ada2fe7eead31-7af1d4b7598mr1661982137.18.1790284370458;
+        Thu, 24 Sep 2026 14:12:50 -0700 (PDT)
+Received: from smtp-us-east1-p01-i01-si01.dlp.protect.broadcom.com (address-144-49-247-18.dlp.protect.broadcom.com. [144.49.247.18])
+        by smtp-relay.gmail.com with ESMTPS id a1e0cc1a2514c-9861af46516sm54693241.4.2026.09.24.14.12.50
+        for <iommu@lists.linux.dev>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 24 Sep 2026 14:12:50 -0700 (PDT)
+X-Relaying-Domain: broadcom.com
+X-CFilter-Loop: Reflected
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-934963b2bc0so54052985a.3
+        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 14:12:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1790284370; x=1790889170; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=skcWtpxGtZJwW4Q1vAThTtylvAwrMeApRCrXkDCWfgY=;
+        b=AV9lK9UpwrgDbjMquJRVhB3jydhfmE+VYRCohv6k4csqxXSGz6a5o6ApS/t5Mn4VAD
+         emNt5NuYa+BwPrDw7RaLSMdeLpVmD9b1lWcdH2SqJ61Stti3IWQgc7bG/d9ZkVdKLzVd
+         XTxYrkknya3awSpFAVx7hdIsWwcRx6wv/2dmU=
+X-Received: by 2002:a05:620a:8389:b0:939:f8e9:5e19 with SMTP id af79cd13be357-93c43c2f3ecmr105807485a.1.1790284369796;
+        Thu, 24 Sep 2026 14:12:49 -0700 (PDT)
+X-Received: by 2002:a05:620a:8389:b0:939:f8e9:5e19 with SMTP id af79cd13be357-93c43c2f3ecmr105803685a.1.1790284369353;
+        Thu, 24 Sep 2026 14:12:49 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93c448eb2a4sm25619685a.20.2026.09.24.14.12.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 24 Sep 2026 14:12:48 -0700 (PDT)
+Message-ID: <7eb8da6d-0c09-44d5-979c-fe0952b92018@broadcom.com>
+Date: Thu, 24 Sep 2026 14:12:45 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260924-bcm2712-iommu-submit-v6-2-7b3cace86973@reactivated.net>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 3/6] dt-bindings: display: brcm,bcm2835-hvs: Document
+ iommus property
+To: Daniel Drake <dan@reactivated.net>, "Joerg Roedel (AMD)"
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>,
+ Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com,
+ james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>
 References: <20260924-bcm2712-iommu-submit-v6-0-7b3cace86973@reactivated.net>
-In-Reply-To: <20260924-bcm2712-iommu-submit-v6-0-7b3cace86973@reactivated.net>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Florian Fainelli <florian.fainelli@broadcom.com>, 
- Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, 
- Daniel Drake <dan@reactivated.net>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
- linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
- james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Get-Message-Sender-Via: s1041.use1.mysecurecloudhost.com: authenticated_id: dan@reactivated.net
-X-Authenticated-Sender: s1041.use1.mysecurecloudhost.com: dan@reactivated.net
-X-Spampanel-Domain: s1041.use1.mysecurecloudhost.com
-X-Spampanel-Username: 192.250.231.249
-Authentication-Results: antispamcloud.com; auth=pass smtp.auth=192.250.231.249@s1041.use1.mysecurecloudhost.com
-X-Spampanel-Outgoing-Class: ham
-X-Spampanel-Outgoing-Evidence: SB/global_tokens (0.00314632716558)
-X-Recommended-Action: accept
-X-Filter-ID: 9kzQTOBWQUFZTohSKvQbgI7ZDo5ubYELi59AwcWUnuVPyya3RnUxCOHHuXIvKUUwNMtspsrkpIe9
- bVuGjJCY1Cu2SmbhJN1U9FKs8X3+Nt06bFpPrNOlRAlE9AVLwR4uGVjKNnzF3nQoDoQtBifM84JL
- M0i5ZAms0EHrvcCaVIOOP3U1rTVqDCrjs1n7qVkYGnT3EFAinyrilm9zau/FuzkQt9Nb4Ml7QXdk
- EetczWCfZW7a9uhvfuE0J/hsBuu+eB7itP8hgjDRserKv4bhb4rodgkl+wsfxZHakHKRaVZWBb39
- uS1TjWG2Inx+Ts2QrtVmombMJ4e2pn5C0yBMHZ0fE47nEjvubMSTLAkKCKefuLbx+lGq0svfyhth
- j0R6Iny++hg9dJLqN5zmWqF/oHgMZXS6X/fIHYslsKU0yPHM4JpSMI47HiFQBsGlm5AyJ9N3+CB9
- 4aFbAhtG8w3Ly5ZVKmISsN3IhGLWYd0758WcWZORtrVlxIXk5jhWVNuX2TLvWiqA6BF3jwTykadj
- Eh4GKZ8tHsR5A+L9kzDG/K7jeiyzqcpyb6SLIRHv2KIjmIf7YZpqL+v4bQH3sWKlGBPtnYg5YizU
- E/EMRWxUHUQ0hYI+2t4HN3I9ouCIE9ZpmIIT4UMJhQzp+ktYysEoXYjyOpKyQ+6FJGgfvyfesL1T
- Yi2bf0F0JzgUQ/o6tR7CeAtyzyXh0NL4l5vWK73eqiIKw1M+yw2yzZUSfFbaoySugmxqcr8pFbGy
- g9Z1tlDRifW6JNJBY9PymNpC4Wmh+9PD5zE6IfxMIfQh9R3Td3D6I4o5YsP+Lyz6c5yHWp+l1v7R
- 8SyvHcEEE42QqO0qgomZEoLxZHOnsblvnV8eXYCZSCMD9D3oJHukiNphohQtuwCmDexg5czsngAO
- BFsShf+76sU8wGmOnLcaeINlh4Cn9ZhZdiagiCOBKUpU6SDcsn+BJp3CoLutPze6u4tYy64Dp2el
- LsD1cFZ5ljV0yCnPlZYJyqLj9DGvv0JxFidP9ylmMcA5Ut2aTq/fdywqeMzbg4Paoa3pNVQ0zl7t
- /+UiLekARSAxYlF7slSgzk1enTnq+eIBXmCMn/1SNcFIP2MttYo7yCqT8k88gwNJ/ZBdCKDGFJnk
- 5eJFcFklVb9231/E3ahF5MMcDI7KdpjQKdEz/+/QkUVhwSqO+QS+xjCZ3JKVmi72ocgY5kMQSjs7
- CnU3Vkswnvz2sY575f5VZdC7A9EkfupFeybqiokSL/UoBa9Z74L1QD5u7fk/CB2ffOy/knOaqu9M
- jU02vQscbAwfX28GBy2wRROaWZyvU3/WDyb1UPpOcShziaQlXemUjvoXt4/HGWyNXB/u9gYnKxY+
- C3NKVBiu9E09fH2QcWWDSTfRyaGsL+KZNwpYGCN6yCqJqJMY7uMzxq3+Ecx6Ww+vAj0HbLbveTIz
- fDDueIdjUxTaa0dmGx2m78JeU6J5dQk8TiQJh7U9utxWE7LPn7sg/7SHllHTMyZl234M8B0+jQL4
- pa+UuQNWiWyd7rUlPAlbDjazCbhs7qBpykynMlI8ehauFjA7dVMOTKcW5c6UnY64mAykh3LBvXwi
- LIjlrjIuKSKddsFYTaIZy4Zvun7pGU7uz9Qh2BYl/pOFic8JjqapLpwrwdUQz9MPWEmV3jR5NeVa
- JQBh0uawl0Cg8hPs+cRD5TJxNzOPadp3mtqXN3cCIyIm263/n4zqghav48Y+3YiJRbPwEKhVXmMF
- SH7pGU7uz9Qh2BYl/pOFic/qXKRF3uOx1VRdI9vLlOBy9jihx+Za/cV70jOJzN2r4A==
-X-Report-Abuse-To: spam@quarantine16.antispamcloud.com
-X-Complaints-To: abuse@master.antispamcloud.com
+ <20260924-bcm2712-iommu-submit-v6-3-7b3cace86973@reactivated.net>
+Content-Language: en-US, fr-FR
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
+ xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
+ M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
+ JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
+ PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
+ KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
+ AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
+ IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
+ ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
+ bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
+ Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
+ tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
+ TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
+ zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
+ WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
+ IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
+ U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
+ 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
+ pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
+ MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
+ IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
+ gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
+ obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
+ N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
+ CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
+ C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
+ wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
+ EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
+ fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
+ MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
+ 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
+ 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
+In-Reply-To: <20260924-bcm2712-iommu-submit-v6-3-7b3cace86973@reactivated.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-DetectorID-Processed: b00c1d49-9d2e-4205-b15f-d015386d3d5e
 
-Add bindings for the Broadcom BCM2712 IOMMUs and their shared TLB cache.
+On 9/24/26 14:10, Daniel Drake wrote:
+> On BCM2712, the Hardware Video Scaler (HVS) is connected behind an IOMMU.
+> Add the optional iommus property to allow describing this connection.
+> 
+> Signed-off-by: Daniel Drake <dan@reactivated.net>
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Signed-off-by: Daniel Drake <dan@reactivated.net>
----
- .../bindings/iommu/brcm,bcm2712-iommu.yaml         | 54 ++++++++++++++++++++++
- .../bindings/iommu/brcm,bcm2712-iommuc.yaml        | 40 ++++++++++++++++
- 2 files changed, 94 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
-new file mode 100644
-index 000000000000..5ca8ce469ec3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
-@@ -0,0 +1,54 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iommu/brcm,bcm2712-iommu.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Broadcom BCM2712 IOMMU
-+
-+maintainers:
-+  - Daniel Drake <dan@reactivated.net>
-+  - Florian Fainelli <florian.fainelli@broadcom.com>
-+  - Jim Quinlan <james.quinlan@broadcom.com>
-+
-+description:
-+  The BCM2712 SoC features multiple independent IOMMU instances providing
-+  address translation for multimedia hardware blocks, such as the VC6 display
-+  pipeline, camera receivers, and ISP. Each IOMMU has its own page tables,
-+  control registers, and local TLB, and is additionally linked to a centralized
-+  L2 TLB (IOMMUC).
-+
-+properties:
-+  compatible:
-+    const: brcm,bcm2712-iommu
-+
-+  reg:
-+    maxItems: 1
-+
-+  '#iommu-cells':
-+    const: 0
-+
-+  brcm,iommu-cache:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description:
-+      Phandle to the shared IOMMU cache (IOMMUC). Each IOMMU instance caches
-+      translated descriptors in this centralized L2 TLB cache block and must
-+      trigger cache invalidation commands on it when updating or unmapping page
-+      table entries.
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#iommu-cells'
-+  - brcm,iommu-cache
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    iommu@5200 {
-+        compatible = "brcm,bcm2712-iommu";
-+        reg = <0x5200 0x80>;
-+        brcm,iommu-cache = <&iommuc>;
-+        #iommu-cells = <0>;
-+    };
-diff --git a/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml
-new file mode 100644
-index 000000000000..47c584ad667a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml
-@@ -0,0 +1,40 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iommu/brcm,bcm2712-iommuc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Broadcom BCM2712 Shared IOMMU Cache (IOMMUC)
-+
-+maintainers:
-+  - Daniel Drake <dan@reactivated.net>
-+  - Florian Fainelli <florian.fainelli@broadcom.com>
-+  - Jim Quinlan <james.quinlan@broadcom.com>
-+
-+description:
-+  The BCM2712 IOMMUC is a centralized Translation Lookaside Buffer (TLB) cache
-+  which accelerates address translation across the SoC's IOMMU devices. If an
-+  address mapping is not found in the IOMMU's local TLB cache, then this
-+  IOMMUC is consulted as a L2 TLB. The SoC includes a single IOMMUC which is
-+  shared between all IOMMUs, and it must be explicitly invalidated when
-+  modifying or unmapping IOMMU page tables.
-+
-+properties:
-+  compatible:
-+    const: brcm,bcm2712-iommuc
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    iommuc@5b00 {
-+        compatible = "brcm,bcm2712-iommuc";
-+        reg = <0x5b00 0x80>;
-+    };
-
+Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
 -- 
-2.55.0
-
+Florian
