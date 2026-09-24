@@ -1,146 +1,184 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B1CD49F13A
-	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 15:00:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 79EB049E5C2
+	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 15:26:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790262047; cv=none; b=RPBS9JNcrit0lXDnDWJd4PGOctGqFw4NjAhA2La/1qiK4de/5kSihnFGMbcZHrlYrhxBHaCtYBpbFftvd3KkkHvZN4YNrhGk2c+rx8PzAIsKdk2PEl+NRPgWUPnmK1XYKlCG0BYnzZxkucvQItNMhxq63t7CGlB3yIeEqZYy+0E=
+	t=1790263578; cv=none; b=ANRNEYHCtHi6mLr49m//KSL81/6Ym8B4sinPf0T9bpv++N5RPJvI+NBIclundoNd9TA+u3QKOivsaCGzlgDuittaGId4FxnL5T5P48w6J06fblVkljV+z/V02tHJm+IO92cUIO+oxRSGEvOpQYOGsKAmClPUnLD0IqbYM4uTtFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790262047; c=relaxed/simple;
-	bh=iuUfA02SH2tSSicml2K0I3xqm9pZO7ThoY25b+dKE6c=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YFUCGjZyKxj7jSukii2P4OvOZ5b1f1hSd3q8zW+S7LghWL4numZpiUVHD1JqfuRAcsSStOG7mGf7GXyLevQ8d0FE749S0dSEza9SZdJgyOmmSYv0urCY+YALJO25UjHHeP9e1m4MkCV59SwQVDOx/M+/dOErSyVHPOVIVehDL4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=h/tUKF+G; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1790263578; c=relaxed/simple;
+	bh=B+Qpq0mGaw3xi25XZVIMrbmAYpvPUbmJS4mCwVTqyrM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AeLH8JtRNdt1pIh3AxziBB61rwoXHJmauVPCsPMw2WhehRd73oztyUB9PazLaRX3ep7Y7PpChBROEDRoL+H4SLw6jq74F+xAOivfTZfVevvSzCxdO3LheAT7O3ubAXptAYBXYjYB2+RRgzwBXvzeXFkvuuJg/ByLm0aY1ZSTjJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=l6n9ELTV; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="h/tUKF+G"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1790262042;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YKTy1DV5Z8HP/0nQigR4wkQdWVD6m+LzXDtQhSwKE3c=;
-	b=h/tUKF+GjUa0Y1mVfe+yVQYzqWASfzm5/7k9EnciidAxox34sO54UF/voll/xmfgUGq8aH
-	2EuBMW79l/Z623eXVcIWgACtfc3pUpSLhU2X0CCIjiSoAnZNr0R9gBnRC0wKqcY3lHBoz7
-	YK/Z34l3bpo15gnKhX3liV6LGOef2uo=
-Received: from mail-yw1-f197.google.com (mail-yw1-f197.google.com
- [209.85.128.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-593-X1--lt7aNfG0vv6603BnDQ-1; Thu, 24 Sep 2026 11:00:41 -0400
-X-MC-Unique: X1--lt7aNfG0vv6603BnDQ-1
-X-Mimecast-MFC-AGG-ID: X1--lt7aNfG0vv6603BnDQ_1790262040
-Received: by mail-yw1-f197.google.com with SMTP id 00721157ae682-87014338e7aso20650337b3.1
-        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 08:00:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790262040; x=1790866840;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=YKTy1DV5Z8HP/0nQigR4wkQdWVD6m+LzXDtQhSwKE3c=;
-        b=ZYgjIXRr5tOiyD1yEYLWVPJAk6oFjM4D2tgymlW98d8PGTFsaUTOwCwcfZI3xgaFfy
-         6Z8Ho3+SH5lufc4i8z5QmB5ur/C6AKPTmdro0B/XVpM0y/dXHzG616fWhbqisErNcNjD
-         8KXJDLEBajCY96ueV9bwZoLdzFcMu4ntssMhRCAY73hjPhAJFh1WYFf/BwKViokYqb0R
-         YxH0gyeR8UU1xzIXZzxhwIh7ifqhb1429sgiVBK2+phcQjpw6SOvjhur4201Vme6tbxG
-         B9XYzxa2FrRy/Bf3thDNqPFm7F94TiZvf8G9iWwhbgR5JRe9WMvZkjPINfJNf/u0roz+
-         d1LA==
-X-Forwarded-Encrypted: i=1; AKwUvBzN2Juma1joEdiT2XBNdRPqpl/ci7oWcVJPL74w7GZSPJPYOUTUTsw6bbVztj3nNEpExjswaQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++n/TN7gfBtgOPxZI9zfQ8MdebSdQaLOSjr7eD8Jw/2qE1oGYiEY
-	ePJgUI65Fq8LbgLmUJMz1HHHGMAmKPD3ZJMDDw2EbIOzzj7KPdOwqHDnzRgimaNOWR+oIN3/7ui
-	WvsXudtP7Ju4r/EUrFzQ7HPO2j/RPyUWxmkkpEjxBKxMFjbfDBZYXaBrVLIJvAf3/zBcgmUSlR9
-	T/Aq8Vu49tRQuVWti3i4mQFAkovTwirIM=
-X-Gm-Gg: AYBFou05VViaEHnAILG/HfAuxgUXX+uG9GlJ8ruw/XM3CzL68HojLFNuBdYTrj9bK5a
-	DpMgiU4tSftgsYpNQ3X3WD+OinaofORzhjMmotG3AjDaB7LACthp2wh+LJh4Ai4LEHGZhj/8RpA
-	cO8PysEA5QnMfbLQ4hUaMLtD/R3a9VlnhAk30ta4g307cGhu4FR0RI+Q==
-X-Received: by 2002:a05:690c:f04:b0:8a4:af43:6941 with SMTP id 00721157ae682-8a64e5d7328mr16132207b3.20.1790262039547;
-        Thu, 24 Sep 2026 08:00:39 -0700 (PDT)
-X-Received: by 2002:a05:690c:f04:b0:8a4:af43:6941 with SMTP id
- 00721157ae682-8a64e5d7328mr16131377b3.20.1790262038827; Thu, 24 Sep 2026
- 08:00:38 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="l6n9ELTV"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55C7B1476;
+	Thu, 24 Sep 2026 08:26:12 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 30A883F86F;
+	Thu, 24 Sep 2026 08:26:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1790263575; bh=B+Qpq0mGaw3xi25XZVIMrbmAYpvPUbmJS4mCwVTqyrM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=l6n9ELTVe2ZkaCPB8nIwz5Sc7JZOs68VmMkYvZCShdny6ZjohUe8b19JXSchJMYF4
+	 uO3QIiF/YMJxoSE0UMYdLjyadb9nHTaDBWegle8Ib7Io9p8Jy5sXqC9NrROZxTUzzZ
+	 GNcyquiJ6/sK6Y7PClYCIdP05QXcDxGvwxBTKEdQ=
+Message-ID: <9547761f-7688-4351-b172-9e9d5fa28b15@arm.com>
+Date: Thu, 24 Sep 2026 16:26:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260914-scm-device-api-v1-0-3573e2596c51@redhat.com>
- <EKwbCgCnxbNX4p95qJ3xoytzeNBBLc2L_HOVWr-S-y8n7pNOIToj37TyoXRcLyIK1gjq_IvbreQ331gw6jIK9Q==@protonmail.internalid>
- <20260914-scm-device-api-v1-1-3573e2596c51@redhat.com> <b1340496-1ff3-4ad7-87c3-36d2162efbfa@kernel.org>
-In-Reply-To: <b1340496-1ff3-4ad7-87c3-36d2162efbfa@kernel.org>
-From: Albert Esteve <aesteve@redhat.com>
-Date: Thu, 24 Sep 2026 17:00:27 +0200
-X-Gm-Features: AclHuK_S1nrFMWot6v8DC6klfULfaNk07isgmJtfP7BYAekyrR84kzWx2Uw9qhE
-Message-ID: <CADSE00JhFYhDV2cuVxZwVTX6LTe8zH0-BR=-Fhv+6UXeFxq_Zw@mail.gmail.com>
-Subject: Re: [PATCH 1/3] firmware: qcom: scm: pass qcom_scm to internal helpers
-To: "Bryan O'Donoghue" <bod@kernel.org>
-Cc: Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Russell King <linux@armlinux.org.uk>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@kernel.org>, 
-	Christian Loehle <christian.loehle@arm.com>, Maximilian Luz <luzmaximilian@gmail.com>, 
-	Bartosz Golaszewski <brgl@kernel.org>, Rob Clark <robin.clark@oss.qualcomm.com>, 
-	Sean Paul <sean@poorly.run>, Akhil P Oommen <akhilpo@oss.qualcomm.com>, 
-	Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
-	Jessica Zhang <jesszhan0024@gmail.com>, Marijn Suijten <marijn.suijten@somainline.org>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>, 
-	Vikash Garodia <vikash.garodia@oss.qualcomm.com>, 
-	Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Srinivas Kandagatla <srini@kernel.org>, 
-	Ekansh Gupta <ekansh.gupta@oss.qualcomm.com>, Arnd Bergmann <arnd@arndb.de>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jeff Johnson <jjohnson@kernel.org>, 
-	Linus Walleij <linusw@kernel.org>, Mathieu Poirier <mathieu.poirier@linaro.org>, 
-	Amirreza Zarrabi <amirreza.zarrabi@oss.qualcomm.com>, Jens Wiklander <jenswi@kernel.org>, 
-	Sumit Garg <sumit.garg@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
-	Thara Gopinath <thara.gopinath@gmail.com>, Zhang Rui <rui.zhang@intel.com>, 
-	Lukasz Luba <lukasz.luba@arm.com>, Brian Norris <briannorris@chromium.org>, 
-	Govind Singh <govinds@codeaurora.org>, Niklas Cassel <niklas.cassel@linaro.org>, 
-	Kalle Valo <kvalo@kernel.org>, linux-arm-msm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-pm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	freedreno@lists.freedesktop.org, iommu@lists.linux.dev, 
-	linux-media@vger.kernel.org, linux-wireless@vger.kernel.org, 
-	ath10k@lists.infradead.org, linux-gpio@vger.kernel.org, 
-	linux-remoteproc@vger.kernel.org, op-tee@lists.trustedfirmware.org, 
-	Maxime Ripard <mripard@kernel.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: oOajz43EhuBm5sKV76SmDjYjQyNKKYDUrobhe8UjWfI_1790262040
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 1/3] iommu/iova: convert from rbtree to maple tree
+To: Rik van Riel <riel@surriel.com>, linux-kernel@vger.kernel.org
+Cc: kernel-team@meta.com, joro@8bytes.org, will@kernel.org,
+ iommu@lists.linux.dev, liam@infradead.org, maple-tree@lists.infradead.org,
+ linux-mm@kvack.org, ashok.raj@oss.qualcomm.com, jgg@ziepe.ca,
+ kyle@mcmartin.ca
+References: <20260818152505.1057922-1-riel@surriel.com>
+ <20260818152505.1057922-2-riel@surriel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260818152505.1057922-2-riel@surriel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 23, 2026 at 11:00=E2=80=AFPM Bryan O'Donoghue <bod@kernel.org> =
-wrote:
->
-> On 14/09/2026 13:41, Albert Esteve wrote:
-> >   int qcom_scm_pas_auth_and_reset(u32 pas_id)
-> >   {
-> > -     return __qcom_scm_pas_auth_and_reset(__scm->dev, pas_id);
-> > +     struct qcom_scm *scm =3D __scm;
-> > +
-> > +     return __qcom_scm_pas_auth_and_reset(scm->dev, pas_id);
-> >   }
-> >   EXPORT_SYMBOL_GPL(qcom_scm_pas_auth_and_reset);
->
-> Why make this change at all though ?
->
-> It takes a pointer to the file static _scm
->
-> The reset of the patch looks straight-forward to me but this change
-> caught my eye.
+On 18/08/2026 4:25 pm, Rik van Riel wrote:
+> alloc_iova() looks for free space by walking the rbtree linearly.
+> On production workloads at Meta, enough CPUs have ended up in that walk
+> at the same time to trigger soft lockups.
+> 
+> Index the iova ranges in a maple tree instead. Its gap search makes
+> alloc_iova() O(log n).
+> 
+> __alloc_and_insert_iova_range() asks mas_empty_area_rev() for the
+> highest free range below limit_pfn. Alignment is handled by rounding
+> up the allocation size, prioritizing speed over address space waste,
+> with the thought that many iova requests on a system will be similar
+> in size, and reuse the same holes.
+[...]
+>   static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
+>   		unsigned long size, unsigned long limit_pfn,
+>   			struct iova *new, bool size_aligned)
+>   {
+> -	struct rb_node *curr, *prev;
+> -	struct iova *curr_iova;
+>   	unsigned long flags;
+> -	unsigned long new_pfn, retry_pfn;
+> +	unsigned long new_pfn;
+>   	unsigned long align_mask = ~0UL;
+> -	unsigned long high_pfn = limit_pfn, low_pfn = iovad->start_pfn;
+> +	unsigned long search_size = size;
+> +	MA_STATE(mas, &iovad->mtree, 0, 0);
+> +
+> +	if (size_aligned) {
+> +		unsigned long align = 1UL << fls_long(size - 1);
+>   
+> -	if (size_aligned)
+>   		align_mask <<= fls_long(size - 1);
+> +		search_size = size + align - 1;
+> +	}
 
-Yeah, this change isn't useful. I aimed to avoid passing __scm to
-function calls but it does nothing in this patch, it'd be better to
-change it directly in the next patch that changes the signature.
+Perhaps it's a bit too much of a cool trick, but I think technically we 
+could just do "search_size = size + ~align_mask" unconditionally.
 
-BR,
-Albert
+However, either way I do worry somewhat about the increase in 
+fragmentation and premature failures once the space starts to fill up. 
+Say for simplicity we have a start_pfn of 0 and limit_pfn of 4 - with 
+the current code we can successfully allocate a size of 1 (to IOVA 3) 
+followed by a size of 3 (to IOVA 0), or even in the opposite order for 
+the same result, whereas with this workaround we couldn't ever allocate 
+the 3 either way if its search_size has to be 7.
 
->
-> ---
-> bod
->
+AFAIK there are real-world use-cases where the usable IOVA space is 
+relatively small compared to the sizes of some of the buffers being 
+mapped, such that packing density matters (i.e. media stuff in mobile 
+SoCs), so if at all possible it would be good if maple tree itself could 
+be improved to support searching for a free range with a particular 
+alignment (either explicit, or implied natural alignemnt of the size) 
+rather than having to bodge it this way. Unfortunately we also can't 
+just relax the general DMA API guarantee that DMA addresses are 
+naturally-aligned to the mapping/allocation size, as who knows how many 
+devices that might break.
 
+> -	/* Walk the tree backwards */
+> -	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+
+FWIW I'm not much of a fan of the implicit scoped-cleanup stuff in 
+general, but this seems like an instance where using guard() to simplify 
+all the early returns might be worthwhile.
+
+Thanks,
+Robin.
+
+> +	spin_lock_irqsave(&iovad->iova_lock, flags);
+> +	/* No 32-bit request this large can fit until the hint is cleared. */
+>   	if (limit_pfn <= iovad->dma_32bit_pfn &&
+>   			size >= iovad->max32_alloc_size)
+> -		goto iova32_full;
+> -
+> -	curr = __get_cached_rbnode(iovad, limit_pfn);
+> -	curr_iova = to_iova(curr);
+> -	retry_pfn = curr_iova->pfn_hi;
+> -
+> -retry:
+> -	do {
+> -		high_pfn = min(high_pfn, curr_iova->pfn_lo);
+> -		new_pfn = (high_pfn - size) & align_mask;
+> -		prev = curr;
+> -		curr = rb_prev(curr);
+> -		curr_iova = to_iova(curr);
+> -	} while (curr && new_pfn <= curr_iova->pfn_hi && new_pfn >= low_pfn);
+> -
+> -	if (high_pfn < size || new_pfn < low_pfn) {
+> -		if (low_pfn == iovad->start_pfn && retry_pfn < limit_pfn) {
+> -			high_pfn = limit_pfn;
+> -			low_pfn = retry_pfn + 1;
+> -			curr = iova_find_limit(iovad, limit_pfn);
+> -			curr_iova = to_iova(curr);
+> -			goto retry;
+> -		}
+> -		iovad->max32_alloc_size = size;
+> -		goto iova32_full;
+> +		goto alloc_fail;
+> +
+> +	if (mas_empty_area_rev(&mas, iovad->start_pfn,
+> +				 limit_pfn - 1, search_size)) {
+> +		/* Only real exhaustion sets the hint, not a failed store. */
+> +		if (limit_pfn <= iovad->dma_32bit_pfn)
+> +			iovad->max32_alloc_size = size;
+> +		goto alloc_fail;
+>   	}
+>   
+> -	/* pfn_lo will point to size aligned address if size_aligned is set */
+> +	/* The gap is search_size wide, so alignment cannot pass start_pfn. */
+> +	new_pfn = (mas.last - size + 1) & align_mask;
+> +
+>   	new->pfn_lo = new_pfn;
+> -	new->pfn_hi = new->pfn_lo + size - 1;
+> +	new->pfn_hi = new_pfn + size - 1;
+>   
+> -	/* If we have 'prev', it's a valid place to start the insertion. */
+> -	iova_insert_rbtree(&iovad->rbroot, new, prev);
+> -	__cached_rbnode_insert_update(iovad, new);
+> +	mas.index = new->pfn_lo;
+> +	mas.last = new->pfn_hi;
+> +	if (mas_store_gfp(&mas, new, GFP_ATOMIC))
+> +		goto alloc_fail;
+>   
+> -	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> +	spin_unlock_irqrestore(&iovad->iova_lock, flags);
+>   	return 0;
+>   
+> -iova32_full:
+> -	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> +alloc_fail:
+> +	spin_unlock_irqrestore(&iovad->iova_lock, flags);
+>   	return -ENOMEM;
+>   }
