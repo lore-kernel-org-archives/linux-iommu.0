@@ -1,100 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from fout-b4-smtp.messagingengine.com (fout-b4-smtp.messagingengine.com [202.12.124.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E95A47427E;
-	Thu, 24 Sep 2026 10:09:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 117F0431E6D
+	for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 10:21:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790244602; cv=none; b=TZ27mzRHrm5Sw4jtmbn3FH/3gimD80/a4OfPZMKL6+XPSnO/6sG8T1absytrT0W0knmDZl3K7pVx5hiR4nhIeUK7p363j57e31+Wn74kKnvalyQSd53Hec4aoVTN9e2upPeS0XnrWnm2tyOCLx2Iu439jsTVTA46A3bRxwbkRuI=
+	t=1790245314; cv=none; b=DucJZxJz7xCoTtVXj31eniVdohkom30WBt6S0/PRkHJVyI25FeIgUKT8mXZICknGTEfdmS1vj6via11d/6FNV2XoCaZrZBEtpJveMO1IFnOiMlSYwvwmaQPRS1fYeM3PZF61/lHV7KPEbh8YcegiPvkT6liJmx2uovCPHItRYNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790244602; c=relaxed/simple;
-	bh=a5wZVDxozWcGbA+/SuJ6Ip5ryygvsJtEYlgQ+RR1o0A=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZfbWfPeHGvJC/4nSOP2eHVteIG7Rc8+LvHf0kwpvGRlmR07tLEroHnCtJe2jFQQ50Wl/EpVhiaSBMCddHZeyjlGR5qtIHzKTZb3OWd2zssdP8SbHnFFRxj2ilmx9hV/6SGGJGFXLJxxlTODEh02SO8xYuxJxsRhDpSbqRrRZr8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Hn9hv8eW; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790245314; c=relaxed/simple;
+	bh=HCHhhkmm8Ak5GFCId+LkLACRLtYRCMVP6w+QDsaD4fg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=k34u5QxvhBTbwOvH2tSR898mGwsZIXFcyeUr4pJQi3V4N49IPUE9lk/Um7QyU491FxBWv8cs2Oxbr+L6edzUe7dZtTtQ/iJX6234UX2Z0YZHaCArDi4L8ksGJdpX20/ZVo6xkqRma+BugaCVwP3a37S36Z51DANCkQgsZwFtjgM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com; spf=pass smtp.mailfrom=gahingwoo.com; dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b=YV226Ebj; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=kh2tFI+C; arc=none smtp.client-ip=202.12.124.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Hn9hv8eW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26EA21F00893;
-	Thu, 24 Sep 2026 10:09:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790244586;
-	bh=dwj3iE+AENM1wdyeAW0ucsrV1xoTqhkmjLwoH3q3QAw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Hn9hv8eWpaJ0p+isry01mjUR+t12CaIbyEhnYYrvyrYgoLrjQYYfgPDJQdaSjfaPh
-	 50aE3RW/t7UTODmesgPWy0ykAx61CbS4D8dbfsypnco6ojqRMUwF5OtdYDnTstc9Iz
-	 8k6nZlY00DBlv3G/7lbhrvb9n8+bCjYSXakBrGqK4DtvHWl2lG8/1uIwzhqKepwQqd
-	 DHbK/opblE1OlSJEblhsQ8zPACxiJ3fuzRt6fdYGbBz++jf6Za8pckAUtcXcqECLqB
-	 AVrLitP9+Im6vOn8+550xQCIMvJHFC3d7TSv1eybV24j9U20ScblwOD7FdGj1Kf6sc
-	 NRGOq4IPnJXrQ==
-From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-To: linux-coco@lists.linux.dev,
-	kvmarm@lists.linux.dev,
+	dkim=pass (2048-bit key) header.d=gahingwoo.com header.i=@gahingwoo.com header.b="YV226Ebj";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="kh2tFI+C"
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfout.stl.internal (Postfix) with ESMTP id 89BA61D00100;
+	Thu, 24 Sep 2026 06:21:49 -0400 (EDT)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-04.internal (MEProxy); Thu, 24 Sep 2026 06:21:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to; s=fm3; t=1790245309; x=1790331709; bh=W6tnudjnaq
+	nDvuJLZWbdA1XYcjcOG/KRBYhK5fxSl2U=; b=YV226EbjfVpuElFcw2Yq0ZEOf3
+	kV4oD1yEgBOGzqiHUWiGBUHsmuZWVgsCJn6s/sTW1jkG562sllnRbXnT1M+JSELY
+	Zq7awi+A4dmbEFQZ7+okF12O6itF/CxLx3TMAiHtctqB1kEMndbbrmrI2vlBk0Ba
+	XYbUEW3W70InY421d7O6sbJPaygVK8oL73OW89OVuXUbRzWTnkaWXWwvGtnCa3JV
+	7eskiX2aABw4Blhzre4ogXQtco0DYIeEDlJeWU5UZaRrxoHvb9CbR4taKSWEPB/n
+	sdoymmnO7c3wE+k0aJs9YPSv56gwVLdBgm0AETs8sQKNxIiQyUtVyWZtMOZg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+	1790245309; x=1790331709; bh=W6tnudjnaqnDvuJLZWbdA1XYcjcOG/KRBYh
+	K5fxSl2U=; b=kh2tFI+C70MTIXe/YX+q8448PWaZCZnhMa5jTmFR1nMou61UJcn
+	3WzJV+5IltfZrse2IpGQnglxx9FQZSd7rVblvWFZmqJQBxnrBOfOorgin2MRol1p
+	7GTIl/h47gfMqkO5WlEFQRGked+S8dxfQw7RG545ESliULywNkO2Qx5Hx9ThYn8j
+	nh/tRRBjbnioJwxB5HMlsLGLW+2Gl/aHQUMYACBSsEAo3f8tb9AmOPdf9xHoco3C
+	EVE8q1HQj6CrJx0/ZQZUP78PC1BIp9aqiXGjjWtSgSkRIL70tyRk/NRpuyBxa9xJ
+	S0Qvt0mK0sgHL8pUxHP7lrwawcp44DWbETA==
+X-ME-Sender: <xms:vPm0avPHMDwn28tloF3tMSEyu8VxF0-yiXQT0HsAbMGQFOGRv59D_Q>
+    <xme:vPm0aqvSQ30pPg-WEW7otfxJ7VOHupprZl9Nln6n-luqCRE4x86mOLUkQiJquwlmT
+    8kqev4u9lOuFsqkJNX5npO4SgiGf73qmqNwFMfAM2VaHTbC4UqsvEs>
+X-ME-Received: <xmr:vPm0aiGUv1jl5nzFATDJdBh4YPod_dURrATFLHxrFQJGEguGf87N8DiHfW9QxPYyoVWy8l0DIw>
+X-ME-Proxy-Cause: dmFkZTGUBsuQ8u1e21jVcr3eLNYG8Ga4Cps63LL/fYxHUubIriJLI2yezzT3bzXM0DpGzH
+    qkZsA9N9aBi9n2Y//Yi0OHlpEZJX5Bnw5YcMHpUTVUO0A8DdY/D5tvhfY4JQtyBJkgAFAw
+    TNXckoesIyFctYvXVe/Yo5XkqpKs0A5wEq4b+dKkkqErTVFOzm2U0Tqf5wP76p8dip0AEW
+    6goXFoqaPcnDdHoe8hK/ilbx/bv7lys+91iE7/Vpn/kNTv2VZk73o5DQPwhe3rGxKYgLLO
+    NoMtnnrti5i/YjyeP2uj7BGXhCqwtaB6+EwJplu7fHaOam2PsrbS75wAJYWOARwLKIr9OS
+    DPI/daDD++KB0WfxHB3zjHMjqNV9vZYf0wOy5M8lMuV0ULxpgCD6jL7ucgWwhkGq9g9783
+    Z9TyFguJ6VUEk3MHSGQ6MdIT1xTww7BiozZzx9xuSDFh5IhMlwK+2xIpfoV13jYDwHIAnV
+    jqIv0OdUCnHJYM+M5qe9XAget8mEh2DuV935JroNa8o8cDgx95KRO5U2Reaw1BbfPvyG6x
+    p75wqGpVNdSXqXUO3rxHI1jVOITR29X4JLt+ZAFW720YnBULxO/I8Xwje52RdiLHEfbleN
+    dqAns0cW41qUL8d047ZJggRqksth7LcFfxDruC5W93OmRI2UsyQh41lNQWzw
+X-ME-Proxy: <xmx:vPm0alRmLW-fC207vPYU88tB4X3W1sYpm4gXSIhoogYbRN6k9_SHXw>
+    <xmx:vPm0amj9Of0_Sc6lVVIi-35IpePezVZYs4b6rN9Ae3Ck6cb98PE9HQ>
+    <xmx:vPm0apZ7rprtTFURlb7CwWUcijiQ8Dh8h-GqaMleHSRjlNg37b7ZRg>
+    <xmx:vPm0anVkLpvzJvhB7q-vVOsUXaic03rqhvimGFh9nCF1pHIGlszOkQ>
+    <xmx:vfm0ajvYafMq3HjSolhWD51Kegqh9Jhm0fEBs5AvIOIkpn2yyLWIeKF5>
+Feedback-ID: i7a5e4b5f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 24 Sep 2026 06:21:39 -0400 (EDT)
+From: Jiaxing Hu <gahing@gahingwoo.com>
+To: tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	ulfh@kernel.org,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com,
+	abel.vesa@oss.qualcomm.com,
+	sebastian.reichel@collabora.com,
+	sidong.yang@furiosa.ai,
+	u.kleine-koenig@baylibre.com,
+	chaoyi.chen@rock-chips.com,
+	diederik@cknow-tech.com,
+	alchark@flipper.net,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Baoquan He <baoquan.he@linux.dev>,
-	Mike Rapoport <rppt@kernel.org>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	Pratyush Yadav <pratyush@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>,
-	Marc Zyngier <maz@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Will Deacon <will@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	Brian Starkey <Brian.Starkey@arm.com>,
-	John Stultz <jstultz@google.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Radu Rendec <radu@rendec.net>,
-	"T.J. Mercier" <tjmercier@google.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <chleroy@kernel.org>,
-	Ritesh Harjani <ritesh.list@gmail.com>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	"K . Y . Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>,
-	Dexuan Cui <decui@microsoft.com>,
-	Long Li <longli@microsoft.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Vitaly Kuznetsov <vkuznets@redhat.com>,
-	Andy Lutomirski <luto@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-media@vger.kernel.org,
-	linux-mm@kvack.org
-Subject: [RFC PATCH v8 14/14] irqchip/gic-v3-its: Preallocate VPE L1 tables
-Date: Thu, 24 Sep 2026 15:35:29 +0530
-Message-ID: <20260924100529.1398790-15-aneesh.kumar@kernel.org>
+	Jiaxing Hu <gahing@gahingwoo.com>
+Subject: [PATCH v14 00/15] accel/rocket: RK3576 NPU (RKNN) enablement
+Date: Thu, 24 Sep 2026 22:21:20 +1200
+Message-ID: <20260924102135.92217-1-gahing@gahingwoo.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260924100529.1398790-1-aneesh.kumar@kernel.org>
-References: <20260924100529.1398790-1-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -103,259 +106,97 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-VPE L1 tables are allocated from the CPU-starting callback, where sleeping is
-not allowed.  Remove the page allocation from this atomic path.
+This adds the RK3576 NPU to accel/rocket. The RK3576 has two cores of
+the RKNN block the driver supports on RK3588, with more clocks, two
+power domains per core, one reset instead of two, and a sixteen-bit task
+number in PC_TASK_CON.
 
-Use a blocking allocation for the boot CPU and record the resulting table
-order.  Allocate a page of that order from the sleepable CPU hotplug prepare
-stage for each secondary CPU.  Consume the preallocated page only when the CPU
-cannot inherit an existing redistributor or ITS table.
+1/15 is Igor Paunovic's patch and also 05/11 of his DVFS series;
+whichever lands first, the other drops it. His 06/11 edits the same
+binding as 6/15.
 
-Reclaim unused preallocations after the CPU reaches the online state, and from
-the prepare-state teardown when CPU bring-up aborts.
+Changes since v13:
 
-Assisted-by: Codex:gpt-5
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Thomas Gleixner <tglx@kernel.org>
-Cc: Radu Rendec <radu@rendec.net>
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
----
- drivers/irqchip/irq-gic-v3-its.c   | 110 +++++++++++++++++++++++++++--
- drivers/irqchip/irq-gic-v3.c       |   4 +-
- include/linux/irqchip/arm-gic-v3.h |   3 +-
- 3 files changed, 108 insertions(+), 9 deletions(-)
+  3/15   The comment notes that a core still up with runtime PM disabled
+         is left unmasked (Sashiko). The message quotes Igor's re-runs
+         on v13; his earlier summary is behind the Links. Igor, say if
+         you want it back.
+  7/15   Heiko's Reviewed-by.
+  9/15   Message trimmed (Ulf), keeping one sentence on need_regulator.
+  10/15  One reset, not an array (Philipp), and the pointer is cleared
+         under pmu->mutex before it is put (Sashiko). Abel, the code
+         under your Reviewed-by changed; say if the tag should go.
+  12/15  Drops a claim that its test was byte exact; it was within one
+         count. Its comment on PC_TASK_CON now says the count clear
+         lands inside the task number and inflates it, which is what
+         happens.
+  13/15, 14/15
+         v13's 13/14, split as Heiko asked. 14/15 gives 786 MHz at 750
+         mV as 11 to 25 wrong words a pass; v12 and v13 said 13 to 20
+         wrong rows, which no record supports.
 
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index 4814161df02e..a8f37fb97845 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -195,6 +195,7 @@ static DEFINE_PER_CPU(struct cpu_lpi_count, cpu_lpi_count);
- static LIST_HEAD(its_nodes);
- static DEFINE_RAW_SPINLOCK(its_lock);
- static struct rdists *gic_rdists;
-+static unsigned int vpe_l1_prealloc_order = UINT_MAX;
- static struct irq_domain *its_parent;
- 
- static unsigned long its_list_map;
-@@ -2884,12 +2885,35 @@ static bool allocate_vpe_l2_table(int cpu, u32 id)
- 	return true;
- }
- 
--static int allocate_vpe_l1_table(void)
-+static unsigned int vpe_l1_table_order(u64 val)
-+{
-+	unsigned int psz;
-+	u64 npg;
-+
-+	switch (FIELD_GET(GICR_VPROPBASER_4_1_PAGE_SIZE, val)) {
-+	default:
-+	case GIC_PAGE_SIZE_4K:
-+		psz = SZ_4K;
-+		break;
-+	case GIC_PAGE_SIZE_16K:
-+		psz = SZ_16K;
-+		break;
-+	case GIC_PAGE_SIZE_64K:
-+		psz = SZ_64K;
-+		break;
-+	}
-+
-+	npg = FIELD_GET(GICR_VPROPBASER_4_1_SIZE, val) + 1;
-+	return get_order(npg * psz);
-+}
-+
-+static int allocate_vpe_l1_table(bool use_prealloc)
- {
- 	void __iomem *vlpi_base = gic_data_rdist_vlpi_base();
- 	u64 val, gpsz, npg, pa;
- 	unsigned int psz = SZ_64K;
- 	unsigned int np, epp, esz;
-+	unsigned int order;
- 	struct page *page;
- 
- 	if (!gic_rdists->has_rvpeid)
-@@ -2982,7 +3006,16 @@ static int allocate_vpe_l1_table(void)
- 
- 	pr_debug("np = %d, npg = %lld, psz = %d, epp = %d, esz = %d\n",
- 		 np, npg, psz, epp, esz);
--	page = its_alloc_pages(GFP_ATOMIC | __GFP_ZERO, get_order(np * PAGE_SIZE));
-+	order = get_order(np * PAGE_SIZE);
-+	if (use_prealloc) {
-+		if (WARN_ON_ONCE(order != vpe_l1_prealloc_order))
-+			return -EINVAL;
-+
-+		page = gic_data_rdist()->vpe_l1_prealloc;
-+		gic_data_rdist()->vpe_l1_prealloc = NULL;
-+	} else {
-+		page = its_alloc_pages(GFP_KERNEL | __GFP_ZERO, order);
-+	}
- 	if (!page)
- 		return -ENOMEM;
- 
-@@ -2999,6 +3032,9 @@ static int allocate_vpe_l1_table(void)
- 	val |= GICR_VPROPBASER_4_1_VALID;
- 
- out:
-+	if (!use_prealloc)
-+		vpe_l1_prealloc_order = vpe_l1_table_order(val);
-+
- 	gicr_write_vpropbaser(val, vlpi_base + GICR_VPROPBASER);
- 	cpumask_set_cpu(smp_processor_id(), gic_data_rdist()->vpe_table_mask);
- 
-@@ -3138,7 +3174,7 @@ static u64 its_clear_vpend_valid(void __iomem *vlpi_base, u64 clr, u64 set)
- 	return val;
- }
- 
--static void its_cpu_init_lpis(void)
-+static void its_cpu_init_lpis(bool use_prealloc)
- {
- 	void __iomem *rbase = gic_data_rdist_rd_base();
- 	struct page *pend_page;
-@@ -3251,7 +3287,7 @@ static void its_cpu_init_lpis(void)
- 		val = its_clear_vpend_valid(vlpi_base, 0, 0);
- 	}
- 
--	if (allocate_vpe_l1_table()) {
-+	if (allocate_vpe_l1_table(use_prealloc)) {
- 		/*
- 		 * If the allocation has failed, we're in massive trouble.
- 		 * Disable direct injection, and pray that no VM was
-@@ -5422,7 +5458,7 @@ static int redist_disable_lpis(void)
- 	return 0;
- }
- 
--int its_cpu_init(void)
-+int its_cpu_init(bool use_prealloc)
- {
- 	if (!list_empty(&its_nodes)) {
- 		int ret;
-@@ -5431,13 +5467,66 @@ int its_cpu_init(void)
- 		if (ret)
- 			return ret;
- 
--		its_cpu_init_lpis();
-+		its_cpu_init_lpis(use_prealloc);
- 		its_cpu_init_collections();
- 	}
- 
- 	return 0;
- }
- 
-+static int its_vpe_l1_prepare(unsigned int cpu)
-+{
-+	struct page **prealloc;
-+
-+	if (!gic_rdists->has_rvpeid ||
-+	    vpe_l1_prealloc_order == UINT_MAX ||
-+	    (gic_data_rdist_cpu(cpu)->flags & RD_LOCAL_LPI_ENABLED))
-+		return 0;
-+
-+	prealloc = &gic_data_rdist_cpu(cpu)->vpe_l1_prealloc;
-+	if (*prealloc)
-+		return 0;
-+
-+	*prealloc = its_alloc_pages_node(cpu_to_node(cpu),
-+					 GFP_KERNEL | __GFP_ZERO,
-+					 vpe_l1_prealloc_order);
-+	return *prealloc ? 0 : -ENOMEM;
-+}
-+
-+static int its_vpe_l1_cleanup(unsigned int cpu)
-+{
-+	struct page *page;
-+
-+	page = xchg(&gic_data_rdist_cpu(cpu)->vpe_l1_prealloc, NULL);
-+	if (page)
-+		its_free_pages(page_address(page), vpe_l1_prealloc_order);
-+
-+	return 0;
-+}
-+
-+static int __init its_vpe_l1_cpuhp_init(void)
-+{
-+	int prepare_state, state;
-+
-+	state = cpuhp_setup_state_nocalls(CPUHP_BP_PREPARE_DYN,
-+					  "irqchip/arm/gicv3-vpe:prepare",
-+					  its_vpe_l1_prepare,
-+					  its_vpe_l1_cleanup);
-+	if (state < 0)
-+		return state;
-+	prepare_state = state;
-+
-+	state = cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN,
-+					  "irqchip/arm/gicv3-vpe:online",
-+					  its_vpe_l1_cleanup, NULL);
-+	if (state < 0) {
-+		cpuhp_remove_state_nocalls(prepare_state);
-+		return state;
-+	}
-+
-+	return 0;
-+}
-+
- static void rdist_memreserve_cpuhp_cleanup_workfn(struct work_struct *work)
- {
- 	cpuhp_remove_state_nocalls(gic_rdists->cpuhp_memreserve_state);
-@@ -5862,6 +5951,15 @@ int __init its_init(struct fwnode_handle *handle, struct rdists *rdists,
- 	if (WARN_ON(!has_v4_1 && rdists->has_rvpeid))
- 		rdists->has_rvpeid = false;
- 
-+	if (rdists->has_rvpeid) {
-+		err = its_vpe_l1_cpuhp_init();
-+		if (err) {
-+			rdists->has_rvpeid = false;
-+			rdists->has_vlpis = false;
-+			pr_err("ITS: Failed to prepare VPE tables, disabling GICv4 support\n");
-+		}
-+	}
-+
- 	if (has_v4 & rdists->has_vlpis) {
- 		const struct irq_domain_ops *sgi_ops;
- 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 6e1fa5b247fc..e2e00372dcfb 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -1320,7 +1320,7 @@ static int gic_starting_cpu(unsigned int cpu)
- 	gic_cpu_init();
- 
- 	if (gic_dist_supports_lpis())
--		its_cpu_init();
-+		its_cpu_init(true);
- 
- 	return 0;
- }
-@@ -2053,7 +2053,7 @@ static int __init gic_init_bases(phys_addr_t dist_phys_base,
- 
- 	if (gic_dist_supports_lpis()) {
- 		its_init(handle, &gic_data.rdists, gic_data.domain, dist_prio_irq);
--		its_cpu_init();
-+		its_cpu_init(false);
- 		its_lpi_memreserve_init();
- 	} else {
- 		if (IS_ENABLED(CONFIG_ARM_GIC_V2M))
-diff --git a/include/linux/irqchip/arm-gic-v3.h b/include/linux/irqchip/arm-gic-v3.h
-index ea5fd2374ebe..a5565a745100 100644
---- a/include/linux/irqchip/arm-gic-v3.h
-+++ b/include/linux/irqchip/arm-gic-v3.h
-@@ -621,6 +621,7 @@ struct rdists {
- 		u64             flags;
- 		cpumask_t	*vpe_table_mask;
- 		void		*vpe_l1_base;
-+		struct page	*vpe_l1_prealloc;
- 	} __percpu		*rdist;
- 	phys_addr_t		prop_table_pa;
- 	void			*prop_table_va;
-@@ -637,7 +638,7 @@ struct rdists {
- struct irq_domain;
- struct fwnode_handle;
- int __init its_lpi_memreserve_init(void);
--int its_cpu_init(void);
-+int its_cpu_init(bool use_prealloc);
- int its_init(struct fwnode_handle *handle, struct rdists *rdists,
- 	     struct irq_domain *domain, u8 irq_prio);
- int mbi_init(struct fwnode_handle *fwnode, struct irq_domain *parent);
+The other messages, apart from 1/15, are shorter.
+
+On Heiko's question, 9/15's delay at 0 makes the first power-on of the
+NPU domain take an async SError, also with vdd_npu_s0 always-on; at 15
+us, 536 cold power-ons were clean. Details are in the v13 9/14 thread:
+https://lore.kernel.org/all/20260924090824.38493-1-gahing@gahingwoo.com/
+
+Routing: Ulf offered to take 7, 9 and 10. 1 to 5, 11 and 12 go through
+accel, 13 to 15 through rockchip, 6 with accel and 8 with the DT patches
+that use it. 15/15 needs 9, 10 and 12 to 14 first; without 9, 10 and 13
+the NPU domain comes up with no settle delay or reset pulse and the
+board takes an SError at boot.
+
+Still open:
+
+  4/15   whether you want a fix for the asynchronous put, and which
+  5/15   moves the line that ZhaoJinming's "accel/rocket: Fix
+         iommu_group leak and unsafe IRQ register access" changes;
+         whichever lands first, the other conflicts
+  14/15  both NPU domains per core, as tested, or one
+  --     rocket_core_fini() puts the IOMMU group before it cancels the
+         timeout worker: fix it here or on its own
+  15/15  hold it a cycle, or coordinate the three trees
+
+Link to v13: https://lore.kernel.org/all/20260915104328.45901-1-gahing@gahingwoo.com/
+
+Igor Paunovic (1):
+  accel/rocket: request the core clocks by name
+
+Jiaxing Hu (14):
+  accel/rocket: take the completion register writes under job_lock
+  accel/rocket: wait for a running IRQ handler before resetting a core
+  accel/rocket: let the core suspend after a reset
+  accel/rocket: factor the completion tail out of the IRQ handler
+  dt-bindings: npu: rockchip: add rockchip,rk3576-rknn-core
+  dt-bindings: power: rockchip: allow resets in a power domain node
+  dt-bindings: iommu: rockchip: describe the RK3576 NPU MMU
+  pmdomain: rockchip: add optional per-domain power-on settle delay
+  pmdomain: rockchip: cycle an optional power-domain reset on power-on
+  accel/rocket: select the per-core clock and reset counts from match
+    data
+  accel/rocket: add RK3576 NPU (RKNN) support
+  arm64: dts: rockchip: add NPU core domain clocks and resets to rk3576
+  arm64: dts: rockchip: add NPU (RKNN) nodes to rk3576
+  arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
+
+ .../bindings/iommu/rockchip,iommu.yaml        |  28 ++++
+ .../npu/rockchip,rk3588-rknn-core.yaml        |  47 +++++-
+ .../power/rockchip,power-controller.yaml      |   8 +
+ .../boot/dts/rockchip/rk3576-rock-4d.dts      |  22 +++
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi      |  86 +++++++++-
+ drivers/accel/rocket/rocket_core.c            |  32 +++-
+ drivers/accel/rocket/rocket_core.h            |  11 +-
+ drivers/accel/rocket/rocket_device.c          |   7 +-
+ drivers/accel/rocket/rocket_drv.c             |  42 ++++-
+ drivers/accel/rocket/rocket_drv.h             |   2 +
+ drivers/accel/rocket/rocket_job.c             | 157 +++++++++++++++---
+ drivers/pmdomain/rockchip/pm-domains.c        |  89 +++++++---
+ 12 files changed, 467 insertions(+), 64 deletions(-)
+
+
+base-commit: 1a1de54f7369cd2b5bac0f265910e60ad3a6b4c3
 -- 
 2.43.0
 
