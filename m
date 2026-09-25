@@ -1,90 +1,80 @@
-Received: from delivery.antispam.mailspamprotection.com (delivery.antispam.mailspamprotection.com [185.56.87.2])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f41.google.com (mail-pj2-f41.google.com [74.125.227.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42A4D4E66C0;
-	Fri, 25 Sep 2026 19:32:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.56.87.2
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790364781; cv=pass; b=C7lJGJPekDqOPSQ/V1na3tILAi2yQz7aAdyeDSIDlZ6rYy+31hBFVt5Q99DL2ILaekyzTE5VJZNp9Z1F2DVohjCwykr0Zwg2sPYjIm55N084R6DqgDBw9NijNpcJvk/3LhMD9O+O1wsN2uA2EhF6WHC9CrthACw9f8Z5Wsn1V8E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790364781; c=relaxed/simple;
-	bh=pfEa9sDfSqmUqAkVSivfg+jwsPnAd7JEdfM7bR8Kono=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCB3046F4AD
+	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 21:44:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790372658; cv=none; b=NBx+3/0WaOZ7cT4ZirGp1psj5trdyQbzT3o1oC2JmxAt+fwzsor2fOMZuU2VhmTtiWTKJOIFMUDF4wW67K9UsbgnFkxT6ZOPyKH9weTvSiV2gtSTg176Lfe9z9O7GUFo5UHMfQ/WYvib52cfCnpLEue6HWb9NWrOzYkQK9mFXgg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790372658; c=relaxed/simple;
+	bh=6U09m8Yxp85jBdyqUnyYZKTjlYcFpD66EbaC4eXzO9s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PN4nmJbkfiUeiYZF6FkHWLOkHp/02OfOb25jF5ONNlqVMwoGHTFg0pPF5NrnmnGe6u0kIm3HsxGmN8NnaEPSOeFCzmytJRG4wgYQNS/fCV1+h9+wMwqGoh17JjXpQdMw/lidoM/5pncjJAhinTdvNjbfjUuI2tSBY/z94Fnx8+M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it; spf=pass smtp.mailfrom=valla.it; dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b=WWs9S7hX; dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b=u7hR3YJo; arc=pass smtp.client-ip=185.56.87.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valla.it
+	 Content-Type:Content-Disposition:In-Reply-To; b=lTPZoZWXrLdw6JwP4WZIdUhxbVsjcy1vJ2OOeqQ8wOEnmzBghq+7w1HiEUvCQwHIKigW1D895F+2k/jg9cPDkT/Uvbtn7PFPFX44DIrgpKgGKOub0kvXiHvCZx/V/QzERl4RWOeQIB6tIyGpWqRuK/l1l4slSLozaH+Nt/a3eIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Zm3yXQEm; arc=none smtp.client-ip=74.125.227.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b="WWs9S7hX";
-	dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b="u7hR3YJo"
-ARC-Seal: i=1; cv=none; a=rsa-sha256; d=outgoing.instance-europe-west4-97jw.prod.antispam.mailspamprotection.com; s=arckey; t=1790364779;
-	 b=aFKo8KGCTzLifXlM+Yv7AqCEoJL4FAo3saj3zmdzydYlPWXEdiefT2Hv7mlTY7AAHPd0kZVLvf
-	  FvHxJxjxDkWrB6m77TwNLyCgU+q7OgAsMgfSxzTzpJjcnayYohtmEZ1XDCdFZVgW02yIbGCQ1/
-	  UrbtHY4qMVDQG/uDLpJQuOHThP4hRBBaZT6OmBgCSvDa3tAgDjhbIjmGY29lQ5gmSYJRo3xWXL
-	  sTCn4Ht77/wLYJVgg1O7TI0RnRmfefxxpG8UU5GAMZ15vLNbDAcQI1DbUsMSeCN/me8YUFUWTc
-	  pJD6A5oVu0vACY0sxkdUaNhqXbleDLc8PFiWoIRUTyolNA==;
-ARC-Authentication-Results: i=1; outgoing.instance-europe-west4-97jw.prod.antispam.mailspamprotection.com; smtp.remote-ip=35.214.173.214;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=outgoing.instance-europe-west4-97jw.prod.antispam.mailspamprotection.com; s=arckey; t=1790364779;
-	bh=pfEa9sDfSqmUqAkVSivfg+jwsPnAd7JEdfM7bR8Kono=;
-	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:
-	  From:Date:DKIM-Signature:DKIM-Signature;
-	b=Ewr6xcrlR2o+qBXHsHFjN1/QDm//fp8MEMwjLckJwpEnBiQDnFBrFFIYBvjjVvlwOqhgCutXF1
-	  OyveQAM40EUUp9q55FZYYTtfyIseWzAYd0SX1LPBl2F5eDk21UFIkJQZs8HXXuSlPC0LRN4fEn
-	  VH/HZmLa1be4o0LFKmBhulr1wIciMXpYxRHsEuWPuv8d4SZlIfwBUByzndG93s3A2DgcfLmekW
-	  uVEafh0tS7u5ZH0aSOBfuCVPnc3ws6dNYateArFsTKFxh7ynkcZBb11Hqg5SQebPTHj225IZW9
-	  QtN0i1azPW20mc4EVRI2F4Jy0BsNrwnu44QWQFRNDIMZTA==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=antispam.mailspamprotection.com; s=default; h=CFBL-Feedback-ID:CFBL-Address
-	:Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	List-Unsubscribe:Content-Transfer-Encoding;
-	bh=jhm3OuOGKpGPipHzsmUmu5dKRRI8/O+LClIrmyA+BRg=; b=WWs9S7hXbU0FcUbna1yXYO/XWr
-	TqyY8eR9fnbfIG13WbABmMOfa/vCHBXhzDuh+IwQaQcDLytEdr3xo+Mybjp9mzYRJKi4oh0AefOGH
-	hSihEP651R4W0imta//zlE/syy2/2Q9Fg0ZTkJprLjiRE1nGRkuudcVg0SisUa7W9qnM=;
-Received: from 214.173.214.35.bc.googleusercontent.com ([35.214.173.214] helo=esm19.siteground.biz)
-	by instance-europe-west4-97jw.prod.antispam.mailspamprotection.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <francesco@valla.it>)
-	id 1xABFA-0000000479C-2lWN;
-	Fri, 25 Sep 2026 19:06:16 +0000
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=valla.it;
-	s=default; h=Subject:Cc:To:From:Date:list-help:list-unsubscribe:
-	list-subscribe:list-post:list-owner:list-archive;
-	bh=jhm3OuOGKpGPipHzsmUmu5dKRRI8/O+LClIrmyA+BRg=; b=u7hR3YJo8ZSr2SisSaLcNNA9di
-	zA3XUxiLlksid/DDe+DIdECQZUJAVZ8/bjoeEVS6W00sscP2aJdJg+YMk9CymkCki0s+B2TN9sXUw
-	6yvzhxIdhakmJQceVp/tAluydMOcnP4JJIpwNXm+4k/TQhLzQ89o8WJWqAP4miEIjMK0=;
-Received: from [79.45.60.29] (port=64306 helo=bywater)
-	by esm19.siteground.biz with essmtpa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <francesco@valla.it>)
-	id 1xABEv-00000000KZm-1aVj;
-	Fri, 25 Sep 2026 19:05:45 +0000
-Date: Fri, 25 Sep 2026 21:05:43 +0200
-From: Francesco Valla <francesco@valla.it>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	virtualization@lists.linux.dev, imx@lists.linux.dev, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFC 06/12] remoteproc: virtio: add bounce buffering for
- data buffers
-Message-ID: <arbEmz1jy0V7gjrU@bywater>
-References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <20260916-remoteproc_virtio_map-v1-6-dac8c5eb4aa9@valla.it>
- <arKlvZGqu2nt6Ci0@p14s>
- <arLXthhYbKkwZ9zY@bywater>
- <CANLsYkwNOukGX68=NVvwNP7iudP3EcKN6C2L2o9nVCTRxFVxFg@mail.gmail.com>
- <arP38OEaabFFu8lJ@bywater>
- <araOI_duKIAbphq6@p14s>
- <1b55f680-2413-4db1-b928-ed5741696d07@arm.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Zm3yXQEm"
+Received: by mail-pj2-f41.google.com with SMTP id 98e67ed59e1d1-3a0abca97c0so775713a91.1
+        for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 14:44:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1790372656; x=1790977456; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=IIMvCRPk4oQabUuNoTzd+hbJerQBs659OSj7AsZRTXU=;
+        b=Zm3yXQEm+bZ13ZnfDZ9Uy3tlpBaiYY5Lzb0W6prJF2lVXrUmNc7wnJRYwpgZC+yy0C
+         ZZuBBs5KCOEFX3/KE903sT5X1lAp73wSfqZejs9khDL9lEkYggvQpcjaBbKwxWbmwsbd
+         q+S14YS7JmIuMsUhh4mLrwSVzfRhbeWO4XyPeIVyC5PlHTes3cHdCQ8rKYtUxjdhbUkV
+         QhRnSuikfnfsrBgZO/hfR6Exd8yzns5LKe9bKYvZ4tdCeTN7myAjQbvOpPxXtgqJlbPD
+         8AxUTL2WT8dwVt9SpdWQBiuF5eXm0ORLQtdEX58+kt02IHkmNSU/2qibXDILom7dEsqq
+         A1aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790372656; x=1790977456;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=IIMvCRPk4oQabUuNoTzd+hbJerQBs659OSj7AsZRTXU=;
+        b=DoVOQadYATVeuHmOL66+3DDPilv0X2citKThK0nmRvolazt7m8NOZENnIut2i9VToW
+         HK/tP7B3mEN36LYMvYkpEV6nlZF2VHgsk6Jc3BXTKJeDrDhhlFiwIKnpPNWObf0QQf1E
+         qLjgqqI1ZPFUDP1qE2MmtYYmj1bwUvlbwL0lf1gbsFs0a0VNn9qwsy3EQcg9ij4sCs+3
+         Ajb1X3ZKUgpvFkwsgE5ul/85AZGovhd5ZmIktZ+yawLALf7YXWdO15Psge8FomSEdgrF
+         GKQT1hOoObGuGaPzB4OhkZM7LdhHuT5+jU8XdcHfK+BwvEuKRGrXsvjgM3s8i8Sz+c4D
+         7aSQ==
+X-Forwarded-Encrypted: i=1; AKwUvByPPr5Xr1goQPJ6PmMQsGkDlN/UwbLIQTu0xOPECC8kvP+UtZv3aotbYS9LgSW5ucWM2DrmHg==@lists.linux.dev
+X-Gm-Message-State: AFuF++kA4ofm/CM48nPJt66z5JnYqiF6+3ulSRbzBwO5QarHWpEBucqM
+	wk777SnXvNNF3g9PF9YyRm053+IRWjpUtZ3lIROyqM4cOfc9ZXoRdJblMp3PO9Iqbw==
+X-Gm-Gg: AYBFou3j7pZ3Gzau1gygi4M1Jp7sz4LW2iDCD3m4UZ2bH8KGCaFy8YEvtmlmEJ6vOWC
+	7St+A7RTxX+3ooHPBf1Dn/kdt5B3lCATmro+MFhaTrhYGqum38/JLUD0GI40SivoerF0XjoNj1+
+	O/z4iWiBbib4TuvZjH3Ka6TQsRoaJVTal4D/a8RQx8Joc8mo93gN4EFuMjtTi3v3i/bQFgD+YIT
+	9IpjRKds3pvIGR64aW+SvkvOfDfA0jRoAgWuwE8NVAWfCV6cIse1sTZG2VXdOcFBkTjbtnpnXVc
+	XRUaCwNkFG0WAwO4FW6yMunA+KPIx7K2fSYEPrmZRLwzB5kENIy2v/fDxR+Bl5Qq+gHJfP2R5bi
+	Xr2WR7Mj1WpgmNFwukPwmUtxKGl68q9jl4YHG28qb2qZjkG8oR1b3xZ6v+OrjW9ZqhaECPf481S
+	ZpycKy7o0idiP11Jrjg5PE93L+H+nXa3SVNr89VzzohP07b4yo8C1Vs+YFlT1pLHw1Tim9Jvzet
+	4F4xa/qzbbiDJEcytriyYi475TUdoCC8EZMpiY7
+X-Received: by 2002:a17:903:184c:b0:2df:3b0c:a6a5 with SMTP id d9443c01a7336-2df7da5d1bemr63157015ad.9.1790372655435;
+        Fri, 25 Sep 2026 14:44:15 -0700 (PDT)
+Received: from google.com (192.150.203.35.bc.googleusercontent.com. [35.203.150.192])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2df91476bb4sm16242765ad.83.2026.09.25.14.44.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2026 14:44:14 -0700 (PDT)
+Date: Fri, 25 Sep 2026 21:44:05 +0000
+From: David Matlack <dmatlack@google.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex@shazbot.org>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Pranjal Shrivastava <praan@google.com>
+Subject: Re: [RFC PATCH 0/3] iommu/arm-smmu-v3: Add support for hitless
+ replace of CD entries
+Message-ID: <arbrJYsILS1IPpCK@google.com>
+References: <20260925011308.3381953-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -93,118 +83,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1b55f680-2413-4db1-b928-ed5741696d07@arm.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - esm19.siteground.biz
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - valla.it
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-SGantispam-id: b4b494bfe2759520406af1bea050b67f
-X-AntiAbuse: ID - b4b494bfe2759520406af1bea050b67f
-AntiSpam-DLS: false
-AntiSpam-DLSP: 
-AntiSpam-DLSRS: 
-AntiSpam-TS: 1.0
-CFBL-Address: feedback@antispam.mailspamprotection.com; report=arf
-CFBL-Feedback-ID: 1xABFA-0000000479C-2lWN-feedback@antispam.mailspamprotection.com
-Authentication-Results: outgoing.instance-europe-west4-97jw.prod.antispam.mailspamprotection.com;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
+In-Reply-To: <20260925011308.3381953-1-skhawaja@google.com>
 
-Hi Robin, Mathieu,
-
-On Fri, Sep 25, 2026 at 05:48:25PM +0100, Robin Murphy wrote:
-> On 25/09/2026 4:07 pm, Mathieu Poirier wrote:
-> > On Wed, Sep 23, 2026 at 06:05:35PM +0200, Francesco Valla wrote:
-> > > On Wed, Sep 23, 2026 at 08:44:41AM -0600, Mathieu Poirier wrote:
-> > > > On Tue, 22 Sept 2026 at 13:39, Francesco Valla <francesco@valla.it> wrote:
-> > > > > 
-> > > > > On Tue, Sep 22, 2026 at 09:58:53AM -0600, Mathieu Poirier wrote:
-> > > > > > On Wed, Sep 16, 2026 at 11:10:51PM +0200, Francesco Valla wrote:
-> > > > > > > Depending on the driver originating them, data buffers used for virtio
-> > > > > > > communication can either:
-> > > > > > > 
-> > > > > > >    - already be allocated from the coherent memory area that is
-> > > > > > >      accessible by the remote processor; this is the case of rpmsg
-> > > > > > >      and the rproc flavor of virtio-console;
-> > > > > > >    - be allocated from generic kmem, and thus not accessible directly by
-> > > > > > >      the remote processor.
-> > > > > > > 
-> > > > > > > Exploiting the map operations, which are used by the virtio framework
-> > > > > > > when VIRTIO_F_ACCESS_PLATFORM is part of a vdev's feature flags, add
-> > > > > > > bounce buffering for the second case: when the map() callback is called
-> > > > > > > for a buffer, one or more pages of coherent memory are allocated and
-> > > > > > > data is copied to them, then they are exposed to the remote processor;
-> > > > > > > the data is  then bounced back on unmap().
-> > > > > > > 
-> > > > > > > The first case is not impacted, since buffers already suitable for
-> > > > > > > remote transmission are passed through.
-> > > > > > > 
-> > > > > > > With the bounce buffering in place, any kind of virtio device can be
-> > > > > > > supported through the remoteproc-virtio transport, at least from a
-> > > > > > > data exchange standpoint.
-> > > > > > 
-> > > > > > Is this _necessary_ for the imx93 platform you are implementing feature for?
-> > > > > > 
-> > > > > 
-> > > > > If I don't want to fundamentally change how the remoteproc integration
-> > > > > works (i.e.: using buffers only from a pre-shared area), yes. While in
-> > > > > my test environment the Cortex-M33 serving as remoteproc is able to
-> > > > > access the whole RAM space, that is not always the case.
-> > > > 
-> > > > The first sentence tells me it is mandatory while the second says it
-> > > > is not.  I understand the use case but don't want to bloat the
-> > > > subsystem with code that is trying to address a problem you currently
-> > > > don't have.
-> > > > 
-> > > 
-> > > Let me rephrase: while on i.MX93 the Cortex-M33 can theoretically access
-> > > the whole RAM space, that is not a good idea from a security point of
-> > > view and can be the source of a number of bugs. The target is to
-> > > statically define a static shared memory area (as I am doing on i.MX95)
-> > > and only use that.
-> > 
-> > As Robin pointed out, have you looked at using a restricted-dma-pool for that?
-> > Note that I am not familiar with the concept but open to go that way if it can
-> > work for us.
-> > 
-> > Robin, can you point us to a simple example we could look at?
-> The only in-tree example is mt8192-asurada.dtsi, but even there the
-> fundamental principle seems exactly the same - the system interconnect is
-> locked down such that there's only a particular region of "shared" memory
-> that PCIe DMA can access, so the restricted pool is placed there, and in
-> that case can occupy the entire region since the wifi adapter only really
-> does streaming DMA - restricted pools have some limited ability to act as a
-> fallback for coherent allocations, which won't work for everything, but does
-> happen to be enough for that wifi driver.
+On 2026-09-25 01:13 AM, Samiullah Khawaja wrote:
+> This patch series adds support for replacing IOMMU domains with S1 page
+> tables hitlessly, that is without disrupting the ongoing DMAs. This is
+> one of the dependencies of the Liveupdate IOMMU support for Arm SMMUv3.
 > 
-> Here it would be a case of reserving some of the shared region for a
-> restricted pool alongside the "vdevbuffer" coherent pool, adding it to the
-> memory-region list of the relevant device(s), and usually that would then
-> just work, since the setup is all done automatically by the core DT code.
-> However I know remoteproc does some funky stuff with child devices, so it's
-> quite possible there might need to be something more done there. But still
-> far, far less than reimplementing a whole other bounce-buffering system.
+> S1 domains are programmed by CD entries in the CD table. During a new
+> domain attach these are updated using arm_smmu_write_cd_entry(). Since
+> ASID and TTB0 are in different 64-bit words, arm_smmu_write_cd_entry()
+> considers it a non-hitless update and sets V=0. This means such an
+> update is disruptive and would generate translation faults if there are
+> ongoing DMAs.
 > 
-> Thanks,
-> Robin.
+> Replace the CD entries by using an unused temporary ASID in the
+> following sequence to allow hitless replacement of CD entry,
+> 
+> - Update the CD entry with temporary ASID.
+> - Update the CD entry with the target TTB0.
+> - Invalidate the temporary ASID.
+> - Update the CD entry with target ASID.
+> - Invalidate and release the temporary ASID.
+> 
+> The series adds a vfio selftest that triggers a continuous DMA and does
+> the hwpt replace while the DMA is ongoing. Since domain replacement is a
+> race with the translation requests, the test does it multiple times to
+> capture the small window where IOMMU faults can occur.
+> 
+> Without this change we can observe the SMMU faults in the kernel logs
+> and with it the SMMU faults do not occur.
+> 
+> This is only tested on qemu with the emulated SMMUv3 and an out of tree
+> NVMe vfio selftest driver, not on real hardware. Following are not
+> covered and can be done later,
 
-I took a look at the restricted-memory-pool - with which I wasn't
-familiar - and seems exactly what is needed here.
-
-I am working on a new prototype with it - if everything works as
-expected (I still did not have time to try it) it should only need some
-very limited glue code, cutting the modifications in the
-remoteproc_virtio driver by 95%. I'll let you knwow.
-
-Thank you for the hint!
-
-Regards,
-Francesco
-
-
+Out of curiousity, does the in-tree VFIO selftests driver for IGB not
+work for this testing scenario?
