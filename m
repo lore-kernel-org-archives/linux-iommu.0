@@ -1,143 +1,199 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99BEA443E56;
-	Fri, 25 Sep 2026 12:09:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 930BF44A401;
+	Fri, 25 Sep 2026 12:09:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790338148; cv=none; b=BtR5Oc7YrO4JxjO7O2NddsuvVowvbZbmR9MIkcIxlumgD4egE1thDdINHg4aHRg8UFMBacK3ZYCZLUI7+26LyJCQF1RGXqKLB516vZC3gAkyejbPvJNXmaUOd6nUhqse9D3ZiuPjcBW/xtk7AbPgqUyf9b+DB9OGGlnS+vZoX7M=
+	t=1790338177; cv=none; b=Ne4gpKyDNgLfwNF43V9mPpl2vLKdpMwKyA1g8Djq4ZZNDcbPReTTdCNhQkIUizae1BHXXYn0NS5zD212lewrnloMiJKJzAphag6cqTZz5wEASZFTyqry2xPwVOYYWTUrmHf6RnTdPzKYeadv3C3Vu2Q1az2MeIF8N4cX3/2khMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790338148; c=relaxed/simple;
-	bh=+CGvG9QrriSVRenQP3QQ5RXJ4XOMxjJ5sDhmV4iIAl8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iH6DpbaRgs5L0PVAajaQ2lGtNL491zGCEciCg6rMeLgBkgz/GNaOahRHOmEfyeI80cRFfr6d0YUIFid5AVV+rhD7LEi0j5iCrlolRhN+ql8wCXgvwcbVVou5/4je7X9VtOTL4mft+LJAz9tVHbIOn/JXaqHUGgFgRSjoPU2deqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hFLxfz7t; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790338177; c=relaxed/simple;
+	bh=hxwPLIWGB9VFacGMzl96vn0a9gK+osjE6UJ2ESecD7k=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=gLeQ8+XYGvLdRzrpWlN8C6u/8kMhgFobzy8PxKaHif7Z3RPQbBA0mmWvx+FxcHMj7ZDKTVs0UIn5Ey0MT2+VOy9MAOJQ0++pVuPlEVeS2XSxmwUClRq2quNh3oko0fmVBew9rJIKEMabESRDXM4hqrb0jz1QsSJNw5wb910FSdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hNtnf5WJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hFLxfz7t"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65371F00898;
-	Fri, 25 Sep 2026 12:09:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790338147;
-	bh=bpOatN8c0vzQ5XGVXFfSv8DKVf4rivauZnBt896FgHg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hFLxfz7t37uk7pH5vMDI/1xpq3m/TfoPjgAEzzyFhXiVwGX5wTVE3zad2a2pHObWM
-	 6I6Q6lr2K3mRbRNX28Efh3GAXHHmIY3YYpn2B6Z2wR2wyNpFzBZ1Ix1J/+1vDdJlxQ
-	 2isQkE+59O8Xlw00i8bK83i3Bheo3FtYcBO7OstX6ieuCPEksA4fWNkzCHIY2nH/X7
-	 PGoKz2s9mawB5vpJ9wNo45/KqKTc/o1pzKByjAQNaB8vCP5zcdMfxTkUHqXQn/mhns
-	 Wh9cEGNbH3lYlFSL2xTPz6nB1tY6rs2EeveZXxprkJu70kcro8FdK2VAa7oMTfWpMp
-	 eoynUk0yJj7aQ==
-Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
-	by mailfauth.ams.internal (Postfix) with ESMTP id F0D01198003A;
-	Fri, 25 Sep 2026 08:08:52 -0400 (EDT)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-03.internal (MEProxy); Fri, 25 Sep 2026 08:09:02 -0400
-X-ME-Sender: <xms:VGS2apVl0oCJHXSAF-WnG03V0OTkE3GA3JKk6_2wku0RZ0iOk6I8VA>
-    <xme:VGS2aiNFpi9BnkhFuuvFuFD70z2eBlFObIvPb29IzL5mI2ZX4ynwOvzRE_LNUXFwx
-    MxB6eWOboCuVpa1CHShE3eBEdlpVGjuVpHowmad4m6Ezn7y_bAq>
-X-ME-Received: <xmr:VGS2aqOosTEEs-ZdT05pxKviNpAWr3_xzRLG8_wFMp7Vw5A6xBNjESi0LMg>
-X-ME-Proxy-Cause: dmFkZTEA00vB4wCEuGFPU26dSeuaRUC5A4v8eR3RjG3bBqa5h9xJ9DkJKF4RfcLFM9n52q
-    3k8DUPXRt4S1MUQEQlgs/wFXZV95oQo4U601e3eSYJKZG4Nhmud24uk7molK+3EfFBEyfp
-    uDB+bzuPtnSdm3cfhWN7C/cKeLr/l2x069NPMBtTxphXRLuvs4rl/Oop2SUxPOEiACBaC0
-    gVKF5BVz0FD5pmDrDLCObajhGOWXVLPB4W5+pGabl+YCuxbxl1db9bA3z/zmlyf/1Y3+2L
-    bVts6vygIEw+WpL0zBkMy806BQB0UOjN5unt97CMkqUmRwIhB3ZHFNBhyJmHTKmaY59xgy
-    PaoQcuDGforIp2yh/OBDcAuLeHTf4NVgu/Q3MiIOv2TZopVH0lk4R8KuKyPCu2sh571uG9
-    sQPWLWpLg+PoxuyoKvDnj3hE9HeDAhnW3hojgqd3K3wL+y5rD/qo4gklbsa8cpwL188kU/
-    PkrFg7Z10iDPdvydF0UxXu1cXW3SDAD7DkoSjDdZk52r6lJ4VuFRP8XOiCC01t/9khS7+8
-    80d3XVP2yWba/CGFqlEv9Y9vYYaHPUtop786W0VSRxh4hYXHm6ZkBsk1pUW3rlfEVHeLs+
-    E+BuIgoOa3tDknUGmMSn2+zWK6DrKkUYj1McN22x/IP5Ssc3bWGg5eEzG1dQ
-X-ME-Proxy: <xmx:VGS2aoYZ7nFUadQ6kpGq7uDV0Tu20PSpPBisEuB6MM_0W2vrpxJVUQ>
-    <xmx:VGS2atoj4JRTVSnU8vzq8ZHzfJromoy1OYGmojnz8W7_me2t_SvIuA>
-    <xmx:VGS2ak9LMv9u5n_IwlQGG91twmRAsL4cPlt48wRftdAIxr4bG3jPgA>
-    <xmx:VGS2alVS_NfEyFQwF6El4FGRt3qemk-R8MfkGXNZNCHv-aPFOPXyxw>
-    <xmx:VGS2at8o0pQeT8R73VmmXOBI_CqD_RbB5258qJ3tDaj-yJiuehlpH8fX>
-Feedback-ID: i10464835:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 25 Sep 2026 08:08:51 -0400 (EDT)
-Date: Fri, 25 Sep 2026 13:08:50 +0100
-From: Kiryl Shutsemau <kas@kernel.org>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
- 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, 	Andrew Morton <akpm@linux-foundation.org>,
- Baoquan He <baoquan.he@linux.dev>, 	Mike Rapoport <rppt@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- 	Pratyush Yadav <pratyush@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- 	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
- 	Marc Zyngier <maz@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- 	Robin Murphy <robin.murphy@arm.com>,
- Steven Price <steven.price@arm.com>,
- 	Sumit Semwal <sumit.semwal@linaro.org>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- 	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
- 	Russell King <linux@armlinux.org.uk>,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- 	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
- 	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
- 	"T.J. Mercier" <tjmercier@google.com>,
- Madhavan Srinivasan <maddy@linux.ibm.com>,
- 	Michael Ellerman <mpe@ellerman.id.au>,
- Nicholas Piggin <npiggin@gmail.com>,
- 	Christophe Leroy <chleroy@kernel.org>,
- Ritesh Harjani <ritesh.list@gmail.com>,
- 	Shrikanth Hegde <sshegde@linux.ibm.com>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- 	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, 	Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- 	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>,
- 	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
- "H . Peter Anvin" <hpa@zytor.com>,
- 	Rick Edgecombe <rick.p.edgecombe@intel.com>,
- "K . Y . Srinivasan" <kys@microsoft.com>,
- 	Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- Dexuan Cui <decui@microsoft.com>, 	Long Li <longli@microsoft.com>,
- Paolo Bonzini <pbonzini@redhat.com>,
- 	Vitaly Kuznetsov <vkuznets@redhat.com>,
- Andy Lutomirski <luto@kernel.org>,
- 	Peter Zijlstra <peterz@infradead.org>, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, 	linux-media@vger.kernel.org,
- linux-mm@kvack.org
-Subject: Re: [RFC PATCH v8 02/14] mm: Zero memory during shared memory
- transitions
-Message-ID: <arZkEugXwCtKHH64@thinkstation>
-References: <20260924100529.1398790-1-aneesh.kumar@kernel.org>
- <20260924100529.1398790-3-aneesh.kumar@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hNtnf5WJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 37EF8C2BCB8;
+	Fri, 25 Sep 2026 12:09:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1790338177;
+	bh=hxwPLIWGB9VFacGMzl96vn0a9gK+osjE6UJ2ESecD7k=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=hNtnf5WJVSGf0w8PKSY2YVUYL8BGrk8P8OlNeD7ysm38/P3IuiSf3JKxRV8V/9bGt
+	 9SlhbLpkcjNL9vD/ZhjugqUfiy+Q0mfgdZrme13tGjeQPjB81rLcw5VFcTiPnzOzwT
+	 oP4trYsFCfOm8bzfPhyG+Kc1mWE0S2ZQoCorsQH6SRAELJVAdFOHyjZ8L/VYVY1dxP
+	 IC9Fgp+/RSx/Wse6rUJcNKrjBQr6eOGroDNM70cHpvtAFRMGsuLDojWWr4cxlAx+8b
+	 ULFe77ftDYxGRrKd29Xexzs91teKK6todRQxH+BW6FZ6EMf8PNJ1ewOiu/TBFMryBA
+	 3HV9ZGaNKHZ5A==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11545C9830E;
+	Fri, 25 Sep 2026 12:09:37 +0000 (UTC)
+From: Michael Reeves via B4 Relay <devnull+michael.reeves077.gmail.com@kernel.org>
+Subject: [PATCH v4 00/10] Add support for Apple Silicon DockChannel
+ internal keyboards
+Date: Fri, 25 Sep 2026 22:09:27 +1000
+Message-Id: <20260925-apple-mtp-keyboard-final-v4-0-304c267518f4@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260924100529.1398790-3-aneesh.kumar@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6XPTWrDMBAF4KsErTtF/4mz6j1KFyN5FIvalpGMa
+ Qi+e6VsGgothS4fzHxv5sYK5UiFnQ83lmmLJaa5Bv10YH7A+UIQ+5qZ5NJyKzvAZRkJpnWBd7q
+ 6hLmHEGccoRPeGbQh6OBZXV8yhfhxp1/fanZYCFzG2Q8NnLCslNtgyGmCdciED02K/9y0CeBgu
+ O07ZVEc+fHlMmEcn32amjfEsqZ8vb+0iVb/T7Ndv8kvqBOnXyBZITTengwZ7iz/Dqm/QqpCpIz
+ VVpM22j1C+75/AgCMxZW7AQAA
+X-Change-ID: 20260629-apple-mtp-keyboard-final-91cb5a6ff4fc
+To: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
+ Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>, 
+ Michael Reeves <michael.reeves077@gmail.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Jiri Kosina <jikos@kernel.org>, 
+ Benjamin Tissoires <bentiss@kernel.org>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+ iommu@lists.linux.dev, linux-input@vger.kernel.org, 
+ Yureka Lilian <yureka@cyberchaos.dev>, Julian Braha <julianbraha@gmail.com>, 
+ Sasha Finkelstein <k@chaosmail.tech>, 
+ Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1790338174; l=6237;
+ i=michael.reeves077@gmail.com; s=fedora-20260918;
+ h=from:subject:message-id;
+ bh=hxwPLIWGB9VFacGMzl96vn0a9gK+osjE6UJ2ESecD7k=;
+ b=uwKlpt0ybpOmsl3B2L9VRnoEgdwRk9jnY9xtfDU/A0D8x94+c/0nzCxHWQAaeZSOaQWfP3lT1
+ DbqhI7t8bwCBCjWU1MRHA66ylkuiWW04MDqGbh2aeQzxeBeU2iCzBbe
+X-Developer-Key: i=michael.reeves077@gmail.com; a=ed25519;
+ pk=VJ0TvyQ9TvfzYZa908YSE9kpkjFLLD5luv0bERu+boc=
+X-Endpoint-Received: by B4 Relay for
+ michael.reeves077@gmail.com/fedora-20260918 with auth_id=1035
+X-Original-From: Michael Reeves <michael.reeves077@gmail.com>
+Reply-To: michael.reeves077@gmail.com
 
-On Thu, Sep 24, 2026 at 03:35:17PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
-> index f904a636d449..1f1f39082391 100644
-> --- a/arch/x86/coco/tdx/tdx.c
-> +++ b/arch/x86/coco/tdx/tdx.c
-> @@ -978,6 +978,9 @@ static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
->  static int tdx_enc_status_change_prepare(unsigned long vaddr, int numpages,
->  					 bool enc)
->  {
-> +	if (!enc)
-> +		memset((void *)vaddr, 0, (size_t)numpages << PAGE_SHIFT);
-> +
->  	/*
->  	 * Only handle shared->private conversion here.
->  	 * See the comment in tdx_early_init().
+This series introduces support for the internal keyboards on Apple
+Silicon M2 and M3 MacBook models.
 
-This doesn't make sense to me.
+On these platforms, built-in input devices are managed by a dedicated
+coprocessor running an RTKit-based operating system. Communication
+between this coprocessor and the main processor is carried out over a
+low-latency hardware byte FIFO interface called DockChannel.
 
-On TDX the memset zeroes a page that is about to be dropped.
-MapGPA(shared) makes the VMM back the GPA with different memory, and
-what the guest reads afterwards through the shared mapping is whatever
-the host has there.
+To support this input path, the series introduces a few new components:
+- An apple-dockchannel mailbox driver to handle the low-level
+  byte-stream FIFO.
+- A DockChannel HID transport driver (apple-hid) that boots the
+  coprocessor using the RTKit framework and encapsulates the HID
+  protocol over the mailbox.
+- Minor additions to the apple-rtkit and hid-apple drivers to support
+  the TraceKit endpoint and integrate the keyboards into the existing
+  input-quirks framework.
+- Devicetree bindings and DTS updates to describe the nodes on M2 and
+  M3 laptops.
 
+The transport driver is based on an original out-of-tree implementation
+by Hector Martin, but it has been significantly rewritten for upstream
+inclusion to use the standard Linux mailbox framework and align better
+with upstream HID design patterns and reduce reliance on hacks.
+
+While the coprocessor manages both the keyboard and the trackpad, this
+series only enables keyboard support. The keyboard can be initialised
+without loading external firmware, whereas the trackpad requires
+firmware. Trackpad support will be submitted in a subsequent series
+once these base transport layers are established.
+
+Tested on: MacBook Air M3 (J613).
+
+Signed-off-by: Michael Reeves <michael.reeves077@gmail.com>
+
+Changes in v4:
+- Link to v3: https://lore.kernel.org/all/20260918-apple-mtp-keyboard-final-v3-0-e356464e454b@gmail.com/
+- Describe the DockChannel interrupt pair in DT (suggested by Yureka Lilian).
+- Serialize command transactions and finish STM setup before signalling ready.
+- Keep IRQ flag reads and acknowledgements under the controller lock.
+- Clarify teardown synchronization and use the explicit-bounds HID API.
+- Preserve interface-start errors and allow waiting again for delayed readiness.
+- Simplify FIFO writes, IRQ startup and compatible matching.
+- The command and IRQ changes address Sashiko feedback.
+
+Changes in v3:
+- Link to v2: https://lore.kernel.org/all/20260918-apple-mtp-keyboard-final-v2-0-a5c685e50b60@gmail.com/
+- Fix failed-probe cleanup and interface publication ordering.
+- Fix report lengths/types and reject replacement descriptors.
+- Terminate serial replies and encode checksums as little endian.
+- Honor HID_QUIRK_IGNORE_SPECIAL_DRIVER.
+- Clarify the DockChannel TX byte register layout.
+- All changes above address Sashiko feedback.
+
+Changes in v2:
+- Link to v1: https://lore.kernel.org/asahi/20260630-apple-mtp-keyboard-final-v1-0-506d936a1707@gmail.com/
+- Rebase onto latest upstream and add M3 Pro/Max device-tree support.
+- Use an optional STM node to decide whether to wait for device IDs
+  (suggested by Yureka Lilian).
+- Rename bindings to match the t8112 fallback (suggested by Conor Dooley).
+- Fix FIFO MMIO write width (suggested by Yureka Lilian) and run mailbox
+  interrupt handling in the IRQ thread.
+- Remove the duplicate report fixup (suggested by Sasha Finkelstein)
+  and redundant HID dependency (suggested by Julian Braha).
+- Fix teardown and the missing HID stop callback; simplify interface lookup.
+
+---
+Michael Reeves (9):
+      dt-bindings: mailbox: apple: Add M3 ASC mailbox compatibles
+      dt-bindings: mailbox: apple: Add DockChannel mailbox
+      dt-bindings: iommu: apple,dart: Add M3 compatibles
+      dt-bindings: input: apple: Add DockChannel HID transport
+      mailbox: apple: Add DockChannel FIFO controller
+      HID: apple: Add support for DockChannel HID keyboards
+      HID: apple: Add DockChannel HID transport driver
+      arm64: dts: apple: Add MTP DockChannel HID nodes
+      arm64: dts: apple: Enable DockChannel HID on M2 and M3 laptops
+
+Sasha Finkelstein (1):
+      soc: apple: rtkit: Add tracekit endpoint
+
+ .../input/apple,t8112-dockchannel-hid.yaml         |  104 ++
+ .../devicetree/bindings/iommu/apple,dart.yaml      |    6 +-
+ .../devicetree/bindings/mailbox/apple,mailbox.yaml |    3 +
+ .../bindings/mailbox/apple,t8112-dockchannel.yaml  |   88 ++
+ MAINTAINERS                                        |    5 +
+ arch/arm64/boot/dts/apple/t602x-die0.dtsi          |   47 +
+ arch/arm64/boot/dts/apple/t602x-j414-j416.dtsi     |   29 +
+ arch/arm64/boot/dts/apple/t6030.dtsi               |   47 +
+ arch/arm64/boot/dts/apple/t6031-die0.dtsi          |   47 +
+ arch/arm64/boot/dts/apple/t603x-j514-j516.dtsi     |   24 +
+ arch/arm64/boot/dts/apple/t8112-j413.dts           |   24 +
+ arch/arm64/boot/dts/apple/t8112-j415.dts           |   24 +
+ arch/arm64/boot/dts/apple/t8112-j493.dts           |   26 +-
+ arch/arm64/boot/dts/apple/t8112.dtsi               |   47 +
+ arch/arm64/boot/dts/apple/t8122-j504.dts           |   26 +
+ arch/arm64/boot/dts/apple/t8122-j613.dts           |   27 +
+ arch/arm64/boot/dts/apple/t8122-j615.dts           |   27 +
+ arch/arm64/boot/dts/apple/t8122.dtsi               |   48 +
+ drivers/hid/Kconfig                                |    2 +
+ drivers/hid/Makefile                               |    2 +
+ drivers/hid/dockchannel/Kconfig                    |   14 +
+ drivers/hid/dockchannel/Makefile                   |    3 +
+ drivers/hid/dockchannel/apple-hid.c                | 1191 ++++++++++++++++++++
+ drivers/hid/hid-apple.c                            |  118 +-
+ drivers/mailbox/Kconfig                            |   12 +
+ drivers/mailbox/Makefile                           |    2 +
+ drivers/mailbox/apple-dockchannel.c                |  357 ++++++
+ drivers/soc/apple/rtkit.c                          |    2 +
+ include/linux/hid.h                                |    1 +
+ include/linux/mailbox/apple-dockchannel.h          |   29 +
+ 30 files changed, 2334 insertions(+), 48 deletions(-)
+---
+base-commit: 5dd1818b15d98d4a20806cd00b1b40320b06004f
+change-id: 20260629-apple-mtp-keyboard-final-91cb5a6ff4fc
+
+Best regards,
 -- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+Michael Reeves <michael.reeves077@gmail.com>
+
+
