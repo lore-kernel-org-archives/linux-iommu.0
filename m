@@ -1,98 +1,196 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBBA214A619
-	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 00:03:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E75641DE4EF
+	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 00:14:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790294638; cv=none; b=Pz4sQbmL73TO3s9+8vcD4S+GNZpHaUuBLiNT7IVY7rpy4FECQCuydAVPYXySy8ruY10NJuC7ypx/KdpS6W//93rVDoO+/Q/2RcE8oRI6yQ07soOWDum9UhFvuOYjHunhuvHJrUsMn5xBojo7nGGHdykqBkqItwkaaaGtxfJI+ls=
+	t=1790295256; cv=none; b=ka/Cxo5B0o2yy5IcHXQBn9sEaeICs2w/gxKqQSjI/00fUBycMVgVTSd7wbQh3dOSxGedw8m+rXapI3nyeKrywg39UIcZcbt2WloeGkc/lcx1x2+L8sW7ZBxaIM9JubFxBSL2xDPKy/ckSXGKqcbC5FAUCz7ocFQ4h0iysWbRHcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790294638; c=relaxed/simple;
-	bh=xiITypc98Vms++xdl1wlGNl0fj78/w8IS+p3wRC0q4g=;
+	s=arc-20240116; t=1790295256; c=relaxed/simple;
+	bh=jp6nqdE7QvGN4xwgnk39K2MvUBZJYTBZhJs+ybChk6c=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jV3z/VqXf/I53IiLPM0Z0x0bd6lFBGm7CUmf4GuuBLfnogeTPWd6nhxeb5DlobbvdgaQBvoSdZdN057oo90NU0evnd0p6ZsMJ/eR3tmdPPdd+NcsImiXYOqX3yXZtieqyIlxksgpILgwbNkdd+IhP3TupzfPsn7IS6eMgpdTpOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dsD0KwM8; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=morFUjzSee92c7hVYy99R07ODlrA8odbcQjQkrqivOoxPCQYP6lejDnU0/h19FUD+AE4RrKWo6pFHcrzi6pJ1os+4YfUBm52DKesa0Ja1OGkkr4KdIZkZVWmDINjZNZTPXRdFP4t8V4OpSPqATB+fOJEsEzJxu6UJlI1pjTLGXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=MM3tH2eD; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dsD0KwM8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 632DD1F00893;
-	Fri, 25 Sep 2026 00:03:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790294637;
-	bh=IvuCKKesGJGL73AIQe+UGtgPPKsfK1qWpEmaJi2MOd0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=dsD0KwM8YVrziEOOqLDWjFJgwJI8FUvtKfnwmXVqSQTnkWyDDS0bvwk1CPnhOwGuK
-	 4qzJClli4k6JplFx6KBiU1MnCrvqV8an2EWJERI7csS6ETJpeTjFfvIQ8d9vg4jCfp
-	 sPoZX1fdPeYO8VoWWReXBGifan0kkh3nDENdrow4fPm8vEUCviF+ld1D9VjUbpjJ2x
-	 HSQlbIKtrS1vpvNAW4SSwqRwUyxJ+KIvo2Jpbh8wSpCddNuEjg0sx9T9/bYfJkXdq+
-	 UVnSs1oeWISy11eoNrpnW3rb3uTbzzPJPaZqAqY+X0EiYTFNp8pFEq+GsRZinHytOq
-	 qtTbnlALlF+5A==
-Message-ID: <5a6ba6f3-4d8b-4d67-8e5a-ffbe22126464@kernel.org>
-Date: Thu, 24 Sep 2026 19:03:56 -0500
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="MM3tH2eD"
+Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 531DE20B7167;
+	Thu, 24 Sep 2026 17:13:24 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 531DE20B7167
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790295205;
+	bh=/A8ze1IR0XgVzAUkWiSQ9oPFysWsnH8Xbk6S7e2PMHA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=MM3tH2eD9cqWsXiQWSQMFKupIv8icq0PO4O8qrwA38SHn9cvi95PyLmdbG7ZbAkR1
+	 cW3NoaAjA1JgB9GiV2wN+FzqRDvNUiBUIwmCF0ujs7L0qaDvZ8iMlX+n+2T3wImter
+	 pgOPA3YArpKLtJi9WIbLLsRXUvdEm+HjTE1IKWKk=
+Message-ID: <329027b5-3110-8362-ccee-080c14ed9b3e@linux.microsoft.com>
+Date: Thu, 24 Sep 2026 17:14:12 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] iommu/amd: Add PerfOpt IOMMU performance
- optimization support
-To: Jason Gunthorpe <jgg@ziepe.ca>,
- Mario Limonciello <mario.limonciello@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>, Joerg Roedel <joro@8bytes.org>,
- amd-gfx@lists.freedesktop.org,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux.dev>,
- Jatin Kataria <jkataria@netflix.com>, Boqun Feng <boqunf@netflix.com>,
- "Derek J . Clark" <derekjohn.clark@gmail.com>
-References: <20260908041207.38113-1-mario.limonciello@amd.com>
- <20260908041207.38113-2-mario.limonciello@amd.com>
- <20260924225018.GB16465@ziepe.ca>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH V1 3/3] x86/hyperv: Implement root VM IOMMU kernel only
+ driver
 Content-Language: en-US
-From: Mario Limonciello <superm1@kernel.org>
-In-Reply-To: <20260924225018.GB16465@ziepe.ca>
+To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org, jgg@nvidia.com,
+ jacob.pan@linux.microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+ bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ will@kernel.org, robin.murphy@arm.com, arnd@arndb.de
+References: <20260924020221.128762-1-mrathor@linux.microsoft.com>
+ <20260924020221.128762-4-mrathor@linux.microsoft.com>
+ <arUkaFhYGxaYwL0L@8bytes.org>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <arUkaFhYGxaYwL0L@8bytes.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
+On 9/24/26 06:35, J?rg R?del wrote:
+> On Wed, Sep 23, 2026 at 07:02:21PM -0700, Mukesh R wrote:
+>> +static int hv_iommu_map_pages(struct iommu_domain *immdom, ulong iova,
+>> +			      phys_addr_t paddr, size_t pgsize, size_t pgcount,
+>> +			      int prot, gfp_t gfp, size_t *mapped)
+>> +{
+>> +	u32 map_flags;
+>> +	int ret;
+>> +	u64 status = 0;
+>> +	ulong npages, sav_iova = iova, done = 0;
+>> +	struct hv_domain *hvdom = to_hv_domain(immdom);
+>> +	phys_addr_t sav_paddr = paddr;
+>> +	size_t done_size, size = pgsize * pgcount;
+>> +
+>> +	map_flags = HV_MAP_GPA_READABLE;	/* required */
+>> +	map_flags |= prot & IOMMU_WRITE ? HV_MAP_GPA_WRITABLE : 0;
+>> +
+>> +	npages = size >> HV_HYP_PAGE_SHIFT;
+>> +	while (done < npages) {
+>> +		ulong completed, remain = npages - done;
+>> +
+>> +		remain = min(remain, HV_MAP_DEVICE_GPA_BATCH_SIZE);
+>> +
+>> +		status = hv_iommu_map_pgs(hvdom, iova, paddr, remain,
+>> +					  map_flags);
+>> +
+>> +		completed = hv_repcomp(status);
+>> +		done = done + completed;
+>> +		iova = iova + (completed << HV_HYP_PAGE_SHIFT);
+>> +		paddr = paddr + (completed << HV_HYP_PAGE_SHIFT);
+>> +
+>> +		if (hv_result_needs_memory(status)) {
+>> +			ret = hv_call_deposit_pages(NUMA_NO_NODE,
+>> +						    hv_current_partition_id,
+>> +						    256);
+> 
+> hv_call_deposit_pages() can sleep and must not be called when gfp == GFP_ATOMIC.
+
+yes, indeed, i missed it.  will address it...
 
 
-On 9/24/26 5:50 PM, Jason Gunthorpe wrote:
-> On Mon, Sep 07, 2026 at 11:12:06PM -0500, Mario Limonciello wrote:
->> +EXPORT_SYMBOL_GPL(amd_iommu_enable_perfopt);
+>> +			if (ret)
+>> +				break;
+>> +			continue;
+>> +		}
+>> +		if (!hv_result_success(status))
+>> +			break;
+>> +	}
+>> +
+>> +	done_size = done << HV_HYP_PAGE_SHIFT;
+>> +
+>> +	if (mapped)
+>> +		*mapped = done_size;
+>> +
+>> +	if (done_size == 0)
+>> +		return hv_result_to_errno(status);
+>> +
+>> +	ret = hv_iommu_add_tree_mapping(hvdom, sav_iova, sav_paddr, done_size,
+>> +					map_flags);
+>> +	if (ret) {
+>> +		size = hv_iommu_hyp_unmap_pages(immdom, sav_iova, done_size);
+>> +		if (size != done_size)
+>> +			WARN(1, "Failed to unmap exact sizes(%lx/%lx)\n",
+>> +			     done_size, size);
+>> +		if (mapped)
+>> +			*mapped = done_size - size;
+>> +
+>> +		return ret;
+>> +	}
 > 
-> Last time we hardwired the GPU and IOMMU drivers together it was a
-> huge mess to undo.
+> A general question: Why is the tree mapping added after the hypervisor mappings
+> are established. It seems easier and more robust the other way around.  Same on
+> the unmap path which should use strictly the reverse order.
 > 
-> Why does the GPU driver have to request this? Why can't the iommu
-> driver know that this is a special device that can use this magic fast
-> path and then auto set it when identity is asked for?
+> With this order, if adding a tree entry fails and the unmap only partially
+> succeeds, it ends up with a partial mapping which can not be unmapped anymore
+> because there is no tree entry.
 
-The reason was to allow an "opt-out" path on the GPU driver.
+well, it was before in V0, but sashiko/copilot/claude/.. you name it
+all bots jumped on me that it would cause tree to go out of sync if map
+fails to map everything, since removal from tree then will remove the
+entire node in the cleanup path, thus leaving mappings in the hyp that
+are not in the tree. In this case above, we only add to the tree whatever
+succeeded. Problem at high level is, any of the two can fail, and undoing
+could also fail, sorta chicken and egg issue.. We discussed internally
+and thought adding WARN() would allow one to catch and maybe panic in
+those cases. I also noticed that other drivers also have similar issues
+and viommu_map_pages() just ignores if viommu_del_mappings() fails, and
+fails the callback.  We fail the callback here also. My V0 did same as
+viommu_map_pages(), difference being, in our case, a hypercall can
+fail with partially done list.
 
-> 
-> How does the GPU driver even know it is magic special?
+So, I'm at a bit of loss. I could go back to V0 which did what what you
+suggested above, but it can also leave stale mappings when map hypercall
+succeeds partially and we delete the entire tree node in cleanup (but
+we could add to the tree back whatever succeeded, but that could fail
+also, but then we could unmap whatever was mapped, but that could fail
+also.. see :)...).
 
-See patch 2/2.  GPU driver looks if it's an APU and it's in identity 
-mode.  The special mode is only for the GPU in an APU.  It shouldn't be 
-applied to anything else.
-> 
->> +	/*
->> +	 * Restore ATS/PRI/PASID (and thus SVA) by re-homing the device onto its
->> +	 * identity domain with the flag cleared, so a later bind without PerfOpt
->> +	 * sees a normally-capable device. See the locking note in
->> +	 * amd_iommu_enable_perfopt().
->> +	 */
-> 
-> And this is sort of a wrong thing in the driver, it shouldn't have ATS
-> turned on for identitiy mappings, and it certainly shouldn't have PRI
-> turned on until a PRI capable domain is attached.
-> 
-> Jason
-> 
+Open to any other suggestions you might have also.
 
-amd_iommu_disable_perfopt() only re-applies the policy that was 
-previously set before PerfOpt.
 
-If you would like I'll send a follow up patch to clarify this comment.
+>> +static int __init hv_iommu_init(void)
+>> +{
+>> +	int rc;
+>> +	struct iommu_device *iommup = &hv_virt_iommu;
+>> +	struct hv_output_get_iommu_capabilities caps;
+>> +
+>> +	if (!hv_is_hyperv_initialized())
+>> +		return -ENODEV;
+>> +
+>> +	rc = hv_iommu_get_caps(&caps);
+>> +	if (rc)
+>> +		return rc;
+>> +
+> 
+> The capabilities returned need more checking. I think at least it needs a check
+> for HV_IOMMU_CAP_PRESENT and that PAGE_SIZE is set in the pgsize_bitmap.
+
+In general this caps hypercall is not available to root partitions,
+our only agreement is for hyp to provide max_iova_width. But, we check
+HV_DEVICE_DOMAIN_AVAILABLE in hv_iommu_detect() which sorta supersedes
+HV_IOMMU_CAP_PRESENT. As for page size, hyp owns the iommu and can chose
+the page size, meaning it can automatically use larger page size when
+possible. But the hypercall HVCALL_MAP_DEVICE_GPA_PAGES will only take
+4k pfns as input, hence:
+
+#define HV_IOMMU_PGSIZES SZ_4K        /* for now, to be enhanced */
+
+>> +	hv_iommu_max_iova = ((ulong)1 << caps.max_iova_width) - 1; >
+> This is undefined behavior if caps.max_iova_width == 64. Better use
+DMA_BIT_MASK().
+
+Ok, I can change it back to DMA_BIT_MASK. (I removed after comment
+on V0 that this is not dma address).
+
+Thanks a lot for the review.
+
+-Mukesh
+
+
