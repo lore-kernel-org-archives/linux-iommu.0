@@ -1,272 +1,141 @@
-Received: from www537.your-server.de (www537.your-server.de [188.40.3.216])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50AC042122E;
-	Fri, 25 Sep 2026 08:39:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.40.3.216
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059CA4746B7;
+	Fri, 25 Sep 2026 09:06:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790325601; cv=none; b=nxeHgqmzKSf8ucH6Bn4zLZebh1VxTrfZ2gCvB2mHFciM3klQMb6B4s1jSdlB4mUetMo548oIwUFYfbumOX8a6un0N1BvHeSwHr9Xyfqhqvw8RRoiKkl64eNpxUqFoge+b5gU31D3gL2wZCn2pfsTKZ774Yb0cBk9DZg+hCY8KNc=
+	t=1790327183; cv=none; b=j0gbWIF9nxuTCo4gGJF1Pe56fV/qf70dOIT8XrV1wwMG1hZhmsScMFKPQiL7nqd+TB4WnJFpbq1p7wDAaFxmT5vWDZO4NgDFngMK1msCGRKl/QqaB6WZ2ijDXaqIYobsfUei9Me+P7GF3yNxAjARLDZLEjA2d3AgaLk0Fk+C0zA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790325601; c=relaxed/simple;
-	bh=pRxtOPD+wTV723hRSqUjEY+Db9xDhxf+jC0XKAhT/pg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OB9i0lIG0HkYs7N6dtIm/ppdk8F2YW+vM+ZQkolsLcOOl0EgSZMkYr801LORebk07kkacE+ZCc3jdtl1/VUWFXlGt+14CqVI6CQKZz1j4aOWwglfGUTyGeIeE1s7OEEqTSNXl7nHIHyFv08qEw+tecVcAddeo6VfLpP2qCxiIAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ew.tq-group.com; spf=pass smtp.mailfrom=ew.tq-group.com; dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b=jmfWB1hk; arc=none smtp.client-ip=188.40.3.216
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ew.tq-group.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ew.tq-group.com
+	s=arc-20240116; t=1790327183; c=relaxed/simple;
+	bh=SJVcI/EkKT5qN9PuN96627g2c1HT0j46qZH1zpOIzGo=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:In-Reply-To:
+	 Content-Type:References; b=g6aRWkH5+NPTYSou9VVsdpC5I1cXGsi3hwFfHJcPM8mKFoHjjMIGvT73bFF2wa3EPG0OPyJsVnBdWCCa6nuW/xfFe+5fTwv1dLuYTiBfX98+io9DaYwIDOnMRLIp9XxAvZ6yECgbNVl0XOosTo/QzhBznWHLlRpua0SYhKiZcAs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=vanVKrSk; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ew.tq-group.com header.i=@ew.tq-group.com header.b="jmfWB1hk"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=ew.tq-group.com; s=default2602; h=Content-Type:Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=mnnEVurKsE39VK48mQRlSprYtzG3NdBD2JmMXmTnB9A=; b=jmfWB1hkHhyIf1MLqAlKpJjFjG
-	rmnnv+vQotGLnRkpPJh52dMym9rkzC6XYqlHzjlwIRg08yVmmNdLHFMCUxroFesYd8ge4/19dFnuN
-	9HjCYm0JH44xF8zk4699EQvaPbYkEMB+aycSf7u8M/rITLODvn/JYfoWuEeN3L0X0921LhuHSFJ9C
-	/332+AGH7lx+e/XCnGRBXN/eFIQ9IcqrudFH7SB7w6I1VahvisI3oOPp/UWgVecK55RTDee9GTCC8
-	FNigEuRr4aR9hDC6hioDoa60v9rNgzL0cAu8K4NMFWCWOdjGMLtP//A8aEHXCxwubtImSDlueMU7K
-	r82OMMxg==;
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-	by www537.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96.2)
-	(envelope-from <alexander.stein@ew.tq-group.com>)
-	id 1xA1TA-000Ccs-2S;
-	Fri, 25 Sep 2026 10:39:48 +0200
-Received: from localhost ([127.0.0.1])
-	by sslproxy04.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <alexander.stein@ew.tq-group.com>)
-	id 1xA1T9-000Dnx-2R;
-	Fri, 25 Sep 2026 10:39:48 +0200
-From: Alexander Stein <alexander.stein@ew.tq-group.com>
-To: Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>, Kees Cook <kees@kernel.org>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>,
- Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
- linux-arm-kernel@lists.infradead.org
-Cc: linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, virtualization@lists.linux.dev,
- imx@lists.linux.dev, iommu@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, Francesco Valla <francesco@valla.it>,
- Francesco Valla <francesco@valla.it>
-Subject:
- Re: [PATCH RFC 12/12] PoC: arm64: dts: imx93-11x11-frdm: add multiple vdevs
-Date: Fri, 25 Sep 2026 10:39:46 +0200
-Message-ID: <3065678.e9J7NaK4W3@steina-w>
-Organization: TQ-Systems GmbH
-In-Reply-To: <20260916-remoteproc_virtio_map-v1-12-dac8c5eb4aa9@valla.it>
-References:
- <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <20260916-remoteproc_virtio_map-v1-12-dac8c5eb4aa9@valla.it>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="vanVKrSk"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260925085711euoutp023034b78e8628550a3ae5d7840b37570c~YhJYCLvL92670226702euoutp022;
+	Fri, 25 Sep 2026 08:57:11 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260925085711euoutp023034b78e8628550a3ae5d7840b37570c~YhJYCLvL92670226702euoutp022
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1790326631;
+	bh=fRkS/AwRvXfqS9hACKPrCrxlhkEVLAdRbTDbRYWa8VU=;
+	h=Date:From:Subject:To:Cc:In-Reply-To:References:From;
+	b=vanVKrSk5T6FjDTn74/1SUO/LMXVqJxekusjmh+babZgiVJMQp94HjScOSgxnGlOR
+	 5d4koPLRi1e6pSrU0IEHhOTj75hlbtCMapcYoGSA9uiDQv+BCXn4dZic+bQLLvKziH
+	 LU69fdmLb9XCyuTFLtUEuYD6O202XJ3H6/pu8JBg=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20260925085711eucas1p1485ce5a6153e8db654ed3cd6ed2fb70c~YhJX0T9dK1519715197eucas1p1s;
+	Fri, 25 Sep 2026 08:57:11 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20260925085707eusmtip2203bb57f8f737ff31c8cf3ba1f2b8a50~YhJULSaYY1254612546eusmtip2q;
+	Fri, 25 Sep 2026 08:57:07 +0000 (GMT)
+Message-ID: <40d8c179-f240-486d-b446-c76549d72772@samsung.com>
+Date: Fri, 25 Sep 2026 10:57:07 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-Virus-Scanned: Clear (ClamAV 1.4.3/28134/Fri Sep 25 08:25:58 2026)
+User-Agent: Betterbird (Windows)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v6 0/8] dma: swiotlb: Centralize default pool policy and
+ sizing
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Mark
+	Rutland <mark.rutland@arm.com>, Marc Zyngier <maz@kernel.org>, Steven Price
+	<steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>, Catalin
+	Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Jason
+	Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Petr Tesarik
+	<ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>, Dan Williams
+	<dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>, Madhavan
+	Srinivasan <maddy@linux.ibm.com>, WANG Xuerui <kernel@xen0n.name>, Albert Ou
+	<aou@eecs.berkeley.edu>, Andy Lutomirski <luto@kernel.org>, Peter Zijlstra
+	<peterz@infradead.org>, Thomas Gleixner <tglx@kernel.org>, Ingo Molnar
+	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
+	<dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, x86@kernel.org
+Content-Language: en-US
+In-Reply-To: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20260925085711eucas1p1485ce5a6153e8db654ed3cd6ed2fb70c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3
+X-EPHeader: CA
+X-CMS-RootMailID: 20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3
+References: <CGME20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3@eucas1p1.samsung.com>
+	<20260924060756.1325156-1-aneesh.kumar@kernel.org>
 
-Am Mittwoch, 16. September 2026, 23:10:57 CEST schrieb Francesco Valla:
-> Add rings for multiple vdevs, as well as the required virtio nodes for
-> I2C, SPI and GPIO functionalities. On top of that, add example
-> peripherals using all of them.
->=20
-> NOTE: this is a Proof-Of-Concept, not meant to be integrated!
->=20
-> Signed-off-by: Francesco Valla <francesco@valla.it>
+On 24.09.2026 08:07, Aneesh Kumar K.V (Arm) wrote:
+> This series centralizes swiotlb default-pool selection and sizing, and
+> simplifies the initialization flags used to describe pool placement.
+>
+> The first patch replaces the addressing-limit argument with initialization
+> flags and introduces explicit policies for the different reasons a default
+> pool may be needed. Architectures now report DMA addressing constraints with
+> SWIOTLB_INIT_ADDRESSING_LIMIT, while the core selects the corresponding pool
+> policy.
+>
+> The second patch moves the reduced sizing used when the pool is needed only
+> for unaligned kmalloc bouncing from arm64 and RISC-V into the swiotlb core.
+>
+> The third patch centralizes swiotlb sizing for memory-encrypted systems. It
+> moves the existing x86 guest-sizing policy into the core. Host memory
+> encryption retains the normal pool size, and a shared default pool is not
+> selected solely for guest memory encryption when a restricted DMA pool is
+> present.
+>
+> The fourth patch removes SWIOTLB_ANY. Pool placement is derived directly from
+> SWIOTLB_INIT_ADDRESSING_LIMIT: pools required for limited DMA addressing are
+> allocated below the architecture's low address limit, while other pools may
+> be allocated anywhere in directly mapped memory. Xen continues to request a
+> pool explicitly with SWIOTLB_INIT_REMAP without imposing a low-address
+> constraint.
 
-Just a general question, unrelated to virtio, but related to AMP: How do you
-manage the clocks, so that Linux doesn't disable clocks needed by the
-Cortex-M?
+
+I would like to give this patchset some tests in linux-next and merge this to
+v7.4-rc1, as this is important continuation of the code already merged to v7.3.
+
+
+Any chance to get some more acks from arch maintainers (especially x86)?
+Unfortunately I had to reduce the CC list due to my smtp limits...
+
+> ...
+>
+>  Documentation/core-api/swiotlb.rst   |   8 +-
+>  arch/arm/mm/init.c                   |   6 +-
+>  arch/arm/xen/mm.c                    |   2 +-
+>  arch/arm64/mm/init.c                 |  14 +-
+>  arch/loongarch/kernel/setup.c        |   2 +-
+>  arch/mips/cavium-octeon/dma-octeon.c |   2 +-
+>  arch/mips/loongson64/dma.c           |   2 +-
+>  arch/mips/sibyte/common/dma.c        |   2 +-
+>  arch/powerpc/kernel/dma-swiotlb.c    |   4 +-
+>  arch/powerpc/mm/mem.c                |  17 ++-
+>  arch/powerpc/platforms/pseries/svm.c |  10 --
+>  arch/powerpc/sysdev/fsl_pci.c        |   1 +
+>  arch/riscv/mm/init.c                 |  24 +---
+>  arch/s390/mm/init.c                  |   2 +-
+>  arch/x86/include/asm/crash_reserve.h |   4 +-
+>  arch/x86/kernel/pci-dma.c            |  23 +++-
+>  arch/x86/mm/mem_encrypt.c            |  24 ----
+>  include/linux/swiotlb.h              |  17 ++-
+>  kernel/dma/swiotlb.c                 | 193 +++++++++++++++++++--------
+>  19 files changed, 210 insertions(+), 147 deletions(-)
 
 Best regards
-Alexander
 
-> ---
->  arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts | 128 +++++++++++++++=
-++++--
->  1 file changed, 119 insertions(+), 9 deletions(-)
->=20
-> diff --git a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts b/arch/ar=
-m64/boot/dts/freescale/imx93-11x11-frdm.dts
-> index bd14ba28690c..dfa3b122ac5f 100644
-> --- a/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx93-11x11-frdm.dts
-> @@ -53,6 +53,32 @@ button-k3 {
->  		};
->  	};
-> =20
-> +	gpio-keys-virtio {
-> +		compatible =3D "gpio-keys-polled";
-> +		poll-interval =3D <100>;
-> +
-> +		button-v1 {
-> +			label =3D "Button V1";
-> +			linux,code =3D <BTN_3>;
-> +			gpios =3D <&v_gpio 23 GPIO_ACTIVE_LOW>;
-> +		};
-> +
-> +		button-v2 {
-> +			label =3D "Button V2";
-> +			linux,code =3D <BTN_4>;
-> +			gpios =3D <&v_gpio 24 GPIO_ACTIVE_LOW>;
-> +		};
-> +	};
-> +
-> +	leds {
-> +		compatible =3D "gpio-leds";
-> +
-> +		led {
-> +			gpios =3D <&v_gpio 18 GPIO_ACTIVE_HIGH>;
-> +			label =3D "LED V";
-> +		};
-> +	};
-> +
->  	reg_usdhc2_vmmc: regulator-usdhc2 {
->  		compatible =3D "regulator-fixed";
->  		off-on-delay-us =3D <12000>;
-> @@ -89,11 +115,6 @@ linux,cma {
->  			linux,cma-default;
->  		};
-> =20
-> -		rsc_table: rsc-table@2021e000 {
-> -			reg =3D <0 0x2021e000 0 0x1000>;
-> -			no-map;
-> -		};
-> -
->  		vdev0vring0: vdev0vring0@a4000000 {
->  			reg =3D <0 0xa4000000 0 0x8000>;
->  			no-map;
-> @@ -105,12 +126,42 @@ vdev0vring1: vdev0vring1@a4008000 {
->  		};
-> =20
->  		vdev1vring0: vdev1vring0@a4010000 {
-> -			reg =3D <0 0xa4010000 0 0x8000>;
-> +			reg =3D <0 0xa4010000 0 0x1000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev2vring0: vdev2vring0@a4011000 {
-> +			reg =3D <0 0xa4011000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev2vring1: vdev2vring1@a4013000 {
-> +			reg =3D <0 0xa4013000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev3vring0: vdev3vring0@a4015000 {
-> +			reg =3D <0 0xa4015000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev4vring0: vdev4vring0@a4017000 {
-> +			reg =3D <0 0xa4017000 0 0x4000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev5vring0: vdev5vring0@a401B000 {
-> +			reg =3D <0 0xa401B000 0 0x2000>;
-> +			no-map;
-> +		};
-> +
-> +		vdev5vring1: vdev5vring1@a401D000 {
-> +			reg =3D <0 0xa401D000 0 0x2000>;
->  			no-map;
->  		};
-> =20
-> -		vdev1vring1: vdev1vring1@a4018000 {
-> -			reg =3D <0 0xa4018000 0 0x8000>;
-> +		vdev5vring2: vdev5vring2@a401F000 {
-> +			reg =3D <0 0xa401F000 0 0x1000>;
->  			no-map;
->  		};
-> =20
-> @@ -149,8 +200,67 @@ &cm33 {
->  		 <&mu1 3 1>;
->  	mbox-names =3D "tx", "rx", "rxdb";
->  	memory-region =3D <&vdevbuffer>, <&vdev0vring0>, <&vdev0vring1>,
-> -			<&vdev1vring0>, <&vdev1vring1>, <&rsc_table>;
-> +			<&vdev1vring0>, <&vdev2vring0>, <&vdev2vring1>,
-> +			<&vdev3vring0>, <&vdev4vring0>,
-> +			<&vdev5vring0>, <&vdev5vring1>, <&vdev5vring2>;
->  	status =3D "okay";
-> +
-> +	virtio {
-> +		#address-cells =3D <1>;
-> +		#size-cells =3D <0>;
-> +
-> +		vdev@2 {
-> +			reg =3D <2>;
-> +
-> +			v_gpio: gpio {
-> +				compatible =3D "virtio,device29";
-> +				gpio-controller;
-> +				#gpio-cells =3D <2>;
-> +				interrupt-controller;
-> +				#interrupt-cells =3D <2>;
-> +			};
-> +		};
-> +
-> +		vdev@3 {
-> +			reg =3D <3>;
-> +
-> +			i2c {
-> +				compatible =3D "virtio,device22";
-> +				#address-cells =3D <1>;
-> +				#size-cells =3D <0>;
-> +
-> +				eeprom@50 {
-> +					compatible =3D "atmel,24c1025";
-> +					reg =3D <0x50>;
-> +				};
-> +			};
-> +		};
-> +
-> +		vdev@4 {
-> +			reg =3D <4>;
-> +
-> +			spi {
-> +				compatible =3D "virtio,device2d";
-> +				#address-cells =3D <1>;
-> +				#size-cells =3D <0>;
-> +
-> +				sram@0 {
-> +					compatible =3D "microchip,mchp23k256";
-> +					reg =3D <0>;
-> +					spi-max-frequency =3D <20000000>;
-> +				};
-> +
-> +				lcd@1 {
-> +					compatible =3D "adafruit,yx240qv29", "ilitek,ili9341";
-> +					reg =3D <1>;
-> +					spi-max-frequency =3D <10000000>;
-> +					dc-gpios =3D <&v_gpio 21 GPIO_ACTIVE_HIGH>;
-> +					reset-gpios =3D <&v_gpio 20 GPIO_ACTIVE_HIGH>;
-> +					rotation =3D <90>;
-> +				};
-> +			};
-> +		};
-> +	};
->  };
-> =20
->  &eqos {
->=20
->=20
-
-
-=2D-=20
-TQ-Systems GmbH | M=FChlstra=DFe 2, Gut Delling | 82229 Seefeld, Germany
-Amtsgericht M=FCnchen, HRB 105018
-Gesch=E4ftsf=FChrer: Detlef Schneider, R=FCdiger Stahl, Stefan Schneider
-http://www.tq-group.com/
-
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
