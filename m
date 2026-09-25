@@ -1,42 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 992AE22FDE6;
-	Fri, 25 Sep 2026 05:48:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E34B43B6C1;
+	Fri, 25 Sep 2026 05:50:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790315335; cv=none; b=nQSC0RP0zluEMAn0U9YdTYWZnd9Gp+9e79IWBEEuaycuB72M+XnfSi6BtGEKqs3ZizPvYUGkyQmxyVl2IOppAc6CkXEj7r/55Ka/zVnLxCdKzG7OJRZUMsyR9N+B9xIajvS9S3b8SaTIJfJ/hWwGSjgmw4EiGOtMlJhw2Isdy70=
+	t=1790315404; cv=none; b=RhT5r2NWWZnHLgeFmAy6tTrQ8OdlDfk62VAf22HUbagU77rXuz5Z1cO5yPgJL4SE+9ywKy0hD5p6bmhenLi5u12CYvIpMSP9wa3XNJ3YL6bdttMbK+7BMrEXwYtzPzM6VxEymkjnMUcwei7KgulEhFXCUncpSzuVdezBkBmIO8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790315335; c=relaxed/simple;
-	bh=CmJ1TohviW1jEy0lu47MxjXwldaBElKqbIb5EO+cb28=;
+	s=arc-20240116; t=1790315404; c=relaxed/simple;
+	bh=KyxvyflDAvHFnwAmHvQz8sED4l9OKQADvuTa5jIm/hY=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=fcvqUcV5w3fAXfrXWHjxselWVjSGsYWdz/48mH+YzAlgFkn0oaa1EGanqwuqMiQOmg3MJkDaB+Ex7Ngk+/WBq50/1MZVAaaD6buo893plqie6YUEyII9NW3hZgQd3ERLkAE5AhfbGp2a7B0UI0JwjhpL5nhKZEsJ1SpZu6WMr5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U/gC5glR; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=U0c7leiCtLCcBDdygufJwwWaasXQ1Gy+Sq5KB8qQhTqM0/Hndc4i4cTJDFqnhbongN5wwyJqP4zf+xZoVQn7dpwwL70SH9Onxc6FG3ya7lIZFxEEee/KxotyLAs5HC9ZnGlF7/Xisg34BFd/W9Gs+EJeJsHJHbsQSDXhcPEDWmQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q6wYyQv3; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U/gC5glR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D851F000FF;
-	Fri, 25 Sep 2026 05:48:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q6wYyQv3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B2AC1F000FF;
+	Fri, 25 Sep 2026 05:49:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790315334;
-	bh=fVBHd/NRy8//2F5Jqnh6S0GIR69NIbQ6J/0is6XkeNM=;
+	s=k20260515; t=1790315403;
+	bh=0VGNRtAzo+DnQT+W8D5ggxSnqtP33s8TLxLi6quFHLo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=U/gC5glR6mBemulyA6RwK8KnSXkXL/sW+AIu8vAtCEv9laYgCxOdUj2Mv0RdMX3Dj
-	 i+Jv/4Bu4ChQUEXllT5T4DG2NhJhH4VxyDgtxpCPJttR7uDRI1gwLJjnTy9y2LS+qp
-	 pBPdKKNFTjp7L6CNd6tT+DP218X6dmCAulMjp2gc5LggNKjM5+r4HaiTeJSfqbW6CU
-	 gYcqBbkS7QtG3FTGegJRFTSkBHUDrt+i4KoqoGKDZLR5SqeNCSDOEMhXsgBvGtl6h6
-	 9L8km8nqeA+OUKfxI+HVtWO1+ZRaT4sEpt8R330nxQF0NNO6BtsNem8yp6iVRdrlbP
-	 +ALkO02nOGXkw==
+	b=Q6wYyQv3lDAKok3ZxNqfOo+ep3YGVqCwZXv6On0tpax8ax8tQVv0DutXxACRjfbF0
+	 Yq6pp3YhmdMapesa65ErD2O9gbpLc9rQ+wwVhV0XZdEUhlrMvgodvj2LfobsxWHua6
+	 NHh1yHkGjFaOgtnD5O4rJQPoealu2/SZ6HNIh1/rONsM0P6LdIiU13dXJiCC4wONpA
+	 pIm8E8qcHz0X7HbJa0AIX0xGcL6dZ/wO22gvU02/L5nVkxpwf4gyVglsB+HdL7YCGc
+	 /PfHhexbRDQKchru3mcqbqdsrn/VJLUhHQOSKFON4lRtZ54WzduXZ9UNsrEefvwSwu
+	 4Y/VHJcC062rg==
 X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
 From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-coco@lists.linux.dev, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>,
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	Alexey Kardashevskiy <aik@amd.com>,
 	Bjorn Helgaas <helgaas@kernel.org>,
 	Joerg Roedel <joro@8bytes.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Samuel Ortiz <sameo@rivosinc.com>,
 	Steven Price <steven.price@arm.com>,
@@ -45,14 +46,14 @@ Cc: linux-coco@lists.linux.dev, iommu@lists.linux.dev,
 	Xu Yilun <yilun.xu@linux.intel.com>,
 	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
 	Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [RFC PATCH v6 05/11] iommu: Add a helper to validate a vIOMMU
- parent
-In-Reply-To: <179027891416.104879.10365675178574704349.b4-review@b4>
+Subject: RE: [RFC PATCH v6 02/11] vfio: cdev: Reject duplicate bind before
+ updating KVM file
+In-Reply-To: <CO1PR11MB483540981ADED57ABF6EB4878C812@CO1PR11MB4835.namprd11.prod.outlook.com>
 References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
- <20260917140159.1163281-6-aneesh.kumar@kernel.org>
- <179027891416.104879.10365675178574704349.b4-review@b4>
-Date: Fri, 25 Sep 2026 11:18:44 +0530
-Message-ID: <yq5ald8pkhj7.fsf@kernel.org>
+ <20260917140159.1163281-3-aneesh.kumar@kernel.org>
+ <CO1PR11MB483540981ADED57ABF6EB4878C812@CO1PR11MB4835.namprd11.prod.outlook.com>
+Date: Fri, 25 Sep 2026 11:19:54 +0530
+Message-ID: <yq5aik3tkhh9.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,75 +62,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
+"Tian, Kevin" <kevin.tian@intel.com> writes:
 
->> [ ... 18 lines skipped ... ]
->> +int iommu_viommu_validate_parent(struct device *dev,
->> +		enum iommu_viommu_type type, struct iommu_domain *parent_domain)
->> +{
+>> From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> Sent: Thursday, September 17, 2026 10:02 PM
+>> 
+>> The cdev path only supports one bound/open device fd, but
+>> VFIO_DEVICE_BIND_IOMMUFD only checked the per-file access_granted flag
+>> before capturing the KVM file reference. A second fd for the same device
+>> could therefore replace device->kvm_file, fail later in vfio_df_open()
+>> because open_count is already nonzero, and then clear the active KVM
+>> association during error cleanup.
+>> 
+>> Reject the bind while holding dev_set->lock if the device is already
+>> open, matching the existing cdev single-open rule before touching the
+>> device-wide KVM state.
+>> 
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 >
-> I didn't see anything that calls this? I can't imagine what it would
-> be needed for?
->
-
-
-That call is part of the TSM backend driver. The full backend driver is available here:
-
-https://git.gitlab.arm.com/linux-arm/linux-cca/-/commits/cca/scratch/vdevice-tdi?ref_type=heads
-
-int cca_viommu_init(struct iommufd_viommu *viommu, struct device *dev,
-		    struct iommu_domain *parent,
-		    const struct iommu_user_data *user_data)
-{
-	struct arm_smmu_realm_params params;
-	struct cca_viommu *cca = to_cca_viommu(viommu);
-	struct cca_psmmu *psmmu;
-	struct kvm *kvm;
-	int ret;
-
-	(void)user_data;
-
-	if (viommu->type != IOMMU_VIOMMU_TYPE_ARM_REALM_SMMUV3)
-		return -EOPNOTSUPP;
-	if (!viommu->kvm_file)
-		return -EINVAL;
-	kvm = viommu->kvm_file->private_data;
-	ret = kvm_realm_ensure_created(kvm);
-	if (ret)
-		return ret;
-
-	ret = iommu_viommu_validate_parent(dev, viommu->type, parent);
-	if (ret)
-		return ret;
-	ret = iommu_viommu_get_params(dev, viommu->type, &params,
-				      sizeof(params));
-	if (ret)
-		return ret;
-
-	psmmu = cca_psmmu_get(&params);
-	if (IS_ERR(psmmu))
-		return PTR_ERR(psmmu);
-	cca->psmmu = psmmu;
-	viommu->ops = &cca_viommu_ops;
-	return 0;
-}
-
-
->
-> The TSM viommu should use a NULL parent domain, it doesn't have an
-> iommufd managed S2.
+> could you send it out as a separate fix?
 >
 
-How would we assign an untrusted device? I currently follow these steps:
-
-1. Create an HWPT with IOMMU_HWPT_ALLOC_NEST_PARENT.
-2. Allocate a vIOMMU with viommu.hwpt_id set to that hwpt_id.
-3. Allocate a vdevice with alloc_vdev.viommu_id set to that viommu_id.
-4. Use VFIO_DEVICE_ATTACH_IOMMUFD_PT with the hwpt_id.
-
-I use the same iommufd for both trusted and untrusted devices because
-the guest controls that transition. While operating in untrusted mode, I
-use the iommufd to insert DMA mappings via IOMMU_IOAS_MAP.
-
+Sure, I'll send it as a separate fix.
 
 -aneesh
