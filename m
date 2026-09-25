@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A31BD3B19AF
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0564C4CC29A
 	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 19:08:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790363288; cv=none; b=rXuaR16e3yyZJ19IKpWsRXwx5kk49UhwvQJswom18oL5Wv5QyDIMtKBuZE3GGBj7OzutF0KL2VbREPwapsVhiM0miRiIE6xI8e73OQVfeIo5h8TPJJXQvLtnaE16T28aHNWh+7L2Bk8X16hvlyGLbhaAa6sCcKoKW0to4+ib5RA=
+	t=1790363290; cv=none; b=Jq4rFXqC0RB2IlWtA+eF6JrDWC4mt9psXGLaCDxXndl8WdhvK7UGx7L1KtkIvA9j1Gj28YVk65/DAXNrQK6kZg9RBvMtB90fY5ctZ20RwZYgfSxJl6U5OHDJVPiEYmZjEGmUcv64IIZbiHXUHsnMUq3DT4+GQD/JibVl71SNezc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790363288; c=relaxed/simple;
-	bh=bYRHyoNZS5V0rKxLP8o3T7TsUkjuDA5Z/rh07b2zojc=;
+	s=arc-20240116; t=1790363290; c=relaxed/simple;
+	bh=FaeFvHouw/vWqgOvAFlzQ/Ngc9gV3TMI9KJb8lwxGkY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EgT67vLYjxPAkdsoeoSekZF3hR/aEYA5qjxv18W0Hm3pnQ8sV8YoUppj5RTARi8PVZLYOGhBPqGJbhaZVUpkocclElPoUDEj7vwDBwe59EX2kaCkAjn5jP4hOxp692XCmq13wYKj/GGrfyOzqvBX2tGWC05ZnVY2wBM3m8foO84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=bY2ERHF/; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=qRJFiMG+IdVB4fSBUfrKzU+0Qhreos2n2qWlG4tHZV8STpO+89LNzS6ndSqGpAUd1WDBj5Yy2XqWx8+PDZ5u0x08g4rQq0ZIWQ+d6gOQ7YvDYk4NJWSv4ji0Gfj3cqoaUcKQDXVm5gVQi2Q73oVj8DzeEqnnBcMHJ7y11kPJ/5g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=dmzDOXDz; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="bY2ERHF/"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="dmzDOXDz"
 Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.1.135])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0BD4620B716E;
+	by linux.microsoft.com (Postfix) with ESMTPSA id AAF8720B716F;
 	Fri, 25 Sep 2026 12:06:59 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0BD4620B716E
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AAF8720B716F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
 	s=default; t=1790363219;
-	bh=L1s97NRSfTsYmPGyRHyQ3MxhO0Su/Io/Yxtd1xKiBC8=;
+	bh=LGDInKLiB7KgFuVCYzgC2MOL5mF6WQcw35pPlJm8T4g=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=bY2ERHF/hHk/QDQOf7kQommbAS0CQLVMYjdxRMou0RCNlf560ubA16tlNwFrPH2c0
-	 svUbDLZ21NgvC7JvWSHy2HgPptiE0KZQQr/Cye3xo34cjCW8i7JVKEeXxfbzvXKPyV
-	 Du8VUEdS0XwCoCWvp2Kql2+xY7EQcz2X7QB6c/CY=
+	b=dmzDOXDzWCM8jzPhYz/j6n1UYET4DIXH5vxfIUIqJaPgvK6m5HLRm2u4wfeNBJtsO
+	 oDlVJI3Sglbrt5EuanwskGyIzpOpi68Lw+0x2+vP+Gi9i/n1NGSGAPOKI3ReQoHl6J
+	 K4CKfSWCfU/YK0jwvTa0DZpT3k2TwkfSuZfpwD58=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@ziepe.ca>,
@@ -51,9 +51,9 @@ Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	Yu Zhang <zhangyu1@linux.microsoft.com>,
 	Easwar Hariharan <eahariha@linux.microsoft.com>,
 	Alex Williamson <alex@shazbot.org>
-Subject: [PATCH RFC 6/9] mshv: Add prepare callback for external device attach
-Date: Fri, 25 Sep 2026 12:07:39 -0700
-Message-ID: <20260925190742.1575380-7-jacob.pan@linux.microsoft.com>
+Subject: [PATCH RFC 7/9] iommu/hyperv: Split root IOMMU declarations
+Date: Fri, 25 Sep 2026 12:07:40 -0700
+Message-ID: <20260925190742.1575380-8-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
 References: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
@@ -65,185 +65,86 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Unlike VFIO/IOMMUFD paging domains, external attach bypasses the DMA
-map flow that pins mapped memory. The ownership model is also different
-for MSHV external attach: MSHV, as the L0 hypervisor, owns address
-translation and DMA fault handling.
-
-Guest memory must therefore be pinned through the MSHV/userspace VMM
-contract before it is mapped for DMA, rather than by the VFIO/IOMMUFD
-pin-and-map flow.
-
-Add a partition-file prepare_attach callback that lets MSHV apply its
-guest-memory pinning policy and perform any other preparation required
-before an external device is attached. A later external-domain patch
-invokes the callback through the vIOMMU-held VM file.
-
-The per-region conversion helper is intentionally left as a stub for
-this RFC to show where MSHV will pin guest memory.
+Move the root IOMMU shared domain type, page-size mask, and
+geometry into a private Hyper-V IOMMU header so IOMMUFD support
+can live outside the main root driver file.
 
 Assisted-by: GPT-5.6 Sol
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
- drivers/hv/hv_common.c         | 24 ++++++++++++++++++++++-
- drivers/hv/mshv_regions.c      |  6 ++++++
- drivers/hv/mshv_root.h         |  1 +
- drivers/hv/mshv_root_main.c    | 35 ++++++++++++++++++++++++++++++++++
- include/asm-generic/mshyperv.h |  7 +++++++
- 5 files changed, 72 insertions(+), 1 deletion(-)
+ drivers/iommu/hyperv/hv-iommu-root.c | 11 +----------
+ drivers/iommu/hyperv/hv-iommu.h      | 26 ++++++++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 10 deletions(-)
+ create mode 100644 drivers/iommu/hyperv/hv-iommu.h
 
-diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-index d259cb833376..7acea1bceae1 100644
---- a/drivers/hv/hv_common.c
-+++ b/drivers/hv/hv_common.c
-@@ -46,7 +46,8 @@ int mshv_partition_file_ops_register(const struct mshv_partition_file_ops *ops)
- {
- 	int ret = 0;
+diff --git a/drivers/iommu/hyperv/hv-iommu-root.c b/drivers/iommu/hyperv/hv-iommu-root.c
+index a5268e0e52cc..3b82891c9cab 100644
+--- a/drivers/iommu/hyperv/hv-iommu-root.c
++++ b/drivers/iommu/hyperv/hv-iommu-root.c
+@@ -7,6 +7,7 @@
+ #include <linux/dma-map-ops.h>
+ #include <linux/interval_tree.h>
+ #include <linux/hyperv.h>
++#include "hv-iommu.h"
+ #include <asm/iommu.h>
+ #include <asm/mshyperv.h>
+ #include "../dma-iommu.h"
+@@ -31,15 +32,6 @@ static struct iommu_domain_ops hv_paging_domain_ops;
+ /* IOMMU device that we export to the world. HyperV supports max of one */
+ static struct iommu_device hv_virt_iommu;
  
--	if (!ops || !ops->file_is_partition || !ops->get_partid)
-+	if (!ops || !ops->file_is_partition || !ops->get_partid ||
-+	    !ops->prepare_attach)
- 		return -EINVAL;
- 
- 	mutex_lock(&mshv_partition_file_ops_lock);
-@@ -106,6 +107,27 @@ u64 mshv_partition_file_get_partid(struct file *file)
- }
- EXPORT_SYMBOL_GPL(mshv_partition_file_get_partid);
- 
-+int mshv_partition_file_prepare_attach(struct file *file)
-+{
-+	const struct mshv_partition_file_ops *ops;
-+	int ret = -EOPNOTSUPP;
-+
-+	if (!file)
-+		return -EINVAL;
-+
-+	mutex_lock(&mshv_partition_file_ops_lock);
-+	ops = mshv_partition_file_ops;
-+	if (ops && ops->file_is_partition(file))
-+		ret = 0;
-+	mutex_unlock(&mshv_partition_file_ops_lock);
-+
-+	if (!ret)
-+		ret = ops->prepare_attach(file);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(mshv_partition_file_prepare_attach);
-+
- /*
-  * ms_hyperv and hv_nested are defined here with other
-  * Hyper-V specific globals so they are shared across all architectures and are
-diff --git a/drivers/hv/mshv_regions.c b/drivers/hv/mshv_regions.c
-index dddaade31b5d..b98e5c3e7819 100644
---- a/drivers/hv/mshv_regions.c
-+++ b/drivers/hv/mshv_regions.c
-@@ -324,6 +324,12 @@ int mshv_region_pin(struct mshv_mem_region *region)
- 	return ret < 0 ? ret : -ENOMEM;
+-struct hv_domain {
+-	struct iommu_domain iommu_dom;
+-	u32 domid_num;			      /* as opposed to domain_id.type */
+-	spinlock_t mappings_lock;	      /* protects mappings_tree */
+-	struct rb_root_cached mappings_tree;  /* iova to pa lookup tree */
+-};
+-
+-#define to_hv_domain(d) container_of(d, struct hv_domain, iommu_dom)
+-
+ struct hv_iommu_mapping {
+ 	phys_addr_t paddr;
+ 	struct interval_tree_node iova;
+@@ -67,7 +59,6 @@ static bool hv_special_domain(struct hv_domain *hvdom)
+ 	return hvdom == &hv_def_identity_dom || hvdom == &hv_def_blocked_dom;
  }
  
-+int mshv_region_make_pinned(struct mshv_mem_region *region)
-+{
-+	/* Guest-memory pin conversion is not implemented in this RFC. */
-+	return 0;
-+}
-+
- static int mshv_region_chunk_unmap(struct mshv_mem_region *region,
- 				   u32 flags,
- 				   u64 page_offset, u64 page_count,
-diff --git a/drivers/hv/mshv_root.h b/drivers/hv/mshv_root.h
-index d57c26950203..d0f3a28abb3b 100644
---- a/drivers/hv/mshv_root.h
-+++ b/drivers/hv/mshv_root.h
-@@ -393,6 +393,7 @@ int mshv_region_unshare(struct mshv_mem_region *region);
- int mshv_region_map(struct mshv_mem_region *region);
- void mshv_region_invalidate(struct mshv_mem_region *region);
- int mshv_region_pin(struct mshv_mem_region *region);
-+int mshv_region_make_pinned(struct mshv_mem_region *region);
- void mshv_region_put(struct mshv_mem_region *region);
- int mshv_region_get(struct mshv_mem_region *region);
- bool mshv_region_handle_gfn_fault(struct mshv_mem_region *region, u64 gfn);
-diff --git a/drivers/hv/mshv_root_main.c b/drivers/hv/mshv_root_main.c
-index 838ea6397c9f..fb422ed23662 100644
---- a/drivers/hv/mshv_root_main.c
-+++ b/drivers/hv/mshv_root_main.c
-@@ -2182,9 +2182,44 @@ static u64 mshv_partition_file_get_partid_impl(struct file *file)
- 	return HV_PARTITION_ID_INVALID;
- }
+-#define HV_IOMMU_PGSIZES SZ_4K		/* for now, to be enhanced */
+ static atomic_t hv_unique_id;		/* unique numeric id for a new domain */
  
-+static int mshv_partition_file_prepare_attach_impl(struct file *file)
-+{
-+	struct mshv_mem_region *region;
-+	struct mshv_partition *partition;
-+	int ret = 0;
+ static bool hv_iommu_capable(struct device *dev, enum iommu_cap cap)
+diff --git a/drivers/iommu/hyperv/hv-iommu.h b/drivers/iommu/hyperv/hv-iommu.h
+new file mode 100644
+index 000000000000..6895b4e7eb6d
+--- /dev/null
++++ b/drivers/iommu/hyperv/hv-iommu.h
+@@ -0,0 +1,26 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Hyper-V root vIOMMU driver.
++ * Copyright (C) 2026, Microsoft, Inc.
++ */
 +
-+#if IS_ENABLED(CONFIG_IOMMUFD_TEST)
-+	if (file->f_op == &mshv_fake_partition_fops)
-+		return 0;
-+#endif
-+	if (file->f_op != &mshv_partition_fops)
-+		return -EINVAL;
++#ifndef __HYPERV_IOMMU_H
++#define __HYPERV_IOMMU_H
 +
-+	partition = file->private_data;
-+	if (!partition)
-+		return -EINVAL;
++#include <linux/interval_tree.h>
++#include <linux/iommu.h>
++#include <linux/sizes.h>
++#include <linux/spinlock.h>
 +
-+	mutex_lock(&partition->pt_mutex);
-+	if (partition->pt_regions_pinned)
-+		goto out_unlock;
++#define HV_IOMMU_PGSIZES SZ_4K  /* for now, to be enhanced */
 +
-+	hlist_for_each_entry(region, &partition->pt_mem_regions, hnode) {
-+		ret = mshv_region_make_pinned(region);
-+		if (ret)
-+			goto out_unlock;
-+	}
++struct hv_domain {
++	struct iommu_domain iommu_dom;
++	u32 domid_num;			      /* as opposed to domain_id.type */
++	spinlock_t mappings_lock;	      /* protects mappings_tree */
++	struct rb_root_cached mappings_tree;  /* iova to pa lookup tree */
++};
 +
-+	partition->pt_regions_pinned = true;
++#define to_hv_domain(d) container_of(d, struct hv_domain, iommu_dom)
 +
-+out_unlock:
-+	mutex_unlock(&partition->pt_mutex);
-+	return ret;
-+}
-+
- static const struct mshv_partition_file_ops mshv_partition_file_ops = {
- 	.file_is_partition = mshv_partition_file_is_valid,
- 	.get_partid = mshv_partition_file_get_partid_impl,
-+	.prepare_attach = mshv_partition_file_prepare_attach_impl,
- };
- 
- static int
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index ed7ab21d68a2..6af793444a4b 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -405,6 +405,7 @@ struct file;
- struct mshv_partition_file_ops {
- 	bool (*file_is_partition)(struct file *file);
- 	u64 (*get_partid)(struct file *file);
-+	int (*prepare_attach)(struct file *file);
- };
- 
- #if IS_ENABLED(CONFIG_HYPERV)
-@@ -413,6 +414,7 @@ void
- mshv_partition_file_ops_unregister(const struct mshv_partition_file_ops *ops);
- bool file_is_mshv_partition(struct file *file);
- u64 mshv_partition_file_get_partid(struct file *file);
-+int mshv_partition_file_prepare_attach(struct file *file);
- #else
- static inline int
- mshv_partition_file_ops_register(const struct mshv_partition_file_ops *ops)
-@@ -434,6 +436,11 @@ static inline u64 mshv_partition_file_get_partid(struct file *file)
- {
- 	return HV_PARTITION_ID_INVALID;
- }
-+
-+static inline int mshv_partition_file_prepare_attach(struct file *file)
-+{
-+	return -EOPNOTSUPP;
-+}
- #endif
- 
- static inline int hv_deposit_memory(u64 partition_id, u64 status)
++#endif /* __HYPERV_IOMMU_H */
 -- 
 2.43.0
 
