@@ -1,141 +1,109 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059CA4746B7;
-	Fri, 25 Sep 2026 09:06:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6454C477E53
+	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 09:13:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790327183; cv=none; b=j0gbWIF9nxuTCo4gGJF1Pe56fV/qf70dOIT8XrV1wwMG1hZhmsScMFKPQiL7nqd+TB4WnJFpbq1p7wDAaFxmT5vWDZO4NgDFngMK1msCGRKl/QqaB6WZ2ijDXaqIYobsfUei9Me+P7GF3yNxAjARLDZLEjA2d3AgaLk0Fk+C0zA=
+	t=1790327585; cv=none; b=T2YoZMdq91r6ja72p48teYFSMoRIwtMdZZ6PhFjAKv6SE7ZkW9XUpXYcAbak/OH8RMCqds08lrFfGb/eXNGo1PJJYpuSI59mug5V1YGVDvLnWnVs6OtVnFzM35i7Awwyh1mdbxWPkKl27vHiAalMc+h1QLr39W+Wj2vEaLpqFDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790327183; c=relaxed/simple;
-	bh=SJVcI/EkKT5qN9PuN96627g2c1HT0j46qZH1zpOIzGo=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:In-Reply-To:
-	 Content-Type:References; b=g6aRWkH5+NPTYSou9VVsdpC5I1cXGsi3hwFfHJcPM8mKFoHjjMIGvT73bFF2wa3EPG0OPyJsVnBdWCCa6nuW/xfFe+5fTwv1dLuYTiBfX98+io9DaYwIDOnMRLIp9XxAvZ6yECgbNVl0XOosTo/QzhBznWHLlRpua0SYhKiZcAs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=vanVKrSk; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1790327585; c=relaxed/simple;
+	bh=1Z3pKVsAB7cGlrs84ql54irrn4EOTKXXllBebSmuuGs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MuuNJuSTYMaA8HDi0UEYyP9JfiDXoq5LgRYtWGUOtlVhjQXBsYXtJZs2bIoSZLVyDxRI2xh+fQZwRFn1bFbaon8pDdmd+c7JHolWvlK4eVBiYa6610IeUSQinQEctB0jN+54r+Eq3xSjCckJ0cyDfp+m3ywWPwh6072wILqafow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PaX8jgz9; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="vanVKrSk"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20260925085711euoutp023034b78e8628550a3ae5d7840b37570c~YhJYCLvL92670226702euoutp022;
-	Fri, 25 Sep 2026 08:57:11 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20260925085711euoutp023034b78e8628550a3ae5d7840b37570c~YhJYCLvL92670226702euoutp022
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1790326631;
-	bh=fRkS/AwRvXfqS9hACKPrCrxlhkEVLAdRbTDbRYWa8VU=;
-	h=Date:From:Subject:To:Cc:In-Reply-To:References:From;
-	b=vanVKrSk5T6FjDTn74/1SUO/LMXVqJxekusjmh+babZgiVJMQp94HjScOSgxnGlOR
-	 5d4koPLRi1e6pSrU0IEHhOTj75hlbtCMapcYoGSA9uiDQv+BCXn4dZic+bQLLvKziH
-	 LU69fdmLb9XCyuTFLtUEuYD6O202XJ3H6/pu8JBg=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20260925085711eucas1p1485ce5a6153e8db654ed3cd6ed2fb70c~YhJX0T9dK1519715197eucas1p1s;
-	Fri, 25 Sep 2026 08:57:11 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20260925085707eusmtip2203bb57f8f737ff31c8cf3ba1f2b8a50~YhJULSaYY1254612546eusmtip2q;
-	Fri, 25 Sep 2026 08:57:07 +0000 (GMT)
-Message-ID: <40d8c179-f240-486d-b446-c76549d72772@samsung.com>
-Date: Fri, 25 Sep 2026 10:57:07 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PaX8jgz9"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2d3b445a84fso32765ad.1
+        for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 02:13:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1790327583; x=1790932383; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=CTMJNzZxuTPM6C0AemlJt6uT6H/3eGpfCZ5SiFyGRfQ=;
+        b=PaX8jgz9KW9YePUBcx1suT91l/J+eA/O/IXLQV18SthdwFBlQXBO7hXcr0zZpiHz/c
+         USxb8pzyXyRiUTaiMi+xDhV5TXkPQd95pOR/BLYqF+q+N4vzolnBTvJkhcMu+ETOn7sz
+         WZGvjyBlYFu5lHjSONDvVa4KjbVSCIcBcGqnMhdJIQHXssiwoC1iKWr/fdnnJfVxYi9s
+         A7U58As1EXZUrRLqY168yEGZNXQqFi6mLQjQ7cafdywg4i0T1r0luKE4f3gpXGU7tQg+
+         Y7w4VgNf425Hb1wrtzZOddVyM4LTCvyOnBdRZ89yR+NCajtFtlVs4vAcwxOvGcCnXGEe
+         2LNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790327583; x=1790932383;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=CTMJNzZxuTPM6C0AemlJt6uT6H/3eGpfCZ5SiFyGRfQ=;
+        b=kxmqf7C/7YHl8LVF1LLyfQlkZuef/sbA0VGdPDSKvrfhWVCDeG7mgPJP5NXzAsd8Hf
+         TWCMaK5ClsbXUy9dvBbxkvuZ0ZMRLxMVyLC8V8oZcgXuI3RsHXfH/uaCaaw9/Mh/X8pX
+         3f8ni4IqODPYbVzV6Bh/OMPLf0KS5vQs7Txu2HggFxAcG+6lp9fgMnCQgmkW+NGXUce3
+         GvNRRk9+2JiPdKTm0S3eJ9aibHUfOu4VbJ+LbxWJkol86BHFkxrWCnCwEl11cfmgCBOL
+         9cEG0K9y5Vw/4yJFXOTgGZj4jipu0ZcJeCxW9cDgfks1DexGcLB5DotjwZIHT4k8czef
+         U98w==
+X-Gm-Message-State: AFuF++mQaXskEgbAZ9nG+fqoTMh0Y0ZdBBW22KT/4fCEQmnm1KrNo1R7
+	hyp50STwgRbJKvCzV5Qx8exvqNSObVZ5AfLWxqyTImPSkgxpxcJAJMhVYkSt4dSjng==
+X-Gm-Gg: AYBFou2VKv4J52pzt7f8ND4GYQgBxk/aNCBapYivuQjfU41S8BvkOeYekma/6tXJwDP
+	PnK/JrKg4lCIZVTr194k58nT5IulY1HSs6cfeSeLyK9rkd3+H1Nw0j/d2FEaOHO3gi0vvu3P1ra
+	jKE8jz5AhW2h+nm41y+q2A61ZjMWorS9ggI0mNMsO0IVF7qlEAktImLTylfsgXZzKWrUg2NGeR+
+	DIg4JmBIr7umKABLDICY6JdzBNlcWuh89qV9TZyUWnRA9t58oIRTgaeFAe27dospJ5xZik64fq7
+	mQsuj5vtwe5qo9JPqd0rui8OAEohOLseYEaGQYdvC/gXdGtBG3XRRuU8tGaK2wZcWrAphCYmeCM
+	0TgDRl8QhfEGUFQNbDAN52kgI/7T6fSTsn2yLopxzc6nUCRW1omI22+IZogZqZnF0+3ag1aZW06
+	lq4K9CFYihdSfEElt0VECI3bSB7SehbGhraGCV47i8839ofzhk5Vu9nZopFkaRC/8KbdGL3f7M5
+	QgEZfwpA9pgAKco//zMwpY/ydRqdzkXJcgQ
+X-Received: by 2002:a17:902:cf03:b0:2d5:db3d:1a42 with SMTP id d9443c01a7336-2df94314b89mr3126305ad.15.1790327582104;
+        Fri, 25 Sep 2026 02:13:02 -0700 (PDT)
+Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a0b9356f48sm3426477a91.6.2026.09.25.02.12.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 25 Sep 2026 02:13:00 -0700 (PDT)
+Date: Fri, 25 Sep 2026 09:12:53 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Ankit Soni <ankit.soni@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>
+Subject: Re: [PATCH v4 0/4] iommu/amd: Refactors for ATS robustness
+Message-ID: <arY7FeYaOG9oglgI@google.com>
+References: <20260910142655.3281464-1-praan@google.com>
+ <arUOoLwpfNlIvIXy@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v6 0/8] dma: swiotlb: Centralize default pool policy and
- sizing
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Mark
-	Rutland <mark.rutland@arm.com>, Marc Zyngier <maz@kernel.org>, Steven Price
-	<steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>, Catalin
-	Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Jason
-	Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Petr Tesarik
-	<ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>, Dan Williams
-	<dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>, Madhavan
-	Srinivasan <maddy@linux.ibm.com>, WANG Xuerui <kernel@xen0n.name>, Albert Ou
-	<aou@eecs.berkeley.edu>, Andy Lutomirski <luto@kernel.org>, Peter Zijlstra
-	<peterz@infradead.org>, Thomas Gleixner <tglx@kernel.org>, Ingo Molnar
-	<mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
-	<dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
-	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, x86@kernel.org
-Content-Language: en-US
-In-Reply-To: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20260925085711eucas1p1485ce5a6153e8db654ed3cd6ed2fb70c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3
-X-EPHeader: CA
-X-CMS-RootMailID: 20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3
-References: <CGME20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3@eucas1p1.samsung.com>
-	<20260924060756.1325156-1-aneesh.kumar@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <arUOoLwpfNlIvIXy@8bytes.org>
 
-On 24.09.2026 08:07, Aneesh Kumar K.V (Arm) wrote:
-> This series centralizes swiotlb default-pool selection and sizing, and
-> simplifies the initialization flags used to describe pool placement.
->
-> The first patch replaces the addressing-limit argument with initialization
-> flags and introduces explicit policies for the different reasons a default
-> pool may be needed. Architectures now report DMA addressing constraints with
-> SWIOTLB_INIT_ADDRESSING_LIMIT, while the core selects the corresponding pool
-> policy.
->
-> The second patch moves the reduced sizing used when the pool is needed only
-> for unaligned kmalloc bouncing from arm64 and RISC-V into the swiotlb core.
->
-> The third patch centralizes swiotlb sizing for memory-encrypted systems. It
-> moves the existing x86 guest-sizing policy into the core. Host memory
-> encryption retains the normal pool size, and a shared default pool is not
-> selected solely for guest memory encryption when a restricted DMA pool is
-> present.
->
-> The fourth patch removes SWIOTLB_ANY. Pool placement is derived directly from
-> SWIOTLB_INIT_ADDRESSING_LIMIT: pools required for limited DMA addressing are
-> allocated below the architecture's low address limit, while other pools may
-> be allocated anywhere in directly mapped memory. Xen continues to request a
-> pool explicitly with SWIOTLB_INIT_REMAP without imposing a low-address
-> constraint.
+On Thu, Sep 24, 2026 at 01:51:45PM +0200, Joerg Roedel wrote:
 
+Hi Bjorn / Joerg,
 
-I would like to give this patchset some tests in linux-next and merge this to
-v7.4-rc1, as this is important continuation of the code already merged to v7.3.
+> On Thu, Sep 10, 2026 at 02:26:51PM +0000, Pranjal Shrivastava wrote:
+> > Pranjal Shrivastava (4):
+> >   iommu/amd: Refactor device probe and capability initialization
+> >   iommu/amd: Remove iommu_ignore_device()
+> >   iommu/amd: Fail probe on ATS configuration failure
+> >   PCI/ATS: Mandate checking pci_ats_supported() before pci_prepare_ats()
+> > 
+> >  drivers/iommu/amd/iommu.c | 164 +++++++++++++++++++-------------------
+> >  drivers/pci/ats.c         |   6 +-
+> >  2 files changed, 86 insertions(+), 84 deletions(-)
+> 
+> Applied the iommu parts (1-3), please submit patch 4 through the PCI tree.
 
+Thanks for applying patches 1-3.
 
-Any chance to get some more acks from arch maintainers (especially x86)?
-Unfortunately I had to reduce the CC list due to my smtp limits...
+Shall I send patch 4 separately or can it be picked into the PCI tree
+directly?
 
-> ...
->
->  Documentation/core-api/swiotlb.rst   |   8 +-
->  arch/arm/mm/init.c                   |   6 +-
->  arch/arm/xen/mm.c                    |   2 +-
->  arch/arm64/mm/init.c                 |  14 +-
->  arch/loongarch/kernel/setup.c        |   2 +-
->  arch/mips/cavium-octeon/dma-octeon.c |   2 +-
->  arch/mips/loongson64/dma.c           |   2 +-
->  arch/mips/sibyte/common/dma.c        |   2 +-
->  arch/powerpc/kernel/dma-swiotlb.c    |   4 +-
->  arch/powerpc/mm/mem.c                |  17 ++-
->  arch/powerpc/platforms/pseries/svm.c |  10 --
->  arch/powerpc/sysdev/fsl_pci.c        |   1 +
->  arch/riscv/mm/init.c                 |  24 +---
->  arch/s390/mm/init.c                  |   2 +-
->  arch/x86/include/asm/crash_reserve.h |   4 +-
->  arch/x86/kernel/pci-dma.c            |  23 +++-
->  arch/x86/mm/mem_encrypt.c            |  24 ----
->  include/linux/swiotlb.h              |  17 ++-
->  kernel/dma/swiotlb.c                 | 193 +++++++++++++++++++--------
->  19 files changed, 210 insertions(+), 147 deletions(-)
-
-Best regards
-
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Thanks,
+Praan
