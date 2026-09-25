@@ -1,56 +1,56 @@
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com [209.85.210.198])
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2579F3403F2
-	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 01:13:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 194FA349CD2
+	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 01:13:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790298797; cv=none; b=KLftHLQcr2v31tOwpu65rxALBjMSlxtwFlwaNdj7gqO3L3lMleBEZHPwAgQhQOrJLP+MbYwDWmkb/1AaGFtJA5UZYADCy8xkg0s9GuZoDQXMOwU9jg94sagSJYuhzjsfvOL5oNcl61+BmLgRxAMcgU+gadAu/xGY1NO35U6ah08=
+	t=1790298799; cv=none; b=YXQ2Xa05WVdEr6H2Bry1yNSSAqHwnreP/CudwEN36p+BW97Ci4f3iXFPys6f1jKi5O0cZoyHaPinMs1+Dn0uWHjH389WgIIL8KlRs4/f7hvwsc6L1ZH4i+epnzsekcxHJvJYJmgtVWmdWNprIgrVgAZRp54txT0y6lb2wRAbwT8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790298797; c=relaxed/simple;
-	bh=bmgdSm8YNHW5kPtfT3/SqPZq1EkFkf4vUCBmOXLEWxA=;
+	s=arc-20240116; t=1790298799; c=relaxed/simple;
+	bh=olGKtxlwn+yhg4dpPmL5Bvr0U6JSMPIbqlhgOBWdrKk=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=kKo/9TQ8lZ/pKgKch8Wes5CoK+1tfJd43LQSh+UKkasRyE9KeRUMl+uba1ZT5aKJYmeU4zj08pZdJEcIme3nlBqVi/ITrNd3PsZzlRQt/YWBzfxFCr7tjBseHm9HHZEbFJXQCVNQfSGmgxQNhPrqKrQpbAyDYNP8IUKDGXGZlBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=M5UoLabw; arc=none smtp.client-ip=209.85.210.198
+	 To:Cc:Content-Type; b=kXZMQ18iYY7csWnicBS37KpUEUQ+Cx0j6/dM0ZlqgEVTNNMSt1xCQL1ES8kGjyxG2wax8DRYsXGQTqBQC4yvUwkBuxhT9ABU0uL8D0W5sIKIqLmcnNJOJFB3MFW1vDP1B2/5RLgF/zK5N5hNwmKxTZCa3+L9lerjtenLdRN6Srs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Q7KEpDfz; arc=none smtp.client-ip=209.85.215.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="M5UoLabw"
-Received: by mail-pf1-f198.google.com with SMTP id d2e1a72fcca58-86a0dc7f26cso539650b3a.3
-        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 18:13:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Q7KEpDfz"
+Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-cc72777faa2so198149a12.1
+        for <iommu@lists.linux.dev>; Thu, 24 Sep 2026 18:13:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790298793; x=1790903593; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1790298794; x=1790903594; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=lelMh14JrGavtZ6asWUfZuJNFtBWesyUfwFCF+GGQWw=;
-        b=M5UoLabwT33VeskS4L3oCfSi/fbDvczLM7CKII8ukKu2YrPAx6xjdvR3yVNs854SEg
-         /YHdF6D1zExIGoJ8SvxHnKks1X0Go8jk2GbEaIvXkonu+JKxz5rCo06sd71DvuzuGIrP
-         rm7UKxuFk3VcbH+HnUDSlVKFiZSISQ21DyUof+drcSSBgDSTpNVWKQCqfWBnERAN6rpm
-         siEAWYWN/ufaX3PH3cQJ/5lfkUDzBrio8UOVT/kRC0VVV63n40ZwgBrOMbC3N+2Ef4IC
-         REd7Fc6GUUiJFabkLBND3SF61mnafF1SwKdNq0QB/30DP4nZB8A5qzHvlUWpB491PJzf
-         yMLg==
+        bh=wql0u/3ksmOdy8r//TkBURdk2dF75TPdcHGkWL4FBiE=;
+        b=Q7KEpDfzljG9NAk9qm05jWtgJKN+VeN7Uo96d0yzagohbjmePRMeW8CIBw6jK4jvww
+         V70YPnoQO4t6XC2fSD6dSJ37ftnuSnnYvvv0ZKgIlybcIl9zolTRUNz80X5n83ZJTrEg
+         6BtNnVSTqhXlvQbNlh/KjZf28w87DH4TcE9PKJxIHxv8gHSMJch6qFcZo0mfo8WI7Du6
+         Yw9P8QMJHX/Z1HffwxGHtt1N5yW9aCQq5EyONcDelxndRb9X3+wpITwyuPHYVomycIP3
+         lkZIttZpjAiiXpeoaceKnA6aZsVuhEM5aoDnLZZkFw/CMfzpzdNWdOf9bH/pH9lgKj00
+         Syag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790298793; x=1790903593;
+        d=1e100.net; s=20260707; t=1790298794; x=1790903594;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=lelMh14JrGavtZ6asWUfZuJNFtBWesyUfwFCF+GGQWw=;
-        b=i9lqEDBzQa0StOieged6HKPar5IzJ3CN9j3BJ1FNz9sH/1yP1ooJ/WlHc5HMAjfUx3
-         lJvFXqE7DctPL0JdMD8Wv6W4UaqR5dEq0jnjkFFENnEeMMWhiS0EY06qcw1+ETf+X1yn
-         VTXHPzyBgyV/sK0iOIRzt99SFoTzOUXVEPkDF6nqvxTGwFNRoueRSl0yYM5hz1J44UVg
-         p/jHbu2BqxJn7R+RudZXm1SBoQ6A4xvbqsyStIauVujDvBW2p480WLHoGMyap4aGxxKj
-         +5QDmYLzZwP3dp/UlOcN6OouRYDOz6MYamWDcdVWigcMEGU+jqokx4IytVipnDiAKtqU
-         51+g==
-X-Forwarded-Encrypted: i=1; AKwUvBwNErOgvSEsxHGvYYXEg9sa316K8OoOVieb3yQw6O8emUDnDban1UHv8JOHANGu6Bvn931HEw==@lists.linux.dev
-X-Gm-Message-State: AFuF++k3dVguY26THtEF70iglGO+/Bqx7mhAEVmP6qDz4sBsyFohHSWQ
-	hH2Uc6Ag2d/dprP/GEY2v9IuF1p9m5ptR2nJudZbogmnbe4zM98gvLHZw+Jg7V+6+QwuTQXasKC
-	SM2mnlqOeCxdN6Q==
-X-Received: from pfbg5.prod.google.com ([2002:a05:6a00:ae05:b0:87f:c4bd:8a29])
+        bh=wql0u/3ksmOdy8r//TkBURdk2dF75TPdcHGkWL4FBiE=;
+        b=X+21StS/wKwhF1b44n1nXSp6rWHNXmDZC2L255CGRqQ2O901/i7kB1SA4hKEmPsM4d
+         usBQcHjNwGoiHBQ37ICNOsgkjgM/tzWvAsFeuwMt3BJRGLjNEmb799gP680kwzbkkRQj
+         jxpRmyaYzc3mWfqz8RZr7DtdeNDJMG9Uoqqjbx/AQAvJb6BeK7mth/IY4UF7f4Abz0Fv
+         8A37lr+BEr/DiTeTVETYr3sKHYFPwpbg6/fFuBY0OzaL46QyM9pdhG6xKnTX2mc8QiQp
+         jtfiZKfUQviK7IIvlizHDTYaj2gbaoXoqxqxzlsEMnaSO7VFsqVLFSrls5e6n0ip1XFl
+         eDaA==
+X-Forwarded-Encrypted: i=1; AKwUvBzeQaHkHYXJyx95SFr/C2jYYhySgySx0JTm2DvSBUBMxqdzxz0bItIaxyp7ny/OXJvBdnZhKw==@lists.linux.dev
+X-Gm-Message-State: AFuF++kFxJZRQTJN/qrPXj8BPSWIYDQAML9JwywX7Ej5Ltd3ajP1f9Y6
+	WaveWcAl5u+0ZUmUHis/Kjvj/Pr4LDcCEn5O/ZI6fH+W2b+ib7lJx+DoQx3HZEACHiD63al+Qup
+	w5dJ6H9Iql9xF5Q==
+X-Received: from pgbbf22.prod.google.com ([2002:a65:6d16:0:b0:cc7:620f:a25f])
  (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6a00:28c3:b0:87d:3894:198d with SMTP id d2e1a72fcca58-87e9ca1ea12mr4000958b3a.58.1790298792751;
- Thu, 24 Sep 2026 18:13:12 -0700 (PDT)
-Date: Fri, 25 Sep 2026 01:13:05 +0000
+ 2002:a05:6a20:7485:b0:3dd:a195:fa1b with SMTP id adf61e73a8af0-3de0e9a0863mr3871178637.64.1790298794332;
+ Thu, 24 Sep 2026 18:13:14 -0700 (PDT)
+Date: Fri, 25 Sep 2026 01:13:07 +0000
 In-Reply-To: <20260925011308.3381953-1-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260925011308.3381953-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20260925011308.3381953-2-skhawaja@google.com>
-Subject: [RFC PATCH 1/3] vfio: selftests: Add support of creating iommus from iommufd
+Message-ID: <20260925011308.3381953-4-skhawaja@google.com>
+Subject: [RFC PATCH 3/3] iommu/arm-smmu-v3: Add support for hitless replace of
+ S1 domains
 From: Samiullah Khawaja <skhawaja@google.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
 Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>, 
@@ -71,201 +72,108 @@ Cc: Samiullah Khawaja <skhawaja@google.com>, Robin Murphy <robin.murphy@arm.com>
 	Lu Baolu <baolu.lu@linux.intel.com>, Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Add API to init a struct iommu using an already opened iommufd instance
-and attach devices to it.
+S1 domains are programmed by CD entries in the CD table. During a new
+domain attach these are updated using write_cd_entry. Since ASID and
+TTB0 are in different 64-bit words, the write_cd_entry considers it a
+non-hitless update and sets V=0. This means such an update is disruptive
+and would generate translation faults if there are ongoing DMAs.
+
+Replace the CD entries by using an unused temporary ASID in following
+sequence to allow hitless replacement of CD entry,
+
+- Update the CD entry with temporary ASID.
+- Update the CD entry with the target TTB0.
+- Update the CD entry with the target ASID.
 
 Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 ---
- .../vfio/lib/include/libvfio/iommu.h          |  2 +
- .../lib/include/libvfio/vfio_pci_device.h     |  2 +
- tools/testing/selftests/vfio/lib/iommu.c      | 60 +++++++++++++++++--
- .../selftests/vfio/lib/vfio_pci_device.c      | 25 ++++++--
- 4 files changed, 80 insertions(+), 9 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 ++++++++++++++++++++-
+ 1 file changed, 64 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h b/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h
-index e9a3386a4719..62f1e8affd2b 100644
---- a/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h
-+++ b/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h
-@@ -29,10 +29,12 @@ struct iommu {
- 	int container_fd;
- 	int iommufd;
- 	u32 ioas_id;
-+	u32 hwpt_id;
- 	struct list_head dma_regions;
- };
- 
- struct iommu *iommu_init(const char *iommu_mode);
-+struct iommu *iommufd_iommu_init(int iommufd, u32 dev_id);
- void iommu_cleanup(struct iommu *iommu);
- 
- int __iommu_map(struct iommu *iommu, struct dma_region *region);
-diff --git a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-index e19bd94b8dd2..4dcc23bc9b78 100644
---- a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-+++ b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
-@@ -19,6 +19,7 @@ struct vfio_pci_device {
- 	const char *bdf;
- 	int fd;
- 	int group_fd;
-+	u32 dev_id;
- 
- 	struct iommu *iommu;
- 
-@@ -82,6 +83,7 @@ static inline void vfio_pci_cmd_clear(struct vfio_pci_device *device, u16 bits)
- 	vfio_pci_config_writew(device, PCI_COMMAND, cmd & ~bits);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 5732f3ba0122..59f4b8cf89f6 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1641,6 +1641,68 @@ void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
+ 	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
  }
  
-+void vfio_pci_device_attach_iommu(struct vfio_pci_device *device, struct iommu *iommu);
- void vfio_pci_irq_enable(struct vfio_pci_device *device, u32 index,
- 			 u32 vector, int count);
- void vfio_pci_irq_disable(struct vfio_pci_device *device, u32 index);
-diff --git a/tools/testing/selftests/vfio/lib/iommu.c b/tools/testing/selftests/vfio/lib/iommu.c
-index b6f3c5c84e01..6d2d5c82813c 100644
---- a/tools/testing/selftests/vfio/lib/iommu.c
-+++ b/tools/testing/selftests/vfio/lib/iommu.c
-@@ -405,6 +405,18 @@ struct iommu_iova_range *iommu_iova_ranges(struct iommu *iommu, u32 *nranges)
- 	return ranges;
- }
- 
-+static u32 iommufd_hwpt_alloc(struct iommu *iommu, u32 dev_id)
++/* Invalidate every stage-1 TLB entry tagged with @asid. */
++static void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
 +{
-+	struct iommu_hwpt_alloc args = {
-+		.size = sizeof(args),
-+		.pt_id = iommu->ioas_id,
-+		.dev_id = dev_id,
-+	};
++	enum arm_smmu_cmdq_opcode op = (smmu->features & ARM_SMMU_FEAT_E2H) ?
++					       CMDQ_OP_TLBI_EL2_ASID :
++					       CMDQ_OP_TLBI_NH_ASID;
 +
-+	ioctl_assert(iommu->iommufd, IOMMU_HWPT_ALLOC, &args);
-+	return args.out_hwpt_id;
++	arm_smmu_cmdq_issue_cmd_with_sync(smmu,
++					  arm_smmu_make_cmd_tlbi(op, asid, 0));
 +}
 +
- static u32 iommufd_ioas_alloc(int iommufd)
- {
- 	struct iommu_ioas_alloc args = {
-@@ -415,17 +427,25 @@ static u32 iommufd_ioas_alloc(int iommufd)
- 	return args.out_ioas_id;
- }
- 
--struct iommu *iommu_init(const char *iommu_mode)
-+static struct iommu *iommu_alloc(const char *iommu_mode)
- {
--	const char *container_path;
- 	struct iommu *iommu;
--	int version;
- 
- 	iommu = calloc_assert(1, sizeof(*iommu));
- 
- 	INIT_LIST_HEAD(&iommu->dma_regions);
- 
- 	iommu->mode = lookup_iommu_mode(iommu_mode);
-+	return iommu;
++static void arm_smmu_cd_set_asid(struct arm_smmu_cd *cd, u16 asid)
++{
++	cd->data[0] &= ~cpu_to_le64(CTXDESC_CD_0_ASID);
++	cd->data[0] |= cpu_to_le64(FIELD_PREP(CTXDESC_CD_0_ASID, asid));
 +}
 +
-+struct iommu *iommu_init(const char *iommu_mode)
++static void arm_smmu_replace_cd_entry(struct arm_smmu_master *master, int ssid,
++				      struct arm_smmu_cd *cdptr,
++				      const struct arm_smmu_cd *target)
 +{
-+	const char *container_path;
-+	struct iommu *iommu;
-+	int version;
++	struct arm_smmu_device *smmu = master->smmu;
++	struct arm_smmu_cd stage;
++	u32 tmp_asid;
 +
-+	iommu = iommu_alloc(iommu_mode);
- 
- 	container_path = iommu->mode->container_path;
- 	if (container_path) {
-@@ -449,10 +469,42 @@ struct iommu *iommu_init(const char *iommu_mode)
- 	return iommu;
- }
- 
-+struct iommu *iommufd_iommu_init(int iommufd, u32 dev_id)
-+{
-+	struct iommu *iommu;
++	lockdep_assert_held(&arm_smmu_asid_lock);
 +
-+	iommu = iommu_alloc("iommufd");
++	/*
++	 * Nothing is translating through an invalid CD, and an update that
++	 * invalidates one cannot be made hitless anyway.
++	 */
++	if (!(cdptr->data[0] & cpu_to_le64(CTXDESC_CD_0_V)) ||
++	    !(target->data[0] & cpu_to_le64(CTXDESC_CD_0_V)))
++		goto write_directly;
 +
-+	iommu->iommufd = dup(iommufd);
-+	VFIO_ASSERT_GT(iommu->iommufd, 0);
++	if (xa_alloc(&arm_smmu_asid_xa, &tmp_asid, XA_ZERO_ENTRY,
++		     XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL))
++		goto write_directly;
 +
-+	iommu->ioas_id = iommufd_ioas_alloc(iommu->iommufd);
-+	iommu->hwpt_id = iommufd_hwpt_alloc(iommu, dev_id);
++	/* Copy the existing cd entry and update only the ASID. */
++	stage = *cdptr;
++	arm_smmu_cd_set_asid(&stage, tmp_asid);
++	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
 +
-+	return iommu;
++	/* Copy the target cd entry and update ASID to the temporary ASID. */
++	stage = *target;
++	arm_smmu_cd_set_asid(&stage, tmp_asid);
++	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
++
++	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
++
++	/* Update to the target cd entry as it should be hitless now. */
++	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
++
++	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
++	xa_erase(&arm_smmu_asid_xa, tmp_asid);
++	return;
++
++write_directly:
++	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
 +}
 +
-+static void iommufd_cleanup(struct iommu *iommu)
-+{
-+	struct iommu_destroy args = {
-+		.size = sizeof(args),
-+	};
-+
-+	if (iommu->hwpt_id) {
-+		args.id = iommu->hwpt_id;
-+		ioctl_assert(iommu->iommufd, IOMMU_DESTROY, &args);
-+	}
-+
-+	args.id = iommu->ioas_id;
-+	ioctl_assert(iommu->iommufd, IOMMU_DESTROY, &args);
-+
-+	VFIO_ASSERT_EQ(close(iommu->iommufd), 0);
-+}
-+
- void iommu_cleanup(struct iommu *iommu)
- {
- 	if (iommu->iommufd)
--		VFIO_ASSERT_EQ(close(iommu->iommufd), 0);
-+		iommufd_cleanup(iommu);
- 	else
- 		VFIO_ASSERT_EQ(close(iommu->container_fd), 0);
+ void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
+ 			 struct arm_smmu_master *master,
+ 			 struct arm_smmu_domain *smmu_domain)
+@@ -3664,8 +3726,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev,
+ 		struct arm_smmu_cd target_cd;
  
-diff --git a/tools/testing/selftests/vfio/lib/vfio_pci_device.c b/tools/testing/selftests/vfio/lib/vfio_pci_device.c
-index 774d1e90ec0e..81d3879d064f 100644
---- a/tools/testing/selftests/vfio/lib/vfio_pci_device.c
-+++ b/tools/testing/selftests/vfio/lib/vfio_pci_device.c
-@@ -469,15 +469,15 @@ int __vfio_device_bind_iommufd(int device_fd, int iommufd, const char *vf_token)
- 	if (ioctl(device_fd, VFIO_DEVICE_BIND_IOMMUFD, &args))
- 		return -errno;
- 
--	return 0;
-+	return args.out_devid;
- }
- 
--static void vfio_device_bind_iommufd(int device_fd, int iommufd,
--				     const char *vf_token)
-+int vfio_device_bind_iommufd(int device_fd, int iommufd, const char *vf_token)
- {
- 	int ret = __vfio_device_bind_iommufd(device_fd, iommufd, vf_token);
- 
--	VFIO_ASSERT_EQ(ret, 0, "Failed VFIO_DEVICE_BIND_IOMMUFD ioctl\n");
-+	VFIO_ASSERT_GE(ret, 0, "Failed VFIO_DEVICE_BIND_IOMMUFD ioctl\n");
-+	return ret;
- }
- 
- static void vfio_device_attach_iommufd_pt(int device_fd, u32 pt_id)
-@@ -503,10 +503,25 @@ static void vfio_pci_iommufd_setup(struct vfio_pci_device *device,
- 				   const char *bdf, const char *vf_token)
- {
- 	vfio_pci_cdev_open(device, bdf);
--	vfio_device_bind_iommufd(device->fd, device->iommu->iommufd, vf_token);
-+	device->dev_id = vfio_device_bind_iommufd(device->fd, device->iommu->iommufd, vf_token);
- 	vfio_device_attach_iommufd_pt(device->fd, device->iommu->ioas_id);
- }
- 
-+void vfio_pci_device_attach_iommu(struct vfio_pci_device *device, struct iommu *iommu)
-+{
-+	u32 pt_id = iommu->ioas_id;
-+
-+	/* Only iommufd supports changing struct iommu attachments */
-+	VFIO_ASSERT_TRUE(iommu->iommufd);
-+
-+	if (iommu->hwpt_id)
-+		pt_id = iommu->hwpt_id;
-+
-+	VFIO_ASSERT_NE(pt_id, 0);
-+	vfio_device_attach_iommufd_pt(device->fd, pt_id);
-+	device->iommu = iommu;
-+}
-+
- struct vfio_pci_device *vfio_pci_device_alloc(const char *bdf, struct iommu *iommu)
- {
- 	struct vfio_pci_device *device;
+ 		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
+-		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
+-					&target_cd);
++		arm_smmu_replace_cd_entry(master, IOMMU_NO_PASID, cdptr,
++					  &target_cd);
+ 		arm_smmu_make_cdtable_ste(&target, master, state.ats_enabled,
+ 					  STRTAB_STE_1_S1DSS_SSID0);
+ 		arm_smmu_install_ste_for_dev(master, &target);
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
 
