@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1304147887F;
-	Fri, 25 Sep 2026 18:59:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 643814D0CC7;
+	Fri, 25 Sep 2026 18:59:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790362745; cv=none; b=Aow1OSum5Lb3FzseH8KVMUHFuEwsH7dO2g+9++ojfNXWoTvvQ7PyxjQomcBb7tUMjKj5npgcGZmFQzGMLtI0+7c620OxCBCHb0CUd+vqkvHqJK8r59W2Ui6ZwNaPMxKh/iolmuNV2eH9MhtM2pnprMspBdcAxuM3183+z/I2dKY=
+	t=1790362759; cv=none; b=GA3dYXX38s/QNCm2Zrf2v/re46C4mOlO97jy9DEy1JXsx5ng2PUCVMKWWSOxbyHQnipUIvKdkegw/XpcLWZpdCHMMEUJp5FKM/QIU6uQXTajc7T03vEd6JxqUUPdFjx5aB+GapCr6vnV7Q2NXHPn2MDS5On8Ixu07nPYDbpSF+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790362745; c=relaxed/simple;
-	bh=GsGSJmQdNP9VfwggsebIUGZXams8HyzS+T1eNBKQBr0=;
+	s=arc-20240116; t=1790362759; c=relaxed/simple;
+	bh=mi4UasTVjBkFXAsf62On1ea2jGiUWLZ+NVitlOC8eTo=;
 	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=h6MNNtwH+Xmili46mAt337OKElDmcL8D1cBusk3XIFVJ8L/6d/yZdbmROMoCiG8gA+mMUOEbtA1TL55WN6FHS3Lf33HGvs+8Nwq438oROGxj7InA4JMkQ3ILdvEZz5xAehCIsZvLNh4dkta8GSV5Z8Rk6rGmxlyQ0hOfwt75DVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aMP+J8fN; arc=none smtp.client-ip=100.103.45.18
+	 In-Reply-To:Content-Type; b=bumGIBw9bZEP+mWLD8xY5/asBu8/p+Y4M3j1XByWMaAjqadsgdTLYs5i7m+VSP2SaO2C+Tc+N+adGU++3oILsAt5MJK1F0vbdF8xYVMew3anJH9DdNm95kb7zWmNVCj/j1CoeHS5aGyKZ10DgybK1BEW6eg3sZ5QFARXKGAIeGY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a9h3q+aK; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aMP+J8fN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F8C1F000FF;
-	Fri, 25 Sep 2026 18:58:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a9h3q+aK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 844871F000FF;
+	Fri, 25 Sep 2026 18:59:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790362743;
-	bh=9G5nansJVpdRG2G9BWUrRMT12MK3Xua0Mjh5VEA42EA=;
+	s=k20260515; t=1790362758;
+	bh=BdL2mpy6N9u1wgXOd8GqMwlnJCsH0UwbNmS0E3bRq/g=;
 	h=Date:From:Subject:To:Cc:References:In-Reply-To;
-	b=aMP+J8fNGRXvj9BO2qUtd9H1I0vQCKSSccGQFS3Yv2AtNtPCRXIpSmM3CjbJ/rBgl
-	 topWwcOAfu5xYw1S4sZDZ7Y5hTfRt53qOwPI0m6HCdhyiBxLCrF2xzqSvzL5DROkF9
-	 JNXZSrOGcK9Mkgjb7U9Pyxa2q611dPjn8lSLTqe7Krua+ROzLH2czufVphlkBKvN+S
-	 9yAq+6vBsmHB9mI20nR1qLPsN8gkpvyvDhITVvISZtNyCsp/8nDd92Sjhy1YMBycQ4
-	 iKdl9ULIJ17HD15NHkYRtsqjjjWQro+at0SUak1HOPyQqSPO5a6giMuOApsUaTwMl8
-	 9G4Rwb5qbIykQ==
-Message-ID: <ef172101-c277-47b4-9141-54e2ed756430@kernel.org>
-Date: Fri, 25 Sep 2026 20:58:54 +0200
+	b=a9h3q+aK+j9Shjj1z93vVB4jypGZXJkJh8sdTqTbH4BZDVz2JdU0N5USfvZ/kX/Kt
+	 D5t9RuRRfWaeVGjEjCo3X6zf+2FrrNzE6XQeKOrs+vK4bLC2h6fY5F1ZNLvGLqbQrY
+	 XoqScWCJP6qQJZUgeMDZG3n0lSfg7GTsTve866bBhPRHT4kYpIZfKPEKs7yVMNk+iH
+	 qIAXuTYGE6RR6DAgO97a3J2mR2L+j4xpx1v/sgkrhPUtuA6VeVfugdPzILRoUitgGU
+	 bh0873X4KDCXaRU7rK1RjD77qyYsWYDelZfe0NhoFHFWktInqKhLIOfJHxHZfO7R/h
+	 UF29zDIviEYvg==
+Message-ID: <25f81c07-f201-4cd2-8c6c-3efe74d7e951@kernel.org>
+Date: Fri, 25 Sep 2026 20:59:09 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,7 +36,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 From: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH v4 03/13] dt-bindings: media: qcom,sm8750-iris: Add
+Subject: Re: [PATCH v4 02/13] dt-bindings: media: qcom,sm8550-iris: Add
  context bank subnodes
 To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
  Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
@@ -57,7 +57,7 @@ Cc: linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
  Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, iommu@lists.linux.dev,
  Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
 References: <20260914-vpu_iommu_iova_handling-v4-0-9b9074a73c41@oss.qualcomm.com>
- <20260914-vpu_iommu_iova_handling-v4-3-9b9074a73c41@oss.qualcomm.com>
+ <20260914-vpu_iommu_iova_handling-v4-2-9b9074a73c41@oss.qualcomm.com>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -102,7 +102,7 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20260914-vpu_iommu_iova_handling-v4-3-9b9074a73c41@oss.qualcomm.com>
+In-Reply-To: <20260914-vpu_iommu_iova_handling-v4-2-9b9074a73c41@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
@@ -118,6 +118,7 @@ On 13/09/2026 20:49, Vikash Garodia wrote:
 >     | pixel stream addressable range (0 - 3.5 GB)               |
 >     | 0x00000000 - 0xe0000000                                   |
 >     +-----------------------------------------------------------+
+
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
