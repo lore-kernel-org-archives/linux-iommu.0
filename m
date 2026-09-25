@@ -1,77 +1,76 @@
-Received: from fout-a3-smtp.messagingengine.com (fout-a3-smtp.messagingengine.com [103.168.172.146])
+Received: from fhigh-a1-smtp.messagingengine.com (fhigh-a1-smtp.messagingengine.com [103.168.172.152])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6A0D48662E;
-	Fri, 25 Sep 2026 09:47:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.146
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4EC6481674;
+	Fri, 25 Sep 2026 09:47:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790329666; cv=none; b=c2CuTZd5tVAh9p/HAKYY2Ggd3QxZeKZvbyxGuD2kJH+yEsvb8JzuqKS4k3XntxGw1qeZmNswWFc2Axl/I5atFJhqDGaIuPG1nKQ0u/MACm4lCFHOfSfXpJ3Y0Yym9IMzi368CsheBjl62jDui9LaH+XfKEv0dILOSircvYwS72g=
+	t=1790329671; cv=none; b=q/ZQkY8R4hais8R24cHRnZ447PoIKSLYbAbX1NWiG24W2G4jMRlQSTsKerrC2dfirDc+59/PaxlC9mi71YfYWORIkIgPcKP6znf6jiX6Pj+6wBN+bXzZQsZXCJG7y3nVPPfq2bWb8GU4kkzdd+SSZURU1YkkwMnSldyhCqRrF5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790329666; c=relaxed/simple;
-	bh=j6a5quoDbZWNbFaX0hWTw5YXeszrdTDrQRilyskDtCQ=;
+	s=arc-20240116; t=1790329671; c=relaxed/simple;
+	bh=2FnZzOmwSzL1DhuUo82J2O5tzJ3UyA/MVzvPykkU6fM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=alDZh83MWASUY4eLTqtNqMk+OgL8sy3jdd3xYmZ5ADniMNJ6y7d4cAHz2qIsy34yYqgXSXOoIcZEgOA5MM+JoSrrbGZyu7KcyUZdC+WWhSov8WeOr4LsSZeHyetoUtBhGau+ous32rVr0bBekVXO3OHeOxHf34+MYyQIllagYa0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=ZO/yHssm; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=JCvfJIRH; arc=none smtp.client-ip=103.168.172.146
+	 In-Reply-To:To:Cc; b=jM6llMFzUPZldDzu4/Pd30Sjm0VVqWkG2lq20blksPCOZ7L1XS8RQvGfYMzMHVliL7sQAKSy19BI7ypWTOmVHmC5X8lcoFJTusKBFxly9A6jF0vG6HUTGvnWa/e9sFBEFPU0OPCUCGVdqObRnIysoGon2cd/vYXJcpiCL3do/HU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=PdE0cQ5A; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=cJ00AtH5; arc=none smtp.client-ip=103.168.172.152
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="ZO/yHssm";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="JCvfJIRH"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfout.phl.internal (Postfix) with ESMTP id 02A35EC0120;
-	Fri, 25 Sep 2026 05:47:44 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="PdE0cQ5A";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="cJ00AtH5"
+Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 0887E140001D;
+	Fri, 25 Sep 2026 05:47:46 -0400 (EDT)
 Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-04.internal (MEProxy); Fri, 25 Sep 2026 05:47:44 -0400
+  by phl-compute-02.internal (MEProxy); Fri, 25 Sep 2026 05:47:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1790329663;
-	 x=1790416063; bh=ZKds3jhyvr2c1oIlOBbIUjibttuUK3PnIKQuStdp9cM=; b=
-	ZO/yHssmVZfy3NIClHX9L7N8oZG+lVfNv9ohGehaj+M1YI4DpvtNy0eHiabGjTj5
-	Y82yZhPYemoFOPUEzbKzXV2zQE0IVyVi+csGwL7xIkmZU4CQJdzAkPO/QxR4DQ4Y
-	D0ztmJDiRrost9aSqCWFazuNsNEGSXVAPNyYJ5bzly0h4M7DVCHQuE2jKKUBVbHY
-	99V9r0V3O7Nwvo1UeWYBVbbS35DW1Kbw8F8HtaH3Kf/jOM/vXqeN62zVPit5F/RH
-	UNAgnWdHwqvHxnxpGb4Z4qhFLLWY5MWadtWod23kNDTeE3amyHqzztbyKXy3HVvy
-	HZxgWmidVJukwnibGJ3htA==
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1790329666;
+	 x=1790416066; bh=BgLJT7gJp2Fy7W73lyx41lDe1zDG0NpaZeQuqYkYPM8=; b=
+	PdE0cQ5ANjCmFzPv5YnHrWuTKpnTw4yMur66qhigIrsN4g2lPWKEa2W7GDo0ASFg
+	wBGXdoIR9BTMG9GX2sOBrO5jNsyaNPOtPp/3aYs/3bcpsGHEvrk4nznUWDM+bPsU
+	1TyiSNSMgRdvUT9BQyBm/XI4+sGUK6VIgjDNAOU2EOY0Gd9PzpVtgc0YMvS4E5I7
+	zb8oGCU2z2F46cX0+qjS44WRz6Lp3iwSZRVC3kFy/c16baZOPS2iKXRNzNNU0b1N
+	LS+7K6YYa+0ZukyebVgxJ6qclVbVFyS8+hoVui3CsMv49CQJmObx1aqLG480zL2c
+	0YTWAo9A+gGPNMOZRzpWgw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1790329663; x=
-	1790416063; bh=ZKds3jhyvr2c1oIlOBbIUjibttuUK3PnIKQuStdp9cM=; b=J
-	CvfJIRHfppFDHrsy6Tcls5YUeVR+BtsCbJLgz8ea3A4s0TqCtXnUBTAsGjAGpVqH
-	1PxzzZJrJa9jA9FOCH4Z1d5fFxArCk8+PY2BaUpodZq7VCJkQzMn+dyrfD5V4Bqe
-	gAAtMn0nE276WQgm6g5BXVMKuX/rjgaanE5Lfo+gxOOUtPPrn3NBbIMQWkE1eu5L
-	elR8moT54gs0gvY95ISCmkPJtTwiYqVIoi6r+AGH1PtKj/knJRExQxBoPyfiivI6
-	kOz/lqVEzpum/+98a1ULLY1oDrmY8mR5n3fb+V5a5NddchUyS8efj1SOWVwagDbQ
-	vyGwsZ9oUNujUUbg/HSJQ==
-X-ME-Sender: <xms:P0O2at_8R697OUyKFBysvfzFZ1zFneMaDP_LzsdbqrfQyG1M1nLO7Q>
-    <xme:P0O2aoybxo7NCvh4n8fQFI8G9MR1M6Wvjh-Pibf99VTe4tTjNq207meCRNmKgtD1W
-    738xY5I4D1zftd_CsJWL58GmE5V-maJZnW8ZnA5HInImsTlb-pDXmAH>
-X-ME-Received: <xmr:P0O2aiskKhHmUE71-9pN-zbZ7KN8LUxQyzwhXb3jtDYFV4mN5xwnqrPo7FtLmNFktUGCZH0>
-X-ME-Proxy-Cause: dmFkZTFQRNgAgioZIU4NTnAZzHVH36NSAZTQ7iz3L3ABJ5sfwezucZ0ckZGmH2NBmgJgD7
-    DN11+Ml5ivhbNuehjt1LKgSMsZHcywAdxibkNH4Kga9zat1WfmAwzTx0EFnYSewxXBTcuR
-    TWE8CqCZXpxKRVbygh8B1D1gTnKvA1U71y03O31HooTNYqybm4TYij5RPCIUTviNeUYIJB
-    iTsQeyUc0bNfSKUAa25Ko49AntFGafBIVM+522RaCs5/WgtP9P7vc7O7KQlTsQr0I/iKiG
-    7xgqQBcKXOa192Yiyt0OaEFJRMKqtNor8hj+mUNDg4uM6GMTAM5mgorTwokU7R2JbH6mnx
-    0j1TFnDsWDtM/72ZCzHJR17lzO4DSv7srSINzRdygL3Ss0cstAVZtOjlwIgS6L4sq8Tv76
-    0BNeHvQIoPAfowvE5CWrnEXNyaEX+wBlZ97097U2k5i+BU6yzvFJeo1HsVqZrWGmKjbS2b
-    OvU4ee62ElUHtXibc3mBiWOKjSQEguu4Ki/o22Ghf9hflCiwMB3yTeMR3QgIhfHRP3iwpf
-    jQwojrOWBbqlPfoXbQPRPVdiPL5YFnWmrW95B58YTBjUuWhMwnETd2xb1YpwLqYqwNKBYv
-    jjlaIHt1qy9mVpePriniHTw+8LBsQN13yXkoZ5qBz+SrYc8cizFokkLAzraw
-X-ME-Proxy: <xmx:P0O2an28IpeLmVZIM0VEBXpsI19mMskbYHHRXo6PoqhcNOlQFlEA8Q>
-    <xmx:P0O2au6cGDf2aENNaLiQHswHyHK4W3QsMNDhxdiIcKhyphiWnnVbEA>
-    <xmx:P0O2apNWsj-ttIjn74Kkdu1mbmyVKFrM_PDXwI24_ZZ0Srqh4s3pZg>
-    <xmx:P0O2aiHzaT0KqEAOqM8ueGq7QpJHyCpGTbrYU9GKYsoZbBzwJ57SFQ>
-    <xmx:P0O2aqVA9smWiw7MD_FfljQXgv2W0pUdz3rkwUMX9N903RQ9WbKrtrKT>
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1790329666; x=
+	1790416066; bh=BgLJT7gJp2Fy7W73lyx41lDe1zDG0NpaZeQuqYkYPM8=; b=c
+	J00AtH5KGUv4OOiwiXOaD0ZiNYScLJkqxCazZh0t/WSZJVeVmsnjj703b9aKCncA
+	r4pwkrnEPW9CrV3phw1L0xDojzh7bS8+b3RWz3iWUy4ijRhBW7PV+DYiE3kmICtG
+	tWMybAglxw8GQbVRaYT5nGrjEYj8U6SMnZKIuYc1/hdDEZo0DKs5JDPgVqLI0HmT
+	XYmtbMC3a+nmYelZwaR3Ux14trBtBbmrN3SgFRyrN2QzhD5b0g56y97mB7C18mBX
+	NGJ8KBQo46uKNUltGGJSQ0lYk47P6e7WiG87l6h2lRqkzC+uJjr5eXGd9ui7+INv
+	m7TEfbiJap+L/PPeRqLUA==
+X-ME-Sender: <xms:QUO2alFIkNSEj6tSQBk3VMGCHr3QJHPN3b4FT7mWe8IW5NhaqaHkww>
+    <xme:QUO2ahYnb8vFMItnfG-YFGO0DuYJ_pOAU8qXOw0tQrUcS1fMhQJWpe6yOxe0-Xnzc
+    nrtgckRBb2By2Dn3ZUPXNBRUiFnaXZBfjuPio3DRU9EUhJliOCICf8Y>
+X-ME-Received: <xmr:QUO2au2Jg6Ge6xmFQVKETyEn5AxEBjgZkfkrs38wWcPRilG4VlNoElRqJscRUDzeT0kvB7M>
+X-ME-Proxy-Cause: dmFkZTEbJhpSeMD7LDnpXCsQixag+cvxD3bFoso28WtgwG8J22LA5vwA2EmaCBywrGkNVk
+    fJMjIB1Awjw+5D30C7m+Dp9Vxht3KEjZe6Lqrn96FVDODdxJTXUrAFR/eapVtvwXhviQS/
+    JjIqmjL9odLytU7DATY/m+docx/hb3FWUj64crzCk+tps7ekg8phg3zCMXxYaP0Ob+waHV
+    cSSktW8VoIuVmdCIqemuf0fMDG7R4dEOgW1ZWVrHKk37AKRJ6VGIvRwRezkqZ1pcO4AQYm
+    oPUZAjyu+mKYQUVO4Gg0cdt3FfSRHd0FcPgbe7x6n5fIfG3GTyJW626LUIjETbYg6L0HUd
+    bb3MdsynMFBcAFgeN+WrxNC9Vd0Omtucz4J/kuv6j70NU7ILl2+HX8fPdpJH8I+uWCAUJY
+    I+WuujpmNuBDT2YV43U+b0MLMl/lAGfQhQe+HhLw3k84JlWVs2t1LPAjLTHe00RtM9D2FM
+    3HPP2oK9yTP5wNX/17Meoiqp8aYvkZ/gE8R/jlGrUkOpd8XQ5MsNTKLytEaANZulFLyqnu
+    Z5SqLcuDoAAnnDWiZmHl/370jREpk2XN4HFQWqeHYLJ8Br82+1Wn0PeGEmMW7zi8xPc7zW
+    umkeBmdgwKM7ApjBIeU8lZCNJt8g/DKaQLDyO0IHmv73jVRoCRoL6x0vQWWw
+X-ME-Proxy: <xmx:QUO2ahdcd2ls74ds6zeE2E8BUGrsMHCUX4UX-EB7L-gP8wl7BfZXSA>
+    <xmx:QUO2aoDtfHpGDAIjNBPYJHWzv2SWdKw0REZjQUafjP9xv3fZjPATYA>
+    <xmx:QUO2ar3QY_Q4UBph6UIGGQ-d3SgRtxhsnGXJfSiOUD7oAF2ExAXlQw>
+    <xmx:QUO2agOzdKs9cDzx8TpU7DKr-vKXEUcAlDDwGLOljfoklss3E4PG_g>
+    <xmx:QkO2amdl8hVkf_Fvc3_3pETOZFzeZTify9YmRDcaBqGr1JLbg3-wdw3T>
 Feedback-ID: i47b949f6:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 25 Sep 2026 05:47:43 -0400 (EDT)
+ 25 Sep 2026 05:47:45 -0400 (EDT)
 From: Janne Grunau <j@jannau.net>
-Date: Fri, 25 Sep 2026 10:22:51 +0200
-Subject: [PATCH 4/7] dt-bindings: nvme: apple,nvme-ans: Add Apple M3
- compatibles
+Date: Fri, 25 Sep 2026 10:22:52 +0200
+Subject: [PATCH 5/7] arm64: dts: apple: t6030: Add NVMe device nodes
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,7 +79,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260925-apple-m3-nvme-v1-4-5e832e2f4aa9@jannau.net>
+Message-Id: <20260925-apple-m3-nvme-v1-5-5e832e2f4aa9@jannau.net>
 References: <20260925-apple-m3-nvme-v1-0-5e832e2f4aa9@jannau.net>
 In-Reply-To: <20260925-apple-m3-nvme-v1-0-5e832e2f4aa9@jannau.net>
 To: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, 
@@ -95,52 +94,77 @@ Cc: linux-nvme@lists.infradead.org, asahi@lists.linux.dev,
  devicetree@vger.kernel.org, iommu@lists.linux.dev, 
  Janne Grunau <j@jannau.net>
 X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1427; i=j@jannau.net;
- h=from:subject:message-id; bh=j6a5quoDbZWNbFaX0hWTw5YXeszrdTDrQRilyskDtCQ=;
- b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqxtztoq68+7PTl7+X78miU6f/nfGdu/NbpR6dK2fkfbV
- q3++aeYOiayMIhxMViKKbIkab/sYFhdoxhT+yAMZg4rE8gQaZEGBiBgYeDLTcwrNdIx0jPVNtQz
- NNIx1jFi4OIUgKlWlGH4Z8T+6EDQSw3no3nC5c8+e7Wa/Z/knLZq3p63E1id4h5372dkOJCovox
- h0/9w31tzjTneCkfq8q7LNPRQZpVwnKTA1TeBFQA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1910; i=j@jannau.net;
+ h=from:subject:message-id; bh=2FnZzOmwSzL1DhuUo82J2O5tzJ3UyA/MVzvPykkU6fM=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqxtztrVXTf296z2y/W2z64+w5mz7OfUE867d7XtXCu50
+ WZLhP/6joksDGJcDJZiiixJ2i87GFbXKMbUPgiDmcPKBDJEWqSBAQhYGPhyE/NKjXSM9Ey1DfUM
+ jXSMdYwYuDgFYKoFqxn+h35+r9XK8fPD69rG7CcvciYpruVWmL+OWeLpu7UuhjvPVzD8r+Pfd4p
+ 3IoOPyau3rIlxzwOOvxSN9skrPVGqeLXi4fPZTAA=
 X-Developer-Key: i=j@jannau.net; a=openpgp;
  fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-The ANS NVMe on Apple M3, M3 Pro and M3 Max/Ultra is compatible with
-with the NVMe on M1. Add their per-SoC compatibles
-"apple,t8122-nvme-ans2", "apple,t6030-nvme-ans2" and
-"apple,t6031-nvme-ans2" to its dt-bindings.
-The NVMe on M3 Max/Ultra uses 3 power-domains so add it to the
-power-domains conditional to change 'minItems'.
+Apple silicon SoCs have a built-in NVMe host controller. Using it
+requires device nodes for its IOMMU (SART), its mailbox and the ANS
+coprocessor implementing the NVMe host controller.
 
 Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/apple/t6030.dtsi | 42 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml b/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
-index 4c0b1f90aff8..10ca8cc5f52a 100644
---- a/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
-+++ b/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
-@@ -14,7 +14,11 @@ properties:
-     oneOf:
-       - const: apple,t8015-nvme-ans2
-       - items:
--          - const: apple,t6020-nvme-ans2
-+          - enum:
-+              - apple,t6020-nvme-ans2
-+              - apple,t6030-nvme-ans2
-+              - apple,t6031-nvme-ans2
-+              - apple,t8122-nvme-ans2
-           - const: apple,t8103-nvme-ans2
-       - items:
-           - enum:
-@@ -75,6 +79,7 @@ if:
-         enum:
-           - apple,t6000-nvme-ans2
-           - apple,t6020-nvme-ans2
-+          - apple,t6031-nvme-ans2
- then:
-   properties:
-     power-domains:
+diff --git a/arch/arm64/boot/dts/apple/t6030.dtsi b/arch/arm64/boot/dts/apple/t6030.dtsi
+index 524e532830e2..85a16d03e22f 100644
+--- a/arch/arm64/boot/dts/apple/t6030.dtsi
++++ b/arch/arm64/boot/dts/apple/t6030.dtsi
+@@ -537,6 +537,48 @@ pinctrl_aop: pinctrl@374824000 {
+ 
+ 			apple,npins = <54>;
+ 		};
++
++		ans_mbox: mbox@389408000 {
++			compatible = "apple,t6030-asc-mailbox",
++				     "apple,asc-mailbox-v4";
++			reg = <0x3 0x89408000 0x0 0x4000>;
++
++			interrupt-parent = <&aic>;
++			interrupts = <AIC_IRQ 839 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 840 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 841 IRQ_TYPE_LEVEL_HIGH>,
++				     <AIC_IRQ 842 IRQ_TYPE_LEVEL_HIGH>;
++			interrupt-names = "send-empty", "send-not-empty",
++					  "recv-empty", "recv-not-empty";
++
++			#mbox-cells = <0>;
++			power-domains = <&ps_ans>;
++		};
++
++		sart: sart@38dc50000 {
++			compatible = "apple,t6030-sart", "apple,t6000-sart";
++			reg = <0x3 0x8dc50000 0x0 0xc000>;
++			power-domains = <&ps_ans>;
++		};
++
++		nvme: nvme@38dcc0000 {
++			compatible = "apple,t6030-nvme-ans2",
++				     "apple,t8103-nvme-ans2";
++			reg = <0x3 0x8dcc0000 0x0 0x60000>,
++			      <0x3 0x89400000 0x0 0x4000>;
++			reg-names = "nvme", "ans";
++
++			interrupt-parent = <&aic>;
++			interrupts = <AIC_IRQ 851 IRQ_TYPE_LEVEL_HIGH>;
++
++			mboxes = <&ans_mbox>;
++
++			power-domains = <&ps_ans>, <&ps_apcie_sys_st>;
++			power-domain-names = "ans", "apcie0";
++			resets = <&ps_ans>;
++
++			apple,sart = <&sart>;
++		};
+ 	};
+ 
+ 	timer {
 
 -- 
 2.55.0
