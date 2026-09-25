@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50B21381E92
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 593E14CDA2D
 	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 19:08:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790363287; cv=none; b=t6lAAr9I5EEjdlhY1V0FxAG3u0j6HHttnEqZDdM+0WZvGheKKt3foqH5m3DHoUCcq6AypytuNEpy+C+0WxfJcCT0s6xVDpmJe/0wSdEXh/FxEBNNjfKZEJEiSf5LGQWLOMy9lTP1lVMmftNohRJlB4S3UA5lMpLnnjdOuUFQSM8=
+	t=1790363289; cv=none; b=pWVaNKNArXPUgqApGtsybJlBVBl9/0u5lV4tHsC0THTU27ToXrCCErUcyrX0+GB+96qcSrFH0UJeF3AIRjAn+03BMuOWzfDv96BsiwN3MjW7cWbY9wHKTX4ylA2BRC/u9YtiNJNUCG3xugrR32U3mkjFAN4IdktKX1zmtfBr7so=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790363287; c=relaxed/simple;
-	bh=uc/GuUSTmqTINuY8L8g4g+Xjn2GAVkPX6V5Kbf56aj8=;
+	s=arc-20240116; t=1790363289; c=relaxed/simple;
+	bh=GZZMXG8OarCWWW+jwF7/L5uJFiWpK4K/j+8dsbx/yPA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kUyddF4Rsu2eNbQtS/rmNdXphIjzmMwXbQ8zuUNPphLM55ABWsSxrNgWlUGYGeSvDLta8H5vVQllDEcoJ9ch4E0sKfM0x4lIi4trsfUr4E+jbXXQr4x1x7yHX1vAWXNfKgyCAC0EDQ+bXwAh4Q+kUGXdoQeW+hSwrEOe821eQjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=LlBcpABN; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=YbIa5mZqE4RZRUWm0jU1BZwjFyqhQLsrpXL/2bC2cB8PN+UmKdt6mth+IMkKabOQ9LNLeX8dATCsddJZGc3HfcTK8boHIaLgTUpQb1i34M5EuvUAQU7fnzV3/wFfu6M8bJdTsANrSnq8iba9gHkKjE2A50bI9JD/OjK5RvrcLug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=qDfH5P+t; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="LlBcpABN"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="qDfH5P+t"
 Received: from administrator-PowerEdge-R660.corp.microsoft.com (unknown [131.107.1.135])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 3D00920B7170;
+	by linux.microsoft.com (Postfix) with ESMTPSA id CFBC620B7171;
 	Fri, 25 Sep 2026 12:07:00 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3D00920B7170
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com CFBC620B7171
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1790363220;
-	bh=6OAcyUWcJJXaEY9f2saEuX6qFLR1eIWBMRBG0yT/ZAc=;
+	s=default; t=1790363221;
+	bh=FoeEr+OnLwxx2zLyfVK537I78o+eF433Mirxja5xOvw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LlBcpABNfDDwEtAnzMzePEcM8v6472ZSYU8DRBEdH8HMBC/EnR5WlnftATzYYNHK6
-	 Vo5qFg3ziwqEbBN0hgItKAB+QXjXVNk9USd62QyjOdjHed/JDDQIJLUrtAyiNcO7YD
-	 nHdSPrxht1MSCzREPyba6VHr5V6O42ZLNOjT3aGw=
+	b=qDfH5P+tFwXtkWJr3ON3rc1hK1VX3Tlcft/tm4vdEk/zx+PSHT+2Zx+UTAYdYvMGi
+	 WcXuHg7F9/0QjwIF4Dm7njX5IJSoFCKcISLZEvWaXUvHyAHxTcAZW07mqPVzJrCvVV
+	 eopQh4lHzJSyI9k83iTjLOjJCsXvvQa2TZ+NfNio=
 From: Jacob Pan <jacob.pan@linux.microsoft.com>
 To: iommu@lists.linux.dev
 Cc: Jason Gunthorpe <jgg@ziepe.ca>,
@@ -51,9 +51,9 @@ Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	Yu Zhang <zhangyu1@linux.microsoft.com>,
 	Easwar Hariharan <eahariha@linux.microsoft.com>,
 	Alex Williamson <alex@shazbot.org>
-Subject: [PATCH RFC 8/9] iommu/hyperv: Add fd-backed vIOMMU support
-Date: Fri, 25 Sep 2026 12:07:41 -0700
-Message-ID: <20260925190742.1575380-9-jacob.pan@linux.microsoft.com>
+Subject: [PATCH RFC 9/9] iommu/hyperv: Add IOMMUFD external domains
+Date: Fri, 25 Sep 2026 12:07:42 -0700
+Message-ID: <20260925190742.1575380-10-jacob.pan@linux.microsoft.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
 References: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
@@ -65,164 +65,243 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Wire Hyper-V root IOMMU ops to initialize hypervisor vIOMMUs from
-MSHV partition file descriptors. Keep the VM file pinned for the
-vIOMMU lifetime and derive the partition ID from the fd instead
-of the VMM thread identity.
+Allocate IOMMU_DOMAIN_EXTERNAL domains under Hyper-V vIOMMUs and use
+HVCALL_ATTACH_DEVICE to assign devices to an MSHV partition.
+
+Resolve the userspace-assigned vDEVICE virt_id during attach and use it
+as the Hyper-V logical device ID. External domains retain their vIOMMU
+so attach preparation can pin guest memory before atomically replacing
+the previous device assignment.
+
+Keep paging domains backed by normal Hyper-V device domains.
 
 Assisted-by: GPT-5.6 Sol
 Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 ---
- drivers/iommu/hyperv/Makefile           |  2 +-
- drivers/iommu/hyperv/hv-iommu-iommufd.c | 91 +++++++++++++++++++++++++
- drivers/iommu/hyperv/hv-iommu-root.c    |  2 +
- drivers/iommu/hyperv/hv-iommu.h         |  9 +++
- 4 files changed, 103 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iommu/hyperv/hv-iommu-iommufd.c
+ drivers/iommu/hyperv/hv-iommu-iommufd.c | 44 ++++++++++++
+ drivers/iommu/hyperv/hv-iommu-root.c    | 89 +++++++++++++++++++++++++
+ drivers/iommu/hyperv/hv-iommu.h         |  5 ++
+ 3 files changed, 138 insertions(+)
 
-diff --git a/drivers/iommu/hyperv/Makefile b/drivers/iommu/hyperv/Makefile
-index c7e7d0dac2a4..2b61a407ee58 100644
---- a/drivers/iommu/hyperv/Makefile
-+++ b/drivers/iommu/hyperv/Makefile
-@@ -1,3 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_IRQ_REMAP) += hv-irq-remap-x86.o
--obj-$(CONFIG_HYPERV_ROOT_IOMMU) += hv-iommu-root.o
-+obj-$(CONFIG_HYPERV_ROOT_IOMMU) += hv-iommu-root.o hv-iommu-iommufd.o
 diff --git a/drivers/iommu/hyperv/hv-iommu-iommufd.c b/drivers/iommu/hyperv/hv-iommu-iommufd.c
-new file mode 100644
-index 000000000000..486a85c0d1e8
---- /dev/null
+index 486a85c0d1e8..e595f53ddc66 100644
+--- a/drivers/iommu/hyperv/hv-iommu-iommufd.c
 +++ b/drivers/iommu/hyperv/hv-iommu-iommufd.c
-@@ -0,0 +1,91 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Hyper-V root vIOMMU IOMMUFD support.
-+ * Copyright (C) 2026, Microsoft, Inc.
-+ */
-+
-+#include <linux/file.h>
-+#include <linux/iommufd.h>
-+#include <linux/slab.h>
-+
-+#include <asm/mshyperv.h>
-+
-+#include "hv-iommu.h"
-+
-+struct hv_iommu_viommu {
-+	struct iommufd_viommu core;
-+	struct file *vm_file;
-+	u64 partid;
-+};
-+
-+static const struct iommufd_viommu_ops hv_iommu_hypervisor_viommu_ops;
-+
-+static struct hv_iommu_viommu *
-+to_hv_iommu_viommu(struct iommufd_viommu *viommu)
-+{
-+	return container_of(viommu, struct hv_iommu_viommu, core);
-+}
-+
-+static void hv_iommu_viommu_destroy(struct iommufd_viommu *viommu)
+@@ -33,10 +33,54 @@ static void hv_iommu_viommu_destroy(struct iommufd_viommu *viommu)
+ 	fput(hv_viommu->vm_file);
+ }
+ 
++static struct iommu_domain *
++hv_iommu_alloc_domain_external(struct iommufd_viommu *viommu, u32 flags,
++			       const struct iommu_user_data *user_data)
 +{
 +	struct hv_iommu_viommu *hv_viommu = to_hv_iommu_viommu(viommu);
-+
-+	fput(hv_viommu->vm_file);
-+}
-+
-+static const struct iommufd_viommu_ops hv_iommu_hypervisor_viommu_ops = {
-+	.destroy = hv_iommu_viommu_destroy,
-+};
-+
-+size_t hv_iommufd_get_viommu_size(struct device *dev,
-+				  enum iommu_viommu_type viommu_type)
-+{
-+	if (viommu_type != IOMMU_VIOMMU_TYPE_HYPERVISOR)
-+		return 0;
-+	return VIOMMU_STRUCT_SIZE(struct hv_iommu_viommu, core);
-+}
-+
-+int hv_iommufd_viommu_init(struct iommufd_viommu *viommu,
-+			   struct iommu_domain *parent_domain,
-+			   const struct iommu_user_data *user_data)
-+{
-+	struct hv_iommu_viommu *hv_viommu = to_hv_iommu_viommu(viommu);
-+	struct iommu_viommu_hypervisor hypervisor = {};
++	struct iommu_hwpt_external external = {};
++	struct hv_domain *hvdom;
 +	int rc;
 +
 +	if (viommu->type != IOMMU_VIOMMU_TYPE_HYPERVISOR)
-+		return -EOPNOTSUPP;
-+	if (parent_domain || !user_data)
-+		return -EINVAL;
++		return ERR_PTR(-EOPNOTSUPP);
++	if (flags)
++		return ERR_PTR(-EOPNOTSUPP);
++	if (!user_data || user_data->type != IOMMU_HWPT_DATA_EXTERNAL)
++		return ERR_PTR(-EOPNOTSUPP);
 +
-+	rc = iommu_copy_struct_from_user(&hypervisor, user_data,
-+					 IOMMU_VIOMMU_TYPE_HYPERVISOR, vm_fd);
++	rc = iommu_copy_struct_from_user(&external, user_data,
++					 IOMMU_HWPT_DATA_EXTERNAL, flags);
 +	if (rc)
-+		return rc;
-+	if (hypervisor.flags || hypervisor.__reserved)
-+		return -EOPNOTSUPP;
++		return ERR_PTR(rc);
++	if (external.flags || external.__reserved)
++		return ERR_PTR(-EOPNOTSUPP);
 +
-+	hv_viommu->vm_file = fget(hypervisor.vm_fd);
-+	if (!hv_viommu->vm_file)
-+		return -EBADF;
++	hvdom = kzalloc_obj(*hvdom, GFP_KERNEL_ACCOUNT);
++	if (!hvdom)
++		return ERR_PTR(-ENOMEM);
 +
-+	if (!file_is_mshv_partition(hv_viommu->vm_file)) {
-+		rc = -EINVAL;
-+		goto out_put_file;
-+	}
++	hvdom->iommu_dom.type = IOMMU_DOMAIN_EXTERNAL;
++	hvdom->iommu_dom.ops = &hv_iommu_external_domain_ops;
++	hvdom->iommu_dom.pgsize_bitmap = HV_IOMMU_PGSIZES;
++	hvdom->partid = hv_viommu->partid;
++	hvdom->viommu = viommu;
 +
-+	hv_viommu->partid =
-+		mshv_partition_file_get_partid(hv_viommu->vm_file);
-+	if (hv_viommu->partid == HV_PARTITION_ID_INVALID) {
-+		rc = -EINVAL;
-+		goto out_put_file;
-+	}
-+
-+	viommu->ops = &hv_iommu_hypervisor_viommu_ops;
-+	return 0;
-+
-+out_put_file:
-+	fput(hv_viommu->vm_file);
-+	hv_viommu->vm_file = NULL;
-+	return rc;
++	return &hvdom->iommu_dom;
 +}
++
+ static const struct iommufd_viommu_ops hv_iommu_hypervisor_viommu_ops = {
+ 	.destroy = hv_iommu_viommu_destroy,
++	.alloc_domain_external = hv_iommu_alloc_domain_external,
+ };
+ 
++int hv_iommufd_prepare_attach(struct iommufd_viommu *viommu)
++{
++	struct hv_iommu_viommu *hv_viommu = to_hv_iommu_viommu(viommu);
++
++	return mshv_partition_file_prepare_attach(hv_viommu->vm_file);
++}
++
+ size_t hv_iommufd_get_viommu_size(struct device *dev,
+ 				  enum iommu_viommu_type viommu_type)
+ {
 diff --git a/drivers/iommu/hyperv/hv-iommu-root.c b/drivers/iommu/hyperv/hv-iommu-root.c
-index 3b82891c9cab..d6424b9ea0cd 100644
+index d6424b9ea0cd..b87152489630 100644
 --- a/drivers/iommu/hyperv/hv-iommu-root.c
 +++ b/drivers/iommu/hyperv/hv-iommu-root.c
-@@ -530,6 +530,8 @@ static struct iommu_domain_ops hv_paging_domain_ops = {
+@@ -7,6 +7,7 @@
+ #include <linux/dma-map-ops.h>
+ #include <linux/interval_tree.h>
+ #include <linux/hyperv.h>
++#include <linux/iommufd.h>
+ #include "hv-iommu.h"
+ #include <asm/iommu.h>
+ #include <asm/mshyperv.h>
+@@ -59,6 +60,13 @@ static bool hv_special_domain(struct hv_domain *hvdom)
+ 	return hvdom == &hv_def_identity_dom || hvdom == &hv_def_blocked_dom;
+ }
+ 
++static u64 hv_iommu_host_device_id(struct pci_dev *pdev)
++{
++	u64 devid = hv_pci_vmbus_device_id(pdev);
++
++	return devid ? devid : hv_build_devid_type_pci(pdev);
++}
++
+ static atomic_t hv_unique_id;		/* unique numeric id for a new domain */
+ 
+ static bool hv_iommu_capable(struct device *dev, enum iommu_cap cap)
+@@ -205,6 +213,11 @@ static void hv_iommu_domain_free(struct iommu_domain *immdom)
+ 	if (hv_special_domain(hvdom))
+ 		return;
+ 
++	if (immdom->type == IOMMU_DOMAIN_EXTERNAL) {
++		kfree(hvdom);
++		return;
++	}
++
+ 	/* Cleanup any remaining. 0 for size results in ULONG_MAX as the last */
+ 	hv_iommu_del_tree_mappings(hvdom, 0, 0);
+ 
+@@ -269,6 +282,10 @@ static int hv_iommu_attach_dev(struct iommu_domain *immdom, struct device *dev,
+ 
+ 	pdev = to_pci_dev(dev);
+ 
++	/*
++	 * HVCALL_ATTACH_DEVICE_DOMAIN atomically replaces any existing
++	 * assignment, leaving @old intact if the new attachment fails.
++	 */
+ 	rc = hv_iommu_att_dev2dom(hvdom_new, pdev);
+ 	if (rc)
+ 		WARN(1, "Failed to attach pdev:%s\n", pci_name(pdev));
+@@ -276,6 +293,73 @@ static int hv_iommu_attach_dev(struct iommu_domain *immdom, struct device *dev,
+ 	return rc;
+ }
+ 
++static int hv_iommu_external_attach_device(struct pci_dev *pdev, u64 partid,
++					   unsigned long vdev_id)
++{
++	struct hv_input_attach_device *input;
++	union hv_device_id host_devid;
++	unsigned long flags;
++	u64 status;
++	int rc;
++
++	if (partid == HV_PARTITION_ID_INVALID)
++		return -EINVAL;
++
++	host_devid.as_uint64 = hv_iommu_host_device_id(pdev);
++
++	do {
++		local_irq_save(flags);
++		input = *this_cpu_ptr(hyperv_pcpu_input_arg);
++		memset(input, 0, sizeof(*input));
++
++		input->partition_id = partid;
++		input->device_id = host_devid;
++		input->attdev_flags.logical_id = 1;
++		input->logical_devid = vdev_id;
++
++		status = hv_do_hypercall(HVCALL_ATTACH_DEVICE, input, NULL);
++		local_irq_restore(flags);
++
++		if (hv_result(status) == HV_STATUS_INSUFFICIENT_MEMORY) {
++			rc = hv_call_deposit_pages(NUMA_NO_NODE, partid, 1);
++			if (rc)
++				return rc;
++		}
++	} while (hv_result(status) == HV_STATUS_INSUFFICIENT_MEMORY);
++
++	if (!hv_result_success(status))
++		hv_status_err(status, "\n");
++
++	return hv_result_to_errno(status);
++}
++
++static int hv_iommu_external_attach_dev(struct iommu_domain *immdom,
++					struct device *dev,
++					struct iommu_domain *old)
++{
++	struct hv_domain *hvdom_new = to_hv_domain(immdom);
++	unsigned long vdev_id;
++	int rc;
++
++	if (!dev_is_pci(dev))
++		return -EINVAL;
++
++	rc = iommufd_viommu_get_vdev_id(hvdom_new->viommu, dev, &vdev_id);
++	if (rc)
++		return rc;
++
++	rc = hv_iommufd_prepare_attach(hvdom_new->viommu);
++	if (rc)
++		return rc;
++
++	/*
++	 * HVCALL_ATTACH_DEVICE atomically replaces any existing assignment,
++	 * leaving @old intact if the new attachment fails.
++	 */
++	return hv_iommu_external_attach_device(to_pci_dev(dev),
++					       hvdom_new->partid, vdev_id);
++}
++
+ static u64 hv_iommu_unmap_batch(u32 domid_num, ulong iova, u16 count)
+ {
+ 	ulong flags;
+@@ -527,6 +611,11 @@ static struct iommu_domain_ops hv_paging_domain_ops = {
+ 	.free = hv_iommu_domain_free,
+ };
+ 
++const struct iommu_domain_ops hv_iommu_external_domain_ops = {
++	.attach_dev = hv_iommu_external_attach_dev,
++	.free = hv_iommu_domain_free,
++};
++
  static struct iommu_ops hv_iommu_ops = {
  	.capable	    = hv_iommu_capable,
  	.domain_alloc_paging	= hv_iommu_domain_alloc_paging,
-+	.get_viommu_size    = hv_iommufd_get_viommu_size,
-+	.viommu_init	    = hv_iommufd_viommu_init,
- 	.probe_device	    = hv_iommu_probe_device,
- 	.device_group	    = hv_iommu_device_group,
- 	.get_resv_regions   = hv_iommu_get_resv_regions,
 diff --git a/drivers/iommu/hyperv/hv-iommu.h b/drivers/iommu/hyperv/hv-iommu.h
-index 6895b4e7eb6d..6fdbe56a4b1d 100644
+index 6fdbe56a4b1d..647fead81533 100644
 --- a/drivers/iommu/hyperv/hv-iommu.h
 +++ b/drivers/iommu/hyperv/hv-iommu.h
-@@ -14,6 +14,9 @@
- 
- #define HV_IOMMU_PGSIZES SZ_4K  /* for now, to be enhanced */
- 
-+struct iommufd_viommu;
-+struct iommu_user_data;
-+
+@@ -20,16 +20,21 @@ struct iommu_user_data;
  struct hv_domain {
  	struct iommu_domain iommu_dom;
  	u32 domid_num;			      /* as opposed to domain_id.type */
-@@ -23,4 +26,10 @@ struct hv_domain {
++	u64 partid;			      /* partition id for external attach */
++	struct iommufd_viommu *viommu;
+ 	spinlock_t mappings_lock;	      /* protects mappings_tree */
+ 	struct rb_root_cached mappings_tree;  /* iova to pa lookup tree */
+ };
  
  #define to_hv_domain(d) container_of(d, struct hv_domain, iommu_dom)
  
-+size_t hv_iommufd_get_viommu_size(struct device *dev,
-+				  enum iommu_viommu_type viommu_type);
-+int hv_iommufd_viommu_init(struct iommufd_viommu *viommu,
-+			   struct iommu_domain *parent_domain,
-+			   const struct iommu_user_data *user_data);
++extern const struct iommu_domain_ops hv_iommu_external_domain_ops;
 +
+ size_t hv_iommufd_get_viommu_size(struct device *dev,
+ 				  enum iommu_viommu_type viommu_type);
+ int hv_iommufd_viommu_init(struct iommufd_viommu *viommu,
+ 			   struct iommu_domain *parent_domain,
+ 			   const struct iommu_user_data *user_data);
++int hv_iommufd_prepare_attach(struct iommufd_viommu *viommu);
+ 
  #endif /* __HYPERV_IOMMU_H */
 -- 
 2.43.0
