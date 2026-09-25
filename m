@@ -1,92 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51BB72F28EA;
-	Fri, 25 Sep 2026 06:08:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EE44130D3FE
+	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 06:34:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790316505; cv=none; b=Wd4Shuf9CuhkPyX3yEKYc57hMN980P3/naFIXydpggc4T/dlmnhKbFJKZn2Z7mWWDIQCNcS8A+Cd3shV/NRtgQY8UQE6CqqV5I3Mvku6i9ifJ8/C69b1T0TW6gT/peFfeqCZOQndOROcgN7EI9PcU1/Yjs7iAHqwUVmPTC0hT8g=
+	t=1790318060; cv=none; b=Mdg4HzJPUKyTE4cYz4lBRdQgsEjOLiUvtrHCppQeFNmZPZ/113/e9AHAf2MBt+j/UVbRJe3tgwTZU5ECwIknj2lq9t9iokYdwMlQYNjY3uKtuFnycObmpHwf+p03+Dj4C39fkqoAS55Zq+ECsEBWGBTfYDaDqPjNKuNr4LT8KTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790316505; c=relaxed/simple;
-	bh=v7Ng6pbWuhjKtpWvJrwm3MDBqlHea2aWPL1IrJ9RS94=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=CGVUOq6/rEMjNDwy0zWPQ2b2RhipbDHAiNKC9IzWPZQzkF6dhTXcpf4CsYTKzaSUt2/Xslq0efhdf9xuRnyhMYF7m0v5pfwloS0eEt4sbdUbJZw57pKz8b/TzpPTr/KCC9LM6dNOjX6nD/e4g8dN8+OfKkO8+1XyhsT62pmhWSs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bux6HE00; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bux6HE00"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627991F000FF;
-	Fri, 25 Sep 2026 06:08:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790316503;
-	bh=P9RibqlRqnRkot6x6sBrQU1dqouJEKEPTfRSSn/46wY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=bux6HE00tUoGtUMQgmmQV6Vn75v2m5JASXXgDsilWKcTrvosGsteG7GIwS1Jb9E/b
-	 gjErOV95yKbqn7m4tkxk3cc//pKNRZcGsHZ+0tSjtiHBeBeWP1xcrSidgxUcFIGb9k
-	 mCXejvn721P7fom+/bzaHsh+oeh6yz5gBE0/WlT8kt64rhXC+I9b/oZcP7XpQ0r3a0
-	 UYltQquXKGnXryceCvrhkEP0lvPq0r5fo4MUeIjcupfjsFiTorBb9QUh7aF11B9lYW
-	 uonZXQU7LCvG2xO2cWJBHexscRDYNQduQGJYLQKo9WZiGtlJyWecetxuVuGBUS/jqq
-	 wTj8/m1Z7T87g==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-coco@lists.linux.dev, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [RFC PATCH v6 08/11] iommufd: Add vIOMMU provider support
-In-Reply-To: <179027891417.104879.5995584402952067518.b4-review@b4>
-References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
- <20260917140159.1163281-9-aneesh.kumar@kernel.org>
- <179027891417.104879.5995584402952067518.b4-review@b4>
-Date: Fri, 25 Sep 2026 11:38:15 +0530
-Message-ID: <yq5acxu1kgmo.fsf@kernel.org>
+	s=arc-20240116; t=1790318060; c=relaxed/simple;
+	bh=f5K8pebqcjgSOOJ25DGEUezzLNt2kwzZeU57MEeclTs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hOKbt/aWl4+USQP+XsjKFj7ymTZCWdtIYP/T9mdES6H/OsyIP8+B+JFDIZ+n0txykNokz3NlHwIfaqPO+juJUz7UyiR+wKnMkIeSCNXetlb3JVqT3aGAhqy29l4dHYww7FcVBP5N3KD6U+CipujAzEOa3UrTD2g6BtpLqoTBjrs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Received: from 8bytes.org (p200300f6af404a000b03c3c046b119f0.dip0.t-ipconnect.de [IPv6:2003:f6:af40:4a00:b03:c3c0:46b1:19f0])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 62B4C1C7759;
+	Fri, 25 Sep 2026 08:34:17 +0200 (CEST)
+Date: Fri, 25 Sep 2026 08:34:16 +0200
+From: "Joerg Roedel (AMD)" <joro@8bytes.org>
+To: Daniel Drake <dan@reactivated.net>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>, 
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
+	linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, james.quinlan@broadcom.com, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: Re: [PATCH v6 0/6] Add support for Broadcom BCM2712 IOMMU driver
+ (Raspberry Pi 5)
+Message-ID: <arYVR2QK4WPpTmTg@8bytes.org>
+References: <20260924-bcm2712-iommu-submit-v6-0-7b3cace86973@reactivated.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260924-bcm2712-iommu-submit-v6-0-7b3cace86973@reactivated.net>
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
+On Thu, Sep 24, 2026 at 10:10:50PM +0100, Daniel Drake wrote:
+> Daniel Drake (6):
+>       iommu_pt: Fix test_pgsize_boundary() failure on narrow-OA formats
+>       dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
+>       dt-bindings: display: brcm,bcm2835-hvs: Document iommus property
+>       iommu/generic_pt: Add Broadcom BCM2712 page table format
+>       iommu: Add Broadcom BCM2712 IOMMU driver
+>       arm64: dts: broadcom: bcm2712: Add GPU IOMMU and IOMMU cache nodes
 
->> vIOMMU creation currently dispatches directly through the physical IOMMU
->> driver. Some vIOMMU types need an implementation supplied by another
->> subsystem, together with private data whose lifetime extends across all
->> vIOMMUs using that implementation.
->> 
->> Introduce a vIOMMU provider that associates implementation operations,
->> their module owner and private data. Allow one external provider to
->> register for each non-default vIOMMU type.
->
-> This seems much more extensive than I imagined when I proposed this.
->
-> I imagined you'd just have iommufd see there is a TSM attached the pci
-> device with a function call, and check if that TSM handled the
-> requested iommu ID.
->
-> No need for a registration system because we already know the only
-> possible TSM driver that can handle it,
->
+Something got lost along the way, I didn't receive patches 5 and 6. While patch
+5 made it to lore at least, patch 6 is missing there as well.
 
-Agreed, there will be only one vIOMMU provider. But, without a
-registration mechanism, what would the module dependency look like?
+Can you please investigate and resend the full series? As Florian requested I
+will then apply only 1-5.
 
-I currently have the TSM driver depending on IOMMUFD. Therefore, the TSM
-driver needs to tell iommufd which vIOMMU type it provides and register
-the corresponding provider. IOMMUFD does not call into TSM directly.
+Thanks, 
 
--aneesh
-
+	Joerg
