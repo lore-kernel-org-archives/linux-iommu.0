@@ -1,74 +1,111 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6452A44AB6C;
-	Fri, 25 Sep 2026 10:01:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99BEA443E56;
+	Fri, 25 Sep 2026 12:09:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790330500; cv=none; b=qCdpaTgszfkNabOFO/UFNJhLaoFa/n65hm9tQneMkOGGhuggVeFRlJHLK4TxU/E2Zz8TKlOORUfxhC3PqMW50CDr9f6Z9BMJbTjrJBaeNBtfYeKPQcdNbZIVP+XBp6g7mM/iO7F37ifGbnPKoDuQrPGUPcomma0iQGkQWwBxUk8=
+	t=1790338148; cv=none; b=BtR5Oc7YrO4JxjO7O2NddsuvVowvbZbmR9MIkcIxlumgD4egE1thDdINHg4aHRg8UFMBacK3ZYCZLUI7+26LyJCQF1RGXqKLB516vZC3gAkyejbPvJNXmaUOd6nUhqse9D3ZiuPjcBW/xtk7AbPgqUyf9b+DB9OGGlnS+vZoX7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790330500; c=relaxed/simple;
-	bh=/pqGybG3gH7p6HG9P9eE+H322CVWdY9u2eX8pVq+/A8=;
+	s=arc-20240116; t=1790338148; c=relaxed/simple;
+	bh=+CGvG9QrriSVRenQP3QQ5RXJ4XOMxjJ5sDhmV4iIAl8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JXcOeX3P3gDwT2HfrUxX+y3lTWlbRRsXTDqXGi+QdLvlX84B2qh1Li++H5+ReB8ONHDfORXAqF2Q9MzIv2qbosZtoJJU34QLdlr37n1fWQLw1F7HMQ1xaEMcIe9kLGRld+LiLbWhISjhY2P7z1bNsKiUz+0QQ7hdx4mGQ702uXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QYwfCVG6; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=iH6DpbaRgs5L0PVAajaQ2lGtNL491zGCEciCg6rMeLgBkgz/GNaOahRHOmEfyeI80cRFfr6d0YUIFid5AVV+rhD7LEi0j5iCrlolRhN+ql8wCXgvwcbVVou5/4je7X9VtOTL4mft+LJAz9tVHbIOn/JXaqHUGgFgRSjoPU2deqI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hFLxfz7t; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QYwfCVG6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF8911F000FF;
-	Fri, 25 Sep 2026 10:01:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hFLxfz7t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65371F00898;
+	Fri, 25 Sep 2026 12:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790330498;
-	bh=c1qtZNQkSLL9jY8cFQvdaU+DuydaEVSzJnJZ/ismFcI=;
+	s=k20260515; t=1790338147;
+	bh=bpOatN8c0vzQ5XGVXFfSv8DKVf4rivauZnBt896FgHg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=QYwfCVG6JAMk9qByU+y21OUB9XibtfndvajO/P2w7i07XB6jM4pCcFfEi1rihN0Hq
-	 PPAeBGcD8eS9KCGS/SVfxF/uxjLrJWevPD8sjNr1R8XIxfToJi8pC9iLHsMY7yhhJK
-	 jWCMB8aF9MFdHncbuAbST10LwBnUox+VupAGDrMfxXrQAGn6toos+Kqon3eq6NFkFL
-	 JkQhaXFeC5Ojd3fXHIx+f++/u6WV+xe6ZIAE3v/e7s5+NTiCHAK62jLz4O37pFyDLe
-	 oLYAA9BKMOrOJX6vPzeWQklm3EmXoHI11TXkbqImkKOJQ3O7y32eQDSi9MSY1A4Ehc
-	 cXVjcto8MTV9Q==
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailfauth.ams.internal (Postfix) with ESMTP id 919B6198003A;
-	Fri, 25 Sep 2026 06:01:33 -0400 (EDT)
+	b=hFLxfz7t37uk7pH5vMDI/1xpq3m/TfoPjgAEzzyFhXiVwGX5wTVE3zad2a2pHObWM
+	 6I6Q6lr2K3mRbRNX28Efh3GAXHHmIY3YYpn2B6Z2wR2wyNpFzBZ1Ix1J/+1vDdJlxQ
+	 2isQkE+59O8Xlw00i8bK83i3Bheo3FtYcBO7OstX6ieuCPEksA4fWNkzCHIY2nH/X7
+	 PGoKz2s9mawB5vpJ9wNo45/KqKTc/o1pzKByjAQNaB8vCP5zcdMfxTkUHqXQn/mhns
+	 Wh9cEGNbH3lYlFSL2xTPz6nB1tY6rs2EeveZXxprkJu70kcro8FdK2VAa7oMTfWpMp
+	 eoynUk0yJj7aQ==
+Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
+	by mailfauth.ams.internal (Postfix) with ESMTP id F0D01198003A;
+	Fri, 25 Sep 2026 08:08:52 -0400 (EDT)
 Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-02.internal (MEProxy); Fri, 25 Sep 2026 06:01:36 -0400
-X-ME-Sender: <xms:fUa2asZjlTTZThjWtSXaPFZJgFBkPnUcvkqUZslxtET03teSnRpFlw>
-    <xme:fUa2amoAxKgYnO5i2XNOhhxeIngCv5Id18Wb4ZmZTTfyyQeXVjC367AEl48R0Ymb-
-    N-wqC9bFjvNyVKj6H8KDnn2ct9Di3B8mSNtusLXcArlZ2eL0u7N87DX>
-X-ME-Received: <xmr:fUa2ajL-639cc4qE0KKv-MgFk1cpqQ4AC0xvbceQOuTWyx4IWGeVB14YLn4>
-X-ME-Proxy-Cause: dmFkZTFaHL7/M+1Ihc5bUYqYtFwJSgrnURianRf/JR5tgLUu7fXkjZXZfmxr42uVkLDENz
-    n6CT7lbp4ydF0hj9OqU2bDAPnJ4sy7gAysDEagQgRgjtp5/JepVQ5/DqM747wnWVnxDpTm
-    jrc4s8XALNefiP8J76+Wd9Svwha8zvIC0O9O96YtBwgD0mX6idSPc1uKI30oRERQlqN8L3
-    Lr8Ld3qlOHIm8iMljBRija5/BxhTJp2TXV2Mkb4SNPIlVJe3N64zVavtx9WdcYOkYU023N
-    aDiaeR+VutG0GUjhSEsKc9hMRKknxanLE2/l1pwQvzn6kS5GFbP3ihVGhp6eMTXXkGvkBS
-    AmeIHYIzhZ1yFuqqvqaHttceMfXxJ9esOyF3qN0yTrvFw5l7swuIkeiaIWZfmYXCLOkUxH
-    VeWCFrW6XfDAicXxWHkznCBWbqieq0djlQ2YFijalVtJhux2dw5S6+WESijC+Z5SzkpHD8
-    6AP3T5/WJZ2Twln5733ADDWrueKkQAIHBNwGdZOaXqWW2Ih4AoS7VjqMXcHB/MboRVRphc
-    DhHmLwygPFVFuzkxTsFkVJmQ+ak4ZvhUKjAEascAyCoLk6pNwzBmTcsQ4y24hX2qaB7OjP
-    0Bk2Z8itCVYzHmcxnXZN5gCoQguQAyxW7M12yG9pjkOqhVb6di6ypYXqSAig
-X-ME-Proxy: <xmx:fUa2ahZg5cvFEiejGT_ny8tJvzmJMMCC6JEOjYjtSmZ2BAsNA8rxTg>
-    <xmx:fUa2aqpZiordqWJcp4HQOrUmrM111pY9DfhfHzjmDir62mi3QT7Gcg>
-    <xmx:fUa2akAIbnxQmmH6kSR8fZHJpOaxnd33Ad3h83f7tdT8gDu1pfm2Tw>
-    <xmx:fUa2aokJ9B0Y8g2Ixga72Cl0sERlNFrflt8vPCraPEXQcvYYyqT6KA>
-    <xmx:fUa2ahptMA3Q0ZKMkk_xxAAkDBS9NMREmdQlWyirfizDxAIVAR4NwhgC>
+  by phl-compute-03.internal (MEProxy); Fri, 25 Sep 2026 08:09:02 -0400
+X-ME-Sender: <xms:VGS2apVl0oCJHXSAF-WnG03V0OTkE3GA3JKk6_2wku0RZ0iOk6I8VA>
+    <xme:VGS2aiNFpi9BnkhFuuvFuFD70z2eBlFObIvPb29IzL5mI2ZX4ynwOvzRE_LNUXFwx
+    MxB6eWOboCuVpa1CHShE3eBEdlpVGjuVpHowmad4m6Ezn7y_bAq>
+X-ME-Received: <xmr:VGS2aqOosTEEs-ZdT05pxKviNpAWr3_xzRLG8_wFMp7Vw5A6xBNjESi0LMg>
+X-ME-Proxy-Cause: dmFkZTEA00vB4wCEuGFPU26dSeuaRUC5A4v8eR3RjG3bBqa5h9xJ9DkJKF4RfcLFM9n52q
+    3k8DUPXRt4S1MUQEQlgs/wFXZV95oQo4U601e3eSYJKZG4Nhmud24uk7molK+3EfFBEyfp
+    uDB+bzuPtnSdm3cfhWN7C/cKeLr/l2x069NPMBtTxphXRLuvs4rl/Oop2SUxPOEiACBaC0
+    gVKF5BVz0FD5pmDrDLCObajhGOWXVLPB4W5+pGabl+YCuxbxl1db9bA3z/zmlyf/1Y3+2L
+    bVts6vygIEw+WpL0zBkMy806BQB0UOjN5unt97CMkqUmRwIhB3ZHFNBhyJmHTKmaY59xgy
+    PaoQcuDGforIp2yh/OBDcAuLeHTf4NVgu/Q3MiIOv2TZopVH0lk4R8KuKyPCu2sh571uG9
+    sQPWLWpLg+PoxuyoKvDnj3hE9HeDAhnW3hojgqd3K3wL+y5rD/qo4gklbsa8cpwL188kU/
+    PkrFg7Z10iDPdvydF0UxXu1cXW3SDAD7DkoSjDdZk52r6lJ4VuFRP8XOiCC01t/9khS7+8
+    80d3XVP2yWba/CGFqlEv9Y9vYYaHPUtop786W0VSRxh4hYXHm6ZkBsk1pUW3rlfEVHeLs+
+    E+BuIgoOa3tDknUGmMSn2+zWK6DrKkUYj1McN22x/IP5Ssc3bWGg5eEzG1dQ
+X-ME-Proxy: <xmx:VGS2aoYZ7nFUadQ6kpGq7uDV0Tu20PSpPBisEuB6MM_0W2vrpxJVUQ>
+    <xmx:VGS2atoj4JRTVSnU8vzq8ZHzfJromoy1OYGmojnz8W7_me2t_SvIuA>
+    <xmx:VGS2ak9LMv9u5n_IwlQGG91twmRAsL4cPlt48wRftdAIxr4bG3jPgA>
+    <xmx:VGS2alVS_NfEyFQwF6El4FGRt3qemk-R8MfkGXNZNCHv-aPFOPXyxw>
+    <xmx:VGS2at8o0pQeT8R73VmmXOBI_CqD_RbB5258qJ3tDaj-yJiuehlpH8fX>
 Feedback-ID: i10464835:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 25 Sep 2026 06:01:32 -0400 (EDT)
-Date: Fri, 25 Sep 2026 11:01:31 +0100
+ 25 Sep 2026 08:08:51 -0400 (EDT)
+Date: Fri, 25 Sep 2026 13:08:50 +0100
 From: Kiryl Shutsemau <kas@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Pranjal Shrivastava <praan@google.com>, Mostafa Saleh <smostafa@google.com>, 
-	Thierry Reding <thierry.reding@kernel.org>, Krishna Reddy <vdumpa@nvidia.com>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, Breno Leitao <leitao@debian.org>, Kyle McMartin <jkkm@meta.com>, 
-	Usama Arif <usama.arif@linux.dev>, kernel-team@meta.com, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/2] iommu/arm-smmu-v3: Add a cmdq_max_n_shift module
- parameter
-Message-ID: <arZFDAofKaurSjCd@thinkstation>
-References: <20260909095228.2174031-1-kas@kernel.org>
- <20260909095228.2174031-2-kas@kernel.org>
- <179018301689.3334538.1783583175230817305.b4-review@b4>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: linux-coco@lists.linux.dev, kvmarm@lists.linux.dev,
+ 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, 	Andrew Morton <akpm@linux-foundation.org>,
+ Baoquan He <baoquan.he@linux.dev>, 	Mike Rapoport <rppt@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ 	Pratyush Yadav <pratyush@kernel.org>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ 	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+ 	Marc Zyngier <maz@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ 	Robin Murphy <robin.murphy@arm.com>,
+ Steven Price <steven.price@arm.com>,
+ 	Sumit Semwal <sumit.semwal@linaro.org>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ 	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+ 	Russell King <linux@armlinux.org.uk>,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ 	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
+ 	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
+ 	"T.J. Mercier" <tjmercier@google.com>,
+ Madhavan Srinivasan <maddy@linux.ibm.com>,
+ 	Michael Ellerman <mpe@ellerman.id.au>,
+ Nicholas Piggin <npiggin@gmail.com>,
+ 	Christophe Leroy <chleroy@kernel.org>,
+ Ritesh Harjani <ritesh.list@gmail.com>,
+ 	Shrikanth Hegde <sshegde@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ 	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, 	Vasily Gorbik <gor@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ 	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>,
+ 	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+ "H . Peter Anvin" <hpa@zytor.com>,
+ 	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+ "K . Y . Srinivasan" <kys@microsoft.com>,
+ 	Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, 	Long Li <longli@microsoft.com>,
+ Paolo Bonzini <pbonzini@redhat.com>,
+ 	Vitaly Kuznetsov <vkuznets@redhat.com>,
+ Andy Lutomirski <luto@kernel.org>,
+ 	Peter Zijlstra <peterz@infradead.org>, dri-devel@lists.freedesktop.org,
+ linaro-mm-sig@lists.linaro.org, 	linux-media@vger.kernel.org,
+ linux-mm@kvack.org
+Subject: Re: [RFC PATCH v8 02/14] mm: Zero memory during shared memory
+ transitions
+Message-ID: <arZkEugXwCtKHH64@thinkstation>
+References: <20260924100529.1398790-1-aneesh.kumar@kernel.org>
+ <20260924100529.1398790-3-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,36 +114,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <179018301689.3334538.1783583175230817305.b4-review@b4>
+In-Reply-To: <20260924100529.1398790-3-aneesh.kumar@kernel.org>
 
-On Wed, Sep 23, 2026 at 02:03:36PM -0300, Jason Gunthorpe wrote:
-> > [ ... 34 lines skipped ... ]
-> > @@ -40,6 +40,11 @@ module_param(disable_msipolling, bool, 0444);
-> >  MODULE_PARM_DESC(disable_msipolling,
-> >  	"Disable MSI-based polling for CMD_SYNC completion.");
-> >  
-> > +static unsigned int cmdq_max_n_shift;
-> > +module_param(cmdq_max_n_shift, uint, 0444);
-> > +MODULE_PARM_DESC(cmdq_max_n_shift,
-> > +	"Cap on the command queue depth, as log2 of the number of entries. Zero means the hardware maximum; the queue never shrinks below one page.");
-> 
-> The patch looks ok
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> But I'd rather use lg2 as name, especially user visible, instead of
-> n_shift. "shift" is a word for bitwise stuff, this is a 2**N log2
-> encoded value.
+On Thu, Sep 24, 2026 at 03:35:17PM +0530, Aneesh Kumar K.V (Arm) wrote:
+> diff --git a/arch/x86/coco/tdx/tdx.c b/arch/x86/coco/tdx/tdx.c
+> index f904a636d449..1f1f39082391 100644
+> --- a/arch/x86/coco/tdx/tdx.c
+> +++ b/arch/x86/coco/tdx/tdx.c
+> @@ -978,6 +978,9 @@ static bool tdx_enc_status_changed(unsigned long vaddr, int numpages, bool enc)
+>  static int tdx_enc_status_change_prepare(unsigned long vaddr, int numpages,
+>  					 bool enc)
+>  {
+> +	if (!enc)
+> +		memset((void *)vaddr, 0, (size_t)numpages << PAGE_SHIFT);
+> +
+>  	/*
+>  	 * Only handle shared->private conversion here.
+>  	 * See the comment in tdx_early_init().
 
-This name has changed twice already. v5 took the value in entries.
-Nicolin asked for a log2 value and named it after max_n_shift, which is
-what the driver calls this quantity everywhere else.
+This doesn't make sense to me.
 
-I would rather not rename it a third time without input from the
-maintainer.
-
-Will, this is the user-visible name. Do you have a preference here?
-Unless you want it changed I will leave v6 as it is.
+On TDX the memset zeroes a page that is about to be dropped.
+MapGPA(shared) makes the VMM back the GPA with different memory, and
+what the guest reads afterwards through the shared mapping is whatever
+the host has there.
 
 -- 
   Kiryl Shutsemau / Kirill A. Shutemov
