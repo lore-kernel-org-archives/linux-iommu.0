@@ -1,109 +1,165 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from fout-a3-smtp.messagingengine.com (fout-a3-smtp.messagingengine.com [103.168.172.146])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6454C477E53
-	for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 09:13:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3DEE488227;
+	Fri, 25 Sep 2026 09:47:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.146
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790327585; cv=none; b=T2YoZMdq91r6ja72p48teYFSMoRIwtMdZZ6PhFjAKv6SE7ZkW9XUpXYcAbak/OH8RMCqds08lrFfGb/eXNGo1PJJYpuSI59mug5V1YGVDvLnWnVs6OtVnFzM35i7Awwyh1mdbxWPkKl27vHiAalMc+h1QLr39W+Wj2vEaLpqFDk=
+	t=1790329654; cv=none; b=T8DVsy5rjijTgxO2paHR97WAWRHdsKCchSGkpYgmGtbUJQjdBu775c6eTKd1wyzq/JyWCqjO8y/yeuhhzCFAS7K2L5zqL2O7ELzDZ8QtLGH4PPns9gbhDfp3ccJONfKUOk5eoJCtOy/xWTWchgT2JBsLHI2uad2PNDLasj7Tt0U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790327585; c=relaxed/simple;
-	bh=1Z3pKVsAB7cGlrs84ql54irrn4EOTKXXllBebSmuuGs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MuuNJuSTYMaA8HDi0UEYyP9JfiDXoq5LgRYtWGUOtlVhjQXBsYXtJZs2bIoSZLVyDxRI2xh+fQZwRFn1bFbaon8pDdmd+c7JHolWvlK4eVBiYa6610IeUSQinQEctB0jN+54r+Eq3xSjCckJ0cyDfp+m3ywWPwh6072wILqafow=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PaX8jgz9; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1790329654; c=relaxed/simple;
+	bh=4ypi7wfhWyu9nXF1ipHoM2VNkSkHsmWohYy1wS85fpI=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=iZGPxZ4Wz+SMAyZtkp4NXLCB22/DbFR0zK3B1Oif6E1vJFW+R0tOXSTl6wqyFplbJSa5jVe+88I4rjFQ0FQ/fyCjy1b1rHIUnxYx1bwEnliKmklV4PI1jCnq58aDN5PJUAT3t1KLohqYESVUOMYwoZAbt4T6NimaCqT8RHtvKDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=iWXrTGRU; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=w8p7OO6J; arc=none smtp.client-ip=103.168.172.146
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PaX8jgz9"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2d3b445a84fso32765ad.1
-        for <iommu@lists.linux.dev>; Fri, 25 Sep 2026 02:13:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790327583; x=1790932383; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=CTMJNzZxuTPM6C0AemlJt6uT6H/3eGpfCZ5SiFyGRfQ=;
-        b=PaX8jgz9KW9YePUBcx1suT91l/J+eA/O/IXLQV18SthdwFBlQXBO7hXcr0zZpiHz/c
-         USxb8pzyXyRiUTaiMi+xDhV5TXkPQd95pOR/BLYqF+q+N4vzolnBTvJkhcMu+ETOn7sz
-         WZGvjyBlYFu5lHjSONDvVa4KjbVSCIcBcGqnMhdJIQHXssiwoC1iKWr/fdnnJfVxYi9s
-         A7U58As1EXZUrRLqY168yEGZNXQqFi6mLQjQ7cafdywg4i0T1r0luKE4f3gpXGU7tQg+
-         Y7w4VgNf425Hb1wrtzZOddVyM4LTCvyOnBdRZ89yR+NCajtFtlVs4vAcwxOvGcCnXGEe
-         2LNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790327583; x=1790932383;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=CTMJNzZxuTPM6C0AemlJt6uT6H/3eGpfCZ5SiFyGRfQ=;
-        b=kxmqf7C/7YHl8LVF1LLyfQlkZuef/sbA0VGdPDSKvrfhWVCDeG7mgPJP5NXzAsd8Hf
-         TWCMaK5ClsbXUy9dvBbxkvuZ0ZMRLxMVyLC8V8oZcgXuI3RsHXfH/uaCaaw9/Mh/X8pX
-         3f8ni4IqODPYbVzV6Bh/OMPLf0KS5vQs7Txu2HggFxAcG+6lp9fgMnCQgmkW+NGXUce3
-         GvNRRk9+2JiPdKTm0S3eJ9aibHUfOu4VbJ+LbxWJkol86BHFkxrWCnCwEl11cfmgCBOL
-         9cEG0K9y5Vw/4yJFXOTgGZj4jipu0ZcJeCxW9cDgfks1DexGcLB5DotjwZIHT4k8czef
-         U98w==
-X-Gm-Message-State: AFuF++mQaXskEgbAZ9nG+fqoTMh0Y0ZdBBW22KT/4fCEQmnm1KrNo1R7
-	hyp50STwgRbJKvCzV5Qx8exvqNSObVZ5AfLWxqyTImPSkgxpxcJAJMhVYkSt4dSjng==
-X-Gm-Gg: AYBFou2VKv4J52pzt7f8ND4GYQgBxk/aNCBapYivuQjfU41S8BvkOeYekma/6tXJwDP
-	PnK/JrKg4lCIZVTr194k58nT5IulY1HSs6cfeSeLyK9rkd3+H1Nw0j/d2FEaOHO3gi0vvu3P1ra
-	jKE8jz5AhW2h+nm41y+q2A61ZjMWorS9ggI0mNMsO0IVF7qlEAktImLTylfsgXZzKWrUg2NGeR+
-	DIg4JmBIr7umKABLDICY6JdzBNlcWuh89qV9TZyUWnRA9t58oIRTgaeFAe27dospJ5xZik64fq7
-	mQsuj5vtwe5qo9JPqd0rui8OAEohOLseYEaGQYdvC/gXdGtBG3XRRuU8tGaK2wZcWrAphCYmeCM
-	0TgDRl8QhfEGUFQNbDAN52kgI/7T6fSTsn2yLopxzc6nUCRW1omI22+IZogZqZnF0+3ag1aZW06
-	lq4K9CFYihdSfEElt0VECI3bSB7SehbGhraGCV47i8839ofzhk5Vu9nZopFkaRC/8KbdGL3f7M5
-	QgEZfwpA9pgAKco//zMwpY/ydRqdzkXJcgQ
-X-Received: by 2002:a17:902:cf03:b0:2d5:db3d:1a42 with SMTP id d9443c01a7336-2df94314b89mr3126305ad.15.1790327582104;
-        Fri, 25 Sep 2026 02:13:02 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a0b9356f48sm3426477a91.6.2026.09.25.02.12.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Sep 2026 02:13:00 -0700 (PDT)
-Date: Fri, 25 Sep 2026 09:12:53 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>
-Cc: iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Ankit Soni <ankit.soni@amd.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>
-Subject: Re: [PATCH v4 0/4] iommu/amd: Refactors for ATS robustness
-Message-ID: <arY7FeYaOG9oglgI@google.com>
-References: <20260910142655.3281464-1-praan@google.com>
- <arUOoLwpfNlIvIXy@8bytes.org>
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="iWXrTGRU";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="w8p7OO6J"
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfout.phl.internal (Postfix) with ESMTP id 7682EEC0120;
+	Fri, 25 Sep 2026 05:47:30 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-05.internal (MEProxy); Fri, 25 Sep 2026 05:47:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:message-id:mime-version:reply-to
+	:subject:subject:to:to; s=fm3; t=1790329650; x=1790416050; bh=ui
+	hSC9KjAUldcdli/RyIuTfjwESydH7W1hKdMi/92G8=; b=iWXrTGRUyPXXY6unNx
+	w3qONh2k4xK99Z7j+wqvXooIRr/H7AZs5zjzs6qzNX5HgD3cv1JVjHeN3z2GmSw1
+	hSeXABdPBYezxyP+o3nIC9TAWUk3vC+b1I3j3EWQdIuggbq1xyrYl787M8BVz1Fe
+	r2iYIgbbtpt46xCpwZ5Y5aMHvHRE2TCeCdLsxhiCew3oMUzuQ6CIRR03Q8E4zQ6X
+	2kxkbk+7eTBp20VxCVlbqRYvgLGTy/LY4MR42h79INZBGnNnZ8zGRkwbLc3I5HGA
+	8AjZy4PtXqBTyCokcnrSPAaKWfAQv9Rf9iDA/y3DCG4pEdl9SOOj1WD1YKAFMm3M
+	t3lQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm1; t=1790329650; x=1790416050; bh=uihSC9KjAUldcdli/RyIuTfjwESy
+	dH7W1hKdMi/92G8=; b=w8p7OO6JUEglT4qr4p4nIn+1nr9uF2NBCGDkJkRGVP79
+	fkePKF8nw/68b8c7+aTK/kSBe3Nr8KkKh6HkHzXbebphnyhZxi2DlzoJwB8abUoO
+	bxN9DTF2seRNS6piTZhm42otQIKStC5M4plAkMlIStmhHV5xr3vJAWz2RqaTqEUs
+	c5Sq6a18BBSuqRB0p24pLJMtAd/xVUZCprqAnJePSI51qwjS9ZT0QyWnTzteXyaH
+	Oht6N5oHS05qrObyQTi0tWPHuqwhtiqzDQQVwly6J36e9B31de964czJ/7FxR9R0
+	qRqPjsW++HsCvZp0ZVCTrFnjRjV6zlXWGkfvuEXXzg==
+X-ME-Sender: <xms:MUO2auVh9cAnVWmYik05PNQl48Qx-pftx_Hl8uBZW_9N6izyxvEnkg>
+    <xme:MUO2arAz945oOI5a96KmbxDXfL0t5ePxOa2U_LWc0S6LJHE0rP0zi0x1ireuZ9tZ0
+    x-u9O_gQiyFvvQLoGvq_qM7Rtq9RJmeetiExX7E5v_bFMFDIs7IBDXY>
+X-ME-Received: <xmr:MUO2an1lrxIUyqF_sf-7ICjD8WNi_pUx3btY56STnkxOYTc11T7LoRKVzIgqsqcyc0h0G0E>
+X-ME-Proxy-Cause: dmFkZTGjYHlpCg9LU5Jn3J5FgSvlVX/173/IVUVYMWwQr/+tJlQQ44eJp+vnUs9/+BFyT6
+    ssREUNEo38vlQcl5fgvUKIXjtCp7Q7cCLjiDHehEfZ9S5lM1RKRi0KJLvYHSIosL2Jh8W7
+    lbrCK9IlAw7h6eRFn9HSKeNdjNZIVWpRGTgUUxXXK2abyqIqpE2sO2wahuV7J79feIjE59
+    Zp1wE5Ak2knYps3/NAGcxC7QpoFOIoA1V+o3foVvgy0Yqc7UxzbImNicvhxs6QsWOQZoyA
+    XozFFyfxAgeYCZlNlOAP9+nO0BuPbV+J7JwHdsiTvJTy9cwlwoiDHQUG9HZJPQCaw52MQ9
+    HIvi8qUWRJ8nfHaADc/WSajaQzChQGP7zhj/mYV/ZMv3g+LPTbsJjkI9i8z9Qknzd4dFmf
+    HacFesobtlzNYgYmZJQ+ro/LizzLROIRsM2k+RGJRMAEeRnKzC33HAh6dsm0LUBBYxkpt1
+    hSXL2IjQNMkPTmejFyVnMgi+Sz6Pob7mG8asUqOlM5+cn/lZkgGARrv3S4MZRy2Do1dZwc
+    5d6CfMn7sCb/ermoec1j6rKtD1EEmFTcee3BrD3dId/FIsxyH0zpsSB7PApZkk/BLQfcu9
+    47tvMsvvM3lKGEa/nT7f2mpCi2BmxYQteOv7p1gERWjkeicyAuccgFDra/JA
+X-ME-Proxy: <xmx:MUO2ajTbUJUj8YkkZEEhHk02QLx11DVCsZcRUfC7Ksa9bCwCuf1-iw>
+    <xmx:MUO2asaFBVwcTkSo9fmNbuBZ1k7N1U-IKotwiuhIenbhoQBiRlf-lw>
+    <xmx:MUO2apDg2kAj6AVGGHhEUjJQ5KNIk_MCy53B2XXTRJjSByeOVQ7ddg>
+    <xmx:MUO2arDidI69AOdKwssovOpVSX72VwEIb9k2JJulqrEuIPluFN5uEw>
+    <xmx:MkO2asiNNChrS3nfi2lyidMdzVwt33pwhBfTwG6_b_DWAYD_VpmFC9GF>
+Feedback-ID: i47b949f6:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 25 Sep 2026 05:47:28 -0400 (EDT)
+From: Janne Grunau <j@jannau.net>
+Subject: [PATCH 0/7] NVMe support for Apple M3, M3 Pro and M3 Max/Ultra
+ devices
+Date: Fri, 25 Sep 2026 10:22:47 +0200
+Message-Id: <20260925-apple-m3-nvme-v1-0-5e832e2f4aa9@jannau.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <arUOoLwpfNlIvIXy@8bytes.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDSyMT3cSCgpxU3Vxj3byy3FRdC/MUi0SDRPPUFEtDJaCegqLUtMwKsHn
+ RsRB+cWlSVmpyCcgQpdpaABKh39NxAAAA
+X-Change-ID: 20260924-apple-m3-nvme-87d8a0a7ed91
+To: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Jassi Brar <jassisinghbrar@gmail.com>, Keith Busch <kbusch@kernel.org>, 
+ Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, 
+ Jens Axboe <axboe@kernel.dk>, Jens Axboe <axboe@kernel.dk>
+Cc: linux-nvme@lists.infradead.org, asahi@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ devicetree@vger.kernel.org, iommu@lists.linux.dev, 
+ Janne Grunau <j@jannau.net>, Michael Reeves <michael.reeves077@gmail.com>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2678; i=j@jannau.net;
+ h=from:subject:message-id; bh=4ypi7wfhWyu9nXF1ipHoM2VNkSkHsmWohYy1wS85fpI=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhqxtzpr7und9kT9plc1tp+Fs+bVrkq3Yf82CRUfjLHTOP
+ NjldrmwYyILgxgXg6WYIkuS9ssOhtU1ijG1D8Jg5rAygQyRFmlgAAIWBr7cxLxSIx0jPVNtQz1D
+ Ix1jHSMGLk4BmOqOa4wM/y2O5XPlW7gbN+Rf4XjsFKijvNz1TKrV9NNOOi9DDj95w/C/YP2bLbc
+ PPN/wJa7E/feOnbP2p+8uObllKt+kHQ9+e9dnsAEA
+X-Developer-Key: i=j@jannau.net; a=openpgp;
+ fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-On Thu, Sep 24, 2026 at 01:51:45PM +0200, Joerg Roedel wrote:
+Hej,
 
-Hi Bjorn / Joerg,
+this series adds NVMe support to all M3, M3 Pro and M3 Max/Ultra
+devices. The hardware works the same way as T602x (M2 Pro/Max/Ultra). If
+there were changes they don't affect the way the existing Linux drivers
+use the hardware. So this series adds new per-SoC compatible strings to
+the mailbox, SART (IOMMU) and ANS (NVMe host controller) bindings and
+the device nodes.
 
-> On Thu, Sep 10, 2026 at 02:26:51PM +0000, Pranjal Shrivastava wrote:
-> > Pranjal Shrivastava (4):
-> >   iommu/amd: Refactor device probe and capability initialization
-> >   iommu/amd: Remove iommu_ignore_device()
-> >   iommu/amd: Fail probe on ATS configuration failure
-> >   PCI/ATS: Mandate checking pci_ats_supported() before pci_prepare_ats()
-> > 
-> >  drivers/iommu/amd/iommu.c | 164 +++++++++++++++++++-------------------
-> >  drivers/pci/ats.c         |   6 +-
-> >  2 files changed, 86 insertions(+), 84 deletions(-)
-> 
-> Applied the iommu parts (1-3), please submit patch 4 through the PCI tree.
+Merge strategy:
+The nvme tree has "dt-bindings: nvme: Add apple,t8132-nvme-ans2
+compatible" [1] queued for apple,nvme-ans.yaml so "dt-bindings:
+nvme: apple: Add Apple M3 compatibles" should go through the nvme tree
+as well. The MAINTAINERS update can go with it.
+The other dt-binding changes are trivial so there is a slight preference
+to take them to the apple-soc tree with Acked-by: by their maintainers.
+This keeps the number of `make dtbs_check` warnings in the apple-soc
+tree low. Merging them through their maintainer's trees is not a
+problem either.
+The apple device tree changes are based on / depend on commit
+eea4f3b5e9e1 ("Merge patch series "dt-check-style strict fixes for Apple
+M3, M3 Pro/Max/Ultra"") apple-soc/dt-7.4.
 
-Thanks for applying patches 1-3.
+I intentionally omitted the Fixes: in the MAINTAINERS update as I don't
+see any value in adding this change to stable releases.
 
-Shall I send patch 4 separately or can it be picked into the PCI tree
-directly?
+Link: https://lore.kernel.org/asahi/20260906-apple-nvme-t8132-v2-0-ac0328590823@cyberchaos.dev/ [1]
 
-Thanks,
-Praan
+Signed-off-by: Janne Grunau <j@jannau.net>
+---
+Janne Grunau (5):
+      MAINTAINERS: Add NVMe devicetree bindings
+      dt-bindings: mailbox: Add Apple M3 compatibles
+      dt-bindings: nvme: apple,nvme-ans: Add Apple M3 compatibles
+      arm64: dts: apple: t6030: Add NVMe device nodes
+      arm64: dts: apple: t6031: Add NVMe device nodes
+
+Michael Reeves (2):
+      dt-bindings: iommu: apple,sart: Add Apple M3 compatibles
+      arm64: dts: apple: t8122: Add NVMe device nodes
+
+ .../devicetree/bindings/iommu/apple,sart.yaml      |  3 ++
+ .../devicetree/bindings/mailbox/apple,mailbox.yaml |  3 ++
+ .../devicetree/bindings/nvme/apple,nvme-ans.yaml   |  7 +++-
+ MAINTAINERS                                        |  1 +
+ arch/arm64/boot/dts/apple/t6030.dtsi               | 42 ++++++++++++++++++++
+ arch/arm64/boot/dts/apple/t6031-nvme.dtsi          | 46 ++++++++++++++++++++++
+ arch/arm64/boot/dts/apple/t6031.dtsi               |  1 +
+ arch/arm64/boot/dts/apple/t6032.dtsi               |  1 +
+ arch/arm64/boot/dts/apple/t8122.dtsi               | 40 +++++++++++++++++++
+ 9 files changed, 143 insertions(+), 1 deletion(-)
+---
+base-commit: eea4f3b5e9e19389af3b99af64cdf7352b67c298
+change-id: 20260924-apple-m3-nvme-87d8a0a7ed91
+
+Best regards,
+--  
+Janne Grunau <j@jannau.net>
+
