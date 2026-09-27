@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF37C3E0081;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4DDD3E49C1;
 	Sun, 27 Sep 2026 13:09:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790514567; cv=none; b=nRG0o+XfmP0mvqHJ1nU4/iHNCa3/w/+5j5CI3nkOcyP6hBcVCdPaaKOwT3RACf1va7ZFhD1RTNY0+y7TDnzooHZHNnGXf6qkn2IV+H9xX8P4HYUbZiWaAU8jOkUanoCrC643B0h6m2G3/AbtSp6rZuNO+wzwKms+n8VopgRQfwI=
+	t=1790514567; cv=none; b=OWoMfAeOpWec3yfidCM5dlLOPqN5t4c4s0GdEwezOpLL5eVPwyNdmR2E6aigyu3I63qsOqPdUmx8nfpC2oqTgcn3bkalFrXpFrL45Y2sfYeUSQtVYS59bvl9X9aU6T3B8NKCsQrutTT+sHlWzJL0rpT+ASGMVOBijQJzLhMzs9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1790514567; c=relaxed/simple;
-	bh=/satiGAup3MvwEQuGuW7WPwdFMZuAWo3ppOawHGJOmc=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=X0DOGjSvO3qUSEVtmKEvepHCv3xlVte1sZ/BXDpUYo6/PCXnHNeHMqPtFUjkBPskIwvnml5tCwZkdWAi3CHmd3cdThABNNMYUSuUZSFj6BesZqYwWW1XsJuuNs+eBJxlXjbG5iTRtauyv6+J3QwEBRXJF5Skq4r/l2lsZfbeMHM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YcVBJgCm; arc=none smtp.client-ip=10.30.226.201
+	bh=GClfUePCC6oeiKfQEPUePyP7ae/FTcCRp32d6d0CEEk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=R3U4AFLt7s1hkDcko9dzFpELfHOOJHDWpCrhRPfrpLATfSR2ovPp7HdkttiUgnQauZuvRgQ7VaoBDHPY4sbWequlxxHg0DneABnEIM20xbcizyaZXPqa7eHkJqqrXKaYxCJuMIzcjfkPkmY6ji4v8HyK9KAFP0M0rzfiIwgE6LU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fZNt6dQ3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YcVBJgCm"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4F800C2BCB3;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fZNt6dQ3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 974BAC4AF51;
 	Sun, 27 Sep 2026 13:09:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1790514567;
-	bh=/satiGAup3MvwEQuGuW7WPwdFMZuAWo3ppOawHGJOmc=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=YcVBJgCmpB00VIVdOWeRsC6ScOW7YNAGGpPxyjwazpTwqof1c1jfrELI38rgvNbHY
-	 2+LaLZHWyju/KrpL3vtYxr51fAohEJo0TVOwYdWhq0jhm1iQxmZnMYBnRCHT1193pS
-	 sM6W2AySvmWyGP7c1TC3cm7FjQZd+VcoHTCcIpiYgmDIn+YtdE/gZJkxRwz+o1FSxg
-	 ADPNgv3hYKzlOhzZMT+qN/o/FLoGMP+NR7WTT5ohYE57DJj0GzaKfYt2yArVCXyiCi
-	 tUVKWm0DE6MlpJaI45y+a2nz9PH1YqQkppjrYC2s3AkL6JBX5W2lVSXcOmhMqJjYHU
-	 2Id4cgBxnkJig==
+	bh=GClfUePCC6oeiKfQEPUePyP7ae/FTcCRp32d6d0CEEk=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=fZNt6dQ3ao7XoaCAdrNpIBSuDWzagb9DmCELajmd7BcIC7VOOR5uGLcWuTS3JMRDc
+	 G6GPnlMuEZlLWbxB+bGTcmBw+ugLlzU0q/WT9qvrgtJygtIWekFNSQ5ml3ZSa/7mK8
+	 pSC24fSwdr0gLX9y20ZsGf4deLOQIA/eaHHvM7aPbVIujFKAPDD1AQZ0hPrWadqMRd
+	 K+7yBXMUKxA/FVpZImMSNJvHAZEZLJPvyNNhbsv1d8uZxv+fuzIUaOuJ5PwDtN6Wc1
+	 dvM4uCvOjzOzoceIcM0afn2zMLlveIeOAhIC8LvtPbPua+SXLiN4TQ9ni/jdTwUPJL
+	 5dLN1tiDax8gA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28002C9832F;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FAB5C98332;
 	Sun, 27 Sep 2026 13:09:27 +0000 (UTC)
 From: Daniel Drake via B4 Relay <devnull+dan.reactivated.net@kernel.org>
-Subject: [PATCH v7 0/6] Add support for Broadcom BCM2712 IOMMU driver
- (Raspberry Pi 5)
-Date: Sun, 27 Sep 2026 14:08:59 +0100
-Message-Id: <20260927-bcm2712-iommu-submit-v7-0-dfa2b975cbc9@reactivated.net>
+Date: Sun, 27 Sep 2026 14:09:03 +0100
+Subject: [PATCH v7 4/6] iommu/generic_pt: Add Broadcom BCM2712 page table
+ format
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -41,13 +41,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/4XPO27DMAwG4KsEmqtWpt6deo+igx5MrMF2IDlGi
- 8B3r5QlBmqjE/ED5EfyTgrmhIW8n+4k45JKmsYa9MuJhN6NF6Qp1kyAgWK6A+rDAK2maRhutNz
- 8kGYKyKyxFpUMgtTRa8Zz+n6wn181e1eQ+uzG0DdsyumSxrfBlRlz6+9Tmaf887hi6drUPwuXj
- jJqGHYsxIiA7iOjC3Na3IzxdcSZtLULbCjQBxRUioHQXgbGI5p9ij8pA/KA4pXS505w1GCsV/u
- UeFKWHT0oKmWj90pqqU3o9im5pewBJSsFktsgwYOwuE+pDQXigFLtQc+DC2iU1fwvta7rL1DEg
- rpVAgAA
-X-Change-ID: 20260712-bcm2712-iommu-submit-2e09899e65c4
+Message-Id: <20260927-bcm2712-iommu-submit-v7-4-dfa2b975cbc9@reactivated.net>
+References: <20260927-bcm2712-iommu-submit-v7-0-dfa2b975cbc9@reactivated.net>
+In-Reply-To: <20260927-bcm2712-iommu-submit-v7-0-dfa2b975cbc9@reactivated.net>
 To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -58,25 +54,23 @@ To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org, 
  linux-arm-kernel@lists.infradead.org, nick.hollinghurst@raspberrypi.com, 
- james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
- Conor Dooley <conor.dooley@microchip.com>
+ james.quinlan@broadcom.com, Jason Gunthorpe <jgg@ziepe.ca>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6705;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=13852;
  i=dan@reactivated.net; h=from:subject:message-id;
- bh=/satiGAup3MvwEQuGuW7WPwdFMZuAWo3ppOawHGJOmc=;
- b=owEBbQKS/ZANAwAKAcPmj7FTFEe7AcsmYgBquRWEh9z9/iyDIBx+HAzEEJ1yd1M1AVJqAulys
- 8n+HKLL8nCJAjMEAAEKAB0WIQQ6Rf0sUP1iEhXfVfjD5o+xUxRHuwUCarkVhAAKCRDD5o+xUxRH
- uxXED/9ELkBTzi0FS9uWC69lXIKCenidL0fc9VO64NIrebRYQjhHU6U1hNx/m5aahMpBqoXUUQx
- K1IktWVsMKNUgwTWG+9oMdHeyVwY6grkJ+Li4c+vZt7pHLNsd19LHUokbnVusgrUrkt1KtJ4Y/D
- VbIdT/1PumNtPRu45CXtdeWfdYE+F6VC+eZCVeCjZ5wcLjOT+jehsvFZTYnQ8fOBEROWMqNWSZr
- M0ccFvJ2TyLkX+o+265mKvZA7Prvejadskmi0Nqc5nZtX73SnhmjV8C+X6YA4xhbCT8ECSRqZ2F
- DNxSbp4K4wz/3nEZHIv3YFJn91oYOIDnODZxAbLG4BZ2fISQDBok1cB9NtC95yTBpPRvetnp0IX
- THvRjDZcAYJ5nTgvUyuGiYzIj2bUTqGJNcCzpaN5tIYfi6j+g/9lzUEDPOCz3ot6q92dVF0RcMO
- NutN1lybkd0xwFVCXNgWkFPlc5JBM4OhMjkVRcZv4RNMmpmiXyhqbEub9u8LdKiq5yAecYCP8wy
- rs69POXXWi/JWEvxjMS+BHPKc29/AJ+nBqe1kfS92exrt1Q36hssQEjmbjLVWGiQFKaZ90s4Y6X
- HYMSZ6O1ASUWQfqvcdt3wOrm5avJ2PauXZt7SZWPNvwQad6XbDwy3A/X5QccybfHusUAUxERzhk
- cHBUU66l59gChxg==
+ bh=0P+lUXYOAgHwLKK7IMQBMw6DGl1StORwkeDAvWwmVYw=;
+ b=owEBbQKS/ZANAwAKAcPmj7FTFEe7AcsmYgBquRWFU3GU2jPnusqsekrGt3S1zI+EiSt4NQG91
+ QyQr+JvyViJAjMEAAEKAB0WIQQ6Rf0sUP1iEhXfVfjD5o+xUxRHuwUCarkVhQAKCRDD5o+xUxRH
+ uzjMEACITl0YO9GviqoTM5n28hBMmItayRozIT6ynMmAGnkh/ydSzr5LeFM2Dt0pDVWTMQO8BsK
+ IgNxnG/Oy44/n6WmdprSOZDL3Jwx8UrVX9tePUemmQ/0Vn6QB9N5uFJEJ5xIWsQ6AmKAyKKVvY7
+ CmIUmwXvX+IABpBfWaqhoRPS3SLmC41A9HszJtZfQmO8TUXDajATY+jLhOPb9x9thMBU+K/Fpxd
+ eAb8FIE4tvgCBtsc1bQRIfr1nIP0E1fR6rf7fVn/4FvH3n+yz9V7w2JTM0M6jJwyL5K5joVj7Tc
+ m+clqGUP1KVGh3CwGPlYOalJEzdyB0Er444BnTdMgnzJ2f7lYnhdyPEJA6hpLupcwz9kHDlAaG1
+ z1tAenpalfoRjQQQyCWY09AYWuFSntPyFjQMoEoD4hoIiEHGAFaqVSVE2bcyINXDJwvGmqgVPjm
+ akSAJ5Ub6slC+pIgHXtdsjZVMUJ1aIWZtXxEHx5NevE0Hm1SOJgZdSBjUWLpIC7lqxjJJvXMu9F
+ xWhBLhS34WT/3euhW98lRrNQK8NXPsh8kfleV65YTN2ONHkST3gqN69JwBXZ9HK9CvqjdAdl8vN
+ pXV0jQjCLU70AqFsh+zk2Nu4D28X1YEq8kOrZXjb6FGP7rNmsyjIgnbX5ap4Qn1pidApET1Fz7z
+ NggExlN+YeymLIA==
 X-Developer-Key: i=dan@reactivated.net; a=openpgp;
  fpr=3A45FD2C50FD621215DF55F8C3E68FB1531447BB
 X-Endpoint-Received: by B4 Relay for dan@reactivated.net/default with
@@ -84,136 +78,450 @@ X-Endpoint-Received: by B4 Relay for dan@reactivated.net/default with
 X-Original-From: Daniel Drake <dan@reactivated.net>
 Reply-To: dan@reactivated.net
 
-Hi,
+From: Daniel Drake <dan@reactivated.net>
 
-This series adds a driver for the Broadcom BCM2712 IOMMU found on
-Raspberry Pi 5, and hooks up the display controller IOMMU for efficient
-management of graphics memory. This is adapted from the downstream driver
-from Raspberry Pi (original author Nick Hollinghurst), with main changes:
- - In page mapping mode, operate the translation aperture from address 0,
-   with no bypass window. More like a IOMMU and less like a GART.
- - Implement the page table management using generic_pt
- - Support 4MB hugepage mapping in top level page table
- - Implement brcm,iommu-cache as standards-compliant DT property
- - Drop the dma-iova-offset hack, used to work around some issue seen with
-   dma-ranges. This will need to be investigated separately and solved
-   properly. (It's not needed for display controller iommu support included
-   here.)
- - Misc simplifications/standardisations/cleanups
+Implement generic_pt support for the 2-level page table format used by
+the BCM2712 IOMMUs.
+
+Adapted from Raspberry Pi's downstream bcm2712-iommu driver (original
+author Nick Hollinghurst).
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Daniel Drake <dan@reactivated.net>
+---
+ drivers/iommu/generic_pt/.kunitconfig        |   1 +
+ drivers/iommu/generic_pt/Kconfig             |  10 +
+ drivers/iommu/generic_pt/fmt/Makefile        |   2 +
+ drivers/iommu/generic_pt/fmt/bcm2712.h       | 288 +++++++++++++++++++++++++++
+ drivers/iommu/generic_pt/fmt/defs_bcm2712.h  |  18 ++
+ drivers/iommu/generic_pt/fmt/iommu_bcm2712.c |   6 +
+ include/linux/generic_pt/common.h            |   6 +
+ include/linux/generic_pt/iommu.h             |  12 ++
+ 8 files changed, 343 insertions(+)
+
+diff --git a/drivers/iommu/generic_pt/.kunitconfig b/drivers/iommu/generic_pt/.kunitconfig
+index 0bb98fe581fe..a3da74328f12 100644
+--- a/drivers/iommu/generic_pt/.kunitconfig
++++ b/drivers/iommu/generic_pt/.kunitconfig
+@@ -7,6 +7,7 @@ CONFIG_IOMMU_PT_AMDV1=y
+ CONFIG_IOMMU_PT_VTDSS=y
+ CONFIG_IOMMU_PT_RISCV64=y
+ CONFIG_IOMMU_PT_X86_64=y
++CONFIG_IOMMU_PT_BCM2712=y
+ CONFIG_IOMMU_PT_KUNIT_TEST=y
  
-The IOMMU works strictly with 4KB pages. This means that unfortunately
-when the kernel is compiled with PAGE_SIZE=16KB (the Raspberry Pi 5
-kernel default), 12KB is wasted in each page that is allocated for page
-tables. I plan to address this in followup work.
+ CONFIG_IOMMUFD=y
+diff --git a/drivers/iommu/generic_pt/Kconfig b/drivers/iommu/generic_pt/Kconfig
+index f4ed1add58b7..2a81dac960ac 100644
+--- a/drivers/iommu/generic_pt/Kconfig
++++ b/drivers/iommu/generic_pt/Kconfig
+@@ -72,6 +72,15 @@ config IOMMU_PT_X86_64
+ 
+ 	  Selected automatically by an IOMMU driver that uses this format.
+ 
++config IOMMU_PT_BCM2712
++	tristate "IOMMU page table for Broadcom BCM2712"
++	help
++	  iommu_domain implementation for the Broadcom BCM2712 IOMMU found on
++	  Raspberry Pi 5. It supports 4K page sizes over a 2-level page table
++	  format.
++
++	  Selected automatically by an IOMMU driver that uses this format.
++
+ config IOMMU_PT_KUNIT_TEST
+ 	tristate "IOMMU Page Table KUnit Test" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+@@ -79,6 +88,7 @@ config IOMMU_PT_KUNIT_TEST
+ 	depends on IOMMU_PT_RISCV64 || !IOMMU_PT_RISCV64
+ 	depends on IOMMU_PT_X86_64 || !IOMMU_PT_X86_64
+ 	depends on IOMMU_PT_VTDSS || !IOMMU_PT_VTDSS
++	depends on IOMMU_PT_BCM2712 || !IOMMU_PT_BCM2712
+ 	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable kunit tests for GENERIC_PT and IOMMU_PT that covers all the
+diff --git a/drivers/iommu/generic_pt/fmt/Makefile b/drivers/iommu/generic_pt/fmt/Makefile
+index ea024d582594..82ca3c36823d 100644
+--- a/drivers/iommu/generic_pt/fmt/Makefile
++++ b/drivers/iommu/generic_pt/fmt/Makefile
+@@ -9,6 +9,8 @@ iommu_pt_fmt-$(CONFIG_IOMMU_PT_RISCV64) += riscv64
+ 
+ iommu_pt_fmt-$(CONFIG_IOMMU_PT_X86_64) += x86_64
+ 
++iommu_pt_fmt-$(CONFIG_IOMMU_PT_BCM2712) += bcm2712
++
+ IOMMU_PT_KUNIT_TEST :=
+ define create_format
+ obj-$(2) += iommu_$(1).o
+diff --git a/drivers/iommu/generic_pt/fmt/bcm2712.h b/drivers/iommu/generic_pt/fmt/bcm2712.h
+new file mode 100644
+index 000000000000..2c5b034441c1
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/bcm2712.h
+@@ -0,0 +1,288 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2026 Daniel Drake
++ *
++ * BCM2712 IOMMU simple two level page table
++ */
++#ifndef __GENERIC_PT_FMT_BCM2712_H
++#define __GENERIC_PT_FMT_BCM2712_H
++
++#include "defs_bcm2712.h"
++#include "../pt_defs.h"
++
++#include <linux/bitfield.h>
++#include <linux/container_of.h>
++#include <linux/log2.h>
++#include <linux/sizes.h>
++
++enum {
++	/* Hardware provides a two-level page table */
++	PT_MAX_TOP_LEVEL = 1,
++
++	/* Hardware page size is strictly 4kb */
++	PT_GRANULE_LG2SZ = ilog2(SZ_4K),
++	PT_TABLEMEM_LG2SZ = PT_GRANULE_LG2SZ,
++
++	/* Table entries and leaf entries are 32 bits */
++	PT_ITEM_WORD_SIZE = sizeof(pt_bcm2712_entry_t),
++
++	/* Leaf entries encode a 25-bit PFN */
++	PT_MAX_OUTPUT_ADDRESS_LG2 = 25 + PT_GRANULE_LG2SZ,
++
++	/*
++	 * For simplicity, only manage mappings within an address space of
++	 * exactly 4GB. This is because our Level 1 directory page will be 4kb
++	 * in the smallest case, permitting 1024 entries pointing at Level 0
++	 * pages, each permitting 4mb of mapped memory.
++	 */
++	PT_MAX_VA_ADDRESS_LG2 = ilog2(SZ_4G),
++
++	/* Level 1 base address is programmed as a 32-bit PFN */
++	PT_TOP_PHYS_MASK = GENMASK_ULL(31 + PT_GRANULE_LG2SZ, PT_GRANULE_LG2SZ),
++};
++
++/* PTE bits */
++enum {
++	BCM2712PT_VALID = BIT(28),
++	BCM2712PT_WRITE = BIT(29),
++	BCM2712PT_PAGESIZE = GENMASK(31, 30),
++	BCM2712PT_PFN = GENMASK(24, 0),
++};
++
++#define common_to_bcm2712pt(common_ptr) \
++	container_of_const(common_ptr, struct pt_bcm2712, common)
++#define to_bcm2712pt(pts) common_to_bcm2712pt((pts)->range->common)
++
++static inline pt_oaddr_t bcm2712pt_table_pa(const struct pt_state *pts)
++{
++	return oalog2_mul(FIELD_GET(BCM2712PT_PFN, pts->entry),
++			  PT_GRANULE_LG2SZ);
++}
++#define pt_table_pa bcm2712pt_table_pa
++#define pt_item_oa bcm2712pt_table_pa
++
++static inline bool bcm2712pt_can_have_leaf(const struct pt_state *pts)
++{
++	return true;
++}
++#define pt_can_have_leaf bcm2712pt_can_have_leaf
++
++/* 4MB pages are installed at level 1, everything else at level 0 */
++static inline unsigned int bcm2712pt_pgsz_lg2_to_level(struct pt_common *common,
++						       unsigned int pgsize_lg2)
++{
++	return pgsize_lg2 == ilog2(SZ_4M) ? 1 : 0;
++}
++#define pt_pgsz_lg2_to_level bcm2712pt_pgsz_lg2_to_level
++
++static inline pt_vaddr_t bcm2712pt_possible_sizes(const struct pt_state *pts)
++{
++	struct pt_bcm2712 *table = common_to_bcm2712pt(pts->range->common);
++
++	if (pts->level == 1)
++		return SZ_4M;
++
++	return SZ_4K |
++	       (table->bigpage_lg2 ? BIT_ULL(table->bigpage_lg2) : 0) |
++	       (table->superpage_lg2 ? BIT_ULL(table->superpage_lg2) : 0);
++}
++#define pt_possible_sizes bcm2712pt_possible_sizes
++
++static inline unsigned int
++bcm2712pt_entry_num_contig_lg2(const struct pt_state *pts)
++{
++	struct pt_bcm2712 *table = common_to_bcm2712pt(pts->range->common);
++	u32 pgsz = FIELD_GET(BCM2712PT_PAGESIZE, pts->entry);
++
++	if (pts->level != 0 || !(pts->entry & BCM2712PT_VALID))
++		return 0;
++
++	/*
++	 * Superpage/bigpage contiguous mapping (really just hinting) is handled
++	 * via PAGESIZE bits on each leaf entry.
++	 */
++	if (pgsz == 2 && table->superpage_lg2)
++		return table->superpage_lg2 - PT_GRANULE_LG2SZ;
++	else if (pgsz == 1 && table->bigpage_lg2)
++		return table->bigpage_lg2 - PT_GRANULE_LG2SZ;
++	return 0;
++}
++#define pt_entry_num_contig_lg2 bcm2712pt_entry_num_contig_lg2
++
++static inline unsigned int bcm2712pt_num_items_lg2(const struct pt_state *pts)
++{
++	return PT_TABLEMEM_LG2SZ - ilog2(PT_ITEM_WORD_SIZE);
++}
++#define pt_num_items_lg2 bcm2712pt_num_items_lg2
++
++static inline enum pt_entry_type bcm2712pt_load_entry_raw(struct pt_state *pts)
++{
++	const pt_bcm2712_entry_t *tablep =
++		pt_cur_table(pts, pt_bcm2712_entry_t);
++
++	pts->entry = READ_ONCE(tablep[pts->index]);
++	if (!(pts->entry & BCM2712PT_VALID))
++		return PT_ENTRY_EMPTY;
++
++	if (pts->level == 1) {
++		if (FIELD_GET(BCM2712PT_PAGESIZE, pts->entry) == 3)
++			return PT_ENTRY_OA;
++		return PT_ENTRY_TABLE;
++	}
++
++	return PT_ENTRY_OA;
++}
++#define pt_load_entry_raw bcm2712pt_load_entry_raw
++
++static inline void
++bcm2712pt_install_leaf_entry(struct pt_state *pts, pt_oaddr_t oa,
++			     unsigned int oasz_lg2,
++			     const struct pt_write_attrs *attrs)
++{
++	pt_bcm2712_entry_t *tablep = pt_cur_table(pts, pt_bcm2712_entry_t);
++	pt_bcm2712_entry_t entry;
++
++	if (!pt_check_install_leaf_args(pts, oa, oasz_lg2))
++		return;
++
++	entry = BCM2712PT_VALID | attrs->descriptor_bits |
++		FIELD_PREP(BCM2712PT_PFN, oalog2_div(oa, PT_GRANULE_LG2SZ));
++
++	if (pts->level == 1) {
++		/* Level 1 hugepage (4MB) */
++		entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 3);
++		WRITE_ONCE(tablep[pts->index], entry);
++		pts->entry = entry;
++		return;
++	}
++
++	if (oasz_lg2 == PT_GRANULE_LG2SZ) {
++		WRITE_ONCE(tablep[pts->index], entry);
++		pts->entry = entry;
++	} else {
++		struct pt_bcm2712 *table =
++			common_to_bcm2712pt(pts->range->common);
++		u32 *end;
++
++		tablep += pts->index;
++		end = tablep + log2_to_int(oasz_lg2 - PT_GRANULE_LG2SZ);
++
++		/*
++		 * Leaf entries can contain hints indicating bigpage/superpage
++		 * contiguous mappings to permit TLB optimization
++		 */
++		if (oasz_lg2 == table->superpage_lg2)
++			entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 2);
++		else if (oasz_lg2 == table->bigpage_lg2)
++			entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 1);
++
++		pts->entry = entry;
++		for (; tablep != end; tablep++, entry++)
++			WRITE_ONCE(*tablep, entry);
++	}
++}
++#define pt_install_leaf_entry bcm2712pt_install_leaf_entry
++
++static inline bool bcm2712pt_install_table(struct pt_state *pts,
++					   pt_oaddr_t table_pa,
++					   const struct pt_write_attrs *attrs)
++{
++	pt_bcm2712_entry_t entry =
++		BCM2712PT_VALID |
++		FIELD_PREP(BCM2712PT_PFN,
++			   oalog2_div(table_pa, PT_GRANULE_LG2SZ));
++
++	return pt_table_install32(pts, entry);
++}
++#define pt_install_table bcm2712pt_install_table
++
++static inline void bcm2712pt_attr_from_entry(const struct pt_state *pts,
++					     struct pt_write_attrs *attrs)
++{
++	attrs->descriptor_bits = pts->entry & BCM2712PT_WRITE;
++}
++#define pt_attr_from_entry bcm2712pt_attr_from_entry
++
++static inline unsigned int bcm2712pt_max_sw_bit(struct pt_common *common)
++{
++	return 2;
++}
++#define pt_max_sw_bit bcm2712pt_max_sw_bit
++
++static inline u32 bcm2712pt_sw_bit(unsigned int bitnr)
++{
++	if (__builtin_constant_p(bitnr) && bitnr > 2)
++		BUILD_BUG();
++	if (PT_WARN_ON(bitnr > 2))
++		return 0;
++
++	/* Bits 27, 26 and 25 are believed spare */
++	return BIT(27 - bitnr);
++}
++#define pt_sw_bit bcm2712pt_sw_bit
++
++/* --- iommu */
++#include <linux/generic_pt/iommu.h>
++#include <linux/iommu.h>
++
++#define pt_iommu_table pt_iommu_bcm2712
++
++/* The common struct is in the per-format common struct */
++static inline struct pt_common *common_from_iommu(struct pt_iommu *iommu_table)
++{
++	return &container_of(iommu_table, struct pt_iommu_table, iommu)
++			->bcm2712pt.common;
++}
++
++static inline struct pt_iommu *iommu_from_common(struct pt_common *common)
++{
++	return &container_of(common, struct pt_iommu_table, bcm2712pt.common)
++			->iommu;
++}
++
++static inline int bcm2712_pt_iommu_set_prot(struct pt_common *common,
++					    struct pt_write_attrs *attrs,
++					    unsigned int iommu_prot)
++{
++	attrs->descriptor_bits = 0;
++	if (iommu_prot & IOMMU_WRITE)
++		attrs->descriptor_bits |= BCM2712PT_WRITE;
++	return 0;
++}
++#define pt_iommu_set_prot bcm2712_pt_iommu_set_prot
++
++static inline int bcm2712_pt_fmt_init(struct pt_iommu_table *fmt_table,
++				      const struct pt_iommu_bcm2712_cfg *cfg)
++{
++	fmt_table->bcm2712pt.bigpage_lg2 = cfg->bigpage_lg2;
++	fmt_table->bcm2712pt.superpage_lg2 = cfg->superpage_lg2;
++
++	pt_top_set_level(&fmt_table->bcm2712pt.common, PT_MAX_TOP_LEVEL);
++	return 0;
++}
++#define pt_iommu_fmt_init bcm2712_pt_fmt_init
++
++static inline void
++bcm2712pt_iommu_fmt_hw_info(struct pt_iommu_bcm2712 *table,
++			    const struct pt_range *top_range,
++			    struct pt_iommu_bcm2712_hw_info *info)
++{
++	info->pt_base = virt_to_phys(top_range->top_table);
++	PT_WARN_ON(info->pt_base & ~PT_TOP_PHYS_MASK);
++}
++#define pt_iommu_fmt_hw_info bcm2712pt_iommu_fmt_hw_info
++
++#if defined(GENERIC_PT_KUNIT)
++static const struct pt_iommu_bcm2712_cfg bcm2712_kunit_fmt_cfgs[] = {
++	[0] = {
++		.common.hw_max_vasz_lg2 = 32,
++		.common.hw_max_oasz_lg2 = 37,
++		.bigpage_lg2 = 16,
++		.superpage_lg2 = 20,
++	},
++};
++#define kunit_fmt_cfgs bcm2712_kunit_fmt_cfgs
++enum { KUNIT_FMT_FEATURES = 0 };
++#endif
++
++#endif
+diff --git a/drivers/iommu/generic_pt/fmt/defs_bcm2712.h b/drivers/iommu/generic_pt/fmt/defs_bcm2712.h
+new file mode 100644
+index 000000000000..f1d983be1716
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/defs_bcm2712.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef __GENERIC_PT_FMT_DEFS_BCM2712_H
++#define __GENERIC_PT_FMT_DEFS_BCM2712_H
++
++#include <linux/generic_pt/common.h>
++#include <linux/types.h>
++
++typedef u32 pt_bcm2712_entry_t;
++typedef u64 pt_vaddr_t;
++typedef u64 pt_oaddr_t;
++
++struct bcm2712pt_write_attrs {
++	pt_bcm2712_entry_t descriptor_bits;
++	gfp_t gfp;
++};
++#define pt_write_attrs bcm2712pt_write_attrs
++
++#endif
+diff --git a/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c b/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c
+new file mode 100644
+index 000000000000..43fbc3cf3adc
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c
+@@ -0,0 +1,6 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#define PT_FMT bcm2712
++#define PT_SUPPORTED_FEATURES BIT(PT_FEAT_DMA_INCOHERENT)
++
++#include <linux/generic_pt/iommu.h>
++#include "iommu_template.h"
+diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
+index 07ef1c8341a4..1b39b27f0cfa 100644
+--- a/include/linux/generic_pt/common.h
++++ b/include/linux/generic_pt/common.h
+@@ -213,4 +213,10 @@ enum {
+ 	PT_FEAT_X86_64_AMD_ENCRYPT_TABLES = PT_FEAT_FMT_START,
+ };
+ 
++struct pt_bcm2712 {
++	struct pt_common common;
++	u8 bigpage_lg2;
++	u8 superpage_lg2;
++};
++
+ #endif
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index dd0edd02a48a..13ebb72a67de 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -346,6 +346,18 @@ struct pt_iommu_x86_64_hw_info {
+ 
+ IOMMU_FORMAT(x86_64, x86_64_pt);
+ 
++struct pt_iommu_bcm2712_cfg {
++	struct pt_iommu_cfg common;
++	u8 bigpage_lg2;
++	u8 superpage_lg2;
++};
++
++struct pt_iommu_bcm2712_hw_info {
++	phys_addr_t pt_base;
++};
++
++IOMMU_FORMAT(bcm2712, bcm2712pt);
++
+ #undef IOMMU_PROTOTYPES
+ #undef IOMMU_FORMAT
+ #endif
 
-It has been tested on Raspberry Pi 5 using a 3D-accelerated graphical
-environment which causes plenty of IOMMU maps & unmaps.
-
-Thanks for the review comments and discussion. Further feedback and
-testing welcome!
-
-Changes in v7:
-- Add latest Reviewed-by / Acked-by 
-- Otherwise no changes, resending due to email delivery issue
-- Link to v6: https://lore.kernel.org/r/20260924-bcm2712-iommu-submit-v6-0-7b3cace86973@reactivated.net
-
-Changes in v6:
-- Add MAINTAINERS entry
-- Drop unnecessary vc4 iommus property (it only needs to sit on the
-  underlying hvs device)
-- Add dt-bindings doc for hvs iommus property
-- Link to v5: https://lore.kernel.org/r/20260909-bcm2712-iommu-submit-v5-0-2539c52b249e@reactivated.net
-
-Changes in v5:
-- Drop blocked_domain support as hardware always translates a minimum
-  256MB aperture when enabled
-- Restrict Kconfig dependency to ARCH_BCM2835, matching other RPi drivers
-- Improved error handling in device attach
-- Add missing iommu_put_pages_list() in iotlb sync
-- Minor readability improvements
-- Link to v4: https://lore.kernel.org/r/20260902-bcm2712-iommu-submit-v4-0-9dbb657578c1@reactivated.net
-
-Changes in v4:
-- Add Jim Quinlan and Florian Fainelli as bindings maintainers
-- Replace MMU register access macros with static inline functions
-- Clear illegal address register and flush caches on blocking domain attach
-- Add __must_hold annotations in TLB helpers
-- Use BIT() macro for MMUC_CONTROL definitions
-- Link to v3: https://lore.kernel.org/r/20260825-bcm2712-iommu-submit-v3-0-7f143e7289b6@reactivated.net
-
-Changes in v3:
-- Switch from a aperture and bypass window GART-like approach
-  to IOMMU-like 0-based translation
-- Add 3 SW bits which seem unused (per the chipset docs); drop patch
-  for NO_SW_BIT handling. This reduces the claimed address space, so I had
-  to tweak a iommu_pt test accordingly.
-- Disallow domain sharing across multiple hardware IOMMU instances
-- Clear and flush local MMU TLB during domain attach
-- Handle unattached domains safely during TLB sync
-- Set cache platform driver data late during probe to prevent race condition
-- Improved handling of cache flush timeouts
-- Use format string for device name in iommu_device_sysfs_add()
-- Use cleanup.h helpers for scope management
-- Expand DT binding descriptions for IOMMU and IOMMUC
-- Add iommus property to HVS display node in DT
-- Drop iommuc back-compat with current RPi DT
-- Link to v2: https://lore.kernel.org/r/20260727-bcm2712-iommu-submit-v2-0-0247b5c03de8@reactivated.net
-
-Changes in v2:
-- Use iommu_fwspec in xlate & probe_device
-- Add blocked_domain support
-- Simplify page size configuration between iommu driver and format
-- Introduce PT_FEAT_NO_SW_BIT flag to allow formats to explicitly opt-in to
-  a defensive flushing algorithm when no sw bit is available
-- Implement 4MB pages at Level 1; this is more efficient and means the
-  "allow full-table contiguous leaves in unit tests" commit has been
-  dropped because it is no longer needed.
-- Hardcode the aperture in an unused part of the address space, removing
-  it from DT (it's a software-specific decision, not an attribute of the
-  hardware), adding more explanatory comments
-- Use pt_full_va_prefix to have the PT format operate within the aperture
-  space, enabling use of IOMMU_PT_DOMAIN_OPS
-- Add more dt-bindings explanation to brcm,iommu-cache and drop docs
-  around the cache property used in RPi firmware (the driver still supports
-  this however, for fw compat reasons)
-- Correct iommu device address in bcm2712.dtsi
-- Link to v1: https://lore.kernel.org/r/20260712-bcm2712-iommu-submit-v1-0-80e10cdde2ea@reactivated.net
-
----
-Daniel Drake (6):
-      iommu_pt: Fix test_pgsize_boundary() failure on narrow-OA formats
-      dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
-      dt-bindings: display: brcm,bcm2835-hvs: Document iommus property
-      iommu/generic_pt: Add Broadcom BCM2712 page table format
-      iommu: Add Broadcom BCM2712 IOMMU driver
-      arm64: dts: broadcom: bcm2712: Add GPU IOMMU and IOMMU cache nodes
-
- .../bindings/display/brcm,bcm2835-hvs.yaml         |   3 +
- .../bindings/iommu/brcm,bcm2712-iommu.yaml         |  54 ++
- .../bindings/iommu/brcm,bcm2712-iommuc.yaml        |  40 ++
- MAINTAINERS                                        |  12 +
- arch/arm64/boot/dts/broadcom/bcm2712.dtsi          |  14 +
- drivers/iommu/Kconfig                              |  15 +
- drivers/iommu/Makefile                             |   1 +
- drivers/iommu/bcm2712-iommu-cache.c                |  84 ++++
- drivers/iommu/bcm2712-iommu-cache.h                |   9 +
- drivers/iommu/bcm2712-iommu.c                      | 550 +++++++++++++++++++++
- drivers/iommu/generic_pt/.kunitconfig              |   1 +
- drivers/iommu/generic_pt/Kconfig                   |  10 +
- drivers/iommu/generic_pt/fmt/Makefile              |   2 +
- drivers/iommu/generic_pt/fmt/bcm2712.h             | 288 +++++++++++
- drivers/iommu/generic_pt/fmt/defs_bcm2712.h        |  18 +
- drivers/iommu/generic_pt/fmt/iommu_bcm2712.c       |   6 +
- drivers/iommu/generic_pt/kunit_iommu_pt.h          |   2 +-
- include/linux/generic_pt/common.h                  |   6 +
- include/linux/generic_pt/iommu.h                   |  12 +
- 19 files changed, 1126 insertions(+), 1 deletion(-)
----
-base-commit: 28924df2a08f440c73991b83028032c901de2ae4
-change-id: 20260712-bcm2712-iommu-submit-2e09899e65c4
-
-Best regards,
 -- 
-Daniel Drake <dan@reactivated.net>
+2.55.0
 
 
