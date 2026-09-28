@@ -1,90 +1,94 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 697174F3930
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 17:05:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65A534F0527
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 17:12:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790615141; cv=none; b=Spkmu1hd+HEpy+8g/SyZWmyqC0hyFi2+/FLZhCzm3RoMeI9op2j0c37v2ma//Ov2kZsI++beGhC8kG8DvNVDP/g9ZfVDcopV8svqNZWoEAUgSR6o0WwHDrCMrkR3VN/pQL0BONiw3pVGP5RRWZ1mzbzNUWe3dtkWTMYQvc4aGYs=
+	t=1790615523; cv=none; b=LDtoOAxCBjev6e9i0+YQu3jyZh3lB0zcVn0AgCkl6LO9urn8llOcDcrpwlpdbqM2+VoGaaUShm1xt6sghROhJxOZL0udfPZtYjK2nA5ndVHegGeu8O6O/IJLzk+zG1RSNsQrqwC3ZCrJxAf1JsBb5EwlmIcnqNuZIdhsX1a8Pvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790615141; c=relaxed/simple;
-	bh=Q8tvAWP6jumWUL42nIbZpr65seFVkU5veTcSD+6xbwI=;
+	s=arc-20240116; t=1790615523; c=relaxed/simple;
+	bh=07TrU0VEizoL1pIvvflmGHE2/PUvnp8kiR1c1VUyQ2c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Yy1f/5ospe3iRzHGKwujanyK10byokoiX7g+L3sCNPOdYZPyt8y7hyitSI/8wYEadMLewUIS9yYsdlfCIQdW/f7Z0DOE9VW7myvuX66Abz1IRZWUGH0b21jsWo7CpQjnGHlZfH1TxVweGV+1GdyLcQJUVLMcFVvCRAEEuACv7+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VE9RsxAx; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=UGU5cHGUjiN5uUENaj0quZPiLoayiM8NNNV8PMl0xtaOlyxzU+uDxAoROuKUZyXAZpbnVv7upNNf+SB/w4MlXvqqp3MP7GWfqMLnEPYSHkeNGfTIAckfsb2+RLFx6iWVkza9u38k0rLRowpUVM+qRX807rhSViLvAVjO0xyNKKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dhC+IE3v; arc=none smtp.client-ip=209.85.161.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VE9RsxAx"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2d8facae850so1985ad.0
-        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 10:05:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dhC+IE3v"
+Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-6d821901872so181472eaf.1
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 10:12:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790615138; x=1791219938; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1790615520; x=1791220320; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ban7nhZo4CJqKpPDdVZLRncSMRaeOxomE1+tyNWWrJM=;
-        b=VE9RsxAxNoRRG6vXXxqX9/n5ok+MraQGl1uy8PK66De318SzniQWQTrF10Y17EGGlG
-         pU4bMTwjD2CVaMF9qH5MB3NuVQKrvQwrqbO2XTtNOwI/neXbDyXsrewx1XqIYYzWNCCu
-         6Va3Fdkfhi3dOVYv6FJv9wkpBqR7Nu5D71u0van3EtJgQmQnUQ3gnhnzSebi243gC9tH
-         QiI6KBcJd3z6+1P373JvmaYsAe2LV8EeTC0vVSPXDYto3DEvoQjBaJ0fBGwP9jt2iKQS
-         XRmm+wc9uWHUg58Te16boCy6jqOELaLG+xp557mC6OkxZBSjZFQLqbblmhIbmaJm03c/
-         Y0yg==
+        bh=a9vn70oN/MkzXdp1qzKn2h1C6fFreFjIcRIhZBrGV58=;
+        b=dhC+IE3vTo7IvdDRQd+AoK5RAPg604mh9eXxcwNxalfcxMEOUB3nE8oj5j1BFnV+2F
+         OeDIPzX1YxoEI9Yqy1FcuIR1BmUKLBknq1ykwAK6T+yBoQcsZ7uxNiO/MnwPhvAcR4CS
+         zuqFCFdgpv/AGT8+PFHXpsvjmhCbOYjgxGXgFimwBbT95NNu7pJAmT8Dl+hOCYJhewrx
+         R0HxnHK55w/q4WgmKMDCEA1WzTdMjTCxXsf6Y8n5PTO8GfSv9DDqHbz8twJnwz6BjZm9
+         TX9r6WTdp0XhtYOsAroaZIiro0Vi9P/80W1o21sPTg0NLl4XSwGTVgLOkyWZ82jD7ldu
+         pDTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790615138; x=1791219938;
+        d=1e100.net; s=20260707; t=1790615520; x=1791220320;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ban7nhZo4CJqKpPDdVZLRncSMRaeOxomE1+tyNWWrJM=;
-        b=fEIRJ1m7EyI+i/j32wCIWIyF5paLuSsm+TAGs2/1LLAL1Pg09Ex81cyBP1qKDXTGju
-         lTtys7ArXlLVFhl7FZ3pJXasRaZ40BEdSuzbNmOjwF5YRtXRN7F6Su/IU2M38Hc9j1RI
-         kbeUlNYhlKOzeE+m5CdO9YOhXg9k9SQWM+cix8D4NNp1O2qv8DDOqjtZ/sol7OCoUWNB
-         4I4Mr8VUiWASLkpZz9o5PdwUVZXuqEaCOZaZ2UBTlqcDtvff4uJfq3EYkdVrQkjAO5SY
-         rUYO89Fs9QPCS62tRdt5TGkdIUZwHgTKW4NRFnTZsVr5zhTANlXKRswA0TuiywVY6S4s
-         8pcw==
-X-Forwarded-Encrypted: i=1; AKwUvBz4qaNqbpElrTzyhQAAgPemWeyK8//+WG2zssUuTFpiegI1lkjN9SK2BEyvNA2eJt/ECYz2/Q==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJrReAd8bSMnH+4t9fDcyWPV2Xdn2rwDy69T6FrOog8COo4rGnB
-	GAKr4C+JZ2aQ1v8/UddkrMbCrysOQS6omcF++JhAM4SLDGeDRBm6M2aitWYxJzpzzw==
-X-Gm-Gg: AYBFou2Q9zHgtWSLDK4C+WqR4dvIrvPLL4JXDadVNNwxtsTmBouHq1Bl/gO3DwpZz2U
-	fxXUmb72A2IO85Rzh+RuKFF0cZgy0hfTt+8Nz+jtcKnDZg6+zMfiVGp3bsAUP3iTVqXexj8KdS+
-	iUQnbeUN7Dz8igOl+ZeLGZY3FQX72lrBCuqdtNpay5KOBVhj0kgBo3WLfQ2HIw1ur3qId9dZeh+
-	Nh+FyhjZspzkLruE0u65fKBe22TDBsQS4X/3M1vD0tHpLbycAPjmPOOIRUhKBaMAcbRQYy19Z7J
-	+IHk5xr1FoMVRYl2qPCY2F78PcoXGICwW5yCIFKrM6jp3zWH9+j+OB25L4nnYvaq2/utA2gh3R9
-	mtyF1R/bkLkCFFTZJfdgssk+MxBh9DjFcrRLvlGLu+ynNUzCRRUoZYaapqa78+xzOPN+3hGxIje
-	USCo6Q+WuQoMPLa7d5hvTAB7PmRgXhX8NOg/0e2iVgQmEDV23QUkQvV5NGyfaf2dBcDUhDPTT9Z
-	n/mkhR61UZIHWvqpi9eOjQjpOpPd6XqHUt+
-X-Received: by 2002:a17:903:1aa3:b0:2d5:db38:800f with SMTP id d9443c01a7336-2dfa6227507mr8287085ad.14.1790615137568;
-        Mon, 28 Sep 2026 10:05:37 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2df9142b00dsm45359075ad.49.2026.09.28.10.05.32
+        bh=a9vn70oN/MkzXdp1qzKn2h1C6fFreFjIcRIhZBrGV58=;
+        b=t4XC4i8v3DXR8A1017tyUw9WCJpc0K29fCQpolHMTiPYeNFe/uCU6VvfSK8p07lOW0
+         qIK87PCCazf4VDbchL99KCWF0/QX0QiPLo9Rawq1jSW5IB7HHaELGvpUX/yTvq5a9itW
+         E7g8hKeeNftF15meUL/3oWHDUbnuqoXfqu3zhcwmokFoWbgUCwKnMq0E73hqO0EzNk4m
+         THZZ1RriFKeLfTvwx2T6WolKmRe+qSAH8eU9hCDk/1BXKIOhee5KjxWEfmzpCimscfcf
+         ci7F8g/PkzKbLkmLlB3grqdhWK39w7+4E5Tc18D4hQ2+dnqqibU9f5noFfvgGIgIyBCj
+         17kw==
+X-Forwarded-Encrypted: i=1; AKwUvBzFUW1AET+4DP0LHBm4+YMqg/pzzYU934QCYKbvx0OY0jpeXMwlFfx6495PCN/KpUs5Gp11DA==@lists.linux.dev
+X-Gm-Message-State: AFuF++lkbazyrbNo5iVFQGm3NE69NySorQZaQoTtkm/CveY0hE2RP9CL
+	Df4BSknKAu8xGhbBrYD5RUL2BGGCj0r018/eXJUFQx8oiV6aV3N85mJOy+4j9yKYFZQ=
+X-Gm-Gg: AYBFou1QyC+a+c55aEpVm0msAfmBCAEtg5dySEdkNlyvafJ9PLIRqnIyRaeB6YdGU7C
+	sCWtDDMj3v789MtXa5fo5EFmC/ME+8AE/OYpcFh/gbltOTQv/vKhZTbkrOrifnYZtPxm9VGqcya
+	WEqFATLs6pDu/tIMeEauwAEOA2W8ZHzOinhqcVsWujYTNQuE50L+gD7j0x6Sp968O4wOM3SA8Zy
+	K36oF1950c+pUVO1s8SmO3N5+eI06OmfO/XjfdVF8rN8jgD5fgqPEUcgozXQYkRYoWJlELTUrUJ
+	g6QSzawxxqvjrfFiwxbuF3cI+0HFN2G4bn3ym8LZsWWBpxG9B5XDj6LW2zNT/80nxNge1VLBMJD
+	Ws6Uc5M2w2pAcZ6cB63Vi08643ynxoR8jNSMiPJx3p1+xzAb7wp088o2KQ9eL5KICWmP+sy+ptw
+	zWl3HiVio+xjMRISGIrJahyKUeNMKXP2J035vaO1uBUvSxRA==
+X-Received: by 2002:a05:6820:308f:b0:6d8:f3dd:4453 with SMTP id 006d021491bc7-6db1146f8d1mr8836eaf.1.1790615519756;
+        Mon, 28 Sep 2026 10:11:59 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4933501183bsm8991295fac.5.2026.09.28.10.11.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 10:05:37 -0700 (PDT)
-Date: Mon, 28 Sep 2026 17:05:29 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
+        Mon, 28 Sep 2026 10:11:58 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xBEtR-00000007LlD-3D6p;
+	Mon, 28 Sep 2026 14:11:57 -0300
+Date: Mon, 28 Sep 2026 14:11:57 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mario Limonciello <mario.limonciello@amd.com>
+Cc: Mario Limonciello <superm1@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	amd-gfx@lists.freedesktop.org,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>, stable@vger.kernel.org,
-	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Subject: Re: [PATCH v7 7/9] iommu/arm-smmu-v3: Populate the tlbi at the top
- of the call chain
-Message-ID: <arqeWXL1jhz9R9-j@google.com>
-References: <0-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
- <7-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
+	"open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux.dev>,
+	Jatin Kataria <jkataria@netflix.com>,
+	Boqun Feng <boqunf@netflix.com>,
+	"Derek J . Clark" <derekjohn.clark@gmail.com>
+Subject: Re: [PATCH v2 1/2] iommu/amd: Add PerfOpt IOMMU performance
+ optimization support
+Message-ID: <20260928171157.GI163130@ziepe.ca>
+References: <20260908041207.38113-1-mario.limonciello@amd.com>
+ <20260908041207.38113-2-mario.limonciello@amd.com>
+ <20260924225018.GB16465@ziepe.ca>
+ <arYf3iJW7hfTua__@8bytes.org>
+ <20260925122848.GD163130@ziepe.ca>
+ <4560d7d3-4d67-457d-bcd7-2176bd850bd4@amd.com>
+ <20260925223928.GE163130@ziepe.ca>
+ <ab1cdd64-3390-480a-8d41-a942e8b2e120@gmail.com>
+ <20260928120831.GF163130@ziepe.ca>
+ <34bcdf7a-82b1-43cb-8409-735ebef3fa97@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -93,75 +97,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
+In-Reply-To: <34bcdf7a-82b1-43cb-8409-735ebef3fa97@amd.com>
 
-On Mon, Sep 21, 2026 at 08:55:15PM -0300, Jason Gunthorpe wrote:
-> Each of these have their own unique situation, populate the tlbi right at
-> the top and pass it into arm_smmu_domain_inv_range(). They will diverge
-> further when the iommupt invalidation scheme is introduced.
-> 
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 21 ++++----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 54 ++++++++++---------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 15 ++++--
->  3 files changed, 51 insertions(+), 39 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 2f76f649dcf1a5..faeec656da9e7f 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -140,16 +140,19 @@ static void arm_smmu_mm_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
->  {
->  	struct arm_smmu_domain *smmu_domain =
->  		container_of(mn, struct arm_smmu_domain, mmu_notifier);
-> -	size_t size;
-> +	struct arm_smmu_tlbi tlbi = {
-> +		.tgsz_lg2 = smmu_domain->tgsz_lg2,
-> +		.iova = start,
-> +		/*
-> +		 * The mm_types defines vm_end as the first byte after the end
-> +		 * address, different from IOMMU subsystem using the last
-> +		 * address of an address range.
-> +		 */
-> +		.size = end - start,
-> +		.iopte_size = PAGE_SIZE,
-> +	};
->  
-> -	/*
-> -	 * The mm_types defines vm_end as the first byte after the end address,
-> -	 * different from IOMMU subsystem using the last address of an address
-> -	 * range. So do a simple translation here by calculating size correctly.
-> -	 */
-> -	size = end - start;
-> -
-> -	arm_smmu_domain_inv_range(smmu_domain, start, size, PAGE_SIZE, false);
-> +	arm_smmu_domain_tlbi(&tlbi, smmu_domain);
->  }
->  
->  static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index b7c9cd074924e4..4062ef2e13fe30 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2801,25 +2801,13 @@ static void arm_smmu_domain_tlbi_inv(struct arm_smmu_tlbi *tlbi,
->  	}
->  }
->  
-> -void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
-> -			       unsigned long iova, size_t size,
-> -			       unsigned int granule, bool leaf)
-> +void arm_smmu_domain_tlbi(struct arm_smmu_tlbi *tlbi,
-> +			  struct arm_smmu_domain *smmu_domain)
+On Mon, Sep 28, 2026 at 10:32:41AM -0500, Mario Limonciello wrote:
 
-A caller re-using the tlbi would overflow the 2-entry range.cmds[], since
-num_cmds is never reset or checked. Should we sanity check num_cmds here?
+> Actually; no.  amdgpu has migrated away from PCI IDs and probes based on the
+> "ATI vendor" + "display class" instead.  As part of the probe sequence there
+> is something called an IP discovery table pull from the platform that
+> identifies all IP blocks in the hardware.
 
-Otherwise,
+Oh, so that big table is not processing pci ids.. OK
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> This IP discovery table will indicate graphics IP and that is mapped to
+> relevant driver code.  So for example GC 11.5.1 is what you find in a Strix
+> Halo APU.  If a future APU had exactly the same graphics IP but a different
+> display IP it would still be GC 11.5.1.
 
-Thanks,
-Praan
+Move this stuff to drivers/firmware and iommu and GPU can access it
+together?
+
+"IP discovery table" sure sounds like a platform firmware datablob to
+me at least?
+
+Jason
