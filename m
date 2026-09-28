@@ -1,154 +1,155 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-yx1-f99.google.com (mail-yx1-f99.google.com [74.125.224.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A29E2372071
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 18:25:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2294239B96A
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 18:26:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790619946; cv=none; b=aDgpQftUqAtXoQlvUn6ecRBMDc/ngwYekVg+9vq/cfKG71cklgG8Dh/2sNwLQzZvroBEcxuLgSudz/ZU0s2sgr4hk6MSDLA63URbNO41eNKmrvRxJ6PKROKQ8W6wxzqYFP46n+FwzSt00BRjS2VMDKOyaaxrf4ergFeEf06BJig=
+	t=1790620015; cv=none; b=dmoiiueXwY7YqmXqiorZH1TCLYs1dv2tpzemCm7qm5dPPa4Lcys8BBXS8XZJ+CgAAuqHkKhc2EhTfiFZkjWfnul27JJiKshkhtT3wX3wS6pUXJpfVghadU/GjWS8tQGx3Kw6hUNJpPSS3Y2sK0AOtCQ9nFCzr01ytbMT103do68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790619946; c=relaxed/simple;
-	bh=S6eNU2hZhNF7ss9QpaGLOW/V81g2oJ53iDZrrOnsD4U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JZi1Kyq0WEIOjOR+iBoqvSMo1PMP4gi3fVhWbfEXeng43S+spLxP7d7gNQrXOZ44GZaESErei1NYnXmTSwm73Rwn6xzLg1cl68DCQzd+31eRDOjqf/bZ8VnLT3+PRuEIEbIZ1z3k/ceniyCo8qEYvJfQcw8L0q56dcSZlAl0168=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FWuHJqll; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1790620015; c=relaxed/simple;
+	bh=EpikG7Z0U6spB0qXKcgHsc68xeElTBeYTJAUVsrk9Fg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HNGkv2WINweJ1TPgijtW9LvGQjYv5mlKw0ikwDJhkiDPq8zyUoEcH2nYh2vztbVsrupVohKYkjYOhZsk4XpX5AalMoycg6tsXi8ebNAYOBxZVvn4eQUsvbeG4VPsnm372Fu+UJmesdjkXrqN0T28PJ4Ha09dkaQRhbaCRpjNEHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com; spf=fail smtp.mailfrom=broadcom.com; dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b=EphBlklo; arc=none smtp.client-ip=74.125.224.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=broadcom.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=broadcom.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FWuHJqll"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2d3b445a84fso8375ad.1
-        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 11:25:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790619944; x=1791224744; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=S6xtdmPyxZgVCGy2Ldjj48nQ82FMLqqca6Mq7V23FWM=;
-        b=FWuHJqll7s41lHP1KLy8aVdi9j9Ej/cHywVyBNxb2dAvHFaFz0aTdiw04ZZYOIVL5e
-         1Nt7X+T8Q6TcT7jXirErqHxuo9wowX7Ux0LbHXeBp/EtqKE7WmpJxr6FRirXXMaVlWyG
-         xb28B4T9GBvQpfmn3DkDbk5/x/yP9lYTSWZXSrwxQ0rooFR091m2+GLDoX2CnwdqSaId
-         75KdIOteqfWq7OmB7cRlVwToVIdW6IqHxMbMudFNvj06kLEcey0K58a/y9LFvKlmmQV/
-         Xyy38yj6Ijb6QMSGZdGxacLUspuuK7N4ECiG5Xinh8imVlWDHv/GqkT4ejB+3PsRsWhE
-         2H6g==
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="EphBlklo"
+Received: by mail-yx1-f99.google.com with SMTP id 956f58d0204a3-674183ca360so312485d50.1
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 11:26:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790619944; x=1791224744;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=1e100.net; s=20260707; t=1790620012; x=1791224812;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:dkim-signature:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=FuQw+B0kSq5FJU56nD6/IW5lKXSJDgEpfGuGLprZ8a4=;
+        b=n7loTx3JWQLryi7Rtb7UjLfz3TkqxFjQpPjASWeJ5yl6FIFfNaWsQxYAUQPCkvamgR
+         49TQrgS1ZNIO0tVpntHojxiFRm/dkXQsQ6ItMwYjJtfBehyvcpACKe+x0Xts0LuDlyDq
+         MG7BrtFYM4ffThfMGOQMkZm+ku2txwiipM7dL6TZk9+tIi9qL39ElX7pdsoVEqwW76Yi
+         Ybov4tm3YkfJOls8Un8Z2hjuwXdVPcByJbRqCRUpxnA72H48uioFTd6MD/krdW8boowe
+         vR3HXC+4AcOkADuuFGRnVMOCPKLcoeyUD5uP/mjCkOctxBnlGTdAYi/7QtkE9efN5EJH
+         P7ig==
+X-Forwarded-Encrypted: i=1; AKwUvBzhALssroxq2b31XJzjMRAZtyd9CBgPDRjb2SI0wsT9JVB2V8lEQoJ4i20wE2Exwyny3CPt6A==@lists.linux.dev
+X-Gm-Message-State: AFq9FYI48OJFtNuNIksOWgR1F91Psxbu5EWD8ApvQFCbPNONosHCnA3k
+	1ST0KQPRv+auz6uwfZ9Q4jG9A7RpOa43opHXqPuvj8vq7cO5imy4wlHexPhmYr9w0K6AB8Zv9h+
+	276OkIVwwG966bREwtgaYiN+UyL7NjbnNEJzO07ulC0nh6GxnkeyxjMRjSsA7Br75Xyysev3pR1
+	emU4YOCwE0+2mE/7Qd0KlJ0zfSYGG5u4yzlY3K/oX+Dfi8PGddNdDZKn73/W4MrIUjlcXnHZRXV
+	3USNewpqQw7VbU=
+X-Gm-Gg: AYBFou3cxQYTEGhnpv2cMpTgffZ1T0WqjV6bg+VsaF6eYon/mqJ/vFDbe7oPq2n81eU
+	0wD0Mq/fy2nUcFHU4nIFPxJkV5K3XlWzXVH+rlXKwnB098gUHGwSzO60aqDgOB2w4W8FIN5piOD
+	p0DpPTqjAefG/tVnQrtC4tY5fRG8FASZZOyR3ndZ8wyaZR+XgOHclcFDKWH/5mbeXUV3+xgRSNU
+	n4vsNBo01UpARakf+KapJV/sWEDOuCzxNUiou4HanuJS9ZfAsiC/+1P2WACO2K6Wm3WqxfoaHoM
+	t749hOO0bHbvP5FPhLOL+0jzO19fSp2TEvWGjDEffxqTKzn28OyEbg0lUAMJ6fJ/E7e3RYHfTzx
+	ffy+6bFhS2VO9Vy7gRkh2zlXNjFBHXZH4a9wCm63k3uQt2TRJM3hjlLKOU+JEwaYgVMBxYKMxki
+	tyDQH6w2twutEYeerXiZrz8Jw5hiFYKrAfSMv/T4Re
+X-Received: by 2002:a05:690e:1c09:b0:671:33f6:721e with SMTP id 956f58d0204a3-6741124f8cdmr3747427d50.54.1790620011810;
+        Mon, 28 Sep 2026 11:26:51 -0700 (PDT)
+Received: from smtp-us-east1-p01-i01-si01.dlp.protect.broadcom.com (address-144-49-247-18.dlp.protect.broadcom.com. [144.49.247.18])
+        by smtp-relay.gmail.com with ESMTPS id 956f58d0204a3-6740ef7e5e7sm1487154d50.22.2026.09.28.11.26.51
+        for <iommu@lists.linux.dev>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 28 Sep 2026 11:26:51 -0700 (PDT)
+X-Relaying-Domain: broadcom.com
+X-CFilter-Loop: Reflected
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-93bfb2da664so971120185a.1
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 11:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google; t=1790620011; x=1791224811; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:autocrypt:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=S6xtdmPyxZgVCGy2Ldjj48nQ82FMLqqca6Mq7V23FWM=;
-        b=r67+YxbQBffbJxQpyysKkqlSXBmjtRxbTgu4FncvARkRnDIUh22+MzPdcZlsPL+z0j
-         FG10s0K9bM2HH+P4dusTj9CvxM9XzrhNSGuslmyRRxTYT5BuYHiqYLe2/gywVLf6/4/4
-         PqvlkO1zsN066iB4m97kNWx45RYGUrWjLKJsy+MyRakm9GLg/fcFWKjGuPogbhumjuLx
-         PbqvPDl7LFXWWOfMJ0f4punXUyPeN2sj9nTwOpmnRbisIjWPyuFqIK0fbwGxllCl2Hc5
-         g1Dnk9pcb2wFBKYQ5Q0soFBTkT6qIv2ZRBZUTdvANGYHqWH9O4S/R7sJe85oZW4XF0wQ
-         xPbA==
-X-Forwarded-Encrypted: i=1; AKwUvByG3WALXtza2fHQALUoof0lOYuY2w1hOVjQjNj2V0NMLOR27G0Y090VwlzHaXMnx3naqnoe9A==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKQgZ6ik0czAJsoMKqbTlc/52X78/n2dxQurgyuQpyBKPdj5yyO
-	OM+4SicBSqaT/00ZwgGBMAh+Ago7dYe5qLoQJbV9TXrLTVIUc5s/kJAy8682UvJO6JMzzrtMrFT
-	MVZ/5apCVzqU=
-X-Gm-Gg: AYBFou3dJWFgq1hchW8yrdB9NEjEoXKm4h/hUiE8XSp5ID6EGCejclxt5B4/HOPrPK/
-	ZHzalZSyK0iSo+OypHiEDdz9Dln+QOBZxraq/JErE8QZX4j7fz5uP5gqnjZ6FGjeUh/PREp+5lw
-	ZUYkMhlZenbSpBI8N1DGcCtFO8CszooYVR1Vny8k833BwpQqBXfDIiumrVSCcb5aqiB93t/NYm4
-	SIarvgfywCM7CgM4NShfLrbhNFcRCPQdz+e8tLMAJuLrfZCuEsAELixDZF6ZgAS+bu8DWevhIa3
-	TNf4enn+tNmgKOB8EnZBKL5q7WZ3bXxZgaovEbV5QgHpykDv4pmE7q6GLU51A8AYuaercFnyB2k
-	BenY0o3dwfF9dNZT8uQ8fSbjfYdttD562KZaBGYR95rER/dnVra/BXZdcMtcmQIJljmuMXKfOAw
-	UAYHanCYWKwHxjK06pyTTaFp7Ihae9VX6hEmStX6jBB1apvGmZTsba0Yd8OhwVyGd9t9FZDBE1v
-	IqfvN4rmWlSLWin89671pCFUtt/DrtdA2OL
-X-Received: by 2002:a17:903:3a8b:b0:2cf:9ec1:ea6e with SMTP id d9443c01a7336-2e2c600c613mr28065ad.8.1790619943076;
-        Mon, 28 Sep 2026 11:25:43 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a49858c123sm831538a91.3.2026.09.28.11.25.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 11:25:42 -0700 (PDT)
-Date: Mon, 28 Sep 2026 18:25:34 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>, stable@vger.kernel.org,
-	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Subject: Re: [PATCH v7 8/9] iommu/arm-smmu-v3: Change how the tlbi describes
- the invalidation
-Message-ID: <arqxHgwVXcS5PIJZ@google.com>
-References: <0-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
- <8-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
+        bh=FuQw+B0kSq5FJU56nD6/IW5lKXSJDgEpfGuGLprZ8a4=;
+        b=EphBlklocq1KmmoCNRSZU5hXo0Ujxjv85AQG/FpJ6RuNRjKPCv+DgN1S670XGWxW9/
+         h0ILRbwfIz3w2y7V/PfM9ALVhFeryR06pVc1TO/ReAg1rvMUwRBze4hIONA0eeczON0E
+         sZYVKEqntsY1XQkmVtdTGeYRA/UHWNOgr0+Kc=
+X-Forwarded-Encrypted: i=1; AKwUvByIceFFfN815YJ1kR8awpwPd/B2qUAK4DSMuwKXoDE99rNpeoMtRfBKxmkkUwLpQzslAA0AJw==@lists.linux.dev
+X-Received: by 2002:a05:620a:7117:b0:93c:2c15:e51d with SMTP id af79cd13be357-93c474ff392mr2182137585a.46.1790620011096;
+        Mon, 28 Sep 2026 11:26:51 -0700 (PDT)
+X-Received: by 2002:a05:620a:7117:b0:93c:2c15:e51d with SMTP id af79cd13be357-93c474ff392mr2182130685a.46.1790620010447;
+        Mon, 28 Sep 2026 11:26:50 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93c8147c4desm205669385a.39.2026.09.28.11.26.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Sep 2026 11:26:49 -0700 (PDT)
+Message-ID: <6b61fc5d-1f4c-4634-8d61-2f090f0f7c3d@broadcom.com>
+Date: Mon, 28 Sep 2026 11:26:47 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 0/6] Add support for Broadcom BCM2712 IOMMU driver
+ (Raspberry Pi 5)
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, dan@reactivated.net
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ nick.hollinghurst@raspberrypi.com, james.quinlan@broadcom.com,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+ Conor Dooley <conor.dooley@microchip.com>
+References: <20260927-bcm2712-iommu-submit-v7-0-dfa2b975cbc9@reactivated.net>
+ <arojDdPH1o2ckB5x@8bytes.org>
+Content-Language: en-US, fr-FR
+From: Florian Fainelli <florian.fainelli@broadcom.com>
+Autocrypt: addr=florian.fainelli@broadcom.com; keydata=
+ xsBNBFPAG8ABCAC3EO02urEwipgbUNJ1r6oI2Vr/+uE389lSEShN2PmL3MVnzhViSAtrYxeT
+ M0Txqn1tOWoIc4QUl6Ggqf5KP6FoRkCrgMMTnUAINsINYXK+3OLe7HjP10h2jDRX4Ajs4Ghs
+ JrZOBru6rH0YrgAhr6O5gG7NE1jhly+EsOa2MpwOiXO4DE/YKZGuVe6Bh87WqmILs9KvnNrQ
+ PcycQnYKTVpqE95d4M824M5cuRB6D1GrYovCsjA9uxo22kPdOoQRAu5gBBn3AdtALFyQj9DQ
+ KQuc39/i/Kt6XLZ/RsBc6qLs+p+JnEuPJngTSfWvzGjpx0nkwCMi4yBb+xk7Hki4kEslABEB
+ AAHNMEZsb3JpYW4gRmFpbmVsbGkgPGZsb3JpYW4uZmFpbmVsbGlAYnJvYWRjb20uY29tPsLB
+ IQQQAQgAywUCZWl41AUJI+Jo+hcKAAG/SMv+fS3xUQWa0NryPuoRGjsA3SAUAAAAAAAWAAFr
+ ZXktdXNhZ2UtbWFza0BwZ3AuY29tjDAUgAAAAAAgAAdwcmVmZXJyZWQtZW1haWwtZW5jb2Rp
+ bmdAcGdwLmNvbXBncG1pbWUICwkIBwMCAQoFF4AAAAAZGGxkYXA6Ly9rZXlzLmJyb2FkY29t
+ Lm5ldAUbAwAAAAMWAgEFHgEAAAAEFQgJChYhBNXZKpfnkVze1+R8aIExtcQpvGagAAoJEIEx
+ tcQpvGagWPEH/2l0DNr9QkTwJUxOoP9wgHfmVhqc0ZlDsBFv91I3BbhGKI5UATbipKNqG13Z
+ TsBrJHcrnCqnTRS+8n9/myOF0ng2A4YT0EJnayzHugXm+hrkO5O9UEPJ8a+0553VqyoFhHqA
+ zjxj8fUu1px5cbb4R9G4UAySqyeLLeqnYLCKb4+GklGSBGsLMYvLmIDNYlkhMdnnzsSUAS61
+ WJYW6jjnzMwuKJ0ZHv7xZvSHyhIsFRiYiEs44kiYjbUUMcXor/uLEuTIazGrE3MahuGdjpT2
+ IOjoMiTsbMc0yfhHp6G/2E769oDXMVxCCbMVpA+LUtVIQEA+8Zr6mX0Yk4nDS7OiBlvOwE0E
+ U8AbwQEIAKxr71oqe+0+MYCc7WafWEcpQHFUwvYLcdBoOnmJPxDwDRpvU5LhqSPvk/yJdh9k
+ 4xUDQu3rm1qIW2I9Puk5n/Jz/lZsqGw8T13DKyu8eMcvaA/irm9lX9El27DPHy/0qsxmxVmU
+ pu9y9S+BmaMb2CM9IuyxMWEl9ruWFS2jAWh/R8CrdnL6+zLk60R7XGzmSJqF09vYNlJ6Bdbs
+ MWDXkYWWP5Ub1ZJGNJQ4qT7g8IN0qXxzLQsmz6tbgLMEHYBGx80bBF8AkdThd6SLhreCN7Uh
+ IR/5NXGqotAZao2xlDpJLuOMQtoH9WVNuuxQQZHVd8if+yp6yRJ5DAmIUt5CCPcAEQEAAcLB
+ gQQYAQIBKwUCU8AbwgUbDAAAAMBdIAQZAQgABgUCU8AbwQAKCRCTYAaomC8PVQ0VCACWk3n+
+ obFABEp5Rg6Qvspi9kWXcwCcfZV41OIYWhXMoc57ssjCand5noZi8bKg0bxw4qsg+9cNgZ3P
+ N/DFWcNKcAT3Z2/4fTnJqdJS//YcEhlr8uGs+ZWFcqAPbteFCM4dGDRruo69IrHfyyQGx16s
+ CcFlrN8vD066RKevFepb/ml7eYEdN5SRALyEdQMKeCSf3mectdoECEqdF/MWpfWIYQ1hEfdm
+ C2Kztm+h3Nkt9ZQLqc3wsPJZmbD9T0c9Rphfypgw/SfTf2/CHoYVkKqwUIzI59itl5Lze+R5
+ wDByhWHx2Ud2R7SudmT9XK1e0x7W7a5z11Q6vrzuED5nQvkhAAoJEIExtcQpvGagugcIAJd5
+ EYe6KM6Y6RvI6TvHp+QgbU5dxvjqSiSvam0Ms3QrLidCtantcGT2Wz/2PlbZqkoJxMQc40rb
+ fXa4xQSvJYj0GWpadrDJUvUu3LEsunDCxdWrmbmwGRKqZraV2oG7YEddmDqOe0Xm/NxeSobc
+ MIlnaE6V0U8f5zNHB7Y46yJjjYT/Ds1TJo3pvwevDWPvv6rdBeV07D9s43frUS6xYd1uFxHC
+ 7dZYWJjZmyUf5evr1W1gCgwLXG0PEi9n3qmz1lelQ8lSocmvxBKtMbX/OKhAfuP/iIwnTsww
+ 95A2SaPiQZA51NywV8OFgsN0ITl2PlZ4Tp9hHERDe6nQCsNI/Us=
+In-Reply-To: <arojDdPH1o2ckB5x@8bytes.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-DetectorID-Processed: b00c1d49-9d2e-4205-b15f-d015386d3d5e
 
-On Mon, Sep 21, 2026 at 08:55:16PM -0300, Jason Gunthorpe wrote:
-> The range-invalidation logic has long had a FIXME that there is not enough
-> information to properly compute the range invalidation. There is also
-> subtly not enough information to properly compute the single stride
-> either.
+On 9/28/26 01:19, Joerg Roedel (AMD) wrote:
+> On Sun, Sep 27, 2026 at 02:08:59PM +0100, Daniel Drake via B4 Relay wrote:
+>> Daniel Drake (6):
+>>        iommu_pt: Fix test_pgsize_boundary() failure on narrow-OA formats
+>>        dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
+>>        dt-bindings: display: brcm,bcm2835-hvs: Document iommus property
+>>        iommu/generic_pt: Add Broadcom BCM2712 page table format
+>>        iommu: Add Broadcom BCM2712 IOMMU driver
+>>        arm64: dts: broadcom: bcm2712: Add GPU IOMMU and IOMMU cache nodes
 > 
-> Change tlbi to use the information format that iommupt is going to use for
-> ARM. This prepares the invalidation code to support iommupt and fixes two
-> small limitations with the current code.
-> 
-> iommupt is designed to accumulate all invalidation into a single gather,
-> then the iommu driver should issue a small number of commands to execute
-> the gather to control invalidation latency. This is in contrast to
-> io-pgtable-arm.c which generates many gather flushes and direct walk cache
-> flushes as it progresses.
-> 
-> To accommodate this the gather will accumulate "damage" in bitmaps, one
-> for leaf changes and one for table changes. This is enough information for
-> SMMUv3 to compute the proper stride for single invalidation and to
-> generate ideal hints for range invalidation.
-> 
-> Change the inner workings of the tlbi process to directly use this
-> new-style gather description with the idea that the iommupt conversion
-> will just direct assign the gather fields to the tlbi.
-> 
-> Rework the three places creating the tlbi to express their needs in
-> terms of the new bitmaps.
->
-> 1) Simple iotlb invalidation always gets a single range of leaf
->    levels, so it can set a single leaf bit
-> 
-> 2) Walk invalidation is expected to clear the table and all the leaves it
->    could contain. Set a single table bit and all the leaf bits.
-> 
->    There is a weakness in the existing io-pgtable where it double
->    invalidates the leaves, once through the arm_smmu_tlb_inv_walk() then
->    again through the gather. Since these are separate operations they are
->    not capped by the invalidation count limits and a single unmap may end
->    up doing thousands of tlbi commands. Eventually converting to iommupt's
->    gather only approach will correct this.
-> 
-> 3) SVA invalidation has no idea what the MM did, so it will set all
->    the bits in the bitmaps.
-> 
->    This corrects another weakness where the range-invalidation logic
->    was generating hints assuming the #2 rules which isn't correct
->    for SVA.
-> 
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Applied patches 1-5, thanks.
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-
-Thanks,
-Praan
+And applied patch 6 to devicetree-arm64/next, thanks!
+-- 
+Florian
