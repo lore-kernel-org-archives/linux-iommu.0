@@ -1,173 +1,155 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013008.outbound.protection.outlook.com [40.107.201.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv2-f32.google.com (mail-qv2-f32.google.com [74.125.230.160])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 428651F427C
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 17:15:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.8
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790615712; cv=fail; b=ki4coOJs+pHwbMrYI2XV4prm21IS+aB5TsF2kZuDQyRdhCG7NOyHol/bJUv8Tb2ljwGoGB2XkWJegDXYl2zeV/0vYcEMhQttuCugS6iTKIyXHQp1bGkynLKPpI7uyM4JeDoj5/75bA45Saf/q4L+MVORze9JqucULyRHaBN91eg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790615712; c=relaxed/simple;
-	bh=NEEr3v3NUL6UMKxHBUFwiSoc8ehie9XTqbg4qP20t9w=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=S5bJ7TJc6dmwxTVWjwFR579hIIRdNJgHa/0QmcQg/vRBlN6op/tjfiiuMajgJtU8kRMkM0x1LrG1nXFyg0p851gX3sl3ojRoiR87kJwTVFprSduYX9U9S5XZX034UKapj+y1HNQRzChS+rRu7qsq+B/kEAvFcs2hT6w7lbt+xe8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=U0erKL0t; arc=fail smtp.client-ip=40.107.201.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99EAF4E3222
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 17:27:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.160
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790616466; cv=none; b=kzVFrylfJOeVb01IWy2Zv4lPl/l41fjudaH3mECxo8pFYmZslomMiWAqRzeKVddPgFjd1XL+C+rlpp7UVmL/ejvmYOHuL6XMJSaWiModfXQ4rSfWPpyzqqA+hW/zaXpx6vWqCldY+iN7kS5S7/Q0DD+qnH7+N6ha7f9J3+wQu/4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790616466; c=relaxed/simple;
+	bh=v0Tvegi3Y0r41uqGe1gwF29EUW2tl7b6bRd3HIgumbg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TFgdwqt2QFMeyprww47z2mMXdZN0bJ3/0HcMGY8JCz3+ZuBKBXwzbFBFd6U/kRGsU8PMWrdR0YPiy/Tmq1dqMuGDpMt9MDyxaHUgfAxox9WJ68+Lfu1Y8w8kfAGP09c9wEntIBvf/MPnJM7IvTesfGW+QwQxEo5dHwbAd5nX/hs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=P6i2U8EA; arc=none smtp.client-ip=74.125.230.160
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="U0erKL0t"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Bxx/mPe3UXgr2HH1DvLKsEdvF6ZHZzugUBwaCUa3qYUStAMxB8xlUrANOHNpbtZp16BKqdEWxeQEKdSk1usfnnLfqjn4xtaxZ01DkUJjvz6XRHO2T/lznK+kWzIFsmiLk24QzHqWPBEqv6QW+KZpMYO/miYyuDL9p7cPlPEx3cn9hzcLueg8g2AYAnTazqninHbvBoe9LPlnFBL1fzZVmF6iCIqUh9zFF4lTpeu34Dh4aKgrSwAxT935WIOWLrE3YSt1EivUNgodTLuxj97zIo3wYp1osQ/0727vAaQpBThnZtlAiDCMvIOAJzvlCGtquQ3btJgpeo3zAm1IxPHiag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XJQoqSEPZFOxU9SKlrmeAOOR1/x49yTJvh+LjkqYq/4=;
- b=eFy0aX2+5+ZQMECN3+vCmAW9i+lhFQ/DNWZX+vr8ghnXnRAflfxcDFstLI84pEDFQ+oZOXWzRICrjh/8rhuLk3TdIYTiG3wYDz0HXsg4L+DMjkvG6YeJiLVJv0JCx7iC+gzlrWUyGpTeyg8xrsG/JMawVaM4ULwwF67Yk9QENsPcnUodSH/TJk/f7Xu/UVcOFh45Rfw4nypGOLvVINJMM6NFjXLBCM+TAZofsT1Fr52AOOE1X2jVHGl8iqCzvrspcfBPjsTKcSPIllDyqN1DaUYspjAEDC6PLZIl7Hpwxt7XYcxxD7GS0sqfgkT9990peLWzr4RunldOZl+1jRpDmg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XJQoqSEPZFOxU9SKlrmeAOOR1/x49yTJvh+LjkqYq/4=;
- b=U0erKL0t7GfhZpc1LY+HtoXE3S2+vwgWdDMguu4C/B7vFP0+CbrEgPV3uRdhjI7SCaLQWvxo3B3LssXs+3H5YP1XcA8onYxaiGkOwpWa8lTttCKCYehKy7JgWPdxW82xyMDe7yPRyT3zP1gjDypuBV4Mt87KIXxJt6G3usWQZos=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH8PR12MB6914.namprd12.prod.outlook.com (2603:10b6:510:1cb::21)
- by DS5PPF5A66AFD1C.namprd12.prod.outlook.com (2603:10b6:f:fc00::64d) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Mon, 28 Sep
- 2026 17:15:05 +0000
-Received: from PH8PR12MB6914.namprd12.prod.outlook.com
- ([fe80::2893:177a:72b0:6000]) by PH8PR12MB6914.namprd12.prod.outlook.com
- ([fe80::2893:177a:72b0:6000%7]) with mapi id 15.21.0451.022; Mon, 28 Sep 2026
- 17:15:05 +0000
-Message-ID: <d0f7e245-829c-471c-bf91-f3a0994f5fa4@amd.com>
-Date: Mon, 28 Sep 2026 12:15:01 -0500
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] iommu/amd: Add PerfOpt IOMMU performance
- optimization support
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>, Alex Deucher <alexander.deucher@amd.com>
-Cc: Mario Limonciello <superm1@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- amd-gfx@lists.freedesktop.org,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux.dev>,
- Jatin Kataria <jkataria@netflix.com>, Boqun Feng <boqunf@netflix.com>,
- "Derek J . Clark" <derekjohn.clark@gmail.com>
-References: <20260908041207.38113-1-mario.limonciello@amd.com>
- <20260908041207.38113-2-mario.limonciello@amd.com>
- <20260924225018.GB16465@ziepe.ca> <arYf3iJW7hfTua__@8bytes.org>
- <20260925122848.GD163130@ziepe.ca>
- <4560d7d3-4d67-457d-bcd7-2176bd850bd4@amd.com>
- <20260925223928.GE163130@ziepe.ca>
- <ab1cdd64-3390-480a-8d41-a942e8b2e120@gmail.com>
- <20260928120831.GF163130@ziepe.ca>
- <34bcdf7a-82b1-43cb-8409-735ebef3fa97@amd.com>
- <20260928171157.GI163130@ziepe.ca>
-From: Mario Limonciello <mario.limonciello@amd.com>
-In-Reply-To: <20260928171157.GI163130@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR03CA0331.namprd03.prod.outlook.com
- (2603:10b6:610:11a::22) To PH8PR12MB6914.namprd12.prod.outlook.com
- (2603:10b6:510:1cb::21)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="P6i2U8EA"
+Received: by mail-qv2-f32.google.com with SMTP id 6a1803df08f44-91782711448so2193976d6.2
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 10:27:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1790616463; x=1791221263; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Snkhkpv5tfQYCAgHHo/k8kMLGqfuMfM+gSc1uL+OvlM=;
+        b=P6i2U8EAbHXFOHGvkKP+Om9lK3tqhddORYaIjoQ+RoLN6g2Glp9z35s9zIMUPCLn1d
+         blhfwiDIdAMsvLIgHt9XDAbF6BNTDYIyZRl2dtSrbWlPvzm/ofvyjOEfkO3l5MKc/2G8
+         UmtRSSBMCkIm2/K6NUsC7LySwqLzeNiIOI88GFwqhhylqZOJLitQowjYctH1cIn9CQzs
+         J9cEvVntmBdkRgKMk/i8ixtKo7RLTA4E0i35PRGVuYdau9WQkSylIKkyeM1csLFz4ZJj
+         8tTcaAxYnq2JQYEqvSbxIsN0eZwd1nCUBUNjxp6Xh755rvUE6XsNYtL9OP3LI4pvb7Km
+         0SbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790616463; x=1791221263;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Snkhkpv5tfQYCAgHHo/k8kMLGqfuMfM+gSc1uL+OvlM=;
+        b=zdEDlKd9C8xpnYli4Oa6EKT5yEYO5msPhTAdsi03uUW0pgZwbFs9T8mj+Smc1wzziT
+         ldrV6t5aA37L/iUYVTV38TXHvfbIXGtGbaC/C8u+us6z6Dgafa/8dJgBpzbaahz1ZWFY
+         x6qA8XEe7+h2jogmvnrYi+TtQxuzd+kIjV/l0Kpb+5G/fWS8kko5QkLFqIaV9slMGb/W
+         1PEDoYg7ekYQp0wP8QDCmJj2wY5x26+mMyoNPavmwENAwp9fpojFU5oRfBi1zVgKXPaj
+         4Z1u9h45w+6zMM2eE6wVzEqs+m1tOwC+v8J4tz/ZkYVp/KlfkBTzD7YL1KWdhzN1jnfl
+         udXA==
+X-Forwarded-Encrypted: i=1; AKwUvBwncOJdC2AraT3Dm4ph+nSc8nmEoRyvN4Skh2avxg8rk398qnuA4NqUGLdSJwsYcZmIvaZTLg==@lists.linux.dev
+X-Gm-Message-State: AFuF++lpHTF9aXeptlIOVOwgRZqOhvbRYh7lgRI+8hwFYXf9pRdaeHLX
+	8u5GZi58U8cpn5ihDKV/tq3NGgExBNsBSE1vbjOBpmgbvGpCyI91CIZ6YL2cYKSFKic=
+X-Gm-Gg: AYBFou2yLAADl9PiOCMzUZ/JYwlqqKyN5V0GZ1zihymevK/5GJccaADTxhldSjWwQEE
+	HEKd9+CxUuYuQT4jcSeiIJjYps1qXQ4zldnuyE6ZkOhkBPeGIzFKiK+fahQxrhF7Cw/3e8njr9B
+	r7zRI1Sl9t6Xnw2b7wuqOxeAqHcSWHiGuaEPa11eIYwSyt6RXtUjsz50qnXjuM+E8l8XezLeEHN
+	8odaHNhTmKp/6ygTgH7IMWtfP/7YPIL1SFpFL7WPQpcCyVfvCFs2zNJAPCJdbk/OdUPD3ef25dZ
+	0Z8FP+J1kzmO1NPFFc42H8ibuDOp7p+NE9a/2CI1qYUGd8+hcG+RWjGCZOWSVjD1fx7zAxa+YN/
+	dMt+jYX67qKzP6fH+glIR/ZxzdqoD+nx6YZpSZzluYp9QfD0w+s6IzxIjVucAdzIUAO187vPAHM
+	sxyelAXqp1f4mM0yFIsB6ibUDTuJKBEw+XdAemNfyOLJ/e
+X-Received: by 2002:a05:6214:ca2:b0:915:e892:d932 with SMTP id 6a1803df08f44-915e892f966mr81063516d6.3.1790616463265;
+        Mon, 28 Sep 2026 10:27:43 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-9144b6335f6sm57161666d6.11.2026.09.28.10.27.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2026 10:27:42 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xBF8f-00000007NXN-3v3H;
+	Mon, 28 Sep 2026 14:27:41 -0300
+Date: Mon, 28 Sep 2026 14:27:41 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Mario Limonciello (AMD)" <superm1@kernel.org>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	"open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux.dev>
+Subject: Re: [PATCH] iommu/amd: Make PerfOpt compulsory for APUs in identity
+Message-ID: <20260928172741.GJ163130@ziepe.ca>
+References: <20260928045050.955165-1-superm1@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH8PR12MB6914:EE_|DS5PPF5A66AFD1C:EE_
-X-MS-Office365-Filtering-Correlation-Id: de1f9dc3-e067-4351-f631-08df1d8409cf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|23010399003|366016|1800799024|22082099003|18002099003|10067099003|56012099006|11063799006|4143699003;
-X-Microsoft-Antispam-Message-Info:
-	/2Wyb8b0UEQHDgTXqIRYKjUW4sotHcU+U8ygJbKMCrraytLHO/tbRZ+qK03eWe79QnHewOXrixZjDCmhtkMxK/TMGn3quJDP3E4JEF19EiVeUASULvY9k6b/QLbsoS1jDnZv/xawyyjY895T2MV6Tkf7m7ZaJoVUjrVtjAMcFB2Ph6xBYFb9EOXD7j2gpTixi1bBLU7oJkitI0HP4NPd/IzrFZKzuk3yFwYZDbyGEM+WBN9etVdsNUjWVX4sMH/gth9JEfAJv2c7bo9UOmUiIHjVaB+WnW4CIS5a0TfaojwmacfaFj9WTnOXm3Suf5D8ltJ1EkhEG/gii9z+VB8oT7CTfzjmqB2VMXu0C/s9nUo3J6hykrCnoXRirVn6EmnyasnvLAd1wPE3F1jwjP8HHo2EtDjYZUHfxvv8SoP9KQBf4y2JeyWobKa2YEMKCGh2Jl3r52SwC8otWnHPQezxAlR+OJTs71NgzUUygNDHhUv2Q6hihMmBT5+9JLdxoPQOlk1pNR/PqQmy3PDOZjrqp0RpNWEngCmbF8DUI5krEymo6igtqBACnfJcJ+i6WgJB0h3F+PyxBxCp0AGI4gbusuoDgUfhNKtZEEnFRKVJy5Pg3+KZnXfhbQ/eMygYmJBUxwEP3dykfoE9HDR02QeNqWrhg16sYxaVmTmh1oozVcw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH8PR12MB6914.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(23010399003)(366016)(1800799024)(22082099003)(18002099003)(10067099003)(56012099006)(11063799006)(4143699003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Ump3bDlXRG9EcSt1MTgrc2ZqNm5JQWRxdmsxcDJGSnlCYzVHakhycGRCdDdt?=
- =?utf-8?B?ekdhT0xSWUxHR2x2TWFqVlkySnZ6bjcxV1NLZ2RzdGxSbmVmRms4dE9lMlNQ?=
- =?utf-8?B?RTFUUG5qcGV0Mlh5Y20rWTA5RVgxdThxODJVS3E2OEdRVzBtcFlndzNWS2VX?=
- =?utf-8?B?MjNXMmdmcHI3c2V4bGYzTzJhSTJLUUY4NnpGY3NSZDNIK2VoU1pPVXFvU2hH?=
- =?utf-8?B?Nkg2K01HSnQzVXRldXVjVTcyejZXbWladEkvM3lKZUZyRnBMazJJdXh2WHM0?=
- =?utf-8?B?dXY0YjRXYTRRd3AvTlBLbXV6K3AvZFZLU0g4U1Y2VmdZS0xZTm55aTZVRE9t?=
- =?utf-8?B?TXQxN29pZmhOSVhNSldVeFMzQk5POVhxTncxdXRTUi9VMXFoL085NExiRXFW?=
- =?utf-8?B?OGVxcUFLVEI1UFlVY2ZuMjhXeXF3N2hGUjFkR2Y2Z1VieUtXZGpPbkhRd2c3?=
- =?utf-8?B?RmJMY2p4U3VRcnJudGsyTG5LZjBOa3phWU1jak9DSS9XSm9pdnJjQXoxbjlE?=
- =?utf-8?B?LzRVbWd3cStpdWx3RU9yamV1QkpjYlNuY0N6L2l6TTlrT3B2bXJwS0NoNTdn?=
- =?utf-8?B?ZlAzRmZEaXExYW10dldlZ1dndWNZakFxbFQvYkh0dTMwcEE4cmx0WG5rb01r?=
- =?utf-8?B?TVNLOXFEV3RlZTJPQlJ6cFVJZ0JYVGo3TlJoZDczNjZ2WkpkKysyOUR3cDhO?=
- =?utf-8?B?cmMzellrcXI5c2d4bkZJNW5DdGNSME9ocDQ1anFCRlRjRURFVFFXOHRaLzFj?=
- =?utf-8?B?WEhzY09wVi9MWTBGZkpOOUtXL3l4eXM1YzVac2lPU2VDOFIxWGRWNEN1eVZF?=
- =?utf-8?B?NE9PUUlQbTErZFNQN2M1WVl0OEpWSTF0QVpLQUI5ZUlMbHpJa0ltL2JYWHdm?=
- =?utf-8?B?UmNTUXlHY3U4NmxETU93NG5EbGM0Y1JnejZlMnR4Q1FWeDBJVkRqYWpzQ1FW?=
- =?utf-8?B?emVBR0VPZkZCOTZsOUNlUDZ5U1BmbS94aC9GNkFybUhRMEJINWcrcDNaK3dt?=
- =?utf-8?B?VGRSaXJKSmEzUFh5dXhBRDdWSUxrdEpuNEMrVGNVNis5ck9TaFp3QmI1SG15?=
- =?utf-8?B?Tm5EMzdDemRVOURwWWJUa1BpWEpvRU9CYU1lcDdjLzFEQkViRTVKeWJIeld4?=
- =?utf-8?B?Mi82MmM3MzYvYmM4TENTYlJ1empGdkJiZ1hJeGN3dlBXdS9pNVMzOE8wbXgw?=
- =?utf-8?B?MGJCY0dYRFlxelZyYzJpV2ZkalJ2K0VJQzN3YXdMV2lkVGZlaC9IUWZ6Tzgr?=
- =?utf-8?B?Q0wxbi9zdldzS0RodEY5RTQ3QXR4RW1KN1dhT1hDQXZ2ZTVxMWZYaHRMWjg2?=
- =?utf-8?B?MDA4c1QvM2VheERJMGVaaGJKYm1SWjJmdkxRVVgyT1JEekpoOFllaTAwd3My?=
- =?utf-8?B?dklOUWJ0VnFxbW1qL1BEOEdnYXhqbEdMVEJPWDFjcm56YVFZTkZQQkxCeE5a?=
- =?utf-8?B?emR3QU1XWCtiOVY4QlBIbTFDb2FQUUtnajRTNlpDUjZmeWZCMFBlcys5WVBo?=
- =?utf-8?B?R25uZ0N1U2UyeEp3S05sQ2tRK3kyd0w5cFlWS2xpOEhtZFB0QzZ0NDNENEho?=
- =?utf-8?B?VGM5ejc2dUp2NmxnOXhRam9FNnBOUm5tQmZMOU50eC84Z0w5RGFBSVlFenVu?=
- =?utf-8?B?RTFLU1lVVlBTYmJVOEN0NWtBUXFkaXdjQjJZRXRqbzByUitJT2NlaXFFVDlt?=
- =?utf-8?B?UFpnajEzblBERURkdkJJQ0ZiQnFCMG94aFc3VExWbnVoTThtNmJ1ZjFOaDZk?=
- =?utf-8?B?MnkxK1hncS9RMTJjeUIrb3lhSzR1dGNTUmVoN2E4ZTZsSktzYlJkRWhMdjh6?=
- =?utf-8?B?UnJNVFI5NzN5ZXlDMHhjY2ZPRFcxbEhXUDVhcm00NHFqa1pNM3RjcFNSTG83?=
- =?utf-8?B?U3haN2plOEtDSzRTcTZpMTVkaVBKOVlEcHUrajBLcXRleU80K1ZTTHNBK0dL?=
- =?utf-8?B?T1c2NkovNWprU3I2N01halFqd2gzZW15Nkl1VUoxVS95bUJwVHdzYWpnaGpS?=
- =?utf-8?B?UXJ6S00vY29xMmdCRWc5aktubXZXbGFCOFJOOC90VGprOUxwUVZZVndBTzJV?=
- =?utf-8?B?b0ZkQnZzT2NOOXh1UFlpbFpxUDhSYXVvSmZVL0FURFM2dVMrbTl2aVZ3aWd1?=
- =?utf-8?B?OHBJMml4STJIdGNvZVZyNzBVYm41VmFSMCtUS2Q2ci9nODdkeFJqa1BDc3BD?=
- =?utf-8?B?TVdtMmRUcEltb0JOK0o3NVZDUTZZazlDRE81alppWkprWU0yQWxnbEJtVmlX?=
- =?utf-8?B?N0V0U2JBRTR5NzJoM0hHRmliQXp4a3dQZURBRUVhT3k1eVVIRExyNGNzcHVW?=
- =?utf-8?Q?nY9hb+l/7qmoXj2szu?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de1f9dc3-e067-4351-f631-08df1d8409cf
-X-MS-Exchange-CrossTenant-AuthSource: PH8PR12MB6914.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2026 17:15:05.0304
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ApI91/v+gi2XcJ5R3Eu3odbmhI14XXkBfDbES65vItb4zVfQFg0StkMFJhitoIe26KOjSo8pAVtE1s0rfwicJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPF5A66AFD1C
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260928045050.955165-1-superm1@kernel.org>
 
+On Sun, Sep 27, 2026 at 11:50:50PM -0500, Mario Limonciello (AMD) wrote:
+> PerfOpt is only a feature usable by integrated GPUs and only in identity
+> mode.  Instead of leaving a policy knob in amdgpu, just turn it on when
+> an integrated GPU in an APU is in identity. Re-use the heuristic in
+> amd_iommu_def_domain_type() to make this decision.
+> 
+> This drops quite a bit of compatibility glue.  There was a refcounting
+> system, exported symbols, and device attach/detach logic.  By just setting
+> it immediately it's a lot more straightforward.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Signed-off-by: Mario Limonciello (AMD) <superm1@kernel.org>
+> ---
+>  drivers/gpu/drm/amd/amdgpu/amdgpu.h        |   1 -
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |  50 -----
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c    |  12 --
+>  drivers/iommu/amd/amd_iommu.h              |   2 +-
+>  drivers/iommu/amd/amd_iommu_types.h        |   3 -
+>  drivers/iommu/amd/init.c                   |   3 +-
+>  drivers/iommu/amd/iommu.c                  | 234 ++++-----------------
+>  include/linux/amd-iommu.h                  |  11 -
+>  8 files changed, 48 insertions(+), 268 deletions(-)
 
+Diffing across the originals to net them out it is much smaller:
 
-On 9/28/26 12:11, Jason Gunthorpe wrote:
-> On Mon, Sep 28, 2026 at 10:32:41AM -0500, Mario Limonciello wrote:
-> 
->> Actually; no.  amdgpu has migrated away from PCI IDs and probes based on the
->> "ATI vendor" + "display class" instead.  As part of the probe sequence there
->> is something called an IP discovery table pull from the platform that
->> identifies all IP blocks in the hardware.
-> 
-> Oh, so that big table is not processing pci ids.. OK
-> 
->> This IP discovery table will indicate graphics IP and that is mapped to
->> relevant driver code.  So for example GC 11.5.1 is what you find in a Strix
->> Halo APU.  If a future APU had exactly the same graphics IP but a different
->> display IP it would still be GC 11.5.1.
-> 
-> Move this stuff to drivers/firmware and iommu and GPU can access it
-> together?
-> 
-> "IP discovery table" sure sounds like a platform firmware datablob to
-> me at least?
-> 
-> Jason
+ 5 files changed, 122 insertions(+), 1 deletion(-)
 
-Yes; it comes from platform firmware.
+And I think this is much better , but I have a few questions
 
-Alex, what do you think of doing this?
+Why is this setting and clearing perf_opt in dev_data?
+
+I expect probe to make a determination if this device has the special
+path and if so then there should be a permanent flag in the dev_data.
+
+Based on that flag amd_iommu_def_domain_type() can return identity to
+override things
+
+When the driver does an identity attachment it would enable the
+perfopt and write out the right DTE for it.
+
+Whenever the driver removes that identity it would disable the
+perf_opt. These points are all marked out in the attach function flow
+you don't need another variable to keep track, or the funny logic to
+block things. All you want is an attached identity domain that is
+"optimized".
+
+Release goes to blocked which should already disable it, so no need to
+disable it again in amd_iommu_release_device()
+
+The repeated pattern is a bit much:
++       if (dev_data->perfopt) {
++               if (WARN_ON(amd_iommu_perfopt_clear(iommu)))
++                       dev_err(dev, "IOMMU%d: failed to clear PerfOpt on release\n",
++                               iommu->index);
+
+Clear should probably just do the warn on and not return any error
+code. It is never OK to allow this to fail..
+
+I'm also scratching my head a bit why the global register needs to be
+set/unset like this? Does that global bit completely bypass the iommu
+for a single special device? With no way to discover from FW which BDF
+is the special device? If this is the right guess please document this
+in a comment around __perfopt_write (and again that's awful, ACPI
+should have a pointer to the special device so the OS can understand
+this)
+
+Jason
