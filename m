@@ -1,57 +1,57 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7836834887B
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 03:39:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1034B345EDB
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 03:39:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790566764; cv=none; b=iSL0Nu7c4PKvNpqthuEnyKXScPxoTUsf0Z5ehm8NN2HmueHgDyNVmID6MlDuskdhR86OmU/lRVS05t33i4DHRW7phLZlFh0iM2kAfvCMv1zviMjPtihAHRv76quo6IAe65P9fpB5lLA6Xdp5Wxm3cIh7TZxP3W/UjHdU65HHJqw=
+	t=1790566765; cv=none; b=AQulrqXQ+EX33wuqn/qvoYC+qKrVo/Z2b4dZYXCyzdu0Caoa0cnZ7GipBXntV6g8L/8BFbNpH6bqng2aj22OMbPjtXw+oUZponXt3t+9tpkz5fErcXjY6dgf5S0ReIFOxgv1YPj2Ru+wyMt3GzaTeMOB+SzTDNWj9wSXR8GJnGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790566764; c=relaxed/simple;
-	bh=l3CJmn6ZjvyW+L68/BKzNUhDnOLFNXWnYeypO7nn4Bs=;
+	s=arc-20240116; t=1790566765; c=relaxed/simple;
+	bh=8ySS42gq8m32VjZ8WeEMReLFtdCCfmGoLff6CDCDGr8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hesDnzDvMKlVsbIMEsWKVdx6ZsJgyfLJVXbMMslAg7jl75zqBlqKG1qBH9o1tcXuRITnB80DrrJ51AcdphM1E39yON+RXGprtj2vnkK+rm0dNLTZ1ganmaGzL6ioAXP2dNEO8mukVH7aCm+agvQ1vG5OiineucgQD5qq+1tSbIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b5QMrs45; arc=none smtp.client-ip=192.198.163.9
+	 MIME-Version; b=Tl86QlCTNehdAJ3JTTS24MqQ+5pRQGywlUWAWyLL3HPEroBnGr8mdRYLw8UgWLPt14+167mG+kHRZFCMlCySNWT7GrSYKaU4CHDqMELZl0/Kq3gFo29OuXatglmm2AbWQtTF1+xl+5E5XZKdiCh1ZYj5qzSOUxmbsfM5FQwUVaA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N/zYEa14; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b5QMrs45"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N/zYEa14"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790566763; x=1822102763;
+  t=1790566764; x=1822102764;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=l3CJmn6ZjvyW+L68/BKzNUhDnOLFNXWnYeypO7nn4Bs=;
-  b=b5QMrs45QDb0Mt4bESKt7hENPLB9rYm0Rrqa1ar82TS7zn+JLz4CISDo
-   IPGDv+cxn2Y9cgmas4KG1a+qfNkFrGGRceLGVK6oiuymyS6wrIirNx1Fc
-   ZQh2nxwBfqXeGBUlRom8jP9GLd1Ht430O4WGzb/HruqeQuDWmBPA6TIHf
-   2eYhpxS4aFYOevLGXAQ3lrNgH0MpK5VMnX+AfNeayw+fM8f/oiuDzGk1H
-   khsnZKteIqjIfGbLueFd8vHs1Ua/gTw4rVEwTSp6+w7C1IYRlMLEhxrM6
-   RKNQjjMmpE+k+lO02thrT895u0ESc6STUyLWm/FXxKHj79kxXuXiA/amU
+  bh=8ySS42gq8m32VjZ8WeEMReLFtdCCfmGoLff6CDCDGr8=;
+  b=N/zYEa14BNnmBKPMXAm3BvTWxj57gCBC0f/2qfZHDAZoTWHxIUMeCpTi
+   5UUTwGYgRDQI4/AvBHJ5aHH2kVGcY3kAKaLJeOdSUL/pQu6QU+tkzD8Ai
+   QGsJ+Li1nS05BNZJH/JxvtqrAViaQtismxdNEAvelxAmTCFRUQYXbTf+e
+   G1YZ0q7z8wBIoUTvHoxgczHVVkl5lJ2AmjpVNDmgcrn9arwpx28A2rIFn
+   ZqXs6OBWBjXm8sRHcLHyeqK99OGScXTMPqXx0JRkB7juk9SuX8RmvYooJ
+   Pk7rYfsf5dydYRbVBm6EP026ty7a22P5DG78cPw+dfFWq2VdK1n62iJnb
    A==;
-X-CSE-ConnectionGUID: 787OdjXYTGW7QeFZ0Wt+QA==
-X-CSE-MsgGUID: MXy54DJUQhOvGBqa+qVTJA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="101917206"
+X-CSE-ConnectionGUID: 7a3dt4GgSL639GsCYMsOug==
+X-CSE-MsgGUID: HSqFYXRIQzqGgjOSB/iDSQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="101917210"
 X-IronPort-AV: E=Sophos;i="6.27,127,1787036400"; 
-   d="scan'208";a="101917206"
+   d="scan'208";a="101917210"
 Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2026 20:39:22 -0700
-X-CSE-ConnectionGUID: HtpZU3qSRLKr5AY0c6Z42w==
-X-CSE-MsgGUID: 0RoDq3XxS7ebFHSszRLyEQ==
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Sep 2026 20:39:24 -0700
+X-CSE-ConnectionGUID: XehOyJ67T/umdnuAoaN2Zg==
+X-CSE-MsgGUID: TOlmPmeETXu0Cw0XAGHktA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,127,1787036400"; 
-   d="scan'208";a="283004092"
+   d="scan'208";a="283004097"
 Received: from allen-box.sh.intel.com ([10.239.48.101])
-  by fmviesa005.fm.intel.com with ESMTP; 27 Sep 2026 20:39:20 -0700
+  by fmviesa005.fm.intel.com with ESMTP; 27 Sep 2026 20:39:22 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Guanghui Feng <guanghuifeng@linux.alibaba.com>,
 	Zhenzhong Duan <zhenzhong.duan@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/9] iommu/vt-d: Handle DID reservation errors when copying context tables
-Date: Mon, 28 Sep 2026 11:27:17 +0800
-Message-ID: <20260928032722.2868623-5-baolu.lu@linux.intel.com>
+Subject: [PATCH 5/9] iommu/vt-d: Reserve scalable-mode DIDs from PASID entries during copy
+Date: Mon, 28 Sep 2026 11:27:18 +0800
+Message-ID: <20260928032722.2868623-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260928032722.2868623-1-baolu.lu@linux.intel.com>
 References: <20260928032722.2868623-1-baolu.lu@linux.intel.com>
@@ -63,61 +63,96 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When kdump reuses old translation tables, all old domain IDs (DIDs) must
-be reserved in the new kernel before new domains are created. Today
-copy_context_table() ignores ida_alloc_range() return values, so a real
--ENOMEM can be missed and an ID may stay unreserved.
+copy_context_table() reserves old domain IDs (DIDs) from context entries.
+That works for legacy mode, but not for scalable mode: scalable context
+entries do not carry DID, so this path ends up reserving the wrong value
+(often DID 0) repeatedly.
 
-That can allow DID reuse while stale hardware cache entries still exist,
-risking domain aliasing.
+In scalable mode, real DIDs are stored in PASID table entries. If they
+are not reserved during kdump table copy, new domains may reuse old DIDs
+while stale PASID/IOTLB cache state still exists, causing translation
+conflicts and DMA faults.
 
-Fix this by moving DID reservation into a helper that:
+Fix this by walking PASID tables in scalable mode, and reserving DIDs
+from present PASID entries. If PASID structures cannot be remapped, return
+error so caller can fall back safely instead of continuing with an unsafe
+DID space.
 
-- treats duplicate reservations (-ENOSPC) as expected success,
-- skips out-of-range IDs as success,
-- propagates real allocation failures (like -ENOMEM), and
-- normalize successful return values.
-
-On failure, unwind as in existing copy-allocation failure paths.
-
-Fixes: f93b4ac5929a ("iommu/vt-d: Use ida to manage domain id")
+Fixes: 0c5f6c0d8201 ("iommu/vt-d: Fix kdump kernels boot failure with scalable mode")
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 39 +++++++++++++++++++++++++++++++++----
- 1 file changed, 35 insertions(+), 4 deletions(-)
+ drivers/iommu/intel/iommu.c | 74 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 72 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index bf8b3e3edf3b..85400d0ab334 100644
+index 85400d0ab334..c9e246e8f8e2 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -1452,12 +1452,39 @@ static void intel_iommu_init_qi(struct intel_iommu *iommu)
- 	}
+@@ -1479,6 +1479,70 @@ static int reserve_domain_id(struct intel_iommu *iommu, int did)
+ 	return ret;
  }
  
 +/*
-+ * Reserve a domain ID inherited from the previous kernel so that it is not
-+ * handed out again while the copied translation structures are still live.
-+ *
-+ * Returns 0 when the ID is reserved, was already reserved, or cannot be
-+ * re-assigned, and a negative errno for a genuine allocation failure.
++ * Reserve the domain IDs used by a scalable mode context entry copied from
++ * the previous kernel.
 + */
-+static int reserve_domain_id(struct intel_iommu *iommu, int did)
++static int copy_pasid_table_dids(struct intel_iommu *iommu, struct context_entry *ce)
 +{
-+	int ret;
++	struct pasid_dir_entry *dir;
++	unsigned long dir_size;
++	phys_addr_t dir_phys;
++	int ret = 0;
++	int i, j;
 +
-+	if (did < 0 || did >= iommu->max_domain_id)
++	dir_phys = ce->lo & VTD_PAGE_MASK;
++	if (!dir_phys)
 +		return 0;
 +
-+	ret = ida_alloc_range(&iommu->domain_ida, did, did, GFP_KERNEL);
-+	/*
-+	 * Devices sharing a domain share its ID, so the same ID is seen in
-+	 * more than one context entry; -ENOSPC merely reports that it is
-+	 * already reserved.  On success the allocated ID is returned, which
-+	 * is not an error either.
-+	 */
-+	if (ret == -ENOSPC || ret >= 0)
-+		return 0;
++	dir_size = get_pasid_dir_size(ce);
++	dir = memremap(dir_phys, dir_size * sizeof(*dir), MEMREMAP_WB);
++	if (!dir)
++		return -ENOMEM;
++
++	for (i = 0; i < dir_size; i++) {
++		struct pasid_entry *table;
++		phys_addr_t table_phys;
++
++		if (!pasid_pde_is_present(&dir[i]))
++			continue;
++
++		/*
++		 * Do not use get_pasid_table_from_pde(); that returns a
++		 * phys_to_virt() pointer, which is not valid for memory
++		 * owned by the previous kernel.
++		 */
++		table_phys = READ_ONCE(dir[i].val) & PDE_PFN_MASK;
++		if (!table_phys)
++			continue;
++
++		/* A PASID table is one page: PASID_TBL_ENTRIES * 64 bytes. */
++		table = memremap(table_phys, PAGE_SIZE, MEMREMAP_WB);
++		if (!table) {
++			ret = -ENOMEM;
++			goto out;
++		}
++
++		for (j = 0; j < PASID_TBL_ENTRIES; j++) {
++			if (!pasid_pte_is_present(&table[j]))
++				continue;
++
++			ret = reserve_domain_id(iommu, pasid_get_domain_id(&table[j]));
++			if (ret) {
++				memunmap(table);
++				goto out;
++			}
++		}
++
++		memunmap(table);
++	}
++
++out:
++	memunmap(dir);
 +
 +	return ret;
 +}
@@ -125,30 +160,23 @@ index bf8b3e3edf3b..85400d0ab334 100644
  static int copy_context_table(struct intel_iommu *iommu,
  			      struct root_entry *old_re,
  			      struct context_entry **tbl,
- 			      int bus, bool ext)
- {
--	int tbl_idx, tbl_slot = 0, idx, devfn, ret = 0, did;
-+	int tbl_idx, tbl_slot = 0, idx, devfn, ret = 0;
- 	struct context_entry *new_ce = NULL, ce;
- 	struct context_entry *old_ce = NULL;
- 	struct root_entry re;
-@@ -1520,9 +1547,13 @@ static int copy_context_table(struct intel_iommu *iommu,
+@@ -1546,8 +1610,14 @@ static int copy_context_table(struct intel_iommu *iommu,
+ 
  		if (!context_present(&ce))
  			continue;
- 
--		did = context_domain_id(&ce);
--		if (did >= 0 && did < iommu->max_domain_id)
--			ida_alloc_range(&iommu->domain_ida, did, did, GFP_KERNEL);
-+		ret = reserve_domain_id(iommu, context_domain_id(&ce));
-+		if (ret) {
-+			/* Not yet published through @tbl, so free it here. */
-+			iommu_free_pages(new_ce);
-+			new_ce = NULL;
-+			goto out_unmap;
-+		}
- 
- 		set_context_copied(iommu, bus, devfn);
- 		new_ce[idx] = ce;
+-
+-		ret = reserve_domain_id(iommu, context_domain_id(&ce));
++		/*
++		 * The context entry only holds a domain ID in legacy mode.
++		 * In scalable mode the IDs are in the PASID table entries.
++		 */
++		if (ext)
++			ret = copy_pasid_table_dids(iommu, &ce);
++		else
++			ret = reserve_domain_id(iommu, context_domain_id(&ce));
+ 		if (ret) {
+ 			/* Not yet published through @tbl, so free it here. */
+ 			iommu_free_pages(new_ce);
 -- 
 2.43.0
 
