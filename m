@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC23F44E65F;
-	Mon, 28 Sep 2026 10:36:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E39343D75D3;
+	Mon, 28 Sep 2026 10:51:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790591812; cv=none; b=srq13U7SR/p0li9/e+tM876m8Ig/lMdeG0De5+Xa3CQgmR5BS9YjUqDX73Aoa2WV74j4TIO+5Uq6OAd3LlVmvgGzmgczbpRkJbLArIXpv+yTwvwwcqC0cMdNO2YQyogLYyAMLj3Ck1dM0wJZGAElg8Vy/J74mFPMKeUyPAEaTs4=
+	t=1790592718; cv=none; b=CQWX0cRDlZeis185c12IpXT/ZtOxSp2Rrop4cLnc+Yfm1CiISgiEJsAFqD0mrzxBq8qgI7GUaxXHAzAsydcjzi4rxMbsEHwJYw/R2N5Fy6RPMUXDUZy4P/fPFEE7aaUimZ+SAAeuxN3uHroXBQMsTnFMtQuczkwBEmeGwAHa6V0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790591812; c=relaxed/simple;
-	bh=+eiU14WtffpsablTSQZkeXYAVRjbhnndgQrMqpPYHgA=;
+	s=arc-20240116; t=1790592718; c=relaxed/simple;
+	bh=i9iWZp76BWiqX76RjNQSQWSTOTQ6yXB6zMkbMGgnohc=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=duU2wTlnzkI0QM2aW/fBO6Oy7mBSxSy8BZtlEPpTVoPXez28YWrUBjs6eArgjXzkP6HCvx7SrAJCY7CwCgoPhmGVm6oXvGZm1vK8U0eVnfy6Qz/JcTbr9faIS/so0Kmwp2wT+SNHR34xsgSoq4iRdJ6bD7VL8+kkUCM4pbUepHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ex9E14LS; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ufqI3p3CxI2QjViJF5iUvxiGqkuRaqbudxDoEf0UOzipDgLCKTgIuo5erEll+DcuSCHoc2uUh9b1Z8c6EifYnCyc1aRtZbcu5zygIxUg3EWdsFi+JVVcXrKwOwFoovrpTHvcYytiiM14mnFfrALItEGHlJo8depjDxhWpLVDAFg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Txs5Ny69; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ex9E14LS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96EFE1F000FF;
-	Mon, 28 Sep 2026 10:36:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Txs5Ny69"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DBEC1F000FF;
+	Mon, 28 Sep 2026 10:51:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790591810;
-	bh=3P2mxhk6Zs1a78JTFJDfkPQ7ymLagWRZKHkU7l2oUs0=;
+	s=k20260515; t=1790592716;
+	bh=NN3wx/RsUxdRsvMjmcHQPLlgjDCWCOIl0dO7zW0TJIY=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=Ex9E14LSPc2TpBUWFF4DLuttqWcWR3I5aUQkGCvGQo9fb9wZJcYjuwPo+aWKDdFBO
-	 mcB34+UNJlXcXuLBR/pWeuBR/2QN6O9xpdvhycb+A6lziTjuLJMTE6ADvc6lWQztDe
-	 YKBRfhVDM/h87MFKcJw6UR1s0s9m1fgJPbuh+ZaRfA9pVACqz41c1UUxRybOkTGMqB
-	 3SJ0Z61CJj8vxV6UBX19iRM6PaUtgiIXn6pb9EfSLOMcZQxjVL+13WluC1DQs6u76c
-	 1yOWjAIThgTYnJ8+t4vQL3BGvHVc27eiJxrrBLiDCYG1PKc1pJnSIo9AsEDBqaZyab
-	 UtCxiGoYp+dow==
+	b=Txs5Ny69Ac9Ri4OQsx9iNJZleKBTZjRKoSp3ReMWT5euTFnxnDZ5vQGpmlP3sF3Al
+	 lKKnhvvUN2DFBydjsg3XPlbzJyY1F7Dcgmh+GRBk8RMU3sKn2jFQvaGW4CV2lSblPD
+	 mkg/mmNzKCn1APoK5P+l73nlg1dOg6bj3i5dgQVwlJ2J4tWquDPBe5bHqoBdSmxdrW
+	 KuieIsdCW7MuISXxhWSL+2iUYnF9cQB2/g4akmKV42ff/yEQuDDI5Hm9psembfanoB
+	 A0H7cEVzxCXb1klAA4GzGK1/dp3Ibg/tvtVSY2VKETj8uMY8M4HRg4EEK/7u09rb4V
+	 ZBFRYSi7hX8IA==
 X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
 From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
 To: Jason Gunthorpe <jgg@nvidia.com>
@@ -44,15 +44,14 @@ Cc: linux-coco@lists.linux.dev, iommu@lists.linux.dev,
 	Xu Yilun <yilun.xu@linux.intel.com>,
 	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
 	Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [RFC PATCH v6 05/11] iommu: Add a helper to validate a vIOMMU
- parent
-In-Reply-To: <20260925122305.GG9354@nvidia.com>
+Subject: Re: [RFC PATCH v6 08/11] iommufd: Add vIOMMU provider support
+In-Reply-To: <20260925123918.GI9354@nvidia.com>
 References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
- <20260917140159.1163281-6-aneesh.kumar@kernel.org>
- <179027891416.104879.10365675178574704349.b4-review@b4>
- <yq5ald8pkhj7.fsf@kernel.org> <20260925122305.GG9354@nvidia.com>
-Date: Mon, 28 Sep 2026 16:06:42 +0530
-Message-ID: <yq5a5wzpr7b9.fsf@kernel.org>
+ <20260917140159.1163281-9-aneesh.kumar@kernel.org>
+ <179027891417.104879.5995584402952067518.b4-review@b4>
+ <yq5acxu1kgmo.fsf@kernel.org> <20260925123918.GI9354@nvidia.com>
+Date: Mon, 28 Sep 2026 16:21:47 +0530
+Message-ID: <yq5a33utr6m4.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,36 +62,95 @@ Content-Type: text/plain
 
 Jason Gunthorpe <jgg@nvidia.com> writes:
 
-> On Fri, Sep 25, 2026 at 11:18:44AM +0530, Aneesh Kumar K.V wrote:
->> > The TSM viommu should use a NULL parent domain, it doesn't have an
->> > iommufd managed S2.
+> On Fri, Sep 25, 2026 at 11:38:15AM +0530, Aneesh Kumar K.V wrote:
+>> Jason Gunthorpe <jgg@nvidia.com> writes:
 >> 
->> How would we assign an untrusted device? I currently follow these steps:
+>> >> vIOMMU creation currently dispatches directly through the physical IOMMU
+>> >> driver. Some vIOMMU types need an implementation supplied by another
+>> >> subsystem, together with private data whose lifetime extends across all
+>> >> vIOMMUs using that implementation.
+>> >> 
+>> >> Introduce a vIOMMU provider that associates implementation operations,
+>> >> their module owner and private data. Allow one external provider to
+>> >> register for each non-default vIOMMU type.
+>> >
+>> > This seems much more extensive than I imagined when I proposed this.
+>> >
+>> > I imagined you'd just have iommufd see there is a TSM attached the pci
+>> > device with a function call, and check if that TSM handled the
+>> > requested iommu ID.
+>> >
+>> > No need for a registration system because we already know the only
+>> > possible TSM driver that can handle it,
+>> >
+>> 
+>> Agreed, there will be only one vIOMMU provider. But, without a
+>> registration mechanism, what would the module dependency look like?
+>> 
+>> I currently have the TSM driver depending on IOMMUFD. Therefore, the TSM
+>> driver needs to tell iommufd which vIOMMU type it provides and register
+>> the corresponding provider. IOMMUFD does not call into TSM directly.
 >
->> 1. Create an HWPT with IOMMU_HWPT_ALLOC_NEST_PARENT.
->> 2. Allocate a vIOMMU with viommu.hwpt_id set to that hwpt_id.
->> 3. Allocate a vdevice with alloc_vdev.viommu_id set to that viommu_id.
->> 4. Use VFIO_DEVICE_ATTACH_IOMMUFD_PT with the hwpt_id.
+> Just put the two new ops in:
 >
-> The vmiommu.hwpt_id should be 0.
+> struct pci_tsm_ops {
+> 	size_t (*viommu_get_size)(struct device *dev, enum iommu_viommu_type type);
+> 	int (*viommu_init)(struct iommufd_viommu *viommu, struct device *dev,
+> 		    struct iommu_domain *parent,
+> 		    const struct iommu_user_data *user_data);
+> }
 >
-> 1. Create a a HWPT with IOMMU_HWPT_ALLOC_NEST_PARENT
-> 2. VFIO_DEVICE_ATTACH_IOMMUFD_PT with the hwpt_id to establish the T=0
->    identity S2, no T=0 vSMMU
-> 3. Create a VIOMMU with no hwpt_id and the RMM's type. This triggers
->    RMM to create the the T=1 vSMMU inside the realm
-> 4. Allocate a vdevice on the viommu_id. This triggers RMM to create
->    the VDEV inside the realm
-> 5. Setup guest ACPI tables/etc to point at the RMM's T=1 vsmmu.
+> And bounce them with a static inline
 >
-> Now both the T=1 VSUMM and T=0 fixed translation are setup.
+> static inline
+> ssize_t pci_tsm_viommu_get_size(struct device *dev, enum iommu_viommu_type type)
+> {
+> 	const struct pci_tsm_ops *ops;
+> 	struct pci_dev *pdev;
+>
+> 	if (!dev_is_pci(dev))
+> 		return -EINVAL;
+>
+> 	pdev = to_pci_dev(dev);
+> 	if (!pdev->tsm)
+> 		return -ENODEV;
+>
+> 	ops = to_pci_tsm_ops(pdev->tsm);
+> 	if (!ops->viommu_get_size)
+> 		return 0;
+> 	return ops->viommu_get_size(dev, type);
+> }
+>
+> No module dependency.
+>
+> The iommufd side is simple, it just calls this before calling the
+> iommu driver. First one to return a size wins and creates the viommu.
+>
+> We'd want to have a reasonable lifetime model where the the pdev->tsm
+> is guarenteed stable while a driver is bound.
 >
 
-ok so iommufd_viommu_alloc_ioctl() will do this based on type.
+And the init side will be as below.
 
-+	if (iommufd_viommu_type_requires_hwpt(cmd->type)) {
-+		hwpt_paging = iommufd_get_hwpt_paging(ucmd, cmd->hwpt_id);
-+		if (IS_ERR(hwpt_paging)) {
+bool use_tsm = false;
+
+viommu_size = tsm_viommu_get_size(dev, type);
+if (viommu_size) {
+	use_tsm = true;
+} else {
+	viommu_size = iommu_ops->get_viommu_size(dev, type);
+	if (!viommu_size)
+		return -EOPNOTSUPP;
+}
+
+
+Initialization becomes:
+
+
+if (use_tsm)
+	ret = tsm_viommu_init(viommu, dev, parent, user_data);
+else
+	ret = iommu_ops->viommu_init(viommu, parent, user_data);
 
 
 -aneesh
