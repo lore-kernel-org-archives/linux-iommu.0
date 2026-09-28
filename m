@@ -1,112 +1,100 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from pdx-out-012.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-012.esa.us-west-2.outbound.mail-perimeter.amazon.com [35.162.73.231])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AFE14BD349
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 14:57:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 734DB4E73C0
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 15:23:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.162.73.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790607428; cv=none; b=G14S4/F+g3cvrICRFjvMTmyc7ZRL45kioweEjzwDEEPRvvllF3bv5Ana4NEF0Q2RwlCn67lu+Dxu0vuXwhcfJwkqPgvK4QjeZ4rGiJs2Vik6NWaeXd7oE/ZyzB8VesHdMDqm93CZC29eWOWrxYhwspb6PP4/Mwo28N0tLbL8Y3A=
+	t=1790609013; cv=none; b=gHun5raYacaynBsDO/IRZYtaHUNXn5dz9psYshdePulcHq2qKqMrCQFfZ+8AqXKPOHhFeJ+2feEAJfjFvh1hJ9wPz0QeUY6aKXgvggFZdWTiD+drjnbeMb6K+OuTbpQDmuejFZjhUkHBUzLqdFIU5C9B/NXHGuzBQyb7zxnl9zM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790607428; c=relaxed/simple;
-	bh=hnhQkpKoMw2Zhfw9DM4few3dVnMySo2yIHKJrwxV20g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WS1vOgJ+WRVaPnkqyVGG12Fdn0PiY5Hiq5o80x1Cn8OtNCOx8v/dahUUw4aCxT89ceAwtDNbBVpDhTexDWWxT4luge1G/PKVd3KN0xXkyr554muxQdYTavDkT0BoB9rSJjSgpE06Awsp/ph6ZWX1FTlkdUH7lgU3KEqQXOR1+xg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ctG+Y3WS; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1790609013; c=relaxed/simple;
+	bh=prL4mY5T7qdCLFQzKZtWBj5xenekzjprM/SYPDvtZrA=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uVuH9k2UhEd3FD7oKfHmHdz6LzidwYbU0xoN1Q1rvScTMSneKAyUrDO8BBpVJo2ysbXNLHcsqnqiCI/9FYsKFtWSXMRmtEu6krC0I8UQK2P+jCu0hYSCg6dABrBqHIZaurmom92FH7IL5gA6YBT4bVSgC9CIkGHBo1cIBffIUBg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.com; dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b=N/7he2Fm; arc=none smtp.client-ip=35.162.73.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ctG+Y3WS"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2db33db4de9so92635ad.0
-        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 07:57:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b="N/7he2Fm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790607425; x=1791212225; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=Go9hn601ofYGhTbmTXvodFkeQSZutx3QY5olFYU9dfU=;
-        b=ctG+Y3WSq7wPpkwHVlmydJSouSru19Ur3NfkABhz8Ru+f/GyrXX4qYJ+kUgBJRQTBu
-         4mw+a+FxkMjFVmHWFjpJCpPBLDeg4RNpMCR3v6nTlyyMQovDiAJBNWZWgQu6oi9as1nX
-         yn8HIfXOKeC3m/FYO6GUdEWY1tT5iVNiF8XY4WlZTqrDMhBNV5lwY6KJevhpo+wPDY1x
-         +0FQRmrIFHvnh6bXSWCFzBnsnVWS630FjMhnUMLJnXGMDUyvXQIvc1Sux+4bLAGNFJ0Y
-         /QHCWPhnyJYZ0D2Kds1hFO2musaQRnyBZTS2rLkORXE7dl5YX+iWNxAxwbdCX81CR8MC
-         toWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790607425; x=1791212225;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Go9hn601ofYGhTbmTXvodFkeQSZutx3QY5olFYU9dfU=;
-        b=sL8GzpK7w4cGFyy2/KPUmTTce3PxuDgXb8hlljJ0RYmJf6gyGFuyVOmbypzngbdfXX
-         S3hzY21oJuTkPgWDr+x0eu04laKQy7G90a8Jbh/StYTZQvqSdRhXXHzABfad/x0vKYhn
-         DY67TkgbnXP5EnKGaTEnY+kjxc86WJiyCPOSgM+47oNp4Bp3x9lxanSEHIY7MHtDKR6k
-         WxYk2bDOzS1ovQj83N6tVOpKlJsn3jbW93mZ6R3eFHMG59uDVvzqgyYlkrHcC/FBb1dM
-         bDocOkuQ2lMdoYgDmlcYz14V/Ge8jJz0X7WJ0oj7+8WFR8Rweg4rdTzXUOwOfCi+7a94
-         GXIA==
-X-Forwarded-Encrypted: i=1; AKwUvBwlWgKHl6kaDYxJFUdjH2SPY/SuLh/PQIpPqeJAPI25DynpvYBGek/a4EOzwDaZ1Z0pZhaG9w==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIbqdKSr30q38k6csG8653rZelS/JKDaA1AfxfQKpdnD2gVH5+q
-	ExRYl0bdBQbS//L/KuNGWxVW8Nrt8lBc4QDOE7PaTVpzxIfyLXlNfWuptIud5x9UmQ==
-X-Gm-Gg: AYBFou3POpFVxQqoPYU1tniD9e1tmVK9b8pU7jgvNIznTv/7T8nEe9n8GemCHwxibt4
-	l4V0zp3csqKUVrhOJgSOlIVMbZtb7LGyIQ8JoWxgSvfwSRPn37670LlxWph0TFlMns9D9a4AQuu
-	8cr9igFTR/yFoJkuh2KY5SxK6zWULH72aLc1ELq3eZxmstmUhzIRrEhfjcKlFjcc7dQuABnh5KC
-	SG3AYlqLw0DapEaaZNlQG/EGLD8J6je5CMNYDPw5Fh3rMydspBmgvCtbXPycjVNxxhaJH10Hoza
-	8b/l12qkpwPx52QVwYFyArRGpz2KjC2jbRd5t365KRfgYP5Mt0Dau/TWJkoMHXG6vP58VIh0PIx
-	844JAV/wffyqDKlKdt4ZTMRxmKUAgEfRbzS56KxAJApHuCL/sRcRhITTJQjhW2PxyOJRc5aCAbu
-	7YUxwdQNVqW3DYRaL8fwvVrN4qosVPVFNynYGBZhSA+6QtUSk2lJ1dUI6LF0hKCCMSbXYNFReUO
-	oNeL8gaoi6bLN+h07KD0XU6XS9WzHrN6uin
-X-Received: by 2002:a17:902:d4d2:b0:2df:42af:2f9f with SMTP id d9443c01a7336-2dfa968ef1cmr5442355ad.1.1790607424172;
-        Mon, 28 Sep 2026 07:57:04 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a0b9feddd0sm7198628a91.2.2026.09.28.07.56.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 07:57:03 -0700 (PDT)
-Date: Mon, 28 Sep 2026 14:56:54 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>, stable@vger.kernel.org,
-	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Subject: Re: [PATCH v7 5/9] iommu/arm-smmu-v3: Keep track in arm_smmu_invs if
- range invalidation is used
-Message-ID: <arqANvAwIz6GSXJp@google.com>
-References: <0-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
- <5-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
+  t=1790609010; x=1822145010;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ssc2XGYXxWt7KSvkGE64VLhm/JYqo0izQ0v9suh6vGk=;
+  b=N/7he2Fm5SIlbha/tmYZs/oZHwH8l0eBQzIkeTzSQ3xdVb9x4qQi31I6
+   tNiJ6NiNNgK7LB24dfnzlLeeXIMG6WZ+3tbpbVfcewK5iUeb0gUse4Ob+
+   QWqvNSVILnzE4k9HY95x3B4UBM0YUKhOfPes5vdTBZ2sBEAa5E7kinMzw
+   dkUFEwl9yx5VSaaxv/3Ex5l8EuvYHsUMVJjgiulLzwRZrLaD0QnROxSaL
+   bUTBQPah1WNNHPb6CTfJsoFMXHhJL89yScViAfWMiYoEbRQ/GgWKtNBqu
+   pjIlFh4gbA08s+Rv5gdqNeqs1OYDRjWTlJ4h1aV//FNjenk9ri34aQtP1
+   Q==;
+X-CSE-ConnectionGUID: jnJ9/YN1TZSLsI2f6lzYSw==
+X-CSE-MsgGUID: 9bwnKBOuR0yNrVpk5p4H0w==
+X-IronPort-AV: E=Sophos;i="6.27,128,1787011200"; 
+   d="scan'208";a="29644157"
+Received: from ip-10-5-12-219.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.12.219])
+  by internal-pdx-out-012.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 15:23:24 +0000
+Received: from EX19MTAUWB002.ant.amazon.com [205.251.233.48:12407]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.13.104:2525] with esmtp (Farcaster)
+ id ea5ba36c-33b9-4f1a-b9d1-70d08488d952; Mon, 28 Sep 2026 15:23:24 +0000 (UTC)
+X-Farcaster-Flow-ID: ea5ba36c-33b9-4f1a-b9d1-70d08488d952
+Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
+ EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.49;
+ Mon, 28 Sep 2026 15:23:23 +0000
+Received: from 7cf34dda9133.amazon.com (10.106.178.42) by
+ EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.49;
+ Mon, 28 Sep 2026 15:23:21 +0000
+From: Cristian Prundeanu <cpru@amazon.com>
+To: <nicolinc@nvidia.com>
+CC: <iommu@lists.linux.dev>, <jamien@nvidia.com>, <jgg@nvidia.com>,
+	<joro@8bytes.org>, <kas@kernel.org>, <kevin.tian@intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<praan@google.com>, <robin.murphy@arm.com>, <smostafa@google.com>,
+	<will@kernel.org>, <leitao@debian.org>, Cristian Prundeanu <cpru@amazon.com>
+Subject: Re: [PATCH v10 00/13] iommu/arm-smmu-v3: Adopt the crashed kernel's stream table for kdump
+Date: Mon, 28 Sep 2026 10:23:02 -0500
+Message-ID: <20260928152302.58271-1-cpru@amazon.com>
+X-Mailer: git-send-email 2.54.0
+In-Reply-To: <cover.1788130528.git.nicolinc@nvidia.com>
+References: <aqfPKIeO4lWCHlQ3@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EX19D031UWA001.ant.amazon.com (10.13.139.88) To
+ EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-On Mon, Sep 21, 2026 at 08:55:13PM -0300, Jason Gunthorpe wrote:
-> Summarize if any of the inv entries will use range invalidation and if any
-> need ARM_SMMU_OPT_FULL_CONT_RANGE_INV. The next patch will use this to
-> avoid range invalidation pre-calculations unless the range commands will
-> be used.
-> 
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Reviewed-by: Mostafa Saleh <smostafa@google.com>
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+On Sun, Aug 30, 2026 at 04:18:01PM -0700, Nicolin Chen wrote:
+> To safely absorb in-flight DMA, the kdump kernel must leave SMMUEN=1 intact
+> and avoid modifying STRTAB_BASE. This allows HW to continue translating in-
+> flight DMA using the crashed kernel's page tables until the endpoint device
+> drivers probe and quiesce their respective hardware.
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Tested v10 on AWS Graviton4 bare metal (m8g.metal-24xl: Neoverse V2, single
+SMMUv3 with a 2-level stream table). On this platform, if the SMMU aborts a
+NIC DMA read, firmware resets the host. An unpatched kernel fails kdump when
+the NIC is still fetching from memory as the SMMU probe installs a fresh
+stream table.
 
-Thanks,
-Praan
+Reproducer: sysrq-c while the NIC receives ~100 kpps of UDP over 64 flows,
+spread across most RX queues. The kdump initramfs omits the NIC driver, so
+nothing quiesces the device.
+
+Results using Amazon Linux 2023 with kdump kernel 6.18.39:
+
+- Unpatched: 2/2 failures. The SMMU logs read and write translation aborts 
+  ~2.5 s after the panic, and the host resets before the vmcore is written.
+
+- v7.3-rc1 + this series: 3/3 complete vmcores, no translation aborts.
+  The kdump kernel logs "kdump: adopting crashed kernel's stream table"
+  and "kdump: retaining SMMUEN for in-flight DMA". In one run the NIC
+  driver was present, so the device was also re-probed and reset.
+
+Tested-by: Cristian Prundeanu <cpru@amazon.com>
