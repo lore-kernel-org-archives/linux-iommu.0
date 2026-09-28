@@ -1,80 +1,91 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-dy2-f41.google.com (mail-dy2-f41.google.com [74.125.229.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B33952EEE9E
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 23:03:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 982664D17BF
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 23:08:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790636631; cv=none; b=jkOG8xWBNaY2RlWo1j0fi8exXxsQISa630slvyfXANXEwapZVHc/6GX7Mch1VgLD8KuHqTcKsEYD7JStP02RflM+2yLyAvwJYb5c52u9nmPI0JD8MQUVk5hahGmIcl6ebicOta4TdZRGAOsEww6ENyhdiPhBZXuoMYKqmH0E04I=
+	t=1790636919; cv=none; b=CpMZMJAKy0o0ppE93orDGFEox3YbgIkEO57H+OHfzsDUjGiPhb8V7fw0IxOCmRu6vexBQgGEw/KzC+Oo+SQ/53I827ykpyCfEa70qeFu1/CJf/QOAhZ6mgzbM9JPxvUKF35iDI33f2gHPACPLBSTqtTuW2oxkNU4nmF3d+7oImA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790636631; c=relaxed/simple;
-	bh=+NbROVe4afASwW55xJJaNok12pyEvCa8CWrMaS1gt/Y=;
+	s=arc-20240116; t=1790636919; c=relaxed/simple;
+	bh=0nWeG7gLZ/H7cWQa/8TVyUSe9M/rW/4Yls/RoHMrSnU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Idlxm5prRxQWagGMu3vwGokljWsDi844x/7V2tc8N7Ma6UbqhIuhw2hJSHhF/4EPV2/PxwDt3c5cfSaN1NsUXSmqeUcKBUncbV9Wv7hXTd9JCgc2kUoHbKYyIor9kOXzDWwNRy3HY+kbH41FHQczEvxApOk8uiHxyQ8ewf4Y6rY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CX2Vh6mW; arc=none smtp.client-ip=209.85.214.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=PfXNoEUh4MIIqE5v9qAAVZNeCEtx0hk2QHQnDhqfoRVd84k0nw/sVlZZ+Ht+Z4rybACNfqwdwNbHNl9VhDmmtYaEU0FSy+Q11F9RM4a3V4Y0BLP/lojZuevfyLuq6ZXUAMn4IrNN8bAzv6e7of1WG/fSUHhD/ggp+eeu/W4ZCA0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=HAeUAGV2; arc=none smtp.client-ip=74.125.229.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CX2Vh6mW"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2db33db4de9so22265ad.0
-        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 16:03:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="HAeUAGV2"
+Received: by mail-dy2-f41.google.com with SMTP id 5a478bee46e88-34b4f2d90c4so6096eec.2
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 16:08:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790636629; x=1791241429; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1790636916; x=1791241716; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=OMftjJLAh8xtsCYYhvQzmmzmnj+Oz+ZcLlSPeG/s0X0=;
-        b=CX2Vh6mWLxK+P2GwlsvBpsX/37qV5YkHAYdQiuc3+M7AWk1b197sJhpXGZ3i1QX0Tw
-         QEu0Bi4idJOLFetY8cJR5YZnCuctnygYXvesU3W9b2VOSU1DN8AHKEKWxhYAshSC2phq
-         7rBUoVlVP22fKcJsckdgD/gJcqVhDwED7uL4VBQ8oMcbnulQOD2eLKT9n8sqIGGVj0jL
-         dLS8cwdrmGoqqacETJ245apVgQuQ5cuBdDNpKJZohQ6N4NfPBsRsXbSr2meibgzlWCkV
-         SM3L+pGOs8MAp5KykP+/owcEoVIdnLo5PwJx7uNJfqjuitKuWoJcosKqRXzKToPXXaKj
-         sfXQ==
+        bh=77Ly/kE6ea0uAMR6LixnKC4rocy66Cjich0gHdqD2Co=;
+        b=HAeUAGV2oWbaGCBvxP0a0vrPMwiXQksarFptTXXXst0tgzSx1XFVVRpYSNIZBoaKTG
+         vs6SjCN+blJ3e7TeN6dirN8fk0mDTdOHMZQZQcfByDJiWiM5gY3bDiKtMsOw4dxue4Ds
+         PM46tahyrltUNz/fOCmjVgh9lN1a988nHCeNGdM55n8yaLjeSTXqShL/8zU58/JjnNDP
+         5Z461Kie4mZiqiq09M4kMqVZiTHijEo4kH3wy9ESvO1FRVfMB4Mkw2xwEMjpLN7HaxKt
+         X0rXqjiRFfmA9NwLnLQXMWnvtuYmouwDZttSCq7CIjNtF0ULgZpL1y+TIE2bvIPyXSxj
+         WsnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790636629; x=1791241429;
+        d=1e100.net; s=20260707; t=1790636916; x=1791241716;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=OMftjJLAh8xtsCYYhvQzmmzmnj+Oz+ZcLlSPeG/s0X0=;
-        b=lhf5+zLZrPA7m5S5U+aaPOYNW97feqV3dHbBLUUqKpKfOoGyqCMk5Ols5d++5yrXja
-         g8o/u0/Etp9rYG0iRLasuP9/8nNE5rxOPj3FnOlDGZW9IdkGLisoEl6WR6N4MWHQLV83
-         VFzhaRwUe3H06UgmgabvQegQmXi2b+IEPKCJNY7Al8Ht/ClctIraQFSrZRC6NF0orlj4
-         MlbnvIe8AW1XTA2Vs4OuLL2NRJdOTX7iYgdZ5/R1vVAK4YdTaiOgh/zUeAh7QS2kYodk
-         b6IB55ZrK42z08ImnaPeZ56x6bNyRI+RcjvujVZ9K3Dnop/nYNvgDG43I4kTjdxt/AuH
-         uY3Q==
-X-Gm-Message-State: AFq9FYJHGfIg0F2OQ8G6RhDp0G4Uo0k2UkD0iAOeht2Jj2m1djkdgLpH
-	I7USJD9RBDpYta49lY3hfNuUyIUVT9NGOLsPRHMtKjS1yboJkQZJu1Z8F4xvBE5cQA==
-X-Gm-Gg: AYBFou1ipX/NLJxMOrsjfZ7nyRB+mmrsvbiF2WtPZoKK3kb2JEqaMSevsyPD93yxmA6
-	KQb5PvU/OUpXcqR5eZ/m35jCgsqbUy5Ld/VaP3/h/OPd65RphQb+H/8F4CUZtYyc01EEMdTxklV
-	aGoLb423vfN9WFtdrp4/rLf5aDhNXCDPbszpGe7/HC6elNmFC2LX2sDg978JcL1TBVVLs1i60RY
-	7xSHpRWZko0Qz+9nLNrLdDz70C9KqhBw/tSfkYxzG4nsGI+a0ZLpf+HD+33lbBbfpel948vRHKz
-	qHUuxrMYa4Ql6WOxj3xArBQwpOWczVwgSkyHkGWKzMRZFJLFqmiqh/gWog9k8jMmwNIDr89c+gy
-	M26TWkA9g6Cp9WrySvqvP6Y1/Ad1j7T8kcdb7/IT6oFPr84GBW45fU4tKaso/rbjHL+g1ziltqT
-	dN3IDxOnkeneB9kfY2LjjPFgvWqJ2mxKiyZtSLMj3Tmh3d0iAVLojLBv8zSukNJeBPzZ5E9WKZF
-	rAIZCBecsbju/L+Nmr7nyYUL0RDm7EQctFi
-X-Received: by 2002:a17:902:f707:b0:2c7:f688:f22f with SMTP id d9443c01a7336-2e2c79fbdd5mr691405ad.13.1790636627971;
-        Mon, 28 Sep 2026 16:03:47 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-87feac93380sm4714358b3a.33.2026.09.28.16.03.45
+        bh=77Ly/kE6ea0uAMR6LixnKC4rocy66Cjich0gHdqD2Co=;
+        b=OmtH3o63bUQA7TVuv4lzxsIcBZQP9yLyiZ5cOBQ/czcIq/fCtK6n2yj9fNtsfY2Ezh
+         hQU0f7ePpX3YpzJSkAjxV0yEYLtvMl2PWGLmc9hi8mFJyhF3UuzYQiRhWtm4JgtLSBKp
+         DXBBK/Ok1VHP4IXD73NCFQOiyEMuJP40iXCZBAyghjQk8tHKG8HSOOYcrXMutYevOSyu
+         3P1Wgos6gZdyCPECygi/LO5Is3jlm0dIJx2o7vtl4d+XiuXNXSMEObsIiZueEsAyFM46
+         687p9PWLkUVwwgZvGcFYM7jWbFBJdO4frVlWhLQs9H2/HEFhL5ke62MKIntD4KLRRP+W
+         sffw==
+X-Forwarded-Encrypted: i=1; AKwUvByIRkKuE8VBjiWQcdlWCxz3JPFE3JOFhSjq3ErkZOtNlFp8SI6D7f0AeTi0vcQnovE5vudl6g==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKFskmsymdb07D2+GWN3uVJDkImgpj80qCi2kzWyi/+PvFLOT12
+	+3Jr83/xG8iLzSN3h+3WCuwWtvxzFBuEMYotsk67s+zxqEdW5T7FgoCshQxPFrWptyI=
+X-Gm-Gg: AYBFou3pgm0Hj1eINrrNZ/4QeuRujK8FIuhilPwknbV7drrV1wYmMlzM0GHeUO+Ms96
+	UbAdXdIjcygelmiz4csyCaDOeq5h9sRbMoOqHfKmk+ME0IWjveJpJf38Cdhv4mVouHBOa3Lzg4y
+	sDFYZrVnGSf6mJAtsPjPG6FUNKrILlCmLdh5X3RmPvWtBLY92ywDX+NpmEVoCob2ii1BXQQBtgT
+	bhqFdbnt9J6wV+wSRFi4VtF9d7vZaeJU/Rx+mvN6bnBLnHsiMNeK48RLsBZdRtVaNve6TtTT00a
+	RHTWa1HA5Bf9LEYtizBmfrt3wQOhKL7xkFPwbB2TxwVQI774dx0YpUsvySrU9wMU7Flh3yVtfdW
+	qNPyCjz0rQsZyr/SwV7p2pPtGbb41nEhNxEQwbRmqI8gQRMs5I4A/lsUx8LzMKGuoDLDZykQQJD
+	0YVoSY1ULOP+SNrTqUigg2AGL/xHS5oP7REflvn3yKDrCw
+X-Received: by 2002:a05:7300:d58d:b0:34b:354b:79b9 with SMTP id 5a478bee46e88-34b355ad91amr317545eec.12.1790636916413;
+        Mon, 28 Sep 2026 16:08:36 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-347328dd123sm9211297eec.13.2026.09.28.16.08.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2026 16:03:47 -0700 (PDT)
-Date: Mon, 28 Sep 2026 23:03:41 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	David Matlack <dmatlack@google.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v2 1/9] iommupt: Remove the sanity check for
- pt_num_items_lg2() at the top level
-Message-ID: <arryTf6sRapjC1uW@google.com>
-References: <0-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com>
- <1-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com>
+        Mon, 28 Sep 2026 16:08:35 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xBKSY-00000007uAr-1P1O;
+	Mon, 28 Sep 2026 20:08:34 -0300
+Date: Mon, 28 Sep 2026 20:08:34 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Sonang Patel <sonangp@nvidia.com>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	linux-coco@lists.linux.dev, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [RFC PATCH v6 11/11] PCI/TSM: Add reference-counted contexts for
+ vdevice providers
+Message-ID: <20260928230834.GL163130@ziepe.ca>
+References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
+ <20260917140159.1163281-12-aneesh.kumar@kernel.org>
+ <arq2Ql3-q9EApe3X@sonangrm.nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,26 +94,32 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com>
+In-Reply-To: <arq2Ql3-q9EApe3X@sonangrm.nvidia.com>
 
-On Wed, Aug 12, 2026 at 05:09:17PM -0300, Jason Gunthorpe wrote:
-> This was ill conceived, the existing formats work OK because they
-> happen to support pt_num_items_lg2() at the top level. However the
-> documentation is clear that is not permitted because ARMv8 has
-> concatenated top levels and we do not want to calculate an exact
-> pt_num_items_lg2() for the top level special case.
+On Tue, Sep 29, 2026 at 12:17:30AM +0530, Sonang Patel wrote:
+> On Thu, 17 Sep 2026 19:31:59 +0530, Aneesh Kumar K.V (Arm) wrote:
+> > +		if (is_pci_tsm_pf0(pdev)) {
+> > +			if (pci_tsm_disconnect(pdev))
+> > +				pci_warn(pdev, "TSM connection is still in use\n");
+> > +		} else {
+> > +			tsm_remove(pdev->tsm);
+> > +		}
 > 
-> The logic to compute the number of items of the top level is shown in
-> pt_top_memsize_lg2() which is:
-> 
-> 	num_items_lg2 = common->max_vasz_lg2 - pt_table_item_lg2sz(&pts);
-> 
-> Which is pointless to try and sanity check.
-> 
-> Reviewed-by: Mostafa Saleh <smostafa@google.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> What happens if the PCI device is removed (e.g. sysfs remove, surprise
+> hot-unplug) while the vDEVICE/TDI still exists?
+> Since removal cannot be refused, should the remove path still force
+> the unbind/unlock?
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+vfio prevents that. It currently will block the sysfs remove until
+vfio is closed.
 
-Thanks,
-Praan
+If we ever decide to fix that then vfio would have to tear down the
+iommufd vdevice before allowing itself to be destroyed.
+
+We don't need any lifetime nonsense once we are inside an iommufd
+context, its existing locking scheme is very strong already. tsm
+should not be allowed to change while a driver is bound, and basically
+I shouldn't see any refcounting or locking in any of these paths
+stemming from a bound driver context in iommufd.
+
+Jason
