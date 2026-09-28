@@ -1,218 +1,169 @@
-Received: from delivery.antispam.mailspamprotection.com (delivery.antispam.mailspamprotection.com [185.56.87.12])
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012001.outbound.protection.outlook.com [40.107.209.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8310E3BB670;
-	Sun, 27 Sep 2026 22:13:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.56.87.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 522EE7083C
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 01:26:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.1
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790547207; cv=pass; b=TosS/QSOXkdXpuot022gMtoNsE2IdSVmDLV6sTJ2piRnbHAJ1gE1oK6QDsizDK5nYGZ6SfX5E4BHZSNld8CTCpXwaruzR86eNlj9h0Q290ZoqFDWa+aEOkDpxKIqEKKCBQaRX4XlNEtuXD1wE4N4fMVpGYJ5BHbRkFd1doHEDGU=
+	t=1790558781; cv=fail; b=T/d3La+pBGxxsH6lVcmM9GrTMwktUJe+EOU7VZ4EPe9yeCuUyojzr3Ez3+dGt2gCtaop3p8tgC169bvZL5Q3Jnx4JwtfKh+CpITg29X+lfbOP6lg/iTtntwopDFpJHOYWMhBZq9z0MA8hjo3ySw7sgzqtTMYwXXhYryrigIs0tg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790547207; c=relaxed/simple;
-	bh=g3a6aFez5u5R7XhphSxDPGFXrJlVJwrOjK3Tk7gWDUU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TNjTmqCafHybXIB7IjfGjZMsYOQrjP6Pqt8AKEboogF2L+ttrsVRC39wagom2y2RmTh7Vo73wchcKX3X7pDEP9CkhUX9nmHvlCipECBrcKusBN3e631/FTqUOnRf48/oHPDNSCuj7E4ixGukO1hVjhwwobGtaTINf8psS0E/UGg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it; spf=pass smtp.mailfrom=valla.it; dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b=TA5+TXW8; dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b=FL5/baBM; arc=pass smtp.client-ip=185.56.87.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valla.it
+	s=arc-20240116; t=1790558781; c=relaxed/simple;
+	bh=geNcw279zn799QgytApZg/6q0vmH/JVTMZ/5HNuggf4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=QpsRiJ+TsXyu6WKn/VcGBuBEynCw1Dmxr051t8MzgRx6caVbULHtKTQwZAff54Qaq5zwQVWi3XLFUIGCg0MY6bJxRz488Oa4agHYjl+9soWu2a9izG8dko4GB68A/zFy80qW8n2fIBaDjFc4eB8SclznyvahTSkNB+5Qaafg6Qs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=KI6uhAAw; arc=fail smtp.client-ip=40.107.209.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b="TA5+TXW8";
-	dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b="FL5/baBM"
-ARC-Seal: i=1; cv=none; a=rsa-sha256; d=outgoing.instance-europe-west4-tjj1.prod.antispam.mailspamprotection.com; s=arckey; t=1790547204;
-	 b=JTOsATYUtEnhZf3Sgp/iD44N52HgdhoKO+KhM347TSMGmqP+VpAmjAyUYTwrVC3OPlAj+8KcoC
-	  +g5YMdAHFDjdbb2WspmX1NN4RHbpN670D65VMQ5nTHVeAwzyOBzupqI+SWGk+dH1f6M4WUfRd4
-	  DuZDwC+aSPZ4TzJBEwbuXCmSrkBVhIEankmpn/wglESvbowRvWA7r84OcYBMWdqQJbi2cR4oNy
-	  2w/RwWG3iyJjCwA5bN1RQtltnquRqAxY6au6iSBsrAjhxQezSryc0LDzHEs0+NY/V2zHjUbJ2/
-	  THhkD8ne2b/9OlIX6kQot9Pl/s5tG9245dlcNZVT+iDn7g==;
-ARC-Authentication-Results: i=1; outgoing.instance-europe-west4-tjj1.prod.antispam.mailspamprotection.com; smtp.remote-ip=35.214.173.214;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=outgoing.instance-europe-west4-tjj1.prod.antispam.mailspamprotection.com; s=arckey; t=1790547204;
-	bh=g3a6aFez5u5R7XhphSxDPGFXrJlVJwrOjK3Tk7gWDUU=;
-	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:
-	  From:Date:DKIM-Signature:DKIM-Signature;
-	b=rnNNROMYEOoT2IGEaZ0LAAXrsdk/ZoP+EmY67XdyncCUpJ1LPF3ooHTxINofzkgsASFrxUVQe6
-	  BAkLE/BToLG6pTBPC6Z/UWGdbSDzwj1jXjNA0f+12lGbXHRiWbWpX3Zk+CF89pvTLNxrcu0hEH
-	  4qywzfbh/6wFC5WEd2HezIfFgQe8r48K0+gc2NKKScpDWP5U2vLlpM9XU/t8YIP3S6h4SJ09v5
-	  QvKmADNujeaXKLCWbLzw5k7sc9VLFO4o8QycrUjpKBQo1Tdbfg96hj8OG7+1I9EZrac32oddMf
-	  ie5c1om+I1Ebrju+aAtSqQLX7zbtqPIa+qXVGM4aroshSA==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=antispam.mailspamprotection.com; s=default; h=CFBL-Feedback-ID:CFBL-Address
-	:Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	List-Unsubscribe:Content-Transfer-Encoding;
-	bh=9LWHPNFgWOuxhAUuO+Xov6euQfWdO2vKk+2zNuLyRVI=; b=TA5+TXW8ui69q30PU7LYeTSKLA
-	o5i3TU4XBz2ZtnJJHBUHyzULbiFIxzwidRArrnjke+YPwdp1VfjWyyVW3TDwodUL9uP1Ha4uH5FsL
-	9bUk1R2ZNLYwxj+MLAALIfSUfJLocr0iHtoV5zSGv1gotg/0DDpttTBTkHIZtXHn1qcE=;
-Received: from 214.173.214.35.bc.googleusercontent.com ([35.214.173.214] helo=esm19.siteground.biz)
-	by instance-europe-west4-tjj1.prod.antispam.mailspamprotection.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <francesco@valla.it>)
-	id 1xAx7T-00000000mgL-0ykI;
-	Sun, 27 Sep 2026 22:13:15 +0000
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=valla.it;
-	s=default; h=Subject:Cc:To:From:Date:list-help:list-unsubscribe:
-	list-subscribe:list-post:list-owner:list-archive;
-	bh=9LWHPNFgWOuxhAUuO+Xov6euQfWdO2vKk+2zNuLyRVI=; b=FL5/baBM4QfixLkgL9NSA6Gyy2
-	e1NYko/DLCVpo5o5+Rbfp/9900ufixVb3f8AGPtX/OPhC9dncfOIpVHwSCZvGdZ3rM3UMtZddQ9Ur
-	oz9rBVaIxeWlXzNCpvxp9IpKiOI6hQ/Hx6U4NFNTSbJo/G5AYMKSunvdUnfPaJPR9taY=;
-Received: from [79.45.60.29] (port=64303 helo=bywater)
-	by esm19.siteground.biz with essmtpa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <francesco@valla.it>)
-	id 1xAx72-000000002xa-3Ygs;
-	Sun, 27 Sep 2026 22:12:48 +0000
-Date: Mon, 28 Sep 2026 00:12:46 +0200
-From: Francesco Valla <francesco@valla.it>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	virtualization@lists.linux.dev, imx@lists.linux.dev, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFC 06/12] remoteproc: virtio: add bounce buffering for
- data buffers
-Message-ID: <armUKG0TYwHkpG56@bywater>
-References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <20260916-remoteproc_virtio_map-v1-6-dac8c5eb4aa9@valla.it>
- <arKlvZGqu2nt6Ci0@p14s>
- <arLXthhYbKkwZ9zY@bywater>
- <CANLsYkwNOukGX68=NVvwNP7iudP3EcKN6C2L2o9nVCTRxFVxFg@mail.gmail.com>
- <arP38OEaabFFu8lJ@bywater>
- <araOI_duKIAbphq6@p14s>
- <1b55f680-2413-4db1-b928-ed5741696d07@arm.com>
- <arbEmz1jy0V7gjrU@bywater>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="KI6uhAAw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hd628v74mLluPNqm8o5vuQq7lC5g6SXZvAGHvmKM/+yb3s8ObotN9aYuGx0PPHcJBJ+fBhCLQB/rjyL0ClwuebFCJewZ2baQFYFF5WaQFI5VpVUT0Th8ZLT3/MJc82LtBxZrNNibD0XUL1a0FxMWS7iN08+/vljTplTO4Bo8mswMiDTbJop1gJLPVE0bT3HW7FWl2jM7gvC/WIQN4VkgryCc/D7jAhw9PmZJIVuLM6wi22aT/8tPykMzWvqmO6n8YCcH2oa5sxtK23wcL26Zj6yGsCLxNVK1kgSfRQmft9jAyJZbygUxRG38iFS2WTsxSQLe46UDvZh3JfL1MjkYKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wLl3NF1GNuW/kIldYaFZKhlazPZirYjrBsMrEu9tSHc=;
+ b=iBD+rkw0ABOGTSF7VQuPJ+nFy9Da1LyJ4duBLLAF7QeWl+mepHZOBCcW5zEYp2kDb6/QNDTba1zNO9nRx8W++DXeiyuH17K36bEnob9U7o2xKk+LU9eruUIrnL1WD5Czw3zpaFFLloFOfiPdcWCMFovEtI1gQrpf3+RApGJ6gmtXmrMMl/SLkyMYO5zjnrQqdZrrrKSayLbD37IrLeio3XGU2y+JbvaRx1KJZmYUwfy12TUPUGJKsXp2j+j7BDwIFADk1TEFJJnzAhy+KJavXOyxVdaZZN6XKE7xe3wiEJ4yisKbGw5VL7hfkkxFfcDSBGGtTYcd1Ktl/UaUKqJatA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wLl3NF1GNuW/kIldYaFZKhlazPZirYjrBsMrEu9tSHc=;
+ b=KI6uhAAwS+XhUEvp5fSquGtU9qI28+NJ/A8vP46EOWKViRyvkkuN3PxfITpo1zpiEREGYq07yGCXuGvdZIs+5ixkjMZMwNw6H/Wn8Slk7BaJgYu0e8OdppWcpvfrpoUHf2mSR0LbafMiLIXnsm5myb7V6g59Gr20FhE8il10ABA=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com (2603:10b6:8:388::22)
+ by DM4PR12MB6448.namprd12.prod.outlook.com (2603:10b6:8:8a::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.451.19; Mon, 28 Sep 2026 01:26:17 +0000
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19]) by DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19%4]) with mapi id 15.21.0451.022; Mon, 28 Sep 2026
+ 01:26:16 +0000
+Message-ID: <19b16cb3-b4f1-4f6b-97a8-0f06c9ae3adc@amd.com>
+Date: Mon, 28 Sep 2026 08:26:06 +0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 06/24] iommu/amd: Map vIOMMU VF and VF Control MMIO
+ BARs
+To: Guixin Liu <kanie@linux.alibaba.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, joro@8bytes.org, jgg@nvidia.com
+Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+ vasant.hegde@amd.com, jon.grimm@amd.com, santosh.shukla@amd.com,
+ Sairaj.K@amd.com, jay.chen@amd.com, Ming.Shu@amd.com, SooJin.Tan@amd.com,
+ wvw@google.com, wnliu@google.com, dantuluris@google.com,
+ chriscli@google.com, kpsingh@google.com, alejandro.j.jimenez@oracle.com,
+ joao.m.martins@oracle.com, guanghuifeng@linux.alibaba.com
+References: <20260914184750.222939-1-suravee.suthikulpanit@amd.com>
+ <20260914184750.222939-7-suravee.suthikulpanit@amd.com>
+ <e0ceffa9-4c75-459d-9298-dd1663d88fbe@linux.alibaba.com>
+Content-Language: en-US
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <e0ceffa9-4c75-459d-9298-dd1663d88fbe@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: KUZPR04CA0005.apcprd04.prod.outlook.com
+ (2603:1096:d10:32::13) To DSVPR12MB999171.namprd12.prod.outlook.com
+ (2603:10b6:8:388::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <arbEmz1jy0V7gjrU@bywater>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - esm19.siteground.biz
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - valla.it
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-SGantispam-id: 8c5efdb70f6422d0810553cee4634225
-X-AntiAbuse: ID - 8c5efdb70f6422d0810553cee4634225
-AntiSpam-DLS: false
-AntiSpam-DLSP: 
-AntiSpam-DLSRS: 
-AntiSpam-TS: 1.0
-CFBL-Address: feedback@antispam.mailspamprotection.com; report=arf
-CFBL-Feedback-ID: 1xAx7T-00000000mgL-0ykI-feedback@antispam.mailspamprotection.com
-Authentication-Results: outgoing.instance-europe-west4-tjj1.prod.antispam.mailspamprotection.com;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DSVPR12MB999171:EE_|DM4PR12MB6448:EE_
+X-MS-Office365-Filtering-Correlation-Id: 898eaa7e-fa8b-4211-d039-08df1cff7dbc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|23010399003|366016|1800799024|10067099003|4143699003|6133799003|18002099003|11063799006|56012099006|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	J/PZrR2sgBPMaU6KEMMjDLywXVng4QuCbQ7Vteb4py06Qm9qApCPESSKdm3hziRuUnY1EOmFgsph2ZCthMnAy0IyGfzcZY+TxbxTcOOgb8GRf2MJK5otkmz6+sPoKv8U9LpT7EbHhmnUk7BCJrT3u0R7MMPalJn5q6TV8KSD8Vht1bi2ZQ+LLP4zFhaQDhliirqGOk4r+Lpv+pcnu/zRYV8N1u428IIABP2pK4er/IomemuhraED3rKufZz5BBsCL4cFtQ9P80n0ihZhoIBtOO9fWczHBb+pF6AW4CMiagc3oH5nl2BfcjB3r6Mo7P1OeLDWpwxARiRVJI19k22Th0fZfCcIw+mBkxvM2CRKyCyiyzQMY6R3jYxaQQqe5j9niUwwW+YJIgTAAiAh/CgDp1RfXQB2+8mwA/zhAy86Gw1Hly904sKO1sPiN/Tw+4IgfjkrMs/PIkLzAuiEfkqqgCUFszYnz9MeMINSTFCxEH1q9rLnL8a4mOkrNxUGvGQs3WCCAV500UEZeri7q7EAxMnlfmHapRfmUzLrbN5Rw3U/dh++483q/rhFbdOvSa7TeAnBcRcy9Li4Ijl6nNFnrkEKjiOxZKVB1rBuQh7WPGzqtqyE/WDc4kYfW95qink4mqFaZ1U9IaCKetkzmYWAQ9jmaeHu9z2/vlW9IkSd9p4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DSVPR12MB999171.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(23010399003)(366016)(1800799024)(10067099003)(4143699003)(6133799003)(18002099003)(11063799006)(56012099006)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dFMveWw3eVZ2UnNUZkMwaW56UnVvVHZZK05VcElHVXhoeVJBbGlHenNzTC9C?=
+ =?utf-8?B?YS85cm1KNVpMdEw2VmxENDJGNHNsYWlEMG9kZTVZK2pVS1A1cU5yVjVxVE9o?=
+ =?utf-8?B?dysyZHpNclc1Y21NMzRsVGV0eUxCNU1KVEEwelNRTWVmeUwxVkdTRkhhekFT?=
+ =?utf-8?B?ckp4VE5IclVsT3M4M1picTFJQ2IxR1lvcTVKNmRQYzlpeUhiWW5TNEJPMXBI?=
+ =?utf-8?B?Y3lVMnpvWmgrZWZBZHBMSVZyaGViV3lySnFidHE0c0cvOHlaZ2kwZGp1RmVI?=
+ =?utf-8?B?S05YeW94REhsMVZXc0owQVFCMmFCeURQQ0dYQlVFQ1BXV2I0NzIzcEpLeVZ2?=
+ =?utf-8?B?VHk1Rk5xVDFhcjA1cysvL1VLWHVaVktqUXN2QXJ4aW9YQ0NJbk9pMVRRYjM4?=
+ =?utf-8?B?QVQrdktmVHlxVm1zOE5QUEExU1NiRUZTVi9PNFVUWFhRL0NGMkhZU1VlOGdu?=
+ =?utf-8?B?dVEwU01Kemo5eklzSi9PUHlFVTVLaERRajFWeVc5OXZ3K3lWdldheGI4dDBX?=
+ =?utf-8?B?blpXUmJid2NOTzI5ZVRFelJVS2VRYVBObDI1aGs3aDZvN1h2TU1za2ZsdWt6?=
+ =?utf-8?B?azY5NzFlTW53dGVmeVBIY24wNnl5c1NCQmErVEtReXRDQWZuRElobkNlQVdt?=
+ =?utf-8?B?TTJNelJjTmVVenRJbWZwZ2k3eXlkUGV2MzRjM3p6VlgwWkpVQ2RyaFAraS9k?=
+ =?utf-8?B?T2NhODhBMVdWVXdpTnppbWZzZ0hyZGxPWVhLTlY4azhnUmtpNkp0bkJEejc2?=
+ =?utf-8?B?cjdDNGtoeVVITm1UY1ZkYjlhemt5bGtsdDlEc0lWVGVaMytkT204QzN2M3hu?=
+ =?utf-8?B?d1dNcEgzMTNPVHp6U25ZNFQrSkRTa1Y0bFduVmd2K0ZsQ0ZRWnNyTjVpamxZ?=
+ =?utf-8?B?dHk0UmpZRHR5VHVGSmJJQlV5TGtCd0dNRjhubnQ1bDhWT2ZmQTErL1pBZXh3?=
+ =?utf-8?B?VStuTThPU2d3MjdtOG5IejdTRnJsN080Q2grTVBJZ0oxSVQrYktqUHNIQTU4?=
+ =?utf-8?B?YVZCNlNJZkJ6QzZjZDlKVEhlbGZER1RKeThUT2ErRTIwMkVtSGt4VkVneklw?=
+ =?utf-8?B?Z25KRm5TWndZZzZTd1I3YTFRODdzYThDZk9mTlA3M0ZKT0wzRWFFUVUxaGJa?=
+ =?utf-8?B?cUtiaDFMVGQ1Yk5SSWxmZjdhOXJqemo4WUZsclNDV3JLc0VTaWxqbmYyQ3ZY?=
+ =?utf-8?B?YXpDck5paE5PMG1vT1BKRGNndVEyWjB0dTJ0NUtFaXNCZlI0ZVRaZ2g2ZXlC?=
+ =?utf-8?B?bW13NEc4cTVQeDc4dzMzYjNNd2ViTWpTaXRYT3Rlcll4RGc2YUwzSndDWm5J?=
+ =?utf-8?B?YTRpWTBRS01oaGdEUldwWHo1YnhUQlE0ZnI2QitMQUcvaTJpanUyL0dVQTFS?=
+ =?utf-8?B?c0MyRWw3YjdtZGRGNWFieVNRT0taNEtzTU5wcVU5eXJZa05FWnBGVFd0QVdl?=
+ =?utf-8?B?RTVmTXBqUG5wNVU4dVcxb3NsZ0tvNi9jSzNGbExZeVlkb1hLakRyWmFvQ1Z0?=
+ =?utf-8?B?VDNBRkV5NGRCZElGSlE3c3NtNHRQK3NkbThtSmg4Y2lsQ1p1eFl1R0txYVpC?=
+ =?utf-8?B?OE83dVNQZjh6UkRycCtGRnIyTVVKaDhlOWhucnVST2p4eXJRRXU0akVQZG9j?=
+ =?utf-8?B?SEtGUERzZVBKOUhxVFViS3RwYzVEUVJGMVpxbzdJQ2dvYmFiWkZHVGhyNEJ5?=
+ =?utf-8?B?MnBZQW5zZWZudUwzdHdhQjJZajIrazY1ZlROMHRuRjJLbVE1NnFuK2FXejcr?=
+ =?utf-8?B?ZmJCYkVmOCtsai9uQUprTVVhNytrNWZKanBuTmk3ZXNJWDV0L0xzbHcrUDN2?=
+ =?utf-8?B?VDczcjFrWHk4SzV3OUxqakUvWTJLYmRrTExFYW5kUDRldk1VdzQ1cWg1T3Ro?=
+ =?utf-8?B?bCt2cjNvby9nUGpjS2xjSzNFTWl3T0RPMUR6MGFzL3hidlpmRUlRd2JyTC9P?=
+ =?utf-8?B?Qm51Wnl5UjhvWnJ5bmVrVmVTUlJULzVDV0NrZFYyNjZzc21ITXowSmNxd2M0?=
+ =?utf-8?B?RUt5YjN1RUxGNUVybnB0c3ZGcW16ejEzWC91OEJMOFIzOE5nTmpMaEl6Nlhp?=
+ =?utf-8?B?eWp1d1ROdnEvZUMzVzlIaW9IU2Nyc2tsL1gxLy9BM1JtYnRyWW1mek0yRUEz?=
+ =?utf-8?B?Y3hFN3hTYnBlVFpndjh1KzNuNGhFeDNGcUxUSjdaOHhPV2lxeXU4NmVDVGdH?=
+ =?utf-8?B?UlEvbE1QcTdiOVU5UE9zajdwZnpIYTFWSTYvYTVsTlE5SlZ0ZGFXTHQwSWZr?=
+ =?utf-8?B?UVZaN1NRcDdGcW1OVEUrOFE0MmNyVTRFa014T2h0MGhtMklWZmlJWHVFN3JX?=
+ =?utf-8?B?Wkh3QVh0R2NmaGtDdXRaY0hPMG95R1RLdEVQbzcveU5oY2ZLRXFWQT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 898eaa7e-fa8b-4211-d039-08df1cff7dbc
+X-MS-Exchange-CrossTenant-AuthSource: DSVPR12MB999171.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2026 01:26:16.2776
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 06EQgvqEyvfvcOSjEyciJcDHWiE8nOQ+VEtMiLKmB5e/s4iWc7ke3dWy2iB60nw/+jLqANJH39/B4eBq/lcg5Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6448
 
-On Fri, Sep 25, 2026 at 09:05:43PM +0200, Francesco Valla wrote:
-> Hi Robin, Mathieu,
-> 
-> On Fri, Sep 25, 2026 at 05:48:25PM +0100, Robin Murphy wrote:
-> > On 25/09/2026 4:07 pm, Mathieu Poirier wrote:
-> > > On Wed, Sep 23, 2026 at 06:05:35PM +0200, Francesco Valla wrote:
-> > > > On Wed, Sep 23, 2026 at 08:44:41AM -0600, Mathieu Poirier wrote:
-> > > > > On Tue, 22 Sept 2026 at 13:39, Francesco Valla <francesco@valla.it> wrote:
-> > > > > > 
-> > > > > > On Tue, Sep 22, 2026 at 09:58:53AM -0600, Mathieu Poirier wrote:
-> > > > > > > On Wed, Sep 16, 2026 at 11:10:51PM +0200, Francesco Valla wrote:
-> > > > > > > > Depending on the driver originating them, data buffers used for virtio
-> > > > > > > > communication can either:
-> > > > > > > > 
-> > > > > > > >    - already be allocated from the coherent memory area that is
-> > > > > > > >      accessible by the remote processor; this is the case of rpmsg
-> > > > > > > >      and the rproc flavor of virtio-console;
-> > > > > > > >    - be allocated from generic kmem, and thus not accessible directly by
-> > > > > > > >      the remote processor.
-> > > > > > > > 
-> > > > > > > > Exploiting the map operations, which are used by the virtio framework
-> > > > > > > > when VIRTIO_F_ACCESS_PLATFORM is part of a vdev's feature flags, add
-> > > > > > > > bounce buffering for the second case: when the map() callback is called
-> > > > > > > > for a buffer, one or more pages of coherent memory are allocated and
-> > > > > > > > data is copied to them, then they are exposed to the remote processor;
-> > > > > > > > the data is  then bounced back on unmap().
-> > > > > > > > 
-> > > > > > > > The first case is not impacted, since buffers already suitable for
-> > > > > > > > remote transmission are passed through.
-> > > > > > > > 
-> > > > > > > > With the bounce buffering in place, any kind of virtio device can be
-> > > > > > > > supported through the remoteproc-virtio transport, at least from a
-> > > > > > > > data exchange standpoint.
-> > > > > > > 
-> > > > > > > Is this _necessary_ for the imx93 platform you are implementing feature for?
-> > > > > > > 
-> > > > > > 
-> > > > > > If I don't want to fundamentally change how the remoteproc integration
-> > > > > > works (i.e.: using buffers only from a pre-shared area), yes. While in
-> > > > > > my test environment the Cortex-M33 serving as remoteproc is able to
-> > > > > > access the whole RAM space, that is not always the case.
-> > > > > 
-> > > > > The first sentence tells me it is mandatory while the second says it
-> > > > > is not.  I understand the use case but don't want to bloat the
-> > > > > subsystem with code that is trying to address a problem you currently
-> > > > > don't have.
-> > > > > 
-> > > > 
-> > > > Let me rephrase: while on i.MX93 the Cortex-M33 can theoretically access
-> > > > the whole RAM space, that is not a good idea from a security point of
-> > > > view and can be the source of a number of bugs. The target is to
-> > > > statically define a static shared memory area (as I am doing on i.MX95)
-> > > > and only use that.
-> > > 
-> > > As Robin pointed out, have you looked at using a restricted-dma-pool for that?
-> > > Note that I am not familiar with the concept but open to go that way if it can
-> > > work for us.
-> > > 
-> > > Robin, can you point us to a simple example we could look at?
-> > The only in-tree example is mt8192-asurada.dtsi, but even there the
-> > fundamental principle seems exactly the same - the system interconnect is
-> > locked down such that there's only a particular region of "shared" memory
-> > that PCIe DMA can access, so the restricted pool is placed there, and in
-> > that case can occupy the entire region since the wifi adapter only really
-> > does streaming DMA - restricted pools have some limited ability to act as a
-> > fallback for coherent allocations, which won't work for everything, but does
-> > happen to be enough for that wifi driver.
-> > 
-> > Here it would be a case of reserving some of the shared region for a
-> > restricted pool alongside the "vdevbuffer" coherent pool, adding it to the
-> > memory-region list of the relevant device(s), and usually that would then
-> > just work, since the setup is all done automatically by the core DT code.
-> > However I know remoteproc does some funky stuff with child devices, so it's
-> > quite possible there might need to be something more done there. But still
-> > far, far less than reimplementing a whole other bounce-buffering system.
-> > 
-> > Thanks,
-> > Robin.
-> 
-> I took a look at the restricted-memory-pool - with which I wasn't
-> familiar - and seems exactly what is needed here.
-> 
-> I am working on a new prototype with it - if everything works as
-> expected (I still did not have time to try it) it should only need some
-> very limited glue code, cutting the modifications in the
-> remoteproc_virtio driver by 95%. I'll let you knwow.
->
 
-Quick update: it works, with minimal glue code as expected. I am
-preparing a v2 based on restricted-memory-pool, but it will take some
-days, as I am addressing the other topics pointed out by Mathieu. I plan
-to propose an update to the documentation too, since the setup is not so
-straightforward.
 
-Thank you again.
+On 9/22/2026 1:43 PM, Guixin Liu wrote:
+>> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+>> index 7b4cb473019d..79386816807a 100644
+>> --- a/drivers/iommu/amd/init.c
+>> +++ b/drivers/iommu/amd/init.c
+>> @@ -459,8 +459,10 @@ static void iommu_disable(struct amd_iommu *iommu)
+>>    * mapping and unmapping functions for the IOMMU MMIO space. Each AMD IOMMU in
+>>    * the system has one.
+>>    */
+>> -static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
+>> +u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
+>>   {
+>> +	u8 __iomem *base;
+>> +
+>>   	if (!request_mem_region(address, end, "amd_iommu")) {
+>>   		pr_err("Can not reserve memory region %llx-%llx for mmio\n",
+>>   			address, end);
+>> @@ -468,10 +470,14 @@ static u8 __iomem * __init iommu_map_mmio_space(u64 address, u64 end)
+>>   		return NULL;
+>>   	}
+>>   
+>> -	return (u8 __iomem *)ioremap(address, end);
+>> +	base = ioremap(address, end);
+>> +	if (!base)
+>> +		release_mem_region(address, end);
+> This release is duplicated with following free_iommu_resources() -> free_iommu_all()
+> -> free_iommu_one() -> iommu_unmap_mmio_space()
 
-Regards,
-Francesco
-
+I'll update this in v6.
+Thanks,
+Suravee
