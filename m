@@ -1,101 +1,109 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0DF984A43EE
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 11:26:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035944A99C5
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 11:34:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790594780; cv=none; b=UKxVBM6O1H9D3PjrL6NjQf4vfIjhYnIrEPqu4IqJCBRXA5s+IzZh6Xt2uu1Ry32dDy5mMXBFUfEOukAE2q8usA1rsY9yPlxnfJu3yaAs9sxz7+Gb+EWTOsT+63e3wgpW5hu/gUMRwZj4g83VUNLLPMBnYLu0iBeULq+MhHRGjhk=
+	t=1790595253; cv=none; b=oGtRzcYEh7J0NOByh6iRdpDD1/x56ruCXqstiic6fZ7VP+ksFCutcVhgO1ARojlYcN1Xevla5ZO3cTRmhu38dsNSOUBi18zqm6MPIPVUMG+XX43uD7lC3EeNUTuJqZK9bf9O8HOgHj1o4tnsC8Xsu7eVr/kqa67XREEcsH93xLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790594780; c=relaxed/simple;
-	bh=7/AMTqVC3MySC6YP56SSfAfMueyYBMWAxyiEfjrQuIg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZLLYtdncpdvKCHDgnCxABwx/918dLD/WxvoifWiiU6b0K+L/zvd8PcBgvvkfmqBGHWqbOaFCClH+Ofnp4LbHMEzdrceGwRjUHYsscURJ+T15vuq5D7CrLZk7Wswm9N3rHjx/mjnqFjF6abdEgwMONZhd8eL++tpFQqoYnoto/J4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=OV6a/ktM; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1790595253; c=relaxed/simple;
+	bh=Jt7kPh9XkqywM/6h7nDHDZz6YThHu04q3E5/FsPi8vs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rp4i8kIYGMwtErQK66RRDIxJHB2DkdMTwBT8NMG86E6OFvy0Oep3m2E3cng6I4+IzpSGNxUeGcLZI945XeD9nObJlpUY67MizjKFL+UZDTcwlsZXv1YQh2sku4Wn6/AiDO3GhnFViXTrHyxXXd+yuKggjyFe6LlViVzN8KunZQw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iLfw62dF; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="OV6a/ktM"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D0F4B153B;
-	Mon, 28 Sep 2026 04:26:14 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0F7B53F763;
-	Mon, 28 Sep 2026 04:26:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1790594778; bh=7/AMTqVC3MySC6YP56SSfAfMueyYBMWAxyiEfjrQuIg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=OV6a/ktMgcixkd4gu++FtkOypRSqjrAqTH8439eWB8VGMp/uqTVjAFRVl2AqtfC9P
-	 nvet8kZ2FD5ur9efuc4sG2wsl0gjGRmaOiKn/xml0z/SqtTtSQgy4sr4VYgc5QDdh1
-	 KOFj0rvczbAJLTpEaSNlKUBIol0mJct1+irn8cUc=
-Message-ID: <47bf9a4c-2a47-4e93-bcdf-8d953c9a5ab8@arm.com>
-Date: Mon, 28 Sep 2026 12:26:14 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iLfw62dF"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2d8facae850so80075ad.0
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 04:34:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1790595251; x=1791200051; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=bqZIT4CuwAtsItk7lmKS5Bq3DdAgNyIdg2q2F0jacX0=;
+        b=iLfw62dFtaB57AuLygdspTv2YK73OW5lPf4P9rFNrk4zCTCfwPqi5zfWZpcH7KsVue
+         1IJaA42qx6X0od9lvtWZwOCnjfwxhuxywto195l/4u4YOKDydCUz8EaYbf1cah4yvQ2M
+         uysmgMuAP841ut3idQrkQwvni+UZniU7q3Q9x19+OW93JXomtV51ELu1kbkUSp8+xcyy
+         wiqqpvtHP+oWmAl1zbEuzG6SEfapKaSWVNC7HowEuoNCvbx0wP5PhOjf5rdAFLL+LfRY
+         o6Lq4Ygpo4iIYPmO8YIjm+5Em7lPavEFzlNWeQxCqfe8WlnPGxyKJjrbqRgFP64Prs7S
+         9cmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790595251; x=1791200051;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=bqZIT4CuwAtsItk7lmKS5Bq3DdAgNyIdg2q2F0jacX0=;
+        b=wpTk26taQg/gtjIR7Lbztte0ooiSR07pHMsaiEDfgNU5PDudnK5Kr97fIf78mHbie/
+         PFdMo8+9ir4HGg3rL/OnE8Si1tG5+D6E4NaOt6yl7GJo/Wg0HWHytcRB2okPhjXm0U7/
+         ARC8bYKlXk4fy9CG9jnFJwxF51zHRjmP+r9gTqodX/mbW7ZEFCKVefyKcV/EPLXk2vTP
+         X5w9O/j6oQwA5Ya9WOEMWH50mGTHkatZbsVZ42EJuFSDZc+e21gcvrEkeTBrHqCCQ222
+         vc7sUqfQV4fm6gNbe4/04EIhiWyXcfKkksTAfnEC0CIa5hw/7GPK5p56VDM8QWuluA+v
+         Oo+w==
+X-Forwarded-Encrypted: i=1; AKwUvBwq/dRUOeUKu2yttrhiPjy3oOaBFGHDBXvdPEDPxyPp+r+rgmG4RXzd0A+Jw2Zkc82ovTpOXA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLFHoiteSE7dcTv4kB+tRVaYYrrf5F6g4Fekus+Y5YsB1meJ64u
+	hm1FQazyZ9BrXkoN0++lr0/QtOjj86l4pOMMyZkFaikRFhlmOAgqRUa3DaE22JgaRg==
+X-Gm-Gg: AYBFou0sGAngbrgzzDTzBGnIPauyRgIeA09S4w6f1glwrGRCstyPqDpyg7MmGRmr72S
+	c1r/WVuVfanaP8fZLCnawpXTUacS/+HLr8xY4cKY5YmcGfNAt85G9JdXSussxAO0ltkREjdEh9l
+	qKUcOvayeALRCsHVGgbe7a9yDBKWezE18EgFuH/e3yh8h+zua8vXdczIBoIbcjJEZU8+XlPoX0l
+	TREeRe3NWRLrXMjIHyiNBTBGXUrOTBE8VkVuFAYXSJ+1cVCu1QHvmHZGZLor7MNQoj39T+XeagX
+	H4De4s3PTv7uwVKeiQuCuJAOapjK42y2GcFf7vBGX/aRomI2u/8Sr57ZNGsGXxdUGKPf8exZN0I
+	mvKt3UosuBJgCto1peyxgOOH2M+TksW1nVXLmotmeXHNf3Ivg0l8jBASDNDYdTrLIadt9uZqfaE
+	NhSJn+tD4mtnfQzSvAQ5MP93WyDE020vUcMBDwYpLXJlXhJQL1MTsp1Zki5UIvWjAsJL4coalve
+	trCsF1fxwmvEVUYPvbmVBOka6PHSYyY0VVj
+X-Received: by 2002:a17:902:d54f:b0:2d5:c090:3810 with SMTP id d9443c01a7336-2dfa615a5b9mr4545925ad.2.1790595250807;
+        Mon, 28 Sep 2026 04:34:10 -0700 (PDT)
+Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a0972f111csm26688235a91.2.2026.09.28.04.34.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2026 04:34:10 -0700 (PDT)
+Date: Mon, 28 Sep 2026 11:34:01 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+	Mark Rutland <mark.rutland@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>, David Matlack <dmatlack@google.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>, stable@vger.kernel.org,
+	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Subject: Re: [PATCH v7 2/9] iommu/arm-smmu-v3: Pass the parameters for the
+ invalidation in a struct
+Message-ID: <arpQqQXkdkNRBn-l@google.com>
+References: <0-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
+ <2-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 1/2] iommu: export iommu_get_dma_domain()
-To: Jianfeng Liu <liujianfeng1994@gmail.com>,
- dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
- freedreno@lists.freedesktop.org, iommu@lists.linux.dev,
- Dmitry Baryshkov <lumag@kernel.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Sumit Semwal <sumit.semwal@linaro.org>, linux-media@vger.kernel.org,
- Bryan O'Donoghue <bod.linux@nxsw.ie>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-References: <20260928053901.7270-1-liujianfeng1994@gmail.com>
- <20260928053901.7270-2-liujianfeng1994@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260928053901.7270-2-liujianfeng1994@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2-v7-e84261bbe7cd+2ea80b-smmu_tlbi_jgg@nvidia.com>
 
-On 28/09/2026 6:38 am, Jianfeng Liu wrote:
-> drm/msm needs to recover the physical address behind a DMA address of
-> imported dma-bufs: with CONFIG_DMABUF_DEBUG=y the attachment sg_table
-> it hands to importers carries no struct page, and msm has to translate
-> sg_dma_address() back to a physical address through the attaching
-> device's DMA-API domain to map such buffers into its own pagetables
-> (see the follow-up drm/msm patch).
+On Mon, Sep 21, 2026 at 08:55:10PM -0300, Jason Gunthorpe wrote:
+> From: Jason Gunthorpe <jgg@ziepe.ca>
 > 
-> Export the helper so modularized drivers can use it.
-
-NAK. Read the comment - this is an internal helper for iommu-dma 
-(currently the only IOMMU_DOMAIN_DMA implementation) and is definitely 
-not for random drivers to abuse. In fact it should really move to 
-iommu-priv.h now that we have that.
-
-If you want to do sketchy things with your device's DMA domain then use 
-the public iommu_get_domain_for_dev() interface like everyone else.
-
-Thanks,
-Robin.
-
+> These parameters go to a lot of different functions and the next patches
+> will add more. Put them into a struct to keep things tidy.
 > 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: iommu@lists.linux.dev
-> 
-> Signed-off-by: Jianfeng Liu <liujianfeng1994@gmail.com>
-> ---
-> 
->   drivers/iommu/iommu.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index cd1bca7ede9af..330f9a79248bd 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2327,6 +2327,7 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
->   {
->   	return dev->iommu_group->default_domain;
->   }
-> +EXPORT_SYMBOL_GPL(iommu_get_dma_domain);
->   
->   static void *iommu_make_pasid_array_entry(struct iommu_domain *domain,
->   					  struct iommu_attach_handle *handle)
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Reviewed-by: Mostafa Saleh <smostafa@google.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
