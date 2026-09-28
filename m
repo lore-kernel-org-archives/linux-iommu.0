@@ -1,106 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC26A4A4824;
-	Mon, 28 Sep 2026 11:21:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0DF984A43EE
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 11:26:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790594465; cv=none; b=e0TZ9Zn4y+fIz1Y4tGfJY6y5S8QTivJBZYtGaBLDR9e3qylYXtKTYG03vX4yHaH/9Y1vYhuhALYV61AfYbNlzuDDZvhmSs4KWbDtT0ZjJA/3mxeR4/7dINHGey5dVIO85Vdhi45aufuaxFbOl6O8sOAtE6PLncBDsWa7AFog0Uw=
+	t=1790594780; cv=none; b=UKxVBM6O1H9D3PjrL6NjQf4vfIjhYnIrEPqu4IqJCBRXA5s+IzZh6Xt2uu1Ry32dDy5mMXBFUfEOukAE2q8usA1rsY9yPlxnfJu3yaAs9sxz7+Gb+EWTOsT+63e3wgpW5hu/gUMRwZj4g83VUNLLPMBnYLu0iBeULq+MhHRGjhk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790594465; c=relaxed/simple;
-	bh=5xjUEmJHIrwDr/jWN/dMBJqofDzgpEevyqEk+J5ypYk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XEMHkuvj1OfKdSwGcXctE0kjIaW6pXOmxbOvY9Y2Qpqu4NGHN22wCSiI6TpUMFUgY8sXlXuNHuxiMJiLyffpnkmMHFUmqq0ZlFlfS0GCNSxcbu+bEEKFmqg2HPCbqYZ25hdmWMEC7jZ8DZp+dQIQHxvgRGzWzrbAl5oEMduli9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RIsEuhBG; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790594780; c=relaxed/simple;
+	bh=7/AMTqVC3MySC6YP56SSfAfMueyYBMWAxyiEfjrQuIg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZLLYtdncpdvKCHDgnCxABwx/918dLD/WxvoifWiiU6b0K+L/zvd8PcBgvvkfmqBGHWqbOaFCClH+Ofnp4LbHMEzdrceGwRjUHYsscURJ+T15vuq5D7CrLZk7Wswm9N3rHjx/mjnqFjF6abdEgwMONZhd8eL++tpFQqoYnoto/J4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=OV6a/ktM; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RIsEuhBG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45EE31F00893;
-	Mon, 28 Sep 2026 11:21:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790594463;
-	bh=LpkC/LmM+yKvvfA+t3CNU0fBQxqnJxtpH59jGwykX2g=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=RIsEuhBG7XNvu6OT6rBf2xDIeAQrOIGWAK4Uffb37GTs+P4XLxWtHwZQPv6aqFCYu
-	 8TNE44t9qyMXTAK47myr9Px6h0XHRXv16x6GiKyfs7bvL1UF50YTWxWz9ULiITdU0U
-	 Nl3NCNExjfae0+Y8iNg0Ppeh+toNwtQhVHTlh/yQkzAckATObh+oKeydglNm45T6DK
-	 WtB72knS22H1WUpjqDPT2cB8DqkwFfSqOMcTfyT44vUNwYPJkXZaU3bHIp9ekcMiJ8
-	 f1z9TzrpP05q6zf/7YYBh/HiyVhLKmVjWsBvdJpfRhZvFz0JP8MQkO8hFA5AMH9C5X
-	 WrJ1VUmc7MG4w==
-From: Leon Romanovsky <leon@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Leon Romanovsky <leon@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-	=?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>
-Cc: linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>,
-	linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org,
-	kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH v8 21/23] RDMA/mlx5: Declare to P2PDMA that ATS is selected per memory key
-Date: Mon, 28 Sep 2026 14:19:25 +0300
-Message-ID: <20260928-fix-p2p-acs-v4-0-v8-21-404453b9c435@nvidia.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260928-fix-p2p-acs-v4-0-v8-0-404453b9c435@nvidia.com>
-References: <20260928-fix-p2p-acs-v4-0-v8-0-404453b9c435@nvidia.com>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="OV6a/ktM"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D0F4B153B;
+	Mon, 28 Sep 2026 04:26:14 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0F7B53F763;
+	Mon, 28 Sep 2026 04:26:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1790594778; bh=7/AMTqVC3MySC6YP56SSfAfMueyYBMWAxyiEfjrQuIg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=OV6a/ktMgcixkd4gu++FtkOypRSqjrAqTH8439eWB8VGMp/uqTVjAFRVl2AqtfC9P
+	 nvet8kZ2FD5ur9efuc4sG2wsl0gjGRmaOiKn/xml0z/SqtTtSQgy4sr4VYgc5QDdh1
+	 KOFj0rvczbAJLTpEaSNlKUBIol0mJct1+irn8cUc=
+Message-ID: <47bf9a4c-2a47-4e93-bcdf-8d953c9a5ab8@arm.com>
+Date: Mon, 28 Sep 2026 12:26:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.15-dev-18f8f
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/2] iommu: export iommu_get_dma_domain()
+To: Jianfeng Liu <liujianfeng1994@gmail.com>,
+ dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
+ freedreno@lists.freedesktop.org, iommu@lists.linux.dev,
+ Dmitry Baryshkov <lumag@kernel.org>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>, linux-media@vger.kernel.org,
+ Bryan O'Donoghue <bod.linux@nxsw.ie>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+References: <20260928053901.7270-1-liujianfeng1994@gmail.com>
+ <20260928053901.7270-2-liujianfeng1994@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260928053901.7270-2-liujianfeng1994@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 28/09/2026 6:38 am, Jianfeng Liu wrote:
+> drm/msm needs to recover the physical address behind a DMA address of
+> imported dma-bufs: with CONFIG_DMABUF_DEBUG=y the attachment sg_table
+> it hands to importers carries no struct page, and msm has to translate
+> sg_dma_address() back to a physical address through the attaching
+> device's DMA-API domain to map such buffers into its own pagetables
+> (see the follow-up drm/msm patch).
+> 
+> Export the helper so modularized drivers can use it.
 
-An mlx5 function issues Translated Requests only through memory keys
-created with ATS. Enabling ATS in its PCIe configuration therefore does
-not make it translate every address it is handed.
+NAK. Read the comment - this is an internal helper for iommu-dma 
+(currently the only IOMMU_DOMAIN_DMA implementation) and is definitely 
+not for random drivers to abuse. In fact it should really move to 
+iommu-priv.h now that we have that.
 
-Declare that where the function's P2PDMA state is set up, before P2PDMA
-starts treating clients with ATS enabled as translating everything.
-Without the declaration, mlx5 would lose bus addressing for peer-to-peer
-DMA whenever the IOMMU enables its ATS.
+If you want to do sketchy things with your device's DMA domain then use 
+the public iommu_get_domain_for_dev() interface like everyone else.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/infiniband/hw/mlx5/main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Thanks,
+Robin.
 
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 373ee1f42d4a..dcf659beaba0 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -4561,6 +4561,8 @@ static int mlx5_ib_stage_init_init(struct mlx5_ib_dev *dev)
- 	if (err && err != -EOPNOTSUPP)
- 		goto err_dd;
- 
-+	pcim_p2pdma_set_ats_per_mapping(mdev->pdev);
-+
- 	mlx5_cmd_init_async_ctx(mdev, &dev->async_ctx);
- 
- 	return 0;
-
--- 
-2.55.0
+> 
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: iommu@lists.linux.dev
+> 
+> Signed-off-by: Jianfeng Liu <liujianfeng1994@gmail.com>
+> ---
+> 
+>   drivers/iommu/iommu.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index cd1bca7ede9af..330f9a79248bd 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2327,6 +2327,7 @@ struct iommu_domain *iommu_get_dma_domain(struct device *dev)
+>   {
+>   	return dev->iommu_group->default_domain;
+>   }
+> +EXPORT_SYMBOL_GPL(iommu_get_dma_domain);
+>   
+>   static void *iommu_make_pasid_array_entry(struct iommu_domain *domain,
+>   					  struct iommu_attach_handle *handle)
 
