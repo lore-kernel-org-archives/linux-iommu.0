@@ -1,185 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx2-f39.google.com (mail-yx2-f39.google.com [74.125.224.167])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39D3D29A309
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 12:44:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9301C437136
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 13:08:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.167
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790599482; cv=none; b=j9mwfYjpOI4XYbqfjVdpQoTl4c1Gz4UqGsltG58S/et4y3v163K9rpqkLf9ESSs3ZfZLTXkfVyWm4xoqQfKdbIum+HAH5ngpe0CB76N9+bha6o6oLK2x7P6LHKCEf0RDzYptlmXU72VpJWz9DSFbRuXkqU38OZpqfj6JEuzYchQ=
+	t=1790600929; cv=none; b=UXRc1+o5kXGyU1stYTdL8m1PPA1NJDDG/5a/KsTSxULay44M/cK3fiaJ9lNoSN/H9REN0C/fQbeJX1fpandgVKuRXvRMOzbE3ws69Lx3MMC7YuYlbIJKpMsSctTUcL4kWJtBRO58tvbAbW6M458eS5c+u6blPehSMDIYbBBsDHo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790599482; c=relaxed/simple;
-	bh=ZXNlI+RAX+nTm0DvvNRSw2dlsVY/sr/atGTezTTinoY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=M1+zuDoHUzHqHkJpNKoneraeuxwl0Yzfo/NtVJuHulFzZMpxs9aRg2GSGpWKquS5BXtqbZuXv1PfjeW946cbtnNpU354VonARC13PJopM0xm85s4K4C7GAgyZ+gnl1Rb2UlvrDozgSOgxz+mVsu7VzE+zLhzvVjoC+om3FOeyCo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KJiDs8xD; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1790600929; c=relaxed/simple;
+	bh=HMf8sz6h2dnybYBuZGK7jThBHP4dhPBd75prPtkOxHo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DopcPhFDT9+5r41Zw3Lt2xYJHXPbjkzXZJhS8eBT7GGhiR1bHOE68xQd/gu3IcoHpEdy80+hMAvPziFgsSNJh0wlGCB0C/4SAB+9LFlGhxmlqqyUTB4s1LpImrBzHjjRuLM4zxAB8V4aSzneMO/bvz/fuKjkgPIYu5yjYsMHAIU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nmeQv4Xu; arc=none smtp.client-ip=74.125.224.167
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KJiDs8xD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1790599481; x=1822135481;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=ZXNlI+RAX+nTm0DvvNRSw2dlsVY/sr/atGTezTTinoY=;
-  b=KJiDs8xDJPEjb9oGMBn9jCsVPTYFalvEsCjsybq6zcDSYhjBJf4AQK9E
-   b2HQjicrqIrSd/c7G6ZwXY9DBboJe7zjT+7tP1273EfMfNT+GOs4AZzRd
-   5kJimaiaHFcAxsBjpoXQ9MMlCDtHFYslLGaLGoFgPV4XXrEBXZrw0pHXH
-   rzJilWIESiEbLKDum4D1cpxdjQsDErsu+ENbEM78zEW7T/b3jH4oUcvFk
-   KdVLKAevI0GM2EU2lAEYeXhJWO1E7JPDgZWl1khiWGIGU3wMlYW99lS1V
-   V8kKB3T4jTX+F+lOi5r0vTKCkrp1VOhaJ/Q1s5H/B9oph59uc8auhmX5T
-   A==;
-X-CSE-ConnectionGUID: uwijqNj5Q+WaiLV1TW005Q==
-X-CSE-MsgGUID: KFQ2GlZ5SsCqcKHxzsWF3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11918"; a="101465244"
-X-IronPort-AV: E=Sophos;i="6.27,128,1787036400"; 
-   d="scan'208";a="101465244"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 05:44:40 -0700
-X-CSE-ConnectionGUID: fFRMilzCTkWSkFZj16NO1w==
-X-CSE-MsgGUID: h6+JZbPHRayLtVxz/h87ig==
-X-ExtLoop1: 1
-Received: from conormcd-mobl2.ger.corp.intel.com (HELO [10.245.244.73]) ([10.245.244.73])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Sep 2026 05:44:35 -0700
-Message-ID: <417b4032fd106c6730558759fd02e67e2fdc1c82.camel@linux.intel.com>
-Subject: Re: [PATCH v8 20/23] PCI/P2PDMA: Let a client declare that it
- selects ATS per mapping
-From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
-To: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>, 
- Logan Gunthorpe <logang@deltatee.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>,  Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Christian =?ISO-8859-1?Q?K=F6nig?=	
- <christian.koenig@amd.com>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev, Tushar Dave
- <tdave@nvidia.com>, 	linux-media@vger.kernel.org,
- dri-devel@lists.freedesktop.org, 	linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, kvm@vger.kernel.org,  Chaitanya Kulkarni	
- <kch@nvidia.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens
- Axboe	 <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>, Ankit Agrawal
-	 <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan	
- <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Sumit
- Semwal	 <sumit.semwal@linaro.org>
-Date: Mon, 28 Sep 2026 14:44:32 +0200
-In-Reply-To: <20260928-fix-p2p-acs-v4-0-v8-20-404453b9c435@nvidia.com>
-References: <20260928-fix-p2p-acs-v4-0-v8-0-404453b9c435@nvidia.com>
-	 <20260928-fix-p2p-acs-v4-0-v8-20-404453b9c435@nvidia.com>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-1.fc43) 
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nmeQv4Xu"
+Received: by mail-yx2-f39.google.com with SMTP id 956f58d0204a3-67534eb4effso1056336d50.1
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 06:08:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1790600926; x=1791205726; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=HMf8sz6h2dnybYBuZGK7jThBHP4dhPBd75prPtkOxHo=;
+        b=nmeQv4XufmXnn1j5MhSDVCgfCe4BLrrF+MoaD5jdIAe++Gq0a7AQkRHlryX+kE0f5F
+         dlkJ2md9C1E/Ipfr4wHJgqw4Qz1dVvEUKl1BDkwGBves8+HUSsk6AqxzCNLmxaQSkK4r
+         llPtHCQA1oXnFb5xKdbynPU/RsHitb7r6Po89MEb/wvdEmHuZ6CbX3da2Sd5dvkdr1Yz
+         6b0PEKUGn9DpJmn41V9nJDOmdTwIfZVUlPrfDZc5F+Uv9hukfqZqEg6jroUjocPRkqrG
+         AjWkXIBQjZbVpB4UDeB+Ls3gI7wcDTOp91WREFaBux38LSpjreVNj9WINTsYd/4J+SOX
+         YqDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790600926; x=1791205726;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=HMf8sz6h2dnybYBuZGK7jThBHP4dhPBd75prPtkOxHo=;
+        b=1PcBSHF2LWwpxpX6uIsztsGtOkDzls/cjD8pkj+2KTnN51A2A5k6TxyxU8TWbqHe+K
+         uYAAwFzn6ahlKz9sRkcTxOy0tcZ4m64DChbluUIpcI0MUMHjfX7zJlBx2r55f6pJ+/4n
+         flMOMLjYWXjehUqhhOtvm9fv5eoEdR9Khy1aVONPjj9eozCiCwrViR0NJGlH0IcK9EZD
+         SK2K+YDfy7piiEW8RF8PO3VsHMST9ruZ/B7HQV0R5Rxwp8x6oot434eHHzh00NzKv5BD
+         tFkMxIREPX520KiU4zQQJcaCO61VFmZVP2qmH9Za7gNwC2CqE3PBV5jOx9nUGYHVwRG7
+         mrUQ==
+X-Forwarded-Encrypted: i=1; AKwUvByecxuiQFgpj65AR/IGD9b6V+RvInxh9JlKWVTC2SZo1z8FcsHMuHcJAfwvc/GRCaNK8kPEHw==@lists.linux.dev
+X-Gm-Message-State: AFuF++nsruRZ4+4C1wMRaULg/bNqnsuSGwBPttYTsAle3/2I2w/VNkDV
+	hfn8OFuOQhzbSwn57nypsRBx0Y4xvBso2H+tG/fEG6AbcXWz/VPFt1xrpkvawKt/LVM=
+X-Gm-Gg: AYBFou2SzSMy5hHIIpIxLKBGxIRnMJ74YppzlUxhtbjRx9hg75TeL9F8xDlbGkkIz5J
+	j77KOVtLpTYYbaQlzK8JC+VTFhAmFll+LV852p4U1edhhOVJ9ZaCGR+qSFZfMJXkXZYZm5dqA9Z
+	o49b6+YIOid10gWzg7wcQQo+oEpl259fAbcdauuD2/1G4Tz3ssDReq+FU++qEEtFjlD6OFf8fZ0
+	7w36GqoEnw3PqydWtTbZvJC+/omjvxucCTTP/XTm1EReV/C4ovivdvKIAA2IcTNPYY1VW9sRJQT
+	Ooj4yuEbOJWYXYXCDil5uOqTFlEDzstKNZSGO0K9zuyoPMUGpI4+nYylz8AmFWm9RLo/XEahmyd
+	VnnjZnZVy2q/Ut3dYyrJfve4hvowqV9+jEtIBBIDG+t+oZFyf951fjacsqcePn0j5IWILa1VK2u
+	N7aWGxaZ5+wFmWWnk5QimmZKcHx0pxdstxjmcfT+gW9aGK
+X-Received: by 2002:a05:690e:128c:b0:675:40e7:8e58 with SMTP id 956f58d0204a3-67540e7c5aamr1608190d50.20.1790600926197;
+        Mon, 28 Sep 2026 06:08:46 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-6740ef28dfasm4604200d50.11.2026.09.28.06.08.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2026 06:08:45 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xBB63-00000006mlN-3bcU;
+	Mon, 28 Sep 2026 10:08:43 -0300
+Date: Mon, 28 Sep 2026 10:08:43 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>, Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [RFC PATCH v6 00/11] iommufd: Infrastructure for vIOMMU creation
+ for confidential guests and guest TSM requests
+Message-ID: <20260928130843.GH163130@ziepe.ca>
+References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
+ <CO1PR11MB48358E3116CC6CF34E6437658C812@CO1PR11MB4835.namprd11.prod.outlook.com>
+ <20260924192054.GA16465@ziepe.ca>
+ <SA2PR11MB484477E4875E71E4C78854A18C8D2@SA2PR11MB4844.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SA2PR11MB484477E4875E71E4C78854A18C8D2@SA2PR11MB4844.namprd11.prod.outlook.com>
 
-On Mon, 2026-09-28 at 14:19 +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
->=20
-> The PCIe ATS Enable bit covers the whole device, so P2PDMA cannot
-> tell
-> from it whether a client will translate a given address. Most devices
-> translate any address once ATS is enabled, but some choose ATS per
-> DMA
-> mapping and can still use bus addresses for the rest.
->=20
-> Add pcim_p2pdma_set_ats_per_mapping() so the driver of such a device
-> can
-> declare that before P2PDMA starts treating clients with ATS enabled
-> as
-> translating everything. Keep it in the device's P2PDMA state, which
-> already ends with the driver binding.
->=20
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Thomas Hellstr=C3=B6m <thomas.hellstrom@linux.intel.com>
+On Mon, Sep 28, 2026 at 03:35:29AM +0000, Tian, Kevin wrote:
 
-> ---
-> =C2=A0drivers/pci/p2pdma.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 27 +++++=
-++++++++++++++++++++++
-> =C2=A0include/linux/pci-p2pdma.h |=C2=A0 4 ++++
-> =C2=A02 files changed, 31 insertions(+)
->=20
-> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-> index 1f4bf0125a5c..ae676509f9f3 100644
-> --- a/drivers/pci/p2pdma.c
-> +++ b/drivers/pci/p2pdma.c
-> @@ -26,6 +26,7 @@
-> =C2=A0struct pci_p2pdma {
-> =C2=A0	struct gen_pool *pool;
-> =C2=A0	bool p2pmem_published;
-> +	bool ats_per_mapping;
-> =C2=A0	struct xarray map_types;
-> =C2=A0	struct p2pdma_provider mem[PCI_STD_NUM_BARS];
-> =C2=A0};
-> @@ -1568,6 +1569,32 @@ void pci_p2pmem_publish(struct pci_dev *pdev,
-> bool publish)
-> =C2=A0}
-> =C2=A0EXPORT_SYMBOL_GPL(pci_p2pmem_publish);
-> =C2=A0
-> +/**
-> + * pcim_p2pdma_set_ats_per_mapping - Declare per-mapping ATS for a
-> client
-> + * @pdev: PCI device that initiates peer-to-peer DMA
-> + *
-> + * Declare that @pdev issues Translated Requests only for the DMA
-> mappings its
-> + * driver sets up to use ATS, rather than for any address once ATS
-> is enabled.
-> + * P2PDMA then takes the Address Type of this client's Requests from
-> the TLP
-> + * flags its callers pass.
-> + */
-> +void pcim_p2pdma_set_ats_per_mapping(struct pci_dev *pdev)
-> +{
-> +	struct pci_p2pdma *p2p;
-> +
-> +	p2p =3D rcu_dereference_protected(pdev->p2pdma, 1);
-> +	if (!p2p)
-> +		/*
-> +		 * ats_per_mapping is a performance optimization,
-> +		 * if pcim_p2pdma_init() didn't set pdev->p2pdma
-> pointer
-> +		 * for some reason, let's simply use ATS global
-> settings.
-> +		 */
-> +		return;
-> +
-> +	p2p->ats_per_mapping =3D true;
-> +}
-> +EXPORT_SYMBOL_GPL(pcim_p2pdma_set_ats_per_mapping);
-> +
-> =C2=A0/**
-> =C2=A0 * pci_p2pdma_map_type_tlp - Determine the mapping type for P2PDMA
-> transfers
-> =C2=A0 * @provider: P2PDMA provider structure
-> diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
-> index 36045b1b730c..543a09426a11 100644
-> --- a/include/linux/pci-p2pdma.h
-> +++ b/include/linux/pci-p2pdma.h
-> @@ -109,6 +109,7 @@ struct scatterlist *pci_p2pmem_alloc_sgl(struct
-> pci_dev *pdev,
-> =C2=A0					 unsigned int *nents, u32
-> length);
-> =C2=A0void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist
-> *sgl);
-> =C2=A0void pci_p2pmem_publish(struct pci_dev *pdev, bool publish);
-> +void pcim_p2pdma_set_ats_per_mapping(struct pci_dev *pdev);
-> =C2=A0int pci_p2pdma_enable_store(const char *page, struct pci_dev
-> **p2p_dev,
-> =C2=A0			=C2=A0=C2=A0=C2=A0 bool *use_p2pdma);
-> =C2=A0ssize_t pci_p2pdma_enable_show(char *page, struct pci_dev *p2p_dev,
-> @@ -166,6 +167,9 @@ static inline void pci_p2pmem_free_sgl(struct
-> pci_dev *pdev,
-> =C2=A0static inline void pci_p2pmem_publish(struct pci_dev *pdev, bool
-> publish)
-> =C2=A0{
-> =C2=A0}
-> +static inline void pcim_p2pdma_set_ats_per_mapping(struct pci_dev
-> *pdev)
-> +{
-> +}
-> =C2=A0static inline int pci_p2pdma_enable_store(const char *page,
-> =C2=A0		struct pci_dev **p2p_dev, bool *use_p2pdma)
-> =C2=A0{
+> Looks there are some resource shared between the untrust and
+> trust invalidation paths, as iommu->qi->q_lock is also acquired
+> in the trust path. I still need to understand the motivation behind,
+> but this can be resolved properly by exporting a helper to the
+> TSM driver even if it's truly required.
+
+That seems a bit suspicious from a security POV.. The secure side
+shouldn't be sharing anything like this with the insecure side, that's
+just inviting invalidation integrity attacks???
+
+Jason
