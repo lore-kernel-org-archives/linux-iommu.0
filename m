@@ -1,165 +1,131 @@
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013031.outbound.protection.outlook.com [40.93.196.31])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8511030EF9A
-	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 22:31:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.31
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790634704; cv=fail; b=jLtq+6VUlGspNLe3uH4lmzT9UWzCXqX5Xa+w1Ak1tB8VNM/Kdz9KWIDe9CztWpWbaYcx6x2dfwvwAAIjTdrLG+XygkpestSOkz7+Lu7yKXXNXrWEEA3P+iHi6OczQqQQMY5TJYH0Hwy1+7u46ahKk4vizCUmh8iIcFcl8shm8g0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790634704; c=relaxed/simple;
-	bh=NX64wE1vnb+JJA/0t53OorDmSWgFOd3it95n76iurhE=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MwFJudtO7WFIhk6IXuv331ITJMOKrDlA7YbXx5L+sMDBtqiRLXmnPEcU5Hi1iDCoZmH4BwK4JUeYt3IuVJca2zrQJpDg43n71mxyHl7/xdGG63+jOgirxRx4gLww/G86lGHv7HTb+7dBRB3l9Kjvwz9pHbZLegx+08gV81wlhBE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rja9iEY8; arc=fail smtp.client-ip=40.93.196.31
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B73634DCD2
+	for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 22:33:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790634809; cv=none; b=PZzNqD88/inFP5WOLE8z+aRJUc5lQfEtrvr1Y004iog5XAKQEn1/V4ZQf5M41roGQhK2wZ/1gtnUs7+C9e5jxrCzpNYTl6FpLmegz7j6aSeKFHrEVK6Ue5Am7HiSs0X2uLRO3Qz0j9iMWA5Cwlum518FcElw9RJrg2/Hm0X+Xo8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790634809; c=relaxed/simple;
+	bh=cz8rbxJONsY2x4jrMJgyEjXBr9ziZ1HR7nWQzwcwDr0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QPJwEC/QWw1GexIrgI4JzuYVg9EOo9wzWfmF/95sk3NEy1P79LSnLHmvtQC6xX/3BawGvOz8dDN7vzYobeI+0k+pQNw2NzfzTONmIshcdmnrrS3Z62tiWU4oPc4/6Y+iTvzrBTToz0FkZPZbedFzPAIFFTYoopO6jPeg3z2GMrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=CcnPidtU; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rja9iEY8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=K7mePuxpKvJ40T4iHTrGP+gydBYd0yQuj60yqby5Wv+Sr0g4zU/zlVA0SKBf5qoZX2epxUNIYPnfYn9bmJRAAnmeUznSC2h0xUq37xhVlOyvsxhQzTRT2i+NX+H4ORjrh29qXzd7llzuUF3DbmQioBWV8tpy+rksWlCS2tPmlYSEI4Zmnma7+6dsblIlf5IvvdnKALL3UDNpDPlkDXAcnPEGsnJS4XbVI5S/OI2VZ1k2ccm9O5jqRjRseDAuTxapwm+y2DxsmV7VpnMZyfDfK6HmtprqUBrDmuHfjaOL51SA8AtxhGevfN4D3AkWYbPgz96XVc6/eswThMHha19GQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=412pjYRAbHCQ7VuHA6+zqc2SlC6XKCjC5ntrrH3uZLU=;
- b=ll+Jk/gaCEsrQwgfQJckzWeRde1Pdi46UxFlbNZfzoYLu+hV9CC02IXqiGbvGbmhLFY+VXhKylP45XOAfUT3lIHCQpSSMhOnwHN9Cxbw8K6rAwh49wdXqj9RSKzP3yXXNsxqlm0YWkJ5CZXV7PVYTVL86cPOTwJq8JFqIFcWsdYZrqlQXpovuKVELlGk6Ef1fwZ1QLfMp/9vagog6zLx7w5yg7aSYdbqaXsOpJpyLG0nV0lzfhje3230jK1DhFVlQP4OWOzc1DpfcunvlllAH/DKDxmqlXWa14eTBH3MOUWJ76mcToT71zT0u/HrdY3RufqiiaUBMMxRbkblKfw8TQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=412pjYRAbHCQ7VuHA6+zqc2SlC6XKCjC5ntrrH3uZLU=;
- b=rja9iEY8t+7ZVHg7vwKRKlv8M6DUNg6G0qb1AUmSI44qRiB0ZBkoT66icXRAX6V7hSF/5pUqXC7/3jj9qKZdz9TRKoizLD6GF6YOBlJPIuDegZW/wgxSIoL6mHIAI2OYuzEgwYqG6+ki8WDUQkkYATEw+5f/DSJhPPjWZMV85M9H0vs1Z/nfW53w361kQeDnzhnSYg834iNch/0Wq3epFsvMck6JugmCcCE8EfuhehY9clKlRGVOR/vkVHkhjyMIP1xorNzxbm/i3tEFRKNV+LLrHeci6AtBGNLi6oIrL4HqSQUX9ZN5xJcIw0S1gezXLVZ9e9LpDYOxzW6Dp08euA==
-Received: from DS7P220CA0093.NAMP220.PROD.OUTLOOK.COM (2603:10b6:8:25a::17) by
- CY8PR12MB7682.namprd12.prod.outlook.com (2603:10b6:930:85::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.24; Mon, 28 Sep 2026 22:29:26 +0000
-Received: from DM2PEPF00003FC3.namprd04.prod.outlook.com
- (2603:10b6:8:25a:cafe::55) by DS7P220CA0093.outlook.office365.com
- (2603:10b6:8:25a::17) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.451.24 via Frontend Transport; Mon,
- 28 Sep 2026 22:29:26 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.161) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- DM2PEPF00003FC3.mail.protection.outlook.com (10.167.23.21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.472.14 via Frontend Transport; Mon, 28 Sep 2026 22:29:26 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Mon, 28 Sep
- 2026 15:29:06 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Mon, 28 Sep
- 2026 15:29:06 -0700
-Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Mon, 28 Sep 2026 15:29:04 -0700
-Date: Mon, 28 Sep 2026 15:29:02 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, Jonathan Cameron
-	<jonathan.cameron@oss.qualcomm.com>, <joro@8bytes.org>,
-	<bhelgaas@google.com>, <praan@google.com>, <kevin.tian@intel.com>,
-	<kees@kernel.org>, <smostafa@google.com>, <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jpb@kernel.org>, Eric Auger <eric.auger@redhat.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-	<skaestle@nvidia.com>, <mmarrid@nvidia.com>, <skolothumtho@nvidia.com>,
-	<bbiber@nvidia.com>, <harsha.v@oss.qualcomm.com>
-Subject: Re: [PATCH v5 04/15] iommu/arm-smmu-v3: Drain in-flight fault events
- on domain detach
-Message-ID: <arrqLmlco3TeC/lV@nvidia.com>
-References: <cover.1789446520.git.nicolinc@nvidia.com>
- <cc7eabdd07e7705c84e30b04c85271d4ddf66055.1789446520.git.nicolinc@nvidia.com>
- <179018862538.3334538.17643821143626392419.b4-review@b4>
- <arRTojIlWBOF57zO@nvidia.com>
- <20260923233920.GJ2545495@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="CcnPidtU"
+Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id BD99620B7166;
+	Mon, 28 Sep 2026 15:32:34 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BD99620B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1790634755;
+	bh=V3GoQAUmSzqBfz/Zu+bg0/ZemXC8i/dcC7ud7QqbcuM=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=CcnPidtUjTTkteuVjRzu5f8AFAcT89Ig+4rm2wifwBXFcFdlA+7qsnCNN180z1a+Y
+	 yb3j2q+AEuBkPd7PciSovFaSWM1+z3DhERaaF/dqEDM4pZifPYkL1ls3tXC7B5VYlY
+	 XICO8t7eZJUTgwuWFL9u/fqzZD4WBlPetdXC338M=
+Message-ID: <27f49fd8-a95e-9812-c996-53d9eb27a148@linux.microsoft.com>
+Date: Mon, 28 Sep 2026 15:33:25 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260923233920.GJ2545495@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM2PEPF00003FC3:EE_|CY8PR12MB7682:EE_
-X-MS-Office365-Filtering-Correlation-Id: 237dd99e-df44-4c60-af30-08df1daff44a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|7416014|36860700016|1800799024|23010399003|10067099003|56012099006|5023799004|11063799006|4143699003|6133799003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	lPrWsilX3vhkjBeDJi9beTIpsPxWrIMV2feBBdMtDMosmPCJdYcMXH+P3ZRTfyT+JulbCeOZ9zV4li4JmFZEaht1z1EuqUQ9MKSAvqaQTm9HjR9Fxh/1jUtFxMAkwtMxPd2c5/ueQnLY7kCQQtqAqFbUI3M2jwW+IJshAA88+KX/fG2GPDsBIQgjMIC4UfHjOJxVc3HvwJczgPsdqCgRGM1G+3YnpKuRDgCYhS2Yjwj6utEb16UDYqdWsFlW4ygVBnodgN39fgs0c1pRKpSIM3xm0Dr0ef6VwDh0NWUAAO+eRBu1UhueUzvnNZFTqQ0D/I9cMmNtbydfyz1Tnf4kdQASl4vUCkTOEjDHvm2jSEw9RVT1PyEzy7THLGaun0S4WAAtFcbLsL+0dEXFRyBH+simJGvuPgITlGLGOh34gu5r/oCZ3a0V5jd2fYV0f0DquiDGl16IM/92K/XjsltXdepRsghIOL+gA1FVpdxKl8WSlDSYBcLJhWLaC0NdGMwMpDlvQeTFcDsIJ3UC9rW4JVnQfKA5A2RmQKnl6024KEjuw6wuo6KgObl8VEn71ltq001X43Vsb96f8Ag0I9+TJbLkm8BVb9raCtv3cL7qBBWmcQfnoWupFbhUVV6ETtFof4IE6w3Y9sgXyTCYfKNzv/JiHN4D2+TOMRlh+KRWpKMT2ecf6IDdAg1SXdd7uG0N49Wut3/MeSb8tmHVAUI8TQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(36860700016)(1800799024)(23010399003)(10067099003)(56012099006)(5023799004)(11063799006)(4143699003)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	sFoqOzxI5/MK9YdN5u6vw0vpMMbLqfrUMl7oBO6MNfcQeUY2MBtUAycAH4m+05sMbGdOn9oHaoyk2MCrE3fBC274rbzq3YJz86Ax8JsTr6UGHEatfzNfLWeGPEg9xYgORRWDSv/It0SIGoRF9AyZnOeUEKWWccPzHXVl3ePu2wX3hmOir3z9djvtY3iprS1gaU41OKlO9srbcUcyVyhuB/gW+hHrTg0nxePuWCMUR/+HI2w0b7u+TSAvNekzpoSyYQQo9WDnTTR7PwaKYGvPgvv+0+MxlwI+xN6N7fWfbhgHa+1ui3CW1KhhBfo5bjZwBxfk4WzVZ2vS3wqlwxElEr99JFMqjhoBVXmPhupb3JM5pcYYt0u8S4Vkl8ldcMd7R+wzxrYzmeofFzs2mXZhKjIgarvX8ut3VukHj8/JN/+w1leMijG7mKA+AYGA4M6A
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Sep 2026 22:29:26.3490
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 237dd99e-df44-4c60-af30-08df1daff44a
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	DM2PEPF00003FC3.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7682
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.1
+Subject: Re: [PATCH V1 3/3] x86/hyperv: Implement root VM IOMMU kernel only
+ driver
+Content-Language: en-US
+To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org, jgg@nvidia.com,
+ jacob.pan@linux.microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, tglx@kernel.org, mingo@redhat.com,
+ bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
+ will@kernel.org, robin.murphy@arm.com, arnd@arndb.de
+References: <20260924020221.128762-1-mrathor@linux.microsoft.com>
+ <20260924020221.128762-4-mrathor@linux.microsoft.com>
+ <arUkaFhYGxaYwL0L@8bytes.org>
+ <329027b5-3110-8362-ccee-080c14ed9b3e@linux.microsoft.com>
+ <arYcFJYOvKf-A6xt@8bytes.org>
+From: Mukesh R <mrathor@linux.microsoft.com>
+In-Reply-To: <arYcFJYOvKf-A6xt@8bytes.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 23, 2026 at 08:39:20PM -0300, Jason Gunthorpe wrote:
-> On Wed, Sep 23, 2026 at 03:33:06PM -0700, Nicolin Chen wrote:
-> > > But I wonder if the point of this has been lost? Prior to calling the
-> > > driver attach functions the core code already changes the xarray:
-> > > 
-> > > 	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL,
-> > > 			  XA_ZERO_ENTRY, GFP_KERNEL);
-> > > 
-> > > That immediately makes the threaded IRQ safe since it calls
-> > > iommu_attach_handle_get() which now fails.
+On 9/25/26 00:13, J?rg R?del wrote:
+> On Thu, Sep 24, 2026 at 05:14:12PM -0700, Mukesh R wrote:
+>> So, I'm at a bit of loss. I could go back to V0 which did what what you
+>> suggested above, but it can also leave stale mappings when map hypercall
+>> succeeds partially and we delete the entire tree node in cleanup (but
+>> we could add to the tree back whatever succeeded, but that could fail
+>> also, but then we could unmap whatever was mapped, but that could fail
+>> also.. see :)...).
+>>
 > 
-> Hmm, actually that's a sneaky cmpxchg that is only doing reserve..
+> The root-problem seems to be that every operation in the step can fail,
+> inluding the unmap operation. This makes it really hard to maintain a
+> consistent state. Are there any guarantees Hyper-V gives on the unmap
+> operation, e.g under which circumstances it can fail? It would really help if
+> the code could assume that it will never fail, or treat a failure as a hard
+> error.
+
+I talked to the hyp dev, and unmap is guaranteed to succeed unless
+the input is bad, even suggesting i could put a bug there. But i know
+there is aversion to putting lot of BUG()s, so i'll just leave the WARN
+there.
+
+> If there are no guarantees HV can give, a solution might be to add a
+> mapping-resize operation to the internal tree (which can not fail) to correctly
+> update the tree structure on partially successful unmaps.
+
+Yeah, perhaps we could do that in future to benefit all drivers.
+
+> I still believe that the internal tree structure should be updated before the
+> HV map operation takes place.
+
+Yes, i'll move that before map.
+
+Thanks again,
+-Mukesh
+
+>>>> +static int __init hv_iommu_init(void)
+>>>> +{
+>>>> +	int rc;
+>>>> +	struct iommu_device *iommup = &hv_virt_iommu;
+>>>> +	struct hv_output_get_iommu_capabilities caps;
+>>>> +
+>>>> +	if (!hv_is_hyperv_initialized())
+>>>> +		return -ENODEV;
+>>>> +
+>>>> +	rc = hv_iommu_get_caps(&caps);
+>>>> +	if (rc)
+>>>> +		return rc;
+>>>> +
+>>>
+>>> The capabilities returned need more checking. I think at least it needs a check
+>>> for HV_IOMMU_CAP_PRESENT and that PAGE_SIZE is set in the pgsize_bitmap.
+>>
+>> In general this caps hypercall is not available to root partitions,
+>> our only agreement is for hyp to provide max_iova_width. But, we check
+>> HV_DEVICE_DOMAIN_AVAILABLE in hv_iommu_detect() which sorta supersedes
+>> HV_IOMMU_CAP_PRESENT. As for page size, hyp owns the iommu and can chose
+>> the page size, meaning it can automatically use larger page size when
+>> possible. But the hypercall HVCALL_MAP_DEVICE_GPA_PAGES will only take
+>> 4k pfns as input, hence:
+>>
+>> #define HV_IOMMU_PGSIZES SZ_4K        /* for now, to be enhanced */
 > 
-> > I am not sure about that. Looking at iommufd_hwpt_replace_device(),
-> > there can be a old_handle != NULL, in which case the cmpxchg() would
-> > not change the xarray?
+> Okay, so this deserves a comment in the code to make it clear why there is no
+> additional checking and what the hyper-v to guest contract for feature
+> detection is.
 > 
-> I think this is wrong, there is no way it can work like this where the
-> attach continues to see the to-be-detached domain across the
-> flushes. No amount of flushing can fix it.
+>> Ok, I can change it back to DMA_BIT_MASK. (I removed after comment
+>> on V0 that this is not dma address).
 > 
-> Somehow we broke it :\
+> An IOVA is a DMA address by definition :)
+> 
+> -Joerg
 
-I'm trying to fix this by replacing xa_cmpxchg() with xa_store().
-
-However, an asynchronous iommu_attach_handle_get() could return the
-old_handle in the iopf path, before xa_store() in the detach path:
-
- - If a different domain is replaced, a driver callback is invoked
-   calling synchronize_irq() and iopf_queue_flush_dev(). And this
-   closes the window on any the old_handle reference before being
-   released.
-
- - If a different handle is replaced on the same domain, the driver
-   callback is skipped. Then, the iopf path could hit UAF while the
-   old_handle being released by the detach path?
-
-To close that window, I think we might need an ABI contract for the
-second case by asking drivers to sync irq and flush the iopf queue?
-This would require to roll out driver-level changes as well.
-
-Thanks
-Nicolin
