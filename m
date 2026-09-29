@@ -1,176 +1,110 @@
-Received: from mail-dl1-f72.google.com (mail-dl1-f72.google.com [74.125.82.72])
+Received: from mail-pj2-f39.google.com (mail-pj2-f39.google.com [74.125.227.167])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6905B39CCE0
-	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 03:22:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F8473FFF8E
+	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 03:28:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.167
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790652155; cv=none; b=pqrCTa0iwd7+Som93bFpuHE3ytqCMoJV89Cuaiecv2+8dIl8Y15rVkBCrJ9tbA9nfYU7n7EwUIvUHh/qjlifQPkkPUGwMhA2CXrTG+ItfXLKzQntC+a4Y3CNwKioaSQ7x3hG47thrg1DMLjAx10kxKW+uNZMxt7gaHkhMvyQUuU=
+	t=1790652525; cv=none; b=pQqEJ2tOf1Tw6R9/6Kmi8kORxuPiidIJ02nQAyvDNCeotu0XB0nD/9dzkC6VX5HNICImhjsH+CWb6InDakEEkdWzy53aDsLmU+pyMEzfAQtrcL/gj5KxCfkkoX6IU1fjkF426h7uYPNAMeGfuvr3RbYHghqfdiUUsqEV2KdPEMg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790652155; c=relaxed/simple;
-	bh=2uWZ4zaZ/v7zYyOa543CiktflOwN+mhMi0SOjznknZU=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=o+z19Hi/TPkmBeyL+rkS09M468x0PSXO8v0AkeYrB9M8zyyN+WaIotQrjhwjKC8uO/9/yKOa22Bsarms1YIbM1DwM48xREjNTCWlVKHkY1mGPncFPSlImzjP4pqHGOC9F/KxSFwFYdR4wQ07BOLIw+xYq9HQ5xJ61f+eXsBbnwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OrZIJ31w; arc=none smtp.client-ip=74.125.82.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
+	s=arc-20240116; t=1790652525; c=relaxed/simple;
+	bh=Ppa/5bvyDHu70Z7WWJJ5TYTAyJSoEiJO45Y9vEXZ7Jg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=X9EUpMunfkjs65HwK7Iz0tG82UOQHMF7BCZs38i4fMy98WD2pJxxU7I7wMYAmhNmhTRecDeHnTWK+KO+/T/R186WtcS3exPdRwQsguNHiY6shELKHfo9aRJW+UVmvzK3wJt97nqLZFV0aZI8kEuOnqrezVJQQ1bm8FYwez2scY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TJiATysj; arc=none smtp.client-ip=74.125.227.167
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OrZIJ31w"
-Received: by mail-dl1-f72.google.com with SMTP id a92af1059eb24-14373747468so3429422c88.1
-        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 20:22:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TJiATysj"
+Received: by mail-pj2-f39.google.com with SMTP id 98e67ed59e1d1-3a49902b607so60061a91.1
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 20:28:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790652152; x=1791256952; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=4CMsaZlCz3tjiQiZY6VpBfkMdJKm49kmWAtKADYZwJQ=;
-        b=OrZIJ31wsxhqWyeYz8hFB5B8PynNOOZPey6bzkVPooGaFjq+RENo7jGNAT2NaaqlGG
-         T54HiLt2FEhUyQrXYNpEYCcKDUoqk80W8dnnPQQs84Niz6jeefttK0s326jrHmbwAmYo
-         3JvenDUAFZYLiRY0oysWpjUw97FgxLyNSdP6gcTVTRHHbVrPmFkuXAA0Fk7cINJglqgC
-         SlOFLoXigs1jVX0l7SP25Rx4Z7VtxHXRRuGyWbcckLyebnhwQ1osR4qO84hKjD1CkNFG
-         xDVqryRpZD5fuxMLzoqYznUckyPfSBtB/HzAxagK0NK9wY84cNNsopwgtJLqODuFIt2I
-         iL+A==
+        d=gmail.com; s=20251104; t=1790652524; x=1791257324; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Ppa/5bvyDHu70Z7WWJJ5TYTAyJSoEiJO45Y9vEXZ7Jg=;
+        b=TJiATysjm7Hg5uba7R69+nZrQ9sSdpfvit0SRIihpidFu+n/R+C2SWEONqBZkFw4BV
+         ZcnwIzCSmLKRtuyBVxm+/5skaWdoC3wARpQv6jbe5mwGDWsQdGnbQmc1VO0WU4B4tyLT
+         a0PgB+1A+XUeHe9IKwJdMhhjKTalirnwZIZRsiMoGDgWl1GSmJrukRDXL7qmd3vBv2cX
+         psNhVDox53O7nR0PJn60X79Gp9FMLKyGeDlUuqsDjD6Hj2+tijUxwJZKV0pahX1KVu+R
+         rwjfiprHgXbn8l06UJ7NUn95B//ch4i5aVdI3gCICSWT250PzG/e6PVYDm6mxJlo0EG/
+         cAsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790652152; x=1791256952;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
+        d=1e100.net; s=20260707; t=1790652524; x=1791257324;
+        h=content-transfer-encoding:mime-version:content-type:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=4CMsaZlCz3tjiQiZY6VpBfkMdJKm49kmWAtKADYZwJQ=;
-        b=bmJcMHuNqR2O4UWb5wnxTnsghT+TOaT6tWbE1xLMs4ysY4bT3FnEHtjpI77gcigfaX
-         EkCGpujt7dQvt9RZeY4m8UtsfO9wLdZ8Gk18pBcBNIx64rbMJwCYWBObT/EiTTWjWFnZ
-         4iCFp9kR9Dd2hvOFJ/Cft2OyACviIOh/CmQcl87ImPBig7moXREUuQK6nwKyDJuGfqAA
-         6vLFrUdLo5YJJ6UDxtc+5s+jLjDpst38Zr0kb8aj9S8H7sm+bBKOJpkau69zAM6tWU68
-         CB/a8wTkGV+KgRpLaKFMaY+QuokhveDbV/WlJfSUZJQt0Ow35ShrwqRb0pMy/U0iNsQl
-         j5FQ==
-X-Gm-Message-State: AFuF++nU7ZFchmllsSJGo+6JrcZfIv6DoXOQ73C0nXgj4oU/uD3mSlZa
-	Ne9OF3t2b4MButyqdZ52XmzCDRZtO47wNt+0ybf4NfBMNEFg75Q6p/QbtQcS005Fnp8Mi9mP7Em
-	Tdb8tTNExuUu0UZtNG1DCpPoyJD6y/4YMvQplq0GguT9xjRtjaTGcH7hkgqxDKyzW5YvkKn0O2X
-	urt4v0hqcVj+OtuGtRip9j4y+PRQLc2OF4WaDMupZh2LpnTBVm7GA9zbovB6Mpuw==
-X-Received: from dlbrx25.prod.google.com ([2002:a05:7022:1719:b0:14a:b069:4d4f])
- (user=danielmentz job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:7022:5f1c:b0:149:7f69:a3ad with SMTP id a92af1059eb24-1497f78ea23mr5506267c88.13.1790652151855;
- Mon, 28 Sep 2026 20:22:31 -0700 (PDT)
-Date: Tue, 29 Sep 2026 03:22:29 +0000
+        bh=Ppa/5bvyDHu70Z7WWJJ5TYTAyJSoEiJO45Y9vEXZ7Jg=;
+        b=maN5l2SgV2+Zxs9H9McMlEVco2C5giOUvjeyPIXOLnn7R+lCRsp5OuqSMkUJ1tppeT
+         wyfR0UORSEoGqj0w78IbnUIfV3spMPq653GqTuSDbfib0bNDYwiZUjOe/2vTdxIM+Dds
+         G6IfsQKiBMhyJlZ/xw2isSRgV1vjmJLJ5PNq7JAagdjjIEwu2OZaErOLCz3Vzh8a2oyZ
+         vSsojpFrJP0tI2Z+kBRqEu7gkAb2Xr2ITxZfLuRH0CGqF5Iyvw/7t/yUL32xSIgsZLhT
+         1PEDYdQb5qf6RB6XhtE8TB8bKivnR+dcivL2hoG3OZIrq2rOvzdrglJH+C7RCzAV/KDX
+         CJhg==
+X-Forwarded-Encrypted: i=1; AKwUvBwAx5dPXIwwjRiSqzEQNX6fYfGlhVnadgXoBMTAWShAGH9jNZwVe7P3vEYeIsI/SzWzOsLCbQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLzOkSxei76MVjQ+JV+gKQfqQVeWpDoQ0vywBxpzmaCJmJldn8i
+	WxogTHtrncbzg8FTBPK/B6vhQ/4EYKmOixcS4ZvUDeAsYaO4CbrPywL/
+X-Gm-Gg: AYBFou18jIj2NMbyooqPgBeCOWkTXh+L8p8eesdFeSuTX92teldbOh2FnnFDWtuaXXS
+	5j3ZrQ4/vx59+tvmGd1G0sQujy4R5YnXrxycACMZ55Wvb8VLhWO4djLC4UZ/ulPYH0SJTaraGzg
+	83lWOi5QF+yggzWspCsJRDELOqL+wTOZEGbqUwXLTPUYXKdYaBHub9JCXKhgms/geVfZbu29+Si
+	rt4TbZCqialznY4ph52HorRFP8VUfVcidWRQAzA3mxHsELD1JxUUtmt1z/Z9U4xla4fYDk8nUlv
+	KvWTbyPw4EcWrdutPvdUPKfO9GnQG7cJTT2DEKJ1SI8lrNGHgU1nBvAC/MISdo4p7V2yZzGSV2H
+	FfdxhO4rhUAlJj8sU+p97W0WZ5G3p7N3yT1TG6ShsLHpMCtzaArcnvK76ig0nFeb5BMjNHZBhV8
+	3DqqS419X5U9NDm7PT4oX0ZydWZ0+IutrPqnAbgL7LgpCjCqrWby3NvE2rPh9N8DtgQ20yOr0Lv
+	vryUrBBUvieq6c=
+X-Received: by 2002:a17:90b:3c4e:b0:3a4:88c2:32b8 with SMTP id 98e67ed59e1d1-3a488c245e0mr4141496a91.1.1790652523654;
+        Mon, 28 Sep 2026 20:28:43 -0700 (PDT)
+Received: from jfliu-sfa1411.. ([129.227.183.200])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a4986e9656sm934089a91.0.2026.09.28.20.28.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 28 Sep 2026 20:28:42 -0700 (PDT)
+From: Jianfeng Liu <liujianfeng1994@gmail.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jianfeng Liu <liujianfeng1994@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Rob Clark <rob.clark@oss.qualcomm.com>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	iommu@lists.linux.dev,
+	dri-devel@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/2] iommu: export iommu_get_dma_domain()
+Date: Tue, 29 Sep 2026 11:28:35 +0800
+Message-ID: <20260929032836.37312-1-liujianfeng1994@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <47bf9a4c-2a47-4e93-bcdf-8d953c9a5ab8@arm.com>
+References: <20260928053901.7270-1-liujianfeng1994@gmail.com> <20260928053901.7270-2-liujianfeng1994@gmail.com> <47bf9a4c-2a47-4e93-bcdf-8d953c9a5ab8@arm.com>
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20260929032229.3532247-1-danielmentz@google.com>
-Subject: [PATCH] iommu/arm-smmu-v3: Align memory attributes for
- SMMU-originated accesses
-From: Daniel Mentz <danielmentz@google.com>
-To: iommu@lists.linux.dev
-Cc: Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>, 
-	Daniel Mentz <danielmentz@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-The SMMU specification defines several types of SMMU-originated memory
-accesses, including Stage 1 and Stage 2 translation table walks, stream
-table accesses (L1STD and STE fetches), CD table accesses (L1CD and CD
-fetches), and queue accesses (CMDQ fetch, EVENTQ write, PRIQ write).
+Hi Robin,
 
-While the memory attributes used for Stage 1 and Stage 2 translation
-table walks are configured in io-pgtable-arm based on whether the SMMU
-is coherent (ARM_SMMU_FEAT_COHERENCY), the attributes for stream tables,
-CD tables, and queues are currently hardcoded to Inner Shareable,
-Write-Back.
+On Mon, Sep 28, 2026 at 12:26 PM Robin Murphy wrote:
+> NAK. Read the comment - this is an internal helper for iommu-dma
+> (currently the only IOMMU_DOMAIN_DMA implementation) and is definitely
+> not for random drivers to abuse. In fact it should really move to
+> iommu-priv.h now that we have that.
+>
+> If you want to do sketchy things with your device's DMA domain then use
+> the public iommu_get_domain_for_dev() interface like everyone else.
 
-On non-coherent systems, however, memory for stream tables, CD tables,
-and queues is allocated via dma_alloc_coherent() /
-dmam_alloc_coherent(), which provides CPU mappings with Normal
-Non-Cacheable attributes. Having a non-coherent SMMU access these
-buffers with Inner Shareable, Write-Back attributes results in
-mismatched memory attributes between the CPU and the SMMU.
+Fair enough - I'll drop the export.
 
-Configure the memory attributes for tables and queues in
-arm_smmu_device_reset() and arm_smmu_make_cdtable_ste() based on
-ARM_SMMU_FEAT_COHERENCY, matching the attributes used for translation
-table walks:
+For the record, if the msm side of the series goes anywhere, the plan
+is to capture iommu_get_domain_for_dev(drm->dev) before msm takes the
+device over with iommu_attach_device() - at that point the device's
+current domain is still the DMA domain, so no new export is needed.
+(Christian is pushing back on the msm patch itself, so that may end up
+moot either way.)
 
-- In SMMU_CR1, use Outer Shareable, Non-Cacheable for non-coherent
-  SMMUs, while retaining Inner Shareable, Write-Back for coherent SMMUs.
-  This applies to stream table accesses as well as queue accesses (CMDQ
-  fetch, EVENTQ write, PRIQ write).
-- In STE.{S1CIR, S1COR, S1CSH}, use Outer Shareable, Non-Cacheable for
-  non-coherent SMMUs, while retaining Inner Shareable, Write-Back
-  Read-Allocate for coherent SMMUs. This applies to CD table accesses.
-
-Assisted-by: LLM
-Signed-off-by: Daniel Mentz <danielmentz@google.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++------
- 1 file changed, 27 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 5732f3ba0122..84cfaeeb4a0d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1881,6 +1881,15 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
- {
- 	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 	struct arm_smmu_device *smmu = master->smmu;
-+	u64 s1c, s1csh;
-+
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENCY) {
-+		s1c = STRTAB_STE_1_S1C_CACHE_WBRA;
-+		s1csh = ARM_SMMU_SH_ISH;
-+	} else {
-+		s1c = STRTAB_STE_1_S1C_CACHE_NC;
-+		s1csh = ARM_SMMU_SH_OSH;
-+	}
- 
- 	memset(target, 0, sizeof(*target));
- 	target->data[0] = cpu_to_le64(
-@@ -1892,9 +1901,9 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
- 
- 	target->data[1] = cpu_to_le64(
- 		FIELD_PREP(STRTAB_STE_1_S1DSS, s1dss) |
--		FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
--		FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
--		FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
-+		FIELD_PREP(STRTAB_STE_1_S1CIR, s1c) |
-+		FIELD_PREP(STRTAB_STE_1_S1COR, s1c) |
-+		FIELD_PREP(STRTAB_STE_1_S1CSH, s1csh) |
- 		((smmu->features & ARM_SMMU_FEAT_STALLS &&
- 		  !master->stall_enabled) ?
- 			 STRTAB_STE_1_S1STALLD :
-@@ -4844,7 +4853,7 @@ static void arm_smmu_write_strtab(struct arm_smmu_device *smmu)
- static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- {
- 	int ret;
--	u32 reg, enables;
-+	u32 reg, enables, cache, sh;
- 
- 	/* Clear CR0 and sync (disables SMMU and queue processing) */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
-@@ -4858,12 +4867,20 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 		return ret;
- 
- 	/* CR1 (table and queue memory attributes) */
--	reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_ISH) |
--	      FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_WB) |
--	      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_WB) |
--	      FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_ISH) |
--	      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_WB) |
--	      FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_WB);
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENCY) {
-+		cache = CR1_CACHE_WB;
-+		sh = ARM_SMMU_SH_ISH;
-+	} else {
-+		cache = CR1_CACHE_NC;
-+		sh = ARM_SMMU_SH_OSH;
-+	}
-+
-+	reg = FIELD_PREP(CR1_TABLE_SH, sh) |
-+	      FIELD_PREP(CR1_TABLE_OC, cache) |
-+	      FIELD_PREP(CR1_TABLE_IC, cache) |
-+	      FIELD_PREP(CR1_QUEUE_SH, sh) |
-+	      FIELD_PREP(CR1_QUEUE_OC, cache) |
-+	      FIELD_PREP(CR1_QUEUE_IC, cache);
- 	writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
- 
- 	/* CR2 (random crap) */
--- 
-2.56.0.rc1.315.gc6ed9934b7-goog
-
+Thanks for the pointer,
+Jianfeng
