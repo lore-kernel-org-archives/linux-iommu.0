@@ -1,30 +1,30 @@
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B947A3D1A9A
-	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 22:36:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 318303DB320
+	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 22:36:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790721396; cv=none; b=I3FXiQFEvyuF25sHgqZnYgSCxY27cglAu/8yktX884dM0DeI47jeG2lz+mfWaOW2VmLE9I7BBTbYnaUZeYkg9qySF8D6HiQtKkJPz4OuyWU8Je23GAfJTuTDUZcDqdogQ8PuGZBAEBWxXremtuoq1COP0v0wleHsaBm0alZX4zA=
+	t=1790721397; cv=none; b=f5KeZStzbfFq1pymi27lLqKPgCfct3XVn60QZwT+g+obGcgx1+O0RyvMd3y6772JZy3FvyqP/t/w9alE/lOBhn5S57jXcnaNs4X2hEtvM8a5nT/5UVwglCt7a5Zp407kvpR2V729xQhGQuWpIudy5WjQO/83ko8150XHMQ3uy5w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790721396; c=relaxed/simple;
-	bh=XrlS4j2ym67Nadudj2nnICnK+UOg6EzZ3N5iVhLHtpY=;
+	s=arc-20240116; t=1790721397; c=relaxed/simple;
+	bh=nLT4zmbddqSlb2WbcSmFeccT00PMbFNPuS30He7wong=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OxpfDjA4TAjiWmkOPjAnjdLKnnRR4Tw2LZn2vFWarI5qFXg7wjljkv24oEmOZgSw0Kh1LM3jWDCZm4zg+9hf5sWobR5hfSmq5YDsH4O3kdVJiGHoRZKicRFTVKFwz1u36Bu291XyuA1mT2SIqiGYbdL5jecA1eklJjxsp1zf/1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=QOMzOJIt; arc=none smtp.client-ip=13.77.154.182
+	 MIME-Version; b=ElOrQJReM8QohhhjcRUy3jbj9CLUBiHcPh1uiGEpjw4zGdtQ6ttNY5TXuwSLopPM1i55UacuqU1BR6uG/URKp5PgWY0699EbJPqG0+tdkMsyk/U6UzwFPQBaBGxL6jbw57RAO4eCMQxwqIlJ6aTsYeYVrATo+RUCxGxiR7Lb568=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=r9P8mMiA; arc=none smtp.client-ip=13.77.154.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="QOMzOJIt"
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="r9P8mMiA"
 Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 495EA20B716A;
-	Tue, 29 Sep 2026 15:35:41 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 495EA20B716A
+	by linux.microsoft.com (Postfix) with ESMTPSA id AA39220B716C;
+	Tue, 29 Sep 2026 15:35:42 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AA39220B716C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1790721341;
-	bh=iXJtYZrPDgTihy0OwCsy2bPoc3grbkXyieDRn57gQkM=;
+	s=default; t=1790721343;
+	bh=udjXgoLSFO3PVlWZmwlzwwvrs8nrg+42HjuCcD0xiO4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=QOMzOJItk20qhjsuBwZ2NGV7lfBlVVwLlS6OVR7kMucBAOLTatboyD65b2naY3vB0
-	 4cUP7F00ei95qJOEwRVLlWj5CtjAkEBX0d9W9Wq1RuGZVVKAHaYn5DSjRfuhcNBcN7
-	 JStENekZBaV6amrHLnQwwnp7naUMJnUC1WHSQliM=
+	b=r9P8mMiAkRPSQDzLsshZ9rOE2U8zh0ve+1TFj5KWA4OhjXPCx1gZZuHtkp/D2cRfK
+	 FrP9OjBwU3JPPQ4gh2RLvXxybt7418j18M92DDU+BTnh7HqW1Zg4LIDg1kX/yrqCCS
+	 Pip1QUCLNaZMVHwyByFadhi8actxXzBzjolX0Pf8=
 From: Mukesh R <mrathor@linux.microsoft.com>
 To: linux-hyperv@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
@@ -47,9 +47,9 @@ Cc: jgg@nvidia.com,
 	robin.murphy@arm.com,
 	arnd@arndb.de,
 	mrathor@linux.microsoft.com
-Subject: [PATCH V2 1/4] mshv: Add gfp_flags parameter to hv_call_deposit_pages()
-Date: Tue, 29 Sep 2026 15:36:19 -0700
-Message-ID: <20260929223622.778617-2-mrathor@linux.microsoft.com>
+Subject: [PATCH V2 2/4] PCI: hv: Export hv_build_devid_type_pci() and change return type
+Date: Tue, 29 Sep 2026 15:36:20 -0700
+Message-ID: <20260929223622.778617-3-mrathor@linux.microsoft.com>
 X-Mailer: git-send-email 2.51.2.vfs.0.1
 In-Reply-To: <20260929223622.778617-1-mrathor@linux.microsoft.com>
 References: <20260929223622.778617-1-mrathor@linux.microsoft.com>
@@ -61,123 +61,77 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Currently GFP_KERNEL is hard coded in hv_call_deposit_pages(). Add
-gfp_flags parameter so it can be called in atomic context from
-map_pages callback in struct iommu_domain_ops and other places in
-future.
+On Hyper-V, most hypercalls related to device domain management like
+attach device to a device domain, or to map/unmap regions, interrupts,
+etc need a device ID as a parameter. So, make hv_build_devid_type_pci()
+public and change return type to u64 to enforce it's size.
 
 Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
+Reviewed-by: Souradeep Chakrabarti <schakrabarti@linux.microsoft.com>
 ---
- drivers/hv/hv_proc.c           | 14 +++++++-------
- drivers/hv/mshv_root_hv_call.c |  6 ++++--
- include/asm-generic/mshyperv.h |  6 ++++--
- 3 files changed, 15 insertions(+), 11 deletions(-)
+ arch/x86/hyperv/irqdomain.c     | 9 +++++----
+ arch/x86/include/asm/mshyperv.h | 6 ++++++
+ 2 files changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hv/hv_proc.c b/drivers/hv/hv_proc.c
-index 57b2c64197cb..ce4276d37d45 100644
---- a/drivers/hv/hv_proc.c
-+++ b/drivers/hv/hv_proc.c
-@@ -15,8 +15,8 @@
-  */
- #define HV_DEPOSIT_MAX (HV_HYP_PAGE_SIZE / sizeof(u64) - 1)
+diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
+index b3ad50a874dc..8780573a4332 100644
+--- a/arch/x86/hyperv/irqdomain.c
++++ b/arch/x86/hyperv/irqdomain.c
+@@ -112,7 +112,7 @@ static int get_rid_cb(struct pci_dev *pdev, u16 alias, void *data)
+ 	return 0;
+ }
  
--/* Deposits exact number of pages. Must be called with interrupts enabled.  */
--int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
-+int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages,
-+			  gfp_t gfp_flags)
+-static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
++u64 hv_build_devid_type_pci(struct pci_dev *pdev)
  {
- 	struct page **pages, *page;
- 	int *counts;
-@@ -35,12 +35,12 @@ int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
- 		return 0;
- 
- 	/* One buffer for page pointers and counts */
--	page = alloc_page(GFP_KERNEL);
-+	page = alloc_page(gfp_flags);
- 	if (!page)
- 		return -ENOMEM;
- 	pages = page_address(page);
- 
--	counts = kzalloc_objs(int, HV_DEPOSIT_MAX);
-+	counts = kzalloc_objs(int, HV_DEPOSIT_MAX, gfp_flags);
- 	if (!counts) {
- 		free_page((unsigned long)pages);
- 		return -ENOMEM;
-@@ -54,7 +54,7 @@ int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
- 		order = 31 - __builtin_clz(num_pages);
- 
- 		while (1) {
--			pages[i] = alloc_pages_node(node, GFP_KERNEL, order);
-+			pages[i] = alloc_pages_node(node, gfp_flags, order);
- 			if (pages[i])
- 				break;
- 			if (!order) {
-@@ -137,7 +137,7 @@ int hv_deposit_memory_node(int node, u64 partition_id,
- 		hv_status_err(hv_status, "Unexpected!\n");
- 		return -ENOMEM;
+ 	int pos;
+ 	union hv_device_id hv_devid;
+@@ -172,8 +172,9 @@ static union hv_device_id hv_build_devid_type_pci(struct pci_dev *pdev)
  	}
--	return hv_call_deposit_pages(node, partition_id, num_pages);
-+	return hv_call_deposit_pages(node, partition_id, num_pages, GFP_KERNEL);
+ 
+ out:
+-	return hv_devid;
++	return hv_devid.as_uint64;
  }
- EXPORT_SYMBOL_GPL(hv_deposit_memory_node);
++EXPORT_SYMBOL_GPL(hv_build_devid_type_pci);
  
-@@ -206,7 +206,7 @@ int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags)
- 	/* Root VPs don't seem to need pages deposited */
- 	if (partition_id != hv_current_partition_id) {
- 		/* The value 90 is empirically determined. It may change. */
--		ret = hv_call_deposit_pages(node, partition_id, 90);
-+		ret = hv_call_deposit_pages(node, partition_id, 90, GFP_KERNEL);
- 		if (ret)
- 			return ret;
- 	}
-diff --git a/drivers/hv/mshv_root_hv_call.c b/drivers/hv/mshv_root_hv_call.c
-index cb55d4d4be2e..bd975239f3bc 100644
---- a/drivers/hv/mshv_root_hv_call.c
-+++ b/drivers/hv/mshv_root_hv_call.c
-@@ -141,7 +141,8 @@ int hv_call_initialize_partition(u64 partition_id)
- 	input.partition_id = partition_id;
+ /*
+  * hv_map_msi_interrupt() - Map the MSI IRQ in the hypervisor.
+@@ -196,7 +197,7 @@ int hv_map_msi_interrupt(struct irq_data *data,
  
- 	ret = hv_call_deposit_pages(NUMA_NO_NODE, partition_id,
--				    HV_INIT_PARTITION_DEPOSIT_PAGES);
-+				    HV_INIT_PARTITION_DEPOSIT_PAGES,
-+				    GFP_KERNEL);
- 	if (ret)
- 		return ret;
+ 	msidesc = irq_data_get_msi_desc(data);
+ 	pdev = msi_desc_to_pci_dev(msidesc);
+-	hv_devid = hv_build_devid_type_pci(pdev);
++	hv_devid.as_uint64 = hv_build_devid_type_pci(pdev);
+ 	cpu = cpumask_first(irq_data_get_effective_affinity_mask(data));
  
-@@ -249,7 +250,8 @@ static int hv_do_map_gpa_hcall(u64 partition_id, u64 gfn, u64 page_struct_count,
- 
- 		if (hv_result_needs_memory(status)) {
- 			ret = hv_call_deposit_pages(NUMA_NO_NODE, partition_id,
--						    HV_MAP_GPA_DEPOSIT_PAGES);
-+						    HV_MAP_GPA_DEPOSIT_PAGES,
-+						    GFP_KERNEL);
- 			if (ret)
- 				break;
- 
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index bf601d67cecb..af65dd3e3725 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -345,7 +345,8 @@ static inline bool hv_parent_partition(void)
- 
- bool hv_result_needs_memory(u64 status);
- int hv_deposit_memory_node(int node, u64 partition_id, u64 status);
--int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
-+int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages,
-+			  gfp_t gfp_flags);
- int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
- int hv_call_notify_all_processors_started(void);
- bool hv_lp_exists(u32 lp_index);
-@@ -360,7 +361,8 @@ static inline int hv_deposit_memory_node(int node, u64 partition_id, u64 status)
+ 	return hv_map_interrupt(hv_devid, false, cpu, cfg->vector,
+@@ -271,7 +272,7 @@ static int hv_unmap_msi_interrupt(struct pci_dev *pdev,
  {
- 	return -EOPNOTSUPP;
+ 	union hv_device_id hv_devid;
+ 
+-	hv_devid = hv_build_devid_type_pci(pdev);
++	hv_devid.as_uint64 = hv_build_devid_type_pci(pdev);
+ 	return hv_unmap_interrupt(hv_devid.as_uint64, irq_entry);
  }
--static inline int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages)
-+static inline int hv_call_deposit_pages(int node, u64 partition_id,
-+					u32 num_pages, gfp_t gfp_flags)
- {
- 	return -EOPNOTSUPP;
- }
+ 
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index f64393e853ee..8ebbd1cb7c8c 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -248,6 +248,12 @@ void hv_crash_asm_end(void);
+ static inline void hv_root_crash_init(void) {}
+ #endif  /* CONFIG_MSHV_ROOT && CONFIG_CRASH_DUMP */
+ 
++#ifdef CONFIG_PCI_MSI
++u64 hv_build_devid_type_pci(struct pci_dev *pdev);
++#else
++static inline u64 hv_build_devid_type_pci(struct pci_dev *pdev) { return 0; }
++#endif
++
+ #else /* CONFIG_HYPERV */
+ static inline void hyperv_init(void) {}
+ static inline void hyperv_setup_mmu_ops(void) {}
 -- 
 2.51.2.vfs.0.1
 
