@@ -1,375 +1,304 @@
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010067.outbound.protection.outlook.com [52.101.201.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5C8391855
-	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 07:20:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.198
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790666420; cv=none; b=g0dvpI54lENqh+u1EFGJ0MgFHsFwhiv7BAlj0zJhx6BYIZD5MYz9QYEIWPsvPNyjruKDBi0R2yn8kmvkZ7HoK6xdDx1+EjSnbkjENw6zC/KM9wRLqa5kOdPNnckNY7Kh+x+M72IRKsv7SPR0HpZurIU6EpP4IccolSssGJ+ZPvI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790666420; c=relaxed/simple;
-	bh=u8O2177+KqQdQw8TfYAzTNICrO5G0fO2/HiKOb7evz4=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ikcwpXAwofWrPQQAMmipfa5Jgz5rIswOvETzAkrxbbF9q0McUl+GRwNsklUcCyj017zQe6HEiaVekjU38w1dIDilF4v1PnB7gon2bP9dIvNFegrHuXVxaph26aP7clyIIRD4gduDbsxBRgf/WBwu6JkQLGHLhK/8MTHH/MPpD1k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=i0qzid6k; arc=none smtp.client-ip=209.85.214.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7294939CD1E
+	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 07:28:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.67
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790666941; cv=fail; b=anIshtrcEMqH3bb+wSTGiLJrpXDjKGMUQtqK+unkcHonDRUCTGmRTNgf7dJGjY0edqku4VJ6ZGBKCi3ABINaUmCxeJx89MfKbmyOOtAZSwcnOY6XrU0ru5vSezBx3AKpMz7VtZI/R4/nHM8IQbuGqFu8qeQ+vjtvAKKXUiN+7YY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790666941; c=relaxed/simple;
+	bh=Y88eJ5+9BwxyjQO03JTsavFK3McJIDRZrP4Ss7mKSyI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=lxJ4DbyGcdGegMTix88dJQNe6RiONVdA9ij8VeYZCUF9Ly1rPNhi0HOLHcMbbODRefgZ73OTlGVZ4CdpyMWAseW+dq9MOJZH03/FT4PrSExN1CwG3X//z93TfWAmbVIvQcaZGTpaxuQ3JUeM/acfeYpKo6s1AUXb/dV72qcGJzA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=agEi3mQc; arc=fail smtp.client-ip=52.101.201.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="i0qzid6k"
-Received: by mail-pl1-f198.google.com with SMTP id d9443c01a7336-2d94a158dc8so55646945ad.2
-        for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 00:20:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790666415; x=1791271215; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=OlVYV/o4fm3RCndKRXTcczL0qjVzCkXzkjMu/hurkAc=;
-        b=i0qzid6kINEwI7D04KBbbamBhzy86v78uf9HQo7Q6DFiKoDXbRn+R/sjxnCSdX+Y4k
-         zWaoKc41AciKbHx8ZO5jKPvL6tnQFvnoP2XAIjI0a7w9LPi57vy+zVcvX2dcq/BMnLcw
-         JO/B61MMLXwLcQwdCU0atv+5rX/pTelZ7TWYp+E5Y5KJnHhTo2ZbloGM8EDANOdqyCdx
-         jamgBUNQY4QQ9QisI8Xtps2iS7zxxoByw02r3jup6WWxUzN/aHUgYD7BgZ/P61OHzFZx
-         lJ9paIxvJv/XqQqZai7U1PFYsir8zqNIF/NBjREJiZo9/SqXPYMt7RtkfWUnRZ817jRn
-         BfVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790666415; x=1791271215;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=OlVYV/o4fm3RCndKRXTcczL0qjVzCkXzkjMu/hurkAc=;
-        b=xJsZizQNaClGiX2pXU2G/M3rqXeBDmMXmxgAVXBHI+OmamjWNFtzt7ZRYu0izASJKv
-         dV5gpSMe3VwsbjUhI9rkEiHXfInv4+fRwCTM9httIWZgerjz3j90luk2I9rxoi5QgRO1
-         /OgjioS25kAwPEFnjysvdUtUabGwxums4gzMK0+Of39DHacHKHYdUgxE1A7FTM2OkwTO
-         osDFPIBfjuQaXD6IIqTjkwo+OYhmZFz3L5t4m1W7m8HYACgdcyJG8NLLUbEVjLBvj2Dc
-         iDjovnqR3tQ3sTyibyGCUQaILKjd3SXcrMjj7aVw1JpAOApK/FTk0AERdq+xMvn9pgrD
-         4cEg==
-X-Gm-Message-State: AFq9FYI4eQxZawj2cVWc8fhH7LztP+wdH6EEKgSBHNSL61Zgp9inpvUG
-	AGLsBTaJ1E/DoajOh/usEGOuphfq/+PM/5k2ZyLECuOK4VcoPfWdRolTKUtp0xqGBuZpKOGxCH3
-	H/omYpcZZ2seYYkhfsKDNXxY7bDMckR58isf0Ndxrt44BzfAe5eFDnFDVDh/XJgSqrJapXHVwOp
-	Q0+4XzsSMJt4HvDeOzwGmzoiSueb13ww==
-X-Received: from plmk4.prod.google.com ([2002:a17:903:1804:b0:2df:af7a:7386])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:d4c1:b0:2dd:c100:9438
- with SMTP id d9443c01a7336-2df94c22bdfmr92863685ad.54.1790666415041; Tue, 29
- Sep 2026 00:20:15 -0700 (PDT)
-Date: Tue, 29 Sep 2026 07:19:50 +0000
-In-Reply-To: <20260929071950.2710070-1-praan@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="agEi3mQc"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CRzDOMP6bsDXurS3WjeU9E+IenhSDC5b+hpLGK2qSeeT3mQoiYnggAif8UmC12opseJ27MaeA9VXUerZFVfLOb+Z/v6CcsFG+hJF+mtgihpZjkiWe5fKxyNqA1Ja/xoKn6tm2n7YLhPpLs4ejCCUpFotPfT27FNGIWwUvcPqVxTm0Th2AFmvsBSav+NywR5I0VjpbonDFSx9NwL9CIJwTdQO7MmjSY7vCjdPQUSheWut0xLlURWPgrlly81CxCWK8MUh2bBjn/jTUwX+hMuK9I9TBR0FyJaFPdAnmADJZssP6jThJ2r2gTnY8ro4hqrMeWFxD+6wMJ4BM5kucBJZrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sMDgxOnntUM4Mqp2gyb0ZzF+sPD9Fz6yuDG/SWQ7Q+I=;
+ b=O8smkyNWfelNtRlTZbkPqAt8JZMeMYaHtuBQXvDv4af8BXAItvPOKlcIc5hjXKngvuMk3KR79SxhXhNDje4RQ40zyQ6SbnoQzjBvU/iWhvb+F+LGW4sqoh9xAEYYl4G6QQzsgB6UJZ7iOwu0BQ8hylWSlCWwmxVakBpfsPuzSwPJUPXMsA0YWtqBYsuFnvhcOyGgkfsFbb+RWYKA0KoAuRwPKplyFO0SuImSVPu/2q1BXX9J5f7fa5f/FI9yutBFFp7KrXyQGc+wciblWcYJg5FqdYUZijLpRcuH3h6N5EGNuTcbushbesKHLVPMQmiZbm/WxWtrMJxjJ1ToLKMB5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sMDgxOnntUM4Mqp2gyb0ZzF+sPD9Fz6yuDG/SWQ7Q+I=;
+ b=agEi3mQcLFQZa7Xd1p9pjBXKqP6n3+BhhhZmrSDOawLT5ufGCZRRahaSHzOfh1D6RRKqF4ynoLWfiioqVHd+eDmbbkgjj0qiitOf2SMzhBgfOJ9pknL+yEOJcHDM9hieL3A79UtWhlx2AiWv7eLSDWjUXLAwIIldyXivy4x76ZIyEnMINNutSiSjunnHknhE3Z7RtO38xGT/TDsS49K6p9vXMR0hBzBHo/PFeYVZbggC3dTzMWRrasJs4yfVIxOn9T0SUdBfOjQrqH+n+sht+jjMAHa4+2uVLqCJ/QBtzSH3kueCFY75DARJrm779Iojz2CTcUr9pYpcjsw5eTng4g==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
+ by CY8PR12MB7706.namprd12.prod.outlook.com (2603:10b6:930:85::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.25; Tue, 29 Sep
+ 2026 07:28:52 +0000
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017%5]) with mapi id 15.21.0451.022; Tue, 29 Sep 2026
+ 07:28:52 +0000
+From: Mikko Perttunen <mperttunen@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>,
+ Thierry Reding <thierry.reding@kernel.org>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Krishna Reddy <vdumpa@nvidia.com>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+Subject:
+ Re: [PATCH 00/11] Make the 32-bit ARM DMA API work with normal IOMMU DMA
+ default domains (+ Tegra PoC)
+Date: Tue, 29 Sep 2026 16:28:40 +0900
+Message-ID: <fpDSraffSy-uBmhoTN1C9A@nvidia.com>
+In-Reply-To: <a5b453db-a4f9-4dba-b150-6e4045f61027@samsung.com>
+References:
+ <CGME20260915021542eucas1p254addab18c10cb117f42ccf3d3522883@eucas1p2.samsung.com>
+ <20260915-b4-arm32-iommu-dma-cookie-v1-0-ba4f9d33a2b8@nvidia.com>
+ <a5b453db-a4f9-4dba-b150-6e4045f61027@samsung.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-ClientProxiedBy: TYCP286CA0143.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:400:31b::19) To SJ2PR12MB9161.namprd12.prod.outlook.com
+ (2603:10b6:a03:566::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20260929071950.2710070-1-praan@google.com>
-X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20260929071950.2710070-10-praan@google.com>
-Subject: [RFC PATCH v1 9/9] iommu/arm-smmu-v3: Adopt the Event queue across a
- Live Update
-From: Pranjal Shrivastava <praan@google.com>
-To: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@nvidia.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Samiullah Khawaja <skhawaja@google.com>, David Matlack <dmatlack@google.com>, 
-	Vipin Sharma <vipinsh@google.com>, Mostafa Saleh <smostafa@google.com>, 
-	Daniel Mentz <danielmentz@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Pratyush Yadav <pratyush@kernel.org>, linux-arm-kernel@lists.infradead.org, 
-	kexec@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	Pranjal Shrivastava <praan@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|CY8PR12MB7706:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3f010b08-d67a-4577-a18d-08df1dfb4f58
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|23010399003|7416014|376014|10070799003|366016|921020|4143699003|10067099003|11063799006|56012099006|18002099003|22082099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	+qEftXZoHdfYddJ3Puras6jQ0pOwIS/rwrhUt39i+K1HWCJiFFIys/sVWe2TTUQ0UzYt5PyOnOkP7UlUQTRfNR7ijAkr9ZEinnOdcQqZZowNsQvRanv/jMXF/zrosE8Y22DI8M9Aye4CoilX1KcITp0a+OCpQolSL7iXd6SVmQaUSM5yzI9vK8uUesWmIx9Y+5Q65hpYkSZSvUtRFYMi9Suhjv3cRIxQAM8JLZ85SA8EbCqSOchYwPcxQs/QpZIdYB7Nr0/NXc0cTnFRsGad15erjs0JiX6gAIZ2Py29lXhqWYDdqs02SlliJDhZ6v22qqWy7exiv+mt8kD17kbgoWs/9XdJ5Q37H6oFlaSGngq431MwjxzjoQ9/UJju47ciJ5xooMWDI8x8zTLrdiCTPPcLk6Lrat7GHrMaBmzJFNVjezlLXGzxdTYB1kipBrpvJD9C4DJ1TQsmAqmgXQhwZeBJNZDU8ZmKpXN3lZRcyFyssf/8RnH9gth2G9zmUWwrhwN3WZZ1CvotEEBEfddDwR55EKLZq4uZWPnVs7R+Wv8WlG749q0p7CiVW7UBAKhCM2nAuomeo9Tp+msF9lQsjlL6I49fS2xmeSYk8iTHSUe66/v8GHcCb7bcstN+XRilC/SwPoDegH3xrjMRR3Yc6p1AWSR8ETFRcwX9GVVyqTFsNiGJxZVfI0pdIe08O29eQXJQPqI5YHokuR6Fb4l2VQ==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(7416014)(376014)(10070799003)(366016)(921020)(4143699003)(10067099003)(11063799006)(56012099006)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?elZITmsxMTlTdWsrZ0t4MjVLRWczRFlHRkdoU2Nrb2tpWjVlMFdGWDhzT3dS?=
+ =?utf-8?B?S1gwRjF5eG9NTUZmQVQ1Y3d4Y1NNWFIzelhtbGV1N1pNd3h0TjVrWTNqOXU5?=
+ =?utf-8?B?QjBlMnBleVljS2tCMjlIZUZoVC93bEhyTHExZjZzbmdDcWppc3NyNExJUXNR?=
+ =?utf-8?B?VTgwRW5RMisydDNrNlBNZU5MN0JlcGJiMUI2NHV2aFdVa3lkQXZTbmhPQTFQ?=
+ =?utf-8?B?NFZDcWtmOXVZeFp0NHV1bUloQ3hsVTdUUXIvdEJxQ2pOcUVwREgwZTk4NDEw?=
+ =?utf-8?B?MGM4NlNocmJOT21XV0lSTmlvU1h1YTIySk0wS1pEK1RLZ1ZFVG9QSkhLdjdD?=
+ =?utf-8?B?OU5PSnV5WVQwVW5MN1VocWQ2aWZKMDJiZHNCbUdYMUZhQnZYK3dVSDNkclZo?=
+ =?utf-8?B?RkJYVUFYZFpnZGVXUndoNWJYeHpiR3dzcFZKMUtLOVpKcXZCT1hyVFVhTlM5?=
+ =?utf-8?B?eTgrSXVjSElxNHNobzAxRUJId21rNTIza3VQdExuenhidjF4ZWFKQTd0NStP?=
+ =?utf-8?B?RnA2dXJZM2Z5WmJ1UFpPTFRTUVQ3OUNwTlMyWUFZT3U4eWFoMlRuZUZDWkJU?=
+ =?utf-8?B?aFRpUFYra01LemdBWXRSeFpSd0F4YWVKeFdJQ0liK011Y1ZFd1prSFhac1ow?=
+ =?utf-8?B?RmNVM0c3QkdSZjR6ZGQyYm9iZlZQSXltNCtkbEFONVJ6WWhRWDRpdU42NSty?=
+ =?utf-8?B?QWt1cmtaelFBRDhsOGZTVzl3dkcyNDFWc0w0TjVLdWJnaGx1emFmbzFzVUI3?=
+ =?utf-8?B?R3ZYZUNxaGRDRUY3QUd0Y2lrRGIrbW5HM040RC85MWp3NWpTd2l0cjlyMHp3?=
+ =?utf-8?B?THRSUVM2K05zZ0d3K0Iza1BvSWlZRjZqUXVrZ0lpQVh1b0Z4aUhva1R5RU9t?=
+ =?utf-8?B?Z09IZnFSeWROTnZ1ZFlNZEIzZUN4Mm5QbTZQS1Vzcm8wbXl2bjNUQkxqYnFk?=
+ =?utf-8?B?c093Q2dRTXA4VUZjZEd1dzBUckNTeGZqaVBXbEE3Q3hpNkxVS1J1RCtUTGxG?=
+ =?utf-8?B?eUdiUGI1T3VsazlFY0c4ZTlIWHRvNlNnN2tuSkV5RFp2TS9rdG5ONUJvUk5N?=
+ =?utf-8?B?RzM4OTljYlVlQWxGdFIzMXFvTWgyd1ZObFFPSkpOYTIvMzgrVTBFQnZocVpI?=
+ =?utf-8?B?TElzTHc2eWcraGNEQ1ZsdHhLckc0Y0J4QTF6eDFKRUhJYXhBemRSYkR3VjRa?=
+ =?utf-8?B?cU0xQS9xRnpTeXIrNEVXdVEzam5yUlJIMlkycjRqbUpiOS9kYkxmNmZJd2Vu?=
+ =?utf-8?B?QWdiTGJ3cFpIaWFPNTlnV294dGo3VTU4L0RRQzlORHphTjMvbm5KOVFOQ2Fh?=
+ =?utf-8?B?dGtka0VKaUs3YTR4cUljZCt4dHQ1emMxSGlNbkx1endhREFFMC8wVHN0Rmsx?=
+ =?utf-8?B?aCtQOGtQNlIwMzFCT1NHaXJObWhUTmhjdnltSnNKdDFvVDI1bXorS2xlMnMz?=
+ =?utf-8?B?ZExxdnpOdnJpQ0ROOE04elN2L3h3NTlYa2pYdS8xME5EUTlCMktLSFFyQm9F?=
+ =?utf-8?B?VUM1VWlTYi9UTE9UVmVWemx5andKOTRIV3o4MVlUbkRuV2FuUlJUcGZLOUhW?=
+ =?utf-8?B?enY2Q3E0SzQxY0kzcGgzQUxSeWJtM0pJeUh5MHRRREx6WXB5Q2JueFFnSThG?=
+ =?utf-8?B?Z1RKeFZrampYNERINmlOWUludG82dGxYMmovK25nbXVyN241dithVThRLzJy?=
+ =?utf-8?B?NHF5eWkwUFRwU00wY3BRYVFnd09meFNvUDVzYmRRSjhESW1VYmQzOTVwUlZK?=
+ =?utf-8?B?YXEvSStuZkdUclRFMHlhUlU1Qmd4UDI0THVJNzZmOUZGZ0tIcklqTmtOb0d0?=
+ =?utf-8?B?NTl3UG5ZNkVnVWU3a09saXZCSDZhRVY3Yk9XYjdURmxVc3kzVjRNWVA0am5E?=
+ =?utf-8?B?NlZmL1ZRcTFBWng1Wm16Ump2K0dJVXgvQTlIc2V1MGQyVVBmdThIc2lZUC9s?=
+ =?utf-8?B?OUtsYnk4T0R3V3FKSzQvNXQ5dTRSeUZEWm84M21XclZZUGVrLzYyUFR5SXZE?=
+ =?utf-8?B?TWhvUGJhVmZjRGg2cU5BMm5xZTlRS2JpNXd2RklzYzUrRk5lZmtRdlBPTkZY?=
+ =?utf-8?B?WmF3dVJWdjFxdmlDQWUwTTBuUEFvMHQwS1hscU1QNWJsd3FCL2pFb0U3V2Fj?=
+ =?utf-8?B?WVZ0OTM4VEJPOHU1QVVlL0Y2Y3B2N0NiWStUVm5UTVpwZ3ovUjF4TjdZMEdN?=
+ =?utf-8?B?TjBMTVllam5CRWFaQ0JiWDdET3VjN1d6NEM5ak41bjJDaHAvMlQ4aXZCZU5k?=
+ =?utf-8?B?SXZOdkV3MGtENGdWc1pPb2U1dWFpL1pVZk9ya3l1ZFRWYkFUUGYycWcvWUMr?=
+ =?utf-8?B?SFpuQWVQTEgrcmRhVnJyNE9NSjJUNisxM1g1WWhONUxDTnllZEFQUUZzNXYy?=
+ =?utf-8?Q?qxtY6/XS1JE/90oiKZQWdNMIVBaIQMooJkl5ISQAuvsXy?=
+X-MS-Exchange-AntiSpam-MessageData-1: 7x90EcBWwRMhIw==
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f010b08-d67a-4577-a18d-08df1dfb4f58
+X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2026 07:28:52.0395
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EnBivfYtFavwTZvq6/k0h29ponIRg8NfCNt342YJoUbeAHtvqdXynbR5tfZo6g+Xn0IiuD5iaZGvScZH0tSmzA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7706
 
-The SMMU may record events of the preserved devices across the kexec,
-which the incoming kernel loses by resetting the EVTQ.
+On Saturday, September 26, 2026 12:20=E2=80=AFAM Marek Szyprowski wrote:
+> On 15.09.2026 04:14, Mikko Perttunen wrote:
+> > Depending on the probe ordering, TegraDRM does not currently probe on=20
+> > kernels with CONFIG_ARM_DMA_USE_IOMMU enabled, such as with=20
+> > multi_v7_defconfig. The Tegra SMMU puts several display and 2D/3D=20
+> > clients into one IOMMU group, and the legacy 32-bit ARM DMA API path=20
+> > creates one UNMANAGED domain per device and attaches it with=20
+> > iommu_attach_device(). That only works for one device per group, so=20
+> > every client after the first fails to attach,=20
+> > iommu_device_use_default_domain() rejects the group with -EBUSY, and th=
+e=20
+> > driver goes down with it. tegra_defconfig is currently working by virtu=
+e=20
+> > of not enabling CONFIG_ARM_DMA_USE_IOMMU.
+> >
+> > Robin suggested [1] that instead of teaching the legacy path about=20
+> > groups, we should explore modernizing the 32-bit ARM DMA code a bit by=
+=20
+> > making it use domain cookies and have the core code own the domains, as=
+=20
+> > is the case on other architectures. Still, ARM's own DMA code is kept t=
+o=20
+> > support existing drivers and APIs that expect it, and because dma-iommu=
+=20
+> > is considered too big and unnecessary for 32-bit ARM.
+>=20
+>=20
+> I agree that such little modernization is the right step to unify a bit
+> ARM 32bit with modern archs and get rid of some workaround in the drivers=
+.
 
-Preserve the EVTQ memory and leave the EVTQ enabled on shutdown. Only
-store its preservation token in the ABI, as the incoming kernel reads the
-base, size, PROD and CONS back from the EVTQ registers. Retain EVTQEN
-across the reset and wake up the EVTQ thread to handle pending events.
+Yes -- certainly TegraDRM's memory management paths have grown to be=20
+rather cumbersome.
 
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
----
- .../arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c  | 108 +++++++++++++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  39 +++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  10 ++
- include/linux/kho/abi/iommu.h                 |   2 +
- 4 files changed, 143 insertions(+), 16 deletions(-)
+>=20
+> It was me who raised the concern about the drivers depending on the first=
+-fit
+> allocation algorithm used in the32-bit ARM DMA code. This is an issue for=
+ some
+> legacy Samsung Exynos drivers. I not aware of any other driver used on AR=
+M 32bit
+> SoCs that depends on this behavior.
+>=20
+> If one is still interested in switching ARM 32bit to generic IOMMU-DMA co=
+de I
+> can prepare a workaround for those Exynos drivers. I still have it on my =
+todo
+> list, but in meantime there was no interest in updating ARM 32bit DMA cod=
+e.
+>=20
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c
-index c0772bcb8d3a..b7cacf48cf8b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c
-@@ -403,11 +403,48 @@ static void arm_smmu_unpreserve_strtab_linear(struct arm_smmu_device *smmu,
- 					    iommu_ser->smmuv3.l1_strtab_lu_state);
- }
- 
-+static size_t arm_smmu_evtq_size(struct arm_smmu_device *smmu)
-+{
-+	return ((1 << smmu->evtq.q.llq.max_n_shift) * EVTQ_ENT_DWORDS) << 3;
-+}
-+
-+/* The EVTQ stays enabled across the kexec */
-+static int arm_smmu_preserve_evtq(struct arm_smmu_device *smmu,
-+				  struct iommu_hw_ser *iommu_ser)
-+{
-+	struct arm_smmu_queue *q = &smmu->evtq.q;
-+
-+	iommu_ser->smmuv3.evtq_lu_state = 0;
-+	if (!(smmu->features & ARM_SMMU_FEAT_EVTQ))
-+		return 0;
-+
-+	return dmam_preserve_coherent_allocation(smmu->dev, q->base,
-+						 arm_smmu_evtq_size(smmu),
-+						 q->base_dma,
-+						 &iommu_ser->smmuv3.evtq_lu_state);
-+}
-+
-+static void arm_smmu_unpreserve_evtq(struct arm_smmu_device *smmu,
-+				     struct iommu_hw_ser *iommu_ser)
-+{
-+	struct arm_smmu_queue *q = &smmu->evtq.q;
-+
-+	if (!iommu_ser->smmuv3.evtq_lu_state)
-+		return;
-+
-+	dmam_unpreserve_coherent_allocation(smmu->dev, q->base,
-+					    arm_smmu_evtq_size(smmu),
-+					    q->base_dma,
-+					    iommu_ser->smmuv3.evtq_lu_state);
-+	iommu_ser->smmuv3.evtq_lu_state = 0;
-+}
-+
- int arm_smmu_preserve(struct iommu_device *iommu,
- 		      struct iommu_hw_ser *iommu_ser)
- {
- 	struct arm_smmu_device *smmu =
- 		container_of(iommu, struct arm_smmu_device, iommu);
-+	int ret;
- 
- 	/* Basic info */
- 	iommu_ser->smmuv3.phys_addr = smmu->base_phys;
-@@ -416,11 +453,20 @@ int arm_smmu_preserve(struct iommu_device *iommu,
- 	iommu_ser->smmuv3.strtab_base_cfg =
- 		readl_relaxed(smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
- 
-+	ret = arm_smmu_preserve_evtq(smmu, iommu_ser);
-+	if (ret) {
-+		dev_err(smmu->dev, "EVTQ preservation failed\n");
-+		return ret;
-+	}
-+
- 	/* We always implements 2-level when supported by HW */
- 	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
--		return arm_smmu_preserve_strtab_2lvl(smmu, iommu_ser);
-+		ret = arm_smmu_preserve_strtab_2lvl(smmu, iommu_ser);
- 	else
--		return arm_smmu_preserve_strtab_linear(smmu, iommu_ser);
-+		ret = arm_smmu_preserve_strtab_linear(smmu, iommu_ser);
-+	if (ret)
-+		arm_smmu_unpreserve_evtq(smmu, iommu_ser);
-+	return ret;
- }
- 
- void arm_smmu_unpreserve(struct iommu_device *iommu,
-@@ -433,6 +479,7 @@ void arm_smmu_unpreserve(struct iommu_device *iommu,
- 		arm_smmu_unpreserve_strtab_2lvl(smmu, iommu_ser);
- 	else
- 		arm_smmu_unpreserve_strtab_linear(smmu, iommu_ser);
-+	arm_smmu_unpreserve_evtq(smmu, iommu_ser);
- }
- 
- static void arm_smmu_liveupdate_clear_l1_std(struct arm_smmu_device *smmu,
-@@ -545,12 +592,12 @@ int arm_smmu_liveupdate_shutdown(struct arm_smmu_device *smmu)
- 	 * TODO: Quiesce the CMDQV VCMDQs assigned to guests.
- 	 */
- 
--	/* Disable the queues, leaving SMMUEN set for the preserved masters */
-+	/* The incoming kernel resets the CMDQ and PRIQ and adopts the EVTQ */
- 	cr0 = readl_relaxed(smmu->base + ARM_SMMU_CR0);
--	cr0 &= ~(CR0_CMDQEN | CR0_EVTQEN | CR0_PRIQEN);
-+	cr0 &= ~(CR0_CMDQEN | CR0_PRIQEN);
- 	ret = arm_smmu_write_reg_sync(smmu, cr0, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
- 	if (ret)
--		dev_err(smmu->dev, "failed to disable queues\n");
-+		dev_err(smmu->dev, "failed to disable CMDQ/PRIQ\n");
- 	return ret;
- }
- 
-@@ -696,6 +743,57 @@ int arm_smmu_liveupdate_restore_strtab(struct arm_smmu_device *smmu)
- 	return 0;
- }
- 
-+/* Adopt the live EVTQ. Returns -ENOENT if it wasn't preserved */
-+int arm_smmu_liveupdate_restore_evtq(struct arm_smmu_device *smmu)
-+{
-+	u64 base = readq_relaxed(smmu->base + ARM_SMMU_EVTQ_BASE);
-+	u32 log2size = FIELD_GET(Q_BASE_LOG2SIZE, base);
-+	struct arm_smmu_queue *q = &smmu->evtq.q;
-+	struct iommu_hw_ser *iommu_ser;
-+
-+	iommu_ser = iommu_get_preserved_data(smmu->base_phys, IOMMU_ARM_SMMUV3);
-+	if (!iommu_ser || !iommu_ser->smmuv3.evtq_lu_state)
-+		return -ENOENT;
-+
-+	if (log2size > q->llq.max_n_shift) {
-+		dev_err(smmu->dev, "preserved EVTQ is larger than supported\n");
-+		return -EINVAL;
-+	}
-+	q->llq.max_n_shift = log2size;
-+
-+	q->base = dmam_restore_coherent_allocation(smmu->dev,
-+			arm_smmu_evtq_size(smmu), &q->base_dma, GFP_KERNEL,
-+			iommu_ser->smmuv3.evtq_lu_state);
-+	if (!q->base)
-+		return -ENOMEM;
-+
-+	if (q->base_dma != (base & Q_BASE_ADDR_MASK)) {
-+		dev_err(smmu->dev, "EVTQ_BASE doesn't match the preserved EVTQ\n");
-+		return -EINVAL;
-+	}
-+
-+	q->prod_reg = smmu->page1 + ARM_SMMU_EVTQ_PROD;
-+	q->cons_reg = smmu->page1 + ARM_SMMU_EVTQ_CONS;
-+	q->ent_dwords = EVTQ_ENT_DWORDS;
-+	q->q_base = base;
-+
-+	q->llq.prod = readl_relaxed(q->prod_reg);
-+	q->llq.cons = readl_relaxed(q->cons_reg);
-+
-+	dev_info(smmu->dev, "restored preserved evtq (%u entries)\n",
-+		 1 << q->llq.max_n_shift);
-+	return 0;
-+}
-+
-+/* A failed EVTQ restore fails the probe, so a preserved EVTQ implies live */
-+bool arm_smmu_liveupdate_evtq_is_live(struct arm_smmu_device *smmu)
-+{
-+	struct iommu_hw_ser *iommu_ser;
-+
-+	iommu_ser = iommu_get_preserved_data(smmu->base_phys, IOMMU_ARM_SMMUV3);
-+	return iommu_ser && iommu_ser->smmuv3.evtq_lu_state;
-+}
-+
- int arm_smmu_liveupdate_restore_cd_tables(struct arm_smmu_master *master)
- {
- 	struct arm_smmu_device *smmu = master->smmu;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b371ea6b6009..5f9f8bfac668 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4683,10 +4683,13 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
- 
- 	/* evtq */
- 	if (smmu->features & ARM_SMMU_FEAT_EVTQ) {
--		ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, smmu->page1,
--					      ARM_SMMU_EVTQ_PROD,
--					      ARM_SMMU_EVTQ_CONS,
--					      EVTQ_ENT_DWORDS, "evtq");
-+		ret = arm_smmu_liveupdate_restore_evtq(smmu);
-+		if (ret == -ENOENT)
-+			ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q,
-+						      smmu->page1,
-+						      ARM_SMMU_EVTQ_PROD,
-+						      ARM_SMMU_EVTQ_CONS,
-+						      EVTQ_ENT_DWORDS, "evtq");
- 		if (ret)
- 			return ret;
- 	}
-@@ -5080,9 +5083,15 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 	 * Same for a Live Update restore.
- 	 */
- 	if (arm_smmu_strtab_is_live(smmu)) {
-+		u32 qens = CR0_CMDQEN | CR0_EVTQEN | CR0_PRIQEN;
-+
- 		dev_info(smmu->dev, "%s: retaining SMMUEN for in-flight DMA\n",
- 			 is_kdump_kernel() ? "kdump" : "live update");
--		enables = reg & ~(CR0_CMDQEN | CR0_EVTQEN | CR0_PRIQEN);
-+
-+		/* An adopted EVTQ keeps running */
-+		if (arm_smmu_liveupdate_evtq_is_live(smmu))
-+			qens &= ~CR0_EVTQEN;
-+		enables = reg & ~qens;
- 		goto reset_queues;
- 	}
- 
-@@ -5173,12 +5182,15 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 
- 	/* Event queue */
- 	if (smmu->features & ARM_SMMU_FEAT_EVTQ) {
--		writeq_relaxed(smmu->evtq.q.q_base,
--			       smmu->base + ARM_SMMU_EVTQ_BASE);
--		writel_relaxed(smmu->evtq.q.llq.prod,
--			       smmu->page1 + ARM_SMMU_EVTQ_PROD);
--		writel_relaxed(smmu->evtq.q.llq.cons,
--			       smmu->page1 + ARM_SMMU_EVTQ_CONS);
-+		/* An adopted EVTQ resumes from its live BASE/PROD/CONS */
-+		if (!arm_smmu_liveupdate_evtq_is_live(smmu)) {
-+			writeq_relaxed(smmu->evtq.q.q_base,
-+				       smmu->base + ARM_SMMU_EVTQ_BASE);
-+			writel_relaxed(smmu->evtq.q.llq.prod,
-+				       smmu->page1 + ARM_SMMU_EVTQ_PROD);
-+			writel_relaxed(smmu->evtq.q.llq.cons,
-+				       smmu->page1 + ARM_SMMU_EVTQ_CONS);
-+		}
- 
- 		enables |= CR0_EVTQEN;
- 		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-@@ -5228,6 +5240,11 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 		return ret;
- 	}
- 
-+	/* Handle the events recorded across the Live Update */
-+	if (arm_smmu_liveupdate_evtq_is_live(smmu) &&
-+	    (smmu->combined_irq || smmu->evtq.q.irq))
-+		irq_wake_thread(smmu->combined_irq ?: smmu->evtq.q.irq, smmu);
-+
- 	/* Enable the SMMU interface */
- 	enables |= CR0_SMMUEN;
- 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 1b33f713f3b7..3a67ba685ef5 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -1214,6 +1214,8 @@ void arm_smmu_unpreserve(struct iommu_device *iommu,
- int arm_smmu_liveupdate_shutdown(struct arm_smmu_device *smmu);
- int arm_smmu_liveupdate_restore_strtab(struct arm_smmu_device *smmu);
- int arm_smmu_liveupdate_restore_cd_tables(struct arm_smmu_master *master);
-+int arm_smmu_liveupdate_restore_evtq(struct arm_smmu_device *smmu);
-+bool arm_smmu_liveupdate_evtq_is_live(struct arm_smmu_device *smmu);
- int arm_smmu_liveupdate_attach_restored(struct arm_smmu_master *master,
- 					struct arm_smmu_domain *smmu_domain);
- #else
-@@ -1229,6 +1231,14 @@ static inline int arm_smmu_liveupdate_restore_cd_tables(struct arm_smmu_master *
- {
- 	return 0;
- }
-+static inline int arm_smmu_liveupdate_restore_evtq(struct arm_smmu_device *smmu)
-+{
-+	return -ENOENT;
-+}
-+static inline bool arm_smmu_liveupdate_evtq_is_live(struct arm_smmu_device *smmu)
-+{
-+	return false;
-+}
- static inline int
- arm_smmu_liveupdate_attach_restored(struct arm_smmu_master *master,
- 				    struct arm_smmu_domain *smmu_domain)
-diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
-index 397fdb0449a6..4e8cc32c3136 100644
---- a/include/linux/kho/abi/iommu.h
-+++ b/include/linux/kho/abi/iommu.h
-@@ -208,12 +208,14 @@ struct iommu_intel_ser {
-  * @l2_strtab_lu_states_phys: Physical pointer to an array of u64 LU state tokens
-  *                            indexed by L1 index, 0 for L2 tables that aren't
-  *                            preserved (0 if linear)
-+ * @evtq_lu_state: Live update state token for the Event queue (0 if not preserved)
-  */
- struct iommu_smmuv3_hw_ser {
- 	u64 phys_addr;
- 	u64 strtab_base_cfg;
- 	u64 l1_strtab_lu_state;
- 	u64 l2_strtab_lu_states_phys;
-+	u64 evtq_lu_state;
- } __packed;
- 
- /**
--- 
-2.56.0.rc1.315.gc6ed9934b7-goog
+While I don't see any immediate need to touch the allocation algorithm,=20
+being able to get rid of some or all of the arm_iommu_* functions would=20
+be nice. At least for create/attach, there aren't very many callers.=20
+Most drivers just get rid of the ARM mapping.
+
+Thank you!
+Mikko
+
+>=20
+> > The series is in four parts:
+> >
+> > - Patches 1-2 are preparation in the IOMMU core:
+> >   1. Add iommu_teardown_dma_ops, counterpart to iommu_setup_dma_ops.
+> >   2. Add cookie type for ARM's DMA domains.
+> > - Patches 3-6 implement the DMA API side on 32-bit ARM:
+> >   3. Split up domain and address space management code in arch/arm/.
+> >   4. Implement parallel dma_ops / cookie APIs on ARM side.
+> >   5. Avoid domain allocation when IOMMU core does it.
+> >   6. Support foreign-allocated sg_tables.
+> > - Patch 7 enables 32-bit ARM IOMMU drivers to provide a DMA default=20
+> >   domain.
+> > - Patches 8-11 convert Tegra:
+> >   8. Allows deferring translation enable until driver handshake for
+> >      selected devices.
+> >   9-10. Removes code detaching ARM UNMANAGED DMA domains in
+> >         Host1x/TegraDRM.
+> >   11. Enables DMA default domain for selected Tegra devices.
+> >
+> > None of this should have any functional effect on any device other than=
+=20
+> > the Tegra devices enabled in patches 8-11. Other IOMMU drivers can opt=
+=20
+> > in later. The new DMA default domains are enabled only when the IOMMU=20
+> > driver explicitly specifies a DMA domain type, just returning 0 for the=
+=20
+> > default is not enough (unlike on arm64), keeping the current behavior.
+> >
+> > Patches 8-11 are provided for demonstration but we can deal with them=20
+> > separately if the rest of the series is accepted.
+> >
+> > Patches 1,2,3 are applicable independently.
+> > Patches 4,5 depend on the previous patches.
+> > Patch 6 can be applied independently but is only required once
+> >   the whole series lands (by TegraDRM).
+> > Patch 7 depends on patch 4.
+> >
+> > Patches 1-7 only touch drivers/iommu/ and arch/arm/mm/ and associated=20
+> > headers.
+> >
+> > Best regards,
+> > Mikko
+> >
+> > [1] https://lore.kernel.org/linux-tegra/910d1492-ad3b-4201-93c6-208be1d=
+cde7d@arm.com/
+> >
+> > ---
+> > Mikko Perttunen (11):
+> >       iommu: Add iommu_teardown_dma_ops
+> >       iommu: Add cookie type for ARM_DMA_USE_IOMMU
+> >       ARM: dma-mapping: Split mapping allocation from domain allocation
+> >       ARM: dma-mapping: Implement and expose DMA setup functions
+> >       ARM: dma-mapping: Bypass the legacy path for core-owned DMA API d=
+omains
+> >       ARM: dma-mapping: Handle foreign buffers in arm_iommu_get_sgtable
+> >       iommu: Let 32-bit ARM drivers opt into a DMA API default domain
+> >       iommu/tegra-smmu: Defer display client translation to driver hand=
+over
+> >       gpu: host1x: Drop release of legacy 32-bit ARM DMA domain
+> >       drm/tegra: Drop release of legacy 32-bit ARM DMA domain
+> >       iommu/tegra-smmu: Use a DMA API default domain per swgroup
+> >
+> >  arch/arm/include/asm/dma-iommu.h |  17 ++++
+> >  arch/arm/mm/dma-mapping.c        | 209 +++++++++++++++++++++++++++++++=
++-------
+> >  drivers/gpu/drm/tegra/dc.c       |   8 ++
+> >  drivers/gpu/drm/tegra/drm.c      |  15 ---
+> >  drivers/gpu/host1x/dev.c         |  15 ---
+> >  drivers/iommu/Kconfig            |   1 +
+> >  drivers/iommu/dma-iommu.c        |   5 +
+> >  drivers/iommu/dma-iommu.h        |  52 +++++++---
+> >  drivers/iommu/iommu.c            |  24 ++---
+> >  drivers/iommu/tegra-smmu.c       | 109 +++++++++++++++++++-
+> >  drivers/memory/tegra/tegra114.c  |  15 ++-
+> >  drivers/memory/tegra/tegra124.c  |  12 ++-
+> >  drivers/memory/tegra/tegra210.c  |   6 +-
+> >  drivers/memory/tegra/tegra30.c   |  18 ++--
+> >  include/linux/iommu.h            |   3 +
+> >  include/soc/tegra/mc.h           |  20 ++++
+> >  16 files changed, 410 insertions(+), 119 deletions(-)
+> > ---
+> > base-commit: f5098b6bae761e346ebcd9da7f95622c04733cff
+> > change-id: 20260728-b4-arm32-iommu-dma-cookie-3170e07f9125
+> >
+> >
+> Best regards
+> --=20
+> Marek Szyprowski, PhD
+> Samsung R&D Institute Poland
+>=20
+>=20
+
+
+
 
