@@ -1,103 +1,82 @@
-Received: from mail-wr2-f8.google.com (mail-wr2-f8.google.com [74.125.225.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from flow-a5-smtp.messagingengine.com (flow-a5-smtp.messagingengine.com [103.168.172.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 778643D3D18
-	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 14:31:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EBA0556B93
+	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 15:18:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.140
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790692269; cv=none; b=X69XI0Tq3fvcSKBdllv9eZ8X71IxeyjYUH5yQmQPQcBEQbUDZmHFzfq5fxWyVy2nO7CzJ4mRm7kzbCpxRI0oVqRLbdA96S55lAE2irlu/wjmiIvAPn92L6VNwudf6cZOJ6ATNzOauAhYKA1lpIFAtLW4ZyL4PK4kEX0F18TeGyU=
+	t=1790695142; cv=none; b=Vp2gTXVodg2qg6rZRRf47CsjS91JayhsikqcmMM3UFlLYZveh4wzGYOf8tOyzhyTXEhmnmurLizE3D53onketGWuNLlw1L2JYhjMCk52G4wcHAYvzlC1FNh4j8V6z112s/Dqr0Q28aIaCFYlTVKBknWxGiKkA7SML7ufuJQ7syU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790692269; c=relaxed/simple;
-	bh=7ldb8HOmjgXtNUqB8nPLQ9i0TZ7S1XWD7Hhe/UMCeKo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=laMR4Wx/WUDi6qQEPtY49Ow/bNI0RPB3PcFpHb1NmjJQ5+MrYhTar/1cjIHqEYC6RxR2FxigwK38EP0wkQhH9qAY5Oqdn52ugtkfq80osvAuaKLjOpxXbvbhxy0LYbUiZCzjU394Kld3ZyT9b4uRmCYAcfCJLNBVAAaPZM2gZus=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S5KKyuWG; arc=none smtp.client-ip=74.125.225.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790695142; c=relaxed/simple;
+	bh=zKMcXrgNjt+/vwNaSVtqeRlh5pMoIISoymHB9jKUNz0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SzQSW3C5QgkNBAJOU+qnQPAxRigndr9Lq+9Q8vFUkFC0eTGeBpkDffYuii4ytm3jPhWV/UChRdUuwLEmxfikS/7GTQC1qRwXF5XjKe7L6USdVLNQ+6Qfmawssb1C8Tz8EO0R/ZENOEm4yJIzu0368iSShIxX0Vd1dLnLiGi/2iM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=novasilicon.dev; spf=pass smtp.mailfrom=novasilicon.dev; dkim=pass (2048-bit key) header.d=novasilicon.dev header.i=@novasilicon.dev header.b=FIjBGX3+; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=vkzlu8Rl; arc=none smtp.client-ip=103.168.172.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=novasilicon.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=novasilicon.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S5KKyuWG"
-Received: by mail-wr2-f8.google.com with SMTP id ffacd0b85a97d-4887dc16848so1038898f8f.0
-        for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 07:31:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790692263; x=1791297063; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=fQTnQKTsS6Avi4kBaKDVGL1M647FRs0iTSqK5qxgUsQ=;
-        b=S5KKyuWGl2W3Qmqq+Mu2DMnIpWm19xx4bCaNMUDdaoaxez4pcZcqId5msvUh3W+awc
-         +9vS/M0wRG6IZ/GrHBv6L8Rl72wvK55KZu5KRPQ7G8EtYDesvxfP1ZLKuTJ6+wF/Ed5I
-         tkABU/n/v1pScuoAb039rjhCTKO0lSduvyWPYoWkYs9tkpT7Jo3k+rvi58dmPXgFVlV/
-         ZBa3F/S4RvKanKT91R/qeZArWT3z3Hub+dOTOz/CXA02aSgP8n2wEu9EIKPI1sBiZSQl
-         M0OvFZ5yTCxtrd6inBDwLFAqTATEi0LsO/7oQ6i7a7I1G3S7hmpgpbo0cuoZdOPQyZ1s
-         pYTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790692263; x=1791297063;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=fQTnQKTsS6Avi4kBaKDVGL1M647FRs0iTSqK5qxgUsQ=;
-        b=j3MpsS+9CY8xL2YKY5NpqEbpcGlKuhMsZ/HgWOp7YhOF3/0aTmEkCcEyXHIFNdJCp3
-         ONRqGYjgY73a6g2HEZFrILKTxOOL+5Qy2LxXHuEZrKZEPC1aBDeNCbPN6d3E8/PgnLcV
-         aEu1rk7nkOJAxVYCyvrTW6f7N1Pc0C1OeNfXCUXMcMtmzeHcpX8Uk7+mAJaOQV77HPof
-         GxtJ+GdzZWsXUNo/25CkTbJGZ7nlGKsLVztYrl+goNNoojDx1vW5Ag8LzKgjl7HXzOJY
-         9rN+8QwTcIp3nK5lAT/trVdxnebm8RuiW9MdL0S6sTYfxFibWsvoVBieU+bsfyhZrknj
-         teUg==
-X-Forwarded-Encrypted: i=1; AKwUvBzKF8b8VaKBWQDQI/6QC3ALe9VBL8FlJKus04sAmOYWHuBPgXPSD7rwVnEmOmodcYrAwkRGPg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKeO9SQpRfQ2S9ER94Q7RtU+7qtLcxBaHgBZ+JawncI5d52R57T
-	RklWiaVh1FBrA9WHskPcMPm4Ya4VhhnSFmHOd/TKHqhORHpM5yY40FMV
-X-Gm-Gg: AYBFou2W/AFZspnQZ7DzaPrbyI9z4u7hOjfnJPzxrukQcwSGDua/id0NVu11+n1w854
-	i/Nn1xgVuhY4hlWThMHN603Sf9y/0xlF9CB22F49RtjxoQ2rJMLeNtYZ++tSltlBPJlznfX+M7V
-	UzNhdPS/z6ekxGYZ+0nSGpa3RajSolbb+Fcuymc3hD7EAajRnIBOzaioC2yNyRO04sZU1Y59f7i
-	wnqRW+6b0QdZnYYLpcputX/As+H/V/35W83gN5dSdP2cFkyaw1dUtbyntWSfGAv05FAQ2E6DXbb
-	2Njy9OoRV4eQsKpdr1QOUt90uA7NfkZfeANkFfy8PL/DDk8pmQ1lNia7l9ITYkMQTB60SxYJKSo
-	TWKI8LeDMklGl5Lb73iw3uLAWNEUMWzu4r9T4jBWvOZ3HlZYcXQHT/fjLjrHLKyecVqilJxAxWg
-	QkCEjuTe+6/bitohGKlVj2fisn9yrYD3tQKc34j+tt0c/sMSB++8EnpgBGy+ShrciXepKK1aoEM
-	yRp6Zw83t+IOWFw
-X-Received: by 2002:a5d:64cc:0:b0:487:212:a412 with SMTP id ffacd0b85a97d-4887165f6fdmr32380213f8f.9.1790692262433;
-        Tue, 29 Sep 2026 07:31:02 -0700 (PDT)
-Received: from localhost.localdomain ([78.40.184.2])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48af5030037sm5196243f8f.8.2026.09.29.07.30.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Sep 2026 07:31:01 -0700 (PDT)
-From: Roman Demidov <roman.demidov.nn@gmail.com>
-To: stable@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Roman Demidov <roman.demidov.nn@gmail.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	lvc-project@linuxtesting.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Andy Lutomirski <luto@kernel.org>,
-	Borislav Betkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@intel.com>,
-	David Hildenbrand <david@redhat.com>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jann Horn <jannh@google.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Liam Howlett <liam.howlett@oracle.com>,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>,
-	Michal Hocko <mhocko@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Thomas Gleinxer <tglx@linutronix.de>,
-	"Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-	Vlastimil Babka <vbabka@suse.cz>,
-	Yi Lai <yi1.lai@intel.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Rahul Sharma <black.hawk@163.com>
-Subject: [PATCH 5.10] iommu: disable SVA when CONFIG_X86 is set
-Date: Tue, 29 Sep 2026 17:30:34 +0300
-Message-ID: <20260929143036.82392-1-roman.demidov.nn@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=novasilicon.dev header.i=@novasilicon.dev header.b="FIjBGX3+";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="vkzlu8Rl"
+Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
+	by mailflow.phl.internal (Postfix) with ESMTP id B1A58138004C;
+	Tue, 29 Sep 2026 11:18:45 -0400 (EDT)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-03.internal (MEProxy); Tue, 29 Sep 2026 11:18:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=novasilicon.dev;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to; s=fm1; t=1790695125; x=1790698725; bh=QVJg3PHXJO
+	vnNC+I077H+SQLnE6FALr+r0kV8K8/IJ0=; b=FIjBGX3+Y+8Fn/KqFvs9mMkzFJ
+	X11aTchD4ot35VZh77KNAmAxhm7N8YoAk8/OB9/qEJ2pLWbQN60y3IrKMd5RUny5
+	s95ItACAqo4VA/LlO4sqzw9H/hz610Ou7uS4KLHZTPZ01CjajVjyEDsKqpKKWLD/
+	miOzP9Jo3ti5+fboBcxpF6Hsuo36oULv3B96FyTjshR/gdzV/M/nxmtdBNb1mOiV
+	MD143Qpkw9DuH7Z8WTQIC8X36jFG6ZMwqP2/VtD96WRq77kqT0J3EKBS3XC6z0Wk
+	oSQOhmfyOffsl12sAzFYEOWcs69PVjAMWjUtHoHNJwtFBog0SYVc175J8fkA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+	1790695125; x=1790698725; bh=QVJg3PHXJOvnNC+I077H+SQLnE6FALr+r0k
+	V8K8/IJ0=; b=vkzlu8RleFIqx+EmWpK9WoMQ3DBDLf0JM31sZ2Em8VPHexDKsI8
+	0whhQZ1keMblqaUVFu8313HyCI9si4JHN599CKRwGxC8ZdeLVdcbr01wvb12wFQc
+	9HTtQObFN4RfR7dLuEOtzPnkfFVVmY70V2zD7B2geWnRVrL1JroWHAPX3fhdw5bf
+	MUizzo+rEPg4S09fZrDsBB50+oAdQHNkXVP49chxKKThEloi6wNWgayuJMRZnDji
+	pMq0YAwFrNsEfEuuvZaDG7YNhUcrNa9hiWianClf22ku2HRq4FsNNr50/KksPHED
+	B6nGnXbgKy8gEjZ6cwbuITBOAFBiURV6Ilg==
+X-ME-Sender: <xms:1Na7auI7c-JfUWqZeAhB_faYfS455G0KGdTHB5KcdhZt9BgyRDNCYA>
+    <xme:1Na7am355LE_Kg09nInd4IraKvfBypGSfbfengKzBQfutFIkvG0pBjE3SMgh0loTs
+    e7Gu_4EIHOmqrejaXTQusdXyk0YiWir9MQNU3VygjOUZgUS_yk8Fky7>
+X-ME-Received: <xmr:1Na7as71xjSqf_hVmu9IKz2C7gldJ8cMhCMqFoY7LKxJruwq4Ti8vM5PkGuJUcpYZJWquU0rLCcw6dXXMZ6q7YtqOylKwhpnG7wBVf5OelZY7vsQtjZvW7VZ0PeNPJiS6KgKuEkEZSS1>
+X-ME-Proxy-Cause: dmFkZTFiT1SLmHPRMxxW2ZmVjh19tJuqnLfyUftrCp7hXb1Yx+HotkMRlqzhf2V2Dodzos
+    cI1gRxHayodV/Y8DF3LIB2IiwK5gjvAKXW6iC5N9HC4KmKjWLDw5xf2GrAXInF0MJwoRvh
+    hlU5/IMehK3L3ITPiey+fqpcbGUwpVwi7ySEeI4UM6p3TbVnwPBkxpVtXXSAmxwiVgiVy5
+    EdwiKcNuYaN3578JEInIhU8V93qG8k+pZTqxPUDfE/4kb8chsrUP8nPDsQTaUcaT3vMcNj
+    6yUdqPrO3Sb6WvkbgWivmrzR32RdhS87aSYYdX2ucSiuRCwnYb8+WVpZgvML4IxxenoOqr
+    7DEA3GH0UaK126AOeaUS2TNRzatSm6QywWY6PKUEGpTBnv7tMiIgT4oZby1dG/j4F74yR7
+    mfe7OWXcnbXDXk+Zn6wwPs/5qPTd3WL3SZ8/tGjN57jy989vJ2ZjjlPgzv5W/qR0cFTyS+
+    ffEX44fOuVevo1GO9XR0ssq3fpUWemuxyj4YZOAZsljBKDGUHS5bMxYrDRM2L4sSsifZ8K
+    COQyj8G+wBJ0Guky4TMjx0m6knHv1KrbopszxuR5+sR7JAPVLksU/uOdTGKirbHdwbnbbs
+    L/SDku2y78d9mZoYdeGUI58arkK6FaPrvuM41Jab0rbcR++p7Y2o9XEx41iQ
+X-ME-Proxy: <xmx:1Na7an8cw8nUzvfd-KPQU2ZR-5mlbb-xa25IDxb1jbvEh2bHb_tOEw>
+    <xmx:1Na7arWXmw7_2QmzHkUj4-j9YhpOEDnrP8SihPGyjoFeP7cQICQb5g>
+    <xmx:1Na7aiox0WGPPshy0-WkZwZjjP4yNJYJhLbwW4h0ixcQcstbl7aHRw>
+    <xmx:1Na7atlogupKkp5p6fYZYJSZP2fNAB7MioksiPLWTk6i69F4d-Vv8w>
+    <xmx:1da7armRoUExUyYFl1OLCsGm-qFaY8LJDw2-gmB36XJja2ZmJT0oeL8T>
+Feedback-ID: i6dae4aba:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 29 Sep 2026 11:18:43 -0400 (EDT)
+From: Johnathan Chan <johnathanc@novasilicon.dev>
+To: Lu Baolu <baolu.lu@linux.intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	iommu@lists.linux.dev
+Subject: [PATCH] iommu/vt-d: Disable superpages on Haswell
+Date: Tue, 29 Sep 2026 11:18:32 -0400
+Message-ID: <20260929151832.80069-1-johnathanc@novasilicon.dev>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -106,116 +85,106 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+The non-graphics DMAR unit of Haswell client processors reports 2MiB and
+1GiB second-level superpage support (SLLPS = 0x3), but DMA that goes
+through a 2MiB superpage entry faults:
 
-commit 72f98ef9a4be30d2a60136dd6faee376f780d06c upstream.
+DMAR: [DMA Read NO_PASID] Request device [00:1f.2] fault addr 0xd1400000
+[fault reason 0x0c] non-zero reserved fields in PTE
+ata5.00: exception Emask 0x70 SAct 0x100000 SErr 0x440900 action 0x6 frozen
+ata5.00: irq_stat 0x28000008, host bus error, interface fatal error
+ata5.00: failed command: WRITE FPDMA QUEUED
+ata5.00: cmd 61/00:a0:00:88:c5/20:00:39:00:00/40 tag 20 ncq dma 4194304 ou
 
-Patch series "Fix stale IOTLB entries for kernel address space", v7.
+The fault addresses are always 2MiB aligned. The leaf entries hold only
+R, W and PS with a 2MiB aligned output address, which is valid per the
+VT-d specification.
 
-This proposes a fix for a security vulnerability related to IOMMU Shared
-Virtual Addressing (SVA).  In an SVA context, an IOMMU can cache kernel
-page table entries.  When a kernel page table page is freed and
-reallocated for another purpose, the IOMMU might still hold stale,
-incorrect entries.  This can be exploited to cause a use-after-free or
-write-after-free condition, potentially leading to privilege escalation or
-data corruption.
+Until v6.13 this was hidden. The superpage level of a DMA domain was the
+smallest common denominator across all active DMAR units, and the
+graphics DMAR unit on these platforms reports SLLPS = 0, so superpages
+were never used. An older report shows that the fault appears as soon as
+the graphics unit is taken out of the picture with intel_iommu=igfx_off.
 
-This solution introduces a deferred freeing mechanism for kernel page
-table pages, which provides a safe window to notify the IOMMU to
-invalidate its caches before the page is reused.
+Since commit 7c204426b818 ("iommu/vt-d: Add domain_alloc_paging
+support"), the superpage capability of a paging domain comes only from
+the DMAR unit that serves the device, so on these systems every device
+behind the non-graphics unit gets superpage mappings. On an ext4-on-
+dm-crypt root on AHCI, large writes fail with I/O errors and the file
+system is corrupted. Other reports show the same fault on HD Audio and on
+a discrete GPU on Haswell machines.
 
-This patch (of 8):
+Disable superpages when a Haswell host bridge is present, which restores
+the behaviour these platforms had before v6.13.
 
-In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
-shares and walks the CPU's page tables.  The x86 architecture maps the
-kernel's virtual address space into the upper portion of every process's
-page table.  Consequently, in an SVA context, the IOMMU hardware can walk
-and cache kernel page table entries.
+Hardware on which this was seen (all fault reason 0x0c, 2MiB aligned):
+ - Core i5-4690K, Z97 [8086:0c00], AHCI 00:1f.2
+ - Core i7-4790K [8086:0c00], 2MiB coherent DMA buffer
+ - ASRock Z97 Extreme6, HD Audio 00:1b.0 (v6.12 good, v6.13-rc6 bad)
+ - Core i7-4870HQ (Crystal Well), discrete GPU 01:00.0
 
-The Linux kernel currently lacks a notification mechanism for kernel page
-table changes, specifically when page table pages are freed and reused.
-The IOMMU driver is only notified of changes to user virtual address
-mappings.  This can cause the IOMMU's internal caches to retain stale
-entries for kernel VA.
-
-Use-After-Free (UAF) and Write-After-Free (WAF) conditions arise when
-kernel page table pages are freed and later reallocated.  The IOMMU could
-misinterpret the new data as valid page table entries.  The IOMMU might
-then walk into attacker-controlled memory, leading to arbitrary physical
-memory DMA access or privilege escalation.  This is also a
-Write-After-Free issue, as the IOMMU will potentially continue to write
-Accessed and Dirty bits to the freed memory while attempting to walk the
-stale page tables.
-
-Currently, SVA contexts are unprivileged and cannot access kernel
-mappings.  However, the IOMMU will still walk kernel-only page tables all
-the way down to the leaf entries, where it realizes the mapping is for the
-kernel and errors out.  This means the IOMMU still caches these
-intermediate page table entries, making the described vulnerability a real
-concern.
-
-Disable SVA on x86 architecture until the IOMMU can receive notification
-to flush the paging cache before freeing the CPU kernel page table pages.
-
-Link: https://lkml.kernel.org/r/20251022082635.2462433-1-baolu.lu@linux.intel.com
-Link: https://lkml.kernel.org/r/20251022082635.2462433-2-baolu.lu@linux.intel.com
-Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alistair Popple <apopple@nvidia.com>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Borislav Betkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@intel.com>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liam Howlett <liam.howlett@oracle.com>
-Cc: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-Cc: Michal Hocko <mhocko@kernel.org>
-Cc: Mike Rapoport <rppt@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Robin Murohy <robin.murphy@arm.com>
-Cc: Thomas Gleinxer <tglx@linutronix.de>
-Cc: "Uladzislau Rezki (Sony)" <urezki@gmail.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Will Deacon <will@kernel.org>
-Cc: Yi Lai <yi1.lai@intel.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-[ The context change is due to the commit
-  be51b1d6bbff ("iommu/sva: Refactoring iommu_sva_bind/unbind_device()")
-  and the commit 757636ed2607 ("iommu: Rename iommu-sva-lib.{c,h}")
-  in v6.2 which are irrelevant to the logic of this patch. ]
-Signed-off-by: Rahul Sharma <black.hawk@163.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Roman Demidov <roman.demidov.nn@gmail.com>
+Fixes: 7c204426b818 ("iommu/vt-d: Add domain_alloc_paging support")
+Cc: stable@vger.kernel.org
+Closes: https://bugs.debian.org/1112627
+Link: https://github.com/omacom/omarchy/issues/12550
+Assisted-by: LLM
+Signed-off-by: Johnathan Chan <johnathanc@novasilicon.dev>
 ---
-Backport fix for CVE-2025-71089
+Notes (not for the changelog):
 
- drivers/iommu/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
+An LLM assistant was used to analyse the logs, find the culprit commit
+and draft the patch and changelog; I reviewed and tested the result.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 9d65557dfb2c..e3f1496013b2 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2988,6 +2988,9 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
- 	struct iommu_sva *handle = ERR_PTR(-EINVAL);
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+Tested on i5-4690K / Z97X-UD3H [8086:0c00], ext4 on LVM on dm-crypt on
+AHCI:
+ - Unpatched v7.0-based kernel: the fault hit in 5 of 6 boots during
+   normal use, losing file data.
+ - v7.0 + this patch: quirk message printed; no DMAR faults or I/O
+   errors after 32GiB of fio 4MiB direct and buffered writes. The
+   tested build differed only in comments. Clean with W=1 and sparse.
+ - Not tested: the other five IDs (worst case there is the pre-v6.13
+   behaviour), and fio on an unpatched kernel without sp_off.
+
+Is there an Intel erratum for this? I found none publicly and would
+like to cite it if one exists.
+
+ drivers/iommu/intel/iommu.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2e3b3ab216f8..b108d1476d4b 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4034,6 +4034,27 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e30, quirk_iommu_rwbf);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e40, quirk_iommu_rwbf);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e90, quirk_iommu_rwbf);
  
-+	if (IS_ENABLED(CONFIG_X86))
-+		return ERR_PTR(-EOPNOTSUPP);
++static void quirk_iommu_no_superpage(struct pci_dev *dev)
++{
++	if (risky_device(dev))
++		return;
 +
- 	if (!ops || !ops->sva_bind)
- 		return ERR_PTR(-ENODEV);
- 
++	/*
++	 * The non-graphics DMAR unit reports superpage support, but DMA
++	 * through a 2MiB superpage entry faults.
++	 */
++	pci_info(dev, "Disabling IOMMU superpage support\n");
++	intel_iommu_superpage = 0;
++}
++
++/* Haswell DMAR superpage support is broken */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0a04, quirk_iommu_no_superpage);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0c00, quirk_iommu_no_superpage);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0c04, quirk_iommu_no_superpage);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0c08, quirk_iommu_no_superpage);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0d00, quirk_iommu_no_superpage);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0d04, quirk_iommu_no_superpage);
++
+ #define GGC 0x52
+ #define GGC_MEMORY_SIZE_MASK	(0xf << 8)
+ #define GGC_MEMORY_SIZE_NONE	(0x0 << 8)
+
+base-commit: 93f51579e7df248780214094418f205253383cc5
 -- 
-2.53.0
+2.43.0
 
