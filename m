@@ -1,74 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BB6B4FDA7F;
-	Tue, 29 Sep 2026 11:41:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05A2550B8AA;
+	Tue, 29 Sep 2026 12:09:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790682105; cv=none; b=THg201gyMxdNO4mk6sbs0CH2ObucTtOCoePqyfegHk1P3gev+1wG152PGPIwb66DL3VSOlFoYNK2yclc/6Jth9fLwNZrHLsLKdUZT3cbjyohyqLCeTGwV2QA7ZAxuhUB4jkxR/vKBnq5sgs+rSPw+lmDYvzoEV32NhrLu4ZhzuM=
+	t=1790683781; cv=none; b=pdjh/GysIgcN6zZJ5vLckl9cTK8x74RhFywXRFy+AGox1tUAEkLvYm6Q/mHGIudmsV3ty3n5G/VJUyg5KJY/xekQ1q8g3Rpiu6GCrZu7V5IBlV/4T/ux4nNxTu+zjOFQTzLNYS1445Z0ynf6oqX0gO2vFNr6i4nTxxrWo+QtnWg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790682105; c=relaxed/simple;
-	bh=r4DkuD8c9rJugP/soUm/UW9JpR/D77uf7Eprg6SeX/w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=it6kHrbWficaT1UoAnpaYLqIBb1YQTZpI45ZcZg4uqygHFmzJJOheFMyJIb8hjnaHzu2IcZEKTLBuh6XvyNmn6g1gQLSPIHjwWTOwMmWtUNwiMHIQKp7MilChs0u2cr2mEd/VvgbHcg66XJh9/0FF3SI6LOeKQtJJzrYr/1Ihc8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d940tbRw; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d940tbRw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 662161F00893;
-	Tue, 29 Sep 2026 11:41:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790682103;
-	bh=tf3LWXKU+gR3zlJtLFtS4/H1jz1r6YhuQkB47pa4hXU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=d940tbRwwR8NEwHkMpZn5KYXeqbS3Abmxl3YE2EE7GcP/CO0xnBr98czUyUUspKah
-	 1GjvBr1z/uy620X6G+uTNih3vMmXjpmX27t03rOv3r/hDFxeG63yo3RF4+AuX0FYrT
-	 btNsb7XXSzppQcLhPyGotJoT5Tl/Fa+eIMkMIJQD+C/B61ptEZl7brqeyLfZeliR75
-	 +QOOYlXIwWyULludOWMGxUEEermNO9yNsqUxScScF6+s/v0euL145J2qApTW/DacOX
-	 l8PykdfCAxzyVBFcwAl8huV1fTWzK4jNOka4u4Q+WN+uYWJsqUa5SLF2m5pXSPitmO
-	 h5IulB3DP4dFg==
-Date: Tue, 29 Sep 2026 12:41:38 +0100
-From: Will Deacon <will@kernel.org>
-To: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Document Adreno SMMU for Nord
- SoC
-Message-ID: <aruj8uLUUiuKfJpp@willie-the-truck>
-References: <20260902013858.130887-1-shengchao.guo@oss.qualcomm.com>
- <arpNicG_jUzh1ZrL@QCOM-aGQu4IUr3Y>
+	s=arc-20240116; t=1790683781; c=relaxed/simple;
+	bh=0TQIG6b0QhiYyhhVsn09ZaXE0tRmvWDczzbfnRItPCs=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=JMTfoBQ7AiQR3BkDOBVWyUzXtJF4culQlcWiw73VfPMjbAwPM7xoBT6zd8y/jBXVniNs+A5CDHAYxMQIWLihXv+kvNn+Nmyl/0XXzcbRb5l8kdhF0kEp+xs3h7dZ23Fzp4QWfulShoNwFcS+V2Wm/KrkhmwiOOKrTl+gVv5JkTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.helo=mail.mainlining.org; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.helo=mail.mainlining.org
+Message-ID: <d3b99da7-bc64-4df8-94ab-25080474ee35@mainlining.org>
+Date: Tue, 29 Sep 2026 15:09:27 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <arpNicG_jUzh1ZrL@QCOM-aGQu4IUr3Y>
+User-Agent: Mozilla Thunderbird
+From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+Subject: Re: [PATCH v3 16/19] thermal: qcom: tsens: Add support for MSM8952
+ tsens
+To: Daniel Lezcano <daniel.lezcano@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
+ Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
+ Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Srinivas Kandagatla <srini@kernel.org>,
+ Ulf Hansson <ulfh@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
+ Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
+ <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>,
+ Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Robert Marko <robimarko@gmail.com>, Guru Das Srinagesh <linux@gurudas.dev>,
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Kees Cook <kees@kernel.org>,
+ Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"
+ <gpiccoli@igalia.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-mmc@vger.kernel.org, iommu@lists.linux.dev, mfd@lists.linux.dev,
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org,
+ linux-input@vger.kernel.org
+References: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
+ <20260921-msm8952-initial-support-v3-16-b96fd3fe298b@mainlining.org>
+ <4de27200-3598-47b7-b0af-8f7acd037618@oss.qualcomm.com>
+Content-Language: en-US
+In-Reply-To: <4de27200-3598-47b7-b0af-8f7acd037618@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 28, 2026 at 07:20:41PM +0800, Shawn Guo wrote:
-> On Wed, Sep 02, 2026 at 09:38:58AM +0800, Shawn Guo wrote:
-> > Add specific compatible string to document the GPU SMMU present on
-> > Nord SoC, and constrain it to the single HLOS vote clock.
-> > 
-> > Signed-off-by: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-> > ---
-> > Changes for v2:
-> > - Add the missing HLOS vote clock constraint
-> > - Link to v1: https://lore.kernel.org/all/20260901140816.74200-1-shengchao.guo@oss.qualcomm.com/
+Hi Daniel,
+
+On Tue, 29 Sep 2026 09:11:28 +0200, Daniel Lezcano wrote:
+> On 9/21/26 20:19, Muzaffer Kadir via B4 Relay wrote:
+>> From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+>>
+>> Add MSM8952 support for tsens.
+>>
+>> Downstream does a lot of advanced things with calculations.
+>> But seems like using tsens-v1 directly works too.
 > 
-> Hi Will,
+> Can you elaborate a bit the changelog please ?
 > 
-> Would you pick up this change? Or are you okay with that we route this
-> change via arm-soc tree?
+> Thanks
+> 
 
-I'll grab it, I'm just thousands of patches behind atm
+MSM8952 has 11 sensors
+and 3200 default slope (according to downstream)
 
-Will
+For tests, this is the table for readings:
+tsens sensor 0  1  2  3  4  5  6  7  8  9  10
+TWRP         32 31 29 28 28 31 30 30 30 32 30
+this patch   31 29 31 29 29 31 30 31 31 30 30
+
+Both are read from same device, one after the other,
+First upstream then TWRP.
+2 degree difference seems reasonable in my idea,
+as there is a reboot process happens in between reads and
+downstream has more power saving features than this port.
+
+I don't know any way to independently measure temperature.
+
+I reused offsets and slope from downstream.
+
+My commit message wasn't good, I will expand the
+commit message by v4.
+
+Best regards,
+Muzaffer Kadir
