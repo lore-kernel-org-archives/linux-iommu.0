@@ -1,56 +1,56 @@
-Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DB0C3FC5B7
-	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 03:45:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0740411660
+	for <iommu@lists.linux.dev>; Tue, 29 Sep 2026 03:45:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790653538; cv=none; b=Vy3bEH5ClwBob6AcRAVT6fjCbU3eV4NG7cwrPbF/qHdOSuVPzkEp10FVw/oxx27Auq/z09uRgZ3YP/x3VDmzOgOXF9pO2o2CHOaUYafdGK8bz6g4nPp1LiWKj+2qWCWkpVA5UckvC+gE8n/Q/lnUYtaBYihmxqommpAmDHIZsvY=
+	t=1790653541; cv=none; b=bd04NQeVdJ1XQl2eYzdIPenp2awAWW/C9Z4F5tA8I8+uJdVijcFZozDEygJqdhFtIFPHozOGA0XiSKOeBTodDr/69J8CtDr5NWa3iO2d2ttz5/cFK3WKFNYZuhiA3zV8KprIwbH+/rcn7ps/Bla6MdVanoMObiOmLrM9E2HAa5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790653538; c=relaxed/simple;
-	bh=fBsvcJTGySkCd+eb4363p1Jk8F2h4J7YsqmmUHp9hgU=;
+	s=arc-20240116; t=1790653541; c=relaxed/simple;
+	bh=hg80R4Fy3y1Gkv79OMihDSs+R+YGPlgT4tBqq7uV0O8=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=W6GOwZRbLjxk26ZVs7iwvpex3Mk3FnE7ROCO4S9wVmv14xyb59YRkZHvT8FbX0SfuzcS8V53iPI7UOX2wGIa9Z9lWfzK3xCSGdpMSzJ+FE31LZmgQWVXX08TXcUW0WIbmN6pOz0Ua+BroRDLLFy7Sj75fkTr8AWi7RT2mZaLnNY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BOQxmVHT; arc=none smtp.client-ip=209.85.215.199
+	 To:Cc:Content-Type; b=P6Sdcz/9sb5VIQhUJxpLXgWL+0PN/5g+qq9aIVs1VEAg6a5QRd5Z80Xi4CoB3WEkMPA4a15s3bDMVDYBI6+MBaQXb9fnE4PJNm5kuVZa3DIvnUTMUwh6LdOFVeEdAQDy/GsyeeEm5xr315ovxF5VFE1Y4XE0/DP2LAJos9oUO3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BjWnqTL2; arc=none smtp.client-ip=209.85.214.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BOQxmVHT"
-Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-cc7361c62b9so2624513a12.3
-        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 20:45:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BjWnqTL2"
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2df8484f12cso36586725ad.3
+        for <iommu@lists.linux.dev>; Mon, 28 Sep 2026 20:45:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790653536; x=1791258336; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1790653539; x=1791258339; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=FTnb5gdEOwnPdz4JRroX+sFrer89MQl7kw/S2QGLtV4=;
-        b=BOQxmVHTcKX5Ee2YPNap7Q33dNnVa56rkiAcxH26Z+7OK4uOURbq28Y+Pnh6CLA8f5
-         aLPXr6uqpwMdr0025ugAusxt+6JOp0sdWHB1wdkbHWbpiM15r7bLqRMh3UFhWl/3i/JP
-         ahF0l/62qXcFlm2E0PYOW3J/ZmZIQ5Yc36elQjtLlmXnW3jRtVmnBtz+Rv2hFcICoQIv
-         VZbBXbu8rGn6GJekNeEwjyl78mSfBGQaj9/kv1c/svT0J+FaVrSxdN4oHbekTkkNpLgH
-         fFH6Q+Wzgy9LUPKfNkgZivkXjynHZzbfg3CuongAutb1G57D+MIgLUOTkuQ8eFDNpjQy
-         2P/Q==
+        bh=KVWbroKeyy/vXGetpyerZbPvNTfOYuPtP3zO4UmiVu0=;
+        b=BjWnqTL2IS+DqyXZibMScFlsLDvtgIQL3DdGb8edhSeZAo2dLKKvQ7QTF4CtqMGiAI
+         UPfIdPjOk/yPuOBUmFEPDV73lEXxd4a/7ODMEXuK7qA/c/h0cY1x3iAaX8PZA+ZIFMz4
+         5yiHx2Bf5ny1KG8F05ja15YnxKOQmTKxtlb6Qa+QNXuGmxfqg36ul8Utsv+sKAdeNqC3
+         alMGZcfPAVz8n1Ne8OqGV3MQ7vn5XZtrxcjkdwRajxn7zFyCKEPzrOvPhLx3abYpZPou
+         EEakOc7dcBS7cMw+Qjc5gfK83M/Y+DmD8qNZAEvFVYK8EaoHSf84+pTcLn8m8xU0Izxv
+         IvDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790653536; x=1791258336;
+        d=1e100.net; s=20260707; t=1790653539; x=1791258339;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=FTnb5gdEOwnPdz4JRroX+sFrer89MQl7kw/S2QGLtV4=;
-        b=1N7IjNZzTNnbG0fj/dKvjKdxpg8XWu/DU03LXN7vzr50QeaFnfPvWLgk7OtDj9viHh
-         ThYVr3ffzrKZCC+k3WIGVCsujCsZ3LQ2ZIvqgghWmW/rl90GfX89xLHXBOBpj7oPSpfU
-         uJzHecph8/GRnK7gSBChDeNbi+tgOUosvKGPbz3WRyviq3/Cj6gxq0y1RHjFqzMqUyJV
-         NFnRU88ZJUgXxGwz2bENTa868PFEKiefZxY0JEqKhTeus0CiRr/IEGAdMDGd0I5xS0BI
-         N1XV/ktufHsAQtNLOs8IOsy6uX8bllF8FGd3npJkvl1S0b3n2weUrK4enOwfnp7J3XMl
-         QDhA==
-X-Gm-Message-State: AFuF++mE3sCBAOMsnT8vN7xNnYEKi46aRKC/vb/QdPPGVVfET+udnozl
-	XqQxnVXD1ClKQaWVuFKLsNevqtr1/s5O+7i5cSqv14Qfa2+mZhUSDXxzUhHUhS47oRSY5zIlafe
-	PQb0UqANcSeOtA5ga9ZEy+X5UXeV4qsT102KSlmLizSdSevP9WiFA25IvwLELNbMzBiis7jfvKW
-	LswqNAncWsV77OC7HpuKysRwouOy0B5w==
-X-Received: from pgbdp8.prod.google.com ([2002:a05:6a02:f08:b0:cc7:a092:edd9])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:e38b:b0:3de:67b8:26bc
- with SMTP id adf61e73a8af0-3de67b82a79mr3606310637.30.1790653536063; Mon, 28
- Sep 2026 20:45:36 -0700 (PDT)
-Date: Tue, 29 Sep 2026 03:45:01 +0000
+        bh=KVWbroKeyy/vXGetpyerZbPvNTfOYuPtP3zO4UmiVu0=;
+        b=ySeNP697qAy1tmJMe8Gn1seDH9qka3ZsAzdJ+BbQTuX4fDcyUn1+lxEX43iGd4mn3W
+         JIm49bFAyCWQNlTTTv+xDjU3IwJ8kEsDBIv/BXZYk+GQRlQILVN7sjo8r1AyCyHIpZzy
+         N14P0Xz1e/ib0UkI8gJBPurdTrnZWlz8UGecCj6AjJDfbrE61osINut95gxR1JG+HL1W
+         QQQTemBoBByXLdy2pddoh/Tc1vNyi5H2nnxSOVHKLRHz1MKpAlm7ASJ8/j/D5bu5DsmQ
+         GUSWhRAxKKz8C3LDCnBhOocs9P28/58cQEkR5lrNvplCgXrRfU1pHKMXzbWnoCE25tOB
+         N1gw==
+X-Gm-Message-State: AFq9FYLgIMuKJ4zJVVoMil0fkby3iXcBROuA3WfQuQgukedhUS5VfGaM
+	hFyi2lLKkapLIcFKENrMjE2NFyA0BerZVbYn2aNtjpZWp3Rr8FpMdWBwo6/yWhUMFVlZZhI7znd
+	AYO3OaNSvBadvWKL8tgORl4wWnmb5dGA3gARkI4m/GzYbQcWfaUySvG3wcUoW3hKjvsBlPEJ+7p
+	k/VYDLZjOj6nzhsnEusLUB8RANHrxLdA==
+X-Received: from plqu23.prod.google.com ([2002:a17:902:a617:b0:2df:9ebf:232b])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:db06:b0:2e2:c84b:43e9
+ with SMTP id d9443c01a7336-2e2c84b48d6mr8655125ad.1.1790653538595; Mon, 28
+ Sep 2026 20:45:38 -0700 (PDT)
+Date: Tue, 29 Sep 2026 03:45:02 +0000
 In-Reply-To: <20260929034510.2023173-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20260929034510.2023173-1-praan@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20260929034510.2023173-8-praan@google.com>
-Subject: [PATCH v11 07/16] genirq/msi: Cache MSI message in irq_chip_write_msi_msg()
+Message-ID: <20260929034510.2023173-9-praan@google.com>
+Subject: [PATCH v11 08/16] genirq/msi: Provide msi_device_domain_restore_msi_msgs()
 From: Pranjal Shrivastava <praan@google.com>
 To: iommu@lists.linux.dev
 Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
@@ -75,62 +75,85 @@ Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
 	Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Currently, PCI MSI caches the composed MSI message into the MSI
-descriptor inside __pci_write_msi_msg(), whereas platform MSI and other
-device MSI domains do not cache the message in the core, forcing
-individual drivers to manually copy the message into desc->msg if they
-need to restore it across power transitions.
+From: Thomas Gleixner <tglx@kernel.org>
 
-Cache desc->msg in irq_chip_write_msi_msg() before invoking the chip
-callback so all hierarchical MSI domains automatically record the
-latest message. Document why the redundant assignment in
-__pci_write_msi_msg() must remain for direct callers outside the
-irq_chip hierarchy.
+Devices that provide the message store for MSI interrupts in their own
+hardware registers often lose that register state across power transitions
+(such as runtime suspend or system sleep) and need to restore the cached
+MSI messages upon resume.
 
-Suggested-by: Thomas Gleixner <tglx@kernel.org>
+Provide msi_device_domain_restore_msi_msgs() to iterate over all
+associated MSI descriptors in a device's MSI domain under proper
+descriptor and irq_desc locking and rewrite the cached MSI messages via
+the irq_chip hierarchy.
+
+Signed-off-by: Thomas Gleixner <tglx@kernel.org>
+[praan: Use scoped_irqdesc_get_and_buslock(), fix the xarray range bound
+ and write the commit message]
 Signed-off-by: Pranjal Shrivastava <praan@google.com>
 ---
- drivers/pci/msi/msi.c | 6 ++++++
- kernel/irq/msi.c      | 9 +++++++++
- 2 files changed, 15 insertions(+)
+ include/linux/msi.h |  2 ++
+ kernel/irq/msi.c    | 37 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 39 insertions(+)
 
-diff --git a/drivers/pci/msi/msi.c b/drivers/pci/msi/msi.c
-index 80a9db417dc8..f7bedc31d486 100644
---- a/drivers/pci/msi/msi.c
-+++ b/drivers/pci/msi/msi.c
-@@ -257,6 +257,12 @@ void __pci_write_msi_msg(struct msi_desc *entry, struct msi_msg *msg)
- 		pci_write_msg_msi(dev, entry, msg);
- 	}
+diff --git a/include/linux/msi.h b/include/linux/msi.h
+index a4613de11960..44d551e85abd 100644
+--- a/include/linux/msi.h
++++ b/include/linux/msi.h
+@@ -669,6 +669,8 @@ void msi_domain_free_irqs_all(struct device *dev, unsigned int domid);
  
-+	/*
-+	 * Although irq_chip_write_msi_msg() already caches the message,
-+	 * keep the assignment here for callers that invoke
-+	 * __pci_write_msi_msg() or pci_write_msi_msg() directly outside
-+	 * the irq_chip hierarchy.
-+	 */
- 	entry->msg = *msg;
+ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain);
  
- 	if (entry->write_msi_msg)
++void msi_device_domain_restore_msi_msgs(struct device *dev, unsigned int domid);
++
+ /* Per device platform MSI */
+ int platform_device_msi_init_and_alloc_irqs(struct device *dev, unsigned int nvec,
+ 					    irq_write_msi_msg_t write_msi_msg);
 diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-index fb5f372215bf..df460a574d80 100644
+index df460a574d80..8fb855b5e09f 100644
 --- a/kernel/irq/msi.c
 +++ b/kernel/irq/msi.c
-@@ -634,6 +634,15 @@ static unsigned int msi_domain_get_hwsize(struct device *dev, unsigned int domid
- static inline void irq_chip_write_msi_msg(struct irq_data *data,
- 					  struct msi_msg *msg)
- {
-+	struct msi_desc *desc = irq_data_get_msi_desc(data);
-+
-+	/*
-+	 * PCI Multi-MSI shares a single descriptor across all vectors and
-+	 * the device stores only the base message. Cache the message of the
-+	 * first interrupt only, so that sub-vectors cannot overwrite it.
-+	 */
-+	if (desc->irq == data->irq)
-+		desc->msg = *msg;
- 	data->chip->irq_write_msi_msg(data, msg);
+@@ -1784,3 +1784,40 @@ bool msi_device_has_isolated_msi(struct device *dev)
+ 	return arch_is_isolated_msi();
  }
- 
+ EXPORT_SYMBOL_GPL(msi_device_has_isolated_msi);
++
++/**
++ * msi_device_domain_restore_msi_msgs - Restore MSI messages for a device domain
++ * @dev:	The device to restore MSI messages for
++ * @domid:	The id of the interrupt domain to restore
++ */
++void msi_device_domain_restore_msi_msgs(struct device *dev, unsigned int domid)
++{
++	if (!dev->msi.data)
++		return;
++
++	guard(msi_descs_lock)(dev);
++	struct irq_domain *domain = msi_get_device_domain(dev, domid);
++
++	if (!domain || !irq_domain_is_msi_device(domain))
++		return;
++
++	struct xarray *xa = &dev->msi.data->__domains[domid].store;
++	struct msi_domain_info *info = domain->host_data;
++	struct msi_desc *msi_desc;
++	unsigned long idx;
++
++	xa_for_each_range(xa, idx, msi_desc, 0, info->hwsize - 1) {
++		/* Only handle MSI entries which have an interrupt associated */
++		if (!msi_desc_match(msi_desc, MSI_DESC_ASSOCIATED))
++			continue;
++
++		scoped_irqdesc_get_and_buslock(msi_desc->irq, 0) {
++			struct irq_data *data = irq_desc_get_irq_data(scoped_irqdesc);
++			struct msi_msg msg = msi_desc->msg;
++
++			if (data->chip)
++				irq_chip_write_msi_msg(data, &msg);
++		}
++	}
++}
++EXPORT_SYMBOL_GPL(msi_device_domain_restore_msi_msgs);
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
 
