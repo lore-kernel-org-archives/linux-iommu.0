@@ -1,197 +1,168 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9F0045A2A2;
-	Wed, 30 Sep 2026 08:03:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC92C4483BE;
+	Wed, 30 Sep 2026 08:18:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790755409; cv=none; b=sXlbAeoZL5CK+kLKOtwMqjDonZoCxGe+Hdc1OXMsZDX67qKMMGqDHFS5dIMeDu9D65EvLe9taj6FGd/k+bWZMif5Xx8AbRUdxvnKyeRb7UdRXmPopGcQ5+joNhN8F3lq8nd3VERR0VT263dbo8akDqSgJkQmPb/FbWO202Kyfl8=
+	t=1790756320; cv=none; b=iN7Azfzya4U6GeYkqnrGrZl2UmPjQfdzDRP+F4mjpCSusoq1lnmJX9VkJ1N6s2LBpS3VkL2mfAqx+Ou8FQ1qowk1eXcTxJQrK1l2JedF8lxZ8UaPnilqUurN7I1sTSkvFmS2DvWjpLN+s0SIamSkJWibxIsnmhwW9qvK1CjyIlQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790755409; c=relaxed/simple;
-	bh=LSD0H7hlTgsIK48icru9I/onbn3XKpj8p7mhQiQrTUg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=da5x0MtzXaqEsN9+RBP84ciG7we585oqyajw6E4bbPcyX6tp5YBzmjGZhG/flbgFaINQhqu7IcI8xkyWnuu0OF69KOZaN0ArbmPL6YG1xxqd7QGQFtPhSnZbtw1L8TIOxW60c1OLsg4TBQUATNZua2rlq+8Uz4wCMqhiUP6DfpA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Hd0+t+cp; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790756320; c=relaxed/simple;
+	bh=R6s8OiKBK+PREbUobOUgjnqt4WFhGHvFtnaErDsUlvQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UBvgQNZ7C6lfDKpEsh33Jb6XS4adH87T2TYVGvf8TFgy8acjWFTJP9NBQ3zjQ0i0chMNVMnnBxViEl6b3R7IjPYLmGE6DGDOtpR18EWsBDX5YEKD5CMNmXhT9Cp0/utMb2/f7fHjW5b4k3HOo3xXnaMwagJbMub9/a2u2wNEJ2Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KHnWXJca; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Hd0+t+cp"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0567A1F000FF;
-	Wed, 30 Sep 2026 08:03:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KHnWXJca"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B9851F000FF;
+	Wed, 30 Sep 2026 08:18:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790755407;
-	bh=w9zOxQ2Xp6lP5o/Tko+m/wjgpl8Fwpt+CqNeRAhSwXE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=Hd0+t+cpt41c4LYVSklR73f+gLWB9/zmTXMCDWih/gR4ZLXKt8iAOR+aE3Gc2Teqe
-	 MbVmDnkB9qw9pZn7yV8m647PcWIVsAqpNmmQEeaWHpmPX5AaRfPlOa10AlAk3357xy
-	 hfw9SYVlu4iUYm3dfgim6ms7xKQKkO4tyhJxNzLOH3cRdCpXxPs7KidEH5HsFvKJDn
-	 QZA6h6OeSxVWceH7i83IXRUpr9gvM+UF+//IukGuLV0TdSgda17aNzo3owL+1mU+wX
-	 QtG2j0X55ujiANkhhe3JGk05Wo9jpAyusLpGn+IgvikGlEM87PBUfqpu3szeCwdgHx
-	 ljVnnt+0EpOZg==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-coco@lists.linux.dev, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	s=k20260515; t=1790756318;
+	bh=Z5uqg8OGV8G3amtZGI+AAjssegRbH2Q3sF6MukzHR4Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=KHnWXJca1OG7ubExZjIAsnSkTiQN7MaCsc/vSPXZmsAHD3sKNtk/npmzfYD81IYrg
+	 h8Lj9rd/RPGayQMkU52JzXFhfUWksJ7TlRl7xUB45oYxoOPh21Ar01EXU4zfXbSsDn
+	 Qx8hep+EjuWDQ7wLN1CF7mjbzVWtpSnXHMaK/a3HE/Dy/wL5ni8au2Tr96oPwO0QDT
+	 7B4erMxz79o2iObpm6+t9Njmp8GREh9GgdzEJAOTzh6WnT8jS413WaA+T2HtK6yklN
+	 vciTXZuE1KJL3zD+ZEd4yVEG0DW9bj3eJpVgh6ta2ZvZ8Du4SNIsl3V3mE1ESo/Lkk
+	 juuuE/eX51S/Q==
+Date: Wed, 30 Sep 2026 11:18:32 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
 	Jason Gunthorpe <jgg@ziepe.ca>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [RFC PATCH v6 09/11] iommufd: Add the vdevice TSM request ioctl
-In-Reply-To: <179027891417.104879.282447770434616733.b4-review@b4>
-References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
- <20260917140159.1163281-10-aneesh.kumar@kernel.org>
- <179027891417.104879.282447770434616733.b4-review@b4>
-Date: Wed, 30 Sep 2026 13:33:17 +0530
-Message-ID: <yq5a7bk3upx6.fsf@kernel.org>
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v8 16/23] dma-buf: Let importers ask how peer-to-peer
+ traffic is routed
+Message-ID: <20260930081832.GA3401365@unreal>
+References: <20260928-fix-p2p-acs-v4-0-v8-0-404453b9c435@nvidia.com>
+ <20260928-fix-p2p-acs-v4-0-v8-16-404453b9c435@nvidia.com>
+ <607e8903-a979-4d78-bf08-447321c03119@amd.com>
+ <20260929132305.GJ563127@unreal>
+ <720dbac3-24f6-4c91-899e-e205865c1fd1@amd.com>
+ <20260929175737.GK563127@unreal>
+ <eeef5951-825e-459f-b474-bf8c59588446@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <eeef5951-825e-459f-b474-bf8c59588446@amd.com>
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
+On Wed, Sep 30, 2026 at 09:00:57AM +0200, Christian König wrote:
+> On 9/29/26 19:57, Leon Romanovsky wrote:
+> > On Tue, Sep 29, 2026 at 03:39:42PM +0200, Christian König wrote:
+> >> On 9/29/26 15:23, Leon Romanovsky wrote:
+> >>> On Tue, Sep 29, 2026 at 11:34:05AM +0200, Christian König wrote:
+> >>>> On 9/28/26 13:19, Leon Romanovsky wrote:
+> >> ...>>
+> >>>>> +	return pci_p2pdma_map_type_tlp(provider, attach->dev, tlp_flags);
+> >>>>
+> >>>> This function call here *must* be in the exporter and not the DMA-buf framework.
+> >>>>
+> >>>> So clear NAK to putting that here.
+> >>>
+> >>> "Look, it is easy to complain you don't like how it looks, but this
+> >>> stuff is hard there are lots of competing concerns, if you have a
+> >>> better idea now is a good time to present it."
+> >>> https://lore.kernel.org/all/20260921130858.GO11599@ziepe.ca/#t
+> >>>
+> >>> Do you have a viable solution?
+> >>
+> >> Ok, that sounds like you haven't understood why I'm rejecting this.
+> >>
+> >> By moving the calls to pci_p2pdma functions into DMA-buf you bypass the NAK to expose those functions to drivers from the DMA maintainers.
+> > 
+> > No, you have misunderstood Hellwig's position. His request was to ensure that only
+> > subsystems deal with P2P internals. He was perfectly fine with bringing P2P
+> > complexity into dma-buf, since it is the agreed-upon mechanism for sharing DMA
+> > regions between devices.
+> 
+> Thanks for clearing that up, I indeed didn't realized that.
+> 
+> But that is pretty much against my standpoint that I don't want any P2P complexity in DMA-buf.
+> 
+> > 
+> > So this is not a NAK bypass; it is a correct implementation of his request.
+> > He handled P2P-related complexity in the block layer.
+> > 
+> > Let's add Christoph to the thread so he can correct me if I'm wrong.
+> > 
+> >>
+> >> I unfortunately didn't understood that when the dma-buf-mapping.c code was added and just assumed that you just needed a place to put some common code.
+> > 
+> > That is not correct. Devices A and B share a DMA region via the dma-buf
+> > mechanism. Where do you expect the code common to dma-buf to be placed?
+> 
+> In the DMA layer!
+> 
+> >>
+> >> So as long as that NAK from the DMA maintainers to expose the pci_p2p functions to drivers stand I will push hard to get that stuff removed again from DMA-buf as well.
+> > 
+> > Are you seriously suggesting that every dma-buf driver in the world should
+> > have to reimplement this mess?
+> 
+> Well I completely agree that this should probably not be replicated into each exporter, but that is the job of the DMA layer and not DMA-buf.
+> 
+> The purpose of DMA-buf is to exchange DMA addresses between an exporter and one or more importers and handle things like lifetime and synchronization of accesses. 
+> 
+> What the framework should do is to transport the capabilities of the importer to the exporter, e.g. what physical connections we have etc..
+> 
+> What the framework can also do is to have additional information from the exporter to the importer regarding addresses and mappings, for example if they are bus, IOVA or some special internal DMA addresses or how to stitch together your PCIe TLP or whatever.
 
->> [ ... 95 lines skipped ... ]
->> +static bool iommufd_vdevice_tsm_req_arch_valid(u32 tvm_arch)
->> +{
->> +	switch (tvm_arch) {
->> +	case IOMMU_VDEVICE_TSM_TVM_ARCH_CCA:
->> +	case IOMMU_VDEVICE_TSM_TVM_ARCH_SEV:
->> +	case IOMMU_VDEVICE_TSM_TVM_ARCH_TDX:
->> +		return true;
->> +	default:
->> +		return false;
->> +	}
->> +}
->
-> Generally speaking we should not do things like this, the viommu
-> object should declare what it supports if we want to have validation
-> on the iommufd side.
->
->> [ ... 140 lines skipped ... ]
->> +#ifdef CONFIG_TSM
->> +/**
->> + * struct tsm_guest_req_info - parameters for a guest-initiated TSM request
->> + * @op: operation for the guest-initiated request
->> + * @tvm_arch: guest TVM architecture
->> + * @req: request data buffer filled by guest
->> + * @req_len: the size of @req filled by guest
->> + * @resp: response data buffer filled by host
->> + * @resp_len: the size of @resp buffer filled by guest
->> + */
->> +struct tsm_guest_req_info {
->> +	enum iommu_vdevice_tsm_guest_req_op op;
->> +	enum iommu_vdevice_tsm_guest_tvm_arch tvm_arch;
->> +	sockptr_t req;
->> +	size_t req_len;
->> +	sockptr_t resp;
->> +	size_t resp_len;
->> +};
->
-> Why is this struct in tsm land?
->
-> I'm not seeing why the iommufd interface should be locked to tsm, as I
-> said other viommus need this kind of command channel too. Can't we
-> have a general one?
->
-> Why would it ever not be tied to userspace pointers? I don't want
-> an in kernel user ever using this kind of struct?
->
+At a minimum, exporters need to pass `p2pdma_provider`.
 
+If I keep the “dma-buf: Let exporters hand out the P2PDMA provider behind a
+buffer” patch, I can move the P2P TLP types back into `p2pdma.c` and export
+only the function that indicates whether ATS is required.
 
-The previous discussion suggested that another kernel subsystem might
-need to use this low-level TSM interface, although no concrete example
-was identified. In other words, an opaque guest request could be issued
-from either userspace or kernel space. 
+Is it ok?
 
->
->> [ ... 34 lines skipped ... ]
->> +/**
->> + * enum iommu_vdevice_tsm_guest_req_op - operation for guest TSM requests
->> + * @TSM_REQ_VALIDATE_MMIO: Validate MMIO for the TDI
->> + * @TSM_REQ_SET_TDI_STATE: Set TDI state
->> + * @TSM_REQ_SEV_ENABLE_DMA: Enable SEV DMA
->
-> That seems wrong.. The hypervisor should not have control over T=1
-> DMA.
->
-
-This was added specifically for AMD SEV, which requires an IOMMU-side
-update to enable DMA.
-
->
->> + * @TSM_REQ_SEV_DISABLE_DMA: Disable SEV DMA
->> + * @TSM_REQ_READ_OBJECT: Read a TSM object
->> + * @TSM_REQ_REGEN_OBJECT: Regenerate a TSM object
->> + * @TSM_REQ_OBJECT_INFO: Read TSM object information
->> + */
->
-> These operations will need alot more commentary. Use kdocs inside the
-> enum below to make that easier.
->
+Thanks
 
 
-I will add kernel-doc comments for the operations used by CCA.
-
-We have gone through several iterations to identify the guest
-passthrough request facility we need. IIUC, both TDX and CCA give the
-hypervisor some control over the request type, while SEV-TIO is more
-opaque.
-
-
->
->> [ ... 10 lines skipped ... ]
->> +/**
->> + * struct iommu_vdevice_tsm_req - ioctl(IOMMU_VDEVICE_TSM_REQ)
->> + * @size: sizeof(struct iommu_vdevice_tsm_req)
->> + * @vdevice_id: vDevice ID the guest request is for
->> + * @op: One of enum iommu_vdevice_tsm_guest_req_op
->> + * @tvm_arch: One of enum iommu_vdevice_tsm_guest_tvm_arch
->> + * @req_len: Size in bytes of the input payload at @req_uptr
->> + * @resp_len: Size in bytes of the output buffer at @resp_uptr
->> + * @req_uptr: Userspace pointer to the guest-provided request payload
->> + * @resp_uptr: Userspace pointer to the guest response buffer
->> + * @tsm_code: TSM-specific result code returned by the TSM implementation
->> + *
->> + * Forward a TSM request to the TSM bound vDevice. This is intended for
->> + * guest TSM/TDISP message transport where the host kernel only marshals
->> + * bytes between userspace and the TSM implementation.
->> + *
->> + * The request operation is guest initiated. The TSM backend validates
->> + * @tvm_arch against its bound TVM architecture assumptions.
->> + *
->> + * The request payload is read from @req_uptr/@req_len. If a response is
->> + * expected, userspace provides @resp_uptr/@resp_len as writable storage for
->> + * response bytes returned by the TSM path.
->> + *
->> + * The ioctl is only suitable for commands and results that the host kernel
->> + * has no use, the host is only facilitating guest to TSM communication.
->> + */
->> +struct iommu_vdevice_tsm_req {
->> +	__u32 size;
->> +	__u32 vdevice_id;
->> +	__u32 op;
->> +	__u32 tvm_arch;
->> +	__u32 req_len;
->> +	__u32 resp_len;
->> +	__aligned_u64 req_uptr;
->> +	__aligned_u64 resp_uptr;
->> +	__aligned_u64 tsm_code;
->
-> out_tsm_code
->
-
-That is required for SEV-TIO.
-
--aneesh
+> 
+> As long as both the exporter and importer agree on what those values mean I have no problem at all with that.
+> 
+> But how those DMA addresses come to be should *absolutely not* be part of DMA-buf! The complexity of that is seriously not something we should have here.
+> 
+> Regards,
+> Christian.
+> 
+> > 
+> > Thanks
+> > 
+> >>
+> >> What you try to do here is seriously not ok and I will push back hard on that in the future.
+> >>
+> >> Regards,
+> >> Christian.
+> >>
+> >>>
+> >>> Thanks
+> >>>
+> >>>>
+> >>>> Regards,
+> >>>> Christian.
+> >>
+> >>
+> 
