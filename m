@@ -1,65 +1,65 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 809DC420480
-	for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 19:57:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0632B44A416
+	for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 20:00:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790798242; cv=none; b=GzCGH/GeXBeq09UwxMwdxt6hEWdfgw0R3h/PHhccbH57on+W8hkky0lUK++DEhM4ACCpovF7wXyl37cNYW6J4JDTzHsL5AiCtwGwgKilrkycK0/zvFVL8wLoszNK98UTjR1xB2DYeFfYnQaO21i+qDgyF78zBWpV9zOW9iTKXdw=
+	t=1790798442; cv=none; b=A9MQcTJoiSFFsz6VRXJwOK8dr3XawXjM8+xYOi8+9/cV04WYxMETj5u7y6esoJ0AUNf3Dl149CzrEh3UPydqIejniSSeT02xLrrVryhRqQpf1KtjQ8Qut7fIic0i3mKUKA4PtVerKZ+UvtvkEyXKUbOSwNISzOkRd4SZ77NhAyg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790798242; c=relaxed/simple;
-	bh=9TZtF4f7bLDr7C03aF5gVG6cbsSVdEXlq+L5u/iiSUY=;
+	s=arc-20240116; t=1790798442; c=relaxed/simple;
+	bh=j05inaXzvotjyKWa/ZFf47qCdIej5ahkTtsZ7bh+bp4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=flhB3n4LY+gfQ6PGMn8qclK7HW+M1YDMuAJ79XQPmgeggOMrktEmVgKV7OFtzSznJgySJ/OG3jG6iukTf3LHzoZH7sbQmuWvUL0VLvRceBekQEv5h/m3RJg4EQSMpm6aW7rENNHJPiyMc+v0k7dDaESvSfZR+VmhvCRzau+1Plo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dErUmZ7W; arc=none smtp.client-ip=209.85.214.171
+	 Content-Type:Content-Disposition:In-Reply-To; b=gUZ6PFK7ZuLzULi6QMB4/3Vk4zt1rGYDa1Yd6es1tJihFaAV80UH04QkI8S9BaG8DG5zx9r7iL/Cam3siGENBxVjkcFKL1NGl/oAaUjCTI4ZfCGx7NmmYZlOmpFKP4O5Y7L48JIJk3K/8hfRULHCsW5Z+o7GWogpp5lDuF2hSlU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iIoU49bO; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dErUmZ7W"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2db33db4de9so4545ad.0
-        for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 12:57:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iIoU49bO"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2e2e4ef20beso18255ad.0
+        for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 13:00:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790798241; x=1791403041; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1790798440; x=1791403240; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=JZWZuvgsWyt2x87h19X7B7J9Ed8aIg0FhoKfAr4PEqA=;
-        b=dErUmZ7WHsMnACf3oAxFLi9K7hcCEUzhhn4w3NY3N500yziR6Y38ewlpuqdZJKhDV4
-         un7TSO0yB98L3yiZv8LQelejN+5XoKYYPA9ppQ1/TUHLnr83dQCwPt+XQIM8gBweH1hN
-         iMNxoyCbCR0FnawKZfpdiOeLBuYhGdciql3dJ9GCKd7pm+m/0NwgKFnHym9xyXh2CYf6
-         PShS3MRYaVLQ/JVReKjo1vR9pwTPFMMMCxiFngYo/vHAmLr8IFzh2/DrA9Db1y7Dp+0O
-         Q7BhwuwWD/k7MojWFyk2F10go8kK3v12coGGrzWFoCjaqn0IeQL4zOOLkdW2Z6IFiKWv
-         QerA==
+        bh=1G7G3x8CQosaH9I2KCc2mDmp0caEd6Jn1e0HXGIwM0A=;
+        b=iIoU49bOGC/kSQ2MqF2qu42Lf3Bxce6n7Nja/APDxh/Nb81JeYLI1Hy8U+eG/0R2Ct
+         FFKyJt6wZdr+9TrLUAGjst/WDIfYg3kBoVEQ6tjGHihEunB4TqgsnkpeiIRgfgqJ6moA
+         GumO9lVEIDwVHw2yizmUfSzciTiRGczWRS3L9tAomwfKfWQP3duVv0EEFu2LsvlRHmOK
+         zPH0WjRG5UxqDfBq/Q+QAMVAIj1y8AjWybLrLp25u6idsIUHwoN0MCSA4r1vV37WUQ6r
+         O3JV1feS/VcFS9U0srESUE3KaJGf9KpXLgr7d8zSQO3ZWoSS2ikoPNfNdcv0drhi17u5
+         9xzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790798241; x=1791403041;
+        d=1e100.net; s=20260707; t=1790798440; x=1791403240;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=JZWZuvgsWyt2x87h19X7B7J9Ed8aIg0FhoKfAr4PEqA=;
-        b=FMUQfTJxt+gcYH4Sk10CsTDs0jx0c7OX3TJu9qSncW7COQFoL/kLvm/p9lZTDt8VQY
-         J1d073+XUpHmwLRzTNmyVDJSf8lXvF4KVwmHcvONGHdyT3QfiGTd6Xc2NRKPt3uitE8v
-         oRIqp4NeP1rd6YtQ+ivaKr0DslZDfmd4gF4Z2mJW3V+ddOOv5FBYkbIWdvuLWeQVt9UC
-         SzKZIX8w3nkdGB7GXUlpiBvHM2zhzNMBnxzkcq4T1f8MFcShdgLG7WW1IlMvgLag4Ssc
-         E8C2G2Nw1g9wo2RGwfRFLLAjjb0f+apGwBz4PJnzIvGp/tV4cdBh2GvmQJKF6zajTGkl
-         0z5g==
-X-Gm-Message-State: AFq9FYLnQ/4HbvkHuyVnvBjjYCr6Z/eBZtgTknZIh/XhYpCtp7O7661o
-	WrQH31hKVlq8YXzS3i39n6a81GMbQCBrZ44bp7KElL2gMTwt1MmxytZLt5DEGahDXg==
-X-Gm-Gg: AYBFou1NYA/AREm3f3S250KLkZeUQ/VKsXHwH2zVhmx2UXSUqa2WusYIzqe9fPBHNbS
-	s5WXHQ75HG9QBWUOBygN6tkh2X00Lx4+hUGc7xFhCiKUIQMhiLgn0vNcfMcg15C/VxIPYW5QWoD
-	8s77SzcWhLpo8/MEiqqF4OXQ8pF+ku/nQnocf1Vy3kBAyAWrHTKWoZcNKI5yJLzg7aKBPAx9W0u
-	9+hZU1BZDJRcxgOueyAekPv97/mvdy0FWMLLQe3eaZVPo5JyMYdkvOv8yCSlwn6oEbkhtouxvRm
-	rBc9V6u+F6P+YFs6XvdUBMQ1ofHov9IprsHn5wodi2n17r82DYLGL9t4d4wcZpegEklWwPynvsK
-	N6klNuaCk68sjcBw7XH+Hv4FSMfV0UzHipkC9xIR9ivTCEntXQfAH8i+3Cdg78JP6P0s5quDzWV
-	ARFvCZ7R/PwqPW8nHoRDRq/V59zZTDAQ4qrZJi+E2axlzKPO7fXzU4jY3lMmQU6tFXT5Bwdzuap
-	EkFF30zgC/z9v0ABPR1JMZKgGuFMWZqLcct
-X-Received: by 2002:a17:902:c946:b0:2bd:3bfd:74f1 with SMTP id d9443c01a7336-2e3015b273amr1215915ad.2.1790798240054;
-        Wed, 30 Sep 2026 12:57:20 -0700 (PDT)
+        bh=1G7G3x8CQosaH9I2KCc2mDmp0caEd6Jn1e0HXGIwM0A=;
+        b=hOOZdm9Oj+zSiKdDE50JPqR14P0yx4NbEFYW+2Pzrcd3mpi5aeLmzg0jYDHBQPZH4v
+         Amd8z4thi/dt4Yyx5P1KiHLW/VWRgzjz+3fsRGJOm59dxDY4eIUBrEDMWWfKQXArrChO
+         R1NnoQWFdUW2MXrS6ps80TQe7rPZarsR2Zs8JnMI4YO0RosJrfF74iqdQvJwYQ36Eahm
+         BVe9/GFlHRHs2CTt2tJFUKUEYKZYLKrCgZwb5uK1bHrD9p/0OLK922riX9ZHwwmvLxUV
+         Udo0q8HW/gcHzZux0PUr/DM4og0QulADravWYtW78mevppB7nUmrTWZ33vLVTwN9VjfQ
+         4xVQ==
+X-Gm-Message-State: AFq9FYIq5WI+rbQepzCymjWFE6/N4f/V2tBX67m+R7+bb6K6AOEqxDHa
+	YCLWt9LkbIK2e0b/p7rT3p941ZoXML9ALa05mBx4eyPKbKJtm4cAN/P1WGEeZ4MhJg==
+X-Gm-Gg: AYBFou2QlV8KpEEdmpRUl+YEZnFtfI081jYLvKAmYAhbmMdy0HFDIR173qQ/oA65pqb
+	gFka334VgPK5V8JdyrRJPOHf3ZWhVAD1Ei6z2rI14lJp5z4UPhplY0T5KQZkoM/RCejjiWBDkEO
+	X0SlUwEHg9PB9U9S2G8FwfHVTewUzTfGsMLX+6HOuz7qKhFjlStphFhXnOQY8YyzWEVEa+NPpFO
+	5I6OEVA+pxxoxO7w77RfCWGnSYs4ZJVh107xmRqwGYONASCOcq91v8nSfPABww30AkyhhBYNwsR
+	T1B/TlnmT7QsoWTwSaTNtiSGb/bKWTrLuRvxT1ZfmhVN6GLvm29bAR9SZlXo5TM6cFi6Yga7Jgi
+	Uw3BDiIy9PKgypS/KqKklGTaTw7K6AUyJAVF2PtU4tWqQCr7pL0x81q0/r1IGn0fxAlBxsYHTlP
+	p9KngQPSm8pt/3dwkn6K7auUL7wXgupCww+05Mv9szlKe/w7aXWPEg0LZ/90/3Ze8z2ErOG+AcQ
+	KM2Iykf5jMfU89GY3+X2ay4Yen8K3qERDqZ
+X-Received: by 2002:a17:902:e951:b0:2df:8ff7:876c with SMTP id d9443c01a7336-2e305472617mr373115ad.16.1790798439504;
+        Wed, 30 Sep 2026 13:00:39 -0700 (PDT)
 Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a4f475f4aasm742177a91.12.2026.09.30.12.57.16
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a4f44d0a30sm753405a91.16.2026.09.30.13.00.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 12:57:19 -0700 (PDT)
-Date: Wed, 30 Sep 2026 19:57:12 +0000
+        Wed, 30 Sep 2026 13:00:38 -0700 (PDT)
+Date: Wed, 30 Sep 2026 20:00:31 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
@@ -72,13 +72,14 @@ Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
 	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rafael@kernel.org,
-	Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev
-Subject: Re: [PATCH v11 12/16] iommu/tegra241-cmdqv: Add a helper to quiesce
- VCMDQs
-Message-ID: <ar1pmNRMKDDJCIkz@google.com>
+	Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v11 10/16] iommu/arm-smmu-v3: Factor out
+ arm_smmu_handle_gerror()
+Message-ID: <ar1qX_Ox2ONgcZM5@google.com>
 References: <20260929034510.2023173-1-praan@google.com>
- <20260929034510.2023173-13-praan@google.com>
- <ar1cxFvuzIc2dpmi@nvidia.com>
+ <20260929034510.2023173-11-praan@google.com>
+ <ar1WQCud+B3nAWX6@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,58 +88,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ar1cxFvuzIc2dpmi@nvidia.com>
+In-Reply-To: <ar1WQCud+B3nAWX6@nvidia.com>
 
-On Wed, Sep 30, 2026 at 12:02:28PM -0700, Nicolin Chen wrote:
-> On Tue, Sep 29, 2026 at 03:45:06AM +0000, Pranjal Shrivastava wrote:
-> > The tegra241-cmdqv driver supports vCMDQs which need to be quiesced using
-> > the STOP_FLAG. The current driver implementation only uses VINTF0 for
-> > vCMDQs owned by the kernel which need to be stopped. Add a helper that
-> > sets the CMDQ_PROD_STOP_FLAG on these vCMDQs.
+On Wed, Sep 30, 2026 at 11:34:40AM -0700, Nicolin Chen wrote:
+> On Tue, Sep 29, 2026 at 03:45:04AM +0000, Pranjal Shrivastava wrote:
+> > The GERROR register's state might be lost when the SMMU is powered down
+> > during runtime suspend, requiring the suspend sequence to handle any
+> > pending errors before the hardware state is lost.
 > > 
-> > Consolidate this logic by renaming the implementation hook to
-> > quiesce_and_drain_queues and ensuring that the tegra241-cmdqv driver
-> > gates all active local virtual queues before starting the drain loop.
-> > Additionally, clear the STOP_FLAG in tegra241_vcmdq_hw_init() as a part
-> > of tegra241_cmdqv_hw_reset().
+> > Refactor the gerror handling logic into a helper function. Subsequent
+> > patches will invoke it from the runtime suspend callback after disabling
+> > the SMMU, ensuring that any late-breaking gerrors are logged and ack'ed
+> > before the hardware state is lost.
 > 
-> This whole suspend routine is missing the CMDQV flags.
+> CMDQV has a separate IRQ, so I think it likely needs a counterpart.
 > 
-> vintf->enabled and vcmdq->enabled must be cleared when the system
-> does suspend, via tegra241_vintf_hw_deinit(vintf0).
+> I have a similar patch in one of my series:
+> https://lore.kernel.org/linux-iommu/16ae24cc2a002802b990afa1a69fe4ceab1e0da2.1790188510.git.nicolinc@nvidia.com/
 > 
-> So, instead of quiesce_and_drain_queues, perhaps we need a suspend
-> callback that:
->  - set stop flags to all lvcmdqs
->  - wait for all lvcmdqs being drained
->  - hw_deinit vintf0 and its lvcmdqs
+> Mine only handles CMDQ error though..
 > 
 
-Interesting. I had thought about that but Ashish was able to test a
-previous series (which def didn't de-init vintf0 & lvcmdqs in it) so I
-dropped that thought..
+I'll add a counterpart to arm_smmu_handle_gerror() in v12, I'll factor 
+out the body of tegra241_cmdqv_isr() into something like 
+tegra241_cmdqv_handle_errors() (bailing out early if VINTF_ERR_MAP is
+clear, so we don't warn on every suspend). The new impl->suspend op
+would call it after draining the lvcmdqs, with cmdqv->irq disabled
+around it, right before hw_deinit(vintf0).
 
-Looking at it again though, leaving the enabled flags stale is actually
-worse than I thought.. on resume, the CFGI_ALL / TLBI_*_ALL issued by
-arm_smmu_device_reset() go through get_secondary_cmdq(), which still
-sees vintf0 & its lvcmdqs as enabled and hands back an lvcmdq with the
-STOP_FLAG still set.. so those invalidations get silently elided until
-impl->device_reset re-inits vintf0 (after SMMUEN=1). Thanks for catching
-this!
+Since yours is for the CMD_SYNC timeout path, I'll keep this
+independent? WDYT?
 
-I'm planning to add an impl->suspend op now.. that will cover this, and
-also the late breaking IRQ changes you're referring to in the other
-thread. Roughly:
- - set STOP_FLAG on all lvcmdqs
- - wait for owners & drain all lvcmdqs
- - handle any pending CMDQV errors
- - tegra241_vintf_hw_deinit(vintf0)
-
-I'll call it from arm_smmu_runtime_suspend() before gating the main
-CMDQ, so the CMD_SYNC in tegra241_vcmdq_hw_flush_timeout() still goes
-through and any late cmd simply falls back to smmu->cmdq.
-
-(Will drop the extra line removal as well).
-
-Thanks,
 Praan
