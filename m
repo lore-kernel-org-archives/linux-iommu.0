@@ -1,55 +1,68 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012063.outbound.protection.outlook.com [52.101.53.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FCB24CDA2E;
-	Wed, 30 Sep 2026 11:44:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790768643; cv=none; b=p912FObWLL8yNgEbzc2N3wm6AwBHuBwBNoaJJzhc1xZ+R7GLgDxL9+yaaVAxDYNFBB7jAXn/Bpza2WunGK+wNazUVYkX9+RUoCtGnKNUGENdc5i9DkrlH2RhJbam+6VjXH31ppH0dwUqp4zlj9HUvfFgEYHze9+I1hGAgZXJSiU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790768643; c=relaxed/simple;
-	bh=XbWhsaYYwwptgi4uHGm8FURUn9UCJ8ZEfu4EpI6zryg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j3Tg46Q2CVOxgKzYjUoRcN88bfTCKgRHBcLq1AVYC8DqiN+2eh5RUaveM+PoFWq3jsIlSBW/ruCC9ixndeutN8SScXvuThNq2WBQayPA7hDwPNLJVvj2fkjBkNLqs6chj+LlXOKzEHCOCTFr3dMY5Zr1w2iBWtSw3aXz0S/+5Mk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VSWXjJHV; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15CFA4ABBCF
+	for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 11:52:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790769171; cv=fail; b=ptIEn6gWbePMt4anMJPHYm1To3sQHqwoXBLyjFBeFHCr1SS+CurEfbJkgrTEhXO0Iw6uJSW6NFFg4PV76XNUUnTvz0upMoevXL7hcfIsJ7035ImYlqOa/12wl3MrXw+2NDUMCCA2jD0MvF2pfo2q8JMiWkiBLytajSskEOGO2Bo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790769171; c=relaxed/simple;
+	bh=Zrab33aLlEAZPZeGSjNpVOzRk159Rr+NBE9iHb0KhCw=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Si0QWUTzZ0U2UKQdBxfDvCeLDt8Fzr2yCvODF4/8hm2nfUTwQGkHCkD+66ocu56xIg4HseYa/084fb/ntrJ/qU7Pkv7fNTx9lB5+eNzHTsXcffUGfy21cmqd7I+k4q0pRLryoUhek47zImoQzfuV1/u4Jf3fzxMkczcDFOHtXyg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=RZdUEce1; arc=fail smtp.client-ip=52.101.53.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VSWXjJHV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E935B1F00893;
-	Wed, 30 Sep 2026 11:44:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790768641;
-	bh=045Gg/9FNTZlrsi+oP8Nxf9edT3+jF24v5WNbYcZjwE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=VSWXjJHVAsJ34fjRpCgdAAm2s+N2fiEQSsaLA83OWsLq4eONyJuVTUfPjdna+84/m
-	 q1/1x2A3M5+juV1717SRNgmygTNIXSdte54KjqlagnfyYM5nvdvN6tmbfog6D74Gii
-	 rtHNCGwAyKdmRpQAOB85aZYiTw8Zv4AvgiTBZj6t3Y3cLYzgx/Cbu8SdkN2WrV56d4
-	 jjoxNRA8oUhe//pwutrYVjDKzCQE6/dOiGbSntP9Yt7b9G6O3cspwsYwROmB1m7da3
-	 DTtTpp37fbHkG2hQ4G38CDwinoxY1+ALw5+CQhP61M6Kpz8Nuf7XXpD5Ucku+DcCIg
-	 rEraZmriCvq5g==
-Date: Wed, 30 Sep 2026 14:43:56 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="RZdUEce1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iwyV6i7SBpIEdWjMDnvq3mgF/ZySU+lRi97X+HMv8iPLZaisXLcKgvdoxfeGqkedQUnYfI0igCcdINu5iWXd4G0QicrmZOxWT4GL1N8IfIuFHF3lwP5xFIJKNM7xJdvqERnc6saK/T98Ht1bp+Vr3s3ZckdwQjT6lUnlxfd8jENehkbUtvg0a4eev+KDSEDOjgipfitimYJiYsdidMfq3K2k2qo3yNlYl86yagBdx92HUaMdBTPK2rnyimq4PmL6nih6R3M5mse05NYR4qK95Ol1Lt3wvZsJ3A6vU+NfARAk4X8E3vpl7BTjdv7XssXlAlCFpc3/SAJkol7ekTnxPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TEvHtxIdqsfhTBVkbiCMeBSGo6IMfO8OaXy6tKtqooo=;
+ b=SpLADxOjDDVk4lqxV4M8MWrLisuZqsJL6IKqseWpkO6lfqG/uGAMx3eshP87hotOmkfoDtI1KpWx6dn422XISkSAATr0X4FBMA6ARAaB4yxxb7+4o1VtbiHw3a+x/KK9cognT6+SCZRqyXmR8rHUtT5NvZ9ynfmrD7fQtj1mMB7DiF2infhkT0ksEvzDtYj+5wTRowSxrWockC4B1k6F+0QQwNKkmia5lBi/pbjT0jThrwH5eDbQxCaYInZCZe9JIA6hTkd1N3KfX/rNypznmg36CHLAvjREEvxsAtG+ESJjwBJ7gx9JKOByKiaaj5YHqDKq95NXkJwe8zH91OEwTg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TEvHtxIdqsfhTBVkbiCMeBSGo6IMfO8OaXy6tKtqooo=;
+ b=RZdUEce16NeuFpEtoZqU317MFFd0O2B+yCel8M0PsF9LWGuVKNCrkyexVg0vGC7XbRvqn1+v9Hl+GMOaUW51UJFd5H/Np3iIASUeJ2RliBR2wcf+Kfg97usHyMLPbmcnkmCeuwpxaGuJQnJFvFqIMcMgIrbOBOftHLh6PWPLeZk=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by LV3PR12MB9354.namprd12.prod.outlook.com (2603:10b6:408:211::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.25; Wed, 30 Sep
+ 2026 11:52:46 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0451.022; Wed, 30 Sep 2026
+ 11:52:46 +0000
+Message-ID: <fbdc710d-7be1-4021-83c2-548c798d9d14@amd.com>
+Date: Wed, 30 Sep 2026 13:52:39 +0200
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v8 16/23] dma-buf: Let importers ask how peer-to-peer
  traffic is routed
-Message-ID: <20260930114356.GC3401365@unreal>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe
+ <logang@deltatee.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+ Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
+ <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+ Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, Sumit Semwal <sumit.semwal@linaro.org>
 References: <20260928-fix-p2p-acs-v4-0-v8-0-404453b9c435@nvidia.com>
  <20260928-fix-p2p-acs-v4-0-v8-16-404453b9c435@nvidia.com>
  <607e8903-a979-4d78-bf08-447321c03119@amd.com>
@@ -59,136 +72,123 @@ References: <20260928-fix-p2p-acs-v4-0-v8-0-404453b9c435@nvidia.com>
  <eeef5951-825e-459f-b474-bf8c59588446@amd.com>
  <20260930081832.GA3401365@unreal>
  <4549640c-f4a5-4dac-9be3-2e5aa127555c@amd.com>
+ <20260930114356.GC3401365@unreal>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20260930114356.GC3401365@unreal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MN0P220CA0006.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:208:52e::30) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <4549640c-f4a5-4dac-9be3-2e5aa127555c@amd.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|LV3PR12MB9354:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2f1ecc12-d9b8-45f0-9fcd-08df1ee95813
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|23010399003|22082099003|18002099003|4143699003|10067099003|56012099006|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	EL3Iq4afWzlfx15QkZBURGTPkrJtm0eSmKYmLkmvNjCqCVuCKP2ANCJueefyiW3zWfsagk0HyB0l4e3gJRn2Z39ednKnF+eHvHNGc51ab7M+s7dD8UXhokBWp+EjE+LJAfp4XqOL6rj2hDj/zon0WtCkRucuAMES3TJSpmoewPp7IJh/XG21YTJvrqJdySmSZMBJdCwkwHMa7i0lMGHI8wTzB2mRmtYHChXZM8u3qgXwl6uQXhEmbBbx5E8NTGeWKzlpLl03BjGypimNzFG8I6KLkYFGVkNZxcOsfN3ZF6oO351g1zZFluC+QUIDWrDf8dKy2MNxsum0bStJQcuceC1RsDIcZNh1fi/OTun4UFMjzDEWtjm+YMyaRbBfuvrxktDZR3Aj79Qs1/nAaDXJpJEJnUSMpnvavnRuHsfjbltbS3lMD7hc3rNvE3rdGthQVHux7/JuK1Nl/Q58Dsz7b3L/nCG0kRGYA2eQd6yrMfmKSow2St7r+noc+IGKu+TAd3EChhDbdIvO93d1nK415SoemPtZtwsYYWUZhLvUtr9pgU82/sOf9/1ARt85CMnviYrrUfpBjrW9o7VJbDGT0odWhB+qzAOvD92Tg2ZFAgenwmoasEwH0v/QQdO/P8c0keBoI1Ryy8M/5puhrG78P5KgIirkjQ0DqlTssLdkkZ4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(23010399003)(22082099003)(18002099003)(4143699003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?OUFWemFuV0R0RXZlcGtoZmk1c2psOS9jV2xFbk9qcHBjdTJXYkVkQXR5NG80?=
+ =?utf-8?B?MGRKOHJPUVdFZ1JXYVgvays2cGNjbDJ1Q1VxYk4xSFhxWC9aQXJTTXZSTjNw?=
+ =?utf-8?B?Q3ZsdVl0alNsYzgrMWJ5YXR0OXduRk84bTEzNzUxSEpJSzIwOTB5Wm9hcjVl?=
+ =?utf-8?B?VEt2YWtHblNQcE51eHkxOGk3RmN3ZFg5S01WN3BhL1pSZDMrOFdRajNVYm5l?=
+ =?utf-8?B?L0ZoTGF0c2dMNk1rZmZIT3lwWDQzNnY0cXhIaUhXOGpwWTRpYkV1NU5NenA2?=
+ =?utf-8?B?Tk5qZHdaa2Q5RVRFaDFweEdKSi9UVGFqSXNYSk1LcnJpVXFzRVd6T0ZHTWt0?=
+ =?utf-8?B?eEhsaWFsTkUrY09LK1JaL3ltUUFoTFcwWlY4TDdrSXdqaG93RWFIMUFUN1NY?=
+ =?utf-8?B?YVB3OXFadmsxc2FuRzhuKzVSbWVScEZmWjV5NGI3RG1yOE84dWphY1BqQlZw?=
+ =?utf-8?B?OHV3T00xTCtudmNCMmc1QzRtUWp5aUFCR1c2cEJMT3Z5Q241cjZhODRvTGJY?=
+ =?utf-8?B?ZjNaSXNGNW80dVkrQ21RTVgyMkRid3l0NVlZZjV1Yy9Pd1ZGcFkrazFHWmND?=
+ =?utf-8?B?RWVLN0RqZ1oycmZyOUlMbXE3MGJjT0VseUNWTVc5eDVINS8xOHh0SFdNQzZ3?=
+ =?utf-8?B?NFJxbGVtRHU4L2VYWnVDbjlIdFJtOGg4TXF4TTJlc0hZbFhMSENRems2clRj?=
+ =?utf-8?B?Kzl5SHhvVGhLV2pXY2NxRnJKVTJ3NXowMXBYZlBuRDBEMk9GVktIbjlnVU9o?=
+ =?utf-8?B?QWdobVh1Ri9zb0JEN28xWVNwNU4waHB6bXFHaTBudDFiYkk3YWZHcHYwb0Nn?=
+ =?utf-8?B?a2krSFhoWkRLOXZHVXRnZllvZ1lGS3VLZWNNaTJ6L3loL2pYWU5yUmY4L3Qy?=
+ =?utf-8?B?UHdnQjFLbk8wWW5nckV0SkJheVYvb290N2k1TW9meHRRQklybmZaem1QK09D?=
+ =?utf-8?B?SmZ6aWdxSDE4bzFlclNIMHl3U1JLWXYrME1NbVBVZGlsRk4rVDgvRm1vOU9y?=
+ =?utf-8?B?NjhOZVNpRnRGOTZPR25Dc2paYURTL2N5dVVQeXdFaHlYQVdPSGRCL1prdE14?=
+ =?utf-8?B?dnRidHRpR1pOMTNTOWVGMUJJOXRjVG5BOWxkeCt2ZjYvVVIyYlZ1RzVCc29F?=
+ =?utf-8?B?Z3A3ZlFPbnh0OTVla21RV3RleTJYcUozTXBRa2ttMzFPV3duVmlFdHBGNEhR?=
+ =?utf-8?B?S2hpSmdRc2QrUHJac1hFb3VYME02MEFqbnFKOElhTDd4a1VaMTdWa1RjTVJm?=
+ =?utf-8?B?dHJENE13eDV3WDM3N21Yem1rVWtmR1ZUSkMrenpoUnRZbGRZRGxXR2ltSVRT?=
+ =?utf-8?B?STJ6YjcyN1RPNHN5NE05UzZjVTNXOXVpSFdjb0Fhais2dHdkeEpyY3FLOUdB?=
+ =?utf-8?B?RXI4NkdRN1hVVHcvcEZKQ3RPNXF5RGxzZEpNVG80blhId1lpUkFrOTgyZDNH?=
+ =?utf-8?B?K2M2MGIyOXdDS0RzR3J3NXY0S1dRaENXMjZWYVJESjdYVmduNXZkUm5PTkFo?=
+ =?utf-8?B?NEhwaHVGcy8vcGV5Z3VIQjlqU0tGUmdlajlrV200MVd3OFlZUDRqemdOcnpY?=
+ =?utf-8?B?Sit0YWd2MzUxNGswdnBSWDBHOXBYRjh5MitTaVdyQTBBNlRLNENvcmNLcjJP?=
+ =?utf-8?B?LzZnSnFSVHViTzRUVm9FWGJ0K20rQzgzYnRTMTAvTjdpV1BDQkk3YTVxTFp0?=
+ =?utf-8?B?RWptWmRudkRYM0QxeXpJVHl5THdydTFvNnQ3ckZKS2RVVEprRml4RE4rN3pq?=
+ =?utf-8?B?Uy9RRWlsRGFFM3RXQ1Y0akkwYUtaeUQvNUp3Qk8xT1BVbjJnQTl0enpKNVVz?=
+ =?utf-8?B?UU5FYkdRd2V0cS9nWjdnaUZSNmNscGc4R0JRbkpPYjhMVFUwckhwbGpxZUFu?=
+ =?utf-8?B?Tko2Y1dCSDVXNzQ5bERwd3pEUVBsbkNoNTF2UWxjSS8zZEFCeXhvUVpYZTI1?=
+ =?utf-8?B?Y3Z6b2JXUnh0aHl5cFpiZXExQWNKTzlKUGo0eEREb2dhcklxTUZHRHdBWTI0?=
+ =?utf-8?B?UlNIbHM0a0ZlZmEzdzE5bEhGUTB4SkFYOTZOczVpRFhwOWtmcHBUL2dmd3Bz?=
+ =?utf-8?B?aXMzY3pFMEduYXBxT3VQZmc4WFJacWd4R3cvVFhhYUE5Y3NXZktWSmhWWVZ2?=
+ =?utf-8?B?Ym5IQWh2RUJIQWhpck9PSmNEZnRJUTcrQ2pTS3VKRXE3V0tXOElSaDh0dXh3?=
+ =?utf-8?B?cTBZSlg3SkpqVXVoMnJoOER4ZUc0N2JHME9PL09uTUtaRDIyUWk5M1ZIcU42?=
+ =?utf-8?B?VEpURUdacHJCRU5maVpuRGttbHExNlN2TTdkb1BWRE9QNVlUeWgxeUFXWjh4?=
+ =?utf-8?Q?r6nMYVwmHYpj8ichVy?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f1ecc12-d9b8-45f0-9fcd-08df1ee95813
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2026 11:52:46.4761
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: R4DPS43uxPJ4WjafJ+UreikyAOxE2ZE/geMwQ7VmW4b+Mdhhj00wjakdkq68WAZ3
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9354
 
-On Wed, Sep 30, 2026 at 10:34:56AM +0200, Christian König wrote:
-> On 9/30/26 10:18, Leon Romanovsky wrote:
-> > On Wed, Sep 30, 2026 at 09:00:57AM +0200, Christian König wrote:
-> >> On 9/29/26 19:57, Leon Romanovsky wrote:
-> >>> On Tue, Sep 29, 2026 at 03:39:42PM +0200, Christian König wrote:
-> >>>> On 9/29/26 15:23, Leon Romanovsky wrote:
-> >>>>> On Tue, Sep 29, 2026 at 11:34:05AM +0200, Christian König wrote:
-> >>>>>> On 9/28/26 13:19, Leon Romanovsky wrote:
-> >>>> ...>>
-> >>>>>>> +	return pci_p2pdma_map_type_tlp(provider, attach->dev, tlp_flags);
-> >>>>>>
-> >>>>>> This function call here *must* be in the exporter and not the DMA-buf framework.
-> >>>>>>
-> >>>>>> So clear NAK to putting that here.
-> >>>>>
-> >>>>> "Look, it is easy to complain you don't like how it looks, but this
-> >>>>> stuff is hard there are lots of competing concerns, if you have a
-> >>>>> better idea now is a good time to present it."
-> >>>>> https://lore.kernel.org/all/20260921130858.GO11599@ziepe.ca/#t
-> >>>>>
-> >>>>> Do you have a viable solution?
-> >>>>
-> >>>> Ok, that sounds like you haven't understood why I'm rejecting this.
-> >>>>
-> >>>> By moving the calls to pci_p2pdma functions into DMA-buf you bypass the NAK to expose those functions to drivers from the DMA maintainers.
-> >>>
-> >>> No, you have misunderstood Hellwig's position. His request was to ensure that only
-> >>> subsystems deal with P2P internals. He was perfectly fine with bringing P2P
-> >>> complexity into dma-buf, since it is the agreed-upon mechanism for sharing DMA
-> >>> regions between devices.
-> >>
-> >> Thanks for clearing that up, I indeed didn't realized that.
-> >>
-> >> But that is pretty much against my standpoint that I don't want any P2P complexity in DMA-buf.
-> >>
-> >>>
-> >>> So this is not a NAK bypass; it is a correct implementation of his request.
-> >>> He handled P2P-related complexity in the block layer.
-> >>>
-> >>> Let's add Christoph to the thread so he can correct me if I'm wrong.
-> >>>
-> >>>>
-> >>>> I unfortunately didn't understood that when the dma-buf-mapping.c code was added and just assumed that you just needed a place to put some common code.
-> >>>
-> >>> That is not correct. Devices A and B share a DMA region via the dma-buf
-> >>> mechanism. Where do you expect the code common to dma-buf to be placed?
-> >>
-> >> In the DMA layer!
-> >>
-> >>>>
-> >>>> So as long as that NAK from the DMA maintainers to expose the pci_p2p functions to drivers stand I will push hard to get that stuff removed again from DMA-buf as well.
-> >>>
-> >>> Are you seriously suggesting that every dma-buf driver in the world should
-> >>> have to reimplement this mess?
-> >>
-> >> Well I completely agree that this should probably not be replicated into each exporter, but that is the job of the DMA layer and not DMA-buf.
-> >>
-> >> The purpose of DMA-buf is to exchange DMA addresses between an exporter and one or more importers and handle things like lifetime and synchronization of accesses. 
-> >>
-> >> What the framework should do is to transport the capabilities of the importer to the exporter, e.g. what physical connections we have etc..
-> >>
-> >> What the framework can also do is to have additional information from the exporter to the importer regarding addresses and mappings, for example if they are bus, IOVA or some special internal DMA addresses or how to stitch together your PCIe TLP or whatever.
-> > 
-> > At a minimum, exporters need to pass `p2pdma_provider`.
+On 9/30/26 13:43, Leon Romanovsky wrote:
+> On Wed, Sep 30, 2026 at 10:34:56AM +0200, Christian König wrote:
+>> On 9/30/26 10:18, Leon Romanovsky wrote:
+...
+>>>
+>>> At a minimum, exporters need to pass `p2pdma_provider`.
+>>
+>> No, exactly that is a no-go. The neither the framework nor the importer should see the p2pdma_provider.
+>>
+>> Only fully translated addresses where the DMA access should happen.
+>>
+>>>
+>>> If I keep the “dma-buf: Let exporters hand out the P2PDMA provider behind a
+>>> buffer” patch, I can move the P2P TLP types back into `p2pdma.c` and export
+>>> only the function that indicates whether ATS is required.
+>>>
+>>> Is it ok?
+>>
+>> What you can do is to forward declare enum pci_p2pdma_map_type and than pass that 1 to 1 from the exporter to the importer.
 > 
-> No, exactly that is a no-go. The neither the framework nor the importer should see the p2pdma_provider.
-> 
-> Only fully translated addresses where the DMA access should happen.
-> 
-> > 
-> > If I keep the “dma-buf: Let exporters hand out the P2PDMA provider behind a
-> > buffer” patch, I can move the P2P TLP types back into `p2pdma.c` and export
-> > only the function that indicates whether ATS is required.
-> > 
-> > Is it ok?
-> 
-> What you can do is to forward declare enum pci_p2pdma_map_type and than pass that 1 to 1 from the exporter to the importer.
+> Unfortunately, neither suggestion applies to RDMA NICs. They need to know,
+> before mapping addresses, whether to create the memory region with ATS
+> enabled.
 
-Unfortunately, neither suggestion applies to RDMA NICs. They need to know,
-before mapping addresses, whether to create the memory region with ATS
-enabled.
+The design principle here is that the final location and access path of the data isn't determined when the buffer is created.
 
-The importer needs a way to obtain device information from the exporter so
-that it can configure itself correctly.
+The importer first need to attach before it can query such information from the exporter.
+> The importer needs a way to obtain device information from the exporter so
+> that it can configure itself correctly.
 
-Thanks
+That won't work with DMA-buf then, the exporter is completely opaque to the importer and that is for really good reasons.
+
+Why in the world does the importer needs to know the information from the exporter before the mapping is created?
+
+It is the exporter who decides how data is accessed by the importer and not the other way around.
+
+Regards,
+Christian.
 
 > 
-> Regards,
-> Christian.
-> 
-> > 
-> > Thanks
-> > 
-> > 
-> >>
-> >> As long as both the exporter and importer agree on what those values mean I have no problem at all with that.
-> >>
-> >> But how those DMA addresses come to be should *absolutely not* be part of DMA-buf! The complexity of that is seriously not something we should have here.
-> >>
-> >> Regards,
-> >> Christian.
-> >>
-> >>>
-> >>> Thanks
-> >>>
-> >>>>
-> >>>> What you try to do here is seriously not ok and I will push back hard on that in the future.
-> >>>>
-> >>>> Regards,
-> >>>> Christian.
-> >>>>
-> >>>>>
-> >>>>> Thanks
-> >>>>>
-> >>>>>>
-> >>>>>> Regards,
-> >>>>>> Christian.
-> >>>>
-> >>>>
-> >>
-> 
+> Thanks
