@@ -1,139 +1,143 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010026.outbound.protection.outlook.com [52.101.193.26])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2213B3C03;
-	Wed, 30 Sep 2026 18:35:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.26
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790793312; cv=fail; b=rYJ23WD1Zd6pSUS7kdh6EkakiwRxPI8um6vsC7230kRJRW1BHQBpoCW66IxKmRomh2USp2kfFsvePWSi02O/CcZoDAkeeIaMKRv0PD5QR4kJK66PM9JFtDEBrHRP7O9PExhjPaKG448t5bFy5rlc7kc24IE09fIKoUYpUIwCDAo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790793312; c=relaxed/simple;
-	bh=3FELcXpAOQAQG5WqRAseygPwAnkxbHAYd2ba7GX9EEI=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h52iRAQA05wllsncuP2ujrHZLbRTMUBmJR54IAZ4wY0R1chJGeQJIyfOKf2d1lNeLjMCrmVV6+YHBmO2Ju1p7yCWy06zH+apEPF6aWXkOQhgf+vtSv3loR3PpOSWa49vKpjkRhCTLfXJV4ePiBnaaCNZRGrm9ut+lPRt0ybfGcQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IJSsegQ/; arc=fail smtp.client-ip=52.101.193.26
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DBDF2E7386;
+	Wed, 30 Sep 2026 18:45:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790793914; cv=none; b=dH3dqZK33iwZ6EpUn+lLgCWTIupomniC2EPxMjmQIT54pw6kQ2xbpYOgBl1hb7G/G2fDdTt1VG/wN8qdu0ZbeoQ1LD5cFB4HvDW55UtKpIjxIddROcZRxg+IJLW2OEy8O+gIt0G0pHGEIhrPiPr1kKGkgSb7ZqQHFG/9dO68MR4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790793914; c=relaxed/simple;
+	bh=bxB1scayv8b4zz5zP1qNakxI8SCbU+g1DMqQRKDjTmY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=O6VC6e/54ImxCwVQpz2i6QfHqJBIhJ8ryyxSocKa0fQzxE90qRteSwmUsYh8bXaMUzhJLec7uSRub6ktvyDW9bRvPVvqhUiIs6CysyAnLCbSAlbwt0rrHRFN5Wswb4Vd8GWXXatYdu9VUXHJ220bZF/dVRAM9Nnt7g3PPu9MI4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W1oPMbDZ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IJSsegQ/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Tn7PxAo1Wlno+9w+dRsQRCGPbiIcPvEmcWRDGddg+yQdz3ksm4CUbZkiR5tCBqnSM6dBO4CLCnHV82XJQFZI6O5v/1LEZJUKBa1YTniZ0iOJq7XIJ7kMhP78wRyUKzlsuGDLNj8AZmUS7iM9F81zJT8NCxGv45GYHHwYH1NaqegcnyXpLsT0O0bHIY48yBoo/Fh9UxT63eSPyktYUyrKkt7EY1nAtrua7PixjR5bKyzzqSjg0tvCBYMh2vkNdYKtBgpcpmjGUTovkTcCkudLWtqYf6sEuXBP1ELTBR7F8LhduMjohkzVJuDhEOjidPQvhTcPW4NYVqdeXouCJ5d7Rg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SlRd1Bcy9vxTTkb5QgIwUNkzFq17T19uqVQCG9qaZYU=;
- b=WBXBtsW+1XTi+JMi/Ln0nMhtgUI1y6g85GUyzOb7qsAwxkpoJDfbgJ2RCW0Y5UeRPJ2CKYscGkawXKjsWZmygeZPGHhjoz7qTX0E60iyrI6KjiqdV7yQGX0TkWU3Gh52dbg4nT5l4n9e2vqWJxu1am/FKxh9gYJHT18rQ3T7/WEw6KDgzoNCmzqbkMUPjtLbolJQb/6lVgnqWYo5BNicqscnHpOSM/SOW7EEkklitRvFPFDwjWKp0qXswmo29gY5nAph7DLV3JIm6ziA+n1lyggDAXeJoun6UWbOwb36Bz/CSX6Jp4VfAndml9bIZdvIwlgRJey64lAnAMy8GiPTdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SlRd1Bcy9vxTTkb5QgIwUNkzFq17T19uqVQCG9qaZYU=;
- b=IJSsegQ/ESrp8WGVq0aU78n89n4TAIsybZMkEa6igvuiXUtKq4rRU5Qqsmt67ugpiW7d+7ldlLO48teuXzOrt5N2tMy9zGkHDopHzZaiqI1WrzGQ1Sz0MpZ5yHclgMSmbT84G3nDB2QA+ZUBsyZ+mZL1vT3IzBQGBrYicfGX+oi1/cS7p/Uyq7v6/HBImZ5Kgxm7mxXzpSfSgrzbTbwrR8MsrSvNvVrC3aM999y5IOgP0ANyAG2KqGUacYfntFpUUndalj+KvCSQu8twEKC8HhpjkEKjs+iNCV9r+dWQ3mXNkkWu48SdFc7YHTTmMKVDR+COPjJM2NoZja83R9GwGA==
-Received: from SA9P223CA0011.NAMP223.PROD.OUTLOOK.COM (2603:10b6:806:26::16)
- by PH0PR12MB5646.namprd12.prod.outlook.com (2603:10b6:510:143::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Wed, 30 Sep
- 2026 18:35:06 +0000
-Received: from SA2PEPF00003F62.namprd04.prod.outlook.com
- (2603:10b6:806:26:cafe::32) by SA9P223CA0011.outlook.office365.com
- (2603:10b6:806:26::16) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.14 via Frontend Transport; Wed,
- 30 Sep 2026 18:35:06 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SA2PEPF00003F62.mail.protection.outlook.com (10.167.248.37) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.472.14 via Frontend Transport; Wed, 30 Sep 2026 18:35:06 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Wed, 30 Sep
- 2026 11:34:45 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Wed, 30 Sep 2026 11:34:45 -0700
-Received: from nvidia.com (10.127.8.11) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Wed, 30 Sep 2026 11:34:43 -0700
-Date: Wed, 30 Sep 2026 11:34:40 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
-	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Daniel Mentz
-	<danielmentz@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
-	<linux-arm-kernel@lists.infradead.org>, Thomas Gleixner <tglx@kernel.org>,
-	Radu Rendec <radu@rendec.net>, Bjorn Helgaas <bhelgaas@google.com>,
-	<linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, <rafael@kernel.org>, "Danilo
- Krummrich" <dakr@kernel.org>, <driver-core@lists.linux.dev>, Jason Gunthorpe
-	<jgg@nvidia.com>
-Subject: Re: [PATCH v11 10/16] iommu/arm-smmu-v3: Factor out
- arm_smmu_handle_gerror()
-Message-ID: <ar1WQCud+B3nAWX6@nvidia.com>
-References: <20260929034510.2023173-1-praan@google.com>
- <20260929034510.2023173-11-praan@google.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W1oPMbDZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B73E1F00898;
+	Wed, 30 Sep 2026 18:45:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790793913;
+	bh=az8uo1MSqUUzA+uFMs11FJL351K6zE7Q4oadgfzKqQU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=W1oPMbDZDb9X3TZvQnW9wpA+7P3OTh5oyRYCj0nYgsvRzds8UZIOUN7twv+Mp6LN7
+	 oTNJM+Kk/F8odvVkjaF3gA8jkdxhQUxjpJRli8QHEXNK+fqUNy8MU2ih2fMaIe86+6
+	 Rr4g3q64Vm4QU1NIT1M39hSbR7Wy/HCsGrs1YxSPP3kHZ26trjQ8pUvReERPEkThcI
+	 vIIaNzZRCL0J/7jY0NqE7eN7Njxpf1S/qmB71J5AjVKEouBf+mtKGP53iSnQRJPZ3b
+	 WdwEHlhFfzY+GWieOF6xABzlTsycghPfsrbOc3hql+K1XifVYK0zy63HkFmL+0q02q
+	 l5oWVukBQOM+g==
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+To: Linux ACPI <linux-acpi@vger.kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Sudeep Holla <sudeep.holla@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ Ard Biesheuvel <ardb@kernel.org>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>, linux-efi@vger.kernel.org,
+ Will Deacon <will@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ David Rhodes <david.rhodes@cirrus.com>,
+ Richard Fitzgerald <rf@opensource.cirrus.com>, linux-sound@vger.kernel.org,
+ patches@opensource.cirrus.com, Shenghao Ding <shenghao-ding@ti.com>,
+ Kevin Lu <kevin-lu@ti.com>, Baojun Xu <baojun.xu@ti.com>,
+ Sen Wang <sen@ti.com>
+Subject: [PATCH v2 5/5] ACPI: bus: Drop acpi_get_first_physical_node()
+Date: Wed, 30 Sep 2026 20:45:01 +0200
+Message-ID: <4537440.ejJDZkT8p0@rafael.j.wysocki>
+Organization: Linux Kernel Development - Intel
+In-Reply-To: <4766532.LvFx2qVVIh@rafael.j.wysocki>
+References: <4766532.LvFx2qVVIh@rafael.j.wysocki>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260929034510.2023173-11-praan@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00003F62:EE_|PH0PR12MB5646:EE_
-X-MS-Office365-Filtering-Correlation-Id: e3fd57bb-6391-4b26-3000-08df1f218ccc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|23010399003|82310400026|7416014|36860700016|22082099003|56012099006|6133799003|10067099003|4143699003|5023799004|11063799006|260925021911599003|260925022911599003|260925021311599003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	fMfsAwTidc4ri2g30F2yb/pn1osjVuwj2HZMhcjdI6Fxs+z143u8rT7JE55GjC/QwTkIVE6KpQGlP9cTcuHn9sszj2/6kiUvYMGugOSE+RmVC3xIzgS+VhBSXNb0SGigap/tlP784yAog3JGqJGE8Aqn1dJMJNNczlEZatd50GaHkAxLtWUX5sXRDkvGDnW4nCY8Rlr7688Om2Faqh2knwcayLW0g95TC2KS2MctWFNAbzb9NIWJe1mPMp71fYIYvRrU33x46+QVRArSjO+NUX9OOtxHondbJbg/zU5uNjCQmGdjhhAMdsbKS6wvLRikjRVvpyEXpW5Z8nRUqiGPzPnrfNEC1T3IbEJvuooWCooFZQvxrrAFNpooYpK+KTfBhQQ1+5+meU3inmispeGqx756xka/VUxFLtBp8EEF8UeqkBHdiXqrOS3e1FCzQr3CDh7oeFQZCJxU9rnurlEMKUYVEjyYehAn6ItdWC/YIWNTJr9ZgCyJ/yeStuxjgGbZwnEAwfvwvj1/edPIhfrJxubrAOnUVkHC1pdACgmywB8Ngn1fB/UfFlphl+nFMb8Tp7bhga22l/6RjaoGrqEFXda+lr+T9/VAaHoH0aBsTA9Sm7ZWOXfbQG+dj43MRRw566kg5Q3G7AoQwQI2OmDZM5HRxNdeNBqgSibIvgfZi2xImN1z/Lq9URhKSi0ZaW3wg/DgMC57AdPnC3XNMX4WuQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(23010399003)(82310400026)(7416014)(36860700016)(22082099003)(56012099006)(6133799003)(10067099003)(4143699003)(5023799004)(11063799006)(260925021911599003)(260925022911599003)(260925021311599003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Tzlcnke9GIpEFY+P46rE/H1JhJClGmvbOCrClNDfdbT+Z2+LabV7PtV6s1hXuqcZbi2uk30Fs9xyD7OaDa1qaJZz4njd6kzPCcMTZ2yGpmd0C3fFdItskicZTM3tpDvYQpzlGX04QKyii1Z3edLl/KJXBEkUzcbrsy4/WavAgw8nzh9W8ksFkqGW9yr1o0S/8bazpJDcOmF91o1PPymNHnRQ4N1uWBugZyNhBYbgke7t7rxBNZVLW29tMXjNqyDC8zJUCNcsZZwB8EkztDm3tFxlGxQE9FcrvxDdOiBIPehbYYUIDxbbdfmB2nujo4c+aOisLcECoa28cj3I8p/DsfGzWPNmy5Cyho7JbD4KzPepuEXtcNfbj0TbaAaeMF0iTcyPK3Ss/0GKuTxCD/VVpIvnWo7Myy0JbwBn2LSaTf5D2hol9M+KIPkjwt3RDI+3
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2026 18:35:06.5044
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e3fd57bb-6391-4b26-3000-08df1f218ccc
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00003F62.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5646
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="utf-8"
 
-On Tue, Sep 29, 2026 at 03:45:04AM +0000, Pranjal Shrivastava wrote:
-> The GERROR register's state might be lost when the SMMU is powered down
-> during runtime suspend, requiring the suspend sequence to handle any
-> pending errors before the hardware state is lost.
-> 
-> Refactor the gerror handling logic into a helper function. Subsequent
-> patches will invoke it from the runtime suspend callback after disabling
-> the SMMU, ensuring that any late-breaking gerrors are logged and ack'ed
-> before the hardware state is lost.
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-CMDQV has a separate IRQ, so I think it likely needs a counterpart.
+Fold acpi_get_first_physical_node() into acpi_primary_dev_companion()
+that is its only remaining caller and drop its signature from the
+header file.
 
-I have a similar patch in one of my series:
-https://lore.kernel.org/linux-iommu/16ae24cc2a002802b990afa1a69fe4ceab1e0da2.1790188510.git.nicolinc@nvidia.com/
+No intentional functional impact.
 
-Mine only handles CMDQ error though..
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Sudeep Holla <sudeep.holla@kernel.org>
+---
 
-Nicolin
+v1 -> v2:
+   * Add R-by from Sudeep
+
+---
+ drivers/acpi/bus.c   | 20 +++++---------------
+ include/linux/acpi.h |  7 -------
+ 2 files changed, 5 insertions(+), 22 deletions(-)
+
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index 808c6746be14..cc6989d88645 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -809,24 +809,14 @@ struct device *acpi_bus_get_primary_device(struct acpi_device *adev)
+ }
+ EXPORT_SYMBOL_GPL(acpi_bus_get_primary_device);
+ 
+-/**
+- * acpi_get_first_physical_node - Find first physical node of an ACPI device
+- * @adev:	ACPI device in question
+- *
+- * Return: First physical node of ACPI device @adev
+- */
+-struct device *acpi_get_first_physical_node(struct acpi_device *adev)
+-{
+-	guard(mutex)(&adev->physical_node_lock);
+-
+-	return primary_physical_device(adev);
+-}
+-EXPORT_SYMBOL_GPL(acpi_get_first_physical_node);
+-
+ static struct acpi_device *acpi_primary_dev_companion(struct acpi_device *adev,
+ 						      const struct device *dev)
+ {
+-	const struct device *phys_dev = acpi_get_first_physical_node(adev);
++	const struct device *phys_dev;
++
++	guard(mutex)(&adev->physical_node_lock);
++
++	phys_dev = primary_physical_device(adev);
+ 
+ 	return phys_dev && phys_dev == dev ? adev : NULL;
+ }
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index ba5234bd93a2..6f69819f9c9a 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -105,8 +105,6 @@ static inline const char *acpi_dev_name(struct acpi_device *adev)
+ 	return dev_name(&adev->dev);
+ }
+ 
+-struct device *acpi_get_first_physical_node(struct acpi_device *adev);
+-
+ enum acpi_irq_model_id {
+ 	ACPI_IRQ_MODEL_PIC = 0,
+ 	ACPI_IRQ_MODEL_IOAPIC,
+@@ -938,11 +936,6 @@ static inline const char *acpi_dev_name(struct acpi_device *adev)
+ 	return NULL;
+ }
+ 
+-static inline struct device *acpi_get_first_physical_node(struct acpi_device *adev)
+-{
+-	return NULL;
+-}
+-
+ static inline void acpi_early_init(void) { }
+ static inline void acpi_subsystem_init(void) { }
+ 
+-- 
+2.51.0
+
+
+
+
