@@ -1,65 +1,65 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0632B44A416
-	for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 20:00:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E7D74156ED
+	for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 20:03:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790798442; cv=none; b=A9MQcTJoiSFFsz6VRXJwOK8dr3XawXjM8+xYOi8+9/cV04WYxMETj5u7y6esoJ0AUNf3Dl149CzrEh3UPydqIejniSSeT02xLrrVryhRqQpf1KtjQ8Qut7fIic0i3mKUKA4PtVerKZ+UvtvkEyXKUbOSwNISzOkRd4SZ77NhAyg=
+	t=1790798613; cv=none; b=iOMq4dnckJt74mBQJX55rpFVznk1I0eF10Z+/zdBWF5CPMuyh11E1XIQwOTR+k5UtlfUqdwbkKT5P8WpN9W2xfZx/IQD4L5R8SdxaEptN0h3zSndJqoOZuwg+eZ4Z6VF54TRSnt3vAAdJcZTU26T2KTLEunqdS+MUuKTBy1RhfY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790798442; c=relaxed/simple;
-	bh=j05inaXzvotjyKWa/ZFf47qCdIej5ahkTtsZ7bh+bp4=;
+	s=arc-20240116; t=1790798613; c=relaxed/simple;
+	bh=tb7tRqjRKsskIV4ptJEZWXYPWkaWUIXs01cFsV/GkMQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gUZ6PFK7ZuLzULi6QMB4/3Vk4zt1rGYDa1Yd6es1tJihFaAV80UH04QkI8S9BaG8DG5zx9r7iL/Cam3siGENBxVjkcFKL1NGl/oAaUjCTI4ZfCGx7NmmYZlOmpFKP4O5Y7L48JIJk3K/8hfRULHCsW5Z+o7GWogpp5lDuF2hSlU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iIoU49bO; arc=none smtp.client-ip=209.85.214.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=US+gZAcQvGuxnkLNPFNzHumDo5Skehct0tBZNfnpZ6rVH8h6br2rmpXe+WQj+oQSMXANpCcTbwDgysyR85slAIbRCIzWtWXtVU+2BmkcaRKD1S3rbfl5Isr4w6N0ox78vR7GEgPVCMLewvPovUM8B6sW5wYKCau7cx5OXO++ZsQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GWIKXjWN; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iIoU49bO"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2e2e4ef20beso18255ad.0
-        for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 13:00:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GWIKXjWN"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2e2e4ef20beso18475ad.0
+        for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 13:03:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790798440; x=1791403240; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1790798610; x=1791403410; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=1G7G3x8CQosaH9I2KCc2mDmp0caEd6Jn1e0HXGIwM0A=;
-        b=iIoU49bOGC/kSQ2MqF2qu42Lf3Bxce6n7Nja/APDxh/Nb81JeYLI1Hy8U+eG/0R2Ct
-         FFKyJt6wZdr+9TrLUAGjst/WDIfYg3kBoVEQ6tjGHihEunB4TqgsnkpeiIRgfgqJ6moA
-         GumO9lVEIDwVHw2yizmUfSzciTiRGczWRS3L9tAomwfKfWQP3duVv0EEFu2LsvlRHmOK
-         zPH0WjRG5UxqDfBq/Q+QAMVAIj1y8AjWybLrLp25u6idsIUHwoN0MCSA4r1vV37WUQ6r
-         O3JV1feS/VcFS9U0srESUE3KaJGf9KpXLgr7d8zSQO3ZWoSS2ikoPNfNdcv0drhi17u5
-         9xzw==
+        bh=gV7fs5Nei/k8o70WCYEk0VoBwcvkJqHkvDHNbl1vC2Y=;
+        b=GWIKXjWNYQigzEKbNcz2wBkpGpYIasAazqWP97AP6Gno45WTj02hsYQMODT377v5q7
+         Baz7NzDhpB9ESdFcnFrRLk4D8qLjxFyDeAIo9fqFVPoBGzvpWiEmDriJF55fe0kPVfNM
+         Rj5dOAWeHZp0yLhtj9zHZjU5OOZ3hBswj/Z+pCcUREYrD8QTg71mOWQ+YMTcpFMFHPae
+         VEDiduRKQ0gCdSj0IgmfrhPDm/O+/AL9QvyoRAdrhYe3ZeXB7B43zam7xd2l4ChcNuPU
+         7rbtE2Lkea61r4Cdvu5JHxplXGkyU9FYWjRy2BPm500WE71aSAjGfOYwocasEHs4Pjly
+         cLLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790798440; x=1791403240;
+        d=1e100.net; s=20260707; t=1790798610; x=1791403410;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=1G7G3x8CQosaH9I2KCc2mDmp0caEd6Jn1e0HXGIwM0A=;
-        b=hOOZdm9Oj+zSiKdDE50JPqR14P0yx4NbEFYW+2Pzrcd3mpi5aeLmzg0jYDHBQPZH4v
-         Amd8z4thi/dt4Yyx5P1KiHLW/VWRgzjz+3fsRGJOm59dxDY4eIUBrEDMWWfKQXArrChO
-         R1NnoQWFdUW2MXrS6ps80TQe7rPZarsR2Zs8JnMI4YO0RosJrfF74iqdQvJwYQ36Eahm
-         BVe9/GFlHRHs2CTt2tJFUKUEYKZYLKrCgZwb5uK1bHrD9p/0OLK922riX9ZHwwmvLxUV
-         Udo0q8HW/gcHzZux0PUr/DM4og0QulADravWYtW78mevppB7nUmrTWZ33vLVTwN9VjfQ
-         4xVQ==
-X-Gm-Message-State: AFq9FYIq5WI+rbQepzCymjWFE6/N4f/V2tBX67m+R7+bb6K6AOEqxDHa
-	YCLWt9LkbIK2e0b/p7rT3p941ZoXML9ALa05mBx4eyPKbKJtm4cAN/P1WGEeZ4MhJg==
-X-Gm-Gg: AYBFou2QlV8KpEEdmpRUl+YEZnFtfI081jYLvKAmYAhbmMdy0HFDIR173qQ/oA65pqb
-	gFka334VgPK5V8JdyrRJPOHf3ZWhVAD1Ei6z2rI14lJp5z4UPhplY0T5KQZkoM/RCejjiWBDkEO
-	X0SlUwEHg9PB9U9S2G8FwfHVTewUzTfGsMLX+6HOuz7qKhFjlStphFhXnOQY8YyzWEVEa+NPpFO
-	5I6OEVA+pxxoxO7w77RfCWGnSYs4ZJVh107xmRqwGYONASCOcq91v8nSfPABww30AkyhhBYNwsR
-	T1B/TlnmT7QsoWTwSaTNtiSGb/bKWTrLuRvxT1ZfmhVN6GLvm29bAR9SZlXo5TM6cFi6Yga7Jgi
-	Uw3BDiIy9PKgypS/KqKklGTaTw7K6AUyJAVF2PtU4tWqQCr7pL0x81q0/r1IGn0fxAlBxsYHTlP
-	p9KngQPSm8pt/3dwkn6K7auUL7wXgupCww+05Mv9szlKe/w7aXWPEg0LZ/90/3Ze8z2ErOG+AcQ
-	KM2Iykf5jMfU89GY3+X2ay4Yen8K3qERDqZ
-X-Received: by 2002:a17:902:e951:b0:2df:8ff7:876c with SMTP id d9443c01a7336-2e305472617mr373115ad.16.1790798439504;
-        Wed, 30 Sep 2026 13:00:39 -0700 (PDT)
+        bh=gV7fs5Nei/k8o70WCYEk0VoBwcvkJqHkvDHNbl1vC2Y=;
+        b=TXSpAb5EzSca2QfgRmc+O4r0A2/6UvIk2uEDp6Y7PNKFJINg8iZFqj54H7bjcUyEKr
+         pJILfz8SUfFwOicmL9NRO4GuIs2qq0H9ufOkcrDU72qI8MclbOPLG+fEXijcluB6aViy
+         H5TSJbJCaW56X7oplzjGr0rpbQ+UfxFSInXYwblx684HRzLzsOEfhCeRkcS+dFGfb5Nf
+         lXlwr2vcc3/mM84QUsES1w5uoNa5F/n0gYK0kiUrijI2F+Wq/8r0vv3PaZopuVjP+FFx
+         EbUdjv6AbGEf3iRtDsZTEtYvEB7BNWOlFYaJOyfFBl1NIhJ8IY+rcVqSmuo90x2P8z3m
+         vluA==
+X-Gm-Message-State: AFq9FYIBdvq8H4cxtqbPzVr8XW9K/UnL4lzM2FpZN3nTKrDbp1v3B5Ca
+	deEfg0f5kheusWvJeSwGObcafWYQUDrwnkWeaEs6UjoYxUFUx9A3o+Vru2YMVdoaWQ==
+X-Gm-Gg: AYBFou1yRZfq/i58Hb/RccVVn0wqf/ZBEEBRwryFiviuDOS+88or/QNz4vz89H4hTCr
+	gTgdRdm++sssD1hDoREiVXlAAtYZ08sLF7EECISvgQahiIgeq1WOk1TP/FhUFj7JWoIKiqMFB5K
+	yS38lZMvSr7b/Cr8RAzf30/MIbihpuq6TYyM2u4A/kW5hMVFEWFYk/QCEiJ+IndPJu9G3ukX3GV
+	V2NDK8J0+OHfI+qJTm6HFASAtR1rdO5e8jBLkXWM8m1nPkQUJp7zNA0JNItZBeyoQOK8pd/hiZC
+	NoXS98fz3WeoZbb05wMATFPicylyNJDV5xCiEyxBjaXnJs2B31jUgt2QWrQMxfh3OKOq/MKgNiq
+	9DM0xfCy/w4EKi38HFB7EvDImeOYE5/SLWQkCwfw/w9289B1YHVYsdxe5ntHiWmg4t6573+NCnU
+	K3sl//S5IyYeZ8NVYjUihPDD3Aj/KkCMYEjkKni4CWcQ+TEHDfWt84SYTfekp9wn3I8MJ0Cp4Pc
+	V7B2IXbINRNkWi1z9Gtm487JLrHEd1CbKcF
+X-Received: by 2002:a17:903:32d0:b0:2c7:9e6a:1a8d with SMTP id d9443c01a7336-2e305407c5fmr334005ad.12.1790798609384;
+        Wed, 30 Sep 2026 13:03:29 -0700 (PDT)
 Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a4f44d0a30sm753405a91.16.2026.09.30.13.00.34
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2e300a90dc9sm1914285ad.18.2026.09.30.13.03.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2026 13:00:38 -0700 (PDT)
-Date: Wed, 30 Sep 2026 20:00:31 +0000
+        Wed, 30 Sep 2026 13:03:28 -0700 (PDT)
+Date: Wed, 30 Sep 2026 20:03:21 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
@@ -76,7 +76,7 @@ Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
 	Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [PATCH v11 10/16] iommu/arm-smmu-v3: Factor out
  arm_smmu_handle_gerror()
-Message-ID: <ar1qX_Ox2ONgcZM5@google.com>
+Message-ID: <ar1rCWg2mJ3aiZS2@google.com>
 References: <20260929034510.2023173-1-praan@google.com>
  <20260929034510.2023173-11-praan@google.com>
  <ar1WQCud+B3nAWX6@nvidia.com>
@@ -106,17 +106,10 @@ On Wed, Sep 30, 2026 at 11:34:40AM -0700, Nicolin Chen wrote:
 > I have a similar patch in one of my series:
 > https://lore.kernel.org/linux-iommu/16ae24cc2a002802b990afa1a69fe4ceab1e0da2.1790188510.git.nicolinc@nvidia.com/
 > 
-> Mine only handles CMDQ error though..
-> 
 
-I'll add a counterpart to arm_smmu_handle_gerror() in v12, I'll factor 
-out the body of tegra241_cmdqv_isr() into something like 
-tegra241_cmdqv_handle_errors() (bailing out early if VINTF_ERR_MAP is
-clear, so we don't warn on every suspend). The new impl->suspend op
-would call it after draining the lvcmdqs, with cmdqv->irq disabled
-around it, right before hw_deinit(vintf0).
+On a different note, I should look at that series, I think there were
+multiple things that were fixed/addreseds in that series. I'll try to
+take a look soon.
 
-Since yours is for the CMD_SYNC timeout path, I'll keep this
-independent? WDYT?
-
+Thanks,
 Praan
