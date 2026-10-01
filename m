@@ -1,144 +1,289 @@
-Received: from mail-yx2-f38.google.com (mail-yx2-f38.google.com [74.125.224.166])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013038.outbound.protection.outlook.com [40.93.196.38])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 959B22FFF8D
-	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 07:00:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.166
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790838024; cv=none; b=CwseqXbOjbBNkp7F0ZnzdHqibFH5pzkWuord7La95GzahAzX02l8pN1hNLHg2s6a+cqrjJmUW2qSd6qkQMnutPJ+Fl/+w/MbWV1OEYQcxq/zpnoq725wPu1+nSzP+ZKwWgGogVj0OR//9hsQaXa/zt8j5q5ooxiUEQc85ucKltQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790838024; c=relaxed/simple;
-	bh=CJLBeRK+I5A1iOpSL7oJuq5eozHbtafRxFhgIb8iIGY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rVFMg0LAami4vcTUA1+xApqoLP3GHV6tZFOWmSAvyvH0q1DCKCHbkFgQQ9briMXldr7JP2h/YUxcdzlloxtI8OUKLeewPucLJo9Pxuz63L+dQmntQFHVz6j452kow1WfViOI7TE5MHzCpM/YTtyO5u4LTkmQFhcEzFaxpxf0Kt4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rwoRx6/v; arc=none smtp.client-ip=74.125.224.166
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E317F2367D3
+	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 07:07:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.196.38
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790838428; cv=fail; b=R9FeXt+SHE+BccDaH+KWW5SkmgKF37BpmCMdY4q+dZaBUYjKpNlkGF5tk7k8Puy/sxsRup8H8Dwk7jGBxQhGzOPHWr+kHVBxJmIxuVv8jxJHGVUxiYf30vt4YmkXKfZtSMlKiE6WdOkyx/uOUuOV17cf+evWd/6J8qwcKZ5XUgA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790838428; c=relaxed/simple;
+	bh=bol+32sjuDEqGPOyiOZ10hMrWUQuJfsmLcsGulxYXNE=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Nkudwyh6e9L09hdRI4f72pVlFJmEtDqq8nrtLp5hhuK0TSU8SycTgk7LNQEEYUvP9MT5/8B3oC7++3AS6JwPAi5W52nZinlOkr5fIzi+dbpMiYhfFg+/CdfqGu6ewTgRjIIi7K8cK9AidwSffTSOg4JlUi1iYCFy9+Sr9JhuzaA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=36AwCbZQ; arc=fail smtp.client-ip=40.93.196.38
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rwoRx6/v"
-Received: by mail-yx2-f38.google.com with SMTP id 00721157ae682-8ac4967f1c9so15591637b3.2
-        for <iommu@lists.linux.dev>; Thu, 01 Oct 2026 00:00:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790838014; x=1791442814; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=PY5L4rsgn2xeSzbqzp3GfiDBmX9wGoutuZbjOU3l+N8=;
-        b=rwoRx6/vVB4JEOBEE6nlIfTaEiCXc3QpBwCkKqQSWW7Hr/JY6F/u/rI3Ds6GpPf1NO
-         NP4U9gRBIeWIaD9U0fY0COKgObVPmuhQuUaLfLzF2KaUysxRp4WYi1uz/T/uZZcQXZSH
-         YnSNUGQJijPFVvVeYBofVlyb/1hNPIITGcwkgbaIYRTZqwM+Dy4a/JB/pyU0hSukMokR
-         92w0g3ZozqexGvFS3/VbdhsmEMR34nVgxjUTT6ZhP4Os8NEzaDbhR+2iiEtI9/rQzXqe
-         occ9xCnTQBnM/Uo1Frgvmlo7pCETMEkgTb+yo3NJhDsHGxUqVvo5ZJbrylhNWh55bDu8
-         Pn/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790838014; x=1791442814;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=PY5L4rsgn2xeSzbqzp3GfiDBmX9wGoutuZbjOU3l+N8=;
-        b=aKsYYqGGxHCf6ls9QO9FlHIwjd5qk9o62i8rTZo79x7Hcc8M/xhu7Qp+i7wTraizfM
-         JqWWaLA4MvyUI51NNN1OOMWx5Qpn2pbTRM6OyzytL9hJL9l7GpKrlYKVHfkl3BLg+CgD
-         gFQzzauGGmJXi99rn6w7KSD2x7yepP8egRLN9hRNAPZM58A8AVumGxsNNJks2j722y4e
-         s36PdS+983PGtQoCMaUJOIZ9vRXhvKE8qf/fsjHk/t39kGD4Y4nvuVK132PfxQu+dTO3
-         npSi9jEn36O03e5oN0k6RJCD3ouiyMVZJBm9CTsj/nsFym1fe3So+dRdpb6bXHMOwe4h
-         hz0Q==
-X-Gm-Message-State: AFq9FYLfMrA8gm2psrvkv6kwWhD1nA3pEO14cs+ziwO1hgItRdr44cQn
-	gk0PRSTiuvaT8tEHvwa5UVUTnPUddiZH/AR/uFH3AKLN5lc3itPlf0Gu
-X-Gm-Gg: AYBFou1TL7/8FXBt4R9stRa1j2esJjUcvDExDFYlV81MppUId7CTDC2Bm6sudxa1LO/
-	Ag1pwLVrLs9erGU3eQHgNM3mk8tE6PB6t3r44yjeRYXPVVod6HH/B5Amt4bOgTD2Mt8suTe6xi2
-	7zIAnHDhiRnkGsuPQpiWLd9tKSSj3+72MRhC6ZcFX4XJbQ4K1yWO9G5DbBiA//tDv+TFEfu3okh
-	eSsNsGkB6x4NKieZfoQ579sK6ufQjjKrKCnSv4Ot45l2USo6iFKsYzbtbfLDsWcipSpkurHpkA0
-	vw9sf5FUa2b9vz5YXgmaZWNZt+JDtM61D7LsviufLEcHpnrDn9UJTplWymREuvpmtnVDFC8dm+U
-	v7+yvZHn/Z6BQWgD+hRWwoux/LNZztXhEktpZ5SyQiIZ1E4/BaHCfzrxoVh3GCy9TPAJ2B9TrND
-	f4OdoE3unOlym7OjI4mvSgVTtt4i8AzNRU3+IVBq6KXfkRcQKngEmzd+WT+5MoRQ==
-X-Received: by 2002:a05:690c:d89:b0:882:31:3b08 with SMTP id 00721157ae682-8ac909cacd4mr14554387b3.15.1790838014308;
-        Thu, 01 Oct 2026 00:00:14 -0700 (PDT)
-Received: from devobuntu.lan ([2600:6c5c:6b00:316::23])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8acdac9d2e8sm7283687b3.12.2026.10.01.00.00.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Oct 2026 00:00:12 -0700 (PDT)
-From: Matt Vollrath <tactii@gmail.com>
-To: Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev,
-	Matt Vollrath <tactii@gmail.com>
-Subject: [PATCH] iommu/dma: Don't free under/oversized IOVA ranges
-Date: Thu,  1 Oct 2026 02:59:53 -0400
-Message-ID: <20261001065953.2717823-1-tactii@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="36AwCbZQ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dVMZMwFU66itSTulAHUSoEdloZ12DaCH9TSJITtPQOa4Sa+doquJzT8ikhaS71TdtM4ap0UXBOCOAOhfP8TI5uOe3p2R77AxnaGR8P4j/mkLJTl5QnLePHcds5GhRQuA4tFjEduxMkgtAWozDfIfd+1AEbpt1SVVg/nlTvzGPzgi9mNHHdO1EthBfNfqsOhghblIOI9GEKfLMIFLxUU7t4QgPIQV4xQ1eTugVKlZ04QQ58tqMDEjhDx5tCRJ+kT23FXKgtkppXfQ4ez/zgolX6Ci9QnV8J9wPUjLB9Eo58/7JZXOl7YUnhdpmEO3YZWPrrJSMFJPNFQrQF/Frb9XRQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nkk+zx2foG7LAhjHNK/8EYmVjGaH3Cl4gw98xP5af3c=;
+ b=oHJ9fVrINfXyTqaAqi2RxDrMgexGZ7mVdQQ7AHMDGERcY9AqPfWpNAZJdtL2/2RxgeW9G/HXtZXlmN3hi+9EYXoBBE5enRFYDORQkdxT34Ci+PDE5+wT/yAY0fbregnBruukCH2zUpMt4wtXF7ATfSAkUV277AZMPf8s4njsVqUUEQRZtShZHi4rqQmrD3q8NLeDTJlf/aIrkRARnQlfIrE38U45U6NqMDxiOtR9WZ3mZJKOlhySTTn5NKt1X4qbW56/+3XgoGF7PCR/J8sam9V0gdMEIIRRlmh4kDFGWXWrSCph1P4GmqIB/f57a7HWFMnjRW5nSENlFdiM/cJO4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nkk+zx2foG7LAhjHNK/8EYmVjGaH3Cl4gw98xP5af3c=;
+ b=36AwCbZQGVvHIzdm7bfnwKmAyEIOrVJmckvIUL995DXcLVnVDzQE2UPhFR0SpwTsrQ2Yavr2mkIu0rb777vLZx1s5QjL4pdh1jwBDXrFFX6jCB1m2qNgdB2JKdF6gcfDOoEY8OITms+xT5oMlN53ANVhIfcOLqfapGbIIUuXq/0=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by PH7PR12MB5596.namprd12.prod.outlook.com (2603:10b6:510:136::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Thu, 1 Oct
+ 2026 07:07:01 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0451.022; Thu, 1 Oct 2026
+ 07:07:01 +0000
+Message-ID: <f5c5319b-e8fd-4a54-b7ea-6bb64a4ff7e2@amd.com>
+Date: Thu, 1 Oct 2026 09:06:54 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 16/23] dma-buf: Let importers ask how peer-to-peer
+ traffic is routed
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe
+ <logang@deltatee.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+ Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+ Chaitanya Kulkarni <kch@nvidia.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe
+ <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+ Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, Sumit Semwal <sumit.semwal@linaro.org>
+References: <20260929132305.GJ563127@unreal>
+ <720dbac3-24f6-4c91-899e-e205865c1fd1@amd.com>
+ <20260929175737.GK563127@unreal>
+ <eeef5951-825e-459f-b474-bf8c59588446@amd.com>
+ <20260930081832.GA3401365@unreal>
+ <4549640c-f4a5-4dac-9be3-2e5aa127555c@amd.com>
+ <20260930114356.GC3401365@unreal>
+ <fbdc710d-7be1-4021-83c2-548c798d9d14@amd.com>
+ <20260930143237.GI3401365@unreal>
+ <ed393791-46d5-40ad-998b-4ac0e1e9c6fa@amd.com>
+ <20261001061752.GJ3401365@unreal>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20261001061752.GJ3401365@unreal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BLAPR03CA0160.namprd03.prod.outlook.com
+ (2603:10b6:208:32f::25) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|PH7PR12MB5596:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0955ad18-71e4-4dbd-3fb4-08df1f8a970d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|366016|1800799024|7416014|376014|22082099003|18002099003|56012099006|4143699003|4133799003|10067099003|5023799004|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	kcnPMq4M1I5/G8ZOuj1CBfW5wcwdlpnGudn1QOzEj/Fg20tBUpi+QQdc4GcGU9C6H5xko5I04Ab/V05jG8On2ZSYNKTo9JoxyC4YQBCEZTFCsy64xx5QlUwy49aWeFb3DMZfYah80ONN8pd1YysFiKR02vUc7jWgQCeJOHLBPZcV8X0fSVE2uiGGHStpmQbBGUqk4AzVBH2uMCQPyhpxSD8R++Y7qXST6rmZ42R9NpzNFmGBdatdM7Zw56Aygra1EVBwMdg3PYj7VTP6nYJsvw3CR/kUGkkwKA/2RInOU+M3nwgocsI/hdokOzmPOuVw0iBM5Zl91/uQgBrZLMu28uGhkafN/0963ZdlCaM8Cc6Ah32Ti3NvkSEwVafj85TQvA0TSod3H4AJnChXs/JOorYD0/MJHLuqKyBHGy6gPb8T0dUy/YiXcQ98OmiQUPX+aTEqIcOYhPSJ7/Ahur/z3X7SwC993RNTU26cjxx2XyTpeITa4RStJAcNrkvLqUVKBzPey5xNgy6xDptEkrkOL19VnhYGSORH/+8yI4+XPcgrTdce2/C7NTvJR6oik772IvJrMfbDrk/Ll0GyG9jLP+2g6uwpNk+3PYa6WeMhIJefcAv8R0dQAeA3oH7txv8b
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(7416014)(376014)(22082099003)(18002099003)(56012099006)(4143699003)(4133799003)(10067099003)(5023799004)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VEpQR0c0NmlnN3BJdmh0MjN3aHZINFN1ZUMwWmt2MEduRmxzeTlsSU1aZGs4?=
+ =?utf-8?B?RGl5cXI5UnAvR2w5RlNndWxDU2lnUmdzVG9VNzVObzJqdG5ta014VCtiQ21m?=
+ =?utf-8?B?dXY2WFdrc2svK1VoZUdIYkxFTmJKM3ZrbTVjTlVFUi8xTGZjSGM4WTMvd0ZW?=
+ =?utf-8?B?RUZOKytIazNQRkg2K0xyczlMSjcyYlBSN3lET1IzU1NRSEgvUkVBSlpvN0h6?=
+ =?utf-8?B?RWlLYnA2dkI2aEkwdmpUVGxDMGpVNWozWklzRzAzaW9EakFrRnhFRmtSbDli?=
+ =?utf-8?B?SEdkU0U2akR1Q1B4YjZZWk9QclhtV2VXODRQTjd5S29LSEZSZFJqazNORThi?=
+ =?utf-8?B?OWZpSGk1WVhlWG5iM01STDExN3VhWll0TnhReTR3YXEvRU5Gc3BaQWNoSnk4?=
+ =?utf-8?B?cGIxdWFhRXZ5ek41czAxSkc2RThtUytnZHhIMXhIZlZtd1NueDlRVGN3akdZ?=
+ =?utf-8?B?cDdwcmErelEwYUh4bTl0SUdibVQyTDRHZ2RoL2c1S0hVWEpCSmFGMGhiQnlx?=
+ =?utf-8?B?TWJPTUw4QUJUeHFVQmpwR1ZwcWxIRXRQUmtVMENuQ25PWW5xSzdVQllLZTls?=
+ =?utf-8?B?WVJvV0RIQ3ZYRDRvUksrdnZXcTFZMkNDUU1xNnZKYXdzYnBlQUZob1VUNVpk?=
+ =?utf-8?B?T2JReXdrMHpNeHJpdVBFbk5tVEdPU29pd3E5b2pyczhvb2pJREl2QUMxQVNx?=
+ =?utf-8?B?Q09CSnFmTXRDVEt0Z0ltclZNZ2pTMXZtRTlGNGJmc1RYUzU3dmZpcDZWUG50?=
+ =?utf-8?B?QVFjTlU5QWgxWER1Q21lTW41eVlWSmdCM2d6Q1hKZTRQMGFxOEQ1SHpYd1RD?=
+ =?utf-8?B?Y0djSzc4U3dUQ0RIOEs0ejV6V2x1ZVovL0lGd3hnMW9DOHBiZzdIc1NSRlF4?=
+ =?utf-8?B?OFZQbkRQUXZNaGdDNk5BTzlWTnozd2xBejVCK3FHTlZoTnZvZEhFSnUzYnJS?=
+ =?utf-8?B?UDgxaEhzcXJ4TkM0SHZ3Ny9WQTh6NUd3YW5RN2QvTlFEWTQ0RWMxSXZkNzh2?=
+ =?utf-8?B?R1NOSWpwODc4T0Z1TXpIV0srUGhmZ2hGODVMYysxZzR1WVFhMUVZNlFDT0Yx?=
+ =?utf-8?B?WmlNY2Q1T0xPMUFWMWdHRGl6cjczS3QyVTlZV0ZqdVFYdmtoN1I3bjUwNVBJ?=
+ =?utf-8?B?ZG5ON2ozRUFXZEs2M3hsTFB5ZTd2SkFSMDloaDVjc3M4MWVKaXFheUwxVUgz?=
+ =?utf-8?B?TDVYYU11eEc5a0JEQVM4N2VkaGh5RHRkWDdhV2dYWTZmYXVGYmx4QkphV0N6?=
+ =?utf-8?B?emREV050dVhZMWVBTUw4Y2g1enJqL0tqeWYzb3hWYUtOU3dBMjF4dnJUdnBs?=
+ =?utf-8?B?VXVlWEVsdDZBWStCU0xHN2dBazg4RWkvdWQ4NmNHQVFaZGZLWWxxZFpKN2Zq?=
+ =?utf-8?B?ald3WS84T0ZtMGtHWFVtb2VnV1h5ZkhjMDBZOXZkb1BxOTdNUDFuY0ZNZ2Nh?=
+ =?utf-8?B?ekM5alc3Z3h4STJvZEZDM2FYeGtSaEoxUGJZYWVZeUJzMDFLQVRJcUJLTFBk?=
+ =?utf-8?B?L0ZyR1hOS2xBTzJIYUF1NmFhUm12RzM0RkNBZ09MaXJIZDRzOGROV2tSVllX?=
+ =?utf-8?B?R1NSOFZldHprcWNMbmppNDlNdDdpT3J3d1o0QUgwS1JLQXE3enRReVo1K3Yy?=
+ =?utf-8?B?ZDFLenRuWnJQREN0ZURFcmkrb2plUmNaZHVWaTR5L3hRV0NkVklMLytWLzBi?=
+ =?utf-8?B?cm9TS3VWbXBJMzQ2U2wxSTc1aDU3dFg2eHNyamNHdjVFZWplM1VVbHhFUVBs?=
+ =?utf-8?B?ZEN3SVFtTG0wdFlUR0RiVWVoYW4xTHl4VFFPOFI4Ujk1QTdXL2FOY2RTdU1D?=
+ =?utf-8?B?OUV0TlE1T2pIbmpKLzYrUXMvR1l6aVF1UnRKenFTWnAyUGN0Q2cyL21oL3VN?=
+ =?utf-8?B?RTVib3gwTjdLaFl2M3R3M3g3Y1FUUnc0cmg1YmJwTHVnRHJpWVZ6bkxXMHVI?=
+ =?utf-8?B?emZ6SjM5TGV1SnB3QlliZDFGUUh1NEdyZDJpOUJ2YXYxakl6YUh3WUNrcmhG?=
+ =?utf-8?B?KytpQWNyamNPRWNnTXNwQkplWnlScEpWck01cFErNE1HNDU1U2lOSU5nMGdP?=
+ =?utf-8?B?S0duNGNGRitqaUdYeHltQ1Yrcis5WUJIMnFmVjN5Y0RHRGVWaXUvN0QzdHRs?=
+ =?utf-8?B?QXl1bWVuOTRJM0FXZlJEYTVTSU10OUtYWVhIaXoyMlQ5MTBNREVkVjgvNmV3?=
+ =?utf-8?B?bmVjWmkvNW9DMHBjMGdVQ0hRTW1ZckpoeEtoOG5GSnA4cjF0Umt3T2JveUVr?=
+ =?utf-8?B?L0ZuZVRESWs2Q3dOLzBlb3Y1a2tUNVNIV1MzK3MreDJSczJrTTZpMFYzOUhQ?=
+ =?utf-8?Q?zbhqywhZ8Qzdl1n8Y+?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0955ad18-71e4-4dbd-3fb4-08df1f8a970d
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2026 07:07:01.2609
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UqJyBsK/boQWkN8i2F/SEK7tUlPl5F4cvGB9AQjK+xpT8szTa2bPgDEBNqLGLqem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5596
 
-When unmapping DMA from a translating IOMMU, the range unmapped by the
-IOMMU page table may not match the size specified in the request. An
-unmapped length of 0 suggests that either the request was rejected by
-the IOMMU or the IOVA did not exist in the page table. A size mismatch
-suggests that either the unmap was partially successful or the request
-was made with an incorrect IOVA and/or size.
+On 10/1/26 08:17, Leon Romanovsky wrote:
+> On Wed, Sep 30, 2026 at 04:52:20PM +0200, Christian König wrote:
+>> On 9/30/26 16:32, Leon Romanovsky wrote:
+>>> On Wed, Sep 30, 2026 at 01:52:39PM +0200, Christian König wrote:
+>> ...
+>>>>> The importer needs a way to obtain device information from the exporter so
+>>>>> that it can configure itself correctly.
+>>>>
+>>>> That won't work with DMA-buf then, the exporter is completely opaque to the importer and that is for really good reasons.
+>>>>
+>>>> Why in the world does the importer needs to know the information from the exporter before the mapping is created?
+>>>>
+>>>> It is the exporter who decides how data is accessed by the importer and not the other way around.
+>>>
+>>> There are several reasons:
+>>>
+>>> 1. This is how DMA-BUF MRs are built in RDMA. In mlx5, they rely on the ODP
+>>>    mechanism, which requires an MKEY to be created first. See commit
+>>>    90da7dc8206a (“RDMA/mlx5: Support dma-buf based userspace memory region”).
+>>
+>> I know that patch, but I absolutely don't understand where the problem is.
+>>
+>>> 2. P2P routing is a property of devices, not memory. It is known and remains
+>>>    stable.
+>>
+>> No, absolutely not. You are making completely incorrect assumptions how DMA-buf works.
+> 
+> Maybe, but I understand how the kernel, PCI, and P2P DMA work, and dma-buf
+> seems to operate in a parallel reality that is not aligned with any of them.
 
-Because the return value of iommu_unmap_fast() is already in hand in
-__iommu_dma_unmap(), hardening is cheap.
+Yes, but that behavior predates the P2P DMA work by over a decade.
 
-In the case of an unmapped length of 0, skip the IOTLB sync (because
-there is nothing to sync) and skip freeing of the unmapped IOVA which
-would corrupt the IOVA allocator state.
+You can't ignore how existing drivers work just because you want PCI P2P to work this way.
 
-In the case of size mismatch, flush the IOTLB synchronously and
-intentionally leak the IOVA allocation if it existed. A potential leak
-of a valid IOVA is more predictable than potentially corrupting the
-IOVA allocator state. The existing WARN_ON() is preserved.
+>> Again: What is exported and from which path is up to the exporter and only determined when you create a DMA-buf mapping!
+> 
+> Let's discuss the PCI P2P case, where `p2pdma_provider` is present. In this
+> flow, the exporter has a PCI device, and the importer also has one when it
+> attaches.
 
-The intention is to prevent failure cascades from intermittent driver
-bugs. If one bad unmap causes a future mapping error (because the
-allocator cache believed that an IOVA was free), then we are at the
-mercy of the driver's map error handling.
+No, they don't.
 
-Signed-off-by: Matt Vollrath <tactii@gmail.com>
-Assisted-by: Claude:claude-opus-5-5
----
-This was tested with QEMU 8.2 against virtio-iommu and emulation of:
-* VT-d
-* AMD-Vi
-* SMMUv3
-* s390 zPCI
----
- drivers/iommu/dma-iommu.c | 17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+> The decision about how to construct the addresses is made at that
+> point. Note that both the exporter and importer are PCI P2P devices, so the
+> importer should make the request.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 58c624513cd4..029ccc3b55cf 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -836,7 +836,22 @@ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
- 	iotlb_gather.queued = READ_ONCE(cookie->fq_domain);
- 
- 	unmapped = iommu_unmap_fast(domain, dma_addr, size, &iotlb_gather);
--	WARN_ON(unmapped != size);
-+	if (WARN_ON(unmapped != size)) {
-+		if (unmapped) {
-+			/*
-+			 * If we changed the page table, we must sync IOTLB.
-+			 * Freeing the IOVA could corrupt the allocator,
-+			 *   so leak it instead.
-+			 */
-+			if (iotlb_gather.queued) {
-+				iommu_flush_iotlb_all(domain);
-+				iommu_put_pages_list(&iotlb_gather.freelist);
-+			} else {
-+				iommu_iotlb_sync(domain, &iotlb_gather);
-+			}
-+		}
-+		return;
-+	}
- 
- 	if (!iotlb_gather.queued)
- 		iommu_iotlb_sync(domain, &iotlb_gather);
+Again, no.
 
-base-commit: cec2dc7663e7182c311162163d71b1bbdfdbf09b
--- 
-2.43.0
+The decision where to place things is done when the first mapping is created and that is documented and full intentional behavior since the very first merged version in 2011.
+
+>> In most cases you don't even have a single device which is the DMA-buf exporter.
+> 
+> How is it possible for exporter with p2pdma_provider?
+> 
+>>
+>> Only while creating the mapping the underlying access path is finally determined. It can be that P2P is used, it can be that internal connections are used, it can be that the data is moved to system memory....
+> 
+> But we are talking about in-tree exporters: RDMA, VFIO e.t.c
+> 
+>>
+>> That's why we have the distinction between attaching and importer and the importer creating a mapping.
+>>
+>>> 3. See the VFIO TPH ST discussion, where the requirement to obtain the
+>>>    exporter’s P2P information in the importer was raised again.
+>>
+>> As far as I can see there isn't any. The TPH/ST information are just passed through from the exporter to the importer.
+>>
+>> We could define a bit better what needs to come first the mapping or the TPH/ST query but for their use case that is actually irrelevant.
+> 
+> They need an access to p2pdma_provider too.
+> https://lore.kernel.org/linux-rdma/CAH3zFs2rhg6-b-pVDps1V8LsM4Dn48t4J4LFVyKOZtT4axdY=Q@mail.gmail.com/
+
+No they don't. They just need the routing information the same way as you do it here.
+
+And Zhiping reply actually makes it 100% clear were the misunderstanding is here:
+
+> Two properties are worth stating explicitly:
+
+>  - The metadata and its callback are per-dmabuf, while routing is per
+> attachment, so this deliberately uses a conservative all-or-nothing
+> gate across the current attachments. It may withhold TPH from a direct
+> importer when another attachment is not BUS_ADDR, but it cannot return
+> a tag while any current attachment has a non-direct route.
+
+Yes that is fully correct.
+
+> An importer
+> attaching later does not change an existing importer's route, and
+> future queries reevaluate the current attachment list.
+
+No, that is incorrect! An importer attaching later eventually *does* change the routing!
+
+The final routing is only determined on the first mapping call.
+
+In other word the semantics is like this:
+
+attachmentA = dma_buf_attach(dma_buf, importerA);
+...
+attachmentB = dma_buf_attach(dma_buf, importerB);
+...
+...
+dma_resv_lock(dma_buf->resv, NULL);
+...
+pci_info = dma_buf_get_tph_st_and_routing(attachmentA);
+mappingA = dma_buf_map_attachment(attachmentA, ...);
+...
+dma_resv_add_fence(dma_buf->resv, async_signal_preventing_unmap);
+dma_resv_unlock(dma_buf->resv);
+
+So that PCI info including TPH, ST and routing is only valid as long as you hold the lock of the DMA-buf.
+
+When another dma_buf_attach() call comes after the mapping is already created the invalidate mappings callback is called and eventually the buffer is moved to a completely different location.
+
+So on the next mapping call you can get different TPH, ST and routing information and depending on the internal topology of the exporter eventually a different PCI device you can do P2P with.
+
+What can be is that not all importers support the invalidate mappings callback and/or dma_buf-pin() is called, but then exporters usually don't allow PCI P2P in the first place or at least only under restrictive limits (like for example cgroups).
+
+And yes that semantics has been the one of DMA-buf for 15 years now and yes we can't change any of that on existing exporters since that is uAPI.
+
+I hope that I finally made it clear how things work here. I'm kind of running out of ideas how to explain that.
+
+Regards,
+Christian.
+
+> 
+> Thanks
+> 
+>>
+>> Regards,
+>> Christian.
+>>
+>>>
+>>> Thanks
+>>
 
