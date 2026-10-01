@@ -1,237 +1,178 @@
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AECB04DEC19
-	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 22:46:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62B7D2D9EFB
+	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 23:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790894811; cv=none; b=kRzcxYnhwvDhn1Ms4WXoySFgpK64wPIe1Xsky7G7y/kSdAQgGynM5EbaPjPVIVsY9AIxLZUkkDdqEkg+Zf7Df2JN33CEg4livqEBo5Ry9zVErM+TXTiT9clWzZXK5KVin+oMTxni16Jpl5SA1wWTgipCY5UqN0+onEDV387IWbo=
+	t=1790895745; cv=none; b=XEQh9Igt5Wuxt2baOZwenQ365+DN/UKpeLXnY9Mpv9zKg6dnlkBw/gIHAKtapwUwtAzf228li/gCSz2ZN23kQXURqievi7jr1LN1BFU8pbbhNZSp37a1/WIsQsE8fY+TkNzUBUtTn2Y8Uyrb0ukPohwKENgvdj50vSoUy1CTHqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790894811; c=relaxed/simple;
-	bh=+ZrMyvypAMHMJwmzcIZVzfzQU/AIsNYo+KFbpNJHSEc=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=SVbcYr4cLGH/+YsQQDgjhe0ylYSd14pYs3UVRzm6Uc/QeiGKS7e3IqF/LHbyTAec+R87xa7vZjAmxKCZjOdKs0Msu8jtVz2tDg5pwkJ0iS3ZoY0gs02tfP5YcEOyBC0IyKGR8plP0t9G0fYDPCnUkkg3qyKO6S4AvMsIFXhCplQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uT6BqYxK; arc=none smtp.client-ip=209.85.210.200
+	s=arc-20240116; t=1790895745; c=relaxed/simple;
+	bh=00lrWxZe17VrlhuY3VaolhqUrEvdKVBmom6nqLyg/hg=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=hJnB2KRsz2x0VKJNZHEGiFdP61wh2IMX4cgAZ7V2o0kmh3Dt0jVrlp5aNWYiR4pisKsLCqXSp8offOiSWN9uOr/j2JchE8l01ljVSqgvlXkci44srOW8KVKabcROiPu+7ocq/c+m0K02FqeLmD19t/aDsholQVacADHf7i5gogc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SagxXKGm; arc=none smtp.client-ip=209.85.215.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uT6BqYxK"
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-8886b1d3242so979310b3a.0
-        for <iommu@lists.linux.dev>; Thu, 01 Oct 2026 15:46:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SagxXKGm"
+Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-cc1eb205d31so8007824a12.2
+        for <iommu@lists.linux.dev>; Thu, 01 Oct 2026 16:02:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790894809; x=1791499609; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=OkzBth2K8luOc5hRw7dwkQ++Ts6T4OZjlz0I1Txn4EY=;
-        b=uT6BqYxKW2Q9W0Pd68BXgKYaD2Lq++dzEA+wQxEi67BBLKUmjJ4DbKnzqbZ7ztjjEr
-         02aaZiOGBRCj9S/cwe1taF54HBm8aKNLOBH/6WMGgfiCiBchk3TTiSCBrXcsLH01Rkj+
-         eKcnBXf0dMXh3ZQdkKHkNh8fcQvUHyAf6GXxSeiFTkAkN4viqrmCd+tcHf+5sxYIxtpv
-         gUQGJV3hGIfLVqt65iwBhicupWXFWiU+4KuoL2eUGeP4iur+488O8eqB18xFC5mbd86E
-         Rt6NZP3cOb6BGv32A1qalf4WWGDICKroJ2BEWQ/30hLTBn4jU4OUA2FyW5t36YNAh5Rv
-         SB4A==
+        d=google.com; s=20251104; t=1790895743; x=1791500543; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=7bxlv5ntBdZO0LQcKQEFlA8jL1mkcFGaYA5LZP7KTXI=;
+        b=SagxXKGmtJjhVJx8GwOAhIzOGvc2wL7o6/poQjGs2xLm1k1JAwSs+RxqPl5MSQPpm3
+         N5yejbQ7QSIXxOYmwuM9Yguuk+jpq+QIo8U9TlPNV529tLaHLLsI9gqp65rLNkOdd8e+
+         acOrAtmlNgWwdFkUApYvSgaDgWWBgw6jOHitBu0V3J1hjwIMfzpkFXh7L+ssp33GgbtU
+         QuS4BTR7b+zEU7KA3ZX1KvTf49W1keyOEIb7BlmXEhcDh6Em6F/oh55ojtqtsnuYkWPX
+         xCXagvow/egKpmZQGXCgqPQ+aisZx9rofPofB5/vpSJWkBwmqOCoDrcNtolZiQhd3Ikc
+         xPEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790894809; x=1791499609;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=OkzBth2K8luOc5hRw7dwkQ++Ts6T4OZjlz0I1Txn4EY=;
-        b=umTNlUgVLdQfXf0LQbOv6k9xJEC9qcj+wzh0Q1colTPx5L9CY/m1WLC+LR5rLVXoXF
-         6gBR9xeuDl24+CRYzuR6j/K4wCMmF8kiIdcrbvzd8O3FiLHWXqnWHmYHYfNfZnUmPDaa
-         iThMMFwOIC1Wfbc3WmhJNkYwqWI25zJfTEENW5liQVnPVlCExRCwRzqPIFpRXs36d4Nx
-         yoKozhC4LISQypmVIAngC7giJHbKh4Qc1o458mBFdMer3YvjRE5jMd2iiRYpfQ7khzYB
-         KPFUplwwwJgrmrLAaan2xqqiVsUWJ85mHoh/FxRseAV8RxZlUEAb0k9YMnAi3LYvTYm5
-         fBiw==
-X-Forwarded-Encrypted: i=1; AKwUvBy9e2Wy2l21Ds69O2w1+XfXFggsXKZyw5GUUSS6tpLElMjoLErrPDLldEF/OZUlv+V85OqqqQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++nrrgYDAcK5cmtAy6w5304ynl19zE+5foDlfHIwIJlMfdY1CyJe
-	r6gwUHbahO9CxVv5lTjEir6NlLRIAzzQbS8M+mm//vpUKSCjyMPeGxRTlrqq/hebTtKXaN381de
-	eRg==
-X-Received: from pfbhu50.prod.google.com ([2002:a05:6a00:69b2:b0:887:3013:c8e7])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:1888:b0:886:1119:2cbf
- with SMTP id d2e1a72fcca58-88af2687915mr858560b3a.5.1790894808625; Thu, 01
- Oct 2026 15:46:48 -0700 (PDT)
-Date: Thu,  1 Oct 2026 22:45:31 +0000
-In-Reply-To: <20261001224531.765278-1-praan@google.com>
+        d=1e100.net; s=20260707; t=1790895743; x=1791500543;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=7bxlv5ntBdZO0LQcKQEFlA8jL1mkcFGaYA5LZP7KTXI=;
+        b=oIi9+W3L3TrRSuWTc7WbsicIz5wNXuKLG3Sc7bEXrYmrhOI70Z9AQn/d6+AzqiW3uV
+         YqchlDt3P3qtk3UM/yotlzu2Z2kx48iN3o1nUzk/xetBMt3zjbtpij0gJjc68+AO83s1
+         DPM4fWVSEJZNtAULrtdgzDanwMCFYab1GEBI9/esAh2t8XMUAOH0BZ39T6L4x3t5oAnr
+         tOVEk55OmvTnDU0fTZ6EjUcBSY0Q+bdhyXZlrEtBI5CPw3uEPu22Q84mzYUDXC3ZZptM
+         MXcaEICem+79fXtmnjlbX5CwCqu2wgSmC75xigBZl1Q1Cv5J0SGtGTfEzDAYSisLnODy
+         N3Ag==
+X-Forwarded-Encrypted: i=1; AKwUvBzglKy/xnV0DjPSRzI5ixH+ctI1Y4rpopaw+ljo7zhvmFUohrU6uRd7PSFke5eSnP+Te7BRtQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++k9nOqTBpg9dCS0JsVUYz/jxtcaaBQ3stF0DJf9kMb1fGXdxkBJ
+	i195UzYW4Z7ara7lf+rSSK2vL5CJZ8/4P1ohnCtWayabqSHx6RHxFmtkghjtYamV+UHGf4ForPL
+	8FQ==
+X-Received: from pgqs2.prod.google.com ([2002:a65:6902:0:b0:cc7:58af:e212])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:4a97:b0:3c3:a3f4:5485
+ with SMTP id adf61e73a8af0-3e0bc9f8cc2mr744551637.6.1790895742383; Thu, 01
+ Oct 2026 16:02:22 -0700 (PDT)
+Date: Thu,  1 Oct 2026 23:02:14 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20261001224531.765278-1-praan@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261001224531.765278-8-praan@google.com>
-Subject: [RFC PATCH 7/7] vfio/selftests: Add observability test for IO page
- table usage
+Message-ID: <20261001230219.818128-1-praan@google.com>
+Subject: [RFC PATCH 0/5] iommupt: Introduce IO page table shrinker
 From: Pranjal Shrivastava <praan@google.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, David Matlack <dmatlack@google.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
 Cc: Mostafa Saleh <smostafa@google.com>, Daniel Mentz <danielmentz@google.com>, 
-	Samiullah Khawaja <skhawaja@google.com>, iommu@lists.linux.dev, kvm@vger.kernel.org, 
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org, 
-	Logan Odell <loganodell@google.com>, Pranjal Shrivastava <praan@google.com>, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
+	Samiullah Khawaja <skhawaja@google.com>, Logan Odell <loganodell@google.com>, iommu@lists.linux.dev, 
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Add a new selftest, vfio_nr_pages_test, to validate the iommu-nr-pages
-fdinfo metric across all IOMMU backends (Type 1 and IOMMUFD native/compat).
+Introduce a lockless, deferred reclamation framework for IOMMU page tables
+built on the generic_pt library. As VMMs and userspace drivers map and
+unmap large, sparse IOVA regions through VFIO and iommufd, page table
+directories are often left allocated but completely empty. generic_pt
+frees a table when a single unmap covers it entirely, but tables that
+empty through a series of partial unmaps stay allocated until the domain
+is destroyed. Under memory pressure, this *stranded* memory cannot be
+reclaimed and has resulted in OOMs.
 
-The test performs a sparse mapping to force the underlying IOMMU driver
-to allocate a deep page table hierarchy. It then asserts that the
-nr_pages metric increases and proves the 'sticky' reclamation behavior
-by verifying the page count does not drop immediately upon unmapping.
+This series refcounts leaf directories natively in struct ioptdesc and
+registers a domain-aware MM shrinker that prunes empty directories under
+system memory pressure.
 
-The test is skipped when the IOMMU driver does not account its page
-table memory, in which case the metric is not reported.
+This is an RFC to align on the design. It has known issues, listed below,
+and is not intended for merging as-is.
 
-Co-developed-by: Logan Odell <loganodell@google.com>
-Signed-off-by: Logan Odell <loganodell@google.com>
-Signed-off-by: Pranjal Shrivastava <praan@google.com>
----
- tools/testing/selftests/vfio/Makefile         |   1 +
- .../selftests/vfio/vfio_nr_pages_test.c       | 119 ++++++++++++++++++
- 2 files changed, 120 insertions(+)
- create mode 100644 tools/testing/selftests/vfio/vfio_nr_pages_test.c
+Design
+======
+ - Refcounting: the __page_refcount of a leaf directory's struct ioptdesc
+   counts its valid leaf entries, plus one for the table itself. Map takes
+   a reference with atomic_inc_not_zero() before installing a leaf, and
+   unmap drops it after clearing one. Leaf entries are counted only in the
+   table that holds them, so map and unmap never update refcounts on the
+   shared tables above it.
+ - Queueing: when the refcount drops to 1, the directory is empty and is
+   logged with its IOVA into a per-domain xarray (reclaim_list). Only
+   non-DMA domains are queued.
+ - Claim: under memory pressure, the shrinker walks the queued directories
+   and claims each with atomic_cmpxchg(refcount, 1, 0). A map that finds
+   the refcount at 0 fails atomic_inc_not_zero() and retries, so it never
+   reuses a claimed directory.
+ - Sever: a format-agnostic top-down walk (sever_branch) clears the parent
+   slot with cmpxchg, severing the dead branch from the live tree.
+ - Free: the domain's IOTLB is flushed so the IOMMU drops any cached
+   pointers to the severed tables. A single synchronize_srcu() then waits
+   for in-flight map walkers before the pages are freed.
 
-diff --git a/tools/testing/selftests/vfio/Makefile b/tools/testing/selftests/vfio/Makefile
-index 2c32c48db509..140ef273e36b 100644
---- a/tools/testing/selftests/vfio/Makefile
-+++ b/tools/testing/selftests/vfio/Makefile
-@@ -13,6 +13,7 @@ TEST_GEN_PROGS += vfio_pci_device_test
- TEST_GEN_PROGS += vfio_pci_device_init_perf_test
- TEST_GEN_PROGS += vfio_pci_driver_test
- TEST_GEN_PROGS += vfio_pci_sriov_uapi_test
-+TEST_GEN_PROGS += vfio_nr_pages_test
- 
- TEST_FILES += scripts/cleanup.sh
- TEST_FILES += scripts/lib.sh
-diff --git a/tools/testing/selftests/vfio/vfio_nr_pages_test.c b/tools/testing/selftests/vfio/vfio_nr_pages_test.c
-new file mode 100644
-index 000000000000..aef6b1dd8e19
---- /dev/null
-+++ b/tools/testing/selftests/vfio/vfio_nr_pages_test.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#include <stdio.h>
-+#include <sys/mman.h>
-+#include <unistd.h>
-+#include <linux/sizes.h>
-+
-+#include <libvfio.h>
-+
-+#include "../kselftest_harness.h"
-+
-+static const char *device_bdf;
-+
-+static long read_nr_pages(struct iommu *iommu)
-+{
-+	char path[256];
-+	char line[128];
-+	FILE *f;
-+	long val = -1;
-+	int fd = iommu->container_fd != -1 ? iommu->container_fd : iommu->iommufd;
-+
-+	snprintf(path, sizeof(path), "/proc/self/fdinfo/%d", fd);
-+	f = fopen(path, "r");
-+	if (!f)
-+		return -1;
-+
-+	while (fgets(line, sizeof(line), f)) {
-+		if (sscanf(line, "iommu-nr-pages: %ld", &val) == 1)
-+			break;
-+	}
-+
-+	fclose(f);
-+	return val;
-+}
-+
-+FIXTURE(vfio_nr_pages_test) {
-+	struct iommu *iommu;
-+	struct vfio_pci_device *device;
-+};
-+
-+FIXTURE_VARIANT(vfio_nr_pages_test) {
-+	const char *iommu_mode;
-+};
-+
-+#define FIXTURE_VARIANT_ADD_IOMMU_MODE(_name) \
-+FIXTURE_VARIANT_ADD(vfio_nr_pages_test, _name) { \
-+	.iommu_mode = #_name, \
-+}
-+
-+FIXTURE_VARIANT_ADD_ALL_IOMMU_MODES();
-+
-+FIXTURE_SETUP(vfio_nr_pages_test)
-+{
-+	self->iommu = iommu_init(variant->iommu_mode);
-+	if (!self->iommu)
-+		SKIP(return, "IOMMU mode %s not supported", variant->iommu_mode);
-+
-+	self->device = vfio_pci_device_init(device_bdf, self->iommu);
-+	if (!self->device) {
-+		iommu_cleanup(self->iommu);
-+		SKIP(return, "Failed to initialize VFIO device");
-+	}
-+}
-+
-+FIXTURE_TEARDOWN(vfio_nr_pages_test)
-+{
-+	if (self->device)
-+		vfio_pci_device_cleanup(self->device);
-+	if (self->iommu)
-+		iommu_cleanup(self->iommu);
-+}
-+
-+TEST_F(vfio_nr_pages_test, sparse_mapping_sticky_reclamation)
-+{
-+	long nr_pages_initial, nr_pages_mapped, nr_pages_final;
-+	struct dma_region region1 = {0};
-+	struct dma_region region2 = {0};
-+
-+	if (!self->iommu || !self->device)
-+		SKIP(return, "Fixture setup failed");
-+
-+	nr_pages_initial = read_nr_pages(self->iommu);
-+	if (nr_pages_initial < 0)
-+		SKIP(return, "iommu-nr-pages not reported by this IOMMU");
-+
-+	/* Map a page at start */
-+	region1.size = SZ_4K;
-+	region1.vaddr = mmap_reserve(region1.size, region1.size, 0);
-+	ASSERT_NE(MAP_FAILED, region1.vaddr);
-+	region1.iova = 0x100000;
-+	iommu_map(self->iommu, &region1);
-+
-+	/* Map another page far away (1GB stride) to force deep page tables */
-+	region2.size = SZ_4K;
-+	region2.vaddr = mmap_reserve(region2.size, region2.size, 0);
-+	ASSERT_NE(MAP_FAILED, region2.vaddr);
-+	region2.iova = 0x100000 + SZ_1G;
-+	iommu_map(self->iommu, &region2);
-+
-+	nr_pages_mapped = read_nr_pages(self->iommu);
-+	ASSERT_GT(nr_pages_mapped, nr_pages_initial);
-+
-+	/* Unmap both regions */
-+	iommu_unmap(self->iommu, &region1);
-+	iommu_unmap(self->iommu, &region2);
-+
-+	nr_pages_final = read_nr_pages(self->iommu);
-+
-+	/* Page tables should remain allocated */
-+	ASSERT_EQ(nr_pages_final, nr_pages_mapped);
-+
-+	munmap(region1.vaddr, region1.size);
-+	munmap(region2.vaddr, region2.size);
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	device_bdf = vfio_selftests_get_bdf(&argc, argv);
-+	return test_harness_run(argc, argv);
-+}
+The cost is one atomic operation per leaf entry on map and unmap, plus an
+xarray insert when a directory becomes empty.
+
+Known issues
+============
+These are understood and will be addressed in the next version:
+
+ - Map vs. shrinker retry: on a claimed directory, map returns -EAGAIN,
+   which __map_range() already uses to re-descend into the cached table
+   pointer, i.e. the dead directory. It needs a distinct error and a retry
+   from the top.
+ - Unmap vs. shrinker hand-off: an unmap that fully covers a queued
+   directory, or a large-page map over an empty range, frees it directly
+   while the xarray still references it.
+ - xarray keys: the key is the IOVA where the emptying unmap started, so a
+   directory can be queued under several keys and nr_reclaimable
+   over-counts. Keying by the table's PFN makes entries unique.
+ - A failed sever leaves the refcount at 0 instead of restoring it to 1.
+   The top-level table, which has no parent, should never be queued.
+ - iommufd allocates paging domains without iommu_domain_init(), so their
+   reclaim_list is not initialised.
+ - Combined with the observability series, pages must be uncharged from
+   their domain at sever time, as they are freed after the domain may be
+   gone.
+
+Open questions
+==============
+ - Leaf directories with child tables: a leaf directory above the last
+   level (e.g. one holding a 2M leaf) can gain a child table, which is not
+   counted, and could then be reclaimed while the child is live. Should
+   child tables be counted at install, or counting be restricted to
+   last-level directories?
+ - SRCU in reclaim context: the shrinker can run from direct reclaim
+   inside a map's SRCU read section, where synchronize_srcu() would wait on
+   itself. Should the free be deferred (work item / call_srcu), or is a
+   different scheme preferred?
+ - IOTLB flush granularity: flush_iotlb_all() is used after severing.
+   Would a range-based paging-structure flush be preferred?
+ - DMA-API domains are excluded since their unmap can run in IRQ context.
+   Should the per-leaf atomics also be skipped for them?
+
+Upcoming Work / Roadmap
+=======================
+An IO page table observability series, which attributes page table memory
+to its domain and exposes it via fdinfo, is posted separately as an RFC.
+The two series are independent; this one applies on v7.3-rc5 by itself.
+
+There's an alignment session at Linux Plumbers Conference 2026 for these [1].
+
+[1] https://lpc.events/event/20/contributions/2624/
+
+Pranjal Shrivastava (5):
+  iommu: Add reclaim_list xarray to struct iommu_domain
+  iommupt: Implement refcounting logic for Leaf entries
+  iommupt: Add lockless sever_branch helper
+  iommupt: Introduce lockless page table shrinker
+  iommupt: Return real page count to the shrinker core
+
+ drivers/iommu/Makefile              |   2 +-
+ drivers/iommu/generic_pt/iommu_pt.h |  81 ++++++++++++++++-
+ drivers/iommu/generic_pt/shrinker.c | 135 ++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c               |   2 +
+ include/linux/generic_pt/iommu.h    |  29 ++++++
+ include/linux/iommu.h               |   3 +
+ 6 files changed, 249 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/iommu/generic_pt/shrinker.c
+
+
+base-commit: 72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
 
