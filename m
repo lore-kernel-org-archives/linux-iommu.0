@@ -1,143 +1,192 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B37027AC57
-	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 00:56:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66BF437B032
+	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 01:57:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790816174; cv=none; b=gmqrNc99iA7K6A1BT/kth5NQP4rcTFLnKAeyWRYn/PkRFV0EH04OhbZ15e+iBqCt//M+PSGZGYzBbuKhaNtWRmFRTFBP1y4ozjgVXumGWa6b+nrK10gTBn+/X3LnkNMCeAqMAC8eAMkyGhNp95MhpNdTkTVRZ0VJTyZ1oNaXwfE=
+	t=1790819847; cv=none; b=dOKNo93dtZLclTrKZP7dq3xdUbXM4blNaTz9P00wye/zW6Qpd7WPmBbgm/SiWd2GisJUpnh+/bLh1ur5Oxi5uZxqAY1xpg2vzo3uAQOIAqWM/HiwVvfp8OsIbpzXEQho5hP6a6/M2E9J9guaFqytAx38g/qNXxOkM2O+BVtnEsA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790816174; c=relaxed/simple;
-	bh=U56QULVWqsKJW2EZBRefVWv3E+jcCLq19wO8Z6fvjlQ=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:In-Reply-To:
-	 From:Content-Type; b=CBrljxN7z8pieQ1y+dufLnk9rruZR6/1ndiRUjN27HZLthK0LwWvYl7AcULiJjPSSlR3tg2DgZlUGKB4OmkmFlqi2V0sD+ko+cxGCyzW4vFfeYeJ34Mvwj0FeV4hTvQ9C1tNm34l83qab3nvlvNLhJk3IDMEp4KItPK/20AnTdI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k/Hc0Kjs; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1790819847; c=relaxed/simple;
+	bh=dc23h0DAzeahU2YQjWsf1UtM8H72KH4uKWQYNEb1GJA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VKfjk2fqfHTrndV1i++/ZFE+GxzpjR9F8tET4dZs11I0wEApi5dG5JTLt7wl9WGc0UtQyxhB1xrUm8WUEtQIgkhuGVZuu2XBFWn7hXS9s42M1jdrCuSsLIVFz87gFOSPrx3rA/6mz08Pa8o3Qmjt1GI9zA+q1slcrp5dp2bdMwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=S50noS3a; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=JvLnVkio; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k/Hc0Kjs"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49e83a388f8so43783625e9.1
-        for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 17:56:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="S50noS3a";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="JvLnVkio"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6910jWHU271282
+	for <iommu@lists.linux.dev>; Thu, 1 Oct 2026 01:57:24 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=uoVV9AMom/z0Z5MeMxOVZrJn
+	fnZMhEF3YGoQPtJPVgc=; b=S50noS3aCk+5o+zo395zaz85DH4dKB/5pNEcwflo
+	sOOZu7Jf9Zf4L6f2HIIt2NIOJgaC39THUFZ5YJQLhQ4ZIA/9usI4JfGvnfqc0Asx
+	0xG7xi6Lyw8j7eoN2QXXDGurmww8SjMNhIrwf1pzzU6/MY9DDL0mYa/WUwzLZHFG
+	g4UtuhHxGQaXLZgYMOuLaVke4M013uQinV4XXShCcGSj49b9X216TkJlJfrLcDEf
+	RYCTetkmOpdbhFL5iw41bl7O5SOFH9aLRSRNyUAwQctTN9BoBgAK6UMluDs70FK+
+	CdnQXuFv/CLkLPfdszF6bWnckNNhN3iGN6k+73VZ+TnnsQ==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h17mvsfmh-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 01 Oct 2026 01:57:24 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-93bf4c0af4eso77819285a.1
+        for <iommu@lists.linux.dev>; Wed, 30 Sep 2026 18:57:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1790816171; x=1791420971; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:from:in-reply-to
-         :content-language:subject:references:cc:to:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=7SWQolDlxs/mWv18+ONCdedDA47CMCmGgXEL49Xti+c=;
-        b=k/Hc0KjsDYjvF6dmmipUwPVn2qHi8rlgTmQisqFUlTrTDl9dOxBpsOe9WT6B6lfDG/
-         G5kMuwmSl8gWyAh9jc2D4m38xNhwQw9i3d2itXfppfz8pbyTQ3GY0066PARuP3PI+XXo
-         pqxU8LzSuflXuMNSlB24QikC2hNkGZzRdke2PwW3cEtnI1bsz1LNwc0898jy2XaQwRY7
-         5drgHekpDWeaj0/0vfY9DrpJYfBp94tmnC0RakOK7EeSECtKtDvVTt4k707p+Yl+OnDJ
-         ufQJxS6ZBZpRTszA3lEGOaQYBRiFVJJINs2gavV8yeIk3+8l5nI3BBuQsaXydvWNjCSU
-         Dsew==
+        d=oss.qualcomm.com; s=google; t=1790819844; x=1791424644; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=uoVV9AMom/z0Z5MeMxOVZrJnfnZMhEF3YGoQPtJPVgc=;
+        b=JvLnVkio/UiaAG77gKVKDuPvQCfXXJbFrxruILttyLsVyRqBSZWa83RB0E0P+3Ri3n
+         CEi1IiknfEIv9PTk0HGMOn83SWtbqLFb1+JXr9tcw0M6c1XavYWDiSGSXa5aYcIk12es
+         Gdf1mk46gLoHcCMAR0FczifMtgfcrv260U0iQxubgY00bsGcHF0VWbDNl7TrsL5jUl6R
+         TNhqMFmnADnKnxUbrtZWGmTujbPXJ7qgxwHq5FkMgcOs9ikTaz5/P0g5A1uUJ6hALVH/
+         xJGb31lg7WPh8Hn6LwWEfNPkr5bPe9CG5TzJ7HpI54w36zsdtH+G0cyjwxcn3jPXnsoO
+         kPfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790816171; x=1791420971;
-        h=content-transfer-encoding:content-type:from:in-reply-to
-         :content-language:subject:references:cc:to:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=7SWQolDlxs/mWv18+ONCdedDA47CMCmGgXEL49Xti+c=;
-        b=teOJ0muGhwEagsP18cy9P07aLgzOMxFIfvy8AgWz5GymUD+9eToSZR7mKAhnlX8AAS
-         xHs8g+oWCbWe7Lc5RBr9Tiw9Rkxtteo9T8SCKPcBYa/Ien0Q14/BgrSO/y6/B3HvNw0t
-         0k5nfAPaWE8/ENc7JAssmO0Yu2EP8/U+Dv/5acdf2CqU7oWpEuMk9fW/fOaUlnFpg1X7
-         BfPWnaJxxfmqyxLzn3ChJi4z3w8ThDUIHSgE1yG7q5g4Yqhm99k+x0M5U/KUc0Lws12n
-         Bzo5jSXJhCXC8BcHjN+AqpFtlQUqTUWOExZ0dkRMwgGPWCkhHI41g581+HdN3V9uB35l
-         2kGw==
-X-Forwarded-Encrypted: i=1; AKwUvBx6Bs6nyZMk5aumEDschmJ2XT4nKP95AP7wcRq0f+f2NcAvokx6ZjwKmsxriSQJgGUX0kMhKQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++nwmlLMEJX9qRLyKW9D32lzfL/9WRHdgHoDJIueCgQy90v6L5P5
-	0ToDXs+LBlv39ARlJKep+VR5RFGc1w2QkFDL1jMWvIoT52qf4eKeWsvc
-X-Gm-Gg: AYBFou0+zdTFRQ6EcEQ1ngERNMAxK8JJdbynIrTqsmUbET5An0v9d9Rew7pq1VN6QzN
-	33Vk3v0FyEqBTlMaZTptrutPEfPgRhcm7K2ouZZqebiWOQjzE4wLcDIbC66agdHuWIb+0TrO+hb
-	UrgIZilS7sAGFivTX1IXJCmAswHCgfc3QAc5WfIKx6wOewjw+S4uyasAlKlJ4TzvOb858oKT6Le
-	K+1ioDr1dTJMvvzz//h+RH1vPJ8jrBB/R1jdNzej7TttPuM5vkCSKWevHRWASNY3Jv1glmpNItu
-	VDWk76e1UWhuPdQZoIno4I3ROjKSe6SnIze/ul/9T6MzW2LcEZKn3AT78x33fG4eiJDqqn50gJp
-	iJZC4zildAIcxWE4rvKqBCSwCKhlXHNGPojjYPhYU0zufMk0M2iRnM+vkDBnfmd+LphFYLOiKkr
-	NSyrfK12BHn+NP6lIrW6hiWFiOasEiEvwq8BUbyGcifLRH+qwtBsY9uOTmAeOhUnFivlJT1Nsrp
-	KlqGYInvZgtUb9Po1PgmD7IzQuB9pXvl++Y
-X-Received: by 2002:a05:600d:82f0:b0:4a0:1e64:4238 with SMTP id 5b1f17b1804b1-4a01e644325mr29628645e9.24.1790816171286;
-        Wed, 30 Sep 2026 17:56:11 -0700 (PDT)
-Received: from [192.168.1.6] ([90.243.208.133])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a01f949709sm36071075e9.12.2026.09.30.17.56.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 30 Sep 2026 17:56:10 -0700 (PDT)
-Message-ID: <3d2d6a70-8a00-4ef4-89ac-8000d9f9bf85@gmail.com>
-Date: Thu, 1 Oct 2026 01:56:09 +0100
+        d=1e100.net; s=20260707; t=1790819844; x=1791424644;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=uoVV9AMom/z0Z5MeMxOVZrJnfnZMhEF3YGoQPtJPVgc=;
+        b=i6luFurIUBtGoJ/NAx1e++gtx2rHEO/smHCIu3vQ5D+kb1kidE0VI127prphcpkSpU
+         tkicdKhtLrNeBjPIWr/JsliuXOm+/pvschkzNKwxjcRAqalSOzcs1RW38qvBToMBzqlZ
+         NrC10t7eYIQSskkPH2K634QXx6z0ZlcSZAaORjSZOj5zd2sDqbD5iQAsuRTahDxie0bm
+         JhLkJAdh/Y59d414CoSmqugEsqdL1fxr+zcjx+uTltlItiBxeWBCmWZ/tu35mGAiQl3w
+         g784fQyQsfImkwwrv1vBY80zbuGAqf83nTYuLH+Q1dIUAGW23y0P5nR00wxuceJTWzhy
+         3eDA==
+X-Forwarded-Encrypted: i=1; AKwUvBz8ZWZ3Zp9JZo3rbixVUCkrOGzVTC6FdA/rsDU3GntFXue5i2uu2AG9QeOPF1qPB9sOR1ojrA==@lists.linux.dev
+X-Gm-Message-State: AFuF++mD08s24WBfMw0D5OBuqEYEKyCQT+MKqwq/BDDfnepOqnTYJSoC
+	Zrixj8YbFfs7wO+QDmF/VkkdwLQW1sgVgQCph9XkZUHjDOUf7tINIQnOnDQw1qOomu1+rpnizSk
+	m0baQ531nnZ5pjg4X1+oLQesbd6UkxzxEXTYBGFUF5Lec3SRd/hXnWNcMkg==
+X-Gm-Gg: AYBFou3TAQ7S0cHkDKrbwj7DE3Ub9ZyD9/dZQpcH4UJvr8nUs4A0AiWPpGy9A9yL324
+	x7oQsPeiyp/3rHWvveJHAY/lG4Kjt0f8bvGCkmaaDZw2vk8LOsGJpMf3axrDQgYX1br55f5f6Xn
+	A95uBn4jKIeWN5R98MRnrRd4rT1St6HZiruklwN94MYcZvUKbKAgwVQ13VBjjkAipSIEvdpzDs6
+	nJ15A1aPpwMIRVftRmVjpWdWGwf5aUg5hZ/Y2ItHBLclXjfxk051amXToSaNA/nW2ZY5060cWrO
+	2OaSJZWraIKvHDjFoD88PEwGAy5oqZdDnrQA/59B+7m86rM80qjf69qeORMPocA/TxWtRW3s481
+	wtMAXMVxYIv2kazs4Ytkwl0wO8opYnHLczrOPVcRAPAWz92L+o2OEMq0QouLfW/v+a/Q+3+WLGB
+	cSy8eQr2H7lXsH
+X-Received: by 2002:a05:620a:269a:b0:93b:d7a4:9d49 with SMTP id af79cd13be357-93cb5a1468amr287212685a.28.1790819843443;
+        Wed, 30 Sep 2026 18:57:23 -0700 (PDT)
+X-Received: by 2002:a05:620a:269a:b0:93b:d7a4:9d49 with SMTP id af79cd13be357-93cb5a1468amr287207785a.28.1790819842965;
+        Wed, 30 Sep 2026 18:57:22 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3a77192ee13sm12526111fa.30.2026.09.30.18.57.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Sep 2026 18:57:21 -0700 (PDT)
+Date: Thu, 1 Oct 2026 04:57:19 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: muzafferkadir@mainlining.org
+Cc: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
+        Jerome Brunet <jbrunet+clk@baylibre.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Srinivas Kandagatla <srini@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Robert Marko <robimarko@gmail.com>,
+        Guru Das Srinagesh <linux@gurudas.dev>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, iommu@lists.linux.dev, mfd@lists.linux.dev,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org,
+        linux-input@vger.kernel.org
+Subject: Re: [PATCH v3 13/19] drm: msm: mdp5: Add MDP5 configuration for
+ MSM8952
+Message-ID: <diibislcaubtwwazmkjsv4y732har2eskayle5mxpdkr5npana@uckh2yzblzxp>
+References: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
+ <20260921-msm8952-initial-support-v3-13-b96fd3fe298b@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: suravee.suthikulpanit@amd.com
-Cc: frank.gorishek@amd.com, iommu@lists.linux.dev, jon.grimm@amd.com,
- joro@8bytes.org, linux-kernel@vger.kernel.org, santosh.shukla@amd.com,
- thomas.lendacky@amd.com, vasant.hegde@amd.com, alex@shazbot.org
-References: <20260424092213.16976-1-suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH v2 0/4] iommu/amd: IVMD handling cleanup and ivmd= boot
- override
-Content-Language: en-US
-In-Reply-To: <20260424092213.16976-1-suravee.suthikulpanit@amd.com>
-From: Adam Pelka <adampelka26@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260921-msm8952-initial-support-v3-13-b96fd3fe298b@mainlining.org>
+X-Proofpoint-ORIG-GUID: rpOX65rbn188uOOlkFbR9H2mBkclL1m1
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDAxMDAwNyBTYWx0ZWRfXznACo2E4yffT
+ f5QaiKI41rJhYqH/9Y+d+2YlErb97cVABJHceeAloiTRKlHNtINTzKMeo5HSlkrLDh/UFWeJvOv
+ H4cSQh+MRfcdSOzDMsU4CnpUfcw5uLd87s8ucD3mz44VCo9FccJ3PIm7C8NmoUthWaCYTCzvRwb
+ U7IaTto6gFGa+SHXrDX4AZL6FSlpjpE5mHu0VkHGFgXt1LgpMRBrSj/VI3acTzxQViiN2+IMj7/
+ EzEB5ZKidrBpZ995uh4Ggt7tOFu6TALedq6UG5EWFx9ezl6D2a+P8ej3jRluC4TObmxgIRVIZIr
+ cqeuC6Hpns2AqS+HMSsq0FXwMMSt+Lvk5IokNjH2Mebma5Fq7QAvXj9p5VHhBQ/IcszQlZhywWt
+ Zi3txpxLKbjMtaPD5N9zX46COtCjrhnsnJr6IMYPVwfnEsIZ0xw5LH603dM35ma6BmxciWyjFxt
+ VWx1jtJZCaHKJ7BabQQ==
+X-Proofpoint-GUID: rpOX65rbn188uOOlkFbR9H2mBkclL1m1
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDAxMDAwNyBTYWx0ZWRfX5GLDnLIzfpPx
+ vdzk/sneRoOesyxachk0W8NOL4juRXv/AaXvqdKDRKqQJ0+3xdsChBtKhd3UdGpBLzhh9scbD/M
+ YhBVzVnjZS3wJOmrtYxZYmbuTEmx7Ys=
+X-Authority-Analysis: v=2.4 cv=KuvYSmWN c=1 sm=1 tr=0 ts=6abdbe04 cx=c_pps
+ a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=YMgV9FUhrdKAYTUUvYB2:22 a=OuZLqq7tAAAA:8
+ a=EUspDBNiAAAA:8 a=YvXxkWmvim7rQlE-Do8A:9 a=CjuIK1q_8ugA:10
+ a=IoWCM6iH3mJn3m4BftBB:22 a=AKGiAy9iJ-JzxKVHQNES:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-10-01_01,2026-09-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 malwarescore=0 spamscore=0 phishscore=0 impostorscore=0
+ adultscore=0 suspectscore=0 priorityscore=1501 clxscore=1015
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
+ definitions=main-2610010007
 
-Hi Suravee,
+On Mon, Sep 21, 2026 at 09:19:04PM +0300, Muzaffer Kadir via B4 Relay wrote:
+> From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+> 
+> Add the mdp5_cfg_hw entry for MDP5 version v1.12 found on MSM8952.
+> 
+> Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
+> ---
+>  drivers/gpu/drm/msm/disp/mdp5/mdp5_cfg.c | 81 ++++++++++++++++++++++++++++++++
+>  1 file changed, 81 insertions(+)
+> 
+> +	.pipe_cursor = {
+> +		.count = 1,
+> +		.base = { 0x440DC },
+> +		.caps = MDP_PIPE_CAP_HFLIP	|
+> +			MDP_PIPE_CAP_VFLIP	|
+> +			MDP_PIPE_CAP_SW_PIX_EXT	|
+> +			MDP_PIPE_CAP_CURSOR	|
+> +			0,
+> +	},
 
-This series removes the IOMMU_RESV_DIRECT regions that block VFIO
-passthrough on my Gigabyte B850 AORUS ELITE WIFI7 (BIOS F11, 05/21/2026;
-same problem on F7), Ryzen 9 9950X3D, RTX 5080.
+PIPE_CURSOR is invalid and should be dropped. I'll do it while applying.
 
-The IVRS table on this board has three IVMD type 0x22 entries, all with
-flags 0x08 (exclusion range only, no unity/IR/IW bits), each covering
-devid 0000:00:00.0 - 0000:0f:1f.7:
+With that fixed:
 
-   IVMD 0x22 flags 0x08  0x8aa34000 len 0x1000
-   IVMD 0x22 flags 0x08  0x8aa33000 len 0x1000
-   IVMD 0x22 flags 0x08  0x95967000 len 0x1000
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 
-Without the series (stock 7.2.6), init_unity_map_range() converts these
-to r/w unity maps, so every IOMMU group on buses 0-15 (27 groups) gets
-them as IOMMU_RESV_DIRECT. The GPU's group (01:00.0 + 01:00.1) shows:
-
-   0x000000008aa33000 0x000000008aa34fff direct
-   0x0000000095967000 0x0000000095967fff direct
-   0x00000000fee00000 0x00000000feefffff msi
-   0x000000fd00000000 0x000000ffffffffff reserved
-
-and VFIO assignment of the GPU failed (tested on F7) with "Firmware has
-requested this device have a 1:1 IOMMU mapping, rejecting configuring
-the device without a 1:1 mapping. Contact your platform vendor."
-
-With v2 1-4 applied on top of 7.2.8 (they apply cleanly), the same
-group shows:
-
-   0x000000008aa33000 0x000000008aa34fff reserved
-   0x0000000095967000 0x0000000095967fff reserved
-   0x00000000fee00000 0x00000000feefffff msi
-   0x000000fd00000000 0x000000ffffffffff reserved
-
-No group on the system reports a direct region any more. The host runs
-with the default DMA-FQ domain on every group except the iGPU
-(identity), and there are no AMD-Vi IO_PAGE_FAULT or FW_BUG messages in
-the log. The ivmd= parameter was not exercised. I have not yet assigned
-the GPU to a VM, so the VFIO ownership claim itself is untested on the
-patched kernel; the check above is of reserved regions only.
-
-This matches the IVMD pattern in the amd_iommu=relax_unity report from
-March [1] (Gigabyte AM5, type 0x22 over devid 0x0000-0x0fff). That
-report didn't include the IVMD flags (Vasant asked for them); on this
-board they are exclusion-only (0x08). If those boards are the same,
-this series should fix them too without relax_unity. I can send the
-raw IVRS dump if useful.
-
-[1] 
-https://lore.kernel.org/all/20260328213228.12084-1-chris.longros@gmail.com/
-
-I'm happy to retest v3 when it's out.
-
-Tested-by: Adam Pelka <adampelka26@gmail.com>
-
-Thanks,
-Adam
+-- 
+With best wishes
+Dmitry
