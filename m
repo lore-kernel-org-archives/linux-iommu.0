@@ -1,165 +1,104 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010034.outbound.protection.outlook.com [52.101.201.34])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7855E35203C;
-	Thu,  1 Oct 2026 18:04:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.34
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790877845; cv=fail; b=psgAaiB/lvuQghaZFIJlo1ktyC+PMD47Brn1Ej682YMjIblAhQi9gq/cNE0EOtkCh1u0Q/zfkj06zJSnKrv8icgqDbR0h+QcxLbP8Rrlyq2BuG29nVxgBc6gcQmkwJzBc4X5Hdkq6EZoHy81yufq/AP0Lw4hpnQUoWQSt8KeSfs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790877845; c=relaxed/simple;
-	bh=VqGTCKRuYElGPMelr7Hcniu8dxhZkgKSaYvWC/wOoog=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QcGqxBtfmnocvqPaRlzEnQQoNYC5bq7YN09GG6rd4bd2ojrK706u+o3Xg8A0B1xEi46YDrkiDTgXKU7kDXTRCJ5DPRw1RG3ODnmT+F6EA4s77yp+Ib4kdZ1oF1kSvlA9CscWh3Y00aZBIaa5VKQx+gStDXnYCOykPoAby8HvgTg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=B1/pFQmp; arc=fail smtp.client-ip=52.101.201.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6A3D43E07A
+	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 18:22:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790878950; cv=none; b=CwA4iVJ82iM9zrh4nRi219vaxYowPNZ5VlpUsJgzrs9AUNfIvQkSW5VoprZn4xaWJmiqBDELIVlpATZT1D6T3nVthwWCkzx1QCSPcGiSJJgyNcOyNriaPihaFfw4m6cVU09Ks+XPU5siYApXeIFtJ7Ja/Gbo8qp6if9Md+7gv0c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790878950; c=relaxed/simple;
+	bh=Y94ugADCjd5S4s4n0Tg88CMgCId4+Gj9yqv40QY1BOI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uYrPcIYH5VojraeD+pbQ4gtPjvm1pp7q/OZghvkRUlP0M2NVDa8ao2skMn6w96EHx8me/0QXcvs/fBqD2U9okIYdP6PBqEp5KQnYPxmHCRH0KBRfKczK833XrafAPjgd+xgfBZrN4LeyAJX94wLtsfbJNbBzXbqcW5bVuAbCGus=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iHoBLnBp; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="B1/pFQmp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Xy6da2qPodJIsDQqngwaR2iUoXx2910zW9htXnU5AtSjbQkBJGloDVbPwMupTsIj/SNyyMiWBWjXniPjtitL0DDUN9h8IWi5+h6yxhakPx9xvYchHbnQw/see7AH5rjQPtkLnul3ccaGjsEVyEbQYUL/fLyepM+vt3N5YCZeoeF3XxivA1Hd5IJpRDYUv0VQ1EgreRFHKMnRZY0HeRclziEvcWmQ8AysGW/gDZWNCnyOOHhLqtFznKr5oCtngxNqsCHamSloFg/PmUQaxFpWNWWOKbPFK9BoRbxD0XqfgpQ3s7ZM4oxMEEJ1+WQ6NeY28jDKhYo7XrMOFBxdy4HX7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4eZIu0ByKLmylD9kPONKLCE9vBYmRBQGjGZ2s2bJrus=;
- b=euRsKXMO0ToLWk4Jjp0pSduwXQ4TFpHPNHjeu8TV810ANucRaS0E9eRl3DHpOj2+hJ+2tvPe0WH/DoQAznB6tJ1yipMK+6oO95FfwNuGBLR+cd7UVqQ7GX9cM+QDU31kZPtjEL0SDKzOQr8iWRkiTBOE7HBEYyPC2yjmug1ZwKiTwSE9rb3ncAtN1lLmm+BBsL15wcl9zpMDq+x9rlj25yfIKF5punXpNErOHUxKT6ZaMEoKdPpI4Ll4FZW0UzXoFWRmQNw3gFvhD+wvG7ap1BgoWSfq7s0TbUNxeRhamIVF/dTuxYFT46OkCNAxHgVeetn3qurbxMoNzn8X1DKeNQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4eZIu0ByKLmylD9kPONKLCE9vBYmRBQGjGZ2s2bJrus=;
- b=B1/pFQmpPID7YyqJCyTJFW1LX1bGYGWSPWcgcyrHfM8fXb2PVF6O/s7VoFNvoIXHm2KdKjH7EW6aAQqfAldyC/Auz4V5D1dPsHtdE/sIEXQeH2KZLhyp9q0g5SQyuAZi7o0UTA012qNiPdwzCfLAoTyN9iIwoHqUNli4SlNGQChoqTia3gQVaaHijGfaspmSAImdVpKMHKxfghxnBno5lMT0o/SAulb5zNonny2ATZw6IHaiFG2ln0B4XcUOQSFD4ku6YUFMidpa4YN5J/MP5tJgzxt0l4EJ3GB7iw1If0pwg+O5lAgffRgylbh1SYWSaVut81uzo97g85KwBJtwdg==
-Received: from DS7P221CA0008.NAMP221.PROD.OUTLOOK.COM (2603:10b6:8:25b::6) by
- LV5PR12MB9804.namprd12.prod.outlook.com (2603:10b6:408:303::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.451.24; Thu, 1 Oct 2026 18:03:53 +0000
-Received: from BN2PEPF0000A802.namprd02.prod.outlook.com
- (2603:10b6:8:25b:cafe::41) by DS7P221CA0008.outlook.office365.com
- (2603:10b6:8:25b::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.18 via Frontend Transport; Thu, 1
- Oct 2026 18:03:53 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN2PEPF0000A802.mail.protection.outlook.com (10.167.245.171) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.472.14 via Frontend Transport; Thu, 1 Oct 2026 18:03:52 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Thu, 1 Oct
- 2026 11:03:19 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Thu, 1 Oct
- 2026 11:03:19 -0700
-Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Thu, 1 Oct 2026 11:03:17 -0700
-Date: Thu, 1 Oct 2026 11:03:15 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
-	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Daniel Mentz
-	<danielmentz@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
-	<linux-arm-kernel@lists.infradead.org>, Thomas Gleixner <tglx@kernel.org>,
-	Radu Rendec <radu@rendec.net>, Bjorn Helgaas <bhelgaas@google.com>,
-	<linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, <rafael@kernel.org>, "Danilo
- Krummrich" <dakr@kernel.org>, <driver-core@lists.linux.dev>
-Subject: Re: [PATCH v11 11/16] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
- gate CMDQ submissions
-Message-ID: <ar6gY9grmdMZcN/M@nvidia.com>
-References: <20260929034510.2023173-1-praan@google.com>
- <20260929034510.2023173-12-praan@google.com>
- <ar1yNtr7Kp2OTcDd@nvidia.com>
- <ar3yWUmi8E0k37Ml@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iHoBLnBp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790878945; x=1822414945;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Y94ugADCjd5S4s4n0Tg88CMgCId4+Gj9yqv40QY1BOI=;
+  b=iHoBLnBpz7Ncj2YN7PyQXGQzQ5VHvD2xbzxa86r66p4AWBBXUR5+Frjz
+   anDOKgvSjdcY5aGMs5qF82Om5QVORClSaubnC+uwk7hDS32yzMS0R3pdr
+   3ZwmW0T3juBTMSSnbUjpxAgXZQwzOqdxdAh6Q1CMaTNqwXtCA0gnNhFjR
+   AtkEc595LweAbZz7LydQ8m5ss2fQ3BQBBOgXrSHsR7mqEzdd16GNZRQYd
+   7bvgDcT0/5I9ywyb1/PYQwyjk9JOpb+HR/4+ayIuiCqdNQ4X9/wIuv+0e
+   p1SVztBQwwsJTfZ6x3kqWdJ7hqVo8g/2kuMbWpbnqa1Cpv3GtltUnlVtV
+   A==;
+X-CSE-ConnectionGUID: c4Gd2+P3Tu6o/LXodCKmLQ==
+X-CSE-MsgGUID: rpfRtFNiQTK/3Lq5gHY+bg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11922"; a="90704758"
+X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
+   d="scan'208";a="90704758"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 11:22:20 -0700
+X-CSE-ConnectionGUID: L5g60cWbRa2/8tjijxT4Ww==
+X-CSE-MsgGUID: StWR2umvRNqgnHBGcd2t7Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,135,1787036400"; 
+   d="scan'208";a="302298846"
+Received: from abityuts-desk1.ger.corp.intel.com (HELO localhost) ([10.245.244.27])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 11:22:14 -0700
+Date: Thu, 1 Oct 2026 21:22:12 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Linux ACPI <linux-acpi@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Sudeep Holla <sudeep.holla@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Ard Biesheuvel <ardb@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	linux-efi@vger.kernel.org, Will Deacon <will@kernel.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	David Rhodes <david.rhodes@cirrus.com>,
+	Richard Fitzgerald <rf@opensource.cirrus.com>,
+	linux-sound@vger.kernel.org, patches@opensource.cirrus.com,
+	Shenghao Ding <shenghao-ding@ti.com>, Kevin Lu <kevin-lu@ti.com>,
+	Baojun Xu <baojun.xu@ti.com>, Sen Wang <sen@ti.com>
+Subject: Re: [PATCH v2 0/5] ACPI: Replace acpi_get_first_physical_node() with
+ acpi_bus_get_primary_device()
+Message-ID: <ar6k1MMzNDTbdLvO@ashevche-desk.local>
+References: <4766532.LvFx2qVVIh@rafael.j.wysocki>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ar3yWUmi8E0k37Ml@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF0000A802:EE_|LV5PR12MB9804:EE_
-X-MS-Office365-Filtering-Correlation-Id: 23d0559a-662a-498c-2550-08df1fe65a7e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|23010399003|7416014|376014|1800799024|36860700016|11063799006|10067099003|56012099006|6133799003|22082099003|4143699003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	bDxz9yFGwjoJn0RAmb3GE1jqkjl0Zyp+Q1PYxMrmRs+2ZrA1RCq8sc8UQO5OAYwSZxWUVZYz7h4caXz+ZuuVCmG91PylSZi7y0obkvBNeVWcQe+Ae9jopgG7P6IWXsq/LzIfmwAiOaUcPdKtIypT7BONjlSYQANnd2facUH/ZJDcOAs/mvrySivSjnq/SaflsJONLIDaLHpQBrlu1Eiz1YFXb3i1MzS0B7eIUuDP3UoBPKz8KewGWAaw6tL9/F9pEROZjw79LQi+O1Q1URJqImLyI0SKCaFqwStxSwMOWwKIX4L8aWqOdM87xf6EyKVSInvg8O5hGvB3bfD0mTNevMPNdVHjnm96sE5PpGG5C9HqdXdMv1sE8mgGWedTR7RgSVfC1NlF4ZG3Al4l2tAwBwx5MSmxwQ9KJ4iNk48agPKb1H0vZaZUL5CCXx8TLv/xGfq4q+Hcg2JoacPNb1Ppd5xvrpj+MlMUA01lLMMEUv5DZC4KlowuciAeR1+g6mw/9OkQopwYRi30OIzIBVvXyA9o2Y2TOGpvpGIFo8QBOztmPplER54v39qbNRIAN8eqcWI0e2LSNqo2F744j8cnV+Cx/qpU8Up+UCRAGLwqkPp2CceThz+zond8YBzjru6y5Zjwyn1VqnNIN7RpsYro7+UiRCT2CF/AJOhzG6lxbJf/R3Qg8fC91P3qhx/pTrbTSqv9GGh89NNpc3D2+wi+Sg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(23010399003)(7416014)(376014)(1800799024)(36860700016)(11063799006)(10067099003)(56012099006)(6133799003)(22082099003)(4143699003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	k2xrJW3QqDsnltYje1YGRGmX0cMLlc3eo8fJ2lHJYiTu5v3Ds/DVRmc1zHv0r/sU/oJCCEBj+3blKf4bkHUxnxLTpA7nueHEG725kmn82nxQu8Hq2SJfXXs168PpfMnRm5ViZ7F76if4jxhSFRFeoAEEtnr24j2ZQfdMrlt2w1sev+SBvdeep+UHeiwT0CEE0gMr2zZAQjT7nF8NO5EvwZkqrnVaZaOdugiqqpA1/YKykYN4kBzYYAtHxh3NGWn6dxroffyqydcjGur43l9/f6C0C+sQA3p3nrXmXCxT/vqML3RrHzRb+iInkK2iwJ4wVN0kB+G7+8SwWNHpvMZqlKzElGj6//LLrudZfhrE37YeiTg1p61vMBZfgR+IymlhQqz0JTx2hpGLVPRUPpMiWgB7fsDfXTsS3qOtIXzZqMtjuTJmEFpYl6NAMRqY11xV
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2026 18:03:52.9217
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23d0559a-662a-498c-2550-08df1fe65a7e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF0000A802.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV5PR12MB9804
+In-Reply-To: <4766532.LvFx2qVVIh@rafael.j.wysocki>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Oct 01, 2026 at 05:40:41AM +0000, Pranjal Shrivastava wrote:
-> On Wed, Sep 30, 2026 at 01:33:58PM -0700, Nicolin Chen wrote:
-> > We may get away from the TLB maintenance. But ATC can be the case
-> > broken by the stop flag?
-> > 
+On Wed, Sep 30, 2026 at 08:30:47PM +0200, Rafael J. Wysocki wrote:
+> Hi All,
 > 
-> Not really, I guess Sashiko missed the comment in a later patch. This
-> was discussed with Jason in v9 [1].
+> This is a partial resend of
 > 
-> The key thing is that ATC_INVs can't be issued by the time we set this
-> flag anyway.. if we're in the suspend callback, the PCIe EP is already
-> suspended, so none of the ATC invalidation TLPs would be responded to.
-
-Okay.
-
-> I'd addressed this in the RPM patch with a comment right above this check:
+> https://lore.kernel.org/linux-acpi/7995179.EvYhyI6sBW@rafael.j.wysocki/
 > 
->          * Note that eliding ATC invalidations (CMDQ_OP_ATC_INV) is safe
->          * because client PCIe endpoints are guaranteed to be suspended
->          * (via device links) before the SMMU is suspended. With the PCIe
->          * links in a low-power state, no new TLPs can be transmitted.
->          * It is strictly the responsibility of the client/endpoint driver
->          * to quiesce DMA and ensure that the ATC state is cleared across
->          * power state transitions.
+> that only includes patches that have not been ACKed and the last one that
+> depends on all of the others.  It is based on linux-next.
 > 
-> i.e. we only start eliding once *all* consumers are RPM suspended, so
-> the "endpoint in D0" scenario can't happen.. and a suspended PCIe
-> function shouldn't be issuing translated requests anyway.
+> This series replaces acpi_get_first_physical_node(), which is inherently racy
+> and therefore generally unsafe to use, with acpi_bus_get_primary_device(), that
+> doesn't have this problem, everywhere in the code.
+> 
+> I will appreciate ACKs from maintainers of the code updated by the patches, so
+> I can pick them up and get rid of the problematic interface in one go.
 
-Maybe move it to this PATCH-11?
+The whole lot is straightforward,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-> So we can't issue ATC_INVs during suspend (the EP is already down), nor
-> during resume (the SMMU resumes *before* the EP is made active). The EP
-> can't use its ATC while suspended, and if it loses power/resets on the
-> way back to D0 (from D3cold, or D3hot with No_Soft_Reset=0), it comes 
-> back with an empty ATC.. same assumption the PCI reset path makes today
-> (pci_dev_reset_iommu_prepare()).
+-- 
+With Best Regards,
+Andy Shevchenko
 
-In that case, would the STOP flag be too late? It's only set in
-the middle of the SMMU suspend. So, an ATC command (via doamin
-invalidation) might be issued prior to the Point of Commitment,
-which will be timed out due to the unresponding EP?
 
-Nicolin
