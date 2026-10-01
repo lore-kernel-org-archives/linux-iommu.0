@@ -1,158 +1,177 @@
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012066.outbound.protection.outlook.com [52.101.43.66])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 022133D25D7
-	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 12:07:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.66
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790856466; cv=fail; b=T/PI22NnAToOjRsZWkR4mW2kBNx7ZXb6g/n/LbFpWK4+3J+JynFnlvDXYjLSD9hxBkZbANGO/KGRmqq7N8rMfDmMkkrnPkVQDI/XuYlQZ0ivHcJRKa4K6aJFLln4nYHulxrDtQ+67i1HJdBYF2j3xWkGwTIDg0Fz2wc5pSCzErM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790856466; c=relaxed/simple;
-	bh=pPyCah+mInsCakdsfxi2qG8f0Ad3K3t37OxvRuGeMjs=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ob4FnqqDOTIots05sxW2FyteBX/TJN3xdQDe6wnShnuA5rUt4uQ15YERoJcR7l7CBYknU7xSSUlrT2nhW4Bly4ikPP64D8200+T9Zi0ulq/1N5UryKAPOX2g4RxMn7GIAp+pb3LBDpm9QFLjnsGqZg7MffREjDY4likhgpPwdyQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=PrWLU/J+; arc=fail smtp.client-ip=52.101.43.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED786493D45
+	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 12:12:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790856762; cv=none; b=TN/IJRu/1BWj0JbCYLqumCSPCeSggzVvyCf4rVKdYo8q3z4UDfFg5GTjP+0gsj0t/u1SG7XHM5XyAvJdjUTtgWVpY9qcccPBSC9VL0WNX5dEc4Oni0VLP5VJJ48KgYFJAisaaCsb1xvb3CJOVRSRnbZBm7rUm7BjN1CfHvCXP2Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790856762; c=relaxed/simple;
+	bh=ZxCdFAWOLjxobLBrBzF661B0SGWR9qyPAncoZzYhjH8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Lpc2jcJGP2hu/Fr+FERu/rYuLcWNb2+yj9xdxxqaIbm9tL0pkDAZERbBmqv/yn4+9nEwi8WFLVgFlOwBkoovl3ti83+c0DHfwW/INlL+qBS+7Zz/NEHd0miD9ZZxRL5uGj4ajzHcov7bra/fPS3NoCJvcC/eYJ6GhP+BRhf2xKs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q9RoBUC7; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="PrWLU/J+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=jwTe6anhhMXRmh4nohyH/qA/lw0JfHTN273NnRlsTjcFTcMD+VoApTsJNJ7ehHkzTNASeqbFWFsdMbVT+Ko0v9gEoRfv+184AXzWJ9ij294wBSYDTt66dThLdezon58zA/+ehrcM8FmkHEb7lFG15MaGB9d4PvMQaghhjap0+jSAOWMPtxmQa3BrNCXx2HRI5WYfsRbttPvyhQkovy4L37KOHC5zQw21DH1ej+fpLX+U80WkNSVvx+MpNsbG2zJ0RrLEGo9Q/8aaLUN+k4X6CvC5gZryI48P6/L9iIaDHjUXbox32/83yBVunfx9UM4vQXwxRsJb46pTB+ookiILGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KCabl5OXsvXGxdp3snxfOqxTNcEu2FkhNPhp1zWWWAA=;
- b=Bd7Rh09oD5rpdq40/gtBjjbp5uEidu7Y85IaMK6yec0tAMqsaK6rUW6xmZ+G8aScs6N2eOC/m+0lHpfD+RnYPNo8wEUlsd1b8QFY9zgvoPS7DR4bewPCvO1Btgx14XuC5JDjzjsbgD02gYMjtY56lq5mG/hqXtA9S2HOXc2W9qyhRBkTPsDQAILD9gSysL6n1TWTvdBkYd/zI6Lk5zUVtlOSouZ1HnfXOrZ7wj42w4O5vAxZMjcR9d5z4bEx7B81z03u02hUAv7V4aW7mwnsushMlCOOFJ8BsemtGn3HZ0+gvB4p8IAXFI1xjbAaSwYq4iGrPDnH1u3aek3he9meBA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KCabl5OXsvXGxdp3snxfOqxTNcEu2FkhNPhp1zWWWAA=;
- b=PrWLU/J+VCuxDBED3sB7TNvZ4GsgKgLBJDiPePncc7wDUxblfUwzMisOd1VOtB8jO9jKKPRgORt1mtF8c1mw6GZEsqc/OAlmZRQS6Gd41xZHlpWNqn93MGnEg6wsDLWflQe/utGRMXR+7ZFOjcUgcZriJ/pxo6qnA9KlNsx5aWQ=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by CYYPR12MB8940.namprd12.prod.outlook.com (2603:10b6:930:bd::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.15; Thu, 1 Oct
- 2026 12:07:31 +0000
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0451.022; Thu, 1 Oct 2026
- 12:07:30 +0000
-Message-ID: <9b5088ad-da0c-4d25-bf9e-1c7ff657bf8e@amd.com>
-Date: Thu, 1 Oct 2026 17:37:18 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 3/5] iommu/x86: Add architectural MSI reserved region
- helper
-To: Yu Zhang <zhangyu1@linux.microsoft.com>, linux-kernel@vger.kernel.org,
- linux-hyperv@vger.kernel.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org, linux-arch@vger.kernel.org, x86@kernel.org
-Cc: wei.liu@kernel.org, kys@microsoft.com, haiyangz@microsoft.com,
- decui@microsoft.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- bhelgaas@google.com, kwilczynski@kernel.org, lpieralisi@kernel.org,
- mani@kernel.org, robh@kernel.org, arnd@arndb.de, jgg@ziepe.ca,
- mhklinux@outlook.com, jacob.pan@linux.microsoft.com,
- tgopinath@linux.microsoft.com, easwar.hariharan@linux.microsoft.com,
- mrathor@linux.microsoft.com, baolu.lu@linux.intel.com,
- suravee.suthikulpanit@amd.com
-References: <20260930141409.437904-1-zhangyu1@linux.microsoft.com>
- <20260930141409.437904-4-zhangyu1@linux.microsoft.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20260930141409.437904-4-zhangyu1@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0076.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:23::21) To BL4PR12MB9505.namprd12.prod.outlook.com
- (2603:10b6:208:591::16)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q9RoBUC7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1790856758; x=1822392758;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ZxCdFAWOLjxobLBrBzF661B0SGWR9qyPAncoZzYhjH8=;
+  b=Q9RoBUC7Spgkx9365peiuXtVBkt8YnocKZLD5RDJbIXy6J0r6uglS67h
+   F3r85QRL6uVOu1dZzvjlxCS+KBZk4AlJeOZIMl7ZMOc4CfOVcWn/byLX1
+   GiBJ6ORfzwcmJxYJdcdA4bUBBLOP33awzldnaVUI3R0jaFglc/d9DeTU4
+   o03w5/iQmokpMEqaJ9k0OEKcoION8QiRF7RZsV0Y1PB9SvFDYl2G85vtX
+   TMSdSfyVj23QVkqN+WumELw/y/M4mO/A4/AY0jgUm25x1s+/nqeLSbVOt
+   YjmXnjk8jpYD7NV1bz8Vt7mOSE/HfcP67a70so+isSIP6196JkIihpa8M
+   w==;
+X-CSE-ConnectionGUID: 8DyIB+wMRZemHCsX2u9/SA==
+X-CSE-MsgGUID: i0jm0bjMTZqAN5G+c7zQvg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11921"; a="94092092"
+X-IronPort-AV: E=Sophos;i="6.27,134,1787036400"; 
+   d="scan'208";a="94092092"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Oct 2026 05:12:32 -0700
+X-CSE-ConnectionGUID: pM/eqZF2Q+GzBtWytpXk0g==
+X-CSE-MsgGUID: bl/fAGK8R8SX7BWvdSzOtw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,134,1787036400"; 
+   d="scan'208";a="302222527"
+Received: from gklab-103a-104.igk.intel.com ([10.91.103.104])
+  by fmviesa002.fm.intel.com with ESMTP; 01 Oct 2026 05:12:30 -0700
+From: michal.camacho.romero@linux.intel.com
+To: Baolu Lu <baolu.lu@linux.intel.com>,
+	Ning Sun <ning.sun@intel.com>,
+	Thomas Gleixner <tglx@kernel.org>
+Cc: Michal Camacho Romero <michal.camacho.romero@intel.com>,
+	x86@kernel.org,
+	iommu@lists.linux.dev,
+	tboot-devel@lists.sourceforge.net,
+	linux-kernel@vger.kernel.org,
+	Mateusz Mowka <mateusz.mowka@intel.com>,
+	Adam Pawlicki <adamx.pawlicki@intel.com>,
+	Pawel Randzio <pawel.randzio@intel.com>,
+	Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
+Subject: [PATCH v4 2/2] iommu/vt-d: Disable PMRs and skip force-IOMMU when TXT TPRs are active
+Date: Thu,  1 Oct 2026 14:12:29 +0200
+Message-ID: <20261001121229.1486711-1-michal.camacho.romero@linux.intel.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <c88f7c82-1b48-4ab2-95d6-73f920879f76@linux.intel.com>
+References: <c88f7c82-1b48-4ab2-95d6-73f920879f76@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|CYYPR12MB8940:EE_
-X-MS-Office365-Filtering-Correlation-Id: df130ed2-4fd3-4fb9-725e-08df1fb4919e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|23010399003|366016|7416014|1800799024|18002099003|22082099003|3023799007|4143699003|11063799006|10067099003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	omIRS6FPl0OSsqHBseAb14t1bmBx10J+U6b4V56Cc4lm+AgtmJ0oiYYQ1gO5lBwu7P46BB5k9oFO5D8GtQ/5gcPFjMVTcDNMZIa89FFvvVUjcVdMo3+KyTSGy3xRdK22/z/MmlhoXZq8SPBfM3BqDivIrsNJDgCsaTRHlm+7TdkU/5rKmLmkvwx7gpJh8ISG2SOyEHBqZt/B3Qs9LehjT7H0hvwfmTVDrucU+ve8oMhwyOcZ68cylT2MfcI4PzmSReb36FKtW3obo9hTfWpFJGpkjYZJDuVy5DGZ71gORmMtj02vKWMJLmnfnzCsucOMVGe1N/fKENnnADBMk+cogFKqELOudAzurBM4RT2Fj+6/wQ12oSZAAmbk+lUJ/bhqVTx8ZjxxixRYTLJhb9o5dPPAMeugVPNmc0cVv8aFmEY/8Pd1PPxBhos7DEfjJ7N38AgNwDMXP1i1mkirwB5DUUU/j7aiUbl2EA4yAmJqOTuK/mvR5MfkSKJJnM3qZxWf2/0Jlbikay0VFVGmy/c+X/T10TmNPEGeXolNLLZRByfYUsKHpPVimOkFU1so7Jfu77k9E/eJKFuFa7dAjPvlpW7L9WtZqcFKIur279f5mogamcBIzB0MsdkOa/mzGKvuyeNNjGW5TSDeEvHQckHNnIGNyTakCkke0zTEX9BD9sk=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(7416014)(1800799024)(18002099003)(22082099003)(3023799007)(4143699003)(11063799006)(10067099003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?V3dSU2JROHVWT1dNVXRsbFJiUC8vRjU0VTN0N2w1Z0hCV2syVTUva25wMkVs?=
- =?utf-8?B?VURqVWZrY09QSUpqSXBaV3AzcmhUcVkxa0FQb3l3b3M5ZkJnS3l0dEx1TGVz?=
- =?utf-8?B?MFNERG91SHBpSTNxdzJIdlZtbkdUWWZQUGVXSk5TeWt1L3B0ZnJEUlJMQmxJ?=
- =?utf-8?B?blVhMFZRWVEyTzVUUEVXK2cvaVdTN1Qvd251SUltT1MzNTVIaUMvUGpMcmhN?=
- =?utf-8?B?SnVtclNXamlKaXcrRHNPTE0yQlBGdHZCZ1BhRFlnNVZtWkp0cjkwejA2WFB0?=
- =?utf-8?B?UDI2OFYzbkdGOHN6ZzNYMWdmVmRoRlBtUG4zNy92Ry80ay9ISmRpS1Bnc20x?=
- =?utf-8?B?Wlh4dTNBSkxBQks0Z3E1Mk9MK1kxc0VFWVBSWWV3bEZiMkkwdDFSbGlLczJ5?=
- =?utf-8?B?ZEdmZUNEWXF4LzdRdndxQXR3WU9lNlljYnpUOUtLTUhsbFlvV1g2TnY5Vlhq?=
- =?utf-8?B?ano4Y0g0WFpmLzlGQVl0c2RnUUtsc2xYTmtmOWpScWptREhUNzhibDI2a3F6?=
- =?utf-8?B?M25GNlgvbW4vN0xwT0lzWUJEaGQ3dk9HditYdjVKSVFCaE13UmUyOVhPMGh4?=
- =?utf-8?B?Ry9wS0NDTG1iZEczaXNmSytGUE5oWTkwVlY2aXVaZSt0QkE2Y2Jkc21pK1pt?=
- =?utf-8?B?SU5heWxXbWtlaWVrYmhvZGVjRTh0MXBUbGhPL0pDWituOW9mdzNnMFVQQ0h3?=
- =?utf-8?B?Ui9rQkpBdmRxR2pHa0R6eXB6blRtcEZ3S1RnRHFHVlIvV0xhZ29RYUFsNllr?=
- =?utf-8?B?SWFEZ0h1VGFXN2JZUXhZVXFlT2dCVVdBZ09VQUlxWGtyM0xEaGN0SEdpUDAx?=
- =?utf-8?B?Zjd4TldFeE1VMXNpYlVlREtQUmpza25zdjNIZWw5SXh4eUFZQkNvRkdRYUQx?=
- =?utf-8?B?bTFWeWJZb3JmdlVCVVkrQjNGV0tRWjY0SWFkUkdvdmhqN0wvb1VKSmZqZnRS?=
- =?utf-8?B?ckx0SWdHNGc1U3BVOHhubDAvVlkzd0pqTFRjMGZYTjRyTEtJN2ozYTAvMlN0?=
- =?utf-8?B?YTVxYUZkY0VJb09NcDU4SHA2V2I3MU82d21zbUZvTGxoZC9RWlo2bjM3QTlo?=
- =?utf-8?B?cjU0cG5NQUZMVFQvaVRUS1d0d2ZGczU4VXY1VC9ENHBFbWEzbVR1a3JJWjRU?=
- =?utf-8?B?S3J2S2dFV0tyMzhyMlZvVGd4Z0FaTUVjc2dpTEdqRE5UVmpHSjE4OU1HSFFh?=
- =?utf-8?B?cldzcGpickpuWno4cGt3aEFJeDlDbVFWNGhLV2tuS3kwQ2ZzYjQzQzhwUkR3?=
- =?utf-8?B?bXpSZHpBNmI4STBxSUhSTEY3ekpiSWRHUjNXMi92MkFpUDlncUprMnpLbVlu?=
- =?utf-8?B?YVF4eXRlV3Y3cmU2YzhId0ZrdWF2N0VTd0c1R1FYN0RnM0xCY0dDTHZReW9o?=
- =?utf-8?B?RXA2bXZHWDl5cVlQaWNNNnhCbkZYVUhNZGg0SUVkUXBxQ0dqMGU4aS9aSGJj?=
- =?utf-8?B?Tmk1bUFCMk13T1pXL00wczk3dlpaRFBxK016Z3BaZjdZdlpNUmRBSit6NGtI?=
- =?utf-8?B?R09MeDA5UVN1Y0dTdmVRTlhjNGxKWmt3ZVJGb0xLK2pDWXFPanpkTWJEQW01?=
- =?utf-8?B?MDBpcGp4RDRBNk9Ka3VlZ3Rtd0xwVEFpTnczUnlUa1JGZmxia3RyWmRUOGxY?=
- =?utf-8?B?SGp4OU9JZWFqdWZ3REdzSGpMTmJoSEk0aUJYSkRtNm45SHZzWGpCK3JrbkNy?=
- =?utf-8?B?UWJiSzVRNmwxaVIwTjVmT2J5eTVZWmpsMWtwRlFlamo1OTBFeXM2T3MvK0lO?=
- =?utf-8?B?aklLV3pORTdUNG85ZU1jdm1sQ2xBUndIVDh4b0pGOGVUdnNKTWx5VmxESHVS?=
- =?utf-8?B?T3ZzN1RJYUt2TnRyYytFYWJackV0OTQ3OENCVExveDN1NVJ6QkFBZ2RwYjJV?=
- =?utf-8?B?cVV0WjBqL0tORzcvdk1YbEFQSTM4bUN4b1Z4VUZwL1F1eFRxbElTRmZ6STN1?=
- =?utf-8?B?VXlrKzN6QlFXVEtjL1ZqZDViODY0SU9vbTZOMHBWcnhaTEN1c3VRaWlvcVVh?=
- =?utf-8?B?RmdzZmNncnpoRFpBMWVKZnRlckVNMUhyTEpIOHNQaTJValA1VCtCeEZnOWRV?=
- =?utf-8?B?LzRIRlU1UzBValZwdysvYWQxdVcyVWM3VFZaRWR4RWJXSFhqbElodmRjZ0tJ?=
- =?utf-8?B?QjBNTjZpVURIUVBNMUZyZHVTZm1HTFU5RFh2dm1rd0JLVFl1azNiTitFdGhl?=
- =?utf-8?B?MnFYUWpPY2kvK05KVWZkSjBqbHNEZ3l3WHMwRE11d3c3K1lJYlBjb21NMmdR?=
- =?utf-8?B?dDNVemFLRC9uY25IM21ZZzRUUlp6NzEwblJQZjFieTFiUk9LTGxURDk0NURP?=
- =?utf-8?B?Zkh1RWhaUG1VbnpBRktJRTkzSXUzdUJnUFJjbU9SNmRBa3BWckY2UT09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: df130ed2-4fd3-4fb9-725e-08df1fb4919e
-X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2026 12:07:30.8833
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PFi+HaCdlA/dQNYW+V4+OJe5VPoQlRwb5G0O8rNfhgcYuJcm/6DI1qOuszacVc9wlWATyLLUmnlmJLu/LaRCKw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8940
+Content-Transfer-Encoding: 8bit
 
+From: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
 
+When Intel TXT Protection Regions (TPRs) are present in the DTPR table,
+hardware-level DMA protection is already enforced by the SINIT ACM.
+In this case:
 
-On 9/30/2026 7:44 PM, Yu Zhang wrote:
-> Intel and AMD IOMMU drivers both reserve the x86 architectural MSI
-> address window from normal IOVA mappings, but each open-codes the range,
-> allocation attributes, and insertion into the reserved-region list.
-> 
-> Add iommu_add_resv_x86_msi_region() to encapsulate those operations, and
-> convert the Intel and AMD drivers to use it. Return an error on allocation
-> failure so callers can preserve their existing error paths.
-> 
-> Signed-off-by: Yu Zhang <zhangyu1@linux.microsoft.com>
-> Reviewed-by: Michael Kelley <mhklinux@outlook.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+- Skip forcing IOMMU enablement in tboot_force_iommu(), since TPRs
+  already provide DMA protection.
+- Tear down PMRs during intel_iommu_init() when TPRs are active,
+  while PMRs are redundant with TPR-based protection.
+- Call tboot_disable_tprs() from parse_dmar_table() to disable
+  TPR regions early, allowing the kernel to manage DMA protection
+  prior to the OS boot.
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Link: https://uefi.org/sites/default/files/resources/633933_Intel_TXT_DMA_Protection_Ranges_rev_0p73.pdf
+Link: https://cdrdv2-public.intel.com/315168/315168_TXT_MLE_DG_rev_017_7.pdf
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
+---
+Thanks for the careful review. Summary of how each point is handled:
 
--Vasant
+Answer for Question No.1:
+   The DTPR handling is now invoked only after dmar_walk_dmar_table()
+   returns success. If DMAR parsing fails, parse_dmar_table() returns the error
+   and IOMMU initialization aborts before any TPR teardown, so the TPRs stay
+   active and DMA protection is retained. They are disabled only, if DMAR parse
+   succeeds.
+
+Answer for Question No.2:
+   I've replaced tboot_parse_dtpr_table function with the tboot_disable_tprs(),
+   which is defined in the Kernel patch
+   "[PATCH v5 1/2] x86/tboot: Add support for parsing DTPR table and disabling TPRs".
+   It is void type function. It verifies now, both if the DTPR Table is
+   present and if TXT Heap exists. If not then function prints a proper warning
+   message and returns.
+
+The rest of your suggestions (including the stale txt_heap = NULL cleanup) have
+been applied in the current patch version.
+
+Regards,
+Michal Camacho Romero
+
+ drivers/iommu/intel/dmar.c  | 18 ++++++++++++++++--
+ drivers/iommu/intel/iommu.c |  9 ++++++++-
+ 2 files changed, 24 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index ba675b08cd20..e8ec2dfe3e33 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -672,8 +672,22 @@ parse_dmar_table(void)
+ 
+ 	pr_info("Host address width %d\n", dmar->width + 1);
+ 	ret = dmar_walk_dmar_table(dmar, &cb);
+-	if (ret == 0 && drhd_count == 0)
+-		pr_warn(FW_BUG "No DRHD structure found in DMAR table\n");
++	if (ret == 0) {
++		/* After DMAR Table successful parsing disable TPRs if necessary */
++		void __iomem           *txt_heap;
++		struct acpi_table_dtpr *dtpr = tboot_get_dtpr_table(&txt_heap);
++
++		if (dtpr) {
++			/*
++			 * TPRs are enabled. This will also tell not to establish IOMMU
++			 * PMRs. It is necessary to parse DTPR Table and disable active TPRs.
++			 */
++			tboot_disable_tprs(dtpr, &txt_heap);
++		}
++
++		if (drhd_count == 0)
++			pr_warn(FW_BUG "No DRHD structure found in DMAR table\n");
++	}
+ 
+ 	return ret;
+ }
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2e3b3ab216f8..ce40b1bf0296 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2563,6 +2563,13 @@ static __init void tboot_force_iommu(void)
+ 	if (!tboot_enabled() || intel_iommu_tboot_noforce)
+ 		return;
+ 
++	/*
++	 * If TPR is enabled we don't need to force IOMMU, TPR set by SINIT
++	 * ACM will take care of DMA protection.
++	 */
++	if (tboot_is_tpr_enabled())
++		return;
++
+ 	if (!dmar_can_force_on(DMAR_FORCEON_TBOOT))
+ 		panic("tboot: Failed to force IOMMU on\n");
+ 
+@@ -2623,7 +2630,7 @@ int __init intel_iommu_init(void)
+ 		 * calling SENTER, but the kernel is expected to reset/tear
+ 		 * down the PMRs.
+ 		 */
+-		if (intel_iommu_tboot_noforce) {
++		if (intel_iommu_tboot_noforce || tboot_is_tpr_enabled()) {
+ 			for_each_iommu(iommu, drhd)
+ 				iommu_disable_protect_mem_regions(iommu);
+ 		}
+-- 
+2.55.0
 
