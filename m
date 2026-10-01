@@ -1,244 +1,128 @@
-Received: from BYAPR05CU005.outbound.protection.outlook.com (mail-westusazon11010048.outbound.protection.outlook.com [52.101.85.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl2-f41.google.com (mail-dl2-f41.google.com [74.125.229.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 953E453D9DB;
-	Thu,  1 Oct 2026 20:23:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.85.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF2991FE44A
+	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 22:22:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.229.169
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790886196; cv=fail; b=VIRfMTxqndR7uhSRQ/fUYoEfJpwPiqngeXcBjgFiYPGkLqWaEHz/ey+3QENthzj2Qc5ehMGE4mKlDJd7fSgFXoS3hXzaSqSqmHT/69GTeEtLpjIviLmuvo/+Cql2A21onyT3QZoQ3RFADIRfcJfJSzwsp8SfERjM64vgSA7Hq6Q=
+	t=1790893367; cv=pass; b=O80X0tK/Op1K6nXvOAeqRy0yiD0v+a7cAeB1pCq7rH6cMekUf8YRi8UTVewUXV3rotjVrvd7l5eD6SOyU+DCC9pVD6sR6LLML5zzCvX9QSOGXP/IMd9sa9HoIOmY4rEBlJTdW/WzWPxJkedy8uwjhbWEpTmcgKTmzVdv18Hh44A=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790886196; c=relaxed/simple;
-	bh=vYZJIO5TzBRSu9OTQlg+PjXnlf942nQfOGs0xU/qak0=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=u0plDxrud64rjH8P+/XtILX6C2NSfj6HX1jf+6DxFp3MU7Q+MO2Af7pTBjsBZr2hILLQJOkvd9nZSyv1BW7MKReee0f3vcHJDRQEu34u0fM8XyaDfRBGCINicqNcqe56Vivr+quTz6u/tpM5FlTcHr7tPLQOi3eRY6PpRjh1bQk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=auSHSEHf; arc=fail smtp.client-ip=52.101.85.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1790893367; c=relaxed/simple;
+	bh=jRjHDbuXKLMn6PiuB+tFuhgDq4MLCM9aKggiyanaEng=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=M8OqsHXG9QLBGzaCUnQAsSk1nZ25RPHBmOn4z/BPpT6RdoT1ATCA9+Hv9ra0/f7RmPO0M7oGbu6DE5641KHFeK2W++qHKobN7OY3Dp2Mwh62hd4xavOzfuuOd4lNSK2OEHJ/VFeNZ5OxNH7J7Pi7JJJH4yFTC2Jb7EVcp3G0Tdo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MM5zqwgL; arc=pass smtp.client-ip=74.125.229.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="auSHSEHf"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=F+27dLCA6Mgyet4dUBSVlbYqKfvTxW8JhyZiFXpiFhV7bs3KQbfFh4mE+iUnErSQeUIE1x3WlsOC0CrEjJGwGvEsnz3GaGVXFKl4Aandfubq791MVP/nLrIkZOoIiNX5SDtaQvotzMXTR4lB3cJkpmwOAWZYuBnAVuh2DPX+KuwMVaJcGuluEjoUgexOX8Y5SBxTegetNIJTb/fBCWZF4rPuMZ04x+DeM0CaHM5WVZZms1UPEWVCb6gbF8KDLMIb7skMTliFjxhQzxknn4Kl0Wj4oA6RgBtNxq6/cszzw6h1XGDhStqkNGB2e5GSNUAxq9ahczj++2hLgH5E+BxQ+Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jpPkeOCPURulNiOuVdrND84Csg55H/+ONreaDCazi8I=;
- b=HxTRAeazuQMcH6vlCjZnij5aUAQPWA/dajh9F1sozs4uIffDT+0qljS7L3WSBozB3XnvM/RMBnDlICCf6s/BECPcHmcz/9vUy/Ey/hEecuOa9ObNIWbSKBW8icG3O+xCfF15nwHKZF0JsKwmNMyt005sHqEz8bGpde5+VvQOWMsu8lv6PNq8SZ7gFnHr4QeqmcoBTG5Lp7OiWbx+EHnScl0TzE6te6Srr7s7dneJw4bqAxCSTlQkiPbhiDM4Ud9nKvD4HuKC9lXt8nMY9E17psWcTpHrvY7kOr/qAMtGNuKVjnIHlo2mxNaAcnlB1bbhXQDgTvhmPvJo/QwgCLjSdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jpPkeOCPURulNiOuVdrND84Csg55H/+ONreaDCazi8I=;
- b=auSHSEHfjMhs3Iwdo/ByIGBNy57dkcjYw8gcVPkr/uqvOtzJvYHf/gXv6fVHcpVfFAVEFjQKJ4Dw0pVPa+7V+T9MtsHtJfH7fuK7gNai1Ge8eDaHaJ3PKJy5eKHrNyB+Jigr3PN7RIqy1tJcJjjccpoTcTDpUdmE6VxkE8TEvfZ1HlDXI5S+y+vfMZtKyHspHkWfoFf/Pd8ptNNEamrY+o7Cq6aH9ctv8bU11S+DsJlHw9H+hJYFvYZXZBWsQrQuMJ99ZjnE8SvkQxrZ6P3RWlDRr3N7JYsI6+Ms/Zxpj3wiA4rbfUzc8aUqD+jygES3M78WAtsruqvyJMy1YW8I8A==
-Received: from SJ0PR03CA0141.namprd03.prod.outlook.com (2603:10b6:a03:33c::26)
- by LV0PR12MB243158.namprd12.prod.outlook.com (2603:10b6:408:3fc::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.18; Thu, 1 Oct
- 2026 20:23:07 +0000
-Received: from SJ1PEPF0000231F.namprd03.prod.outlook.com
- (2603:10b6:a03:33c:cafe::7f) by SJ0PR03CA0141.outlook.office365.com
- (2603:10b6:a03:33c::26) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.406.7 via Frontend Transport; Thu, 1
- Oct 2026 20:23:07 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SJ1PEPF0000231F.mail.protection.outlook.com (10.167.242.235) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.472.14 via Frontend Transport; Thu, 1 Oct 2026 20:23:07 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Thu, 1 Oct
- 2026 13:22:44 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Thu, 1 Oct 2026 13:22:44 -0700
-Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Thu, 1 Oct 2026 13:22:42 -0700
-Date: Thu, 1 Oct 2026 13:22:40 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
-	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
-	<jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Daniel Mentz
-	<danielmentz@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
-	<linux-arm-kernel@lists.infradead.org>, Thomas Gleixner <tglx@kernel.org>,
-	Radu Rendec <radu@rendec.net>, Bjorn Helgaas <bhelgaas@google.com>,
-	<linux-pci@vger.kernel.org>, <linux-kernel@vger.kernel.org>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, <rafael@kernel.org>, "Danilo
- Krummrich" <dakr@kernel.org>, <driver-core@lists.linux.dev>
-Subject: Re: [PATCH v11 13/16] iommu/arm-smmu-v3: Implement pm_runtime &
- system sleep ops
-Message-ID: <ar7BEIURVG6kGKX8@nvidia.com>
-References: <20260929034510.2023173-1-praan@google.com>
- <20260929034510.2023173-14-praan@google.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MM5zqwgL"
+Received: by mail-dl2-f41.google.com with SMTP id a92af1059eb24-1497f78ebc6so788172c88.0
+        for <iommu@lists.linux.dev>; Thu, 01 Oct 2026 15:22:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790893365; cv=none;
+        d=google.com; s=arc-20260327;
+        b=lQp+MPC7AHY8ESlSwOn5YOaRHbL3AQsAaPaNfsQOnJNoCiio2+xHp5wJjmEeCbx9ci
+         lkUM+ky6NyPXZq9gc9nmVFu4+Uz3J50ZU1FgyzCsWe9nQBYdFioYe0cxzAwy/byev/MT
+         h69JU6x3UFuG4Uxy8K62j0VQabbNDU6j2B+NN2GkRenjfzQpDbUG1Rnul4sHzhoUAb2C
+         m4N4ZhKiSGOK6ercKH9KKp5iq17EYCOtLfEwfgfE+egGJXYqoZcBrD2eVd5ay7OthMuI
+         RqQJnsyjsHyAU8uaketApvnpCiuRu+HTV9uwsC1yvo42D0K2yQpBbUd6aYgLlFGUZCcN
+         yTDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=wfKwgJtYMsEYEWlSf+SsfhmhLRaFUNim0MEAFnPkGYc=;
+        fh=xk0/dF3YR9Hrt26j7kp59U+MrY1kQ//2tMXGyzQBi/A=;
+        b=P49V6NHMQepKUEe2vqii9mjLEUFS5RqPokvOPgLYq9K7HXjdvQcerMw0+2KqjmSsGQ
+         LqpB2ZnAlSAmz1quqqdVKQquE47vah42HBqG2DRpBeh4ILAbXJUGkud6pJ5KfzSNO68r
+         MovMybJTvChNI4LAvJ0mIuImtmOIsOKv+88z8G6M0V3FiWFMb+VRC9CjcyL4b8ytvMqn
+         /vphVbamKv3w6fOsyNZLPLtiw+S1wTSVpLkae5VCrVOmyOeq60E8mIC8K5mokkiHjT8W
+         M6I5t5Hj5hNWhIQ1gpntHyVyw+dDrWrGXCL3hoM9KLvPGu+Jj28alKhmcrViCg6iXJK3
+         ZXqQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1790893365; x=1791498165; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wfKwgJtYMsEYEWlSf+SsfhmhLRaFUNim0MEAFnPkGYc=;
+        b=MM5zqwgLk2LCZe7o2QUG+vBIaXrXG2/gH0F1yFIwHyVpBe1eOCraQrIYxUZl940ilG
+         pClnc/NT+TTgnwncQvCx2QPRom9y1YB6OMM9SViz8stK9AZ1ldpXOmrbgTOLshC3uVfy
+         BAfD4he5tlUbr9OUDlRDNB//eIqNJ1QDyD33i20B+MRLX2GqT67f9X0xoPP2y5A7lLit
+         lwAsjlxziNfBwuedYxCvj8lx1E3tyakGHctV1JJQLyrWpezVexd+d1Gci1jp37h1047M
+         /WE9n4XmZtr5burbcBE63Z5a59Qm0kydVZQsiLWrKdP5YkGg41q3/hFkVgv4abDReXBd
+         g30Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1790893365; x=1791498165;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wfKwgJtYMsEYEWlSf+SsfhmhLRaFUNim0MEAFnPkGYc=;
+        b=j9rdPA86Et7HHjDzQuc3pZtO/DaDgoxpo94A1UfmZ9Rf/g7TfGp2mG9pYKkj7COT1y
+         pJ1yX8UQBbs/gHbEM0xYNKfN5vT2xNGVViIjBolGtGarz57LYw+dHAg4H6pqGxxSdhbx
+         xXLBa1bjDrMcHSIO5qaWAkZZLlldU5m7Wgx/edLoCf1LqHjfQQuDSi0D0OQRvwJOqOlU
+         QyPVJZe5/gP8IEak6eDizx+NngoEMs5hDQezxUPFF/fzY8y0ZSogWBZkxGAaCAkyWJPH
+         NAb5VeHsCokt6i0FHCie1D9GRui+BOntuy1UTvEgF+rgZvseE3r9BPQigdWmUEZxqjxX
+         SazQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxmkTLUqmeAyJ3yJcPOcf8C96Chj6FWny6BXYbptUD0envc3MS6IAVupG7GWPLHsb1zJLe39A==@lists.linux.dev
+X-Gm-Message-State: AFuF++khmLo2UDaczQEAoYnpH9h2otGOhID7D/+PBGPfbMY3Fy9VjenT
+	bscBEwPN4C52lXuV+oSFJuF5bW+D8rJCMifWRI7gmYkrGwSIeAY5n1sxuTWQ3RMiocTvIhdyr3D
+	woIotXrttoKjD5JD0EmXl1pIhF6ssb/itTxULNrlP
+X-Gm-Gg: AYBFou3V5QT8+6luxJoR2EbV2h3Eu7fnmoBWe68mZ5q+g2gOiKZ1LIA8yc//L+OmG7S
+	r9D6Ea+ryygThUElGYY28dncD5LHbVihU4WaGnYjiDKxQzDQI4YD5fmQsBhU5LJplCZT4vosZrW
+	Uled64yCEA81hlxdeSZZSUB5QJBgQsVitNQxQEFGpvXOuSQsTTneC3Hu5W3kZ8UQ6rQU5Y30Lfn
+	FtfaagaGfm3a6ZC+vImxU/yk9R4jhdxV/yPNghrsQCibvRysP/jj+oEEotflq/DNje6KBUZ5ibU
+	Z1JVdW73QcnKmjlYlCTIuNg6S2s3elTvLn2WyeFivtsXNY3yU27WVKbDhBphm7iH
+X-Received: by 2002:a05:701b:42d3:20b0:143:72b1:9004 with SMTP id
+ a92af1059eb24-14f5cbd2c4bmr587221c88.45.1790893363916; Thu, 01 Oct 2026
+ 15:22:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20260929034510.2023173-14-praan@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF0000231F:EE_|LV0PR12MB243158:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6069da64-a309-4036-a7b5-08df1ff9cde1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|376014|7416014|23010399003|1800799024|56012099006|6133799003|11063799006|4143699003|10067099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	wkNJ00GJVTxA/PZgKwTJQTPQs7wJNy5VilET7+tVt1HDv1I+bROwmfVJrzpQrMLLflfxafWye3V6K/PLdrVkDyES4bEGPu0KgDaWrDyiJ0bUfe71Lhp09dXQljvtWOEj0fNg9YcQtbOQZLM5ymcyR12VYrBqTrTElqyMCMdvaJsPmFN1Ss29EA914SRHYIium1NeN2Zo1s8Yole2paZ4CHe+B4WXlVEuW8vps/2W464TnwDEYnn0k82NGeZJ/wkSyoRQV4jFHiTGFqE2/OLIqqWy3XZd0vCI3c/7Y0lvQVAlvKuB8VRyqO9cGsD/M/nOkD2wZHj5bC+MyjD5H9++04cotbvZvty9SAdrHU4+o7VcRXvUFvhdmES9seH2L9TinNG7dfcC4fKLM8c0yK/dok7QG2cH68RCTsF/ArSvJ2EG1QjGxDiCK6eIlECO6hQfyPl3qaIgIQBVg6vY5PXLEcHSxnuwjce1fxu/WTFEB0vTFHFBZTo6ulUpYFWRPZ7nlCtxVm45L7yt9iHazZ+ZJw9OB+todHUm0WaS7H8eJIUtWCKgNwx7R1Kc62gD8hyxt80SZbrPNz1f5iF/ThIvgi7RWJEh6e8JvdYpclGgtNGml8zteT0U/Olt6Q2tHbp1hceQn9XmD5tMaYkGKr/kJohnpZAKZ/Ge0FzV+eBFXsz9PaNTslEC67RSBu1eKHoRX434uRoNtKMXqOja56sASw==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(7416014)(23010399003)(1800799024)(56012099006)(6133799003)(11063799006)(4143699003)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	/joHKHcVocduuhZZ4Mr+NO+05zxdWqnpFYLy+SyQELNicRWh1jHHUqV9ec3cVCMyfgiBN/Id/w+eYAbaPhoqQajIXONZ3zFBFWX4+3pg0PMdHjFNKyAuLeSj16K3DFA/dFTMBwuzcq8ypVylUkZcJpx3+ykDtYPHAxBjP4esizlPg6i0mMAc/iELbfNEIGkCMLsIcH9v+RjtoWdiNl93oUvbr6KiNgyklLPvASMcy1tWOBEpNoiAcb99eIprCI749bFgVLYqe09B45Y1Ek0KIFsPP2QL66JfochG+0TcfCjUjbq4VuyqqTFvW/SSLsk7DX9Qq38r8eK0CT5LgIIW+8RnZ4JC94O68YpF+x9d8CpN9fdDyUEMOMi//37IpU8NTYt+qbe+0B3oGK/9k74HWGJ2j8zavQWG8TIT1/0vKKRVL4aRFNboEHzmwHfiw5XF
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2026 20:23:07.1076
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6069da64-a309-4036-a7b5-08df1ff9cde1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF0000231F.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV0PR12MB243158
+References: <20260517114026.6817-1-vasant.hegde@amd.com> <amc-s_W_TjLYnbw0@8bytes.org>
+In-Reply-To: <amc-s_W_TjLYnbw0@8bytes.org>
+From: Chun-Tse Shao <ctshao@google.com>
+Date: Thu, 1 Oct 2026 15:22:07 -0700
+X-Gm-Features: AclHuK_pUfvqEqlIhxon9tDrY8mIgK0Ky_lHDUxAV5-XvBm5W49T2B5l4bbA0VI
+Message-ID: <CAJpZYjVRRsof8KsgOfGL1ZBE8zM5hTY1+U5PHdz9=gkSfeRw9A@mail.gmail.com>
+Subject: Re: [PATCH] x86/events/amd/iommu: Fix cpumask of IOMMU events
+To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, linux-perf-users@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, peterz@infradead.org, mingo@redhat.com, 
+	acme@kernel.org, namhyung@kernel.org, mark.rutland@arm.com, 
+	alexander.shishkin@linux.intel.com, jolsa@kernel.org, irogers@google.com, 
+	adrian.hunter@intel.com, james.clark@linaro.org, x86@kernel.org, 
+	dave.hansen@linux.intel.com, tglx@kernel.org, bp@alien8.de, hpa@zytor.com, 
+	iommu@lists.linux.dev, suravee.suthikulpanit@amd.com, sandipan.das@amd.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Just some small things from a quick scan:
+Ping for attention.
 
-On Tue, Sep 29, 2026 at 03:45:07AM +0000, Pranjal Shrivastava wrote:
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 0a841441cc44..d0a3d497915c 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -663,11 +663,14 @@ arm_smmu_make_cmd_tlbi(enum arm_smmu_cmdq_opcode op, u16 asid, u16 vmid)
-[...]
-> +#define RPM_AUTOSUSPEND_DELAY_MS	15
-> +
->  struct arm_smmu_ll_queue {
->  	union {
->  		u64			val;
-> @@ -1234,6 +1237,18 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->  				bool sync);
->  bool arm_smmu_erratum_repeat_tlbi_cfgi(void);
->  
-> +/*
-> + * Lockless pre-check to test if the SMMU is actively powered.
-> + * Races with concurrent suspend are benign: the cmpxchg loop in
-> + * arm_smmu_cmdq_issue_cmdlist() acts as the true commit point.
-> + * If we lose the race, that loop observes Q_STOP == 1 and safely
-> + * drops the command. If we win, the suspend thread waits for us.
-> + */
-> +static inline bool arm_smmu_is_active(struct arm_smmu_device *smmu)
-> +{
-> +	return !Q_STOP(READ_ONCE(smmu->cmdq.q.llq.prod));
-> +}
+Thanks,
+CT
 
-Move these to the patch that uses it? 
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 89a4e756ff17..e127e3be3a6b 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -29,6 +29,7 @@
->  #include <linux/platform_device.h>
->  #include <linux/sort.h>
->  #include <linux/string_choices.h>
-> +#include <linux/pm_runtime.h>
->  #include <kunit/visibility.h>
->  #include <uapi/linux/iommufd.h>
->  
-> @@ -119,6 +120,45 @@ static const char * const event_class_str[] = {
->  static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
->  static bool arm_smmu_ats_supported(struct arm_smmu_master *master);
->  
-> +/* Runtime PM helpers */
-> +__maybe_unused static int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
-> +{
-> +	int ret;
-> +
-> +	if (!pm_runtime_enabled(smmu->dev))
-> +		return 0;
-> +
-> +	ret = pm_runtime_resume_and_get(smmu->dev);
-> +	if (ret < 0) {
-> +		dev_err(smmu->dev, "failed to resume device: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +__maybe_unused static bool arm_smmu_rpm_get_if_active(struct arm_smmu_device *smmu)
-> +{
-> +	if (!pm_runtime_enabled(smmu->dev))
-> +		return true;
-> +
-> +	return pm_runtime_get_if_active(smmu->dev) > 0;
-> +}
-> +
-> +__maybe_unused static void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
-> +{
-> +	int ret;
-> +
-> +	if (!pm_runtime_enabled(smmu->dev))
-> +		return;
-> +
-> +	ret = pm_runtime_put_autosuspend(smmu->dev);
-> +
-> +	/* -EAGAIN & -EBUSY aren't failures */
-> +	if (ret < 0 && ret != -EAGAIN && ret != -EBUSY)
-> +		dev_err(smmu->dev, "failed to suspend device: %d\n", ret);
-> +}
-
-Ditto
-
-> +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
-[...]
-> +	/* Wait for the last committed owner to reach the hardware */
-> +	while (atomic_read(&cmdq->owner_prod) != target && timeout) {
-> +		udelay(1);
-> +		timeout--;
-> +	}
-> +
-> +	/*
-> +	 * Entering suspend implies no active clients. A timeout here
-> +	 * indicates a fatal CMDQ lockup or hardware stall. We proceed
-> +	 * anyway to prioritize memory safety (avoiding stale TLBs)
-> +	 */
-> +	if (!timeout)
-> +		dev_err(smmu->dev, "cmdq owner wait timeout, (check runtime PM + devlinks)\n");
-> +
-> +	/* Wait for cmdq->lock == 0 to ensure last CMDQ_CONS_REG is written */
-> +	timeout = ARM_SMMU_SUSPEND_TIMEOUT_US;
-> +	while (atomic_read(&cmdq->lock) != 0 && timeout) {
-> +		udelay(1);
-> +		timeout--;
-> +	}
-> +
-> +	/* Timing out here implies misconfigured Runtime PM or broken devlinks */
-> +	if (!timeout)
-> +		dev_err(smmu->dev, "cmdq lock != 0, forcing suspend. Polling CPUs may fault.\n");
-
-Maybe a small helper that takes: read pointer, target, print?
-
-> +	/* Wait for pending gerror handlers */
-> +	synchronize_irq(smmu->combined_irq ? smmu->combined_irq : smmu->gerr_irq);
-
-Both might be 0?
-
-Nicolin
+On Mon, Jul 27, 2026 at 4:26=E2=80=AFAM J=C3=B6rg R=C3=B6del <joro@8bytes.o=
+rg> wrote:
+>
+> On Sun, May 17, 2026 at 11:40:26AM +0000, Vasant Hegde wrote:
+> > IOMMU performance counters are accessed via MMIO space. Currently IOMMU
+> > PMUs uses a single global cpumask (iommu_cpumask) shared across all AMD
+> > IOMMU PMU instances. This prevents collecting per-socket numbers
+> > (ex: perf stat --per-socket).
+> >
+> > Fix this by adjusting cpumask based on IOMMUs NUMA node.
+> >
+> > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> > ---
+> >  arch/x86/events/amd/iommu.c | 29 +++++++++++++++++++++++------
+> >  drivers/iommu/amd/init.c    |  7 +++++++
+> >  include/linux/amd-iommu.h   |  1 +
+> >  3 files changed, 31 insertions(+), 6 deletions(-)
+>
+> Acked-by: Joerg Roedel <joerg.roedel@amd.com>
+>
+>
