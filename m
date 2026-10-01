@@ -1,131 +1,175 @@
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011027.outbound.protection.outlook.com [40.93.194.27])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAEFA4AD4B5
-	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 16:08:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.27
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790870883; cv=fail; b=e1D2bDdeyo6640wkEyUzRVSvjJ91bWWthH9lVXdXbwKktmFxKRl2uNCdX7dMKJD/0rgTlrfoXO+BCGmEK1pqKGfEhlH/m8k5oC/y6xrZ69cKgb7AchkBRvy88ljuPjyOwf326jid9iZRkhHIKAK7uaGfn5BolHpxlDBhl3qm13Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790870883; c=relaxed/simple;
-	bh=+zhzJ2C7zN0BbylPGgGP615YQ7kWnv66TLwqLS78K1g=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=G6E0uqCKksMbZlUgMnPBqmiyNAn+03HRaYcvWHDG6MYWyZl3p4ZORpGSj1SnW7aphOzAYUBDMyIafQ9fhZNtYlvGVmR7jAp9kGuDcquSbcXrxRrzI/gP11UUdWzRk3dBmdkX/LHMb/NiECfwmWs9B9mNs8coFuB4JRNvxHyP5GI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PMV4KYwC; arc=fail smtp.client-ip=40.93.194.27
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBB5E3C945A;
+	Thu,  1 Oct 2026 16:47:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790873256; cv=none; b=RkAbU1i8ea9Xq5fCjyzHovVlncfICokoBKBb4T9jbYy1sesQ9z32IXY/S/IAqFCZPa2ij/V7kReVNA3N1wXp1BVWXUz275RNZ+qtv7ZIEqOQV2tNSLpbrgr5DBk+3jLn2h/K5wByX4hYPREHkJBbAI9mpaTmWgA/Dtetra1CiN8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790873256; c=relaxed/simple;
+	bh=n9XIO+FCtR5RGP2aVIeOzFhviUjwIvMo6NoXrlUrKFo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MNmF/6tGa1xaw2ANF9hQ71d09NisGSLHbJAlslSZMb9jHyroGQvGpuN3rjt0PD8jAhC9Dr90MbKlFjr2Ak+93JjGjG0dze7LzVf5OfapaUBZslWp/keOBNBCqsjhX1usSY3oBDBR4ds/XmXsM5/M3fAjcvTHimchEnRkZoV+9Ok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BYBLhdXz; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PMV4KYwC"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ig//65JYSSCTmCATYl8upOBWqUI3XRG6YIy7ipMN76HLaxUQ4pkBwGDUmnSvkkletO58PkeAYPyuEPfyYUFltvz5HqS52qIlUbZE2APH5wcSuLbeO8tSEGGiR5/n2ta648y747tuwJWp+69n9gX/CM9aj5QUotnuGMcpD4w93Viy1Tm0u2G1jMhlo3cAsJR/gSu/oPWfGtg0Ak9vuFml/GtD2wjYeNFAo1nYhtv2WuSGcoCpqKComJUPYr2m0odXpe3C1FS7GsjsgwgHnudglJ87uSiElQiLo1QcHBsG8yBl3YDMrVcPcSVdZvvWJQ1jn3DRtqGJPGyA+N1RtmF58A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZlIwZqfS4qkAG4wU/kx4+s6vSfa4ae8MTU3fVmSFJzU=;
- b=kg3c5mh3wCfExZ8p/Y6or+cFWXL9pIP0FpbfCVJnWGBshBQ/OsMoT2DLUBUdh40X4rX2OJ3JyMFJXolhMtgU1KlG/47TyyZ5Ul+Cb9fNvMFZJIWIfEMj2Na2L+BPXYlGbyyL6w5v53644omzojNnDuP9dtHC8Ir9Jct7aDArNpWa8+4gxHJrUvImXYpzED0rF45C0bVAIR3B3GISzdKLZBin/Bd9KAjAZNv6aq6LKs5pEQ4ApL1FHcXsNzRXOjuW5tXeIt1aNHAV9uf3ERB41IOsf+62AGZKSLIF7LNa5EqdW4BIABRN0QoSCoNOC7FTQzwm6VjmibnsMBuB1MPYeQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=oss.nxp.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZlIwZqfS4qkAG4wU/kx4+s6vSfa4ae8MTU3fVmSFJzU=;
- b=PMV4KYwCOBIK7HZeUnkwPjpHevmUe0roT+vHI/TOU47vHmmAuSV/bxWktesj+ADbiPTEzkURC4O7EcYqe8msp8+9gRvDjuzDJElyQdHH2sp5votjvDBW28NxE31C+MGxvnoVNf8f3TPbnNRcW83A5K9QG433c5PLUnixpAEPkbDUTJrv2YWuuUMb0XOGz+SmAsxGMsBetpS16GMCmvHHnDNMP6Gj+7h1gbnXT9p2t0YMF/VZ05TFrLyCP92axQpCVSixxM2PtIzsevSBy1jbfhyK5/mICxLBlUpcIWCZFuMsfsG+obfBFE0ZBGPj6sqGs9SN52oxmpp9zn4pwt3pxg==
-Received: from BN9P222CA0025.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::30)
- by CY5PR12MB6431.namprd12.prod.outlook.com (2603:10b6:930:39::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.23; Thu, 1 Oct
- 2026 16:07:51 +0000
-Received: from BN7PEPF00000097.namprd03.prod.outlook.com
- (2603:10b6:408:10c:cafe::91) by BN9P222CA0025.outlook.office365.com
- (2603:10b6:408:10c::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.15 via Frontend Transport; Thu, 1
- Oct 2026 16:07:51 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BN7PEPF00000097.mail.protection.outlook.com (10.167.245.75) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.472.14 via Frontend Transport; Thu, 1 Oct 2026 16:07:50 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Thu, 1 Oct
- 2026 09:07:21 -0700
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Thu, 1 Oct 2026 09:07:20 -0700
-Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Thu, 1 Oct 2026 09:07:20 -0700
-Date: Thu, 1 Oct 2026 09:07:18 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel (AMD)" <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC v4 1/4] iommu/arm-smmu-v3: Skip duplicate SIDs when
- erasing streams from RB tree
-Message-ID: <ar6FNrZfN+ZXVtsk@nvidia.com>
-References: <20261001-smmu-shared-sid-ver3-v4-0-06b34fb2e691@nxp.com>
- <20261001-smmu-shared-sid-ver3-v4-1-06b34fb2e691@nxp.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BYBLhdXz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F731F000FF;
+	Thu,  1 Oct 2026 16:47:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1790873254;
+	bh=FhZ3viI4a+onznOSZ/GgXONA5mgxVXnZIXHP+HAKRZo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=BYBLhdXzWw6hX50PjoCkj4DtY7oVXhLI7ajAsCWzwlAs+9X3eTMkcIiKe1tG3DGwU
+	 LFXeQxa6jSPPZuftXGdujfNg8E+UQvgckXKDP7c5SQNG+JrLz2D2zWBRg9/3VBwnGK
+	 ZMRHFIoceGupgZBb/PPdMSP9OAW+TTMOE1RAJHIoDvuKRqWA/8iPVF5KBp3QohyP3X
+	 KHXuDk1ck8M//MJ4U5mupP+oK12skf+/BNgyJoVrE6O+iYBEUYs0N/61N95e4aHwaq
+	 KYLPEI9sZ7B3vF1Ocvru/79l9AgS3Xbfwu4olI/PFBmXnneHz+PTXaDFLVD4mEqTYt
+	 4eVbWIK2oNjGQ==
+Message-ID: <0221445b-92b1-43b3-99e6-d1c57c6a202e@kernel.org>
+Date: Thu, 1 Oct 2026 11:47:33 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20261001-smmu-shared-sid-ver3-v4-1-06b34fb2e691@nxp.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN7PEPF00000097:EE_|CY5PR12MB6431:EE_
-X-MS-Office365-Filtering-Correlation-Id: b3d96162-b21f-41fb-3ae6-08df1fd624d1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|7416014|36860700016|82310400026|376014|1800799024|10067099003|260925021911599003|56012099006|260925022911599003|260925021311599003|22082099003|18002099003|4143699003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	3Vly5svhGAM0mU+1DJYcv0BpVJoG2d8ban/Ia6i/P5rQe3NdbN7dx8aXNIN3pqnhW7IRHafsU/Wdon3X3tN4YCc14efAdJNgGn/J9jeYhDBPJP43+Kowlt8A1RltSwrla159vRsNFqBlB1VCMlhyYmhbmgdZ2nYsjRBcQhAKIEtcSq/Gv8NyNH35yDbwDP999+1Y/R9YVvDSLUuMDKMag/iGBVsJ0i5MAE06YqVylxQWKd2sbnpz0dtWjDlSBJHa2rhs7vNU5Y9MvFBepAt6C4rJuUM/7d1/Amy+eOdc/UrR4blU6Mgh6fW5h31O8s6Srp434NHW7PXE7uazQ2Up3KJL8mNcTfb6JcUwBf+32PWvtZYuYGRmtlKLvjtwwVtnPGgBxl4R5OGKL+8RKne/fyXe8EUq9MMttM2qpN5Vz4bQ3FuGrwx6W11Chtz9L43MGaok13iBAMfkNSrAFMLxO2+GdbjmJZAy/9IZQ9FSh3CiRyWPbcgm7hQnRbAhP2aeEmGJGLJUZ8rbK9qrACVGa7EFkIqWBEmiv9Wn6wGAtiihwFlYFsc6NBFYG4SkCUCHEb1dcap28icS9XzcHswPsOF+LUB8Au9DRfH9OGWI2RnuN+zV7kshqzq1ykyYX4huwwb6sEfrbhkRyybbMdhWK2+ayVEsVr7judBiV8Zqw6Y1DlGOx5uZis1LxxUYZ0ex9/4cbuDDqS22O68769OMOQ==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(36860700016)(82310400026)(376014)(1800799024)(10067099003)(260925021911599003)(56012099006)(260925022911599003)(260925021311599003)(22082099003)(18002099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	dXIOMtaM1NbiAjYhvKyo9ZNwWXYuKfnEZGHrp6VS008x/PaWCq7Oy+Xwit/i26DgVmB22BAMfWncx8wvKseu3WF+C74246IfGDhEntxG7cU+LFxiXlAN0PjgRYMVXBtTOz+h5meNlKnKyNl0M7Ta/c1L6mwu5pqERXLOH1donmjnW9Z3jnH2sg8/je7tc7vzLGrbaP10yMUq4IDw22UgNQbh59Gu8bj57z8L+Y9PdVbix5IBiuhdpyOtnuseNJINA12nOlWaDbO1OL5w4hR0fiYFr5vuvlirVjGl82CTrcpcvzdnP3dFz//uOVSXt0bAr2r9H5jIciq1dv36HTBYO44K25ZXeC09kaG94TSjGLZ8HO3eko44kcqs/jnZ2qNImNMD560sPkqtBgzz3V/4KnbCNFejgs5UgbrEDVzPnht+VwUIBWsn7C5DcCu12ef+
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2026 16:07:50.9236
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b3d96162-b21f-41fb-3ae6-08df1fd624d1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN7PEPF00000097.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6431
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3] iommu/amd: Make PerfOpt compulsory
+Content-Language: en-US
+To: Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Alex Deucher <alexander.deucher@amd.com>,
+ Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+References: <20260930162401.273907-1-superm1@kernel.org>
+ <179080801733.122959.2048638492948411360.b4-review@b4>
+ <01dc5f6c-3131-42b6-9aea-23d8c5f19757@amd.com>
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <01dc5f6c-3131-42b6-9aea-23d8c5f19757@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 01, 2026 at 08:49:58PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On 10/1/26 06:34, Vasant Hegde wrote:
 > 
-> Bridged PCI devices may end up with duplicated Stream IDs in
-> master->streams[].  During insertion, rb_find_add() silently
-> drops the duplicate node when it collides with an already-inserted
-> entry from the same master, leaving the duplicate's rb_node in an
-> uninitialized state.
+> 
+> On 10/1/2026 4:10 AM, Jason Gunthorpe wrote:
+>>> [ ... 336 lines skipped ... ]
+>>> @@ -2370,7 +2370,7 @@ static int attach_device(struct device *dev,
+>>>   	if (ret)
+>>>   		goto out;
+>>>   
+>>> -	if (dev_data->perfopt)
+>>> +	if (dev_data->perfopt && pdom_is_in_pt_mode(domain))
+>>>   		goto skip_caps;
+>>
+>> This should also disable PASID support since without a gcr3 table
+>> that's broken. Set the max_pasid to zero during probe device.
+> 
+> I think we can add it inside amd_iommu_probe_device().
 
-There is already a cleaner fix:
-https://lore.kernel.org/linux-iommu/76c5f9dde30269995ef842a12a3a5e1ebaa3e6df.1790188510.git.nicolinc@nvidia.com/
+OK, I'll rev the patch to do this.
 
-Hopefully Will can take it soon.
+> 
+>>
+>> The flow is weird like this because the driver still hasn't cleaned up
+>> the identity/blocking domain flows. There is no need to track them in
+>> lists and things because they never need invalidation..
+> 
+> Right. attach_device path cleanup is in my list. Now that _probe() path is
+> settled (thanks to Pranjal), this is probably next item to pick up.
+> 
+> 
+>>
+>> This is much nicer if the above could be written in side
+>> amd_iommu_identity_attach().
+> 
+> I'd say for now its fine to keep it in attach_device() as it gets called anyway.
+> When I rework, will make sure its moved under  amd_iommu_identity_attach().
+> 
 
-Nicolin
+I'll leave these two items to Vasant.
+
+> 
+>>
+>> Also, I'm a little confused, I thought this had to be toggled on and
+>> off so it is only set while in identity, how does the DTE influence
+>> what happens when in this special mode? I was sort of expecting it was
+>> ignored entirely in HW. This version seems to lock it to always on,
+>> but still permits a blocking domain to attach.
+>>
+
+Yeah; AFAICT all the skips of features are mostly symbolic and for 
+consistency when this is enabled.
+
+I suppose really we should not permit a blocking domain to attach to 
+make sure it's a clear message what's going on.
+
+> 
+> Mario, Can you check what happens if we move device to BLOCKED domain (DTE[v]=0) ?
+> 
+> -Vasant
+
+
+I tested this on an APU that applies this.
+
+Short answer: with PerfOpt enabled, moving the GPU towards a blocked DTE
+has no effect -- the device keeps doing DMA as if nothing changed. This
+matches Jason's expectation that the DTE is ignored entirely in HW for the
+device once it is in the PerfOpt/identity fast path.
+
+Longer answer below (I had an agent help do this check).
+
+Method
+------
+To keep the normal driver bound and the GPU doing real work, I added a
+small debugfs knob that flips the live DTE in place and back, reusing the
+existing paths:
+
+   clear_dte_entry()  -> V=1, TV=0, IR=IW=0   (same DTE as blocking domain)
+   set_dte_entry()    -> restore passthrough
+
+Note the AMD "blocked" DTE is V=1/TV=0, not V=0 -- make_clear_dte() keeps
+V set, and TV=0 is what is supposed to block DMA. I confirmed the change
+via /sys/kernel/debug/iommu/amd/devtbl:
+
+   passthrough:  QWORD[0] = 0x6000000000000003  (V=1 TV=1 IR=1 IW=1)
+   blocked:      QWORD[0] = 0x0000000000000001  (V=1 TV=0 IR=0 IW=0)
+
+The write goes through update_dte256() + iommu_flush_dte_sync() + a
+completion wait, so the IOMMU re-fetched the entry.
+
+For a guaranteed IOMMU-routed DMA source I used amdgpu_benchmark test 1
+(SDMA VRAM<->GTT copies). The GTT side is system memory, so for an
+identity device it has to traverse the IOMMU DTE.
+
+Result
+------
+With the DTE blocked (TV=0), SDMA still moved 2GB to and from GTT at full
+speed:
+
+   dma 1024 bo moves of 1024 kB from 2 to 4 ...  5890 MB/s  (GTT->VRAM)
+   dma 1024 bo moves of 1024 kB from 4 to 2 ... 10922 MB/s  (VRAM->GTT)
+
+(vs ~10-11 GB/s unblocked, i.e. no change). During the blocked window:
+
+   - mem_target_abort (amd_iommu PMU) = 0
+   - no IO_PAGE_FAULT in the event log
+   - no SDMA error / ring timeout / GPU reset
+
+I also tried to witness the GPU's DMA directly via the amd_iommu PMU
+filtered by devid. The filter itself works (NVMe, in a translating
+domain, shows ~120M mem_trans_total under load), but the GPU reads zero
+on every counter -- mem_trans_total, mem_pass_untrans, mem_target_abort --
+even under the 2GB benchmark. The GPU is the only identity device on this
+system, so I had no non-PerfOpt passthrough device to validate the
+passthrough counters against; hence I am relying on the functional
+benchmark result above rather than the zero counts.
+
+Conclusion
+----------
+Once PerfOpt is enabled and the device is in the identity/pt fast path,
+the DTE is effectively ignored by HW: TV=0 does not block DMA. So a
+blocking-domain attach would not actually stop the device while it is in
+this state.
