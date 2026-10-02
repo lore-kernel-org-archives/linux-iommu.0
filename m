@@ -1,155 +1,129 @@
-Received: from mail-wm2-f13.google.com (mail-wm2-f13.google.com [74.125.225.141])
+Received: from mail-dl2-f43.google.com (mail-dl2-f43.google.com [74.125.229.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADF124ACC74
-	for <iommu@lists.linux.dev>; Fri,  2 Oct 2026 13:31:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.225.141
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E09324E0B8F
+	for <iommu@lists.linux.dev>; Fri,  2 Oct 2026 15:08:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.229.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790947918; cv=none; b=BvFs0nGBZU6tk5hKV8LFPffoWpCTpkGXw9qLTEh/Y0mVV6I43Wvag9ZRi5HCAd1WgtwC6BzEUpeD55aKyNmYwktxr5Ochxf485rXsy5nZwoX5/Zd+H78joXZorJ42wPD/uESkcKAUgwOaz4ffqj3wMCqIzKCGhCoO3cje+9MQ9k=
+	t=1790953733; cv=none; b=D6OGNFer4cPFuXg/Z88RpJib+W/vUYzmekvT1R6V7tkceVPjmkfSZNJgXkrhH8aFGzgt747G3d1slW97i8CeuOIWlhbh2mrzd67N4Xhf54ueY4CBjlQdWcrwZqC5zwo2x2xxY3f0iQOhykSfcyEion+gVe/wIfiCOIuZgVxOsAY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790947918; c=relaxed/simple;
-	bh=osc7Bs2PrTQAuRxp4Vg65RRTN9ESX9QDgpxPBG4dOZ0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WrPfC7QM2RYJcgpeSVDqqVlxMNvNrZ+c0kuMewDJaKbfdoYO2kCLmswoXUOuMscp5OTUNcKMObBm+QJij+H6y6+aa/2OlgUNxtzOaqHwqEo3iIEgvcvtS/Zfekdu1QK0qMVS4KynWdm8+w1oP83gT+FREYrcc7LvW6/UEUdHS50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=readmodwrite.com; spf=none smtp.mailfrom=readmodwrite.com; dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b=dTFmj4Tt; arc=none smtp.client-ip=74.125.225.141
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=readmodwrite.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=readmodwrite.com
+	s=arc-20240116; t=1790953733; c=relaxed/simple;
+	bh=rN2GiY5/HkyS1I9EgmemypM94IRF9h269bCwt6E9FiE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NHrxtKcmuseCZq0tLQUeD3iFSmSaZY9rr3R/GCZZKUaDDvLNv3Mv4AMX7wwokrVIP/KoZ4ljz09y4S6nxIAMiv5W4CwsVDPSEwm3WejQjr+ch6ngXH5vBwS+om4OymxoZ8p0s5wmkrQ7z+r3BNZlzmUXOynTfKfXGMxKWViRIqs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=UQsrUeqX; arc=none smtp.client-ip=74.125.229.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b="dTFmj4Tt"
-Received: by mail-wm2-f13.google.com with SMTP id 5b1f17b1804b1-49fe8bf173aso296955e9.3
-        for <iommu@lists.linux.dev>; Fri, 02 Oct 2026 06:31:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UQsrUeqX"
+Received: by mail-dl2-f43.google.com with SMTP id a92af1059eb24-1450541ab18so8551434c88.0
+        for <iommu@lists.linux.dev>; Fri, 02 Oct 2026 08:08:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=readmodwrite-com.20251104.gappssmtp.com; s=20251104; t=1790947913; x=1791552713; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=9n14yfRryIKsVd2VYTqhCugxHgfRwCkDigMRwboBnXI=;
-        b=dTFmj4TtuV0sMvYaI+hy2kf//9tTQk9vf+Y5EPt5ZexztIctMBBXcSesmy/u2+J7iD
-         a5Y3XVHIyl7Z05rHW+b2DO2H/4CZR8cAVrBNhhmWeSd/fZFmwZV3rDlMYARfYNVsCQpP
-         Nm7mh1zgVe5YT/AJqbK8SQ7MU5tZcfB91ZM3Wlr4MPMG24V+BBY9VSTSfjPaDsSJUlwh
-         f84sn7/A1qWcP+txjpSV5MgQ947k9OP4lpWxpa8OL47TXBEPQW0hAdF0qKc2104nbl3b
-         qCiP3OULwG1ENIF84gpgUsQSVzG9QLMMqa6OW36kd3W2Ho/vD/Cr0JnwUANui0HRltsn
-         eivw==
+        d=ziepe.ca; s=google; t=1790953728; x=1791558528; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ENyCFbokdLWAmAh2KCAVPVZPtiPMjF2AJu3KZcFQdKM=;
+        b=UQsrUeqX+Ns9l4k5O8rLo+0qHgU9WyjubsqmUmpoOtuPUwITZoDDqWcSDp5tNDwiZT
+         zFT7HJMuc1WuEC0z3FAVu6o5iLVDrHtNTTqyvoaFqLImsRKISEEqDy0miObSbn0Ifoad
+         1T/kdlRHu46oAGiV0Ma06wET8h6i8W4aHk/f25JMMyJ/TXGNNTABScYJCDCGjEPGRbvX
+         Al17tZAc+2B6ikJcSkM1lAY+aXFdEh4G0G+iPEuJZwDJ1/0rmJ6Y7vM0NFkhNQM1Y/dI
+         KZwbWzr2WBh29aYKPVvnBptQkVB7dLxPG+6v85hC/fTrlO4HNNUZLllQbNUAzTXFurRi
+         WF+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790947913; x=1791552713;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=9n14yfRryIKsVd2VYTqhCugxHgfRwCkDigMRwboBnXI=;
-        b=nJArE6a3nHCSdW8YnA/pxOdp43vwO8+BzvAz4moBG4ytEvBdVNdx34SfGb6bNkZOjw
-         dnAU3ETcdcF72idw4BEXzFH4F041iSMai35WzVHlT0q4T/0stc5N2PVupV7tSp4Gt0Tv
-         wKaMTaUhvgiwBmdlg0C52OAVqc0q8N8hsmlEIeSzPsMGRWFli9Cnd7yS7qUKAl/WhIdt
-         wo/xusjwK4yNJa0nGnWX+UO5n444H1VU9TOK5sRL9dCy71sO2WACWALOUCzFDyfqNpSU
-         919qw/EC/XbEOg8+LtVDEu8uDa6/j60pBvBsvPS1iaPiKg/YYMEaR4RAB7BzzXB5b7uN
-         Bnrg==
-X-Forwarded-Encrypted: i=1; AKwUvBz66f0LDT9uO/gJIIE9rLwUjnTmxjAI4fOzj3qk2fPI4Q89KQtTBmD7ulLTZHNuK/jHtGF21w==@lists.linux.dev
-X-Gm-Message-State: AFuF++lJH57yfk17k77FrMAoxKr4SMRSlqCcLhZtgNPxsymUF5gTqVTt
-	OeMxhs6TtM6YPKEbrV/9oxAcvTdxOgsJByswXZ6o16zLI/jrXWxWRny2K+4HyF356Us=
-X-Gm-Gg: AYBFou0ZFhBbXmRM7pN/FRLVt13QnhYDGP16RGvM8WwBHdzKQUSf2VpnbQAYFf8E0LP
-	Bwz4cnQ0XWWjzpj043mEJStEqlArUkt6AX/qRX3KtWqlX20Tc7gC9G1g9Rb9D9kHtvb5Z8ZM7yo
-	DildA41p3xXq/IV3A21aaUBsqYZ1okfPAmYZ4gwpCvlojbeaGdtLVPqD8nXGvkfbZAbRmKSLi2L
-	2okfWPrGQ3dFFTgZzZxw6ZOkCKwOxfcE2ps1BaxFWa2PnDaWPohAS6ZjXqrh6OESfcXRqEL7ErQ
-	l4bCaLonc58K542CwyqiTBbAngs+twCmiQvTTej5VMNgK5sEqpjTVoWVOgYZ1C/XqENAAmZlozg
-	yTnByfit38pf0+yqJQ5hzpn/1D1h4qGV93ruDEi8ut2yGaMltoltsDJghgE14FWOOUtD8Gz/Og1
-	lMR89HTEB/B+YozVtbQR4eLH70fFOqj5OEj3Y3MjietOHt5YLFD/lPwECOmeUQAaL8/HJGlYN0
-X-Received: by 2002:a05:600c:46d0:b0:49f:ce73:5e94 with SMTP id 5b1f17b1804b1-4a02769ac69mr53033795e9.34.1790947912805;
-        Fri, 02 Oct 2026 06:31:52 -0700 (PDT)
-Received: from matt-Precision-5490.. ([2a09:bac6:37a8:ebe::178:143])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a0394e6c5asm60543205e9.2.2026.10.02.06.31.51
+        d=1e100.net; s=20260707; t=1790953728; x=1791558528;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ENyCFbokdLWAmAh2KCAVPVZPtiPMjF2AJu3KZcFQdKM=;
+        b=aJTG51VrEP01eve+j9YUq9A2XgSfBfBG7FXaWIkSO6Bt5CC8z+NPmhZ0uS5pk06uqV
+         ni5dPCkn3QK+ztP29Nh5RLtCsVQ/JoKLFOPS3t3vb62ARB/6wDGU1qvOhApT6SuFU5CM
+         i/invky+S9x0crycwx5O4p+PehHq26xK8CutSxnHvUsWZdUAkubhN8LFJ8IlshRE0k0M
+         /xQmQKHmnqteI6be8h8D7/nzKLyj3jVj7stcLOwGxj6+4pRqPw6a8Vd4Q2dqCRLYoUjy
+         8880Nn3j6UPCHo8jI2ASdmtfPQBnHWBNSi7nmeYurpu7AZZ2xrubCgrEtjwwSx7dypyy
+         du1g==
+X-Forwarded-Encrypted: i=1; AKwUvBzZypTucTd9BtvGwCNad8pLqcu7xt+GoUkMikWiJMUQCqMIi1kmJkNrgHgAn6F/MCs74b0e+A==@lists.linux.dev
+X-Gm-Message-State: AFuF++kxp0+XPJRfl8n2yBIFd1d/BEpTGsuTHhPNotjwNMF45JO3jaYW
+	QF92L3QxolMIpCnFKntBhzTNoJLScwaVNnRNbdKC60P5ie3zch4GbuA0o5kwcvG/Qbs=
+X-Gm-Gg: AYBFou3dOXvLx7hR2VUC1vVg4pBOm/GAei8cCGMKnpnmWwHv72GIfUIrdjS4i9+Y+Fg
+	yNalqn369OH824nnwmqr+P3Aw26oi4JSC+K1vYe/0EX8ZefyrNJ7fXQXMXuLaT24KwR0flDjlBx
+	05HfeL02qusBHDJqYC1iMwF5YMC/EuBJBe8p52CcDSIJhe1TnRbq6zvDKmzxVyvBRRogNTR5kxO
+	XH7Weu8WdRfTt7Qj/XQdFRciyZMHTPR83N4yxV18w37atRjeLxZnc7lTL9m2anHwBbTV7UMjp+X
+	tyLkGZzD0CIT6PkuFUnuBoBGg4D5s/cZyggdM9FxzImwvxJ8fqqo2ZVuS4t0X/dpFDcyLeGWews
+	cScEI1PInruVWBjk07bxxchbblJnsBixomxmttW0NF4YWJ6XhmqSt+3z5aM49Zvuwa7Y4ggliRo
+	sd0e/cWjNOeIlfeYYsvGqGzsXBjM+rI8jrMwmmDRER2m22
+X-Received: by 2002:a05:7022:ed04:b0:14c:d8d9:94fb with SMTP id a92af1059eb24-14f5c3f1c17mr2903275c88.23.1790953726759;
+        Fri, 02 Oct 2026 08:08:46 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-14f468c08absm6704330c88.8.2026.10.02.08.08.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 06:31:52 -0700 (PDT)
-From: Matt Fleming <matt@readmodwrite.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Sairaj Kodilkar <sarunkod@amd.com>,
-	Baoquan He <bhe@redhat.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	kernel-team@cloudflare.com,
-	Matt Fleming <mfleming@cloudflare.com>
-Subject: [PATCH 2/2] iommu/amd: Don't allocate kdump device table from DMA32
-Date: Fri,  2 Oct 2026 14:31:43 +0100
-Message-ID: <20261002133143.3628181-3-matt@readmodwrite.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261002133143.3628181-1-matt@readmodwrite.com>
-References: <20261002133143.3628181-1-matt@readmodwrite.com>
+        Fri, 02 Oct 2026 08:08:46 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xCesO-0000000Gmdt-3ju7;
+	Fri, 02 Oct 2026 12:08:44 -0300
+Date: Fri, 2 Oct 2026 12:08:44 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Logan Odell <loganodell@google.com>, iommu@lists.linux.dev,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 0/5] iommupt: Introduce IO page table shrinker
+Message-ID: <20261002150844.GC3481470@ziepe.ca>
+References: <20261001230219.818128-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261001230219.818128-1-praan@google.com>
 
-From: Matt Fleming <mfleming@cloudflare.com>
+On Thu, Oct 01, 2026 at 11:02:14PM +0000, Pranjal Shrivastava wrote:
+> Introduce a lockless, deferred reclamation framework for IOMMU page tables
+> built on the generic_pt library. As VMMs and userspace drivers map and
+> unmap large, sparse IOVA regions through VFIO and iommufd, page table
+> directories are often left allocated but completely empty. generic_pt
+> frees a table when a single unmap covers it entirely, but tables that
+> empty through a series of partial unmaps stay allocated until the domain
+> is destroyed. Under memory pressure, this *stranded* memory cannot be
+> reclaimed and has resulted in OOMs.
+> 
+> This series refcounts leaf directories natively in struct ioptdesc and
+> registers a domain-aware MM shrinker that prunes empty directories under
+> system memory pressure.
 
-Booting a kdump kernel with crashkernel=X,high crashkernel=0,low on an
-AMD system fails the per-segment device table allocation because there
-is no memory below 4G:
+We had talked about doing it this way
 
-  swapper/0: page allocation failure: order:9, mode:0x40104(GFP_DMA32|__GFP_ZERO|__GFP_COMP)
-  iommu_alloc_pages_node_sz+0x7f/0x150
-  alloc_pci_segment+0x4bd/0x650
-  iommu_go_to_state+0x213d/0x34e0
-  amd_iommu_prepare+0x39/0xa0
-  irq_remapping_prepare+0x83/0xd0
-  enable_IR_x2apic+0x61/0x370
+But I had proposed a different, and possibly simpler, solution that
+addresses *just* the iommufd use case.
 
-On our E810 systems, the kdump kernel booted but ice MSI-X interrupts
-never fired and the TX queues timed out.
+After unmapping something have iommufd compute the gap in IOVA that
+contains what was unmapped and then issue a 'clean(gap)' operation to
+generic_pt.
 
-Commit b336781b82cc ("iommu/amd: Allocate memory below 4G for dev table
-if translation pre-enabled") allocated device tables below 4G. At the
-time, the kdump kernel programmed a copy of the old table into the base
-register with the IOMMU still enabled. Keeping the table below 4G means
-it doesn't matter that the hardware splits that write into two 32-bit
-halves.
+This is the same operation as unmap, except we know now that the gap
+has no PTEs so all it does is clean up the table pointers.
 
-Since commit 38e5f33ee359 ("iommu/amd: Reuse device table for kdump")
-the kdump kernel reuses the previous kernel's table without writing the
-base register, so its newly allocated table is discarded when reuse
-succeeds. If reuse fails, the previous patch programs the new table only
-after disabling the IOMMU. Either way, the kdump kernel's table doesn't
-need to be below 4G.
+This requires no special refcounting or anything difficult beyond
+some locking in iommufd to hold the gap stable while we clean it.
 
-The previous kernel still allocates its table from DMA32, so the kdump
-kernel's check that the old table is below 4G still works. Drop
-GFP_DMA32 for kdump kernels only.
+Would it work for you? It seems substantially simpler, but I never
+tried to implement it.
 
-Signed-off-by: Matt Fleming <mfleming@cloudflare.com>
----
- drivers/iommu/amd/init.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+An alternative version is closer to what you have here, somehow
+connect iommufd to the shrinker and have it lock and walk the gaps
+cleaning them on shrink requests?
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 0572e1a674f0..16c26d75f46f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -648,8 +648,19 @@ static int __init find_last_devid_acpi(struct acpi_table_header *table, u16 pci_
- /* Allocate per PCI segment device table */
- static inline int __init alloc_dev_table(struct amd_iommu_pci_seg *pci_seg)
- {
--	pci_seg->dev_table = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
--						  pci_seg->dev_table_size);
-+	gfp_t gfp = GFP_KERNEL;
-+
-+	/*
-+	 * Keep normal kernel device tables below 4G because a later kdump
-+	 * kernel only trusts and reuses old tables below that limit. A kdump
-+	 * kernel's new table is either discarded when reuse succeeds or
-+	 * programmed after the IOMMU is disabled, so the table does not
-+	 * need DMA32 memory (which the crashkernel may not have).
-+	 */
-+	if (!is_kdump_kernel())
-+		gfp |= GFP_DMA32;
-+
-+	pci_seg->dev_table = iommu_alloc_pages_sz(gfp, pci_seg->dev_table_size);
- 	if (!pci_seg->dev_table)
- 		return -ENOMEM;
- 
--- 
-2.43.0
+iommufd has no trouble walking the gaps in the interval tree, there is
+a helper that does that computation.
 
+Jason
