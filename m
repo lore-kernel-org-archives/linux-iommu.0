@@ -1,56 +1,64 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BA1137DE8D;
-	Fri,  2 Oct 2026 16:46:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA20B37DE8D;
+	Fri,  2 Oct 2026 16:46:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790959611; cv=none; b=NKjzZfqkJf/ZE+/ud/H/QX9njLUdKziL9IxNlXeqbgFmNeU+jru/CUqQHurd90uW0XMLMTMjw7lh4GFtZAwliHKckHKNcJ8vhroqGVIqT951SgGbh57UL9lEFbARmUL4btR7F2xpUQIUMTb8WgBrmeU+ZsRzLJrVzdFLrwGB2Vw=
+	t=1790959616; cv=none; b=MBH0Ab88f2mQjGRl2YqE7MTNaj//09KC51UlHD980y6xdtZU0jAUUbhNyTFpSmNLMyZ4DIdnM639vH3gpCvTsHu5LZDfy9SlTbmjSBrC6r2oH5w7K6/T51hV+5EzaujGkE86dCMSPRGv2mcd6NugZzHiMcXTFLKwXXkRWv3iX54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790959611; c=relaxed/simple;
-	bh=6cg+lcCuAXFBL/G+Ow/2cm9Jj4ZO8hTglEeqlPbP+jM=;
+	s=arc-20240116; t=1790959616; c=relaxed/simple;
+	bh=kIO15s4RFEZL8Yq+ihwrnHsCzSxNGPQ0MfJIp2HTffQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gsQk+cgcHTm11PTZC4Y6pqA4NiPCaHaTxeSE+nisvPm42qFNDToUxMbDRGR1Cf2NsDlKm0GOqqFfUlhC5IAXVqHpMF4B3tliC5fbtDT5rJuCYe8zrf12OWFg0P7GfuSgbZ8p4voc5BTaZNZt3fu2+JqrWGUuj0ACLWiUn8Pw9m4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FbY6Q7sw; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=ZhU6/+MTGm0+E1pxkYzpeFIgAJDCppv5Dn3NV/I5A5Lh9Sb+RT7QIJrEpNWGAShkUESWJ3bpejRNHdcuGgaxzXjDjwU/YxVWiS2ScSap1LigfQ5vLzygd12DTSnihcShzyAYAIfHtZ3rgQ8dOxaA/MLM5eGMPZN5POiM3UgE9Rw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gptaoozJ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FbY6Q7sw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B5751F000FF;
-	Fri,  2 Oct 2026 16:46:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gptaoozJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 948431F00893;
+	Fri,  2 Oct 2026 16:46:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790959610;
-	bh=zjleGJ012fVIUizu+B+4yp+yZfnLWc86v1x3Uze5e9s=;
+	s=k20260515; t=1790959615;
+	bh=YAqc7sLlvdB11p/fqTbQZyKaqldWqbPlcsvirlY8+UQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=FbY6Q7swcBGXHERBYi/rjqaoowyPWWj8QKiIbZ9bqRZwGy1kzg8F59oCJxiST0Hqo
-	 9ymkPB4zuc8/ZU2rA6N6TzX0urFAwRlChTzAPiQNeLLKtUFsHJTlKjdPgbNSEzWK+u
-	 HcPdLAKf//UVXffcgZ2bizZuPp/7DI7yVIjLf/Z0ODjd5LS7QSwq2umTByQsmXtEsM
-	 rLrbvmO2prQzU47PGy3n3MW6Z0IKqFHrq0jHDtE/YNB/hQ3ti3Ud40/6mHjktgsgrC
-	 0gCTqTocESF5/bNE+jj8YD0+RocgvoKBoMFCzfvRitatSOZuwR3AjACFP83y+YvwN5
-	 ENJPYZq/qyEyQ==
+	b=gptaoozJsVlyRpi1v4AMP6xux9F8RC3N/XoMasZaml0QePIxG0lgKEtPsG+deXLHp
+	 w4A8nMDwZYObPipk2vYt69kbkg23Q/TNC7jIkNJj+GcYRDk/rItB4B9u95+AbnKJxP
+	 Z3BC7nwOGGKxqiOcqcqvmYryHRdw3RfhIeFCzyUevzCySZC81Pwbnt7WBP3R+LfB1W
+	 In4spXOffKfk/Rgi+gUulZ+sPHPKTIAuXic2XvE0MbGIMxvLpPrlpCB8rL8DnIOFjf
+	 SttCfRoNpjbUPh2JmjrgIsILk70FxlPSwlClcvXuiJ3tiBV6tkG3Lio63yc58ch4Vc
+	 xhsawTVWregJA==
 From: Will Deacon <will@kernel.org>
 To: Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jingyi Wang <jingyi.wang@oss.qualcomm.com>
+	Joerg Roedel <joro@8bytes.org>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Breno Leitao <leitao@debian.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kiryl Shutsemau <kirill@shutemov.name>
 Cc: catalin.marinas@arm.com,
 	mark.rutland@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	aiqun.yu@oss.qualcomm.com,
-	tingwei.zhang@oss.qualcomm.com,
-	trilok.soni@oss.qualcomm.com,
-	yijie.yang@oss.qualcomm.com,
+	"Kiryl Shutsemau (Meta)" <kas@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	Shameer Kolothum <skolothumtho@nvidia.com>,
+	Yuanhe Shu <xiangzao@linux.alibaba.com>,
+	Kyle McMartin <jkkm@meta.com>,
+	Usama Arif <usama.arif@linux.dev>,
+	kernel-team@meta.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: arm-smmu: Document GPU SMMU on Qualcomm Maili SoC
-Date: Fri,  2 Oct 2026 17:46:36 +0100
-Message-ID: <179095600013.2119816.14349217332489680081.b4-ty@kernel.org>
+Subject: Re: [PATCH v7 0/2] iommu/arm-smmu-v3: Make the queue depths tunable, and shrink them in a kdump kernel
+Date: Fri,  2 Oct 2026 17:46:37 +0100
+Message-ID: <179095566175.2076343.2229507765103689715.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260830-maili-gpu-smmu-v1-1-253e1108ce82@oss.qualcomm.com>
-References: <20260830-maili-gpu-smmu-v1-1-253e1108ce82@oss.qualcomm.com>
+In-Reply-To: <20260925141532.1274962-1-kirill@shutemov.name>
+References: <20260925141532.1274962-1-kirill@shutemov.name>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,15 +68,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Sun, 30 Aug 2026 19:44:03 -0700, Jingyi Wang wrote:
-> Document GPU SMMU which uses "hlos" vote clock on Qualcomm Maili SoC.
+On Fri, 25 Sep 2026 15:15:28 +0100, Kiryl Shutsemau wrote:
+> The queues are sized from the IDR1 maxima and allocated at probe, costing
+> megabytes per queue per SMMU instance. A kdump capture kernel pays that out
+> of a small crashkernel reservation, for queues it barely uses and two of
+> which it switches off anyway.
 > 
+> Patch 1 adds a cmdq_max_n_shift module parameter, decided in a per-queue
+> helper and floored at one page. Patch 2 has a kdump kernel size all three
+> queues at one page through the same helper. The parameter does not apply
+> there.
 > 
+> [...]
 
-Applied to iommu (arm/smmu/bindings), thanks!
+Applied to iommu (arm/smmu/updates), thanks!
 
-[1/1] dt-bindings: arm-smmu: Document GPU SMMU on Qualcomm Maili SoC
-      https://git.kernel.org/iommu/c/991ded609472
+[1/2] iommu/arm-smmu-v3: Add a cmdq_max_n_shift module parameter
+      https://git.kernel.org/iommu/c/c9b493a312f3
+[2/2] iommu/arm-smmu-v3: Default queue depths to one page in a kdump kernel
+      https://git.kernel.org/iommu/c/3f9fa6b9520d
 
 Cheers,
 -- 
