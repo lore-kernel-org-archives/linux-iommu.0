@@ -1,199 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012038.outbound.protection.outlook.com [40.93.195.38])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6545B352020;
-	Fri,  2 Oct 2026 08:17:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790929037; cv=none; b=cuKwxUdJZIlErZT8j/uV6GDlYaMSYCTEyzXlZlv057i/ccgIG0FPR/axzFS75AJDHs7uNi/XgBnknAa0BpwQvraZPam2UwHSqSHyMgbrp9YuQYVTPZ3Ezx89p2CYWOTXWtl/xOmoW9GGMBXW10MA40sXKhc5/UO4xhS62mmn5/o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790929037; c=relaxed/simple;
-	bh=2Zp7yJ1dUnyWFb+yLrS2OcemuTfJSfuHlJx1my886eA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ltXtiJtjKdDaInXfPo+XOl05zurqUxPvmplyxVSf5X4EU6Dzpk3kXoCYL/3QVISw8lQ9cfVs3F0nzKTDGPVO6NH6LBigjKVYen2dR6oQ8bV9u5PIiKM5xaJRVpAP6/ZYLp0eM4Vumd4hVu43MWuOKGvKmQzH0Fau6iniRlF7voY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nQXXNjLk; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B76853890E8
+	for <iommu@lists.linux.dev>; Fri,  2 Oct 2026 08:19:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.38
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790929163; cv=fail; b=pe50owWnsa9qiOgJ8VkzQXE4wzKoQX2jfV8fdH3alk61A4d/Cc5lmnMEpZiaRv3wR0r3aBxZBW9zrp/1BH74a/Xd43MEAe/VqZblmoNHW/8J9vr8K1z+gUcv8vn61W2ZtEsy6LXh95Pw+p6qKPvzi7h+vcsE1vceoeQj3KTc4Sc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790929163; c=relaxed/simple;
+	bh=gj//q+1a+/OeW727QNyGE3wHN7lurV4zIWP8tpmRqBk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=ExEeR65klj/VoEbAfVkFizL6VkHIn4zoX1NO0ukUlYTrES9g6fSY0EPwISOW5ZOF4DBjgAXa+00F56keNb6kjNV0udxJ+F02jwYQaNnOqVAQDPeiE5ddh7Ga/FkiGUt21WjIKD1SqN+ZLhJS1zEeq4CEuzjUs4vbD/EKol2AGzs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=fail (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WHbK0TJU reason="signature verification failed"; arc=fail smtp.client-ip=40.93.195.38
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nQXXNjLk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E981F000FF;
-	Fri,  2 Oct 2026 08:17:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790929036;
-	bh=9yx8ebg2bvWYOV3tWECQ37hO2lwB9L2e0febzTmH5JU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=nQXXNjLkwYz58zsrBOiKsev3kSoSv0Qn6uiQT1NeTnbVNcw1p5XvMUficJ1jAi+Ak
-	 IrQUl6apYNM0BZb+MwY+skimjk4Gaz+DKfu2Z7rrlWqcHeKazOZ/231skNjWs+VoHH
-	 hvldwUO3pE+zFitrOfFP0Nw36i/xpINvewLoPaNmIPApssJKO+twQoB8Do6cTfiqc5
-	 iB8xlM34AUVUaxFI7uiDOgQFd78kW0wtR2JuI/FknTclevK64ODgJXoQ+NBv/ZOiVh
-	 paTytyIjv85kIpY8OrS5F04vP35/hXTrzck/QL84DN+aQFgoAt0oSjO6j+qJxAzJrr
-	 gQoYq19TSfH3Q==
-Date: Fri, 2 Oct 2026 10:17:05 +0200
-From: Mike Rapoport <rppt@kernel.org>
-To: Wandun Chen <chenwandun1@gmail.com>
-Cc: robh@kernel.org, baoquan.he@linux.dev, m.szyprowski@samsung.com,
-	catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
-	chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
-	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr,
-	tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-	saravanak@kernel.org, akpm@linux-foundation.org,
-	pasha.tatashin@soleen.com, pratyush@kernel.org,
-	ruirui.yang@linux.dev, robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org, kexec@lists.infradead.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v7 0/9] kdump: reduce vmcore size and capture time
-Message-ID: <ar9ogXc12cLjziHS@kernel.org>
-References: <20260922084256.1515554-1-chenwandun1@gmail.com>
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WHbK0TJU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=s/5BeHV2RcbUsahAove1C/e9yW3bKZ053BdztybQ7jIKDQbf/0jcVsw6K4YoDM2/QehFjAPOeZLBvojZflHU/ZyDbM/Az48LEm4mEYDWzQf1uj43fck8EE/BoUWRume2xCHbfE5MNuAj/36VLOS9h/s1AshPE/Occo3S/e1yA+ZQBPFLFlpuIMEpWBJYyFm9PqfpMJo8oOe/FoshrOdUlhHCgt2/NY1Qb+Ip/igP828jz+a9kagPiOQ1K8fKmDJdA8Wsn0kw6iAU82ylBSjLPC3CWxERXekChmZYU6uNVMLtqUgx7bnnz0g2vCAaEOw7kX0hixYtLSEy2rXRrI1PuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sAHMbd5X85eP2wU1JNvY8QdHR7BXBSEcRd6L7eR/zWQ=;
+ b=qus7pOR8YE4hwG90Gun6aingi7hFVxJHxO5UpFgMpOPVrtFzLhPd3m6ocdHs472VYBIeAM4/j83EkmhH9Zhu0zhizBLF+dggplfilVLgwbU1KSEOTofYJUJ7TQK68q3o0wh+zUVomwkExs+xjCy9mwm/HHFWojbqXLaWrkMWdqIQpySlHSkzhcc0iYM0kwCXLFO0Zl/IrbDOSZ+i4t0IprfmJo1s89In4vytZy07SvNBvh38R3/7kWWJj5izvPGH99uIXyr5KltR6HLPZJL5Z5eZTrHT7GhrC75mXwioyZvhf/JofnswBwXggZ+BP3iSjJToON9jqDktikdzFLbkoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sAHMbd5X85eP2wU1JNvY8QdHR7BXBSEcRd6L7eR/zWQ=;
+ b=WHbK0TJUTayumdrMB1SRgRRm4SX/F20x4Jpc4LvtcU4hLzX0I4+sCHeng8gki+iuRDBP4LDw7mELJeCrdKKdpFDkZ1eFTkHHA0oXqOuT74pjNWS8BlhzHz5bYwzFBbqXTZIN0xZwwcwjVw+ma62F6HuYylTqiA9FXIq+kK7hStV9J8abej/iPn1z4SKWqj3EBqojA1xxm76MxQtg6jTSOmpS1x+INoCg2ZySwncYD16rM0fPe+ka2fuvy3RrHtVDBUFTHSl/padEDUIXmgd5Ub3w8xV2NbKDLTec9EAPfSkYi7qpPMcGAZ/JY4Yhl56DTV0Nw5iBe49IfOHLlD6EVg==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN0PR12MB5977.namprd12.prod.outlook.com (2603:10b6:208:37c::22)
+ by IA0PR12MB8086.namprd12.prod.outlook.com (2603:10b6:208:403::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.15; Fri, 2 Oct
+ 2026 08:19:13 +0000
+Received: from MN0PR12MB5977.namprd12.prod.outlook.com
+ ([fe80::d8:f725:258:2f28]) by MN0PR12MB5977.namprd12.prod.outlook.com
+ ([fe80::d8:f725:258:2f28%4]) with mapi id 15.21.0472.016; Fri, 2 Oct 2026
+ 08:19:13 +0000
+Date: Fri, 2 Oct 2026 18:19:08 +1000
+From: Alistair Popple <apopple@nvidia.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, 
+	Leon Romanovsky <leon@kernel.org>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev, Tushar Dave <tdave@nvidia.com>, 
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org, Chaitanya Kulkarni <kch@nvidia.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>, 
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v8 16/23] dma-buf: Let importers ask how peer-to-peer
+ traffic is routed
+Message-ID: <ar9oLsphjPs8NwCj@nvdebian.thelocal>
+References: <720dbac3-24f6-4c91-899e-e205865c1fd1@amd.com>
+ <20260929175737.GK563127@unreal>
+ <eeef5951-825e-459f-b474-bf8c59588446@amd.com>
+ <20260930081832.GA3401365@unreal>
+ <4549640c-f4a5-4dac-9be3-2e5aa127555c@amd.com>
+ <20260930114356.GC3401365@unreal>
+ <fbdc710d-7be1-4021-83c2-548c798d9d14@amd.com>
+ <20260930143237.GI3401365@unreal>
+ <b2e766389e57a55da959369c5ad4b9e39e425659.camel@linux.intel.com>
+ <20260930165236.GS163130@ziepe.ca>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260930165236.GS163130@ziepe.ca>
+X-ClientProxiedBy: SY6PR01CA0067.ausprd01.prod.outlook.com
+ (2603:10c6:10:ea::18) To MN0PR12MB5977.namprd12.prod.outlook.com
+ (2603:10b6:208:37c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260922084256.1515554-1-chenwandun1@gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN0PR12MB5977:EE_|IA0PR12MB8086:EE_
+X-MS-Office365-Filtering-Correlation-Id: d842b86b-18b5-41c8-7c09-08df205dd7a0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|23010399003|4143699003|11063799006|10067099003|56012099006|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	1fiC/2Uqd2f8D2JDB6k2zs2qKNomWcEVdNsoK7ihPz33vqhhBbMy7DRojlMmWQY9T65kJP6h/VZ9S9H9REhp8qa+xMSx11QeEoZA7rxzCA7c7lJNO0/+xAnlm3IGRKu82u0PJogfF0bl4k3s7SVfyAR6kE01oZBa62lgpf+5Nl23qHE8LYQM1EXSpKAhLf4gU/YwNE85I+sdoYOtIHkE0RMYL0nJYD449s2CsqI3osmnCfqyKnus2oROhMTztAsB8udOhRtxFJCbfODPqrwupj+cmQFiExUSVW+9H5O/GhBEqh6E/jIwuIQYH0zsfWZj2C2LghcfMUnFD3KdJ/Zhz6nzdpPg55MP/BmicEGr6Vva4swDZtvTvIX3l7z6Pb+Cx3NEu8/L5dctJCCD5PFakajKMhnR7DtlgMQQK1lW+OWWRvLjUteb62NI4KWpAGZxGvY5jAHNkLGK9GAN91iMLMB6DvdVdhwq0TJkCP7DHblhrOLY8WP8JFlohxO2Jk4gIa0pLnUXnMASGmuz6maS6IiLea3k7IqYEZNOGQBq7p1vmlX9apX/yNEcvXbaUmjD2qjXVNw/DO0hth4CkDi6Nom9LhnkAQG/8uvGaNSNq9JdhNB4SwgEZQjShBHOkdiXypgoYJ8CD87TSkytH9mXK+WaoagpQ80BuPiuX+A/GBE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR12MB5977.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(23010399003)(4143699003)(11063799006)(10067099003)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?iso-8859-1?Q?EIdqCwbgYeC354o63j+LiaHxw2EgElafXUpCJ3WSfRcmuvX9qfOnmjPnx+?=
+ =?iso-8859-1?Q?TyXVrt5R8OYxIKQ7JSdtNc/zz6p+fIBjU4E7NrdS5YJx5AbJPBrIMLJClt?=
+ =?iso-8859-1?Q?L13wLLA57K0xOiaLZsJvhe3ppO+JfiA5u20nTHMT6k5GkqpLPDl22Y4h/X?=
+ =?iso-8859-1?Q?2QHS9rS+NihE0UYsRyoL0SYwIKAOz4LzlR6Du211wpB9eqORFcfcWjldvx?=
+ =?iso-8859-1?Q?n56eH1C99X6LMMxg5gbKXKoqwybmLt0Gk/aVyCYCnM9Um3uzcHik4qQlvc?=
+ =?iso-8859-1?Q?cF7DJotJtYPtlLZo1UZzeqYUx+nIsE4JzsDsaa2UKmgonqdMg1voRAyInF?=
+ =?iso-8859-1?Q?evi1alurPs5jrggYDSwDgD5xn89perTbZ5KuXqthQyBSIX0n4GYCpHGaML?=
+ =?iso-8859-1?Q?AUpbnvUwqxBqCrPBFu2S0MIWpi4GT4TMxnYOZ6hEjUvWvgUGSdIQ1vbFCI?=
+ =?iso-8859-1?Q?UwfyncS5+Qtk3PNt2nJ8kN6keYxo8d4fvNrKgewDDAGVQqTH1g6eI7CSig?=
+ =?iso-8859-1?Q?fCmhd7fGZ3AWlGsrEzrdyKyBSJYOhtFgqiACbtDdPGFDyf677+SAUX+BXV?=
+ =?iso-8859-1?Q?wcWGVDqvpYksW6GzO2eCUxIsKoTtTUNc71/rAmfUTSNsAnJlaSCAYofSQM?=
+ =?iso-8859-1?Q?G9pYhxgNqmqnhoxfNcdfUu9zYoUgNPfGwskV+Y0jbA2kAWjGMOKJAthPIX?=
+ =?iso-8859-1?Q?qNnpAElnpeLMbPfyYGqsaA5sw+xxf3tYAmkjcaLVxoSOvEZOBTzq5jeONi?=
+ =?iso-8859-1?Q?ari7M1A3b2hfSkB4Tm6XIBrMuGB7LTpMghzhcJ+klv1+1dkAC683vzmJf1?=
+ =?iso-8859-1?Q?dkRmQsc3K5YJvTV+zWtVW7v3t+P6CZqrl4/g/beChL1GsaQ3MbnRH69hc7?=
+ =?iso-8859-1?Q?W+4lCBS8TEcYBrgneX9yMmhVJFkcd6mk/+mYdHstUjANuFCo4WB5OzgZyM?=
+ =?iso-8859-1?Q?v6l/fs3csMhUEzHRNzbooBG7uevBfOlXuIwYYBXtIajsMUbCPYZgmg9R/x?=
+ =?iso-8859-1?Q?e2/FJyjAt0goB/TSE1ls0FDlU7KHUJAWHimBPNeKVGsGO++J6kFWWRcDmp?=
+ =?iso-8859-1?Q?tjDloPhwOy8pFYLxFl8JjTyR5w3ITL49uzzjyuNTRrZ9b8uvvvZmxozDa0?=
+ =?iso-8859-1?Q?iWn+QshZPCoF34wz7QKSnCp5dgq1stac/hoThU9g9CimBsthFfgJMYw+j2?=
+ =?iso-8859-1?Q?XyQb+rBUsCXW8u4cphRHSFokg2JSCwIGtfGIwTkP5QkRPu+tIAK33fmn8j?=
+ =?iso-8859-1?Q?qcJvZT0AaFh20AS/xdSFMt8JmIu6NcT5/BgY8O2h12vQh5RtWdvQ2yjX1Z?=
+ =?iso-8859-1?Q?3kX3P2soSFgJftvmDNPs1oHqWgqXmqE2B7ULeqngy3Gp0GCBUg63eYpHDC?=
+ =?iso-8859-1?Q?v5FIecDG+8fECoqxnFuPshR+QVGGPDXy3UWGjxqx2x2vFWkdGpFWoc2mWC?=
+ =?iso-8859-1?Q?w7GotCelDXdsJFrwavhIiW1eUhfuV54CSw8KEN3KpCGKI0QMcUyyoKu7+M?=
+ =?iso-8859-1?Q?foZydYJUJ6aFBQK6H6QgmFFFJvlinEbMIcZRQRNy+R9yTNhO9lgd9w3qz8?=
+ =?iso-8859-1?Q?dqkSy026036m4qZ1dLNWlkRvGq3O2JTGPkmOzLoB6SDzApD8K7/n/JGTNA?=
+ =?iso-8859-1?Q?i5czxhNqBxSek58R5P3lxjCJ3kn1+i485bUurW+xdIGhc7ylClBzXiODJs?=
+ =?iso-8859-1?Q?USqT7HboYBHydP4VPkt93aPB5+f8+vB8+8aMnpogxv20hSQEsafHSv78Tn?=
+ =?iso-8859-1?Q?QErUgih54QYzj2mpzQypkLWduHfVD5/iaVukho6wWGndvQN2XoetGbQQVu?=
+ =?iso-8859-1?Q?uvOrgU9a8Q=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d842b86b-18b5-41c8-7c09-08df205dd7a0
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR12MB5977.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2026 08:19:13.4577
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Cm7f1AVPUFjzuur8ny70YrV1wn1pn4ECdGFrRWa8t//E0wKYSPIOqMafzD8lFh8G27f1V5f8tdOIfURkborBQw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8086
 
-Hi Wandun,
+On 2026-10-01 at 02:52 +1000, Jason Gunthorpe <jgg@ziepe.ca> wrote...
+> On Wed, Sep 30, 2026 at 04:57:04PM +0200, Thomas Hellström wrote:
+> 
+> > Returning again to Jason's series. Let's say we'd add just the mapping
+> > type infrastructure, converted users of pcie_p2pdma only to use that
+> > and then we'd have access to per-mapping-type data. This could actually
+> > be done as a prereq for this series and merged separately. It's a
+> > couple of patches only.
+> 
+> I'm happy to say I found someone here to pick it up again, so we
+> should see something on it after LPC!
 
-On Tue, Sep 22, 2026 at 04:42:47PM +0800, Wandun Chen wrote:
-> From: Wandun Chen <chenwandun@lixiang.com>
-> 
-> On SoCs that carve out large firmware-owned reserved memory (GPU,
-> camera ISP, ...), kdump currently dumps those carveouts as part of
-> system RAM even though their contents are firmware state that is not
-> useful for kernel crash analysis.
-> 
-> This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
-> reserved memory on DT-based architectures (arm64, riscv, loongarch).
-> Reserved regions are marked MEMBLOCK_NODUMP by default so kdump omits
-> them; reusable CMA regions are different because their pages are handed
-> back to the buddy allocator and may carry crash-relevant data.
-> 
-> ACPI systems already filter reserved memory out of the vmcore through
-> their existing path; only DT-based systems currently fail to filter these
-> regions, which is what this series addresses. The flag lives in memblock
-> itself rather than in a DT-only structure, so both ACPI and DT systems
-> can benefit from it (suggested by Rob, thanks).
+Yes, I will be picking Jason's series up once I return from LPC. Hopefully I
+might see some of you there!
 
-Can you elaborate how ACPI systems filter their reserved memory?
-With your patches, the memblock flag becomes a part of DT-only
-infrastructure, so that claim that both ACPI and DT benefit from it does
-not hold, doesn't it?
- 
-> Since the reserved memory regions are filtered out, the vmcore is
-> smaller in size and faster to produce.
-> 
-> The series is based on linux-next and is organized as follows:
-> 
-> Patches 1-3: Preparation and bugfixes: switch riscv crash_mem to memblock,
-> 	     fold the duplicated per-arch memblock walks into the weak
->              defaults, and serialize crash header preparation against
->              memory hotplug.
-> Patches 4-8: NODUMP infrastructure: switch crash_core to
->              for_each_mem_region(), introduce the MEMBLOCK_NODUMP flag,
-> 	     add a dumpable flag to struct reserved_mem, and mark
-> 	     /reserved-memory and /memreserve/ entries with MEMBLOCK_NODUMP
-> 	     flag.
-> Patch 9:     Exclude MEMBLOCK_NODUMP regions from the vmcore ELF
->              header.
-> 
-> v6 --> v7:
-> 1. Fix a stale MEMBLOCK_NODUMP flag issue [1]. Memory reserved and
->    marked as NODUMP may later be freed (the initrd, for example),
->    so the NODUMP flag must be cleared accordingly. Since the fix is
->    part of the NODUMP infrastructure introduced by patch 5, it has
->    been folded into that patch.
-> 
-> 2. Drop the "generic" related description in the cover letter.
-> 
-> 3. Collect the Acked-by and Reviewed-by tags received during the v6
->    review (thanks to Baoquan, Mike, Rob and Marek). Patch 5 is the
->    only one without a tag, as its Reviewed-by was dropped when the
->    fix was folded in.
-> 
-> 4. Drop patch 1 of v6, which has been merged separately.
-> 
-> 
-> v5 --> v6:
-> 1. Serialize crash header preparation against memory hotplug to avoid
->    out-of-bounds or use-after-free issues.
-> 2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
->    avoiding a panic from too few regions before resize is permitted.
-> 3. Reordered the patches, put pre-existing bugfixes earlier in the series.
-> 
-> 
-> v4 --> v5:
-> 1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
->    (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
->    DT-only struct reserved_mem [2].
-> 2. Switch the riscv vmcore elf header preparation to use memblock
->    instead of the resource tree, aligning it with arm64 and loongarch,
->    so riscv also can exclude reserved memory from vmcore.
-> 3. Deduplicate the vmcore elf header preparation: arm64, riscv and
->    loongarch open-coded the same logic, so fold it into shared
->     __weak defaults in crash_core.
-> 4.  Drop the v4 patch that saved /memreserve/ entries into the
->     reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
->     directly.
-> 
-> v3 --> v4:
-> 1. Rebase this series on v7.2-rc1.
-> 2. Add two cleanup patches (patch 02/03).
-> 3. Simplify patch 03 to avoid checking whether initial_boot_params is
->    NULL multiple times, suggested by Rob.
-> 
-> v2 --> v3:
-> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.
-> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
-> 3. Add some prepare patches.
-> 
-> v1 --> v2:
-> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
->    feedback [3], v2 drop that property and exclude reserve memory
->    by default.
-> 2. Split some prepared patches from the original patches.
-> 3. Address coding-style comments on patch 5 from Rob.
-> 
-> [1] https://sashiko.dev/#/message/20260917220750.GA4013814-robh%40kernel.org
-> [2] https://lore.kernel.org/lkml/20260723234126.GA3253409-robh@kernel.org/
-> [3] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
-> 
-> 
-> 
-> Wandun Chen (9):
->   riscv: build crash_mem ranges from memblock instead of resource tree
->   crash_core: fold duplicated memblock arch hooks into the weak default
->   crash_core: serialize crash header preparation against hotplug
->   crash_core: replace for_each_mem_range() with for_each_mem_region()
->   memblock: introduce MEMBLOCK_NODUMP flag
->   of: reserved_mem: add dumpable flag to opt-in vmcore
->   of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
->   of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
->   crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
->     header
-> 
->  arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
->  arch/loongarch/kernel/machine_kexec_file.c | 27 ------------
->  arch/riscv/Kconfig                         |  2 +-
->  arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
->  arch/x86/kernel/crash.c                    |  2 +-
->  drivers/of/fdt.c                           |  2 +
->  drivers/of/of_private.h                    |  2 +
->  drivers/of/of_reserved_mem.c               | 48 ++++++++++++++++++++
->  include/linux/crash_core.h                 |  2 +
->  include/linux/memblock.h                   |  9 ++++
->  include/linux/of_reserved_mem.h            |  1 +
->  kernel/crash_core.c                        | 51 ++++++++++++++++++++--
->  kernel/dma/contiguous.c                    |  1 +
->  mm/memblock.c                              | 43 +++++++++++++++++-
->  14 files changed, 155 insertions(+), 97 deletions(-)
-> 
-> -- 
-> 2.43.0
-> 
+ - Alistair
 
--- 
-Sincerely yours,
-Mike.
+> Jason
