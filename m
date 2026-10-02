@@ -1,177 +1,202 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B1FF1C2324
-	for <iommu@lists.linux.dev>; Fri,  2 Oct 2026 21:11:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790975515; cv=none; b=uLCuLsy+o1QK6sBDpvqgDJS8wS7DJ9A6eAQDdLUymElkjR/s2Vyw2yv/8KvoT7uRL7ozf/Jf1yk9Z1u+NvYWg6NQ02bFfdFGsmXWTuahjeNzOrUdC/t4oB0UP9n1ad8tC/eFGN+8L2sJ8ymlHxt7rLFIUByXIIy4l8a/3iEX3eE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790975515; c=relaxed/simple;
-	bh=iOrHGz64z0wKTg4YNpqTI/tUIfNY75DEXU5oPmbSSps=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HJ1p4QDsEzo4VJlMZBTGQdxNiZQ6RaOfNax0cW/C8EZMOoIHzz8qhXSM4aXSE7Tg3ePy+IqQQFjmUN+a5/urHah+inSc4YlPNF1U94HZRAUDTWN3A/JX4qqF0eK5scBLLcVc5JV90B4ACjZ37JSm42qJP6beoKQeJ/tVnnpYZY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nuDcH4Wh; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB78748124C
+	for <iommu@lists.linux.dev>; Fri,  2 Oct 2026 22:45:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.169
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790981153; cv=pass; b=VJkovDQYtbXZ/uWcdslnHM/uZ2YKkPPybaGEh1w4x2tR8VVDihbFTlP/C4RMmDTgBdP40SvP4SvEFYEdK0OhrD/77rbR2765+G3xUXrthZCa7aueCd9a1DQLDc5gwbYsYSbpYZ76ODwBmFQO5BCpaZhDJJh1/8Gdw0LFR2WwVHk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790981153; c=relaxed/simple;
+	bh=b6tpnWqi0sBgzEyRHL09Bqg9b7O7aqDdleTKkCbYmwU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=F5Ke8AR7ZBaeUaDT5R1QT/Ikl4MSPk1QABLg/jiosjX9pMH6s94CPeniY5rg4n2yk+CnX2WHWLLfGpv3NRJeWZAw1E+ZvBTbvMBPy8azZSw/sHQzsmSucJfV6CxFcJopXdeEITlaDIuxin3Z07Wqepnj3gjVwb8NZZb2Lf3n9II=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CYx5zdK8; arc=pass smtp.client-ip=209.85.160.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nuDcH4Wh"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2d3b445a84fso20545ad.1
-        for <iommu@lists.linux.dev>; Fri, 02 Oct 2026 14:11:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CYx5zdK8"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-53113d72966so40581cf.1
+        for <iommu@lists.linux.dev>; Fri, 02 Oct 2026 15:45:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1790981149; cv=none;
+        d=google.com; s=arc-20260327;
+        b=Gd2gVREwwXZtmeKXLXf1j3sOWfTv9zUIxqO43oSR9UgJHSAy6gDmrm57SFGQrko5qX
+         HNkTgKXonKa6Qvk04QnP3JJ3QdzKaHw4abgHQ+8VtDLCMs5HqBfiK/x41oTZztPZ+mqe
+         XPh94xiMR9/V1tddv5Q/19IRiMOh2RqdL3g1JrUMLy/57yUGMBf5GiL+t8QLZVmO+f4N
+         fg6Lmm87wMqSb/dIZf7qxGNGZz8iqq0TCGn/9xZBeX048perVlhzlFUZN0GPIMwSgZIN
+         at2zVBlCn84dRm58jbpDXXUnRSqiEmruJupDJ6XKGZMGfuurFodzc7Tl2p2uC3Ye+hJm
+         EE4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=4ethMyS6aCMQkVyOx2GRO0J5eXro8MDvqsE/LBxA2QM=;
+        fh=7qafrwt2OuZhLmSOh2KDnxX2wzOs5bw+CIm/6b9rWFQ=;
+        b=ouIw3FmiYFmVphseAdDyryUakHUDVx9eU1vR8RcUBxUM11T6txIPvqqg6JoJ7NLhgE
+         FMQxPTHaTvj+3iLhi4Nau+tN/yr/Zn7ffz6xPCvqiEdlGlbieZ0YH8AryalWdjQLvl4q
+         IkKfZLrbArNL0y4iQMnGVt7gkI6rL7CCoRGNlfud9+b0eUjam9LRjSmVK4JFmhMeh8q4
+         O3sx/7laREtJGP3mgmTiClb41cu+N1QcuVvcioz+CiuFVXAK00HEIrEKk4UMt+Z4T0BI
+         aSYUJQkySlpYO3q+6J6C8+zH9tZzupxzgTkyqsLe+HSAWLjCDQ8EefnvPcXbF3WykbX/
+         GU4g==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790975507; x=1791580307; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=google.com; s=20251104; t=1790981149; x=1791585949; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=aTAI7MYZpbnU/agtQxfkMDXpGe2YnzBKn6e+VLjrcQs=;
-        b=nuDcH4WhOYh6+5b80rm+NwPkm6jz+tV0Ti7Q7U5P9xyREJJNGhs8ysG3fPJ2oFd7wD
-         V9LuMByJDpE4dv8+zPR1RUXJTR9i14b4ACUYzLErC6vSSXPPsktNiTJbQu23lxsf7jJ0
-         vu+gO7zyIuUy2cTSBIB1Tv/pLQv4SsIT2B1OZ5KHSi7BSVPkGsE/nDQEOCT3+UuZwj3Z
-         d09Z3ermq0HHJnlZ59ReApp49KYNeglieeSyfYNdxgfEUjgNb35sCTsf6KRHxH74983T
-         dum58uBZ72xIgB8Aqw+JWmyVDbq4ddeEt4aWtRGXUJ78uLIJFcSm1vJaCou+MFSU+28t
-         wv+A==
+        bh=4ethMyS6aCMQkVyOx2GRO0J5eXro8MDvqsE/LBxA2QM=;
+        b=CYx5zdK8ISZvXoHSvY77TBd4xO3bIQJ3VbnA5R+2d8ACnxzxtvMnZ4UaZducvIKBTc
+         +5rQzt53O6ioHq5tAsj/Af9lTOxD1fy1wXz6ku7al3Nau0UuuYRs6UQYGgeB/WwWeulA
+         s4sgfLrhmZYWchaTWPCKvtdrIQ/u5O+GxWaMhpCyX46kKII6zx/aJ9zbtUGxKIABndC+
+         0GaIzsgezA/Qr/27btB7xUSa+HPXSjHlFg+Pp9UzFid+JuNKa3JDfNSO/MXq8b593Tsg
+         9AratuCOa0YnPvo8Z5CzKUq3hRdHHL1MCwcwxZNFpsbGSTpSCPS5q1sotdBRbPMaVycj
+         1f3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790975507; x=1791580307;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1790981149; x=1791585949;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=aTAI7MYZpbnU/agtQxfkMDXpGe2YnzBKn6e+VLjrcQs=;
-        b=L/5hPavsZiGJ0JUcgfMhYFBMHKu348vOHtBQtOd/lNLX5+kIVmlAHtRhyIzd56GaB+
-         Hjojw9hbQtSqWp3LGmXbtFjwiLDpAMc8Snp2zW3X0YoxivxSm4iKOknpLsxH5PLZY4UT
-         6kOOLX2UsSDBPptHb3ctHqsPHrePhHlsn33lCf56scOA3eSbvOpz6+iidOgEi/2cZX3L
-         OW04bywAy85Yg/UpExe80YtI8qsRkgWKzt5dHUSK3RY0hiY3rFHzSSplmqGk9PBDKpfE
-         JXTFgwdqlOkjjeANqrB5dkaRqUvbHeEePjIOWW4FLqbJ7zxOiBuIiBcZuCLwCEAMh3ev
-         2gWg==
-X-Forwarded-Encrypted: i=1; AKwUvByosmElpAHn0PA1RPxSU+MwfnAYH0Ym4VLATWYESOiSK9Pwm6ZOBPV4jPTJZc7E0NvyyTqZPQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYK0IdzWCuegUfhxDUvWGKTpbj1/Yvns0XQRY5fbBgLoDIYFtVvy
-	Ng9DliyaeN8YsO0Yjovr8DbFoFqqt8deu7BjJptNgd3zsjkaOQU+1LKh1YXNElCkIw==
-X-Gm-Gg: AYBFou19k26w6PbFsEs5ctHW0ePrAAFALcFKRNBU9nQ1mmpMXunN3dyS4Vy7i1uWIdG
-	jZsXZJ/hyBfjYJ9ehhZLBf6A+JQjrFIUPDOoswrZURONA6ZwrqCnULb5xhlYYbzQC/8qhrqDT4Z
-	j485jfAeQvVy0Jj3MGSrQnQFgTKXnfVSPRw3W+9rejAlT0yEdBzTzM1LDD5wMSzC44+ePiklJ8h
-	SAcV3OYcArZCNj3wLv5jrg7fjCqCCLX8kJ+jNUHk/XSASYObJ8pXnvIXtxK7pawE1ZkTjJVoMsI
-	qANW6Geesjj3jrnIDqty7jT60mQa/Aul1Mv4BEOFXMWbz4qQV7fo0wDqbh5x7tBM2v2Q8h58Eb/
-	W2yhfNsUrlomFwUetq9F7gOsQPgPwuabbcmFF5bC+DUmDK0Skh8tV1KhPkaPafA0NZe9hk3w0zd
-	K1k/MeNnl9NEHxX7377Q2lIKj+sXJG1OAnrdTaCQdpH8tjjOV6aW/VPEhmfZi+X7PTY65cWeOWF
-	qZTZtODLHiZoEgkyd/qGjIO+XKy13IAyBb8
-X-Received: by 2002:a17:903:b8c:b0:2bd:3bfd:74f1 with SMTP id d9443c01a7336-2e53091f83bmr1274215ad.2.1790975506423;
-        Fri, 02 Oct 2026 14:11:46 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3a78e497230sm39218a91.11.2026.10.02.14.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 14:11:45 -0700 (PDT)
-Date: Fri, 2 Oct 2026 21:11:39 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rafael@kernel.org,
-	Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev
-Subject: Re: [PATCH v11 11/16] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
- gate CMDQ submissions
-Message-ID: <asAeCz_rmpe5hbsh@google.com>
-References: <20260929034510.2023173-1-praan@google.com>
- <20260929034510.2023173-12-praan@google.com>
- <ar1yNtr7Kp2OTcDd@nvidia.com>
- <ar3yWUmi8E0k37Ml@google.com>
- <ar6gY9grmdMZcN/M@nvidia.com>
- <20261002164748.GD3481470@ziepe.ca>
+        bh=4ethMyS6aCMQkVyOx2GRO0J5eXro8MDvqsE/LBxA2QM=;
+        b=EUt2WU8Lj2jy91G13WoXv3Vb7s9Q4m/E8ZB9Aflbqr4gB6/sFWaZokPBSWi5WHVqet
+         SjIxB3M0+dqvMFjCk+KsD2RDfnGlcbQ5wce1YWjdh9CCsBQ+pKCM9GbaM5hDDa/sm2Zn
+         +S6wXOkR9CWDDniuY3aMS0k6wgcKjnTHOEtOp7KNlUmKSYLEDp6qJEgKplV+CyqFpdOD
+         qst92FUoCpQk1KqNFp5LT3aDOkiLFpInlDUtkqpEaEwW6RFMzlI2A+lAm66EHuzc2ypF
+         51/OteKYpiN6pu9KoOGuC9S3RJKkjzeOu9MUl3mKK+gkiymGoO1uk4s5h6Duym0vpWRi
+         k8Ig==
+X-Gm-Message-State: AFuF++nwgOmCre+6NE+VYfl7HG6s30fEMLz3nWUPOJhRwI0hqxtap6qn
+	HZHM6mW23C4wZTJodfWn15wtGfvhgfNivl3CzjAYvC5ST5GLB0l+9JPeUIGHrXZ8NNHJyhrOrkU
+	3HmyyRy+JeuAq8sC1QBxdHqub+2lmPV4v5d4dvuXi
+X-Gm-Gg: AYBFou00pt5Ov3Vmk/2U4bTqGnzUUyaW1SvEauoGOZtiKpAZ/bEPjYzoJdPjyTbiSm3
+	OihfzJvQgugY6MGOLMFqWNWUxXg2+9MCPLPyTSTXKfCfoMixwJm25Za94ClLaKud6vgV91C2H7T
+	HFFqaU99zg/b5B6ul4UojSkdRTu9sTNivsdmJGswemUrW/mVUevpxsh6fY3TkBHrnFFr+8Kvo1D
+	C8NEOI6FLohcQ+cOeAVXmnsZFOeBHHE2SNDd8/kFsbESrZSXQIxl7jo9M2fWdr0TXK6PcT2+vIo
+	9R6rI+oSR0F6JtloWG1uR3ZtUwbRMQdR3vHVcaP+lEbFBCeAc67t
+X-Received: by 2002:ac8:5a94:0:b0:531:16a:5a3d with SMTP id
+ d75a77b69052e-535149262fcmr842331cf.12.1790981147901; Fri, 02 Oct 2026
+ 15:45:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261002164748.GD3481470@ziepe.ca>
+References: <20260929032229.3532247-1-danielmentz@google.com> <CAFgf54p=0wy9vAJKf8U_B9r27Z8UfqoNCXCeMDPdVETK9m5kAQ@mail.gmail.com>
+In-Reply-To: <CAFgf54p=0wy9vAJKf8U_B9r27Z8UfqoNCXCeMDPdVETK9m5kAQ@mail.gmail.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Fri, 2 Oct 2026 15:45:36 -0700
+X-Gm-Features: AclHuK9C1mykAPGW2LozKJaWwIrPicnc-cAJAcON6rNq9TejSYBgxUBDdZwGJ74
+Message-ID: <CAE2F3rACz6Z7X3NNfLWEfjTD9K9YJyYHHyGzcBafEemTFGhgqQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Align memory attributes for
+ SMMU-originated accesses
+To: Mostafa Saleh <smostafa@google.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, dawei.li@linux.dev, 
+	Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Oct 02, 2026 at 01:47:48PM -0300, Jason Gunthorpe wrote:
-> On Thu, Oct 01, 2026 at 11:03:15AM -0700, Nicolin Chen wrote:
-> 
-> > > So we can't issue ATC_INVs during suspend (the EP is already down), nor
-> > > during resume (the SMMU resumes *before* the EP is made active). The EP
-> > > can't use its ATC while suspended, and if it loses power/resets on the
-> > > way back to D0 (from D3cold, or D3hot with No_Soft_Reset=0), it comes 
-> > > back with an empty ATC.. same assumption the PCI reset path makes today
-> > > (pci_dev_reset_iommu_prepare()).
-> > 
-> > In that case, would the STOP flag be too late? It's only set in
-> > the middle of the SMMU suspend. So, an ATC command (via doamin
-> > invalidation) might be issued prior to the Point of Commitment,
-> > which will be timed out due to the unresponding EP?
-> 
-> How can you ever fix that?
+Hi Mostafa,
 
-The unfortunate reality is that this gap exists in the kernel even
-today.. upstream SMMUv3 has no RPM, so it's always on, while the EPs can
-runtime suspend independently. So an ATC_INV can already be issued to
-an EP that has suspended. I'd argue RPM improves this slightly, since
-once the STOP flag is set everything is elided, so the window closes at
-SMMU suspend instead of never.
+On Thu, Oct 1, 2026 at 2:22=E2=80=AFAM Mostafa Saleh <smostafa@google.com> =
+wrote:
+> A similar patch was posted previously, and Robin highlighted the
+> reasoning for keeping it as is:
+> https://lore.kernel.org/linux-iommu/c25309d1-0424-495e-82af-d025b3e6d8c8@=
+arm.com/
+>
+> It'd be great to highlight any changes since then.
 
-> 
-> How does power management really work, is it expected that the end
-> device is already quieted by its driver?
-> 
+Thanks for the pointer. I wasn't previously aware of that email thread.
+Having read through the full discussion now, I don't think Dawei Li's
+patch was rejected on principle, nor did Robin argue that the driver
+should keep programming Write-Back attributes for non-coherent SMMUs:
 
-Yes, power management would topo-sort all dependencies and invoke
-suspend callbacks accordingly, i.e. in our case the suspend callbacks of
-all SMMU clients would be called before the SMMU's suspend callback.
+1. In that message, Robin was explaining why the existing code happened
+   to work in practice on common AXI implementations ("the Normal
+   Cacheable attribute will inherently degrade to a non-snooping (and
+   thus effectively Normal Non-Cacheable) one, as that's essentially
+   what AXI will do in practice"), and pushing back against the Fixes: /
+   stable tags and against abusing firmware COHACC overrides to operate
+   a coherent SMMU non-coherently.
 
-> Could the first step in power management install a blocked STE? Then
-> we don't have to worry about ATC desync and that automatically stops
-> generating new ATC invalidations if we go and detact the domains too
-> 
+   In his follow-up reply in the same thread [1], Robin clarified:
 
-Partially.. at SMMU suspend we set GBPA to abort and clear SMMUEN, so
-nothing gets through while the SMMU is off. But that's global and only
-happens after all EPs are down, it doesn't stop ATC_INVs in the window
-Nicolin pointed out.
+   "Oh, I'm not saying that we *shouldn't* set our attributes more
+   exactly - this would still be needed for doing things the "right"
+   way too - I just want to be very clear on the reasons why."
 
-One way to ensure the ATC state is relying on the PCIe spec to lose ATC
-content during D0 entry from D3cold, or D3hot with No_Soft_Reset=0). 
+   Will also noted in the same thread [2]:
 
-Another way to enforce this, is to *somehow* ask the endpoint drivers
-disable ATS during *their* suspend, i.e. in the EP's driver's suspend
-they could call pci_disable_ats or a better suited helper from pci core
-and the in the pm_resume / rpm_resume they could call it's equivalent 
-pci_enable_ats, counterpart ensuring a clean ATS state. Or maybe the 
-pci_dev_reset_iommu_prepare/done() pair (with slight refactoring) in EP's
-suspend/resume?
+   "I'm not against being more careful about the memory attributes used
+   by the non-coherent walker..."
 
-I could mention this explicitly in some comments or dev_warn if any of
-the masters have ATS state as ON during suspend?
+   Dawei agreed to address the review feedback (such as dropping the
+   unnecessary Q_BASE_RWA / STRTAB_BASE_RA changes, since allocation
+   hints are ignored when Non-Cacheable is configured per IHI 0070
+   section 6.3.11), and simply never sent a v2.
 
-LMK what you guys think of that?
+2. More importantly, Robin's observation about AXI degrading Normal
+   Cacheable to non-snooping is based on the behavior of common
+   implementations, not on the Arm SMMUv3 Architecture Specification
+   (ARM IHI 0070).
 
-> Maybe I'm wondering if power management should involve the core code
-> so it detaches all the domains from the device, setups up blocking and
-> then the iommu itself could power ofF?
+   Under ARM IHI 0070 section 3.15 ("Coherency considerations and memory
+   access types"):
 
-I'm slightly against the blocking domain attach because it's a
-reasonable ask for the client drivers to be able to dma_map / unmap when
-they're suspended, given that most of the modern IOMMU state is
-in-memory and the only HW state is some sort of TLB/ATC maintenance. We
-can map/unmap when the IOMMU is off and just ensure a clean cache state.
+   "ARM expects that this be IO-coherent access to normal shared memory,
+   but in implementations that cannot support cache coherency, this
+   might be non-cached access. ... The degree to which the different
+   memory access types and attributes are supported is IMPLEMENTATION
+   DEFINED."
 
-Drivers often want to pre-map everything, power ON just to run their
-workload, power off and then unmap. 
+   Furthermore, section 6.3.11 ("SMMU_CR1") and section 13.1.2
+   ("Attribute support") explicitly permit an SMMU and memory system to
+   reject unsupported memory attributes with an External Abort:
 
-That said, I agree it would be nice to have the core code handle power
-management, which can be one of the next steps. (it would be complicated
-to see how or what each IOMMU might have to handle for power mangement
-in a generic way). 
+   "Where an SMMU and the memory system support only a subset of memory
+   types, and where access to an unsupported type can be reported to the
+   SMMU, the SMMU will record an external abort for the cause of the
+   access in question in the architected manner."
 
-> Jason
+   Section 13.1.2 specifically lists the resulting faults for
+   SMMU-originated accesses using unsupported memory types:
+   - STE fetch: F_STE_FETCH
+   - CD fetch: F_CD_FETCH
+   - Command queue read: GERROR.CMDQ_ERR and CERROR_ABT
+   - Event queue access: GERROR.EVENTQ_ABT_ERR
+   - PRI queue access: GERROR.PRIQ_ABT_ERR
+   - Translation table walk: F_WALK_EABT
+
+   Therefore, a non-coherent SMMUv3 implementation (SMMU_IDR0.COHACC =3D=3D=
+ 0)
+   where every SMMU-originated access configured with Normal Write-Back,
+   Inner Shareable attributes fails and records an External Abort is
+   completely architecturally compliant, yet unsupported by the current
+   arm-smmu-v3 driver.
+
+3. Finally, the Arm Architecture Reference Manual (ARM DDI 0487, section
+   B2.8 "Mismatched memory attributes") explicitly warns against
+   accessing the same memory location with mismatched attributes across
+   agents:
+
+   "There might be a loss of coherency when multiple agents attempt to
+   access a memory Location [with mismatched memory attributes]."
+
+   On a non-coherent SMMU, stream tables, CD tables, and queues are
+   allocated via dma_alloc_coherent() / dmam_alloc_coherent(), which
+   maps them as Normal Non-Cacheable on the CPU. Programming the SMMU to
+   access those same buffers as Normal Write-Back, Inner Shareable
+   creates mismatched memory attributes between the CPU and the SMMU.
+
+   We already avoid this for Stage 1 and Stage 2 translation table walks
+   in io-pgtable-arm by selecting Non-Cacheable, Outer Shareable when
+   !coherent_walk. This patch simply brings SMMU_CR1 and
+   STE.{S1CIR,S1COR,S1CSH} into compliance with the same rule.
+
+[1] https://lore.kernel.org/linux-iommu/f253d6aa-1dc2-4b1a-85df-f43b06719c0=
+4@arm.com/
+[2] https://lore.kernel.org/linux-iommu/aW9xs1ko3nWq5VbS@willie-the-truck/
 
 Thanks,
-Praan
+Daniel
