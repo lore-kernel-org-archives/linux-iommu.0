@@ -1,364 +1,159 @@
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013033.outbound.protection.outlook.com [40.107.201.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0EA63C3F5D
-	for <iommu@lists.linux.dev>; Thu,  1 Oct 2026 23:21:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.200
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790896910; cv=none; b=VQR4VEIZot9LfCCTKe+aW/1f8mQJ7Yfy89Seu2TNcDh/lVuqPef2y4MsNJHDFcVoqDIuAxUfld+LYoav+s/Y4XRgRAL3V6UqDBBwlXk/B4vtiGGG++avMhDp5x2USY6UqSbzq6WTOjz0jbYw57H5fXVSCSt9Fh7T44HNUMfMgjY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790896910; c=relaxed/simple;
-	bh=CAQJ4AH9ck0dNustqMu2MOb79P0N7gK3NmW0EHyVxR8=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=rzdLR5LdPyMi0J2FPbMrcO31a4thcvLYKQmM49Rqp1wgda27BfaGWbfylZw19vZlmUUdL1E8yXDnAssIxrVlN2Plp9AsoPpGONKl/3G8iSOeTiyYzuqAPPJ2IQn/rVjAXPUIcQk1T0j3argGoGwFa8ttRY9hXzQqLWnMeOL5NLM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Ku2bf+Hg; arc=none smtp.client-ip=209.85.214.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D0E53546C0
+	for <iommu@lists.linux.dev>; Fri,  2 Oct 2026 03:45:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.33
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790912724; cv=fail; b=nYU4vhJEPGTbmuKU9oXfJm2Nb5WX6UnJ7LG617pR/unBUuitX//RXCfPZBfWrIS4AW9RAZnJhXGS8w6wIOYevAVSytLRsmaltyc6fIgykHjDvHrwgP4aliPkWco35+zRYbwvIYdEuBs5f6xfrR79wJfj9q43PGOfUwlky78WUAg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790912724; c=relaxed/simple;
+	bh=2Rzqk5YYAM42LTRagSfD8P1lze2KbrabSuD50kRCHaY=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=D+3lLR/bys5nbRdcGPh3ltfhZMVjQBKLFa71vuow6i/nnpYLNgrO6ukXNNlrI4vuO9UKb8Vnn/aF3CU79ngkhGX4Aq9wmhNQhFUBLpO4Y5/K3fFCn9G3zLLOqCNLa2KkVvIikhHZP5oSgRVts5ju178gpWhe3FtbUJttRda5Umw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=XgXWPtQb; arc=fail smtp.client-ip=40.107.201.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ku2bf+Hg"
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2d001671a54so70721965ad.2
-        for <iommu@lists.linux.dev>; Thu, 01 Oct 2026 16:21:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790896907; x=1791501707; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=bH2Pq1q5pIyFrXqiHygcqwFBcPzQ4OFyA1DBLvgDPs4=;
-        b=Ku2bf+Hg+WhsNW9hCiA64+DRnjo1kHpAr/tSMJDgIxsUFfsrXoEAcXS/N/tLchcfgG
-         5jpV7QbmSpt9aQeJPqA0xWDZy8DSIkXIAH0AykHmaN2X69dyQzf+rhf8iuMMQMneJD3r
-         ig+t6VM40QJSuhNm7hpIzno/wapJMTyM3gbMojAp32UrqhwA5V4cbQ1w5Ztr04H/nLZC
-         WJq5Trd7h8KHr+8tlNkEix78/hGKftjybEMPwIYsIsljeq6JpsXG0/69oe5n1S3hMmQf
-         vKkNYfRDseM6EPMJFaKCCz8dsL1oCXu/0C7tipYu+EkfA2CYCmwhknCue5VRQlYJvAky
-         c2nQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790896907; x=1791501707;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=bH2Pq1q5pIyFrXqiHygcqwFBcPzQ4OFyA1DBLvgDPs4=;
-        b=MQqhUucDtKZGDxPk+cWeRHlpQygpo0ZFJPjqQTx6amcDgzXU1pZTCT7Ys22SvHvEuN
-         DPiEWXpd8VzGocTWVgNYVKr+Ak34LmkKQ7urkv6xdI8cryUw0YXInRS8SwUfoEc438A7
-         XzfAWBOOhjMKkVKRZl5PPKbkdiyuLZdOpp737reqFMWqD/oazI6QyJ+vqW2gos5q4aaf
-         PlGCbaKOcFiPywmHADx3ZiRcfNXOKRsJP4N11tN3BZ29WM+L0y9gSsqXV5KX8xiSSCiU
-         4NiD5rC5zR45BhkwLUYUyPkzLwrGSzrgSa9rF/Amz2yNqHpK01RlLo0vw4pvLEXvMm8d
-         npFg==
-X-Forwarded-Encrypted: i=1; AKwUvBytYBHTYccms8feZIKFieMlpAXCueqYuJCj09m6Vsw5Cay4XcpReih5Q2MvXmbHKebySn51tQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLzxxyfR6SAcubEEJnZRs/Om+FNs0O9R042RK1Qz6gmQf4kgv0j
-	QAQi3VsnoQ7PWDF2ZZNNsQqQDWTmFcSoyVkcB/oWEmaTEDmAKPBTTLj/SymXZ2nECean3zK8/yk
-	lSTV327tvFu67aA==
-X-Received: from pldv20.prod.google.com ([2002:a17:902:ca94:b0:2e2:f25a:7b5])
- (user=dmatlack job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:902:e807:b0:2dd:ad74:6d16 with SMTP id d9443c01a7336-2e49b6add39mr7150245ad.28.1790896906728;
- Thu, 01 Oct 2026 16:21:46 -0700 (PDT)
-Date: Thu,  1 Oct 2026 23:21:07 +0000
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="XgXWPtQb"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xKmxBZbM3K125gGivTyUQq8oZXSE0S1+5cklnYUyrVl/V9UAD5A5hlTEc38osVfI9Xq58dB8nojOAEmDbU77kcaehmyY+r4DQKMo+QAQ6rkwB6JXHr/D8JDv4EGj3U/VZADB0vhN8pqFLiH4aP67LPCTBOCbdONQthOmJuTLwgRlbHgl+4OCq4+3jlxaWsjPt/IzwflUH2TfqTjQImvm6ejcqZJkEp49PXvlvWIAGVPE3UOwvEfstGU26ZeHv1WB2KCjI+37pBoiaaTLwnq6gqlf0tBvcd/BWXqhq3TGkM+jhDyGosjNf4YwxHEwOsQZ1mbjY0/tEbC8NZ5qDeP9UA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gOw0UB9iFDf8BCSyQ/SVNJD/5hN2YPyarozK4u8dqUc=;
+ b=UiL3ceb8PPzuxwUoAQH5Guj6htVsbf0+2pZ/yaE6oMrghkEXWP3kvL6X8CQcWvVubDVayba3wwfJoYWf6q1XIhgH92gioO45aH2Svu7ZRC3xW61gRKm5yy56l78plQqzpxwbWGjjxchhVrPGAeYMW8YIGSyMgUChHSZOdwuDnHJ9ePpuVJuRK4c62wIOAmk9K+mJMiO6nhnqUXZqwlPGDsDFqJb5jE+vL5CXJ3X5WCa2z01fhPmde+Fsoip4fZn6D2XsXcrzcRKkTi/Zd2qyY35WpQ8haKvJYjUBAU7ktCYseDvtpC/+Snoc9aXJjwFw4Y/vqlVk5lIOZn0KZ2pBow==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gOw0UB9iFDf8BCSyQ/SVNJD/5hN2YPyarozK4u8dqUc=;
+ b=XgXWPtQbhL+jQXbbD5EDtB7Dxx1eCEdwNCUxL47QatWHibRFpXzrVA2FgBkicwuDU1WX1hqvjh9zM6s2OsD0BzuM3r/IOdCilMEwUBHvz/ftj5w9dOuKWhOtCAQ+w1wWJBPXbpuyrzo3nDgcbiWrq7bdyooZV7GnNWiBGmVOwH4=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by PH8PR12MB6820.namprd12.prod.outlook.com (2603:10b6:510:1cb::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.16; Fri, 2 Oct
+ 2026 03:45:13 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0451.022; Fri, 2 Oct 2026
+ 03:45:08 +0000
+Message-ID: <d4634df4-ab32-46df-8b05-665998959e43@amd.com>
+Date: Fri, 2 Oct 2026 09:14:59 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4] iommu/amd: Make PerfOpt compulsory
+To: "Mario Limonciello (AMD)" <superm1@kernel.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Alex Deucher <alexander.deucher@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ "open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux.dev>
+References: <20261001182410.1525285-1-superm1@kernel.org>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20261001182410.1525285-1-superm1@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0224.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:ea::19) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261001232133.560284-1-dmatlack@google.com>
-Subject: RFC: PCI core Live Update Roadmap
-From: David Matlack <dmatlack@google.com>
-To: linux-pci@vger.kernel.org
-Cc: David Matlack <dmatlack@google.com>, Bjorn Helgaas <bhelgaas@google.com>, 
-	Alex Williamson <alex@shazbot.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Lukas Wunner <lukas@wunner.de>, 
-	Logan Gunthorpe <logang@deltatee.com>, 
-	"=?UTF-8?q?Ilpo=20J=C3=A4rvinen?=" <ilpo.jarvinen@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Samiullah Khawaja <skhawaja@google.com>, Vipin Sharma <vipinsh@google.com>, 
-	Pranjal Shrivastava <praan@google.com>, kexec@lists.infradead.org, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|PH8PR12MB6820:EE_
+X-MS-Office365-Filtering-Correlation-Id: bf29b6a1-e70b-4f0a-ea52-08df20378d6e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|11063799006|56012099006|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	Y2kfK73lDm7dekdWMd1jVe9Z/Ci0LCeARX/8tuLuQp5CSJP1hZ9K0BlE41LHVGK77+1dPxoGo4dM/XVescIsk6VnY5YUiqCmCDPnpb0Cbou4d//sXjSy0lSsZp2QpsLYwll9NmIt3jmj3JLvI4ZMPeWxE+JSj2D1qvhTLD0cGkwccA9BAw0et9fqa6w6PpEymB0/UYMoPsOgDh26v/lUeY7Xj0F0U+zqvsU0Dsm4oaH3ymk14cj/z/ZbjhqcP2CZD5yzt3kOtAUexdgI7nKLVmW2SI8qc640iemyakBs2a3Dl55ST+ISZkzXD05E4xoQf834chEODHF4gY5AKBc7d3XGg03IuYRpc723A1Kk1ZyBrx6+lIXvURnkBl8Q5V4Q7CqDFRx1qMLXyJrVwNZm7fODD5emw7f58YumwkjXNjEn7xyg1Mv2W4cshdHi19fCt1XJP4IbmmPYtjCuKwumqI1QdqVMRk97kH26t63NbAFOwk9rRzjJJ6TJYRriijfSWyA1AJ2QTCDm3/0PjZ3Vo1HUq1aEpFBALHA43IKGBqQ/24ZhBRvDNXx6L5/NaZ+MYFww1zSCQ7mhLodqzA+uEq2K/h/qfxzpIc8iv9q50ug2Hu3Wy69VkzLyjhEs7R01gbWwPJNP51gNBB8MJdKix6vGlw1JJeqo3GnrqBW/+nc=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(11063799006)(56012099006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bGpDNUVRSVpkVi91NGpsQ0FGWDNLOUplMWVBTEE0aDVLT2NRN1JwN084YkVG?=
+ =?utf-8?B?L0paYWhPamJNZ1hvMzdSRS8wQy9jS1Z3eXZIUklUL001RDVxd05wUXR3M2RB?=
+ =?utf-8?B?MnBCVG4wOEZDOWx5Q0MzdTNVSWlQdko3UU1sam9qOC85WTBwQllKUWttdmVD?=
+ =?utf-8?B?dENqbTVCUk5ocytZYlk3L3hzdGhySzBYbUNYNGk5OXcwR0VJK2R2ZXFLdWhD?=
+ =?utf-8?B?WkxlVlhtM25rSTIwenhTZDBKT3p6SXhicC9zNlpvSHNjeTJXd1QrQWZMeVZv?=
+ =?utf-8?B?NXhVdHI4R3dEOFJ4bk5SVzRTR3JlWjVYVkhsc1JpN0xDcGtBVFFsd2lEMFhB?=
+ =?utf-8?B?ZXBnKzc4YzQ5M0E3STMrTWZLWGsrc3ZkQ1lldHVCN2dUS3FqRTZqN1poTnZP?=
+ =?utf-8?B?YTArNEZleFZGbUpiZzRHL0N6SVNSUkIxZ2tFRDhWU3BHVFZEZWJXSUw5UEFF?=
+ =?utf-8?B?MXpmZFU1cUxnZmlDZGZqU3Z6V29tYkJIUWs1bDlidXh5cXp4YVMrZzFZYTUw?=
+ =?utf-8?B?TktrTEVaWlJPZU1lc0VLQjJNZG9xTDlGUzBQT2xwaWkwVEdaWnE0YmdPZytx?=
+ =?utf-8?B?SzBselRLTHRxZUIxMVY0VWpWa21EdmF2MGVXOW0rMkhHS2lFWUl4TmZ1VUJX?=
+ =?utf-8?B?TWMvMmVIV2luOCtuUnI1ZS9pY3lER21kY1o1TDIvZDJURTlqME05MXVkWCtF?=
+ =?utf-8?B?L1VVT1lHa1RNUklnSG9pMGdobTQvNEgwMHBIN3dlZnZsOHprekN2N3ZISFR4?=
+ =?utf-8?B?ekRwYkhqOFJWWVVta3J0YVQ1NkhhVk84ZEZ3TkxpWEQxNEJ6SUE5Vjc4WjVz?=
+ =?utf-8?B?bEJRbDM0akZVQVpWbHR4QzRBY2tJUks0ZlJsTHRTd1JvbnpGd0V3N1MzbmtS?=
+ =?utf-8?B?T0FsK3lnNjBCQWVQYndnSGpaeWwwVkNJSm15amRwU1o2U1JlZGVzODNYa3FL?=
+ =?utf-8?B?cHplUTF6NUhxSUJ5eG0yYnYwOWZaam1tU1U0eis5b3Jtb1ZDeWY4RWMyVG1D?=
+ =?utf-8?B?aTFtamNkTSt2clVRTGVScEEwa1BBa0EweXB1cFlsa24yQm5zZDErdGFjWU9n?=
+ =?utf-8?B?NkdtanlqT29id1AyRjI5b1pENE5CWTFkOUQ3SXpoNUp3OGZqMk5VZWxxY3Uv?=
+ =?utf-8?B?RE5hVk5DMzM1ZkZRME45RlJTSG55UHNLc0NQcXBONzIwckFIZ2prdWc3Rjdw?=
+ =?utf-8?B?bU1menJ3czFvbmlPSEgrQlZFOEd3b3ZMcnF2dEV4c3NKa2RwMVU2YnNJeXFp?=
+ =?utf-8?B?ejM0YWRIK2NRMEZjZUNhYnQzVk5sUmNUL0lJaXFXZ0NVS25yTUtQYU5Ta082?=
+ =?utf-8?B?dStXK0hRV2JiekVOQjV1K2V2aUFNSkpFVnhjN0hGdzZWY0hCSlBiL2E3Qlpk?=
+ =?utf-8?B?NmsvQjBzeE5rbmpwS2w1dERqTHo1SXRyTWVTT2dMdEQ4V3FKVlhaT3A1ZXVa?=
+ =?utf-8?B?K0lzRWRPWDFIV1Rid1dyWjFLWkhZMDJDN21YVWRSZHVydVF2US9pVndrcko1?=
+ =?utf-8?B?cnlaOWVWZzBXTFdoWjBpbEFEZFdid0dIc0YxM2JhN1hDanFOUFR1VEJGSHor?=
+ =?utf-8?B?cXY5NW5ueVk5a29Pb3hMaVROWFMvVkhwZktnM1RjU1Y1dTg1ODRsS2RLVlZB?=
+ =?utf-8?B?bUUvcTNNbXVGYkt5d3FRT3JzTndoakN5dmlLeU9yMzhTeTBPaEEwcWVIdnZ3?=
+ =?utf-8?B?T2pTOUo1YytBWnFUUGVObG4zQ3BJenVsZzVPaXNBU1RHNEVNUWlxRnNSNENu?=
+ =?utf-8?B?M0kwQjUwNm5ROU9IWFNEMGhEamZ4Q3N0L0RxbkVaNFR0dUpnZk93MkI4YldF?=
+ =?utf-8?B?OWxOanFuK2pLRGFyNnhUTXoxYjNCVlBCSFdRVHVkTU1GRG8zakY3NmdBYzdE?=
+ =?utf-8?B?SjcwTjFseTlQOXpHOGZhVnF4LzRzMEkzYTVrOXVxMVg2b3ZsNGlRWlVzSDMv?=
+ =?utf-8?B?VlRsUmpOZFJTUTQzSzBwUVRXSGh3ZUczNlM2bXdISUFSVDFhckRhR0dDTVND?=
+ =?utf-8?B?ZDI4MTBITU5hWVJaVWpMMXVLZ3hQTE85UUZTaldsb1pHa1hJa0JDQzB3bWpn?=
+ =?utf-8?B?UHBBaEJ4T0E2NFNwNUpQWjR4MFArRWMyNVJSV0Y4SWtEOWZmREMwMEtnNmlz?=
+ =?utf-8?B?eVM5bFk4OFNGVU9EM3VNc3I4bGRHOWMwSXRqZ1IydnN3YWIzVlVUaGhsdU9O?=
+ =?utf-8?B?QXdZbkQ4TnZubjNUalJiTHZ5TWRZVzlIcFFYYk5TY2psbEJneXR0eUd3Q3dw?=
+ =?utf-8?B?bDMzc21DQ0VaakhkZ2tyaDZmTjJDL3lxTGcvcW0vcDE3bFZabnRobTJ3VmV4?=
+ =?utf-8?Q?jF086t2XBPU0JTnMYz?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf29b6a1-e70b-4f0a-ea52-08df20378d6e
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Oct 2026 03:45:08.1462
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NpdhPHZIgXeKJVeYKtTBt1qCZx26uG1wvM9b5c2dvNySmSkPYxO6Ql9coWvWDWzLkWbuQw0/4jnt7jUS+bjvRQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6820
+
+
+
+On 10/1/2026 11:54 PM, Mario Limonciello (AMD) wrote:
+> PerfOpt is only a feature usable by integrated GPUs and only in identity
+> mode.  Instead of leaving a policy knob in amdgpu, just turn it on when
+> an integrated GPU is in identity.
+> 
+> PerfOpt locks the GPU into identity mode where the DTE is ignored, so mark
+> it require_direct (blocks VFIO/iommufd claims) and disable PASID (no GCR3
+> table in the fast path).
+> 
+> This drops quite a bit of compatibility glue.  There was a refcounting
+> system, exported symbols, and device attach/detach logic.  By just setting
+> it immediately it's a lot more straightforward.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Signed-off-by: Mario Limonciello (AMD) <superm1@kernel.org>
+> ---
+> v4:
+>  * Disable PASID for PerfOpt devices
+>  * Don't allow attaching a blocked domain
+
+This will block attaching device to guest via vfio-pci. Is that fine?
+
+-Vasant
 
-Hi all,
-
-Now that the base PCI core support for Live Update has been applied to
-liveupdate.git [1], I wanted to share the plan for the rest of the PCI core
-work, so that reviewers can see what is coming and how the pieces fit
-together.
-
-I was originally going to present this roadmap at LPC next week [2], but
-since there are no immediate blockers, we decided to repurpose the talk to
-cover tmpfs file preservation instead [3]. If anyone would like to discuss
-the roadmap at LPC, please reach out. I would love to talk about it.
-
-As a reminder, the goal of Live Update is to allow the host kernel to be
-updated with kexec while VFIO-assigned PCI devices keep running and keep
-doing DMA to guest memory and P2P to other preserved devices. This work
-aims to get every PCI core change needed for that merged upstream.
-
-This roadmap only covers functional support in the PCI core. Blackout time
-(from VM pause to VM resume) is intentionally out of scope. For preserved
-devices, the PCI core mostly skips work it would normally do (bus number
-and BAR assignment, ACS/ATS/PASID programming), so these changes should not
-add meaningfully to blackout time. Please call out anything in this plan
-that would make blackout time worse or harder to optimize later.
-
-The work is split into six series (five feature series plus one selftests
-series). Each one will be sent and merged on its own. Feedback on the plan,
-the ordering, and the open question in #5 is very welcome.
-
-Overview
-========
-
-  #   Series                              Status             Target
-  --  ----------------------------------  -----------------  ------
-  1   PCI core support for Live Update    v9 applied         7.4
-  2   Index saved capability state by     v1 posted          7.5
-      configuration space offset
-  3   Do not break P2P across             In progress        7.6
-      Live Update
-  4   Adopt ATS and PASID state across    Not yet posted     7.7
-      Live Update
-  5   SR-IOV support across Live Update   Not started        7.8
-  T1  PCI core Live Update selftests      Not started        7.5
-
-Targets are tentative and based on the usual release cadence [4]. The 7.4
-merge window is expected to open in late October 2026, 7.5 in January 2027,
-7.6 in March, 7.7 in May, and 7.8 in July. A series needs to be in
-linux-next by about rc6 of the preceding cycle to make its target.
-
-Dependencies
-============
-
-  LUO FLB refcounting (applied) ---+
-                                   |
-  LUO FLB fixes (applied) ---------+
-                                   |
-                                   v
-                  #1 PCI core support for Live Update
-                                   |
-         +-------------+-----------+-----------+-------------+
-         |             |                       |             |
-         v             v                       v             v
-      #3 P2P     #4 ATS/PASID              #5 SR-IOV   T1 Selftests
-                 (+ IOMMU Live             (+ VFIO PF
-                  Update series)            preservation)
-
-#2 (saved state indexed by config space offset) is an independent PCI
-refactor with no dependency on #1. It is a prerequisite for VFIO carrying
-struct pci_saved_state across Live Update.
-
-Details
-=======
-
-1. PCI core support for Live Update
------------------------------------
-
-Status: v9 [5] was applied to liveupdate.git on Sep 28 [1] and is in
-linux-next, targeting 7.4. Thanks to everyone who reviewed it.
-
-One item from v9 review is still open. Alex pointed out that the ACS Egress
-Control Vector is not saved and restored along with the ACS Control
-register [6]. An updated patch that handles it is in that thread, and it
-will be sent as a follow-up if it turns out to be needed.
-
-This is the base series. It allows preserved PCI devices to keep doing DMA
-to system memory (preserved memfds) across Live Update. Devices can sit
-behind bridges but cannot be VFs, and P2P is not supported yet. The series:
-
-  - Sets up the PCI core FLB handler that carries struct pci_ser across
-    kexec through KHO. The ABI lives in include/linux/kho/abi/pci.h.
-
-  - Adds APIs for drivers to register devices for preservation (outgoing)
-    and lets the PCI core recognize preserved devices during enumeration
-    (incoming).
-
-  - Automatically preserves every upstream bridge of a preserved endpoint,
-    with refcounting.
-
-  - Keeps each preserved device's Requester ID (BDF) the same by inheriting
-    secondary/subordinate bus numbers and ARI Forwarding Enable on
-    preserved bridges.
-
-  - Keeps TLP routing the same by adopting the ACS controls on the path
-    from the endpoint up to the root port. ACS Control is now saved and
-    restored through the normal save/restore path.
-
-  - Freezes preservation status at shutdown and leaves Bus Master Enable on
-    for preserved devices during kexec.
-
-  - Adds Documentation/PCI/liveupdate.rst describing what the PCI core,
-    drivers, and userspace are each responsible for.
-
-Size: 17 files, about 1.4k lines added (mostly the new
-drivers/pci/liveupdate.c).
-
-History: v1 was posted in November 2025 together with the VFIO changes [7].
-The PCI core changes were split out into their own series in v4 (April
-2026) [8].
-
-2. Index saved capability state by configuration space offset
--------------------------------------------------------------
-
-Status: v1 [9] (15 patches) was posted on Sep 24 and is waiting for review.
-It is intended to go through pci.git and has no dependency on #1.
-
-Why: VFIO saves a device's state with pci_store_saved_state() on first open
-and restores it with pci_load_and_free_saved_state() on last close. A Live
-Update can happen between those two calls. Today struct pci_saved_state
-cannot be handed to the next kernel, because its layout depends on the
-kernel that wrote it (which capabilities are recorded, how big each record
-is, what each word means). The receiving kernel has no way to check it
-against the device in front of it.
-
-What: Replace the per-capability save buffers with a single per-device
-store indexed by config space offset (new drivers/pci/saved-caps.c), and
-lay out struct pci_saved_state the same way: a bitmap of saved DWORDs plus
-their values. The format of the blob then comes from the hardware rather
-than the kernel version, so any kernel can check it.
-
-Side benefits:
-
-  - One saved-state allocation per device instead of up to nine separate
-    ones. The one remaining allocation failure is reported (AER, DPC, PTM,
-    and TPH used to ignore allocation failures).
-
-  - Removes fragile save/restore ordering that relied on running buffer
-    cursors. Restore routines now name registers by offset.
-
-  - Saves 32 to 160 bytes per device, and fixes a possible unaligned access
-    in pci_load_saved_state().
-
-Size: 13 files, +680/-621. The series is bisect-safe and converts one
-capability per patch, so feedback on one capability does not have to hold
-up review of the rest.
-
-Follow-on work (not part of this series): Serializing struct
-pci_saved_state across Live Update (a KHO ABI definition in
-include/linux/kho/abi/ plus serialize/deserialize routines) will be part of
-the VFIO Live Update work rather than a separate PCI core series. It builds
-on the offset-indexed layout from this series. Separately, the remaining
-saved-state allocation failure should be made fatal to device setup.
-
-3. Do not break P2P across Live Update
---------------------------------------
-
-Status: In progress, not yet posted.
-
-Scope: This series only ensures that the PCI core does not break ongoing
-P2P between preserved devices across Live Update, e.g. by changing BAR
-addresses. Actually supporting P2P across Live Update will also require
-work in VFIO and a story around preserving dma-bufs.
-
-Why: Preserved devices may be doing peer-to-peer DMA to each other
-throughout the Live Update, e.g. device-to-device traffic between
-VFIO-assigned devices in a VM. That traffic breaks if the next kernel
-changes BAR addresses or bridge windows during enumeration. Independent of
-P2P, VFIO also needs stable BAR addresses so that it can safely preserve
-the rbar field in struct vfio_pci_core_device.
-
-Approach: This touches PCI resource code (preserve_config, BAR sizing). The
-new behavior will be limited to incoming preserved devices, so that boots
-without Live Update are unaffected, and existing mechanisms such as
-preserve_config will be reused rather than adding new ones.
-
-Dependencies: #1 and the LUO FLB fixes (applied).
-
-Next steps: Rebase onto the applied base series and post an RFC, so that
-review of the resource assignment changes can overlap with #1 soaking in
-linux-next. Early feedback on the approach from Bjorn and the PCI resource
-reviewers would be much appreciated.
-
-4. Adopt ATS and PASID state across Live Update
------------------------------------------------
-
-Status: Patches written, not yet posted.
-
-Why: Turning ATS or PASID on or off while a device is doing DMA is unsafe.
-Enabling ATS is not atomic (the IOMMU context entry and the endpoint's ATS
-Control register are separate), and disabling ATS without quiescing DMA can
-leave stale ATC translations behind, which risks silent memory corruption.
-For preserved devices the kernel must adopt the existing hardware state
-instead of reprogramming it.
-
-Dependencies: #1. Samiullah's IOMMU Live Update series [10] also needs to
-land for this to be useful end to end, since the IOMMU driver is what calls
-into ATS/PASID enablement. The plan is to post #4 once the IOMMU series has
-settled (targeting 7.7, with 7.6 as a stretch), and to agree on the
-ATS/PASID adoption interface with Samiullah ahead of time. Alternatively,
-these PCI core patches may be folded into a larger IOMMU series from
-Samiullah that handles ATS and PASID end to end.
-
-5. SR-IOV support across Live Update
-------------------------------------
-
-Status: Not started.
-
-Why: VFs assigned to VMs through VFIO need to survive Live Update. That
-means preserving the parent PF's SR-IOV configuration (NumVFs, VF Enable,
-VF BARs, etc.) and enumerating the VFs after kexec without resetting or
-reconfiguring them.
-
-Scope: Userspace must explicitly preserve a PF for a VF to be preserved.
-Unlike upstream bridges, the PCI core will not automatically preserve the
-PF of a preserved VF. The PF must be explicitly preserved by its driver.
-
-Expected work:
-
-  - Remove the base series' restriction against preserving VFs.
-
-  - Preserve and adopt the PF's SR-IOV capability state instead of
-    reprogramming it on the incoming side.
-
-  - Enumerate VFs on the incoming side while keeping their Requester IDs
-    and BARs unchanged (builds on the bus number and BAR work in #1 and
-    #3).
-
-Open question: When should the VFs be enumerated on the incoming side? The
-PCI core has enough information to enumerate them during the initial bus
-scan, but userspace may prefer to trigger enumeration itself after
-disabling VF autoprobe (sriov_drivers_autoprobe).
-
-Dependencies: #1 and VFIO PF preservation support.
-
-T1. PCI core Live Update selftests
-----------------------------------
-
-Status: Not started.
-
-Why: PCI core support for Live Update is currently tested by applying the
-VFIO series [11] on top and running the VFIO Live Update selftests. That
-works for basic sanity testing, but it will make it harder to test new PCI
-core features that need to land ahead of their VFIO counterparts. Adding
-PCI core specific tests under tools/testing/selftests/liveupdate would make
-PCI core development less coupled to VFIO. That requires a test driver,
-provided by the selftests, that can preserve devices without VFIO.
-
-Dependencies: #1.
-
-Related work outside the PCI core
-=================================
-
-  - LUO: Refcounting for incoming FLB [12]. Applied in May. Needed by #1,
-    #3, and #5.
-
-  - LUO: FLB fixes, outgoing refcounting, and preventing multiple retrieve
-    [13]. Applied in July. Needed by #1, #3, and #5.
-
-  - Vipin's VFIO PCI Live Update series (v5) [11]. Under review. The main
-    user of #1, and a future user of #2 (saved state) and #5 (PF/VF).
-
-  - Samiullah's IOMMU Live Update series (v5) [10]. Posted on Sep 21.
-    Needed end to end for DMA through the IOMMU. Pairs with #4.
-
-  - LUO file dependencies (Samiullah). LPC talk planned. Needed for
-    VFIO/iommufd ordering and for PF/VF dependencies (#5).
-
-Thanks,
-David
-
-[1] https://lore.kernel.org/linux-pci/179061032462.173069.6066907606098407222.b4-ty@b4/
-[2] https://lpc.events/event/20/contributions/2618/
-[3] https://lore.kernel.org/kexec/20260925143000.2729890-1-pasha.tatashin@soleen.com/
-[4] https://deb.tandrin.de/phb-crystal-ball.htm
-[5] https://lore.kernel.org/linux-pci/20260918200640.887030-1-dmatlack@google.com/
-[6] https://lore.kernel.org/linux-pci/20260918191846.2f68b23b@shazbot.org/
-[7] https://lore.kernel.org/kvm/20251126193608.2678510-1-dmatlack@google.com/
-[8] https://lore.kernel.org/linux-pci/20260423212316.3431746-1-dmatlack@google.com/
-[9] https://lore.kernel.org/linux-pci/20260924173501.856380-1-dmatlack@google.com/
-[10] https://lore.kernel.org/linux-iommu/20260921004834.2601285-1-skhawaja@google.com/
-[11] https://lore.kernel.org/kvm/20260714151505.3466855-1-vipinsh@google.com/
-[12] https://lore.kernel.org/lkml/177766042304.401635.6805828117822344063.b4-ty@soleen.com/
-[13] https://lore.kernel.org/kexec/178448096578.306041.16503153363800577876.b4-ty@b4/
