@@ -1,64 +1,59 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA20B37DE8D;
-	Fri,  2 Oct 2026 16:46:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18C5037DE8D;
+	Fri,  2 Oct 2026 16:47:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790959616; cv=none; b=MBH0Ab88f2mQjGRl2YqE7MTNaj//09KC51UlHD980y6xdtZU0jAUUbhNyTFpSmNLMyZ4DIdnM639vH3gpCvTsHu5LZDfy9SlTbmjSBrC6r2oH5w7K6/T51hV+5EzaujGkE86dCMSPRGv2mcd6NugZzHiMcXTFLKwXXkRWv3iX54=
+	t=1790959621; cv=none; b=ND5tI3MhwhQLRMv+HtoQ5zbFTxchDq0mToJU6aSAINqnah9AE/NpkGOpQj+KjtMpXjo/F7evZOyklXT+/ao2Au9Ewi7Lx8cP1VjKxpZMHvuFChS7gUcdn4ifSqQRi2VI8dnXs0kzIoy1ueAf+ydJTxg7xJXad1Hc7CRT8PYeHV8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790959616; c=relaxed/simple;
-	bh=kIO15s4RFEZL8Yq+ihwrnHsCzSxNGPQ0MfJIp2HTffQ=;
+	s=arc-20240116; t=1790959621; c=relaxed/simple;
+	bh=Ak9YuvUZ4Q42MkX93DtuSJR5MmuDUyFag5+CHZ/hCHk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZhU6/+MTGm0+E1pxkYzpeFIgAJDCppv5Dn3NV/I5A5Lh9Sb+RT7QIJrEpNWGAShkUESWJ3bpejRNHdcuGgaxzXjDjwU/YxVWiS2ScSap1LigfQ5vLzygd12DTSnihcShzyAYAIfHtZ3rgQ8dOxaA/MLM5eGMPZN5POiM3UgE9Rw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gptaoozJ; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=OYWcQklFZsQYZPWfG8SN4jyDwpfgzy56yKuI+bHignPKJZhpSk4Ym7AG8pKxiHZXjnlNnWrguWbTEs9VtIhy2s42WpMjtA16EOdQlOzMJxqGzVV0wZsx56xATUPVUJf1d3pPIsYZTTdexUD8Lfaa2xj1XBgLy9ytrzY8oOlsaEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DAFy5SyA; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gptaoozJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 948431F00893;
-	Fri,  2 Oct 2026 16:46:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DAFy5SyA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 030971F000FF;
+	Fri,  2 Oct 2026 16:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790959615;
-	bh=YAqc7sLlvdB11p/fqTbQZyKaqldWqbPlcsvirlY8+UQ=;
+	s=k20260515; t=1790959620;
+	bh=3kes/itfXouN+8b8QKCcHWhQnNlQ4qwwFi3DP2N4wKo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=gptaoozJsVlyRpi1v4AMP6xux9F8RC3N/XoMasZaml0QePIxG0lgKEtPsG+deXLHp
-	 w4A8nMDwZYObPipk2vYt69kbkg23Q/TNC7jIkNJj+GcYRDk/rItB4B9u95+AbnKJxP
-	 Z3BC7nwOGGKxqiOcqcqvmYryHRdw3RfhIeFCzyUevzCySZC81Pwbnt7WBP3R+LfB1W
-	 In4spXOffKfk/Rgi+gUulZ+sPHPKTIAuXic2XvE0MbGIMxvLpPrlpCB8rL8DnIOFjf
-	 SttCfRoNpjbUPh2JmjrgIsILk70FxlPSwlClcvXuiJ3tiBV6tkG3Lio63yc58ch4Vc
-	 xhsawTVWregJA==
+	b=DAFy5SyAedvDBHPiCtmx+Lv1F1yUT3VlWcf2SpPsTYH2g/Ir8NpIKV1eQnA+JQwCW
+	 vFFSTgOvIHsPX5KD5xsZmU2IhQ4p3+cWGmoLJWtDRF3rB7cQuNYMAe9fpFzRfY76qb
+	 xUSCSW6rJtQWSG0gJtCx/h66lUQq3BSVzj0okY0Ll3sUISBEGzGHFjQTPptd6V4QiB
+	 FvUfB2YgBA1FMVlUFNCIu49ket3TIdIYeGxZ/UDd8/nQKNYBGTf4luQUCA4/tGRYVa
+	 m7K4oBaPZxU+C386dbovGdErUHiXfqZcclDp7vHdv0ll/qwt0fOPoRxUcDWWxJHbM9
+	 SWa+poyK8uGmA==
 From: Will Deacon <will@kernel.org>
 To: Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Breno Leitao <leitao@debian.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kiryl Shutsemau <kirill@shutemov.name>
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>
 Cc: catalin.marinas@arm.com,
 	mark.rutland@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	"Kiryl Shutsemau (Meta)" <kas@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>,
 	Pranjal Shrivastava <praan@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
 	Mostafa Saleh <smostafa@google.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	Shameer Kolothum <skolothumtho@nvidia.com>,
-	Yuanhe Shu <xiangzao@linux.alibaba.com>,
-	Kyle McMartin <jkkm@meta.com>,
-	Usama Arif <usama.arif@linux.dev>,
-	kernel-team@meta.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 0/2] iommu/arm-smmu-v3: Make the queue depths tunable, and shrink them in a kdump kernel
-Date: Fri,  2 Oct 2026 17:46:37 +0100
-Message-ID: <179095566175.2076343.2229507765103689715.b4-ty@kernel.org>
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	tudor.ambarus@linaro.org,
+	andre.draszik@linaro.org,
+	willmcvicker@google.com,
+	jyescas@google.com
+Subject: Re: [PATCH v2 0/2] Add arm-smmu-v3 support for Laguna SMMU silicon erratum workaround
+Date: Fri,  2 Oct 2026 17:46:38 +0100
+Message-ID: <179095464942.2068396.10273315598059135297.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260925141532.1274962-1-kirill@shutemov.name>
-References: <20260925141532.1274962-1-kirill@shutemov.name>
+In-Reply-To: <20260911-arm-smmu-v3-instcfg-override-v2-0-5804e4f400b5@linaro.org>
+References: <20260911-arm-smmu-v3-instcfg-override-v2-0-5804e4f400b5@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,25 +63,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Fri, 25 Sep 2026 15:15:28 +0100, Kiryl Shutsemau wrote:
-> The queues are sized from the IDR1 maxima and allocated at probe, costing
-> megabytes per queue per SMMU instance. A kdump capture kernel pays that out
-> of a small crashkernel reservation, for queues it barely uses and two of
-> which it switches off anyway.
+On Fri, 11 Sep 2026 21:21:04 +0000, Peter Griffin wrote:
+> The Google Tensor G5 SoC (Laguna) has a silicon erratum with the SMMU
+> integration where the AxPROT[2] signal is always 1, which makes all
+> transactions appear as instructions.
 > 
-> Patch 1 adds a cmdq_max_n_shift module parameter, decided in a per-queue
-> helper and floored at one page. Patch 2 has a kdump kernel size all three
-> queues at one page through the same helper. The parameter does not apply
-> there.
+> As a software workaround we make use of the INSTCFG override feature to
+> force all incoming traffic to data.
 > 
 > [...]
 
-Applied to iommu (arm/smmu/updates), thanks!
+Applied first patch to iommu (arm/smmu/bindings), thanks!
 
-[1/2] iommu/arm-smmu-v3: Add a cmdq_max_n_shift module parameter
-      https://git.kernel.org/iommu/c/c9b493a312f3
-[2/2] iommu/arm-smmu-v3: Default queue depths to one page in a kdump kernel
-      https://git.kernel.org/iommu/c/3f9fa6b9520d
+[1/2] dt-bindings: iommu: arm,smmu-v3: Add arm,instdata-override property
+      https://git.kernel.org/iommu/c/87098700b3cb
 
 Cheers,
 -- 
