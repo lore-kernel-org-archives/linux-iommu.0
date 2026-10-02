@@ -1,89 +1,122 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08B7A322A2E;
-	Fri,  2 Oct 2026 03:57:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7C7A353A88;
+	Fri,  2 Oct 2026 05:26:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790913441; cv=none; b=DVuFMUGOqkCR+RLks64mmTvtJLqIF5p3/p8gx5h0whJ1rF+7jHc/ejFSY7JSyrBcOTYLsX8nauMujRp0NKO9vs23D2LtzmpYrecSgpCp9JWbYyyVT7hWm1eU8zQDwHdh+wkS3dS2PlBFXlzyERhkTetp7gF+UfbdSf5k6yiZu34=
+	t=1790918776; cv=none; b=nuQ64d/3MEdqhMkMgBtfsEQGppshKisZLpqECGDzdAtEydhSb41EcQIM/m5kMver69s9BDNkM8wMFz7dtGPGJMWdvqUldbqUvSuq7mCRvD1+ndbOSX4MPOPkp92cz2b1r2ctQQld8kxd9tEbODGWaWevly6Pd0sOc2OPkRsNe6Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790913441; c=relaxed/simple;
-	bh=ud0njTb+UTcmC7RfcGMaJx5fA1+AoT2gA/SldV45wKc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hSJC6dE2Nha+9GbX4P0lO5z7mLB5E4HxDcSAQoJ7osNkFu+m/Geg3dtwU6F62rB/Uh5kBigyWhxNPx3fkbUdb689d3bbGMrpq5OtTVUO0GhXHfUJqmADRGC2LGEmPOXW3a53ETpC7p6hrWEBIf18a4atylBbpN0wkdBp1qEgX/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fiJkGWu5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1790918776; c=relaxed/simple;
+	bh=YlkxD2FRDsRnwLsQylg3tobY+DHUi6fR7Udg+UrkSWM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=f2u4xpQKYaXCyMIcv1wZJS9GbiGtxaNwoVPvQR1Od3zcorZ5gXid2tlzAZkU2c7i7Jw4QIPgyl/n/ZK8R9sVAVg7zwMHoxxwvCzd02FRbAmpxQPx0/760CkP1EtNm143jdVr9AVHHSjj1cfap/ik43iaU+jWsjLOKFMeuE9COJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ifqz3ID8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fiJkGWu5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0DED1F000FF;
-	Fri,  2 Oct 2026 03:57:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ifqz3ID8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2A141F000FF;
+	Fri,  2 Oct 2026 05:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1790913439;
-	bh=JGbxfjALTUQwxq1qJv01o3GgQpTAqeK9iKQm41v7RH0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=fiJkGWu5LJxFkR3v6K0UnkZ3TKNnXEv4qWypJMDSvW9pkeN4RItLn2SBF7Ubej4VB
-	 xmU0yzbWQ12Xf4YDF4O15g4sX6iZyJFRFLedUWJREiGGU+Wj1V3Mz8n2f01OLYhyzf
-	 /KjbfSVPIWDd2SgNG2VrgelKFaIK+EPZ/hYD1HsKE1/iWsb4qj3bMQpZ/PepUuDqPC
-	 WmjdW0Dh2jfdQ2uCNRgr8cMfYE/5yyMqNYGPE4XiDZmI6Xm4UOlSA8xazXs8nvRQ7N
-	 eP4Tr3nd6sSTPpNViD1JuXoey7tLZx7cQj561YBho3gXAPvNle2TU5o0RMf7zuPGzJ
-	 ISREDXIhmnXwQ==
-Message-ID: <f790bd53-8610-4e8a-aa4c-1f346c0cbbe6@kernel.org>
-Date: Thu, 1 Oct 2026 22:57:17 -0500
+	s=k20260515; t=1790918774;
+	bh=wqEd61paSK0lZtnAaPVyFzjg1xp1PL90xru5qjSKVT4=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=ifqz3ID85TTlv0qXCW7sIt7jdz7DR/CScCpnrAmcjwX13qJNlxbWgzHpeJWWrngKA
+	 JNYy0MAHlJe1SXd2XF0edqzrYA95/32tZr5QzZDxXnvavvnaR+UID1DGVcjrBRxrQb
+	 omfK6YopdOKRs8Be50Blq2fclL3UbRbxaJV4t+WGET524lhRC6tWqjX/hyLILqkLfx
+	 whu0EBDNR00BoiBzQx1bbMG0RCRxzG9BHCE4wFf4gJ00uVbJI7ze2bO1aMDpcAg566
+	 Q2qkDEl+T8d4Qe3agUauhpAIi0mEjkzlmcCjQYlN7juR11I8iEDUXqlE3DGJfgGfhU
+	 MZiF6aJW1WT5g==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Vasant Hegde <vasant.hegde@amd.com>, linux-coco@lists.linux.dev,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kvm@vger.kernel.org
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [RFC PATCH v6 04/11] iommufd/viommu: Keep a reference to the
+ KVM file
+In-Reply-To: <76d51545-47d3-4ef7-bb10-551c898c0968@amd.com>
+References: <20260917140159.1163281-1-aneesh.kumar@kernel.org>
+ <20260917140159.1163281-5-aneesh.kumar@kernel.org>
+ <76d51545-47d3-4ef7-bb10-551c898c0968@amd.com>
+Date: Fri, 02 Oct 2026 10:56:03 +0530
+Message-ID: <yq5ay0cgu104.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4] iommu/amd: Make PerfOpt compulsory
-To: Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alex Deucher <alexander.deucher@amd.com>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- "open list:RADEON and AMDGPU DRM DRIVERS" <amd-gfx@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:AMD IOMMU (AMD-VI)" <iommu@lists.linux.dev>
-References: <20261001182410.1525285-1-superm1@kernel.org>
- <d4634df4-ab32-46df-8b05-665998959e43@amd.com>
-Content-Language: en-US
-From: Mario Limonciello <superm1@kernel.org>
-In-Reply-To: <d4634df4-ab32-46df-8b05-665998959e43@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
+Vasant Hegde <vasant.hegde@amd.com> writes:
 
-
-On 10/1/26 10:44 PM, Vasant Hegde wrote:
-> 
-> 
-> On 10/1/2026 11:54 PM, Mario Limonciello (AMD) wrote:
->> PerfOpt is only a feature usable by integrated GPUs and only in identity
->> mode.  Instead of leaving a policy knob in amdgpu, just turn it on when
->> an integrated GPU is in identity.
->>
->> PerfOpt locks the GPU into identity mode where the DTE is ignored, so mark
->> it require_direct (blocks VFIO/iommufd claims) and disable PASID (no GCR3
->> table in the fast path).
->>
->> This drops quite a bit of compatibility glue.  There was a refcounting
->> system, exported symbols, and device attach/detach logic.  By just setting
->> it immediately it's a lot more straightforward.
->>
->> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
->> Signed-off-by: Mario Limonciello (AMD) <superm1@kernel.org>
+> On 9/17/2026 7:31 PM, Aneesh Kumar K.V (Arm) wrote:
+>> From: Nicolin Chen <nicolinc@nvidia.com>
+>> 
+>> The TSM vDevice operations need access to the KVM associated with the
+>> device's vIOMMU. Save the device's KVM file in the iommufd_viommu when the
+>> vIOMMU is allocated, and take a file reference so it remains valid for the
+>> lifetime of the vIOMMU.
+>> 
+>> Release the reference when the vIOMMU is destroyed.
+>> 
+>> Based on an original patch by Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+>> 
+>> [nicolinc: hold kvm's users_count]
+>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>> [aneesh.kumar: Switch to use kvm_file]
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 >> ---
->> v4:
->>   * Disable PASID for PerfOpt devices
->>   * Don't allow attaching a blocked domain
-> 
-> This will block attaching device to guest via vfio-pci. Is that fine?
-> 
-> -Vasant
-> 
+>>  drivers/iommu/iommufd/viommu.c | 5 +++++
+>>  include/linux/iommufd.h        | 1 +
+>>  2 files changed, 6 insertions(+)
+>> 
+>> diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+>> index 4081deda9b33..bf5d58d55939 100644
+>> --- a/drivers/iommu/iommufd/viommu.c
+>> +++ b/drivers/iommu/iommufd/viommu.c
+>> @@ -1,6 +1,7 @@
+>>  // SPDX-License-Identifier: GPL-2.0-only
+>>  /* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
+>>   */
+>> +#include <linux/file.h>
+>>  #include "iommufd_private.h"
+>>  
+>>  void iommufd_viommu_destroy(struct iommufd_object *obj)
+>> @@ -11,6 +12,8 @@ void iommufd_viommu_destroy(struct iommufd_object *obj)
+>>  	if (viommu->ops && viommu->ops->destroy)
+>>  		viommu->ops->destroy(viommu);
+>>  	refcount_dec(&viommu->hwpt->common.obj.users);
+>> +	if (viommu->kvm_file)
+>> +		fput(viommu->kvm_file);
+>>  	xa_destroy(&viommu->vdevs);
+>>  }
+>>  
+>> @@ -76,6 +79,8 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
+>>  	}
+>>  
+>>  	xa_init(&viommu->vdevs);
+>> +	if (idev->kvm_file)
+>> +		viommu->kvm_file = get_file(idev->kvm_file);
+>
+> Nice! This is needed for AMD IOMMU as well!
+>
+> Minor nit. You have to add fput() in error path.
 
-Right - The thing is from that experiment on v3, putting it in blocked 
-domain does nothing while PerfOpt is enabled.
+The error path is handled by iommufd_viommu_destroy().
+iommufd_fops_ioctl() calls either destroy or finalize, as required.
 
-I figured the user should be aware; so I was between blocking attaching 
-a blocked domain or showing a warning.
-
-
+-aneesh
