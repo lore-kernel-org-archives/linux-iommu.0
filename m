@@ -1,56 +1,56 @@
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C16D0472F9D
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:22:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A593448F842
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:22:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791062573; cv=none; b=hawn8mIvDBZhE6hDW5FzkkNyJf5Q9PsKMdmEMRP1elA5BGVHj7G7iAixBhplEVZ199tD9TVmUkxibsD/zCFGsiKvVVXmQ6eVhij44zR75p9pc4xVsJwdPxUheawfcInM6tFpAcgHbpxhLJ/+mxpqliaFjHi6ybVNccQxiClG/GQ=
+	t=1791062574; cv=none; b=HYvpvyeXSHf4rsF0d5bcNIvVtM2EIfuwRGSx4zsIgVbzsXIJeSaIOBrp7EM3LQQSNYzRS7poENDkI287FlUdpQIJVmNoxR7tS0v8AiB7ZVTQ4U+PTynse99iSvJthLXG95xcEOSY0sXpg6JiZ1JqBy9NCePIC7LXmso7ozjKAck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791062573; c=relaxed/simple;
-	bh=9SiAtXSSbWZChOXkfX0L5j9w+kDO2w5thJ1qDzwQhRc=;
+	s=arc-20240116; t=1791062574; c=relaxed/simple;
+	bh=MoIkMJRd4yrBi0biNtUyvIJGrV1vLOXgYLA16HWtVZU=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=sDnwF26wLfVHSJQgiTS75tvgsQce7GQACNfD6nsSuEMbM9BQlpLaakZ6rXX1XGLaMVyaihdFsVpgnkmWoqazjEpWaTrDnv0n9gNHxquFhccS3EjDvFDwFuVJ99pURlgP9EssiwkEdnxLDzXoaXEIgRIJOD4MY/GocQgMlF1BLEs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OGiPqvEu; arc=none smtp.client-ip=209.85.208.69
+	 To:Cc:Content-Type; b=AFRNFJ8JiF7F01oW58i8yVaXyzorLo7htuDnHpcRs8v9Nk6HjX0eSj7EQti2p4e3SPzEu5kUMRf4/bepsIaHS6ST6HqZVD/1vEvD1CkfDOQSnvydUEy3NOiW1ORpCX14CLxB7OQmX9vWIVjnp1dIaUP4H/Toz/5Ivhah7X2H6oQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LfCkGXAR; arc=none smtp.client-ip=209.85.218.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OGiPqvEu"
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-6af980fdc44so797659a12.2
-        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:22:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LfCkGXAR"
+Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-c2e48dc5363so98842466b.0
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:22:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791062568; x=1791667368; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1791062569; x=1791667369; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=wCPdU27sg6z5vmqKOpFlsCnhDDPZy7EzA7omKnPk3ys=;
-        b=OGiPqvEugwG/wyfeSjFQhR+cuEJH92ECVqCXOx6un86hhq1UHWVGp7Gu7Fq6kWwugZ
-         RFgVmmZ1fPAB1BsncxwYSLtXbTSHBkXbZMB6bPygSbLvEfNe4rJn/7f9ncFxm7DMf1Is
-         FD+zUa60SXhiTYfM8eNZLoSbV+jE1tNiX1+vbsxM+jTm7iymyp5Y6UBOXStB6sR3gGmH
-         iLO212poKFIDFWaBX7+C9PxIxI1cbl4HakyTNZFKh4Z6+pdIbF+At6ACm1IdHCnym0yQ
-         HrGerKEv3XuLT42dxrHGDkNDf9i+NoCOuK27DYzBnDJpYBPGgWKP/SSSbdWhTcOV7wTc
-         aWOA==
+        bh=fl5oLGui9d01xKPfSkAYkXMsMEaO4XUa6GnMZGmlpEY=;
+        b=LfCkGXARDTlUfZhAJ1H4VeQC1CRiHWDrjfQLlXHCwdSA6pKWtvB8pc/m3vNy7uOEeK
+         F9B6H2uY3ZgsbIE3GC4ZpgP2722cGrfSQqtYAnqkqMm8jPspZibxTOxEpYK5nrCAps2x
+         zwhErYBVPW17BLFV009vd1cHSF+dT4dKE9eBJ0u1utI7/mPSJPclojGIVh6T3h2/ikTi
+         rzAzelTryK30BS2/uMaWYlu+iKpGMHc0FSiHD5qNRaOYuTjmyCI8WkI63hxOUVtHSLAk
+         praf+mS7FdApvJuHakBXU08g+uaYrA7UyUgYhhIdfea72Y/LwFFDMR0tkPssmUigBS+o
+         BkRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791062568; x=1791667368;
+        d=1e100.net; s=20260707; t=1791062569; x=1791667369;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=wCPdU27sg6z5vmqKOpFlsCnhDDPZy7EzA7omKnPk3ys=;
-        b=SOTrIrwcOKi5u5y+jIDYYIEWlGYdHukHvAK0BSdgs6JbxOYwR7m53WFu0CQOVnARtp
-         viCEo2XwtmoWW77sQdgxJbAC3cnqic1uJAP3JIaGdLFJRQk/t8nansh6n/LkvzGa6Dr2
-         9bXvYo9FGgVycU6hCXy+Uo4epOPLEcMfQOJgyW6HHqXAE42IOTfydOpYaJ6Qe9GpwTj8
-         3U/8m2I++rl+kefNQMqVxC+1STwexjGMAdzdFgyYIgn8B60LJguyGHIImg5xu2PANp+h
-         x/zJZwA8PpnN94tqUB+x3dtu6R9TtvmQe2I8IjQtP/XXy+4D/GhO+kAlzkqH5VVlzf2f
-         VtWQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzA8Yq0r00ThgQ0YeGEuDK8d3aEK51RvQRZqI9XnLlcyBafCi29urgmQmawPI8C4x1ynyXOhA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLUX/bnPa/CrCiV2AXouwp+TfPxireYksorSp78H+VCZMBSeiNd
-	kK2pFWhXNeVoqi4DzmXurRQiELvuEV7oTvure5aLj9ZxNswOXj1UG8ehxzGAvlvqcCc5NjOGus+
-	zP1/VYQ==
-X-Received: from edbfj19.prod.google.com ([2002:a05:6402:2b93:b0:6ae:1946:248a])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6402:3810:b0:6ac:813a:a1ef
- with SMTP id 4fb4d7f45d1cf-6af9e2f1a5fmr5355535a12.26.1791062567237; Sat, 03
- Oct 2026 14:22:47 -0700 (PDT)
-Date: Sat,  3 Oct 2026 21:22:20 +0000
+        bh=fl5oLGui9d01xKPfSkAYkXMsMEaO4XUa6GnMZGmlpEY=;
+        b=CYSioJG4/QZg5i4hzVZ26QaVzMeCIp7BNPVI8PiPM66l2nZ8pxJy3mDDFY87rk6ve7
+         R0ev4M/ju9YlLaPDk44b/zYM64nqdxB/sIkVJjm81cWG1plc7V02gl9Y56P+tvC3czPS
+         h2kFTzosdsnCSOBD9yPTqcYSKtZ/wYq9rTPtkgyjnuB0bJ4QoE/PZ80uuNcwmASYhyFD
+         sTTLbVlPM/JurnA+s8y5OeviPKSZukQtmbVY6uqo7UJdrDXS1FxK6+xvYRJfC66VHMG3
+         5HML2V3RzoA7ERWIKY1Nz+ypyrSMMoMH1kjsUvHsq2LRiKmdDAga+Xe/RonR8xzwy1N7
+         LKAA==
+X-Forwarded-Encrypted: i=1; AKwUvBwnX3tX9osfiKC/xQS91WqL0eGkT8ZXTV3NAABoO0OhdfAihLszwTjiOtIDcYtFpXF/Jz35oA==@lists.linux.dev
+X-Gm-Message-State: AFuF++lcN8wK9WHUzZo6qEhrxTcH0Mxky7CXFZBReLdNNZ5L98ny7lWE
+	81SzHjRdTbwS3qdQUX6/THYYMbnhxUMfR9UuLeQpNpO0FxCFgFjM25ZWintj9NJgLyjEyOQbN/w
+	QIraO+A==
+X-Received: from ejbhk12.prod.google.com ([2002:a17:906:c9cc:b0:c2e:27b8:8572])
+ (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:e102:b0:c2e:7daa:2399
+ with SMTP id a640c23a62f3a-c2e7daa4002mr69702066b.42.1791062568434; Sat, 03
+ Oct 2026 14:22:48 -0700 (PDT)
+Date: Sat,  3 Oct 2026 21:22:21 +0000
 In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20261003212241.3432303-1-lrizzo@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261003212241.3432303-2-lrizzo@google.com>
-Subject: [RFC: DMA_PMD 01/22] iommu/dma: introduce CONFIG_DMA_PMD and metadata table
+Message-ID: <20261003212241.3432303-3-lrizzo@google.com>
+Subject: [RFC: DMA_PMD 02/22] iommu/dma: add DMA_PMD pool lifecycle and page
+ recycle hook
 From: Luigi Rizzo <lrizzo@google.com>
 To: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
@@ -82,1022 +83,729 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafae
 	linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-DMA_PMD is a new subsystem to back IO buffers with physically contiguous
-PMD_SIZE pages, allowing the use of larger leaves in the IOMMU.  This
-significantly reduces IOTLB pressure, with great performance benefits. It
-support very common cases (2MB PMD, !PREEMPT_RT).  The 2MB backing pages
-are dynamically allocated and released.  DMA_PMD overhead is 128B of
-metadata per physical page (64KB per 1GB, or 0.01% of physical RAM).
+DMA_PMD manages pools of PMD_SIZE physically contiguous memory from which
+IO buffers can be allocated. Recycling memory to the pool amortizes the
+cost of mapping, unmapping and IOTLB flush, but must be handled so that
+memory with active IOMMU mappings cannot be used for other data or code.
 
-Add a CONFIG_DMA_PMD option to enable it only when applicable, and
-introduce a sparse per-PMD metadata table to store the necessary side
-information efficiently (similar in principle to pageblock_flags).
-The table is initialized on first use, reserving KVA across the physical
-address space up to iomem_resource.end (capped at MAX_PHYSMEM_BITS,
-64KB of KVA per 1GB of address space) along with a chunk-populated
-bitmap (1 bit per 64MB chunk) for fast lockless lookups. Only chunks
-covering online RAM are backed by physical pages at init; memory
-hotplugged later within the reserved range is populated on demand when
-allocated by a DMA_PMD pool, and safely declined otherwise.
+Add the pool lifecycle (struct dma_pmd_pool, dma_pmd_pool_create(),
+dma_pmd_pool_destroy()) and the page release side. In particular,
+__dma_pmd_free_page() is hooked into __free_pages_prepare() so that
+DMA_PMD pages are returned to the pool.
 
-Also add a built-in KUnit test suite (CONFIG_DMA_PMD_META_KUNIT_TEST)
-exercising initialization idempotency, PFN/physical round-trip lookups,
-out-of-bounds physical address handling, and DMA_PMD membership toggling.
+Also implement asynchronous DMA_PMD page retirement and release to
+the buddy allocator via a WQ_MEM_RECLAIM worker.  Retirement removes
+DMA_PMD pages from pools and destroys the mappings flushing the IOTLB,
+but defers the buddy release by an RCU grace period, so a reader that
+already passed dma_is_pmd_page() can safely finish reading p2m.
 
 Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 ---
- Documentation/core-api/dma-pmd.rst | 320 +++++++++++++++++++++++++
- Documentation/core-api/index.rst   |   1 +
- drivers/iommu/Kconfig              |  32 +++
- drivers/iommu/Makefile             |   2 +
- drivers/iommu/dma-pmd-kunit.c      | 102 ++++++++
- drivers/iommu/dma-pmd-meta.c       | 365 +++++++++++++++++++++++++++++
- drivers/iommu/dma-pmd-priv.h       |  56 +++++
- include/linux/dma-pmd.h            |  36 +++
- 8 files changed, 914 insertions(+)
- create mode 100644 Documentation/core-api/dma-pmd.rst
- create mode 100644 drivers/iommu/dma-pmd-kunit.c
- create mode 100644 drivers/iommu/dma-pmd-meta.c
- create mode 100644 drivers/iommu/dma-pmd-priv.h
- create mode 100644 include/linux/dma-pmd.h
+ drivers/iommu/Makefile       |   2 +-
+ drivers/iommu/dma-pmd-meta.c |   4 +-
+ drivers/iommu/dma-pmd-pool.c | 379 +++++++++++++++++++++++++++++++++++
+ drivers/iommu/dma-pmd-priv.h | 129 +++++++++++-
+ include/linux/dma-pmd.h      |  73 ++++++-
+ mm/page_alloc.c              |   4 +
+ 6 files changed, 579 insertions(+), 12 deletions(-)
+ create mode 100644 drivers/iommu/dma-pmd-pool.c
 
-diff --git a/Documentation/core-api/dma-pmd.rst b/Documentation/core-api/dma-pmd.rst
-new file mode 100644
-index 0000000000000..1d113b8c15876
---- /dev/null
-+++ b/Documentation/core-api/dma-pmd.rst
-@@ -0,0 +1,320 @@
-+.. SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+
-+=========================================================
-+DMA_PMD: PMD_SIZE IOMMU mappings for DMA-coherent devices
-+=========================================================
-+
-+Overview
-+========
-+
-+DMA_PMD is a transparent enhancement of the current IOMMU modes, that
-+gives the performance of identity mode, and like strict IOMMU mode
-+(DMA), guarantees that memory will go back to the buddy allocator only
-+when all IOMMU mappings have been removed and IOTLB flushed.
-+
-+The original design aimed at removing IOTLB thrashing, but its mechanism
-+also give security guarantees comparable to strict IOMMU, and remove the
-+bounce buffer overhead from Confidential Computing and preemptible VMs.
-+
-+Background and motivations
-+==========================
-+
-+I/O devices typically access at least 3-4 different memory regions on
-+each transaction (network packet or disk request):
-+
-+- command, completion and buffer queues
-+- optionally, header or metadata buffers (e.g., NIC packet headers, NVMe SGL...)
-+- data buffers (TX socket buffers, NIC RX buffers, disk I/O buffers)
-+
-+Enabling the IOMMU impacts performance for the following reasons:
-+
-+- CPU cost to install/remove IOMMU Page Table Entries (PTEs)
-+  (``dma_map_*()``, ``dma_unmap_*()``)
-+- CPU/system overhead to flush the IOTLB, ie remove stale PTEs that could give
-+  access to sensitive data or code when memory is recycled for other purposes.
-+- Higher DMA read/write latency from IOMMU page walks when the working set
-+  exceeds the IOTLB size, backpressuring the bus via flow control.
-+  This is one of the biggest bottleneck for high speed devices:
-+  typical network devices have very little IOVA locality, and that makes the IOTLB
-+  almost completely ineffective.
-+
-+There are known methods to mitigate these problems:
-+
-+1. Recycling I/O buffers and their IOMMU mappings removes most of the DMA map/unmap
-+   costs. This is common practice for command, completion and buffer
-+   queues, as well as disk I/O and network receive buffers.  Network
-+   TX buffers are a noticeable exception. They normally come from
-+   ``alloc_pages()`` calls unaware of the leaf device, and require
-+   mapping/unmapping on each use.
-+
-+2. Lazily flushing the IOTLB (as implemented by DMA-FQ) amortizes a
-+   very expensive operation (up to several microseconds to wait for
-+   completion, necessary for security), but the way it is implemented
-+   in DMA-FQ compromises on security: IOTLB flush requests are run
-+   periodically in batches, but the underlying memory is recycled without
-+   waiting. During that window, the physical memory is still accessible,
-+   opening the door to exfiltration or corruption of sensitive data/code.
-+
-+3. The set of PTEs in active use can be significantly reduced by mapping larger
-+   blocks, e.g. 2MB (called PMD) instead of the usual 4KB (PTE). This is not
-+   currently pursued by the kernel.
-+
-+DMA_PMD addresses all the above with a combination of simple, known concepts,
-+implemented in a way that integrates smoothly with the kernel and drivers:
-+
-+- intercept calls to the small set of functions used to allocate, map, unmap, and free
-+  device-accessible memory (rings and buffers)
-+- return memory backed by physically contiguous 2MB pages (PMD) and 2MB IOMMU
-+  mappings
-+- heavily recycle memory and mappings
-+- wait until the IOTLB has been flushed before returning unused DMA_PMD memory
-+  to the system pool
-+
-+Execution is what makes DMA_PMD practical: the implementation intercepts
-+a small set of kernel APIs so that device will inherit the benefits with
-+little if any changes, and the design is such that these intercepts have
-+minimal impact on the original functions.
-+
-+Furthermore, since DMA_PMD intercepts allocations of device-accessible
-+memory, it gives two important benefits:
-+- transparent pinning/unpining, required for preemptible VMs
-+- transparent configuration of unencrypted mode, required for confidential computing
-+
-+Limitations
-+===========
-+
-+DMA_PMD is currently limited to systems with ``PMD_SIZE`` equal to 2MB, which
-+is the vast majority of existing platforms. It could be extended to larger
-+pages without much effort. This is enforced at compile time.
-+
-+The implementation assumes non-preemptible spinlocks, so DMA_PMD is not
-+compatible with ``PREEMPT_RT``. This is enforced at compile time.
-+
-+DMA_PMD can only be used by DMA-coherent devices. This is enforced at runtime.
-+
-+IOMMU mappings for data buffers are always ``DMA_BIDIRECTIONAL``. This
-+simplifies the handling of e.g. forwarding between different network
-+interfaces.
-+
-+IOMMU mappings for queues are also ``DMA_BIDIRECTIONAL``, though stricter modes
-+can be implemented trivially.
-+
-+Implementation details
-+======================
-+
-+Most of the code size and design complexity relates to the handling
-+of exceptional events (device teardown, memory hotplug) and to
-+the safe release of pages through deferred tasks, RCU and grace
-+periods.
-+
-+The implementation lives in ``drivers/iommu/dma-pmd-*.c`` and
-+``include/linux/dma-pmd.h``, and relies on the components described below.
-+We use the name "DMA_PMD" to refer to the second-level physically contiguous
-+pages (typically 2MB) used for I/O memory.
-+
-+The set of functions that need to be intercepted is relatively small:
-+
-+- ``page_pool_dev_alloc*()``, ``skb_page_frag_refill()``, ``__free_pages()``
-+- ``dma_alloc_attrs()``, ``dma_map_*()``, ``dma_unmap_*()``
-+
-+and most devices will automatically inherit the benefits.
-+
-+Requirements (for performance and functionality)
-+================================================
-+
-+- efficient identification of DMA_PMD pages, based on either their Physical
-+  Address (PA) or their I/O Virtual Address (IOVA)
-+- fast access to DMA_PMD page metadata
-+- fast allocation under highly concurrent usage
-+- efficient DMA map/unmap
-+- comprehensive lifetime management
-+- support for confidential computing (decrypted DMA buffers)
-+- support for preemptible VMs (pinned DMA buffers)
-+
-+Internal mechanisms
-+===================
-+
-+We use the following components:
-+
-+- **DMA_PMD metadata** (``struct dma_pmd_meta``):
-+
-+  Identification of DMA_PMD pages could be done in principle with a flag in
-+  ``struct page``, but that would not solve the management of per-page
-+  metadata.
-+
-+  DMA_PMD addresses both requirements without depending on ``struct page``
-+  using an idea similar to ``pageblock_flags``. Each 2MB page used as a
-+  buffer requires only 256B of metadata, or 0.01% overhead. For metadata,
-+  we reserve a sparse virtual memory region covering of approximate
-+  size ``max_pfn * 256 / PMD_SIZE``, so the metadata can be accessed
-+  directly using the 2MB page index.  Metadata pages are populated on
-+  demand, with a compact bitmap (1 bit per 32MB chunk, or 4KB per 1TB
-+  of address space) tracking which metadata pages are backed, allowing
-+  fast lockless validation and direct array indexing. Memory hotplugged
-+  later is also supported.
-+
-+  ``struct dma_pmd_meta`` has flags to mark the page status (used as
-+  DMA_PMD buffer, decrypted for confidential computing, or pinned against
-+  memory compaction), and tracks which subpages are free, which domains
-+  have an active IOMMU mapping for the page, and holds list/RCU linkage
-+  to manage its lifetime.
-+
-+- **Per-domain reserved DMA_PMD IOVA ranges**:
-+
-+  Another key requirement is to quickly resolve the PA-IOVA mapping for a given domain. Since
-+  a DMA_PMD page can be mapped in multiple domains (e.g. a network buffer used
-+  to route packets between different NICs), it would be too expensive to manage random
-+  PA-IOVA mappings created on the fly.
-+  DMA_PMD reserves on each domain an IOVA range
-+  covering the physical memory range plus an extra region, allowing a
-+  fixed PA-IOVA offset, possibly different for each domain.
-+  The IOVA allocation happens the first time a domain is used, hence a
-+  IOVA within the reserved range will uniquely identify a DMA_PMD page.
-+
-+- **alloc_pages() compatible dma_pmd_pool allocator for I/O buffers**:
-+
-+  DMA_PMD implements a dma_pmd_pool object for fixed-order page allocations
-+  that is a natural fit for the allocation of NIC receive buffers and tx
-+  socket buffers. The API is similar to ``alloc_pages()`` (in fact, it is an
-+  almost direct replacement) and dma_pmd_pools are instantiated as follow:
-+  - per NIC-receive-queue (or page_pool) to provide order-0 pages to each queue
-+  - per-CPU to provide order-0 and order-3 pages to refill tx socket buffers.
-+
-+- **dma_pmd_arena allocator to back dma_alloc_attrs()**
-+
-+  Devices use ``dma_alloc_attrs()`` or variants for long-lived, variable size
-+  allocations to back device queues and header buffers. dma_pmd_arena
-+  has the same functions: it both allocates and maps memory in the
-+  reserved IOVA, and is used exclusively within dma_alloc_attrs() to
-+  handle suitable requests (4K or larger, GFP_KERNEL, for devices that
-+  specifically enable DMA_PMD)
-+
-+
-+- **Fine grained control**
-+
-+  Both for experimentation and production use, it is useful to have
-+  some form of control on which devices want to use DMA_PMD and for
-+  what. DMA_PMD exposes the following controls. Keep in mind that full
-+  performance can only be achieved if all regions are mapped using DMA_PMD.
-+
-+  - /sys/devices/*/*/dma_pmd_{rings,rxbuf,tx_hdrs} per-device entries
-+    that can be used within device drivers to decide whether to use DMA_PMD for each of its regions
-+
-+  - /proc/sys/net/core/tx_enable_dma_pmd controls whether tx socket buffers should use DMA_PMD
-+
-+- **Safe release of memory to the system**
-+
-+  A key feature of DMA_PMD is that memory is not released to the system
-+  while there are active IOMMU mappings. Release of buffers is managed
-+  as follows
-+
-+  1. on ``__free_pages()`` or ``dma_free_attrs()``, blocks are returned to DMA_PMD,
-+     IOMMU mappings are still active, and they can be recycled
-+
-+  2. when all blocks in a DMA_PMD page are unused, the page is moved to an
-+     "idle" list, still with active mappings and available for reuse
-+
-+  3. upon memory pressure or when above some global threshold, a shrinker
-+     thread collects idle pages from all pools and starts removing the iommu
-+     mappings and issues a synchronous IOTLB flush. The pages are not usable for allocations
-+     but not returned to the pool yet
-+
-+  4. once the previous step is complete, the system schedules ``call_rcu()``
-+     and waits for an RCU grace period (and re-encrypts the page if it was
-+     decrypted) before returning the 2MB page to the buddy allocator.
-+
-+- **Handling domain destruction**
-+
-+  When a device/domain is destroyed, all I/O issued by the device must have
-+  been quiesced and memory released via ``__free_pages()`` or ``dma_free*()``.
-+  DMA_PMD hooks into the domain destructor and removes all existing mappings
-+  for the disappearing domain and synchronously flushes the IOTLB, similarly
-+  to steps #3 and #4 shown before.
-+
-+- **Allocation and compound splitting**:
-+
-+  A pool that needs memory calls ``dma_pmd_add_page()`` to allocate a
-+  physically contiguous 2MB page on the calling CPU's NUMA node, and
-+  ``split_page_compound()`` to split it into independent blocks of
-+  ``pool->order``. These blocks can be independently passed through the
-+  networking stack.
-+
-+Modified kernel APIs and runtime controls
-+=========================================
-+
-+DMA_PMD integrates transparently into existing kernel memory, DMA, and
-+networking APIs. Allocation of DMA_PMD memory is opt-in via per-device sysfs
-+attributes or sysctls, while mapping, unmapping, and freeing automatically
-+detect whether a buffer or IOVA belongs to DMA_PMD:
-+
-+1. **Streaming DMA map and unmap** (``dma_map_page_attrs()``,
-+   ``dma_map_single_attrs()``, ``dma_map_sg_attrs()`` and
-+   ``dma_unmap_page_attrs()``, ``dma_unmap_single_attrs()``,
-+   ``dma_unmap_sg_attrs()`` via ``drivers/iommu/dma-iommu.c`` and
-+   ``kernel/dma/direct.c``):
-+
-+   - On map, any buffer belonging to a DMA_PMD page (``dma_is_pmd_phys(phys)``)
-+     is mapped via the domain's reserved ``DMA_PMD`` IOVA window with a simple
-+     addition, typically reusing existing mappings.
-+     Under ``dma-direct``, decrypted or pinned ``DMA_PMD`` pages
-+     (``dma_is_pmd_direct(phys)``) can be mapped directly without ``swiotlb`` bounce.
-+
-+     On unmap, IOVAs can be identified as DMA_PMD buffers with a simple range check
-+     and that results in a no-operation.
-+
-+2. **Coherent DMA allocation and free** (``dma_alloc_attrs()`` /
-+   ``dma_alloc_coherent()`` and ``dma_free_attrs()`` / ``dma_free_coherent()``
-+   in ``kernel/dma/mapping.c``):
-+
-+   - DMA_PMD is enabled per device via ``/sys/devices/.../dma_pmd_rings``
-+     (``dev->dma_pmd_rings``). When set, sleepable ``GFP_KERNEL`` coherent
-+     allocations are rounded up to 4KB and carved out of DMA_PMD buffers
-+     ``dma_pmd_arena`` and mapped accordingly.
-+     ``dma_free_attrs()`` automatically detects arena IOVAs via
-+     ``dma_pmd_free()`` and returns the sub-blocks to the arena.
-+
-+3. **Page allocator release** (``__free_pages()`` / ``put_page()`` via
-+   ``__free_pages_prepare()`` in ``mm/page_alloc.c``):
-+
-+   - ``dma_pmd_free_page()`` checks
-+     ``dma_is_pmd_page(page_to_pfn(page))`` and recycles DMA_PMD subpages back to
-+     their owning ``dma_pmd_pool`` instead of releasing them to the buddy
-+     allocator while their 2MB IOMMU mappings remain active.
-+
-+4. **IOMMU domain teardown** (``iommu_put_dma_cookie()`` in
-+   ``drivers/iommu/dma-iommu.c``):
-+
-+   - A call to ``dma_pmd_domain_release()`` before freeing a
-+     domain's IOVA cookie and page tables clears cached domain state across
-+     all pools. Existing IOMMU mappings and IOTLB flush has already happened.
-+
-+5. **Networking ``page_pool``**
-+
-+   - DMA_PMD is enabled per device via ``/sys/devices/.../dma_pmd_rxbuf``
-+     (``dev->dma_pmd_rxbuf``). Any NIC driver using ``page_pool`` with this
-+     flag set will back its RX buffers with a per-``page_pool``
-+     ``dma_pmd_pool``, and opportunistically replaces plain 4KB pages when pooled 2MB
-+     blocks are available.
-+
-+6. **Socket TX page fragments** (``skb_page_frag_refill()`` in
-+   ``net/core/sock.c``):
-+
-+   - When enabled globally via the ``net.core.tx_enable_dma_pmd`` sysctl
-+     socket TX fragments are allocated from per-CPU ``dma_pmd_pool`` instances.
-+
-+7. **NIC driver RX pools and TX header bounce buffers**
-+
-+   - **RX buffers:** Controlled per device by ``/sys/devices/.../dma_pmd_rxbuf``
-+     (``dev->dma_pmd_rxbuf``) for queue modes managing their own page rings
-+     (``idpf``, ``gve`` GQI-RDA, ``gq``).
-+   - **TX headers:** Controlled per device by
-+     ``/sys/devices/.../dma_pmd_tx_hdrs`` (``dev->dma_pmd_tx_hdrs``),
-+     copying linear packet headers into pre-allocated coherent bounce buffers
-+     (backed by ``dma_pmd_arena`` when ``dma_pmd_rings`` is also enabled).
-+
-+8. **Global pool limit and observability:**
-+
-+   - ``/sys/module/kernel/parameters/dma_pmd_max_pages``: Global cap on 2MB
-+     pages held across all pools (defaults to 1/8th of physical RAM).
-+   - ``/sys/kernel/debug/dma_pmd/pools``: Debugfs summary of global and per-pool
-+     allocation, mapping, and fallback counters.
-diff --git a/Documentation/core-api/index.rst b/Documentation/core-api/index.rst
-index 92f91c6a0d79d..49608d2b7509b 100644
---- a/Documentation/core-api/index.rst
-+++ b/Documentation/core-api/index.rst
-@@ -113,6 +113,7 @@ more memory-management documentation in Documentation/mm/index.rst.
-    dma-attributes
-    dma-isa-lpc
-    swiotlb
-+   dma-pmd
-    mm-api
-    cgroup
-    genalloc
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 6e07bd69467a3..1bb347fd9da4a 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -158,6 +158,38 @@ config IOMMU_DMA
- 	select NEED_SG_DMA_LENGTH
- 	select NEED_SG_DMA_FLAGS if SWIOTLB
- 
-+# PMD_SIZE IOMMU backing for DMA-coherent devices
-+config DMA_PMD
-+	bool "PMD_SIZE IOMMU backing for DMA-coherent devices"
-+	depends on IOMMU_DMA
-+	depends on X86_64 || (ARM64 && ARM64_4K_PAGES)
-+	depends on !PREEMPT_RT
-+	default y
-+	help
-+	  Hand out DMA buffers carved out of PMD_SIZE physically contiguous
-+	  blocks that the IOMMU maps with a single leaf PTE. Mapping,
-+	  unmapping and IOTLB flushing are done lazily to reduce CPU overhead.
-+	  The large mappings greatly reduce IOTLB usage. As in strict iommu
-+	  mode, pages are returned to the buddy allocator only when any existing
-+	  mappings have been removed and IOTLB flushed.
-+	  Costs 128KB of metadata per GB of DMA_PMD buffers, allocated on demand.
-+
-+	  The config option enforces requirements (2MB PMD and !PREEMPT_RT) at compile
-+	  time. Other constraints (e.g. dma-coherent devices) are verified at runtime.
-+
-+	  If unsure, say Y.
-+
-+config DMA_PMD_META_KUNIT_TEST
-+	bool "KUnit test for DMA_PMD metadata table (built-in)" if !KUNIT_ALL_TESTS
-+	depends on DMA_PMD && KUNIT=y
-+	default KUNIT_ALL_TESTS
-+	help
-+	  Builds KUnit unit tests for the sparse, per-PMD-frame metadata table,
-+	  PMD page pools, and coherent DMA arenas in drivers/iommu/dma-pmd*.c,
-+	  verifying metadata lookup, pool recycling, and arena block allocation.
-+
-+	  If unsure, say N.
-+
- # Shared Virtual Addressing
- config IOMMU_SVA
- 	select IOMMU_MM_DATA
 diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 2f05725eaab18..2ad9b2eefd741 100644
+index 2ad9b2eefd741..de2c3bad9aa3e 100644
 --- a/drivers/iommu/Makefile
 +++ b/drivers/iommu/Makefile
-@@ -11,6 +11,8 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+@@ -11,7 +11,7 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
  obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
  obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
  obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
-+obj-$(CONFIG_DMA_PMD) += dma-pmd-meta.o
-+obj-$(CONFIG_DMA_PMD_META_KUNIT_TEST) += dma-pmd-kunit.o
+-obj-$(CONFIG_DMA_PMD) += dma-pmd-meta.o
++obj-$(CONFIG_DMA_PMD) += dma-pmd-meta.o dma-pmd-pool.o
+ obj-$(CONFIG_DMA_PMD_META_KUNIT_TEST) += dma-pmd-kunit.o
  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
- obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
-diff --git a/drivers/iommu/dma-pmd-kunit.c b/drivers/iommu/dma-pmd-kunit.c
-new file mode 100644
-index 0000000000000..f80527eaf2e84
---- /dev/null
-+++ b/drivers/iommu/dma-pmd-kunit.c
-@@ -0,0 +1,102 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-+/*
-+ * KUnit tests for the opaque struct dma_pmd_meta table API.
-+ */
-+#include <kunit/test.h>
-+#include <linux/gfp.h>
-+#include <linux/dma-pmd.h>
-+#include <linux/mm.h>
-+
-+#include "dma-pmd-priv.h"
-+
-+static void test_meta_init_and_roundtrip(struct kunit *test)
-+{
-+	struct dma_pmd_meta *m_pfn, *m_phys;
-+	unsigned long pfn, base_pfn;
-+	phys_addr_t pa, base_pa;
-+	struct page *page;
-+
-+	KUNIT_ASSERT_EQ(test, dma_pmd_meta_init(), 0);
-+	/* Second call must be idempotent. */
-+	KUNIT_ASSERT_EQ(test, dma_pmd_meta_init(), 0);
-+
-+	page = alloc_page(GFP_KERNEL);
-+	KUNIT_ASSERT_NOT_NULL(test, page);
-+
-+	pfn = page_to_pfn(page);
-+	base_pfn = ALIGN_DOWN(pfn, 1UL << PMD_ORDER);
-+	pa = page_to_phys(page);
-+	base_pa = ALIGN_DOWN(pa, PMD_SIZE);
-+
-+	m_pfn = dma_pmd_meta_of_pfn(pfn);
-+	m_phys = dma_pmd_meta_from_phys(pa);
-+
-+	KUNIT_EXPECT_PTR_EQ(test, m_pfn, m_phys);
-+	KUNIT_EXPECT_EQ(test, dma_pmd_meta_to_pfn(m_pfn), base_pfn);
-+	KUNIT_EXPECT_EQ(test, dma_pmd_meta_to_phys(m_phys), base_pa);
-+
-+	__free_page(page);
-+}
-+
-+static void test_meta_invalid_phys(struct kunit *test)
-+{
-+	struct dma_pmd_meta *m;
-+
-+	KUNIT_ASSERT_EQ(test, dma_pmd_meta_init(), 0);
-+
-+	m = dma_pmd_meta_from_phys(PHYS_ADDR_MAX);
-+	KUNIT_ASSERT_NOT_NULL(test, m);
-+	KUNIT_EXPECT_EQ(test, dma_pmd_meta_to_phys(m), PHYS_ADDR_MAX);
-+	KUNIT_EXPECT_FALSE(test, dma_is_pmd_page(ULONG_MAX >> PAGE_SHIFT));
-+}
-+
-+static void dma_pmd_meta_set_pooled(struct dma_pmd_meta *m, bool pooled)
-+{
-+	WRITE_ONCE(m->pooled, pooled);
-+}
-+
-+static void test_meta_pooled_toggle(struct kunit *test)
-+{
-+	unsigned long pfn, base_pfn;
-+	struct dma_pmd_meta *m;
-+	struct page *page;
-+
-+	KUNIT_ASSERT_EQ(test, dma_pmd_meta_init(), 0);
-+
-+	page = alloc_pages(GFP_KERNEL, PMD_ORDER);
-+	KUNIT_ASSERT_NOT_NULL(test, page);
-+
-+	pfn = page_to_pfn(page);
-+	base_pfn = ALIGN_DOWN(pfn, 1UL << PMD_ORDER);
-+	/* The buddy allocator returns naturally aligned blocks. */
-+	KUNIT_EXPECT_EQ(test, pfn, base_pfn);
-+	m = dma_pmd_meta_of_pfn(pfn);
-+
-+	KUNIT_EXPECT_FALSE(test, dma_is_pmd_page(pfn));
-+
-+	dma_pmd_meta_set_pooled(m, true);
-+	KUNIT_EXPECT_TRUE(test, dma_is_pmd_page(base_pfn));
-+	KUNIT_EXPECT_TRUE(test, dma_is_pmd_page(pfn));
-+	KUNIT_EXPECT_TRUE(test, dma_is_pmd_page(base_pfn + (1UL << PMD_ORDER) - 1));
-+
-+	dma_pmd_meta_set_pooled(m, false);
-+	KUNIT_EXPECT_FALSE(test, dma_is_pmd_page(pfn));
-+
-+	__free_pages(page, PMD_ORDER);
-+}
-+
-+static struct kunit_case dma_pmd_meta_test_cases[] = {
-+	KUNIT_CASE(test_meta_init_and_roundtrip),
-+	KUNIT_CASE(test_meta_invalid_phys),
-+	KUNIT_CASE(test_meta_pooled_toggle),
-+	{}
-+};
-+
-+static struct kunit_suite dma_pmd_meta_test_suite = {
-+	.name = "dma_pmd_meta",
-+	.test_cases = dma_pmd_meta_test_cases,
-+};
-+
-+kunit_test_suite(dma_pmd_meta_test_suite);
-+MODULE_DESCRIPTION("KUnit tests for struct dma_pmd_meta table");
-+MODULE_LICENSE("Dual BSD/GPL");
 diff --git a/drivers/iommu/dma-pmd-meta.c b/drivers/iommu/dma-pmd-meta.c
-new file mode 100644
-index 0000000000000..fcaf5b121e66a
---- /dev/null
+index fcaf5b121e66a..27b8c2568c749 100644
+--- a/drivers/iommu/dma-pmd-meta.c
 +++ b/drivers/iommu/dma-pmd-meta.c
-@@ -0,0 +1,365 @@
+@@ -43,7 +43,9 @@ EXPORT_SYMBOL(dma_pmd_meta_array);
+ unsigned long dma_pmd_meta_nframes __read_mostly;
+ static unsigned long *dma_pmd_chunk_bitmap __read_mostly;
+ 
+-static struct dma_pmd_meta dma_pmd_meta_nil;
++static struct dma_pmd_meta dma_pmd_meta_nil = {
++	.map_lock = __SPIN_LOCK_UNLOCKED(dma_pmd_meta_nil.map_lock),
++};
+ 
+ static unsigned long dma_pmd_meta_pages;
+ static DEFINE_MUTEX(dma_pmd_meta_mutex);
+diff --git a/drivers/iommu/dma-pmd-pool.c b/drivers/iommu/dma-pmd-pool.c
+new file mode 100644
+index 0000000000000..5020265d52cd5
+--- /dev/null
++++ b/drivers/iommu/dma-pmd-pool.c
+@@ -0,0 +1,379 @@
 +// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 +/*
-+ * DMA_PMD sparse per-PMD-frame metadata table.
++ * DMA_PMD streaming page pool, async page reclaim, shrinker, and debugfs.
 + *
 + * See Documentation/core-api/dma-pmd.rst for the architecture overview.
 + */
 +
++#include <linux/atomic.h>
 +#include <linux/bitmap.h>
++#include <linux/bitops.h>
 +#include <linux/cache.h>
-+#include <linux/cacheflush.h>
++#include <linux/debugfs.h>
++#include <linux/dma-mapping.h>
 +#include <linux/dma-pmd.h>
 +#include <linux/export.h>
 +#include <linux/gfp.h>
-+#include <linux/ioport.h>
++#include <linux/kref.h>
 +#include <linux/list.h>
-+#include <linux/memblock.h>
++#include <linux/llist.h>
 +#include <linux/mm.h>
++#include <linux/moduleparam.h>
 +#include <linux/mutex.h>
-+#include <linux/pgtable.h>
++#include <linux/rcupdate.h>
++#include <linux/seq_file.h>
++#include <linux/shrinker.h>
++#include <linux/slab.h>
 +#include <linux/spinlock.h>
-+#include <linux/vmalloc.h>
++#include <linux/srcu.h>
++#include <linux/workqueue.h>
 +
 +#include "dma-pmd-priv.h"
 +
 +/*
-+ * Each PAGE_SIZE (4KB) metadata page holds (PAGE_SIZE >> DMA_PMD_META_SHIFT)
-+ * struct dma_pmd_meta entries (32 entries of 128B, or 16 entries of 256B with
-+ * spinlock debugging), each covering one PMD_SIZE (2MB) physical frame.
-+ * One metadata page therefore covers a chunk of DMA_PMD_CHUNK_PAGES 4KB pages
-+ * (64MB normally, or 32MB with spinlock debugging), i.e. order
-+ * DMA_PMD_CHUNK_ORDER.
++ * DMA_PMD pages whose last block has just been freed and which are over the
++ * pool's idle watermark are pushed here locklessly for later release.
 + */
-+#define DMA_PMD_CHUNK_ORDER		(PMD_ORDER + PAGE_SHIFT - DMA_PMD_META_SHIFT)
-+#define DMA_PMD_CHUNK_PAGES		BIT(DMA_PMD_CHUNK_ORDER)
++static LLIST_HEAD(dma_pmd_free_list);
 +
-+static_assert(PAGE_SIZE >= DMA_PMD_META_SIZE);
-+static_assert(PMD_SIZE == SZ_2M);
-+static_assert(PMD_ORDER <= MAX_PAGE_ORDER);
-+static_assert(PMD_SHIFT <= SUBSECTION_SHIFT);
++/* Dedicated WQ_MEM_RECLAIM workqueue, can run without allocations. */
++static struct workqueue_struct *dma_pmd_wq __ro_after_init;
 +
-+void *dma_pmd_meta_array __read_mostly;
-+EXPORT_SYMBOL(dma_pmd_meta_array);
-+unsigned long dma_pmd_meta_nframes __read_mostly;
-+static unsigned long *dma_pmd_chunk_bitmap __read_mostly;
++/* All live pools. */
++static LIST_HEAD(dma_pmd_pools);
++static DEFINE_MUTEX(dma_pmd_pools_lock);
++static LLIST_HEAD(dma_pmd_dead_pools);
 +
-+static struct dma_pmd_meta dma_pmd_meta_nil;
++static void dma_pmd_schedule_reclaim(void);
 +
-+static unsigned long dma_pmd_meta_pages;
-+static DEFINE_MUTEX(dma_pmd_meta_mutex);
-+
-+static __always_inline struct dma_pmd_meta *__dma_pmd_meta_of_pfn(unsigned long pfn)
++static void dma_pmd_pool_free_kref(struct kref *kref)
 +{
-+	struct dma_pmd_meta *array = dma_pmd_meta_base();
-+	unsigned long frame = pfn >> PMD_ORDER;
++	struct dma_pmd_pool *pool = container_of(kref, struct dma_pmd_pool, refcount);
 +
-+	if (unlikely(!array || frame >= dma_pmd_meta_nframes ||
-+		     !test_bit_acquire(pfn >> DMA_PMD_CHUNK_ORDER, dma_pmd_chunk_bitmap)))
-+		return &dma_pmd_meta_nil;
-+
-+	return &array[frame];
++	llist_add(&pool->dead_node, &dma_pmd_dead_pools);
++	dma_pmd_schedule_reclaim();
 +}
-+
-+bool __dma_is_pmd_page(unsigned long pfn)
-+{
-+	return READ_ONCE(__dma_pmd_meta_of_pfn(pfn)->pooled);
-+}
-+EXPORT_SYMBOL(__dma_is_pmd_page);
-+
-+/**
-+ * dma_pmd_meta_of_pfn - Metadata for a PFN known to be used by DMA_PMD.
-+ * @pfn: PFN the caller already holds a struct page for
-+ */
-+struct dma_pmd_meta *dma_pmd_meta_of_pfn(unsigned long pfn)
-+{
-+	return __dma_pmd_meta_of_pfn(pfn);
-+}
-+EXPORT_SYMBOL(dma_pmd_meta_of_pfn);
-+
-+/**
-+ * dma_pmd_meta_from_phys - Metadata for the PMD frame containing @pa
-+ * @pa: Any physical address
-+ *
-+ * Safe against MMIO above max_pfn and PFNs inside physical holes: those
-+ * resolve to the shared sink entry.
-+ *
-+ * Return: Pointer to metadata entry (never NULL).
-+ */
-+struct dma_pmd_meta *dma_pmd_meta_from_phys(phys_addr_t pa)
-+{
-+	return __dma_pmd_meta_of_pfn(PHYS_PFN(pa));
-+}
-+EXPORT_SYMBOL(dma_pmd_meta_from_phys);
-+
-+/**
-+ * dma_pmd_meta_to_pfn - Base PFN of @m's PMD frame
-+ * @m: Entry in @dma_pmd_meta_array
-+ *
-+ * Return: PMD-aligned base PFN, or ULONG_MAX for the sink.
-+ */
-+unsigned long dma_pmd_meta_to_pfn(const struct dma_pmd_meta *m)
-+{
-+	if (unlikely(m == &dma_pmd_meta_nil))
-+		return ULONG_MAX;
-+
-+	return (unsigned long)(m - dma_pmd_meta_base()) << PMD_ORDER;
-+}
-+EXPORT_SYMBOL(dma_pmd_meta_to_pfn);
-+
-+/**
-+ * dma_pmd_meta_to_phys - Base physical address of @m's PMD frame
-+ * @m: Entry returned by dma_pmd_meta_of_pfn() or dma_pmd_meta_from_phys()
-+ *
-+ * Return: PMD-aligned physical address, or PHYS_ADDR_MAX for the sink.
-+ */
-+phys_addr_t dma_pmd_meta_to_phys(const struct dma_pmd_meta *m)
-+{
-+	if (unlikely(m == &dma_pmd_meta_nil))
-+		return PHYS_ADDR_MAX;
-+
-+	return (phys_addr_t)(m - dma_pmd_meta_base()) << PMD_SHIFT;
-+}
-+EXPORT_SYMBOL(dma_pmd_meta_to_phys);
 +
 +/*
-+ * Install one preallocated page. The page is allocated by the caller rather
-+ * than here because apply_to_page_range() runs this callback under lazy-MMU
-+ * mode with the pte level pinned, which is not a context to allocate from.
++ * Releasing an idle PMD page proceeds in three stages:
 + *
-+ * @data points at the caller's page pointer and is cleared once the page has
-+ * been consumed, so the caller can free it if it was not needed.
++ * 1. Detach from pool->idle (or when the last block of a destroyed/over-watermark
++ *    PMD page frees in __dma_pmd_free_page()). Because __free_pages_prepare()
++ *    may run in hardirq/softirq or with allocator locks held, the PMD page is
++ *    pushed locklessly onto dma_pmd_free_list and dma_pmd_reclaim_work is
++ *    scheduled on dma_pmd_wq.
++ * 2. In process context, dma_pmd_release_page() unmaps all IOMMU domains
++ *    (dma_pmd_unmap_all(), added in a later commit), clears meta->pooled so
++ *    new lockless readers stop entering @meta, and queues
++ *    dma_pmd_release_page_rcu() via call_rcu().
++ * 3. After an RCU grace period (once no concurrent dma_pmd_free_page() reader
++ *    can still be dereferencing @meta), dma_pmd_release_page_rcu() unfreezes
++ *    all order-pool->order blocks (already split by split_page_compound()),
++ *    returns them to the buddy allocator, and drops pool->refcount.
 + */
-+static int dma_pmd_meta_set_pte(pte_t *ptep, unsigned long addr, void *data)
++
++/**
++ * dma_pmd_release_page_rcu - Return a retired PMD page to the buddy allocator
++ * @head: @rcu member of the PMD page being released
++ *
++ * Runs once no reader can still be resolving a PFN in this PMD page. All blocks
++ * are unfrozen and handed back to the buddy allocator, and the pool reference
++ * is dropped last.
++ */
++static void dma_pmd_release_page_rcu(struct rcu_head *head)
 +{
-+	struct page **pagep = data;
-+	pte_t pte;
++	/*
++	 * Read @meta->pool before returning the blocks to buddy: once the last
++	 * block is freed, the PMD frame can be reallocated and @meta overwritten.
++	 */
++	struct dma_pmd_meta *meta = container_of(head, struct dma_pmd_meta, rcu);
++	struct page *page = pfn_to_page(dma_pmd_meta_to_pfn(meta));
++	struct dma_pmd_pool *pool = READ_ONCE(meta->pool);
++	unsigned int nr = DMA_PMD_BLOCKS(pool->order);
++	unsigned int order = pool->order;
++	unsigned long flags;
++	unsigned int i;
 +
-+	if (!pte_none(ptep_get(ptep)))
-+		return 0;
++	for (i = 0; i < nr; i++) {
++		struct page *block = page + (i << order);
 +
-+	pte = pfn_pte(page_to_pfn(*pagep), PAGE_KERNEL);
-+
-+	spin_lock(&init_mm.page_table_lock);
-+	if (likely(pte_none(ptep_get(ptep)))) {
-+		set_pte_at(&init_mm, addr, ptep, pte);
-+		*pagep = NULL;
++		page_ref_unfreeze(block, 1);
++		__free_pages(block, order);
 +	}
-+	spin_unlock(&init_mm.page_table_lock);
 +
-+	return 0;
++	spin_lock_irqsave(&pool->lock, flags);
++	pool->pmd_free_cnt++;
++	spin_unlock_irqrestore(&pool->lock, flags);
++
++	kref_put(&pool->refcount, dma_pmd_pool_free_kref);
 +}
 +
-+/* True iff @pfn is backed by online system RAM (excludes holes and ZONE_DEVICE). */
-+static inline bool dma_pmd_pfn_online(unsigned long pfn)
++/**
++ * dma_pmd_release_page - Retire a PMD page and schedule its buddy release
++ * @meta: PMD page metadata structure (must have all usable blocks idle)
++ *
++ * Cost: Slow path; clears the membership bit. The blocks themselves are
++ *       returned after an RCU grace period.
++ * Locking: Must not hold @pool->lock.
++ * Frequency: Rare (background reclaim workqueue, pool destruction).
++ */
++static void dma_pmd_release_page(struct dma_pmd_meta *meta)
 +{
-+	struct mem_section *ms;
++	/* dma_pmd_unmap_all(meta) will be called here once IOMMU mappings are added. */
 +
-+	if (unlikely(!pfn_valid(pfn)))
-+		return false;
++	/*
++	 * Clear membership before the grace period. A reader that passed
++	 * dma_is_pmd_page() just before this may still be reading @meta, so
++	 * the PMD page and its metadata entry must outlive the grace period.
++	 */
++	WRITE_ONCE(meta->pooled, false);
++	call_rcu(&meta->rcu, dma_pmd_release_page_rcu);
++}
 +
-+	ms = __pfn_to_section(pfn);
-+	if (unlikely(!online_section(ms)))
-+		return false;
++static void dma_pmd_reclaim_work_fn(struct work_struct *work)
++{
++	struct llist_node *node = llist_del_all(&dma_pmd_free_list);
++	struct dma_pmd_pool *pool, *ptmp;
++	struct dma_pmd_meta *meta, *tmp;
 +
-+	if (unlikely(online_device_section(ms) && is_zone_device_page(pfn_to_page(pfn))))
-+		return false;
++	llist_for_each_entry_safe(meta, tmp, node, llnode)
++		dma_pmd_release_page(meta);
++
++	node = llist_del_all(&dma_pmd_dead_pools);
++	if (node) {
++		mutex_lock(&dma_pmd_pools_lock);
++		llist_for_each_entry_safe(pool, ptmp, node, dead_node)
++			list_del(&pool->node);
++		mutex_unlock(&dma_pmd_pools_lock);
++
++		llist_for_each_entry_safe(pool, ptmp, node, dead_node)
++			kfree(pool);
++	}
++}
++
++static DECLARE_WORK(dma_pmd_reclaim_work, dma_pmd_reclaim_work_fn);
++
++static void dma_pmd_schedule_reclaim(void)
++{
++	struct workqueue_struct *wq = READ_ONCE(dma_pmd_wq);
++
++	if (likely(wq))
++		queue_work(wq, &dma_pmd_reclaim_work);
++	else
++		schedule_work(&dma_pmd_reclaim_work);
++}
++
++/**
++ * dma_pmd_pool_create - Create a DMA_PMD page pool
++ * @order: Block order to dispense, must be <= PMD_ORDER.
++ * @max_idle_pages: Maximum number of completely idle PMD pages to keep cached in
++ *               the pool before asynchronously releasing excess PMD pages to buddy
++ *               (0 uses default of 16 = 32 MB).
++ *
++ * New PMD physical pages are allocated on demand on the NUMA node of the
++ * calling CPU (the NAPI CPU for RX queue refill, or the application CPU for TX).
++ *
++ * Cost: Process-context control plane; allocates pool metadata structure, and
++ *       on first call the global membership bitmap.
++ * Locking: May sleep (GFP_KERNEL).
++ * Frequency: Rare (driver queue initialization or subsystem init).
++ *
++ * Return: Pointer to the created pool, or NULL on failure.
++ */
++struct dma_pmd_pool *dma_pmd_pool_create(unsigned int order, unsigned int max_idle_pages)
++{
++	struct dma_pmd_pool *pool;
++
++	if (order > PMD_ORDER)
++		return NULL;
++
++	pool = kzalloc(sizeof(*pool), GFP_KERNEL);
++	if (!pool)
++		return NULL;
++
++	kref_init(&pool->refcount);
++	spin_lock_init(&pool->lock);
++	pool->order = order;
++	pool->max_idle_pages = max_idle_pages ? : 16;
++	pool->next_alloc_attempt = jiffies;
++	INIT_LIST_HEAD(&pool->partial);
++	INIT_LIST_HEAD(&pool->idle);
++	INIT_LIST_HEAD(&pool->full);
++
++	mutex_lock(&dma_pmd_pools_lock);
++	if (dma_pmd_meta_init()) {
++		mutex_unlock(&dma_pmd_pools_lock);
++		kfree(pool);
++		return NULL;
++	}
++	list_add(&pool->node, &dma_pmd_pools);
++	mutex_unlock(&dma_pmd_pools_lock);
++
++	return pool;
++}
++EXPORT_SYMBOL(dma_pmd_pool_create);
++
++/**
++ * dma_pmd_pool_destroy - Destroy a DMA_PMD page pool and unmap cached PMD pages
++ * @pool: Pool to destroy
++ *
++ * Frees completely idle 2M pages immediately. Device DMA must be quiesced by
++ * the caller first, but blocks already handed to the networking stack (e.g.,
++ * RX skbs waiting in socket queues or TX skbs in TCP retransmit queues) may
++ * still be in flight; those 2M pages stay on @pool->partial / @pool->full and
++ * keep @pool alive on @dma_pmd_pools via @pool->refcount until their last
++ * blocks free.
++ *
++ * Cost: Control plane teardown; flushes async reclaim workqueue.
++ * Locking: Process context (may sleep in flush_work). Acquires @pool->lock.
++ * Frequency: Rare (driver queue teardown or module unload).
++ *
++ * Return: Always NULL, so callers can write `pool = dma_pmd_pool_destroy(pool)`.
++ */
++struct dma_pmd_pool *dma_pmd_pool_destroy(struct dma_pmd_pool *pool)
++{
++	struct dma_pmd_meta *meta, *tmp;
++	LIST_HEAD(release_list);
++	unsigned long flags;
++
++	if (!pool)
++		return NULL;
++
++	spin_lock_irqsave(&pool->lock, flags);
++	pool->destroyed = true;
++
++	/* Take out the idle PMD pages; the unmap happens outside the lock. */
++	list_splice_init(&pool->idle, &release_list);
++	pool->num_idle_pages = 0;
++
++	spin_unlock_irqrestore(&pool->lock, flags);
++
++	list_for_each_entry_safe(meta, tmp, &release_list, list) {
++		list_del(&meta->list);
++		dma_pmd_release_page(meta);
++	}
++
++	kref_put(&pool->refcount, dma_pmd_pool_free_kref);
++	flush_work(&dma_pmd_reclaim_work);
++	return NULL;
++}
++EXPORT_SYMBOL(dma_pmd_pool_destroy);
++
++/**
++ * __dma_pmd_free_page - Recycle a freed block back into its DMA_PMD pool
++ * @page: Block being freed
++ *
++ * Called from __free_pages_prepare() when a block's refcount reaches 0.
++ * Marks the block index available in @meta->dirty_bitmap[] (or @meta->free_bitmap[]
++ * when init_on_free zeroes it). If the PMD page becomes completely idle and the
++ * pool exceeds @max_idle_pages, queues the PMD page to dma_pmd_free_list for
++ * asynchronous unmapping and buddy release.
++ *
++ * Cost: O(1) bit set under spinlock (~15-20 cycles).
++ * Locking: Runs inside the rcu_read_lock() section opened by
++ *          dma_pmd_free_page(), and acquires @pool->lock (irqsave).
++ *          Safe from any context (IRQ, softirq, process). Never sleeps.
++ * Frequency: Very high (called on every kfree_skb / napi_consume_skb / put_page
++ *            for buffers allocated from an dma_pmd_pool).
++ *
++ * Return: true if the page belonged to a DMA_PMD pool and was recycled, false
++ *         if it is a normal system page that should be freed by the buddy
++ *         allocator.
++ */
++bool __dma_pmd_free_page(struct page *page)
++{
++	struct dma_pmd_meta *meta = dma_pmd_meta_of_pfn(page_to_pfn(page));
++	unsigned int nr = DMA_PMD_BLOCKS(meta->pool->order), idx;
++	struct dma_pmd_pool *pool = meta->pool;
++	unsigned long pfn = page_to_pfn(page);
++	bool should_release = false;
++	bool zeroed_on_free = false;
++	unsigned int avail;
++	unsigned long flags;
++
++	idx = (pfn - dma_pmd_meta_to_pfn(meta)) >> pool->order;
++
++	/*
++	 * Never reuse or return a hwpoisoned block to buddy: leave its bit
++	 * clear in free_bitmap/dirty_bitmap so the PMD page stays pinned and isolated.
++	 */
++	if (unlikely(folio_contain_hwpoisoned_page(page_folio(page)))) {
++		pr_err_once("dma_pmd: poisoned block at pfn %lu, leaking it to keep pool %p intact\n",
++			    pfn, pool);
++		return true;
++	}
++
++	/*
++	 * Reject double frees (bit already set in free_bitmap or dirty_bitmap),
++	 * out-of-range indices, or mismatched orders: leak the block rather than
++	 * corrupt the pool or hand a live PMD page's block to the buddy allocator.
++	 */
++	if (WARN_ON_ONCE(idx >= nr || compound_order(page) != pool->order ||
++			 test_bit(idx, meta->free_bitmap) ||
++			 test_bit(idx, meta->dirty_bitmap)))
++		return true;
++
++	/*
++	 * Pooled blocks stay allocated from buddy until dma_pmd_release_page_rcu()
++	 * (which runs KASAN/KMSAN/pgalloc_tag_sub via __free_pages()), and never
++	 * come from HIGHMEM (CONFIG_DMA_PMD is 64-bit only).
++	 */
++	if (want_init_on_free()) {
++		memset(page_address(page), 0, PAGE_SIZE << pool->order);
++		zeroed_on_free = true;
++	}
++
++	spin_lock_irqsave(&pool->lock, flags);
++
++	if (WARN_ON_ONCE(test_bit(idx, meta->free_bitmap) ||
++			 test_bit(idx, meta->dirty_bitmap))) {
++		spin_unlock_irqrestore(&pool->lock, flags);
++		return true;
++	}
++
++	if (zeroed_on_free) {
++		__set_bit(idx, meta->free_bitmap);
++		meta->nr_free++;
++	} else {
++		__set_bit(idx, meta->dirty_bitmap);
++		meta->nr_dirty++;
++	}
++	avail = dma_pmd_meta_avail(meta);
++	pool->block_free_cnt++;
++
++	if (avail == 1 && !pool->destroyed)
++		list_move(&meta->list, &pool->partial);
++
++	if (avail == nr) {
++		if (pool->destroyed || pool->num_idle_pages >= pool->max_idle_pages) {
++			list_del_init(&meta->list);
++			llist_add(&meta->llnode, &dma_pmd_free_list);
++			should_release = true;
++		} else {
++			list_move(&meta->list, &pool->idle);
++			pool->num_idle_pages++;
++		}
++	}
++	spin_unlock_irqrestore(&pool->lock, flags);
++
++	if (should_release)
++		dma_pmd_schedule_reclaim();
 +
 +	return true;
 +}
++EXPORT_SYMBOL(__dma_pmd_free_page);
 +
-+/**
-+ * dma_pmd_meta_populate - back the array for [@start_pfn, @end_pfn)
-+ * @array: base virtual address of the reservation
-+ * @nframes: number of valid PMD frames in the reservation
-+ * @start_pfn: first PFN of the range
-+ * @end_pfn: one past the last PFN of the range
-+ * @force: if true, populate every chunk unconditionally (hotplug / arena)
-+ *
-+ * Maps and zeroes one page of the array per chunk of the range that contains
-+ * at least one online RAM PFN (or unconditionally when @force is set), and
-+ * skips chunks that are already mapped. A chunk
-+ * is DMA_PMD_CHUNK_PAGES of physical address space: 64MB normally, 32MB when
-+ * spinlock debugging doubles the entry size.
-+ * Locking: caller must hold @dma_pmd_meta_mutex.
-+ *
-+ * Return: 0, or -ENOMEM with the range partially backed.
-+ */
-+static int dma_pmd_meta_populate(struct dma_pmd_meta *array, unsigned long nframes,
-+				 unsigned long start_pfn, unsigned long end_pfn, bool force)
++static int __init dma_pmd_init(void)
 +{
-+	unsigned long chunk, last, pfn;
-+
-+	lockdep_assert_held(&dma_pmd_meta_mutex);
-+
-+	end_pfn = min(end_pfn, nframes << PMD_ORDER);
-+	if (start_pfn >= end_pfn)
-+		return 0;
-+
-+	chunk = start_pfn >> DMA_PMD_CHUNK_ORDER;
-+	last = (end_pfn - 1) >> DMA_PMD_CHUNK_ORDER;
-+
-+	for (; chunk <= last; chunk++) {
-+		unsigned long addr, base = chunk << DMA_PMD_CHUNK_ORDER;
-+		int ret, nid = NUMA_NO_NODE;
-+		bool has_valid = false;
-+		struct page *page;
-+
-+		addr = (unsigned long)array + (chunk << PAGE_SHIFT);
-+		if (vmalloc_to_page((void *)addr)) {
-+			set_bit(chunk, dma_pmd_chunk_bitmap);
-+			continue;		/* already backed */
-+		}
-+
-+		if (force) {
-+			has_valid = true;
-+		} else {
-+			for (pfn = base; pfn < base + DMA_PMD_CHUNK_PAGES;
-+			     pfn += 1UL << PMD_ORDER) {
-+				if (dma_pmd_pfn_online(pfn)) {
-+					has_valid = true;
-+					nid = page_to_nid(pfn_to_page(pfn));
-+					if (nid != NUMA_NO_NODE && node_online(nid))
-+						break;
-+					nid = NUMA_NO_NODE;
-+				}
-+			}
-+		}
-+		if (!has_valid)
-+			continue;	/* pure hole, leave it unmapped */
-+
-+		page = alloc_pages_node(nid, GFP_KERNEL | __GFP_ZERO, 0);
-+		if (!page)
-+			return -ENOMEM;
-+
-+		ret = apply_to_page_range(&init_mm, addr, PAGE_SIZE,
-+					  dma_pmd_meta_set_pte, &page);
-+		if (ret) {
-+			__free_page(page);
-+			return ret;
-+		}
-+		if (page) {
-+			/*
-+			 * Unreachable while dma_pmd_meta_mutex serialises
-+			 * every install, but kept so that the defensive
-+			 * pte_none() re-test in dma_pmd_meta_set_pte() can
-+			 * never leak the page it declined to consume.
-+			 */
-+			__free_page(page);
-+			set_bit(chunk, dma_pmd_chunk_bitmap);
-+			continue;
-+		}
-+
-+		flush_cache_vmap(addr, addr + PAGE_SIZE);
-+		/* Pair with test_bit_acquire() in readers. */
-+		smp_mb__before_atomic();
-+		set_bit(chunk, dma_pmd_chunk_bitmap);
-+		dma_pmd_meta_pages++;
-+	}
++	/*
++	 * Reclaim frees memory, so it must not queue behind arbitrary work on
++	 * system_wq when the machine is already short of it. Failure is not
++	 * fatal: dma_pmd_schedule_reclaim() falls back to system_wq.
++	 */
++	dma_pmd_wq = alloc_workqueue("dma_pmd", WQ_MEM_RECLAIM, 0);
++	if (!dma_pmd_wq)
++		pr_warn("dma_pmd: no reclaim workqueue, falling back to system_wq\n");
 +
 +	return 0;
 +}
-+
-+bool dma_pmd_meta_ensure_pfn(unsigned long pfn, bool can_block)
-+{
-+	int ret;
-+
-+	if (likely(__dma_pmd_meta_of_pfn(pfn) != &dma_pmd_meta_nil))
-+		return true;
-+
-+	if (!can_block || !dma_pmd_meta_base() ||
-+	    (pfn >> PMD_ORDER) >= dma_pmd_meta_nframes)
-+		return false;
-+
-+	mutex_lock(&dma_pmd_meta_mutex);
-+	ret = dma_pmd_meta_populate(dma_pmd_meta_base(), dma_pmd_meta_nframes,
-+				    pfn, pfn + (1UL << PMD_ORDER), true);
-+	mutex_unlock(&dma_pmd_meta_mutex);
-+
-+	return !ret;
-+}
-+EXPORT_SYMBOL(dma_pmd_meta_ensure_pfn);
-+
-+/**
-+ * dma_pmd_meta_init - Reserve and populate the sparse per-PMD metadata array
-+ *
-+ * Populates all present RAM pages before publishing @dma_pmd_meta_array so
-+ * no concurrent reader ever sees an unmapped entry.
-+ *
-+ * Return: 0 on success, or negative errno on failure.
-+ */
-+int dma_pmd_meta_init(void)
-+{
-+	unsigned long nframes, nchunks, size;
-+	struct dma_pmd_meta *array;
-+	struct vm_struct *vm;
-+	int ret = 0;
-+
-+	if (likely(dma_pmd_meta_base()))
-+		return 0;
-+
-+	mutex_lock(&dma_pmd_meta_mutex);
-+	if (dma_pmd_meta_array)
-+		goto out_unlock;
-+
-+	nframes = DIV_ROUND_UP(max3((unsigned long)max_pfn,
-+				    (unsigned long)max_possible_pfn,
-+				    (unsigned long)min_t(u64, iomem_resource.end >> PAGE_SHIFT,
-+							 1ULL << (MAX_PHYSMEM_BITS - PAGE_SHIFT))),
-+			       1UL << PMD_ORDER);
-+	size = PAGE_ALIGN(nframes << DMA_PMD_META_SHIFT);
-+	nchunks = size >> PAGE_SHIFT;
-+
-+	dma_pmd_chunk_bitmap = bitmap_zalloc(nchunks, GFP_KERNEL);
-+	if (!dma_pmd_chunk_bitmap) {
-+		ret = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	vm = get_vm_area(size, VM_MAP);
-+	if (!vm) {
-+		bitmap_free(dma_pmd_chunk_bitmap);
-+		dma_pmd_chunk_bitmap = NULL;
-+		ret = -ENOMEM;
-+		goto out_unlock;
-+	}
-+	array = vm->addr;
-+
-+	ret = dma_pmd_meta_populate(array, nframes, 0, max_pfn, false);
-+	if (ret) {
-+		struct page *p, *next;
-+		unsigned long chunk;
-+		LIST_HEAD(pages);
-+
-+		for_each_set_bit(chunk, dma_pmd_chunk_bitmap, nchunks) {
-+			p = vmalloc_to_page((void *)array + (chunk << PAGE_SHIFT));
-+			if (p)
-+				list_add(&p->lru, &pages);
-+		}
-+		dma_pmd_meta_pages = 0;
-+		free_vm_area(vm);
-+		bitmap_free(dma_pmd_chunk_bitmap);
-+		dma_pmd_chunk_bitmap = NULL;
-+		list_for_each_entry_safe(p, next, &pages, lru) {
-+			list_del_init(&p->lru);
-+			__free_page(p);
-+		}
-+		goto out_unlock;
-+	}
-+
-+	/*
-+	 * Publish @nframes and the populated pages before the array pointer:
-+	 * readers pair with smp_load_acquire(&dma_pmd_meta_array).
-+	 */
-+	dma_pmd_meta_nframes = nframes;
-+	/* Pairs with smp_load_acquire() in dma_is_pmd_page(). */
-+	smp_store_release(&dma_pmd_meta_array, array);
-+
-+	pr_info("dma_pmd: %lu frames, %lu KB of KVA, %lu pages backed (%lu KB)\n",
-+		nframes, size / 1024, dma_pmd_meta_pages,
-+		dma_pmd_meta_pages * (PAGE_SIZE / 1024));
-+
-+out_unlock:
-+	mutex_unlock(&dma_pmd_meta_mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL(dma_pmd_meta_init);
++subsys_initcall(dma_pmd_init);
 diff --git a/drivers/iommu/dma-pmd-priv.h b/drivers/iommu/dma-pmd-priv.h
-new file mode 100644
-index 0000000000000..a5ebede11dac2
---- /dev/null
+index a5ebede11dac2..99bd7d77fd4ef 100644
+--- a/drivers/iommu/dma-pmd-priv.h
 +++ b/drivers/iommu/dma-pmd-priv.h
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-+#ifndef _DRIVERS_IOMMU_DMA_PMD_PRIV_H
-+#define _DRIVERS_IOMMU_DMA_PMD_PRIV_H
-+
-+#include <linux/dma-pmd.h>
-+#include <linux/spinlock.h>
-+#include <linux/types.h>
-+
-+#ifdef CONFIG_DMA_PMD
+@@ -3,37 +3,150 @@
+ #define _DRIVERS_IOMMU_DMA_PMD_PRIV_H
+ 
+ #include <linux/dma-pmd.h>
++#include <linux/kref.h>
++#include <linux/list.h>
++#include <linux/llist.h>
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+ 
+ #ifdef CONFIG_DMA_PMD
+ 
++#define DMA_PMD_BLOCKS(order)		(1U << (PMD_ORDER - (order)))
 +
 +/*
-+ * Normally 128 B per entry (64 KB per GB of RAM), or 256 B when spinlock
-+ * debugging enlarges struct dma_pmd_meta. Verified by static_assert().
++ * Locking
++ * -------
++ * dma_pmd_meta_mutex	Serialises population of dma_pmd_meta_array. Taken
++ *			from init and on-demand from dma_pmd_meta_ensure_pfn()
++ *			when can_block is true. It is not nested with pool->lock
++ *			or meta->map_lock, and sits inside dma_pmd_pools_lock
++ *			when dma_pmd_pool_create() calls dma_pmd_meta_init().
++ *
++ * dma_pmd_pools_lock	Mutex over the list of live pools. Outermost of the
++ *			three, and it must not be taken from a context that
++ *			cannot sleep.
++ *
++ * pool->lock		IRQ-safe spinlock over one pool's partial/idle/full
++ *			lists and its counters. The alloc and free fast paths
++ *			take it on its own.
++ *
++ * meta->map_lock	IRQ-safe spinlock over one PMD frame's domains_mapped
++ *			bitmap. Innermost, and never held across anything that
++ *			sleeps.
 + */
-+#if defined(CONFIG_DEBUG_SPINLOCK) || defined(CONFIG_DEBUG_LOCK_ALLOC)
-+#define DMA_PMD_META_SHIFT		8
-+#else
-+#define DMA_PMD_META_SHIFT		7
-+#endif
-+#define DMA_PMD_META_SIZE		BIT(DMA_PMD_META_SHIFT)
++
+ /*
+- * Normally 128 B per entry (64 KB per GB of RAM), or 256 B when spinlock
+- * debugging enlarges struct dma_pmd_meta. Verified by static_assert().
++ * 256 B per entry (128 KB per GB of RAM). Verified by static_assert().
+  */
+-#if defined(CONFIG_DEBUG_SPINLOCK) || defined(CONFIG_DEBUG_LOCK_ALLOC)
+ #define DMA_PMD_META_SHIFT		8
+-#else
+-#define DMA_PMD_META_SHIFT		7
+-#endif
+ #define DMA_PMD_META_SIZE		BIT(DMA_PMD_META_SHIFT)
+ 
+ /**
+  * struct dma_pmd_meta - Metadata for a single DMA_PMD page
+- * @pooled: True while this page is owned by an dma_pmd_pool (at offset 0)
++ * @pooled:	True while this page is owned by an dma_pmd_pool (offset 0)
++ *		read locklessly by dma_is_pmd_page().
++ * @nr_free:	Number of zeroed available blocks in @free_bitmap
++ * @nr_dirty:	Number of dirty available blocks in @dirty_bitmap
++ * @map_lock:	Spinlock protecting slow-path updates to @domains_mapped
++ *
++ * Map fast path:
++ * @domains_mapped: One bit per domain index: set once this PMD page's leaf
++ *		PTE is installed in that domain.
++ *
++ * Alloc/free fast path, all under pool->lock:
++ * @pool:	Owning dma_pmd_pool (holds a kref on the pool while pooled)
++ * @list:	Node in pool->partial, pool->idle or pool->full
++ *
++ * Slow path only (disjoint lifetimes):
++ * @llnode:	Node in lockless dma_pmd_free_list for async buddy release
++ * @rcu:	RCU head used to defer buddy release past lockless readers
++ *
++ * @free_bitmap: Bitmap of zeroed available block indices (up to 1 << PMD_ORDER)
++ * @dirty_bitmap: Bitmap of dirty available block indices
+  *
+  * Lives in the sparse per-PMD-frame array @dma_pmd_meta_array indexed by
+  * (pfn >> PMD_ORDER). Only chunks covering valid RAM are backed by physical
+- * pages (64 KB per GB of RAM).
++ * pages (128 KB per GB of RAM).
+  */
+ struct dma_pmd_meta {
+ 	bool pooled;
++	u16 nr_free;
++	u16 nr_dirty;
++	spinlock_t map_lock;
++
++	unsigned long domains_mapped;
++
++	struct dma_pmd_pool *pool;
++	struct list_head list;
++
++	union {
++		struct llist_node llnode;
++		struct rcu_head rcu;
++	};
++
++	DECLARE_BITMAP(free_bitmap, 1U << PMD_ORDER) ____cacheline_aligned;
++	DECLARE_BITMAP(dirty_bitmap, 1U << PMD_ORDER) ____cacheline_aligned;
+ } __aligned(DMA_PMD_META_SIZE);
+ 
+ static_assert(offsetof(struct dma_pmd_meta, pooled) == 0);
+ static_assert(sizeof(struct dma_pmd_meta) == DMA_PMD_META_SIZE);
+ 
++static inline unsigned int dma_pmd_meta_avail(const struct dma_pmd_meta *m)
++{
++	return m->nr_free + m->nr_dirty;
++}
 +
 +/**
-+ * struct dma_pmd_meta - Metadata for a single DMA_PMD page
-+ * @pooled: True while this page is owned by an dma_pmd_pool (at offset 0)
++ * struct dma_pmd_pool - Pool managing PMD-backed blocks of a fixed order
 + *
-+ * Lives in the sparse per-PMD-frame array @dma_pmd_meta_array indexed by
-+ * (pfn >> PMD_ORDER). Only chunks covering valid RAM are backed by physical
-+ * pages (64 KB per GB of RAM).
++ * @lock:	Spinlock protecting @partial, @idle, @full, @num_idle_pages,
++ *		block bitmaps and the statistics counters
++ * @order:	Block order managed by this pool (<= PMD_ORDER)
++ * @destroyed:	Set when dma_pmd_pool_destroy() has been called
++ * @partial:	List of PMD pages with at least 1 free block, but not all
++ *		of them (MRU ordered). Candidates for allocation.
++ * @idle:	List of PMD pages whose every usable block is free. Held
++ *		separately because they can be released under pressure.
++ * @full:	List of PMD pages with 0 free blocks
++ * @num_idle_pages: Length of @idle
++ * @max_idle_pages: High watermark of completely idle PMD pages retained in
++ *		@idle before triggering asynchronous release to buddy
++ * @pmd_alloc_cnt: Statistics counter of PMD pages allocated from buddy
++ * @pmd_free_cnt: Statistics counter of PMD pages released back to buddy
++ * @block_alloc_cnt: Statistics counter of block allocations satisfied
++ * @block_free_cnt: Statistics counter of block frees recycled into pool
++ * @next_alloc_attempt: Do not attempt a new order-9 allocation before this time.
++ *		Damps repeated high-order GFP_ATOMIC failures under
++ *		fragmentation, which would otherwise be retried on every
++ *		pool miss from softirq context.
++ * @refcount:	Reference count; held by pool creator and each active PMD page
++ * @node:	Node in the global dma_pmd_pools list
++ * @dead_node:	Node in dma_pmd_dead_pools once @refcount reaches 0
 + */
-+struct dma_pmd_meta {
-+	bool pooled;
-+} __aligned(DMA_PMD_META_SIZE);
++struct dma_pmd_pool {
++	/* First cacheline: hot fields touched on block alloc and free. */
++	spinlock_t		lock;
++	u8			order;
++	bool			destroyed;
++	struct list_head	partial;
++	struct list_head	idle;
++	struct list_head	full;
++	unsigned int		num_idle_pages;
++	unsigned int		max_idle_pages;
 +
-+static_assert(offsetof(struct dma_pmd_meta, pooled) == 0);
-+static_assert(sizeof(struct dma_pmd_meta) == DMA_PMD_META_SIZE);
++	/* Statistics, all updated under @lock. */
++	u64			pmd_alloc_cnt;
++	u64			pmd_free_cnt;
++	u64			block_alloc_cnt;
++	u64			block_free_cnt;
 +
-+extern unsigned long dma_pmd_meta_nframes;
++	/* Cold. */
++	unsigned long		next_alloc_attempt;
++	struct kref		refcount;
++	struct list_head	node;
++	struct llist_node	dead_node;
++} ____cacheline_aligned;
 +
-+static inline struct dma_pmd_meta *dma_pmd_meta_base(void)
-+{
-+	/*
-+	 * Acquire pairs with smp_store_release() in dma_pmd_meta_init():
-+	 * orders both @dma_pmd_meta_nframes and the populated backing pages.
-+	 */
-+	return smp_load_acquire(&dma_pmd_meta_array);
-+}
-+
-+int dma_pmd_meta_init(void);
-+bool dma_pmd_meta_ensure_pfn(unsigned long pfn, bool can_block);
-+struct dma_pmd_meta *dma_pmd_meta_of_pfn(unsigned long pfn);
-+struct dma_pmd_meta *dma_pmd_meta_from_phys(phys_addr_t pa);
-+unsigned long dma_pmd_meta_to_pfn(const struct dma_pmd_meta *m);
-+phys_addr_t dma_pmd_meta_to_phys(const struct dma_pmd_meta *m);
-+
-+#endif /* CONFIG_DMA_PMD */
-+#endif /* _DRIVERS_IOMMU_DMA_PMD_PRIV_H */
+ extern unsigned long dma_pmd_meta_nframes;
+ 
+ static inline struct dma_pmd_meta *dma_pmd_meta_base(void)
 diff --git a/include/linux/dma-pmd.h b/include/linux/dma-pmd.h
-new file mode 100644
-index 0000000000000..07df815945257
---- /dev/null
+index 07df815945257..236be50b7349f 100644
+--- a/include/linux/dma-pmd.h
 +++ b/include/linux/dma-pmd.h
-@@ -0,0 +1,36 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-+/* See Documentation/core-api/dma-pmd.rst for the architecture overview. */
-+#ifndef _LINUX_DMA_PMD_H
-+#define _LINUX_DMA_PMD_H
+@@ -3,9 +3,12 @@
+ #ifndef _LINUX_DMA_PMD_H
+ #define _LINUX_DMA_PMD_H
+ 
+-#include <linux/compiler.h>
+-#include <linux/mm_types.h>
+ #include <linux/types.h>
++#include <linux/mm.h>
++#include <linux/rcupdate.h>
 +
-+#include <linux/compiler.h>
-+#include <linux/mm_types.h>
-+#include <linux/types.h>
++struct device;
++struct dma_pmd_pool;
+ 
+ #ifdef CONFIG_DMA_PMD
+ 
+@@ -25,6 +28,56 @@ static inline bool dma_is_pmd_page(unsigned long pfn)
+ 	return __dma_is_pmd_page(pfn);
+ }
+ 
++bool __dma_pmd_free_page(struct page *page);
 +
-+#ifdef CONFIG_DMA_PMD
-+
-+extern void *dma_pmd_meta_array;
-+
-+bool __dma_is_pmd_page(unsigned long pfn);
-+
-+static inline bool dma_is_pmd_page(unsigned long pfn)
++static inline bool dma_pmd_free_page(struct page *page)
 +{
-+	/*
-+	 * Acquire pairs with smp_store_release() in dma_pmd_meta_init():
-+	 * orders both @dma_pmd_meta_nframes and the populated backing pages.
-+	 */
-+	if (likely(!smp_load_acquire(&dma_pmd_meta_array)))
-+		return false;
++	bool ret;
 +
-+	return __dma_is_pmd_page(pfn);
++	rcu_read_lock();
++	ret = dma_is_pmd_page(page_to_pfn(page)) && __dma_pmd_free_page(page);
++	rcu_read_unlock();
++
++	return ret;
 +}
 +
-+#else /* !CONFIG_DMA_PMD */
++/*
++ * External API: dma_pmd_pool (streaming DMA page pool)
++ * -----------------------------------------------------
++ * Opportunistic drop-in for alloc_pages_node() that carves fixed-order
++ * (order <= PMD_ORDER) pages out of 2MB physically contiguous buddy pages.
++ *
++ * - Creation (dma_pmd_pool_create):
++ *   Records @order and @max_idle_pages; no 2MB pages or IOMMU mappings
++ *   are allocated yet.
++ *
++ * - Allocation (dma_pmd_pool_alloc_node / dma_pmd_pool_alloc):
++ *   Dispenses an order-@order compound page with refcount 1 (or NULL on
++ *   unsupported GFP flags / OOM, so callers fall back to alloc_pages_node()).
++ *   On a pool miss, allocates a 2MB page on @nid and splits it into subpages.
++ *
++ * - Mapping (dma_map_page / dma_map_single / dma_map_phys / dma_map_sg):
++ *   Intercepts single-buffer and scatterlist maps. On first use of a 2MB page
++ *   in an IOMMU domain, lazily installs a 2MB bidirectional leaf PTE in the
++ *   domain's DMA_PMD IOVA window; subsequent maps are O(1) arithmetic.
++ *
++ * - Unmapping & Recycling (dma_unmap_* / put_page):
++ *   dma_unmap_page/single/phys/sg() is a no-op for IOVAs in the DMA_PMD window,
++ *   keeping the 2MB PTE resident across buffer reuse. When the page's last
++ *   reference drops (put_page() / __free_pages()), __free_pages_prepare()
++ *   intercepts it via dma_pmd_free_page() and recycles the subpage back into
++ *   @pool.
++ *
++ * - Unmap & Buddy Release (reclaim / shrinker / dma_pmd_pool_destroy):
++ *   A 2MB page is released back to the buddy allocator only when all of its
++ *   subpages are free in @pool and either the pool exceeds @max_idle_pages, the
++ *   system shrinker reclaims idle pages, or dma_pmd_pool_destroy() is called.
++ *   Before __free_pages(PMD_ORDER) is called, the 2MB leaf PTE is unmapped from
++ *   every domain that mapped it and the IOTLB is synchronously flushed.
++ */
++struct dma_pmd_pool *dma_pmd_pool_create(unsigned int order, unsigned int max_idle_pages);
++struct dma_pmd_pool *dma_pmd_pool_destroy(struct dma_pmd_pool *pool);
 +
-+static inline bool dma_is_pmd_page(unsigned long pfn)
+ #else /* !CONFIG_DMA_PMD */
+ 
+ static inline bool dma_is_pmd_page(unsigned long pfn)
+@@ -32,5 +85,21 @@ static inline bool dma_is_pmd_page(unsigned long pfn)
+ 	return false;
+ }
+ 
++static inline bool dma_pmd_free_page(struct page *page)
 +{
 +	return false;
 +}
 +
-+#endif /* CONFIG_DMA_PMD */
-+#endif /* _LINUX_DMA_PMD_H */
++static inline struct dma_pmd_pool *
++dma_pmd_pool_create(unsigned int order, unsigned int max_idle_pages)
++{
++	return NULL;
++}
++
++static inline struct dma_pmd_pool *dma_pmd_pool_destroy(struct dma_pmd_pool *pool)
++{
++	return NULL;
++}
++
+ #endif /* CONFIG_DMA_PMD */
+ #endif /* _LINUX_DMA_PMD_H */
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 12fac9084c483..e8e9905cdea5b 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -17,6 +17,7 @@
+ #include <linux/stddef.h>
+ #include <linux/mm.h>
+ #include <linux/highmem.h>
++#include <linux/dma-pmd.h>
+ #include <linux/interrupt.h>
+ #include <linux/jiffies.h>
+ #include <linux/compiler.h>
+@@ -1327,6 +1328,9 @@ static __always_inline bool __free_pages_prepare(struct page *page,
+ 
+ 	VM_BUG_ON_PAGE(PageTail(page), page);
+ 
++	if (unlikely(dma_pmd_free_page(page)))
++		return false;
++
+ 	trace_mm_page_free(page, order);
+ 	kmsan_free_page(page, order);
+ 
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
 
