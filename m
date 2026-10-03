@@ -1,56 +1,56 @@
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A13A74A3F38
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:23:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBD014A2068
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:23:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.70
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791062603; cv=none; b=mcX1iqK/W7qgbM/KzEl/psTHI89rhP47QeLGaXydby6IWTH3+qCjEpglbzuCbN9USsdqbiGr8TOFtHxQYBQOse3aFZdpDVg3nfsoNi8ricIualtQPLiHErGtO1GG4bjiqbXUHKrzgwWCBxZf8au3oZ8PSQRM+S1GaHozrRB1s1U=
+	t=1791062606; cv=none; b=rKB5PDVAx3ONbU4Cc+rC+jmmLRIIn7yfD5Ebcvfu4hShJZG0Ci36K9qFc3gIXxv/lCXaxONt1IDkSWDF5QBs24cE4f0VXnTrf83YxqbHxQcyXsoWBBGmKUr1jVa9tptfzzgqm6IBsV5quwyBmS4QbI0de3X4pKz1SJxjtrLO0RY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791062603; c=relaxed/simple;
-	bh=8ZNIlyr1jf4wemFQxYBClG2qYiJuLZwAwwnYI0RRw10=;
+	s=arc-20240116; t=1791062606; c=relaxed/simple;
+	bh=jMV8cgJDxEPGY0Ge+j+1w7LUuIYbV6z8Yuhe0nrl7DE=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=h+7JTf+02BnQZYSElfr91Jzi2HrYeZRWkdOh5ANX/qYeogn+k/FdIA9yiMlscPIuHmPLQ4xbQjDS//MefcnpnOKY6dpoJKtgfaX3Nx2y9AB0lFI4KGk3e5wTCJKgXpI0Ed8Vm/uboa0mvfKH5twwLLujcZnZe4/gAdeKZQo+mAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=EaI19jnq; arc=none smtp.client-ip=209.85.208.72
+	 To:Cc:Content-Type; b=VgjTVY6fjck3DzH2Tla3n57+JXadQSxJ944iqqGEOktxoGel+owIhk7upByZcm4bJCcb/75OyA/dazyGL5yUrK9FabanXSrl0IUnqOUTir74mXeV+EropXJTmgcdTOMGBrocsYs/x1vaOT18UcQaoaEqLIQp8ztjLN12DWYTGfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dfYqdT3s; arc=none smtp.client-ip=209.85.218.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="EaI19jnq"
-Received: by mail-ed1-f72.google.com with SMTP id 4fb4d7f45d1cf-6ae14ecef5fso456539a12.0
-        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:23:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dfYqdT3s"
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-c2e5cad0956so100573766b.3
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:23:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791062593; x=1791667393; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1791062596; x=1791667396; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=o3OL/zoqqGDD0aU88aaqUVRrKPVNP3UBVkh8EHXtEjE=;
-        b=EaI19jnqQRMspNtlryohYtM6oW27d1M+QoLx/eqTy+ssYR/1g2MVNtB3DDRCuVwjId
-         0Js17WgpL3Hzj2muZSb6NUdT+14KmCHXuAHAe8UqVIrdy44ov2YCCpszlbobLcGXBO2y
-         T2WCiGbxviG9Mg/oTtdTZX+m1ZvTWFvqAgQpVMWQSkvxGNYrgGZdkK1wObETDLg1GPYg
-         U06odDv8Yg6OQ6AIiIHSFyWrnNlTjEZYwzM202PeuFFyH8SDjLFu+HPKYykonbWHVq/T
-         qSOicAXq+wxXcwGl9tlr/yuQI/oAnrtG4wfoVx3lXY+OIqueeDr+UeS5WOjRmhFsA+w8
-         wDmA==
+        bh=G22V7xnwxmYg316SURjvKl+D8LO21QtdPNHOpoX1sic=;
+        b=dfYqdT3sVcjTWsRjYx7PnJIXfpTHHWk+lZeqmqev1I/fVqy7Z6puRGoiVeVVkJEDs6
+         k/2gIfL/OzE93ltwGgJ6dCl6+xoOy6xMzIARelAtESDjTUITPHV51+6azghqP7UVo5s9
+         91P1XUBF7Q9cZ0mfp+1EKBTCfAC0Qwovi2opCmYE1TPUt99Rbtd+AxhajDho9sor7lXx
+         7dfe/PYXrWCs+nVnwxEhO3+dOuSJPn2b5Lnw/nj7CANrLbYrXBWc4DWSgjbH++Ggi+Ky
+         DXb8hEFXzEusjqpuZ4HCKg00TKo7R9KqtWQ/AHINWlAuSoY2Y9UYZnoUP6rnuXYJu2yN
+         Mmyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791062593; x=1791667393;
+        d=1e100.net; s=20260707; t=1791062596; x=1791667396;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=o3OL/zoqqGDD0aU88aaqUVRrKPVNP3UBVkh8EHXtEjE=;
-        b=mS766EOd+xo0UwM9ai/nI8+67/F23LrO/MdVxA3gDBrGAYyO+z+nsbmu93CvAmxYjW
-         iQnIGXcXvvdeclPQMsru1dqY8zdIT9WJPRL8k1tFBH6kJE/9KOTcay05Ndah1S8TQo1B
-         kvsYgSWvPpYPvK/a/1n0ERi3Rn2xziVyOS2v6jnKVv5SBmV0naLDt6sDW7WICghP8b2e
-         6u3sYTNxCzcF9xzzDFVOjPS//aCWOHdIvSqEkJqEaFviPyYkzCsZDcdD056XHQP0VGcW
-         8wOiP7IRhs4ixmGGHy/65GcZjNOkWPv0TeJIGRVVVzlSRwmU81LtQdYHDxlaKFOI/NfR
-         P1Zw==
-X-Forwarded-Encrypted: i=1; AKwUvBykP0/cBKV+Miv9LQ/PPW+lIDptuMYlfeIaGrlOVa2CCRO8HNldDPLbI65TKKAmtNJpYuXH6A==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJHH33vYfyOw6Rw4hASKgfyC2RIQ00tQpwJt17MCmiTaIvZ56x3
-	3kbq4WI9sg9TblP+DMTqbMUghCo86UWLww6G8FgolAbVQUJhshTiTs330WS4s/+5a4RML6b+Wdw
-	g0usccA==
-X-Received: from edaa13.prod.google.com ([2002:a05:6402:24cd:b0:6ac:c62c:c5e3])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6402:461a:b0:6af:9bef:cf6d
- with SMTP id 4fb4d7f45d1cf-6af9e2fc8eemr4684173a12.25.1791062592978; Sat, 03
- Oct 2026 14:23:12 -0700 (PDT)
-Date: Sat,  3 Oct 2026 21:22:39 +0000
+        bh=G22V7xnwxmYg316SURjvKl+D8LO21QtdPNHOpoX1sic=;
+        b=oRuReixfyplQo97J0ZhBvbVOEHoVTmfH56sDeRgkxJNNU9tKpmiZuOYwDtoO8XbDI+
+         R3V++Kqx9ltL4/jD/Rk+t+jKsD3uHEeOGf3dCbA+N5MmHyK0DNckVoh5og8ZyNfEn24y
+         sl8rpodj7fHcK1798CEuQycOu8jGf1mWlG6x268IuJoBuHlVjraFd+y3ri2A6iMywuuy
+         yn3d/W7oZj0XJmPhrpWI6jvhMjU8g/cdYhFIwxMlwua8sYRmhVzhZLlRCnHMQF2pJyP/
+         nP/WAG/chyJoqqZY/qlKA0fF6gNS1Dn+O1PDmtlig2UftK+re7Z2hGQWVHK9O5oHHCt/
+         ZiNA==
+X-Forwarded-Encrypted: i=1; AKwUvBywyQoQJZn5COTOk9vtWCWq6UJjczjp5cyyAaOw08TategHMvB7poghJHg3Sa3Lq/+LL7mzmg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLAWf7r5Zx6H8ErCYyQ8y0oltYg36gSkR8QhJgFyqo8Dugj2mAx
+	eLHzxlpHzTmIXiwwamYxJeA5l1R0nzlQv9y/iLShGkSeMPh+uwnrcW17A4WRdTFBelhf8uzplmL
+	mMnPrqA==
+X-Received: from edrm21.prod.google.com ([2002:aa7:d355:0:b0:6ae:152a:a437])
+ (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6402:350a:b0:6ac:6318:ab1e
+ with SMTP id 4fb4d7f45d1cf-6af9e334a3bmr5072182a12.24.1791062595665; Sat, 03
+ Oct 2026 14:23:15 -0700 (PDT)
+Date: Sat,  3 Oct 2026 21:22:41 +0000
 In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,9 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20261003212241.3432303-1-lrizzo@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261003212241.3432303-21-lrizzo@google.com>
-Subject: [RFC: DMA_PMD 20/22] net/idpf: Use DMA_PMD memory for tx header
- bounce buffers
+Message-ID: <20261003212241.3432303-23-lrizzo@google.com>
+Subject: [RFC: DMA_PMD 22/22] iommu/dma: Add DMA_PMD statistics and debugfs
 From: Luigi Rizzo <lrizzo@google.com>
 To: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
@@ -83,192 +82,417 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafae
 	linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-When dev->dma_pmd_tx_hdrs is enabled, allocate a MAX_TCP_HEADER
-bounce buffer per TX buffer slot out of the DMA_PMD arena. When the
-linear portion of a transmitted packet is at most MAX_TCP_HEADER bytes,
-copy it into the pre-mapped bounce buffer and set the SQE unmap length
-to 0 instead of calling dma_map_single()/dma_unmap_page() on every
-packet.
+DMA_PMD pools fail silently. dma_pmd_pool_alloc() returns NULL for four
+distinct reasons - allocation backoff, the global DMA_PMD page ceiling, an
+PMD_ORDER allocation failure, and a split_page_compound() rejection - and
+every caller quietly falls back to a plain page, so a pool that has
+stopped pooling looks exactly like one that is working. The map path is no
+better: a buffer can be mapped individually because the domain has no
+usable IOVA window, because the domain has no 2MB page size, or because
+the PMD_ORDER page mapping itself failed, and none of that was observable
+either. The only symptom is a throughput loss with no counter to point at.
+
+Add a counter for each of those cases plus the number of 2M page mappings
+established and dropped, and export them, along with the existing per-pool
+statistics, through /sys/kernel/debug/dma_pmd/pools.
+
+The new counters are atomic64_t rather than being folded into the existing
+lock-protected statistics because their update sites cannot take
+pool->lock: dma_pmd_add_page() runs outside it, and the map slow path
+holds p2m->map_lock, so taking pool->lock there would invert the order
+against dma_pmd_domain_release().
+
+Also emit a one-shot warning on the first PMD_ORDER allocation failure.
+That request carries __GFP_NOWARN, so the page allocator says nothing, and
+this is the one failure mode that is worth a line in dmesg rather than a
+counter somebody has to know to look at.
 
 Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 ---
- .../ethernet/intel/idpf/idpf_singleq_txrx.c   |  6 ++---
- drivers/net/ethernet/intel/idpf/idpf_txrx.c   | 21 ++++++++++++---
- drivers/net/ethernet/intel/idpf/idpf_txrx.h   | 27 ++++++++++++++++++-
- include/net/libeth/tx.h                       |  5 ++--
- 4 files changed, 50 insertions(+), 9 deletions(-)
+ drivers/iommu/dma-pmd-map.c  |  16 +++-
+ drivers/iommu/dma-pmd-pool.c | 143 ++++++++++++++++++++++++++++++++---
+ drivers/iommu/dma-pmd-priv.h |  43 ++++++++++-
+ 3 files changed, 186 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_singleq_txrx.c b/drivers/net/ethernet/intel/idpf/idpf_singleq_txrx.c
-index e3ddf18dcbf51..24a2dfec6212d 100644
---- a/drivers/net/ethernet/intel/idpf/idpf_singleq_txrx.c
-+++ b/drivers/net/ethernet/intel/idpf/idpf_singleq_txrx.c
-@@ -261,7 +261,7 @@ static void idpf_tx_singleq_map(struct idpf_tx_queue *tx_q,
+diff --git a/drivers/iommu/dma-pmd-map.c b/drivers/iommu/dma-pmd-map.c
+index 76cb5d01cb1e8..46c6ab5c1b7de 100644
+--- a/drivers/iommu/dma-pmd-map.c
++++ b/drivers/iommu/dma-pmd-map.c
+@@ -468,8 +468,13 @@ dma_addr_t dma_pmd_dma_map_phys(struct device *dev, struct iommu_domain *domain,
+ 		else
+ 			ret = dma_pmd_window_assign(dev, domain, win);
  
- 	tx_desc = &tx_q->base_tx[i];
+-		if (ret)
++		if (ret) {
++			if (ret == -EOPNOTSUPP)
++				atomic64_inc(&meta->pool->fallback_nopool);
++			else
++				atomic64_inc(&meta->pool->fallback_nowindow);
+ 			return DMA_MAPPING_ERROR;
++		}
+ 		win_size = READ_ONCE(win->size);
+ 	}
  
--	dma = dma_map_single(tx_q->dev, skb->data, size, DMA_TO_DEVICE);
-+	dma = idpf_tx_map_hdr(tx_q, skb, first, size);
- 
- 	/* write each descriptor with CRC bit */
- 	if (idpf_queue_has(CRC_EN, tx_q))
-@@ -274,8 +274,7 @@ static void idpf_tx_singleq_map(struct idpf_tx_queue *tx_q,
- 			return idpf_tx_singleq_dma_map_error(tx_q, skb,
- 							     first, i);
- 
--		/* record length, and DMA address */
--		dma_unmap_len_set(tx_buf, len, size);
-+		/* record DMA address */
- 		dma_unmap_addr_set(tx_buf, dma, dma);
- 		tx_buf->type = LIBETH_SQE_FRAG;
- 
-@@ -326,6 +325,7 @@ static void idpf_tx_singleq_map(struct idpf_tx_queue *tx_q,
- 
- 		size = skb_frag_size(frag);
- 		data_len -= size;
-+		dma_unmap_len_set(tx_buf, len, size);
- 
- 		dma = skb_frag_dma_map(tx_q->dev, frag, 0, size,
- 				       DMA_TO_DEVICE);
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_txrx.c b/drivers/net/ethernet/intel/idpf/idpf_txrx.c
-index 4311ffa30bb18..4bdec468ea2ce 100644
---- a/drivers/net/ethernet/intel/idpf/idpf_txrx.c
-+++ b/drivers/net/ethernet/intel/idpf/idpf_txrx.c
-@@ -90,6 +90,14 @@ static void idpf_tx_buf_rel_all(struct idpf_tx_queue *txq)
- 	else
- 		idpf_tx_buf_clean(txq);
- 
-+	if (txq->hdr_buf_va) {
-+		dma_free_coherent(txq->dev,
-+				  txq->buf_pool_size * MAX_TCP_HEADER,
-+				  txq->hdr_buf_va, txq->hdr_buf_dma);
-+		txq->hdr_buf_va = NULL;
-+		txq->hdr_buf_dma = 0;
+@@ -482,8 +487,10 @@ dma_addr_t dma_pmd_dma_map_phys(struct device *dev, struct iommu_domain *domain,
+ 	 * device mask.
+ 	 */
+ 	if (unlikely(iova - win->base + size > win_size ||
+-		     iova + size - 1 > min_not_zero(dma_mask, dev->bus_dma_limit)))
++		     iova + size - 1 > min_not_zero(dma_mask, dev->bus_dma_limit))) {
++		atomic64_inc(&meta->pool->fallback_nowindow);
+ 		return DMA_MAPPING_ERROR;
 +	}
-+
- 	kfree(txq->tx_buf);
- 	txq->tx_buf = NULL;
+ 
+ 	domain_idx = win->domain_idx - DMA_PMD_IDX_FIRST;
+ 	if (likely(test_bit(domain_idx, &meta->domains_mapped)))
+@@ -510,12 +517,15 @@ dma_addr_t dma_pmd_dma_map_phys(struct device *dev, struct iommu_domain *domain,
+ 			 */
+ 			smp_mb__before_atomic();
+ 			set_bit(domain_idx, &meta->domains_mapped);
++			atomic64_inc(&meta->pool->pmd_map_cnt);
+ 		}
+ 	}
+ 	spin_unlock_irqrestore(&meta->map_lock, flags);
+ 
+-	if (unlikely(ret))
++	if (unlikely(ret)) {
++		atomic64_inc(&meta->pool->fallback_maperr);
+ 		return DMA_MAPPING_ERROR;
++	}
+ 
+ 	return iova;
  }
-@@ -187,6 +195,13 @@ static int idpf_tx_buf_alloc_all(struct idpf_tx_queue *tx_q)
- 	if (!tx_q->tx_buf)
- 		return -ENOMEM;
+diff --git a/drivers/iommu/dma-pmd-pool.c b/drivers/iommu/dma-pmd-pool.c
+index d48c8e19741ab..a85aa550b500c 100644
+--- a/drivers/iommu/dma-pmd-pool.c
++++ b/drivers/iommu/dma-pmd-pool.c
+@@ -682,16 +682,21 @@ unsigned int dma_pmd_pools_forget_domain(int idx)
  
-+	if (tx_q->dev->dma_pmd_tx_hdrs)
-+		tx_q->hdr_buf_va =
-+			dma_alloc_coherent(tx_q->dev,
-+					   tx_q->buf_pool_size * MAX_TCP_HEADER,
-+					   &tx_q->hdr_buf_dma,
-+					   GFP_KERNEL | __GFP_NOWARN);
+ 	mutex_lock(&dma_pmd_pools_lock);
+ 	list_for_each_entry(pool, &dma_pmd_pools, node) {
++		unsigned int n = 0;
 +
- 	return 0;
+ 		spin_lock_irqsave(&pool->lock, flags);
+ 		list_for_each_entry(meta, &pool->partial, list)
+-			dropped += dma_pmd_forget_domain(meta, idx);
++			n += dma_pmd_forget_domain(meta, idx);
+ 		list_for_each_entry(meta, &pool->partial_dirty, list)
+-			dropped += dma_pmd_forget_domain(meta, idx);
++			n += dma_pmd_forget_domain(meta, idx);
+ 		list_for_each_entry(meta, &pool->idle, list)
+-			dropped += dma_pmd_forget_domain(meta, idx);
++			n += dma_pmd_forget_domain(meta, idx);
+ 		list_for_each_entry(meta, &pool->full, list)
+-			dropped += dma_pmd_forget_domain(meta, idx);
++			n += dma_pmd_forget_domain(meta, idx);
+ 		spin_unlock_irqrestore(&pool->lock, flags);
++
++		atomic64_add(n, &pool->domain_forget_cnt);
++		dropped += n;
+ 	}
+ 	mutex_unlock(&dma_pmd_pools_lock);
+ 
+@@ -843,8 +848,10 @@ static struct dma_pmd_meta *dma_pmd_add_page(struct dma_pmd_pool *pool,
+ 	 * A high-order allocation is expensive when it fails, and under fragmentation
+ 	 * it fails on every pool miss. For GFP_ATOMIC, back off briefly.
+ 	 */
+-	if (!can_block && time_before(jiffies, READ_ONCE(pool->next_alloc_attempt)))
++	if (!can_block && time_before(jiffies, READ_ONCE(pool->next_alloc_attempt))) {
++		atomic64_inc(&pool->fail_backoff);
+ 		return NULL;
++	}
+ 
+ 	/* Aggregate ceiling across every pool, independent of max_idle_pages. */
+ 	if (atomic_long_inc_return(&dma_pmd_nr_pages) > READ_ONCE(dma_pmd_max_pages)) {
+@@ -852,6 +859,7 @@ static struct dma_pmd_meta *dma_pmd_add_page(struct dma_pmd_pool *pool,
+ 		if (!can_block)
+ 			WRITE_ONCE(pool->next_alloc_attempt,
+ 				   jiffies + DIV_ROUND_UP(HZ, 100));
++		atomic64_inc(&pool->fail_budget);
+ 		return NULL;
+ 	}
+ 
+@@ -890,6 +898,14 @@ static struct dma_pmd_meta *dma_pmd_add_page(struct dma_pmd_pool *pool,
+ 		if (!can_block)
+ 			WRITE_ONCE(pool->next_alloc_attempt,
+ 				   jiffies + DIV_ROUND_UP(HZ, 100));
++		atomic64_inc(&pool->fail_nomem);
++		/*
++		 * __GFP_NOWARN suppresses the page allocator's own report, so
++		 * without this the pool can stop pooling entirely and look
++		 * exactly like one that is working.
++		 */
++		pr_warn_once("dma_pmd: order-%u allocation failed for pool %p; further failures are counted in debugfs only\n",
++			     PMD_ORDER, pool);
+ 		return NULL;
+ 	}
+ 
+@@ -922,6 +938,7 @@ static struct dma_pmd_meta *dma_pmd_add_page(struct dma_pmd_pool *pool,
+ 			__free_pages(page, PMD_ORDER);
+ 			atomic_long_dec(&dma_pmd_nr_pages);
+ 		}
++		atomic64_inc(&pool->fail_split);
+ 		return NULL;
+ 	}
+ 
+@@ -1020,7 +1037,7 @@ static struct dma_pmd_meta *dma_pmd_pick_meta(struct dma_pmd_pool *pool, bool ze
+ /* Extract up to @want available blocks from @meta under @pool->lock. */
+ static unsigned long dma_pmd_take_blocks(struct dma_pmd_pool *pool,
+ 					 struct dma_pmd_meta *meta,
+-					 unsigned long want,
++					 int target_nid, unsigned long want,
+ 					 struct page **out, bool zero)
+ {
+ 	unsigned long base_pfn = dma_pmd_meta_to_pfn(meta);
+@@ -1040,6 +1057,8 @@ static unsigned long dma_pmd_take_blocks(struct dma_pmd_pool *pool,
+ 		meta->nr_dirty = 0;
+ 	}
+ 	dma_pmd_place_meta(pool, meta);
++	if (page_to_nid(pfn_to_page(base_pfn)) != target_nid)
++		pool->numa_mismatch_cnt += used;
+ 
+ 	return got;
+ }
+@@ -1075,13 +1094,18 @@ unsigned long dma_pmd_pool_alloc_bulk_node(struct dma_pmd_pool *pool, gfp_t gfp,
+ {
+ 	unsigned long allocated = 0, flags;
+ 	bool should_scrub = false;
++	int target_nid;
+ 	bool zero;
+ 
+-	if (unlikely(!pool || pool->destroyed || !nr_pages ||
+-		     (gfp & (__GFP_DMA | __GFP_DMA32 | __GFP_THISNODE |
+-			     __GFP_ACCOUNT))))
++	if (unlikely(!pool || pool->destroyed || !nr_pages))
++		return 0;
++
++	if (unlikely(gfp & (__GFP_DMA | __GFP_DMA32 | __GFP_THISNODE | __GFP_ACCOUNT))) {
++		atomic64_inc(&pool->fail_gfp);
+ 		return 0;
++	}
+ 
++	target_nid = (nid == NUMA_NO_NODE) ? numa_mem_id() : nid;
+ 	zero = want_init_on_alloc(gfp);
+ 
+ 	spin_lock_irqsave(&pool->lock, flags);
+@@ -1093,8 +1117,11 @@ unsigned long dma_pmd_pool_alloc_bulk_node(struct dma_pmd_pool *pool, gfp_t gfp,
+ 			/* Fallback to a new allocation */
+ 			spin_unlock_irqrestore(&pool->lock, flags);
+ 			meta = dma_pmd_add_page(pool, gfp, nid, zero);
+-			if (!meta)
++			if (!meta) {
++				if (!allocated)
++					atomic64_inc(&pool->block_alloc_fail);
+ 				goto out;
++			}
+ 			spin_lock_irqsave(&pool->lock, flags);
+ 			pool->pmd_alloc_cnt++;
+ 			list_add(&meta->list, &pool->partial);
+@@ -1102,7 +1129,7 @@ unsigned long dma_pmd_pool_alloc_bulk_node(struct dma_pmd_pool *pool, gfp_t gfp,
+ 				should_scrub = true;
+ 		}
+ 
+-		allocated += dma_pmd_take_blocks(pool, meta,
++		allocated += dma_pmd_take_blocks(pool, meta, target_nid,
+ 						 nr_pages - allocated,
+ 						 &page_array[allocated], zero);
+ 	}
+@@ -1366,6 +1393,91 @@ static unsigned long dma_pmd_shrink_scan(struct shrinker *shrink,
+ 	return freed ?: SHRINK_STOP;
  }
  
-@@ -2663,7 +2678,7 @@ static void idpf_tx_splitq_map(struct idpf_tx_queue *tx_q,
- 
- 	tx_desc = &tx_q->flex_tx[i];
- 
--	dma = dma_map_single(tx_q->dev, skb->data, size, DMA_TO_DEVICE);
-+	dma = idpf_tx_map_hdr(tx_q, skb, first, size);
- 
- 	tx_buf = first;
- 	first->nr_frags = 0;
-@@ -2680,8 +2695,7 @@ static void idpf_tx_splitq_map(struct idpf_tx_queue *tx_q,
- 		first->nr_frags++;
- 		tx_buf->type = LIBETH_SQE_FRAG;
- 
--		/* record length, and DMA address */
--		dma_unmap_len_set(tx_buf, len, size);
-+		/* record DMA address */
- 		dma_unmap_addr_set(tx_buf, dma, dma);
- 
- 		/* buf_addr is in same location for both desc types */
-@@ -2784,6 +2798,7 @@ static void idpf_tx_splitq_map(struct idpf_tx_queue *tx_q,
- 
- 		size = skb_frag_size(frag);
- 		data_len -= size;
-+		dma_unmap_len_set(tx_buf, len, size);
- 
- 		dma = skb_frag_dma_map(tx_q->dev, frag, 0, size,
- 				       DMA_TO_DEVICE);
-diff --git a/drivers/net/ethernet/intel/idpf/idpf_txrx.h b/drivers/net/ethernet/intel/idpf/idpf_txrx.h
-index 93547597efd2a..39458a8e5baa0 100644
---- a/drivers/net/ethernet/intel/idpf/idpf_txrx.h
-+++ b/drivers/net/ethernet/intel/idpf/idpf_txrx.h
-@@ -8,6 +8,7 @@
- #include <linux/net/intel/virtchnl2_lan_desc.h>
- 
- #include <net/libeth/cache.h>
-+#include <net/libeth/tx.h>
- #include <net/libeth/types.h>
- #include <net/netdev_queues.h>
- #include <net/tcp.h>
-@@ -639,6 +640,8 @@ libeth_cacheline_set_assert(struct idpf_rx_queue,
-  * @q_vector: Backreference to associated vector
-  * @buf_pool_size: Total number of idpf_tx_buf
-  * @rel_q_id: relative virtchnl queue index
-+ * @hdr_buf_va: Base of the TX header bounce buffer array, or NULL
-+ * @hdr_buf_dma: DMA address matching @hdr_buf_va
-  */
- struct idpf_tx_queue {
- 	__cacheline_group_begin_aligned(read_mostly);
-@@ -715,6 +718,8 @@ struct idpf_tx_queue {
- 
- 	u32 buf_pool_size;
- 	u32 rel_q_id;
-+	void *hdr_buf_va;
-+	dma_addr_t hdr_buf_dma;
- 	__cacheline_group_end_aligned(cold);
- };
- libeth_cacheline_set_assert(struct idpf_tx_queue, 64,
-@@ -723,7 +728,7 @@ libeth_cacheline_set_assert(struct idpf_tx_queue, 64,
- 			    offsetofend(struct idpf_tx_queue, timer) +
- 			    offsetof(struct idpf_tx_queue, q_stats) -
- 			    offsetofend(struct idpf_tx_queue, tstamp_task),
--			    32);
-+			    48);
- 
- /**
-  * struct idpf_buf_queue - software structure representing a buffer queue
-@@ -1131,4 +1136,24 @@ int idpf_tso(struct sk_buff *skb, struct idpf_tx_offload_params *off);
- 
- void idpf_wait_for_sw_marker_completion(const struct idpf_tx_queue *txq);
- 
-+static inline dma_addr_t idpf_tx_map_hdr(struct idpf_tx_queue *tx_q,
-+					 const struct sk_buff *skb,
-+					 struct libeth_sqe *first,
-+					 unsigned int size)
++/*
++ * One block of lines per pool, in /sys/kernel/debug/dma_pmd/pools.
++ *
++ * Pools that have seen no activity at all are skipped: two are created per
++ * possible CPU and one per RX queue, so on a large machine the overwhelming
++ * majority are idle and would bury the few that carry traffic. A pool that
++ * tried and failed is never skipped - that is the case this file exists for.
++ *
++ * The u64 statistics are snapshotted under @pool->lock and printed after it is
++ * dropped; the atomic64 ones are read locklessly, so a line is not a
++ * consistent instant. That is fine for what this is used for - watching which
++ * way a counter moves - and keeps the file off the locking hot path.
++ *
++ * The partial/full split is not reported: counting it means walking both lists
++ * with @pool->lock held and interrupts off, which is unbounded in the number of
++ * PMD pages a pool holds. "held" is derived from the got/put counters instead.
++ */
++static int dma_pmd_pools_show(struct seq_file *s, void *unused)
 +{
-+	u32 buf_idx = first - tx_q->tx_buf;
++	unsigned int reservoir_nr = 0;
++	struct dma_pmd_pool *pool;
++	int nid;
 +
-+	if (tx_q->hdr_buf_va && buf_idx < tx_q->buf_pool_size &&
-+	    size <= MAX_TCP_HEADER) {
-+		u32 offset = buf_idx * MAX_TCP_HEADER;
++	for_each_node_state(nid, N_MEMORY)
++		reservoir_nr += READ_ONCE(dma_pmd_reservoirs[nid].nr_pages);
 +
-+		memcpy(tx_q->hdr_buf_va + offset, skb->data, size);
-+		dma_unmap_len_set(first, len, 0);
-+		return tx_q->hdr_buf_dma + offset;
++	seq_printf(s, "2m_pages %ld/%lu reservoir %u; pools with no activity are omitted\n",
++		   atomic_long_read(&dma_pmd_nr_pages), dma_pmd_max_pages, reservoir_nr);
++
++	mutex_lock(&dma_pmd_pools_lock);
++	list_for_each_entry(pool, &dma_pmd_pools, node) {
++		u64 alloc_2m, free_2m, block_alloc, block_free, block_scrub;
++		u64 block_fail, fail_gfp, numa_mismatch;
++		unsigned int num_idle, max_idle;
++		unsigned long flags;
++
++		block_fail = atomic64_read(&pool->block_alloc_fail);
++		fail_gfp = atomic64_read(&pool->fail_gfp);
++
++		spin_lock_irqsave(&pool->lock, flags);
++		alloc_2m = pool->pmd_alloc_cnt;
++		free_2m = pool->pmd_free_cnt;
++		block_alloc = pool->block_alloc_cnt;
++		block_free = pool->block_free_cnt;
++		block_scrub = pool->block_scrub_cnt;
++		numa_mismatch = pool->numa_mismatch_cnt;
++		num_idle = pool->num_idle_pages;
++		max_idle = pool->max_idle_pages;
++		spin_unlock_irqrestore(&pool->lock, flags);
++
++		/*
++		 * A pool that acquired no PMD page is the one worth looking at,
++		 * not the one to hide: it is indistinguishable from a healthy
++		 * pool everywhere else, because its callers just fall back.
++		 * Omit a pool only when nothing has ever happened to it, which
++		 * is the idle-per-CPU case this filter exists for.
++		 */
++		if (!alloc_2m && !block_alloc && !block_fail && !fail_gfp)
++			continue;
++
++		seq_printf(s, "pool %p order %u\n", pool, pool->order);
++		seq_printf(s, "  2m_pages  got %llu put %llu held %llu idle %u/%u\n",
++			   alloc_2m, free_2m, alloc_2m - free_2m, num_idle, max_idle);
++		seq_printf(s, "  blocks    alloc %llu free %llu scrub %llu numa_mismatch %llu failed %llu gfp %llu\n",
++			   block_alloc, block_free, block_scrub, numa_mismatch,
++			   block_fail, fail_gfp);
++		seq_printf(s, "  no_2m     backoff %lld budget %lld nomem %lld split %lld\n",
++			   atomic64_read(&pool->fail_backoff),
++			   atomic64_read(&pool->fail_budget),
++			   atomic64_read(&pool->fail_nomem),
++			   atomic64_read(&pool->fail_split));
++		seq_printf(s, "  domains   mapped %lld forgotten %lld\n",
++			   atomic64_read(&pool->pmd_map_cnt),
++			   atomic64_read(&pool->domain_forget_cnt));
++		seq_printf(s, "  per_buf   no_window %lld no_pool %lld map_err %lld\n",
++			   atomic64_read(&pool->fallback_nowindow),
++			   atomic64_read(&pool->fallback_nopool),
++			   atomic64_read(&pool->fallback_maperr));
 +	}
++	mutex_unlock(&dma_pmd_pools_lock);
 +
-+	dma_unmap_len_set(first, len, size);
-+	return dma_map_single(tx_q->dev, skb->data, size, DMA_TO_DEVICE);
++	return 0;
 +}
++DEFINE_SHOW_ATTRIBUTE(dma_pmd_pools);
 +
- #endif /* !_IDPF_TXRX_H_ */
-diff --git a/include/net/libeth/tx.h b/include/net/libeth/tx.h
-index c3db5c6f16410..2720ab9393e90 100644
---- a/include/net/libeth/tx.h
-+++ b/include/net/libeth/tx.h
-@@ -130,8 +130,9 @@ static inline void libeth_tx_complete(struct libeth_sqe *sqe,
- 	case LIBETH_SQE_SKB:
- 	case LIBETH_SQE_FRAG:
- 	case LIBETH_SQE_SLAB:
--		dma_unmap_page(cp->dev, dma_unmap_addr(sqe, dma),
--			       dma_unmap_len(sqe, len), DMA_TO_DEVICE);
-+		if (dma_unmap_len(sqe, len))
-+			dma_unmap_page(cp->dev, dma_unmap_addr(sqe, dma),
-+				       dma_unmap_len(sqe, len), DMA_TO_DEVICE);
- 		break;
- 	default:
- 		break;
+ static int __init dma_pmd_init(void)
+ {
+ 	struct shrinker *shrink;
+@@ -1377,7 +1489,7 @@ static int __init dma_pmd_init(void)
+ 	}
+ 
+ 	/*
+-	 * Hard ceiling on memory diverted from the buddy allocator into 2MB
++	 * Hard ceiling on memory diverted from the buddy allocator into DMA_PMD
+ 	 * pools, in PMD pages. One eighth of RAM is far above what the per-pool
+ 	 * watermarks should ever reach; it exists to bound a pathological
+ 	 * configuration (many queues, many CPUs, all pools at their high
+@@ -1403,6 +1515,13 @@ static int __init dma_pmd_init(void)
+ 	if (!dma_pmd_wq)
+ 		pr_warn("dma_pmd: no reclaim workqueue, falling back to system_wq\n");
+ 
++	/*
++	 * No error handling and no dentry kept: this is built in and never
++	 * unloaded, and the stubs are no-ops when debugfs is disabled.
++	 */
++	debugfs_create_file("pools", 0444, debugfs_create_dir("dma_pmd", NULL),
++			    NULL, &dma_pmd_pools_fops);
++
+ 	shrink = shrinker_alloc(0, "dma_pmd");
+ 	if (!shrink) {
+ 		pr_warn("dma_pmd: shrinker registration failed\n");
+diff --git a/drivers/iommu/dma-pmd-priv.h b/drivers/iommu/dma-pmd-priv.h
+index 82a5c869aa216..b9bf48eb7f0f7 100644
+--- a/drivers/iommu/dma-pmd-priv.h
++++ b/drivers/iommu/dma-pmd-priv.h
+@@ -178,7 +178,8 @@ static inline unsigned int dma_pmd_meta_avail(const struct dma_pmd_meta *m)
+  * struct dma_pmd_pool - Pool managing PMD-backed blocks of a fixed order
+  *
+  * @lock:	Spinlock protecting @partial, @idle, @full, @num_idle_pages,
+- *		block bitmaps and the statistics counters
++ *		the block bitmaps and the u64 statistics counters. The
++ *		atomic64_t counters below are deliberately outside it.
+  * @order:	Block order managed by this pool (<= PMD_ORDER)
+  * @destroyed:	Set when dma_pmd_pool_destroy() has been called
+  * @partial:	List of partially used PMD pages with @nr_free > 0 (clean-only
+@@ -196,6 +197,7 @@ static inline unsigned int dma_pmd_meta_avail(const struct dma_pmd_meta *m)
+  * @block_alloc_cnt: Statistics counter of block allocations satisfied
+  * @block_free_cnt: Statistics counter of block frees recycled into pool
+  * @block_scrub_cnt: Statistics counter of dirty blocks zeroed by scrubber
++ * @numa_mismatch_cnt: Block allocations satisfied from a non-target NUMA node
+  * @next_alloc_attempt: Do not attempt a new order-9 allocation before this time.
+  *		Damps repeated high-order GFP_ATOMIC failures under
+  *		fragmentation, which would otherwise be retried on every
+@@ -203,6 +205,26 @@ static inline unsigned int dma_pmd_meta_avail(const struct dma_pmd_meta *m)
+  * @refcount:	Reference count; held by pool creator and each active PMD page
+  * @node:	Node in the global dma_pmd_pools list
+  * @dead_node:	Node in dma_pmd_dead_pools once @refcount reaches 0
++ * @fail_backoff: PMD page acquisitions skipped because @next_alloc_attempt was set
++ * @fail_budget: PMD page acquisitions refused by global dma_pmd_max_pages
++ * @fail_nomem: PMD page acquisitions that ran out of memory for the order-9
++ *		allocation. Silent otherwise: the request carries __GFP_NOWARN
++ *		so the page allocator says nothing.
++ * @fail_split: split_page_compound() rejections
++ * @block_alloc_fail: PMD page acquisitions that failed, making
++ *		dma_pmd_pool_alloc() return NULL so the caller had to fall
++ *		back to a plain page
++ * @fail_gfp:	dma_pmd_pool_alloc() calls declined due to unsupported GFP
++ *		flags (__GFP_DMA, __GFP_DMA32, __GFP_THISNODE, __GFP_ACCOUNT)
++ * @pmd_map_cnt: PMD page mappings established across all domains
++ * @fallback_nowindow: Buffers mapped individually because the domain has no
++ *		usable IOVA window - no free range large enough, no free
++ *		domain index, or a window the device cannot address
++ * @fallback_nopool: Buffers mapped individually because the domain can never
++ *		pool: direct isolation, or no PMD page size
++ * @fallback_maperr: Buffers mapped individually because the PMD page mapping
++ *		itself failed
++ * @domain_forget_cnt: Cached mappings dropped by dma_pmd_domain_release()
+  */
+ struct dma_pmd_pool {
+ 	/* First cacheline: hot fields touched on block alloc and free. */
+@@ -222,12 +244,31 @@ struct dma_pmd_pool {
+ 	u64			block_alloc_cnt;
+ 	u64			block_free_cnt;
+ 	u64			block_scrub_cnt;
++	u64			numa_mismatch_cnt;
+ 
+ 	/* Cold. */
+ 	unsigned long		next_alloc_attempt;
+ 	struct kref		refcount;
+ 	struct list_head	node;
+ 	struct llist_node	dead_node;
++
++	/*
++	 * Statistics updated without @lock. dma_pmd_add_page() runs outside
++	 * it, and the map slow path holds @meta->map_lock - taking @lock there
++	 * would invert the order against dma_pmd_domain_release(), which
++	 * walks @lock then map_lock.
++	 */
++	atomic64_t		fail_backoff;
++	atomic64_t		fail_budget;
++	atomic64_t		fail_nomem;
++	atomic64_t		fail_split;
++	atomic64_t		block_alloc_fail;
++	atomic64_t		fail_gfp;
++	atomic64_t		pmd_map_cnt;
++	atomic64_t		fallback_nowindow;
++	atomic64_t		fallback_nopool;
++	atomic64_t		fallback_maperr;
++	atomic64_t		domain_forget_cnt;
+ } ____cacheline_aligned;
+ 
+ extern unsigned long dma_pmd_meta_nframes;
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
 
