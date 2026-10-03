@@ -1,202 +1,223 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB78748124C
-	for <iommu@lists.linux.dev>; Fri,  2 Oct 2026 22:45:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.169
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790981153; cv=pass; b=VJkovDQYtbXZ/uWcdslnHM/uZ2YKkPPybaGEh1w4x2tR8VVDihbFTlP/C4RMmDTgBdP40SvP4SvEFYEdK0OhrD/77rbR2765+G3xUXrthZCa7aueCd9a1DQLDc5gwbYsYSbpYZ76ODwBmFQO5BCpaZhDJJh1/8Gdw0LFR2WwVHk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790981153; c=relaxed/simple;
-	bh=b6tpnWqi0sBgzEyRHL09Bqg9b7O7aqDdleTKkCbYmwU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=F5Ke8AR7ZBaeUaDT5R1QT/Ikl4MSPk1QABLg/jiosjX9pMH6s94CPeniY5rg4n2yk+CnX2WHWLLfGpv3NRJeWZAw1E+ZvBTbvMBPy8azZSw/sHQzsmSucJfV6CxFcJopXdeEITlaDIuxin3Z07Wqepnj3gjVwb8NZZb2Lf3n9II=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CYx5zdK8; arc=pass smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EC1123D2A1
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 00:47:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790988441; cv=none; b=EqprPDGrSoLadjZR1op4+VQZ2Tpx1eyrsPCCHzf/9rSHmOfTFLAWjbE2ygkyXhrN6j6Q32hKKaxtdySyZeLtamadE5uh+tBwyrlFCYBJArCyo2D767MvpYfEyALDYeN6athW2ReoJ2dIHXVLeeunRvQpT58RON+1p74z6GTnFHE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790988441; c=relaxed/simple;
+	bh=yTZUC6jKZaCOtbJ/3nZWWXEu0NQbc2ytDJaD5GmrxC0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=N/W4IoEgeCwL0KZPNV87Omi0eQ4fardqe47qz/IHfCAHVvwJvOnlijsz3PSpU/HDwkQvw5SN5EPx150vhWx7YlwTbcpD4U+Ap/k+OsViGgrd/l6UjUeMp9HSjorUWfrqjOdgiGNISPM6nnqrhwUvf+iaEBLOg05HekhbQvfKM30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=MVAl5iG8; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=iuSmjWxs; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CYx5zdK8"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-53113d72966so40581cf.1
-        for <iommu@lists.linux.dev>; Fri, 02 Oct 2026 15:45:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1790981149; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Gd2gVREwwXZtmeKXLXf1j3sOWfTv9zUIxqO43oSR9UgJHSAy6gDmrm57SFGQrko5qX
-         HNkTgKXonKa6Qvk04QnP3JJ3QdzKaHw4abgHQ+8VtDLCMs5HqBfiK/x41oTZztPZ+mqe
-         XPh94xiMR9/V1tddv5Q/19IRiMOh2RqdL3g1JrUMLy/57yUGMBf5GiL+t8QLZVmO+f4N
-         fg6Lmm87wMqSb/dIZf7qxGNGZz8iqq0TCGn/9xZBeX048perVlhzlFUZN0GPIMwSgZIN
-         at2zVBlCn84dRm58jbpDXXUnRSqiEmruJupDJ6XKGZMGfuurFodzc7Tl2p2uC3Ye+hJm
-         EE4g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=4ethMyS6aCMQkVyOx2GRO0J5eXro8MDvqsE/LBxA2QM=;
-        fh=7qafrwt2OuZhLmSOh2KDnxX2wzOs5bw+CIm/6b9rWFQ=;
-        b=ouIw3FmiYFmVphseAdDyryUakHUDVx9eU1vR8RcUBxUM11T6txIPvqqg6JoJ7NLhgE
-         FMQxPTHaTvj+3iLhi4Nau+tN/yr/Zn7ffz6xPCvqiEdlGlbieZ0YH8AryalWdjQLvl4q
-         IkKfZLrbArNL0y4iQMnGVt7gkI6rL7CCoRGNlfud9+b0eUjam9LRjSmVK4JFmhMeh8q4
-         O3sx/7laREtJGP3mgmTiClb41cu+N1QcuVvcioz+CiuFVXAK00HEIrEKk4UMt+Z4T0BI
-         aSYUJQkySlpYO3q+6J6C8+zH9tZzupxzgTkyqsLe+HSAWLjCDQ8EefnvPcXbF3WykbX/
-         GU4g==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="MVAl5iG8";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="iuSmjWxs"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6930KIi72791526
+	for <iommu@lists.linux.dev>; Sat, 3 Oct 2026 00:47:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	n+oeytl8ILE2lGP9tC08C8X3AyaLqZaWEZaYxX5SV4c=; b=MVAl5iG8Lo15jt5m
+	aeO2/4y4NEt2oIlneY7iMQe6SPm7IIkm4YUip77RwFIkhAgq1b3DC7UVkazVlyWS
+	409t6yFoHgIwQ8qaeBQKPURlGKJj8ZmU9TlgPjuq8Y+o8dRmh781mTMtT/9zRukg
+	aqejn/IrWOxKbonrlb424CnFjj+1i4hhgGOkMxu6XXX/ZJQWH4j9p05yrR+iJOQx
+	uKMlBYqVpHDoi5ZFbrGkrUlQ1gLyxAmnyUrxPeRT8xmJSu6rBufePqJzZycbBRy3
+	GZhkIc1A5q15OAAPUwl2nKBBAQ8lssJAibEHtkVwisgzX+ADk+xfVTXyW6rWqURf
+	3+SbBw==
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h2q2nr1yj-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 00:47:00 +0000 (GMT)
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-93c5ab5c136so12172285a.3
+        for <iommu@lists.linux.dev>; Fri, 02 Oct 2026 17:46:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1790981149; x=1791585949; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+        d=oss.qualcomm.com; s=google; t=1790988419; x=1791593219; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=4ethMyS6aCMQkVyOx2GRO0J5eXro8MDvqsE/LBxA2QM=;
-        b=CYx5zdK8ISZvXoHSvY77TBd4xO3bIQJ3VbnA5R+2d8ACnxzxtvMnZ4UaZducvIKBTc
-         +5rQzt53O6ioHq5tAsj/Af9lTOxD1fy1wXz6ku7al3Nau0UuuYRs6UQYGgeB/WwWeulA
-         s4sgfLrhmZYWchaTWPCKvtdrIQ/u5O+GxWaMhpCyX46kKII6zx/aJ9zbtUGxKIABndC+
-         0GaIzsgezA/Qr/27btB7xUSa+HPXSjHlFg+Pp9UzFid+JuNKa3JDfNSO/MXq8b593Tsg
-         9AratuCOa0YnPvo8Z5CzKUq3hRdHHL1MCwcwxZNFpsbGSTpSCPS5q1sotdBRbPMaVycj
-         1f3w==
+        bh=n+oeytl8ILE2lGP9tC08C8X3AyaLqZaWEZaYxX5SV4c=;
+        b=iuSmjWxs/u2jomHDDWEjgvXeDLG8NWeixadnjDOTNI7qMS+h86JKanyOQWxeT3HdfC
+         mU7Fx45vxFM+3kuD+kAFX4ZOzk1iN/WtrEyJVi4usMBuBoWRcXNbE4YEdE22gzQU5CPM
+         pRxTTnEZ3BxbZgwPm3oMuQGPOkJdHgRq5jr+aBkXl+2sGVB8fgL2IBC2DjQcaoHeqs6p
+         OpWBO6xOKhFBAZNYkx5Phu9FhQ4PnHXiwJgB2uHN/2dA6vBjSrfs1/OyRgRfxZmKfzzR
+         VFgGCaK+3O6HO9ueN+MaBErTF1Hac4hJGDz/xM5R2waGQqI/UFQ7g1Z8qDs66F0rW63o
+         iP7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790981149; x=1791585949;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1790988419; x=1791593219;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=4ethMyS6aCMQkVyOx2GRO0J5eXro8MDvqsE/LBxA2QM=;
-        b=EUt2WU8Lj2jy91G13WoXv3Vb7s9Q4m/E8ZB9Aflbqr4gB6/sFWaZokPBSWi5WHVqet
-         SjIxB3M0+dqvMFjCk+KsD2RDfnGlcbQ5wce1YWjdh9CCsBQ+pKCM9GbaM5hDDa/sm2Zn
-         +S6wXOkR9CWDDniuY3aMS0k6wgcKjnTHOEtOp7KNlUmKSYLEDp6qJEgKplV+CyqFpdOD
-         qst92FUoCpQk1KqNFp5LT3aDOkiLFpInlDUtkqpEaEwW6RFMzlI2A+lAm66EHuzc2ypF
-         51/OteKYpiN6pu9KoOGuC9S3RJKkjzeOu9MUl3mKK+gkiymGoO1uk4s5h6Duym0vpWRi
-         k8Ig==
-X-Gm-Message-State: AFuF++nwgOmCre+6NE+VYfl7HG6s30fEMLz3nWUPOJhRwI0hqxtap6qn
-	HZHM6mW23C4wZTJodfWn15wtGfvhgfNivl3CzjAYvC5ST5GLB0l+9JPeUIGHrXZ8NNHJyhrOrkU
-	3HmyyRy+JeuAq8sC1QBxdHqub+2lmPV4v5d4dvuXi
-X-Gm-Gg: AYBFou00pt5Ov3Vmk/2U4bTqGnzUUyaW1SvEauoGOZtiKpAZ/bEPjYzoJdPjyTbiSm3
-	OihfzJvQgugY6MGOLMFqWNWUxXg2+9MCPLPyTSTXKfCfoMixwJm25Za94ClLaKud6vgV91C2H7T
-	HFFqaU99zg/b5B6ul4UojSkdRTu9sTNivsdmJGswemUrW/mVUevpxsh6fY3TkBHrnFFr+8Kvo1D
-	C8NEOI6FLohcQ+cOeAVXmnsZFOeBHHE2SNDd8/kFsbESrZSXQIxl7jo9M2fWdr0TXK6PcT2+vIo
-	9R6rI+oSR0F6JtloWG1uR3ZtUwbRMQdR3vHVcaP+lEbFBCeAc67t
-X-Received: by 2002:ac8:5a94:0:b0:531:16a:5a3d with SMTP id
- d75a77b69052e-535149262fcmr842331cf.12.1790981147901; Fri, 02 Oct 2026
- 15:45:47 -0700 (PDT)
+        bh=n+oeytl8ILE2lGP9tC08C8X3AyaLqZaWEZaYxX5SV4c=;
+        b=RtFBm3Fm/nLV3dyopZOTTyPv7feT/w2Vi8of7yXxCrnm/sAFLKU+SkpMykUcaAbseK
+         3gKfqVZN9i9koFXaL5spPLqCRj6aQbsPMOPfWO3yntp9aKt9xzlmv/MvTBAm6qSQBLm4
+         ZJrJsO5QRTMtEVgSJG4dmhc3qsr1ux0VOiuRceKr4cOkZgU1538XG/lrVcIQwTGCjHeP
+         m/1YakZsNPuh4I+lcuchvCWOZxMn2DOQ0IcJEF/N9vWT1qikNPwG6VQ3zLboC/vRJ+lA
+         11h+gSp64nbuoot5quDifcGgqoZt0g+wFhMamDnxjS65mgFnNieX/5+eAhScCTGoDaBf
+         oWBQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxx4sBONeVGhtGzppYXFHIYLNyW9vT1sAMuyoBhLGn0YHtCwoF/OSzHVS91hOYg6azZKYkCng==@lists.linux.dev
+X-Gm-Message-State: AFuF++kn408h7Sq7q5Yk+JwliD2UjiwLNSHF1MbsTvmVNJbLXyROxq+I
+	M9OyTwg2Dbdibh8UBtjixjHOxx4IPDZq7lj8uI4uzWBkBzsfbQsO8o8RB64asoFWHv9LLhNXiBO
+	eW60CGQ/ViBgEbcRVkzLb6Hn5qL/qkinI3ZbYBb6hTX8OrYdirtT/E2RcAA==
+X-Gm-Gg: AYBFou2gknLbCIrw93SGs4sMn8qg5AgDWEvdPXVSRhWRzV92dc2ueSf+yHTj3sOCA28
+	K9gZMoo3MHzuwONO6k32KTeH7+qfZqrzkUQd1ZJup1i8blTgDbro0rDUozImim/31qx8gVh+PFK
+	ikr3ixwLEIjAJ6RAOKnY0FVxrCICbvPuyMJj6tEwVhIkr6y82sMGHGLfaWxuMfIzofPxLChxATl
+	kcKcxUWW/xiBQoj10xLXQvw5UBBM9s4HALy9ryUIDvegGhmzgXfHx/oZdY4BHGU4avf9bg0IQKE
+	8kbnfcoUa0rvCrzE5np3qNNTNmN/WVVcSaW0v0Mp4YG9Q8N41KuFU2yGR6R2OKT7PkNVKX6UlsO
+	QfW+o+eMuhNTSmIw/DGLefiNLQ4pWVKntaPZlCiUqNVqUpfm1uLpqp685PLPi9E2K5OQLmg5sRd
+	D5GAhw76jG3sIy
+X-Received: by 2002:a05:620a:278a:b0:93b:d7a0:d9e7 with SMTP id af79cd13be357-93cf19d98b0mr819175385a.65.1790988419237;
+        Fri, 02 Oct 2026 17:46:59 -0700 (PDT)
+X-Received: by 2002:a05:620a:278a:b0:93b:d7a0:d9e7 with SMTP id af79cd13be357-93cf19d98b0mr819168185a.65.1790988418537;
+        Fri, 02 Oct 2026 17:46:58 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bb7c71911bsm1160748e87.11.2026.10.02.17.46.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Oct 2026 17:46:57 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
+        Jerome Brunet <jbrunet+clk@baylibre.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Srinivas Kandagatla <srini@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Robert Marko <robimarko@gmail.com>,
+        Guru Das Srinagesh <linux@gurudas.dev>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Muzaffer Kadir <muzafferkadir@mainlining.org>
+Cc: David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, iommu@lists.linux.dev, mfd@lists.linux.dev,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org,
+        linux-input@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Abel Vesa <abel.vesa@oss.qualcomm.com>
+Subject: Re: [PATCH v3 00/19] Add Initial Support For MSM8952, Add General Mobile Shamrock
+Date: Sat,  3 Oct 2026 03:46:52 +0300
+Message-ID: <179098834078.3641559.798772743228949994.b4-ty@b4>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
+References: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20260929032229.3532247-1-danielmentz@google.com> <CAFgf54p=0wy9vAJKf8U_B9r27Z8UfqoNCXCeMDPdVETK9m5kAQ@mail.gmail.com>
-In-Reply-To: <CAFgf54p=0wy9vAJKf8U_B9r27Z8UfqoNCXCeMDPdVETK9m5kAQ@mail.gmail.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Fri, 2 Oct 2026 15:45:36 -0700
-X-Gm-Features: AclHuK9C1mykAPGW2LozKJaWwIrPicnc-cAJAcON6rNq9TejSYBgxUBDdZwGJ74
-Message-ID: <CAE2F3rACz6Z7X3NNfLWEfjTD9K9YJyYHHyGzcBafEemTFGhgqQ@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Align memory attributes for
- SMMU-originated accesses
-To: Mostafa Saleh <smostafa@google.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Nicolin Chen <nicolinc@nvidia.com>, dawei.li@linux.dev, 
-	Pranjal Shrivastava <praan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDAzMDAwMiBTYWx0ZWRfXxXYuxIbnypVV
+ BsrWlWWyRZ74GOe8rENbYPty+1/urUURqVccKIE5rwE+QB4QUrzP23YIa7KXbfpYlLKFysJdRIZ
+ tWmDeXtgtO3+nJ59pRd6Bc1JU7UnTME=
+X-Proofpoint-ORIG-GUID: 2yYZJSrknLFPSozXfBL57xCK3Nj9zcyb
+X-Proofpoint-GUID: 2yYZJSrknLFPSozXfBL57xCK3Nj9zcyb
+X-Authority-Analysis: v=2.4 cv=SKHXx+vH c=1 sm=1 tr=0 ts=6ac05084 cx=c_pps
+ a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22 a=e5mUnYsNAAAA:8
+ a=sFPzMUYdAbi3-6yuofgA:9 a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
+ a=Vxmtnl_E_bksehYqCbjh:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDAzMDAwMiBTYWx0ZWRfXzrKxuPcFvBA6
+ jkASKM4QEr6zhdQOZdakO/Eke/UJxAJ4wBfmk2OZ2jGxj8NoB1UDQJEv0qqmywWtKVvLGPjZ7l9
+ wpkB8TvsgM+lZ4A/wycWIvpS3jbpq+VnM+xxUkmRk+Jx9QZHR3HFn2L5n8d/3gXPKdU2KHjB6uC
+ UrhjPzShnMiDpG8AVm/XHmR/kSmAiUdSv3ObpUks+dPOoDT8UF2/6KvPYz6bs5vCHIVlVs2SPb9
+ 3CJxsHRqdKUQB2P5XRXquwJhJSgt2fN4QEonub9E0yeHW6IXzniySdShBQvXo3EToTG5OekL+R/
+ StajrxCse8r2R73ZfHr91lF5qLKDLA0jyTJDQdV2e+4wxq2r71OgZqlU3caGU4bC7WNg88ZKiWA
+ cRY8u0TwVWQeHasYw3HzVBdaNqkVf4TQiZQOizMO8SkkcA5yqmyhcXPweml2pC/Fkmuthg7YY9o
+ a+V7STyHKPrwuiyIIFQ==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-10-02_07,2026-10-02_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 adultscore=0 suspectscore=0 spamscore=0 priorityscore=1501
+ bulkscore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2610030002
 
-Hi Mostafa,
+On Mon, 21 Sep 2026 21:18:51 +0300, Muzaffer Kadir wrote:
+> MSM8952 is a SoC with 8 core cpu and Adreno 405 gpu.
+> 
+> Ported without uart connection. ramoops and usb
+> mainly used to debug.
+> USB is not enabled in this series because it
+> depends on the not yet upstreamed (and not developed by me)
+> pmi8950_smbcharger.
+> 
+> [...]
 
-On Thu, Oct 1, 2026 at 2:22=E2=80=AFAM Mostafa Saleh <smostafa@google.com> =
-wrote:
-> A similar patch was posted previously, and Robin highlighted the
-> reasoning for keeping it as is:
-> https://lore.kernel.org/linux-iommu/c25309d1-0424-495e-82af-d025b3e6d8c8@=
-arm.com/
->
-> It'd be great to highlight any changes since then.
+Applied to ttt, thanks!
 
-Thanks for the pointer. I wasn't previously aware of that email thread.
-Having read through the full discussion now, I don't think Dawei Li's
-patch was rejected on principle, nor did Robin argue that the driver
-should keep programming Write-Back attributes for non-coherent SMMUs:
+[01/19] dt-bindings: clock: qcom: Add MSM8952 global clock controller
+        (no commit info)
+[02/19] clk: qcom: Add global clock controller driver for MSM8952
+        (no commit info)
+[03/19] dt-bindings: nvmem: Add compatible for MSM8952
+        (no commit info)
+[04/19] dt-bindings: power: rpmpd: Add MSM8952 power domains
+        (no commit info)
+[05/19] dt-bindings: mmc: sdhci-msm: Add MSM8952 compatible
+        (no commit info)
+[06/19] dt-bindings: vendor-prefixes: Add General Mobile
+        (no commit info)
+[07/19] dt-bindings: arm: qcom: Document MSM8952 SoC binding
+        (no commit info)
+[08/19] dt-bindings: iommu: qcom,iommu: Add MSM8952 IOMMU to SMMUv2 compatibles
+        (no commit info)
+[09/19] dt-bindings: mfd: qcom,tcsr: Add compatible for MSM8952
+        (no commit info)
+[10/19] dt-bindings: display/msm: qcom, mdp5: Add MSM8952 compatible
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/df6ce9e6447e
+[11/19] dt-bindings: firmware: qcom,scm: Document MSM8952 SCM
+        (no commit info)
+[12/19] dt-bindings: clock: qcom,rpmcc: Add MSM8952 compatible
+        (no commit info)
+[13/19] drm: msm: mdp5: Add MDP5 configuration for MSM8952
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/7af226f9aa59
+[14/19] soc: qcom: ubwc: Add UBWC config for MSM8952
+        (no commit info)
+[15/19] dt-bindings: thermal: tsens: Add MSM8952
+        (no commit info)
+[16/19] thermal: qcom: tsens: Add support for MSM8952 tsens
+        (no commit info)
+[17/19] arm64: dts: qcom: Add initial support for MSM8952
+        (no commit info)
+[18/19] dt-bindings: input: touchscreen: goodix: Add binding for GT970
+        (no commit info)
+[19/19] arm64: dts: qcom: generalmobile-shamrock: new device
+        (no commit info)
 
-1. In that message, Robin was explaining why the existing code happened
-   to work in practice on common AXI implementations ("the Normal
-   Cacheable attribute will inherently degrade to a non-snooping (and
-   thus effectively Normal Non-Cacheable) one, as that's essentially
-   what AXI will do in practice"), and pushing back against the Fixes: /
-   stable tags and against abusing firmware COHACC overrides to operate
-   a coherent SMMU non-coherently.
+Best regards,
+-- 
+With best wishes
+Dmitry
 
-   In his follow-up reply in the same thread [1], Robin clarified:
 
-   "Oh, I'm not saying that we *shouldn't* set our attributes more
-   exactly - this would still be needed for doing things the "right"
-   way too - I just want to be very clear on the reasons why."
-
-   Will also noted in the same thread [2]:
-
-   "I'm not against being more careful about the memory attributes used
-   by the non-coherent walker..."
-
-   Dawei agreed to address the review feedback (such as dropping the
-   unnecessary Q_BASE_RWA / STRTAB_BASE_RA changes, since allocation
-   hints are ignored when Non-Cacheable is configured per IHI 0070
-   section 6.3.11), and simply never sent a v2.
-
-2. More importantly, Robin's observation about AXI degrading Normal
-   Cacheable to non-snooping is based on the behavior of common
-   implementations, not on the Arm SMMUv3 Architecture Specification
-   (ARM IHI 0070).
-
-   Under ARM IHI 0070 section 3.15 ("Coherency considerations and memory
-   access types"):
-
-   "ARM expects that this be IO-coherent access to normal shared memory,
-   but in implementations that cannot support cache coherency, this
-   might be non-cached access. ... The degree to which the different
-   memory access types and attributes are supported is IMPLEMENTATION
-   DEFINED."
-
-   Furthermore, section 6.3.11 ("SMMU_CR1") and section 13.1.2
-   ("Attribute support") explicitly permit an SMMU and memory system to
-   reject unsupported memory attributes with an External Abort:
-
-   "Where an SMMU and the memory system support only a subset of memory
-   types, and where access to an unsupported type can be reported to the
-   SMMU, the SMMU will record an external abort for the cause of the
-   access in question in the architected manner."
-
-   Section 13.1.2 specifically lists the resulting faults for
-   SMMU-originated accesses using unsupported memory types:
-   - STE fetch: F_STE_FETCH
-   - CD fetch: F_CD_FETCH
-   - Command queue read: GERROR.CMDQ_ERR and CERROR_ABT
-   - Event queue access: GERROR.EVENTQ_ABT_ERR
-   - PRI queue access: GERROR.PRIQ_ABT_ERR
-   - Translation table walk: F_WALK_EABT
-
-   Therefore, a non-coherent SMMUv3 implementation (SMMU_IDR0.COHACC =3D=3D=
- 0)
-   where every SMMU-originated access configured with Normal Write-Back,
-   Inner Shareable attributes fails and records an External Abort is
-   completely architecturally compliant, yet unsupported by the current
-   arm-smmu-v3 driver.
-
-3. Finally, the Arm Architecture Reference Manual (ARM DDI 0487, section
-   B2.8 "Mismatched memory attributes") explicitly warns against
-   accessing the same memory location with mismatched attributes across
-   agents:
-
-   "There might be a loss of coherency when multiple agents attempt to
-   access a memory Location [with mismatched memory attributes]."
-
-   On a non-coherent SMMU, stream tables, CD tables, and queues are
-   allocated via dma_alloc_coherent() / dmam_alloc_coherent(), which
-   maps them as Normal Non-Cacheable on the CPU. Programming the SMMU to
-   access those same buffers as Normal Write-Back, Inner Shareable
-   creates mismatched memory attributes between the CPU and the SMMU.
-
-   We already avoid this for Stage 1 and Stage 2 translation table walks
-   in io-pgtable-arm by selecting Non-Cacheable, Outer Shareable when
-   !coherent_walk. This patch simply brings SMMU_CR1 and
-   STE.{S1CIR,S1COR,S1CSH} into compliance with the same rule.
-
-[1] https://lore.kernel.org/linux-iommu/f253d6aa-1dc2-4b1a-85df-f43b06719c0=
-4@arm.com/
-[2] https://lore.kernel.org/linux-iommu/aW9xs1ko3nWq5VbS@willie-the-truck/
-
-Thanks,
-Daniel
