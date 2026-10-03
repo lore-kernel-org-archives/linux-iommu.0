@@ -1,392 +1,254 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012019.outbound.protection.outlook.com [40.107.209.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45455325726;
-	Sat,  3 Oct 2026 01:25:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790990745; cv=fail; b=ZTIsn2RVkNW8FhjjaW2bZRgWcLir5xxklIeDWI22wLka3hyBNs3ZdEltlkF/hiYawDsLHNEvBnFgxcgplmPLvhdB8mDFZb/uX9ONgRE+RYRaaKVHU2mkv3FmTXPKBQRDVli2/CuSbWG0JdJnBJAADz22wy0xBjuW+nI8AJcEEqE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790990745; c=relaxed/simple;
-	bh=nr5SlCv7DMjQY0uxN6FppK7xDq53reB7A2fXtoCdBs0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=g4mdg+pZItRVP0v29p4oiP5LpTEU/HCuw0XjCDd/C/ynDUdrLpvHFUrJ8x/l51U0BOz4JpWCM3oes1YnWyWMjbIO+P8uCurPJ/aIVcI+5BcrlsHmCg2F+EjNtIJcJPxAOpXy9N3HTd5ltDzr9HS9xx5hi8G5sUvi3wdfbUJ9U44=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=CmzoBITP; arc=fail smtp.client-ip=40.107.209.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="CmzoBITP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JQJs0TlvZ5aHVN6OHzrmlCYXRDYa3Ix60bdRpTIz4OkPQzkoMNAx8ziZG9bTuG7OUhhVfD6Dnvu96S4g/SIaCLmmfMCG5+9EFoMOfFOjd2c1LhuNCZdcH/SFMBF1CTwmfFcmdHE+WWJaJQrDpcANr9Nv2KdZbhU7ik41JzRtgwFW8PLoFSxH6ThaRo3ZaRRkJlnzGYLLHxexH1vBZrAXSE+mGGiVBtgGrwfCEdcNcsEldAbkOaToLQnevidQyVgKO0N/7G11knWuJ+NSnKr8ZiEDkf42kJN9z1GaPJkFbNWbWJWLtM+f41EjGCUVcO5tjGa5r8bpgURjuCKFBEO8EA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5glH9DmziBjBYl5fIYQ9mjjg3MikVsgEtKtEeeS8Iuw=;
- b=uM7FJGZ6WVhn4C4NIFuXigP8Fdh/O2lza7hRQ7mGinxvgD1wIGhoMBdCaOS02xMLtIlYQm22B2BUae5vXzoOvObo3f0WKKYDLtevaDrZTuDbJOu9K5E/wqqfGmZh7WCKO7LabfxSWwNZiKds/0gTiG+Gx4rlG/zHQsug786mH7iSrGYJk2AoTyAffzGw7KiVhF5O/GZy13xZYSKtcCuRZK2x0HKG26f0VUX4J/dUdM1sQVW4nz2aj/zN9xAPgUJctIqzcvn7r1S3sucNu/eeD7evM2WpPczAigdL2g1BdXaUD4/CGBiIsCgD9xWDTQ07L8jE+Kkv69Y6ar/CmbZ+og==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5glH9DmziBjBYl5fIYQ9mjjg3MikVsgEtKtEeeS8Iuw=;
- b=CmzoBITPTMvzuZDqydEHttt+6sGVzRKYEu3oLW2hAjnAbMX537IBBZNBgMxtB/GBa91EKE6V7EO/uuwsHmUTy8pNuY2GXn2AWhH/MWgQjn5sh8ro6hRyg9joScjXixeOSdH/e8QAl7RoIzzc3lASjrkO5hAcRFmAlgjXXyHB3NuE1aCDa+WSwF4/yBHJZhASERop4aMTwAo21Ii4WemOu0KzMjqTrIxP8f4SXsa+4l22TxlMeDmYae3SyocQWHl3O32lHl0xK/3dUi+/Y35qSOiewOd1DHxw528QyPSPS0QelcPlaNTAX5M5zToWw2IR5VtXwwuLnBaoMlYSZNhtng==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by CH3PR12MB7641.namprd12.prod.outlook.com
- (2603:10b6:610:150::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.26; Sat, 3 Oct
- 2026 01:23:32 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0472.016; Sat, 3 Oct 2026
- 01:23:31 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Catalin Marinas <catalin.marinas@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	iommu@lists.linux.dev,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-doc@vger.kernel.org,
-	Mark Rutland <mark.rutland@arm.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Will Deacon <will@kernel.org>
-Cc: David Matlack <dmatlack@google.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	patches@lists.linux.dev,
-	Pranjal Shrivastava <peaan@google.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Samiullah Khawaja <skhawaja@google.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
-Subject: [PATCH v8 2/9] iommu/arm-smmu-v3: Pass the parameters for the invalidation in a struct
-Date: Fri,  2 Oct 2026 22:23:21 -0300
-Message-ID: <2-v8-1eaaed5e0433+3d3d2d-smmu_tlbi_jgg@nvidia.com>
-In-Reply-To: <0-v8-1eaaed5e0433+3d3d2d-smmu_tlbi_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY3PR05CA0030.namprd05.prod.outlook.com
- (2603:10b6:a03:254::35) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6079D388E43
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 08:10:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791015034; cv=none; b=EzNCFXNHU8k+prXwHAc56yr3dEGgxXOGIsl2eD5E4UToKz4ADWET85fw1ga6Bb865jYx5OzoDgl6PAZNeFH0M64wbFX3f0TH1b2G5wt5VJQUUkck33TvtB4tVOvvNC2NVUvJa0Hj4vQZfLDBOjrCw1G0Pfvr2vJ11pKucLY3A2A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791015034; c=relaxed/simple;
+	bh=1GbWSRG1Tg8HTAPfR8tlfIKArNgsa7BAmPF83bDFBl0=;
+	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
+	 Content-Type; b=oMoqITWmjUju8bGURMv2a+Lvp4KBpwog/WUqc3iTIm41FGfu11oXrTL9ZecXKquENvAHbUqf+WxiNJb8XXhjS4YrkwCLN+If+Xan4w/vIvAfseKpS+GJMlgkIgPL9BWmhkMS4vV5kds4NvRXsyDVbbKF0VBUESEn/6EbUOQsdzk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4c7f887ac6bso256301b6e.3
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 01:10:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791015031; x=1791619831;
+        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=FU+MzeJUD4jN7QZs0C8lQMkG+5XN6W1QTOf7yTqArOg=;
+        b=BOmw+B5CezN0gGiN0Pb0c/iEKqLXgMKZMsdLAkmHEWRe3gZtcKxgVwimTi+bQGEV0j
+         fJ0aWQgqag7JncjlttGBEsjufgGBPEfV3XrmXS7HK7qxNC52mNRCggnszHMaZNaIULoq
+         QIOTu7C0LvG43szdGqIc+R+M4SFdAMNJsNxCCnF3NMC6N1eN4RE7ZLmO5F4C4HSva3Zy
+         fA3SMpDX4MAPgVVgav1CbFp2RVVTc66+CXCp0I/p9HEz+4tX6MpN2eT6kO3/F4jQHTv0
+         o2Dn8eNseGVCqVKVL1qvCQCYSdIS0ixcwRR1qdpQD871YOZJjhzrO8FHtA/E2pfKnKS3
+         FCew==
+X-Forwarded-Encrypted: i=1; AKwUvBzOncZa1ypl7uSULVK11rjUeRykEFxhWZ+v5PPr4xjvg3KKzUynO0T4Rt4bW50FKRT7noO0cg==@lists.linux.dev
+X-Gm-Message-State: AFuF++lreBWGPuCASkysFXjOL41pFdqYV4V2RQYj1ZqZM8zkDq52vEfo
+	4UAQdZjsikQM5Nsl1wYmdj1MbRkKUxkrOntgXBy48yQv5NxfemXUUdmsuyVDCiVQ/CVxNlNENoE
+	tZuvoSjbVlsEDUeSrI1zyy1khpG/H8wiCMvUETNWAT65kHEM+0sH9M5yMrKE=
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|CH3PR12MB7641:EE_
-X-MS-Office365-Filtering-Correlation-Id: 98a18f75-2551-45fc-3b6d-08df20ecef74
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|7416014|23010399003|1800799024|6133799003|11063799006|10067099003|56012099006|22082099003|18002099003|3023799007|921020;
-X-Microsoft-Antispam-Message-Info:
-	qQBa/oubEdCrCjK55MyG2jdljXYV1ArOdd1HM5OvaO/3jI9LYNCKDzYWb/2Mu/IvfUEnd2e50GrL4Kma4vk0rLIFVB4+tIv3lF9yRlxLrbH8x6ZCVFIto3/Edg3KLbK5i3mFmXZcAiKxh3pRS4+d+qmaEHgg+6cC6uPCKBvH9FAbMlm3iQY3chWei8323m2LLYnMoH8oSp7ZVYXIjjZD4CgueFR8L9mhUk+9efl80Fn0+XUuJCkzfGnnoyAo21OqRBXuB4yViup8R28AfV9OnmtIOQj+XVZTSt+9bj8D+X48NgKSu4z8i0K9zz5FXBBNushjnaKXFeRmllL85KxVzh4WxwdxWZ3DNhVEL54yZmPaIASJMK+YqQ4EQAjEfQiW6DrRot/gyYJSBhe0jfXFxEQjWE4/SCtolYRQXiWA+bsLloCPJbtSoaqnwZCBLWyUl5KbRjEYKROPZw4vavvm8DVwzcUWbL0hnyoODBnaF/hq7rsLja5kYlq4UmSjDxe5OxpJtq7i//WRqq4MiSWo7X+AEB29UxdItmUYylzkDH3wmy+cYZe/AVcdcMx/ddaakHg0lH22xuNM97bUesGEtFgF//1hitS/ch7DY0eFHkCTM7QDq5xY19qb/hK0PXo+CrKVo99SEhU05e7H8A3c6IX3UCxdm99IbKtjoMo93xgsyZA/MCcY+fd7JQOeuqhY7yHVOGT8w+iXwoPXbJe5ew==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(23010399003)(1800799024)(6133799003)(11063799006)(10067099003)(56012099006)(22082099003)(18002099003)(3023799007)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?uFudxhTv82+DIXzoH+wv5gNMB338MG11nLlr59db1MwojQjwQkNdB/QEtrUY?=
- =?us-ascii?Q?sXS+HYyFmhHSQJBZiBxhWmOOaqGyimBBIb0VN0DXBl/lRp3KEQs5YFV8pdmD?=
- =?us-ascii?Q?3dATfNBEKe12hOL+3Fg0FbZFsB0mnv3ujMBHqKWrHxPMFGThcBT9Jo6OftSG?=
- =?us-ascii?Q?QFsyVw0IsLK7/TR4NBtto6FTAJ/GvA6rvA2EEInCbyt7DcHtOtwq33QjyJWC?=
- =?us-ascii?Q?7/fV9iE6Xb5oa4fUJJdnJW36Gqui2PDKNwmCkB40rYPKIJCMUJEUJqo6kO0G?=
- =?us-ascii?Q?/duw2zxBB1ptmTx9CSh55Q/DXxgN18I/MpLhmeiaZErJ0d33P5JrIkNIHNlQ?=
- =?us-ascii?Q?vuidvT2CAbEAswX5zOX4LoL/aEwxff579iE8jUZ97WQ0lwrj+HgVTxK4vvwG?=
- =?us-ascii?Q?q/tGI+fbE3EjwbZ8JeaVMkHSZeqmrMnx18pDyxA4zPliKbgkIWAiMZRdpy+g?=
- =?us-ascii?Q?sNHXphu/aOqjoscwV7ewYXIKYTkztGGcuW33MIhPTc4Ty+xHxcsGCkN3W5RN?=
- =?us-ascii?Q?HILizNSAoKKDFVy1rx1kpG/Qhujn3MKP8QjUbaUqdT1b2UMF/l/xUIhdjo4A?=
- =?us-ascii?Q?YPK/TC3hsxEpv9acagRWdIdNbcHi+4w2KCd3rfy/MebuB5hB0QZLB+K53QNz?=
- =?us-ascii?Q?o/awI2b7nZEl2kFWVPR++mZDfTg/p2TNXZhaGVdi6g0IXGVlvsnzZbK5LPUO?=
- =?us-ascii?Q?kySaexnGtqOrzjEUtXduFrDVI8e6qyj5XRqw5uPwwr670rrkTk6ZVtENdZW9?=
- =?us-ascii?Q?DnHarkaAJPkEYMEapUhYJA3C7spc6Ltz3i1WCLkNwD76wW7E2Y7DfiitTc+Q?=
- =?us-ascii?Q?mq2dLEbY7kwjBwHIG5HPszDFDynKzD4yCqmYSMzlridiWivC3x3uTbY83WFq?=
- =?us-ascii?Q?vV2gePnPMHRvWhMzYKT+NpoewaYG8HbZBWrTRP7hpvmHQHg7+2j28jotJQlD?=
- =?us-ascii?Q?5ESQxPnE2RWpVGOvXTRvPsc/zLwO21PlQDePW+g2YCN04PqaPUiCT60vfErA?=
- =?us-ascii?Q?5rQfH5JjIBEjGcctNYr0TlaS74gycSG1vO3Uj8BltyWl3sPw0G2z+NsEtLBA?=
- =?us-ascii?Q?xKA9MoE6OdYDkoDq7/rT5xG5TJrU5Kh8RW55Fs0bB8U9eqCXbRVYh1OH5OC5?=
- =?us-ascii?Q?UXspV132fy9F9JHLUBYn+mtTE5XrkclVG+361vK1TaWgaiUA+AgdO7H6Tw+D?=
- =?us-ascii?Q?K9K2ucyxB6rKvXN7Dbt+74rgKYq050G1LATD6vaYAMmdR2UA902HXDUcVXti?=
- =?us-ascii?Q?3w57yYCpFkc2AvOnDM/wTr9Tq3rNTPRvbXbnMeMbQ3RX1Ucyr0p1I0Jl5Frx?=
- =?us-ascii?Q?rL2i6QOP7v4U1iFmAgwwHJpALncUHKhgL9nHCwNQgJNOUaACspdK6VI5mcSf?=
- =?us-ascii?Q?Cz3eS8vSh9fttfDWpJVAbxVSUYigwHZdaK2E0Willu+R2UCOgqr5pAckjPGf?=
- =?us-ascii?Q?Vpqz1rcjVWl5fs18G2CzKtBvxRfH2jC3+A5z9aLDvKgQsrA9C2g0oJRnuvv9?=
- =?us-ascii?Q?UP/kVtym9XTdOgs7JX1ww6yIKPkTJwbSEOl7dnl1DWFyMWoGW4o/KVjRIRxD?=
- =?us-ascii?Q?v/cXZSHtpq0TiS6Rm4g3ooyQ3xDtZ90lkTkuQl07Os7j2qlwzFBfyneqCUaX?=
- =?us-ascii?Q?10EW4Sx54i2LDmMgN3yxrLgKfqscIGY3QNUpPBNPXupG/xIKCMK99AUhK0pt?=
- =?us-ascii?Q?XC/LYml7x8mRjS/qfUgOsbwXtW7Nd/ABBgNnglTJR7V/ruHI?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98a18f75-2551-45fc-3b6d-08df20ecef74
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2026 01:23:31.4166
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zJYDueEQbSSRF1A9GmPNLGslGdJ0la7KAJ9DjAeA5z5on83HyfFnPrelNX9U0/43
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7641
+X-Received: by 2002:a05:6808:2383:b0:4f3:2f34:fc51 with SMTP id
+ 5614622812f47-4f5267483a0mr4086203b6e.8.1791015031357; Sat, 03 Oct 2026
+ 01:10:31 -0700 (PDT)
+Date: Sat, 03 Oct 2026 01:10:31 -0700
+In-Reply-To: <20261001230219.818128-1-praan@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <6ac0b877.81dddff3.363068.0005.GAE@google.com>
+Subject: [syzbot ci] Re: iommupt: Introduce IO page table shrinker
+From: syzbot ci <syzbot+ci374b2971a7526572@syzkaller.appspotmail.com>
+To: danielmentz@google.com, iommu@lists.linux.dev, jgg@ziepe.ca, 
+	joro@8bytes.org, kevin.tian@intel.com, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, loganodell@google.com, praan@google.com, 
+	robin.murphy@arm.com, skhawaja@google.com, smostafa@google.com, 
+	will@kernel.org
+Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 
-From: Jason Gunthorpe <jgg@ziepe.ca>
+syzbot ci has tested the following series
 
-These parameters go to a lot of different functions and the next patches
-will add more. Put them into a struct to keep things tidy.
+[v1] iommupt: Introduce IO page table shrinker
+https://lore.kernel.org/all/20261001230219.818128-1-praan@google.com
+* [RFC PATCH 1/5] iommu: Add reclaim_list xarray to struct iommu_domain
+* [RFC PATCH 2/5] iommupt: Implement refcounting logic for Leaf entries
+* [RFC PATCH 3/5] iommupt: Add lockless sever_branch helper
+* [RFC PATCH 4/5] iommupt: Introduce lockless page table shrinker
+* [RFC PATCH 5/5] iommupt: Return real page count to the shrinker core
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Pranjal Shrivastava <praan@google.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+and found the following issues:
+* BUG: spinlock bad magic in xa_destroy
+* INFO: trying to register non-static key in xa_destroy
+* INFO: trying to register non-static key in xa_store
+
+Full report is available here:
+https://ci.syzbot.org/series/792388cb-7e39-4d83-8008-54d31031a227
+
+***
+
+BUG: spinlock bad magic in xa_destroy
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/40ee62cc-4991-4840-96ac-e3f70bd4b70b/config
+syz repro: https://ci.syzbot.org/findings/96c389a5-7ad8-436e-87ca-df20279f6360/syz_repro
+
+iommufd_mock iommufd_mock0: Adding to iommu group 0
+BUG: spinlock bad magic on CPU#1, syz.2.19/5813
+ lock: mock_blocking_domain+0x70/0xe0 selftest.c:-1, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
+CPU: 1 UID: 0 PID: 5813 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
+ spin_bug kernel/locking/spinlock_debug.c:78 [inline]
+ debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
+ do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
+ __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:156 [inline]
+ _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:181
+ xa_destroy+0x59/0x2e0 lib/xarray.c:2393
+ iommu_domain_free+0x25/0x170 drivers/iommu/iommu.c:2130
+ iommu_deinit_device+0x353/0x5d0 drivers/iommu/iommu.c:600
+ __iommu_group_remove_device+0x1dd/0x270 drivers/iommu/iommu.c:764
+ iommu_release_device drivers/iommu/iommu.c:783 [inline]
+ iommu_bus_notifier+0x6d/0x2c0 drivers/iommu/iommu.c:1826
+ notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
+ blocking_notifier_call_chain+0x6a/0x90 kernel/notifier.c:380
+ bus_notify+0x143/0x180 drivers/base/bus.c:1086
+ device_del+0x740/0x8f0 drivers/base/core.c:3982
+ device_unregister+0x21/0xf0 drivers/base/core.c:4006
+ mock_dev_destroy drivers/iommu/iommufd/selftest.c:1042 [inline]
+ iommufd_test_mock_domain drivers/iommu/iommufd/selftest.c:1108 [inline]
+ iommufd_test+0x3e03/0x6360 drivers/iommu/iommufd/selftest.c:2109
+ iommufd_fops_ioctl+0x465/0x600 drivers/iommu/iommufd/main.c:556
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:597 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
+ do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
+ do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f9ceff9e159
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f9cf0ea9028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f9cf0225fa0 RCX: 00007f9ceff9e159
+RDX: 0000200000000100 RSI: 0000000000003ba0 RDI: 0000000000000003
+RBP: 00007f9cf003506b R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f9cf0226038 R14: 00007f9cf0225fa0 R15: 00007ffe0de56058
+ </TASK>
+
+
+***
+
+INFO: trying to register non-static key in xa_destroy
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/40ee62cc-4991-4840-96ac-e3f70bd4b70b/config
+
+iommufd_mock iommufd_mock0: Adding to iommu group 0
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 1 UID: 0 PID: 5775 Comm: syz.2.31 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150
+ assign_lock_key+0x133/0x150
+ register_lock_class+0xcc/0x2e0
+ __lock_acquire+0x10c/0x2de0
+ lock_acquire+0x115/0x350
+ _raw_spin_lock_irqsave+0x40/0x60
+ xa_destroy+0x59/0x2e0
+ iommu_domain_free+0x25/0x170
+ iommufd_hwpt_nested_destroy+0x4d/0x1a0
+ iommufd_object_remove+0x35a/0x4c0
+ iommufd_fops_ioctl+0x465/0x600
+ __se_sys_ioctl+0xfc/0x170
+ do_syscall_64+0x166/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f593cf9e159
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f593df41028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f593d225fa0 RCX: 00007f593cf9e159
+RDX: 0000200000000300 RSI: 0000000000003b80 RDI: 0000000000000003
+RBP: 00007f593d03506b R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007f593d226038 R14: 00007f593d225fa0 R15: 00007ffe5c49ab68
+ </TASK>
+
+
+***
+
+INFO: trying to register non-static key in xa_store
+
+tree:      axboe
+URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
+base:      72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
+arch:      amd64
+compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
+config:    https://ci.syzbot.org/builds/40ee62cc-4991-4840-96ac-e3f70bd4b70b/config
+
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 0 UID: 0 PID: 6433 Comm: syz.2.305 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0xe8/0x150
+ assign_lock_key+0x133/0x150
+ register_lock_class+0xcc/0x2e0
+ __lock_acquire+0x10c/0x2de0
+ lock_acquire+0x115/0x350
+ _raw_spin_lock+0x2e/0x40
+ xa_store+0x23/0x50
+ __unmap_range+0x748/0x1190
+ __unmap_range+0xbed/0x1190
+ __unmap_range+0xbed/0x1190
+ amdv1_mock_unmap_range+0x418/0x5e0
+ __iommu_unmap+0x138/0x740
+ iommu_unmap+0x114/0x200
+ iopt_area_unmap_domain_range+0x279/0x310
+ __iopt_area_unfill_domain+0x8a2/0xf30
+ iopt_table_remove_domain+0x7e8/0xa90
+ iommufd_hwpt_paging_destroy+0x1c1/0x2f0
+ iommufd_object_remove+0x35a/0x4c0
+ iommufd_hw_pagetable_detach+0x564/0x6a0
+ iommufd_device_detach+0x1c/0x80
+ iommufd_selftest_destroy+0xae/0x130
+ iommufd_fops_release+0x186/0x3b0
+ __fput+0x418/0xa50
+ task_work_run+0x1d9/0x270
+ exit_to_user_mode_loop+0x204/0x770
+ do_syscall_64+0x328/0x520
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fed0639e159
+Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff16748678 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
+RAX: 0000000000000000 RBX: 00007fff16748760 RCX: 00007fed0639e159
+RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
+RBP: 000000000001312c R08: 0000000000000001 R09: 0000000000000000
+R10: 0000001b31420000 R11: 0000000000000246 R12: 00007fff167487a0
+R13: 00007fed06625fac R14: 0000000000013174 R15: 00007fed06625fa0
+ </TASK>
+
+
+***
+
+If these findings have caused you to resend the series or submit a
+separate fix, please add the following tag to your commit message:
+  Tested-by: syzbot@syzkaller.appspotmail.com
+
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 90 ++++++++++-----------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  9 +++
- 2 files changed, 53 insertions(+), 46 deletions(-)
+This report is generated by a bot. It may contain errors.
+syzbot ci engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 502745984a5364..bcdeb9a47df7bd 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2385,8 +2385,8 @@ static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
- 	return IRQ_WAKE_THREAD;
- }
- 
--static struct arm_smmu_cmd
--arm_smmu_atc_inv_to_cmd(u32 sid, int ssid, unsigned long iova, size_t size)
-+static struct arm_smmu_cmd arm_smmu_atc_inv_to_cmd(u32 sid, int ssid,
-+						   struct arm_smmu_tlbi *tlbi)
- {
- 	size_t log2_span;
- 	size_t span_mask;
-@@ -2408,8 +2408,8 @@ arm_smmu_atc_inv_to_cmd(u32 sid, int ssid, unsigned long iova, size_t size)
- 	 * This has the unpleasant side-effect of invalidating all PASID-tagged
- 	 * ATC entries within the address range.
- 	 */
--	page_start	= iova >> inval_grain_shift;
--	page_end	= (iova + size - 1) >> inval_grain_shift;
-+	page_start = tlbi->iova >> inval_grain_shift;
-+	page_end = (tlbi->iova + tlbi->size - 1) >> inval_grain_shift;
- 
- 	/*
- 	 * In an ATS Invalidate Request, the address must be aligned on the
-@@ -2484,20 +2484,23 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- 
- static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
- 					  struct arm_smmu_cmdq_batch *cmds,
--					  struct arm_smmu_cmd *cmd, bool leaf,
--					  unsigned long iova, size_t size,
--					  size_t granule, size_t pgsize)
-+					  struct arm_smmu_cmd *cmd,
-+					  struct arm_smmu_tlbi *tlbi,
-+					  size_t pgsize)
- {
--	unsigned long end = iova + size, num_pages = 0, tg = pgsize;
-+	size_t inv_range = tlbi->iopte_size;
-+	unsigned long iova = tlbi->iova;
-+	unsigned long end = iova + tlbi->size;
-+	unsigned long num_pages = 0;
-+	unsigned int tg = pgsize;
- 	u64 orig_data0 = cmd->data[0];
--	size_t inv_range = granule;
- 	u8 ttl = 0, tg_enc = 0;
- 
--	if (WARN_ON_ONCE(!size))
-+	if (WARN_ON_ONCE(!tlbi->size))
- 		return;
- 
- 	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
--		num_pages = size >> tg;
-+		num_pages = tlbi->size >> tg;
- 
- 		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
- 		tg_enc = (tg - 10) / 2;
-@@ -2510,8 +2513,8 @@ static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
- 		 * want to use a range command, so avoid the SVA corner case
- 		 * where both scale and num could be 0 as well.
- 		 */
--		if (leaf)
--			ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
-+		if (tlbi->leaf_only)
-+			ttl = 4 - ((ilog2(tlbi->iopte_size) - 3) / (tg - 3));
- 		else if ((num_pages & CMDQ_TLBI_RANGE_NUM_MAX) == 1)
- 			num_pages++;
- 	}
-@@ -2550,7 +2553,7 @@ static void arm_smmu_cmdq_batch_add_range(struct arm_smmu_device *smmu,
- 		 * command and something would be very broken if iova had them
- 		 * set.
- 		 */
--		cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_LEAF, leaf) |
-+		cmd->data[1] = FIELD_PREP(CMDQ_TLBI_1_LEAF, tlbi->leaf_only) |
- 			       FIELD_PREP(CMDQ_TLBI_1_TTL, ttl) |
- 			       FIELD_PREP(CMDQ_TLBI_1_TG, tg_enc) |
- 			       (iova & ~GENMASK_U64(11, 0));
-@@ -2591,13 +2594,13 @@ static bool arm_smmu_cmdq_batch_add_range_inv(struct arm_smmu_device *smmu,
- 	return true;
- }
- 
--static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu, size_t size,
--				      size_t granule)
-+static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu,
-+				      struct arm_smmu_tlbi *tlbi)
- {
- 	size_t max_tlbi_ops;
- 
- 	/* 0 size means invalidate all */
--	if (!size || size == SIZE_MAX)
-+	if (!tlbi->size || tlbi->size == SIZE_MAX)
- 		return true;
- 
- 	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV)
-@@ -2610,32 +2613,31 @@ static bool arm_smmu_inv_size_too_big(struct arm_smmu_device *smmu, size_t size,
- 	 * invalidation feature, where there can be too many per-granule TLBIs,
- 	 * resulting in a soft lockup.
- 	 */
--	max_tlbi_ops = 1 << (ilog2(granule) - 3);
--	return size >= max_tlbi_ops * granule;
-+	max_tlbi_ops = 1 << (ilog2(tlbi->iopte_size) - 3);
-+	return tlbi->size >= max_tlbi_ops * tlbi->iopte_size;
- }
- 
- /* Used by non INV_TYPE_ATS* invalidations */
- static void arm_smmu_inv_to_cmdq_batch(struct arm_smmu_inv *inv,
- 				       struct arm_smmu_cmdq_batch *cmds,
- 				       struct arm_smmu_cmd *cmd,
--				       bool single_range_inv, bool leaf,
--				       unsigned long iova, size_t size,
--				       unsigned int granule)
-+				       struct arm_smmu_tlbi *tlbi)
- {
- 	struct arm_smmu_cmd nsize_cmd;
- 
--	if (arm_smmu_inv_size_too_big(inv->smmu, size, granule))
-+	if (arm_smmu_inv_size_too_big(inv->smmu, tlbi))
- 		goto full_inv;
- 
--	if (single_range_inv && size > granule) {
-+	if (tlbi->has_cont && tlbi->size > tlbi->iopte_size &&
-+	    (inv->smmu->options & ARM_SMMU_OPT_FULL_CONT_RANGE_INV)) {
- 		if (!arm_smmu_cmdq_batch_add_range_inv(inv->smmu, cmds, cmd,
--						       iova, size, inv->pgsize))
-+						       tlbi->iova, tlbi->size,
-+						       inv->pgsize))
- 			goto full_inv;
- 		return;
- 	}
- 
--	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, leaf, iova, size,
--				      granule, inv->pgsize);
-+	arm_smmu_cmdq_batch_add_range(inv->smmu, cmds, cmd, tlbi, inv->pgsize);
- 	return;
- 
- full_inv:
-@@ -2660,10 +2662,8 @@ static inline bool arm_smmu_invs_end_batch(struct arm_smmu_inv *cur,
- 	return false;
- }
- 
--static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
--					unsigned long iova, size_t size,
--					unsigned int granule,
--					bool single_range_inv, bool leaf)
-+static void __arm_smmu_domain_inv_range(struct arm_smmu_tlbi *tlbi,
-+					struct arm_smmu_invs *invs)
- {
- 	struct arm_smmu_cmdq_batch cmds = {};
- 	struct arm_smmu_inv *cur;
-@@ -2693,20 +2693,16 @@ static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
- 		case INV_TYPE_S1_ASID:
- 			cmd = arm_smmu_make_cmd_tlbi(cur->size_opcode,
- 						     cur->id, 0);
--			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd,
--						   single_range_inv, leaf, iova,
--						   size, granule);
-+			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, tlbi);
- 			break;
- 		case INV_TYPE_S2_VMID:
- 			cmd = arm_smmu_make_cmd_tlbi(cur->size_opcode,
- 						     0, cur->id);
--			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd,
--						   single_range_inv, leaf, iova,
--						   size, granule);
-+			arm_smmu_inv_to_cmdq_batch(cur, &cmds, &cmd, tlbi);
- 			break;
- 		case INV_TYPE_S2_VMID_S1_CLEAR:
- 			/* CMDQ_OP_TLBI_S12_VMALL already flushed S1 entries */
--			if (arm_smmu_inv_size_too_big(cur->smmu, size, granule))
-+			if (arm_smmu_inv_size_too_big(cur->smmu, tlbi))
- 				break;
- 			arm_smmu_cmdq_batch_add_cmd(
- 				smmu, &cmds,
-@@ -2717,7 +2713,7 @@ static void __arm_smmu_domain_inv_range(struct arm_smmu_invs *invs,
- 			arm_smmu_cmdq_batch_add_cmd(
- 				smmu, &cmds,
- 				arm_smmu_atc_inv_to_cmd(cur->id, cur->ssid,
--							iova, size));
-+							tlbi));
- 			break;
- 		case INV_TYPE_ATS_FULL:
- 			arm_smmu_cmdq_batch_add_cmd(
-@@ -2748,10 +2744,14 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
- 			       unsigned long iova, size_t size,
- 			       unsigned int granule, bool leaf)
- {
-+	struct arm_smmu_tlbi tlbi = {
-+		.iova = iova,
-+		.size = size,
-+		.iopte_size = granule,
-+		.has_cont = smmu_domain->stage == ARM_SMMU_DOMAIN_SVA,
-+		.leaf_only = leaf,
-+	};
- 	struct arm_smmu_invs *invs;
--	bool single_range_inv =
--		smmu_domain->stage == ARM_SMMU_DOMAIN_SVA &&
--		(smmu_domain->smmu->options & ARM_SMMU_OPT_FULL_CONT_RANGE_INV);
- 
- 	/*
- 	 * An invalidation request must follow some IOPTE change and then load
-@@ -2791,12 +2791,10 @@ void arm_smmu_domain_inv_range(struct arm_smmu_domain *smmu_domain,
- 		unsigned long flags;
- 
- 		read_lock_irqsave(&invs->rwlock, flags);
--		__arm_smmu_domain_inv_range(invs, iova, size, granule,
--					    single_range_inv, leaf);
-+		__arm_smmu_domain_inv_range(&tlbi, invs);
- 		read_unlock_irqrestore(&invs->rwlock, flags);
- 	} else {
--		__arm_smmu_domain_inv_range(invs, iova, size, granule,
--					    single_range_inv, leaf);
-+		__arm_smmu_domain_inv_range(&tlbi, invs);
- 	}
- 
- 	rcu_read_unlock();
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 0a1bb75467dbda..f0839cc767dd68 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -810,6 +810,15 @@ static inline struct arm_smmu_invs *arm_smmu_invs_alloc(size_t num_invs)
- 	return new_invs;
- }
- 
-+struct arm_smmu_tlbi {
-+	unsigned long iova;
-+	size_t size;
-+	/* page or block size of the leaf iopte */
-+	unsigned int iopte_size;
-+	bool has_cont;
-+	bool leaf_only;
-+};
-+
- struct arm_smmu_evtq {
- 	struct arm_smmu_queue		q;
- 	struct iopf_queue		*iopf;
--- 
-2.43.0
+To test a fix for this bug, please reply with `#syz test`
+(on a separate line) and attach the patch to the email.
 
+Notes:
+- The patch will be applied on top of the tested series (as an
+  incremental fix).
+- To test a new version of the whole series, please send it directly
+  to syzbot@lists.linux.dev.
+- Arguments like custom git repos and branches are not supported.
