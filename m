@@ -1,223 +1,314 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011048.outbound.protection.outlook.com [40.107.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EC1123D2A1
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 00:47:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1790988441; cv=none; b=EqprPDGrSoLadjZR1op4+VQZ2Tpx1eyrsPCCHzf/9rSHmOfTFLAWjbE2ygkyXhrN6j6Q32hKKaxtdySyZeLtamadE5uh+tBwyrlFCYBJArCyo2D767MvpYfEyALDYeN6athW2ReoJ2dIHXVLeeunRvQpT58RON+1p74z6GTnFHE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1790988441; c=relaxed/simple;
-	bh=yTZUC6jKZaCOtbJ/3nZWWXEu0NQbc2ytDJaD5GmrxC0=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D29D340A6B;
+	Sat,  3 Oct 2026 01:23:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1790990632; cv=fail; b=LvP+HXFbequhiFWen21ZT+280w6X9oj2n6CAyWFgVOwCKWojiAphdMLheyl3kWaOP6uLcWwD1v18k6rayFx1TN1l5xTnulRe9C8kRAxZkJLJI7dBMPHJPeTKFRuHBhors66YKaClzmITk2jOHjff3C3sAmZz8BtV1YcNpuSDHOA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1790990632; c=relaxed/simple;
+	bh=Kdg6sRl3zFaxxQVN6Lsh2yIm/8NRLfdDAlJNYaJaUFI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=N/W4IoEgeCwL0KZPNV87Omi0eQ4fardqe47qz/IHfCAHVvwJvOnlijsz3PSpU/HDwkQvw5SN5EPx150vhWx7YlwTbcpD4U+Ap/k+OsViGgrd/l6UjUeMp9HSjorUWfrqjOdgiGNISPM6nnqrhwUvf+iaEBLOg05HekhbQvfKM30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=MVAl5iG8; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=iuSmjWxs; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:MIME-Version; b=E8uprDctbZcUWlu4coZxYkBapx2UnDZLUr5ENCzMCzL+vq6Jzu8MJsftBzAP4UUZxeOY+UyZS78zLyN0ftj5fnAhw/njOR063KQQ6b6M97ObMLL8tuI3Hf7xz+6+rSEyOt0Hb90LyRDCK7/1gKz2LDxY5jq8oXbXKtN5gQYNtmw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=POK0yDXa; arc=fail smtp.client-ip=40.107.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="MVAl5iG8";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="iuSmjWxs"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6930KIi72791526
-	for <iommu@lists.linux.dev>; Sat, 3 Oct 2026 00:47:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	n+oeytl8ILE2lGP9tC08C8X3AyaLqZaWEZaYxX5SV4c=; b=MVAl5iG8Lo15jt5m
-	aeO2/4y4NEt2oIlneY7iMQe6SPm7IIkm4YUip77RwFIkhAgq1b3DC7UVkazVlyWS
-	409t6yFoHgIwQ8qaeBQKPURlGKJj8ZmU9TlgPjuq8Y+o8dRmh781mTMtT/9zRukg
-	aqejn/IrWOxKbonrlb424CnFjj+1i4hhgGOkMxu6XXX/ZJQWH4j9p05yrR+iJOQx
-	uKMlBYqVpHDoi5ZFbrGkrUlQ1gLyxAmnyUrxPeRT8xmJSu6rBufePqJzZycbBRy3
-	GZhkIc1A5q15OAAPUwl2nKBBAQ8lssJAibEHtkVwisgzX+ADk+xfVTXyW6rWqURf
-	3+SbBw==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h2q2nr1yj-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 00:47:00 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-93c5ab5c136so12172285a.3
-        for <iommu@lists.linux.dev>; Fri, 02 Oct 2026 17:46:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1790988419; x=1791593219; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=n+oeytl8ILE2lGP9tC08C8X3AyaLqZaWEZaYxX5SV4c=;
-        b=iuSmjWxs/u2jomHDDWEjgvXeDLG8NWeixadnjDOTNI7qMS+h86JKanyOQWxeT3HdfC
-         mU7Fx45vxFM+3kuD+kAFX4ZOzk1iN/WtrEyJVi4usMBuBoWRcXNbE4YEdE22gzQU5CPM
-         pRxTTnEZ3BxbZgwPm3oMuQGPOkJdHgRq5jr+aBkXl+2sGVB8fgL2IBC2DjQcaoHeqs6p
-         OpWBO6xOKhFBAZNYkx5Phu9FhQ4PnHXiwJgB2uHN/2dA6vBjSrfs1/OyRgRfxZmKfzzR
-         VFgGCaK+3O6HO9ueN+MaBErTF1Hac4hJGDz/xM5R2waGQqI/UFQ7g1Z8qDs66F0rW63o
-         iP7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1790988419; x=1791593219;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=n+oeytl8ILE2lGP9tC08C8X3AyaLqZaWEZaYxX5SV4c=;
-        b=RtFBm3Fm/nLV3dyopZOTTyPv7feT/w2Vi8of7yXxCrnm/sAFLKU+SkpMykUcaAbseK
-         3gKfqVZN9i9koFXaL5spPLqCRj6aQbsPMOPfWO3yntp9aKt9xzlmv/MvTBAm6qSQBLm4
-         ZJrJsO5QRTMtEVgSJG4dmhc3qsr1ux0VOiuRceKr4cOkZgU1538XG/lrVcIQwTGCjHeP
-         m/1YakZsNPuh4I+lcuchvCWOZxMn2DOQ0IcJEF/N9vWT1qikNPwG6VQ3zLboC/vRJ+lA
-         11h+gSp64nbuoot5quDifcGgqoZt0g+wFhMamDnxjS65mgFnNieX/5+eAhScCTGoDaBf
-         oWBQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxx4sBONeVGhtGzppYXFHIYLNyW9vT1sAMuyoBhLGn0YHtCwoF/OSzHVS91hOYg6azZKYkCng==@lists.linux.dev
-X-Gm-Message-State: AFuF++kn408h7Sq7q5Yk+JwliD2UjiwLNSHF1MbsTvmVNJbLXyROxq+I
-	M9OyTwg2Dbdibh8UBtjixjHOxx4IPDZq7lj8uI4uzWBkBzsfbQsO8o8RB64asoFWHv9LLhNXiBO
-	eW60CGQ/ViBgEbcRVkzLb6Hn5qL/qkinI3ZbYBb6hTX8OrYdirtT/E2RcAA==
-X-Gm-Gg: AYBFou2gknLbCIrw93SGs4sMn8qg5AgDWEvdPXVSRhWRzV92dc2ueSf+yHTj3sOCA28
-	K9gZMoo3MHzuwONO6k32KTeH7+qfZqrzkUQd1ZJup1i8blTgDbro0rDUozImim/31qx8gVh+PFK
-	ikr3ixwLEIjAJ6RAOKnY0FVxrCICbvPuyMJj6tEwVhIkr6y82sMGHGLfaWxuMfIzofPxLChxATl
-	kcKcxUWW/xiBQoj10xLXQvw5UBBM9s4HALy9ryUIDvegGhmzgXfHx/oZdY4BHGU4avf9bg0IQKE
-	8kbnfcoUa0rvCrzE5np3qNNTNmN/WVVcSaW0v0Mp4YG9Q8N41KuFU2yGR6R2OKT7PkNVKX6UlsO
-	QfW+o+eMuhNTSmIw/DGLefiNLQ4pWVKntaPZlCiUqNVqUpfm1uLpqp685PLPi9E2K5OQLmg5sRd
-	D5GAhw76jG3sIy
-X-Received: by 2002:a05:620a:278a:b0:93b:d7a0:d9e7 with SMTP id af79cd13be357-93cf19d98b0mr819175385a.65.1790988419237;
-        Fri, 02 Oct 2026 17:46:59 -0700 (PDT)
-X-Received: by 2002:a05:620a:278a:b0:93b:d7a0:d9e7 with SMTP id af79cd13be357-93cf19d98b0mr819168185a.65.1790988418537;
-        Fri, 02 Oct 2026 17:46:58 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bb7c71911bsm1160748e87.11.2026.10.02.17.46.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Oct 2026 17:46:57 -0700 (PDT)
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
-        Jerome Brunet <jbrunet+clk@baylibre.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Srinivas Kandagatla <srini@kernel.org>, Ulf Hansson <ulfh@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Robert Marko <robimarko@gmail.com>,
-        Guru Das Srinagesh <linux@gurudas.dev>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Muzaffer Kadir <muzafferkadir@mainlining.org>
-Cc: David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, iommu@lists.linux.dev, mfd@lists.linux.dev,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org,
-        linux-input@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Abel Vesa <abel.vesa@oss.qualcomm.com>
-Subject: Re: [PATCH v3 00/19] Add Initial Support For MSM8952, Add General Mobile Shamrock
-Date: Sat,  3 Oct 2026 03:46:52 +0300
-Message-ID: <179098834078.3641559.798772743228949994.b4-ty@b4>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
-References: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="POK0yDXa"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=QLRFmeZv6trhlSj6VcAR/C427U9J3Gj3qYUZzU4GF3e/VD5uNMGKO5/61qUPUjuBJranlIV1ypZQP/rsome+p+JDSJMWpEGQaNYTcolNblKGyb0ghjfEGkNCupYfkFlmuZhBFrB+DtOe/DszAWTW48zZlarBhjIYF9dhtI5I5CITepgy0vHVVGyD8LjVYJkkZG3EbHlEJYfd2GjfQ3JIaHCNGOvgEMBWGz7gjD2OHMunLEvMvh+YuAG2u9UtG9J9olKc1srFmGNnDtqMshmFVZPYSw+LnPc3mo2pnwG2/VCPm9cBUYneWSmL/ha+Tj9ITuitWnoFHwurONQ4Il/Ssg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IwgZe2x+1oxG19dWxTG3Nlb1KBjkFXZ/4cBvqE++qZg=;
+ b=AIN7jIpatp9YUPVJyYP5e/giG37GjJkEbVpt2Vo+edIr/FUhlsV67ymP0E6c5bT87KZeZLQrX023V+IE3e0Qtdj8pOsFFsveGLYsdBccJsT9zPtf00o8wym5rgWmrBQPzjezAJHWu1OZyrmYUZ+WhtaC6xJyYgAR6UwxPXVAd0KBxVf/3LR0tbdZYPjS1ygAUqYUZn1zj6Pg372vvflX4ANa4ef6IFNZWqc19zYF/UDJV6vBkOTZoKCxLlcS1SQlzWfH0q1MiLJsh+3JDSY02QZYuFKWOTgI7WVBGtyMdCm6QkjeGjqksnJ5UsOoHQj19qeP+USyb9YwLFy9JW43RA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IwgZe2x+1oxG19dWxTG3Nlb1KBjkFXZ/4cBvqE++qZg=;
+ b=POK0yDXalja6QKMEtlCqG6t3LXLesY8yjvAvSkh6JkRn9z1HVwPGzjRvheVL+zLeaC7PFYHmOD7TagWlJKQQeesti7F+Wq8whax1ObAzNMFAmQR/sdQUiuCwRSbWvKa3UFZJEUH+7jxw0epjp9/UXrSgIeh18gPCEuKWxT4ZxZDK78DYB/H+iY/bPUf2QZGj7/V0Dq9F1QIiuqU/JNeDhaUyBsQYlwjvWI31RsnLXD7vefaP3nerV/+jPPSyTGNvZTccdK4N+eqgo6xTGVI/jX7mBpbBMj6Ui4joLmMQt3ITgpOLyRT9J4/8mlgMCqYlmq0uzb8lWpAPIUtUd2HecQ==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by DM4PR12MB6615.namprd12.prod.outlook.com
+ (2603:10b6:8:8d::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.25; Sat, 3 Oct
+ 2026 01:23:33 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0472.016; Sat, 3 Oct 2026
+ 01:23:33 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Catalin Marinas <catalin.marinas@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-doc@vger.kernel.org,
+	Mark Rutland <mark.rutland@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Will Deacon <will@kernel.org>
+Cc: David Matlack <dmatlack@google.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	patches@lists.linux.dev,
+	Pranjal Shrivastava <peaan@google.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Subject: [PATCH v8 5/9] iommu/arm-smmu-v3: Keep track in arm_smmu_invs if range invalidation is used
+Date: Fri,  2 Oct 2026 22:23:24 -0300
+Message-ID: <5-v8-1eaaed5e0433+3d3d2d-smmu_tlbi_jgg@nvidia.com>
+In-Reply-To: <0-v8-1eaaed5e0433+3d3d2d-smmu_tlbi_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR13CA0159.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c7::14) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDAzMDAwMiBTYWx0ZWRfXxXYuxIbnypVV
- BsrWlWWyRZ74GOe8rENbYPty+1/urUURqVccKIE5rwE+QB4QUrzP23YIa7KXbfpYlLKFysJdRIZ
- tWmDeXtgtO3+nJ59pRd6Bc1JU7UnTME=
-X-Proofpoint-ORIG-GUID: 2yYZJSrknLFPSozXfBL57xCK3Nj9zcyb
-X-Proofpoint-GUID: 2yYZJSrknLFPSozXfBL57xCK3Nj9zcyb
-X-Authority-Analysis: v=2.4 cv=SKHXx+vH c=1 sm=1 tr=0 ts=6ac05084 cx=c_pps
- a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=rJkE3RaqiGZ5pbrm-msn:22 a=e5mUnYsNAAAA:8
- a=sFPzMUYdAbi3-6yuofgA:9 a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
- a=Vxmtnl_E_bksehYqCbjh:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDAzMDAwMiBTYWx0ZWRfXzrKxuPcFvBA6
- jkASKM4QEr6zhdQOZdakO/Eke/UJxAJ4wBfmk2OZ2jGxj8NoB1UDQJEv0qqmywWtKVvLGPjZ7l9
- wpkB8TvsgM+lZ4A/wycWIvpS3jbpq+VnM+xxUkmRk+Jx9QZHR3HFn2L5n8d/3gXPKdU2KHjB6uC
- UrhjPzShnMiDpG8AVm/XHmR/kSmAiUdSv3ObpUks+dPOoDT8UF2/6KvPYz6bs5vCHIVlVs2SPb9
- 3CJxsHRqdKUQB2P5XRXquwJhJSgt2fN4QEonub9E0yeHW6IXzniySdShBQvXo3EToTG5OekL+R/
- StajrxCse8r2R73ZfHr91lF5qLKDLA0jyTJDQdV2e+4wxq2r71OgZqlU3caGU4bC7WNg88ZKiWA
- cRY8u0TwVWQeHasYw3HzVBdaNqkVf4TQiZQOizMO8SkkcA5yqmyhcXPweml2pC/Fkmuthg7YY9o
- a+V7STyHKPrwuiyIIFQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-10-02_07,2026-10-02_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 adultscore=0 suspectscore=0 spamscore=0 priorityscore=1501
- bulkscore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2609040000 definitions=main-2610030002
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|DM4PR12MB6615:EE_
+X-MS-Office365-Filtering-Correlation-Id: 605e8abf-5f1d-48b8-a03f-08df20ecf0cc
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|7416014|376014|1800799024|23010399003|10067099003|11063799006|56012099006|3023799007|18002099003|22082099003|921020;
+X-Microsoft-Antispam-Message-Info:
+	ND0NTHiiM0235xpNIvwmByMEwelGj3D0Y93Y0p7Ph5j9WULT7YZktYY+eTDDzUvhswC0igekZbCTAbeWbrdqKnYBhuFchwrEHtUIB3rlBQ8cFuaUiYS2ndYiam3h4OEADSG/eYZOZYoxBjP/0hHmOxrCa6fHU15zmEihT/YyKcXtFtbxtJEXbGXkF6ilzWyvCIODG9FIRWJFY5xkvbpU+aXOH34RfHjq6wjfNhcP4p82s86ntQMfwS3lINR9sKTUlabU/iC+hjsR2tJ2baGvthxhYYiPtN9QGnk0vlmSla2/4iGIDJNG/Akeebg7E9PLPWW0SVC4ZJvG32UP+zHl8ba40MzgMLaC9068960wwO2UHpyjFbBPtEZrdnPdA1WXay9CDzU1zwmcThQQseN1mSLxmyLe/7TYMaWw+1mkFMNY9xvUAwXqXlye4QfjJB8xZo3e0I0pSYkH4xfnyX87V2+fIlcq5STDC9J9rOhGflS1ieJIi0hFEUFVYcqj4cy/jvGC7PtsFqKmd4BPn7NvvRjozzYAIE2yHGZoRS5AxQBcYX/wFKn1wxAEJnmTKYBczkaONgb877GgvHAgYUa3Qoz09vnO2MiZ+DAaIHek8JuVI+I+EX+zldBLNc51+kur2MHzpNu02OJOH/jcrX7zkub/GsOB73z/H9EF7DhgcmUqg4ZBQrfoHFSuhvZTYGx8xDWF/T9JQwCQOg7UxtAoIA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(23010399003)(10067099003)(11063799006)(56012099006)(3023799007)(18002099003)(22082099003)(921020);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Ko1BkijFiVcBqh8KCKV6GKFxpcm5q/GpWN35uwxgVbsqMLeCnz5bLfzLcKaR?=
+ =?us-ascii?Q?Vh7ph9Y/pdJqeM+KAm3gLv7Jwe3gkgAVXVgTFKJyY0BcMa06h+iVX3aYdFjq?=
+ =?us-ascii?Q?AXh574DA1wJd1raYo19lUadaQOFZ2Niq5BnbL7hWoBncruXgzgg8uKrec4Py?=
+ =?us-ascii?Q?oJVpOShWdPgzQOAPx+CV7R78Um3NqqrNppmWjo8U46i/Ur1qxBNlRZbE1z0K?=
+ =?us-ascii?Q?ouyKuMG6Hb773qqSerN78JQ5LnkBsjoobjSTU+4ooscvAzCBGFjZJDV6bgLF?=
+ =?us-ascii?Q?d59pgHBnOJ4PoYerHk8+skR7XjPT/Cp1hztrYh/3pRQADra8p3mf5ZDRmgyy?=
+ =?us-ascii?Q?m+BIx5wLcOxXhWyhoKXE0/FX6pEfM02k23G9hIOANVqXUemNnx9Pd28+rIp7?=
+ =?us-ascii?Q?mXr02llTVUbwAyTUgKdsMzdZex7ZwwnhCO2G3myP8BA3ahBAIDtUX5kMNZ7C?=
+ =?us-ascii?Q?r+nbrZ3W106R/03ggsVme8jURVdy5rmek+4eECxpN23xV2JeA8WfYy4/0Jtz?=
+ =?us-ascii?Q?wilkcE6q7rkN856oSM9DnhH2cEyHIEKX3Ad/B+yVoe7K2BJujPk6A2tVWkA1?=
+ =?us-ascii?Q?/Gyv+USCGO/NgiT6ZdxT/7yCLapAGjffM4M38f7XnZwKEB3KpRqQliE8t+F1?=
+ =?us-ascii?Q?HdYyvO8AzWBDpCw/OND+UT3cyAiS4k03JTMrOdys2k9Ge3NBNvw3kKE+2EeJ?=
+ =?us-ascii?Q?blOGdtgsfIi8KwkgSDMB/UYIQGP9P08F07MJt0eDTabtknPfzpSMJl4bjo/+?=
+ =?us-ascii?Q?QvSP5BU58Hc1PndMupY/UHpVjrKEml2B0lEU6Kunx/3/vFz2oxZ0mfuXlYcv?=
+ =?us-ascii?Q?Z16VblX2gOalo5EC2S36l3B+CZisGpHbAt4QE5Xw+zffaeXXY+4tKD6AP+a2?=
+ =?us-ascii?Q?9gTHmAh00us99takkYlxk7iJ/LMduzwUhOLG6xM1+vSa2hilRxjc2tV2jLfs?=
+ =?us-ascii?Q?c3/teSDWTbXeyudi26yE7C0nzlQMJtGswTST0VIajjebgcw7gn6ckO/jeTrr?=
+ =?us-ascii?Q?FSjmGB9JmhirvpXfkiYulnNhvqLK/KRSoLmwJ7cIW2nRv0tmiSVNKaRmUxvj?=
+ =?us-ascii?Q?B/w8ZFRlI/CRHKGLGnIvLspBiK/6kTfI6zUvP02SNWNbEheChQBMpbljJ04w?=
+ =?us-ascii?Q?3fh2WyzkKmzW3Y1aIvRXMic0DlIc839BZsNwwV05bCsMG9dzxbW5apOPLCkg?=
+ =?us-ascii?Q?D9NO0fWZK+Sw28CsUbu9WiN/U58WpTSJTY4+05qsKpHszdhhBjbjOAkNFPaW?=
+ =?us-ascii?Q?E3u9/7RRUF6DKAzGvS85v6c3/vMmCnTO2KEmPL2L1roSnC0Kqg1dt1LadS4I?=
+ =?us-ascii?Q?+NwlRoF1Pe+5BiXisnkt3KAxeYEKUs862Sq5EdPGnW/sY2+LT82jtZYeXPYL?=
+ =?us-ascii?Q?wSfnprMs9PJs/5V3C0jjtaNEIBaTZuvHapEAIzYPmoRUOy9gzF4P35mXBXgT?=
+ =?us-ascii?Q?DRdzu7fIBteF2IkYGj6xBSqHCqNYspp9OrhzDFB4V/vtY8glkf4MMRtm+gkr?=
+ =?us-ascii?Q?BKWOqiya+yGmj53CkqwNhW0NLxaKzUnIWzt2jzSvCWU7ezPiMyQGBqzE1uwF?=
+ =?us-ascii?Q?QG2R3SrAQD+Ht4C+7d9g4W69p3kKePMYuaVhZgXFizSGmUb2TgFC5HzyKVA5?=
+ =?us-ascii?Q?xMqSepb80qWCaXUSpHjfIyVf/cR2kIZBp3rAlLHASlAsS/iMGPCMYmlHmnsH?=
+ =?us-ascii?Q?M6kklSC0fjb4zZJjib1CTttWJgjNRNjtp6biToSZ2pD2fKhy?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 605e8abf-5f1d-48b8-a03f-08df20ecf0cc
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2026 01:23:33.6485
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hFsQKk+GMiX+u06EI4J5yGm4OadKmSwFUeE+st9Qv8OGeehGAsOEN03pLCBsVyiy
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6615
 
-On Mon, 21 Sep 2026 21:18:51 +0300, Muzaffer Kadir wrote:
-> MSM8952 is a SoC with 8 core cpu and Adreno 405 gpu.
-> 
-> Ported without uart connection. ramoops and usb
-> mainly used to debug.
-> USB is not enabled in this series because it
-> depends on the not yet upstreamed (and not developed by me)
-> pmi8950_smbcharger.
-> 
-> [...]
+Summarize if any of the inv entries will use range invalidation and if any
+need ARM_SMMU_OPT_FULL_CONT_RANGE_INV. The next patch will use this to
+avoid range invalidation pre-calculations unless the range commands will
+be used.
 
-Applied to ttt, thanks!
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 38 +++++++++++--------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 19 ++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  5 +++
+ 3 files changed, 42 insertions(+), 20 deletions(-)
 
-[01/19] dt-bindings: clock: qcom: Add MSM8952 global clock controller
-        (no commit info)
-[02/19] clk: qcom: Add global clock controller driver for MSM8952
-        (no commit info)
-[03/19] dt-bindings: nvmem: Add compatible for MSM8952
-        (no commit info)
-[04/19] dt-bindings: power: rpmpd: Add MSM8952 power domains
-        (no commit info)
-[05/19] dt-bindings: mmc: sdhci-msm: Add MSM8952 compatible
-        (no commit info)
-[06/19] dt-bindings: vendor-prefixes: Add General Mobile
-        (no commit info)
-[07/19] dt-bindings: arm: qcom: Document MSM8952 SoC binding
-        (no commit info)
-[08/19] dt-bindings: iommu: qcom,iommu: Add MSM8952 IOMMU to SMMUv2 compatibles
-        (no commit info)
-[09/19] dt-bindings: mfd: qcom,tcsr: Add compatible for MSM8952
-        (no commit info)
-[10/19] dt-bindings: display/msm: qcom, mdp5: Add MSM8952 compatible
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/df6ce9e6447e
-[11/19] dt-bindings: firmware: qcom,scm: Document MSM8952 SCM
-        (no commit info)
-[12/19] dt-bindings: clock: qcom,rpmcc: Add MSM8952 compatible
-        (no commit info)
-[13/19] drm: msm: mdp5: Add MDP5 configuration for MSM8952
-        https://gitlab.freedesktop.org/lumag/msm/-/commit/7af226f9aa59
-[14/19] soc: qcom: ubwc: Add UBWC config for MSM8952
-        (no commit info)
-[15/19] dt-bindings: thermal: tsens: Add MSM8952
-        (no commit info)
-[16/19] thermal: qcom: tsens: Add support for MSM8952 tsens
-        (no commit info)
-[17/19] arm64: dts: qcom: Add initial support for MSM8952
-        (no commit info)
-[18/19] dt-bindings: input: touchscreen: goodix: Add binding for GT970
-        (no commit info)
-[19/19] arm64: dts: qcom: generalmobile-shamrock: new device
-        (no commit info)
-
-Best regards,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+index e52a7d95c919dc..5a4e45e1512589 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+@@ -24,7 +24,9 @@ struct arm_smmu_test_writer {
+ static struct arm_smmu_ste bypass_ste;
+ static struct arm_smmu_ste abort_ste;
+ static struct arm_smmu_device smmu = {
+-	.features = ARM_SMMU_FEAT_STALLS | ARM_SMMU_FEAT_ATTR_TYPES_OVR
++	.features = ARM_SMMU_FEAT_STALLS | ARM_SMMU_FEAT_ATTR_TYPES_OVR |
++		    ARM_SMMU_FEAT_RANGE_INV,
++	.options = ARM_SMMU_OPT_FULL_CONT_RANGE_INV,
+ };
+ static struct mm_struct sva_mm = {
+ 	.pgd = (void *)0xdaedbeefdeadbeefULL,
+@@ -645,6 +647,8 @@ static void arm_smmu_v3_invs_test_verify(struct kunit *test,
+ {
+ 	KUNIT_ASSERT_EQ(test, invs->num_invs, num_invs);
+ 	KUNIT_EXPECT_EQ(test, invs->num_trashes, num_trashes);
++	KUNIT_EXPECT_TRUE(test, invs->has_range_inv);
++	KUNIT_EXPECT_TRUE(test, invs->has_full_cont_range_inv);
+ 	while (num_invs--) {
+ 		KUNIT_EXPECT_EQ(test, invs->inv[num_invs].id, ids[num_invs]);
+ 		KUNIT_EXPECT_EQ(test, READ_ONCE(invs->inv[num_invs].users),
+@@ -656,41 +660,41 @@ static void arm_smmu_v3_invs_test_verify(struct kunit *test,
+ static struct arm_smmu_invs invs1 = {
+ 	.max_invs = 3,
+ 	.num_invs = 3,
+-	.inv = { { .type = INV_TYPE_S2_VMID, .id = 1, },
+-		 { .type = INV_TYPE_S2_VMID_S1_CLEAR, .id = 1, },
+-		 { .type = INV_TYPE_ATS, .id = 3, }, },
++	.inv = { { .smmu = &smmu, .type = INV_TYPE_S2_VMID, .id = 1, },
++		 { .smmu = &smmu, .type = INV_TYPE_S2_VMID_S1_CLEAR, .id = 1, },
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 3, }, },
+ };
+ 
+ static struct arm_smmu_invs invs2 = {
+ 	.max_invs = 3,
+ 	.num_invs = 3,
+-	.inv = { { .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
+-		 { .type = INV_TYPE_ATS, .id = 4, },
+-		 { .type = INV_TYPE_ATS, .id = 5, }, },
++	.inv = { { .smmu = &smmu, .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 4, },
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 5, }, },
+ };
+ 
+ static struct arm_smmu_invs invs3 = {
+ 	.max_invs = 3,
+ 	.num_invs = 3,
+-	.inv = { { .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
+-		 { .type = INV_TYPE_ATS, .id = 5, }, /* recover a trash */
+-		 { .type = INV_TYPE_ATS, .id = 6, }, },
++	.inv = { { .smmu = &smmu, .type = INV_TYPE_S2_VMID, .id = 1, }, /* duplicated */
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 5, }, /* recover a trash */
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 6, }, },
+ };
+ 
+ static struct arm_smmu_invs invs4 = {
+ 	.max_invs = 3,
+ 	.num_invs = 3,
+-	.inv = { { .type = INV_TYPE_ATS, .id = 10, .ssid = 1 },
+-		 { .type = INV_TYPE_ATS, .id = 10, .ssid = 3 },
+-		 { .type = INV_TYPE_ATS, .id = 12, .ssid = 1 }, },
++	.inv = { { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 1 },
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 3 },
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 12, .ssid = 1 }, },
+ };
+ 
+ static struct arm_smmu_invs invs5 = {
+ 	.max_invs = 3,
+ 	.num_invs = 3,
+-	.inv = { { .type = INV_TYPE_ATS, .id = 10, .ssid = 2 },
+-		 { .type = INV_TYPE_ATS, .id = 10, .ssid = 3 }, /* duplicate */
+-		 { .type = INV_TYPE_ATS, .id = 12, .ssid = 2 }, },
++	.inv = { { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 2 },
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 10, .ssid = 3 }, /* duplicate */
++		 { .smmu = &smmu, .type = INV_TYPE_ATS, .id = 12, .ssid = 2 }, },
+ };
+ 
+ static void arm_smmu_v3_invs_test(struct kunit *test)
+@@ -711,6 +715,8 @@ static void arm_smmu_v3_invs_test(struct kunit *test)
+ 	test_a = arm_smmu_invs_alloc(0);
+ 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, test_a);
+ 	KUNIT_EXPECT_EQ(test, test_a->num_invs, 0);
++	KUNIT_EXPECT_FALSE(test, test_a->has_range_inv);
++	KUNIT_EXPECT_FALSE(test, test_a->has_full_cont_range_inv);
+ 
+ 	/* Test1: merge invs1 (new array) */
+ 	test_b = arm_smmu_invs_merge(test_a, &invs1);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 777ec0e8cb0735..7a5f4b54f3066f 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1059,6 +1059,19 @@ static inline int arm_smmu_invs_iter_next_cmp(struct arm_smmu_invs *invs_l,
+ 	return arm_smmu_inv_cmp(cur_l, &invs_r->inv[next_r]);
+ }
+ 
++static void arm_smmu_invs_update_caps(struct arm_smmu_invs *invs,
++				      const struct arm_smmu_inv *inv)
++{
++	if (arm_smmu_inv_is_ats(inv))
++		invs->has_ats = true;
++
++	if (inv->smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
++		invs->has_range_inv = true;
++		if (inv->smmu->options & ARM_SMMU_OPT_FULL_CONT_RANGE_INV)
++			invs->has_full_cont_range_inv = true;
++	}
++}
++
+ /**
+  * arm_smmu_invs_for_each_cmp - Iterate over two sorted arrays computing for
+  *                              arm_smmu_invs_merge() or arm_smmu_invs_unref()
+@@ -1129,8 +1142,7 @@ struct arm_smmu_invs *arm_smmu_invs_merge(struct arm_smmu_invs *invs,
+ 		 */
+ 		if (new != new_invs->inv)
+ 			WARN_ON_ONCE(arm_smmu_inv_cmp(new - 1, new) == 1);
+-		if (arm_smmu_inv_is_ats(new))
+-			new_invs->has_ats = true;
++		arm_smmu_invs_update_caps(new_invs, new);
+ 		new++;
+ 	}
+ 
+@@ -1240,8 +1252,7 @@ struct arm_smmu_invs *arm_smmu_invs_purge(struct arm_smmu_invs *invs)
+ 
+ 	arm_smmu_invs_for_each_entry(invs, i, inv) {
+ 		new_invs->inv[num_invs] = *inv;
+-		if (arm_smmu_inv_is_ats(inv))
+-			new_invs->has_ats = true;
++		arm_smmu_invs_update_caps(new_invs, inv);
+ 		num_invs++;
+ 	}
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index d2dc787349e01c..8b71e6cc19f29d 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -763,6 +763,9 @@ static inline bool arm_smmu_inv_is_ats(const struct arm_smmu_inv *inv)
+  *               Must not be greater than @num_invs
+  * @rwlock: optional rwlock to fence ATS operations
+  * @has_ats: flag if the array contains an INV_TYPE_ATS or INV_TYPE_ATS_FULL
++ * @has_range_inv: flag if any entry's SMMU supports range invalidation
++ * @has_full_cont_range_inv: flag if any entry's SMMU requires the CONT range
++ *                           invalidation workaround
+  * @rcu: rcu head for kfree_rcu()
+  * @inv: flexible invalidation array
+  *
+@@ -792,6 +795,8 @@ struct arm_smmu_invs {
+ 	size_t num_trashes;
+ 	rwlock_t rwlock;
+ 	bool has_ats;
++	bool has_range_inv;
++	bool has_full_cont_range_inv;
+ 	struct rcu_head rcu;
+ 	struct arm_smmu_inv inv[] __counted_by(max_invs);
+ };
 -- 
-With best wishes
-Dmitry
-
+2.43.0
 
