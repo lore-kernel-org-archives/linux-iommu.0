@@ -1,125 +1,192 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC071377550
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 08:50:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791017408; cv=pass; b=nGajGkHnEc8JtqVXNT4JsgOGWQM7lTnn1TP9uornG+vslIQfw9oSpSoIOyFe3m0IkdKwysiNEJeJ4lTiobmivc87sPILRSb0qd8sPpR9SAEYReSZiPPrpLgFLEF1X1CVG3DtVgF4DQNokUxt7JlLSRNoFUH3C8l9COFwP2tBlZ4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791017408; c=relaxed/simple;
-	bh=wwEY7S58LLbqNEpta5C1Ecn/2pNosDxbBn3Dvm4v3mg=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=A4930SKR+wyCyLcI+NOlLS2+nC/Pcm2zL78uIiJxnmRglRH4tz0E0vvhR2YSEkcO95+Fx5yIZVL6CZknNAzakjw4AfcZayBIDiOugVeAmfJBXRFW3w4TUJbKvJc2KdvUuLldSgWFwNZDPRDVVZr5uEj2B1I5n2DwJ1EPsG5+b1g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bEiVVc/g; arc=pass smtp.client-ip=209.85.219.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DADE83B42C7
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 12:03:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791029021; cv=none; b=D7mruur12KCbh6dkVFxdCHsbKtg/VKYFgtT6AwP4KGkSjSGRVyCoA0NvtTAdhd5lkUyrWRxmnIMpsTNipN4rqyTtUc88nIlurACYGr75gVr7fEtNW8ZeaNlmnisneBhxc/IadKsTXU+OucjbVjJeSCRC8SpNa477KxuGTcgrXZ8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791029021; c=relaxed/simple;
+	bh=ld0OrougPNfBp6Ry3148Z2Li9neJoj1Ak158VsVyVmo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WmypVxQd18KR8yPd4trnszQ6cAnlSMjLLfyzFiBydJBKt/xO6KCueIBquD0tV43/fxCptjkfcEyd3+bbObjJarczUh4nwt6cnTYjB264/N3O7S2F0suORnE3dm/RI44ZMPZg+RXgp5urb0j2OX3DdnLz5GJqUpoiXWiIHa4vzy8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iaPbbMLi; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=GEvoj3uX; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bEiVVc/g"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-917ad52d7b6so5159276d6.2
-        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 01:50:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791017405; cv=none;
-        d=google.com; s=arc-20260327;
-        b=JnEbPZyaYj+Vh984cf9pcEkrvF+iNsr5Nz48hfU+/Fgc6fVvzTr/+HZNh1cLkFL3Xq
-         9fRjaXlPWlFGHsOZbbdkRwgw0v08PPjlIAcj0gIuLJAq4grSrxRw5y5TDda5psEiEwUX
-         NQMexRSgPzp5Cpmp8mHJysMu2o64YgkuTNbMNDXemZAt2ZW93lx1iksa/xVBEVI9uQCw
-         2riOKc9QjxsLQwlQr0fnTWX5cPYl6QWEYU+x6Ya8z0ZlgDt0qFHNj9Pr+bxdNnihAkJr
-         /MrllndpWpZ45QpcyZzSmEZhL2paByIb1yqvzR2TtUE7R8suzv8WMWc9ZSNsuI+5AhEg
-         hOgw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=aw92WUQMYYkpSyEQ6zu6Xuske1k+/7TiDhQr8+Oxm0w=;
-        fh=qR3VQXVegcdGAIFOeV+QId1twGveXTs7Z7KH3dsxKxk=;
-        b=ZOXHVdievq0eBTy1khvXxD8OvkE1ArLP7Jo6Yzy9pQdXDmwHO37qr50gO7T7Y5RkOu
-         /ml7kXfDncsYzhQBojsYHBXGrIoG3j9mr3KAswoESlhcOxHGIDTvXdqzrTQweliRqnKd
-         2OqUPGLMWoMVtMk2VlFT+GE1YlIXr1yFoo/O79lwuABvvFWjTBlmwakpSw5nYMtTbY2X
-         fvFqEC5qPwPNuGEudCmNGTwnSnKW63GzHjJTdOMrHfGbvHCVGjiyj6SmQJ/z59cRYsHF
-         VU9CTq5EBlvEINGQaaZz5tAhulp0TRT5OMd9Jq31TpW8iyk84t59HxL86vfR5O5WjGqx
-         40uw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iaPbbMLi";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="GEvoj3uX"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 693AtrA03312916
+	for <iommu@lists.linux.dev>; Sat, 3 Oct 2026 12:03:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=ld0OrougPNfBp6Ry3148Z2Li
+	9neJoj1Ak158VsVyVmo=; b=iaPbbMLi2rtDwRfy/OT6hy7GqUujdf404T8d/T9O
+	sKhA14+aPKlNSOfIAqwoI9Gqe/qCTLjw6wpZxa4xs6HFlfDxQzBEX42km7tthw4Q
+	GIU/WQkR1xGKW1jPoz/QxCZEoDAca/pBbLT2F/9RA4ZZT8gI1+6SWavNpYhubaOF
+	KEvO4F+TPCjusBwwIroVCK1YeFKbVF5gKW0IfqNIUOQKCA+LnZXRAUNZswGfOxAo
+	MG2bnrEScHPcrhNycWBdjGhCjF48ZJoNeU1wXl8VODbMLgQS/HNwfKFAe6BWhmQQ
+	tS3EDMQk3WIr1adwX45D1p9BWFvjjHfz5KD21rtUI3WrNg==
+Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com [209.85.221.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h2t36grnj-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 12:03:38 +0000 (GMT)
+Received: by mail-vk1-f200.google.com with SMTP id 71dfb90a1353d-5c93c294214so109816e0c.0
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 05:03:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791017405; x=1791622205; darn=lists.linux.dev;
-        h=content-type:to:subject:message-id:date:from:mime-version:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=aw92WUQMYYkpSyEQ6zu6Xuske1k+/7TiDhQr8+Oxm0w=;
-        b=bEiVVc/gL/OzNDxl4LswDTKo6Mgu6sGAngAxZAeGAgwsG753ZkFcgp3bMbzAqGAiLb
-         8FpfBUMWzdxuM8nskluz3Xumc/p9iEnElI+YwnhbwHYPErj9dECrgweUparzdAiQGjcB
-         furRaXIxwaOhuXo2PECeiCAEAACHRgL3Kpqnsp1a1RMGrcfNVjOA6zvkn5irBa1ACdpk
-         PIVqPyo2Y3xeWcvSNdw2KzbnN38R3/OBQj+pljK//YLa0rN/gauUOP1v0hYinBaZ/bcS
-         YnuF1uf26yG/uGrsbD+RL9MhDZMso/0WAjDpoPbseH/L/gotQcxUPLWXs+t+mIF3xIdN
-         TNQQ==
+        d=oss.qualcomm.com; s=google; t=1791029018; x=1791633818; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ld0OrougPNfBp6Ry3148Z2Li9neJoj1Ak158VsVyVmo=;
+        b=GEvoj3uXuOuUtnRIZG1GAAItn18+ezoal6EbRvB3Dm14/RIOGjyKoyWHD1dNZSzUZL
+         aAXm3VBSPM+avc82NvJ8WEiP2yPxf5PXvfUPXraJzGnQJ1sMPPpNmHdbYzXE+FjXz3MQ
+         L/1VEbXqba+JT4NWhu86Q4Z0H0ta1Y3qMg8G4Njb31IhJ68yOZKPiHe6535ezT9CwZGl
+         /FTRgXmVkAbuP6UrjWvmxmWS1/Pw34FUJGH+777gpgB27nF6y+lyCwSrV7Suz2V2HS68
+         lJe1r6Cyfy/wf6V3a2WhhZUmRX0Cypl5imjyufwRpU7QyuTDCRc+nqiA2DLCVQ7o3nCv
+         X8pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791017405; x=1791622205;
-        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1791029018; x=1791633818;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=aw92WUQMYYkpSyEQ6zu6Xuske1k+/7TiDhQr8+Oxm0w=;
-        b=CI2Vzmr3kPNdyc6nyY6jbEgTzs5Y4lxDfKT/+A9fPNYzRkpXvsxi6175+mmyLFqiwx
-         CxR1y4HLxoeriug3cbYDtQotYx8+E97FG1O49Gx+jOx6vWFenGD1PfkWeAkzW+Qd10w1
-         iGChnNCPdWN4f6FDF9kNbXc0MwbH6w2YICn6LPdDAKe86R7wAr9hXGHZ8RIF5vc0+Dra
-         /i+oMtBjbXTRR0C9oZMj7YqMY3WxoJEmkMM/OZ6eFSL07MTsyVJ2M/kwvMiSeZVhqR2z
-         SDjInEdkGPCEIWT5M/w91Pv5tygo5RjdQA1RwZR8Y0942XfKsOx9y3sChAvPYSa91kUt
-         cElA==
-X-Gm-Message-State: AFq9FYKgVs3ZpioHes35AR7SPBEdrQKEEPP3CaIQFluYj+6tLtEkvQh9
-	azL794HtVAN2VbkdWkCsxwIeu6ySdQ4puQa3T+dRU1QuHt1EpqyvzQAaaMIyPrRQ/1wQjQ3OX9m
-	Qz9lMch2P43UYcEjmylAJoviPkACrZCwYMXPM
-X-Gm-Gg: AYBFou1MSBcI7ooYziRI0SQ+8xaJyRnk/1E1sn+wdIwgFRH4Z8hJcitt9fGjMFGdwZL
-	oVdhuCHYRkKy7z9QZM5evs7rooE3RRkfdp2f2kpGoLGz5AtWl8AruGuR+OonY87W/hz5Ea7oBiy
-	A3MF4mPGmtdXSB0SZ/HkBizPZmeo9PDqgMhn0sd/7uTW/Fftcw9NA73G0tx4t0moj2l6ITRp/v9
-	LW9/isfqtX9qo8o4FOKjv5UzcM1qnK1hNkbUhjooQMr1tn4hNbVIS9kZvWjgAfUTSQURXfz55O7
-	mpc1IOlXZT9f5v1Q+rCpuLMdeBMSicjtQy8A9tyCfyFal/7f43fiTKgJWgwP8n62JhpnI4/o/mr
-	uj4fxvzz7AG4JqYTwHot7GwnZgdsvVoBPFI8p2db8BSMYtpI=
-X-Received: by 2002:a05:6214:19ed:b0:915:e6ed:db32 with SMTP id
- 6a1803df08f44-9195d202047mr34293916d6.43.1791017405252; Sat, 03 Oct 2026
- 01:50:05 -0700 (PDT)
+        bh=ld0OrougPNfBp6Ry3148Z2Li9neJoj1Ak158VsVyVmo=;
+        b=SMkXdOrRWFakDRyklJ2jyAVNiUKlbu28BwL9uZh6NuZ7hkk/wtLNo23JMXhVenIIx6
+         0SJdMjCTKFxMec8uxpZOtr7He3DNKhV/ghhwDU6gSpWvokZ/9yK4drf9CO/qIk/l7S2E
+         i1QfF+H7r31zVB3tUi8QI46O5pbbUfXifoykWGlMJdq5jQsMoNJ9hEetqFw2v0lQbwNK
+         RPNpN0hnY2/es1Uk9dDUKnYXxMkT8lrRtz4dr1GwS2v8JzyKqXl/hODBC0NSkpCTfyHt
+         PZErQb9rBCC3Q19+tCv/0itlpyMzrEugpl6JT/1xBo7yYYz8UYepVPxvVDzCHX0vKfCp
+         tg4g==
+X-Forwarded-Encrypted: i=1; AKwUvBxFBNwN+OKe33DTDtqdji8XfAMzZEtngTL1soxcaV5kaYvEvvBHzSBaEvNZhZBR+7q+qsu92Q==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJ2dh0ChCYazetlxLjAETYFOFJ46BIM9py1UhE+lexM87sz87/Y
+	IwG29OMg7p9XZNR9qSM1TPdR53ipbMFTgYCTw7bYDlYCnCIl19BLpIsRollT1sH2CVWDCQFWnCW
+	QVgJC4Wa+6bTqQuCh+blsq7NibusXDE4PPzJpzSwKk0Lq0Jv2GKYnvHvAHw==
+X-Gm-Gg: AYBFou1dzXB4uDwbOlipdzjNL9LaqMIHqN444lbmfj9mPYqLSfS2YU6IG/oRs1sG4RO
+	ZSfTwWODJ+jPkQ+HQePnab5FrGFYwRvkVYQ57nHZe9dtbu12THkiHVQWMuHq5Ltxcw5NuelxhHw
+	GncZKDgagwX9Ivds2KJNXfYQoXwf4U9OjNuCI4OMTZiOfxuR64Xhzr44Rl751T/PiWJzV3cJs71
+	fcyXv9cdkH9SjlYQXpR7qXfn9Gv4b+p+04Yr2HH68NsfZ93/ZflvXtUxqkMdQx/t02z1VX1/CcT
+	WSwrMsmG6aosanUMW6xF22iDSKQ114Yt2t5E5w5J0tTDxJr5mLh7JN1d/8vBPmuW7XKFORW9Yzp
+	J3bpcQyL2Da/c8/jHfcrZ3zzBEzC9
+X-Received: by 2002:a05:6102:6415:b0:7c1:75c5:c4c with SMTP id ada2fe7eead31-7c175c521afmr567416137.25.1791029017764;
+        Sat, 03 Oct 2026 05:03:37 -0700 (PDT)
+X-Received: by 2002:a05:6102:6415:b0:7c1:75c5:c4c with SMTP id ada2fe7eead31-7c175c521afmr567402137.25.1791029017224;
+        Sat, 03 Oct 2026 05:03:37 -0700 (PDT)
+Received: from localhost (109-81-9-204.rct.o2.cz. [109.81.9.204])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a0394c937csm97187345e9.1.2026.10.03.05.03.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Oct 2026 05:03:36 -0700 (PDT)
+Date: Sat, 3 Oct 2026 14:03:35 +0200
+From: Andrew Jones <andrew.jones@oss.qualcomm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, tomasz.jeznach@linux.dev,
+        tjeznach@rivosinc.com, jgg@ziepe.ca, jgg@nvidia.com, joro@8bytes.org,
+        will@kernel.org, pjw@kernel.org, palmer@dabbelt.com,
+        anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
+        fangyu.yu@linux.alibaba.com
+Subject: Re: [PATCH v6 01/16] iommu/dma: Prepare MSI physical address lists
+Message-ID: <pph73bajtpgp3u5vb7xjqmbrz35zs2lw7fpkhobg5jdzbjw2vq@usg3jbbneskp>
+References: <20260925151659.419512-1-andrew.jones@oss.qualcomm.com>
+ <20260925151659.419512-2-andrew.jones@oss.qualcomm.com>
+ <18c9b030-8dc6-4242-8e66-0448ee125d7d@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Thomas Kroll <nofuturekid@gmail.com>
-Date: Sat, 3 Oct 2026 10:49:39 +0200
-X-Gm-Features: AclHuK-KochZyQ4RHrlZSze3j2U8UwBGcRtQAlKKoEs5_vb-guRgHQ_ZEvQmy9c
-Message-ID: <CACvYUjoCW-HReH1VMVDVvJqbAbnZENdBjDD2HmUdcVhTx7qzsA@mail.gmail.com>
-Subject: amd_iommu: MMIO_STATUS_TIMEOUT on hibernate (S4) with Ryzen 8700G,
- amd_iommu_intr=legacy avoids it
-To: iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <18c9b030-8dc6-4242-8e66-0448ee125d7d@arm.com>
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDAzMDA0NyBTYWx0ZWRfX0hB32BmDuHuT
+ M/RJM+gA4eTg3xQq8MVXvsJ9d+L3zPXspjzK72gFDJg5QgJrzsODu9YmAzrHw3DqfdFNpbDotTk
+ vTg/Rb72oWdr5iseBLGsFPfomaXTiiw=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDAzMDA0NyBTYWx0ZWRfX54M00t8OblGH
+ 4309wqyeGkGmKeMkGVXTbr4wFfKKuw40t8XyquiMEwMVJpmgaFFEd8wwNVc99LhHqrAKUkOaHrX
+ LmBExJrDwcHPHaVsabqmdPtkqh/sEhjQ2rAP/XMVy6nqQG2psjFOKqbXzNWYSK2cESzK91gdee5
+ +Mg8DQ4XJsyG5hkDKJGLRXrQkJ0nZzplVlVb5ML4fj3VYuw0SUte3Yhab87gDdJz0tgOiT9WC3S
+ QL3mAr+gqemRe9mL7IhPg9KpeDejUf89rRjp84rIbibhHOQfREEnmXMj/ykXLxhV6F7Oeeuffov
+ QyvAaL8eTEPcObPfJmys2vWm9mEm9h9Hq7U1FGrWSfq0Mhx3pzicUUWsK2SosmM2qfGCXK9FgBb
+ FNRT215WYkEwEpXFoSo7cAfoEBP7JylnQYC+UBgzYzhamtCg6J0d6gdTN6qvRJnEm130GeIT46D
+ B6UFkDapYpelGBAw2cA==
+X-Proofpoint-ORIG-GUID: nqrn5pe42XdtEAu20KgWb9RdrI-bX-kb
+X-Authority-Analysis: v=2.4 cv=UpH2pOwB c=1 sm=1 tr=0 ts=6ac0ef1a cx=c_pps
+ a=wuOIiItHwq1biOnFUQQHKA==:117 a=0bpig9kOJEczWR0iouTWkw==:17
+ a=kj9zAlcOel0A:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yx91gb_oNiZeI1HMLzn7:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=PG2Lv3-wYJ-N5-kAUs0A:9 a=CjuIK1q_8ugA:10
+ a=XD7yVLdPMpWraOa8Un9W:22
+X-Proofpoint-GUID: nqrn5pe42XdtEAu20KgWb9RdrI-bX-kb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
+ definitions=2026-10-03_01,2026-10-02_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 suspectscore=0 spamscore=0 phishscore=0 malwarescore=0
+ adultscore=0 impostorscore=0 priorityscore=1501 lowpriorityscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
+ definitions=main-2610030047
 
-This adds to the existing report "[BUG] amd_iommu driver timeout
-(i >= MMIO_STATUS_TIMEOUT) during S3 resume on ASUS B650M (Ryzen 8700G)"
-(Gareth Wilson, 2026-08-07, follow-up 2026-10-02). Sorry for not
-replying in-thread, I could not get the Message-ID.
 
-Same 8700G, a third board, and on the hibernate (S4) path:
+Hi Robin,
 
-  MSI MAG X870E TOMAHAWK WIFI (MS-7E59), BIOS 2.AC3 06/25/2026
-  Ryzen 7 8700G, kernel 7.2.8-zen1 (Arch)
+On Fri, Oct 02, 2026 at 05:21:18PM +0100, Robin Murphy wrote:
+> You already end up adding what is effectively a RISC-V-specific
+> entrypoint, so you may as well just carry that all the way through to
+> its own effectively RISC-V-specific implementation
 
-It hits every hibernate cycle (5 of 5 checked), twice per cycle:
-once in syscore_resume() right after the snapshot is created, and
-once after the image is restored. Each time about 24 s pass inside
-amd_iommu_resume() before:
+The list API came out of the v4[1] discussion with Jason. Preparing the
+targets as one contiguous IOVA range lets the MSI descriptor cache the
+base and IMSIC compose the address as base + CPU offset. That got
+rid of the separate domain-local lookup table and its lifetime handling,
+which I think was a worthwhile improvement.
 
-  WARNING: drivers/iommu/amd/init.c:945 at
-amd_iommu_enable_interrupts+0x523/0x5e0
-  i >= MMIO_STATUS_TIMEOUT
-   syscore_resume+0x5d/0x170
-   hibernation_snapshot+0x24d/0x4f0
-   hibernate.cold+0x117/0x4b5
+I'd like to keep that model. I'm open to splitting the implementation,
+but most of the added code seems necessary to prepare multiple targets
+together, regardless of whether the list is fixed.
 
-It reproduces without writing an image: with
-"echo core > /sys/power/pm_test", the 5 s test delay takes 31 s.
+> it should merely be a case of whether a) this is the first call for
+> the given cookie so everything needs mapping, or b) it's not the
+> first call, so everything must already be mapped and we can just
+> return the IOVA.
 
-amd_iommu_intr=legacy avoids it while keeping the IOMMU enabled: no
-warning, and the time from "hibernation entry" to "Image saving done"
-drops from ~70 s to 9 s. That may be a narrower workaround than
-amd_iommu=off for others hitting this.
+For DMA-IOMMU, yes, remembering the base would let us drop the range
+matching. We'd still need the contiguous IOVA allocation, mapping loop,
+rollback on failure, and locking across the whole operation.
 
-Happy to test patches.
+For iommufd, there are also separate things to track: whether the context
+has allocated IOVAs for the set, whether a particular HWPT has those
+mappings installed, and whether a group needs them installed when its
+domain is replaced. Having one fixed list doesn't by itself remove
+that bookkeeping.
 
-(I tracked this down with help from an AI assistant; the numbers and
-log lines are from my machine.)
+The current IMSIC caller does always supply the same list. We could make
+that a requirement, but we'd need to define its scope: per cookie for
+DMA-IOMMU, and how it applies across groups and HWPTs for iommufd. The
+current interface instead takes an ordered list and provides contiguous
+IOVAs for it; the range matching makes reuse honor that contract.
 
-Thomas
+> At very worst, a separate hook to just pre-populate msi_page_list
+> with a regular page for each IMSIC address [...] could probably
+> suffice without any other major structural changes
+
+Is the main concern the range matching, or the shared mapping path
+itself? Apart from lookup, both paths need much the same allocation,
+mapping, locking, cleanup, and descriptor handling. Keeping those
+separate seems likely to duplicate code, while factoring them into
+shared helpers seems likely to bring us back towards a list-based
+mapping helper.
+
+We could handle lookup of existing mappings separately for the single-page
+and list cases while sharing the allocation and mapping code. But I'm not
+yet seeing a substantial overall simplification from requiring a fixed
+list. Is there more bookkeeping you have in mind that could go away with
+that restriction?
+
+[1] https://lore.kernel.org/all/20260820214150.545737-3-andrew.jones@oss.qualcomm.com/
+
+Thanks,
+drew
