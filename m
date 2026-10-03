@@ -1,56 +1,56 @@
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B445F49BD9F
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:23:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.69
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2CA049E135
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:23:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.71
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791062591; cv=none; b=uN0HeOrcbZigPcMXWyZ9RSB+cRFrdqKTeA7ZRVALoPNBhtFxiaw/eLu8TejGOF0IEcPvVKzAjpkdE6IWhuHW7445nwSqI6V6RLQ1NUZSKHOEgKKiv5RWtilJpP7FSKgGtQ06YuTOchHcLJeHMSmasldcqPcg7/6NhZ/f7hr86hM=
+	t=1791062590; cv=none; b=CYD4/4yBBf2VGM8AbBEJrY2Y3BhHYqmrBTLvu5IA6munw0epHFZ8FO2jIHjeU7oF3qUK+mkHFKnamMgJ8zSv5xjJoyn9xUuIbYsoIOr/EX6AIGdEkW3iWjCQidFs0uHdY0moA1GVAW3I7S4Ar1Nrq6LqXA8EJ0oBR5RoB+bfWSA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791062591; c=relaxed/simple;
-	bh=aRhPkQ0AujSti8lSbFZvdZ/I9EYR/iIXHu//HkeGLmw=;
+	s=arc-20240116; t=1791062590; c=relaxed/simple;
+	bh=Ox+oo5QJRQUMxLVya4s0wzbVsem5Q6Eie6XnmZs8e/4=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ff20VmbgtvjPn+dng4xpPgspv6JPswcmsjNAkwpFgBkFIR70jyRbHUSiAsFbrrEBybdZIzs12jwCcsLfi4TJmUUJST9OfmezefIQQjCUlhLHyg0jQIJ0K4vNtFDjb0OR7Tl4x6LD1a2pJV3vOWVKVELGo8nG1LxAa1QLdYkG2ls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tKX6zwJP; arc=none smtp.client-ip=209.85.208.69
+	 To:Cc:Content-Type; b=iQzfS79BszNLhGP4V0VN8WY4CcslDqriVntIya5CjGUvl4QPdWB3VbwpSeyjLl5jL0rComS6xNBu6WArBIwYIFJeyIN2tzCX3DEpEnw6MCVyF3L66OjFxpP0oZuYwEwVMomciSfWkrnfspcZdO7z6JCg9yUVwl4kvkXSsidx/VQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=shZXJhWj; arc=none smtp.client-ip=209.85.218.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tKX6zwJP"
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-6ae18a3adaeso964746a12.0
-        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:23:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="shZXJhWj"
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-c2e5cad0956so100558466b.3
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:23:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791062584; x=1791667384; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1791062581; x=1791667381; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=A8y+NqNGWEVo5m0sdN+ejiIJNOP7rTpNObbOwi7GoT0=;
-        b=tKX6zwJP+MDcthDvtJ54+VnN+tAwEQouZW7DLmC57EFbmvFpoW56l85czeUs7nA95U
-         WGztpsCrDGpzYu3m49nGUi7Zg4BIJeZ4zq+Hg+yIv3AaiJbUolX7LufuSlvuT17fA9yd
-         wKkUpcqFhoInOOmDarnWFanh8Vf10Bi90cFyadMGjI5JKYTaGc0y6Y7PH+4Wvg5yDWJQ
-         0EV+w9n+xz1dIURHHwBc77RIuKE5npwpUiUpFNmPed1BqmhJsgG0g0ld48yXKEy9pkRt
-         BzNcgd8iTjv2NBwJw2QAp+F0SlxSD4OaLQTzP3TbjHFjM/0gdgmfWzi/aUvMe0syShbk
-         T3/Q==
+        bh=sxnWfCtIeX20UabhbwcYMIUINCIuBjoP15nZymAWMw0=;
+        b=shZXJhWjGmXu0eewbJkGxOUsWygyIgnO5etPdKMorB9Z7YjNvcOq3g50qauYbtsY7E
+         WReBlwLLRGVYXgBQ8eGIRvgJ1HxHa6NDU3O84EJZ293n4W1X8BNPlHYiXwMappxrCuW5
+         5HcRjIq35JlPtbnD0PyZsMVsLz9VWkvDo7H8VK1lFzhFPCPI9XqJpMXsx6gmieknkRj/
+         wsEqutVhMPNEVnff8eCfKoUkwi1ea3Sp0JFbIC8N2npEQttgU3V7LjePoRgNtzccIws5
+         Buc8hpjjl9okHmOU7LHk8Px6Q1tk22TklGUa/wERBF0hFy6eu69GWOsNMGzbwisQa2mR
+         Vg/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791062584; x=1791667384;
+        d=1e100.net; s=20260707; t=1791062581; x=1791667381;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=A8y+NqNGWEVo5m0sdN+ejiIJNOP7rTpNObbOwi7GoT0=;
-        b=DvY+jKJWZobsbAuZlVdVtP0TlVbzHOvah8Chx4a2h5E6HilaKwUbqbTT7mFk98ZOGC
-         yxIWVD2tH7CFtiJOBg87aLqXK70X08z4SuugnOpveOzRDL38syLlhTyoCDaxqKClAWSb
-         1VaB/cg9hd/c0/rSePE9d5qBo7OTijXmDCwVLyEyqmMjuJApFSvf4rlHBFaaLywMYgeb
-         CSf7taGeHT8DmdBeWOW0L7IWQLpfdOfWSRO1zk8ZVwUnnPHXHcox2cOzoOYPQdvz3GrN
-         A8pX1LJFIMACiBdWv7MCMPqG5Vy8VJl/f3xKU2BVjurQ+mMReJVfxckM026XAQaE6FT9
-         2myQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzDLrwSBv8XVE3XEHfRsicKBC5yzEXmUoqmx7k3Z2I2WnPsRVYdpfG4saCGHXRHagDHjLvfAg==@lists.linux.dev
-X-Gm-Message-State: AFuF++m6QyQy3wgzLBDT32Oo2XMQ+ayYTayM5irUeHxTwpJ/I2zE9BNB
-	WP23aGa3BoUmq9p66niPK+AWO287Ibv5aiPl3IuDmIs4mT88TXqfraHsiiRLk4XkurVYz6z84Vg
-	/czvlqw==
-X-Received: from edse14.prod.google.com ([2002:aa7:d7ce:0:b0:6ae:2c82:36b6])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:97c7:b0:c2e:22f7:59c5
- with SMTP id a640c23a62f3a-c2e33ef144dmr845653066b.7.1791062583666; Sat, 03
- Oct 2026 14:23:03 -0700 (PDT)
-Date: Sat,  3 Oct 2026 21:22:32 +0000
+        bh=sxnWfCtIeX20UabhbwcYMIUINCIuBjoP15nZymAWMw0=;
+        b=CqgmSpIb9NkGwmbeFPLi1sLy0TsAh2z7SJNOMn+3pqi/H3f92XptXO4prljcyRAdSp
+         eUlptZNm2tQicRPtcca6+evAFQKszbi8DBsSXnMCr6Z8Iseiz4uJhhVP3qtrW9/IZxgA
+         SSrJGPJgEsXPWEoKz8kjhPrNjZVdrYPaK7my8pNW/yi5+f1tM+aevv5JXXKRicZ5bXHI
+         jGFMwJyRvUDe+jv60oTYVijo5sCnrAY0O3wDb4XZ8pAUdC/cdgnglaX1fhXmgSEuepIl
+         4SKhjejOcyoBPsBjaWcqStFG2FCkU9RufI4zMbCcfzGX5j+iamtEMh+JYyYsLA8lVp+X
+         j5vA==
+X-Forwarded-Encrypted: i=1; AKwUvByXnZYSorDaLL7Q/YfaryIKC4eL1spNSpTFSP+oy1QS7KjweIAadAdX2YZ4g74JUZJfpQcDvg==@lists.linux.dev
+X-Gm-Message-State: AFuF++neUWritpsItLgGMFIWL68uwChM7kCHA2SqlLHuKkfx6bJVJgLl
+	Md20VLnmxjTIfU9bmI5PSKY3bO/9qq29sz5+hEoPKoYxCKgzRVBfHcV6ZWTpZysb1pigIqeYaQK
+	qg/rqfw==
+X-Received: from edgj17-n2.prod.google.com ([2002:a05:6402:a5d1:20b0:6ae:2baf:8e53])
+ (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:7282:b0:c2d:fc0b:551c
+ with SMTP id a640c23a62f3a-c2e4ad7caa6mr536656666b.16.1791062580744; Sat, 03
+ Oct 2026 14:23:00 -0700 (PDT)
+Date: Sat,  3 Oct 2026 21:22:30 +0000
 In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20261003212241.3432303-1-lrizzo@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261003212241.3432303-14-lrizzo@google.com>
-Subject: [RFC: DMA_PMD 13/22] net/core: Use DMA_PMD for page_pool memory
+Message-ID: <20261003212241.3432303-12-lrizzo@google.com>
+Subject: [RFC: DMA_PMD 11/22] dma-mapping: Use DMA_PMD arena for dma_alloc_attrs()
 From: Luigi Rizzo <lrizzo@google.com>
 To: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
@@ -82,179 +82,270 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafae
 	linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-When dev->dma_pmd_rxbuf is enabled on the pool device,
-use a per-page_pool DMA_PMD pool for page_pool allocations
-(__page_pool_alloc_netmems_slow() and __page_pool_alloc_page_order()).
-
-When enabled, pages leaving the page_pool cache (e.g. held by socket
-buffers beyond NAPI) return to the DMA_PMD pool on final put_page(),
-retaining their cached IOVA mapping, avoiding per-page 4KB IOMMU
-PTE updates and IOTLB flushes on replenishment. Plain 4KB pages are
-opportunistically replaced in __page_pool_page_can_be_recycled() when
-free pooled blocks are available.
-
-Also skip inserting and erasing DMA_PMD pages in the pool->dma_mapped
-XArray (used for DMA_ATTR_SKIP_CPU_SYNC tracking), as dma_unmap_page_attrs()
-is a no-op for DMA_PMD pages and skipping the XArray avoids xa_lock
-contention on refill and release.
+Wire dma_alloc_attrs() and dma_free_attrs() into the DMA_PMD arena
+when dev->dma_pmd_rings is enabled on a device:
+  - Add dma_pmd_dma_alloc() and dma_is_pmd_dma() backed by
+    dma_pmd_arena.
+  - Route GFP_KERNEL dma_alloc_attrs() requests through dma_pmd_dma_alloc()
+    when dev->dma_pmd_rings is set, logging latency when
+    dev->dma_pmd_debug is enabled.
+  - Reclaim sub-allocations back to the arena in dma_free_attrs() via
+    dma_pmd_arena_free() while keeping the PMD_SIZE IOMMU mapping active.
 
 Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 ---
- include/net/page_pool/types.h |  3 ++
- net/core/page_pool.c          | 61 ++++++++++++++++++++++++++++-------
- 2 files changed, 52 insertions(+), 12 deletions(-)
+ drivers/iommu/dma-pmd-arena.c | 27 ++++++++++++++++++++++++
+ drivers/iommu/dma-pmd-kunit.c | 11 +++++++---
+ drivers/iommu/dma-pmd-map.c   | 17 +++++++++++++++
+ include/linux/dma-pmd.h       | 29 ++++++++++++++++++++++++++
+ kernel/dma/mapping.c          | 39 +++++++++++++++++++++++++++++------
+ 5 files changed, 114 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/page_pool/types.h b/include/net/page_pool/types.h
-index 03da138722f58..62a5c50dda43f 100644
---- a/include/net/page_pool/types.h
-+++ b/include/net/page_pool/types.h
-@@ -34,6 +34,8 @@
- #define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV | \
- 				 PP_FLAG_SYSTEM_POOL | PP_FLAG_ALLOW_UNREADABLE_NETMEM)
- 
-+struct dma_pmd_pool;
+diff --git a/drivers/iommu/dma-pmd-arena.c b/drivers/iommu/dma-pmd-arena.c
+index 578df5be86a86..e1a7d9d6f0f60 100644
+--- a/drivers/iommu/dma-pmd-arena.c
++++ b/drivers/iommu/dma-pmd-arena.c
+@@ -383,3 +383,30 @@ void *dma_pmd_arena_alloc(struct device *dev, size_t size, dma_addr_t *dma, int
+ 	return NULL;
+ }
+ EXPORT_SYMBOL(dma_pmd_arena_alloc);
 +
- /* Index limit to stay within PP_DMA_INDEX_BITS for DMA indices */
- #define PP_DMA_INDEX_LIMIT XA_LIMIT(1, BIT(PP_DMA_INDEX_BITS) - 1)
- 
-@@ -234,6 +236,7 @@ struct page_pool {
- 
- 	void *mp_priv;
- 	const struct memory_provider_ops *mp_ops;
-+	struct dma_pmd_pool *dma_pmd_pool;
- 
- 	struct xarray dma_mapped;
- 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index d7c88c0b67e53..5774247a06291 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -22,6 +22,7 @@
- #include <linux/page-flags.h>
- #include <linux/mm.h> /* for put_page() */
- #include <linux/poison.h>
-+#include <linux/dma-pmd.h>
- #include <linux/ethtool.h>
- #include <linux/netdevice.h>
- 
-@@ -304,6 +305,10 @@ static int page_pool_init(struct page_pool *pool,
- 		goto free_ptr_ring;
- 	}
- 
-+	if (pool->dma_map && pool->p.dev && !pool->mp_ops &&
-+	    READ_ONCE(pool->p.dev->dma_pmd_rxbuf))
-+		pool->dma_pmd_pool = dma_pmd_pool_create(pool->p.order, 8);
++void *dma_pmd_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma,
++			gfp_t gfp, unsigned long attrs)
++{
++	void *va;
 +
- 	return 0;
- 
- free_ptr_ring:
-@@ -318,6 +323,7 @@ static int page_pool_init(struct page_pool *pool,
- 
- static void page_pool_uninit(struct page_pool *pool)
- {
-+	pool->dma_pmd_pool = dma_pmd_pool_destroy(pool->dma_pmd_pool);
- 	ptr_ring_cleanup(&pool->ring, NULL);
- 	xa_destroy(&pool->dma_mapped);
- 
-@@ -406,7 +412,9 @@ static noinline netmem_ref page_pool_refill_alloc_cache(struct page_pool *pool)
- 		if (unlikely(!netmem))
- 			break;
- 
--		if (likely(netmem_is_pref_nid(netmem, pref_nid))) {
-+		if (likely(netmem_is_pref_nid(netmem, pref_nid)) ||
-+		    (pool->dma_pmd_pool &&
-+		     dma_is_pmd_page(page_to_pfn(netmem_to_page(netmem))))) {
- 			pool->alloc.cache[pool->alloc.count++] = netmem;
- 		} else {
- 			/* NUMA mismatch;
-@@ -565,9 +573,20 @@ static bool page_pool_dma_map(struct page_pool *pool, netmem_ref netmem, gfp_t g
- 		goto unmap_failed;
- 	}
- 
--	err = page_pool_register_dma_index(pool, netmem, gfp);
--	if (err)
--		goto unset_failed;
++	if (!dev || !dev->iommu_group || !dev_is_dma_coherent(dev))
++		return NULL;
 +	/*
-+	 * DMA_PMD mappings are owned by dma_pmd_pool (and torn down on pool or
-+	 * IOMMU domain release without pool->p.dev), not unmapped per-page in
-+	 * page_pool_scrub(). Leave dma_index == 0 so page_pool_release_dma_index()
-+	 * skips dma_unmap_page_attrs() without dereferencing pool->p.dev on
-+	 * late returns after device removal.
++	 * The arena allocates PMD pages, IOMMU page tables, and vmap() areas
++	 * with GFP_KERNEL, and shares PMD pages across allocations on the same
++	 * device. Decline non-GFP_KERNEL requests (including GFP_NOFS/GFP_NOIO
++	 * or scoped memalloc_nofs/noio contexts) and per-allocation modifiers
++	 * such as __GFP_ACCOUNT or __GFP_NORETRY so the caller falls back to
++	 * the standard DMA allocator.
 +	 */
-+	if (pool->dma_pmd_pool && dma_is_pmd_dma(pool->p.dev, dma)) {
-+		netmem_set_dma_index(netmem, 0);
-+	} else {
-+		err = page_pool_register_dma_index(pool, netmem, gfp);
-+		if (err)
-+			goto unset_failed;
-+	}
- 
- 	page_pool_dma_sync_for_device(pool, netmem, pool->p.max_len);
- 
-@@ -585,10 +604,13 @@ static bool page_pool_dma_map(struct page_pool *pool, netmem_ref netmem, gfp_t g
- static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
- 						 gfp_t gfp)
- {
--	struct page *page;
-+	struct page *page = NULL;
- 
- 	gfp |= __GFP_COMP;
--	page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
-+	if (pool->dma_pmd_pool)
-+		page = dma_pmd_pool_alloc_node(pool->dma_pmd_pool, gfp, pool->p.nid);
-+	if (!page)
-+		page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
- 	if (unlikely(!page))
- 		return NULL;
- 
-@@ -634,8 +656,14 @@ static noinline netmem_ref __page_pool_alloc_netmems_slow(struct page_pool *pool
- 	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk */
- 	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
- 
--	nr_pages = alloc_pages_bulk_node(gfp, pool->p.nid, bulk,
--					 (struct page **)pool->alloc.cache);
-+	nr_pages = 0;
-+	if (pool->dma_pmd_pool)
-+		nr_pages = dma_pmd_pool_alloc_bulk_node(pool->dma_pmd_pool, gfp,
-+							pool->p.nid, bulk,
-+							(struct page **)pool->alloc.cache);
-+	if (!nr_pages)
-+		nr_pages = alloc_pages_bulk_node(gfp, pool->p.nid, bulk,
-+						 (struct page **)pool->alloc.cache);
- 	if (unlikely(!nr_pages))
- 		return 0;
- 
-@@ -825,9 +853,18 @@ static bool page_pool_recycle_in_cache(netmem_ref netmem,
- 
- static bool __page_pool_page_can_be_recycled(netmem_ref netmem)
- {
--	return netmem_is_net_iov(netmem) ||
--	       (page_ref_count(netmem_to_page(netmem)) == 1 &&
--		!page_is_pfmemalloc(netmem_to_page(netmem)));
-+	struct page *page;
++	if ((current_gfp_context(gfp) & ~(__GFP_ZERO | __GFP_NOWARN)) != GFP_KERNEL ||
++	    (attrs & ~DMA_ATTR_NO_WARN))
++		return NULL;
 +
-+	if (netmem_is_net_iov(netmem))
-+		return true;
-+
-+	page = netmem_to_page(netmem);
-+	if (page_ref_count(page) != 1 || page_is_pfmemalloc(page))
-+		return false;
-+	if (page->pp->dma_pmd_pool && !dma_is_pmd_page(page_to_pfn(page)) &&
-+	    dma_pmd_pool_has_free(page->pp->dma_pmd_pool))
-+		return false;
-+	return true;
++	va = dma_pmd_arena_alloc(dev, size, dma, dev_to_node(dev));
++	if (!va && !(gfp & __GFP_NOWARN) && !(attrs & DMA_ATTR_NO_WARN))
++		dev_warn_ratelimited(dev, "DMA_PMD arena alloc failed (size %zu)\n",
++				     size);
++	return va;
++}
++EXPORT_SYMBOL(dma_pmd_dma_alloc);
+diff --git a/drivers/iommu/dma-pmd-kunit.c b/drivers/iommu/dma-pmd-kunit.c
+index b91dbcb468879..c2363277e2ecd 100644
+--- a/drivers/iommu/dma-pmd-kunit.c
++++ b/drivers/iommu/dma-pmd-kunit.c
+@@ -169,11 +169,16 @@ static void test_window_helpers(struct kunit *test)
+ static void test_arena_alloc_and_free(struct kunit *test)
+ {
+ 	struct device dev = { .numa_node = NUMA_NO_NODE };
+-	void *v1, *v2, *v3, *vl1;
+ 	dma_addr_t d1, d2, d3, dl1;
++	void *v1, *v2, *v3, *vl1;
+ 
+-	KUNIT_EXPECT_NULL(test,
+-			  dma_pmd_arena_alloc(NULL, SZ_4K, &d1, NUMA_NO_NODE));
++	KUNIT_EXPECT_NULL(test, dma_pmd_arena_alloc(NULL, SZ_4K, &d1, NUMA_NO_NODE));
++	KUNIT_EXPECT_NULL(test, dma_pmd_dma_alloc(NULL, SZ_4K, &d1, GFP_KERNEL, 0));
++	KUNIT_EXPECT_NULL(test, dma_pmd_dma_alloc(&dev, SZ_4K, &d1, GFP_KERNEL, 0));
++	KUNIT_EXPECT_NULL(test, dma_pmd_dma_alloc(&dev, SZ_4K, &d1,
++						  GFP_KERNEL | __GFP_ACCOUNT, 0));
++	KUNIT_EXPECT_FALSE(test, dma_pmd_free(&dev, SZ_4K, NULL, 0));
++	KUNIT_EXPECT_FALSE(test, dma_is_pmd_dma(&dev, 0));
+ 
+ 	v1 = dma_pmd_arena_alloc(&dev, SZ_64K, &d1, NUMA_NO_NODE);
+ 	KUNIT_ASSERT_NOT_NULL(test, v1);
+diff --git a/drivers/iommu/dma-pmd-map.c b/drivers/iommu/dma-pmd-map.c
+index 1147874ac8068..76cb5d01cb1e8 100644
+--- a/drivers/iommu/dma-pmd-map.c
++++ b/drivers/iommu/dma-pmd-map.c
+@@ -380,6 +380,23 @@ int dma_pmd_window_assign(struct device *dev, struct iommu_domain *domain,
+ 	return ret;
  }
  
- /* If the page refcnt == 1, this will try to recycle the page.
-@@ -1178,7 +1215,7 @@ static void page_pool_scrub(struct page_pool *pool)
- 			 * if there are no outstanding mapped pages.
- 			 */
- 			if (dma_dev_need_sync(pool->p.dev) &&
--			    !xa_empty(&pool->dma_mapped))
-+			    (pool->dma_pmd_pool || !xa_empty(&pool->dma_mapped)))
- 				synchronize_net();
- 		}
++/**
++ * dma_is_pmd_dma - Test whether @dma lies in @dev's DMA_PMD IOVA window
++ * @dev: Device performing DMA
++ * @dma: DMA address to test
++ */
++bool dma_is_pmd_dma(struct device *dev, dma_addr_t dma)
++{
++	struct dma_pmd_window *win;
++
++	if (!dev || !dev->iommu_group)
++		return false;
++
++	win = dma_pmd_dma_window(iommu_get_dma_domain(dev));
++	return win && dma_pmd_window_owns(win, dma);
++}
++EXPORT_SYMBOL(dma_is_pmd_dma);
++
+ /**
+  * dma_pmd_dma_map_phys - Derive the IOVA of a pool address, mapping if needed
+  * @dev: Device performing DMA
+diff --git a/include/linux/dma-pmd.h b/include/linux/dma-pmd.h
+index 55c770fe232b0..7b7e9477d44e1 100644
+--- a/include/linux/dma-pmd.h
++++ b/include/linux/dma-pmd.h
+@@ -96,7 +96,19 @@ static inline struct page *dma_pmd_pool_alloc(struct dma_pmd_pool *pool, gfp_t g
+ bool dma_pmd_pool_has_free(struct dma_pmd_pool *pool);
  
+ /* Hooks for kernel/dma/mapping.c */
++void *dma_pmd_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma,
++			gfp_t gfp, unsigned long attrs);
+ bool dma_pmd_arena_free(struct device *dev, size_t size, void *cpu_addr, dma_addr_t dma);
++bool dma_is_pmd_dma(struct device *dev, dma_addr_t dma);
++
++static inline bool dma_pmd_free(struct device *dev, size_t size,
++				void *cpu_addr, dma_addr_t dma_handle)
++{
++	/* Pairs with smp_store_release() in dma_pmd_meta_init(). */
++	if (likely(!smp_load_acquire(&dma_pmd_meta_array)))
++		return false;
++	return dma_pmd_arena_free(dev, size, cpu_addr, dma_handle);
++}
+ 
+ #else /* !CONFIG_DMA_PMD */
+ 
+@@ -144,11 +156,28 @@ static inline bool dma_pmd_pool_has_free(struct dma_pmd_pool *pool)
+ 	return false;
+ }
+ 
++static inline void *dma_pmd_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma,
++				      gfp_t gfp, unsigned long attrs)
++{
++	return NULL;
++}
++
+ static inline bool dma_pmd_arena_free(struct device *dev, size_t size,
+ 				      void *cpu_addr, dma_addr_t dma)
+ {
+ 	return false;
+ }
+ 
++static inline bool dma_is_pmd_dma(struct device *dev, dma_addr_t dma)
++{
++	return false;
++}
++
++static inline bool dma_pmd_free(struct device *dev, size_t size,
++				void *cpu_addr, dma_addr_t dma_handle)
++{
++	return false;
++}
++
+ #endif /* CONFIG_DMA_PMD */
+ #endif /* _LINUX_DMA_PMD_H */
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index bf2651a70b7c2..cc18896017e35 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -10,6 +10,8 @@
+ #include <linux/dma-map-ops.h>
+ #include <linux/export.h>
+ #include <linux/gfp.h>
++#include <linux/ktime.h>
++#include <linux/dma-pmd.h>
+ #include <linux/iommu-dma.h>
+ #include <linux/kmsan.h>
+ #include <linux/of_device.h>
+@@ -180,7 +182,8 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
+ 	if (!is_mmio)
+ 		kmsan_handle_dma(phys, size, dir);
+ 	trace_dma_map_phys(dev, phys, addr, size, dir, attrs);
+-	debug_dma_map_phys(dev, phys, size, dir, addr, attrs);
++	if (IS_ENABLED(CONFIG_DMA_API_DEBUG) && !dma_is_pmd_dma(dev, addr))
++		debug_dma_map_phys(dev, phys, size, dir, addr, attrs);
+ 
+ 	return addr;
+ }
+@@ -223,7 +226,8 @@ void dma_unmap_phys(struct device *dev, dma_addr_t addr, size_t size,
+ 	else if (ops->unmap_phys)
+ 		ops->unmap_phys(dev, addr, size, dir, attrs);
+ 	trace_dma_unmap_phys(dev, addr, size, dir, attrs);
+-	debug_dma_unmap_phys(dev, addr, size, dir, attrs);
++	if (IS_ENABLED(CONFIG_DMA_API_DEBUG) && !dma_is_pmd_dma(dev, addr))
++		debug_dma_unmap_phys(dev, addr, size, dir, attrs);
+ }
+ EXPORT_SYMBOL_GPL(dma_unmap_phys);
+ 
+@@ -633,7 +637,11 @@ EXPORT_SYMBOL_GPL(dma_get_required_mask);
+ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 		gfp_t flag, unsigned long attrs)
+ {
++	bool debug = unlikely(READ_ONCE(dev->dma_pmd_debug)) && gfpflags_allow_blocking(flag);
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
++	bool can_block = gfpflags_allow_blocking(flag);
++	bool from_arena = false;
++	u64 start_ns = 0;
+ 	void *cpu_addr;
+ 
+ 	WARN_ON_ONCE(!dev->coherent_dma_mask);
+@@ -655,10 +663,14 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	if (force_dma_unencrypted(dev))
+ 		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
+ 
++	if (debug) {
++		start_ns = ktime_get_ns();
++		*dma_handle = 0;
++	}
+ 	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
+ 		trace_dma_alloc(dev, cpu_addr, *dma_handle, size,
+ 				DMA_BIDIRECTIONAL, flag, attrs);
+-		return cpu_addr;
++		goto out_debug;
+ 	}
+ 
+ 	/* let the implementation decide on the zone to allocate from: */
+@@ -667,18 +679,31 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	if (dma_alloc_direct(dev, ops) || arch_dma_alloc_direct(dev)) {
+ 		cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
+ 	} else if (use_dma_iommu(dev)) {
+-		cpu_addr = iommu_dma_alloc(dev, size, dma_handle, flag, attrs);
++		if (READ_ONCE(dev->dma_pmd_rings) && can_block) {
++			cpu_addr = dma_pmd_dma_alloc(dev, size, dma_handle, flag, attrs);
++			from_arena = !!cpu_addr;
++		}
++		if (!from_arena)
++			cpu_addr = iommu_dma_alloc(dev, size, dma_handle, flag, attrs);
+ 	} else if (ops->alloc) {
+ 		cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
+ 	} else {
++		cpu_addr = NULL;
+ 		trace_dma_alloc(dev, NULL, 0, size, DMA_BIDIRECTIONAL, flag,
+ 				attrs);
+-		return NULL;
++		goto out_debug;
+ 	}
+ 
+ 	trace_dma_alloc(dev, cpu_addr, *dma_handle, size, DMA_BIDIRECTIONAL,
+ 			flag, attrs);
+-	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
++	if (!from_arena)
++		debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
++out_debug:
++	if (debug)
++		dev_info(dev,
++			 "dma_alloc_coherent(size=%zu, gfp=%pGg, attrs=%#lx) -> va=%p, dma=%pad, arena=%d in %llu ns\n",
++			 size, &flag, attrs, cpu_addr, dma_handle, from_arena,
++			 ktime_get_ns() - start_ns);
+ 	return cpu_addr;
+ }
+ EXPORT_SYMBOL(dma_alloc_attrs);
+@@ -703,6 +728,8 @@ void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+ 		       attrs);
+ 	if (!cpu_addr)
+ 		return;
++	if (use_dma_iommu(dev) && dma_pmd_free(dev, size, cpu_addr, dma_handle))
++		return;
+ 
+ 	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle, attrs);
+ 	if (dma_alloc_direct(dev, ops) || arch_dma_free_direct(dev, dma_handle))
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
 
