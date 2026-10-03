@@ -1,56 +1,56 @@
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627503537E5
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:22:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B8C549BD9F
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:23:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791062582; cv=none; b=SOv4F7L43vJ1pTS30xMpVhgyTLGgbXmivjFSLx88XATdJXrPXOT5nK2x8en9qKS7UMGe1W9OvB8gMeF1RIf9YibYG7ncbh6a2vQxhdjeAWqysrDna0kx4E5Ba9kHctmN1Tfw4HDO6L/jkAZj94/lNigjf38oV2l7sml16obRiPg=
+	t=1791062585; cv=none; b=Mx9XZkSLx6+3WgT5dePlvO/9CzLs8Mf2DNAtSqvMHE9D3jYmIgGy82uEeSAGGurOZe8hPGGHN8UT+6PJwyffaiYhxkG0s4N4JJffYt4jX8yjWDvvalyFwa5ZLcgcgBWATXf0ASOLqOAcpbRQQPlO+fThPUZ8WRIqDd5COBsWLJw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791062582; c=relaxed/simple;
-	bh=oXNpyemzjpaF1oK9/Tiu84/tS1OoKiMXg/qoeAYURjE=;
+	s=arc-20240116; t=1791062585; c=relaxed/simple;
+	bh=cNEMysw2Cgmwf5E8UE2NJ5SQe39tIvEBhPTTYNdpjzI=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=nBlm4/MVbZk43Beduo8RRvxwqPFCU+XUKurRtASBsVAdzdCMNvJYO8pFytmZ7fWY/6U03/hgyT6gYnx8pfCj0M3EDy+6LMl6zQflQSSFLzQsAh+U+nc7g6lg7btbvLQs0znHDzmPeJWGwR1BObw0Zsu6dUqZfcWNQ3u+ju43bg0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cfG00BFv; arc=none smtp.client-ip=209.85.218.70
+	 To:Cc:Content-Type; b=hS9rxd02E6t5udid9J0ljlRNYCxM49ee7Jedg/9xC0yTQm9X/ZCFz0iyqyYgnK93VBPgohIrZUm5+HqTjZXkKvs48Spgp4gWHDrLM41aUut7ALtNvzIAwh/6fy5boos85U1+wJKGQ2MxnuokAhjljS4XA9kzeXwMT5mdM9IZFY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FJkr1Y8X; arc=none smtp.client-ip=209.85.128.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cfG00BFv"
-Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-c2e4d39c795so89160766b.1
-        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:22:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FJkr1Y8X"
+Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-4a019d53f46so5092795e9.3
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:23:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791062577; x=1791667377; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1791062578; x=1791667378; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=N54zKWi7Lhs08q/THaKTXSODVv5TF25KadC1J/BT63c=;
-        b=cfG00BFvxRyaIH25/VZhkKxUrzGdoUES5ijP8TiU6r06279+S3o5WtaZbWzpAB9iK7
-         7PfJ+oysAwl+fIoK5ANVqn6qe4DNUUEhkVTqE+HEXjt75VB43KCXqKwlFcOwTEDJKLPh
-         MKyK9ReLuIJnphUkQBkHdBqTM3OOgBJ6/XhwC/8RCAgHdjge4j9rabDkxVQd5R5Ss6rd
-         ln8EXjW6enmTw0lPCMvhriUYomZNComA0rnCmm6kOLVsuZMPIeHyjjkWSlSkLZAvgmjx
-         IS8d+m50xrXtXsFPcVi3yOp9+kswS7JRkOZYhA6tAA6lpC0WSUL8nwuh0RQz4kb45wWZ
-         K0pw==
+        bh=sGGPC1bwrTZZ3ZKXOiwd7CFyhuWlN9AcME08KbRuwUo=;
+        b=FJkr1Y8XSAsOyeS6QAGrd4upatIdj0rNZA5miIMZXVKTebje/iWGAllAYejHxB20pI
+         LCsw8pUdrIBzSgyfHOnag+SnJHbv+OJXbWGeH1xEkrCHK5pLK/WQTBg9u4xUInsETOQq
+         IGW9XGiXaTqT+H6de2XfGZEym+zh2cLLUWWzW/oC67zdBRhGsVLQ2U7kypw71Z67c1zx
+         BwvB90pK2u9NxOdkRIl7qj1JJfXmPgNk4qEQ3pmrROSV5/naDY1UBlzakZGqbYCm1hPe
+         ZuiOHlvpnKKxAFsR7FXnpCVywS0QJ8mHoTXZKO+rNzgBe2iA92SMT1GGy4Vp0DvjiYNm
+         RszA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791062577; x=1791667377;
+        d=1e100.net; s=20260707; t=1791062578; x=1791667378;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=N54zKWi7Lhs08q/THaKTXSODVv5TF25KadC1J/BT63c=;
-        b=umnkr0CjXwrDGmdQFTy7DXHORh6bhXHvnO1nBk7IFEUJK7papbHTQt8VdahQKX8cGP
-         wL4FmW0gEWcyUnpKZOjUwfhz3p6ZNJlAIsjoUtxlLmU16xINbHlHCRKzGL4To4QVlg4P
-         GWTPaFnz0bBNA2wha3KIFc0NYRB83gkW53/7TAk6uuPGmFdk4x++vFrsr3nWCTRpj8M9
-         L0JJzAY8L2B7JMcROH3rshAhZwni5S51J3io4fqpmeZia/mdePbMSe9tyPJlCs4IbvOo
-         mEL2A06XoyNHHiTQZsrc9Ub6gthEfJww9uci/J5vD5kCvxMyA/Os7jKOhjAdb9CRX7UM
-         54/g==
-X-Forwarded-Encrypted: i=1; AKwUvBz//Aq4GwF5rC3Z4T8K0APV674kDO9gmYlE1TtfbOCd+Hu2yAqvZd5vFQxnZKQVgI5OfmGVog==@lists.linux.dev
-X-Gm-Message-State: AFuF++k0c7pVxmdVB9Do8p6YhW7UkUS8HK584iPRw3+REN/QbPRiasWf
-	SyKYIaKURLgXNkI6bSeoaXgerYrSmPBUsXeDEEzgUs/f607hLH3w5VTKpNE2oOkqT5KJT6CWguf
-	DHGoMQg==
-X-Received: from ejze9.prod.google.com ([2002:a17:906:c009:b0:c2e:7b39:59da])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:720f:b0:c29:4490:50d6
- with SMTP id a640c23a62f3a-c2e4b229d3bmr529969366b.47.1791062576831; Sat, 03
- Oct 2026 14:22:56 -0700 (PDT)
-Date: Sat,  3 Oct 2026 21:22:27 +0000
+        bh=sGGPC1bwrTZZ3ZKXOiwd7CFyhuWlN9AcME08KbRuwUo=;
+        b=wgOhje/PIJ9rR10oAfvAVJjo0PHBm5Zy4fKSilJ+wxd2yZyAaDtESisGwQq+3mN+bf
+         VwsT07WL6Xww89c2GyegnBu9F7tYC2/wgw7Fq7IgIWvva+vB8so9M4fij1qBuTHrWHR0
+         eNHhKwtexn1/dBqgRFe2yyZfXUqXTz4oJp5DZfFjOpNuS70HBPdohL/AqgnD/nm//FfX
+         55uTLwcd1gK6U0mQwWzcoG0rDVc6yEyrpLgsY8RotDB/03hYE4wUoCHnsNxxDaNoeOck
+         gl0N5ljjEaF7Ub1kx12E0Zbd9w2MosGEWXYfs8iAITuUgS0sgprvLEGPQ+ttHK2R2wPI
+         Bd8w==
+X-Forwarded-Encrypted: i=1; AKwUvBz/QAE1+sggyEgEVLIDW8Z9jvATk56B3N1uVMmPq+ZHvNmwumYIDE14QtV9xv12f9rdDEpGaA==@lists.linux.dev
+X-Gm-Message-State: AFuF++lNLfBMxLMfbLAm/yj/bb5kfV4sJYtO3jYnxBp4AtGgTkHbgfJn
+	MxE+57Qcxh6KHqj0r/vq5mopmSRUTjhhBQKmGqbuemUar06sJ5VHtIJ345QOhOWb3bZGzmeeNMR
+	/jkzs0w==
+X-Received: from wmpd34.prod.google.com ([2002:a05:600c:4c22:b0:49e:6b11:9532])
+ (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a05:600c:3b04:b0:49f:c331:39e4
+ with SMTP id 5b1f17b1804b1-4a1680e76c5mr48512125e9.7.1791062578150; Sat, 03
+ Oct 2026 14:22:58 -0700 (PDT)
+Date: Sat,  3 Oct 2026 21:22:28 +0000
 In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,9 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20261003212241.3432303-1-lrizzo@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261003212241.3432303-9-lrizzo@google.com>
-Subject: [RFC: DMA_PMD 08/22] iommu/dma: use per-domain IOVA window to map
- DMA_PMD memory
+Message-ID: <20261003212241.3432303-10-lrizzo@google.com>
+Subject: [RFC: DMA_PMD 09/22] iommu/dma: Add DMA_PMD arena allocator
 From: Luigi Rizzo <lrizzo@google.com>
 To: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
@@ -83,485 +82,841 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafae
 	linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Map each DMA_PMD page at win->base + phys inside the domain's reserved
-IOVA window and track per-domain leaf PDE residency in
-p2m->domains_mapped:
+Device driver use dma_alloc_attrs() for several long lived
+device-accessible regions, such as queues and header buffers.
 
-- dma_pmd_window_assign() assigns a dense domain index in
-  dma_pmd_domains[] and allocates the per-domain IOVA window via
-  dma_pmd_dma_window_alloc() on first use.
-- dma_pmd_dma_window_alloc() reserves a PMD_SIZE-aligned range via
-  alloc_iova() from the domain's iova_domain so no ordinary IOVA can
-  land inside it, allowing unmap to identify pooled IOVAs by range check.
-- dma_pmd_dma_map_phys() returns win->base + phys in O(1) when the
-  domain's bit is set in p2m->domains_mapped, installing the PDE_ORDER leaf
-  PTE on the first map in a domain.
-- iommu_dma_map_phys() and iommu_dma_unmap_phys() route DMA_PMD
-  buffers through the per-domain window, making dma_unmap_*() an O(1)
-  range check with no page-table walk or IOTLB flush.
+Add a compatible dma_pmd_arena allocator for DMA_PMD pages, which will be
+later used by dma_alloc_attrs() for eligible allocations. Reserve a IOVA
+region right after the one used to map physical ram, used specifically for
+dma_pmd_arena allocations so they can be easily identifyed from their IOVA.
 
 Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 ---
- drivers/iommu/Kconfig        |   1 +
- drivers/iommu/dma-iommu.c    |  27 +++-
- drivers/iommu/dma-pmd-map.c  | 275 +++++++++++++++++++++++++++++++++++
- drivers/iommu/dma-pmd-priv.h |  33 +++++
- drivers/iommu/iommu.c        |   2 +-
- 5 files changed, 336 insertions(+), 2 deletions(-)
+ drivers/iommu/Makefile        |   3 +-
+ drivers/iommu/dma-pmd-arena.c | 385 ++++++++++++++++++++++++++++++++++
+ drivers/iommu/dma-pmd-kunit.c |  35 ++++
+ drivers/iommu/dma-pmd-map.c   |  19 +-
+ drivers/iommu/dma-pmd-meta.c  |  61 ++++--
+ drivers/iommu/dma-pmd-priv.h  |  41 +++-
+ include/linux/dma-pmd.h       |   9 +
+ 7 files changed, 519 insertions(+), 34 deletions(-)
+ create mode 100644 drivers/iommu/dma-pmd-arena.c
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 1bb347fd9da4a..7cb5b036e0f3b 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -164,6 +164,7 @@ config DMA_PMD
- 	depends on IOMMU_DMA
- 	depends on X86_64 || (ARM64 && ARM64_4K_PAGES)
- 	depends on !PREEMPT_RT
-+	select NEED_SG_DMA_FLAGS
- 	default y
- 	help
- 	  Hand out DMA buffers carved out of PMD_SIZE physically contiguous
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index ee14175b79bc2..6d33e245530ec 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1286,6 +1286,14 @@ dma_addr_t iommu_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 		arch_sync_dma_flush();
- 	}
- 
-+	if (dma_is_pmd_phys(phys)) {
-+		iova = dma_pmd_dma_map_phys(dev, domain,
-+					    &domain->iova_cookie->win_dma_pmd,
-+					    phys, size, prot, dma_mask);
-+		if (likely(iova != DMA_MAPPING_ERROR))
-+			return iova;
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index e701b36b9b605..e96fcf309a0b2 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -11,7 +11,8 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+ obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+ obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
+ obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+-obj-$(CONFIG_DMA_PMD) += dma-pmd-meta.o dma-pmd-pool.o dma-pmd-map.o
++obj-$(CONFIG_DMA_PMD) += dma-pmd-meta.o dma-pmd-pool.o dma-pmd-map.o \
++			 dma-pmd-arena.o
+ obj-$(CONFIG_DMA_PMD_META_KUNIT_TEST) += dma-pmd-kunit.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+ obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+diff --git a/drivers/iommu/dma-pmd-arena.c b/drivers/iommu/dma-pmd-arena.c
+new file mode 100644
+index 0000000000000..578df5be86a86
+--- /dev/null
++++ b/drivers/iommu/dma-pmd-arena.c
+@@ -0,0 +1,385 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
++/*
++ * DMA_PMD coherent arena allocator (ARENA_REGION).
++ *
++ * See Documentation/core-api/dma-pmd.rst for the architecture overview.
++ */
++
++#include <linux/bitmap.h>
++#include <linux/bitops.h>
++#include <linux/cache.h>
++#include <linux/dma-map-ops.h>
++#include <linux/dma-mapping.h>
++#include <linux/dma-pmd.h>
++#include <linux/export.h>
++#include <linux/gfp.h>
++#include <linux/iommu.h>
++#include <linux/mm.h>
++#include <linux/sched/mm.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++#include <linux/vmalloc.h>
++
++#include "dma-iommu.h"
++#include "dma-pmd-priv.h"
++/*
++ * dma_pmd_arena (ARENA_REGION allocator for coherent buffers)
++ * -----------------------------------------------------------
++ * Packs long-lived coherent DMA allocations into PMD physical pages mapped
++ * via PMD IOMMU leaf PTEs in the 16GB ARENA_REGION at the bottom of each
++ * domain's DMA_PMD IOVA window.
++ *
++ * - Allocation & Mapping (dma_pmd_arena_alloc / dma_pmd_dma_alloc):
++ *   Allocates a PAGE_SIZE-aligned, zeroed region of @size bytes in
++ *   ARENA_REGION, returning the CPU virtual address and storing the IOVA in
++ *   *@dma. Each PMD arena page is mapped into a single IOMMU domain and is
++ *   never shared across domains. Allocations <= 1MB first try partially used
++ *   PMD arena pages already mapped in the caller's domain before allocating a
++ *   fresh PMD page. Allocations > 1MB allocate contiguous empty PMD slots in
++ *   ARENA_REGION and vmap() them when spanning multiple PMD pages; if the
++ *   trailing PMD page has leftover 4KB blocks, it becomes available for
++ *   subsequent <= 1MB allocations in the same domain.
++ *
++ * - Unmapping & Release (dma_free_coherent / dma_pmd_free):
++ *   dma_pmd_free() checks whether @dma_handle falls in @dev's ARENA_REGION and,
++ *   if so, unreserves the 4KB blocks via dma_pmd_arena_free(). Once all 512 4KB
++ *   blocks of a PMD slot are free, its PMD PTE is unmapped from its domain and
++ *   the backing PMD page is returned to the buddy allocator.
++ */
++
++struct dma_pmd_arena {
++	spinlock_t lock;	/* protects bitmaps and arena metadata */
++	DECLARE_BITMAP(fully_empty, DMA_PMD_ARENA_PAGES);
++	DECLARE_BITMAP(partial_empty, DMA_PMD_ARENA_PAGES);
++};
++
++/* Currently one instance for all allocations */
++static struct dma_pmd_arena dma_pmd_arena __cacheline_aligned_in_smp = {
++	.lock = __SPIN_LOCK_UNLOCKED(dma_pmd_arena.lock),
++	.fully_empty = { [0 ... BITS_TO_LONGS(DMA_PMD_ARENA_PAGES) - 1] = ~0UL },
++};
++
++/* Provide a contiguous VA range for multi-page allocations */
++static void *dma_pmd_arena_vmap(unsigned int slot, unsigned int npages)
++{
++	unsigned int nr_subpages = npages * DMA_PMD_BLOCKS(0);
++	unsigned int subpages_per_2m = DMA_PMD_BLOCKS(0);
++	struct page *page, **pages;
++	unsigned int i, j;
++	void *va;
++
++	pages = kvmalloc_array(nr_subpages, sizeof(*pages), GFP_KERNEL);
++	if (!pages)
++		return NULL;
++
++	for (i = 0; i < npages; i++) {
++		page = dma_pmd_arena_meta(slot + i)->arena_page;
++		for (j = 0; j < subpages_per_2m; j++)
++			pages[i * subpages_per_2m + j] = page + j;
 +	}
 +
- 	iova = __iommu_dma_map(dev, phys, size, prot, dma_mask);
- 	if (iova == DMA_MAPPING_ERROR &&
- 	    !(attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT)))
-@@ -1296,14 +1304,19 @@ dma_addr_t iommu_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- void iommu_dma_unmap_phys(struct device *dev, dma_addr_t dma_handle,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
-+	struct iommu_domain *domain = iommu_get_dma_domain(dev);
- 	phys_addr_t phys;
- 
-+	/* DMA_PMD mapped buffer: nothing to unmap or release. */
-+	if (dma_pmd_window_owns(&domain->iova_cookie->win_dma_pmd, dma_handle))
-+		return;
-+
- 	if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT)) {
- 		__iommu_dma_unmap(dev, dma_handle, size);
- 		return;
- 	}
- 
--	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-+	phys = iommu_iova_to_phys(domain, dma_handle);
- 	if (WARN_ON(!phys))
- 		return;
- 
-@@ -1499,6 +1512,18 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
- 			 */
- 			break;
- 		case PCI_P2PDMA_MAP_NONE:
-+			if (dma_is_pmd_phys(sg_phys(s))) {
-+				iova = dma_pmd_dma_map_phys(dev, domain,
-+							    &cookie->win_dma_pmd,
-+							    sg_phys(s), s_length,
-+							    prot, dma_get_mask(dev));
-+				if (likely(iova != DMA_MAPPING_ERROR)) {
-+					s->dma_address = iova;
-+					sg_dma_len(s) = s_length;
-+					sg_dma_mark_bus_address(s);
-+					continue;
-+				}
-+			}
- 			break;
- 		case PCI_P2PDMA_MAP_BUS_ADDR:
- 			/*
-diff --git a/drivers/iommu/dma-pmd-map.c b/drivers/iommu/dma-pmd-map.c
-index cffa94a7c7c84..565e10dd1a2e8 100644
---- a/drivers/iommu/dma-pmd-map.c
-+++ b/drivers/iommu/dma-pmd-map.c
-@@ -13,6 +13,8 @@
- #include <linux/dma-pmd.h>
- #include <linux/export.h>
- #include <linux/iommu.h>
-+#include <linux/iova.h>
-+#include <linux/memblock.h>
- #include <linux/mm.h>
- #include <linux/spinlock.h>
- #include <linux/srcu.h>
-@@ -218,3 +220,276 @@ void dma_pmd_domain_release(struct iommu_domain *domain)
- 		pr_debug("dma_pmd: released %u PMD page mappings for domain %p (index %d)\n",
- 			 dropped, domain, idx);
- }
-+
-+/**
-+ * dma_pmd_dma_window_alloc - Allocate an IOVA window for DMA_PMD mappings
-+ * @dev: Device whose addressing limits the window must respect
-+ * @domain: Domain to take the window from
-+ * @size: Window size in bytes
-+ *
-+ * Allocates a contiguous IOVA range out of @domain's iova_domain on first use,
-+ * aligned to PMD_SIZE matching the mapping. Callers on the map path still
-+ * check each device's own dma_mask/bus_dma_limit against the resulting IOVA and
-+ * fall back to per-buffer mapping if a narrower device shares @domain.
-+ *
-+ * Return: base IOVA, or 0 if no range that large is available.
-+ */
-+static dma_addr_t dma_pmd_dma_window_alloc(struct device *dev,
-+					   struct iommu_domain *domain, u64 *sizep)
-+{
-+	u64 limit = min_not_zero(dma_get_mask(dev), dev->bus_dma_limit);
-+	struct iova_domain *iovad = dma_pmd_dma_iovad(domain);
-+	u64 min_size = ALIGN(PFN_PHYS(max_pfn), PMD_SIZE);
-+	unsigned long shift, iova_len;
-+	struct iova *new_iova;
-+
-+	if (!iovad)
-+		return 0;
-+
-+	if (domain->geometry.force_aperture)
-+		limit = min_t(u64, limit, domain->geometry.aperture_end);
-+
-+	if (*sizep > limit / 2 && limit / 2 >= min_size)
-+		*sizep = ALIGN_DOWN(limit / 2, PMD_SIZE);
-+
-+	/* Ignore devices with too many constraints. */
-+	if (limit <= DMA_BIT_MASK(32) || *sizep > limit - PMD_SIZE)
-+		return 0;
-+
-+	shift = iova_shift(iovad);
-+	iova_len = (*sizep + PMD_SIZE) >> shift;
-+
-+	/*
-+	 * Note: dev->iommu->pci_32bit_workaround is intentionally not consulted
-+	 * here. It is an advisory preference (enabled by default on all PCI
-+	 * devices).
-+	 */
-+	new_iova = alloc_iova(iovad, iova_len, limit >> shift, false);
-+	if (!new_iova)
-+		return 0;
-+
-+	return ALIGN((dma_addr_t)new_iova->pfn_lo << shift, PMD_SIZE);
++	va = dma_common_pages_remap(pages, nr_subpages << PAGE_SHIFT,
++				    PAGE_KERNEL, __builtin_return_address(0));
++	if (!va)
++		kvfree(pages);
++	return va;
 +}
 +
-+/**
-+ * dma_pmd_window_assign - Give @domain an IOVA window and a domain index
-+ * @dev: Device whose addressing limits the window must respect
-+ * @domain: Domain to set up
-+ * @win: @domain's window, from its DMA cookie
-+ *
-+ * Called the first time anything tries to pool through @domain. Failure is
-+ * recorded in @win->domain_idx rather than retried: the allocation is a
-+ * multi-terabyte search of the IOVA tree, and a domain that has no room for it
-+ * once will not have room on the next buffer either. The caller tests that
-+ * record without the lock, so the reason has to survive in the sentinel.
-+ *
-+ * A domain that cannot install a PMD leaf is declined. The whole benefit
-+ * is the single large PTE; without it a 2M page would cost 512 4KB PTEs, which
-+ * is worse than not pooling.
-+ *
-+ * Locking: Acquires @dma_pmd_domains_lock (irqsave). Callable from the DMA
-+ *          map path, so it never sleeps.
-+ *
-+ * Return: 0 if @win is usable on return, negative otherwise.
-+ */
-+int dma_pmd_window_assign(struct device *dev, struct iommu_domain *domain,
-+			  struct dma_pmd_window *win)
++/* Provide a contiguous IOVA range for allocations */
++static int dma_pmd_arena_map_domain(struct device *dev, struct iommu_domain *domain,
++				    struct dma_pmd_window *win, struct dma_pmd_meta *m)
 +{
-+	u64 size = ALIGN(PFN_PHYS(dma_pmd_top_pfn()), PMD_SIZE);
++	unsigned int domain_idx;
 +	unsigned long flags;
-+	int idx, ret = 0;
-+	dma_addr_t base;
++	dma_addr_t iova;
++	int prot, ret;
++	u64 limit;
 +
-+	if (!dev_is_dma_coherent(dev))
-+		return -EOPNOTSUPP;
++	if (!domain)
++		return 0;
 +
-+	if (min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <= DMA_BIT_MASK(32))
++	iova = win->base + dma_pmd_meta_win_offset(m);
++	limit = min_not_zero(dma_get_mask(dev), dev->bus_dma_limit);
++	if (iova + PMD_SIZE - 1 > limit)
 +		return -ENOSPC;
 +
-+	spin_lock_irqsave(&dma_pmd_domains_lock, flags);
++	domain_idx = win->domain_idx - DMA_PMD_IDX_FIRST;
++	if (test_bit(domain_idx, &m->domains_mapped))
++		return 0;
 +
-+	if (win->size)				/* another CPU got here first */
-+		goto out;
-+
-+	/* Declined earlier; only DMA_PMD_IDX_NONE means "not tried yet". */
-+	if (win->domain_idx != DMA_PMD_IDX_NONE) {
-+		ret = win->domain_idx == DMA_PMD_IDX_NOHUGE ? -EOPNOTSUPP : -ENOSPC;
-+		goto out;
++	prot = dma_info_to_prot(DMA_BIDIRECTIONAL, true, 0);
++	spin_lock_irqsave(&m->map_lock, flags);
++	if (test_bit(domain_idx, &m->domains_mapped)) {
++		ret = 0;
++	} else if (unlikely(!dma_pmd_domain_active(domain_idx, domain))) {
++		ret = -ENODEV;
++	} else {
++		ret = iommu_map(domain, iova, page_to_phys(m->arena_page),
++				PMD_SIZE, prot, GFP_ATOMIC);
++		if (!ret) {
++			/* Ensure the leaf PTE is visible before setting the bit. */
++			smp_mb__before_atomic();
++			set_bit(domain_idx, &m->domains_mapped);
++		}
 +	}
-+
-+	if (!(domain->pgsize_bitmap & PMD_SIZE)) {
-+		dev_warn_ratelimited(dev,
-+				     "dma_pmd: domain lacks a %luMB page size, not pooling\n",
-+				     (unsigned long)(PMD_SIZE >> 20));
-+		ret = -EOPNOTSUPP;
-+		goto decline_nohuge;
-+	}
-+
-+	for (idx = 0; idx < DMA_PMD_MAX_DOMAINS; idx++) {
-+		if (!dma_pmd_domains[idx].domain && !dma_pmd_domains[idx].draining)
-+			break;
-+	}
-+	if (idx == DMA_PMD_MAX_DOMAINS) {
-+		pr_warn_ratelimited("dma_pmd: all %d domain indices in use, not pooling for domain %p\n",
-+				    DMA_PMD_MAX_DOMAINS, domain);
-+		ret = -ENOSPC;
-+		goto decline;
-+	}
-+
-+	base = dma_pmd_dma_window_alloc(dev, domain, &size);
-+	if (!base) {
-+		dev_warn_ratelimited(dev,
-+				     "dma_pmd: no free %llu GB IOVA range for a DMA_PMD window\n",
-+				     size >> 30);
-+		ret = -ENOSPC;
-+		goto decline;
-+	}
-+
-+	dma_pmd_domains[idx].domain = domain;
-+	dma_pmd_domains[idx].base = base;
-+	win->base = base;
-+	win->domain_idx = idx + DMA_PMD_IDX_FIRST;
-+	/*
-+	 * Publish .base and .domain_idx before .size. A non-zero .size is what
-+	 * tells both the map and the unmap side that the other two are valid;
-+	 * see dma_pmd_window_owns().
-+	 */
-+	smp_store_release(&win->size, size);
-+
-+	dev_info(dev, "dma_pmd: domain %p index %d window %pad + %llu GB\n",
-+		 domain, idx, &base, size >> 30);
-+	goto out;
-+
-+decline_nohuge:
-+	win->domain_idx = DMA_PMD_IDX_NOHUGE;
-+	goto out;
-+
-+decline:
-+	win->domain_idx = DMA_PMD_IDX_NOSPACE;
-+out:
-+	spin_unlock_irqrestore(&dma_pmd_domains_lock, flags);
++	spin_unlock_irqrestore(&m->map_lock, flags);
 +	return ret;
 +}
 +
 +/**
-+ * dma_pmd_dma_map_phys - Derive the IOVA of a pool address, mapping if needed
-+ * @dev: Device performing DMA
-+ * @domain: @dev's DMA domain
-+ * @win: @domain's DMA_PMD window, from its DMA cookie
-+ * @phys: Physical address within a DMA_PMD page
-+ * @size: Mapping size requested
-+ * @prot: IOMMU protection flags requested by the caller
-+ * @dma_mask: Device DMA mask
++ * dma_pmd_arena_free - Unreserve blocks in an ARENA_REGION allocation
++ * @dev: Device passed to dma_free_coherent()
++ * @size: Size of the allocation being freed
++ * @cpu_addr: CPU virtual address passed to dma_free_coherent()
++ * @dma: DMA address passed to dma_free_coherent()
 + *
-+ * The IOVA is not allocated or cached: it is @win->base plus the PMD page's
-+ * physical address, so every block of every PMD page has a fixed
-+ * address in this domain that both this function and the unmap path can
-+ * compute. All the PMD page has to remember is whether the PMD leaf PTE has
-+ * actually been installed here, which is one bit in @meta->domains_mapped.
-+ *
-+ * The PMD page is mapped with IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE so that
-+ * blocks can be used in any DMA direction. Callers requesting additional
-+ * protection flags in @prot fall back to per-buffer mapping.
-+ *
-+ * Cost:
-+ *   - Fast path: O(1) lockless - one bit test and an add. No IOVA tree, no
-+ *     page table, and no metadata load beyond the bitmask word.
-+ *   - First use of a PMD page in a domain: one iommu_map() of the whole PMD
-+ *     page, once, under @meta->map_lock.
-+ * Locking: Fast path is lockless. Slow path acquires @meta->map_lock
-+ *          (irqsave), and @dma_pmd_domains_lock on the very first PMD page
-+ *          mapped through @domain.
-+ * Frequency: Very high (called on every dma_map_page / dma_map_single for
-+ *            buffers allocated from an dma_pmd_pool).
-+ *
-+ * Return: Mapped IOVA, or DMA_MAPPING_ERROR on failure.
++ * Return: true if @dma belonged to ARENA_REGION and was freed.
 + */
-+dma_addr_t dma_pmd_dma_map_phys(struct device *dev, struct iommu_domain *domain,
-+				struct dma_pmd_window *win, phys_addr_t phys,
-+				size_t size, int prot, u64 dma_mask)
++bool dma_pmd_arena_free(struct device *dev, size_t size, void *cpu_addr, dma_addr_t dma)
 +{
-+	int block_prot = IOMMU_CACHE | IOMMU_READ | IOMMU_WRITE;
-+	unsigned long pfn = phys >> PAGE_SHIFT;
-+	struct dma_pmd_meta *meta;
-+	unsigned int domain_idx;
++	unsigned int slot, off, nblocks, bpp = DMA_PMD_BLOCKS(0);
++	struct iommu_domain *domain;
++	struct dma_pmd_window *win;
++	dma_addr_t arena_base;
 +	unsigned long flags;
-+	dma_addr_t iova;
-+	u64 win_size;
-+	int ret;
 +
-+	if (unlikely((prot & ~block_prot) || !dev_is_dma_coherent(dev) ||
-+		     !dma_is_pmd_page(pfn) || (phys & (PMD_SIZE - 1)) + size > PMD_SIZE))
-+		return DMA_MAPPING_ERROR;
++	if (!dev || !cpu_addr)
++		return false;
 +
-+	meta = dma_pmd_meta_of_pfn(pfn);
++	if (!dma_pmd_meta_base())
++		return false;
 +
-+	/* Acquire pairs with the .size release in dma_pmd_window_assign(). */
-+	win_size = smp_load_acquire(&win->size);
-+
-+	if (unlikely(!win_size)) {
-+		u16 win_idx = READ_ONCE(win->domain_idx);
-+
-+		/*
-+		 * A declined domain stays declined, so the answer is cached in
-+		 * @domain_idx and read without @dma_pmd_domains_lock. Otherwise
-+		 * every map through such a domain would queue on a global
-+		 * spinlock only to be told no.
-+		 */
-+		if (unlikely(win_idx == DMA_PMD_IDX_NOHUGE))
-+			ret = -EOPNOTSUPP;
-+		else if (unlikely(win_idx == DMA_PMD_IDX_NOSPACE))
-+			ret = -ENOSPC;
-+		else
-+			ret = dma_pmd_window_assign(dev, domain, win);
-+
-+		if (ret)
-+			return DMA_MAPPING_ERROR;
-+		win_size = READ_ONCE(win->size);
++	if (dev->iommu_group) {
++		domain = iommu_get_dma_domain(dev);
++		win = domain ? dma_pmd_dma_window(domain) : NULL;
++		/* Pairs with smp_store_release() in dma_pmd_window_assign(). */
++		if (!win || !smp_load_acquire(&win->size))
++			return false;
++		arena_base = win->base;
++	} else if (IS_ENABLED(CONFIG_DMA_PMD_META_KUNIT_TEST)) {
++		/* Reachable only from KUnit tests with a dummy device. */
++		arena_base = 0;
++	} else {
++		return false;
 +	}
 +
-+	iova = dma_pmd_window_iova(win, phys);
++	if (dma < arena_base || dma - arena_base >= ARENA_REGION_SIZE)
++		return false;
++
++	if (is_vmalloc_addr(cpu_addr)) {
++		kvfree(dma_common_find_pages(cpu_addr));
++		dma_common_free_remap(cpu_addr, size);
++	}
++
++	slot = (dma - arena_base) >> PMD_SHIFT;
++	off = ((dma - arena_base) & (PMD_SIZE - 1)) >> PAGE_SHIFT;
++	nblocks = ALIGN(size, PAGE_SIZE) >> PAGE_SHIFT;
++
++	while (nblocks > 0 && slot < DMA_PMD_ARENA_PAGES) {
++		struct dma_pmd_meta *m = dma_pmd_arena_meta(slot);
++		unsigned int n = min(nblocks, bpp - off);
++		struct page *free_page = NULL;
++
++		spin_lock_irqsave(&dma_pmd_arena.lock, flags);
++		if (!WARN_ON_ONCE(!m->arena_page)) {
++			bitmap_clear(m->free_bitmap, off, n);
++			m->nr_free += n;
++			if (m->nr_free == bpp) {
++				free_page = m->arena_page;
++				m->arena_page = NULL;
++				m->nr_free = 0;
++				__clear_bit(slot, dma_pmd_arena.partial_empty);
++			} else {
++				__set_bit(slot, dma_pmd_arena.partial_empty);
++			}
++		}
++		spin_unlock_irqrestore(&dma_pmd_arena.lock, flags);
++
++		if (free_page) {
++			dma_pmd_unmap_all(m);
++			__free_pages(free_page, PMD_ORDER);
++			spin_lock_irqsave(&dma_pmd_arena.lock, flags);
++			__set_bit(slot, dma_pmd_arena.fully_empty);
++			spin_unlock_irqrestore(&dma_pmd_arena.lock, flags);
++		}
++
++		nblocks -= n;
++		off = 0;
++		slot++;
++	}
++
++	return true;
++}
++EXPORT_SYMBOL(dma_pmd_arena_free);
++
++/**
++ * dma_pmd_arena_alloc - Carve a DMA-mapped buffer out of ARENA_REGION
++ * @dev: Device the buffer is allocated and mapped for
++ * @size: Requested size, rounded up to 4KB
++ * @dma: Out parameter, DMA address of the returned buffer in ARENA_REGION
++ * @node: Preferred NUMA node, or NUMA_NO_NODE for the device's own node
++ *
++ * Locking: Acquires @dma_pmd_arena.lock (irqsave) when searching or updating
++ *          slot bitmaps.
++ *
++ * Return: Kernel virtual address of the zeroed buffer, or NULL if the caller
++ *         should fall back to its own allocation (e.g. dma_alloc_coherent()).
++ */
++void *dma_pmd_arena_alloc(struct device *dev, size_t size, dma_addr_t *dma, int node)
++{
++	unsigned int npages, nblocks, slot, i, bpp = DMA_PMD_BLOCKS(0);
++	unsigned long *bitmap = dma_pmd_arena.fully_empty;
++	struct iommu_domain *domain;
++	struct dma_pmd_window *win;
++	dma_addr_t arena_base;
++	unsigned long flags;
++	void *va;
++
++	if (!dev || (!dev->iommu_group && !IS_ENABLED(CONFIG_DMA_PMD_META_KUNIT_TEST)))
++		return NULL;
++
++	if (node == NUMA_NO_NODE)
++		node = dev_to_node(dev);
++
++	size = ALIGN(size, PAGE_SIZE);
++	if (!size || size > ARENA_REGION_SIZE)
++		return NULL;
++
++	domain = dev->iommu_group ? iommu_get_dma_domain(dev) : NULL;
++	win = domain ? dma_pmd_dma_window(domain) : NULL;
++	if (dev->iommu_group && (!win || !(domain->pgsize_bitmap & PMD_SIZE)))
++		goto err_fallback;
++
++	if (unlikely(dma_pmd_meta_init()))
++		goto err_fallback;
++
++	/* Pairs with smp_store_release() in dma_pmd_window_assign(). */
++	if (win && !smp_load_acquire(&win->size) &&
++	    (READ_ONCE(win->domain_idx) != DMA_PMD_IDX_NONE ||
++	     dma_pmd_window_assign(dev, domain, win)))
++		goto err_fallback;
++
++	arena_base = win ? win->base : 0;
++	nblocks = size >> PAGE_SHIFT;
 +
 +	/*
-+	 * The window was sized against the first device to pool through this
-+	 * domain (and may have been clamped to the domain aperture). Mirror
-+	 * __iommu_dma_map() and bound by the window size, bus limit, and
-+	 * device mask.
++	 * Allocations <= 1MB first try partially empty pages already mapped in
++	 * @domain (arena PMD pages are single-domain and never shared across
++	 * IOMMU domains).
 +	 */
-+	if (unlikely(iova - win->base + size > win_size ||
-+		     iova + size - 1 > min_not_zero(dma_mask, dev->bus_dma_limit)))
-+		return DMA_MAPPING_ERROR;
++	if (size <= SZ_1M) {
++		unsigned long domain_mask = win ? BIT(win->domain_idx - DMA_PMD_IDX_FIRST) : 0;
++		u64 limit = min_not_zero(dma_get_mask(dev), dev->bus_dma_limit);
 +
-+	domain_idx = win->domain_idx - DMA_PMD_IDX_FIRST;
-+	if (likely(test_bit(domain_idx, &meta->domains_mapped)))
-+		return iova;
++		spin_lock_irqsave(&dma_pmd_arena.lock, flags);
++		for_each_set_bit(slot, dma_pmd_arena.partial_empty, DMA_PMD_ARENA_PAGES) {
++			struct dma_pmd_meta *m = dma_pmd_arena_meta(slot);
++			unsigned long off;
 +
-+	/* First use of this PMD page in this domain: install the leaf PTE. */
-+	spin_lock_irqsave(&meta->map_lock, flags);
-+	if (test_bit(domain_idx, &meta->domains_mapped)) {
-+		/* raced, someone else mapped */
-+		ret = 0;
-+	} else {
-+		ret = iommu_map(domain,
-+				dma_pmd_window_iova(win, dma_pmd_meta_to_phys(meta)),
-+				dma_pmd_meta_to_phys(meta), PMD_SIZE,
-+				block_prot, GFP_ATOMIC);
-+		if (!ret) {
-+			/*
-+			 * A lockless reader that sees this bit skips the
-+			 * iommu_map() above and hands the IOVA straight to the
-+			 * device, so the leaf PTE has to be visible first.
-+			 * set_bit() carries no ordering of its own on a weakly
-+			 * ordered machine; the barrier is a no-op on x86,
-+			 * where the LOCK prefix already provides it.
-+			 */
-+			smp_mb__before_atomic();
-+			set_bit(domain_idx, &meta->domains_mapped);
++			if (READ_ONCE(m->domains_mapped) != domain_mask ||
++			    (domain &&
++			     arena_base + ((dma_addr_t)(slot + 1) << PMD_SHIFT) - 1 > limit))
++				continue;
++			if (m->nr_free < nblocks)
++				continue;
++
++			off = bitmap_find_next_zero_area(m->free_bitmap, bpp, 0, nblocks,
++							 (1UL << get_order(size)) - 1);
++			if (off >= bpp)
++				continue;
++
++			bitmap_set(m->free_bitmap, off, nblocks);
++			m->nr_free -= nblocks;
++			if (m->nr_free == 0)
++				__clear_bit(slot, dma_pmd_arena.partial_empty);
++			va = page_address(m->arena_page) + (off << PAGE_SHIFT);
++			*dma = arena_base + ((dma_addr_t)slot << PMD_SHIFT) +
++			       (off << PAGE_SHIFT);
++			spin_unlock_irqrestore(&dma_pmd_arena.lock, flags);
++
++			memset(va, 0, size);
++			return va;
++		}
++		spin_unlock_irqrestore(&dma_pmd_arena.lock, flags);
++	}
++
++	/*
++	 * Allocations > 1MB (or <= 1MB when no partial page fits) look for
++	 * @npages contiguous fully empty pages.
++	 */
++	npages = DIV_ROUND_UP(size, PMD_SIZE);
++	spin_lock_irqsave(&dma_pmd_arena.lock, flags);
++	slot = 0;
++	while (slot + npages <= DMA_PMD_ARENA_PAGES) {
++		unsigned int next_zero;
++
++		slot = find_next_bit(bitmap, DMA_PMD_ARENA_PAGES, slot);
++		if (slot + npages > DMA_PMD_ARENA_PAGES)
++			break;
++		next_zero = find_next_zero_bit(bitmap, slot + npages, slot);
++		if (next_zero >= slot + npages) {
++			bitmap_clear(bitmap, slot, npages);
++			break;
++		}
++		slot = next_zero + 1;
++	}
++	spin_unlock_irqrestore(&dma_pmd_arena.lock, flags);
++
++	if (slot + npages > DMA_PMD_ARENA_PAGES)
++		goto err_fallback;
++
++	for (i = 0; i < npages; i++) {
++		struct dma_pmd_meta *m = dma_pmd_arena_meta(slot + i);
++		gfp_t gfp = GFP_KERNEL | __GFP_ZERO | __GFP_NOWARN;
++		struct page *page;
++
++		page = (node == NUMA_NO_NODE) ? alloc_pages(gfp, PMD_ORDER) :
++			alloc_pages_node(node, gfp, PMD_ORDER);
++		if (!page)
++			goto err_free_pages;
++
++		m->arena_page = page;
++		if (dma_pmd_arena_map_domain(dev, domain, win, m)) {
++			m->arena_page = NULL;
++			__free_pages(page, PMD_ORDER);
++			goto err_free_pages;
 +		}
 +	}
-+	spin_unlock_irqrestore(&meta->map_lock, flags);
 +
-+	if (unlikely(ret))
-+		return DMA_MAPPING_ERROR;
++	va = (npages == 1) ? page_address(dma_pmd_arena_meta(slot)->arena_page) :
++			     dma_pmd_arena_vmap(slot, npages);
++	if (!va)
++		goto err_free_pages;
 +
-+	return iova;
++	spin_lock_irqsave(&dma_pmd_arena.lock, flags);
++	for (i = 0; i < npages; i++) {
++		struct dma_pmd_meta *m = dma_pmd_arena_meta(slot + i);
++		unsigned int n = min(nblocks - i * bpp, bpp);
++
++		bitmap_zero(m->free_bitmap, bpp);
++		bitmap_set(m->free_bitmap, 0, n);
++		m->nr_free = bpp - n;
++		if (m->nr_free > 0)
++			__set_bit(slot + i, dma_pmd_arena.partial_empty);
++	}
++	spin_unlock_irqrestore(&dma_pmd_arena.lock, flags);
++
++	*dma = arena_base + ((dma_addr_t)slot << PMD_SHIFT);
++	return va;
++
++err_free_pages:
++	while (i--) {
++		struct dma_pmd_meta *m = dma_pmd_arena_meta(slot + i);
++		struct page *page = m->arena_page;
++
++		m->arena_page = NULL;
++		dma_pmd_unmap_all(m);
++		__free_pages(page, PMD_ORDER);
++	}
++	spin_lock_irqsave(&dma_pmd_arena.lock, flags);
++	bitmap_set(bitmap, slot, npages);
++	spin_unlock_irqrestore(&dma_pmd_arena.lock, flags);
++err_fallback:
++	return NULL;
 +}
-diff --git a/drivers/iommu/dma-pmd-priv.h b/drivers/iommu/dma-pmd-priv.h
-index 8477a8edfac63..355f865f44057 100644
---- a/drivers/iommu/dma-pmd-priv.h
-+++ b/drivers/iommu/dma-pmd-priv.h
-@@ -2,6 +2,7 @@
- #ifndef _DRIVERS_IOMMU_DMA_PMD_PRIV_H
- #define _DRIVERS_IOMMU_DMA_PMD_PRIV_H
- 
-+#include <linux/dma-mapping.h>
- #include <linux/dma-pmd.h>
- #include <linux/kref.h>
- #include <linux/list.h>
-@@ -10,6 +11,7 @@
- #include <linux/srcu.h>
- #include <linux/types.h>
- 
-+struct device;
- struct iommu_domain;
- 
- /**
-@@ -220,6 +222,22 @@ static inline struct dma_pmd_meta *dma_pmd_meta_base(void)
- 	return smp_load_acquire(&dma_pmd_meta_array);
++EXPORT_SYMBOL(dma_pmd_arena_alloc);
+diff --git a/drivers/iommu/dma-pmd-kunit.c b/drivers/iommu/dma-pmd-kunit.c
+index 7f4251845ba49..b91dbcb468879 100644
+--- a/drivers/iommu/dma-pmd-kunit.c
++++ b/drivers/iommu/dma-pmd-kunit.c
+@@ -166,12 +166,47 @@ static void test_window_helpers(struct kunit *test)
+ 	dma_pmd_pool_destroy(pool);
  }
  
-+/*
-+ * Highest PFN covered by the allocated @dma_pmd_meta_array reservation.
-+ * Every domain's IOVA window is sized to match this bound.
-+ */
-+static inline unsigned long dma_pmd_top_pfn(void)
++static void test_arena_alloc_and_free(struct kunit *test)
 +{
-+	return dma_pmd_meta_nframes << PMD_ORDER;
++	struct device dev = { .numa_node = NUMA_NO_NODE };
++	void *v1, *v2, *v3, *vl1;
++	dma_addr_t d1, d2, d3, dl1;
++
++	KUNIT_EXPECT_NULL(test,
++			  dma_pmd_arena_alloc(NULL, SZ_4K, &d1, NUMA_NO_NODE));
++
++	v1 = dma_pmd_arena_alloc(&dev, SZ_64K, &d1, NUMA_NO_NODE);
++	KUNIT_ASSERT_NOT_NULL(test, v1);
++	v2 = dma_pmd_arena_alloc(&dev, SZ_64K, &d2, NUMA_NO_NODE);
++	KUNIT_ASSERT_NOT_NULL(test, v2);
++	KUNIT_EXPECT_PTR_EQ(test, v2, v1 + SZ_64K);
++	KUNIT_EXPECT_EQ(test, d2, d1 + SZ_64K);
++
++	/* Freeing v1 unreserves [0, 64K); next 64K alloc reuses it. */
++	KUNIT_EXPECT_TRUE(test, dma_pmd_arena_free(&dev, SZ_64K, v1, d1));
++	v3 = dma_pmd_arena_alloc(&dev, SZ_64K, &d3, NUMA_NO_NODE);
++	KUNIT_EXPECT_PTR_EQ(test, v3, v1);
++	KUNIT_EXPECT_EQ(test, d3, d1);
++
++	/*
++	 * Allocate 3MB (spans 2 contiguous fully_empty slots in ARENA_REGION);
++	 * the trailing 1MB in the second slot is marked partial_empty and can
++	 * satisfy a <= 1MB allocation before both are freed.
++	 */
++	vl1 = dma_pmd_arena_alloc(&dev, SZ_2M + SZ_1M, &dl1, NUMA_NO_NODE);
++	KUNIT_ASSERT_NOT_NULL(test, vl1);
++	KUNIT_EXPECT_TRUE(test, dma_pmd_arena_free(&dev, SZ_2M + SZ_1M, vl1, dl1));
++	KUNIT_EXPECT_TRUE(test, dma_pmd_arena_free(&dev, SZ_64K, v2, d2));
++	KUNIT_EXPECT_TRUE(test, dma_pmd_arena_free(&dev, SZ_64K, v3, d3));
 +}
 +
-+/* IOVA of @phys in @win. Only valid once the PMD page's PTE is installed. */
-+static inline dma_addr_t dma_pmd_window_iova(const struct dma_pmd_window *win,
-+					     phys_addr_t phys)
+ static struct kunit_case dma_pmd_meta_test_cases[] = {
+ 	KUNIT_CASE(test_meta_init_and_roundtrip),
+ 	KUNIT_CASE(test_meta_invalid_phys),
+ 	KUNIT_CASE(test_meta_pooled_toggle),
+ 	KUNIT_CASE(test_pool_alloc_and_recycle),
+ 	KUNIT_CASE(test_window_helpers),
++	KUNIT_CASE(test_arena_alloc_and_free),
+ 	{}
+ };
+ 
+diff --git a/drivers/iommu/dma-pmd-map.c b/drivers/iommu/dma-pmd-map.c
+index 565e10dd1a2e8..1147874ac8068 100644
+--- a/drivers/iommu/dma-pmd-map.c
++++ b/drivers/iommu/dma-pmd-map.c
+@@ -51,6 +51,11 @@ static DEFINE_SPINLOCK(dma_pmd_domains_lock);
+  */
+ DEFINE_SRCU(dma_pmd_srcu);
+ 
++bool dma_pmd_domain_active(unsigned int idx, const struct iommu_domain *domain)
 +{
-+	return win->base + phys;
++	return READ_ONCE(dma_pmd_domains[idx].domain) == domain;
 +}
 +
+ /**
+  * dma_pmd_unmap_all - Remove a PMD page's PTE from every domain holding it
+  * @meta: PMD page metadata structure
+@@ -77,7 +82,7 @@ DEFINE_SRCU(dma_pmd_srcu);
+  */
+ void dma_pmd_unmap_all(struct dma_pmd_meta *meta)
+ {
+-	phys_addr_t phys = dma_pmd_meta_to_phys(meta);
++	dma_addr_t offset = dma_pmd_meta_win_offset(meta);
+ 	unsigned long mapped, flags;
+ 	int idx, srcu_idx;
+ 
+@@ -104,7 +109,7 @@ void dma_pmd_unmap_all(struct dma_pmd_meta *meta)
+ 		if (!domain)
+ 			continue;
+ 
+-		iommu_unmap(domain, base + phys, PMD_SIZE);
++		iommu_unmap(domain, base + offset, PMD_SIZE);
+ 	}
+ 	srcu_read_unlock(&dma_pmd_srcu, srcu_idx);
+ }
+@@ -170,6 +175,7 @@ void dma_pmd_domain_release(struct iommu_domain *domain)
+ {
+ 	unsigned int dropped = 0;
+ 	unsigned long flags;
++	unsigned int i;
+ 	int idx;
+ 
+ 	/* Nothing has ever been pooled, so nothing can reference @domain. */
+@@ -199,6 +205,9 @@ void dma_pmd_domain_release(struct iommu_domain *domain)
+ 
+ 	dropped += dma_pmd_pools_forget_domain(idx);
+ 
++	for (i = 0; i < DMA_PMD_ARENA_PAGES; i++)
++		dropped += dma_pmd_forget_domain(dma_pmd_arena_meta(i), idx);
++
+ 	/*
+ 	 * Any PMD page removed from a pool list before the walk above is either
+ 	 * already on @dma_pmd_free_list (placed there under @pool->lock in
+@@ -225,7 +234,7 @@ void dma_pmd_domain_release(struct iommu_domain *domain)
+  * dma_pmd_dma_window_alloc - Allocate an IOVA window for DMA_PMD mappings
+  * @dev: Device whose addressing limits the window must respect
+  * @domain: Domain to take the window from
+- * @size: Window size in bytes
++ * @sizep: In/out window size in bytes
+  *
+  * Allocates a contiguous IOVA range out of @domain's iova_domain on first use,
+  * aligned to PMD_SIZE matching the mapping. Callers on the map path still
+@@ -237,9 +246,9 @@ void dma_pmd_domain_release(struct iommu_domain *domain)
+ static dma_addr_t dma_pmd_dma_window_alloc(struct device *dev,
+ 					   struct iommu_domain *domain, u64 *sizep)
+ {
++	u64 min_size = ARENA_REGION_SIZE + ALIGN(PFN_PHYS(max_pfn), PMD_SIZE);
+ 	u64 limit = min_not_zero(dma_get_mask(dev), dev->bus_dma_limit);
+ 	struct iova_domain *iovad = dma_pmd_dma_iovad(domain);
+-	u64 min_size = ALIGN(PFN_PHYS(max_pfn), PMD_SIZE);
+ 	unsigned long shift, iova_len;
+ 	struct iova *new_iova;
+ 
+@@ -295,7 +304,7 @@ static dma_addr_t dma_pmd_dma_window_alloc(struct device *dev,
+ int dma_pmd_window_assign(struct device *dev, struct iommu_domain *domain,
+ 			  struct dma_pmd_window *win)
+ {
+-	u64 size = ALIGN(PFN_PHYS(dma_pmd_top_pfn()), PMD_SIZE);
++	u64 size = ALIGN(PFN_PHYS(dma_pmd_top_pfn()), PMD_SIZE) + ARENA_REGION_SIZE;
+ 	unsigned long flags;
+ 	int idx, ret = 0;
+ 	dma_addr_t base;
+diff --git a/drivers/iommu/dma-pmd-meta.c b/drivers/iommu/dma-pmd-meta.c
+index 27b8c2568c749..8f2bc7d77e5bd 100644
+--- a/drivers/iommu/dma-pmd-meta.c
++++ b/drivers/iommu/dma-pmd-meta.c
+@@ -186,8 +186,9 @@ static inline bool dma_pmd_pfn_online(unsigned long pfn)
+  *
+  * Return: 0, or -ENOMEM with the range partially backed.
+  */
+-static int dma_pmd_meta_populate(struct dma_pmd_meta *array, unsigned long nframes,
+-				 unsigned long start_pfn, unsigned long end_pfn, bool force)
++static int dma_pmd_meta_populate(struct dma_pmd_meta *array, unsigned long *bitmap,
++				 unsigned long nframes, unsigned long start_pfn,
++				 unsigned long end_pfn, bool force)
+ {
+ 	unsigned long chunk, last, pfn;
+ 
+@@ -208,7 +209,8 @@ static int dma_pmd_meta_populate(struct dma_pmd_meta *array, unsigned long nfram
+ 
+ 		addr = (unsigned long)array + (chunk << PAGE_SHIFT);
+ 		if (vmalloc_to_page((void *)addr)) {
+-			set_bit(chunk, dma_pmd_chunk_bitmap);
++			if (bitmap)
++				set_bit(chunk, bitmap);
+ 			continue;		/* already backed */
+ 		}
+ 
+@@ -247,14 +249,17 @@ static int dma_pmd_meta_populate(struct dma_pmd_meta *array, unsigned long nfram
+ 			 * never leak the page it declined to consume.
+ 			 */
+ 			__free_page(page);
+-			set_bit(chunk, dma_pmd_chunk_bitmap);
++			if (bitmap)
++				set_bit(chunk, bitmap);
+ 			continue;
+ 		}
+ 
+ 		flush_cache_vmap(addr, addr + PAGE_SIZE);
+-		/* Pair with test_bit_acquire() in readers. */
+-		smp_mb__before_atomic();
+-		set_bit(chunk, dma_pmd_chunk_bitmap);
++		if (bitmap) {
++			/* Pair with test_bit_acquire() in readers. */
++			smp_mb__before_atomic();
++			set_bit(chunk, bitmap);
++		}
+ 		dma_pmd_meta_pages++;
+ 	}
+ 
+@@ -273,8 +278,9 @@ bool dma_pmd_meta_ensure_pfn(unsigned long pfn, bool can_block)
+ 		return false;
+ 
+ 	mutex_lock(&dma_pmd_meta_mutex);
+-	ret = dma_pmd_meta_populate(dma_pmd_meta_base(), dma_pmd_meta_nframes,
+-				    pfn, pfn + (1UL << PMD_ORDER), true);
++	ret = dma_pmd_meta_populate(dma_pmd_meta_base(), dma_pmd_chunk_bitmap,
++				    dma_pmd_meta_nframes, pfn,
++				    pfn + (1UL << PMD_ORDER), true);
+ 	mutex_unlock(&dma_pmd_meta_mutex);
+ 
+ 	return !ret;
+@@ -284,18 +290,20 @@ EXPORT_SYMBOL(dma_pmd_meta_ensure_pfn);
+ /**
+  * dma_pmd_meta_init - Reserve and populate the sparse per-PMD metadata array
+  *
+- * Populates all present RAM pages before publishing @dma_pmd_meta_array so
+- * no concurrent reader ever sees an unmapped entry.
++ * Populates all present RAM pages and ARENA_REGION entries before publishing
++ * @dma_pmd_meta_array so no concurrent reader ever sees an unmapped entry.
+  *
+  * Return: 0 on success, or negative errno on failure.
+  */
+ int dma_pmd_meta_init(void)
+ {
+-	unsigned long nframes, nchunks, size;
+-	struct dma_pmd_meta *array;
++	unsigned long nframes, total_frames, nchunks, size, i;
++	struct dma_pmd_meta *raw, *array;
+ 	struct vm_struct *vm;
+ 	int ret = 0;
+ 
++	static_assert(IS_ALIGNED(DMA_PMD_ARENA_PAGES << DMA_PMD_META_SHIFT, PAGE_SIZE));
++
+ 	if (likely(dma_pmd_meta_base()))
+ 		return 0;
+ 
+@@ -308,8 +316,9 @@ int dma_pmd_meta_init(void)
+ 				    (unsigned long)min_t(u64, iomem_resource.end >> PAGE_SHIFT,
+ 							 1ULL << (MAX_PHYSMEM_BITS - PAGE_SHIFT))),
+ 			       1UL << PMD_ORDER);
+-	size = PAGE_ALIGN(nframes << DMA_PMD_META_SHIFT);
+-	nchunks = size >> PAGE_SHIFT;
++	total_frames = DMA_PMD_ARENA_PAGES + nframes;
++	size = PAGE_ALIGN(total_frames << DMA_PMD_META_SHIFT);
++	nchunks = PAGE_ALIGN(nframes << DMA_PMD_META_SHIFT) >> PAGE_SHIFT;
+ 
+ 	dma_pmd_chunk_bitmap = bitmap_zalloc(nchunks, GFP_KERNEL);
+ 	if (!dma_pmd_chunk_bitmap) {
+@@ -324,14 +333,25 @@ int dma_pmd_meta_init(void)
+ 		ret = -ENOMEM;
+ 		goto out_unlock;
+ 	}
+-	array = vm->addr;
+-
+-	ret = dma_pmd_meta_populate(array, nframes, 0, max_pfn, false);
++	raw = vm->addr;
++	array = raw + DMA_PMD_ARENA_PAGES;
++
++	ret = dma_pmd_meta_populate(raw, NULL, DMA_PMD_ARENA_PAGES,
++				    0, DMA_PMD_ARENA_PAGES << PMD_ORDER, true);
++	if (!ret)
++		ret = dma_pmd_meta_populate(array, dma_pmd_chunk_bitmap,
++					    nframes, 0, max_pfn, false);
+ 	if (ret) {
++		unsigned long off, chunk;
+ 		struct page *p, *next;
+-		unsigned long chunk;
+ 		LIST_HEAD(pages);
+ 
++		for (off = 0; off < (DMA_PMD_ARENA_PAGES << DMA_PMD_META_SHIFT);
++		     off += PAGE_SIZE) {
++			p = vmalloc_to_page((void *)raw + off);
++			if (p)
++				list_add(&p->lru, &pages);
++		}
+ 		for_each_set_bit(chunk, dma_pmd_chunk_bitmap, nchunks) {
+ 			p = vmalloc_to_page((void *)array + (chunk << PAGE_SHIFT));
+ 			if (p)
+@@ -348,6 +368,9 @@ int dma_pmd_meta_init(void)
+ 		goto out_unlock;
+ 	}
+ 
++	for (i = 0; i < DMA_PMD_ARENA_PAGES; i++)
++		spin_lock_init(&raw[i].map_lock);
++
+ 	/*
+ 	 * Publish @nframes and the populated pages before the array pointer:
+ 	 * readers pair with smp_load_acquire(&dma_pmd_meta_array).
+diff --git a/drivers/iommu/dma-pmd-priv.h b/drivers/iommu/dma-pmd-priv.h
+index 355f865f44057..b411ecb1fdafc 100644
+--- a/drivers/iommu/dma-pmd-priv.h
++++ b/drivers/iommu/dma-pmd-priv.h
+@@ -16,8 +16,9 @@ struct iommu_domain;
+ 
+ /**
+  * struct dma_pmd_window - A domain's IOVA window reserved for DMA_PMD pages
+- * @base: First IOVA of the window. A page at @phys is mapped, in every domain
+- *        that has a window, at @base + @phys.
++ * @base: First IOVA of the window. The leading ARENA_REGION_SIZE bytes
++ *        [base, base + ARENA_REGION_SIZE) form ARENA_REGION; a pooled RAM
++ *        page at @phys is mapped at @base + ARENA_REGION_SIZE + @phys.
+  * @size: Window size in bytes, or 0 if this domain has no window, either
+  *        because nothing has pooled through it yet, or because it could not
+  *        find a free range that large. 0 must make both the map and the unmap
+@@ -40,6 +41,8 @@ struct dma_pmd_window {
+ #ifdef CONFIG_DMA_PMD
+ 
+ #define DMA_PMD_BLOCKS(order)		(1U << (PMD_ORDER - (order)))
++#define DMA_PMD_ARENA_PAGES		8192U
++#define ARENA_REGION_SIZE		((u64)DMA_PMD_ARENA_PAGES * PMD_SIZE)
+ 
+ /*
+  * Number of IOMMU domains that may use DMA_PMD at once.
+@@ -116,8 +119,9 @@ enum {
+  * @domains_mapped: One bit per domain index: set once this PMD page's leaf
+  *		PTE is installed in that domain.
+  *
+- * Alloc/free fast path, all under pool->lock:
++ * Alloc/free fast path, all under pool->lock (or dma_pmd_arena.lock):
+  * @pool:	Owning dma_pmd_pool (holds a kref on the pool while pooled)
++ * @arena_page:	Allocated 2MB struct page for an ARENA_REGION entry
+  * @list:	Node in pool->partial, pool->idle or pool->full
+  *
+  * Slow path only (disjoint lifetimes):
+@@ -125,11 +129,13 @@ enum {
+  * @rcu:	RCU head used to defer buddy release past lockless readers
+  *
+  * @free_bitmap: Bitmap of zeroed available block indices (up to 1 << PMD_ORDER)
+- * @dirty_bitmap: Bitmap of dirty available block indices
++ *		 for pools, or allocated 4KB blocks for ARENA_REGION entries
++ * @dirty_bitmap: Bitmap of dirty available block indices for pools
+  *
+  * Lives in the sparse per-PMD-frame array @dma_pmd_meta_array indexed by
+- * (pfn >> PMD_ORDER). Only chunks covering valid RAM are backed by physical
+- * pages (128 KB per GB of RAM).
++ * (pfn >> PMD_ORDER), preceded by DMA_PMD_ARENA_PAGES entries for
++ * ARENA_REGION. Only chunks covering valid RAM and ARENA_REGION are backed by
++ * physical pages (128 KB per GB of RAM).
+  */
+ struct dma_pmd_meta {
+ 	bool pooled;
+@@ -139,7 +145,10 @@ struct dma_pmd_meta {
+ 
+ 	unsigned long domains_mapped;
+ 
+-	struct dma_pmd_pool *pool;
++	union {
++		struct dma_pmd_pool *pool;
++		struct page *arena_page;
++	};
+ 	struct list_head list;
+ 
+ 	union {
+@@ -224,18 +233,29 @@ static inline struct dma_pmd_meta *dma_pmd_meta_base(void)
+ 
+ /*
+  * Highest PFN covered by the allocated @dma_pmd_meta_array reservation.
+- * Every domain's IOVA window is sized to match this bound.
++ * Every domain's IOVA window is sized up to this bound.
+  */
+ static inline unsigned long dma_pmd_top_pfn(void)
+ {
+ 	return dma_pmd_meta_nframes << PMD_ORDER;
+ }
+ 
++static inline struct dma_pmd_meta *dma_pmd_arena_meta(unsigned int slot)
++{
++	return (dma_pmd_meta_base() - DMA_PMD_ARENA_PAGES) + slot;
++}
++
+ /* IOVA of @phys in @win. Only valid once the PMD page's PTE is installed. */
+ static inline dma_addr_t dma_pmd_window_iova(const struct dma_pmd_window *win,
+ 					     phys_addr_t phys)
+ {
+-	return win->base + phys;
++	return win->base + ARENA_REGION_SIZE + phys;
++}
++
++/* Offset of @m (either arena or RAM) from the start of a domain's window. */
++static inline dma_addr_t dma_pmd_meta_win_offset(const struct dma_pmd_meta *m)
++{
++	return (dma_addr_t)(m - dma_pmd_arena_meta(0)) << PMD_SHIFT;
+ }
+ 
  int dma_pmd_meta_init(void);
- bool dma_pmd_meta_ensure_pfn(unsigned long pfn, bool can_block);
- struct dma_pmd_meta *dma_pmd_meta_of_pfn(unsigned long pfn);
-@@ -230,6 +248,8 @@ phys_addr_t dma_pmd_meta_to_phys(const struct dma_pmd_meta *m);
- unsigned int dma_pmd_pools_forget_domain(int idx);
- void dma_pmd_unmap_all(struct dma_pmd_meta *meta);
+@@ -250,6 +270,7 @@ void dma_pmd_unmap_all(struct dma_pmd_meta *meta);
  unsigned int dma_pmd_forget_domain(struct dma_pmd_meta *meta, int idx);
-+int dma_pmd_window_assign(struct device *dev, struct iommu_domain *domain,
-+			  struct dma_pmd_window *win);
+ int dma_pmd_window_assign(struct device *dev, struct iommu_domain *domain,
+ 			  struct dma_pmd_window *win);
++bool dma_pmd_domain_active(unsigned int idx, const struct iommu_domain *domain);
  
  static inline bool dma_is_pmd_phys(phys_addr_t phys)
  {
-@@ -255,6 +275,10 @@ static inline bool dma_pmd_window_owns(const struct dma_pmd_window *win, dma_add
- 	return size && dma - win->base < size;
- }
+@@ -281,6 +302,8 @@ dma_addr_t dma_pmd_dma_map_phys(struct device *dev, struct iommu_domain *domain,
  
-+dma_addr_t dma_pmd_dma_map_phys(struct device *dev, struct iommu_domain *domain,
-+				struct dma_pmd_window *win, phys_addr_t phys,
-+				size_t size, int prot, u64 dma_mask);
-+
  void dma_pmd_domain_release(struct iommu_domain *domain);
  
++void *dma_pmd_arena_alloc(struct device *dev, size_t size, dma_addr_t *dma, int node);
++
  #else /* !CONFIG_DMA_PMD */
-@@ -269,6 +293,15 @@ static inline bool dma_pmd_window_owns(const struct dma_pmd_window *win, dma_add
+ 
+ static inline bool dma_is_pmd_phys(phys_addr_t phys)
+diff --git a/include/linux/dma-pmd.h b/include/linux/dma-pmd.h
+index 085d9a730c278..55c770fe232b0 100644
+--- a/include/linux/dma-pmd.h
++++ b/include/linux/dma-pmd.h
+@@ -95,6 +95,9 @@ static inline struct page *dma_pmd_pool_alloc(struct dma_pmd_pool *pool, gfp_t g
+ }
+ bool dma_pmd_pool_has_free(struct dma_pmd_pool *pool);
+ 
++/* Hooks for kernel/dma/mapping.c */
++bool dma_pmd_arena_free(struct device *dev, size_t size, void *cpu_addr, dma_addr_t dma);
++
+ #else /* !CONFIG_DMA_PMD */
+ 
+ static inline bool dma_is_pmd_page(unsigned long pfn)
+@@ -141,5 +144,11 @@ static inline bool dma_pmd_pool_has_free(struct dma_pmd_pool *pool)
  	return false;
  }
  
-+static inline dma_addr_t dma_pmd_dma_map_phys(struct device *dev,
-+					      struct iommu_domain *domain,
-+					      struct dma_pmd_window *win,
-+					      phys_addr_t phys, size_t size,
-+					      int prot, u64 dma_mask)
++static inline bool dma_pmd_arena_free(struct device *dev, size_t size,
++				      void *cpu_addr, dma_addr_t dma)
 +{
-+	return DMA_MAPPING_ERROR;
++	return false;
 +}
 +
- static inline void dma_pmd_domain_release(struct iommu_domain *domain)
- {
- }
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cd1bca7ede9af..d918d1294eb0d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2867,7 +2867,7 @@ ssize_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
- 	while (i <= nents) {
- 		phys_addr_t s_phys = sg_phys(sg);
- 
--		if (len && s_phys != start + len) {
-+		if (len && (sg_dma_is_bus_address(sg) || s_phys != start + len)) {
- 			ret = iommu_map_nosync(domain, iova + mapped, start,
- 					len, prot, gfp);
- 			if (ret)
+ #endif /* CONFIG_DMA_PMD */
+ #endif /* _LINUX_DMA_PMD_H */
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
 
