@@ -1,56 +1,56 @@
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B9DC49DB96
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:23:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.72
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B445F49BD9F
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:23:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.69
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791062586; cv=none; b=lOhYdvq58Y92xJmrkqzNU0RJVMEVeuPlQIFZBa5QYQKKHhEcE5cpyJn35DBGe7HYwrVwZY4qvg5pR+ogkjE/A0cBbvH9007/o1Tu/w/tCDdwDeSKIvxuGGCZg1+6Fm4MrLCk8G6RTjlVo6QWXGzy3k/UdwUf0OHDbZQueIKtskY=
+	t=1791062591; cv=none; b=uN0HeOrcbZigPcMXWyZ9RSB+cRFrdqKTeA7ZRVALoPNBhtFxiaw/eLu8TejGOF0IEcPvVKzAjpkdE6IWhuHW7445nwSqI6V6RLQ1NUZSKHOEgKKiv5RWtilJpP7FSKgGtQ06YuTOchHcLJeHMSmasldcqPcg7/6NhZ/f7hr86hM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791062586; c=relaxed/simple;
-	bh=HZezqFHG4CfZ5iR0/LZ0zdzG9lX8598jo6XwAPIqyoA=;
+	s=arc-20240116; t=1791062591; c=relaxed/simple;
+	bh=aRhPkQ0AujSti8lSbFZvdZ/I9EYR/iIXHu//HkeGLmw=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=dVMejLBvg11YCZoQDDM7GqzTzNhQMLNHh9BJrojZa3CTOXM+SET3dZBoxcwsT46JPKCDCW99eHbVYKRLxTS327FfazpqP8H8H+onCYgtu0dUUUK8Vq8dcocE9bc2hWhcN3dAYM+71W62ULJCwrIzxyivoyn8fUf2JA26H1YIWqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=AHPymgSU; arc=none smtp.client-ip=209.85.218.72
+	 To:Cc:Content-Type; b=ff20VmbgtvjPn+dng4xpPgspv6JPswcmsjNAkwpFgBkFIR70jyRbHUSiAsFbrrEBybdZIzs12jwCcsLfi4TJmUUJST9OfmezefIQQjCUlhLHyg0jQIJ0K4vNtFDjb0OR7Tl4x6LD1a2pJV3vOWVKVELGo8nG1LxAa1QLdYkG2ls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tKX6zwJP; arc=none smtp.client-ip=209.85.208.69
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="AHPymgSU"
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c2e47a584edso110016966b.3
-        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:23:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tKX6zwJP"
+Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-6ae18a3adaeso964746a12.0
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:23:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791062580; x=1791667380; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1791062584; x=1791667384; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=GInLAF6QzIbkn/554tL70qj8kbEMjqAAjjITOwkojYs=;
-        b=AHPymgSU7DwS1d4nA8hNIR9M1RumwdzDmHiYugoARXxVnScbzUZCdN4PE9Zzntqwbp
-         zdHl/KQIipDK+MiRBbceqjJTpAhB6x7uBOrv5ZDWlksn1vsQ6/ijVdC0CcFBFnGIZku+
-         JPAjk7iShKu+qjq4m26UZfmqQOu6rCx/On/VrF2D0oaih34zIQG02FBkRR/4c95U5gci
-         xcrZvmvvotdfxIsgDG/3FTQqa7EmsbNahFcTuxBvWUyBaQvoAX9ksxfab+WI9TfMVPiC
-         LhLv/65keQII1db8cDE/9PERq57zgQ7Q52RkckQf+ZZsyYST9CuKpKEaWm3BtHloEgNq
-         mH7Q==
+        bh=A8y+NqNGWEVo5m0sdN+ejiIJNOP7rTpNObbOwi7GoT0=;
+        b=tKX6zwJP+MDcthDvtJ54+VnN+tAwEQouZW7DLmC57EFbmvFpoW56l85czeUs7nA95U
+         WGztpsCrDGpzYu3m49nGUi7Zg4BIJeZ4zq+Hg+yIv3AaiJbUolX7LufuSlvuT17fA9yd
+         wKkUpcqFhoInOOmDarnWFanh8Vf10Bi90cFyadMGjI5JKYTaGc0y6Y7PH+4Wvg5yDWJQ
+         0EV+w9n+xz1dIURHHwBc77RIuKE5npwpUiUpFNmPed1BqmhJsgG0g0ld48yXKEy9pkRt
+         BzNcgd8iTjv2NBwJw2QAp+F0SlxSD4OaLQTzP3TbjHFjM/0gdgmfWzi/aUvMe0syShbk
+         T3/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791062580; x=1791667380;
+        d=1e100.net; s=20260707; t=1791062584; x=1791667384;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=GInLAF6QzIbkn/554tL70qj8kbEMjqAAjjITOwkojYs=;
-        b=IG/kzytBx2OG3NgyiEjxZvCQ+sc720uH1W951CGiwny8GwSAAf4zCmIY0+3HaWESUH
-         Cg0s4P15VQR4+e3kqbZlxaKg21OTVgm0O3oft6fUCYl2mSrjyqOHc22ojg/XI2napGlc
-         u1B212Ia5i9NCagaaegh1cjwtqY5I6dNONUFZuHENhtpYTq9EVL25QxyZfzfVwiweh1r
-         51wyfDVb5bj7X8g1GrTUbcC9uNBYL06WVW296rVW5UlqMLzkWFpoNgjMCTnnR0aBz4qU
-         ofcPBdPPiHMukIhyjB80Q9WJZ290ekTe7bhNFJANhaRN9pxeq0PbeRiZeQgseXYX8etv
-         epQQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwxPnAvBxHlPHosxM73leqsqPE5o0N1MS1d870MJjyxS5sDNE1Uet/yS6WrxuP3wWC4Xctu1w==@lists.linux.dev
-X-Gm-Message-State: AFuF++kXuaIurFc+sm0OM+5NizK02B0Z/Q4KYnDnBquDroNCp4LyWlzy
-	qwLVKjgDhyoAO2+8r8B2KZhDfSc2lIe/P5Nj6vyxlwd/HgELZldwCH5AJLVxAm5AJxf/gq2UHpU
-	SXan/Sw==
-X-Received: from ejyb21.prod.google.com ([2002:a17:906:8355:b0:c2e:2022:87e8])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:c011:b0:c2e:4e08:19b4
- with SMTP id a640c23a62f3a-c2e6e9c9fd6mr253423166b.3.1791062579466; Sat, 03
- Oct 2026 14:22:59 -0700 (PDT)
-Date: Sat,  3 Oct 2026 21:22:29 +0000
+        bh=A8y+NqNGWEVo5m0sdN+ejiIJNOP7rTpNObbOwi7GoT0=;
+        b=DvY+jKJWZobsbAuZlVdVtP0TlVbzHOvah8Chx4a2h5E6HilaKwUbqbTT7mFk98ZOGC
+         yxIWVD2tH7CFtiJOBg87aLqXK70X08z4SuugnOpveOzRDL38syLlhTyoCDaxqKClAWSb
+         1VaB/cg9hd/c0/rSePE9d5qBo7OTijXmDCwVLyEyqmMjuJApFSvf4rlHBFaaLywMYgeb
+         CSf7taGeHT8DmdBeWOW0L7IWQLpfdOfWSRO1zk8ZVwUnnPHXHcox2cOzoOYPQdvz3GrN
+         A8pX1LJFIMACiBdWv7MCMPqG5Vy8VJl/f3xKU2BVjurQ+mMReJVfxckM026XAQaE6FT9
+         2myQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzDLrwSBv8XVE3XEHfRsicKBC5yzEXmUoqmx7k3Z2I2WnPsRVYdpfG4saCGHXRHagDHjLvfAg==@lists.linux.dev
+X-Gm-Message-State: AFuF++m6QyQy3wgzLBDT32Oo2XMQ+ayYTayM5irUeHxTwpJ/I2zE9BNB
+	WP23aGa3BoUmq9p66niPK+AWO287Ibv5aiPl3IuDmIs4mT88TXqfraHsiiRLk4XkurVYz6z84Vg
+	/czvlqw==
+X-Received: from edse14.prod.google.com ([2002:aa7:d7ce:0:b0:6ae:2c82:36b6])
+ (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:97c7:b0:c2e:22f7:59c5
+ with SMTP id a640c23a62f3a-c2e33ef144dmr845653066b.7.1791062583666; Sat, 03
+ Oct 2026 14:23:03 -0700 (PDT)
+Date: Sat,  3 Oct 2026 21:22:32 +0000
 In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -60,8 +60,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20261003212241.3432303-1-lrizzo@google.com>
 X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261003212241.3432303-11-lrizzo@google.com>
-Subject: [RFC: DMA_PMD 10/22] driver core: Add per-device dma_pmd_* sysfs attributes
+Message-ID: <20261003212241.3432303-14-lrizzo@google.com>
+Subject: [RFC: DMA_PMD 13/22] net/core: Use DMA_PMD for page_pool memory
 From: Luigi Rizzo <lrizzo@google.com>
 To: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
@@ -82,115 +82,178 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafae
 	linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Add four boolean attributes to struct device exposed under
-/sys/devices/*/*/dma_pmd_*:
-  - dma_pmd_rxbuf:   enable DMA_PMD pools for RX buffers / page_pool
-  - dma_pmd_tx_hdrs: enable DMA_PMD pools for TX header bounce buffers
-  - dma_pmd_rings:   enable DMA_PMD arena for coherent rings
-  - dma_pmd_debug:   log coherent DMA alloc timing and arena usage
+When dev->dma_pmd_rxbuf is enabled on the pool device,
+use a per-page_pool DMA_PMD pool for page_pool allocations
+(__page_pool_alloc_netmems_slow() and __page_pool_alloc_page_order()).
 
-These can be used by device drivers to selectively enable DMA_PMD for
-their allocations.
+When enabled, pages leaving the page_pool cache (e.g. held by socket
+buffers beyond NAPI) return to the DMA_PMD pool on final put_page(),
+retaining their cached IOVA mapping, avoiding per-page 4KB IOMMU
+PTE updates and IOTLB flushes on replenishment. Plain 4KB pages are
+opportunistically replaced in __page_pool_page_can_be_recycled() when
+free pooled blocks are available.
+
+Also skip inserting and erasing DMA_PMD pages in the pool->dma_mapped
+XArray (used for DMA_ATTR_SKIP_CPU_SYNC tracking), as dma_unmap_page_attrs()
+is a no-op for DMA_PMD pages and skipping the XArray avoids xa_lock
+contention on refill and release.
 
 Signed-off-by: Luigi Rizzo <lrizzo@google.com>
 ---
- drivers/base/core.c    | 51 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/device.h |  5 +++++
- 2 files changed, 56 insertions(+)
+ include/net/page_pool/types.h |  3 ++
+ net/core/page_pool.c          | 61 ++++++++++++++++++++++++++++-------
+ 2 files changed, 52 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 4c0c373998a19..f8c3c42d84b8d 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -2905,6 +2905,43 @@ static ssize_t removable_show(struct device *dev, const struct device_attribute
- }
- static const DEVICE_ATTR_RO(removable);
+diff --git a/include/net/page_pool/types.h b/include/net/page_pool/types.h
+index 03da138722f58..62a5c50dda43f 100644
+--- a/include/net/page_pool/types.h
++++ b/include/net/page_pool/types.h
+@@ -34,6 +34,8 @@
+ #define PP_FLAG_ALL		(PP_FLAG_DMA_MAP | PP_FLAG_DMA_SYNC_DEV | \
+ 				 PP_FLAG_SYSTEM_POOL | PP_FLAG_ALLOW_UNREADABLE_NETMEM)
  
-+/* Per-device configuration to selectively enable DMA_PMD */
-+#define DMA_PMD_BOOL_ATTR(name)						\
-+static ssize_t name##_show(struct device *dev,				\
-+			   struct device_attribute *attr, char *buf)	\
-+{									\
-+	return sysfs_emit(buf, "%u\n", READ_ONCE(dev->name));		\
-+}									\
-+static ssize_t name##_store(struct device *dev,				\
-+			    struct device_attribute *attr,		\
-+			    const char *buf, size_t count)		\
-+{									\
-+	bool val;							\
-+	int ret = kstrtobool(buf, &val);				\
-+	if (ret < 0)							\
-+		return ret;						\
-+	WRITE_ONCE(dev->name, val);					\
-+	return count;							\
-+}									\
-+static DEVICE_ATTR_RW(name)
++struct dma_pmd_pool;
 +
-+DMA_PMD_BOOL_ATTR(dma_pmd_rxbuf);
-+DMA_PMD_BOOL_ATTR(dma_pmd_tx_hdrs);
-+DMA_PMD_BOOL_ATTR(dma_pmd_rings);
-+DMA_PMD_BOOL_ATTR(dma_pmd_debug);
-+
-+static struct attribute *dev_attr_dma_pmd[] = {
-+	&dev_attr_dma_pmd_rxbuf.attr,
-+	&dev_attr_dma_pmd_tx_hdrs.attr,
-+	&dev_attr_dma_pmd_rings.attr,
-+	&dev_attr_dma_pmd_debug.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group dev_attr_dma_pmd_group = {
-+	.attrs = dev_attr_dma_pmd,
-+};
-+
- int device_add_groups(struct device *dev,
- 		      const struct attribute_group *const *groups)
- {
-@@ -3012,8 +3049,20 @@ static int device_add_attrs(struct device *dev)
- 			goto err_remove_dev_removable;
+ /* Index limit to stay within PP_DMA_INDEX_BITS for DMA indices */
+ #define PP_DMA_INDEX_LIMIT XA_LIMIT(1, BIT(PP_DMA_INDEX_BITS) - 1)
+ 
+@@ -234,6 +236,7 @@ struct page_pool {
+ 
+ 	void *mp_priv;
+ 	const struct memory_provider_ops *mp_ops;
++	struct dma_pmd_pool *dma_pmd_pool;
+ 
+ 	struct xarray dma_mapped;
+ 
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index d7c88c0b67e53..5774247a06291 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -22,6 +22,7 @@
+ #include <linux/page-flags.h>
+ #include <linux/mm.h> /* for put_page() */
+ #include <linux/poison.h>
++#include <linux/dma-pmd.h>
+ #include <linux/ethtool.h>
+ #include <linux/netdevice.h>
+ 
+@@ -304,6 +305,10 @@ static int page_pool_init(struct page_pool *pool,
+ 		goto free_ptr_ring;
  	}
  
-+	if (dev->dma_mask) {
-+		error = device_add_group(dev, &dev_attr_dma_pmd_group);
-+		if (error)
-+			goto err_remove_dev_physical_location;
-+	}
++	if (pool->dma_map && pool->p.dev && !pool->mp_ops &&
++	    READ_ONCE(pool->p.dev->dma_pmd_rxbuf))
++		pool->dma_pmd_pool = dma_pmd_pool_create(pool->p.order, 8);
 +
  	return 0;
  
-+ err_remove_dev_physical_location:
-+	if (dev->physical_location) {
-+		device_remove_group(dev, &dev_attr_physical_location_group);
-+		kfree(dev->physical_location);
-+		dev->physical_location = NULL;
+ free_ptr_ring:
+@@ -318,6 +323,7 @@ static int page_pool_init(struct page_pool *pool,
+ 
+ static void page_pool_uninit(struct page_pool *pool)
+ {
++	pool->dma_pmd_pool = dma_pmd_pool_destroy(pool->dma_pmd_pool);
+ 	ptr_ring_cleanup(&pool->ring, NULL);
+ 	xa_destroy(&pool->dma_mapped);
+ 
+@@ -406,7 +412,9 @@ static noinline netmem_ref page_pool_refill_alloc_cache(struct page_pool *pool)
+ 		if (unlikely(!netmem))
+ 			break;
+ 
+-		if (likely(netmem_is_pref_nid(netmem, pref_nid))) {
++		if (likely(netmem_is_pref_nid(netmem, pref_nid)) ||
++		    (pool->dma_pmd_pool &&
++		     dma_is_pmd_page(page_to_pfn(netmem_to_page(netmem))))) {
+ 			pool->alloc.cache[pool->alloc.count++] = netmem;
+ 		} else {
+ 			/* NUMA mismatch;
+@@ -565,9 +573,20 @@ static bool page_pool_dma_map(struct page_pool *pool, netmem_ref netmem, gfp_t g
+ 		goto unmap_failed;
+ 	}
+ 
+-	err = page_pool_register_dma_index(pool, netmem, gfp);
+-	if (err)
+-		goto unset_failed;
++	/*
++	 * DMA_PMD mappings are owned by dma_pmd_pool (and torn down on pool or
++	 * IOMMU domain release without pool->p.dev), not unmapped per-page in
++	 * page_pool_scrub(). Leave dma_index == 0 so page_pool_release_dma_index()
++	 * skips dma_unmap_page_attrs() without dereferencing pool->p.dev on
++	 * late returns after device removal.
++	 */
++	if (pool->dma_pmd_pool && dma_is_pmd_dma(pool->p.dev, dma)) {
++		netmem_set_dma_index(netmem, 0);
++	} else {
++		err = page_pool_register_dma_index(pool, netmem, gfp);
++		if (err)
++			goto unset_failed;
 +	}
-  err_remove_dev_removable:
- 	device_remove_file(dev, &dev_attr_removable);
-  err_remove_dev_waiting_for_supplier:
-@@ -3037,6 +3086,8 @@ static void device_remove_attrs(struct device *dev)
- 	const struct class *class = dev->class;
- 	const struct device_type *type = dev->type;
  
-+	device_remove_group(dev, &dev_attr_dma_pmd_group);
+ 	page_pool_dma_sync_for_device(pool, netmem, pool->p.max_len);
+ 
+@@ -585,10 +604,13 @@ static bool page_pool_dma_map(struct page_pool *pool, netmem_ref netmem, gfp_t g
+ static struct page *__page_pool_alloc_page_order(struct page_pool *pool,
+ 						 gfp_t gfp)
+ {
+-	struct page *page;
++	struct page *page = NULL;
+ 
+ 	gfp |= __GFP_COMP;
+-	page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
++	if (pool->dma_pmd_pool)
++		page = dma_pmd_pool_alloc_node(pool->dma_pmd_pool, gfp, pool->p.nid);
++	if (!page)
++		page = alloc_pages_node(pool->p.nid, gfp, pool->p.order);
+ 	if (unlikely(!page))
+ 		return NULL;
+ 
+@@ -634,8 +656,14 @@ static noinline netmem_ref __page_pool_alloc_netmems_slow(struct page_pool *pool
+ 	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk */
+ 	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
+ 
+-	nr_pages = alloc_pages_bulk_node(gfp, pool->p.nid, bulk,
+-					 (struct page **)pool->alloc.cache);
++	nr_pages = 0;
++	if (pool->dma_pmd_pool)
++		nr_pages = dma_pmd_pool_alloc_bulk_node(pool->dma_pmd_pool, gfp,
++							pool->p.nid, bulk,
++							(struct page **)pool->alloc.cache);
++	if (!nr_pages)
++		nr_pages = alloc_pages_bulk_node(gfp, pool->p.nid, bulk,
++						 (struct page **)pool->alloc.cache);
+ 	if (unlikely(!nr_pages))
+ 		return 0;
+ 
+@@ -825,9 +853,18 @@ static bool page_pool_recycle_in_cache(netmem_ref netmem,
+ 
+ static bool __page_pool_page_can_be_recycled(netmem_ref netmem)
+ {
+-	return netmem_is_net_iov(netmem) ||
+-	       (page_ref_count(netmem_to_page(netmem)) == 1 &&
+-		!page_is_pfmemalloc(netmem_to_page(netmem)));
++	struct page *page;
 +
- 	if (dev->physical_location) {
- 		device_remove_group(dev, &dev_attr_physical_location_group);
- 		kfree(dev->physical_location);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index aee79fd6b32b4..52aa4a7e1cc45 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -794,6 +794,11 @@ struct device {
- 
- 	enum device_removable	removable;
- 
-+	bool			dma_pmd_rxbuf;
-+	bool			dma_pmd_tx_hdrs;
-+	bool			dma_pmd_rings;
-+	bool			dma_pmd_debug;
++	if (netmem_is_net_iov(netmem))
++		return true;
 +
- 	DECLARE_BITMAP(flags, DEV_FLAG_COUNT);
- };
++	page = netmem_to_page(netmem);
++	if (page_ref_count(page) != 1 || page_is_pfmemalloc(page))
++		return false;
++	if (page->pp->dma_pmd_pool && !dma_is_pmd_page(page_to_pfn(page)) &&
++	    dma_pmd_pool_has_free(page->pp->dma_pmd_pool))
++		return false;
++	return true;
+ }
+ 
+ /* If the page refcnt == 1, this will try to recycle the page.
+@@ -1178,7 +1215,7 @@ static void page_pool_scrub(struct page_pool *pool)
+ 			 * if there are no outstanding mapped pages.
+ 			 */
+ 			if (dma_dev_need_sync(pool->p.dev) &&
+-			    !xa_empty(&pool->dma_mapped))
++			    (pool->dma_pmd_pool || !xa_empty(&pool->dma_mapped)))
+ 				synchronize_net();
+ 		}
  
 -- 
 2.56.0.rc1.315.gc6ed9934b7-goog
