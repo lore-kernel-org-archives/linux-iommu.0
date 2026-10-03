@@ -1,254 +1,125 @@
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6079D388E43
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 08:10:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.200
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791015034; cv=none; b=EzNCFXNHU8k+prXwHAc56yr3dEGgxXOGIsl2eD5E4UToKz4ADWET85fw1ga6Bb865jYx5OzoDgl6PAZNeFH0M64wbFX3f0TH1b2G5wt5VJQUUkck33TvtB4tVOvvNC2NVUvJa0Hj4vQZfLDBOjrCw1G0Pfvr2vJ11pKucLY3A2A=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791015034; c=relaxed/simple;
-	bh=1GbWSRG1Tg8HTAPfR8tlfIKArNgsa7BAmPF83bDFBl0=;
-	h=MIME-Version:Date:In-Reply-To:Message-ID:Subject:From:To:Cc:
-	 Content-Type; b=oMoqITWmjUju8bGURMv2a+Lvp4KBpwog/WUqc3iTIm41FGfu11oXrTL9ZecXKquENvAHbUqf+WxiNJb8XXhjS4YrkwCLN+If+Xan4w/vIvAfseKpS+GJMlgkIgPL9BWmhkMS4vV5kds4NvRXsyDVbbKF0VBUESEn/6EbUOQsdzk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.167.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4c7f887ac6bso256301b6e.3
-        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 01:10:32 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC071377550
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 08:50:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791017408; cv=pass; b=nGajGkHnEc8JtqVXNT4JsgOGWQM7lTnn1TP9uornG+vslIQfw9oSpSoIOyFe3m0IkdKwysiNEJeJ4lTiobmivc87sPILRSb0qd8sPpR9SAEYReSZiPPrpLgFLEF1X1CVG3DtVgF4DQNokUxt7JlLSRNoFUH3C8l9COFwP2tBlZ4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791017408; c=relaxed/simple;
+	bh=wwEY7S58LLbqNEpta5C1Ecn/2pNosDxbBn3Dvm4v3mg=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=A4930SKR+wyCyLcI+NOlLS2+nC/Pcm2zL78uIiJxnmRglRH4tz0E0vvhR2YSEkcO95+Fx5yIZVL6CZknNAzakjw4AfcZayBIDiOugVeAmfJBXRFW3w4TUJbKvJc2KdvUuLldSgWFwNZDPRDVVZr5uEj2B1I5n2DwJ1EPsG5+b1g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bEiVVc/g; arc=pass smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bEiVVc/g"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-917ad52d7b6so5159276d6.2
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 01:50:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1791017405; cv=none;
+        d=google.com; s=arc-20260327;
+        b=JnEbPZyaYj+Vh984cf9pcEkrvF+iNsr5Nz48hfU+/Fgc6fVvzTr/+HZNh1cLkFL3Xq
+         9fRjaXlPWlFGHsOZbbdkRwgw0v08PPjlIAcj0gIuLJAq4grSrxRw5y5TDda5psEiEwUX
+         NQMexRSgPzp5Cpmp8mHJysMu2o64YgkuTNbMNDXemZAt2ZW93lx1iksa/xVBEVI9uQCw
+         2riOKc9QjxsLQwlQr0fnTWX5cPYl6QWEYU+x6Ya8z0ZlgDt0qFHNj9Pr+bxdNnihAkJr
+         /MrllndpWpZ45QpcyZzSmEZhL2paByIb1yqvzR2TtUE7R8suzv8WMWc9ZSNsuI+5AhEg
+         hOgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=aw92WUQMYYkpSyEQ6zu6Xuske1k+/7TiDhQr8+Oxm0w=;
+        fh=qR3VQXVegcdGAIFOeV+QId1twGveXTs7Z7KH3dsxKxk=;
+        b=ZOXHVdievq0eBTy1khvXxD8OvkE1ArLP7Jo6Yzy9pQdXDmwHO37qr50gO7T7Y5RkOu
+         /ml7kXfDncsYzhQBojsYHBXGrIoG3j9mr3KAswoESlhcOxHGIDTvXdqzrTQweliRqnKd
+         2OqUPGLMWoMVtMk2VlFT+GE1YlIXr1yFoo/O79lwuABvvFWjTBlmwakpSw5nYMtTbY2X
+         fvFqEC5qPwPNuGEudCmNGTwnSnKW63GzHjJTdOMrHfGbvHCVGjiyj6SmQJ/z59cRYsHF
+         VU9CTq5EBlvEINGQaaZz5tAhulp0TRT5OMd9Jq31TpW8iyk84t59HxL86vfR5O5WjGqx
+         40uw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791017405; x=1791622205; darn=lists.linux.dev;
+        h=content-type:to:subject:message-id:date:from:mime-version:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=aw92WUQMYYkpSyEQ6zu6Xuske1k+/7TiDhQr8+Oxm0w=;
+        b=bEiVVc/gL/OzNDxl4LswDTKo6Mgu6sGAngAxZAeGAgwsG753ZkFcgp3bMbzAqGAiLb
+         8FpfBUMWzdxuM8nskluz3Xumc/p9iEnElI+YwnhbwHYPErj9dECrgweUparzdAiQGjcB
+         furRaXIxwaOhuXo2PECeiCAEAACHRgL3Kpqnsp1a1RMGrcfNVjOA6zvkn5irBa1ACdpk
+         PIVqPyo2Y3xeWcvSNdw2KzbnN38R3/OBQj+pljK//YLa0rN/gauUOP1v0hYinBaZ/bcS
+         YnuF1uf26yG/uGrsbD+RL9MhDZMso/0WAjDpoPbseH/L/gotQcxUPLWXs+t+mIF3xIdN
+         TNQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791015031; x=1791619831;
-        h=content-type:cc:to:from:subject:message-id:in-reply-to:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=FU+MzeJUD4jN7QZs0C8lQMkG+5XN6W1QTOf7yTqArOg=;
-        b=BOmw+B5CezN0gGiN0Pb0c/iEKqLXgMKZMsdLAkmHEWRe3gZtcKxgVwimTi+bQGEV0j
-         fJ0aWQgqag7JncjlttGBEsjufgGBPEfV3XrmXS7HK7qxNC52mNRCggnszHMaZNaIULoq
-         QIOTu7C0LvG43szdGqIc+R+M4SFdAMNJsNxCCnF3NMC6N1eN4RE7ZLmO5F4C4HSva3Zy
-         fA3SMpDX4MAPgVVgav1CbFp2RVVTc66+CXCp0I/p9HEz+4tX6MpN2eT6kO3/F4jQHTv0
-         o2Dn8eNseGVCqVKVL1qvCQCYSdIS0ixcwRR1qdpQD871YOZJjhzrO8FHtA/E2pfKnKS3
-         FCew==
-X-Forwarded-Encrypted: i=1; AKwUvBzOncZa1ypl7uSULVK11rjUeRykEFxhWZ+v5PPr4xjvg3KKzUynO0T4Rt4bW50FKRT7noO0cg==@lists.linux.dev
-X-Gm-Message-State: AFuF++lreBWGPuCASkysFXjOL41pFdqYV4V2RQYj1ZqZM8zkDq52vEfo
-	4UAQdZjsikQM5Nsl1wYmdj1MbRkKUxkrOntgXBy48yQv5NxfemXUUdmsuyVDCiVQ/CVxNlNENoE
-	tZuvoSjbVlsEDUeSrI1zyy1khpG/H8wiCMvUETNWAT65kHEM+0sH9M5yMrKE=
+        d=1e100.net; s=20260707; t=1791017405; x=1791622205;
+        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aw92WUQMYYkpSyEQ6zu6Xuske1k+/7TiDhQr8+Oxm0w=;
+        b=CI2Vzmr3kPNdyc6nyY6jbEgTzs5Y4lxDfKT/+A9fPNYzRkpXvsxi6175+mmyLFqiwx
+         CxR1y4HLxoeriug3cbYDtQotYx8+E97FG1O49Gx+jOx6vWFenGD1PfkWeAkzW+Qd10w1
+         iGChnNCPdWN4f6FDF9kNbXc0MwbH6w2YICn6LPdDAKe86R7wAr9hXGHZ8RIF5vc0+Dra
+         /i+oMtBjbXTRR0C9oZMj7YqMY3WxoJEmkMM/OZ6eFSL07MTsyVJ2M/kwvMiSeZVhqR2z
+         SDjInEdkGPCEIWT5M/w91Pv5tygo5RjdQA1RwZR8Y0942XfKsOx9y3sChAvPYSa91kUt
+         cElA==
+X-Gm-Message-State: AFq9FYKgVs3ZpioHes35AR7SPBEdrQKEEPP3CaIQFluYj+6tLtEkvQh9
+	azL794HtVAN2VbkdWkCsxwIeu6ySdQ4puQa3T+dRU1QuHt1EpqyvzQAaaMIyPrRQ/1wQjQ3OX9m
+	Qz9lMch2P43UYcEjmylAJoviPkACrZCwYMXPM
+X-Gm-Gg: AYBFou1MSBcI7ooYziRI0SQ+8xaJyRnk/1E1sn+wdIwgFRH4Z8hJcitt9fGjMFGdwZL
+	oVdhuCHYRkKy7z9QZM5evs7rooE3RRkfdp2f2kpGoLGz5AtWl8AruGuR+OonY87W/hz5Ea7oBiy
+	A3MF4mPGmtdXSB0SZ/HkBizPZmeo9PDqgMhn0sd/7uTW/Fftcw9NA73G0tx4t0moj2l6ITRp/v9
+	LW9/isfqtX9qo8o4FOKjv5UzcM1qnK1hNkbUhjooQMr1tn4hNbVIS9kZvWjgAfUTSQURXfz55O7
+	mpc1IOlXZT9f5v1Q+rCpuLMdeBMSicjtQy8A9tyCfyFal/7f43fiTKgJWgwP8n62JhpnI4/o/mr
+	uj4fxvzz7AG4JqYTwHot7GwnZgdsvVoBPFI8p2db8BSMYtpI=
+X-Received: by 2002:a05:6214:19ed:b0:915:e6ed:db32 with SMTP id
+ 6a1803df08f44-9195d202047mr34293916d6.43.1791017405252; Sat, 03 Oct 2026
+ 01:50:05 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:2383:b0:4f3:2f34:fc51 with SMTP id
- 5614622812f47-4f5267483a0mr4086203b6e.8.1791015031357; Sat, 03 Oct 2026
- 01:10:31 -0700 (PDT)
-Date: Sat, 03 Oct 2026 01:10:31 -0700
-In-Reply-To: <20261001230219.818128-1-praan@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ac0b877.81dddff3.363068.0005.GAE@google.com>
-Subject: [syzbot ci] Re: iommupt: Introduce IO page table shrinker
-From: syzbot ci <syzbot+ci374b2971a7526572@syzkaller.appspotmail.com>
-To: danielmentz@google.com, iommu@lists.linux.dev, jgg@ziepe.ca, 
-	joro@8bytes.org, kevin.tian@intel.com, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, loganodell@google.com, praan@google.com, 
-	robin.murphy@arm.com, skhawaja@google.com, smostafa@google.com, 
-	will@kernel.org
-Cc: syzbot@lists.linux.dev, syzkaller-bugs@googlegroups.com
+From: Thomas Kroll <nofuturekid@gmail.com>
+Date: Sat, 3 Oct 2026 10:49:39 +0200
+X-Gm-Features: AclHuK-KochZyQ4RHrlZSze3j2U8UwBGcRtQAlKKoEs5_vb-guRgHQ_ZEvQmy9c
+Message-ID: <CACvYUjoCW-HReH1VMVDVvJqbAbnZENdBjDD2HmUdcVhTx7qzsA@mail.gmail.com>
+Subject: amd_iommu: MMIO_STATUS_TIMEOUT on hibernate (S4) with Ryzen 8700G,
+ amd_iommu_intr=legacy avoids it
+To: iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-syzbot ci has tested the following series
+This adds to the existing report "[BUG] amd_iommu driver timeout
+(i >= MMIO_STATUS_TIMEOUT) during S3 resume on ASUS B650M (Ryzen 8700G)"
+(Gareth Wilson, 2026-08-07, follow-up 2026-10-02). Sorry for not
+replying in-thread, I could not get the Message-ID.
 
-[v1] iommupt: Introduce IO page table shrinker
-https://lore.kernel.org/all/20261001230219.818128-1-praan@google.com
-* [RFC PATCH 1/5] iommu: Add reclaim_list xarray to struct iommu_domain
-* [RFC PATCH 2/5] iommupt: Implement refcounting logic for Leaf entries
-* [RFC PATCH 3/5] iommupt: Add lockless sever_branch helper
-* [RFC PATCH 4/5] iommupt: Introduce lockless page table shrinker
-* [RFC PATCH 5/5] iommupt: Return real page count to the shrinker core
+Same 8700G, a third board, and on the hibernate (S4) path:
 
-and found the following issues:
-* BUG: spinlock bad magic in xa_destroy
-* INFO: trying to register non-static key in xa_destroy
-* INFO: trying to register non-static key in xa_store
+  MSI MAG X870E TOMAHAWK WIFI (MS-7E59), BIOS 2.AC3 06/25/2026
+  Ryzen 7 8700G, kernel 7.2.8-zen1 (Arch)
 
-Full report is available here:
-https://ci.syzbot.org/series/792388cb-7e39-4d83-8008-54d31031a227
+It hits every hibernate cycle (5 of 5 checked), twice per cycle:
+once in syscore_resume() right after the snapshot is created, and
+once after the image is restored. Each time about 24 s pass inside
+amd_iommu_resume() before:
 
-***
+  WARNING: drivers/iommu/amd/init.c:945 at
+amd_iommu_enable_interrupts+0x523/0x5e0
+  i >= MMIO_STATUS_TIMEOUT
+   syscore_resume+0x5d/0x170
+   hibernation_snapshot+0x24d/0x4f0
+   hibernate.cold+0x117/0x4b5
 
-BUG: spinlock bad magic in xa_destroy
+It reproduces without writing an image: with
+"echo core > /sys/power/pm_test", the 5 s test delay takes 31 s.
 
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/40ee62cc-4991-4840-96ac-e3f70bd4b70b/config
-syz repro: https://ci.syzbot.org/findings/96c389a5-7ad8-436e-87ca-df20279f6360/syz_repro
+amd_iommu_intr=legacy avoids it while keeping the IOMMU enabled: no
+warning, and the time from "hibernation entry" to "Image saving done"
+drops from ~70 s to 9 s. That may be a narrower workaround than
+amd_iommu=off for others hitting this.
 
-iommufd_mock iommufd_mock0: Adding to iommu group 0
-BUG: spinlock bad magic on CPU#1, syz.2.19/5813
- lock: mock_blocking_domain+0x70/0xe0 selftest.c:-1, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
-CPU: 1 UID: 0 PID: 5813 Comm: syz.2.19 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150 lib/dump_stack.c:120
- spin_bug kernel/locking/spinlock_debug.c:78 [inline]
- debug_spin_lock_before kernel/locking/spinlock_debug.c:86 [inline]
- do_raw_spin_lock+0x1e5/0x2f0 kernel/locking/spinlock_debug.c:115
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:156 [inline]
- _raw_spin_lock_irqsave+0x4c/0x60 kernel/locking/spinlock.c:181
- xa_destroy+0x59/0x2e0 lib/xarray.c:2393
- iommu_domain_free+0x25/0x170 drivers/iommu/iommu.c:2130
- iommu_deinit_device+0x353/0x5d0 drivers/iommu/iommu.c:600
- __iommu_group_remove_device+0x1dd/0x270 drivers/iommu/iommu.c:764
- iommu_release_device drivers/iommu/iommu.c:783 [inline]
- iommu_bus_notifier+0x6d/0x2c0 drivers/iommu/iommu.c:1826
- notifier_call_chain+0x1a5/0x3d0 kernel/notifier.c:85
- blocking_notifier_call_chain+0x6a/0x90 kernel/notifier.c:380
- bus_notify+0x143/0x180 drivers/base/bus.c:1086
- device_del+0x740/0x8f0 drivers/base/core.c:3982
- device_unregister+0x21/0xf0 drivers/base/core.c:4006
- mock_dev_destroy drivers/iommu/iommufd/selftest.c:1042 [inline]
- iommufd_test_mock_domain drivers/iommu/iommufd/selftest.c:1108 [inline]
- iommufd_test+0x3e03/0x6360 drivers/iommu/iommufd/selftest.c:2109
- iommufd_fops_ioctl+0x465/0x600 drivers/iommu/iommufd/main.c:556
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:597 [inline]
- __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:583
- do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
- do_syscall_64+0x166/0x520 arch/x86/entry/syscall_64.c:84
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f9ceff9e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f9cf0ea9028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f9cf0225fa0 RCX: 00007f9ceff9e159
-RDX: 0000200000000100 RSI: 0000000000003ba0 RDI: 0000000000000003
-RBP: 00007f9cf003506b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f9cf0226038 R14: 00007f9cf0225fa0 R15: 00007ffe0de56058
- </TASK>
+Happy to test patches.
 
+(I tracked this down with help from an AI assistant; the numbers and
+log lines are from my machine.)
 
-***
-
-INFO: trying to register non-static key in xa_destroy
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/40ee62cc-4991-4840-96ac-e3f70bd4b70b/config
-
-iommufd_mock iommufd_mock0: Adding to iommu group 0
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 1 UID: 0 PID: 5775 Comm: syz.2.31 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- assign_lock_key+0x133/0x150
- register_lock_class+0xcc/0x2e0
- __lock_acquire+0x10c/0x2de0
- lock_acquire+0x115/0x350
- _raw_spin_lock_irqsave+0x40/0x60
- xa_destroy+0x59/0x2e0
- iommu_domain_free+0x25/0x170
- iommufd_hwpt_nested_destroy+0x4d/0x1a0
- iommufd_object_remove+0x35a/0x4c0
- iommufd_fops_ioctl+0x465/0x600
- __se_sys_ioctl+0xfc/0x170
- do_syscall_64+0x166/0x520
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f593cf9e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007f593df41028 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f593d225fa0 RCX: 00007f593cf9e159
-RDX: 0000200000000300 RSI: 0000000000003b80 RDI: 0000000000000003
-RBP: 00007f593d03506b R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007f593d226038 R14: 00007f593d225fa0 R15: 00007ffe5c49ab68
- </TASK>
-
-
-***
-
-INFO: trying to register non-static key in xa_store
-
-tree:      axboe
-URL:       https://kernel.googlesource.com/pub/scm/linux/kernel/git/axboe/linux.git
-base:      72d3fcf802c45d00b300f25b848a93c3a2bd7c7e
-arch:      amd64
-compiler:  Debian clang version 22.1.8 (++20260613092233+e80beda6e255-1~exp1~20260613092250.77), Debian LLD 22.1.8
-config:    https://ci.syzbot.org/builds/40ee62cc-4991-4840-96ac-e3f70bd4b70b/config
-
-INFO: trying to register non-static key.
-The code is fine but needs lockdep annotation, or maybe
-you didn't initialize this object before use?
-turning off the locking correctness validator.
-CPU: 0 UID: 0 PID: 6433 Comm: syz.2.305 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.2-debian-1.16.2-1 04/01/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0xe8/0x150
- assign_lock_key+0x133/0x150
- register_lock_class+0xcc/0x2e0
- __lock_acquire+0x10c/0x2de0
- lock_acquire+0x115/0x350
- _raw_spin_lock+0x2e/0x40
- xa_store+0x23/0x50
- __unmap_range+0x748/0x1190
- __unmap_range+0xbed/0x1190
- __unmap_range+0xbed/0x1190
- amdv1_mock_unmap_range+0x418/0x5e0
- __iommu_unmap+0x138/0x740
- iommu_unmap+0x114/0x200
- iopt_area_unmap_domain_range+0x279/0x310
- __iopt_area_unfill_domain+0x8a2/0xf30
- iopt_table_remove_domain+0x7e8/0xa90
- iommufd_hwpt_paging_destroy+0x1c1/0x2f0
- iommufd_object_remove+0x35a/0x4c0
- iommufd_hw_pagetable_detach+0x564/0x6a0
- iommufd_device_detach+0x1c/0x80
- iommufd_selftest_destroy+0xae/0x130
- iommufd_fops_release+0x186/0x3b0
- __fput+0x418/0xa50
- task_work_run+0x1d9/0x270
- exit_to_user_mode_loop+0x204/0x770
- do_syscall_64+0x328/0x520
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7fed0639e159
-Code: ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 e8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fff16748678 EFLAGS: 00000246 ORIG_RAX: 00000000000001b4
-RAX: 0000000000000000 RBX: 00007fff16748760 RCX: 00007fed0639e159
-RDX: 0000000000000000 RSI: 000000000000001e RDI: 0000000000000003
-RBP: 000000000001312c R08: 0000000000000001 R09: 0000000000000000
-R10: 0000001b31420000 R11: 0000000000000246 R12: 00007fff167487a0
-R13: 00007fed06625fac R14: 0000000000013174 R15: 00007fed06625fa0
- </TASK>
-
-
-***
-
-If these findings have caused you to resend the series or submit a
-separate fix, please add the following tag to your commit message:
-  Tested-by: syzbot@syzkaller.appspotmail.com
-
----
-This report is generated by a bot. It may contain errors.
-syzbot ci engineers can be reached at syzkaller@googlegroups.com.
-
-To test a fix for this bug, please reply with `#syz test`
-(on a separate line) and attach the patch to the email.
-
-Notes:
-- The patch will be applied on top of the tested series (as an
-  incremental fix).
-- To test a new version of the whole series, please send it directly
-  to syzbot@lists.linux.dev.
-- Arguments like custom git repos and branches are not supported.
+Thomas
