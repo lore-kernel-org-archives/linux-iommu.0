@@ -1,156 +1,320 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012065.outbound.protection.outlook.com [40.107.200.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F055426D37
-	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 12:10:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791029464; cv=fail; b=hMvERfBS6aZoPisEbfIV5PwEhAGr2Lbp6OXsMqSo+/DzI7at3T57JZrXrUhH89mCbASqBV94jYiiX7ILniBg5lU3LwfAMpatBR6a36rz+vHSz7gqNvxpbsXMI3vrQGITHp1rbnGGGF6Xbv7uE2UiapJDNptUNdM2R23CfUKjTFc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791029464; c=relaxed/simple;
-	bh=NK+BpGG0EL9WKowh4dmMIzGjJ9MOGqFuJ7FUDKBFJ8Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=URT4yBqaG15fGG2Wajui3B42+kNB5B5AAy0qF0kHOyff2OHUVg3nSH6TpIauOqtxKmPcpidPy3ouxpp+33E72KHfA3J9s6XvsEarFLYaxmz8ZajCaHO2JTJ47oOkpCEoPDtKDBFp7PpwD6KxssceTOYegb1ooSO3BJsG0ZUSSKI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=RQx/KdPy; arc=fail smtp.client-ip=40.107.200.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32849443E5E
+	for <iommu@lists.linux.dev>; Sat,  3 Oct 2026 21:22:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.72
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791062570; cv=none; b=cNNJ3gF41v7MIXBc9nUoHni9suJDGHRCL/vIMLrjnNsYScfwpqVTfCJMq8T/evvl43YAbPT29czW6JzSF4vOcOdXbVHP8FxpBk1R1v/8G20mM7SruetsKZTxds/jQMHoVGgHyjZSSZqpJkT8ZmSGz2wwZxvhDZ1whuyL0PJVKHQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791062570; c=relaxed/simple;
+	bh=Ue7ULJ5WY3bFakED6d/ARGtq7/M50CODLVb+2O2f6Yo=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=d8pfeRIpjwkDbMj0Pyf5DOCT9roGsGi0cEuOWoCmZd6Mk4FFF1JMXKlzwO61moVuGgLK8xZPnxTJY914MlUmkf3iPblf5ver00hSVLoJthRpN0LUX+GclLPjsqxscBDs5onuOBL2vCU6L+5qpOGVRa7+EKa4bASyVU9z1D//f5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=N/tuliZD; arc=none smtp.client-ip=209.85.208.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RQx/KdPy"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BYnDcw6QqZhifEgRm+6Nj7KvOiAOfN3+sO0uO2+TosuNKbBOZL/5fsxs9hqPQSLdOG/ibvvn+wAdsw9zL/+moMgvQOnspXy20aLsCiyDb3Zvw6IKza733Mj01tTlQyGZrZDajMuGAofxVOqNQ7ODgNMBGtbCQiMqsnhkjRVj/UQvku1NcWHEkpsamtI7rFr7G4NRioCfXbkhBhulLYEhXpN24DNIsASG5TDufsNnBOjbq4aYEAElZA/FqiwcNZKPKy1FzpXD+WeO6MT56hZrRIrf1L/DFzyw25sJgLU+LAY8cQCjm7vmk5kEt8/0e+W4N0AhFfc7Th9cv32o6i9qKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KAy+rEbd3t9toj9RUI/d6qpRXZPbZhJ4XvyM6ZvdyRo=;
- b=W3vXwW4bUTw43wrF04MmZHxwSYa5Dl/6+FMEdnbNiHt83f4HMgp4Qrr8a5sRJdL39COsK6pQDNVDXXY36a2Ic8mio7fWymTyyVCrPm0+8OtyWLbInVY1TPYjpO+s/jRVnWYm6hV6Ue5MYwOLevbuXgO2cEXdc24oqkf8+yP1UsAsUhaNgalrUtaObgI7dql4r0jw2v8RZtMAaopacoi/iqYrHhV2nDE/CidhtsBPV4voQaA6KjaQa9MhVvMj5R7MGzWxRxuP1vq8ZzYwCFyo0OEVZKukTE/RmxfotCjIMK0qb3PT7y/zzHQWhXTxzr8hfSbQlNhSL5sArolNf/qTlA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KAy+rEbd3t9toj9RUI/d6qpRXZPbZhJ4XvyM6ZvdyRo=;
- b=RQx/KdPyf6XiD364pUAyqWER/E10rroPIMl1tFHyzehLTeCjb/PTGAdNWCsuSmHWRvrF5WyaLkcUQyoLDW8fztKsf6vFMNPe/mgcoydw4RYU7LQLwONa6/MGxabgcVFlCumkJfRibbLpanqHT4BJqlPG1LMEMdROaAqtLGTVHAEQjnY+ZLXKNVwjKYXmpAGNcj3HawTS2cnIqcv0gIsoL3oEwkj5wO0oNMtTCWvMJa5Yl5hhkNrTuuIJdLMxFME7629/LQ74Y+6c1zBxPPTt5u+PNmHAoS13sLLQKoa/DMRTc5LfpRLwmijt+BbtZJ7bS1kvqc9GBM3o6tcpEFZGjg==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by LV2PR12MB683086.namprd12.prod.outlook.com
- (2603:10b6:408:414::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.18; Sat, 3 Oct
- 2026 12:10:51 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0472.016; Sat, 3 Oct 2026
- 12:10:50 +0000
-Date: Sat, 3 Oct 2026 09:10:49 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andrew Jones <andrew.jones@oss.qualcomm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-riscv@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	tomasz.jeznach@linux.dev, tjeznach@rivosinc.com, joro@8bytes.org,
-	will@kernel.org, pjw@kernel.org, palmer@dabbelt.com,
-	anup@brainfault.org, tglx@kernel.org, kevin.tian@intel.com,
-	fangyu.yu@linux.alibaba.com
-Subject: Re: [PATCH v6 01/16] iommu/dma: Prepare MSI physical address lists
-Message-ID: <20261003121049.GX1616761@nvidia.com>
-References: <20260925151659.419512-1-andrew.jones@oss.qualcomm.com>
- <20260925151659.419512-2-andrew.jones@oss.qualcomm.com>
- <18c9b030-8dc6-4242-8e66-0448ee125d7d@arm.com>
- <pph73bajtpgp3u5vb7xjqmbrz35zs2lw7fpkhobg5jdzbjw2vq@usg3jbbneskp>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <pph73bajtpgp3u5vb7xjqmbrz35zs2lw7fpkhobg5jdzbjw2vq@usg3jbbneskp>
-X-ClientProxiedBy: SA0PR11CA0106.namprd11.prod.outlook.com
- (2603:10b6:806:d1::21) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="N/tuliZD"
+Received: by mail-ed1-f72.google.com with SMTP id 4fb4d7f45d1cf-6a615ab0c06so639422a12.2
+        for <iommu@lists.linux.dev>; Sat, 03 Oct 2026 14:22:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1791062566; x=1791667366; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=VE+LxnBIdWSDoOzHpOAVXErosSD4QsTFJ9TX/Oi0RT4=;
+        b=N/tuliZDz6QttxVa73L8cnT61cPMei5baJ5QCzimWEw/vjnl1DnzckPYaKhw4JV075
+         REr1Y28PZgHW/VwnWwY7eOFSSeNfCNT+vyw6+NI5pHi13PfJEEalM4VJulhMaNpqeQPF
+         P8GwD2Dw0r9CWGgYVikIiJPbO8xZgn5UvfJMh6dlT50lqtR2YFmEqNAMfqY7XpQbycP3
+         3ibSEKbdmtb5fB38asevqcvTswquPA+NxLkuAY19cs28XLUUN+w3x9WWfK0mDWUqiKpu
+         0jweyEFz50NUOB7sBWHP7AxX5zo6wbRZUfML+7LekjyDIdI3MHsMz0JoV3k1r0hCRdJl
+         rqaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791062566; x=1791667366;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=VE+LxnBIdWSDoOzHpOAVXErosSD4QsTFJ9TX/Oi0RT4=;
+        b=UOfdtnighsflWskcMYjTNkILR/rw1O6En7Uk6QZFS0bzdM/PN01kHywNz3hHiU2NLC
+         uUvtQpAVate5q+0Nj7yXWQ1Ei3Ib3+v6e0Z4uWMRK+RusZsh9KQvQhSUKaGsNQkPAIqB
+         q30G6oftvXRdC5iQ7xlITF5Rz4DkkxImRXQdwcSiDfSgZBs4rsaIMEM6Cl8AGHF0gS8I
+         0HhVSNc7Dj3U31CwTqADR4rT2f9+m54aFq5/Jp/oqsJFTvTtP3VMHA9aP43k3Bklkfm4
+         NduQFBp10pxVsHLP97ItumiDdNYb0G6oXrzb8z/VVpYwKJ625kBMr9gBsxszDm2xeZjz
+         KEEg==
+X-Forwarded-Encrypted: i=1; AKwUvBz4sLLFZwbLXwN01AFK5+/zzbUpiycHHUB31Pr2e5v4PpdzLsCJ/3fNGAXCm9JpnGyXYoj7fA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYK0gYC4GiHNQARgGaY0LMvjyxkhepXnXAX9TIFAvN5cLxL3bhzq
+	ks+Fax//8OCCU2rRcefEblbuJEhH5jbQq6NqnGNtqRZgUMzh8KAeSedsPsxPa+3By3E61d8CiXN
+	wrxnL8Q==
+X-Received: from ejbhk10.prod.google.com ([2002:a17:906:c9ca:b0:c2e:6b98:66f3])
+ (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6402:3808:b0:6ac:8ef4:177d
+ with SMTP id 4fb4d7f45d1cf-6af9e2d34f8mr5494442a12.20.1791062566061; Sat, 03
+ Oct 2026 14:22:46 -0700 (PDT)
+Date: Sat,  3 Oct 2026 21:22:19 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|LV2PR12MB683086:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9e9044a5-5fdb-4884-c362-08df21475da3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|23010399003|10067099003|56012099006|11063799006|4143699003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	zbDRNFYX+m/MOXMxkKnV3fcYc55Jt7Ud3K86fb2UWsoBOzNySMOM3WGyOGInM/IZB5u+UVnGpA8abWDGvGOpLwTEhmh5VfPhviw5zzXoG23YaqLPqB57EgjzMkFXJ+OZ3UZQC+4kIbix+Kr8KwRhiUEAle4CsF0n+4C9TxARGrVGUUq6eEIceGR47r1Oe5SDl+TnqsdS23G7WMrgE28L3MlkL2dsuEbBh3bl9CfY4JGR5Q4U/zIWGNNwfllWNkrJVfm/2kwMXWFXwCRysSMSgRzUvAG2iGPFinB+cieHjnIc5eqSkrnwNGYg+zCnPFtwepxP9KaVZ640S7VH6v7A3Pv3XvxmT9RprxwKUCGIDwMMAfB/eE1MsMFNx5IqJRoTmZ6s1LK2XEta6fMnLhjjhJc62/FKmokkXTuZqT3TytXCZuXRntiGVxyBYRGZXsF3VzLw4sb5TmpI6fC+uVkvSL7aY9TzPThDIKx5cbE9119uUs98QcAgaHvEBynTXZNVsIODbqnXe3nBYNbeZapWRy0BnlYAJUwxyOaBx26mxNt6X/jXvJc/tuHi/2iL+aq5EN8swnZSzaaj9ccs0ssqEg3BkzBpW6qsckJFOON8OfYp4w2n27Gnx3PnpJ5Baf99qzP/YJXT8OUHITg8TnZkdO9SfKPCWjCjeR33FgIoqqg=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(23010399003)(10067099003)(56012099006)(11063799006)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?/C+OrBE/L8YS5js7EiIBP3vpSdRyStb05c0FAVbM563So1bOhWiwakdeyqOd?=
- =?us-ascii?Q?hZerG6MJOBNZd+QHvC1+2TbsKHy3frHxnVMPIq2Hk8YMEI0awDe6j22XnTB2?=
- =?us-ascii?Q?hCBxRusD3A6oTdDW2FkDe8DlGR8AgRu+uGDo5asOApoLVLU1yMt1bFxeYUt+?=
- =?us-ascii?Q?t+3eB+YkrpyGmRTU6NNHStcYEe6r5riJb2XV6lRxIqvp1qs578jvS2xctx/D?=
- =?us-ascii?Q?8FEcaFfn2DaeWXiG+svDJxEyBHPGWU1Tq7x1iMqm4cxwb7poHEHGsGls7ThE?=
- =?us-ascii?Q?66KrfYtSJS0TLYR2bQaq2bk7ac5HLVEH+lyx/MSJHxF2SCV29ULX1jQoYVWJ?=
- =?us-ascii?Q?XdQQscADZmJOHI2v4SLW25f1RaC3cw0NL75ZITYwgcG7U7/TKbI11J7HmUhr?=
- =?us-ascii?Q?LQJA6k/rNl2i0noGykry/5ewUZoszRw97L/9C1h7/d2N6mleofO5NjJTyzlu?=
- =?us-ascii?Q?9igjITKFWSQ5ny5eVnZ7PQN4JHiQayzSk6TXCqXncXafm4GiidoHrT0tqPKW?=
- =?us-ascii?Q?uHZmOY7nw5Z82NvC74r+BFmyM92PdxUW3MR8MAe9v2ZFvGQImgVorvTnW4CV?=
- =?us-ascii?Q?L3hDQ3+3XDPjiu5qVND9vdFUePU2hOtgtJV8MDzCylRvT9cmZ4LPsjA8NAl0?=
- =?us-ascii?Q?9J/kOJRFf0jGECrObieUYkxFXdBwG88Ix2NPx+tc9vFESXIwa4OYHK7H2HMU?=
- =?us-ascii?Q?WMuWkvx2oyOSozFRCmOTmD631kcVVXbwaSF+GOkLif89oqNypP+auVlGDvdF?=
- =?us-ascii?Q?CQaig69T92Fu/bZdCOGgwNMg3D5ghVptgCQ0LvfRHOFf4uJArKgzwnveY44t?=
- =?us-ascii?Q?RNe9wockzoqrumiVDZ/p9XoZPA6Vk7UOZYZnp1JJqM1hDrTSaMP6qtjuyfVH?=
- =?us-ascii?Q?HVNIUV6gkaGIKuswys0xgWtBpFLsiOqTInlOtAGESYX44WVhEBLSjU6w+nq0?=
- =?us-ascii?Q?ZvaL/Viys5ImfqQ5kL7+vCqzTrVuoRGaJmjofjIh/X7g2EYR0RxY8ttBmgak?=
- =?us-ascii?Q?BVgPSBf9pvuiQ5DlY2cr/UpOaCIAmuU17WIBxWmOL7rBgUYHcB8egj7D+h/m?=
- =?us-ascii?Q?S5C73CvWk4x6MAYs5u5JxGASM50gaYBawFHwTxg73tAQIyV0OgzdDS0CEYeI?=
- =?us-ascii?Q?O5NGjWXKlx4h4miS+SKIjUPqeOYwN597Tu2F4BpvUvGJZydcaBrauar0+PPL?=
- =?us-ascii?Q?utt1B6voy9w/nGSp7KMC1PCLnjVa5Pi06QOY2IZvXa9x4Cb270kdzhYEGCDr?=
- =?us-ascii?Q?q3uo1RFKY9uCdrxDhNbAzx4voCRkav3GVL2CULMZAndATjJ/uu1k/vtLRzqJ?=
- =?us-ascii?Q?CotVn/c7t7v5bwbRJaBhQeBGu24aD5HuKCq7TNDiMIMXP2Zkx9BZXbCqQH36?=
- =?us-ascii?Q?zkJzRELGVyYxAVXTHh7/A/SlMoyg5L17qme/JP2QOifgbWp2xGD4Uayx5+Ti?=
- =?us-ascii?Q?oBrqHCntvpdIVPjhjz8Rtyh/pEa7kggX6x4m0vmszpdZ0nr9sGahUvvsmqng?=
- =?us-ascii?Q?XsqVPlJE8yUqvb+//hbG3JZzIi4QnoaLKYbLUmtg9HS2BmwcdyAFihfpbB/J?=
- =?us-ascii?Q?6ENdR8xjPeed2q/OkNQJMkguFzupxxfFnlFiyDArvWQpxFDSvyqvPCcfF75w?=
- =?us-ascii?Q?bVeCa4T1mtc1xXz69zu4s8DgKcTKdGV4Fhg2VUCATEe4fQvuRp7XLfS3rmYW?=
- =?us-ascii?Q?r/FVHhlYx+sWdIlEnFM/Sn5vKg8lzyLLBCtaYrbQDC69ecrX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e9044a5-5fdb-4884-c362-08df21475da3
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Oct 2026 12:10:50.8348
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w/7k6Dke9Wc5YaZoMd15Vso57UY5U0a7CC/bDJlrEyMEzuwCeoAJUM1tv0/KyC+N
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB683086
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
+Message-ID: <20261003212241.3432303-1-lrizzo@google.com>
+Subject: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+From: Luigi Rizzo <lrizzo@google.com>
+To: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, David Hildenbrand <david@kernel.org>, 
+	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
+	Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Joshua Washington <joshwash@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>, 
+	Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+	Alexander Lobakin <aleksander.lobakin@intel.com>, Michael Chan <michael.chan@broadcom.com>, 
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev, netdev@vger.kernel.org, 
+	linux-mm@kvack.org, driver-core@lists.linux.dev, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Luigi Rizzo <lrizzo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Sat, Oct 03, 2026 at 02:03:35PM +0200, Andrew Jones wrote:
-> 
-> Hi Robin,
-> 
-> On Fri, Oct 02, 2026 at 05:21:18PM +0100, Robin Murphy wrote:
-> > You already end up adding what is effectively a RISC-V-specific
-> > entrypoint, so you may as well just carry that all the way through to
-> > its own effectively RISC-V-specific implementation
-> 
-> The list API came out of the v4[1] discussion with Jason. Preparing the
-> targets as one contiguous IOVA range lets the MSI descriptor cache the
-> base and IMSIC compose the address as base + CPU offset. That got
-> rid of the separate domain-local lookup table and its lifetime handling,
-> which I think was a worthwhile improvement.
+Here is a subsystem called DMA_PMD on which I would like feedback on
+architecture, possible enhancements, or kernel components that could be
+reused to avoid duplication.
 
-Yeah, I prefer this idea to what you had earlier, however it is
-accomodated.
+I think it can be extremely useful for those affected by the HW/SW overhead
+of IOMMU (especially IOTLB thrashing, see [1]), or confidential computing,
+or preemptable VMs.
 
-> > it should merely be a case of whether a) this is the first call for
-> > the given cookie so everything needs mapping, or b) it's not the
-> > first call, so everything must already be mapped and we can just
-> > return the IOVA.
-> 
-> For DMA-IOMMU, yes, remembering the base would let us drop the range
-> matching. We'd still need the contiguous IOVA allocation, mapping loop,
-> rollback on failure, and locking across the whole operation.
+The (not too exaggerated) pitch line is
 
-I fell like dma-iommu should have a way to map a page list to iova and
-maybe that is all the shared code with arm there is.
+DMA_PMD has the performance of identity, guarantees that only IO buffers
+can ever have active IOMMU or IOTLB mappings, removes the bounce buffer
+overhead in confidential computing and preemptable VMs, and integrates
+smoothly with existing kernel APIs.
 
-Jason
+=== ARCHITECTURE
+
+DMA_PMD was initially designed to address IOTLB thrashing (details in [1]),
+but turned out to also resolve nicely the strict IOMMU overhead, and avoid
+the bounce buffer overhead in preemptible VMs and Confidential Computing.
+
+It works by combining several known techniques:
+
+- transparently feed allocators of device memory (skb_page_frag_refill(),
+  dma_alloc_attrs(), pagepool, ...) with DMA_PMD pages, i.e. physically
+  contiguous PMD_SIZE (2MB) pages mapped via PDE_SIZE IOMMU entries
+
+- heavy recycling of DMA_PMD pages (like pagepool) and lazy IOMMU unmapping
+  (like DMA-FQ), BUT:
+
+- like strict IOMMU (DMA), safely release memory back to the kernel only
+  after destroying all of its IOMMU mappings and a synchronous IOTLB flush
+
+- on allocation, DMA_PMD pages can be configured to be pinned in the host
+  (hence suitable for preemptible VMs) and/or unencrypted (hence suitable
+  for Confidential Computing), removing the need for bounce buffers
+
+- there are global and per-device optin /sys/device/.../dma_pmd_*
+  and /proc/sys/net/core/tx_enable_dma_pmd
+
+NIC drivers can typically use dma_pmd with no modifications for rings,
+tx buffers, rx buffers (if they use pagepool), and rx headers. For tx
+headers, almost all drivers need changes (see later patches in the series)
+to implement cheap bounce buffers and avoid individual 4K mappings.
+
+The series has the following main components:
+
+- a sparse array (similar to pageblock_flags) to quickly attach metadata
+  to a 2MB page without fiddling with the struct page. Cost is 128B per 2MB
+  page used as an IO buffer, totally negligible.
+
+- dma_pmd_pool, a replacement for alloc_pages() that can be instantiated
+  per-CPU or per receive queue. It handles the split of PMD_SIZE pages
+  into order-N blocks, handles dma_map and unmap, and aggressively recycles
+  entries. It is used to feed skb_page_frag_refill(), pagepool, and
+  receive buffers for drivers that do not use pagepool.
+  See [2] for "WHY NOT PAGEPOOL FOR TX AND EVERYTHING"
+
+- dma_pmd_arena, is another allocator backed by DMA_PMD pages and
+  is used exclusively as the backend for dma_alloc_attrs().
+  Used for longer-lived allocations (descriptor/completion rings,
+  rx and tx header buffers)
+
+- glue code to hook DMA_PMD into pagepool [2], skb_page_frag_refill(),
+  dma_alloc_attrs(), dma_map/unmap...
+
+- per-driver patches, where necessary (e.g. tx header buffers [3])
+
+=== PERFORMANCE BENEFITS
+
+Your mileage may vary. Enabling the IOMMU may have no throughput
+impact, until it does when some system components (bus, IOTLB, CPU)
+become overloaded.  Aside from throughput reduction, one interesting
+parameter is the effectiveness of the IOTLB. Here is a sample of SMMU
+performance counters for a large ARM system with 2x200G NICs doing
+bidirectional traffic:
+
+    === DMA-FQ MODE (total throughput ~440Gbps)
+    25,757,488      smmuv3_pmcg_*/event=0x80/   IOTLB lookups
+    16,634,941      smmuv3_pmcg_*/event=0x81/   IOTLB  misses
+
+    === DMA_PMD on top of strict DMA (total throughput ~745Gbps)
+    22,693,218      smmuv3_pmcg_*/event=0x80/   IOTLB lookups
+        30,536      smmuv3_pmcg_*/event=0x81/   IOTLB  misses
+    (not a mistake, also lookups went down despite the higher rate
+    because the tx side can use larger segments)
+
+The 2MB mappings made IOTLB misses almost non existent, because
+the working set is reduced by a factor of ~512.
+       
+Note, the code has more verbose comments than I would like.
+Several of them are there to avoid Sashiko getting confused and
+flagging false positives.
+
+=== NOTES
+
+[1] IOMMU IMPACT AND IOTLB THRASHING
+This is documented in more detail in Documentation/core-api/dma-pmd.rst
+but the compact version is below.
+
+There are three main costs involved with using the IOMMU:
+- CPU cost for dma map/unmap
+- CPU cost and latency for synchronous IOTLB flush (required for strong security)
+- IOTLB thrashing, shows up dramatically when the IO access pattern
+  exceeds the IOTLB size, and IOMMU page walks slow down bus activity
+  up to a point where we see over 30..60% throughput reduction just for
+  this reason.  Some relevant references
+
+  https://lore.kernel.org/all/4b42f2eb-dc29-153e-ace9-5584ea2e5070@redhat.com/
+  https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10280580/
+
+Specifically, NICs access 4 or more pages per packet (descriptor queue,
+completion queue, rx or tx header, one or more buffers), with very little
+locality especially for data buffers and tx headers. Each queue has 1-4K
+entries, a fast NIC uses 16 or more queues per direction, so just the
+data buffers cover 32..128K pages. Using 4KB mappings makes the IOTLB
+ineffective, as shown by the performance counters shown earlier.
+
+[2] WHY NOT PAGEPOOL FOR TX AND EVERYTHING
+There is some overlap between pagepool and dma_pmd_pool in that both
+implement a cache, but pagepool is missing some important features:
+
+- pagepool does not handle splitting 2M pages in smaller chunks, or
+  the mappings. That would need to be implemented (and is what dma_pmd_pool does)
+
+- pagepool's provided pages cannot be cleanly managed by
+  get_page()/put_page(), which is what all the consumers of
+  skb_page_frag_refill(). Fixing that would require dozen of changes
+  with high risk of missing some paths.
+
+- even for the receive path, a provider for pagepool has more restrictions
+  than alloc_pages-supplied memory, so if I wanted to wrap dma_pmd_pool
+  as a provider I would have needed changes to the provider interface.
+
+- pagepool requires a device at allocation time, which is not known when
+  skb_page_frag_refill() runs, hence the IOMMU mappings cannot be handled
+  at allocation time.
+
+- page_pool_alloc_pages assumes a single NAPI consumer with BH disabled,
+  whereas skb_page_frag_refill() runs from a preemptive context.
+
+- and last not least, we need to handle the dma_alloc_attrs() allocations
+  which don't match pagepool API
+
+Of course all of the above could be modified, but the complexity
+would be similar to that of implementing dma_pmd_pool, and with a
+huge risk of breaking existing functionality or missing some path.
+
+[3] DRIVER CHANGES
+
+Most drivers need no change for rings, transmit buffers, or receive buffers
+(if they use pagepool). Tx headers are generally mapped on the fly and
+that is enough to trigger IOTLB thrashing, so most drivers need a small
+change to implement very cheap tx bounce buffers backed by DMA_PMD pages.
+
+We could avoid the bounce buffers using DMA_PMD for the skb->head region,
+but that memory is contiguous to skb_shinfo so it would be exposed to
+IO device access, which may be undesirable for security.
+
+Luigi Rizzo (22):
+  iommu/dma: introduce CONFIG_DMA_PMD and metadata table
+  iommu/dma: add DMA_PMD pool lifecycle and page recycle hook
+  mm: Add split_page_compound()
+  iommu/dma: add DMA_PMD pool block allocation
+  iommu/dma: Global cap and shrinker for DMA_PMD pool memory
+  iommu/dma: reserve a per-domain IOVA window for DMA_PMD pages
+  iommu/dma: release DMA_PMD domain mappings on domain teardown
+  iommu/dma: use per-domain IOVA window to map DMA_PMD memory
+  iommu/dma: Add DMA_PMD arena allocator
+  driver core: Add per-device dma_pmd_* sysfs attributes
+  dma-mapping: Use DMA_PMD arena for dma_alloc_attrs()
+  net/core: Use per-CPU DMA_PMD pools for skb_page_frag_refill()
+  net/core: Use DMA_PMD for page_pool memory
+  iommu/dma: Support decrypted and pinned DMA_PMD pages
+  iommu/dma: Add background page scrubber for DMA_PMD pools
+  iommu/dma: Add per-NUMA-node PMD page reservoir
+  net/gve: Use DMA_PMD memory for RX buffers
+  net/gve: Use DMA_PMD memory for tx header bounce buffers
+  net/mlx5e: Use DMA_PMD memory for tx header bounce buffers
+  net/idpf: Use DMA_PMD memory for tx header bounce buffers
+  net/bnxt: Use DMA_PMD memory for tx header bounce buffers
+  iommu/dma: Add DMA_PMD statistics and debugfs
+
+ Documentation/core-api/dma-pmd.rst            |  320 ++++
+ Documentation/core-api/index.rst              |    1 +
+ drivers/base/core.c                           |   51 +
+ drivers/iommu/Kconfig                         |   33 +
+ drivers/iommu/Makefile                        |    3 +
+ drivers/iommu/dma-iommu.c                     |   72 +-
+ drivers/iommu/dma-iommu.h                     |    8 +
+ drivers/iommu/dma-pmd-arena.c                 |  412 +++++
+ drivers/iommu/dma-pmd-kunit.c                 |  225 +++
+ drivers/iommu/dma-pmd-map.c                   |  531 ++++++
+ drivers/iommu/dma-pmd-meta.c                  |  403 +++++
+ drivers/iommu/dma-pmd-pool.c                  | 1538 +++++++++++++++++
+ drivers/iommu/dma-pmd-priv.h                  |  385 +++++
+ drivers/iommu/iommu.c                         |    2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   45 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |    2 +
+ drivers/net/ethernet/google/gve/gve.h         |    5 +
+ drivers/net/ethernet/google/gve/gve_main.c    |    5 +
+ drivers/net/ethernet/google/gve/gve_rx.c      |   61 +-
+ drivers/net/ethernet/google/gve/gve_tx.c      |   38 +-
+ drivers/net/ethernet/google/gve/gve_tx_dqo.c  |   45 +-
+ .../ethernet/intel/idpf/idpf_singleq_txrx.c   |    6 +-
+ drivers/net/ethernet/intel/idpf/idpf_txrx.c   |   21 +-
+ drivers/net/ethernet/intel/idpf/idpf_txrx.h   |   27 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |    2 +
+ .../net/ethernet/mellanox/mlx5/core/en/txrx.h |    4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   14 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |   28 +-
+ include/linux/device.h                        |    5 +
+ include/linux/dma-pmd.h                       |  198 +++
+ include/linux/mm.h                            |    2 +
+ include/net/libeth/tx.h                       |    5 +-
+ include/net/page_pool/types.h                 |    3 +
+ include/net/sock.h                            |    3 +
+ kernel/dma/direct.c                           |    6 +-
+ kernel/dma/mapping.c                          |   39 +-
+ mm/Kconfig.debug                              |   11 +
+ mm/Makefile                                   |    1 +
+ mm/page_alloc.c                               |   89 +
+ mm/split_page_compound_kunit.c                |  113 ++
+ net/core/page_pool.c                          |   61 +-
+ net/core/sock.c                               |   86 +-
+ net/core/sysctl_net_core.c                    |    7 +
+ 43 files changed, 4835 insertions(+), 81 deletions(-)
+ create mode 100644 Documentation/core-api/dma-pmd.rst
+ create mode 100644 drivers/iommu/dma-pmd-arena.c
+ create mode 100644 drivers/iommu/dma-pmd-kunit.c
+ create mode 100644 drivers/iommu/dma-pmd-map.c
+ create mode 100644 drivers/iommu/dma-pmd-meta.c
+ create mode 100644 drivers/iommu/dma-pmd-pool.c
+ create mode 100644 drivers/iommu/dma-pmd-priv.h
+ create mode 100644 include/linux/dma-pmd.h
+ create mode 100644 mm/split_page_compound_kunit.c
+
+-- 
+2.56.0.rc1.315.gc6ed9934b7-goog
+
