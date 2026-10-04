@@ -1,186 +1,168 @@
-Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013017.outbound.protection.outlook.com [40.93.201.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E579400991
-	for <iommu@lists.linux.dev>; Sun,  4 Oct 2026 19:50:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.199
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791143447; cv=none; b=i57lK6fff/vyLK9VCwbqtpr65lJwjCsYSAYjz/4orpzlGPvjTAeecLDoali1hNU5op42K3bLOqKFyhZ3ry4lZv5u8/hfGPpp1k3w5KcTnTav18/2wCh0U1kdbqq7hO8aHujCo/NgkHLWFraPWJFi72WmRNsaqAhRrYWV3ZXTizo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791143447; c=relaxed/simple;
-	bh=SHw9kMnxKKwhY3CM5Kg8GrEdHVMXUmjxOrNJxpjRzB0=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=ugx9gjmftKkNPHFTZGVd1rWGWLUdZAoKRn6W0z117PpzPr+QNZV0x3X7zBq1M1ZGVURSIgqCj/6j90sDVltD9PYMeJHKRzc/jeb79WNkTGJQUyqvb51dhj1ybyFF6zdBpq7VLUWeoLYgRliwtDYX7iYDsl1lUNSZOUzk78J5ZNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Vs+SsTLi; arc=none smtp.client-ip=74.125.82.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DDC53DD520
+	for <iommu@lists.linux.dev>; Sun,  4 Oct 2026 20:21:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791145276; cv=fail; b=pwCMvpch7+cVmUwNnBxDNdeypqV67MHqPg35YYmwnMKtkY28RxAxwX8RO9Ryanqc5IghgOKgMdrRtKUMEuCIgEw/5+5bhKx3V95xWvel5cF99o0oxnZbAcax/EfgaijzJuxYUKhn8SbVN8+ksAgkXVpDr614nA4BqJ7OKANwh0s=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791145276; c=relaxed/simple;
+	bh=FC/2ZXJAHKCmN3C1sif+P9jUbr03r+gc9Z9e4x8J1Xo=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jBJ0J5UyKkpbIG2UTQR7OM7bqUrz2fG+dPfHk/Acm5SGQCYQoQg/U90CJE5IztqRxNcXtH9KJUb7r05TUBDZAU/XDYN1vIVzGYktKttjWkq2raiKWEaA8kIbe5tbWvM0R6Qg6QdBMvq1Lg2qtMEuJeqgnjYnIrSvOoAQKj0PGro=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UU+CFVso; arc=fail smtp.client-ip=40.93.201.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Vs+SsTLi"
-Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-30bcb065bfdso1832169eec.0
-        for <iommu@lists.linux.dev>; Sun, 04 Oct 2026 12:50:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791143445; x=1791748245; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=/0+8/7+L8DONYJQ3fWVSioDtnywAJwCJWEJlOMQxkV4=;
-        b=Vs+SsTLiy8Zt37fF/aJddKtI8SeosnAXqGXTKTMYLWOFX9I1E4kaVSjYtMx0Jfl65r
-         Xkjttn+Ut2vLK6GuP/TgIE6EwrGS4BJFbeRYqEF7koRgvf97GHrCoSCrukllsrF96TQy
-         Hr7Ew9szvFxXqQsIX7DWd2wJ3/H/XimPtWeWvC2A6v18GJNw8We+8mHYHTcKiuIvU5q7
-         poRhvfl7FtSX1VtPLOtoEemCkA12xs5y1fYt5cocd+eLb2PeufA4IGE0f0+pJUJWBFqE
-         FQk+xee7z5qfj3VO16Dtxs/ks/mqOo/2zgSRBiXPY2PnpqVgv2hIb+Z06llOvz6OBF4g
-         RGuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791143445; x=1791748245;
-        h=content-type:cc:to:from:subject:message-id:mime-version:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=/0+8/7+L8DONYJQ3fWVSioDtnywAJwCJWEJlOMQxkV4=;
-        b=Qfth9y45ntR2thkAEGCu3TBNP3WsgCjQ4ZU/nAKuy9LV/hpVtIPLU67ujPaqelLUDH
-         2aZI7UjePaoUcwmQKqxHsNVjb/+letPon32PB7EZ+lE7WitP5B9LvyweU9Ba1SrQ8Ers
-         eg8PK4F3aDNvXr9cMVnJa0qbPtqghxOsNJSyiTO8gwqQ6lhOnhgRIMclJat73fEf+vJ2
-         rqYLwcwywX6K9z2uCME4xxuadWp5i5FEuTzGYkMtfDT+cwL3Le7kI1RUffeUAwsHjqll
-         WzRnVv5Uv/JnrQ1Ru+M7rzDlZL5BHE5EjQcBc0fD4fK5EUN9icgfznB192ozj+DCWWMU
-         Jaug==
-X-Gm-Message-State: AFuF++lSUkG7QK1VBuxizgrPsRchEr3kjdClvB+CVDoQs5Nv+nyTFNI+
-	AcaGPTZztZ29ejxC43FKQ0MPDHHNPGoX83qFUqq7uqIKWIDobcshIkdCljyJlmxfykz7+kyTQhC
-	IQ68ojVIgwy8zFw1MTLvYNA11vUV4KH+novI0wDpu8IqXGOr6onejIG3cDAAD6a+81u+VGmpFXh
-	wAMglyOawZSuJSV4auD4HiCgTLYX7gNSnHLd7uGuMbh9uIli+Cfhh1baml/rzu7w==
-X-Received: from dlbti5.prod.google.com ([2002:a05:7022:1b05:b0:159:4114:9dd])
- (user=danielmentz job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:7022:f90b:b0:149:c766:3629 with SMTP id a92af1059eb24-14f5c5e9661mr13770215c88.23.1791143444306;
- Sun, 04 Oct 2026 12:50:44 -0700 (PDT)
-Date: Sun,  4 Oct 2026 19:50:27 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UU+CFVso"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZP7RUSazbUCYQc8vlpeeeUeb+JmiWZavI9Ir+czWNn3MazRuB0rHUdxtWSkXbnNhBnrJDSkGXsd5grxQ2HflYRPKBstEILYp47AY6k2Cdr4oXOTbg6m35dAqVLX4duZWiJ6ptBOPVLbbuiJFi5yFQ1FrNrTFGw6p3sSL3pgpuJCg2imWNbsehTZ+LnKfNuQtGhwzgo1X98WFWXpkLfPGGgG56Xah/2hU6gaMjbr3JKQpdoELje7u/ycKTbXSCEslCU7t4ag6oN0QWXB8Avu6Q5CVwO/54tn7HlG1+m29XPZCuhhVU549ZCYTX5UycIsCDbA66ulqfrsI66X/+B1ZNA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gnvjIoBpiVa0v/G9CktuetqHt5VDy4vQhVI5IaYGwlk=;
+ b=dfCJ5o14OP6p6GG20rsFO1kGy+JUeWU3PzNddBWLFDAgAmUCgPNB93+mIdIkCwUQO6+a7Z/vUb5A0ROtUPJeCr8bCuE0EHD4hrR8OEjJYfELbY8x4LlY0XK0oaG/36x5X6QSOGDG8WLeNeOphbToxAZgehoz9+IGHB4RFlkoQ/fBszlsSJvkDK/9yaT2NJbkseGF7j882Zwe/fsY5cBQ3FOZNm6t/zl5F46rn4fBTHVcDYTqqwTnveL8yTDjm0ZJMFVBTUgLnq/21xh5N+0oIBsSBoBuBaAkyTlv8DsRYuArH1eOVRaMtr2oxv/pLuxrD5phTqaXHSlIt6OOOK0Qtg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gnvjIoBpiVa0v/G9CktuetqHt5VDy4vQhVI5IaYGwlk=;
+ b=UU+CFVsokl+HIlN/l0Hz5DC7h92/0/sPS6hsyV7l/0++9FhfJJTV6VwrNTWiUDOPAPJgUCRiMrPvArU/ZfDu8HwjBdZtbNulIXFrftrbX+JpBWWcZVOZrTnuMhQKWH4GLgUhHnnuVBZwuxu8fKEV9ekAvIMx07j0e8tyoFAjzlHRylFaofAuYp4QgpNAFUOZ0rII+sj6gREFL96MgBKytrzEa0ZaCc+FjGZQGvF2l+IWvb1wl4OKybmfNlrKNz3aYHJiagPBuycxPXawoPHLZwCbSLCsLpZLJhmd5/qe41E24rTvu/VbjJzJ6Hzz/6lCYlswl1YTQIMsxlcoZOMxlQ==
+Received: from PH8PR22CA0004.namprd22.prod.outlook.com (2603:10b6:510:2d1::19)
+ by DS0PR12MB7970.namprd12.prod.outlook.com (2603:10b6:8:149::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.18; Sun, 4 Oct
+ 2026 20:21:06 +0000
+Received: from SN1PEPF000397B3.namprd05.prod.outlook.com
+ (2603:10b6:510:2d1:cafe::54) by PH8PR22CA0004.outlook.office365.com
+ (2603:10b6:510:2d1::19) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.20 via Frontend Transport; Sun, 4
+ Oct 2026 20:21:06 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.118.233) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ SN1PEPF000397B3.mail.protection.outlook.com (10.167.248.57) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.472.14 via Frontend Transport; Sun, 4 Oct 2026 20:21:06 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Sun, 4 Oct
+ 2026 13:20:55 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.49; Sun, 4 Oct 2026 13:20:55 -0700
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
+ Transport; Sun, 4 Oct 2026 13:20:54 -0700
+Date: Sun, 4 Oct 2026 13:20:52 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Will Deacon <will@kernel.org>
+CC: <robin.murphy@arm.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<praan@google.com>, <kevin.tian@intel.com>, <smostafa@google.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <jamien@nvidia.com>, <kas@kernel.org>
+Subject: Re: [PATCH v10 03/13] iommu/arm-smmu-v3: Add ARM_SMMU_FEAT_EVTQ for
+ the event queue
+Message-ID: <asK1JIsTay1yeBEU@nvidia.com>
+References: <cover.1788130528.git.nicolinc@nvidia.com>
+ <b6493aeece86f44195e8afb6fb8b3497cc237dc2.1788130528.git.nicolinc@nvidia.com>
+ <asJTer4cNh4DAQMY@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
-Message-ID: <20261004195027.227748-1-danielmentz@google.com>
-Subject: [PATCH v2] iommu/arm-smmu-v3: Align memory attributes for
- SMMU-originated accesses
-From: Daniel Mentz <danielmentz@google.com>
-To: iommu@lists.linux.dev
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	nicolinc@nvidia.com, smostafa@google.com, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	dawei.li@linux.dev, jgg@ziepe.ca, praan@google.com, 
-	Daniel Mentz <danielmentz@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <asJTer4cNh4DAQMY@willie-the-truck>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF000397B3:EE_|DS0PR12MB7970:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9f866ae4-3db0-41a3-8506-08df2255051f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|1800799024|7416014|376014|82310400026|23010399003|11063799006|56012099006|4143699003|10067099003|18002099003|22082099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	CVZqiiL7ZbkBezhDIyAqZK6qmyy2q4uldMa40UKX113CaEmWNEVT8mku2YGEo3G1/bPNonMF4ybZKSzFfWApx3MSeFa7AwVLzZRwHdLSDsNt5D65X+zS2MPfKLKK4QiPKkJV+VoAfaRRHE+svivKqg+WYDYtAlBBBaRKb4y6NABI0cwsOzY/voQxNBa54pYj7fh6hMB10S8NBQiRDxya1E9khYQC7xxMXcg6bCERJegJV+CmwG2csRo6IW3ofkOc3bOkdvOQZCeUibQrObqD2LRGChkIM8AdFhYGjZnYM13oO4kQ2eEGBKvhXD6wldYYpEvgsG6FBd9l5fVEKd//FTk84siD5gTrY8YV01DLVXFl7wGX0RfBJNLoozYLVhCUHSx9TUzIuZNvzRA4ECJ4DtPB6TGgFjbrdrBjzHjhLj/CtvRMgSCaHHDEBrnP+GZFPIfHHKUuk1TIzm5Ato4hRqX0foh/YHcEjbaUEdlWjUT9Sqpv4yiSHIbbA/WN5yzyUj/s7edKlQtblZdbuJJaBe8kYn8dXit4wbz77jR39gqpNFl0u54zh02FtprgBL50GF/qTMOuvg2W+1uUpMgxHf+pO9I/siS6HwVMy92beqCMkamz11lHNdYfJ304cY6qLksQK2MPhx5sXJQotc49dyyrMYdKYb+/ENBt9lafVuJoO/Kub0BhMOiH2jG+KwQ5/MFalnBBSwSR9UFlA4qIFw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(7416014)(376014)(82310400026)(23010399003)(11063799006)(56012099006)(4143699003)(10067099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	5sTOE5zCtw2AXDvFX4TriSn+7bTaQgEjU4/RtMx8ME7OHL0wl/iSPp/QmPcFTxD3ntCpAQo1xgcaypSwGT8Vw4xBs2qj4UqduRRx/usDffvebLxD/gG6JHUqBJPqdH3FgcH7PLq5d0wUWjV6/ZSVFtOgJCZW1k42saFkHhtu4VJ5QqtuqtGbqTVPIdrMRJENknm4HQNjBRRGlbyBeNF4/cTqzqEaT1pMlrQsS4AWL+/0zb88GzgpBfWgP6DZmi2zjSyMS9nzoyDAff09dGSlVWyRXrVCLkPB9TFLjd+Z3v+ohLmuLV6URgzbsFETvSLEdvRsFSnnY3eL1YK8nw257Sh5RV4BTDZv5Fd1UdFMH8EGgX4Eg4AAiI7rMYVrpW/evGagDSH9qhLAh5q88E7+EGUsTdVw7HoLqDhbUdht8edtl+5x39kHvD32yRv0RY3Y
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2026 20:21:06.2010
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f866ae4-3db0-41a3-8506-08df2255051f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF000397B3.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7970
 
-The SMMU specification defines several types of SMMU-originated memory
-accesses, including Stage 1 and Stage 2 translation table walks, stream
-table accesses (L1STD and STE fetches), CD table accesses (L1CD and CD
-fetches), and queue accesses (CMDQ fetch, EVENTQ write, PRIQ write).
+On Sun, Oct 04, 2026 at 02:24:10PM +0100, Will Deacon wrote:
+> On Sun, Aug 30, 2026 at 04:18:04PM -0700, Nicolin Chen wrote:
+> > The driver programs and enables the event queue unconditionally, while the
+> > PRI queue has an ARM_SMMU_FEAT_PRI gating each of its touch points. Yet a
+> > kdump kernel wants to leave both of the queues alone, which would take an
+> > is_kdump_kernel() test at every one of those places.
+> > 
+> > Add an ARM_SMMU_FEAT_EVTQ that the probe always sets, as the event queue is
+> > architecturally mandatory, and gate the queue's allocation, its interrupt
+> > and its CR0 and IRQ_CTRL enables on it, so that a later change can turn the
+> > queue off in a single place.
+> > 
+> > No functional change intended.
+> > 
+> > Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> > Assisted-by: Claude:claude-opus-5
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 79 +++++++++++++--------
+> >  2 files changed, 52 insertions(+), 28 deletions(-)
+> 
+> Sashiko has comments about the event queue MSI configuration for this patch.
+> Please can you have a look?
 
-While the memory attributes used for Stage 1 and Stage 2 translation
-table walks are configured in io-pgtable-arm based on whether the SMMU
-is coherent (ARM_SMMU_FEAT_COHERENCY), the attributes for stream tables,
-CD tables, and queues are currently hardcoded to Inner Shareable,
-Write-Back.
+Sashiko raised those because it doesn't read subsequent patches.
 
-On non-coherent systems, however, memory for stream tables, CD tables,
-and queues is allocated via dma_alloc_coherent() /
-dmam_alloc_coherent(), which provides CPU mappings with Normal
-Non-Cacheable attributes. Having a non-coherent SMMU access these
-buffers with Inner Shareable, Write-Back attributes results in
-mismatched memory attributes between the CPU and the SMMU.
+And I left them as-is because I don't think they worth a change:
 
-Configure the memory attributes for tables and queues in
-arm_smmu_device_reset() and arm_smmu_make_cdtable_ste() based on
-ARM_SMMU_FEAT_COHERENCY, matching the attributes used for translation
-table walks:
+1. IRQ_CTRL_EVTQ_IRQEN is never enabled in the kdump mode, so that
+   ARM_SMMU_EVTQ_IRQ_CFG0 line shouldn't matter.
 
-- In SMMU_CR1, use Outer Shareable, Non-Cacheable for non-coherent
-  SMMUs, while retaining Inner Shareable, Write-Back for coherent SMMUs.
-  This applies to stream table accesses as well as queue accesses (CMDQ
-  fetch, EVENTQ write, PRIQ write).
-- In STE.{S1CIR, S1COR, S1CSH}, use Outer Shareable, Non-Cacheable for
-  non-coherent SMMUs, while retaining Inner Shareable, Write-Back
-  Read-Allocate for coherent SMMUs. This applies to CD table accesses.
+2. arm_smmu_write_msi_msg() is never called in the kdump mode since
+   devm_request_threaded_irq() is guarded with ARM_SMMU_FEAT_EVTQ.
 
-Assisted-by: LLM
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Daniel Mentz <danielmentz@google.com>
----
-Changes in v2:
-- Rename local variables 'cache' and 'sh' to 'cr1_cache' and 'cr1_sh' in
-  arm_smmu_device_reset() (Nicolin, Will)
-- Collect Reviewed-by from Nicolin
-- Link to v1: https://lore.kernel.org/linux-iommu/20260929032229.3532247-1-danielmentz@google.com/
+Sashiko is only right about the small waste of the MSI vector since
+it's unused. But, that nvec decrement trick only works for PRIQ, as
+its MSI index is at top of the list:
 
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++------
- 1 file changed, 27 insertions(+), 10 deletions(-)
+   enum arm_smmu_msi_index {
+	EVTQ_MSI_INDEX,
+	GERROR_MSI_INDEX,
+	PRIQ_MSI_INDEX,
+	ARM_SMMU_MAX_MSIS, // "nvec--" shifts up this, skipping PRIQ
+   };
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 34e916ea339f..02cc6fb83461 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1905,6 +1905,15 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
- {
- 	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
- 	struct arm_smmu_device *smmu = master->smmu;
-+	u64 s1c, s1csh;
-+
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENCY) {
-+		s1c = STRTAB_STE_1_S1C_CACHE_WBRA;
-+		s1csh = ARM_SMMU_SH_ISH;
-+	} else {
-+		s1c = STRTAB_STE_1_S1C_CACHE_NC;
-+		s1csh = ARM_SMMU_SH_OSH;
-+	}
- 
- 	memset(target, 0, sizeof(*target));
- 	target->data[0] = cpu_to_le64(
-@@ -1916,9 +1925,9 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
- 
- 	target->data[1] = cpu_to_le64(
- 		FIELD_PREP(STRTAB_STE_1_S1DSS, s1dss) |
--		FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
--		FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
--		FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
-+		FIELD_PREP(STRTAB_STE_1_S1CIR, s1c) |
-+		FIELD_PREP(STRTAB_STE_1_S1COR, s1c) |
-+		FIELD_PREP(STRTAB_STE_1_S1CSH, s1csh) |
- 		((smmu->features & ARM_SMMU_FEAT_STALLS &&
- 		  !master->stall_enabled) ?
- 			 STRTAB_STE_1_S1STALLD :
-@@ -5102,7 +5111,7 @@ static void arm_smmu_write_strtab(struct arm_smmu_device *smmu)
- static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- {
- 	int ret;
--	u32 reg, enables;
-+	u32 reg, enables, cr1_cache, cr1_sh;
- 
- 	/* Clear CR0 and sync (disables SMMU and queue processing) */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
-@@ -5116,12 +5125,20 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- 		return ret;
- 
- 	/* CR1 (table and queue memory attributes) */
--	reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_ISH) |
--	      FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_WB) |
--	      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_WB) |
--	      FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_ISH) |
--	      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_WB) |
--	      FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_WB);
-+	if (smmu->features & ARM_SMMU_FEAT_COHERENCY) {
-+		cr1_cache = CR1_CACHE_WB;
-+		cr1_sh = ARM_SMMU_SH_ISH;
-+	} else {
-+		cr1_cache = CR1_CACHE_NC;
-+		cr1_sh = ARM_SMMU_SH_OSH;
-+	}
-+
-+	reg = FIELD_PREP(CR1_TABLE_SH, cr1_sh) |
-+	      FIELD_PREP(CR1_TABLE_OC, cr1_cache) |
-+	      FIELD_PREP(CR1_TABLE_IC, cr1_cache) |
-+	      FIELD_PREP(CR1_QUEUE_SH, cr1_sh) |
-+	      FIELD_PREP(CR1_QUEUE_OC, cr1_cache) |
-+	      FIELD_PREP(CR1_QUEUE_IC, cr1_cache);
- 	writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
- 
- 	/* CR2 (random crap) */
--- 
-2.56.0.rc1.315.gc6ed9934b7-goog
+On the other hand, EVTQ_MSI_INDEX is at 0. Skipping it would need to
+shift the entire index list; struct arm_smmu_msi_cfg would not work
+straightforwardly as today.
 
+Nicolin
