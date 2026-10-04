@@ -1,43 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76B861F5821;
-	Sun,  4 Oct 2026 13:25:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BABB2199920;
+	Sun,  4 Oct 2026 13:43:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791120314; cv=none; b=qmjZUF+OtSbiCzQiJYY4u/jloN+caZOWBDvkWYzk5207Nuah6P/KVR5wOGgko3ThjOrrqykBNJSjo+xc+Efl8ihlpp/dYZWY6EoktQ4pKKI3RaFc5hdkC66C2f/EHpVXUZhmWPaq45F7+LWEQuQWNGC1YApi0AbE/U/BmwLc/zU=
+	t=1791121422; cv=none; b=tW/bkI/jOsarJeWnz/SIzcljk6m4+UrXnI8O874Q8sfPuxvnqgpaGcdyhTzjPEf2HiMk9gaBB/CvDOSlsEyDhvQC9nSPNXxNBGcmYeTNaq82IuXN3CjvM2RILGOiUDMe5IGrgP9Hk3Hs8jtoG5X/O/AWX2TZ3c9CQ2WdFME1AY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791120314; c=relaxed/simple;
-	bh=KHUX7DP5Hz7DZRHoaUZIOSzT1VpKb3R1L2CP9fea+Wc=;
+	s=arc-20240116; t=1791121422; c=relaxed/simple;
+	bh=pnM8FL0ybhA47wliAPvpkvg/bQFuT8QP5JjHEhOeIRQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qmeECP0waQfzAEVsiDiQ+pkcuy7ilKIrDQVplSfyerWNq83a+iTGXoh/chF08PSXAyyVmB632wpitfcS6Nrl43Pf8sVS/isebR1I1xEnQofdb42wTUIFBx1GyWAQ1zPLOhwtKX4XtuHr5d8xcScBuhfujuMgE8LECikDmtVYOto=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SLs041OM; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Pc6c72LGclIyX+W0vU2D6bMD/WYEIhSzlwiu4Ez6cln656d2BsgtByQpi7IqPnJ043rW+vY6bADt9Q/qsP1KMl+gODnz29N9jA9sivV8eaM78XkhIFl/jPS4iEqpwWe7ikxcM3GisOg6vHuCZZ/5J4qroR5Ex5r9utx3pjDevJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RBhKWZwQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SLs041OM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EC3E1F000FF;
-	Sun,  4 Oct 2026 13:25:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RBhKWZwQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2237B1F000FF;
+	Sun,  4 Oct 2026 13:43:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791120312;
-	bh=S8JfRD9GH3BjKxXE7cm8G7Z8e3QaQRCrAiAXcY8gZC8=;
+	s=k20260515; t=1791121421;
+	bh=cart4aroCADpkmuYa0nf9U9evT/n9aZirEJ8Fg6h6N0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=SLs041OMqUBDLcrFW9c/GkDb/XulJnQ6qacHbf76qKFlynOEgOOY0oK/kN8xMGO8C
-	 FlHjvUabzVxWFcmsl4TwHKIe8DklPjc+NakROBRwVA+1sarDYZEztNAUiKiXnvIk5Q
-	 I1n8sXStb0r4oyTPNkrdjhGe6ei+eoYA2bYkhJojIpOr0uvQ9036Mf256RxlzuaCu5
-	 QSzFAUX3O99Yr+tMe+CyP6OK2NKh4nzIj/iicbXYHL6XfqRRn2TeZvLtWzUKhdIayF
-	 bsDhpSh6Zdumc8KVkI6YtZDviz2PK9sJS0bqkWovnWkK+tK8AXEYSAxgEj1uisxX6u
-	 EaUBzQ/eVrJkA==
-Date: Sun, 4 Oct 2026 14:25:07 +0100
+	b=RBhKWZwQoqVRPgABpKUBw2m1iBnKwBRS8e4lwcs4mZ0ezvhFPwQ/qiagGCgYoJlvd
+	 jbPda7CHLgMQ9E0vt7Vz2PdBNP4zJ9xX+fjK3oAwJoYrB80I5MskYqFVKT1KrS5YG/
+	 LtktnVLfp6tIjGjVdaWULRbMUwRMH5uLhISHJPjVSMynmYWaOg2eOVU7gLrjhhUDRc
+	 oJeeraSRS1XQm3CstRdRDNMNrwEg32d9UZ99oWf2QmecCF/nloSpdoj8kdQ/XUtjb9
+	 5O7P6PZaup8SxVxeiK8b0YPlbbd+4RDjB87WoDT/AWpMhS7OdhQZxZuGmCjT4PcgI4
+	 j0J/6E/EoFkMg==
+Date: Sun, 4 Oct 2026 14:43:33 +0100
 From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: robin.murphy@arm.com, jgg@nvidia.com, joro@8bytes.org, praan@google.com,
-	kevin.tian@intel.com, smostafa@google.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, jamien@nvidia.com, kas@kernel.org
-Subject: Re: [PATCH v10 06/13] iommu/arm-smmu-v3: Add
- ARM_SMMU_OPT_KDUMP_ADOPT for kdump kernel
-Message-ID: <asJTsw-oWDlSqNa3@willie-the-truck>
-References: <cover.1788130528.git.nicolinc@nvidia.com>
- <d661395d986d3aa78af200f55e43740996ee8a0f.1788130528.git.nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+	Mark Rutland <mark.rutland@arm.com>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	David Matlack <dmatlack@google.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev,
+	Pranjal Shrivastava <peaan@google.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>
+Subject: Re: [PATCH v8 8/9] iommu/arm-smmu-v3: Change how the tlbi describes
+ the invalidation
+Message-ID: <asJYBfMe_qf5Nbn-@willie-the-truck>
+References: <0-v8-1eaaed5e0433+3d3d2d-smmu_tlbi_jgg@nvidia.com>
+ <8-v8-1eaaed5e0433+3d3d2d-smmu_tlbi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,99 +61,99 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d661395d986d3aa78af200f55e43740996ee8a0f.1788130528.git.nicolinc@nvidia.com>
+In-Reply-To: <8-v8-1eaaed5e0433+3d3d2d-smmu_tlbi_jgg@nvidia.com>
 
-On Sun, Aug 30, 2026 at 04:18:07PM -0700, Nicolin Chen wrote:
-> When transitioning to a kdump kernel, the primary kernel might have crashed
-> while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
-> driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
-> and setting the Global Bypass Attribute (GBPA) to ABORT.
-> 
-> In a kdump scenario, this aggressive reset is highly destructive:
-> a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
->    PCIe AER or SErrors that may panic the kdump kernel
-> b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
->    the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
-> 
-> To safely absorb in-flight DMAs, a kdump kernel will have to leave SMMUEN=1
-> intact and avoid modifying STRTAB_BASE, allowing HW to continue translating
-> in-flight DMAs reusing the crashed kernel's page tables until the endpoint
-> device drivers probe and quiesce their respective hardware.
-> 
-> However, the ARM SMMUv3 architecture specification states that updating the
-> SMMU_STRTAB_BASE register while SMMUEN == 1 is UNPREDICTABLE or ignored.
-> 
-> This leaves a kdump kernel no choice but to adopt the stream table from the
-> crashed kernel.
-> 
-> Introduce ARM_SMMU_OPT_KDUMP_ADOPT and adopt functions memremapping all the
-> stream tables extracted from STRTAB_BASE and STRTAB_BASE_CFG. Add them in
-> a new arm-smmu-v3-kdump.c, which is only built when CONFIG_CRASH_DUMP=y.
-> 
-> Note that the adoption of the crashed kernel's stream table follows certain
-> strict rules, since the old stream table might be compromised. Thus, apply
-> some basic validations against the values read from the registers. If tests
-> fail, it means the stream table cannot be trusted, so toss it entirely. To
-> avoid OOM due to a potentially corrupted stream table, the memremap for l2
-> tables is done lazily on the kdump kernel's demand.
-> 
-> The new option will be set in a following change, once the device reset and
-> the RMR setup are reworked not to overwrite the adopted stream table, and
-> the crashed kernel's in-use ASIDs and VMIDs are reserved.
-> 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Assisted-by: Claude:claude-fable-5
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/Makefile        |   1 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  21 ++
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c | 229 ++++++++++++++++++
+On Fri, Oct 02, 2026 at 10:23:27PM -0300, Jason Gunthorpe wrote:
+>  /*
+> - * Generate up to two range TLBI command payloads covering [iova, iova+size).
+> - * Sets use_full_inv if the range is too large to represent.
+> + * Compute the TTL hint from leaf/table level bitmaps. 0 ttl means no hint
+> + * invalidate all levels.
+> + */
+> +static unsigned int arm_smmu_compute_ttl(u8 leaf_bitmap, u8 table_bitmap,
+> +					 u8 tgsz_lg2)
+> +{
+> +	int ttl;
+> +
+> +	if (leaf_bitmap) {
+> +		/* If TTL is used then only leaves at the TTL are invalidated */
+> +		if (!is_power_of_2(leaf_bitmap))
+> +			return 0;
+> +
+> +		ttl = arm_smmu_bitmap_to_level(leaf_bitmap);
+> +		if (table_bitmap) {
+> +			int table_ttl =
+> +				arm_smmu_bitmap_to_level(table_bitmap) + 1;
+> +
+> +			/*
+> +			 * A range invalidation with !leaf_only clears out all
+> +			 * table levels above the leaf level ttl only.
+> +			 */
+> +			if (table_ttl > ttl)
+> +				return 0;
+> +		}
+> +	} else if (table_bitmap) {
+> +		/*
+> +		 * Table-only invalidation. Spec says:
+> +		 *  For operations with Leaf=0, invalidation of cached Table
+> +		 *  descriptors for the address and scope additionally occurs at
+> +		 *  levels between the start of the walk and the level before
+> +		 *  the last level given by TTL.
+> +		 * Choose a TTL hint that covers the only target table
+> +		 * descriptor levels.
+> +		 */
+> +		ttl = arm_smmu_bitmap_to_level(table_bitmap) + 1;
+> +
+> +		/*
+> +		 * 16K granule, ARM TTL=1 is reserved (SMMUv3 H.a Section
+> +		 * 4.4.1.1) if DS=0, avoid it always for table invalidations
+> +		 * since we don't know what instance this will be applied to
+> +		 * yet.
+> +		 */
+> +		if (tgsz_lg2 == 14 && ttl == 1)
+> +			return 0;
+> +	} else {
+> +		/* Both bitmaps zero is not allowed */
+> +		WARN_ON(true);
+> +		return 0;
+> +	}
+> +
+> +	/*
+> +	 * Assumes the page table is formed properly and does not trigger the
+> +	 * 16k TTL=1 condition for leaf-only unless DS is enabled.
+> +	 *
+> +	 * ARM level -1 never has a leaf so something has gone wrong. ARM Level
+> +	 * 0 cannot be hinted because ttl=0 means no-hint.
+> +	 */
 
-Please don't put this here. The live update / handover stuff is going to
-need very similar logic (see the RFC from Pranjal) and I don't fancy
-having to rename or resplit this file when that comes along.
+nit: This isn't strictly true for the non-range invalidation operations, so
+I think it would be handy to have a big note saying that this function only
+works for range invalidation or even stick "range" in the function name
+somewhere.
 
-Maybe just stick all of arm-smmu-v3-kexec.c and arm-smmu-v3-kdump.c into
-arm-smmu-v3-handover.c or something?
+> @@ -2917,12 +2998,17 @@ static void arm_smmu_tlb_inv_walk(unsigned long iova, size_t size,
+>  				  size_t granule, void *cookie)
+>  {
+>  	struct arm_smmu_domain *smmu_domain = cookie;
+> +	u8 tgsz_lg2 = smmu_domain->tgsz_lg2;
+>  	struct arm_smmu_tlbi tlbi = {
+>  		.tgsz_lg2 = smmu_domain->tgsz_lg2,
+> -		.iova = iova,
+> -		.size = size,
+> -		.iopte_size = 1 << smmu_domain->tgsz_lg2,
+> +		.start = iova,
+> +		.last = iova + size - 1,
+>  	};
+> +	u8 table_levels =
+> +		BIT(arm_smmu_pt_lg2sz_to_level(tgsz_lg2, ilog2(size)));
+> +
+> +	tlbi.table_levels_bitmap = table_levels;
+> +	tlbi.leaf_levels_bitmap = table_levels - 1;
 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c
-> new file mode 100644
-> index 0000000000000..a074d59ce3445
-> --- /dev/null
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c
-> @@ -0,0 +1,229 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Implementation of the kdump stream table adoption for ARM SMMUv3
-> + *
-> + * When the crashed kernel left the SMMU enabled with in-flight DMAs, the kdump
-> + * kernel adopts the crashed kernel's stream tables, instead of doing a regular
-> + * reset, to keep in-flight DMAs translating until the endpoint device drivers
-> + * re-probe and quiesce their devices.
-> + *
-> + * Note:
-> + *  - Adoption only starts on an SMMU that the crashed kernel left enabled, as a
-> + *    disabled SMMU (CR0_SMMUEN=0) could hold meaningless register values.
-> + *  - Values read from the crashed kernel's registers get structural validation
-> + *    only (format, size, span, alignment, and ID range); the physical addresses
-> + *    are not vetted, as the kdump kernel has no record of which pages held the
-> + *    tables.
-
-Can we at least check that they don't point at the kdump region?
-
-> + *  - A structural inconsistency at adoption time tosses the entire adoption and
-> + *    makes the SMMU fall back to a full reset blocking in-flight DMAs.
-> + *  - L2 stream tables are adopted lazily at master-inserting time, to bound the
-> + *    peak memory use against a corrupted L1 table; any lazy L2 adoption failure
-> + *    rejects that device alone, as its blast radius is bounded to the bus.
-> + *  - Only a coherent SMMU (ARM_SMMU_FEAT_COHERENCY) is supported, as the stream
-> + *    table adoption is done by memremap with MEMREMAP_WB, which is verified on
-> + *    the real hardware. Callers of these functions are responsible for gating
-> + *    ARM_SMMU_FEAT_COHERENCY once during the probe.
-
-This is an artificial restriction and not one that I'm wild about for kdump:
-we should be able to support this for non-coherent SMMUs as well. Is there
-anything more to it than using MEMREMAP_WC in that case?
+I'm having a tough time understanding this part. Specifically, I'm trying
+to work out what happens if we end up doing a non-leaf invalidation at the
+PGD (1GiB) level with leaves at the PTE (4KiB) level. In that case, don't
+we need to have table_levels describing both PGD and PMD levels so that
+the TTL describes the 4k leaf entries?
 
 Will
