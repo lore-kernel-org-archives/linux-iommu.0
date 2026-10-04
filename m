@@ -1,61 +1,61 @@
-Received: from out162-62-58-211.mail.qq.com (out162-62-58-211.mail.qq.com [162.62.58.211])
+Received: from out162-62-58-216.mail.qq.com (out162-62-58-216.mail.qq.com [162.62.58.216])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D186D421251;
-	Sun,  4 Oct 2026 13:04:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E3B645040B;
+	Sun,  4 Oct 2026 13:04:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.58.216
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791119061; cv=none; b=dbFvqR+pV46YMque4PEe1C6Bbcqc/yJ+ON7i0F3+W+NUFi23htxqD6/0kELxZyqJ0tzcxhUfpSIUCYtsespiSA3ILOn4bTPP6Puw532bAjLOdLvi0D8++t724saEXGlMlAgKA+4M10tXYQKregFeoRTdp4YAtugV+8O4ZMEyAvk=
+	t=1791119071; cv=none; b=J1Pe6i60QetdLbw49TsliGDqF0oBTy300YFZ0wWByaM+fkd8aG+T/GITsoOzI3Xx4d7KsPay1I0wpaRL5I+zgGOPEIYbFiVuaQK9oLev9PYbox5iAyWjdBVH+hBSHyAgLIqKSNt9yy2srOUq7IkKCVse8GnknD5YRU7Z13GJLu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791119061; c=relaxed/simple;
-	bh=rTrPGs/6gIYXgawRDaWv1j0V8mqrl6e2mJv8wMh56MU=;
+	s=arc-20240116; t=1791119071; c=relaxed/simple;
+	bh=VvpL7/jS27aEMVBz78ArV0ueZqdb0AcM3oTX0rxFptU=;
 	h=Message-ID:From:To:Cc:Subject:Date:In-Reply-To:References:
-	 MIME-Version; b=LPn1ISxQUhTdQh5y8p2UQB0EqO6IWn+TMsumhTxxUa7gbEbdS/PzQ+XMVolsPNaXKbplj/njSIWFm+/161tBPaiO9codDjofH3AS3hF4+LmnpUNkwExkQrIhVxPvU7A8tu39kt60laA61KRM8jXZXzOI6rMQBYRMC3khvVSDqVo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=mtRHSUJf; arc=none smtp.client-ip=162.62.58.211
+	 MIME-Version; b=YdFKF9JZ3EUXOdq6Ja5Lm83I6O90T3bCLkIHVwYlhFrt1p3MfDY3UO18m+cAbBAfGNSkuJXYsRwv9hTfL8my3xbAzGn7a8hWc4SfB3F3+f2wMrQYKJul6t8P0roK/gfuvK4qbbx8Rx3zO/rFFW6D39rKhQ7YP0j1LIsXosKKgK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=O0wHyuIL; arc=none smtp.client-ip=162.62.58.216
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="mtRHSUJf"
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="O0wHyuIL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
-	t=1791119055; bh=1sUK1jwzkfXeuosRyWgebZbS7VsC96r41xwmpwXMUQ8=;
+	t=1791119064; bh=uzRS4yFR6AumHCkERSa+89uFhChWocAdxVFoUjMRQSY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=mtRHSUJfGIxbE3UQMBSNTwEXX4KHlcRUqBMVZ+YsU5+oOYc8iuK5EZkj7gRnFnbUy
-	 q9A0dQITucL13wBQVI8ZZyHyi613vC8kca17JQZP65jZ9cSJ2WFZ+3tceX2mr8mlKt
-	 phNzq+evbs9TwBGnbZWL99/GBYgkbz9V9dz4O2co=
+	b=O0wHyuILQ3pdJ8LuwuI4qy21zcMQOhF9nklQvko7gImG/pX7hNQoXpJbIrR8maH9t
+	 CCH6wyNgnejkgKyoKhRajIfkr8uaiRZpclE1rGyhXZX8GRQS34tNePs4k8mZCMUhDv
+	 EjI3ce/Q9/f4JJmRH4Z1QGvOB+rAD3buypNjG2VA=
 Received: from xiuos ([2001:da8:201:1175:6e92:bfff:fe3b:37c3])
 	by newxmesmtplogicsvrsza63-0.qq.com (NewEsmtp) with SMTP
-	id 1070AA28; Sun, 04 Oct 2026 21:04:07 +0800
-X-QQ-mid: xmsmtpt1791119047t3apx62qw
-Message-ID: <tencent_0775C96A4F2A7BB91937DF8EA13FEAACAA09@qq.com>
-X-QQ-XMAILINFO: OOO9dHjlsLs7iatHntpbBYiOSPtdbAHahXXXGypKHpgKYr2YnfIg3h2Lx2mMhz
-	 GlrqVDrgjg/wyj3O5pdyW1aWisVVm2k36TZrTTIAhWwCql0m7Vo4/nPX4mbTlVIqtpvZ32TaWhwv
-	 3m8Qh1QO4R9AXOiUm/NWQJesbJNFiDIwKEdqKMbjckzccwOyhN2Wqm/0ZMR0AHxBpG/WQvQcryN/
-	 TxJfduy6NBHjZk7p4f8OsJ0/fS3eQ2bDX5Duf4FyyTQseFnhLbh6WnYc6vBYlzY2KC8g8oHA5JWf
-	 rSB6QI2QG0MkpfPccFQ0lcUfoXfHNHXDkLKz8UgpSA7LFb1Kd0CxY+4zi7Wh667aN+44s1AQaLb+
-	 8PkINq+oq+Kak9mdBOg5sK27CEEF+UkBcA57Tl+Zi6Bl3TTbYr2m/nuzmmTKQJ5Xljk9yXSMWVc2
-	 BctqQqqr7bqfeHa1k0ne+dBA0QoWdetQKFIsyGSA14ELqLWd9Fa0KASPTccpmMH/G9/ItcnuzS2W
-	 41+lne+7qg5/JkUk8SbDUhDwq5Xs/MfdMKBJMviJ93tiaecJ+qAfYAEjb48Qpxa0eiIz0HW3vCh7
-	 HiY/t6jR61SVv9LHcuGilKdAvJayNSvrWjMK4CahxOC6ruOhT0Ivf/eFqUm89tQLnIHtavI/MeV8
-	 79+xe9lWbwTiOXB0r5ATl7W5ojPxYZwJw+DOPXi8RygrA8Hl9CacUuScVtcyVruiANhm4CN+Ok/N
-	 iDmNOQcWXDslUdi7vEl6q+7hF08kFGTYeYfb/VJnWAI/UZjYlgQsSGggqxfeFU8U44Tx/I3eKlBg
-	 5HKExglpMolgxps+R2MqWhWx4F4FIQvjQRQeLasOdaqcqpOKBaMLUwVxN4KRO37cc4mKw8oiyuXh
-	 YWt2pSoFa/FQZU1LSBDrVVDWWhn3ShfuOX9EDOi/xjITW78tXhKm+aRMbE62xM5heItpVhBnB7vV
-	 r1ucE4rHZ6SfppSwfs7ZSYrl0NZ0K4pDYl1mK6i1K58Q+FsyrQkDWcNIj5cQ1fPqazEO1xX5mLc2
-	 2hw5s/04vt8n6ixY/KbnFQxQnVJ1b2VsjmvPCakHeFB0d6DsCVMGAJ96VOUmW2aS27Q9Pp28u37p
-	 /9WwsmONbnN7QdYOV2P+RVzvl1cvt3RkEs4MMhDi/HsCQAAuo=
-X-QQ-XMRINFO: OD9hHCdaPRBwH5bRRRw8tsiH4UAatJqXfg==
+	id 112866B8; Sun, 04 Oct 2026 21:04:18 +0800
+X-QQ-mid: xmsmtpt1791119058t5fb74n6a
+Message-ID: <tencent_93CC5A85EA5ED64E556670FF6FA21D4B7D0A@qq.com>
+X-QQ-XMAILINFO: NhlrMjhcHpE/XBp2d+IDCt2wXcboY29WL4wVWqFM+3+3EevxoVJSwaHXnY7qYr
+	 Bhp/HWG8bZoEx71WEWctpaMmFqusIst3s6UzkJBn9n2miYSSQqNRqf6gBYoFTZlLSl1EXPg1m3Zn
+	 /zpnr6M6Ah1b8oaj7H6DTPwNn48l3LjFX2dHlmN40G8RWN3yeHi+5AJWVmC+MRP+/+pQNGIDCSps
+	 FOSlq9m6WU3cBEYS8DF0/91rs7wGryHScL5isnEs74HNBVH7YDpmGlBxKAsYFXH308dy5dddAilM
+	 XNKcu22IXD6iPZ87403LqAlMLsPn1exdZs5TmgeHTO2Ax9WKo5hPanMnNeCanhYzvkv3D/GtwUHC
+	 IMPBl56p4n9LUvmfJuC/jOEVoGjyn75a0GknUoPzCf5LfXHkwKPpllxtXczuCOWTo4z5nCLOnwun
+	 1IlNpu36NRnzKp2PoPBNaVFMwJiywdA9Vi9KH7iZ0+EZFuMOWRli4O7FG8YoS27UEI0SVO7FKzL6
+	 3DyRHOzu2ZItXPzIr2PxcxuKm91HlJQY9ioWUTi4CgcQYfj6Ll5LsHY8dAw/cAJSvEPSrrLJqCXy
+	 zAP5wFj3nFzUsrjrKS516T+kr+3mEQPSE4h3atMZnywtcnHQipGs6BZ3m57VWDZffogGjJaZ54Ap
+	 lm2XSHVmjR99a2b3meUMPzbqlGks0M9CWsyBMTxxZaJVmWEGew9vU01tHB+zg0+5Ua0gE8SNR4kW
+	 bq+6o2S2MK2LIoqFK00hwDGMtmG56a1U6dP59y3xPRIR02JR9krxACyzkfZ0n+9MWsVp1fp4uCT/
+	 Ry28gYVEvG83n7JHY+rWGoKf0NXK1T907ueiozNrlv0DedFa8cFq/7WrMWqm6O6BH4qrUFKHhr7E
+	 onwd7sy9dLnAOfZkjZIw+YXAm3CDQyRjfEzSp7445c38ckdu6RDDvT7pkpwuz9Ti9YRV4Stn9C4D
+	 jNgYSpJVDM46ikhjCobmHq5yZm0Y9EE7zusBKfNCvY3kRChB0JvCmVJjEGhwkwnqhOZxlpph9K7m
+	 gZ+t8/FfYpVOTuTuKO2CkHr1c81DSZaeJDGX0GOKRPEVpJOJBQLGv7kDsg9Yotniz7HzNJcCFHK7
+	 mBtd0two0zOwFIxCyCmGAk/Dxy6tx29TLmf1Aa8dNAJI9DPXw=
+X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
 From: Anlai Lu <agicy@qq.com>
 To: sashiko-bot@kernel.org
 Cc: virtualization@lists.linux.dev,
 	iommu@lists.linux.dev,
 	"Michael S . Tsirkin" <mst@redhat.com>,
 	Eugenio Perez <eperezma@redhat.com>
-Subject: Re: [PATCH 4/6] iommu/virtio: stop queueing and draining once the device is removed
-Date: Sun,  4 Oct 2026 13:04:07 +0000
-X-OQ-MSGID: <20261004130407.3226174-1-agicy@qq.com>
+Subject: Re: [PATCH 6/6] iommu/virtio: batch the mapping replay on domain attach
+Date: Sun,  4 Oct 2026 13:04:18 +0000
+X-OQ-MSGID: <20261004130418.3226279-1-agicy@qq.com>
 X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261004120957.CEB961F000FF@smtp.kernel.org>
-References: <20261004120957.CEB961F000FF@smtp.kernel.org>
+In-Reply-To: <20261004121049.590941F0089A@smtp.kernel.org>
+References: <20261004121049.590941F0089A@smtp.kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,35 +64,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-> [Severity: Medium]
-> If a device is removed while IOMMU requests are queued but not yet synced,
-> does this early return bypass __viommu_sync_req() where those pending
-> requests would normally be freed?
-> When setting viommu->removed to true during teardown, do we also need to
-> iterate over the viommu->requests list and free any abandoned
-> viommu_request objects?
+This is the same issue as the report on 4/6: with the device removed,
+viommu_sync_req() returns without draining, and the requests left on
+viommu->requests are not freed anywhere either.
 
-Yes, they are left behind, and it is a real leak.  They cannot be freed at
-that point, though: the virtqueue still owns them - it holds them as the
-buffer data and has their scatterlists mapped - and the device may still be
-using them until it is reset a few lines later.
+Batching does not change its size: once the device is gone nothing can be
+queued anymore, and a request only enters the list together with a free
+descriptor in the request virtqueue, so what can be left behind is bounded
+by that queue's depth.  It is a leak all the same.
 
-The cleanup belongs after the reset and before the queues are deleted,
-where virtqueue_detach_unused_buf() releases both the object and its DMA
-mapping, as other drivers do at removal - and that is what the v2 I just
-sent does:
+Please see my reply to 4/6 for the cleanup and the reasoning:
 
-	vq = viommu->vqs[VIOMMU_REQUEST_VQ];
-	while ((req = virtqueue_detach_unused_buf(vq))) {
-		list_del(&req->list);
-		kfree(req);
-	}
-	vdev->config->del_vqs(vdev);
+ - the objects cannot be freed before the queues are torn down: the
+   virtqueue owns them (it holds them as the buffer data and has their
+   scatterlists mapped) and the device may still use them until it is
+   reset;
+ - after the reset, virtqueue_detach_unused_buf() releases both the object
+   and its mapping, which is where the loop belongs;
+ - the baseline did not clean up either, and would use-after-free the
+   deleted virtqueues instead.
 
-The baseline did not clean up either, but worse: with no removal state it
-would call virtqueue_get_buf() on the already-deleted virtqueues, i.e.
-use-after-free, rather than leak.  The flag turns that into "queueing and
-draining stop"; the loop above closes the loop on what is left.
+That cleanup is in the v2 I just sent.
 
 Thanks,
 Anlai
