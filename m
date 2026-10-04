@@ -1,149 +1,186 @@
-Received: from mail-qk2-f38.google.com (mail-qk2-f38.google.com [74.125.230.230])
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CA7C3CB56B
-	for <iommu@lists.linux.dev>; Sun,  4 Oct 2026 18:22:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.230.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E579400991
+	for <iommu@lists.linux.dev>; Sun,  4 Oct 2026 19:50:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791138149; cv=none; b=LlKg7ldNn/onyJkUNC+6O3Q3jz71wrzHCb/pgp6wzuR2wY8KR4jhoYALoscKC47/ZGzWhv/70oa1w44towNH+KD3qkKTmdr81OusbDvZ2Y8dkedH8EPaVcMyjDtQKRwqiBidtoWtApzXem/k2Ft7V5vRA7YBl+YUGeJbMPVvUEE=
+	t=1791143447; cv=none; b=i57lK6fff/vyLK9VCwbqtpr65lJwjCsYSAYjz/4orpzlGPvjTAeecLDoali1hNU5op42K3bLOqKFyhZ3ry4lZv5u8/hfGPpp1k3w5KcTnTav18/2wCh0U1kdbqq7hO8aHujCo/NgkHLWFraPWJFi72WmRNsaqAhRrYWV3ZXTizo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791138149; c=relaxed/simple;
-	bh=oWV1x6C2ME/T5Yb2MZ7o3ypqhTuzYDHLFIWMHTAMo24=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=S7huBDpx2v2zFpBAqsGcH7w/tHtMQPfoGnVvz7kXfjaRJZ79LI0la2KbqYppmZHv5rQD9oK762HQZ04+VhKVhIkO8ysJM4DFYmjcDbyEbFlGPUDek49JCmnx0sW60nzsCcWWLP/i5Ya7Xkp6COKBRuBaWQbUOlSX2EDibQzlJmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bgfM+iDu; arc=none smtp.client-ip=74.125.230.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791143447; c=relaxed/simple;
+	bh=SHw9kMnxKKwhY3CM5Kg8GrEdHVMXUmjxOrNJxpjRzB0=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=ugx9gjmftKkNPHFTZGVd1rWGWLUdZAoKRn6W0z117PpzPr+QNZV0x3X7zBq1M1ZGVURSIgqCj/6j90sDVltD9PYMeJHKRzc/jeb79WNkTGJQUyqvb51dhj1ybyFF6zdBpq7VLUWeoLYgRliwtDYX7iYDsl1lUNSZOUzk78J5ZNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Vs+SsTLi; arc=none smtp.client-ip=74.125.82.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bgfM+iDu"
-Received: by mail-qk2-f38.google.com with SMTP id d75a77b69052e-533984bfe2bso9584681cf.3
-        for <iommu@lists.linux.dev>; Sun, 04 Oct 2026 11:22:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Vs+SsTLi"
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-30bcb065bfdso1832169eec.0
+        for <iommu@lists.linux.dev>; Sun, 04 Oct 2026 12:50:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791138146; x=1791742946; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=CF4IOObCfjFDOCjh2XXYxYv4lcIPIAWQIMOn46YsfNw=;
-        b=bgfM+iDu1SHwDsVAyt4v2fvqfPeJ+KTb9XDBK4MR8KVDj7tPRhs4VwVfdhROkevpOU
-         /N7tjA3ZQqXWyfddyQVwsfdC9uBjIqLTaPZZPQxVPet3xBo1bdJngnyveNTmS3vG1DLx
-         RR9joGWUl2oS7HB4PskBf2iNFxSZ8mwT1SCullx4q0OSydIKzqQ/Oc270kqz4X8187hn
-         Nw5xAxGXIe+Gx8JphG0cEygx1GkfT/n6kURr28xbKi9H4Ps/nJkl5hne/+QsMUUXSCsL
-         +jgt19IBfWxt6aKBr8O4DPGIul/kQIa8gRCldVsH1btiA3n2BvsjJfH2Ny8q4hW0ucNe
-         7MfQ==
+        d=google.com; s=20251104; t=1791143445; x=1791748245; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=/0+8/7+L8DONYJQ3fWVSioDtnywAJwCJWEJlOMQxkV4=;
+        b=Vs+SsTLiy8Zt37fF/aJddKtI8SeosnAXqGXTKTMYLWOFX9I1E4kaVSjYtMx0Jfl65r
+         Xkjttn+Ut2vLK6GuP/TgIE6EwrGS4BJFbeRYqEF7koRgvf97GHrCoSCrukllsrF96TQy
+         Hr7Ew9szvFxXqQsIX7DWd2wJ3/H/XimPtWeWvC2A6v18GJNw8We+8mHYHTcKiuIvU5q7
+         poRhvfl7FtSX1VtPLOtoEemCkA12xs5y1fYt5cocd+eLb2PeufA4IGE0f0+pJUJWBFqE
+         FQk+xee7z5qfj3VO16Dtxs/ks/mqOo/2zgSRBiXPY2PnpqVgv2hIb+Z06llOvz6OBF4g
+         RGuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791138146; x=1791742946;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=CF4IOObCfjFDOCjh2XXYxYv4lcIPIAWQIMOn46YsfNw=;
-        b=GwqrdZHPHRysIiRwp+5KL/y7pX8UP24KpNPiQpdnrbvOgdbhicbFpB+bcYqp/D0hS/
-         bde3Tli50770fzz3tPcJgFRiA1MOTNVk2JKv/nmykplAyDJN1aJSC6/2AprbU+h4WcmN
-         SQZwYLxOSarQcUdc1pXGegxU37jnJdFZwbfw2ZJCFCTy7/o9SDOSwroImeTcPRuXmT0A
-         c/dkIRYEZMGk7eVIwzHvvtmXUqWgg/diU9GzbgZpwqtGtWLAZpybYWsDmCSQhakGs0wm
-         RAcjdiMCtG1Z7TNAWOq8N7NLTOe2cTSfdHtzJbiJDpRrKKMpXKtiqDpCiBoCTROqcix2
-         QQuA==
-X-Forwarded-Encrypted: i=1; AKwUvBwhjOD2ps3cviWMFk8hDodtj/acKPeZ9XrA507v0L5Q+spPw/Yojr5y/aEAqgAybZcbd8GbNQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++kPkCXQtLUVVD3UY+/WY7YkcpKdmZZG3fF9wdfN9vBUvUwHR/w0
-	yB1e9lUAgQCaXiVY4CAD/7utXlUKsYGyAtIMwuLtSQ4N+s4Wft52Fcsf
-X-Gm-Gg: AYBFou1VA9xrH1ssgGhA7tgE5rQ07rZ1RI2HGE5EU5aDMJtKRhahlP/q4yiBQCbFXvR
-	shhtlrUiPHv3j+Wr6tCbcFcehOE8/ZTFJ3fh61R5CDFDPZqOGRpNrnNdya2gcpg8utGCraOvArJ
-	qP7gTjCiz1qKaUbD4ETDGmif/9eiDfX1+bNjfezmsg8LSqX26rqASYGOw0Ahj+/Z0OjSw67qr92
-	nMGfCoA7gd7NlRuzOmBbajL2iweQdi/8VgPBAnkicwtnZPX+rgtG9Q60J2CUv0tjC9lKT2OMSHX
-	Uo8SNCbywhGY3oT7vAPgV9QA4KOQPKP4XuloS9zcJP0tAAp203ttSI1VFDNhNLvu4ODBgrYp8Sk
-	zu7ARPaUuXRBWEOipf1bg8A66gQ5Tz/+thwDjhwpFXB4BwxmAT51gwGM5uuZl4dEb6Wmux2WD0s
-	lPsbccCUyoolwtjQkLHJ18icbOuQRtYE9/UX8qRehHbjNEhSyQIMXVPYHWUkmKlM7ewRqxt1dKR
-	H2VQ+JHpk7kFs+egFigNpb0ZGe3KdC8
-X-Received: by 2002:a05:622a:618c:b0:531:ab4:c604 with SMTP id d75a77b69052e-533bc652ea4mr174969861cf.1.1791138145927;
-        Sun, 04 Oct 2026 11:22:25 -0700 (PDT)
-Received: from i4-gl-tmk5904.ad.psu.edu ([130.203.156.186])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5351fd92b58sm27430061cf.21.2026.10.04.11.22.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Oct 2026 11:22:25 -0700 (PDT)
-From: Yuho Choi <oss.patchbox@gmail.com>
-To: Jean-Philippe Brucker <jpb@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	"Michael S . Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowangio@gmail.com>,
-	virtualization@lists.linux.dev,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Yuho Choi <oss.patchbox@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] iommu/virtio: Reset device before deleting virtqueues on probe failure
-Date: Sun,  4 Oct 2026 14:21:10 -0400
-Message-ID: <20261004182218.177343-1-oss.patchbox@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        d=1e100.net; s=20260707; t=1791143445; x=1791748245;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=/0+8/7+L8DONYJQ3fWVSioDtnywAJwCJWEJlOMQxkV4=;
+        b=Qfth9y45ntR2thkAEGCu3TBNP3WsgCjQ4ZU/nAKuy9LV/hpVtIPLU67ujPaqelLUDH
+         2aZI7UjePaoUcwmQKqxHsNVjb/+letPon32PB7EZ+lE7WitP5B9LvyweU9Ba1SrQ8Ers
+         eg8PK4F3aDNvXr9cMVnJa0qbPtqghxOsNJSyiTO8gwqQ6lhOnhgRIMclJat73fEf+vJ2
+         rqYLwcwywX6K9z2uCME4xxuadWp5i5FEuTzGYkMtfDT+cwL3Le7kI1RUffeUAwsHjqll
+         WzRnVv5Uv/JnrQ1Ru+M7rzDlZL5BHE5EjQcBc0fD4fK5EUN9icgfznB192ozj+DCWWMU
+         Jaug==
+X-Gm-Message-State: AFuF++lSUkG7QK1VBuxizgrPsRchEr3kjdClvB+CVDoQs5Nv+nyTFNI+
+	AcaGPTZztZ29ejxC43FKQ0MPDHHNPGoX83qFUqq7uqIKWIDobcshIkdCljyJlmxfykz7+kyTQhC
+	IQ68ojVIgwy8zFw1MTLvYNA11vUV4KH+novI0wDpu8IqXGOr6onejIG3cDAAD6a+81u+VGmpFXh
+	wAMglyOawZSuJSV4auD4HiCgTLYX7gNSnHLd7uGuMbh9uIli+Cfhh1baml/rzu7w==
+X-Received: from dlbti5.prod.google.com ([2002:a05:7022:1b05:b0:159:4114:9dd])
+ (user=danielmentz job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:7022:f90b:b0:149:c766:3629 with SMTP id a92af1059eb24-14f5c5e9661mr13770215c88.23.1791143444306;
+ Sun, 04 Oct 2026 12:50:44 -0700 (PDT)
+Date: Sun,  4 Oct 2026 19:50:27 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.56.0.rc1.315.gc6ed9934b7-goog
+Message-ID: <20261004195027.227748-1-danielmentz@google.com>
+Subject: [PATCH v2] iommu/arm-smmu-v3: Align memory attributes for
+ SMMU-originated accesses
+From: Daniel Mentz <danielmentz@google.com>
+To: iommu@lists.linux.dev
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
+	nicolinc@nvidia.com, smostafa@google.com, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	dawei.li@linux.dev, jgg@ziepe.ca, praan@google.com, 
+	Daniel Mentz <danielmentz@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-viommu_probe() marks the device DRIVER_OK before populating the event
-virtqueue and registering the IOMMU device in sysfs.  viommu_fill_evtq()
-hands the device a set of device-writable buffers through
-virtqueue_add_inbuf(), so from that point on the device may write into
-them and into the rings.
+The SMMU specification defines several types of SMMU-originated memory
+accesses, including Stage 1 and Stage 2 translation table walks, stream
+table accesses (L1STD and STE fetches), CD table accesses (L1CD and CD
+fetches), and queue accesses (CMDQ fetch, EVENTQ write, PRIQ write).
 
-If either step fails, the error path deletes the virtqueues without
-resetting the device first.  The event buffers are allocated with
-devm_kmalloc_array() and are released as probe unwinds, so the device can
-go on writing to memory that has been freed.
+While the memory attributes used for Stage 1 and Stage 2 translation
+table walks are configured in io-pgtable-arm based on whether the SMMU
+is coherent (ARM_SMMU_FEAT_COHERENCY), the attributes for stream tables,
+CD tables, and queues are currently hardcoded to Inner Shareable,
+Write-Back.
 
-Reset the device before deleting the virtqueues, the way viommu_remove()
-already does.
+On non-coherent systems, however, memory for stream tables, CD tables,
+and queues is allocated via dma_alloc_coherent() /
+dmam_alloc_coherent(), which provides CPU mappings with Normal
+Non-Cacheable attributes. Having a non-coherent SMMU access these
+buffers with Inner Shareable, Write-Back attributes results in
+mismatched memory attributes between the CPU and the SMMU.
 
-Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Yuho Choi <oss.patchbox@gmail.com>
+Configure the memory attributes for tables and queues in
+arm_smmu_device_reset() and arm_smmu_make_cdtable_ste() based on
+ARM_SMMU_FEAT_COHERENCY, matching the attributes used for translation
+table walks:
+
+- In SMMU_CR1, use Outer Shareable, Non-Cacheable for non-coherent
+  SMMUs, while retaining Inner Shareable, Write-Back for coherent SMMUs.
+  This applies to stream table accesses as well as queue accesses (CMDQ
+  fetch, EVENTQ write, PRIQ write).
+- In STE.{S1CIR, S1COR, S1CSH}, use Outer Shareable, Non-Cacheable for
+  non-coherent SMMUs, while retaining Inner Shareable, Write-Back
+  Read-Allocate for coherent SMMUs. This applies to CD table accesses.
+
+Assisted-by: LLM
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Daniel Mentz <danielmentz@google.com>
 ---
 Changes in v2:
-- No code change.
-- Reword the commit message to explain how the device can write to the
-  freed event buffers.
-- Add Cc: stable.
-- v1 was mistakenly posted twice; this version supersedes both postings.
+- Rename local variables 'cache' and 'sh' to 'cr1_cache' and 'cr1_sh' in
+  arm_smmu_device_reset() (Nicolin, Will)
+- Collect Reviewed-by from Nicolin
+- Link to v1: https://lore.kernel.org/linux-iommu/20260929032229.3532247-1-danielmentz@google.com/
 
-v1: https://lore.kernel.org/all/20260911011249.1498825-1-oss.patchbox@gmail.com/
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++------
+ 1 file changed, 27 insertions(+), 10 deletions(-)
 
-Compile-tested only (x86_64 allmodconfig, W=1).
-
- drivers/iommu/virtio-iommu.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 587fc13197f12..fa72ae23b8afa 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1227,12 +1227,12 @@ static int viommu_probe(struct virtio_device *vdev)
- 	/* Populate the event queue with buffers */
- 	ret = viommu_fill_evtq(viommu);
- 	if (ret)
--		goto err_free_vqs;
-+		goto err_reset_vdev;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 34e916ea339f..02cc6fb83461 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1905,6 +1905,15 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
+ {
+ 	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
+ 	struct arm_smmu_device *smmu = master->smmu;
++	u64 s1c, s1csh;
++
++	if (smmu->features & ARM_SMMU_FEAT_COHERENCY) {
++		s1c = STRTAB_STE_1_S1C_CACHE_WBRA;
++		s1csh = ARM_SMMU_SH_ISH;
++	} else {
++		s1c = STRTAB_STE_1_S1C_CACHE_NC;
++		s1csh = ARM_SMMU_SH_OSH;
++	}
  
- 	ret = iommu_device_sysfs_add(&viommu->iommu, dev, NULL, "%s",
- 				     virtio_bus_name(vdev));
- 	if (ret)
--		goto err_free_vqs;
-+		goto err_reset_vdev;
+ 	memset(target, 0, sizeof(*target));
+ 	target->data[0] = cpu_to_le64(
+@@ -1916,9 +1925,9 @@ void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
  
- 	vdev->priv = viommu;
+ 	target->data[1] = cpu_to_le64(
+ 		FIELD_PREP(STRTAB_STE_1_S1DSS, s1dss) |
+-		FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+-		FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+-		FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
++		FIELD_PREP(STRTAB_STE_1_S1CIR, s1c) |
++		FIELD_PREP(STRTAB_STE_1_S1COR, s1c) |
++		FIELD_PREP(STRTAB_STE_1_S1CSH, s1csh) |
+ 		((smmu->features & ARM_SMMU_FEAT_STALLS &&
+ 		  !master->stall_enabled) ?
+ 			 STRTAB_STE_1_S1STALLD :
+@@ -5102,7 +5111,7 @@ static void arm_smmu_write_strtab(struct arm_smmu_device *smmu)
+ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+-	u32 reg, enables;
++	u32 reg, enables, cr1_cache, cr1_sh;
  
-@@ -1244,6 +1244,8 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	/* Clear CR0 and sync (disables SMMU and queue processing) */
+ 	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
+@@ -5116,12 +5125,20 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 		return ret;
  
- 	return 0;
+ 	/* CR1 (table and queue memory attributes) */
+-	reg = FIELD_PREP(CR1_TABLE_SH, ARM_SMMU_SH_ISH) |
+-	      FIELD_PREP(CR1_TABLE_OC, CR1_CACHE_WB) |
+-	      FIELD_PREP(CR1_TABLE_IC, CR1_CACHE_WB) |
+-	      FIELD_PREP(CR1_QUEUE_SH, ARM_SMMU_SH_ISH) |
+-	      FIELD_PREP(CR1_QUEUE_OC, CR1_CACHE_WB) |
+-	      FIELD_PREP(CR1_QUEUE_IC, CR1_CACHE_WB);
++	if (smmu->features & ARM_SMMU_FEAT_COHERENCY) {
++		cr1_cache = CR1_CACHE_WB;
++		cr1_sh = ARM_SMMU_SH_ISH;
++	} else {
++		cr1_cache = CR1_CACHE_NC;
++		cr1_sh = ARM_SMMU_SH_OSH;
++	}
++
++	reg = FIELD_PREP(CR1_TABLE_SH, cr1_sh) |
++	      FIELD_PREP(CR1_TABLE_OC, cr1_cache) |
++	      FIELD_PREP(CR1_TABLE_IC, cr1_cache) |
++	      FIELD_PREP(CR1_QUEUE_SH, cr1_sh) |
++	      FIELD_PREP(CR1_QUEUE_OC, cr1_cache) |
++	      FIELD_PREP(CR1_QUEUE_IC, cr1_cache);
+ 	writel_relaxed(reg, smmu->base + ARM_SMMU_CR1);
  
-+err_reset_vdev:
-+	virtio_reset_device(vdev);
- err_free_vqs:
- 	vdev->config->del_vqs(vdev);
- 
-
-base-commit: 7704c4c5bb127673b4f0ead839919db573559e38
+ 	/* CR2 (random crap) */
 -- 
-2.43.0
+2.56.0.rc1.315.gc6ed9934b7-goog
 
