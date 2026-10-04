@@ -1,169 +1,178 @@
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011056.outbound.protection.outlook.com [52.101.62.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D87D239B947
-	for <iommu@lists.linux.dev>; Sun,  4 Oct 2026 16:28:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791131288; cv=none; b=mSF+wq2hu8yIj1oDgG9NUjFkvVX3uCENRnPqklr8qZeUZjXfN1P3mrgqBiwr3tUBAqP/oirYT2A6yMyGGIn4CPMGzTGCA+VAPTEb4PeOGr3miyJT59TMW/7Mot+COexNnlOvw5W7DsKgRGebv+RQOJJM57StIm9Paw/4GNcPoVE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791131288; c=relaxed/simple;
-	bh=6JhFOSzDBz498SVVIXzQUcHOXuvxrUCXtfUrR9WXqXo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=iVxUUH1RJaOIphKKvmTFXF2aAEOGaNdMXAGVWalPqgQCVvhEWoWkp6vvXo5F5iKwaDu+jPWYPAb4xu4cUWStNYyIOMJSjXk9kYChkl9ZmmyXDPGBJH6Q3Vr/abNd1cPxpvVT1+CYMb7FZi1i2hroSDTSGZPSq5dWQhUWzN2E2AE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=abPzSSfF; arc=none smtp.client-ip=115.124.30.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8377393DF5
+	for <iommu@lists.linux.dev>; Sun,  4 Oct 2026 16:35:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.62.56
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791131728; cv=fail; b=cJj5H7JAVzCwSDp/ER/X2JtZagFjMB3TjNH72Q0XXc2a1/EnvprjjbORt6nb5ZqmBY7hmVK795oEwevAGEohcsMlyVaXA0GgRy/B2OIzBaJrzEm2p7VYCh1cTRJheLns/gkiCvycfEDKC7ZrvHPtWO+oI1+w2OIOnDNNtl8ABS8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791131728; c=relaxed/simple;
+	bh=GOAjdFuKdBSdsldN5WGys2fRZHUMjGjYFFr78HPNUQE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=l4KbG76nKs6nwITJ2NOJYDNMyCxwrUJSzTVk7WdluzLKUnEaRbd8VcoUFrFS0Anm0DyDrvRuCvMF2SBI/Whc5O0lY/MhMEvIAnTwWF8Oa5Cb7FBu9ZhIz8sMUHB5kpX5uPPYstxhR1MV6TwoQr/BAwGpzk9aOA0Ub5nDJMt7buw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YUeP7fTu; arc=fail smtp.client-ip=52.101.62.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="abPzSSfF"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1791131277; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=b3pihz/2uGlCKNqilY+Zn7blSFGVNUKQTRQLSRlrA+8=;
-	b=abPzSSfFOJplujgQMLv1OkuQdUZow13Cd0q/rtS8vcwtiEoxdf14hvV53g+f83mZPEVrdC2uy9k6zkgjkDECdGzK3IjMyUZDvqw5rIV7qNVQM7RDmMFHm4Ew1olA12KiCbel0NL37rIfMpUtO12jeffCUZM5VBnjQft09RDeIko=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0XC2deBc_1791130957;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XC2deBc_1791130957 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 05 Oct 2026 00:22:38 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: jgg@ziepe.ca
-Cc: alex@shazbot.org,
-	guanghuifeng@linux.alibaba.com,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	kevin.tian@intel.com,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com,
-	will@kernel.org
-Subject: [PATCH v3 1/2] iommu: Add iommu_get_pci_resv_windows() helper
-Date: Mon,  5 Oct 2026 00:22:12 +0800
-Message-ID: <20261004162213.3787623-2-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
-In-Reply-To: <20261004162213.3787623-1-guanghuifeng@linux.alibaba.com>
-References: <20260921115513.GK11599@ziepe.ca>
- <20261004162213.3787623-1-guanghuifeng@linux.alibaba.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YUeP7fTu"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hT/xvkO/L8Yr7M8ClaQH6NZwTl1fZmHQEi0ErIPMt1UTBK2IcMwfZymJ3JJACmSsMjMvX8Nd9Apr4BOL0bmwYdyiu4hjuzTnWMR2GzPTvwAYNyHRnbewBbP7S+LjBX62l+prc+MiFXRk0lPG2AXXuwS7dBqFfidDmvOOEEjfWagVehZg7VGj9zsGV6X6wQnEmIdIv+Fl8YIvKMXDQkzkwpFetw3e+TxrlpsAidv9xdI86Z10jqpBHarAUA4IqdeunCwT8098OkYN/5jN5sR1gWeJo5uNGgWmUoumy8NWidViu+lDot+NXLFLMpf04+Dx7BNDM4zXHmXEU0rj+in/Jw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5YgX2AoQaapIat7rVM8bSTabZ6dH/M92RBQDHYFs5nw=;
+ b=ZzzdCAQy3XwdBoc5DT7C5UbVFpYovUQat2MladTxvDV/aLPvX0s2suGxOJX7LucC8jfq5IODL7DVXFC7NMYQSUC5ieys+fV5dZUZYGIzg7rEhwmpNKoqlS6UDH8CkVESWaXVtanK+JWnmrGJFkieCnBQqBycRfTgBgPAXV0x81MWqpbxp3vOm+V8qXpGVkwlUhGvpBmCwxPa4YyQWspAVglZgGZYJ0tawZaLwPV5kh40rDDHHH1qFS79sbZkzRwaPRHCTMdptP1fhgsX1LsxIkgBo+NzYWQMyq5NCwWAb/Q6QW5MEFM3xH81QHn2DsSAeTngDWnsOs/FRY0we+g9Og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5YgX2AoQaapIat7rVM8bSTabZ6dH/M92RBQDHYFs5nw=;
+ b=YUeP7fTumXJrXgl673cZKDcQLZ+efyJp2kgxKXPNyyEkUvOBVoOvMGOKWFI6YKLArTAFG5jD26GDo4gBnSp000cCnUt6bUUm47Jg+WSOCZHxm2+b+eakZOWsuJ3euha9pkdq+rutXcvwJGXQJs/iDZibxtuSr/51lF2r2YSmFhEjp0Q6KoKUBVMBz4u61nhitcJdrzVSDvpGGLT1UmpcgiyJ/YshPbXKz54XgP79YcOQ/3ga0ZgLSI0JtJc+vCEGq76lOlgMoXeaV0X2sA9XEgy1bi5Brpw78lwq/FNMZFkU7Mp9FKx4keSYBCDMdg8Ma7Gc2r7VpgKwEyG9r7jEWw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by IA1PR12MB8357.namprd12.prod.outlook.com
+ (2603:10b6:208:3ff::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.18; Sun, 4 Oct
+ 2026 16:35:04 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0472.016; Sun, 4 Oct 2026
+ 16:35:04 +0000
+Date: Sun, 4 Oct 2026 13:35:01 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, robin.murphy@arm.com,
+	joro@8bytes.org, praan@google.com, kevin.tian@intel.com,
+	smostafa@google.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	jamien@nvidia.com, kas@kernel.org
+Subject: Re: [PATCH v10 06/13] iommu/arm-smmu-v3: Add
+ ARM_SMMU_OPT_KDUMP_ADOPT for kdump kernel
+Message-ID: <20261004163501.GB4064@nvidia.com>
+References: <cover.1788130528.git.nicolinc@nvidia.com>
+ <d661395d986d3aa78af200f55e43740996ee8a0f.1788130528.git.nicolinc@nvidia.com>
+ <asJTsw-oWDlSqNa3@willie-the-truck>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <asJTsw-oWDlSqNa3@willie-the-truck>
+X-ClientProxiedBy: VI1PR04CA0116.eurprd04.prod.outlook.com
+ (2603:10a6:803:f0::14) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|IA1PR12MB8357:EE_
+X-MS-Office365-Filtering-Correlation-Id: 60515a4a-9d2c-49b7-fbf8-08df223571b1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|366016|376014|7416014|1800799024|18002099003|22082099003|4143699003|6133799003|10067099003|56012099006|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	gKvg0zPyupSW5xGMT+DH5XlgqTxyHrZVyffjpUkfUjrMvZJO15yqmDNZkauWdHm724clahM58P/sY7ZB+SgwWtpLMbcgSDjDPG2AcX7hSx1NpY0FNTLlmaOuesaNO+/4dApeXBlG93V5sr78lmbk08llcm/z5xblfYDD/6ip29Kput8v++SBSUcYE5yCsihBpNe4craGCHWdAc2N0A5Cc3lLvmflV5YFTqzqJqNs8nVooLFLAVGO3HIJ6lWZh1iJhYHdhFqmLDicClmHofVzSVoq2V/MPRO0c+bD3YIBFjCULfrrQt1ES5otFeB6xB48SovM4kxHHFFgJFnpf872GWQYctpUD8IzGn6WQJRhY8s6gFmngFIkvmRY3i688BTgszT0smQIBwx/cXDEJAooAsTwa8ZyU92Q7lZMnqLXLBX16d9y0i0F5ZdBUeA0gG/Q6h1eKwDk+aRt8m4yk1WYacbqlbU+9Dtjo8tpCNUMHu/Fj0ROspewjIqGRJpAwgtS6NEFKv1QpK7u4gBmkR08jXMpA9uZY0sXQ8x4KglXbLICAw/zDl8HoFWRjaguEPcujuPBFztSANdSr0zN91Brx1fTzcU5YJNRTM7GeMUHqu0fo1F5jyEFOEKgrA4IDCtw2wuh1lRS7i8hzumLjWdbIGPgzl3PE96akYXmELexX6Y=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(376014)(7416014)(1800799024)(18002099003)(22082099003)(4143699003)(6133799003)(10067099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?/s3Nf6Mu712YleWEsbzTPHZch2pacxmoQoXJRquDASqkzclwzYNvCChU65IA?=
+ =?us-ascii?Q?gRUvt/x5ezcYk3oqrXsI7q9xe9ktUoLgp+k7G2cmtysW0/l8QMBzTnpEG9aX?=
+ =?us-ascii?Q?PHUBdelEJb/z9l/VoflDWGkVVkbTFyJADTXkx+WMbbgFmTJEGRyvk2TMYMak?=
+ =?us-ascii?Q?VKlzk6+RHZCHHy5W5k5DZ3s9CbDZqypra4DT7vMqWEyupK2xvqDtx+ES1kTo?=
+ =?us-ascii?Q?wwivBVVcX4RSfxppVoABNN336dgHseQzH8YBZUrcHMtV4OPSf06+8nhxTOAI?=
+ =?us-ascii?Q?o1lS9BYDKW3FKmaQqycnxvWRkVaeu5mkTL94G+4rxrczHGO5Hckl+KiXoBCo?=
+ =?us-ascii?Q?fKIKFPo/4bH6nLLR5d2qAXXjYrEKTe5+RV0s+WyNvwBBZ1k9TQ3BnCQsRSjn?=
+ =?us-ascii?Q?n00hV4t3qv5tgQeNmWa/tuYlWyix1uUrStuF2IeIP1pyGqMd+RjV2VgW3zHc?=
+ =?us-ascii?Q?qX8Nz17Nk/T+auN2IMfg82FwDyxj+iJP1Fkd9xMvqwv1/iJPTjOksqpP1L91?=
+ =?us-ascii?Q?0j0U6V1qNISUccL2nzebFYAvk+DYMde+wEiMKpnXR5gwOzLpzwMbrY0Y7/XT?=
+ =?us-ascii?Q?uPEyj0HyMudqoU+imtQ3FUn0sSoZECB3vZysL6BNyeNlcFOnOy88c0NeDUQO?=
+ =?us-ascii?Q?g8YfMCUstXZWCSvATHoP0+5sSRaqadrOeY5+q0VsgaiDz9cQidCXofdZYimG?=
+ =?us-ascii?Q?qZrsQCodie8+E5AkhD+4mUmMXTHl12MajzBeXOf3ZJS3KsXsQzOrNSXqvPmy?=
+ =?us-ascii?Q?Be+kNC6rKdDZ6UTSAvbfzgOnoF1Onn7Pg+4QmwQc3RkJYlF8hju2WjPgVorD?=
+ =?us-ascii?Q?iH1r78koLcLgcYEu8BEXCILJpbYUwu7pgwyY+tmvRM8RcXllF/fT1OGwols6?=
+ =?us-ascii?Q?PBwRiCmyXAjqEdTnv6IvUkszwLC0snqjNlsBt36/PkJclUrSA+Beu0HeZtF/?=
+ =?us-ascii?Q?RMUkQiYpg3O9NeBjqwDV7q6pvEps9m6rnGLOPGY3cWWO17vhP/pXeO5SH3hr?=
+ =?us-ascii?Q?KfB1rlBOOvbIMp86AuIyXIQgVxn/W6zKbjebyoCvS5+cWkpk8ENW489wy3oD?=
+ =?us-ascii?Q?b2wQARJeeee3fw5vPLU8wSag05Vml2i17ZMsb9TrzMb1PgpbMjkQD6mVA8M9?=
+ =?us-ascii?Q?2XRyPZES01M5KL/a/psf3YORw1yIMJkcfqwElOJffdbbLJwZlMX4YQnY+9kZ?=
+ =?us-ascii?Q?lUixfHkSuDm125ZE3ul2MBEdboCcSIRSOWDcjtAkwbsCLohz2mJqlaCdC0CY?=
+ =?us-ascii?Q?Yoa8zlFfP9TvG8CoDqQ43lJRW6soHVzkbgMDWzOV9UPpizvIDxaKjQ8LS87Q?=
+ =?us-ascii?Q?pZnD9tpgsgd6JNkaA2xUeLSGF/RQJiW3Ql5qgKs3Kdtq4dqt93xdq90+5lbx?=
+ =?us-ascii?Q?KTDJHYcUjLqtb0D56ed3uXMW6ZZ6kVBQIpbNmeORXmNf9GoAXI0fy44xyYXE?=
+ =?us-ascii?Q?yjYMIpF8zxXYOYQ5jbLJIhGfcOANBhH1PH/bXtkv5NSYgIil8D50vkHo5Ibq?=
+ =?us-ascii?Q?3L3/lN1gP7cjdyqllcSDQjMcTDUBfuYP9Jzh6XrLJfvGlNgjqpgFwbyg/H7T?=
+ =?us-ascii?Q?eEc07p7KfyNxRTVhO0mqNMPKS4rEfqlREDnBLsrhI9qAEiSvL5P+dvnsb+zE?=
+ =?us-ascii?Q?5L0k0xFP38FL3l9KLk/YIgWTFP+nBuAFd75R+rHrpBMDr/R5gkixpgv2Dral?=
+ =?us-ascii?Q?MclXlnbOW/kPK1/nI2UbbxbqNqZV1hA1EDYOJKuGBudnmuCb?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60515a4a-9d2c-49b7-fbf8-08df223571b1
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Oct 2026 16:35:04.6781
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: RlNUO5CZlPeW3vjMeCj1zQ6uALyBuagxyA/0XAFixbEdTCwoqU0Vk/gx7xQvG4oq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8357
 
-Add a common helper that walks a PCI device's host bridge MMIO windows
-and returns them as IOMMU_RESV_RESERVED regions in a list.  This
-provides a reusable interface for subsystems that need visibility into
-PCI host bridge MMIO address ranges, such as iommufd which wants to
-expose these ranges to userspace for opt-in IOVA avoidance.
+On Sun, Oct 04, 2026 at 02:25:07PM +0100, Will Deacon wrote:
+> >  drivers/iommu/arm/arm-smmu-v3/Makefile        |   1 +
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  21 ++
+> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c | 229 ++++++++++++++++++
+> 
+> Please don't put this here. The live update / handover stuff is going to
+> need very similar logic (see the RFC from Pranjal) and I don't fancy
+> having to rename or resplit this file when that comes along.
 
-The helper builds its results in a local list using
-iommu_insert_resv_region() so entries are sorted by start address and
-overlapping same-type regions are merged.  On allocation failure the
-partial list is freed internally, leaving the caller's list head
-unmodified.
+Ah, I was thinking we'd put most of that stuff in here, but a kexec
+name would probably be nicer.
 
-Note: commit cd2c9fcf5c66 ("iommu/dma: Move PCI window region reservation back into dma specific path.")
-intentionally keeps PCI window reservation out of the IOMMU group-level
-reserved region API.  This helper respects that boundary: it does not
-inject windows into iommu_get_group_resv_regions().  Consumers that need
-this information call the helper directly.
+> > + * Note:
+> > + *  - Adoption only starts on an SMMU that the crashed kernel left enabled, as a
+> > + *    disabled SMMU (CR0_SMMUEN=0) could hold meaningless register values.
+> > + *  - Values read from the crashed kernel's registers get structural validation
+> > + *    only (format, size, span, alignment, and ID range); the physical addresses
+> > + *    are not vetted, as the kdump kernel has no record of which pages held the
+> > + *    tables.
+> 
+> Can we at least check that they don't point at the kdump region?
 
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
----
- drivers/iommu/iommu-priv.h | 12 ++++++++
- drivers/iommu/iommu.c      | 57 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 69 insertions(+)
+I don't think it is necessary, I  was on the fence about all this
+exisitng validation even in the first place.
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index aaffad5854fc..17f2234dabd4 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -123,4 +123,16 @@ static inline void iommu_debug_init(void)
+Is there any easy way to do it?
  
- #endif /* CONFIG_IOMMU_DEBUG_PAGEALLOC */
+> > + *  - A structural inconsistency at adoption time tosses the entire adoption and
+> > + *    makes the SMMU fall back to a full reset blocking in-flight DMAs.
+> > + *  - L2 stream tables are adopted lazily at master-inserting time, to bound the
+> > + *    peak memory use against a corrupted L1 table; any lazy L2 adoption failure
+> > + *    rejects that device alone, as its blast radius is bounded to the bus.
+> > + *  - Only a coherent SMMU (ARM_SMMU_FEAT_COHERENCY) is supported, as the stream
+> > + *    table adoption is done by memremap with MEMREMAP_WB, which is verified on
+> > + *    the real hardware. Callers of these functions are responsible for gating
+> > + *    ARM_SMMU_FEAT_COHERENCY once during the probe.
+> 
+> This is an artificial restriction and not one that I'm wild about for kdump:
+> we should be able to support this for non-coherent SMMUs as well. Is there
+> anything more to it than using MEMREMAP_WC in that case?
  
-+struct pci_dev;
-+
-+#ifdef CONFIG_PCI
-+int iommu_get_pci_resv_windows(struct pci_dev *dev, struct list_head *head);
-+#else
-+static inline int iommu_get_pci_resv_windows(struct pci_dev *dev,
-+					     struct list_head *head)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_PCI */
-+
- #endif /* __LINUX_IOMMU_PRIV_H */
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cd1bca7ede9a..25bc99114e1e 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -945,6 +945,63 @@ iommu_insert_device_resv_regions(struct list_head *dev_resv_regions,
- 	return ret;
- }
- 
-+#ifdef CONFIG_PCI
-+/**
-+ * iommu_get_pci_resv_windows - collect PCI host bridge MMIO windows as
-+ *                               reserved regions
-+ * @dev: PCI device whose host bridge to scan
-+ * @head: list head to append iommu_resv_region entries to
-+ *
-+ * Walks the MMIO windows of @dev's PCI host bridge and inserts an
-+ * IOMMU_RESV_RESERVED region for each one using iommu_insert_resv_region(),
-+ * keeping the entries sorted by start address and merging overlapping
-+ * regions of the same type.  On success the inserted entries are appended
-+ * to @head and the caller must free them with kfree() when done.  On
-+ * failure any entries built so far are freed internally and @head is left
-+ * unmodified.
-+ *
-+ * Returns 0 on success, negative errno on failure.
-+ */
-+int iommu_get_pci_resv_windows(struct pci_dev *dev, struct list_head *head)
-+{
-+	struct pci_host_bridge *bridge = pci_find_host_bridge(dev->bus);
-+	struct iommu_resv_region *region, *next;
-+	struct resource_entry *window;
-+	LIST_HEAD(resv_windows);
-+	int ret;
-+
-+	if (!bridge)
-+		return -ENODEV;
-+
-+	resource_list_for_each_entry(window, &bridge->windows) {
-+		struct iommu_resv_region tmp = {
-+			.type = IOMMU_RESV_RESERVED,
-+		};
-+
-+		if (resource_type(window->res) != IORESOURCE_MEM)
-+			continue;
-+
-+		tmp.start = window->res->start - window->offset;
-+		tmp.length = window->res->end - window->res->start + 1;
-+
-+		ret = iommu_insert_resv_region(&tmp, &resv_windows);
-+		if (ret)
-+			goto err_free;
-+	}
-+
-+	list_splice_tail(&resv_windows, head);
-+	return 0;
-+
-+err_free:
-+	list_for_each_entry_safe(region, next, &resv_windows, list) {
-+		list_del(&region->list);
-+		kfree(region);
-+	}
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_get_pci_resv_windows);
-+#endif /* CONFIG_PCI */
-+
- int iommu_get_group_resv_regions(struct iommu_group *group,
- 				 struct list_head *head)
- {
--- 
-2.43.7
+I've forgotten why it ended up like this, it was some complication
+that seemed hard.. MEMREMAP_WC is not the same attribute dma coherent
+would have used, I'm not sure we have the right stuff to be able to
+flush any write combining buffer? I'm nervous about that at least.
 
+Remember this is not just reading it but it has to operate like this
+after the fact. In handover you wanted to use the dma cohernent
+preservation.
+
+So, I think this restriction is mostly a lack of the right MEMREMAP
+flag? It is not insovlable just work outside the scope of this series.
+
+Jason
