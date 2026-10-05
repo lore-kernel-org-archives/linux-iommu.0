@@ -1,46 +1,46 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011043.outbound.protection.outlook.com [52.101.57.43])
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011070.outbound.protection.outlook.com [40.93.194.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0359036657B
-	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 06:42:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17D653672A8
+	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 06:43:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.194.70
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791182542; cv=fail; b=FV7LB1KerRsRn8yvUH9/WQx0PGriYklg/SuYQ6IwEjiVdDKWs9ERN5G0zbqKh4ud6/kTFovChK0l3zfqxebTl1zCD9az5H/r+Y3yNSg2Xe/8FuyOz896/wCWtz1jddOkL234qRt2uMVnCEJVla9NuKUzHbEfIYUHL5KkbfWmSKQ=
+	t=1791182585; cv=fail; b=F8GNqVZRzRTLaFwzZDWGj8XznXE4wzP9buVTs1VnfHljd9w1Iy7WBgSayGY1Q1nEgtn7y3phkr2mHtAogZ83u4UJLPlHrPLD9l7jkdH/CqNJRLKm75mroSrIHDm/70kT4VvHBTPtoNnJRCik01DNj9lOKmBQ63HBr98OtoWbN/k=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791182542; c=relaxed/simple;
-	bh=dnWaU68ybMHGAMd8MKZHozJFXgy/vilyK9cgiNRIZ1E=;
+	s=arc-20240116; t=1791182585; c=relaxed/simple;
+	bh=itwOAFFlRFbOZMZeUtUpIwYVhhOavwA45e/RsVq7LHg=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A2TKGJMaxFS8QjJNYBpF8ZqOVpJrLUG+fftEWTwtRuNXi6/yjZU4xzuC+BQzf+hyElW3wyYiCsJnPFC3a38dnxVwpKfMCLZ4djCtyb+zUbG5f1NhZpeSfKZAW7gRu/AphU64ty06mj8NTAS6+TL1p6FNCoBHMI1eAwVI8liohZc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=IkB0QhK4; arc=fail smtp.client-ip=52.101.57.43
+	 MIME-Version:Content-Type; b=LTYCk7B5Lm109Whb3xNAQaGhTEkMXnV6iTR3vvacQpvqxgzNTkxhVEThkaFTvw7W4oWAHANhQV2C6keHRfBQBfUxqP/0ihvK/zFYR9257Ho7MonSnFtJ82UTQUrP0DWHkx3jh8xa5BGwBxOAEfkSUNiCgvXyO25LHmFh3EY+ZL0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=RSy0aK7D; arc=fail smtp.client-ip=40.93.194.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="IkB0QhK4"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="RSy0aK7D"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dRz+gOkEz4ad+3E2fA93YTkiFYuTFUzX2tAhdP9l+qrie643YVEqDnBV3Cp5y2YXz6A+YDrHpeq1+8+AEZNTBr0rim1X1l3E0BggDLK7ivtG+bbkL3+OG/OrScSIYK0RA+xQDs0KZwmCBztUwPYS7vj+/TKzaf8B0J2MwuPai7oWJPNcJQVjVLrSwFaPj5eOAE8wTwoFEZxnV8jbstaA1U2UfqqIrHJOEIvbRlHW2XVBQyvVqije702fZ5uwA/EK9DolTQMWxYhOn8CV3cbvyru1UZ4C6BXCCZ7COHCMGltvDlB33YpgY2mPBdI7HQL/qLX0KnCnSVzPgI/tQlcRLQ==
+ b=i0/az2oNS7gM4sN51zm6rJn0+NUf9UfVn1Yh/V3IJ4NEdRkBrG7RvEY5HA4jq38ge6mkhZJo5+k4VcF2SsUG3To8O1WOoNgFde5cWWGCKLoeFgKmqiec4LT1hOu+wMytHUvcDuDzTC/SQrbOLrUVX0PZNHk+0scyZJ1mA8rpKIcYhVIzfm7SleaXi7l3VnuPExfBvGsCNflisMxBFe0xwqjkpSZ2xkAHBsdESwC99ZzK+5xZJnfZwyxo1VLnpYSccw091PvzcspfwJi7I8wCpoIoi7sUA5OZNUiILXqCronQZs48lxeGQNgyf2EBfVayfU1C/WgN9+z4z5X7mAGDvA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EDlxqsEV7ybCSYJh8SEF4BKG5KLcjQGx5eOQJpeMUko=;
- b=oe3CZ4TfC8t9lG3BGXXk3/mSXsuY6Thrna6+urxAUNlvHZ8tpwNbxHwKNY98K1f/DubQFuJuUpuoliBVflPLzlUoFGcsGuCIAoJAtJWPDW3wxxD44ZnTqDa8NCZFIklz29ojq3LaAFQ9xX73rbN8ACsz5ZTftlICvym3JY4GEiEpA0cgJFGpPQ3x3OXagUnFGPrfs5DeeyMy9RNPpIS7SqY5X846E4T/kGy4YjBFOmQoxXleGfY536ZqiSPKUeJHcfB7ajK0FOa1GLhp/nPvtH/gXVa7DPJbHvr9FvGujQkUFfvsTF0lU4LIDa1w0FLhJCCCtzpPGIuGFoTtkNA9ow==
+ bh=G/RbVZpVdpKgZdzpy0VeT/U4Pg6dvpQP/ByuVMdUbD0=;
+ b=EuEMBYvTquJKeN0JG7e/Hm4v/tSIUTVuipE5V7ocYPGuWBDKQ7OcjFgNA5Mf4o6tVNOXM5TtYOjeA43+A0/KrffsdglFlGq6XFkUIVJBvIrDBTLOZbsAFduN9/7kuOTcNDly6huHHcL2YTIB9AXYVKpvnWZ2c1Chimm1hoWGd7CNbrKKDf5sh4NF2xJtUCHxCwZdNuTvzylQwF6/WD9VC1Y5iF7Gk27gi8xwwEJvPIxSKUt3dWQjvb4NPKtZARvFNcMNrUuVgE3rPI1A0YOMtXAzGeQuVdRD9Ayq9Kfcm6a0g+xHF0wVdWe4CXEd4Wy4EN2d4ig3BcZ4MWz4QP3jzw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EDlxqsEV7ybCSYJh8SEF4BKG5KLcjQGx5eOQJpeMUko=;
- b=IkB0QhK4hRD+k49gpj+u2YwEawowxPrRDNJ+wlVy/9MSGrqXnC7eY9wdCmQlaKdL5JhXh4uC/Q32yqPi0+WZ391zPl0yhm2yA7wMYuaCBfivGBwQAN2SuvmQRNWVv7rHbw+dgrgqJAD9E2le0JdbNxDCkyuQKn/tFC67PMYNZRc=
-Received: from SJ0P220CA0012.NAMP220.PROD.OUTLOOK.COM (2603:10b6:a03:41b::24)
- by CH3PR12MB8481.namprd12.prod.outlook.com (2603:10b6:610:157::21) with
+ bh=G/RbVZpVdpKgZdzpy0VeT/U4Pg6dvpQP/ByuVMdUbD0=;
+ b=RSy0aK7DAlBO8KW1jeNWzn0VeEsBVRNyVcsU9jedwTlW6lHz0ek9BVL6UaMR2KRxOAdYiHUDjcuCjojaCy8XUUwWZ/ExGSEKzi0stNgGGWfFNE35Q+Z1eK09dKqEAIlZogenQcqLA5/uvhIMgtgOocFk+zllNoUcSjbAhkPH3b0=
+Received: from MW4PR04CA0244.namprd04.prod.outlook.com (2603:10b6:303:88::9)
+ by BL1PR12MB5922.namprd12.prod.outlook.com (2603:10b6:208:399::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.26; Mon, 5 Oct
- 2026 06:42:14 +0000
-Received: from CO1PEPF00012E60.namprd05.prod.outlook.com
- (2603:10b6:a03:41b:cafe::88) by SJ0P220CA0012.outlook.office365.com
- (2603:10b6:a03:41b::24) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Mon, 5 Oct
+ 2026 06:42:57 +0000
+Received: from CO1PEPF00012E61.namprd05.prod.outlook.com
+ (2603:10b6:303:88:cafe::8) by MW4PR04CA0244.outlook.office365.com
+ (2603:10b6:303:88::9) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.20 via Frontend Transport; Mon, 5
- Oct 2026 06:42:14 +0000
+ Oct 2026 06:42:57 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,13 +48,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- CO1PEPF00012E60.mail.protection.outlook.com (10.167.249.69) with Microsoft
+ CO1PEPF00012E61.mail.protection.outlook.com (10.167.249.70) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.472.14 via Frontend Transport; Mon, 5 Oct 2026 06:42:14 +0000
+ 15.21.472.14 via Frontend Transport; Mon, 5 Oct 2026 06:42:56 +0000
 Received: from BLRANKISONI.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Mon, 5 Oct
- 2026 01:42:06 -0500
+ 2026 01:42:48 -0500
 From: Ankit Soni <Ankit.Soni@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>, <will@kernel.org>,
 	<jgg@nvidia.com>
@@ -65,9 +65,9 @@ CC: <suravee.suthikulpanit@amd.com>, <vasant.hegde@amd.com>,
 	<praan@google.com>, <baolu.lu@linux.intel.com>, <dwmw2@infradead.org>,
 	<kevin.tian@intel.com>, <dmatlack@google.com>, <vipinsh@google.com>,
 	<kexec@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH 4/7] iommu/amd: preserve IOMMU and device state for live update
-Date: Mon, 5 Oct 2026 06:40:14 +0000
-Message-ID: <20261005064018.1558-5-Ankit.Soni@amd.com>
+Subject: [RFC PATCH 6/7] iommu/amd: restore preserved state on a live-update boot
+Date: Mon, 5 Oct 2026 06:40:16 +0000
+Message-ID: <20261005064018.1558-7-Ankit.Soni@amd.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261005064018.1558-1-Ankit.Soni@amd.com>
 References: <20261005064018.1558-1-Ankit.Soni@amd.com>
@@ -83,414 +83,371 @@ X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF00012E60:EE_|CH3PR12MB8481:EE_
-X-MS-Office365-Filtering-Correlation-Id: 657157b1-7a54-44de-d5b3-08df22abca86
+X-MS-TrafficTypeDiagnostic: CO1PEPF00012E61:EE_|BL1PR12MB5922:EE_
+X-MS-Office365-Filtering-Correlation-Id: a1d34347-7c34-4cb7-41d9-08df22abe415
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|7416014|376014|23010399003|36860700016|18002099003|22082099003|11063799006|6133799003|56012099006|10067099003|5023799004;
+	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|1800799024|7416014|376014|6133799003|22082099003|18002099003|10067099003|11063799006|56012099006|5023799004;
 X-Microsoft-Antispam-Message-Info:
-	RRMMrngvTHPfDogU6kFmzuehF/91S+CbDWV3PDkbzOV2r0ymrFMMSYl3BA8s/HgPHS/0YmfghQURL6VhocothZDSUGk+cA38V9Mczw9OzdBI1vWVAVcbGLqvZcE4VeR6TpX4q9cvWizPla7Qqp0VpdkLrkqC+a27yHBm2tBoXYb6fEE+iIOo2Tgn+pU1qcu+0eL1t9Hy3BwqRP/l08V0ZDec8RWSMEDt3hVfjjPHstobOsFBeMCGzXzKCo00e6XmjePPmZz1HHFhIiF61gRqqw8t5hQ56vOl9UwJKrobxiOLkngKyZWbr+SfcFIqqgvnkesERW1SKnjxC4IuYk5EXPd2wnJh+E+ELFZT4IyhstnLQedTuG3ozmNtMsmM2ZqMuZsVBypoLs/te5Bevo5QVA+eJzJijEOSBlFw0pYEJfuvOVD5DIAtvUSISOKO0bKlTKyas8UA62/9ypNsX0TsIcUDXwn+Gowm35qC4PyaaMT+MMiRHSEj+mV/ouBAziF8Pqwzj/AhWPPDEwQHEIwkbChr3rU8HdsIz8QKBnG7U9D//DhST1QvZAez+NJ5LRowJ/RDOBBBbpPBxYnEk9wV5r2cfpm10OPjxoba60cJr2GZH2duEF78E5XSakb6jhKf6I1KSrbNTnILfd/HVaz6oZUvS3kD7gokXm+T/4b+ceoZs+faQqDA3YtwBcdeJppmxRSQD+C16rruaHPtoX7dPg==
+	8+N/rpAPaCs6e7dXslDqz05LU4u7ehHULwburScYkPos3RPAzZvzRWMhNrz934loqeShpcfrMNYB+w9Ogu8sdlUqF2JYYuQK7RsZyO110roRz5/gpLGjeUfuNE0VDONPBePVOT0cT8prVznj1YSXg3NqbfBayP29B3ODZKiHHKL795YVS7cPYem6LtlHj+P582vJASEqtMbjq+ZhqmvMd1d8GvE3NT7viOiVg9lwPgcDVmgUoJHM2k8NxwScfKSTDAz4CksK/6jtvAEbSBJh1gLTbaInzWj+TnAlO/8KUqRM1DOcZSVHLkkL7bhP7PPDCoOZMt0j7OslrS7P8P9y7aRiXRRdzWZ7OistOBSw+sdn1oab5rkEyBeWE04EYb6sb9W+CiH1W4bf5e30xYXRR6TtC3JXsAVZmzfWDXz0knzZOmdjgZsfNWgMcAsXsGB11VRr/Y0WLpjYCkJ0zmVJuXFrRUP2hgDB/hOErjD9v7V/SeE3gde1btq+34uDmm+mm3VWHowrFDU87jDAIDy4v1dSiUVNCGjLIsvnwSv3OBGCWqvFtja2DKfwkc4lTO9o4288Qs/lfIwVeBuw+7T9htQDXfGYkP3XYo4fENArCOrDvzFyeV4x8OX1gM8YAQir1QkWqSHQyqJjAdppe04ABlqlPPBkuIXjTJhFJe0oW29IuCWq0cDkJ6CIaABBahnu72jSa2XWJYF8pN+0GLNg9w==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(7416014)(376014)(23010399003)(36860700016)(18002099003)(22082099003)(11063799006)(6133799003)(56012099006)(10067099003)(5023799004);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(1800799024)(7416014)(376014)(6133799003)(22082099003)(18002099003)(10067099003)(11063799006)(56012099006)(5023799004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	L+P2Emm4Z6Wuv4K59LDD5K2jKG/HY71/M/cJiU/GQ+Zmwx5exxpx69FUT9v9Jxx69/+fMWhCzfb/iJsF2jq+dTER6NNlTLyp/Um38AxqSlact11WO9HWjghbDxE3GiBXo/KcYEoHBpyHmuDnkPF+vQcRYOjGl9JicfvjltG800e8PTQdbPbHilCfKsjH62b9DtL6rm+BHyqcrFW418ccxqsTJ7AScHaakjL81sMh+kNo9JKVqw5jkpER9FVkQxs63U6/9QdbQMupQYBtAMkq0+oJGsOcItjcJiZj4/KQ0Ac/DyA9uoivwhbKqHqFSBk0ALYiXTxq9BRna2TOvA2PaFC1dz4DnBcHauRGw2H4afZotniHHrU+IlEesXMYaqkeSTyjqmdw+Ll5vZB6QX6gGcwg4ohBSQOoZwLriUzHffPYF8VVDVQUCfPvU0PibAw5
+	I11i7zuUNSBiAIBBrKbCzF0ZnD/t+MWhP3mXMUsykBVbcSFk8aAXFb6DCC5VCWTbhYcrzntUzjIh3ZeObyxUn37saYKeHl5mL8seLYDSeJjoa1kchoOnS/REv5jtpg0gUCGO4tgxc3omhU9cryNRlSBNy05Ke/rnCHgpBYIoVhifpfi07bMMjEVmM9KFYh3J9r/yZFz5Pc6TjZie1ahANZ+IZb8jHkl1F18F28u/tWCO92DSFrciiOiddeKwKQkoeZQNtVn1Ev06PIZnkMRP1tOZ9B1dM8uBwibAlS44lXSqmWH8JHqAsKjwDJrFXe6bhxOP2JO3/pWmzv8OphAIgoBrJM0MI0ELRL28SeQuWayhJL1OMT1K2KsnS7yx5JXyyBfjSoDtg32MZYqX4PQoXNNWZd6ETKR8NWRI6w0EG/fWLgu5eLw5pULx0hq3gHVj
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 06:42:14.1133
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 06:42:56.9862
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 657157b1-7a54-44de-d5b3-08df22abca86
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1d34347-7c34-4cb7-41d9-08df22abe415
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF00012E60.namprd05.prod.outlook.com
+	CO1PEPF00012E61.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8481
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5922
 
-Implement the .preserve and .preserve_device callbacks. Pin the PCI
-segment's device table for KHO and record each device's domain ID,
-page-table mode and GCR3 tree, so the next kernel can rebuild them.
+Adopt the preserved device table for the PCI segment instead of
+allocating a fresh one, and reserve the domain IDs it already carries so
+a domain allocated by this kernel cannot be handed an ID the hardware is
+still tagging cache entries with.
 
-The device table is shared by every IOMMU in a segment while the
-callbacks run once per IOMMU, so the pin is reference counted.
+Also stop clearing the enable bit on a unit that was handed over
+translating. Doing so would drop its devices into untranslated
+passthrough while their DMA is still in flight.
 
 Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
 ---
- drivers/iommu/amd/Makefile          |   1 +
- drivers/iommu/amd/amd_iommu.h       |  12 ++
- drivers/iommu/amd/amd_iommu_types.h |  14 ++
- drivers/iommu/amd/iommu.c           |   7 +
- drivers/iommu/amd/liveupdate.c      | 281 ++++++++++++++++++++++++++++
- 5 files changed, 315 insertions(+)
- create mode 100644 drivers/iommu/amd/liveupdate.c
+ drivers/iommu/amd/amd_iommu.h  |   7 ++
+ drivers/iommu/amd/init.c       | 165 ++++++++++++++++++++++++++-------
+ drivers/iommu/amd/liveupdate.c |  33 +++++++
+ 3 files changed, 174 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
-index 94b8ef2acb18..227bbe920c26 100644
---- a/drivers/iommu/amd/Makefile
-+++ b/drivers/iommu/amd/Makefile
-@@ -2,3 +2,4 @@
- obj-y += iommu.o init.o quirks.o ppr.o pasid.o
- obj-$(CONFIG_AMD_IOMMU_IOMMUFD) += iommufd.o nested.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
-+obj-$(CONFIG_IOMMU_LIVEUPDATE) += liveupdate.o
 diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index a2fe804b038b..5cf32e4898dc 100644
+index 4402724bfd06..ac6d7a17eb40 100644
 --- a/drivers/iommu/amd/amd_iommu.h
 +++ b/drivers/iommu/amd/amd_iommu.h
-@@ -225,4 +225,16 @@ amd_iommu_make_clear_dte(struct iommu_dev_data *dev_data, struct dev_table_entry
- struct iommu_domain *
- amd_iommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 			      const struct iommu_user_data *user_data);
+@@ -237,9 +237,16 @@ int amd_iommu_preserve_device(struct device *dev,
+ void amd_iommu_unpreserve_device(struct device *dev,
+ 				 struct iommu_device_ser *device_ser);
+ void amd_iommu_clear_unpreserved_dtes(struct amd_iommu *iommu);
++void amd_iommu_restore_dev_table(struct amd_iommu *iommu,
++				 struct iommu_hw_ser *ser);
+ #else
+ static inline void amd_iommu_clear_unpreserved_dtes(struct amd_iommu *iommu)
+ {
+ }
 +
-+#ifdef CONFIG_IOMMU_LIVEUPDATE
-+/* LIVE UPDATE (drivers/iommu/amd/liveupdate.c) */
-+int amd_iommu_preserve(struct iommu_device *iommu_dev,
-+		       struct iommu_hw_ser *ser);
-+void amd_iommu_unpreserve(struct iommu_device *iommu_dev,
-+			  struct iommu_hw_ser *ser);
-+int amd_iommu_preserve_device(struct device *dev,
-+			      struct iommu_device_ser *device_ser);
-+void amd_iommu_unpreserve_device(struct device *dev,
-+				 struct iommu_device_ser *device_ser);
-+#endif /* CONFIG_IOMMU_LIVEUPDATE */
++static inline void amd_iommu_restore_dev_table(struct amd_iommu *iommu,
++					       struct iommu_hw_ser *ser)
++{
++}
+ #endif /* CONFIG_IOMMU_LIVEUPDATE */
  #endif /* AMD_IOMMU_H */
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 3dbe20023456..fc9d98dfc6cd 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -596,6 +596,20 @@ struct amd_iommu_pci_seg {
- 	 */
- 	struct dev_table_entry *dev_table;
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 3b46d46f7143..8aba3b715a02 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -33,6 +33,7 @@
  
-+#ifdef CONFIG_IOMMU_LIVEUPDATE
-+	/*
-+	 * The device table is shared by every IOMMU in this PCI segment, but
-+	 * the live-update .preserve callback runs once per IOMMU, and each of
-+	 * those IOMMUs is preserved and unpreserved independently by the core.
-+	 * KHO preservation is not refcounted, so the references are counted
-+	 * here and the shared pages are pinned on the first and unpinned only
-+	 * on the last -- otherwise one IOMMU being unpreserved would drop the
-+	 * pin from underneath the devices still preserved behind every other
-+	 * IOMMU in the segment.
-+	 */
-+	unsigned int dev_table_preserve_count;
-+#endif
-+
- 	/*
- 	 * The rlookup iommu table is used to find the IOMMU which is
- 	 * responsible for a specific device. It is indexed by the PCI
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a83ce4521f7f..72df97b99589 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -32,6 +32,7 @@
- #include <linux/percpu.h>
- #include <linux/cc_platform.h>
  #include <linux/crash_dump.h>
-+#include <linux/iommu-liveupdate.h>
- #include <asm/irq_remapping.h>
- #include <asm/io_apic.h>
- #include <asm/apic.h>
-@@ -3221,6 +3222,12 @@ const struct iommu_ops amd_iommu_ops = {
- 	.page_response = amd_iommu_page_response,
- 	.get_viommu_size = amd_iommufd_get_viommu_size,
- 	.viommu_init = amd_iommufd_viommu_init,
-+#ifdef CONFIG_IOMMU_LIVEUPDATE
-+	.preserve_device	= amd_iommu_preserve_device,
-+	.unpreserve_device	= amd_iommu_unpreserve_device,
-+	.preserve		= amd_iommu_preserve,
-+	.unpreserve		= amd_iommu_unpreserve,
-+#endif
- };
+ #include <linux/iommu-liveupdate.h>
++#include <linux/kexec_handover.h>
  
- #ifdef CONFIG_IRQ_REMAP
-diff --git a/drivers/iommu/amd/liveupdate.c b/drivers/iommu/amd/liveupdate.c
-new file mode 100644
-index 000000000000..096a23bb4e7b
---- /dev/null
-+++ b/drivers/iommu/amd/liveupdate.c
-@@ -0,0 +1,281 @@
-+// SPDX-License-Identifier: GPL-2.0-only
+ #include "amd_iommu.h"
+ #include "../irq_remapping.h"
+@@ -1135,14 +1136,42 @@ static void set_dte_bit(struct dev_table_entry *dte, u8 bit)
+ 	dte->data[i] |= (1UL << _bit);
+ }
+ 
+-static bool __reuse_device_table(struct amd_iommu *iommu)
 +/*
-+ * AMD IOMMU (AMD-Vi) live update support.
-+ *
-+ * Copyright (C) 2026 Advanced Micro Devices, Inc.
-+ * Author: Ankit Soni <Ankit.Soni@amd.com>
++ * Reserve the domain IDs the previous kernel programmed into the adopted Device
++ * Table, so this kernel never hands out an ID the hardware still tags cache
++ * entries with. @pci_seg->old_dev_tbl_cpy must already point at that table.
 + */
++static bool reserve_dev_table_domain_ids(struct amd_iommu_pci_seg *pci_seg)
+ {
+-	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
+ 	struct dev_table_entry *old_dev_tbl_entry;
+-	u32 lo, hi, old_devtb_size, devid;
+-	phys_addr_t old_devtb_phys;
++	u32 devid;
+ 	u16 dom_id;
+ 	bool dte_v;
 +
-+#include <linux/iommu-liveupdate.h>
-+#include <linux/pci.h>
++	for (devid = 0; devid <= pci_seg->last_bdf; devid++) {
++		old_dev_tbl_entry = &pci_seg->old_dev_tbl_cpy[devid];
++		dte_v = FIELD_GET(DTE_FLAG_V, old_dev_tbl_entry->data[0]);
++		dom_id = FIELD_GET(DTE_DOMID_MASK, old_dev_tbl_entry->data[1]);
 +
-+#include "amd_iommu.h"
-+#include "../iommu-pages.h"
-+
-+/* Each 4K GCR3 table level holds 512 u64 entries. */
-+#define GCR3_ENTRIES_PER_LEVEL	512
-+
-+/**
-+ * amd_iommu_preserve - Preserve one AMD IOMMU instance for live update
-+ * @iommu_dev: Core handle for the IOMMU whose state is being preserved
-+ * @ser: Serialized IOMMU-instance record to fill in
-+ *
-+ * Pins the PCI-segment Device Table. Command, event, PPR and GA buffers are
-+ * not preserved: they are drained or quiesced at shutdown and the next kernel
-+ * allocates fresh ones, matching Intel phase 1.
-+ *
-+ * Return: 0 on success, negative errno on failure (any pages pinned by this
-+ * call are released before returning).
-+ */
-+int amd_iommu_preserve(struct iommu_device *iommu_dev, struct iommu_hw_ser *ser)
-+{
-+	struct amd_iommu *iommu = container_of(iommu_dev, struct amd_iommu, iommu);
-+	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
-+	int ret;
-+
-+	if (!pci_seg->dev_table_preserve_count) {
-+		ret = iommu_preserve_pages(pci_seg->dev_table);
-+		if (ret)
-+			return ret;
++		if (!dte_v || !dom_id)
++			continue;
++		/*
++		 * ID reservation can fail with -ENOSPC when there
++		 * are multiple devices present in the same domain,
++		 * hence check only for -ENOMEM.
++		 */
++		if (amd_iommu_pdom_id_reserve(dom_id, GFP_KERNEL) == -ENOMEM)
++			return false;
 +	}
-+	pci_seg->dev_table_preserve_count++;
 +
-+	ser->type			= IOMMU_AMD;
-+	ser->token			= iommu->mmio_phys;
-+	ser->amd.mmio_phys		= iommu->mmio_phys;
-+	ser->amd.dev_table_phys		= __pa(pci_seg->dev_table);
-+	ser->amd.dev_table_size		= pci_seg->dev_table_size;
-+	ser->amd.pci_seg_id		= pci_seg->id;
-+	ser->amd.efr			= iommu->features;
-+	ser->amd.efr2			= iommu->features2;
-+
-+	return 0;
++	return true;
 +}
 +
-+/**
-+ * amd_iommu_unpreserve - Release live-update state of one AMD IOMMU instance
-+ * @iommu_dev: Core handle for the IOMMU whose state is being released
-+ * @ser: Serialized IOMMU-instance record (unused; state is derived from @iommu)
-+ *
-+ * Reverse of amd_iommu_preserve(): once the last IOMMU of the segment has
-+ * dropped its reference, unpins the shared Device Table.
-+ */
-+void amd_iommu_unpreserve(struct iommu_device *iommu_dev,
-+			  struct iommu_hw_ser *ser)
++static bool __reuse_device_table(struct amd_iommu *iommu)
 +{
-+	struct amd_iommu *iommu = container_of(iommu_dev, struct amd_iommu, iommu);
 +	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
++	u32 lo, hi, old_devtb_size;
++	phys_addr_t old_devtb_phys;
+ 	u64 entry;
+ 
+ 	/* Each IOMMU use separate device table with the same size */
+@@ -1178,22 +1207,6 @@ static bool __reuse_device_table(struct amd_iommu *iommu)
+ 		return false;
+ 	}
+ 
+-	for (devid = 0; devid <= pci_seg->last_bdf; devid++) {
+-		old_dev_tbl_entry = &pci_seg->old_dev_tbl_cpy[devid];
+-		dte_v = FIELD_GET(DTE_FLAG_V, old_dev_tbl_entry->data[0]);
+-		dom_id = FIELD_GET(DTE_DOMID_MASK, old_dev_tbl_entry->data[1]);
+-
+-		if (!dte_v || !dom_id)
+-			continue;
+-		/*
+-		 * ID reservation can fail with -ENOSPC when there
+-		 * are multiple devices present in the same domain,
+-		 * hence check only for -ENOMEM.
+-		 */
+-		if (amd_iommu_pdom_id_reserve(dom_id, GFP_KERNEL) == -ENOMEM)
+-			return false;
+-	}
+-
+ 	return true;
+ }
+ 
+@@ -1201,27 +1214,69 @@ static bool reuse_device_table(void)
+ {
+ 	struct amd_iommu *iommu;
+ 	struct amd_iommu_pci_seg *pci_seg;
+-
+-	if (!amd_iommu_pre_enabled)
+-		return false;
+-
+-	pr_warn("Translation is already enabled - trying to reuse translation structures\n");
++	bool reused = false;
+ 
+ 	/*
+ 	 * All IOMMUs within PCI segment shares common device table.
+ 	 * Hence reuse device table only once per PCI segment.
+ 	 */
+ 	for_each_pci_segment(pci_seg) {
++		struct amd_iommu *preserved_iommu = NULL;
++		struct iommu_hw_ser *ser = NULL;
 +
-+	if (WARN_ON(!pci_seg->dev_table_preserve_count))
-+		return;
-+
-+	if (!--pci_seg->dev_table_preserve_count)
-+		iommu_unpreserve_pages(pci_seg->dev_table);
-+}
-+
-+/*
-+ * Map the domain's page-table mode onto its handoff wire value. Done with an
-+ * explicit switch rather than a cast so that renumbering
-+ * enum protection_domain_mode cannot silently change the ABI.
-+ */
-+static u32 pd_mode_to_ser(enum protection_domain_mode pd_mode)
-+{
-+	switch (pd_mode) {
-+	case PD_MODE_V1:
-+		return IOMMU_AMD_SER_PD_MODE_V1;
-+	case PD_MODE_V2:
-+		return IOMMU_AMD_SER_PD_MODE_V2;
-+	default:
-+		return IOMMU_AMD_SER_PD_MODE_NONE;
-+	}
-+}
-+
-+static void unpreserve_gcr3_level(u64 *tbl, int level)
-+{
-+	int i;
-+
-+	if (level > 0) {
-+		for (i = 0; i < GCR3_ENTRIES_PER_LEVEL; i++) {
-+			u64 *child;
-+
-+			if (!(tbl[i] & GCR3_VALID))
++		/*
++		 * The device table is shared by the whole segment and pinned
++		 * by whichever unit preserved it, so any member holding
++		 * preserved state can describe it for all of them.
++		 */
++		for_each_iommu(iommu) {
++			if (pci_seg->id != iommu->pci_seg->id)
 +				continue;
 +
-+			child = iommu_phys_to_virt(tbl[i] & PAGE_MASK);
-+			unpreserve_gcr3_level(child, level - 1);
++			ser = iommu_get_preserved_data(iommu->mmio_phys,
++						       IOMMU_AMD);
++			if (ser) {
++				preserved_iommu = iommu;
++				break;
++			}
 +		}
-+	}
 +
-+	iommu_unpreserve_pages(tbl);
-+}
-+
-+static int preserve_gcr3_level(u64 *tbl, int level)
-+{
-+	u64 *child;
-+	int i, ret;
-+
-+	ret = iommu_preserve_pages(tbl);
-+	if (ret)
-+		return ret;
-+
-+	if (level == 0)
-+		return 0;
-+
-+	for (i = 0; i < GCR3_ENTRIES_PER_LEVEL; i++) {
-+		if (!(tbl[i] & GCR3_VALID))
++		if (preserved_iommu) {
++			amd_iommu_restore_dev_table(preserved_iommu, ser);
++			/*
++			 * Fatal for the same reason a failed table adopt is;
++			 * see amd_iommu_restore_dev_table().
++			 */
++			if (!reserve_dev_table_domain_ids(pci_seg))
++				panic("AMD-Vi: IOMMU:%d cannot reserve the preserved domain IDs\n",
++				      preserved_iommu->index);
++			reused = true;
 +			continue;
++		}
 +
-+		child = iommu_phys_to_virt(tbl[i] & PAGE_MASK);
-+		ret = preserve_gcr3_level(child, level - 1);
-+		if (ret)
-+			goto err_unwind;
-+	}
-+
-+	return 0;
-+
-+err_unwind:
-+	while (--i >= 0) {
-+		if (!(tbl[i] & GCR3_VALID))
-+			continue;
-+
-+		child = iommu_phys_to_virt(tbl[i] & PAGE_MASK);
-+		unpreserve_gcr3_level(child, level - 1);
-+	}
-+	iommu_unpreserve_pages(tbl);
-+	return ret;
-+}
-+
-+/*
-+ * A nested attach programs the DTE from the guest's own descriptor instead of
-+ * from dev_data: the DOMID is the viommu's host domain ID for that guest domain,
-+ * the GCR3 pointer is the guest's, and dev_data->domain is never assigned, so it
-+ * still refers to whatever was attached before -- the nest parent, or nothing at
-+ * all (see set_dte_nested()). None of that is recoverable from the state
-+ * amd_iommu_preserve_device() serializes, and the core cannot filter it out
-+ * either: a device on a nested domain is preserved against the domain of its
-+ * paging parent, which is a legitimately preserved domain, so every check up to
-+ * this point passes (see find_hwpt_paging()).
-+ *
-+ * Guest translation that this kernel set up itself always has a host-allocated
-+ * GCR3 table behind it, which is what tells the two apart.
-+ */
-+static bool dev_is_nested_attached(struct iommu_dev_data *dev_data)
-+{
-+	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
-+	struct dev_table_entry *dev_table = get_dev_table(iommu);
-+
-+	if (!dev_table)
-+		return false;
-+
-+	return (READ_ONCE(dev_table[dev_data->devid].data[0]) & DTE_FLAG_GV) &&
-+	       !dev_data->gcr3_info.gcr3_tbl;
-+}
-+
-+/**
-+ * amd_iommu_preserve_device - Preserve per-device live-update state
-+ * @dev: The device being preserved
-+ * @device_ser: Serialized per-device record to fill in
-+ *
-+ * The device's DTE rides across the kexec inside the preserved Device Table and
-+ * keeps being used by the hardware, so everything the DTE still points at
-+ * afterwards must be KHO-pinned. For a PASID-capable device that is the GCR3
-+ * directory tree; the domain's page tables are pinned by the core when it
-+ * preserves the domain. Anything not pinned must instead be dropped from the
-+ * DTE, which is what amd_iommu_clear_unpreserved_dtes() does at shutdown.
-+ *
-+ * Records the domain ID the DTE tags this device with, and the domain's
-+ * page-table mode so the next kernel can confirm its own default agrees before
-+ * adopting the preserved tables. Both describe the DTE only as long as it was
-+ * programmed from dev_data, so a device whose DTE came from a guest descriptor
-+ * instead is refused outright; see dev_is_nested_attached().
-+ *
-+ * The walk runs during the quiesced live-update window, where the device is
-+ * owned by its userspace driver and no PASID is being attached or detached, so
-+ * the GCR3 tree is stable and no iommu-group lock is taken.
-+ *
-+ * Return: 0 on success, negative errno otherwise.
-+ */
-+int amd_iommu_preserve_device(struct device *dev,
-+			      struct iommu_device_ser *device_ser)
-+{
-+	struct gcr3_tbl_info *gcr3_info;
-+	struct iommu_dev_data *dev_data;
-+	int ret;
-+
-+	if (!dev_is_pci(dev)) {
-+		dev_err(dev, "cannot preserve non-PCI device\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	dev_data = dev_iommu_priv_get(dev);
-+	if (!dev_data)
-+		return -EINVAL;
-+
-+	if (dev_is_nested_attached(dev_data)) {
-+		dev_err(dev, "cannot preserve device attached to a nested domain\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (!dev_data->domain)
-+		return -EINVAL;
-+
-+	/* Page-table mode is a domain property, independent of PASID use. */
-+	device_ser->amd.pd_mode = pd_mode_to_ser(dev_data->domain->pd_mode);
-+
-+	gcr3_info = &dev_data->gcr3_info;
-+	if (!gcr3_info->gcr3_tbl) {
 +		/*
-+		 * Non-PASID device: the DTE's DOMID field holds the plain
-+		 * protection-domain ID (see amd_iommu_set_dte_v1()), and there
-+		 * is no GCR3 tree to pin.
++		 * Nothing was handed over for this segment. The kdump path can
++		 * still remap the previous kernel's table, but only when every
++		 * IOMMU came up with translation already enabled.
 +		 */
-+		device_ser->domain_iommu_ser.attachment_id = dev_data->domain->id;
-+		device_ser->amd.gcr3_tbl_phys = 0;
-+		device_ser->amd.gcr3_glx = 0;
-+		return 0;
-+	}
++		if (!amd_iommu_pre_enabled)
++			return false;
 +
-+	/* PASID device: pin the whole GCR3 directory tree. */
-+	ret = preserve_gcr3_level(gcr3_info->gcr3_tbl, gcr3_info->glx);
-+	if (ret)
-+		return ret;
++		pr_warn("Translation is already enabled - trying to reuse translation structures\n");
++
+ 		for_each_iommu(iommu) {
+ 			if (pci_seg->id != iommu->pci_seg->id)
+ 				continue;
+ 			if (!__reuse_device_table(iommu))
+ 				return false;
++			if (!reserve_dev_table_domain_ids(pci_seg))
++				return false;
++			reused = true;
+ 			break;
+ 		}
+ 	}
+ 
+-	return true;
++	return reused;
+ }
+ 
+ struct dev_table_entry *amd_iommu_get_ivhd_dte_flags(u16 segid, u16 devid)
+@@ -1948,6 +2003,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
+ 
+ static int __init init_iommu_one_late(struct amd_iommu *iommu)
+ {
++	struct iommu_hw_ser *ser;
+ 	int ret;
+ 
+ 	ret = alloc_iommu_buffers(iommu);
+@@ -1957,7 +2013,25 @@ static int __init init_iommu_one_late(struct amd_iommu *iommu)
+ 	iommu->int_enabled = false;
+ 
+ 	init_translation_status(iommu);
+-	if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
++
++	/* The MMIO physical base is the handoff token; NULL means a cold boot. */
++	ser = iommu_get_preserved_data(iommu->mmio_phys, IOMMU_AMD);
++
++	if (translation_pre_enabled(iommu) && !is_kdump_kernel() && !ser) {
++		/*
++		 * A handover boot that left this unit translating but produced
++		 * no record for it is not a stale enable. Either the handover
++		 * was never consumable (this kernel booted without
++		 * liveupdate=1) or it was not visible yet. Clearing the enable
++		 * bit drops every device behind this unit into untranslated
++		 * passthrough while its DMA is still in flight, aimed at
++		 * addresses that mean nothing in this kernel's physical map,
++		 * so stop instead of doing it silently.
++		 */
++		if (is_kho_boot())
++			panic("AMD-Vi: IOMMU:%d was handed over translating but no preserved state is available; refusing to disable it under live DMA\n",
++			      iommu->index);
++
+ 		iommu_disable(iommu);
+ 		clear_translation_pre_enabled(iommu);
+ 		pr_warn("Translation was enabled for IOMMU:%d but we are not in kdump mode\n",
+@@ -2944,6 +3018,18 @@ static void early_enable_iommus(void)
+ 		}
+ 
+ 		for_each_iommu(iommu) {
++			/*
++			 * Units with no preserved devices come back with
++			 * translation off. Programming their buffers without
++			 * enabling them leaves amd_iommu_flush_all_caches()
++			 * waiting on a completion idle hardware never posts,
++			 * so bring them up the normal way.
++			 */
++			if (!translation_pre_enabled(iommu)) {
++				early_enable_iommu(iommu);
++				continue;
++			}
++
+ 			iommu_disable_command_buffer(iommu);
+ 			iommu_disable_event_buffer(iommu);
+ 			iommu_disable_irtcachedis(iommu);
+@@ -3033,12 +3119,25 @@ static void enable_iommus_vapic(void)
+ #endif
+ }
+ 
+-static void disable_iommus(void)
++static bool iommu_was_handed_over(struct amd_iommu *iommu)
++{
++	struct iommu_hw_ser *ser;
++
++	ser = iommu_get_preserved_data(iommu->mmio_phys, IOMMU_AMD);
++
++	return ser;
++}
++
++static void __disable_iommus(bool keep_handed_over)
+ {
+ 	struct amd_iommu *iommu;
+ 
+-	for_each_iommu(iommu)
++	for_each_iommu(iommu) {
++		if (keep_handed_over && iommu_was_handed_over(iommu))
++			continue;
++
+ 		iommu_disable(iommu);
++	}
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 	if (AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+@@ -3046,6 +3145,11 @@ static void disable_iommus(void)
+ #endif
+ }
+ 
++static void disable_iommus(void)
++{
++	__disable_iommus(false);
++}
++
+ /*
+  * Bound the wait for a log engine to report itself idle. An engine only has
+  * to finish a write it has already started, which takes microseconds, so this
+@@ -3388,9 +3492,8 @@ static int __init early_amd_iommu_init(void)
+ 			amd_iommu_pgtable = PD_MODE_NONE;
+ 	}
+ 
+-	/* Disable any previously enabled IOMMUs */
+ 	if (!is_kdump_kernel() || amd_iommu_disabled)
+-		disable_iommus();
++		__disable_iommus(true);
+ 
+ 	if (amd_iommu_irq_remap)
+ 		amd_iommu_irq_remap = check_ioapic_information();
+diff --git a/drivers/iommu/amd/liveupdate.c b/drivers/iommu/amd/liveupdate.c
+index a3a9ebea5138..2e9a1de6b1ff 100644
+--- a/drivers/iommu/amd/liveupdate.c
++++ b/drivers/iommu/amd/liveupdate.c
+@@ -362,3 +362,36 @@ void amd_iommu_clear_unpreserved_dtes(struct amd_iommu *iommu)
+ 
+ 	amd_iommu_flush_all_caches(iommu);
+ }
++
++void amd_iommu_restore_dev_table(struct amd_iommu *iommu,
++				 struct iommu_hw_ser *ser)
++{
++	struct amd_iommu_pci_seg *pci_seg = iommu->pci_seg;
++
++	if (ser->amd.dev_table_size != pci_seg->dev_table_size)
++		panic("AMD-Vi: IOMMU:%d preserved device table size mismatch (0x%x vs 0x%x)\n",
++		      iommu->index, ser->amd.dev_table_size,
++		      pci_seg->dev_table_size);
++
++	if (ser->amd.pci_seg_id != pci_seg->id)
++		panic("AMD-Vi: IOMMU:%d preserved PCI segment mismatch (%u vs %u)\n",
++		      iommu->index, ser->amd.pci_seg_id, pci_seg->id);
++
++	if (ser->amd.efr != iommu->features ||
++	    ser->amd.efr2 != iommu->features2)
++		panic("AMD-Vi: IOMMU:%d preserved feature registers mismatch (EFR 0x%llx/0x%llx vs 0x%llx/0x%llx)\n",
++		      iommu->index, ser->amd.efr, ser->amd.efr2,
++		      iommu->features, iommu->features2);
 +
 +	/*
-+	 * For a GCR3 device the DTE's DOMID field holds gcr3_info->domid, not
-+	 * domain->id (see set_dte_gcr3_table()).
++	 * Reclaim the folio from KHO the first time this segment's table is
++	 * seen, then adopt it. Later IOMMUs in the same segment reference the
++	 * same physical table and must not restore it again.
 +	 */
-+	device_ser->domain_iommu_ser.attachment_id = gcr3_info->domid;
-+	device_ser->amd.gcr3_tbl_phys = __pa(gcr3_info->gcr3_tbl);
-+	device_ser->amd.gcr3_glx = gcr3_info->glx;
++	if (!ser->amd.restored) {
++		iommu_restore_pages(ser->amd.dev_table_phys);
++		ser->amd.restored = 1;
++	}
 +
-+	return 0;
-+}
-+
-+/**
-+ * amd_iommu_unpreserve_device - Release per-device live-update state
-+ * @dev: The device whose state is being released
-+ * @device_ser: Serialized per-device record (unused)
-+ *
-+ * Reverse of amd_iommu_preserve_device(): unpins the GCR3 tree of a
-+ * PASID-capable device. The DTE itself lives in the shared Device Table
-+ * released by amd_iommu_unpreserve().
-+ */
-+void amd_iommu_unpreserve_device(struct device *dev,
-+				 struct iommu_device_ser *device_ser)
-+{
-+	struct gcr3_tbl_info *gcr3_info;
-+	struct iommu_dev_data *dev_data;
-+
-+	if (!dev_is_pci(dev))
-+		return;
-+
-+	dev_data = dev_iommu_priv_get(dev);
-+	if (!dev_data)
-+		return;
-+
-+	gcr3_info = &dev_data->gcr3_info;
-+	if (!gcr3_info->gcr3_tbl)
-+		return;
-+
-+	unpreserve_gcr3_level(gcr3_info->gcr3_tbl, gcr3_info->glx);
++	pci_seg->old_dev_tbl_cpy = __va(ser->amd.dev_table_phys);
 +}
 -- 
 2.43.0
