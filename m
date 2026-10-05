@@ -1,196 +1,153 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011035.outbound.protection.outlook.com [40.107.208.35])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C837E274658
-	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 04:38:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.35
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791175093; cv=fail; b=m+UmK/lVlKsM4rRUQDvcdsdLAyKJpfnu+IQ7VTzi82+jJDBab/1d19o88YSRcO+WXGXtY0kjH3wClTQ4nm9ucSU5whRKVSYSL2aVKwx8p/KbLGtNW1MXca1sHxYCTfFXINs4eYKcH5JgoNADeJmQFWb/mIun/Rb7qGReKbIUZSI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791175093; c=relaxed/simple;
-	bh=bEejZcA/AsFK2yaBupjeQ5ZypWTObYKV+8kYHna5jBE=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jJCYjf7ctoEap+/iP5nmRBX6MF2M8+yqcvOGWk+fjLG9nqXHCnsQaEm8xW9baX7XNv8xxU97RwurLP0ahk8W2799LzvN0wY9y7gmrbKerZnOXBknRjolkcraB1y6jLI+owDZkYYseLexU2gLcMS2ccKoIhJfw+qa3Ta05knRrqQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=EOm4fmrj; arc=fail smtp.client-ip=40.107.208.35
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83F1B21A447
+	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 04:58:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791176339; cv=none; b=f67v97tb3vazjCa6W5Hj9lqOmyDftMh9op2WYHGvSVC3dQInfrfKseQLpO+l2tqhrc5Lnm6997ZCTBva5s3ElFYLWxPUynMYynK2E0MCaFNU0nKi7lkRoCKFPUt+I48T1SRhiJQmyQwcc2Ha2eoNsooX+Y+7XAL5i7tuJdwC/Wo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791176339; c=relaxed/simple;
+	bh=OWeLqewt6cDtSzZMGAcsd1VNoKJM2XpzzuMOzXs1SEU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nwr9uXieSKC3ABkRFaju94zFK4uNaKnVEY6lK3V+RzHLzMsAwTUF9dfhVVbt3L8kXDxlhbGLHcnDISol9MWY1VDo/RtdlnnpZMVL/9RITHxK5r1V3bdxzoExGFpGVkNCmFRQ55PMaBKnrKIB3seiic6/fZLiEaHRxH7Grvfnsms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=u88IKhij; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="EOm4fmrj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=DwRrwi2SN3uL/RDyJifpYdQf6Fbm4o8UYhwHbPu9cdKCkqbbFcOSbMSLftPTd2bIqptxbk9KMlvG4f2xmxfbylO2ohDcTINDAXv+TpeK1Msdlq3f3pJqFL9gChIr2zn8Ro1dBp1yKPoA8NvennYYh3CkTU+45OuhjwMObVGEyzrehaWDo2STDlhtRWN2HeOOb47k5uNArm5fYJHpggR8LL9KGob36g1OVxpVn9XPA221NM8RM8ocjl+PE+thihvy/n6ScLAxPA58P6PyFH7dW4kajn908vqoaJHUhDhqn6PUQM6bPjDSJ7rdO/zqL7F7YV8jLuyJ5XoEp2k300nBuQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=O/ziH18LAbNiH6REnk/O8I8z/GkAviNGuhqg0Og/uFo=;
- b=KzYbgpyiK45S4ErMEgVZ1tyGpJ/KT4QdUKKDgoEQ52BMg9NodC+jLh6jJiYuuCOrqzKsY3jjPTw3qk2E/GhyoYJ+eVq435hte1mL3XssNi51BUccaAp/MNyX9Lj9mwz9VmiV6VPv8ugHyMJ+AP0lDWxrTx5e2vuNI5C3iYM9XxNP9AHdXDM5j5bsE95zAabstFbURzqBoX5+/OQkpwklOBccfLM3m1VvyBiM9nw+Y7KA9MDvRZQNPriAt2MtoOumZcFCBlqcnc/tyLr8Yva2zuGKrzIX7OC8jUN+h9bqnMbNW/Euhq6GH9Y6NwwTna8xt5sRg4BE2fGHe2+uosnv0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O/ziH18LAbNiH6REnk/O8I8z/GkAviNGuhqg0Og/uFo=;
- b=EOm4fmrjYhR2rkyzj1jJD1kuwfKDMA138kMZ+Y4bpEbU11Yr6Qr8gVwDIFpAbC9HAxgxKjiUZk71+CSnaf6egGdZ6pzgMtaGyq7juBTZOVuKkUqVOkRGyJ+UlIL2v944xjq4NJdUXTTXYC+kmMJivYV8sbQuewRPz08VKXFVF5SHISECPTKJ7lf7S2Vu2NBtIHGMmqUst/6iNHsoqpenaOPI+ZWBTFwJErcUO8csjNTo90rlIFEvzsMIilODdgdSuMgC4f2MlJXGQKMfJFlS1Rs14hdAesz1Qezudei6GU11qfYbbD+tPJodSzfSAh1IEM4X98WK50Jt1HnWBX0TZg==
-Received: from BN0PR04CA0205.namprd04.prod.outlook.com (2603:10b6:408:e9::30)
- by MN0PR12MB6295.namprd12.prod.outlook.com (2603:10b6:208:3c0::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.24; Mon, 5 Oct
- 2026 04:38:05 +0000
-Received: from BN3PEPF0000B069.namprd21.prod.outlook.com
- (2603:10b6:408:e9:cafe::85) by BN0PR04CA0205.outlook.office365.com
- (2603:10b6:408:e9::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.20 via Frontend Transport; Mon, 5
- Oct 2026 04:38:05 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN3PEPF0000B069.mail.protection.outlook.com (10.167.243.68) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.522.3 via Frontend Transport; Mon, 5 Oct 2026 04:38:05 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Sun, 4 Oct
- 2026 21:37:51 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Sun, 4 Oct
- 2026 21:37:51 -0700
-Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Sun, 4 Oct 2026 21:37:49 -0700
-Date: Sun, 4 Oct 2026 21:37:48 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>
-CC: <robin.murphy@arm.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
-	<praan@google.com>, <kevin.tian@intel.com>, <smostafa@google.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <jamien@nvidia.com>, <kas@kernel.org>
-Subject: Re: [PATCH v10 03/13] iommu/arm-smmu-v3: Add ARM_SMMU_FEAT_EVTQ for
- the event queue
-Message-ID: <asMpnDFQgry5moXr@nvidia.com>
-References: <cover.1788130528.git.nicolinc@nvidia.com>
- <b6493aeece86f44195e8afb6fb8b3497cc237dc2.1788130528.git.nicolinc@nvidia.com>
- <asJTer4cNh4DAQMY@willie-the-truck>
- <asK1JIsTay1yeBEU@nvidia.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="u88IKhij"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2e2e4ef20beso59595ad.0
+        for <iommu@lists.linux.dev>; Sun, 04 Oct 2026 21:58:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1791176338; x=1791781138; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wh1AxkS8SWKuWWWh7pZFQjWGZF9aNJY94i0CrRQCRF8=;
+        b=u88IKhijnmu3YeklL54jLEeDDDpjAGV+Y+nbr+xu05d0G1NLO25hbWgJ3dSRiKeGeK
+         lCv1mkLYmSmNxXxO4ky/kxFq8ZVR4aK1FC62SoWEw/fNbqX4j/B+KqbcTpYksgZV9G2o
+         FKwmjF4/uIldzhlxuqcWqE05wTbh0rdz5XW9l2nOQskUDqIFTkw98NoDELjoaS8myND3
+         5lFysnLM+Cqdwm7hw/1cu9LMNZJpJivJAbffK0wlXlPGOz+CtCI2GFQD8/sukwUK9xL+
+         mj064Fba5RO0lGd8kLq9Lpb3TnlpX4PM7m3tLsVD6RSDpfYOZ6BwjrrgDtSKSu0ol9DG
+         GH7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791176338; x=1791781138;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wh1AxkS8SWKuWWWh7pZFQjWGZF9aNJY94i0CrRQCRF8=;
+        b=qXLATbCuulw8c3gnRCDqBDDtPg/XxjT6ezpAVjbAk/xgv0aLo7oP1ok1UUBzqOz/+w
+         yppx6gJt9P+pYAN3Du3jwo6RFk/bGGYYk4vaeGzWHK68xBVX4OXEC0Y11iiP2YwkDS1g
+         J6qGRpC5pgT1hUW6pdBg+AfSyaqocK71aFqH8Jgg4q4xTJ37laRFoZ8xDx5Dfj5PMjFb
+         eTUWYFce6H6hVs8HGH7UmcMDUPfK8f7sG/AcfKy3q4X4a9wBQ69gUI/JQ9c416OHpcYD
+         /cSyyYXNESusjsyVmt09OuTVP2ob4fxW3CcFN/o/dkjRGqOYZhPToHct5lUM9hnJ8RJ+
+         6eJg==
+X-Forwarded-Encrypted: i=1; AKwUvBwAarRmeB3FtjEfrQXaMtJ/hdXBkkF8UbvaeY3XHLW0iCmmb6yiReAkJ7rgkf8q9fVV3CR38w==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJm/soB70mjy85YUpPEwomlISoUfdfeeVQxjGn9iRN6Q/XQ9G5W
+	XYzN3/FkrWUpG/yYoZ3e6PdblHY5DpNp9xq3m1XNxQ/EGyuiZjnntmIQvxXgSbeZJQ==
+X-Gm-Gg: AYBFou3e1aIhVVbwVBbmkAOzO29tS9awRcTG3t2sRKg+KMj06YKSWXNzAYMxq/dE8ht
+	0wxXumEJDN7ORnviYKerrXcLZHbsYQT3TlMa++QgR+Y6WRI0Kd+83C8zqHWSuQtYtLNt2jwmQg4
+	um5kn3pFRQCYblTIul2gxsIEnJDFAc4QyzZnfSa8+rFXSqhHmzzKmH8US61wzdLT2PqkXvNNgMY
+	YRXyoa9NuzHJoIK6yyKKTb2gtSnJk9Nn2JqmvGqCXGlbrTlBAhvI+3xAaBZ0YIvjEezMVFOKcns
+	gLAcm8gS9t8IHUOeXm8G5FHy5Rla6YOu34lGpdbGMUknLd0bhjftZE0z8fiXtioIDTVD2aN4Qr9
+	/86L5Qq+G67/mXEsqNMPrQIvdcTQBn7++QMCJioiEPBEhn35mKk3277RlLC37vbbRJ1+ClldLaW
+	1BsGwWrzGdKEiEwK92DnIBYVJuL6FPSCGYW/uvHqnopImLPuwNP1YOgXXDH+/fnSZwiWa28+QzQ
+	p00lUqRrBgMmemIdNvJ3Id+U6KDZ1eUh3GW
+X-Received: by 2002:a17:902:d987:b0:2d7:1cc3:a69c with SMTP id d9443c01a7336-2e5339b60b6mr5288515ad.7.1791176337084;
+        Sun, 04 Oct 2026 21:58:57 -0700 (PDT)
+Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cce6d901a2asm185534a12.17.2026.10.04.21.58.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 Oct 2026 21:58:56 -0700 (PDT)
+Date: Mon, 5 Oct 2026 04:58:50 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Logan Odell <loganodell@google.com>, iommu@lists.linux.dev,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 0/5] iommupt: Introduce IO page table shrinker
+Message-ID: <asMuigioXmHZmjO2@google.com>
+References: <20261001230219.818128-1-praan@google.com>
+ <20261002150844.GC3481470@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <asK1JIsTay1yeBEU@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B069:EE_|MN0PR12MB6295:EE_
-X-MS-Office365-Filtering-Correlation-Id: 86f2abc9-145c-4b64-bd04-08df229a729c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|376014|7416014|82310400026|36860700016|18002099003|22082099003|56012099006|4143699003|10067099003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	clfLeG/L8tgcaN7J43Z2CnRijOGk2R/53/l1X4I69udX82FLN3s0XDoVLpaD06XvfathkvIbTYE5YyVbDwTOyOFSzNMEKG/eI2dlXSzVFE24muY7J8rwn1hFgIVXmlJcNiIXaMIA9lPgaTs5nKAdk6vguopLfYwyV4yLsWyRITzGV6grBGvVNtVBwLiONCs+l30cr5Tz5bgsBIpJKxM4j5VzyCN0/VncUvZ0VNVtXAASRc0/Ns2sqgNjam+8GlcFT0E0hdRptpp6hjXrYyQ7q7cZx6Hrm4FvO342HpF8uzFdof2Rk3vTC4Xzsw8+UaVwnod2NxxD+3ZEoYJ71Qk6QV2ZXZLqXuJXX1dze326jKbfjKIdcJe7/dh78JThQIkkN9Rsn2MA2cBIegf7PwZ9/qBllMn80E8OUd9mbcraNyHaU0cwc0coKa0/ASKhhLNGXTIOHwA8evTfw3TiRmLKscVfkfT+QcRm8UnRVyLwd2rGJy+XL5b9lT7+zNh5IG14z67gFCc4o2brAXJpqSRigWoPOkEOx+lWuec9o81hJZNaPVYdE2mUFHqvtEGuAOgti5Xj0n/35M9uPKF6xR8U6VfB36whjm6BIOd0v6xRCS2+uescDaUKbLTQHY5sj8I6jk+wp1oSVlocIetf+cDK4WBqLUTatbOgHBRSGQr9hgfLdxQdAbVC3g5PHq3yA2P4MEZBZ5HBLJo1XYjfr2EzAg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(7416014)(82310400026)(36860700016)(18002099003)(22082099003)(56012099006)(4143699003)(10067099003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	0OLONGkrCschtZ18UPp67Z8gEvIR6B9vTpauU93HDopdtR19EUilmaUqG4Tz3Uy2S7vFvDkUuG79a/EWFUdOQEcYAAq4SacDaVMx3V7J2weP5C0//yxVhGzZbHluhCE2fY/P8lEzoq4ZDYa9jZhdYufx/XsdB0jJWF+yDzeeumJE/eS4vMOVMxMHPaVo04zLVaykX3F0ely9B5UYUhts87SOj9mlgqF+7sE/0NP1qHbHiUzirmnzT00G7QMY+9EVEpWaJkPNlGhzcs5bu4u6csqYyieHVEPrc2HzaumH+17b+LEYFvZeI/29dP59ceFyzcN6gsIMyFv0YHzcws3Xr0CD7PG7dcPM7CpuIsbpBxdBmPB6tslfUwdzFAzv4BdTLWRCtAMPiPaQwO4kq3K/RS3cjtB8Uz+Z0qL6Jypd3AbU+7n6MfotVaDyIm944JrG
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 04:38:05.1228
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86f2abc9-145c-4b64-bd04-08df229a729c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF0000B069.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6295
+In-Reply-To: <20261002150844.GC3481470@ziepe.ca>
 
-On Sun, Oct 04, 2026 at 01:20:52PM -0700, Nicolin Chen wrote:
-> Sashiko is only right about the small waste of the MSI vector since
-> it's unused. But, that nvec decrement trick only works for PRIQ, as
-> its MSI index is at top of the list:
+On Fri, Oct 02, 2026 at 12:08:44PM -0300, Jason Gunthorpe wrote:
+> On Thu, Oct 01, 2026 at 11:02:14PM +0000, Pranjal Shrivastava wrote:
+> > Introduce a lockless, deferred reclamation framework for IOMMU page tables
+> > built on the generic_pt library. As VMMs and userspace drivers map and
+> > unmap large, sparse IOVA regions through VFIO and iommufd, page table
+> > directories are often left allocated but completely empty. generic_pt
+> > frees a table when a single unmap covers it entirely, but tables that
+> > empty through a series of partial unmaps stay allocated until the domain
+> > is destroyed. Under memory pressure, this *stranded* memory cannot be
+> > reclaimed and has resulted in OOMs.
+> > 
+> > This series refcounts leaf directories natively in struct ioptdesc and
+> > registers a domain-aware MM shrinker that prunes empty directories under
+> > system memory pressure.
 > 
->    enum arm_smmu_msi_index {
-> 	EVTQ_MSI_INDEX,
-> 	GERROR_MSI_INDEX,
-> 	PRIQ_MSI_INDEX,
-> 	ARM_SMMU_MAX_MSIS, // "nvec--" shifts up this, skipping PRIQ
->    };
+> We had talked about doing it this way
 > 
-> On the other hand, EVTQ_MSI_INDEX is at 0. Skipping it would need to
-> shift the entire index list; struct arm_smmu_msi_cfg would not work
-> straightforwardly as today.
+> But I had proposed a different, and possibly simpler, solution that
+> addresses *just* the iommufd use case.
+> 
+> After unmapping something have iommufd compute the gap in IOVA that
+> contains what was unmapped and then issue a 'clean(gap)' operation to
+> generic_pt.
+> 
+> This is the same operation as unmap, except we know now that the gap
+> has no PTEs so all it does is clean up the table pointers.
+> 
+> This requires no special refcounting or anything difficult beyond
+> some locking in iommufd to hold the gap stable while we clean it.
+> 
+> Would it work for you? It seems substantially simpler, but I never
+> tried to implement it.
+> 
 
-I made a small change swapping those two indexes. Though it cannot
-break the dependency on the vectors, I think we should be fine as
-there should be no use case for !FEAT_EVTQ && FEAT_PRI.
+I was tempted to use the interval trees too, but I started thinking
+about:
 
------------------------prep patch--------------------------
-@@ -59,4 +59,4 @@ static DEFINE_STATIC_KEY_FALSE(arm_smmu_erratum_repeat_tlbi_cfgi_key);
- enum arm_smmu_msi_index {
--	EVTQ_MSI_INDEX,
- 	GERROR_MSI_INDEX,
-+	EVTQ_MSI_INDEX,
- 	PRIQ_MSI_INDEX,
-@@ -70,7 +70,2 @@ static_assert(sizeof(struct arm_smmu_cd) == NUM_ENTRY_QWORDS * sizeof(u64));
- static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
--	[EVTQ_MSI_INDEX] = {
--		ARM_SMMU_EVTQ_IRQ_CFG0,
--		ARM_SMMU_EVTQ_IRQ_CFG1,
--		ARM_SMMU_EVTQ_IRQ_CFG2,
--	},
- 	[GERROR_MSI_INDEX] = {
-@@ -80,2 +75,7 @@ static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
- 	},
-+	[EVTQ_MSI_INDEX] = {
-+		ARM_SMMU_EVTQ_IRQ_CFG0,
-+		ARM_SMMU_EVTQ_IRQ_CFG1,
-+		ARM_SMMU_EVTQ_IRQ_CFG2,
-+	},
- 	[PRIQ_MSI_INDEX] = {
-@@ -4967,3 +4967,3 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
- 
--	/* Allocate MSIs for evtq, gerror and priq. Ignore cmdq */
-+	/* Allocate MSIs for gerror, evtq and priq. Ignore cmdq */
- 	ret = platform_device_msi_init_and_alloc_irqs(dev, nvec, arm_smmu_write_msi_msg);
-@@ -4974,4 +4974,4 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
- 
--	smmu->evtq.q.irq = msi_get_virq(dev, EVTQ_MSI_INDEX);
- 	smmu->gerr_irq = msi_get_virq(dev, GERROR_MSI_INDEX);
-+	smmu->evtq.q.irq = msi_get_virq(dev, EVTQ_MSI_INDEX);
- 	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
------------------------------------------------------------
+a) Locking: For the gap to stay stable while we clean it, we'd need to
+add some kind of serialization either through iova_rwsem or a dedicated
+gap_lock to prevent a concurrent map to allocate IOVA from that gap. 
+Thus, every unmap pays for clean under the lock. I haven't perf-ed it 
+yet, but I'm not sure whether users/Guests using virtio-iommu, where any 
+guest DMA unmap becomes an unmap on the host, would regress.
 
------------------------nvec patch--------------------------
-@@ -4952,3 +4961,11 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
- 	writeq_relaxed(0, smmu->base + ARM_SMMU_GERROR_IRQ_CFG0);
--	writeq_relaxed(0, smmu->base + ARM_SMMU_EVTQ_IRQ_CFG0);
-+
-+	/* PRIQ's vector needs EVTQ's to be kept */
-+	WARN_ON_ONCE(!(smmu->features & ARM_SMMU_FEAT_EVTQ) &&
-+		     (smmu->features & ARM_SMMU_FEAT_PRI));
-+
-+	if (smmu->features & ARM_SMMU_FEAT_EVTQ)
-+		writeq_relaxed(0, smmu->base + ARM_SMMU_EVTQ_IRQ_CFG0);
-+	else
-+		nvec--;
- 
------------------------------------------------------------
+b) Other users of IOMMU API (unmanaged domain) like the type 1 (which
+was the one hurting our systems) and other in-tree drivers that use an
+unmanaged domain and call iommu_map()/iommu_unmap() with their own IOVA
+allocator. One of the goals was to avoid enabling the user-space or
+in-kernel IOVA allocation (ab)users to cause OOMs via IOPT allocation.
 
-I also did a rebase on arm/smmu/updates, resolving merge conflict.
+> An alternative version is closer to what you have here, somehow
+> connect iommufd to the shrinker and have it lock and walk the gaps
+> cleaning them on shrink requests?
+> 
 
-I can quickly respin a v11 once we finalize the discussions in the
-other thread. 
+I like this one better than cleaning on every unmap, since it keeps
+the cost off the map/unmap path and only does work under memory
+pressure. Although, it doesn't help type1 or the in-tree iommu_map()
+users.
 
-Thanks
-Nicolin
+Would you consider those users worth covering, or would you rather
+they track their own holes and call clean() themselves? Happy to dig
+into this at the LPC session too.
+
+Thanks,
+Praan
