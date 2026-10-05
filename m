@@ -1,132 +1,126 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1685494A18;
-	Mon,  5 Oct 2026 14:00:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27FD125393E
+	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 14:37:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791208835; cv=none; b=aZ289adNZPx/RvPf+DDz8ztIew+sG328tA+of5itRoXn/eYJiEEIFZssypeXh3px6iqVntiBMuofsn6Guefn04VCsFaPOYhBq091YVrkLseH1ypDkgtYFvNTKuseykGFcF2HOrvboWk6C8b1uosQ9Eh4JViN6+TNHH7QjMSlamI=
+	t=1791211071; cv=none; b=YSXwljoZkFyAY+vERyqzN8nBp6ILzb4xgpBMyJqHfxJ/Aky3ncNdE/QapGP1bEwoj5hxdEN8NsZMiTf4gEvAgoIECaaQf60YwtjXoxSJcVgwmnFZxu4TrAnsuy9lmrkmlGAu9rYZbnjTCAYtMHexvJJL8NVFpPnAHP2Q61hAu+4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791208835; c=relaxed/simple;
-	bh=ZX5xUToHuWaNOd+bCaQzYXpRy+E8h/GxkuOaBVGHj2A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=k6CyxhpkM6mItOhW5yGcDWB+H37kGQ+RcYYDoIA+IBKtidpL/hNyr9FRNVsEsUyFz+NElIcl5p92dbzlYM+NB3VXoEzi9z4CWUVYITGAhl3o1qXpINwrdKwYDXvr6oIKNdalBCKbqhSN7y6KBIUpHSSNgV6qg8dRbg6oQ6XoADg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.helo=mail.mainlining.org; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.helo=mail.mainlining.org
-Message-ID: <e590764c-1ef7-4166-9c2d-a96a89029736@mainlining.org>
-Date: Mon, 5 Oct 2026 17:00:05 +0300
+	s=arc-20240116; t=1791211071; c=relaxed/simple;
+	bh=XMLrGbedguO2MBiVSIISwnSja9N+qK6r3eVRTxmWl6E=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=R4pQm67bbumleKqkjMQuESQ3SfPbo1eREZ7iH2zm2M+vfchx70soRlumSrREOGa6LGGS1iuN/V/+XuKk72CLdAgHhZvFAK3yjQGVlTKMMx8zPSMr8WIzTWZeM68uZLHr1oggv9ZfyXMaWpFStMwO/BsJPW+bcUyxtpqQ40EpmnY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TEESLVxC; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TEESLVxC"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a1728d8dfcso9497845e9.1
+        for <iommu@lists.linux.dev>; Mon, 05 Oct 2026 07:37:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791211062; x=1791815862; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=uiX4TTvsWBCxTAoZ5BYlS69N5ifB0LlN73jBhn7IiHk=;
+        b=TEESLVxCh3cW5ErJgsC1wBp72NV+PMa4E2AkUhiPPzhgqZTxOqnv6kSr1Mfc3oBBi5
+         wPORxLhnh3lvJL75N3KqpBDkrJYXB15AcvukhXL0OdKq+I1GArzGYDAt/ZogEAEzwun7
+         m08PHL+B/22oiei3D+4qiYpGnYER6rfjVoi4UpxW7Sezrb9DW9/4GJGP6sy9sNN3vKOt
+         zjJYprwT+BNuj3afSp6GkEp5mmexiM0F1dOFMhP2oLV6w1CdBujEthmDmLNk/Z1MXgIW
+         lnupRa7BPhXXj/76zmN7xS5rBJn3ZPa/gN+9fIKxnpNVnkPGCwnb7ovwU1XbtxWxKfwD
+         PSsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791211062; x=1791815862;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=uiX4TTvsWBCxTAoZ5BYlS69N5ifB0LlN73jBhn7IiHk=;
+        b=pTKMu3wKldZrDIC6w6NVP1Q5gN6PxBUegwUTA/MCKUwKWnGFN+O7CENbki9nJIyF5N
+         hemfSqSqE4kQt1JE1sIUPNitGMvZ/cJVqgYBk3tNL3OmF2/RAS7MH5iWxv1BqwlNeYPU
+         CVxNs6ta91Gou+uLqZrbP3iZo4i2Ix2ewlGFn/iGXPJbbZLLAJJCc2tQEgytPTZZey9T
+         BMhDRMfvdpB6iNOqjQVV1g3F0b7nlbZsFQGFzHzBh63dImQWHcN0fCr2bithBRq1YGYX
+         EGdacrEb2eW3+m+YvMdqXVl4BFl6y/mqF75D/rCbRXucy1KSRL2ehy3lJu1HnfA9gkCa
+         jCVg==
+X-Forwarded-Encrypted: i=1; AKwUvBwPhPg4z/tRk+wbpUW5McyBq2nbnZpuxmvM49wTxgg2jAU5AdWQKRBd35PIJKer9F41wmUSNQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++ni9qPURLrkY/OvRQhm6qhUIWdLSXMaDAWfZHVwDnE4WsTVVEBo
+	ItvZWZqhbuszYqjvAXLdNEt7+CWfhCAv/LS33qyQPgIhhNBpr1UMt6N+
+X-Gm-Gg: AYBFou2dqZinnVSqT068oe6yY5SOh71VjCOM4aqsXKs3A7xhiVUxPv/a7oMivUIhdUh
+	0cPPNr/r/m0TuS8/0Ky2onmbThGohLSUJJU4VHGwuvTMQdKiTPwb175tgSMVxIvoYw+G2H1nZSW
+	8FsQ02LG05gc8c57mOnwPfmY5VpL/r0T1xfCAhifcuaNOgMF3FNBkz9JWO4+h7JrtdGZ86eAKyi
+	SM9E+KgaZAbUfoIOxi8Cv/k9Nk5x4FSS03jY8iBiTAkbJdsLrGKcEqnTaP1+fXUyFfoAMBIRO3T
+	FaOSqJcCwezTSrU8+LxI+dPAx5k9+3XpwDvvnpxoa+FaiT8BFXXAtFITccKCPVqRiu1UzB8uj7r
+	Y3XiU2OLl1jfIFB043QIXvEphccpamq8VJUcqr6Z9EJugsEk4dQTQLZUVkPtg7LqADsiy5SrNU4
+	iDNHlSpp4Sy4IngaF3OjzYmRSztfZdwEYJIWyLmha6dtCMJa616dfG/0XSQVwEQHJvDOA+okLBP
+	JU1B7UywT7vGr2PtSAsiRmqwT//OO4KtHkEqGEZcfuVVnOR
+X-Received: by 2002:a05:600c:37c9:b0:4a0:159b:d2a2 with SMTP id 5b1f17b1804b1-4a1680f4309mr117560825e9.29.1791211062322;
+        Mon, 05 Oct 2026 07:37:42 -0700 (PDT)
+Received: from andreayoga.localdomain ([80.188.242.210])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a0276fa954sm348555785e9.3.2026.10.05.07.37.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Oct 2026 07:37:41 -0700 (PDT)
+From: Andrea Parri <parri.andrea@gmail.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Shuah Khan <shuah@kernel.org>
+Cc: Andrea Parri <parri.andrea@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] iommufd: Keep dmabuf MMIO attributes in domains added later
+Date: Mon,  5 Oct 2026 16:37:34 +0200
+Message-ID: <20261005143737.2915-1-parri.andrea@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 00/19] Add Initial Support For MSM8952, Add General
- Mobile Shamrock
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
- Stephen Boyd <sboyd@kernel.org>, Brian Masney <bmasney+clk@redhat.com>,
- Jerome Brunet <jbrunet+clk@baylibre.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Srinivas Kandagatla <srini@kernel.org>,
- Ulf Hansson <ulfh@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Lee Jones <lee@kernel.org>,
- Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov
- <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>,
- Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Robert Marko <robimarko@gmail.com>, Guru Das Srinagesh <linux@gurudas.dev>,
- Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Kees Cook <kees@kernel.org>,
- Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"
- <gpiccoli@igalia.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-mmc@vger.kernel.org, iommu@lists.linux.dev, mfd@lists.linux.dev,
- dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
- Krzysztof Kozlowski <krzk@kernel.org>, linux-pm@vger.kernel.org,
- linux-input@vger.kernel.org,
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>,
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
- Abel Vesa <abel.vesa@oss.qualcomm.com>
-References: <20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org>
- <179098834078.3641559.798772743228949994.b4-ty@b4>
-From: Muzaffer Kadir <muzafferkadir@mainlining.org>
-Content-Language: en-US
-In-Reply-To: <179098834078.3641559.798772743228949994.b4-ty@b4>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat,  3 Oct 2026 03:46:52 +0300, Dmitry Baryshkov wrote:
-> On Mon, 21 Sep 2026 21:18:51 +0300, Muzaffer Kadir wrote:
->> MSM8952 is a SoC with 8 core cpu and Adreno 405 gpu.
->>
->> Ported without uart connection. ramoops and usb
->> mainly used to debug.
->> USB is not enabled in this series because it
->> depends on the not yet upstreamed (and not developed by me)
->> pmi8950_smbcharger.
->>
->> [...]
-> 
-> Applied to ttt, thanks!
-> 
-> [01/19] dt-bindings: clock: qcom: Add MSM8952 global clock controller
->         (no commit info)
-> [02/19] clk: qcom: Add global clock controller driver for MSM8952
->         (no commit info)
-> [03/19] dt-bindings: nvmem: Add compatible for MSM8952
->         (no commit info)
-> [04/19] dt-bindings: power: rpmpd: Add MSM8952 power domains
->         (no commit info)
-> [05/19] dt-bindings: mmc: sdhci-msm: Add MSM8952 compatible
->         (no commit info)
-> [06/19] dt-bindings: vendor-prefixes: Add General Mobile
->         (no commit info)
-> [07/19] dt-bindings: arm: qcom: Document MSM8952 SoC binding
->         (no commit info)
-> [08/19] dt-bindings: iommu: qcom,iommu: Add MSM8952 IOMMU to SMMUv2 compatibles
->         (no commit info)
-> [09/19] dt-bindings: mfd: qcom,tcsr: Add compatible for MSM8952
->         (no commit info)
-> [10/19] dt-bindings: display/msm: qcom, mdp5: Add MSM8952 compatible
->         https://gitlab.freedesktop.org/lumag/msm/-/commit/df6ce9e6447e
-> [11/19] dt-bindings: firmware: qcom,scm: Document MSM8952 SCM
->         (no commit info)
-> [12/19] dt-bindings: clock: qcom,rpmcc: Add MSM8952 compatible
->         (no commit info)
-> [13/19] drm: msm: mdp5: Add MDP5 configuration for MSM8952
->         https://gitlab.freedesktop.org/lumag/msm/-/commit/7af226f9aa59
-> [14/19] soc: qcom: ubwc: Add UBWC config for MSM8952
->         (no commit info)
-> [15/19] dt-bindings: thermal: tsens: Add MSM8952
->         (no commit info)
-> [16/19] thermal: qcom: tsens: Add support for MSM8952 tsens
->         (no commit info)
-> [17/19] arm64: dts: qcom: Add initial support for MSM8952
->         (no commit info)
-> [18/19] dt-bindings: input: touchscreen: goodix: Add binding for GT970
->         (no commit info)
-> [19/19] arm64: dts: qcom: generalmobile-shamrock: new device
->         (no commit info)
+A VFIO PCI dmabuf mapped into an IOAS gets IOMMU_MMIO only in the domains
+that exist when it is mapped. A domain attached afterwards, or an
+IOMMU_IOAS_COPY of the area, reads the PFNs back from the existing
+domain and maps the BAR as cacheable CPU memory. Patch 1 always takes
+dmabuf PFNs from the recorded phys range instead.
 
-Hi Dmitry,
+Sashiko first reported this on patch 6 of David Woodhouse's RFC "KVM:
+Allow alternative providers of guest_memfd backed by PFNMAP memory",
+which picks the batch kind in pfn_reader_fill_dmabuf() from the
+exporter's memory type. This fix does not depend on that series and
+combines with it: with both, a domain added later gets the kind the
+exporter reports.
 
-Thanks for accepting MDP5 patches.
+The mock page table has no memory type bits, so the existing selftests
+cannot see the difference. Patch 2 makes the mock record, per domain,
+the pages mapped with IOMMU_MMIO, adds IOMMU_TEST_OP_MD_CHECK_MMIO, and
+checks the domain filled later in two new tests, dmabuf_mmio_new_domain
+and dmabuf_mmio_copy.
 
-The message lists all 19 patches, but only 10 and 13 have commit
-links, the rest say "(no commit info)". Does this mean the whole
-series was applied, or only the MDP5 ones?
+Tested on x86-64 under virtme-ng with CONFIG_IOMMUFD_TEST=y. Without
+patch 1 both new tests fail on the second domain in all three mock
+domain variants; in dmabuf_mmio_new_domain, a temporary print in
+batch_to_domain() showed that domain mapped with IOMMU_READ |
+IOMMU_WRITE | IOMMU_CACHE, where the first got IOMMU_READ | IOMMU_WRITE |
+IOMMU_MMIO. With patch 1 the dmabuf tests pass.
 
-Best regards,
-Muzaffer Kadir
+Not tested on hardware that uses the memory type bits (ARM SMMUv3, AMD
+with SME, RISC-V).
+
+Andrea Parri (2):
+  iommufd: Keep dmabuf PFNs MMIO when filling another domain
+  iommufd/selftest: Check dmabuf MMIO mappings filled from another domain
+
+ drivers/iommu/iommufd/iommufd_test.h          |  5 ++
+ drivers/iommu/iommufd/pages.c                 | 13 ++-
+ drivers/iommu/iommufd/selftest.c              | 90 +++++++++++++++++++
+ tools/testing/selftests/iommu/iommufd.c       | 51 +++++++++++
+ tools/testing/selftests/iommu/iommufd_utils.h | 13 +++
+ 5 files changed, 168 insertions(+), 4 deletions(-)
+
+-- 
+2.53.0
 
