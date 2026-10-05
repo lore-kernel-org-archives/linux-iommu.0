@@ -1,114 +1,163 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013041.outbound.protection.outlook.com [40.93.201.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C224313C9C4
-	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 07:05:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791183939; cv=none; b=D1XcGc+Pt6cYGa+gq+yWL4YtsRz7MuqWFa3q2NBgIy/GonDS6UcgF+Sy4BtvQWEOFiKZZ2zEqav0Jc2M2oaspHxlKtLoWihK70i38DOnTl4EWa3ORp8M8JPFsR858bz/YeQDujqHye9SIH2hj89CkQuiUR1nlvxNAJku9DWuJeU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791183939; c=relaxed/simple;
-	bh=bOMfemk3uY28fNnYGUGWntGo8SXhMDB3X38cDyx5epo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
-	 References; b=gnSDcBSUcnXdRAve1Nvd6KbvTcAWqMvOoLw6ztQ75X1MHG039Bd7zueJNV8BnSLtQpGe/kik7UpfazAqyU5jemOOqSiiKBlqgBLrYaBjsGfSxHFh8CKyPyJKXorpr0j+pnpkN5v5KrF3W+MpItC3jBp49JFcRMiuvsEpgPxP+x4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=IUkx1HND; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E07A137E5D1
+	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 07:57:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791187025; cv=fail; b=WgvslLZuyCH6hfE62j49rcWuRyxi39mP/QG2rcNId7qhrVno5trR87PqPJzOJfCGLgrnMQ5YfevFbMPP+eN5RToQRM1qsLJGuEHaT8Wm3YPb9sKqEJRMj90OPGxLFUa2nqk3FBKxefjqRNDcFmrLxjKVgNSdf5FqhQanxswq0U4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791187025; c=relaxed/simple;
+	bh=lpiTOk4fFsQqRJWAJiHIDf9qUNCJyQZw1PUcOKl2nhY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VpeH2fjs3Vh9JXKdYTyDoFFxaIBrHfCYZHKOpKKpv76Di0JV6ytMcZ0jA8p5Z6VlMwSS2c7Yb8uE/zdCxydb2MaWfOFM4JbJRauMMlcZaktow0sdGgrKV7+jMhy7Q2D0fneJOZPOlG8qCVrTFf6j4CS1FPd8Ba47YEF0QlLv5sQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=GDFJ6GZ+; arc=fail smtp.client-ip=40.93.201.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="IUkx1HND"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261005070529euoutp02e90b6b805a1fd9e5cbb87c5e0c841764~bkEshA9i_2589225892euoutp02P
-	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 07:05:29 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261005070529euoutp02e90b6b805a1fd9e5cbb87c5e0c841764~bkEshA9i_2589225892euoutp02P
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1791183929;
-	bh=LI1PY/lp2Uaq3ccGVqctwJ7GhEhUeqzl4hfjynZeaG8=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=IUkx1HNDA0Ce0WVEr0ao5DI7gy0CMBPsbPTzPoH85+3oggsJMvxhJOxmMxm36/r28
-	 Js3UdcmTu5NNN2QVFUR7zJwIdhN9iflz37cpmw4aOb55MYN4sZJqCGFLJwdqHBP8bV
-	 dBD4t3FwZKIO32AV80IxRIAyj0Zx1bC2v7SJR89E=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261005070528eucas1p18d16ec6ecc4e879d0adc66538122132c~bkEsU7ZkM1887318873eucas1p1T;
-	Mon,  5 Oct 2026 07:05:28 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261005070528eusmtip1b88e4c060af8fd0102f58eef95fae4dd~bkErlAe2r2672226722eusmtip1G;
-	Mon,  5 Oct 2026 07:05:28 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	xen-devel@lists.xenproject.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Petr Tesarik
-	<petr.tesarik.ext@huawei.com>, Andreas Greve <andreas.greve@a-greve.de>,
-	James Dingwall <james@dingwall.me.uk>
-Subject: [PATCH] swiotlb: fix default_swiotlb_limit() for non-growable
- default pool
-Date: Mon,  5 Oct 2026 09:05:17 +0200
-Message-ID: <20261005070518.1590097-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GDFJ6GZ+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=yUjGznyiuMfZG4sK5EmCKGlc0dv7gw40jBVZSZ/Rk8OwrWiAP29xr0O/kf34BtFX977TmTP6p0eYT3TRS1FhIhFZ6/ZNEYUqy8tNGqXCQ1nMYGIgrkvr3M+HdmGp8s6ba/QPr8vVxIqmCFiU4eeCX1fu2QhGW6aQlKRRdt1L46X2ZU+sEUPf5LNeIWIx7utPDikuV9xro5tNBWPAS8PDehfbNGGIJPGirBQieM89xbJ2RipGU8abpmAhHT/4fuF6qAKsnasX6WuWQxKbaSQHvulIgQMk56wUQ4rO5xY8dE3U8yP+TsOmWPDwfAL4XQ5/tXWIwJOXLL1gs7JcOWOYTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xAVQMT6mdhsNRSuRByO+cLEzQhlwcOKja0nvC5l/Hb4=;
+ b=j2fqJOesR1cZBBC5q/XCY390pT9m11EtEP6GTe15Wz+yLTX/9+1pyhLsqM1+1mUFGKxFg6QA/4xFrDzFXXRNRm6iX6bwxXWQ+biIxu6KEoH7OjJCHNYGBZqci/+ub5jfFiuXAJFqGeLSWpwczqUUJoEeOEMuyyjpVR6YGU2gjPcjlKa8YKwnJ1vIFiMhchoMRM5bLydT+V9T6y+qvnF7/Jy19rnk1+5lsLh669PUY1BtLI9h765InBqIssIAj9N3iTwGGeoKSByq2CgQsov8pfEDMse8jjmsToepKg6ZmEYZVT8fVKrik9Q3DjXzWg67ijcoZOh1FbFOpN54A6IKXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xAVQMT6mdhsNRSuRByO+cLEzQhlwcOKja0nvC5l/Hb4=;
+ b=GDFJ6GZ+6En6UUsvN8Mkx9kZhAPOUxM1SPG0MPm/nTfixcbrT6Ilp4S6ldjdPOyDnzAKI1YZ2cryqzKCWN5aGSdtNR3W2Rcp6bitEI1f0khiCf/y6VqF9hYSrD6JUGyqagHcS2P2EgwO9F8b9OWdpsTfKXgLwVMuSGwXllVbWIBIQjjttpM8ZVUZaJoT+zU4i/J3VnQF2GRno3TbsAvkCe9Zmfh3mV6+eAo1WzfO9yzNMPtqLN6IokruR3Ifu85XXiEMQSmu0hUmfuVA6Ta4tH6Di/R2GFbZE6CmJuHRrKQ2qzXnprOUraGIXayHTSzqnOWkcQ+mrANiWYRTNbIeRg==
+Received: from PH7P220CA0024.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:326::11)
+ by SA3PR12MB9179.namprd12.prod.outlook.com (2603:10b6:806:3a1::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Mon, 5 Oct
+ 2026 07:56:59 +0000
+Received: from SJ5PEPF000001EE.namprd05.prod.outlook.com
+ (2603:10b6:510:326:cafe::a0) by PH7P220CA0024.outlook.office365.com
+ (2603:10b6:510:326::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.19 via Frontend Transport; Mon, 5
+ Oct 2026 07:56:58 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ SJ5PEPF000001EE.mail.protection.outlook.com (10.167.242.202) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.472.14 via Frontend Transport; Mon, 5 Oct 2026 07:56:58 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Mon, 5 Oct
+ 2026 00:56:37 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.49; Mon, 5 Oct 2026 00:56:37 -0700
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
+ Transport; Mon, 5 Oct 2026 00:56:36 -0700
+Date: Mon, 5 Oct 2026 00:56:34 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Will Deacon <will@kernel.org>
+CC: <robin.murphy@arm.com>, <jgg@nvidia.com>, <joro@8bytes.org>,
+	<praan@google.com>, <kevin.tian@intel.com>, <smostafa@google.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <jamien@nvidia.com>, <kas@kernel.org>
+Subject: Re: [PATCH v10 06/13] iommu/arm-smmu-v3: Add
+ ARM_SMMU_OPT_KDUMP_ADOPT for kdump kernel
+Message-ID: <asNYMpZfyMHakuZ6@nvidia.com>
+References: <cover.1788130528.git.nicolinc@nvidia.com>
+ <d661395d986d3aa78af200f55e43740996ee8a0f.1788130528.git.nicolinc@nvidia.com>
+ <asJTsw-oWDlSqNa3@willie-the-truck>
+ <asK7VILK4CgEFjdT@nvidia.com>
+ <asNEmjxZ73ezL4I3@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261005070528eucas1p18d16ec6ecc4e879d0adc66538122132c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261005070528eucas1p18d16ec6ecc4e879d0adc66538122132c
-X-EPHeader: CA
-X-CMS-RootMailID: 20261005070528eucas1p18d16ec6ecc4e879d0adc66538122132c
-References: <CGME20261005070528eucas1p18d16ec6ecc4e879d0adc66538122132c@eucas1p1.samsung.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <asNEmjxZ73ezL4I3@willie-the-truck>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ5PEPF000001EE:EE_|SA3PR12MB9179:EE_
+X-MS-Office365-Filtering-Correlation-Id: 23c6e39a-2e6a-44fd-0cfa-08df22b63b9b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|1800799024|82310400026|376014|7416014|23010399003|11063799006|56012099006|4143699003|10067099003|22082099003|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	meNuGWJPZwkFhs4VQJegb5s3BgbHhOy9Pt7cATVmFPSuNtFEcGn2h4hrnkA7Zc9YfDynK1ELPefMfcPdeP6XdyFWRJdF7nl65J8NJ03szoWT4mc6azoGaCG1QmBeHslHJaCUBgrcx1C/T0pV7MM7UwTzpJggKc/QkexVCasW2u8ehUNJiP0xmUdyBdW1zMCAjgb/TWqG3gAPVakGbinRmoptluRIDAEiNKLDdbUit4gneNJKpOm3gpNbfzrua55SlPjr8CW08tvfMtzQuepiAjNKG6OUBO1c5bc5Co+eHgJGLYPCwQXUtWxuswqE2R9IIptPjX2nqsTw2EplU6kvMp5Y2IX7cnlfmvp0N3oUqjK4E4HsXWxTytsc1+kIbmvn4EcYhpNAGimU8apEQ50u3TfXSiO2/cvkol69hGvOa/zAsMeChT0t9ss8DOojPpk5ieYm5uTWXLPII0EPt3mo3nfNJXf9dTzyBw0fqx0Bvyv1HxsHw/dB+Ikb0rqtruJCsZQccj2EGnfwUhhJ/yvagO+SVJ0r4vqhDBueNHpKHK//x8WT9C+KzUIrlzSRvuMjC5AP0Pq7PT3cKGCT5fQIj3Fc+DFuU2o146Ri9HdCuGbobgRUPxgu7XO1iKS8fyDnxIRx8zJhPisByuZMaM9L7iOWdNjrXcnEdkzuRNSCtwhqPR8kXuO3eNzwreNdUqp7Wp6h3QpendE2FCiMSU+afg==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(82310400026)(376014)(7416014)(23010399003)(11063799006)(56012099006)(4143699003)(10067099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	vfXX90Z6IzULzgLbwjyUpxCXsgykg9rhk6mDmgzZxjhC8GWilxkber58WdLtNu6TSvKnq6juJzs6Yb45uot6FzCr+xB+rfvUFncXC7ig1XrskqQCMXqbO0IULdJlTkl5PdyHDipCyMT3OmIg2g/J/PmWiOFX7UnVmfcDJJ3qrPrMn3nkgRnRhHGIOdCcnd6ZF3yPfuGF/UtYK+WA4fFwN+YlbPkMgfG9cR7GryK8i5Izt6a5R8t2whhznLZObyqYQ+caSqY4f6MhqL41zf/fhmyaKfXHgKq4Px8sVQy+ymiZch2q5xSAhJ2YKLEBqv7Ml0ShwTNrSZe1pSdOOsjKNYUU8RCaKKK/62RPGxOY1HvzkvgWpYNTiCx+XAmKzt4jV3pV57sRzKDoY3InfzTtfZM2WIu+lK0Cl3v8Pd5n0hJEzWBQK1X04pTEn5Q8N3yJ
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2026 07:56:58.9100
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23c6e39a-2e6a-44fd-0cfa-08df22b63b9b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ5PEPF000001EE.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9179
 
-Commit ad96ce3252db ("swiotlb: determine potential physical address
-limit") changed default_swiotlb_limit() to return the maximum physical
-address that could ever be used by dynamically allocated pools, so that
-the value stays constant when CONFIG_SWIOTLB_DYNAMIC=y. However,
-io_tlb_default_mem.phys_limit is returned even when the default pool
-cannot grow, e.g. when swiotlb_init_remap() is called with a remap
-callback.
+On Mon, Oct 05, 2026 at 07:32:58AM +0100, Will Deacon wrote:
+> On Sun, Oct 04, 2026 at 01:47:16PM -0700, Nicolin Chen wrote:
+> > On Sun, Oct 04, 2026 at 02:25:07PM +0100, Will Deacon wrote:
+> > > On Sun, Aug 30, 2026 at 04:18:07PM -0700, Nicolin Chen wrote:
+> > > >  drivers/iommu/arm/arm-smmu-v3/Makefile        |   1 +
+> > > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  21 ++
+> > > >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kdump.c | 229 ++++++++++++++++++
+> > > 
+> > > Please don't put this here. The live update / handover stuff is going to
+> > > need very similar logic (see the RFC from Pranjal) and I don't fancy
+> > > having to rename or resplit this file when that comes along.
+> > > 
+> > > Maybe just stick all of arm-smmu-v3-kexec.c and arm-smmu-v3-kdump.c into
+> > > arm-smmu-v3-handover.c or something?
+> > 
+> > Hmm, Pranjal and I already aligned that cleanly. And there is no
+> > further rename/resplit in his series.
+> > 
+> > arm-smmu-v3-kexec: common helpers for both
+> > arm-smmu-v3-kdump: kdump specific (my series)
+> > arm-smmu-v3-liveupdate: liveupdate specific (Pranj's)
+> > 
+> > Each of them is built on a separate config:
+> >  arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_KEXEC) += arm-smmu-v3-kexec.o
+> >  arm_smmu_v3-$(CONFIG_IOMMU_LIVEUPDATE) += arm-smmu-v3-liveupdate.o
+> >  arm_smmu_v3-$(CONFIG_CRASH_DUMP) += arm-smmu-v3-kdump.o
+> > 
+> > If we put everything into one big file, we'd add the two individual
+> > config guards internally, which isn't as clean as currently IMHO.
+> > 
+> > Note that the kdump file has a very long notes (kdump specific).
+> 
+> I dunno, three files seems way over the top for this imo. I'd rather have
+> one (even if it uses preprocessor guards internally) otherwise it just
+> seems inevitable that we'll have random internals exposed from one file
+> to the other, or duplication of logic or both. Even if we end up splitting
+> it eventually, I'd much rather start from a position where everything is
+> in one place.
 
-This breaks Xen dom0 on x86: pci_xen_swiotlb_init() passes SWIOTLB_ANY
-and xen_swiotlb_fixup(), so phys_limit is set to the top of dom0 memory,
-although xen_swiotlb_fixup() makes the default pool below the 32-bit
-boundary. xen_swiotlb_dma_supported() then rejects 32-bit DMA masks,
-even though the bounce buffer is perfectly usable by such devices.
+OK. I'll merge them, maybe into arm-smmu-v3-kexec as Jason suggested?
 
-Return phys_limit only if the default pool can actually grow, otherwise
-report the real end of the default pool, like in the
-!CONFIG_SWIOTLB_DYNAMIC case.
+Or do you still prefer handover?
 
-Reported-by: Andreas Greve <andreas.greve@a-greve.de>
-Reported-by: James Dingwall <james@dingwall.me.uk>
-Fixes: ad96ce3252db ("swiotlb: determine potential physical address limit")
-Closes: https://lore.kernel.org/xen-devel/f74668db-52fd-4575-8372-7bfdf10d62ac@a-greve.de/
-Cc: stable@vger.kernel.org
-Assisted-by: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- kernel/dma/swiotlb.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index aa2f1c4588b9..5edea93ec635 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -1844,10 +1844,10 @@ phys_addr_t default_swiotlb_base(void)
- phys_addr_t default_swiotlb_limit(void)
- {
- #ifdef CONFIG_SWIOTLB_DYNAMIC
--	return io_tlb_default_mem.phys_limit;
--#else
--	return io_tlb_default_mem.defpool.end - 1;
-+	if (io_tlb_default_mem.can_grow)
-+		return io_tlb_default_mem.phys_limit;
- #endif
-+	return io_tlb_default_mem.defpool.end - 1;
- }
- 
- #ifdef CONFIG_DEBUG_FS
--- 
-2.43.0
-
+Thanks
+Nicolin
