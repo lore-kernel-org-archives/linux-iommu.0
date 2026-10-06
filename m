@@ -1,142 +1,117 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 681043DB997
-	for <iommu@lists.linux.dev>; Mon,  5 Oct 2026 21:26:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.182
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791235582; cv=pass; b=WYpU+s+d7IqA0UnZKYQR3Lpc6/AlUHAfTejTiBIp0Oo1Zs+yUeF2C2HWZHnWbkwug8jtszIbCxIE0C7SEc2Enh78LsqH6Gx9RacUkN/IXcLJXjQNj4TXaFs/2SVOjRN7HKNZ3gBAhN7s/hfQ5CUA2Bvy9yGcOgTelIiJeLotTSM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791235582; c=relaxed/simple;
-	bh=S2vBvVoHVnC1tWQn7yYkVMwt5nPTA4KFwEAWn+1KcrU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ICTQ/vg0wlu4OJXjwnUZho51zmr86x5dbtdRtRlWuzc4xwRTHVBlwYPixO0k8o85SlLKfcU789WlfbMgr2ZueuSfALXVpyWxEIT1oJ5CrHQrxxTBnTewgUeyzahddm1EX2sA3Ndnh9nv9pHnROVLnXbEVzYu61Ufhy7MWnLnvwc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=q7EIXQoW; arc=pass smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0691F63D9
+	for <iommu@lists.linux.dev>; Tue,  6 Oct 2026 02:11:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791252675; cv=none; b=HRfetNlfLRvf+vcrhe4mTD3lUqOy2gTE6oZk39zkOZTUc9IT8kYyg+gr2wiMMGRe1DKz+C8QCAhTu7GRzftTZ3Li3a5ZoCZGI19XglcESz+xfLVCmeT6CVoZqXVB0BlP+wAKDTk7OCYmUGV8aTi77yt5Of8G2uVm0u1yF4/8HXs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791252675; c=relaxed/simple;
+	bh=f7D5f2zBx5F+sgI5FQe36BPmSURC8axCxrmXCcSCeLk=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=MzQ8bsRWlWmW8191ty8JM6HT4GWIro2vwNkszfOfZgGJAeFV1i/IIrBr7rQe0Bm9HXNcqk6SvHe13H8XoFVsWYKuFOsfOLuGyMwYkjww7/IOliEp7JG6JWnoFYOCQs5pWYHWSPPDF/AAcxKPsz/kldtEZJK84RiMQNMKBiDr0yg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gsStrUOG; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="q7EIXQoW"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-5351f9dbfe0so6431cf.1
-        for <iommu@lists.linux.dev>; Mon, 05 Oct 2026 14:26:21 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791235580; cv=none;
-        d=google.com; s=arc-20260327;
-        b=KbMQ76hFqSgJilvlhYb/EfGCYJv3qlwNozwLLxeN4dQZbIIqltdxR9K7tGHUnQEsB0
-         ztjOEoRuOUIHYoRj96PsCXWm9Wq/C/3jiUuNMjC1EK1T7qqVYUjO2sHHvJ+Hby59zcKV
-         qfXdJLiX0WaoZTXFAxHxFXMZcEPAFimYbLHWnsVuaqOKAqJ0RddlSZBSFX2w4vi1HJKE
-         2GG4O+zRbuVKHu0f0nzG7PibmMScNhpuo4/VNLdJgCkrrkUX72hJ6GiABca42MN+7jNo
-         URm6qcZqnbGGT/o0HxbdTmEH2NVtRsc864hYBdNDVvH5glutBNQc34Sjhm7KYmvUSlxK
-         C2rw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=WKyjO6uz5lI4nCNYOIuplPGihZ8U3rsq+3xZ/QD0AP8=;
-        fh=tE67N7RfFyukiUoLNb6goSpOWcOsVAOgwwwl/IFlBL4=;
-        b=H4Q3RJ0OEtlHBHgFnl0eI7ootrxzqiiPAstBycrsOz5zEwpYh3FBW5/1W5ZQLgq0Kf
-         E6eqOUT4inXkfML9GigIlL3kibgBCOGDY+KxWaS8TMwWm7uL9v3EbwJ/6VrDzeUEiZNP
-         xk5ToqW8el6uGPvyTtOnTxRVLRe59PM72pIs1BPx6txUFeMnYS6bIlm/7WUpI3cI55F0
-         r1XZZnfFVhexBC9buxFs0FnhjgGiCe9uKcozAHVw4H/DLh29C5KmKQaew5Jrxk6+Vj+h
-         mLtyjJQMANebmtO6gdBfp9XB2Q/+VSqc3WjtMo3d7aA6U/xgd+kvERiCNzZRIQNmd35m
-         WQyA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791235580; x=1791840380; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=WKyjO6uz5lI4nCNYOIuplPGihZ8U3rsq+3xZ/QD0AP8=;
-        b=q7EIXQoWBMJh1YrII1IC4BHVhUusEdVsQLTmI2gFsFwbFrzo4kZpTyYXf/s7TMlH/W
-         uXIqm6hV6giasc7+4TIsPwckjEqM6DnAiQVQmRJ8eFugztiQTWcliXRrVwLsv3foBr/8
-         kcKgvrUCvamhQNoco9qjyur3+nhxKqemPuVNtEaOeTPmGkv+0oadjWxxFQO8AlksoDNh
-         zMvCtRhJqmG5tzxtxcXMv9k9/2tJ3HFeWNI8y/mhgMtPw1TvtZCj+42W542L7H2Q+Sxu
-         Ab7fXTA24Xm8W5TjQnXAdthAwlZ07Eg5iBlPrz14W2dUsTi5JiKohWCEXL0M3kxDJJDg
-         y78Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791235580; x=1791840380;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=WKyjO6uz5lI4nCNYOIuplPGihZ8U3rsq+3xZ/QD0AP8=;
-        b=yKo/qa/jTL9Z4xQjYUbgyfM5x5kPIG+pkFkV7KV7Xb4K8UiOTahgj6gsAT5OkbDirn
-         bgvH1CxiKv7S/FtmLbngjGL8SPYUk+l8ak+g2zTuTEwSESf1CUKOr6PnWM5p9zUY2KpC
-         DN34D8qiVItCD8VzJFYMj3+07o8mukj24RE/HJdtXFuMDoAg8/Iduz2FAJhBQcAezwMo
-         TAFxFpN1c4xOvIOrCmkCsU5Sdc/0QcaMCPt/tLnae+rYrQPc5MC11gYvWkEs386G3gnu
-         8CO7RuyffAr7AnW9ks5UjLAsNb2MsnZKTyc6mM9d6CASTcLFrYO9bOeSi2yLLJhp51xL
-         b1iA==
-X-Gm-Message-State: AFuF++nozM+xCF67PlboO3u3LDPz4xcZsaT5DYU5TQtoGYPibA+L1EOW
-	hxf+9m2PBHzBoVjIF+YfeHmsVXa04WuCwYiiftG5zUKYexItUnp97iV0KfUUJU/Hgpeb9WNdIpO
-	FMxMGlChwRzauNNPoHK9banEv6LUcEF9hHeWNyZM9N8hQoU0krv6K3Y0r0/s=
-X-Gm-Gg: AYBFou39kGumY+ZoYhPJQrRNp5m8BzbX6F1T2puAGVY6IUBQiG8Jy33owDf1RTiesJA
-	UlUULfAeG5tz/p4ieZx38Nc6NGkmrKq5lxkqQySMw+kVpxagVCB4LFhZN+oJZm/J+jRz/3E3kbY
-	7aNgCBwQ1TyLhv8zY9PPYwIltzZPzT+/cNvBudQiWH99B7zWngHI0TMz7uvG1HthyDddJJ9hocy
-	tUwGHSdkZt+JGQIJS8S9Y14Flsw/UEpUI5Iso23G4CPTLbkL41/2HTRk8hBKvl3ciluDxtIiYaf
-	eRvkjuaJ7PN6yCBZJDx8F4Dtc/cLb2FBRMOKsDEPWnD3FsnMnebIeuDLBd6DyvLM
-X-Received: by 2002:a05:622a:118f:b0:531:d8:e437 with SMTP id
- d75a77b69052e-5354229a448mr834721cf.7.1791235579527; Mon, 05 Oct 2026
- 14:26:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gsStrUOG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791252673; x=1822788673;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=f7D5f2zBx5F+sgI5FQe36BPmSURC8axCxrmXCcSCeLk=;
+  b=gsStrUOGQPdnyGEYE0rHz5ZBqoflWTrTqHyYCUjVsOLgRZ5ZeQNLlEeZ
+   uCEipZWG3I2n5Ty1UTuG4osDGeEgllVG9zaR1HxaGVVfyOHIyx7Mm9f29
+   ApO83FK8n1qfGNde3qWJjBSd9wi3+Msl4VYTyBIL15HwDO6DYt3hFqCIf
+   uT98KUWn3nTAzJXvDfCqcaJoPHQzhSVZ7B4YSpaHsaUVTp9Qd12Qi9cfZ
+   lRWXv3wqrrphvq+ZE+gtswGR+G3RymjCf53cwVQkaySuxxKIK3IWszv9q
+   Ikp/Ysex+PEKZ0y5tyMGz0qV/HfGSq/LXElPDRZTyrjsF8Xw5VDP+DK+H
+   g==;
+X-CSE-ConnectionGUID: ZstRrQ43QmqqJ/7eWal55A==
+X-CSE-MsgGUID: QZj1Zov8RG+g4j+gqmVr2g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11926"; a="92043504"
+X-IronPort-AV: E=Sophos;i="6.27,143,1787036400"; 
+   d="scan'208";a="92043504"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2026 19:11:13 -0700
+X-CSE-ConnectionGUID: JMlpMnjZRm2Lg3EHqiJSow==
+X-CSE-MsgGUID: M6Yz8J13RI+O1j1rLUvqGQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,143,1787036400"; 
+   d="scan'208";a="275643023"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.249.52]) ([10.124.249.52])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2026 19:11:11 -0700
+Message-ID: <bd1240e6-c678-4be4-8f64-881d4a43b0f3@linux.intel.com>
+Date: Tue, 6 Oct 2026 10:11:08 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20261004195027.227748-1-danielmentz@google.com> <92758f79-d5b7-4c15-a55d-6bea5f84a028@arm.com>
-In-Reply-To: <92758f79-d5b7-4c15-a55d-6bea5f84a028@arm.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Mon, 5 Oct 2026 14:26:08 -0700
-X-Gm-Features: AclHuK8Ya4qZUHEU4y2SIFN99XMdQR1xv1nuJUxB3fTt2xE4zcFS3toMd_5km7k
-Message-ID: <CAE2F3rAJdC9pAqMKcXhxpw1keGzH_kQUNBoPHXjTP8+7TOhfwQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Align memory attributes for
- SMMU-originated accesses
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, joro@8bytes.org, 
-	nicolinc@nvidia.com, smostafa@google.com, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	dawei.li@linux.dev, jgg@ziepe.ca, praan@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Fix iopf_refcount leak in nested RID
+ replacement
+To: Jiale Yao <yaojiale02@163.com>, David Woodhouse <dwmw2@infradead.org>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20260924115027.656743-1-yaojiale02@163.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260924115027.656743-1-yaojiale02@163.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 5, 2026 at 9:42=E2=80=AFAM Robin Murphy <robin.murphy@arm.com> =
-wrote:
-> This still isn't answering the question of "why?" though. Yes the
-> architecture says some things, but if we were strict about avoiding
-> mismatched attributes then Linux couldn't ever support non-coherent DMA
-> at all! Similarly while the architecture does permit SMMU
-> implementations to be picky about their output attributes, does any such
-> implementation actually exist at all, let alone in a system capable of
-> running mainline Linux?
+On 9/24/2026 7:50 PM, Jiale Yao wrote:
+> intel_nested_attach_dev() enables IOPF for the new nested domain without
+> releasing the reference held by the old domain.  Replacing a domain with
+> an IOPF-enabled domain therefore leaves an extra reference in
+> info->iopf_refcount.
+> 
+> Commit 236dd58fabd2 ("iommu/vt-d: Fix iopf_refcount leak on RID
+> domain replacement") fixed the same IOPF reference leak in the regular
+> RID attach paths.  The nested RID attach path has the same old-domain
+> handling bug.
+> 
+> Use iopf_for_domain_replace() for the attach and restore the old domain
+> reference if nested PASID setup fails, matching the existing PASID path.
+> 
+> Signed-off-by: Jiale Yao <yaojiale02@163.com>
+> Link: https://lore.kernel.org/all/20260731054329.2948252-4-baolu.lu@linux.intel.com/
+> ---
+>   drivers/iommu/intel/nested.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+> index 2b979bec56ce..dbcec6093d50 100644
+> --- a/drivers/iommu/intel/nested.c
+> +++ b/drivers/iommu/intel/nested.c
+> @@ -50,7 +50,7 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+>   	if (ret)
+>   		goto detach_iommu;
+>   
+> -	ret = iopf_for_domain_set(domain, dev);
+> +	ret = iopf_for_domain_replace(domain, old, dev);
+>   	if (ret)
+>   		goto unassign_tag;
+>   
+> @@ -67,7 +67,7 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+>   
+>   	return 0;
+>   disable_iopf:
+> -	iopf_for_domain_remove(domain, dev);
+> +	iopf_for_domain_replace(old, domain, dev);
+>   unassign_tag:
+>   	cache_tag_unassign_domain(dmar_domain, dev, IOMMU_NO_PASID);
+>   detach_iommu:
 
-Fair point that existing implementations have been forgiving in
-practice. My thinking here is simply that a small, self-contained
-cleanup that brings the driver into line with the architecture spec is
-worthwhile on its own merits, even without a known implementation where
-this currently causes problems.
+Thanks for the patch, but we already have a fix in the iommu tree:
 
-This is really in the same spirit as your commit 7618e4790982
-("iommu/io-pgtable-arm: Improve attribute handling"), which aligned the
-attribute handling with the architecture specification on the basis
-that:
-
-  "Although the SMMU architectures seem to give some slightly stronger
-   guarantees of Non-Cacheable output types becoming implicitly Outer
-   Shareable in most cases, we may as well be explicit and not take any
-   chances."
-
-As I noted in my reply on the v1 thread [1], under ARM IHI 0070
-(sections 3.15, 6.3.11, and 13.1.2), a non-coherent SMMUv3
-implementation (SMMU_IDR0.COHACC =3D=3D 0) in which every SMMU-originated
-access configured with Normal Write-Back, Inner Shareable attributes
-fails and records an External Abort (F_STE_FETCH, F_CD_FETCH,
-CERROR_ABT, etc.) is completely architecturally compliant, yet wouldn't
-work with the current arm-smmu-v3 driver.
-
-It seems reasonable to be explicit here too and program attributes that
-are valid per the spec, rather than relying on the interconnect to
-silently degrade Write-Back attributes to Non-Cacheable.
-
-[1] https://lore.kernel.org/linux-iommu/CAE2F3rACz6Z7X3NNfLWEfjTD9K9YJyYHHy=
-GzcBafEemTFGhgqQ@mail.gmail.com/
+83871c3ae10e ("iommu/vt-d: Fix iopf refcount leak in nested attach")
 
 Thanks,
-Daniel
+baolu
