@@ -1,56 +1,85 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0C21134CCF;
-	Tue,  6 Oct 2026 21:49:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C1013590AE;
+	Tue,  6 Oct 2026 21:49:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791323342; cv=none; b=rtyBuGrMEsoFU5mJZIfvYgwBTtchWeYFwI8eqhHdUUKKUHGriYvx8ztFv6+UGM5hTH0V/894p6OgQVTTsbP3PDdjEgI46/qgpBxJiSFaa3X/9FAnUVCVvYNlprp1Z3WPds3v0GOOh4PJ9C2+JUk/TRXpME06YVtcGEEdlHUVP/M=
+	t=1791323372; cv=none; b=SxCiulIhvc5juDpOUhg7rVBbuymwjWgqyE6AHVJVpBmFHaY74xYOA39ylLYJR5ePjiEnvR1q5tddRoRfKwHwhFN5exXSCUOQJGI6kP6ic4LaJTrOXLMY0Lb76r0YS8IRBEbcoD5syo9Hk5rMtPIiAOKqfOls2+61FTeljot4Juw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791323342; c=relaxed/simple;
-	bh=9/kIwIroF3I78IKmLSDuil+2CDGn0X72S83yzgqd7/g=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=BSrlAfsrj0OZzKhi+9OpUllWeFarU8x9UB+jQTvhZ2WIwQd/VIFRI2bUDYmExoN0ag1FyUBK9eftNG4SJsgiO7d/QA5VsMOJKkBsyIrinEv0lp+7mc4kEgL1g58kFTT1A34o3M8A8pymts5eNLWqFfhxBEn1bvowM5d2MXUqJHg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q5v2niIJ; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791323372; c=relaxed/simple;
+	bh=zmNVpFiIdF8yRDkY6dmoQbBghNxbyY57cDfc2JuLrNQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EaMcm3GZ0WsGIoZ+lExP9KiVQRxRbCyNpVXiGH/DOBSI1UMcHdoL8RKH83lhYyVnoA98jLErWeeLUoPcDojxgHzyxdBeq5+NrDDF9cOBfbRfU7a7xUYgHF16ZlD293WiyNE6T2qKX9eYmV+GAaJN7lFGXNZ3ah5Fhawa5lMIg8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z+T8EQwQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q5v2niIJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D35B91F0089B;
-	Tue,  6 Oct 2026 21:48:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z+T8EQwQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 873651F0089B;
+	Tue,  6 Oct 2026 21:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791323340;
-	bh=DOWWt1KJLFYMrWcgT4FQO58tS9UYRaxA2t0lKYqxiTY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=Q5v2niIJ5LRiKoDFZltL3IbLPktOJr5pP30s5DSLcbt7GSEtaOrjaS2MbGXva/rHo
-	 QphiZGiboKLj+JYKWvdvZpAQTI1HZk7dqUpSR/BsyAJVl8JlvzTyBSdXtc0qxOSAcP
-	 UJTUQDck9g0spi4EUe2Cg6f0RMqY//NeuZoQxvXlx5fsAMPtQY3ETYBtdfyd82pqd5
-	 17Tyk3Zpyh8Smibz0CdsEbfty1JqfiHQogouoEZZnJilPhni1gh7ZN5IwXEFOcsHz5
-	 xpn7wVe6vIYIfBKbZXDwfXxj3/7Nfo9zSphjycYssaD1pFvLPuV7NEvEe/THhy/u8k
-	 rlMDKf7O8JzeA==
-Date: Tue, 6 Oct 2026 16:48:58 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	s=k20260515; t=1791323371;
+	bh=MR/kKzdKUbRbxIo5AlBnzLpoRKt6DdnYtuH9HxT5rZg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Z+T8EQwQfcC4Dsl0rfHAy7DAr3ckjnc55xRY9k8ihf2V06by9utsJIUbvm4QE+qHR
+	 QKdcDlyOBwe3F4rGUU5EdOvz65Jgt+VzWFiWaBtahe3bL5n/K61Ms7q595gvqrDB72
+	 Ez27iKZ/SQ1f/FuWmqqDU3Guw4kpQZ2aiSIWeXp3/Fi2cDErexzgESkZmUkPWv20Vo
+	 49yv64pLvV9ZDzsc7eMwgznEKqg8QdJ8I29J3N+TnSgVCEcytw3htWHfNzQjfFCe5P
+	 LSItfvLQ9ixCWlP4yZR7plvTFG2lBxy8cZ/+eIE5upXhl7h44DyChdW/rFTzCXyyRz
+	 k1f+1HOXPJh8g==
+Date: Tue, 6 Oct 2026 22:49:17 +0100
+From: Will Deacon <will@kernel.org>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>,
 	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v9 06/18] PCI/P2PDMA: Collect the path's ACS controls
- before deciding
-Message-ID: <20261006214858.GA717151@bhelgaas>
+	Mark Rutland <mark.rutland@arm.com>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>,
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	x86@kernel.org
+Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
+ sizing
+Message-ID: <asVs3doaJ4WrT3M2@willie-the-truck>
+References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
+ <20260924060756.1325156-7-aneesh.kumar@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,244 +88,143 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261001-fix-p2p-acs-v4-0-v9-6-1a8e0f50ddd9@nvidia.com>
+In-Reply-To: <20260924060756.1325156-7-aneesh.kumar@kernel.org>
 
-On Thu, Oct 01, 2026 at 02:55:14PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, Sep 24, 2026 at 11:37:54AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> Memory-encrypted guests use shared or unencrypted memory for DMA and may
+> route all DMA through SWIOTLB. The default pool can therefore be too
+> small for I/O-intensive workloads.
 > 
-> calc_map_type_and_dist() reads each divergence port's ACS Control register
-> and folds the result into running counters as it goes. Any routing property
-> that depends on the kind of TLP being routed would have to be threaded
-> through that code, so there is nowhere to put one without reading the
-> registers again for each kind.
-
-What is the "one" that there's nowhere to put?  I guess the routing
-property?  So this is an optimization to avoid some config reads?
-
-> Collect the two ports' ACS Control values into struct pci_p2pdma_acs_path
-> first, then decide from it. pci_p2pdma_route() applies the same rule as
-> before: a path routes directly only when both directions do.
+> Move the existing x86 guest-sizing policy into the SWIOTLB core. For
+> SWIOTLB_POOL_CC_GUEST, size the pool to 6% of guest memory, clamped
+> between the normal default and 1 GiB. Preserve an explicit swiotlb=
+> size.
 > 
-> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
-> Tested-by: Tushar Dave <tdave@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> Host memory encryption still selects a normal-sized shared pool and
+> does not use the guest-sizing policy.
+> 
+> A restricted DMA pool already provides shared bounce buffers for its
+> devices. Record its presence during reserved-memory initialization and
+> do not select the confidential-guest default-pool policy solely because
+> guest memory encryption is active.
+> 
+> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Andy Lutomirski <luto@kernel.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Thomas Gleixner <tglx@kernel.org>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: x86@kernel.org
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 > ---
->  drivers/pci/p2pdma.c | 148 +++++++++++++++++++++++++++++++++------------------
->  1 file changed, 96 insertions(+), 52 deletions(-)
+>  arch/x86/mm/mem_encrypt.c | 24 ------------------------
+>  kernel/dma/swiotlb.c      | 27 +++++++++++++++++++++++++--
+>  2 files changed, 25 insertions(+), 26 deletions(-)
 > 
-> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-> index 550e6c7346ef..841c86be31bb 100644
-> --- a/drivers/pci/p2pdma.c
-> +++ b/drivers/pci/p2pdma.c
-> @@ -553,6 +553,80 @@ static void seq_buf_print_bus_devfn(struct seq_buf *buf, struct pci_dev *pdev)
->  	seq_buf_printf(buf, "%s;", pci_name(pdev));
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index 95bae74fdab2..912f22ca838f 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -101,9 +101,6 @@ void __init mem_encrypt_init(void)
+>  
+>  void __init mem_encrypt_setup_arch(void)
+>  {
+> -	phys_addr_t total_mem = memblock_phys_mem_size();
+> -	unsigned long size;
+> -
+>  	/*
+>  	 * Do RMP table fixups after the e820 tables have been setup by
+>  	 * e820__memory_setup().
+> @@ -114,27 +111,6 @@ void __init mem_encrypt_setup_arch(void)
+>  	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+>  		return;
+>  
+> -	/*
+> -	 * For SEV and TDX, all DMA has to occur via shared/unencrypted pages.
+> -	 * Kernel uses SWIOTLB to make this happen without changing device
+> -	 * drivers. However, depending on the workload being run, the
+> -	 * default 64MB of SWIOTLB may not be enough and SWIOTLB may
+> -	 * run out of buffers for DMA, resulting in I/O errors and/or
+> -	 * performance degradation especially with high I/O workloads.
+> -	 *
+> -	 * Adjust the default size of SWIOTLB using a percentage of guest
+> -	 * memory for SWIOTLB buffers. Also, as the SWIOTLB bounce buffer
+> -	 * memory is allocated from low memory, ensure that the adjusted size
+> -	 * is within the limits of low available memory.
+> -	 *
+> -	 * The percentage of guest memory used here for SWIOTLB buffers
+> -	 * is more of an approximation of the static adjustment which
+> -	 * 64MB for <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
+> -	 */
+> -	size = total_mem * 6 / 100;
+> -	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
+> -	swiotlb_adjust_size(size);
+> -
+>  	/* Set restricted memory access for virtio. */
+>  	virtio_set_mem_acc_cb(virtio_require_restricted_mem_acc);
 >  }
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 75ee63cd354e..e626cca63ad1 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -33,6 +33,7 @@
+>  #include <linux/kmsan-checks.h>
+>  #include <linux/iommu-helper.h>
+>  #include <linux/init.h>
+> +#include <linux/math64.h>
+>  #include <linux/memblock.h>
+>  #include <linux/mm.h>
+>  #include <linux/pfn.h>
+> @@ -80,6 +81,7 @@ struct io_tlb_slot {
 >  
-> +/*
-> + * What the topology walk found out about one provider/client path. Producing
-> + * this costs a walk and one config read per divergence port, none of which
-> + * depends on the TLP being routed.
-> + *
-> + * @req_ctrl:	ACS Control of the client-side divergence port. That is the
-> + *		first port at which a Request can route toward the peer rather
-> + *		than upstream, so it is where the Request controls apply.
-> + * @cpl_ctrl:	ACS Control of the provider-side divergence port, likewise for
-> + *		the Completions travelling back.
-> + * @unreadable:	First port whose ACS Control could not be read, if any.
-> + */
-> +struct pci_p2pdma_acs_path {
-> +	u16 req_ctrl;
-> +	u16 cpl_ctrl;
-> +	struct pci_dev *unreadable;
-> +};
-> +
-> +/*
-> + * Combine both directions into a mapping type. Only a path that routes the
-> + * Request and the Completions it generates directly can be programmed with
-> + * the peer's bus addresses.
-> + */
-> +static enum pci_p2pdma_map_type
-> +pci_p2pdma_route(const struct pci_p2pdma_acs_path *path)
-> +{
-> +	if (path->unreadable)
-> +		return PCI_P2PDMA_MAP_NOT_SUPPORTED;
-> +
-> +	if (pci_acs_p2pdma_request(path->req_ctrl) == PCI_ACS_P2PDMA_DIRECT &&
-> +	    pci_acs_p2pdma_completion(path->cpl_ctrl) == PCI_ACS_P2PDMA_DIRECT)
-> +		return PCI_P2PDMA_MAP_BUS_ADDR;
-> +
-> +	return PCI_P2PDMA_MAP_THRU_HOST_BRIDGE;
-> +}
-> +
-> +/*
-> + * Name the ports that keep this path off a direct route, so that the admin
-> + * can hand them to pci=disable_acs_redir=.
-> + */
-> +static void pci_p2pdma_warn_path(struct pci_dev *client,
-> +				 struct pci_dev *provider,
-> +				 const struct pci_p2pdma_acs_path *path,
-> +				 struct pci_dev *a_child,
-> +				 struct pci_dev *b_child)
-> +{
-> +	struct seq_buf acs_list;
-> +	char buf[128];
-> +
-> +	if (path->unreadable) {
-> +		pci_warn(client,
-> +			 "ACS Control is unreadable for provider %s at %s\n",
-> +			 pci_name(provider), pci_name(path->unreadable));
-> +		return;
-> +	}
-> +
-> +	seq_buf_init(&acs_list, buf, sizeof(buf));
-> +	if (pci_acs_p2pdma_completion(path->cpl_ctrl) != PCI_ACS_P2PDMA_DIRECT)
-> +		seq_buf_print_bus_devfn(&acs_list, a_child);
-> +	if (pci_acs_p2pdma_request(path->req_ctrl) != PCI_ACS_P2PDMA_DIRECT)
-> +		seq_buf_print_bus_devfn(&acs_list, b_child);
-> +
-> +	/* Drop the final semicolon; the list is not empty here. */
-> +	if (!seq_buf_has_overflowed(&acs_list))
-> +		acs_list.buffer[acs_list.len - 1] = '\0';
-> +
-> +	pci_warn(client,
-> +		 "ACS redirect is set between the client and provider (%s)\n",
-> +		 pci_name(provider));
-> +	pci_warn(client,
-> +		 "to disable ACS controls for this path, add the kernel parameter: pci=disable_acs_redir=%s\n",
-> +		 seq_buf_str(&acs_list));
-> +}
-> +
->  static bool cpu_supports_p2pdma(void)
->  {
->  #ifdef CONFIG_X86
-> @@ -751,19 +825,13 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
->  		int *dist, bool verbose)
->  {
->  	enum pci_p2pdma_map_type map_type = PCI_P2PDMA_MAP_THRU_HOST_BRIDGE;
-> -	enum pci_acs_p2pdma_state state = PCI_ACS_P2PDMA_NOT_SUPPORTED;
->  	struct pci_dev *a = provider, *b = client, *bb;
->  	struct pci_dev *a_child = NULL, *b_child = NULL;
-> -	struct pci_dev *acs_unreadable = NULL;
-> +	struct pci_p2pdma_acs_path path = {};
->  	struct pci_p2pdma *p2pdma;
-> -	struct seq_buf acs_list;
-> -	int acs_redirect_cnt = 0;
-> +	bool cpu_p2pdma, host_whitelisted = false;
->  	int dist_a = 0;
->  	int dist_b = 0;
-> -	char buf[128];
-> -	u16 ctrl;
-> -
-> -	seq_buf_init(&acs_list, buf, sizeof(buf));
+>  static bool swiotlb_force_bounce;
+>  static bool swiotlb_force_disable;
+> +static bool restricted_dma_pool_present __initdata;
 >  
->  	/*
->  	 * Note, we don't need to take references to devices returned by
-> @@ -806,61 +874,35 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
->  	 * branch is upstream, so redirect controls do not affect the path.
->  	 */
->  	if (a_child && b_child) {
-> -		if (pci_acs_p2pdma_ctrl(a_child, &ctrl))
-> -			state = pci_acs_p2pdma_completion(ctrl);
-> -		if (state != PCI_ACS_P2PDMA_DIRECT) {
-> -			seq_buf_print_bus_devfn(&acs_list, a_child);
-> -			if (state == PCI_ACS_P2PDMA_REDIRECT)
-> -				acs_redirect_cnt++;
-> -			else if (!acs_unreadable)
-> -				acs_unreadable = a_child;
-> -		}
-> -
-> -		state = PCI_ACS_P2PDMA_NOT_SUPPORTED;
-> -		if (pci_acs_p2pdma_ctrl(b_child, &ctrl))
-> -			state = pci_acs_p2pdma_request(ctrl);
-> -		if (state != PCI_ACS_P2PDMA_DIRECT) {
-> -			seq_buf_print_bus_devfn(&acs_list, b_child);
-> -			if (state == PCI_ACS_P2PDMA_REDIRECT)
-> -				acs_redirect_cnt++;
-> -			else if (!acs_unreadable)
-> -				acs_unreadable = b_child;
-> -		}
-> +		if (!pci_acs_p2pdma_ctrl(a_child, &path.cpl_ctrl))
-> +			path.unreadable = a_child;
-> +		if (!pci_acs_p2pdma_ctrl(b_child, &path.req_ctrl) &&
-> +		    !path.unreadable)
-> +			path.unreadable = b_child;
->  	}
+>  enum swiotlb_pool_policy {
+>  	SWIOTLB_POOL_NONE,
+> @@ -478,7 +480,25 @@ swiotlb_adjust_pool_size(enum swiotlb_pool_policy policy)
+>  		size = min(swiotlb_default_pool_size(), size);
+>  		break;
+>  	case SWIOTLB_POOL_CC_GUEST:
+> -		return;
+> +		/*
+> +		 * For SEV and TDX and CCA, all DMA has to occur via
+> +		 * shared/unencrypted pages. Kernel uses SWIOTLB to make this
+> +		 * happen without changing device drivers. However, depending on
+> +		 * the workload being run, the default 64MB of SWIOTLB may not be
+> +		 * enough and SWIOTLB may run out of buffers for DMA, resulting in
+> +		 * I/O errors and/or performance degradation especially with high
+> +		 * I/O workloads.
+> +		 *
+> +		 * Adjust the default size of SWIOTLB using a percentage of guest
+> +		 * memory for SWIOTLB buffers.
+> +		 *
+> +		 * The percentage of guest memory used here for SWIOTLB buffers is
+> +		 * more of an approximation of the static adjustment which 64MB for
+> +		 * <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
+> +		 */
+> +		size = div_u64((u64)memblock_phys_mem_size() * 6, 100);
+> +		size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
+> +		break;
+>  	case SWIOTLB_POOL_NONE:
+>  		WARN(true, "Cannot adjust SWIOTLB size without a pool\n");
+>  		return;
+> @@ -496,7 +516,8 @@ swiotlb_select_pool_policy(unsigned int flags)
+>  	if (swiotlb_force_disable)
+>  		return SWIOTLB_POOL_NONE;
 >  
->  	/*
->  	 * Below a shared upstream bridge, a path whose divergence ports do not
->  	 * redirect routes the request directly.
->  	 */
-> -	if (!acs_unreadable && !acs_redirect_cnt) {
-> -		map_type = PCI_P2PDMA_MAP_BUS_ADDR;
-> +	map_type = pci_p2pdma_route(&path);
-> +	if (map_type == PCI_P2PDMA_MAP_BUS_ADDR)
->  		goto done;
-> -	}
->  
-> -	if (verbose) {
-> -		/* Drop the final semicolon; the list is not empty here. */
-> -		if (!seq_buf_has_overflowed(&acs_list))
-> -			acs_list.buffer[acs_list.len - 1] = '\0';
-> -		if (acs_unreadable)
-> -			pci_warn(client, "ACS Control is unreadable for provider %s at %s\n",
-> -				 pci_name(provider), pci_name(acs_unreadable));
-> -		else {
-> -			pci_warn(client, "ACS redirect is set between the client and provider (%s)\n",
-> -				 pci_name(provider));
-> -			pci_warn(client, "to disable ACS controls for this path, add the kernel parameter: pci=disable_acs_redir=%s\n",
-> -				 seq_buf_str(&acs_list));
-> -		}
-> -	}
-> +	if (verbose)
-> +		pci_p2pdma_warn_path(client, provider, &path, a_child, b_child);
->  
->  	/* An unreadable control does not establish an upstream redirect. */
-> -	if (acs_unreadable) {
-> -		map_type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
-> +	if (path.unreadable)
->  		goto done;
-> -	}
->  
->  map_through_host_bridge:
-> -	if (!cpu_supports_p2pdma() &&
-> -	    !host_bridge_whitelist(provider, client, verbose)) {
-> +	cpu_p2pdma = cpu_supports_p2pdma();
-> +	if (!cpu_p2pdma)
-> +		host_whitelisted = host_bridge_whitelist(provider, client,
-> +							  verbose);
-> +
-> +	if (!cpu_p2pdma && !host_whitelisted) {
->  		if (verbose)
->  			pci_warn(client, "cannot be used for peer-to-peer DMA as the client and provider (%s) do not share an upstream bridge or whitelisted host bridge\n",
->  				 pci_name(provider));
-> @@ -1193,8 +1235,9 @@ enum pci_p2pdma_map_type pci_p2pdma_map_type(struct p2pdma_provider *provider,
->  {
->  	enum pci_p2pdma_map_type type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
->  	struct pci_dev *pdev = to_pci_dev(provider->owner);
-> -	struct pci_dev *client;
->  	struct pci_p2pdma *p2pdma;
-> +	unsigned long cache_index;
-> +	struct pci_dev *client;
->  	int dist;
->  
->  	if (!pdev->p2pdma)
-> @@ -1204,13 +1247,14 @@ enum pci_p2pdma_map_type pci_p2pdma_map_type(struct p2pdma_provider *provider,
->  		return PCI_P2PDMA_MAP_NOT_SUPPORTED;
->  
->  	client = to_pci_dev(dev);
-> +	cache_index = map_types_idx(client);
->  
->  	rcu_read_lock();
->  	p2pdma = rcu_dereference(pdev->p2pdma);
->  
->  	if (p2pdma)
->  		type = xa_to_value(xa_load(&p2pdma->map_types,
-> -					   map_types_idx(client)));
-> +					   cache_index));
->  	rcu_read_unlock();
->  
->  	if (type == PCI_P2PDMA_MAP_UNKNOWN)
-> 
-> -- 
-> 2.55.0
-> 
+> -	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+> +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+> +	    !restricted_dma_pool_present)
+>  		return SWIOTLB_POOL_CC_GUEST;
+
+I think this check on the restricted DMA pool is too general -- the pool
+could be tied to a specific DMA-capable peripheral and so treating its
+presence as a global property isn't right.
+
+Will
