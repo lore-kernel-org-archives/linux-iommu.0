@@ -1,286 +1,166 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010052.outbound.protection.outlook.com [52.101.69.52])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87E61370D79
-	for <iommu@lists.linux.dev>; Tue,  6 Oct 2026 12:15:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791288934; cv=fail; b=XVIUdxpjhLe6gLKR+fo6VAYaEr8CfQQyNGGaRvuFGiCrP1XS9bDOfWGlaFMNq/kigMTMKPcnXOe8Jwp52MuArCLGj0JZNLhWA4YUz79rUqgPnVS/Bt9HtEH7LzWPI5frP0Zt8Y6Y9KuBL9q8tWeonndHT86DjsIVb1f+JmbHO40=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791288934; c=relaxed/simple;
-	bh=31uOTvM2KjCaCCqC6Lmx3LgjhlvyUZc2K+VHmB9kuG4=;
-	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=P1bJobl+vuU8IHt0ce2cSQIjwGaxpwJd/7RIQHUMx2z16/hTFRdSntqWZVCDvr1dzHQdx+c3YHBh3szpuBLBdgd5+psMMecZ41prwOliu2bVcer+Y7gpuDyle6spI2jN0lX1dtk5ugFhZmhQXwymJcjg2t/k6tbJqXd04exeqhQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=D6DWMWMd; arc=fail smtp.client-ip=52.101.69.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B50483EE1D8;
+	Tue,  6 Oct 2026 12:15:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791288941; cv=none; b=lMcUNVp4d/yWd55i0kaYRyysuHyouZZXx7pZtdfrix7ycP6p/b/l37DWc1NgH2IX6bfAO1Xbe38DtwSD5A1yHtOBL33UHjlsAlLveDdwXrptmdtmxHjFh7cmyD4r3eA9e8WojzsH83SmCa9FEcBNMwQFWGcNMHgAK0DZ1y+yDYQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791288941; c=relaxed/simple;
+	bh=rYCBbrg6VaozSAt8qT2CvuJdZ2GptJZIPsnjcyJQKUE=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=BKV9SUV7UQn8HdYFfz0+y1z+f5sBRwE4Yi/pzEVHs4HOR+HTS087ukp/eIktJW/icS2l7cL9oM+c5dM46LpCM/h6V4ajF5IUkVMCZT4WjFpFYyu60w/NryJAwKHS/jJRlUFXBY8UoQIN+L4gLX1s1NeMO9sSTb2kEjbYYuDT3DU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZdRt9J32; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="D6DWMWMd"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=F87k6AIJCEYsRwWqyET+gZcaHnHVQDSNvYJlDpk6DfaZbpnLUQwSqcv8TVO47wsJUnbDbUENYBbJB63KHKJSjfTk8VycwXsZudbCJ9+jjTIRfwzwL4VofYN0i2FoAlUxdV1a4LXZHmwax4we14EjYGn9QvuFxTHLnaMh2+Ou3xSmeti7WTgWiOIdhtFO9o12NFPkgjlu6miI0aRngF47oEstjsgksNU/9+82dlnAHw0xG2kMefejCOPzCWf2gy2iYTxAnYYFe0zn3UnsaE9nss7mBsvm6jxL7RFlq80HsVJoXe//BBT79UdExWWNFxgWsnVkMgMheMETBvEIRsYrIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eK+wlQJbqjTvzPyYVmfbshZ5uU8o39NppGal6lXmNb0=;
- b=QZhZ2Cx5Qu7cvYstsIDI7FPDZhub53zdA3HwWrT3AloT1Rlp8QE/D0euHwi9UuUF769F0QG+CiIUXx6XAjpb5i8C3pngPMFRfC51zFbYASjMc8fL7syiPXzQRHFtZN04f8cjUWSqEZVLYy/84EotQ93G/BRS1y0pkkQWvCc84/UY8LjC+tznL4pHjVpMTnExwG5z0xnbgddu9pdDaB2+9XpSjW4pkAd3w14jb5hej/u4+nM2CW/8p9UxeOgTPvCLN569cDLaagxHsa/qYr9Uz52cO021pHpG/0wz9fYgY2+DZKZ2MdeMVyIms0yRQN1xvki2eCYl4f2+j+rUeI/HjQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eK+wlQJbqjTvzPyYVmfbshZ5uU8o39NppGal6lXmNb0=;
- b=D6DWMWMdnAB62s4scok4l6dYhYKd0kidwWWOTJ2rit46u8cTa3ZpLrfQXHr/yFtgaeYD/ysYYbmnzNXfMQs7cBkyPu8/3ctHH73VQfm5UQ5mwOpVwJVWWzFab7khXKlgO3EqgtA8cuRnkmkSUDRBaUFkQccZEnE3UuscdBFT1wRlyao0PQ6MZi+3aMgY/eRSWZ72GvrmrxFSuANT1BFvAV+WsWauxib5zT7yloyoVfFEQmLhArvtCjORYahneXmVRg31Zi3F8dE1DphdLqiVkYRD4C5loKPclY/Eq77PLeWy8dMWC3bZ9v0mtPEZ/rN1epB+bGgXQFNcyRhmnpl5cQ==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
- by FRZPR04MB12432.eurprd04.prod.outlook.com (2603:10a6:d10:1ca::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Tue, 6 Oct
- 2026 12:15:29 +0000
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0451.022; Tue, 6 Oct 2026
- 12:15:28 +0000
-From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Date: Tue, 06 Oct 2026 20:19:12 +0800
-Subject: [PATCH RFC v5 6/6] iommu/arm-smmu-v3: Wire up shared-SID STE
- ordering and feature gating
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261006-smmu-shared-sid-v5-6-169a59c671d3@nxp.com>
-References: <20261006-smmu-shared-sid-v5-0-169a59c671d3@nxp.com>
-In-Reply-To: <20261006-smmu-shared-sid-v5-0-169a59c671d3@nxp.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- "Joerg Roedel (AMD)" <joro@8bytes.org>, 
- Jean-Philippe Brucker <jpb@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
- Jason Gunthorpe <jgg@ziepe.ca>, Thierry Reding <thierry.reding@kernel.org>, 
- Krishna Reddy <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
- Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, 
- Peng Fan <peng.fan@nxp.com>
-X-Mailer: b4 0.16-dev-7bc12
-X-ClientProxiedBy: MA5P287CA0032.INDP287.PROD.OUTLOOK.COM
- (2603:1096:a01:17a::10) To AM8PR04MB7874.eurprd04.prod.outlook.com
- (2603:10a6:20b:24d::9)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZdRt9J32"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A6664C4AF0B;
+	Tue,  6 Oct 2026 12:15:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1791288940;
+	bh=rYCBbrg6VaozSAt8qT2CvuJdZ2GptJZIPsnjcyJQKUE=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=ZdRt9J32LcOc7hFkdqRc0knbJ30Eir0jBNe9U514CISBDdPhh7wS4wC8/uowEHGMg
+	 M+/RyNJY3NnClSBW7V3zr9Q0pBXiDYT2yArX4p1j/L6lb8jIcw/BZIHXF3fdSGWv6A
+	 31+NnIARV561UFV0x3eIbM3lBbvTw/mWex63xAsSYWRQyrCF7L0Gb4y2li3mMqg7OV
+	 hgrWvH0e/5BhNWFB8+TsP0Sf/Jo/5dHVVs9orLboIHjgYcqcJA9cFjKx7wDdo1kcfR
+	 r9jka/B/yZxfAFLFQiXHWnHKhjWMmkuyBu8bbqMBlo51KsFVsKV3ImFUvUwXUUQxTN
+	 6hvjvF5Bcgr4Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8467CCA5FF0;
+	Tue,  6 Oct 2026 12:15:40 +0000 (UTC)
+From: Muzaffer Kadir via B4 Relay <devnull+muzafferkadir.mainlining.org@kernel.org>
+Subject: [PATCH v4 0/7] Add Initial Support For MSM8952, Add General Mobile
+ Shamrock
+Date: Tue, 06 Oct 2026 15:15:07 +0300
+Message-Id: <20261006-msm8952-initial-support-v4-0-ecdcc1ac620c@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|FRZPR04MB12432:EE_
-X-MS-Office365-Filtering-Correlation-Id: afadd3b9-63ba-4150-ec71-08df23a3829b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|366016|23010399003|19092799006|1800799024|10067099003|56012099006|11063799006|18002099003|22082099003|921020;
-X-Microsoft-Antispam-Message-Info:
-	wfnadZOD7lMKqzhpQ/NX+ATIKwSC0DzIUeErdzo9yzlM3IZKvKael9c70mLpvaLYm1Gm1UC3RvfjURfFt5JbdB1uXA/yPD/Cj4j17ixgvuzuX6EgSk8G2xeEKcQQRW8bB/6HXoq6I81qGzuyWGTw6mhO48cFhOV3TffZxIHYDIKZIX4HN5ZFOvdKtV2H6UM1rxfnROLDKB/Up2ZWw5bHb/JbQsuDZVv9v+VNrwRp3IE8LHYpWweIZYx3F9H6gYjGVHvs521Bks1TK1kU0vEF0YqKrl+uHS10tg6/chvDuGEiLFDNFHgetAo0VLLCz20iHv1aZdvUcjxM/8HSSJF4dEOeaHqJoPd9jzN9Pet9xIAGzjXkxjVn4kuTqtcCPN//MX1MY7K7QBodyz9jkflwroWIOQAmjsyGwrAqMkCDhmRASdrXFctv6oP9iUoJXxyX8CjAkUbfrSHe6+Cjg5bsbKOg6Hr2AdRnJ5ZYOtOsAMOOGC8WRadSvHos4eYgr1nAyLX5YyYo8Lseoq1axwzdWOGPCK2AEDd6TMs/QMCpupa+4RPOw71V7sskw/my1g/Fli5uvQMxGiqpB6B4ITTFg+ZLJC43Y9SmKNJSjagH2TQzjIq6YUXRUi/Py3L3DXcyRloqPxeihmrhsnCHMUsGr6JEKt6kONNMoh0UVMaUdrxV/aJdx/YycOlFfDnRcuGCKw1RflqyQ0RF/eizEAFvSQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(23010399003)(19092799006)(1800799024)(10067099003)(56012099006)(11063799006)(18002099003)(22082099003)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?R0hLZHE0VHo3RHpDSkJodjJLVVVtajVCRHR2dnAwWjlFbVdEUmFjbzdrK0dt?=
- =?utf-8?B?STI1bklCY3pZclIzSXI2V3h1Wm14d1QzS1hHVFZQMklWUGdQdnVoRkplWmYv?=
- =?utf-8?B?bmlhSFo2TUV5VVgxaE5pa01IcWdpUlhVZVBwRnJwc3ltT0k5TGlJTXZkdUhO?=
- =?utf-8?B?V1hONnhqcWVSL3NRcXJrZU9uOGZmT3RsRUpiRXRiSFY2K09uaHBvclhqMjk4?=
- =?utf-8?B?b2ZieU96M2lSOW5VajlnaUhrNTloUTZHVkNsRzl3RzV0OC9GakdSM3M5U0pv?=
- =?utf-8?B?dnQ0VWJTN3VqUDZUWHBBTWpCRzJCTUs1aTg1ZHErWFg4aTRyYmp4dndieUJE?=
- =?utf-8?B?OGFNRzRkTG9MVW5CN0VqT1VBandTN2xsTzhoZUpqQkc3YmdXdTV5WTlKTTNV?=
- =?utf-8?B?MXhIUWNmaTlqVVl1RWl0TU93b1R5UnFkSDJUWTRxTkhwUEVBQzlOK3F3aXdp?=
- =?utf-8?B?UXZpa3VYMGIzNStpby9nLy9aTjZISzNuNExCalFFTmd5SHVZeTdaMCtrR01s?=
- =?utf-8?B?ejFyRE9kYlJmVHRwcGZBcGR1N2IyVXBIaXpBL2tLaUFuTHdjdTVnOXBVVFZt?=
- =?utf-8?B?VVhBSUF6V0huSjF1TTZURU42WWJKek9IRTZldTBjUUlBL244eGdRTXN6QUhv?=
- =?utf-8?B?TUgwVHVvZnhpRnoyMldCTWN2R0ZrNlAvdVNjaEoxQ3ByeWV4eEJlRVd5S1Y2?=
- =?utf-8?B?VXA0dFNEVWtkWGZqRVVaUmk2VWp5QWxzN1hlbVAvTE41NTVJWmh2aEpFdEVl?=
- =?utf-8?B?T2lTM3BUL1hkM3ZocHVzMC8ydldXUGcveFNnbnljMXRqOXNicWFUdzVhSCtY?=
- =?utf-8?B?OHlJbWdXY0J0eitvM0hGUFpDQlllU3kyNjZTL0JtNk5nWldrL0oxMnhCYnY2?=
- =?utf-8?B?UDB1cnc4YmQ3MU0wdXcvSS9LblZNNXpQTkxQOUpiaGNGdHpFdjE0cU1xR0hM?=
- =?utf-8?B?bGQzeE84R0ZJUkVibFVNRnBDeUkxOXJhT3ZrZlZ3SitQV3RlSmZyUU44V3V1?=
- =?utf-8?B?WmtVeldtSWFUY1dZMlRIWDFLM05GT0JGeStnaEpGb1pSTzliamI5clRLcXFN?=
- =?utf-8?B?c1RFbW9kTUd2dlRyaG1HTU5LYmcraGQ3OUF5clBJbjVFaDlFVU5zQjV1MUdC?=
- =?utf-8?B?QjZQS1pWV3RFRkF6dmV5MnZvNkpYTXhNUW1Za2x5VWRFOGtPU0VUdjhkeFRp?=
- =?utf-8?B?ZmRFM2N0cXR0MWxvWmFwTnJlSEUwRHFSZXc0NEo0bzF0UEowQ2JpYkZIRlpt?=
- =?utf-8?B?TDFkMGFTMHlSUWhxTGFFNUdheHJTMU83cWVXNnloclpqUlpQODhBM1JqWUp1?=
- =?utf-8?B?bGxFWHpqaWpmcUtkZzFkQXJBaUhaR1hMUWZ5ak5ZV1R0cThhbFFIeFp2Ulhw?=
- =?utf-8?B?b056QkpKRHJsbFM2RHhOdWswdmE3L2ZiOXIwMS9WUTUxN2pKRUNSYVJXdnpZ?=
- =?utf-8?B?TDhsQzVzQXRPSlh1ME1Fa0plbW5uS25YL2UzbUtnOEhiVUZZR2lreUxvYldp?=
- =?utf-8?B?aDlIYVZWR1pPUUdWSnZMVmNkZDIrZllNamhrOWp3aHNLdUJqVUpHWHNRZHlj?=
- =?utf-8?B?WCtTaHU4TFVxblhrTHJ3WXRtUHZvZ0N1b1Z4UXFvN3NTWDkyV0c3bUxuZVdT?=
- =?utf-8?B?WWg5b1BmN1B5UXlhZFZQSXhOc294NnFoN2tWODNOc3EreU41QlFJVC9kbEpu?=
- =?utf-8?B?dUxjekd6bFBjQTVBb0tiTGZLbzkwdllEc3A0azZZTC9BS25JRlpYekdsZUNX?=
- =?utf-8?B?Tk5Hem9XZnlIV1dLTVN3ZXJXQVBPRzRhb0o5aUI5cGRMMFF5bFNXVmc5UG1n?=
- =?utf-8?B?dnphZW9OK01NM0tuYnQ3dnlEbTdyakl0bDNseDkzeUwyNHg5R1Bvd3lMNEdr?=
- =?utf-8?B?dGE5b1l3WVdNYTJudVFLdXhqVkdUdnRpUkVNT1dSZUI1MlNKd3lWbUVsczgw?=
- =?utf-8?B?UlB4ZDhyTFU5bEkzYnRPdXBYY2VGNk5ubm83TUwvYWtzMUNSdUllZmVKR3Bw?=
- =?utf-8?B?QXIzREc3QmtSVVZnVzRscjdjWWdJYlEvQWliS09IWk5CMXhCdmRGcjliQzBi?=
- =?utf-8?B?ei9pa0JxeVg0QkJ2aGlRUWtGOXllUTRvbWVZMnpDVktYWHZ6S1YxdmFIR1Zx?=
- =?utf-8?B?RDRSQTVCdy92VW9jZzlZOTJHZW5mNVdBcTFVRFgyMUVsSmMza1NaUklOVXFm?=
- =?utf-8?B?T0lnZ0pXRGRDYm5mNzIxWnp1OGh4Ujc5bDl3VmZ5NnBjNFJ5SFh5RGpKOHc2?=
- =?utf-8?B?Mml5dTYycnduUktDeFRqdWo4TmdGMy96WGNweWRxRkJkckxkbnVaRm5POXRZ?=
- =?utf-8?B?UzZpZlNPTExnOVlsczZaVmRkZXdkeC9GK0ticTVPN3ZXNlczbnBTYmNJYkNw?=
- =?utf-8?Q?f8L3fqLiOx8V6JoQGWV+Hs9OGyTzfWs7wEeC9?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: afadd3b9-63ba-4150-ec71-08df23a3829b
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2026 12:15:28.9121
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eV8p8bX7XcKOn9ZOXzY5SbMKX0E3K1jxhqlVVs5CD5i22tYL5rdtDIUYbLBrVSmL7aF93s4ECqKsHYXTUmW6MwHW/dQxmLxkhktVZO0CKhcwz3+tv2XQxepAxTIVo6HS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FRZPR04MB12432
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3XNTQ6CMBAF4KuQrq1pBwrUlfcwLvgZYBJpSYtEQ
+ 7i7hbggUZZv8t43M/PoCD27RDNzOJEna0JIThGrusK0yKkOmYGAVGihee/7XCvgZGik4sH9cxi
+ sG3kqCqF0BSgVsrAeHDb02uTbPeSO/Gjde3s0yfX6NSUcmpPkggvMElBZXipIrn1B5hFqpj1b1
+ 7IVnmCPpccYBCzTeRV6UNco/2LxDgN5jMUBK3Xa1HGDoPPyB1uW5QNfLoJSXQEAAA==
+X-Change-ID: 20260909-msm8952-initial-support-60a059c2e15e
+To: Srinivas Kandagatla <srini@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Amit Kucheria <amitk@kernel.org>, 
+ Thara Gopinath <thara.gopinath@gmail.com>, 
+ "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, Bjorn Andersson <andersson@kernel.org>, 
+ Abel Vesa <abelvesa@kernel.org>, Kees Cook <kees@kernel.org>, 
+ Tony Luck <tony.luck@intel.com>, 
+ "Guilherme G. Piccoli" <gpiccoli@igalia.com>, 
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+ linux-pm@vger.kernel.org, linux-input@vger.kernel.org, 
+ Muzaffer Kadir <muzafferkadir@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791288938; l=3733;
+ i=muzafferkadir@mainlining.org; s=20260816; h=from:subject:message-id;
+ bh=rYCBbrg6VaozSAt8qT2CvuJdZ2GptJZIPsnjcyJQKUE=;
+ b=CizsLT+23ueq94HTcVvhJxrkLy7dnhL+aXcQ77BQ3VrL2ubqpS9ezdLtcYgQ0Vph6KvqZOL7I
+ oeb3Go0K5dODlkyC1pvpp+CnnZw0VQousR/V3UNs4egDm+6lx80rRTB
+X-Developer-Key: i=muzafferkadir@mainlining.org; a=ed25519;
+ pk=4zkv4suQ3cYcO4Z7CrV8JSSjEGLBGepUtvQCFjgnYIU=
+X-Endpoint-Received: by B4 Relay for muzafferkadir@mainlining.org/20260816
+ with auth_id=954
+X-Original-From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+Reply-To: muzafferkadir@mainlining.org
 
-From: Peng Fan <peng.fan@nxp.com>
+MSM8952 is a SoC with 8 core cpu and Adreno 405 gpu.
 
-For shared SIDs, only the first master to attach writes the STE
-(tracked by ste_installed under streams_mutex); subsequent masters
-skip the write.  On teardown, skip the ABORT STE write while other
-masters still share the SID.
+Ported without uart connection. ramoops and usb
+mainly used to debug.
+USB is not enabled in this series because it
+depends on the not yet upstreamed (and not developed by me)
+pmi8950_smbcharger.
 
-Fault events on shared SIDs cannot be attributed to a specific
-master, so arm_smmu_find_master() returns NULL when the stream's
-shared_masters list is non-empty.
+General Mobile shamrock display panel driver
+is generated using MSM8916's mdss dsi panel
+driver generator and tested with it. I didn't
+include it.
 
-Disable SVA, IOPF/stall, and vSMMU nesting for shared-SID masters
-since all three require unambiguous SID-to-device mapping.  Clear
-stall_enabled at probe time so the STE is not programmed with the
-stall bit, which would cause unrecoverable bus lockups since
-CMD_RESUME cannot be issued without a unique SID-to-device mapping.
+Pinctrl driver was submitted and merged here:
+https://lore.kernel.org/all/20260907-msm8952-pinctrl-v5-0-9a2d8d72ffdb@mainlining.org/
 
-Assisted-by: LLM
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
 ---
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |  2 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  3 ++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 47 ++++++++++++++++++++--
- 3 files changed, 47 insertions(+), 5 deletions(-)
+Changes in v4:
+- Dropped 1651200000 freq on cluster 1 because it depends on speedbin 3
+  and speedbin is not included in this patch series
+- Dropped applied patches
+- Changed mdss_dsi0 power-domain to MDSS_GDSC
+- Reformatted SoC dtsi file
+- Added the remaining reserved-memory entries for not added parts
+- Rename adsp_mem to adsp_fw_mem
+- Drop the "ts-" prefix of touchscreen pinctrl in device dts.
+- Link to v3: https://patch.msgid.link/20260921-msm8952-initial-support-v3-0-b96fd3fe298b@mainlining.org
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-index 0934a6bbd3e08..9f13154f832c1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-@@ -309,7 +309,7 @@ static int arm_vsmmu_vdevice_init(struct iommufd_vdevice *vdev)
- 	 * arm_vsmmu_vsid_to_sid() maps a vSID to master->streams[0] alone, so
- 	 * more streams would leave the rest stale and none reads out of bounds.
- 	 */
--	if (master->num_streams != 1)
-+	if (master->num_streams != 1 || !list_empty(&master->shared_masters_elm))
- 		return -EOPNOTSUPP;
- 	return 0;
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 0a429c64fbf3e..54a0a65669ac2 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -271,6 +271,9 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
- 	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
- 		return -EOPNOTSUPP;
- 
-+	if (!list_empty(&master->shared_masters_elm))
-+		return -EOPNOTSUPP;
-+
- 	/* Prevent arm_smmu_mm_release from being called while we are attaching */
- 	if (!mmget_not_zero(domain->mm))
- 		return -EINVAL;
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index c4cfe609ae93d..bf09c02538381 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2977,11 +2977,36 @@ arm_smmu_get_step_for_sid(struct arm_smmu_device *smmu, u32 sid)
- 	}
- }
- 
-+static bool arm_smmu_is_shared_sid(struct arm_smmu_master *master)
-+{
-+	return !list_empty(&master->shared_masters_elm);
-+}
-+
-+static bool arm_smmu_skip_shared_ste(struct arm_smmu_device *smmu,
-+				     u32 sid, bool is_abort)
-+{
-+	struct arm_smmu_stream *stream;
-+
-+	lockdep_assert_held(&smmu->streams_mutex);
-+
-+	stream = arm_smmu_find_stream(smmu, sid);
-+	if (!stream || list_empty(&stream->shared_masters))
-+		return false;
-+
-+	if (is_abort)
-+		return true;
-+	if (stream->ste_installed)
-+		return true;
-+	stream->ste_installed = true;
-+	return false;
-+}
-+
- void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
- 				  const struct arm_smmu_ste *target)
- {
- 	int i, j;
- 	struct arm_smmu_device *smmu = master->smmu;
-+	bool is_abort;
- 
- 	master->cd_table.in_ste =
- 		FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(target->data[0])) ==
-@@ -2990,10 +3015,12 @@ void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
- 		FIELD_GET(STRTAB_STE_1_EATS, le64_to_cpu(target->data[1])) ==
- 		STRTAB_STE_1_EATS_TRANS;
- 
-+	is_abort = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(target->data[0])) ==
-+		   STRTAB_STE_0_CFG_ABORT;
-+
- 	for (i = 0; i < master->num_streams; ++i) {
- 		u32 sid = master->streams[i]->id;
--		struct arm_smmu_ste *step =
--			arm_smmu_get_step_for_sid(smmu, sid);
-+		struct arm_smmu_ste *step;
- 
- 		/* Bridged PCI devices may end up with duplicated IDs */
- 		for (j = 0; j < i; j++)
-@@ -3002,6 +3029,16 @@ void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
- 		if (j < i)
- 			continue;
- 
-+		if (arm_smmu_is_shared_sid(master)) {
-+			mutex_lock(&smmu->streams_mutex);
-+			if (arm_smmu_skip_shared_ste(smmu, sid, is_abort)) {
-+				mutex_unlock(&smmu->streams_mutex);
-+				continue;
-+			}
-+			mutex_unlock(&smmu->streams_mutex);
-+		}
-+
-+		step = arm_smmu_get_step_for_sid(smmu, sid);
- 		arm_smmu_write_ste(master, sid, step, target);
- 	}
- }
-@@ -3149,8 +3186,7 @@ static int arm_smmu_enable_iopf(struct arm_smmu_master *master,
- 	if (!master->stall_enabled)
- 		return 0;
- 
--	/* We're not keeping track of SIDs in fault events */
--	if (master->num_streams != 1)
-+	if (master->num_streams != 1 || arm_smmu_is_shared_sid(master))
- 		return -EOPNOTSUPP;
- 
- 	if (master->iopf_refcount) {
-@@ -4331,6 +4367,9 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- 	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
- 		master->stall_enabled = true;
- 
-+	if (arm_smmu_is_shared_sid(master))
-+		master->stall_enabled = false;
-+
- 	ret = arm_smmu_master_prepare_ats(master);
- 	if (ret)
- 		goto err_disable_pasid;
+Changes in v3:
+- Improved GCC driver, also rewrote resets part
+- Rewrote the dt-binding side of gcc
+- Reformatted Device tree files with dt-check-style tool
+- Added reset to sdhci1 and sdhci2
+- Added cx regulator to gcc
+- Added gcc commit messages that it is a derived driver
+- Dropped adsp_mem, renamed lpass_mem to adsp_mem
+- Changed tusb320 interrupt from rising to falling as downstream uses
+- Link to v2: https://patch.msgid.link/20260916-msm8952-initial-support-v2-0-798c2602dde1@mainlining.org
 
--- 
-2.34.1
+Changes in v2:
+- Changed device dts file as David's and Konrad's suggestions
+- Removed accidental duplicated clock assigments and fixed wrong gcc gp1,gp2
+  and gp3 parent_maps
+- Updated commit messages to make it wrapped at 72 character.
+- Fixed spi1 tlmm node naming
+- Added remaining spi and i2c nodes
+- Wired up mpm
+- Add mmio-sram to rpm_msg_ram
+- Reformatted msm8952.dtsi
+- Removed rpmcc-msm8952 driver entry and replaced it with rpmcc-msm8976
+- Merged sdhci tlmm pins to single nodes, now it is similar to existing SoCs
+- Rebased to latest linux-next, now storage works
+- Removed polling-delay properties from tsens
+- Link to v1: https://lore.kernel.org/r/20260912-msm8952-initial-support-v1-0-0e742578b524@mainlining.org
+
+---
+Muzaffer Kadir (7):
+      dt-bindings: nvmem: Add compatible for MSM8952
+      dt-bindings: iommu: qcom,iommu: Add MSM8952 IOMMU to SMMUv2 compatibles
+      dt-bindings: thermal: tsens: Add MSM8952
+      thermal: qcom: tsens: Add support for MSM8952 tsens
+      arm64: dts: qcom: Add initial support for MSM8952
+      dt-bindings: input: touchscreen: goodix: Add binding for GT970
+      arm64: dts: qcom: generalmobile-shamrock: new device
+
+ .../bindings/input/touchscreen/goodix.yaml         |   35 +-
+ .../devicetree/bindings/iommu/qcom,iommu.yaml      |    1 +
+ .../devicetree/bindings/nvmem/qcom,qfprom.yaml     |    1 +
+ .../devicetree/bindings/thermal/qcom-tsens.yaml    |    1 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ .../dts/qcom/msm8952-generalmobile-shamrock.dts    |  435 ++++
+ arch/arm64/boot/dts/qcom/msm8952.dtsi              | 2720 ++++++++++++++++++++
+ drivers/thermal/qcom/tsens-v1.c                    |   44 +
+ drivers/thermal/qcom/tsens.c                       |    3 +
+ drivers/thermal/qcom/tsens.h                       |    2 +-
+ 10 files changed, 3227 insertions(+), 16 deletions(-)
+---
+base-commit: bf1ee2bd5c2da8992f33c8950ef194aaff74ed6c
+change-id: 20260909-msm8952-initial-support-60a059c2e15e
+
+Best regards,
+--  
+Muzaffer Kadir <muzafferkadir@mainlining.org>
+
 
