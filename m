@@ -1,138 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E48073DC4BC;
-	Tue,  6 Oct 2026 21:36:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 945873C9EE9;
+	Tue,  6 Oct 2026 21:43:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791322613; cv=none; b=YF2FdH3r0EOi13YnPgsFo8ZvAjwklyZIXC10b2765Vs62yg0m8LpGGlgCt7q14EpfpkZSvnKGY/5mvCjhJqprQGel0LQUFcR0xwAJsTJYdZbJhuvR35oo87+mLARMp8wPXmL5I8ZbHKA0uk4bzz8aVe7MVw1EdlDLvJmCwxyYnc=
+	t=1791322985; cv=none; b=QiKrzKRW0Fz5sPEQ2wuk4Ko47E/VeKtLTzodldVPHNfssLrUe9oiMvdt6zCy4cjWWF+4CCTKGSUVuK/Krv4dKXWvXjwi6kHw2KoLRikhMY6tcNhAy7lVVAsO5FgTgTOWKDMnF2xN2xanFmQVaIot8AeqbB6oWUEbHnIkFYdR/UI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791322613; c=relaxed/simple;
-	bh=Xcv+Vm/jbRp2Q6/9NtuGI1Gim0KGGilL8hp/09vEgGg=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=ioLaheCXALY8SYL9JY0FQoCTXGkEC8gKJd7sGeFPnwsFOs7RB27NgB6XiR/1VXja8/SxbPpQurrSThv4ikgaF6Rb9BNWplGQhWfdDdaHoDa+gMJils0+RPqHJUgIjddoq5Pl2xWlnCNAdEKkYbHewAeUudKKMH4QwfN5IwaAX60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LEA/N8ye; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791322985; c=relaxed/simple;
+	bh=oCSkRp6GuCzlh/94BooGUaQCzy26rKPOU+FL0sDDpuE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=qGLygcqJK0UAK5itimXBil9F5KxLKLTu1CBm4dgnggKeo4R1vQ+CqKNjz/FVpVXalKdv5qBIhm9Y6AexVBbWSQ6ENysRBy6VX4PVaM8vcwQfCE0WSk9nNk+oS3t2D4zOPC/8DkBBX7saErhnE+1wbTdP8RSJBVZQ8m9+6BVjqWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=X7izBr5m; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LEA/N8ye"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A12C71F0089C;
-	Tue,  6 Oct 2026 21:36:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791322611;
-	bh=jO1rNsL4MEoaqt+EDLxFDNqJq3+GIguSxOzwozJ8c1U=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=LEA/N8yeHjy4SYd/wWMhspV55RDyEFyUH6Gre+O+y20X2dHCZ1VFdedVDBcYMVPZ7
-	 zAQRArHg7K0x2xZjt3tcjC22uKAUZj7ltbiMBw3d8zzcau5qTw9t2THEcpwtGtiuqG
-	 UA5sTicyur71JTs5u4w0kHbViIyDDfC+0SNRqiPMfGdKnoxy1dDc51wm4YviLXFrkO
-	 PXMqpvagxGWh6FDj4b8h1D3HCvc6HBkTzWBKD/dzMzJ5FJdQHxqajQCxrgv0asCl0A
-	 4ygRC49Ss94R002VvZYzG+uq/wLAf/KwzPwSCc6Runw8uTU9U1vPar+HhcmP+tPUTQ
-	 6yb9hL78+a0rQ==
-Date: Tue, 6 Oct 2026 16:36:50 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v9 00/18] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
-Message-ID: <20261006213650.GA716945@bhelgaas>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="X7izBr5m"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261006214259euoutp01c5bc7ee57334b408af09a066c2d8412b~cDsI8Wk8f1988319883euoutp01S;
+	Tue,  6 Oct 2026 21:42:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261006214259euoutp01c5bc7ee57334b408af09a066c2d8412b~cDsI8Wk8f1988319883euoutp01S
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1791322979;
+	bh=ZioSMG43MEHFd9pfn3EIJe0Ig/c7Qq/kf97OHfOELpI=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=X7izBr5m8cmXF7INH1PfY//K2/ri63BnSaoZWWQn+J7F7DSyWLAOh8zyLCqoA49T1
+	 fLrFXwNe1fB08G783PVdG9eZQswPfnng02g4QBXO6NsFZq0Etq3vQI7hHj5Ixmn3ua
+	 C9iDLQSmItu72iRpHKjS66EAZ/bv/+aIrijM19SA=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20261006214258eucas1p21c51f2c73891f0ad8a848a058ab4e7b2~cDsH4gZff0914409144eucas1p2i;
+	Tue,  6 Oct 2026 21:42:58 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261006214255eusmtip2826fd9cdfb4c80046b451ff2238aee5d~cDsFarzwa1576315763eusmtip2a;
+	Tue,  6 Oct 2026 21:42:55 +0000 (GMT)
+Message-ID: <ff4f59ea-6c51-41d6-a92d-d1dd205b1e78@samsung.com>
+Date: Tue, 6 Oct 2026 23:42:54 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261006212227.GB7822@unreal>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v6 0/8] dma: swiotlb: Centralize default pool policy and
+ sizing
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Robin Murphy <robin.murphy@arm.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+	<rdunlap@infradead.org>, Will Deacon <will@kernel.org>, Mark Rutland
+	<mark.rutland@arm.com>, Marc Zyngier <maz@kernel.org>, Steven Price
+	<steven.price@arm.com>, Suzuki K Poulose <Suzuki.Poulose@arm.com>, Catalin
+	Marinas <catalin.marinas@arm.com>, Jiri Pirko <jiri@resnulli.us>, Jason
+	Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>, Petr Tesarik
+	<ptesarik@suse.com>, Alexey Kardashevskiy <aik@amd.com>, Dan Williams
+	<dan.j.williams@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>, Madhavan
+	Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)"
+	<chleroy@kernel.org>, "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>, Alexander Gordeev
+	<agordeev@linux.ibm.com>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>, Sven Schnelle
+	<svens@linux.ibm.com>, Stefano Stabellini <sstabellini@kernel.org>, Russell
+	King <linux@armlinux.org.uk>, Huacai Chen <chenhuacai@kernel.org>, WANG
+	Xuerui <kernel@xen0n.name>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>, Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>, Andy Lutomirski <luto@kernel.org>, Peter
+	Zijlstra <peterz@infradead.org>, Thomas Gleixner <tglx@kernel.org>, Ingo
+	Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
+	<dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, x86@kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20261006214258eucas1p21c51f2c73891f0ad8a848a058ab4e7b2
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3
+X-EPHeader: CA
+X-CMS-RootMailID: 20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3
+References: <CGME20260924060823eucas1p1d27fbf57221c9b4c0e9831a9b0cdd7d3@eucas1p1.samsung.com>
+	<20260924060756.1325156-1-aneesh.kumar@kernel.org>
 
-On Wed, Oct 07, 2026 at 12:22:27AM +0300, Leon Romanovsky wrote:
-> On Tue, Oct 06, 2026 at 02:29:55PM -0500, Bjorn Helgaas wrote:
-> > On Thu, Oct 01, 2026 at 02:55:08PM +0300, Leon Romanovsky wrote:
-> > > PCI P2PDMA applies Request and Completion Redirect throughout both paths.
-> > > This misclassifies asymmetric and nested switches, and reports one answer
-> > > for every kind of TLP.
-> > > 
-> > > Three ACS controls act on TLP attributes the client chooses rather than
-> > > on the topology: Translation Blocking and Direct Translated P2P act on
-> > > a Request's Address Type, and Completion Redirect skips Completions carrying
-> > > Relaxed Ordering.
-> > > 
-> > > Evaluate each direction at the path divergence, decide every class from the
-> > > one walk, and treat a client with ATS enabled as translating unless its
-> > > driver declares per-mapping ATS.
-> > > 
-> > > This completes the P2PDMA side; dma-buf and mlx5 follow separately.
-> > > ...
-> > 
-> > > Leon Romanovsky (18):
-> > >       PCI/P2PDMA: Document the TLP attribute assumptions
-> > >       PCI/P2PDMA: Derive routing from directional ACS controls
-> > >       PCI: Reject unreadable ACS controls in isolation checks
-> > >       PCI/P2PDMA: Evaluate ACS controls at the path divergence
-> > >       PCI/P2PDMA: Document directional ACS routing
-> > >       PCI/P2PDMA: Collect the path's ACS controls before deciding
-> > >       PCI/P2PDMA: Answer routing per TLP class
-> > >       PCI/P2PDMA: Route Relaxed Ordering Completions directly
-> > >       PCI/P2PDMA: Reject Translated Requests blocked by Translation Blocking
-> > >       PCI/P2PDMA: Route Translated Requests under Direct Translated P2P
-> > >       PCI/P2PDMA: Log detailed ACS routing diagnostics
-> > >       PCI/P2PDMA: Add KUnit tests for the ACS routing decisions
-> > >       PCI/P2PDMA: Test the ACS P2P routing walk
-> > >       PCI: Add KUnit coverage for ACS isolation checks
-> > >       PCI/P2PDMA: Document TLP-class routing
-> > >       PCI/P2PDMA: Let a client declare that it selects ATS per mapping
-> > >       PCI/P2PDMA: Evaluate the ATS path for clients with ATS enabled
-> > >       PCI/P2PDMA: Test the routing of clients with ATS enabled
-> > > 
-> > >  Documentation/admin-guide/kernel-parameters.txt |  15 +-
-> > >  Documentation/driver-api/pci/p2pdma.rst         |  80 +++
-> > >  drivers/pci/Kconfig                             |  15 +
-> > >  drivers/pci/Makefile                            |   1 +
-> > >  drivers/pci/p2pdma.c                            | 719 ++++++++++++++++++--
-> > >  drivers/pci/pci.c                               |   7 +-
-> > >  drivers/pci/pci.h                               |  58 ++
-> > >  drivers/pci/pci_acs_test.c                      | 860 ++++++++++++++++++++++++
-> > >  drivers/pci/quirks.c                            |   6 +-
-> > >  include/linux/pci-p2pdma.h                      |  12 +-
-> > >  10 files changed, 1687 insertions(+), 86 deletions(-)
-> > > ---
-> > > base-commit: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
-> > > change-id: 20260821-fix-p2p-acs-v4-0-e72455e3a261
-> > > prerequisite-message-id: <20260830-batch-p2p-fixes-v1-0-5044e8dfbe2e@nvidia.com>
-> > > prerequisite-patch-id: 6b25c7fcf164cdfc14e9fac5b908d97fcf6509d7
-> > > prerequisite-patch-id: 0d083c281001365aae4b35544cf28891a6ab9a96
-> > > prerequisite-patch-id: bfd9dabf271f3cc9a3a61f46387d20c20311363d
-> > > prerequisite-patch-id: fad0275efc722830fc591509506c0a5e4f581073
-> > > prerequisite-patch-id: 0c83bee688fec1f6d1564654df7c630fa6a4a978
-> > 
-> > This seems like material for the PCI tree, but I'm not sure how to
-> > apply it.  It doesn't apply cleanly on the current pci/p2pdma
-> > (https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git/log/?h=p2pdma),
-> > which does contain your series from
-> > 20260830-batch-p2p-fixes-v1-0-5044e8dfbe2e@nvidia.com.
-> > 
-> > I could probably fix the conflicts but I don't know why there should
-> > be conflicts, since the only commits on pci/p2pdma other than yours
-> > are a few trivial allow-list updates.
-> 
-> So maybe this is related to these trivial updates, my series was based
-> on the clean p2pdma branch:
-> https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=fix-p2p-acs-v9
+On 24.09.2026 08:07, Aneesh Kumar K.V (Arm) wrote:
+> This series centralizes swiotlb default-pool selection and sizing, and
+> simplifies the initialization flags used to describe pool placement.
+>
+> The first patch replaces the addressing-limit argument with initialization
+> flags and introduces explicit policies for the different reasons a default
+> pool may be needed. Architectures now report DMA addressing constraints with
+> SWIOTLB_INIT_ADDRESSING_LIMIT, while the core selects the corresponding pool
+> policy.
+>
+> The second patch moves the reduced sizing used when the pool is needed only
+> for unaligned kmalloc bouncing from arm64 and RISC-V into the swiotlb core.
+>
+> The third patch centralizes swiotlb sizing for memory-encrypted systems. It
+> moves the existing x86 guest-sizing policy into the core. Host memory
+> encryption retains the normal pool size, and a shared default pool is not
+> selected solely for guest memory encryption when a restricted DMA pool is
+> present.
+>
+> The fourth patch removes SWIOTLB_ANY. Pool placement is derived directly from
+> SWIOTLB_INIT_ADDRESSING_LIMIT: pools required for limited DMA addressing are
+> allocated below the architecture's low address limit, while other pools may
+> be allocated anywhere in directly mapped memory. Xen continues to request a
+> pool explicitly with SWIOTLB_INIT_REMAP without imposing a low-address
+> constraint.
 
-Ah, yeah, it must be the allow-list additions that I have but you
-don't.  I wouldn't have thought the offsets would have been a problem.
+
+I will give this patchset a chance in linux-next. If one feels that it still needs
+to be improved or sees any other reason why it shouldn't be merged, let me know
+asap.
+
+
+Applied to dma-mapping-for-next.
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
