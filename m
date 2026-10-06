@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20DC13F0AA6;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E613F1044;
 	Tue,  6 Oct 2026 12:15:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791288942; cv=none; b=Ll07yz61VIIyoKqrwT+1ywPd1g3GR6CHTxZUnRF6P156YAsktlKN2Y2dpTnck5TjALPPv0i+v6ZAIvM0n/XoECbCKmY//FfgNcdkT1edMK5w2eIh1lDzSp+oeVkJhP7SM5bvxNNN5XQwV482CUQ8Y5g0RQb3FHWZXFyK2UcUkuU=
+	t=1791288942; cv=none; b=d9fZbNn8bRpNoFIzpnyIR7k/4SgV/OFGhk+5chPWwdkokNNBY7lgPwU8iKCCZvPYZWUFctV2HAXNarEbongopTUmSir9Ug6EqAiez3wASn4Rg+rItjWymzEXdx/IpJCIGH4p1bDKwzcAY8ceHwyg+aeAYT7FqIhegkuDZTFV1mY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791288942; c=relaxed/simple;
-	bh=qxGO+ycUBgOhJBZAGPdMdhfTmpAtmhy1AXQFuLCJMnc=;
+	bh=td2I24nRoQ5+bn5CQxQqEo0inmSjlf0k47TwwMGhEuI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=f2UMQgyz6zPTGIl+1bcX2t5eZSWbfm6M2PfGYku7S98J9sFKarIhgesvbw1h0YpVolmD4TH6smbtSJ4GW1U85pGv75g5/6QNZi6Oj9SlytQtZGBTPd45tca33Qs227t/zU27db80mpJsloptYuSU99KR2rwG529SRxYeR4eAS2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ABZPvz5S; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=aaXRxWnTCmCJOUqbTA2pDtVFTVBIBAkQcZZ7fcICTgSEibqxjKGZ7iX9sgMBqx8vi3c4Nf9TVHHoc126RLZ1Y2nXW3aG1epGIJDAsjC1WoT8G9/mTFNSLiMEFuBEBeMpwJRrPnBHrDusq8py0NrdmccgWV1sL6T4vqsyhJIptyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ctkjs+Yj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ABZPvz5S"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A71DC4DDEB;
-	Tue,  6 Oct 2026 12:15:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ctkjs+Yj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D1553C4AF67;
+	Tue,  6 Oct 2026 12:15:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1791288941;
-	bh=qxGO+ycUBgOhJBZAGPdMdhfTmpAtmhy1AXQFuLCJMnc=;
+	s=k20201202; t=1791288940;
+	bh=td2I24nRoQ5+bn5CQxQqEo0inmSjlf0k47TwwMGhEuI=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ABZPvz5S6EkR3OKrew6NofAuZFSc0vDSzosLSExbAzRhWRh+REk91kdfOAS+P+6Sl
-	 JDwucJXfYiM62uCEqHyae21xFGbn5t1ec/FKrqmIJWnUySOEdIsdmrABcwVoOM/o9C
-	 oQ+XjDLslgcl6u0r1E4/2LQyrfthEFKWlQ6wD8aaFZ4sKqCfxK+GQb9K8uExfwr/8p
-	 wR+N2Ck2f+lqkEIkCe+mqk+4wIEUSV0QKNlpulejUR26v6NxP2lJD8uw9bnIbdK2Yq
-	 GwD1+q3Lsui26QWPZg9rX2bfbJKkxii66OlAKn+8XC1l1uuZfVXG9zyJ4ojcw2NgaJ
-	 g9xGTD7eTslrw==
+	b=ctkjs+YjExmKsGR6kzAY7qGBTugSc5JjfabXHkyvulnFEVdTXbzW+0dfrs/9bS1Vx
+	 /u1lPzPmJojiNSaSPnQlBJQoSrdD8356CTb9rvjgjfIdDj7+Sw8AX8IrBkysyN/0Pd
+	 4k7KyyIhcUC+wDRO8Ko/ZeQoJt8ijyFBkGl42vQ7/dtkWkTqBfkovlxV6xigvSPgBD
+	 50V4lAbaSp8IhysfjbO+XgwZjYXkQbMURGguAAN3W/WPK4X/Ffe8QeOy50GuGvt5F0
+	 l6wtnO5QJcBkfy9Jr60il3oMQUcRs4LMTzp+fTFAyfoabdtEjC8sP+lWJ7UOL01jA1
+	 GbHBInkK9kn4g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E101DCA6006;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B790FCA5FED;
 	Tue,  6 Oct 2026 12:15:40 +0000 (UTC)
 From: Muzaffer Kadir via B4 Relay <devnull+muzafferkadir.mainlining.org@kernel.org>
-Date: Tue, 06 Oct 2026 15:15:11 +0300
-Subject: [PATCH v4 4/7] thermal: qcom: tsens: Add support for MSM8952 tsens
+Date: Tue, 06 Oct 2026 15:15:09 +0300
+Subject: [PATCH v4 2/7] dt-bindings: iommu: qcom,iommu: Add MSM8952 IOMMU
+ to SMMUv2 compatibles
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,7 +41,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261006-msm8952-initial-support-v4-4-ecdcc1ac620c@mainlining.org>
+Message-Id: <20261006-msm8952-initial-support-v4-2-ecdcc1ac620c@mainlining.org>
 References: <20261006-msm8952-initial-support-v4-0-ecdcc1ac620c@mainlining.org>
 In-Reply-To: <20261006-msm8952-initial-support-v4-0-ecdcc1ac620c@mainlining.org>
 To: Srinivas Kandagatla <srini@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -60,13 +61,14 @@ Cc: David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
  linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
  linux-pm@vger.kernel.org, linux-input@vger.kernel.org, 
- Muzaffer Kadir <muzafferkadir@mainlining.org>
+ Muzaffer Kadir <muzafferkadir@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1791288938; l=3730;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791288938; l=969;
  i=muzafferkadir@mainlining.org; s=20260816; h=from:subject:message-id;
- bh=GlMfaKulJyweyvmQh5pumZkzisbxK5lO6uH1lkzZYew=;
- b=HLtRdjqtxqWqiTHkQnazm8zvUX4t1MgqeQYoY8jPM6VWo0en0TOQCVSmQ+5tD90U+HRDnodgj
- 6MH1f7kwz4kAmbH7F9+55dPPBDd6YvUBlZbmy8iHOLIsUeHCuL5zXet
+ bh=ITO15xkGcBa687Mp0TLRvjwHoI0S0V/a2UgW08TP0cI=;
+ b=aR9iJLeo1zn3F93QVjjTRCrpBuq2h2NParpPyp9IuREEWoYQ4URPKzNc19opyDaCKUd7bBm0W
+ +zcGnI42ws3C2QPlYWQ/1tY9Iw+b2PTXWUWlhQTQm3nU1zUUA+TdUUx
 X-Developer-Key: i=muzafferkadir@mainlining.org; a=ed25519;
  pk=4zkv4suQ3cYcO4Z7CrV8JSSjEGLBGepUtvQCFjgnYIU=
 X-Endpoint-Received: by B4 Relay for muzafferkadir@mainlining.org/20260816
@@ -76,107 +78,28 @@ Reply-To: muzafferkadir@mainlining.org
 
 From: Muzaffer Kadir <muzafferkadir@mainlining.org>
 
-Add support for tsens v1 block that exists on MSM8952
-with 11 tsens sensors. Sensor Offsets and slope values
-are taken from downstream.
+Add MSM8952 compatible string with "qcom,msm-iommu-v2" as fallback
+for the MSM8952 IOMMU which is compatible with Qualcomm's secure
+fw "SMMU v2" implementation.
 
-Link: https://android.googlesource.com/kernel/msm.git/+/refs/tags/android-wear-7.0.0_r0.3/drivers/thermal/msm-tsens.c#1621
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
 ---
- drivers/thermal/qcom/tsens-v1.c | 44 +++++++++++++++++++++++++++++++++++++++++
- drivers/thermal/qcom/tsens.c    |  3 +++
- drivers/thermal/qcom/tsens.h    |  2 +-
- 3 files changed, 48 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/iommu/qcom,iommu.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/thermal/qcom/tsens-v1.c b/drivers/thermal/qcom/tsens-v1.c
-index faa5d00788ca..f4201748ea29 100644
---- a/drivers/thermal/qcom/tsens-v1.c
-+++ b/drivers/thermal/qcom/tsens-v1.c
-@@ -145,6 +145,37 @@ static const struct reg_field tsens_v1_regfields[MAX_REGFIELDS] = {
- 	[TRDY] = REG_FIELD(TM_TRDY_OFF, 0, 0),
- };
- 
-+static int __init init_8952(struct tsens_priv *priv)
-+{
-+	for (int i = 0; i < priv->num_sensors; ++i)
-+		priv->sensor[i].slope = 3200;
-+
-+	priv->sensor[0].p1_calib_offset = 2;
-+	priv->sensor[0].p2_calib_offset = -1;
-+	priv->sensor[1].p1_calib_offset = -4;
-+	priv->sensor[1].p2_calib_offset = -4;
-+	priv->sensor[2].p1_calib_offset = 4;
-+	priv->sensor[2].p2_calib_offset = 5;
-+	priv->sensor[3].p1_calib_offset = 1;
-+	priv->sensor[3].p2_calib_offset = 1;
-+	priv->sensor[4].p1_calib_offset = 2;
-+	priv->sensor[4].p2_calib_offset = 3;
-+	priv->sensor[5].p1_calib_offset = -1;
-+	priv->sensor[5].p2_calib_offset = -1;
-+	priv->sensor[6].p1_calib_offset = 0;
-+	priv->sensor[6].p2_calib_offset = -1;
-+	priv->sensor[7].p1_calib_offset = 3;
-+	priv->sensor[7].p2_calib_offset = 4;
-+	priv->sensor[8].p1_calib_offset = 2;
-+	priv->sensor[8].p2_calib_offset = 4;
-+	priv->sensor[9].p1_calib_offset = 0;
-+	priv->sensor[9].p2_calib_offset = 0;
-+	priv->sensor[10].p1_calib_offset = -3;
-+	priv->sensor[10].p2_calib_offset = -2;
-+
-+	return init_common(priv);
-+}
-+
- static int __init init_8956(struct tsens_priv *priv) {
- 	priv->sensor[0].slope = 3313;
- 	priv->sensor[1].slope = 3275;
-@@ -223,6 +254,19 @@ struct tsens_plat_data data_8937 = {
- 	.fields		= tsens_v1_regfields,
- };
- 
-+static const struct tsens_ops ops_8952 = {
-+	.init		= init_8952,
-+	.calibrate	= tsens_calibrate_common,
-+	.get_temp	= get_temp_tsens_valid,
-+};
-+
-+struct tsens_plat_data data_8952 = {
-+	.num_sensors	= 11,
-+	.ops		= &ops_8952,
-+	.feat		= &tsens_v1_feat,
-+	.fields		= tsens_v1_regfields,
-+};
-+
- static const struct tsens_ops ops_8956 = {
- 	.init		= init_8956,
- 	.calibrate	= tsens_calibrate_common,
-diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
-index b5ec70201e2f..4d7013fc79d6 100644
---- a/drivers/thermal/qcom/tsens.c
-+++ b/drivers/thermal/qcom/tsens.c
-@@ -1191,6 +1191,9 @@ static const struct of_device_id tsens_table[] = {
- 	}, {
- 		.compatible = "qcom,msm8939-tsens",
- 		.data = &data_8939,
-+	}, {
-+		.compatible = "qcom,msm8952-tsens",
-+		.data = &data_8952,
- 	}, {
- 		.compatible = "qcom,msm8956-tsens",
- 		.data = &data_8956,
-diff --git a/drivers/thermal/qcom/tsens.h b/drivers/thermal/qcom/tsens.h
-index e8376accdff3..a35b15312961 100644
---- a/drivers/thermal/qcom/tsens.h
-+++ b/drivers/thermal/qcom/tsens.h
-@@ -669,7 +669,7 @@ extern struct tsens_plat_data data_8960;
- extern struct tsens_plat_data data_8226, data_8909, data_8916, data_8939, data_8974, data_9607;
- 
- /* TSENS v1 targets */
--extern struct tsens_plat_data data_tsens_v1, data_8937, data_8976, data_8956;
-+extern struct tsens_plat_data data_tsens_v1, data_8937, data_8952, data_8976, data_8956;
- 
- /* TSENS v1 with no RPM targets */
- extern const struct tsens_plat_data data_ipq5018;
+diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+index 93a489025317..9952b9da9a6a 100644
+--- a/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
++++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.yaml
+@@ -27,6 +27,7 @@ properties:
+           - const: qcom,msm-iommu-v1
+       - items:
+           - enum:
++              - qcom,msm8952-iommu
+               - qcom,msm8953-iommu
+               - qcom,msm8976-iommu
+           - const: qcom,msm-iommu-v2
 
 -- 
 2.55.0
