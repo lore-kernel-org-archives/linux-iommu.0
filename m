@@ -1,363 +1,215 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C9F9E49E13F
-	for <iommu@lists.linux.dev>; Tue,  6 Oct 2026 16:21:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791303692; cv=none; b=Ayl8ZgwMaycx9oJO9ozO3JjeJBiqo+Zp+JkgM/xQbArz4zxRcWUklW63/nO02hjQzn1GWOjxL+ZAr7PTVthSiCqOQdbk3OwlpptTh+j50aM6usgVE4m7pPQzDXL5omyKTzLmZpNjr6nXIPsfP82XjfGmB6GY9y/3taDpn6PmFSg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791303692; c=relaxed/simple;
-	bh=FUiQOxZp7MucygylVgsIgOnfV2/qHj/GNQ7iil0CDdU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=csfp0TWZdl10uiCFP4YecEtDbChRwuOyxZnn90Ardb+rn6FTNCI3zkwlE998FPY9vjUxMUAG4VgWIT5zXSbfVwKIJfC1Pi8BcdGNC7uihMHtwkGcyTc8RevMhOSSMzqWH1ftwjmkTx2aspt3qzQKO1O5pG1RK4k+octDUM2hJEY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=XalXf6pV; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012021.outbound.protection.outlook.com [52.101.43.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C1883F1076;
+	Tue,  6 Oct 2026 17:27:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.21
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791307645; cv=fail; b=lTLciV/G9p/QtM8e/s8YuO30MKySbZLtlgaAZ5KOMpaAGenU6SamVkNfvvktsQqBwmncpsOxzbgbJaN6WOhTcudiLsspaDI+Z/6a/LvCrbEfk9WeB9PhYPTzHRId+BgYwFJgkZfdp7I06xnUHD59VuwtGH1ZiDdZ3LhpPD3B1us=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791307645; c=relaxed/simple;
+	bh=8Ov+NNl747DYuuRKgblzdusZV2JAiNYb7FnBYKs6jDM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Cyduphl/aO8nLk2h7pbDdW15m0MZtfeTWOYbnFJXl2lSJilgfE4Yr5n4NO4zKhIy1LtAfQlfyqwu5h7HCcJK21FWTZjTn3aFKDBlfA+3sh+UdQjbdaMhE7cqGJ7jDdXceFUeBDZQbyOR6GCRu+GC/mhOnuPx5VosfC3DjywTg9I=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=B6XhkOG5; arc=fail smtp.client-ip=52.101.43.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="XalXf6pV"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D7583143D;
-	Tue,  6 Oct 2026 09:21:25 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B91E3F66F;
-	Tue,  6 Oct 2026 09:21:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1791303689; bh=FUiQOxZp7MucygylVgsIgOnfV2/qHj/GNQ7iil0CDdU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=XalXf6pVcVvZbeMt2Zn8WosR+pRyf8V1BLuKW99LfSOYGos8qy7duq0J/4jxWjg8/
-	 DgdWe95kHtfXdcFNd5xbjHl9i/wj5WSQ3H7xJQ3Dm9V8dqm5RFZcHbh9ZvACJWQHHV
-	 1FiJ3Chcp7+UXnag7GlZr5/AgM32YtHXHj+HHB1Y=
-Message-ID: <2b981fe5-589b-4262-9830-f1fc4c332b8c@arm.com>
-Date: Tue, 6 Oct 2026 17:21:25 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="B6XhkOG5"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=FScoJr500Yx9RW7SKHqCr+ZoQ3XW3yBLK33Sb2ulIYKftyvxWzcMLoXCyGkvFeQqGA86OXeWV27P62BXDAKG6APtzmYs+nobl/lqLBXVqCc/3sNm8wWS8VUeQFRDoYguJDe/fx+97j46Z3aU2aDNb24q+ldFKMrLjqH7Tme7YcnkYKL5Zuqu+ZW/jDzIKgKkbnNtsrsuhNr7HN6XwBnO0GyLl94+PVw7wtNQQqDfA6v+hddYg4DEfLXLNyUuUt7KP7dMuCvWbz56iVk19qEuGXYyD+Q3udva00q7cATS3FXTHNJEOgkTc0WDIK0hrw2qrihWdaLv60toj6TtXJs5ZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L2bhA+uZ3vUrcb5norWF7VUtyFvgn68rxkSwA/DkM+A=;
+ b=himKe5n/Ll9xgvmUjCHCDUUj64Z32/xCGvKe2By+pVuORMgt32L8oOaqngUe6M55PO2nq9+2HQurxkfwzYgRdtKar13V4+3sjqhUgELtQkh2dmBHFpv2/Ni3RSQTBqTAXDE1+nGegAhqfWjaIM13EPMRhAsiolu9xNthu3xLcLyhNU5tV76JCAt8tICxZUzdxaPffl/vkGfa4h+SFa7Gm2BwkF9eXTyk/GLha57byNzeIS/VXjgl0BQWI2dkwwWfp1CUuqjngeJzb16KN5UT9phllKz7hr/83yAMQu8s+amS+UrfEXHKjBYFleD78275+z/hz/UFfmepH2A1aYVhvA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=ziepe.ca smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L2bhA+uZ3vUrcb5norWF7VUtyFvgn68rxkSwA/DkM+A=;
+ b=B6XhkOG5Zxy8qQKL0c0tKrDZIjUAmr9d8QhTR6ZBdNOv6n/uSPALrGtDy2FnZAxvbMRjTKsArH/GZLkLibhJGuoEb3v06HklD7Yjgy57jxf4zX+1bFg0/x9+OFf/KhcpxsiVdPYuP5rfAoA1oQTn3JEQ77D6DDVkvPSAvL0Cvy7ceklDcA26jMhdpfidUL5X4TR6/5zqkWdlDD+GPzaRhoo3iqV2qlco+P1+otEAOfeAyVFRopIx3l81Ou7oQYOKGLdVyvk7Whb4dDNyvwz3D9w8irfQ35wTXrZPCvn60Fl18B202BduH0fGfURQKV1HSEeQDp11VzQM6asAdPzZ+A==
+Received: from CH0PR13CA0015.namprd13.prod.outlook.com (2603:10b6:610:b1::20)
+ by CH3PR12MB873938.namprd12.prod.outlook.com (2603:10b6:610:366::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.15; Tue, 6 Oct
+ 2026 17:27:17 +0000
+Received: from CH2PEPF0000013F.namprd02.prod.outlook.com
+ (2603:10b6:610:b1:cafe::75) by CH0PR13CA0015.outlook.office365.com
+ (2603:10b6:610:b1::20) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.496.5 via Frontend Transport; Tue, 6
+ Oct 2026 17:27:17 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.161) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CH2PEPF0000013F.mail.protection.outlook.com (10.167.244.71) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.496.14 via Frontend Transport; Tue, 6 Oct 2026 17:27:17 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 6 Oct
+ 2026 10:26:45 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Tue, 6 Oct
+ 2026 10:26:45 -0700
+Received: from nvidia.com (10.127.8.10) by mail.nvidia.com (10.129.68.6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
+ Transport; Tue, 6 Oct 2026 10:26:44 -0700
+Date: Tue, 6 Oct 2026 10:26:41 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, Pranjal Shrivastava <praan@google.com>
+CC: <iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Joerg Roedel
+	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, Mostafa Saleh
+	<smostafa@google.com>, Daniel Mentz <danielmentz@google.com>, Ashish Mhetre
+	<amhetre@nvidia.com>, <linux-arm-kernel@lists.infradead.org>, Thomas Gleixner
+	<tglx@kernel.org>, Radu Rendec <radu@rendec.net>, Bjorn Helgaas
+	<bhelgaas@google.com>, <linux-pci@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, <rafael@kernel.org>, Danilo Krummrich
+	<dakr@kernel.org>, <driver-core@lists.linux.dev>
+Subject: Re: [PATCH v11 11/16] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
+ gate CMDQ submissions
+Message-ID: <asUvUf4PZJ7JCLXp@nvidia.com>
+References: <20260929034510.2023173-1-praan@google.com>
+ <20260929034510.2023173-12-praan@google.com>
+ <ar1yNtr7Kp2OTcDd@nvidia.com>
+ <ar3yWUmi8E0k37Ml@google.com>
+ <ar6gY9grmdMZcN/M@nvidia.com>
+ <20261002164748.GD3481470@ziepe.ca>
+ <asAeCz_rmpe5hbsh@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v1 9/9] iommu/arm-smmu-v3: Adopt the Event queue
- across a Live Update
-To: Pranjal Shrivastava <praan@google.com>, iommu@lists.linux.dev,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Nicolin Chen <nicolinc@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>, Samiullah Khawaja <skhawaja@google.com>,
- David Matlack <dmatlack@google.com>, Vipin Sharma <vipinsh@google.com>,
- Mostafa Saleh <smostafa@google.com>, Daniel Mentz <danielmentz@google.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- Pratyush Yadav <pratyush@kernel.org>, linux-arm-kernel@lists.infradead.org,
- kexec@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20260929071950.2710070-1-praan@google.com>
- <20260929071950.2710070-10-praan@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260929071950.2710070-10-praan@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <asAeCz_rmpe5hbsh@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH2PEPF0000013F:EE_|CH3PR12MB873938:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4e5184b9-7d05-443b-15d7-08df23cf1200
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|7416014|376014|1800799024|5023799004|56012099006|11063799006|4143699003|10067099003|22082099003|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	oNoxu2o+yOyAyjH9D+1LRzLDxI9f+HufROL+/5PhCmrnxFV6BOn+aebeAH8XqPqgJ0sho+BWc7/SGeTfC7z7NF5NiUl2N1ioxTAbmA59GHDq52Y+MOglo9GFn5md7MWl8fH1OxPehcQm17Tj0Ti6DlgBHNPaP0oRofMVrw+n4gPrdPGlkz3nnP73bus7s1qMwpvGtFb5V3uCcxd5QhR1XdgR3Df7/gVUgqfWPlw+CaXWLJ4e8o+tQW+RrHLcj3Vnw3K2krb30bnaotoERYVn/k/Ew1nVwB+LZEGjUpCRlUZN8aJ0HoSwwUKeSgnL9dyvpUu1Q0ckCiS676esZ89LysFkOzzGF+F0H31VjdID+0aoLdX3OYoXVOZQlcbtlc3rZWV4r6Y+SbMDxnt5vi+7QlweYhQLp1gT8cPrD4+2MdSHv/Ow2IyJHnYAvE7+ijArqirp8dvmpxOkrwHStiX4/gb//aRpk7ag0b1gptjlwLHyXTf6R5xo71EWOcM+dy0BEOjkFnLyi+AhCr2doi6x8932sey5HWkK+nBCBCL49+LBlIB3u5l7+1T5kellBf1j2HPOVtgBqgvGeOvrDLZARQpC62YiRLw8I8HIbIcXU6G6QIbkRfYSqOlk5cIhJ2zT9tEPRIDwKWNjuBq5ZERHV9G43sEGAFiYR/SNXOByWDx5aUeuPtpAyPlAImd5r9DSd+aiw7HVwNvtWgFHTA+YsQ==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(7416014)(376014)(1800799024)(5023799004)(56012099006)(11063799006)(4143699003)(10067099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	6on5dneOxA07jgzPwBKxzb8L+veZcqZOhTfU8TMMD841DjK/Y8YM0NxO0IbxjTw6Nh27xVKlWkcUpuVQamUiRioWOF68CytCzy/WSe6FJyLTv6d83PqeDcnhdmDam6kTArvHA71BGK6JABS/q2SR3T1GJht+Cicgktrc71ryBL9MEYX8/uKX4J4nf4AUZcof9XkASjDKq3AcgzpD4+v9VYjWrr8Y1jfdO5Omb+tlhFKqEOea6z4m1sXAupA7ZVpXRSiToepMT70utehgLg2xqWiwjgImHfjZOqcS3VBlc9+YTfY3gdXiBNNvXedYVWvO53tgS8Y1IOsfjolbOphuToj8/qhm7LmXh03Vx7cyL7uQouPD3vUfaiYGO8yxDNeZ1H2yRwrhvAfiDKbaJHb+Oo1TuNgWRdS4o+sXN6lhO+uy7v3BhkFvPLY/Nr9u8oqk
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Oct 2026 17:27:17.5583
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4e5184b9-7d05-443b-15d7-08df23cf1200
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH2PEPF0000013F.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB873938
 
-On 29/09/2026 8:19 am, Pranjal Shrivastava wrote:
-> The SMMU may record events of the preserved devices across the kexec,
-> which the incoming kernel loses by resetting the EVTQ.
-
-Not really; events which matter, i.e. stalled faults, are held until the 
-queue becomes writable again. The only events which could be lost would 
-be those which represent unexpected programming errors left over from 
-the previous kernel, which we really cannot do anything about other than 
-say "well, that happened..." Plus there's already no guarantee that such 
-events aren't lost if the queue becomes full or stops for any other 
-reason, so do we really need the hassle here?
-
-Tahsnk,
-Robin.
-
-> Preserve the EVTQ memory and leave the EVTQ enabled on shutdown. Only
-> store its preservation token in the ABI, as the incoming kernel reads the
-> base, size, PROD and CONS back from the EVTQ registers. Retain EVTQEN
-> across the reset and wake up the EVTQ thread to handle pending events.
+On Fri, Oct 02, 2026 at 09:11:39PM +0000, Pranjal Shrivastava wrote:
+> On Fri, Oct 02, 2026 at 01:47:48PM -0300, Jason Gunthorpe wrote:
+> > On Thu, Oct 01, 2026 at 11:03:15AM -0700, Nicolin Chen wrote:
+> > 
+> > > > So we can't issue ATC_INVs during suspend (the EP is already down), nor
+> > > > during resume (the SMMU resumes *before* the EP is made active). The EP
+> > > > can't use its ATC while suspended, and if it loses power/resets on the
+> > > > way back to D0 (from D3cold, or D3hot with No_Soft_Reset=0), it comes 
+> > > > back with an empty ATC.. same assumption the PCI reset path makes today
+> > > > (pci_dev_reset_iommu_prepare()).
+> > > 
+> > > In that case, would the STOP flag be too late? It's only set in
+> > > the middle of the SMMU suspend. So, an ATC command (via doamin
+> > > invalidation) might be issued prior to the Point of Commitment,
+> > > which will be timed out due to the unresponding EP?
+> > 
+> > How can you ever fix that?
 > 
-> Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> ---
->   .../arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c  | 108 +++++++++++++++++-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  39 +++++--
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  10 ++
->   include/linux/kho/abi/iommu.h                 |   2 +
->   4 files changed, 143 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c
-> index c0772bcb8d3a..b7cacf48cf8b 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-liveupdate.c
-> @@ -403,11 +403,48 @@ static void arm_smmu_unpreserve_strtab_linear(struct arm_smmu_device *smmu,
->   					    iommu_ser->smmuv3.l1_strtab_lu_state);
->   }
->   
-> +static size_t arm_smmu_evtq_size(struct arm_smmu_device *smmu)
-> +{
-> +	return ((1 << smmu->evtq.q.llq.max_n_shift) * EVTQ_ENT_DWORDS) << 3;
-> +}
-> +
-> +/* The EVTQ stays enabled across the kexec */
-> +static int arm_smmu_preserve_evtq(struct arm_smmu_device *smmu,
-> +				  struct iommu_hw_ser *iommu_ser)
-> +{
-> +	struct arm_smmu_queue *q = &smmu->evtq.q;
-> +
-> +	iommu_ser->smmuv3.evtq_lu_state = 0;
-> +	if (!(smmu->features & ARM_SMMU_FEAT_EVTQ))
-> +		return 0;
-> +
-> +	return dmam_preserve_coherent_allocation(smmu->dev, q->base,
-> +						 arm_smmu_evtq_size(smmu),
-> +						 q->base_dma,
-> +						 &iommu_ser->smmuv3.evtq_lu_state);
-> +}
-> +
-> +static void arm_smmu_unpreserve_evtq(struct arm_smmu_device *smmu,
-> +				     struct iommu_hw_ser *iommu_ser)
-> +{
-> +	struct arm_smmu_queue *q = &smmu->evtq.q;
-> +
-> +	if (!iommu_ser->smmuv3.evtq_lu_state)
-> +		return;
-> +
-> +	dmam_unpreserve_coherent_allocation(smmu->dev, q->base,
-> +					    arm_smmu_evtq_size(smmu),
-> +					    q->base_dma,
-> +					    iommu_ser->smmuv3.evtq_lu_state);
-> +	iommu_ser->smmuv3.evtq_lu_state = 0;
-> +}
-> +
->   int arm_smmu_preserve(struct iommu_device *iommu,
->   		      struct iommu_hw_ser *iommu_ser)
->   {
->   	struct arm_smmu_device *smmu =
->   		container_of(iommu, struct arm_smmu_device, iommu);
-> +	int ret;
->   
->   	/* Basic info */
->   	iommu_ser->smmuv3.phys_addr = smmu->base_phys;
-> @@ -416,11 +453,20 @@ int arm_smmu_preserve(struct iommu_device *iommu,
->   	iommu_ser->smmuv3.strtab_base_cfg =
->   		readl_relaxed(smmu->base + ARM_SMMU_STRTAB_BASE_CFG);
->   
-> +	ret = arm_smmu_preserve_evtq(smmu, iommu_ser);
-> +	if (ret) {
-> +		dev_err(smmu->dev, "EVTQ preservation failed\n");
-> +		return ret;
-> +	}
-> +
->   	/* We always implements 2-level when supported by HW */
->   	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
-> -		return arm_smmu_preserve_strtab_2lvl(smmu, iommu_ser);
-> +		ret = arm_smmu_preserve_strtab_2lvl(smmu, iommu_ser);
->   	else
-> -		return arm_smmu_preserve_strtab_linear(smmu, iommu_ser);
-> +		ret = arm_smmu_preserve_strtab_linear(smmu, iommu_ser);
-> +	if (ret)
-> +		arm_smmu_unpreserve_evtq(smmu, iommu_ser);
-> +	return ret;
->   }
->   
->   void arm_smmu_unpreserve(struct iommu_device *iommu,
-> @@ -433,6 +479,7 @@ void arm_smmu_unpreserve(struct iommu_device *iommu,
->   		arm_smmu_unpreserve_strtab_2lvl(smmu, iommu_ser);
->   	else
->   		arm_smmu_unpreserve_strtab_linear(smmu, iommu_ser);
-> +	arm_smmu_unpreserve_evtq(smmu, iommu_ser);
->   }
->   
->   static void arm_smmu_liveupdate_clear_l1_std(struct arm_smmu_device *smmu,
-> @@ -545,12 +592,12 @@ int arm_smmu_liveupdate_shutdown(struct arm_smmu_device *smmu)
->   	 * TODO: Quiesce the CMDQV VCMDQs assigned to guests.
->   	 */
->   
-> -	/* Disable the queues, leaving SMMUEN set for the preserved masters */
-> +	/* The incoming kernel resets the CMDQ and PRIQ and adopts the EVTQ */
->   	cr0 = readl_relaxed(smmu->base + ARM_SMMU_CR0);
-> -	cr0 &= ~(CR0_CMDQEN | CR0_EVTQEN | CR0_PRIQEN);
-> +	cr0 &= ~(CR0_CMDQEN | CR0_PRIQEN);
->   	ret = arm_smmu_write_reg_sync(smmu, cr0, ARM_SMMU_CR0, ARM_SMMU_CR0ACK);
->   	if (ret)
-> -		dev_err(smmu->dev, "failed to disable queues\n");
-> +		dev_err(smmu->dev, "failed to disable CMDQ/PRIQ\n");
->   	return ret;
->   }
->   
-> @@ -696,6 +743,57 @@ int arm_smmu_liveupdate_restore_strtab(struct arm_smmu_device *smmu)
->   	return 0;
->   }
->   
-> +/* Adopt the live EVTQ. Returns -ENOENT if it wasn't preserved */
-> +int arm_smmu_liveupdate_restore_evtq(struct arm_smmu_device *smmu)
-> +{
-> +	u64 base = readq_relaxed(smmu->base + ARM_SMMU_EVTQ_BASE);
-> +	u32 log2size = FIELD_GET(Q_BASE_LOG2SIZE, base);
-> +	struct arm_smmu_queue *q = &smmu->evtq.q;
-> +	struct iommu_hw_ser *iommu_ser;
-> +
-> +	iommu_ser = iommu_get_preserved_data(smmu->base_phys, IOMMU_ARM_SMMUV3);
-> +	if (!iommu_ser || !iommu_ser->smmuv3.evtq_lu_state)
-> +		return -ENOENT;
-> +
-> +	if (log2size > q->llq.max_n_shift) {
-> +		dev_err(smmu->dev, "preserved EVTQ is larger than supported\n");
-> +		return -EINVAL;
-> +	}
-> +	q->llq.max_n_shift = log2size;
-> +
-> +	q->base = dmam_restore_coherent_allocation(smmu->dev,
-> +			arm_smmu_evtq_size(smmu), &q->base_dma, GFP_KERNEL,
-> +			iommu_ser->smmuv3.evtq_lu_state);
-> +	if (!q->base)
-> +		return -ENOMEM;
-> +
-> +	if (q->base_dma != (base & Q_BASE_ADDR_MASK)) {
-> +		dev_err(smmu->dev, "EVTQ_BASE doesn't match the preserved EVTQ\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	q->prod_reg = smmu->page1 + ARM_SMMU_EVTQ_PROD;
-> +	q->cons_reg = smmu->page1 + ARM_SMMU_EVTQ_CONS;
-> +	q->ent_dwords = EVTQ_ENT_DWORDS;
-> +	q->q_base = base;
-> +
-> +	q->llq.prod = readl_relaxed(q->prod_reg);
-> +	q->llq.cons = readl_relaxed(q->cons_reg);
-> +
-> +	dev_info(smmu->dev, "restored preserved evtq (%u entries)\n",
-> +		 1 << q->llq.max_n_shift);
-> +	return 0;
-> +}
-> +
-> +/* A failed EVTQ restore fails the probe, so a preserved EVTQ implies live */
-> +bool arm_smmu_liveupdate_evtq_is_live(struct arm_smmu_device *smmu)
-> +{
-> +	struct iommu_hw_ser *iommu_ser;
-> +
-> +	iommu_ser = iommu_get_preserved_data(smmu->base_phys, IOMMU_ARM_SMMUV3);
-> +	return iommu_ser && iommu_ser->smmuv3.evtq_lu_state;
-> +}
-> +
->   int arm_smmu_liveupdate_restore_cd_tables(struct arm_smmu_master *master)
->   {
->   	struct arm_smmu_device *smmu = master->smmu;
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index b371ea6b6009..5f9f8bfac668 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -4683,10 +4683,13 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
->   
->   	/* evtq */
->   	if (smmu->features & ARM_SMMU_FEAT_EVTQ) {
-> -		ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, smmu->page1,
-> -					      ARM_SMMU_EVTQ_PROD,
-> -					      ARM_SMMU_EVTQ_CONS,
-> -					      EVTQ_ENT_DWORDS, "evtq");
-> +		ret = arm_smmu_liveupdate_restore_evtq(smmu);
-> +		if (ret == -ENOENT)
-> +			ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q,
-> +						      smmu->page1,
-> +						      ARM_SMMU_EVTQ_PROD,
-> +						      ARM_SMMU_EVTQ_CONS,
-> +						      EVTQ_ENT_DWORDS, "evtq");
->   		if (ret)
->   			return ret;
->   	}
-> @@ -5080,9 +5083,15 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   	 * Same for a Live Update restore.
->   	 */
->   	if (arm_smmu_strtab_is_live(smmu)) {
-> +		u32 qens = CR0_CMDQEN | CR0_EVTQEN | CR0_PRIQEN;
-> +
->   		dev_info(smmu->dev, "%s: retaining SMMUEN for in-flight DMA\n",
->   			 is_kdump_kernel() ? "kdump" : "live update");
-> -		enables = reg & ~(CR0_CMDQEN | CR0_EVTQEN | CR0_PRIQEN);
-> +
-> +		/* An adopted EVTQ keeps running */
-> +		if (arm_smmu_liveupdate_evtq_is_live(smmu))
-> +			qens &= ~CR0_EVTQEN;
-> +		enables = reg & ~qens;
->   		goto reset_queues;
->   	}
->   
-> @@ -5173,12 +5182,15 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   
->   	/* Event queue */
->   	if (smmu->features & ARM_SMMU_FEAT_EVTQ) {
-> -		writeq_relaxed(smmu->evtq.q.q_base,
-> -			       smmu->base + ARM_SMMU_EVTQ_BASE);
-> -		writel_relaxed(smmu->evtq.q.llq.prod,
-> -			       smmu->page1 + ARM_SMMU_EVTQ_PROD);
-> -		writel_relaxed(smmu->evtq.q.llq.cons,
-> -			       smmu->page1 + ARM_SMMU_EVTQ_CONS);
-> +		/* An adopted EVTQ resumes from its live BASE/PROD/CONS */
-> +		if (!arm_smmu_liveupdate_evtq_is_live(smmu)) {
-> +			writeq_relaxed(smmu->evtq.q.q_base,
-> +				       smmu->base + ARM_SMMU_EVTQ_BASE);
-> +			writel_relaxed(smmu->evtq.q.llq.prod,
-> +				       smmu->page1 + ARM_SMMU_EVTQ_PROD);
-> +			writel_relaxed(smmu->evtq.q.llq.cons,
-> +				       smmu->page1 + ARM_SMMU_EVTQ_CONS);
-> +		}
->   
->   		enables |= CR0_EVTQEN;
->   		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> @@ -5228,6 +5240,11 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->   		return ret;
->   	}
->   
-> +	/* Handle the events recorded across the Live Update */
-> +	if (arm_smmu_liveupdate_evtq_is_live(smmu) &&
-> +	    (smmu->combined_irq || smmu->evtq.q.irq))
-> +		irq_wake_thread(smmu->combined_irq ?: smmu->evtq.q.irq, smmu);
-> +
->   	/* Enable the SMMU interface */
->   	enables |= CR0_SMMUEN;
->   	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 1b33f713f3b7..3a67ba685ef5 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -1214,6 +1214,8 @@ void arm_smmu_unpreserve(struct iommu_device *iommu,
->   int arm_smmu_liveupdate_shutdown(struct arm_smmu_device *smmu);
->   int arm_smmu_liveupdate_restore_strtab(struct arm_smmu_device *smmu);
->   int arm_smmu_liveupdate_restore_cd_tables(struct arm_smmu_master *master);
-> +int arm_smmu_liveupdate_restore_evtq(struct arm_smmu_device *smmu);
-> +bool arm_smmu_liveupdate_evtq_is_live(struct arm_smmu_device *smmu);
->   int arm_smmu_liveupdate_attach_restored(struct arm_smmu_master *master,
->   					struct arm_smmu_domain *smmu_domain);
->   #else
-> @@ -1229,6 +1231,14 @@ static inline int arm_smmu_liveupdate_restore_cd_tables(struct arm_smmu_master *
->   {
->   	return 0;
->   }
-> +static inline int arm_smmu_liveupdate_restore_evtq(struct arm_smmu_device *smmu)
-> +{
-> +	return -ENOENT;
-> +}
-> +static inline bool arm_smmu_liveupdate_evtq_is_live(struct arm_smmu_device *smmu)
-> +{
-> +	return false;
-> +}
->   static inline int
->   arm_smmu_liveupdate_attach_restored(struct arm_smmu_master *master,
->   				    struct arm_smmu_domain *smmu_domain)
-> diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
-> index 397fdb0449a6..4e8cc32c3136 100644
-> --- a/include/linux/kho/abi/iommu.h
-> +++ b/include/linux/kho/abi/iommu.h
-> @@ -208,12 +208,14 @@ struct iommu_intel_ser {
->    * @l2_strtab_lu_states_phys: Physical pointer to an array of u64 LU state tokens
->    *                            indexed by L1 index, 0 for L2 tables that aren't
->    *                            preserved (0 if linear)
-> + * @evtq_lu_state: Live update state token for the Event queue (0 if not preserved)
->    */
->   struct iommu_smmuv3_hw_ser {
->   	u64 phys_addr;
->   	u64 strtab_base_cfg;
->   	u64 l1_strtab_lu_state;
->   	u64 l2_strtab_lu_states_phys;
-> +	u64 evtq_lu_state;
->   } __packed;
->   
->   /**
+> The unfortunate reality is that this gap exists in the kernel even
+> today.. upstream SMMUv3 has no RPM, so it's always on, while the EPs can
+> runtime suspend independently. So an ATC_INV can already be issued to
+> an EP that has suspended. I'd argue RPM improves this slightly, since
+> once the STOP flag is set everything is elided, so the window closes at
+> SMMU suspend instead of never.
 
+That doesn't sound very convincing though...
+
+> > How does power management really work, is it expected that the end
+> > device is already quieted by its driver?
+> > 
+> 
+> Yes, power management would topo-sort all dependencies and invoke
+> suspend callbacks accordingly, i.e. in our case the suspend callbacks of
+> all SMMU clients would be called before the SMMU's suspend callback.
+
+If that's guaranteed, we should probably -EBUSY the suspend if one
+STE isn't aborted.
+
+> > Could the first step in power management install a blocked STE? Then
+> > we don't have to worry about ATC desync and that automatically stops
+> > generating new ATC invalidations if we go and detact the domains too
+> > 
+> 
+> Partially.. at SMMU suspend we set GBPA to abort and clear SMMUEN, so
+> nothing gets through while the SMMU is off. But that's global and only
+> happens after all EPs are down, it doesn't stop ATC_INVs in the window
+> Nicolin pointed out.
+> 
+> One way to ensure the ATC state is relying on the PCIe spec to lose ATC
+> content during D0 entry from D3cold, or D3hot with No_Soft_Reset=0). 
+> 
+> Another way to enforce this, is to *somehow* ask the endpoint drivers
+> disable ATS during *their* suspend, i.e. in the EP's driver's suspend
+> they could call pci_disable_ats or a better suited helper from pci core
+> and the in the pm_resume / rpm_resume they could call it's equivalent 
+> pci_enable_ats, counterpart ensuring a clean ATS state. Or maybe the
+
+pci_enable/disable_ats is used by IOMMU drivers only.
+
+> pci_dev_reset_iommu_prepare/done() pair (with slight refactoring) in EP's
+> suspend/resume?
+
+That sounds right to me, though a different API for suspend/resume
+will be required. And call them in pci_pm_runtime_suspend/resume()
+maybe.
+
+Jason, how do you think about this?
+
+> I could mention this explicitly in some comments or dev_warn if any of
+> the masters have ATS state as ON during suspend?
+> 
+> LMK what you guys think of that?
+> 
+> > Maybe I'm wondering if power management should involve the core code
+> > so it detaches all the domains from the device, setups up blocking and
+> > then the iommu itself could power ofF?
+> 
+> I'm slightly against the blocking domain attach because it's a
+> reasonable ask for the client drivers to be able to dma_map / unmap when
+> they're suspended, given that most of the modern IOMMU state is
+> in-memory and the only HW state is some sort of TLB/ATC maintenance. We
+> can map/unmap when the IOMMU is off and just ensure a clean cache state.
+> Drivers often want to pre-map everything, power ON just to run their
+> workload, power off and then unmap. 
+
+If it's about mapping, it shouldn't be a problem: while a device is
+in suspend state, iommu_group->domain would point to the DMA domain.
+This is similar to the resetting flow that only sets gdev->blocked.
+
+Nicolin
