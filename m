@@ -1,49 +1,86 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB10F46985D;
-	Wed,  7 Oct 2026 09:01:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAE0F488236;
+	Wed,  7 Oct 2026 10:04:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791363711; cv=none; b=kB01lq1VweaS+ZAWpMhq+bqQ3SphjrLgL6LohVO+6vq5KIGTmD+gjzvrx1dvvDuMkwZrwfcQZwUSQJvBe4er6ergPY2xYmX3v3Lr+rzgBz07+5CFg7rKlp180pc6TShYLH9QAoE7fNznaXUYi+HDkAis7iFASbICVi6BPzTcbTI=
+	t=1791367474; cv=none; b=Hbz2RFBLoiMFMLZQA4MGhgiy2rVXOmlhxEEiV6zs7UKezrlVVdINts0bkYy5u5lAyZhU+2BXraLvZGespRsQIVykJ9iTmRIeGQaWbuy8HgY1cphyvH71FhYakCUrts4WymPSevO+KjIXXRVIbD458UqLRZqzvAGnBtWtDSgbF68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791363711; c=relaxed/simple;
-	bh=R4A2MlJ1q92uYLDOmySiqipN7jMQBj/38nBB7XYmanY=;
+	s=arc-20240116; t=1791367474; c=relaxed/simple;
+	bh=CbXWi9ehHUC17LrX7h7fiWJISOx4QxW252o3EdbyLB8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tqm9nYms8aFRSVrwZTeAfeJWFYujnHrKiu/5sJewFuL7VVgDbaXO3+rK8d0NxpCtlepm1Y1npdmVbJANboGrewlaJ2O0LZj6IlkWsrDRFziagT3um373h+S8+EE1qC7esHapfY+F1PIYQLOVJIf2xBZSc7F8WhmwcFjfxPwUhcw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lsjKNZK2; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZZADHDtF+f7ecnBIrI3MUMx8K9olhu/qTpzh7W+p6PeKiO1sI+EeVvKb/OfQnXsZFQ5LET/RqIqxuXgkEejWTU4AtOlJ9dy9uPlwdMR6wwGbPqdXpqbeBOt5qc7Ls6VxZcKd55LXh8VUcMihC2CTU+a+7P8Wa6mVCRSrV323jsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=FvDQmLy4; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lsjKNZK2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B1C71F00A06;
-	Wed,  7 Oct 2026 09:01:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791363689;
-	bh=7dJAIrAjhjxcyvz9oV+xoiaVLLnVm/pZD3w+TP4HzxY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=lsjKNZK2WBQ7sax84EecjI8cnKrPGrizIUN1kNyLVFPwJQhmjKmEBb44Qelpnhkx5
-	 dLYREZtdPYRsdhQ0a+qdyB3O39spA9fvgMx3KTop3jf5xaRzsHFCFY8+hZtcBsZwAZ
-	 6wXgW/O4PKRgzxdrBHqH9cqT5SpIp9j2ZQXQ3KHgvem70erGGG3kCDL4EV4vdKjSUz
-	 58IYdv+mnHPhjNm1cnhZ+UbwPiJz5/8fmrC9DdMdwvTDl3sq9thr202AX3K6ae9NUJ
-	 HMVkwk4OumMGjUGVkynHeN7IinIJdp7UStpySCvfbdlPR7WI0eCr76bipfWZyHEELk
-	 HbvqEkYWEITYQ==
-Date: Wed, 7 Oct 2026 10:01:23 +0100
-From: Will Deacon <will@kernel.org>
-To: Shawn Guo <shengchao.guo@oss.qualcomm.com>, joro@8bytes.org
-Cc: catalin.marinas@arm.com, mark.rutland@arm.com, kernel-team@android.com,
-	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Document Adreno SMMU for Nord
- SoC
-Message-ID: <asYKYzDvNBLjnotz@willie-the-truck>
-References: <20260902013858.130887-1-shengchao.guo@oss.qualcomm.com>
- <179095635040.2123203.12001281676860626455.b4-ty@kernel.org>
- <asW7Lay9i_hiuTcP@QCOM-aGQu4IUr3Y>
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="FvDQmLy4"
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 85BE1152B;
+	Wed,  7 Oct 2026 03:04:12 -0700 (PDT)
+Received: from arm.com (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D0133F86F;
+	Wed,  7 Oct 2026 03:04:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1791367455; bh=CbXWi9ehHUC17LrX7h7fiWJISOx4QxW252o3EdbyLB8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FvDQmLy4EGj89GAfvZk4KGPda4lF9dF5oeqcn5GaKKWzv0KKEFA+8t3r7QqyDC8G5
+	 15dMv0AaR5+XBy9C4yatPq0j3+EwXMtpi531/x06RJAiNh8Dw7kgMptDkWV6AFLItD
+	 7tFE/6cK6Ee5diPXgRQlJIGJZozxaEJpY12Bwfsw=
+Date: Wed, 7 Oct 2026 11:04:05 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Will Deacon <will@kernel.org>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Mark Rutland <mark.rutland@arm.com>, Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>,
+	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	x86@kernel.org
+Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
+ sizing
+Message-ID: <asYZFXGyafRjjBS0@arm.com>
+References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
+ <20260924060756.1325156-7-aneesh.kumar@kernel.org>
+ <asVs3doaJ4WrT3M2@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,26 +89,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <asW7Lay9i_hiuTcP@QCOM-aGQu4IUr3Y>
+In-Reply-To: <asVs3doaJ4WrT3M2@willie-the-truck>
 
-On Wed, Oct 07, 2026 at 11:23:25AM +0800, Shawn Guo wrote:
-> On Fri, Oct 02, 2026 at 05:46:40PM +0100, Will Deacon wrote:
-> > On Wed, 02 Sep 2026 09:38:58 +0800, Shawn Guo wrote:
-> > > Add specific compatible string to document the GPU SMMU present on
-> > > Nord SoC, and constrain it to the single HLOS vote clock.
-> > > 
-> > > 
-> > 
-> > Applied to iommu (arm/smmu/bindings), thanks!
-> > 
-> > [1/1] dt-bindings: arm-smmu: Document Adreno SMMU for Nord SoC
-> >       https://git.kernel.org/iommu/c/e9da5ec4a1d6
+On Tue, Oct 06, 2026 at 10:49:17PM +0100, Will Deacon wrote:
+> On Thu, Sep 24, 2026 at 11:37:54AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> > @@ -496,7 +516,8 @@ swiotlb_select_pool_policy(unsigned int flags)
+> >  	if (swiotlb_force_disable)
+> >  		return SWIOTLB_POOL_NONE;
+> >  
+> > -	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+> > +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+> > +	    !restricted_dma_pool_present)
+> >  		return SWIOTLB_POOL_CC_GUEST;
 > 
-> Hi Will,
-> 
-> Could we get this into linux-next please?
+> I think this check on the restricted DMA pool is too general -- the pool
+> could be tied to a specific DMA-capable peripheral and so treating its
+> presence as a global property isn't right.
 
-I'm hoping Joerg can rebuild the 'next' branch soon, but it's LPC this
-week so I know that everybody is busy.
+I agree it's a hack but that was the simplest way to avoid the pVMs
+getting a bounce buffer after this patch. More than happy to leave it
+out and reduce the buffer on cmdline or we come up with some better
+heuristics.
 
-Will
+Another option could be the arch code passing another flag that it
+doesn't want an encrypted pool (e.g. when running in a pKVM guest) but I
+don't particularly this either. The arch code doesn't know whether
+there's an alternative pool.
+
+That said, such heuristics should have been a separate patch to make it
+easier to review/drop.
+
+-- 
+Catalin
