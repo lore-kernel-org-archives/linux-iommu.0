@@ -1,101 +1,58 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1833130BB80
-	for <iommu@lists.linux.dev>; Wed,  7 Oct 2026 03:23:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC5F23D3CF2;
+	Wed,  7 Oct 2026 06:32:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791343417; cv=none; b=dILJK9novGLQh+3DK7uKLV9RKfMPg/p7lR0S+Z+M2EL8BS4yXDEeY9d07PXWXFIpGRR1LyfWGXggq3xqqA2VvQ8ckz4iBmhuA/1/fE6h8aIhSESfr0ZvqztwZTxS1B5TfGDk082hqFcbnbrq5Ka898+svnLi1AzXZHs/d0zBDVU=
+	t=1791354752; cv=none; b=Bhxgfio3wtsUABhaabVdkjfqlqh2TJCMYjEoURkfU2LDMbCwGd2gdFQXfOP4fysuVKgTIWLdetIwx6loZPSihg7xIVr9T6s47f0biC8DrsPMbXhAzTr6j4olexQje8yTFCM6Zwxzl7fkzlvYiRx5xeun1ocLdzp1fM4VJ5s+h64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791343417; c=relaxed/simple;
-	bh=Ausy8/4gz8lUdqnofFDo6hUNOeuY6YmQ2FWO2tl7+ns=;
+	s=arc-20240116; t=1791354752; c=relaxed/simple;
+	bh=vK02Arew/xoK/SEhK+ZOF9gf1+RD+J2G1rphi2B2vFo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mR/EhQ8An4LGX403sF/OQQvTVh59XCzBmc0g5mR9cwOGxaZo2ywrMgTSZIwsyPL6asAzsu8eZCKteNAxH94eK7lr7wdli4We8db1NvD4gz9fNlPe7kfKPlSNYkMwKRGH44TjfQfFsBGphdeCy+zaX0j1jLhhaTiFXwvAkNI46nw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=AOKk/AKT; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=eXg3CKOt; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=H//l0cbaJOnya+D/AA/9sqkMV3H4QqTozb4pJsDBlWt7Kvl6bYkh+qziWrHbnJdJ3T/m4L+OQlpl0RyyFUR4OaflypBdD6qrxpI6FAHlvFGAuz4QnI48DNhCpKpjgIiWWQbh5EE9zihuaVs9WF+3612EhCH5rSHi/spqrKbwzgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JsS3Dv1k; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="AOKk/AKT";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="eXg3CKOt"
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6971HYmB2974559
-	for <iommu@lists.linux.dev>; Wed, 7 Oct 2026 03:23:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=KA48W7VRQ3uJFaVC9VZEckxe
-	CX/Ro12c18oCYgFj9fI=; b=AOKk/AKTQqwVwdqwJ4RHXf+UEx/9Grw0PuLX/Bh/
-	fl7qmVTYUXmKbu/7NT7+v/CcdcMsB1xLUIf3kOnGjtU69HCbuajma6LhoYQstI7b
-	+/StMXc+dK5ASKTn5EvU0nXazkyeC3FzioFavxTKdJ21ZkvOQ5ijNyEzWjLcLol9
-	HzYY1UlnJP+B2uwJp6/oSPjKpqBQ9Q9uEjZDssBxyOxW/NbqGrT3pLSdtIrhcNjv
-	4iprMdmBfYjVS7wyH9Bn573mYa8s4vDzrlvk1CbQpUtj1UeNEU9bTw2iH0lwRWZ6
-	ojdvncwWq3r3pOx1FR7EIz+qe7rXf/SPy/yro6ssnwx9pQ==
-Received: from mail-dy1-f198.google.com (mail-dy1-f198.google.com [74.125.82.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h4xwwuqjg-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 07 Oct 2026 03:23:34 +0000 (GMT)
-Received: by mail-dy1-f198.google.com with SMTP id 5a478bee46e88-30bcb065bfdso7148756eec.0
-        for <iommu@lists.linux.dev>; Tue, 06 Oct 2026 20:23:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1791343414; x=1791948214; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=KA48W7VRQ3uJFaVC9VZEckxeCX/Ro12c18oCYgFj9fI=;
-        b=eXg3CKOtE+lxigeXupFUMN8rTIXS5gQ1ZKIILa9q5C4u4bKL0ThV4pbA/lCsAH5gYa
-         pWt+tEMZBSS5GtmrMN/UwXDYihyXJ99GcQofqKgA3gqqc7WdQkJmG5ifUHrT96Yrlucf
-         K+C5SCexzSt5WVPBQUw4aSx3P3Rz3boh7wJrsqo0eMmu+Zf0iwHD2uY46HkRMfIbnv31
-         1hoVW5zr4D+2FcwMC2HJ1t0rUtwUV2GV6lr7DJtR3eJkN6AYy+XmCADCSnx+dxQJknBN
-         sqn48yi97rFwJctoSHXaRUiooQYLyVa6t5+WKaR8c7bEfa4I29qAYrmEJO8M9rfLkygT
-         wqWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791343414; x=1791948214;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=KA48W7VRQ3uJFaVC9VZEckxeCX/Ro12c18oCYgFj9fI=;
-        b=zKSzULdO1A+0Nbwd8nE87De30QD+JjFOVp6ucHCDTFJwEdIQzKUfhnmK+sjjCTkyV+
-         GW6ik1Tg8RGdqUVwlcDH8UqqZUVrvUevvq+pY6qYi+e+Cjtj6Nqfx5sCNoiuGbIxSzmW
-         B7YJ6pOsRjsQtzQ3w0e05WmbpZjfj1FQebdqJDcCLvniP8dUeQzIi7Aku68cTpolUj7P
-         ufdjQpzR4iS7UdMP+HkV0k/If2vBetCDF567kGK9KgKXj10YmOVJPRDoWvWAJtcHXuLn
-         h9To6lLSFeCPRhUJnYKru+anIJfjJu+ehfvc4eg1KK8PVEJrQ8yglqtNMki1A6ufRW3i
-         4BIQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzhyOBwMxQmMLnPent5r6k7vJbV08LgU9pboLjxSLcDQXsw6ZCSiocJ3l5+SxRABbV433NYiQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++kr04wLj8PQPYN5qIMNKU1CniYPThu4MsgtBNbed3wBRn6ycOMA
-	DPrWOlLAGNkTqkJgPiIg4EcAg71LtuwOMhAZt63KzI7xdRk6+UY0wiu/yhRMLTKN5A/hVLeySBn
-	xO6g/dyO2HR219hHVb9eD1BzvbE60KYkZmKTQwEcsgL4e5Gi8G3A9HOUodg==
-X-Gm-Gg: AYBFou2TaAas5D+f6OTiu2nVvcZTjx86fNPtZ2HgXJDQ0XZDU1GWZQRWICSXNTnmrdQ
-	vjJdcOaKSt7VcSpMqKL6KP/Gxf5sYck1OcpnzQQiUYcCazpId/83iAw9uajQkgoTEhy8jIVpKKm
-	HaR5wmKPn4TESqfAOU/Jd3IywqsXIn/myOvPFqKU7zJ97nrdWWk5DetTx1xpL2LCD8DW6AT8DUa
-	tA5rewZJJkHkqkqaFnUodI47QUNdhHmJmrFBuKQWVCC8YvBC6vbsgDs9uH58Hsp/7479+ePJcIV
-	dzL7Ox24cnPcJMEFTH2tbkzNHJmirJOmAzVfrKjl+FR9+gdECriGn9AcfA1tPj/OVJcyHULf4s1
-	EShDMZvEZZ/FOBnguxg8rH5W7o54OhJQRMsCmAz253g==
-X-Received: by 2002:a05:7300:c00e:10b0:34e:caae:20f5 with SMTP id 5a478bee46e88-3515de2686cmr822500eec.30.1791343413975;
-        Tue, 06 Oct 2026 20:23:33 -0700 (PDT)
-X-Received: by 2002:a05:7300:c00e:10b0:34e:caae:20f5 with SMTP id 5a478bee46e88-3515de2686cmr822477eec.30.1791343413469;
-        Tue, 06 Oct 2026 20:23:33 -0700 (PDT)
-Received: from QCOM-aGQu4IUr3Y (i-global052.qualcomm.com. [199.106.103.52])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3515b03da93sm2702320eec.29.2026.10.06.20.23.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2026 20:23:32 -0700 (PDT)
-Date: Wed, 7 Oct 2026 11:23:25 +0800
-From: Shawn Guo <shengchao.guo@oss.qualcomm.com>
-To: Will Deacon <will@kernel.org>
-Cc: catalin.marinas@arm.com, mark.rutland@arm.com, kernel-team@android.com,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bartosz Golaszewski <brgl@kernel.org>,
-        Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] dt-bindings: arm-smmu: Document Adreno SMMU for Nord
- SoC
-Message-ID: <asW7Lay9i_hiuTcP@QCOM-aGQu4IUr3Y>
-References: <20260902013858.130887-1-shengchao.guo@oss.qualcomm.com>
- <179095635040.2123203.12001281676860626455.b4-ty@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JsS3Dv1k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0E41F0089C;
+	Wed,  7 Oct 2026 06:32:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791354750;
+	bh=l2L4StRud6VKnWJLizrYPJpAWtLjtw/B6kHwcJg+Mm0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=JsS3Dv1kRWzQotpwuewh//UeSyfmkPJJkE+mwKLwFO4G5FdMIONZZ7Ahkd5MZ60hI
+	 7m6CXy/QS4j/6BaYrlxzDg0PgvvF8tG0WR1rr03foPSIElWbzRJqEbeJNZnG1hX9mv
+	 LTrHS+Lc+AS1wOrNiXTu821Dl11fHMWlY4CVf1JbvYlY05OFcFmSX1JSEFeYbGY/Je
+	 /bWNpYvx0lRvsWmmez92yyYm8uZB5FDe0H615VR7sk182sVK0KMvzlwfS0lIGjWgV2
+	 gx99D6OTKYXV3lBZlVs0bmUuC6Aj2UnZN/xUifsdb/0/db3t6IUDZi3uI9KxR/nhWd
+	 V3q25hUqVfVzA==
+Date: Wed, 7 Oct 2026 09:32:27 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v9 02/18] PCI/P2PDMA: Derive routing from directional ACS
+ controls
+Message-ID: <20261007063227.GC7822@unreal>
+References: <20261001-fix-p2p-acs-v4-0-v9-2-1a8e0f50ddd9@nvidia.com>
+ <20261006204947.GA708098@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -104,50 +61,201 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <179095635040.2123203.12001281676860626455.b4-ty@kernel.org>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA3MDAxMiBTYWx0ZWRfX3g40fG3oxTgr
- lqx1Sk/GfC2Vi7zmSV9HzaZ0cKEmzAkGQAvCkcEALRfT/PZZOBezByLHNuXrju7pkfNAo3jvPtV
- VaZP6HoXHr50/J52YCXiPTGW5pnqZw9sMYV0h+RzUDgoTP+IYiTNj1xzzzEAInI0ZrDpgpTqigi
- x7cqQd6ovh2vYlORm0tUO1M793w2eFE1hbRSul4sxnNu+wA8eghKwT2AJVtisGv/zB00Pym7uQm
- myWfaFDeDCShYq0kHwOPiDdRUJEUcbv81JI1BdA7urXK6po5U6rKmdQmWWUyRsfr3QFaKyHuzjT
- /sU/anlplG78Nq7UA57mDj0ohrkXuxsUW0nStGjZwLmYH5hMo/OjxmWv9fTJXpSRvq75wq3gV4F
- 41c493dZgEI2Z3lIWa5xaCk9cwvIqpiBjlb6Hm5eG3Pvi1EaDUe+ndFhCANuDm0T8B3F7j1s0XF
- 6REMJx4pg3mUQRy+mkQ==
-X-Proofpoint-ORIG-GUID: CGvRnp59fUCekf_o6Hh_eZCC8klin4gJ
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA3MDAxMiBTYWx0ZWRfX0B95yY0sB//y
- 9FD7fs+keR9pwjS7SQUk0FB1f20J7AG26zEL001Cspmf9mPo97sllovMMv0Wx2FIlD9S8v+iyRK
- NLbdFuhEbWfDbl/9Q/+BoyRblAqkKYU=
-X-Proofpoint-GUID: CGvRnp59fUCekf_o6Hh_eZCC8klin4gJ
-X-Authority-Analysis: v=2.4 cv=SJXXx+vH c=1 sm=1 tr=0 ts=6ac5bb37 cx=c_pps
- a=wEP8DlPgTf/vqF+yE6f9lg==:117 a=b9+bayejhc3NMeqCNyeLQQ==:17
- a=kj9zAlcOel0A:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=VwQbUJbxAAAA:8 a=362RFuTrwy6jnSdmp1cA:9 a=CjuIK1q_8ugA:10
- a=bBxd6f-gb0O0v-kibOvt:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-10-07_01,2026-10-06_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- malwarescore=0 spamscore=0 phishscore=0 adultscore=0 clxscore=1015
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2609040000
- definitions=main-2610070012
+In-Reply-To: <20261006204947.GA708098@bhelgaas>
 
-On Fri, Oct 02, 2026 at 05:46:40PM +0100, Will Deacon wrote:
-> On Wed, 02 Sep 2026 09:38:58 +0800, Shawn Guo wrote:
-> > Add specific compatible string to document the GPU SMMU present on
-> > Nord SoC, and constrain it to the single HLOS vote clock.
+On Tue, Oct 06, 2026 at 03:49:47PM -0500, Bjorn Helgaas wrote:
+> On Thu, Oct 01, 2026 at 02:55:10PM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
 > > 
+> > pci_bridge_has_acs_redir() treats Request and Completion Redirect as
+> > interchangeable. On asymmetric fabrics, a control for only the reverse TLP
+> > direction can unnecessarily force P2PDMA through the host bridge.
+> 
+> Does "the reverse TLP direction" refer to Completions?
+
+In general, the P2P code treats TLPs flowing from device A to device B the
+same as TLPs flowing from device B to device A.
+
+However, in the context of this commit message, yes: completions flow in the
+opposite direction from the device's perspective.
+
+> 
+> > Evaluate Request Redirect for client Requests and Completion Redirect for
+> > provider read Completions. Continue treating enabled Egress Control
+> > conservatively as a Request redirect.
+> 
+> Completion Redirect is intended to avoid ordering rule violations
+> between Completions and Requests when Requests are redirected (PCIe
+> r7.0, sec 6.12.1.1).  I assume this patch preserves the ordering rule,
+> but does the commit log need to say something about that?  I don't
+> know enough about P2P DMA for it to be obvious to me.
+
+I don't think so, i didn't change anything related to ordering.
+
+> 
+> Not really a question for this series, but p2pdma.c and p2pdma.rst
+> refer to "clients" and "providers", neither of which are mentioned in
+> the PCIe spec.  In this case it sounds like a client is a Requester
+> and a provider is a Completer in spec terms.  Is that always the case?
+> If so, "client" and "provider" in this paragraph are not adding any
+> information.
+> 
+> If "client" is not the same concept as "Requester" and "provider" not
+> the same as "Completer", maybe p2pdma.rst could explain the
+> difference?
+
+Client vs. provider are actual target vs. initiator. They express the
+device role in the flow.
+
+Thanks
+
+> 
+> > Fixes: 52916982af48 ("PCI/P2PDMA: Support peer-to-peer memory")
+> > Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+> > Tested-by: Tushar Dave <tdave@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  drivers/pci/p2pdma.c | 75 ++++++++++++++++++++++++++++++++++++++++------------
+> >  1 file changed, 58 insertions(+), 17 deletions(-)
 > > 
-> 
-> Applied to iommu (arm/smmu/bindings), thanks!
-> 
-> [1/1] dt-bindings: arm-smmu: Document Adreno SMMU for Nord SoC
->       https://git.kernel.org/iommu/c/e9da5ec4a1d6
-
-Hi Will,
-
-Could we get this into linux-next please?
-
-Shawn
+> > diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+> > index 4e4d2df17a45..12612b82d80d 100644
+> > --- a/drivers/pci/p2pdma.c
+> > +++ b/drivers/pci/p2pdma.c
+> > @@ -21,6 +21,8 @@
+> >  #include <linux/seq_buf.h>
+> >  #include <linux/xarray.h>
+> >  
+> > +#include "pci.h"
+> > +
+> >  struct pci_p2pdma {
+> >  	struct gen_pool *pool;
+> >  	bool p2pmem_published;
+> > @@ -490,26 +492,56 @@ static struct pci_dev *find_parent_pci_dev(struct device *dev)
+> >  	return NULL;
+> >  }
+> >  
+> > +enum pci_acs_p2pdma_state {
+> > +	PCI_ACS_P2PDMA_DIRECT,
+> > +	PCI_ACS_P2PDMA_REDIRECT,
+> > +};
+> > +
+> >  /*
+> > - * Check if a PCI bridge has its ACS redirection bits set to redirect P2P
+> > - * TLPs upstream via ACS. Returns 1 if the packets will be redirected
+> > - * upstream, 0 otherwise.
+> > + * Decide how a peer-to-peer Request at an ACS-capable ingress port routes,
+> > + * from that port's ACS Control register.
+> > + *
+> > + * Linux does not read the Egress Control Vector, so Egress Control is treated
+> > + * conservatively as a redirect. Per PCIe r7.0 Table 6-11 the outcomes it
+> > + * selects are a direct route and an ACS Violation, and neither one lets peer
+> > + * bus addressing be assumed.
+> >   */
+> > -static int pci_bridge_has_acs_redir(struct pci_dev *pdev)
+> > +static enum pci_acs_p2pdma_state
+> > +pci_acs_p2pdma_request(u16 ctrl)
+> >  {
+> > -	int pos;
+> > -	u16 ctrl;
+> > +	return ctrl & (PCI_ACS_RR | PCI_ACS_EC) ?
+> > +		PCI_ACS_P2PDMA_REDIRECT : PCI_ACS_P2PDMA_DIRECT;
+> > +}
+> >  
+> > -	pos = pdev->acs_cap;
+> > -	if (!pos)
+> > -		return 0;
+> > +/*
+> > + * Decide how a peer-to-peer Completion at an ACS-capable ingress port routes.
+> > + * PCIe r7.0 sec 6.12.1.1: no ACS control other than P2P Completion Redirect
+> > + * affects a Completion.
+> > + */
+> > +static enum pci_acs_p2pdma_state
+> > +pci_acs_p2pdma_completion(u16 ctrl)
+> > +{
+> > +	return ctrl & PCI_ACS_CR ? PCI_ACS_P2PDMA_REDIRECT :
+> > +				   PCI_ACS_P2PDMA_DIRECT;
+> > +}
+> >  
+> > -	pci_read_config_word(pdev, pos + PCI_ACS_CTRL, &ctrl);
+> > +/*
+> > + * Read @pdev's ACS Control register. A device without an ACS capability has
+> > + * no peer-to-peer controls at all, which routes the same as having them all
+> > + * clear. Returns false when the register is present but cannot be read; @ctrl
+> > + * is then meaningless.
+> > + */
+> > +static bool pci_acs_p2pdma_ctrl(struct pci_dev *pdev, u16 *ctrl)
+> > +{
+> > +	int pos;
+> >  
+> > -	if (ctrl & (PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_EC))
+> > -		return 1;
+> > +	pos = pdev->acs_cap;
+> > +	if (!pos) {
+> > +		*ctrl = 0;
+> > +		return true;
+> > +	}
+> >  
+> > -	return 0;
+> > +	return !pci_read_config_word(pdev, pos + PCI_ACS_CTRL, ctrl);
+> >  }
+> >  
+> >  static void seq_buf_print_bus_devfn(struct seq_buf *buf, struct pci_dev *pdev)
+> > @@ -698,6 +730,10 @@ static unsigned long map_types_idx(struct pci_dev *client)
+> >   * then to Device B. The mapping type returned depends on the ACS
+> >   * redirection setting of the ports along the path.
+> >   *
+> > + * The client initiates Requests to provider memory. Check Request Redirect
+> > + * on the client path and Completion Redirect for read Completions on the
+> > + * provider path.
+> > + *
+> >   * If ACS redirect is set on any port in the path, traffic between the
+> >   * devices will go through the host bridge, so return
+> >   * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE; otherwise return
+> > @@ -721,6 +757,7 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+> >  	int dist_a = 0;
+> >  	int dist_b = 0;
+> >  	char buf[128];
+> > +	u16 ctrl;
+> >  
+> >  	seq_buf_init(&acs_list, buf, sizeof(buf));
+> >  
+> > @@ -732,7 +769,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+> >  	while (a) {
+> >  		dist_b = 0;
+> >  
+> > -		if (pci_bridge_has_acs_redir(a)) {
+> > +		if (!pci_acs_p2pdma_ctrl(a, &ctrl) ||
+> > +		    pci_acs_p2pdma_completion(ctrl) ==
+> > +			    PCI_ACS_P2PDMA_REDIRECT) {
+> >  			seq_buf_print_bus_devfn(&acs_list, a);
+> >  			acs_cnt++;
+> >  		}
+> > @@ -761,7 +800,9 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
+> >  		if (a == bb)
+> >  			break;
+> >  
+> > -		if (pci_bridge_has_acs_redir(bb)) {
+> > +		if (!pci_acs_p2pdma_ctrl(bb, &ctrl) ||
+> > +		    pci_acs_p2pdma_request(ctrl) ==
+> > +			    PCI_ACS_P2PDMA_REDIRECT) {
+> >  			seq_buf_print_bus_devfn(&acs_list, bb);
+> >  			acs_cnt++;
+> >  		}
+> > @@ -1109,10 +1150,10 @@ EXPORT_SYMBOL_GPL(pci_p2pmem_publish);
+> >  /**
+> >   * pci_p2pdma_map_type - Determine the mapping type for P2PDMA transfers
+> >   * @provider: P2PDMA provider structure
+> > - * @dev: Target device for the transfer
+> > + * @dev: Client device that initiates the transfer
+> >   *
+> >   * Determines how peer-to-peer DMA transfers should be mapped between
+> > - * the provider and the target device. The mapping type indicates whether
+> > + * the provider and the client device. The mapping type indicates whether
+> >   * the transfer can be done directly through PCI switches or must go
+> >   * through the host bridge.
+> >   */
+> > 
+> > -- 
+> > 2.55.0
+> > 
