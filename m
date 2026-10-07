@@ -1,222 +1,313 @@
-Received: from delivery.antispam.mailspamprotection.com (delivery.antispam.mailspamprotection.com [185.56.87.0])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010050.outbound.protection.outlook.com [40.93.198.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C34A396597;
-	Wed,  7 Oct 2026 17:05:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=185.56.87.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 705954DE727
+	for <iommu@lists.linux.dev>; Wed,  7 Oct 2026 19:45:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791392756; cv=pass; b=cnIliZAmIDNbmOSwz8yAQfVcN2ce9Md/LoT+T5PTxl4DtSj6pn5Em38K/aKY7VCmUZg3ldrWzCK0ciMmYkcs5jioPcnKlZRZkQN2SAyZawazGASIbK5rEVDrBSX6wFxuuyVjqZYosHtQ+xUmjqv5NDAV7zF1jUxP1YfmbzXgUMI=
+	t=1791402306; cv=fail; b=XJHWNX7yaKWZ+YJ4jnJRaFGRAElE2knkiLFI5pu85z8XQKtiLY7VXL63/UJ749uHHGGuv8VgCvIf32KAfYLHLHIBw6oucXu7UpMtSYsOx5YfnsPY6OvSo63WIeA2Wlb1DnzhducOvjckmioebQNGtCBxVMT9blqn+KWzqe5noKI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791392756; c=relaxed/simple;
-	bh=zWZ8FsXv6P2pM5aRRcbjwFhBPvqExbHMMrdKWPrYp+w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mQIpKbxCRiD6Y/YbvzwBI/9Thb5hlFHiZvy0pPNYWzv01UvmGXagSW+lRq3AbwVKRt3wwyvunnWPJH7mqX63ZrYN0/6TZarqq2fwkwYmOxO3QSbs5dBrJKIRXo8qViqRvVUIwYvjIGhjQGdpd1U1o1HZROsoHgRK5Er92sLt1s8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it; spf=pass smtp.mailfrom=valla.it; dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b=1QXFMbgo; dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b=rGQH2Jt/; arc=pass smtp.client-ip=185.56.87.0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=valla.it
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=valla.it
+	s=arc-20240116; t=1791402306; c=relaxed/simple;
+	bh=bEiCMPfXrmZ+UJ2TjpgHrg06T1IqeD4i4XVhiCcZReg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FG1Cf5WU85NELqX+Zm1w5oU9VvN9qvUvmdPrMKxlphWUlITjP2YL7yAyK4RrcngBPw4UBj0DZhLp041TWfOTZ7GZLbalMWBg53xqNUQaJYxPLt/Ovg46sXLSPsgSrQLIfH/kUUSGVlFuqEF2SIo1hs6Mioj/i/uCeVVNXqih8/M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=B+qFssXA; arc=fail smtp.client-ip=40.93.198.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=antispam.mailspamprotection.com header.i=@antispam.mailspamprotection.com header.b="1QXFMbgo";
-	dkim=pass (1024-bit key) header.d=valla.it header.i=@valla.it header.b="rGQH2Jt/"
-ARC-Seal: i=1; cv=none; a=rsa-sha256; d=outgoing.instance-europe-west4-1b4f.prod.antispam.mailspamprotection.com; s=arckey; t=1791392754;
-	 b=kqpz4SBOsmVe4sWITwxWJ/Bm4N5xyykQ6uTBbnyawCsBqOvp5vaI4UjJeOfl4jM/mV5Wtlh/KR
-	  kPEX+wAy8oKcnjXrUy0tzq5N9P5r5mJ1EQaiJ8JRsX76MVbBaIFDTRomwItntvgrs1EZKFJD95
-	  GA7iwAdfcg1wanMALHfNn5Sqs5C1d206NCqvzH6kWdMFt0tEp3nMcX7QwEszuEnFF48tWMiCz+
-	  d5WIoPARuINFoM5VLY8F+1DBOhaceJDSJtb3zzDUWVL2I2Pu/mKpkRV8k634XCH/TEnLhgO7Rk
-	  qjK//ujbtOmba+SpdJXd9it7DvREyr/QN6nJx5CA6KPxug==;
-ARC-Authentication-Results: i=1; outgoing.instance-europe-west4-1b4f.prod.antispam.mailspamprotection.com; smtp.remote-ip=35.214.173.214;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed; d=outgoing.instance-europe-west4-1b4f.prod.antispam.mailspamprotection.com; s=arckey; t=1791392754;
-	bh=zWZ8FsXv6P2pM5aRRcbjwFhBPvqExbHMMrdKWPrYp+w=;
-	h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:
-	  From:Date:DKIM-Signature:DKIM-Signature;
-	b=Sam6xDxwhd2n0pTapfXilBkRNDjBKAbLyymdD0HQBEH9F3HbERhwJrEuSuAILZYz/6bo9sSYa3
-	  HxLIrm1b6i2NAut0MVVHbeOd1i333Yo7fMUpq72MmLHtUMwoL/CFwlKYhANwnTg7gilv8Rwq/0
-	  vPiX91BibIskfK/HqmQd8lDb4jZaThGA4I1uaLRvXZuKeeqOrpbIUDacgl3ts3RYOTBjP9Mpv1
-	  4SchT/0Q4DjUjC9NdOQ+v9sCe0SoxONcun+OjcJ3gjkDAT3DGqt4ZTqrXHV/ChobQzpr2QHRjt
-	  3FdDuVUf9GlGekuwRZQrpb21MMY+Mg7tMnVeXeUULhOs6g==;
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=antispam.mailspamprotection.com; s=default; h=CFBL-Feedback-ID:CFBL-Address
-	:Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-	List-Unsubscribe:Content-Transfer-Encoding;
-	bh=tLwUzAmQhGSL3Ue4ZR+yc6YJqjUkv8c/LUizgFvUpEU=; b=1QXFMbgo+pkNfF3Q0MJJ0TFjBd
-	WS2IzCaXEJA5OCmWHRXVJGFQQmXW1UsoXxZ4ltQIAF15k3ow+dDC1WT0XVaobysSuPBs8E6zBUxrT
-	picNUzj5RK0q8aYYxQIPpWN7sXTwWAj/ZrZqfGO9fojUpUrlGh8Es0CCX6eVCzQGbkmA=;
-Received: from 214.173.214.35.bc.googleusercontent.com ([35.214.173.214] helo=esm19.siteground.biz)
-	by instance-europe-west4-1b4f.prod.antispam.mailspamprotection.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <francesco@valla.it>)
-	id 1xEUbD-00000008OUD-37ot;
-	Wed, 07 Oct 2026 16:34:36 +0000
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=valla.it;
-	s=default; h=Subject:Cc:To:From:Date:list-help:list-unsubscribe:
-	list-subscribe:list-post:list-owner:list-archive;
-	bh=tLwUzAmQhGSL3Ue4ZR+yc6YJqjUkv8c/LUizgFvUpEU=; b=rGQH2Jt/bpeF930y+rHYkN2zf8
-	97TtVSvsaaG5aGcB4PZfyMk7r2RX3uiBz38jxRRTSPle16p8V/ICrwQiDPiognt0S2z0kAnDjDYyP
-	KOckZczNOgULzyrqXvYBnhG1X2IVXykdOIdCVq4OfsXhbomC4NP/QV3KzGUgCqn84S2E=;
-Received: from [79.14.200.104] (port=64271 helo=bywater)
-	by esm19.siteground.biz with essmtpa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <francesco@valla.it>)
-	id 1xEUau-00000000MYn-3hbM;
-	Wed, 07 Oct 2026 16:34:17 +0000
-Date: Wed, 7 Oct 2026 18:34:14 +0200
-From: Francesco Valla <francesco@valla.it>
-To: Rob Herring <robh@kernel.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Kees Cook <kees@kernel.org>, 
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Mark Brown <broonie@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Frank Li <Frank.Li@nxp.com>, 
-	Peng Fan <peng.fan@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>, 
-	linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
-	virtualization@lists.linux.dev, imx@lists.linux.dev, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH RFC 08/12] dt-bindings: remoteproc: add remoteproc-virtio
-Message-ID: <asZ0KdG7lloNwDfx@bywater>
-References: <20260916-remoteproc_virtio_map-v1-0-dac8c5eb4aa9@valla.it>
- <20260916-remoteproc_virtio_map-v1-8-dac8c5eb4aa9@valla.it>
- <arKhbxi3Snbt1_Mn@p14s>
- <arLZj2DxBazf3wMd@bywater>
- <20261006183910.GA2890477-robh@kernel.org>
- <CANLsYkwhrqk0nQNFuP_5aMYQCLGsLrzm-z9YP+Fvv-C1Ug8trg@mail.gmail.com>
- <20261007134206.GB2792240-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="B+qFssXA"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=onjJVMNA+YF1JwyxTe7kO1390v47iicUoRKOf8aM8+iVxSSBeY8JJw4OwhHiDgZklkmcjZPkoyoYZ3soMPXjqwAoHTjOaXDCtTtXJS+zC5DYkIb3/fEYCYPzq1dvwZqpoFnRnLQBt7a6UqDIpoFdRZZQD1tDHQaPBCVSM9HPmirmJd3U8g+yMu6vfUEgototbLAIb5CKpSNTCHUFoxkHuCb1HqVxPbii+thpc9evi5J2DXB6uH/gJLnMf5X7Uo5J4PGxb4EcpC3XvermJ0wiC+ayGOlaqUx9xfzjI/4QkQbDrINaIsOjAIFsVQMXw/DhtEdUhO87ALWdkNCxaLq9WA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=J0t0/2x45Uwu3oL0pEL0/crmRnJUcXSjt8g0SKNyXmw=;
+ b=Ima8HY1+MfO3TtjvTs3jX1f+KuKmmG13VWbQSbPIifAlItVyiemt39aeOWM2zwod0XElEG6M7KfkParq4aaImYlDQOwJRKAu0+qFvUmWDZH+FFoTcsavwkM/bMqld5BCAldepGzWFZtfXgfP8PCwhWD6mfjFo+sWypn8MuJ2eznc2XWCApwxZu6tCTMEa08aBhrdEj60paBQSozF9Lw+cDqXl1OO4qAIUmNEk6DgJ/C2nEXQY+86ycBE1Hr7jgHE++kWyqzrVGo55Dr5l1aAKJeI7LVQ4JGgJBie5EWzZ0dhE7hyfOnLyhXN/yGpWuA88P5I8xApsiHh6f/AdRfLUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J0t0/2x45Uwu3oL0pEL0/crmRnJUcXSjt8g0SKNyXmw=;
+ b=B+qFssXAWQIoPjuiAdxddA8j/uZtX0Vy/3xXoClo5LlphLjCAJiyApNoAhjgqbxIWqTVBJqzOBYVXkc3zjR8xgT1o8UPVUZZfwH47FelXcUII3OFvM7xa48IQq+UqvLZAsGAWUglxfNGzWoYQ3GG+Bml9SCLsoQjW0+A4XC8yB/fX32rfO3sGQnjnlEZ9wmIuEgLym39QiRZQ9YaH0Oqmv7PEA4N6KUf2YQ0OjtTmvRee5UmKDDUKR89TGDzRs+X4+qKVeDZQgWq4l9+FgHK9Im4TA3+3dODbNoJcvlcJeJpV4GOpeyFGEoBGHe1x9cJt02e/8xyYnzuDOu3hyGaLQ==
+Received: from MN0P222CA0024.NAMP222.PROD.OUTLOOK.COM (2603:10b6:208:531::26)
+ by CY8PR12MB7313.namprd12.prod.outlook.com (2603:10b6:930:53::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.15; Wed, 7 Oct
+ 2026 19:44:57 +0000
+Received: from BL2PEPF000352CD.namprd02.prod.outlook.com
+ (2603:10b6:208:531:cafe::4d) by MN0P222CA0024.outlook.office365.com
+ (2603:10b6:208:531::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.21 via Frontend Transport; Wed, 7
+ Oct 2026 19:44:57 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.118.233) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BL2PEPF000352CD.mail.protection.outlook.com (10.167.249.135) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.496.14 via Frontend Transport; Wed, 7 Oct 2026 19:44:56 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Wed, 7 Oct
+ 2026 12:44:35 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.49; Wed, 7 Oct 2026 12:44:34 -0700
+Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
+ Transport; Wed, 7 Oct 2026 12:44:33 -0700
+Date: Wed, 7 Oct 2026 12:44:31 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Samiullah Khawaja <skhawaja@google.com>
+CC: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy
+	<robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Alex Williamson
+	<alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>, Pratyush Yadav
+	<pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, "David
+ Matlack" <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>,
+	Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
+Subject: Re: [PATCH v5 11/18] iommu: Restore and reattach preserved domains
+ to devices
+Message-ID: <asahH/NfWZGdvIsE@nvidia.com>
+References: <20260921004834.2601285-1-skhawaja@google.com>
+ <20260921004834.2601285-12-skhawaja@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20261007134206.GB2792240-robh@kernel.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - esm19.siteground.biz
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - valla.it
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-SGantispam-id: 7f844bbd81814414b18190a4a9dc02a6
-X-AntiAbuse: ID - 7f844bbd81814414b18190a4a9dc02a6
-AntiSpam-DLS: false
-AntiSpam-DLSP: 
-AntiSpam-DLSRS: 
-AntiSpam-TS: 1.0
-CFBL-Address: feedback@antispam.mailspamprotection.com; report=arf
-CFBL-Feedback-ID: 1xEUbD-00000008OUD-37ot-feedback@antispam.mailspamprotection.com
-Authentication-Results: outgoing.instance-europe-west4-1b4f.prod.antispam.mailspamprotection.com;
-	iprev=pass (214.173.214.35.bc.googleusercontent.com) smtp.remote-ip=35.214.173.214;
-	auth=pass (LOGIN) smtp.auth=esm19.siteground.biz;
-	dkim=pass header.d=valla.it header.s=default header.a=rsa-sha256;
-	arc=none
+In-Reply-To: <20260921004834.2601285-12-skhawaja@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL2PEPF000352CD:EE_|CY8PR12MB7313:EE_
+X-MS-Office365-Filtering-Correlation-Id: df3adf60-13db-4c8a-dbed-08df24ab777d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|82310400026|7416014|36860700016|1800799024|18002099003|10067099003|22082099003|4143699003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	UckYY5OS6FDB2hal9Hp1XuN3cWHPWf5FSaZSzJiMMnns7Vhzyh0EPxDGoV1XrF33gvUCQnc9Vq3YM39Em1ldrgMGamdCNyNoZtKxlgk0XS+u2ExpHaYHmSpLrO5fjxGSmsspKSGlwR3oLO52eXDqUi2OQqbvOjn8HbpW8rrMIRufOsD127tiBUmkjm04fEDonMNQwTqDnXOaZTRCcy7KV3zveQeQujsIO7Uki9mlVHwITk7rACj4nxx6bA7kIchfOGtDAQTK4j6qUCJ2VHwGnW7vvRyPQG6YHZq5TIRMaEX+M/cBQklqnRLcb/yEKruAmA3o1HNX4niHRSeBJ6xrCM3G/WN21CpMniw7tLLHQ2JPfQ//gBdfIO9hkWhJPas80v/4L8fKARn41YseEqyXUNMdjuYkIsT+ZuIRIm7pg9zM4B32dh0Qw0zVEyW/2uEVCJQN/kD+x8//gXwBElgccqc1g4/fAvI+Nnc6J7vbNcwG16Y8OwckqEhCawKdrbxL2x1TYgGXOr1xh+G1p2SHUhaoPN9mQF5FxdDtRdUyQgLnMgTYWLcarIyFVB33FAVICNm1ECxCH+cEit/JUrKX+V0N6k7xRR0SJszQHxqm4vNAKXHPz+hjKTli7Xn2jki05DYQaWWldR0onxQDkeuvsq+8VIniuwlDwP8UDlUmeUdzhNKeMYjoh6qSDu6RBLmVRWIQjgbwcWQhX1L88lb12g==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(376014)(82310400026)(7416014)(36860700016)(1800799024)(18002099003)(10067099003)(22082099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	uVB4KE0tqBUj9+97BBGfQ/mtvnbvXad0Fbb0qJ50l0bgkSHmmd36hLMjONYzwf4auzAPZ/gje9m8MaSguvtTBiQYYtwO6Z75kt3f22/jyA+lKEyiwd9rRKEid8hUadeBvEBx1FFIUoG8o9Oq+5gNEKk67WZ7OwDuzLggcp5S4WpPwaWQESwKXQ0VwMBBmE20YGI/yWtPqw746ma/O4xxOn6OUK1jeriH/jjqYDvig4iOsV76bu3lMYyBm8Ad3oFtYH1KcGVdH8hVjr1djJD3zup9dUnXoj24Jwj2HaJ/SHOIIpROCzifPkmBjHvzsG0dcne1TDCnVQgNF7jSqWGR0ly/rxZtIWm0QLdGu+4qhLLqCjQ4q+CI05OktYzxCrubr2miHF18OLhtqLpR8KraHeYKbT3hoGaOSyTylnRx40whwi4H577oM8kGf341cbyE
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2026 19:44:56.9695
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: df3adf60-13db-4c8a-dbed-08df24ab777d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL2PEPF000352CD.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7313
 
-Hello Rob,
+On Mon, Sep 21, 2026 at 12:48:27AM +0000, Samiullah Khawaja wrote:
+> @@ -694,7 +700,8 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>  	}
+>  
+>  	for_each_group_device(group, gdev2) {
+> -		if (dev_iommu_preserved_state(gdev2->dev)) {
+> +		if (dev_iommu_preserved_state(gdev2->dev) ||
+> +		    dev_iommu_restored_state(gdev2->dev)) {
+>  			ret = -EBUSY;
+>  			goto err_free_gdev;
 
-On Wed, Oct 07, 2026 at 08:42:06AM -0500, Rob Herring wrote:
-> On Tue, Oct 06, 2026 at 06:51:52PM -0600, Mathieu Poirier wrote:
-> > On Tue, 6 Oct 2026 at 12:39, Rob Herring <robh@kernel.org> wrote:
-> > >
-> > > On Tue, Sep 22, 2026 at 09:44:20PM +0200, Francesco Valla wrote:
-> > > > On Tue, Sep 22, 2026 at 09:40:31AM -0600, Mathieu Poirier wrote:
-> > > > > On Wed, Sep 16, 2026 at 11:10:53PM +0200, Francesco Valla wrote:
-> > > > > > Add a new binding to describe remoteproc-provided virtio devices; while
-> > > > > > these are discovered through a resource table parsed by the remoteproc
-> > > > > > infrastructure at runtime, their description can be needed to probe
-> > > > > > non-discoverable buses (such as I2C) or to link consumers and suppliers.
-> > > > > >
-> > > > > > Each vdev is described by a dedicated "group" node, which then includes
-> > > > > > a virtio-device node, which binding is already existent and used by
-> > > > > > virtio-mmio. Each vdev shall be stattically linked to a "group" node
-> > > > > > using its index inside the resource table as the reg property of the
-> > > > > > node; this permits to have multiple instances of the same type of
-> > > > > > device.
-> > > > > >
-> > > > > > The binding is intended to be generic and adopted by any remoteproc
-> > > > > > provider.
-> > > > > >
-> > > > > > Signed-off-by: Francesco Valla <francesco@valla.it>
-> > > > > > ---
-> > > > > >  .../bindings/remoteproc/remoteproc-virtio.yaml     | 89 ++++++++++++++++++++++
-> > > > > >  1 file changed, 89 insertions(+)
-> > > > > >
-> > > > > > diff --git a/Documentation/devicetree/bindings/remoteproc/remoteproc-virtio.yaml b/Documentation/devicetree/bindings/remoteproc/remoteproc-virtio.yaml
-> > > > > > new file mode 100644
-> > > > > > index 000000000000..c4a0d84b1460
-> > > > > > --- /dev/null
-> > > > > > +++ b/Documentation/devicetree/bindings/remoteproc/remoteproc-virtio.yaml
-> > > > > > @@ -0,0 +1,89 @@
-> > > > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > > > > > +%YAML 1.2
-> > > > > > +---
-> > > > > > +$id: http://devicetree.org/schemas/remoteproc/remoteproc-virtio.yaml#
-> > > > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > > > +
-> > > > > > +title: Virtio devices over remoteproc
-> > > > > > +
-> > > > > > +description: |
-> > > > > > +  Virtio devices ("vdevs") can be exposed using the remoteproc infrastructure
-> > > > > > +  and its resource table. For some of them, a device tree node might be needed
-> > > > > > +  to describe remote undiscoverable hardware and/or connect consumers and
-> > > > > > +  providers.
-> > > > > > +
-> > > > > > +maintainers:
-> > > > > > +  - Francesco Valla <francesco@valla.it>
-> > > > > > +
-> > > > > > +properties:
-> > > > > > +  virtio:
-> > > > > > +    description: Contains a group of Virtio devices exposed by the remoteproc.
-> > > > > > +
-> > > > > > +    properties:
-> > > > > > +      '#address-cells':
-> > > > > > +        const: 1
-> > > > > > +
-> > > > > > +      '#size-cells':
-> > > > > > +        const: 0
-> > > > > > +
-> > > > > > +    patternProperties:
-> > > > > > +      "^vdev@[0-9a-f]+$":
-> > > > > > +        type: object
-> > > > > > +
-> > > > > > +        properties:
-> > > > > > +          reg:
-> > > > > > +            description: Virtio device index inside the resource table.
-> > >
-> > 
-> > There are 2 configurations we need to account for: (1) each device
-> > located behind the remote processor gets its own set of virtqueues and
-> > adheres to the virtio specifications.  This is the configuration
-> > targeted by this thread.  The other configuration (2), discussed in
-> > the other thread, involves virtio piggy-backed over RPMSG.  The hope
-> > is to represent both configurations using the same bindings.  For (1),
-> > virtio devices will be advertised in the resource table and for (2),
-> > virtio devices will be announced via the existing remoteproc namespace
-> > service.
-> > 
-> > > Who/what defines the resource table?
-> > 
-> > The resource table is part of the firmware image and is parsed by the
-> > remoteproc core.  For (1), as presented in this set, "reg" links the
-> > entry in the resource table with the device definition in the DT.  For
-> > (2), the definition is also a device index, but said index is
-> > communicated to the remoteproc core using a namespace announcement
-> > rather than the resource table.
-> > 
-> > I hope to establish bindings for configuration (1) and merge that work
-> > first.  Once that is done we can extend it to cover (2).
-> 
-> "Defined by firmware" is all I needed. Please make sure the binding 
-> patches include this information or I'll forget and just ask again.
->
+Maybe it should -EBUSY on a group that already has a device so it
+wouldn't end up with a multi-device group.
 
-I'll include this detail in the next version of the bindings; I'm always
-working on .rst documentation to add to the next version of the patchset.
+> @@ -2211,6 +2242,7 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>  	ret = domain->ops->attach_dev(domain, dev, old);
+>  	if (ret)
+>  		return ret;
+> +
+>  	dev->iommu->attach_deferred = 0;
+>  	trace_attach_device_to_domain(dev);
+>  	return 0;
 
-> Rob
+Unnecessary change.
 
-Regards,
-Francesco
+> @@ -3175,6 +3207,62 @@ int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
+>  
+> +static struct device *__iommu_group_restored_device(struct iommu_group *group)
+> +{
+> +	struct group_device *gdev;
+> +
+> +	lockdep_assert_held(&group->mutex);
+> +	for_each_group_device(group, gdev) {
+> +		if (!dev_is_pci(gdev->dev))
+> +			continue;
+> +
+> +		if (dev_iommu_restored_state(gdev->dev))
+> +			return gdev->dev;
 
+list_first_entry instead of for_each_group_device since there's a
+singleton enforcement.
+
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +static int __iommu_group_restore_domain(struct iommu_group *group)
+> +{
+> +	struct iommu_device_ser *device_ser;
+> +	struct iommu_domain *domain;
+> +	struct device *dev;
+> +	void *owner;
+> +	int ret;
+> +
+> +	lockdep_assert_held(&group->mutex);
+> +	if (group->domain)
+> +		return -EBUSY;
+> +
+> +	dev = __iommu_group_restored_device(group);
+> +	device_ser = dev_iommu_restored_state(dev);
+> +	if (!device_ser)
+> +		return -ENOENT;
+> +
+> +	ret = __iommu_group_alloc_blocking_domain(group);
+> +	if (ret)
+> +		return ret;
+> +
+> +	domain = iommu_restore_domain(dev, device_ser, &owner);
+> +	if (WARN_ON(IS_ERR(domain)))
+> +		return PTR_ERR(domain);
+> +
+> +	/* The restored domain is attached with the restored device. */
+> +	ret = __iommu_group_set_domain(group, domain);
+> +	if (ret)
+> +		return ret;
+
+If (ret), how about the restored domain by iommu_restore_domain()?
+
+> +	/*
+> +	 * Ownership of groups with preserved devices is set during boot. These
+> +	 * will be reclaimed later by the entity (iommufd) that preserved them.
+> +	 */
+> +	WARN_ON(group->owner);
+> +	group->owner = owner;
+> +	group->owner_cnt = 1;
+> +	return ret;
+> +}
+> +
+>  /**
+>   * iommu_setup_default_domain - Set the default_domain for the group
+>   * @group: Group to change
+> @@ -3233,6 +3321,16 @@ static int iommu_setup_default_domain(struct iommu_group *group,
+>  
+>  	/* We must set default_domain early for __iommu_device_set_domain */
+>  	group->default_domain = dom;
+> +
+> +	/* Preserved devices need to be attached to the restore domain */
+> +	if (__iommu_group_restored_device(group)) {
+> +		ret = __iommu_group_restore_domain(group);
+
+__iommu_group_restored_device is called twice: here (outside) and
+inside __iommu_group_restore_domain.
+
+Perhaps change to:
+	dev = __iommu_group_restored_device(group);
+	if (dev)  {
+		ret = __iommu_device_restore_domain(dev);
+	...
+?
+
+> +void iommu_init_device_preserved_data(struct device *dev)
+> +{
+> +	struct iommu_device_ser *device_ser = NULL;
+
+"= NULL" doesn't seem necessary.
+
+> +	struct iommu_device_array_ser *array;
+> +	struct iommu_flb_obj *flb_obj;
+> +	int ret, idx;
+> +
+> +	if (!dev_is_pci(dev))
+> +		return;
+> +
+> +	ret = iommu_liveupdate_flb_get_incoming(&flb_obj);
+> +	if (ret)
+> +		return;
+> +
+> +	mutex_lock(&flb_obj->lock);
+> +	array = phys_to_virt(flb_obj->ser->device_array_phys);
+> +	iommu_liveupdate_for_each_arr(array) {
+> +		iommu_liveupdate_for_each_obj(array, device_ser, idx) {
+> +			if (match_device_ser(device_ser, to_pci_dev(dev))) {
+> +				device_ser->hdr.flags |= IOMMU_SER_FLAG_INCOMING;
+> +				goto out;
+> +			}
+> +		}
+> +	}
+> +
+> +	device_ser = NULL;
+> +out:
+> +	WRITE_ONCE(dev->iommu->device_ser, device_ser);
+
+dev->iommu->device_ser is NULL after kzalloc.
+
+So, maybe drop "device_ser = NULL" and move WRITE_ONCE() into the
+loop (under match_device_ser)?
+
+> +	mutex_unlock(&flb_obj->lock);
+> +	liveupdate_flb_put_incoming(&iommu_flb);
+
+Hmm, you might want to check the lifecycle of this flb thing.
+
+dev->iommu->device_ser points to something inside the flb, which
+might be freed somewhere?
+
+> +struct iommu_domain *iommu_restore_domain(struct device *dev,
+[...]
+> +	domain_ser = phys_to_virt(ser->domain_iommu_ser.domain_phys);
+> +	if (domain_ser->restored_domain) {
+> +		*owner = ser;
+> +		domain = domain_ser->restored_domain;
+> +		goto out;
+> +	}
+> +
+> +	domain_ser->hdr.flags |=  IOMMU_SER_FLAG_INCOMING;
+
+Drop the extra space before "IOMMU".
+
+> +/**
+> + * dev_iommu_restore_did() - Get restored domain ID for a device
+> + * @dev: Target device
+> + * @domain: Target domain
+> + *
+> + * Fetches the domain ID preserved for @dev and @domain across Live Update.
+> + *
+> + * Return: Domain ID or -1 on error.
+> + */
+> +static inline int dev_iommu_restore_did(struct device *dev, struct iommu_domain *domain)
+
+"did" is an intel thing..
+
+> +{
+> +	struct iommu_device_ser *ser = dev_iommu_restored_state(dev);
+> +
+> +	if (ser && iommu_domain_restored_state(domain))
+> +		return ser->domain_iommu_ser.attachment_id;
+
+... so, it could be just dev_iommu_restored_attachment_id()?
+
+Nicolin
