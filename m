@@ -1,154 +1,174 @@
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012043.outbound.protection.outlook.com [52.101.48.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f100.google.com (mail-pj1-f100.google.com [209.85.216.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E692E3976BA
-	for <iommu@lists.linux.dev>; Thu,  8 Oct 2026 17:33:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.48.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791480785; cv=fail; b=ggSIlC6HTJ/SZddWV8rO1cshKLd1L4EDhY9dj1Bek7DTsSLUhDPSYM9R+emXbSqhTzoT+HH58U7nPdDW5eyUQnecXmmpStca4oixj09/BXD5xa4/Y+oiOy6zlLklxsr+ItVbIkiEF7rZ9EusZ9+XiYdINBkOP47ZKR0CYF5MrbU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791480785; c=relaxed/simple;
-	bh=N9tqa45kPhC8CIsbchtmed7rw5pXfY7Mny380qGFk1E=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=D40ImC7f/NJmF6RkGzR4bOFzVbgLytKpY/k7q1UMYcrBFfQurV8wEBi2zcj0mAJxFCPWMEYts+eHEASjyZFsc2ye+vFpW3jyRHghLmdOwctEmG5RIcmc9IdyXNL4JCEjS4OJ1g15gP4wQbKknPY8I1aA9XeyK85IefY+JRPTSuM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Xj7vw/WM; arc=fail smtp.client-ip=52.101.48.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 591864FC335
+	for <iommu@lists.linux.dev>; Thu,  8 Oct 2026 20:29:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.100
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791491353; cv=none; b=gJ43qSMUzNgeFkfpLqSPDEXD2ByKMWsficOfVojVN8OCf6BPOJoeW46RdZpK0vkjWhyZXgtwjAhwQDv+qEGPnV72dSP+RS0JCxXn13ZZPIJkn+kj2823lECXwPQ0YkY4kP8ZtsHKhSZirtoXvhNnF9hebDDOWve5UVpDRpKvHHc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791491353; c=relaxed/simple;
+	bh=GqNZFFS4eTIb708Eoy/tXQ66KdSn0Lvhue0RwL47s4A=;
+	h=From:To:Cc:Subject:Date:Message-ID; b=BUxigvw4KckI94sxgLyP2ZqYJY00BZq2PXw/bicg562GqpOoxkiFmYAqkeeUhHsyEegToPNK6WJ42dKZIa/6tGVJD7QRCSN64MjR680M8b+8M++/dAoVz1ZobhCEGHtOpEfWxDHfPYoHtrYKchuZhuTpadb+C4nUNr1nU4p81do=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arista.com; spf=pass smtp.mailfrom=arista.com; dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b=ESbe4Ntt; arc=none smtp.client-ip=209.85.216.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=arista.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arista.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Xj7vw/WM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=kdtdBvuyGBkekygsoWH+GXCkfKa/rq8YEQAuOzjXySEBxpvsbae7mvo4q4H8ARqY6GRYmoh2uKMzqZSMb86iA0XYf3xEJcCSzUmcm0Toqu4myuOTgCwZHOlb4UcA57yRbkeMn1duOkgFPXewTgZAh5aeaAx2Mxpy9xay9pyooc5uwAIURp3cdOVodf01HMfcrKVBod7nrV4iHDpXOPgaHEi0fsBGUtV/KkCuRIppE1uYz4VYFayc+po7MHkZroZ7RknsWK4FKwmC354soZFzUMk9Gib5ir90JQjoBICn5vVNfZUmxJMsrJ3RrrqEeunr8ZdxNDxtJ4b1ZFVALd3Hug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d8u8H4QYJiarOEqRZ8ZbXOONzxSr4hNvAmbzJoELjm0=;
- b=nP7QZ9IyP2nXQB4Njdls2XvwH/HTfwySHDqen6TL8375KHrnRAhmlNdM6KDWLcDktd0AeBh+xQ9A4mxieMOccaQu2qV0bQmdMX8I0CjGUGgJQhQ958y2Zk9kCI28iX0wTA8pIvnJEWTL2iVRSN9IlKRcif15b6MufBk8Mksz6ODMtCo+3zrDEdcphfyPZ7pkKQ5Fwp2891NGYB0RcIL0efTHg6HEX/tEzX2qDMcu18sLOHsueN62pSNM24vJkMet2nfBuHDzHa978AlvOa9elvLFNLGLoZIA7mET5shhsa2dnct41SGMzeSio7ukRzgNt63RB22UE6NKfGkPMFioYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=d8u8H4QYJiarOEqRZ8ZbXOONzxSr4hNvAmbzJoELjm0=;
- b=Xj7vw/WM+BmjotnO6HFyxzHGCxuul5S2WTImFKNX4l9EHwCwpsOxM0glaH5o2fIva/ceMk3sfVLj/vJH5Y7oMc0H5+wSzZlTbWcK9CPUIO2xyfbPo9WZuQUS9N20AaYVyySLHt7ahx2B/WQxcoJqQWMYu828FPTkFxCP21Afc4OIXPQI+jUeoXA9JGwcupocC26jMhdxSywWeBm8oagLvxFqa5znaljX+GrkjlYXMx4AtYHf21aqSMrRsm9ekiKavIocaxxPmrY0j7WriyGTwMydY+YZvyV+zWieeLpcsuq9mghEFzri5JjM6bq5oZ5AJVzSokpp60S6Hbg+UUw+AQ==
-Received: from MN2PR06CA0007.namprd06.prod.outlook.com (2603:10b6:208:23d::12)
- by DM4PR12MB6206.namprd12.prod.outlook.com (2603:10b6:8:a7::6) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.472.20; Thu, 8 Oct 2026 17:32:55 +0000
-Received: from BN2PEPF0000A991.namprd04.prod.outlook.com
- (2603:10b6:208:23d:cafe::18) by MN2PR06CA0007.outlook.office365.com
- (2603:10b6:208:23d::12) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.496.5 via Frontend Transport; Thu, 8
- Oct 2026 17:32:55 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN2PEPF0000A991.mail.protection.outlook.com (10.167.248.138) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.522.6 via Frontend Transport; Thu, 8 Oct 2026 17:32:55 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Thu, 8 Oct
- 2026 10:32:28 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
- (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Thu, 8 Oct
- 2026 10:32:27 -0700
-Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Thu, 8 Oct 2026 10:32:25 -0700
-Date: Thu, 8 Oct 2026 10:32:23 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Will Deacon <will@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Jean-Philippe Brucker
-	<jpb@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Thierry Reding
-	<thierry.reding@kernel.org>, Krishna Reddy <vdumpa@nvidia.com>, "Jonathan
- Hunter" <jonathanh@nvidia.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-tegra@vger.kernel.org>, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC v5 2/6] iommu/arm-smmu-v3: Allocate streams
- individually
-Message-ID: <asfTp0KxWIyxmcnz@nvidia.com>
-References: <20261006-smmu-shared-sid-v5-0-169a59c671d3@nxp.com>
- <20261006-smmu-shared-sid-v5-2-169a59c671d3@nxp.com>
- <asbTEPMJvm9T00c+@nvidia.com>
- <7626c1be-305e-478a-a017-548341d25419@arm.com>
+	dkim=pass (2048-bit key) header.d=arista.com header.i=@arista.com header.b="ESbe4Ntt"
+Received: by mail-pj1-f100.google.com with SMTP id 98e67ed59e1d1-381b831d535so5714786a91.0
+        for <iommu@lists.linux.dev>; Thu, 08 Oct 2026 13:29:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791491348; x=1792096148;
+        h=content-transfer-encoding:message-id:date:subject:cc:to:from
+         :dkim-signature:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=u0ZTgl3gzHMxU8rZBcoHFObnSv/9xICBYZH4gzmLfRc=;
+        b=ONgS3UWKyP7p6JXjpShpmaqS2N6IuE7z8GnEz4ALo3qnmf0YdcVRhDTnVBfi2+7Dmg
+         6M/0COQgJurdPuq7TbXsWaIxMD1nEhEGsofDKNFrpNl7pvM1Jmfxr9KLQwAS7UuaZVtq
+         kvDWbf0r872oPjEJi+aGfA1nFcdHMJzhAJQyc0UrHFQ1eCskD8/UR0dvOWNApOHv3vCG
+         eY8W5elUpipan8EYldDP6vUrpVUJewXR6O+REonfOs2cINgI4uGQm4EATDiNhfmPCK1l
+         x8qxYO2jHfOk+VJ5SDTQJFGAMLRflT0VpqXoyMD2PXWZ2VweHMtHTc3xKurCu6uXXCbP
+         J+ig==
+X-Forwarded-Encrypted: i=1; AKwUvBzQhQdUJIvcisMqCZAfEUWcO2Wo8BucKzL2Nm30yG5JNwzWV+iHkijZOl0tIc1PKnbZjwEzrg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJvdv77bp+i5jtMilJaF0kCQrFWjLFqQcEKo7Et7rr68fiDL0uF
+	DjBwg8AaB+rqOGB5O/H/2PAewYsfcEy1mAKlrzZfzpqNT9j6BE8oawezcU6TydT2XSWCzcS/IfU
+	mY2tZy/pBkoCKSAGdGIzY/niNLP5qahfOLw==
+X-Gm-Gg: AYBFou0bJ0VpMuSzuhm2PE33OVKkJSEY529EpnVophvTkvoNonO0tDRliir6esJNAPh
+	I+HZ8aKep8X2R0RQKXmLr8wFQk33DFO83V/4Lazo6dljwBNU361SLRh3bow1uRr8kNzWK189gCu
+	yZvc0P+J/30YHyj/W6ZN5OW3njnhPC1QEJ22kwBALoldJaAVXZQnl0+OebDI0RD5uov306eK2Lh
+	36bgoWf6vKFLAgxnj/OUoJqCpLLl1FoIrh/CUTDr7Smoov5pZm0PUWPGmKrJ6P7X44odxyDXk8B
+	hmKThSVqY3OHwMC3a97FqnLg7mMPfhpY+AJ7BzeBsqAGvvmFhkQfNZbeXQ8nDeThX3AHikMIWzv
+	U6qpPbFLyvepeD5eUQFKO+Xo3ywZbpMTd2folYYI3rALgr3ygjBrLBL+vgpg=
+X-Received: by 2002:a17:90b:5483:b0:3a8:6424:b1b1 with SMTP id 98e67ed59e1d1-3a8a1ab7705mr5561957a91.33.1791491348558;
+        Thu, 08 Oct 2026 13:29:08 -0700 (PDT)
+Received: from smtp.aristanetworks.com (ec2-54-84-120-176.compute-1.amazonaws.com. [54.84.120.176])
+        by smtp-relay.gmail.com with ESMTPS id 98e67ed59e1d1-3ab36e34040sm101802a91.7.2026.10.08.13.29.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Oct 2026 13:29:08 -0700 (PDT)
+X-Relaying-Domain: arista.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+	s=Arista-A; t=1791491347;
+	bh=u0ZTgl3gzHMxU8rZBcoHFObnSv/9xICBYZH4gzmLfRc=;
+	h=From:To:Cc:Subject:Date:From;
+	b=ESbe4NttCxfd+SKabiUWx7Vhpj+uqDMw5OweWOHbqvc+Sfy0zTNfkCmrMF39g5xxp
+	 7dbDDMbZhV9cpyECp1X03fk/DimWsomsi54QolxKMZuk0wYS1M8QRVcTLbgfc1QuW1
+	 AxYQ0wA2VffZKLWtunS8kn+UbY1NYO6xkv9nZI6q5WJvyohmJqIC3YMqY4TPf4/j3l
+	 4/++rYGL+HVLTUZPkq5obVPGtXPf9iqTd8RVWgQMYajQBkzVcxdUpMdvAhaAIUBX09
+	 TFk1vo2TZ0/sgquwYniiYxGORbMp1ITjnQ/wMMnDtpSX9S9U5i1vpdnndUWKK681nx
+	 wR8EYL7s3uZVg==
+Received: from kevmitch-g-eos-trunk-kernel7-2026-09-06.sjc.aristanetworks.com (unknown [10.242.71.193])
+	by smtp.aristanetworks.com (Postfix) with ESMTP id D8BACC047B;
+	Thu,  8 Oct 2026 20:29:06 +0000 (UTC)
+X-SMTP-Authentication: Allow-List-permitted
+X-SMTP-Authentication: Allow-List-permitted
+From: Kevin Mitchell <kevmitch@arista.com>
+To: Vasant Hegde <vasant.hegde@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Kevin Mitchell <kevmitch@arista.com>,
+	stable@vger.kernel.org,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joerg.roedel@amd.com>,
+	iommu@lists.linux.dev (open list:AMD IOMMU (AMD-VI)),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] iommu/amd: allow identity domain during device release
+Date: Thu,  8 Oct 2026 13:25:27 -0700
+Message-ID: <20261008202530.14501-2-kevmitch@arista.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <7626c1be-305e-478a-a017-548341d25419@arm.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF0000A991:EE_|DM4PR12MB6206:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1a4f6afc-e8a3-4ba0-bab4-08df2562302c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|7416014|376014|23010399003|82310400026|1800799024|4143699003|11063799006|10067099003|56012099006|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	p+jLB/3ZkFpni6t04v3S4LLHD9AxzXZcKBy72q+dnoN1tw2MNUkopiSE1xIH2rowXsIfxZ+GCZApPFVazZgMXWkRlc5oV7Sdol+Ezwx2iUVxRiPQKW2Qnzt35nL7I1Pdf7VFo4tjicE2qcQ9RSFnzwR0/u5/+Qi+TIwxVEZnJLgZK7eOiRlzl76HGeW631f2xxHjKCJSUdkFAYIjjq/f7dG5eplKgDLE+u+Ukc8/ZCNwMTiCC6u/usn02xatRRO5Z1eRapB+dDw0KCNeH/jaS3kCWAJNCUNos4HXa10mv4synkBQ7uF6d8eZ+jKhhcGbknGPgCW9V+YBZv4cjseuPKzVnxZ+necBz+LSO6NEdKRlcf+6JPdzPW7vO8I3mTAZEakXqcAwkO/agMIPvUZehi4kQA7SfGKRu4sjUs7C72K4XQdAvWOu2PzUFGxfmujcdBTiGwAoSQPgM3rpwDjAP4AwyOv1b4hYhkomukFzdOIEFSVxzXBBwHQmRIufGuyZioDKRq84jfNjwrmZ/21t0rqGF7NkliK5PPaRMYJw7GZyjIWSbk0SlMhIrkRiwLWErIUhbEE4fBnEY0N0UOxlfgG3UhnQbgnAQyt3xjiSEnlWhitTCNCKDsaqJCeMdFiPaLTcj67WRyJOsNRNWTe5bCsU/TWXB3wm5Niz/O3hAvHSasB/rnZzQBapsb+8jWiDlRoXN9Roh6XM5Oe9RR4Npg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(376014)(23010399003)(82310400026)(1800799024)(4143699003)(11063799006)(10067099003)(56012099006)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	T9Ua8oRnqjyMJR0UEoEIZmwLc27Z4hkekcuqtEVR1ApwyxOkcfav2weeIbioXt8hqqeoodNk0reUJOH/E+Ces7P5Kfgrah8itsISuuKxoakt2Iw1nV1aPJDoqf0R89DSNF2y7iTOBm7xvYQKxFUVfGvm2zhJonIz65z/43I0qxtGtFk+LGiqJwf6pr0Kho9mBpZ6IQqL5mtpnZWnC43FuJLi/8gY4vdN5MjsOdws7gpYgUPjfpD5OmU3Xwt8ydDXV0kSi3uVSTpRhS9UznigHcXvh+QBfG1qE4Iu1POZMC2I/odls082ptziL+M8QhoTl1GcrkHA6IyZ+kGo3UqYZc2N68CIl8zsGcKM6tD6PJrVU3G45YaFMykxwaVzFmURDgzRCbNUHL5++w5ifI/Lca95wOlPWVbutsLLwaDe3qUm0kwq0ZAXp5znY+j+QpV5
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2026 17:32:55.3171
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1a4f6afc-e8a3-4ba0-bab4-08df2562302c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF0000A991.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6206
 
-On Thu, Oct 08, 2026 at 02:21:43PM +0100, Robin Murphy wrote:
-> On 08/10/2026 12:17 am, Nicolin Chen wrote:
-> > On Tue, Oct 06, 2026 at 08:19:08PM +0800, Peng Fan (OSS) wrote:
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-> > > index 6644075c1431e..bc62a3d5a63f9 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-> > > @@ -1257,7 +1257,7 @@ static int tegra241_vintf_init_vsid(struct iommufd_vdevice *vdev)
-> > >   	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> > >   	struct tegra241_vintf *vintf = viommu_to_vintf(vdev->viommu);
-> > >   	struct tegra241_vintf_sid *vsid = vdev_to_vsid(vdev);
-> > > -	struct arm_smmu_stream *stream = &master->streams[0];
-> > > +	struct arm_smmu_stream *stream = master->streams[0];
-> > 
-> > Sashiko raised a concern of an out-of-bounds pointer dereference.
-> > 
-> > Though it's practically not possible, probably it would be safer
-> > to move this behind the check:
-> > 
-> > 	if (master->num_streams != 1)
-> > 		return -EOPNOTSUPP;
-> 
-> The IORT path unconditionally adds 1 ID via acpi_iommu_fwspec_init(), so
-> num_streams==0 could only potentially happen with DT if a fwspec was parsed
-> using #iommu-cells==0, except arm_smmu_device_dt_probe() would refuse to
-> probe the entire SMMU if that was anything other than 1, so no, this
-> definitely cannot ever be out of bounds.
+A warning is triggered in amd_iommu_release_device() on removal of a
+device with an IOMMU_RESV_DIRECT region. The warning is based on the
+false assumption that correct attachment to the release_domain will
+always result in a NULL dev_data->domain pointer. For devices with
+IOMMU_RESV_DIRECT (and consequently dev->iommu->require_direct), the
+release domain is the permanent identity_domain which sets
+itself to dev_data->domain on attach.
 
-Yea, it's unreachable. So, either way is fine.
+This behaviour was added in commit e94160488e65 ("iommu: Generic support
+for RMRs during device release"). Commit c21b34762e2f ("iommu/amd: Set
+release_domain to blocked_domain") caused it to take effect for AMD
+IOMMU.
 
-The num_streams guard is already there: doing a dereference after
-the guard is a common practice anyway. And that drops the Sashiko
-false positive.
+Explicitly allow the identity domain pointer to be set. Keep the warning
+for any other non-NULL domain.
 
-Nicolin
+The warning was observed for a device with direct mapped region:
+
+/sys/bus/pci/devices/0000:04:00.0/iommu_group/reserved_regions:
+
+  0x00000000fee00000 0x00000000feefffff msi
+  0x000000fd00000000 0x000000ffffffffff reserved
+  0x0000fffd00000000 0x0000ffffffffffff direct
+
+Upon hotunplug:
+
+[   28.715475] pcieport 0000:00:03.1: pciehp: Slot(0-3): Link Down
+[   28.715482] pcieport 0000:00:03.1: pciehp: Slot(0-3): Card not present
+[   28.715601] ------------[ cut here ]------------
+[   28.715603] WARNING: drivers/iommu/amd/iommu.c:2521 at amd_iommu_release_device+0x5d/0x70, CPU#4: irq/29-pciehp/99
+[   28.715657] RIP: 0010:amd_iommu_release_device+0x5d/0x70
+[   28.715687] Call Trace:
+[   28.715689]  <TASK>
+[   28.715694]  iommu_deinit_device+0x84/0x110
+[   28.715699]  __iommu_group_remove_device+0xa8/0xd0
+[   28.715703]  iommu_bus_notifier+0x48/0x70
+[   28.715707]  notifier_call_chain+0x48/0xe0
+[   28.715712]  blocking_notifier_call_chain+0x45/0x60
+[   28.715716]  bus_notify+0x3b/0x60
+[   28.715720]  device_del+0x259/0x3b0
+[   28.715730]  pci_remove_bus_device+0x85/0x100
+[   28.715735]  pciehp_unconfigure_device+0x9d/0x180
+[   28.715743]  __pciehp_disable_slot+0x47/0xe0
+[   28.715747]  pciehp_handle_presence_or_link_change+0x80/0x5e0
+[   28.715753]  pciehp_ist+0x162/0x290
+
+Fixes: c21b34762e2f ("iommu/amd: Set release_domain to blocked_domain")
+Cc: stable@vger.kernel.org
+Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
+---
+ drivers/iommu/amd/iommu.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 56262f6b1f70..770717e36333 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2548,11 +2548,17 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
+ 	return iommu_dev;
+ }
+ 
++static struct protection_domain identity_domain;
++
+ static void amd_iommu_release_device(struct device *dev)
+ {
+ 	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+ 
+-	WARN_ON(dev_data->domain);
++	/*
++	 * Devices with direct mapped regions are attached to the
++	 * identity_domain as their release_domain.
++	 */
++	WARN_ON(dev_data->domain && dev_data->domain != &identity_domain);
+ 
+ 	/*
+ 	 * We keep dev_data around for unplugged devices and reuse it when the
+@@ -2953,8 +2959,6 @@ static struct iommu_domain blocked_domain = {
+ 	}
+ };
+ 
+-static struct protection_domain identity_domain;
+-
+ static int amd_iommu_identity_attach(struct iommu_domain *dom, struct device *dev,
+ 				     struct iommu_domain *old)
+ {
+-- 
+2.51.0
+
