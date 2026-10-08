@@ -1,364 +1,280 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E831484250
-	for <iommu@lists.linux.dev>; Thu,  8 Oct 2026 09:34:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F5F53F12EF
+	for <iommu@lists.linux.dev>; Thu,  8 Oct 2026 09:42:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791452062; cv=none; b=uOjnAF8Kr85juCBwmANe35VuvVqdOq++1Me1pNAq7zUdzVC+Un8Q1tpNlw2xma4JHTBiXk93EH54fsir5pt4KijyN+HA7zBfzIlR1uLB/sCykxz9ZrNwIpIIOIdEeaqmmhd4ExZ2Uq8IsQg5adFr967XAlbKWrg6Lwv616orH/E=
+	t=1791452581; cv=none; b=H1jdmQSGVApYecL8pfqoMsZrQV0MGCmAiW7epMoYZVL8CZeeCeAmZsLnt450veqI9cSP1DE9AbMKeDETfAUl9qiRq+YPRF/uh12em/KJX5j+vmeTgZrZbEwrGb2KiAgg52cs8JfcSsv3yNvN6JBv6IuBFaRb0UNA6S4mo2m+W2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791452062; c=relaxed/simple;
-	bh=wtEHxStfIshAPX4gIqNIaRHRcB7Y6f1N/JTj0bHLKgo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kSOnAwc6fFRuUBT9uiCnnMndgGIEkMDHDnNlWJ1VtKRETGLeGWC+EW7I9YABIksGwJXRE2k24qKL4/z9GDnASAEC4Slm8RWx9ZQkVZsPSwl7Qrfjzsopqe2f8S0rl98HwQJBfouV1+aF2Ge4xMl1qzNk8eIv4ihT3mxKI4F6lVA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=XPY0VS7S; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=GR/vgiJe; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1791452581; c=relaxed/simple;
+	bh=h0yoA9WpDZlYZlj4yRkwxpntMollTZRU8GnNa75CX58=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=f0ClJd9fW5FPu/DQgE6c3MYy5PiKn5oXdHYT+qscHovHhBBot86t/YznMbUEwg/lPqdtrT/GxcrqmoyBbX61zVWS4wMSj4EaB/Fw4r09YWmpcnnMm8IAlvvvC8TS6Bc+ClyLcNXxIFR/mMEE+yG46yY4OJQHfvHFRzndQjHD1go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=isslab.korea.ac.kr; spf=none smtp.mailfrom=isslab.korea.ac.kr; dkim=pass (2048-bit key) header.d=isslab-korea-ac-kr.20251104.gappssmtp.com header.i=@isslab-korea-ac-kr.20251104.gappssmtp.com header.b=V1TSdT9R; arc=none smtp.client-ip=209.85.210.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=isslab.korea.ac.kr
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=isslab.korea.ac.kr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="XPY0VS7S";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="GR/vgiJe"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6987KB8K2560132
-	for <iommu@lists.linux.dev>; Thu, 8 Oct 2026 09:34:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	W4JK4jopm1sGil/0A6A5ktzLmRObQ9TZ0+aXAuCmuLw=; b=XPY0VS7SWUNfKwrU
-	0rBrjm51Ey288/p8a9zfSWppp1UepVCfQgXyVKDFsD5CDH5sqnfgMwmBac666rlF
-	5Ky5hl8LQJEaQi+reis1l4QzPbixoq9uVS8wuWEq3b51Ciu0r34zpLC1MCY666L7
-	98IAVnZNi4VsgyIpr7hEHJ8l+yVc69XaNIETwqWsuhP1KPbDX0IDKVyFLXSp6m0v
-	HWlGeNrfajUFh5KHeaG28I3yrnxKFhioYU5xN2NDCFq4xCo4Eh04akWZW8dE9CXI
-	sZeX9Mdm2DTsqaK/wlq1NJ0OHafJhasU6fPro/p6om+zhVPu6iHambODlRWr3VYH
-	wkI1YQ==
-Received: from mail-dy1-f198.google.com (mail-dy1-f198.google.com [74.125.82.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4h5xe825ew-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 08 Oct 2026 09:34:16 +0000 (GMT)
-Received: by mail-dy1-f198.google.com with SMTP id 5a478bee46e88-34ef0362d95so9775786eec.1
-        for <iommu@lists.linux.dev>; Thu, 08 Oct 2026 02:34:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=isslab-korea-ac-kr.20251104.gappssmtp.com header.i=@isslab-korea-ac-kr.20251104.gappssmtp.com header.b="V1TSdT9R"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-8899a204034so1548288b3a.2
+        for <iommu@lists.linux.dev>; Thu, 08 Oct 2026 02:42:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1791452056; x=1792056856; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=W4JK4jopm1sGil/0A6A5ktzLmRObQ9TZ0+aXAuCmuLw=;
-        b=GR/vgiJeBeWiHKYfEPoOf1UjFdVDRC2v2elUw4yLE/Ypu/MjnKzWkKWcoF6E5ij8aN
-         gyu3v/VUMnPhQMQNYOGQ9uIuF0OcUGdsJqoL3XvuYZsFzQnQhDwd07/kryM5U4CraA2H
-         SCwO0mg6d2VQY58s2elMVUOKXiPAL4ozUeWhaK/XAUvhHhujP98uUy/9yxP0MemPfRfW
-         LuXpUf36vILiPIP9M9i4aGFUO3a99m7ylFgcwrumwUCwoVwR+KvfNu8VOXRTM/OCvPf+
-         0J//HoqShmT0fLOOx1/cVhmppBlfelzE98iRy1V27VVwev9v+IaHgm3LB6430xokQXMC
-         XKiw==
+        d=isslab-korea-ac-kr.20251104.gappssmtp.com; s=20251104; t=1791452576; x=1792057376; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PNARdq7cJoEo1sJkc3fA00mNIi6bXCz2q0z3p/1RfxQ=;
+        b=V1TSdT9RMjbBfse7wXV4zBjyrX07g2JAX6kyfxflYSh+Bzkdvl4KP/SisckX3909+l
+         bz7UEXNb6S2bf6k5zAx1oaAFpYesrE+Z+GKq0+7+gYqUGP5uVGpW2p6Wki2YpLC9mF0H
+         ejpR7CkgY9ByzrslU2dRLLBqtyHWGAzSWl1J3w7y+8igx59yF625b5fLSll0DvP7GPQr
+         ZM7CMcDrZvzMyCHaRUPEzb0vNeTUPVuDkHYG4bfXqFMRzvgk9GuQA6tr+DkQMPkLnSPo
+         q8xQLC+QdeSOrRx4dZHEelcKTeRawiTZci9I1lHYM6CRWZWSdd1CzYofrOEl+7E3/FLw
+         0PFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791452056; x=1792056856;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20260707; t=1791452576; x=1792057376;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=W4JK4jopm1sGil/0A6A5ktzLmRObQ9TZ0+aXAuCmuLw=;
-        b=IEnX679JuFPv9Jua3obmQ3CfOnlf/rq2I/YYJg160fcXTo+Y6Jznv/c2Oascb9PLE1
-         dY86gN4Ioc1Ee55+yK74YjMXqC8f20PH9Sbk4kEoa4X+eJb4tbWKw2yfe54LYXbxuNgp
-         aR+jxVxUG0i+ZmRzoYioFJSdTwWknwTU2GT6a5ovi7Fsr64OUmflo5W7qrNTM/iCpQaN
-         qceTRgzGEq5/ZcjcrihhsNi1Wt88EJMbGpQxNCLbZxSTL58DU3ZRUZ4hFjrC8ps+OVcK
-         WXBbAoWmRC1LAesi//O4moNdxs1Kls2eKo13h9LeIY3HMphqhX4i+44bMGmbTnyyV61A
-         QxYQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxzCCyfc444h6Y8FRAKTzpaGF4lvBoJI8jTmRnztAjoH+tFcGZgdcPCDJg6EOXF4W0s3RvEBg==@lists.linux.dev
-X-Gm-Message-State: AFuF++kjTwAtsw8G4Zvg4MBGFwo0RiQDxXHPjEJ1hu4YV6NkSFDFolHf
-	fOhU50YL/eiD8AzpgvkXvuCNQO/mFjl3XtXFJAcna8ciplhzySPa4Wy3DeLkEhuJpVlTR/JIUCb
-	e4VwMo2Qm8ztdSx8O3v4AFpW/9lgSE4zu2AtF+gUpI5PmS5dljj2rYmGeLg==
-X-Gm-Gg: AYBFou3uxz6mBim2gfnn708cvUmo8TCprHrzj4B9ocfIgqgliSlraP9sxjB2pVoFi59
-	TZZUpAyfcZruScFJ3VWnfdrznCyhpW7MH0W5IxUssDfr7hDc+Fe4dA9d9MugGGim76/bXS1VQun
-	wGEENjXdFkw2Y7lk9RZ+Oaqm6zYdM1ooRltqJJxi8Vig+2mdMxeGUljDdZn48F3SfviQfv+fj1V
-	taKXBnBib82KTpfW3oxNSvFWNon6B8KXyNv2JNNyeNNMep8FazFTzswy+Ee8T7hW+c0UdTvaVz2
-	v/4tpJnhC6BW51D8sY7NLt2bSWvjPdLtbBmVNoarV7ibcVHZLavcbemoBNzGY83BmVWIs5AskP1
-	OuxbYgUwWUP4ObZKEjpS2auRsRezFBEGj9w==
-X-Received: by 2002:a05:701b:4294:10b0:143:2973:3240 with SMTP id a92af1059eb24-16205db7a2cmr6040062c88.29.1791452055733;
-        Thu, 08 Oct 2026 02:34:15 -0700 (PDT)
-X-Received: by 2002:a05:701b:4294:10b0:143:2973:3240 with SMTP id a92af1059eb24-16205db7a2cmr6040010c88.29.1791452054971;
-        Thu, 08 Oct 2026 02:34:14 -0700 (PDT)
-Received: from [10.204.101.119] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1616b01c2b4sm12194515c88.20.2026.10.08.02.34.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2026 02:34:14 -0700 (PDT)
-Message-ID: <f07e4b33-47fc-45a0-8fff-105766efb5e4@oss.qualcomm.com>
-Date: Thu, 8 Oct 2026 15:04:05 +0530
+        bh=PNARdq7cJoEo1sJkc3fA00mNIi6bXCz2q0z3p/1RfxQ=;
+        b=Piv5ZVTg1LfChL/ePnKXaR93JxFRcHxzO4IxcG9yoh0eptQsTmCmos4/7tFLN/0F/r
+         2NTwAH/egm8lTrZQMBjZ6hMPiHrwZEcQQI36MtlOAT6n9d16lQFBhHxdC5wxWZgjtncL
+         eBhW3O0TYrmRVc98l0kBmFC1s83EGz4BVn96/RPOG19Kfof1aOSi1r/DLGrYwDNBlrmD
+         yYJbWHRXauMvkAhR18hWU9DjZrInnCrVk46G5t90MHyVZ+Aq3jBHsIu4IiPb70O3Fd7s
+         7AS8vvgmj3IiwTVWbQjKmPA/Q5dasHMu/EvjPOF+XTMNGVBtHdPHBZPEXDozyVzrwfXX
+         tSHg==
+X-Forwarded-Encrypted: i=1; AKwUvBwUe1ElLyCWBXVHcgTsvft/BT6pIuCgmSr+DgXM9a+yJ777MJbfPmd5eKcs4Z2spqvL8+JGgg==@lists.linux.dev
+X-Gm-Message-State: AFuF++ldtHDAMJWMwPYknBFuRX/mm8zy36YVwvZeXURgGYSRIY5uutED
+	DsLXvegDkhRjFW9YVsUL8u2eM9PpBjrDAWXdhds5WqCRRpl2KlHZfToDS5jaVM1kDLc=
+X-Gm-Gg: AYBFou2j0gWApCa4A/pYS4kfheRSMq90q84r91TT34znDHLu1b9v5z8IxMp5aV1vLOa
+	ETCRSNEEQND43l8kSu/DpkTEYZuhgqdFXIDrIkIhBwnM35VPh+lC7TORH8ZU93JTkRp/LqHTaHh
+	zErqFPkbtKedXRn7FW7iE82aYpT/ajGgCmx3aZ+XsSdxEKnei+IK5+SI3aMEpfOfNZliBy4a9JX
+	EauktSBBIJEDA80CVXM4GVLfHaWu3Y8b056FE3AF8u2cfUAPxVwQoO+wNrpBpz41zokapierccu
+	nIBCgN3D2KEUmYnJMly+rJS76uXay784HQkuRlf1HHoTAfaQpqQ+ZixMf2JRdQAsPH8oOCFMY+A
+	dZ4kMWJVjV/4AJVfH+lWKaqOoALbGUjpZY4DADz665CVnoMLfqknxKWqxSLgn0rz7gO58GIWneO
+	n9mWZJPyO+cjauiPsKMzUKLUGRjJ8RpUAvrqDLrazx6Kk0Y4PDu8jAgu46mdD9oCck1RGTFepX7
+	qP+m9iakQJhdtcR
+X-Received: by 2002:a05:6a20:b787:b0:3dd:a196:30a7 with SMTP id adf61e73a8af0-3e134180c1cmr3895479637.87.1791452576425;
+        Thu, 08 Oct 2026 02:42:56 -0700 (PDT)
+Received: from yhlee-960QFG.. ([125.131.91.97])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cd0a5822bd2sm2808017a12.3.2026.10.08.02.42.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Oct 2026 02:42:56 -0700 (PDT)
+From: Yehyeong Lee <yhlee@isslab.korea.ac.kr>
+To: jpb@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org
+Cc: robin.murphy@arm.com,
+	eric.auger@redhat.com,
+	mst@redhat.com,
+	virtualization@lists.linux.dev,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Yehyeong Lee <yhlee@isslab.korea.ac.kr>,
+	stable@vger.kernel.org
+Subject: [PATCH] iommu/virtio: bound the probe-property walk to the probe buffer
+Date: Thu,  8 Oct 2026 18:42:40 +0900
+Message-ID: <20261008094240.1082031-1-yhlee@isslab.korea.ac.kr>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 01/13] dt-bindings: media: qcom,venus: Add context bank
- subnodes to common schema
-To: Zhangfei Gao <zhangfei.gao@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Bryan O'Donoghue <bod@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Stephan Gerhold <stephan.gerhold@linaro.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Abel Vesa <abelvesa@kernel.org>,
-        linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux.dev,
-        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-References: <20260926-vpu_iommu_iova_handling-v5-0-0322ca5dc10c@oss.qualcomm.com>
- <20260926-vpu_iommu_iova_handling-v5-1-0322ca5dc10c@oss.qualcomm.com>
- <CAFkd8hujKYhXveemgPCbsUk5DFB=fQSxqK_-69fP5aPzoWSzbQ@mail.gmail.com>
-Content-Language: en-US
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <CAFkd8hujKYhXveemgPCbsUk5DFB=fQSxqK_-69fP5aPzoWSzbQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDA4MDAzNyBTYWx0ZWRfXyzD49ROekPLe
- PZu1rznXdSRWVD5e/3IHis6bUT6qwtJ80YBn5mfUMTtoci6G16PEDooyGX4WGZppuRevBMzyjXX
- j0RdvaiUSDGdkxtgGh+MF85w2LwvrPL8jzBEwI+FXF9juqVhYv1koWMqAr1hlY1jDxVp07FrLKO
- YpdvhMtPWei3CK+HlJSK4zV9j9yKhJsB7cWsGxvk6ISlc1v9Bqv5kUyU15AIHRBK9/SUD35kHI0
- ZSNpP/hQYhhmAFF9zpzfdMldAGO4gRXBsdNUwuUN6YZg5Gk0PK+KdLRf+eunpQdjAvS+rVLYnhI
- 3/BZVJBhf0AD2OnwTEoDawTbme87cllGavSI2s7hquHSdZym2YKMk2Q3wKvo+s9hq/K8pkbz4E6
- h5yKQpsAczXZckCJ/LlP0Pxat7+pIa3dMRVjT7C8pvJK6WsiMnigIzueIV8fTupW7xt3DNcNQJq
- txzz+aYnoE4TUwCRuEg==
-X-Proofpoint-GUID: El9pyKOGwXJYYe6lt9sp7Bboj6Awk1Xe
-X-Proofpoint-ORIG-GUID: El9pyKOGwXJYYe6lt9sp7Bboj6Awk1Xe
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDA4MDAzNyBTYWx0ZWRfX0wZrifUfeDge
- Axg5KDjyiPjM+vsOaPJO/I31JqK0ZrtvCW54xwt9D+7+x7ri7tkarD2JojQH5yqEdP6lbgsgOhI
- r5SIR0j52EbEbK0Hx/JN+2kMt+oSMsw=
-X-Authority-Analysis: v=2.4 cv=MPT1C8Zl c=1 sm=1 tr=0 ts=6ac76399 cx=c_pps
- a=wEP8DlPgTf/vqF+yE6f9lg==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=_glEPmIy2e8OvE2BGh3C:22
- a=e5mUnYsNAAAA:8 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=xMmXIViELGE0eokI73UA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=bBxd6f-gb0O0v-kibOvt:22
- a=Vxmtnl_E_bksehYqCbjh:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-10-08_03,2026-10-06_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 bulkscore=0 adultscore=0 priorityscore=1501 suspectscore=0
- malwarescore=0 phishscore=0 lowpriorityscore=0 clxscore=1015 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610020000 definitions=main-2610080037
 
+viommu_probe_endpoint() walks the properties the device returns in the
+PROBE request, advancing a cursor by each property's device-provided
+length.  The loop only checks that the start of a property header lies
+within probe_size, but viommu_add_resv_mem() then dereferences a full
+struct virtio_iommu_probe_resv_mem, reading mem->start and mem->end,
+before its own length check runs.  A property placed near the end of the
+buffer, or a probe_size smaller than the property, makes that read run
+past the end of the probe allocation.
 
-On 10/8/2026 12:16 PM, Zhangfei Gao wrote:
-> On Sat, Sep 26, 2026 at 2:38 PM Vikash Garodia
-> <vikash.garodia@oss.qualcomm.com> wrote:
->>
->> The VPU issues DMA through several SMMU streams, and the hardware does
->> not give every stream the same addressable range. The non-pixel stream
->> cannot address the low 600MB of IOVA space, while the pixel stream can
->> address the full range:
->>      +-----------------------------------------------------------+
->>      | non-pixel stream addressable range (600 MB - 3.5 GB)      |
->>      | 0x25800000 - 0xe0000000                                   |
->>      +-----------------------------------------------------------+
->>      | pixel stream addressable range (0 - 3.5 GB)               |
->>      | 0x00000000 - 0xe0000000                                   |
->>      +-----------------------------------------------------------+
->> A single "iommus" property on the video-codec node puts every stream in
->> one IOMMU domain sharing one IOVA allocator, so nothing restricts a
->> non-pixel buffer to avoid 0 to 600MB. Once an allocation lands below
->> that boundary the hardware faults, which shows up as unhandled SMMU page
->> faults and spontaneous reboots:
->> https://gitlab.freedesktop.org/drm/msm/-/work_items/100
->>
->> Given that the address range restriction is for specific VPU stream, it
->> should be ideally be moved to that stream. To achieve the same, a subset
->> of streams is now represented as subnodes, so that each can be
->> associated with its respective addressable range. The design was
->> discussed and agreed by mainatiners here
->> https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org
->>
->> In the past, this limitation was addressed with an iommu-map approach,
->> with the iris driver dynamically creating the devices. That approach was
->> later concluded to be a hack to avoid having subnodes, and was NAKed by
->> the iommu maintainers. It was discussed in detail here:
->> https://lore.kernel.org/all/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
->>
->> "iommu-ranges" on the subnode describes the *allowed* IOVA range that
->> stream is allowed to use, so the IOVA is allocated from the specified
->> range only. Define all the possible subnodes so as to describe all the
->> VPU hardware iommu interfaces, both secure as well as non secure.
->>
->> address-cells, size-cells and dma-ranges declares the 1:1 DMA
->> translation into the parent.
->>
->> The parent "iommus" is kept as an alternative via "oneOf", so platforms
->> that have not been converted to subnodes still validate. New platforms
->> should use the subnode form.
->>
->> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
->> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
->> ---
->>   .../bindings/media/qcom,sc7180-venus.yaml          | 15 ----
->>   .../bindings/media/qcom,venus-common.yaml          | 97 ++++++++++++++++++++++
->>   2 files changed, 97 insertions(+), 15 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml b/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml
->> index b21bed314848480b82153e49602f0b19e08e7335..bfd8b1ad473128c974bce84639cb0aff59d8c2cc 100644
->> --- a/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml
->> +++ b/Documentation/devicetree/bindings/media/qcom,sc7180-venus.yaml
->> @@ -91,21 +91,6 @@ properties:
->>       deprecated: true
->>       additionalProperties: false
->>
->> -  video-firmware:
->> -    type: object
->> -    additionalProperties: false
->> -
->> -    description: |
->> -      Firmware subnode is needed when the platform does not
->> -      have TrustZone.
->> -
->> -    properties:
->> -      iommus:
->> -        maxItems: 1
->> -
->> -    required:
->> -      - iommus
->> -
->>   required:
->>     - compatible
->>     - power-domain-names
->> diff --git a/Documentation/devicetree/bindings/media/qcom,venus-common.yaml b/Documentation/devicetree/bindings/media/qcom,venus-common.yaml
->> index 59a3fde846d2196ab1e4588eb396012ba6860712..68d5e592a028c5eecde04ce72cd5ae6815ba5c82 100644
->> --- a/Documentation/devicetree/bindings/media/qcom,venus-common.yaml
->> +++ b/Documentation/devicetree/bindings/media/qcom,venus-common.yaml
->> @@ -47,6 +47,93 @@ properties:
->>       minItems: 1
->>       maxItems: 4
->>
->> +  '#address-cells':
->> +    const: 1
->> +
->> +  '#size-cells':
->> +    const: 1
->> +
->> +  dma-ranges:
->> +    maxItems: 1
->> +
->> +  non-pixel:
->> +    type: object
->> +    description:
->> +      Context bank for VPU non-pixel buffers, including compressed and internal buffers.
->> +    additionalProperties: false
->> +
->> +    properties:
->> +      iommus:
->> +        maxItems: 1
->> +      iommu-ranges:
->> +        maxItems: 1
->> +    required:
->> +      - iommus
->> +      - iommu-ranges
->> +
->> +  pixel:
->> +    type: object
->> +    description:
->> +      Context bank for VPU pixel buffers containing uncompressed video data.
->> +    additionalProperties: false
->> +
->> +    properties:
->> +      iommus:
->> +        maxItems: 1
->> +    required:
->> +      - iommus
->> +
->> +  video-firmware:
->> +    type: object
->> +    description:
->> +      Context bank for the VPU firmware processing domain.
->> +    additionalProperties: false
->> +
->> +    properties:
->> +      iommus:
->> +        maxItems: 1
->> +    required:
->> +      - iommus
->> +
->> +  secure-non-pixel:
->> +    type: object
->> +    description:
->> +      Context bank for VPU secure non-pixel buffers.
->> +    additionalProperties: false
->> +
->> +    properties:
->> +      iommus:
->> +        maxItems: 1
->> +      iommu-ranges:
->> +        maxItems: 1
->> +    required:
->> +      - iommus
->> +      - iommu-ranges
->> +
->> +  secure-pixel:
->> +    type: object
->> +    description:
->> +      Context bank for VPU secure pixel buffers containing uncompressed video data.
->> +    additionalProperties: false
->> +
->> +    properties:
->> +      iommus:
->> +        maxItems: 1
->> +    required:
->> +      - iommus
->> +
->> +  secure-bitstream:
->> +    type: object
->> +    description:
->> +      Context bank for VPU secure bitstream buffers containing compressed video data.
->> +    additionalProperties: false
->> +
->> +    properties:
->> +      iommus:
->> +        maxItems: 1
->> +    required:
->> +      - iommus
->> +
->>   required:
->>     - reg
->>     - clocks
->> @@ -55,4 +142,14 @@ required:
->>     - memory-region
->>     - power-domains
->>
->> +oneOf:
->> +  - required:
->> +      - iommus
->> +  - required:
->> +      - '#address-cells'
->> +      - '#size-cells'
->> +      - dma-ranges
->> +      - non-pixel
->> +      - pixel
->> +
->>   additionalProperties: true
->>
-> Got this warning:
-> arch/arm64/boot/dts/qcom/nord-rrd.dtb: non-pixel: iommu-ranges:
-> b'%\x80\x00\x00\xda`\x00\x00' is not of type 'object', 'integer',
-> 'array', 'boolean', 'null'
-> arch/arm64/boot/dts/qcom/nord-ride-embedded.dtb: non-pixel:
-> iommu-ranges: b'%\x80\x00\x00\xda`\x00\x00' is not of type 'object',
-> 'integer', 'array', 'boolean', 'null'
-> 
+A malicious or buggy device triggers this with a RESV_MEM property at the
+tail of the buffer.  KASAN reports a slab-out-of-bounds read, and the
+out-of-bounds bytes become the start and end of a reserved region that is
+then exposed to userspace through
+/sys/kernel/iommu_groups/*/reserved_regions:
 
-You have not picked the latest dt schema. Please go through the cover 
-letter where a PR is mentioned, please pull that or validate against 
-latest schema.
+[    0.894779] BUG: KASAN: slab-out-of-bounds in viommu_probe_device+0x8b4/0xb20
+[    0.894788] Read of size 8 at addr ffff88800a2eba4c by task swapper/0/1
+[    0.894791]
+[    0.894794] CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.3.0-rc6-00063-g0c2669a9f4a1 #1 PREEMPT(lazy)
+[    0.894800] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.17.0-0-gb52ca86e094d-prebuilt.qemu.org 04/01/2014
+[    0.894802] Call Trace:
+[    0.894805]  <TASK>
+[    0.894807]  dump_stack_lvl+0x66/0xa0
+[    0.894821]  print_report+0xd0/0x630
+[    0.894827]  ? viommu_probe_device+0x8b4/0xb20
+[    0.894831]  ? __virt_addr_valid+0x209/0x3f0
+[    0.894837]  ? viommu_probe_device+0x8b4/0xb20
+[    0.894840]  kasan_report+0xe4/0x120
+[    0.894844]  ? viommu_probe_device+0x8b4/0xb20
+[    0.894849]  viommu_probe_device+0x8b4/0xb20
+[    0.894855]  __iommu_probe_device+0x298/0x12f0
+[    0.894860]  ? __pfx___iommu_probe_device+0x10/0x10
+[    0.894863]  ? lockdep_hardirqs_on_prepare+0xdc/0x190
+[    0.894869]  ? trace_hardirqs_on+0x18/0x160
+[    0.894875]  ? __pfx_probe_iommu_group+0x10/0x10
+[    0.894879]  probe_iommu_group+0x25/0x50
+[    0.894882]  bus_for_each_dev+0x103/0x180
+[    0.894887]  ? __pfx_bus_for_each_dev+0x10/0x10
+[    0.894890]  ? iommu_device_register+0x195/0x680
+[    0.894893]  ? lock_release+0xc6/0x280
+[    0.894899]  iommu_device_register+0x1d7/0x680
+[    0.894903]  ? __pfx_iommu_device_register+0x10/0x10
+[    0.894907]  ? __asan_memset+0x23/0x50
+[    0.894913]  viommu_probe+0x1001/0x1460
+[    0.894919]  ? __pfx_viommu_probe+0x10/0x10
+[    0.894924]  ? lock_acquire+0x18d/0x300
+[    0.894929]  ? __pfx_viommu_event_handler+0x10/0x10
+[    0.894933]  ? vp_modern_set_extended_features+0x85/0xb0
+[    0.894938]  ? vp_set_status+0x20/0x70
+[    0.894944]  virtio_dev_probe+0x569/0xbe0
+[    0.894950]  ? kernfs_add_one+0xeb/0x7a0
+[    0.894956]  ? __pfx_virtio_dev_probe+0x10/0x10
+[    0.894961]  ? kernfs_create_link+0x169/0x230
+[    0.894965]  ? kernfs_put+0x17/0x30
+[    0.894970]  ? sysfs_do_create_link_sd+0x89/0x100
+[    0.894976]  really_probe+0x1c3/0x6a0
+[    0.894981]  __driver_probe_device+0x19e/0x3b0
+[    0.894985]  ? trace_hardirqs_on+0x18/0x160
+[    0.894990]  driver_probe_device+0x45/0xd0
+[    0.894994]  __driver_attach+0x149/0x3e0
+[    0.894998]  ? __pfx___driver_attach+0x10/0x10
+[    0.895002]  bus_for_each_dev+0x103/0x180
+[    0.895006]  ? __pfx_bus_for_each_dev+0x10/0x10
+[    0.895008]  ? bus_add_driver+0x1d1/0x500
+[    0.895012]  ? lock_release+0xc6/0x280
+[    0.895018]  bus_add_driver+0x20b/0x500
+[    0.895022]  driver_register+0x12f/0x450
+[    0.895027]  ? __pfx_virtio_iommu_drv_init+0x10/0x10
+[    0.895032]  do_one_initcall+0xc9/0x440
+[    0.895037]  ? __pfx_do_one_initcall+0x10/0x10
+[    0.895042]  ? __kmalloc_noprof+0x40d/0x680
+[    0.895047]  ? kernel_init_freeable+0x385/0x8e0
+[    0.895053]  kernel_init_freeable+0x4c3/0x8e0
+[    0.895057]  ? __pfx_kernel_init+0x10/0x10
+[    0.895063]  kernel_init+0x1f/0x1e0
+[    0.895068]  ? _raw_spin_unlock_irq+0x23/0x40
+[    0.895072]  ? __pfx_kernel_init+0x10/0x10
+[    0.895077]  ret_from_fork+0x52e/0x780
+[    0.895081]  ? __pfx_ret_from_fork+0x10/0x10
+[    0.895085]  ? __switch_to+0x572/0xde0
+[    0.895091]  ? __pfx_kernel_init+0x10/0x10
+[    0.895096]  ret_from_fork_asm+0x1a/0x30
+[    0.895103]  </TASK>
+[    0.895104]
+[    0.895105] Allocated by task 1:
+[    0.895108]  kasan_save_stack+0x33/0x60
+[    0.895111]  kasan_save_track+0x14/0x30
+[    0.895114]  __kasan_kmalloc+0x8f/0xa0
+[    0.895117]  __kmalloc_noprof+0x264/0x680
+[    0.895120]  viommu_probe_device+0x2e3/0xb20
+[    0.895123]  __iommu_probe_device+0x298/0x12f0
+[    0.895126]  probe_iommu_group+0x25/0x50
+[    0.895129]  bus_for_each_dev+0x103/0x180
+[    0.895131]  iommu_device_register+0x1d7/0x680
+[    0.895134]  viommu_probe+0x1001/0x1460
+[    0.895137]  virtio_dev_probe+0x569/0xbe0
+[    0.895141]  really_probe+0x1c3/0x6a0
+[    0.895144]  __driver_probe_device+0x19e/0x3b0
+[    0.895148]  driver_probe_device+0x45/0xd0
+[    0.895151]  __driver_attach+0x149/0x3e0
+[    0.895154]  bus_for_each_dev+0x103/0x180
+[    0.895160]  bus_add_driver+0x20b/0x500
+[    0.895163]  driver_register+0x12f/0x450
+[    0.895166]  do_one_initcall+0xc9/0x440
+[    0.895166]  kernel_init_freeable+0x4c3/0x8e0
+[    0.895166]  kernel_init+0x1f/0x1e0
+[    0.895166]  ret_from_fork+0x52e/0x780
+[    0.895166]  ret_from_fork_asm+0x1a/0x30
+[    0.895166]
+[    0.895166] The buggy address belongs to the object at ffff88800a2eb800
+[    0.895166]  which belongs to the cache kmalloc-1k of size 1024
+[    0.895166] The buggy address is located 0 bytes to the right of
+[    0.895166]  allocated 588-byte region [ffff88800a2eb800, ffff88800a2eba4c)
+[    0.895166]
+[    0.895166] The buggy address belongs to the physical page:
+[    0.895166] page: refcount:0 mapcount:0 mapping:0000000000000000 index:0xffff88800a2ee000 pfn:0xa2e8
+[    0.895166] head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+[    0.895166] flags: 0x100000000000240(workingset|head|node=0|zone=1)
+[    0.895166] page_type: f5(slab)
+[    0.895166] raw: 0100000000000240 ffff888008c41dc0 ffff888008c40888 ffff888008c40888
+[    0.895166] raw: ffff88800a2ee000 000000000010000c 00000000f5000000 0000000000000000
+[    0.895166] head: 0100000000000240 ffff888008c41dc0 ffff888008c40888 ffff888008c40888
+[    0.895166] head: ffff88800a2ee000 000000000010000c 00000000f5000000 0000000000000000
+[    0.895166] head: 0100000000000003 fffffffffffffe01 00000000ffffffff 00000000ffffffff
+[    0.895166] head: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
+[    0.895166] page dumped because: kasan: bad access detected
+[    0.895166]
+[    0.895166] Memory state around the buggy address:
+[    0.895166]  ffff88800a2eb900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[    0.895166]  ffff88800a2eb980: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[    0.895166] >ffff88800a2eba00: 00 00 00 00 00 00 00 00 00 04 fc fc fc fc fc fc
+[    0.895166]                                               ^
+[    0.895166]  ffff88800a2eba80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[    0.895166]  ffff88800a2ebb00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[    0.895166] ==================================================================
 
-Regards,
-Vikash
+Bound the walk so a property cannot extend past probe_size, and move the
+length check in viommu_add_resv_mem() ahead of the dereference.  The
+property length is device-controlled, so widen it so the addition cannot
+wrap.
+
+Fixes: 2a5a314874450d ("iommu/virtio: Add probe request")
+Cc: stable@vger.kernel.org
+Signed-off-by: Yehyeong Lee <yhlee@isslab.korea.ac.kr>
+---
+ drivers/iommu/virtio-iommu.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 587fc13197f12..dbc997a6e3568 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -489,6 +489,9 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ 	struct iommu_resv_region *region = NULL, *next;
+ 	unsigned long prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+ 
++	if (len < sizeof(*mem))
++		return -EINVAL;
++
+ 	start = start64 = le64_to_cpu(mem->start);
+ 	end = end64 = le64_to_cpu(mem->end);
+ 	size = end64 - start64 + 1;
+@@ -497,9 +500,6 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ 	if (start != start64 || end != end64 || size < end64 - start64)
+ 		return -EOVERFLOW;
+ 
+-	if (len < sizeof(*mem))
+-		return -EINVAL;
+-
+ 	switch (mem->subtype) {
+ 	default:
+ 		dev_warn(vdev->dev, "unknown resv mem subtype 0x%x\n",
+@@ -531,7 +531,8 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ {
+ 	int ret;
+-	u16 type, len;
++	u16 type;
++	unsigned int len;
+ 	size_t cur = 0;
+ 	size_t probe_len;
+ 	struct virtio_iommu_req_probe *probe;
+@@ -563,8 +564,10 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ 	type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
+ 
+ 	while (type != VIRTIO_IOMMU_PROBE_T_NONE &&
+-	       cur < viommu->probe_size) {
++	       cur + sizeof(*prop) <= viommu->probe_size) {
+ 		len = le16_to_cpu(prop->length) + sizeof(*prop);
++		if (len > viommu->probe_size - cur)
++			break;
+ 
+ 		switch (type) {
+ 		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
+-- 
+2.43.0
 
