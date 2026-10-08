@@ -1,111 +1,135 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73F33493D55
-	for <iommu@lists.linux.dev>; Thu,  8 Oct 2026 10:27:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7403643D515;
+	Thu,  8 Oct 2026 11:42:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791455232; cv=none; b=OR1HIA2x8GFPla1LyOytDvfB3B22xFXzN9FPuk778/mw6EXTYFe6/9eM9UMPXf/TA/XJEqP0kIpCnVGO9XfyHkzFIZJo2l0HAefJ1tc0x8QwjWU3jH0qXH08h/laTpnf5kVr/pcVWyFFP/81rPImqVuMiBj+EHbxc+JnJQFuL7g=
+	t=1791459773; cv=none; b=XPg3L4u12zmNsjT4dfVp128q2WTZ9wfZQxQFDBIgBjm9+0H/WQiYGcKQHy7UyBdQ0NKdwcMk47QCi04nbFh9cVqHYW0R8NcwFgBP8vI71sS1adBtXszpG9OI4KLj8cq8ZHFP3TIWoHsuygkSDNPc2ljdp+vyumUlHnOJDuF9rKs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791455232; c=relaxed/simple;
-	bh=QhCEJCWFqwrvmCjcqkWNZlTEDRjVdZZGuz074t6eMjc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oLjLtOtQNZutOLoPNN/TGGQzcx4/Xy5CQQxLFgMSvDEYM8S7VoE3bK4zX+KvceSQ17uBD9lRFEtiOaKAiPeKU/B3gV9GGg4FHsBw8EyMePJAgQpHWXiNlK0YXIEydDuam+GGm5MYnjKt6whE3kySiChoxVyvRPgZKtl/LKCJE0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=isslab.korea.ac.kr; spf=none smtp.mailfrom=isslab.korea.ac.kr; dkim=pass (2048-bit key) header.d=isslab-korea-ac-kr.20251104.gappssmtp.com header.i=@isslab-korea-ac-kr.20251104.gappssmtp.com header.b=SGfcgKO6; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=isslab.korea.ac.kr
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=isslab.korea.ac.kr
+	s=arc-20240116; t=1791459773; c=relaxed/simple;
+	bh=3r/0Tsoa/eArH3KAveHgL61sNbj+NCEWCLZ1vCW0CKA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=KxrgKozgks7BvVsJi4N9B6WA5kFB7g0614uYyXio0DeMIH20Bpax4OlESatY1+0v53g92wvXVWdrFPUyp1LPP11s8udQDJSPEX9Jjn99XIeCE8ONbOGaaXVaggWM3T5Lt60cyTQSuF+3UWziF783+4Fv4znXx4gyfVssIue8t7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YiFIMNPQ; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=isslab-korea-ac-kr.20251104.gappssmtp.com header.i=@isslab-korea-ac-kr.20251104.gappssmtp.com header.b="SGfcgKO6"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2e5378b281aso16653885ad.2
-        for <iommu@lists.linux.dev>; Thu, 08 Oct 2026 03:27:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isslab-korea-ac-kr.20251104.gappssmtp.com; s=20251104; t=1791455231; x=1792060031; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=yYFMzSsUO1/6oY0m9yqtR64F8Xqv2JTUxrApkdvIlak=;
-        b=SGfcgKO6rSEdfjAJPBfae+8fL2h2389M+B1ZOeUWxAInCIe4JjHRhtTADkv1uSkNJ9
-         FWsPLnPeNNeJTrEPCRUlcoNNpklYb6+/Gnut3jMDd92D0prQVrQZzpcmdTNNVsu68ECR
-         xGOiDw/8rwwu4oXyfxaBIQ6UI7Sb+IyVI9YsHsZC5MLve/knqML+A2Zxz0JL8JlsmJBa
-         1isYJA1C7J5hqAzkE5aLa14u/5Wkoaa9kjKt3rb4Cie2FOB5qXId9fYUL+diAia6hTlJ
-         4nXfmp1zbjrJGANKZovWhz4T79QlYGyScfx7cRd0L9QYGkQTiav/9txBnIkspSjgKG7/
-         aw7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791455231; x=1792060031;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=yYFMzSsUO1/6oY0m9yqtR64F8Xqv2JTUxrApkdvIlak=;
-        b=ok4/ELl2YkABKLAEw9SDkhEHxROfW+0AP6FJz9CzmLSNgwQ4V4+UDFmNpCTLRYBanh
-         a3jxYGjw5ajfBb+TNAugj7vCsGJDIV9b9YW2YAaYcrrRrDMYxDeavqjjmKsdfKff/tSz
-         TWmO4sxnxRKSVWq30UzsCp7zvtY7SIBMFDkjNAFoDAyQNSEe3AnmRaYPf2z7A4Kq7V3b
-         z8PoQwxJoKnNbZTwgAycB3SglCYEmatO35OnJopzDTlIeiF29W8Zabeyp8aYliX8E5j+
-         XZty6pj9gHsY8w6Jvwn/vFAq9DhNybXSPeMqqtEDCrjKdVggKwThBcm/JL5eZPE8A2a8
-         1SWg==
-X-Forwarded-Encrypted: i=1; AKwUvBzkOWePPamcPaOSoiMgjA9iCXiAWmmc4ATiF5pOxeoi083ZOprhOUpmCTADQUlo9r+ENZB+nw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYI7vRvfweQCqSCVFCrtsg11xqdRHVTzg2nSf3dw4KIrr9+bYCvT
-	Dg16vIUK8IyDYtD3ekHgH8wSfI1+O3RSL2xnxNkYNs4nmsYV9UAAYRz7qDEKJn9ouz8=
-X-Gm-Gg: AYBFou2uf3Zaf6ycSywlit4IiLxw+KSfh7dRL8HCVGtMGoqeiGQtwbfB3RkFSflShdP
-	SwA31QJ/ICskMd7mj3RuaE1lx4OtvZ4XyxuzXVdQqvuY19idkBhf6u3edoYYxCAOVA1OKp3ROAY
-	FXJ7ZdoS3z1ThJk2vCbUePA/rhrkJX4G9PEv2YXPfrYHz388tBJ5npomfQZQJ+gbTkpPJWc5f5X
-	ERidNSTY5ZAY3EDxxNs43uVGSqUlYDydcYXwmDUy+PABRmEX67hlzoBoBPcc6xK2d3c6zJc10DZ
-	iGNKO0eyCVYNMMmPHyegmVzmo14YuI0iatLiFt2glWOnw1Pu7X4tyK959FL6HTO88Yypwk3YO1h
-	eguYwYtHVd3KrqLwvhEnuHCy7LN6mkey5co9R0YuEjIAMcqKOUKCYJpjxrnpv/crDf3qQ1qwzzY
-	CoPkQo4RxsAxE6RVzzC7DV7TUwxFQ+sllpmKhVWJuEQlQLb0YPjgkhH2U9FboxQQhjkBhwLv4Z6
-	8W8NA==
-X-Received: by 2002:a17:902:f707:b0:2e2:ed2b:87f8 with SMTP id d9443c01a7336-2e600509214mr44172725ad.41.1791455230764;
-        Thu, 08 Oct 2026 03:27:10 -0700 (PDT)
-Received: from yhlee-960QFG.. ([125.131.91.97])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2e6046fdbcasm22578185ad.13.2026.10.08.03.27.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2026 03:27:10 -0700 (PDT)
-From: Yehyeong Lee <yhlee@isslab.korea.ac.kr>
-To: jpb@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org
-Cc: robin.murphy@arm.com,
-	eric.auger@redhat.com,
-	mst@redhat.com,
-	virtualization@lists.linux.dev,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	sashiko-bot@kernel.org,
-	Yehyeong Lee <yhlee@isslab.korea.ac.kr>
-Subject: Re: [PATCH] iommu/virtio: bound the probe-property walk to the probe buffer
-Date: Thu,  8 Oct 2026 19:26:53 +0900
-Message-ID: <20261008102653.1084996-1-yhlee@isslab.korea.ac.kr>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <sashiko-outbox-163970@kernel.org>
-References: <sashiko-outbox-163970@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YiFIMNPQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 866B91F000FF;
+	Thu,  8 Oct 2026 11:42:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791459772;
+	bh=4xI6sjx5O7jgHs+vd9dc55iUHxFgkYDVUp/hXBLdiUU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=YiFIMNPQLdCE2zbWLTULNFqt7kb5t3ajFyu/BuSQuH9LkL3xA+iVywarHowzdzA+7
+	 1sou/7jke+Vj+nbmlqBC7VTbQKzq6IDlT13spt+uePeZIZSDvImU4X8lzs7M9MWkgQ
+	 ufVjTQQcUB+9Uhuptv8x1rTJ2ng7aURxLQAwDcN+KUP9pnq+WBBmHpWri6CQgA1FJo
+	 gjdV83W7dro0R18RTq0UUSD0nA6cozVVgRHk/IvB8xAFneymfmMfAbHLzncbeqt7T5
+	 QuvxlpKgQFLXt52Ywqwn3oQGPELoMic1DSF4KHV61Y6N7B50K7oD5nmWN42IdAkaMz
+	 Pd2ocvIJj9mQw==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	x86@kernel.org
+Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
+ sizing
+In-Reply-To: <bc0fdf46-eaf6-49b9-a015-1742c66829a6@samsung.com>
+References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
+ <20260924060756.1325156-7-aneesh.kumar@kernel.org>
+ <asVs3doaJ4WrT3M2@willie-the-truck> <asYZFXGyafRjjBS0@arm.com>
+ <CGME20261007104325eucas1p2277d74db794e285f33038204d52dc843@eucas1p2.samsung.com>
+ <asYiOgskwi8JYLe_@willie-the-truck>
+ <bc0fdf46-eaf6-49b9-a015-1742c66829a6@samsung.com>
+Date: Thu, 08 Oct 2026 17:12:28 +0530
+Message-ID: <yq5ase2g8lln.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-Thanks for the review.  Both points are the same concern: an unaligned property
-making mem->start and mem->end unaligned.
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
 
-This is pre-existing.  viommu_add_resv_mem() already performed the le64_to_cpu()
-reads of mem->start and mem->end before this patch; the patch only adds the
-bounds check in the walk and moves the existing length check ahead of those
-reads, so it neither introduces nor widens the unaligned access.
+> On 07.10.2026 12:43, Will Deacon wrote:
+>> On Wed, Oct 07, 2026 at 11:04:05AM +0100, Catalin Marinas wrote:
+>>> On Tue, Oct 06, 2026 at 10:49:17PM +0100, Will Deacon wrote:
+>>>> On Thu, Sep 24, 2026 at 11:37:54AM +0530, Aneesh Kumar K.V (Arm) wrote:
+>>>>> @@ -496,7 +516,8 @@ swiotlb_select_pool_policy(unsigned int flags)
+>>>>>  	if (swiotlb_force_disable)
+>>>>>  		return SWIOTLB_POOL_NONE;
+>>>>>  
+>>>>> -	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+>>>>> +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+>>>>> +	    !restricted_dma_pool_present)
+>>>>>  		return SWIOTLB_POOL_CC_GUEST;
+>>>> I think this check on the restricted DMA pool is too general -- the pool
+>>>> could be tied to a specific DMA-capable peripheral and so treating its
+>>>> presence as a global property isn't right.
+>>> I agree it's a hack but that was the simplest way to avoid the pVMs
+>>> getting a bounce buffer after this patch. More than happy to leave it
+>>> out and reduce the buffer on cmdline or we come up with some better
+>>> heuristics.
+>> Hrm, that does mean that reverting just this part will regress pVMs
+>> because they'll suddenly be allocating a tonne more memory for an
+>> entirely unused swiotlb buffer. So I think I'd prefer to drop the entire
+>> series until this has been worked out properly.
+> I've dropped the entire series from dma-mapping-for-next. Aneesh, please respin
+> it again and move the pKVM/restricted_dma_pool related code into the separate
+> patch.
+>
 
-And it does not fault on the architectures that build this driver.  VIRTIO_IOMMU
-depends on (ARM64 || X86) (drivers/iommu/Kconfig), and both select
-HAVE_EFFICIENT_UNALIGNED_ACCESS and read unaligned normal memory without
-trapping.  I tested this on x86-64: with the RESV_MEM property forced to an odd
-offset so mem->start and mem->end are misaligned, the values are read back
-correctly with no alignment fault, both with and without this patch (I have not
-run the same on arm64).  The 8-byte property alignment is a device-side
-requirement; the driver does not need to rely on it, since an unaligned property
-is still read correctly here.
+Once we agree on the correct way to detect the pKVM use case, I will
+resend the series.
 
-If you would prefer the parser to be alignment-safe regardless, for instance for
-a UBSAN_ALIGNMENT build, I can convert the device-provided reads to
-get_unaligned_le64() as a follow-up.
-
-Thanks,
-Yehyeong
+-aneesh
