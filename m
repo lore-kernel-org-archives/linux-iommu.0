@@ -1,29 +1,30 @@
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30EB26FA4B
-	for <iommu@lists.linux.dev>; Thu,  8 Oct 2026 14:00:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216403E49FD
+	for <iommu@lists.linux.dev>; Thu,  8 Oct 2026 14:00:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791468029; cv=none; b=fpw8i7wt9HxXtpKuG5v+j8HA+2BnWvgozuRZ14MDTwMnPsrxkNDN7ZR1MOdSzJjhtoHu0nDegiX/O2topzPaAqciNogroq7crbAN6hnr0/ipvvE414eNtOwhTXIq69waMnvvpgkb9oZlMuorfobO07efzsUbwZoYv/iOMsaQf8s=
+	t=1791468030; cv=none; b=oQBUuSeCLMVZ8cH6q7rIIL0vDL6GH8NcCJKelPf7IsFn2k63cml6FJ05vbU681HcgV9EQR/1wglw7ngKXK0GLXnK6q47faIA/IAK5s5KDY1vAlMGOiGrJ5WeOQRCdnXMu4oh4WKQPr/msB6mKnFZhrY/SV9lxgA1nHkQu/usl9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791468029; c=relaxed/simple;
-	bh=b30BF064L6H8MGZ61C8L/nvtO3ny+4+nYm+uc7KOSKw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Z/XvtZBHuddgDOHOKG5swN4jC+ow0ODN4hmixrRwTYMeWZApnkWAhokyNdK1x7uwcbuQ1mvph7oF3PvENox1V7FKEvU5Wv9lDX241bmByFH5dcL9qE/ySQscoz2jq/j8QnYWZciayIytAZ2Bn5FW/64Cu0eT+qxrhr8c2melPF0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=e1eLbpL1; arc=none smtp.client-ip=115.124.30.132
+	s=arc-20240116; t=1791468030; c=relaxed/simple;
+	bh=kqoKfbRIzrThWrSIDSos43QWzar7POfE2OCl+OI2leo=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Wnk/+YMviomIS1AQYU0Cq4HB44opp7cZfk32SuBao8++Y5b2wMLkCZ9JTLqG2crHiJ1EL3t1hxWFSIOr/SmUK6m6XS0SdSzZ7yDSxrnl/g/53DMwFDoWkhzXsCCSlCUdldm0eJddsA5rj/uZb9Sc5IeGyHSdFp4yLe7V3u/mqiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=Xvx1tic4; arc=none smtp.client-ip=115.124.30.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="e1eLbpL1"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="Xvx1tic4"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1791468021; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=rZAOc+mYe3cY1Z5TiO6j3GRrj0kPXBVOgAxhQWLGsmQ=;
-	b=e1eLbpL19UWneGlOJyaJgIdHJnUTjOHRW+/24skkeDs4DsBaCNf+t8Mfbt70kPWBFBCH/gB9rWiJ7WwXxksBruj1sakeZunc/7sNooBHWF/CetZ6d9j8XOX3WBCVsfh1gvGAo1zKTqRFw32CCh718XrdRWDgsiYKqWGvKKz6YEE=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0XCQTvlb_1791468019;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XCQTvlb_1791468019 cluster:ay36)
+	t=1791468023; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=ZdsybsZg4gWBHS9NoCP952HDoUG/uyGaTz5zYAijfYM=;
+	b=Xvx1tic4v9CqoIOByaiK+c3+B1h44FeHOpfoQ6UqSe3JE0Z1/2wppTot6andVq87WlQFSrvb+ilkSnztdb7dygJdhZQkuvXTxWd50+aKDTQfVh7TrFb4LedOyS9CLe8VAu+VIqMu9WCb5B5e4QAWFyViXa0sjOImfXdW+lwo8oY=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R811e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0XCQTvlx_1791468021;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XCQTvlx_1791468021 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Thu, 08 Oct 2026 22:00:20 +0800
+          Thu, 08 Oct 2026 22:00:22 +0800
 From: fangyu.yu@linux.alibaba.com
 To: tomasz.jeznach@linux.dev,
 	joro@8bytes.org,
@@ -44,10 +45,12 @@ Cc: fangyu.yu@linux.alibaba.com,
 	linux-kernel@vger.kernel.org,
 	linux-riscv@lists.infradead.org,
 	kvm-riscv@lists.infradead.org
-Subject: [RFC PATCH 0/3] iommu/riscv: Add irqbypass support without MSI page table
-Date: Thu,  8 Oct 2026 21:59:58 +0800
-Message-Id: <20261008140001.94508-1-fangyu.yu@linux.alibaba.com>
+Subject: [RFC PATCH 1/3] iommu/riscv: Add guest IMSIC GPA mapping helpers
+Date: Thu,  8 Oct 2026 21:59:59 +0800
+Message-Id: <20261008140001.94508-2-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20261008140001.94508-1-fangyu.yu@linux.alibaba.com>
+References: <20261008140001.94508-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,34 +61,200 @@ Content-Transfer-Encoding: 8bit
 
 From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-The MSI page table is an optional feature of the RISC-V IOMMU
-specification. Hardware without the MSI_FLAT capability has no such
-table, and MSI writes from devices are translated by the second-stage
-page table like any other DMA.
+IOMMU implementations without the MSI_FLAT capability translate MSI
+writes through the second-stage page table, so IRQ forwarding on them
+will need guest IMSIC pages mapped into the second-stage domain.
 
-Since the second-stage page table governs where those MSI writes land,
-forwarding is still possible without an MSI page table: map the guest
-IMSIC GPA to the host IMSIC HPA in the second-stage domain and device
-MSI writes reach the vCPU's interrupt file directly, bypassing the host
-MSI path entirely.
+Add an xarray to the MSI table that tracks the HPA installed for each
+mapped guest IMSIC GPA, and two helpers for use with the MSI table lock
+held: riscv_iommu_msi_table_map_gpa() installs the initial 4 KiB
+mapping, and riscv_iommu_msi_table_replace_gpa_leaf() atomically swaps
+the leaf PTE's PFN when a vCPU's VS-file host page moves, rejecting
+leaves that do not map the expected old HPA.
 
-This patch implements irqbypass using second-stage page table, so it
-is a functional supplement for IOMMU without MSI page table.
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+---
+ drivers/iommu/riscv/iommu.c | 94 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/riscv/iommu.h | 12 +++++
+ 2 files changed, 106 insertions(+)
 
-This series is based on Andrew Jones' v3 irqbypass support series [1]
-
-[1] https://lore.kernel.org/linux-riscv/20260928143113.49838-1-andrew.jones@oss.qualcomm.com/
-
-Fangyu Yu (3):
-  iommu/riscv: Add guest IMSIC GPA mapping helpers
-  iommu/riscv: Extract IRQ forwarding payload validation
-  iommu/riscv: Support IRQ forwarding without MSI page tables
-
- drivers/iommu/riscv/iommu-ir.c | 179 +++++++++++++++++++++++++++++++--
- drivers/iommu/riscv/iommu.c    |  94 +++++++++++++++++
- drivers/iommu/riscv/iommu.h    |  12 +++
- 3 files changed, 276 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index e2e77469ea3c..48fc57d6409c 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -24,6 +24,7 @@
+ #include <linux/moduleparam.h>
+ #include <linux/mutex.h>
+ #include <linux/pci.h>
++#include <linux/pgtable.h>
+ #include <linux/generic_pt/iommu.h>
+ 
+ #include "../dma-iommu.h"
+@@ -1217,6 +1218,92 @@ void riscv_iommu_msi_table_inval_all(struct riscv_iommu_msi_table *msi_table)
+ 	riscv_iommu_iotlb_inval(domain, &gather);
+ }
+ 
++int riscv_iommu_msi_table_map_gpa(struct riscv_iommu_msi_table *msi_table,
++				  dma_addr_t gpa, phys_addr_t hpa)
++{
++	struct riscv_iommu_domain *domain =
++		container_of(msi_table, struct riscv_iommu_domain, msi_table);
++	const int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
++
++	/* Guest IMSIC GPA mapping only exists in second-stage translations. */
++	if (!domain->gscid)
++		return -EOPNOTSUPP;
++
++	return iommu_map(&domain->domain, gpa, hpa, IMSIC_MMIO_PAGE_SZ, prot,
++			 GFP_ATOMIC);
++}
++
++int riscv_iommu_msi_table_replace_gpa_leaf(struct riscv_iommu_msi_table *msi_table,
++					   dma_addr_t gpa, phys_addr_t old_hpa,
++					   phys_addr_t new_hpa)
++{
++	struct riscv_iommu_domain *domain =
++		container_of(msi_table, struct riscv_iommu_domain, msi_table);
++	struct pt_iommu_riscv_64_hw_info pt_info;
++	u64 *root, *table, *ptep;
++	u64 old, new;
++	int top_level, level;
++
++	if (!IS_ALIGNED(gpa | old_hpa | new_hpa, PAGE_SIZE))
++		return -EINVAL;
++	if (!domain->gscid)
++		return -EOPNOTSUPP;
++
++	pt_iommu_riscv_64_hw_info(&domain->riscvpt, &pt_info);
++	switch (pt_info.iohgatp_mode) {
++	case RISCV_IOMMU_DC_IOHGATP_MODE_SV39X4:
++		top_level = 2;
++		break;
++	case RISCV_IOMMU_DC_IOHGATP_MODE_SV48X4:
++		top_level = 3;
++		break;
++	case RISCV_IOMMU_DC_IOHGATP_MODE_SV57X4:
++		top_level = 4;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	root = phys_to_virt(pt_info.ppn << PAGE_SHIFT);
++	for (;;) {
++		table = root;
++		for (level = top_level; level >= 0; level--) {
++			unsigned int shift = PAGE_SHIFT + level * 9;
++			unsigned int index = gpa >> shift;
++
++			if (level == top_level)
++				index &= GENMASK(10, 0);
++			else
++				index &= GENMASK(8, 0);
++			ptep = &table[index];
++			old = READ_ONCE(*ptep);
++
++			if (level) {
++				/* A valid non-leaf PTE has R/W/X clear. */
++				if ((old & (_PAGE_PRESENT | _PAGE_LEAF)) !=
++				    _PAGE_PRESENT)
++					return -EADDRINUSE;
++				table = phys_to_virt(FIELD_GET(_PAGE_PFN_MASK,
++							       old) << PAGE_SHIFT);
++				continue;
++			}
++
++			/* Replace only the L0 leaf previously installed for this GPA. */
++			if (!(old & _PAGE_PRESENT) || !(old & _PAGE_LEAF) ||
++			    FIELD_GET(_PAGE_PFN_MASK, old) !=
++			    old_hpa >> PAGE_SHIFT)
++				return -EADDRINUSE;
++
++			new = (old & ~_PAGE_PFN_MASK) |
++			      FIELD_PREP(_PAGE_PFN_MASK,
++					 new_hpa >> PAGE_SHIFT);
++			if (cmpxchg64(ptep, old, new) == old)
++				return 0;
++			break;
++		}
++	}
++}
++
+ #define RISCV_IOMMU_FSC_BARE 0
+ /*
+  * This function sends IOTINVAL commands as required by the RISC-V
+@@ -1425,6 +1512,8 @@ static void riscv_iommu_iotlb_sync(struct iommu_domain *iommu_domain,
+ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
+ {
+ 	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
++	struct riscv_iommu_noflat_imsic *imsic;
++	unsigned long index;
+ 
+ 	WARN_ON(!list_empty(&domain->bonds));
+ 
+@@ -1435,6 +1524,10 @@ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
+ 	if (domain->gscid > 0)
+ 		ida_free(&riscv_iommu_gscids, domain->gscid);
+ 
++	xa_for_each(&domain->msi_table.noflat_imsics, index, imsic)
++		kfree(imsic);
++	xa_destroy(&domain->msi_table.noflat_imsics);
++
+ 	pt_iommu_deinit(&domain->riscvpt.iommu);
+ 	iommu_free_pages(domain->msi_table.root);
+ 	kfree(domain);
+@@ -1676,6 +1769,7 @@ riscv_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
+ 	INIT_LIST_HEAD_RCU(&domain->bonds);
+ 	raw_spin_lock_init(&domain->lock);
+ 	raw_spin_lock_init(&domain->msi_table.lock);
++	xa_init(&domain->msi_table.noflat_imsics);
+ 	mutex_init(&domain->mutex);
+ 	iommu = dev_to_iommu(dev);
+ 	cfg.common.hw_max_oasz_lg2 = 56;
+diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+index 9852962e245b..53a368fbbdf2 100644
+--- a/drivers/iommu/riscv/iommu.h
++++ b/drivers/iommu/riscv/iommu.h
+@@ -18,6 +18,7 @@
+ #include <linux/irqdomain.h>
+ #include <linux/rcupdate.h>
+ #include <linux/sizes.h>
++#include <linux/xarray.h>
+ 
+ #include "iommu-bits.h"
+ 
+@@ -74,6 +75,11 @@ struct riscv_iommu_device {
+ 	struct irq_domain *irqdomain;
+ };
+ 
++/* Tracks a guest IMSIC GPA mapped into an S2 domain on IOMMUs without MSI_FLAT. */
++struct riscv_iommu_noflat_imsic {
++	phys_addr_t hpa;
++};
++
+ struct riscv_iommu_msi_table {
+ 	/* Protects attachment, interrupt forwarding state, and MSI PTE updates. */
+ 	raw_spinlock_t lock;
+@@ -84,6 +90,7 @@ struct riscv_iommu_msi_table {
+ 	u64 msi_addr_pattern;
+ 	const void *owner;
+ 	u64 required_caps; /* RISCV_IOMMU_CAPABILITIES_* required by active MSI PTEs */
++	struct xarray noflat_imsics;
+ };
+ 
+ /* Private IOMMU data for managed devices, dev_iommu_priv_* */
+@@ -109,6 +116,11 @@ bool riscv_iommu_msi_table_check_caps(struct riscv_iommu_msi_table *msi_table, u
+ void riscv_iommu_msi_table_inval(struct riscv_iommu_msi_table *msi_table, unsigned long addr);
+ void riscv_iommu_msi_table_inval_all(struct riscv_iommu_msi_table *msi_table);
+ void riscv_iommu_msi_table_update(struct riscv_iommu_msi_table *msi_table, bool activate);
++int riscv_iommu_msi_table_map_gpa(struct riscv_iommu_msi_table *msi_table,
++				  dma_addr_t gpa, phys_addr_t hpa);
++int riscv_iommu_msi_table_replace_gpa_leaf(struct riscv_iommu_msi_table *msi_table,
++					   dma_addr_t gpa, phys_addr_t old_hpa,
++					   phys_addr_t new_hpa);
+ 
+ #ifdef CONFIG_RISCV_IMSIC
+ void riscv_iommu_ir_irq_domain_remove(struct riscv_iommu_device *iommu);
 -- 
 2.50.1
 
