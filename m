@@ -1,231 +1,253 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF7B52BEC34;
-	Thu,  8 Oct 2026 05:33:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6537B37E316;
+	Thu,  8 Oct 2026 06:00:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791437626; cv=none; b=D+XF+1rDsbDJNGDyCHVQvMhRJmbevT3vjTZ1vVXdoOpyW0OWhpxEQ/OJEm/EI5J9ZvezL1MUvLx9ULCdI8wgbYz8jLPRybooaPz/xGZo50i+OnK4HFTjk+/hhpBQok5Z6pmPG8+OsgziL1lJK8oAaOnBKA8Zf0brazggA7wyLxQ=
+	t=1791439215; cv=none; b=fgEEI3N1JardZoD4FfjuETRWxKqrl1WthVHNd+7Yjb1bIcwA8GvzxnqXrZAW4yh0I4TmA+rW5MPhjVvKiksnQoZsFc1tjfqNgdOlqhnxViH0HvoHc/lSRGOsPXF8h1qmnMZ42Sr5zcUUcDTyMwXLcgRNBhp5KFqIlbruRuk8ogY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791437626; c=relaxed/simple;
-	bh=Xr/3FGMXw2SythNdPq6WqsopLIGssI8wJikwFk2nM/U=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=DgTsaKNzcJzwUvbeuHBGLrl9Cpm9weWBOEf8zcRUe24kZtQnPhBC1AUP6lgApF5FSS2OJt3iDAN9845FhNY1JX1rYV5Qv/6z9aktF2+3NpwUFQu5NcLCusMDaNX5F8KBVLp0Yl0x7MZiOfrwdokt3WGQwhNdn3gsRVeTU05Azqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MlFvX1x1; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791439215; c=relaxed/simple;
+	bh=CWXwUoC8C3Vk139oKSzyQMaY69RG3Wg9yXa0Eecy3Q0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=b2C7cij5KO8Sa8iJimuVdDZcx1g2O6lEsJZe+9XkQM25Jum8qGl9zBSxN/210C00guRfg2y0K5fUyZs276GnRjYcvbnb+NJ5OzfqPrYJzph8++PPz6J/ASm+6aFYbSRYaMdTuEqRcwhd7b+xh6ygjhFWs6m8+gMqaKQv//eD2Eo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XecI8/3Z; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MlFvX1x1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADBD61F000FF;
-	Thu,  8 Oct 2026 05:33:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XecI8/3Z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0E511F000FF;
+	Thu,  8 Oct 2026 06:00:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791437624;
-	bh=DiCB3zTU35Q/So7+8YpTI1O1VNazQCwPsoCqXsbVCxA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=MlFvX1x1UhWZRY1blp5vdgZEPOMCBXQinqSZI84kOfHvYoEphDSM4c94C8k0YCneZ
-	 +CvWpN13IHO40ySHjg36SGLM6p3x45bPMR627QwPtHEOxGz1S8+sT5TicHHAqfnwbg
-	 bqFKdwKME2OoCRwQAo2p4meLpit9e42WrSXDC9nPxddpD1ycCgJPlJjEd5pDoDOqWs
-	 ennUOXzrVpLk3Kqhf1z0mNeMc81DduJcnqdwFkPFglVDZ80bS0a6JisTfrcpB+qHEQ
-	 B2B7dFO8dNiI2LLj/G2xvndmsNBdA4U85+1Ksxk77R/C0BzNaKttWJhMVtqisJgUfF
-	 7H/HlTSl2Xjzw==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Will Deacon <will@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
+	s=k20260515; t=1791439214;
+	bh=/bHTGZMzM4w6xwig+RjqaHBwjvdE8aY9v1cTkEXLvIA=;
+	h=From:To:Cc:Subject:Date;
+	b=XecI8/3ZQU3h+nwgEgT8B163FnicZXb5taygrZgyqNxVgYnIX4dOYfOJLIS/BF/BY
+	 fo7Tdo7rqHWJwVZPqgpY4EITNaQyRvtUytleMo6+eQ3Pngjq3Rz/kKdy68Tyzl9hwt
+	 kdSQ1ymBca46zPz+539vrPXicNregsaP2vBA+ZmiAb6YeiLwUpTgmr6CZNfPDr6Ixx
+	 WhXTuoP4f0jVp45a0YQ0BFU3CkkgJpB48KE/w3S3bqSUPljENxrSDi3crSwIWhW0d1
+	 WYuEI+DL33qAHDCaS8K2qny9sZzoMPq7//HcMo/EK557E78ccM/N8zyny2EEaQdefU
+	 EQfxHQ7qPK+SA==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: iommu@lists.linux.dev
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Alex Williamson <alex@shazbot.org>,
 	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
 	Xu Yilun <yilun.xu@linux.intel.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Paul Walmsley <pjw@kernel.org>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Alexandre Ghiti <alex@ghiti.fr>,
-	Andy Lutomirski <luto@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	x86@kernel.org
-Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
- sizing
-In-Reply-To: <yq5awlrt3dwo.fsf@kernel.org>
-References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
- <20260924060756.1325156-7-aneesh.kumar@kernel.org>
- <asVs3doaJ4WrT3M2@willie-the-truck> <asYZFXGyafRjjBS0@arm.com>
- <asYiOgskwi8JYLe_@willie-the-truck> <yq5awlrt3dwo.fsf@kernel.org>
-Date: Thu, 08 Oct 2026 11:03:27 +0530
-Message-ID: <yq5av77c92oo.fsf@kernel.org>
+	kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: [PATCH v7 00/16] iommufd: vIOMMUs and TSM guest requests for confidential guests
+Date: Thu,  8 Oct 2026 11:29:39 +0530
+Message-ID: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+This series adds IOMMUFD and PCI/TSM infrastructure for assigning PCI
+devices to confidential guests. It includes the IOMMU_VDEVICE_TSM_REQ
+ioctl. The Arm CCA host backend is supplied in a separate series; this
+series provides the interfaces it uses.
 
-> Will Deacon <will@kernel.org> writes:
->
->> On Wed, Oct 07, 2026 at 11:04:05AM +0100, Catalin Marinas wrote:
->>> On Tue, Oct 06, 2026 at 10:49:17PM +0100, Will Deacon wrote:
->>> > On Thu, Sep 24, 2026 at 11:37:54AM +0530, Aneesh Kumar K.V (Arm) wrote:
->>> > > @@ -496,7 +516,8 @@ swiotlb_select_pool_policy(unsigned int flags)
->>> > >  	if (swiotlb_force_disable)
->>> > >  		return SWIOTLB_POOL_NONE;
->>> > >  
->>> > > -	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
->>> > > +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
->>> > > +	    !restricted_dma_pool_present)
->>> > >  		return SWIOTLB_POOL_CC_GUEST;
->>> > 
->>> > I think this check on the restricted DMA pool is too general -- the pool
->>> > could be tied to a specific DMA-capable peripheral and so treating its
->>> > presence as a global property isn't right.
->>> 
->>> I agree it's a hack but that was the simplest way to avoid the pVMs
->>> getting a bounce buffer after this patch. More than happy to leave it
->>> out and reduce the buffer on cmdline or we come up with some better
->>> heuristics.
->>
->> Hrm, that does mean that reverting just this part will regress pVMs
->> because they'll suddenly be allocating a tonne more memory for an
->> entirely unused swiotlb buffer. So I think I'd prefer to drop the entire
->> series until this has been worked out properly.
->>
->>> Another option could be the arch code passing another flag that it
->>> doesn't want an encrypted pool (e.g. when running in a pKVM guest) but I
->>> don't particularly this either. The arch code doesn't know whether
->>> there's an alternative pool.
->>
->> At that point, the default size may as well be driven by the
->> drivers/virt/coco driver.
->>
->>> That said, such heuristics should have been a separate patch to make it
->>> easier to review/drop.
->>
->> I think the only right way to get a semi-accurate heuristic is to take
->> into account the set of dma-capable devices that will use the swiotlb
->> pool, but that's fiddly and should probably be tackled as a separate
->> series. Maybe a simpler hack in that direction would be to take the
->> SWIOTLB_POOL_CC_GUEST if _any_ device is going to use swiotlb? You'll
->> run into the usual problem of not being able to tell if a device is
->> DMA-capable or not, but you could probably look for a global restricted
->> DMA pool and, if that doesn't exist, check for per-device restricted pools
->> on dma-coherent devices (since restricted DMA isn't supported by ACPI) as
->> a reasonable approximation.
->
-> So, something like this?
->
-> 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
-> 	    swiotlb_cc_guest_needs_default_pool())
-> 		return SWIOTLB_POOL_CC_GUEST;
->
+Physical IOMMU drivers and PCI TSM backends now provide vIOMMU ops before
+IOMMUFD validates the parent HWPT. These ops provide callbacks for
+determining the allocation size and initializing the vIOMMU, along with
+flags specifying whether a parent HWPT is required. A nesting parent is
+required by default. When the selected ops set IOMMUFD_VIOMMU_NO_HWPT,
+userspace must supply a zero hwpt_id, and IOMMUFD passes NULL as the parent
+domain to the initialization callback. Nested HWPT and hardware queue
+allocation are rejected for a vIOMMU without a parent.
 
-Detecting a DMA-capable device is not straightforward, and if we get it
-wrong, we will enable SWIOTLB_POOL_CC_GUEST unnecessarily. Would the
-code below be a reasonable approximation of what you suggested?
+IOMMUFD first queries the TSM attached to the selected PCI device. Lookup
+pins the backend module before using its vIOMMU ops, and that
+reference is released after the backend's vIOMMU destruction callback.
+The backend must keep its TSM registered while the module is pinned.
+When no TSM provides ops for the requested type, IOMMUFD falls back
+to the physical IOMMU driver. An error from TSM lookup or querying its ops is
+returned without falling back.
 
-Another option would be to make swiotlb_cc_guest_needs_default_pool() a
-weak function that architectures can override. arm64 pKVM could then use
-a different scheme (for this patch series default to false). Would that
-be preferable?
+Vdevice contexts replace the legacy PCI/TSM bind and unbind interface.
+Context acquisition verifies that the device's current TSM matches the
+vIOMMU's TSM. An explicit sysfs disconnect returns EBUSY while contexts
+remain active. Guest requests are dispatched through the vIOMMU ops.
 
-#ifdef CONFIG_DMA_RESTRICTED_POOL
-static bool __init swiotlb_of_dma_candidate(struct device_node *np)
-{
-	struct device_node *node __free(device_node) = of_node_get(np);
+IOMMU_VDEVICE_TSM_REQ checks the guest architecture and the vdevice's
+supported-operation mask before forwarding userspace buffers to the
+backend. Request and response lengths are limited to INT_MAX so a
+successful residue fits in the ioctl return value. The backend supplies
+the architecture-specific request handling and TSM result code.
 
-	/*
-	 * Ignore nodes that don't have compatible and reg property
-	 * So we don't wrongly consider a node as device node.
-	 */
-	if (!of_property_present(np, "compatible") ||
-	    !of_property_present(np, "reg"))
-		return false;
+Notes:
+* Codex was used to assist with commit message formatting and code
+  rearrangement.
+* This series also includes patches from the following series to provide
+  the dependencies needed for Sashiko to review the combined changes:
+  https://lore.kernel.org/all/20260928-vfio-v4-0-e32e226d5932@linux.ibm.com
 
-	while (node) {
-		if (!of_device_is_available(node))
-			return false;
-		/*
-		 * Ignore reserved-memory nodes because that have compatible
-		 * and reg property
-		 */
-		if (node->parent == of_root &&
-		    of_node_name_eq(node, "reserved-memory"))
-			return false;
-		node = of_get_next_parent(node);
-	}
-	return of_dma_is_coherent(np);
-}
+Changes from v6:
+https://lore.kernel.org/all/20260917140159.1163281-1-aneesh.kumar@kernel.org
+* Replace the IOMMUFD provider registry with per-device TSM operation lookup.
+* Move vIOMMU allocation size and initialization into the selected vIOMMU ops.
+* Select parent HWPT policy from the vIOMMU ops flags.
+* Pin a vIOMMU's TSM backend module through vIOMMU destruction.
 
-static bool __init swiotlb_of_dma_needs_default_pool(struct device_node *np)
-{
-	if (!of_dma_get_restricted_pool(np))
-		return true;
+Changes from v5:
+https://lore.kernel.org/all/20260525154816.1029642-1-aneesh.kumar@kernel.org
+* Replace the TSM bind/unbind interface with reference-counted contexts.
+* Add the IOMMUFD vIOMMU provider abstraction.
+* Route TSM guest requests through vIOMMU ops.
 
-	return false;
-}
-#endif
+Changes from v4:
+https://lore.kernel.org/all/20260427061005.901854-1-aneesh.kumar@kernel.org
+* Switch VFIO/iommufd to use struct file *kvm_file instead of relying on
+  kvm->users_count references.
+* Define TSM request scope values globally in iommufd.
+* Rename the ioctl to IOMMU_VDEVICE_TSM_REQ.
+* Address other review feedback.
 
-static bool __init swiotlb_cc_guest_needs_default_pool(void)
-{
-#ifdef CONFIG_DMA_RESTRICTED_POOL
-	struct device_node *np;
-	bool found = false;
+Changes from v2:
+https://lore.kernel.org/all/20260309111704.2330479-1-aneesh.kumar@kernel.org
+* Bump the series revision to v4 to keep it in sync with the dependent CCA DA
+  patchsets. There was no v3 posting.
+* Drop [PATCH v2 1/3] iommufd/viommu: Allow associating a KVM VM fd with a
+  vIOMMU
+* Add two new patches to associate a struct kvm * with iommufd objects:
+  iommufd/device: Associate a kvm pointer to iommufd_device
+  iommufd/viommu: Associate a kvm pointer to iommufd_viommu
+* Address review feedback
 
-	if (!of_root)
-		return true;
-	/*
-	 * DMA capability is not explicitly described for every DT device.
-	 * Use coherent, addressed device nodes as an approximation, and keep
-	 * guest sizing unless every candidate has an initialized restricted
-	 * pool.
-	 */
-	for_each_of_allnodes(np) {
-		if (!swiotlb_of_dma_candidate(np))
-			continue;
-		found = true;
-		if (swiotlb_of_dma_needs_default_pool(np))
-			return true;
-	}
+Changes from v1:
+https://lore.kernel.org/all/20250728135216.48084-8-aneesh.kumar@kernel.org
+* Rebase onto the latest kernel
+* Address review feedback
+* Drop the TSM map ioctl; the KVM prefault patch will be used instead to
+  ensure that private memory is preallocated
 
-	return !found;
-#else
-	return true;
-#endif
-}
+Cc: Alex Williamson <alex@shazbot.org>
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com> 
+CC: Jacob Pan <jacob.pan@linux.microsoft.com> 
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Hunter <jonathanh@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Krishna Reddy <vdumpa@nvidia.com>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Samuel Ortiz <sameo@rivosinc.com>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Thierry Reding <thierry.reding@kernel.org>
+Cc: Vasant Hegde <vasant.hegde@amd.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: kvm@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-coco@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-pci@vger.kernel.org
+Cc: linux-tegra@vger.kernel.org
+
+Aneesh Kumar K.V (Arm) (8):
+  tsm: Remove the device from lookup before PCI teardown
+  iommufd: Add the vdevice TSM request ioctl
+  PCI/TSM: Remove the legacy guest request interface
+  PCI/TSM: Add vIOMMU-bound contexts for vdevices
+  iommufd/viommu: Select vIOMMU operations before allocation
+  iommufd/viommu: Allow PCI TSM backends to provide vIOMMU operations
+  iommufd: Allow vIOMMUs without a parent HWPT
+  PCI/TSM: wait for vdevice contexts before removing a DSM
+
+Nicolin Chen (1):
+  iommufd/viommu: Keep a reference to the KVM file
+
+Shameer Kolothum (1):
+  iommufd/device: Associate KVM file pointer with iommufd_device
+
+Steffen Eiden (6):
+  KVM: Introduce file_to_kvm_<arch>() infrastructure
+  KVM: Add file back-pointer to struct kvm
+  KVM: x86: Use file_to_kvm_x86() in SEV
+  KVM/vfio: Use file-based reference counting for KVM
+  KVM: Restrict kvm_get_kvm/kvm_put_kvm export to internal KVM modules
+  KVM: Remove unused file_is_kvm
+
+ Documentation/ABI/testing/sysfs-bus-pci       |  17 +-
+ Documentation/userspace-api/iommufd.rst       |  44 ++-
+ arch/s390/include/asm/kvm_host_s390.h         |   4 +-
+ arch/s390/kvm/s390/pci.c                      |   9 +-
+ arch/x86/include/asm/kvm_host.h               |   2 +
+ arch/x86/include/asm/kvm_page_track.h         |  10 +-
+ arch/x86/kvm/Makefile                         |   4 +-
+ arch/x86/kvm/mmu/page_track.c                 |  22 +-
+ arch/x86/kvm/svm/sev.c                        |   8 +-
+ drivers/iommu/amd/iommu.c                     |   3 +-
+ drivers/iommu/amd/iommufd.c                   |  18 +-
+ drivers/iommu/amd/iommufd.h                   |  11 +-
+ drivers/iommu/amd/nested.c                    |   4 +-
+ .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  37 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   7 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  16 +-
+ .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |  24 +-
+ drivers/iommu/iommufd/Makefile                |   2 +
+ drivers/iommu/iommufd/device.c                |   7 +-
+ drivers/iommu/iommufd/hw_pagetable.c          |  14 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  10 +
+ drivers/iommu/iommufd/main.c                  |   3 +
+ drivers/iommu/iommufd/selftest.c              |  33 +-
+ drivers/iommu/iommufd/tsm.c                   |  80 ++++
+ drivers/iommu/iommufd/viommu.c                | 117 ++++--
+ drivers/pci/tsm.c                             | 362 ++++++++----------
+ drivers/s390/crypto/vfio_ap_ops.c             |  20 +-
+ drivers/vfio/group.c                          |  11 +-
+ drivers/vfio/iommufd.c                        |   3 +-
+ drivers/vfio/vfio.h                           |  12 +-
+ drivers/vfio/vfio_main.c                      |  57 +--
+ drivers/virt/coco/tsm-core.c                  |  55 ++-
+ include/linux/iommu.h                         |  20 +-
+ include/linux/iommufd.h                       |  35 +-
+ include/linux/kvm_host.h                      |  19 +-
+ include/linux/pci-tsm.h                       | 153 ++++----
+ include/linux/tsm.h                           |  46 +++
+ include/linux/vfio.h                          |   5 +-
+ include/uapi/linux/iommufd.h                  |  85 +++-
+ virt/kvm/kvm_main.c                           |  21 +-
+ virt/kvm/vfio.c                               |  13 +-
+ 41 files changed, 893 insertions(+), 530 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/tsm.c
+
+
+base-commit: 551c722f40809618230001baccf219193e22fc5a
+-- 
+2.43.0
+
