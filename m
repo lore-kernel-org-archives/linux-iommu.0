@@ -1,110 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FC7243712D;
-	Fri,  9 Oct 2026 10:18:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 273DF4A68AD
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 11:04:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791541100; cv=none; b=in7cU4F0s9aw/k3/XWYTWtWpqNMSGzyGEDom/fLcKUNuu3dQnpfCxYgodHXWVu+dFRXFRlQ+oQI9E/57zPFnGq+u7cwY2QuOzriO7MHVog+LpmYaR1ZZxDLo8kcvxd6UR6dgwjJR7HzO5+tdu5YrRPiWezB9L6ix/Ze5a/dGw/0=
+	t=1791543861; cv=none; b=RT1v/EHcVSjD6NpRDS+gDxEMdbxrCqt0dIIev+vYhP9Fgh7GYusb9Tv+C6Xp/Qdr9Gqz+Jn4u80kIRyJ0QClNjcsJbDNSazb+HEZzyuXlSu4U3n7qUbhGr5/k+xzb5bs8vrx7SEuXw7uAEpiUFVHXvWTgkKZl4/zC0HXYupwl7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791541100; c=relaxed/simple;
-	bh=Abb6ExL+zdNLeWtkL/SrnN/NL/IFI90mg1+qHNwetUs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bw6x6sP2tndr7frUWpaHDD39oSplC+uoPZ6CYkqDMUB4iX0dfBt8XHZdJMmLleVmKv9CzxOpys7HtepgvoAUDQtuZMLep2RtvmfOa+lnGtWSoMR3QfaNNgWuVdW2t1UG7IeZtybITOLkmsBLNBOFSGh/9jHES6VJT5wKPKcUWCA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J/Ulp1ki; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791543861; c=relaxed/simple;
+	bh=PyGpHovG2GVwa9YAK09Xz2EUqL/+PMGU2xO2YXv5xH0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type:
+	 References; b=DvCc4MZNVFoZYWmRq3jW+6wlqxXXcGjRdTkmfU3k4jEC1h57VQ7w/aENqqE01lkoAgHcl02kaD7TF2rmn+2mnYJbzni0fTQPtKAGWYpOIi7Yh+gGuiHSo38xZBGCXh8J7vNf6qvZdYdYMH1tJRgOWDmSXsCsJHfNSqzCGegZbBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=gzYWUVlx; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J/Ulp1ki"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40FA51F000FF;
-	Fri,  9 Oct 2026 10:18:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791541098;
-	bh=wxARsjGuquaiLxgSm18RK/GYX/5yHnqt2BOAs4KeGsQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=J/Ulp1kiU/fHLorufnUGZviVewHpZ4i2nh7ovjmbgtSVM9rKK3zfjolFAXlJiCoG/
-	 BMW5Ubh23ZkHDtz2gC3M7BH0DoQb7aWS09Fvb5ai3Tah7LXu0pj6waoAyV4+Ys7d5Z
-	 +iywIF9ht9ECEh7ry8yPogWZ87BGl4TKzbkbZrEJI5fQcCBS3ROhYfkTdcqveZDJbP
-	 aeEe9F9SdlEQjf4RfVxNp6TljhzSQkjK1V50hbw9FBfJgs2u42Zj9iTGwDxFCYK4CY
-	 7TdAyz5T7sPBsEmViOMRCDgegOg9M7rT99tg9OQAo14hJB5idOZRFpneZ6VooRc89y
-	 jEHJjjoVpql9w==
-Date: Fri, 9 Oct 2026 11:18:05 +0100
-From: Will Deacon <will@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Mark Rutland <mark.rutland@arm.com>, Marc Zyngier <maz@kernel.org>,
-	Steven Price <steven.price@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
-	Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Petr Tesarik <ptesarik@suse.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
-	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
-	Shrikanth Hegde <sshegde@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Huacai Chen <chenhuacai@kernel.org>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Jiaxun Yang <jiaxun.yang@flygoat.com>,
-	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	Andy Lutomirski <luto@kernel.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>,
-	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
-	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	x86@kernel.org
-Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
- sizing
-Message-ID: <asi_XW2FaVjjWhxk@willie-the-truck>
-References: <20260924060756.1325156-7-aneesh.kumar@kernel.org>
- <asVs3doaJ4WrT3M2@willie-the-truck>
- <asYZFXGyafRjjBS0@arm.com>
- <asYiOgskwi8JYLe_@willie-the-truck>
- <yq5awlrt3dwo.fsf@kernel.org>
- <yq5av77c92oo.fsf@kernel.org>
- <aseRzPshcoys7AJS@arm.com>
- <CGME20261008143238eucas1p1ee087352709f2a82d2aec95540ae2031@eucas1p1.samsung.com>
- <yq5ao6d48dqr.fsf@kernel.org>
- <c2e38455-cb31-4854-ab84-4a370fabc1f9@samsung.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="gzYWUVlx"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261009110401euoutp01500c55e172b69af1bb43350ee44517c3~c16HIfGoV0072500725euoutp01G
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 11:04:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261009110401euoutp01500c55e172b69af1bb43350ee44517c3~c16HIfGoV0072500725euoutp01G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1791543841;
+	bh=IOJmWjKAq0AWIt2/KFdzBAY525uiSoVkQwuNEs5hc2Q=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=gzYWUVlxxBsbNbEGUQeRAl2vmrecXtOc39gyKfvPQdDy2axEbyhw/TFRSuE+b5j7i
+	 3fbZsobAy8rHG8EakjvEaZjNn4G0zFFB2VchEjW5UAc7Mg5zTgIUrMsbyJBeiP9Ek+
+	 owdJeXl8DKdZDQO/MHnivwOE92FWKqJXvaX8t4Nw=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261009110401eucas1p18f48109c4922503c4a371dee94aac268~c16G35TCe2428424284eucas1p1-;
+	Fri,  9 Oct 2026 11:04:01 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261009110401eusmtip2dd49c0c16c77c93239428917d8e7a295~c16GkDdSe0698206982eusmtip2d;
+	Fri,  9 Oct 2026 11:04:00 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Peng Fan
+	<peng.fan@nxp.com>
+Subject: [GIT PULL] 2nd dma-mapping fixes for Linux 7.3
+Date: Fri,  9 Oct 2026 13:03:46 +0200
+Message-ID: <20261009110348.43841-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c2e38455-cb31-4854-ab84-4a370fabc1f9@samsung.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261009110401eucas1p18f48109c4922503c4a371dee94aac268
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261009110401eucas1p18f48109c4922503c4a371dee94aac268
+X-EPHeader: CA
+X-CMS-RootMailID: 20261009110401eucas1p18f48109c4922503c4a371dee94aac268
+References: <CGME20261009110401eucas1p18f48109c4922503c4a371dee94aac268@eucas1p1.samsung.com>
 
-On Thu, Oct 08, 2026 at 05:32:44PM +0200, Marek Szyprowski wrote:
-> On 08.10.2026 16:32, Aneesh Kumar K.V wrote:
-> > Patch 3 is a fix, so you may want to take it even if we drop the rest of
-> > the series. Perhaps the first three patches could be taken together?
-> 
-> Okay, I will take only the first 3 patches to dma-mapping-for-next branch now
-> and wait for the remaining patches until they gets sorted out.
+The following changes since commit 55a8e1451869233db837a97e8f3cbf9983bc8678:
 
-Thanks, Marek.
+  x86/mm: Don't force unencrypted DMA for IOMMU-backed devices (2026-09-11 10:30:50 +0200)
 
-Will
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.3-2026-10-09
+
+for you to fetch changes up to 911655ab1dfb9d526978a75df3b210132620d30a:
+
+  swiotlb: fix default_swiotlb_limit() for non-growable default pool (2026-10-08 12:13:28 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for Linux 7.3
+
+Two more fixes for the corner cases in the DMA-mapping SWIOTLB code
+(Peng Fan and Marek Szyprowski).
+
+----------------------------------------------------------------
+Marek Szyprowski (1):
+      swiotlb: fix default_swiotlb_limit() for non-growable default pool
+
+Peng Fan (1):
+      iommu/dma: skip swiotlb bounce for DMA_ATTR_MMIO in iommu_dma_map_phys
+
+ drivers/iommu/dma-iommu.c | 4 ++--
+ kernel/dma/swiotlb.c      | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+----------------------------------------------------------------
+
+Thanks!
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
