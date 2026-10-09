@@ -1,88 +1,68 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 881473546D3
-	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 16:32:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8696F3546D3;
+	Fri,  9 Oct 2026 16:43:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791563560; cv=none; b=cxeRYhUP3r1yt1FW57MzONHuCR8ZfLr6K5gveBrKCpSa9y94zCl+74VTYdb80bKib3MlNoJkzehTZT5X5gYR0+0H897GksjCOjEXZS2uApVgzpnSBLs9/sfEtctmY4gnk8oZN1j441RJ82GgAa++nk7aMQul4jw196Q+5V42nzI=
+	t=1791564188; cv=none; b=XpT2GpmShMbMXcQsBBXAot7ARwM7+Q5+ap8LRvflH7AD8wEDblFDZfBVb0AzFZsoLNJZFYgHacs0aE5ekuyN1wiGngXoKkvzixqepK7P3TIc4kFDERvgZGIUdg1xVljORdXBxy2Uh+X8+xcMd+LSQmf5CzN+JroCARZYda8vmg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791563560; c=relaxed/simple;
-	bh=07yf6xBRrUXFeq5vbgPfsiIGYgZGyZxl3GUx7RyhdKM=;
+	s=arc-20240116; t=1791564188; c=relaxed/simple;
+	bh=HL4dLnQazmu9eond2oaF2ZCcsFOHB8BI0FASnIbUEk8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UG7lgNAYQ/lMz7sBh66PuWNJIKiQARsb184hCx1Jn7iH08+t0s5eIBIpQH5DBFOCGKLHpjnAsZfFF34oyrs6xZlGrVBjEKE0zLzV/xsXnwn416V0/SBTVKn1w/vangL+YcH6JGhAu9Qebx/Ma36p/DDWoZ3QCk8K9w1yuDlcgwU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=kRRrhG2+; arc=none smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=HIoJUrnsv7J2BDm3yqBINUftakb1RRt3aPbT+ZePOoG/LA6nDAJXkV6c83DuQoqwGrtRycShuA1xDTQwzEKvkmSIHbm3VZ04l9FfA+P8PDyZs453PSJL/4fhY62gfYsVgdatas7E1Xp5JwASjecKZuu8NIGoDjVgSsEYQvAHh/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=drO0Mp0r; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="kRRrhG2+"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-93e6eb77f0bso542446185a.3
-        for <iommu@lists.linux.dev>; Fri, 09 Oct 2026 09:32:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1791563556; x=1792168356; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=e/TRD6BwLaJ/NfMLCCm5dSOuj3VkkC7kRDobdLq+Uh4=;
-        b=kRRrhG2+TmWcY9doa3f6+oObPdfa3V4kK/Pq5hMwBh81cqd0vAaU1KWRw2tQ8RFTAv
-         lGWTyD6Cd9frIIQCXsx51T1NwInqYuaNcdn4FvjIiLbStsyUX0XY03zHtINyzcUf6+eU
-         K7gE1W+raivqxfFa6ioz3YDOaGRC98FhWSC3Xpt3B8X6OdANOJ+Kqv58pRZ+E13X56fG
-         jxJu34BbnzA/ObrA+bEjTsM0M9ZsVH34VYoT6QEOLvnaUXPStlHQhVdUGfMJHFv55elG
-         8VrSxS9mEJSvefOs9klvGC8st5xx8v7Nw+MFkCvU1WT28YBpBJqWHS7QcX6/VnVdGXYv
-         prWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791563556; x=1792168356;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=e/TRD6BwLaJ/NfMLCCm5dSOuj3VkkC7kRDobdLq+Uh4=;
-        b=ksD3tMTiLMgpSUg3k4ugER5ttcdrs8pBbLr4aTfFuf7MKkZsG8oMac2hT7+BnBWgX7
-         A3S7y5lpdJVIRQZ5scSO67Dvb+K+gbbhmwmMw07ScvnyhNto2rbcTDFdvoOuwki2+w8s
-         QuhpZm8Eck9f90wLTZ7wUErX1lqVI3lI2jpLKBpQrlyIwD0ZxLaIsto7bgcYdt8dtY4b
-         xIdCZBAToJT7wIyFFdaVWKK7KOgeY1PNapauhEgOO/CJmnaaxy7MtCybDLsj7QsAndHS
-         kOi00+7eJQelDL0x2YEXmUDnG/1KZ6KcfH9afHKNnwpO7lDSeyudI7HAFUjpVlRQLvQN
-         ZOwQ==
-X-Forwarded-Encrypted: i=1; AKwUvByz3MamRmTfYPsoZvLSemk+iJtKrN+/qB0h3m101nb83xV3XtqNA/r3Ty0E+0vZgciOhyWbIw==@lists.linux.dev
-X-Gm-Message-State: AFuF++mBp4H2qPDDQd791LHICr22L7QRaiwtZUY+8pV9dkF34mfgTxyb
-	EzTTz+sZg1mMDdveJNOq6rMG63dQkaeaCjRyXvn8dSzTrZKpmuDArWBDOZvDyJTrT5M=
-X-Gm-Gg: AYBFou2aIpb7XE13AF4SeCnxdEDiTJZczuN1Hq9O8SmnEyso4nztgVpYLw+ILvnEm5c
-	svjo/TORCIBJ/Qt9dE33AgaCTTlpUpeLQotsIURNZtfGRi14cYq9pvbOIKSjB24HvEvrsBb3PJf
-	a/pwIXTiLQq48Sl3cSUIG1HG7pgLIb3vPypndJoVM5b8cYWNKsNMPDrBPYg1svlt1cUfvtOhGvi
-	HEhx3dG+ebTeLoOWTnQNnsmafXuxvV/DDlsXag6Hs5dfSvzTAbt+C9gYAf7foevL1PK75Y71MRg
-	NDqJFmt8Y1gryQ27ggCdoMdbQoemBPpddXzGG3KrCHcoQ/0HOVzO7cXDNsn+UUhFR9crohyap1Z
-	QvEvyuAkGXD8ATtQevH3PVKEYnI14Ue0eWRQj5ymMu3n8cC9C+oRQMlHNgSLr6v5H/FhtCEZW2J
-	vNKqtF2Q+Qg6hKMo8Wm+8duRRX7C+rZoLdCo1GdM+pPQgqkbim2lVszFXDiVWZ/eRqs5ksVCDKY
-	ca1px0bFSJI4TYpR+pGWY3UTqhserryTFTglz45jJfb1QzqM+RhDUnJ
-X-Received: by 2002:a05:620a:4456:b0:93b:be6d:4f3e with SMTP id af79cd13be357-93ebd1b7386mr410267085a.25.1791563555872;
-        Fri, 09 Oct 2026 09:32:35 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93eb98906c3sm225037585a.26.2026.10.09.09.32.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2026 09:32:32 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xFDWK-00000000Kpb-0HpH;
-	Fri, 09 Oct 2026 13:32:32 -0300
-Date: Fri, 9 Oct 2026 13:32:32 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Vijayanand Jitta <vijayanand.jitta@oss.qualcomm.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Will Deacon <will@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Prakash Gupta <prakash.gupta@oss.qualcomm.com>
-Subject: Re: [PATCH v5] iommu/io-pgtable-arm: Add support for contiguous hint
- bit
-Message-ID: <20261009163232.GB14213@ziepe.ca>
-References: <20260921-iommu_contig_hint-v5-1-e7fbd1c3774d@oss.qualcomm.com>
- <20260924001502.GO1540250@ziepe.ca>
- <CAE2F3rCVh0CmW6+a__PcCrBgsMJVompKJX_qYBdQ=exj3bYtCg@mail.gmail.com>
- <20260924225340.GC16465@ziepe.ca>
- <7ab6eab6-ec6e-47dc-b387-eb380e2e365c@oss.qualcomm.com>
- <52ba8a64-2d3d-4c3f-ae8f-54ab4f0f164d@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="drO0Mp0r"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791564186; x=1823100186;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HL4dLnQazmu9eond2oaF2ZCcsFOHB8BI0FASnIbUEk8=;
+  b=drO0Mp0rpBtNc6uIThJsJKdGp5RjJ0VNoigfdMonSUgCwFa1UblGbR1k
+   G7m3MrFx4sF4Jyf9TMgztRkHUNb9xPFyl+fXrSdxiBVU1cPki0rcqDy3q
+   AyQYN3tmpNci8o++Eh0HCkmr5VQzemhw65K5fQq0hrSd3F5tf51GHJX44
+   z5t+62BoC7+s9lWimZ3RXyWOXtqchimQiuBA8j/p7nnnB4nj09SMxfhpB
+   509s2hldYDR9S/i6dL9i/Dy+0u+kLKDp3ijD2OdUf4yGtz93dKFlkY0rT
+   hfQtkSOqRSmlu/zYbTrBBKpLgPwd1RKzysEqWMy0vfqH63t73PgFZVJ5A
+   Q==;
+X-CSE-ConnectionGUID: v5R9gWcBTe+zOhANKqvSXQ==
+X-CSE-MsgGUID: M5FzHXKKS6G3G4AAkNVN5w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11930"; a="259599"
+X-IronPort-AV: E=Sophos;i="6.27,148,1787036400"; 
+   d="scan'208";a="259599"
+Received: from fmviesa013.fm.intel.com ([10.60.135.153])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 09:43:05 -0700
+X-CSE-ConnectionGUID: tUi5YPRHSZWPTE6paRwA/Q==
+X-CSE-MsgGUID: QM0uw6PORcuqyvHNUpy+Pg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,148,1787036400"; 
+   d="scan'208";a="2094648"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by fmviesa013.fm.intel.com with ESMTP; 09 Oct 2026 09:43:02 -0700
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xFDgR-0000000061U-0JFK;
+	Fri, 09 Oct 2026 16:42:59 +0000
+Date: Sat, 10 Oct 2026 00:42:14 +0800
+From: kernel test robot <lkp@intel.com>
+To: Haotian Zhang <vulab@iscas.ac.cn>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Joerg Roedel <jroedel@suse.de>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/exynos: fix NULL pointer dereference on
+ device_link_add() failure
+Message-ID: <202610100049.FvaUUeCb-lkp@intel.com>
+References: <20261009034539.3073100-1-vulab@iscas.ac.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,43 +71,85 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <52ba8a64-2d3d-4c3f-ae8f-54ab4f0f164d@arm.com>
+In-Reply-To: <20261009034539.3073100-1-vulab@iscas.ac.cn>
 
-On Fri, Oct 09, 2026 at 04:37:08PM +0100, Robin Murphy wrote:
+Hi Haotian,
 
-> range size being unmapped, so even if the total gathered size exceeds a
-> single command, we still wouldn't split it _within_ any single one of those
-> ranges, only at a boundary between two unrelated ones.
+kernel test robot noticed the following build warnings:
 
-The question revolves on when the iopgtable path flushes gathers.
+[auto build test WARNING on krzk/for-next]
+[also build test WARNING on arm-perf/for-next/perf pinctrl-samsung/for-next linus/master v7.3-rc6 next-20261008]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-If the gather only holds a single page size and always starts aligned
-to that size then the RIL splitting algorithm won't cause an issue.
+url:    https://github.com/intel-lab-lkp/linux/commits/Haotian-Zhang/iommu-exynos-fix-NULL-pointer-dereference-on-device_link_add-failure/20261009-114539
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/krzk/linux.git for-next
+patch link:    https://lore.kernel.org/r/20261009034539.3073100-1-vulab%40iscas.ac.cn
+patch subject: [PATCH] iommu/exynos: fix NULL pointer dereference on device_link_add() failure
+config: arm-defconfig (https://download.01.org/0day-ci/archive/20261010/202610100049.FvaUUeCb-lkp@intel.com/config)
+compiler: clang version 24.0.0git (https://github.com/llvm/llvm-project 242243a5814307de825db3428662d67b064e2cbc)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261010/202610100049.FvaUUeCb-lkp@intel.com/reproduce)
 
-It isn't a question of allowing CONTs to be split, it is about when
-consecutive unmaps can merge into a single gather. iommupt is very
-general here so it can create gathers with mixed up page sizes and
-trigger the problem.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202610100049.FvaUUeCb-lkp@intel.com/
 
-For iopgtable we have several layers of logic splitting and flushing
-things. I keep forgetting about this bit in iommu_iotlb_gather_add_page():
+All warnings (new ones prefixed by >>):
 
-	/*
-	 * If the new page is disjoint from the current range or is mapped at
-	 * a different granularity, then sync the TLB so that the gather
-	 * structure can be rewritten.
-	 */
-	if ((gather->pgsize && gather->pgsize != size) ||
+>> drivers/iommu/exynos-iommu.c:1434:39: warning: variable 'tmp' is uninitialized when used here [-Wuninitialized]
+    1434 |         list_for_each_entry_continue_reverse(tmp, &owner->controllers,
+         |                                              ^~~
+   drivers/iommu/exynos-iommu.c:1406:35: note: initialize the variable 'tmp' to silence this warning
+    1406 |         struct sysmmu_drvdata *data, *tmp;
+         |                                          ^
+         |                                           = NULL
+   1 warning generated.
 
-I didn't try to do a full analysis that it really is enough for this
-series, but if size here is the PTE size including the CONT effect
-then it seems like it could be OK. The gather has to be aligned and
-has to have a single CONT size within it.
 
-My original reply was mostly to be taken as 'RIL alone isn't enough',
-meaning write an explanation someplace why it is safe under the
-current system. The commit messages for the SVA and my later fixup for
-iommupt explain the general concept and problem..
+vim +/tmp +1434 drivers/iommu/exynos-iommu.c
 
-Regards,
-Jason
+  1402	
+  1403	static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
+  1404	{
+  1405		struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+  1406		struct sysmmu_drvdata *data, *tmp;
+  1407	
+  1408		if (!has_sysmmu(dev))
+  1409			return ERR_PTR(-ENODEV);
+  1410	
+  1411		list_for_each_entry(data, &owner->controllers, owner_node) {
+  1412			/*
+  1413			 * SYSMMU will be runtime activated via device link
+  1414			 * (dependency) to its master device, so there are no
+  1415			 * direct calls to pm_runtime_get/put in this driver.
+  1416			 */
+  1417			data->link = device_link_add(dev, data->sysmmu,
+  1418						     DL_FLAG_STATELESS |
+  1419						     DL_FLAG_PM_RUNTIME);
+  1420			if (!data->link) {
+  1421				dev_err(dev, "Unable to link %s\n",
+  1422					dev_name(data->sysmmu));
+  1423				goto err_unlink;
+  1424			}
+  1425		}
+  1426	
+  1427		/* There is always at least one entry, see exynos_iommu_of_xlate() */
+  1428		data = list_first_entry(&owner->controllers,
+  1429					struct sysmmu_drvdata, owner_node);
+  1430	
+  1431		return &data->iommu;
+  1432	
+  1433	err_unlink:
+> 1434		list_for_each_entry_continue_reverse(tmp, &owner->controllers,
+  1435						     owner_node)
+  1436			device_link_del(tmp->link);
+  1437	
+  1438		return ERR_PTR(-ENODEV);
+  1439	}
+  1440	
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
