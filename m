@@ -1,14 +1,14 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EB0537E5EC
-	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 08:46:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3000E3EC839
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 08:49:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791535611; cv=none; b=cnsE3nM/V5kk26DypkAmLwpkeaLS1h0Ed5DZOUr/QoOXbg/dmJ0IObf5h1qEFZ/yBNnHJRMwAZz0lwKH/Pm2uSbAWm2hmRZ+6x6PrWeVpmd4PknELIPgkHifpWflR3xQA4Z2SD0TftfiGDMse7xY1YcBaRcfmMtAVqh2XBEfFDI=
+	t=1791535766; cv=none; b=cd7mZWlfRw+8DEopngLBKsRtm97KgXED7vSJsJ2+RV+ocrBwiTAjnrmCVoRhKgumCx8Gpp0+fb6nuTks/6pH2YYKKRXivNrq0PoMzoUj5Or08UCET9dya2q9TS95hi3J9QlKfkpY2ici2PrVYwOVLehC+EJ7drAFzA7r7IDVDR8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791535611; c=relaxed/simple;
-	bh=EeRW7OuzFuwtX3+Xf56mlHirqXhOKUolGPXCmrOrm+w=;
+	s=arc-20240116; t=1791535766; c=relaxed/simple;
+	bh=1XGz+osF98bJ65rLePu/ISyhWyU41/o9flRX04pLmm0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bhShKTjOinMRX7xjRnN2hlDYDHtMHkK+BBCnSNeRIeAopw24Uq6Sz3s9PKjfTx0L9VEkIcIgP5XZvsrcrKWEh/S0fuOYJ43ev98BATpvGkWHMkrbm5OXcO75kqG/qZGTKbgZGn3LRvsIB14uX1LGQBdOHzw3ckoh95d6gMOiUc8=
+	 Content-Type:Content-Disposition:In-Reply-To; b=axsJdyIZ9V1E//7pplSUWdgWji78wAPQ/GjNGzGc8TmaTsdHzdqPtpTIBhw568UZC+CG6HyQX4Z2iHGZOXbP8qOLF5XoEhS9MiNgXqr+Od6MwFMj0ZZK3FaxgBNrGH2R9I3ci3wgvGfyTqGYNoMICBrgDTzJUQpncgsDOCSnEq0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
@@ -16,20 +16,23 @@ Received: from 8bytes.org (p200300f6af404a00448550d0471e54ea.dip0.t-ipconnect.de
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 7770A1C77A3;
-	Fri,  9 Oct 2026 10:46:49 +0200 (CEST)
-Date: Fri, 9 Oct 2026 10:46:48 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Krzysztof Karas <krzysztof.karas@intel.com>
-Cc: intel-gfx@lists.freedesktop.org, iommu@lists.linux.dev, 
-	dri-devel@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Andi Shyti <andi.shyti@linux.intel.com>, 
-	=?utf-8?Q?Micha=C5=82?= Grzelak <michal.grzelak@intel.com>, Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>, 
-	Sebastian Brzezinka <sebastian.brzezinka@intel.com>, Krzysztof Niemiec <krzysztof.niemiec@intel.com>, 
-	stable@vger.kernel.org
-Subject: Re: [PATCH] iommu/dma: Catch scatterlist length overflows
-Message-ID: <asip2Nv2rCRE4mPH@8bytes.org>
-References: <20261002053320.3145901-1-krzysztof.karas@intel.com>
+	by mail.8bytes.org (Postfix) with ESMTPSA id 0F1B41C77A4;
+	Fri,  9 Oct 2026 10:49:20 +0200 (CEST)
+Date: Fri, 9 Oct 2026 10:49:18 +0200
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Zong Li <zong.li@sifive.com>
+Cc: tomasz.jeznach@linux.dev, will@kernel.org, robin.murphy@arm.com, 
+	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, 
+	mark.rutland@arm.com, andrew.jones@oss.qualcomm.com, guoren@kernel.org, 
+	david.laight.linux@gmail.com, zhangzhanpeng.jasper@bytedance.com, yang.yicong@picoheart.com, 
+	nutty.liu@hotmail.com, iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org, 
+	Chen Pei <cp0613@linux.alibaba.com>, Fangyu Yu <fangyu.yu@linux.alibaba.com>, 
+	Samuel Holland <samuel.holland@sifive.com>
+Subject: Re: [PATCH v15 2/2] iommu/riscv: create a auxiliary device for HPM
+Message-ID: <asiqePAyXAWkaeMq@8bytes.org>
+References: <20261002063315.1535817-1-zong.li@sifive.com>
+ <20261002063315.1535817-3-zong.li@sifive.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -38,10 +41,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261002053320.3145901-1-krzysztof.karas@intel.com>
+In-Reply-To: <20261002063315.1535817-3-zong.li@sifive.com>
 
-On Fri, Oct 02, 2026 at 05:33:20AM +0000, Krzysztof Karas wrote:
->  drivers/iommu/dma-iommu.c | 20 +++++++++++++++++++-
->  1 file changed, 19 insertions(+), 1 deletion(-)
+On Thu, Oct 01, 2026 at 11:33:12PM -0700, Zong Li wrote:
+> Create an auxiliary device for HPM when the IOMMU supports a
+> hardware performance monitor.
+> 
+> Tested-by: Chen Pei <cp0613@linux.alibaba.com>
+> Tested-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
+> Reviewed-by: Guo Ren <guoren@kernel.org>
+> Reviewed-by: Yicong Yang <yang.yicong@picoheart.com>
+> Suggested-by: Samuel Holland <samuel.holland@sifive.com>
+> Signed-off-by: Zong Li <zong.li@sifive.com>
+> ---
+>  drivers/iommu/riscv/Kconfig |  1 +
+>  drivers/iommu/riscv/iommu.c | 58 +++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/riscv/iommu.h |  4 +++
+>  3 files changed, 63 insertions(+)
 
-Applied, thanks.
+Acked-by: Joerg Roedel <joerg.roedel@amd.com>
+
