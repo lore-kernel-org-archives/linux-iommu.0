@@ -1,53 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24C3F328610;
-	Fri,  9 Oct 2026 17:10:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70894CE69E;
+	Fri,  9 Oct 2026 17:43:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791565829; cv=none; b=of5I5BDiJxt9b6fcKQxiiCs46sRAeKlm+kPrkpZ4e0hGuQG/EMasOahJ2SgcpAFzXQEPbjvQH6qOQVUU/g8yDYtzafOeZkVwKmUzrTLrD359qZH1u8f0vlxF6+igmifiGitn+9pG8Jz/Ujs1nuaKS/u1ItUccJx0YWy15jlk/W8=
+	t=1791567787; cv=none; b=L/f3YYSRDFjNdXMITwPtSQJ5VtKbvudNduxd3qj08Gq3FyVGxrt2hQpO/EDHwCc9JG2WBvGpS3EDfo72kybUtgvPgzF95FmtaLN7V7nxQ3mzf9g3Ra1H9GkGcTVHSut2HQOAr5llK7kVu78rRpafYVFtz9mvAh56o3t8Rd4aaaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791565829; c=relaxed/simple;
-	bh=S1yiruj1Bl53UmxXG/p0iUk6DARn+XM9wVtHfc60myg=;
+	s=arc-20240116; t=1791567787; c=relaxed/simple;
+	bh=mLiQqzGLzW31eYbHCnl2GntdGqvBueCmcEVKVxHtV3o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZqCH4uA8MTvvDe3Xy1N9c2OdTzyFoyhrBKoa06J1KPceIjXkQC7zdR3w2/6IhVD2gNYmZYE4eamnEt8whDT7+gqb/SuP0BAwGtoZnCU5eXv1v9OEMr3UutJRdZ40b4nZJdwuQcbEfQZ0/8xy2Ll+Z3BWSN3N1+3O0oSvgClgSeU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q1Nhseao; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=kj4QlkqSQobDbIAFOvqthedtZfy5TzVlg97S1DCdyMpTso7TzZl9Y8A064OoV8OjxEOJoJIC9cLbSPHAsACdCVIWspA5WnaKVYGd5+uB2YuQT1yX1slEXdxDTrsji1eS/ss86ZoN8mxscN8sHyR9tycCK/xpqjyTLryQyqhRk8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dCpHTy2k; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q1Nhseao"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F951F000FF;
-	Fri,  9 Oct 2026 17:10:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dCpHTy2k"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB21D1F000FF;
+	Fri,  9 Oct 2026 17:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791565827;
-	bh=kAD7jZL3WT2oDggDD/W1Uk0YnF3NERQV17t5J8hJ8+M=;
+	s=k20260515; t=1791567786;
+	bh=U0s03iNrq790So+pbxwkgjCu207XK/E0NIw4uR3r3S4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Q1Nhseaoa+rDmPgv3RV88Xq/keczcbIu4FLYepJnBvD2cRWQ9lipkpUB7/oP4GWM2
-	 FtecI4n/MNfujCQ2qyTF3wHtE8IruMwItFTLmIBKKeC3vlmY0G1hsyyVZAtoiwWou8
-	 P3DbUqJp9Xmpt/k5D8+TZwqQdKWqiN19Lf+AJ3W0+6UWmvY9NsCpCPQCR2qUhmOLIC
-	 8Ojr7flTBUGp+qSaJwC9QVMRhzWedJSGwa8czVneuywDeGOD4MwdC3oFvmjdVrC/MQ
-	 pQQu6ro5HclX1M3k8qO/i9gCSAbnfYwfDkfc5jGddIzvabPGzItOqeLhZ1tE9Uequ/
-	 TaRWxOs50oK2g==
-Date: Fri, 9 Oct 2026 12:10:27 -0500
-From: Rob Herring <robh@kernel.org>
-To: Mike Rapoport <rppt@kernel.org>
-Cc: Wandun <chenwandun1@gmail.com>, baoquan.he@linux.dev,
-	m.szyprowski@samsung.com, catalin.marinas@arm.com, will@kernel.org,
-	mark.rutland@arm.com, chenhuacai@kernel.org, kernel@xen0n.name,
-	pjw@kernel.org, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-	alex@ghiti.fr, tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
-	dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-	saravanak@kernel.org, akpm@linux-foundation.org,
-	pasha.tatashin@soleen.com, pratyush@kernel.org,
-	ruirui.yang@linux.dev, robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	loongarch@lists.linux.dev, linux-riscv@lists.infradead.org,
-	devicetree@vger.kernel.org, kexec@lists.infradead.org,
-	linux-mm@kvack.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v7 0/9] kdump: reduce vmcore size and capture time
-Message-ID: <20261009171027.GA2734758-robh@kernel.org>
-References: <20260922084256.1515554-1-chenwandun1@gmail.com>
- <ar9ogXc12cLjziHS@kernel.org>
- <80af60db-8c39-461c-a488-3dfee990bce8@gmail.com>
- <askVvEPHyrhpF8aw@kernel.org>
+	b=dCpHTy2kRayrBM7jKK+ewjW+/1nlHlYFvCNzUWHvIu4BhDEB40Ckb1z6CuG6HTcHP
+	 k0R5edj57wikOJaKKbUpz/U6Uj2TkOq3otUC/mhhMHhIX1qtO+Abkqvj1HGZ1Suwsb
+	 9gv70Q5NfRUrjEy02QyerM0P1NLHA9bxKt0wf6Gwfz+6DPhCjog6Gzf+m6XKDFMWVz
+	 4V63bvdWNQqHPqcGFyl3Cja06HwpnTIU2Ppi+uVZvAm12V1aM7HOlI1P/OJDDrZFuK
+	 vza8KWGlZrphMiubCqZL0OEZzyaXsLrJGdfDm4YSvNuV+YQn7ap18HyVVtuVFDiDku
+	 ptjFns74hSqpw==
+Date: Fri, 9 Oct 2026 20:43:01 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v9 02/18] PCI/P2PDMA: Derive routing from directional ACS
+ controls
+Message-ID: <20261009174301.GC11438@unreal>
+References: <20261007063227.GC7822@unreal>
+ <20261007204045.GA783967@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,73 +61,83 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <askVvEPHyrhpF8aw@kernel.org>
+In-Reply-To: <20261007204045.GA783967@bhelgaas>
 
-On Fri, Oct 09, 2026 at 06:26:36PM +0200, Mike Rapoport wrote:
-> On Fri, Oct 09, 2026 at 11:04:47AM +0800, Wandun wrote:
-> > On 10/2/26 16:17, Mike Rapoport wrote:
-> > > Hi Wandun,
+On Wed, Oct 07, 2026 at 03:40:45PM -0500, Bjorn Helgaas wrote:
+> On Wed, Oct 07, 2026 at 09:32:27AM +0300, Leon Romanovsky wrote:
+> > On Tue, Oct 06, 2026 at 03:49:47PM -0500, Bjorn Helgaas wrote:
+> > > On Thu, Oct 01, 2026 at 02:55:10PM +0300, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > 
+> > > > pci_bridge_has_acs_redir() treats Request and Completion Redirect as
+> > > > interchangeable. On asymmetric fabrics, a control for only the reverse TLP
+> > > > direction can unnecessarily force P2PDMA through the host bridge.
 > > > 
-> > > On Tue, Sep 22, 2026 at 04:42:47PM +0800, Wandun Chen wrote:
-> > >> From: Wandun Chen <chenwandun@lixiang.com>
-> > >>
-> > >> On SoCs that carve out large firmware-owned reserved memory (GPU,
-> > >> camera ISP, ...), kdump currently dumps those carveouts as part of
-> > >> system RAM even though their contents are firmware state that is not
-> > >> useful for kernel crash analysis.
-> > >>
-> > >> This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
-> > >> reserved memory on DT-based architectures (arm64, riscv, loongarch).
-> > >> Reserved regions are marked MEMBLOCK_NODUMP by default so kdump omits
-> > >> them; reusable CMA regions are different because their pages are handed
-> > >> back to the buddy allocator and may carry crash-relevant data.
-> > >>
-> > >> ACPI systems already filter reserved memory out of the vmcore through
-> > >> their existing path; only DT-based systems currently fail to filter these
-> > >> regions, which is what this series addresses. The flag lives in memblock
-> > >> itself rather than in a DT-only structure, so both ACPI and DT systems
-> > >> can benefit from it (suggested by Rob, thanks).
-> > > 
-> > Hi Mike,
+> > > Does "the reverse TLP direction" refer to Completions?
 > > 
-> > Thanks for the review.
+> > In general, the P2P code treats TLPs flowing from device A to device B the
+> > same as TLPs flowing from device B to device A.
 > > 
-> > > Can you elaborate how ACPI systems filter their reserved memory?
-> > 
-> > In the EFI memory map, firmware carveouts are reported with the type
-> > EFI_RESERVED_TYPE. This type of memory gets the nomap flag set in
-> > memblock.memory (is_usable_memory() returns false in reserve_regions()
-> > and mark these regions with nomap flag), during prepare_elf_headers(),
-> > for_each_mem_range() filters out these nomap regions. Therefore, the
-> > memory reserved on ACPI based systems will not be dumped into the vmcore.
-> > 
-> > I will add these description in next version.
-> > 
-> > > With your patches, the memblock flag becomes a part of DT-only
-> > > infrastructure, so that claim that both ACPI and DT benefit from it does
-> > > not hold, doesn't it?
-> > 
-> > You are right, the wording was misleading. Let me clarify what I meant.
-> > 
-> > In this series only DT marks regions as MEMBLOCK_NODUMP:
-> > /reserved-memory and /memreserve/ entries are tagged in the OF
-> > paths (of_reserved_mem.c, fdt.c). ACPI does not set the flag and
-> > keeps filtering its reserved memory through the existing path, as
-> > described above.
-> > 
-> > 
-> > What I intended to convey is that the flag itself lives in memblock
-> > rather than on the DT-only struct reserved_mem, so it is available
-> > for reuse. If an ACPI system ever needed to exclude a firmware-owned
-> > region from the vmcore, it could mark that region with MEMBLOCK_NODUMP
-> > the same way DT does, instead of having to invent a parallel mechanism.
-> > That is a future option, not something this series enables for ACPI
-> > today.
+> > However, in the context of this commit message, yes: completions flow in the
+> > opposite direction from the device's perspective.
 > 
-> So, EFI uses NOMAP for the same purpose, right?
-> Why when we need a new memblock flag then?
+> And I guess asymmetric fabrics must mean fabrics where Request
+> Redirect and Completion Redirect are not set the same way?
 
-IIUC, NOMAP implies NODUMP (for EFI and DT), but NODUMP is needed for 
-some mapped (!NOMAP) regions.
+Yes, in some of our systems, deviceA to deviceB is going through
+different route than deviceB to deviceA.
 
-Rob
+> 
+> > > > Evaluate Request Redirect for client Requests and Completion Redirect for
+> > > > provider read Completions. Continue treating enabled Egress Control
+> > > > conservatively as a Request redirect.
+> > > 
+> > > Completion Redirect is intended to avoid ordering rule violations
+> > > between Completions and Requests when Requests are redirected (PCIe
+> > > r7.0, sec 6.12.1.1).  I assume this patch preserves the ordering rule,
+> > > but does the commit log need to say something about that?  I don't
+> > > know enough about P2P DMA for it to be obvious to me.
+> > 
+> > I don't think so, i didn't change anything related to ordering.
+> 
+> I don't think there's anything in this whole series that changes any
+> ACS settings, so I shouldn't have wondered about *preserving* the
+> ordering rule.
+> 
+> But I asked about ordering because it sounds like this patch expects
+> to encounter asymmetric fabrics where Request Redirect and Completion
+> Redirect may not be set the same way, and the spec implies that
+> asymmetry may result in ordering violations.
+
+My guess is that the hardware and system architects have ensured this
+doesn't happen. At least, I haven't received any complaints about this
+series during internal testing.
+
+> 
+> > > Not really a question for this series, but p2pdma.c and p2pdma.rst
+> > > refer to "clients" and "providers", neither of which are mentioned in
+> > > the PCIe spec.  In this case it sounds like a client is a Requester
+> > > and a provider is a Completer in spec terms.  Is that always the case?
+> > > If so, "client" and "provider" in this paragraph are not adding any
+> > > information.
+> > > 
+> > > If "client" is not the same concept as "Requester" and "provider" not
+> > > the same as "Completer", maybe p2pdma.rst could explain the
+> > > difference?
+> > 
+> > Client vs. provider are actual target vs. initiator. They express the
+> > device role in the flow.
+> 
+> I'd rather use "Requester" and "Completer" when possible because they
+> have specific meanings in the PCI spec and they correspond to the ACS
+> control bits.  Client, provider, target, initiator are all from the
+> outer world that makes use of PCIe constructs, but they don't mean
+> anything inside the PCIe world.
+
+These names come from p2p users such as dma-buf and NVMe. I didn't want
+to rename them as they already exists and is in use inside p2p code.
+
+Thanks
+
+> 
+> Bjorn
