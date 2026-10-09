@@ -1,110 +1,44 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5819D42C518;
-	Fri,  9 Oct 2026 06:10:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4D10A47DD6D
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 07:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791526221; cv=none; b=SZvXwhQQ3YlhgaNyrfK23favSUBtCq452dAATk3RnQn3IBbQcrCI4GY78d07f01lmtzPlm8s0pN3HHaSCLQuJF9ebPA20iDz9UuhP3Y+DuGOUmDf1pNax8xVsKyC8FADDwh9Ssf1gmYHvRNlCednlHsonNEYYLtIU8kXNmB29U0=
+	t=1791531763; cv=none; b=ir32crlKcw6oyYhyDvnBYWLgGL52ZnC3zgURbYp3JVpOMzLGqfopJGs+0MVap+vNXyjD6VokaFs3IW+YFp7g+b//jXQs0X3Gp2WPRWsRIS2pDAayuxdiA24l13TFA4Arsx/LIALW8LOXPLmiXpBMHRbjPG8v6dT0gmlQ8deaWZg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791526221; c=relaxed/simple;
-	bh=flrZtGuBWN5uhPpVz0flFxAvlWbkl/ZkK9l7vI322/s=;
+	s=arc-20240116; t=1791531763; c=relaxed/simple;
+	bh=ttTgc0TBMKNpVqPimza+iyOXZq5xcMS9RuWdrtdHnws=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YU1FNurFTLAnJztx4QOjLAFlAqkSgK86WDJ7EKjHs/dhN9DnRJvrDj5xdeWxwTFRkjaLbgPvfrkfKdWBoaN9pwCwOir0xKHBgPx56MlVaiTR/fqBPBft5A5PimgPtisWMFO8um8zCFOENwT+9GvIMNS4nw9K2VkZVEHDekAcyBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ItDXhXo2; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ItDXhXo2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E04D71F000FF;
-	Fri,  9 Oct 2026 06:10:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791526218;
-	bh=EKOWnKBJbJXeo8x7ZpRmGUBbXlEBT0+pIRkZH0GNbaw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ItDXhXo2lnHxe4Ty/4W3UyneDlSvPXkqY1slCpv+/7L44f/H4MflyLcIPg1F0NZL1
-	 WxWCTDpohl1nagM2Mos1gx+t5J9XCO8EFZUQ449XxQrFF9mkSXJsscKKmdbAdguvWA
-	 MQr75gWIvkmf7QtGuytNbx24zzZh0LgqxMvNHjTw2dPcyl/QaBLztME9BD5ZbtnIQt
-	 Ch/4lZtWUQ2c8qAll6JMREHTy8zt3oRzdQXcIb2A1FtH39mJWx9mR76qQorM5G0Ro9
-	 uI4WIYQYoQ1A4IuEgTxOymxp0leN25nseGB8cen3v6KvCzEEx1pZN/sOp/WbGcjOnB
-	 p2J63HhwyivYA==
-Date: Fri, 9 Oct 2026 08:10:16 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Haotian Zhang <vulab@iscas.ac.cn>
-Cc: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-samsung-soc@vger.kernel.org, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>, 
-	Alim Akhtar <alim.akhtar@samsung.com>, Peter Griffin <peter.griffin@linaro.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>
-Subject: Re: [PATCH] iommu/exynos: fix NULL pointer dereference on
- device_link_add() failure
-Message-ID: <20261009-refreshing-squirrel-from-hyperborea-ea10de@quoll>
-References: <20261009034539.3073100-1-vulab@iscas.ac.cn>
+	 Content-Type:Content-Disposition:In-Reply-To; b=qGd5b3xFtMPbL0mD6P5zxiPx+NvyPK+9bwZrQ96lN7J1Tau1BQHeCbd8lV5BAAxcozbNMsNL9aEUs5A86S8yfBlLoOvZl6U602m+HZ85YYTapawl3rwrD/EeMCyrgfTZzKOKzLUf0aIfikrg8aZ9Rz1WVdc3S7at9Y1gl8UBTY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Received: from 8bytes.org (p200300f6af404a00448550d0471e54ea.dip0.t-ipconnect.de [IPv6:2003:f6:af40:4a00:4485:50d0:471e:54ea])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 5DA2F1C77A3;
+	Fri,  9 Oct 2026 09:34:38 +0200 (CEST)
+Date: Fri, 9 Oct 2026 09:34:37 +0200
+From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu: Make iommu-dma helpers private
+Message-ID: <asiY-QQGSya10kOU@8bytes.org>
+References: <ddcc6f8487366211af0d81ad9af2376ec29d8460.1790596307.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261009034539.3073100-1-vulab@iscas.ac.cn>
+In-Reply-To: <ddcc6f8487366211af0d81ad9af2376ec29d8460.1790596307.git.robin.murphy@arm.com>
 
+On Mon, Sep 28, 2026 at 12:51:47PM +0100, Robin Murphy wrote:
+>  drivers/iommu/dma-iommu.c  | 1 +
+>  drivers/iommu/iommu-priv.h | 4 ++++
+>  include/linux/iommu.h      | 2 --
+>  3 files changed, 5 insertions(+), 2 deletions(-)
 
-On Fri, 09 Oct 2026 11:45:39 +0800, Haotian Zhang wrote:
-> exynos_iommu_probe_device() stores the result of device_link_add() in
-> data->link without checking it for failure, although device_link_add()
-> returns NULL when the supplier is not PM initialized, on a dependency
-> cycle or on allocation failure. exynos_iommu_release_device() then calls
-> device_link_del() on that entry unconditionally, and device_link_del()
-> dereferences link->flags, so a NULL data->link causes a NULL pointer
-> dereference when the device is released.
-> 
-> Check the returned device link for NULL, unwind the links that were
-> already created and fail the probe instead.
-> 
-> Fixes: 7a974b29fe5d ("iommu/exynos: Rework runtime PM links management")
-> Assisted-by: DeepSeek-V4.1-Flash
-> Signed-off-by: Haotian Zhang <vulab@iscas.ac.cn>
-> ---
->  drivers/iommu/exynos-iommu.c | 14 +++++++++++++-
->  1 file changed, 13 insertions(+), 1 deletion(-)
-> 
-
-
-
-Multiple things here:
-1. Your team ignored completely previous feedback.
-
-2. You use multiple identities with this email, thus I actually doubt we speak
-   with actual person.
-
-3. Finally, same feedback:
-You sent multiple independent patches, to multiple independent
-subsystems. The amount of these patches clearly suggest this was
-AI generated and most likely not tested.
-
-More importantly, you sent all this work without properly organizing
-relevant patches into patchsets. This makes reviewing difficult
-and might cause multiple reviewers to address the same issue.
-Replying to the entire set is impossible and requires handling each
-patch independently, instead of applying or discarding the set.
-Maintainers also won't see the bigger picture of your work. Quite
-worrying.
-
-This is on the verge of hostile patch: bomb us with so many
-contributions, we won't be able to handle them in efficient manner,
-like responding ONCE to ask you to slow down.  Considering all this
-is untested and LLM generated, I have even more doubts whether this
-should be considered for review.
-
-Please read kernel documentation BEFORE posting more work. It will
-explain you how to identify subsystems, how to organize your work per
-subsystem (so a patchset grouping multiple patches with a short cover
-letter), how to document usage of LLM and how what you should not do
-if this was posted in a good faith.
-
-Best regards,
-Krzysztof
-
-
-
-
+Applied, thanks.
