@@ -1,145 +1,165 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013068.outbound.protection.outlook.com [40.107.201.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1E7E4E4332
-	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 14:24:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791555895; cv=none; b=ATA+lkF7XWf+gHJwIsmPhKP5kVRNjGfpMMsvkgSFtUemSdo8cIk6WGYO/AL175Gr4KmyoTeepwlrEKd2ltC4egwjXC1+RVMAQVIUnWirQ2NJFAuuPuMN+z+TywdtQ7tnHhCLAh0iInalO+XFGz9yqDwoZGGZrNIO71QEqwZk59M=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791555895; c=relaxed/simple;
-	bh=BTM1SaIu5cG3yTWrz2K2vWlOLmwrSJXM5K8HXP2AqSI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=qWC0tubmx5dz4AFZFgg9Ij8iufFEwteebWwS7BqwM9EcUbVbmgjbOgdvZoQ2cCBtz1BZONX090ixgiYFm2mzS8Ur3Kbr2yzAJkvb7UvIWoPUaJ/K+R3rgSa8ltmYQst/rqzkql4cmwycXbI0Iy7FCDmdaBQNwVy7idLmZQ3ZRqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=aiqEJSWO; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A347C4E66A2
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 14:43:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791557011; cv=fail; b=qws0T2aqRdfOdOUa7372u6y8d9dYYcdrtSuSqGxBe+Byhm0Tm6zUlWZNsGbeh/j0hLb1wK2rtypO5/lc3dYThc/D9K9FQawM9bIToufQvGkX+UZ/r2vqG7wF22jACD5+V1LG79fI0+Av8s6GHB0ocrr4I9NZ8l9cnD96k9Cz9Kw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791557011; c=relaxed/simple;
+	bh=34+VJIm0IJxV8PYQszE/GNNN7IRbW4eQhHjh15g+G/Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=GUffOLu3JZEIlYrFdEIVNI/nOm0s1N+0TfiVoIj2WiQm506K8eyrQeB1tqT4VwGk9Vmqi7mcBHYUp25heI9Y6wyrx8aoYQw6t0GZOwpihF3Qgw091TnsgAX+xAcQJ+7Hn2lCVOalj9Z7OIRcDVtIVqraQOI+Dan8B4lGVNtw2Zk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MPdRqLmn; arc=fail smtp.client-ip=40.107.201.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="aiqEJSWO"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261009142450euoutp019a993703ca650948b66974ed961b66f0~c4pc4X6ZG2835128351euoutp01Q
-	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 14:24:50 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261009142450euoutp019a993703ca650948b66974ed961b66f0~c4pc4X6ZG2835128351euoutp01Q
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1791555890;
-	bh=i0RSIhug9e9ydgjudmmhXvwA5s3usVBKmgWxJQR/YPg=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=aiqEJSWOpDfUL1AKnBKqTlwcfxTrq/0miLWX+Wzd1JbYG3hVbE9drv9eNOifHgEql
-	 emZ8+9HPeiodQIG7JntklpErISRudBQfgtd3p/eahry/SnuvXYkbKxhpz59KMOb5mG
-	 M+q0tsnIp/g6YDhqptVYzJndtyaOadY4kv31Cj78=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261009142450eucas1p22aec6df61384870aa07eecf8ca4f269c~c4pcwGLoI2048820488eucas1p2r;
-	Fri,  9 Oct 2026 14:24:50 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261009142449eusmtip113f1886f9735f58850eaf51a840c30dd~c4pb_Pa1X1436814368eusmtip1V;
-	Fri,  9 Oct 2026 14:24:49 +0000 (GMT)
-Message-ID: <a4e7873b-f5eb-47cf-91f6-ad3e70f7b0cd@samsung.com>
-Date: Fri, 9 Oct 2026 16:24:49 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MPdRqLmn"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=WMXBW8OrP+OXkDBF2gTJPHqP6lllVDNfoESgP/Qfw/lRHLLA8+7AsUJ9BvGpfmxVy6E5EEs/s0Mc+/VFTlhfbFGus7S8gl/S1aI2zoFhELiZJDS8a9kA3f4UGO/WLpgVb4II2OKM2on4i5v27DAMnaNOQt1QwGOwJZ0tUgSUKSbkcVnvIEkHDOsEwRIXA5d/wMyWPG1fhzYRVpoOpqoXJ2LLDsy+ksxf14svR3mE3lhAj8obf4pW1RZRdRGRqX42pp3KdK5duknm31ImllekCYFQ0qiYcEfn0PLVM/HhXAECYn7qHcynuJPstrzW4CpvFF0HRAi+Z6wK5DapI8/5bA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Lzj0/FMthPmD+zy8ocYz7qr/nwxApU7bjPa3TkzroPc=;
+ b=tSPDse3dL1sEtnU/MOK7b1m33wpJtBjoeQyuCrWrUM6dVzobp2vMwFI/XfUDXxiSlan7W0rtPdP+g1p8TLeTUnKfODrW7xPSv5juL0umKB5MbVj9n0pa7f/TGthR/GFpmROjYt8LKBpr+jKiaRMn/rtLwBIPC/xPn8OQm+aAR7SX7kQIB5cJKNSbFk/yHhwGCHjINtjTZJ4UhpZ1oleuyliqZ1ZbfHrfmQaqN5z73Elkg1ivNNEHEAZjy85D01+vbMvF6V8LAH8DOij/N9oPlA1rDYTaHOBj7aFbs76ZviAPXVCg39kAb2CtXPKtpil45x2C6SzakSMwUg6k2aX+PQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Lzj0/FMthPmD+zy8ocYz7qr/nwxApU7bjPa3TkzroPc=;
+ b=MPdRqLmnHsIYs+6FZXShhvJQgFFHB3WUo4d7i5jowa2ioNP4cQR+PrPnN4vwBd8FXxoCCveVunr6Z9EAg9Z28wFzl0yLa3sotKOzWD2DHrfqMchpkEp2o0lXbd8xlIRuVPLRy1mmvG4BQCqFyznCYBLQNHyrt32LwuqhElR/jyBN/wmFgcWCnHK0OwoEV2zr8ValgBqcgHJl7BhFzbeyamkgCeQEdnYcfuko24BhLLBXxHopaMf/RWrTZwpvo0gsc5pYwJr2omRlmFyzRpz+FtrW819Kk8Z39xdbgPjx78HaOCv/eY9NpvdKcIcTiFXwiUqiIsuMFPTMPqxfSOpslg==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by IA0PR12MB8207.namprd12.prod.outlook.com
+ (2603:10b6:208:401::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.16; Fri, 9 Oct
+ 2026 14:43:20 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0496.015; Fri, 9 Oct 2026
+ 14:43:20 +0000
+Date: Fri, 9 Oct 2026 11:43:19 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Karl Mehltretter <kmehltretter@gmail.com>,
+	Alistair Popple <apopple@nvidia.com>
+Cc: iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
+	Diederik de Haas <diederik@cknow-tech.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sandy Huang <hjc@rock-chips.com>,
+	Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>,
+	Andy Yan <andyshrk@163.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jianfeng Liu <liujianfeng1994@gmail.com>,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	linux-rockchip@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 1/2] iommu: Add iommu_map_sgtable_dma()
+Message-ID: <20261009144319.GA58900@nvidia.com>
+References: <20261009002114.67851-1-kmehltretter@gmail.com>
+ <20261009002114.67851-2-kmehltretter@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261009002114.67851-2-kmehltretter@gmail.com>
+X-ClientProxiedBy: YT4PR01CA0035.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:fe::21) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH] dma-direct: Restore arch_dma_alloc() for the
- DMA_ATTR_NO_KERNEL_MAPPING case
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>, Russell King
-	<linux@armlinux.org.uk>, "Claude Opus 5 . 5" <noreply@anthropic.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20260930135734.1013905-1-m.szyprowski@samsung.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261009142450eucas1p22aec6df61384870aa07eecf8ca4f269c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20260930135751eucas1p1c3b8b79ed87c3bf6f473d26e4663e7e4
-X-EPHeader: CA
-X-CMS-RootMailID: 20260930135751eucas1p1c3b8b79ed87c3bf6f473d26e4663e7e4
-References: <CGME20260930135751eucas1p1c3b8b79ed87c3bf6f473d26e4663e7e4@eucas1p1.samsung.com>
-	<20260930135734.1013905-1-m.szyprowski@samsung.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|IA0PR12MB8207:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5c1ff189-dbec-443b-9628-08df2613a9b2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|23010399003|7416014|18002099003|22082099003|4143699003|56012099006|10067099003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	l1SKlmN7a5cmPfSoAOiOcHkmYwgnQPag5BK4t68BmMxHgEvn8pLf9uN/3EIJb3wvZcG0k8D6b99yvIK3q2sc4Knnzbapo+BAt7uhTVE7nGUlETM1CQqd+Wvu2km7CLMYhNVA9OHoc1d7bVFFMc8Vu5v1Ju0arAx6NtcMUg2zZn0ehEAv6LispeEiMphD37MCUUt4GLt1cbNiZRnKH57aTVuijVrCxCpVLCyzp6LCnxMvtXkIoT+t31taIKLU32ICkS6g/0TYoP7jLqSCRva7OJivNzROracYYTOnSzCY4kQu/jv3/7jM+oTQCmL95Ycz/k4sOmQv0G2gYZa2HCBRAio/rocnMbvEVuJkCEtNi1L4XzNUDhp7ib7lvjMKE3cEh0hqQOyKY7/g73pyqPW6B8WtT+ctxVjwmJ2a4sXP8d3RZbouA6BbCb393KGvbcZtm+l2iIqxZOPLPudQpkbQTpV9X9qbFpMog0Kw/D3+tC9HK3X5oBnYH36/RreiqDlkhrYBksKDLX0i3SwwJOxwvQ9ht0mH+pYV6W8wS985kinyAJY860WWbZCzk8FyEdQC+aCeFa4BFp+SJTpMzTbyry/xu3lzF6ILgsE2/1md+8qAZ2q5PHrGkmI8yb9p6/eCADQ9ZT0fPZRMPC6S3bWDo+/k0sDQlPFkXOl8GitG1HM=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(23010399003)(7416014)(18002099003)(22082099003)(4143699003)(56012099006)(10067099003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?wvH+h9sEGxVzQEnUy9PMqtWLSATdT2bltIY1F4wxk77ddwR2hNm3YqIqWKyJ?=
+ =?us-ascii?Q?0kiT5CSfisUxHz0he3Ls0FNd4gsvy1vYAGMR7wv9XAHeFfEhmA1Hy8xBpgfc?=
+ =?us-ascii?Q?CeVQp3MJSXujY6S/6KjxsxNN8FrszCmWUSyg+HN4+tmbOS+pVO4gCmfgPeRp?=
+ =?us-ascii?Q?R3oLX33LU4l4xqitz4eQ9qyAyhC7ed/ybXIzDlxg3ZEqBxiHJA3MrONirZnG?=
+ =?us-ascii?Q?fD37etUy09OAZRAltCjVKSwKWTaE6H0jQcYsQ+5F1dqbwxsYPpTLa56Uyhay?=
+ =?us-ascii?Q?6HJLGJ3nRBQI4Wyly7o0mmlIVpdXOOOO4tqpl5bgEpanXWQ0jogbCtnd1bl6?=
+ =?us-ascii?Q?Wf8wEFkUSqk3jH78YAeJ+sz6PIFpwdGtV49ljXpczrYS4aybuman/MaJ5GCu?=
+ =?us-ascii?Q?xDQ6P16MAkWtLTl0BLd9CgRBSoKYAjWIm/sjRIxHGaPGLu/Ny1xZssx3qRW8?=
+ =?us-ascii?Q?1UsemdXhqCi4EJSSNY/c+owRbCNYoJXcw5YITM+9Nmwe1fieB92yRqFQlPV1?=
+ =?us-ascii?Q?xOYF7i1c3yDNS4NBVOpZliWhFl7+vdaeKEa8dgMiV91M1wK8Ua9iaX1aP5iB?=
+ =?us-ascii?Q?0JrmMD5kSGHssr2P0ww73kEEqAuMh5212+RjxK5g8Vx0K/usKFt06aLUiHzx?=
+ =?us-ascii?Q?2AxLAtr4x2SBOJHuzEaJFB+RxyFCHMpCo9aPlOxmKm49T8d3jya3SflNpxR3?=
+ =?us-ascii?Q?Hzc8c4dqJuMeZObCXwA2yxRAWiLr5k3NHITvQI4WW9b31fpS04A7NY6Kd6PD?=
+ =?us-ascii?Q?UpofJoOF3xMwlul0Ef7KL/li0NCcFpI88Dejwp3kV705nugUnfljxtmyQrGi?=
+ =?us-ascii?Q?qHQvhGyOhX/S9AflTnx8BuxT97VWChuzl81DvefiAJt6EB4E/3Hpj3VEFx23?=
+ =?us-ascii?Q?WgQliMVT0hfzOTndcB8rQ+X0xCIg5c4XL+tSvZCIL1LwQjjvJF9/0E5FG94V?=
+ =?us-ascii?Q?hqxMjp/hhw20y+dQdDkke0jDnDZfH0tJUWYubwgBI4XM+Y+YN9HBgHnQx5Nj?=
+ =?us-ascii?Q?IRqc7RFXaCiuUkT9dM+1ETT1mHF2MK3/Pr5yeNbVs3GLn3olp7bSSlhpOVrc?=
+ =?us-ascii?Q?A/AGvYtRhAGCQnGBZGrgLy7tqNgPIzXCXD3IlmAFeBH5PBUU4kIfo9m4vwdW?=
+ =?us-ascii?Q?fBKCQmMtFza2GCltsV7XSFqpL92ukqAEZcAaE+S/fKYm9YI3rCGrLR28SEG1?=
+ =?us-ascii?Q?I0/Cfm0UVlMHUo2oqdxZ6c6yWA6FTYAasmde8R/9AeB/17v6qSPU6ljSFgqc?=
+ =?us-ascii?Q?azgs7gWy+PmFlBYNMKMM8nLdV0sVVUlyNhIfoZYZVr3JhTK78UqBn2mZTiNx?=
+ =?us-ascii?Q?nsBhMNXKaei69iB0p+lXpwnRgUGJzolEq8Ff/rSLCR668A1Ia1uKlmVZwzGo?=
+ =?us-ascii?Q?3miEQqNwXzDBqGjAZ/3desJsJDbmc91gO1K0aqBMoUt6GKGWQgzebcoTVZw0?=
+ =?us-ascii?Q?pVsl/Emf8W4tShIdo146xKZLYbRIkOqL5QAezBUquRswv41/suLqaL4Gw3As?=
+ =?us-ascii?Q?hbEbPUWlXzK7bTjZUY2onnMPaFpxD2ZbvmBjnBlk8s/85glTTcZ+V5stiibk?=
+ =?us-ascii?Q?3H12B1+NT2FeJOyg6LjP/TwgajA92WPxNmfVK5OjehLDEw2j7hfc3dJmLNDv?=
+ =?us-ascii?Q?xY7/FDMZI/3nG8/pEAp1YpR6gwsKKfucUJCWWxN4ZJ2MNxW/VCszX+Koe9xc?=
+ =?us-ascii?Q?NlwzNTit9HetBJPQkLO2YFQgm71Dkmijic1wc7nfwQRDLiYQ?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c1ff189-dbec-443b-9628-08df2613a9b2
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2026 14:43:20.3977
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qzXEd/gUoEsZUvqa7XwV8tugZN2Bt6Reo9yjYPaCXa8IdvlCUBp//hoqG4EFVYXY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8207
 
-On 30.09.2026 15:57, Marek Szyprowski wrote:
-> Commit 849facea92fa ("dma-direct: simplify the DMA_ATTR_NO_KERNEL_MAPPING
-> handling") moved the DMA_ATTR_NO_KERNEL_MAPPING shortcut in
-> dma_direct_alloc() in front of the arch_dma_alloc() call. Architectures
-> providing their own DMA coherent allocator (CONFIG_ARCH_HAS_DMA_ALLOC)
-> therefore no longer see such requests. ARM 32bit is one of such. Lack of
-> the call to arch_dma_alloc() results in the lack of proper cache
-> management on HighMem pages.
->
-> Take the dma-direct shortcut only for coherent devices or when the
-> architecture doesn't provide arch_dma_alloc(). While touching this,
-> move that check into separate function to avoid duplication in alloc
-> and free paths.
->
-> Fixes: 849facea92fa ("dma-direct: simplify the DMA_ATTR_NO_KERNEL_MAPPING handling")
-> Reported-by: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-> Closes: https://lore.kernel.org/all/yq5ams2akznl.fsf@kernel.org/
-> Assisted-by: Claude Opus 5.5 <noreply@anthropic.com>
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Applied to dma-mapping-for-next, because it looks that this case has no
-active users, so it is not the urgent fix.
+On Fri, Oct 09, 2026 at 02:21:13AM +0200, Karl Mehltretter wrote:
+> DMA-BUF attachments provide DMA addresses, not CPU-side pages.
+> iommu_map_sgtable() needs those pages, so private-domain importers such
+> as Rockchip cannot use it with strict DMABUF_DEBUG.
+> 
+> Add an iommu-dma helper to map a live attachment into another domain by
+> translating through the device's default DMA domain. Roll back target
+> mappings on error. This still recovers physical addresses
+> internally.
 
-> ---
->  kernel/dma/direct.c | 22 ++++++++++++++++++----
->  1 file changed, 18 insertions(+), 4 deletions(-)
->
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index da665ca22d5c..a31bd3129f3f 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -179,6 +179,22 @@ static struct page *dma_direct_alloc_from_pool(struct device *dev, size_t size,
->  	return page;
->  }
->  
-> +/*
-> + * Check if the allocation can skip the kernel mapping and return the page
-> + * pointer as the cookie.
-> + */
-> +static bool dma_direct_use_no_mapping(struct device *dev, unsigned long attrs)
-> +{
-> +	if ((attrs & (DMA_ATTR_NO_KERNEL_MAPPING | __DMA_ATTR_ALLOC_CC_SHARED)) !=
-> +	    DMA_ATTR_NO_KERNEL_MAPPING)
-> +		return false;
-> +	if (is_swiotlb_for_alloc(dev))
-> +		return false;
-> +	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_ALLOC) && !dev_is_dma_coherent(dev))
-> +		return false;
-> +	return true;
-> +}
-> +
->  static void *dma_direct_alloc_no_mapping(struct device *dev, size_t size,
->  		dma_addr_t *dma_handle, gfp_t gfp)
->  {
-> @@ -226,8 +242,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	if (attrs & DMA_ATTR_NO_WARN)
->  		gfp |= __GFP_NOWARN;
->  
-> -	if (((attrs & (DMA_ATTR_NO_KERNEL_MAPPING | __DMA_ATTR_ALLOC_CC_SHARED)) ==
-> -	     DMA_ATTR_NO_KERNEL_MAPPING) && !is_swiotlb_for_alloc(dev))
-> +	if (dma_direct_use_no_mapping(dev, attrs))
->  		return dma_direct_alloc_no_mapping(dev, size, dma_handle, gfp);
->  
->  	if (!dev_is_dma_coherent(dev)) {
-> @@ -374,8 +389,7 @@ void dma_direct_free(struct device *dev, size_t size,
->  	if (attrs & __DMA_ATTR_ALLOC_CC_SHARED)
->  		mark_mem_encrypted = true;
->  
-> -	if (((attrs & (DMA_ATTR_NO_KERNEL_MAPPING | __DMA_ATTR_ALLOC_CC_SHARED)) ==
-> -	     DMA_ATTR_NO_KERNEL_MAPPING) && !is_swiotlb_for_alloc(dev)) {
-> +	if (dma_direct_use_no_mapping(dev, attrs)) {
->  		/* cpu_addr is a struct page cookie, not a kernel address */
->  		dma_free_contiguous(dev, cpu_addr, size);
->  		return;
+Absolutely not. You cannot recover the phys_addr's from a DMABUF
+expoter by using iommu_iova_to_phys(). Christian is adamant that
+drivers must not use physical addresses, and I will not agree to any
+hacks like this to try to end-run around his prohibition by abusing
+iommu subsystem.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+NAKed-by: Jason Gunthorpe <jgg@nvidia.com>
 
+If you want to keep the domain in the rockchip driver you have to fix
+DMABUF to allow an importer to use an iommu domain safely.
+
+It *must not* be done with a scatterlist interface, sorry, I know that
+is alot of work but Alistair is going to take a serious stab at it.
+
+Many users want this, not just rockchip. So help with the work to
+allow iommufd to do this and you will get it for free.
+
+Jason
