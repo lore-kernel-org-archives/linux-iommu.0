@@ -1,187 +1,110 @@
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2950549B214
-	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 09:15:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=58.251.27.85
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D83BD342514;
+	Fri,  9 Oct 2026 09:27:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791537313; cv=none; b=Nu4Xn+Qqr+dP9g149XnEA7nuQgpQiYNEhNPUTIDZtU41hZaQgzbgIwBydapL13O0qRFdL8j4C87grrWB/LbpZ9s4YxGO0MniIOuOLT3gyBr9d6btSqrmV14wr3tzl+Zs4YwmyJOP3PJB86oWAR6nQQOgbCX4CVkfiSFcyERaJMs=
+	t=1791538056; cv=none; b=WEwhbkYQC7xYxGebHzBYWMI3EWyhrVn1Rm1MljwRYqaMDA3s4eQfP97q2VAFPGvuckXpI6PHecSz7pd0vd4lW03YwH4IgH1Fwl0TJtbv2tBre6/FOYBUk+UCOFcvpHByZie/h1b80mBzIp58tW9a7++raCBKK+TIuA3QZ6nWd5I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791537313; c=relaxed/simple;
-	bh=cFJXizfmrElWI9zVTKNIIsrYqGqqIWoznlaActFHRr0=;
-	h=Message-Id:From:To:Cc:Subject:Date:In-Reply-To:References:
-	 MIME-Version; b=XvzwARXlAQBFmSMS5UUIe5Gm//Xq2K9jXqDYJbB7k63N04p+bY0esuECe4gSJy3mHV61rZwpKqim04h6tlIfgk275kobpG9wEfeQQiTPhqkDdQReNc2W84ELWU3kn54dyDJaYG4wugokISnCS8h1yxXtJiN5xOFxaCysie5FriI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn; spf=pass smtp.mailfrom=sanechips.com.cn; arc=none smtp.client-ip=58.251.27.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mxde.zte.com.cn (unknown [10.35.20.165])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxct.zte.com.cn (FangMail) with ESMTPS id 4j1LmS65VfzYCS
-	for <iommu@lists.linux.dev>; Fri, 09 Oct 2026 17:15:04 +0800 (CST)
-Received: from mxhk.zte.com.cn (unknown [192.168.250.138])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxde.zte.com.cn (FangMail) with ESMTPS id 4j1LmG3fmnz5Ttm2
-	for <iommu@lists.linux.dev>; Fri, 09 Oct 2026 17:14:54 +0800 (CST)
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4j1Lm45T4rz4yjjH;
-	Fri, 09 Oct 2026 17:14:44 +0800 (CST)
-Received: (from root@localhost)
-	by mse-fl1.zte.com.cn id 6999EfSj006317;
-	Fri, 9 Oct 2026 17:14:41 +0800 (+08)
-	(envelope-from gong.shuai@sanechips.com.cn)
-Message-Id: <202610090914.6999EfSj006317@mse-fl1.zte.com.cn>
-Received: from szxlzmapp04.zte.com.cn ([10.5.231.166])
-	by mse-fl2.zte.com.cn with SMTP id 69995Y26078728;
-	Fri, 9 Oct 2026 17:05:34 +0800 (+08)
-	(envelope-from gong.shuai@sanechips.com.cn)
-Received: from localhost.localdomain (unknown [10.230.214.35])
-	by smtp (Zmail) with SMTP;
-	Fri, 9 Oct 2026 17:05:36 +0800
-X-Zmail-TransId: 3e816ac8ae5a022-c22f1
-X-Zmail-LocalSMTP: 1
-X-Zmail-RealSender: gong.shuai@sanechips.com.cn
-From: Gong Shuai <gong.shuai@sanechips.com.cn>
-To: andrew.jones@oss.qualcomm.com
-Cc: anup@brainfault.org, atish.patra@linux.dev, fangyu.yu@linux.alibaba.com,
-        iommu@lists.linux.dev, jgg@nvidia.com, jgg@ziepe.ca, joro@8bytes.org,
-        kvm-riscv@lists.infradead.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com,
-        tglx@kernel.org, tomasz.jeznach@linux.dev, will@kernel.org,
-        zhangzhanpeng.jasper@bytedance.com, zong.li@sifive.com,
-        gong.shuai@sanechips.com.cn, gsh517025@gmail.com
-Subject: Re: [RFC PATCH v3 04/14] iommu/riscv: Reject live S2 replacement with forwarded IRQs
-Date: Fri,  9 Oct 2026 17:05:30 +0800
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260928143113.49838-5-andrew.jones@oss.qualcomm.com>
-References: <20260928143113.49838-5-andrew.jones@oss.qualcomm.com>
+	s=arc-20240116; t=1791538056; c=relaxed/simple;
+	bh=VzHE6sfBCfn7lqlC5cHQiEZhMNffUx9scn7YhfPiWwQ=;
+	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
+	 References:Date:Message-Id; b=CZpCR4hHvmJ4HJq+b8UMfxyFjbD6zw3xDEbh2JIhXz/pkQBQXQx/rMjFhaJyzMXG4H2jlzmBFV/iRzQJIRZDk/V8/ICQQZJCch8y47UkAf4ip2MikuFauGInHMmjfEKWyDvbsO98iGCtjerNalGYix6G9iKU3mYPzQZCVNy0LYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XPuqMM3d; arc=none smtp.client-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XPuqMM3d"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFD01F000FF;
+	Fri,  9 Oct 2026 09:27:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791538055;
+	bh=gbs+O3il6AZ+b47/QZ+p2Di1T0JcIDp2VboXRYCu+d0=;
+	h=Subject:From:To:Cc:In-Reply-To:References:Date;
+	b=XPuqMM3d1Qi1aZndxPFwZ/pv1ON3DCmT9vbtpoTfmZ0DbNrNzqxp9MmQtN0N7lPNw
+	 82MbsFLUXNFWqsLNWTIeQyabxtAvVTfoXJGUWI+AEpbGGxxMYAER/TX8+e1lW6nMPY
+	 Jzx+LAcudYMXMgCVaPA4JZlnN7gZ4Z9vrrMzeksTa7H2qjblAzli0MZl2d8uE1qyQA
+	 QckkWsP64wDafUqmti14ZWy3t5vdgAWbtsI+W9V5u9ZNXGpnZXPlB2CD6N4kH31aog
+	 QRwhOHIfnFKlitWENMC4AFSdg3vcgV5ShD6F3ddnUt1h0UiRZaVgs4xHLx2iud6clQ
+	 OmtlkWckQ1HDA==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
-Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl1.zte.com.cn 6999EfSj006317
-X-MSS: AUDITRELEASE@mse-fl1.zte.com.cn
-X-TLS: YES
-X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.35.20.165 unknown Fri, 09 Oct 2026 17:15:05 +0800
-X-CLEAN: YES
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AC8B097.001/4j1LmS65VfzYCS
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v5 04/13] iommu: of_iommu: Add support for
+ "iommu-ranges" on a device node
+From: bod@kernel.org
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, 
+ Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, 
+ Stanimir Varbanov <stanimir.varbanov@linaro.org>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Bryan O'Donoghue <bryan.odonoghue@linaro.org>, 
+ Stephan Gerhold <stephan.gerhold@linaro.org>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Abel Vesa <abelvesa@kernel.org>, 
+ linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
+ Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux.dev, 
+ Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+In-Reply-To: <20260926-vpu_iommu_iova_handling-v5-4-0322ca5dc10c@oss.qualcomm.com>
+References: <20260926-vpu_iommu_iova_handling-v5-0-0322ca5dc10c@oss.qualcomm.com>
+ <20260926-vpu_iommu_iova_handling-v5-4-0322ca5dc10c@oss.qualcomm.com>
+Date: Fri, 09 Oct 2026 10:27:28 +0100
+Message-Id: <179153804819.2596899.5363254526911327543.b4-reply@b4>
+X-Mailer: b4 0.17-dev-e5aa4
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1488; i=bod@kernel.org;
+ h=from:subject:message-id; bh=VzHE6sfBCfn7lqlC5cHQiEZhMNffUx9scn7YhfPiWwQ=;
+ b=owEBbQKS/ZANAwAKASJxO7Ohjcg6AcsmYgBqyLOAWpqazRvXBDloXY25XV4lXHcaFmGj5ELii
+ bSVcf0LYN2JAjMEAAEKAB0WIQTmk/sqq6Nt4Rerb7QicTuzoY3IOgUCasizgAAKCRAicTuzoY3I
+ OmPGEACoJWqpXTUeA2xXyByyk9UwsfAtwy0Vci6LkFvoGik4pIdt3Mj4H0QrW47lTxZQbZrz13o
+ JgNkLcd3oIfuAo6ClboHAkkNAWgCXKUMzeRo4J1UMDkdJ6Oos2J+IB5oPdk9AIGa6GsvHdVn5mV
+ 1zDuC/YO7yEB7+bjoe4WODTac1W2RPHYoH5PnUxA/Kx2CoJTMXWjQD56zxjS7ZRHChW6ZOtloB0
+ 2OtXE3dokqWksorCZmRcY7f1dvo7TiMpt+5s1pVYEgf9yI2NBDeJrjxE0sZWJsqwTodfjYHHvZy
+ zC7J2NqUfsGpAA3QMVWOIXaPTdl3k/7VTW4H+3l9px4EbzrBYLWalfCfDJzq5SHEmyKb14NcBT8
+ 73rAofB5fr34cxBEHNbTAmR3m5P2ZqClcj1nHmWLMad9utVP/qLJfTzBb/X67GXBLSBp8Sz1VG9
+ 3XzRJkoGTejRplbYuqqWowxbZxmyzSOP/qrs1KyuH4JBHzkggwdjk4qymT1fyd58ICBWSucqxXN
+ C5dNV0/VqAO8mknnCZnvpu/2lKDak0StqWY/ae3Ngo+nNdU5lOCDHSSSkh/5sZwke/JtDPh4vUh
+ BxQZdZMH+44CGjw/y4osw/pd/RGobUggsnXRy/WJSl1xec+fF6XURJzss778pS7dh1yl4fH4ice
+ m0C+Fa086hPiOTw==
+X-Developer-Key: i=bod@kernel.org; a=openpgp;
+ fpr=E693FB2AABA36DE117AB6FB422713BB3A18DC83A
 
-Hi Drew,
-
-> MSI forwarding state is tied to the S2 domain MSI table. Replacing a
-> device's S2 domain while one of its IRQs is forwarded would leave the
-> IRQ state referring to the detached table.
+On 2026-09-26 12:04 +0530, Vikash Garodia wrote:
+> Reserving an IOVA address using "iommu-addresses" requires it to be
+> placed in the reserved-memory node. But when "iommu-addresses" is the
+> only property being described and there is no backing "reg" (i.e. no
+> actual reserved system memory), it does not really belong under
+> /reserved-memory. A device IOVA range is specific to its own address
+> space, and does not describe the system physical memory to make it
+> qualify under reserved-memory. Given this, place "iommu-addresses"
+> inside reserved-memory only when it is paired with a "reg", otherwise,
+> define it within the device own node. It was discussed here:
+> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
 > 
-> Reject direct S2-to-S2 replacement when the moving device has forwarded
-> IRQs. Introduce a per-device nr_forwarded_irqs counter, rather than
-> domain-wide accounting, so other devices in the same IOMMU group can
-> still move and can be rolled back if a later device fails.
+> Existing "iommu-addresses" property expects a phandle, which does
+> not make sense when the property is defined within the device node.
+> Introduce a new property, "iommu-ranges", to specify the device
+> specific IOVA ranges when there is no backing "reg".
 > 
-> Later patches which introduce interrupt remapping support will manage
-> the newly introduced nr_forwarded_irqs counter.
-> 
-> Signed-off-by: Andrew Jones <andrew.jones@oss.qualcomm.com>
-> ---
->  drivers/iommu/riscv/iommu.c | 36 ++++++++++++++++++++++++++++++++++++
->  1 file changed, 36 insertions(+)
-> 
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 57f2884dec42..d48667112cd9 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -872,6 +872,7 @@ PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
->  /* Private IOMMU data for managed devices, dev_iommu_priv_* */
->  struct riscv_iommu_info {
->  	struct riscv_iommu_domain *domain;
-> +	unsigned int nr_forwarded_irqs;
->  };
->  
->  static struct riscv_iommu_msi_table *riscv_iommu_domain_msi_table(struct iommu_domain *iommu_domain)
-> @@ -1432,6 +1433,36 @@ static int riscv_iommu_msi_table_alloc(struct riscv_iommu_domain *domain,
->  	return 0;
->  }
->  
-> +static bool riscv_iommu_can_attach_paging_domain(struct iommu_domain *iommu_domain,
-> +						 struct device *dev,
-> +						 struct iommu_domain *old)
-> +{
-> +	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
-> +	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
-> +	bool new_is_s2 = domain->gscid;
-> +	struct riscv_iommu_msi_table *new_msi_table, *old_msi_table;
-> +
-> +	if (iommu_domain == old)
-> +		return true;
-> +
-> +	new_msi_table = riscv_iommu_domain_msi_table(iommu_domain);
-> +	old_msi_table = riscv_iommu_domain_msi_table(old);
-> +
-> +	if (new_msi_table)
-> +		lockdep_assert_held(&new_msi_table->lock);
-> +	if (old_msi_table)
-> +		lockdep_assert_held(&old_msi_table->lock);
-> +
-> +	/*
-> +	 * Per-device accounting allows other devices in the same IOMMU group
-> +	 * to move or roll back while this device has forwarded interrupts.
-> +	 */
-> +	if (new_is_s2 && old_msi_table && info->nr_forwarded_irqs)
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
 
-This check might miss one case. old_msi_table comes from this
-attach's old domain, so only a direct S2 to S2 swap is caught.
-A device with live forwarded IRQs can still be moved to blocking
-and then to a different S2 domain, and on that second attach old
-is the blocking domain, so old_msi_table is NULL and the check
-passes. This is only from reading the code, I have no test program
-that triggers it.
+I think we need to get buy-in from the IOMMU people on this change before
+we commit to bindings that may be affected by a rejection.
 
-If you think this is a real gap, one idea would be to record the
-table the forwarding was set up on in riscv_iommu_info(a pointer to
-riscv_iommu_msi_table), set when the first IRQ of the device is
-forwarded and cleared when the last one is unforwarded. The pointer
-survives the blocking hop, since attaching to blocking domain only
-clears info->domain. Then can_attach here will reject when the new
-domain's table differs from it. That covers both the direct and the
-blocking case, and the PCI reset path still works because the device
-returns to the same S2 domain. The unforward path can use the pointer
-instead of info->domain. Note that the S2 domain owning the table
-must not be freed while a device still points at that table.
+i.e. There's no point in absorbing potentially DOA bindings.
+---
+bod
 
-Thanks,
-Shuai
-
-> +		return false;
-> +
-> +	return true;
-> +}
-> +
->  static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->  					    struct device *dev,
->  					    struct iommu_domain *old)
-> @@ -1477,6 +1508,11 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->  	bond->dev = dev;
->  
->  	flags = riscv_iommu_msi_tables_lock(old, iommu_domain);
-> +	if (!riscv_iommu_can_attach_paging_domain(iommu_domain, dev, old)) {
-> +		riscv_iommu_msi_tables_unlock(old, iommu_domain, flags);
-> +		kfree(bond);
-> +		return -EBUSY;
-> +	}
->  	riscv_iommu_bond_link(domain, bond);
->  	riscv_iommu_iodir_update(iommu, dev, &dc);
->  	riscv_iommu_bond_unlink(info->domain, dev);
-> -- 
-> 2.43.0
