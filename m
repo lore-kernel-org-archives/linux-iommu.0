@@ -1,50 +1,68 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj2-f5.google.com (mail-pj2-f5.google.com [74.125.227.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC2E034EEFD
-	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 02:24:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA5F337B81
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 03:05:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791512676; cv=none; b=m/e4jzGucK5NrhNrN3RIDcR8Kb/Z4fRi2z+9cECdZbipxHkQzhioWksmF7JukG+VA4+9SCFjiah0J+qO8SG//EH1ZMFjLuP08IyP0jhI4lJViIn55HEdGz+V9fqkL+2kaDB7hnpxIpK4/ZmlFYn0+rbkNQ5tgJj9yklcY/ap/UE=
+	t=1791515109; cv=none; b=J+Um/76tcRZ5ZCUUDM9NJfb4SZQiMb2ilNaA7lXg56fk1jfqfpF4G3q76Ra2N2h/R/EWRnPBsn0VHWNyw6cBbVMy3ViWiMAmneacLiCU8MV27Y0Y281+LzrUsW/mI8eRkqjDcYsuheEFxO8/EGPLlW3bdFncsHo1EZzDiRVVP/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791512676; c=relaxed/simple;
-	bh=K50/PcpP8Qtz65E+Lgp8dSBTkqCqXw61G3kjlUVi/gk=;
+	s=arc-20240116; t=1791515109; c=relaxed/simple;
+	bh=2CBQKgx82cWynOCmi7Aef2VtATV6JiH2VphXL1cfpYU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NZsUHBx88qBeVmeZLUKVk/XNW6YPoiMFwhKIGEjSJsmTWpS0sNxVkvdfcNIaoCHTyfKdUtHCYqe4MNh+LGK5fPutmZ7jDM/7L0fO6sm55l4r89ZSIvaD5107/QFZDqdlmpmc3RAviq3tKP8EVeoh5Uz3SGPjqxY7enbsxNZ9asQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LFRBxf6o; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 In-Reply-To:Content-Type; b=lUOCyF1n1qOuUw2gv4F/v4rpDFVnhJiQUhpdPgrsbgZDCicwTUDQNiUj5knld/xxXw7UTFEf6zIEaPpQG4eJwH9dUwli2sJLDh7CCY/h1kocA/lb5CJKXYjuvAAS5HYtLPeJNTuSQk3WduFPxfiFjM6Iz7njDaPNfL4ZjODJmqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HoxV2YlL; arc=none smtp.client-ip=74.125.227.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LFRBxf6o"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791512674; x=1823048674;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=K50/PcpP8Qtz65E+Lgp8dSBTkqCqXw61G3kjlUVi/gk=;
-  b=LFRBxf6oF0H7b5KsNy5e0WIlHWekt/WQfF9LgwikKNwOdLFYQ0R8pir6
-   SXuZJ9vgoMII3IqkJKvP4BzlEEVtSFdG33QhuDTzV1une10uvEOW8Sp0X
-   u7duRYyOGu/FI1IsW7Nsi2BbQCQjzFbrlFYvtWj7OshASlYGDyfNcesq6
-   Fdca2cCvKOm7YFu6K2EmDFTFKsOHGGrO7OexFht6aMJihA99Ydz+QOMdt
-   nH4H5rvF/X+nhyYnpoofeFJ0nI2KErVHjit7oz+6U7hTxsvAxCV3DdBe8
-   FUMoU1I95MoMtNSfReJv54oJqqB+ieH/jw5VR6iov5QkAPv4E5uHT7/YY
-   g==;
-X-CSE-ConnectionGUID: rxjF8c7pSOuK2mNjJT8vDQ==
-X-CSE-MsgGUID: TVzCr4/eQTWL6Pe4j9bzUg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11929"; a="311951"
-X-IronPort-AV: E=Sophos;i="6.27,147,1787036400"; 
-   d="scan'208";a="311951"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2026 19:24:34 -0700
-X-CSE-ConnectionGUID: djHuauNsQ+yIo/Saju4CSQ==
-X-CSE-MsgGUID: 2Lo9SwOzTvGYs14EHdPaUQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,147,1787036400"; 
-   d="scan'208";a="291156"
-Received: from blu2-desk.sh.intel.com (HELO [10.239.156.26]) ([10.239.156.26])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2026 19:24:29 -0700
-Message-ID: <5be26af3-9d0c-40ce-bf58-9e98ef4a8670@linux.intel.com>
-Date: Fri, 9 Oct 2026 10:24:28 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HoxV2YlL"
+Received: by mail-pj2-f5.google.com with SMTP id d9443c01a7336-2e7c8213b09so6621015ad.0
+        for <iommu@lists.linux.dev>; Thu, 08 Oct 2026 20:05:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1791515108; x=1792119908; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=qQfYvkNkqoOJCA+/6hCONW4bFzc6fazsqzcsWi6a4VE=;
+        b=HoxV2YlL8ySz+zX72Llk3g29rFGRO2AaAr5FbKF0HxV32nxmwJuv/2vRkpEAz8qCyQ
+         b5S6jWrjeud4oLemQbiQ9jmNmNLtOJC2iWqlGAoSIgO7QGfRPkAFN49pkbfGQ6VFw+mF
+         C+cXwn4ZcOFy+y0jwhrF1BX5o0Hb5TS62TzUj0mehyBBEAmu8dNeKNk0kskY0Ha90I9a
+         mDnqtdoZvxkwgVjsRMAw9/J+6ty7ivVpUflMlHNcuQnHIjN/9KujW2QbwajKVtTu+nPj
+         Ww5E/69NAqq4pSeje2KRRsTOURKNvFp5ULAcm4LPmsLR2DPQCkiQMjyULRGNidaKyjkI
+         SQ6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791515108; x=1792119908;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=qQfYvkNkqoOJCA+/6hCONW4bFzc6fazsqzcsWi6a4VE=;
+        b=FQLr21rETaO9dR1QOSuPL1BzB5i/wkmXU+DBkooUpii0fEv8Gu+pEMWAfybEO0hPrE
+         89cLkKuSvyUANFvztvtopVxviM/6BgEdg/LsA3ZaN/LvqRaJuN7bfK8HcOe8PDflJYP5
+         2cZ5U/HJMDQJ9TZuClJtALcGBC2Sg2s4tuWyD6rIDtDerDGfkvTM2U+uWet0V9RfSLbg
+         EVqC7f5vPkt37Z+EHTv3t9QPmWyo8Qi4IjJTGqjOKe+bmyftVwsVmP9CgASvfNi9LtPD
+         BFb7ZQsFU7m6ph8LlzmHQ0BMx7I9v0Y/yBVLsC+ReIW9CGCKA5LbnA0KlR1K3kVFI793
+         VpKQ==
+X-Forwarded-Encrypted: i=1; AKwUvByHYyZnrwbueS2071AfaXuIph6oJ6uW4cL8pvddEEgZHDsO7qKj9CxGHkujmYf+nXmtVZ3UhQ==@lists.linux.dev
+X-Gm-Message-State: AFuF++n62TjstNcHqYRJAtioDLbJRzjjsfQpDxE8mYL/+VZOUE4T2UCa
+	7EqAhslziA0Kzmz0adt7/zQ7RGuFypO0NP/ufibxu71a+UeDlZUJBtWf
+X-Gm-Gg: AYBFou2Tl5rFP5mXOzMeDgi8lO9SHEtYZJ1I9NfSJvQ4a4VbrU2D3WgO5zEwHXAFAhS
+	eHgPV+2+p8wUPP4wI+u6+qDk1+t82OjiSgaAg78pkueSwG/FhXSTF1+EQQRCA2ZBuLIxo5ST9ub
+	mhvXw8zVwnu5pH+3GhRVLo6Hz3F5jy6aXJ8eIsrjpygItmwsmX31YvwyW+RFbFyy3JH6gtTQT3g
+	QmduFLdC3Q1zXaYlR9Iv2X7UhDTShTJVGTfevPFel6ic7nHiTV/kxll7ngHZC4fs27osqFkPQ9O
+	1HqT6nGuTR01lrq5BONZ/heqKFLbAFvLs19cKb9Q0HR4+BEA/ZozwzcqzhTo28AdpgwYWgQ8qwm
+	sLEgmXlJOnDidpjuJmawZqbZ8L0z9J9jWOuUXVq+egRXu2OyRzpT2JC94qih53dTqf3DgDy8veJ
+	DaJTWy7qGJyRt6q4RURIQOghNzecDd+oRJcyrb36IFkjdtqOdy6FGfeSTiAYQTIlvqaRfywAFs1
+	9BkFA==
+X-Received: by 2002:a05:6a21:e08c:b0:3e0:da23:8746 with SMTP id adf61e73a8af0-3e16bdae93emr416704637.18.1791515107689;
+        Thu, 08 Oct 2026 20:05:07 -0700 (PDT)
+Received: from [10.125.112.22] ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cd3d9e08c89sm296018a12.8.2026.10.08.20.04.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2026 20:05:07 -0700 (PDT)
+Message-ID: <80af60db-8c39-461c-a488-3dfee990bce8@gmail.com>
+Date: Fri, 9 Oct 2026 11:04:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,349 +70,204 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 12/18] iommu/vt-d: Handle reattach of the restored
- domain
-To: Samiullah Khawaja <skhawaja@google.com>,
- David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
-References: <20260921004834.2601285-1-skhawaja@google.com>
- <20260921004834.2601285-13-skhawaja@google.com>
+Subject: Re: [PATCH v7 0/9] kdump: reduce vmcore size and capture time
+To: Mike Rapoport <rppt@kernel.org>
+Cc: robh@kernel.org, baoquan.he@linux.dev, m.szyprowski@samsung.com,
+ catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
+ chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, tglx@kernel.org,
+ mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+ hpa@zytor.com, saravanak@kernel.org, akpm@linux-foundation.org,
+ pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+ kexec@lists.infradead.org, linux-mm@kvack.org, iommu@lists.linux.dev
+References: <20260922084256.1515554-1-chenwandun1@gmail.com>
+ <ar9ogXc12cLjziHS@kernel.org>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20260921004834.2601285-13-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Wandun <chenwandun1@gmail.com>
+In-Reply-To: <ar9ogXc12cLjziHS@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 9/21/26 08:48, Samiullah Khawaja wrote:
-> Reattach the restored domain to the preserved device using restored
-> domain ID. While reattaching do not setup the context and PASID entries
-> as those are preserved during liveupdate.
+
+
+On 10/2/26 16:17, Mike Rapoport wrote:
+> Hi Wandun,
 > 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->   drivers/iommu/intel/iommu.c      |  32 +++++--
->   drivers/iommu/intel/iommu.h      |  14 +++
->   drivers/iommu/intel/liveupdate.c | 159 +++++++++++++++++++++++++++++++
->   3 files changed, 197 insertions(+), 8 deletions(-)
+> On Tue, Sep 22, 2026 at 04:42:47PM +0800, Wandun Chen wrote:
+>> From: Wandun Chen <chenwandun@lixiang.com>
+>>
+>> On SoCs that carve out large firmware-owned reserved memory (GPU,
+>> camera ISP, ...), kdump currently dumps those carveouts as part of
+>> system RAM even though their contents are firmware state that is not
+>> useful for kernel crash analysis.
+>>
+>> This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
+>> reserved memory on DT-based architectures (arm64, riscv, loongarch).
+>> Reserved regions are marked MEMBLOCK_NODUMP by default so kdump omits
+>> them; reusable CMA regions are different because their pages are handed
+>> back to the buddy allocator and may carry crash-relevant data.
+>>
+>> ACPI systems already filter reserved memory out of the vmcore through
+>> their existing path; only DT-based systems currently fail to filter these
+>> regions, which is what this series addresses. The flag lives in memblock
+>> itself rather than in a DT-only structure, so both ACPI and DT systems
+>> can benefit from it (suggested by Rob, thanks).
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index c5044e834337..6d3cbe0745c9 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -2819,6 +2819,9 @@ static int blocking_domain_attach_dev(struct iommu_domain *domain,
->   {
->   	struct device_domain_info *info = dev_iommu_priv_get(dev);
->   
-> +	if (dev_iommu_restored_state(dev))
-> +		return -EBUSY;
-> +
->   	iopf_for_domain_remove(info->domain ? &info->domain->domain : NULL, dev);
->   	device_block_translation(dev);
->   	return 0;
-> @@ -3187,6 +3190,9 @@ static int intel_iommu_attach_device(struct iommu_domain *domain,
->   {
->   	int ret;
->   
-> +	if (dev_iommu_restored_state(dev))
-> +		return intel_iommu_restore_device(domain, dev);
-> +
->   	device_block_translation(dev);
->   
->   	ret = paging_domain_compatible(domain, dev);
-> @@ -3317,7 +3323,8 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
->   	info->iommu = iommu;
->   	RB_CLEAR_NODE(&info->node);
->   	if (dev_is_pci(dev)) {
-> -		if (ecap_dev_iotlb_support(iommu->ecap) &&
-> +		if (!dev_iommu_restored_state(dev) &&
-> +		    ecap_dev_iotlb_support(iommu->ecap) &&
->   		    pci_ats_supported(pdev) &&
->   		    dmar_ats_supported(pdev, iommu)) {
->   			info->ats_supported = 1;
-> @@ -3421,12 +3428,16 @@ static void intel_iommu_release_device(struct device *dev)
->   	struct device_domain_info *info = dev_iommu_priv_get(dev);
->   	struct intel_iommu *iommu = info->iommu;
->   
-> -	iommu_disable_pci_pri(info);
-> -	iommu_disable_pci_ats(info);
-> +	if (!dev_iommu_restored_state(dev)) {
-> +		iommu_disable_pci_pri(info);
-> +		iommu_disable_pci_ats(info);
->   
-> -	if (info->pasid_enabled) {
-> -		pci_disable_pasid(to_pci_dev(dev));
-> -		info->pasid_enabled = 0;
-> +		if (info->pasid_enabled) {
-> +			pci_disable_pasid(to_pci_dev(dev));
-> +			info->pasid_enabled = 0;
-> +		}
-> +	} else {
-> +		intel_iommu_detach_restored_device(dev);
->   	}
->   
->   	mutex_lock(&iommu->iopf_lock);
-> @@ -3434,11 +3445,13 @@ static void intel_iommu_release_device(struct device *dev)
->   		device_rbtree_remove(info);
->   	mutex_unlock(&iommu->iopf_lock);
->   
-> -	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
-> +	if (!dev_iommu_restored_state(dev) && sm_supported(iommu) &&
-> +	    !dev_is_real_dma_subdevice(dev) &&
->   	    !context_copied(iommu, info->bus, info->devfn))
->   		intel_pasid_teardown_sm_context(dev);
->   
-> -	intel_pasid_free_table(dev);
-> +	if (!dev_iommu_restored_state(dev))
-> +		intel_pasid_free_table(dev);
->   	intel_iommu_debugfs_remove_dev(info);
->   	kfree(info);
->   }
-> @@ -3900,6 +3913,9 @@ static int identity_domain_attach_dev(struct iommu_domain *domain,
->   	struct intel_iommu *iommu = info->iommu;
->   	int ret;
->   
-> +	if (dev_iommu_restored_state(dev))
-> +		return -EBUSY;
-> +
->   	device_block_translation(dev);
->   
->   	if (dev_is_real_dma_subdevice(dev))
-> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-> index 3a2cb08c0ac1..25104644317c 100644
-> --- a/drivers/iommu/intel/iommu.h
-> +++ b/drivers/iommu/intel/iommu.h
-> @@ -1310,6 +1310,9 @@ void intel_iommu_unpreserve(struct iommu_device *iommu,
->   void clear_unpreserved_context_entries(struct intel_iommu *iommu);
->   void intel_iommu_liveupdate_restore_root_table(struct intel_iommu *iommu,
->   					       struct iommu_hw_ser *iommu_ser);
-> +int intel_iommu_restore_device(struct iommu_domain *domain,
-> +			       struct device *dev);
-> +int intel_iommu_detach_restored_device(struct device *dev);
->   #else
->   static inline void clear_unpreserved_context_entries(struct intel_iommu *iommu)
->   {
-> @@ -1319,6 +1322,17 @@ static inline void intel_iommu_liveupdate_restore_root_table(struct intel_iommu
->   							     struct iommu_hw_ser *iommu_ser)
->   {
->   }
-> +
-> +static inline int intel_iommu_restore_device(struct iommu_domain *domain,
-> +					     struct device *dev)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline int intel_iommu_detach_restored_device(struct device *dev)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
->   #endif
->   
->   #ifdef CONFIG_INTEL_IOMMU_SVM
-> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
-> index c9e553379683..6e6707eefc8c 100644
-> --- a/drivers/iommu/intel/liveupdate.c
-> +++ b/drivers/iommu/intel/liveupdate.c
-> @@ -351,6 +351,165 @@ void intel_iommu_liveupdate_restore_root_table(struct intel_iommu *iommu,
->   	BUG_ON(iommu_for_each_preserved_device(_restore_used_domain_ids, iommu));
->   }
->   
-> +static void domain_detach_reattached_iommu(struct dmar_domain *domain,
-> +					   struct intel_iommu *iommu)
+Hi Mike,
 
-The naming is ambiguous. How about
+Thanks for the review.
 
-	domain_detach_restored_iommu()
-	domain_attach_restored_iommu()
+> Can you elaborate how ACPI systems filter their reserved memory?
 
-?
+In the EFI memory map, firmware carveouts are reported with the type
+EFI_RESERVED_TYPE. This type of memory gets the nomap flag set in
+memblock.memory (is_usable_memory() returns false in reserve_regions()
+and mark these regions with nomap flag), during prepare_elf_headers(),
+for_each_mem_range() filters out these nomap regions. Therefore, the
+memory reserved on ACPI based systems will not be dumped into the vmcore.
 
-> +{
-> +	struct iommu_domain_info *info;
-> +
-> +	guard(mutex)(&iommu->did_lock);
-> +	info = xa_load(&domain->iommu_array, iommu->seq_id);
-> +	if (--info->refcnt == 0) {
-> +		xa_erase(&domain->iommu_array, iommu->seq_id);
-> +		kfree(info);
-> +	}
-> +}
-> +
-> +static int domain_reattach_iommu(struct dmar_domain *domain,
-> +				 struct intel_iommu *iommu,
-> +				 struct iommu_device_ser *device_ser)
-> +{
-> +	struct iommu_domain_info *info, *curr;
-> +	struct iommu_domain_ser *domain_ser;
-> +	struct iommu_hw_ser *iommu_hw_ser;
-> +	int restored_did;
-> +	int ret;
-> +
-> +	if (!iommu_domain_restored_state(&domain->domain))
-> +		return -EINVAL;
-> +
-> +	if (!device_ser->domain_iommu_ser.domain_phys ||
-> +	    !device_ser->domain_iommu_ser.iommu_phys)
-> +		return -EINVAL;
-> +
-> +	domain_ser = phys_to_virt(device_ser->domain_iommu_ser.domain_phys);
-> +	if (domain_ser->restored_domain != &domain->domain)
-> +		return -EINVAL;
-> +
-> +	iommu_hw_ser = phys_to_virt(device_ser->domain_iommu_ser.iommu_phys);
-> +	if (iommu_hw_ser->type != IOMMU_INTEL ||
-> +	    iommu_hw_ser->intel.phys_addr != iommu->reg_phys)
-> +		return -EINVAL;
-> +
-> +	restored_did = device_ser->domain_iommu_ser.attachment_id;
-> +	if (!ida_exists(&iommu->domain_ida, restored_did))
-> +		return -EINVAL;
-> +
-> +	info = kzalloc_obj(*info);
-> +	if (!info)
-> +		return -ENOMEM;
-> +
-> +	guard(mutex)(&iommu->did_lock);
-> +	curr = xa_load(&domain->iommu_array, iommu->seq_id);
-> +	if (curr) {
-> +		curr->refcnt++;
-> +		kfree(info);
-> +		return 0;
-> +	}
-> +
-> +	info->refcnt	= 1;
-> +	info->did	= restored_did;
-> +	info->iommu	= iommu;
-> +	curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
-> +			  NULL, info, GFP_KERNEL);
-> +	if (curr) {
-> +		ret = xa_err(curr) ? : -EBUSY;
-> +		goto err_unlock;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_unlock:
-> +	kfree(info);
-> +	return ret;
-> +}
-> +
-> +/**
-> + * intel_iommu_restore_device() - Restore device domain attachment after live update
-> + * @domain: Restored domain
-> + * @dev: Restored device
-> + *
-> + * Return: 0 on success, or negative error code.
-> + */
-> +int intel_iommu_restore_device(struct iommu_domain *domain,
-> +			       struct device *dev)
+I will add these description in next version.
 
-How about renaming it intel_iommu_attach_restored_device() to pair with
-the detach helper?
+> With your patches, the memblock flag becomes a part of DT-only
+> infrastructure, so that claim that both ACPI and DT benefit from it does
+> not hold, doesn't it?
 
-> +{
-> +	struct iommu_device_ser *device_ser = dev_iommu_restored_state(dev);
-> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct intel_iommu *iommu = info->iommu;
-> +	unsigned long flags;
-> +	int ret;
-> +
-> +	if (!device_ser)
-> +		return -EINVAL;
-> +
-> +	if (dev_is_real_dma_subdevice(dev))
-> +		return -EOPNOTSUPP;
+You are right, the wording was misleading. Let me clarify what I meant.
 
-The vmd subdevices rely on the host endpoint to restore the domain
-attachment, so instead of returning an error, it could return 0,
-indicating nothing to do?
+In this series only DT marks regions as MEMBLOCK_NODUMP:
+/reserved-memory and /memreserve/ entries are tagged in the OF
+paths (of_reserved_mem.c, fdt.c). ACPI does not set the flag and
+keeps filtering its reserved memory through the existing path, as
+described above.
 
-> +
-> +	ret = domain_reattach_iommu(dmar_domain, iommu, device_ser);
-> +	if (ret)
-> +		return ret;
-> +
-> +	info->domain = dmar_domain;
-> +	info->domain_attached = true;
-> +	spin_lock_irqsave(&dmar_domain->lock, flags);
-> +	list_add(&info->link, &dmar_domain->devices);
-> +	spin_unlock_irqrestore(&dmar_domain->lock, flags);
-> +
-> +	ret = cache_tag_assign_domain(dmar_domain, dev, IOMMU_NO_PASID);
-> +	if (ret)
-> +		goto err;
 
-The restored domain is an immutable domain. It could only be freed; no
-map and unmap should happen on it. So why do you need to assign a cache
-tag for it?
+What I intended to convey is that the flag itself lives in memblock
+rather than on the DT-only struct reserved_mem, so it is available
+for reuse. If an ACPI system ever needed to exclude a firmware-owned
+region from the vmcore, it could mark that region with MEMBLOCK_NODUMP
+the same way DT does, instead of having to invent a parallel mechanism.
+That is a future option, not something this series enables for ACPI
+today.
 
-> +
-> +	ret = iopf_for_domain_set(domain, dev);
+Also will update these description in next verison.
 
-ATS and PRI are not supported on the preserved devices, so the above is
-dead code, right?
+Best regards,
+Wandun
 
-> +	if (ret)
-> +		goto err;
-> +
-> +	return 0;
-> +
-> +err:
-> +	/*
-> +	 * Detach the restored domain from device and iommu on failure, but keep
-> +	 * the hardware state intact.
-> +	 */
-> +	info->domain_attached = false;
-> +	cache_tag_unassign_domain(info->domain, dev, IOMMU_NO_PASID);
-> +	spin_lock_irqsave(&info->domain->lock, flags);
-> +	list_del(&info->link);
-> +	spin_unlock_irqrestore(&info->domain->lock, flags);
-> +
-> +	domain_detach_reattached_iommu(info->domain, iommu);
-> +	info->domain = NULL;
-> +	return ret;
-> +}
-> +
-> +int intel_iommu_detach_restored_device(struct device *dev)
-> +{
-> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct intel_iommu *iommu = info->iommu;
-> +	struct iommu_domain *domain;
-> +	unsigned long flags;
-> +
-> +	if (!info->domain_attached || !info->domain)
-> +		return -EINVAL;
-> +
-> +	domain = &info->domain->domain;
-> +	if (!iommu_domain_restored_state(domain))
-> +		return -EINVAL;
-> +
-> +	iopf_for_domain_remove(domain, dev);
-> +	cache_tag_unassign_domain(info->domain, dev, IOMMU_NO_PASID);
-> +	info->domain_attached = false;
-> +
-> +	spin_lock_irqsave(&info->domain->lock, flags);
-> +	list_del(&info->link);
-> +	spin_unlock_irqrestore(&info->domain->lock, flags);
-> +
-> +	domain_detach_reattached_iommu(info->domain, iommu);
-> +	info->domain = NULL;
-> +
-> +	return 0;
-> +}
-> +
->   /**
->    * intel_iommu_preserve_device() - Intel IOMMU callback to preserve device state
->    * @dev: Target device
+>  
+>> Since the reserved memory regions are filtered out, the vmcore is
+>> smaller in size and faster to produce.
+>>
+>> The series is based on linux-next and is organized as follows:
+>>
+>> Patches 1-3: Preparation and bugfixes: switch riscv crash_mem to memblock,
+>> 	     fold the duplicated per-arch memblock walks into the weak
+>>              defaults, and serialize crash header preparation against
+>>              memory hotplug.
+>> Patches 4-8: NODUMP infrastructure: switch crash_core to
+>>              for_each_mem_region(), introduce the MEMBLOCK_NODUMP flag,
+>> 	     add a dumpable flag to struct reserved_mem, and mark
+>> 	     /reserved-memory and /memreserve/ entries with MEMBLOCK_NODUMP
+>> 	     flag.
+>> Patch 9:     Exclude MEMBLOCK_NODUMP regions from the vmcore ELF
+>>              header.
+>>
+>> v6 --> v7:
+>> 1. Fix a stale MEMBLOCK_NODUMP flag issue [1]. Memory reserved and
+>>    marked as NODUMP may later be freed (the initrd, for example),
+>>    so the NODUMP flag must be cleared accordingly. Since the fix is
+>>    part of the NODUMP infrastructure introduced by patch 5, it has
+>>    been folded into that patch.
+>>
+>> 2. Drop the "generic" related description in the cover letter.
+>>
+>> 3. Collect the Acked-by and Reviewed-by tags received during the v6
+>>    review (thanks to Baoquan, Mike, Rob and Marek). Patch 5 is the
+>>    only one without a tag, as its Reviewed-by was dropped when the
+>>    fix was folded in.
+>>
+>> 4. Drop patch 1 of v6, which has been merged separately.
+>>
+>>
+>> v5 --> v6:
+>> 1. Serialize crash header preparation against memory hotplug to avoid
+>>    out-of-bounds or use-after-free issues.
+>> 2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
+>>    avoiding a panic from too few regions before resize is permitted.
+>> 3. Reordered the patches, put pre-existing bugfixes earlier in the series.
+>>
+>>
+>> v4 --> v5:
+>> 1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
+>>    (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
+>>    DT-only struct reserved_mem [2].
+>> 2. Switch the riscv vmcore elf header preparation to use memblock
+>>    instead of the resource tree, aligning it with arm64 and loongarch,
+>>    so riscv also can exclude reserved memory from vmcore.
+>> 3. Deduplicate the vmcore elf header preparation: arm64, riscv and
+>>    loongarch open-coded the same logic, so fold it into shared
+>>     __weak defaults in crash_core.
+>> 4.  Drop the v4 patch that saved /memreserve/ entries into the
+>>     reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
+>>     directly.
+>>
+>> v3 --> v4:
+>> 1. Rebase this series on v7.2-rc1.
+>> 2. Add two cleanup patches (patch 02/03).
+>> 3. Simplify patch 03 to avoid checking whether initial_boot_params is
+>>    NULL multiple times, suggested by Rob.
+>>
+>> v2 --> v3:
+>> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.
+>> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
+>> 3. Add some prepare patches.
+>>
+>> v1 --> v2:
+>> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
+>>    feedback [3], v2 drop that property and exclude reserve memory
+>>    by default.
+>> 2. Split some prepared patches from the original patches.
+>> 3. Address coding-style comments on patch 5 from Rob.
+>>
+>> [1] https://sashiko.dev/#/message/20260917220750.GA4013814-robh%40kernel.org
+>> [2] https://lore.kernel.org/lkml/20260723234126.GA3253409-robh@kernel.org/
+>> [3] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
+>>
+>>
+>>
+>> Wandun Chen (9):
+>>   riscv: build crash_mem ranges from memblock instead of resource tree
+>>   crash_core: fold duplicated memblock arch hooks into the weak default
+>>   crash_core: serialize crash header preparation against hotplug
+>>   crash_core: replace for_each_mem_range() with for_each_mem_region()
+>>   memblock: introduce MEMBLOCK_NODUMP flag
+>>   of: reserved_mem: add dumpable flag to opt-in vmcore
+>>   of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+>>   of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
+>>   crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+>>     header
+>>
+>>  arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
+>>  arch/loongarch/kernel/machine_kexec_file.c | 27 ------------
+>>  arch/riscv/Kconfig                         |  2 +-
+>>  arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
+>>  arch/x86/kernel/crash.c                    |  2 +-
+>>  drivers/of/fdt.c                           |  2 +
+>>  drivers/of/of_private.h                    |  2 +
+>>  drivers/of/of_reserved_mem.c               | 48 ++++++++++++++++++++
+>>  include/linux/crash_core.h                 |  2 +
+>>  include/linux/memblock.h                   |  9 ++++
+>>  include/linux/of_reserved_mem.h            |  1 +
+>>  kernel/crash_core.c                        | 51 ++++++++++++++++++++--
+>>  kernel/dma/contiguous.c                    |  1 +
+>>  mm/memblock.c                              | 43 +++++++++++++++++-
+>>  14 files changed, 155 insertions(+), 97 deletions(-)
+>>
+>> -- 
+>> 2.43.0
+>>
+> 
 
-Thanks,
-baolu
