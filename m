@@ -1,110 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D83BD342514;
-	Fri,  9 Oct 2026 09:27:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72E78484237
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 09:35:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791538056; cv=none; b=WEwhbkYQC7xYxGebHzBYWMI3EWyhrVn1Rm1MljwRYqaMDA3s4eQfP97q2VAFPGvuckXpI6PHecSz7pd0vd4lW03YwH4IgH1Fwl0TJtbv2tBre6/FOYBUk+UCOFcvpHByZie/h1b80mBzIp58tW9a7++raCBKK+TIuA3QZ6nWd5I=
+	t=1791538521; cv=none; b=DNBJotFsoT7VUxHapdLMWQHWhOuXHj8lTO7gyqcv7v6T+qkDsbG1Fmo3MB3N43lA+LRJfw6l7fB06aeD2aiLrVagf1WTZhIcTrAb1ipS0SQPZzMB1tCWarZM84faGBRcrzR85S5wL0x6ofoyVt/AEsB5hjOspntR9bn1XTAJYNI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791538056; c=relaxed/simple;
-	bh=VzHE6sfBCfn7lqlC5cHQiEZhMNffUx9scn7YhfPiWwQ=;
-	h=MIME-Version:Content-Type:Subject:From:To:Cc:In-Reply-To:
-	 References:Date:Message-Id; b=CZpCR4hHvmJ4HJq+b8UMfxyFjbD6zw3xDEbh2JIhXz/pkQBQXQx/rMjFhaJyzMXG4H2jlzmBFV/iRzQJIRZDk/V8/ICQQZJCch8y47UkAf4ip2MikuFauGInHMmjfEKWyDvbsO98iGCtjerNalGYix6G9iKU3mYPzQZCVNy0LYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XPuqMM3d; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791538521; c=relaxed/simple;
+	bh=/c8N48QbtXgR/eVlCX4e1X5WhhCM4Hemay3LC9ggKPk=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bkzV8jIRMc+NH5yV91Cufv504ldBqvQHVDXye48MHHiJrZPM/ixodBGJ5Uvogh6tCPrvsNdfFt78AASuAccMi/JduABMQ5qzCgFpVQbU1GnX1mvb9D8Sgh85eoSKV2l1Tw9/u98aG9QoDnCNa2BoHcUemNLbebSveYhpYPtLuB8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cloudflare.com; spf=pass smtp.mailfrom=cloudflare.com; dkim=pass (2048-bit key) header.d=cloudflare.com header.i=@cloudflare.com header.b=FskiCDHI; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cloudflare.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cloudflare.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XPuqMM3d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CFD01F000FF;
-	Fri,  9 Oct 2026 09:27:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791538055;
-	bh=gbs+O3il6AZ+b47/QZ+p2Di1T0JcIDp2VboXRYCu+d0=;
-	h=Subject:From:To:Cc:In-Reply-To:References:Date;
-	b=XPuqMM3d1Qi1aZndxPFwZ/pv1ON3DCmT9vbtpoTfmZ0DbNrNzqxp9MmQtN0N7lPNw
-	 82MbsFLUXNFWqsLNWTIeQyabxtAvVTfoXJGUWI+AEpbGGxxMYAER/TX8+e1lW6nMPY
-	 Jzx+LAcudYMXMgCVaPA4JZlnN7gZ4Z9vrrMzeksTa7H2qjblAzli0MZl2d8uE1qyQA
-	 QckkWsP64wDafUqmti14ZWy3t5vdgAWbtsI+W9V5u9ZNXGpnZXPlB2CD6N4kH31aog
-	 QRwhOHIfnFKlitWENMC4AFSdg3vcgV5ShD6F3ddnUt1h0UiRZaVgs4xHLx2iud6clQ
-	 OmtlkWckQ1HDA==
+	dkim=pass (2048-bit key) header.d=cloudflare.com header.i=@cloudflare.com header.b="FskiCDHI"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4a02718da81so29325975e9.1
+        for <iommu@lists.linux.dev>; Fri, 09 Oct 2026 02:35:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google09082023; t=1791538510; x=1792143310; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=oJvujCG6Ef+ooO87W/Kfsk5ax+KDA0Y6he4rHd/9/6A=;
+        b=FskiCDHIoeJ9VQFnOPR3rxAtR36tvY0SSA1sW+GE+5f9KwRRrfLG6Bf69zCJ242Ft+
+         vuVCGUrEVGVl4Tti3n83zjLtkvnxQkd1Y1BCmFPZ9edNf5WybTSR2KwRY461v7NLzfI3
+         va666H/rnkNdYEmTnu+f4EtDZEArC9/UXfD0zLkx3uAMsu+a8fYNgMurpPNZERS/Xq1l
+         IYsP3aofloxlzjooA4jwlet4F7HgmuXYi91xom15pzgzjInoQgoT68V4NCf0eFBN3IID
+         KwqClLhkQJHXRXzPDOwc/Dps7WvgCgfYB7+k4PJ4zOYKvTSewqXS7XpmppGKf5k6mMUq
+         Cedw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791538510; x=1792143310;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=oJvujCG6Ef+ooO87W/Kfsk5ax+KDA0Y6he4rHd/9/6A=;
+        b=shCcC3FfjxV01fqJS7+1Y9ZOJOP60uB18TF6V/VASi5cjC9rqrVcAUkcc5x/p66Awa
+         0DMOsSnzuaERbSG/OVd0Ubk+4c5FwEV1LiOSuDYdHr44sQ8+ZyhobMGtoTyxQ5DKmxWf
+         P0UDJHRWX3zRGrIYD/2qkdw4yoGKcz98JfjqPrKufqhqE9rWngWQI/69EPQhPBGS3ryh
+         uGqYHTWTSTUQciig5tKQZXqpBAU8unrsf4zhp65Fi/ltqJZP5bHmvLU6TNq5+ljI4PTg
+         dPJ4nObtrSjgXCQ/9mz8ctS7e/wwx7SPQ8wl9XAPgnqw6JJQ9ZcypvwiIK+8NHCfskdd
+         8i7A==
+X-Forwarded-Encrypted: i=1; AKwUvBw5ExtgKfpJ2Gub+zZ1O0ZLvGDJgQ+Qx5vBRO0CH2wHbI6b+uXD9kxhicFAq9E4gTedByxe7g==@lists.linux.dev
+X-Gm-Message-State: AFuF++lOx+orPNHEZ5KEaorZ0qNx1OzdJwtoYoQtvDb4uRJ8ZD4zoIYo
+	YGIFjgcXEE61n/il4Cy02hixzQqSht+w+EI51XdxJjUmk66NAeCuG7SRmfuBrEF8J6k=
+X-Gm-Gg: AYBFou1n+QVZd1yFmGPjEoEOAqtMQn0iFskj2e2YumU8+c3wFE4JRAzXhnJkbwc7bi0
+	7IF247JwLm7SstVEbIhVSJzvLSe5a8eIEW7wdR2vs3psidI9osLofhw0k40I14qVv9p7oEAD+wq
+	DBFvRv8SrPQ7cVwCoVuIdcd61RpFRqQhZlEo/IkPJSkkJzPGkLgDNWSN0zjhSxjxWgp3AI/Wpin
+	b8gwOSGyb75zWb1rhb8YfiwZTd93xESOeDvlm5/fnNxo3wEEioTce5Dz9Dt3ep07OhCXxTvydND
+	CPARPaCrVCGbuuESvRhAKnjWaCDCJcuD+iphhE97+ARLy4xpIdQONXMX14kZCwn/rvzohvb9qe5
+	pYljmWUXyavcp3TyoZ3X6axUu2GuIVxa5zEUrra2zyhTmxXLWJ6NRAGMpErMGXgvpzTb8ib5faj
+	f3efMPa1NJc+jXGjQjW4eqj2lr1zgmja9RPnUYngrZivWYc2BL1zUAnkw=
+X-Received: by 2002:a05:600c:4f10:b0:4a0:d1f4:b1d1 with SMTP id 5b1f17b1804b1-4a18e4bff89mr26548565e9.24.1791538510535;
+        Fri, 09 Oct 2026 02:35:10 -0700 (PDT)
+Received: from localhost ([2a09:bac6:37a8:2696::3d8:4])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a18bea1021sm43339765e9.10.2026.10.09.02.35.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Oct 2026 02:35:10 -0700 (PDT)
+From: Matt Fleming <mfleming@cloudflare.com>
+X-Google-Original-From: Matt Fleming <matt@readmodwrite.com>
+Date: Fri, 9 Oct 2026 10:35:09 +0100
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Ashish Kalra <ashish.kalra@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Baoquan He <bhe@redhat.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org, kernel-team@cloudflare.com
+Subject: Re: [PATCH 0/2] iommu/amd: Fix device table setup in kdump kernels
+Message-ID: <asi0gnLD2v2Ir5bX@matt-Precision-5490>
+References: <20261002133143.3628181-1-matt@readmodwrite.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v5 04/13] iommu: of_iommu: Add support for
- "iommu-ranges" on a device node
-From: bod@kernel.org
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Cc: Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>, 
- Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>, 
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, 
- Stanimir Varbanov <stanimir.varbanov@linaro.org>, 
- Neil Armstrong <neil.armstrong@linaro.org>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
- Bryan O'Donoghue <bryan.odonoghue@linaro.org>, 
- Stephan Gerhold <stephan.gerhold@linaro.org>, 
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Abel Vesa <abelvesa@kernel.org>, 
- linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, 
- Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux.dev, 
- Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-In-Reply-To: <20260926-vpu_iommu_iova_handling-v5-4-0322ca5dc10c@oss.qualcomm.com>
-References: <20260926-vpu_iommu_iova_handling-v5-0-0322ca5dc10c@oss.qualcomm.com>
- <20260926-vpu_iommu_iova_handling-v5-4-0322ca5dc10c@oss.qualcomm.com>
-Date: Fri, 09 Oct 2026 10:27:28 +0100
-Message-Id: <179153804819.2596899.5363254526911327543.b4-reply@b4>
-X-Mailer: b4 0.17-dev-e5aa4
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1488; i=bod@kernel.org;
- h=from:subject:message-id; bh=VzHE6sfBCfn7lqlC5cHQiEZhMNffUx9scn7YhfPiWwQ=;
- b=owEBbQKS/ZANAwAKASJxO7Ohjcg6AcsmYgBqyLOAWpqazRvXBDloXY25XV4lXHcaFmGj5ELii
- bSVcf0LYN2JAjMEAAEKAB0WIQTmk/sqq6Nt4Rerb7QicTuzoY3IOgUCasizgAAKCRAicTuzoY3I
- OmPGEACoJWqpXTUeA2xXyByyk9UwsfAtwy0Vci6LkFvoGik4pIdt3Mj4H0QrW47lTxZQbZrz13o
- JgNkLcd3oIfuAo6ClboHAkkNAWgCXKUMzeRo4J1UMDkdJ6Oos2J+IB5oPdk9AIGa6GsvHdVn5mV
- 1zDuC/YO7yEB7+bjoe4WODTac1W2RPHYoH5PnUxA/Kx2CoJTMXWjQD56zxjS7ZRHChW6ZOtloB0
- 2OtXE3dokqWksorCZmRcY7f1dvo7TiMpt+5s1pVYEgf9yI2NBDeJrjxE0sZWJsqwTodfjYHHvZy
- zC7J2NqUfsGpAA3QMVWOIXaPTdl3k/7VTW4H+3l9px4EbzrBYLWalfCfDJzq5SHEmyKb14NcBT8
- 73rAofB5fr34cxBEHNbTAmR3m5P2ZqClcj1nHmWLMad9utVP/qLJfTzBb/X67GXBLSBp8Sz1VG9
- 3XzRJkoGTejRplbYuqqWowxbZxmyzSOP/qrs1KyuH4JBHzkggwdjk4qymT1fyd58ICBWSucqxXN
- C5dNV0/VqAO8mknnCZnvpu/2lKDak0StqWY/ae3Ngo+nNdU5lOCDHSSSkh/5sZwke/JtDPh4vUh
- BxQZdZMH+44CGjw/y4osw/pd/RGobUggsnXRy/WJSl1xec+fF6XURJzss778pS7dh1yl4fH4ice
- m0C+Fa086hPiOTw==
-X-Developer-Key: i=bod@kernel.org; a=openpgp;
- fpr=E693FB2AABA36DE117AB6FB422713BB3A18DC83A
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261002133143.3628181-1-matt@readmodwrite.com>
 
-On 2026-09-26 12:04 +0530, Vikash Garodia wrote:
-> Reserving an IOVA address using "iommu-addresses" requires it to be
-> placed in the reserved-memory node. But when "iommu-addresses" is the
-> only property being described and there is no backing "reg" (i.e. no
-> actual reserved system memory), it does not really belong under
-> /reserved-memory. A device IOVA range is specific to its own address
-> space, and does not describe the system physical memory to make it
-> qualify under reserved-memory. Given this, place "iommu-addresses"
-> inside reserved-memory only when it is paired with a "reg", otherwise,
-> define it within the device own node. It was discussed here:
-> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
+On Fri, Oct 02, 2026 at 02:31:41PM +0100, Matt Fleming wrote:
+> From: Matt Fleming <mfleming@cloudflare.com>
 > 
-> Existing "iommu-addresses" property expects a phandle, which does
-> not make sense when the property is defined within the device node.
-> Introduce a new property, "iommu-ranges", to specify the device
-> specific IOVA ranges when there is no backing "reg".
+> An AMD kdump kernel booted with crashkernel=512M,high and
+> crashkernel=0,low fails to allocate its device table because there's no
+> memory below 4G. IOMMU init fails and, on our systems with an Intel
+> E810 NIC, the ice driver's TX queues time out, so the dump never gets
+> sent.
 > 
-> Suggested-by: Rob Herring <robh@kernel.org>
-> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> Since commit 38e5f33ee359 ("iommu/amd: Reuse device table for kdump"), a
+> kdump kernel normally reuses the previous kernel's table. Patch 1
+> programs the new table if reuse fails. Patch 2 drops GFP_DMA32 for
+> kdump kernels. Normal kernels still allocate below 4G, because that's
+> what the kdump kernel checks before reusing the table.
+> 
+> On an AMD EPYC system with an E810 NIC, the kdump kernel without these
+> patches failed the order-9 GFP_DMA32 allocation and its TX queues timed
+> out. With these patches, the kdump kernel reused the old device table
+> and the dump was written over the network.
+> 
+> Matt Fleming (2):
+>   iommu/amd: Program device table when kdump reuse fails
+>   iommu/amd: Don't allocate kdump device table from DMA32
+> 
+>  drivers/iommu/amd/init.c | 23 ++++++++++++++++++++---
+>  1 file changed, 20 insertions(+), 3 deletions(-)
 
-I think we need to get buy-in from the IOMMU people on this change before
-we commit to bindings that may be affected by a rejection.
+Hey Joerg, 
 
-i.e. There's no point in absorbing potentially DOA bindings.
----
-bod
+I know it was Plumbers and ksummit this week, but have you had chance
+to look at these two patches?
 
+Thanks,
+Matt
