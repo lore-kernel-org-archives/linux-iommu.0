@@ -1,68 +1,50 @@
-Received: from mail-pj2-f5.google.com (mail-pj2-f5.google.com [74.125.227.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA5F337B81
-	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 03:05:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.227.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51D63367282
+	for <iommu@lists.linux.dev>; Fri,  9 Oct 2026 03:39:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791515109; cv=none; b=J+Um/76tcRZ5ZCUUDM9NJfb4SZQiMb2ilNaA7lXg56fk1jfqfpF4G3q76Ra2N2h/R/EWRnPBsn0VHWNyw6cBbVMy3ViWiMAmneacLiCU8MV27Y0Y281+LzrUsW/mI8eRkqjDcYsuheEFxO8/EGPLlW3bdFncsHo1EZzDiRVVP/M=
+	t=1791517154; cv=none; b=C2kUiTba6Y3snGizQm/sW60jNRj5Ewj0rwj2KhA3q7i52N/hD6GxYCCBz1gMMVCkLSVpKugGKId+RuorzODOG/PbpNanJUgp8poDFpiV1rQua5vV8G/41qPOYjtMK6L6afefbrtyfacskO5w6m+WkD1eeqNgaSzzNS/mAkT9dq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791515109; c=relaxed/simple;
-	bh=2CBQKgx82cWynOCmi7Aef2VtATV6JiH2VphXL1cfpYU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lUOCyF1n1qOuUw2gv4F/v4rpDFVnhJiQUhpdPgrsbgZDCicwTUDQNiUj5knld/xxXw7UTFEf6zIEaPpQG4eJwH9dUwli2sJLDh7CCY/h1kocA/lb5CJKXYjuvAAS5HYtLPeJNTuSQk3WduFPxfiFjM6Iz7njDaPNfL4ZjODJmqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HoxV2YlL; arc=none smtp.client-ip=74.125.227.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791517154; c=relaxed/simple;
+	bh=qxkP7enFTqdhW6Qu4+SieFT7bB/OzuNtiOV4WmyjgcU=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=cDspe2ek5kgKxy9PM/6V8nlprR5EPicppgO4UEO6IMJmmLmBd7hDOdpEgrbov3xATPu+qzuT9D5QK1GwR+WMF86y5hfZ0xgR77prVv56OUpjc/B/LOmeSjb/TZZVJL5Untfctka7OJS5jZkXOCVeWd0pjVtm2Xqf057ndJAxExM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CtIsRyCj; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HoxV2YlL"
-Received: by mail-pj2-f5.google.com with SMTP id d9443c01a7336-2e7c8213b09so6621015ad.0
-        for <iommu@lists.linux.dev>; Thu, 08 Oct 2026 20:05:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791515108; x=1792119908; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=qQfYvkNkqoOJCA+/6hCONW4bFzc6fazsqzcsWi6a4VE=;
-        b=HoxV2YlL8ySz+zX72Llk3g29rFGRO2AaAr5FbKF0HxV32nxmwJuv/2vRkpEAz8qCyQ
-         b5S6jWrjeud4oLemQbiQ9jmNmNLtOJC2iWqlGAoSIgO7QGfRPkAFN49pkbfGQ6VFw+mF
-         C+cXwn4ZcOFy+y0jwhrF1BX5o0Hb5TS62TzUj0mehyBBEAmu8dNeKNk0kskY0Ha90I9a
-         mDnqtdoZvxkwgVjsRMAw9/J+6ty7ivVpUflMlHNcuQnHIjN/9KujW2QbwajKVtTu+nPj
-         Ww5E/69NAqq4pSeje2KRRsTOURKNvFp5ULAcm4LPmsLR2DPQCkiQMjyULRGNidaKyjkI
-         SQ6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791515108; x=1792119908;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=qQfYvkNkqoOJCA+/6hCONW4bFzc6fazsqzcsWi6a4VE=;
-        b=FQLr21rETaO9dR1QOSuPL1BzB5i/wkmXU+DBkooUpii0fEv8Gu+pEMWAfybEO0hPrE
-         89cLkKuSvyUANFvztvtopVxviM/6BgEdg/LsA3ZaN/LvqRaJuN7bfK8HcOe8PDflJYP5
-         2cZ5U/HJMDQJ9TZuClJtALcGBC2Sg2s4tuWyD6rIDtDerDGfkvTM2U+uWet0V9RfSLbg
-         EVqC7f5vPkt37Z+EHTv3t9QPmWyo8Qi4IjJTGqjOKe+bmyftVwsVmP9CgASvfNi9LtPD
-         BFb7ZQsFU7m6ph8LlzmHQ0BMx7I9v0Y/yBVLsC+ReIW9CGCKA5LbnA0KlR1K3kVFI793
-         VpKQ==
-X-Forwarded-Encrypted: i=1; AKwUvByHYyZnrwbueS2071AfaXuIph6oJ6uW4cL8pvddEEgZHDsO7qKj9CxGHkujmYf+nXmtVZ3UhQ==@lists.linux.dev
-X-Gm-Message-State: AFuF++n62TjstNcHqYRJAtioDLbJRzjjsfQpDxE8mYL/+VZOUE4T2UCa
-	7EqAhslziA0Kzmz0adt7/zQ7RGuFypO0NP/ufibxu71a+UeDlZUJBtWf
-X-Gm-Gg: AYBFou2Tl5rFP5mXOzMeDgi8lO9SHEtYZJ1I9NfSJvQ4a4VbrU2D3WgO5zEwHXAFAhS
-	eHgPV+2+p8wUPP4wI+u6+qDk1+t82OjiSgaAg78pkueSwG/FhXSTF1+EQQRCA2ZBuLIxo5ST9ub
-	mhvXw8zVwnu5pH+3GhRVLo6Hz3F5jy6aXJ8eIsrjpygItmwsmX31YvwyW+RFbFyy3JH6gtTQT3g
-	QmduFLdC3Q1zXaYlR9Iv2X7UhDTShTJVGTfevPFel6ic7nHiTV/kxll7ngHZC4fs27osqFkPQ9O
-	1HqT6nGuTR01lrq5BONZ/heqKFLbAFvLs19cKb9Q0HR4+BEA/ZozwzcqzhTo28AdpgwYWgQ8qwm
-	sLEgmXlJOnDidpjuJmawZqbZ8L0z9J9jWOuUXVq+egRXu2OyRzpT2JC94qih53dTqf3DgDy8veJ
-	DaJTWy7qGJyRt6q4RURIQOghNzecDd+oRJcyrb36IFkjdtqOdy6FGfeSTiAYQTIlvqaRfywAFs1
-	9BkFA==
-X-Received: by 2002:a05:6a21:e08c:b0:3e0:da23:8746 with SMTP id adf61e73a8af0-3e16bdae93emr416704637.18.1791515107689;
-        Thu, 08 Oct 2026 20:05:07 -0700 (PDT)
-Received: from [10.125.112.22] ([122.11.210.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cd3d9e08c89sm296018a12.8.2026.10.08.20.04.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2026 20:05:07 -0700 (PDT)
-Message-ID: <80af60db-8c39-461c-a488-3dfee990bce8@gmail.com>
-Date: Fri, 9 Oct 2026 11:04:47 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CtIsRyCj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791517145; x=1823053145;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=qxkP7enFTqdhW6Qu4+SieFT7bB/OzuNtiOV4WmyjgcU=;
+  b=CtIsRyCjZ8t44tXyodM7Z/H3SF6aHntx1vb3Udmo5a9lZHNjjrCk1imT
+   CISBn4pBVhm+lQnJ5TcDmjkqCDvNRDsJdhq9vnYnfj5wLbJ0YiGrqvZSb
+   9whfuBag/eaoVk19RN5w4RXh7lcmT0Pfa4yzqfrwcz+HLppq6WIDAiGUg
+   P6UAasKFU2LV+0cSNFjbBDPjo5+hovvJLYpDpoHnq2m6A3GBfvvHrCsM8
+   oAhQm6eu26WeCbtNZ/Z/ypfmYJXtzh6ih/7ZAEE2nmPdkXemsFPoW2EaV
+   1dL3dZSW8StQNsPKXGvNHWxIVosUd7+tlRZR94Bljx+aPpE29v1vm3a5X
+   g==;
+X-CSE-ConnectionGUID: Yphz+EP9QTWwE/JWNmnheQ==
+X-CSE-MsgGUID: uX3N81rvTH+ckp34qeEEIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11929"; a="322155"
+X-IronPort-AV: E=Sophos;i="6.27,147,1787036400"; 
+   d="scan'208";a="322155"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2026 20:39:04 -0700
+X-CSE-ConnectionGUID: +j5MTzF0RgSefwq5oHFpug==
+X-CSE-MsgGUID: J/DFg3C/RTyOkalJxGI/sQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,147,1787036400"; 
+   d="scan'208";a="535772"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Oct 2026 20:39:01 -0700
+Message-ID: <f48258bb-df50-43bb-9141-433601d885a2@linux.intel.com>
+Date: Fri, 9 Oct 2026 11:38:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,204 +52,343 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 0/9] kdump: reduce vmcore size and capture time
-To: Mike Rapoport <rppt@kernel.org>
-Cc: robh@kernel.org, baoquan.he@linux.dev, m.szyprowski@samsung.com,
- catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
- chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
- palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, tglx@kernel.org,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
- hpa@zytor.com, saravanak@kernel.org, akpm@linux-foundation.org,
- pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
- robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
- linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
- kexec@lists.infradead.org, linux-mm@kvack.org, iommu@lists.linux.dev
-References: <20260922084256.1515554-1-chenwandun1@gmail.com>
- <ar9ogXc12cLjziHS@kernel.org>
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
+ Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>
+Subject: Re: [PATCH v5 13/18] iommu/vt-d: Preserve PASID table of preserved
+ device
+To: Samiullah Khawaja <skhawaja@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20260921004834.2601285-1-skhawaja@google.com>
+ <20260921004834.2601285-14-skhawaja@google.com>
 Content-Language: en-US
-From: Wandun <chenwandun1@gmail.com>
-In-Reply-To: <ar9ogXc12cLjziHS@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20260921004834.2601285-14-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-
-
-On 10/2/26 16:17, Mike Rapoport wrote:
-> Hi Wandun,
+On 9/21/2026 8:48 AM, Samiullah Khawaja wrote:
+> In scalable mode the PASID table is used to fetch the io page tables.
+> Preserve and restore the PASID table of the preserved devices.
 > 
-> On Tue, Sep 22, 2026 at 04:42:47PM +0800, Wandun Chen wrote:
->> From: Wandun Chen <chenwandun@lixiang.com>
->>
->> On SoCs that carve out large firmware-owned reserved memory (GPU,
->> camera ISP, ...), kdump currently dumps those carveouts as part of
->> system RAM even though their contents are firmware state that is not
->> useful for kernel crash analysis.
->>
->> This series introduces a MEMBLOCK_NODUMP flag in memblock to filter
->> reserved memory on DT-based architectures (arm64, riscv, loongarch).
->> Reserved regions are marked MEMBLOCK_NODUMP by default so kdump omits
->> them; reusable CMA regions are different because their pages are handed
->> back to the buddy allocator and may carry crash-relevant data.
->>
->> ACPI systems already filter reserved memory out of the vmcore through
->> their existing path; only DT-based systems currently fail to filter these
->> regions, which is what this series addresses. The flag lives in memblock
->> itself rather than in a DT-only structure, so both ACPI and DT systems
->> can benefit from it (suggested by Rob, thanks).
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>   drivers/iommu/intel/liveupdate.c | 141 +++++++++++++++++++++++++++++--
+>   drivers/iommu/intel/pasid.c      |  10 ++-
+>   drivers/iommu/intel/pasid.h      |   8 ++
+>   include/linux/kho/abi/iommu.h    |  17 ++++
+>   4 files changed, 169 insertions(+), 7 deletions(-)
+
+Should this patch come before patch 12/18, which restores the device’s
+domain attachment?
+
 > 
-Hi Mike,
+> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
+> index 6e6707eefc8c..b9467fb7195f 100644
+> --- a/drivers/iommu/intel/liveupdate.c
+> +++ b/drivers/iommu/intel/liveupdate.c
+> @@ -14,6 +14,7 @@
+>   #include <linux/pci.h>
+>   
+>   #include "iommu.h"
+> +#include "pasid.h"
+>   #include "../iommu-pages.h"
+>   
+>   /* 2 tables per bus in scalable mode with upper table at odd bit */
+> @@ -510,6 +511,69 @@ int intel_iommu_detach_restored_device(struct device *dev)
+>   	return 0;
+>   }
+>   
+> +enum pasid_lu_op {
+> +	PASID_LU_OP_PRESERVE = 1,
+> +	PASID_LU_OP_UNPRESERVE,
+> +	PASID_LU_OP_RESTORE,
+> +};
+> +
+> +static int pasid_lu_do_op(void *table, enum pasid_lu_op op)
+> +{
+> +	int ret = 0;
+> +
+> +	switch (op) {
+> +	case PASID_LU_OP_PRESERVE:
+> +		ret = iommu_preserve_pages(table);
+> +		break;
+> +	case PASID_LU_OP_UNPRESERVE:
+> +		iommu_unpreserve_pages(table);
+> +		break;
+> +	case PASID_LU_OP_RESTORE:
+> +		iommu_restore_pages(virt_to_phys(table));
+> +		break;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int pasid_lu_handle_pd(struct pasid_dir_entry *dir,
+> +			      u32 max_pasid, enum pasid_lu_op op)
+> +{
+> +	int max_pde = max_pasid >> PASID_PDE_SHIFT;
+> +	struct pasid_entry *table;
+> +	int i, ret;
+> +
+> +	for (i = 0; i < max_pde; i++) {
+> +		table = get_pasid_table_from_pde(&dir[i]);
+> +		if (!table)
+> +			continue;
+> +
+> +		ret = pasid_lu_do_op(table, op);
+> +		if (ret)
+> +			goto err;
+> +	}
+> +
+> +	ret = pasid_lu_do_op(dir, op);
+> +	if (ret)
+> +		goto err;
+> +
+> +	return 0;
+> +
+> +err:
+> +	if (op != PASID_LU_OP_PRESERVE)
+> +		return ret;
+> +
+> +	while (i > 0) {
+> +		table = get_pasid_table_from_pde(&dir[--i]);
+> +		if (!table)
+> +			continue;
+> +
+> +		pasid_lu_do_op(table, PASID_LU_OP_UNPRESERVE);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>   /**
+>    * intel_iommu_preserve_device() - Intel IOMMU callback to preserve device state
+>    * @dev: Target device
+> @@ -521,6 +585,7 @@ int intel_iommu_preserve_device(struct device *dev,
+>   				struct iommu_device_ser *device_ser)
+>   {
+>   	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	struct pasid_table *pasid_table;
+>   	int ret;
+>   
+>   	if (!dev_is_pci(dev)) {
+> @@ -543,6 +608,22 @@ int intel_iommu_preserve_device(struct device *dev,
+>   
+>   	device_ser->domain_iommu_ser.attachment_id = domain_id_iommu(info->domain,
+>   								     info->iommu);
+> +
+> +	if (!sm_supported(info->iommu))
+> +		return 0;
+> +
+> +	pasid_table = intel_pasid_get_table(dev);
+> +	if (!pasid_table)
+> +		return -EINVAL;
+> +
+> +	ret = pasid_lu_handle_pd(pasid_table->table,
+> +				 pasid_table->max_pasid,
+> +				 PASID_LU_OP_PRESERVE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	device_ser->intel.pasid_table = virt_to_phys(pasid_table->table);
+> +	device_ser->intel.max_pasid = pasid_table->max_pasid;
+>   	return 0;
+>   }
+>   
+> @@ -554,15 +635,33 @@ int intel_iommu_preserve_device(struct device *dev,
+>   void intel_iommu_unpreserve_device(struct device *dev,
+>   				   struct iommu_device_ser *device_ser)
+>   {
+> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> +	struct pasid_table *pasid_table;
+> +
+> +	if (!dev_is_pci(dev))
+> +		return;
+> +
+> +	if (!info)
+> +		return;
+> +
+> +	if (!sm_supported(info->iommu))
+> +		return;
+> +
+>   	/*
+>   	 * The context tables preserved during device preservation, in the
+>   	 * preserve_device() callback, might be shared with other devices, so
+> -	 * those are unpreserved in the iommu unpreserve() callback. So this
+> -	 * callback is kept empty.
+> -	 *
+> -	 * Once device PASID tables are preserved, the unpreservation of PASID
+> -	 * tables will be added here.
+> +	 * those are unpreserved in the iommu unpreserve() callback.
+>   	 */
+> +	if (!device_ser->intel.pasid_table)
+> +		return;
+> +
+> +	pasid_table = intel_pasid_get_table(dev);
+> +	if (!pasid_table)
+> +		return;
+> +
+> +	pasid_lu_handle_pd(pasid_table->table,
+> +			   pasid_table->max_pasid,
+> +			   PASID_LU_OP_UNPRESERVE);
+>   }
+>   
+>   /**
+> @@ -607,3 +706,35 @@ void intel_iommu_unpreserve(struct iommu_device *iommu_dev,
+>   	unpreserve_iommu_context_tables(iommu, ser);
+>   	iommu_unpreserve_pages(iommu->root_entry);
+>   }
+> +
+> +/**
+> + * intel_pasid_restore_table() - Restore preserved PASID table for a device
+> + * @dev: Restored device
+> + * @max_pasid: Maximum supported PASID
+> + *
+> + * Return: Pointer to restored PASID table directory, or NULL if not preserved.
+> + */
+> +void *intel_pasid_restore_table(struct device *dev, u64 max_pasid)
+> +{
+> +	struct iommu_device_ser *ser = dev_iommu_restored_state(dev);
+> +
+> +	if (!ser || !ser->intel.pasid_table)
+> +		return NULL;
+> +
+> +	/*
+> +	 * MAX PASID of a device should not change as it is read from
+> +	 * capabilities.
+> +	 */
+> +	BUG_ON(ser->intel.max_pasid != max_pasid);
+> +
+> +	if (ser->intel.restored)
+> +		goto out;
+> +
+> +	BUG_ON(pasid_lu_handle_pd(phys_to_virt(ser->intel.pasid_table),
+> +				  ser->intel.max_pasid,
+> +				  PASID_LU_OP_RESTORE));
+> +	ser->intel.restored = 1;
+> +
+> +out:
+> +	return phys_to_virt(ser->intel.pasid_table);
+> +}
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index e4f24d3f19a6..59cc69383799 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -13,6 +13,7 @@
+>   #include <linux/cpufeature.h>
+>   #include <linux/dmar.h>
+>   #include <linux/iommu.h>
+> +#include <linux/iommu-liveupdate.h>
+>   #include <linux/memory.h>
+>   #include <linux/pci.h>
+>   #include <linux/pci-ats.h>
+> @@ -60,8 +61,13 @@ int intel_pasid_alloc_table(struct device *dev)
+>   
+>   	size = max_pasid >> (PASID_PDE_SHIFT - 3);
+>   	order = size ? get_order(size) : 0;
+> -	dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
+> -					1 << (order + PAGE_SHIFT));
+> +
+> +	max_pasid = 1 << (order + PAGE_SHIFT + 3);
+> +	if (dev_iommu_restored_state(dev))
+> +		dir = intel_pasid_restore_table(dev, max_pasid);
+> +	else
+> +		dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
+> +						1 << (order + PAGE_SHIFT));
 
-Thanks for the review.
+This restores only the PASID table pages. The PASID table is eventually
+installed in the context entry during probe_device:
 
-> Can you elaborate how ACPI systems filter their reserved memory?
+         if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+                 ret = intel_pasid_alloc_table(dev);
+                 if (ret) {
+                         dev_err(dev, "PASID table allocation failed\n");
+                         goto clear_rbtree;
+                 }
 
-In the EFI memory map, firmware carveouts are reported with the type
-EFI_RESERVED_TYPE. This type of memory gets the nomap flag set in
-memblock.memory (is_usable_memory() returns false in reserve_regions()
-and mark these regions with nomap flag), during prepare_elf_headers(),
-for_each_mem_range() filters out these nomap regions. Therefore, the
-memory reserved on ACPI based systems will not be dumped into the vmcore.
+                 if (!context_copied(iommu, info->bus, info->devfn)) {
+                         ret = intel_pasid_setup_sm_context(dev);
+                         if (ret)
+                                 goto free_table;
+                 }
+         }
 
-I will add these description in next version.
+For a restored PASID table, the call to intel_pasid_setup_sm_context()
+should be skipped. Instead, it should check whether the preserved pasid
+table is compatible with the new kernel environment.
 
-> With your patches, the memblock flag becomes a part of DT-only
-> infrastructure, so that claim that both ACPI and DT benefit from it does
-> not hold, doesn't it?
+>   	if (!dir) {
+>   		kfree(pasid_table);
+>   		return -ENOMEM;
+> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
+> index 48d3bb6b68de..801768cdea16 100644
+> --- a/drivers/iommu/intel/pasid.h
+> +++ b/drivers/iommu/intel/pasid.h
+> @@ -301,6 +301,14 @@ static inline void pasid_set_eafe(struct pasid_entry *pe)
+>   
+>   extern unsigned int intel_pasid_max_id;
+>   int intel_pasid_alloc_table(struct device *dev);
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +void *intel_pasid_restore_table(struct device *dev, u64 max_pasid);
+> +#else
+> +static inline void *intel_pasid_restore_table(struct device *dev, u64 max_pasid)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+>   void intel_pasid_free_table(struct device *dev);
+>   struct pasid_table *intel_pasid_get_table(struct device *dev);
+>   int intel_pasid_setup_first_level(struct intel_iommu *iommu, struct device *dev,
+> diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
+> index 5aaa29da6832..308cd83fd3e3 100644
+> --- a/include/linux/kho/abi/iommu.h
+> +++ b/include/linux/kho/abi/iommu.h
+> @@ -129,6 +129,19 @@ struct iommu_dev_map_ser {
+>   	u64 iommu_phys;
+>   } __packed;
+>   
+> +/**
+> + * struct iommu_device_intel_ser - Intel specific state of serialized device
+> + * @restored: Whether the device state is restored
+> + * @pasid_table: Physical address of pasid table
+> + * @max_pasid: Maximum supported pasid
+> + */
+> +struct iommu_device_intel_ser {
+> +	u8 restored;
+> +	u8 padding[7];
+> +	u64 pasid_table;
+> +	u64 max_pasid;
+> +} __packed;
+> +
+>   /**
+>    * struct iommu_device_ser - Serialized state of a device
+>    * @hdr: Common object header
+> @@ -136,6 +149,7 @@ struct iommu_dev_map_ser {
+>    * @pci_domain_nr: PCI domain number
+>    * @dma_owner_token: Token to identify the DMA owner of this device
+>    * @domain_iommu_ser: Domain and IOMMU mapping
+> + * @intel: Intel specific serialization data
+>    */
+>   struct iommu_device_ser {
+>   	struct iommu_hdr_ser hdr;
+> @@ -143,6 +157,9 @@ struct iommu_device_ser {
+>   	u32 pci_domain_nr;
+>   	u64 dma_owner_token;
+>   	struct iommu_dev_map_ser domain_iommu_ser;
+> +	union {
+> +		struct iommu_device_intel_ser intel;
+> +	};
+>   } __packed;
+>   
+>   /* There are maximum 256 buses, so maximum 512 context tables */
 
-You are right, the wording was misleading. Let me clarify what I meant.
-
-In this series only DT marks regions as MEMBLOCK_NODUMP:
-/reserved-memory and /memreserve/ entries are tagged in the OF
-paths (of_reserved_mem.c, fdt.c). ACPI does not set the flag and
-keeps filtering its reserved memory through the existing path, as
-described above.
-
-
-What I intended to convey is that the flag itself lives in memblock
-rather than on the DT-only struct reserved_mem, so it is available
-for reuse. If an ACPI system ever needed to exclude a firmware-owned
-region from the vmcore, it could mark that region with MEMBLOCK_NODUMP
-the same way DT does, instead of having to invent a parallel mechanism.
-That is a future option, not something this series enables for ACPI
-today.
-
-Also will update these description in next verison.
-
-Best regards,
-Wandun
-
->  
->> Since the reserved memory regions are filtered out, the vmcore is
->> smaller in size and faster to produce.
->>
->> The series is based on linux-next and is organized as follows:
->>
->> Patches 1-3: Preparation and bugfixes: switch riscv crash_mem to memblock,
->> 	     fold the duplicated per-arch memblock walks into the weak
->>              defaults, and serialize crash header preparation against
->>              memory hotplug.
->> Patches 4-8: NODUMP infrastructure: switch crash_core to
->>              for_each_mem_region(), introduce the MEMBLOCK_NODUMP flag,
->> 	     add a dumpable flag to struct reserved_mem, and mark
->> 	     /reserved-memory and /memreserve/ entries with MEMBLOCK_NODUMP
->> 	     flag.
->> Patch 9:     Exclude MEMBLOCK_NODUMP regions from the vmcore ELF
->>              header.
->>
->> v6 --> v7:
->> 1. Fix a stale MEMBLOCK_NODUMP flag issue [1]. Memory reserved and
->>    marked as NODUMP may later be freed (the initrd, for example),
->>    so the NODUMP flag must be cleared accordingly. Since the fix is
->>    part of the NODUMP infrastructure introduced by patch 5, it has
->>    been folded into that patch.
->>
->> 2. Drop the "generic" related description in the cover letter.
->>
->> 3. Collect the Acked-by and Reviewed-by tags received during the v6
->>    review (thanks to Baoquan, Mike, Rob and Marek). Patch 5 is the
->>    only one without a tag, as its Reviewed-by was dropped when the
->>    fix was folded in.
->>
->> 4. Drop patch 1 of v6, which has been merged separately.
->>
->>
->> v5 --> v6:
->> 1. Serialize crash header preparation against memory hotplug to avoid
->>    out-of-bounds or use-after-free issues.
->> 2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
->>    avoiding a panic from too few regions before resize is permitted.
->> 3. Reordered the patches, put pre-existing bugfixes earlier in the series.
->>
->>
->> v4 --> v5:
->> 1. Rework the mechanism around a memblock-level MEMBLOCK_NODUMP flag
->>    (suggested by Rob) instead of the v4 opt-in 'dumpable' flag on
->>    DT-only struct reserved_mem [2].
->> 2. Switch the riscv vmcore elf header preparation to use memblock
->>    instead of the resource tree, aligning it with arm64 and loongarch,
->>    so riscv also can exclude reserved memory from vmcore.
->> 3. Deduplicate the vmcore elf header preparation: arm64, riscv and
->>    loongarch open-coded the same logic, so fold it into shared
->>     __weak defaults in crash_core.
->> 4.  Drop the v4 patch that saved /memreserve/ entries into the
->>     reserved_mem array; /memreserve/ is now marked MEMBLOCK_NODUMP
->>     directly.
->>
->> v3 --> v4:
->> 1. Rebase this series on v7.2-rc1.
->> 2. Add two cleanup patches (patch 02/03).
->> 3. Simplify patch 03 to avoid checking whether initial_boot_params is
->>    NULL multiple times, suggested by Rob.
->>
->> v2 --> v3:
->> 1. Fix out-of-bounds issue if device tree lacks /reserved-memory node.
->> 2. Fix UAF issue when alloc_reserved_mem_array() fails.
->> 3. Add some prepare patches.
->>
->> v1 --> v2:
->> 1. v1 added an opt-out DT property ('linux,no-dump'). Per Rob's
->>    feedback [3], v2 drop that property and exclude reserve memory
->>    by default.
->> 2. Split some prepared patches from the original patches.
->> 3. Address coding-style comments on patch 5 from Rob.
->>
->> [1] https://sashiko.dev/#/message/20260917220750.GA4013814-robh%40kernel.org
->> [2] https://lore.kernel.org/lkml/20260723234126.GA3253409-robh@kernel.org/
->> [3] https://lore.kernel.org/lkml/20260506144542.GA2072596-robh@kernel.org/
->>
->>
->>
->> Wandun Chen (9):
->>   riscv: build crash_mem ranges from memblock instead of resource tree
->>   crash_core: fold duplicated memblock arch hooks into the weak default
->>   crash_core: serialize crash header preparation against hotplug
->>   crash_core: replace for_each_mem_range() with for_each_mem_region()
->>   memblock: introduce MEMBLOCK_NODUMP flag
->>   of: reserved_mem: add dumpable flag to opt-in vmcore
->>   of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
->>   of: reserved_mem: mark /memreserve/ entries as MEMBLOCK_NODUMP
->>   crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
->>     header
->>
->>  arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
->>  arch/loongarch/kernel/machine_kexec_file.c | 27 ------------
->>  arch/riscv/Kconfig                         |  2 +-
->>  arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
->>  arch/x86/kernel/crash.c                    |  2 +-
->>  drivers/of/fdt.c                           |  2 +
->>  drivers/of/of_private.h                    |  2 +
->>  drivers/of/of_reserved_mem.c               | 48 ++++++++++++++++++++
->>  include/linux/crash_core.h                 |  2 +
->>  include/linux/memblock.h                   |  9 ++++
->>  include/linux/of_reserved_mem.h            |  1 +
->>  kernel/crash_core.c                        | 51 ++++++++++++++++++++--
->>  kernel/dma/contiguous.c                    |  1 +
->>  mm/memblock.c                              | 43 +++++++++++++++++-
->>  14 files changed, 155 insertions(+), 97 deletions(-)
->>
->> -- 
->> 2.43.0
->>
-> 
-
+Thanks,
+baolu
