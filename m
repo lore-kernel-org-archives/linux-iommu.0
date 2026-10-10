@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFBC0434989;
-	Sat, 10 Oct 2026 07:25:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29B8042BC31;
+	Sat, 10 Oct 2026 07:26:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791617169; cv=none; b=KfrrXC6psBGM3/uzVP2sDgYWXhJ21A6ejs/V4SzgilxlfA+00uy2p4t2ZQ9rxYl2Aah4go/TSWCp3MHpWW3Apb9tGVc5NMuRu7igyP2ADEeJ3d3r1PqI//FgW2YWX9OQf+HCNE+1K2akTh0HbZboQdTqpGFpmbM8mXYfxMUntFc=
+	t=1791617170; cv=none; b=tIYbV6+CD5i8YGYK3EKaQNM4/xpA8U1rb1zNpK2MlzfAOTzGuscWS09ukKupR8wIC00lMjzGDZI0pb9sT95WdaIZyPjs3zP4o2O2WaC2LmaZt/HR4Mx+DdZqh0jv0gP/xlfeLUnRq5QNbBHXkms0pZNzZtO2V5WuIWpeoJ6ANHw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791617169; c=relaxed/simple;
-	bh=ly/GIgH8nRwLkP47R8iDbrwG9vK+nFIiG6hSiEv5698=;
+	s=arc-20240116; t=1791617170; c=relaxed/simple;
+	bh=Vbcbsr6cvfU6GoMdA6/IQjqRxgHN6aqmxXM42m0Oea4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=VMFaHqEr1VVQq+2oRgTbb7DnHz0OYuKbcOjOO4wxM3xM6YuGiQ1mFYB+0TuCzRPGwEpZ1iwPMUfKM4Ub1t1XzIyLha1IqTsDvnFL2b61VRY5uUf7OjZKrbtvrl9UlffGCNz9h/7sAibfoXEuVKuBj5PxdubgcubuzbDJaypqOWY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BFVhMT0J; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version; b=RwgwV8lUUJiCiiC2p0li+mmPvvEYkR5XBwNBuD/14xLGlN965PPMapDWAUCp6Lo6ttDE8m777x9yazL9RDTwkFO9BySOVx8prETi2G9uZCOQGyZdnvUfc4kdKoZHVv11vSyfu6i7aNOq8/CWRv1zsf3R+7bKafc1wCVUDqgvj+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DopzFWC8; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BFVhMT0J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 058A91F00893;
-	Sat, 10 Oct 2026 07:25:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DopzFWC8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EDEB1F000FF;
+	Sat, 10 Oct 2026 07:25:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791617157;
-	bh=MSLBgSpL8WFx3oVv0DZuEdHIFrQ0Rx31xXHUW2/juco=;
+	s=k20260515; t=1791617165;
+	bh=SFc5keFXkg6Mpob065yWrmhH+gHGmT3Wh8EDXifbAc8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=BFVhMT0JpSBRMmlI35eyxBKGUunlbBCcfWbHVxhwVAihKgtC1JLvdI36dnHyfD6Cn
-	 KMyukunZZk5+j00EDgoTN4O9OCSw2Z41C8hr6ML4O4gfRIuXyzC21Um9jjbNK19m55
-	 ouKBN2IleQTtJUMW++NPRdDuYbR7PmdNGD48qJ+n6Kgxd09JSSR8w5oU7CGqFiFPqb
-	 nA5A958rzqujOH0cx4qhGEKW8fnuEvVOHfMbjKwok0VewJg61QdJl6a58CK2njNd9J
-	 aSytbs+sUEcnaNK3w+d+NlCz4+y+wBm91PiIIz7zV37q159rApgcxMduY5UJhUtx+C
-	 JYs+L/ScY6idQ==
+	b=DopzFWC8mcuatbjy7uO5TuGNT1kRR3mL4Jk8Szz5im+83Efac7+wTbUAETZf9a1SG
+	 yPPcWYOJGDa4439dWt/BFE16F5BL0ghFu0VgC2ZNrz0O8Rgk/PtrsjWAZ9f+gboXra
+	 LdjtjXV2YycGuf5XVc1ZuLt3D1J5eEy2lNkqsidtJAkiKxG7eTJUDlV1dcSCsNg2IU
+	 T4ViC34FO+C5lMMNx/ZbVOQ7lspP86n5u9M5Oz7l9n/L7nu9vw2Bf3RvBYrm1zTAYa
+	 C8t4GT6kgnFDn3LAXHY+d9yUSUWXY6OB7hGGGoHxR00nlIb2SzqZmXwnswAupvBbKh
+	 +nS66z0+vbRiw==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: linux-coco@lists.linux.dev,
 	linux-kernel@vger.kernel.org
@@ -49,9 +49,9 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	Fred Griffoul <griffoul@gmail.com>,
 	iommu@lists.linux.dev,
 	kvm@vger.kernel.org
-Subject: [RFC PATCH v1 5/6] KVM/VFIO: Remove device mappings during guest_memfd teardown
-Date: Sat, 10 Oct 2026 12:55:03 +0530
-Message-ID: <20261010072504.536230-6-aneesh.kumar@kernel.org>
+Subject: [RFC PATCH v1 6/6] KVM: Invalidate guest_memfd mappings before removing memslot bindings
+Date: Sat, 10 Oct 2026 12:55:04 +0530
+Message-ID: <20261010072504.536230-7-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261010072504.536230-1-aneesh.kumar@kernel.org>
 References: <20261010072504.536230-1-aneesh.kumar@kernel.org>
@@ -63,16 +63,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-On final guest_memfd close, stop new provider access and callbacks
-before removing private device mappings and releasing the provider. Keep
-slot bindings available until the mappings have been removed.
+Unmap guest_memfd ranges before deleting their memslot bindings. Remove
+private device mappings before committing deletion, and invalidate
+remaining mappings while holding the inode invalidate lock.
 
-Serialize teardown with conversion using the inode invalidate lock. VFIO
-takes the vDEVICE MMIO mutex and its memory lock when disabling access
-and callbacks, preventing concurrent faults or device operations from
-using provider state being torn down.
-
-Cc: Alex Williamson <alex@shazbot.org>
 Cc: Paolo Bonzini <pbonzini@redhat.com>
 Cc: Sean Christopherson <seanjc@google.com>
 Cc: David Hildenbrand <david@kernel.org>
@@ -81,208 +75,153 @@ Cc: linux-kernel@vger.kernel.org
 Assisted-by: Codex
 Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- drivers/vfio/pci/vfio_pci_gmem.c        | 27 +++++++++++++++++++++++++
- drivers/vfio/pci/vfio_pci_gmem.h        |  6 ++++++
- drivers/vfio/pci/vfio_pci_gmem_access.c | 12 +++++++----
- include/linux/guest_memfd.h             |  1 +
- virt/kvm/guest_memfd.c                  | 21 +++++++++++++++++++
- 5 files changed, 63 insertions(+), 4 deletions(-)
+ virt/kvm/guest_memfd.c | 70 ++++++++++++++++++++++++++++++++++++++++--
+ virt/kvm/guest_memfd.h |  6 ++++
+ virt/kvm/kvm_main.c    |  4 +++
+ 3 files changed, 77 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci_gmem.c b/drivers/vfio/pci/vfio_pci_gmem.c
-index d232b5c3e539..3f8630a0eeca 100644
---- a/drivers/vfio/pci/vfio_pci_gmem.c
-+++ b/drivers/vfio/pci/vfio_pci_gmem.c
-@@ -183,6 +183,8 @@ static int vfio_gmem_bind(void *data, u64 offset, u64 size,
- 	int ret;
- 
- 	guard(iommufd_vdevice_mmio)(ctx->ivdev);
-+	if (ctx->callbacks_detached)
-+		return -ENODEV;
- 	ret = vfio_gmem_resolve_bar_range(ctx, offset, size, &bar, &off, &pa);
- 	if (ret)
- 		return ret;
-@@ -226,6 +228,8 @@ static int vfio_gmem_get_pfn(void *data, u64 offset, unsigned long *pfn)
- 	int ret;
- 
- 	guard(rwsem_read)(&vdev->memory_lock);
-+	if (ctx->callbacks_detached)
-+		return -ENODEV;
- 	if (vdev->pm_runtime_engaged || !__vfio_pci_memory_enabled(vdev))
- 		return -EAGAIN;
- 
-@@ -255,6 +259,10 @@ static int vfio_gmem_prepare_conversion(struct guest_memfd_device_context *conte
- 	struct vfio_pci_gmem *ctx = vfio_pci_gmem_from_context(context);
- 
- 	iommufd_vdevice_mmio_lock(ctx->ivdev);
-+	if (req && ctx->callbacks_detached) {
-+		iommufd_vdevice_mmio_unlock(ctx->ivdev);
-+		return -ENODEV;
-+	}
- 	if (req && req->vdev_id != ctx->ivdev->virt_id) {
- 		iommufd_vdevice_mmio_unlock(ctx->ivdev);
- 		return -EPERM;
-@@ -284,6 +292,24 @@ static void vfio_gmem_finish_conversion(struct guest_memfd_device_context *conte
- 	iommufd_vdevice_mmio_unlock(ctx->ivdev);
+diff --git a/virt/kvm/guest_memfd.c b/virt/kvm/guest_memfd.c
+index f493b452fae8..f58270d0510d 100644
+--- a/virt/kvm/guest_memfd.c
++++ b/virt/kvm/guest_memfd.c
+@@ -1330,6 +1330,58 @@ static int kvm_gmem_device_convert(struct inode *inode, pgoff_t start,
+ 	return ret;
  }
  
 +/**
-+ * vfio_gmem_detach() - stop invalidation callbacks before core teardown
-+ * @data: attached provider context
++ * kvm_gmem_prepare_memslot_delete() - remove guest_memfd mappings before deletion
++ * @kvm: VM whose memslot is being removed
++ * @slot: original guest_memfd memslot being removed
 + *
-+ * Mark the provider detached under the VFIO memory lock and revoke BAR
-+ * translations.
++ * The caller has replaced the active slot with an entry marked
++ * KVM_MEMSLOT_INVALID, preventing new guest faults from creating mappings.
++ * Remove private device mappings, then invalidate the remaining guest_memfd
++ * mappings, including shared mappings.
++ *
++ * Perform this cleanup while the guest_memfd binding still provides the
++ * file-offset-to-GPA translation needed to locate the guest mappings.
++ * The device provider remains attached until guest_memfd close.
++ *
++ * Caller holds slots_lock.
++ * Return: 0 on success or a negative error code.
 + */
-+static void vfio_gmem_detach(void *data)
++int kvm_gmem_prepare_memslot_delete(const struct kvm_memory_slot *slot)
 +{
-+	struct vfio_pci_gmem *ctx = vfio_pci_gmem_from_context(data);
-+
-+	guard(iommufd_vdevice_mmio)(ctx->ivdev);
-+	scoped_guard(rwsem_write, &ctx->vdev->memory_lock) {
-+		ctx->callbacks_detached = true;
-+	}
-+	vfio_gmem_invalidate_mmio(&ctx->context);
-+}
-+
- /**
-  * vfio_gmem_release() - release a provider after successful core cleanup
-  * @data: provider context to release
-@@ -315,6 +341,7 @@ const struct guest_memfd_device_operations vfio_pci_gmem_ops = {
- 	.get_pfn = vfio_gmem_get_pfn,
- 	.prepare_conversion = vfio_gmem_prepare_conversion,
- 	.finish_conversion = vfio_gmem_finish_conversion,
-+	.detach = vfio_gmem_detach,
- 	.release = vfio_gmem_release,
- };
- EXPORT_SYMBOL_GPL(vfio_pci_gmem_ops);
-diff --git a/drivers/vfio/pci/vfio_pci_gmem.h b/drivers/vfio/pci/vfio_pci_gmem.h
-index e5ad19ba6748..a47a8d386051 100644
---- a/drivers/vfio/pci/vfio_pci_gmem.h
-+++ b/drivers/vfio/pci/vfio_pci_gmem.h
-@@ -17,6 +17,12 @@ struct vfio_pci_gmem {
- 	unsigned long owner;
- 	resource_size_t start[PCI_STD_NUM_BARS];
- 	resource_size_t len[PCI_STD_NUM_BARS];
-+	/*
-+	 * Disables callbacks and new bind/private requests. Set once with
-+	 * both the vDEVICE MMIO and VFIO memory locks held; readers hold
-+	 * either lock. Shared cleanup remains allowed after detachment.
-+	 */
-+	bool callbacks_detached;
- };
- 
- static inline struct vfio_pci_gmem *
-diff --git a/drivers/vfio/pci/vfio_pci_gmem_access.c b/drivers/vfio/pci/vfio_pci_gmem_access.c
-index a3975b536e22..254a311b5072 100644
---- a/drivers/vfio/pci/vfio_pci_gmem_access.c
-+++ b/drivers/vfio/pci/vfio_pci_gmem_access.c
-@@ -14,7 +14,7 @@
-  * Called by vfio_pci_zap_bars() after it removes host BAR mappings. Notify
-  * guest_memfd synchronously so KVM removes the corresponding shared guest
-  * mappings. This helper does not remove host mappings or change attributes.
-- * Skip notification if no provider is attached.
-+ * Skip notification if no provider is attached or its callbacks are detached.
-  *
-  * The guest_memfd callback takes SRCU and the KVM MMU lock without taking
-  * the inode invalidate lock, which may already be held during conversion.
-@@ -25,7 +25,7 @@ void vfio_pci_gmem_invalidate(struct vfio_pci_core_device *vdev)
- 	struct vfio_pci_gmem *ctx = vdev->gmem;
- 
- 	lockdep_assert_held_write(&vdev->memory_lock);
--	if (ctx)
-+	if (ctx && !ctx->callbacks_detached)
- 		ctx->context.device->invalidate(ctx->context.device);
- }
- 
-@@ -33,11 +33,12 @@ void vfio_pci_gmem_invalidate(struct vfio_pci_core_device *vdev)
-  * vfio_gmem_invalidate_mmio() - revoke host and shared guest BAR translations
-  * @data: attached provider context
-  *
-- * Initiate BAR revocation for conversion or access refresh. Call
-+ * Initiate BAR revocation for conversion, access refresh or teardown. Call
-  * vfio_pci_zap_and_down_write_memory_lock() to remove host BAR mappings;
-  * its BAR zap path also calls vfio_pci_gmem_invalidate() to remove the
-  * corresponding shared guest mappings. Release the VFIO memory lock before
-- * returning.
-+ * returning. Host mappings are removed even if guest_memfd callbacks are
-+ * detached.
-  *
-  * During private conversion, the caller holds the inode invalidate lock to
-  * prevent new guest_memfd faults. Host faults and I/O try that lock when
-@@ -68,6 +69,7 @@ void vfio_gmem_invalidate_mmio(void *data)
-  * Consult completed guest_memfd attributes for the requested interval.
-  * Private mappings in another interval do not block this access. Try the
-  * inode lock instead of waiting in the reverse order from conversion.
-+ * Detachment excludes access during teardown.
-  *
-  * Return: true when the requested interval is accessible.
-  */
-@@ -84,6 +86,8 @@ bool vfio_pci_gmem_access_allowed(struct vfio_pci_core_device *vdev,
- 	if (!ctx->ivdev)
- 		return false;
- 
-+	if (ctx->callbacks_detached)
-+		return false;
- 	return ctx->context.device->host_accessible(ctx->context.device,
- 						    offset, size);
- }
-diff --git a/include/linux/guest_memfd.h b/include/linux/guest_memfd.h
-index 24f4b3c79afa..8373ef8150c5 100644
---- a/include/linux/guest_memfd.h
-+++ b/include/linux/guest_memfd.h
-@@ -41,6 +41,7 @@ struct guest_memfd_device_operations {
- 		const struct guest_memfd_device_request *req);
- 	void (*finish_conversion)(struct guest_memfd_device_context *context,
- 		const struct guest_memfd_device_request *req);
-+	void (*detach)(void *data);
- 	void (*release)(void *data);
- };
- 
-diff --git a/virt/kvm/guest_memfd.c b/virt/kvm/guest_memfd.c
-index fc37066bfaa5..f493b452fae8 100644
---- a/virt/kvm/guest_memfd.c
-+++ b/virt/kvm/guest_memfd.c
-@@ -381,6 +381,7 @@ static void kvm_gmem_invalidate_end(struct inode *inode, pgoff_t start,
- static int kvm_gmem_device_convert(struct inode *inode, pgoff_t start,
- 		pgoff_t nr_pages, const struct guest_memfd_device_request *req,
- 		const struct kvm_memory_slot *slot);
-+static void kvm_gmem_device_close(struct inode *inode);
- 
- static long kvm_gmem_punch_hole(struct inode *inode, loff_t offset, loff_t len)
- {
-@@ -503,6 +504,9 @@ static int kvm_gmem_release(struct inode *inode, struct file *file)
- 
- 	filemap_invalidate_lock(inode->i_mapping);
- 
-+	if (GMEM_I(inode)->device_ops)
-+		kvm_gmem_device_close(inode);
-+
- 	xa_for_each(&f->bindings, index, slot) {
- 		WRITE_ONCE(slot->gmem.file, NULL);
- 	}
-@@ -1362,6 +1366,23 @@ int kvm_gmem_device_map(struct kvm *kvm, u64 gpa, u64 size, u64 pa, u64 vdev_id)
- }
- EXPORT_SYMBOL_FOR_KVM_INTERNAL(kvm_gmem_device_map);
- 
-+static void kvm_gmem_device_close(struct inode *inode)
-+{
-+	struct gmem_inode *gi = GMEM_I(inode);
++	struct file *file = READ_ONCE(slot->gmem.file);
++	pgoff_t start = slot->gmem.pgoff;
++	pgoff_t end = start + slot->npages;
++	struct inode *inode;
 +	int ret;
 +
-+	gi->device_ops->detach(gi->provider);
-+	ret = gi->device_ops->prepare_conversion(gi->provider, NULL);
-+	if (!ret) {
-+		ret = kvm_gmem_device_make_shared(inode, 0,
-+						i_size_read(inode) >> PAGE_SHIFT);
-+		if (!ret)
-+			WRITE_ONCE(gi->device_has_private, false);
-+		gi->device_ops->finish_conversion(gi->provider, NULL);
++	/* slots_lock keeps the bindings alive until file release can finish. */
++	file = get_file_active(&file);
++	if (!file) {
++		/* Let .release drain the bindings before deletion can discard them. */
++		if (READ_ONCE(slot->gmem.file))
++			return -EBUSY;
++		return 0;
 +	}
-+	WRITE_ONCE(gi->device.core, NULL);
++	inode = file_inode(file);
++	if (GMEM_I(inode)->device_ops) {
++		ret = kvm_gmem_device_convert(inode, start, slot->npages, NULL, NULL);
++		if (ret)
++			goto out;
++	}
++
++	filemap_invalidate_lock(inode->i_mapping);
++	__kvm_gmem_invalidate_start(file->private_data, start, end,
++				    kvm_gmem_get_all_gfns_filter(inode));
++	__kvm_gmem_invalidate_end(file->private_data, start, end);
++	filemap_invalidate_unlock(inode->i_mapping);
++	ret = 0;
++out:
++	fput(file);
++	return ret;
 +}
 +
- static int kvm_gmem_attach_resource(struct kvm *kvm,
- 		struct inode *inode, int resource_fd)
++
+ int kvm_gmem_device_map(struct kvm *kvm, u64 gpa, u64 size, u64 pa, u64 vdev_id)
  {
+ 	struct guest_memfd_device_request req = { gpa, pa, vdev_id };
+@@ -1620,11 +1672,19 @@ int kvm_gmem_bind(struct kvm *kvm, struct kvm_memory_slot *slot,
+ 	return r;
+ }
+ 
+-static void __kvm_gmem_unbind(struct kvm_memory_slot *slot, struct gmem_file *f)
++static void __kvm_gmem_unbind(struct kvm_memory_slot *slot, struct file *file)
+ {
++	struct gmem_file *f = file->private_data;
+ 	unsigned long start = slot->gmem.pgoff;
+ 	unsigned long end = start + slot->npages;
+ 
++	/*
++	 * Unmap this slot's guest mappings before removing it from f->bindings.
++	 * The invalidation helper walks f->bindings to find the slots to unmap.
++	 */
++	__kvm_gmem_invalidate_start(f, start, end,
++				    kvm_gmem_get_all_gfns_filter(file_inode(file)));
++	__kvm_gmem_invalidate_end(f, start, end);
+ 	xa_store_range(&f->bindings, start, end - 1, NULL, GFP_KERNEL);
+ 
+ 	/*
+@@ -1656,12 +1716,16 @@ void kvm_gmem_unbind(struct kvm_memory_slot *slot)
+ 	 * until the caller drops slots_lock.
+ 	 */
+ 	if (!file) {
+-		__kvm_gmem_unbind(slot, slot->gmem.file->private_data);
++		struct file *closing_file = slot->gmem.file;
++
++		filemap_invalidate_lock(closing_file->f_mapping);
++		__kvm_gmem_unbind(slot, closing_file);
++		filemap_invalidate_unlock(closing_file->f_mapping);
+ 		return;
+ 	}
+ 
+ 	filemap_invalidate_lock(file->f_mapping);
+-	__kvm_gmem_unbind(slot, file->private_data);
++	__kvm_gmem_unbind(slot, file);
+ 	filemap_invalidate_unlock(file->f_mapping);
+ }
+ 
+diff --git a/virt/kvm/guest_memfd.h b/virt/kvm/guest_memfd.h
+index 0f9c6f840838..6fad6adfdadc 100644
+--- a/virt/kvm/guest_memfd.h
++++ b/virt/kvm/guest_memfd.h
+@@ -11,6 +11,7 @@ int kvm_gmem_create(struct kvm *kvm, struct kvm_create_guest_memfd *args);
+ int kvm_gmem_bind(struct kvm *kvm, struct kvm_memory_slot *slot,
+ 		  unsigned int fd, uoff_t offset);
+ void kvm_gmem_unbind(struct kvm_memory_slot *slot);
++int kvm_gmem_prepare_memslot_delete(const struct kvm_memory_slot *slot);
+ #else
+ static inline int kvm_gmem_init(struct module *module)
+ {
+@@ -29,6 +30,11 @@ static inline void kvm_gmem_unbind(struct kvm_memory_slot *slot)
+ {
+ 	WARN_ON_ONCE(1);
+ }
++
++static inline int kvm_gmem_prepare_memslot_delete(const struct kvm_memory_slot *slot)
++{
++	return 0;
++}
+ #endif /* CONFIG_KVM_GUEST_MEMFD */
+ 
+ #endif /* __KVM_GUEST_MEMFD_H__ */
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index f3f46a8563b3..58da57b8a268 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1696,6 +1696,10 @@ static int kvm_prepare_memory_region(struct kvm *kvm,
+ 	}
+ 
+ 	r = kvm_arch_prepare_memory_region(kvm, old, new, change);
++	if (!r && change == KVM_MR_DELETE) {
++		if (old->flags & KVM_MEM_GUEST_MEMFD)
++			r = kvm_gmem_prepare_memslot_delete(old);
++	}
+ 
+ 	/* Free the bitmap on failure if it was allocated above. */
+ 	if (r && new && new->dirty_bitmap && (!old || !old->dirty_bitmap))
 -- 
 2.43.0
 
