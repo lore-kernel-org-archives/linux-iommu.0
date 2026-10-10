@@ -1,201 +1,288 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698AC3806B5;
-	Sat, 10 Oct 2026 02:59:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 539063A5E65
+	for <iommu@lists.linux.dev>; Sat, 10 Oct 2026 03:18:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791601179; cv=none; b=rK8GGaMyqYv5bZopH3R8YxTqGUy/EEuXRe805coTpFRansz+6odJTolv5B29C58/Dsdd9HLqp9X65H7DlPz673Dz5tR6SH8mEHnCGpxrEQIVzvXSGtM4SRH/u2rI6xrG9nMcVvdpuugEnqnWDjnLpH+9+n0cfxEgDDP0S/ZzZPc=
+	t=1791602297; cv=none; b=mfBXf5FmGJH8rBrsLu4p1g+UB0bOkkZP9g+TPVvgqx3Z64d57VtlM36uGDa9Z+GHflzq1xxPuN6l2v0cASZAqOzLefLvy3DBBxpil1IMSACfkM7SlVKIp7y2fNE02PYCztuwV1JkKlKGU0KbUniqf6RLd39fMfkylJ3hhB3NcYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791601179; c=relaxed/simple;
-	bh=Lmzi9xD+MtFDsvia7u2Hw0Yuu44BmeRtKvAQ5SQT7cY=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=PZoyD+q51snT8/yXq59UF2hHdDL3Eqo7rTejUkO1yv6XaOisYU5aj2fGpnarcgDNUu8RLXP1PAz/y5POqrdy3wqppc7IWhlsop+NAzWkXPYLMR+DhagHm9tkwIW2GecjpMCoqTQlt7R0BA4rMpkQEgCJfZn5akiBPYf9bdwvKKI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ll9asCl7; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1791602297; c=relaxed/simple;
+	bh=Q3Vg1yA9geODvj3ocRmt5LLHOG9WIK/bk89Xu2ISBDM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QB/6iZVi7VowqTFtYacORcn8ynVmuuxT8SGZ0fwjljmjNVRfC0ofm2XDg7jcNJQxdt+rcUOL1YPe8kdTvQIBizamVzPzInEDUdrpu8TuIegpbe7MmUfmnLBTW3MDoencKDV4nxglg8gpC8o+BHbsa3ufwtNRHsQdDgxCe75haFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t72Ry8pw; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ll9asCl7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1791601177; x=1823137177;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   in-reply-to;
-  bh=Lmzi9xD+MtFDsvia7u2Hw0Yuu44BmeRtKvAQ5SQT7cY=;
-  b=Ll9asCl7J9FeNzw4ss6mw9sOis9ptCgIt/ckN2vz+/t/l+bgNb+E1kza
-   zOiMIoG52kzx62AwzrzpdjyE3vmU3yGM23vV6GKeiulf3wITwF/0tedvR
-   Fif3uCqUeBu4Sgy3R932Djjwxw6zl8ltzPAg5gtTz0KLiDHBFMx7zpjoV
-   BSmLZ7lsQscWUQmF4HX5UD4+kzEb/SZR19kotWv6UxVJr22JLa8rcnioa
-   nF9dWVKdUgOZmKGBuXkZAWFR57R4i9+5vOq+atPFZMjv92/ak4qapfn59
-   mWqQrYYmcYsNNcDHzhiiDGdyz70QPj0EMUDh65771yFlmgg/QIhkN7ft0
-   w==;
-X-CSE-ConnectionGUID: 5QTV7eBaTBeq8jSKH6yoEw==
-X-CSE-MsgGUID: HR2LkEVQTcmO92uNWX49Ug==
-X-IronPort-AV: E=McAfee;i="6800,10657,11930"; a="297255"
-X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
-   d="scan'208";a="297255"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 19:59:36 -0700
-X-CSE-ConnectionGUID: D0WT4WvpRAWa+I2cCRGTnA==
-X-CSE-MsgGUID: 5I+VBCSRRdyWLhvWpsksMw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
-   d="scan'208";a="541414"
-Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 19:59:27 -0700
-Date: Sat, 10 Oct 2026 10:59:24 +0800
-From: kernel test robot <yi1.lai@intel.com>
-To: Luigi Rizzo <lrizzo@google.com>
-Cc: oe-lkp@lists.linux.dev, lkp@intel.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	David Hildenbrand <david@kernel.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Willem de Bruijn <willemb@google.com>,
-	Kuniyuki Iwashima <kuniyu@google.com>,
-	Joshua Washington <joshwash@google.com>,
-	Harshitha Ramamurthy <hramamurthy@google.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Tariq Toukan <tariqt@nvidia.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Michael Chan <michael.chan@broadcom.com>,
-	Pavan Chebbi <pavan.chebbi@broadcom.com>, netdev@vger.kernel.org,
-	driver-core@lists.linux.dev, linux-doc@vger.kernel.org,
-	Luigi Rizzo <lrizzo@google.com>, yi1.lai@intel.com
-Subject: Re: [RFC: DMA_PMD 02/22] iommu/dma: add DMA_PMD pool lifecycle and
- page recycle hook
-Message-ID: <202610101013.706708d0-lkp@intel.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t72Ry8pw"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2d3b445a84fso4745ad.1
+        for <iommu@lists.linux.dev>; Fri, 09 Oct 2026 20:18:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1791602296; x=1792207096; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=W8TSuOKAYLfNd5Z9H+xLlnGLDWUhgC3yxJkhYP5eP5c=;
+        b=t72Ry8pwydK72tdJxwUifuL50Z9WfyIme0l4XqoXoN7/9LmNYjgTL9yig5mb2/4Njk
+         Ggsf/uEpHusTT6RyJ1AOt6omPEQVP7yVrYVExeDb4xPN4At7auBAgQn5RBb7/dP6D0n0
+         VImKtaEaMIR+BLkasP7fDZ/HLxg8JebkNF9jl+EwgBS/7N1CoMF3l3kbZnIY2c3Hs9My
+         FHV0/FFBJHQuPm/qEBAHGifhchkx+SJRzIEkbYKtbPks5k30wfg3Ewq4KnCpJFj1fnV7
+         iL74TY4sbX0lqdL7+FFLvnx/iIXLfhU+F49oXWSQ+hOGu8tAAyPruM11DgCeAC8hySjp
+         TA0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791602296; x=1792207096;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=W8TSuOKAYLfNd5Z9H+xLlnGLDWUhgC3yxJkhYP5eP5c=;
+        b=2U3LerxqVqpzNZARVGudcWp7GPmazv5B1fbAxSvotYXi3wHokRGLDC/132WOG/5mRD
+         LHZZDw3EiVcgB31+3Ey4HrDM75Nmjlh3H3CrvWzd2YY/yEBhovSG0dRRveVrnDdIUveB
+         o+brFxyXaoFSad074oSVXkCJkJHN1xQRYRhibdCRbfrkzIvcAzbS7NItu/EyfXTUZVbJ
+         TT1k/lQAzp8WhBMK+E/4p8pFdnaPYpgNSvQ9o/bzY6M5FC/5a8qsvX5gnDbZe8ZqR3rr
+         +HlP6VTgqSmKjzLupYUvvi1XXmMFNCSjwmcXyfEWKVXO5gXJPu73Ie/YFkW0pTxr4RkG
+         ys0Q==
+X-Forwarded-Encrypted: i=1; AKwUvBxu0bgbZJ6G5lb9K+4KE186Y4LdprFyZjTRX7P3B0ExchohSW+T1oP5itFnOPx8eBOxaFiBIA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYL68C9y4SijknPpX0+Z8L2Tjxfq9LDboJAtAvRDG4gZlaGU/xiC
+	RoTTUVMYp5i1BnJ9FLc5stZguedWb67icgE8DXLTR6HrL0fLzuKalKbbZrF/fAZ/Dw==
+X-Gm-Gg: AYBFou0Mh9jw+H0NEwUgxlJoUKQW5pRVmT2qZSrsRXprgRdUixbT5sQSrBAqL6VKHYk
+	JRcDLA5lAcjbDeE78D6TclGs6PTD5hlW49d+v/cpFxrpijXoxVqvLzYBxMJnK5B5Jke+GPXQDHE
+	KAExU/jB0wMU4MOuJYt+Qi5mw/LornM/ZzjJCeK++A+8BW3T/kqy7pJraOvMhyEHyVDU5QkpVe5
+	oFDOwz5/pZp5QwnASA7PFNdYezqxYW7+6QvJt/OpM+tBQY4wq9xtEx3pucHe8QwSrtX9MxMjH8y
+	mpagZEAZiHEHUK8nLbl+UhDM/zEdspc0VX7bpXByzlLojuxwEqJFXowGDmu2cnjYxbc2UtnQIKf
+	2pNRVGyChrXApud1mOHuTVq0wxhgo9jLohifGNStMah0cJh6AjnZXVR6LcAyba25+mK3QrnPGRV
+	JvMdOHuawv+/oprlLyQIXT5xrlptCDkSClX8mc+wuwEFQ9abXqs/HRCrcgNObuWft7DUP2PTvJT
+	l4PdjRHrxzKBoeeP/TfTx9ciA75icoOhqWb8dTzTcj4rNbfJ2UZ4vS6VuB/hEuCXTQ=
+X-Received: by 2002:a17:903:324c:b0:2e7:e742:8bb5 with SMTP id d9443c01a7336-2e87e2d3f9fmr648295ad.14.1791602294963;
+        Fri, 09 Oct 2026 20:18:14 -0700 (PDT)
+Received: from google.com (163.1.145.34.bc.googleusercontent.com. [34.145.1.163])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ab3371f748sm3950221a91.1.2026.10.09.20.18.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Oct 2026 20:18:14 -0700 (PDT)
+Date: Sat, 10 Oct 2026 03:18:11 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>
+Subject: Re: [PATCH v5 02/18] iommu: Implement IOMMU Live update FLB callbacks
+Message-ID: <asmj6ErFqQMJe0_u@google.com>
+References: <20260921004834.2601285-1-skhawaja@google.com>
+ <20260921004834.2601285-3-skhawaja@google.com>
+ <asWEtTcNJSbrY579@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20261003212241.3432303-3-lrizzo@google.com>
+In-Reply-To: <asWEtTcNJSbrY579@nvidia.com>
 
+On Tue, Oct 06, 2026 at 04:31:01PM -0700, Nicolin Chen wrote:
+>On Mon, Sep 21, 2026 at 12:48:18AM +0000, Samiullah Khawaja wrote:
+>> +struct iommu_flb_obj {
+>> +	struct mutex lock;
+>> +	struct iommu_flb_ser *ser;
+>> +
+>> +	struct iommu_hw_array_ser *curr_iommu_array;
+>> +	struct iommu_domain_array_ser *curr_domain_array;
+>> +	struct iommu_device_array_ser *curr_device_array;
+>> +};
+>
+>IIUIC, there should be one pair of obj + ser in the entire system:
+>  - old kernel has one outgoing obj + ser
+>  - new kernel has one incoming obj + ser
+>right?
+>
+>If so, things in iommu_flb_obj (except ser) are all transient, and
+>there is no need to preserve them across the two kernels.
 
-Hello,
+The contents of iommu_flb_obj are not preserved. Only the contents of
+iommu_flb_ser are preserved. Other "curr_" structs in iommu_flb_obj are
+only there for quick access to add new iommus, domains and devices.
+>
+>It also feels redundant to have this iommu_flb_obj structure. Why
+>not link liveupdate_flb_op_args directly to the ser? Then, things
+>in iommu_flb_obj could be global?
 
-kernel test robot noticed "WARNING:at_kernel/workqueue.c:#alloc_workqueue_va" on:
+The liveupdate_flb_op_args is linked directly to the ser, but it only
+contains the physical address for the next kernel. Basically LUO
+provides following mechanism to handle FLBs:
 
-commit: 3311715530328ddf9249e312fa817c89b767fde9 ("[RFC: DMA_PMD 02/22] iommu/dma: add DMA_PMD pool lifecycle and page recycle hook")
-url: https://github.com/intel-lab-lkp/linux/commits/Luigi-Rizzo/iommu-dma-introduce-CONFIG_DMA_PMD-and-metadata-table/20261003-212220
-base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything patch link: https://lore.kernel.org/all/20261003212241.3432303-3-lrizzo@google.com/
-patch subject: [RFC: DMA_PMD 02/22] iommu/dma: add DMA_PMD pool lifecycle and page recycle hook
+- data: ser structure for the next kernel.
+- obj: Live object that can be used in the current or next kernel for
+   easy access or staging.
 
-in testcase: boot
+For example here, iommu_flb_obj has pointers to the end of the array
+linked list of each type.
 
-config: x86_64-rhel-9.4-rust
-compiler: clang-22
-test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 4 -m 16G
+Also note LUO keeps separate incoming and outgoing data and obj for each
+FLB. In the new kernel both can exist at the same time, as the incoming
+one stays until finish and preserving for the next live update creates
+the outgoing one. So keeping these in the obj avoids managing two sets
+of globals and their lifetime in the iommu code.
+>
+>> +static int iommu_liveupdate_flb_preserve(struct liveupdate_flb_op_args *argp)
+>> +{
+>> +	struct iommu_flb_obj *obj;
+>> +	struct iommu_flb_ser *ser;
+>> +	void *mem;
+>> +
+>> +	/* obj exists only in the current kernel to track preserved state */
+>> +	obj = kzalloc_obj(*obj, GFP_KERNEL);
+>> +	if (!obj)
+>> +		return -ENOMEM;
+>> +
+>> +	mutex_init(&obj->lock);
+>> +
+>> +	/* mem is allocated via KHO and will survive the kexec */
+>> +	mem = kho_alloc_preserve(sizeof(*ser));
+>> +	if (IS_ERR(mem))
+>> +		goto err_free_obj;
+>> +
+>> +	ser = mem;
+>> +	obj->ser = ser;
+>> +	ser->version = IOMMU_LUO_FLB_VERSION;
+>
+>As version is per ser, ...
 
-(please refer to attached dmesg/kmsg for entire log/backtrace)
+Answered below.
+>
+>> +static int iommu_liveupdate_flb_retrieve(struct liveupdate_flb_op_args *argp)
+>> +{
+>> +	struct iommu_flb_obj *obj;
+>> +	struct iommu_flb_ser *ser;
+>> +
+>> +	obj = kzalloc_obj(*obj, GFP_KERNEL);
+>> +	if (!obj) {
+>> +		/*
+>> +		 * If retrieve fails, the finish path won't be called as
+>> +		 * can_finish() will fail, preventing the restore.
+>> +		 */
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	/* Data must be present and valid from the previous kernel */
+>> +	BUG_ON(!kho_restore_folio(argp->data));
+>> +
+>> +	mutex_init(&obj->lock);
+>> +	ser = phys_to_virt(argp->data);
+>> +	obj->ser = ser;
+>> +
+>> +	obj->curr_domain_array = iommu_liveupdate_restore_array(ser->iommu_domain_array_phys);
+>> +	obj->curr_device_array = iommu_liveupdate_restore_array(ser->device_array_phys);
+>> +	obj->curr_iommu_array = iommu_liveupdate_restore_array(ser->iommu_array_phys);
+>
+>... should we validate ser->version before restoring arrays?
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <yi1.lai@intel.com>
-| Closes: https://lore.kernel.org/oe-lkp/202610101013.706708d0-lkp@intel.com
+Agreed. I will update this.
+>
+>> +/**
+>> + * enum iommu_type_ser - Type of the IOMMU being preserved
+>> + * @IOMMU_INVALID: Invalid type of IOMMU
+>> + *
+>> + * IOMMU type is stored in the IOMMU HW state to differentiate between various
+>> + * IOMMU HWs.
+>> + */
+>> +enum iommu_type_ser {
+>> +	IOMMU_INVALID,
+>> +};
+>
+>Nit: IOMMU_* sounds too generic. Given it's ser-specific, maybe
+>IOMMU_SER_TYPE_*?
 
+Agreed. Will update in next revision.
+>
+>> +/**
+>> + * struct iommu_domain_ser - Serialized state of an IOMMU domain
+>> + * @hdr: Common object header
+>> + * @top_table_phys: Physical address of the top-level page table
+>> + * @top_level: Level of the top-level page table
+>> + * @vasz: Virtual Address Size
+>
+>Since it comes directly from iommupt, why not just reuse:
+>    @max_vasz_lg2: Maximum number of bits the VA can contain
+>?
 
-[    0.966875][    T1] ------------[ cut here ]------------
-[    0.972831][    T1] workqueue: dma_pmd is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
-[    0.978823][    T1] WARNING: kernel/workqueue.c:5939 at alloc_workqueue_va+0x75a/0x7c0, CPU#3: swapper/0/1
-[    0.983827][    T1] Modules linked in:
-[    0.985221][    T1] CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.3.0-rc5+ #1 PREEMPT(lazy)
-[    0.988734][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
-[    0.991819][    T1] RIP: 0010:alloc_workqueue_va (workqueue.c:5938)
-[    0.993522][    T1] Code: 00 08 00 00 e8 40 08 f0 ff e9 cb f9 ff ff 0f 0b e9 cd fe ff ff 0f 0b e9 c6 fe ff ff 48 8d 3d 66 07 18 02 49 8d b6 b8 00 00 00 <67> 48 0f b9 3a 41 81 cc 00 01 00 00 e9 75 f9 ff ff 48 8d 3d 57 07
-All code
-========
-   0:	00 08                	add    %cl,(%rax)
-   2:	00 00                	add    %al,(%rax)
-   4:	e8 40 08 f0 ff       	call   0xfffffffffff00849
-   9:	e9 cb f9 ff ff       	jmp    0xfffffffffffff9d9
-   e:	0f 0b                	ud2
-  10:	e9 cd fe ff ff       	jmp    0xfffffffffffffee2
-  15:	0f 0b                	ud2
-  17:	e9 c6 fe ff ff       	jmp    0xfffffffffffffee2
-  1c:	48 8d 3d 66 07 18 02 	lea    0x2180766(%rip),%rdi        # 0x2180789
-  23:	49 8d b6 b8 00 00 00 	lea    0xb8(%r14),%rsi
-  2a:*	67 48 0f b9 3a       	ud1    (%edx),%rdi		<-- trapping instruction
-  2f:	41 81 cc 00 01 00 00 	or     $0x100,%r12d
-  36:	e9 75 f9 ff ff       	jmp    0xfffffffffffff9b0
-  3b:	48                   	rex.W
-  3c:	8d                   	.byte 0x8d
-  3d:	3d                   	.byte 0x3d
-  3e:	57                   	push   %rdi
-  3f:	07                   	(bad)
+Agreed. Will update.
+>
+>> +/**
+>> + * struct iommu_dev_map_ser - Serialized mapping between device, domain,
+>> + *				    and IOMMU instance.
+>> + * @attachment_id: ID of the attachment between device and domain.
+>> + * @domain_phys: Physical address of the domain
+>> + * @iommu_phys: Physical address of the IOMMU
+>> + */
+>> +struct iommu_dev_map_ser {
+>> +	u64 attachment_id;
+>> +	u64 domain_phys;
+>> +	u64 iommu_phys;
+>> +} __packed;
+>
+>Hmm, why iommu<->domain?
+>
+>An attachment (software) is between device and domain.
+>
+>A device is always behind an IOMMU IOMMU HW (fixed; hardware).
+>
+>Should iommu_phys be moved under iommu_device_ser directly?
 
-Code starting with the faulting instruction ===========================================
-   0:	67 48 0f b9 3a       	ud1    (%edx),%rdi
-   5:	41 81 cc 00 01 00 00 	or     $0x100,%r12d
-   c:	e9 75 f9 ff ff       	jmp    0xfffffffffffff986
-  11:	48                   	rex.W
-  12:	8d                   	.byte 0x8d
-  13:	3d                   	.byte 0x3d
-  14:	57                   	push   %rdi
-  15:	07                   	(bad)
-[    0.999820][    T1] RSP: 0000:ffffcb9d00013a90 EFLAGS: 00010246
-[    1.001542][    T1] RAX: 0000000000000000 RBX: ffff8b7380b46400 RCX: 33ebeeb162fc7d00
-[    1.004550][    T1] RDX: 0000000000000007 RSI: ffff8b7380b464b8 RDI: ffffffff8e484980
-[    1.006818][    T1] RBP: 0000000000000000 R08: 00000000646d705f R09: 000000000000000f
-[    1.008790][    T1] R10: ffff8b7381cec680 R11: ffffffff8ea6ca80 R12: 0000000000000008
-[    1.011630][    T1] R13: ffffffff8da42c29 R14: ffff8b7380b46400 R15: ffffcb9d00013b10
-[    1.013818][    T1] FS:  0000000000000000(0000) GS:ffff8b7721089000(0000) knlGS:0000000000000000
-[    1.016639][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    1.018818][    T1] CR2: 0000000000000000 CR3: 00000003e4e20000 CR4: 00000000000406f0
-[    1.021819][    T1] Call Trace:
-[    1.022829][    T1]  <TASK>
-[    1.023829][    T1]  ? iommu_dma_forcedac_setup (dma-iommu.c:?)
-[    1.025515][    T1]  alloc_workqueue_noprof (workqueue.c:6049)
-[    1.026818][    T1]  ? blake2s_update (crypto/blake2s.c:131)
-[    1.028234][    T1]  ? intel_cleanup_irq_remapping (irq_remapping.c:?)
-[    1.029818][    T1]  dma_pmd_init (iommu/dma-pmd-pool.c:373)
-[    1.031195][    T1]  do_one_initcall (main.c:1358)
-[    1.032833][    T1]  ? get_random_u32 (char/random.c:396 char/random.c:541)
-[    1.033826][    T1]  ? __get_random_u32_below (char/random.c:555)
-[    1.036270][    T1]  ? alloc_from_new_slab (linux/spinlock.h:425 slub.c:4519)
-[    1.037829][    T1]  ? refill_objects (slub.c:7424)
-[    1.038818][    T1]  ? irqentry_exit (linux/irq-entry-common.h:539)
-[    1.040264][    T1]  ? asm_sysvec_apic_timer_interrupt (x86/include/asm/idtentry.h:674)
-[    1.045448][    T1]  ? parameq (params.c:91 params.c:99)
-[    1.046722][    T1]  ? parameq (linux/fortify-string.h:218 params.c:99)
-[    1.051786][    T1]  ? do_initcall_level (linux/srcutree.h:?)
-[    1.054571][    T1]  ? parse_args (params.c:153)
-[    1.056827][    T1]  do_initcall_level (main.c:1420)
-[    1.058834][    T1]  do_initcalls (main.c:1436)
-[    1.060827][    T1]  kernel_init_freeable (main.c:1671)
-[    1.063560][    T1]  ? rest_init (main.c:?)
-[    1.065827][    T1]  kernel_init (main.c:1561)
-[    1.067786][    T1]  ret_from_fork (x86/kernel/process.c:158)
-[    1.069828][    T1]  ? rest_init (main.c:?)
-[    1.072821][    T1]  ret_from_fork_asm (x86/entry/entry_64.S:245)
-[    1.074826][    T1]  </TASK>
-[    1.076251][    T1] ---[ end trace 0000000000000000 ]---
+Agreed. I will move iommu_phys under iommu_device_ser.
 
+Also I will move this out as a separate structure.
 
-The kernel config and materials to reproduce are available at:
-https://download.01.org/0day-ci/archive/20261010/202610101013.706708d0-lkp@intel.com
+struct iommu_attachment_ser {
+	u64 attachment_id;
+	u64 domain_phys;
+	u64 device_phys;
+	u64 pasid;
+} __packed;
 
+It defines the attachment between device and domain at a pasid. These
+will be kept in separate array like device, domain and iommu.
+>
+>> +/**
+>> + * struct iommu_device_ser - Serialized state of a device
+>> + * @hdr: Common object header
+>> + * @devid: Device ID
+>> + * @pci_domain_nr: PCI domain number
+>> + * @dma_owner_token: Token to identify the DMA owner of this device
+>> + * @domain_iommu_ser: Domain and IOMMU mapping
+>> + */
+>> +struct iommu_device_ser {
+>> +	struct iommu_hdr_ser hdr;
+>> +	u32 devid;
+>> +	u32 pci_domain_nr;
+>> +	u64 dma_owner_token;
+>> +	struct iommu_dev_map_ser domain_iommu_ser;
+>
+>I guess this single attachment_id needs to be fixed in phase 2 for
+>PASID?
 
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+I will drop the domain_iommu_ser as per the explanation above.
+>
+>> +} __packed;
+>> +
+>> +/**
+>> + * struct iommu_hw_ser - Serialized state of an IOMMU instance
+>> + * @hdr: Common object header
+>> + * @token: Unique token for the IOMMU
+>
+>Could be clearer:
+>@token: Unique token to identify the IOMMU instance
 
+Agreed. Will update this.
+>
+>Nicolin
 
+Thanks Nicolin for looking into this.
+Sami
