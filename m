@@ -1,231 +1,164 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010033.outbound.protection.outlook.com [52.101.56.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A10033AD8B
-	for <iommu@lists.linux.dev>; Sat, 10 Oct 2026 04:03:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791605002; cv=none; b=K1d45NIEv4NqwaZgVp9K6r40p6Mlo971MdPqloWUz5LzrXPZmjnnqlyCrSkf+LhaCLKTQHrunbDQR9n4bSChYv3QkWZD9ykJ+pVFv64FDUiOGFwuvki+zOf5N287FIfR6wz09CzSH2mr3WlYF2Av6a0V+nwIMVWKhFgsmdvGP/8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791605002; c=relaxed/simple;
-	bh=Ejwhu/6CkTsJ1S4j1p20bCnMk+QTjT5h4/wH/FJ04D0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tx7ObEDlL1uv6a5pc44xzjc9P2b1RbQftUunk8E+gpn8LQa3WzYLDClR8OEL5UCIs8BzEZodtM//qXD9TQMvGG1e8dkBE79GC2Yh/GzZlinqIsomEamwsRAdGLjc4sEICng0pxnqszGfkTmYQAdNClepdURi2CCxp3gYGidc23E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LlEdsB+6; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EF65299920
+	for <iommu@lists.linux.dev>; Sat, 10 Oct 2026 05:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.33
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791609839; cv=fail; b=g8ojndicZPr93jMPDGG4ufd+tIgc26bRajA3ROIo7sRzAUGTaP5imIZBwOATg2BzG2yD0NcTaXYUdZbkcQ9L12ycFMaMWHmFQLreMUrl60uX4iUv8QVLyyM1ugb/bH31GekOyxc8lJh+Tb3tPStU4mtqO+aWJjEAxTBj5oRFU6c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791609839; c=relaxed/simple;
+	bh=1goldK8kV5P0B6jiu+02+PIMhjx2lcAZ+/r8X9mvwu0=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qqwAF5jE0PmLnTXuYDJIe1HdQ51cdGSPS0BcT5dnGT1qXRvPwpzRC0iEfou0oHc+BQXQ8mx4aNnBjvXWF3hplhD8LyO85GJKtcvFX6rHxa0UKOSmiGaUx/4xIwvibtYmBY06ONFNupSaUOpngGFzsGvxCitYUcceo3zok+yX6bk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ZxZ1BnvF; arc=fail smtp.client-ip=52.101.56.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LlEdsB+6"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2d8fd7a3f38so6335ad.1
-        for <iommu@lists.linux.dev>; Fri, 09 Oct 2026 21:03:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791605001; x=1792209801; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=QCxXLqh4eBCoc+xD4Hz7gL94yd/wl3WV/0Db7GuN9jk=;
-        b=LlEdsB+6GiTkObvoXDlqwNpyIVqvnHzQUh01KmyaeRTfLeWLYfyEO8N2NfoU98dRqM
-         EYMMkX8dkje0uw5POPGxlDp94PWDPLi1USFjaAygdyHLGd5o5gJTx7WxL2ZKitFqFIH5
-         43qIA5714Wm76NEquMs10qbdbaWf6/xbGTv3WTxlVJmO9zCXQ39dnWmcoXqMaFFzYGIz
-         CPyz3TAgrovO6Ggs1b4uvpCjXqKUpaN0BXjjjg+U9HWeQFly6N0GEWPy8F0uqa5anLc3
-         L9Wp2S5mfEMn/9GGe+RUqntaFYX079WvFwCO32mZV2E62s4aDw5OXUJWFkjOemHLRUYU
-         Sx6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791605001; x=1792209801;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QCxXLqh4eBCoc+xD4Hz7gL94yd/wl3WV/0Db7GuN9jk=;
-        b=Fdt0U+BSiJTcPGT+eoIDGnUT8PP2Zy0P9bPufJb49TPz2gl5sNey+hC0wbgf66NLcm
-         LwDRtiiwim+SjBLZBM5tXeeH3Mx2jyhwL4FtgNR55LO+R7hBiwqdiMhakEbrs9y6jaMP
-         Tt5Tz8lPy+Y9T7j6B+Z3eog3ZhqYzyTDv5ikW6gOETwaUIpLczoUs1NJpl+gytzrUcQ4
-         fMgf2u+i8MwgIcAW+pbJJf2+9A+B8JvJH4wh/klcb1tXziXmH0ewU/i9vp8l6ItWCzfm
-         OPaD54B57mKpkHact2T1RM6S3jQOPyH/OnY5GXK4LU9yBLS56ms2b7FhhEBIqgxGEZSs
-         59hg==
-X-Forwarded-Encrypted: i=1; AKwUvBzRkHVxsPKoqrmdUvgMCZ827i1rx3Tt4IlViqdT4NNM+Vof1k3bgw0JbBqwFvgp7tIwzUXNCg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKZvN4K4IXzTlWeqiqtBiJP4o1gtqXzvRxMiwndcdeInuwltCxm
-	9TmqgpnrL3T2f6WlOWxJ2simnUiTTNAdj3FIlD/Yao9sZ6+xb757FgfCh8Nw4ZVSEQ==
-X-Gm-Gg: AYBFou32H6MI1nTYMImxTtDFwn1JjZvMDRP9LpRxdEwqatsVmDv4aTboohBnjlFZb3s
-	CPUsC8g4kLt0DhN49tEvFRJt8G5XXpWiHAKk9SxxUbIEPbQmutibZnVy/+ZxHm9PTEw5GzdpDGO
-	YeowOCbpr0UedVEici9XGdbSXIiLXAiVSrfF3/qYbJ5qLVd9tLQ+AauoLKLCnW8H8j74hIlehWJ
-	bM3gRvmIWRK3UCguO6ku6CDIe+USSlsCSaq9UtFFuNyV8Tkib9pZd9YYraLawhQIs0Ng06uFScV
-	6Uo/tKuwNiZVLXm1KcC8pmkh6YRWQ9t7nyCD3+LZ3JhvvHv/KzYNosWO0u69FLQtWk2UhErSsAo
-	65bk958tiy5KHIKHvWrzoF4cv3sOO6VlryjnKTlckuypKl/ukJdUIhKlFvFhG7eoKkGtyypMx0H
-	GevgUztYwE3uub1KTKYp59xJD1tblQ0Za/BNjfyWTsJoCMkj2NlX/cNdbKb7Er9e9EY5AX0+hSe
-	rCt5qSWQfIHmxtuXaPlibRqOicHXElzOQcofSAUGzGs0J5LTsOWBoq5XeKmk/XyeUQ=
-X-Received: by 2002:a17:903:1a2f:b0:2d5:c090:3810 with SMTP id d9443c01a7336-2e87b1611e7mr1347695ad.2.1791604998738;
-        Fri, 09 Oct 2026 21:03:18 -0700 (PDT)
-Received: from google.com (163.1.145.34.bc.googleusercontent.com. [34.145.1.163])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2e88645c20esm121255ad.41.2026.10.09.21.03.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2026 21:03:15 -0700 (PDT)
-Date: Sat, 10 Oct 2026 04:03:12 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, YiFei Zhu <zhuyifei@google.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v5 15/18] iommufd: Persist iommu hardware pagetables for
- live update
-Message-ID: <asm2djTBxDLfrX4B@google.com>
-References: <20260921004834.2601285-1-skhawaja@google.com>
- <20260921004834.2601285-16-skhawaja@google.com>
- <asa6Q4t1pqn9gz3P@nvidia.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ZxZ1BnvF"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Jhjyy+zPQArqdKWNA5zevz15O6F2QIg2inpQQX24hUhZ/BbpysT6uzsVnmZ6SaJgWJsPSgPxK4WED/fx91VDDB0KOdvmy+kUfy3VU9UJp4OhM9JqI1+lEbgq4Q9NPE02fnRvossl1FM0/y4HCMDDS/CD14mNm5lS893hsoJRPY1QaBp0pO6AjI8YD28otzxVR8DDgLzk7I+SFlwYnBBCnAD77Qm0GW5/xRH2WXjFpmkZsX9OAF/PbOGzEsEBrIJLLJwINFx+o1d0grpejOjnYi+CUIWI8i7q9E+pJYljoHFHRI2zzISpZan5kvQw0xGroSGoQbHqGY3wZZ0TYUIDWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8eF5h7r1Ne+8Fa4YaprA4tr5Oh1DbZb8eL+7txFXNk8=;
+ b=eJh6UU9Jgik+20Veo7+8vh3LpvnAh0Bmq0QSCUCz3+je0xQvRPN7Oobj/Y9hTTn29XBWGvbpTNrKe79Eo+QnrB9zBpd2VsTlKPQhM0RQrmDHlVLaiWozlsoCZ7lNT/rpKOwlERAStGLDhYze/+WNqEPR2VYOLx7NlXjSN7VqkHkX7DeZJM81uOrip+IqCKW3G+W4HfnyWb0oUKzv+/5oauYyBYAsrlNbGf2Qza7sCwLL7RgwhMfgE8zUBKXM1jjmXI4pnYBnOsRAvP7EoLMm6wSOHJH/dJyoiGdtVHP/lmIe0At212NiaphYZBfPa/3WZzDrcnnV0AHFetDHEBk+3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=readmodwrite.com smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8eF5h7r1Ne+8Fa4YaprA4tr5Oh1DbZb8eL+7txFXNk8=;
+ b=ZxZ1BnvFGq1r9W2F4hZd4t9Ijz95TeAtL1bg3ALArmmm476bM6ZwXCNrDRYm4h5VVwUJTG8fYakR7VyNgpXW0QrviSBN+2x39AH/O93yoRsE9XsQlXxmBglA0RV5psr3w3Dy9jTp0sLWsysKGxFzDBuazRQhhA4LBdcdPJ3/7r4=
+Received: from CH0PR04CA0021.namprd04.prod.outlook.com (2603:10b6:610:76::26)
+ by BL1PR12MB5731.namprd12.prod.outlook.com (2603:10b6:208:386::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.451.26; Sat, 10 Oct
+ 2026 05:23:52 +0000
+Received: from BL02EPF00029928.namprd02.prod.outlook.com
+ (2603:10b6:610:76:cafe::54) by CH0PR04CA0021.outlook.office365.com
+ (2603:10b6:610:76::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.496.5 via Frontend Transport; Sat, 10
+ Oct 2026 05:23:52 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BL02EPF00029928.mail.protection.outlook.com (10.167.249.53) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.522.6 via Frontend Transport; Sat, 10 Oct 2026 05:23:52 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Sat, 10 Oct
+ 2026 00:23:47 -0500
+Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Sat, 10 Oct
+ 2026 00:23:47 -0500
+Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
+ Transport; Sat, 10 Oct 2026 00:23:43 -0500
+Date: Sat, 10 Oct 2026 05:23:39 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Matt Fleming <matt@readmodwrite.com>
+CC: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Ashish Kalra <ashish.kalra@amd.com>, "Vasant
+ Hegde" <vasant.hegde@amd.com>, Sairaj Kodilkar <sarunkod@amd.com>, Baoquan He
+	<bhe@redhat.com>, <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+	<stable@vger.kernel.org>, <kernel-team@cloudflare.com>, Matt Fleming
+	<mfleming@cloudflare.com>
+Subject: Re: [PATCH 1/2] iommu/amd: Program device table when kdump reuse
+ fails
+Message-ID: <lbwkxwguxaoq3utgmqkre2x4bsv22tvuvrwwdbhhhrwznht2dw@6rbtm3bwlydl>
+References: <20261002133143.3628181-1-matt@readmodwrite.com>
+ <20261002133143.3628181-2-matt@readmodwrite.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <asa6Q4t1pqn9gz3P@nvidia.com>
+In-Reply-To: <20261002133143.3628181-2-matt@readmodwrite.com>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF00029928:EE_|BL1PR12MB5731:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0ff0c8ec-4b3b-42f1-788a-08df268eac2b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|1800799024|376014|23010399003|82310400026|22082099003|10067099003|11063799006|18002099003|56012099006|6133799003|261009223027099003|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	FTP1Oq+0stMLJpOIH7D7FAkX3rsuEr2qK3RMzo70tN8MypJXQiqba0tbitYcDwb6nh8HZSR5oLl5dlcH9bQivzaDnAU/DT51dvu7r9JNScLhtLwq0FbuRs3S39ZWMixmZHL6Whnlb87JxwkBgKL0ivBez2VFwIHYlNKG+xwS2DyxrQ00HdHqlnVMennZq24gYP9Z9+q17TM/GiT2Gy9VGoN4uCx6it5Y8plV3fT1q3bFU12zGlLqRPfU+tcAQONCM13ticaDh7PAPBVGhMzd0vcAXOBzC4XfLItCJ9r2yoK+oqW8BgHwmx4/xbreg+WUdMXDDlG75pRm6LHwTVuAzgYdLbyJGDWky/rPQPCGetTCB8N14P4oTniomdpbQLZfJVrj4J1uQPVKPV9Ye+3MJV+VKYbg3w/+/JObLcrCfRoYaaJ6s5MciG5wdA5blegg3Hkl77rLZH3qjJP0lUfBbBLp1ZSikQ0HwzQqg5IFkUnnOaE0aSiXVJj0pHQSFM67ATYETuHFpU7kPyEc41ce1IOyTUoZnud1Ju7lOyUGwD1LI/9Q0CRReTZPUSG5kqYgxqTACQTRgKkENZVuJowlBORP6t4R/6a9hRVSHzn4MCx4kAkJzY1h0yesLBCxN5n3yznww25WiZFhP9w1WW3RHVhXY0P00M3WflZJ58m8As8DdvZEgDi2hTLI1mvrOOQPeoWr1FQUulUlMpxWFz1COA==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(376014)(23010399003)(82310400026)(22082099003)(10067099003)(11063799006)(18002099003)(56012099006)(6133799003)(261009223027099003)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	y/vPBvKNccQBYbUVsZy9W9+6HWX+aqdcVglEqzrmLaEa4ITqDm2v9MD7iFwT4lBMrEnTlrcIT3ijW4ofHl/+1R1P8hkHYifyefTxF92O5C5Salc+JbJEYZpResf7W13nZp+S9IKUUYh72HaECelFs0v2HpCtkwXTKP8C6JW1kcsvk5rNNWamTrQjQr/mIWwFIDxenm8R1LPwqcyvqyNxNe6UaAGNVLVhN6Z6l9vNhpR7xSZr9KBYqJyUp3nDLYJy3rrU7HvuoLnhD5N6CBsaPDVm5lXBKWgwKApHA7Ag4P7C867kME+yNQZCJTBr1+5XkwUQKB4i6UWdRhkeEP0pHIEwaJQkIsBXElvIA/ukrFg2dXNaXIhFmDqEJoeEO4qraNm6TI0rIygB6EEvHIQR2wRu7+YLKrgeGPh6Wll7ROfHPUEm3fjEj0cq3+nIeG3j
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2026 05:23:52.5208
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0ff0c8ec-4b3b-42f1-788a-08df268eac2b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF00029928.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5731
 
-On Wed, Oct 07, 2026 at 02:31:47PM -0700, Nicolin Chen wrote:
->On Mon, Sep 21, 2026 at 12:48:31AM +0000, Samiullah Khawaja wrote:
->> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
->> index a33b32708afa..a4ddc29ec5ae 100644
->> --- a/drivers/iommu/iommufd/iommufd_private.h
->> +++ b/drivers/iommu/iommufd/iommufd_private.h
->> @@ -98,6 +98,9 @@ struct io_pagetable {
->>  	/* IOVA that cannot be allocated, struct iopt_reserved */
->>  	struct rb_root_cached reserved_itree;
->>  	u8 disable_large_pages;
->> +#ifdef CONFIG_IOMMU_LIVEUPDATE
->> +	u32 nr_preserved_domains;
->> +#endif
->
->In iommufd, "num_" is used more often than "nr_".
+On Fri, Oct 02, 2026 at 02:31:42PM +0100, Matt Fleming wrote:
+> From: Matt Fleming <mfleming@cloudflare.com>
+> 
+> Commit 38e5f33ee359 ("iommu/amd: Reuse device table for kdump") made
+> iommu_set_device_table() return early in every kdump kernel. That is
+> needed when the previous kernel's device table is reused: the base
+> register already points at it, and on SNP-enabled systems the register
+> is locked.
+> 
+> But if reuse isn't possible, early_enable_iommus() falls back to the
+> freshly allocated table and calls early_enable_iommu(). Because of the
+> early return, that table is never written to the base register. The
+> IOMMU keeps using whatever table the register pointed at before, while
+> the driver writes entries into the new one.
+> 
+> Only skip the write when the previous kernel's table was reused.
+> 
+> Fixes: 38e5f33ee359 ("iommu/amd: Reuse device table for kdump")
+> Cc: stable@vger.kernel.org
 
-Will update.
->
->>  	unsigned long iova_alignment;
->>  };
->>
->> @@ -398,6 +401,7 @@ struct iommufd_hwpt_paging {
->>  	bool enforce_cache_coherency : 1;
->>  	bool nest_parent : 1;
->>  #ifdef CONFIG_IOMMU_LIVEUPDATE
->> +	bool liveupdate_preserved;
->>  	u64 liveupdate_token;
->>  #endif
->>  	/* Head at iommufd_ioas::hwpt_list */
->
->> +static inline bool iopt_liveupdate_immutable(const struct io_pagetable *iopt)
->> +{
->> +	return iopt->nr_preserved_domains > 0;
->> +}
->
->It's used in io_pagetable file only. I'd move it out of the header:
->
->static inline bool iopt_liveupdate_immutable(const struct io_pagetable *iopt)
->{
->	bool immutable = false;
->
->	lockdep_assert_held(&iopt->domains_rwsem);
->
->#ifdef CONFIG_IOMMU_LIVEUPDATE
->	/* iopt becomes immutable once liveupdate preservation starts */
->	immutable = iopt->num_preserved_domains;
->#endif
->	return immutable;
->}
+Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
 
-Will update.
->
->> diff --git a/drivers/iommu/iommufd/liveupdate.c b/drivers/iommu/iommufd/liveupdate.c
->> +static bool ioas_set_immutable(struct iommufd_ioas *ioas, bool set)
->> +{
->> +	bool was_immutable;
->> +
->> +	down_write(&ioas->iopt.domains_rwsem);
->> +	was_immutable = ioas->iopt.nr_preserved_domains > 0;
->> +	if (set)
->> +		ioas->iopt.nr_preserved_domains++;
->> +	else if (!WARN_ON(!was_immutable))
->> +		ioas->iopt.nr_preserved_domains--;
->> +
->> +	up_write(&ioas->iopt.domains_rwsem);
->> +
->> +	return was_immutable;
->> +}
->
->Since it has to handle refcount, an unset doesn't really unset the
->flag, which is confusing.
->
->Maybe just:
->  iopt_inc_num_preserved_domains
->  iopt_dec_num_preserved_domains
-
-Sounds good. Will update.
->
->> +static int check_iopt_pages_preserved(struct liveupdate_session *s,
->> +				      struct iommufd_hwpt_paging *hwpt)
->
->static int iopt_validate_preserved_memory(struct io_pagetable *iopt,
->					  struct liveupdate_session *s)
-
-Will update.
->
->> +{
->> +	u32 req_seals = F_SEAL_SEAL | F_SEAL_GROW | F_SEAL_SHRINK;
->> +	struct iopt_area *area;
->> +	int ret = 0;
->> +
->> +	down_read(&hwpt->ioas->iopt.iova_rwsem);
->> +	for (area = iopt_area_iter_first(&hwpt->ioas->iopt, 0, ULONG_MAX); area;
->> +	     area = iopt_area_iter_next(area, 0, ULONG_MAX)) {
->> +		struct iopt_pages *pages = area->pages;
->
->Move req_seals inside the for loop.
-
-Will update.
->
->> +static int iommufd_liveupdate_preserve(struct liveupdate_file_op_args *args)
->[...]
->> +	iommufd_ser = mem;
->> +	iommufd_ser->nr_hwpts = nr_hwpts;
->> +
->> +	/* Preserve HWPTs */
->> +	i = 0;
->> +	xa_lock(&ictx->objects);
->> +	xa_for_each_marked(&ictx->objects, index, obj, IOMMUFD_OBJ_LIVEUPDATE_MARK) {
->[...]
->> +	}
->> +	xa_unlock(&ictx->objects);
->> +
->> +	/* Store the actual number of HWPTs that are preserved */
->> +	iommufd_ser->nr_hwpts = i;
->
->iommufd_ser->nr_hwpts is set twice. First one seems redundant.
-
-Agreed.
->
->> +++ b/include/linux/kho/abi/iommufd.h
->> +/**
->> + * struct iommu_hwpt_ser - IOMMUFD HWPT serialized state
->> + * @domain_data: Physical address of the serialized state of associated domain
->
->Then, it could be domain_ser_phys?
-
-Agreed.
->
->> + * @token: User provided token
->> + * @reclaimed: Whether the HWPT is reclaimed
->
->Once the hwpt is reclaimed, could we clear domain_data to indicate
->"it is reclaimed" instead of a separate field?
-
-Agreed.
->
->Nicolin
-
-Thanks,
-Sami
+> Signed-off-by: Matt Fleming <mfleming@cloudflare.com>
+> ---
+>  drivers/iommu/amd/init.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index c07c3a01b978..0572e1a674f0 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -409,7 +409,13 @@ static void iommu_set_device_table(struct amd_iommu *iommu)
+>  
+>  	BUG_ON(iommu->mmio_base == NULL);
+>  
+> -	if (is_kdump_kernel())
+> +	/*
+> +	 * A kdump kernel that reuses the previous kernel's device table must
+> +	 * leave the base register alone. It already points at that table, and
+> +	 * with SNP enabled the register is locked. If reuse failed, program
+> +	 * the freshly allocated table like a normal boot.
+> +	 */
+> +	if (iommu->pci_seg->old_dev_tbl_cpy)
+>  		return;
+>  
+>  	entry = iommu_virt_to_phys(dev_table);
+> -- 
+> 2.43.0
+> 
