@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FE0C286D56;
-	Sat, 10 Oct 2026 07:25:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA8841F5CC;
+	Sat, 10 Oct 2026 07:25:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791617137; cv=none; b=nbDXyVgTI9A15H/ILbEZUlDelVjoeP19aFds3ZFppnoGTpfvSzZ5Hgyt1JrimTtVbKV4ES5NTQXKjFA9tcATaxNb6O/eEiqDdLv8Tz973BBogO/xnzAeIDmhsKzNMFyQPo8BK5MB7YmJs6VJLEyq4/IjtjaX7ukn6/BRd9Th5Ws=
+	t=1791617145; cv=none; b=CHc61ytkUSu7MtsyUUqXsMPwBOTacqTNNFzHXKE5lhl58KkAT8E5EDRIlQivw3pQ7ntkUi8iLGeOkfgnGPG2tQrgNcyY0pryx/LkGMojbC1JLMpHvKGvf0v+8kbasV4mLJjJTvejDNiamUcfi9Ul7G0GiI273pp16EQZdXFTqY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791617137; c=relaxed/simple;
-	bh=vqjTy10tRAAitBQY76eKcje96O8JPGzAM3qdOygpGxc=;
+	s=arc-20240116; t=1791617145; c=relaxed/simple;
+	bh=VsbBN+Gd9crWzbtmDpOiUzbhpJ2HeVHD0GBSu765JAw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=iOnlFzo602/RsFEwLovgZEHPKR8VykKirIRPMWpMfi6K+qIKNdCL+G9oqT/XuepPq1sxcw1vf9ldxDWT79GzOdM+8s/RCpU9lOTi2m0XHY9DNEOmDRgHT/bGWTmgbQ9W04hp9c9BYKYuefx4W8eKYOiYWgCqDZ+WIdNLb3F7vaE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BqDKuRuv; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version; b=fplJ+VaRMPHq2q3nXD73hsk/565iUfQzuQI/5bnjEINelrktCD5gyCEgbnnZvCchvG5MYSIlhyqC1mlOJweKIbQOmnvDZR2C5nD3Bmd0q2q2w2Um3FpEbkLlEPBXaWnyTr0Eyipa815OEIJWrg+jjZL4+HBOnBMTFjzm4jpwrn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NKID7QUw; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BqDKuRuv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C4231F000FF;
-	Sat, 10 Oct 2026 07:25:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NKID7QUw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 730F41F00898;
+	Sat, 10 Oct 2026 07:25:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791617135;
-	bh=7D05JbekXDae7rMFREA91+cD+F0A/ebNTntADJMqeac=;
+	s=k20260515; t=1791617143;
+	bh=30aq9tkiRs8WXbQvzT7r2ZLPlmnUXZ3Mb3eddKOUaaI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=BqDKuRuvK9lw8ClqH9Lm2cQIFldGB8RrFh6SmtE/xqbq9DvweyGsrnsuy5/wPsmI8
-	 H2ENY4ROMp2C/iESiyIYl0pR2PIRK/wnpSlt7EmHhHERjwQZ8JKhNhg3/Nn+d8ehCm
-	 kvBxrN9ed++wvSFy1Cfg3ZkcxmiLFbxZ1GMPoqvwfM7S3OX/8vBZ7IRtVFvCyW5Shs
-	 yztxMEqsw2dG2Lff+BSy8KJtSObcPmigMQXhsKpk9NKBUVoHeH9zOPhJQMp1yLTZXJ
-	 YVsqqmE/wbzkrcSvvyPhuDGzHdBJZBCn1LSkz8XaPxnqFWW9pyARfbe5zP5hf6PiFX
-	 dcRLf1N9l95+A==
+	b=NKID7QUw3ci/1/RxlD7rfVmdSrtZ2/Zd+cFkF34F3aBR5OSiIzgmhoVVTDjO+6TlT
+	 yA1rj2Tb9yLhKP03T/xnhCt7fgphDahRbCuG3vQPOaSoZ+BFVp3YaLLAqcA8FQLmtA
+	 GN40klzob4yKoZK/HrupRKVY62C5h1Sjcta/h2osWxuurb9r3JAN7gU0p5Jujl7GAa
+	 HnCJ0FSKTHcs/69RL+uSQWibqi27ZDad4HXzABYFLrLIIvGjQTqd5wPifJEz1k5FTL
+	 FXCUN0hiNoGLWVRfnKYlKbfPiJW2V6vyxQApSlvepExaaiX0O+kRDRXnPqs3dJ0NnH
+	 /zKdfkFVEVf8Q==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: linux-coco@lists.linux.dev,
 	linux-kernel@vger.kernel.org
@@ -49,9 +49,9 @@ Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	Fred Griffoul <griffoul@gmail.com>,
 	iommu@lists.linux.dev,
 	kvm@vger.kernel.org
-Subject: [RFC PATCH v1 2/6] KVM: guest_memfd: Support private/shared conversion of device memory
-Date: Sat, 10 Oct 2026 12:55:00 +0530
-Message-ID: <20261010072504.536230-3-aneesh.kumar@kernel.org>
+Subject: [RFC PATCH v1 3/6] iommufd: Support MMIO provider attachment to vDEVICEs
+Date: Sat, 10 Oct 2026 12:55:01 +0530
+Message-ID: <20261010072504.536230-4-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261010072504.536230-1-aneesh.kumar@kernel.org>
 References: <20261010072504.536230-1-aneesh.kumar@kernel.org>
@@ -63,300 +63,217 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Allow architectures to convert device-backed guest_memfd ranges to
-private memory. Coordinate conversion with the device provider and
-update guest_memfd attributes only after the architecture operation
-succeeds.
+Allow a device MMIO provider to attach to the existing vDEVICE after the
+backend validates its association with the VM. Keep the vDEVICE and
+IOMMUFD context alive until the provider detaches.
 
-Hold the inode invalidate lock across conversion and the attribute
-update. Provider callbacks allow a device conversion lock to cover the
-same operation, with the inode lock acquired first. This prevents faults
-and competing device operations from observing an incomplete conversion.
+Add a per-vDEVICE MMIO mutex to serialize provider attachment and
+detachment, and allow providers and backends to use the same lock for
+memory conversion and device state changes. Provide callbacks to
+invalidate MMIO mappings and query whether private ranges remain.
 
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: David Hildenbrand <david@kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev
 Cc: linux-kernel@vger.kernel.org
-Cc: kvm@vger.kernel.org
 Assisted-by: Codex
 Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- include/linux/guest_memfd.h |  12 +++
- include/linux/kvm_host.h    |   5 +
- virt/kvm/guest_memfd.c      | 186 +++++++++++++++++++++++++++++++++++-
- 3 files changed, 201 insertions(+), 2 deletions(-)
+ drivers/iommu/iommufd/viommu.c | 90 ++++++++++++++++++++++++++++++++++
+ include/linux/iommufd.h        | 33 +++++++++++++
+ 2 files changed, 123 insertions(+)
 
-diff --git a/include/linux/guest_memfd.h b/include/linux/guest_memfd.h
-index 4f232612a525..b566c581f04d 100644
---- a/include/linux/guest_memfd.h
-+++ b/include/linux/guest_memfd.h
-@@ -11,6 +11,13 @@ struct mempolicy;
- struct kvm;
- struct guest_memfd_device;
+diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+index 9155d0dcb4b4..24a817fb2ae8 100644
+--- a/drivers/iommu/iommufd/viommu.c
++++ b/drivers/iommu/iommufd/viommu.c
+@@ -250,6 +250,7 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 		goto out_unlock_igroup;
+ 	}
  
-+/* Claims come from a pending architecture exit, never from a userspace PA. */
-+struct guest_memfd_device_request {
-+	u64 gpa;
-+	u64 pa;
-+	u64 vdev_id;
-+};
-+
- /* Binding data stays valid only while the device guest_memfd is active. */
- struct guest_memfd_device_binding {
- 	/* Architecture-specific mapping owner, e.g. an RMM vDEVICE handle. */
-@@ -29,6 +36,11 @@ struct guest_memfd_device_operations {
- 	int (*bind)(void *data, u64 offset, u64 size,
- 		struct guest_memfd_device_binding *binding);
- 	int (*get_pfn)(void *data, u64 offset, unsigned long *pfn);
-+	/* A protected request prepares private mapping; NULL prepares sharing. */
-+	int (*prepare_conversion)(struct guest_memfd_device_context *context,
-+		const struct guest_memfd_device_request *req);
-+	void (*finish_conversion)(struct guest_memfd_device_context *context,
-+		const struct guest_memfd_device_request *req);
- 	void (*release)(void *data);
- };
- 
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index f1675a3e00b6..32bd56f39f59 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -2614,6 +2614,11 @@ bool kvm_gmem_range_has_attributes(struct kvm_memory_slot *slot, gfn_t start,
- bool kvm_arch_gmem_device_supported(struct kvm *kvm);
- void kvm_arch_gmem_device_bind(struct kvm_memory_slot *slot,
- 		const struct guest_memfd_device_binding *binding);
-+int kvm_arch_gmem_device_map(struct kvm *kvm,
-+		const struct kvm_memory_slot *slot,
-+		u64 gpa, u64 size, u64 pa);
-+int kvm_arch_gmem_device_unmap(struct kvm *kvm, u64 gpa, u64 size);
-+int kvm_gmem_device_map(struct kvm *kvm, u64 gpa, u64 size, u64 pa, u64 vdev_id);
- int kvm_gmem_set_attributes(struct kvm_memory_slot *slot, gfn_t start,
- 			    gfn_t end, u64 attributes);
- bool kvm_arch_supports_gmem_init_shared(struct kvm *kvm);
-diff --git a/virt/kvm/guest_memfd.c b/virt/kvm/guest_memfd.c
-index c1fd232a83dd..246099caa75f 100644
---- a/virt/kvm/guest_memfd.c
-+++ b/virt/kvm/guest_memfd.c
-@@ -82,6 +82,13 @@ struct gmem_inode {
- 
- 	struct guest_memfd_device device;
- 	const struct guest_memfd_device_operations *device_ops;
-+	/*
-+	 * Whether the completed attribute tree contains any private device range.
-+	 * Updated under the inode invalidate and provider conversion locks;
-+	 * provider/TDI readers use READ_ONCE() without taking the inode lock.
-+	 * This summary avoids reversing the inode -> vDEVICE MMIO lock order.
-+	 */
-+	bool device_has_private;
- 	void *provider;
- 	const struct guest_memfd_provider_operations *provider_ops;
- 
-@@ -371,6 +378,10 @@ static void kvm_gmem_invalidate_end(struct inode *inode, pgoff_t start,
- 		__kvm_gmem_invalidate_end(f, start, end);
++	mutex_init(&vdev->mmio_lock);
+ 	vdev->virt_id = virt_id;
+ 	vdev->viommu = viommu;
+ 	refcount_inc(&viommu->obj.users);
+@@ -487,3 +488,92 @@ int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	iommufd_put_object(ucmd->ictx, &viommu->obj);
+ 	return rc;
  }
- 
-+static int kvm_gmem_device_convert(struct inode *inode, pgoff_t start,
-+		pgoff_t nr_pages, const struct guest_memfd_device_request *req,
-+		const struct kvm_memory_slot *slot);
 +
- static long kvm_gmem_punch_hole(struct inode *inode, loff_t offset, loff_t len)
- {
- 	enum kvm_gfn_range_filter filter = kvm_gmem_get_all_gfns_filter(inode);
-@@ -792,8 +803,12 @@ static int __kvm_gmem_set_attributes(struct inode *inode, pgoff_t start,
- 	struct ma_state mas;
- 	int r = 0;
- 
--	if (gi->device_ops)
--		return -EOPNOTSUPP;
-+	if (gi->device_ops) {
-+		*err_index = start;
-+		if (to_private)
-+			return -EPERM;
-+		return kvm_gmem_device_convert(inode, start, nr_pages, NULL, NULL);
-+	}
- 
- 	mt = &gi->attributes;
- 
-@@ -1079,6 +1094,172 @@ void __weak kvm_arch_gmem_device_bind(struct kvm_memory_slot *slot,
- {
- }
- 
-+int __weak kvm_arch_gmem_device_map(struct kvm *kvm,
-+		const struct kvm_memory_slot *slot,
-+		u64 gpa, u64 size, u64 pa)
++struct iommufd_vdevice *
++iommufd_device_attach_mmio_provider(struct iommufd_device *idev,
++		struct kvm *kvm, void *data,
++		void (*invalidate_mmio)(void *),
++		bool (*has_private_mmio)(void *),
++		unsigned long *owner)
 +{
-+	return -EOPNOTSUPP;
-+}
-+
-+int __weak kvm_arch_gmem_device_unmap(struct kvm *kvm, u64 gpa, u64 size)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static void kvm_gmem_device_update_private(struct gmem_inode *gi)
-+{
-+	MA_STATE(mas, &gi->attributes, 0, 0);
-+	void *entry;
-+	bool private = false;
-+
-+	mas_for_each(&mas, entry, ULONG_MAX) {
-+		if (kvm_gmem_get_attributes(&gi->vfs_inode, entry) &
-+		    KVM_MEMORY_ATTRIBUTE_PRIVATE) {
-+			private = true;
-+			break;
-+		}
-+	}
-+	WRITE_ONCE(gi->device_has_private, private);
-+}
-+
-+/* The protected request and its slot identify exactly one private range. */
-+static int kvm_gmem_device_make_private(struct inode *inode,
-+		const struct kvm_memory_slot *slot,
-+		const struct guest_memfd_device_request *req,
-+		pgoff_t nr_pages)
-+{
-+	return kvm_arch_gmem_device_map(GMEM_I(inode)->device.kvm, slot,
-+					req->gpa, (u64)nr_pages << PAGE_SHIFT,
-+					req->pa);
-+}
-+
-+/* The inode lock protects both attributes and the offset-to-GPA bindings. */
-+static int kvm_gmem_device_make_shared(struct inode *inode,
-+	       pgoff_t start, pgoff_t end)
-+{
-+	struct gmem_inode *gi = GMEM_I(inode);
-+	struct gmem_file *f;
-+	void *entry;
-+
-+	MA_STATE(mas, &gi->attributes, start, start);
-+
-+	mas_for_each(&mas, entry, end - 1) {
-+		pgoff_t first = max(start, mas.index);
-+		pgoff_t last = min(end, mas.last + 1);
-+
-+		if (!(kvm_gmem_get_attributes(inode, entry) &
-+		      KVM_MEMORY_ATTRIBUTE_PRIVATE))
-+			continue;
-+		while (first < last) {
-+			struct kvm_memory_slot *slot = NULL;
-+			pgoff_t high;
-+			u64 gpa;
-+			int ret;
-+
-+			kvm_gmem_for_each_file(f, inode) {
-+				slot = xa_load(&f->bindings, first);
-+				if (slot)
-+					break;
-+			}
-+			if (!slot)
-+				return -EINVAL;
-+			high = min(last, slot->gmem.pgoff + slot->npages);
-+			gpa = (slot->base_gfn + first - slot->gmem.pgoff) << PAGE_SHIFT;
-+			ret = kvm_arch_gmem_device_unmap(gi->device.kvm, gpa,
-+						      (high - first) << PAGE_SHIFT);
-+			if (ret)
-+				return ret;
-+			first = high;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int kvm_gmem_device_convert(struct inode *inode, pgoff_t start,
-+		pgoff_t nr_pages, const struct guest_memfd_device_request *req,
-+		const struct kvm_memory_slot *slot)
-+{
-+	struct gmem_inode *gi = GMEM_I(inode);
-+	u64 attrs = req ? KVM_MEMORY_ATTRIBUTE_PRIVATE : 0;
-+	bool prepared = false;
++	struct iommufd_vdevice *vdev;
 +	int ret;
 +
-+	MA_STATE(mas, &gi->attributes, start, start + nr_pages - 1);
++	if (!idev)
++		return ERR_PTR(-ENODEV);
 +
-+	filemap_invalidate_lock(inode->i_mapping);
-+	if (__kvm_gmem_range_has_attributes(inode, start, nr_pages, attrs)) {
-+		ret = 0;
-+		goto out;
-+	}
-+	if (req && !__kvm_gmem_range_has_attributes(inode, start, nr_pages, 0)) {
-+		ret = -EEXIST;
-+		goto out;
-+	}
-+	ret = kvm_gmem_mas_preallocate(&mas, attrs, start, nr_pages);
++	guard(mutex)(&idev->igroup->lock);
++	if (idev->destroying)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	vdev = idev->vdev;
++	if (!vdev)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	if (!vdev->viommu->ops ||
++	    !vdev->viommu->ops->vdevice_get_mmio_owner)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	guard(mutex)(&vdev->mmio_lock);
++	if (vdev->mmio_provider_data)
++		return ERR_PTR(-EBUSY);
++
++	ret = vdev->viommu->ops->vdevice_get_mmio_owner(vdev, kvm, owner);
 +	if (ret)
-+		goto out;
-+	kvm_gmem_invalidate_start(inode, start, start + nr_pages, KVM_FILTER_SHARED);
-+	if (req && READ_ONCE(gi->device.kvm->vm_dead))
-+		ret = -EIO;
-+	else
-+		ret = gi->device_ops->prepare_conversion(gi->provider, req);
-+	if (!ret) {
-+		prepared = true;
-+		if (req)
-+			ret = kvm_gmem_device_make_private(inode, slot, req, nr_pages);
-+		else
-+			ret = kvm_gmem_device_make_shared(inode, start, start + nr_pages);
-+	}
-+	if (!ret) {
-+		mas_store_prealloc(&mas, xa_mk_value(attrs));
-+		kvm_gmem_device_update_private(gi);
-+	} else {
-+		mas_destroy(&mas);
-+	}
-+	kvm_gmem_invalidate_end(inode, start, start + nr_pages);
-+	if (prepared)
-+		gi->device_ops->finish_conversion(gi->provider, req);
-+out:
-+	filemap_invalidate_unlock(inode->i_mapping);
-+	return ret;
-+}
++		return ERR_PTR(ret);
 +
-+int kvm_gmem_device_map(struct kvm *kvm, u64 gpa, u64 size, u64 pa, u64 vdev_id)
++	/* IOMMU_DESTROY must wait for the attached gmem provider to detach. */
++	ret = iommufd_try_inc_users(idev->ictx, &vdev->obj);
++	if (ret)
++		return ERR_PTR(ret);
++
++	iommufd_ctx_get(idev->ictx);
++	vdev->mmio_provider_data = data;
++	vdev->invalidate_mmio = invalidate_mmio;
++	vdev->has_private_mmio = has_private_mmio;
++	invalidate_mmio(data);
++	return vdev;
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_device_attach_mmio_provider, "IOMMUFD");
++
++void iommufd_vdevice_detach_mmio_provider(struct iommufd_vdevice *vdev)
 +{
-+	struct guest_memfd_device_request req = { gpa, pa, vdev_id };
-+	struct kvm_memory_slot *slot;
-+	gfn_t gfn = gpa >> PAGE_SHIFT;
-+	struct file *file;
-+	int ret;
++	struct iommufd_ctx *ictx = vdev->viommu->ictx;
 +
-+	if (!size)
-+		return -EINVAL;
-+
-+	if (!PAGE_ALIGNED(gpa | size | pa))
-+		return -EINVAL;
-+
-+	/* Caller holds SRCU across the pending architecture request. */
-+	slot = gfn_to_memslot(kvm, gfn);
-+	if (!slot || (slot->flags & KVM_MEMSLOT_INVALID))
-+		return -EINVAL;
-+
-+	if (!(slot->flags & KVM_MEMSLOT_GMEM_DEVICE))
-+		return -EINVAL;
-+
-+	if ((size >> PAGE_SHIFT) > slot->npages - (gfn - slot->base_gfn))
-+		return -EINVAL;
-+
-+	file = kvm_gmem_get_file(slot);
-+	if (!file)
-+		return -ENOENT;
-+	ret = kvm_gmem_device_convert(file_inode(file),
-+				      kvm_gmem_get_index(slot, gfn),
-+				      size >> PAGE_SHIFT, &req, slot);
-+	fput(file);
-+	return ret;
++	scoped_guard(mutex, &vdev->mmio_lock) {
++		WARN_ON(iommufd_vdevice_has_private_mmio(vdev));
++		vdev->mmio_provider_data = NULL;
++		vdev->invalidate_mmio = NULL;
++		vdev->has_private_mmio = NULL;
++	}
++	refcount_dec(&vdev->obj.users);
++	iommufd_ctx_put(ictx);
 +}
-+EXPORT_SYMBOL_FOR_KVM_INTERNAL(kvm_gmem_device_map);
++EXPORT_SYMBOL_NS_GPL(iommufd_vdevice_detach_mmio_provider, "IOMMUFD");
 +
- static int kvm_gmem_attach_resource(struct kvm *kvm,
- 		struct inode *inode, int resource_fd)
- {
-@@ -1585,6 +1766,7 @@ static struct inode *kvm_gmem_alloc_inode(struct super_block *sb)
- 	gi->provider = NULL;
- 	gi->provider_ops = NULL;
- 	gi->device_ops = NULL;
-+	gi->device_has_private = false;
- 	memset(&gi->device, 0, sizeof(gi->device));
- 	INIT_LIST_HEAD(&gi->gmem_file_list);
- 	return &gi->vfs_inode;
++void iommufd_vdevice_mmio_lock(struct iommufd_vdevice *vdev)
++{
++	mutex_lock(&vdev->mmio_lock);
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_vdevice_mmio_lock, "IOMMUFD");
++
++void iommufd_vdevice_mmio_unlock(struct iommufd_vdevice *vdev)
++{
++	mutex_unlock(&vdev->mmio_lock);
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_vdevice_mmio_unlock, "IOMMUFD");
++
++/**
++ * iommufd_vdevice_has_private_mmio() - check for private MMIO ranges
++ * @vdev: vDEVICE whose private MMIO state is being checked
++ *
++ * Return: true if the attached provider has committed private ranges.
++ */
++bool iommufd_vdevice_has_private_mmio(struct iommufd_vdevice *vdev)
++{
++	lockdep_assert_held(&vdev->mmio_lock);
++	if (!vdev->has_private_mmio)
++		return false;
++	return vdev->has_private_mmio(vdev->mmio_provider_data);
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_vdevice_has_private_mmio, "IOMMUFD");
+diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+index 2e67846d6f35..3f3b9d1dd22a 100644
+--- a/include/linux/iommufd.h
++++ b/include/linux/iommufd.h
+@@ -7,10 +7,12 @@
+ #define __LINUX_IOMMUFD_H
+ 
+ #include <linux/bits.h>
++#include <linux/cleanup.h>
+ #include <linux/err.h>
+ #include <linux/errno.h>
+ #include <linux/iommu.h>
+ #include <linux/refcount.h>
++#include <linux/mutex.h>
+ #include <linux/types.h>
+ #include <linux/xarray.h>
+ #include <uapi/linux/iommufd.h>
+@@ -26,6 +28,7 @@ struct iommufd_device;
+ struct iommufd_viommu_ops;
+ struct tsm_dev;
+ struct page;
++struct kvm;
+ struct tsm_guest_req_info;
+ 
+ enum iommufd_object_type {
+@@ -73,6 +76,20 @@ int iommufd_device_replace(struct iommufd_device *idev, ioasid_t pasid,
+ 			   u32 *pt_id);
+ void iommufd_device_detach(struct iommufd_device *idev, ioasid_t pasid);
+ 
++/* The returned opaque vDEVICE pins its IOMMUFD context and physical owner. */
++struct iommufd_vdevice *
++iommufd_device_attach_mmio_provider(struct iommufd_device *idev,
++		struct kvm *kvm, void *data,
++		void (*invalidate_mmio)(void *),
++		bool (*has_private_mmio)(void *),
++		unsigned long *owner);
++void iommufd_vdevice_detach_mmio_provider(struct iommufd_vdevice *vdev);
++void iommufd_vdevice_mmio_lock(struct iommufd_vdevice *vdev);
++void iommufd_vdevice_mmio_unlock(struct iommufd_vdevice *vdev);
++DEFINE_GUARD(iommufd_vdevice_mmio, struct iommufd_vdevice *,
++	     iommufd_vdevice_mmio_lock(_T), iommufd_vdevice_mmio_unlock(_T))
++bool iommufd_vdevice_has_private_mmio(struct iommufd_vdevice *vdev);
++
+ struct iommufd_ctx *iommufd_device_to_ictx(struct iommufd_device *idev);
+ u32 iommufd_device_to_id(struct iommufd_device *idev);
+ 
+@@ -130,6 +147,18 @@ struct iommufd_vdevice {
+ 	 */
+ 	u64 virt_id;
+ 
++	/* Serializes provider attachment and conversion. */
++	struct mutex mmio_lock;
++	/* Attached provider and callbacks, protected by mmio_lock until detach. */
++	void *mmio_provider_data;
++	/*
++	 * Revoke VFIO userspace BAR mappings and shared guest stage-2 mappings
++	 * before delegation. Private guest mappings remain intact; guest_memfd
++	 * removes them through its architecture unmap operation.
++	 */
++	void (*invalidate_mmio)(void *data);
++	bool (*has_private_mmio)(void *data);
++
+ 	/* Guest TSM requests accepted by this vdevice; set by vdevice_init(). */
+ 	u64 tsm_req_op_mask;
+ 	u32 tsm_tvm_arch;
+@@ -187,6 +216,7 @@ struct iommufd_hw_queue {
+  *                include/uapi/linux/iommufd.h)
+  *                If driver has a deinit function to revert what vdevice_init op
+  *                does, it should set it to the @vdev->destroy function pointer
++ * @vdevice_get_mmio_owner: Validate the VM and return its MMIO owner.
+  * @vdevice_tsm_req: Forward a guest TSM request to a driver-owned vDEVICE
+  * @get_hw_queue_size: Get the size of a driver-defined HW queue structure for a
+  *                     given @viommu corresponding to @queue_type. Driver should
+@@ -218,6 +248,9 @@ struct iommufd_viommu_ops {
+ 		const struct iommu_user_data *user_data);
+ 	int (*cache_invalidate)(struct iommufd_viommu *viommu,
+ 				struct iommu_user_data_array *array);
++	/* Owner lookup runs with vdevice->mmio_lock held. */
++	int (*vdevice_get_mmio_owner)(struct iommufd_vdevice *vdev,
++		struct kvm *kvm, unsigned long *owner);
+ 	const size_t vdevice_size;
+ 	int (*vdevice_init)(struct iommufd_vdevice *vdev);
+ 	ssize_t (*vdevice_tsm_req)(struct iommufd_vdevice *vdev,
 -- 
 2.43.0
 
