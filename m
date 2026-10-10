@@ -1,216 +1,201 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F72339182F
-	for <iommu@lists.linux.dev>; Sat, 10 Oct 2026 02:31:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698AC3806B5;
+	Sat, 10 Oct 2026 02:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791599514; cv=none; b=ZZgk5oyflbRFObeRv8wg213KBCQpRuYPpFvT8TCdc/1rwrSx/2s1a2gC4fJTAfeEtH+p6xRJ3g8iK4uGqyGVOIpW4kszroJPgIIEQSU9d60qXpMpF5kbIJyVya4linYSb9+SU9cu2yWZPz9EJdLGTSpRaL8C583Qf6PYjE8D5Hk=
+	t=1791601179; cv=none; b=rK8GGaMyqYv5bZopH3R8YxTqGUy/EEuXRe805coTpFRansz+6odJTolv5B29C58/Dsdd9HLqp9X65H7DlPz673Dz5tR6SH8mEHnCGpxrEQIVzvXSGtM4SRH/u2rI6xrG9nMcVvdpuugEnqnWDjnLpH+9+n0cfxEgDDP0S/ZzZPc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791599514; c=relaxed/simple;
-	bh=Wsfe86TYaGANkos5Or/r/Ovy9nBCe20RY2SVazy8WIQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RlXc19jqZzm3C4IsChP5WNW7xDQpaCWjWOMX/ydivs4nI50rrEtdvQDGAqX8ZsCr5nE2zTRIeIgbyM/f1+v6WIx2R97AW5bG02L2uff5UUivk98m2r/8qu5X8LyRbtiE7GJyCR5jPLZWYmkcTbh/nnzY/JDjdEllF473A2l/DGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=J+/RDeAA; arc=none smtp.client-ip=209.85.214.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1791601179; c=relaxed/simple;
+	bh=Lmzi9xD+MtFDsvia7u2Hw0Yuu44BmeRtKvAQ5SQT7cY=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=PZoyD+q51snT8/yXq59UF2hHdDL3Eqo7rTejUkO1yv6XaOisYU5aj2fGpnarcgDNUu8RLXP1PAz/y5POqrdy3wqppc7IWhlsop+NAzWkXPYLMR+DhagHm9tkwIW2GecjpMCoqTQlt7R0BA4rMpkQEgCJfZn5akiBPYf9bdwvKKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ll9asCl7; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="J+/RDeAA"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2db33db4de9so10355ad.0
-        for <iommu@lists.linux.dev>; Fri, 09 Oct 2026 19:31:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791599508; x=1792204308; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=3rzKQ4RjsXxN/zYQ6wEGpTgXALdkb/UwVP3kYDgAqNA=;
-        b=J+/RDeAAxbz2pfHo8FtgbLC24E8EiKi8WjRX6l5q6795Z10KxWzxLlhlytOGTvHj+Y
-         kzKKGtuMgjBoQaYo9YOzCurDsH1nH86HXIgjIxzAzgG392WBwDcvGRaW4yn48XTC4G5T
-         tDQr6OIiNmQ+LWZMCOGruZayfj3g2xhZqsIqih5OuGKDiEZdZYyjzegNc4vbaxTDU5NV
-         o+zilT5XgRy7sNpeqmP56cfaFZ32ATSplgqgtEY++GrsHMtToHcuDxoOjBkZxC8K4zyp
-         LLXKFIwC2gVVd3mWlDljsakEKfXbmduzprCbs1vn3qXseofd2YJdaopXXjgR2IBI4T/c
-         l1JQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791599508; x=1792204308;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=3rzKQ4RjsXxN/zYQ6wEGpTgXALdkb/UwVP3kYDgAqNA=;
-        b=q+lRtiKmHutuK7uoZZ3HXKeLuohsvLvPRA9im9nFbeot9joHXF5F1YVY8EmmH+qcg4
-         1ZpPdDe922g2NpcpdEMkCraDS1ZKevLgfGJy0OFe3Kr9aFsDaobRDkDpFpoIKUt7z7n5
-         ZwsYpaPsk4bgqiJDghYyni3wo2LK0+N8dKer1S0PPRohyXqRbrYV9cwW/RpKbPIQRgu2
-         ZE2QAXqs3Ig6nn2B02kOfT7Ztrxrwo2RgXhRShh29Mqwcqa3W8SDUsazH0f6KL9EDrou
-         IlDETorYRLSGjwwVrUNErtkvD/yEJ0mMkuUsT5H4QeTfm14Si6QZMuXQvut3UKSdhfW6
-         QZJw==
-X-Forwarded-Encrypted: i=1; AKwUvBwo5XhZWlF2Ix7JMhje+ysnO8fV7BhQW4A7Utlk6TKL2yHYEgDUpMU/wBpocPLAAtAbsOONIA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYI27AQPCpbUR/OZBsgtdhvwtrcS8Y5LOZyOL5Ty9cBlvGKQ3rTx
-	BUZVkgkAUg2XopqZksuVFIM2h41t3wN99ezNU6PIJdAX6P+HIFWEWGHLcd9ZGI/TJA==
-X-Gm-Gg: AYBFou045Zs6NdBjEQSHc5AljEjib5K+SrXwazqMxSCwY47Vl+/0UFepLOWSRsYv4dl
-	rmmJJwNZqGxmFqu3JNlnlhfQn+kyRw4emLjb3Ur/sjxabTfz6wyMLqBCZSC3M3KKqKH2k++UoP7
-	OaKd0bGQ1GpViuwf1mYcNvSjDdd9+2tvOndF1qorPrkDbqlKwf/S5zGB0Uf/7eAH/70VkwE/BXn
-	K9+H3+RSxWCbZPUaIm+gNlG0qLRIUtr0skjk5ojAm3iJwyEg0LkObIe2y3ww+3Vpit+fDPbEoPF
-	hWOEuOk7e+rTJw3KYX4aYGSZf9Ki5mjQ7YzbsDQZmWjqBY9C3akZy1M7TJ/0FhEmYtOn3/naMeM
-	Afrl3DevYt1DgSPCCf2Z0D8TuMCQ8Axw6HTC62mYnAhejqDifHLd+vYre5OARWiO9el8M24j4kA
-	k6A20VrjX63hgSKwEK9edwdlXx92oVaSM9g50FCYzcF1YITqfdsGOcEqLR+idCdqoPm9YtUJ4BI
-	tpvyQfyNjjH1yEpS/k8XIqqGHeImwaepUvbSAdprPyS5Ze1ewVKKxIcQIyuLNoUPgw=
-X-Received: by 2002:a17:903:15c3:b0:2e6:1917:fd with SMTP id d9443c01a7336-2e87e2bb07amr579615ad.7.1791599507817;
-        Fri, 09 Oct 2026 19:31:47 -0700 (PDT)
-Received: from google.com (163.1.145.34.bc.googleusercontent.com. [34.145.1.163])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ab38b9633fsm7435279a91.6.2026.10.09.19.31.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2026 19:31:46 -0700 (PDT)
-Date: Sat, 10 Oct 2026 02:31:42 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>
-Subject: Re: [PATCH v5 13/18] iommu/vt-d: Preserve PASID table of preserved
- device
-Message-ID: <asmeX0tryM-fR-d_@google.com>
-References: <20260921004834.2601285-1-skhawaja@google.com>
- <20260921004834.2601285-14-skhawaja@google.com>
- <f48258bb-df50-43bb-9141-433601d885a2@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ll9asCl7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1791601177; x=1823137177;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   in-reply-to;
+  bh=Lmzi9xD+MtFDsvia7u2Hw0Yuu44BmeRtKvAQ5SQT7cY=;
+  b=Ll9asCl7J9FeNzw4ss6mw9sOis9ptCgIt/ckN2vz+/t/l+bgNb+E1kza
+   zOiMIoG52kzx62AwzrzpdjyE3vmU3yGM23vV6GKeiulf3wITwF/0tedvR
+   Fif3uCqUeBu4Sgy3R932Djjwxw6zl8ltzPAg5gtTz0KLiDHBFMx7zpjoV
+   BSmLZ7lsQscWUQmF4HX5UD4+kzEb/SZR19kotWv6UxVJr22JLa8rcnioa
+   nF9dWVKdUgOZmKGBuXkZAWFR57R4i9+5vOq+atPFZMjv92/ak4qapfn59
+   mWqQrYYmcYsNNcDHzhiiDGdyz70QPj0EMUDh65771yFlmgg/QIhkN7ft0
+   w==;
+X-CSE-ConnectionGUID: 5QTV7eBaTBeq8jSKH6yoEw==
+X-CSE-MsgGUID: HR2LkEVQTcmO92uNWX49Ug==
+X-IronPort-AV: E=McAfee;i="6800,10657,11930"; a="297255"
+X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
+   d="scan'208";a="297255"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 19:59:36 -0700
+X-CSE-ConnectionGUID: D0WT4WvpRAWa+I2cCRGTnA==
+X-CSE-MsgGUID: 5I+VBCSRRdyWLhvWpsksMw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,149,1787036400"; 
+   d="scan'208";a="541414"
+Received: from ly-workstation.sh.intel.com (HELO ly-workstation) ([10.239.182.64])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2026 19:59:27 -0700
+Date: Sat, 10 Oct 2026 10:59:24 +0800
+From: kernel test robot <yi1.lai@intel.com>
+To: Luigi Rizzo <lrizzo@google.com>
+Cc: oe-lkp@lists.linux.dev, lkp@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	David Hildenbrand <david@kernel.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Willem de Bruijn <willemb@google.com>,
+	Kuniyuki Iwashima <kuniyu@google.com>,
+	Joshua Washington <joshwash@google.com>,
+	Harshitha Ramamurthy <hramamurthy@google.com>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Michael Chan <michael.chan@broadcom.com>,
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, netdev@vger.kernel.org,
+	driver-core@lists.linux.dev, linux-doc@vger.kernel.org,
+	Luigi Rizzo <lrizzo@google.com>, yi1.lai@intel.com
+Subject: Re: [RFC: DMA_PMD 02/22] iommu/dma: add DMA_PMD pool lifecycle and
+ page recycle hook
+Message-ID: <202610101013.706708d0-lkp@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f48258bb-df50-43bb-9141-433601d885a2@linux.intel.com>
+In-Reply-To: <20261003212241.3432303-3-lrizzo@google.com>
 
-On Fri, Oct 09, 2026 at 11:38:57AM +0800, Baolu Lu wrote:
->On 9/21/2026 8:48 AM, Samiullah Khawaja wrote:
->>In scalable mode the PASID table is used to fetch the io page tables.
->>Preserve and restore the PASID table of the preserved devices.
->>
->>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->>---
->>  drivers/iommu/intel/liveupdate.c | 141 +++++++++++++++++++++++++++++--
->>  drivers/iommu/intel/pasid.c      |  10 ++-
->>  drivers/iommu/intel/pasid.h      |   8 ++
->>  include/linux/kho/abi/iommu.h    |  17 ++++
->>  4 files changed, 169 insertions(+), 7 deletions(-)
->
->Should this patch come before patch 12/18, which restores the device’s
->domain attachment?
 
-Agreed. I will move it before the patch that restores the device's
-domain attachment.
->
->>
+Hello,
 
-[snip]
+kernel test robot noticed "WARNING:at_kernel/workqueue.c:#alloc_workqueue_va" on:
 
->>diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->>index e4f24d3f19a6..59cc69383799 100644
->>--- a/drivers/iommu/intel/pasid.c
->>+++ b/drivers/iommu/intel/pasid.c
->>@@ -13,6 +13,7 @@
->>  #include <linux/cpufeature.h>
->>  #include <linux/dmar.h>
->>  #include <linux/iommu.h>
->>+#include <linux/iommu-liveupdate.h>
->>  #include <linux/memory.h>
->>  #include <linux/pci.h>
->>  #include <linux/pci-ats.h>
->>@@ -60,8 +61,13 @@ int intel_pasid_alloc_table(struct device *dev)
->>  	size = max_pasid >> (PASID_PDE_SHIFT - 3);
->>  	order = size ? get_order(size) : 0;
->>-	dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
->>-					1 << (order + PAGE_SHIFT));
->>+
->>+	max_pasid = 1 << (order + PAGE_SHIFT + 3);
->>+	if (dev_iommu_restored_state(dev))
->>+		dir = intel_pasid_restore_table(dev, max_pasid);
->>+	else
->>+		dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
->>+						1 << (order + PAGE_SHIFT));
->
->This restores only the PASID table pages. The PASID table is eventually
->installed in the context entry during probe_device:
->
->        if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
->                ret = intel_pasid_alloc_table(dev);
->                if (ret) {
->                        dev_err(dev, "PASID table allocation failed\n");
->                        goto clear_rbtree;
->                }
->
->                if (!context_copied(iommu, info->bus, info->devfn)) {
->                        ret = intel_pasid_setup_sm_context(dev);
->                        if (ret)
->                                goto free_table;
->                }
->        }
->
->For a restored PASID table, the call to intel_pasid_setup_sm_context()
->should be skipped. Instead, it should check whether the preserved pasid
->table is compatible with the new kernel environment.
+commit: 3311715530328ddf9249e312fa817c89b767fde9 ("[RFC: DMA_PMD 02/22] iommu/dma: add DMA_PMD pool lifecycle and page recycle hook")
+url: https://github.com/intel-lab-lkp/linux/commits/Luigi-Rizzo/iommu-dma-introduce-CONFIG_DMA_PMD-and-metadata-table/20261003-212220
+base: https://git.kernel.org/cgit/linux/kernel/git/akpm/mm.git mm-everything patch link: https://lore.kernel.org/all/20261003212241.3432303-3-lrizzo@google.com/
+patch subject: [RFC: DMA_PMD 02/22] iommu/dma: add DMA_PMD pool lifecycle and page recycle hook
 
-I will skip the setup call here, but the compatibility check is done in
-the intel_pasid_restore_table(). The command line configuration and
-other things can be verified during iommu unit restore as you pointed
-out in the other patch.
->
->>  	if (!dir) {
->>  		kfree(pasid_table);
->>  		return -ENOMEM;
->>diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
+in testcase: boot
 
-[snip]
+config: x86_64-rhel-9.4-rust
+compiler: clang-22
+test machine: qemu-system-x86_64 -enable-kvm -cpu SandyBridge -smp 4 -m 16G
 
->>index 5aaa29da6832..308cd83fd3e3 100644
->>--- a/include/linux/kho/abi/iommu.h
->>+++ b/include/linux/kho/abi/iommu.h
->>@@ -129,6 +129,19 @@ struct iommu_dev_map_ser {
->>  	u64 iommu_phys;
->>  } __packed;
->>+/**
->>+ * struct iommu_device_intel_ser - Intel specific state of serialized device
->>+ * @restored: Whether the device state is restored
->>+ * @pasid_table: Physical address of pasid table
->>+ * @max_pasid: Maximum supported pasid
->>+ */
->>+struct iommu_device_intel_ser {
->>+	u8 restored;
->>+	u8 padding[7];
->>+	u64 pasid_table;
->>+	u64 max_pasid;
->>+} __packed;
->>+
->>  /**
->>   * struct iommu_device_ser - Serialized state of a device
->>   * @hdr: Common object header
->>@@ -136,6 +149,7 @@ struct iommu_dev_map_ser {
->>   * @pci_domain_nr: PCI domain number
->>   * @dma_owner_token: Token to identify the DMA owner of this device
->>   * @domain_iommu_ser: Domain and IOMMU mapping
->>+ * @intel: Intel specific serialization data
->>   */
->>  struct iommu_device_ser {
->>  	struct iommu_hdr_ser hdr;
->>@@ -143,6 +157,9 @@ struct iommu_device_ser {
->>  	u32 pci_domain_nr;
->>  	u64 dma_owner_token;
->>  	struct iommu_dev_map_ser domain_iommu_ser;
->>+	union {
->>+		struct iommu_device_intel_ser intel;
->>+	};
->>  } __packed;
->>  /* There are maximum 256 buses, so maximum 512 context tables */
->
->Thanks,
->baolu
+(please refer to attached dmesg/kmsg for entire log/backtrace)
 
-Thanks,
-Sami
+If you fix the issue in a separate patch/commit (i.e. not just a new version of the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <yi1.lai@intel.com>
+| Closes: https://lore.kernel.org/oe-lkp/202610101013.706708d0-lkp@intel.com
+
+
+[    0.966875][    T1] ------------[ cut here ]------------
+[    0.972831][    T1] workqueue: dma_pmd is using neither WQ_PERCPU or WQ_UNBOUND. Setting WQ_PERCPU.
+[    0.978823][    T1] WARNING: kernel/workqueue.c:5939 at alloc_workqueue_va+0x75a/0x7c0, CPU#3: swapper/0/1
+[    0.983827][    T1] Modules linked in:
+[    0.985221][    T1] CPU: 3 UID: 0 PID: 1 Comm: swapper/0 Not tainted 7.3.0-rc5+ #1 PREEMPT(lazy)
+[    0.988734][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[    0.991819][    T1] RIP: 0010:alloc_workqueue_va (workqueue.c:5938)
+[    0.993522][    T1] Code: 00 08 00 00 e8 40 08 f0 ff e9 cb f9 ff ff 0f 0b e9 cd fe ff ff 0f 0b e9 c6 fe ff ff 48 8d 3d 66 07 18 02 49 8d b6 b8 00 00 00 <67> 48 0f b9 3a 41 81 cc 00 01 00 00 e9 75 f9 ff ff 48 8d 3d 57 07
+All code
+========
+   0:	00 08                	add    %cl,(%rax)
+   2:	00 00                	add    %al,(%rax)
+   4:	e8 40 08 f0 ff       	call   0xfffffffffff00849
+   9:	e9 cb f9 ff ff       	jmp    0xfffffffffffff9d9
+   e:	0f 0b                	ud2
+  10:	e9 cd fe ff ff       	jmp    0xfffffffffffffee2
+  15:	0f 0b                	ud2
+  17:	e9 c6 fe ff ff       	jmp    0xfffffffffffffee2
+  1c:	48 8d 3d 66 07 18 02 	lea    0x2180766(%rip),%rdi        # 0x2180789
+  23:	49 8d b6 b8 00 00 00 	lea    0xb8(%r14),%rsi
+  2a:*	67 48 0f b9 3a       	ud1    (%edx),%rdi		<-- trapping instruction
+  2f:	41 81 cc 00 01 00 00 	or     $0x100,%r12d
+  36:	e9 75 f9 ff ff       	jmp    0xfffffffffffff9b0
+  3b:	48                   	rex.W
+  3c:	8d                   	.byte 0x8d
+  3d:	3d                   	.byte 0x3d
+  3e:	57                   	push   %rdi
+  3f:	07                   	(bad)
+
+Code starting with the faulting instruction ===========================================
+   0:	67 48 0f b9 3a       	ud1    (%edx),%rdi
+   5:	41 81 cc 00 01 00 00 	or     $0x100,%r12d
+   c:	e9 75 f9 ff ff       	jmp    0xfffffffffffff986
+  11:	48                   	rex.W
+  12:	8d                   	.byte 0x8d
+  13:	3d                   	.byte 0x3d
+  14:	57                   	push   %rdi
+  15:	07                   	(bad)
+[    0.999820][    T1] RSP: 0000:ffffcb9d00013a90 EFLAGS: 00010246
+[    1.001542][    T1] RAX: 0000000000000000 RBX: ffff8b7380b46400 RCX: 33ebeeb162fc7d00
+[    1.004550][    T1] RDX: 0000000000000007 RSI: ffff8b7380b464b8 RDI: ffffffff8e484980
+[    1.006818][    T1] RBP: 0000000000000000 R08: 00000000646d705f R09: 000000000000000f
+[    1.008790][    T1] R10: ffff8b7381cec680 R11: ffffffff8ea6ca80 R12: 0000000000000008
+[    1.011630][    T1] R13: ffffffff8da42c29 R14: ffff8b7380b46400 R15: ffffcb9d00013b10
+[    1.013818][    T1] FS:  0000000000000000(0000) GS:ffff8b7721089000(0000) knlGS:0000000000000000
+[    1.016639][    T1] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    1.018818][    T1] CR2: 0000000000000000 CR3: 00000003e4e20000 CR4: 00000000000406f0
+[    1.021819][    T1] Call Trace:
+[    1.022829][    T1]  <TASK>
+[    1.023829][    T1]  ? iommu_dma_forcedac_setup (dma-iommu.c:?)
+[    1.025515][    T1]  alloc_workqueue_noprof (workqueue.c:6049)
+[    1.026818][    T1]  ? blake2s_update (crypto/blake2s.c:131)
+[    1.028234][    T1]  ? intel_cleanup_irq_remapping (irq_remapping.c:?)
+[    1.029818][    T1]  dma_pmd_init (iommu/dma-pmd-pool.c:373)
+[    1.031195][    T1]  do_one_initcall (main.c:1358)
+[    1.032833][    T1]  ? get_random_u32 (char/random.c:396 char/random.c:541)
+[    1.033826][    T1]  ? __get_random_u32_below (char/random.c:555)
+[    1.036270][    T1]  ? alloc_from_new_slab (linux/spinlock.h:425 slub.c:4519)
+[    1.037829][    T1]  ? refill_objects (slub.c:7424)
+[    1.038818][    T1]  ? irqentry_exit (linux/irq-entry-common.h:539)
+[    1.040264][    T1]  ? asm_sysvec_apic_timer_interrupt (x86/include/asm/idtentry.h:674)
+[    1.045448][    T1]  ? parameq (params.c:91 params.c:99)
+[    1.046722][    T1]  ? parameq (linux/fortify-string.h:218 params.c:99)
+[    1.051786][    T1]  ? do_initcall_level (linux/srcutree.h:?)
+[    1.054571][    T1]  ? parse_args (params.c:153)
+[    1.056827][    T1]  do_initcall_level (main.c:1420)
+[    1.058834][    T1]  do_initcalls (main.c:1436)
+[    1.060827][    T1]  kernel_init_freeable (main.c:1671)
+[    1.063560][    T1]  ? rest_init (main.c:?)
+[    1.065827][    T1]  kernel_init (main.c:1561)
+[    1.067786][    T1]  ret_from_fork (x86/kernel/process.c:158)
+[    1.069828][    T1]  ? rest_init (main.c:?)
+[    1.072821][    T1]  ret_from_fork_asm (x86/entry/entry_64.S:245)
+[    1.074826][    T1]  </TASK>
+[    1.076251][    T1] ---[ end trace 0000000000000000 ]---
+
+
+The kernel config and materials to reproduce are available at:
+https://download.01.org/0day-ci/archive/20261010/202610101013.706708d0-lkp@intel.com
+
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
+
