@@ -1,299 +1,271 @@
-Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012007.outbound.protection.outlook.com [52.101.66.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D75DC2367D3
-	for <iommu@lists.linux.dev>; Sun, 11 Oct 2026 09:03:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791709388; cv=none; b=dhTK+V5OtHMk3dEmmQtelqalvF6kXMvxKL4oOt9d+WEi+K3eHjjy+IwQolc6B4+VX+UmvlEdsgjvnqP37kAPpFiqrxRjeLi+rOlOyfgaVK3U74ateH7A4wANsylYl/4htFi1W99pf04mX2s1vCNekRP4y7kc0TR0Lx7Ns8XOVYY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791709388; c=relaxed/simple;
-	bh=yQNy5NpswkjkGeyFIb6D2Av/9wJgprKZuQYo7hdra8g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uRs2sFcZeaaaoSIA80JJPEb36hOoiFoMKbGPjKzdiawGHwNxBpb41DSip6zwn+UOkaAK+XJ/F7i0xq9B+yGub3GFZ+yuzfqTTIm7CvA8WJWaCx7tLNDLyxgzl6XTeDW49WXVvDP8AUqVrnLRcoYXUbms+8v9IH+WyacVD8kJPWo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OuOd4tBx; arc=none smtp.client-ip=74.125.82.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19F8639C00F
+	for <iommu@lists.linux.dev>; Sun, 11 Oct 2026 11:26:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.7
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791718020; cv=fail; b=pYALyOpf1A54e4JSUNRml2BCrqrzM8Jx70g5bU4ioFcTNMxuEjvP7VYfaKpHoVtxd24H8CPHLpk4vgKInkr80Db7WT2MPk3bDf15MQgpPbHyv6mxagpOUsCZMP67fbepBvWdYGcEOq83UA8ghFAxtSiwJBspL9mreI6nm3dLHXk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791718020; c=relaxed/simple;
+	bh=xP4TAvsXiZQofcRNYiiMmmNv+xdQMEpcH81QZ23YqRE=;
+	h=From:Subject:Date:Message-Id:Content-Type:To:Cc:MIME-Version; b=O5ofSjk0rrwC4E+HnDtJN+b/GG88/fGhoDIdVd6sj6pWbh+/grS/SCw3NyUkefhSPoJ0/GIFBAxWQLVL2aX4FVko/bqqyvIcjzEpcUT+DhB+DWtFsYr5EFr0jM1+pGc12ccYcQD/k5rLpmCdV/lFLKB/0pzpaQ0EISC4i93tu88=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=VK9cF9xB; arc=fail smtp.client-ip=52.101.66.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OuOd4tBx"
-Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-150ef97e790so3462c88.1
-        for <iommu@lists.linux.dev>; Sun, 11 Oct 2026 02:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791709386; x=1792314186; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=mnvvNDQ4QSwr11mN2HQofr10EXpSOnRYT1GPrI43QCA=;
-        b=OuOd4tBx9XapZFCUP6YaL2Obokw8cl6OnU33/z/2s1fizBTM6ffm0vQMu0rzivy/rv
-         vWnaNgmSRINOK2UHSAJZmBRkpcER5Ctrzj0tCEFGPD8fFECiBUX+nLY1qZAGTJQOlxcr
-         /sg5tHJf0On8AvnC6Rf/X992lski7SY6GJelFFhd+gzrebQWByboz5iJkEfusmtA2anG
-         503XSbHpjVoSzTOviuop52VEUQmW/cFJLwQ+O5ckZ54kkuKJQ5XXeaiUxVTXtEZ6+LVy
-         EO5IGx+zUBfJWxW8ftVWqpTxHqOL0sTAogfYymD2OXI+GIklDevS2CwFvDnNI5gKz/ri
-         C0CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791709386; x=1792314186;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mnvvNDQ4QSwr11mN2HQofr10EXpSOnRYT1GPrI43QCA=;
-        b=VuJwa7L4bzWBDRH/7Ovs0KbG3uNU77HFYvcN6g5tOZrnu3jct2+QfC/bhDBBrvLUc+
-         qi5Ae5YyseBi0196PufrJRtFzDFqHczf5HdgR1pszmgLiJL7Jrm6feg0jpCSKs8Fjwir
-         +WG7iA4lVdlgO1xut/SKGTuTD4JSR9d+2D2WLb2wy1uk784CbW7a+m9017ebbrZxrDUT
-         nWmGYY769lEbl8RIxuYg8G+HRMgSIJaBJCE1PteGSjKr0hAWTGQkHjmNWmGo5f/yP7Hl
-         OUWLKPOI4YWoIBpP2UfkO6VY9/oON/ffbshkQIclj5ZgIFOTovWvM49Z79ZZ1rvS1cE2
-         qp6A==
-X-Forwarded-Encrypted: i=1; AKwUvByjSaRQu1TXyMtEw1l/NmtoDt2ZdRfVbhSzG8rEh4TqlaLGZ5xK/7EoH/SGh+ON161Iz86ROw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKGhZb01FQvNZmlcmbuqHQQvnA00g/uJlgN/Ewlu6X7aMyaREdl
-	Qas9RRlwfwe/Bjg1V69AMS28aRtrFS+74roD7t2Qi+pMrUUO84KmsvBvGh2A9p7kJA==
-X-Gm-Gg: AYBFou1R3xhrG8g2FEmSEM4AuGkhCMilH+pZDY4FGII0ND6qVAn6xZl0gGMjC/4XNIV
-	VgDLJOm1Cs07x8aBv/A89n9fFbHeVT6F/+45dUm0MvqbhTk0QnlA+qhMHlnLuA9L7yJeoVFgzKr
-	lz+1XGSysxpWEWxDbL+YlcOrJMkK/D+Lx+u+Bij3WJ9tr2LTTwz+JLkibwPZCJiFhvwgKvA/wwZ
-	PIolvQ6WGFrudlnRLk2kTgirFuy/7UtIQou/6Q5GmuXowLrp44QFPRR+zUdjU79ac2UnW1IRFNl
-	Tq6hRH7LF2IuP78tyHvacxWrTC87osiccVXawXCTyrrNkSqOo+riFJSSvfrFryqPqgy1O1jnDp5
-	qHY68DS5wSWeUKUgUvw56jKVL22/FUoIMkvC6sSSzSkTucsNN7W0unTV5g0Hk2qPIkhgfuYdyQ7
-	iMMW6M8JuIP3Nysd/Aif/Eh9Cv4bcEQoUqjl/ds67eCKfy565Owwh8Xvq8Nxf1qmxxbpVEIrgiT
-	0hdirbiKF6jNZBapKJLGcCcmGto
-X-Received: by 2002:a05:7022:103:b0:144:cad0:b472 with SMTP id a92af1059eb24-16ef25fdbdbmr175230c88.9.1791709384349;
-        Sun, 11 Oct 2026 02:03:04 -0700 (PDT)
-Received: from google.com (57.45.87.34.bc.googleusercontent.com. [34.87.45.57])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3537ca1b556sm28915417eec.9.2026.10.11.02.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2026 02:03:02 -0700 (PDT)
-Date: Sun, 11 Oct 2026 09:02:51 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Luigi Rizzo <lrizzo@google.com>
-Cc: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	David Hildenbrand <david@kernel.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Willem de Bruijn <willemb@google.com>,
-	Kuniyuki Iwashima <kuniyu@google.com>,
-	Joshua Washington <joshwash@google.com>,
-	Harshitha Ramamurthy <hramamurthy@google.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Tariq Toukan <tariqt@nvidia.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Michael Chan <michael.chan@broadcom.com>,
-	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev,
-	netdev@vger.kernel.org, linux-mm@kvack.org,
-	driver-core@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
-Message-ID: <astQu7_kbZRnbwng@google.com>
-References: <20261003212241.3432303-1-lrizzo@google.com>
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="VK9cF9xB"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZjODp9PN9n0eFFdj7DWlkFdMC45O798gfEWBRLm6pcMGWhJQ2raBwqUhg1nHuw3BQBf8GOMOzJpmaajECTrLDu+smkm5n1WlppAMBgvxDMBchDv9PfkR49jmbHwQXMptvIOybdeTcaAQaKnLc+2JQz7WT9Tc39toQfiP/eOE1/o6hctpgXMnegibsNNEauSOUvbqOALvkK46Lf8jfCZRoK5LTqXb9No+CS0sg7WuZaZZ0FFOlI78FItuoJGs1aG1kAz/Ho1IlveUCewxUbgx3PnUzmvSgcjR9YL6nvcuw1hmnywsR3e8qqzkkB9bnZ07Q3/OjTHaTZ1HS/KiAQmMow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zB0eG+67WrOD+nu5Yl9dOpljx02bmMiypblsUT25l/o=;
+ b=HN/TA3i8bTWfsg/jX7Rp8IKGcG3/qQc/XUWxwFzQc0KTwTLkNGsoRxjDnaS8pidaDiVtiW45ZRtQvfQS0793FDuT669BlIf4tN8HRWgl3yBmDh/H5QTRjbDE6cGwwDf7xd2pVPzxY1Ao3pyBEeVuh/S79po+2aUkCpU2Ymp58Be+beKN+KsNwZlwtx6DJdWXNVed9fLXll2rIox4c4ALefgyXbpRjqiJtWkLtXHugXg6Gw5XVvUV10tfgGqyY2aD6t6ywu0IXnLwaYfpStxuC+YpYOMrCiFzoW8z0sKlQq8RiRtrEY1ILXEuQZLPNrkAs+iyFwB3kr/TU459xt+AkQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zB0eG+67WrOD+nu5Yl9dOpljx02bmMiypblsUT25l/o=;
+ b=VK9cF9xBW0BY/2QyQGVPtVLwaoptwEU2vQTCNGQDQuDrwfXSTZa0u0QxOGHM1Qui+85EYxpwXfMPp375kyEAiP20/UggJH/EdHhJyckHmiIwDzgRz52LkJzEvOr3qiniLSdwGsfmLtx/9+5HcGnoK6wlJurwIhtX5yQnqDYEWkL1zDjFSN1JDZDLfqi7gXy+omfVo6uuAF01ycpt+1gILPmqxz2BlF1Y8HzKP3ukqcRs5jkliAu5OrA3Y7RzMED30IFvgVtiFbVyrem8kEGlGjvhYanxz6/5t99TS43lWv8nvjfCXCtTXL618KNqMM/IRNoB9bl3nHXeFHLSo7pIXQ==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
+ by VI2PR04MB11171.eurprd04.prod.outlook.com (2603:10a6:800:29a::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.20; Sun, 11 Oct
+ 2026 11:26:54 +0000
+Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
+ ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0496.019; Sun, 11 Oct 2026
+ 11:26:53 +0000
+From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Subject: [PATCH RFC v6 0/5] iommu/arm-smmu-v3: Support shared Stream IDs
+Date: Sun, 11 Oct 2026 19:31:24 +0800
+Message-Id: <20261011-smmu-shared-sid-v6-0-cb76b89dc612@nxp.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAIxzy2oC/3WNywrCMBREf0Xu2kjSJmnrShD8ALfiIia3NkIfJ
+ G2olP67bQTd6HKGOWcm8OgsethvJnAYrLdtswS53YCuVHNHYs2SIaGJpAWTxNf1QHylHBrirSH
+ I87yUmhteUliozmFpx2i8wPl0hOu79MPtgbpfXeussr5v3TP+BhbHfy8CI5QIlqU5F5QrxEMzd
+ jvd1tEdxIdmlP6gxUIzWShRaJkxk37peZ5f1NHtVgEBAAA=
+X-Change-ID: 20260916-smmu-shared-sid-e488f6c4d4f0
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Jean-Philippe Brucker <jpb@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
+ Jason Gunthorpe <jgg@ziepe.ca>, Thierry Reding <thierry.reding@kernel.org>, 
+ Krishna Reddy <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
+ Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, 
+ Peng Fan <peng.fan@nxp.com>
+X-Mailer: b4 0.16-dev-7bc12
+X-ClientProxiedBy: MA5PR01CA0117.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:1a7::14) To AM8PR04MB7874.eurprd04.prod.outlook.com
+ (2603:10a6:20b:24d::9)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|VI2PR04MB11171:EE_
+X-MS-Office365-Filtering-Correlation-Id: 837146a8-7ac8-4f99-b281-08df278a8cf2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|19092799006|366016|1800799024|23010399003|11063799006|921020|56012099006|18002099003|261009223027099003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	Jbg9/PG+kM+q/Z+FH5FHbOVSYfKm0AnSMumu84EF0O7xMYp8l2Vr5sbqXiA+Mpfw/8I3fd/toPC2I61MFOj6glBBTthTjBu5Y4oKETTu0xmg2+BtvzhcdkpSri6BxgF0m88mDK9KkFoaeXT8NKPV3CUI1j4UT4V3eRUcAl7UXMjS84bgWYUkd27ULNFu2zT9xDCCZwgxiVF0J5M3KFFIuOm2AkEx9pisWLcyRDcep2ehE5lJdTn+qOPgDimgMfuOonvdQlWhL5p+cH+UpmoOMBJYTBZ+O+znhXu47Pcp4h5lvBXCSUFVNltqJbc4M4s1K8Aq3BwXyZSWcpqEH83UZriq86VX2K84ItNhK50VzwD+7VPMznO98IlHvbS5kKNU9ha0cQXOR1ns6VxAkleEkkBthyooN4O+7OMntsRh8DdFwURbo4pn5yu5U1ccLjO8+c+Al+/XuXFFzzti/H+6mG/QWzLGe+OhCeVlOygc0kFhN/13tJvAlhp6UYo4jOEtewGVZTxV4V4jMwpf7UuRuLjZMSP6zKON94qc0Zmjv2GiZHwNpjyJOv2QrnmivQAt4CKJY6/sn9GyXWb7URv6nWzHgPL9vWjOSppyOVU9863+6xoL6vEdJs9NIW8bjTvYBXNs57Z7adsMKTSc0I8j2ydjSZE7EB3GxiE1H8R9asA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(19092799006)(366016)(1800799024)(23010399003)(11063799006)(921020)(56012099006)(18002099003)(261009223027099003)(10067099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?OE9nbkprZWR3Y3RjRDJnQU8xVVd1VXhSTnM1K0VWdlgvTUZlY3NidVk4eGZy?=
+ =?utf-8?B?U2ZkcmRUZzVYS1lUYUU3c01NNFQwMzNRRE5uNm9oMmxWTDJkc3k1S292U3RC?=
+ =?utf-8?B?QnZKNmtpaHU3dnYzdWFkTHpmazU3OHdXVVMweWtOR1dBMDY1eHZmaGE3OVpu?=
+ =?utf-8?B?UktPbDRaSzBIdURURXpabTBOajU4ZXdEM3lqOWo4UnhGdktUQU9sZlkvSThK?=
+ =?utf-8?B?NU9wZkVKY3pSTnpDWmR5TVkySVJhUURjYnlyQVhFK3YvYVYzOHhZSy9Bem1O?=
+ =?utf-8?B?MTJneXg2NDRMd004QS96Nzh5NE00NkVFaGhjU29LWHZKMjFRdmtNVzBFbnA0?=
+ =?utf-8?B?QjQ4cHMxSy9IRmFJdXNiMnlSWmoyVjAvSGNLL1VMcWhOTWdLZVBMemIrd2dH?=
+ =?utf-8?B?ZVp6MlRSelY1S1pncGwrblJLczZVWkdFMzkvMXZuRUV1ZVVBa0Y4cnBIMDY4?=
+ =?utf-8?B?ektqTURQUTdYSzRZVzFST2Y4cHFKeE52aXF6Q0RyL0ZPTWVmZzYzSjd5aTN2?=
+ =?utf-8?B?bWI5QnNVVzlZMjhWaXV1RVIwYkUxM25UbjUzanl5bGp3ZnI3cURkd21qb29J?=
+ =?utf-8?B?aWFWUENXYzhQVzVYMXlDMnl5Q0QyK3ZiUTlpWS9zZ3dBQnpMVUJaNHhOREJV?=
+ =?utf-8?B?RnZMeXM5Y1UybUFHSks1bFRuK1F4bGVkWmdRS2M3cHFObzVTL2k5UUlhMW45?=
+ =?utf-8?B?V1Y0WjE0TDdISmtWemlhTVl4NVZGVTNGOXVSOEthUXkwUmQzeXZSK1RLSCt0?=
+ =?utf-8?B?ZGlTVjV6ZVhFSVl3VElSRG1CYnoyZjNSaTIrMzA3b1hiaGdqeVFhald3dE94?=
+ =?utf-8?B?MzlrRG1SZHlvSGtjNmQ0SzdqT2FKYnZDVDBOVkdtRWhKc2Y0d1hmUDFCU1h2?=
+ =?utf-8?B?UXRZSHczM3VUajNzYWE3a3R1UVFIbTM2Zk8yNWt2WmtDTnNBQzFZK2dBaWhF?=
+ =?utf-8?B?ekF3eW1Zc1Vxb2MrNldrR3NZbEpmMFIwZFBQS3RsRmdoSHhrdE15NmNESmY2?=
+ =?utf-8?B?QkVId3paam5aU08zUWEwSWhNVzZDWnVQeUx4WldhWWhFeERhMndqM1RlQnpT?=
+ =?utf-8?B?OERrZFlKN1l5UUR3TkUxV1ZWTCswZU9ISFFITTI4c2drUDI3YjVuTkw5MmpF?=
+ =?utf-8?B?ZlZzdVYxMy9tYWxkRVU3VDF4YnNBcUhKM09BZ3RoblNTTHRWbG5QY2JqVnov?=
+ =?utf-8?B?b1dFbDVhOG80T2o4T2dRV3FmaUtCdW5tTTEyREEzOGNuNFc1eUxHZm9XKzdP?=
+ =?utf-8?B?aC9XT054d0VOallya3FDVG9VanpFcGRCc1ZJQTRqcEtGeFMvK05nVStqWVdL?=
+ =?utf-8?B?T2pmaGhhdEYwZ3kzcEx4Uks2b1Axb1NMV1RKY0tQWWRwSWt1cUwyU1BZbkFE?=
+ =?utf-8?B?bjQzaGdSRFhZYzlWdnJlNU0rMVR5dm51V1l0TkhOb3FUNjR5dG9saksyNmtj?=
+ =?utf-8?B?TGlDMG1NM0hOdFYwbkZIMHFBNWNpRWhHSERzUXRFMjZiZnU2Q1FibC9jOFZR?=
+ =?utf-8?B?b09MYkpaUE9aQ1U1R0pPcE9SWHROWi9Mc3l5dlpPVHdDUUJLL2JKcEFnUTlj?=
+ =?utf-8?B?OWZCMVJXaG1ZKzdkVEJLdmlmVnp0dTg4YjlpR0lpVUdzYmpablBaWVFwQXd5?=
+ =?utf-8?B?TWhrQkRaandUa1lrbkZHM1M4VFRKMmtHSnBlZGRJVlZIVHVkVXdFT3N0K3JP?=
+ =?utf-8?B?UFF1T2ErTFBtWkVVcFNGdFNrNlFPQlV5bzdETkF6cGJwY2VEZVUxMTR5NmRs?=
+ =?utf-8?B?Vi9jUUc1S3RNeHliUjNpMlppYmlURndhM2p3SUFNa2tZMWYzbFdMcU1jaG5n?=
+ =?utf-8?B?dWNsZWk0cFR5R2lvTElid2hnVWdVcEFubVcxUlpTN0VCc0VvRFlNREVWZnU2?=
+ =?utf-8?B?RVdUVW5xRUxUUC9Oa3EzcXF3YXZWOUZrR0Q1NFhzamJITFNLMVN3VEZVRWdM?=
+ =?utf-8?B?aDB1REs5d1NHb0VRSC92OUo1SHhOcUN4a1ZTVHcxZy9pZEJCMVU5eEtxL3ho?=
+ =?utf-8?B?TnhiTzYwSHV3MTFaa0JRTHg4Z01BeW14Q3RXcVlJanBYVHpja29SY3hOVkFG?=
+ =?utf-8?B?dnBNNnhmeiswS3RnR0pCYU1hMHFJbW9ISW9ZT2RUaWhsaDViRktOS0JsNHFJ?=
+ =?utf-8?B?djJMZUYwRmlIS3VMOUN1WVhJbWRFZ0poNkpNME5DUTY2U1NlRXl4bFBFZGtl?=
+ =?utf-8?B?Szc2VUo0UmdkTjNsRzQ5cW5EcVBWOVNxSVd6QWY4RTJJRUs4aVpweXlqUjUv?=
+ =?utf-8?B?MGVqbFA2Y2d3Q2RDRWN1Zm16VFdaSnRWMVhRakhrWlVMVkt4SXgwNmF4bms1?=
+ =?utf-8?B?RTQwMTBSVFRleWJzdk5MTWlPSkEyYyt4RFgyWDVlenJROWpKR1p5VExlWjhG?=
+ =?utf-8?Q?v8nXhoF45eUo1lJMRoouN2MtkRlyByFHXHAVh?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 837146a8-7ac8-4f99-b281-08df278a8cf2
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2026 11:26:53.8336
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hP4oILOkRdN2E7fhB3EtRwuwGYBvFVwOeoagOi8DlzXpCwlD6O1Y6WwiqruyH/p9hF4NM5wV+SarRgh5FYovur2nd5Kf6y5DN0Omvz8WJbFrJ3Mo126q1np6GacQ16IV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI2PR04MB11171
 
-On Sat, Oct 03, 2026 at 09:22:19PM +0000, Luigi Rizzo wrote:
+Changes since RFC v5:
+- Rebased on next-20261009 and drop Nicolin's patch
+  ("iommu/arm-smmu-v3: Don't rb_erase() a never-inserted stream node") which
+  was already in tree.
+- Actively deduplicate Stream IDs during insertion instead of
+  storing duplicate pointers. num_streams now reflects the unique
+  count, eliminating pointer-equality dedup loops from all cleanup
+  paths (Robin).
+- Extracted arm_smmu_find_stream() into patch 2 instead of patch 3
+  to clean up the find-before-allocate code (Nicolin).
+- Extracted arm_smmu_free_master_streams() helper shared between
+  error rollback and arm_smmu_remove_master() (Nicolin).
+- Fixed remove_master to reassign stream->master when the current
+  owner departs, preventing dangling pointer (Nicolin).
+- Fixed remove_master to use a for loop iterating master->streams[]
+  with per-stream shared vs non-shared handling (Nicolin).
+- Reset ste_installed on ABORT so domain transitions (e.g. DMA ->
+  VFIO) correctly re-write the STE instead of freezing it.
+- Clear stall_enabled on the first master retroactively when
+  sharing is detected in arm_smmu_insert_master(), not just on
+  subsequent masters at probe time.  Prevents bus lockup when
+  the first master probes before sharing is known.
+- Link to v5: https://lore.kernel.org/linux-iommu/20261006-smmu-shared-sid-v5-0-169a59c671d3@nxp.com/
 
-Hi Luigi,
+Changes since RFC v4:
+- Include Nicolin's patch ("iommu/arm-smmu-v3: Don't rb_erase() a
+  never-inserted stream node") to avoid conflicts in future.
+  so the standalone patch 1 from v4 is dropped.
+- Split old patch 2 (shared SID support) into two:
+  - New patch 2: Convert streams from embedded array to individually
+    allocated objects (struct arm_smmu_stream ** instead of *).
+  - New patch 3: Move stream allocation inside the mutex and look up
+    existing entries first (find-before-allocate), avoiding unnecessary
+    allocation when the SID already exists.  Pure refactor, no
+    functional change.
+  - New patch 4: Add shared-SID logic on top of the refactored code.
+- Duplicate-SID cleanup (bridged PCI) now uses pointer-equality dedup
+  instead of RB_EMPTY_NODE checks, since streams are no longer
+  pre-allocated with cleared nodes.
+- Link to v4: https://lore.kernel.org/all/20261001-smmu-shared-sid-ver3-v4-0-06b34fb2e691@nxp.com/
 
-> Here is a subsystem called DMA_PMD on which I would like feedback on
-> architecture, possible enhancements, or kernel components that could be
-> reused to avoid duplication.
-> 
+Changes since RFC v3:
+- Added a standalone bugfix for duplicate-SID rb_erase (new patch 1).
+- Stream structures are now shared directly between masters
+  instead of duplicating them (Nicolin).  No ref_count field;
+  sharing is detected via list_empty(&stream->shared_masters).
+- On owner removal, use rb_replace_node() + list_splice_init()
+  to transfer the RB tree entry and shared_masters list to the
+  next sharer, avoiding use-after-free.
+- INIT_LIST_HEAD(&stream->shared_masters) moved after sort() to
+  avoid list pointer corruption from bitwise memory swaps.
+- Both sides of the sharing pair are checked for num_streams == 1.
+- Link to v3: https://lore.kernel.org/all/20260930-smmu-shared-sid-v3-0-8abe6c1b4c20@nxp.com/
 
-Thanks for posting this series, it solves more than one problems.
-I went through the whole series and the following is my take on the
-overall design (I might wait before replying to individual patches
-hence this might be verbose).
+Changes since RFC v2:
+- Dropped the RB tree to XArray conversion patch (Nicolin).
+  The RB tree is retained as-is; a new arm_smmu_find_stream()
+  helper provides stream-level lookup.
+- No per-master shared_sid bool; replaced by
+  list_empty(&master->shared_masters_elm) (Nicolin).
+- Only SID-sharing for single SID device
+- Follow Nicolin's suggestion https://lore.kernel.org/linux-iommu/arG6hmng3NddGEHm@nvidia.com/
+- Link to v2: https://lore.kernel.org/linux-iommu/20260921-smmu-shared-sid-v2-0-4b656ce68178@nxp.com/
 
-> I think it can be extremely useful for those affected by the HW/SW overhead
-> of IOMMU (especially IOTLB thrashing, see [1]), or confidential computing,
-> or preemptable VMs.
-> 
-> The (not too exaggerated) pitch line is
-> 
-> DMA_PMD has the performance of identity, guarantees that only IO buffers
-> can ever have active IOMMU or IOTLB mappings, removes the bounce buffer
-> overhead in confidential computing and preemptable VMs, and integrates
-> smoothly with existing kernel APIs.
-> 
-> === ARCHITECTURE
-> 
-> DMA_PMD was initially designed to address IOTLB thrashing (details in [1]),
-> but turned out to also resolve nicely the strict IOMMU overhead, and avoid
-> the bounce buffer overhead in preemptible VMs and Confidential Computing.
-> 
+Changes since RFC v1:
+- Revised cover letter to drop eDMA channel example (Jason).
 
-I'm thinking if we can re-work the dma pools here to fit the needs of
-DMA PMD. Apart from that my main concern is the isolation model. 
-As implemented:
+Some SoCs have a limited number of IOMMU Stream IDs (SIDs) and
+hardware that inherently shares them. For example, the NXP i.MX95
+only has 64 SIDs, only 6 bits for SID in the system chip bus.
+However there are many device IPs, such as SDHC, PCIE, NETC, GPU,
+NPU, Display, VPU, ISP, ISI, JPEG, SATA, DMA and etc. Each Kind IP has
+mutilple instances inside the SoC. So I introudce this patchset to
+support shared SID.
 
-- dma_unmap_*() of a pooled buffer is a no-op, i.e. unmap doesn't happen
-  till the page is retired.
-- the whole 2M page is mapped IOMMU_READ | IOMMU_WRITE, regardless of
-  the direction of the buffer that triggered the mapping
-- the mapping stays in every domain that ever mapped any block of the
-  page until the page is retired, which under steady traffic may be
-  never
-- the TX pools are per-CPU and shared by all sockets and devices.
+The current ARM SMMUv3 driver rejects this with:
+  "Aliasing StreamID unsupported, expect DMA to be broken"
 
-So, a NIC ends up with long-lived RW access to other sockets' data in
-the same 2M pages, including loopback payloads and kTLS SW plaintext
-(both come from sk_page_frag), and a DMA after unmap no longer faults
-but silently hits whoever owns the block next. For pooled memory this
-is identity-like isolation and weaker than DMA-FQ, whose exposure is
-bounded by the flush timeout. Thus, I'm not fully sure of the claim:
-"security guarantees comparable to strict IOMMU". 
+I took comments in [1] and implement this patchset and only want to
+support a very simple case that multiple platform devices share one SID.
 
-It also isn't opt-in: dma_is_pmd_phys() is checked for every device in
-iommu_dma_map_phys(), thus, any device that is handed a pooled page gets
-a window, including in domains where the admin asked for strict mode.
-I think DMA_PMD has to be an explicit per-group default-domain policy,
-like DMA-FQ: selectable through iommu_groups/N/type and/or a boot
-option, off by default, decided when the default domain is set up and
-recorded in the cookie and the map path can check it before doing any
-pool lookup.
+Patch 1 converts the per-master streams array from an embedded array
+of structs to an array of individually allocated pointers.  This
+prepares for subsequent patches where multiple masters will point
+to the same stream object.
 
-That is also the natural place to refuse untrusted devices. Today the
-window path runs after the swiotlb decision in iommu_dma_map_phys(),
-which for untrusted devices only bounces buffers that aren't
-granule-aligned, so a page-aligned pooled block gives an
-external-facing device a permanent RW 2M window over unrelated data.
-iommu_get_default_domain_type() already forces strict DMA for such groups
-DMA_PMD must not undo that.
+Patch 2 moves stream allocation from upfront into the mutex-protected
+loop in arm_smmu_insert_master(), using a find-before-allocate pattern:
+first look up whether the SID already exists in the RB tree, only
+allocate and insert a new stream when no existing entry is found.
+This is a pure refactor with no functional change.
 
-I'm thinking If pooled memory is going to be shared across opt-in
-devices anyway, would an explicit shared domain for opted-in devices
-be cleaner?
+Patch 3 adds shared-SID tracking so that when a second single-SID
+master registers an already-owned SID, it joins the existing
+stream rather than being rejected.  The stream structure is shared
+directly between masters via a linked list.  On removal, a shared
+master detaches from the list; the stream and its RB tree entry
+are kept alive until the last master is removed.
 
-It removes the per-domain machinery, but those devices then lose 
-isolation from each other for all DMA, and the core would need to 
-support a default domain shared across groups
+Patch 4 places devices that share a SID into the same IOMMU
+group, ensuring they share a single IOMMU domain (required
+because one STE can only point to one cd_table).
 
-Additionally, we should handle edge cases where the dma unmap (or it's
-TLB flush) fails for some reason but the page is freed to buddy..
+Patch 5 wires up STE write ordering (first master writes, last
+master tears down) and gates features that require unambiguous
+SID-to-device mapping: SVA, IOPF/stall, and vSMMU nesting are
+disabled for shared-SID masters.
 
-> It works by combining several known techniques:
-> 
-> - transparently feed allocators of device memory (skb_page_frag_refill(),
->   dma_alloc_attrs(), pagepool, ...) with DMA_PMD pages, i.e. physically
->   contiguous PMD_SIZE (2MB) pages mapped via PDE_SIZE IOMMU entries
-> 
-> - heavy recycling of DMA_PMD pages (like pagepool) and lazy IOMMU unmapping
->   (like DMA-FQ), BUT:
-> 
-> - like strict IOMMU (DMA), safely release memory back to the kernel only
->   after destroying all of its IOMMU mappings and a synchronous IOTLB flush
-> 
+[1] https://lore.kernel.org/linux-iommu/DU0PR04MB94172CB3F138AD39E9B6DEEF887F9@DU0PR04MB9417.eurprd04.prod.outlook.com/
 
-That's one of the strict-mode properties that this series keeps and two
-things undermine it today, dma_pmd_unmap_all() ignores the iommu_unmap()
-retval after it has already cleared the per-domain bits (for fellow 
-reviewers this is in patch 7). And window PTEs outlive driver unbind and
-DMA ownership trasnfer because  dma_pmd_domain_release() only runs when
-the cookie is freed, if a device is handed back from VFIO, it'll regain
-access to live host pages and patch 13 additionally gives up page_pool's
-destroy unmap of in-flight pafes.. The mappings need to go when the last
-DMA API user of the domain goes away not only at domain free..
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+Peng Fan (5):
+      iommu/arm-smmu-v3: Allocate streams individually
+      iommu/arm-smmu-v3: Delay stream allocation to inside the mutex
+      iommu/arm-smmu-v3: Support shared SIDs in insert/remove_master
+      iommu/arm-smmu-v3: Group aliasing devices into the same IOMMU group
+      iommu/arm-smmu-v3: Wire up shared-SID STE ordering and feature gating
 
-> - on allocation, DMA_PMD pages can be configured to be pinned in the host
->   (hence suitable for preemptible VMs) and/or unencrypted (hence suitable
->   for Confidential Computing), removing the need for bounce buffers
-> 
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |   4 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |   3 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 254 ++++++++++++++-------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |   5 +-
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     |   2 +-
+ 5 files changed, 185 insertions(+), 83 deletions(-)
+---
+base-commit: 581e50f62f59cba2e33c72ca119d3c3f797aec9d
+change-id: 20260916-smmu-shared-sid-e488f6c4d4f0
 
-In CoCo guests, dma_pmd.decrypt is swtiched on silently and applied to
-every pool. inclusing the per-CPU skb_page_frag_refill pools that serve
-every socket. Enabling tx_enable_dma_pmd thenmakes loopback payloads and
-kTLS plaintext host readable & writable before encyrption. Similarly
-decrypted Rx pages lose the private copythat swiotlb had making it
-possible for the host to change packets after the stack has looked at
-them.. Can we make it much more explicit to the Guest/ Guest user that
-they're opting in to sharing their data with host for performance?
+Best regards,
+--  
+Peng Fan <peng.fan@nxp.com>
 
-> - there are global and per-device optin /sys/device/.../dma_pmd_*
->   and /proc/sys/net/core/tx_enable_dma_pmd
-> 
-
-Bools with sysfs files on every device having a dma_mask doesn't seem
-too nice.. the iommu policy belongs to the group's default domain..
-
-> NIC drivers can typically use dma_pmd with no modifications for rings,
-> tx buffers, rx buffers (if they use pagepool), and rx headers. For tx
-> headers, almost all drivers need changes (see later patches in the series)
-> to implement cheap bounce buffers and avoid individual 4K mappings.
-> 
-> The series has the following main components:
-> 
-> - a sparse array (similar to pageblock_flags) to quickly attach metadata
->   to a 2MB page without fiddling with the struct page. Cost is 128B per 2MB
->   page used as an IO buffer, totally negligible.
-> 
-
-IIUC, the entries are 256B and the array is sized from theoretical
-phys_addr space rather that from memory: up to 8G of KVA on x86 4-level,
-32G on arm64 with 48-bit PA and 512G 52-bit PA, where the chunk bitmap no
-longer fits in kmalloc, failing the init. Init also populates metadata
-for the entire RAM.. it'd be nice to size it from real memory ranges or
-use an xarray or per-section array with lazy population..
-
-> - dma_pmd_pool, a replacement for alloc_pages() that can be instantiated
->   per-CPU or per receive queue. It handles the split of PMD_SIZE pages
->   into order-N blocks, handles dma_map and unmap, and aggressively recycles
->   entries. It is used to feed skb_page_frag_refill(), pagepool, and
->   receive buffers for drivers that do not use pagepool.
->   See [2] for "WHY NOT PAGEPOOL FOR TX AND EVERYTHING"
-> 
-
-I am seeing that the recycles page blocks bypass KASAN/KMSAN poisoning,
-page owner, alloc tagging and bad_page checks.. which might make a UAF
-go undetected. We might have to use it or a similar technique to ensure
-the UAF of a polled buffer remains safe in such a case.. IIRC,
-kasan_mempool_(un)poison_pages are used for such cache (I'd let the mm
-folks chime in on this). 
-
-> - dma_pmd_arena, is another allocator backed by DMA_PMD pages and
->   is used exclusively as the backend for dma_alloc_attrs().
->   Used for longer-lived allocations (descriptor/completion rings,
->   rx and tx header buffers)
-> 
-> - glue code to hook DMA_PMD into pagepool [2], skb_page_frag_refill(),
->   dma_alloc_attrs(), dma_map/unmap...
-> 
-
-On the IOMMU side there are also a few structural limits:
-
-- the domain registry has BITS_PER_LONG entries, and a decline is
-  cached in the cookie forever. Default domains are per IOMMU group,
-  often one per function (VFs included) on ACS-capable machines, and TX
-  pages reach every NIC, so a limit of 64 is reachable, and which 
-  devices get to pool would depend on probe order.
-- the per-domain window is a multi-TB alloc_iova() carved on the first
-  map, under a global IRQ-off lock, sized from iomem_resource.end and
-  from whichever device in the group maps firstF
-- I'm wondering it iova - base == PA (plus a fixed 16G offset), is safe? 
-  As devices learn host physical addresses.
-
-Can we consider giving each PMD page a dense slot number when it
-enters a pool, and using iova = base + slot * 2M? That keeps the O(1)
-map and the range-check unmap, shrinks the window to cap * 2M, works
-with narrower masks and stops exposing PAs, and per-domain tracking of
-mapped slots would lift the 64-domain limit as well. The window could
-then be reserved in iommu_dma_init_domain() through a dma-iommu helper,
-instead of handing the iova_domain to dma-pmd-map.c.
-
-Thanks,
-Praan
