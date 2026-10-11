@@ -1,56 +1,81 @@
-Received: from mail-10630.protonmail.ch (mail-10630.protonmail.ch [79.135.106.30])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65F9B33260B
-	for <iommu@lists.linux.dev>; Sun, 11 Oct 2026 18:22:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.30
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A3F6469829;
+	Sun, 11 Oct 2026 22:34:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791742977; cv=none; b=i5hxTh5i24St2RccZ2Y3P+Tmw0bSmaGUkdInFfVmZbmAL+RA6gBqXo1Xd63Nm1es6LCKcLHkTO9HG+ioJHiawYxuLMQgXgQshnuzexo52DEO7gWGTCGOHHNYRTNNLJaIxR82bzicwyGe8cjDheA0YG1l2l7KsSu+996dYUopJH4=
+	t=1791758046; cv=none; b=UjaxECL1NJeICM7g42tsV1RIkgIJQA9e9L/K1x5CWHwcGbkDqjamQ9TM+Zo9Fb/5GTki7RbVTMBjM418Okz55+yXaMooXn0kK+yKOlEp4TmtdLVY8c7K7Yw//0R3ScOWcwm2+Qq6E/QJtBJPh/GINUUG35Y0xpWtNohMPuvQhPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791742977; c=relaxed/simple;
-	bh=XPWwyt3/uXVYcgzd8Enwfe/DGoKEFenuEHyqp8gDCJM=;
-	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=GNgUYpbveEJiIBgRicj/2TX6jQARjyqsdZ+fyvPhFPwfReT8Thxdn7suQsXtS5X4L+f6v5rrmk0kx8q1xtFBCLIb9ZVdagygy7hiKhAA5blE+RGLFYi6mmKoqy3X8eOjffYEsjHlvgF6cm92Nrvhe8ptAjLYPmptt0XGEb/AiJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=I1OdSDY3; arc=none smtp.client-ip=79.135.106.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
+	s=arc-20240116; t=1791758046; c=relaxed/simple;
+	bh=+dKFlC8W3vOE1tGAfuaZ2p2Uv1/GeOYR8teClFiYmEs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=W/eEyEmvauzMaxRUTjX6hZCjcgYdt5zfndwrcAiJ4oTogA4F+bwa8QZkw6Jnb9/f6H5b25vEyK1v4pg4WgQzZ3TfL+Vkpk+cFTpNiKKJXnL/r6t5MJpsf3qlaAgXt9rtJ4BtwqUS2eL7OdCCQrP3r0HmNtSugxT1sfpQG97N6ts=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lSUIsz0M; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="I1OdSDY3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=protonmail2; t=1791742964; x=1792002164;
-	bh=XPWwyt3/uXVYcgzd8Enwfe/DGoKEFenuEHyqp8gDCJM=;
-	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
-	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=I1OdSDY3q0LkROmMghCduFk5TXBGpYZSeWAZfaVi+UsuztOWLpCk6Alwrh9DBqvQ9
-	 9PrC0OCe+4SGTHa/uSevW260Azc+Ragw4AbHti07P9vcIrK6B2ei28ifSphdeuUvIQ
-	 e+EIasH/QSck5vuSOJgPlkgvNQfIMCwuPK4J/3PJ5Y3B8pG2AfMBrrGXf/pbP6djI+
-	 p8w6HOsvNA/O4DCDt+QA//91rhZeL/wyM1UIajqQtDbm0lJwplbNtkOblgj5cZIF0c
-	 +BDyeCFhXr2S/7UB2suVkACh5Bj+5YJ+dsLGm5rccy4rL2CP394aeKCfohSEPSA6ig
-	 KqNUs6+QJ0JRQ==
-Date: Sun, 11 Oct 2026 18:22:39 +0000
-To: x@2005.tr
-From: Lorenzo Delgado <lnsdev@proton.me>
-Cc: Lorenzo Delgado <lnsdev@proton.me>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, Miguel Ojeda <ojeda@kernel.org>, Daniel Almeida <daniel.almeida@collabora.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, =?utf-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>, Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, Robin Murphy <robin.murphy@arm.com>, driver-core@lists.linux.dev, rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v3] rust: io: use newtype for PhysAddr
-Message-ID: <20261011182233.3234121-1-lnsdev@proton.me>
-Feedback-ID: 53083996:user:proton
-X-Pm-Message-ID: be7ab1927f2d72ecea22ce26cc259d326bf9dd73
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lSUIsz0M"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 390861F0089B;
+	Sun, 11 Oct 2026 22:34:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791758045;
+	bh=9ApxRjIgXaJO/vkqe1GeUvOEuj9GXvGm5LSP/tDliAY=;
+	h=From:To:Cc:Subject:Date;
+	b=lSUIsz0MKqNONShNq08Z1d1HB9gXmXJwmS3aYNKF3f8zkxiLuSUsS0/yyxCOHl3fH
+	 E7GdaVUF7chCAftRh5y4PfNo1fUDg1tpS/Ws7Mx35I1h3vyJccBNg/zWmKCkoRKf9f
+	 sMI4neydK//Lns5BRlTdvDz/nJsmfBoiABUV+eRc2QAan286HgYj3sy/K18uu8N+lz
+	 zo4OUIUdl4gDXuVRuE5u5NrtGMxdv8PdlY0hspTC2TLsAEsRUlF3rloMDI+Ik4raPp
+	 Jem8O44pyiLZes3emkj7795d3FfqePeOY6K04kxreKuMtYPBldUu3xRgvrXegl6Qf4
+	 7vE2sYJgSMgmA==
+From: Sasha Levin <sashal@kernel.org>
+To: Barry Song <baohua@kernel.org>,
+	Qinxin Xia <xiaqinxin@huawei.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Sasha Levin <sashal@kernel.org>,
+	stable@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] tools/dma: fix building with O=
+Date: Sun, 11 Oct 2026 18:33:31 -0400
+Message-ID: <20261011223358.2327625-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Hi,
+With O= set, "all" depends on $(OUTPUT)dma_map_benchmark, but the only
+rule builds dma_map_benchmark in the source directory, and built-in
+rules are disabled:
 
-Are you still planning a v4? v3 no longer applies to driver-core-next
-since ResourceSize became a newtype, and there's a new PhysAddr user in
-drivers/gpu/drm/tyr/vm.rs.
+  make: *** No rule to make target '<O>/dma_map_benchmark', needed by 'all'.  Stop.
 
-If not, I'm happy to pick it up and credit your v3.
+Build $(OUTPUT)dma_map_benchmark.
 
-Thanks,
-Lorenzo
+Fixes: f74ee32963f1b ("tools/dma: move dma_map_benchmark from selftests to tools/dma")
+Cc: stable@vger.kernel.org
+Assisted-by: LLM
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/dma/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/dma/Makefile b/tools/dma/Makefile
+index e4abf37bf020c..0c239a6b9eae5 100644
+--- a/tools/dma/Makefile
++++ b/tools/dma/Makefile
+@@ -38,8 +38,8 @@ prepare: $(OUTPUT)include/linux/map_benchmark.h
+ FORCE:
+ 
+ DMA_MAP_BENCHMARK = dma_map_benchmark
+-$(DMA_MAP_BENCHMARK): prepare FORCE
+-	$(CC) $(CFLAGS) $(DMA_MAP_BENCHMARK).c -o $(DMA_MAP_BENCHMARK)
++$(OUTPUT)$(DMA_MAP_BENCHMARK): prepare FORCE
++	$(CC) $(CFLAGS) $(DMA_MAP_BENCHMARK).c -o $@
+ 
+ clean:
+ 	rm -f $(ALL_PROGRAMS)
+-- 
+2.53.0
 
