@@ -1,183 +1,130 @@
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 669F7346777
-	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 13:28:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57F33EC81F;
+	Mon, 12 Oct 2026 13:51:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791811697; cv=none; b=lkjX9Voezfs4sPn3O1tFBWKnsyljuOKFRGh9bllMCbxApu6778UiZjsYIyJ4voDIENhSCLM+sCnrd/QpqMywSfAB8ikJdsVNfPutIEMCphbvFSWISSJYyP1hdrBhVmEQKKrvkZm37Lq1ZFMush4QHSOIIAMgK3Zt4AUniE5gWuI=
+	t=1791813109; cv=none; b=ApEOCBpQYVbvfu9ZYLl9EeoScJmlI0q5ETom9Pr0J3Lb5frIaLKQer/e9c4UghAxET8Gls2Wm8JW9kMMjytcsTsa3Dq1WRsMEXrYhY0h67pGkIzo6Dh1QDKRON2IJOb/zJsQ98GYdwGMDiyTWRS2NSPdxJCs0haP5ZQb7LnV9DM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791811697; c=relaxed/simple;
-	bh=qtj9QPvxdaek1ie58tXDrS0v4YKkGwAE+g3oWgU0JC8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SuDoKYiFOm0ueb1ZbuSPSqxH3bUh5twnf69a09fZfYS7tYGsBxUbQ9W8A3555WB8HuByotYMDfzHeYoMDx7QaNxBoTSgKzvYHHWTYrvf8vZbBoOOh1v/23MuPYwhcFtGwhi+vgNSfd7OfztgnWRHAcebaxACmzOkso+EdAR6zHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PG+UdpA0; arc=none smtp.client-ip=209.85.219.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1791813109; c=relaxed/simple;
+	bh=D8b9Gp9SrpJ6GeBRaBAklzcISw35XYnUMsD+GI9OWHQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VyexahOINoMP17O92pTX4HYaLlx47pCfXEKo406PSSvzNBE9RZ3hwBZSA00uQaFQzx6U0wq/6F4GCD+9wefaif1Dl1wMuRBJ0AYd4T756GPfArARcZn1TXr3ibV4ImOwT2Y8lMSDJOMAyIiC9pzccJNtTEGOVY6o+89G3heEalY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lM0hHZTF; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PG+UdpA0"
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-91054f537ccso23401466d6.1
-        for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 06:28:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1791811694; x=1792416494; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=jJd/wX/j900G5XTB7UARaKvliXjJOtwZKQBz13LNSNw=;
-        b=PG+UdpA0RibTYJ8lHM2X+fS0ZaDwo8n3vs5GO7TumzqzHFGUC6ek7rUlp2zfaWH3c5
-         mTaOkwHkIsNeO+MraqSvgdLYzAWDW6i4xSsR64avPwZSRh3eN0UQiMLIlhOzID7b2L9M
-         PECibxP+Smm3IhVA7dqIArjZ7bp8YdYXuDVl8FPPu+Do/9odGIZUUk5AbDIj3dJ0E40n
-         0ShHHhFR/2WF2L1MweLMlmrjqBw74Zw+JsRj88EWTgEFlX2CMaI9ljRsiWOgMmyJtHiu
-         tHEqMdHskBz9U+MoWo79X6q3bLopV/0uF6XJDRvIJRnl6PB52GzxZjU7iJ3/5VNBL+wW
-         ybaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791811694; x=1792416494;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=jJd/wX/j900G5XTB7UARaKvliXjJOtwZKQBz13LNSNw=;
-        b=O5Nfa/h4sVffPCffRo+WmYE5e3INncwgwV+CATt18valajksm3reld/2Mdkbvbk0CT
-         7zs9jAYEByfxl1mrpI4TlQn+92BbCl/LDdhE4r4x5N3yxpl462ZHc86NhaNoGJKB7ZOr
-         0Gm0DCsZnsOj1/ML9NFvHFnondk4kNzjkQ8YvGuswT5u5GVMKSIwP1ddw16XJW9CaGYs
-         uoDAsfA/VsXlVC6XI6aQno6qd4rmr7RLVosZswuuGFHZO22qtYv5RHkd/ey6ZoD90Y1T
-         +Kc53HXzvV37VNDQLp57kFL+F/P2Xz/E+yRImpV0DYc6oPEuyL1ABI0scdOhSDzo6y/8
-         WcRQ==
-X-Forwarded-Encrypted: i=1; AKwUvBx0zfS8KkOejzhEEVrONtF4x0Q/IlXibrGleCRVeoDy3Mgs/oicdWlvg9mfmH5PHNhHNuv5Sw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLRFU1Macw3pvxkLN2Hh2iYOg1sb1vZWvegqqtoapnkncnsBh8x
-	T+M1IFkF98N7JCh+yfQPn72FWYtjWVr/bhiZXp7uP2aLJuT64AsFH7vi8XIOPBTgRcY=
-X-Gm-Gg: AYBFou2L33rF5+B5fP6Ai0fF1yfmZ3QhNJhWt7K9cMsaW+NA40pIe1MEO5ouhc6te3I
-	H9nLfHlbj0M845nCR3Ibabf7wdh06UFmLRhqkvVKEzEblAQ9ZdSj7scqWQLkE9jl8DN9Oyx6/mq
-	aNYvnkP4dD2fv7l9q9RN8IaMV6wQLej1QPZISWPr4fJBMlxJASlqfISml0oiNZ3Rm2Agsy96QeX
-	xpz29Pzvsm7v3xHWkAknxMa+RhPyWtxJb1LZIklShe1RgjrhRMUInns8cfsP7Kos2pjUtMSbfFl
-	MmXqKsrxiaT5tcGyjdQAEmtQ5bxzgFZA7jDGAYuhMtKVggUyn0u/+i570zDG0i2ivtP172pB5fI
-	mdg2kYnlh9rSi8y8vIrqU5cmWjZkj4G60zWaWFR2MrEtunvB9Ri2aMIYGY81f37NIjIIeIBldsr
-	F/wKLBfMyEd2N5KO2hhVAcC0UXZTC2K8ueY0Q8CEmeusPrApUiP8OjQCzd4sUs2rbC6TIl8UeMe
-	AVT44+qkUba3Kv0O62hVC8GEd7ENiJSY2zhUat+g+69hnyqcEdLqbPE
-X-Received: by 2002:a05:620a:601b:b0:93e:6a4b:3ea6 with SMTP id af79cd13be357-93ebd1de502mr1556980385a.24.1791811693967;
-        Mon, 12 Oct 2026 06:28:13 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93eb986c0e9sm869347185a.20.2026.10.12.06.28.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 06:28:11 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xGG4Y-00000006Hq6-1xVE;
-	Mon, 12 Oct 2026 10:28:10 -0300
-Date: Mon, 12 Oct 2026 10:28:10 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Daniel Drake <ddrake@baylibre.com>,
-	Matthew Wilcox <willy@infradead.org>
-Cc: robin.murphy@arm.com, iommu@lists.linux.dev
-Subject: Re: [RFC] Subpage allocations for IOMMU tables
-Message-ID: <20261012132810.GE14213@ziepe.ca>
-References: <20261012091823.114480-1-ddrake@baylibre.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lM0hHZTF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EFD21F0089B;
+	Mon, 12 Oct 2026 13:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791813108;
+	bh=sy0tOZL5muoOOj5/SzuLSHHZra65UzlPYGgPa55GTM8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=lM0hHZTF2mkh9fZMXoW6EwN4MlP8QMBI+4vZOhjSLdxNiA3yY2oH3Bf3LDxTXxpog
+	 2lPpUIY/NoiEFNUzFfRv1fGWTuG38zl3wTrl13oeTVesh7Dv3w3rlIC+6V/K5VXqqv
+	 IuAspCH3e+lRirW5gpc+xUdJnYpeOh+VU2meNf+KHQuvv5XtiDectnC+1rNJSwJcK0
+	 kPr+n55XDM58Tph7T1sxflfPg8qPjMOlRCrTk/Z4FBU0DdVzsF/5lvR7wqbF9utWvR
+	 3RbUTFlH7cEqTshzl1vZKn+DhUncPea51W3H6huQ8cBDdLqsA48yQyfh1P52iPjfYi
+	 1dbrGbEZBxu/A==
+Message-ID: <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
+Date: Mon, 12 Oct 2026 15:51:39 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261012091823.114480-1-ddrake@baylibre.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+To: Luigi Rizzo <lrizzo@google.com>, Luigi Rizzo <rizzo.unipi@gmail.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Vlastimil Babka <vbabka@kernel.org>, "David S . Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J . Wysocki" <rafael@kernel.org>, Danilo Krummrich
+ <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Jesper Dangaard Brouer <hawk@kernel.org>,
+ Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+ Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima
+ <kuniyu@google.com>, Joshua Washington <joshwash@google.com>,
+ Harshitha Ramamurthy <hramamurthy@google.com>,
+ Saeed Mahameed <saeedm@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>,
+ Tony Nguyen <anthony.l.nguyen@intel.com>,
+ Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+ Alexander Lobakin <aleksander.lobakin@intel.com>,
+ Michael Chan <michael.chan@broadcom.com>,
+ Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev,
+ netdev@vger.kernel.org, linux-mm@kvack.org, driver-core@lists.linux.dev,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20261003212241.3432303-1-lrizzo@google.com>
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 12, 2026 at 11:18:23AM +0200, Daniel Drake wrote:
-> Hi Jason & co,
-> 
-> I have been experimenting for how we might support allocations smaller
-> than PAGE_SIZE from iommu_alloc_pages_sz(). Are there any existing
-> ideas or plans for how this could be done?
-> 
-> This would be particularly beneficial for ARM platforms where the
-> tendency of using 16KB or 64KB system page sizes is growing, but the
-> IOMMU is fixed at 4KB page size, leading to wasted memory.
+On 10/3/26 23:22, Luigi Rizzo wrote:
+> Here is a subsystem called DMA_PMD on which I would like feedback on
+> architecture, possible enhancements, or kernel components that could be
+> reused to avoid duplication.
 
-Oh? People built SMMUs without the 16k option? That's sad news.  In
-the systems I have the SMMUv3 supports 64k/16k so there is no waste..
+Here is a feedback to a subsystem called DMA_PMD ;)
 
-> One possible/draft approach is below. When a small allocation is
-> requested, a per-node per-size folio is created. A section of this is
-> used to satisfy the allocation, and the folio is added to a pool so that
-> it can be used to satisfy later allocations too.
->
-> The main challenge is handling the iommu_pages_list used for freeing
-> allocations. In the whole-page case, this is nicely handled by using the
-> list_head in in struct ioptdesc. But now we may have up to 16
-> allocations per page, where each one can be placed on a different list.
-> 
-> So, in this approach, I have made iommu_pages_list manage both a list
-> of regular full-page ioptdesc allocations, and also a list of subpage
-> allocations that live within these subpage folios. The subpage
-> list heads are stored in a dynamically allocated struct
-> iommu_subpage_meta.
-> 
-> I don't love the approach but it at least seems to be working and I
-> figured it would be good to get some opinions before I go further.
+Why is basing this on PMDs (and embedding it in the name) the right approach?
 
-Yeah, you've hit on the main issues. Throw in the coming RCU HEAD
-issue too and you get more problems. The iommu_pages_list abstraction
-was intended to give some flexbility to solve this.
+On architctures with large PMDs (512 MiB on arm64 with 64k), would we really
+want to use 512 MiB pages, or rather something smaller (e.g., 2 MiB) that might
+possibly also have TLB benefits (cont-pte)?
 
-The idea Matthew was aiming toward was to allocate a dedicated struct
-for each folio that could have the right sized stuff. You can have an
-array of list heads, for example. Then you are not limited to
-overlaying on struct folio.
+-- 
+Cheers,
 
-He once even talked about making this into some kind of generic sub
-page allocator with metadata, which seems quite interesting.
-
-In this mode the core mm would provide the pooling and the subsystem
-could request XX bytes memory + YY bytes metadata with some way to
-convert from a memory pointer to the metadata pointer and back again.
-
-There is also the exciting stuff power does with it's sub page
-allocator, not sure that is a great example though.
-
-Another option might be to involve generic_pt somehow and have it
-populate the tree with the full folio. At least this way the memory is
-not "lost" but it may not be used optimally. I doubt many people need
-a 16x level 3 page for example
-
-Another thought might be to use (pre) allocated memory to hold the
-free list during unmap and then flush if we run out of memory. This
-eliminates the linked list which seems helpful. Not sure what kind of
-performance we'd get though.
-
-> Other options:
->  - Replace the list_head with a pointer to the virt address of the next
->    page in the list. We can detect whether we're working with a full
->    page or subpage based on virt address, which means we only need one
->    pointer in iommu_pages_list.
-
-So long as a linked list is used you need 4x the pointers, which seems
-to be the main problem.
-
->  - Bump allocator with per-CPU pools of partial subpage folios, along
->    the lines of the networking subsystem's page_frag_cache. A little
->    simpler than the approach here, but we'd have to evict and abandon
->    filling the folio if the next request is for a different NUMA node,
->    and handle CPU hotplug.
-
-Free side can't gurantee it will only free the same per-CPU pages, so
-you are still back to needing 4x pointers.
-
->  - Allocate the subpage-tracking data in the unmap path? Falling back to
->    immediate flush and free if allocation fails, along the lines of
->    tlb_remove_table(). Would need more thought.
->  - Implement generation-based deferred freeing in iommu core,
->    eliminating the need for iommu_pages_list?
-
-What would this look like?
-
-There is also the 32 bit ARM option which avoided using a free list
-so it doesn't need folio memory. This allows it to use a normal
-kmemcache.
-
-free list is fundamental to the design of generic_pt, but if more
-people than just arm32 need this it would be reasonable to implement a
-generic_pt_nolist variation. Driver can select which version it
-wants. Maybe this is implemented as some combination of immediate
-flushing and a small free array allocation from a cache?
-
-Jason
+David
