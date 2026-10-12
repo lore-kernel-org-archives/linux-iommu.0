@@ -1,154 +1,118 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mta0.migadu.com (out-212.mta0.migadu.com [91.218.175.212])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC1703C09F8
-	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 08:41:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EF1046D56A
+	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 08:42:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.212
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791794510; cv=none; b=XCaaoJGglemHXCQkqLvOYWg3ycF7Ynf61NGIewYv2bMfzx0QUjr8s0QsvizPpvnTUQRGhil/+oXrXt7yqEw52t7ubK2i6oLWYp4nbsN7rkD6ChUssrCZX+NwaffDb+Lhs/g/+OCt24rOR1BoXmeVkm0MOZryzWwcytFVGtO7uDo=
+	t=1791794532; cv=none; b=Jd8RCOH27ntsVfkM4fwFpa66kqkuTHP0vPnlIX+Kpm9owcjlqGz7+acrjp43JchPvPV/oFNHCGUvmhhEubNDobbiS/wlhiJKeqtS4CX+DPZtTJHZQkYWLMTef/Q88t4tk0Jb1znx6KaHZHRiZ/onMvgwJzjyrnSbroBSDv5jdVk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791794510; c=relaxed/simple;
-	bh=Qanp8XpTcR8oBU9NgCmlUZCKBu56qLf1fhHTnhwauVY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ams8IO8gTzCo3BcuNohUzdIkY0Ss3WaxDdBOogVWsQ/JSCekWOt+FiH2zAx6EnEfjgh/kGyXXNggch/BfGdYFlmtZmqlWKiIrpSaw4yToJIHpnDaZEHix9G3Pm6nRi3H8GsZ02Mr7c1dapFe7iwgT+Fe+1OrEXWym57DT4KTyUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=ISA+Fx0H; arc=none smtp.client-ip=117.135.210.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1791794532; c=relaxed/simple;
+	bh=o2e972utFFQk0BpQcOPt5dGwhiilIlCaD4fH59gbqmg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UkYy62KRls2PWTAQYrOxhBHXcP/90/Vru3z5tuX1QChVZPD+5qyD6tGnyfIKO1i1AGk5VB65/RnhPxuGDvXG7VCbtsdwJDeO7UmIaweoIaM7lssea/EgGVZkRQHHiv/HEKLsvK9dDsKMphryKxst72xZRDBvu2+rzAA7M9ANmkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=CIs9CNJG; arc=none smtp.client-ip=91.218.175.212
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="ISA+Fx0H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=xi
-	B/mc8XaApxaPDniNNCfUu6SOnvJQaPDWT8rHnuIrc=; b=ISA+Fx0HcsaEn6AJxt
-	Xv6MAskDAExXqkuderFxpnFYN+zuaVu0jYYwRMF3ZhLKCAhQvijPXFgRBS5/vBKs
-	RVUS6qh9Y4HDyGrZ2FX8p7wdFvpOyat7U6pq7MvnMxTZRz9I/Ppd9V04SqwJqV7b
-	9QUUbtkGBFzQ2XVeG8WM+ILLU=
-Received: from WIN-TOG0NDEIICD.localdomain (unknown [])
-	by gzga-smtp-mtada-g1-1 (Coremail) with SMTP id _____wD3P7Efncxqike8Dw--.13686S2;
-	Mon, 12 Oct 2026 16:41:04 +0800 (CST)
-From: Shirong Zhao <shxzhaosr@163.com>
-To: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org
-Cc: robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu: intel: Apply the device scope length check to every device scope walk
-Date: Mon, 12 Oct 2026 16:41:02 +0800
-Message-ID: <20261012084102.18-1-shxzhaosr@163.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="CIs9CNJG"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=o2e972utFFQk0BpQcOPt5dGwhiilIlCaD4fH59gbqmg=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1791794526; v=1; x=1792399326;
+ b=CIs9CNJGQUGiqAI2ZqXcFp8GQCPZ14aJt/EoAX5tXeuGWVTkftOkULl+0xKe7rQSNXNkBrXK
+ bMO5IB857jP5OZTX8m6H4Sk4YA/bW8a4a+0Kp4R9dZRxpl/FPFfYHLJ/Ehfjue76fo5BmPhNczF
+ PFSlp2ouwbjyf3+1xxkr8xW4=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by mta12.migadu.com with ESMTPS id a325368366ef22a3;
+	Mon, 12 Oct 2026 08:42:06 +0000
+X-Mizu-Trace-ID: a325368366ef22a3
+X-Migadu-Flow: FLOW_OUT
+Message-ID: <2007f03b-2c76-4c36-a0bd-0ce99d1a01a2@linux.dev>
+Date: Mon, 12 Oct 2026 09:42:04 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wD3P7Efncxqike8Dw--.13686S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJFy5KryDXr43Kryftw17trb_yoWrXw1rpF
-	W8KrZ0yrW5trs7Gw13AayfZry5tws3A3y3CF45W3909a129Fy5WFyDGFySgr1rKFWDtF1f
-	ZayjvrWUCw15JF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jVUDJUUUUU=
-X-CM-SenderInfo: hvk06xhdrv2qqrwthudrp/xtbC7gA9e2rMnSB-EQAA3d
+User-Agent: Mozilla Thunderbird
+Subject: Re: [External] Re: [PATCH] Revert "nvme-pci: clamp max_hw_sectors
+ based on DMA optimized limitation"
+To: Adrian Huang12 <ahuang12@lenovo.com>, Christoph Hellwig <hch@lst.de>
+Cc: "kbusch@kernel.org" <kbusch@kernel.org>,
+ "sagi@grimberg.me" <sagi@grimberg.me>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ Jiwei JW10 Sun <sunjw10@lenovo.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20261006120248.147654-1-hch@lst.de>
+ <8cf8a8ea-c9c9-434b-aec6-e361280a88a4@linux.dev>
+ <20261008123724.GA22096@lst.de>
+ <TPZP295MB0013C6E51C73799E49B8EFF4B3922@TPZP295MB0013.TWNP295.PROD.OUTLOOK.COM>
+Content-Language: en-US
+From: John Garry <john.garry@linux.dev>
+In-Reply-To: <TPZP295MB0013C6E51C73799E49B8EFF4B3922@TPZP295MB0013.TWNP295.PROD.OUTLOOK.COM>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-dmar_walk_remapping_entries() already refuses to step by a zero length:
+On 10/9/26 10:11, Adrian Huang12 wrote:
+>> -----Original Message-----
+>> From: Christoph Hellwig <hch@lst.de>
+>> Sent: Thursday, October 8, 2026 8:37 PM
+>> To: John Garry <john.garry@linux.dev>
+>> Cc: Christoph Hellwig <hch@lst.de>; kbusch@kernel.org; Adrian Huang12
+>> <ahuang12@lenovo.com>; sagi@grimberg.me; linux-nvme@lists.infradead.org;
+>> Jiwei JW10 Sun <sunjw10@lenovo.com>; iommu@lists.linux.dev
+>> Subject: [External] Re: [PATCH] Revert "nvme-pci: clamp max_hw_sectors
+>> based on DMA optimized limitation"
+>>
+>> On Thu, Oct 08, 2026 at 08:36:54AM +0100, John Garry wrote:
+>>> On 10/6/26 13:02, Christoph Hellwig wrote:
+>>>> This turns down to cause up to 15% performance regressions on
+>>>> standard large transfer workloads.  Revert it and hope the IOVA
+>>>> allocator can eventually be fixed to remove the need for the original
+>> workaround.
+>>>>
+>>>> This reverts commit 3710e2b056cb92ad816e4d79fa54a6a5b6ad8cbd.
+>>>>
+>>>
+>>> What was the block size and conditions for the original issue? The
+>>> commit just mentions that mdts=10 and we get a 4096KB max HW sectors.
+>>
+>> Good question.  The original submitter and reporter are on Cc.
+> 
+> 1. The block size depends on the configuration of the fio parameter 'bs'. See below for details.
+> 2. Conditions for the original issue: The issue is triggered if the IO size > 128KB.
+> 
+> [Detail]
+> 1. A NVME with mdts=10 (maximum data transfer size = 4096 KB)
+>    1.1 fio with bs=128k or below => Passed
+>    1.2 fio with bs > 128k => Failed
 
-	next = (void *)iter + iter->length;
-	if (iter->length == 0) {
-		/* Avoid looping forever on bad ACPI tables */
-		pr_debug(FW_BUG "Invalid 0-length structure\n");
-		break;
-	}
 
-Five walks over the same DMAR structures do not:
+That block size limit is an important detail missing from 
+3710e2b056cb92ad816e4d79fa54a6a5b6ad8cbd commit message.
 
-  dmar_alloc_dev_scope()        - counts namespace/endpoint/bridge scopes
-  dmar_insert_dev_scope()       - attaches a scope to a PCI path
-  dmar_acpi_insert_dev_scope()  - same, by ANDD enumeration id
-  dmar_acpi_dev_scope_init()    - the ANDD entries at the end of the table
-  ir_parse_ioapic_hpet_scope()  - IOAPIC and HPET scopes
+And now we seem to have a conflict, as Christoph wants block size > IOVA 
+rcache limit but you find it may cause this soft lockup.
 
-Each advances its cursor by a length read out of the DMAR table, and
-nothing constrains it.  A zero length leaves the cursor where it is and
-the walk never ends; a short one steps through table payload a byte at a
-time, reinterpreting it as scopes.  dmar_alloc_dev_scope() and
-dmar_acpi_dev_scope_init() run on every boot with the IOMMU enabled, and a
-short length in the latter hands andd->device_name to acpi_get_handle().
+> 2. Another NVME with mdts=5 (maximum data transfer size = 128KB)
+>    2.1 The issue does not reproduce regardless of the 'bs' configuration
+> 3. The condition '128 KB' is identified because the IOMMU scalable IOVA mechanism supports a maximum transfer size of 128 KB.
+> 4. IOMMU pass-through mode does not trigger the issue with the 'mdts=10' nvme disk.
+> 5. The issue only appears with high-core-count servers
+>    5.1 Reproduced servers: 448-core server and 384-core server
+>    5.2 Non-reproduced server: 128-core server
 
-Use the check dmar_walk_remapping_entries() already uses.
+How long does it take for the lockup to trigger? Pretty quickly, I guess.
 
-Checked against torvalds/linux at HEAD; both files are unmodified there.
+Does changing the number of CPUs affect throughput (before the lockup)? 
+Are you using just a single disk?
 
-Found by EFSM.R17, which reports a loop whose cursor advances by a step
-memory can supply as zero while the exit condition depends on that cursor.
-Signed-off-by: Shirong Zhao <shxzhaosr@163.com>
+> 
+> BTW, with this reverted patch, I'm setting up the test environment to check whether the issue does not appear with a newer kernel that includes the updated IOMMU subsystem. I'll share the results by the end of next week.
+> 
 
----
- drivers/iommu/intel/dmar.c          | 16 ++++++++++++++++
- drivers/iommu/intel/irq_remapping.c |  5 +++++
- 2 files changed, 21 insertions(+)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index ba675b0..1615ef6 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -94,6 +94,10 @@ void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
- 			scope->entry_type != ACPI_DMAR_SCOPE_TYPE_HPET) {
- 			pr_warn("Unsupported device scope\n");
- 		}
-+		if (!scope->length) {
-+			pr_warn(FW_BUG "Invalid 0-length device scope\n");
-+			break;
-+		}
- 		start += scope->length;
- 	}
- 	if (*cnt == 0)
-@@ -227,6 +231,10 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
- 
- 	for (; start < end; start += scope->length) {
- 		scope = start;
-+		if (!scope->length) {
-+			pr_warn(FW_BUG "Invalid 0-length device scope\n");
-+			break;
-+		}
- 		if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_ENDPOINT &&
- 		    scope->entry_type != ACPI_DMAR_SCOPE_TYPE_BRIDGE)
- 			continue;
-@@ -743,6 +751,10 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
- 		for (scope = (void *)(drhd + 1);
- 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
- 		     scope = ((void *)scope) + scope->length) {
-+			if (!scope->length) {
-+				pr_warn(FW_BUG "Invalid 0-length device scope\n");
-+				break;
-+			}
- 			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
- 				continue;
- 			if (scope->enumeration_id != device_number)
-@@ -778,6 +790,10 @@ static int __init dmar_acpi_dev_scope_init(void)
- 	for (andd = (void *)dmar_tbl + sizeof(struct acpi_table_dmar);
- 	     ((unsigned long)andd) < ((unsigned long)dmar_tbl) + dmar_tbl->length;
- 	     andd = ((void *)andd) + andd->header.length) {
-+		if (!andd->header.length) {
-+			pr_warn(FW_BUG "Invalid 0-length namespace entry\n");
-+			break;
-+		}
- 		if (andd->header.type == ACPI_DMAR_TYPE_NAMESPACE) {
- 			acpi_handle h;
- 			struct acpi_device *adev;
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index 25c26f7..884347c 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -933,6 +933,11 @@ static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
- 			ret = ir_parse_one_ioapic_scope(scope, iommu, drhd);
- 		else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET)
- 			ret = ir_parse_one_hpet_scope(scope, iommu, drhd);
-+		if (!scope->length) {
-+			pr_warn(FW_BUG "Invalid 0-length device scope\n");
-+			ret = -EINVAL;
-+			break;
-+		}
- 		start += scope->length;
- 	}
- 
+thanks
 
