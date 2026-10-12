@@ -1,149 +1,140 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F1864908B9
-	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 14:46:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72F7449481E
+	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 14:49:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791816381; cv=none; b=AvXv2uD2iPMYzESE0iEguhGX7X6f1BC2DmaZDubsTIEc13/iCa+MTa88REw5ybfQXGlj7vH5WlV+95/msAO4HphD26HNG1cij8dgGC2f8uJCg7iS1NTH8vLEgZ9ReIPnNNuBmJ8f6VXVTVyxtdfzRDL/41H4Hehdaae7FQpj5o0=
+	t=1791816570; cv=none; b=H9+pkSK4zmScy1dDP7jML1xD6gc1iT2F48bFe9/KolDPR0DljYiw26Uh24der/bb3toNtBjDjV1FS+uofnlp+cogzgW90+5+kSdqgAnLdzNj1yDXjtyfGAowpImMD4v+F0JvqQEqCGbFRivK1tQLwsLPVnfcGk1pHFaQcbYFXWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791816381; c=relaxed/simple;
-	bh=YarLj6Tl5drs4d48GxIIPRySQhK4PE3lDvu4dKT16oE=;
+	s=arc-20240116; t=1791816570; c=relaxed/simple;
+	bh=9zUPL5NVEOabXBETdoVcRvq0NcBLE5K5KiwUVsZ6rXg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=igwWgk+udOmpJPWEXTVBxzhg5VYUlrM7GDKE1GA1d3i5wls261cKJuaGtMNPUyEpHtSpLeUX2FeGkHdqYQh2rU/xOMxFv7AB4GJl1SMuFiUbafiUr/tuxK1/0XEaApQnry8ZnglSxG1eGUyuIbuA22W2QfpihsHkX7gLcfrobM4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=EiLRIhjS; arc=none smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=pOQoTPPjQnAEFkzL4YcNggAawxdaRHpS/WEzbUZOZ8n/ZTuswDmo+tmCDIbKNipi2IqEFRX9nlzkn0y8wQVPlvNi1mMMudRmCA9JbB8lO9fR1BNpU9p3gHV3Yf609OW+1YZDoLexmE/EyVfE6KspsW2UWmx+lQb50GCi7HCzdKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tuDs1W7e; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="EiLRIhjS"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-5338f65913dso22437001cf.2
-        for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 07:46:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tuDs1W7e"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a021c28046so57225e9.1
+        for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 07:49:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1791816378; x=1792421178; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=kVDh4BcUbgvIW1O8+CoyCzwwqxHQNia8D9+ovujPztQ=;
-        b=EiLRIhjSzHwrzkp2r0PFYyL4CPPIERk4zqYjFzaHFJZBcbziv0ZHTRG8WIVOuBPsYW
-         rq02vYbK0um+FI2ajpwC1s+dVAgOwBKLutbvofkpT0DzoWte1Xs2bt+81SKmON6wZke9
-         Lm5JvS0/Nof3PNkfvfEfPA616j7MTzNH4gEs26ru4VCh8mgTbpfPwufXluoeVZluZIWl
-         rvZ7pzJQce48uUbwkl303BFhzwSLPFrbuvHkX7WtZhulqyUnnC3rtKLBasWo6V8xxTzB
-         IdU/X0buw3HGRWxyIUnuJ1kgqabyGty8FNalJXeRITW5XGHOdxU1lGKQZhs3xhJbyzVG
-         lJhg==
+        d=google.com; s=20251104; t=1791816568; x=1792421368; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=8W07NsiEHCJwsJueJBy/t/T/wHddWfvjW0+P0EskkyI=;
+        b=tuDs1W7eNh+eGFUcttMjt+OqSARUelnqANs7c5T3hNckA4uXaL5gRY3YUGpxFRErkM
+         J+g1Qd6eem7fmPTK06S7wf/b2XacLNuPGlV/pBCr6bQWDnFeofPQn01saViXn0obSUsq
+         bnh6DDh1ofl265xFGeLLCnRBCc/5ICkve9Gp16r72tHz4eP8Y+rYHNntlXzzxE/u6Ijk
+         m8G6WYNYQ3SGWal2ZYjw1ykO9T7OsLElef7/91FtoCNKWdVOD6vMGEQkHXG74nLlpqva
+         t4baYO2WFAD6bhVW79g1nRsi4/ow/ytRaB+zxAALIMlvlkr7p6ebql5sNcRdnyAlNfdz
+         ddzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791816378; x=1792421178;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=kVDh4BcUbgvIW1O8+CoyCzwwqxHQNia8D9+ovujPztQ=;
-        b=zmWrhD6b2TUhkOEhHCkBK+y2on+thgQY2gmY2sDrI0k8xs/TpiuESBvFTjUWKh1Kzu
-         mUHF5CGsqBZjqbBmubVoz2Y5WjKz2ThCmCqX9RNITkFqK6CxCpf72FU3NHas2YANQXfG
-         uSkG9RL7KF6SzbeW7cPr5ww4Iy/1dqSTOzJGjullSdUwpXBQMIKJMQk19ipS0bHTbmrI
-         JP1CkmayHfv3zpsuIWu3Pj2X1ygS6GWFpvbAPLBVDzdAgm02UDmN4yW7IqIF3OfUyaLl
-         /ezifRp5LD1g8+5MuGhdWwygxjtpocAb2V1G6HrFgnxZx5FZoJN6h7uJE2S5yQNnXCCW
-         zU1Q==
-X-Forwarded-Encrypted: i=1; AKwUvBy7Te+UpZOyWhworldkcKp0/PCyc9xHWZ+RsypMdkuBYRHyHuvp7H25qkOPRrNGM+Yuq/VNzw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLFwttQQ/xysCIffMA1b5/Z6DtB/iK7AmTAQURqs5MSM6GzgaxH
-	4/s6ETyWmT+37XaJ0CJ2wGsX8IJzgfCGmVKzbc4Tb61A3DIQ6KKT0MGMeRneTAef5OpTh2wwhWz
-	bR2iz
-X-Gm-Gg: AYBFou3GYExoowf/vI+qehXkzc6tbIFOWBA94ntwNuTzfm3l2IwCiwpOxZq05/femhT
-	mWIookpRBlHYOEAn2K/juhUOqWU+7U56a5HrGTaqFqENl4TA60VnZRdlcCVvIKxgIe4uopOaOU6
-	yOpuYxdiHz6HgBrsp9VBZvAJ0EtLbYSkumJdRs3ogjanALHH27DiudlI3kHGy/sIU1A6trANngH
-	rh1+ONI1UQMHCvKaVBX1IkHcou0eh/EurvgXvi885ztFLsxuskSw24nVmMFW5IhVj81OBRz/Z8X
-	UrTRv/Udyz+VAt2QZUC8X4pHe28yewPSpJNipH8Di1Hf0826y6N2lD1ipvQswebY+zjrYIPDzcN
-	KmQ9creTKLIWDBWcpUsXyvoXKgctAaTsPVL7eFqrFYn51E3Pqa0at/bgsgDUb6ytrMqE8EAEzRK
-	QqBAHbeROnvQVCOFD3lUbMPX2wdoP9u8IZfm9342EzRRqxCCmAlNhuOWFxGJGNQ/1jkU4D8f8ql
-	bOn+9DzDCqw8RdxwWuAJGCOohJp4wLM/Q4+LKipgDNoNcpuY36u2au3
-X-Received: by 2002:a05:622a:2487:b0:535:1134:91b with SMTP id d75a77b69052e-5359faead4bmr160454661cf.14.1791816378499;
-        Mon, 12 Oct 2026 07:46:18 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-535e652f3c7sm3157041cf.26.2026.10.12.07.46.17
+        d=1e100.net; s=20260707; t=1791816568; x=1792421368;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=8W07NsiEHCJwsJueJBy/t/T/wHddWfvjW0+P0EskkyI=;
+        b=xEqNSwU7zcDsj94+ON1JeANbjsWsDeLbCcuujGIt5kJLI8GZ2dKr9V9MmojKr4sk1B
+         a7Jw7KtwUQA1GBGHRICgkf5DN1BVz91zTxvFsKXKalQMZlR9OoVnYQNqm/zGdhZ0Prn/
+         TEthNH26JuxfgG1Bze/TVv0o0eJTtCj3YzCVPayL0bcn1jW9K8NzRU3NSe/21Vo1ra6O
+         ygjt8ieAMhjj91ytggGuw61tQAqUtmH+MtXT2SLJB7aRRPQ3ehNxVDvmTv44z79BMZJU
+         HAkZWtcT7c/HwUljlFjl2ZcVzE7MkIkCpRI9hbIBg8DQOKlQmXKTT29/AQlng9BewbhG
+         pRxQ==
+X-Forwarded-Encrypted: i=1; AKwUvBy0OatqfXPUkTadnkL8J+NGPIllBEgnn6Ltd9F9L22duXWccuyw6peGa41g3W8ZVF64Z72LLA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYInSiqphJYo/1c9jiyKoxCkyL8261Wv8dY6rjvRIT1MHjla4LQc
+	N9B4PMumCdRVdfivfLkPLBgViY4DuhiDBKj1PGRhgsiwS9rodP1zyzj2GwmlwJZ68Q==
+X-Gm-Gg: AYBFou31hNhDyATHSr6yrGqdd+HOJHI0eFmcYB+M52LOhurUqXQNtgEnwUin7mElx9F
+	x5i8JQO50YzSeZf+ZYFek3962S9reohdaC4+9HzgcHI2X3f5/3jvLiqrxLScE1fuQ+f7cebZ5id
+	Xk6dKl7zmynvHc4NKm8/nIiYjj2xRZUbNYprylC9lhVylVGEya7qUEU/vdV4zwoUzNtg7Uz5A4h
+	GaStqH3tWv8Yff1+9spJbUEh4Sv/LR0nf/SO+gHgq1OIwszk5EYXy3sd5aBxVzcRi5QpqPBkAJi
+	bGviuMG4n5rRTnbC+ajePnB9Q7KcKVI/LaZyg7OGQ3Lfsh6RUBWPCdvRiFdHO8I8tXchY9qPRt6
+	2m9nck5TwZohfHDCuqTnwOTOyQxdCgibV1/pQ/aL+grYX7DAw/A9iMrSO1HaJHwx9rM6W3WR/7c
+	PysNwIAY7QahD8wJZuzaNd7iyrPu0Z1mmm/NhwyRClGg4Oq8RUQlXmccsvzJv6ehjOGLYSdD4jQ
+	mvsFvRUGpiVNd10/hYPQzwCKAAdRkYrEJ2itH9KNphcS8P8wNg=
+X-Received: by 2002:a05:600c:8b54:b0:49e:b733:7277 with SMTP id 5b1f17b1804b1-4a19d710a67mr1241395e9.2.1791816567153;
+        Mon, 12 Oct 2026 07:49:27 -0700 (PDT)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a19f249692sm172738315e9.3.2026.10.12.07.49.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 07:46:17 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xGHI8-00000006SW2-2nlk;
-	Mon, 12 Oct 2026 11:46:16 -0300
-Date: Mon, 12 Oct 2026 11:46:16 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Fred Griffoul <griffoul@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Marc Zyngier <maz@kernel.org>, Oliver Upton <oupton@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Ackerley Tng <ackerleytng@google.com>,
-	Joey Gouly <joey.gouly@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Steffen Eiden <seiden@linux.ibm.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H . Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-kselftest@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
-	x86@kernel.org
-Subject: Re: [RFC PATCH 2/6] dma-buf: Add get_phys() to describe a physical
- run
-Message-ID: <20261012144616.GF14213@ziepe.ca>
-References: <a04f17cc-f59a-4240-81c8-29776eee3a2e@amd.com>
- <20261005132046.30025-1-griffoul@gmail.com>
- <f0077cec-10fe-400a-b229-f7434e297364@amd.com>
+        Mon, 12 Oct 2026 07:49:26 -0700 (PDT)
+Date: Mon, 12 Oct 2026 14:49:22 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Luigi Rizzo <lrizzo@google.com>, Luigi Rizzo <rizzo.unipi@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Willem de Bruijn <willemb@google.com>,
+	Kuniyuki Iwashima <kuniyu@google.com>,
+	Joshua Washington <joshwash@google.com>,
+	Harshitha Ramamurthy <hramamurthy@google.com>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Michael Chan <michael.chan@broadcom.com>,
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev,
+	netdev@vger.kernel.org, linux-mm@kvack.org,
+	driver-core@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+Message-ID: <aszzcpW6fJWGcQCZ@google.com>
+References: <20261003212241.3432303-1-lrizzo@google.com>
+ <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f0077cec-10fe-400a-b229-f7434e297364@amd.com>
+In-Reply-To: <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
 
-On Mon, Oct 05, 2026 at 04:53:34PM +0200, Christian König wrote:
-> > KVM gets its frames through the KVM-private guest_memfd provider
-> > interface from David's series. iommufd gets them through a private
-> > interface with the exporter, as it already does for vfio-pci. The new
-> > version adds a small registry in iommufd for that, which replaces the
-> > symbol_get() of the sample in David's series. The dma-buf is then only
-> > the handle and the existing revoke.
+On Mon, Oct 12, 2026 at 03:51:39PM +0200, David Hildenbrand (Arm) wrote:
+> On 10/3/26 23:22, Luigi Rizzo wrote:
+> > Here is a subsystem called DMA_PMD on which I would like feedback on
+> > architecture, possible enhancements, or kernel components that could be
+> > reused to avoid duplication.
 > 
-> Yeah that approach sounds totally sane to me.
+> Here is a feedback to a subsystem called DMA_PMD ;)
 > 
-> We have drivers which stuff all kind of resources, not just memory,
-> into a DMA-buf. That ranges from MMIO BARs to trigger FW operations
-> (doorbells) over full HW blocks (ordered appends, global wave sync
-> etc...) where two or more applications need to share which one is
-> used.
+> Why is basing this on PMDs (and embedding it in the name) the right approach?
 > 
-> That you then have a exporter private interface is for accessing
-> this is perfectly ok.
-> 
-> The problem you are facing here is more that this is not limited to
-> one driver/module but multiple ones and you don't want module inter
-> dependencies because of the symbols.
-> 
-> So symbol_get() is probably the right thing to do as long as we
-> don't have something like weak symbols or similar.
+> On architctures with large PMDs (512 MiB on arm64 with 64k), would we really
+> want to use 512 MiB pages, or rather something smaller (e.g., 2 MiB) that might
+> possibly also have TLB benefits (cont-pte)?
 
-I don't want to keep expanding this hack in iommufd. If dmabuf is to
-be used then dmabuf needs to provide a pluggable way to fill the
-iommu_domain that many exporters can plug into. I don't want to
-hardwire every exporter into iommufd, that makes no sense.
++1 I raised the same point in the LPC talk.
+AFAIK, this series tries to solve both IOTLB pressure and CoCo bouncing
+at the same time which might be too strict; as for CoCo there is no
+actual IOMMU, so there is no sizing constraint.
 
-The existing arrangement is to motivate solving this problem
-generically, not something to be expanded on.
+Also to reduce bouncing, I think it is sufficient to use the SWIOTLB
+instead of having a new pool + recycling, the tricky part is how to
+abstract that to client drivers as this would be needed beyond SKB.
 
-Jason
+Thanks,
+Mostafa
+
+> 
+> -- 
+> Cheers,
+> 
+> David
+> 
