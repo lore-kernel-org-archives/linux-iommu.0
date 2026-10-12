@@ -1,133 +1,220 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010046.outbound.protection.outlook.com [52.101.193.46])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAEE32D738F;
-	Mon, 12 Oct 2026 13:07:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791810465; cv=fail; b=tqlgWujsEHyBvveN8ae/pmPvXlkQ/kUSICNpezROTcTFHSS0iYfJNABXqkA4tcN5qcaNZFK/ISZsVPqOdtgB6JnyFS2+pjNeYfEsjVpHR1/jaPcrsnqsCQVnaHGXiY35+9Vu6ew2AJvQcgSnwyarWpcdfhV+zgaRKd9+9So5Yg8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791810465; c=relaxed/simple;
-	bh=bdQdtUs152P37h0az2qbWFE996hu2OkY4YLp69SIzMQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=t8rt3SfYpn8mZe26otWawZmIwllS7398CvD/ekLMCT3CL3fDdQwJa9oKhBSmHSGG399PPxhM0Qsq5Xjsg3HNQBUS1lpnvTzZRQ1sevulNMTRA9XoJRkZ9dKytovMon+G9ZFmP8vr/XtWS6coEh22GMhTcrx9YTSxMY8rBumXHh8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=gd42O2Fi; arc=fail smtp.client-ip=52.101.193.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4582E375F81;
+	Mon, 12 Oct 2026 13:08:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791810500; cv=none; b=JCQWBAqFqhE7LjvEJNByaDqXIKWbnHj0vXg8DInRKLT9CZw97m/9594pO7vTryTt+rx/W5A35ZR6SZ2Rt/p/vIVSl+ZOg8/2rfKthgm3DWq43LG0pfgppAPWQ5TBG8aLzIvbQ/Iy+37v3gme7TOqmi4JOJcyN1bjs80VTiKJGlY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791810500; c=relaxed/simple;
+	bh=5OoO4u4wT2EspBgtGfHo4fnutiaRSS4knSYoOyJYjR4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=mkvihMeWph3PFjLOtxOHDt5ZPCU5cLKao7/YrRoRuXbKdkUhru2fRNIkHdt4eHLQ2NS57rogGVo8i7vZ9CQ0lPrbMrOksJofVCpgM5oCet6/7BVLGQc8hM6HqHrZ3z/rnbCpnSSH97qDMGvVXyzQqciY4TwlJkdykNNaxNuTGjE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VjXaAxUY; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="gd42O2Fi"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QR/E1Hu5Nai5vxr93RxFA1ZNHbpYfmyIft1x3Am1i1VPvV2h73mH3np70C6D3QY1gBVosRJFLiSDGCtz400vxRRVEjxDY/ipiI7ZVhEYL1D1XxDwwEKfecyBqYHQbmDx7FADra1DqZqRpHfZbpp2f9MPUQFSfU0PttF5BfxIe/G3vBwH6JQGuJ6/rR5FNYc83zQmlK1aRj2keMTrbDLDngXQmXluUtTFN/FlJZswIyq317Jt0PbHVuJ5nm5VvMQKhVeKDMA8nWfp906e5zr2LcvhzVQwvzpeJDxyJiOYYKuHr0kmLWNFZPbyxYRTGtDkj3C6o9C5IwmSNEuH2hZarg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bdQdtUs152P37h0az2qbWFE996hu2OkY4YLp69SIzMQ=;
- b=WEUarqDypF/x8m2oTSw86h6vPfPqhCGHnu/P8KRS4HGlEDSNgwITHgf9ZRKc4C+X9ZqkysZBFplbtGPWpSxL0u4tZzrs9mYpKRkpAXwm8a2mlYSpOhGHMDA+hqgdsW0OVaXZmk6zMYDmZpdeQNP4VtSJ2RhMUG6QGH2WHRV+ck1b0JAQ2KELgju3HC4ohJvhbZ+8GsYJeO8+7SgcXW4rB39NVEyowB/sCB1gjFv/FoQHf5Myx9Bcap5n6yvSwq35n/TAO8o3QgXoZ4zH5qNg6Qj51m+mNC1v48AZTlrNnk4lUC+ZRxD+iMfZI2T621wYnXJkIwwDoiUyTuacLf8ASg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bdQdtUs152P37h0az2qbWFE996hu2OkY4YLp69SIzMQ=;
- b=gd42O2Fi2MrSS9lEzbrrdOA9nQHWvcMG2koqFDf1EWcEXLumIndyMmYVuDd/g2GKcrgRVRdBXWyIgq0n6oBDJt5oqe8TizecpomhpKQBJmwhIueY0GndqHNcuVOcgN3NK3oZEvJg41xOcELCrGA+73ipSlwPQYqkpKV8NNW63HdppMFHVbKqk1meo5Munvj+ZQ50ZRh2sw/sCCZBnPpvaPP68Wppme5z/NnW2UJyaj+zXsNjdu1zSj535citzt5fXEtMNf+MP/WdKbCM9Uw3lQ3R2KKiRcxLqPR8ItvTGrr/YL7s0J+NsoD0SRa7l/+27P1kp3hQNOVfnDgrmTFing==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by SA3PR12MB177419.namprd12.prod.outlook.com
- (2603:10b6:806:53f::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.23; Mon, 12 Oct
- 2026 13:07:40 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0496.015; Mon, 12 Oct 2026
- 13:07:40 +0000
-Date: Mon, 12 Oct 2026 10:07:39 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: sashiko-reviews@lists.linux.dev, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH v7 16/16] PCI/TSM: wait for vdevice contexts before
- removing a DSM
-Message-ID: <20261012130739.GM13920@nvidia.com>
-References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
- <20261008055955.4014342-17-aneesh.kumar@kernel.org>
- <sashiko-outbox-163687@kernel.org>
- <yq5atsmr44r6.fsf@kernel.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5atsmr44r6.fsf@kernel.org>
-X-ClientProxiedBy: BN9PR03CA0639.namprd03.prod.outlook.com
- (2603:10b6:408:13b::14) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VjXaAxUY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D6E1F0089B;
+	Mon, 12 Oct 2026 13:08:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791810498;
+	bh=hPD4B6sRGtyUbN0DgtR7qqzDwJtgKxfCYn3LCYYPWBo=;
+	h=From:To:Cc:Subject:Date;
+	b=VjXaAxUYRaAMJ9UDZRIhSGKch2D3eK+W/4GnK3Abi9fGOVhoo5Vc7NrHGnBNKIx5I
+	 0ZaSDpw3JUhjSLhn4MGtuZLNlRUwRp9VGS9R/hHUJd3ALB9s9c4CDVK3mFXzfeBWBC
+	 JlbthD/kyLCYW8wTQKVUVTtj+Wxl9zsDFLMdX96jrP4wIspfP+XjizcsQ3gVMa+i8s
+	 U9MwWZx+/luOySXU6esCZWxXgr7fHC17Ct/RyMphKL8UZTV+zR67VCnj7ZJ+HFSOcr
+	 qWEt4kgz30LmeOO+9DXRaV4sT8NnyKPzGBxusQq1ffqym+Ve/J5A0GyUZx2W51q/0C
+	 OxOAQajio+HmQ==
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Leon Romanovsky <leon@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+	=?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>
+Cc: linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>,
+	linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org,
+	kvm@vger.kernel.org,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>,
+	Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: [PATCH v10 00/18] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
+Date: Mon, 12 Oct 2026 16:07:37 +0300
+Message-ID: <20261012-fix-p2p-acs-v4-0-v10-0-6ffe7b7a4517@nvidia.com>
+X-Mailer: git-send-email 2.56.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|SA3PR12MB177419:EE_
-X-MS-Office365-Filtering-Correlation-Id: 48c0180f-08f4-4ceb-a7c3-08df2861cbca
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|23010399003|4143699003|11063799006|56012099006|18002099003|22082099003|6133799003|10067099003;
-X-Microsoft-Antispam-Message-Info:
-	phG1H1w69fWqfWD83Lbt4yJDFmSg5QCst4Dr4bObyevLrWXFrhSr1vziMHMm297f4wD5GqioYmw82t7pqbPcSToQv4i8xBej5pb7mfvXUHE3fo2XLq+3rlo/Pu7N1z3E+sq3SDIFDy97Aw7NovFQL58FbChoUohCNgwpmMkiVwpJdc6fm9NFFQ89OlcY1GtXX09ZiNSOl2Dn4uKm31gwVZmpGb8K2fHvXwcVAip09Xu8+ZOcE0kUb3Rgd5GebuIj+HciTQJ/MGvwq+H7NKsOnNZWHZsPlLf+0T12mlE0c2xQiBwtzUc5O4M6zunACjRmSV7aR6fGkwi4/65yOZUibDdKMuGFA1Pu0n30XWZUOxYTZ/cwrc1GNRNgVBtaZA7zpHrVURJRbs43I3rfVV5xkg9hPoWYf7OqktTYD6b8ZwCRt3DJLq1FweseEDwp8E+YeAVqj8Vx0b/wuBAI/5prIiHiboh65s4Wu6DhnO/M+DjfYKKpaXpBZfZP767Fmuf6mRYddjnejy3lXLts9hEbXDbSfbCXM5fTS7okOL//zamD7tUYdVbklMQEpIrl2PG6svprnqJSbsc2h06q13YA3Lj18pSiZP0w1X06Ag7zndEWF7YW6pt92BVSp5rqxwFSCHX/wgcsJCyIAK/megWAPn09eGR+sBx91SuV+8Wj22A=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(23010399003)(4143699003)(11063799006)(56012099006)(18002099003)(22082099003)(6133799003)(10067099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?lHSDPGBuiFhrQ+t434OhWa27xhGsPONW/BrkrZhj2Uz3SghiMqpGapbs8Z+H?=
- =?us-ascii?Q?C3Ha6DGNSBtqw6njwxIuEwF+3aikRUpKqircsX4nXEdiTNsIz1cWz0QGGvxO?=
- =?us-ascii?Q?KG6eFu+YjK9keJC4wVkO8Yls03wi5cUZqeEXIkmO57GaS+98mW3LDTKFE4/a?=
- =?us-ascii?Q?fA/2XgpekW6SSDvXWItlsHlWyD+sx2X8lXX4f6WM3PhYFvOu4ojEt9YsMwFz?=
- =?us-ascii?Q?BIG5xPWC2NT/KLsdNubau6iOQarH4Q6uQCkSzk8JVMVaGvv4nj8Frf8Q5Ue0?=
- =?us-ascii?Q?GmPIT9Hp5QvDR2U0voyLAYKoG6eyJVC6V8utV9Gi/Tb/GRwj5PqOxWeoovfm?=
- =?us-ascii?Q?Vh/D3ihM0+4OagBRE9gFf5mn+KK/8Lyf6upXtSH6Jca5Ov97BLXjPB0N08BT?=
- =?us-ascii?Q?LxM7EL21lc/GGx1pBB95oxHff8X7Dyaibncd5bHQ8l94Xke55sn0j+aZj6tl?=
- =?us-ascii?Q?s1cjXcJW3qLXJgZhicPQJx3+qETZkpPXzZFNfiV50nLi25a6izxvRvwAPBOc?=
- =?us-ascii?Q?ZVgzgAm3xEOI2sQkTIT5ulDcjmkRYjVSFaLoVqxJ0AtYTIAEn4BlDKuxqWjw?=
- =?us-ascii?Q?APILbrwqbkff4iHOm057YM/jEzgRZhIB8SSZiQuwaBSUafLiwc3IT6BGquSl?=
- =?us-ascii?Q?NWDAONmrr3yExjwogUjIuvLNayNtOWkLIjsLa/DqW5B3o5VJ0eG2ZAKf2L4U?=
- =?us-ascii?Q?2GV9AxYyw1OeT5Pz/BrSFl4YHP1zBiKKfdd2ZTDDr0V+kOvflslJSgB1n4j/?=
- =?us-ascii?Q?sBIyZI+ROuUnPtcjMNgJooFfFzwgVHr8LcrbOIuSYKyQcQWJUP+fjl4TSvcu?=
- =?us-ascii?Q?UB6cwD6H7lh2ZJVXTW8rD0WUmX7bm+H8RL1HbHy+9brSM9Om0V8XQky73eq+?=
- =?us-ascii?Q?9gnjlCgJI+0udeNZO/UGAvgMKKqdB90ZU4cm56jIqabgn928HLFGb32zRzre?=
- =?us-ascii?Q?pMbmKDQx6wI7BmtcWRGxyRxLnvOME44YP7Rk/zNPOTqTHqPb7WghfHCy48cY?=
- =?us-ascii?Q?eZLCuknG/bs0KH/XX3orHStWM8yBCu1t1P8dse3xCQTlT84bhxe6TVvD/F3w?=
- =?us-ascii?Q?5BBJsdai0MPXJ5QtFhpRRNx9LECNWN+CnhNhBj2q85efaOTB+ZiGfWp7L5rn?=
- =?us-ascii?Q?XLzqmImuhAxRjk32QhFOBRhC5IFMrP1X5rE1jMqiDRcFq3V4D+bADD+Elz3w?=
- =?us-ascii?Q?TE6CG5y88zA8F5uZCe87dFn5q1hJ5sGyDkO5IARqTRr7xudWHZ01Az4m4xqQ?=
- =?us-ascii?Q?TS5TrgVhUMftqzvKuJT7ltX86XDlaPgJuP1VYNEHZIgCJJO0wdx9xCq2f6Ri?=
- =?us-ascii?Q?U6NGzf0KNKfMCGykl9VZXKL7emv3WjtuNumtKiZfePNPl4bz4DKfGMuAxEgO?=
- =?us-ascii?Q?wK1ja+ZtYQqpnTlEBKKJGoRJ684tWRUK+3K+7jxTjNoWkVRFymITmPtAIMRj?=
- =?us-ascii?Q?/vcM0woqd6BytKQpKt7M+7YnJ3gs36XNVzTqA4lDiXLJBkAjSiyA7tPXk07+?=
- =?us-ascii?Q?TJhmgVORBf6sXd7wBKI0NF44Z6GogUG8X7WpNYuJ+4Zj8AoL8opZ8XpqzJ5r?=
- =?us-ascii?Q?zP1QRqXW9IiKcSEk3jpSJDcC0mf4LRGRosQJJsAZljVx+sdSIOSd7+WMqEDt?=
- =?us-ascii?Q?IgNOg34ITSBn8WEPpiVrv7euGB+z7XDNlxm3wmBsQUnnzeCQmBjEO9HKu+dH?=
- =?us-ascii?Q?RT2SLzn3hraPwScZFMPBKo2BrjRFaHi1EANUV9zGTyaSeOW/?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48c0180f-08f4-4ceb-a7c3-08df2861cbca
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2026 13:07:40.6698
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Agc3VCPW7S2tKfm3qvo2Tv5ppfMvZXItHEPqiGX9vdMRxB7257K0zIp4uLhr8Cjb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB177419
+Content-Type: text/plain; charset="utf-8"
+X-Change-ID: 20260821-fix-p2p-acs-v4-0-e72455e3a261
+X-Mailer: b4 0.15-dev-18f8f
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 12, 2026 at 03:31:17PM +0530, Aneesh Kumar K.V wrote:
+PCI P2PDMA applies Request and Completion Redirect throughout both paths.
+This misclassifies asymmetric and nested switches, and reports one answer
+for every kind of TLP.
 
-> With this series, vdevices hold a reference to their parent vIOMMU,
-> which pins arm-cca-host. sysfs unbind is disabled, and the SMCCC
-> provider device has no hot-unplug path.
+Three ACS controls act on TLP attributes the Requester chooses rather
+than on the topology: Translation Blocking and Direct Translated P2P act on
+a Request's Address Type, and Completion Redirect skips Completions carrying
+Relaxed Ordering.
 
-It probably needs some logic like vfio has to prevent unregister from
-completing if there are active users. The module pin should prevent it
-from ever triggering, but as a safety precaution.
+Evaluate each direction at the path divergence, decide every class from the
+one walk, and treat a client with ATS enabled as translating unless its
+driver declares per-mapping ATS.
 
-Jason
+This completes the P2PDMA side; dma-buf and mlx5 follow separately.
+
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+Changes in v10:
+- Fixed the Relaxed Ordering description: a Completion carries the
+  attribute of its Request (PCIe r7.0 sec 2.2.9.1).
+- Used the PCIe terms Requester and Completer for TLPs, ACS and ports;
+  client and provider remain for P2PDMA objects.
+- Rebased on pci/p2pdma, which includes the prerequisite P2PDMA fixes.
+- Added a topology example to the path divergence patch.
+- Removed a repeated sentence from the disable_acs_redir documentation.
+- Explained the path divergence in the documentation.
+- Link to v9: https://patch.msgid.link/20261001-fix-p2p-acs-v4-0-v9-0-1a8e0f50ddd9@nvidia.com
+
+Changes in v9:
+- Removed dmabuf patches for now.
+- Removed mlx5 per-mapping ATS declaration for now; it comes back with
+  the dmabuf patches.
+- Link to v8: https://patch.msgid.link/20260928-fix-p2p-acs-v4-0-v8-0-404453b9c435@nvidia.com
+
+Changes in v8:
+- Added extra Reviewed-by from Logan.
+- Added patches to take care of ATS per-device vs. per-mapping option
+- Link to v7: https://patch.msgid.link/20260920-fix-p2p-acs-v4-0-v7-0-ca0828ab697c@nvidia.com
+
+Changes in v7:
+- Removed "Document pdev->p2pdma lifetime rules" patch, it gives nothing
+  after p2pmem fix.
+- Split dmabuf patch.
+- Tushar retested the series, so added his Tested-by.
+- Added Logan's ROB tags and fixed minor documentation issues pointed
+  by him.
+- Link to v6: https://lore.kernel.org/all/20260914-fix-p2p-acs-v4-0-v6-0-5ef07ec9ef06@nvidia.com/
+
+Changes in v6:
+- Changed DMABUF to use callbacks and not directly stored pointer.
+- Link to v5: https://patch.msgid.link/20260910-fix-p2p-acs-v4-0-v5-0-856087f63c0d@nvidia.com
+
+Changes in v5:
+- Rebase on the posted fixes.
+- Dropped tags from changed patches.
+- Remove Egress Control Vector interpretation and coverage.
+- Keep enabled Egress Control conservative as a Request redirect.
+- Use pci_dbg()/dev_dbg() for diagnostics and drop the "debug" prefix.
+- Removed code comments from "Document the pdev->p2pdma lifetime and RCU
+  rules" patch and reduced description to actual lifetime explanation.
+- Added note that Linux assumes that TLPs are in strict-ordering and
+  untranslated.
+- Added code to calculate p2p paths per-TLP type.
+- Converted mlx5 to use that new proposed API.
+- Link to https://patch.msgid.link/20260821-fix-p2p-acs-v4-0-v4-0-94426b96de73@nvidia.com
+
+Changes in v4:
+- Reject ACS Violations and unreadable routing state instead of treating
+  them as host-bridge redirects
+- Added Tested-by tags from Tushar Dave
+- Added support to asymmetric ACS routing
+- Limited redirect checks to the two ports at the path divergence
+- Added standalone ACS routing diagnostics for hardware retesting
+- Dropped " PCI: Account for Direct Translated P2P in ACS isolation checks" patch
+- Link to v3: https://patch.msgid.link/20260811-fix-p2p-acs-v3-0-efc488ee7c03@nvidia.com
+
+Changes in v3:
+- Fixed pci_p2pdma_add_resource() error unwinding
+- Made pdev->p2pdma teardown wait unconditionally for RCU readers
+- Restricted pci_p2pmem_find_many() to pool-backed providers
+- Documented the pdev->p2pdma lifetime and RCU rules
+- Fixed calc_map_type_and_dist() handling of the verbose argument
+- Required the ACS port and target to share a bus before indexing the
+  Egress Control Vector
+- Gave pci_acs_enabled() and pci_acs_path_enabled() a scope, so the ACS
+  Direct Translated P2P rule no longer stops pci_enable_pasid() from
+  enabling PASID
+- Dropped "Report ACS ports when the paths share no upstream bridge":
+  the mapping type cannot change without a shared upstream bridge, so
+  the pci=disable_acs_redir= hint was not actionable there and the ACS
+  walk only cost config space reads
+- Folded the Request Redirect rule into pci_acs_rr_ineffective(), so
+  pci_acs_flags_enabled() and the Intel SPT PCH quirk share one copy
+- Renamed pci_acs_egress_ctrl_set() to pci_acs_egress_ctrl_is_set(), it
+  reads the bit rather than setting it
+- Reworded the blocked-path warning: ACS may also leave the direct route
+  indeterminate rather than blocked
+- Added KUnit coverage for the shared-bus guard, a device with no ACS
+  capability and an unreadable ACS Control register
+- Added the missing Fixes: tags, a second one on the
+  pci_p2pdma_add_resource() unwinding fix (the dangling devres action
+  dates to f58ef9d1d135) and one on the Egress Control isolation change
+- Link to v2: https://patch.msgid.link/20260806-fix-p2p-acs-v2-0-0cec14812965@nvidia.com
+
+Changes in v2:
+- Added Logan's ROB tags
+- Added commas in Documentation patch
+- Link to v1: https://patch.msgid.link/20260802-fix-p2p-acs-v1-0-a7c5eb64fff6@nvidia.com
+
+---
+Leon Romanovsky (18):
+      PCI/P2PDMA: Document the TLP attribute assumptions
+      PCI/P2PDMA: Derive routing from directional ACS controls
+      PCI: Reject unreadable ACS controls in isolation checks
+      PCI/P2PDMA: Evaluate ACS controls at the path divergence
+      PCI/P2PDMA: Document directional ACS routing
+      PCI/P2PDMA: Collect the path's ACS controls before deciding
+      PCI/P2PDMA: Answer routing per TLP class
+      PCI/P2PDMA: Route Relaxed Ordering Completions directly
+      PCI/P2PDMA: Reject Translated Requests blocked by Translation Blocking
+      PCI/P2PDMA: Route Translated Requests under Direct Translated P2P
+      PCI/P2PDMA: Log detailed ACS routing diagnostics
+      PCI/P2PDMA: Add KUnit tests for the ACS routing decisions
+      PCI/P2PDMA: Test the ACS P2P routing walk
+      PCI: Add KUnit coverage for ACS isolation checks
+      PCI/P2PDMA: Document TLP-class routing
+      PCI/P2PDMA: Let a client declare that it selects ATS per mapping
+      PCI/P2PDMA: Evaluate the ATS path for clients with ATS enabled
+      PCI/P2PDMA: Test the routing of clients with ATS enabled
+
+ Documentation/admin-guide/kernel-parameters.txt |  11 +-
+ Documentation/driver-api/pci/p2pdma.rst         |  81 +++
+ drivers/pci/Kconfig                             |  15 +
+ drivers/pci/Makefile                            |   1 +
+ drivers/pci/p2pdma.c                            | 719 ++++++++++++++++++--
+ drivers/pci/pci.c                               |   7 +-
+ drivers/pci/pci.h                               |  56 ++
+ drivers/pci/pci_acs_test.c                      | 860 ++++++++++++++++++++++++
+ drivers/pci/quirks.c                            |   6 +-
+ include/linux/pci-p2pdma.h                      |  12 +-
+ 10 files changed, 1683 insertions(+), 85 deletions(-)
+---
+base-commit: 36038f0e8377ef316b723d0d85b1510bc64069ab
+change-id: 20260821-fix-p2p-acs-v4-0-e72455e3a261
+
+Best regards,
+--  
+Leon Romanovsky <leonro@nvidia.com>
+
