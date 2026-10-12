@@ -1,131 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD14E361961;
-	Mon, 12 Oct 2026 11:57:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC31D47ACD6
+	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 12:17:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791806252; cv=none; b=pVSpt9HR3CJwOUWX62z54Ah6nIutD23qR+P3XgEaKFq4yytvZxpkFxqMGRr9A515Da7KQfj2p9ljG5abbhRhuERB+TySQ8LQzzN6xm60B9g3+ykV4zIln5wXLuqhLBFldkVlahWeIbDeecQEXI9MjPrh6jy8wJcDCilLHRVY5wE=
+	t=1791807465; cv=none; b=d83WFD+OK/Qi/a2UDT5byhgqnnzFZ7A/qgYWwPmWMSQcP1BCKUlukouLfAsa3jRvt7rHP5sAlhGv8x2n3wvlvOrXpWwFQt6HKyDaahQYeMOErYwGPrVHEFEpOPaAWvSn4S0dqULxvwYlMPZjOHgtKFBPgKIPNpFV9mHDA5nNJnw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791806252; c=relaxed/simple;
-	bh=zHKVY/NJvHBNZ9hB3vMb1iEOuHc9AyYoNpqdlMl+GP4=;
+	s=arc-20240116; t=1791807465; c=relaxed/simple;
+	bh=a97eitSQlYdigcawlcd8+/c0hBgHCxsubwLctE3uf8c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I5vlnsC3kq/HEQMppNDlJjmRwHZ+PCH0iV8qlQBH/hHfx2vLfHb7UmKX61EQOKWBHdPyLqc7yRYOVchcC0LYUmf8bxlBmO3HSy147uWRkg57b9icJxKm4ZBHRGkzWI4xtL/MNPKCQNBbF/wWG8EEATX9ME04PBhtBhWOBUbfxgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RXwZp/P7; arc=none smtp.client-ip=100.103.45.18
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RXwZp/P7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE761F0089B;
-	Mon, 12 Oct 2026 11:57:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791806250;
-	bh=dIdf0EGX3pGuBo+uaCGYdHblHIOFatYE3He9grPS0X0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=RXwZp/P7uRNArmaAhe0CHt6e5o5jX04SLyCRKlf2SJazfM0blAKjm8KtZvox63ONT
-	 Reb4NOOE4ucQMY0rI7BcHL662fhJg6LRTFOcgaa9ZFldfLNDM1uP2lyc5/dIbBRde6
-	 FLipsxi0fmaesgVy06bTQkR9gCv3h51b8JbMGMyFpVueZ7YvGwFqQkPpjbaMWHfQLI
-	 bcAUtReyeQ0A5sQRVhlrk2EIf9dNtDmB5eCSdauNtFppTsAn+uwz9V6rXOyvUsxl/y
-	 CGJ+3BFX2IneJRacFb4dMFWzKpbojw0mDD8EmP6rHM22Rme7630rx+LR3QHJgSYJLK
-	 B2G/agcYNEbFQ==
-Date: Mon, 12 Oct 2026 14:57:27 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v9 07/18] PCI/P2PDMA: Answer routing per TLP class
-Message-ID: <20261012115727.GF219304@unreal>
-References: <20261001-fix-p2p-acs-v4-0-v9-7-1a8e0f50ddd9@nvidia.com>
- <20261009212529.GA1086940@bhelgaas>
+	 Content-Type:Content-Disposition:In-Reply-To; b=N8rI7p9Axdkm68s19k0HbS09U+wxWDmUXx1fzYEJ1dF9au6xttT4nstadfrlh4BqFCVI+i2uyPDzZt5W0SRcFPpSV1KUC+LF7o2mkPrMjUt0sVythKo4vXoljmx/hbRcNiruG3+25dS+CSP1fSvmi/73tidIj2Dy7/uUnygk6/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 5D7F96732A; Mon, 12 Oct 2026 14:17:37 +0200 (CEST)
+Date: Mon, 12 Oct 2026 14:17:36 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: John Garry <john.garry@linux.dev>
+Cc: Adrian Huang12 <ahuang12@lenovo.com>, Christoph Hellwig <hch@lst.de>,
+	"kbusch@kernel.org" <kbusch@kernel.org>,
+	"sagi@grimberg.me" <sagi@grimberg.me>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	Jiwei JW10 Sun <sunjw10@lenovo.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [External] Re: [PATCH] Revert "nvme-pci: clamp max_hw_sectors
+ based on DMA optimized limitation"
+Message-ID: <20261012121736.GE29954@lst.de>
+References: <20261006120248.147654-1-hch@lst.de> <8cf8a8ea-c9c9-434b-aec6-e361280a88a4@linux.dev> <20261008123724.GA22096@lst.de> <TPZP295MB0013C6E51C73799E49B8EFF4B3922@TPZP295MB0013.TWNP295.PROD.OUTLOOK.COM> <2007f03b-2c76-4c36-a0bd-0ce99d1a01a2@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261009212529.GA1086940@bhelgaas>
+In-Reply-To: <2007f03b-2c76-4c36-a0bd-0ce99d1a01a2@linux.dev>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Fri, Oct 09, 2026 at 04:25:29PM -0500, Bjorn Helgaas wrote:
-> On Thu, Oct 01, 2026 at 02:55:15PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > calc_map_type_and_dist() returns one mapping type per provider and client,
-> > valid only for strictly ordered Requests carrying an Untranslated address.
-> > Clients that use Relaxed Ordering or ATS cannot ask what the fabric would
-> > do with their traffic.
-> > 
-> > Add enum pci_p2pdma_tlp_flags to name a class and pci_p2pdma_map_type_tlp()
-> > to ask about one. The topology walk and the ACS Control reads do not depend
-> > on the class, so decide all of them from the one walk and cache them
-> > together, four bits each. Every class still answers alike; the controls
-> > that tell them apart come next.
-> > 
-> > Tested-by: Tushar Dave <tdave@nvidia.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  drivers/pci/p2pdma.c | 159 +++++++++++++++++++++++++++++++++++++++++----------
-> >  1 file changed, 128 insertions(+), 31 deletions(-)
-> > 
-> > diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-> > index 841c86be31bb..43e225cc5735 100644
-> > --- a/drivers/pci/p2pdma.c
-> > +++ b/drivers/pci/p2pdma.c
-> > @@ -492,6 +492,33 @@ static struct pci_dev *find_parent_pci_dev(struct device *dev)
-> >  	return NULL;
-> >  }
-> >  
-> > +/**
-> > + * enum pci_p2pdma_tlp_flags - Properties of the TLPs a client will issue
-> > + *
-> > + * These describe the traffic rather than the topology, and select which ACS
-> > + * controls apply along the peer-to-peer path. A value of 0 means strictly
-> > + * ordered Requests carrying an Untranslated address.
-> > + *
-> > + * @PCI_P2PDMA_TLP_TRANSLATED: Requests carry an ATS Translated address. PCIe
-> > + *	r7.0 sec 6.12.3 routes those to the peer regardless of ACS P2P Request
-> > + *	Redirect and ACS P2P Egress Control wherever ACS Direct Translated P2P
-> > + *	is enabled.
-> > + * @PCI_P2PDMA_TLP_RELAXED_CPL: The provider returns Completions with the
-> > + *	Relaxed Ordering attribute set. PCIe r7.0 sec 6.12.1.1 never redirects
-> > + *	those, so ACS P2P Completion Redirect does not gate the path. The
-> > + *	Completer chooses this attribute and the specification does not require
-> > + *	it to copy Relaxed Ordering from the Request into the Completion, so a
-> > + *	caller passing this flag asserts that its provider does.
-> 
-> It doesn't sound right to me that Completers choose the attribute.  I
-> thought *Requesters* chose the RO attribute based on their design
-> (knowledge about which transactions require strong ordering) and their
-> Enable Relaxed Ordering bit.  Sec 2.2.9.1 says:
-> 
->   - Completion headers must supply the same values for the Attribute
->     as were supplied in the header of the corresponding Request,
->     except as explicitly allowed:
-> 
->     - when IDO is used (see § Section 2.2.6.4)
-> 
->     - when RO is used in a Translation Completion (see § Section
->       10.2.3)
+On Mon, Oct 12, 2026 at 09:42:04AM +0100, John Garry wrote:
+> And now we seem to have a conflict, as Christoph wants block size > IOVA 
+> rcache limit but you find it may cause this soft lockup.
+>
+>> 2. Another NVME with mdts=5 (maximum data transfer size = 128KB)
+>>    2.1 The issue does not reproduce regardless of the 'bs' configuration
+>> 3. The condition '128 KB' is identified because the IOMMU scalable IOVA mechanism supports a maximum transfer size of 128 KB.
+>> 4. IOMMU pass-through mode does not trigger the issue with the 'mdts=10' nvme disk.
+>> 5. The issue only appears with high-core-count servers
+>>    5.1 Reproduced servers: 448-core server and 384-core server
+>>    5.2 Non-reproduced server: 128-core server
+>
+> How long does it take for the lockup to trigger? Pretty quickly, I guess.
+>
+> Does changing the number of CPUs affect throughput (before the lockup)? Are 
+> you using just a single disk?
 
-You are right, while the code is correct and we indeed expects from
-"Requester" to chose, the comment is not correct and needs to be
-changed.
+If the iova cache locks up under a perfectly normal workloads it
+is broken.  We really need to fix the code there.
 
-Thanks
