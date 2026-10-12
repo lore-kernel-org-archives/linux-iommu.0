@@ -1,276 +1,183 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010039.outbound.protection.outlook.com [52.101.84.39])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBF2748EBC1
-	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 13:19:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.39
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791811143; cv=fail; b=hqGwnWd11n2Kf88B/wQDJVvyUZ/YSSiod1wb2z+xR52VOlBFsihHRHAYZL97b81TKYXY40ZyUQMs1iYufwM0DHlO2UQyUdxie/8N4B5+lU6tK97wzR+Ha9/tULD1GDQ7JEQNGPzx+h9PoIGGuPis4qJdRKPoGyQ26diKHZQEmPo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791811143; c=relaxed/simple;
-	bh=ROB1Xf+TvXuzsrvpRMjnv5/L/HPgSvCmZX8AVp+e8Jc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=O7WUH2W6HTScXMUdn9hr7FWEMepJm89g0ADN7Gt7Yuad2qiBc77+hCeuUp3K9qF/z89ld6W+4bcU+SCqIqr4II22MlPYNhJFyclDGf4uQKhkcnDuZKPUVVWL017BMkREOPDre6azRndPJGu7Flwf6qqlt27Xz6L8YlBEMo6ze0o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=TOGy+2c8; arc=fail smtp.client-ip=52.101.84.39
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 669F7346777
+	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 13:28:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791811697; cv=none; b=lkjX9Voezfs4sPn3O1tFBWKnsyljuOKFRGh9bllMCbxApu6778UiZjsYIyJ4voDIENhSCLM+sCnrd/QpqMywSfAB8ikJdsVNfPutIEMCphbvFSWISSJYyP1hdrBhVmEQKKrvkZm37Lq1ZFMush4QHSOIIAMgK3Zt4AUniE5gWuI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791811697; c=relaxed/simple;
+	bh=qtj9QPvxdaek1ie58tXDrS0v4YKkGwAE+g3oWgU0JC8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SuDoKYiFOm0ueb1ZbuSPSqxH3bUh5twnf69a09fZfYS7tYGsBxUbQ9W8A3555WB8HuByotYMDfzHeYoMDx7QaNxBoTSgKzvYHHWTYrvf8vZbBoOOh1v/23MuPYwhcFtGwhi+vgNSfd7OfztgnWRHAcebaxACmzOkso+EdAR6zHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PG+UdpA0; arc=none smtp.client-ip=209.85.219.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="TOGy+2c8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TqSYDltBd1LMeVhe8QgkAeR5xNcM37S27ecWcIYsOzIz0S2Yjw4o1DFUokDfqzd+LBLDG2BzDFfnx46L6cyWuUlvF8lGjW3SOP/Iu6qIX8bdX84x3CJ3vIF1BWd26n/FmsmxdcX+BwBKI2Wk46wYo6WSmzLY9hC4OPWXjwjfMjzld/AI4JcuIT5eevnZyd7LzcOvE8fxwf+VeK4g13sSInMhrk7ENcOJz9ac/wMAOoTfAhRLgvLcuhj8pjSL5zbPtSf70MB1UPWZDyLB6iwaR/9q7Py99yN0SEDqjMeGhFJLS+wzNWKHEp0md1e/EO/MR9lEDHp7jNbYhTaE36cgHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Dk75LqYt1alYz1PWaWOdD4b/cjZLZXMEv/OmqxUE6lk=;
- b=g4n/rU5ODzCBPcD+qnEMR0sDqAVWj0M2KBUw1nD30a7+cSqH4uoyW8KkWlWEplDRoBA32+QYN8S6flO0ERrIgeDYa5b391pSUzH/G0h5yw3VtLUV3g1GUUCo3fFdztEOkhKEx0fUUQ6Z2z11/8x6XnlVJuapkn/IgXjHtd8nyv6QtTVsEAASZB3HZlcV7N/iSfssdpc3dCWd2rnTIlOiR7m9SiQc0J/QvlN6v9Al8gb3L6zFK+6adKjHCiOX/OY73JcgIl1VwEOFDgR6M2ansrAIi7gbn3oq7zOiAOALlbKNooBiBv4pWp0B81hqJOWExO6tSR0NL8dcqVrjOY03lg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dk75LqYt1alYz1PWaWOdD4b/cjZLZXMEv/OmqxUE6lk=;
- b=TOGy+2c8NpsMuIqFQ7RB0y/CRF7BpRJWjyd5Aga8Ww5uv1zkIu0rWD/BRwl1uamwjPEFLB5EtuuRPcB/lgxBTOPETEmfefh+vAs+IfEK1m/dpEDN72tknaKzSgE5xfDRUjGrwGgZeo2PX6f1r3vCI43zj6RHeX6lDLdRvCKwLFkehR6IqKQw+otgjQtD52UHwFI/neqQKIwL9Tz8ldgRhfuISnRp6VJ2xrHOf4zvwuB2oPjn2H9vBIvBQ30rCQFuI2lC/ZEYs28gRnT/0oVW8lPzgwErtlcSGbAs/0+2kr1GWfJMSEEsg75XhBsncQWsQeICVJ4wg6UTDzGxXqbaTQ==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
- by DB8PR04MB6953.eurprd04.prod.outlook.com (2603:10a6:10:111::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.21; Mon, 12 Oct
- 2026 13:18:58 +0000
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0496.021; Mon, 12 Oct 2026
- 13:18:58 +0000
-Date: Mon, 12 Oct 2026 21:23:32 +0800
-From: Peng Fan <peng.fan@oss.nxp.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
-	Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC v6 5/5] iommu/arm-smmu-v3: Wire up shared-SID STE
- ordering and feature gating
-Message-ID: <aszfVNP6DGzWYdK0@shlinux89>
-References: <20261011-smmu-shared-sid-v6-0-cb76b89dc612@nxp.com>
- <20261011-smmu-shared-sid-v6-5-cb76b89dc612@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261011-smmu-shared-sid-v6-5-cb76b89dc612@nxp.com>
-X-ClientProxiedBy: MA5PR01CA0215.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:1f3::19) To AM8PR04MB7874.eurprd04.prod.outlook.com
- (2603:10a6:20b:24d::9)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PG+UdpA0"
+Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-91054f537ccso23401466d6.1
+        for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 06:28:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1791811694; x=1792416494; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=jJd/wX/j900G5XTB7UARaKvliXjJOtwZKQBz13LNSNw=;
+        b=PG+UdpA0RibTYJ8lHM2X+fS0ZaDwo8n3vs5GO7TumzqzHFGUC6ek7rUlp2zfaWH3c5
+         mTaOkwHkIsNeO+MraqSvgdLYzAWDW6i4xSsR64avPwZSRh3eN0UQiMLIlhOzID7b2L9M
+         PECibxP+Smm3IhVA7dqIArjZ7bp8YdYXuDVl8FPPu+Do/9odGIZUUk5AbDIj3dJ0E40n
+         0ShHHhFR/2WF2L1MweLMlmrjqBw74Zw+JsRj88EWTgEFlX2CMaI9ljRsiWOgMmyJtHiu
+         tHEqMdHskBz9U+MoWo79X6q3bLopV/0uF6XJDRvIJRnl6PB52GzxZjU7iJ3/5VNBL+wW
+         ybaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791811694; x=1792416494;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=jJd/wX/j900G5XTB7UARaKvliXjJOtwZKQBz13LNSNw=;
+        b=O5Nfa/h4sVffPCffRo+WmYE5e3INncwgwV+CATt18valajksm3reld/2Mdkbvbk0CT
+         7zs9jAYEByfxl1mrpI4TlQn+92BbCl/LDdhE4r4x5N3yxpl462ZHc86NhaNoGJKB7ZOr
+         0Gm0DCsZnsOj1/ML9NFvHFnondk4kNzjkQ8YvGuswT5u5GVMKSIwP1ddw16XJW9CaGYs
+         uoDAsfA/VsXlVC6XI6aQno6qd4rmr7RLVosZswuuGFHZO22qtYv5RHkd/ey6ZoD90Y1T
+         +Kc53HXzvV37VNDQLp57kFL+F/P2Xz/E+yRImpV0DYc6oPEuyL1ABI0scdOhSDzo6y/8
+         WcRQ==
+X-Forwarded-Encrypted: i=1; AKwUvBx0zfS8KkOejzhEEVrONtF4x0Q/IlXibrGleCRVeoDy3Mgs/oicdWlvg9mfmH5PHNhHNuv5Sw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLRFU1Macw3pvxkLN2Hh2iYOg1sb1vZWvegqqtoapnkncnsBh8x
+	T+M1IFkF98N7JCh+yfQPn72FWYtjWVr/bhiZXp7uP2aLJuT64AsFH7vi8XIOPBTgRcY=
+X-Gm-Gg: AYBFou2L33rF5+B5fP6Ai0fF1yfmZ3QhNJhWt7K9cMsaW+NA40pIe1MEO5ouhc6te3I
+	H9nLfHlbj0M845nCR3Ibabf7wdh06UFmLRhqkvVKEzEblAQ9ZdSj7scqWQLkE9jl8DN9Oyx6/mq
+	aNYvnkP4dD2fv7l9q9RN8IaMV6wQLej1QPZISWPr4fJBMlxJASlqfISml0oiNZ3Rm2Agsy96QeX
+	xpz29Pzvsm7v3xHWkAknxMa+RhPyWtxJb1LZIklShe1RgjrhRMUInns8cfsP7Kos2pjUtMSbfFl
+	MmXqKsrxiaT5tcGyjdQAEmtQ5bxzgFZA7jDGAYuhMtKVggUyn0u/+i570zDG0i2ivtP172pB5fI
+	mdg2kYnlh9rSi8y8vIrqU5cmWjZkj4G60zWaWFR2MrEtunvB9Ri2aMIYGY81f37NIjIIeIBldsr
+	F/wKLBfMyEd2N5KO2hhVAcC0UXZTC2K8ueY0Q8CEmeusPrApUiP8OjQCzd4sUs2rbC6TIl8UeMe
+	AVT44+qkUba3Kv0O62hVC8GEd7ENiJSY2zhUat+g+69hnyqcEdLqbPE
+X-Received: by 2002:a05:620a:601b:b0:93e:6a4b:3ea6 with SMTP id af79cd13be357-93ebd1de502mr1556980385a.24.1791811693967;
+        Mon, 12 Oct 2026 06:28:13 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93eb986c0e9sm869347185a.20.2026.10.12.06.28.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2026 06:28:11 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xGG4Y-00000006Hq6-1xVE;
+	Mon, 12 Oct 2026 10:28:10 -0300
+Date: Mon, 12 Oct 2026 10:28:10 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Daniel Drake <ddrake@baylibre.com>,
+	Matthew Wilcox <willy@infradead.org>
+Cc: robin.murphy@arm.com, iommu@lists.linux.dev
+Subject: Re: [RFC] Subpage allocations for IOMMU tables
+Message-ID: <20261012132810.GE14213@ziepe.ca>
+References: <20261012091823.114480-1-ddrake@baylibre.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|DB8PR04MB6953:EE_
-X-MS-Office365-Filtering-Correlation-Id: 70b9dda4-40c2-434f-b921-08df28635f9f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|23010399003|1800799024|7416014|376014|366016|6133799003|10067099003|22082099003|18002099003|13003099007|11063799006|261009223027099003|4143699003|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	By+ZwRpqBnzT6dsOJMDr36133UM+WAhbP5daSKBpaAvtaQuKh8pW2mogy96cMaPPAzC+80ZGrVOhw8Z/Ebf92Xb5NFOREajxPGiI0wMZGsC5hF6a5a3aXFZkT06W9r8HjSWVsQmL32Du0dpOUoA0f/AMp3QQWZWLVSVv1LHtr3ZCntFSOdpbQoRDu2thiopB071rQg+tdhn0uZOfO73JWBtClRVUZm+ZAqRgQaZ8Qp2eeL9fHk28eM+HJ93TAVvAoExl5MMUohMHNkX+klXHWuSC9zMUlpdEb68Z/wsbGj28R6GZ6ysyrChRxYEVa1IC8MgxJyDOqV9ehtsTBNyLEXWo172Vm/ELx9EkrVu3Gxu+3Bwse1QLa5GkY7ddt4/FFIkG+DIgLDXqjZwIJdLSGB+kQvWY0SKn8YNWEsp6MtpLuX3FcfY00U+aXMrCHhCeXrLGgHanje8bnrvJUlGFBtM8qfeICe/WDVn7iFVgUhl/UQrGd/vglYpvwA3IHzxUvuuCVawadnuwqKIzikEAsNJz7LE9VddLjGteguervnQVtdKGQwlWTWIz7wp3ONFNsjr9B2OEYpc76mfqO+CFTs5OdGgdbEmyWYrv0NaGZ7s=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(23010399003)(1800799024)(7416014)(376014)(366016)(6133799003)(10067099003)(22082099003)(18002099003)(13003099007)(11063799006)(261009223027099003)(4143699003)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?PTLtNWnhqfAzNA65MedZ1FOFnAb/7zqp1UBLaxBc2jISYsp1Fc590pJJGy9q?=
- =?us-ascii?Q?rYM1IaaDGpPvOkNlKqZk8g57fDSKN3sVQHj5WlyYzAppvgi20PhhzqRgs3x5?=
- =?us-ascii?Q?m7KsIyBNvRt/rpcRc5xUCVETp5iGkXVt7L53EeEeulR8ViaGNkizBwZ5wiNe?=
- =?us-ascii?Q?nDlxaXzrvdL62yaCjkhchY5x8RCh8vJok2pspACNo+BppSZulnLyEsT8HQ13?=
- =?us-ascii?Q?AeC7pgU9f60sxojvQ0JYGlw7Yj96OuHMcK8vTQlHN2r7eRWBJeIiCLcKy7o4?=
- =?us-ascii?Q?9j9Qdvu0f69H8ifOfySEawRcVM9vlaD89CQymVUi06l93D/OrOV5GIw6EkrL?=
- =?us-ascii?Q?b8PWTqvVV4hhqqAomvAFUHnehoLtWTGtJS+OXhwSDmXoXkWrPeAm7Vt00OfV?=
- =?us-ascii?Q?m2aZREoBAaoX9k6Kd4FrnqQ7YMPeghUoLI2IA0OtzSJQ12AfhlyqSQaBzgkl?=
- =?us-ascii?Q?MEyoFJ73zlZgfrDIaGXDkO5y9tI6KwxDKFUGyTKmHxOAYTX7S8Fl8r9+QWeF?=
- =?us-ascii?Q?UJxy8LYR/6GgK4k6w3ey5sZxfNlpLU0V/xix0C6dwgk+RWGqhbNvgpwBaUnO?=
- =?us-ascii?Q?CyNxjFHDXaQ3qdUvvLDXjAoHRRpFJroNtw0A3bR8b2x2d+XqRY55D/1nFhFK?=
- =?us-ascii?Q?5uf85ag/ywXMHKufbJMA/ULTyIgBFqCrx3hBjBKHYRQpQXw2WpKW6hezP7AA?=
- =?us-ascii?Q?3QrsRISdwycxti69Zyd2PH2R9wlgTabjPP0cdeiJvg9EX/vmU3jBlglEOQM7?=
- =?us-ascii?Q?XJg6BfswI3ZMn2nq1CbLjYE9AyzpkCX8+3Q8FVRWmpx7zqPGLgQ+ZGQZ1arU?=
- =?us-ascii?Q?ADkjxPHf3POrI/s960Qy6Cz1AXeWx1gZ+49sYorwBErXaWODpws5f8BwOt10?=
- =?us-ascii?Q?nenyN1WfE3R2DyWeGZxzOQ8v58/GB1I9NHBWXAtIv6FJj6abTyaryAPXlh8H?=
- =?us-ascii?Q?+JB7gMZxELgaUjlxgmKoE0+NHKJue845g2UYETwSdca4SOSZ0/9unmDaHomC?=
- =?us-ascii?Q?mWBkr7Smr0PjfCsURuigwXJR1xXKZlLBY6056ZuPkDLAaNLdheQMQMEqtOWs?=
- =?us-ascii?Q?wzP6YfXemmKWNCMCIQy+bsjkOg9hAsvsMRBoJeZZB33BydLYHHsleoltRHjW?=
- =?us-ascii?Q?/y3HGxsPO29eqHpJ73JKhBYFbfFB/3ScldQ02kgMTVeWCerA6ifqejijqArz?=
- =?us-ascii?Q?jG3hWDxn2u5BpVBqzURMb77oEsmZKUUgiBbZr5Kuynqz1dl4KLeLJAcqHe7c?=
- =?us-ascii?Q?B4k7fq95v6n2esRKfEtQPCIwPI9JpV71I8zWpGoCT1NZOjhETCcWcWAjZtT5?=
- =?us-ascii?Q?tmLSYrAzz9ar7g50EXavo+2n+MFrhscurgrNRBwHz/s+qzNf8rh/S/3AGUB5?=
- =?us-ascii?Q?maQT8eEMgPRKIgf22nagX16k5qlagfiYaXvqhJENWMlALxhe16zdnzlXwu4q?=
- =?us-ascii?Q?R4UjzfiOqebEy16k+c3GB/en4ArHhjms7rO9o2eAGnL7sN6wTN6NSBsL63k7?=
- =?us-ascii?Q?Ec+IjOPFvWjayZ3ywpAtcWJHFZ/OYnIQ9UTY9zUAgO9caEWNRsepRBAyVaTx?=
- =?us-ascii?Q?5OS/IGJXL3AGpI+5tTGZBIp5Z9vYiGZTjeluvO/80uQK5Dk1Vbj1gsbsSSJK?=
- =?us-ascii?Q?vnfguB7QlW6CXiU2R7JJ3YnmEqU46iaquyh3sHhdO/OcCiThTiU62k/MQwkb?=
- =?us-ascii?Q?WyPxfPi+nyC83s1EWbypO2UUX2sV5Gmjkkcp6SDApVAYKLJQqQ7AdAcrhwrN?=
- =?us-ascii?Q?YDyFVQBbi1/XInhwN9l+ZyrOFkCnBOq7gyb4DYOohQRMOOwtK3y3?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 70b9dda4-40c2-434f-b921-08df28635f9f
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2026 13:18:58.4025
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fzD0cE2CHLbny92t5pHYNsa5MmfrQzPIw56xnbdAwhbJ41mHWTvGdEO9WFLXVnjF3cEYsIjuyoWDFXR265C6MK7w4S5DMmaeC5m623PH11f1dfaxWYpemicZSPrirBxd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6953
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261012091823.114480-1-ddrake@baylibre.com>
 
-Hi Robin, Nicolin,
-
-On Sun, Oct 11, 2026 at 07:31:29PM +0800, Peng Fan (OSS) wrote:
->From: Peng Fan <peng.fan@nxp.com>
->
->For shared SIDs, only the first master to attach writes the STE
->(tracked by ste_installed under streams_mutex); subsequent masters
->skip the write.  On teardown, skip the ABORT STE write while other
->masters still share the SID, and reset ste_installed so the next
->domain attach cycle re-writes the STE.
->
->Fault events on shared SIDs cannot be attributed to a specific
->master, so arm_smmu_find_master() returns NULL when the stream's
->shared_masters list is non-empty.
->
->Disable SVA, IOPF/stall, and vSMMU nesting for shared-SID masters
->since all three require unambiguous SID-to-device mapping.  Clear
->stall_enabled for both the new master and the existing first master
->when sharing is detected in arm_smmu_insert_master(), so the STE
->is never programmed with the stall bit.  This prevents
->unrecoverable bus lockups since CMD_RESUME cannot be issued without
->a unique SID-to-device mapping.
->
->Assisted-by: LLM
->Signed-off-by: Peng Fan <peng.fan@nxp.com>
->---
-> .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |  2 +-
-> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  3 ++
-> drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 60 +++++++++++++++++-----
-> 3 files changed, 52 insertions(+), 13 deletions(-)
-
-...
-
->+
->+static bool arm_smmu_skip_shared_ste(struct arm_smmu_device *smmu,
->+				     u32 sid, bool is_abort)
->+{
->+	struct arm_smmu_stream *stream;
->+
->+	lockdep_assert_held(&smmu->streams_mutex);
->+
->+	stream = arm_smmu_find_stream(smmu, sid);
->+	if (!stream || list_empty(&stream->shared_masters))
->+		return false;
->+
->+	if (is_abort) {
->+		stream->ste_installed = false;
->+		return true;
->+	}
->+	if (stream->ste_installed)
->+		return true;
->+	stream->ste_installed = true;
->+	return false;
-
-sashiko has comments: https://sashiko.dev/#/patchset/20261011-smmu-shared-sid-v6-0-cb76b89dc612%40nxp.com
-
-We just need to support a simple case that platform devices(single SID) which
-could share there SIDs, such as MMC-0 and MMC-1 share one SID.
-
-Shared-SID masters are restricted to platform devices sharing a single SID.
-SVA, IOPF, and vSMMU nesting are all rejected for shared-SID masters (patch 5),
-so VFIO passthrough and direct domain replacement scenarios do not apply.
-The only domain transitions are the default DMA domain attach at probe time
-and ABORT on unbind. Or I may miss something.
-
->+}
->+
-> void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master,
-> 				  const struct arm_smmu_ste *target)
-> {
->-	int i, j;
->+	int i;
-> 	struct arm_smmu_device *smmu = master->smmu;
->+	bool is_abort;
+On Mon, Oct 12, 2026 at 11:18:23AM +0200, Daniel Drake wrote:
+> Hi Jason & co,
 > 
-
-....
-
->@@ -4360,9 +4391,11 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
-> 				break;
-> 			}
+> I have been experimenting for how we might support allocations smaller
+> than PAGE_SIZE from iommu_alloc_pages_sz(). Are there any existing
+> ideas or plans for how this could be done?
 > 
->-			if (list_empty(&stream->shared_masters))
->+			if (list_empty(&stream->shared_masters)) {
-> 				list_add_tail(&stream->master->shared_masters_elm,
-> 					      &stream->shared_masters);
->+				stream->master->stall_enabled = false;
+> This would be particularly beneficial for ARM platforms where the
+> tendency of using 16KB or 64KB system page sizes is growing, but the
+> IOMMU is fixed at 4KB page size, leading to wasted memory.
 
-Sashiko comment:
-https://sashiko.dev/#/patchset/20261011-smmu-shared-sid-v6-0-cb76b89dc612%40nxp.com
+Oh? People built SMMUs without the 16k option? That's sad news.  In
+the systems I have the SMMUv3 supports 64k/16k so there is no waste..
 
-"
-Does this dynamically modify the software stall state of the active first
-master without reprogramming the active SMMU hardware STE?
-When a second device sharing a SID is dynamically probed, this clears the
-software stall_enabled flag for the existing active master. However, this
-software state change is never actively flushed to the live hardware Context
-Descriptor (CD), leaving the stall bit active in the SMMU hardware.
-If the first device triggers a page fault while in this mismatched state,
-the SMMU hardware will pause the transaction and generate a stall event.
-Because arm_smmu_find_master() returns NULL for shared SIDs, won't
-arm_smmu_handle_event() drop the event?
-Alternatively, if a fault was already reported to the IOPF queue just before
-the second device's probe, wouldn't arm_smmu_page_response() see the cleared
-stall_enabled flag and return early?
-In both cases, the required CMD_RESUME is never issued. Can this result in
-a permanent, unrecoverable lockup of the SMMU bus? Should this sharing be
-rejected if the existing master is already actively using SVA or IOPF?
-"
-
-I am thinking to simplify reject if stall_enabled is true:
- 			if (list_empty(&stream->shared_masters)) {
-+				if (stream->master->stall_enabled) {
-+					dev_warn(master->dev,
-+						 "Shared StreamID 0x%x rejected: existing master has stall enabled\n",
-+						 sid);
-+					ret = -EBUSY;
-+					break;
-+				}
-
-Otherwise things will be a bit complicated.
-
-May I get your suggestions?
-
-Thanks
-Peng
-
-
->+			}
-> 			list_add_tail(&master->shared_masters_elm,
-> 				      &stream->shared_masters);
-> 			master->streams[n++] = stream;
->@@ -4522,6 +4555,9 @@ static struct iommu_device *arm_smmu_probe_device(struct device *dev)
-> 	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-> 		master->stall_enabled = true;
+> One possible/draft approach is below. When a small allocation is
+> requested, a per-node per-size folio is created. A section of this is
+> used to satisfy the allocation, and the folio is added to a pool so that
+> it can be used to satisfy later allocations too.
+>
+> The main challenge is handling the iommu_pages_list used for freeing
+> allocations. In the whole-page case, this is nicely handled by using the
+> list_head in in struct ioptdesc. But now we may have up to 16
+> allocations per page, where each one can be placed on a different list.
 > 
->+	if (arm_smmu_is_shared_sid(master))
->+		master->stall_enabled = false;
->+
-> 	ret = arm_smmu_master_prepare_ats(master);
-> 	if (ret)
-> 		goto err_disable_pasid;
->
->-- 
->2.34.1
->
->
->
+> So, in this approach, I have made iommu_pages_list manage both a list
+> of regular full-page ioptdesc allocations, and also a list of subpage
+> allocations that live within these subpage folios. The subpage
+> list heads are stored in a dynamically allocated struct
+> iommu_subpage_meta.
+> 
+> I don't love the approach but it at least seems to be working and I
+> figured it would be good to get some opinions before I go further.
+
+Yeah, you've hit on the main issues. Throw in the coming RCU HEAD
+issue too and you get more problems. The iommu_pages_list abstraction
+was intended to give some flexbility to solve this.
+
+The idea Matthew was aiming toward was to allocate a dedicated struct
+for each folio that could have the right sized stuff. You can have an
+array of list heads, for example. Then you are not limited to
+overlaying on struct folio.
+
+He once even talked about making this into some kind of generic sub
+page allocator with metadata, which seems quite interesting.
+
+In this mode the core mm would provide the pooling and the subsystem
+could request XX bytes memory + YY bytes metadata with some way to
+convert from a memory pointer to the metadata pointer and back again.
+
+There is also the exciting stuff power does with it's sub page
+allocator, not sure that is a great example though.
+
+Another option might be to involve generic_pt somehow and have it
+populate the tree with the full folio. At least this way the memory is
+not "lost" but it may not be used optimally. I doubt many people need
+a 16x level 3 page for example
+
+Another thought might be to use (pre) allocated memory to hold the
+free list during unmap and then flush if we run out of memory. This
+eliminates the linked list which seems helpful. Not sure what kind of
+performance we'd get though.
+
+> Other options:
+>  - Replace the list_head with a pointer to the virt address of the next
+>    page in the list. We can detect whether we're working with a full
+>    page or subpage based on virt address, which means we only need one
+>    pointer in iommu_pages_list.
+
+So long as a linked list is used you need 4x the pointers, which seems
+to be the main problem.
+
+>  - Bump allocator with per-CPU pools of partial subpage folios, along
+>    the lines of the networking subsystem's page_frag_cache. A little
+>    simpler than the approach here, but we'd have to evict and abandon
+>    filling the folio if the next request is for a different NUMA node,
+>    and handle CPU hotplug.
+
+Free side can't gurantee it will only free the same per-CPU pages, so
+you are still back to needing 4x pointers.
+
+>  - Allocate the subpage-tracking data in the unmap path? Falling back to
+>    immediate flush and free if allocation fails, along the lines of
+>    tlb_remove_table(). Would need more thought.
+>  - Implement generation-based deferred freeing in iommu core,
+>    eliminating the need for iommu_pages_list?
+
+What would this look like?
+
+There is also the 32 bit ARM option which avoided using a free list
+so it doesn't need folio memory. This allows it to use a normal
+kmemcache.
+
+free list is fundamental to the design of generic_pt, but if more
+people than just arm32 need this it would be reasonable to implement a
+generic_pt_nolist variation. Driver can select which version it
+wants. Maybe this is implemented as some combination of immediate
+flushing and a small free array allocation from a cache?
+
+Jason
