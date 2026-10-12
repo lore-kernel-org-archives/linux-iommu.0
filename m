@@ -1,147 +1,269 @@
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C710D2264B0
-	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 20:08:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E98DE2D7DF1;
+	Mon, 12 Oct 2026 20:34:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791835712; cv=none; b=kaXlZFNZ+bzxgGj9cwudHx2Ub5aYElFy5gSieXJDqmeCbDjkUkUxZTXHqFaQHuRCPDtpCmms3VwrJ3D4TROfs3vm/sYHBo47fi119ExlHSul4yOldB7WKVc/n9mss/0fdnIeU2Nve36w3KF9FjKbvvThxTDwfcnZib5MUVDTCbI=
+	t=1791837272; cv=none; b=VOAzunI6d97rxMdis1mcKwxePKdAyiMj5uAkpbHgtW8Kfpstd3WpddAYHglQ5camX+1tn/ZPQzkPNwHIpFRgSdsPurQWy+kcOQHrb4yCojZaek+w/ylqMmGptU31kd1uBe3GbFrBqBJFkQZeVPg4EUEtOCSPoQsVN+8/1ZuhLdE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791835712; c=relaxed/simple;
-	bh=tge+8N4eSTSVxeb5T2g4NYzIYsLGM11CHJPIBUanVCo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RnsCQYlVysQNhgERiJr9XO4Y/8cFltFegh4oYABOqWp/Cv/wdizlp7WQbaMCSOXNOedt2NH3GmJUr//SG6CroB9eG0LzL1QNt1LoGbJ/2gbDwvDOQyLZXToV+Igkd6KxP3umNt3kk+snETweQ214p9dW+teLRE2ZJeKG7LjG7N8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utexas.edu; spf=pass smtp.mailfrom=utexas.edu; dkim=pass (2048-bit key) header.d=utexas.edu header.i=@utexas.edu header.b=sXKnHqsX; arc=none smtp.client-ip=209.85.160.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=utexas.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=utexas.edu
+	s=arc-20240116; t=1791837272; c=relaxed/simple;
+	bh=mLvfYrEjCPUj6KEWLX5KIVZEqZ6uvmF+kUcBtcGjXS8=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=WLnhCpGdSxGdQl1bI13wwqBnPxMVt8GHm4SM0qNd6liU5LRiJAP67x1aPfEsnF4OvUgaJtgNz0z7pm6r2Ss4j3u+8HbGKSAx0AXxDy6g/a0RQMIPLz+svX2SHZz4UyHN6SNnbjH3XU0ldIkxR1+FH7b3ZC800ZooYSU8sjUowjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IunHpEJd; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=utexas.edu header.i=@utexas.edu header.b="sXKnHqsX"
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-4877837890fso1126830fac.2
-        for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 13:08:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=utexas.edu; s=google; t=1791835706; x=1792440506; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=C5VkKI5ZAzJ6cEJcZ3ResShuIP8Oeib9ArzUWA2J4tg=;
-        b=sXKnHqsXBrk3imPoz9fooCaGRhrIN86M1sFYSCEcgfpt933gq3SA738jIBvrHLWLbx
-         vieHAULUzNXUK4CiCxfguYoObuJkvq4GMb7KruABvvcPhbVCATZmSzFviSpVM8KCQGnv
-         hs29NjR6T1udWLSj/23VbkBJMDeABmO2hA89LzyiuRh7Aka5Xw9Zct23G8Ce7ETD0N49
-         Dx0jtbQvST0lcOYcuCyJDsW8LbJgHKq8tXsrQHeiOgg/eLrHvEBjbhZiO0QlNEbz+txZ
-         8vUIVphMT0XOHIH6uVSVmCeHhV+NzH6GNu/DDOQLRdqI4+YpvGdAzLdzRR4yCpAd4+7n
-         WBpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791835706; x=1792440506;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=C5VkKI5ZAzJ6cEJcZ3ResShuIP8Oeib9ArzUWA2J4tg=;
-        b=MaFo8nai5nSqewZKkEupwb1HxsAoT1sOQ+SFaz3+DqK0/y7BDiJTtzjlyS7qnBfLDp
-         I6baEuJoIXfnprPBqfmGETTIiZ+NAz6NtO1/aRYt/HfWkEdhMAHSIcYejyjcIVMWB+77
-         nWBYQa+zgsfbsZQyQiqIyKIAByhi0Z5+sTOOywx9TsplCw/okVqilTLfVkJ5mwlmtrt2
-         C0Dkjpg5GLQqa6hGIAM4plVtHHxkSEaSWMthjEKjZ0OgYsXHOPqRfXEHWlyv8vGqSx2+
-         iRAB7ZugwME1XebjaNh8IroPT9VcqYKsTSknqRRRl7Nz/VNIbLBOCHI2vdkL5UPGHN8w
-         eZPg==
-X-Forwarded-Encrypted: i=1; AKwUvBwqWoDrJ+kKw4B6qXLjdekbFgivszDAEOkYB+EyxnsQml04P3QFGEQCIEFl2UAINT18FGiklw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKcPPLkzJ8pcPx+A4wtz13ZactbX5SezaEimSzbsZ4u9/nznYLh
-	jdqCwpSrwshc1+rKipTt/ZMPV7wFBY+574GGGupIysjVeUdvuUvr0hOcI9JdV20dV+Y=
-X-Gm-Gg: AYBFou03OSln8YPjv0wPd37HE1CDNWCzKnGRku2MKIOgQvL8TlaBVD/7QVHfFboIEmq
-	E5IE+Q33Ke6yhos6pSOGXBnR781Y98ODqCpuVbdi8r9LFs4l00oL4CUxs57RhKvOKpxa+KKpOfk
-	TUSJWQnAJovtv0VJ6jbBkhRFuPeJshnK1Yz5GeH3KvLhqJEcH5ksNWwtWqpItEqjGGJC/2TVgfL
-	Wtk/X5suTkOf9AbNIgoxRVEbevlmriWms5U+49Tr5T7nI/v0gkVKiuVFhUAQvORQ/x6BD99efZ/
-	ZDEdq438dOAuzvsxwHJvkUCsiKzv49a61Zy6apLZv6z/e2006n+148QF2irOnz1MGZkwGhNbd82
-	m+BVddx3UXie+WYbW0FVIur7yIx2hPJZiX2lEnS3AuagFHV5L6723vQ+L6K79A9PNmlLrszlRpT
-	as6ejAnM4kI9vfPF8lpB3MHnYNHkqYX9iVzvTXk1SbdJeEcAg3W+sePKz4r0toKHNPkm2POzfjN
-	zRSI/QmJpsx7P0/f0lvOQ==
-X-Received: by 2002:a05:6870:63aa:b0:493:ab63:38b2 with SMTP id 586e51a60fabf-4a2a8b0cf44mr8930726fac.57.1791835706237;
-        Mon, 12 Oct 2026 13:08:26 -0700 (PDT)
-Received: from paizhang-U9.taila8073d.ts.net ([70.116.71.224])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4a6aca4711csm2166166fac.4.2026.10.12.13.08.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2026 13:08:25 -0700 (PDT)
-From: Peizhe Liu <peizheliu@utexas.edu>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IunHpEJd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0011F0089B;
+	Mon, 12 Oct 2026 20:34:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791837270;
+	bh=McoQna29qBqDfcfSexNQ6Y2tR6Jmmbfkwzj7Jotj0ms=;
+	h=Date:From:To:Cc:Subject:In-Reply-To;
+	b=IunHpEJddXRTQpHnVlBUlx8dLmuOIWKjQN9ETKM0g+PoB4Ibd4gjx6fPLdzX3LPwY
+	 xpayzGi6Z/p7VxE/uNyGHylcn3PnoyXEj2Bji/LPAKByFw3UcuWOWHvZ97c2zgLI63
+	 txIGUVKI7egXxoxTfQmlxcKDt+Hke49rd9ww94IxfpuIb8J0PG18hkodikXFvu0VUu
+	 ZK4Tq8u0J3qGazUTNhjsYB8ylzKtY0iKQW9y1bKsyRTYK//u/uShkt9P6XnjdG7dhO
+	 ZXvPAQtg2ZKjQKAs3FRvzxjJ/cd1FqvrE0d1a8TMLG0pihIz2vES+MQJ3n07nPJUX/
+	 vU8OfSwd/qjmg==
+Date: Mon, 12 Oct 2026 15:34:29 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
 	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Michal Hocko <mhocko@kernel.org>,
-	Roman Gushchin <roman.gushchin@linux.dev>,
-	Shakeel Butt <shakeel.butt@linux.dev>,
-	Muchun Song <muchun.song@linux.dev>,
-	iommu@lists.linux.dev,
-	linux-mm@kvack.org,
-	cgroups@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/sva: Charge IOPF allocations to the faulting mm's memcg
-Date: Mon, 12 Oct 2026 15:08:23 -0500
-Message-ID: <20261012200823.699316-1-peizheliu@utexas.edu>
-X-Mailer: git-send-email 2.53.0
+	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org,
+	Jonathan Cameron <jonathan.cameron@huawei.com>
+Subject: Re: [PATCH v7 16/16] PCI/TSM: wait for vdevice contexts before
+ removing a DSM
+Message-ID: <20261012203429.GA1381362@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261008055955.4014342-17-aneesh.kumar@kernel.org>
 
-iommu_sva_handle_mm() runs from the IOPF workqueue and calls
-handle_mm_fault() for the faulting mm, but does not set the active
-memcg. File-backed faults can allocate page cache through
-mem_cgroup_charge(folio, NULL, gfp), which falls back to the root memcg
-when the worker has neither an active memcg nor a current->mm. Page
-cache faulted in by a device is therefore charged to root and escapes
-the task's memory.max.
+On Thu, Oct 08, 2026 at 11:29:55AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> A PF0 DSM can be removed while a sibling function still has a vdevice.
+> The context pins both the pci dev, but those references do not keep the
+> PF0 DOE mailbox alive. Ignoring -EBUSY from link disconnect lets PCI
+> continue to pci_doe_destroy(), leaving the vdevice with a stale mailbox
+> pointer.
 
-Set the active memcg to the one associated with the faulting mm while
-handling the fault, and restore the previous value afterwards.
+  - Please capitalize the subject line to match history:
+      PCI/TSM: Wait for ...
 
-Fixes: fc36479db74e ("iommu: Add a page fault handler")
-Signed-off-by: Peizhe Liu <peizheliu@utexas.edu>
----
-Tested on a Xeon Gold 5512U with Intel DSA, based on iommu/next.
-Before/after testing confirmed that the block-on-fault case charges
-the page cache to the task's memcg after this change and is subject
-to memory.max.
+  - Please disambiguate "DSM" from the common "ACPI _DSM", e.g., by
+    spelling out the first use of "DSM".
 
- drivers/iommu/iommu-sva.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+  - "vdevice" is not a well-known term in drivers/pci/, so please
+    clarify.  The log messages may also benefit from more context,
+    since sysadmins will be reading them.  I assume this is not the
+    pseries, xen, or fusion "vdevice", which are the current upstream
+    uses.
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 9827cb804363..9a825fac61a5 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -2,6 +2,7 @@
- /*
-  * Helpers for IOMMU drivers implementing SVA
-  */
-+#include <linux/memcontrol.h>
- #include <linux/mmu_context.h>
- #include <linux/mmu_notifier.h>
- #include <linux/mutex.h>
-@@ -220,6 +221,7 @@ iommu_sva_handle_mm(struct iommu_fault *fault, struct mm_struct *mm)
- 	unsigned int access_flags = 0;
- 	unsigned int fault_flags = FAULT_FLAG_REMOTE;
- 	struct iommu_fault_page_request *prm = &fault->prm;
-+	struct mem_cgroup *memcg, *old_memcg;
- 	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
- 
- 	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
-@@ -255,7 +257,11 @@ iommu_sva_handle_mm(struct iommu_fault *fault, struct mm_struct *mm)
- 		/* Access fault */
- 		goto out_put_mm;
- 
-+	memcg = get_mem_cgroup_from_mm(mm);
-+	old_memcg = set_active_memcg(memcg);
- 	ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);
-+	set_active_memcg(old_memcg);
-+	mem_cgroup_put(memcg);
- 	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
- 		IOMMU_PAGE_RESP_SUCCESS;
- 
-
-base-commit: c233d59828627bfaab750ec5546e81970475f951
--- 
-2.53.0
-
+> This follows the VFIO PCI removal model: vfio_unregister_group_dev()
+> prevents new userspace opens and waits for existing users to release the
+> device before teardown proceeds. Likewise, DSM removal rejects new
+> contexts and waits for existing vdevice contexts to drain before
+> destroying the DOE mailbox.
+> 
+> Mark the DSM as removing so no new contexts or subfunctions can attach.
+> Wait for the last context to be released before disconnecting the link,
+> 
+> VFIO PCI also uses an eventfd to notify userspace that the device should
+> be released. This patch does not add an equivalent notification for
+> vdevice contexts; DSM removal waits for userspace to release them. Such
+> a notification can be added later if required.
+> 
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Jonathan Cameron <jonathan.cameron@huawei.com>
+> Cc: Alexey Kardashevskiy <aik@amd.com>
+> Cc: Xu Yilun <yilun.xu@linux.intel.com>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Cc: Samuel Ortiz <sameo@rivosinc.com>
+> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> ---
+>  drivers/pci/tsm.c       | 63 +++++++++++++++++++++++++++++++++++++++--
+>  include/linux/pci-tsm.h |  5 ++++
+>  2 files changed, 65 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/tsm.c b/drivers/pci/tsm.c
+> index c8603867e09d..8aa74ba31932 100644
+> --- a/drivers/pci/tsm.c
+> +++ b/drivers/pci/tsm.c
+> @@ -10,10 +10,13 @@
+>  
+>  #include <linux/bitfield.h>
+>  #include <linux/iommufd.h>
+> +#include <linux/jiffies.h>
+>  #include <linux/module.h>
+>  #include <linux/pci.h>
+>  #include <linux/pci-doe.h>
+>  #include <linux/pci-tsm.h>
+> +#include <linux/pid.h>
+> +#include <linux/sched.h>
+>  #include <linux/slab.h>
+>  #include <linux/sysfs.h>
+>  #include <linux/tsm.h>
+> @@ -354,6 +357,12 @@ struct pci_tsm_context *pci_tsm_context_get(struct pci_dev *pdev,
+>  		return ERR_PTR(-ENOMEM);
+>  
+>  	guard(mutex)(&pf0->lock);
+> +	if (pf0->removing) {
+> +		kfree(context);
+> +		return ERR_PTR(-ENODEV);
+> +	}
+> +	if (!pf0->context_users)
+> +		reinit_completion(&pf0->contexts_drained);
+>  	pf0->context_users++;
+>  	context->pf0 = pf0;
+>  	context->pdev = pci_dev_get(pdev);
+> @@ -368,8 +377,11 @@ void pci_tsm_context_put(struct pci_tsm_context *context)
+>  
+>  	down_read(&pci_tsm_rwsem);
+>  	mutex_lock(&pf0->lock);
+> -	if (!WARN_ON(!pf0->context_users))
+> -		pf0->context_users--;
+> +	if (WARN_ON(!pf0->context_users))
+> +		goto out_unlock;
+> +	if (!--pf0->context_users)
+> +		complete_all(&pf0->contexts_drained);
+> +out_unlock:
+>  	mutex_unlock(&pf0->lock);
+>  	up_read(&pci_tsm_rwsem);
+>  
+> @@ -452,6 +464,9 @@ static ssize_t disconnect_store(struct device *dev,
+>  	tsm_dev = pdev->tsm->tsm_dev;
+>  	if (!sysfs_streq(buf, dev_name(&tsm_dev->dev)))
+>  		return -EINVAL;
+> +	if (is_link_tsm(tsm_dev) && is_pci_tsm_pf0(pdev) &&
+> +	    to_pci_tsm_pf0(pdev->tsm)->removing)
+> +		return -ENODEV;
+>  
+>  	rc = pci_tsm_disconnect(pdev);
+>  	if (rc)
+> @@ -663,6 +678,9 @@ int pci_tsm_pf0_constructor(struct pci_dev *pdev, struct pci_tsm_pf0 *tsm,
+>  			    struct tsm_dev *tsm_dev)
+>  {
+>  	mutex_init(&tsm->lock);
+> +	init_completion(&tsm->contexts_drained);
+> +	tsm->context_users = 0;
+> +	tsm->removing = false;
+>  	tsm->doe_mb = pci_find_doe_mailbox(pdev, PCI_VENDOR_ID_PCI_SIG,
+>  					   PCI_DOE_FEATURE_CMA);
+>  	if (!tsm->doe_mb) {
+> @@ -751,8 +769,44 @@ static void __pci_tsm_destroy(struct pci_dev *pdev, struct tsm_dev *tsm_dev)
+>  
+>  void pci_tsm_destroy(struct pci_dev *pdev)
+>  {
+> -	guard(rwsem_write)(&pci_tsm_rwsem);
+> +	struct pci_tsm_pf0 *pf0 = NULL;
+> +	struct completion *drained;
+> +	bool interrupted = false;
+> +	long rc;
+> +
+> +	down_write(&pci_tsm_rwsem);
+> +	if (pdev->tsm && is_link_tsm(pdev->tsm->tsm_dev) &&
+> +	    is_pci_tsm_pf0(pdev)) {
+> +		pf0 = to_pci_tsm_pf0(pdev->tsm);
+> +		drained = &pf0->contexts_drained;
+> +		mutex_lock(&pf0->lock);
+> +		pf0->removing = true;
+> +		mutex_unlock(&pf0->lock);
+> +
+> +		/* An unused DSM may never have completed contexts_drained. */
+> +		rc = pf0->context_users ?
+> +			try_wait_for_completion(drained) : 1;
+> +		/* Context release needs the read side of pci_tsm_rwsem. */
+> +		up_write(&pci_tsm_rwsem);
+> +		while (rc <= 0) {
+> +			if (interrupted) {
+> +				rc = wait_for_completion_timeout(drained, HZ * 10);
+> +			} else {
+> +				rc = wait_for_completion_interruptible_timeout(drained,
+> +									       HZ * 10);
+> +				if (rc < 0) {
+> +					interrupted = true;
+> +					pci_warn(pdev, "Task \"%s\" (%d) blocked until vdevices are released\n",
+> +						 current->comm, task_pid_nr(current));
+> +				}
+> +			}
+> +			if (!rc)
+> +				pci_warn(pdev, "TSM connection is in use, waiting for vdevices\n");
+> +		}
+> +		down_write(&pci_tsm_rwsem);
+> +	}
+>  	__pci_tsm_destroy(pdev, NULL);
+> +	up_write(&pci_tsm_rwsem);
+>  }
+>  
+>  void pci_tsm_init(struct pci_dev *pdev)
+> @@ -779,6 +833,9 @@ void pci_tsm_init(struct pci_dev *pdev)
+>  		 */
+>  		if (!dsm->tsm)
+>  			return;
+> +		if (is_link_tsm(dsm->tsm->tsm_dev) &&
+> +		    to_pci_tsm_pf0(dsm->tsm)->removing)
+> +			return;
+>  
+>  		probe_fn(pdev, dsm);
+>  	}
+> diff --git a/include/linux/pci-tsm.h b/include/linux/pci-tsm.h
+> index b27f7cf99f22..3adc317d0f9b 100644
+> --- a/include/linux/pci-tsm.h
+> +++ b/include/linux/pci-tsm.h
+> @@ -1,6 +1,7 @@
+>  /* SPDX-License-Identifier: GPL-2.0 */
+>  #ifndef __PCI_TSM_H
+>  #define __PCI_TSM_H
+> +#include <linux/completion.h>
+>  #include <linux/mutex.h>
+>  #include <linux/pci.h>
+>  
+> @@ -107,12 +108,16 @@ struct pci_tsm {
+>   * @lock: mutual exclustion for pci_tsm_ops invocation
+>   * @context_users: live per-function contexts on this PF0; a nonzero count
+>   *	blocks link disconnect
+> + * @contexts_drained: completed when the last context is released
+> + * @removing: reject new contexts while the DSM is being removed
+>   * @doe_mb: PCIe Data Object Exchange mailbox
+>   */
+>  struct pci_tsm_pf0 {
+>  	struct pci_tsm base_tsm;
+>  	struct mutex lock;
+>  	unsigned int context_users;
+> +	struct completion contexts_drained;
+> +	bool removing;
+>  	struct pci_doe_mb *doe_mb;
+>  };
+>  
+> -- 
+> 2.43.0
+> 
