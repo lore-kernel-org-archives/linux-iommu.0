@@ -1,149 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2D9243DA53;
-	Mon, 12 Oct 2026 08:33:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC1703C09F8
+	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 08:41:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791794000; cv=none; b=a2063VkuZokYg0uq3a77H/EuxfKZh+7Y+TuFLizH198nHPli+s7rtTZtKeS7IJjudsuGJqkshP5rX2c3+GnZ4Nxye5H18aNslFbmK8C5HLeabyoXhc33Y5md+kKlkOb1V9nXG9N85dPVKcy1kebMCp+IKqFRPiEcpPh9keFNMTw=
+	t=1791794510; cv=none; b=XCaaoJGglemHXCQkqLvOYWg3ycF7Ynf61NGIewYv2bMfzx0QUjr8s0QsvizPpvnTUQRGhil/+oXrXt7yqEw52t7ubK2i6oLWYp4nbsN7rkD6ChUssrCZX+NwaffDb+Lhs/g/+OCt24rOR1BoXmeVkm0MOZryzWwcytFVGtO7uDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791794000; c=relaxed/simple;
-	bh=d24JUMEgq/L4Pu19uiMCeWUmaAqyRlnqjGMteRDvmNA=;
-	h=From:To:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=aSccAJs/AwWhHbJrFg22zMeL/hefhzhOyf8UY0f/8byZQ0/CMdynfuT6dojaorbv7BbZFicCPKQUp3AdzwDJinkEJ7uka3H8SjrAJSHVpCVPLSiBZNrXffwScVkHcf72XKMooK74na42CTp6rJ+bCciU/JPGadHzM/Q3aOYwFu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CqR8atw5; arc=none smtp.client-ip=100.103.45.18
+	s=arc-20240116; t=1791794510; c=relaxed/simple;
+	bh=Qanp8XpTcR8oBU9NgCmlUZCKBu56qLf1fhHTnhwauVY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ams8IO8gTzCo3BcuNohUzdIkY0Ss3WaxDdBOogVWsQ/JSCekWOt+FiH2zAx6EnEfjgh/kGyXXNggch/BfGdYFlmtZmqlWKiIrpSaw4yToJIHpnDaZEHix9G3Pm6nRi3H8GsZ02Mr7c1dapFe7iwgT+Fe+1OrEXWym57DT4KTyUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=ISA+Fx0H; arc=none smtp.client-ip=117.135.210.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CqR8atw5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308981F0089B;
-	Mon, 12 Oct 2026 08:33:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791793998;
-	bh=54DUM2oKjZAclxAxVUj2EX0vltXxqlpAry0veMiF1aA=;
-	h=From:To:Subject:In-Reply-To:References:Date;
-	b=CqR8atw5Xs7/N/SDbpLDf0ojYxTSK85Gl0xM5AWq8EuA5ieRYqCDaf/Ii3Ydra7sS
-	 fmHlSyQV8e4WH03nDAygFO9f4Zmmh0QtYZdxieTepC+fpclV+4K63o2waDhNUZOpkT
-	 TPRQbp3slcnqdpd5KnrLcgj4tJDQ9djsmQvHEKF0h29ymoI+J4Th8YUgGlEYTiPxwS
-	 jiExllP2vWHbI2MXS6WUOYAWKuKjdugrD3u509vxIhzCPbtLXqEP6DfadftcHO3fT4
-	 uIE0Ad3G/U7sQrX7ZD/lbb8xgnSGHWpcLtx5UmyWOBp7PVtb1CUBYR0QcPz+6LFSRc
-	 mQGJ7rzF2Xi4A==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: sashiko-reviews@lists.linux.dev, Jason Gunthorpe <jgg@nvidia.com>,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v7 07/16] iommufd/device: Associate KVM file pointer
- with iommufd_device
-In-Reply-To: <sashiko-outbox-163681@kernel.org>
-References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
- <20261008055955.4014342-8-aneesh.kumar@kernel.org>
- <sashiko-outbox-163681@kernel.org>
-Date: Mon, 12 Oct 2026 14:03:13 +0530
-Message-ID: <yq5a5wz75nee.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="ISA+Fx0H"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-ID:MIME-Version; bh=xi
+	B/mc8XaApxaPDniNNCfUu6SOnvJQaPDWT8rHnuIrc=; b=ISA+Fx0HcsaEn6AJxt
+	Xv6MAskDAExXqkuderFxpnFYN+zuaVu0jYYwRMF3ZhLKCAhQvijPXFgRBS5/vBKs
+	RVUS6qh9Y4HDyGrZ2FX8p7wdFvpOyat7U6pq7MvnMxTZRz9I/Ppd9V04SqwJqV7b
+	9QUUbtkGBFzQ2XVeG8WM+ILLU=
+Received: from WIN-TOG0NDEIICD.localdomain (unknown [])
+	by gzga-smtp-mtada-g1-1 (Coremail) with SMTP id _____wD3P7Efncxqike8Dw--.13686S2;
+	Mon, 12 Oct 2026 16:41:04 +0800 (CST)
+From: Shirong Zhao <shxzhaosr@163.com>
+To: dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	joro@8bytes.org,
+	will@kernel.org
+Cc: robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu: intel: Apply the device scope length check to every device scope walk
+Date: Mon, 12 Oct 2026 16:41:02 +0800
+Message-ID: <20261012084102.18-1-shxzhaosr@163.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wD3P7Efncxqike8Dw--.13686S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJFy5KryDXr43Kryftw17trb_yoWrXw1rpF
+	W8KrZ0yrW5trs7Gw13AayfZry5tws3A3y3CF45W3909a129Fy5WFyDGFySgr1rKFWDtF1f
+	ZayjvrWUCw15JF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jVUDJUUUUU=
+X-CM-SenderInfo: hvk06xhdrv2qqrwthudrp/xtbC7gA9e2rMnSB-EQAA3d
 
-sashiko-bot@kernel.org writes:
+dmar_walk_remapping_entries() already refuses to step by a zero length:
 
-> Thank you for your contribution! Sashiko AI review found 1 potential issue(s) to consider:
-> - [High] iommufd: UAF of kvm_file due to iommufd_device outliving VFIO unbind
-> --
->
-> commit ddde31c06624779bad69fb77ae7b9503b553dacc
-> Author: Shameer Kolothum <skolothumtho@nvidia.com>
->
-> iommufd/device: Associate KVM file pointer with iommufd_device
->
-> TSM vDevice support needs access to the KVM associated with a VFIO device
-> after the device has been bound to iommufd. Extend iommufd_device_bind() to
-> accept the device's KVM file and store it in the iommufd_device.
->
->> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
->> index a664c70a6fe73..f99f7bee2e774 100644
->> --- a/drivers/iommu/iommufd/device.c
->> +++ b/drivers/iommu/iommufd/device.c
-> [ ... ]
->> @@ -308,7 +309,9 @@ static int iommufd_bind_noiommu(struct iommufd_device *idev)
->>   * The caller must undo this with iommufd_device_unbind()
->>   */
->>  struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
->> -					   struct device *dev, u32 *id)
->> +					   struct device *dev,
->> +					   struct file *kvm_file,
->> +					   u32 *id)
->>  {
->>  	struct iommufd_device *idev;
->>  	int rc;
->> @@ -319,6 +322,8 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
->>  
->>  	idev->ictx = ictx;
->>  	idev->dev = dev;
->> +	/* VFIO holds the file reference while the device is open. */
->> +	idev->kvm_file = kvm_file;
->
-> [Severity: High]
-> Does this code introduce a use-after-free regression for kvm_file when a
-> concurrent ioctl is accessing the device?
->
-> If an untrusted user thread executes an ioctl that calls iommufd_get_device(),
-> it will increment idev->obj.users to 2.
->
-> If another thread concurrently closes the VFIO device fd, it calls
-> vfio_df_unbind_iommufd() which leads to iommufd_device_unbind() and then
-> iommufd_object_destroy_user().
->
-> Because users is 2, iommufd_object_remove() will return -EBUSY:
->
-> drivers/iommu/iommufd/main.c:iommufd_object_remove() {
->         ...
->         if (!refcount_dec_if_one(&obj->users)) {
->                 ret = -EBUSY;
->                 goto err_xa;
->         }
->         ...
-> }
->
-> The unbind operation ignores this error, leaving the idev alive:
->
-> drivers/iommu/iommufd/iommufd_private.h:iommufd_object_destroy_user() {
->         ...
->         ret = iommufd_object_remove(ictx, obj, obj->id, REMOVE_WAIT);
->         WARN_ON(ret);
-> }
->
-> The VFIO device then drops its KVM reference during the close process, freeing
-> the kvm_file. When the first thread resumes, will it access the freed kvm_file
-> stored here?
->
+	next = (void *)iter + iter->length;
+	if (iter->length == 0) {
+		/* Avoid looping forever on bad ACPI tables */
+		pr_debug(FW_BUG "Invalid 0-length structure\n");
+		break;
+	}
 
-This is the VFIO device fd close stack:
+Five walks over the same DMAR structures do not:
 
-  vfio_device_fops_release()
-    vfio_df_unbind_iommufd()
-      vfio_df_close()
-        vfio_df_device_last_close()
-          vfio_df_iommufd_unbind()
-            vfio_iommufd_physical_unbind()
-              iommufd_device_unbind()
-                iommufd_object_destroy_user()
-                  iommufd_object_remove(..., REMOVE_WAIT)
-                    iommufd_object_dec_wait() /* timeout: -EBUSY */
-                  WARN_ON(ret)
-      vfio_device_put_kvm()
-        fput(device->kvm)
+  dmar_alloc_dev_scope()        - counts namespace/endpoint/bridge scopes
+  dmar_insert_dev_scope()       - attaches a scope to a PCI path
+  dmar_acpi_insert_dev_scope()  - same, by ANDD enumeration id
+  dmar_acpi_dev_scope_init()    - the ANDD entries at the end of the table
+  ir_parse_ioapic_hpet_scope()  - IOAPIC and HPET scopes
 
-IIUC, this is a real issue: in this case, we neither remove the idev
-object from the xarray nor invoke its destroy callback. Is that correct?
+Each advances its cursor by a length read out of the DMAR table, and
+nothing constrains it.  A zero length leaves the cursor where it is and
+the walk never ends; a short one steps through table payload a byte at a
+time, reinterpreting it as scopes.  dmar_alloc_dev_scope() and
+dmar_acpi_dev_scope_init() run on every boot with the IOMMU enabled, and a
+short length in the latter hands andd->device_name to acpi_get_handle().
 
+Use the check dmar_walk_remapping_entries() already uses.
 
-After the REMOVE_WAIT timeout, unbind returns without removing the
-device from the xarray. VFIO close then continues, but the final ioctl
-put by the thread that called iommufd_get_device() only decrements
-users and wait_cnt; it does not retry destruction. The surviving idev
-also holds an iommufd file reference, so closing the userspace iommufd
-descriptor cannot complete the cleanup.
+Checked against torvalds/linux at HEAD; both files are unmodified there.
 
--aneesh
+Found by EFSM.R17, which reports a loop whose cursor advances by a step
+memory can supply as zero while the exit condition depends on that cursor.
+Signed-off-by: Shirong Zhao <shxzhaosr@163.com>
+
+---
+ drivers/iommu/intel/dmar.c          | 16 ++++++++++++++++
+ drivers/iommu/intel/irq_remapping.c |  5 +++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index ba675b0..1615ef6 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -94,6 +94,10 @@ void *dmar_alloc_dev_scope(void *start, void *end, int *cnt)
+ 			scope->entry_type != ACPI_DMAR_SCOPE_TYPE_HPET) {
+ 			pr_warn("Unsupported device scope\n");
+ 		}
++		if (!scope->length) {
++			pr_warn(FW_BUG "Invalid 0-length device scope\n");
++			break;
++		}
+ 		start += scope->length;
+ 	}
+ 	if (*cnt == 0)
+@@ -227,6 +231,10 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
+ 
+ 	for (; start < end; start += scope->length) {
+ 		scope = start;
++		if (!scope->length) {
++			pr_warn(FW_BUG "Invalid 0-length device scope\n");
++			break;
++		}
+ 		if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_ENDPOINT &&
+ 		    scope->entry_type != ACPI_DMAR_SCOPE_TYPE_BRIDGE)
+ 			continue;
+@@ -743,6 +751,10 @@ static void __init dmar_acpi_insert_dev_scope(u8 device_number,
+ 		for (scope = (void *)(drhd + 1);
+ 		     (unsigned long)scope < ((unsigned long)drhd) + drhd->header.length;
+ 		     scope = ((void *)scope) + scope->length) {
++			if (!scope->length) {
++				pr_warn(FW_BUG "Invalid 0-length device scope\n");
++				break;
++			}
+ 			if (scope->entry_type != ACPI_DMAR_SCOPE_TYPE_NAMESPACE)
+ 				continue;
+ 			if (scope->enumeration_id != device_number)
+@@ -778,6 +790,10 @@ static int __init dmar_acpi_dev_scope_init(void)
+ 	for (andd = (void *)dmar_tbl + sizeof(struct acpi_table_dmar);
+ 	     ((unsigned long)andd) < ((unsigned long)dmar_tbl) + dmar_tbl->length;
+ 	     andd = ((void *)andd) + andd->header.length) {
++		if (!andd->header.length) {
++			pr_warn(FW_BUG "Invalid 0-length namespace entry\n");
++			break;
++		}
+ 		if (andd->header.type == ACPI_DMAR_TYPE_NAMESPACE) {
+ 			acpi_handle h;
+ 			struct acpi_device *adev;
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 25c26f7..884347c 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -933,6 +933,11 @@ static int ir_parse_ioapic_hpet_scope(struct acpi_dmar_header *header,
+ 			ret = ir_parse_one_ioapic_scope(scope, iommu, drhd);
+ 		else if (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_HPET)
+ 			ret = ir_parse_one_hpet_scope(scope, iommu, drhd);
++		if (!scope->length) {
++			pr_warn(FW_BUG "Invalid 0-length device scope\n");
++			ret = -EINVAL;
++			break;
++		}
+ 		start += scope->length;
+ 	}
+ 
+
