@@ -1,269 +1,151 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011031.outbound.protection.outlook.com [40.107.208.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E98DE2D7DF1;
-	Mon, 12 Oct 2026 20:34:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791837272; cv=none; b=VOAzunI6d97rxMdis1mcKwxePKdAyiMj5uAkpbHgtW8Kfpstd3WpddAYHglQ5camX+1tn/ZPQzkPNwHIpFRgSdsPurQWy+kcOQHrb4yCojZaek+w/ylqMmGptU31kd1uBe3GbFrBqBJFkQZeVPg4EUEtOCSPoQsVN+8/1ZuhLdE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791837272; c=relaxed/simple;
-	bh=mLvfYrEjCPUj6KEWLX5KIVZEqZ6uvmF+kUcBtcGjXS8=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=WLnhCpGdSxGdQl1bI13wwqBnPxMVt8GHm4SM0qNd6liU5LRiJAP67x1aPfEsnF4OvUgaJtgNz0z7pm6r2Ss4j3u+8HbGKSAx0AXxDy6g/a0RQMIPLz+svX2SHZz4UyHN6SNnbjH3XU0ldIkxR1+FH7b3ZC800ZooYSU8sjUowjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IunHpEJd; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C14EA374E5A
+	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 20:37:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.31
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791837449; cv=fail; b=PR2yxa2UMCNMiHqmHk+zl1nNWZOkYilnObpFF0vADEYmPJ4pVtV7/1lY5K7+jHaFhQ5vf3RK8xh5bdZ3Zi3u1Ctu2k4l5dr+JdZf5E96/gip4ln9OBDmgZ/IpazaBN429guDYruE+jvmZb1c/v8gTx17SpNnQO/m9x1LlhlChgg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791837449; c=relaxed/simple;
+	bh=lMZ1x4G4it+CMwFwhK905qNI+FwXHRpJ5AMqWeh1c6E=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=gwOF9QRUhgrke76Oi0vYwh9xA6NaBVfNHa/d81Nlu9+LhaclGeQOwMeSNLCOZR19Uz+2j/yzBiTBGh6bstYJyvD5CxwrxD1YELX59fsGx8gouKP9g8QGaSwbWxN8EEHJzUnFMJwAFwba0VQGShzlekAUDALiNEz/412XHAThdr0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pBYdJVaJ; arc=fail smtp.client-ip=40.107.208.31
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IunHpEJd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0011F0089B;
-	Mon, 12 Oct 2026 20:34:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1791837270;
-	bh=McoQna29qBqDfcfSexNQ6Y2tR6Jmmbfkwzj7Jotj0ms=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=IunHpEJddXRTQpHnVlBUlx8dLmuOIWKjQN9ETKM0g+PoB4Ibd4gjx6fPLdzX3LPwY
-	 xpayzGi6Z/p7VxE/uNyGHylcn3PnoyXEj2Bji/LPAKByFw3UcuWOWHvZ97c2zgLI63
-	 txIGUVKI7egXxoxTfQmlxcKDt+Hke49rd9ww94IxfpuIb8J0PG18hkodikXFvu0VUu
-	 ZK4Tq8u0J3qGazUTNhjsYB8ylzKtY0iKQW9y1bKsyRTYK//u/uShkt9P6XnjdG7dhO
-	 ZXvPAQtg2ZKjQKAs3FRvzxjJ/cd1FqvrE0d1a8TMLG0pihIz2vES+MQJ3n07nPJUX/
-	 vU8OfSwd/qjmg==
-Date: Mon, 12 Oct 2026 15:34:29 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
-	Jonathan Cameron <jonathan.cameron@huawei.com>
-Subject: Re: [PATCH v7 16/16] PCI/TSM: wait for vdevice contexts before
- removing a DSM
-Message-ID: <20261012203429.GA1381362@bhelgaas>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pBYdJVaJ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CStAggHYQrtr6l9SGQx7j7uv1DTGi3N4xzcCnEqWcxq0ENtDCb5AE/waHu2Y1q8ouQpga25D1I6+QMNVW9Hs/11FXm4dngvxtrvDxVt9gw9m+leqpM2X7xHtaDl7A4cIiY0YybKt0JwCdc+a1RyDyYoZRbE1drI+BABR+7bkRSfz/UaMA7nOokBlNogtFoFHiMmO/ABUR9T5qaYgL9rUBpiotYgOABP/cbqTEiU94EBtt48q/RcTmjs0RVV9rCxOOf/rnUgSY5dulHNpmByFeT+mc4pVV/1Cb1o37tOqnXE6/h0MtcuytDvPvTv3RxVe7skhFVLb8a715VIZ1mWMug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uXAypmjkzsPsccnpYZ+pz+KKsjx6A3pa0OCFGNmIXX8=;
+ b=lD3aVGBrpF/L5vL/VqqQ1MQ2wvOwB/dl/VhDMBtE+/R2xZBtnhVnRGsoRxDUhgx4gunWhKG6MWpEX9vCMhVM8/Vn4r3LC00nQzNtUC3MGuL8bxy5TxQ1vUCIGocUsnJGgelCIFMY63SzWrUSbM/yZ48F9iCB3G2VkIuQ2nakPfQ8Yffi4/h9GF98Xn3ufuTKU8COgpWeFJzCohbTTE7Ae9JO5eY9po48G8YpiHVjh/SCFpGSFZOQAsuiDETC1h5TMlSZlDOlIKWNoIXIEEoz2fGG+Hqu1IPUUMimBwR+b0BVJjqtF2jGiMjNsjAQh0n/X2aoed43MTTjkjqwgtazng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=oss.nxp.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uXAypmjkzsPsccnpYZ+pz+KKsjx6A3pa0OCFGNmIXX8=;
+ b=pBYdJVaJWDxtXZGjsXSAaDa475Pwy6m+k67R27FbTUy3HrB8TPZxl8vQCGMLh9/yHDSUzHxE6PFOiIvcZaiqHzK6hckfJgG2w+LIkQs13OCEI1mIyWB3I752qUqIxdxvJ6WbRUif133ERIKOXJZlOTabJgvqfsqj2fF6X+vbitustDiomFAGnAyybUGC2Q8Buz12xMG0c2l7Wa1FcUBsMqBkC8vfLR3O1jegGvvOobGOea+Q78WmfE5f+ow8yMkWJ0PMX89w6fRfuwWe5WqtQfhkdZapyrpu1wSqiVv57lTA4P/lvz7W1J0clGlLHq4wI/UfF5oZxaKs6GS/PnHYEQ==
+Received: from PH8PR07CA0048.namprd07.prod.outlook.com (2603:10b6:510:2cf::19)
+ by DS3PR12MB524383.namprd12.prod.outlook.com (2603:10b6:8:608::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.23; Mon, 12 Oct
+ 2026 20:37:23 +0000
+Received: from CY8PEPF00000058.namprd21.prod.outlook.com
+ (2603:10b6:510:2cf:cafe::a3) by PH8PR07CA0048.outlook.office365.com
+ (2603:10b6:510:2cf::19) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.20 via Frontend Transport; Mon,
+ 12 Oct 2026 20:37:22 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.161) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY8PEPF00000058.mail.protection.outlook.com (10.167.247.21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.546.0 via Frontend Transport; Mon, 12 Oct 2026 20:37:21 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Mon, 12 Oct
+ 2026 13:36:55 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Mon, 12 Oct
+ 2026 13:36:55 -0700
+Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
+ Transport; Mon, 12 Oct 2026 13:36:54 -0700
+Date: Mon, 12 Oct 2026 13:36:51 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
+ Roedel (AMD)" <joro@8bytes.org>, Jean-Philippe Brucker <jpb@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>, Peng Fan
+	<peng.fan@nxp.com>
+Subject: Re: [PATCH RFC v6 2/5] iommu/arm-smmu-v3: Delay stream allocation to
+ inside the mutex
+Message-ID: <as1E40DCc+u8I66P@nvidia.com>
+References: <20261011-smmu-shared-sid-v6-0-cb76b89dc612@nxp.com>
+ <20261011-smmu-shared-sid-v6-2-cb76b89dc612@nxp.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20261008055955.4014342-17-aneesh.kumar@kernel.org>
+In-Reply-To: <20261011-smmu-shared-sid-v6-2-cb76b89dc612@nxp.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY8PEPF00000058:EE_|DS3PR12MB524383:EE_
+X-MS-Office365-Filtering-Correlation-Id: fe4b6ec2-d7e1-48f0-a06d-08df28a09e04
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700016|7416014|376014|1800799024|82310400026|23010399003|56012099006|11063799006|4143699003|261009223027099003|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	a/HacVqqyur3i3cWUw3FWP2dnSAQqNQDbgLr2zQ44aBWbDi+PwhySEZlfgHXOwuOwwlFUWzN4b72NmVU7ox1GILAatnjWYLONHb1a4I2bOo3cOaWxnErqAD8Ojtww9PxNmlBZYoM37Dk/ddRY8nBPlY7dYo+PlAlx3vlbs0EgSOKwZoVqwo1Z/0aY99nRBIMep/76dHnn3EutAqbO8enifwK94sEErxzIRhrK7hS16yXeCFsYctnjw2nGUP2rqrjKiMneek77NpdBxynij1uUX+voLI0DTCefeK77atqkMnzLmdBWi2tUmimhJ1rjza/mo/0zLXqiBRYWZLtYON8vEOdloWLt9DosPgy34Z90GuNdxjqjJ8GEIXFRMLvpaeSvyozPZ01HAz71eagCfJ7c+sB7QLsshKuqhK2WWnZp8QBg+VRqzdBQyLjTW58c/hw8xkAZ8lSq3odrKhnClT+IAbaJOlYx1xP8i7E8w8t8QQuHdxl1P5i9XLpeLuDKTU0ZiMgfZBrALt3ecxIPVjb4N9Zod7nwqz1AQ+JHebXLifDf6N4/fr7B9KW/8wKZ7iAKhaQhW3T2Vpnu+FCC47ntqq9/b1ruYL9U+TejVuswc39ZanqYDZ2t9xxWL1E24IOWSCYDYyd99qtYRzC7PcBIhK3cieGDnel/g6SC4iVEYalT179x9o2VlPePRcktMLpNQ7D4uR/jNThQPkj4+J6kA==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(7416014)(376014)(1800799024)(82310400026)(23010399003)(56012099006)(11063799006)(4143699003)(261009223027099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	ahXq5IutnJPmT3Y+Gc4An9gl1Q74q1c+5VVCbQ88Mf87xXyU0YHfr9p5Yq75MEYihe13EvooPROx2MBTDsLB+MhKPKOUWnm9/70nXnynZgW083meIEEgyb0/AMqgMVzMnmCPMoen/5A+o7d831CEsXTj6NsUq+MM7TJ3xFdm5ZKY8wtQR8v5xu16d9Vp6tulkD2cEsxopIXs64Mu0spL8j0XJIerIaGrfwawF4tc4TmnDF7zDlIQS6RpHyiuP1XP86st6OcA6SzCLbENligvrAYTuqBEQqAELREVhPzSqXDtJoI/KEb8MOoJs8InKhd7R3cw56supleFoJfsAW/CgqHnqd6p+JEI3F43iOOWlCm1JUdzWkJeBLWu0BLYr8KYGeeV0KDEr/revzxS3SQH18YaBaHbMyAqG7qyppItc0V7jXAWeyQEAGjY8vPXhwFF
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Oct 2026 20:37:21.9383
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe4b6ec2-d7e1-48f0-a06d-08df28a09e04
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY8PEPF00000058.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS3PR12MB524383
 
-On Thu, Oct 08, 2026 at 11:29:55AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> A PF0 DSM can be removed while a sibling function still has a vdevice.
-> The context pins both the pci dev, but those references do not keep the
-> PF0 DOE mailbox alive. Ignoring -EBUSY from link disconnect lets PCI
-> continue to pci_doe_destroy(), leaving the vdevice with a stale mailbox
-> pointer.
+On Sun, Oct 11, 2026 at 07:31:26PM +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> Move arm_smmu_stream allocation from upfront (before the mutex) into
+> the mutex-protected loop in arm_smmu_insert_master(). Instead of
+> pre-allocating all stream objects and then inserting them into the RB
+> tree, first look up whether the SID already exists in the tree via the
+> new arm_smmu_find_stream() helper. Only allocate and insert a new
+> stream when no existing entry is found.
+> 
+> Duplicated Stream IDs from bridged PCI devices are now actively
+> skipped rather than stored as duplicate pointers. A separate write
+> index (n) tracks only unique entries, and master->num_streams is set
+> to the deduplicated count. This eliminates the need for duplicate-
+> pointer tracking in all cleanup paths.
+> 
+> Extract arm_smmu_find_stream() from arm_smmu_find_master() to provide
+> stream-level lookup, which will also be used by subsequent shared-SID
+> patches.
+> 
+> Extract arm_smmu_free_master_streams() to share the stream cleanup
+> logic between the error rollback in arm_smmu_insert_master() and
+> arm_smmu_remove_master().
+> 
+> The sort is moved after the mutex section, since streams are now
+> populated inside the loop rather than beforehand.
+> 
+> Suggested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Assisted-by: LLM
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
 
-  - Please capitalize the subject line to match history:
-      PCI/TSM: Wait for ...
-
-  - Please disambiguate "DSM" from the common "ACPI _DSM", e.g., by
-    spelling out the first use of "DSM".
-
-  - "vdevice" is not a well-known term in drivers/pci/, so please
-    clarify.  The log messages may also benefit from more context,
-    since sysadmins will be reading them.  I assume this is not the
-    pseries, xen, or fusion "vdevice", which are the current upstream
-    uses.
-
-> This follows the VFIO PCI removal model: vfio_unregister_group_dev()
-> prevents new userspace opens and waits for existing users to release the
-> device before teardown proceeds. Likewise, DSM removal rejects new
-> contexts and waits for existing vdevice contexts to drain before
-> destroying the DOE mailbox.
-> 
-> Mark the DSM as removing so no new contexts or subfunctions can attach.
-> Wait for the last context to be released before disconnecting the link,
-> 
-> VFIO PCI also uses an eventfd to notify userspace that the device should
-> be released. This patch does not add an equivalent notification for
-> vdevice contexts; DSM removal waits for userspace to release them. Such
-> a notification can be added later if required.
-> 
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Jonathan Cameron <jonathan.cameron@huawei.com>
-> Cc: Alexey Kardashevskiy <aik@amd.com>
-> Cc: Xu Yilun <yilun.xu@linux.intel.com>
-> Cc: Lukas Wunner <lukas@wunner.de>
-> Cc: Samuel Ortiz <sameo@rivosinc.com>
-> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
->  drivers/pci/tsm.c       | 63 +++++++++++++++++++++++++++++++++++++++--
->  include/linux/pci-tsm.h |  5 ++++
->  2 files changed, 65 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/pci/tsm.c b/drivers/pci/tsm.c
-> index c8603867e09d..8aa74ba31932 100644
-> --- a/drivers/pci/tsm.c
-> +++ b/drivers/pci/tsm.c
-> @@ -10,10 +10,13 @@
->  
->  #include <linux/bitfield.h>
->  #include <linux/iommufd.h>
-> +#include <linux/jiffies.h>
->  #include <linux/module.h>
->  #include <linux/pci.h>
->  #include <linux/pci-doe.h>
->  #include <linux/pci-tsm.h>
-> +#include <linux/pid.h>
-> +#include <linux/sched.h>
->  #include <linux/slab.h>
->  #include <linux/sysfs.h>
->  #include <linux/tsm.h>
-> @@ -354,6 +357,12 @@ struct pci_tsm_context *pci_tsm_context_get(struct pci_dev *pdev,
->  		return ERR_PTR(-ENOMEM);
->  
->  	guard(mutex)(&pf0->lock);
-> +	if (pf0->removing) {
-> +		kfree(context);
-> +		return ERR_PTR(-ENODEV);
-> +	}
-> +	if (!pf0->context_users)
-> +		reinit_completion(&pf0->contexts_drained);
->  	pf0->context_users++;
->  	context->pf0 = pf0;
->  	context->pdev = pci_dev_get(pdev);
-> @@ -368,8 +377,11 @@ void pci_tsm_context_put(struct pci_tsm_context *context)
->  
->  	down_read(&pci_tsm_rwsem);
->  	mutex_lock(&pf0->lock);
-> -	if (!WARN_ON(!pf0->context_users))
-> -		pf0->context_users--;
-> +	if (WARN_ON(!pf0->context_users))
-> +		goto out_unlock;
-> +	if (!--pf0->context_users)
-> +		complete_all(&pf0->contexts_drained);
-> +out_unlock:
->  	mutex_unlock(&pf0->lock);
->  	up_read(&pci_tsm_rwsem);
->  
-> @@ -452,6 +464,9 @@ static ssize_t disconnect_store(struct device *dev,
->  	tsm_dev = pdev->tsm->tsm_dev;
->  	if (!sysfs_streq(buf, dev_name(&tsm_dev->dev)))
->  		return -EINVAL;
-> +	if (is_link_tsm(tsm_dev) && is_pci_tsm_pf0(pdev) &&
-> +	    to_pci_tsm_pf0(pdev->tsm)->removing)
-> +		return -ENODEV;
->  
->  	rc = pci_tsm_disconnect(pdev);
->  	if (rc)
-> @@ -663,6 +678,9 @@ int pci_tsm_pf0_constructor(struct pci_dev *pdev, struct pci_tsm_pf0 *tsm,
->  			    struct tsm_dev *tsm_dev)
->  {
->  	mutex_init(&tsm->lock);
-> +	init_completion(&tsm->contexts_drained);
-> +	tsm->context_users = 0;
-> +	tsm->removing = false;
->  	tsm->doe_mb = pci_find_doe_mailbox(pdev, PCI_VENDOR_ID_PCI_SIG,
->  					   PCI_DOE_FEATURE_CMA);
->  	if (!tsm->doe_mb) {
-> @@ -751,8 +769,44 @@ static void __pci_tsm_destroy(struct pci_dev *pdev, struct tsm_dev *tsm_dev)
->  
->  void pci_tsm_destroy(struct pci_dev *pdev)
->  {
-> -	guard(rwsem_write)(&pci_tsm_rwsem);
-> +	struct pci_tsm_pf0 *pf0 = NULL;
-> +	struct completion *drained;
-> +	bool interrupted = false;
-> +	long rc;
-> +
-> +	down_write(&pci_tsm_rwsem);
-> +	if (pdev->tsm && is_link_tsm(pdev->tsm->tsm_dev) &&
-> +	    is_pci_tsm_pf0(pdev)) {
-> +		pf0 = to_pci_tsm_pf0(pdev->tsm);
-> +		drained = &pf0->contexts_drained;
-> +		mutex_lock(&pf0->lock);
-> +		pf0->removing = true;
-> +		mutex_unlock(&pf0->lock);
-> +
-> +		/* An unused DSM may never have completed contexts_drained. */
-> +		rc = pf0->context_users ?
-> +			try_wait_for_completion(drained) : 1;
-> +		/* Context release needs the read side of pci_tsm_rwsem. */
-> +		up_write(&pci_tsm_rwsem);
-> +		while (rc <= 0) {
-> +			if (interrupted) {
-> +				rc = wait_for_completion_timeout(drained, HZ * 10);
-> +			} else {
-> +				rc = wait_for_completion_interruptible_timeout(drained,
-> +									       HZ * 10);
-> +				if (rc < 0) {
-> +					interrupted = true;
-> +					pci_warn(pdev, "Task \"%s\" (%d) blocked until vdevices are released\n",
-> +						 current->comm, task_pid_nr(current));
-> +				}
-> +			}
-> +			if (!rc)
-> +				pci_warn(pdev, "TSM connection is in use, waiting for vdevices\n");
-> +		}
-> +		down_write(&pci_tsm_rwsem);
-> +	}
->  	__pci_tsm_destroy(pdev, NULL);
-> +	up_write(&pci_tsm_rwsem);
->  }
->  
->  void pci_tsm_init(struct pci_dev *pdev)
-> @@ -779,6 +833,9 @@ void pci_tsm_init(struct pci_dev *pdev)
->  		 */
->  		if (!dsm->tsm)
->  			return;
-> +		if (is_link_tsm(dsm->tsm->tsm_dev) &&
-> +		    to_pci_tsm_pf0(dsm->tsm)->removing)
-> +			return;
->  
->  		probe_fn(pdev, dsm);
->  	}
-> diff --git a/include/linux/pci-tsm.h b/include/linux/pci-tsm.h
-> index b27f7cf99f22..3adc317d0f9b 100644
-> --- a/include/linux/pci-tsm.h
-> +++ b/include/linux/pci-tsm.h
-> @@ -1,6 +1,7 @@
->  /* SPDX-License-Identifier: GPL-2.0 */
->  #ifndef __PCI_TSM_H
->  #define __PCI_TSM_H
-> +#include <linux/completion.h>
->  #include <linux/mutex.h>
->  #include <linux/pci.h>
->  
-> @@ -107,12 +108,16 @@ struct pci_tsm {
->   * @lock: mutual exclustion for pci_tsm_ops invocation
->   * @context_users: live per-function contexts on this PF0; a nonzero count
->   *	blocks link disconnect
-> + * @contexts_drained: completed when the last context is released
-> + * @removing: reject new contexts while the DSM is being removed
->   * @doe_mb: PCIe Data Object Exchange mailbox
->   */
->  struct pci_tsm_pf0 {
->  	struct pci_tsm base_tsm;
->  	struct mutex lock;
->  	unsigned int context_users;
-> +	struct completion contexts_drained;
-> +	bool removing;
->  	struct pci_doe_mb *doe_mb;
->  };
->  
-> -- 
-> 2.43.0
-> 
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
