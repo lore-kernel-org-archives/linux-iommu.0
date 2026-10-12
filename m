@@ -1,146 +1,149 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2AEC3E7BD5
-	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 14:45:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.169
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791816349; cv=pass; b=aW9251r8ormC+hC1lfZ3w7a+vhhVPVK8UN5N38nY2lm/d6FgTOTCu2UPOZHdXF32BtImIHddmowIMlnFjNCfVZNmLNP/7b2iWkSMdR5694zduXeJr4Sli+mPLb10u4AQ5HLzgbfLadiikzgNtfQecNxrK2ux+KeiaMhhRJWg9Q0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791816349; c=relaxed/simple;
-	bh=gGrNTBjii+g6uIsj6txOBfGumy2pNID11P1zmPmCOWs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oRMO6sm+xKd7dQKdVtGz0M0uthWEWBpKJnEdiDncm1fnQtTS5cdEd92UvpI3tzdwRZi+kmelF2iq23E6C19ACMfwTpRoCkdivv0c7um036THcBRLitkTCGKaer8Gu5F/g3QFwTBAnRDBVQuwsPhWG+wRNYnM1NX3vnc/9PM3dE4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=H8RwqdnT; arc=pass smtp.client-ip=209.85.214.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F1864908B9
+	for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 14:46:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791816381; cv=none; b=AvXv2uD2iPMYzESE0iEguhGX7X6f1BC2DmaZDubsTIEc13/iCa+MTa88REw5ybfQXGlj7vH5WlV+95/msAO4HphD26HNG1cij8dgGC2f8uJCg7iS1NTH8vLEgZ9ReIPnNNuBmJ8f6VXVTVyxtdfzRDL/41H4Hehdaae7FQpj5o0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791816381; c=relaxed/simple;
+	bh=YarLj6Tl5drs4d48GxIIPRySQhK4PE3lDvu4dKT16oE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=igwWgk+udOmpJPWEXTVBxzhg5VYUlrM7GDKE1GA1d3i5wls261cKJuaGtMNPUyEpHtSpLeUX2FeGkHdqYQh2rU/xOMxFv7AB4GJl1SMuFiUbafiUr/tuxK1/0XEaApQnry8ZnglSxG1eGUyuIbuA22W2QfpihsHkX7gLcfrobM4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=EiLRIhjS; arc=none smtp.client-ip=209.85.160.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="H8RwqdnT"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2d8fd7a3f38so69555ad.1
-        for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 07:45:48 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1791816348; cv=none;
-        d=google.com; s=arc-20260327;
-        b=cQj1Zo1EgeXPKOG8o9ZKHK7RtsnEoG+fVDo29kaf/JxYONKEQNYYbLgbS8vplizhQc
-         1u97JDgtwIWhOz4I34MWwlH3Pkp9glqlvqueeuR2IAIJuvybo9gmF/1XI3G+CtJpqTr6
-         aXfEBRI2zG0Tmgnc80N98ckRCHtxQAUkIK+tskfAxN0e8h3edSkkqeSkM6IWvk6n2UG2
-         iegsqq10phJSbduximrFgAO1gVNwxcRv9f0iwxaItj2u15AcGHuTzfr0mGMk4JTKEu4P
-         14n/Kuxo24EVskSxEyH3bYiH/1ykbPi9Xbhm65+rOkLuoJvBhSIVr+X9VCQNsbg8aoiP
-         qm+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gGrNTBjii+g6uIsj6txOBfGumy2pNID11P1zmPmCOWs=;
-        fh=y+rI4WBOW403bZQZOE3NMquQy++kkpDJrGRm0zd9K0Q=;
-        b=URfRAdFdaG/m4dXToc5fMODO6aop9lcOvaLRvo0sllHvErZLaXnIDDZFEQsVn5+s2Z
-         Gg/k7rkoKJ9nRbiWEs932oFzAOaSLtT9sx1I9pZd/Rm6FBpzznAmUt5I6EXcmyUz0yer
-         GUalmFgN/pGok/Gqx0Hks2f2OR/mWnRF3e6NLto/t6BnGMqJlXLx7CzSrh/zM8I3pkyo
-         hvFfYT1LD/JrLYptx5BMtZBD5kss4M3L1FEb7JpQ8IWHsBCOIPoiKDnCmzfDyx1EjkvO
-         myXane1so6Ivx/64FqVFsztV0/HvYNL+pSgr/ceuuXjcKS3t+5tZvsZf2IuMh6Wd36Nu
-         FF2A==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="EiLRIhjS"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-5338f65913dso22437001cf.2
+        for <iommu@lists.linux.dev>; Mon, 12 Oct 2026 07:46:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1791816348; x=1792421148; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=gGrNTBjii+g6uIsj6txOBfGumy2pNID11P1zmPmCOWs=;
-        b=H8RwqdnTsfxvlFIu4bL6y2XzWHC9CMjoB5xbijUz+5dT/bsSWUhr2Xqf0/ZcHXD0Et
-         fadxnXrCr3tpHbDBKxKunD+WlHmFpS/tC1rNeMfQ2tyQQlTRPFhMTg8EHgddqI1AXiHv
-         /eysLyW/8+y818+h5ImIgUMIBb6mVDz3V6Ia9CYAyBMBJ/PG2PQ4VXL5x4eg2rGdQMyb
-         Cn0kD/hCFhDJhoBklbUYP3QeBXKXc4LOGgU+RX0IkGLwOB+e2Rv7+qkORDyjckBGnCie
-         xCLh3tOdXyudZn/VwuQ1IjVUlxtVenjaBw8g0PBjxoc/GZzOvRWymerS046Dg0a2Vf4j
-         qf0Q==
+        d=ziepe.ca; s=google; t=1791816378; x=1792421178; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=kVDh4BcUbgvIW1O8+CoyCzwwqxHQNia8D9+ovujPztQ=;
+        b=EiLRIhjSzHwrzkp2r0PFYyL4CPPIERk4zqYjFzaHFJZBcbziv0ZHTRG8WIVOuBPsYW
+         rq02vYbK0um+FI2ajpwC1s+dVAgOwBKLutbvofkpT0DzoWte1Xs2bt+81SKmON6wZke9
+         Lm5JvS0/Nof3PNkfvfEfPA616j7MTzNH4gEs26ru4VCh8mgTbpfPwufXluoeVZluZIWl
+         rvZ7pzJQce48uUbwkl303BFhzwSLPFrbuvHkX7WtZhulqyUnnC3rtKLBasWo6V8xxTzB
+         IdU/X0buw3HGRWxyIUnuJ1kgqabyGty8FNalJXeRITW5XGHOdxU1lGKQZhs3xhJbyzVG
+         lJhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791816348; x=1792421148;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=gGrNTBjii+g6uIsj6txOBfGumy2pNID11P1zmPmCOWs=;
-        b=MmrlWnf16MQ0eFbNtWcNXWLDjl5BlZGvBKauPNg48irOhWf7VA8t4ocBS9I+4Al5c9
-         BkC92qvBJf5+/2Pjn7cxgBmHysWU0rJbU5EpwWmjuaQymJOgxOeYRcODBbITt7H89Bip
-         d4oY5WS9QptxReg4FJZdGhAQVQKVT3/atUj39M352BUxpaC5BaG6ZUWbS5TpGbhmUiuU
-         F840BzXhLWqjFWSR0IT9ztwVodb4vHXqZ9FZOEGSm5RRdJVW7fOfiLevLYO5BD72xJUD
-         8DWtPNX/5KUpJdnboGpdnLk2GIrdbxvl++QfTu4/siPCeTy9075pQfovGwL8hcUMbGf6
-         RonA==
-X-Forwarded-Encrypted: i=1; AKwUvBwdVLn/x1EzPn/dMBueJ22V+/ccK9F7vVxqV6REvklC8jtj8LnrjVj/Y7NE1pOkIvpRdpM64A==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJu/lJ9ctJFzL2MJu69+Ga1WfdsQnpJVJosKe6AhexgxwQ620qW
-	XrvGfdiwFm/h0XtGzHk29NaXk334xfn8Xjbh4ltVknzWLVAfdlJ/2iSreo1Ld+DZ6PYdVNsZhX5
-	ginoOc5ikwGSp4NJPDQk8oxKQNRXjdRDiaYqPI/0X
-X-Gm-Gg: AYBFou1ZyKYeVeEPVjrhpMi5RhUEwFh4/3Eud3dkS2a0e1JVR1BdEWRfvJRJ+EF9pwl
-	z9TsvTrwZkMwrLLx1A8P8AsXVU6HnKF6824u397F3/1Ab2Fx53f4E7eg05S61wIcCfIdORJE9rN
-	YQHU8f5v48FoGlsll5cFUK73UKMVq3Xv/JOlvcgU0nrR7/3Jt6tRRJDiwajPu35o6mmbpMCLOAm
-	YlubbD8XYevoy40FMA3KADOEmCeMFem3Ml6CwwFacDxaQ/C6erW7cNP67tTx7wW1JacE8fm/WaO
-	KuUMLb7XBQFZqZMIiKuzVSJdxchugwa9ERCoTHsbmGtuxuxjnePU7mIB
-X-Received: by 2002:a17:902:ebc6:b0:2e2:d665:6ad8 with SMTP id
- d9443c01a7336-2e87bc2190fmr6225715ad.4.1791816347416; Mon, 12 Oct 2026
- 07:45:47 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1791816378; x=1792421178;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=kVDh4BcUbgvIW1O8+CoyCzwwqxHQNia8D9+ovujPztQ=;
+        b=zmWrhD6b2TUhkOEhHCkBK+y2on+thgQY2gmY2sDrI0k8xs/TpiuESBvFTjUWKh1Kzu
+         mUHF5CGsqBZjqbBmubVoz2Y5WjKz2ThCmCqX9RNITkFqK6CxCpf72FU3NHas2YANQXfG
+         uSkG9RL7KF6SzbeW7cPr5ww4Iy/1dqSTOzJGjullSdUwpXBQMIKJMQk19ipS0bHTbmrI
+         JP1CkmayHfv3zpsuIWu3Pj2X1ygS6GWFpvbAPLBVDzdAgm02UDmN4yW7IqIF3OfUyaLl
+         /ezifRp5LD1g8+5MuGhdWwygxjtpocAb2V1G6HrFgnxZx5FZoJN6h7uJE2S5yQNnXCCW
+         zU1Q==
+X-Forwarded-Encrypted: i=1; AKwUvBy7Te+UpZOyWhworldkcKp0/PCyc9xHWZ+RsypMdkuBYRHyHuvp7H25qkOPRrNGM+Yuq/VNzw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLFwttQQ/xysCIffMA1b5/Z6DtB/iK7AmTAQURqs5MSM6GzgaxH
+	4/s6ETyWmT+37XaJ0CJ2wGsX8IJzgfCGmVKzbc4Tb61A3DIQ6KKT0MGMeRneTAef5OpTh2wwhWz
+	bR2iz
+X-Gm-Gg: AYBFou3GYExoowf/vI+qehXkzc6tbIFOWBA94ntwNuTzfm3l2IwCiwpOxZq05/femhT
+	mWIookpRBlHYOEAn2K/juhUOqWU+7U56a5HrGTaqFqENl4TA60VnZRdlcCVvIKxgIe4uopOaOU6
+	yOpuYxdiHz6HgBrsp9VBZvAJ0EtLbYSkumJdRs3ogjanALHH27DiudlI3kHGy/sIU1A6trANngH
+	rh1+ONI1UQMHCvKaVBX1IkHcou0eh/EurvgXvi885ztFLsxuskSw24nVmMFW5IhVj81OBRz/Z8X
+	UrTRv/Udyz+VAt2QZUC8X4pHe28yewPSpJNipH8Di1Hf0826y6N2lD1ipvQswebY+zjrYIPDzcN
+	KmQ9creTKLIWDBWcpUsXyvoXKgctAaTsPVL7eFqrFYn51E3Pqa0at/bgsgDUb6ytrMqE8EAEzRK
+	QqBAHbeROnvQVCOFD3lUbMPX2wdoP9u8IZfm9342EzRRqxCCmAlNhuOWFxGJGNQ/1jkU4D8f8ql
+	bOn+9DzDCqw8RdxwWuAJGCOohJp4wLM/Q4+LKipgDNoNcpuY36u2au3
+X-Received: by 2002:a05:622a:2487:b0:535:1134:91b with SMTP id d75a77b69052e-5359faead4bmr160454661cf.14.1791816378499;
+        Mon, 12 Oct 2026 07:46:18 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-535e652f3c7sm3157041cf.26.2026.10.12.07.46.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2026 07:46:17 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xGHI8-00000006SW2-2nlk;
+	Mon, 12 Oct 2026 11:46:16 -0300
+Date: Mon, 12 Oct 2026 11:46:16 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+Cc: Fred Griffoul <griffoul@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Marc Zyngier <maz@kernel.org>, Oliver Upton <oupton@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Ackerley Tng <ackerleytng@google.com>,
+	Joey Gouly <joey.gouly@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Zenghui Yu <yuzenghui@huawei.com>,
+	Steffen Eiden <seiden@linux.ibm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H . Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-kselftest@vger.kernel.org, linux-trace-kernel@vger.kernel.org,
+	x86@kernel.org
+Subject: Re: [RFC PATCH 2/6] dma-buf: Add get_phys() to describe a physical
+ run
+Message-ID: <20261012144616.GF14213@ziepe.ca>
+References: <a04f17cc-f59a-4240-81c8-29776eee3a2e@amd.com>
+ <20261005132046.30025-1-griffoul@gmail.com>
+ <f0077cec-10fe-400a-b229-f7434e297364@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20261003212241.3432303-1-lrizzo@google.com> <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
-In-Reply-To: <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
-From: Luigi Rizzo <lrizzo@google.com>
-Date: Mon, 12 Oct 2026 16:45:11 +0200
-X-Gm-Features: AclHuK-i8fHHmdGq1sG19E58z4J25P_7xaX9lSE-RrDdVmPDw1ep2a8coGIVdbw
-Message-ID: <CAMOZA0JaiKsRgDdjHkL_N+MshhcyLSv+cT9SzEbNsC_sumHvOw@mail.gmail.com>
-Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
-To: "David Hildenbrand (Arm)" <david@kernel.org>
-Cc: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, "David S . Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, 
-	Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
-	Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
-	Joshua Washington <joshwash@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
-	Saeed Mahameed <saeedm@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>, 
-	Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
-	Alexander Lobakin <aleksander.lobakin@intel.com>, Michael Chan <michael.chan@broadcom.com>, 
-	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev, netdev@vger.kernel.org, 
-	linux-mm@kvack.org, driver-core@lists.linux.dev, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f0077cec-10fe-400a-b229-f7434e297364@amd.com>
 
-On Mon, Oct 12, 2026 at 3:51=E2=80=AFPM David Hildenbrand (Arm)
-<david@kernel.org> wrote:
->
-> On 10/3/26 23:22, Luigi Rizzo wrote:
-> > Here is a subsystem called DMA_PMD on which I would like feedback on
-> > architecture, possible enhancements, or kernel components that could be
-> > reused to avoid duplication.
->
-> Here is a feedback to a subsystem called DMA_PMD ;)
->
-> Why is basing this on PMDs (and embedding it in the name) the right appro=
-ach?
->
-> On architctures with large PMDs (512 MiB on arm64 with 64k), would we rea=
-lly
-> want to use 512 MiB pages, or rather something smaller (e.g., 2 MiB) that=
- might
-> possibly also have TLB benefits (cont-pte)?
+On Mon, Oct 05, 2026 at 04:53:34PM +0200, Christian König wrote:
+> > KVM gets its frames through the KVM-private guest_memfd provider
+> > interface from David's series. iommufd gets them through a private
+> > interface with the exporter, as it already does for vfio-pci. The new
+> > version adds a small registry in iommufd for that, which replaces the
+> > symbol_get() of the sample in David's series. The dma-buf is then only
+> > the handle and the existing revoke.
+> 
+> Yeah that approach sounds totally sane to me.
+> 
+> We have drivers which stuff all kind of resources, not just memory,
+> into a DMA-buf. That ranges from MMIO BARs to trigger FW operations
+> (doorbells) over full HW blocks (ordered appends, global wave sync
+> etc...) where two or more applications need to share which one is
+> used.
+> 
+> That you then have a exporter private interface is for accessing
+> this is perfectly ok.
+> 
+> The problem you are facing here is more that this is not limited to
+> one driver/module but multiple ones and you don't want module inter
+> dependencies because of the symbols.
+> 
+> So symbol_get() is probably the right thing to do as long as we
+> don't have something like weak symbols or similar.
 
-I had to call it something... an earlier prototype used the name IOMMU_2M,
-but I didn't want to suggest that the design was limited to 2M (it is not).
+I don't want to keep expanding this hack in iommufd. If dmabuf is to
+be used then dmabuf needs to provide a pluggable way to fill the
+iommu_domain that many exporters can plug into. I don't want to
+hardwire every exporter into iommufd, that makes no sense.
 
-Aside from the name, the _current_ prototype restricts to 2M allocations,
-exactly because too large units are expensive and wasteful.
+The existing arrangement is to motivate solving this problem
+generically, not something to be expanded on.
 
-In the code, decoupling the allocation size from the PMD size is trivial.
-
-To enjoy the reduced IOTLB pressure the architecture needs to support
-IOMMU leaves with the correct size. Looks like ARM supports a
-"Contiguous" hint, but I am not sure how to tell if the hint is honored
-(ie the IOTLB actually uses one entry for the full contiguous range)
-other than measuring.
-
-cheers
-luigi
+Jason
