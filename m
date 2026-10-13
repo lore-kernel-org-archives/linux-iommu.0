@@ -1,73 +1,75 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+Received: from mail-dy1-f171.google.com (mail-dy1-f171.google.com [74.125.82.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D3E051FCAC
-	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 17:00:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AB725218B0
+	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 17:12:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791910816; cv=none; b=h36VdQnzUAuSpPA/AxPnzVouTEaSHwMra5vv//0DfLrLnfhOuHBw5SNZBPsF9ehyPp58VWedJ49iwvvOdpkOwavy6tx9Ai6LGhQOV8QroonKzPwZfBLxr0LLDCStcLK1+BfzVoRnVyJqC9RPPwxxRq4dXiLxgumt2CIMSpswDso=
+	t=1791911562; cv=none; b=KhcQ0x1qvbRxRL2zNwzWTnXRsF8yXmiVPEwW/6/Vm8VsJ8Tj+IqPaRz6xVenyS940O5S5ptaQ/wt/XXstfVFNvFn4l2+g5sHepLr/mA+uMxEOIeyjZV7WzAip4tgpVj2mGfimfJh+9UjU553XX+PNRxTgtlEZGrj/RBnToOkEvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791910816; c=relaxed/simple;
-	bh=s6xm5xGCBjDdmzPSVyNR3aQ8ZEGeMfYGDHFgVN1bRvs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=keLTUGuuPw6Zg/gfF/7V5mjEvp4ukYongz3Ezei5VXHoZ3lC96TdQsbXlL3lWUmG3fphPPOXO2ScYgZglbYlZxB2ArPcQZjrMDnOSpJBw7LEBOxjSMsp+e1SQRyj70HK+Hg7+XKwA1/MJZ7P/h3t1oW7xY+1zUuXe0d1QL2PqUU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ba+q0Byo; arc=none smtp.client-ip=209.85.210.51
+	s=arc-20240116; t=1791911562; c=relaxed/simple;
+	bh=vZ3XOjh7+MDb5NRUrgu7NjsmjoO7dxSF5Zx4rb2v0VQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kqmx8LoYls2/6DXdXLfy64+JyOdb15Y9C/UsG8kcmmpTBzmwarw67MeVG7TnWLzWrbKJSl68MWjv0049iYWHpuHI0P0YMFTjLeLcmuSPmMjd3sVjin1wUCmXoP6h9YXhZUGgX8eY5QVuX+d8vinvRoqWhLx/zqSLc/F0txGdqfg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C4/yHGQj; arc=none smtp.client-ip=74.125.82.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ba+q0Byo"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-81ba09a5d23so56668a34.3
-        for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 10:00:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C4/yHGQj"
+Received: by mail-dy1-f171.google.com with SMTP id 5a478bee46e88-33e6279a1d7so1361018eec.1
+        for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 10:12:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791910814; x=1792515614; darn=lists.linux.dev;
+        d=gmail.com; s=20251104; t=1791911559; x=1792516359; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=bwxVaq2ksRwIQCdDWrzJYHR4z+d7pSrUOkNdZaCLjGQ=;
-        b=ba+q0ByoOBlU1HhhwlIkw9AaYRswqkCPs/AoPe4xa7yah8Z43pWk4OFQhdqDpsRC61
-         1Y8mb6rG3AXKNiZvSRbANLZFaNDFUBPf0Ekz5GW36XOPRCQ2FPlbIe/U7kJvBiCn+M1X
-         OQbZTB7/64TNO98DuFFiomq07tJVjQo8JmVAY8IGUt61vFMaoUYX8JErGa3oSaEBmLeU
-         Tlfi4Lc7Tr4W81J6aTna3BWlwgrCR/E8Z6twlmsBCNIFyubGmmAvbtmIJb4CgBlJgX4I
-         U/w6LyMTqo2kmRcgjF0h1nDK8eEX/dC4dSgL7h61Rny4o4C4v9Bv1R1+QHt28fFRddZc
-         pedA==
+        bh=LZU7pSaZGKiPMSZYCfmxHQiJ5B/e9tRYMINwq527v7w=;
+        b=C4/yHGQjcw7chFo7OmzSP0XnEVbteqWwPxf/ArKeipo8HvByvytzbtHF2C/Ln9BJ3k
+         /Eohb6d31JuTrqHaYS+PCHN+ztpB8raRPbRjFWvR2Ze9BFNXLIPVmHZFHP0fGWRW9hGV
+         Gr5O+8T+uJhhoA4qDS2Jq3x6FrWTwIoa6TIi9jYY3MyDcaxUHGYHytBBfBiO5Z7UsdRD
+         r4SJNH+kaIu1COm1H5OYDiupSCyfFGiUN4cWE2K89A6oT96q4+KirDwZtR18zRBTa+gu
+         wvLbVonwcuAaSWzYDjDbTNWc0Doq4ay21Dn0i8FpjCPVoO4e3RyXd7rduvnPCeIUmWz1
+         nkfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791910814; x=1792515614;
+        d=1e100.net; s=20260707; t=1791911559; x=1792516359;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=bwxVaq2ksRwIQCdDWrzJYHR4z+d7pSrUOkNdZaCLjGQ=;
-        b=RhUg7zICL0tc9vGvsWrJzSBu7thOgk4MRrwvDwXv6Cxek7aneKoOsKOSJJdwtW1S/N
-         wd88HPhaI/vtsrxWMildp3AEWv9O+c9o1UprBlZPJSf39/MCMTGt4MzmMfGjwL/UHHiW
-         jOtZOEnzk79Rs/rc7LiQNa8lC3TZU5Dl6QW+xhfkELTJGzFw8xw+YUi8P4vWu7Y/BeFx
-         cYURvIP4XuN3+7VDfhyzEgZNzZjfSgvXjWAQPEuqn5EjQKdU/xLJEN51tad2HFkc98UC
-         apLa9hKepesqWePdsortPNaRxizUHRU7UbppX3bNfSbixx3x9P/JISOgq6c161giP3MS
-         RFBA==
-X-Forwarded-Encrypted: i=1; AKwUvBzhEnCrVP4FZhgpwxd+6WnghudrvdS/hGNDaiPWjm/Qboyncekv57dCxBA0BpWEzAIHEVSLrA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYI366CNs62Q3U8BTicfSnJ8MkU/sFoMpXOU9Wk8GRD4Rmhvn63m
-	z8re9REFYBybWTLtko3F2+WS0GL0R6IsuQg/M5vXIMJ6z/p3JxiAdzzt
-X-Gm-Gg: AYBFou1EfzRlMol71f9WJ5zrfqB3FvbsF7zJ9iNw7vyqgbNO6cYOnueHp2ROnA8YviQ
-	F7Z6ae1RJ1rTNXeRpZrwwZjoh3J837BeyL1F2ZQJnjOM7LPZ4A8g2FNeNpGLaIJy/bkbly5irOX
-	Pgjad5Yfty7oKvgsQmQi2o8lRbVBprFiwyepJ1O7f+OUaURMjX5dY3/yczmAC60WkXnOuvSveMP
-	5xGREl5BVcAxSFsHchVvsbQj5onQ+Pmn8O8ijlhKBrd5C8SHNsLBD5CTstx7xRuWSls38o4QzNe
-	may77SCxo0vJuYReDxuDSwyUHX441mwtppxua7+I7OT6DrtCZPdSbGWBJ8dZnhNIow/p5MrBKKs
-	r5Zdu9zdBxGYRCAExIuMBEDk276/bctJ4CeFhFqHtQyF4mJIyqQmMQQqp2Ui3iyA2hoNMi1g37E
-	2tX95XE+Mj4KnlbYLmcWF7ajHywCss/9jxgRpYhX6HovGQsRTYkM15Us564uG4gd/IjeT+clHcq
-	EGdp5xg6R808dSWzYigXRHELo9EdlXpYyX7iXi1Nr8zArx5fNh5UqU3cUAx2a9lHPU=
-X-Received: by 2002:a05:6808:130f:b0:4c1:5614:acab with SMTP id 5614622812f47-50c532f8aa4mr11754186b6e.37.1791910813978;
-        Tue, 13 Oct 2026 10:00:13 -0700 (PDT)
+        bh=LZU7pSaZGKiPMSZYCfmxHQiJ5B/e9tRYMINwq527v7w=;
+        b=X96rXfxPNA1TymjCxGXw4s5LiROrlnSjJsSz5MTnBarPf3OqxYIIhCWqtn1uOtV9Dr
+         PnYLacbwS7VZ3eDKVRV3wa7jf/a8/1LyUOo6sWKeTvWZqQzO+EMqAcs5KkNdP7OZKtWQ
+         rNy5JsG3RjvwpIj0DXa6Qi+XEybzO8Q/boF0Ze/aXmc3Ss+NUd3KLVIm1JTmVQeNjpZ0
+         1qZ5T2JG3Z0osssz2uh08r3xeoOFKczIgzPfwY3+CEyMHhco6p4tm5NkjhDBV3Itx5n2
+         1WQutooxUmmNNjXNEy8mNYmLtA74B4SM2bMLlqYV6RFm13zFlWhzSf6Z4utvPg3GNSZ4
+         IPjw==
+X-Forwarded-Encrypted: i=1; AKwUvBzU2GrkqfO10z7gDYx2uid5W+tCiRBQAFxI6x9wNpjuu48eisiMzc8Da01ogA5BfS+j0nh6wg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKa0HJ9v/w51IVFjqPCI980uz6QCksUF2RkgkuubfkFO4S/QLgw
+	wDPld3NHttjAqNvOZv+fIJeI5sGlyd7OjD4U4H8zQXIP+U64IjUQp5KY
+X-Gm-Gg: AYBFou1opKLVfzmr/aVwtHtCU/C63+nM7nRPA5vu+lqS4ZJbyu97n45ydIkTW8KBLw3
+	a39iapCDJzVF1Sj+FEWSwn37T9FXA7EwZt86sv4eNBcYnFP1mhDk5reheezzhVND2bi/O8+vtAg
+	WvCtSMSc2KbJqs/uyt9oKhBZAYSHY5f6q8/2aIA3RuTex2X+zRPq2Z/4cg62Jd0Be2ZxcOnF+57
+	V21fFzeWsFmr2b/dZHKyopaNFnO25JsHWjbl6r+XuWg2SLb9Dg+TWi6lXJUIdSM4iUKkEAdS4wG
+	QqZmkROtTjEtMF/4gH85aUEWafPCZYzWmPKv3IT6yN9/Cu5XSyX2iRktcAiTwzzDQNUS8cWOWIe
+	PwipwixiWYTKCbuZnkRwUQgz6xsU2XG1lL1OeTcfbtPAgHq0xTCFpL23tuZbRcdJ93qqdxXCYaN
+	p3bBlZlk0ZBZ/rOox4H1o8yHsjteFH+ZCGu7Y/iBZbj5SI3RP72g78vtg6N4pi9rdjpnx0VoEgj
+	mWo86s2yoNJKVfuCO9V3pWRHGR5NWY1ElX2yoe9+OteBeN1nf931MMr
+X-Received: by 2002:a05:693c:4159:20b0:34c:8c69:529d with SMTP id 5a478bee46e88-3537e0a9695mr19809272eec.26.1791911558689;
+        Tue, 13 Oct 2026 10:12:38 -0700 (PDT)
 Received: from 1u1g-b650-0212.nvidia.com ([72.25.70.131])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-50c0c5fe916sm15298147b6e.1.2026.10.13.10.00.12
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-35a352d4b05sm25620546eec.19.2026.10.13.10.12.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 10:00:13 -0700 (PDT)
+        Tue, 13 Oct 2026 10:12:37 -0700 (PDT)
 From: samarth.colleges@gmail.com
 To: Jason Gunthorpe <jgg@nvidia.com>,
 	Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>
 Cc: Robin Murphy <robin.murphy@arm.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Kevin Tian <kevin.tian@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Samarth Narang <samarth.colleges@gmail.com>
-Subject: [PATCH] iommupt: report the whole contiguous group in read_and_clear_dirty
-Date: Tue, 13 Oct 2026 09:58:14 -0700
-Message-ID: <20261013165814.3092559-1-samarth.colleges@gmail.com>
+Subject: [PATCH] iommufd/iova_bitmap: fail GET_DIRTY_BITMAP when a bitmap page cannot be pinned
+Date: Tue, 13 Oct 2026 10:10:45 -0700
+Message-ID: <20261013171045.3104619-1-samarth.colleges@gmail.com>
 X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -79,45 +81,74 @@ Content-Transfer-Encoding: 8bit
 
 From: Samarth Narang <samarth.colleges@gmail.com>
 
-The record_dirty() function computes the reported dirty length of a contiguous
-(multi-item) leaf group as:
+The iova_bitmap_set() function reports dirty IOVAs into a user-provided bitmap, it does so by
+pinning the bitmap pages lazily one chunk at a time as the reported IOVA advances.
+When advancing to the next chunk fails, the function simply returns without recording the dirty bits.
 
-	end_index = log2_set_mod_max_t(unsigned int, pts->index, num_contig_lg2);
-	end_index = min(end_index, pts->end_index);
-	dirty_len = (end_index - index) * log2_to_int(pt_table_item_lg2sz(pts));
+	if (iova_bitmap_advance_to(bitmap, iova))
+		return;
 
-Here, log2_set_mod_max_t() sets the low num_contig_lg2 bits of the index to all
-ones, i.e. it returns the *inclusive* last index of the contiguous group.
-However, pts->end_index is an *exclusive* bound, this can be seen from the
-definition of pt_range_to_end_index() which returns of the form "index + 1".
-Also, the iterator stops on index >= end_index. Therefore, subtracting an
-inclusive end from an exclusive bound will yield one less item than the actual
-length of the contiguous group.
+So on an IOMMU_HWPT_GET_DIRTY_BITMAP ioctl, if any bitmap chunk past the
+first cannot be pinned, the dirty pages in that chunk are cleared in the page table,
+not set in the bitmap, and the ioctl will still return success.
+This means that the destination VM will observe stale memory.
 
-For IOMMU dirty tracking used by VFIO/iommufd live migration this silently
-drops the last page of a contiguous dirty mapping from the migration
-bitmap.
-
-This patch makes end_index exclusive to match pts->end_index and the span cleared by
-pt_entry_make_write_clean(). Also, the same length is passed to
-iommu_iotlb_gather_add_range() so this fix would correct that as well.
+This patch records the first such error in the iova_bitmap and propagates it so the
+ioctl fails instead of silently succeeding.
 
 Fixes: 4a00f9434891 ("iommupt: Add read_and_clear_dirty op")
 Signed-off-by: Samarth Narang <samarth.colleges@gmail.com>
 ---
- drivers/iommu/generic_pt/iommu_pt.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
---- a/drivers/iommu/generic_pt/iommu_pt.h
-+++ b/drivers/iommu/generic_pt/iommu_pt.h
-@@ -248,7 +248,7 @@ static void record_dirty(struct pt_state *pts,
- 	if (num_contig_lg2 != ilog2(1)) {
- 		unsigned int index = pts->index;
- 		unsigned int end_index = log2_set_mod_max_t(
--			unsigned int, pts->index, num_contig_lg2);
-+			unsigned int, pts->index, num_contig_lg2) + 1;
+diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
+index 4e447ce74..e6540b0a2 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -589,7 +589,7 @@ iommu_read_and_clear_dirty(struct iommu_domain *domain,
+ 	arg.iopt = iopt;
+ 	arg.domain = domain;
+ 	arg.dirty = &dirty;
+-	iova_bitmap_for_each(iter, &arg, __iommu_read_and_clear_dirty);
++	ret = iova_bitmap_for_each(iter, &arg, __iommu_read_and_clear_dirty);
  
- 		/* Adjust for being contained inside a contiguous page */
- 		end_index = min(end_index, pts->end_index);
-
+ 	if (!(flags & IOMMU_DIRTY_NO_CLEAR))
+ 		iommu_iotlb_sync(domain, &gather);
+diff --git a/drivers/iommu/iommufd/iova_bitmap.c b/drivers/iommu/iommufd/iova_bitmap.c
+index dac3e657d..483f0cc84 100644
+--- a/drivers/iommu/iommufd/iova_bitmap.c
++++ b/drivers/iommu/iommufd/iova_bitmap.c
+@@ -116,6 +116,9 @@ struct iova_bitmap {
+ 
+ 	/* length of the IOVA range for the whole bitmap */
+ 	size_t length;
++
++	/* first error from pinning a bitmap chunk; -EFAULT etc. */
++	int err;
+ };
+ 
+ /*
+@@ -384,7 +387,9 @@ static int iova_bitmap_advance_to(struct iova_bitmap *bitmap,
+ int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
+ 			 iova_bitmap_fn_t fn)
+ {
+-	return fn(bitmap, bitmap->iova, bitmap->length, opaque);
++	int ret = fn(bitmap, bitmap->iova, bitmap->length, opaque);
++
++	return ret ? ret : bitmap->err;
+ }
+ EXPORT_SYMBOL_NS_GPL(iova_bitmap_for_each, "IOMMUFD");
+ 
+@@ -411,8 +416,13 @@ void iova_bitmap_set(struct iova_bitmap *bitmap,
+ 		 * may fail if it's out of bounds, or pinning the pages
+ 		 * returns an error.
+ 		 */
+-		if (iova_bitmap_advance_to(bitmap, iova))
++		int ret = iova_bitmap_advance_to(bitmap, iova);
++
++		if (ret) {
++			if (!bitmap->err)
++				bitmap->err = ret;
+ 			return;
++		}
+ 	}
+ 
+ 	last_page_idx = mapped->npages - 1;
