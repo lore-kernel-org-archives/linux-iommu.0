@@ -1,122 +1,110 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90C51184
-	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 12:44:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 530F92475E3
+	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 12:44:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791895443; cv=none; b=cRxrzud8vk9nbdcWFiLRX2O0NAlfUQ0W7FxH3owr00spkkQDjduW58H8JcxaeoHpCXf8UhbHuaFfuNN+bUrr+SG3s9mY7wi67YkgRq/xq9xW+v7iL9keWx1eZoUCvjrYkBnubhbXhNs07aCENnZz60OHkfrjdjOwrXRfJZE8ykk=
+	t=1791895444; cv=none; b=q7tEQ8icI0fulXI11n9n7z8AHXu3sJh+S9x3r5WitaAh6Hxn1/9QmajJrWVMds0wrC+1YThkRK140rBeYrv8AwyXwUO/M7XoZCHXBSt7AWPGiI+/6c28KCrwEghSGpZsxl4of7qHFHlMjrTP37sXyydFqR4JxOtqewPhBQnvIsc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791895443; c=relaxed/simple;
-	bh=7nLXDgVjqrePKb7nbBeVACkcTllKFH4WmHA0OYhVz+4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=bAy3Zh2biVVXNSeHfnA82KopC3x9+hu7thw9ZhnYI/wlY2cqHoZjaJKiuv7EV/e2pjUCTMnjAIkn9BafpjgyxUg0blQRXJ/wdew8M4YkEW1eTSzcA50A0hDQFDhGDkxnvl51Nv+2v32Lll1xY5cwSIRkYbBoKg/igpiKF71Br14=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b=IWG1Xee+; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	s=arc-20240116; t=1791895444; c=relaxed/simple;
+	bh=Ffj0rg1ejA7e68ABDtZ/JEnCcPZ/obpgDVy5o1iSi8k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PiPav3uPEeHqb5nu+fPY0eZeJ/6WHdTnydg83gQvGpW+EBq7yMQTCjARYp/fqnIzQ8eNfTeXCx29wKga4Ol/oeAdsnScnfvxZL0T3L6zAlltKBZpJYmUMSBkMwg1Z5066Ua8zd8V1CO8a7trz8SI2UEkkTQXtcgC6yw0aITSjE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Kbp101ei; arc=none smtp.client-ip=209.85.222.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.b="IWG1Xee+"
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8DBC2169C;
-	Tue, 13 Oct 2026 05:43:56 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CBA633F7B4;
-	Tue, 13 Oct 2026 05:43:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1791895439; bh=7nLXDgVjqrePKb7nbBeVACkcTllKFH4WmHA0OYhVz+4=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=IWG1Xee+jUdb3DdoHLKB03WzcdKGcCjsFZw4HKmQ9X6v0YKD+YrhiBX88p9wyTr7Y
-	 KGwMryiKgox7uyTZnRoVgzba9gpGqTnLFT6C+/xvacSeExFusXeDvxWxvxdh0iLb7C
-	 i1iNyeYooTb4HqF2qaiUx9dDrjG9FM8PFIeXQfiA=
-Message-ID: <e7b6e74a-4ec9-4146-a6b0-9183a9fb7933@arm.com>
-Date: Tue, 13 Oct 2026 13:43:56 +0100
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Kbp101ei"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-93e63522076so218177085a.1
+        for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 05:44:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1791895442; x=1792500242; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Ffj0rg1ejA7e68ABDtZ/JEnCcPZ/obpgDVy5o1iSi8k=;
+        b=Kbp101eim2OAp3VE0rj2zZZAgFZX+r47hIx/OMFwoC8OYZrene3lOSAU8Ctna/axO2
+         HCRj0ivyKAtQUjQWaYrrafcW2jrQLmgA9UM5mg6GUF6UcblBMtD+84ymBH9wJNZxEr6u
+         6MJmAOzZLcc2l5SlMAWdWE3R8uYWPytq9fNV0o9HicU2IomJ3I4LIxpF8snznfxGJH5v
+         d10ulHwnSQIjNRnXiFlMgbGPk3bl7VkPmchh1Jg7GiW3HHwUEGHOfS+LpMJcUOcQ9JJi
+         9VZSkBOQ8ezJ4i4zZ2i4CqrIMVXQmNgKhTtVLD+sMaeR8XDa8kKAHsECL35iVaC5mSTM
+         +xbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791895442; x=1792500242;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Ffj0rg1ejA7e68ABDtZ/JEnCcPZ/obpgDVy5o1iSi8k=;
+        b=zWgvwjPGb9g8e/TOKAPGEd5q79Y0Ftrp/VrzCKnXYNFK6TH5fhy3kFVng8+di1u7bt
+         EcKquV1ksDEksHNAzWNFKXmp/Cu80gUDb600TXct047FjuFjNRKk69YZ+eh1FhDFwA/2
+         9FyBnwY/3D1KRslK33we8NcRqBo9o2Up/rtRcjoxKo8urWuYBShYSIOs1zW2X9vnEvt4
+         +BIWoeudNLrjkmn7jZAncZFnSQhY2COwy6jTbwinUphKzdXByUzRQqgZwQh1Ohy1HU2o
+         pmtd105j8wDisZTE1ra6R2zUGhL4hj053KPTkOngNZzTtjtXTBJINCIzDmgW/IirnJ73
+         lb4A==
+X-Forwarded-Encrypted: i=1; AKwUvByrl48iJC/MgpNlRVZpIRtjT8bK5RgywoBYzNXSAt+T0v2N15zyoi8ALC2Vau8exk9Z9/ZaJQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLmmOqPrBqAaPoXzKjeN8zKVdNjA+3HhfTeAhczKyVtq0KHDkad
+	THPjtcYmZXkwxv0RE6yDgCqO85VRDBrkRnjlCT5g2AODig8We5jTAQX2fuvfbsjylAw=
+X-Gm-Gg: AYBFou2l1DTYkrmPLJz64UGgmzaZoTWJ6poBtX7MTew6O+kTFKUcbSEowrd/AB0F8Hi
+	XJFWODfSjGwy8QhV6MTZAe20i9zs5dnszUvpIT+DRHRPzTEvf0tl4T2i58yWOrG+K4H9mn3go/r
+	ZF0AYL0la+sg7RFcED4HhnvsJxYyXPzLz2U9rs3bCytmnB5cJ9zlSGqjCsCZxRxpsXgsWvx0KmB
+	tJnMGQVIqgWHd0t8ubZwqepTZATAp9xSXEUbw2FmfZadRAVSPQv1oJIuO2jPDNf/mFytg0oeRCZ
+	73kogwZdxXP3Ga7/pdWocb1vPWj7iBlUyoh4eXvAxe9KBfT9oA6I+nv58VDtWiAjpQFT+uGSLz8
+	FEvTIhvC6x9rvK+aaOjYb0L3PMT3FZzQ6ugyHsA070p8z8vH4XqMncl8bqX6DcXG5iyH9C2gNeJ
+	6ZTuPnoIAk1OGKFNgs5zXNWazzmnuoSvnsA22D+tDmDSSzObKYsIekqppzdJTSQtmt3L+niX9bv
+	/ebq/DXVd+BNQYT6emY/a23rHkisGh5mvEBmFig4kuW1JBFjR/5JX9P
+X-Received: by 2002:a05:620a:6601:b0:93e:6ff1:b67c with SMTP id af79cd13be357-93ebd1e0149mr2182476585a.20.1791895442098;
+        Tue, 13 Oct 2026 05:44:02 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93ef5009ca3sm227528285a.7.2026.10.13.05.44.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Oct 2026 05:44:01 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xGbrM-00000009Wdr-3fVQ;
+	Tue, 13 Oct 2026 09:44:00 -0300
+Date: Tue, 13 Oct 2026 09:44:00 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Peng Fan <peng.fan@oss.nxp.com>,
+	Will Deacon <will@kernel.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+	Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH RFC v6 5/5] iommu/arm-smmu-v3: Wire up shared-SID STE
+ ordering and feature gating
+Message-ID: <20261013124400.GI14213@ziepe.ca>
+References: <20261011-smmu-shared-sid-v6-0-cb76b89dc612@nxp.com>
+ <20261011-smmu-shared-sid-v6-5-cb76b89dc612@nxp.com>
+ <aszfVNP6DGzWYdK0@shlinux89>
+ <as1zR1wc7ERxvR1F@nvidia.com>
+ <e8c22eb2-ed1f-47c7-b2ac-c56ead1cba8b@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-debug: Skip cacheline tracking for MMIO mappings
-To: Leon Romanovsky <leon@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>,
- Arnd Bergmann <arnd@arndb.de>, Vinod Koul <vkoul@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20261013-dma-debug-fixes-v1-1-1ad1f471cc61@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20261013-dma-debug-fixes-v1-1-1ad1f471cc61@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e8c22eb2-ed1f-47c7-b2ac-c56ead1cba8b@arm.com>
 
-On 13/10/2026 12:44 pm, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Mapping one MMIO dma-buf for many RDMA importers overflows dma-debug's
-> cacheline overlap counter and triggers a warning. DMA_ATTR_MMIO mappings
-> must never be CPU-cacheable, so CPU cacheline overlap tracking does not
-> apply to them.
-> 
-> Skip MMIO entries in both cacheline insertion and removal. Keep them in
-> the DMA entry hash so mapping and unmapping checks still run.
+On Tue, Oct 13, 2026 at 12:22:06PM +0100, Robin Murphy wrote:
+> If we're not going to support PASID for shared streams (which I suggest we
+> don't...) than we shouldn't strictly need to worry about CD tables anyway.
+> So rather than having to special-case CD table sharing for shared streams,
+> perhaps it might make sense to generalise back to a "default" per-domain CD
+> for non-PASID use, which can then get switched for the private per-stream
+> cd_table if and when a device does enable PASID?
 
-Seems fair;
+If we have stared STEs then the group becomes the per-STE data
+structure not the master.. We don't have any way right now to do that,
+but it would make some sense for the group to store the shared CD
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
-[...]
-> 
-> Fixes: 0e74b34dfc33 ("dma-debug: add support for resource mappings")
-
-Although it would be a challenge to backport _that_ far, so more 
-realistically I'd probably say:
-
-Fixes: 3aa31a8bb11e ("dma-buf: provide phys_vec to scatter-gather 
-mapping routine")
-
-since regular dma_map_resource() users are still never going to hit this 
-making their one-off mapping of a UART FIFO or whatever.
-
-Thanks,
-Robin.
-
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->   kernel/dma/debug.c | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-> index 026d50de340e..36c1f7cbb2ae 100644
-> --- a/kernel/dma/debug.c
-> +++ b/kernel/dma/debug.c
-> @@ -489,8 +489,10 @@ static int active_cacheline_insert(struct dma_debug_entry *entry,
->   	/* If the device is not writing memory then we don't have any
->   	 * concerns about the cpu consuming stale data.  This mitigates
->   	 * legitimate usages of overlapping mappings.
-> +	 * MMIO mappings are never CPU-cacheable and do not need tracking either.
->   	 */
-> -	if (entry->direction == DMA_TO_DEVICE)
-> +	if (entry->direction == DMA_TO_DEVICE ||
-> +	    entry->attrs & DMA_ATTR_MMIO)
->   		return 0;
->   
->   	spin_lock_irqsave(&radix_lock, flags);
-> @@ -519,7 +521,8 @@ static void active_cacheline_remove(struct dma_debug_entry *entry)
->   	unsigned long flags;
->   
->   	/* ...mirror the insert case */
-> -	if (entry->direction == DMA_TO_DEVICE)
-> +	if (entry->direction == DMA_TO_DEVICE ||
-> +	    entry->attrs & DMA_ATTR_MMIO)
->   		return;
->   
->   	spin_lock_irqsave(&radix_lock, flags);
-> 
-> ---
-> base-commit: 39d3758108bb0ef9da484062d65288bbe9cada0e
-> change-id: 20261013-dma-debug-fixes-5aaf1bb17544
-> 
-> Best regards,
-> --
-> Leon Romanovsky <leonro@nvidia.com>
-> 
-
+Jason
