@@ -1,61 +1,64 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D04843E0C67
-	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 12:19:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E369D4F7CDE
+	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 12:19:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791893993; cv=none; b=JzmOqLanDgTPeV8Dk/7NCbEHi+EQojGUPzv6AYe+/WAzb7IXLYDDyfdj2gsjRs8SzP8Zo/BKxQdTtrTWiCA/EyGSwAG7lfKMuKf6NhhCsgBRXN+pon1nI+pXfKmAf/NHjhfakoMXYkNrubAU7yjFFdCu05gbE5VZpHGaYo3AJ6A=
+	t=1791893993; cv=none; b=u/cCkKQwMlGOODNKw05njGSFpsP11xPEU+WNWXIB7C50GTLbz5ZzWMTbaxog9yex0WBrEyrvtZfJVal3qG/AvLMLnwP9pShoyaiKtxVhXBYgJYfPQb/hBDYPYdJfOgDNN2vVJC89I+nXrb6LaJlyeJsMXtT6FT7YWKTiYoMI5b8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1791893993; c=relaxed/simple;
-	bh=y4qpe0tgvGpYrTTX2TUZf8EY0t68Wbod8QGn65cyHK4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UHuimgrgoPQtji/ChrT+eZYdxAPXTwNA0KcRXNHs88fDdJQd7drIhKJlPR6aZq7wfQF8t7b+B1q3QQo1/rKYRz/6jlTJTFu+zh6b8hWQsgVuCCtajZ3f82qRUVJ5stj78pOQ5NuFxkh+VIB5eQqiBEW/T5IbFAkvv+Fhd5oZeDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=readmodwrite.com; spf=none smtp.mailfrom=readmodwrite.com; dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b=FKdySRCI; arc=none smtp.client-ip=209.85.221.42
+	bh=s5emk8cFtirRGCseiGygX//y5idLtVzc0HzJCE1i+YQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=txu5kZGiq/FOWd77GqL5ZXZUoHIZr28gC4cDQACeJs0e7qakkKsDGI7OtsmnKaVipMkPDw9Yg3DCxoJ2qmRTQ2RCxNg61unSuSJdvL2MNwDuyybwHtfUE8RlI1CcBu2rDWjaEFsBw74PcMikxA/urGVQJJJmdrlTytzSU66w9Cs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=readmodwrite.com; spf=none smtp.mailfrom=readmodwrite.com; dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b=WJ2QbgCb; arc=none smtp.client-ip=209.85.221.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=readmodwrite.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=readmodwrite.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b="FKdySRCI"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-48441a2ba1bso1688606f8f.1
-        for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 05:19:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b="WJ2QbgCb"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-48c02782159so1763526f8f.0
+        for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 05:19:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=readmodwrite-com.20251104.gappssmtp.com; s=20251104; t=1791893989; x=1792498789; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=7OLEATEFg9EwTB6dtGbWTtK5m6qNSnDgXdqZaAx1bWM=;
-        b=FKdySRCIaJAJ3j5s9ViJ3/EjObovRtJlZSK1pIa91+AN1+UbKrjhzoFCNspuPWlWVg
-         7y8P2zeu5KZD/so2+HcGaDVCCtpX8T9iMd6HrJC5ZlkTQQ69bvBle2VT4b43j/+Pj8H/
-         g8wzO2zLgktQC3bohAmGduo68wkEp7b9CDE83FdxjZ7U3MT2BF3duI+6drIiftbHtgv/
-         C0r+yeplvS1Qpd1McwtHaO3ob6AHE5Q/2YuOi9dP0asAEf0LTpTTMYVnNwwLFONKUevK
-         JvTWaJYhf5HSbE8MktcwmoOFV6i91/AXVwjvPHhWTODPwaFE+SOrGaSZlwPxaiKb7Dca
-         yrUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791893989; x=1792498789;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=readmodwrite-com.20251104.gappssmtp.com; s=20251104; t=1791893990; x=1792498790; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=7OLEATEFg9EwTB6dtGbWTtK5m6qNSnDgXdqZaAx1bWM=;
-        b=KHaKwb3DKzP9jzN2vgQUC6ieFqKD6vQxfjO0zGR++WbrlEg3Vcxi10RsxyYqPO4+oS
-         Oh3VpM8/rcsbM7d6ub/NgH1cjEgQfaXpu0tjqdM7UtX3+Uv2LjUFiATZgMF1FCpUNCMW
-         cUin43452ojoCzDfDGWQ7fA/C1ZLpkGuQ+CHLx+d+HBvhM8ozpmdpPdG1bOFsbIbi3em
-         /SOrkBOSyoKMeUxoidoIDSxIvNvhpV5uQPfXeVlG+h5mjpZc6MhtysRZtcRc76UYZiS7
-         sNQU4j8lZoyYXWstUGe2jthRuj5qjtdGT5fBcYI+IiARotO6nGGotL58LuEUoxucunkR
-         8tRg==
-X-Forwarded-Encrypted: i=1; AKwUvBxvvOgmD94mqatnD4AIHuHEFjIb9yQf5kPE/eCu70pyau3MI6jMI/67bs/VODKMj+9lgCS3ug==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJLTc4W7HvnSVT5Hdg3p/UXKzqHOZIusmIxmh8+u0+F4KgBJfU/
-	1uul3VPjTc00U5X4ccMm8HIryBtr+/8SqJd9tXopdr0YSQgieJ0SpsXknTsLJD6FwXo=
-X-Gm-Gg: AYBFou0TAnC3FD/3STDIGS+zQXeDq8M/UJzzl4MCdEnuPcsupzOyjOJA+PviefF1Cdw
-	3DV6eBZK3DCkOiRdJ3grtNpGlbn16NkJy55kAwtRaH5TBA7A/tzCKcuZ11r7g46eiFae8ufQVSl
-	Lmxqcb0jD56Kl9ixghcZEBn9D7qbHdgCDWXzGeoGf9VX+wpTAV2duExrb9q39mZCyH4TnkQ+qY5
-	jPi+5Mggq2cqcuajxfM/fOmXx5eLZHUEGPlFO+F0ZFs/JawZd+O4ijkFvcukCqd1S4tksGpEWO2
-	MwJPYIJVYlGiVxBDaBuh+0P9Iv6jfcjkjOopSXGa5Z+Jl9XxLJaOPo6PTGlg2f8+U1O+feOpmkJ
-	epBvbohVr7LNzS6kJwFs0p9qpdiVtdZ8CaC0byEOD2wRZP4wuVxAay8bntIofEWBnASqdMVJ6pv
-	ZQx3ibZXYlHMJ4aS1dzuYCCdix0hWHLvUFyoQdrmgNWF5y1291McjuQYvAE4bTeQoMjAO+S8PF
-X-Received: by 2002:a5d:44cd:0:b0:488:89e4:c3af with SMTP id ffacd0b85a97d-48dbaae4869mr18341163f8f.45.1791893988877;
-        Tue, 13 Oct 2026 05:19:48 -0700 (PDT)
+        bh=n9uGCpvQermHDBtNBPxInsuZtK4DVOzfBsyPIO70t8w=;
+        b=WJ2QbgCbK6kF08OyMUi9Vih6JSg1ViMg/0T8ucrESh0HmiFsbYk0Y7VcUve6xaYKtk
+         /YCZ4sNbTfcRyrPSHkYfHnrlGL7e6rydbAXSGtJiaFpdrdKK5Q16XbvZHdGS6NGNc3ZA
+         jFSkyTNSK4gsqnFDR6rBozRk3MrvL0PsXlSJs8YgQa8y9yn44tcBdqT3yDiPINuwP7a6
+         Xi6Ydc2VAwgW9ozO2cECqITrH0xgBUlfXUpfnhA4pPeuQxspTWc8Eu6HQg37ZHWBLu6N
+         Cw/+toRCQO23giSWupV1Y2W7yhxC007M9glaQOA5YgXdJ9GZPcuLnnJ6nMgUXzW0qyTA
+         lNmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1791893990; x=1792498790;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=n9uGCpvQermHDBtNBPxInsuZtK4DVOzfBsyPIO70t8w=;
+        b=xqu4960G9M4WUV9KxUBzaX3s7e950ASq4wBn7exGAIjOd/asue9Q2mlI3m/G6dofuk
+         h575y7BiL/hx4urU3Xdwe3UY8bcWoSpHkZAw3GQqM5a/jPuLDLmT1uUrrKJOlWlOMWvZ
+         1YsqIujTWNE81rNT16CVCajbekOJZl3tQjnJcsh7bW7kJpxpta1y3KMZhH1c5LGdBYXJ
+         Sbsv7zRxVXF7rDL5Ln9FKPf5pmjtcI9u7IjzzJ/Ukw2PC0PpYkErv5bGcSt7uF26PkAm
+         fI6+xmk9tUmNAzQ1cNEp66/QjCudCNWfNdjFTfmRwr7piEmX3OuTefEE9uHRi+4dQLEi
+         X0Ag==
+X-Forwarded-Encrypted: i=1; AKwUvBy1bdzH7iORPCNs98Y9gqLgYKnxEmw2wxyYA0z6m8vD/Phuk/i3+GnU3qtkavtHRyb0Qb8YLA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYILIemgKm3FiEGrSu6CqZ5dAEhjgRLpbQwuNUieuYL211hJPnbK
+	Gcpwo4aSWP/cf1GErmsgin0CwEpPzVTbzZPjEjKH6i+h7bg7ijcFn+BnxTJzbGpV1YE=
+X-Gm-Gg: AYBFou1JbEtbu4m5KYc0aK/wHrFRHH5qVyKRrOOxCcaIPmrHRKQvk4eAjzZAi8N7c3H
+	HngMtj2YtHm7ik/BExonvJNqR+wPNOQvrdO2uLOD2++ZrF6f48nGu2k3stqq74PuMQsAkDy/Faa
+	EZu4bdh1/pdQXqlLuZNrL7DtWLQkmNx7d2i6KS7NxOh0hOyjp5ZsbTANxTSKT0yB9r2Wxt1JS9u
+	kcYeCCcpeNmWnHDyW3VCztEbMnY8iS1joU/Nw1fbbMZg+9BVw5Mk5b7XEzUKbIg2dtWq++l/Ugm
+	0/pPW/tro8sAoqZ+zrbFI3JsOgUvu9AXGmUeGYIUYdcHY7XNg9pJZUQq+mxlduQCLs8/HVRWDDK
+	8qF02WQKOpUSAxbcFfwEDhSkZm/8XbgrUt3HxjxSziy30zwUWQe2yY6u4uxS6g3tvkD4rt1XwIG
+	vo+nT+dNvPleVO9r7HDQoyJnPIjxCzHUT921e1r+a6IZjtf/uOkyZbUx2IYlN3CXQZxnq3aboCF
+	zHtv/Pq+fw=
+X-Received: by 2002:a05:6000:4288:b0:488:6ed9:b11d with SMTP id ffacd0b85a97d-48dbacf554cmr22783078f8f.52.1791893990090;
+        Tue, 13 Oct 2026 05:19:50 -0700 (PDT)
 Received: from matt-Precision-5490.. ([2a09:bac6:37a8:26c8::3dd:3d])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0bc5e0asm4806155f8f.50.2026.10.13.05.19.47
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0bc5e0asm4806155f8f.50.2026.10.13.05.19.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 05:19:48 -0700 (PDT)
+        Tue, 13 Oct 2026 05:19:49 -0700 (PDT)
 From: Matt Fleming <matt@readmodwrite.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
@@ -69,10 +72,12 @@ Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	stable@vger.kernel.org,
 	kernel-team@cloudflare.com,
 	Matt Fleming <mfleming@cloudflare.com>
-Subject: [PATCH v2 0/2] iommu/amd: Fix device table setup in kdump kernels
-Date: Tue, 13 Oct 2026 13:19:42 +0100
-Message-ID: <20261013121944.4060097-1-matt@readmodwrite.com>
+Subject: [PATCH v2 1/2] iommu/amd: Program device table when kdump reuse fails
+Date: Tue, 13 Oct 2026 13:19:43 +0100
+Message-ID: <20261013121944.4060097-2-matt@readmodwrite.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261013121944.4060097-1-matt@readmodwrite.com>
+References: <20261013121944.4060097-1-matt@readmodwrite.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,42 +88,49 @@ Content-Transfer-Encoding: 8bit
 
 From: Matt Fleming <mfleming@cloudflare.com>
 
-An AMD kdump kernel booted with crashkernel=512M,high and
-crashkernel=0,low fails to allocate its device table because there's no
-memory below 4G. IOMMU init fails and, on our systems with an Intel
-E810 NIC, the ice driver's TX queues time out, so the dump never gets
-sent.
+Commit 38e5f33ee359 ("iommu/amd: Reuse device table for kdump") made
+iommu_set_device_table() return early in every kdump kernel. That is
+needed when the previous kernel's device table is reused: the base
+register already points at it, and on SNP-enabled systems the register
+is locked.
 
-Since commit 38e5f33ee359 ("iommu/amd: Reuse device table for kdump"), a
-kdump kernel normally reuses the previous kernel's table. Patch 1
-programs the new table if reuse fails. Patch 2 drops GFP_DMA32 for
-kdump kernels. Normal kernels still allocate below 4G, because that's
-what the kdump kernel checks before reusing the table.
+But if reuse isn't possible, early_enable_iommus() falls back to the
+freshly allocated table and calls early_enable_iommu(). Because of the
+early return, that table is never written to the base register. The
+IOMMU keeps using whatever table the register pointed at before, while
+the driver writes entries into the new one.
 
-On an AMD EPYC system with an E810 NIC, the kdump kernel without these
-patches failed the order-9 GFP_DMA32 allocation and its TX queues timed
-out. With these patches, the kdump kernel reused the old device table
-and the dump was written over the network. The reuse-failure path in
-patch 1 was found by code inspection, not exercised by this test.
+Only skip the write when the previous kernel's table was reused.
 
+Fixes: 38e5f33ee359 ("iommu/amd: Reuse device table for kdump")
+Cc: stable@vger.kernel.org
+Reviewed-by: Ashish Kalra <ashish.kalra@amd.com>
+Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Matt Fleming <mfleming@cloudflare.com>
 ---
-Changes in v2:
-- Explain the split base-register write and DMA32 requirement in patch 2.
-- Limit patch 2's stable backports to 6.18.x and later, which contain
-  38e5f33ee359.
-- Add Ashish Kalra's and Ankit Soni's Reviewed-by tags to both patches,
-  and Vasant Hegde's Reviewed-by tag to patch 1.
-- No code changes from v1.
+ drivers/iommu/amd/init.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-v1: https://lore.kernel.org/r/20261002133143.3628181-1-matt@readmodwrite.com
-
-Matt Fleming (2):
-  iommu/amd: Program device table when kdump reuse fails
-  iommu/amd: Don't allocate kdump device table from DMA32
-
- drivers/iommu/amd/init.c | 23 ++++++++++++++++++++---
- 1 file changed, 20 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index c07c3a01b978..0572e1a674f0 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -409,7 +409,13 @@ static void iommu_set_device_table(struct amd_iommu *iommu)
+ 
+ 	BUG_ON(iommu->mmio_base == NULL);
+ 
+-	if (is_kdump_kernel())
++	/*
++	 * A kdump kernel that reuses the previous kernel's device table must
++	 * leave the base register alone. It already points at that table, and
++	 * with SNP enabled the register is locked. If reuse failed, program
++	 * the freshly allocated table like a normal boot.
++	 */
++	if (iommu->pci_seg->old_dev_tbl_cpy)
+ 		return;
+ 
+ 	entry = iommu_virt_to_phys(dev_table);
 -- 
 2.43.0
 
