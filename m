@@ -1,97 +1,87 @@
-Received: from canpmsgout06.his.huawei.com (canpmsgout06.his.huawei.com [113.46.200.221])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mta1.migadu.com (out-37.mta1.migadu.com [95.215.58.37])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D4AE44BCBE
-	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 02:09:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=113.46.200.221
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBF6B3624A5
+	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 02:23:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.37
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791857370; cv=none; b=rYlS98e9TQnTka7JaDssfOJAuZRrrI5D+LMexu5PZ34+N4PNtSs30fYcBI9oPdpjMf0HBife612KVLEnwzA2dntEP5aIWGUGA2kq4rtMPt1pJU993WRtGEHC04YVC3wvzg8ThnkIUWOOON673CBMP7uDRnM8UKqJFfAnYnQ6qKE=
+	t=1791858214; cv=none; b=U+eL3IloCoiWwSYWwTB2VLpzo9rmJtp28NfCXqvRx/V8K1dTgiyDURQPGoefAB85uwN6Cqtz3tvsY+fOVh+D9/smA0VLBQQRNJmy1wc1+TqKlUkfLrFpxKjFrhss1eJR1IbSSxztiaY34D2AZYdZ1c7/HdxDjJChdwTxYZAmKUY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791857370; c=relaxed/simple;
-	bh=F/tFZnIesbEp/jouf3jZn0ZNdnUf1tTCCFrENvkWFpk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=P8YBqRke2U5jzmI+r3LTuNRhR7FPfgHtHi4L6NJ+mBK/s3NihMfKTtP3xI4K3AjAieiKhPLWyZhvIHXvBb8EJt1fZaDnuEGI5dvpxpJ0jfoB9/7cs/5rq/JCL3l+cUPdD//5sjVjb7eR5LbQP+giONfk3x+TuUXAKPFk74F3sgw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b=Y/02cg6s; arc=none smtp.client-ip=113.46.200.221
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	s=arc-20240116; t=1791858214; c=relaxed/simple;
+	bh=wCnL6viEy1CesNNIWQQHyBFJylxrQHFF/Yc3GsIfI3M=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=NcjqXQJuMwfKMMbN7RDuUolzDSMwURjbYp60iDZLOZkl7Yo0NfQidpgkzIR/+zSRu54aPxVm2rjIoHG2BxypGqM4tg/n2opJv3j898x9u65ggugZ7Zw7jU1oUCfUxz8wRDTtXY1paRoynNMrcb7roPGdGyrGKvdBo3W452/ogV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=sth5oaSX; arc=none smtp.client-ip=95.215.58.37
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.b="Y/02cg6s"
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=XBHUkK44x866PxdO3DxpbAK9UVhaScIzV3W9hPGWv1A=;
-	b=Y/02cg6spwfx6hG2o7IR5zb0lX3hHl2nvACuyB75ShwrcV3MvkazFo/aqV5ddz1N5W1qCJ98f
-	CLBHm/r1Tcc3bV5qW4t2chNz5RKh9iOoAw3piXwKGqHCB2LMYzTvx1IMmrtNGTmfp8m5nmIf67T
-	JaXdNOv3iTdMAT16uP0ceYU=
-Received: from mail.maildlp.com (unknown [172.19.162.144])
-	by canpmsgout06.his.huawei.com (SkyGuard) with ESMTPS id 4j3csN2RmhzRhTk;
-	Tue, 13 Oct 2026 09:57:12 +0800 (CST)
-Received: from kwepemo500007.china.huawei.com (unknown [7.202.195.114])
-	by mail.maildlp.com (Postfix) with ESMTPS id F2B9B40538;
-	Tue, 13 Oct 2026 10:09:25 +0800 (CST)
-Received: from [10.67.120.170] (10.67.120.170) by
- kwepemo500007.china.huawei.com (7.202.195.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.45; Tue, 13 Oct 2026 10:09:25 +0800
-Message-ID: <9c81fb51-ba0d-4b4a-b08b-7bdfaf3b51ff@huawei.com>
-Date: Tue, 13 Oct 2026 10:09:25 +0800
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="sth5oaSX"
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=wCnL6viEy1CesNNIWQQHyBFJylxrQHFF/Yc3GsIfI3M=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1791858209; v=1; x=1792463009;
+ b=sth5oaSXVmazhbqjMSm9UreItIu7BqfmBHDx3GkxkSOr2A2T6L7KwtBHUW0WLaBq2sQ9efAH
+ HznDHucugTQ+K43NcNThdrwVa8LD3m8o78pjyOlQo2yFnjVQ0H8G7dEBK1xPn0h44ta4QG0OPXI
+ lk3PosVQwvW+cMpjqXLIUdzg=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id c5dacfae51997a19;
+	Tue, 13 Oct 2026 02:23:29 +0000
+X-Mizu-Trace-ID: c5dacfae51997a19
+X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain;
+	charset=us-ascii
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tools/dma: fix building with O=
-To: Sasha Levin <sashal@kernel.org>, Barry Song <baohua@kernel.org>, Marek
- Szyprowski <m.szyprowski@samsung.com>
-CC: <stable@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-References: <20261011223358.2327625-3-sashal@kernel.org>
-From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <20261011223358.2327625-3-sashal@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3901.100.1.1.12\))
+Subject: Re: [PATCH] iommu/sva: Charge IOPF allocations to the faulting mm's
+ memcg
+From: Muchun Song <muchun.song@linux.dev>
+In-Reply-To: <20261012200823.699316-1-peizheliu@utexas.edu>
+Date: Tue, 13 Oct 2026 10:23:14 +0800
+Cc: Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jpb@kernel.org>,
+ Johannes Weiner <hannes@cmpxchg.org>,
+ Michal Hocko <mhocko@kernel.org>,
+ Roman Gushchin <roman.gushchin@linux.dev>,
+ Shakeel Butt <shakeel.butt@linux.dev>,
+ iommu@lists.linux.dev,
+ linux-mm@kvack.org,
+ cgroups@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: kwepems200001.china.huawei.com (7.221.188.67) To
- kwepemo500007.china.huawei.com (7.202.195.114)
+Message-Id: <38FAA6E2-15C2-4C1A-9E3F-3F0B079A9D08@linux.dev>
+References: <20261012200823.699316-1-peizheliu@utexas.edu>
+To: Peizhe Liu <peizheliu@utexas.edu>
+X-Mailer: Apple Mail (2.3901.100.1.1.12)
 
 
 
-On 2026/10/12 06:33:31, Sasha Levin <sashal@kernel.org> wrote:
-> With O= set, "all" depends on $(OUTPUT)dma_map_benchmark, but the only
-> rule builds dma_map_benchmark in the source directory, and built-in
-> rules are disabled:
+> On Oct 13, 2026, at 04:08, Peizhe Liu <peizheliu@utexas.edu> wrote:
 > 
->    make: *** No rule to make target '<O>/dma_map_benchmark', needed by 'all'.  Stop.
+> iommu_sva_handle_mm() runs from the IOPF workqueue and calls
+> handle_mm_fault() for the faulting mm, but does not set the active
+> memcg. File-backed faults can allocate page cache through
+> mem_cgroup_charge(folio, NULL, gfp), which falls back to the root memcg
+> when the worker has neither an active memcg nor a current->mm. Page
+> cache faulted in by a device is therefore charged to root and escapes
+> the task's memory.max.
 > 
-> Build $(OUTPUT)dma_map_benchmark.
+> Set the active memcg to the one associated with the faulting mm while
+> handling the fault, and restore the previous value afterwards.
 > 
-> Fixes: f74ee32963f1b ("tools/dma: move dma_map_benchmark from selftests to tools/dma")
-> Cc: stable@vger.kernel.org
-> Assisted-by: LLM
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->   tools/dma/Makefile | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/dma/Makefile b/tools/dma/Makefile
-> index e4abf37bf020c..0c239a6b9eae5 100644
-> --- a/tools/dma/Makefile
-> +++ b/tools/dma/Makefile
-> @@ -38,8 +38,8 @@ prepare: $(OUTPUT)include/linux/map_benchmark.h
->   FORCE:
->   
->   DMA_MAP_BENCHMARK = dma_map_benchmark
-> -$(DMA_MAP_BENCHMARK): prepare FORCE
-> -	$(CC) $(CFLAGS) $(DMA_MAP_BENCHMARK).c -o $(DMA_MAP_BENCHMARK)
-> +$(OUTPUT)$(DMA_MAP_BENCHMARK): prepare FORCE
-> +	$(CC) $(CFLAGS) $(DMA_MAP_BENCHMARK).c -o $@
->   
->   clean:
->   	rm -f $(ALL_PROGRAMS)
+> Fixes: fc36479db74e ("iommu: Add a page fault handler")
+> Signed-off-by: Peizhe Liu <peizheliu@utexas.edu>
 
-Acked-by: Qinxin Xia <xiaqinxin@huawei.com>
--- 
-Thanks,
-Qinxin
+Acked-by: Muchun Song <muchun.song@linux.dev>
+
+Thanks.
 
