@@ -1,160 +1,157 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011052.outbound.protection.outlook.com [52.101.52.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60ABB4F7CC9
-	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 12:19:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791893996; cv=none; b=dhahKIRMlD0wLKViQFzztS6RDOj/0Vs5rLVm27dJGuYWBY/LM+duDYCgvjKwxs5u3vdUaxuTx2XKOnBE5bVduME+h4Use7jU4Y/xRETTAD48cgIPhkea3bUqfkPqapYmrzPTGDiSGgQvV01nvnC3Jm4U3JlYxoXp6n+Mx55/5jE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791893996; c=relaxed/simple;
-	bh=HClb3+R7XqUi6eYTOz7iTtJSRX2ibpgrEI5bky7lR/I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PrbbC+e36195YFPAnuzpOFaSPo9bxozi0ncVNlpYv2eX1UUrNCrpk0LjZRp/TL0Ov3g5x9uC/xGNH/EPm9Jz18/gQkBCTlz5SPAa4+yBhljD0fDFyYqfRy8Zxg8AnkNyudWZi48qXPNK+OlwB7qTosShbSCMK5lvyV3HYDcCtog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=readmodwrite.com; spf=none smtp.mailfrom=readmodwrite.com; dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b=bTivdQzn; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=readmodwrite.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=readmodwrite.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DDBE4F7CA2
+	for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 12:22:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791894169; cv=fail; b=LCSitGlP3F4vaDrk27XXpOqHeslT36HA+668yJg6Is3UqisaSuPPE0SAarbS1ik/CkR0OZh58cq3XtCpTvizMXdUe7ANICVqJRfpcyLKok0itXxhvHLVU6UQAq2+MLgdMHocOdy/HB5yeXPtFhCq+S/5G9F7N++cep2tpH9xeP8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791894169; c=relaxed/simple;
+	bh=wXmyGuPqtt4tOahdNTPMAEJMyYtSrcYOpWAFAg4iirM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=uAE179oHBTf8QGQuN6noQpM0ekRFHdm0BNU8v3zwRTRutNtp4UIuld+MbPRz5SdJy1b8KWAH6crHTijltkPLWS/xthM6FVkXNic7wORyPVjvalsi4YlkCA2L18msoMf+feqkflzkTyIvTNctREG5futUlxOrtaVLNlpzrUBs22c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rNN0xJWg; arc=fail smtp.client-ip=52.101.52.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=readmodwrite-com.20251104.gappssmtp.com header.i=@readmodwrite-com.20251104.gappssmtp.com header.b="bTivdQzn"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-48c4d99c32bso2771723f8f.1
-        for <iommu@lists.linux.dev>; Tue, 13 Oct 2026 05:19:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=readmodwrite-com.20251104.gappssmtp.com; s=20251104; t=1791893991; x=1792498791; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=nClHHLwqIIKVi02OMAQklsmsGC+QC3Qdr3aT7miJ3Rg=;
-        b=bTivdQznwL8GJ4mqfc8SrpiQi7FXgFwbTg/W6oZJEq5Xtww9BOfejx5+x3Gwyq8CoC
-         51a8A9hk22j0wMQdfHQhTr5rMEDcdpsTN+SCSLcosJ9Xh8S2/nSUxjQ7R7F2TZ+/JbHO
-         TiHrF8zO8mz/MWrwOYcxPSs5PDVqEhQZRWzw6ABB0oKgEejQU/iUqZkOculdPsMz+77V
-         ekwgf2Y/o7tBfcDJo8NsEeTYg8ib5h/H6znAN9EB83DkheyW8+iS1d5jafRrn8w0/+9B
-         gYkGUFmvuvdmaWYrEii57950sBTfLFX0ueVIGqOW+5rvAUo5ORqJ+Gon7fXXhdx4DoOg
-         ZahQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791893991; x=1792498791;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nClHHLwqIIKVi02OMAQklsmsGC+QC3Qdr3aT7miJ3Rg=;
-        b=sT1zrijX0HpuOmOG7ZBBBPbTkxHs3iOrG3wGMG37eBWHEMh79X7LZsjvnSSxygyr4X
-         sg8ZRvQNz+gYMRQCK8lGT8neEZdFHFoSnuNjU1GYNAM/QzRqDYQixkHkfFGDPWE5GmEw
-         olokam9/YGUOmv99al9eakUwIKkNsvxplLSy8XuZoy8g+yCgodBY6ZZBAOg43Hc+1cDi
-         T4kzwmTUMI/0yh+akD9SeYDmB+GSxTlMhmVXOiZpamU6zda/gp4SMvjee+fbeCpgSriE
-         t5iiP9ety44s8BbN8U325CddAt/iq+dg81xRFXuobCWnwhE9HRkBvxJXUzSj7fyYkS6c
-         j7wQ==
-X-Forwarded-Encrypted: i=1; AKwUvBxuN56ouvlEf+te1eqCM1tYRxVfN7Q6qejFG3HFNV4WcyQHfURciK315j0syQGVUs5SxRzeQQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIxcbPO51BE10j1v4ZR3EWcV3tCagtIvBCw4t2BgorrvoIesmRm
-	PP/5Q3/YLgHJfEUnyL6+obQC8qk6KHPBc/b52V/0VZf2OsJWKUhRV1ocSTTm8si1Oa0=
-X-Gm-Gg: AYBFou1iiSbjXnXLRvaG4mygb8+5mNPxvI1cfrm6NcFu4RJDiHxcScIn9QB8v3+O8ze
-	saMMLHGmWJTwua1gj5Q37nsFc7oZTmFMIHw3mDwBd88jMHUpQgRCHV2ZrmK/2Ku7K/z7RklgAlp
-	XF6C1gYJ5WTKG9qzoyVkeYoTDZQf14Glp/U2RMcGaSG/33KoKINxLp7LOtbypaGkhEEN9QnJ76r
-	U9g37bOmMUx8fYnHp4B1KW8cUX0lba6Sf0pLnHT1csbeHVMHz2iR8Jj51w6lDIzPYHxqp3jaNqk
-	ONEtlMzhLVMxVRezhzeJptWKSlWRdkQFNtVRruIufny2pjjnIkfE2YWJ9TVHbv/TUyo12TtPF9P
-	rtKUUa7C+k2p6/BAYsMOFPg8EIp0lyvgpRc4MraKBcjx4BWgmJinzgYIpZFz/kOqmfDJq3/KdtL
-	rYAV3xSvt2W6jpxpVMuV9V5la5YQNF0x8JDEYHixHYPprAWuWeeTnNIKPymGyIoAkjRwWWLWkZ
-X-Received: by 2002:a05:600c:c3cc:10b0:4a1:a7f8:c12b with SMTP id 5b1f17b1804b1-4a1a7f8c219mr37427115e9.19.1791893991549;
-        Tue, 13 Oct 2026 05:19:51 -0700 (PDT)
-Received: from matt-Precision-5490.. ([2a09:bac6:37a8:26c8::3dd:3d])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0bc5e0asm4806155f8f.50.2026.10.13.05.19.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2026 05:19:50 -0700 (PDT)
-From: Matt Fleming <matt@readmodwrite.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Sairaj Kodilkar <sarunkod@amd.com>,
-	Ankit Soni <Ankit.Soni@amd.com>,
-	Baoquan He <bhe@redhat.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	kernel-team@cloudflare.com,
-	Matt Fleming <mfleming@cloudflare.com>
-Subject: [PATCH v2 2/2] iommu/amd: Don't allocate kdump device table from DMA32
-Date: Tue, 13 Oct 2026 13:19:44 +0100
-Message-ID: <20261013121944.4060097-3-matt@readmodwrite.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261013121944.4060097-1-matt@readmodwrite.com>
-References: <20261013121944.4060097-1-matt@readmodwrite.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rNN0xJWg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=IGxUkAS47x+/e+PjS6JgKUvxhH78KkSGLH2TVT4j6lrt3nafrF0DhBIPdCwgkAmVTzIxre4s0mK8wOsCnwL3R/qPANjMGeMWHjY1rDV4DSDZjwhrXPFYHcx1jh32lsVAmR+vJVScHBnq7ctGRcMt8atqoFaX/buwA3vWDJRT/FJqCwmWB3/A4HlHTyMsv10zDYM5pqZ6UHAGDrAan6WWFbJ+MK8OqApzjDQDSbfpqHpgHZq7bHef1yASY30y9uNGYXPEVDoe9/I7fvc8bi+5MwPdWk+GsqdCB2xkLtLsFQw5sBcsyB8CbgUJg3Q52qAKXIHknli64J2My0x5J0dTjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=v+wEt9RoxMstqYDfMgU/aZVdd2TgXoSCaXwYp6a3UlQ=;
+ b=TAeGp3qN2gMrQDZbrrg0lLrsW17EGzFgEElQMlciShGRASuAws/d/YPNJ5zpCtlMW5SZE5n/2qHkaX/q/9fi5LndcaTDEmpm14i097VN0cmrNnTP56+2qp9y+11Dl9q/TkVDRtO5D972BVkdvGj6JXcXS4EExrnA7GEQjmUGreRXvFaGQa64LhUf2jzT1YwbktjFjfbx6IYlg276LXqWrgS3qBuYaTXBA1ESdPbhmS63a/UjlLz3XeSsCP66QbY84x6F7pCqHA9iHO5KEszgh3568N2+wgn/DCVxzFxwm4R0U5eaKTbWqzkj2pjUfypWuafTlTFKPqzWsESHMcR/eg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v+wEt9RoxMstqYDfMgU/aZVdd2TgXoSCaXwYp6a3UlQ=;
+ b=rNN0xJWgfZd3UxFXfL/HshtKE+k5cpt0+Zka8o4/RC0WsvbzTsduN8LWSfOi5k+6DsPBV73A68l8nclDuZsUkKBoGD4vRELlgBp8hLYCwvzuGJNmhvOLaalP9T5U2gcXCxIA0ANF2RKSI8pnfg6AYTHqbPzxUX9oWkkWHHvg4v0jTibFtn5Fa3GuqVB5rSPaMGWtZ8SCDYztUWAJPxzzQPUtCfA69eXOwH0aNWAWF/pxUXwfY01i6Llh312C5/BJJc/rsdgRZmqQFvW6gE1MUiLErH+tD7Ep2kcimBRfgvwOcX+ABw0EMf+3TbfXT8tqWgg5tgP3UrIs0PkSg7pCTw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by PH7PR12MB6564.namprd12.prod.outlook.com
+ (2603:10b6:510:210::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.15; Tue, 13 Oct
+ 2026 12:22:42 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0496.021; Tue, 13 Oct 2026
+ 12:22:42 +0000
+Date: Tue, 13 Oct 2026 09:22:41 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Peizhe Liu <peizheliu@utexas.edu>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Michal Hocko <mhocko@kernel.org>,
+	Roman Gushchin <roman.gushchin@linux.dev>,
+	Shakeel Butt <shakeel.butt@linux.dev>,
+	Muchun Song <muchun.song@linux.dev>, iommu@lists.linux.dev,
+	linux-mm@kvack.org, cgroups@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/sva: Charge IOPF allocations to the faulting mm's
+ memcg
+Message-ID: <20261013122241.GR13920@nvidia.com>
+References: <20261012200823.699316-1-peizheliu@utexas.edu>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261012200823.699316-1-peizheliu@utexas.edu>
+X-ClientProxiedBy: MN2PR15CA0049.namprd15.prod.outlook.com
+ (2603:10b6:208:237::18) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|PH7PR12MB6564:EE_
+X-MS-Office365-Filtering-Correlation-Id: 85aa23c0-8b76-48ab-1638-08df2924adad
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|7416014|376014|23010399003|11063799006|56012099006|10067099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	8PNheXzvleP1Mrd5XJzu/o87Hzb/8voBiqbOfl65Mufolo8YISSUdRwcHctzHKa/Ln7M523POeaG6HI0Znt0rF2au6+rik6Ivz3+3Dg2akQZMiyfS7AeIrJ0g11uQxIp0mrNmsQJoCYpQ1ydUlmZrmaWx6ENsqYIFAdgcwqwLw45Oqz1XCMbV04sCTvEwd9G1gpg+oLDtsgMbplbh+kajr0zZ2wljRQQuZrn8ELOaZkGLf4hgdMBBCIYaI6UqyWNL4XIXk9CAnqX8pn2PKkDhFasKn8qO9FS/pfN0dhXaI3fbpb6Aud0IqovC/EO6wJ7kArgucyuG45qtGAtbmTAprgcMn7nszbQ4tB4YyCKERoaS79Nv0ibHDCoEf7paeyhoXnd367EE7Iqm9WbROh0fTa8DN2LsWuwwe6iWFtYoDk5/VRi3ZEhe4gE1dZCLkNNAX/PsnsY8wvV7ouvnKki6zddcJ/Zy62lOpw9daSB+dybRkaWv5cfnZZLRqAjxsW2W3kv2aQ6Qfl24PWE60qfevId/iY0c7w8WlwG+ZPIJaQ+KBt8pbLEsZliAaxmexyGU3YCSA6gMGd073bg/4aGP/BwwZHCQad9Kdltew8MslB1B/G/bdXRmherYxDKivmPpShQhTG31jNlfnGrKU6gr+Z+W2XTWQIgHxxADf8OBbg=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(23010399003)(11063799006)(56012099006)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?smqlxlUDgM0p7XxQzY/nbzhZH6qVMBKljGz2SlbQ+y7x40jedZ65RGbBge4g?=
+ =?us-ascii?Q?MeZUJrB45XRlWRzwTHFZRzi06YeY8dkddBnTcwu8kZFfv9lYkLKeRmwSrBjA?=
+ =?us-ascii?Q?H/je+p/LzhfNeWYD3N8/EAZbEQEo45CeykbfEAhYAn617ib322mbbE2K089C?=
+ =?us-ascii?Q?zkNC71dvLhgAUQz3KNl1w4TU72mHJZFMfe4vH2qx6CXciYjZDnx1FUjXL77c?=
+ =?us-ascii?Q?FzZ8eimhb6epYGcBZYkbQcX7ljXfIsQfziyXY16Nqp/zG/6vBM6j1JojRONL?=
+ =?us-ascii?Q?eoiwuliouYrm01e5cYB5RL6JhW1/nPWV48yfUWr6wT0nT2xpPmr6NUdAjrzm?=
+ =?us-ascii?Q?vFLPYkJ9xK+Arv1hEhRMlTpm7GhKELN4HP5azWDObHMtJousO9fIAIp7rOe1?=
+ =?us-ascii?Q?St20yjz+yRq5HOptjDKnFEuz8X/4nA7y5CHt5L6fJLu5h8nctK1kWBepxSKm?=
+ =?us-ascii?Q?wCtGo1doZ5vNTPI9vNNBSUBQLa9UzhituxWt1V51fMdfQhiSp6Y0q+CTLxeI?=
+ =?us-ascii?Q?nPh/aog/FLeOS0O8MATKZOIY2pxCrN1z5Lvyr8e8Al82lYXm0lQE4aY7b+tw?=
+ =?us-ascii?Q?1FVo1x4n8Inc3epkC+EeQc5tJQnh9KPEtG6WzJBBTAiwB3CNjcC56RJDh53Q?=
+ =?us-ascii?Q?Q3S0OUY/1ulAZvBF/Xtl2swXsvY3UwA+cdOuYD4fHtpAiSU82UIFdBABZYmQ?=
+ =?us-ascii?Q?W1spDl3d+AhsNM7DSlrKE3AGMqphegCEHu8/KqDXT69jn/Owdc6RS+GAjIYO?=
+ =?us-ascii?Q?jAAqdhZOLkp3OstLMNNAzzY6RGCWpqNg/ov2j/hC2SaIFlMazHln292DmhHy?=
+ =?us-ascii?Q?3aOsLZs4/9d1rleZQAHCvls4QZfNdAfWWA8F80DqPRTcB+gJL4YfcogJDy8I?=
+ =?us-ascii?Q?3de+dH/QTwTwlDG12xU46GzwON0Z4RoCMIJCsGIwg/H6pJrR2qCWEF8JlgxS?=
+ =?us-ascii?Q?4r77VsTGHuvtNCxoYJZsXlEMgKougGOKEYUyWtgl9LCVbN5h5rqUbvbBN/GB?=
+ =?us-ascii?Q?Mj8Q46yxCOrAXTCKOnW9Au70IGUndAHTAQ5PP7yUFgp++yRr5STmCPmKQU1x?=
+ =?us-ascii?Q?sBqOaguDzMyzr39PnJxmyuqqZpn66i2Q+LZ+kf8Rcoq5MG5dVcrtkJjsbg49?=
+ =?us-ascii?Q?KrE7tBDhGihpwOFP2pxAnMY+ZzcTjlfL3/tufTzX9aQHIHRtpgREGH/Mi693?=
+ =?us-ascii?Q?aKLSYYiJ77itytzv/tykPrUV0vSiWFfvVTe8kdEslrsLBPtwXTaqT7YqtXZ1?=
+ =?us-ascii?Q?q9dJVdKKeImGcY8t0e4ppC9Nd8d5xwXCd2xHrJyFvfZWUoZxg6+H3u+f1L8l?=
+ =?us-ascii?Q?9/0bjK5BgPf4heuJIovvA5wAPXwXh5XSClKvT1ak1jWXOzH8WeZA90k6amVl?=
+ =?us-ascii?Q?np8dI3jtDF/AOrsyHMrDr1tODbwqMb9hgJAhkv1eY5GgzYLun/g5h6E8U+BR?=
+ =?us-ascii?Q?IMTsgRwbZyhaAAGZYLspdvwRXoUgDap77kpOHKnZ+TZumUvI6UQjWIbE1ial?=
+ =?us-ascii?Q?7HDZvL9beUpQQhuqDYXujDUysW10mGQcgCz9KuBFU/IcBayyBWB7VLVBCpbA?=
+ =?us-ascii?Q?Ln1hqRtXJD8XIFnn1414oIMuCReII4G/QstLHHfbjHm2utn/p0LIBOYwVKaO?=
+ =?us-ascii?Q?uIuwubKSPGc56CxCJLXeighozfUqGfgpF74Kjd1bH6p8m3K47PT58nnao41P?=
+ =?us-ascii?Q?BnU0gsMWx66GKQ9XOR/2UpCjLKfZMm+vkhKtd9gJ2+x+1kZy?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85aa23c0-8b76-48ab-1638-08df2924adad
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2026 12:22:42.0159
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8vajYsH3hRncQpXw8OZoYPNDyy84Uzk87vm+XSk1RS+1fY8zmsLqek3FVzT44O7g
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6564
 
-From: Matt Fleming <mfleming@cloudflare.com>
+On Mon, Oct 12, 2026 at 03:08:23PM -0500, Peizhe Liu wrote:
+> iommu_sva_handle_mm() runs from the IOPF workqueue and calls
+> handle_mm_fault() for the faulting mm, but does not set the active
+> memcg. File-backed faults can allocate page cache through
+> mem_cgroup_charge(folio, NULL, gfp), which falls back to the root memcg
+> when the worker has neither an active memcg nor a current->mm. Page
+> cache faulted in by a device is therefore charged to root and escapes
+> the task's memory.max.
+> 
+> Set the active memcg to the one associated with the faulting mm while
+> handling the fault, and restore the previous value afterwards.
+> 
+> Fixes: fc36479db74e ("iommu: Add a page fault handler")
+> Signed-off-by: Peizhe Liu <peizheliu@utexas.edu>
+> ---
+> Tested on a Xeon Gold 5512U with Intel DSA, based on iommu/next.
+> Before/after testing confirmed that the block-on-fault case charges
+> the page cache to the task's memcg after this change and is subject
+> to memory.max.
+> 
+>  drivers/iommu/iommu-sva.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 
-Booting a kdump kernel with crashkernel=X,high crashkernel=0,low on an
-AMD system fails the per-segment device table allocation because there
-is no memory below 4G:
+It makes sense to me
 
-  swapper/0: page allocation failure: order:9, mode:0x40104(GFP_DMA32|__GFP_ZERO|__GFP_COMP)
-  iommu_alloc_pages_node_sz+0x7f/0x150
-  alloc_pci_segment+0x4bd/0x650
-  iommu_go_to_state+0x213d/0x34e0
-  amd_iommu_prepare+0x39/0xa0
-  irq_remapping_prepare+0x83/0xd0
-  enable_IR_x2apic+0x61/0x370
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-On our E810 systems, the kdump kernel booted but ice MSI-X interrupts
-never fired and the TX queues timed out.
-
-Commit b336781b82cc ("iommu/amd: Allocate memory below 4G for dev table
-if translation pre-enabled") allocated device tables below 4G. At the
-time, the kdump kernel programmed a copy of the old table into the base
-register with the IOMMU still enabled. The 64-bit register is updated
-as two 32-bit halves, so the running IOMMU could see a half-written,
-invalid table pointer. Keeping both tables below 4G leaves the upper
-half zero throughout the update, so the pointer stays valid.
-
-Since commit 38e5f33ee359 ("iommu/amd: Reuse device table for kdump")
-the kdump kernel reuses the previous kernel's table without writing the
-base register, so its newly allocated table is discarded when reuse
-succeeds. If reuse fails, the previous patch programs the new table only
-after disabling the IOMMU. Either way, the kdump kernel's table doesn't
-need to be below 4G.
-
-The previous kernel still allocates its table from DMA32, so the kdump
-kernel's check that the old table is below 4G still works. Drop
-GFP_DMA32 for kdump kernels only.
-
-Cc: <stable@vger.kernel.org> # 6.18.x
-Reviewed-by: Ashish Kalra <ashish.kalra@amd.com>
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
-Signed-off-by: Matt Fleming <mfleming@cloudflare.com>
----
- drivers/iommu/amd/init.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 0572e1a674f0..16c26d75f46f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -648,8 +648,19 @@ static int __init find_last_devid_acpi(struct acpi_table_header *table, u16 pci_
- /* Allocate per PCI segment device table */
- static inline int __init alloc_dev_table(struct amd_iommu_pci_seg *pci_seg)
- {
--	pci_seg->dev_table = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
--						  pci_seg->dev_table_size);
-+	gfp_t gfp = GFP_KERNEL;
-+
-+	/*
-+	 * Keep normal kernel device tables below 4G because a later kdump
-+	 * kernel only trusts and reuses old tables below that limit. A kdump
-+	 * kernel's new table is either discarded when reuse succeeds or
-+	 * programmed after the IOMMU is disabled, so the table does not
-+	 * need DMA32 memory (which the crashkernel may not have).
-+	 */
-+	if (!is_kdump_kernel())
-+		gfp |= GFP_DMA32;
-+
-+	pci_seg->dev_table = iommu_alloc_pages_sz(gfp, pci_seg->dev_table_size);
- 	if (!pci_seg->dev_table)
- 		return -ENOMEM;
- 
--- 
-2.43.0
-
+Jason
