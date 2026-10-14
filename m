@@ -1,210 +1,246 @@
-Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011027.outbound.protection.outlook.com [52.101.57.27])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2FD330B517;
-	Wed, 14 Oct 2026 08:18:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.27
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791965926; cv=fail; b=YVmrZGOeC/lWVlnMwJGLi77OzMrsyZfqvxHu7pc3c3t7Kezz4iYvQbciZbTUSWQJ0bjDecTWfhoBTCv6NJrFCPVVfcgHBz1cczTdTrUydxK2q+QVnhtRblxxePAqnRGz9giBrqmUKMV8o3gjM3zYDnG75Q+UlIMUdVKubov9ifs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791965926; c=relaxed/simple;
-	bh=pZuKXL+/CjMooqGp5Hh5+kCSsAKZYzHwzsgyT7jkLF8=;
-	h=Message-ID:Date:MIME-Version:CC:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=m6ZGDkERoIVc0Qio4b/nDlNKBHAcofaFRnwmblw0yrS8+RE9sd/+NO9Yj1mY2/4qb7gxWLONOwDUPB8rxdsLeuXcLvWl2E5o87YPemx8JSx2eSZFti5fZynW5SiLLQrSOO9SoUrhujM8Gq0YiTzCEBLiELb/YHmf58xAwK5NAms=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=x0W3CTep; arc=fail smtp.client-ip=52.101.57.27
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EC5637A840;
+	Wed, 14 Oct 2026 08:38:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791967095; cv=none; b=qtffXDcT90EPLorlCOi1arNOwJ6GuKx4c/k84f+CoAwNw2tAYEuuVeWDbXNM8I01I10EubnKVAvvao986sw0ycLNaQFplRXF0gZtVidoklGZhuDfNtB/TsTaio5f9IeMU537htmyWQYYaq+JXFB3Etf8DSvI3C96q7SszfFRvm8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791967095; c=relaxed/simple;
+	bh=YyHDUboAl8DGIwqb8WSL+sGNujn8F87tNepM8aGf6uY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=AeaWQTCv+8dhKTShVQSRuW8Ybk+xRas+IDXd2FyswbKfjEsxE7QXocu46gdp5hyInHA/jqbldWTSdn4vDFYC45pBDTaI4kGCv/ybFyjhvmfkASwynsiEAdC4BhB7vn9/K+C7SIDDw6BJzKge4U5PLcNeiZMGkkYZDKZmQaEbY4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZBkdOjI5; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="x0W3CTep"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Mk0I2KYY4brVYkRiVaEkPYi6HeOEQ4gQ+Vc7Durlch9LzBIvJGkTUtr9F6xvUzbH8NNLGpTHjwrAtl1SMxLkUdOJIJPqfcQWuB3febllDDE06ejbnSqGAqxEHd85H1RkGw0zy3UVFcyGQt54XKMaixeDt6wSWQra1rucSowYdQKjaOnn8anMGN+DkR91tq8SyjOPOU1/ITVB8bPBAjbTwP5E7yumrhxH8NWeUI7Wzyk4LJ+Z4neYO4JEOCBKO7wylQtRTailGETCthtB5GNR3oDALbCiLGDL5jUSAvjqB1jA4oZPGPUDm5uif6ojHjhcC5iGRm4TI9mfymZBTIEOSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B/O6P/5Mykn6grmjNggrSRIITjQ1hZN2/tusJ7WQk0I=;
- b=k8JeDCYWX9r8SlVwxnpxsxxibo9DufkK8wo5a82yYpbdDs1EKqsercGZGYTMfQgOAjfI42xw8KZT24LOIGk7rRCW5T72Mvvuvwjj+YuhTv51mTKVbo/VuE+nbZwFmV40bcYjA9sR1mNkIq1Rc+gfqTgqiVJ103RHMdP3TbjPXxCiCjds5GZJy5bwSWshxDMyuwqpJhuXSbvgovzEbTpLm5Ww9vVyg7kcjPVo/pzMngWUM/eYDwTL39cnOszoT2aGikEBQAm9ZGrxqB+FaZmJKy5WWtechp63o7VfrXzKL3x1ZGrZLC+zpqgrEBG0HY2fpiequ0rSJL9llc+v2xtbEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=alien8.de smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B/O6P/5Mykn6grmjNggrSRIITjQ1hZN2/tusJ7WQk0I=;
- b=x0W3CTepWnJgzEAVBsyan4wnQqFsTDhO6in1fe5iRWYo8DjYm9rZU0uJ+y8cXTX9wSJLqrXdqvTta4dJn2uibj+1RAVfax/8LQYM8QjeSmaJ8WXOjvn7EwmYktjmBU/bS/C+GAyyJJBx+hkWZ3TIybcKCgVyOaND2wV25/YGfhU=
-Received: from SJ0PR13CA0111.namprd13.prod.outlook.com (2603:10b6:a03:2c5::26)
- by PH7PR12MB9223.namprd12.prod.outlook.com (2603:10b6:510:2f2::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.13; Wed, 14 Oct
- 2026 08:18:38 +0000
-Received: from SJ1PEPF000037A9.namprd03.prod.outlook.com
- (2603:10b6:a03:2c5:cafe::86) by SJ0PR13CA0111.outlook.office365.com
- (2603:10b6:a03:2c5::26) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.522.4 via Frontend Transport; Wed, 14
- Oct 2026 08:18:38 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- SJ1PEPF000037A9.mail.protection.outlook.com (10.167.244.182) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.522.6 via Frontend Transport; Wed, 14 Oct 2026 08:18:37 +0000
-Received: from [10.85.37.249] (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Wed, 14 Oct
- 2026 03:18:23 -0500
-Message-ID: <98ce2887-7df0-47e4-b1f6-4dba2442126f@amd.com>
-Date: Wed, 14 Oct 2026 13:48:16 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZBkdOjI5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E22CE1F000FF;
+	Wed, 14 Oct 2026 08:38:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791967094;
+	bh=YyHDUboAl8DGIwqb8WSL+sGNujn8F87tNepM8aGf6uY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=ZBkdOjI5xFHLM/lUIbuC1rvH1kdnsHjIlxqalBInWP+3FvNSchmjKTmg5JwB47uWb
+	 lEsyz90U9qVC3roXg5+59U2YKl4Q/eS32I7+EGZ9+8HziCTHZDrHSUqXjxpmGXqjfP
+	 6ZRONkjp2lFXVMgpbbYPRq8HT+CkX7xnAmbcelbSgurdI82dsTOrIFjEbmY8KO1wAh
+	 W5XxVs/TjxaryAGuRP6E8DRq1+rs2gZzLbmHmlvPoo3+rrGB9cMD8DL7LHsnG3guQR
+	 uIj1zsJ7IYy/Rq63L7fXIuJuHZhMZmC8/Y28mUlSs3R2AS+zt85OQWIhB3bqunw7Dr
+	 /Krsj9P8fmdVg==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Ackerley Tng <ackerleytng@google.com>, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Alex Williamson <alex@shazbot.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	David Hildenbrand <david@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Will Deacon <will@kernel.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Fred Griffoul <griffoul@gmail.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org
+Subject: Re: [RFC PATCH v1 0/6] KVM/VFIO: guest_memfd support for device
+ MMIO resources
+In-Reply-To: <CAEvNRgFC6U4er0QhcwVOqWyz657WWWtidkNu0hKS5go4A3cP4g@mail.gmail.com>
+References: <20261010072504.536230-1-aneesh.kumar@kernel.org>
+ <CAEvNRgFC6U4er0QhcwVOqWyz657WWWtidkNu0hKS5go4A3cP4g@mail.gmail.com>
+Date: Wed, 14 Oct 2026 14:08:04 +0530
+Message-ID: <yq5a7bjky8wj.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-CC: <sarunkod@amd.com>
-Subject: Re: [PATCH v4 6/7] KVM: SVM: Add support for AMD IOMMU Guest APIC
- Physical Processor Interrupt (GAPPI)
-To: Vasant Hegde <vasant.hegde@amd.com>, "Borislav Petkov (AMD)"
-	<bp@alien8.de>, "H. Peter Anvin" <hpa@zytor.com>, "Joerg Roedel (AMD)"
-	<joro@8bytes.org>, "Paul E. McKenney" <paulmck@kernel.org>, Andrew Morton
-	<akpm@linux-foundation.org>, Breno Leitao <leitao@debian.org>, "Christian
- Brauner" <brauner@kernel.org>, Dapeng Mi <dapeng1.mi@linux.intel.com>, "Dave
- Hansen" <dave.hansen@linux.intel.com>, Eric Biggers <ebiggers@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>, Jakub Kicinski <kuba@kernel.org>, "Jonathan
- Corbet" <corbet@lwn.net>, Kiryl Shutsemau <kas@kernel.org>, Li RongQing
-	<lirongqing@baidu.com>, Marco Elver <elver@google.com>, Paolo Bonzini
-	<pbonzini@redhat.com>, Rick Edgecombe <rick.p.edgecombe@intel.com>, "Robin
- Murphy" <robin.murphy@arm.com>, Sean Christopherson <seanjc@google.com>,
-	"Shuah Khan" <skhan@linuxfoundation.org>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>, Thomas Gleixner <tglx@kernel.org>, "Will
- Deacon" <will@kernel.org>, <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
-	<linux-coco@lists.linux.dev>, <linux-doc@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <x86@kernel.org>
-References: <20260821055611.27138-1-sarunkod@amd.com>
- <20260821055611.27138-7-sarunkod@amd.com>
- <bdf29f6c-9f2e-4230-b5f5-5f25827f5b7a@amd.com>
-From: Sairaj Kodilkar <sarunkod@amd.com>
-Content-Language: en-US
-In-Reply-To: <bdf29f6c-9f2e-4230-b5f5-5f25827f5b7a@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000037A9:EE_|PH7PR12MB9223:EE_
-X-MS-Office365-Filtering-Correlation-Id: fe97b226-96ed-4475-914e-08df29cbbfa8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|82310400026|23010399003|36860700016|921020|56012099006|11063799006|4143699003|261009223027099003|10067099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	x0mCN7IgDrXaghCoGHC8EOOtM8J9EznMQ5iRwYmRp5yf7WuNBtJgF8oJ6lNTAlVGQT048kBC15ZMn/tUhbuaBA4jrrsRQQZc03AjEREekTcRVUatJ5f3/rZWdi1Aor+5ortiiX3PHIgjT34MJFHo3akPBAG7FcXyA6beB6narutttyAtyOxnr/jQOtUtxMVsxlK2g5sGvp+4B4Luxa5fGlicuDOCm1flvrM1I5cBq79ZWtG47wHQLSilkjchlvV8IuGSvS6JTq65eZ+P6VYXdnPV3Q58xpKQ4iYS2RChAowuWRKKD16puSfAC+Buv912NUpGtmhiftWSUDI6CC7ANthOuyZqnL1VGXccI3nvgtEslBXK6Asje6NVFrGfDsmWcyGCJ/WKwSLM2DnzpRb8Fa9sxXjK/q7YsY/78AxKYeLSCms3hLkEznAFNGHlpiKMAmTu+TrJlVBFhhWBEzA2FrD3WG3v4qDYNoXv18nlTw2nRQY+UYUxQOn3BOvAUG2MCQ9pLLQkt70SA3Tpm32fh8H/BbahAbyTFcHTQOwvec1tHEhuFrRvBAog35IXV1icuzbf+ZGCgTI1ldy9xzldrl0pRBqSrowUAmEwGnQ3T9rFFH9kvNk8w74oMKbN5eRSJaMT0JvFvlPVoPAeNecp0hVNn82pEc0yM40oAYYyEyx5jh8c8XCEJURqrBHAXSjE4byoXAY/nuLOXtg9Pht9XxSEGdc/ERSVdBcw7vv/585KlvZzY8rskQwyvzAEUOja
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(82310400026)(23010399003)(36860700016)(921020)(56012099006)(11063799006)(4143699003)(261009223027099003)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	MHYhb8X9cbYSojlSMYY+HfWhsiQsq9YRiZ5FqVTR1WzQhsPZG8ys6P5XadM0WMefVwmFId5fZxnjtCZNM15JcILg8Rad8YWzG0xhcGrIcaVLKdy512HsrLWAEf5Nt91zBindduNSI/dVwcyByDACQY7d1N0f6t7mKUtlKLYDoskxKfhEqjZiUtJ8/N/5H2HOQnyAV5tomJUXKQW3KHJCzQNpluUEl6b5arec9Ntwv8Mj/NwmjwShSDmgfcgxHc4MytPGnste6QdTNx8GD9oHyId4fzNgrellsHtpfyIWUg/XNra5Id5ZDcMtLgeNiFMGIu1hnPOnhaOGmoo4VagoA1kflfwcBE+dg60KTVJehZvlM6umKFTndO0rF6LQ4KYCPJAqdF2rCg+Qocer2ExKbqPYW1yNANbMlBu99SOuFUcLmAXiC4Kn7VjcrY91GsOr
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2026 08:18:37.9234
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe97b226-96ed-4475-914e-08df29cbbfa8
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000037A9.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9223
+Content-Type: text/plain
 
+Ackerley Tng <ackerleytng@google.com> writes:
 
-
-On 8/21/2026 9:45 PM, Vasant Hegde wrote:
-> 
-> 
-> On 8/21/2026 11:26 AM, Sairaj Kodilkar wrote:
->> With AVIC guest-mode interrupt remapping, device interrupts are posted into
->> the guest vAPIC backing page by the IOMMU. When the vCPU is not running
->> (IRTE[IsRun] = 0), KVM must still be notified to schedule it. The legacy
->> path uses the GA log.
+> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+>
+>> This series adds a guest_memfd device-resource framework for exposing PCI
+>> BAR memory to guests. The intended use is confidential device assignment,
+>> where KVM needs to coordinate private device mappings with shared access
+>> through VFIO. The Arm CCA backend is provided separately; these patches
+>> contain the guest_memfd, VFIO and IOMMUFD interfaces it uses.
 >>
->> GAPPI (Guest APIC Physical Processor Interrupt) is an alternative to the
->> GA log mechanism provided by the AMD IOMMU. With GAPPI enabled, the IOMMU
->> still updates the vAPIC backing page IRR, but the host wakeup notification
->> is delivered as a physical APIC interrupt to IRTE[Destination], using
->> IRTE[GATag][7:0] as the vector (POSTED_INTR_WAKEUP_VECTOR).
+>
+> Thank you Aneesh!
+>
+> I definitely like this since it builds upon [1], the model where
+> guest_memfd coordinates zapping during conversions for the
+> provider. Please see comparison with the alternative at [2].
+>
 >>
->> SVM follows the Intel posted-interrupt wakeup model. Each pCPU maintains
->> a list of blocked vCPUs that may be woken by a GAPPI delivery to that CPU.
->> When a vCPU blocks while waiting for an interrupt, SVM enqueues it on the
->> wakeup list of the pCPU on which it was previously running and passes that
->> same pCPU's physical APIC ID to the IOMMU to program IRTE[Destination].
->> The rationale is that the vCPU is likely to run again on the same pCPU,
->> which is common when vCPUs are pinned; targeting GAPPI notifications there
->> reduces unnecessary VMEXITs from GAPPI deliveries on other CPUs. SVM
->> registers the GAPPI handler via kvm_set_posted_intr_wakeup_handler(). On
->> delivery, it walks the local vCPU list and wakes vCPUs with a pending IRR.
+>> [...snip...]
 >>
->> All GAPPI logic is gated on amd_iommu_gappi. Without it, KVM and the IOMMU
->> falls back to the legacy GA log mechanism for vCPU wakeup.
+>
+> I have questions:
+>
+>> Userspace creates a device-backed guest_memfd using the ordinary VFIO
+>> device fd as resource_fd, with GUEST_MEMFD_FLAG_USE_RESOURCE,
+>> GUEST_MEMFD_FLAG_DEVICE
+>
+> With the model described at [1][2][3], I was thinking that the VFIO fd
+> would be the resource fd. I'm hoping that there wouldn't be a need for
+> GUEST_MEMFD_FLAG_DEVICE.
+>
+> The plan [3] was for resource fd to represent just the resource but not
+> provide any way to access the underlying resource, so that after
+> .attach(), guest_memfd's fd should be the way userspace would access the
+> underlying resource.
+>
+> For tmpfs, the example in [1], fsmount() returns an fd that has no
+> .mmap/.read/.write ops, which fits the plan above perfectly. It tells
+> guest_memfd about the resource, but does not give userspace access to
+> the resource.
+>
+> In VFIO's case, vfio_device_fops does implement .mmap()/.read/.write,
+> and I don't think there's a better existing fd that represents a single
+> device.
+>
+
+With VFIO, after attachment we can reject new mmap() calls by checking
+the attachment status in vfio_pci_core_mmap(). During attachment, we can
+reject the operation if the VFIO fd already has an mmap. But I guess
+read(), write(), and VFIO_DEVICE_IOEVENTFD should still operate through
+the VFIO fd, or are you suggesting that all of them operate through
+guest_memfd?
+
+I am not sure we want to move the ioeventfd ioctl out of VFIO. If it
+remains there, userspace needs write access to shared BAR regions via
+vfio fd, so it would make sense to continue allowing read() and write()
+as well. If we allow read() and write(), should we also allow mmap()?
+
+I agree that keeping userspace mappings(mmap) under guest_memfd rather
+than VFIO simplifies conversion. The conversion then becomes:
+
+unmap_mapping_pages(inode->i_mapping, start, nr_pages, true); //unmap user mapping
+kvm_gmem_invalidate_start(inode, start, start + nr_pages, KVM_FILTER_SHARED); // stage2 unmap
+
+
+Both are now under guest_memfd control, so no VFIO callback is needed.
+
+>
+>> and GUEST_MEMFD_FLAG_INIT_SHARED. Eligible BAR
+>> intervals are registered as guest_memfd memslots. File offsets use the
+>> existing VFIO region-offset namespace, allowing one guest_memfd to cover
+>> multiple BAR intervals. Device-backed guest_memfd rejects mmap and
+>> fallocate; shared guest faults obtain bare BAR PFNs from the provider
+>> instead of resolving the memslot HVA or allocating folios.
 >>
->> Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
->> ---
->>  arch/x86/kvm/svm/avic.c | 72 ++++++++++++++++++++++++++++++++++++-----
->>  arch/x86/kvm/svm/svm.c  |  3 ++
->>  arch/x86/kvm/svm/svm.h  |  5 +++
->>  3 files changed, 72 insertions(+), 8 deletions(-)
+>
+> The model I have in mind is kind of opposite from above. Instead of the
+> guest_memfd rejecting mmap(), I'm thinking that the VFIO fd should be
+> the one that rejects mmap(), read() and write() once guest_memfd
+> attaches to it.
+>
+> If userspace needed to mmap() the VFIO fd, it should instead mmap() the
+> guest_memfd fd. guest_memfd doesn't support read() and write() now, but
+> support can be added. The read/write for guest_memfd just forwards to
+> vfio if the offset range is shared and blocks if the range is
+> private.
+>
+> For mmap(), for regular memory, mmap() is always allowed, but faulting
+> dependsd on shared/private status. It would be nice if the same logic
+> could apply to guest_memfds that wrap VFIO.
+>
+> I prefer the userspace accesses to go through guest_memfd to VFIO so
+> that the shared/private-ness can be enforced from guest_memfd.
+>
+
+Sure, I can implement this. I guess read(), write(), and ioeventfd will
+continue to go through the VFIO fd?
+
+>
+>
+> Is GUEST_MEMFD_FLAG_DEVICE there because GUEST_MEMFD_FLAG_USE_RESOURCE
+> tells guest_memfd to look up
+> resource_inode->i_sb->s_op->gmem_provider_ops but for VFIO,
+> gmem_provider_ops can't be stored in super_operations? If that's the
+> only reason, that's a very good reason to store gmem_provider_ops in
+> file_operations for gmem_provider_ops to serve different kinds resources
+> and include VFIO.
+>
+
+I can use the same approach for VFIO. I kept the current implementation
+simpler by using a registration framework on the VFIO side.
+
+I can switch to gmem_provider_ops if we are comfortable adding the
+device-specific callbacks to guest_memfd_provider_operations. Since the
+VFIO core supports multiple backend drivers, such as vfio-pci, the
+superblock operations would essentially forward the calls to the
+appropriate backend driver. That is a VFIO-specific detail that
+guest_memfd can ignore.
+
+>
+> I also noticed the need to guest_memfd_register_device_fops, so that
+> guest_memfd knows the device supports being attached to?
+>
+> What do you think of this: we have a common attach function for all VFIO
+> fds in file_operations that would look up the struct vfio_device to
+> determine if guest_memfd can attach to the vfio device? Actually, which
+> devices would not support attaching? Wouldn't all devices support
+> attaching? I'm thinking that using a device that is all-shared via
+> guest_memfd should be no different from using the device directly. All
+> operations should flow through to the device.
+>
+
+>
+> Regarding conversions, I would like to check: with Confidential IO, are
+> conversions at runtime actually necessary?
+>
+
+They occur at runtime after the guest starts, but are infrequent. The
+entire region starts shared. The guest validates the interface report and
+requests that the BAR regions be mapped private. They remain private until
+the host converts them back to shared during the TDISP unlock operation.
+
+>
+> Is the only "conversion" the one when the guest accepts a device? If so,
+> maybe that "conversion" can be implemented by replacing memslots.
+>
+> Pre-accept, mmap() the vfio fd directly, set it up in memslots.
+>
+> Post-accept, remove the old memslot, wrap the vfio fd with guest_memfd,
+> set up the guest_memfd statically with shared/private ranges as the TDI
+> report requested and never allow conversions, replace the pre-accept
+> memslot.
+>
+
+Is there a reason to use two different flows here? Why can't we always
+use guest_memfd? We could attach the device at startup and use
+guest_memfd before acceptance, while the BAR is mapped shared. We would
+not need mmap() unless userspace requires it for another reason; the VM
+fault handler could fault in those PFNs.
+
+During device acceptance, we convert those BARs to private. On CCA, we
+also create the stage2 mappings at that point, since private BAR regions
+do not support fault handling.
+
+>
+>> IOMMUFD resolves and pins the device's existing vDEVICE for the VM and
+>> serializes MMIO conversion through its MMIO mutex. VFIO supplies BAR PFNs,
+>> checks eligible ranges and excludes independent dma-buf exports while a
+>> guest_memfd provider is attached. VFIO host mmap faults, read/write and
+>> ioeventfd accesses check the requested range's guest_memfd attributes.
+>> Conversion revokes cached host mappings and shared guest mappings before
+>> installing private mappings. Other shared intervals remain accessible.
 >>
->> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
->> index dd497530d365..18ac24ef40e1 100644
->> --- a/arch/x86/kvm/svm/avic.c
->> +++ b/arch/x86/kvm/svm/avic.c
->> @@ -874,6 +874,8 @@ int avic_init_vcpu(struct vcpu_svm *svm)
->>  	INIT_LIST_HEAD(&svm->ir_list);
->>  	raw_spin_lock_init(&svm->ir_list_lock);
->>  
->> +	svm->gappi_cpu = -1;
-> 
-> Can we initialize it to CPU0?
+>>
+>> [...snip...]
+>>
+>
+> [1] https://lore.kernel.org/all/20260925-gmem-tmpfs-backend-v1-0-d36159822d18@google.com/
+> [2] https://lore.kernel.org/all/CAEvNRgEseLO+LbkwXrEit0H2LH5Wx-srSvHEMpt0=upPL3tF=g@mail.gmail.com/
+> [3] https://lpc.events/event/20/contributions/2551/attachments/2047/4693/lpc-2026-gmem-other-backends.pdf
 
-Yeah, I think we can do this, I was worried about passing gappi_cpu=0 to
-kvm_pi_disable_wakeup_handler() when vCPU is not in list but I think it
-should be safe because of list_empty() check.
-
->> +
->>  	if (!enable_apicv || !irqchip_in_kernel(vcpu->kvm))
->>  		return 0;
->>  
->> @@ -886,6 +888,20 @@ int avic_init_vcpu(struct vcpu_svm *svm)
->>  	return ret;
->>  }
->>  
->> +void avic_destroy_vcpu(struct vcpu_svm *svm)
->> +{
->> +	if (amd_iommu_gappi && svm->gappi_cpu != -1) {
-> 
-> Redundant amd_iommu_gappi check?
-
-I am not sure if we should call kvm_pi_disable_wakeup_handler() outside
-amd_iommu_gappi check. Although it is safe to do so, I want to have this
-call inside amd_iommu_gappi check.
-
-Thanks
-Sairaj.
-
-> 
->> +		unsigned long flags;
->> +
->> +		local_irq_save(flags);
->> +
->> +		kvm_pi_disable_wakeup_handler(&svm->vcpu, svm->gappi_cpu);
->> +		svm->gappi_cpu = -1;
-> 
-> Redundant assignement?
-> 
-> -Vasant
-> 
-
+-aneesh
