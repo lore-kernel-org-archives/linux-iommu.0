@@ -1,144 +1,164 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF31A3FF8A5;
-	Wed, 14 Oct 2026 17:59:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792000770; cv=none; b=VcCVa7LCmpMmEbpjNWes9/HQkpgE3Y7GC7SFqSVczY9ZDlaI3QtdckYCj1hTYP78DUsA4ixDaCed5X8h7dBvOj1k9j+5fjbHuPGFzffDyAKWGYOPCI/9OedFLrQgnDwVKZNJsZ6hwSmqkdXw5ty9uADKS5fLhOlnH0sX3YaRpqk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792000770; c=relaxed/simple;
-	bh=xvrU7+OQe2cN+5nepJqt1T1xTdMTt8Ci1AZBLgoDkjY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OZe5Mgt+3gnUisvDYiLwod0dn6E2C1i3wFDt/SQ4yIlr+KjDYL31MB0OoGNH1unjMACI1NOFw1OXqjCUwNezFwNXN98/DMjKQVS2flalDhDqeQfvW9pCw/Hu/IY1L7Bnp9xu5PtNldvdyXbExOT8yhTJEO/sKsKxIddVZNSrZTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=axoF8r+6; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980C2568FC7
+	for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 18:15:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.181
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792001721; cv=pass; b=TfZtnwT4R1hvDldLnqQq+v3gEQvfuOAmZ+bkT2ZCXR5Q3KcEEVAuBb2a0WYx2bb8CP9nk13dJ0pHpqDHS/oa7vCGy+mEgba20BLdv/QwvfXufWPXEZBxM35ARbe6/sMKwb3B4X61BFW4cH7KhzcRd+LssWQXMv49nDouIRNjhCY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792001721; c=relaxed/simple;
+	bh=ZDeZDQJcijxdIEcisFFhzJK1uUV77Ej4r8MxO3z/x0Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZaBmKT8Z469nXR+fPBmCK55D+Zx21+0zY4chbpGcGufGgFNC1VM1Cd3scnx6vzQtSRJUch3mK/eZjtxqezdDnhpGjG3+OtD3bZFw6mqjrlj7CblRnQIOXf8BCmLwLDvDo3mnHQRlRH0IHk4gjBSajeTUIYDSDH7lYE7I9YDphEY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=M7oLYk6e; arc=pass smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="axoF8r+6"
-Received: from localhost (unknown [4.194.122.144])
-	by linux.microsoft.com (Postfix) with ESMTPSA id BE38B20B7166;
-	Wed, 14 Oct 2026 10:59:13 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BE38B20B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1792000765;
-	bh=w+LHJC/NB4yRzWoWwokMMEzOhdTsVA9ERhh/Ya3fyko=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=axoF8r+6w476cU0VGnnpnAmwmzXLi4bAV8TsfQtae96LkE3UE0UZC6O3c5c/ntdql
-	 eYvWFE3Uu7XqgcwhPPlZBwc4Nr6xACMFBQ+1papQUDT8vJHb9XQBWWus4QC50y/B7E
-	 w0dvyC+VBWj+UHjxKlTKAyFWiS0KwTtKwKFICy9c=
-Date: Wed, 14 Oct 2026 10:59:13 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>, Alexey
- Kardashevskiy <aik@amd.com>, Bjorn Helgaas <bhelgaas@google.com>, Catalin
- Marinas <catalin.marinas@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Joerg
- Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>, Jonathan
- Hunter <jonathanh@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, Krishna
- Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Nicolin Chen
- <nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Samuel Ortiz
- <sameo@rivosinc.com>, Shameer Kolothum
- <shameerali.kolothum.thodi@huawei.com>, Steven Price
- <steven.price@arm.com>, Suravee Suthikulpanit
- <suravee.suthikulpanit@amd.com>, Suzuki K Poulose <suzuki.poulose@arm.com>,
- Thierry Reding <thierry.reding@kernel.org>, Vasant Hegde
- <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, Xu Yilun
- <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
- linux-tegra@vger.kernel.org, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v7 08/16] iommufd/viommu: Keep a reference to the KVM
- file
-Message-ID: <20261014105913.00001217@linux.microsoft.com>
-In-Reply-To: <20261008055955.4014342-9-aneesh.kumar@kernel.org>
-References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
-	<20261008055955.4014342-9-aneesh.kumar@kernel.org>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="M7oLYk6e"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2e8623790f8so247815ad.0
+        for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 11:15:19 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792001719; cv=none;
+        d=google.com; s=arc-20260327;
+        b=YvZWoZIMScBkGdScelcZk6Qr7mx8i9On35YnSyUL8FHHxIY+9Xd/gkd4mt14Ulzbll
+         dCJWydaGO7XRJQk8FQBOTie4/sRAfBcJp5kkPF6PuiNLlRJBTM7ahI9tgyk5lgF9yllj
+         pXG6dQ540KXf5OYj+zGxXGAhOsPVmbBxFownEGScLpIzSNJYnoPqGd63mNmPBAPnz7It
+         irxU5PP8e9QINzj1VDdsbpF9Z1zFlNQcnbrCoZECXer64ecRMYRYm0EJBfINsr34O8ut
+         SDmI4Mog7tN8nOyz7EzvkSKFjvx8raDhJWv4Z3rlOnbVJqx1+zXIbZFM/+CUzt7dMfvM
+         /ceQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ukWxxq7IJoiKFikFQrOXvwgn9jZTFnVv2R6ijBLFQBc=;
+        fh=TOH0RSw3b3KYqw6amCFpnNF42QlG4IULyRLM+/rgzhs=;
+        b=ZlQ38FOQemcbOD+4sKXC0AizU8t0nnXt6Xw2JifBpFpM/ojtLzrnW1UogO4p1Vc3fY
+         5oUmcNyWX+CBjIYskBigRmZQjBQRl7/LwXWesGqXgRorCVaOxg2TNdSFX8gllvfhmal4
+         5aPkRxmb06xY0ScuIS2pKIr6tDqNePu0ocmJQenNcdJR65WjMPH/fGElF2/OwNKvm66A
+         VjjIyVDCSqMKEdFECgrZjWjOWSClznTNKdAeIW35aRXavdxvEuuFwEzhzszgH4Z+dLuP
+         DcpXZQ7yH81v7fIrsrx1AOLRHS2M+OpD0SfipTexXtBhchxqF6yH3giJMr/0DWtxYLwE
+         xrKA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1792001719; x=1792606519; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ukWxxq7IJoiKFikFQrOXvwgn9jZTFnVv2R6ijBLFQBc=;
+        b=M7oLYk6eIJGZ5/iBSgm9STMoCE1bHjlRYRBi1vofgBwsASzFpRaEHa830Cocltc/gV
+         F/qhAhdl/ukTyPuvfuWVN4iTipxysjhjSk7jaSwL8cmSwQyJBx7o+jhAdhwPzjBg1RRU
+         1dC7W/YBH0ehTMIN8hMsuxVZ0KdNCn/epyJ2P/tbjNAh1XwLmd87scZH2xETxFLG27dB
+         W5Cn4lQVQ0jKjf0FdEeP9Xnse4GIuimhjG5eGCy/5vkqEnKpFaaBLjDCBB8ZngBxVFkF
+         Wgko2oEbFQjO6jRS4K3jfkK4KDXwKo8CyUkI96e8LLGo+QQe59Dwo2JhkdaEWuWICv0J
+         qdkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792001719; x=1792606519;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ukWxxq7IJoiKFikFQrOXvwgn9jZTFnVv2R6ijBLFQBc=;
+        b=Nv0P7uYaU36RBGRZAqysAru6fAmLgozbH0Yyb9oOsaPU76a+obhuITGJdJFchKyTe7
+         /WAjO+ETLXeQbbRTxdNxotKgEM93d8HOvs/t1UcLwOCfHSkc9F1idUHSxNg7be2Ed2bK
+         HXfU7bvVlsgxprrZGoA8O48sPRl1AwLBJGnnj4ea9HYIiD+JMAv48nW5f2hKPAASw85P
+         1XZ2M59zJt+5b8jytBjroFvgVOeM7XY0uz3j1ay7jzP8ZsMUPEOIQOaeCD1oh3i/15fV
+         sbe1qDLg6d9Yz+SiBn/6ttmqzscx2EZjRsmGgW2C/7kgwk5e892XxnLMF8BGUCykynFF
+         nhVg==
+X-Forwarded-Encrypted: i=1; AKwUvByzdW4COtlWFDs5am/O5vtWmxzzxgO+9ex1DJZqxUGHFM5t8qc+/HNlXQR+2XeBhfp4jMCeOw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKGPMp8OfAkOQYwKfy0QGQdNSy8Z8LfUX3Vjx3d+NqzxNydipYg
+	pR/LinNrup2300G1IvJS0HI5uba3ZQOq14hnn12MeFfPWM+xjuMvxmeXq9LKUcGHkWSHG2gB07c
+	V+AzCHPwkPhYz0pIxsDP+hISaqpFREJEgcgdHD/9F
+X-Gm-Gg: AYBFou36e1JtMZvUTsNl3Brig83tEpU/zyV8Gc5x4CMFMxhSiq7GAZ3gCWxZcmWuDvD
+	mgnnA7DNOcSPTn0ewnRlxJzRkGPwrGGq1aYLk5JygOVeIRD7V3I8NcCJvMdgg48MmBOuU0gzybF
+	IS7y5SPO6WrbW828bArXaVCl3KK2rs1Gr3s1rhedm9xvbRKfXUU65VUe2i/UfcW28iOvMvImz0F
+	bh0uQKx/XZGHR9kEbXvrE8BqbVIM2hinsQDByifmWf1G8djvE1I7IFWfzDsPXXgvATX4PoMyvkw
+	pag1fXGMEaWs+PWx6ZlJRpFX221Cumpaphe+JXf492Zxg5feduVkOsuX
+X-Received: by 2002:a17:902:ec86:b0:2e6:1013:ad57 with SMTP id
+ d9443c01a7336-2e939d090a3mr4279565ad.12.1792001718105; Wed, 14 Oct 2026
+ 11:15:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20261003212241.3432303-1-lrizzo@google.com> <8584c31e-fd93-4f1a-9929-e71c5d9ccd0f@nvidia.com>
+In-Reply-To: <8584c31e-fd93-4f1a-9929-e71c5d9ccd0f@nvidia.com>
+From: Luigi Rizzo <lrizzo@google.com>
+Date: Wed, 14 Oct 2026 20:14:41 +0200
+X-Gm-Features: AclHuK9G3FSCwwu9o-cWYwZA7nUn_K71LEEmvdGinw_0nCstr-Fs63NFljz-hj0
+Message-ID: <CAMOZA0JiGhVmc0PXajBzha3cBY-sdc3pz8eLCCbt6=hmsEh65Q@mail.gmail.com>
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+To: Dragos Tatulea <dtatulea@nvidia.com>
+Cc: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, David Hildenbrand <david@kernel.org>, 
+	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
+	Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Joshua Washington <joshwash@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>, 
+	Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+	Alexander Lobakin <aleksander.lobakin@intel.com>, Michael Chan <michael.chan@broadcom.com>, 
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev, netdev@vger.kernel.org, 
+	linux-mm@kvack.org, driver-core@lists.linux.dev, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Aneesh,
+On Wed, Oct 14, 2026 at 7:28=E2=80=AFPM Dragos Tatulea <dtatulea@nvidia.com=
+> wrote:
+>
+> Hi Luigi,
+>
+> On 03.10.26 23:22, Luigi Rizzo wrote:
+> > Here is a subsystem called DMA_PMD on which I would like feedback on
+...
+>
+> Thanks for the RFC. Here are my notes (some points rephrase what was alre=
+ady
+> said):
+>
+> - On CoCo VMs it seems that the only way to opt in the IOMMU optimization=
+ is to
+>   also opt in the copy avoidance which is not always desirable.
+>
+> - Having the pool generic opens up more visibility from the untrusted hos=
+t
+>   side. Having device based pools at least isolates one device's memory f=
+rom
+>   the rest of the system.
+>
+> - Also, device driver could help with provisioning just the right amount =
+of
+>   memory that is needed. And per device control also means that probably
+>   you don't need to map everything RW to the IOMMU.
 
-On Thu,  8 Oct 2026 11:29:47 +0530
-"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+Yes on all three. I am looking into providing more knobs for different leve=
+ls
+of opt-in and isolation, so users may adjust them according to the
+threat models and performance goals.
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> 
-> The TSM vDevice operations need access to the KVM associated with the
-> device's vIOMMU. Save the device's KVM file in the iommufd_viommu
-> when the vIOMMU is allocated, and take a file reference so it remains
-> valid for the lifetime of the vIOMMU.
-> 
-> Release the reference when the vIOMMU is destroyed.
-> 
-> Based on an original patch by
-> Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> 
-> [nicolinc: hold kvm's users_count]
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> [aneesh.kumar: Switch to use kvm_file]
-> Cc: jgg@ziepe.ca
-> Cc: kevin.tian@intel.com
-> Cc: joro@8bytes.org
-> Cc: will@kernel.org
-> Cc: robin.murphy@arm.com
-> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> ---
->  drivers/iommu/iommufd/viommu.c | 5 +++++
->  include/linux/iommufd.h        | 1 +
->  2 files changed, 6 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommufd/viommu.c
-> b/drivers/iommu/iommufd/viommu.c index f7951057a1e5..b7489ed259bd
-> 100644 --- a/drivers/iommu/iommufd/viommu.c
-> +++ b/drivers/iommu/iommufd/viommu.c
-> @@ -1,6 +1,7 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  /* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
->   */
-> +#include <linux/file.h>
->  #include "iommufd_private.h"
->  
->  void iommufd_viommu_destroy(struct iommufd_object *obj)
-> @@ -11,6 +12,8 @@ void iommufd_viommu_destroy(struct iommufd_object
-> *obj) if (viommu->ops && viommu->ops->destroy)
->  		viommu->ops->destroy(viommu);
->  	refcount_dec(&viommu->hwpt->common.obj.users);
-> +	if (viommu->kvm_file)
-> +		fput(viommu->kvm_file);
->  	xa_destroy(&viommu->vdevs);
->  }
->  
-> @@ -82,6 +85,8 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd
-> *ucmd) }
->  
->  	xa_init(&viommu->vdevs);
-> +	if (idev->kvm_file)
-> +		viommu->kvm_file = get_file(idev->kvm_file);
-So kvm_file will persist inside viommu even when no more vdevice exists
-under the viommu. In that case, don't we need to check idev->kvm_file
-matches viommu->kvm_file during vdevice allocation?
+I am not especially worried about provisioning because the system is
+already reasonably adaptive, and leveraging existing caches, the waste
+the waste due to allocating 2MB units can be kept relatively small.
 
-Otherwise, it appears possible to associate a device belonging to a
-different KVM VM with the existing vIOMMU, no?
+As an example, the update I am working on has the following:
+- a lean per-cpu cache that can be attached on top of a dma_pmd_pool,
+  similar to the one used by the buddy allocator. The dma_pmd_pool will hol=
+d
+  the 2MB pages, and the caches can buffer smaller sets, reducing the waste=
+.
+  Useful on the tx side.
+- on the receive side, one dma_pmd_pool per device will feed all
+  pagepools for that device (typically one per queue).
+  The pagepool is already a pretty good cache that does not
+  access the allocator often, so once again the waste due to
+  partially used pages is minimized.
 
->  	viommu->type = cmd->type;
->  	viommu->ictx = ucmd->ictx;
->  	viommu->hwpt = hwpt_paging;
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index 0a0bb4abfbd2..3267717f676d 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -103,6 +103,7 @@ struct iommufd_viommu {
->  	struct iommufd_ctx *ictx;
->  	struct iommu_device *iommu_dev;
->  	struct iommufd_hwpt_paging *hwpt;
-> +	struct file *kvm_file;
->  
->  	const struct iommufd_viommu_ops *ops;
->  
+cheers
+luigi
