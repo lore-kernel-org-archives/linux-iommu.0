@@ -1,195 +1,161 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-dl1-f45.google.com (mail-dl1-f45.google.com [74.125.82.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19CD84A8FE3
-	for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 09:57:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 858A9421226
+	for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 10:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791971828; cv=none; b=Q1Mwj7ddJ6DXaECFzRA4s4RbgQw4DFgZnKXPGBo2hitwtiALDsRWFvkmhWfDz2D0ANI5kooS8y+sj2vBAbRFut/gCpMxymWjT4PDlUzh570QdPemRtzGx6LBGqQ733Qcv/yvadJ/sQRLnJmLkhY3/bVvSiT1EFtwlKpMgfKvYk0=
+	t=1791973606; cv=none; b=gsQcw9ecqTN2Dv7AwRCUGOFy5VBQHvQFJUM5imE9Y26IJcKdIIgBdxGViwu8ruoyg9oszx/P7aAHTzm6h87CTUsZZcp2aZoHIU+0vOvgzRdqL0M7/MzOqC5PO85+B5GsP5izfzw9cK6XtALeUqkPoKxbCruWjnvQJfbA+3gCX28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791971828; c=relaxed/simple;
-	bh=qA69ri66dsMoSQKZKokr8N+gVHGTbzuvnNDHG21QYWg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LugUKf3stvemOovbPr2kHC5mpZs2Yu4ViKCEjRCCookNBWZ3A9VGCQdADzUYaVBYT6Uj44821Yoiic6+J7fNivjiM6pJG4hhOZW9c5PwnPECnAZbNj8Q8irEd+Iu/V/Zk4whqUZSSrQTPp4tEaMGq8TJWJv0m/PkRYUHqKU08EQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EKZFATO0; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1791973606; c=relaxed/simple;
+	bh=gDHWDcYK2QanyrU6NUlrYkRMYYGX2rjQ5QCZVztfKm8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=l9II0J8KeJlp9SjyXoBHOmoA9ny0IM/l7riY96WbMECKthYor9WUIiitflcZ+HLJXlfCagHkSoEdV1Wvsy4CJb143bU0oFtpewDbikkZAZZbYsnqXL0V7/uIhVao41ccryy2F1z+rg37U2UhokKgBB/aMqY1NAancrWRSKudd8k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk; spf=pass smtp.mailfrom=thegoodpenguin.co.uk; dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20251104.gappssmtp.com header.i=@thegoodpenguin-co-uk.20251104.gappssmtp.com header.b=fhOIoSjB; arc=none smtp.client-ip=74.125.82.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thegoodpenguin.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thegoodpenguin.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EKZFATO0"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a02753c04fso21534355e9.3
-        for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 02:57:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=thegoodpenguin-co-uk.20251104.gappssmtp.com header.i=@thegoodpenguin-co-uk.20251104.gappssmtp.com header.b="fhOIoSjB"
+Received: by mail-dl1-f45.google.com with SMTP id a92af1059eb24-15354aa70e8so1935178c88.1
+        for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 03:26:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1791971824; x=1792576624; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=JhQ5yirY83poEzPx8x3H8aN7RnWItIKkuGofgEQwLq8=;
-        b=EKZFATO0MH7u7TkdkA+HreJfWb/32uc+jHHdfRsHZ49S7jB7rciDRhRB6rEkI59v3z
-         Fjx1IbK9FqN7WuUJnsuNi1HIKHyHPzNODLeiE92G3v2Ej05Q88AG3RAiWIJBZGSfYA4U
-         wgJ66xQTaQ+ov6mtaKg/EMqySXiDRpDPKsxRaUNJAyX9G/Q436yUTqB/fzv8/r4Me+zm
-         e/AYLjGTaVm4EiEsqrk7lmfOW4/735k8A1BitebvXn57f3A6m4GtluB/SUWFYZ3WwXW/
-         9kERYkPBTNFpgcXpASmySdhIqWOaFjqbAQY+Aeb48xY8x7E6iVB8VZYiVjvAtD9ZB8z2
-         DgdQ==
+        d=thegoodpenguin-co-uk.20251104.gappssmtp.com; s=20251104; t=1791973602; x=1792578402; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=VtYMXNbVtRfmsxMVZSkEhD6PvdF6VjEcdjKsoIPRggg=;
+        b=fhOIoSjBL4VSVK/0GFQ+2JG82QrFpmdh5SmTGhV7RC7nLbbBqknVOjRl7op+B+8nPB
+         iiBrUuOGn1yfPgG/3Ul4uBfVvejpAPGMgLyrk+0EFUD0Yjh8j5wRlRZK5VuD+s88NfAc
+         +GEzaG1BtbyZjThczujIRvTpxh/1q1X0AsgeI5i2K4/Q5tD5v9LQGpcI3S6zq+OdrLkZ
+         MLU+D4dtN3m4VJ/cLqGLoE8dAMfs6h+NmZdnDfOja7xC8U9hpA5YyHBdnvCDxzY4erbZ
+         O7XWe3SDzfH+uWu6pf1fEHPfuWzoRjEhToqT6VRzuHFDnM3pPns7aK1PUwtI5Jf1SmiK
+         tKew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1791971824; x=1792576624;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=JhQ5yirY83poEzPx8x3H8aN7RnWItIKkuGofgEQwLq8=;
-        b=dW6FjkylZTD3y07mO3xIoYeZEs2V1LR8kJ+P4x5olV+Kg2N7pJLWVKQog/+LjgCPz5
-         Y8e6wZpw0wrH1wEPOwROiaQ19Ik3iKqHiVGvYxV8hBZktaVl0Yj7n6OxSPiA9mWG1JYT
-         TObwsvmG0ijGPEPzkGlO8S3xVbFILbSb6IzPiEKkuJhlU67Hny7nzowgBe3htoLCnFzn
-         2aRc/QASTukrG23fy0nBTAk1gwZZCfDb00VWV762LDO5GAaHLGZfWy4NRMWBo/F4jvaT
-         CIeFkpCS7lwqRXXB40vbU17BWRIfYegBgrLBy4tCUzqiEl6NELvfLu9jeXziWRWtrgcT
-         4DGQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzwzkhK1oVf3/HHxP2617lbTwjo3VSmOsX3jTo6oH60NIeVXCRWtbC0UtrcTIUDh0CSQe4K4g==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLefwTvBm2qFoFL37nvuAsNSqFcePu13NNyLmB52GoRKEI6evhY
-	8PBog/lKGArPmKY7rcLN5iQqZm679r/jI7gctrDBmC4VCJXfMFo8xnsj
-X-Gm-Gg: AYBFou1MRLyY+0OOHNUqjKnLPmWd0cV2PnRVT/Ra4jEQTbJ+nXK3RpUqqrjtnRnboMO
-	JqqtjaioAu4eZwytoPoeDUcz4vgyfLPTdJ/uN6yjkBCoIf5uc89UsADoPCL77ZNe0n+EWO/gwEG
-	GKmJZbbk0LsKl+O7sAVG3+puw7JCXzlAHNvnNwAI1rEDtz9L7xbgSGtdz08RhdU366YQuuakulN
-	F+MZ5LT9wNGdATS0PtPRcgEFWOMEsgXyMKRG/fMzFHl/3hd5I+IX58Ibu2uRQmeocXnHVWIxJN7
-	mdEuQeCUjJ2V1rBDq8Uk1kT6eHONIODerMHeBf/Z5wKzfGEV5mcI9rLwLv83xtrSRBmenFQ0pS8
-	0eQxytuu50syBFjR7N7EgL7gxz/V6Gdf2nGFMgGtHO/+IYTFSUnIO9GVlPYQ0Q+ThfDRNdOgzFp
-	XJvQAiq5HIb3fFtkQmbp8rAMehsDeEZ/fle9yZY8C3JX+Vp6z1Tf2rcl68JCWIfJAzsPHzmlSxu
-	yo1qyInbU7KH1bFIYsuMdJg+Y9/oFqMdbo6TWAvBRzMCueBvxem8Snwh4VyFo9zkXXdIGEF0ADv
-	LGGEpekMj1ZaP38sYtCYjzAOpDKKBGTL9lav
-X-Received: by 2002:a05:600c:4747:b0:4a1:80d8:aed0 with SMTP id 5b1f17b1804b1-4a18e4a9862mr311763425e9.15.1791971824195;
-        Wed, 14 Oct 2026 02:57:04 -0700 (PDT)
-Received: from dev-dsk-fgriffo-1c-93421965.eu-west-1.amazon.com (54-240-197-234.amazon.com. [54.240.197.234])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48de0ac5257sm11206338f8f.42.2026.10.14.02.57.02
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Oct 2026 02:57:03 -0700 (PDT)
-From: Fred Griffoul <griffoul@gmail.com>
-To: Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Oliver Upton <oupton@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	Jan Kara <jack@suse.cz>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <shuah@kernel.org>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Ackerley Tng <ackerleytng@google.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R . Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Joey Gouly <joey.gouly@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Steffen Eiden <seiden@linux.ibm.com>,
-	linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org,
-	kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-fsdevel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-kselftest@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [RFC PATCH 0/9] mm: Memory providers for guest_memfd and iommufd
-Date: Wed, 14 Oct 2026 09:57:02 +0000
-Message-ID: <20261014095702.39676-1-griffoul@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <CAEvNRgEseLO+LbkwXrEit0H2LH5Wx-srSvHEMpt0=upPL3tF=g@mail.gmail.com>
-References: <20260720111259.122911-1-dwmw2@infradead.org> <20261006183235.16576-1-griffoul@gmail.com> <CAEvNRgEseLO+LbkwXrEit0H2LH5Wx-srSvHEMpt0=upPL3tF=g@mail.gmail.com>
+        d=1e100.net; s=20260707; t=1791973602; x=1792578402;
+        h=cc:to:message-id:content-transfer-encoding:content-type
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=VtYMXNbVtRfmsxMVZSkEhD6PvdF6VjEcdjKsoIPRggg=;
+        b=HBProvN58qdSRhdugmfxVeK2yuxDZaGl+ylNQE7Uz6UF9AIhGcD3wIPNIyDbFX7VD6
+         kgf4yo3ZJYk84FqBK4XwobzymGGQq5vZ3AmPFiadmVvoM/bo+s5WzjIynxSrsT38B8iD
+         Fx0YgO59vcXIjkr27juQXkG4godFB3fJh4NE7hYXl/FrEjM5ItFWeZQn+GZ74k+MXW9f
+         R1sAjYr7oAOoYR/8Lp2HNPQ66l+Bnk129IEPgN5XJ4By7dfFHdf5sx1XTCHDsIQjUzLq
+         YhR9aGFo8mt3A5tLTSlaYzJHmcIqUB74bB2uW7+Vsdd7AJVyxSRJPizGORgpp89qXrBH
+         vykQ==
+X-Gm-Message-State: AFq9FYJXCJeDW5Zi62khcrjrCLghMzdO6fgvo/UVpHK5sSdRTmh1pNDt
+	ldfVJZtae8pOWG+OM/fQs1M6ZhI/vMhlqcJuFhhiSYq8Flip4vRel9TZ7G9r+QNVJdk=
+X-Gm-Gg: AYBFou3wOs2qc7lea6CcNZCDS+/Jia8AzO74Kv2gJokKGplh9yCmEZHlYGZf2DfMIZn
+	fJKDpa/VCGpJtgJ9YG4llshxqZQDfZRpvgX9Py4ZnjYMZifwWA2mPuBqP3EaBVuFdCVT/jfzYaV
+	8mDF/fmfvPSSBnVVJIjdV0sBZAaTxJCx5kIzt2QYyCgYcn6BqrQgAAMcqNN38ggXwR2XFHkBxHB
+	CU2clrNGd0dBLG2Nofir2+4Ws7L3T9HNgOD0CShXwDKX1UW91G22rCw7ncRPX3i39BriWNVmm79
+	prWEKpFoQL31C++hImtZwH8ELv2aCUTZYD0f0fD/0WiZ6RbYzGan4TeH2gq68/jW3ZNxbzl1suR
+	cw4uLD4QWxQAkuhoKCvqghEtp06iAAeu9xxqMu0+ys6x8dwFsFrPIrqkU8BnkzAHgzDoWvG1jzh
+	8sOuLdx3h6KG68vhsvoebIVfb5q58To378fg2ov0eaM0Z2JoU18GH5g3lp8jcb7lBw6+kOj0xNE
+	ceqHKHpcOdqcw==
+X-Received: by 2002:a05:701b:450a:10b0:151:bbe4:b6ab with SMTP id a92af1059eb24-16a5ed3d9bcmr20307029c88.17.1791973602335;
+        Wed, 14 Oct 2026 03:26:42 -0700 (PDT)
+Received: from [10.42.0.1] ([2a00:23c7:1d1a:9c01:bf23:2386:c0c:815])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-169a442ac67sm70318219c88.18.2026.10.14.03.26.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Oct 2026 03:26:41 -0700 (PDT)
+From: Pawel Zalewski <pzalewski@thegoodpenguin.co.uk>
+Date: Wed, 14 Oct 2026 11:26:33 +0100
+Subject: [PATCH] iommu/riscv: Use named initializers for acpi_device_id
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20261014-acpi-iommu-v1-1-1744523fa658@thegoodpenguin.co.uk>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQ5AMBBA0avIrDUxIiSuIhbTdjASrbSIRNxds
+ XyL/y+IHIQjtNkFgQ+J4l0C5hmYidzISmwylEVZY4GVIrOKEr8su2JEy1bbhkhDCtbAg5zfrOt
+ /x13PbLb3APf9AIDyXE5uAAAA
+X-Change-ID: 20261014-acpi-iommu-e11dedbd7aab
+To: Tomasz Jeznach <tomasz.jeznach@linux.dev>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <pjw@kernel.org>, 
+ Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+ Alexandre Ghiti <alex@ghiti.fr>
+Cc: iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, 
+ Pawel Zalewski <pzalewski@thegoodpenguin.co.uk>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1791973598; l=2641;
+ i=pzalewski@thegoodpenguin.co.uk; s=20260430; h=from:subject:message-id;
+ bh=gDHWDcYK2QanyrU6NUlrYkRMYYGX2rjQ5QCZVztfKm8=;
+ b=AwtnJHIiJrTb4iNCDXIUiIfMWQQpeSjBoeHg0K9C/FGGtJ2S2EBE/Vbsc2hjBGRj6UWaaVaOG
+ 0c5IzhdxGZQDYbImcQizT8FBGigNg/gaCupWKWysURa6+HbfFZBsZtA
+X-Developer-Key: i=pzalewski@thegoodpenguin.co.uk; a=ed25519;
+ pk=vHq4n9IonORH2GTzLv8r6CWAFHzgfBuNkQPXA8NSly0=
 
-Ackerley Tng <ackerleytng@google.com> writes:
+Use a designated initializer for the acpi_device_id fields which makes the
+code more readable and consistent with how lists are initialized in the
+rest of the kernel code base. Also drop explicitly setting fields to 0
+where it is redundant.
 
-> When the provider wants to revoke the page, the notifications/function
-> calls flow this way, the last [ENTITY] in the chain actually does the
-> zapping.
->
-> + [PROVIDER] -> [KVM]
-> + [PROVIDER] -> [DMABUF] -> [IOMMU]
-> + [PROVIDER] -> [GUEST_MEMFD] -> [USERSPACE] (AFAICT this was not
->   implemented in the RFC.)
+Unify the list terminator to have a single space between the brackets and
+no trailing comma.
 
-Thanks for going through it. I have just posted v2:
+Signed-off-by: Pawel Zalewski <pzalewski@thegoodpenguin.co.uk>
+---
+This series is converting lists that contain the acpi_device_id struct,
+which is defined in the include/linux/device-id/acpi.h to make use of named
+initializers (which they do not use currently). This work is part of the on
+going effort in the kernel associated with device-ids [1]
 
-  https://lore.kernel.org/all/20261014093733.90312-1-griffoul@gmail.com/
+The plan is to convert acpi_device_id::driver_data to have an anonymous
+union, similarly to what was introduced for PCI and I2C device ID tables.
+The goal is to increase type-safety (most of the existing casts are gone),
+to improve readability and to make use intent a bit more clear:
 
-It changes two of these chains. dma-buf is gone: iommufd attaches to
-the provider file itself, through a small interface in mm. And
-guest_memfd now maps the file into userspace from the provider's
-frames, so a revoke also zaps the VMM's mapping:
+```
+union {
+	kernel_ulong_t driver_data;
+	const void *driver_data_ptr;
+}
+```
 
-  [PROVIDER] -> [GUEST_MEMFD] -> [KVM], [USERSPACE]
-  [PROVIDER] -> [IOMMU]
+But for that to work all lists containing the structs need to use named
+initializers first to avoid triggering -Wmissing-braces. I already have
+patches that implement this and touching a lot of kernel subsystmes that
+use the acpi_device_id struct and that list keeps on growing. Therefore,
+I have decided to split the series per every subsystem into:
+- pre-clean-ups that convert the lists to use named initializers
+  (which is this series)
+- actual implementations that make some of the modules use the new
+  driver_data_ptr member (does not apply to this tree)
 
-> IIUC guest_memfd conversions was not illustrated in the RFC: what
-> happens on a shared -> private conversion?
+That way the task can be fragmented into manageable and independent chunks
+of work and makes this effort easier to review.
 
-There are none yet. Only VMs of type KVM_X86_DEFAULT_VM can use a
-provider, so all their memory is shared.
+[1] https://lore.kernel.org/all/cover.1780048925.git.u.kleine-koenig@baylibre.com/
+---
+ drivers/iommu/riscv/iommu-platform.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> Does your provider need to know if some memory was transitioned between
-> shared/private states? The provider can be notified too, if
-> necessary. If not, then isn't guest_memfd doing all the coordination
-> better than going via the provider?
+diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
+index 399ba8fe1b3e..5680424e36c4 100644
+--- a/drivers/iommu/riscv/iommu-platform.c
++++ b/drivers/iommu/riscv/iommu-platform.c
+@@ -164,8 +164,8 @@ static const struct of_device_id riscv_iommu_of_match[] = {
+ };
+ 
+ static const struct acpi_device_id riscv_iommu_acpi_match[] = {
+-	{ "RSCV0004", 0 },
+-	{}
++	{ .id = "RSCV0004" },
++	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, riscv_iommu_acpi_match);
+ 
 
-Our provider does not need to know, and I agree: once there is private
-memory, guest_memfd converts the pages, so it should tell the others
-what to zap.
+---
+base-commit: 4056b3c9d3c92ea45955641dbafeb9b960e146ef
+change-id: 20261014-acpi-iommu-e11dedbd7aab
 
-I think the two models meet there, and the v2 cover letter now says so.
-The iommufd side of v2 does not pin and keeps no references: it asks for
-the frame behind each page, treats a page with no frame as a hole, and
-maps again on a revoke. guest_memfd can offer that for its own file:
-shared pages return their frames, private pages are holes, and
-guest_memfd revokes a range whenever it converts it, in either
-direction. That is your [GUEST_MEMFD] -> [IOMMU], and it should work for
-folio-backed guest_memfd without memfd_pin_folios() or refcounts, as
-long as guest_memfd also revokes a range before it frees its folios.
+Best regards,
+--  
+Pawel Zalewski <pzalewski@thegoodpenguin.co.uk>
 
-The one difference is that v2 also lets iommufd map a provider file
-directly. Going through guest_memfd would add nothing without private
-memory: it would only pass each revoke on. And memory that only devices
-use, such as MMIO, does not go through guest_memfd at all. Both paths
-would use the same iommufd code.
-
-> Does the revocation model work for you? If it helps, I can rebuild the
-> sample provider to illustrate how the revocation can be done.
-
-Yes, the revocation model works for us. v2 replaces David's sample
-with one that moves, donates and makes pages read-only, and a selftest
-that checks the guest, the device and the VMM's mapping after each
-change. It may be a good base if you want to try guest_memfd as the
-provider for iommufd on top of it.
-
-> 4. [DIRECTMAP] Kernel direct map.
-
-Agreed, that is separate. The memory we have in mind is a range hidden
-from the host with memmap=, so it is not in the direct map.
-
-Thanks,
-Fred
