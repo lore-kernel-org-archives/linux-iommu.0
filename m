@@ -1,52 +1,51 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010004.outbound.protection.outlook.com [40.93.198.4])
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010068.outbound.protection.outlook.com [40.93.198.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B461562617;
-	Wed, 14 Oct 2026 17:23:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFD9231B101;
+	Wed, 14 Oct 2026 17:28:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.68
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791998599; cv=fail; b=hr8og0IArl1WN0AuatZZOk85BWOD9UN7/E8q257k0+vJyl4HZlMFEnKzdcmrzXqFb+2SP5KI7NCHCH+PxZJESogPmMZZmZielm1yDViqWfWCT0ZMRCt19Py8/A6JTg/pt1VW4TwFqYmwOYLcRntflAIu7WgtKqGoZ6OzSlaMLfI=
+	t=1791998916; cv=fail; b=jalEBaI8Ol2c5/aPdgtANd8J8k73D6rSeUEfoAXctpPhuOB1X/tgP6l3ckPVZqD46IQ+J/00sKVqJVH5ZpHX1RFIwYP35NsW+zdk6D4MwKCNg4Z2xGxDDcF8PjZuhOGqREBGDQB3yXMIX94trSMeYGMElXyYHxxCB93qrfErH+M=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791998599; c=relaxed/simple;
-	bh=fgFSHPfGjd0NI4bE+Izn8WJHUs/Yfu0SkqNPxD1/iFo=;
+	s=arc-20240116; t=1791998916; c=relaxed/simple;
+	bh=Zaxu+xs8/TLfPPS7FJyy+3Izl3KVky4IwKpL0eBNGT4=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=sHi/UmCsKl1Rf6wbUaQYNPiYWw7mZmasHusiEc5+t5K1LmMia/gWi2KkSX1TZHBhmk3rcsNLaYrT8dAxVbFRQthyzIc2g/1f9hiHi8yhBJiQPGFeovpgTOsLTzmDowPGyyjngRNcwHjrx0YGFPHRjm6e/P9aDqaHQDb1EbZfsfE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=bVb1rV2Y; arc=fail smtp.client-ip=40.93.198.4
+	 Content-Type:MIME-Version; b=i9gw0xF3mMY7ft8lhJENiuq96ALdnAq0Yz6rvSV8r+TJBciocKYT7Ug3rsosGJiOxuLjmY3jxEX6f0iBhZ3rhttGxpnLP8WLHpbm5Bj4tVXncVK006aaB37swK0/zu0bwu7QVreYy8+6fD/YGWMh0YpCMG6FQoBJ+oBIgYdMjHA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=F2izcVJz; arc=fail smtp.client-ip=40.93.198.68
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="bVb1rV2Y"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="F2izcVJz"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=v/kdN7tyiwnjtlCf1e9V+9vBvyugFIdGz9p/7DeTaGKyeHhC+0/ZT25k5NXtmDuCRtHE7fipqp/SJmxfjfLHIj0z0i8m2inEKeJlj6DwYgPPJZKpn1VdfFYhRy0zCRkhbdBXZ2gmQKAzQPc7TYXX2FJ1F98duHi89EXrqJ9ilZOC2/mxRSLJXR/57e3wY8898FiGTbk550C8JZyqnAjRtBXRqj6ePY4MJHbR4J8I5ooAi/8SywVPfXSP4MozYPRK+A97g3yhssai7309C21T+Ga7GSKTm1rpCIPcstHaOCEU/kKbGy42C0sD5rmzgWtIAX+L75OupEansQdz9X/kDA==
+ b=kPKnyWCpQPbyNgBhI9wjbSy1vAr9qhe/QeM/PNDY9vVHE4L2ISwQL3L/uX9Z+ipM0HN4R8d8WH0IjS/SLPUcI+dX3SasgrKZhvPmtAEi/T15KWUeG9wgKI03V9/bvsSVQdeoeqk74ZbuZdUd9xpHuXk/zfaHWhaANhujaFQF3STVqtLYHrYRDT5tpW3bAvDE+B2Qqd2D22hYFLT4+KGqqMsfJD0tMXEGCQg8XgMhlOPpTq8T1LziPaEdiSnwgzRksG62Hs3yrb3ejl7WRyXRf0zlqXlEdYv8IpGb54s9kA0lSwhqdetE1LXNEJUdT1cgHMEJRAKUpdfvy3sflqWdQQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pU+Q0ZM+OtCWWIZfUckYUcSDo0oKVok3eFxG30959Fw=;
- b=XHqo+ELHVS2bLufhv1Rr6p2K0pjK8YhD81bEhoEwI3E82izUIJoimfmaGq6l5naLlfJFU684TtKkhjaSt9APLhWuU70MeZYacwg2pHZys7MW/HsrdLvTwC4BKWA71AKEFCAQr7toS8h6hqSWtJUliGl6JSmKHQTLDzsTuRTiJCaKVo/5Ah7gGsKzb9dFXUrjQWfpvVPSbzzc7czq4OSh8kttJY+MxUtA3+J5XFywn6S9cQVxm8trUGNh9BzuJ1NwDe653gS91Z61ylZdMGnhFUCJ8jOASoktTj3N2sve4K1C5xeI7/Pe2zOSph3Zyv5LXYn5hjvF7ShQt9JYIugOJA==
+ bh=9zQo6auwQ99hZR3tkVJxqkOS0P8kXOvtGnZ2F3nStuk=;
+ b=fQLAnFYUqYa4TCcul6ZoY6wL3ckmZZm9Xmn3rUag4hkaDW+VwwZtymBy9+IYZhye5xWTTthhXbO14MPLbf2hM9LZbeW4PFbW5xG9KjbYD6nST1izQoV5xp0yTtdDN6Iwoc6zauu6kSdioJUczC9trGwsVJ8Q7HB75vaVxh4LB4IG2uEMpdrCQldTOs6bj2K+o2ajBYIBwIzIxwo6Uw+mGeb4XJFKo2oxo5RXPhRVAC3LfVLz5ULHLITvfGtT+B2wwg1FL0SDwVk9rIt2KVEX1ICxSY5fvr2jBPV1iuHgV4Sv7Vf7JLIceCDiznaNew2N+/U5V1x3qNTpIxT83FbHfw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pU+Q0ZM+OtCWWIZfUckYUcSDo0oKVok3eFxG30959Fw=;
- b=bVb1rV2YB3sYdyPeaJ9s7bBe118hWmsUCT60Duj0ombLjLAoxG8YVaoBoIoz0wZ3GnVBF/ldbodVfZtLJdT1bwgh5QsZ0+vXEzl5mMaillUZNvzm6TIJnoYcoCAJE+dL19j9aY/0Z1r+bsVRV35CGh1zilPQ/kdsriq0FfXOoXEEuVlV94XgSvBy7fTuubj50BcH/+WIeURMDndNzoQlv6NlZlSToBA9AWwbz2EOihCHt2k5YHJYAxGmpRLJ1sR9nV6PPp2/MAujZA2C4aLmMfKT6Nsw+AlFpoNRAcZFojd4G/S++GfCyqNmgkLQMMvTQLe4i4Sy6KmiPEg1PEgwWA==
+ bh=9zQo6auwQ99hZR3tkVJxqkOS0P8kXOvtGnZ2F3nStuk=;
+ b=F2izcVJzIjTuCC1rFOQMwT1SrhLNlfIJsH5UPWqlwM0XHWVg6k6UBNQ5izeMd8PWsK+Qbg4mp8KxagGeDmOqWyJBrY4huNy+F3VwDe0Hr8qcnAW++BI+PsOveKr7i60A3vHvfNcUsvPS6cozmH/VuQwZt84H7IZyqxWpyLk4GpoQ+eIGog3c5XA38lMLV8vnZuzTJYC1wCwghW9rv5GtTFBLZdoG7Qn+6yJJL0KWoVhd6G5BySekVykqFBop7cK9xqrxDVyZm1NsPCBZ+fiVy4ahBEAKUSwQiCxtsV5QhZ8sx8fM1JIK3+MOiSCgUmxOr5mJNs886gBHoKgt1fx29g==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from CH1PR12MB9647.namprd12.prod.outlook.com (2603:10b6:610:2b0::10)
  by PH8PR12MB7447.namprd12.prod.outlook.com (2603:10b6:510:215::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.13; Wed, 14 Oct
- 2026 17:23:08 +0000
+ 2026 17:28:25 +0000
 Received: from CH1PR12MB9647.namprd12.prod.outlook.com
  ([fe80::228c:766a:191d:77b2]) by CH1PR12MB9647.namprd12.prod.outlook.com
  ([fe80::228c:766a:191d:77b2%3]) with mapi id 15.21.0522.012; Wed, 14 Oct 2026
- 17:23:08 +0000
-Message-ID: <52a702a4-14eb-4617-bd29-e3140fd36780@nvidia.com>
-Date: Wed, 14 Oct 2026 19:22:59 +0200
+ 17:28:25 +0000
+Message-ID: <8584c31e-fd93-4f1a-9929-e71c5d9ccd0f@nvidia.com>
+Date: Wed, 14 Oct 2026 19:28:16 +0200
 User-Agent: Mozilla Thunderbird Beta
-Subject: Re: [RFC: DMA_PMD 19/22] net/mlx5e: Use DMA_PMD memory for tx header
- bounce buffers
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
 To: Luigi Rizzo <lrizzo@google.com>, Luigi Rizzo <rizzo.unipi@gmail.com>,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
@@ -73,14 +72,13 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  netdev@vger.kernel.org, linux-mm@kvack.org, driver-core@lists.linux.dev,
  linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20261003212241.3432303-1-lrizzo@google.com>
- <20261003212241.3432303-20-lrizzo@google.com>
 Content-Language: en-US
 From: Dragos Tatulea <dtatulea@nvidia.com>
-In-Reply-To: <20261003212241.3432303-20-lrizzo@google.com>
+In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0159.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a2::19) To CH1PR12MB9647.namprd12.prod.outlook.com
+X-ClientProxiedBy: FR3P281CA0156.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a2::17) To CH1PR12MB9647.namprd12.prod.outlook.com
  (2603:10b6:610:2b0::10)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -90,184 +88,249 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: CH1PR12MB9647:EE_|PH8PR12MB7447:EE_
-X-MS-Office365-Filtering-Correlation-Id: a86ad3f3-750b-40c1-a83b-08df2a17d09d
+X-MS-Office365-Filtering-Correlation-Id: cee8ed33-c83b-4a81-c6b7-08df2a188da9
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|1800799024|366016|376014|23010399003|921020|56012099006|11063799006|4143699003|261009223027099003|10067099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|7416014|1800799024|366016|376014|23010399003|921020|56012099006|11063799006|261009223027099003|10067099003|22082099003|18002099003|6133799003|3023799007;
 X-Microsoft-Antispam-Message-Info:
-	Jpc7nkYl+/Q2vfpm+rCIIhwidKrjEo16BaCm2gD4ay+fhx+f5FJBsJjJpsBHRt7AW+tOzbp2lL4wUDzHya0A3ZScVRreeKscojdhh/2Ke73mGgwBVLRpRoSJE3TOlMJrsFHUvuZvk/4agPLe0qRo8IA3iHSdxKMk++4ZWyYqatvfy0Mp2D9GZibIjom4fqwqwEBKw3hC4Dyr7bOecJcMu2lKVQ2DX1cTfQfAX5+9upmEa2q5rNRZzvpOPJVVE3VQI2+IEXW+8+lgemyiu09kiO6Zydt1gJp4KUBejTzChltSakVPhsYw55syVgHr5skaW5zVwEl4mcmY0277ZKVRWtZW5uAnzwZDLlN6IoCpDXSl2Yc8/thp9Q1n3hx3HD/0M5iA/8ysLHhfcBZuJAa6vCAQ0/+o0EbvxD99XGzx8YANaejBymnA0hkrl3SSbauNjRO1tzw7eG9xCfdHTmbPE3JOw84IC15oPYOWG/5fY2poGNpJhqnpRXCFEm5YrD6DYs/mnkaKrJfu32ZhqWxxMaJPsnLm8FIoUIo4OFahLwHWnTcvvM6GEbYLXLImijKDG9jVfW8gLJt+kDTuzwDenHLCPaY7CZ8GCg5VTJaIvNF2mR9Wsb1QNdCr5V+MXTuc505leevTZNMBiZQFrUj8S5Udn0gr6Tep1m+kQDrVwCIDR9Vgq4YmPzooCJXFC0syy5ggRjh7br688FFNjCueOA==
+	WHDcgCEWzJkPrqq20DZDeJl45jpjkxTcIefoS0OJetAZqU1JDeHmRkEA9J1JzEwllj749VARwtmK071Td+OUmtNbd5K9/03sn7Dhv1xZrZ5G7i/88ud1v56oztYl5GNYaS4m7Fm8OltURzv7i8qSaZrrh/xwGSoNNRRjFMl8rDdJuR4ehFmtPGY6JdjgFvhfZ/IYkjxAWguwwGomsXsdDC44jVixzAy7W3yf3r6Z4NmFO9ldBN4kUvLkrD863SjCyXOu821PyRrNu5z02pwndIQHDbabbRVCm465orT5qS8WhKhFNhDBmmsF6ybJZZdDm7hCYqPiBUu1qjWO1jOkdiQdA1DCe0FarEjJNgze8BHmuFrxrk49x15WVYBaDAtwae26H1rOkADTW2pZsgt28wJ9asc4V05B6WmzPnEuFb5Lzo/h04B59ovBORpDoppWFBgpEsy0ElAxTWAmsNk1d9Mi6G8US4pkWqZR2fKOujZM/A8zo3kdF95wAYPGvIgzK5BpZUrnWnAqVP1K+74PkjyZTWXgslc40lOlmp4oPMBr4B1oK4pwiRIXmAuA8eJGhDNlYYj/y5NqjlVPSy6MbUIjmN9nJcw3f1OaSoLaiI/aTBLpj/he1JaiBcBfsU/wz9yYHJ92UltkLgqkttTkmR/adTeiyMtkQ5/E3MVi37bzr56/jqxkYzi9vBv3mluYlGPlZq95KDVEBL0Lmhe24g==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH1PR12MB9647.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(366016)(376014)(23010399003)(921020)(56012099006)(11063799006)(4143699003)(261009223027099003)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH1PR12MB9647.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(366016)(376014)(23010399003)(921020)(56012099006)(11063799006)(261009223027099003)(10067099003)(22082099003)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UTM2WWhDZDdHakxBSGtmNDdibWtXYmxnbHpDblJJVWpCV251aENJRDFCbURk?=
- =?utf-8?B?ZVp5NnNYMUVXS1BKdnVsVFc1L0NocnNjdDVWcVliWFRhK2dvWnoxWDgvT29Y?=
- =?utf-8?B?bHhuSGV2aTYrY0d6R2Q5RHd4NXd1MTM1NUl0Si91V3MrS3lKWFlvdDgzaDB6?=
- =?utf-8?B?emRzbWFQYmIwNWUrWldnNmZBaGVwZ1R3L1FxNmREVzd5REtkbUdCSTFBZERu?=
- =?utf-8?B?Vy9hcy90cDNsMURzRStqeDdPbjdnWDJWQmZHeEtFZUM2bm1KOEFod1dyTFFj?=
- =?utf-8?B?Z2EwMWFMNUthbGloTEhwOHF5WEJCcTB5ZnMwOFh6V0t0ZE9RSXFFU3JoMjVO?=
- =?utf-8?B?KzdGMFVlTXd5OHhjSWRDSURrQmpIZHRoMzlVQU5yZC9TRzFvaWowK3QzeVhm?=
- =?utf-8?B?d1liWis0RVhxK3FZQVRwZEhSaU5zUy9CTUs0bFk3ZzRoZUFyeXQ2Si9LN1A0?=
- =?utf-8?B?VENxQWpJbjBSSk5VMEI5cllnbHRYY1pYcWZnb0NXcTdhR1Fpclc2bWRyck9G?=
- =?utf-8?B?YWlUWXZ1OG9tbHJudGhXMGhFR0VuZ084VXdOaExnMkFSV2ZBd253V3d2ZTJU?=
- =?utf-8?B?NlR3aWp3ZU9CZFltRklGalRNVUdVZG5GWWJHOVlUU1AxcGRlaktkUmhvY1FI?=
- =?utf-8?B?NjdGMjZqV1I1eTJaaWMrTnRTeXE1cnhzSmFEMFpqNkh6NVZEVXJvSzNwdlVJ?=
- =?utf-8?B?OHdhQjZiUjhnamdVV3BaRFl3VFRjMStFd1c1MDVMVmFtUkROWTJOTEcwTUxL?=
- =?utf-8?B?ZmxSMGRBUFNjVXY1eG1UQ1RSUXJ1ODlWeFBHdE1PbTBia29UbmdjZkVpT1Qv?=
- =?utf-8?B?V3RXUTdCdUQzVDMxVC9XQi9SNHNQS3JmUnJnd3p1UG5reEp5bjhaaGdjSy92?=
- =?utf-8?B?bzgwS1FXYUdkUFpnRVpMeHZGSlh2Nzg3WDk4RzllQ3dDYkd2eFlvL21MUEls?=
- =?utf-8?B?dDFTOXM1VCtXNHF3aDEvZzEzUS9xVVU0em0rVktrWVEveDdHUzVDNU9DcnQ1?=
- =?utf-8?B?QktTWWFBc3djT0o3QkQxajk2Z3ZoMVFiaWtleDFrL3E1V3ppRHU4WnpwTmtE?=
- =?utf-8?B?UXhvSFZoVS80MC9LekFtelhCZ0Fma2hqM2dKcHA5Ym03cDZJVTdkY1RPdlFC?=
- =?utf-8?B?QXpGdVFYVERvdHBiMEpncjJRVmNvRGx5cFFyNEZObnpmZnlSaXNxUFJudXE5?=
- =?utf-8?B?Q25vU3JOaTBzdVo4YW1jaWVuSzNzQmt2TXM0T3R4VGp4RW1TRUk5S0RmKzVz?=
- =?utf-8?B?VVRXU3FEZzRXbFoxcTJVdTZDSUptVnBueTdNMkJIVjI1R0hGd2t0N3ZDdWpV?=
- =?utf-8?B?eTJaTjlZUlNacHZ0WkVrVUNGUmJMVGNGNjdoSnQrK0QrRm5OQlVXN0tnZ0hy?=
- =?utf-8?B?Q2NlQnpReFduWHVsRXBIRlU1RHBlK3AwYjZQdmJxaTM3UVA5SmpPU1B1eFor?=
- =?utf-8?B?ZVNraUMyUmRkdk9CdVJrVE0rRUZITVZQWjBMOE1MY1lodHllVG1ZekJreDJQ?=
- =?utf-8?B?Yjl6SWxuZzdsQ3FpOWdvdmVwdFRZZDVCUG94aDNyZWs4ZGtaUCs1UnpHSzVp?=
- =?utf-8?B?S1RaY0hzdStkV2c2Qmh5VUcrN04zblJINDZVZmpnampMTU1nN2lOODRIam93?=
- =?utf-8?B?d0xNMTBuK0g3UFRWT2tGNFh4MWplVzFVNXJNaktOUU5nUXA0UFpadmt4dlEz?=
- =?utf-8?B?K0Y4MGluWHB0RXEzUkRkZFhnRURVNGNDaHBkeTZzOEI4dE01QlpSdytIZXlY?=
- =?utf-8?B?Rm80ZXJvRWNWSmtEL3FwQlV0ZnAzMnBKSTR1TG90VkxJN3pWZll5RGdMbjM4?=
- =?utf-8?B?bkhGRmtDYmUrcXFpUStLU0xiRG5UVzQyQVE5S3JVK3dNLzhCL1hqMytacVBz?=
- =?utf-8?B?VTlUbzRaNWM0VWwvZXZ4Z3labDduRXhvNjNYcGR1V3IwSGRpZ0VCUm40Tjc1?=
- =?utf-8?B?RmdHRzFicXV0bU5ydndobzU2czhMYlY1VzExcVVnVnU2OVlqNFpUa1Z4L1hK?=
- =?utf-8?B?VGJkSjdkbGJUbkpMVDFPT2NkVlNhaFVGMkc5bDRwOXZ4TkxDYllLc21mcEtC?=
- =?utf-8?B?SkxKWTIxTnc1M0MxZU14US80UzdrcG04YlV1VWx6Sm5DMlJhUi8ybGROUUxn?=
- =?utf-8?B?TFE5NjFTSDZRSm51SWYvSGZjSWF6azNSSWRBejc3Q2RtV3FLekVIODRUbUFx?=
- =?utf-8?B?M0ZRUkNoZmFxRWtzZnd1SktheDdJMXlYMEpqZ1V5eUp1emU3ZDc0MlhRSlRu?=
- =?utf-8?B?a2hJQnE5aWkveFdqdmFQby9kVlAxMXJGUVFoTHdwR0s3RzVRaFhsdnhlZDlT?=
- =?utf-8?B?RGl5UURjRUFveDU5SE9SN2VFdmVuNUI0WXQzVjJzMmkzeE1jNENsUT09?=
+	=?utf-8?B?TTFlVndZYjZva09QS2ZheVA4NFFlWGFXWm9IZkxYV0xPY0t2Tng3M2xUQWg5?=
+ =?utf-8?B?ZHFzeTFqSEpCSFRrNFlUcWt4OEwxdkdHT3p4ZWxPYnRGejVRVjAyRmE0emV5?=
+ =?utf-8?B?em90L2xPaXJNZUVQdFpva2Zva0ptaHhXenNacGtzbnNtSXpjV3A1aWdQdENm?=
+ =?utf-8?B?NndmcGhTOUYrMUs5cGVwY3VORE94UzFndjZYdURWZjZTRXJjbFhEWkJ6Mnpz?=
+ =?utf-8?B?SDNEZXAyTmkxbXhwMWdKQk5xdTArZ3hoN00rUnQyZ25raVlMS0c3WmptaGdH?=
+ =?utf-8?B?cnVqL1pYRDFhY0FKK0RHMnpTZzlML3VYbUtHeERELzVaNzI1M2Nka2ZIdVhy?=
+ =?utf-8?B?LzNjT3FiSG1oRjNaa3JiWXhuM05VZGhvdjdnY21LSWlWV2g0TWhZT281MW5V?=
+ =?utf-8?B?ajRJUXh5cFYrejhma1NBSXJKR05NS1JsRXhhRjR6SWxmd3AvK2t5b0VHS2NN?=
+ =?utf-8?B?STFsNzdTeEhmcVF0OWptKzZ2ZmZUMWttamdreENYY1d2a3B6RVQyaTVtVXpm?=
+ =?utf-8?B?Z2MxaGRxZVMxK0lrcXBqSkQzZGNiTndtNktmTzFBa2MrMCswUkh2ZUMwYWF3?=
+ =?utf-8?B?dUtPbTh2UFhFWnRveEM3dUNwc2RRdmNqcVBEWko0QW45ZXlCbzJwQ0FZRG84?=
+ =?utf-8?B?clFza0s0OU9Sa3J2TXdWMkwzSjRwcG5RT25TQ3QxbWFaTkR4VmZYcmdrRmFD?=
+ =?utf-8?B?MGMxY2YvbU96UHlMUVo5cHlIN05TZ0FZVUdpc2F0dFUyMlZSbUxXLzNHNngv?=
+ =?utf-8?B?Y1JCU3ZodHpaUDduNC9wMElyUTROYkFCRysrMUJOVHM0blVSWDYvNTV0S3Ro?=
+ =?utf-8?B?NDM0Q2ZSUmlhR2tLc29SUDQrNitpYmNhY2c1OThvVVpWRGZnYklIMmVheTdx?=
+ =?utf-8?B?QmhLMlJvdmJxdm5hQnBNSnhUNnI4Z28yVm13OXZuejU1RlhwQklCNzZOMGZu?=
+ =?utf-8?B?bCt6ZVdubWpwZzJFaWx4d2l4d2c3cU1YdnV1WjNZSWc0MHFMVDNRVUxaaVN6?=
+ =?utf-8?B?TGtGSTdtMDZYcHZ6cUxYbFcwNWlKb3JwdXdWU1pDNHdsRllZRlNBc0xqd3Yw?=
+ =?utf-8?B?NXZ6cVF6eEtJZG1JOHZ3Y3E1VHRiUkRrTHowRG1WY0UrdFJJZjV0K1NST0dN?=
+ =?utf-8?B?WmszSWc5YXEza1NwS0pnT1pGM3YveEZDY3kyWTROajVKZE1jbHpEUCtKUGpo?=
+ =?utf-8?B?ZHdmUGpvU05sTnB1VTcxWG9KSmhBa1NrTjBUN2poalpRaFlwSEx0dFlLVUY5?=
+ =?utf-8?B?UjdqeHhwVzVBbEhPVlUvZnRSYmVNU2dXU09tellhTFkxdDVDZEdkWWcvcmNx?=
+ =?utf-8?B?MmJ0bGZoZ1V2T1ZRUHczUHl2VzBDMmQ1QkNYRi95UzIzL003OUU5S3ZFVmg0?=
+ =?utf-8?B?aHlRM0xNdm94bE5WWUlJaVZZbXRWbGxBZjNwb2hZY0RxQUk0aWhlcEFub09E?=
+ =?utf-8?B?N0dIVFRZL3UwOS9PYnJ5aGRUQ3hqVXlrVDJLL04vSFYzQTM1djBYQStOS2ow?=
+ =?utf-8?B?L3pLT0RWL2l4Q1RMQkZPZlBUSVREZllhT1R3UGVXM2g3eHBUNFJZSTJ0WTJK?=
+ =?utf-8?B?aEhYVnpORHlQUnRiUmlGakRMcVhYVHVUN081NlAxMFpSbEQ4cVBzcWJNTUdr?=
+ =?utf-8?B?NWM1YnZMNkNPNnNGdHBxTDBlY2JvWjB5MUR0RHNzWTI4VEkzM29WWkRzazZT?=
+ =?utf-8?B?YnZPOXhZOHh5MVk5cWk0ZGRpV1VOZmpIYTZNaW9HWGVxalNndmplTjJLWEtG?=
+ =?utf-8?B?aVc0RnkvcGtPQkJLN2Y0Z3pQMm1oVjVmR3pKUkwzMmk4ZndjN3UzZm5tbWdz?=
+ =?utf-8?B?NjZYM2p0MnlCRmkyYVdnbERRdk03UDJEeERtNHUxLzQvYi9SNE5obS90c25p?=
+ =?utf-8?B?QzU1elZXaGs3Umc4S3h5VnJDZXVVVlZwR09EbCtLcmk1UWtJSEsyd05uTmF3?=
+ =?utf-8?B?QWUrWDRyU1NpNTh0YlN3N1F2VlJDSnkvMmdmd21mS2dsWVpqWmFWdU9DbHZu?=
+ =?utf-8?B?RG9ZMU1OcllEckFrd2h3M3IrZWRic0tSWFJ4TEFHUzVZSWl2TTd6THM5ZUMw?=
+ =?utf-8?B?Zy9FWW1sRk1TWUdTbW9zanlhamd1ajJ6ZjVDUmh3MnlhUXZuVWY4dkZ4dEN4?=
+ =?utf-8?B?YlhEYUh3NSthY2t0U1JzL1ZnZjEwVXhnZ2tVQnNJREdhVWMyOFRtNTVScllZ?=
+ =?utf-8?B?blZIWmVHSFYrYjZtUnRjWm90NElmczFidDdBS1JVM1M2UzhoMFl4OTZWSHBK?=
+ =?utf-8?B?Vi9OSXdORlF1cGw5c3dZZ05zaDRpa2Z6azU1Z01McHB6UktvbHFwbnpWQTd2?=
+ =?utf-8?B?eGFDdkVJMWgxb01Oekp2UGNhRFFEVmY0MkEzZ2JiRFV3U3lYT2krQT09?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a86ad3f3-750b-40c1-a83b-08df2a17d09d
+X-MS-Exchange-CrossTenant-Network-Message-Id: cee8ed33-c83b-4a81-c6b7-08df2a188da9
 X-MS-Exchange-CrossTenant-AuthSource: CH1PR12MB9647.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2026 17:23:08.5465
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2026 17:28:25.6506
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +cxCQXw2m7xsnSltg+bUip43cPkYNIDDR7N+YMg6s9sCmWbfKhDnJfDgc4P2tt2d09kO6v5Rbpv9o/iMkz/qLg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: jVM56snw1CO5qN98Evi1gsNXrsRJZT+R+KFGs3aagD4cTw/C+2q5E/16Kdj+CCKXHJE/gtvah9pD0b81M/+l/w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7447
 
-
+Hi Luigi,
 
 On 03.10.26 23:22, Luigi Rizzo wrote:
-> When dev->dma_pmd_tx_hdrs is enabled, allocate a MAX_TCP_HEADER
-> bounce buffer per TX DMA FIFO slot out of the DMA_PMD arena. When the
-> linear portion of a transmitted packet is at most MAX_TCP_HEADER bytes,
-> copy it into the pre-mapped bounce buffer instead of calling
-> dma_map_single()/dma_unmap_single() on every packet.
+> Here is a subsystem called DMA_PMD on which I would like feedback on
+> architecture, possible enhancements, or kernel components that could be
+> reused to avoid duplication.
 > 
-What is the difference between using the DMA_PMD pool or one (or a few)
-coherent DMA (2MB) buffers allocated by the driver?
-
-> Signed-off-by: Luigi Rizzo <lrizzo@google.com>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en.h  |  2 ++
->  .../net/ethernet/mellanox/mlx5/core/en/txrx.h |  4 ++-
->  .../net/ethernet/mellanox/mlx5/core/en_main.c | 14 ++++++++++
->  .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 28 +++++++++++++++----
->  4 files changed, 42 insertions(+), 6 deletions(-)
+> I think it can be extremely useful for those affected by the HW/SW overhead
+> of IOMMU (especially IOTLB thrashing, see [1]), or confidential computing,
+> or preemptable VMs.
 > 
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> index a3945195f454e..d762ad1c1ffaf 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-> @@ -442,6 +442,8 @@ struct mlx5e_txqsq {
->  		struct mlx5e_sq_dma       *dma_fifo;
->  		struct mlx5e_skb_fifo      skb_fifo;
->  		struct mlx5e_tx_wqe_info  *wqe_info;
-> +		void                      *tx_hdr_bufs;
-> +		dma_addr_t                 tx_hdr_bufs_dma;
-Why are only headers considered for bouncing? Because they have the
-highest mapping overhead?
+> The (not too exaggerated) pitch line is
+> 
+> DMA_PMD has the performance of identity, guarantees that only IO buffers
+> can ever have active IOMMU or IOTLB mappings, removes the bounce buffer
+> overhead in confidential computing and preemptable VMs, and integrates
+> smoothly with existing kernel APIs.
+> 
+> === ARCHITECTURE
+> 
+> DMA_PMD was initially designed to address IOTLB thrashing (details in [1]),
+> but turned out to also resolve nicely the strict IOMMU overhead, and avoid
+> the bounce buffer overhead in preemptible VMs and Confidential Computing.
+> 
+> It works by combining several known techniques:
+> 
+> - transparently feed allocators of device memory (skb_page_frag_refill(),
+>   dma_alloc_attrs(), pagepool, ...) with DMA_PMD pages, i.e. physically
+>   contiguous PMD_SIZE (2MB) pages mapped via PDE_SIZE IOMMU entries
+> 
+> - heavy recycling of DMA_PMD pages (like pagepool) and lazy IOMMU unmapping
+>   (like DMA-FQ), BUT:
+> 
+> - like strict IOMMU (DMA), safely release memory back to the kernel only
+>   after destroying all of its IOMMU mappings and a synchronous IOTLB flush
+> 
+> - on allocation, DMA_PMD pages can be configured to be pinned in the host
+>   (hence suitable for preemptible VMs) and/or unencrypted (hence suitable
+>   for Confidential Computing), removing the need for bounce buffers
+> 
+> - there are global and per-device optin /sys/device/.../dma_pmd_*
+>   and /proc/sys/net/core/tx_enable_dma_pmd
+> 
+> NIC drivers can typically use dma_pmd with no modifications for rings,
+> tx buffers, rx buffers (if they use pagepool), and rx headers. For tx
+> headers, almost all drivers need changes (see later patches in the series)
+> to implement cheap bounce buffers and avoid individual 4K mappings.
+> 
+> The series has the following main components:
+> 
+> - a sparse array (similar to pageblock_flags) to quickly attach metadata
+>   to a 2MB page without fiddling with the struct page. Cost is 128B per 2MB
+>   page used as an IO buffer, totally negligible.
+> 
+> - dma_pmd_pool, a replacement for alloc_pages() that can be instantiated
+>   per-CPU or per receive queue. It handles the split of PMD_SIZE pages
+>   into order-N blocks, handles dma_map and unmap, and aggressively recycles
+>   entries. It is used to feed skb_page_frag_refill(), pagepool, and
+>   receive buffers for drivers that do not use pagepool.
+>   See [2] for "WHY NOT PAGEPOOL FOR TX AND EVERYTHING"
+> 
+> - dma_pmd_arena, is another allocator backed by DMA_PMD pages and
+>   is used exclusively as the backend for dma_alloc_attrs().
+>   Used for longer-lived allocations (descriptor/completion rings,
+>   rx and tx header buffers)
+> 
+> - glue code to hook DMA_PMD into pagepool [2], skb_page_frag_refill(),
+>   dma_alloc_attrs(), dma_map/unmap...
+> 
+> - per-driver patches, where necessary (e.g. tx header buffers [3])
+> 
+> === PERFORMANCE BENEFITS
+> 
+> Your mileage may vary. Enabling the IOMMU may have no throughput
+> impact, until it does when some system components (bus, IOTLB, CPU)
+> become overloaded.  Aside from throughput reduction, one interesting
+> parameter is the effectiveness of the IOTLB. Here is a sample of SMMU
+> performance counters for a large ARM system with 2x200G NICs doing
+> bidirectional traffic:
+> 
+>     === DMA-FQ MODE (total throughput ~440Gbps)
+>     25,757,488      smmuv3_pmcg_*/event=0x80/   IOTLB lookups
+>     16,634,941      smmuv3_pmcg_*/event=0x81/   IOTLB  misses
+> 
+>     === DMA_PMD on top of strict DMA (total throughput ~745Gbps)
+>     22,693,218      smmuv3_pmcg_*/event=0x80/   IOTLB lookups
+>         30,536      smmuv3_pmcg_*/event=0x81/   IOTLB  misses
+>     (not a mistake, also lookups went down despite the higher rate
+>     because the tx side can use larger segments)
+> 
+> The 2MB mappings made IOTLB misses almost non existent, because
+> the working set is reduced by a factor of ~512.
+>        
+> Note, the code has more verbose comments than I would like.
+> Several of them are there to avoid Sashiko getting confused and
+> flagging false positives.
+> 
+> === NOTES
+> 
+> [1] IOMMU IMPACT AND IOTLB THRASHING
+> This is documented in more detail in Documentation/core-api/dma-pmd.rst
+> but the compact version is below.
+> 
+> There are three main costs involved with using the IOMMU:
+> - CPU cost for dma map/unmap
+> - CPU cost and latency for synchronous IOTLB flush (required for strong security)
+> - IOTLB thrashing, shows up dramatically when the IO access pattern
+>   exceeds the IOTLB size, and IOMMU page walks slow down bus activity
+>   up to a point where we see over 30..60% throughput reduction just for
+>   this reason.  Some relevant references
+> 
+>   https://lore.kernel.org/all/4b42f2eb-dc29-153e-ace9-5584ea2e5070@redhat.com/
+>   https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10280580/
+> 
+> Specifically, NICs access 4 or more pages per packet (descriptor queue,
+> completion queue, rx or tx header, one or more buffers), with very little
+> locality especially for data buffers and tx headers. Each queue has 1-4K
+> entries, a fast NIC uses 16 or more queues per direction, so just the
+> data buffers cover 32..128K pages. Using 4KB mappings makes the IOTLB
+> ineffective, as shown by the performance counters shown earlier.
+> 
+> [2] WHY NOT PAGEPOOL FOR TX AND EVERYTHING
+> There is some overlap between pagepool and dma_pmd_pool in that both
+> implement a cache, but pagepool is missing some important features:
+> 
+> - pagepool does not handle splitting 2M pages in smaller chunks, or
+>   the mappings. That would need to be implemented (and is what dma_pmd_pool does)
+> 
+> - pagepool's provided pages cannot be cleanly managed by
+>   get_page()/put_page(), which is what all the consumers of
+>   skb_page_frag_refill(). Fixing that would require dozen of changes
+>   with high risk of missing some paths.
+> 
+> - even for the receive path, a provider for pagepool has more restrictions
+>   than alloc_pages-supplied memory, so if I wanted to wrap dma_pmd_pool
+>   as a provider I would have needed changes to the provider interface.
+> 
+> - pagepool requires a device at allocation time, which is not known when
+>   skb_page_frag_refill() runs, hence the IOMMU mappings cannot be handled
+>   at allocation time.
+> 
+> - page_pool_alloc_pages assumes a single NAPI consumer with BH disabled,
+>   whereas skb_page_frag_refill() runs from a preemptive context.
+> 
+> - and last not least, we need to handle the dma_alloc_attrs() allocations
+>   which don't match pagepool API
+> 
+> Of course all of the above could be modified, but the complexity
+> would be similar to that of implementing dma_pmd_pool, and with a
+> huge risk of breaking existing functionality or missing some path.
+> 
+> [3] DRIVER CHANGES
+> 
+> Most drivers need no change for rings, transmit buffers, or receive buffers
+> (if they use pagepool). Tx headers are generally mapped on the fly and
+> that is enough to trigger IOTLB thrashing, so most drivers need a small
+> change to implement very cheap tx bounce buffers backed by DMA_PMD pages.
+> 
+> We could avoid the bounce buffers using DMA_PMD for the skb->head region,
+> but that memory is contiguous to skb_shinfo so it would be exposed to
+> IO device access, which may be undesirable for security.
+> 
 
-Note that TSO/GSO packets will copy the header inline in the WQE
-already. But not for small packets.
+Thanks for the RFC. Here are my notes (some points rephrase what was already
+said):
 
->  	} db;
->  	void __iomem              *uar_map;
->  	struct netdev_queue       *txq;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-> index f2a8453d8dce0..6de7a2a430d72 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/txrx.h
-> @@ -365,7 +365,9 @@ mlx5e_tx_dma_unmap(struct device *pdev, struct mlx5e_sq_dma *dma)
->  {
->  	switch (dma->type) {
->  	case MLX5E_DMA_MAP_SINGLE:
-> -		dma_unmap_single(pdev, dma->addr, dma->size, DMA_TO_DEVICE);
-> +		if (dma->size)
-> +			dma_unmap_single(pdev, dma->addr, dma->size,
-> +					 DMA_TO_DEVICE);
->  		break;
->  	case MLX5E_DMA_MAP_PAGE:
->  		netmem_dma_unmap_page_attrs(pdev, dma->addr, dma->size,
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> index 4c6060d54fbed..efd766aa43a02 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-> @@ -1666,6 +1666,13 @@ static void mlx5e_free_icosq(struct mlx5e_icosq *sq)
->  
->  void mlx5e_free_txqsq_db(struct mlx5e_txqsq *sq)
->  {
-> +	if (sq->db.tx_hdr_bufs) {
-> +		int wq_sz = mlx5_wq_cyc_get_size(&sq->wq);
-> +		int df_sz = wq_sz * MLX5_SEND_WQEBB_NUM_DS;
-> +
-> +		dma_free_coherent(sq->pdev, df_sz * MAX_TCP_HEADER,
-> +				  sq->db.tx_hdr_bufs, sq->db.tx_hdr_bufs_dma);
-> +	}
->  	kvfree(sq->db.wqe_info);
->  	kvfree(sq->db.skb_fifo.fifo);
->  	kvfree(sq->db.dma_fifo);
-> @@ -1690,6 +1697,13 @@ int mlx5e_alloc_txqsq_db(struct mlx5e_txqsq *sq, int numa)
->  		return -ENOMEM;
->  	}
->  
-> +	if (sq->pdev->dma_pmd_tx_hdrs)
-> +		sq->db.tx_hdr_bufs =
-> +			dma_alloc_coherent(sq->pdev,
-> +					   df_sz * MAX_TCP_HEADER,
-> +					   &sq->db.tx_hdr_bufs_dma,
-> +					   GFP_KERNEL | __GFP_NOWARN);
-> +
->  	sq->dma_fifo_mask = df_sz - 1;
->  
->  	sq->db.skb_fifo.pc   = &sq->skb_fifo_pc;
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-> index 0b5e600e4a6a9..3b6a7a8b0128e 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-> @@ -177,6 +177,27 @@ mlx5e_tx_get_gso_ihs(struct mlx5e_txqsq *sq, struct sk_buff *skb)
->  	return ihs;
->  }
->  
-> +static inline dma_addr_t
-> +mlx5e_tx_map_hdr(struct mlx5e_txqsq *sq, unsigned char *data, u32 len)
-> +{
-> +	dma_addr_t dma_addr;
-> +
-> +	if (sq->db.tx_hdr_bufs && len <= MAX_TCP_HEADER) {
-> +		u32 off = (sq->dma_fifo_pc & sq->dma_fifo_mask) *
-> +			  MAX_TCP_HEADER;
-> +
-> +		memcpy(sq->db.tx_hdr_bufs + off, data, len);
-> +		dma_addr = sq->db.tx_hdr_bufs_dma + off;
-> +		mlx5e_dma_push_single(sq, dma_addr, 0);
-> +		return dma_addr;
-> +	}
-> +
-> +	dma_addr = dma_map_single(sq->pdev, data, len, DMA_TO_DEVICE);
-> +	if (likely(!dma_mapping_error(sq->pdev, dma_addr)))
-> +		mlx5e_dma_push_single(sq, dma_addr, len);
-> +	return dma_addr;
-> +}
-> +
-This looks like a form of tx-copybreak.
+- On CoCo VMs it seems that the only way to opt in the IOMMU optimization is to
+  also opt in the copy avoidance which is not always desirable.
+
+- Having the pool generic opens up more visibility from the untrusted host
+  side. Having device based pools at least isolates one device's memory from
+  the rest of the system.
+
+- Also, device driver could help with provisioning just the right amount of
+  memory that is needed. And per device control also means that probably
+  you don't need to map everything RW to the IOMMU.
 
 Thanks,
 Dragos
+
+
+
+
+
