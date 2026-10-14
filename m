@@ -1,94 +1,96 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980C2568FC7
-	for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 18:15:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63F365505C2
+	for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 18:28:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.175
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792001721; cv=pass; b=TfZtnwT4R1hvDldLnqQq+v3gEQvfuOAmZ+bkT2ZCXR5Q3KcEEVAuBb2a0WYx2bb8CP9nk13dJ0pHpqDHS/oa7vCGy+mEgba20BLdv/QwvfXufWPXEZBxM35ARbe6/sMKwb3B4X61BFW4cH7KhzcRd+LssWQXMv49nDouIRNjhCY=
+	t=1792002525; cv=pass; b=AY4EwCMSpmLnhOxom0CAyEZvAyQUluWWLgkGTcSiHVfsnVGdI4gQ9yXA5yDPeDrt7Tdw2uptz9KgS+vlcV6logp8ZXL6UNsst0z4misJWIPsbrXQLFfgGef50PXboz6pOW4XOGf/Sk9ewQQtdA18LipjUFHV/p20n+4NhpJVWHs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792001721; c=relaxed/simple;
-	bh=ZDeZDQJcijxdIEcisFFhzJK1uUV77Ej4r8MxO3z/x0Y=;
+	s=arc-20240116; t=1792002525; c=relaxed/simple;
+	bh=0+JRXvl/R9u5pNiuiBxqdsVIx1pGWTS2oCduhPjMn+0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZaBmKT8Z469nXR+fPBmCK55D+Zx21+0zY4chbpGcGufGgFNC1VM1Cd3scnx6vzQtSRJUch3mK/eZjtxqezdDnhpGjG3+OtD3bZFw6mqjrlj7CblRnQIOXf8BCmLwLDvDo3mnHQRlRH0IHk4gjBSajeTUIYDSDH7lYE7I9YDphEY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=M7oLYk6e; arc=pass smtp.client-ip=209.85.214.181
+	 To:Cc:Content-Type; b=E1v+B8hAXCkm2haqcv+23xPsH7FDYTjMaeE5GekSwQNTedDvAVvazzmCE7MJbxH9aeb/Ada5TAKMU/BW3N462AGFXMM/tfL43MdAh9FczpwlhnS/hC75VDZQFk4CP/tydRWgmjz1p31TL4aqmUP+miXht2ya36OQ/xCAADtqdfE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XKUQdDFL; arc=pass smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="M7oLYk6e"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2e8623790f8so247815ad.0
-        for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 11:15:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792001719; cv=none;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XKUQdDFL"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2db33db4de9so249345ad.0
+        for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 11:28:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792002522; cv=none;
         d=google.com; s=arc-20260327;
-        b=YvZWoZIMScBkGdScelcZk6Qr7mx8i9On35YnSyUL8FHHxIY+9Xd/gkd4mt14Ulzbll
-         dCJWydaGO7XRJQk8FQBOTie4/sRAfBcJp5kkPF6PuiNLlRJBTM7ahI9tgyk5lgF9yllj
-         pXG6dQ540KXf5OYj+zGxXGAhOsPVmbBxFownEGScLpIzSNJYnoPqGd63mNmPBAPnz7It
-         irxU5PP8e9QINzj1VDdsbpF9Z1zFlNQcnbrCoZECXer64ecRMYRYm0EJBfINsr34O8ut
-         SDmI4Mog7tN8nOyz7EzvkSKFjvx8raDhJWv4Z3rlOnbVJqx1+zXIbZFM/+CUzt7dMfvM
-         /ceQ==
+        b=faTLD/STSGvc659hXpCmRUqXP4hmZzGtq/nwHg6pse7xjXNC5ewwIxP+EvBc5M712V
+         N+htq2F08GSXe7ZdS0tWopInRyBijUrT3Wmk22F80AhFwclzHRNy/9CxgioQyG8D1Ajb
+         BfS9SShDyBIpUl/DqYx5E/TdFs7qN0RhTRp0I2XQ7qthn4/M61r+UKF5Y+qqJirab26r
+         QzBnheGW6JMrpJHy8KxLx3CNwbvq1796LtNcyzUWlY/6KuYVGxTTMCb9VGzglsnq/0qc
+         Nqm5EgKRsdOKqKEhVv8pjfmFQO636hVpFcJEjASmnnqwggiUPabQSb6kLpbabHPfcRn8
+         hxEg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=ukWxxq7IJoiKFikFQrOXvwgn9jZTFnVv2R6ijBLFQBc=;
-        fh=TOH0RSw3b3KYqw6amCFpnNF42QlG4IULyRLM+/rgzhs=;
-        b=ZlQ38FOQemcbOD+4sKXC0AizU8t0nnXt6Xw2JifBpFpM/ojtLzrnW1UogO4p1Vc3fY
-         5oUmcNyWX+CBjIYskBigRmZQjBQRl7/LwXWesGqXgRorCVaOxg2TNdSFX8gllvfhmal4
-         5aPkRxmb06xY0ScuIS2pKIr6tDqNePu0ocmJQenNcdJR65WjMPH/fGElF2/OwNKvm66A
-         VjjIyVDCSqMKEdFECgrZjWjOWSClznTNKdAeIW35aRXavdxvEuuFwEzhzszgH4Z+dLuP
-         DcpXZQ7yH81v7fIrsrx1AOLRHS2M+OpD0SfipTexXtBhchxqF6yH3giJMr/0DWtxYLwE
-         xrKA==;
+        bh=0+JRXvl/R9u5pNiuiBxqdsVIx1pGWTS2oCduhPjMn+0=;
+        fh=GRlZT0liX8h3Boz8kfpYTgcsurJ01mY8kR/PkY6DfYs=;
+        b=s6tJRLl5eZW2fIR0FVH/z5reMvxsca7nT9Ecf8Q+y+0OeM7/mbjs6tXFNYfMZK8OJn
+         wJwpfppn976L441uyYaFXGPtP5p2UjLaK3TairCH9Gdm4kL/O/Uo8/SQIJHWl/pJ4Uau
+         LnsrKNH/Pjt6Hty4ojEVP9YPD9uU3CaIigL/Zs9r3FVmbU3nSWuV/9WSxE6utv0II2OW
+         PVxowRpGm44hW/GykaZZ7fsB+BuMNcCFFPVABmKoEfA+1KQCWncZVOM/UNzQB+TfF3Nl
+         6dj2/ip57KbUzgKAHQPJyL7iQjCoAaj1CCl7bfBxh0bJxZaXdH8VqIJmv4WV4J9n3KVC
+         GqSQ==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792001719; x=1792606519; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1792002522; x=1792607322; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=ukWxxq7IJoiKFikFQrOXvwgn9jZTFnVv2R6ijBLFQBc=;
-        b=M7oLYk6eIJGZ5/iBSgm9STMoCE1bHjlRYRBi1vofgBwsASzFpRaEHa830Cocltc/gV
-         F/qhAhdl/ukTyPuvfuWVN4iTipxysjhjSk7jaSwL8cmSwQyJBx7o+jhAdhwPzjBg1RRU
-         1dC7W/YBH0ehTMIN8hMsuxVZ0KdNCn/epyJ2P/tbjNAh1XwLmd87scZH2xETxFLG27dB
-         W5Cn4lQVQ0jKjf0FdEeP9Xnse4GIuimhjG5eGCy/5vkqEnKpFaaBLjDCBB8ZngBxVFkF
-         Wgko2oEbFQjO6jRS4K3jfkK4KDXwKo8CyUkI96e8LLGo+QQe59Dwo2JhkdaEWuWICv0J
-         qdkw==
+        bh=0+JRXvl/R9u5pNiuiBxqdsVIx1pGWTS2oCduhPjMn+0=;
+        b=XKUQdDFL6+r/EppmAGWbckBkYphrqgxbA/KutD01423is/o/KEG92dsYK0esacD32r
+         5fhNrE7wF8/+WziP14kSSLtjjSM4bimWAaP58XVv8Bri69MCTodylA0ooKJjnfgUnAIC
+         t86DM4S1HnM++RocINvqiWbsbRp/Mzwch7d00jY1oeWuKE/sKxdyKVA3LwD4GPdJQoJ9
+         fuaYMMOE8+8OCDtPovdKkzvbFwktK0rTuVGRhWdWp6gAs11E5ROPn3I/LsvnlZgfwOZL
+         MqzZcMF8xi69PBckOtZw4qK5ErOLW0bCABmmPVG8jJxzVJVN+Cpg7j5lfsm2FmGY1NJg
+         cguQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792001719; x=1792606519;
+        d=1e100.net; s=20260707; t=1792002522; x=1792607322;
         h=content-transfer-encoding:content-type:cc:to:subject:message-id
          :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ukWxxq7IJoiKFikFQrOXvwgn9jZTFnVv2R6ijBLFQBc=;
-        b=Nv0P7uYaU36RBGRZAqysAru6fAmLgozbH0Yyb9oOsaPU76a+obhuITGJdJFchKyTe7
-         /WAjO+ETLXeQbbRTxdNxotKgEM93d8HOvs/t1UcLwOCfHSkc9F1idUHSxNg7be2Ed2bK
-         HXfU7bvVlsgxprrZGoA8O48sPRl1AwLBJGnnj4ea9HYIiD+JMAv48nW5f2hKPAASw85P
-         1XZ2M59zJt+5b8jytBjroFvgVOeM7XY0uz3j1ay7jzP8ZsMUPEOIQOaeCD1oh3i/15fV
-         sbe1qDLg6d9Yz+SiBn/6ttmqzscx2EZjRsmGgW2C/7kgwk5e892XxnLMF8BGUCykynFF
-         nhVg==
-X-Forwarded-Encrypted: i=1; AKwUvByzdW4COtlWFDs5am/O5vtWmxzzxgO+9ex1DJZqxUGHFM5t8qc+/HNlXQR+2XeBhfp4jMCeOw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKGPMp8OfAkOQYwKfy0QGQdNSy8Z8LfUX3Vjx3d+NqzxNydipYg
-	pR/LinNrup2300G1IvJS0HI5uba3ZQOq14hnn12MeFfPWM+xjuMvxmeXq9LKUcGHkWSHG2gB07c
-	V+AzCHPwkPhYz0pIxsDP+hISaqpFREJEgcgdHD/9F
-X-Gm-Gg: AYBFou36e1JtMZvUTsNl3Brig83tEpU/zyV8Gc5x4CMFMxhSiq7GAZ3gCWxZcmWuDvD
-	mgnnA7DNOcSPTn0ewnRlxJzRkGPwrGGq1aYLk5JygOVeIRD7V3I8NcCJvMdgg48MmBOuU0gzybF
-	IS7y5SPO6WrbW828bArXaVCl3KK2rs1Gr3s1rhedm9xvbRKfXUU65VUe2i/UfcW28iOvMvImz0F
-	bh0uQKx/XZGHR9kEbXvrE8BqbVIM2hinsQDByifmWf1G8djvE1I7IFWfzDsPXXgvATX4PoMyvkw
-	pag1fXGMEaWs+PWx6ZlJRpFX221Cumpaphe+JXf492Zxg5feduVkOsuX
-X-Received: by 2002:a17:902:ec86:b0:2e6:1013:ad57 with SMTP id
- d9443c01a7336-2e939d090a3mr4279565ad.12.1792001718105; Wed, 14 Oct 2026
- 11:15:18 -0700 (PDT)
+        bh=0+JRXvl/R9u5pNiuiBxqdsVIx1pGWTS2oCduhPjMn+0=;
+        b=uPY2bwg6yCFKZMi4Dx3x8WplR6KUKuQlVaIS+KjZz6hCXoUTV/kCB/iTSNQkGIh3qX
+         rqWtzQyC7iTpJan+WNuFbqlZciMFRsg0LktM+oKuLbuZD5PZ+PvkROBkUdaa5K+8SXc3
+         z9UIj+KV4fG6C1qbhcVHEkIL/UdXJelFA/1cUY/ln3Kd9Au640JLOzW9DH2VVjx7J3YH
+         UgtBH499Qa2wENpST21/M/PNez+CXOYDU56rGEW5ez1LJ38yg7xCj5qSV1YqFuuCJcXs
+         fEfZvctrv1oPCeojg6tppk3Am31kSNNkcdqNA3e43S6o1ILEF5eOZC2iAPmlRlzlLGVa
+         SU2w==
+X-Forwarded-Encrypted: i=1; AKwUvBxjWwJwVTe/nx3OOUaZ8UUxIkX0J9JbTrVgjOuOt8v88IZ6zX56Uz9Tf1ZzU6vMmcl2BAqh6w==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLIouh2QtLAOaBKQtrqairLRMN74qrb2y5Sa/GDC+cOhinKGiN6
+	xnxTd8wa2PrveePWnXxlRaUMQ17rQh32Hh3k/ahEP0uvFu92zPbFT8LRuIslb2MvYCTbHGjIs7u
+	LXItIVMf/JnNV2jdBY+9HkCnDH/1+fZt7PbODsEOQ
+X-Gm-Gg: AYBFou2J2C7mbBoWyaPwQZZuSmWoLtDMfoZ9BWRk5VUYEnNNgMIADcho5XqRYgYSpcF
+	m4ZOLk44kPFO7oCa6Cu46giih9lMsgCmWd5zuJfD8Ywm1jL4oqJfNY+hUtfbtAmME+RWl5MpI5r
+	RVyEIbBqi7QpBtu0eCRGfr+7mcvloB+kzp+Hd8UEmB5SB/bDijFqg2kaUxFM1N/Zsy4yNJDhiWD
+	/ULW1XWfzdBio9vPp+DsaRfpv0YD4PC4BcyyWx+NG8jZA36RELmqcVO7IITEz76DVnqyeS9ercQ
+	HRyiVbKHaT6vjv7zlwHCUkf8zyncA1zDNpfbqsX9sBdw0U4F2uv3MVXk
+X-Received: by 2002:a17:902:e944:b0:2e5:4604:c37a with SMTP id
+ d9443c01a7336-2e87e303708mr18554105ad.18.1792002521805; Wed, 14 Oct 2026
+ 11:28:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20261003212241.3432303-1-lrizzo@google.com> <8584c31e-fd93-4f1a-9929-e71c5d9ccd0f@nvidia.com>
-In-Reply-To: <8584c31e-fd93-4f1a-9929-e71c5d9ccd0f@nvidia.com>
+References: <20261003212241.3432303-1-lrizzo@google.com> <20261003212241.3432303-20-lrizzo@google.com>
+ <52a702a4-14eb-4617-bd29-e3140fd36780@nvidia.com> <afff5a1f-000a-4216-b4df-dd3d0406047c@nvidia.com>
+In-Reply-To: <afff5a1f-000a-4216-b4df-dd3d0406047c@nvidia.com>
 From: Luigi Rizzo <lrizzo@google.com>
-Date: Wed, 14 Oct 2026 20:14:41 +0200
-X-Gm-Features: AclHuK9G3FSCwwu9o-cWYwZA7nUn_K71LEEmvdGinw_0nCstr-Fs63NFljz-hj0
-Message-ID: <CAMOZA0JiGhVmc0PXajBzha3cBY-sdc3pz8eLCCbt6=hmsEh65Q@mail.gmail.com>
-Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+Date: Wed, 14 Oct 2026 20:28:05 +0200
+X-Gm-Features: AclHuK-6TbXuD5dQp6Q_-RxWjRRPPqkpIpvGcrKlslQ4aEjsOkMcO7VIrHzh1iI
+Message-ID: <CAMOZA0K4ZV53pE41AKoKz1g2wz3YENBz=HVoXng=RZbGyN3ssg@mail.gmail.com>
+Subject: Re: [RFC: DMA_PMD 19/22] net/mlx5e: Use DMA_PMD memory for tx header
+ bounce buffers
 To: Dragos Tatulea <dtatulea@nvidia.com>
 Cc: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
@@ -110,55 +112,41 @@ Cc: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Oct 14, 2026 at 7:28=E2=80=AFPM Dragos Tatulea <dtatulea@nvidia.com=
+On Wed, Oct 14, 2026 at 7:51=E2=80=AFPM Dragos Tatulea <dtatulea@nvidia.com=
 > wrote:
 >
-> Hi Luigi,
->
-> On 03.10.26 23:22, Luigi Rizzo wrote:
-> > Here is a subsystem called DMA_PMD on which I would like feedback on
-...
->
-> Thanks for the RFC. Here are my notes (some points rephrase what was alre=
-ady
-> said):
->
-> - On CoCo VMs it seems that the only way to opt in the IOMMU optimization=
- is to
->   also opt in the copy avoidance which is not always desirable.
->
-> - Having the pool generic opens up more visibility from the untrusted hos=
-t
->   side. Having device based pools at least isolates one device's memory f=
-rom
->   the rest of the system.
->
-> - Also, device driver could help with provisioning just the right amount =
-of
->   memory that is needed. And per device control also means that probably
->   you don't need to map everything RW to the IOMMU.
 
-Yes on all three. I am looking into providing more knobs for different leve=
-ls
-of opt-in and isolation, so users may adjust them according to the
-threat models and performance goals.
+> > On 03.10.26 23:22, Luigi Rizzo wrote:
 
-I am not especially worried about provisioning because the system is
-already reasonably adaptive, and leveraging existing caches, the waste
-the waste due to allocating 2MB units can be kept relatively small.
+> > Why are only headers considered for bouncing? Because they have the
+> > highest mapping overhead?
+>
+> I meant to say headers and small packets.
 
-As an example, the update I am working on has the following:
-- a lean per-cpu cache that can be attached on top of a dma_pmd_pool,
-  similar to the one used by the buddy allocator. The dma_pmd_pool will hol=
-d
-  the 2MB pages, and the caches can buffer smaller sets, reducing the waste=
-.
-  Useful on the tx side.
-- on the receive side, one dma_pmd_pool per device will feed all
-  pagepools for that device (typically one per queue).
-  The pagepool is already a pretty good cache that does not
-  access the allocator often, so once again the waste due to
-  partially used pages is minimized.
+Headers have a high cost for the map/unmap (especially in strict iommu mode=
+),
+and also cause significant IOTLB thrashing, because they come from skb_head
+that is not pre-mapped. The impact of IOTLB thrashing depends on
+the hardware and load but they consume one IOTLB entry per packet with
+almost non-existent recycling.
+
+In the following version I have modified the slub and skb allocator to
+feed skb head from DMA_PMD memory, which removes the need
+for header bounce buffers. It is a compromise (the skb head includes
+skb_shinfo, which we may not always want to expose to the device),
+but gives an option to those who want it, and in that case drivers
+that use pagepool can get all the benefits of DMA_PMD with zero
+modifications.
+
+> > Note that TSO/GSO packets will copy the header inline in the WQE
+> > already. But not for small packets.
+
+Yes additional bounce buffers are not needed on hardware that are
+essentially using the WQE as a bounce buffer. I'll double check the patch
+(mechanically generated).
+
+Small packets should not be too problematic, as long as they come from
+fragments allocated during the copy_from_user.
 
 cheers
 luigi
