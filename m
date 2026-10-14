@@ -1,293 +1,134 @@
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A54495012A3
-	for <iommu@lists.linux.dev>; Wed, 14 Oct 2026 14:11:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1CAB37F72F;
+	Wed, 14 Oct 2026 14:50:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791987123; cv=none; b=S6KnI53Qr6egpY+E69lIEk4MLbndbcSM8Sj/FvS/U9CV4fmTljDvDC8IK8b8LVaLZsh/TvYQ6f6T4g16JGIH1R8xdSPXipbafyq+/mZckGCT9dccmfIZQM+5mXIFMnNECnh7GyKDKaqTJ3N/VNQO3BxF3SEB0+cVE1yOk58BO2Q=
+	t=1791989418; cv=none; b=eOqd3MOlc+Sex+kJWFgbT6lrHUSGMG2W0jIQ+XRfi+s+UaJXL9/CTeJHM23J/SrArpd6RRb0/sirwqxSYOp03l25Gn0ysqSMV8weqz1ukr8ZbFXf6qxu1Zr+C9m2LbZWfoDHLZdKUZfePbl8OiEtVSaLeULK1bwpNEMsPKyEPSk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791987123; c=relaxed/simple;
-	bh=vV6x6FIV2yGpHHj8sdpOHduIEMQvL67Zrz9bs0s+o9I=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=lgY2qjS5yBfha6ryUEBqo0xdCZvh2mrG2C13y8WDvSCqqgb9po5+LnYbnwqj1IQwxGKEidDmQG7c43L1vuhWpEbhs/nueHI6n7WnfyDwQFLSpmttU4+jxnZPxDBkB3o8tHApv/ZAxGrZKBlJdlOyPkzLTwbdPASqJGVvRPsoiac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=i/Xv+I2i; arc=none smtp.client-ip=115.124.30.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1791989418; c=relaxed/simple;
+	bh=1ZGFJL3aWBxdpm2daJRhOsohwWnF9u/jnnIW8uUSFdI=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=XBIeaKuEJ5ed0tp3tPqnmwHoae2MxjP+LJ1lZqf43Y9y0N9GBiUK5+iapYakOZSR9ol1doqJPyQ8euaSj4xZTIKWibL6+RcDiKQY0DldxoA+mjfXERKbj1h/jW2xyip/xdFk4r2iyLviIf8GF5UhHNCNnkwmM+KDKhniyTMY3xo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BM+UwMfH; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="i/Xv+I2i"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1791987102; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=3BDA8tuxbUYruftXQKUiM6Q2zzcDlFfuoJXp/9UZKuI=;
-	b=i/Xv+I2irvZwMCd60DUiyuspnnbqhXjAceG0jZbG+5fS56jyC7k1sg9BN0Xgmkd3BGkF+Xkr9MSejCdUChc9DnNeD76e4XaH9lzB7WphHkTtzs7e/eeNPr9LrL2/Yisf7870tbfpudGgBCiJT2ipj2JHqV4so3IQe6S4TDhr+mQ=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0XCp410e_1791987099;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XCp410e_1791987099 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 14 Oct 2026 22:11:40 +0800
-From: fangyu.yu@linux.alibaba.com
-To: tomasz.jeznach@linux.dev,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	pjw@kernel.org,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	jroedel@suse.de,
-	zong.li@sifive.com,
-	andrew.jones@oss.qualcomm.com,
-	jgg@nvidia.com,
-	jgg@ziepe.ca,
-	gsh517025@gmail.com
-Cc: fangyu.yu@linux.alibaba.com,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	kvm-riscv@lists.infradead.org
-Subject: [RFC PATCH v2 4/4] iommu/riscv: Support IRQ forwarding without MSI page tables
-Date: Wed, 14 Oct 2026 22:11:24 +0800
-Message-Id: <20261014141124.48569-5-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20261014141124.48569-1-fangyu.yu@linux.alibaba.com>
-References: <20261014141124.48569-1-fangyu.yu@linux.alibaba.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BM+UwMfH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0002F1F000C4;
+	Wed, 14 Oct 2026 14:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1791989414;
+	bh=NdWDzbW7Y26htAfpjZvTCflFdSCpG0s8lhU2ZneTFLQ=;
+	h=Date:From:To:Cc:In-Reply-To:References:Subject;
+	b=BM+UwMfHAZjW9N+hXqGXqJO9+J70Tu+8At5e5U9AabuLJPkoU+OY5Q1tGeuDSRar7
+	 h+ueY9Vo+zchRUUDgnBlJpJjetO+qPXf++oPOSRIyP/PLLyvuOMCgyJOlm++Hbpw60
+	 91hK/nZUCLHOb407EzR1u0TPmbD+57P+JLtsy0JLqNWJLg6hPEMYNaJhx/1+SxKz0d
+	 SO9dytJU49vKpXLjbMQzrDTGL+wUdcHlbtIZVVNCRud1aDPerhS0f2Ud7adqwIcLSQ
+	 +H4U30KC2ow3o0gXS5ee0f1ShRWTDgZpMUZXwUlPNsa0ImzI79zjWNk1pRc+3suPXr
+	 gOVfAi3aygJUg==
+Received: from stl-compute-04.internal (stl-compute-04.internal [10.204.2.64])
+	by mailfauth.stl.internal (Postfix) with ESMTP id 04A4D780043;
+	Wed, 14 Oct 2026 10:50:12 -0400 (EDT)
+Received: from stl-imap-11 ([10.204.2.102])
+  by stl-compute-04.internal (MEProxy); Wed, 14 Oct 2026 10:50:13 -0400
+X-ME-Sender: <xms:pJbParDoKmXnnnpeCXDM-T7ZQy3mvEAFl8leKVWTW8fxLoSHruK5UQ>
+    <xme:pJbPasUGIp5Y-WerYrbOqfCqOomhS8YNkL3QSuUtKHjrt1PtIhP5Tu_WX_moXYsdi
+    sbHexPhmB_BmED0e-qA-2512EZv-PGP1oM7DEoJZYvBXbW1hOGKzMw>
+X-ME-Proxy-Cause: dmFkZTEBp4CSFP+oEygyR/ha7jJPYfJMSPM5LgWWD6WbfqNZUsOvuFcngQ6E2/sdCMTQyy
+    HijyMuq/lh8owh49Uvpdcd1Ra8UygobWNKOnsEZkYTkmkHBveua5QlCVL0sCLNdxkZT+w3
+    DLhzUNIRhU4ZpiQON0x0kMLOeVf1NUWdQo8JyVcvXXYMchFoGUAJI+xNE/ThwwUpa6FP20
+    cODEKLQFrG3geSG9+uwSFuaKXh/2ud2Hqj5zJA8H7nV9YIwFspm4XSoh0NWLuXc9SN7nF+
+    M0GU0dQmTpL8asKz2BQ4XwgO2/Sbpm/VnJLXVHzZvHTjDZHcObiXGKyIKkXuB2XL3tAzYg
+    g5OGTBD8KSmGCXSDu0gnl3UHb3Lp0SpglQkUX+piCkkNEgINFXYTsBjDIeCtd2BdV9QJQ3
+    mTfP+iSHHMJzo+KhWjJukhVQ8api1RFiaA7pywTevfwudi7iFEWHwbF3fD5qNbbxrYH6AU
+    uYTVm5lCHKo9KUELmKH5bJ67yzCta8QTOKdU30qDP+TjTRIjQ+yKitK4LMuJrfSdbT2I9F
+    XD2Zr3H2f1O2VvIbU3//Z6dHBXNQw8Z3KtlE1yB8wGuWJDbUxnRMiVGCy3EYOa2136W6Bm
+    7OdRD5lAU7SoYDdBdbK4z9I3J6kegvsNGaHYnREsjFZCq7Mj6bavvPFXsDFw
+X-ME-Proxy: <xmx:pJbPansXMvJtbNWVaV-mNd-qlczn-gGt_SH9XPSu00VX_1SCUwMIlg>
+    <xmx:pJbPavaCY2nnNd54zW53nb1b3n4NiW-6Jz-Ae3Sgp4IwUoSeeyOUxQ>
+    <xmx:pJbPahNykOFC4DtN7tXyMI1gDyWwjUYT8QfRvRRh_Su1dkRJTn2MGA>
+    <xmx:pJbPakut9LU5_6VoGmrV77P8-_f8MaRAa1YriFmU-18E2Z6zPqispA>
+    <xmx:pJbPapJayEVieuXZFLVJRdxfrNSvTiCPGOlJqmlWP5cgxmEZki4NOH5n>
+Feedback-ID: i927946fb:Fastmail
+Received: by mailuser.stl.internal (Postfix, from userid 501)
+	id 90E9119C0067; Wed, 14 Oct 2026 10:50:12 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Date: Wed, 14 Oct 2026 17:49:53 +0300
+From: "Leon Romanovsky" <leon@kernel.org>
+To: "Bjorn Helgaas" <helgaas@kernel.org>
+Cc: "Bjorn Helgaas" <bhelgaas@google.com>,
+ "Logan Gunthorpe" <logang@deltatee.com>,
+ "Jason Gunthorpe" <jgg@ziepe.ca>, "Joerg Roedel" <joro@8bytes.org>,
+ "Will Deacon" <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+ "Tushar Dave" <tdave@nvidia.com>, linux-media@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+ linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+ "Chaitanya Kulkarni" <kch@nvidia.com>,
+ "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+ "Jens Axboe" <axboe@kernel.dk>, "Alex Williamson" <alex@shazbot.org>,
+ "Ankit Agrawal" <ankita@nvidia.com>, "Jonathan Corbet" <corbet@lwn.net>,
+ "Shuah Khan" <skhan@linuxfoundation.org>,
+ "Randy Dunlap" <rdunlap@infradead.org>,
+ "Sumit Semwal" <sumit.semwal@linaro.org>
+Message-Id: <eb8e0edd-4c4d-402e-9875-bdbc6d191edf@app.fastmail.com>
+In-Reply-To: <20261014132353.GA1625948@bhelgaas>
+References: <20261014132353.GA1625948@bhelgaas>
+Subject: Re: [PATCH v11 00/19] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-IOMMU implementations without the MSI_FLAT capability have no MSI page
-table, and their MSI writes are translated by the second-stage page
-table. Forward interrupts there by mapping the guest IMSIC GPA to the
-host IMSIC HPA in the second-stage domain, so device MSI writes reach
-the vCPU's interrupt file directly.
 
-Dispatch on the IOMMU capabilities in the IRQ forwarding entry: with
-MSI_FLAT nothing changes; without it, validate that every target is an
-IMSIC page in the guest MSI address window, install the GPA mappings,
-and replace the leaf PTE via the generic page table replace_leaf op
-when a vCPU migration moves the VS-file host page. Mappings persist
-for the lifetime of the domain; disabling forwarding or a failed
-operation only drops the per-IRQ state so the IRQ falls back to host
-delivery.
+On Wed, Oct 14, 2026, at 16:23, Bjorn Helgaas wrote:
+> On Wed, Oct 14, 2026 at 09:53:47AM +0300, Leon Romanovsky wrote:
+>> On Tue, Oct 13, 2026 at 05:25:08PM +0300, Leon Romanovsky wrote:
+>> > PCI P2PDMA applies Request and Completion Redirect throughout both paths.
+>> > This misclassifies asymmetric and nested switches, and reports one answer
+>> > for every kind of TLP.
+>> > 
+>> > Three ACS controls act on TLP attributes the Requester chooses rather
+>> > than on the topology: Translation Blocking and Direct Translated P2P act on
+>> > a Request's Address Type, and Completion Redirect skips Completions carrying
+>> > Relaxed Ordering.
+>> > 
+>> > Evaluate each direction at the path divergence, decide every class from the
+>> > one walk, and treat a client with ATS enabled as translating unless its
+>> > driver declares per-mapping ATS.
+>> > 
+>> > This completes the P2PDMA side; dma-buf and mlx5 follow separately.
+>> > 
+>> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+>> > ---
+>> > Changes in v11:
+>> 
+>> 
+>> Bjorn,
+>> 
+>> Could you please save me from the AI-bot attack? Every rebase seems to
+>> uncover another bizarre pre-existing issue. It never ends.
+>
+> Can you elaborate?  I'm not sure what you'd like me to do here.  I
+> don't control the Sashiko reviews, and I thought Sashiko was recently
+> changed to put pre-existing issues in a database but not in the email
+> responses.
 
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
----
- drivers/iommu/riscv/iommu-ir.c | 156 ++++++++++++++++++++++++++++++++-
- 1 file changed, 153 insertions(+), 3 deletions(-)
+AI reviews are not deterministic and every resubmission gives us slightly different result, which is in this phase of submission is  full of hallucinated flows not applicable to the upstream.
 
-diff --git a/drivers/iommu/riscv/iommu-ir.c b/drivers/iommu/riscv/iommu-ir.c
-index b96baff9986d..bc474e44805d 100644
---- a/drivers/iommu/riscv/iommu-ir.c
-+++ b/drivers/iommu/riscv/iommu-ir.c
-@@ -271,14 +271,159 @@ static int riscv_iommu_ir_update_target(struct riscv_iommu_msi_table *msi_table,
- 	return 0;
- }
- 
--static int riscv_iommu_ir_irq_set_vcpu_affinity_locked(struct irq_data *data,
-+static int riscv_iommu_ir_validate_noflat_target(const struct riscv_iommu_ir_vcpu_info *vcpu_info,
-+						 const struct riscv_iommu_ir_target *target)
-+{
-+	u64 addr = target->gpa >> IMSIC_MMIO_PAGE_SHIFT;
-+
-+	if (!IS_ALIGNED(target->gpa, IMSIC_MMIO_PAGE_SZ) ||
-+	    (addr & ~vcpu_info->msi_addr_mask) != vcpu_info->msi_addr_pattern)
-+		return -EINVAL;
-+
-+	/* Without MSI_FLAT there is no MSI page table, so only IMSIC targets work. */
-+	if (target->type != RISCV_IOMMU_IR_TARGET_IMSIC)
-+		return -EOPNOTSUPP;
-+
-+	if (!IS_ALIGNED(target->hpa, IMSIC_MMIO_PAGE_SZ))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+/* Caller must hold msi_table->lock. */
-+static int riscv_iommu_ir_map_guest_imsic(struct riscv_iommu_msi_table *msi_table,
-+					  const struct riscv_iommu_ir_target *target)
-+{
-+	unsigned long index = target->gpa >> IMSIC_MMIO_PAGE_SHIFT;
-+	struct riscv_iommu_noflat_imsic *imsic;
-+	int ret;
-+
-+	imsic = xa_load(&msi_table->noflat_imsics, index);
-+	if (imsic) {
-+		if (imsic->hpa == target->hpa)
-+			return 0;
-+
-+		ret = riscv_iommu_msi_table_replace_gpa(msi_table, target->gpa,
-+							imsic->hpa, target->hpa);
-+		if (ret)
-+			return ret;
-+	} else {
-+		imsic = kzalloc_obj(*imsic, GFP_ATOMIC);
-+		if (!imsic)
-+			return -ENOMEM;
-+
-+		ret = xa_err(xa_store(&msi_table->noflat_imsics, index, imsic,
-+				      GFP_ATOMIC));
-+		if (ret) {
-+			kfree(imsic);
-+			return ret;
-+		}
-+
-+		ret = riscv_iommu_msi_table_map_gpa(msi_table, target->gpa, target->hpa);
-+		if (ret) {
-+			xa_erase(&msi_table->noflat_imsics, index);
-+			kfree(imsic);
-+			return ret;
-+		}
-+	}
-+
-+	imsic->hpa = target->hpa;
-+	riscv_iommu_msi_table_inval(msi_table, target->gpa);
-+	return 0;
-+}
-+
-+static int riscv_iommu_ir_activate_noflat(struct riscv_iommu_msi_table *msi_table,
-+					  struct riscv_iommu_ir_vcpu_info *vcpu_info)
-+{
-+	int ret;
-+
-+	ret = riscv_iommu_ir_validate_vcpu_info(vcpu_info);
-+	if (ret)
-+		return ret;
-+
-+	if (!vcpu_info->targets || !vcpu_info->nr_targets)
-+		return -EINVAL;
-+
-+	for (unsigned int i = 0; i < vcpu_info->nr_targets; i++) {
-+		ret = riscv_iommu_ir_validate_noflat_target(vcpu_info, &vcpu_info->targets[i]);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	for (unsigned int i = 0; i < vcpu_info->nr_targets; i++) {
-+		ret = riscv_iommu_ir_map_guest_imsic(msi_table, &vcpu_info->targets[i]);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int riscv_iommu_ir_update_target_noflat(struct riscv_iommu_msi_table *msi_table,
-+					       struct riscv_iommu_ir_vcpu_info *vcpu_info)
-+{
-+	const struct riscv_iommu_ir_target *target = &vcpu_info->target;
-+	int ret;
-+
-+	ret = riscv_iommu_ir_validate_vcpu_info(vcpu_info);
-+	if (ret)
-+		return ret;
-+
-+	ret = riscv_iommu_ir_validate_noflat_target(vcpu_info, target);
-+	if (ret)
-+		return ret;
-+
-+	if (!xa_load(&msi_table->noflat_imsics, target->gpa >> IMSIC_MMIO_PAGE_SHIFT))
-+		return -EINVAL;
-+
-+	return riscv_iommu_ir_map_guest_imsic(msi_table, target);
-+}
-+
-+static int riscv_iommu_ir_irq_set_vcpu_affinity_noflat(struct irq_data *data,
- 						       struct riscv_iommu_info *info,
- 						       struct riscv_iommu_ir_vcpu_info *vcpu_info,
- 						       struct riscv_iommu_msi_table *msi_table)
-+{
-+	int ret;
-+
-+	if (!vcpu_info) {
-+		/* Mappings persist; only the per-IRQ forwarding state is dropped. */
-+		if (irqd_is_forwarded_to_vcpu(data)) {
-+			irqd_clr_forwarded_to_vcpu(data);
-+			info->nr_forwarded_irqs--;
-+		}
-+		return 0;
-+	}
-+
-+	ret = vcpu_info->cmd == RISCV_IOMMU_IR_FORWARD ?
-+		riscv_iommu_ir_activate_noflat(msi_table, vcpu_info) :
-+		riscv_iommu_ir_update_target_noflat(msi_table, vcpu_info);
-+	if (!ret) {
-+		if (!irqd_is_forwarded_to_vcpu(data)) {
-+			irqd_set_forwarded_to_vcpu(data);
-+			info->nr_forwarded_irqs++;
-+		}
-+	} else if (irqd_is_forwarded_to_vcpu(data)) {
-+		irqd_clr_forwarded_to_vcpu(data);
-+		info->nr_forwarded_irqs--;
-+	}
-+
-+	return ret;
-+}
-+
-+static int riscv_iommu_ir_irq_set_vcpu_affinity_locked(struct irq_data *data,
-+						       struct riscv_iommu_info *info,
-+						       struct riscv_iommu_ir_vcpu_info *vcpu_info,
-+						       struct riscv_iommu_msi_table *msi_table,
-+						       bool noflat)
- {
- 	struct riscv_iommu_device *iommu = data->domain->host_data;
- 	int ret;
- 
-+	if (noflat)
-+		return riscv_iommu_ir_irq_set_vcpu_affinity_noflat(data, info,
-+								    vcpu_info, msi_table);
-+
- 	if (!vcpu_info) {
- 		if (WARN_ON_ONCE(!msi_table->nr_forwarded_irqs || !info->nr_forwarded_irqs))
- 			return -EINVAL;
-@@ -332,10 +477,12 @@ static int riscv_iommu_ir_irq_set_vcpu_affinity_locked(struct irq_data *data,
- static int riscv_iommu_ir_irq_set_vcpu_affinity(struct irq_data *data, void *arg)
- {
- 	struct riscv_iommu_ir_vcpu_info *vcpu_info = arg;
-+	struct riscv_iommu_device *iommu = data->domain->host_data;
- 	struct riscv_iommu_msi_table *msi_table;
- 	struct riscv_iommu_info *info;
- 	struct msi_desc *desc;
- 	struct device *dev;
-+	bool noflat;
- 	int ret;
- 
- 	if (!vcpu_info && !irqd_is_forwarded_to_vcpu(data))
-@@ -354,6 +501,8 @@ static int riscv_iommu_ir_irq_set_vcpu_affinity(struct irq_data *data, void *arg
- 	if (WARN_ON_ONCE(!info))
- 		return -EINVAL;
- 
-+	noflat = !(iommu->caps & RISCV_IOMMU_CAPABILITIES_MSI_FLAT);
-+
- 	scoped_guard(rcu) {
- 		/*
- 		 * RCU keeps the table alive, but the device may switch domains before
-@@ -361,7 +510,7 @@ static int riscv_iommu_ir_irq_set_vcpu_affinity(struct irq_data *data, void *arg
- 		 */
- 		for (;;) {
- 			msi_table = riscv_iommu_msi_table_rcu(info);
--			if (!msi_table || !msi_table->root)
-+			if (!msi_table || (!noflat && !msi_table->root))
- 				return -EOPNOTSUPP;
- 
- 			raw_spin_lock(&msi_table->lock);
-@@ -371,7 +520,8 @@ static int riscv_iommu_ir_irq_set_vcpu_affinity(struct irq_data *data, void *arg
- 		}
- 	}
- 
--	ret = riscv_iommu_ir_irq_set_vcpu_affinity_locked(data, info, vcpu_info, msi_table);
-+	ret = riscv_iommu_ir_irq_set_vcpu_affinity_locked(data, info, vcpu_info,
-+							  msi_table, noflat);
- 	raw_spin_unlock(&msi_table->lock);
- 
- 	return ret;
--- 
-2.50.1
+In addition to upstream Sashiko, i run everything through local one with slightly better models which hallucinating even more.
 
+I would ask you to merge the series so it gets real exposure in addition to my kunit and specific hw setup.
+
+Thanks 
+
+>
+> Bjorn
