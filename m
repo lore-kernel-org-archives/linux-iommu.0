@@ -1,33 +1,33 @@
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C16B49C4BC
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 06:52:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=160.30.148.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9692C4A2A72
+	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 06:53:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=183.62.165.209
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792047182; cv=none; b=fUTpyI/sfLd1xcRgqXS5pq9M7Rkt6Cva/OzDu0g06uCd0PwishEua1whNQPlihLAwgnYD1mRvV6P5qsH5PT2yJsLwhqcawHOrZ3ntPEnEBFUeUoOy+HRjTIB29Z7nDMp4bpZJhCpJVF9HL+VFlgn8wm2Bs4KUIMzWFxh7ysBNMw=
+	t=1792047187; cv=none; b=AXhygyliRKga29OdYU8ohjrcnhRXlZ0F2Rne5w/hEu5xe0kjQQi2LH5x2D/vI8dbrgl/T8uENbR2sEHB6SHLJ39fATDFbq1ViDJMmxwzmCS4cSjrfNGy3R95mE8Ioc1XsJOZamzCpVDGBNQB0vovXhT1xaAGnt/vuCUC3xao6s4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792047182; c=relaxed/simple;
-	bh=KpBRoo1AGCSg/H6JDJ7ELtcRGaW7NHwEetKk7sLzBXw=;
+	s=arc-20240116; t=1792047187; c=relaxed/simple;
+	bh=bnQZBmPqb2gVIFMuYl1TCmL/8dsJ9MatQerVGaTX/Lw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pAZOWUSK0Gzk+KC8i+4NVVGuD0cCpaE2B7DTfoWJZn3fa2y+kzG467IekvbneZw4AdzadgvJIg4f7HbW6cDLdUwD+zuzuT/KZMXecFYaO2TsmGYu6IJl21YG7nJcgzfzOR2ho+vORXIYp7UGS4pPkKW39ZdJEB8ooPtYkZywZvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn; spf=pass smtp.mailfrom=sanechips.com.cn; arc=none smtp.client-ip=160.30.148.35
+	 MIME-Version; b=qqCgrv5HzT7Y+tbJ79Ns0VlanjUJlEFl74rgxcWYC1Hv4dMvI+Jzaq2FKp8FECZFgTV4lBnHjMMQTaPpEWuNcEcE8CV3P2UgQ4xkvF1C1YLvNTd1iEhwSAO3iu5/7tRY1cPGrcPlMkUAnb2qtOVbNEc/tXutLthavQnIGTd/0tQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn; spf=pass smtp.mailfrom=sanechips.com.cn; arc=none smtp.client-ip=183.62.165.209
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
 Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4j4zKX3rJdz8Xrrd;
-	Thu, 15 Oct 2026 14:52:48 +0800 (CST)
-Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
-	by mse-fl1.zte.com.cn with SMTP id 69F6qfBb013906;
-	Thu, 15 Oct 2026 14:52:41 +0800 (+08)
+	by mxct.zte.com.cn (FangMail) with ESMTPS id 4j4zKl2GgNz5B15S;
+	Thu, 15 Oct 2026 14:52:59 +0800 (CST)
+Received: from szxlzmapp04.zte.com.cn ([10.5.231.166])
+	by mse-fl1.zte.com.cn with SMTP id 69F6qkRW013978;
+	Thu, 15 Oct 2026 14:52:46 +0800 (+08)
 	(envelope-from gong.shuai@sanechips.com.cn)
 Received: from ubuntu-35-gs (unknown [10.230.214.35])
 	by smtp (Zmail) with SMTP;
-	Thu, 15 Oct 2026 14:52:43 +0800
-X-Zmail-TransId: 3e816ad0783a024-55537
+	Thu, 15 Oct 2026 14:52:48 +0800
+X-Zmail-TransId: 3e816ad0783f024-555d7
 X-Zmail-LocalSMTP: 1
 X-Zmail-RealSender: gong.shuai@sanechips.com.cn
 From: Gong Shuai <gong.shuai@sanechips.com.cn>
@@ -49,9 +49,9 @@ Cc: Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>,
         Zhao Qingye <zhao.qingye@sanechips.com.cn>,
         Gong Shuai <gong.shuai@sanechips.com.cn>,
         Gong Shuai <gsh517025@gmail.com>
-Subject: [RFC PATCH 06/12] iommu/riscv: Add vIOMMU cache invalidation
-Date: Thu, 15 Oct 2026 14:52:26 +0800
-Message-ID: <20261015065232.604503-7-gong.shuai@sanechips.com.cn>
+Subject: [RFC PATCH 12/12] RISC-V: KVM: Forward MSIs for guests with a vIOMMU
+Date: Thu, 15 Oct 2026 14:52:32 +0800
+Message-ID: <20261015065232.604503-13-gong.shuai@sanechips.com.cn>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261015065232.604503-1-gong.shuai@sanechips.com.cn>
 References: <20261015065232.604503-1-gong.shuai@sanechips.com.cn>
@@ -63,162 +63,187 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
 Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl1.zte.com.cn 69F6qfBb013906
+X-MAIL:mse-fl1.zte.com.cn 69F6qkRW013978
 X-TLS: YES
 X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Thu, 15 Oct 2026 14:52:48 +0800
+X-SOURCE-IP: 10.5.228.132 unknown Thu, 15 Oct 2026 14:52:59 +0800
 X-CLEAN: YES
 X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AD07840.001/4j4zKX3rJdz8Xrrd
+X-Fangmail-MID-QID: 6AD0784B.001/4j4zKl2GgNz5B15S
 
-Implement cache_invalidate for the vIOMMU, which takes IOTINVAL commands
-from user space in the struct iommu_viommu_riscv_invalidate format and
-forwards them to the physical IOMMU command queue.
+The IRQ bypass names the target vCPU by matching the device MSI address
+against the guest IMSIC addresses of the vCPUs, so it only works when the
+guest programs the device with those addresses directly. A guest with a
+vIOMMU programs an address from its own IOVA space instead, which the
+IOMMU resolves through the guest stage-1 page tables before it looks the
+address up in the MSI table, so no vCPU can be named at that point.
 
-The uAPI payload is little-endian, so convert it to the native command
-words the hardware queue expects. Only IOTINVAL.VMA is accepted;
-reserved bits are rejected. The guest-owned GV, GSCID and PSCV/PSCID
-operands are replaced with the ones the host actually programs, so a
-guest cannot invalidate caches that belong to another guest.
+Falling back to host delivery is not an option either. The device would
+keep the host IMSIC address composed at vector activation, and the
+guest's own stage-1 page tables do not map it, so its MSIs fault instead
+of reaching an interrupt file.
+
+The MSI table already holds the VM-wide IMSIC topology, so the hardware
+finds the target vCPU by itself once the address is translated. Forward
+such IRQs for the whole VM and program the device with the MSI message
+composed by the guest.
+
+Such a producer can reach any vCPU of the VM, so unforward it whenever a
+VS-file is released and retarget it whenever a vCPU migrates.
 
 Co-developed-by: Wu Fei <wu.fei9@sanechips.com.cn>
 Signed-off-by: Wu Fei <wu.fei9@sanechips.com.cn>
 Signed-off-by: Gong Shuai <gong.shuai@sanechips.com.cn>
 ---
- drivers/iommu/riscv/iommu-bits.h | 13 +++++
- drivers/iommu/riscv/iommu.c      | 93 ++++++++++++++++++++++++++++++++
- 2 files changed, 106 insertions(+)
+ arch/riscv/kvm/aia_imsic.c | 67 +++++++++++++++++++++++++++-----------
+ include/linux/kvm_irqfd.h  |  2 ++
+ 2 files changed, 50 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-index 2a8230a0c1bb..68190d6cc060 100644
---- a/drivers/iommu/riscv/iommu-bits.h
-+++ b/drivers/iommu/riscv/iommu-bits.h
-@@ -486,6 +486,19 @@ struct riscv_iommu_command {
- /* dword1[61:10] is the 4K-aligned page address */
- #define RISCV_IOMMU_CMD1_IOTINVAL_ADDR		GENMASK_ULL(61, 10)
+diff --git a/arch/riscv/kvm/aia_imsic.c b/arch/riscv/kvm/aia_imsic.c
+index 010f9a90f107..862db53c66a5 100644
+--- a/arch/riscv/kvm/aia_imsic.c
++++ b/arch/riscv/kvm/aia_imsic.c
+@@ -758,7 +758,7 @@ int kvm_riscv_irqfd_unforward(struct kvm_kernel_irqfd *irqfd)
  
-+/*
-+ * All standard bits of the IOTINVAL command. The remaining bits are
-+ * reserved for future standard use, forwarding them to the physical IOMMU
-+ * may make it treat the command as illegal.
-+ */
-+#define RISCV_IOMMU_CMD0_IOTINVAL_STANDARD \
-+	(RISCV_IOMMU_CMD0_OPCODE | RISCV_IOMMU_CMD0_FUNC | \
-+	 RISCV_IOMMU_CMD0_IOTINVAL_AV | RISCV_IOMMU_CMD0_IOTINVAL_PSCID | \
-+	 RISCV_IOMMU_CMD0_IOTINVAL_PSCV | RISCV_IOMMU_CMD0_IOTINVAL_GV | \
-+	 RISCV_IOMMU_CMD0_IOTINVAL_NL | RISCV_IOMMU_CMD0_IOTINVAL_GSCID)
-+#define RISCV_IOMMU_CMD1_IOTINVAL_STANDARD \
-+	(RISCV_IOMMU_CMD1_IOTINVAL_S | RISCV_IOMMU_CMD1_IOTINVAL_ADDR)
-+
- /* 3.1.2 IOMMU Command Queue Fences */
- /* Fields on dword0 */
- #define RISCV_IOMMU_CMD_IOFENCE_OPCODE		2
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 8046cadefbd8..c34331bcd661 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -2075,8 +2075,101 @@ riscv_viommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
- 	return &nested_domain->domain;
+ 	lockdep_assert_held(&kvm->irqfds.lock);
+ 
+-	if (!irqfd->irq_bypass_vcpu)
++	if (!irqfd->irq_bypass_vcpu && !irqfd->irq_bypass_nested)
+ 		return 0;
+ 
+ 	irq_data = irq_get_irq_data(irqfd->producer->irq);
+@@ -775,6 +775,7 @@ int kvm_riscv_irqfd_unforward(struct kvm_kernel_irqfd *irqfd)
+ 		return ret;
+ 
+ 	irqfd->irq_bypass_vcpu = NULL;
++	irqfd->irq_bypass_nested = false;
+ 	return 0;
  }
  
-+/*
-+ * One invalidation command, viewed as either the little-endian uAPI
-+ * payload or the native command words.
-+ */
-+struct riscv_viommu_invalidation_cmd {
-+	union {
-+		struct riscv_iommu_command cmd;
-+		struct iommu_viommu_riscv_invalidate ucmd;
-+	};
-+};
-+
-+static int riscv_viommu_cache_invalidate(struct iommufd_viommu *viommu,
-+					 struct iommu_user_data_array *array)
-+{
-+	struct riscv_viommu *rv_viommu = container_of(viommu, struct riscv_viommu, core);
-+	struct riscv_iommu_device *iommu = rv_viommu->iommu;
-+	struct riscv_viommu_invalidation_cmd *cmds;
-+	unsigned int i = 0;
-+	int ret;
-+
-+	if (array->type != IOMMU_VIOMMU_INVALIDATE_DATA_RISCV)
-+		return -EINVAL;
-+
-+	/* entry_num==0 is the data_type support probe */
-+	if (!array->entry_num)
-+		return 0;
-+
-+	static_assert(sizeof(*cmds) == 2 * sizeof(u64));
-+
-+	cmds = kcalloc(array->entry_num, sizeof(*cmds), GFP_KERNEL);
-+	if (!cmds)
-+		return -ENOMEM;
-+
-+	ret = iommu_copy_struct_from_full_user_array(cmds, sizeof(*cmds), array,
-+						     IOMMU_VIOMMU_INVALIDATE_DATA_RISCV);
-+	if (ret)
-+		goto out_free;
-+
-+	for (i = 0; i < array->entry_num; i++) {
-+		struct riscv_iommu_command *cmd = &cmds[i].cmd;
-+		u64 opcode, func;
-+
-+		/* The uAPI payload is little-endian */
-+		cmd->dword0 = le64_to_cpu(cmds[i].ucmd.cmd[0]);
-+		cmd->dword1 = le64_to_cpu(cmds[i].ucmd.cmd[1]);
-+
-+		opcode = FIELD_GET(RISCV_IOMMU_CMD0_OPCODE, cmd->dword0);
-+		if (opcode != RISCV_IOMMU_CMD_IOTINVAL_OPCODE) {
-+			/* Only page-table cache invalidation is forwarded */
-+			ret = -EIO;
-+			goto out_free;
-+		}
-+
-+		/* Reject reserved bits instead of forwarding them to the physical IOMMU */
-+		if (cmd->dword0 & ~RISCV_IOMMU_CMD0_IOTINVAL_STANDARD ||
-+		    cmd->dword1 & ~RISCV_IOMMU_CMD1_IOTINVAL_STANDARD) {
-+			ret = -EINVAL;
-+			goto out_free;
-+		}
-+
-+		func = FIELD_GET(RISCV_IOMMU_CMD0_FUNC, cmd->dword0);
-+		if (func != RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA) {
-+			ret = -EIO;
-+			goto out_free;
-+		}
-+
-+		/*
-+		 * The guest operates in its own GSCID/PSCID namespace.
-+		 * The physical IOMMU uses the host-assigned GSCID and
-+		 * PSCID=0. Enforce both for correct cache invalidation.
-+		 */
-+		cmd->dword0 &= ~(RISCV_IOMMU_CMD0_IOTINVAL_GV |
-+				 RISCV_IOMMU_CMD0_IOTINVAL_GSCID |
-+				 RISCV_IOMMU_CMD0_IOTINVAL_PSCV |
-+				 RISCV_IOMMU_CMD0_IOTINVAL_PSCID);
-+		cmd->dword0 |= FIELD_PREP(RISCV_IOMMU_CMD0_IOTINVAL_GSCID,
-+					  rv_viommu->gscid) |
-+			       RISCV_IOMMU_CMD0_IOTINVAL_GV |
-+			       FIELD_PREP(RISCV_IOMMU_CMD0_IOTINVAL_PSCID, 0) |
-+			       RISCV_IOMMU_CMD0_IOTINVAL_PSCV;
-+
-+		riscv_iommu_cmd_send(iommu, cmd);
-+	}
-+
-+	riscv_iommu_cmd_sync(iommu, RISCV_IOMMU_IOTINVAL_TIMEOUT);
-+
-+out_free:
-+	array->entry_num = i;
-+	kfree(cmds);
-+	return ret;
-+}
-+
- static const struct iommufd_viommu_ops riscv_viommu_ops = {
- 	.alloc_domain_nested = riscv_viommu_alloc_domain_nested,
-+	.cache_invalidate = riscv_viommu_cache_invalidate,
- };
+@@ -788,7 +789,11 @@ static int imsic_vcpu_unforward(struct kvm_vcpu *vcpu)
+ 	guard(spinlock_irqsave)(&kvm->irqfds.lock);
  
- static size_t riscv_iommu_get_viommu_size(struct device *dev,
+ 	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
+-		if (irqfd->irq_bypass_vcpu != vcpu)
++		/*
++		 * Nested-forwarded producers can target any vCPU of the VM,
++		 * unforward them on any VS-file release.
++		 */
++		if (!irqfd->irq_bypass_nested && irqfd->irq_bypass_vcpu != vcpu)
+ 			continue;
+ 
+ 		ret = kvm_riscv_irqfd_unforward(irqfd);
+@@ -902,7 +907,7 @@ static int imsic_vsfile_target_replace(struct kvm_vcpu *vcpu, phys_addr_t vsfile
+ 	vcpu_info.target.type = RISCV_IOMMU_IR_TARGET_IMSIC;
+ 	vcpu_info.target.hpa = vsfile_pa;
+ 	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
+-		if (!irqfd->irq_bypass_vcpu)
++		if (!irqfd->irq_bypass_vcpu && !irqfd->irq_bypass_nested)
+ 			continue;
+ 
+ 		ret = irq_set_vcpu_affinity(irqfd->producer->irq, &vcpu_info);
+@@ -931,16 +936,10 @@ static bool imsic_targets_valid(struct kvm_aia *aia)
+ 	return true;
+ }
+ 
+-static struct kvm_vcpu *imsic_irqfd_route_vcpu(struct kvm *kvm,
+-					       struct kvm_kernel_irq_routing_entry *irq_entry)
++static struct kvm_vcpu *imsic_irqfd_route_vcpu(struct kvm *kvm, gpa_t target)
+ {
+ 	struct kvm_vcpu *vcpu;
+ 	unsigned long index;
+-	gpa_t target;
+-
+-	target = ((gpa_t)irq_entry->msi.address_hi << 32) | irq_entry->msi.address_lo;
+-	if (target & (IMSIC_MMIO_PAGE_SZ - 1))
+-		return NULL;
+ 
+ 	kvm_for_each_vcpu(index, vcpu, kvm) {
+ 		if (target == vcpu->arch.aia_context.imsic_addr)
+@@ -968,6 +967,9 @@ static int imsic_irqfd_forward(struct kvm_kernel_irqfd *irqfd,
+ 		.data = irq_entry->msi.data,
+ 	};
+ 	struct kvm_vcpu *vcpu;
++	gpa_t target, gpa;
++	unsigned int i;
++	bool nested = false;
+ 	int ret;
+ 
+ 	lockdep_assert_held(&kvm->irqfds.lock);
+@@ -988,24 +990,51 @@ static int imsic_irqfd_forward(struct kvm_kernel_irqfd *irqfd,
+ 	 * The IOMMU writes MSIs straight into the VS-file, so bypass is
+ 	 * gated by the hardware backing checks below, not the AIA mode.
+ 	 */
+-	if (!imsic_targets_valid(&kvm->arch.aia)) {
+-		pr_debug("KVM: IMSIC IRQ bypass requires all VS-files\n");
++	target = ((gpa_t)irq_entry->msi.address_hi << 32) | irq_entry->msi.address_lo;
++	if (target & (IMSIC_MMIO_PAGE_SZ - 1))
+ 		return -EOPNOTSUPP;
+-	}
+ 
+-	/* Leave guest messages that name no vIMSIC to software injection. */
+-	vcpu = imsic_irqfd_route_vcpu(kvm, irq_entry);
+-	if (!vcpu)
+-		return -EOPNOTSUPP;
++	vcpu = imsic_irqfd_route_vcpu(kvm, target);
++	if (vcpu) {
++		/*
++		 * The guest programmed a guest interrupt file address, so every
++		 * vCPU of the VM must be hardware backed for the complete
++		 * topology to be installable.
++		 */
++		if (!imsic_targets_valid(aia)) {
++			pr_debug("KVM: IMSIC IRQ bypass requires all VS-files\n");
++			return -EOPNOTSUPP;
++		}
++		gpa = vcpu->arch.aia_context.imsic_addr;
++	} else {
++		/*
++		 * A vIOMMU guest programs the device with an IOVA-space MSI
++		 * address, which names no vCPU until the IOMMU translates it
++		 * and resolves the target through its MSI table of published
++		 * VS-files. Forward such IRQs for the whole VM. The address
++		 * pattern comes from any published target, as only the
++		 * mask-covered index bits differ between them.
++		 */
++		for (i = 0; i < aia->nr_targets; i++)
++			if (aia->targets[i].type == RISCV_IOMMU_IR_TARGET_IMSIC)
++				break;
++		if (i == aia->nr_targets)
++			return -EOPNOTSUPP;
++		gpa = aia->targets[i].gpa;
++		nested = true;
++	}
+ 
+-	vcpu_info.msi_addr_pattern = (vcpu->arch.aia_context.imsic_addr >> IMSIC_MMIO_PAGE_SHIFT) &
++	vcpu_info.msi_addr_pattern = (gpa >> IMSIC_MMIO_PAGE_SHIFT) &
+ 				     ~vcpu_info.msi_addr_mask;
+ 	ret = irq_set_vcpu_affinity(irqfd->producer->irq, &vcpu_info);
+ 	if (ret)
+ 		return ret;
+ 
+ 	pci_write_msi_msg(irqfd->producer->irq, &msg);
+-	irqfd->irq_bypass_vcpu = vcpu;
++	if (nested)
++		irqfd->irq_bypass_nested = true;
++	else
++		irqfd->irq_bypass_vcpu = vcpu;
+ 
+ 	return 0;
+ }
+diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
+index ef8c134ded8a..39c73157e086 100644
+--- a/include/linux/kvm_irqfd.h
++++ b/include/linux/kvm_irqfd.h
+@@ -60,6 +60,8 @@ struct kvm_kernel_irqfd {
+ 	struct irq_bypass_producer *producer;
+ 
+ 	struct kvm_vcpu *irq_bypass_vcpu;
++	/* Forwarded to any vCPU of the VM (guest-controlled MSI target) */
++	bool irq_bypass_nested;
+ 	struct list_head vcpu_list;
+ 	void *irq_bypass_data;
+ };
 -- 
 2.53.0
 
