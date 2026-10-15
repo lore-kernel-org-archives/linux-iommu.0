@@ -1,388 +1,309 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D7E13C3437
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 12:17:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64084525A90;
+	Thu, 15 Oct 2026 12:21:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792066639; cv=none; b=EGdbmd0NATzYvYQPQeFTfIREFm1Z/IvYZUZfn4kOloLriGo6iz9lEmZWoUu4hJeEhLNuK2MLpEWdtzQ3AnMj9JQj7p8OTfP7wWXTn//nQyTbjJOkRSvHrXKAhHsn6vpIYzBM7WU/tzoP9O6cQEgFKD9To8dEwYU0Z78VLu+K7nM=
+	t=1792066868; cv=none; b=oDmuakDJusKgu3rv+lswdumk0EYOYKG1xN1kCslwZ4vopc5SyRi5TI+k0ITgOKx+G7gbaHNT7VJ+yOvXIu9ghqz4DpqdNWDO7Hrsn9B5WPznRPQYKO+ElYKnLiWORggVIDklveWO6wlTSOeO09TBljNfVqcn/gYFO+w7T3B5g8I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792066639; c=relaxed/simple;
-	bh=+cu3tY8AFUM+eV4SLAgVAUZxH2ozE0k4wg3g2rhklmw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IJ0TZOaaLXi2vHlziNfhXThdeF5/9u+/mIzqGkd37M2v8eX8uz6laIwnfMux3wtTXBqtUQEAWNTdCkSfmdpiyWrNt2W7kQHgMh4XVHCsO2opy9DBgpobABxUxXlVu7+v0gG94SD9B3pbW2wK1JZ+YLmEKRBXSL1+OaAKzUZCLCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Ampdpgar; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=SFov9NCK; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1792066868; c=relaxed/simple;
+	bh=Ox1xbZLOZJW2NqByxDANPKArn+SfLQtTDB3WiJswZoc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Dh53V65ei3wbDl3LJfpScaB3uneRZzx2JPi1dzAAF5DkccVTa8NLEmQPg2cq7txqC2207Jtqt3cXUt/pnmiZmjg9kJ20XVz1+hot/M98MqTE8NxiMZDIrTW9gk+Wpx7JiHJnqftPn85dIAiRi32euvaVc1LaeN8O/4wiehAuGWo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h/IWRFaq; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Ampdpgar";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="SFov9NCK"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69FAQ39o1596571
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 12:17:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=kwvB1zKyxNXdUuzLtE3Xrjsi
-	oZNHT7RX4lExGCslwX0=; b=AmpdpgarodzIVAKJa8VQxjU3IzQux0vpqCcAhD7c
-	ZFlIcas0KLQn13sqWS0jJh40xKUrAc8+I3v0bHOpN0XSKUfV5uS+AVw2cjQYO3Pi
-	/j9iz4brp7TwDEzjLTTfHoedSoLBLvf93/yZCeBhCDXNPGA8JNM9hSLtw5759kEH
-	2hOYzU2+cscF3mrrIw7GqLyf2wDE7jFE7lAG1fMNgbkoABZ7voXmD8TS7kIzOleC
-	fEihV5xE3MJimuMr+LQNUuaUH696j4epbU+JbrtpDfoZ5m6lhITY+2HRuyyuhOQl
-	wPB7BS2p0K8KCN7ykoebhsPhW+jlLvSmm1IX/OimxfRIZw==
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4haw2v8cv6-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 12:17:17 +0000 (GMT)
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-93e46c120dfso185168985a.1
-        for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 05:17:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1792066636; x=1792671436; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=kwvB1zKyxNXdUuzLtE3XrjsioZNHT7RX4lExGCslwX0=;
-        b=SFov9NCKK1YopwlKe2y08FxLx10SHMT+3R7BMFIv0iU7mItRtTxWog/qqfR1Aezb7Q
-         aSDipN814PtP2Zo+0mFwju0ZZWqF4zlX4XzCKzH3rYFUUBQ6t+WcmvsxupudDDbQcjae
-         Nd11bNB/UpCX8LkQaILTdl6VBMhQSNQFL9cctOVrNBWYwA/LGcZe1uRzTFZX9Rwo8P33
-         2xtcy34b080txxQD+1QgNr/YAf4NI5JdYhBfCS0whvBxJnOzc8UgqihZGr+IuI6AuBZJ
-         4Xra9rcAIQjr0ygn1RDNUpUXC9jUR5tCTsdOMCOXBi+lebivCoptslqgftpsfltA5K4d
-         3iHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792066636; x=1792671436;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=kwvB1zKyxNXdUuzLtE3XrjsioZNHT7RX4lExGCslwX0=;
-        b=zBVqBTBhCPBkjIob+gkOEQsXSO3N5wV0V9nk98wBh8GNVHAhB9AEdUEP27MIQKXT9U
-         7fWZ/pJItbBM3DfCcQRIVfOT6opJGyXhpUM5kVmGWZZBCyQTvj1DpZ8494vjD1caaIpy
-         zdWVQ9LxBaCpGQVgmzfTUjPQsM/2PnaU6A+DEu0Sbdsc2t940ZqCpu8SLohvu7+NfWtF
-         f+i7c2BpThq3h5ciFA7yAPZSRBTd0L3aMretUtwzcbNLfD6LEDKT8t2qo6wJ7M51WaRQ
-         bjLMiEwEkUMZjN4WjBjiiILNwYqFpx5iZM3N21iSEh3iN/+sdxcHv+bs+PVKw53oh2C9
-         FuPw==
-X-Forwarded-Encrypted: i=1; AKwUvByIDx2Ssm3FUTqixZY7UB+PQnUiTbqDiJTLOQG06KA4yNUbsAh5xBHYU4JagH1echgC2xMGbw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIj6F4uVXQGB7qGysWkRB42dlAW0Pujc7wVVNL7BGgDYssfQhja
-	/fbJS9YYHCJoTrwmmWr7wv+r7FfZ4FciqY0Jx0TYJKhKA4Gqun0/94SSbGMyd3L7f+FARnEGXLe
-	d7FbwVbKy6MLtbL9kO+shn529HmYE9RC3n2kc1aq1UGRNm1UN8Ma4iKl23Q==
-X-Gm-Gg: AYBFou0v36c/98k4m8k3qadOgHebSojEACUs/nQ5JnNyxvQS0nDKZqfXn5uxm23g+1M
-	DanQQY0gdAiJITr78zXKDNN3w9e+4WcoqsEXp5XTw+iltrIERJnuvZpmIB9/S9InIkQmxN8SNYF
-	v70Tl3YXc4z0G60dEW8/4yENlwW6VTClCc8NKPvkCkaFqyxFHiy1S0DFeXjkaSRLoWfo7cX34a5
-	hQ2BF9zFp3tZzCHiqE9yUax7x7wI3DdNRdpIBmEqSwlK8pUCDq/Odyzvu3E6hKavIW5INZbe6hi
-	vlMe9QUyzAvMM/8hGYarKr7NKGPfXWtbL6TtTcv6hrtmCctx64lhyrXEEJLBd+TMVcxaKWWSPny
-	hC/RHBzTu0WsJQ9Jxp4SqOVJYNFHH0g1d8PZlXVDzgZViOIar9c2zXjO3yOlYkGAlGWgBzXhzaU
-	D52JrzpL8RfhsX
-X-Received: by 2002:a05:620a:3708:b0:93e:c12c:fbcc with SMTP id af79cd13be357-93ec12d072cmr2801924685a.72.1792066635854;
-        Thu, 15 Oct 2026 05:17:15 -0700 (PDT)
-X-Received: by 2002:a05:620a:3708:b0:93e:c12c:fbcc with SMTP id af79cd13be357-93ec12d072cmr2801917085a.72.1792066635216;
-        Thu, 15 Oct 2026 05:17:15 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3aafdc040d3sm5939231fa.3.2026.10.15.05.17.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 05:17:13 -0700 (PDT)
-Date: Thu, 15 Oct 2026 15:17:12 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Philipp Stanner <phasta@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Abel Vesa <abelvesa@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH 01/13] dt-bindings: display: msm: Add Qualcomm DCP
- bindings
-Message-ID: <hprf3vrsveovq3hwcgjrfj6uhmlxlq5u5bx4lkbswgxe476qwz@pacalsdgrjx7>
-References: <20261015-jshekhar-drm-msm-dcp-v1-v1-0-48aad0fe4f72@oss.qualcomm.com>
- <20261015-jshekhar-drm-msm-dcp-v1-v1-1-48aad0fe4f72@oss.qualcomm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h/IWRFaq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0EC01F000C4;
+	Thu, 15 Oct 2026 12:21:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1792066867;
+	bh=NT2XbSQZp+cU7Cn4WzI+ruP1eafbyQ8K/6l27WXBHEs=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=h/IWRFaq4vA9PtvjP61helCdett9RPb6ElPn1qf8Rmx5VpDLIOMyGhWQAl4AqqKq+
+	 pB9w4hUWwxUkgv7/VeC0aZVKq9gdMDTq1n2jzH73aVJymY1ba6j+HH3nC2w+JnRWfP
+	 J/XrSzZfsKbPodI48N6DSA9Yb0XQdOJMGHYmJVkayrGuaOz3JooD3sWwdBBHavaILA
+	 bKBaModR4Pm4+rMEHP/D90IGF8JbG20dewHhOZ57o9qZV+YyTHpkK9Gfbgra4+3wY7
+	 2SVGgT++KvPbARS5XSpKpJnpe4RgDExOgFfx1DDZs7YOPRzn4E8/oMgNCptt+DygU9
+	 3UDbtQYkvuaew==
+From: Pratyush Yadav <pratyush@kernel.org>
+To: Logan Odell <loganodell@google.com>
+Cc: arnd@arndb.de,  pasha.tatashin@soleen.com,  rppt@kernel.org,
+  pratyush@kernel.org,  graf@amazon.com,  akpm@linux-foundation.org,
+  pbonzini@redhat.com,  maz@kernel.org,  oupton@kernel.org,
+  seanjc@google.com,  bhelgaas@google.com,  alex@shazbot.org,
+  jgg@nvidia.com,  kevin.tian@intel.com,  dwmw2@infradead.org,
+  baolu.lu@linux.intel.com,  joro@8bytes.org,  will@kernel.org,
+  robin.murphy@arm.com,  linux-arch@vger.kernel.org,
+  linux-kernel@vger.kernel.org,  kexec@lists.infradead.org,
+  linux-mm@kvack.org,  kvm@vger.kernel.org,
+  linux-arm-kernel@lists.infradead.org,  kvmarm@lists.linux.dev,
+  linux-pci@vger.kernel.org,  iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 1/3] luo: Move to feature flags instead of
+ compatibility strings
+In-Reply-To: <20260903023452.721732-2-loganodell@google.com> (Logan Odell's
+	message of "Wed, 2 Sep 2026 19:34:50 -0700")
+References: <20260903023452.721732-1-loganodell@google.com>
+	<20260903023452.721732-2-loganodell@google.com>
+Date: Thu, 15 Oct 2026 14:21:01 +0200
+Message-ID: <2vxzzewfgno2.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261015-jshekhar-drm-msm-dcp-v1-v1-1-48aad0fe4f72@oss.qualcomm.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDE1MDA0OCBTYWx0ZWRfXzplNKwFBQYx0
- pBRMyMNsxXdF/BjnsqMwO2sSpiwFoE0I4tAHAuBgwaWZdd5A7XDmy12yvowBJYgYJo6HL3gvTks
- 7qR4KsoERL/oFVE23vu6Wys0VI7Qn6M22hJcExfy5hQ7EQkLcsYUpVAc+AjIKQmTUsDzSUVDlEa
- jThG6h1RCT9oIE+m1HkdMu9k9WkWLlK3TuDkk2j7zcog5/Z5UC5x1jhHiEFcVp45yDCW3fcHcSC
- n7YR5DNrQjlVtqOKoNP5y4sgJzty7tMgjXZkB7OCRUaBTr6G+nbbiHUHAvECp3pKP9GRoImYDqe
- +pkz7LVLg9Wq9FjE8wvjgNdZ7GtXPCP31O4jhIjasWWVESHUTW5pKPf5uJRB+CyjpJCcRTLSwev
- AGQTlVAZJGaG6//7ZtWLC50Y/kyRPF0oXLfsd7VVLTGKzGYbBrbMlC7a6GOTR4u1IZ6nhDhcCI0
- ce+YpFLgmYtXPTu8QSw==
-X-Proofpoint-ORIG-GUID: aST7R9yw1M2O6KabbaJtnX4SIaNfCfs9
-X-Proofpoint-GUID: aST7R9yw1M2O6KabbaJtnX4SIaNfCfs9
-X-Authority-Analysis: v=2.4 cv=G/CJgNk5 c=1 sm=1 tr=0 ts=6ad0c44d cx=c_pps
- a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=DJpcGTmdVt4CTyJn9g5Z:22 a=gEfo2CItAAAA:8
- a=EUspDBNiAAAA:8 a=-nBYf6lyRfyxIgOjefsA:9 a=CjuIK1q_8ugA:10
- a=IoWCM6iH3mJn3m4BftBB:22 a=sptkURWiP4Gy88Gu7hUp:22
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDE1MDA0OCBTYWx0ZWRfX8uiZuE775YJu
- n/JWBfdhKY2Bk9Up4kEr7nz33BGebaPKLkntMcmN+DQKw7xuXa8KampsaPMZYp1fy2Wou8rcpxT
- drBuUrsOx2hGo3cIjoCG5ShS4CZUv6I=
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-10-14_01,2026-10-14_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 lowpriorityscore=0 spamscore=0 clxscore=1015 bulkscore=0
- impostorscore=0 suspectscore=0 adultscore=0 phishscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610080000 definitions=main-2610150048
+Content-Type: text/plain
 
-On Thu, Oct 15, 2026 at 01:08:21PM +0530, Jayant Shekhar wrote:
-> DCP platforms place the display pipeline under firmware control, so Linux
-> cannot discover display resources through direct register access. The DRM
-> driver therefore needs device-tree descriptions of the firmware transport,
-> display topology, IOMMU contexts, and panel connections.
-> 
-> Add bindings for the Qualcomm DCP VirtIO display function, including the
-> INTF graph and DSI host outputs. Document the framebuffer IOMMU context,
-> IPCC power-notify mailbox and interrupts, firmware display topology, and
-> firmware-visible IOVA window supplied by the parent VirtIO-MMIO transport.
-> 
-> Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> Assisted-by: LLM
+Hi Logan,
+
+On Wed, Sep 02 2026, Logan Odell wrote:
+
+> Define a 128 byte header that can be used by all live update serialized
+> structures. In this header, we reserve room for 64 features with
+> supported, active, and required bits. Update the top level luo struct to
+> use this instead of compatibility strings. Previous versions of the
+> struct had smaller sizes, so add a minimum size check to avoid
+> collisions with older kernels.
+>
+> Signed-off-by: Logan Odell <loganodell@google.com>
 > ---
->  .../bindings/display/msm/qcom,dcp-dsi.yaml         |  75 +++++++++++++
->  .../bindings/display/msm/qcom,dcp-virtio.yaml      | 113 +++++++++++++++++++
->  .../devicetree/bindings/display/msm/qcom,dcp.yaml  | 119 +++++++++++++++++++++
->  3 files changed, 307 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,dcp-dsi.yaml b/Documentation/devicetree/bindings/display/msm/qcom,dcp-dsi.yaml
-> new file mode 100644
-> index 000000000000..f7178c66c09e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/msm/qcom,dcp-dsi.yaml
-> @@ -0,0 +1,75 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/msm/qcom,dcp-dsi.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm DCP DSI host
-> +
-> +maintainers:
-> +  - Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> +
-> +description: |
-> +  A MIPI DSI host exposed by the Qualcomm DCP VirtIO device (see
-> +  qcom,dcp.yaml). DCP is a firmware protocol shared across multiple
-> +  Qualcomm SoCs, not specific to any one of them; Hawi is its first
-> +  platform. The DSI host and its connection to a panel are described
-> +  using the standard DSI controller and OF graph properties.
-> +
-> +allOf:
-> +  - $ref: /schemas/display/dsi-controller.yaml#
-> +
-> +properties:
-> +  reg:
-> +    maxItems: 1
-> +    description: Index of this DSI host among its siblings.
-> +
-> +  status: true
-> +
-> +  ports:
-> +    $ref: /schemas/graph.yaml#/properties/ports
-> +    description: |
-> +      port@0: Input from the DCP virtio device's DPU INTF output port.
-> +      port@1: Output to the attached panel.
-> +    properties:
-> +      port@0:
-> +        $ref: /schemas/graph.yaml#/properties/port
-> +      port@1:
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        unevaluatedProperties: false
-> +        properties:
-> +          endpoint:
-> +            $ref: /schemas/media/video-interfaces.yaml#
-> +            unevaluatedProperties: false
+>  include/linux/kho/abi/luo.h  | 74 +++++++++++++++++++++++++++++-------
+>  kernel/liveupdate/luo_core.c | 44 +++++++++++++--------
+>  2 files changed, 90 insertions(+), 28 deletions(-)
+>
+> diff --git a/include/linux/kho/abi/luo.h b/include/linux/kho/abi/luo.h
+> index 288076de6d4a..0a7662a0cf9a 100644
+> --- a/include/linux/kho/abi/luo.h
+> +++ b/include/linux/kho/abi/luo.h
+> @@ -13,15 +13,17 @@
+>   * kernel. The ABI is built upon the Kexec HandOver framework and registers
+>   * the central `struct luo_ser` via the KHO raw subtree API.
+>   *
+> - * This interface is a contract. Any modification to the structure fields,
+> - * compatible strings, or the layout of the `__packed` serialization
+> - * structures defined here constitutes a breaking change. Such changes require
+> - * incrementing the version number in the relevant `_COMPATIBLE` string to
+> - * prevent a new kernel from misinterpreting data from an old kernel.
+> + * This interface is a contract. To ensure the stability of moving between
+> + * kernel versions, any changes to the structures should only be additive
+> + * and should utilize the feature flags to denote the supported, active, and
+> + * required status of the feature.
+> + *
+> + * Features that are entirely optional can be added with the supported and
+> + * active flags both asserted, and the required flag cleared. Features that
+> + * require that the next kernel supports the feature should only be added as
+> + * supported to allow compatible transition kernels. At a later time, the
+> + * active and required flag should be asserted.
+>   *
+> - * Changes are allowed provided the compatibility version is incremented;
+> - * however, backward/forward compatibility is only guaranteed for kernels
+> - * supporting the same ABI version.
+>   *
+>   * KHO Structure Overview:
+>   *   The entire LUO state is encapsulated within a single KHO entry named "LUO".
+> @@ -30,7 +32,7 @@
+>   * Serialization Structures:
+>   *   - struct luo_ser:
+>   *     The central ABI structure that contains the overall state of the LUO.
+> - *     It includes the compatibility string, the liveupdate-number, and pointers
+> + *     It includes the feature flags, the liveupdate-number, and pointers
+>   *     to sessions and FLBs.
+>   *
+>   *   - struct luo_session_ser:
+> @@ -58,19 +60,65 @@
+>  #define _LINUX_KHO_ABI_LUO_H
+>  
+>  #include <linux/align.h>
+> +#include <linux/bits.h>
+>  #include <linux/kho/abi/block.h>
+>  #include <uapi/linux/liveupdate.h>
+>  
+> +/**
+> + * struct luo_feature_hdr - Feature negotiation and versioning header.
+> + * @supp:     Bitmask of features supported by the producing subsystem.
+> + * @req:      Bitmask of features required for safe deserialization by the
+> + *            receiving subsystem.
 
-Why do we need OF graph here? Would it be enough to link one of the
-ports of the root node with the panel's input?
+I think you are mixing two things here: description of the payload and
+description of the file handler capability.
+
+The payload that is handed over via KHO should have the active and
+required bitmasks only. It doesn't need the supported bitmask, because
+it doesn't matter what the handler that produced the payload supports.
+It only matters what fields it populated and which ones are mandatory to
+understand.
+
+Similarly, the description of the file handler can't really describe
+"active". Because the capabilities are static and the active bits will
+depend on a specific file.
+
+So I reckon we should separate these two. These should be the same bits
+of course, but expressed in two ways in two different places.
+
+> + * @active:   Bitmask of features actually active/used in the serialized payload.
+> + * @reserved: Reserved for future use.
+> + *
+> + * This header can be embedded at the beginning of any serialized structure to
+> + * provide forward and backward compatibility via feature negotiation across
+> + * live update.
+> + */
+> +struct luo_feature_hdr {
+> +	u64 supp;
+> +	u64 req;
+> +	u64 active;
+> +	u64 reserved[13];
+
+How do you plan to ever use this? Say I want to extend my bitmaps so I do:
+
+    struct luo_feature_hdr {
+    	u64 supp;
+    	u64 req;
+    	u64 active;
+    	u64 supp2;
+    	u64 req2;
+    	u64 active2;
+    	u64 reserved[10];
+
+But when I go back to a kernel that doesn't know about supp2, req2,
+etc., how does it know how to interpret these? How does it know what the
+values mean?
+
+Is your goal only to be able to extend the three types of flags we have?
+If so, perhaps something like "if bit 63 is set, the flags continue to
+the next u64"? It is certainly harder for the parser, but seems to at
+least be extensible. What do you think?
+
+> +} __packed;
+> +
+> +#define LUO_FEATURE_ACTIVE(s, f)		\
+> +	do {					\
+> +		(s)->features.supp |= (u64)(f);	\
+> +		(s)->features.active |= (u64)(f);	\
+> +	} while (0)
+> +#define LUO_FEATURE_SUPPORTED(s, f)	((s)->features.supp |= (u64)(f))
+> +#define LUO_FEATURE_REQUIRED(s, f)	((s)->features.req |= (u64)(f))
+> +#define LUO_FEATURE_IS_ACTIVE(s, f)	(!!((s)->features.active & (u64)(f)))
+> +#define LUO_FEATURE_IS_SUPPORTED(s, f)	(!!((s)->features.supp & (u64)(f)))
+> +#define LUO_FEATURE_IS_REQUIRED(s, f)	(!!((s)->features.req & (u64)(f)))
+> +
+>  /*
+>   * The LUO state is registered under this KHO entry name.
+>   */
+>  #define LUO_KHO_ENTRY_NAME	"LUO"
+> -#define LUO_ABI_COMPATIBLE	"luo-v5"
+> -#define LUO_ABI_COMPAT_LEN	ALIGN(sizeof(LUO_ABI_COMPATIBLE), 8)
+> +
+> +/*
+> + * Bits associated with the luo_feature_hdr values.
+> + */
+> +#define LUO_FEATURE_NUMBER    BIT_ULL(0)
+> +#define LUO_FEATURE_SESSIONS  BIT_ULL(1)
+> +#define LUO_FEATURE_FLBS      BIT_ULL(2)
+
+Nit: please give the flags full documentation on their semantics.
 
 > +
-> +required:
-> +  - reg
-> +  - ports
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    dcp-subsystem {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        dsi@0 {
-> +            reg = <0>;
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                port@0 {
-> +                    reg = <0>;
-> +                    dcp_dsi0_in: endpoint {
-> +                        remote-endpoint = <&dcp_intf1_out>;
-> +                    };
-> +                };
-> +
-> +            };
-> +        };
-> +    };
-> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,dcp-virtio.yaml b/Documentation/devicetree/bindings/display/msm/qcom,dcp-virtio.yaml
-> new file mode 100644
-> index 000000000000..018694310dfb
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/msm/qcom,dcp-virtio.yaml
-> @@ -0,0 +1,113 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/msm/qcom,dcp-virtio.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm DCP VirtIO host
-> +
-> +maintainers:
-> +  - Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> +
-> +description: |
-> +  Qualcomm's DCP VirtIO host provides the generic VirtIO-MMIO transport and
-> +  the host-side IPCC channel used to wake the DCP firmware.
-> +
-> +properties:
-> +  compatible:
-> +    contains:
-> +      const: qcom,dcp-virtio
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  iommus:
-> +    maxItems: 1
-> +
-> +  iommu-ranges:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +
-> +  interrupts-extended:
-> +    minItems: 2
-> +
-> +  interrupt-names:
-> +    items:
-> +      - const: virtio
-> +      - const: dcp_power_notify_irq
-> +
-> +  dma-coherent: true
-> +
-> +  mboxes:
-> +    maxItems: 1
-> +
-> +  mbox-names:
-> +    const: dcp-power-tx
-> +
-> +  dcp-subsystem:
-> +    $ref: qcom,dcp.yaml#
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts-extended
-> +  - interrupt-names
-> +  - iommus
-> +  - dcp-subsystem
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/mailbox/qcom-ipcc.h>
-> +
-> +    virtio@9be8000 {
-> +        compatible = "qcom,dcp-virtio", "virtio,mmio";
+> +#define LUO_CORE_FEATURES_SUPP		(LUO_FEATURE_NUMBER | \
+> +					 LUO_FEATURE_SESSIONS | \
+> +					 LUO_FEATURE_FLBS)
+> +#define LUO_CORE_FEATURES_REQ		(LUO_FEATURE_NUMBER | \
+> +					 LUO_FEATURE_SESSIONS | \
+> +					 LUO_FEATURE_FLBS)
+> +#define LUO_CORE_FEATURES_ACTIVE	(LUO_FEATURE_NUMBER | \
+> +					 LUO_FEATURE_SESSIONS | \
+> +					 LUO_FEATURE_FLBS)
+>  
+>  /**
+>   * struct luo_ser - Centralized LUO ABI header.
+> - * @compatible:     Compatibility string identifying the LUO ABI version.
+> + * @features:       Bit mask of supported and active features.
+>   * @liveupdate_num: A counter tracking the number of successful live updates.
+>   * @sessions_pa:    Physical address of the first session block header.
+>   * @flbs_pa:        Physical address of the FLB header.
+> @@ -78,7 +126,7 @@
+>   * This structure is the root of all preserved LUO state.
+>   */
+>  struct luo_ser {
+> -	char compatible[LUO_ABI_COMPAT_LEN];
+> +	struct luo_feature_hdr features;
 
-Is it really compatible with virtio,mmio? Can it be handled completely
-by virtio,mmio?
+Do we still need compatible here? How will we ever do breaking changes
+if we really need to?
 
-> +        reg = <0x09be8000 0x1000>;
-> +        interrupts-extended = <&intc GIC_ESPI 956 IRQ_TYPE_LEVEL_HIGH>,
-> +                              <&ipcc 13 5 IRQ_TYPE_EDGE_RISING>;
-> +        interrupt-names = "virtio", "dcp_power_notify_irq";
-
-Why do you need names? Can they be dropped in favour of using indices?
-
-> +        iommus = <&apps_smmu 0x15a3 0x0>;
-> +        iommu-ranges = <0x0 0x84000000 0x0 0x04000000>;
-> +        dma-coherent;
-> +        mboxes = <&ipcc 13 5>;
-> +        mbox-names = "dcp-power-tx";
+>  	u64 liveupdate_num;
+>  	u64 sessions_pa;
+>  	u64 flbs_pa;
+> diff --git a/kernel/liveupdate/luo_core.c b/kernel/liveupdate/luo_core.c
+> index 1b2bda22902d..6add1ecc463f 100644
+> --- a/kernel/liveupdate/luo_core.c
+> +++ b/kernel/liveupdate/luo_core.c
+> @@ -107,26 +107,37 @@ static int __init luo_early_startup(void)
+>  		return 0;
+>  	}
+>  
+> -	if (len < sizeof(*luo_ser)) {
+> -		pr_err("LUO state is too small (%zu < %zu)\n", len, sizeof(*luo_ser));
+> -		return -EINVAL;
+> +	luo_ser = phys_to_virt(luo_ser_phys);
 > +
-> +        dcp-subsystem {
-> +            compatible = "virtio,device34";
-> +            iommus = <&apps_smmu 0x400 0x2>;
+> +	if (len < sizeof(struct luo_feature_hdr)) {
+> +		pr_err("LUO state is too small (%zu < %zu)\n",
+> +		       len, sizeof(struct luo_feature_hdr));
+> +		err = -EINVAL;
+> +		goto out_free_ser;
+>  	}
+>  
+> -	luo_ser = phys_to_virt(luo_ser_phys);
+> -	if (strncmp(luo_ser->compatible, LUO_ABI_COMPATIBLE, LUO_ABI_COMPAT_LEN)) {
+> -		pr_err("LUO state is incompatible with '%s'\n", LUO_ABI_COMPATIBLE);
+> -		return -EINVAL;
+> +	if (luo_ser->features.req & ~LUO_CORE_FEATURES_SUPP) {
+> +		pr_err("Unsupported required LUO feature (req: 0x%llx, supp: 0x%llx)\n",
+> +		       luo_ser->features.req, (u64)LUO_CORE_FEATURES_SUPP);
+> +		err = -EOPNOTSUPP;
+> +		goto out_free_ser;
+>  	}
+>  
+> -	luo_global.liveupdate_num = luo_ser->liveupdate_num;
+> -	pr_info("Retrieved live update data, liveupdate number: %lld\n",
+> -		luo_global.liveupdate_num);
+> +	if (LUO_FEATURE_IS_ACTIVE(luo_ser, LUO_FEATURE_NUMBER)) {
+> +		luo_global.liveupdate_num = luo_ser->liveupdate_num;
+> +		pr_info("Retrieved live update data, liveupdate number: %lld\n",
+> +			luo_global.liveupdate_num);
+> +	}
+>  
+> -	err = luo_session_setup_incoming(luo_ser->sessions_pa);
+> -	if (err)
+> -		goto out_free_ser;
+>  
+> -	luo_flb_setup_incoming(luo_ser->flbs_pa);
+> +	if (LUO_FEATURE_IS_ACTIVE(luo_ser, LUO_FEATURE_SESSIONS)) {
+> +		err = luo_session_setup_incoming(luo_ser->sessions_pa);
+> +		if (err)
+> +			goto out_free_ser;
+> +	}
 > +
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
+> +	if (LUO_FEATURE_IS_ACTIVE(luo_ser, LUO_FEATURE_FLBS))
+> +		luo_flb_setup_incoming(luo_ser->flbs_pa);
+>  
+>  	err = 0;
+>  
+> @@ -162,7 +173,10 @@ static int __init luo_state_setup(void)
+>  		return PTR_ERR(luo_ser);
+>  	}
+>  
+> -	strscpy(luo_ser->compatible, LUO_ABI_COMPATIBLE, sizeof(luo_ser->compatible));
+> +	luo_ser->features.supp = LUO_CORE_FEATURES_SUPP;
+> +	luo_ser->features.req = LUO_CORE_FEATURES_REQ;
+> +	luo_ser->features.active = LUO_CORE_FEATURES_ACTIVE;
 > +
-> +            ports {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                port@1 {
-> +                    reg = <1>;
-> +                    dcp_intf1_out: endpoint {
-> +                        remote-endpoint = <&dcp_dsi0_in>;
-
-Can this point directly to the panel_in? What's the point of describing
-internal paths in the DT?
-
-> +                    };
-> +                };
-> +            };
-> +
-> +            dsi@0 {
-> +                reg = <0>;
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                ports {
-> +                    #address-cells = <1>;
-> +                    #size-cells = <0>;
-> +
-> +                    port@0 {
-> +                        reg = <0>;
-> +                        dcp_dsi0_in: endpoint {
-> +                            remote-endpoint = <&dcp_intf1_out>;
-> +                        };
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
+>  	luo_ser->liveupdate_num = luo_global.liveupdate_num + 1;
+>  
+>  	luo_session_setup_outgoing(&luo_ser->sessions_pa);
 
 -- 
-With best wishes
-Dmitry
+Regards,
+Pratyush Yadav
