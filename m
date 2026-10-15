@@ -1,160 +1,355 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010012.outbound.protection.outlook.com [52.101.193.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C843CF69C
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 13:40:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792071658; cv=fail; b=ADz0X1yfe17oGJZDeNs6KkOuYi96Pjf4h7S7ERfFhMK0DFv6uATky2cX8PG8o6slSjdu2tLc7pWJ5jh4nWeoocqT7m7yHqfzn1rnL4OtHmu2vqj52t7d2gMaYdaErp3iEGyrBqZFxPu9I1YMnAvf1oUtOEHZo0empM2k/q27Rig=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792071658; c=relaxed/simple;
-	bh=qbU0h+HyM2YqLn2EWbtYGlrBUxnI6fFZoDgItXoDxqE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=e6Ej6KuJm6EWDEkKlD/s7d5J1fT7DWFWrJDwCK2sI2Nr1nGIc86S1TpBnT5KgW7RJorYjJGQ+6jI8PndOs1/IkcUZ04+ieA+ujEq1RnS+s/slrmk6+cHKvRH7asv0QoZVMkss45H+VI3kQNd0xTQgvbxryfxNVNoerPe4AahXTc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WJNYVwac; arc=fail smtp.client-ip=52.101.193.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20DC24A2049
+	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 15:07:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.70
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792076860; cv=none; b=qSiLijHzl+2lAEdkgbqoJY1nE40d0QZxqB8XFr+9ZyYk4CTCAse0Zx8jLiXBEaRy8dUjh328Gdqii+vlN1QXvLJBknzDyZLIVFF4XyQ0RghtwcZGGfacnvwiV+COhuOD6uVSBgVfjnx8Ybsw/fTaiTwVIAeXVHIVCxUbgdSuH7M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792076860; c=relaxed/simple;
+	bh=fDf2TZGggSk/cJ95OW/A1pc9n9A1t6tXqujXvNReYYs=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=iEMcGVSdqo7O5blTAmr62Mvca0ShDa/f806dzIMG1Rf50pTEpf8k+M9pulo1WpnHkfgPUXg7PoUGC4Vg9wDFSQlNPFJy0xBrhLAe5jpDn44SmVOjR2TqhrA14hOmaj7CH8PcHIYHD0wOYJ7AcMsikhDkvASsY4SxfwssxSptCrQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fJ+oSXQ2; arc=none smtp.client-ip=209.85.218.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WJNYVwac"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qQEZuVBzr9ERiZpYA4KyrFGytKgrZFIK2EGHiXZlFnKXsicXcYKB0Z6CfbkflS5wAPRN736yO3Z3YWcm4gvt8AwlOG1K546KNfFr1tUyCkcSyHH/0Y4Jgx3jZOMvhWJsmPcBmVe4rEPWLQI3JtgKun9ICdROgsH404PN2Eys0iALF66/rp05kq0KNkG9Jt0XUiEiAptRXIFPK7kvNCm7FKcUjqksVAOQnHEZn2RckjMxZpoy6wrcAC/DShpDhNnOqwj5Ap5i0TXI9XRHeQdCnJD67rT2ZqPg2hzHBbI3uEASMVA+4ewURf3bRnlhlpcuHFsGawKLDDjF+KXnthbrjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vs6rPn9agh2Vc8z63hmqjpR5ZxBDKOI8l7kXmBJvuOg=;
- b=y/KYobi+sae3A/jcQlzD+id+Y/8SJhQ7Jfs2u/JO0UVWv67Qc+7POwk20tELToIB+urg4dSfonw/2F3CezvrNiNvyazNJ7jtPDOzx/QDlHGItKObHRRGA/c2J4gi7fEhszGFTWARoyKnNYKWGFqlryNJ0XMdlLuN7fK4z/4dauDvRbilkIrKq0IjBe/Ah4ZHIpwr7SHiDHMypUjvud4dd908PqRXGsOWxuisyhZZmkMPGLW+uA4oUH9BpIzMVjLZcAo6t7Jsqi84Y5qSuXBspbgf/ZVn6HP+9krskHKvGxGk6xpP6DrHaSsug3GoF5pBNymRpshT3XKMTryHZpPdeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vs6rPn9agh2Vc8z63hmqjpR5ZxBDKOI8l7kXmBJvuOg=;
- b=WJNYVwachw6D32wYbA0NGSj+288k7vL5wbbJZGFrmw1K4NYvjUfM5ZnOmE7l2tCniKBEHQ1DtvdZv08iUb9v9xvuYUGYEBdJQBHgL4U/w7SAERGGDhsz3V5e6Dys3QzCdHDCA59xuvervZKNCmuCjIGFUS91bBkgoXOzFcbYfYVOOrXP/7xVl4UL60IYijgMJHUXtp+BuxkJ1AQ05ua631elVRO4N4uYFOJXjHfHRn8FunbNiekZ7zKdBPsumD4wMaSdrmpEsG+ou5xAmrwlhW4YA7RvvAoLV4OgVg5lc0ObT679xolFp2/3mVkGjWyn2pbBs/wVIEJaIOHEOWl3Gw==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by CY8PR12MB7707.namprd12.prod.outlook.com
- (2603:10b6:930:86::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.13; Thu, 15 Oct
- 2026 13:40:49 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0522.013; Thu, 15 Oct 2026
- 13:40:49 +0000
-Date: Thu, 15 Oct 2026 10:40:48 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: fangyu.yu@linux.alibaba.com
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	joerg.roedel@amd.com, vasant.hegde@amd.com, kevin.tian@intel.com,
-	Ankit.Soni@amd.com, guoren@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommupt/kunit: Read an exact NR_SECONDARY_PAGETABLE
- snapshot for the leak check
-Message-ID: <20261015134048.GB13920@nvidia.com>
-References: <20261015132024.43998-1-fangyu.yu@linux.alibaba.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261015132024.43998-1-fangyu.yu@linux.alibaba.com>
-X-ClientProxiedBy: CH0PR03CA0355.namprd03.prod.outlook.com
- (2603:10b6:610:11a::12) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fJ+oSXQ2"
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-c2e47a584edso227053266b.3
+        for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 08:07:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1792076856; x=1792681656; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=IC5Ct3FOhi968am1MRf06lj4teeqkFZmOqPC0DoSw2E=;
+        b=fJ+oSXQ2+yZcN69fp6O78+yppt6DxZzI7Dl4YGk7Xu/cpAnUa6PoF/qqPqHeijvXsR
+         azpJuIMSQB3bYht2JHEP4q7tU7wwdO1LWLLgilRcmIM72VARffvBUmXi5usGDM8IG02u
+         xKzQscFFdLkokaLofnqQE/YSdSuPS48R8lwlFjE74K9X0/TfxwYcN2xFeCK6hRFtZ82K
+         23Kb/W1ry568pN3X8nhsZDw+V08blpSIN/JoP3+U4fI2feBo8vBL71bho+4AyuAE1yo6
+         t2ucOkGRkzTOSs3Eamq7KZQaEFRXtM8EkdoK/Pka4ST8lUOMSl/gKByX4fUPLNHYqeg3
+         9bDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792076856; x=1792681656;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=IC5Ct3FOhi968am1MRf06lj4teeqkFZmOqPC0DoSw2E=;
+        b=UF8GvrkAbLVXN8zGq8LTHR2o0ii1IQ2r8zOYxcDpCzyMuJlmL7wLsagh+wiRLfiEVR
+         70aBgYdItVLbP8dpReZHle8k/YHTpZvGbuN2wABtUmQoNOQW9WMBtXY6y+O65lD1N4oP
+         EIa0UnD/XSiSOImZRp/wKJ2l0Z+L0/ULdnfORF4oW2ysc7IvPabB/DPEhehj1K0nx7ZK
+         hyag3qNXqZ3o3xDmDh+V0C6LI15A43EJHwCW6KMFQXYkwehmXYf4qhH5OEItJG/l+H8t
+         WQcCP76Tak9ACEH5tC9KRacEigTRquIp+7vQbkGG9WRjI9f7U0GMoaL7/T3AmGEUYqA8
+         K9VA==
+X-Forwarded-Encrypted: i=1; AKwUvBzuOuAbqOlnC2AgB62yfk+xoCMNRDFhQj1swB4O+OLTpnXmzbvhQKvsxhc7VeTywP1Wu5oJEQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYImPUFX/wsNWiZzLzK9ntmnqUpmofjmoszNgW/FwcrD+0PkEElR
+	GtEmHsrdSbZPlRNkcTYOSGb0hqbQNTSO1ogvVrVtud3nFRESxfHS2lNVb9qgyvsKdQYRhasBpvl
+	+21StCw7RG1ljXfsNEQ==
+X-Received: from ejbbq18.prod.google.com ([2002:a17:906:d0d2:b0:c2e:1f38:d81a])
+ (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:907:9615:b0:c24:adf4:5c73 with SMTP id a640c23a62f3a-c31a9a28825mr1772701566b.1.1792076855746;
+ Thu, 15 Oct 2026 08:07:35 -0700 (PDT)
+Date: Thu, 15 Oct 2026 15:07:34 +0000
+In-Reply-To: <2vxzzewfgno2.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|CY8PR12MB7707:EE_
-X-MS-Office365-Filtering-Correlation-Id: f370077a-7151-40eb-868c-08df2ac1ec93
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|23010399003|56012099006|11063799006|261009223027099003|10067099003|22082099003|6133799003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	AVGyXkjpKuse8TOyYTsiIlzq03b9gbSuXE2K4i/60eR8tqyxjLFQ9GfJkTxz/fqPY8wHFf12hwNeiyY0qHU1QJuO/QEh5xSTjFV5BcT/NnMThj0TtQk82OF4ZeGDqLA7d8b22mk2q/6cRg3tSEXuga5FsRyKE9paosmz0xBQqZs+wYcDvbNTP1mxXCqdgzH/7q4R2oxfmh1MVg7jj7gFUa9SuyYDGvjIlcZ5jyLUOmElPTCTjS++0ThW6MJ9wuPtFC+CXOIL5MK2oZE0ZmLnTOtwyYlOLwl5kQt+l42UDTTHE2ziQ1jLzL75hqLP5TGjrEmRTy/UNMXlH/Sqy88WrATOY1MQDfC72lZEt5dW1u6aL6ULQk47ZsnfqrOR27LnYKnqUVQYOYAG3sR67O815gRmmQ43impKNEUnPElVqeN4HbxB0lIaB0zKjp3kdi5iT4Ho3K1Pjr15BAZYLNWYjlWkdIG+c7Dz4s+oBQ1R1wWLi6ovsKcBfRpibrNtFUF5hhiRIrk/u9H6jLHU7dii+j2VRPZUQd1JFv8GBdm90aenOC9pNW30Viaf6vOtyCC/lhTvXz0a7on65E0rHAhRa3Kn9+H+C8WZ4hzGuzeQRf63lv8dQG0G3djhm2pvL++A8bbVYQ97MckEOCovn6s86qTDjLR3EfFDlTk683VPekE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(23010399003)(56012099006)(11063799006)(261009223027099003)(10067099003)(22082099003)(6133799003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?hPaDpzjJj7XDg0qufz0bmmplrbblLJcoxL689K7m7bOxDOGG1uYw90OU6pHS?=
- =?us-ascii?Q?bsaFUtMXlY0wpPfvzZhV+BOXiJA9F2vYw6XYqvBkPxsdQHDpXFiiCkgz3hZ8?=
- =?us-ascii?Q?Gcd6NrFEMc2TGQj6RS1kqNw2/XyHnz/HYat0p20LiRxyY1w7ABVlYFRCQWQb?=
- =?us-ascii?Q?yiOXtneKNHePt0gBjHxXKP3bC6v7gN2siuCRWCBw474nrmK2S1RCJYRpTTyZ?=
- =?us-ascii?Q?TGzl0uvbceRU6usH193meTXwk2vntNQu17+aK7f7YIJYVKo+yilvrVLUD6aC?=
- =?us-ascii?Q?XyS3fJZcuxJclAWG4niKyLXki6rDyHubwM7jOvFCyCem7xkXdqUmFDmByvV8?=
- =?us-ascii?Q?XKQLRFB1vK1p6tnV5M0QAgoWOE+MjP4M6Bezi1UqGINYC/ddHTD2kJqYyt84?=
- =?us-ascii?Q?WyWtd1kgvS+n1jFqmrsWkeD2GdwDd3EQNB3CdCRgup/0hD4A0o04wjh1M66i?=
- =?us-ascii?Q?gy0Vvff1XSCbkySRs0Mv4rnsr/CNcxCTI3KE38Fzar5vTtcfGdvPGyzAxL4J?=
- =?us-ascii?Q?NMbPb3YXZWa6V9HNPpuwPi4X9a9bNU5zAndo2e55/sTTd+lwNEcnqlsqq9AA?=
- =?us-ascii?Q?TzizovLDyZxMF+VEyhzc5UWQFAUrBj2OU/lvFI78VjjdCABZ+VKFgCsSi0Wf?=
- =?us-ascii?Q?MmCb3fHpYP4ZVDXz9MUEW99RPAOg9scPcSvT0NiTnXa5LnDgvwV5ViNmFvYo?=
- =?us-ascii?Q?3Yyv1LG1RY5ZJ5c9ZwfQp3j2LVxbSmYBpBFXdw8EuiR+mXG/XVTL3WhjVn2O?=
- =?us-ascii?Q?+XV4jxKi6sq7Tm7TJDsZ5Kf7LmIHPCDGtwWW/JNgGjG8YPapiZjyDm3q8RAh?=
- =?us-ascii?Q?z7yKgfhzDi8Dyw8t8B4AYGpyfm9817SQxEGthituRcl4KfP18CpraC3QYnAy?=
- =?us-ascii?Q?OG+EF/EJHjQ4H9RaTcrOrZnzBN5mCL+xLSnTwh/zM30OfpkHEVhr477xzX5e?=
- =?us-ascii?Q?vpPnGmJHA/gNvdHrVNXUr2PE4zfY//swzBC2VeLKuEbDsLQsGGmwFzXwH/ca?=
- =?us-ascii?Q?Aw9Y3niUWw3vz4jr7cP/TM2fIuiQxoEiaqd/bnWlQ+e+tCew4dWAuSo2ckxJ?=
- =?us-ascii?Q?YioCSoO3MzedC/srgYKOV6FOFmwoVxS7XHbqEauPUTUuE7KLGd7ET49lfBIt?=
- =?us-ascii?Q?K9/ZgjE3Ra3Q+Ka2/3EREYvfeX3h7bqPnGwqRBhZGKZPz9YGFAaTIkG3Ln/k?=
- =?us-ascii?Q?Uh08JttUFcQVUbtUUMpAVrrPckpJRf2pLLblLTeFlBXako6Mia6bDviz5ZSX?=
- =?us-ascii?Q?qn6sUrHPCqVTfBhQ1CCQxkfPV4rZOQSdkWE718hjfJRQ0PaQLgzMKsw7P5sl?=
- =?us-ascii?Q?v9hJa9UOPaeRztItD9BzpKg/ASdW30OzVLyXHF6LxNfXrfYQhbpMq3R149x1?=
- =?us-ascii?Q?4F5KOxPMM3/BrXRR0quS+VFXSkRlxbv+ESsVij/Zk6S68DRq46WWiBz5hpUW?=
- =?us-ascii?Q?BPzA8371p2auDmktyXH5F4FcGJylhceEFOY7mvjnBvQbufMlwupdaTZZ5oT8?=
- =?us-ascii?Q?PBAZYOK0NLI8jy8I1hNTQ7XqOEO1CP4LhAo87giD0HuV3Odu0V20RdG61tjv?=
- =?us-ascii?Q?4E3lOFNySfaGBUiNeY/IJTyH5/cPf1kYV3abiEPnGkSKT1dUgcLGe7ccH/1z?=
- =?us-ascii?Q?pgq+HGMQauFXR7KoXgoSTsNPjk6/sFXczjQV9nn6WkMe+YQhehRx6xMD1FEu?=
- =?us-ascii?Q?hUsftrUAmezvB4clPZEKxTgJJgTxRj7m4v0AGzJKsDvkxssu?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f370077a-7151-40eb-868c-08df2ac1ec93
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2026 13:40:49.7039
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oVzf+AsNp2qCcJzu2z5gDJx0P+O2MLvaNmdWaCCvSx3PIZ37EFDv/RMC4/I7qAMH
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7707
+Mime-Version: 1.0
+References: <20260903023452.721732-1-loganodell@google.com>
+ <20260903023452.721732-2-loganodell@google.com> <2vxzzewfgno2.fsf@kernel.org>
+Message-ID: <9huzqzhrhuix.fsf@tarunix.c.googlers.com>
+Subject: Re: [RFC PATCH 1/3] luo: Move to feature flags instead of
+ compatibility strings
+From: tarunsahu@google.com
+To: Pratyush Yadav <pratyush@kernel.org>, Logan Odell <loganodell@google.com>
+Cc: arnd@arndb.de, pasha.tatashin@soleen.com, rppt@kernel.org, 
+	pratyush@kernel.org, graf@amazon.com, akpm@linux-foundation.org, 
+	pbonzini@redhat.com, maz@kernel.org, oupton@kernel.org, seanjc@google.com, 
+	bhelgaas@google.com, alex@shazbot.org, jgg@nvidia.com, kevin.tian@intel.com, 
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org, 
+	will@kernel.org, robin.murphy@arm.com, linux-arch@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, kexec@lists.infradead.org, linux-mm@kvack.org, 
+	kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+	kvmarm@lists.linux.dev, linux-pci@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Oct 15, 2026 at 09:20:24PM +0800, fangyu.yu@linux.alibaba.com wrote:
+Pratyush Yadav <pratyush@kernel.org> writes:
 
-> +/*
-> + * The global NR_SECONDARY_PAGETABLE counter is batched per-CPU and folded
-> + * into the global value asynchronously, sum the global value and the per-CPU
-> + * deltas to get an exact snapshot.
-> + *
-> + * The global value must be read without the clamp of global_node_page_state():
-> + * the raw counter is transiently negative whenever a folded free batch
-> + * outweighs allocation deltas still pending on other CPUs, and clamping
-> + * before adding the deltas back would overestimate and report phantom leaks.
-> + * global_node_page_state_monotonic() is normally reserved for monotonic
-> + * counters because a raw negative read is garbage as a page count, but the
-> + * sum with the pending deltas always restores the exact non-negative value.
-> + */
-> +static unsigned long pt_kunit_nr_secondary_pagetable(void)
-> +{
-> +	unsigned long nr = global_node_page_state_monotonic(NR_SECONDARY_PAGETABLE);
-> +
-> +#ifdef CONFIG_SMP
-> +	int nid, cpu;
-> +
-> +	cpus_read_lock();
-> +	for_each_online_cpu(cpu)
-> +		for_each_online_node(nid)
-> +			nr += per_cpu_ptr(NODE_DATA(nid)->per_cpu_nodestats,
-> +					  cpu)->vm_node_stat_diff[NR_SECONDARY_PAGETABLE];
-> +	cpus_read_unlock();
-> +#endif
+> Hi Logan,
+>
+> On Wed, Sep 02 2026, Logan Odell wrote:
+>
+>> Define a 128 byte header that can be used by all live update serialized
+>> structures. In this header, we reserve room for 64 features with
+>> supported, active, and required bits. Update the top level luo struct to
+>> use this instead of compatibility strings. Previous versions of the
+>> struct had smaller sizes, so add a minimum size check to avoid
+>> collisions with older kernels.
+>>
+>> Signed-off-by: Logan Odell <loganodell@google.com>
+>> ---
+>>  include/linux/kho/abi/luo.h  | 74 +++++++++++++++++++++++++++++-------
+>>  kernel/liveupdate/luo_core.c | 44 +++++++++++++--------
+>>  2 files changed, 90 insertions(+), 28 deletions(-)
+>>
+>> diff --git a/include/linux/kho/abi/luo.h b/include/linux/kho/abi/luo.h
+>> index 288076de6d4a..0a7662a0cf9a 100644
+>> --- a/include/linux/kho/abi/luo.h
+>> +++ b/include/linux/kho/abi/luo.h
+>> @@ -13,15 +13,17 @@
+>>   * kernel. The ABI is built upon the Kexec HandOver framework and registers
+>>   * the central `struct luo_ser` via the KHO raw subtree API.
+>>   *
+>> - * This interface is a contract. Any modification to the structure fields,
+>> - * compatible strings, or the layout of the `__packed` serialization
+>> - * structures defined here constitutes a breaking change. Such changes require
+>> - * incrementing the version number in the relevant `_COMPATIBLE` string to
+>> - * prevent a new kernel from misinterpreting data from an old kernel.
+>> + * This interface is a contract. To ensure the stability of moving between
+>> + * kernel versions, any changes to the structures should only be additive
+>> + * and should utilize the feature flags to denote the supported, active, and
+>> + * required status of the feature.
+>> + *
+>> + * Features that are entirely optional can be added with the supported and
+>> + * active flags both asserted, and the required flag cleared. Features that
+>> + * require that the next kernel supports the feature should only be added as
+>> + * supported to allow compatible transition kernels. At a later time, the
+>> + * active and required flag should be asserted.
+>>   *
+>> - * Changes are allowed provided the compatibility version is incremented;
+>> - * however, backward/forward compatibility is only guaranteed for kernels
+>> - * supporting the same ABI version.
+>>   *
+>>   * KHO Structure Overview:
+>>   *   The entire LUO state is encapsulated within a single KHO entry named "LUO".
+>> @@ -30,7 +32,7 @@
+>>   * Serialization Structures:
+>>   *   - struct luo_ser:
+>>   *     The central ABI structure that contains the overall state of the LUO.
+>> - *     It includes the compatibility string, the liveupdate-number, and pointers
+>> + *     It includes the feature flags, the liveupdate-number, and pointers
+>>   *     to sessions and FLBs.
+>>   *
+>>   *   - struct luo_session_ser:
+>> @@ -58,19 +60,65 @@
+>>  #define _LINUX_KHO_ABI_LUO_H
+>>  
+>>  #include <linux/align.h>
+>> +#include <linux/bits.h>
+>>  #include <linux/kho/abi/block.h>
+>>  #include <uapi/linux/liveupdate.h>
+>>  
+>> +/**
+>> + * struct luo_feature_hdr - Feature negotiation and versioning header.
+>> + * @supp:     Bitmask of features supported by the producing subsystem.
+>> + * @req:      Bitmask of features required for safe deserialization by the
+>> + *            receiving subsystem.
+>
+> I think you are mixing two things here: description of the payload and
+> description of the file handler capability.
+>
+> The payload that is handed over via KHO should have the active and
+> required bitmasks only. It doesn't need the supported bitmask, because
+> it doesn't matter what the handler that produced the payload supports.
+> It only matters what fields it populated and which ones are mandatory to
+> understand.
+>
+> Similarly, the description of the file handler can't really describe
+> "active". Because the capabilities are static and the active bits will
+> depend on a specific file.
+>
+> So I reckon we should separate these two. These should be the same bits
+> of course, but expressed in two ways in two different places.
+>
+>> + * @active:   Bitmask of features actually active/used in the serialized payload.
+>> + * @reserved: Reserved for future use.
+>> + *
+>> + * This header can be embedded at the beginning of any serialized structure to
+>> + * provide forward and backward compatibility via feature negotiation across
+>> + * live update.
+>> + */
+>> +struct luo_feature_hdr {
+>> +	u64 supp;
+>> +	u64 req;
+>> +	u64 active;
+>> +	u64 reserved[13];
+>
+> How do you plan to ever use this? Say I want to extend my bitmaps so I do:
+>
+>     struct luo_feature_hdr {
+>     	u64 supp;
+>     	u64 req;
+>     	u64 active;
+>     	u64 supp2;
+>     	u64 req2;
+>     	u64 active2;
+>     	u64 reserved[10];
 
-This should not be outside the mm code that manages this data
-structure.
+I thinking this is too spreaded.
 
-I think the kunit runner executes this in some environment that
-doesn't trigger this delay? At least I've never seen this assert?
+We can do somthing like:
 
-Maybe the test should just be ifdef'd off if that isn't the case?
+struct ABI {
+       u64 size;
+       u64 flags;
+       u64 flags2;
+}
 
-Jason
+where flags is extended to flags2 if flags MSB bits is 11.
+
+and each flags is formatted like 0b 00 01 11 00 11 10 11 11 00 00 11 ...
+
+each pair represents 0b 1 (required) 1 (active)
+Getting the details of the feature is just bit manipulation, so
+proper macro definition similar to the one this patch has implemented.
+
+
+~Tarun
+
+
+
+>
+> But when I go back to a kernel that doesn't know about supp2, req2,
+> etc., how does it know how to interpret these? How does it know what the
+> values mean?
+>
+> Is your goal only to be able to extend the three types of flags we have?
+> If so, perhaps something like "if bit 63 is set, the flags continue to
+> the next u64"? It is certainly harder for the parser, but seems to at
+> least be extensible. What do you think?
+>
+>> +} __packed;
+>> +
+>> +#define LUO_FEATURE_ACTIVE(s, f)		\
+>> +	do {					\
+>> +		(s)->features.supp |= (u64)(f);	\
+>> +		(s)->features.active |= (u64)(f);	\
+>> +	} while (0)
+>> +#define LUO_FEATURE_SUPPORTED(s, f)	((s)->features.supp |= (u64)(f))
+>> +#define LUO_FEATURE_REQUIRED(s, f)	((s)->features.req |= (u64)(f))
+>> +#define LUO_FEATURE_IS_ACTIVE(s, f)	(!!((s)->features.active & (u64)(f)))
+>> +#define LUO_FEATURE_IS_SUPPORTED(s, f)	(!!((s)->features.supp & (u64)(f)))
+>> +#define LUO_FEATURE_IS_REQUIRED(s, f)	(!!((s)->features.req & (u64)(f)))
+>> +
+>>  /*
+>>   * The LUO state is registered under this KHO entry name.
+>>   */
+>>  #define LUO_KHO_ENTRY_NAME	"LUO"
+>> -#define LUO_ABI_COMPATIBLE	"luo-v5"
+>> -#define LUO_ABI_COMPAT_LEN	ALIGN(sizeof(LUO_ABI_COMPATIBLE), 8)
+>> +
+>> +/*
+>> + * Bits associated with the luo_feature_hdr values.
+>> + */
+>> +#define LUO_FEATURE_NUMBER    BIT_ULL(0)
+>> +#define LUO_FEATURE_SESSIONS  BIT_ULL(1)
+>> +#define LUO_FEATURE_FLBS      BIT_ULL(2)
+>
+> Nit: please give the flags full documentation on their semantics.
+>
+>> +
+>> +#define LUO_CORE_FEATURES_SUPP		(LUO_FEATURE_NUMBER | \
+>> +					 LUO_FEATURE_SESSIONS | \
+>> +					 LUO_FEATURE_FLBS)
+>> +#define LUO_CORE_FEATURES_REQ		(LUO_FEATURE_NUMBER | \
+>> +					 LUO_FEATURE_SESSIONS | \
+>> +					 LUO_FEATURE_FLBS)
+>> +#define LUO_CORE_FEATURES_ACTIVE	(LUO_FEATURE_NUMBER | \
+>> +					 LUO_FEATURE_SESSIONS | \
+>> +					 LUO_FEATURE_FLBS)
+>>  
+>>  /**
+>>   * struct luo_ser - Centralized LUO ABI header.
+>> - * @compatible:     Compatibility string identifying the LUO ABI version.
+>> + * @features:       Bit mask of supported and active features.
+>>   * @liveupdate_num: A counter tracking the number of successful live updates.
+>>   * @sessions_pa:    Physical address of the first session block header.
+>>   * @flbs_pa:        Physical address of the FLB header.
+>> @@ -78,7 +126,7 @@
+>>   * This structure is the root of all preserved LUO state.
+>>   */
+>>  struct luo_ser {
+>> -	char compatible[LUO_ABI_COMPAT_LEN];
+>> +	struct luo_feature_hdr features;
+>
+> Do we still need compatible here? How will we ever do breaking changes
+> if we really need to?
+>
+>>  	u64 liveupdate_num;
+>>  	u64 sessions_pa;
+>>  	u64 flbs_pa;
+>> diff --git a/kernel/liveupdate/luo_core.c b/kernel/liveupdate/luo_core.c
+>> index 1b2bda22902d..6add1ecc463f 100644
+>> --- a/kernel/liveupdate/luo_core.c
+>> +++ b/kernel/liveupdate/luo_core.c
+>> @@ -107,26 +107,37 @@ static int __init luo_early_startup(void)
+>>  		return 0;
+>>  	}
+>>  
+>> -	if (len < sizeof(*luo_ser)) {
+>> -		pr_err("LUO state is too small (%zu < %zu)\n", len, sizeof(*luo_ser));
+>> -		return -EINVAL;
+>> +	luo_ser = phys_to_virt(luo_ser_phys);
+>> +
+>> +	if (len < sizeof(struct luo_feature_hdr)) {
+>> +		pr_err("LUO state is too small (%zu < %zu)\n",
+>> +		       len, sizeof(struct luo_feature_hdr));
+>> +		err = -EINVAL;
+>> +		goto out_free_ser;
+>>  	}
+>>  
+>> -	luo_ser = phys_to_virt(luo_ser_phys);
+>> -	if (strncmp(luo_ser->compatible, LUO_ABI_COMPATIBLE, LUO_ABI_COMPAT_LEN)) {
+>> -		pr_err("LUO state is incompatible with '%s'\n", LUO_ABI_COMPATIBLE);
+>> -		return -EINVAL;
+>> +	if (luo_ser->features.req & ~LUO_CORE_FEATURES_SUPP) {
+>> +		pr_err("Unsupported required LUO feature (req: 0x%llx, supp: 0x%llx)\n",
+>> +		       luo_ser->features.req, (u64)LUO_CORE_FEATURES_SUPP);
+>> +		err = -EOPNOTSUPP;
+>> +		goto out_free_ser;
+>>  	}
+>>  
+>> -	luo_global.liveupdate_num = luo_ser->liveupdate_num;
+>> -	pr_info("Retrieved live update data, liveupdate number: %lld\n",
+>> -		luo_global.liveupdate_num);
+>> +	if (LUO_FEATURE_IS_ACTIVE(luo_ser, LUO_FEATURE_NUMBER)) {
+>> +		luo_global.liveupdate_num = luo_ser->liveupdate_num;
+>> +		pr_info("Retrieved live update data, liveupdate number: %lld\n",
+>> +			luo_global.liveupdate_num);
+>> +	}
+>>  
+>> -	err = luo_session_setup_incoming(luo_ser->sessions_pa);
+>> -	if (err)
+>> -		goto out_free_ser;
+>>  
+>> -	luo_flb_setup_incoming(luo_ser->flbs_pa);
+>> +	if (LUO_FEATURE_IS_ACTIVE(luo_ser, LUO_FEATURE_SESSIONS)) {
+>> +		err = luo_session_setup_incoming(luo_ser->sessions_pa);
+>> +		if (err)
+>> +			goto out_free_ser;
+>> +	}
+>> +
+>> +	if (LUO_FEATURE_IS_ACTIVE(luo_ser, LUO_FEATURE_FLBS))
+>> +		luo_flb_setup_incoming(luo_ser->flbs_pa);
+>>  
+>>  	err = 0;
+>>  
+>> @@ -162,7 +173,10 @@ static int __init luo_state_setup(void)
+>>  		return PTR_ERR(luo_ser);
+>>  	}
+>>  
+>> -	strscpy(luo_ser->compatible, LUO_ABI_COMPATIBLE, sizeof(luo_ser->compatible));
+>> +	luo_ser->features.supp = LUO_CORE_FEATURES_SUPP;
+>> +	luo_ser->features.req = LUO_CORE_FEATURES_REQ;
+>> +	luo_ser->features.active = LUO_CORE_FEATURES_ACTIVE;
+>> +
+>>  	luo_ser->liveupdate_num = luo_global.liveupdate_num + 1;
+>>  
+>>  	luo_session_setup_outgoing(&luo_ser->sessions_pa);
+>
+> -- 
+> Regards,
+> Pratyush Yadav
