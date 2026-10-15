@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77DD151815C;
-	Thu, 15 Oct 2026 10:51:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 819393DAADE;
+	Thu, 15 Oct 2026 10:52:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792061470; cv=none; b=B5zszry0LmS8P+VaCemfxQY3BxHqk9pn0manMezSZUyUG/xeqQ8h4FARJWD972qxjAApy24fennHYFNYCbLzYer74qpnAFASuA3Y0L4p5/n9qEK3l61FhLq4zXO2/ModzAW5eXPpzp5RF+m4WN1HqrwTDGeiPx460r1SsNXMARU=
+	t=1792061558; cv=none; b=g6gCuPouF7Vk0CerG3GqeGhKQMIdyNartBmcmcMqzcm3x2hjfScUgPZMhlSscPyOAyRtamz5lNLGOh+tpMNjsgaqkPvSA/A02Mrc0c2hnMFzfyspujWce4q8mU1fS4HE1Pb0pC7yL1l0kOLzOBfJ8GcNFOnGgQdQTSOjK24SWeQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792061470; c=relaxed/simple;
-	bh=iATAZQNpwLiLA6uzvSr9O8Gp6IjloaF2SO3MNPYTggQ=;
+	s=arc-20240116; t=1792061558; c=relaxed/simple;
+	bh=m7cKcAII0plOVkGKcv7uSfFLh3XYSWdt5h/PKHYcFK4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rWByeMWCWmiNNBlwMyndyPa/5TQJUoM9QGQeB4w3G1aqaWBRcPEXDO/V8dh2rEDpvpupGMOdc8p6cSyZc7Q8RryN1DKm8h/z7fClUOd73eXxJzTHKrn/6/iGWCtm/wxBvTsohmRyCzjXxV8jxQAzk5NHWyJ7Idw/TBwXwDIfoTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eI00sS55; arc=none smtp.client-ip=100.103.45.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=Xg1JiBa/0fP93fglgTYTgCjjrukeNJXzde3QR3Oyo9Y0y3zDk26JKFHugjkDxKOw4AV9GYKTJdITI/deQJf0bpSvasZPM3fYjMSetfS8cTetpOOLQFTK4wJjfEdqBDie9kXYqB98VKauUyJFydoomhqzfNnMWXlHZvwPRilgQT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lpu1v2r0; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eI00sS55"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47A061F000C4;
-	Thu, 15 Oct 2026 10:51:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lpu1v2r0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 156521F000C4;
+	Thu, 15 Oct 2026 10:52:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792061465;
-	bh=bFFn0cRn6AsMOpftXDuldzKxv+UaZPVlY/652IOEEvE=;
+	s=k20260515; t=1792061549;
+	bh=xC/wmtw3i4A2qkYE5TyAigTML94khyrDMBlobSOJqgU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=eI00sS55Iy3s9dl4hDFDl3vJAJSGRnw1ZcAx7y1Ox7wH6ID+qeZkJc7dXm9qlM+Bt
-	 ZqIHQxJlHxS0aggNGh3Y1yINK2NpmPHTiZuCLHVn2iiIEjguDBRLdjtJv93FDUX+JB
-	 OO85Nula9BWRO+ArMXHaE6CdaBQhuh86CSUMahrEoO6bmFLd6Q6ChJTmAO6AdCpJ61
-	 yrrD5zzOxE3+brjgCPXRJe0G1VvoCPuC1hGPs+VCvu0nDwMakBRtYLXQ8m2zlPzBPF
-	 R/Lbh76mSki0DMATkeeyUxSsQkrivw/BRdWQDnDVijBaKXbbsQJzc/tacZw2ApyYqR
-	 It0q9fLzbF18g==
-Date: Thu, 15 Oct 2026 12:50:59 +0200
+	b=lpu1v2r0eRW+NRHnHYNntpREb8FMeCzXvUSXWLPRx2DICFS4FVUw0CR1u/6+PzGt+
+	 Yzl8fxEqDbo8MXZhXaDNuIBJ6JeqVUHk+X9/tHvhPtpVsOOEoTfdpKE4ZeGl0/3D7c
+	 W52ZmS9sh+GQ3PmXB+jkFg9vC6beXSxsuyoAdrn2azxT22T0+C3B/6RLnG2xLU/qCO
+	 Xwyu91CPNXWyge0u1YAOun349hIpNU9DILBK/DuEyCDVZinqo/u+YX4ik+1JVKcn4k
+	 L0/lnaxv+n/8+XgltW01lXWDw/NepkPyzJrVbiS2Du+anuU9FCrp/UOkam0rFCILkY
+	 9RzfHijUP9llg==
+Date: Thu, 15 Oct 2026 12:52:23 +0200
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
 Cc: Rob Clark <robin.clark@oss.qualcomm.com>, 
@@ -43,11 +43,10 @@ Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
 	Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
 	freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
 	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
-Subject: Re: [PATCH 01/13] dt-bindings: display: msm: Add Qualcomm DCP
- bindings
-Message-ID: <20261015-heavy-clam-of-sunshine-8fe831@quoll>
+Subject: Re: [PATCH 13/13] arm64: dts: qcom: hawi: Add DCP support
+Message-ID: <20261015-unstoppable-masterful-wrasse-87dcd4@quoll>
 References: <20261015-jshekhar-drm-msm-dcp-v1-v1-0-48aad0fe4f72@oss.qualcomm.com>
- <20261015-jshekhar-drm-msm-dcp-v1-v1-1-48aad0fe4f72@oss.qualcomm.com>
+ <20261015-jshekhar-drm-msm-dcp-v1-v1-13-48aad0fe4f72@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,71 +55,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261015-jshekhar-drm-msm-dcp-v1-v1-1-48aad0fe4f72@oss.qualcomm.com>
+In-Reply-To: <20261015-jshekhar-drm-msm-dcp-v1-v1-13-48aad0fe4f72@oss.qualcomm.com>
 
-On Thu, Oct 15, 2026 at 01:08:21PM +0530, Jayant Shekhar wrote:
-> DCP platforms place the display pipeline under firmware control, so Linux
-> cannot discover display resources through direct register access. The DRM
-> driver therefore needs device-tree descriptions of the firmware transport,
-> display topology, IOMMU contexts, and panel connections.
+On Thu, Oct 15, 2026 at 01:08:33PM +0530, Jayant Shekhar wrote:
+> diff --git a/arch/arm64/boot/dts/qcom/hawi.dtsi b/arch/arm64/boot/dts/qcom/hawi.dtsi
+> index 0926d880cb0c..58fcf42cbaba 100644
+> --- a/arch/arm64/boot/dts/qcom/hawi.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/hawi.dtsi
+> @@ -8235,4 +8235,63 @@ timer {
+>  			     <GIC_PPI 11 IRQ_TYPE_LEVEL_LOW>,
+>  			     <GIC_PPI 10 IRQ_TYPE_LEVEL_LOW>;
+>  	};
+> +
+> +	dcp: virtio@9be8000 {
+> +		compatible = "qcom,dcp-virtio", "virtio,mmio";
 
-Due to dependencies this cannot be tested, so limited review.
+More slop.
 
-A nit, subject: drop second/last, redundant "bindings". The
-"dt-bindings" prefix is already stating that these are bindings.
-See also:
-https://elixir.bootlin.com/linux/v7.1-rc7/source/Documentation/devicetree/bindings/submitting-patches.rst#L23
-
-> 
-> Add bindings for the Qualcomm DCP VirtIO display function, including the
-> INTF graph and DSI host outputs. Document the framebuffer IOMMU context,
-> IPCC power-notify mailbox and interrupts, firmware display topology, and
-> firmware-visible IOVA window supplied by the parent VirtIO-MMIO transport.
-> 
-> Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> Assisted-by: LLM
-> ---
->  .../bindings/display/msm/qcom,dcp-dsi.yaml         |  75 +++++++++++++
->  .../bindings/display/msm/qcom,dcp-virtio.yaml      | 113 +++++++++++++++++++
->  .../devicetree/bindings/display/msm/qcom,dcp.yaml  | 119 +++++++++++++++++++++
->  3 files changed, 307 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/msm/qcom,dcp-dsi.yaml b/Documentation/devicetree/bindings/display/msm/qcom,dcp-dsi.yaml
-> new file mode 100644
-> index 000000000000..f7178c66c09e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/display/msm/qcom,dcp-dsi.yaml
-> @@ -0,0 +1,75 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/display/msm/qcom,dcp-dsi.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm DCP DSI host
-> +
-> +maintainers:
-> +  - Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> +
-> +description: |
-> +  A MIPI DSI host exposed by the Qualcomm DCP VirtIO device (see
-> +  qcom,dcp.yaml). DCP is a firmware protocol shared across multiple
-> +  Qualcomm SoCs, not specific to any one of them; Hawi is its first
-> +  platform. The DSI host and its connection to a panel are described
-> +  using the standard DSI controller and OF graph properties.
-> +
-> +allOf:
-> +  - $ref: /schemas/display/dsi-controller.yaml#
-> +
-> +properties:
-> +  reg:
-> +    maxItems: 1
-> +    description: Index of this DSI host among its siblings.
-> +
-> +  status: true
-
-I see slop, I finished here. Mind this maintainers summit words - if you
-use AI, you must use good one, not the shloppy slop.
+At least you could ask your agent to TEST it. See internal guidelines
+how to do it.
 
 Best regards,
 Krzysztof
