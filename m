@@ -1,159 +1,160 @@
-Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010012.outbound.protection.outlook.com [52.101.193.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEFE14AA56B
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 13:20:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792070445; cv=none; b=Bn7ksrCHN6CR9UqD7eyTJW2nzIQYFZTksZletvv7ylrilG6VlTnqrhOjE4jqtUgXo2uTshpiAEuqtA+PF61z5eINZgEeL4Z2dfp6yO0R5F1rbQQS1JWHy2QT4aDXVoYmUlVf0y/A8f7p5nCudRGNk94WSuohSt7j6V7CewGiEQE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792070445; c=relaxed/simple;
-	bh=p7maNFUFZ8AqbEu28V2pBJOxhMBuQWHTODXj03fzBeE=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=YcjAuKYnd2p/VhwhtyePSBtT8HTW3EfL14GtIas1mahvf0zPcaGQw9rZTIKMmgwsTTn+Dd6tABr7ZLQNJvVW8iPajScN4gOq571BCilPyI0msr02Rm24RHpUOyH+0UOiCkPR5i/CNobfcFXkOWTlP3Nw/J9jQrP+BByKbqgRYnI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=fUnivaV+; arc=none smtp.client-ip=115.124.30.97
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C843CF69C
+	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 13:40:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792071658; cv=fail; b=ADz0X1yfe17oGJZDeNs6KkOuYi96Pjf4h7S7ERfFhMK0DFv6uATky2cX8PG8o6slSjdu2tLc7pWJ5jh4nWeoocqT7m7yHqfzn1rnL4OtHmu2vqj52t7d2gMaYdaErp3iEGyrBqZFxPu9I1YMnAvf1oUtOEHZo0empM2k/q27Rig=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792071658; c=relaxed/simple;
+	bh=qbU0h+HyM2YqLn2EWbtYGlrBUxnI6fFZoDgItXoDxqE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=e6Ej6KuJm6EWDEkKlD/s7d5J1fT7DWFWrJDwCK2sI2Nr1nGIc86S1TpBnT5KgW7RJorYjJGQ+6jI8PndOs1/IkcUZ04+ieA+ujEq1RnS+s/slrmk6+cHKvRH7asv0QoZVMkss45H+VI3kQNd0xTQgvbxryfxNVNoerPe4AahXTc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WJNYVwac; arc=fail smtp.client-ip=52.101.193.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="fUnivaV+"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1792070433; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=vsIpB7vSSkRwIpK0lyI7cC1L86RAh24gU6u1hVeflGQ=;
-	b=fUnivaV+tHjWqDp1Ju3QhOHL6nM1yz03n6M5wqtIE6vPV2AxiNhbCt8gxDnPdAgbbJav3+juM06uKhTKZanuH3IqNnrtcuelL2rF7Ietswyl6ll7e/U0k1oM6xki+7DJIq2AG3VI4ZIIYzsHSA44T/zoMhpBTTSgAJipFwqMreg=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0XCrq9fv_1792070431;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XCrq9fv_1792070431 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Thu, 15 Oct 2026 21:20:32 +0800
-From: fangyu.yu@linux.alibaba.com
-To: jgg@nvidia.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	joerg.roedel@amd.com,
-	jgg@ziepe.ca,
-	vasant.hegde@amd.com,
-	kevin.tian@intel.com,
-	Ankit.Soni@amd.com
-Cc: guoren@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [PATCH] iommupt/kunit: Read an exact NR_SECONDARY_PAGETABLE snapshot for the leak check
-Date: Thu, 15 Oct 2026 21:20:24 +0800
-Message-Id: <20261015132024.43998-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WJNYVwac"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=qQEZuVBzr9ERiZpYA4KyrFGytKgrZFIK2EGHiXZlFnKXsicXcYKB0Z6CfbkflS5wAPRN736yO3Z3YWcm4gvt8AwlOG1K546KNfFr1tUyCkcSyHH/0Y4Jgx3jZOMvhWJsmPcBmVe4rEPWLQI3JtgKun9ICdROgsH404PN2Eys0iALF66/rp05kq0KNkG9Jt0XUiEiAptRXIFPK7kvNCm7FKcUjqksVAOQnHEZn2RckjMxZpoy6wrcAC/DShpDhNnOqwj5Ap5i0TXI9XRHeQdCnJD67rT2ZqPg2hzHBbI3uEASMVA+4ewURf3bRnlhlpcuHFsGawKLDDjF+KXnthbrjA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=vs6rPn9agh2Vc8z63hmqjpR5ZxBDKOI8l7kXmBJvuOg=;
+ b=y/KYobi+sae3A/jcQlzD+id+Y/8SJhQ7Jfs2u/JO0UVWv67Qc+7POwk20tELToIB+urg4dSfonw/2F3CezvrNiNvyazNJ7jtPDOzx/QDlHGItKObHRRGA/c2J4gi7fEhszGFTWARoyKnNYKWGFqlryNJ0XMdlLuN7fK4z/4dauDvRbilkIrKq0IjBe/Ah4ZHIpwr7SHiDHMypUjvud4dd908PqRXGsOWxuisyhZZmkMPGLW+uA4oUH9BpIzMVjLZcAo6t7Jsqi84Y5qSuXBspbgf/ZVn6HP+9krskHKvGxGk6xpP6DrHaSsug3GoF5pBNymRpshT3XKMTryHZpPdeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vs6rPn9agh2Vc8z63hmqjpR5ZxBDKOI8l7kXmBJvuOg=;
+ b=WJNYVwachw6D32wYbA0NGSj+288k7vL5wbbJZGFrmw1K4NYvjUfM5ZnOmE7l2tCniKBEHQ1DtvdZv08iUb9v9xvuYUGYEBdJQBHgL4U/w7SAERGGDhsz3V5e6Dys3QzCdHDCA59xuvervZKNCmuCjIGFUS91bBkgoXOzFcbYfYVOOrXP/7xVl4UL60IYijgMJHUXtp+BuxkJ1AQ05ua631elVRO4N4uYFOJXjHfHRn8FunbNiekZ7zKdBPsumD4wMaSdrmpEsG+ou5xAmrwlhW4YA7RvvAoLV4OgVg5lc0ObT679xolFp2/3mVkGjWyn2pbBs/wVIEJaIOHEOWl3Gw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by CY8PR12MB7707.namprd12.prod.outlook.com
+ (2603:10b6:930:86::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.13; Thu, 15 Oct
+ 2026 13:40:49 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0522.013; Thu, 15 Oct 2026
+ 13:40:49 +0000
+Date: Thu, 15 Oct 2026 10:40:48 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: fangyu.yu@linux.alibaba.com
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	joerg.roedel@amd.com, vasant.hegde@amd.com, kevin.tian@intel.com,
+	Ankit.Soni@amd.com, guoren@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommupt/kunit: Read an exact NR_SECONDARY_PAGETABLE
+ snapshot for the leak check
+Message-ID: <20261015134048.GB13920@nvidia.com>
+References: <20261015132024.43998-1-fangyu.yu@linux.alibaba.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261015132024.43998-1-fangyu.yu@linux.alibaba.com>
+X-ClientProxiedBy: CH0PR03CA0355.namprd03.prod.outlook.com
+ (2603:10b6:610:11a::12) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|CY8PR12MB7707:EE_
+X-MS-Office365-Filtering-Correlation-Id: f370077a-7151-40eb-868c-08df2ac1ec93
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|366016|23010399003|56012099006|11063799006|261009223027099003|10067099003|22082099003|6133799003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	AVGyXkjpKuse8TOyYTsiIlzq03b9gbSuXE2K4i/60eR8tqyxjLFQ9GfJkTxz/fqPY8wHFf12hwNeiyY0qHU1QJuO/QEh5xSTjFV5BcT/NnMThj0TtQk82OF4ZeGDqLA7d8b22mk2q/6cRg3tSEXuga5FsRyKE9paosmz0xBQqZs+wYcDvbNTP1mxXCqdgzH/7q4R2oxfmh1MVg7jj7gFUa9SuyYDGvjIlcZ5jyLUOmElPTCTjS++0ThW6MJ9wuPtFC+CXOIL5MK2oZE0ZmLnTOtwyYlOLwl5kQt+l42UDTTHE2ziQ1jLzL75hqLP5TGjrEmRTy/UNMXlH/Sqy88WrATOY1MQDfC72lZEt5dW1u6aL6ULQk47ZsnfqrOR27LnYKnqUVQYOYAG3sR67O815gRmmQ43impKNEUnPElVqeN4HbxB0lIaB0zKjp3kdi5iT4Ho3K1Pjr15BAZYLNWYjlWkdIG+c7Dz4s+oBQ1R1wWLi6ovsKcBfRpibrNtFUF5hhiRIrk/u9H6jLHU7dii+j2VRPZUQd1JFv8GBdm90aenOC9pNW30Viaf6vOtyCC/lhTvXz0a7on65E0rHAhRa3Kn9+H+C8WZ4hzGuzeQRf63lv8dQG0G3djhm2pvL++A8bbVYQ97MckEOCovn6s86qTDjLR3EfFDlTk683VPekE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(366016)(23010399003)(56012099006)(11063799006)(261009223027099003)(10067099003)(22082099003)(6133799003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?hPaDpzjJj7XDg0qufz0bmmplrbblLJcoxL689K7m7bOxDOGG1uYw90OU6pHS?=
+ =?us-ascii?Q?bsaFUtMXlY0wpPfvzZhV+BOXiJA9F2vYw6XYqvBkPxsdQHDpXFiiCkgz3hZ8?=
+ =?us-ascii?Q?Gcd6NrFEMc2TGQj6RS1kqNw2/XyHnz/HYat0p20LiRxyY1w7ABVlYFRCQWQb?=
+ =?us-ascii?Q?yiOXtneKNHePt0gBjHxXKP3bC6v7gN2siuCRWCBw474nrmK2S1RCJYRpTTyZ?=
+ =?us-ascii?Q?TGzl0uvbceRU6usH193meTXwk2vntNQu17+aK7f7YIJYVKo+yilvrVLUD6aC?=
+ =?us-ascii?Q?XyS3fJZcuxJclAWG4niKyLXki6rDyHubwM7jOvFCyCem7xkXdqUmFDmByvV8?=
+ =?us-ascii?Q?XKQLRFB1vK1p6tnV5M0QAgoWOE+MjP4M6Bezi1UqGINYC/ddHTD2kJqYyt84?=
+ =?us-ascii?Q?WyWtd1kgvS+n1jFqmrsWkeD2GdwDd3EQNB3CdCRgup/0hD4A0o04wjh1M66i?=
+ =?us-ascii?Q?gy0Vvff1XSCbkySRs0Mv4rnsr/CNcxCTI3KE38Fzar5vTtcfGdvPGyzAxL4J?=
+ =?us-ascii?Q?NMbPb3YXZWa6V9HNPpuwPi4X9a9bNU5zAndo2e55/sTTd+lwNEcnqlsqq9AA?=
+ =?us-ascii?Q?TzizovLDyZxMF+VEyhzc5UWQFAUrBj2OU/lvFI78VjjdCABZ+VKFgCsSi0Wf?=
+ =?us-ascii?Q?MmCb3fHpYP4ZVDXz9MUEW99RPAOg9scPcSvT0NiTnXa5LnDgvwV5ViNmFvYo?=
+ =?us-ascii?Q?3Yyv1LG1RY5ZJ5c9ZwfQp3j2LVxbSmYBpBFXdw8EuiR+mXG/XVTL3WhjVn2O?=
+ =?us-ascii?Q?+XV4jxKi6sq7Tm7TJDsZ5Kf7LmIHPCDGtwWW/JNgGjG8YPapiZjyDm3q8RAh?=
+ =?us-ascii?Q?z7yKgfhzDi8Dyw8t8B4AYGpyfm9817SQxEGthituRcl4KfP18CpraC3QYnAy?=
+ =?us-ascii?Q?OG+EF/EJHjQ4H9RaTcrOrZnzBN5mCL+xLSnTwh/zM30OfpkHEVhr477xzX5e?=
+ =?us-ascii?Q?vpPnGmJHA/gNvdHrVNXUr2PE4zfY//swzBC2VeLKuEbDsLQsGGmwFzXwH/ca?=
+ =?us-ascii?Q?Aw9Y3niUWw3vz4jr7cP/TM2fIuiQxoEiaqd/bnWlQ+e+tCew4dWAuSo2ckxJ?=
+ =?us-ascii?Q?YioCSoO3MzedC/srgYKOV6FOFmwoVxS7XHbqEauPUTUuE7KLGd7ET49lfBIt?=
+ =?us-ascii?Q?K9/ZgjE3Ra3Q+Ka2/3EREYvfeX3h7bqPnGwqRBhZGKZPz9YGFAaTIkG3Ln/k?=
+ =?us-ascii?Q?Uh08JttUFcQVUbtUUMpAVrrPckpJRf2pLLblLTeFlBXako6Mia6bDviz5ZSX?=
+ =?us-ascii?Q?qn6sUrHPCqVTfBhQ1CCQxkfPV4rZOQSdkWE718hjfJRQ0PaQLgzMKsw7P5sl?=
+ =?us-ascii?Q?v9hJa9UOPaeRztItD9BzpKg/ASdW30OzVLyXHF6LxNfXrfYQhbpMq3R149x1?=
+ =?us-ascii?Q?4F5KOxPMM3/BrXRR0quS+VFXSkRlxbv+ESsVij/Zk6S68DRq46WWiBz5hpUW?=
+ =?us-ascii?Q?BPzA8371p2auDmktyXH5F4FcGJylhceEFOY7mvjnBvQbufMlwupdaTZZ5oT8?=
+ =?us-ascii?Q?PBAZYOK0NLI8jy8I1hNTQ7XqOEO1CP4LhAo87giD0HuV3Odu0V20RdG61tjv?=
+ =?us-ascii?Q?4E3lOFNySfaGBUiNeY/IJTyH5/cPf1kYV3abiEPnGkSKT1dUgcLGe7ccH/1z?=
+ =?us-ascii?Q?pgq+HGMQauFXR7KoXgoSTsNPjk6/sFXczjQV9nn6WkMe+YQhehRx6xMD1FEu?=
+ =?us-ascii?Q?hUsftrUAmezvB4clPZEKxTgJJgTxRj7m4v0AGzJKsDvkxssu?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f370077a-7151-40eb-868c-08df2ac1ec93
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2026 13:40:49.7039
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oVzf+AsNp2qCcJzu2z5gDJx0P+O2MLvaNmdWaCCvSx3PIZ37EFDv/RMC4/I7qAMH
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7707
 
-From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On Thu, Oct 15, 2026 at 09:20:24PM +0800, fangyu.yu@linux.alibaba.com wrote:
 
-NR_SECONDARY_PAGETABLE is per-CPU batched and only folded into the global
-counter about once per second. The tests complete within a few seconds, so
-the init/exit checks can read stale values and randomly fail when a fold
-lands mid-test, even though no page table is leaked:
+> +/*
+> + * The global NR_SECONDARY_PAGETABLE counter is batched per-CPU and folded
+> + * into the global value asynchronously, sum the global value and the per-CPU
+> + * deltas to get an exact snapshot.
+> + *
+> + * The global value must be read without the clamp of global_node_page_state():
+> + * the raw counter is transiently negative whenever a folded free batch
+> + * outweighs allocation deltas still pending on other CPUs, and clamping
+> + * before adding the deltas back would overestimate and report phantom leaks.
+> + * global_node_page_state_monotonic() is normally reserved for monotonic
+> + * counters because a raw negative read is garbage as a page count, but the
+> + * sum with the pending deltas always restores the exact non-negative value.
+> + */
+> +static unsigned long pt_kunit_nr_secondary_pagetable(void)
+> +{
+> +	unsigned long nr = global_node_page_state_monotonic(NR_SECONDARY_PAGETABLE);
+> +
+> +#ifdef CONFIG_SMP
+> +	int nid, cpu;
+> +
+> +	cpus_read_lock();
+> +	for_each_online_cpu(cpu)
+> +		for_each_online_node(nid)
+> +			nr += per_cpu_ptr(NODE_DATA(nid)->per_cpu_nodestats,
+> +					  cpu)->vm_node_stat_diff[NR_SECONDARY_PAGETABLE];
+> +	cpus_read_unlock();
+> +#endif
 
-    # test_map_simple: ASSERTION FAILED at .../kunit_iommu_pt.h:473
-    Expected priv->orig_nr_secondary_pagetable ==
-    global_node_page_state(NR_SECONDARY_PAGETABLE), but
-        priv->orig_nr_secondary_pagetable == 68 (0x44)
-        global_node_page_state(NR_SECONDARY_PAGETABLE) == 70 (0x46)
+This should not be outside the mm code that manages this data
+structure.
 
-Sum the per-CPU batches together with the global counter to get an exact
-snapshot before and after each test case, which makes the check
-deterministic without any settling delay.
+I think the kunit runner executes this in some environment that
+doesn't trigger this delay? At least I've never seen this assert?
 
-Fixes: bc5233c0904e ("iommupt: Add a kunit test for the IOMMU implementation")
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
----
- drivers/iommu/generic_pt/kunit_iommu_pt.h | 40 ++++++++++++++++++++---
- 1 file changed, 36 insertions(+), 4 deletions(-)
+Maybe the test should just be ifdef'd off if that isn't the case?
 
-diff --git a/drivers/iommu/generic_pt/kunit_iommu_pt.h b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-index ece1c9b8c55d..d20728b196be 100644
---- a/drivers/iommu/generic_pt/kunit_iommu_pt.h
-+++ b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-@@ -4,6 +4,7 @@
-  */
- #include "kunit_iommu.h"
- #include "pt_iter.h"
-+#include <linux/cpu.h>
- #include <linux/generic_pt/iommu.h>
- #include <linux/iommu.h>
- 
-@@ -438,6 +439,36 @@ static struct kunit_case iommu_test_cases[] = {
- 	{},
- };
- 
-+/*
-+ * The global NR_SECONDARY_PAGETABLE counter is batched per-CPU and folded
-+ * into the global value asynchronously, sum the global value and the per-CPU
-+ * deltas to get an exact snapshot.
-+ *
-+ * The global value must be read without the clamp of global_node_page_state():
-+ * the raw counter is transiently negative whenever a folded free batch
-+ * outweighs allocation deltas still pending on other CPUs, and clamping
-+ * before adding the deltas back would overestimate and report phantom leaks.
-+ * global_node_page_state_monotonic() is normally reserved for monotonic
-+ * counters because a raw negative read is garbage as a page count, but the
-+ * sum with the pending deltas always restores the exact non-negative value.
-+ */
-+static unsigned long pt_kunit_nr_secondary_pagetable(void)
-+{
-+	unsigned long nr = global_node_page_state_monotonic(NR_SECONDARY_PAGETABLE);
-+
-+#ifdef CONFIG_SMP
-+	int nid, cpu;
-+
-+	cpus_read_lock();
-+	for_each_online_cpu(cpu)
-+		for_each_online_node(nid)
-+			nr += per_cpu_ptr(NODE_DATA(nid)->per_cpu_nodestats,
-+					  cpu)->vm_node_stat_diff[NR_SECONDARY_PAGETABLE];
-+	cpus_read_unlock();
-+#endif
-+	return nr;
-+}
-+
- static int pt_kunit_iommu_init(struct kunit *test)
- {
- 	struct kunit_iommu_priv *priv;
-@@ -447,8 +478,7 @@ static int pt_kunit_iommu_init(struct kunit *test)
- 	if (!priv)
- 		return -ENOMEM;
- 
--	priv->orig_nr_secondary_pagetable =
--		global_node_page_state(NR_SECONDARY_PAGETABLE);
-+	priv->orig_nr_secondary_pagetable = pt_kunit_nr_secondary_pagetable();
- 	ret = pt_kunit_priv_init(test, priv);
- 	if (ret) {
- 		kunit_kfree(test, priv);
-@@ -461,17 +491,19 @@ static int pt_kunit_iommu_init(struct kunit *test)
- static void pt_kunit_iommu_exit(struct kunit *test)
- {
- 	struct kunit_iommu_priv *priv = test->priv;
-+	unsigned long nr;
- 
- 	if (!test->priv)
- 		return;
- 
- 	pt_iommu_deinit(priv->iommu);
-+	nr = pt_kunit_nr_secondary_pagetable();
-+
- 	/*
- 	 * Look for memory leaks, assumes kunit is running isolated and nothing
- 	 * else is using secondary page tables.
- 	 */
--	KUNIT_ASSERT_EQ(test, priv->orig_nr_secondary_pagetable,
--			global_node_page_state(NR_SECONDARY_PAGETABLE));
-+	KUNIT_ASSERT_EQ(test, priv->orig_nr_secondary_pagetable, nr);
- 	kunit_kfree(test, test->priv);
- }
- 
--- 
-2.50.1
-
+Jason
