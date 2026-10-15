@@ -1,281 +1,229 @@
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D3213921C6
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 04:24:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C006470117;
+	Thu, 15 Oct 2026 06:38:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792038253; cv=none; b=CoNnQBW0SucQhzN6+2dAye4tVP6WJD61PcvnOqTiZW1CMQMz9XC/7YsGZ2aW8GIpDaCvD66tkAVnCxTTw2HxlvfIs/B/brEafFQjmIS+eAfHiAo9EqX9TebhJAsrHbcqaBZ7vC8andcpTWhwkye7ueVwicyB1QqrJJeu6kgCs8Q=
+	t=1792046308; cv=none; b=C2/Cd3EYmZ0LCt9ebY53lue+EEYsgAzZPJ+RABjjOCMLcCZXa21lpJbS0AFNrbwKex1QDSIMIKM2eeeaYgyCyLLo2GLsuxIjOYNSufJRqzYf7tx8hiA8y9wuRkZn589hUctKWrnJQWpLlIE7CwC4U4tDZ4UJEtXTCRVleGV1Mbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792038253; c=relaxed/simple;
-	bh=HBsRSDytGP1ixAALMZ5BxVYMOlkdn2lfW2SfQbXtfR4=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=YddWdlxmMC000uemiWykNxRObrSkoqE1jXaNe3XVfgNNq/lTZhxmK5tQH1hKpgAr4Awn7RqdQ/QpLBVKZe7X2wfQBABYdL7vpLJwrQn1fPdeOPmyxlNUYgBGM2/U/Aj0CEHZYgVxkOWrUxRInNDEu0wbU0Ycn+lyvOc/2TxgGr4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=v/CsGVII; arc=none smtp.client-ip=115.124.30.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1792046308; c=relaxed/simple;
+	bh=C5S/fcxahP44X6HH95SPiDjS7f7yvFtGXNMyBC8X13E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kVEMbzoPkO7A7TCqoPJQ8slvVLIt8XBZhOpESG6790/oX05rWZYfRWLzNEHQZzkz2sxKIjDvyv/FEnSrzKAXA794M5TivETtuEfm81SK5qblqY6NJ97Bfz2lUEy1yTEy5+hZU+Uau1yzwxyPoesDlkUwzrOD0jAE0nUaSvDKFFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BcRoZ0cr; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="v/CsGVII"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1792038245; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=uSfhX7WAmylRzrNtrWoK1R7H9Xh+c4oQUQrMJZhdohI=;
-	b=v/CsGVIIAKTvJxJsbcqCNWh0B+ixzMfa7D+ClhzryHhyhH7mL6Oq4eDyoXKahYE0RwHNYcTe8V9QIUYzEzxgzMXvACgezDQQoVUQ9c5kiKYUE57efmwXb6cEKangKLEL3EyRlkBLj1/ZbmJaKBw1NCpxmF32nh29Q9b4enFiPiE=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0XCqWEQv_1792038228;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XCqWEQv_1792038228 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Thu, 15 Oct 2026 12:24:05 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/amd: Restore three-stage vector cleanup for IR affinity migration
-Date: Thu, 15 Oct 2026 12:23:47 +0800
-Message-ID: <20261015042347.1823813-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BcRoZ0cr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792046306; x=1823582306;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=C5S/fcxahP44X6HH95SPiDjS7f7yvFtGXNMyBC8X13E=;
+  b=BcRoZ0crPPJx7aXOgVapSj8HUphNyFpaXTJ+9uMV95emb6wbhIOe/Xcl
+   bpxi2xINz3uvF4yUp9bw1VSiLo4FBk6kmG5D7ZXvvE00bym/zxx4LFe8H
+   Jkj+Od3GEOOcAsOZalr1EzDVLBkkIPwg0oAxmnTgWYnppg9+Z4h3KQpWv
+   cYtedHMihCkAD8rgWljwAKLtdAS8vwjdI6gz5lBfbP6ZqO5RDoKbHGQZd
+   ORsdRFrW+yxMyvqRS75SBwQUgTS9lpu3hnmJKTAtuiczhhM4k54kU7Sw0
+   MrR7OChuuZf+jny+1oX87NStas+OeIJA89yhj6Qjh3BdcPU/0DYnfa5xG
+   Q==;
+X-CSE-ConnectionGUID: t0HAHxzYQhiICkNrnMGzQw==
+X-CSE-MsgGUID: Uoye4k8ERpiDQZvR4iU/KA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11935"; a="808739"
+X-IronPort-AV: E=Sophos;i="6.27,159,1787036400"; 
+   d="scan'208";a="808739"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2026 23:38:26 -0700
+X-CSE-ConnectionGUID: EUNteLj8S+C95zjKYbm1yQ==
+X-CSE-MsgGUID: XiGxUsyISKOUsloHsSQ10A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,159,1787036400"; 
+   d="scan'208";a="1936573"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.47.46])
+  by fmviesa007.fm.intel.com with ESMTP; 14 Oct 2026 23:38:23 -0700
+Date: Thu, 15 Oct 2026 14:34:13 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, x86@kernel.org, linux-coco@lists.linux.dev,
+	kvm@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>, xiaoyao.li@intel.com,
+	Chao Gao <chao.gao@intel.com>,
+	Binbin Wu <binbin.wu@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] x86/virt/tdx: Add SEAMCALL wrappers for IOMMU
+ setup/clear
+Message-ID: <atBz5cj0wQZv/fLN@yilunxu-OptiPlex-7050>
+References: <20261015010705.1973284-1-baolu.lu@linux.intel.com>
+ <20261015010705.1973284-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261015010705.1973284-2-baolu.lu@linux.intel.com>
 
-From: Guanghui Feng <guanghui.fgh@linux.alibaba.com>
+On Thu, Oct 15, 2026 at 09:07:02AM +0800, Lu Baolu wrote:
+> Add SEAMCALL wrappers for TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR.
 
-AMD IOMMU specification (Rev 3.10) does not define interrupt message
-draining semantics for INVALIDATE_INTERRUPT_TABLE + COMPLETION_WAIT.
-This creates a race between vector_schedule_cleanup() and in-flight MSI
-messages still transiting the Data Fabric after IRTE modification.
+We need this patch been reviewed by x86 reviewers. x86 convention
+doesn't start with the implementation, so remove it.
 
-Intel VT-d is architecturally safe due to explicit interrupt draining
-guarantees.  VT-d spec Section 6.5.5 states:
+We can start with a generic description of what the 2 SEAMCALLs are
+doing in general and why. Maybe move some of your description in next
+paragraph ahead.
 
-  "An interrupt request is considered drained when the interrupt is
-   accepted by the processor Local xAPIC (for fixed and lowest priority
-   delivery mode interrupts this means the interrupt is at least
-   recorded in the Local xAPIC Interrupt Request Register (IRR))."
+> 
+> TDH.IOMMU.SETUP transitions an IOMMU and related I/O stack into Secure
+> TDX Mode. During this transition, the TDX module validates and protects
+> relevant I/O resources from further untrusted host access, providing the
+> trusted foundation required before enabling TEE-IO security protocols
+> (e.g. SPDM/IDE).
+> 
+> TDH.IOMMU.CLEAR performs the reverse operation and tears down the Secure
+> TDX Mode state for the target IOMMU.
+> 
+> The caller is responsible for allocating the required pages and
+> populating the parameter page in the ABI-defined format.
+> 
+> See Intel TDX Connect ABI Specification [1], Section 3.2 (TDX Connect
+> Host-Side (SEAMCALL) Interface Functions).
+> 
+> Thanks to Xu Yilun for the initial draft.
 
-  "Interrupt draining is performed by remapping hardware after Interrupt
-   Entry Cache (IEC) invalidation requests.  For IEC invalidations
-   submitted through the queued invalidation interface, interrupt
-   draining must be completed before the next Invalidation Wait
-   Descriptor is completed by hardware."
+Feel free to drop it. Not that important.
 
-  "For index-selective IEC invalidation requests, hardware only
-   guarantees draining of non-committed interrupt requests referencing
-   interrupt indexes specified in the invalidation request."
+> 
+> [1] https://cdrdv2.intel.com/v1/dl/getContent/858625
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  arch/x86/include/asm/tdx.h  |  2 ++
+>  arch/x86/virt/vmx/tdx/tdx.h |  2 ++
+>  arch/x86/virt/vmx/tdx/tdx.c | 56 +++++++++++++++++++++++++++++++++++++
+>  3 files changed, 60 insertions(+)
+> 
+> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+> index 89e97d5761d8..8b5411d3eb67 100644
+> --- a/arch/x86/include/asm/tdx.h
+> +++ b/arch/x86/include/asm/tdx.h
+> @@ -176,6 +176,8 @@ u64 tdh_mem_page_remove(struct tdx_td *td, u64 gpa, enum pg_level level, u64 *ex
+>  u64 tdh_phymem_cache_wb(bool resume);
+>  u64 tdh_phymem_page_wbinvd_tdr(struct tdx_td *td);
+>  u64 tdh_phymem_page_wbinvd_hkid(u64 hkid, kvm_pfn_t pfn);
+> +u64 tdh_iommu_setup(u64 reg_base, void *root, u64 *tdx_iommu_id);
+> +u64 tdh_iommu_clear(u64 tdx_iommu_id);
+>  #else
+>  static inline void tdx_init(void) { }
+>  static inline u32 tdx_get_nr_guest_keyids(void) { return 0; }
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+> index bdfd0e1e337a..d7beb42cf972 100644
+> --- a/arch/x86/virt/vmx/tdx/tdx.h
+> +++ b/arch/x86/virt/vmx/tdx/tdx.h
+> @@ -49,6 +49,8 @@
+>  #define TDH_SYS_SHUTDOWN		52
+>  #define TDH_SYS_UPDATE			53
+>  #define TDH_SYS_DISABLE			69
+> +#define TDH_IOMMU_SETUP			128
+> +#define TDH_IOMMU_CLEAR			129
+>  
+>  /*
+>   * SEAMCALL leaf:
+> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+> index 1b9ff749dd8e..5d31c1b0890a 100644
+> --- a/arch/x86/virt/vmx/tdx/tdx.c
+> +++ b/arch/x86/virt/vmx/tdx/tdx.c
+> @@ -2034,3 +2034,59 @@ void tdx_sys_disable(void)
+>  	if (ret && (ret & TDX_SW_ERROR) != TDX_SW_ERROR)
+>  		pr_err("TDH.SYS.DISABLE failed: 0x%016llx\n", ret);
+>  }
+> +
+> +/*
+> + * Wrapper for TDH.IOMMU.SETUP leaf, which transitions the IOMMU and related
+> + * I/O stack into Secure TDX Mode.
 
-Additionally, Section 6.5.2.8 (IEC Invalidate Descriptor) mandates:
+Other tdh_*() wrappers don't have the general descriptions. We all know
+these are wrappers for some SEAMCALL leafs.
 
-  "As part of IEC invalidation, hardware must drain interrupt requests
-   that are already processed by the remapping hardware, but queued
-   within the Root-Complex to be delivered to the processor."
+So if there is no special thing to note, remove it.
 
-Therefore when qi_flush_iec() + qi_submit_sync() returns (Wait Descriptor
-reports QI_DONE), all non-committed interrupt messages referencing the
-invalidated IRTE index are guaranteed to have been delivered to the
-target LAPIC IRR.  The subsequent vector_schedule_cleanup() is safe
-because is_vector_pending(prev_vector) will always observe the drained
-message in IRR, causing the cleanup timer to rearm until the interrupt
-is properly serviced.
+> + *
+> + * The @root page format is defined by the TDX Connect ABI spec (Table 3.35,
+> + * Structure of IOMMU_MT Parameter): the first two entries describe the size
+> + * and HPA (Host Physical Address) of the two contiguous buffers for the
+> + * invalidation queue; the remaining entries provide HPAs of
+> + * IOMMU_MT_PAGES_COUNT metadata pages. IOMMU_MT_PAGES_COUNT is obtained from
+> + * trusted IOMMU global metadata.
+> + */
+> +u64 tdh_iommu_setup(u64 reg_base, void *root, u64 *tdx_iommu_id)
 
-In contrast, AMD IOMMU spec Section 2.4.5 defines
-INVALIDATE_INTERRUPT_TABLE only as:
+IIUC, the void *root is a vague type, no type safty. Is it better we
+define an explicit structure that mirrors the in-memory ABI? Something
+like:
 
-  "instructs the IOMMU to invalidate all cached interrupt information
-   for the device"
+  struct tdx_iommu_metadata {
+	u64 iq1_pa;
+	u64 iq2_pa;
+	DECLARE_FLEX_ARRAY(u64, mt_pa);
+  };
 
-with no completion condition, no drain semantics, and no ordering
-guarantee for previously-remapped interrupt messages.  Section 2.4.11.2
-("Invalidation Commands Interaction Requirements") limits the completion
-guarantee exclusively to DMA transactions:
+Or,
 
-  "Invalidation commands are considered complete only when the IOMMU can
-   ensure there are no DMA transactions in flight anywhere in the system
-   fabric that relied on translation cache contents prior to
-   invalidation."
+  struct tdx_iommu_metadata {
+	u64 iq1_pa;
+	u64 iq2_pa;
+	u64 mt_pa[510];
+  };
 
-The words "drain", "drained", or "draining" appear zero times in the
-entire AMD IOMMU specification (Rev 3.10, 48882-PUB, Feb 2025) in
-connection with interrupt messages.
+  static_assert(sizeof(struct tdx_iommu_metadata) == 4096);
 
-Consequently, iommu_flush_irt_and_complete() returning does NOT guarantee
-that old (vector, destination) interrupt messages have been delivered to
-the previous CPU's LAPIC IRR.  The immediate vector_schedule_cleanup()
-after IRTE modification races with in-flight messages on the Data Fabric:
-the cleanup timer reads IRR clear (message still in transit), calls
-free_moved_vector(), then the message arrives at the old CPU hitting
-VECTOR_UNUSED -- producing "No irq handler for vector" and permanently
-losing an edge-triggered MSI.
-
-Fix by restoring three-stage cleanup semantics for the normal
-(guest_mode=0) path:
-
- 1. Change amd_ir_chip.irq_ack from apic_ack_irq to apic_ack_edge,
-    which calls irq_complete_move().  This ensures cleanup is only
-    scheduled when the new vector first arrives at the new CPU --
-    providing a natural delay (device interrupt period + PCIe transit +
-    IOMMU translation + Data Fabric delivery) that far exceeds any
-    residual in-flight message transit time.
-
- 2. Remove the unconditional vector_schedule_cleanup() from
-    amd_ir_set_affinity() for the IRTE-modified path.
-
- 3. For guest_mode=1 (AVIC/guest interrupt virtualization), the IRTE
-    is not modified and no host-vector interrupt will arrive (interrupts
-    are delivered to the vAPIC backing page instead).  Retain direct
-    vector_schedule_cleanup() in this case to prevent move_in_progress
-    from permanently blocking future affinity changes.
-
-The combination of stage-2 natural delay and stage-3 IRR gating
-(is_vector_pending + timer rearm) provides robust protection against
-the AMD-specific lack of interrupt drain guarantee.
-
-Intel VT-d, Hyper-V, and UV platforms are not modified as Intel is
-architecturally safe per the spec guarantees cited above.
-
-Fixes: 5478844b12d3 ("iommu/amd: Move interrupt remapping to its own file")
-Signed-off-by: Guanghui Feng <guanghui.fgh@linux.alibaba.com>
----
- drivers/iommu/amd/amd_iommu_types.h |  2 +-
- drivers/iommu/amd/iommu.c           | 46 +++++++++++++++++++++--------
- 2 files changed, 34 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 8241ef922519..35024e3f5b90 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -1037,7 +1037,7 @@ struct amd_irte_ops {
- 	void (*prepare)(void *, u32, bool, u8, u32, int);
- 	void (*activate)(struct amd_iommu *iommu, void *, u16, u16);
- 	void (*deactivate)(struct amd_iommu *iommu, void *, u16, u16);
--	void (*set_affinity)(struct amd_iommu *iommu, void *, u16, u16, u8, u32);
-+	bool (*set_affinity)(struct amd_iommu *iommu, void *, u16, u16, u8, u32);
- 	void *(*get)(struct irq_remap_table *, int);
- 	void (*set_allocated)(struct irq_remap_table *, int);
- 	bool (*is_allocated)(struct irq_remap_table *, int);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 56262f6b1f70..60e769384e8b 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3634,7 +3634,7 @@ static void irte_ga_deactivate(struct amd_iommu *iommu, void *entry, u16 devid,
- 	modify_irte_ga(iommu, devid, index, irte);
- }
- 
--static void irte_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
-+static bool irte_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
- 			      u8 vector, u32 dest_apicid)
- {
- 	union irte *irte = (union irte *) entry;
-@@ -3642,9 +3642,11 @@ static void irte_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u
- 	irte->fields.vector = vector;
- 	irte->fields.destination = dest_apicid;
- 	modify_irte(iommu, devid, index, irte);
-+
-+	return true;
- }
- 
--static void irte_ga_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
-+static bool irte_ga_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid, u16 index,
- 				 u8 vector, u32 dest_apicid)
- {
- 	struct irte_ga *irte = (struct irte_ga *) entry;
-@@ -3656,7 +3658,11 @@ static void irte_ga_set_affinity(struct amd_iommu *iommu, void *entry, u16 devid
- 		irte->hi.fields.destination =
- 					APICID_TO_IRTE_DEST_HI(dest_apicid);
- 		modify_irte_ga(iommu, devid, index, irte);
-+
-+		return true;
- 	}
-+
-+	return false;
- }
- 
- #define IRTE_ALLOCATED (~1U)
-@@ -3933,7 +3939,7 @@ static void irq_remapping_free(struct irq_domain *domain, unsigned int virq,
- 	irq_domain_free_irqs_common(domain, virq, nr_irqs);
- }
- 
--static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
-+static bool amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
- 			       struct amd_ir_data *ir_data,
- 			       struct irq_2_irte *irte_info,
- 			       struct irq_cfg *cfg);
-@@ -4153,7 +4159,7 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *info)
- }
- 
- 
--static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
-+static bool amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
- 			       struct amd_ir_data *ir_data,
- 			       struct irq_2_irte *irte_info,
- 			       struct irq_cfg *cfg)
-@@ -4163,9 +4169,9 @@ static void amd_ir_update_irte(struct irq_data *irqd, struct amd_iommu *iommu,
- 	 * Atomically updates the IRTE with the new destination, vector
- 	 * and flushes the interrupt entry cache.
- 	 */
--	iommu->irte_ops->set_affinity(iommu, ir_data->entry, irte_info->devid,
--				      irte_info->index, cfg->vector,
--				      cfg->dest_apicid);
-+	return iommu->irte_ops->set_affinity(iommu, ir_data->entry, irte_info->devid,
-+					     irte_info->index, cfg->vector,
-+					     cfg->dest_apicid);
- }
- 
- static int amd_ir_set_affinity(struct irq_data *data,
-@@ -4176,6 +4182,7 @@ static int amd_ir_set_affinity(struct irq_data *data,
- 	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct irq_data *parent = data->parent_data;
- 	struct amd_iommu *iommu = ir_data->iommu;
-+	bool irte_modified;
- 	int ret;
- 
- 	if (!iommu)
-@@ -4185,13 +4192,26 @@ static int amd_ir_set_affinity(struct irq_data *data,
- 	if (ret < 0 || ret == IRQ_SET_MASK_OK_DONE)
- 		return ret;
- 
--	amd_ir_update_irte(data, iommu, ir_data, irte_info, cfg);
-+	irte_modified = amd_ir_update_irte(data, iommu, ir_data, irte_info, cfg);
-+
- 	/*
--	 * After this point, all the interrupts will start arriving
--	 * at the new destination. So, time to cleanup the previous
--	 * vector allocation.
-+	 * If the IRTE was actually modified (guest_mode == 0), rely on the
-+	 * three-stage cleanup: apic_ack_edge() calls irq_complete_move() when
-+	 * the new vector first arrives at the new CPU, which then schedules
-+	 * the cleanup of the previous vector allocation.  This avoids a race
-+	 * where in-flight MSI messages, still on the Data Fabric after the
-+	 * IRT invalidation because the AMD-Vi specification provides no
-+	 * interrupt drain guarantee, arrive after the old vector has been
-+	 * freed.
-+	 *
-+	 * If the IRTE was NOT modified (guest_mode == 1), no in-flight
-+	 * messages exist for the host vector and the new host vector will
-+	 * never receive an interrupt (those go to the vAPIC backing page
-+	 * instead).  Schedule the cleanup directly to prevent
-+	 * move_in_progress from getting permanently stuck.
- 	 */
--	vector_schedule_cleanup(cfg);
-+	if (!irte_modified)
-+		vector_schedule_cleanup(cfg);
- 
- 	return IRQ_SET_MASK_OK_DONE;
- }
-@@ -4205,7 +4225,7 @@ static void ir_compose_msi_msg(struct irq_data *irq_data, struct msi_msg *msg)
- 
- static struct irq_chip amd_ir_chip = {
- 	.name			= "AMD-IR",
--	.irq_ack		= apic_ack_irq,
-+	.irq_ack		= apic_ack_edge,
- 	.irq_set_affinity	= amd_ir_set_affinity,
- 	.irq_set_vcpu_affinity	= amd_ir_set_vcpu_affinity,
- 	.irq_compose_msi_msg	= ir_compose_msi_msg,
--- 
-2.43.7
-
+> +{
+> +	struct tdx_module_args args = {
+> +		.rcx = reg_base,
+> +		.rdx = __pa(root),
+> +	};
+> +	u64 ret;
+> +
+> +	/*
+> +	 * Don't loop forever:
+> +	 *
+> +	 *  - TDX_INTERRUPTED_RESUMABLE guarantees forward progress between
+> +	 *    calls.
+> +	 *  - On TDX_INTERRUPTED_RESUMABLE, all registers except RAX remain
+> +	 *    unchanged.
+> +	 */
+> +	do {
+> +		ret = seamcall_ret(TDH_IOMMU_SETUP, &args);
+> +	} while (ret == TDX_INTERRUPTED_RESUMABLE);
+> +
+> +	*tdx_iommu_id = args.rcx;
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_FOR_MODULES(tdh_iommu_setup, "tdx-host");
+> +
+> +/*
+> + * Wrapper for TDH.IOMMU.CLEAR leaf, which terminates Secure TDX Mode for the
+> + * target IOMMU and restores control of related hardware resources to the host.
+> + */
+> +u64 tdh_iommu_clear(u64 tdx_iommu_id)
+> +{
+> +	struct tdx_module_args args = {
+> +		.rcx = tdx_iommu_id,
+> +	};
+> +	u64 ret;
+> +
+> +	do {
+> +		ret = seamcall(TDH_IOMMU_CLEAR, &args);
+> +	} while (ret == TDX_INTERRUPTED_RESUMABLE);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_FOR_MODULES(tdh_iommu_clear, "tdx-host");
+> -- 
+> 2.43.0
+> 
