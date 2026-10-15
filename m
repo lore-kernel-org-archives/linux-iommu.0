@@ -1,33 +1,33 @@
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D972949CF5D
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 06:52:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=160.30.148.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 651D749DBA3
+	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 06:52:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=160.30.148.35
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792047178; cv=none; b=Ux9GUfkrExSUnqKjrvQAWgai05WwziGWvI8NzIkTrK25QGBwf/gAF5yORppPS4SastZvhW+nxgQe25FTw11nKe0CG5mAp7i2XFpFRD2T60C7JfFqqIPJQ2+WQ1dQD3CIWJ5cg5L143z1FHf7Daz0Ns1zKfCXk7JLBtUTFH3jXQA=
+	t=1792047179; cv=none; b=shgOkJcBL4TC1+06sjRN72HApxJ6H2TOzqse/s/+V8Xgb44pMbltUxvCMwr0dI+1zY7mefOQ9B/yNCAsmiKhAY4W/ytTr9+jh53axBKnWAndKm9SDz6ozr7V2G5YGtE90I85ITVLgSkOk81fu92Shz5GqvtKmQO8Q/zPrcEy1SE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792047178; c=relaxed/simple;
-	bh=NAZzbrZ0ghYjiDnLPJMUT2odWpqPsyRG3/eqddghz0w=;
+	s=arc-20240116; t=1792047179; c=relaxed/simple;
+	bh=i8CWjC5rVdo92dxQJLn7ddk7ijxX4u2um0IGc6rgft4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ssq3voPmOO/gfn0IkO7LDCtROLi1K/H73ILZVg4GiLw9ChXH+87MYSzodcyuJbFJqlAXliJy/ohdPOSde4c05EYKu2DaSKuZsuKTqIFrpTcbDD/KY8ZT2tU7XZ4O+G1VScGh3YK21BiI+P2EQ7HGIDKEnN2tGMg1uB1MQnyrdwA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn; spf=pass smtp.mailfrom=sanechips.com.cn; arc=none smtp.client-ip=160.30.148.34
+	 MIME-Version; b=kuf81mq2XlVs9ZTxUJ7MP+NSYlUcMtq6ThhnQwgy2Yg1qT/DobKW/RdwN4DpKGiOIT9rcMFdMywoX/LHNgNjjtP9kJ1LT0UdAs+lPT2d5pRdhxuVKpHjhVxdS4MnH+snDXfYuzvT/YLx1zTrFG1xBByp5bYxuOWlIB+KVYPBQ+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn; spf=pass smtp.mailfrom=sanechips.com.cn; arc=none smtp.client-ip=160.30.148.35
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4j4zKb1TSJz4yh0n;
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4j4zKb5VzQz8XrrX;
 	Thu, 15 Oct 2026 14:52:51 +0800 (CST)
-Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
-	by mse-fl1.zte.com.cn with SMTP id 69F6qi6w013950;
-	Thu, 15 Oct 2026 14:52:44 +0800 (+08)
+Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
+	by mse-fl2.zte.com.cn with SMTP id 69F6qgc6019110;
+	Thu, 15 Oct 2026 14:52:42 +0800 (+08)
 	(envelope-from gong.shuai@sanechips.com.cn)
 Received: from ubuntu-35-gs (unknown [10.230.214.35])
 	by smtp (Zmail) with SMTP;
-	Thu, 15 Oct 2026 14:52:46 +0800
-X-Zmail-TransId: 3e816ad0783e024-555a1
+	Thu, 15 Oct 2026 14:52:44 +0800
+X-Zmail-TransId: 3e816ad0783b024-55553
 X-Zmail-LocalSMTP: 1
 X-Zmail-RealSender: gong.shuai@sanechips.com.cn
 From: Gong Shuai <gong.shuai@sanechips.com.cn>
@@ -49,9 +49,9 @@ Cc: Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>,
         Zhao Qingye <zhao.qingye@sanechips.com.cn>,
         Gong Shuai <gong.shuai@sanechips.com.cn>,
         Gong Shuai <gsh517025@gmail.com>
-Subject: [RFC PATCH 10/12] RISC-V: KVM: Accept auto-mode interrupt files for IMSIC IRQ bypass
-Date: Thu, 15 Oct 2026 14:52:30 +0800
-Message-ID: <20261015065232.604503-11-gong.shuai@sanechips.com.cn>
+Subject: [RFC PATCH 07/12] iommufd: Add RISC-V IOMMU hardware info type
+Date: Thu, 15 Oct 2026 14:52:27 +0800
+Message-ID: <20261015065232.604503-8-gong.shuai@sanechips.com.cn>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261015065232.604503-1-gong.shuai@sanechips.com.cn>
 References: <20261015065232.604503-1-gong.shuai@sanechips.com.cn>
@@ -63,50 +63,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
 Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl1.zte.com.cn 69F6qi6w013950
+X-MAIL:mse-fl2.zte.com.cn 69F6qgc6019110
 X-TLS: YES
 X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Thu, 15 Oct 2026 14:52:51 +0800
+X-SOURCE-IP: 10.5.228.133 unknown Thu, 15 Oct 2026 14:52:51 +0800
 X-CLEAN: YES
 X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AD07843.000/4j4zKb1TSJz4yh0n
+X-Fangmail-MID-QID: 6AD07843.000/4j4zKb5VzQz8XrrX
 
-The IRQ bypass required the AIA to be in HWACCEL mode, while the KVM
-default is AUTO, which publishes an IMSIC VS-file whenever one is
-available and only falls back to the SW-file when the host has none
-left. Rejecting AUTO leaves every assigned device on host MSI delivery,
-which cannot work for a device attached to a nested domain because its
-stage-1 page tables belong to the guest, so the device keeps the host
-MSI address composed at vector activation and its MSIs fault in the
-guest stage-1.
+From: Wu Fei <wu.fei9@sanechips.com.cn>
 
-Co-developed-by: Wu Fei <wu.fei9@sanechips.com.cn>
+Add IOMMU_HW_INFO_TYPE_RISCV and struct iommu_hw_info_riscv, which
+reports the RISC-V IOMMU Capabilities register through
+IOMMU_GET_HW_INFO.
+
 Signed-off-by: Wu Fei <wu.fei9@sanechips.com.cn>
 Signed-off-by: Gong Shuai <gong.shuai@sanechips.com.cn>
 ---
- arch/riscv/kvm/aia_imsic.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ include/uapi/linux/iommufd.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/riscv/kvm/aia_imsic.c b/arch/riscv/kvm/aia_imsic.c
-index 37e27f28dc62..010f9a90f107 100644
---- a/arch/riscv/kvm/aia_imsic.c
-+++ b/arch/riscv/kvm/aia_imsic.c
-@@ -981,10 +981,13 @@ static int imsic_irqfd_forward(struct kvm_kernel_irqfd *irqfd,
- 	 * MSI-X because pci_write_msi_msg() masks an MSI-X vector around the
- 	 * update, which conventional MSI cannot provide.
- 	 */
--	if (kvm->arch.aia.mode != KVM_DEV_RISCV_AIA_MODE_HWACCEL ||
--	    !imsic_irqfd_is_msix(irqfd))
-+	if (!imsic_irqfd_is_msix(irqfd))
- 		return -EOPNOTSUPP;
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 36e6187bb34b..acfef0338cd1 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -716,6 +716,14 @@ struct iommu_hw_info_amd {
+ 	__aligned_u64 efr2;
+ };
  
-+	/*
-+	 * The IOMMU writes MSIs straight into the VS-file, so bypass is
-+	 * gated by the hardware backing checks below, not the AIA mode.
-+	 */
- 	if (!imsic_targets_valid(&kvm->arch.aia)) {
- 		pr_debug("KVM: IMSIC IRQ bypass requires all VS-files\n");
- 		return -EOPNOTSUPP;
++/**
++ * struct iommu_hw_info_riscv - RISC-V IOMMU device info
++ * @capabilities: Value of RISC-V IOMMU Capabilities register
++ */
++struct iommu_hw_info_riscv {
++	__u64 capabilities;
++};
++
+ /**
+  * enum iommu_hw_info_type - IOMMU Hardware Info Types
+  * @IOMMU_HW_INFO_TYPE_NONE: Output by the drivers that do not report hardware
+@@ -726,6 +734,7 @@ struct iommu_hw_info_amd {
+  * @IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV: NVIDIA Tegra241 CMDQV (extension for ARM
+  *                                     SMMUv3) info type
+  * @IOMMU_HW_INFO_TYPE_AMD: AMD IOMMU info type
++ * @IOMMU_HW_INFO_TYPE_RISCV: RISC-V IOMMU info type
+  */
+ enum iommu_hw_info_type {
+ 	IOMMU_HW_INFO_TYPE_NONE = 0,
+@@ -734,6 +743,7 @@ enum iommu_hw_info_type {
+ 	IOMMU_HW_INFO_TYPE_ARM_SMMUV3 = 2,
+ 	IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV = 3,
+ 	IOMMU_HW_INFO_TYPE_AMD = 4,
++	IOMMU_HW_INFO_TYPE_RISCV = 5,
+ };
+ 
+ /**
 -- 
 2.53.0
 
