@@ -1,247 +1,196 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from esa6.hgst.iphmx.com (esa6.hgst.iphmx.com [216.71.154.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 980CD5221D2
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 12:44:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792068258; cv=none; b=nj/5BKLjS6QO2yJtM07hz6YggN4nbZEzrDjsMwfImiI+NNycPSa6kqPNWfqmsKou1JLne8yB2ilGIIJ6m4aNvexnwHXFqbBlaF+JUwON+VOBDclzXzqc322FQ0Mxm/zQm6IGC54NCReLZ+o6zbgYWGqO+IVNNXeHOHszzD5bXf8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792068258; c=relaxed/simple;
-	bh=S3MW9H3wgEOvPP0uhKYDeITR4aJO7iujGxWR+LezJgc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mvqV/cnQUJ8nZ33PqRv3Zp28+iCnazhcrtzanHlHgLl6oaMvDNqGk1q0k0QIlp5SXqF4TDA22omoIkjLVHfW+rpiEpPDYgzfVoScSSRcVHP/nLTg47odKNvBx7sLP7QHbdc3Fo7WTvF/hgotP+wi0sVdFfD8bZ9R2ueqAv6ygUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=O+Ke54Gg; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=DHKbPKrW; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8235E4D9577
+	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 12:49:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=216.71.154.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792068589; cv=fail; b=V8WPr9E7XOjIC3kDDZJI9FEttcjGQaOLwNYdeBwxtfHooXVwmZawg2EIF/AZFVUy/FV/HA7cA0u61prPUSeQziaXMqwTI4C2gw1prsAm8d9YTpZqQZ8vc3WGyAxKnLZDJQAytQ6wpLZ09XpbdcgiWSgQKSWxXfwCGx6eRUunkyQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792068589; c=relaxed/simple;
+	bh=8Hqq8tQhQKPGZt3Ic5hkvs/NNlLGI09eHwaWB9FN+7M=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=jsmC3TFQk5UK58QXNMJclVzpcWr60hSjS0pKltMOB4+RNJ0ew2YmYtInG+KYjPFQBqoDd/zXf3QpefMPbXsNI4lpHO7rj0QwBBAw0yCO7662wZQt2qYad3izzoKb3ZBuGME0HmrDiBAJ+MQWIebGNfXfZm4FtJPRnJdMC0wTp3M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wdc.com; spf=pass smtp.mailfrom=wdc.com; dkim=pass (2048-bit key) header.d=wdc.com header.i=@wdc.com header.b=rxxpp//4; dkim=pass (1024-bit key) header.d=sharedspace.onmicrosoft.com header.i=@sharedspace.onmicrosoft.com header.b=Gn0+dFGx; arc=fail smtp.client-ip=216.71.154.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wdc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wdc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="O+Ke54Gg";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="DHKbPKrW"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69F9jash2966471
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 12:44:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=w8o5JafesiRvwaLb/g8OOXSj
-	6qim+o/hrusYm3HaIh8=; b=O+Ke54GgUCNZs50ieolXqxwKWZv0GIbzUBWi/mRX
-	qAr6Yc9v7NGxFfNxuj1qm+mf68ZVCtMHRN/GHTRMJQiIoKc8h1h84O3NW2NiiT2R
-	wLdLcB8PSbHwQqJoTa3n00fLvxuYQ1WxSTJdTbHfVACOEMIJMfTL0kI8f+cId4Uu
-	Ofom2YTbY9cCqIN666IL9KBx4fbze9wANQhw2i/msJHFhBaVbRBac+rszrbYC8Kj
-	3pL7HzIWeJ9b4zWstuSD75Vu3okjf8sdEngWm5Dyc+K8H69jlyzuQpNzOU38trOO
-	TUb4BmS1X2z8hfsvxeljav8v/3aQ/PKwsB4izHosZsRD6w==
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hae4wv2j2-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 12:44:16 +0000 (GMT)
-Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-93e46c120dfso188090685a.1
-        for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 05:44:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=wdc.com header.i=@wdc.com header.b="rxxpp//4";
+	dkim=pass (1024-bit key) header.d=sharedspace.onmicrosoft.com header.i=@sharedspace.onmicrosoft.com header.b="Gn0+dFGx"
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1792068587; x=1823604587;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=8Hqq8tQhQKPGZt3Ic5hkvs/NNlLGI09eHwaWB9FN+7M=;
+  b=rxxpp//4zGVNnDYSkwAbF38jhQZEKhomq1zGHRCO4rzeH25jaRaCusWK
+   Be93Kh0qh0mH/uhf87HWsbZxkMgQkTtTvRfAurHNlTUkrqF9iHKSKcAhh
+   a+fXR7kK++sqAcsGXuzImq8vc3NY3iWgRcv73uIz1c324WDeL7vLNcXB8
+   ZG6bK1ZDxCUGM2l0cZqtO3bB1W3yDFMJNXtmrtJsJt8TOtR0EwCE9kwjN
+   mLlVsbYufXHU1nSsCJya8uLeCPHpESPvKoYV1rlvgpFl7zly50Fo87Eh6
+   Sl0ERn95WZ8mS+WJLdA3Sw+aJlkLdCo5iyJjkjxWKhUdOgupWkoO0uhWA
+   g==;
+X-CSE-ConnectionGUID: WvjyFfYOTwmcW6vx3Bcohg==
+X-CSE-MsgGUID: FivafuK7T9uL3EImr29Hqg==
+X-IronPort-AV: E=Sophos;i="6.27,159,1786982400"; 
+   d="scan'208";a="156565886"
+Received: from mail-eastusazon11012018.outbound.protection.outlook.com (HELO BL0PR03CU003.outbound.protection.outlook.com) ([52.101.53.18])
+  by ob1.hgst.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 15 Oct 2026 20:49:40 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xmvQnrpkqz9msmiRgs+HpmFJ72CkK2Xaw8EOc32Dvjz4H9JVxUDzGA/Tndtd6Xhwm0u6bAxOqaXghovmCI6XAh4zRXqbtipSrUrQhE/wiQJTSEzJwRuVudHZDszTbQsWOqDIZSfUgcw1WHDJi4e4A4Q67GCq21mwS6hlRTxnmX9luH6rsl1KZnTtXtJ7cSSuVMRyHUgj1U1sVwo1BmA5wIU5UFYlUtYlHtCmc4sEt8NlnOr1jfBGbqAOOXuH7MC71GMpnhhVdC9VNCKWNjz9NxFmEXINHiklEShdMvm8xBEh5S9ms+zpcrhDyWMP/litF0QzqkmNajfO3IuG+KIN2Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MgSwg59Mk8dqlqCQ2BrOFH8IKDVq8y/Kbh0fZjilPDs=;
+ b=fCfqUAwBccHwd4h2+0X8Sb5qct3CeyFPwsWvDRVrWVfEgY0+iN3aEIs8m8EDP2f0mKp3Ecol7lV8Am8Jp9xkCaVXhqeaGDU+cp4u+ZVxC68hvxBb2lk4NSQD7Ur6ohUXczxvcDFSODtN5MsIq+hTdpPe/auZ+sxZbtVhpyI5Uq9SyVYyfgrMyxpBdCA5WE6VXKtHtedmqnOBw+QSvpjJqOypOaq7fWOQz00RF3+s5492e25wCP96xVy0DfzWYTKwrgwSwcJGqEfjXX+L7+hh+RrXjSdxxi1dA4Uf9f8m0fbDJVvou2YRqNROFpS2I3lCoDk643e460uuVAcCpjTVmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wdc.com; dmarc=pass action=none header.from=wdc.com; dkim=pass
+ header.d=wdc.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1792068256; x=1792673056; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=w8o5JafesiRvwaLb/g8OOXSj6qim+o/hrusYm3HaIh8=;
-        b=DHKbPKrWCPiV66sGqjYJ4dVwvgnDLSF9FCvGXpLpDVtz+Bbsl9V5dOxA0WjEbUOUQN
-         lxuhHM2WbGQtA++IKG34IjyEH4MKRtN94A1/Xuq6HDQQmpBdBALKsjxa54xQLZ7x2rcd
-         qTBUd+DkuXeykc4mfQLjrmuEWcfiYQi1ALrqocTabr8qWhLy538uTg+s1PUx/P/r5gwL
-         A5eaqqJ85gS3zuPcjz9ZeLeeTrET+2gdSRAywYeoOF7qVlXyVWtJ1o5/gjvkPhv0ZZcc
-         rOVBaKdFoilGQIE45Dj55kmKhzZGzEPLEcowQY9BDYf4O6UcYA2oX+cZWe7v4+IIkfFl
-         vPHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792068256; x=1792673056;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=w8o5JafesiRvwaLb/g8OOXSj6qim+o/hrusYm3HaIh8=;
-        b=TX1Xvbj8usPkSisVsFmq3aSIzN9rpYVZiVi0NPBM2oCA0gUsNOyvWIeJh98gREdWzL
-         Em+Ng5/Spjsp5RAk2zLhC1iHxYARIXgRfFYS1q8QUb5WnB8o8QPoqJI2eajgVtZE/FuX
-         xjYc/dWaLhsTnRcamNEivw5kqOPCP8SzXOTLcB3q2EWfBpkiOl00bsFRff5wSiEpKN6g
-         Ru/IaTETJMGg9ZYxRORd6BUXQxXWtyJsObyfz8dkTenodrM2xCyyyPM2xck4peYSoZwl
-         NuDCNuqYjMuxPOns/pbi3L2x1Q8Mz1b8Ykxt4WHDTxd84yRkbEwjW3MZFSzU70xcm6Dg
-         2ZQw==
-X-Forwarded-Encrypted: i=1; AKwUvByrrctx6uv3H/iQ3GglnVCiXoZWZsjEQv4dpKxEaMFV2OBor1QzxZjYUZk4Yu6xwuznxgy2RQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYL0iKq9ECtEO0aOWWUEFydwc6AkzHYe+upjT/G2rb/kmx3ImMtm
-	+LDGpirKbNHZPJh5BjIM0rvHeeLA8e7t4QtaLOPitoJDKQzNDazmmK6TU4/YzQBP+zWoKKsXOv2
-	UJrNeiXHFrHSGTlPCa7ErE9HOmxQqCpZ9ZJcTftyQbwi9W1up/paE1Lj9uQ==
-X-Gm-Gg: AYBFou17WRYozjlKjK0YkhSgN2Tki+SZYax3oiuUJbpKcMy+Uh7/AeY0xBwNN94OpAr
-	opjJX7xxUZCOvr1M4rqbtggGd/fm0EbHpJsGWFyLXPowfNI4CmamNFho++0Pyn+1DbImOj5sxOE
-	TRuIdw9/1Moq1AdJSIOIcS8n8pOX0iWtfUipmTCqzmCuCIdSQEVyaO9OfP/kRuHO17+nhPaPjG3
-	Ftjp9iGqU/M/E5IpAHGFwGH8sTbjuJHDkol059lbPpLRCpb6mFV6G5DL/G9H+zs0+R+6nJJ+nv+
-	etz2tm//LVXCHkIC5ieXD4vuHR3+IXlDol+vvKfAKK7DtB1hT5oX4H2h8sKgDFNo0eEj79BVpsy
-	7XvvroQQkpwlf6RlDko1aPw9Qk4At6eAm60JfzrObUal0kpRt+RyFiBD4ctZmws/rIXECzFvpbO
-	7sJzegm7TPB34W
-X-Received: by 2002:a05:620a:4041:b0:937:675e:2903 with SMTP id af79cd13be357-93ebd212371mr3197367185a.14.1792068255543;
-        Thu, 15 Oct 2026 05:44:15 -0700 (PDT)
-X-Received: by 2002:a05:620a:4041:b0:937:675e:2903 with SMTP id af79cd13be357-93ebd212371mr3197362985a.14.1792068254905;
-        Thu, 15 Oct 2026 05:44:14 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-3aafdf2fa18sm5761271fa.36.2026.10.15.05.44.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 05:44:13 -0700 (PDT)
-Date: Thu, 15 Oct 2026 15:44:12 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Philipp Stanner <phasta@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Abel Vesa <abelvesa@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH 07/13] drm/msm/dcp: Add DCP encoder
-Message-ID: <bmtabdrtxygyubfmxgvixn5r4rosu4tepopc2ro37heeqzwzgx@mu5wk2stm7yi>
-References: <20261015-jshekhar-drm-msm-dcp-v1-v1-0-48aad0fe4f72@oss.qualcomm.com>
- <20261015-jshekhar-drm-msm-dcp-v1-v1-7-48aad0fe4f72@oss.qualcomm.com>
+ d=sharedspace.onmicrosoft.com; s=selector2-sharedspace-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MgSwg59Mk8dqlqCQ2BrOFH8IKDVq8y/Kbh0fZjilPDs=;
+ b=Gn0+dFGxuc5nO0znlMaVrRGaIUSGxlXOIyb5m6wlnOSRoUldry4TvTd4BI2Ow5nMCVcex4FO7eFbLZfSnGPD6bsJrIho1u6yzP+wga+jg9XTfQEgEfaTF/B4l02jsApu/Z3195WCl6ZfSEKbpcRKBrdK1jDT5VPt5FQ2DepDkAQ=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=wdc.com;
+Received: from LV3PR04MB9259.namprd04.prod.outlook.com (2603:10b6:408:26d::9)
+ by LV2PR04MB993760.namprd04.prod.outlook.com (2603:10b6:408:370::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.13; Thu, 15 Oct
+ 2026 12:49:38 +0000
+Received: from LV3PR04MB9259.namprd04.prod.outlook.com
+ ([fe80::ad82:88c4:91dd:53b1]) by LV3PR04MB9259.namprd04.prod.outlook.com
+ ([fe80::ad82:88c4:91dd:53b1%4]) with mapi id 15.21.0522.012; Thu, 15 Oct 2026
+ 12:49:37 +0000
+Message-ID: <4a67d264-107b-48bb-a1ff-00396284ca95@wdc.com>
+Date: Thu, 15 Oct 2026 14:49:06 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Revert "nvme-pci: clamp max_hw_sectors based on DMA
+ optimized limitation"
+To: Christoph Hellwig <hch@lst.de>, kbusch@kernel.org
+Cc: sagi@grimberg.me, linux-nvme@lists.infradead.org, ahuang12@lenovo.com,
+ sunjw10@lenovo.com, iommu@lists.linux.dev
+References: <20261006120248.147654-1-hch@lst.de>
+Content-Language: en-US
+From: Hans Holmberg <hans.holmberg@wdc.com>
+In-Reply-To: <20261006120248.147654-1-hch@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: PR1P264CA0190.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:102:34d::19) To SA6PR04MB9269.namprd04.prod.outlook.com
+ (2603:10b6:806:417::19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261015-jshekhar-drm-msm-dcp-v1-v1-7-48aad0fe4f72@oss.qualcomm.com>
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDE1MDA1MCBTYWx0ZWRfXzd8NDxf4YQzy
- lsu0bjmuxHKhgR4tiWcgczaOqVB3hdfXY4XuGphTriTX/TdkskwF2d+EMstHBltoKyXT29zSl9i
- bwKvyn3cM8sNsB+MUAN1RKVya5cCHPo=
-X-Proofpoint-ORIG-GUID: JnjHxSy4RGCrthi2-sr_YtSHT3t19qTx
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDE1MDA1MCBTYWx0ZWRfXw75sC2+V7fxF
- K+SkCUNCEMScGuIqg5HA9QnROGThjF9jTsic5vpkpnfd7I4qX/HHurqqwOFt29T95ZVr21eita7
- Jxr4j8iTC9q8yv91mCTKq1rqUDoKJTuNugO9BmMyKgm3ppBEQJiX3N7+6P9yHO4uP1hIHaM4se1
- bO29afDNoUSte1gU5j9VnDcasiZc3FBilR1cre+YQi9ulbAeLxAtvsRsd5Ydj0ptbbBEpzVe8xv
- sPtGHrrk6XilBbpF17nVdFPIPxrqm2O0+SBMcMFlQYVoPjPG1EaKyzcVPh5u02r+ZqCWpZq7dNS
- 2YUfqpr7Wzp7SQpgXqGmvw+E8SVTBaK9xieRdKkrF6VLHjjv8e35AGuYRJlU7WXJKsZhkLfecNZ
- hQwSLT6KUG1jABNUNylElWT/qKwxugcypdIjAFpDWETU+wVBZrRJRh5yPUDBwAvcKHhF13LHlaa
- YbkflkdA/CYuNPIOUZQ==
-X-Authority-Analysis: v=2.4 cv=E8BYNqdl c=1 sm=1 tr=0 ts=6ad0caa0 cx=c_pps
- a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22 a=EUspDBNiAAAA:8
- a=N3-jI2xQlndCWEcerb8A:9 a=CjuIK1q_8ugA:10 a=IoWCM6iH3mJn3m4BftBB:22
-X-Proofpoint-GUID: JnjHxSy4RGCrthi2-sr_YtSHT3t19qTx
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.134,FMLib:17.12.100.49
- definitions=2026-10-14_01,2026-10-14_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 suspectscore=0 malwarescore=0 spamscore=0
- bulkscore=0 adultscore=0 priorityscore=1501 lowpriorityscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610080000 definitions=main-2610150050
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV3PR04MB9259:EE_|LV2PR04MB993760:EE_
+X-MS-Office365-Filtering-Correlation-Id: b6f1f510-ac0a-4504-1f70-08df2ababa56
+WDCIPOUTBOUND: EOP-TRUE
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|23010399003|366016|19092799006|56012099006|11063799006|261009223027099003|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	Rsb3E/otBcLWqj1+E219/aQCl1Gfk+rDm7tjKebNUjsdeyuVjtgCzamMNlb003tuHF31z96/Pie8X4rwKP35DgvLxDW8d4AH/RKpAbmkpND20q/EOqXFI3SkTOJQLv8XJNVqDmATQcH6+mkr363yJNQAUuZc7RmAh+/T4k5aimZqXCS9bG6eUntciCvvTMF4VwcKFX5HmIuQxan0Ba6RLFCHEyttGNSZMbvjcGijrnuNxFkjDN+AC8KZdsM2GVUuYRUxmlpb5jXNZ/+vrr1Rwh2+7YE05hH8e4lCsrNl/N/vuAKXfRamzNgbOlwD0K3GyjNiI//rTgP0FdtrhTZgL3jqEMgG1ORa/I7l1ZeZAbQ9ZRv/uPwwM+dKuHvCd2RyXlzv53IBEEo/8l0pj3O40zuQ2FC6je7VCJqOQpCMnOn21LYTZYFXNlbZezNwVIJZt4XnoZym9bgjhmoc7DxVwAhEL5p1maRgmStf2rLR4sHpBlgNFtxAVriMlPRlSW4C1oHh9J0x2vGjnoZ9cetRd6RoslPom3m74UGTSEDCyH7tW9Va/Qu7YDVNd6gEHW6GYH9Bh5AsAiK0IIYFC/v5zQ9mIZFkQHa+ut/LqMnQJ0/ZvCzIOM9dDHi/jmrh7r6a4+se1v0vAaWOW84p4Usx4VGkIoy4EDtQN+ra3wD2WHM=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV3PR04MB9259.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(23010399003)(366016)(19092799006)(56012099006)(11063799006)(261009223027099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?enlHR2l1dkJ0NEFuN3dNRmwycUNobGt0eEZTUmt4eXBhRG1jcjdNTkVvTGRa?=
+ =?utf-8?B?cVUvTktSVStCVVhhWm5sbGlMREY2eGVTdFBzamx1dE0vdnAxYUFHUVEvMFJW?=
+ =?utf-8?B?ZWVtK0o4VEErMEFyOUJaRldidXJaelJRTUFoUVFVOUgyb0xRbS9yUUZQZS82?=
+ =?utf-8?B?ZkZkbzMxL3hLK2FERjZWVjhBYTNPeDdxcCtOM2JkVG1ZRGs1TzZsemo4eUxn?=
+ =?utf-8?B?YnUvUy94Tm4rVXkydVpyeXBRd2E0SXJhOW1nRzJoQjYvd0tVSHFOTUM4ZERQ?=
+ =?utf-8?B?TjllVWNqRHpaTld5UTZJTm5YMUw5WkxxeXh2Um0xMEIzWklpL1BCWHJBSlZo?=
+ =?utf-8?B?TUJMRFVEZ2daOTBzN3FkNkk0aVZpb1VTOG9Ncnpzd2Jyd0tsZDZDbGhPSDY3?=
+ =?utf-8?B?THZKYytjeitoREdrSW5RY1hCSjhXNFBXVy9nUDJxZUsweTNCRGhNcFh6RDF6?=
+ =?utf-8?B?b3RkSVFZSkRFSkZtNlJZdWdZcnFLakdkbHFvVHNDbk5tTDNGNFI4NE5DanJ1?=
+ =?utf-8?B?Z3VDeU11SnhDcUpTdUp5TnlQaXhYMWtVajgzQWtNUXFFcUNSZllIcXBlMjZJ?=
+ =?utf-8?B?RzhFaVQ4L2lLSitmQVVvc0drbURheDJpc255ckpQOEdONW5OeXJZN2FuL3BJ?=
+ =?utf-8?B?aE9qcXRyalZWUzVwY1dhd0NsY201OHl2UW1vTmlXZWRBNGhoblVvVlloeFUy?=
+ =?utf-8?B?dm9LOVhOUkFTdmQrWlJtUFNyWEFkaXF4NnRWTkN2dzUzWGNuWHlGVHBkZHox?=
+ =?utf-8?B?ak9FSW55WGYxYkpxcDc5Y0FzUW81RGRjemZxdkx2YU5Pd2h2SGR6TDdQTWli?=
+ =?utf-8?B?bVV2Q1FRaTBUVThUSldXK0VSaHlkVlFPRGU1a09lVXNCdlkwU3kzeGR6NUxU?=
+ =?utf-8?B?YzdEMFU5VisvZkZyKzI0aGQ2cHlHckhKbEJYRWNtUk0ydllsRjFmdlIra01t?=
+ =?utf-8?B?eE1oUzhiaDVERmZJdmRkYlZNL2NyWjRJVGhnTTdmQkJMWFhzSjZXRFBkb0Vv?=
+ =?utf-8?B?R2dvNmZSL3REUmpXOFZZdFZPMTB3ODVnaEVtc3pGOEd5UkVUQlNvSlpPZjJB?=
+ =?utf-8?B?M3RYTVZ3eUR3MmYyaWVqUFVwSFBhWTZaRHRoc09HbmhyaTl6SWdRa3U1dEVZ?=
+ =?utf-8?B?MFRMejU5azAzcTZGQ2VjM2xnZjR3cHdnWVliRGE4OXlWVXdKdXVlNUFGSXRC?=
+ =?utf-8?B?TUgrS1h5aFJieTdaZ01mUFE2TFE5UnQyYlRtZjNhVHloRjZGbTJGL0FGN1Zq?=
+ =?utf-8?B?bmppNk0reTNPV094cHlJOGgrcW9TbEZqSVJjaU9qc2xHUWxMRlQrOGpnL0wv?=
+ =?utf-8?B?R2hWK0ZIMVB2S0VMalpMNmFzYWUzTXZaS0dtenlpN3BaOER1K0E5ZWR3d1FG?=
+ =?utf-8?B?UVBkRGJ5amxnYjBuOVA0WURxN3JYNC9OWUF1OWpoS2owaS91OUdCUmpqYnRi?=
+ =?utf-8?B?MWwwMzVjRzN0WFZmcThnRzhQVk1JOWlrdld5TTJRWVo2eEZhUFAzK1JQY2pa?=
+ =?utf-8?B?WCtTOUdCdnRpZjJDMldtSXR4enQxUDFNbHd3K3hYVEt4alZlOEdOa2xYOVF1?=
+ =?utf-8?B?N05vYjgwTzdjTWU2cHhDMlRXNjJkRWhmYWxad3NyTHhGbUFrTmpxeCsycHgr?=
+ =?utf-8?B?dlhHVVgwbHZ4QUhKNHR0WDhKL2loaU9ZN21XeVB5RURzWkFPdlBYUE5BYnhw?=
+ =?utf-8?B?Q3JjTGFjdVNvOU5KSVB2bnU3a21vSlpFTUdyNHl5MmJsZ3J0a3YwQ1JoU1Uy?=
+ =?utf-8?B?emFReEFOQXh0amluV05JUDlqTlAydlI4bDFQTm10NUJHeXdYSTdWcWhtT2xo?=
+ =?utf-8?B?blhDUnhGY0NaYVZkb2tRMzBzeTZ5elBCWmE1cDUreHUrZFh6Ky9jenlQSUVj?=
+ =?utf-8?B?Snk5OXhiQ2h4bHp5ejB1RG85K3RiY21iaGZreGMxVVluRmgrOWU5WUVvNlAx?=
+ =?utf-8?B?NTI1OVkyNXpWcW1HUG52bTZZN3FWRTFSbGJVMEpMZEJmZVc0N2lRN2p4MkdX?=
+ =?utf-8?B?ZFUvU0FTTDU1bisxSHNvNmtFWXgxdUd1ZjdoTGpyWVZTRVMvRW9WOWY2aEla?=
+ =?utf-8?B?ZzhoaFNZQmpqSjVFTWpmbnpuUGVqOXl3bm5kUisraEZoMWVJaFFIZFFvSHAw?=
+ =?utf-8?B?dS9tMU9KcUhrcXdiMUptODM2elZiRWRsQVpBZWdhUkVqUzYyVlUxdS9VUVRp?=
+ =?utf-8?B?M3V5WTMzY09iOHNLcXJLMzYxSWg2UzM1TXdsRGw1L0RXaCtDS3pKbDM1WUVS?=
+ =?utf-8?B?V2hqV3hpc3c5eW8zalVEeHpzQ1ViR0hiRGFiNnFVSkNoaGU3TDNpM0VHUC8r?=
+ =?utf-8?B?WHg4djNpS2hqUnhlR285YUoxSHgzTTZXRDYxbXhXOUhJL1FVdFg2QT09?=
+X-Exchange-RoutingPolicyChecked:
+	EW3oFzSVkt15oJmiCj9AeNHdoDNcwpPAImpibcv555F0/kqe5I6o6M6++BINzFShynrgqmj9qZ2FK1gOUFIoWeKekrVg8mVaVCbD3CRx51Vmqspkkb4DVsxM6gs+gzzEIDUCVNIQMhb1P/ZS75qu5e+v0B8Dp5OC/NSLD8xkrfxzumxSvpfRJ0S/Gfr2FdEQyPBbLLbnNW+1nbHrDleqQSaRFCYsHdYYhXEZr0RjbMC9OLDuxnnumVfnNzWH22kcNwN3ANmyR4SGJYp/eBj/yVi7NEZgEegY7dwlYdPI8qheoDV2AQ1va7BmzshcDYGXK1VYHaxWtQb7urEItnm6IQ==
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	aRDvSYX95xLC6ezZba2gH5QYRFYa0cnvdraWw0wrGOShf+q+3/S5h8BGQCB7xqyxgrKtMKerWvYAq1XBKRAg5DaU2cI+Qckyv7CX1NYG4b5eLSCFfz63XMoJU/OWPoRTzB3l9BacurE7+hP0Et/zQKHlSBtZgJNyKiGYmcVL8hVwyPMV/WedqZQC9TOV6/UgRsY8AD+t1lfyP5NhEQxewGdBWIs63JT9ofcEoLNYSsxUEEfL3mykaHYoUSl9xsM+ocuG0hr4bzRm6cKTLUQVDO6702Pj0BzUnqZdsFRET5EcupZs0uk8Oz761TSeN4103xT6tsyIPUrRu9CW14KccSWV6tyWgKiq+MRcvQVUcDEMix7nzbkWK2l+ZTXu3gulYnab4w/cOhsWp7XoJ6OD80TvL2mFV+2ONN4VmVPgoYhL+5CoGW6xODVf0DWOIs1QG0P7SlNKziF/rGpEcxjTR/g/Ra+bIyNfSpgIY8aYJPGwUtQoE2l+rEZeM8+qyD+uAY0MIsHUcpU64tUErH2GLM8AH57GVDK6WJ/FTIoLrRcmX5MvOPqlvgIyyALzH1jPPtEzqO9VOazEZXhraLcUABTXBIrvcbutoUTUeo7N0/ZEnkUquM0exOt3surqXL5q
+X-OriginatorOrg: wdc.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6f1f510-ac0a-4504-1f70-08df2ababa56
+X-MS-Exchange-CrossTenant-AuthSource: SA6PR04MB9269.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2026 12:49:37.8881
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b61c8803-16f3-4c35-9b17-6f65f441df86
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ypd5op6AWMzk+w/yz+53YQGZsnOcV5ktTabRrREPAGN5gWX5yfe3E8a6lHEM53/MGR7DPZ9MSGCDqGZU0mRMgA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR04MB993760
 
-On Thu, Oct 15, 2026 at 01:08:27PM +0530, Jayant Shekhar wrote:
-> The DCP display pipeline needs a DRM encoder to connect a CRTC to its
-> firmware-backed output bridge while reusing the existing MSM DRM object
-> model.
-> 
-> Add the DCP encoder wrapper and keep encoder allocation and DRM object
-> initialization independent from bridge and KMS registration.
-> 
-> Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> Assisted-by: LLM
+On 06/10/2026 14:02, Christoph Hellwig wrote:
+> This turns down to cause up to 15% performance regressions on standard
+> large transfer workloads.  Revert it and hope the IOVA allocator can
+> eventually be fixed to remove the need for the original workaround.
+>=20
+> This reverts commit 3710e2b056cb92ad816e4d79fa54a6a5b6ad8cbd.
+>=20
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  drivers/gpu/drm/msm/Makefile          |  1 +
->  drivers/gpu/drm/msm/dcp/dcp_encoder.c | 31 +++++++++++++++++++++++++++++++
->  drivers/gpu/drm/msm/dcp/dcp_encoder.h | 16 ++++++++++++++++
->  3 files changed, 48 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/msm/Makefile b/drivers/gpu/drm/msm/Makefile
-> index b7c1a2e9a19e..e7d24be72113 100644
-> --- a/drivers/gpu/drm/msm/Makefile
-> +++ b/drivers/gpu/drm/msm/Makefile
-> @@ -81,6 +81,7 @@ msm-display-$(CONFIG_DRM_MSM_DCP) += \
->  	dcp/dcp_hfi_plane.o \
->  	dcp/dcp_ipcc.o \
->  	dcp/dcp_plane.o \
-> +	dcp/dcp_encoder.o \
->  	dcp/hfi/hfi_packer.o \
->  	dcp/hfi/hfi_unpacker.o \
->  	dcp/hfi/hfi_utils.o
-> diff --git a/drivers/gpu/drm/msm/dcp/dcp_encoder.c b/drivers/gpu/drm/msm/dcp/dcp_encoder.c
-> new file mode 100644
-> index 000000000000..bc173fffb325
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/dcp/dcp_encoder.c
-> @@ -0,0 +1,31 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-> + *
-> + * DCP encoder wrapper for the CRTC-to-bridge connection.
-> + * Hardware programming and mode sequencing are handled by the bridge and HFI.
-> + */
-> +
-> +#include <drm/drm_encoder.h>
-> +#include <drm/drm_managed.h>
-> +
-> +#include "dcp_encoder.h"
-> +
-> +struct drm_encoder *dcp_encoder_init(struct drm_device *dev, int enc_type)
-> +{
-> +	struct drm_encoder *encoder;
-> +	int ret;
-> +
-> +	encoder = drmm_kzalloc(dev, sizeof(*encoder), GFP_KERNEL);
-> +	if (!encoder)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	ret = drmm_encoder_init(dev, encoder, NULL, enc_type, "encoder%d",
-> +				dev->mode_config.num_encoder);
-> +	if (ret) {
-> +		dev_err(dev->dev, "encoder init failed: %d\n", ret);
+>  drivers/nvme/host/pci.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> index 5440cf18b55b..82e308fe4f4c 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+> @@ -3747,7 +3747,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct p=
+ci_dev *pdev,
+>  	 */
+>  	dev->ctrl.max_hw_sectors =3D min_t(u32,
+>  			NVME_MAX_BYTES >> SECTOR_SHIFT,
+> -			dma_opt_mapping_size(&pdev->dev) >> 9);
+> +			dma_max_mapping_size(&pdev->dev) >> 9);
+>  	dev->ctrl.max_segments =3D NVME_MAX_SEGS;
+>  	dev->ctrl.max_integrity_segments =3D 1;
+>  	return dev;
 
-Again, ignored feedback. Use drm_foo functions instead of dev_foo().
-Also, there is little point in printing an error here.
 
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	return encoder;
-> +}
-> diff --git a/drivers/gpu/drm/msm/dcp/dcp_encoder.h b/drivers/gpu/drm/msm/dcp/dcp_encoder.h
-> new file mode 100644
-> index 000000000000..de40c9bca4bb
-> --- /dev/null
-> +++ b/drivers/gpu/drm/msm/dcp/dcp_encoder.h
-> @@ -0,0 +1,16 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-> + *
-> + * DCP encoder interface between the CRTC and bridge chain.
-> + * Hardware programming is delegated to DCP firmware.
-> + */
-> +
-> +#ifndef __DCP_ENCODER_H__
-> +#define __DCP_ENCODER_H__
-> +
-> +#include <drm/drm_encoder.h>
-> +
-> +struct drm_encoder *dcp_encoder_init(struct drm_device *dev, int enc_type);
-> +
-> +#endif /* __DCP_ENCODER_H__ */
-> 
-> -- 
-> 2.43.0
-> 
+I saw a related problem with the limit capped to dma_opt_mapping_size - thi=
+s can
+cause inflated number of ios in zoned xfs as the max zone append limit is
+capped by max_hw_sectors. It can also lead to more extents being generated.
 
--- 
-With best wishes
-Dmitry
+In my case, the drive did not have any limits on appends (mdts: 0 ,=C2=A0 z=
+asl: 0) but
+dma_opt_mapping_size capped that to 128kib which is very small. It would be=
+ great
+to fix this.
+
