@@ -1,194 +1,171 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013033.outbound.protection.outlook.com [40.93.201.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C034EFFCA;
-	Thu, 15 Oct 2026 22:47:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792104433; cv=none; b=DgbkAkbduuku9CJ4UdeXlsK5SsVmLNXWjhP2GlrVK5D5R25glp/LJIINhsTnDTon0dJ+nHlbfF5rfgpSwohCYTSoU4lkaJ833Bwpw8OizazxobtIzOoDG4BBKOJLbBlRYLwcnB0A0x8sFJ15wp/xtEDI11PHtAEQvODlmDB/wqo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792104433; c=relaxed/simple;
-	bh=7VzyWhS0yiLiqhjJozM7MK0XGplhJcLRtNB0AJdHGWE=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=e4X2ICgc3jZsjchJ9F6dk9Dnt2LiKek0pfz4gIUGSLix4HNHkG+Qnwp4GQurG1aBSulLYNkdCNcUIA1JQUfeUv2FHH+1RJC9SaY+XoTjf2cSyss6v1X48Z49nJowQMTqCMVtFbHKzJugxxNsplycOJouvY8IqAGOFz2yaXpscPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=frWiSVJb; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCCB137A834
+	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 23:39:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.201.33
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792107600; cv=fail; b=HxfVZJSYlgRZERSuml9kCrCoxCd0g4x4IkJTjlvmJK8vX+nUgbpR2K1tGQa7Wxfo2bQgtO7Ve1SHMnYdeiGlxjc1BWw45dMpuUXIHf5zN+lJHlC9rva6eu34vyuYDyC1mIHpD1RpyxVigx0RsDKUob8pJITg05HHRHj31wwKDpw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792107600; c=relaxed/simple;
+	bh=SvNN90dDkfS8PBQQHylUtt8A0QOpneFMHJNoTkxJ9E0=;
+	h=Content-Type:Subject:From:To:Cc:In-Reply-To:References:Date:
+	 Message-Id:MIME-Version; b=nqukPAtVFSUDIIVxqukEIk7bh4VHEWu9Lw/k/warmJruXzUSl4P7jTgVk6bgSczAm5f1Ro/jXQwnbSFDohpGEufmG3n1skl5L0jL6JdBlq/LBeSaDR0XXK+2AhPlrHk1OQ6Nz/TOKiQpbcZPNH9MBuFwPPmtcjBrbVoC93kLDXc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=f42e7ub+; arc=fail smtp.client-ip=40.93.201.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="frWiSVJb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ECA71F000C4;
-	Thu, 15 Oct 2026 22:47:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792104430;
-	bh=EgeZyXP6AssGk+9sGtqMIvSOTxvKxWy2gMJ2hGDgcKE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=frWiSVJbt5aOK3+VC3/gyLircFrCXy1DAds2Xhs+iV5Ou6U8yfAECWUEb0qMVlist
-	 s+eyeHlp15yeTc0FhC5AsaRs3gtsCLfKnomPMDRwSSfo0fhQlW/gdnyeT1Fkru1gGf
-	 OGlpHpwb+vP9s5vkGrblUGuX8dK6AxLsi5Ri3JWxk+HPnfNM2SPsZNmFP2uOnK0V21
-	 9guIyf0rfunb7t/7gDnto0X//aJDrnaBCbx7imox00jv1ADS11buBhYhf3c6W+Qky/
-	 elHFGyjbcLdxdJ+hpQp1st6477Xa+oGpvBEUHrDo7t5pQIEgAdc/BK3QmNTAwkvjlW
-	 KTTP50YYAP3NA==
-Date: Thu, 15 Oct 2026 17:47:08 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Naman Jain <namjain@linux.microsoft.com>
-Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>, Wei Liu <wei.liu@kernel.org>,
-	"K . Y . Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	Michael Kelley <mhklinux@outlook.com>,
-	Long Li <longli@microsoft.com>, Nam Cao <namcao@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Kees Cook <kees@kernel.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Radu Rendec <radu@rendec.net>,
-	Sean Christopherson <seanjc@google.com>,
-	Kai Huang <kai.huang@intel.com>, Dmitry Ilvokhin <d@ilvokhin.com>,
-	Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Thierry Reding <treding@nvidia.com>,
-	Jiri Wiesner <jwiesner@suse.de>,
-	Daniel J Blueman <daniel@quora.org>, linux-hyperv@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org
-Subject: Re: [PATCH v6 4/4] x86/irq, iommu/amd, x86/hyperv, PCI: Drop
- redundant irq_retrigger inits
-Message-ID: <20261015224708.GA1810637@bhelgaas>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="f42e7ub+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=avsA17UV31D/ghSmNVhmQs+/KcHcHsHKbbmqojE+LWc8eh3rr/U+poHpCJ5L8vVBQjW+lIP4KIzsy6WyBEvzCvQD2XtFyp6NDo+9vmk45sTiyrIZgE4PFYCy5QOeARN1Wym5BbYWBohbMf2RTRvQopD+SxN3aIdBJ7jhRv3h1FwosuDmexOzJ+QxEe9+63KaBrSIkGiwVMGLCm9vywagdm6PgV22fEHblZwENOBhF4UidccKrkJIouX7PkXvqy/PLEplHxaTgzsiZuCf/3MFkyaOWhgTCk4WRmh2HijGZCEGlsN6oXFoEewwMLWUwzY+8iFGYcboiEtUA7w63ZWDFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6z4Jt/93ZoBgu0fp+cI719MlSxp/VM6/9dn3hGyfyFY=;
+ b=SzE5j5a19Ps6nm6cw2EXaCH9TSVTBpkovU9e0t2GKGfJ2jPrjTRlDXY6FQYNvngT2jn83sIjxnsguQ8ZbIBTK4azYzuTbKXjQibGP1eQgMJRi/UXvbrshs1THNcOyITdwRdbSM7aIXKd9Cc4oeGIIQle3Whw3gfvehnfbxLfNXh3db+Y2gB2KCtAgQHF/vxcx1lTKaxiDGoshKT09Y/L5sN2in85SjepakH/FB6XagGwz3HWppaKN9B/B3b/sTjcmE9DcAu+mILsa7MzbitWKH6PDeS3y31DVtE6Ib8W9ITT4be5hz8oQaJ4+yNn43rZe4ei8yigX33O/2OshvE5yg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6z4Jt/93ZoBgu0fp+cI719MlSxp/VM6/9dn3hGyfyFY=;
+ b=f42e7ub+cLXGLVnzUmi85dOV2PFwj1iWmVVtYIdGhxfun0fZOHZbg7awWHzOQlJQSGF5Q3VoGMQRHse+0t2kX/1cE6Ts2Is1iUcGvRdi5WCTr/uznJMt6LedjojdYKUr+eMY3xVUQ8r6+gXxFYZKrrTUInmbDFZnzHRRKKfp8rLrzX77I+oEj6e7y3RVOco51vVI4du+qGSPTLEDMVpzL6NWGYWfm4UPra7Pux+wqamRoG9SReN/Pyg/wK5mTGdN0NRiItGoi/+7tlFDEODUlAINSrIIZFa8UFyW2UeUZJ3iKPtIQBuWxr13zKCpfhkhctTzgmyUJ0SLz+HfpjzYPg==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by CH9PR12MB209431.namprd12.prod.outlook.com
+ (2603:10b6:610:315::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.13; Thu, 15 Oct
+ 2026 23:39:54 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0522.013; Thu, 15 Oct 2026
+ 23:39:53 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v6 18/24] iommu/amd: Init and clear vIOMMU DevID and
+ DomID maps
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org, 
+ jgg@nvidia.com, yi.l.liu@intel.com, kevin.tian@intel.com, 
+ nicolinc@nvidia.com, vasant.hegde@amd.com, jon.grimm@amd.com, 
+ santosh.shukla@amd.com, Sairaj.K@amd.com, jay.chen@amd.com, 
+ Ming.Shu@amd.com, SooJin.Tan@amd.com, chrisl@kernel.org, wvw@google.com, 
+ wnliu@google.com, dantuluris@google.com, kpsingh@google.com, 
+ alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com, 
+ guanghuifeng@linux.alibaba.com
+In-Reply-To: <20260930092344.5616-19-suravee.suthikulpanit@amd.com>
+References: <20260930092344.5616-1-suravee.suthikulpanit@amd.com>
+ <20260930092344.5616-19-suravee.suthikulpanit@amd.com>
+Date: Thu, 15 Oct 2026 20:39:49 -0300
+Message-Id: <179210758994.4133959.6615374486960504749.b4-review@b4>
+X-Mailer: b4 0.17-dev
+X-ClientProxiedBy: BN9PR03CA0463.namprd03.prod.outlook.com
+ (2603:10b6:408:139::18) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260923043023.3150498-5-namjain@linux.microsoft.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|CH9PR12MB209431:EE_
+X-MS-Office365-Filtering-Correlation-Id: 015b51d5-e85f-400c-1d73-08df2b159ce5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|366016|376014|1800799024|23010399003|56012099006|11063799006|4143699003|10067099003|18002099003|6133799003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	tSvWrs/DXhlyedXU1EqB7ZNDDNGlETrIlQRRIOKWtqFvbuuVgvTWhfQp794IBXCKi545KRUur61ypTC3a8B33kKdHBnHM8+HE68CLzA4upmp5+4CFJ0KqEVrzwisWI7Y//AUj6mRrrxps1QVmRiHrr4NINqULOXvfNrsbovDe4inj8YcL8viSk9nWxbIltNAPub6GEF/OlJBT5w5jkGGf0IcX1Ph86K2IvcjiAFX9yAX20QUQxs44opCrO6bwQ2CCrz2Ni4l95c3BH0EAJS0DO88NfqjmKSLjPQtJVH70K/eK+rcmaorYXwekOykq9PLmel8VkijzftnOcD0UAcMh8GaOXx+iDyHkRunc49b0XpuxkQI6KNhm11YMbAnpj/yIA/aFRXf4rl21qwd5bRJsCzpllfcDV/rRPvpx/Ibzm6Mj+xo1l8jGbeo8qneEFgMpJrPTiV0BR9WeWnAMNdYcg3KocNMdUEni09hn6Am/T++UQNJf2cqr026W9nONrEVYqjSol0zgFlhpsGL1IW7+QRdLHuRjI2qpEechHe4TJnMZQUpDc1b38p/i0QKaQrI0BypFeHeDwQiUG8hs+BSNXH1hOHiv99TmF97U0AWmSMiTvYWM2dMTkaSkQePahybYza4XKMdVHK9p7puuSsPpCsys2BB3A47wNGzONXgxZ8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(366016)(376014)(1800799024)(23010399003)(56012099006)(11063799006)(4143699003)(10067099003)(18002099003)(6133799003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TFpFeGRVTHVlZmJQWGZxV3ZER0dDZ25aL2RkdkEyR1NjUzJSNmlFZXdWMkM4?=
+ =?utf-8?B?NkVFbGkzRUtVcUdCS0F1WXNsMmh4aXJSRXdHajFGK3prZmZMRkpIZTJWWDU0?=
+ =?utf-8?B?WjVXTktNbVRFdWNucDRZbVhQZWI5NWFGSlh0SkpleGdHV0ZpVllXWHBRY2dD?=
+ =?utf-8?B?UU9hY01scmdQdHA1UWFGN1RoZjJtZ3RNVnNycHlabWNocHhUUUQ3Uk5uZW9w?=
+ =?utf-8?B?enZqTlRHYzh0ZDJUREduenhRRXBDSGliU2pFV0xOR1BFZUIvZTAyd1ZWaUNz?=
+ =?utf-8?B?Q1d1RzBHNXhtb1lNNVZQUjQrYnpVSEFFSHVucXFMcGhGREQzYi9LeGE2RFMy?=
+ =?utf-8?B?VDYrNURQbDNqU29UdjJzb1Z1c2sreWRTektxQXFFNGFNZUFFaWhWVCt6NDBE?=
+ =?utf-8?B?amJUU3k5NTRWNXkzUFBsNTcxLzZDcStBSGU1OEk5SUIzeXVkSk9iT2NXaUhM?=
+ =?utf-8?B?MTN6bkFHb0MxZUExRy9OYlA1cFl6aDBUSENTVzBBZFpCMHM3clo5eHd5MCtB?=
+ =?utf-8?B?bTlpdmRNV2xnZkFma1hRKzZDVjlhOGNBZjQrWHNBRkw3NzZxRit0eFdpUzB0?=
+ =?utf-8?B?S213TnlaYmdJdVpCSmZrS0ptZjY1U2dtVEgzWnZTNEtQTkt4Sk05cWRRWmtK?=
+ =?utf-8?B?NnhTUEV3Y1l2K1J2SklaRlFPUXU5eTY4cnJkbjR0cC9Xck1RK3RjNk5ndVdl?=
+ =?utf-8?B?WXZnUVVkKy95ci8vMmszdFNzT1M4VmJpQzFXeU16RFE5QmtaYUZVNjN2aWE0?=
+ =?utf-8?B?MGdJS1FLcE9RYzE0WnVwYkFWU2NRMGNadXoyNkZpQmVieW1zMzB5RDNFOUNF?=
+ =?utf-8?B?TU1xZSthMlBwTS8yVVMxZE5kamNKb29nQlR1bGs1eTVEdWJJQjVxQUFoc1R4?=
+ =?utf-8?B?b1ZKMkJRM0NlZkNoVWZyQjRYQXVuK3R2aVRxVm5nMFI5MUkxdFZRank4Q2h2?=
+ =?utf-8?B?eVFUblB4NlUyYVVaTmFSNFNKQ0ROTWZaS1VXVHNsL1dSSU9majZuSSs1QXZK?=
+ =?utf-8?B?K0loSEhTbjA3ZnJqNjM0dUhpVXgxVHJMR1J4K1FadkpwbVo1U01GYUhiSlBD?=
+ =?utf-8?B?VFIzWllHU05NM3UxampyaDFHTXA5a0JTaThPcUtTTGpxZXRrcm9tS3grR0sy?=
+ =?utf-8?B?SDdiTW9vL3QzRk15eTY1UEZoYTZaSDN5ZEM1cTF5eUtmQ2dOQW5rZU54T01C?=
+ =?utf-8?B?OXh0UGhmQUVOb1p4REZlN0RZN0tDZy9XWkI2ME9ZS1cyWm9OODZWUGUzblFa?=
+ =?utf-8?B?NitIT2hqUkhxY2pnejBEYmlFZ3k5Z2lZVGpJV25YbFhOMS9VVEZJeFF5RFNK?=
+ =?utf-8?B?Q2g0anVKZzRMQUVmR3BITzBsK0JGWDlQYXlCRHpsRkp6OXVOOGtCRldZSEtM?=
+ =?utf-8?B?ZEZpS3h5R2pJZmNVOWtNMndVYXFxemlMYWw2WVlXZHc5dGVIeXJieDhmVmJW?=
+ =?utf-8?B?eWFjNUY4MmpsOHpTZlA5T0dncndlVmU2dldVdU1qR2xnc0o2MEttaldMR3Ux?=
+ =?utf-8?B?UTJXRVl6NTVFYnZGY0dIMG9iRUhNOW1yaldqL1JqVXJRVW1pd0VZK1ZNZWpz?=
+ =?utf-8?B?SG1oVjFLWFJYZG1OTktTVnNUcjlXdklBakc0OWpodlZkeTk5WlFaMVN0cXR2?=
+ =?utf-8?B?WVFPbEFib1VrM3pLQ1hzU2dVQTVGTi9zQi9nVzlOblBpZUN2VFdENWg5VG1I?=
+ =?utf-8?B?SWM5YkExZkVHam9SeGJkczk1NDM2VWVMVWZENDZnVGNuR010RlVHYUNKUzVL?=
+ =?utf-8?B?YTRSOElLUngxWEI0R1FZOURwNStualcrbDd5WjFYY29jWHVXVzBlZXJjYndq?=
+ =?utf-8?B?ejgwQVo1OWY0bElaa1UyTkw2YjRjMlZWVC9xWGJuYm54NmpIa0p4MFU3bTF0?=
+ =?utf-8?B?NTYwZDk0bElGb0R1YjU1VHpWWDllbTZ1eUJDcWt2emNSdVkyQ3JqSW96eTJD?=
+ =?utf-8?B?eVBtU2tjWmFZRVNnVXkvc0FuTk5tREl0Z0s2QTgwbmlQZ2g3L3Y1dWZ2RmFW?=
+ =?utf-8?B?WURWSEpKSkFKQ3RTaktWS211OGZiQVc1Q0VYYkpoQlNESWMzdTdSMVFoQm9F?=
+ =?utf-8?B?d1RtVnRocVF0MTRSUHZVWUthVG4ySG01bXgzR1FsY0p2SDM3YWE1aXdWNklH?=
+ =?utf-8?B?WGp5TC8yZitWRFFXSVFYdC9pZWUyc25Jei9WYU93T0hDZUJMWXd6R1lhc0Ey?=
+ =?utf-8?B?d3FHaXNsaW9LTXNJT0lGUE1sNmdLRW9mTmtaRlppSXp5YUM5TlYrWDRSOHJx?=
+ =?utf-8?B?Sm92SkRmNTFzbGdzOU85NTRpWnpad0xrN1ZZS1NlckFMTGpWejNSc1B3VnZ1?=
+ =?utf-8?Q?ESU/lo3Z4IgM1vw2j9?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 015b51d5-e85f-400c-1d73-08df2b159ce5
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2026 23:39:53.7586
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tOnAwb2SIOtw4D1bHhjdGn9BLdMzwDlR3a3KzmFVLHZqYBYv/VZO0ibVHpQDY1to
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH9PR12MB209431
 
-On Wed, Sep 23, 2026 at 04:30:23AM +0000, Naman Jain wrote:
-> With fixup_irqs() and msi_set_affinity() now using
-> irq_chip_retrigger_hierarchy(), the outermost domain chips no longer need
-> the helper as their irq_retrigger() callback. The generic resend path
-> already uses the hierarchy helper.
+> Before using a vIOMMU instance, prefill the mapping tables so hardware
+> never sees an unknown guest ID. Map every gdom_id to the nest parent
+> domain ID, and write every gdev_id with hdev_id 0. Init cannot be
+> scoped to IDs in use; INVALIDATE_IOMMU_ALL walks the HW table.
 > 
-> The hierarchy walk reaches the x86 vector domain's apic_retrigger_irq() for
-> all of these stacked domain chips.
+> Yield vfctrl_lock every 256 doorbells so the 128K MMIO loop can
+> resched. Attach cannot run until viommu->ops is set after init_one().
 > 
-> Remove the now redundant irq_retrigger() initializations from the outermost
-> domain interrupt chips, including the Hyper-V root partition PCI/MSI chip.
+> On destroy, drain CONTROL0/CONTROL1 WRITE and unmap. Do not rewrite
+> the full tables: that would start 128K DMA writes into pages about
+> to be freed. vDevice destroy and nested_domain_free already restored
+> idle entries.
 > 
-> No functional change intended.
-> 
-> Suggested-by: Thomas Gleixner <tglx@kernel.org>
-> Reviewed-by: Shradha Gupta <shradhagupta@linux.microsoft.com>
-> Reviewed-by: Thomas Gleixner <tglx@kernel.org>
-> Signed-off-by: Naman Jain <namjain@linux.microsoft.com>
+> Skip VFCTRL access when CONTROL_CMDBUF_EN is already clear, matching
+> viommu_priv_unmap_free() on the same uninit_one() path.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com> # pci-hyperv.c
+I didn't see any explanation what happens if the guest issues an
+invalidate to a gdomid without a host domid?
 
-> ---
->  arch/x86/hyperv/irqdomain.c         | 1 -
->  arch/x86/kernel/apic/io_apic.c      | 2 --
->  arch/x86/kernel/apic/msi.c          | 2 --
->  arch/x86/kernel/hpet.c              | 1 -
->  drivers/iommu/amd/init.c            | 1 -
->  drivers/pci/controller/pci-hyperv.c | 1 -
->  6 files changed, 8 deletions(-)
-> 
-> diff --git a/arch/x86/hyperv/irqdomain.c b/arch/x86/hyperv/irqdomain.c
-> index 6d790636c8b95..b3ad50a874dca 100644
-> --- a/arch/x86/hyperv/irqdomain.c
-> +++ b/arch/x86/hyperv/irqdomain.c
-> @@ -316,7 +316,6 @@ static bool hv_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
->  		return false;
->  
->  	chip->flags |= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED;
-> -	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
->  
->  	info->ops->msi_prepare = pci_msi_prepare;
->  
-> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-> index 7d7175d012288..18f49a251f23b 100644
-> --- a/arch/x86/kernel/apic/io_apic.c
-> +++ b/arch/x86/kernel/apic/io_apic.c
-> @@ -1857,7 +1857,6 @@ static struct irq_chip ioapic_chip __read_mostly = {
->  	.irq_ack		= irq_chip_ack_parent,
->  	.irq_eoi		= ioapic_ack_level,
->  	.irq_set_affinity	= ioapic_set_affinity,
-> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
->  	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
->  	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED |
->  				  IRQCHIP_AFFINITY_PRE_STARTUP,
-> @@ -1871,7 +1870,6 @@ static struct irq_chip ioapic_ir_chip __read_mostly = {
->  	.irq_ack		= irq_chip_ack_parent,
->  	.irq_eoi		= ioapic_ir_ack_level,
->  	.irq_set_affinity	= ioapic_set_affinity,
-> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
->  	.irq_get_irqchip_state	= ioapic_irq_get_chip_state,
->  	.flags			= IRQCHIP_SKIP_SET_WAKE |
->  				  IRQCHIP_AFFINITY_PRE_STARTUP,
-> diff --git a/arch/x86/kernel/apic/msi.c b/arch/x86/kernel/apic/msi.c
-> index 9160227b9b32a..aad2f15eb2176 100644
-> --- a/arch/x86/kernel/apic/msi.c
-> +++ b/arch/x86/kernel/apic/msi.c
-> @@ -246,7 +246,6 @@ static bool x86_init_dev_msi_info(struct device *dev, struct irq_domain *domain,
->  	info->ops->msi_prepare		= x86_msi_prepare;
->  
->  	info->chip->irq_ack		= irq_chip_ack_parent;
-> -	info->chip->irq_retrigger	= irq_chip_retrigger_hierarchy;
->  	info->chip->flags		|= IRQCHIP_SKIP_SET_WAKE |
->  					   IRQCHIP_AFFINITY_PRE_STARTUP;
->  
-> @@ -313,7 +312,6 @@ static struct irq_chip dmar_msi_controller = {
->  	.irq_mask		= dmar_msi_mask,
->  	.irq_ack		= irq_chip_ack_parent,
->  	.irq_set_affinity	= msi_domain_set_affinity,
-> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
->  	.irq_compose_msi_msg	= dmar_msi_compose_msg,
->  	.irq_write_msi_msg	= dmar_msi_write_msg,
->  	.flags			= IRQCHIP_SKIP_SET_WAKE | IRQCHIP_MOVE_DEFERRED |
-> diff --git a/arch/x86/kernel/hpet.c b/arch/x86/kernel/hpet.c
-> index 8dc7b710e1250..2bb7a6f466af3 100644
-> --- a/arch/x86/kernel/hpet.c
-> +++ b/arch/x86/kernel/hpet.c
-> @@ -509,7 +509,6 @@ static struct irq_chip hpet_msi_controller __ro_after_init = {
->  	.irq_mask = hpet_msi_mask,
->  	.irq_ack = irq_chip_ack_parent,
->  	.irq_set_affinity = msi_domain_set_affinity,
-> -	.irq_retrigger = irq_chip_retrigger_hierarchy,
->  	.irq_write_msi_msg = hpet_msi_write_msg,
->  	.flags = IRQCHIP_SKIP_SET_WAKE | IRQCHIP_AFFINITY_PRE_STARTUP,
->  };
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 8a410d4aa3704..0d22324568911 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -2477,7 +2477,6 @@ static struct irq_chip intcapxt_controller = {
->  	.irq_unmask		= intcapxt_unmask_irq,
->  	.irq_mask		= intcapxt_mask_irq,
->  	.irq_ack		= irq_chip_ack_parent,
-> -	.irq_retrigger		= irq_chip_retrigger_hierarchy,
->  	.irq_set_affinity       = intcapxt_set_affinity,
->  	.irq_set_wake		= intcapxt_set_wake,
->  	.flags			= IRQCHIP_MASK_ON_SUSPEND | IRQCHIP_MOVE_DEFERRED,
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-> index 056d379b3cee4..a004b08d68fe9 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -2119,7 +2119,6 @@ static bool hv_pcie_init_dev_msi_info(struct device *dev, struct irq_domain *dom
->  	info->ops->msi_prepare = hv_msi_prepare;
->  
->  	chip->irq_set_affinity = irq_chip_set_affinity_parent;
-> -	chip->irq_retrigger = irq_chip_retrigger_hierarchy;
->  
->  	if (IS_ENABLED(CONFIG_X86))
->  		chip->flags |= IRQCHIP_MOVE_DEFERRED;
-> -- 
-> 2.43.0
-> 
+This is related to my questions about when the IOTLB is cleaned. Given
+this patch I would expect that once the mapping is removed the hdomid
+is cleaned and any invalidations for the gdomid are NOPd
+
+If the gdomis is used again it is assigned to a clean hdomid and those
+NOP'd invalidations don't matter.
+
+Is this how it works?
+
+I have to say the commit messages are no good in this series, do not
+summarize what the patch is doing, explain why this patch is necessary
+in the first place.
+
+-- 
+Jason
