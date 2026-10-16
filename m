@@ -1,139 +1,120 @@
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1C4849428E
-	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 18:05:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14E02379998
+	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 19:40:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792173929; cv=none; b=Rdw2mR+0gOc8KLJUbU0qq/xNCfJGf2qvz+LDuhRqAZt5DWPnqsr9pbf/jCMIsJlhgMg6yhm4uryMRO+Bwclv4oTmoc2PFP50oe28zIzf054TWtLBtqkEofLFWvDTLy10mZRVtjVF04mhELeyDZ+nYSkNLdCRf3Lz90nyQVJqRt8=
+	t=1792179643; cv=none; b=RnBtOrRKPWMyj5ZTIik2ZzqqHeFt2I+RWabhjOHEFVr2QNrq7Z+4rf+gARIM9YMVWybXQfFLjk9NER0Q257pDNk5xCBqYxE7/bjTcbSmTHcMWRMJ3OMjj49aiTEd4FA7trEL+5sN3WpTelNIn+UKR8wQS7SSQYHci75meCoDPts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792173929; c=relaxed/simple;
-	bh=9/EH6Nh3IyjidhjX8ImjHAg8jsbvenySYa7Lj4rRnzw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L/nmxMs3/AGo04ZwfwTdsWtPeJEpiXf9og7J81w2DLRYInyFy/dWw38DIhsHESn3Mq9y88ub8WWsP0fTlmuXOmsxBFJI6JdaUz/MnvJulIUC6Do662mCfOdZbDaCiSSHVXRR3iJiFj4TKgT64a9nrqWBbXLtO02FxhyeVaDeiwg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AHtyY7o0; arc=none smtp.client-ip=209.85.222.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1792179643; c=relaxed/simple;
+	bh=xXQUv4FgmNf0JJMpp6ecZtgviJ+BWlmyvg/p6z47y0I=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Xg8CzAvlP768rjm0bFP1EiZzndVXLmtJCBdLXD4Ju6eE1/5O79Inf0ad27BPxy01yc72qpZ+XpMvU+49GMNSzasPIxbYTEVF8bUwhozzZ35eCU+g/9VyGWd8FtG8PpKy04qET6dDJawMt/TWXfbvH5SMONE0k18zDsnaaZDU5fw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AMmY9exb; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AHtyY7o0"
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-93efc0452b5so16008085a.0
-        for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 11:05:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AMmY9exb"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4a16c1608faso4231095e9.0
+        for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 12:40:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1792173923; x=1792778723; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=bcPINE8kLYO7ad2h8AzZJW55DUCIX7EGWisyHohuTdg=;
-        b=AHtyY7o0Zr8mAuVa3F4YpnPuZAbKFl9eGvRGn2N3JfMcsa+F96y7h/TcLnmAZb3lCR
-         vknvMJqI1YmUKb3Sgwsa4LQoWdhYNJwJIyBkVMZyF96025gm9Bq0amQycGYgd2O+E1Qr
-         ivkGYwslmeX03aE4MJlaWWgKm/bNjVRFffB37gvk9TSxJYptSK0SWsifDSvkH5YckFbZ
-         geSW+QSfUVThbbo4dkyXTiv0/ZuZCfq/HuHutXPSTl7iwD8TPFbOOndSfm4SWaq5zllq
-         wHmC93AnPUgrgWMTApBvbjXcjJa0UHE3HUZ3UywSNdJ1BjlkDJT2aFNmrwtLJvyGprh0
-         dJlg==
+        d=gmail.com; s=20251104; t=1792179640; x=1792784440; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=iMRRI5bEPrjeiE8Y1aI7MLDO6J4IuqM4URq6dJXpjo8=;
+        b=AMmY9exbLY1oWMlIXqtj5bEB3Ek17+OyswDjDdPDcfvtEwQrK8a0Mg6j/zUYtedg5V
+         6RcTzZvdb/ad8XBEA0aJ1kmbTn3Vb1OXmxvPxrW8w7NYef1Avs/ECvOUqpNDtt3icfUm
+         QdLhLc8Iph7/gHtTGUUMFasw9oiAgr7zmhWf1nDM6fwX6hxCVoFr2aOYosj7mcNWhmFW
+         oFT2knuHr9xaY8It/FyD5fBITjm/shwSXkR9j8jNkupVW99i4Fn4HVb4LfnEIQdLxMJi
+         ESPQ/e/V8H6HpA+3l9UV2X9RYZ8HS5NJBsDVG7sI8Nbg6zHmfWyk39N5BD/+nWSn5BW0
+         tsow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792173923; x=1792778723;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=bcPINE8kLYO7ad2h8AzZJW55DUCIX7EGWisyHohuTdg=;
-        b=ZgI6tBSlCbQhX6G+Ynwsq8189J10PcDE5s1GuHD6LGtuvBU/ubk1ykqM/vE4d5EK1s
-         JBY59G0hlhReTa8Iwrn81zT+eILQyga9mdOzUr1jD32g0J7L1Pc92mMJ3eSdlvh6r01W
-         rJAxt+Q876gwDItma5VczQDu7VDeMyDBKyLOsAgtTdTFfhk+js2NtMnFDDdWmzcreAQo
-         WRB2gH/RyYDjXMStHxshCQpNSUWHMHZJpHw8xrYIbV/auUbq/Kvn7CWZ6bCpdpGQ4nm9
-         xk3jxNI5i6OHQTeanggRYqfBGWC9DPGn/07FF+slDDjlcOTNPTDnMRO4oge3jDiLu8kn
-         /jUg==
-X-Gm-Message-State: AFq9FYJ1FFHy7Tb5Ha6gD69Igv/344qHCC1csFMJoLkgOQe3YvK/Stb7
-	UyJIKGZRjFNM8v3Q+A4GJisbKm/8xdkxlRuoFOPLliN6TxCf2RGWr0xm57zYtHPiRX8=
-X-Gm-Gg: AYBFou0O8n32eklTDL0kpd3Qk2AVlok8QFQS8JzwrQ0t/5wuw+CHbD1vIRebO3HF9wO
-	ddXd/oXhCsnE6/h7GDFLFCZXTQBA/Juws1/RNZkWIA9QADALI9YvFmXdtsDum70BicmffPYBbvj
-	g2JjW1U7eH+v5HZLQWQcx6RpOIa819oeR63jJJwdDkt3dJOiDIL3vdglFNiFFBciDUUYTxIMBKC
-	u8pNYKPelIkMt3gWOway21m0STr6A+0kSYquAUiPyd3KQstc0XGtwDDJK9lvaJ3pgSnmxNtbXJY
-	SMKRONe248JNAZl4Hm/2o5RrOost3QTqKNn9N61oobsfVw7jyOi/Hrnqr3anxuWmZTGd2BRgiL9
-	0xx/ieKhVgWkehMSCLmBgmzo7jt3RkV2IsCvywnyRr1TuDQOkJyh1kB+fgb6b04nvxV2pST9HDw
-	7MjUhFcUUrNsgfO/jUzUYdEVW0avSiCch+qRMtXDill+V22LE7smnDYeHG3CZ7+Eq+T0uGX1Ud+
-	WhyV3S4xcPOvkKu9HI47KBpQ8sUtlPrrOABXxZlW2T2HfTyObMEHCSM00IBHu4gsHM=
-X-Received: by 2002:a05:620a:2990:b0:93c:c08f:ecf with SMTP id af79cd13be357-93f29d69e08mr105371785a.53.1792173923072;
-        Fri, 16 Oct 2026 11:05:23 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93f23eb7ba5sm131256785a.27.2026.10.16.11.05.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2026 11:05:22 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xHmIz-00000002FIM-2VOf;
-	Fri, 16 Oct 2026 15:05:21 -0300
-Date: Fri, 16 Oct 2026 15:05:21 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Daniel Mentz <danielmentz@google.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
-	joro@8bytes.org, nicolinc@nvidia.com, smostafa@google.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	dawei.li@linux.dev, praan@google.com
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Align memory attributes for
- SMMU-originated accesses
-Message-ID: <20261016180521.GJ14213@ziepe.ca>
-References: <20261004195027.227748-1-danielmentz@google.com>
+        d=1e100.net; s=20260707; t=1792179640; x=1792784440;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=iMRRI5bEPrjeiE8Y1aI7MLDO6J4IuqM4URq6dJXpjo8=;
+        b=UfyHfrJDAwjtK0xkk4NSA2XoQv4t2yRBqfUkxxk7qB6OgY6XYa9RE2NhkoBsBv7lWp
+         8k7ZXIGDuhdvNUj7hLLbjKN/JL39CJEJRn3V7j7VmVICx8MgOY8FSf4dy27XbBFbu8h6
+         pe58C1Va0+2F0XcBuQGAT9otgImp23nPSEdg6lWd4pt7DeUm+u6VCAIxN8hqEq1w7RJa
+         seoXfeJJcr70NaeqjQqoGurwtsAyPM694Fn2NmeNhV0EQgCCsaik1z47s8gdbHRUcZJ1
+         NcSb/dLo9MY3pzLbCXcoaDe/MOFG/b5HYXfRKUugmq+PS4rMY7XqQlnHNIDtUL2p46RV
+         7V1A==
+X-Forwarded-Encrypted: i=1; AKwUvByORIbs6PMo3Kq1Ag8cadxcJJDrl+8J7fL/JI7CZh4pBQM5f4JX91iYlnxADfBuYCRfPCZF+Q==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIMWM0BjGDnWuLTYpCd6vwyf3kKkfbVCkzN/0m1UwQSTT6qoNEw
+	x5JSUvOEtBIzjXpIPx5g8pxZ3DVPdSIZitHZlVnvnQDwJiwWfPypPYSu
+X-Gm-Gg: AYBFou3buotroB4oppW1TVEIRVSZg1P+gzXxNtIxeaAyqHlxeIH7PEvvmDmdfGChMpy
+	qwoezUQZZJ7px7zJiBzo3eORbiLYNFqA9cvBiLjj4h7F606wAB0BL04oyh70S3GVDL6qqRFFD0j
+	nrzNca/JUUtMRgUqTPFvIuQBeASOeMMUs7vgFEFvWKIeu/ZreNNUx9sX+H1UlPRsF8uSo0UozfK
+	metLQ2fEnX23WuixMifF3mlEv72H87YvQmFoJBeVgLonKtknINHyBDr+aID6rQPpkN+FCoQslLt
+	yxKundAkiEn3lPaDpqCUphaenrTWCYMPqZsCfZJT6AUPTLWheK6UDd/QBWZV3mNC7IKeR0eRjHa
+	op0kTJj+GUAgg8RKpFKtO6x8RKo7/0P/FQzwce8MYNAxJbSr8xQnV2WwTk0vjXTIrKKA71CUFth
+	A2PwQgBBbrEkRucNb6//d0G1DsqBjcYWY/DVn+OS7xHHoEmUJNqYixdzQHaTQvl5LoFEhwjtaFR
+	6UVU82lIK7bXJqzuO1l8mk4gom+sa2jtAYJ6nmAa9SlbZDAU9k3ma9ZGw+GIg2YPxmrNMIK81HT
+	KBNwG6xZKzVsHv6CBw/Wwys71QLsfoY66aG9DGW5fUosjGjVxX9R6rMVmN8ox3CqqJExiYwofvh
+	TznjAtbPyKs4S
+X-Received: by 2002:a05:600c:a102:b0:4a1:bc14:224b with SMTP id 5b1f17b1804b1-4a1c66b37cfmr83617395e9.10.1792179639973;
+        Fri, 16 Oct 2026 12:40:39 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-2a02-3100-a951-9501-1471-d90c-a21f-9dd7.310.pool.telefonica.de. [2a02:3100:a951:9501:1471:d90c:a21f:9dd7])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48dfd5038b8sm7026413f8f.48.2026.10.16.12.40.37
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Fri, 16 Oct 2026 12:40:38 -0700 (PDT)
+From: Karl Mehltretter <kmehltretter@gmail.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Karl Mehltretter <kmehltretter@gmail.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Christian Koenig <christian.koenig@amd.com>,
+	Dongwon Kim <dongwon.kim@intel.com>,
+	dri-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	iommu@lists.linux.dev,
+	Kevin Tian <kevin.tian@intel.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	linaro-mm-sig@lists.linaro.org,
+	linux-media@vger.kernel.org,
+	Matthew Brost <matthew.brost@intel.com>,
+	Simona Vetter <simona.vetter@ffwll.ch>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>
+Subject: Re: [PATCH RFC 23/26] iommufd: Use the PAL mapping type instead of a vfio function
+Date: Fri, 16 Oct 2026 21:40:22 +0200
+Message-Id: <20261016194022.62065-1-kmehltretter@gmail.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+In-Reply-To: <23-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com> <23-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261004195027.227748-1-danielmentz@google.com>
+Content-Transfer-Encoding: 8bit
 
-On Sun, Oct 04, 2026 at 07:50:27PM +0000, Daniel Mentz wrote:
-> The SMMU specification defines several types of SMMU-originated memory
-> accesses, including Stage 1 and Stage 2 translation table walks, stream
-> table accesses (L1STD and STE fetches), CD table accesses (L1CD and CD
-> fetches), and queue accesses (CMDQ fetch, EVENTQ write, PRIQ write).
-> 
-> While the memory attributes used for Stage 1 and Stage 2 translation
-> table walks are configured in io-pgtable-arm based on whether the SMMU
-> is coherent (ARM_SMMU_FEAT_COHERENCY), the attributes for stream tables,
-> CD tables, and queues are currently hardcoded to Inner Shareable,
-> Write-Back.
-> 
-> On non-coherent systems, however, memory for stream tables, CD tables,
-> and queues is allocated via dma_alloc_coherent() /
-> dmam_alloc_coherent(), which provides CPU mappings with Normal
-> Non-Cacheable attributes. Having a non-coherent SMMU access these
-> buffers with Inner Shareable, Write-Back attributes results in
-> mismatched memory attributes between the CPU and the SMMU.
-> 
-> Configure the memory attributes for tables and queues in
-> arm_smmu_device_reset() and arm_smmu_make_cdtable_ste() based on
-> ARM_SMMU_FEAT_COHERENCY, matching the attributes used for translation
-> table walks:
-> 
-> - In SMMU_CR1, use Outer Shareable, Non-Cacheable for non-coherent
->   SMMUs, while retaining Inner Shareable, Write-Back for coherent SMMUs.
->   This applies to stream table accesses as well as queue accesses (CMDQ
->   fetch, EVENTQ write, PRIQ write).
-> - In STE.{S1CIR, S1COR, S1CSH}, use Outer Shareable, Non-Cacheable for
->   non-coherent SMMUs, while retaining Inner Shareable, Write-Back
->   Read-Allocate for coherent SMMUs. This applies to CD table accesses.
-> 
-> Assisted-by: LLM
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Daniel Mentz <danielmentz@google.com>
-> ---
-> Changes in v2:
-> - Rename local variables 'cache' and 'sh' to 'cr1_cache' and 'cr1_sh' in
->   arm_smmu_device_reset() (Nicolin, Will)
-> - Collect Reviewed-by from Nicolin
-> - Link to v1: https://lore.kernel.org/linux-iommu/20260929032229.3532247-1-danielmentz@google.com/
-> 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++------
->  1 file changed, 27 insertions(+), 10 deletions(-)
+On Tue, Feb 17, 2026 at 08:11:54PM -0400, Jason Gunthorpe wrote:
+> +		dma_resv_lock(dmabuf->resv, NULL);
+> +		if (pages->dmabuf.exp_phys)
+> +			dma_buf_pal_unmap_phys(pages->dmabuf.attach,
+> +					       pages->dmabuf.exp_phys);
+> +		dma_resv_unlock(dmabuf->resv);
+> +
+>  		dma_buf_detach(dmabuf, pages->dmabuf.attach);
 
-I think this looks OK
+exp_phys remains non-NULL after dma_buf_pal_unmap_phys() frees it. A
+move notification after dma_resv_unlock() and before dma_buf_detach()
+therefore reaches iopt_revoke_notify() and frees it again.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+A test hook forced that ordering on the posted series. The one-page
+IOMMUFD selftest unmap on arm64 QEMU with KASAN reports:
 
-Did you check the spec that this is every access? I remember there is
-a table outlining every access and where the memory attribute lives?
+  BUG: KASAN: double-free in iommufd_dma_pal_unmap_phys+0x14/0x20
 
-Jason
+The first free is in iopt_release_pages(). The second is through
+dma_buf_move_notify() -> iopt_revoke_notify().
+
+Clearing exp_phys before dropping the reservation lock makes the same test
+complete without a KASAN report.
+
+Karl
