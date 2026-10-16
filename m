@@ -1,123 +1,139 @@
-Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FFBD59C992
-	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 18:03:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1C4849428E
+	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 18:05:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792173790; cv=none; b=aCLcGu8NnJuqrROFY9QZkr15aKV57CzftyukbY5CIFa7LNFPGW1upLOuGzcx+ohphFHgTjIt4xazrEgCi9JVORTMFKf1qp4aTqi3W88UTOaYebzDm1T8J/znd+bk5WUswvvXYddkBVZqGesbkCJG7ir9Skl0Z7bRQNRzuUTSDc0=
+	t=1792173929; cv=none; b=Rdw2mR+0gOc8KLJUbU0qq/xNCfJGf2qvz+LDuhRqAZt5DWPnqsr9pbf/jCMIsJlhgMg6yhm4uryMRO+Bwclv4oTmoc2PFP50oe28zIzf054TWtLBtqkEofLFWvDTLy10mZRVtjVF04mhELeyDZ+nYSkNLdCRf3Lz90nyQVJqRt8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792173790; c=relaxed/simple;
-	bh=pTk9CQUhhcRb0FpSpb2UUz4euVW/T1p/m9rxv8ABrpo=;
+	s=arc-20240116; t=1792173929; c=relaxed/simple;
+	bh=9/EH6Nh3IyjidhjX8ImjHAg8jsbvenySYa7Lj4rRnzw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TOOG+vBMaVsOJ2KkMBZPJkw8q+pFzmsp8KrW1b0MxaGMcoDCivhqFpYOJTzelWnQt6GfsKvaPUHqqet0S8foY6375YcTYIunsLAqDxGlY/ooNKyfyMRw6WTPl7BGvMUrlsAgwbGgD2Op0Kzcz2rdYGbjWkJpKN7NcXYyrkghSzY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=HiDT7vFI; arc=none smtp.client-ip=209.85.219.42
+	 Content-Type:Content-Disposition:In-Reply-To; b=L/nmxMs3/AGo04ZwfwTdsWtPeJEpiXf9og7J81w2DLRYInyFy/dWw38DIhsHESn3Mq9y88ub8WWsP0fTlmuXOmsxBFJI6JdaUz/MnvJulIUC6Do662mCfOdZbDaCiSSHVXRR3iJiFj4TKgT64a9nrqWBbXLtO02FxhyeVaDeiwg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AHtyY7o0; arc=none smtp.client-ip=209.85.222.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="HiDT7vFI"
-Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-91b63bd2030so2521896d6.3
-        for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 11:03:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AHtyY7o0"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-93efc0452b5so16008085a.0
+        for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 11:05:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1792173787; x=1792778587; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=oCOssGC3fJ3o3ujxU/0UoaTklTa5OtsoPRrPROKWjDk=;
-        b=HiDT7vFI/yKQXrr+NH2ZCtUvVtzjk3EBFbUi10FAP/O27yDCHZ4YDiUaXauE/vLBEn
-         o0eNZpqcfqIRhJYzSQpfNl23xiDSb+HTsk8Z+gR/nwA3kR8h1D7PKIZcbO/Z7bg35vcv
-         x9U6hQxbXXcpG4x7+xBN2ZXyIWCm2TVBgEqOvJKakZYKZTlqMrGE9ZK4iIJNV4zGvB+o
-         oXJmsrMQhmgwSXJ3ESuXmykpP7FEYWDTYB7AGqbLsD00q5lMliqZfptWKI99vUpbSIhZ
-         kK6KRwvQs0XFiSn6tgD2pWAMeMm1qiBULtHAVcKay9KlYjg1i176TvT+bERS4SQACqWY
-         sMkw==
+        d=ziepe.ca; s=google; t=1792173923; x=1792778723; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=bcPINE8kLYO7ad2h8AzZJW55DUCIX7EGWisyHohuTdg=;
+        b=AHtyY7o0Zr8mAuVa3F4YpnPuZAbKFl9eGvRGn2N3JfMcsa+F96y7h/TcLnmAZb3lCR
+         vknvMJqI1YmUKb3Sgwsa4LQoWdhYNJwJIyBkVMZyF96025gm9Bq0amQycGYgd2O+E1Qr
+         ivkGYwslmeX03aE4MJlaWWgKm/bNjVRFffB37gvk9TSxJYptSK0SWsifDSvkH5YckFbZ
+         geSW+QSfUVThbbo4dkyXTiv0/ZuZCfq/HuHutXPSTl7iwD8TPFbOOndSfm4SWaq5zllq
+         wHmC93AnPUgrgWMTApBvbjXcjJa0UHE3HUZ3UywSNdJ1BjlkDJT2aFNmrwtLJvyGprh0
+         dJlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792173787; x=1792778587;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=oCOssGC3fJ3o3ujxU/0UoaTklTa5OtsoPRrPROKWjDk=;
-        b=o9j0D8OLWWcLDIz4PilZ2uGfm+rTRBv/2be7kUHlowAiPKU6YpGb4BsU5yosBQ26zu
-         ien0nYHH3EhFXdRO2b+KvgT00jlgE8cJSfz/tKsxU3KqLBvAu6H7aaXsMwF4xa1niLLP
-         TK3bTt6gg1o3mLMR2Ks4v5joIjXZxwUJmhI9r2bRHpnQT6RMo1HPVzBXL+u+uLBtx8rU
-         2T3zoBaS6LjkhA6qhXOcwnmVmCNw68HYPFVehK5owD7W2np5r95QsCGMQNjdo3dmMlZm
-         sOg5Ho8ljDxPnhZGfVXUWiBoozqzt1eiTVERI7v31MGwiI6pBTE9hkYj1BsP58aU7mPi
-         Y8CA==
-X-Forwarded-Encrypted: i=1; AKwUvBw6ZyIfWMdy8XQVnpNh2jLTeBARkzjSI7xq6WDdGmIskRl8avWOq4FaZ49VIMrmbXevNR3UrA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIrxP/oLzpoAvQqUTSuhlxCSvyzFFEBKfL8fGG8uAeqgbVOjF8q
-	wIsEtDAlv4LR4jSK123SPxmI8l4wN+EOt+6HxDcuB43aBM5KbxPYK0mSos4d8Q5Q44I=
-X-Gm-Gg: AYBFou3PF4wycHUnJbNLQ2ETNrUv2ziX1fS6bB93ZWaLjcjcJgPaFZAw867nagJMmlu
-	nUV1Fjl8+ICwuj6oN5wJuK/OcSlNcDghlbvjJYTsPEtthk88PW+dTzVHe4Xo+HOTRCFnaPfMI5f
-	2loRJU3aoOyxjxoPvofVXI+zX+Pjsv81JDkdPFsDaR2jb4wdHvBnTIy5U1DjaYZXiESkJs94b7n
-	ynsFub6mcWyDDqwO4YwSnHMnzo6ZyOUJlPyJpA4RkrAvDEoHA2M54Ff+0VH3odl2TQ+czgKgham
-	rRUsujbriSSYeMUPKUcMu9RvPTFaHjPSxU1GgwtaMm+DtzFaVswQqi0ihiX9FdXSclaFOcyC0/h
-	2aZcMRPMiiUpPMUEOWg9INgI/QYluYfVX0KmE2q3SH0odnZvNx8z8JU88oVN9YPeh+xuAPb5OSq
-	l1Tb5WqVQbzIivgARZAe26D8mB4ehkwPc8P1RkJG4ptLDHajhuJasPmnFFIY17sEuDgrU4fi+zy
-	BjjuEZqiTc7rgYzru/k5xFW2iun0lNR1uCrhIeIiZlvQGgHd+6UqDz1
-X-Received: by 2002:a05:620a:1a1d:b0:93f:1cd7:7341 with SMTP id af79cd13be357-93f29d388f8mr119685685a.35.1792173787295;
-        Fri, 16 Oct 2026 11:03:07 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1792173923; x=1792778723;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=bcPINE8kLYO7ad2h8AzZJW55DUCIX7EGWisyHohuTdg=;
+        b=ZgI6tBSlCbQhX6G+Ynwsq8189J10PcDE5s1GuHD6LGtuvBU/ubk1ykqM/vE4d5EK1s
+         JBY59G0hlhReTa8Iwrn81zT+eILQyga9mdOzUr1jD32g0J7L1Pc92mMJ3eSdlvh6r01W
+         rJAxt+Q876gwDItma5VczQDu7VDeMyDBKyLOsAgtTdTFfhk+js2NtMnFDDdWmzcreAQo
+         WRB2gH/RyYDjXMStHxshCQpNSUWHMHZJpHw8xrYIbV/auUbq/Kvn7CWZ6bCpdpGQ4nm9
+         xk3jxNI5i6OHQTeanggRYqfBGWC9DPGn/07FF+slDDjlcOTNPTDnMRO4oge3jDiLu8kn
+         /jUg==
+X-Gm-Message-State: AFq9FYJ1FFHy7Tb5Ha6gD69Igv/344qHCC1csFMJoLkgOQe3YvK/Stb7
+	UyJIKGZRjFNM8v3Q+A4GJisbKm/8xdkxlRuoFOPLliN6TxCf2RGWr0xm57zYtHPiRX8=
+X-Gm-Gg: AYBFou0O8n32eklTDL0kpd3Qk2AVlok8QFQS8JzwrQ0t/5wuw+CHbD1vIRebO3HF9wO
+	ddXd/oXhCsnE6/h7GDFLFCZXTQBA/Juws1/RNZkWIA9QADALI9YvFmXdtsDum70BicmffPYBbvj
+	g2JjW1U7eH+v5HZLQWQcx6RpOIa819oeR63jJJwdDkt3dJOiDIL3vdglFNiFFBciDUUYTxIMBKC
+	u8pNYKPelIkMt3gWOway21m0STr6A+0kSYquAUiPyd3KQstc0XGtwDDJK9lvaJ3pgSnmxNtbXJY
+	SMKRONe248JNAZl4Hm/2o5RrOost3QTqKNn9N61oobsfVw7jyOi/Hrnqr3anxuWmZTGd2BRgiL9
+	0xx/ieKhVgWkehMSCLmBgmzo7jt3RkV2IsCvywnyRr1TuDQOkJyh1kB+fgb6b04nvxV2pST9HDw
+	7MjUhFcUUrNsgfO/jUzUYdEVW0avSiCch+qRMtXDill+V22LE7smnDYeHG3CZ7+Eq+T0uGX1Ud+
+	WhyV3S4xcPOvkKu9HI47KBpQ8sUtlPrrOABXxZlW2T2HfTyObMEHCSM00IBHu4gsHM=
+X-Received: by 2002:a05:620a:2990:b0:93c:c08f:ecf with SMTP id af79cd13be357-93f29d69e08mr105371785a.53.1792173923072;
+        Fri, 16 Oct 2026 11:05:23 -0700 (PDT)
 Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-93f1a19ce5asm271055585a.32.2026.10.16.11.03.03
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93f23eb7ba5sm131256785a.27.2026.10.16.11.05.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2026 11:03:04 -0700 (PDT)
+        Fri, 16 Oct 2026 11:05:22 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1xHmGk-00000002F39-2Fc1;
-	Fri, 16 Oct 2026 15:03:02 -0300
-Date: Fri, 16 Oct 2026 15:03:02 -0300
+	id 1xHmIz-00000002FIM-2VOf;
+	Fri, 16 Oct 2026 15:05:21 -0300
+Date: Fri, 16 Oct 2026 15:05:21 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Daniel Mentz <danielmentz@google.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	will@kernel.org, joro@8bytes.org, nicolinc@nvidia.com,
-	smostafa@google.com, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, dawei.li@linux.dev, praan@google.com
+Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com,
+	joro@8bytes.org, nicolinc@nvidia.com, smostafa@google.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	dawei.li@linux.dev, praan@google.com
 Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Align memory attributes for
  SMMU-originated accesses
-Message-ID: <20261016180302.GI14213@ziepe.ca>
+Message-ID: <20261016180521.GJ14213@ziepe.ca>
 References: <20261004195027.227748-1-danielmentz@google.com>
- <92758f79-d5b7-4c15-a55d-6bea5f84a028@arm.com>
- <CAE2F3rAJdC9pAqMKcXhxpw1keGzH_kQUNBoPHXjTP8+7TOhfwQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE2F3rAJdC9pAqMKcXhxpw1keGzH_kQUNBoPHXjTP8+7TOhfwQ@mail.gmail.com>
+In-Reply-To: <20261004195027.227748-1-danielmentz@google.com>
 
-On Mon, Oct 05, 2026 at 02:26:08PM -0700, Daniel Mentz wrote:
-> On Mon, Oct 5, 2026 at 9:42 AM Robin Murphy <robin.murphy@arm.com> wrote:
-> > This still isn't answering the question of "why?" though. Yes the
-> > architecture says some things, but if we were strict about avoiding
-> > mismatched attributes then Linux couldn't ever support non-coherent DMA
-> > at all! Similarly while the architecture does permit SMMU
-> > implementations to be picky about their output attributes, does any such
-> > implementation actually exist at all, let alone in a system capable of
-> > running mainline Linux?
+On Sun, Oct 04, 2026 at 07:50:27PM +0000, Daniel Mentz wrote:
+> The SMMU specification defines several types of SMMU-originated memory
+> accesses, including Stage 1 and Stage 2 translation table walks, stream
+> table accesses (L1STD and STE fetches), CD table accesses (L1CD and CD
+> fetches), and queue accesses (CMDQ fetch, EVENTQ write, PRIQ write).
 > 
-> Fair point that existing implementations have been forgiving in
-> practice. My thinking here is simply that a small, self-contained
-> cleanup that brings the driver into line with the architecture spec is
-> worthwhile on its own merits, even without a known implementation where
-> this currently causes problems.
+> While the memory attributes used for Stage 1 and Stage 2 translation
+> table walks are configured in io-pgtable-arm based on whether the SMMU
+> is coherent (ARM_SMMU_FEAT_COHERENCY), the attributes for stream tables,
+> CD tables, and queues are currently hardcoded to Inner Shareable,
+> Write-Back.
+> 
+> On non-coherent systems, however, memory for stream tables, CD tables,
+> and queues is allocated via dma_alloc_coherent() /
+> dmam_alloc_coherent(), which provides CPU mappings with Normal
+> Non-Cacheable attributes. Having a non-coherent SMMU access these
+> buffers with Inner Shareable, Write-Back attributes results in
+> mismatched memory attributes between the CPU and the SMMU.
+> 
+> Configure the memory attributes for tables and queues in
+> arm_smmu_device_reset() and arm_smmu_make_cdtable_ste() based on
+> ARM_SMMU_FEAT_COHERENCY, matching the attributes used for translation
+> table walks:
+> 
+> - In SMMU_CR1, use Outer Shareable, Non-Cacheable for non-coherent
+>   SMMUs, while retaining Inner Shareable, Write-Back for coherent SMMUs.
+>   This applies to stream table accesses as well as queue accesses (CMDQ
+>   fetch, EVENTQ write, PRIQ write).
+> - In STE.{S1CIR, S1COR, S1CSH}, use Outer Shareable, Non-Cacheable for
+>   non-coherent SMMUs, while retaining Inner Shareable, Write-Back
+>   Read-Allocate for coherent SMMUs. This applies to CD table accesses.
+> 
+> Assisted-by: LLM
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Daniel Mentz <danielmentz@google.com>
+> ---
+> Changes in v2:
+> - Rename local variables 'cache' and 'sh' to 'cr1_cache' and 'cr1_sh' in
+>   arm_smmu_device_reset() (Nicolin, Will)
+> - Collect Reviewed-by from Nicolin
+> - Link to v1: https://lore.kernel.org/linux-iommu/20260929032229.3532247-1-danielmentz@google.com/
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++------
+>  1 file changed, 27 insertions(+), 10 deletions(-)
 
-I think we should fix this. At least we have HW that respects these
-attributes and they have a performance impact depending on how they
-are set. Fortunately at least our HW does not have a functional
-"mismatched attribute" issue.
+I think this looks OK
 
-If the FW has selected to run the SMMU in non-coherent mode then all
-of the bits should be set to ask the SMMU to run non-coherent. Ditto
-for coherent.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-No sense in giving up performance due to mis set bits.
-
-These IP integrations are complicated, the FW may be saying to use
-non-coherent because some small slice of the system needs that. It
-doesn't mean that every access on every bus the SMMU has is forced
-non-coherent.
+Did you check the spec that this is every access? I remember there is
+a table outlining every access and where the memory attribute lives?
 
 Jason
