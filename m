@@ -1,149 +1,117 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 040D91A6822
-	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 00:14:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47EF82DCF55
+	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 00:45:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792109693; cv=none; b=pbNP5oWAT8Rl5hpHHJPmS/PMbqAXQtaRhhgwcNu+S4tli565w0vt8jCrlT2vAqYEbeh+0SQDvMjfvOeeRFkDI7es+3zhmRZU/eyynuucUMIssxvEO8ZmnnZSXrfIEssxhiNUfyIoVzYcxewgvFEXDuP2bJQDDAUcmsFqpzsRB+o=
+	t=1792111516; cv=none; b=r8fQdLc91jCW0K+sMlQvRiAaFkx6tAvO89EnFJzGzqPOfv9zsTsZ+TSkuZYQkbFr0fbK98H4TMPYg7jjvG0+5ibe9/+Mqt7j3+9XnRtQN9fXgV+zh4O75Zt5h3vU5HZYBccZOpLE5Fl1KhItBz+oQVm7UyCsi5AQGuSnK7Zcy68=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792109693; c=relaxed/simple;
-	bh=N3hAyy7nTu0uD6uxxEosrsvSAc05WwQLSTSIID6INNQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oQL4ihDAGmXWvS783iA18OArqFb6kN/OAbu65qwzlQJiTYgUVpb7l8ls0Il5N197RVMZ7Xuhr2xKyfHqH6bIqwbBfSiQyvNjfGkSVS6A4CcTgBsHE7Pj9YFR+XPoym8V80TD3jOjo6N/9xQ0hrZIBGS8zCpo/fz75ioJjAa/AAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=bJzYnRFl; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1792111516; c=relaxed/simple;
+	bh=hhjWCjDJiUS4wOBIl2PR4tvUuVgOu2aOIBOkR3X3z/I=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=VYr+ZyxGLQ8JM9+Zf4tOxTcXlvrAlncOc1q3uoCgSbiBpHBO6n63TvriPjnP5O3hre2pkKRrfLw56Zv91EqoRqkFNXuTUSU3zqCBya4GB9GM8epSWGVbQtaItb8+FmnJ/07OFltd7ecmBzTTrcmTcO/SNVHAvRcptANOuvntfMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hYl1dmp9; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bJzYnRFl"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-5351d76e1baso5830001cf.1
-        for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 17:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1792109691; x=1792714491; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=V2saNd2pf5xXpmgizEGMG+P83blHZRupazL/vtIJhv4=;
-        b=bJzYnRFlIDxmVj0hiPhhIk0Tpjyy1Hw8G0mxbVBIu4vU0O9DXvQKwpYj4o6qxs9Y6x
-         aymBEGjcgZpuZvh1GqjD9yZSAs6m8g1eyKY0QAxkhvpddBEmzS55ehGLiJQbngJmr088
-         1wX9hegbOXjL9KRYIJ+Qi1tp1I6Rx4Cgh1MpUKPOBxM/YEFk3kb+Kj3lNklsjL5Pnjqp
-         fniPPEYKSQVn0npdcaBPUlBGwSGR8vBxFdfSb5D/eT0odmQ+wQyerA0UX4aGK4osd2GE
-         6rz81qrWRn7VRbc84MOJBMOgulrPRhegfd5NL8i3aClEUpkZ+vivifirQ6iQpmG1vy3s
-         yiRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792109691; x=1792714491;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=V2saNd2pf5xXpmgizEGMG+P83blHZRupazL/vtIJhv4=;
-        b=WSSsIhdLMLO4AA1+E9FQFzk2IKk5r5XGXBFZ9TgmSuCMGgAeoe7ag3xhOMLph9xi3c
-         EtytH9fNVys+/Lag9x4zPio5dI/OymG7G+ocILiRKMoEd/lmJjJkUJK1V1xMUpsL6zip
-         m1Ws1sLsmOusZKYCTzYFeSMYJKWQxAEMDAaGJOWZrPzo7oHQ7i0i/QYHFN/q7NfO3vem
-         /a5H7IYj+b3QhFMWqExe2t0cMFSAw+94JAlLvkN65ucuMr0PZVguxA2y96z4vRD9Qi+w
-         53XrhTfdJs/3FC0s4nD45xl5IiK7x9yycs+5pD3CglLHUIL/EI7eoGo+nctIYt0w08eY
-         ETkQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwBiVI7rp2Ka/l1nsDTgkYwWSdFKJLaHUbOhJAvlqXBcFBZA+2YS3T0v9sHHRtBddJ8s8CMvA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKQY0zyoOTrU799eqbEtGedPIiBHFBJwFhkZREVigh4B6s1/tAo
-	io6RDk9LhIur98pRHKEXcg9/AcW7D4fCn/fFiOgPoKWQfe9hfWgdDCKjAlTCmK8e1ZE=
-X-Gm-Gg: AYBFou3wdMP1vcyHH+O1RzFqnggX+jJMPzzUIc9lHCZVGKc0SKpMC26yoewZaMwGpV/
-	JGFrAKnUp09bQnz4KGRWm87RmdFZsRNnnz9Af9osPeSFxuUmaGIyrf20QYk+Kdmc23BQuRoEsxi
-	l8Ya7YfrXpq4GM7VEK6c/egBb9wqGA6owGFs3Km6PGOI6vbCgmoAPnn1FSy0v94uyaVrXAMuhjc
-	FcXYr4+Os52yS0T06pLAOGErjx3Ie8UGm2nMsrTELL+tyTnSnWv8L9/99NYIXakEgN0EQCa00B4
-	UXZFq51UCji6dm3a7/R2OcGfL2fU+3TYJZYjDartNFVK2uf70Nc54MQERrQhxtKhJLPsZ3JImYd
-	Q9WyvsPS/3Mrx/UvGTDjCdBVnz2d8/XlT2ut4Fc9W80o+kstpf4VvBXZtXcJJJcuf8lfBePqloe
-	fz4frOo06xbYtKpHcEDOUpjIHM5LiY0deJ3/326tx1AGFCHk56ehx76kEgKXdehhjF8GpRrJBkG
-	ZQwU4Zx/nmSRE7yWvLTbLbPkxRscWb8Vw1cSDL4hzKeL2GxriysjRhB
-X-Received: by 2002:a05:622a:990:b0:535:ba01:d95 with SMTP id d75a77b69052e-536272c2d55mr30900421cf.19.1792109690637;
-        Thu, 15 Oct 2026 17:14:50 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5362aa57106sm7257071cf.28.2026.10.15.17.14.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 17:14:49 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xHVay-00000000IxD-2c33;
-	Thu, 15 Oct 2026 21:14:48 -0300
-Date: Thu, 15 Oct 2026 21:14:48 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Fred Griffoul <griffoul@gmail.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Marc Zyngier <maz@kernel.org>, Oliver Upton <oupton@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-	Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <shuah@kernel.org>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Ackerley Tng <ackerleytng@google.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R . Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>, Joey Gouly <joey.gouly@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Steffen Eiden <seiden@linux.ibm.com>, linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [RFC PATCH v2 07/11] iommufd: Use large IOMMU pages for provider
- mappings
-Message-ID: <20261016001448.GC14213@ziepe.ca>
-References: <20261014093733.90312-1-griffoul@gmail.com>
- <20261014093733.90312-8-griffoul@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hYl1dmp9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792111514; x=1823647514;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=hhjWCjDJiUS4wOBIl2PR4tvUuVgOu2aOIBOkR3X3z/I=;
+  b=hYl1dmp9ztbrNn9V0HqP89g1Kc5zGi83wvyzYf5vG6Pw9I0lamfxrXtj
+   3TNSFyqYHVq8J3nbF+fZh+Vy/Fq/5ko5mr/nA5g9h3d0hee9VNHwr/YEM
+   q0dfcS/VW5MAiZwE4HUTX+rnxGG3bwLGvYNSQgrnIF+CqNUL3m1E0nkDs
+   eAuZhxLTD8dmANsfV7LW/3JPPjywjM8yPyaYbI14CKWsnwQ5OFrq0i2Td
+   cIil4EFdgLftNwxNyEGE5mLxJ3iho53P0zfXVwftxVMl1LNZ9pd0evrIC
+   Iz4euuKQ7brzBydqTxNvVIk5KS6D/95/ZKsEK3NWXmznkeFOaIFSYQYG1
+   w==;
+X-CSE-ConnectionGUID: h32epS8hRhGzprX/aULHSA==
+X-CSE-MsgGUID: Yvp/dIiBTXSAD64cFg26rQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="997940"
+X-IronPort-AV: E=Sophos;i="6.27,160,1787036400"; 
+   d="scan'208";a="997940"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 17:45:13 -0700
+X-CSE-ConnectionGUID: amjPhSp9S9+Na2q8ZGGn0g==
+X-CSE-MsgGUID: Fk0Ps5F9Q46/zvXp/8hVgQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,160,1787036400"; 
+   d="scan'208";a="1829041"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2026 17:45:12 -0700
+Message-ID: <0ba4e7ba-c412-44ca-837c-13075d745843@linux.intel.com>
+Date: Fri, 16 Oct 2026 08:45:09 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261014093733.90312-8-griffoul@gmail.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, robin.murphy@arm.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu: intel: Apply the device scope length check to
+ every device scope walk
+To: Shirong Zhao <shxzhaosr@163.com>, dwmw2@infradead.org, joro@8bytes.org,
+ will@kernel.org
+References: <20261012084102.18-1-shxzhaosr@163.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20261012084102.18-1-shxzhaosr@163.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Oct 14, 2026 at 09:37:29AM +0000, Fred Griffoul wrote:
-> From: Fred Griffoul <fgriffo@amazon.co.uk>
+On 10/12/2026 4:41 PM, Shirong Zhao wrote:
+> dmar_walk_remapping_entries() already refuses to step by a zero length:
 > 
-> Provider pages are mapped with one PAGE_SIZE entry each. A device that
-> uses a large provider block then misses in the IOTLB on every page, and
-> the IOMMU needs more page table memory than the block requires. A
-> revoke also flushes the IOTLB once per run of pages it unmaps.
+> 	next = (void *)iter + iter->length;
+> 	if (iter->length == 0) {
+> 		/* Avoid looping forever on bad ACPI tables */
+> 		pr_debug(FW_BUG "Invalid 0-length structure\n");
+> 		break;
+> 	}
 > 
-> Map each block that the provider reports with large IOMMU pages where
-> the IOVA and the frames are aligned alike, and with smaller ones where
-> they are not. Only the pages of the block are mapped, as before.
+> Five walks over the same DMAR structures do not:
 > 
-> A large IOMMU page can only be unmapped whole, so a revoke that cuts
-> one widens its range to the whole page. It maps back what the provider
-> backs now, and a device may also fault on the rest of that page while
-> it is remapped. The widening finds the page with iova_to_phys():
-> pages that only look like one large page make the revoke remap more
-> than it must, which is harmless.
+>    dmar_alloc_dev_scope()        - counts namespace/endpoint/bridge scopes
+>    dmar_insert_dev_scope()       - attaches a scope to a PCI path
+>    dmar_acpi_insert_dev_scope()  - same, by ANDD enumeration id
+>    dmar_acpi_dev_scope_init()    - the ANDD entries at the end of the table
+>    ir_parse_ioapic_hpet_scope()  - IOAPIC and HPET scopes
+> 
+> Each advances its cursor by a length read out of the DMAR table, and
+> nothing constrains it.  A zero length leaves the cursor where it is and
+> the walk never ends; a short one steps through table payload a byte at a
+> time, reinterpreting it as scopes.  dmar_alloc_dev_scope() and
+> dmar_acpi_dev_scope_init() run on every boot with the IOMMU enabled, and a
+> short length in the latter hands andd->device_name to acpi_get_handle().
+> 
+> Use the check dmar_walk_remapping_entries() already uses.
+> 
+> Checked against torvalds/linux at HEAD; both files are unmodified there.
+> 
+> Found by EFSM.R17, which reports a loop whose cursor advances by a step
+> memory can supply as zero while the exit condition depends on that cursor.
+> Signed-off-by: Shirong Zhao<shxzhaosr@163.com>
+> 
+> ---
+>   drivers/iommu/intel/dmar.c          | 16 ++++++++++++++++
+>   drivers/iommu/intel/irq_remapping.c |  5 +++++
+>   2 files changed, 21 insertions(+)
 
-You are going to need to go into generic_pt and implement cut and a
-more suitable unmap to make this stuff work properly. We can't over
-unmap on conversions.
+A zero length is never valid under the VT-d spec, so such a DMAR table
+is a firmware bug.
 
-> iommu_unmap() may not split the range of one map call either, and
-> virtio-iommu refuses to. Map each IOMMU page with its own call: the
-> widened range ends on IOMMU page boundaries, so it also ends on map
-> call boundaries.
+The existing check in dmar_walk_remapping_entries() already rejects a
+zero-length top-level structure before any of these walks run, and I'm
+not aware of any shipping platform with a malformed device scope.
 
-Also please don't write commit messages with AI. WTF is this even
-trying to say? The subject is "use large pages" and this text says
-"map each page with its own call"
+Without a real-world report, I'd rather not add more checks for this.
+Thanks for looking at this, though.
 
-Jason
+Thanks,
+baolu
