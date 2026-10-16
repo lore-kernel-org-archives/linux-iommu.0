@@ -1,114 +1,143 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED5D227A907
-	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 01:34:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CD942D738F
+	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 03:01:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792114445; cv=none; b=P0+3FUwmDXVFL2TkE/N9tZwiOnn29S61c+LvJBeDdENPrC2JVA+Qh820uFMDcjer9N0DOQTmldgpkGO9zetBv6sFyuN9wnW8cZKxVaVnf19BbtpU1hL4l11yWn4QFlUACd7nan1XgHPMoevwr5j7Jv0W5EjClO6z61W1Y22ZycQ=
+	t=1792119713; cv=none; b=bzMjLJO46Rc3jOuOXgj8gcIhhcyDc5N9RgYGAxIYBSwjhmofouioUaHCqZNA32HksoYQrXxpCMBHV5ZbsqExxipBk+UEPdy1o1Iuie2p/7Rric8iL98P1GF08pacxaBU/tcEAo6hSNiQc+vqssdplSIoSrDimQjifQwBJPP5f0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792114445; c=relaxed/simple;
-	bh=nLgPiYbSq45fhcCwaebsJ2SjYmzyaWlhxU4COKBBfmw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gyC4xzRvD1gxVzjv3Dx+n+FepMBLyPjRjiGE/3P3bODvnAd37M07TBVjN3Zrxex0dmp+v0703Fn9rz3Qc0vcb0FlPqQuzD6ZFGJkW7Z4p6Ocdt1454oYF+TNLOgj6DjeTPH/WcO2eMeT8iqfNYyloG/b+v9pTEgfYgBToVJ1mao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ksLJOq/a; arc=none smtp.client-ip=209.85.214.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1792119713; c=relaxed/simple;
+	bh=0v039CvrPkfYK3JQLaQF5YFH8+rzT6W/53Fw5Z25W8I=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=T+5vGdrz98VRMj5n4pJtyd+Adl23SRSwVS9CW9cf4f+SLyo3GzV3Fp8MUkpPyrWe+RGcZzu6pZwEuYynS6ah7XVK3voY3vMcQK/jleH+ZbtXnpTcxnPnQq20KFmfeyyQMTIzbn/+JP5224U0wahBfeJWBsfNsb+9b/byRtB+AtA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=f1LQ2GSw; arc=none smtp.client-ip=115.124.30.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ksLJOq/a"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2e8623790f8so27935ad.0
-        for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 18:34:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792114443; x=1792719243; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=sdPpN9Xqdtkh9zsXDM/jJFMTNd+EOKXTasm7UxE7C4k=;
-        b=ksLJOq/a85igf03T3u9oirfpcqwqtDaTenXkqSFC+LSSpmyLanRmV5+6npCFZMJett
-         jlKDB50bk9NzMDJeyDVMpnB9S1einyCUuX2jQ/JTwH9oC0CYN2X6kPmRB7DvItTw9rbu
-         A1rePEksFIz5UWHXvE/1/mQrwIVynkL3M8vZfFZKXulYutodtOCCmATxdUBhtoA6HN5a
-         vk6mKWlwr4aXjzF1itrPl9b15CT1k0TCBdqVq4fHdzoatVRBL5GRPJFK2ipLmHN9UlrM
-         JYyo1lcpD3T031p2clCp7QNKIJxpH++2RtB+aObt5e7z2kg3QLZhL+ITXrk6ioe8tQWh
-         iVPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792114443; x=1792719243;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=sdPpN9Xqdtkh9zsXDM/jJFMTNd+EOKXTasm7UxE7C4k=;
-        b=T/XSZtf0cZDqvUoznIhRgBzWPE1aSRjarD11OLn26IwPew9jEldsRv53SnefgGBnvq
-         Qr9GKIkC+gn0pZ1BUJ0mD92Aj87BB+e6zujaaeP12nkjNqW02bJ/NlXRE9Q/sd4K93gW
-         paLYdgLpDAY/QraPTwN95JOI3gNzvQvv11sggn/g8IjBhXlmU2zpQcBIJgOsmT4UFN3a
-         FtZ/U9TBsHTSewx7DXiQ6IhlpGeckZ6qrkBAPV+ZI9FG9pMP4hcFk5pymaVEdNfrCJaE
-         mOSG3gRYOwKe4DgPvUXeaD7k7APHf+ltjYePGrUZa3Yv7526aJtYKuR0JlGQgBS6B4ub
-         auHg==
-X-Gm-Message-State: AFq9FYKKBX4OIqWJ6ULeaOzv5DUCDh5JqI9Q/nmOAbvvw6t2joQlZxCc
-	wVGz0pysb7DLExXZYwIFY50s1zN5RYRftRmXz/wWXmzJU1vx9as/JMQ4K6qLC04DA6rnKboNAv5
-	565raPw==
-X-Gm-Gg: AYBFou3qjBCC/cC1usbHUA89XWWoBB352Y0dETC1pnGNz3x2oDNe1+73g+15JhPwLlS
-	V5SCGLf35Ow51SMIaAfJo7gQ10nkrIli/9WyDZVdcIqHQ7W8pBAIj5iNH8mKRXTZ1Esw9QFyrAH
-	M5BYOMr35/tP9V63egTUCj/EillKv/hXrjMQ+6yl3x96J1ARV77dJ0iqKtp3APivSVxY6wGPmMf
-	z66WQroymgtKPTY5zaZM1IbQ2muee5rIt74s5VR0QpOSXl5sMIl75xPnSzDP1vdXobtwYKb69c/
-	COYH657wgHdF0KMXRw3PQP3Hy5iC85TCpa7QbtJY55i1Q7AH+T9qJuYkwrMlD0oh6D2pvyfGYzH
-	kBpRdKsZRfCNOp1OrPS+etsx6nnG1ytlQOxrZLzd0jU35JO9OfAsrxFvSqg7dAm5+64yE8XKRiW
-	AmhJDDrg6VBLdoPgFWZsN/WIg80cvp4Q7zDvAnGMu1VMZmVrtbiJVp4n/TH4MsMDUygc8rQ0kaF
-	eLCxcFc1ouiT+A7KoDa41JroK50RDrUu9iWQqFN3lNSdID2xYN2RSbtSd6kyHJ4Evg=
-X-Received: by 2002:a17:902:ecc3:b0:2e6:1013:ad57 with SMTP id d9443c01a7336-2e9821d5bafmr1820355ad.12.1792114442559;
-        Thu, 15 Oct 2026 18:34:02 -0700 (PDT)
-Received: from google.com (163.1.145.34.bc.googleusercontent.com. [34.145.1.163])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3acd05c9255sm407564a91.2.2026.10.15.18.34.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 18:34:01 -0700 (PDT)
-Date: Fri, 16 Oct 2026 01:33:55 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	linux-kselftest@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, 
-	Shuah Khan <shuah@kernel.org>, Will Deacon <will@kernel.org>, 
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, Joerg Roedel <joerg.roedel@amd.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	patches@lists.linux.dev, Samarth Narang <samarth.colleges@gmail.com>
-Subject: Re: [PATCH] iommupt: Do not allow PTEs to be split when dirty logging
-Message-ID: <atF8QSyk2TK7wlvH@google.com>
-References: <0-v1-5bb926ff73ec+576-iommufd_dirty_jgg@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="f1LQ2GSw"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1792119703; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=mrYD4Xmw9JmUEwP1jk5CPITT3K8gC8rF0fjahbJTkBU=;
+	b=f1LQ2GSwkkcoDs8AMQTuJmUVphd7My4b2l29ibY8YipeIOyMv1GUxFTXO0lntVyqvKvYuBbUDKoaSQb26GC+bgTBNOUPX+h3MwfAtcUbklKTglZ9m7RLrgWKF5HNYMaPJb2MLSOcCr3fvudQ1NPmAQrMCdDKBNh/Tp8C3BiQkGg=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R491e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=20;SR=0;TI=SMTPD_---0XCtC-XB_1792119699;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XCtC-XB_1792119699 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Fri, 16 Oct 2026 11:01:41 +0800
+From: fangyu.yu@linux.alibaba.com
+To: jgg@nvidia.com
+Cc: alex@ghiti.fr,
+	andrew.jones@oss.qualcomm.com,
+	aou@eecs.berkeley.edu,
+	fangyu.yu@linux.alibaba.com,
+	gsh517025@gmail.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	jroedel@suse.de,
+	kvm-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	tomasz.jeznach@linux.dev,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [RFC PATCH v2 3/4] iommu/riscv: Add guest IMSIC GPA mapping helpers
+Date: Fri, 16 Oct 2026 11:01:38 +0800
+Message-Id: <20261016030138.91675-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <179210803193.58760.10996339526486124321.b4-reply@b4>
+References: <179210803193.58760.10996339526486124321.b4-reply@b4>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <0-v1-5bb926ff73ec+576-iommufd_dirty_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Oct 15, 2026 at 02:20:10PM -0300, Jason Gunthorpe wrote:
->If a single PTE cannot be stored in the current bitmap that should be a
->failure and reported back to userspace. Allowing a PTE to be split creates
->a possibility that dirty memory will be reported as clean.
+>> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>>
+>> IOMMU implementations without the MSI_FLAT capability translate MSI
+>> writes through the second-stage page table, so IRQ forwarding on them
+>> will need guest IMSIC pages mapped into the second-stage domain.
+>>
+>> Add an xarray to the MSI table that tracks the HPA installed for each
+>> mapped guest IMSIC GPA, and two helpers for use with the MSI table lock
+>> held: riscv_iommu_msi_table_map_gpa() installs the initial 4 KiB
+>> mapping, and riscv_iommu_msi_table_replace_gpa() repoints the leaf PTE
+>> when a vCPU's VS-file host page moves, using the generic page table
+>> replace_leaf op instead of walking the table in the driver.
+>>
+>> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>> ---
+>>  drivers/iommu/riscv/iommu.c | 43 +++++++++++++++++++++++++++++++++++++
+>>  drivers/iommu/riscv/iommu.h | 12 +++++++++++
+>>  2 files changed, 55 insertions(+)
+>>
+>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>> index e2e77469ea3c..88e131ce96c1 100644
+>> --- a/drivers/iommu/riscv/iommu.c
+>> +++ b/drivers/iommu/riscv/iommu.c
+>> @@ -1217,6 +1217,42 @@ void riscv_iommu_msi_table_inval_all(struct riscv_iommu_msi_table *msi_table)
+>>  	riscv_iommu_iotlb_inval(domain, &gather);
+>>  }
+>>
+>> +int riscv_iommu_msi_table_map_gpa(struct riscv_iommu_msi_table *msi_table,
+>> +				  dma_addr_t gpa, phys_addr_t hpa)
+>> +{
+>> +	struct riscv_iommu_domain *domain =
+>> +		container_of(msi_table, struct riscv_iommu_domain, msi_table);
+>> +	const int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>> +
+>> +	/* Guest IMSIC GPA mapping only exists in second-stage translations. */
+>> +	if (!domain->gscid)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	return iommu_map(&domain->domain, gpa, hpa, IMSIC_MMIO_PAGE_SZ, prot,
+>> +			 GFP_ATOMIC);
+>> +}
 >
->The gather must also cover the entire PTE that is being cleaned, not just
->the part that fits within the bitmap.
+>Andrew has moved well past a v3
 >
->Fix both issues by computing the full IOVA range of every PTE and using
->that to update the bitmap and the gather. The bitmap code now rejects
->ranges that don't fit in it, and the gather always combined ranges.
+>I shouldn't be seeing code in iommu or irq drivers directly mapping into
+>domains. That doesn't work, Andrew's latest series don't do this.
 >
->The selftest quietly relied on a bug where the CONT was split, that is why
->the half page size for the mock domain saw alternating dirties. Increase
->the dirty test page size to PAGE_SIZE so it still works as intended.
->
->Cc: stable@vger.kernel.org
->Fixes: 4a00f9434891 ("iommupt: Add read_and_clear_dirty op")
->Reported-by: Samarth Narang <samarth.colleges@gmail.com>
->Closes: https://lore.kernel.org/all/20261013165814.309255
->Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->---
-> drivers/iommu/generic_pt/iommu_pt.h     | 30 +++++++------------------
-> tools/testing/selftests/iommu/iommufd.c | 10 ++++-----
-> 2 files changed, 13 insertions(+), 27 deletions(-)
->
->This relies on other changes in the iommufd tree so I will take it
+>It still needs to use the SW_MSI mechanism and related.
 >
 
-Reviewed-by: Samiullah Khawaja <skhawaja@google.com>
+Andrew has posted two patch series in the community: one is the
+MSI remap v6 series[1], and another is the IRQ bypass v3 series[2].
+I think you are referring to the MSI remap v6 series. My patch was
+based on the IRQ bypass v3 series, and I added this patch on top
+of it.
+
+[1] https://lore.kernel.org/linux-iommu/179209292714.4133959.5997128071302263244.b4-review@b4/T/#t
+[2] https://lore.kernel.org/linux-riscv/20260928143113.49838-1-andrew.jones@oss.qualcomm.com/
+
+>Nothing in the commit messages clearly explained what this is actually for
+>without having to go dig up the riscv manuals again. Please explain how the
+>interrupt translation works and what actual user visible problem this is
+>trying to solve is.
+>
+
+The interrupt translation is based on Andrew's irq bypass patch
+description.
+
+RISC-V IOMMU defines an optional MSI page table feature, which can
+be used to implement irq bypass by translating the vIMSIC GPA to
+the pIMSIC HPA.
+
+My patch complements that design. If the RISC-V IOMMU hardware does
+not implement the MSI page table, then the second-stage page table
+can be used instead to map vIMSIC GPA to pIMSIC HPA.
+
+Thanks,
+Fangyu
+
+>--
+>Jason
