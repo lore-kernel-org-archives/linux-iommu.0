@@ -1,70 +1,71 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18F536B923
-	for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 23:55:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B332C4E50DE
+	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 00:00:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792108538; cv=none; b=B3O2//c97p4VEhoxYFZ6FtyHlyXPJhOEXgoBAiEZiperKbYmwhiD6JZHe6GUd4YDqyjgPp3QFRZ8WSJTBaEy9NfyPK1IhchLwmRFnuG4rl6VVVYA10B/Gybr48b35xa30UhRdBrxeS/nSxta/TxOuVN9Sbn7emxOVZlI9IpdsTU=
+	t=1792108811; cv=none; b=TRxW1vSq/dpLJg5QvvBUcTVsQ+oClwNKyDwQnvYWgfszMMJVZRiW4plhtdiWUuZGwdmV3pFCSHN5Nvc+jAxfwRyiRVcHE2sZyFzv8Hxv6qqT5EJ/4Ys5DuDWoIA2PxMDPv1du1B2jk4WEfCS65vvWjZI9YiqNYuRd8gCj1ql47I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792108538; c=relaxed/simple;
-	bh=Ehw6rvE7MggWEFaG3dtW8QCrQMJWKzz2aYrhccXAY7o=;
+	s=arc-20240116; t=1792108811; c=relaxed/simple;
+	bh=QqEHOCux09a0Q8vXL7DmpuXdHbLuTIeeYNtJksyQERU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Y9QUG9oUYSsijRlCXYWkCd9fCQfofpqLjBk2QPdY/ihTa7qFy3RsawOpkR/RvkTviqoHwACfJlp9QvnauT2r85a1i/2l2mP3YcBQHbeiMp8LDhZcViPGL/t50rklX4xq0SlrxqVGc4bqWWlkbK/v89tekHwvf8LQUIfhdtvMYvU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hgQHEGP4; arc=none smtp.client-ip=209.85.160.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZJEXO09cm4m8+wQsxrjreg0mb+kn/6MM5PVRJkB1E2R+9Vtst3Xxae0cu5jaJsKowSaL9PuEOWQxyb3tsftTPPaNZBBaYcMN5jiiNLj3DeZ/E29J0DzMW9DJO3KdhJuuSGMwS1PBVbcZV0UMiMMF69+28trqtz2o6TIX/KNOW5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VWT2NaHG; arc=none smtp.client-ip=209.85.219.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hgQHEGP4"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-533972e0cccso66149181cf.0
-        for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 16:55:36 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VWT2NaHG"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-91b83459526so54527096d6.2
+        for <iommu@lists.linux.dev>; Thu, 15 Oct 2026 17:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1792108536; x=1792713336; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1792108809; x=1792713609; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Q9upklymhAO5QkQciFGrhvMFEHYA5CmaaRGixe6VBms=;
-        b=hgQHEGP4oW2/iO60mpMFo7bZtDgEMuXFXHH2zabCLpqGWWov4WeYzCMQoqdv8m086L
-         Vs4Ucb4jJCcsKmLDx6MIQLrAXRaU4p83ZKcjJ3Oky6r846mMoragkBc3yfMWLrG27X5i
-         AqS2Rn+HvYz9ug7Uqs4MOMDUOY7WrjIEO41fA4+qD93yhWHnVhupW9jwz0sBHm4rxcDs
-         IRWdVIe+IXyjHxhCNoEd8eFWJn3s+wa26NpSGBT1V8fJPXqUibYgrAVYEnKMJDq2EYDL
-         vkUoitPfi12dAXRlWKqzdOsYM3WZUPsA3IDzTnjjcJdB2rneE95qpPP1BHbebNXERRsm
-         ogNQ==
+        bh=QqEHOCux09a0Q8vXL7DmpuXdHbLuTIeeYNtJksyQERU=;
+        b=VWT2NaHGs2Yc4Q6Xdkgr+pciiw34ukVmmz/ZwxHbLsDUMXfiuvMDphi32uef7ru84x
+         Jw24UejRhNua91C50y8UhD3esZgqCgDIjw8qq04LYhqOt+bSP2pFU3zt6fzz99un2m5U
+         0gqLh5PdAqIS2G+3LiHE8iZ36/wntO6HGjeE1jW0f9rChjrB2+oKEd4TJ9tcGYcQgafO
+         A1j1Bp+3/OOi0hFHmITHDSVKIAwa5urXfhSZytTxwdo4DHmgi4/h2tJvDwLJR1mW1lkI
+         Hmd0R6rpNKUrG6JwlLbMk8BmDngy9gKWi+4GNdibimU8FDLp5KXCGsu9Crko7fxuEsx0
+         jizg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792108536; x=1792713336;
+        d=1e100.net; s=20260707; t=1792108809; x=1792713609;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Q9upklymhAO5QkQciFGrhvMFEHYA5CmaaRGixe6VBms=;
-        b=KZiHzUzhX0prnz5lloKx2wcPb1V1CLLpyMlq4E7OnDF33CvGd8GOHbLgezZvp6XRC4
-         SfvIZR9qzTx6qTuNeaqvvBQ3Hjfr5zPgog0QKcqPQntyZwJmLqK3BEb6sFi3MzLpNLaa
-         u25xpd+KEuE5CDzkn8rnmL02joR29r6h1IpgV1IpO0WWpieYx+3XosYTliMPWQsRnC4R
-         ZNwBjLXSv6jHiQyn1rrlqZrbdDR5DSoaylDsimbZp8V9ifHJRvS+jI4m2ZILwKVOeSYW
-         WV82OYhSwwzK4yxGI/ghY8xgWDiyoq3SUsiKXNFw/LdPBT41YVYGa51giZ5qO0IOvvlr
-         hP6w==
-X-Forwarded-Encrypted: i=1; AKwUvBzphx1YShfX99d+b3iRPoX5zluwyYKQJddvzfZRTBviSiT68fMT4DJmLT/a0SrrvU7x+wVCcA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYI40MMo701IjCP2YN/WoUj7ZzVDiJjN3BzbQUXmLokEbHaYBm3l
-	c4XE5x7Kqa5qksoNkGn5BFQeR9oX4BCCcOF5GqYy7cuqMZDOOYkPInnN0l6Qy6nzbqk=
-X-Gm-Gg: AYBFou2LrW57et99JVw5a8jsl+eVSuAR982RM8ncKRF1kjjmF9fxmDQKWTEPaYlJ97H
-	1oItQ0MBFfBuEf+mk4tbDPzXCSrkIh4LiRp0zfYjroSaDBp3m0tAKB4s9ESPSO7yV5CJ5gfPyD+
-	1haxn+GBrr3S0AHZVpvnqHhVp9phvqGUW+n3T1s1T2OWlsfJrwd9EEzyEym6BvZ4mlUviSKb3Ec
-	PPmWVt0BMAVZ6JxVNkIFzOUePmiCXBmvAQdD/W6Rj1WtLtnn5pqIawQ827xNKkMu+JcrNg6rJrJ
-	T9w9qMyjXYoYiUX3WmUVqyO7mhIDBoWfk42FIjZG0HzhP7/LfNf4VXu/QOO8dN6ga6cOIezCD32
-	2zJApkk7McDLNxBNhKMMzcwPhQjDolV+1LmbU3cOTlfx+2ibiICqymEvSp8ubj0bKgpPbTeJl+5
-	FGoAgJ69T1/xV/n7Yp5Ge34jqZaiUvuWylJDdumMrzkkWb02EQuBNf6R4Be689utHLQAR3mCCPD
-	KXzroOyNCiyF7M8DFZ61w1PL9jC76Tz/NGT2DqRVrZ/Nbsd5u0YVgkH
-X-Received: by 2002:a05:622a:251a:b0:532:f124:18dd with SMTP id d75a77b69052e-5359f49891emr329059071cf.11.1792108535894;
-        Thu, 15 Oct 2026 16:55:35 -0700 (PDT)
+        bh=QqEHOCux09a0Q8vXL7DmpuXdHbLuTIeeYNtJksyQERU=;
+        b=x/hNn14KrmFlFiG9NS5PtNGWP8InceKRSr3anQe9lwLrhi7OMOniBArbuUUtTz4sUs
+         WPl3ywKmpwqYiZcQFcInEYKhCyL9UaORI/73VSpAAlEI06/m4ZRYqKkDU6bGLOZy5LXS
+         qJ5LYk4+CR+T5gZbeYBMkZBaS/zGgV4t9z6uOWTKahAQL5V/cUJytbpJZquL5Kvk/IeB
+         DEWFE2hwj3Ukor+OK89W/O62YzTHHfLah9zxmLVijAkv7cjchc/DLo8dZS/aezvurD4b
+         4aYbZSzQkPMt58Wu6Y191SVc469yzL3PvKmpRNYECargOy6uMkZGHEEvCyjWqCzaBOeU
+         GcYg==
+X-Forwarded-Encrypted: i=1; AKwUvByXELfO5XWZ4s5iVIazVfpAgacs2T33uj1/2ifZv5kwZOohoK8L6ONlNGPy4QShD8D/WLlGog==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLFgir5QZCETKkcNLr32Jy7r2E1apIeXQn9KBOg269UB+ZF85XG
+	UvRsBhumLBpdKS0IX1/xBPQGyxfCtdngPYLq/olOw1Rqbg5RGMrnwgmUYF6ft/hJrwhMf+Z6q8T
+	70wr6
+X-Gm-Gg: AYBFou1M/4IiqRzx4jUVXG+PIgXxmXXk3VtGesYClrqZZhRAZuvtN5T1zUiV+VqVPRd
+	W9XwYfX7wI+U+bcXdBLf9BYK/RsecIyYwC3dPWva1tnkEnrAcGPGsHPfKN6C9FdEjN82cQfmYaQ
+	g+JvnU8F3Ntod8kp42cVlmG8LjUyybnZ1BuIDmpDyjFXt2oMAW0C7A7yX0vT3ZaRgjOGwLq1qlk
+	hKvEs5ffmBh5yAeQZslaQ+rfQhswaYq1SCZn8V2AcK53gMqoXjVzEMsX76zryRs3dcT+LidmgSE
+	2cpIOo1PRckSxvqphPteSfEu0nYqu5IwXGbizFHW/mCt8YgjdbVQRDuddR2v+DzfpmBJuiFsHtX
+	+FlYikcVBOLYRk4FsaJyMyOxC/7fgPn2qqR+rAjgv+7N8GqLnCkiChqDLXNYGhEIn/6suL/F77y
+	W7ghOCFx/XSr85c+iDrJfGiABM6V+dQ/6/S2KZsrl0FZJ1D7kWbLmbcD3yQ7f8hcNXi4DE0yFBu
+	wU8vgLXobsa0VL5Tx/Szh3sqBd+FJHc1LzFt1LT+Q==
+X-Received: by 2002:ad4:5deb:0:b0:917:bbf1:5323 with SMTP id 6a1803df08f44-91b55793527mr367860846d6.38.1792108808237;
+        Thu, 15 Oct 2026 17:00:08 -0700 (PDT)
 Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91bcba4db4csm8430526d6.16.2026.10.15.16.55.35
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91bce8918bdsm4228956d6.48.2026.10.15.17.00.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2026 16:55:35 -0700 (PDT)
+        Thu, 15 Oct 2026 17:00:05 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1xHVIM-00000000Gew-3ViJ;
-	Thu, 15 Oct 2026 20:55:34 -0300
-Date: Thu, 15 Oct 2026 20:55:34 -0300
+	id 1xHVMi-00000000H7g-17qS;
+	Thu, 15 Oct 2026 21:00:04 -0300
+Date: Thu, 15 Oct 2026 21:00:04 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Gong Shuai <gong.shuai@sanechips.com.cn>
 Cc: kvm@vger.kernel.org, kvm-riscv@lists.infradead.org,
@@ -84,10 +85,10 @@ Cc: kvm@vger.kernel.org, kvm-riscv@lists.infradead.org,
 	Wu Fei <wu.fei9@sanechips.com.cn>,
 	Zhao Qingye <zhao.qingye@sanechips.com.cn>,
 	Gong Shuai <gsh517025@gmail.com>
-Subject: Re: [RFC PATCH 07/12] iommufd: Add RISC-V IOMMU hardware info type
-Message-ID: <20261015235534.GA14213@ziepe.ca>
+Subject: Re: [RFC PATCH 0/12] iommu/riscv: Add nested translation (vIOMMU)
+ support
+Message-ID: <20261016000004.GB14213@ziepe.ca>
 References: <20261015065232.604503-1-gong.shuai@sanechips.com.cn>
- <20261015065232.604503-8-gong.shuai@sanechips.com.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -96,40 +97,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261015065232.604503-8-gong.shuai@sanechips.com.cn>
+In-Reply-To: <20261015065232.604503-1-gong.shuai@sanechips.com.cn>
 
-On Thu, Oct 15, 2026 at 02:52:27PM +0800, Gong Shuai wrote:
-> From: Wu Fei <wu.fei9@sanechips.com.cn>
-> 
-> Add IOMMU_HW_INFO_TYPE_RISCV and struct iommu_hw_info_riscv, which
-> reports the RISC-V IOMMU Capabilities register through
-> IOMMU_GET_HW_INFO.
-> 
-> Signed-off-by: Wu Fei <wu.fei9@sanechips.com.cn>
-> Signed-off-by: Gong Shuai <gong.shuai@sanechips.com.cn>
-> ---
->  include/uapi/linux/iommufd.h | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 36e6187bb34b..acfef0338cd1 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -716,6 +716,14 @@ struct iommu_hw_info_amd {
->  	__aligned_u64 efr2;
->  };
->  
-> +/**
-> + * struct iommu_hw_info_riscv - RISC-V IOMMU device info
-> + * @capabilities: Value of RISC-V IOMMU Capabilities register
-> + */
-> +struct iommu_hw_info_riscv {
-> +	__u64 capabilities;
-> +};
-> +
+On Thu, Oct 15, 2026 at 02:52:20PM +0800, Gong Shuai wrote:
+> Add nested translation support to the RISC-V IOMMU driver, so a KVM guest
+> with its own vIOMMU can own the first stage of a device context while the
+> host keeps the second stage, and add the interrupt support. This is an RFC
+> and comments on the design are welcome.
 
-Same here, spec reference.
+The iommufd parts looked reasonable to me
 
-Also be careful to always use __aligned_u64, check all the patches.
+I feel some mild skepticism about all the MSI parts, it would be good
+to get more of the interrupt stuff actually landed before posting this
+again.
 
-JAson
+Please try harder on the commit messages, do not use AI to write them
+like this. They need to explain why this patch exists and what problem
+it is solving not some inscrutible description of what it contains.
+
+You'll need other riscv people to help you with reviewing it.
+
+Jason
