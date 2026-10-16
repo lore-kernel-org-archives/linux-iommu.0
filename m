@@ -1,145 +1,96 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE7BC3F9F5B
-	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 09:46:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB59409279;
+	Fri, 16 Oct 2026 09:46:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792143976; cv=none; b=qZdqVEmmgq3AjyiyN9/sk1NUS6t6zFMJzjHpn+adqlkAGZSUvoOj0U+ZP/Bvywj05uF2eUAJf3o5cfbG0F9MuRYy32iaBeUELJ29Wr7QloOUJL0Qxy3sds0HrDIKupT3xzO5ESBvTi+RZFe6M7IiFY4uY+0yWSZ/41jzv7ofwxk=
+	t=1792144005; cv=none; b=BOGIehIytrx8z0cLP1+QDq6w3Kl3MQkaRKgj+lwLDpJY+IdROouWME1nWTmXFWJBOMw8pEIS3wEANpMY5lSQkIBt9ktsPQZqzoaBDBuRbmx1jtXU66ttoqLo74jaMkeeIebTRoztG4q19izsuOlDW3xRzGTUGtrcSGYOUCUbBJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792143976; c=relaxed/simple;
-	bh=WBdGcxWiDrcVKqaT6IjY7dlU/wWj/hMB+CXmv51CihE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VaAPH12kN5qsTmWokC2+4BcxlgpTGTP1Yssg3yEACaNFb5bHG3/ii6lJWAgVImvOpXDLXfQxFjeBPIkdr0EarpI9v2Mum6kSrzSyL5B5lNci+PvQtiRYsbgiwBJoG5og8k8bsCWvSR3WDDcLmDxlkpCzlU2QEjjYrnTUOlwluek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=URjumONf; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1792144005; c=relaxed/simple;
+	bh=POI86Emv7LXTXvwaaJBvK12dMOj7PnyouyYL3O/OxHs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=aK8G4rAGxl3OPcyiQ0g/V8pcK64YSZMwXQso3UKrlXcJ8bzAZuSnjGHEhFOoBtL/EiwaxHujH8ccG7DeWwBP0TgZA7L8qfMaC12pxuv6sjd3sy8DsqE8D3h69Oc50SnwT/wxzp/uE05mTpCq+RziOYSYqziGirshf55PwUAqHPs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q2nz0b/t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="URjumONf"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4a16af2a232so48552215e9.1
-        for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 02:46:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792143973; x=1792748773; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=WBdGcxWiDrcVKqaT6IjY7dlU/wWj/hMB+CXmv51CihE=;
-        b=URjumONfcfryt1WgeuAqgjRYS5Y9e/PDeAZq5vW+4zjAtO2opeCvVefEdusMUjQFdc
-         p18kJCWeg0he0Fyk0wVyF0tyf2VahpI2s+k+dC3y/pNBDbBxenOGktoqLxkIPc+o7keB
-         ACaNSuXTDaZmcCQjGI+txXujwnEsM4xIsndA9HfW7V6LYZal8kuPitoVQnkuQdG5NZZE
-         kXWW8oHMTCB20QNdKwz9byhh8JM0cMWp1GLwSdF5cHfjGmTvgkGjgWMe2+TstmW79Z+b
-         kuDlU7jSw5I0+GY0XIKz7CbaazIMVXUW63DvIS8d7GqgQHKsa2irApbWuHmql+PHfm3x
-         9GdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792143973; x=1792748773;
-        h=content-transfer-encoding:content-type:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=WBdGcxWiDrcVKqaT6IjY7dlU/wWj/hMB+CXmv51CihE=;
-        b=rl86pgNYwcdWxYswyT0jX2u2DAfcp5lU8P6/LTgIbLMLcAZA4yEtEtiAdBmdvwmTmp
-         O3m9VBtebEXwUAGlmfdkHgdZh2+uM77RfNShSrHLOIMlRgw4PBdP6ZH2YHCWScwBGSQf
-         C4q87CUgK+JO8yIHrfG/diJfIaCxyPGliFt5sow3iGIeKtCnwelkUCeLdtH09w9eztYg
-         G9AEgmrYbbpnIhPWY/yipjeebYfjU5XWUoSBBIdeK2GCEu7C1NkhY5mm2cXuEVLNY1us
-         jxf1+QTMkllHso2RJuqtinRWshQ+O02APyqN4s1D1wquNSy3aZJuRbGd9SBg/gqSfh3h
-         jz9A==
-X-Forwarded-Encrypted: i=1; AKwUvBzG8vcaigi+XcXHC5IFgsHPkb8pWuOBKMWJbbNxIQDM78qYqQ+QjWQzjIAeaHA/LzOL8uivtg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJkOPMl1ClZC+eaQ/0z8F6/EPTKQC+1wsTua9hmCeSLgV+LTR0x
-	V00V89GFJjrhUtvYSUcpR63evBGCKZjRw5pBr5quk6ROTx4pIYnZQx3Z
-X-Gm-Gg: AYBFou1bPoY81N9tZlta+OL10ZQ96a2PqhdGlfgt+g90ZMA2K15xCY5+apszKbzN1Je
-	zZY2/mLC9eU/AetQ6Jx7DZ58nWYeaiE9lIeYgVpjRVmU6zlEK3QjEJ7B3w/t9ITfOctUfKLrGka
-	eB8+NnXWHBZqx/KfW7GvZvg1jL+QfIKSuz0QDxjE336plHJB901t/+a2WLwvrqEGC+HbY5wGWVA
-	ISbwnkkYZn3/i1vN2krU7i8EdRZ1UirAbp5E9N6gVr9vDQ8cYkRkVr0nEMFUkgPBwjoncHw3UmW
-	FBPhzN71d16tvSiCpwTk4ZFeKwqVLmLPBHF9xJn0CVHarPIUC9XkJM/+tf/Ff92859Wm5kjPPI4
-	yGjBSy1AxsfKULjK62oknyC06Dfuw6HEI3ibpYnwsep0rK/NRKdkf1csolhttWuNp2M1K9Yl2Im
-	t3cvIqxbvTFY1daWK6+kS1giUdx58QGHBGAJ5vli6T5KALUNOYWKJjy0s0MgbS7TdwiAp0GNNEo
-	dxD1/w4/ixvBYfN+EnxHx70/LYb8nPrAG4Yq8rxyP8FFlbRqr+oo3Jqz7cYKHnO6O5uAbj7yctY
-	+BWpX4YdlJ4tSXZgs3m5ndXk8HHwWcCpvJU=
-X-Received: by 2002:a05:600c:83c6:b0:4a1:7093:40c7 with SMTP id 5b1f17b1804b1-4a18e493048mr406737735e9.8.1792143972697;
-        Fri, 16 Oct 2026 02:46:12 -0700 (PDT)
-Received: from dev-dsk-fgriffo-1c-93421965.eu-west-1.amazon.com (54-240-197-234.amazon.com. [54.240.197.234])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1cca43012sm17041055e9.3.2026.10.16.02.46.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Oct 2026 02:46:12 -0700 (PDT)
-From: Fred Griffoul <griffoul@gmail.com>
-To: Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Oliver Upton <oupton@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	David Hildenbrand <david@kernel.org>,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	Jan Kara <jack@suse.cz>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <shuah@kernel.org>,
-	Shuah Khan <skhan@linuxfoundation.org>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Ackerley Tng <ackerleytng@google.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
-	Lorenzo Stoakes <ljs@kernel.org>,
-	"Liam R . Howlett" <liam@infradead.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	Mike Rapoport <rppt@kernel.org>,
-	Suren Baghdasaryan <surenb@google.com>,
-	Michal Hocko <mhocko@suse.com>,
-	Joey Gouly <joey.gouly@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Steffen Eiden <seiden@linux.ibm.com>,
-	linux-kernel@vger.kernel.org,
-	kvm@vger.kernel.org,
-	kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-fsdevel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-kselftest@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [RFC PATCH v2 07/11] iommufd: Use large IOMMU pages for provider mappings
-Date: Fri, 16 Oct 2026 09:46:10 +0000
-Message-ID: <20261016094610.57849-1-griffoul@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20261016001448.GC14213@ziepe.ca>
-References: <20261014093733.90312-1-griffoul@gmail.com> <20261014093733.90312-8-griffoul@gmail.com> <20261016001448.GC14213@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q2nz0b/t"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E474C2BCF5;
+	Fri, 16 Oct 2026 09:46:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1792144005;
+	bh=POI86Emv7LXTXvwaaJBvK12dMOj7PnyouyYL3O/OxHs=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=Q2nz0b/tXJv8DFUCbYs8UIB6ZeD79wS5SliZ/dDLNDR1YkSUwk0ZHedgKJbzImhj8
+	 zM1F2pIB+Fgc3Xdp04U8DwO3Xh+EqaAowMKe7oz1sR6yoMuM6CCi6oZQy4cifDEKxz
+	 s5ESrsW4QoDbRrHbQBg6MWDaxq6vFqeOTsIuHBzk8NtH5TzrgTsvUn0KfAODLRNhLe
+	 qV5IbqQLXo7k1F/Woxdlu0etxzoWuI5/mLEYUHH2x93pltZr/Hu5AeJBnT1EBXb8qu
+	 7NRW+5oB4jky3csF28WJJJrVK543FLs4JMdHQRyG8J0K02+kZzeStsENJ63rwxGL8m
+	 QrM2uzQK5uxjQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C156CCA464;
+	Fri, 16 Oct 2026 09:46:45 +0000 (UTC)
+From: Ishu Brar via B4 Relay <devnull+patches.brar.si@kernel.org>
+Subject: [PATCH 0/2] iommu/arm-smmu-qcom: Add SM7250 support
+Date: Fri, 16 Oct 2026 15:16:39 +0530
+Message-Id: <20261016-smmu-sm7250-v1-0-e11fc0384cfa@brar.si>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzNDA0Mz3eLc3FIgYW5kaqBraWqekmZglGJpZGGsBNRRUJSallkBNi06FsI
+ vLk3KSk0uARmhVFsLAG6DOrFvAAAA
+X-Change-ID: 20261016-smmu-sm7250-957df02d9283
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-arm-msm@vger.kernel.org, Ishu Brar <patches@brar.si>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792144002; l=976;
+ i=patches@brar.si; h=from:subject:message-id;
+ bh=POI86Emv7LXTXvwaaJBvK12dMOj7PnyouyYL3O/OxHs=;
+ b=z/jR/8mzWoN9+ulva91kznpd3Hm8A2A5JQJ6+dwPb9j9/g7oKoOMZAFiIq84ALgiwuk32Pa0t
+ cdd324JFkduBwMLbMg5TURPTgYHTEUioKE8q+KrMkRliT8lGl5/9hRp
+X-Developer-Key: i=patches@brar.si; a=ed25519;
+ pk=Ds+E23E3ntzjPzuBDyVRkOouclcNI5k75R+N42yJtCk=
+X-Endpoint-Received: by B4 Relay for patches@brar.si/default with
+ auth_id=1189
+X-Original-From: Ishu Brar <patches@brar.si>
+Reply-To: patches@brar.si
 
-On Thu, Oct 15, 2026 at 09:14:48PM -0300, Jason Gunthorpe wrote:
-> You are going to need to go into generic_pt and implement cut and a
-> more suitable unmap to make this stuff work properly. We can't over
-> unmap on conversions.
+This documents SMMUs of Qualcomm SM7250 (Snapdragon
+765/765G/768G) and skips Adreno SMMU PRR setup on it.
 
-Agreed. I'll drop this patch from v3 for now.
+As on SM8250, firmware resets device when PRR registers are
+written, which happens as soon as GPU creates its first per-process
+pagetable. Patch 1 adds the compatible to binding (apps SMMU and GPU
+SMMU). Patch 2 excludes it from PRR callbacks.
 
-Just to check I understand what you have in mind: a cut operation in
-generic_pt that splits a large entry in place into smaller ones, so
-that the revoke unmaps exactly its range, and iommufd uses large pages
-only on domains that support it?
+Tested on OnePlus Nord (SM7250) with Vulkan on Adreno 620. The SoC
+devicetree nodes are not part of this series.
 
-> Also please don't write commit messages with AI. WTF is this even
-> trying to say? The subject is "use large pages" and this text says
-> "map each page with its own call"
+Signed-off-by: Ishu Brar <patches@brar.si>
+---
+Ishu Brar (2):
+      dt-bindings: arm-smmu: Document SM7250 SMMU
+      iommu/arm-smmu-qcom: Skip PRR setup on SM7250 GPU SMMU
 
-Sorry about that. It goes away with the patch, and I'll check and
-rewrite the other commit messages for v3.
+ Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 +++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 1 +
+ 2 files changed, 4 insertions(+)
+---
+base-commit: 7b7429c28ac01c8a2952225a4b8a742eec7359c3
+change-id: 20261016-smmu-sm7250-957df02d9283
 
-Fred
+Best regards,
+--  
+Ishu Brar <patches@brar.si>
+
+
