@@ -1,201 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E7D4396B9D;
-	Fri, 16 Oct 2026 08:25:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 447AC440633
+	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 09:02:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792139147; cv=none; b=qffEZL3swmZYK3hv8FnA8thR3JEYKhdGHfq73JO9FV0yn+xq96jLC+u2yHr3JxF6or2j+O5LCOqAN535BemW2wE2+yNkOonKnugiQjjtdyB+TwehlPMWV+DZQxHcmvVHh5PIIFeeg/WmlMS1Yp1nrmkJP4r+7ioo8/u3Te6baW8=
+	t=1792141355; cv=none; b=BvaLizIodmFfWc4qy6YVk+IPvH1PnLUXXEdAMCaVisgT53dNtu1OCgA/qL8eF7X4nRLbasrTQtRx77NO8IWbmjv/do5dROFwpumixltROzZDy1X7i09tqxe9wT/ZuMr/Z2NvIgNC/ZIokf9sdIbi+amp1HqE6LLJ+e4OegUTr+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792139147; c=relaxed/simple;
-	bh=KAfd8tRH2E+vvJpLkFEh63/NAmBOZN4lDvDMX9uzf5s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gi/XvUgdEax3kCdfGILZS4OA+sW3AG0qu5VhsyWkxCt8fnzM8UmnlSC5+696oSQlNnGcs90M0zCBVTcau6fegMZGsZ/1jTk+SdvLN/acJrIfwz5UeswCvr4P+qVfKu9cXkZeJ+RZUcVRtl7+ZZGY5fy4LplvXuu91Pxfv4fUEEo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AoR2383t; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1792141355; c=relaxed/simple;
+	bh=EAL0w1drlk9iRFR44y1KTfcczLiGqgrQS+sQXndKFGk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=q6WNC0+UemWFbxD6DO1Kgb4GWQ9ZW5xYZRrdCVzn4XzWnQzE908mqCgXQbKR9aqSuf0uAKsrsQkW66p8uoU6SRajFoVXO1D2+c1UQ9ncUX3kiKHTmC7jr/BX6hZ9b4Fq3t7uiwFCEJsSuux1AZUIdDB5Q1BRh6nfxhE1HX7lTp0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PwXlea5E; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AoR2383t"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792139146; x=1823675146;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KAfd8tRH2E+vvJpLkFEh63/NAmBOZN4lDvDMX9uzf5s=;
-  b=AoR2383tIJnDYyU0qzY3sDPTyeKQOpgfCgFPtjKL4/lNhDCP580XnG+U
-   Sohew1udjwNOdLkyE17mvquC0a1wePHYSy67fUowHCWaXylNw9GBgr48O
-   C97ngCow8v7TC1EIp/sj0By3znjYii9RVpkfKiZgIjlDIc5miv6pUT9dh
-   qiKeb4rgbm5xEddgJ5/14SA0BMigBOacifGvWtV+NruHdqfNITXpLj1wX
-   3+UJh3N0shlYeEQiZW8Tw0HCP4oRQBYdAPijJfMBIxemzv30IG8PWJrvp
-   sWXEj9/gNJvtrpRy5ZGDlsCQ6fqCK0+oLZZYsmxVrFTOOHr8YK8Qtp5xa
-   Q==;
-X-CSE-ConnectionGUID: xCkuKGpfR2GMF8K5hslBXw==
-X-CSE-MsgGUID: /FX5izdURLWXpsPi5RZMrQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11936"; a="812315"
-X-IronPort-AV: E=Sophos;i="6.27,161,1787036400"; 
-   d="scan'208";a="812315"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Oct 2026 01:23:27 -0700
-X-CSE-ConnectionGUID: u5J2rt91RgyRRrpNhQby/w==
-X-CSE-MsgGUID: kNfHIRW4RAm85ARoSZ/D7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,161,1787036400"; 
-   d="scan'208";a="2143052"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 16 Oct 2026 01:23:20 -0700
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xHdDg-00000000HtS-105i;
-	Fri, 16 Oct 2026 08:23:16 +0000
-Date: Fri, 16 Oct 2026 16:23:02 +0800
-From: kernel test robot <lkp@intel.com>
-To: Sairaj Kodilkar <sarunkod@amd.com>, "H. Peter Anvin" <hpa@zytor.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	"Mike Rapoport (Microsoft)" <rppt@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Borislav Petkov <bp@alien8.de>,
-	Dapeng Mi <dapeng1.mi@linux.intel.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Ethan Nelson-Moore <enelsonmoore@gmail.com>,
-	Ingo Molnar <mingo@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
-	Jeff Layton <jlayton@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Kiryl Shutsemau <kas@kernel.org>,
-	Li RongQing <lirongqing@baidu.com>, Marco Elver <elver@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PwXlea5E"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a140e7405dso28451635e9.3
+        for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 02:02:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792141352; x=1792746152; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=j0+d5JuI7cYWqs6zSvGD292VqwhHrlteYqsYUHwcriY=;
+        b=PwXlea5ER/GZLn/gHN1dPY+F22/8KfyUzzeClulvYxBooD6HODc7Gr+EM7MDQLMJK7
+         VHNjZHXuqdgKPtLXywjyYjNP/Y/IWJ7O2fBH1g5Uz14XhzZWiyrzdp4e5y6HoyUn4Xl4
+         j16yklk+9bdMS/QSftvFmJre9jL8N3vrnb1eb5fAeGb8ZYqP8a6bmWSFwR8zqFQP9afJ
+         W/49EvNd9xgrPhxTidl0wBQN/DCKDIugSuo67uH/Y8SNlYGBkC5Y5oyJTsQQ+lUAZ5YA
+         lRd5/cyx4CFSYoiTCzovnGMQPYwQ0mwr1S3+YjtwO8YBoOIiCF1OMCEX3YcitPgq5Nh4
+         LBCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792141352; x=1792746152;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=j0+d5JuI7cYWqs6zSvGD292VqwhHrlteYqsYUHwcriY=;
+        b=02+v5hWQbDzAEYD2q5JFMxIZ4Al/0AsI32IzTtd2jXVj8bmvCOU9qDQNkDi4bIU4ax
+         TfG0xhCcQlKbAGxYZl2ZMw+PubTtMYrCXr9B6CfrUss1dHX652nMAGkdyIANs4n8w/m0
+         OX3uthnBKWkmPmC1FVV6FWu/UKRI1IZUpQMIbN71bgg6ynUo+pD0/rFXrRqjFGrWHDWS
+         AfOY/PI705L22GQRj+M4J0QrOchJrYJHwVvY5txp7XfAYaZqdhY1WaEkH26QIaOPLLsW
+         tQp3K03EuVMHRxhfjC7p4GMMh+0eIm1I6qAPVc6KzuyyRwA/lskzOET/RzbRkqS1qd7Z
+         0QEQ==
+X-Forwarded-Encrypted: i=1; AKwUvByA8Ssza7wC+Zlt+EPSt0PSd85C/ZUVukBJkGkFyLOdRtecVGko0HQ5e/0rDzRWjLQ5SFzbZg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIiJKSY6a2lk6eQSHYzO7u3pNxLg2ffe2pNP44P2SAHwN1iVq/e
+	sgNSlgCxQi9M8//jHhcokshFN29d+WKrx1CQ1i6hYWQLQMFRVHU1JLTh
+X-Gm-Gg: AYBFou3AtWqzfCq9oBeExw7RETrSmkbUbQls2Xa6OqAZP8wLar8wQQwIdbad/SimedK
+	t3L4gMctvMfJlvSJKEdvtxXKkQdSQI8LqAldekZif8mLyBcWFU2TlrhkI9PS6bsBNZnAS1aeivc
+	nmDBAkWbAYFZsP4N0ySooUtdkQ07lBaO5HoYwo51CzvgCfiNRFhFMgfnM6Bt/6ws5pP3IwXokU4
+	90rU7Lt5bGrvfPf97B13I9VMimm7jbcecWKc5VGYmfYEM0NbLepcRKKliO9CuUogVHRAhT3wTB+
+	j423bNk79p9UN5L/k3qg6qq7ilSfm7E3wVOgU6PMQrsmPjBtroPQY+PA2l9Pq9p0yYNKkKSlbdk
+	TlmtrM99UNBktT+J4rZNirs9BmSoxVPyQWctobaeb4tJ3+yRlMMQho326M6/A7yMq2rBBVIyfW5
+	3L32tE8tSahgRCta74oaeV/UjZQQr3kBUVYVGTuAe7aH6AgYp2DYGJ0QiOSV5H2puzPqaD+6t7/
+	SgFJH/i0/w7q0/cIZcEHkk2giylli9to5Z+LPVFF16Z8g==
+X-Received: by 2002:a05:600c:46cc:b0:4a1:688d:a41c with SMTP id 5b1f17b1804b1-4a18e4c06a8mr416698625e9.25.1792141352107;
+        Fri, 16 Oct 2026 02:02:32 -0700 (PDT)
+Received: from andreayoga.wind3.hub ([31.189.109.133])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a1cca30aa4sm16138995e9.2.2026.10.16.02.02.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2026 02:02:31 -0700 (PDT)
+From: Andrea Parri <parri.andrea@gmail.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-coco@lists.linux.dev
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Linux Memory Management List <linux-mm@kvack.org>
-Subject: Re: [PATCH v5 7/7] iommu/amd: Provide kernel command line option to
- enable GAPPI
-Message-ID: <202610161625.7iSczyVo-lkp@intel.com>
-References: <20261015064515.10700-8-sarunkod@amd.com>
+	Nicolin Chen <nicolinc@nvidia.com>,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iommufd/selftest: Check dmabuf MMIO mappings filled from another domain
+Date: Fri, 16 Oct 2026 11:02:24 +0200
+Message-ID: <20261016090225.3824-1-parri.andrea@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261015172243.GE13920@nvidia.com>
+References: <20261008125206.11990-1-parri.andrea@gmail.com> <20261008125206.11990-3-parri.andrea@gmail.com> <179200036595.15213.9864724554843977359.b4-review@b4> <20261014211608.291608-1-parri.andrea@gmail.com> <20261015172243.GE13920@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261015064515.10700-8-sarunkod@amd.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Sairaj,
+On Thu, Oct 15, 2026 at 02:22:43PM -0300, Jason Gunthorpe wrote:
+> This sounds better, but I don't know if we need all this code just for
+> a selftest.
 
-kernel test robot noticed the following build errors:
+Fair enough, I'll drop the selftest.  Thanks for picking up patch 1.
 
-[auto build test ERROR on 4056b3c9d3c92ea45955641dbafeb9b960e146ef]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Sairaj-Kodilkar/iommu-amd-KVM-SVM-Rename-cpu-to-apicid-in-IOMMU-interface/20261015-121509
-base:   4056b3c9d3c92ea45955641dbafeb9b960e146ef
-patch link:    https://lore.kernel.org/r/20261015064515.10700-8-sarunkod%40amd.com
-patch subject: [PATCH v5 7/7] iommu/amd: Provide kernel command line option to enable GAPPI
-config: x86_64-randconfig-1017-20261016 (https://download.01.org/0day-ci/archive/20261016/202610161625.7iSczyVo-lkp@intel.com/config)
-compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261016/202610161625.7iSczyVo-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202610161625.7iSczyVo-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/iommu/amd/init.c:163:6: error: redefinition of 'false' as different kind of symbol
-     163 | bool amd_iommu_gappi;
-         |      ^
-   include/linux/amd-iommu.h:65:25: note: expanded from macro 'amd_iommu_gappi'
-      65 | #define amd_iommu_gappi false
-         |                         ^
-   include/linux/stddef.h:11:2: note: previous definition is here
-      11 |         false   = 0,
-         |         ^
-   drivers/iommu/amd/init.c:164:15: error: redefinition of 'false' as different kind of symbol
-     164 | EXPORT_SYMBOL(amd_iommu_gappi);
-         |               ^
-   include/linux/amd-iommu.h:65:25: note: expanded from macro 'amd_iommu_gappi'
-      65 | #define amd_iommu_gappi false
-         |                         ^
-   include/linux/stddef.h:11:2: note: previous definition is here
-      11 |         false   = 0,
-         |         ^
-   drivers/iommu/amd/init.c:164:1: error: cannot take the address of an rvalue of type 'int'
-     164 | EXPORT_SYMBOL(amd_iommu_gappi);
-         | ^             ~~~~~~~~~~~~~~~
-   include/linux/export.h:89:29: note: expanded from macro 'EXPORT_SYMBOL'
-      89 | #define EXPORT_SYMBOL(sym)              _EXPORT_SYMBOL(sym, "")
-         |                                         ^              ~~~
-   include/linux/export.h:86:38: note: expanded from macro '_EXPORT_SYMBOL'
-      86 | #define _EXPORT_SYMBOL(sym, license)    __EXPORT_SYMBOL(sym, license, "")
-         |                                         ^               ~~~
-   include/linux/export.h:77:2: note: expanded from macro '__EXPORT_SYMBOL'
-      77 |         __ADDRESSABLE(sym)                                      \
-         |         ^             ~~~
-   include/linux/compiler.h:276:2: note: expanded from macro '__ADDRESSABLE'
-     276 |         ___ADDRESSABLE(sym, __section(".discard.addressable"))
-         |         ^              ~~~
-   include/linux/compiler.h:273:63: note: expanded from macro '___ADDRESSABLE'
-     273 |         __UNIQUE_ID(__PASTE(addressable_, sym)) = (void *)(uintptr_t)&sym;
-         |                                                                      ^~~~
->> drivers/iommu/amd/init.c:3804:20: error: expression is not assignable
-    3804 |                         amd_iommu_gappi = true;
-         |                         ~~~~~~~~~~~~~~~ ^
-   4 errors generated.
-
-
-vim +3804 drivers/iommu/amd/init.c
-
-  3775	
-  3776	static int __init parse_amd_iommu_options(char *str)
-  3777	{
-  3778		if (!str)
-  3779			return -EINVAL;
-  3780	
-  3781		while (*str) {
-  3782			if (strncmp(str, "fullflush", 9) == 0) {
-  3783				pr_warn("amd_iommu=fullflush deprecated; use iommu.strict=1 instead\n");
-  3784				iommu_set_dma_strict();
-  3785			} else if (strncmp(str, "force_enable", 12) == 0) {
-  3786				amd_iommu_force_enable = true;
-  3787			} else if (strncmp(str, "off", 3) == 0) {
-  3788				amd_iommu_disabled = true;
-  3789			} else if (strncmp(str, "force_isolation", 15) == 0) {
-  3790				amd_iommu_force_isolation = true;
-  3791			} else if (strncmp(str, "pgtbl_v1", 8) == 0) {
-  3792				amd_iommu_pgtable = PD_MODE_V1;
-  3793			} else if (strncmp(str, "pgtbl_v2", 8) == 0) {
-  3794				amd_iommu_pgtable = PD_MODE_V2;
-  3795			} else if (strncmp(str, "irtcachedis", 11) == 0) {
-  3796				amd_iommu_irtcachedis = true;
-  3797			} else if (strncmp(str, "nohugepages", 11) == 0) {
-  3798				pr_info("Restricting V1 page-sizes to 4KiB");
-  3799				amd_iommu_pgsize_bitmap = AMD_IOMMU_PGSIZES_4K;
-  3800			} else if (strncmp(str, "v2_pgsizes_only", 15) == 0) {
-  3801				pr_info("Restricting V1 page-sizes to 4KiB/2MiB/1GiB");
-  3802				amd_iommu_pgsize_bitmap = AMD_IOMMU_PGSIZES_V2;
-  3803			} else if (strncmp(str, "gappi", 5) == 0) {
-> 3804				amd_iommu_gappi = true;
-  3805			} else {
-  3806				pr_notice("Unknown option - '%s'\n", str);
-  3807			}
-  3808	
-  3809			str += strcspn(str, ",");
-  3810			while (*str == ',')
-  3811				str++;
-  3812		}
-  3813	
-  3814		return 1;
-  3815	}
-  3816	
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Andrea
