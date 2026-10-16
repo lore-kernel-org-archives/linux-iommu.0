@@ -1,53 +1,53 @@
 Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012001.outbound.protection.outlook.com [40.93.195.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9646B3CBE9C
-	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 06:48:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F6D13D0919
+	for <iommu@lists.linux.dev>; Fri, 16 Oct 2026 06:48:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.195.1
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792133298; cv=fail; b=jiRCaATkNfCpiLpu2PLT1m18PH2UhWBI+thNdpqq2bQaue7sqrMuK9cHBmtCw+7PkOtl2Ju44DcaGf1BkLhgEea5nhUa/XiVm60YeJzW2TGhol4ag2A3KtSAOzCZhRiuwi1kH86+TI8NZehre93Kmyk01u7N7Bfz5IwfOOpVJ2k=
+	t=1792133308; cv=fail; b=A0J88GtPjSO2pSMEVZvACPRY5zQQVQVQJBdMKyP89yYt6Up1WPQlLSHwaT4P1G9roIiapf8JoJmeQLxf+ZClPnC1phnGL0uAqgk5H//IkTj4Nf2XqLLRaVCTX5x5TaIAKZmdQQXFRsgvZbL6AHZssU4RBagt9T98o7Ezjt6/MAw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792133298; c=relaxed/simple;
-	bh=uozO/8ibrnK+sMbCuM0psrl4WrWsttU9V1wkBCq0EIM=;
+	s=arc-20240116; t=1792133308; c=relaxed/simple;
+	bh=/oGNx2zHjSUTe7+Pe48iyyKq29ukvmIhB8FC1RK5068=;
 	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=kABsLOZvgMn8x9Z/SwWdevf3ULjXQWxc6Tiy35STOg+XFOJouRf736HqfmjZVWNmbN8yJ24xJ4tzdQ24oBsRupZvvWUUXat1sSzAbRFv/y7SVqMDeu4aGhzYcXJ+A2HZpLLZu1n7femHmhQNN/qGCgokDdtVvyZEFhkEyc69IMM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=D4ZiFTH7; arc=fail smtp.client-ip=40.93.195.1
+	 To:Cc:MIME-Version; b=pP5FXUG1aRmCWQYKKpHVFLOKYo8EuXt5aZAVpfcyyco6mtsSogHyfrJevDqyXW1uTivyXyQFXYkSXxYvG5U5FldjcYqbg+u661giV7Fmnl9sn9SHFHAs9Bfp4HEKOdFQXiJIRJ1R7gLkUtSoBY21JrzDVj2dQ1LfMyhkSPYl6G8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NVHGawXv; arc=fail smtp.client-ip=40.93.195.1
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="D4ZiFTH7"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NVHGawXv"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=v2WX8Q2oBWRt9tEPVXQCCrviZrXbqqFSJfw2Qsir9j8pgRdT32tb+BIbFGAwaiKatlW4pK8TRDpSnaD60liDx9tx3CTmNpkxfNbc2W91cbfZqHhALIkpMlwBdBKGbgGwWlR/h+Hp+Epn4hJJmIdg2Hy1Evzc0iI2b/shlQCyZ98GNcong6wpOrusFHV9G0EinYsLCNnamrqns4B5Ma307/wYhxeLSvSEgru2TDoXpvznfersqtb+DTZZKms6Q0IYFHaYkXAxuLaXVMRXitq10pzUyrxTCjqfeJbT4I6dkZqMHTyBTlNYA/RQ3/uoUe3U+E6BypyNqwqKBU2M2Nmbdw==
+ b=n0KMngbGjN/+/FOi5ZzKp4FUOdZtu8ma2awjtI3a7+ylh0uCKFXfoxhhZMkwnkubdcDnkYya7zVFcB5F+V8yNSzv8chydL/TrbqmcCzleH9ZmKVUm4oQVgQIUs37dZzW4nw/9a+dAXY6FeU9Y5HQRm8AdPsskfs9Orq5XRemidWe5OFLa8jNl1px4VIL786xlu187y0rJT14prgcUrIfASWj/3nCzVb3z+K9clKxsnHvNUviT1Zr7fEvOzChvh0itjvygIInpzqGUN06fKMPOhyP9tv0zFSXYU4Wy1EkKK6NVE0AtQ3TiJJxZEVi5uwt59kay9QpYyqBWp0kvP5lwQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=skELHGXYwmVkFrxaXa2Z2ScMh9pbahl9cfXogy+pSyQ=;
- b=ejC+0pngwuzNuJnuEiDDarPxk0Pdr8+y6GMwlfnHZXZASxYYMtCEMDUEir4JeuAUEEVBA2CepUtE4dNQ/raIlbuhL/1c6E1HcVFhE8n973Lbx71rTbYrHJ+H/nC+RFea7UsrIKhUX1Ovtch2SH5rmjIa7jzT55/vh61mm2SwnbmKC1bYLHtMSB7ZwMhq0tX0cjWThkMyCj2VxMCS1Ogx8DEjyClAExpTPaPM5aBYztUjmE27QAY2AbyTd3v1PYzeKO6SJSbqZzdt18xOpxAxOqrW/72D2d9ChMVd6k+lkHwI+lQ4LMLPlMwnxLi9G8G+CO1FtNCypOiX3iwZCSVAZw==
+ bh=IbYwVjX1w253oNkzMi5EarZnzZyILMj2AiqbENbLWMQ=;
+ b=QC0aIMWLUe5SLL1ci15dUBxOBxScAGcDpjHWzwe52vj2IuCcCLAM3zEPX2TypLTwA42DDK1arxMANd9Snz3jwL6Xe4il/aWjszT1TTU2+ygIx/5QSpiZ4odICPYh9gilv8SzhzPJcm47z1kg6gX4PERtfXvoHI1+XSzYD0Al0TOJlaBuFIBKrofUB7J0oiMWqVa10kN5MGk45uOBONnbxFJlTBKrULuoGBARWl0igmy6fGaqJ3sXHYTeyid1j2Hxm5hQOcVG/+USh7zmU+oA073tYHqXyoc+jMA9Br2ODs3IRdu36pmEmXNMBLhKkOpx2Lwt7o/czMdxPVUZcebzEA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=skELHGXYwmVkFrxaXa2Z2ScMh9pbahl9cfXogy+pSyQ=;
- b=D4ZiFTH74T6HKaXyB2xt1UIVnyvIdhckleAviOfagecjkcNqmC7EpsmmnU1HKO2KZcX8xaM+7lhWwWwiWF+gP5aIzfPcZGt1eYNxUCZ2w/OoCYkpZEhE3CwJV6gHRQllFDOSFl47eiFUTNWwLNmRB1TaZmV0P5a/coUDtkLGHF5dzczTMIRnThqijwVNSy9nvBmgt0wosni9AYkmZ5iAGZLvNq+CPy+t+y6SnnrFb0rZgt0qBFrMcegQTa6vVjfVj4N12iEzgSFyd7rb3jle+VO32jS/6uydPvAWLhX5FDN7jdWRhbXEG91weTGvZ4y04y4GpzesH8q6+ONy4XNvXw==
+ bh=IbYwVjX1w253oNkzMi5EarZnzZyILMj2AiqbENbLWMQ=;
+ b=NVHGawXv4rrjggCD9paPZs/qo41kHxDldQjdqREq6BtmGZ3e7CM768V1kXCE8Y29fkwb3A3v1dlNmlTLpQs5R/qY14Or/WAv13a6PC7qpFCHFd37sV1YIoAzJqRk/sv7V3G3K/CefqPlU1BL24Appe/D7HzFbKcRcJwkketKoaONa/ExiGU9DULnHv5G2upQ5uf0r671v1T9kg7LEgPfu6ZlXVmcEzPEpzMnaA0b7NYusFxHajVjYQij7wu5sOKA1kkzbJHlwscvpkOvMzeJfDxjc4npc3JkEgaBDyZ+Rqx0+FjxgTIGSz6IUA1mrGS4cYuLCRUhWF0bAAThkr6f+w==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
  by DS7PR12MB6021.namprd12.prod.outlook.com (2603:10b6:8:87::5) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.496.15; Fri, 16 Oct 2026 06:47:45 +0000
+ 15.21.496.15; Fri, 16 Oct 2026 06:47:55 +0000
 Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
  ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
  ([fe80::d9d1:8c49:a703:b017%5]) with mapi id 15.21.0522.013; Fri, 16 Oct 2026
- 06:47:44 +0000
+ 06:47:55 +0000
 From: Mikko Perttunen <mperttunen@nvidia.com>
-Date: Fri, 16 Oct 2026 15:46:51 +0900
-Subject: [PATCH v2 05/11] ARM: dma-mapping: Bypass the legacy path for
- core-owned DMA API domains
+Date: Fri, 16 Oct 2026 15:46:53 +0900
+Subject: [PATCH v2 07/11] iommu: Let 32-bit ARM drivers opt into a DMA API
+ default domain
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261016-b4-arm32-iommu-dma-cookie-v2-5-b06842a01938@nvidia.com>
+Message-Id: <20261016-b4-arm32-iommu-dma-cookie-v2-7-b06842a01938@nvidia.com>
 References: <20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com>
 In-Reply-To: <20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com>
 To: Robin Murphy <robin.murphy@arm.com>, 
@@ -70,8 +70,8 @@ Cc: Peter Griffin <peter.griffin@linaro.org>,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
 X-Mailer: b4 0.16-dev
-X-ClientProxiedBy: TYCP286CA0055.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:2b5::10) To SJ2PR12MB9161.namprd12.prod.outlook.com
+X-ClientProxiedBy: TY4P301CA0125.JPNP301.PROD.OUTLOOK.COM
+ (2603:1096:405:37e::18) To SJ2PR12MB9161.namprd12.prod.outlook.com
  (2603:10b6:a03:566::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -81,134 +81,156 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|DS7PR12MB6021:EE_
-X-MS-Office365-Filtering-Correlation-Id: cc5b1057-d2de-4481-3d20-08df2b51620d
+X-MS-Office365-Filtering-Correlation-Id: a6111762-edd4-4c43-096d-08df2b516856
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|1800799024|7416014|376014|56012099006|10067099003|22082099003|11063799006|921020|18002099003|261009223027099003;
+	BCL:0;ARA:13230040|366016|23010399003|1800799024|7416014|376014|5023799004|56012099006|10067099003|22082099003|11063799006|921020|18002099003|3023799007|261009223027099003;
 X-Microsoft-Antispam-Message-Info:
-	75AVFfB3pWUbZVjRewozz1ZHKS5qhsSOY23tbgK1LXGYVq7Mrn+cCjqNz1pCQcmhxXvPgDBX5R9OBiUSW+fxY7fXiMW43YOyty1ohmrn/2Wuh90Gtk4iUZvwpUA4lx8qyjCIWFf8Vb4zsbxWTRfCfa1oJGfacoAudTrZVXFpk3vjUeL1YjkMEecbMEsXB1yyMa7iXeTWUuLct7/yNW31tl5RFtauitp5g2nyp+Ez3StMuym4i8NleZbMotdVOOYYwGxvttIuVUqdAa5CIdVk3enfsU2LAzCSdmsPakSm9yqkQ8swABWtVlMYstDI8ksUzuidTIVOnuPP+1pTzdnplUjZtuU4qDj8LBWrpi3qyj+1Qg2btz4KJtD6wXIm6LAZNiHuOPnatoERuwIMl7GvCW+ZYr+sRILk3yakyvnGxOmwoX+uIsb5r5+xlX5PrEWkPn6EtB9NtqbRsee46+zZxLRUyv0OQI38W9R1xEc6tcoR8N8vaKvOj4spfnSnwh2S/oWmOyUgRUrJQKyGpFMz6XaKe144k3HiwIY8tKudpxcommRHPAhrOBu4/jARnUNaEJQQjrOPd90+XjkknP4cpkc88coJcrmkz7ucVqjKwuA5hbEcX6iZ7/czVFbTi73OOnQ6tJ35E/k6083rnseaeokwBj2JC0ELAKYgMxheGFubX9wI0YJVi35RAbfs9OuGRHDYFqcWO8R/nDmwwpz+hQ==
+	Ec2gWHSU2yQDWN8WRNNhOIs3bZW9Z3cMCuHpxGsPbIVadz1EhCq1K6o32UNfPDrIDNS/EoKEjcUDtA7S3POh+GquKBozhDRhSFBjG9VXa+Q5/EGXMTFEO6ZDQ11onrO4PYN6K+eBRiE8VcGcBvifRrPYgJuRBroeuBzX7ePo5OnY3GkGepfNlo6xQ4lktDzUfTmDcue9DvAOMf2HmT7PJTIZgYpAilfXLpVcQetBvyeoHMYSselZ+/wIDZ5Kulj1d4oJxKvMwXPMMtCT8jUxTEeRuHFKQNBWdMBKtRTxiIc3mcCF5e7u64y96VXQloUZJBU4y1oot6y+8sNbFFvNw6Jjbp0qqwO7lLVV3QhyhZK1aznA8Vt2N4qmvr7EgxxWFapcMimlmPT+2erkM+dNiFeZW8hnA8w5xjSf0GzdN4J/FozuivZsjmYQR4gcFvXaeo4jN6rzvI30pu+ng2yGBDPX0JgckYoR4ZiPaa61hhdUyndrO/kUYyNn63Z77HiBVInJUgFZ+FLbSIdb+LaODm42senVGaAppdpULPn7U+d1BPdAzIVvK/KSacRbkNkTzrRgnnGgF0ekvUPRUUA5a46PtFYDb4r0VGL7eT1YZAqEp2FEd8yl5W3ylj/1eDWYvjDGnzB4Nea3Wd1j7YjpnOS6XVt1uCNpyT1LaUA1sWkOlxfsEVjPCp7WhQlf5dPUdVkPT5onk09o5II17irJ3g==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(7416014)(376014)(56012099006)(10067099003)(22082099003)(11063799006)(921020)(18002099003)(261009223027099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(7416014)(376014)(5023799004)(56012099006)(10067099003)(22082099003)(11063799006)(921020)(18002099003)(3023799007)(261009223027099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Z3prREZjRjRrZm9COVZ5Q2JEOHFoSkxMTzVaTytycHl4bU5QVkJYY241L29D?=
- =?utf-8?B?YlpRVTJ3TnRDVS9kWVpXeXEwYXRXYUprb2VGM2tOUFpFd3ZMVVRIVmNQY2E4?=
- =?utf-8?B?NmlFV3JZM1hrVmIwbjVuaGxPWTJLVWRLN0dXZG9JRm5NWk94VTkxRS9sbjkr?=
- =?utf-8?B?RTN2VVYwbUxBNmZKK1kveC9yOU1kd1JURW5YNVBWREQreFA0aC94ak5oT25i?=
- =?utf-8?B?ZXg1eStVWHVteEhLalVmNTJLdlV6RUdDOHRNTnJZKzcrMnFJR1d0Y08wVEFO?=
- =?utf-8?B?akdQQlZOTTNVZWNLREpzZU5xTzFVMzUzZEJ4OC9ZRzF1aHhBWnJpZDVGdU5p?=
- =?utf-8?B?UllMdldTa3lqMUZVL3plYVUwZ2t6K2hCWmpDcmlHWlgwRlFsQ2l4Mlh6cHJj?=
- =?utf-8?B?RkhBYXgxZ2lSSEdhZzhyRVA3dlljVkg1YjNmM05iMEx6NW9LZFgxbEJQV2RZ?=
- =?utf-8?B?YlViZjBNSEVDR2I4VmdjQWtVZEcya0xhMXczM1hqeXlMdGJaVG9WRmVrZzcr?=
- =?utf-8?B?R212MmNLeGtQWTBGZ1NQaE1tNlNJamwrc25wckpDalBPQ3Z2Y0x0RVhTaDgx?=
- =?utf-8?B?U3AvYkkwcHFUd1hxUWQ5RCtnVHErZlhOQnhKWStHck15QWlUT203Vlh5NkRn?=
- =?utf-8?B?UnowWDMrU2VTSGhMa0grc3l1NEttWG0vSk1pZ1BjOURYMm53MWg5YTgrbVIw?=
- =?utf-8?B?cU5neGFJeWFHeW1sUVl6Vk82aUxyQ0J2UXdOM1A0aWlkdXNWK2RjeDRWeld0?=
- =?utf-8?B?NUVSUWZ4dmdUVkYxMEoxSzM0M0RjUDh0aFkxdlRJN2lFc0NyQ1A1V0hod2VX?=
- =?utf-8?B?TmFGZGdBTXl0b3BJYVk3VlZ2ODBwOGN0WHAxTWxiS2VjVUpjY1FFa3VmRDVW?=
- =?utf-8?B?N0haY1NhZ1BnYThlSlNPd3I4WHVuejlPa1hvVXpWWTk1ejFrZURqV0dHQUNK?=
- =?utf-8?B?QjE4ekhFK1Rra2NBVnRNL05PL0xtQTkxVzlZVkYycTFSbFErR2xEbURKMUQv?=
- =?utf-8?B?dUg4Zml0eTNuQWFXbjZOalNQVVliTXYyN0w1TFlxK21OUUVHT2dpY2RRcStI?=
- =?utf-8?B?SUdkNlo4OUJXbE9FV2Zkb1BJQUFiV0ltUlZNZVBnWWI2c3ZsZCtZb0YwaDZp?=
- =?utf-8?B?VDgzL2VOSi9UT1UyV2NyckdrOTFyaTUra2pLSjVtV2JSVkdzYmozVkZJYUt6?=
- =?utf-8?B?NVQwWGNRVUFvL2ZQOEI0R1VNVGxBQkQraitFdTFrRCtFWkE2UTJSaFArNSt5?=
- =?utf-8?B?cEQzdHRBaUUzWnhiTFpHSGVSc0NPZnBnc0xVbHBLN1dOWkY2a1FoR1UwS295?=
- =?utf-8?B?QjAyb0xPbFZIN2xMNHJ4SS9vRjdYSGRDc013QjRJUmdma1lqcVlyRHREU3BK?=
- =?utf-8?B?Vm9lMlFXVmJ1T2JiTTN2M2JpQnJWRWxRM0VTdE5YMm5TT2hCYWNGaGdPOTJO?=
- =?utf-8?B?S1o2STVBSXBFVWFrMmlRTUhkSGx6YTE0cVdOUGp1VzArVGdxLzhGdzNQRUFX?=
- =?utf-8?B?QkJhOWhUWC9TblB6NVJGK3NQbkpPWlphNXNYUjJucUpTTnZiVXNTZ3NiVkJB?=
- =?utf-8?B?RzVCaUc2SXFRL1BWcXBpd2l5WVBCTVVSeEswOWtyZ2VuOFBVMENRUFh2ZXNI?=
- =?utf-8?B?Y1E3VUc4bjdCeS84UWNOU0wvWk1reC9WNExpUTZEeUY0ZjI1ZHZrMnB2dHpQ?=
- =?utf-8?B?djMrN01jQlR5Zm9Dd1ZjclhneTN0cURrWGNteFNPdktOL0pORFJpcGFrSUJv?=
- =?utf-8?B?akZnenNYQnpZYTNjNUlYN3NyY1RwWU51WDhtVmwzaENSTkhRTXFSMXpKN3M5?=
- =?utf-8?B?R2d6azU0ZjdMdlc4QVg0TnZEaE5rckRrc3h5MXVRN0NhT2p1UmxiTkFWZC9V?=
- =?utf-8?B?YXplZWJRZ002enR2UGZTanY3SFIvend4RWJpN3VQRE1FL1krVUVlRCs0WW1O?=
- =?utf-8?B?THpwcDQ4cUowM1ZLcGVGdks1TExFdWJVbTZLb0p2TFJ0dmNoQzlkVHcybUlt?=
- =?utf-8?B?S1VtckRRckM5UzJHWkhaT05SNkR3cmFmZ3BDaUN5aVgzeTRsbmRGNDk3bC9o?=
- =?utf-8?B?OEkwbGQvNzkyYUI2R2tCbzVFek5PUXkxa0QrS1c4cUkzcWxoYk4rb3NKYUpS?=
- =?utf-8?B?UlhBSzlLcXNMQlFNNE5uMXVia0xvTkRVUWdVM3V4K2N4TGdnMWVldzl6Y1lC?=
- =?utf-8?B?TUFtSXNoKzdTR1FYQVdLOHl3QkJRczY5RFV0bGwyWStWVVBzNE45Tnc3NFg1?=
- =?utf-8?B?VnVtY1ZVTWlyblgyeGpkUk9zTnZXbUFzUXlMcTFwTWp1alNmQ0Q2M3JjaXl1?=
- =?utf-8?B?b0xVdC9HcG9JcjUyejNGQjkrd1ZQTUtOWHU4YlpQSUFRSXI0Z1V5dz09?=
+	=?utf-8?B?K3RrWmdhZ3ZBZ1pMakNxdk1uVytpVzhPWEFzL2Urdkd2SFFlUE14cUNZUEJj?=
+ =?utf-8?B?bHZQMk9OYTJuVjIvWEFzakJONjV6ekdJQk5nbTl5b3FqVnYwcStnRzdaVzhO?=
+ =?utf-8?B?cm1TbEdKZnlneVZ6bGVkMDdYZmRpOWZZWkhjSkwvQ1hjOGd3WW53YnlldU5L?=
+ =?utf-8?B?QTJJN2E1SVNGN2grTkw0azM3RTRIUUdrSTM1VjMxRjZxdFZuSUJ3OGwraFNj?=
+ =?utf-8?B?NUpYNUhZa0FXSTA1a2VrVUl0MFdZYTF1SmYvclJGcTVWVk9lSGlIQVpLVWZl?=
+ =?utf-8?B?SXhYcHpSWEQxK1FKeXYwbUgvWEliTzR2Mld4cGNVWW1HVVBCY1pLMHFMMW1v?=
+ =?utf-8?B?Z0FFbHBkVVY2UFNhejlkWStURUN2UXI0TkhaaE9rTHZmUGY5SjA5SitndEM0?=
+ =?utf-8?B?UFIrZ3BKZkp0RlhpSjdpUWNDbVA3eFR2VzJzY3Z2cXIzVGJybkRwQ05rUGRM?=
+ =?utf-8?B?TXJBWkZCVW5KNjFWcE0wMzBuNWVDeEdsNk0ybTFmYmE0bHdkaCtwTHdJYXJa?=
+ =?utf-8?B?ckFMaU9DU0RQMk52SEd6NG9QTVYrVnBpT1Y2c1NjYXZmRlIySGNmbkZTUzNR?=
+ =?utf-8?B?OXcxcERPOHhuUnlaNFBYVkNIYzVnMWZZV1JEdVpjRkVxMWtuay9wRTV5Z0hr?=
+ =?utf-8?B?b05XYlJ3VlJjOTR6VWthdVdQUXFwMWRjN0xETitSN1htYktldVFialVNMnd6?=
+ =?utf-8?B?Z1RENUhPbTVvUGUySFV1cEpEdXVUMm42TVNDc2pJVy9jOHlxRlJQVm9yd1VH?=
+ =?utf-8?B?alVKVURyV3ErclZyM0EzVC9FMFpOdWtGK21aNGo0bGFwR1p1QTVwZmMyYXkx?=
+ =?utf-8?B?OGszUk5BbG5DV3c3NVh0cjZaM3pmZmRVc09qSDVoT3pYdlBCS2FYNitrL3Ra?=
+ =?utf-8?B?RlJsNDFZRHBxRlRPb2M1cXJKRzFmbkJabTh3K0M4Rk1oWlpiSmo2cDRDQWdx?=
+ =?utf-8?B?ZlFRckxrandLL2toVjdEakhjdm4veXVyTnppYlZaY1lSYUhyWlZzWURkSy90?=
+ =?utf-8?B?UHJZYWlod0RKbW01cDhIY0tqbjY4MDNJaFpUaFVrNmU4Q2Z1ZEtPM0JsRGIw?=
+ =?utf-8?B?S2NnbkZpdERtQlhKWmloajdZYlM4bS9ETHJWQTNpV1pUQ29YaFhyZndDaVFZ?=
+ =?utf-8?B?WHU1bEgxa3ZQNjRSWGJvUUxFbmhPQ2IxdUU3c29NdVNnZjZrdGI4cTlqNTky?=
+ =?utf-8?B?K2h1WElqb1VtZ1dQNldjU2hHNWVHZ1h0T0FnVUc2VWgzQ21MOG5rdUtURTV6?=
+ =?utf-8?B?N2VtaTFLMHV4ZlM3dERWSUFzSHZlTzltcStITG5NTHA0cndVdUhDVHNiZUZH?=
+ =?utf-8?B?TitXbDE5NmhleTVzaWx0RnpHUCtzTzlBS3EyTmRoa292WTNDNE5VNzBaWjdq?=
+ =?utf-8?B?dkJtNUdoL21xL2NNTDRmSS9wMkR6c3o0R1RKYWVCWUtzT2lUVllqYlByUzEv?=
+ =?utf-8?B?bzhvOXhha0Q2dXJFdFpOSkxOTnYrYS9hTUNLdVo2N2IweVNQcjYwNGdZRmMy?=
+ =?utf-8?B?YzkvZ0NTRWkvWjIzNXpYTklBUTVMNjJXWGpRRUUwL0l6TDE3NjFFU0xZb1RL?=
+ =?utf-8?B?MHpQRHlUVENicUp6RXI5cDgrbzBRWXZ6Slk2UllHbmZnQ05qTDVmbUFGbnBZ?=
+ =?utf-8?B?NGk0bHdnU2dOSEFtMFpmL2dSMTRFWGg2RDNGZC95dlNaMnNMOUM0NXFoTXJS?=
+ =?utf-8?B?MW1VMk4ycmkrTGVMMW96MFRLOWVhYWhlbm45QjAxeEJwZk14NmNTYmVLYVRi?=
+ =?utf-8?B?NStwdm1tMFZ3UlgzZW9kMlFrOGl2RXZVdTh4MWQ3d3Y5QXBWYzY5bUh5OWlh?=
+ =?utf-8?B?L1hiOW5IN21Ua0dXWHFHeFRDRXpmeUw3WTVOQTVRUVFNQkdvRjdaUGFHbUp5?=
+ =?utf-8?B?Zm5tRmJPSWVLVE9MbTczeUtQNExQandMSk1idE03NGFUWWY4N0hTejVBMVFp?=
+ =?utf-8?B?VVk5YU52d3pxZ2VXRklNOWRMdjVLb0J6UFJET0srN1FxZUh4TVVsdzAycTdo?=
+ =?utf-8?B?TDVWNHpLZDRMQWhhSTE5UkJ4MmRweks2bytVUERHaDFWekFIZVllSms0ZVJy?=
+ =?utf-8?B?b2JQWUp5dCtpQjRpNGxPNDlMWWNtY0c1NTJTYVhhMmtyN1FQVjJzSEVHSEFv?=
+ =?utf-8?B?ZlVXZlJ4R1hENE51c2lqRzNoVEpDUDlDNVByelBOeXViZlNZNk9mcWdiQmo3?=
+ =?utf-8?B?NTJGbnRMNGRRWmFobDlNYzZqQVgrc001WktHVm9ibWhlZThDOFMraHRSUDFq?=
+ =?utf-8?B?RWdzeWZndHkxZ0xxYWl0dGxTN3pxK1doc3ZmbzFac01SWWlndDhGY3FFS3g4?=
+ =?utf-8?B?M1V5dlFIRGc2bk56TGJJQytzZFA5VXdiQm94a21JT3Bsbm96Qk1jUT09?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc5b1057-d2de-4481-3d20-08df2b51620d
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6111762-edd4-4c43-096d-08df2b516856
 X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2026 06:47:44.9119
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2026 06:47:55.3527
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zj3ufSFd8SI8kTevQEnJuqg+pUfJItJX9g65/qfDnb+3pzX2KhHAz3ndTSO26hX2s/vpdNDP6LEkIOmNzS+gxQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vbe30ODLnwVeLiBLexuxYebLEp8iP0JOfVZOi0iHlGMYjsUIGWwh/LHhoaIkoiZvMPMIQYaOed+o82bKpcDuVw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6021
 
-ARM's arch_setup_dma_ops / arm_setup_iommu_dma_ops creates a custom
-IOMMU domain for DMA API usage, and continues to do so when the IOMMU
-driver doesn't explicitly request a DMA default domain type.
+iommu_get_default_domain_type() unconditionally forces IDENTITY on
+32-bit ARM as ARM_DMA_USE_IOMMU installs its own UNMANAGED domain on top
+of whatever the group already had. Now that the ARM DMA API state is an
+ordinary domain cookie, IOMMU drivers can ask for a real
+IOMMU_DOMAIN_DMA default domain instead. Drop the override so that
+->def_domain_type is honoured, and let a driver-requested DMA domain
+through the !CONFIG_IOMMU_DMA guard when ARM_DMA_USE_IOMMU can back it.
 
-When, however, that DMA default domain is requested and the core owns
-the domain, we need to skip our own domain management. Add checks to
-arm_setup/teardown_iommu_dma_ops for these cases. In such a case IOVAs
-can be allocated from anywhere in the domain's geometry, so also add a
-check to ensure the device's dma-ranges cover it. Presently, this is the
-case for all platforms except some OMAP platforms with a non-zero
-dma-ranges base.
+IOMMU_DOMAIN_DMA stays strictly opt-in on 32-bit ARM and is never the
+fallback to avoid unexpected changes, as drivers today return 0 from
+->def_domain_type while expecting the legacy behaviour.
+
+Behaviour is therefore unchanged for every existing 32-bit ARM IOMMU
+driver:
+
+- exynos-iommu, omap-iommu, rockchip-iommu, msm_iommu, ipmmu-vmsa,
+  mtk_iommu*, sun50i-iommu and qcom_iommu have no ->def_domain_type,
+  so iommu_get_def_domain_type() returns the unchanged cur_type of 0,
+  which is forced to IDENTITY as before.
+- arm-smmu returns IDENTITY for legacy bindings and 0 otherwise, which
+  ends up in the same place.
+- tegra-smmu returns IDENTITY explicitly, and keeps doing so until a
+  later patch.
+
+Also move the static_assert on the two DMA API implementations being
+mutually exclusive to drivers/iommu/dma-iommu.h, next to the
+declarations that depend on it.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
- arch/arm/mm/dma-mapping.c | 25 ++++++++++++++++++++++++-
- 1 file changed, 24 insertions(+), 1 deletion(-)
+ drivers/iommu/dma-iommu.h |  3 +++
+ drivers/iommu/iommu.c     | 20 +++++---------------
+ 2 files changed, 8 insertions(+), 15 deletions(-)
 
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index f2d3e8ec3487..d6315baeddb9 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -1761,13 +1761,33 @@ EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
+diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
+index 71b23cb698c0..24fa4165450f 100644
+--- a/drivers/iommu/dma-iommu.h
++++ b/drivers/iommu/dma-iommu.h
+@@ -12,6 +12,9 @@
+  * IOMMU_DOMAIN_DMA default domains. Only one provider can be compiled in at a
+  * time.
+  */
++static_assert(!(IS_ENABLED(CONFIG_IOMMU_DMA) &&
++		IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)));
++
+ #if defined(CONFIG_ARM_DMA_USE_IOMMU)
  
- static void arm_setup_iommu_dma_ops(struct device *dev)
- {
--	struct dma_iommu_mapping *mapping;
-+	struct dma_iommu_mapping *mapping = to_dma_iommu_mapping(dev);
- 	u64 dma_base = 0, size = 1ULL << 32;
+ #include <asm/dma-iommu.h>
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 5fbb76d44a1e..0d812c4b9f08 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1884,18 +1884,6 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
  
- 	if (dev->dma_range_map) {
- 		dma_base = dma_range_map_min(dev->dma_range_map);
- 		size = dma_range_map_max(dev->dma_range_map) - dma_base;
- 	}
-+
-+	/*
-+	 * An existing cookie means the core owns the domain. Only set the
-+	 * per-binding DMA ops. IOVAs are allocated from the whole aperture,
-+	 * so the device's dma-ranges must cover it.
-+	 */
-+	if (mapping) {
-+		const struct iommu_domain_geometry *geo =
-+			&mapping->domain->geometry;
-+
-+		if (dma_base > geo->aperture_start ||
-+		    dma_base + size < geo->aperture_end) {
-+			dev_err(dev, "dma-ranges do not cover the IOMMU aperture\n");
-+			return;
-+		}
-+
-+		set_dma_ops(dev, &iommu_ops);
-+		return;
-+	}
-+
- 	mapping = arm_iommu_create_mapping(dev, dma_base, size);
- 	if (IS_ERR(mapping)) {
- 		pr_warn("Failed to create %llu-byte IOMMU mapping for device %s\n",
-@@ -1792,6 +1812,9 @@ static void arm_teardown_iommu_dma_ops(struct device *dev)
- 	if (!mapping)
- 		return;
+ 	lockdep_assert_held(&group->mutex);
  
-+	if (!mapping->owns_domain)
-+		return;
-+
- 	arm_iommu_detach_device(dev);
- 	arm_iommu_release_mapping(mapping);
- }
+-	/*
+-	 * ARM32 drivers supporting CONFIG_ARM_DMA_USE_IOMMU can declare an
+-	 * identity_domain and it will automatically become their default
+-	 * domain. Later on ARM_DMA_USE_IOMMU will install its UNMANAGED domain.
+-	 * Override the selection to IDENTITY.
+-	 */
+-	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
+-		static_assert(!(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) &&
+-				IS_ENABLED(CONFIG_IOMMU_DMA)));
+-		driver_type = IOMMU_DOMAIN_IDENTITY;
+-	}
+-
+ 	for_each_group_device(group, gdev) {
+ 		driver_type = iommu_get_def_domain_type(group, gdev->dev,
+ 							driver_type);
+@@ -1913,11 +1901,13 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
+ 
+ 	/*
+ 	 * If the common dma ops are not selected in kconfig then we cannot use
+-	 * IOMMU_DOMAIN_DMA at all. Force IDENTITY if nothing else has been
+-	 * selected.
++	 * IOMMU_DOMAIN_DMA at all, unless this is ARM32 and the driver asked
++	 * for it explicitly, where CONFIG_ARM_DMA_USE_IOMMU provides the
++	 * implementation. Force IDENTITY if nothing else has been selected.
+ 	 */
+ 	if (!IS_ENABLED(CONFIG_IOMMU_DMA)) {
+-		if (WARN_ON(driver_type == IOMMU_DOMAIN_DMA))
++		if (WARN_ON(driver_type == IOMMU_DOMAIN_DMA &&
++			    !IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
+ 			return -1;
+ 		if (!driver_type)
+ 			driver_type = IOMMU_DOMAIN_IDENTITY;
 
 -- 
 2.55.0
