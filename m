@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB59409279;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BABB3E558F;
 	Fri, 16 Oct 2026 09:46:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792144005; cv=none; b=BOGIehIytrx8z0cLP1+QDq6w3Kl3MQkaRKgj+lwLDpJY+IdROouWME1nWTmXFWJBOMw8pEIS3wEANpMY5lSQkIBt9ktsPQZqzoaBDBuRbmx1jtXU66ttoqLo74jaMkeeIebTRoztG4q19izsuOlDW3xRzGTUGtrcSGYOUCUbBJY=
+	t=1792144005; cv=none; b=nVvoZY9++uqM52jGfn+6MpRXInOPjEsnkpwU0CP4sjsabz4BVOv5YQR0Ifq3gUVGfJ9zQ8NoIWtLqofmW+QGUWt9guocTj/zrUdmjk9a2ZAYRyJX/poJkB+vDzLr7rX5LJzAFaflpyvG2meqRPEIPvq5pFuMpUKPPfgiHhyz6Tg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1792144005; c=relaxed/simple;
-	bh=POI86Emv7LXTXvwaaJBvK12dMOj7PnyouyYL3O/OxHs=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=aK8G4rAGxl3OPcyiQ0g/V8pcK64YSZMwXQso3UKrlXcJ8bzAZuSnjGHEhFOoBtL/EiwaxHujH8ccG7DeWwBP0TgZA7L8qfMaC12pxuv6sjd3sy8DsqE8D3h69Oc50SnwT/wxzp/uE05mTpCq+RziOYSYqziGirshf55PwUAqHPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q2nz0b/t; arc=none smtp.client-ip=10.30.226.201
+	bh=WN8ne8APJSKDOBLbnZQKiIgT1j4FX2dGzt2uRPetLwk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=DAN82xHrH/79gYtguf8p+Ey4R6m4x5Q77z+oHQ8XP7uC/7TYXMjS5Z6fvq21aqooK1/mpvTOHpeqCmCkrMU9gA3mSBFNed/LYyc/KDRPf4bOEsaGBHyrmwyrzSXEtxqzjSFni7wrudAWKO5N8+8TWu90wgyEAo24IeP4B3vSDgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JoywHDUb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q2nz0b/t"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E474C2BCF5;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JoywHDUb"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4DAFBC2BCFB;
 	Fri, 16 Oct 2026 09:46:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1792144005;
-	bh=POI86Emv7LXTXvwaaJBvK12dMOj7PnyouyYL3O/OxHs=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=Q2nz0b/tXJv8DFUCbYs8UIB6ZeD79wS5SliZ/dDLNDR1YkSUwk0ZHedgKJbzImhj8
-	 zM1F2pIB+Fgc3Xdp04U8DwO3Xh+EqaAowMKe7oz1sR6yoMuM6CCi6oZQy4cifDEKxz
-	 s5ESrsW4QoDbRrHbQBg6MWDaxq6vFqeOTsIuHBzk8NtH5TzrgTsvUn0KfAODLRNhLe
-	 qV5IbqQLXo7k1F/Woxdlu0etxzoWuI5/mLEYUHH2x93pltZr/Hu5AeJBnT1EBXb8qu
-	 7NRW+5oB4jky3csF28WJJJrVK543FLs4JMdHQRyG8J0K02+kZzeStsENJ63rwxGL8m
-	 QrM2uzQK5uxjQ==
+	bh=WN8ne8APJSKDOBLbnZQKiIgT1j4FX2dGzt2uRPetLwk=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=JoywHDUbBTIXhVgObe6+aS0RoLo4ClD6bdr4JQhQqy0ZJJmt0q+na2AI7VpyBvH+/
+	 afzsUpgU5JK5+fmriEddiVYFFLp/zIv8cjhTs17tOS9vME/EHE3MTTXbVbeF1td5PT
+	 PDFKoB9UTBMehdWYcm/W4clDpb92qQoZNMS/OQ1oYc+Ew8ttXJe+CGV/SeEfhnh9Xt
+	 Tyg8HQ+bQJR0OUsZxpAGXhhc9oN3+o2aIaSoVv9TEjCFTDok+h4rstoqhZmmwEBiky
+	 I1rfAgiNvvuJeR3DWMQVpIjnArJ1qf0lQG68cTo4QPESKCB9mrUDsgvqK/jzzzj0RN
+	 FUjkwej4aGSzA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C156CCA464;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D152CCA48B;
 	Fri, 16 Oct 2026 09:46:45 +0000 (UTC)
 From: Ishu Brar via B4 Relay <devnull+patches.brar.si@kernel.org>
-Subject: [PATCH 0/2] iommu/arm-smmu-qcom: Add SM7250 support
-Date: Fri, 16 Oct 2026 15:16:39 +0530
-Message-Id: <20261016-smmu-sm7250-v1-0-e11fc0384cfa@brar.si>
+Date: Fri, 16 Oct 2026 15:16:41 +0530
+Subject: [PATCH 2/2] iommu/arm-smmu-qcom: Skip PRR setup on SM7250 GPU SMMU
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,10 +40,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzNDA0Mz3eLc3FIgYW5kaqBraWqekmZglGJpZGGsBNRRUJSallkBNi06FsI
- vLk3KSk0uARmhVFsLAG6DOrFvAAAA
-X-Change-ID: 20261016-smmu-sm7250-957df02d9283
+Message-Id: <20261016-smmu-sm7250-v1-2-e11fc0384cfa@brar.si>
+References: <20261016-smmu-sm7250-v1-0-e11fc0384cfa@brar.si>
+In-Reply-To: <20261016-smmu-sm7250-v1-0-e11fc0384cfa@brar.si>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
  "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
@@ -53,11 +52,11 @@ Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-arm-msm@vger.kernel.org, Ishu Brar <patches@brar.si>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1792144002; l=976;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792144002; l=1110;
  i=patches@brar.si; h=from:subject:message-id;
- bh=POI86Emv7LXTXvwaaJBvK12dMOj7PnyouyYL3O/OxHs=;
- b=z/jR/8mzWoN9+ulva91kznpd3Hm8A2A5JQJ6+dwPb9j9/g7oKoOMZAFiIq84ALgiwuk32Pa0t
- cdd324JFkduBwMLbMg5TURPTgYHTEUioKE8q+KrMkRliT8lGl5/9hRp
+ bh=VF/mGbM1EJsewrS92EWhHwKM9QYUxif31RQPsJ22WkY=;
+ b=MgCQW+q+gdFxZtCWsk0t82jYnAc0w2/vWkXnNsoCO55m+Zt6MIUZx590bsXBO94tK74UYRbTg
+ nMtTRX6V0tsDmJoW4NKUgkU3htbhLWlIwJGie3sIh3NVX6sdywqjsP2
 X-Developer-Key: i=patches@brar.si; a=ed25519;
  pk=Ds+E23E3ntzjPzuBDyVRkOouclcNI5k75R+N42yJtCk=
 X-Endpoint-Received: by B4 Relay for patches@brar.si/default with
@@ -65,32 +64,34 @@ X-Endpoint-Received: by B4 Relay for patches@brar.si/default with
 X-Original-From: Ishu Brar <patches@brar.si>
 Reply-To: patches@brar.si
 
-This documents SMMUs of Qualcomm SM7250 (Snapdragon
-765/765G/768G) and skips Adreno SMMU PRR setup on it.
+From: Ishu Brar <patches@brar.si>
 
-As on SM8250, firmware resets device when PRR registers are
-written, which happens as soon as GPU creates its first per-process
-pagetable. Patch 1 adds the compatible to binding (apps SMMU and GPU
-SMMU). Patch 2 excludes it from PRR callbacks.
+As on SM8250, the firmware on SM7250 resets the device when the Adreno
+SMMU PRR registers are written. This happened as soon as the first
+per-process GPU pagetable was created. Do not install the PRR
+callbacks for the SM7250 GPU SMMU either.
 
-Tested on OnePlus Nord (SM7250) with Vulkan on Adreno 620. The SoC
-devicetree nodes are not part of this series.
+Tested on a OnePlus Nord (SM7250) with Vulkan.
 
 Signed-off-by: Ishu Brar <patches@brar.si>
 ---
-Ishu Brar (2):
-      dt-bindings: arm-smmu: Document SM7250 SMMU
-      iommu/arm-smmu-qcom: Skip PRR setup on SM7250 GPU SMMU
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 3 +++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c            | 1 +
- 2 files changed, 4 insertions(+)
----
-base-commit: 7b7429c28ac01c8a2952225a4b8a742eec7359c3
-change-id: 20261016-smmu-sm7250-957df02d9283
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 795e8ec7e..55071eb03 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -394,6 +394,7 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 	priv->set_prr_addr = NULL;
+ 
+ 	if (of_device_is_compatible(np, "qcom,smmu-500") &&
++	    !of_device_is_compatible(np, "qcom,sm7250-smmu-500") &&
+ 	    !of_device_is_compatible(np, "qcom,sm8250-smmu-500") &&
+ 	    of_device_is_compatible(np, "qcom,adreno-smmu")) {
+ 		priv->set_prr_bit = qcom_adreno_smmu_set_prr_bit;
 
-Best regards,
---  
-Ishu Brar <patches@brar.si>
+-- 
+2.56.0
 
 
