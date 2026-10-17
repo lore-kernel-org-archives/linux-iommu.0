@@ -1,171 +1,138 @@
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011046.outbound.protection.outlook.com [52.101.57.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E9A92F3C3D
-	for <iommu@lists.linux.dev>; Sat, 17 Oct 2026 08:19:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.101
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792225172; cv=none; b=oj97aiYzLUdmcrNRvd8ZztX3IMkvI73wcFnxGtxGIMup07XmVQ4CDk+rHiRxWhiWVCqRXl2Tu6uoSIWFj50DjIfVwh/NgwhgQ/NbxnT8ZM+abpM0et9bF+YnnCtVBnhnVrtIy+YKeU/M8UqykHClmHrPeWiv0KG0oJjPMdgWHic=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792225172; c=relaxed/simple;
-	bh=nB1z2FAlgkv6hwNiZtfd9WPOohxtypbsqIfn2C57yTk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=h5DqcD9UkGmycuGBb7I+cH5pX2oI9B/5IRYI+FlC1eKZgEpEA+kYWqJTKQcbLzsOA/8e0W3YK1rn8n5gvxFHx4GDYh+9+B+K6keVJ1+yr5kp1wJeDbT9Ae1M+ihmTI8JdNJrwbjCqov6hbiIQIXr9s8gfAct2ki7fFbhbQlutGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=ljXevt2J; arc=none smtp.client-ip=115.124.30.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E4FD3D3492
+	for <iommu@lists.linux.dev>; Sat, 17 Oct 2026 11:40:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792237233; cv=fail; b=tBEF7ok7mV88pBWxCTeVOlF+M5JFLcnYfEm+8AHpBsXRyP43+L0F4BMq0EF9idrZbpkE2LUysLgX+jfOErZR3K8Wy1cgzU7KV2D2udEgDaTKVaLqI0NY+GX6qlroHOY77HBRAlVaGmBtwCeBnF61gaa9iZl0G+WUWrc9FMrjEwQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792237233; c=relaxed/simple;
+	bh=rNkl/cwsFV0KZsYFk5EUTQpm1Sh80iTgT8Lz9pbwlds=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=D5tl/wYBmctsVHKnvtSZes2fzeyVcifoAa2gqKTfpKgEcY/M4MNQxmF7bPnVwp1e8OZxoZlP1IkXhYtr9Dj3TJKkksuCN2TCzzqBFMLcLBEBP2Ok1rtito0Vr+bByGB09pMp6lK+hPWfhOK4W+MJf6okKeKC5wKlV1fBh1QVOY8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=sm9cAx7S; arc=fail smtp.client-ip=52.101.57.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="ljXevt2J"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1792225163; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=Hm49MjoKdmBJeY4b0QFV0UuGDTjMKJ5IHpViY1jODFQ=;
-	b=ljXevt2JpsS6LzdN5elwHNcFrNJoHc8Ow7A7KkgnmGrkvcKPARHaqK3LUlshZqu63ZPrDHeGTgvWCIFGGu3e3Fxp4fdvNaGnxuBWFn8H8hkFtY7MfbBQafvYQb7E92Pbq1mwytI2nKvM433RdjFtmF149kW7TEocC+vQTOzJj08=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R871e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0XCwojoQ_1792225161;
-Received: from 30.28.50.44(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0XCwojoQ_1792225161 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Sat, 17 Oct 2026 16:19:22 +0800
-Message-ID: <27f2e050-10c0-4a77-8d59-00a95a162912@linux.alibaba.com>
-Date: Sat, 17 Oct 2026 16:19:20 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sm9cAx7S"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ehXjVZLVydIENP10GfqYZhnP3fDRSlYNpiUHhYKPyH21nO9a2xSjUKrWAFtnHC5yWUTO2HWPV7s8r1fFExfxDqfxjzZync6g/6a8Gk5KshHGl4lOVTVrXLBdFGNlVMoXOPFY5iqDWuLNmYT32aePrVuzvr+aNeBuXv6ndQHValm/Pa9mVh5Wnkal7VVGpTYWdvMI7hH0DanpWvJKcG3W9OViz9bxLEH+b02hl0lmmtAFmOTDELSRgQUGbjzK6VZ26WtZCywU7nkumVE4dFOuhmJNO3CQAJx42ELJp0d1PA3IvCaZt4ppOGN2ji8mVW0MVK/WPG97F+0YpnZc5jeWJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rNkl/cwsFV0KZsYFk5EUTQpm1Sh80iTgT8Lz9pbwlds=;
+ b=qGMqt7nPJMiqSLpZXQuqF3aUXRmQ1dM4kMZnF1kX0YY0xEF15lHHq9L/vCBs4l3qQa39oIAgH2RaKRzDGoeY5Ji+kSFqBf1sVmYbJtC7VSx/hbDtWzcuvEGLl094zuL6U9M9o6zfRr8HthsMdrgrsDeWjucAtniopXgcxXZxm8cXat9q68+IgUAjOYUHHxi2s3JRHpLqTKQcAwafr66k0jr1Jgdd6x1uNx8vCTbjn8aPoSWDw/pxVCrebbzZZK1arKTIiHT9kMnIjAIZH1XFxQITe1pTXrZXhOCzqU6jpdpp65H9ArR7LAj2HC2gyEXE9ojah8PaYEDHC02qysaMig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rNkl/cwsFV0KZsYFk5EUTQpm1Sh80iTgT8Lz9pbwlds=;
+ b=sm9cAx7SEXCL9jLdk7tlAItAyslkJH/GIeu2wOWyw+NDJvvNjAwciY6LuLWPfEdLQZb+LHPbnnL3fGG7SGV/SJttsZIWE/dzs6Y19MMDpwVQx37Dklo8ht4eRBZ6EONnxk7Du3fuUti5wilEGXC+A+JWfOgFzG1QJyefzYnJrdEuFlCse2fdr7n2KsOn1KoTi2mazmKSuLEIpVh9/HFAxaR18NTkEic9SIEXTbxwiEyzFnmm2qos0X+opfzvIecNtmPMr6Oo4EHrYyiKPv6Cq02GlLdB7Ks3Zw4qBKpp4v+UgDZSstVBpJmlVR82NRfl7xvRtMWr4vSz3sMjxOdyWw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by MW6PR12MB8914.namprd12.prod.outlook.com
+ (2603:10b6:303:244::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.17; Sat, 17 Oct
+ 2026 11:40:26 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0522.017; Sat, 17 Oct 2026
+ 11:40:26 +0000
+Date: Sat, 17 Oct 2026 08:40:25 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Shuai Xue <xueshuai@linux.alibaba.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, praan@google.com,
+	kevin.tian@intel.com, smostafa@google.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, jamien@nvidia.com, kas@kernel.org,
+	Cristian Prundeanu <cpru@amazon.com>,
+	Breno Leitao <leitao@kernel.org>
+Subject: Re: [PATCH v11 00/11] iommu/arm-smmu-v3: Adopt the crashed kernel's
+ stream table for kdump
+Message-ID: <20261017114025.GL13920@nvidia.com>
+References: <cover.1791226953.git.nicolinc@nvidia.com>
+ <27f2e050-10c0-4a77-8d59-00a95a162912@linux.alibaba.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <27f2e050-10c0-4a77-8d59-00a95a162912@linux.alibaba.com>
+X-ClientProxiedBy: YT4PR01CA0301.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:10e::10) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v11 00/11] iommu/arm-smmu-v3: Adopt the crashed kernel's
- stream table for kdump
-To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org
-Cc: robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com, praan@google.com,
- kevin.tian@intel.com, smostafa@google.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, jamien@nvidia.com, kas@kernel.org,
- Cristian Prundeanu <cpru@amazon.com>, Breno Leitao <leitao@kernel.org>
-References: <cover.1791226953.git.nicolinc@nvidia.com>
-From: Shuai Xue <xueshuai@linux.alibaba.com>
-In-Reply-To: <cover.1791226953.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|MW6PR12MB8914:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4d6f9fdf-a3aa-4b6d-dc6d-08df2c43701c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|366016|1800799024|23010399003|56012099006|4143699003|11063799006|10067099003|18002099003|22082099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	vMgX5T7kEhKxztKbwl3y1isAeqbz6eTTPoDkQ84nTjldbeJrN9dvb24CXz81U6x8C7lXL6YFWSIQue28oB+Hamf+xLXu76SmIZkNxxHpCFVbUbX8unU30Kj0SZ3McLdJAwPtLFAIMsmX49hWAjw/W69XcgRmAEEypTHEVcrbm0cHV2fLVLC002cvBIIwzT063gQBe+JsB6Tl3nAV1zHGcXecWCJ29lFoiFRoQ7mWQvvbX411QXNQdll7BhSZ2veDkAFvW+JR+ObSchtYjqFLVxKGBEpTg6EI/8hpJ/250kt0J8plAZ7Cr7B14scOAYy34Tpsg0c9amCSMM80y4uhk8ucWMV3djjF16fuDSWtsu2UtTx6nOfKQj7iqsAMBdPFMsDHJgwPliE+KLHz5WuRc8CDc/SvZcdXy10xSEawEuNSvU7FU/5JDOqnAzMNFMAMcpkJXIvLrR+y+UCiiMq9927KfTThlhRBk9pefHZX/U/pWimOs/r3MCWZTtTtiP5Z7r9rLzYal8CA+l2rmILzinxQIGH2lJJv1a08nCWzM1payHko+2x8B7q8XV91BnbvRVAobroJbRT51LWCQsatA4raJuoaAVNtLys4vfGXEcCSWg6MnhgVv2Uk2ttRF36Ze2seuKv6U7SXiLfzgXbJJajRnJj/YR9/nIiJScPF4RI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(23010399003)(56012099006)(4143699003)(11063799006)(10067099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?jazau589mUeO2nNC9SbH69bQc2blX0rlk3Jz4VL+F+cmtfUUbmrcAhhLQlIs?=
+ =?us-ascii?Q?42IRSOsJG/jK0qEQvz1mEvzCQSGUahHH/vfCoHcFkcqWzA3qwwow4CY8dbEW?=
+ =?us-ascii?Q?KwhnD3tnvvqcMxVnyJ/NpO33SnIHB06UyjUwTxtt38OHRs8FcE+EfGeaN8ms?=
+ =?us-ascii?Q?XTlB0SjX17LQImMhI7FoDWqFokPuZSWbXKfysW56gqh7Z87OfGOTUHqOaqyV?=
+ =?us-ascii?Q?XeOxeE7DavmYL85jVugCvxZ0clZXtBW7Ru9TKBzn/CO7Ii/cjdd8fMGjfbM8?=
+ =?us-ascii?Q?bs6o8FJHydtH7e9FFZNtEpYtXK/G56v92T+KK4hl9TEFiZkzVYBE5mM/BwxT?=
+ =?us-ascii?Q?a9yifjfyhz7/zMHf4qJTqVyf+PxdQnbacfucWrqQBKbWsiYmihj8siXlKNZo?=
+ =?us-ascii?Q?Ho5Rj45K7my+0KdogU9eArvNFT39t0wbc+938eIMb1cf958c4MVBxd7XC0d4?=
+ =?us-ascii?Q?u/T2lLdrm+rK6FTWUc6yNYwf7OOA9yOF+eOWoRkj1m2O6Qg4kgb/rV2tGDdI?=
+ =?us-ascii?Q?9SBvLOLSSqRrq3a8/0iaB2wVk+2XJaKVx3ttlEIpv4OFOMJ/986ojEaMkGHY?=
+ =?us-ascii?Q?PXRKwYg6611g2YwefVgMQORH0n79mR0O70IrSgP0EBIwdIPIq/IpUmw6Vl7W?=
+ =?us-ascii?Q?Lt7cTaPg/OKrU7g/t5tsXlrhPu6sW246OaSJcwLBwRMtuFILQm7e+r3ru8l1?=
+ =?us-ascii?Q?tTBUuT4+47aA5Of5lNTIjhHkPRgcCTZu4X8fwz3ztTcWw/w9nQc3wAJgpEG+?=
+ =?us-ascii?Q?mKo3fMFGFpJFpwJQxPrh8zwKELCRulE+YZ8XZ/jAwv78NR3QRRHIbrvJBrz8?=
+ =?us-ascii?Q?DjjH7ibfvbA/2ANU4KEYwPdFmUIFSQ7ZXtMGDXWCb0zLyDPkoN9AEb+CPDy2?=
+ =?us-ascii?Q?QtHmgRnECa1QWmaTU3yPuqoYRJCiPlmdghn6BEeO1Se8Y5hphvKBg/8FiMMW?=
+ =?us-ascii?Q?XL5NOUqxXy5s0uENUcLQw68vx3c4Qv57Z9+eXGiAXQVNFHnPTphtqu5X1y7e?=
+ =?us-ascii?Q?PW3fMlwSW6Lt2Eyju+BaXMU6wTxp8FW/n0LPVJc4ufzAb9fyfGiXRj+IBcE1?=
+ =?us-ascii?Q?DE5aOWhsDCY4BgJnqFslrum6Lb/QvpcFQqP804H3ED/4Tm4sIBtKB0jcqPe6?=
+ =?us-ascii?Q?k6+SBLR/O2Cz+SnC9yJEpSYd+nlIDFB00zXCEZSHZiVPgVzBJOMJFTwqC32L?=
+ =?us-ascii?Q?jrGlUEoXhGtNQ1IWGsGU3Klg2dyCBIo2yiE+XUW+lC0wNBrT9P2Kh6lBuM9T?=
+ =?us-ascii?Q?kmx7R17iNgkIFOjH7pC5uAx6u1AEFyWMbcfLQEJvAOdBdpmLCv3m+/AcpUqY?=
+ =?us-ascii?Q?r0qAHP4SpU1Fp4i/51K91cJsmOvn8lJPW5zipzCPH7PqKRNW/zfc2Yd63ajA?=
+ =?us-ascii?Q?uU9E87FZFD7roQxLyMvdhqUjcQqaJ4c3T35HgDNjf36UIaBX7QnOmcWhHj5D?=
+ =?us-ascii?Q?6hDPMXxi8UYFW6rbMrSnQanSnGaDKWf/pkFFX86KK+h/AW9zwR2BKtgagSpV?=
+ =?us-ascii?Q?K0I1bhR2DdUMOy3beOrRx18/gDcfW+9ie9eBjVIOanfi/zqE7PlZhTxXicrm?=
+ =?us-ascii?Q?0clx5UtRQLdfVH4UbpzOcxCyhlZx6u/b914ENdsHkrPI18XDkZyj9gIJWztO?=
+ =?us-ascii?Q?RzqbyNm+yprNTMEukjH6ZdzQLMEn7Iek2v3CfzEWzFD0quSKfei2awpWnFBL?=
+ =?us-ascii?Q?2NrF3dka3YziaWNgMWL1Svu/58cBBCjHsoVaeX7l4DcGosKX?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d6f9fdf-a3aa-4b6d-dc6d-08df2c43701c
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2026 11:40:26.6260
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3sddnaeRRz31Ay4rfuV65PL4hXS41uvXd7T6XXrvZm32mON7rLsDvic/RQJwUy2r
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8914
 
+On Sat, Oct 17, 2026 at 04:19:20PM +0800, Shuai Xue wrote:
 
+> We tested this series (v11, backported onto our 6.6-based kernel) on two
+> arm64 server platforms that differ in how PCIe errors are reported: one
+> with firmware-first reporting (GHES/CPER), the other with OS-first AER
+> plus DPC. The test triggers a kdump crash (echo c > /proc/sysrq-trigger)
+> on an otherwise idle machine and compares the capture kernel's dmesg
+> between the unpatched baseline and the kernel carrying this series.
 
-On 10/6/26 3:30 AM, Nicolin Chen wrote:
-> When transitioning to a kdump kernel, the primary kernel might have crashed
-> while endpoint devices were actively bus-mastering DMA. Currently, the SMMU
-> driver aggressively resets the hardware during probe by clearing CR0_SMMUEN
-> and setting the Global Bypass Attribute (GBPA) to ABORT.
-> 
-> In a kdump scenario, this aggressive reset is highly destructive:
-> a) If GBPA is set to ABORT, in-flight DMA will be aborted, generating fatal
->     PCIe AER or SErrors that may panic the kdump kernel
-> b) If GBPA is set to BYPASS, in-flight DMA targeting some IOVAs will bypass
->     the SMMU and corrupt the physical memory at those 1:1 mapped IOVAs.
-> 
-> To safely absorb in-flight DMA, the kdump kernel must leave SMMUEN=1 intact
-> and avoid modifying STRTAB_BASE. This allows HW to continue translating in-
-> flight DMA using the crashed kernel's page tables until the endpoint device
-> drivers probe and quiesce their respective hardware.
-> 
-> However, the ARM SMMUv3 architecture specification states that updating the
-> SMMU_STRTAB_BASE register while SMMUEN == 1 is UNPREDICTABLE or ignored.
-> 
-> This leaves a kdump kernel no choice but to adopt the stream table from the
-> crashed kernel.
-> 
-> In this series:
->   - Introduce an ARM_SMMU_OPT_KDUMP_ADOPT
->   - Skip SMMUEN and STRTAB_BASE resets in arm_smmu_device_reset()
->   - Skip EVENTQ/PRIQ setup including interrupts and their handlers
->   - Memremap the crashed kernel's stream tables into the kdump kernel [*]
->   - Reserve the crashed kernel's in-use ASIDs and VMIDs, preventing any TLB
->     aliasing with the kdump kernel's own domains
->   - Defer any default domain attachment to retain STEs until device drivers
->     explicitly request it.
-> Most of the new code is in arm-smmu-v3-kexec.c. A hidden ARM_SMMU_V3_KEXEC
-> config symbol (def_bool CRASH_DUMP) controls its build.
-> 
-> The common helpers parse and walk the crashed kernel's stream/CD tables and
-> reserve its in-use IDs. The kdump code is guarded by CONFIG_CRASH_DUMP. The
-> helpers can also support the proposed SMMUv3 Live Update work:
-> https://lore.kernel.org/all/20260929071950.2710070-1-praan@google.com/
-> 
-> [*] For verification reasons, this series only fixes coherent SMMUs.
-> 
-> For non-ARM_SMMU_OPT_KDUMP_ADOPT cases, keep a status quo since the commit
-> 3f54c447df34f ("iommu/arm-smmu-v3: Don't disable SMMU in kdump kernel"):
-> full reset followed by driver-initiated reattach, potentially rejecting any
-> in-flight DMA.
-> 
-> Note that this series is no longer treated as a bug fix, since it has grown
-> fairly big and most of the kdump code now resides in a separate C file. For
-> folks interested in back-porting the change: a v6.12+ kernel (since commit
-> 85196f54743d ("iommu/arm-smmu-v3: Reorganize struct arm_smmu_strtab_cfg"))
-> would be still compatible with this series.
-> 
-> This is on Github:
-> https://github.com/nicolinc/iommufd/commits/smmuv3_kdump-v11
-> 
-> Changelog
-> v11
->   * Rebase on arm/smmu/updates branch
->   * Add Tested-by from Breno and Cristian
->   * Add Reviewed/Acked-by from Jason and Kiryl
->   * Update commit messages and Assisted-by tags
->   * New prep patch: swap EVTQ/GERROR MSI indexes
->   * Skip EVTQ's CFG0 write and vector allocation
->   * Merge arm-smmu-v3-kdump code into arm-smmu-v3-kexec
->   * Fold patches accordingly as static functions require callers
-Hi Nicolin,
+Thanks, this is a nice description of the challenges server type
+systems face!
 
-We tested this series (v11, backported onto our 6.6-based kernel) on two
-arm64 server platforms that differ in how PCIe errors are reported: one
-with firmware-first reporting (GHES/CPER), the other with OS-first AER
-plus DPC. The test triggers a kdump crash (echo c > /proc/sysrq-trigger)
-on an otherwise idle machine and compares the capture kernel's dmesg
-between the unpatched baseline and the kernel carrying this series.
-
-On the firmware-first platform (10 SMMUv3 instances):
-
-   Unpatched, every SMMU logs:
-
-     arm-smmu-v3.0.auto: SMMU currently enabled! Resetting...
-
-   and the destructive reset immediately aborts in-flight DMA. The capture
-   kernel then drowns in a storm of GHES/CPER records together with PCIe
-   AER "Poisoned TLP" (Data Link Layer) errors from the devices that were
-   bus-mastering at crash time. Devices behind the reset SMMUs fail to
-   recover in the capture kernel, and in some runs the capture kernel
-   hangs in the error storm instead of saving the vmcore.
-
-   With the series applied, all 10 SMMUs log:
-
-     arm-smmu-v3.0.auto: kdump: retaining SMMUEN for in-flight DMA
-
-   and the capture kernel boots with zero AER/GHES error records. A
-   complete vmcore is saved and the machine reboots normally.
-
-On the OS-first AER/DPC platform (8 SMMUv3 instances):
-
-   Unpatched: 8x "SMMU currently enabled! Resetting..." followed within
-   seconds by PCIe AER Completion Abort errors reported by the root
-   complex, along with DPC containment events and EDR notifications. The
-   NICs behind the contained link never recover in the capture kernel.
-
-   With the series applied: 8x "kdump: retaining SMMUEN for in-flight DMA",
-   no PCIe error events at all, a complete vmcore and a clean reboot.
-
-The baseline symptom is load-independent: it reproduces on idle machines,
-since even an idle server has periodic DMA in flight (NIC rings, NVMe
-admin queues, etc.).
-
-Overall, on both platforms this series turns a capture-kernel boot that
-used to be buried under fatal PCIe error storms into a quiet one that
-reliably produces a usable vmcore.
-
-Please feel free to add:
-
-Tested-by: Shuai Xue <xueshuai@linux.alibaba.com>
-
-Thanks,
-Shuai Xue
+Jason
