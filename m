@@ -1,170 +1,144 @@
-Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011050.outbound.protection.outlook.com [40.107.208.50])
+Received: from enforcer.machelett.com (enforcer.machelett.com [85.25.207.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A89E3B813A
-	for <iommu@lists.linux.dev>; Sat, 17 Oct 2026 18:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.208.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792263180; cv=fail; b=etHC3d7NZgCsn0TkmcK+J8KM8m1LPPaFNjnWr1ls0FMZM2Rne5H82PFJXozUyNH1bqBr88Y1SgvtVsilorijnEenXfpmM37clIbVVI3EjVSvmFJQpUPeUvQdI4m7MgFEuS2NlDT9uBRW++YCGjxJTmPbv7avTnyntX5weVMmDm8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792263180; c=relaxed/simple;
-	bh=fRjqPKHGPYYWwIQKbhIQe4YUC72OBJb2LsnJJO0D4EA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IGtszSV4G7laJjFIJ/YA0wKn1o2Hjc8R+TGaY7/vKEWVVGizfKAwxkuoABgdUhkS0EFdaXU7aQCRXSD6svUUzKIAPZmgYV73PjmlnL874DEYxEww3iJS1iU11z6B9cXosiuZcnfDjoXYk1Jl/pb/R6NAcsICVJoXj7nIbVagiBM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ULXkPGq+; arc=fail smtp.client-ip=40.107.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCABB155757
+	for <iommu@lists.linux.dev>; Sun, 18 Oct 2026 01:56:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.25.207.147
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792288567; cv=none; b=EaqDwg7eRUZxpT1zaWdViPf7DuXr82qZj0hclF38oK7FKQzgKp4O8zIoLtWdyqHCJdQi6eadtN9Ld0Zj8e7wmmp2+9rk7k0LUHmGZMHljdGrO1MlnFhZq+NYCITRgD8gEIofvvfVWc55toy2iFO+Bpx138sIEC89vAJjaaYrcds=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792288567; c=relaxed/simple;
+	bh=INkyGhxuf2ncKMV1C63Lpz06FWz77n//VGCaeT7Jyt8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=TTazzseNyow0sUJpXVbuknmPQJNtf00iugnPOdEc+jbN6lw2XkvZv50SMZGC1u8hTJELY2XHU3T1sg8604+Dgi6JpjWN231FAgq5vr792RCo0jZOpnfqvIG3BTZTdTeZK/9+mdRLRR+5dRuiZ/3NFmFGEZllqjx3FiNJgjxTxjI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=machelett.com; spf=pass smtp.mailfrom=machelett.com; dkim=pass (1024-bit key) header.d=machelett.com header.i=@machelett.com header.b=L3vTUUAv; arc=none smtp.client-ip=85.25.207.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=machelett.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=machelett.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ULXkPGq+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SOtauT+41YUPIDGcnPR48TmjHAp8ZZ7eGxE8zC1yC2hKG3dZVIPIs70eGpyw6UROLWdLSn4oXjOjZ8aR2dPZsIANrhAF1q80lPaxPxWTeh5UxKoNXZB0lX8q9MOKIorpTouMgCUCmgR9qfGhdpEME6eLc48gXVKT3VDF1B5hQQ/GotmOpS4+0+0m7bO6sMqo5vRO0wx7slUh6pJBt77CVxF+VySkho0xrkfyp1C/f5qi/f3SMwrALj53TzjDfmk0ut9VsnWPWWE2glEW73M2Bo6eqeuUzKBHJOIxuviM+uluhK6mSyDuPNIfx0LuLvvWnXKHB49gRxH/TBTWWt8gvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fnG1IHbKdrW5+1vo0oRNSVva4D3AZOkREuzQNjGzOQQ=;
- b=e0vT2W9Ex53WmycrAcotrx6F1UkdYWwKumNWRs/qHBScoOOThpNLktaUqEcQ2qqtvFtf/bYRUl0sWCTvDpJnLuWstYwWMNw43ri6oak0z2YH4626umhiV1QeD6a1sE1LhMCI//kZ9rytO/t/aX4xH4iilCrbDkCgdkJcq3xlZvg2ugD/YGzHFH+Hm/N7SUJ2CaHNlP+RG2lUJ30a+Jm/hokvG/ovBE7zJUgT5QnRcvPp9ogJdJugYY5M0zZhZ1vMnW5PVb1XD6GjG/CFNbFb0UnWaWjRxDoS1HSNMru2SaNCNN3hJADGSaFae3kKYrdzWhrIkUiJZnEkMI9SK5zTSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=linux.alibaba.com
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fnG1IHbKdrW5+1vo0oRNSVva4D3AZOkREuzQNjGzOQQ=;
- b=ULXkPGq+nWguu9U8G6cBRE41jRRuvsCdmfAPXmWTZU5o6ba1b7wLqtAJICo4CnNpZiHyeURO4CBo0+w0mKu3eRRo8J+kJ7n7GYBi5z9PtwBYppZCgtAGOT7QOe4jlwaPq9vhX5u7CNhYi+aDVNipuoenYPmVpWDhVACzoa/DhZSFyK56iOsxlRkUMalcACNJIrPFdE8twhLCeKFPSdyIy1FZd2rTuNKxBLtPTquzFZyP7x6AxYfD6HKoxH2Aq+A5YdQk84V883revaB8QgMgKVyxdQQc0NbM3aeuoyBOla0mfaVkjZWLcdd4oeqvGmQ4L4Hhs/TKmLmOwpilVt5RsA==
-Received: from PH7P221CA0058.NAMP221.PROD.OUTLOOK.COM (2603:10b6:510:33c::28)
- by PH7PR12MB5951.namprd12.prod.outlook.com (2603:10b6:510:1da::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.472.20; Sat, 17 Oct
- 2026 18:52:52 +0000
-Received: from BY1PEPF00026964.namprd05.prod.outlook.com
- (2603:10b6:510:33c:cafe::a3) by PH7P221CA0058.outlook.office365.com
- (2603:10b6:510:33c::28) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.522.4 via Frontend Transport; Sat, 17
- Oct 2026 18:52:52 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.118.233) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BY1PEPF00026964.mail.protection.outlook.com (10.167.244.148) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.522.6 via Frontend Transport; Sat, 17 Oct 2026 18:52:52 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Sat, 17 Oct
- 2026 11:52:51 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Sat, 17 Oct 2026 11:52:51 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Sat, 17 Oct 2026 11:52:50 -0700
-Date: Sat, 17 Oct 2026 11:52:47 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Shuai Xue <xueshuai@linux.alibaba.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jgg@nvidia.com>, <praan@google.com>, <kevin.tian@intel.com>,
-	<smostafa@google.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, <jamien@nvidia.com>,
-	<kas@kernel.org>, Cristian Prundeanu <cpru@amazon.com>, Breno Leitao
-	<leitao@kernel.org>
-Subject: Re: [PATCH v11 00/11] iommu/arm-smmu-v3: Adopt the crashed kernel's
- stream table for kdump
-Message-ID: <atPD/yTKA1Jw3bS1@nvidia.com>
-References: <cover.1791226953.git.nicolinc@nvidia.com>
- <27f2e050-10c0-4a77-8d59-00a95a162912@linux.alibaba.com>
+	dkim=pass (1024-bit key) header.d=machelett.com header.i=@machelett.com header.b="L3vTUUAv"
+Received: from localhost (localhost [127.0.0.1])
+	by enforcer.machelett.com (Postfix) with ESMTP id 2D622390090A;
+	Sun, 18 Oct 2026 03:50:11 +0200 (CEST)
+X-Virus-Scanned: Debian amavis at machelett.com
+Received: from enforcer.machelett.com ([127.0.0.1])
+ by localhost (enforcer.machelett.com [127.0.0.1]) (amavis, port 10024)
+ with LMTP id sn6cLzKLxH78; Sun, 18 Oct 2026 03:50:11 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=machelett.com;
+	s=mail; t=1792288210;
+	bh=20lCdNjxVdddOU0IEUN1YmUFTYoS9csqiMmSnMvdXgk=;
+	h=From:To:Cc:Subject:Date:From;
+	b=L3vTUUAvM8z686HP1Axx4v3x8P7W9APknz0xsvs1zYT66f3Z5VPRLSDCSUE4JfPdc
+	 mAuKIK2l+Qykk7s5P8J9eZ9PF90A5KtFxAFDJC++vwWpF0mFfzWhPA44YUq5GkYzIa
+	 5JhQXiuIdNk0WUNhE0qBR6kf4f+TX6NpyfLWK63k=
+Received: from RAIDER (ip-037-049-016-046.um09.pools.vodafone-ip.de [37.49.16.46])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by enforcer.machelett.com (Postfix) with ESMTPSA id D1E3A39002C8;
+	Sun, 18 Oct 2026 03:50:10 +0200 (CEST)
+From: "Renato Machelett" <renato@machelett.com>
+To: <iommu@lists.linux.dev>,
+	<kernel-team@lists.ubuntu.com>
+Cc: <robin.murphy@arm.com>,
+	<baolu.lu@linux.intel.com>,
+	<joro@8bytes.org>
+Subject: iommu/dma: SATA RMRR reservation omission in shared group on HP Gen8
+Date: Sun, 18 Oct 2026 03:50:10 +0200
+Organization: Machelett Software & Consulting
+Message-ID: <02b201dd5ea3$02b88430$08298c90$@machelett.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <27f2e050-10c0-4a77-8d59-00a95a162912@linux.alibaba.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BY1PEPF00026964:EE_|PH7PR12MB5951:EE_
-X-MS-Office365-Filtering-Correlation-Id: c068e7dc-89b8-4488-eb35-08df2c7fd8db
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700016|82310400026|23010399003|7416014|376014|4143699003|56012099006|18002099003|22082099003|6133799003|11063799006|10067099003;
-X-Microsoft-Antispam-Message-Info:
-	nIbCEIq3wVML9+dCGxIYI3EwinKQcP0XZ4qmrXUiTF/YJmXHKQUssjrGx9vx1B6zLqm/mBl2nmVTYX5N8m910MkajryUGTRLCUfp5QXLhSXiw7lQW3Oa1cGWhknBN6Zmshzk09b0+PQBzSgukXmSk5RxO7fFolFFSnIupeefgrpgV3XEzz29QCr0V8IjSbUOJCmHf0aOBz6/u1cPTzxa2Ivokrotk75mkqsL6PsPhjk48xoSN6jmYfpfhMm78qlh/vFcibuXwypoJOYPFUFGXRTEikXxZJlQBIQMqmET3MAyOWuvFkDxHT6qByg0vKycOky0Sh2oetPRXDatQdIQAjepWebhR704J+WjVUxRLQf2YhWVx9MwOWv/ejtbx+r648IwFCkMGMMBrJYaujLjZsb7stHIonaEKRJ1dHApBiSH/n4y7WtjXC0oppn2isSwGIw+uy0dMZfS0r2ZDW609EQy3u7Vu0KVX6x/WLVCjw6OgDDtMgTtfR7DCaBk0FQmCgvg4RLe0dmTCKtV223xe5fRYIHdfAeRi08dpIte4Lm5135XyIaH336Y8hi+f8ld3+IZsySYYmKHRCGGYdgnDkXuv/HgM2J69jJFsgF/BBp5w1oSUN5ReWRDsabYStA/GaT7lkEMeuDxlSj+ukmQ79GgBFzpzbEnDybU3Y2E7tOnj9uuplHJwRJuCiBLqgBK8ckMMNlnsbMfhTlViKHxvg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700016)(82310400026)(23010399003)(7416014)(376014)(4143699003)(56012099006)(18002099003)(22082099003)(6133799003)(11063799006)(10067099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Y/2BpgpMVeCtGiTgQupv+bCDJRhQptll+bf64fDbZefIoMkcYZyAZjNRX6vmWSMiNavp8wFQlAu0QWH3TaZ4n9qPT6oS+Ps/AKxU2G+CAdlfh244TxSudtXAWME8LInkzQr2VTPoX2XZHhQJc97aRccS4UiMRiaeMljm8ZsfHnN4e+nX+juzT5I4pJY+x1MuiqnrRa/DyJ/LFj+BAo9VDzGYMe425eDYHA611TjKxqamVWhz5xtKGp9rtJoQl7H9XKipfoRBu4BHNT+WiUEaLRKuQKGHaukoUw7NGS0frUtPd2ThOG0gWGTDDSb25OlV3mMvr9m2FXc2pqQ8Wk/5PiiV56eJrfs/ZvXrOu16I2uvyrWmkAjJ2ftXEyIVsfD58Bx+6t/Sbg78SB2iu4SZTRjgfMRNvifV4yLJjd2z22FecOGAb45opFfXc0zBf2DT
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2026 18:52:52.0503
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c068e7dc-89b8-4488-eb35-08df2c7fd8db
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BY1PEPF00026964.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5951
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: Ad1eop9ftz9XZwIZQAC9DrEvO272kg==
+Content-Language: en-de
 
-On Sat, Oct 17, 2026 at 04:19:20PM +0800, Shuai Xue wrote:
-> We tested this series (v11, backported onto our 6.6-based kernel) on two
-> arm64 server platforms that differ in how PCIe errors are reported: one
-> with firmware-first reporting (GHES/CPER), the other with OS-first AER
-> plus DPC. The test triggers a kdump crash (echo c > /proc/sysrq-trigger)
-> on an otherwise idle machine and compares the capture kernel's dmesg
-> between the unpatched baseline and the kernel carrying this series.
-> 
-> On the firmware-first platform (10 SMMUv3 instances):
-> 
->   Unpatched, every SMMU logs:
-> 
->     arm-smmu-v3.0.auto: SMMU currently enabled! Resetting...
-> 
->   and the destructive reset immediately aborts in-flight DMA. The capture
->   kernel then drowns in a storm of GHES/CPER records together with PCIe
->   AER "Poisoned TLP" (Data Link Layer) errors from the devices that were
->   bus-mastering at crash time. Devices behind the reset SMMUs fail to
->   recover in the capture kernel, and in some runs the capture kernel
->   hangs in the error storm instead of saving the vmcore.
-> 
->   With the series applied, all 10 SMMUs log:
-> 
->     arm-smmu-v3.0.auto: kdump: retaining SMMUEN for in-flight DMA
-> 
->   and the capture kernel boots with zero AER/GHES error records. A
->   complete vmcore is saved and the machine reboots normally.
-> 
-> On the OS-first AER/DPC platform (8 SMMUv3 instances):
-> 
->   Unpatched: 8x "SMMU currently enabled! Resetting..." followed within
->   seconds by PCIe AER Completion Abort errors reported by the root
->   complex, along with DPC containment events and EDR notifications. The
->   NICs behind the contained link never recover in the capture kernel.
-> 
->   With the series applied: 8x "kdump: retaining SMMUEN for in-flight DMA",
->   no PCIe error events at all, a complete vmcore and a clean reboot.
-> 
-> The baseline symptom is load-independent: it reproduces on idle machines,
-> since even an idle server has periodic DMA in flight (NIC rings, NVMe
-> admin queues, etc.).
-> 
-> Overall, on both platforms this series turns a capture-kernel boot that
-> used to be buried under fatal PCIe error storms into a quiet one that
-> reliably produces a usable vmcore.
-> 
-> Please feel free to add:
-> 
-> Tested-by: Shuai Xue <xueshuai@linux.alibaba.com>
+Hello,
 
-Thanks for the test report. I'll add your tag in v12 (on rc1).
+I am hitting a recurring DMA PTE collision issue on an HP ProLiant =
+DL320e Gen8 v2 (Xeon E3-1230 v3, Intel C222 Lynx Point PCH, BIOS P80 =
+tested with both 03/28/2014 and 04/04/2019) on Ubuntu 24.04 with =
+6.8.0-146-generic. In Ubuntu's 6.8.0-147-generic source, =
+drivers/iommu/dma-iommu.c is byte-identical.
 
-Nicolin
+On Ubuntu Launchpad, bug 2160616 =
+(https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2160616) reported =
+the same 0xf1f7e collisions on HP Gen8 hardware and was marked as a =
+duplicate of bug 2158934 (the PCIe ACS quirk regression reverted in =
+6.8.0-136.136). However, 6.8.0-146 already contains that ACS revert and =
+still reproduces these collisions with intel_iommu=3Don, because on the =
+Intel C222 PCH 00:1f.0 (LPC bridge, 8086:8c4e) and 00:1f.2 (AHCI SATA =
+controller, 8086:8c02) are multifunction siblings without ACS hardware =
+and share IOMMU group 8:
+
+  pci 0000:00:1f.0: Adding to iommu group 8
+  pci 0000:00:1f.2: Adding to iommu group 8
+
+The ProLiant DMAR table defines 23 pages of RMRR (0xf1f7e000-0xf1f94fff) =
+scoped to 00:1f.2 (SATA), but not to 00:1f.0 (LPC).
+
+My source analysis points to drivers/iommu/dma-iommu.c (matching the Oct =
+2024 thread at https://lists.openwall.net/linux-kernel/2024/10/24/1195):
+1. During bus probing (bus_iommu_probe -> iommu_setup_default_domain, =
+drivers/iommu/iommu.c:2014, :3150), =
+iommu_create_device_direct_mappings() installs 00:1f.2's 23 identity =
+PTEs (0xf1f7e003..0xf1f94003) into group 8's hardware IOMMU page table.
+2. When bus_iommu_probe() finalizes group 8 in member order (00:1f.0 =
+first, 00:1f.2 second), iommu_dma_init_domain() =
+(drivers/iommu/dma-iommu.c:701-727) initializes iovad->start_pfn and =
+calls iova_reserve_iommu_regions() for 00:1f.0 (which has no RMRRs), =
+then takes the already-initialized iovad->start_pfn early return (lines =
+701-713) for 00:1f.2 without reserving 00:1f.2's RMRRs in the IOVA =
+allocator.
+3. Because iommu_dma_alloc_iova() prefers allocations below 4 GiB =
+(pci_32bit_workaround), ordinary ahci disk I/O can allocate these =
+unreserved vPFNs (0xf1f7e..0xf1f94):
+
+  DMAR: ERROR: DMA PTE for vPFN 0xf1f7e already set (to f1f7e003 not =
+11f04e003)
+  WARNING: CPU: 3 PID: 2210 at drivers/iommu/intel/iommu.c:2227 =
+__domain_mapping+0x2b5/0x320
+  Call Trace:
+   <TASK>
+   intel_iommu_map_pages+0xe1/0x140
+   __iommu_map+0x121/0x280
+   iommu_map_sg+0xbf/0x1f0
+   iommu_dma_map_sg+0x463/0x4f0
+   __dma_map_sg_attrs+0x35/0xd0
+   dma_map_sg_attrs+0xe/0x30
+   ata_qc_issue+0x131/0x320
+
+4. In __domain_mapping() (drivers/iommu/intel/iommu.c:2218), =
+cmpxchg64_local(&pte->val, 0ULL, pteval) sees the pre-existing RMRR =
+identity PTE (0xf1f7e003) and logs the warning, but does not fail the =
+mapping, leaving the identity translation in place. A subsequent DMA =
+transfer could therefore access the RMRR page instead of the intended =
+RAM buffer (I also observed cached ext4 inode checksum errors on this =
+host, though I have not proven the completed DMA link directly). =
+Subsequent DMA unmapping in dma_pte_clear_level() =
+(drivers/iommu/intel/iommu.c:1097) calls dma_clear_pte(), clearing the =
+covered identity PTE so repeated allocations at that vPFN need not =
+produce another warning.
+
+Separately, when testing Ubuntu Noble HWE 7.0.0-38-generic on the same =
+host, drivers/iommu/dma-iommu.c still has the same initialized-domain =
+early return before per-device reservation, and I also observed =
+immediate VT-d faults during boot ("DMAR: [DMA Write NO_PASID] Request =
+device [00:1f.2] fault addr 0xf4c00000 [fault reason 0x0c] non-zero =
+reserved fields in PTE", CAP=3D0xd2008c20660462, ECAP=3D0xf010da) =
+followed by ATA Emask 0x40 (AC_ERR_SYSTEM) failures. This kernel uses =
+drivers/iommu/generic_pt/fmt/vtdss.h, whose permission handling in =
+vtdss_pt_iommu_set_prot() differs from the legacy implementation (no =
+longer OR'ing bit 0 on IOMMU_WRITE), though I have not established which =
+specific PTE field caused the 0x0c fault.
+
+I am currently running with intel_iommu=3Doff as a workaround. Is there =
+an existing fix or backport for this shared-group reservation omission?
+
+Thank you!
+Renato
+
