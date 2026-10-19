@@ -1,93 +1,183 @@
-Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E1BC4F30F6
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 13:42:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C16F325B0AC
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 13:48:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792417345; cv=none; b=OYxVih5LMfx0N2zDUJwRzLDQT4F49QrXUplCAIXIDh6kWAnwlOY/CgX5gF3BDAfGWEZzjuhJYJC56WNMc1z/+J+X0aEH4GCd0P2/4NUn9sCSlvnvNDgl/mFDjkojwO9gOCrWzWcSmkNwiWpqVH9rlJh3EM798xK/VN6ips32ukc=
+	t=1792417698; cv=none; b=LlSmQqxtNBhRe0sNsc34ewtVQY+svb1l+NBgOKU43JvCRLFMOWKMXhlk/ekQ4xQpim60dd6LAFBGXN5Jj1qsE3WXNw8pv/xtaBwK160ZVml2mjYMiX4jfbUp0sAXiwvaZ56WIPvkcxbCRJNZccVAOfmU7TuoDo+Z3MadSmS/cjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792417345; c=relaxed/simple;
-	bh=QbGpQcndJ7BqGjQvL1nKGYut4bIaKUMiSNZJxZ7Ju8I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=LJZP0t5Ao6kE568L1jV+an9VLfwwdxRRanRImlAX3eLgxveYjw7npIzVA+RPshFMEEX88/0lG14EEbkMkCngsr6jbAkTecyg0bCLhqzDToJDg07WohOhN9QXmiBfVue9W0wTWmiAcGUiULIQNWhZgTJpfmQJVuWakGv9+17/19E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mails.ucas.ac.cn; spf=pass smtp.mailfrom=mails.ucas.ac.cn; arc=none smtp.client-ip=159.226.251.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mails.ucas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mails.ucas.ac.cn
-Received: from k3-03 (unknown [159.226.43.8])
-	by APP-01 (Coremail) with SMTP id qwCowACHW++pHNZqOSE+Cw--.8031S2;
-	Mon, 19 Oct 2026 21:35:46 +0800 (CST)
-From: Tan Chi <tanchi25@mails.ucas.ac.cn>
-To: fangyu.yu@linux.alibaba.com
-Cc: tomasz.jeznach@linux.dev,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	pjw@kernel.org,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	baolu.lu@linux.intel.com,
-	jroedel@suse.de,
-	zong.li@sifive.com,
-	andrew.jones@oss.qualcomm.com,
-	anup@brainfault.org,
-	jgg@nvidia.com,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	atish.patra@linux.dev,
-	skhawaja@google.com,
-	vasant.hegde@amd.com,
-	gsh517025@gmail.com,
-	joerg.roedel@amd.com,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	kvm-riscv@lists.infradead.org
-Subject: Re: [RFC PATCH v4 10/10] iommu/riscv: Add IOTINVAL.GVMA after updating DDT/PDT entries
-Date: Mon, 19 Oct 2026 21:35:36 +0800
-Message-ID: <20261019133536.1610-1-tanchi25@mails.ucas.ac.cn>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260917025446.4070-1-fangyu.yu@linux.alibaba.com>
-References: <20260917025446.4070-1-fangyu.yu@linux.alibaba.com>
+	s=arc-20240116; t=1792417698; c=relaxed/simple;
+	bh=1uPDEr3HIV5YG4p8D5KJZ05iu8cxrjsZZLs2LzXgWeY=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=kPoeEzoL1SGLWat+5O5RF7kUgq9YvibDOjY3Dp9H5miNaNLORNkLQOtE98KYbal+Gfa/JBJMNdSHH3pUWaW1sD7OjKEum10f+O+M30/fFA9ID9p82euL3KoWhnTby/KfKpgrRqiY4ySyQM4SqkTrHwQcUd0ME93YD2Q1HTfoCSg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fKsYIuTu; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fKsYIuTu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792417696; x=1823953696;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=1uPDEr3HIV5YG4p8D5KJZ05iu8cxrjsZZLs2LzXgWeY=;
+  b=fKsYIuTuO5AQEQW5W8ElUp7L8akBhE6mvla+xizR9D9Dbdgs+GNsXZja
+   bnyRdEQb/0ryyYaDlnIZjPCh/DbAVVZopJuLpz84xgtxudBJnT+eIxpvK
+   9p1R6LqzltE4kxR6LXrx3gGHfwSw4KczEP7kvTrHQaDfvorHzqWympRmR
+   BK7wiA2mKI2Ddb7hc9MD9f1XtRsKqB65ORU3qAA9Yn9XL9Z68uVb4h7VV
+   7jbAeKK4ptxtLbresIoco9fReU99okV9coI8c8GBXUhYaSCSGHElCvXzq
+   AqGl/Bv3NFST3wDraJVX4RGWoinCATCAcxIxHsAjgEw6qsA3LrCPkQ3xr
+   w==;
+X-CSE-ConnectionGUID: cFBSKzgIT7St7X/8859T/A==
+X-CSE-MsgGUID: dyIfT1TbQWKGGAMFm4hFJQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11940"; a="999427"
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="999427"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 06:48:15 -0700
+X-CSE-ConnectionGUID: QvL0Ti8ZQd6z6qPl5njqCQ==
+X-CSE-MsgGUID: i2O2ctf8Rya27oi/wURERQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="4372774"
+Received: from conormcd-mobl2.ger.corp.intel.com (HELO [10.245.244.47]) ([10.245.244.47])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 06:47:58 -0700
+Message-ID: <5f57c49d34f2812b0b68be71218ce0a9b6510c14.camel@linux.intel.com>
+Subject: Re: [PATCH RFC 03/26] dma-buf: Add dma_buf_mapping_attach()
+From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Alistair Popple <apopple@nvidia.com>
+Cc: Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Karl
+ Mehltretter <kmehltretter@gmail.com>, Dongwon Kim <dongwon.kim@intel.com>, 
+	dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org, 
+	iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>, Leon Romanovsky	
+ <leonro@nvidia.com>, linaro-mm-sig@lists.linaro.org, 
+	linux-media@vger.kernel.org, Matthew Brost <matthew.brost@intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>, Sumit Semwal
+ <sumit.semwal@linaro.org>, Vivek Kasireddy	 <vivek.kasireddy@intel.com>
+Date: Mon, 19 Oct 2026 15:47:55 +0200
+In-Reply-To: <20261019133031.GQ13920@nvidia.com>
+References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+	 <3-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+	 <20261016202653.97339-1-kmehltretter@gmail.com>
+	 <d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com>
+	 <8d4cb20b70ac4c3f36d8d631769757158af2ac8e.camel@linux.intel.com>
+	 <20261019133031.GQ13920@nvidia.com>
+Organization: Intel Sweden AB, Registration Number: 556189-6027
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 (3.58.3-2.fc43) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:qwCowACHW++pHNZqOSE+Cw--.8031S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUOj7k0a2IF6F4UM7kC6x804xWl14x267AK
-	xVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGw
-	A2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26F1j
-	6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j6r4UJwA2z4x0Y4vEx4A2jsIE14v26r
-	xl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAac4AC62xK8xCEY4vEwIxC4wAS
-	0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-	IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
-	Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVAFwVW5GwCF04k20x
-	vY0x0EwIxGrwCF54CYxVCY1x0262kKe7AKxVW8ZVWrXwCFx2IqxVCFs4IE7xkEbVWUJVW8
-	JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1V
-	AFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xII
-	jxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4
-	A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU
-	0xZFpf9x07j2E__UUUUU=
-X-CM-SenderInfo: pwdquxrlsvqzpdlo2hpxfd2hldfou0/
 
-Hi Fangyu,
+On Mon, 2026-10-19 at 10:30 -0300, Jason Gunthorpe wrote:
+> On Mon, Oct 19, 2026 at 02:43:29PM +0200, Thomas Hellstr=C3=B6m wrote:
+> > On Mon, 2026-10-19 at 10:35 +0200, Christian K=C3=B6nig wrote:
+> > > On 10/16/26 22:26, Karl Mehltretter wrote:
+> > > > On Tue, Feb 17, 2026 at 08:11:34PM -0400, Jason Gunthorpe
+> > > > wrote:
+> > > > > +	match_args.attach =3D attach;
+> > > > > +	if (dmabuf->ops->match_mapping) {
+> > > > > +		ret =3D dmabuf->ops-
+> > > > > >match_mapping(&match_args);
+> > > > > +	}
+> > > > > +
+> > > > > =C2=A0	attach->dmabuf =3D dmabuf;
+> > > > > =C2=A0	attach->importer_ops =3D importer_ops;
+> > > > > =C2=A0	attach->importer_priv =3D importer_priv;
+> > > >=20
+> > > > I may misunderstand the intended contract. match_mapping() runs
+> > > > while the
+> > > > attachment is still zeroed and without dmabuf->resv held.
+> > > >=20
+> > > > Patch 11's amdgpu callback needs importer_ops and
+> > > > importer_priv, so
+> > > > its XGMI
+> > > > match cannot work here. Patch 12's VFIO callback asserts
+> > > > dmabuf-
+> > > > > resv and
+> > > > reads priv->vdev, which cleanup changes under that lock.
+> > > >=20
+> > > > Should the core initialize the attachment and hold dmabuf->resv
+> > > > for
+> > > > match_mapping(), or should callbacks avoid attachment and lock-
+> > > > protected
+> > > > state?
+> > >=20
+> > > Right. This completely misplaced.
+> > >=20
+> > > The matching can't be done at attachment time, but rather needs
+> > > to be
+> > > done before creating a mapping while holding the resv lock so
+> > > that
+> > > the matching decision can't change.
+> >=20
+> > So question is what exactly should the contract be?
+> > Looking at the pcie_p2p negotiation today it looks somewhat like.
+> >=20
+> > 1) Importer and exporter agree at attach time what mappings are
+> > allowed
+> > pending placement conditions and other attachers.
+> > 2) At map-time the mapping is negotiated taking all constraints
+> > into
+> > account.
+> > 3) The negotiated mapping is valid until an invalidate_mappings()
+> > callback is received.
+> >=20
+> > Following this would allow a re-implementation of pcie_p2p as a
+> > mapping
+> > type and would allow a controlled link-severing to send an
+> > invalidate_mappings() notifier and the mappings to be re-
+> > negotiated.
+> >=20
+> > Importers requiring an early hint as to what the actual mapping
+> > would
+> > look like would need to be prepared to re-consider at map-time,
+> > with a
+> > reasonable assumption that the reconsideration and re-mapping would
+> > happen seldom enough.
+>=20
+> The idea was the supported mapping types are fixed properties of the
+> importer and exporter.
+>=20
+> Like iommufd is not suddenly going to start understanding ualink
+> after
+> an invalidation.
+>=20
+> Further, I had the (perhaps naive) expectation that the interconnect
+> option was not something that would change during mapping. I did not
+> think you would loose your PCIe option if ualink becomes available,
+> or
+> vice versa. Though on deeper reflection I suppose someone could build
+> HW so you might loose your ualink option if the dmabuf is moved to
+> system memory while PCIe would still work.
 
-I wonder if riscv_iommu_iodir_set_mode() also needs a global
-IOTINVAL.GVMA now that second-stage translations are supported.
+True, but there are other complications. Let's say at map time there is
+another importer that don't support anything but system memory dma-
+bufs. Then both ualink and PCIe p2p could not be used, and we'd fall
+back to system. Or a map() move to VRAM from system for a fast
+interconnect failed for some reason. (Somebody might have pinned it in
+system).
 
-It currently issues IODIR.INVAL_DDT and IOTINVAL.VMA after updating
-DDTP, but cached G-stage translations may still remain, for example
-when the IOMMU is reinitialized after a previous kernel used
-second-stage domains.
+But agreed it sounds to me like the interconnect capabilities should be
+fixed at attach time.
 
-Would a global IOTINVAL.GVMA (GV=0) be needed here as well?
+>=20
+> Making the decision right before map seems like a reasonable
+> enhancement, but I can no longer remember off hand if that would
+> cause
+> complications :)
 
-Thanks,
-Tan Chi
+It was that mellanox ATS thing, right? That's the only case I heard of
+that needed the mapping type decision (or at least a strong hint)
+early.
 
+/Thomas
+
+
+>=20
+> Jason
