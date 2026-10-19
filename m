@@ -1,51 +1,51 @@
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010063.outbound.protection.outlook.com [52.101.61.63])
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011055.outbound.protection.outlook.com [52.101.57.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 541E24AAC66
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 11:30:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.61.63
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70B8D49E12A
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 11:38:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.57.55
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792409413; cv=fail; b=MjwWnKOUyCCsvWYXbjALREpseYummNJphcUMMF/9jyd6DeQX5HKMtA3S23aPmU6zKfKziLEKkLbJ2ag+r3920E7R9btSAiAvrw9OeAtaNlt5SClFLR/kSH7Gu4gmYXFuc6TV20Q6DWSGI5osJSoPtjYIWS9ZpCdn82nQWZM7KnU=
+	t=1792409913; cv=fail; b=YQiy3qC5P1vV4OLTun4uAhK5jbbjKaEQkX4EtAzrflvllel6Rt9U/rmxFnA+UYyPQorR3LCQgYyqZprxIGnfLdT3E38AYx5X9Z1W+bzIO44+UgWF2jqEjxx73gPRc4gd77Qv1XRTa4FQiVXyKAqpv01P9odR0TC7aP61Pdt8ZLk=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792409413; c=relaxed/simple;
-	bh=2Y17Y+cFoxgoA/U/dfwbdvxSewrMQ6ZCbljFOh/6HwE=;
+	s=arc-20240116; t=1792409913; c=relaxed/simple;
+	bh=bXwqVR7SVtP6dapbjymO/ILjpfd/kvc9JVjEsPTnI68=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=P4U3i1pMnQ/7Km1S2MyEjKQwwmQ6Ylcz3/OF1R6EW5UOoNXZkjPEj68MWl9XGiwbEzUyWJstFZpLbeiF7HWZvPbCDLnUADdIEOqNsHdkcxEOi81l7NkM6fbwSgrlr6cYs3DxqD1BSPMRN6HRiMIAm06tJgswbVyxfxik/n8dDAY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=cDMFBs2h; arc=fail smtp.client-ip=52.101.61.63
+	 Content-Type:MIME-Version; b=KMHwRU9e8a21Q1kWyw/qfL7Ab6wvxwocMmCtsY5uaKfAv03xIEPBDkSOBzACHwTkyhU4Xhy1Kl+JDkkLseu+5q1ZJkgQJbTRZDbgKBNgx+mAnSA9U8pPIhz/zzRsO5kSjR0qPTO0gcdJusUsduYVoyJYrHHnLhZaVSVxUy2ooe4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=sXdgPOBP; arc=fail smtp.client-ip=52.101.57.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="cDMFBs2h"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="sXdgPOBP"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VMWLtrrD9gMDBNSLxc6dCovPcbTtGZjYk1ZuNz/WFWzqsJr8RSo6m4sZnMyjInNsEsE/TuRnRGcLA9eQ2YCRT5hjTTFAHcNVwzRPigS1kcRd/AVi3KQWbizM7rsRKA9mrWWwH1uIvIXoK+Ilob98dZ9vEq8vCaa/sc/JFZ8JSTed+EYX+QsZAjrmZ2mv9Akk6m1sDxy3GT3WivYzKwo8A2BcmAqs99nOZY1iMlQTs/o/r1LIuynDcgB17I5W3XsCzHak1b061IxppladUpHOwu1wDNhUEqFwhFV3+P9a0cMbz9p3pZGE9SyL9O14rhkflNCAN121Rnlx3sZFrj3iQw==
+ b=CubJuneUhqyetW4nMg/UM1s3wPRsLg/ZqI2WpxXUd3uUvpdJ8BQ7AnhUCqU28Hr5KwMrZ9VNCSrVTu47S+PJdv4cIWhtF3JjLaVKIqe7GWAK2ZRl+32GHpyGCwWuoVC9+PyE3qVaagvWgf32PgMp3rATALlfzEXyIc9Wdh/AR5wve/rRPrMjc057ACEQfHbjJEMwLesBG+bwN9o3PBD0hE5xSDbTUmH9eq8ngiZGqdqDbmhSX5+oW063iAD8P6WRYab5hhD6fiVZF2VVE1TtazOh6LKXT7RrM+Mxo8vJMjOaiU3fPZEfKpCXeBHzCZTC5ujkAHI1020UDp/WJUT0lA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GCIP6MflMKeSwZzW0KQFSECURaVvFqh4GVkdY9rF+aU=;
- b=KX6dax90FkQjLQoId30uX3no6b8Ve7JvYa6RZZup6PGfzqqd6DI1d1P1SXRMlKzn72pbtLe9jLqpFIWu/RU2PYWch0bZ+3s8cx0HH1CGb/OEokGJ+7GrKE7R9GZtrY3ovuzo7twZP/4pnKAqscq+be/ZDmZ/I32HqyW7SbFkZ3jE8j2YHg7rhaNMHLydAa9zgav/NtuFkDKyDBfaua2rHOC+DQYt+bxWKl/oqpL5V9jaIi//lfLPQlUYcieGdE/XDWnjGYyT8Ku9zv3ed3liymbEcFGUzObr4vFM5izkqHdITZ808Mkx3asbCzNQ14woBDUB6czFXVcAzYyCfgxPCA==
+ bh=dw9f+1kV0ai0puE50Vr4VGdP4kML0e6Lob5+rrsU4Ug=;
+ b=xceTgNQP/hiu4jQLlxLlrz3AKpst6HM1q8LnS+9NKNXu0DijyxBhwWYdvKSjZuMaf8jo+g0P3ih2xggJ1q2FBumNf3wbliK61svjbiQOwQTba4YNBRPDgcaiN0rMfgw0yiAip74AN1RJHupC5VFGRYxC7Wabo5ZWSY0mcmNOsgMnWWGhUWd0tWuVYdy/1r6Oplc4ziIlODne+3/t6tluxY715OC4g13m3Dof/WadNPjWMzoOf2b1MgJ4mTJWy0pn/1ghzvsRi1lDsGyFzJj4Vm7QeQ3d5uQ02dNc3dsLXDKU2AMNtpyx5DKzWU3eXRb3xVDo1afmNppar6DMqcUCpA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GCIP6MflMKeSwZzW0KQFSECURaVvFqh4GVkdY9rF+aU=;
- b=cDMFBs2hxJotzisO+0T16OpzaHnUTg5ZL9XyrANvWF7OPOn8gCYRayCWMLwGEuxZPlV1hxfNm0H+l+fRjbboX8YsQTxFvzTj6Cu/lHiParJMmKivanqWkuYoEuJLH+7BqLT6wd4aF9sm9x5A3q+XsTusyVKtX1V9YnB8u3Lme9c=
+ bh=dw9f+1kV0ai0puE50Vr4VGdP4kML0e6Lob5+rrsU4Ug=;
+ b=sXdgPOBPx8ychHdB6uRSXGmsxdXexCb+IGfrv3Oyh+uaJRsXCYO72f3+FA7w9wxYNyMnTvQE2Pn9YkwDMJRnKrDxra/UXEfmIWqnGRekNDGfvtnJ090WUl6NCFejOkI7tK9IUag/rksJWePICQHdMJmgf3op3yBN6P9x/MYn2G0=
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by BL1PR12MB5730.namprd12.prod.outlook.com (2603:10b6:208:385::9) with
+ by MW4PR12MB6732.namprd12.prod.outlook.com (2603:10b6:303:1ea::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.19; Mon, 19 Oct
- 2026 11:28:20 +0000
+ 2026 11:38:28 +0000
 Received: from BL4PR12MB9505.namprd12.prod.outlook.com
  ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
  ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0522.017; Mon, 19 Oct 2026
- 11:28:19 +0000
-Message-ID: <3eae322b-1fee-4994-bb9b-ab30ec45e7e5@amd.com>
-Date: Mon, 19 Oct 2026 16:58:00 +0530
+ 11:38:28 +0000
+Message-ID: <3bb95ee3-634c-4609-8ea0-2e6a5122ea63@amd.com>
+Date: Mon, 19 Oct 2026 17:08:10 +0530
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 06/24] iommu/amd: Map vIOMMU VF and VF Control MMIO
- BARs
+Subject: Re: [PATCH v6 07/24] iommu/amd: Add support for AMD vIOMMU VF MMIO
+ region
 To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
  linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
  jgg@nvidia.com
@@ -56,14 +56,14 @@ Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
  alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com,
  guanghuifeng@linux.alibaba.com
 References: <20260930092344.5616-1-suravee.suthikulpanit@amd.com>
- <20260930092344.5616-7-suravee.suthikulpanit@amd.com>
+ <20260930092344.5616-8-suravee.suthikulpanit@amd.com>
 Content-Language: en-US
 From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20260930092344.5616-7-suravee.suthikulpanit@amd.com>
+In-Reply-To: <20260930092344.5616-8-suravee.suthikulpanit@amd.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA5PR01CA0211.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:1b0::12) To BL4PR12MB9505.namprd12.prod.outlook.com
+X-ClientProxiedBy: MA0PR01CA0015.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:80::7) To BL4PR12MB9505.namprd12.prod.outlook.com
  (2603:10b6:208:591::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -72,129 +72,117 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|BL1PR12MB5730:EE_
-X-MS-Office365-Filtering-Correlation-Id: 456e9513-eb07-45af-a1d1-08df2dd413ba
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|MW4PR12MB6732:EE_
+X-MS-Office365-Filtering-Correlation-Id: 022087dd-5437-4df8-41b1-08df2dd57e76
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|366016|18002099003|10067099003|22082099003|4143699003|261009223027099003|5023799004|11063799006|56012099006;
+	BCL:0;ARA:13230040|366016|7416014|376014|23010399003|1800799024|10067099003|18002099003|22082099003|4143699003|261009223027099003|11063799006|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	kDDXiTNbzjIwhpZKA1BDTsEk6TaFD88SmTNBlFza4IvfC065IPXHq+0EjmqzHTNMUIS/KlvdWmMdFT2N9beAk5WHF22sAE+KxwX4NQQhBahqSkPW6Aqhq5pOFUJGCqU0icGl4lsBySNlNqNa727NrIccZSzEJ2hg0pXcmYVgPPYDd5oQl/xr+pR5Osvk9nl1mDEcYJgVq8R1QJGV7QafjSTTAhmwv9ixtLTbaFbDJ2lVp6mQ8eRZwGC80S3hJq45cpR5O+nmyzno7QtgBpZGuAOeVevPOs2b0T9ADXaWUA3nuxt5vWK9BJup09/ug6cjcJh1nPExNREHgSklR9pCMdB5bjPkdUbeoCUV5nS4x2kI59dexbmnYb+go868ANaQsOa+LcMvIOjAnI9V2vlNHiXkynipnXYXtkErfeaLJUvMw/5wxesO8UWj8jd7jrRi/oI7LkvFWjfkXPV9bB6WSPqmGKDJIChcVcMWzZM8Tp4ixb2ilmkR4iY9szCq/DGldFlSCimkMos5MwVMVo0rHS4vScUArQBRZcfPSh6Y6EnQpq//W2njttHGxLDMwDXy/1nbs+D9Owax9FUBEEK2DPfhfQLUJB1ipfA+UhYcSihD+6m/kZbQ6+taOrGJHGfg4sKb+FAlnBtrzouYEqztRQzY4uu+xPHz+3W4CIZRblc=
+	tE+ux1qkAn7gjrhhi+qDFd6vCRiiwJSgLM3PlZX9uKBCvp6EWYhofI6zy6WWlSVnrFHyFGkymzIpXajj4xlEOGaMCVSdvpXDoZ5XtUd5zSZNUUwJFVyr79ueSn192bYT07Gwe2/BdDrMibZka10ohDqCJqtPZljMYzdnEIkBeDEk0N9k0YC+o5G3LJQieoBeAvpKjDgbCYnoyi4ekv/l/+7u8uw+LRh8lXtPyDK9p8xqYHhs39Yxr8us1qpqGqNmttVwaZLBaEkIruqJiJpdgoxEHgQ1CLWfrYMuHcFUldmYsm429sm39s/BusEXvCO1bg80kZaWLfctOsQ7m2OCS9CFQZI1/GSdd3q4hUg5gJuWsutgdi8LK6Y58mnvGI/TFJjgrYgmuf1W9JaMyKQ0nGdKDAwm/zQe1WFKIb/HKX7sXAWFmaUIr14Nnhhe/UTUe6EHxFOQCNEJ10AE3fcIwh/oEr2mgD5c7ctewSZXmwoLmoAGgBJjS2od1S8w+kt18CNgAA3PgcbSY7/9VK5yoOnQBqdToZzLaC5DsAXmplNuPYlmADkkeCw95l6OI7Cfgk5mTSURupTfUrHD87PZlsFyeaxk4rjR+DsmAvED8c1Mj2pMGkM1ZLQTyswS28gYozsazjbANHANOvexqNdFpzgC092E7AHJg3Mo+oqLzH4=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(366016)(18002099003)(10067099003)(22082099003)(4143699003)(261009223027099003)(5023799004)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(23010399003)(1800799024)(10067099003)(18002099003)(22082099003)(4143699003)(261009223027099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UEladWdxQ3oyV2ZQcXMvMkNQemJ2KzNXeW10Z3pNK3lHdzA4aWdLYjh4dFU0?=
- =?utf-8?B?Q2g1TENJZnFnbFlMOHBMdSt4SlNSbEQwK2tJUHpRSGxVemJUdEMyQXNwVFRL?=
- =?utf-8?B?STlySVlxVEU2cDFyeCtCcW9WbE1NbW5SUGNZUm9xQys0VGhERXBnZzdvZU1L?=
- =?utf-8?B?OFY2OWpjODBGRkVBS00yVFlINFFhbEhZWi9PWDNnVnBJTU5odVBBUFpJK01M?=
- =?utf-8?B?V1FpUTRqYUxWK3BKSUg0NkVpOHF2Qk5SZ01IamdrVDJYZy9tU0RENUVzcEpu?=
- =?utf-8?B?VEVwb0Uvakl1bDBrYjRDZkJSM3l6MmhRamkva2FSbW1HMGNoVGxpVXEyd202?=
- =?utf-8?B?bGVaVzNxZlpQeC9iVVh0YWdCK0MwVGUvellBa3Bsa3REdDdwbkNsY3VVOXJQ?=
- =?utf-8?B?T3ZPUEdaWTJ2ZTFzYkdvK3dKWHIzZGZRMkRSRWl0QW9pVDdJOThtdGZVSHlU?=
- =?utf-8?B?TXg0NUhpd0xhdVh6VjVRQzREUFhwZURPTjhROVIvOXhRRysrQWpVSVFwU0Zl?=
- =?utf-8?B?aCt4NWQyUno2MzRhNVhYQndNYmY1Y3I0ancrMm84RjNqMzUvU3dSYTZiN3Jt?=
- =?utf-8?B?UCt1UHl1U2tJaGVqeHpEc3d3TkptTURzUEMxaWFkUlh0UE5aaWlsRHQyWkNR?=
- =?utf-8?B?c3FUZzFVNUN4blNmbmRPY3RVdzZkSHhkUkxiYVlzcWtkOTZBS1FLZ3ErVko1?=
- =?utf-8?B?MUNVK01NSFJtaXJHOFlIa3JJeERuNXR6ZlJnUWtuR2tOaE0zNVZvYXBRb09C?=
- =?utf-8?B?QWNpNGNUQmQxZGljVkRzSFZiWEpLNWhpU0RmYTdMcXFWUDRsa3UzeFg2b0lP?=
- =?utf-8?B?TEhub1lvSm5reFFLNU9BRFdwT2p6MU9XU3FwWEJoTndLQkJPR3Z1aWpzTGF5?=
- =?utf-8?B?YkdTTC84RWs4U3R5Vm1JeHg2L1ladFFFeGRMQ3BNNllEd2o4ZFhrVVFMZWVG?=
- =?utf-8?B?Ym1TditCS3hMRXd2WmhkclVvRUpTVjN2c2twbk1kV2V1RWhob05abE83dHFp?=
- =?utf-8?B?Z2FnWVRCYUVMNTB3NlNDNERON1FtK1Y3aGdCd1MrWkNQUCtVdWpwdi9hR1V4?=
- =?utf-8?B?blJaNzA2ZGVlV3BOTVJLR3BmakV0RzZ4Q3JaaTNOSXo0SjQ4TnFvVzlQS05O?=
- =?utf-8?B?alN0R3FnYzlwckhtdFpEY2dyUkhXVTRHeEhHSjczOC9CZ1VDaTVjQmhsWldT?=
- =?utf-8?B?eFcxNGJhR3pIV1F6Q0YvVVQ2NUlFd1VJVmVOaFVNYjY4anBTQk5aU0JZTHky?=
- =?utf-8?B?Mk1WMmp2UG8wWm5Vc0ZtQ3IwcG1yM2xwNkE5VEhmVDVubE83eXNOQnh3SGxB?=
- =?utf-8?B?MGlRUkZmc3RSQmp0YVRsN09SSm4zYjlnMkhqNEVvT1hpOFducHBRbVhUWjMz?=
- =?utf-8?B?SDEyTnNjYVBhenlaWSs3dlY4UkhnM09aYU1sWC9mUURHNC9EQW9kRWdpcmtj?=
- =?utf-8?B?VUkzOGgzZnRmRjMrQXJYaXphSDBqci8yZFdrdGVnY3BJZDZRN1VBcUt5SjZE?=
- =?utf-8?B?cDY1T2UwMTdCL2FCZnlDOU9xaXJaakhBbUhQT2ZQVEo4aGQ2anhneGt4QTZ1?=
- =?utf-8?B?d0x3MndBNkJzY0c2Vm1ZLzJqT1VIY04yaUNQeSszd0ErL3Fmamh5YVRUUktN?=
- =?utf-8?B?Q3d4TUdhZjg1MmVjYmp0ZERpdFZ2c3BQS1Fnck10ODRQK2dZZmZ0UWhGTFRC?=
- =?utf-8?B?em9URGtkWVVHWjhPTnBJbUtuR0pvUU9tZTk5S3Q5WWRQZis1bTNDM0FZQWRq?=
- =?utf-8?B?aUZqcklhMVdyZU9XUDA0SGovRXpVbVN1b05ZdVk5QWpqMlBteWZjYVVvN2lx?=
- =?utf-8?B?YnBvQ2I2WmVkZUw5OUNNNnB3ckZ5ejk4MStEOGlPY3l0ZEN4VXB1c0xtK2NJ?=
- =?utf-8?B?WS9VWU94NzVJQTBwcnBydjN4OVBkMU9lSDNIOTVCYzNPVXA3ejBGNG1ZK3Vy?=
- =?utf-8?B?ZUN1ME5DY0ZrdC9Ya0VaZjNucCt5WnpJVnlUZHc5YUdIeXVwbkJrZUlOdzlr?=
- =?utf-8?B?YzJiMExNSWhhQTJmbWp0TUVwUnVtMGxZZXVhVEdadXdwdHphYldtenFhdGJE?=
- =?utf-8?B?ZFZKQnhpVUxKam1nWmpjWEFVNXkwdjFBeWlHVFVxTE1VWm1oSlg0cWlydlhP?=
- =?utf-8?B?RTFST2drVGxLcjc2MUI0Ykd6T3RlTmZNai9yeTZSRnZraHVzS3hIN2hZRUZF?=
- =?utf-8?B?dFA1Z1JCcm1KenloZEUyOGtaNld5YStnRHBPVW1iVldEYk5jK1RpekJLTldC?=
- =?utf-8?B?WTlzK3RKVVoxRkxjRUNvWTBhaXF4WDVOMGRoUGh4dkJrejBJd25SYUdJWVVG?=
- =?utf-8?Q?I+7Xu1ng8hi30/7vx/?=
+	=?utf-8?B?dFFYOFc2MWRxR2FPcUhHQVd6cE83RlJXMVRCUXhpV3JnWjhRUFR5NW9FK1hL?=
+ =?utf-8?B?SUltR09TQ2xWekduZlRqdW1GL0tyb1hBUDFhWUdjTWZ4SlY0azJyWTk5alYw?=
+ =?utf-8?B?V2Zqa0k1SFJ3LzlTdlk4RzEwK0pQZWdFN251MUJUTzN4NXNBWXNVM1BBaEd2?=
+ =?utf-8?B?Qmo5VlFVTmNvMmluOEIrZHRCczRJU2ZJWXUwNzdSVS95dW9Od3BPQVhRRHVs?=
+ =?utf-8?B?L3luekJxZENTc011ZlNSUENyck4xS1c2U3FHMVBQR2hDZDZ4Q21veDhKNjAv?=
+ =?utf-8?B?a0xnTVhlcHZnWjdTdHlaNXlUR1VBVmNETWV6TjQyLzVnR2ZWdlRRZUhFdmlF?=
+ =?utf-8?B?QWZQcUVZSEUrZE80cmw2eExxc2RPRllQbWU2QlVDb0RSc1hzU2t3aFdkUHlF?=
+ =?utf-8?B?TUsxYk96TTRDOWVYQU1INkFpZmtnZHJlWml6V0tuZnFsWVB5RmxVN0p0MThi?=
+ =?utf-8?B?QkFJck9jTHJBYVFqYmJ5OU9SanFlWGFpcnYzcjhPS3lvY0I0d1lGa1h6Rklo?=
+ =?utf-8?B?d0RUcVR6cEg5dTNxM09mRXpuZUtNN3oxWVppcmxLMWUzQkFLQjA3LzV5V3VM?=
+ =?utf-8?B?UTlrcUZFd0NiY3EwZjBzaXR5cUFaaU9rWldSSldUU2VEa3EwL0NTdzJYWWpr?=
+ =?utf-8?B?aUtrZEVsS2hhMmw2Q3hVRy9wV0JHU3BqbjhITUlaSkhSQmw5bHlkWktpbERx?=
+ =?utf-8?B?NmUxcDkrMlE5aXBNL0ZTWkI5azNVdG1yUzgzeFh1NTk1Nkx0SmRqWnVsUzNn?=
+ =?utf-8?B?QmluZCtDSTNkL1dlNWNUeFc4SkdHT0VWdDdlTWdSekFQY3Noc1ZWdnY2YzhK?=
+ =?utf-8?B?WVkvbnNNaHpSYVAzWWpBSnZZOThkL2NMYVBpbGxlcVl2YnZzdWNzNWdoREli?=
+ =?utf-8?B?V2tWWU9RMXQ2eFcrcGVGTXExcGR0dUl2R2VsdnNMZEJoUmpUNmoxeGczOXNP?=
+ =?utf-8?B?UWZRZ3hSTEltanl3VXRzTFdlL0pVb24ra1h2c2xKOUFEU2NKbElkU2JiN2Z3?=
+ =?utf-8?B?Q1h0YjJva3l3VUxpeGNNQnJuYWJudlptWnhVUHlzbURzV3Z1Nm00WUxsT1p0?=
+ =?utf-8?B?NXBQQ0l4NENxb3NaRTUvaGw0ZE5MVEE3YXRGVUVyYWV4SUJhbEszUERZSThj?=
+ =?utf-8?B?SVQ0QVNaSnlBOHJ4TE1FR1hleUxBSHIwN3g1YnpWRlllV3Y5K2tVQk9pOGFS?=
+ =?utf-8?B?eEJKUkRJMUFZRGRVWS8xcEZjQ0Qyb3BFMG1Nc0E0THdMcndSakdUWFMvdFAr?=
+ =?utf-8?B?UVRpQll6S0ZxWU1sUEhnTFJ1NEJJNzB0M0xqVjJOVFBBdXo1V0NLSjA2SGds?=
+ =?utf-8?B?bm9MaC9Wa2FnK3FuTTIyQXR1Q0IzRUl1QTMwYm9xZklvbitTTlNYSDFjbmpk?=
+ =?utf-8?B?ZmEyNklkQ04wRDZ6M205NlQ1elFiNFU2YUJPY1JTS1JBTHBqeTVoT0d2ODdD?=
+ =?utf-8?B?S0g0Y1IzOFAwTmxHVUZ4a1JHUXRwYThoT0hxRTNvM1pXUmhUTFFmTUZhMzNs?=
+ =?utf-8?B?YWF3K3liNnlEVjVFT2Jwb1B3OWJhUWprOXovUkJwUnc4cExKM1VnMjREUW1r?=
+ =?utf-8?B?dXFidG9hUkxDZmpNZUxoeTNBQjViSXNOMmF0K29yOTd1WEVualJVb3NYTWk0?=
+ =?utf-8?B?QlVWVi9Cb3RBSU1SdS9vcWlTdWR4ZmJBbDV2UTRJVjRvNi9IUmxEazF3eG5m?=
+ =?utf-8?B?cWdxcnYrUkFObUZqdEdUWTFvaURJNDF6dEhXbTNmWmROdzR5VlV4eFFmd0NQ?=
+ =?utf-8?B?RVNHN01kQi9zZ1JvSWY5WlZ6YnkzYVpXeWdRamJlcXBaWW52TEJsNEQ3WFlJ?=
+ =?utf-8?B?NFc2WE5WKzk3enFkUW9OR05vdzBiVUZQb1E3c1Y4ckNzbkkzMDlZM3dLNE13?=
+ =?utf-8?B?QzdpL3NvTzVjN0R1QVF6SFkrNmd2RXYyNWtsVzk4NktrOFVvNFNOQXl6dEZW?=
+ =?utf-8?B?SjZ0K05IZ0V6R2JlVXJMNkZSUDNzbEFHKzJMOUpjbmxZNFFWblNYS1Y1VFFL?=
+ =?utf-8?B?VjZja3A0eGFROXhyYi9MR1d0Mk5ubXJhVHJjYmZIbDZKRWJLaEl1dWNpNmoz?=
+ =?utf-8?B?OFNjaHV1MXJzamN5QTI0dlBpeXdPYkdFRlBZblBrUGNGMG5VSlJUU2phb2ZS?=
+ =?utf-8?B?Qm9ZTjJGbHZIb0M3VUs2dWowdTVYbDM1VVFTNDh5L3ZpZWQ0SVNwd1AzVTdk?=
+ =?utf-8?B?QnJldzhFYndCNHV0T2FLR3piRDh5c0NSdTNLUno1WFF2aXk1Tk9Tb2hVOUtn?=
+ =?utf-8?B?THJLQjNIUU9LNUM2M0gwTFRKM25xRG5pWGdYSFBUc1NQTTA1MTR0RFBKSXZk?=
+ =?utf-8?Q?B7M5jwcHGzFH12uRML?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 456e9513-eb07-45af-a1d1-08df2dd413ba
+X-MS-Exchange-CrossTenant-Network-Message-Id: 022087dd-5437-4df8-41b1-08df2dd57e76
 X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2026 11:28:19.8471
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2026 11:38:28.3895
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6E8C4n6cFAWDQJC+ghmmgZeIFbed89rwIQvTkIXaS/Rry+0mUBauVD2WRvgwTPHbHJDlxiHimziOercWmo9TdA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5730
+X-MS-Exchange-CrossTenant-UserPrincipalName: eLjDlpJEiIkaElR70xvaH2ByfE3VnSe5CXgTsg0BaAUzd7CHtFa94UfkrlJR8hu/PJCWNOq3Tp4ru5QGv8tV+w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6732
 
 
 
 On 9/30/2026 2:53 PM, Suravee Suthikulpanit wrote:
-> Enable hardware vIOMMU on an IOMMU by locating its PCI vendor-specific
-> capability (VSC), reading the VF and VF Control BAR addresses, and
-> mapping them for host access (256MB VF, 4MB VF Control).
+> The AMD vIOMMU virtualizes guest MMIO registers at the 3rd 4K region.
+> This is achieved using the iommufd_viommu_alloc_mmap().
 > 
-> VF Control covers the first 4K of guest IOMMU MMIO (control registers,
-> trapped by QEMU). VF MMIO covers the third 4K (virtualized by the
-> IOMMU). Per-guest bases use the Guest ID from the previous patch.
+> Copy struct iommu_viommu_amd from and to userspace so the VF-MMIO
+> mmap offset is validated and returned on vIOMMU alloc.
 > 
-> Reject a VSC VF or VF Control BAR that is disabled or decodes to
-> physical address zero before mapping MMIO.
+> Return -EINVAL if the VF-MMIO page_base is zero so mmap is not
+> registered at physical address 0.
 > 
-> Set AMD_IOMMU_FLAG_VIOMMU_EN after the VF BARs are mapped. Export
-> MMIO map helpers. Call amd_viommu_uninit() from IOMMU teardown
-> before free_iommu_buffers() so MMIO and the command buffer remain.
-> 
-> Release the reserved MMIO region if ioremap() fails so VF/VFCTRL map
-> errors do not leak request_mem_region() for the life of the machine.
-> 
-> Skip the host release in iommu_unmap_mmio_space() when mmio_base is
-> NULL, so a failed ioremap() is not released twice.
-> 
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Co-developed-by: Vasant Hegde <Vasant.Hegde@amd.com>
+> Signed-off-by: Vasant Hegde <Vasant.Hegde@amd.com>
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
 
 
 .../...
 
+>  /*
+> diff --git a/drivers/iommu/amd/amd_viommu.h b/drivers/iommu/amd/amd_viommu.h
+> index e5fbea666e01..276f2126290f 100644
+> --- a/drivers/iommu/amd/amd_viommu.h
+> +++ b/drivers/iommu/amd/amd_viommu.h
+> @@ -14,6 +14,8 @@ int amd_viommu_init(struct amd_iommu *iommu);
+>  
+>  void __init amd_viommu_uninit(struct amd_iommu *iommu);
+>  
+> +u64 amd_viommu_get_vfmmio_addr(struct amd_iommu *iommu, u16 gid);
 > +
-> +	pci_read_config_dword(iommu->dev, vsc + MMIO_VSC_VF_CNTL_BAR_LO_OFFSET, &lo);
-> +	pci_read_config_dword(iommu->dev, vsc + MMIO_VSC_VF_CNTL_BAR_HI_OFFSET, &hi);
-> +	vf_cntl_phys = hi;
-> +	vf_cntl_phys = (vf_cntl_phys << 32) | lo;
-> +	if (!(vf_cntl_phys & 1)) {
-> +		pr_err(FW_BUG "vf_cntl_phys disabled\n");
-> +		return -EINVAL;
-> +	}
-> +	vf_cntl_phys &= ~1ULL;
-> +	if (!vf_cntl_phys) {
-> +		pr_err(FW_BUG "vf_cntl_phys address is zero\n");
-> +		return -EINVAL;
-> +	}
+>  #else
+>  
+>  /*
+> @@ -30,6 +32,11 @@ static inline void amd_viommu_uninit(struct amd_iommu *iommu)
+>  {
+>  }
+>  
+> +static inline u64 amd_viommu_get_vfmmio_addr(struct amd_iommu *iommu, u16 gid)
+> +{
+> +	return 0;
+> +}
 > +
-> +	/* Mapping 256MB of VF and 4MB of VF_CNTL BARs */
-> +	iommu->vf_base = iommu_map_mmio_space(vf_phys, VIOMMU_VF_MMIO_MAP_SIZE);
-> +	if (!iommu->vf_base) {
-> +		pr_err("Can't reserve vf_base\n");
-> +		goto err_out;
-> +	}
-> +	iommu->vf_base_phys = vf_phys;
-> +
-> +	iommu->vfctrl_base = iommu_map_mmio_space(vf_cntl_phys, VIOMMU_VF_CNTL_MMIO_MAP_SIZE);
-> +	if (!iommu->vfctrl_base) {
-> +		pr_err("Can't reserve vfctrl_base\n");
-> +		goto err_out;
 
-Nothing to cleanup here. You can replace goto with return.
+
+Do we really needs this? amd_viommu_get_vfmmio_addr() will be called from vIOMMU
+code path only.
 
 -Vasant
 
