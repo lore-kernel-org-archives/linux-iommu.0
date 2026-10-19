@@ -1,179 +1,143 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D7A63603DB;
-	Mon, 19 Oct 2026 07:03:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792393441; cv=fail; b=ItMgqbHiJJP2Cpbu5DDUPSAj1DLlrpI2FWq13B9ovnkrc7i44LzI1KzZd2yxCJc46TCi8F4cXUGPru9RkW41TBZ2DSfpS9aUKtI2/2VPmkKc+YFMsFvZ/p/ksRZ+2mvkTgSObG9IWp8KvVMUCK1zjfYV/X98Zq1yiLmiGMN+31o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792393441; c=relaxed/simple;
-	bh=6okEMB3dbIhkhxWbAp97OxapkUd0QzqqKRZqwgiHXM4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=lbAAfg+xMoLDNDRqr9kBH7Hx9QxnfshiffdOVHCq/eqQXl6rKCg5ItAOcNdpyF0acGzw4ifg/ZEfpBI1PNBhK5xs5ZPvLRIqyEvkmmZ/6epiXFSD5bsH0EYwmIkDlWEdwtMwLiczSGTE1rYU1KxcSO6u91Q2WEi1iKDM/IozrLs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C53jxuag; arc=fail smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75CB048DB37
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 07:27:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792394839; cv=none; b=Js7NzH18bBwPQDZ6VpNM1nPRHkbJia0Gtr4g81dM/6IhHgZp+dRLDHLgqdGG2Utw7Ucr0WWOAFDI+L1h3TY/yFNSRGy2cxJzn5nl9H0tnfuPfs7YdPa4sgLgmkarKPtjpHGn+Ckt6bcLgU4l1mxAlYix8VoYl0haP2XTGLVseQc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792394839; c=relaxed/simple;
+	bh=0T98m1ELRc4eTtBMW8+nPuPgIS0HZy+hRlapM4lfh7g=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=ZFVAjQrtKmKjOQr2xyVQ8TA8QprYSguya1lZbj6znzy2Rs4RrULVCP9Zz8w3F44an7BiKjjFC2vZVWTJSQInuh9iG3OOTRZLg6kMoMCXC1y+Wv6Fq4gEh+m4yHNyPL2peL5+EWxJyvPle2YGYwCcyTRP7iHTsXTkp2AbuPKu1do=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I6TLGGkT; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C53jxuag"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I6TLGGkT"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792393440; x=1823929440;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=6okEMB3dbIhkhxWbAp97OxapkUd0QzqqKRZqwgiHXM4=;
-  b=C53jxuagYlrqiJFrevwkqkbB4SPuvHURKfVWqBAH5gkVbCbWxAZg4uD5
-   kNNyJ7g8NTcT3YDeaI1iFxiNHW/DaeyOIxOgLD+VyTyG0tY+5EmieCaT+
-   4cMHGf/tw+9+BR8KtD3MpHl8IGBrRuDu+YzNvzpOWEGqBwthaQTYnx72H
-   GVKcFqZr0uaUxVi/wJDOws6EuwSPkWz2q1iBlqNaj1XF929xhAzMdFOXO
-   N5V5QI26hu2LE5OvLX/JAMD7pRV91cqny4qxFoQp1zERYMArp19JARhg4
-   XboKpoUxSc8k0HAVg8B3xkz1YnHB2DRb9YkYiiG5xshlWDlaoX82vMZSR
-   Q==;
-X-CSE-ConnectionGUID: 1fff9PaqT4u0Ig45fy11kA==
-X-CSE-MsgGUID: WqyvMjx8Sv6wKzdxRgGXqA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1175911"
+  t=1792394838; x=1823930838;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=0T98m1ELRc4eTtBMW8+nPuPgIS0HZy+hRlapM4lfh7g=;
+  b=I6TLGGkTJZ8ZMMAHp5vz8pZC963V+67E1T2FnSI8qWdd+4mlCj3a4ymT
+   nNFgAD0416NkXAdgerQjMt7rb4g4erqjFtsSP3vYnyX/7ymHgmcUum/4Q
+   T8JV8QD1mwGnWXG/uE887t7w2k5M27GOULVtYYqm0yUxZHPnbDUucFr5k
+   7qv8Q3vNY/aOnGYqGGs5JB34FTioofd+c22pRK+98jlHQ6mlBxQtopsLp
+   cwMEWUUOsIdL5N+7CfnPgMT9y7Nc0L1R8McRx181OZKT7bsJmsweK4kCL
+   YMA52GZ8TGvdYrfhqzYpt1Y3bE666r0x81TzCPqGcEITlYEN8Qu2XeITC
+   A==;
+X-CSE-ConnectionGUID: G7+9Ake2S+imszY2hdtpPA==
+X-CSE-MsgGUID: mNlyxhiVQ0GC0jrvAfWHtQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1070551"
 X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1175911"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 00:03:59 -0700
-X-CSE-ConnectionGUID: qU59e1SHRYalEoYOIzIVnA==
-X-CSE-MsgGUID: kX53vz4gQPSs8xrm5KXHXA==
+   d="scan'208";a="1070551"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 00:27:17 -0700
+X-CSE-ConnectionGUID: ABrjHQwhQfC7Fzeh5vgpCQ==
+X-CSE-MsgGUID: UqkibW+DSqiD7OLmcaTHLA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2465985"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by orviesa009.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 00:03:59 -0700
-Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Mon, 19 Oct 2026 00:03:57 -0700
-Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49 via Frontend Transport; Mon, 19 Oct 2026 00:03:57 -0700
-Received: from SA9PR02CU001.outbound.protection.outlook.com (40.93.196.24) by
- edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Mon, 19 Oct 2026 00:03:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PIUMXs1JGSJ5IoX9vKzOWDp62ivj/JjSk/snf7uejSzBHtIwS9vGX0tzbleeWpsE8zm/aR6SnKhFDj57UQyz0z93iRRTCuSJL2r2wLfqBoHKWwOrfyoty6D25eHgkUIU5pkkfHhsBGHENzEB8cfF0v8fR/pwwQ//UgvxT5Pfhv+eeFd+hOQ0e3NuebVWTFCCf1EPlMXkcDCE72GL8nqMW2F02YpT9YJJ0ARSlSj0uPjPq5p+/2AsiCz5l/crWHswfNRP60leCKwfB54YmLMqjtlJK4TnFJt770velkTGRzlpao9PlWeP6iJWE3QtuVdmASfZfDpUIF4w6DGx3Arcow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gKK//Y007Z1goE31W+aEpm20D0p5AR4RSGldsFGEVco=;
- b=HEkd4g4rcjp5aKXM8EwmPWISt7jxikdLf6nbN+sVwLnYkGlKtWu4FWKiM7irPbyG2Abk8g6JPU1weblSdmVNo5nF/JChCeR3bPFeZr4myJ/AHQkd6++kRPHVfuJ0Sxg4gRUsK0k8C7K6bFPHSud/2O921I2oEZfiGSGTmLWxCjny003CuiAby3GgkFegPjY2t6y4L06AGVrYBj1fniuTXyoW3U9z7wFQLiIphu9R8aq5CSAiDxisko3Ygzme6+CU9LSrOa8Z0MoDuNJes3iluYVOL0UO5n+Ug4I8V1lqgL79Vl4WkFLwBnHVzuTfdcnsRt/y7gEszQE6eJEz0SOrIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from IA0PR11MB8380.namprd11.prod.outlook.com (2603:10b6:208:485::21)
- by SJ0PR11MB8271.namprd11.prod.outlook.com (2603:10b6:a03:47a::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.19; Mon, 19 Oct
- 2026 07:03:46 +0000
-Received: from IA0PR11MB8380.namprd11.prod.outlook.com
- ([fe80::ea8e:eec4:f8d3:f95d]) by IA0PR11MB8380.namprd11.prod.outlook.com
- ([fe80::ea8e:eec4:f8d3:f95d%5]) with mapi id 15.21.0522.017; Mon, 19 Oct 2026
- 07:03:46 +0000
-Date: Mon, 19 Oct 2026 15:03:35 +0800
-From: Chao Gao <chao.gao@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-CC: <iommu@lists.linux.dev>, <x86@kernel.org>, <linux-coco@lists.linux.dev>,
-	<kvm@vger.kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
-	<kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
-	<rick.p.edgecombe@intel.com>, <yilun.xu@linux.intel.com>,
-	<xiaoyao.li@intel.com>, Binbin Wu <binbin.wu@linux.intel.com>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/4] coco/tdx-host: Initialize trusted DMA on all
- capable IOMMUs
-Message-ID: <atXAxzxYdDo6RbHM@intel.com>
-References: <20261015010705.1973284-1-baolu.lu@linux.intel.com>
- <20261015010705.1973284-5-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20261015010705.1973284-5-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: PSBPR02CA0010.apcprd02.prod.outlook.com (2603:1096:301::20)
- To IA0PR11MB8380.namprd11.prod.outlook.com (2603:10b6:208:485::21)
+   d="scan'208";a="2826014"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 00:27:15 -0700
+Message-ID: <ea131a99-d3f0-4d52-a076-d80d84d690e8@linux.intel.com>
+Date: Mon, 19 Oct 2026 15:27:13 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA0PR11MB8380:EE_|SJ0PR11MB8271:EE_
-X-MS-Office365-Filtering-Correlation-Id: 921a281d-698b-4d18-efc9-08df2daf1e03
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|23010399003|1800799024|261009223027099003|10067099003|56012099006|22082099003|18002099003|4143699003|11063799006;
-X-Microsoft-Antispam-Message-Info: HKCpVTubiSZXWVKF5ZKStWqSHH9scRXPW+kdMPFrh2pKIEP2Dg79ajjxhBEbwEyvTT8Jn0ChLJSCiZW9Y+xHp3XLNl0VtmysE9gNTfq5oG+I2xVWXD5l9nFUJYZKYsrSzHECj+/7zu8Za4DniLJqgLQElfcfzeQjKYynob5djAytFyFChoQ9Re09/DCLiTs/qMq+DT1UZ01oeaq9odtotVjw/7STv/wXL6GJb+SJHJfXqTVUhWmhxav+Cw//YdtRoWOGa8iy5L+7Abq9y6Iw71zNaouWa35qPTO0s5CatRNohwHOy4l7Ojqq1JvnLo7evoNC1TXagty55A+14slUaFTplkbPuxwXsdNFmFiw3f3J84rxIwZvq/awAUrwrPPstNOd868qwwXrxfk+/4AtWFkBuXACyJ+9ciC4dP7E/e/0o8VkvIyMkEADoZWrjQf355zkbKjyxHSJU1dNfCtqMQgz5Sdd+hv07EjMgClcX2HpRVrlgKRAQm9vtx/KLLdI6yIKwQxJZprtwMqgL1VNkW5f14/3v6FXWbMfcPdan011zSzzZJH1UobA214IImqVSpdFuR4jVdynTSTjQFYV3/Xj/C8BPU9UEFs99IK2C2YAGhW2jsm6E0aYQyDjCnXnhCKzxhGPilWgU7yB5mSezaLsRDM7pW1bd7dFub5pBsY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA0PR11MB8380.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(23010399003)(1800799024)(261009223027099003)(10067099003)(56012099006)(22082099003)(18002099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sgnMeQpwBsoJ8KJcEXpmIxVNc+iduzJZQlUpbNPLes4esB182/lFX2xY5YLm?=
- =?us-ascii?Q?2mLs7HmOcs3p4V2Bzc13bvEsexmXvHG9IYgjmQnTtNe7pP0SmVxYflgA3MJA?=
- =?us-ascii?Q?JxQbALig4ahmWqYNUnJ5HC9StJnzSv2q6W0sCRggeRONUJU4XsiDyd0hfsya?=
- =?us-ascii?Q?W2PgPWeoL4I07DKqwK1/m0FJwAqi3Tj7D/Mmc6HvtV8j7bDkZJ+/PfxeV7q8?=
- =?us-ascii?Q?khlffG7xcIkIvalI6VhYzOmEQRP/GpPETWho9zPFOdjw7hnJ3o8dnVv+0UC5?=
- =?us-ascii?Q?ZBnDheDB57QLW8Zm54lQcqVy+43VQfFMyA48XB0VLrxZDyznzUmvqQwjwg+E?=
- =?us-ascii?Q?HAPkasq7d2Czb1sZWiwAawHLbfkJUvYzMzrRihEZ3XPlMv6TJDpN5Nb8AD8p?=
- =?us-ascii?Q?rOBQIDJ8NrmvzXgVJCRArbYLn4j9+P+t8ZFeAoHOqd+SN15vXxbHSzAX/lvd?=
- =?us-ascii?Q?orJH8iloZrGa7g4ChvWa9TjHRVviB0lEe3FMgbbudLMuHKMuOu50RQs22xRi?=
- =?us-ascii?Q?uJZ4BBJYz95pE5cVDB8UIZwFDOJbF/4Q4yS26l3AGazWax74H6I1adeZF03u?=
- =?us-ascii?Q?ZJ9MmbO34U4/LqEUEF2KWoSBnpPm/oQ+fnrvzdbREc5nxzxR2TX9T5zxDBVt?=
- =?us-ascii?Q?Qiwa85WiziFLo1dG5aURNNpFGhhaSLffFFdmYnfFQJ/qPsHQek34xczaACBH?=
- =?us-ascii?Q?GT9ok5UKauilPLLRvRyQF95pEpEJbMpYZ/b88nQ/IjRfys5vZYkSC9WbWvtz?=
- =?us-ascii?Q?crsfrg4fTZVtPDJG+mGv4GFrc8wDUSC/05/Tf/giv1i14w8t+v5dRNzNpG92?=
- =?us-ascii?Q?x20eKcUnAQvpX7ydfOaWfbMRTFv4dvSPoJLx0tspRILFENYwRolCIbXiyFZ6?=
- =?us-ascii?Q?zNTxsag9+y9aXc85x3vj8yghElM+jL/pCMBbqPp9VErxg4vxUb+2gb6VUflK?=
- =?us-ascii?Q?UTDCe+bzIcJjOONXdY1ts1+R19P7lHcCTsbFAPpq8X/mMePSwcF6jBGRIW8s?=
- =?us-ascii?Q?S8Sv8Den6mGIdd+1OpDyjVM89WRGrTi1bCPqB0TrgPnpCYhhXTmgC+MR8iPz?=
- =?us-ascii?Q?HQWiDn2F/8cZ6Uw3+OzNt9zAIjTJtv4ctwmzm4HeXJ9BKFx0dmWzuvOaMrVV?=
- =?us-ascii?Q?IBquFtN20P0ly1uiCA9GzhpKLLCsC8PWoTmNXqEh9Rl/nyduEo1nUqwHBOuV?=
- =?us-ascii?Q?02MRDmSEYkn07Q7bLfXOa9OWLC7aZHRYKd0oQR9245poIv/yerERCFaKtDeN?=
- =?us-ascii?Q?uc4zf7RG5l25/yX0Daoz9UkYI0x8V/vulfIBoofw+R8QLg65p4QTBYpgi5G0?=
- =?us-ascii?Q?hfwbm65BxBKfutkn0jlZ8DKeox5X5u4xuQOT6U3deUPr1T7oBBRxlzsANECY?=
- =?us-ascii?Q?KLl931I6RBo1yNOP13LKhNQhRMeGEQ42GWuZ8RrRcrf5Fq+YtZIp9VL8vy+h?=
- =?us-ascii?Q?OiGgWO0OyiepNtnWfSaox1GZFnqEA4lIUFmA48jYXRk+NMxmho8zM7ENLZFP?=
- =?us-ascii?Q?VczJUomBYoHmaICTiwX7WUFaIzX+HQJVUFkZ/IiY5u/nk9Hj38gtfRw7nagJ?=
- =?us-ascii?Q?sp10qLLoGn2DzFtBAiGQCT/HUNtTOQOkFShXi+XS022rCIT2h6FIqsD8Cu1w?=
- =?us-ascii?Q?nTBSUJ+dNsD2/RRgA7nIOIxy1sjl0f7qWrcgJsjyWYLdK9hM2mpaHu5hDys9?=
- =?us-ascii?Q?kuC6nd+qhSmIM2flS8mJx01yeWoiyYa11NROcmOmaiUgg50pS+DAaazKbfhw?=
- =?us-ascii?Q?I2LLQbe0cg=3D=3D?=
-X-Exchange-RoutingPolicyChecked: zfriOKhTBEF8Ko2aVcoav55F1LP45uoLnrbsuesvhEzMi0WZpr620KBoQIdie45sZd7oT2ob0/5km0CURCMTpwstsO0ajkTaHxyMq/2qjZUGUYvKOgvyGqeYohz1CLqPwMwI6tnZ72kMHmzi8T81FCC0GiutB+9XY8Wik204ZEdvbu9Se8Hi8ubvX+qzhqQHrGUhrlaJoGtpKuTJ+n6Yc2DXVCQVc3zz3kzumCm/RA6B0nddM/HAj4JoljvznWOcuY/p5pC2yCWg0Bg5NfjNqbz29PxGgWeDiB5LOErTP6koD3sFLuTvqDgjzDQDY7R9Cff3gMsDXtcJn/N8iiGWgg==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 921a281d-698b-4d18-efc9-08df2daf1e03
-X-MS-Exchange-CrossTenant-AuthSource: IA0PR11MB8380.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2026 07:03:46.0200
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: afxq7FE196wbXWKVQMopY+wrEHs2tBTLKJx8ODzsBMz3XvYjGVPcSdJfgFLUb3v3fLfpddHp7JaG4lrWl0SkZg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB8271
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, robin.murphy@arm.com, joro@8bytes.org
+Subject: Re: iommu/dma: SATA RMRR reservation omission in shared group on HP
+ Gen8
+To: Renato Machelett <renato@machelett.com>, iommu@lists.linux.dev,
+ kernel-team@lists.ubuntu.com
+References: <02b201dd5ea3$02b88430$08298c90$@machelett.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <02b201dd5ea3$02b88430$08298c90$@machelett.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
->+static int tdx_iommu_setup(struct dmar_drhd_unit *drhd)
->+{
->+	const struct tdx_sys_info *tdx_sysinfo = tdx_get_sysinfo();
->+	unsigned int mt_page_count = tdx_sysinfo->tdx_connect.iommu_mt_page_count;
->+	struct tdx_iommu_state *state;
->+	u64 r, tdx_iommu_id;
->+	int ret;
->+
->+	struct tdx_iommu_state *iommu_state __free(kfree) = kzalloc_obj(*iommu_state);
->+	if (!iommu_state)
->+		return -ENOMEM;
->+
->+	struct tdx_iommu_pages *iommu_mt __free(free_mt_pages) =
->+			tdx_iommu_alloc_mt_pages(drhd, mt_page_count);
->+	if (!iommu_mt)
->+		return -ENOMEM;
->+
->+	r = tdh_iommu_setup(drhd->reg_base_addr, iommu_mt->root, &tdx_iommu_id);
+On 10/18/2026 9:50 AM, Renato Machelett wrote:
+> Hello,
+> 
+> I am hitting a recurring DMA PTE collision issue on an HP ProLiant DL320e Gen8 v2 (Xeon E3-1230 v3, Intel C222 Lynx Point PCH, BIOS P80 tested with both 03/28/2014 and 04/04/2019) on Ubuntu 24.04 with 6.8.0-146-generic. In Ubuntu's 6.8.0-147-generic source, drivers/iommu/dma-iommu.c is byte-identical.
+> 
+> On Ubuntu Launchpad, bug 2160616 (https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2160616) reported the same 0xf1f7e collisions on HP Gen8 hardware and was marked as a duplicate of bug 2158934 (the PCIe ACS quirk regression reverted in 6.8.0-136.136). However, 6.8.0-146 already contains that ACS revert and still reproduces these collisions with intel_iommu=on, because on the Intel C222 PCH 00:1f.0 (LPC bridge, 8086:8c4e) and 00:1f.2 (AHCI SATA controller, 8086:8c02) are multifunction siblings without ACS hardware and share IOMMU group 8:
+> 
+>    pci 0000:00:1f.0: Adding to iommu group 8
+>    pci 0000:00:1f.2: Adding to iommu group 8
+> 
+> The ProLiant DMAR table defines 23 pages of RMRR (0xf1f7e000-0xf1f94fff) scoped to 00:1f.2 (SATA), but not to 00:1f.0 (LPC).
+> 
+> My source analysis points to drivers/iommu/dma-iommu.c (matching the Oct 2024 thread at https://lists.openwall.net/linux-kernel/2024/10/24/1195):
+> 1. During bus probing (bus_iommu_probe -> iommu_setup_default_domain, drivers/iommu/iommu.c:2014, :3150), iommu_create_device_direct_mappings() installs 00:1f.2's 23 identity PTEs (0xf1f7e003..0xf1f94003) into group 8's hardware IOMMU page table.
+> 2. When bus_iommu_probe() finalizes group 8 in member order (00:1f.0 first, 00:1f.2 second), iommu_dma_init_domain() (drivers/iommu/dma-iommu.c:701-727) initializes iovad->start_pfn and calls iova_reserve_iommu_regions() for 00:1f.0 (which has no RMRRs), then takes the already-initialized iovad->start_pfn early return (lines 701-713) for 00:1f.2 without reserving 00:1f.2's RMRRs in the IOVA allocator.
+> 3. Because iommu_dma_alloc_iova() prefers allocations below 4 GiB (pci_32bit_workaround), ordinary ahci disk I/O can allocate these unreserved vPFNs (0xf1f7e..0xf1f94):
+> 
+>    DMAR: ERROR: DMA PTE for vPFN 0xf1f7e already set (to f1f7e003 not 11f04e003)
+>    WARNING: CPU: 3 PID: 2210 at drivers/iommu/intel/iommu.c:2227 __domain_mapping+0x2b5/0x320
+>    Call Trace:
+>     <TASK>
+>     intel_iommu_map_pages+0xe1/0x140
+>     __iommu_map+0x121/0x280
+>     iommu_map_sg+0xbf/0x1f0
+>     iommu_dma_map_sg+0x463/0x4f0
+>     __dma_map_sg_attrs+0x35/0xd0
+>     dma_map_sg_attrs+0xe/0x30
+>     ata_qc_issue+0x131/0x320
+> 
+> 4. In __domain_mapping() (drivers/iommu/intel/iommu.c:2218), cmpxchg64_local(&pte->val, 0ULL, pteval) sees the pre-existing RMRR identity PTE (0xf1f7e003) and logs the warning, but does not fail the mapping, leaving the identity translation in place. A subsequent DMA transfer could therefore access the RMRR page instead of the intended RAM buffer (I also observed cached ext4 inode checksum errors on this host, though I have not proven the completed DMA link directly). Subsequent DMA unmapping in dma_pte_clear_level() (drivers/iommu/intel/iommu.c:1097) calls dma_clear_pte(), clearing the covered identity PTE so repeated allocations at that vPFN need not produce another warning.
+> 
+> Separately, when testing Ubuntu Noble HWE 7.0.0-38-generic on the same host, drivers/iommu/dma-iommu.c still has the same initialized-domain early return before per-device reservation, and I also observed immediate VT-d faults during boot ("DMAR: [DMA Write NO_PASID] Request device [00:1f.2] fault addr 0xf4c00000 [fault reason 0x0c] non-zero reserved fields in PTE", CAP=0xd2008c20660462, ECAP=0xf010da) followed by ATA Emask 0x40 (AC_ERR_SYSTEM) failures. This kernel uses drivers/iommu/generic_pt/fmt/vtdss.h, whose permission handling in vtdss_pt_iommu_set_prot() differs from the legacy implementation (no longer OR'ing bit 0 on IOMMU_WRITE), though I have not established which specific PTE field caused the 0x0c fault.
+> 
+> I am currently running with intel_iommu=off as a workaround. Is there an existing fix or backport for this shared-group reservation omission?
 
-Dynamic PAMT was merged in 7.3. With it enabled, the PAMT for 4K pages
-is no longer allocated up front, and the kernel must add PAMT backing
-before giving a page to the TDX module. So, the IQ buffers and the metadata
-pages need tdx_pamt_get() before TDH.IOMMU.SETUP and tdx_pamt_put() after
-TDH.IOMMU.CLEAR hands them back.
+Thank you for the report. This issue still appears to exist in the
+latest upstream kernel:
+
+static int iommu_dma_init_domain(struct iommu_domain *domain, struct 
+device *dev)
+{
+...
+         /* start_pfn is always nonzero for an already-initialised domain */
+         if (iovad->start_pfn) {
+                 if (1UL << order != iovad->granule ||
+                     base_pfn != iovad->start_pfn) {
+                         pr_warn("Incompatible range for DMA domain\n");
+                         return -EFAULT;
+                 }
+
+                 return 0;
+         }
+...
+}
+
+The early return is still there. Have you tried reserving the second
+device's RMRR in the IOVA allocator as well? Something like:
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 68ee57800fef..e9b39009f109 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -704,7 +704,7 @@ static int iommu_dma_init_domain(struct iommu_domain 
+*domain, struct device *dev
+                         return -EFAULT;
+                 }
+
+-               return 0;
++               return iova_reserve_iommu_regions(dev, domain);
+         }
+
+         init_iova_domain(iovad, 1UL << order, base_pfn);
+
+This would at least confirm your analysis.
+
+Thanks,
+baolu
