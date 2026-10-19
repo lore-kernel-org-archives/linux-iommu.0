@@ -1,492 +1,422 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
+Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012046.outbound.protection.outlook.com [52.101.43.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF64527FB1;
-	Mon, 19 Oct 2026 14:02:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792418574; cv=none; b=qyPWc/8Y3bn/LYQmQm8H94dburBBvNjoEcBSLO7I6FJ0eclN6cjckoztKaoIKiwFPyO33Q0Uay73UOK04LhNvD4hprV3VbLem0OCK4qsS3NQ+IPi6vsZC4JD9rinjacfvE3s4wkbgd8TpBAZjj11O9EGhcARqxtF/Lf1bfSFCCE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792418574; c=relaxed/simple;
-	bh=+1ZWmQmS7jC1pco+Ozx6kg7JXui4zpUeJ0lalaES/0E=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QKNcRLJ6DsCnzu0nNrfl9u6WZFzGABXj6sBiDOTvzl5VxUxL3OxUEZdjE8osTcaGhLnzwP3wKMFEed+m7JZOEiuU9GSD85cV4MqsLjtaaOeiwB4OjuRaE0h2E4sltSmeWZqup7Qut6M3lPy/fzVxI3WwaSct2BaOSrGx+b8DYdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DqXoXndN; arc=none smtp.client-ip=100.103.45.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A6F64C3F6
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 14:06:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.43.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792418820; cv=fail; b=REjhcbSJeXsKb3hqUoLtxmgvYo3tFG1sm9ueRG4ifi7FeJmJy7eUFkqcET5CQACgNEXdz8iIhWgiSxUsLGAxhkC6k5fMoJVPOpOcTLT7LNgKLrwjQE83eNyu2g/GFAh9tz/KyToHLz4RH9opQTh/trfiW+cg8nChnejRg258Glw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792418820; c=relaxed/simple;
+	bh=1V4JjxKwfRyyJREemNKLd1nc5hOESKUtnAcsm9gyey4=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=UdILbP0/he93+hCVCin7EYtTzeZJA6JW01fnaTIqyGpnFe1ZwrzPoVoF+hzs3ZxHanhaNIz3GInk1to519AY99NuJMQttPprldyRTKJHBJW+8RFwgHkAc8yI/qSa/+kYds5++qGrJiAOTrGZ9W5XUVu//C3ZbkZRV1Gf0kZH2+4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=NBJ1Nfcg; arc=fail smtp.client-ip=52.101.43.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DqXoXndN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F86A1F000C4;
-	Mon, 19 Oct 2026 14:02:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792418571;
-	bh=kvnjUFG/xYwm+NO+qD6stlC04XHUVrYTPecZAg78TVo=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=DqXoXndNKnS8fnPbfriMzHZ+67xbnT+aM4apZ4mCSmVhejV08Btca1t0aLb/BzPK8
-	 MKkfNKtn+BJh2P5re4b/Q2WSKc/jsYWbzZwXlmYtTwyjHE1QXMKJU2e1EaeMcUYfHd
-	 XDp39gUf+Alh8xwIVxGgrZ8f8iCRSNvRFzsxXZGxV65F7+NavVTPsTDelD2XxOrFIU
-	 4J2W42vFcqaTDRUK9sc6syMq0vd+PGhws6I78Ipc8KfUPvtd1F9Fsan3BMeSQ4qDRm
-	 4GBQWhxWqxr4rY0gwtI+9q97fRyG8qqe2QmOgmmh5CBQF61ExTPQMlw8HUYtPRjEY1
-	 wCvnSpb3Zy30g==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-	Will Deacon <will@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
-	robin.clark@oss.qualcomm.com,
-	joro@8bytes.org,
-	iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-5.10] iommu/qcom: Check pm_runtime_resume_and_get() return in probe
-Date: Mon, 19 Oct 2026 09:50:33 -0400
-Message-ID: <20261019135441.1420968-342-sashal@kernel.org>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261019135441.1420968-1-sashal@kernel.org>
-References: <20261019135441.1420968-1-sashal@kernel.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="NBJ1Nfcg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tTz/YlsXwChHIbwvRd0enxxKnWH96cl/35uZRNtp5rYVb0/8jRFYbcJNL++60BWJy63Cnxxq98lRk+ru6ylQIumFkucddRsBWdWsHcG1cJplxnDZZCf7Su168Q32bJjZEKlx5q9vpx+b0gMyURT2E/Zr9D343b64c5Kxv1bBZSvItuzfHyi5vzFQky6ywSlDYU8y7zViBDaXyc+zFo/P2DwIOVGWP5Vy+TPBZ/02pXRr95tmNXBTVYr7tHD6SQjMnW4EbXS6otnTMUBa19LxeLPRX/id5GbogI8t/1Ia6rCsksFlEuhZyjDxocmjYLLekKAwA28u3BqZF7+uY/6lcA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0eoDnC2atBcu4KECPbOSglscfk7+x3ie9YeAXth+GcQ=;
+ b=yP8h5wz+gS/3jWKAi0n0shn3n0A8akT7O/78MU1aQxj8xtlrrIVjDo3kwRXkRRNllvb5BvcGNl+i5e2ZLPPPls71zUcilY2xTv2WmdBsi3AbRQklX+9f5IN8BuGdDRm+xY+gv/MCnJqmwd9hM2++5jW8336tnz2DirzShVeHXaJxGN5avhrPW9PgEPYVSQm3TZBSvqB8+sev3c01YyUq3YpQOIn2iEhmboy47MIqNyC4EETpb4f6frblgMryoBJ4lPDrZ2iLT1b9qGft8k/J9PBrQX5M7Ex4Tv4PeLr9wo6Hb4IoB4yHFzI6PpVz23+ZMm+vpgZV5S+GdOsX7/DNtg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0eoDnC2atBcu4KECPbOSglscfk7+x3ie9YeAXth+GcQ=;
+ b=NBJ1NfcgOV9C4g2ZKIzKJQAbDubc44OlYgaEx+5Ew71vCXiXwgxmNEbqnAawdzlciFqtOxYdq+Nye958UYMMBEBbmv+j/7XmsLLxOZrSqhfZPeJWveau3Qz/oRQeRgpDL/ow32cIm/+OaEh9FESWyWCkK+iKpbSnOFFFaem1CdU=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by SA5PPFDC35F96D4.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8e5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.496.17; Mon, 19 Oct
+ 2026 14:06:49 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0522.017; Mon, 19 Oct 2026
+ 14:06:49 +0000
+Message-ID: <f725d1d7-2147-4155-a3cf-f8348b56dca8@amd.com>
+Date: Mon, 19 Oct 2026 19:36:31 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 09/24] iommu/amd: Introduce and map vIOMMU private IPA
+ region
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+ jgg@nvidia.com
+Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+ jon.grimm@amd.com, santosh.shukla@amd.com, Sairaj.K@amd.com,
+ jay.chen@amd.com, Ming.Shu@amd.com, SooJin.Tan@amd.com, chrisl@kernel.org,
+ wvw@google.com, wnliu@google.com, dantuluris@google.com, kpsingh@google.com,
+ alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com,
+ guanghuifeng@linux.alibaba.com
+References: <20260930092344.5616-1-suravee.suthikulpanit@amd.com>
+ <20260930092344.5616-10-suravee.suthikulpanit@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20260930092344.5616-10-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5P287CA0118.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:1d0::11) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.18.57
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-From: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-
-[ Upstream commit e910315ae08a23bc953daed10b1c518abac1df49 ]
-
-The SMMU_INTR_SEL_NS register write in qcom_iommu_device_probe() uses
-pm_runtime_get_sync() without checking the return value. If runtime
-resume fails the subsequent writel_relaxed() would access hardware with
-clocks potentially disabled.
-
-Switch to pm_runtime_resume_and_get() which handles the usage-count
-cleanup on failure, check the return value, and unwind the already
-registered iommu device on error.
-
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Signed-off-by: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-LLM Generated explanations, may be completely bogus:
-
-I have the tree version, the probe path, series context, and review
-thread. Compiling the nine-phase analysis and verdict next.
-
----
-
-## PHASE 1: COMMIT MESSAGE FORENSICS
-
-**Step 1.1: PARSE THE SUBJECT LINE**
-
-Record: **[iommu/qcom]** **[Check]** Check `pm_runtime_resume_and_get()`
-return in probe. “Check” here is a missing-error-handling fix, not a
-feature.
-
-**Step 1.2: PARSE ALL COMMIT MESSAGE TAGS**
-
-Record:
-- **Reviewed-by:** Konrad Dybcio \<konrad.dybcio@oss.qualcomm.com\>
-  (Qualcomm reviewer)
-- **Signed-off-by:** Mukesh Ojha \<mukesh.ojha@oss.qualcomm.com\>
-  (author)
-- **Signed-off-by:** Will Deacon \<will@kernel.org\> (IOMMU/SMMU
-  maintainer who applied it)
-- **No Fixes:** tag (expected for this review pipeline)
-- **No Cc: stable** (expected)
-- **No Reported-by / Tested-by / Link / Acked-by**
-- Ignore any pipeline “Signed-off-by: Sasha Levin” / “[Upstream commit
-  …]” markers (none in the real commit)
-
-**Step 1.3: ANALYZE THE COMMIT BODY TEXT**
-
-Record:
-- **Bug:** `qcom_iommu_device_probe()` does `pm_runtime_get_sync()` then
-  `writel_relaxed()` to `SMMU_INTR_SEL_NS` without checking the PM call.
-- **Symptom:** If runtime resume fails, MMIO is written with clocks
-  possibly off. On Qualcomm that can hang the interconnect / SError, and
-  probe still returns success so interrupt routing may be wrong.
-- **Root cause:** ignored `pm_runtime_get_sync()` return; that API also
-  leaves the usage count up on failure (the new API drops it).
-- **Fix:** `pm_runtime_resume_and_get()`, check `ret`, unwind
-  `iommu_device_unregister` + existing sysfs remove.
-- **Version info:** none in the message. Code dates to the original
-  driver (v4.14).
-
-**Step 1.4: DETECT HIDDEN BUG FIXES**
-
-Record: Not disguised. Explicit error-path / unclocked-access fix. The
-“usage-count cleanup” wording is slightly overstated at this site
-because the old code always called `pm_runtime_put_sync()` after the
-write; the real bugs are the unclocked `writel` and probe succeeding
-after a failed resume.
-
----
-
-## PHASE 2: DIFF ANALYSIS
-
-**Step 2.1: INVENTORY THE CHANGES**
-
-Record:
-- File: `drivers/iommu/arm/arm-smmu/qcom_iommu.c` (+5 / −1)
-- Function: `qcom_iommu_device_probe()`
-- Scope: single-file surgical probe error path
-
-**Step 2.2: UNDERSTAND THE CODE FLOW CHANGE**
-
-Record: Before (only when `qcom_iommu->local_base` is set):
-`pm_runtime_get_sync` → always `writel_relaxed(0xffffffff, local_base +
-SMMU_INTR_SEL_NS)` → `pm_runtime_put_sync` → return 0. After:
-`pm_runtime_resume_and_get`; on failure `goto err_iommu_unregister`
-(unregister IOMMU, remove sysfs, return error); on success same write +
-put as before.
-
-**Step 2.3: IDENTIFY THE BUG MECHANISM**
-
-Record:
-- **Category:** (a) error-path unwind + (g) missing return check, which
-  prevents unclocked MMIO.
-- **Mechanism:** `qcom_iommu_resume()` enables iface/bus/tbu clocks via
-  `clk_bulk_prepare_enable()`. If that (or SCM restore) fails, the old
-  path still wrote `SMMU_INTR_SEL_NS`. Switch to
-  `pm_runtime_resume_and_get()` is required: `pm_runtime_get_sync()` can
-  return `1` (already active), so `if (ret)` on get_sync would mis-
-  handle success.
-
-**Step 2.4: ASSESS THE FIX QUALITY**
-
-Record: Minimal and correct. `pm_runtime_resume_and_get()` returns 0 or
-negative (`include/linux/pm_runtime.h`). Unwind matches
-`qcom_iommu_device_remove()`. Regression risk is low: only the RPM-
-failure path starts failing probe instead of succeeding after a possibly
-unclocked write. If clocks cannot be enabled, failing probe is the right
-outcome.
-
----
-
-## PHASE 3: GIT HISTORY INVESTIGATION
-
-**Step 3.1: BLAME THE CHANGED LINES**
-
-Record: The `if (qcom_iommu->local_base)` write was added in
-**0ae349a0f33fb0** (“iommu/qcom: Add qcom_iommu”, Rob Clark,
-2017-08-09), first in **v4.14-rc1**. Present in this tree (`git merge-
-base --is-ancestor 0ae349a0f33fb0 HEAD`). Long-lived bug, not new code.
-
-**Step 3.2: FOLLOW THE FIXES: TAG**
-
-Record: No Fixes: tag. Buggy code is the original 2017 driver, not a
-recent regression.
-
-**Step 3.3: CHECK FILE HISTORY FOR RELATED CHANGES**
-
-Record: Same-day IOMMU pull (Will Deacon, 2026-07-22):
-- `c579f18e79599` — adds `err_sysfs_remove` (**soft prerequisite** for
-  the new goto)
-- `bf69e515b1802` — `devm_pm_runtime_enable()` (series 2/6; changes
-  nearby error labels)
-- **`e910315ae08a2`** — this commit (series 3/6)
-- Later 4/6–6/6 are other bugs in the same file, not needed for this
-  hunk
-
-Standalone for the probe RPM check, but the hunk assumes
-`err_sysfs_remove` exists. That label is in this tree.
-
-**Step 3.4: CHECK THE AUTHOR'S OTHER COMMITS**
-
-Record: Mukesh Ojha (Qualcomm) sent the “iommu/qcom: Misc Fixes” series.
-Not the file’s listed maintainer (Rob Clark); Konrad reviewed, Will
-applied. Related author commits on this file are the rest of that
-series.
-
-**Step 3.5: CHECK FOR DEPENDENT/PREREQUISITE COMMITS**
-
-Record: Needs `err_sysfs_remove` from `c579f18e79599` (cover letter:
-series sits on Haoxiang Li’s sysfs cleanup).
-`pm_runtime_resume_and_get()` exists in this tree. Can apply standalone
-**on this checkout**. Does not need 4/6–6/6.
-
----
-
-## PHASE 4: MAILING LIST AND EXTERNAL RESEARCH
-
-**Step 4.1: FIND THE ORIGINAL PATCH DISCUSSION**
-
-Record:
-- **b4 dig:** v2 3/6, https://patch.msgid.link/20260717144608.3216274-4-
-  mukesh.ojha@oss.qualcomm.com
-- **Revisions:** v1 3/8 (2026-06-23) → v2 3/6 (2026-07-17). Same hunk;
-  v1 still had `err_pm_disable` (removed by 2/6).
-- Konrad R-b on v1 with no requested changes: Message-ID
-  `f636b144-807f-4a10-bf44-d06b169fce21@oss.qualcomm.com`
-- Will applied the whole v2 series 2026-07-22; no NAKs
-- No reviewer asked for Cc: stable
-
-**Step 4.2: CHECK WHO REVIEWED THE PATCH**
-
-Record: To/Cc included Rob Clark, Will Deacon, Joerg Roedel, Robin
-Murphy, `iommu@lists.linux.dev`, `linux-arm-msm`. Konrad R-b; Will
-merged.
-
-**Step 4.3: SEARCH FOR THE BUG REPORT**
-
-Record: No Reported-by, syzbot, or bugzilla. Author analysis of the
-error path, not a user crash report.
-
-**Step 4.4: CHECK FOR RELATED PATCHES AND SERIES**
-
-Record: Cover: “[PATCH v2 0/6] iommu/qcom: Misc Fixes”. Independent
-fixes in one file. This patch does not need 4/6 (pgtbl leak), 5/6 (mutex
-publish), or 6/6 (ctx_probe clocks). 2/6 only shifts nearby labels.
-
-**Step 4.5: CHECK STABLE MAILING LIST HISTORY**
-
-Record: gnuweeb `/stable/?q=qcom_iommu+pm_runtime_resume_and_get` had no
-discussion of this fix. Not previously rejected for stable.
-
----
-
-## PHASE 5: CODE SEMANTIC ANALYSIS
-
-**Step 5.1: IDENTIFY KEY FUNCTIONS IN THE DIFF**
-
-Record: `qcom_iommu_device_probe()`; new label `err_iommu_unregister`
-calling `iommu_device_unregister()`.
-
-**Step 5.2: TRACE CALLERS**
-
-Record: `.probe = qcom_iommu_device_probe` on `qcom-iommu`. Triggered by
-DT `qcom,msm-iommu-v1` / `v2` during boot (or bind). Not a syscall.
-`local_base` is optional (first MEM resource); the RPM get/write runs
-only if that resource exists.
-
-**Step 5.3: TRACE CALLEES**
-
-Record: `pm_runtime_resume_and_get` → `qcom_iommu_resume` →
-`clk_bulk_prepare_enable` and possibly `qcom_scm_restore_sec_cfg`. Then
-`writel_relaxed` to `SMMU_INTR_SEL_NS` (0x2000), `pm_runtime_put_sync`.
-
-**Step 5.4: FOLLOW THE CALL CHAIN**
-
-Record: Boot/device probe on MSM8916-class SoCs. Unprivileged users can
-rebind if they can unbind the driver; typical trigger is boot. Path is
-real on those boards.
-
-**Step 5.5: SEARCH FOR SIMILAR PATTERNS**
-
-Record: Same file still uses unchecked `pm_runtime_get_sync` in
-`domain_free`, `attach_dev`, `identity_attach`, `unmap`,
-`flush_iotlb_all`. Comments there already warn about unclocked TLB
-access. This commit only fixes probe. Sibling 6/6 adds a checked resume
-around ctx-bank FSR access.
-
----
-
-## PHASE 6: CROSS-REFERENCING AGAINST THE LOCAL TREE
-
-**Step 6.1: DOES THE BUGGY CODE EXIST IN THIS TREE?**
-
-Record: Local tree is **v7.3-rc4** (`git describe HEAD` =
-`v7.3-rc4-27-gf0100363d8c37`, `VERSION=7 PATCHLEVEL=3 SUBLEVEL=0
-EXTRAVERSION=-rc4`). Driver is present. The unclocked-write pattern
-existed here from v4.14 until `e910315ae08a2`. HEAD already has the
-fixed form in `qcom_iommu_device_probe()` (lines 866–880). Evaluation is
-technical merit for this tree’s code, not “already landed.”
-
-**Step 6.2: CHECK FOR BACKPORT COMPLICATIONS**
-
-Record: **Clean apply** on this tree: `err_sysfs_remove` and
-`devm_pm_runtime_enable` are present. Hunk matches current/pre-fix
-context.
-
-**Step 6.3: CHECK IF RELATED FIXES ARE ALREADY HERE**
-
-Record: No alternate fix for this probe RPM check. Sysfs unwind
-(`c579f18e79599`) is here and is what this goto chains into.
-
----
-
-## PHASE 7: SUBSYSTEM AND MAINTAINER CONTEXT
-
-**Step 7.1: IDENTIFY THE SUBSYSTEM AND ITS CRITICALITY**
-
-Record: **IOMMU / Qualcomm legacy SMMU** (`drivers/iommu/arm/arm-
-smmu/qcom_iommu.c`). **IMPORTANT** for MSM8916/8917/8937/8939/8953/8976
-(DT still uses `qcom,msm-iommu-v1`). Not core MM/VFS; IOMMU failures
-break DMA/display/modem on those SoCs.
-
-**Step 7.2: ASSESS SUBSYSTEM ACTIVITY**
-
-Record: Mature “legacy qcom_iommu” (author’s words). Occasional
-correctness fixes in 2026, not heavy churn. Long-lived bug, more
-relevant for stable.
-
----
-
-## PHASE 8: IMPACT AND RISK ASSESSMENT
-
-**Step 8.1: DETERMINE WHO IS AFFECTED**
-
-Record: **Driver/platform-specific**, `CONFIG_QCOM_IOMMU`, older
-Qualcomm ARM64 boards listed above. Not universal.
-
-**Step 8.2: DETERMINE THE TRIGGER CONDITIONS**
-
-Record: Probe, and only if `local_base` is mapped **and** runtime resume
-fails (`clk_bulk_prepare_enable` or SCM restore). Uncommon on healthy
-hardware; realistic on clock/GDSC/SCM failure. Not a normal userspace
-trigger.
-
-**Step 8.3: DETERMINE THE FAILURE MODE SEVERITY**
-
-Record: Unclocked MMIO → possible **bus hang / SError** (**HIGH** if it
-fires). Otherwise probe succeeds with `SMMU_INTR_SEL_NS` not programmed
-(**MEDIUM** functional). Trigger rarity → overall **MEDIUM–HIGH**, still
-a real hang class, not cosmetic.
-
-**Step 8.4: CALCULATE RISK-BENEFIT RATIO**
-
-Record:
-- **Benefit:** Avoid hang/abort and false-successful probe when clocks
-  cannot come up; fail cleanly and unwind registration.
-- **Risk:** Very low (6-line error path, reviewed, standard API).
-- **Ratio:** Favorable.
-
----
-
-## PHASE 9: FINAL SYNTHESIS
-
-**Step 9.1: COMPILE THE EVIDENCE**
-
-**FOR:**
-- Real unclocked MMIO on a documented-sensitive Qualcomm path
-- Small (+5/−1), obviously correct
-- `pm_runtime_resume_and_get` is the right API (get_sync’s `1` is
-  success)
-- Konrad R-b, Will merged; no NAKs
-- Driver in this tree since v4.14; DT still ships for several SoCs
-- Same-file comments treat unclocked access as a real hang risk
-- Prerequisites (`err_sysfs_remove`, `pm_runtime_resume_and_get`) are in
-  this tree
-- Matches stable’s “oops, hang, … or some ‘oh, that’s not good’ issue”
-
-**AGAINST:**
-- No user/syzbot report; error path is uncommon
-- Series patch 3/6 (but functionally independent)
-- Other `get_sync` sites in the file remain unchecked
-- Usage-count leak at this site was already balanced by `put_sync`
-
-**UNRESOLVED:** lore.kernel.org HTTP 403; discussion recovered via `b4
-dig` mbox, gnuweeb, and openwall. No evidence of a field crash, only
-code-path analysis.
-
-**Step 9.2: APPLY THE STABLE RULES CHECKLIST**
-
-1. Obviously correct and tested? **PASS** — API contract matches;
-   maintainer applied after R-b
-2. Fixes a real bug that affects users? **PASS** — unclocked write and
-   successful probe after failed resume on shipped MSM8916-class IOMMU
-3. Important issue? **PASS** — hang/SError class; trigger is rare but
-   severity is not “trivial”
-4. Small and contained? **PASS** — 6 lines, one function
-5. No new features or APIs? **PASS**
-6. Can apply to the local tree? **PASS** — code and labels exist here
-
-**Step 9.3: CHECK FOR EXCEPTION CATEGORIES**
-
-Record: None (not a device ID, quirk table, DT, build, or doc fix).
-Qualifies as a normal small bugfix.
-
-**Step 9.4: MAKE YOUR DECISION**
-
-This is a small, reviewed probe-path fix that stops a `writel` to SMMU
-MMIO when runtime resume (clocks) has failed, and fails probe instead of
-continuing. That is a real stability bug on a still-used Qualcomm IOMMU,
-the change is contained, and this checkout has the driver plus the sysfs
-unwind label the hunk uses. Benefit outweighs risk.
-
----
-
-### What the commit solves for this tree
-
-`qcom_iommu_device_probe()` programmed `SMMU_INTR_SEL_NS` after
-`pm_runtime_get_sync()` with no check. Resume enables the IOMMU clocks;
-on failure the write can hit unclocked hardware (hang/SError) and probe
-still returned 0. The fix uses `pm_runtime_resume_and_get()`, returns
-the error, and unregisters the IOMMU device.
-
-It meets stable rules: obviously correct, real hang-class bug, ~6 lines,
-no new API. Risk is confined to the already-broken clock-failure path.
-
----
-
-### Verification
-
-- **[Phase 1]** Parsed `e910315ae08a2`: R-b Konrad Dybcio; SOB Mukesh
-  Ojha, Will Deacon; no Fixes/Reported-by/stable Cc
-- **[Phase 2]** Diff: +5/−1 in `qcom_iommu_device_probe()`;
-  `pm_runtime_get_sync` → checked `pm_runtime_resume_and_get` +
-  `err_iommu_unregister`
-- **[Phase 2]** Confirmed `pm_runtime_resume_and_get()` returns 0 or
-  negative (`include/linux/pm_runtime.h`); `get_sync` may return 1
-- **[Phase 2]** Confirmed resume path: `qcom_iommu_resume()` →
-  `clk_bulk_prepare_enable()`
-- **[Phase 3]** Blame: write from `0ae349a0f33fb0` (v4.14-rc1); `merge-
-  base --is-ancestor` true
-- **[Phase 3]** `c579f18e79599` and `bf69e515b1802` are ancestors of
-  HEAD
-- **[Phase 4]** `b4 dig -c e910315ae08a2`: v2 3/6 of “Misc Fixes”; v1
-  3/8 same hunk
-- **[Phase 4]** `b4 dig -a/-w/-m`: Konrad R-b, Will applied 1/6–6/6;
-  recipients were IOMMU/QCOM lists; no NAK
-- **[Phase 4]** Stable-list search: no prior discussion of this fix
-- **[Phase 5]** Probe is platform driver for `qcom,msm-iommu-v1/v2`; DT
-  hits in msm8916/8917/8937/8939/8953/8976
-- **[Phase 6]** `git describe HEAD` = `v7.3-rc4-27-gf0100363d8c37`;
-  Makefile 7.3.0-rc4; driver present; hunk matches
-- **[Phase 8]** Failure mode: unclocked MMIO hang/SError if RPM resume
-  fails at probe; severity HIGH if hit, trigger uncommon
-- **UNVERIFIED:** lore.kernel.org 403 (mbox/mirrors used instead); no
-  field reproducer found
-
-The fix is small, surgical, and meets the stable criteria for this tree.
-
-**YES**
-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 9bee85259c69e..fbe4bd3ec0c42 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -863,13 +863,17 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 	}
- 
- 	if (qcom_iommu->local_base) {
--		pm_runtime_get_sync(dev);
-+		ret = pm_runtime_resume_and_get(dev);
-+		if (ret)
-+			goto err_iommu_unregister;
- 		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
- 		pm_runtime_put_sync(dev);
- 	}
- 
- 	return 0;
- 
-+err_iommu_unregister:
-+	iommu_device_unregister(&qcom_iommu->iommu);
- err_sysfs_remove:
- 	iommu_device_sysfs_remove(&qcom_iommu->iommu);
- err_pm_disable:
--- 
-2.53.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|SA5PPFDC35F96D4:EE_
+X-MS-Office365-Filtering-Correlation-Id: 92fe6902-27bc-4587-4874-08df2dea377a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|7416014|366016|23010399003|261009223027099003|18002099003|22082099003|10067099003|11063799006|5023799004|56012099006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	+Epm+lUavSciUcpuvPgunvruwP55/WAJOLYhM4P5EUNCEW9mw5wvbeWwMGK9CQAHr0BUKuc4W7KpQVVKjAT735Za/9IFqge1TYUnYKVsnGEwSJZDXQizHxj2udWmarpf1ad02WDwD4jBYdYoB1aeco0o+DnFSOjS6trHDIAZSGuI4PejXTsHWywmmwCQGAgQDe6lfpYc5Rx9sAUI5zYPFNPfDaSgqWUlgRtj2kNmhbFiuxSOj5mqgv9y3VVORy63w1NsaOkMcAip8r7b2JdL83QBaXc75a35Si8WRt5ROMnp6TJeVXhi19z0qlrny3dGNPD/euYRAZcxY5TBrrohrTJTsDkalIty68os8AoNu3twOIQMlphDBDUy4LlUk60omQD3b1Uu5F6MaP9dCviMn/RZrWr+BSwth3VKiT4SaDeOgni7UMICxJxawdCGD07jCX9XNXGynwc45B3VYONaBfSUOX+nKy7rDr1gTcU7RkJvUNdkWH8pfgJgzChV8LDNy5x7fT7ngaVzAb0Lhk88D/JjmUtAXmPdKbZH+A9Ss9voA10q0usPPfA06RO3011lgkEg+cMM7HRN1JF+TnCilLMJ8OLyIPCSQVCPig4/yHf4f+Y2c5jS8MqblsM2TKkETIVZa0WJiWVVnrFYH0/5L/4Ak9Zd4VXni6hZHyOQZJ8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(366016)(23010399003)(261009223027099003)(18002099003)(22082099003)(10067099003)(11063799006)(5023799004)(56012099006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bGppQ1Bzcjc2dTBpUjVxKy9UZm05V2Y1dS9qUUIzTGp2WWd2eWh2cUxBM2Rj?=
+ =?utf-8?B?UmNOcE8yL0dRLzI1OHQvMDZvY0VxNWxkZ3I3emU2WHdpeHB1WTUweDRLc2Vs?=
+ =?utf-8?B?bkhLZStEdGJ4ZUh4aGxURjhhckVKQVFWS3RYdFZZM0NpNkkybWUxb1dYVDNK?=
+ =?utf-8?B?dlc5UlluNnVPZGViTnQzc2pxNFNyZ3dEaUltSHhwbWN4VVpmZFZQM3M4UGQ3?=
+ =?utf-8?B?ME9PWEtaSnRMZldIdTBScldFQ2RhM2FxUm91aU9vN0JrTUY4ZDJQM3pVMGhy?=
+ =?utf-8?B?bHdhQ1AxQWwyMjYvbFBzUE96NUp6TjFxQlU4d1UvWnQ1MmFXeXl5RlRtbzFh?=
+ =?utf-8?B?T2ZWbG9IMkdtSHN4QW9sOVFGSUpQKytwRFAyZHNINmZqcWZ6VUJtQnhyTCtW?=
+ =?utf-8?B?QXc4RnVpb0hCMyt2VkFFSXZsandTZW1CemgxSXRtVFlweElCeS9tejl5dVNE?=
+ =?utf-8?B?WGM5NlBOR2lNcUg1Wi8wTTZma0ZBNzhVTk5KbzZ3SmNyeThhUEpjbXgydzUr?=
+ =?utf-8?B?dm1ZSW5CUnE0YWlwYVh4NS9ldzQySDNDRGdJNmlGbUxtYlE4T0hHWkFVb2Ru?=
+ =?utf-8?B?MkhJemt2VFlkb1IzSERwbVY0UFlFTTIzUDE2SFpjcjB6NitXdERheGdiRkJV?=
+ =?utf-8?B?UEF2K2F3VDErL1VTTHN4aEJjOWdmenhWTlVNcTVlM29hL1JoN2wwYzViTmdF?=
+ =?utf-8?B?V0FUd2NPR3BSbmlINXBGL1ZPQU9VSXFDUVVjYWdxa3RDNU94Z29KdHBTYy9u?=
+ =?utf-8?B?d1lMSVNtRlM2R1Nvck1DcUkvWEsyblhlWmxWdldoQ0p5citXa2NLenJuZXNq?=
+ =?utf-8?B?anpTRlh5VVFrNnBYWk9RVElzTHZ2OU0wNzl6MTdCMXo3a2M4KzlBR2tURVRv?=
+ =?utf-8?B?VVh1ZWtOK1FTeE5wbXlEbW5GRkthTXYxUVJ1TVFwR0dxTWF4dlFaL3YzVEhC?=
+ =?utf-8?B?Rk5aVEZLcEdNaTJyQUZMUHo5QmFXRGNkVytQeUVBM0J1Vmt2aGxPRjlkekxl?=
+ =?utf-8?B?cXEyaXhQdHd6VXJIMEZhWFNqOGRoL0Z3ZlA0ZExtL3VDbjlZTmY0d0pGZlhK?=
+ =?utf-8?B?dXlkamZzNFVMQStSYXkwOXlndXpTMVh1OE5rcjNTOUhTT3BwNFZLTlZzaVU4?=
+ =?utf-8?B?VG9sOVl2aG9NTjQyODhNbE1iS3BDczBvaUtWelpkZnlieVp0cW1aNXRqVjNJ?=
+ =?utf-8?B?ZytXYXNoSHV6SUhlT3pPMWtNT1dKVnFERU5vajhXNWRwUnJxOU9BTFdwN0JI?=
+ =?utf-8?B?ZmRQaFRYd2JueDdhL3pUbTRXcmhQcW9ZbGZPZkhOYy81bkExQklvQTJCemhy?=
+ =?utf-8?B?YTdqWWJIbGNJOGt5T3dRb1E4TkF1c1pGeTVnYVRRbVlZQjVUUlE1VWs2SVBx?=
+ =?utf-8?B?bVJSUUN1MG9VOUxTK1IxR2FRZ09MNG5aUFlJd05nejRXdk9iVUw3cjBUd0l5?=
+ =?utf-8?B?Y2lZTDJ3QWdFTWZzak9RT2t6WEo5L01EZDREWXhjSFRCNDQyaUh4OUR3TnhN?=
+ =?utf-8?B?aHhRQkJ4TkJNSG56NUVlV3d0THJnVkUvQ2JNUFBadjdValBNNUJ0WW13ZS9x?=
+ =?utf-8?B?eEdWVDdMTGhESzhRbFdhK29Fb25JSUg3YnhNYXlSSGdtYlp2cnVjS1BWUlpi?=
+ =?utf-8?B?cVNQU0IzTjgwZlZzd2o2dWpFODZ5MURqUWVBcG5naXhQNHpaQWtMaHpGYlkx?=
+ =?utf-8?B?eUpCeTBMMDBjN01Qb0ozdXpwM25MNHJhaGFRK09kaXJSVlpsNTQrK05vTVRY?=
+ =?utf-8?B?RmxCMWh0VmJDTmtxNGF6eXdqVzNGaDY2eWZFRG16MTNEUkVjYmlLSHVwWTdk?=
+ =?utf-8?B?czhEMkhSOUZxUkE4eEdhVHZtbGlZK3ovV21DMEtBd0hBZmFkelp3b0ZVZmpm?=
+ =?utf-8?B?STlKZ2RUVFV3MmRMa3lMRnE5MFA5MVNHNVk1OVlyYUkya09nSzV5aklpTzNa?=
+ =?utf-8?B?L1J5ekEvbG0zSG1sWklFVmN0ZC81UVJSQ0RSL0piTUViRU9KbzFCVkRWaGsw?=
+ =?utf-8?B?bkxDUU9UVk9VZ21OQ2N4K1NPY3ZNbjAxdFpPYkIva0IzT1ZoQis5dEtGRFd1?=
+ =?utf-8?B?UUozcW5Yd1lFYWxZbjlITUZJSVZsS1VMMmZkb0c5S3lGVXZkT3NTc2F3eXAz?=
+ =?utf-8?B?azdqZUR6TUZtY0o2T2tTTHhUU1JOYzVtTXBXZU1meHNNQlJVZGRUeFJaTWlI?=
+ =?utf-8?B?RUhVeExhWXJOUmE2RHQ3d0tXUjBIUDhCdlBmdDJWVDR0M0tjYS9xeXlXQlkv?=
+ =?utf-8?B?TmZpcWU5aTczZm0wNFNvVkpGK0lQWktKc1JPZk8xQ01Xa1ZUU2Y1ZWF2L3dl?=
+ =?utf-8?Q?wGIHrnX7bSEkDHk1CF?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92fe6902-27bc-4587-4874-08df2dea377a
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2026 14:06:48.8134
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AKk+OOAH8mQYvKQZ7zt31njENPW/GwcZ72+dxUzVEPerd2f+ZS2hYafkhyOhD7lHunkAOuGoTux2TyjotVn1rg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPFDC35F96D4
+
+
+
+On 9/30/2026 2:53 PM, Suravee Suthikulpanit wrote:
+> AMD vIOMMU introduces the IOMMU Private Address (IPA) region for
+> guest-side IOMMU virtualization data structures.
+> 
+> Introduce a per-IOMMU v1 paging domain in viommu_pdom, allocate
+> 8MB of backing memory as four 2MB subregions, map them into the
+> domain, and add viommu_private_space_init() /
+> viommu_private_space_uninit() as a matched pair.
+> 
+> Register the owning IOMMU in viommu_pdom->iommu_array via
+> amd_iommu_pdom_bind_iommu() so unmap uses the standard
+> domain_flush_pages_v1() IOTLB invalidation path. On bare metal
+> iommu_map() does not flush (amd_iommu_iotlb_sync_map() returns
+> early unless amd_iommu_np_cache is set).
+> 
+> Call viommu_private_space_uninit() from amd_viommu_uninit() so
+> boot failure and free_iommu_one() release the 8MB IPA mapping.
+> Failed amd_viommu_init() after VF mapping goes through uninit.
+> 
+> viommu_priv_alloc_map() takes a gfp for backing pages and
+> iommu_map() page tables. Boot uses GFP_KERNEL.
+> iommu_alloc_pages_node_sz() zeros them. On set_memory_uc()
+> or iommu_map() failure, restore WB or leak rather than returning
+> UC-mapped memory to the allocator. iommu_map() already unmaps
+> any partial IOVA.
+> 
+> Skip IOTLB invalidation when CONTROL_CMDBUF_EN is clear so boot
+> failure after disable_iommus() does not wait on a dead command
+> buffer.
+> 
+> set_memory_uc() on each 2MB-aligned subregion splits the x86
+> direct map to 4KB PTEs. set_memory_wb() on free does not
+> re-coalesce them, so the direct map stays fragmented (8MB per
+> vIOMMU-capable IOMMU) for the life of the machine.
+> 
+> The private IPA domain skips iommu_domain_init(), so set
+> IOMMU_DOMAIN_UNMANAGED. set_dte_entry() only programs a v1 table
+> when type has __IOMMU_DOMAIN_PAGING; type 0 would WARN and install
+> a cleared DTE when increase_top() rewrites the self DTE.
+> > For more info, see section vIOMMU Private Address Space of the
+> IOMMU specification [1].
+> 
+> [1] https://docs.amd.com/v/u/en-US/48882_3.10_PUB
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
+>  drivers/iommu/amd/amd_iommu.h       |   5 +
+>  drivers/iommu/amd/amd_iommu_types.h |  11 ++
+>  drivers/iommu/amd/init.c            |   7 +-
+>  drivers/iommu/amd/iommu.c           |  13 +-
+>  drivers/iommu/amd/viommu.c          | 192 ++++++++++++++++++++++++++++
+>  5 files changed, 225 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+> index 8c298e090889..a0d5d7e34020 100644
+> --- a/drivers/iommu/amd/amd_iommu.h
+> +++ b/drivers/iommu/amd/amd_iommu.h
+> @@ -53,6 +53,8 @@ extern bool amd_iommu_hatdis;
+>  /* Protection domain ops */
+>  void amd_iommu_init_identity_domain(void);
+>  struct protection_domain *protection_domain_alloc(void);
+> +struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev,
+> +						      u32 flags);
+>  struct iommu_domain *amd_iommu_domain_alloc_sva(struct device *dev,
+>  						struct mm_struct *mm);
+>  void amd_iommu_domain_free(struct iommu_domain *dom);
+> @@ -94,6 +96,9 @@ void amd_iommu_domain_flush_pages(struct protection_domain *domain,
+>  void amd_iommu_dev_flush_pasid_pages(struct iommu_dev_data *dev_data,
+>  				     ioasid_t pasid, u64 address, u64 last);
+>  
+> +int amd_iommu_pdom_bind_iommu(struct amd_iommu *iommu, struct protection_domain *pdom);
+> +void amd_iommu_pdom_unbind_iommu(struct amd_iommu *iommu, struct protection_domain *pdom);
+> +
+>  #ifdef CONFIG_IRQ_REMAP
+>  int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
+>  #else
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index 9eb9a0c190de..9a90b8fe0fe3 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -417,6 +417,13 @@
+>  /* Guest ID bits 0-14; bit 15 is reserved for secure vIOMMU. */
+>  #define VIOMMU_MAX_GID		0x7FFF
+>  
+> +/*
+> + * Total IOMMU private region is 8MB (4 x 2MB-subregion)
+> + */
+> +#define VIOMMU_PRIV_REGION_BASE		(0)
+> +#define VIOMMU_PRIV_SUBREGION_CNT	(4)
+> +#define VIOMMU_PRIV_SUBREGION_SIZE	(0x200000)  /* 2MB */
+> +
+>  /* Timeout stuff */
+>  #define LOOP_TIMEOUT		100000
+>  #define MMIO_STATUS_TIMEOUT	2000000
+> @@ -804,6 +811,10 @@ struct amd_iommu {
+>  	unsigned char iopfq_name[32];
+>  
+>  	struct ida gid_ida;		 /* guest IDs for this IOMMU */
+> +
+> +	/* HW vIOMMU support */
+> +	struct protection_domain *viommu_pdom;
+> +	void *viommu_priv_region[VIOMMU_PRIV_SUBREGION_CNT];
+>  };
+>  
+>  static inline struct amd_iommu *dev_to_amd_iommu(struct device *dev)
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 5be422591bac..d34f991dee24 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -1805,7 +1805,12 @@ static void __init free_sysfs(struct amd_iommu *iommu)
+>  static void __init free_iommu_one(struct amd_iommu *iommu)
+>  {
+>  	free_sysfs(iommu);
+> -	/* Tear down vIOMMU before IOMMU buffers and MMIO are released. */
+> +	/*
+> +	 * Tear down vIOMMU before buffers and MMIO are released.
+> +	 * IOTLB invalidation runs only while CONTROL_CMDBUF_EN is
+> +	 * set (amd_viommu_init() unwind). disable_iommus() clears
+> +	 * that bit first on the boot-failure path.
+> +	 */
+>  	amd_viommu_uninit(iommu);
+>  	free_iommu_buffers(iommu);
+>  	amd_iommu_free_ppr_log(iommu);
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index ae44050fe86a..dfb9268f3c4e 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2509,6 +2509,16 @@ static void pdom_detach_iommu(struct amd_iommu *iommu,
+>  	spin_unlock_irqrestore(&pdom->lock, flags);
+>  }
+>  
+> +int amd_iommu_pdom_bind_iommu(struct amd_iommu *iommu, struct protection_domain *pdom)
+
+Why not just rename pdom_attach_iommu / pdom_detach_iommu ?
+
+> +{
+> +	return pdom_attach_iommu(iommu, pdom);
+> +}
+> +
+> +void amd_iommu_pdom_unbind_iommu(struct amd_iommu *iommu, struct protection_domain *pdom)
+> +{
+> +	pdom_detach_iommu(iommu, pdom);
+> +}
+> +
+>  /*
+>   * If a device is not yet associated with a domain, this function makes the
+>   * device visible in the domain
+> @@ -2858,8 +2868,7 @@ static const struct iommu_dirty_ops amdv1_dirty_ops = {
+>  	.set_dirty_tracking = amd_iommu_set_dirty_tracking,
+>  };
+>  
+> -static struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev,
+> -							     u32 flags)
+> +struct iommu_domain *amd_iommu_domain_alloc_paging_v1(struct device *dev, u32 flags)
+>  {
+>  	struct pt_iommu_amdv1_cfg cfg = {};
+>  	struct protection_domain *domain;
+> diff --git a/drivers/iommu/amd/viommu.c b/drivers/iommu/amd/viommu.c
+> index c9207ed47fb6..89d6dc520b2c 100644
+> --- a/drivers/iommu/amd/viommu.c
+> +++ b/drivers/iommu/amd/viommu.c
+> @@ -17,6 +17,7 @@
+>  #include "amd_iommu.h"
+>  #include "amd_iommu_types.h"
+>  #include "amd_viommu.h"
+> +#include "../iommu-pages.h"
+>  
+>  static void __init amd_viommu_vf_vfcntl_unmap(struct amd_iommu *iommu)
+>  {
+> @@ -39,9 +40,12 @@ static void __init amd_viommu_vf_vfcntl_unmap(struct amd_iommu *iommu)
+>  	}
+>  }
+>  
+> +static void viommu_private_space_uninit(struct amd_iommu *iommu);
+> +
+>  void __init amd_viommu_uninit(struct amd_iommu *iommu)
+>  {
+>  	iommu->flags &= ~AMD_IOMMU_FLAG_VIOMMU_EN;
+> +	viommu_private_space_uninit(iommu);
+>  	amd_viommu_vf_vfcntl_unmap(iommu);
+>  }
+>  
+> @@ -110,6 +114,187 @@ static int __init viommu_vf_vfcntl_init(struct amd_iommu *iommu)
+>  	return -ENOMEM;
+>  }
+>  
+> +/*
+> + * Restore WB and free @va. If WB restore fails, leak the pages so
+> + * UC-MINUS direct-map PTEs and the PAT memtype reservation are not
+> + * returned to the buddy allocator.
+> + */
+> +static void viommu_priv_wb_free(void *va, size_t size)
+
+Better viommu_priv_free() so that it matches the alloc function?
+
+
+> +{
+> +	if (WARN_ON_ONCE(set_memory_wb((unsigned long)va,
+> +				       size >> PAGE_SHIFT)))
+> +		return;
+> +	iommu_free_pages(va);
+> +}
+> +
+> +/*
+> + * Allocate backing pages, mark UC, and map at @iova in viommu_pdom.
+> + * *@out_va is NULL on any failure. @gfp is used for the backing
+> + * folio and iommu_map() page tables.
+> + */
+> +static int viommu_priv_alloc_map(struct amd_iommu *iommu, u64 iova, size_t size,
+> +				 gfp_t gfp, void **out_va)
+> +{
+> +	int ret;
+> +	void *va;
+> +	int nid = iommu && iommu->dev ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
+> +
+> +	*out_va = NULL;
+> +
+> +	if (!iommu || !iommu->viommu_pdom)
+> +		return -EINVAL;
+
+Redundant check as its static function and know we it gets called only if iommu
+and viommu_pdom is valid.
+
+> +
+> +	va = iommu_alloc_pages_node_sz(nid, gfp, size);
+> +	if (!va)
+> +		return -ENOMEM;
+> +
+> +	/*
+> +	 * IOMMU spec: backing storage must be UC. set_memory_uc()
+> +	 * splits covering 2MB direct-map pages to 4K; set_memory_wb()
+> +	 * does not re-coalesce them.
+> +	 */
+> +	ret = set_memory_uc((unsigned long)va, size >> PAGE_SHIFT);
+> +	if (ret)
+> +		goto err_uc;
+> +
+> +	ret = iommu_map(&iommu->viommu_pdom->domain, iova,
+> +			iommu_virt_to_phys(va), size,
+> +			IOMMU_READ | IOMMU_WRITE, gfp);
+> +	if (ret)
+> +		goto err_uc;
+> +
+> +	*out_va = va;
+> +	return 0;
+> +
+> +err_uc:
+> +	viommu_priv_wb_free(va, size);
+> +	return ret;
+> +}
+> +
+> +static bool viommu_cmdbuf_enabled(struct amd_iommu *iommu)
+> +{
+> +	if (!iommu->mmio_base)
+> +		return false;
+> +	return readq(iommu->mmio_base + MMIO_CONTROL_OFFSET) &
+> +	       BIT_ULL(CONTROL_CMDBUF_EN);
+> +}
+> +
+> +/*
+> + * Unmap @iova if the command buffer is still enabled, restore WB, and
+> + * free @cpu_va. Skip IOTLB invalidation after disable_iommus().
+> + */
+> +static void viommu_priv_unmap_free(struct amd_iommu *iommu, u64 iova, size_t size,
+> +				   void *cpu_va)
+> +{
+> +	size_t unmapped;
+> +
+> +	if (!cpu_va)
+> +		return;
+> +	if (!iommu || !iommu->viommu_pdom)
+> +		return;
+> +
+> +	if (viommu_cmdbuf_enabled(iommu)) {
+
+Hmmm. Why do we need this check?  We already have AMD_IOMMU_FLAG_VIOMMU_EN to
+track whether vIOMMU is enabled or not. So in amd_viommu_uninit() path, if
+required we can check that flag so that we are sure command buffer was enabled.
+
+
+-Vasant
 
