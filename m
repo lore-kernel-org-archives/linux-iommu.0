@@ -1,47 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BB5D4D3BC1;
-	Mon, 19 Oct 2026 14:01:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF64527FB1;
+	Mon, 19 Oct 2026 14:02:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792418517; cv=none; b=QmPWIxhiS9Oj/OjgEuFRlcYAnnYX/r3vgF4fplPnEJMqC0hnJ6AkR+TEViJTbpdxbnZNHjawF4GuuGCr9jEBXWcUEuB4Z57a+EABd5eEyJTr5zsrYI4P5l58iSFPmPZsBPDrpB2jH+M0B0i9A17zDCU2JpR3hDBZ0dewCOL74JM=
+	t=1792418574; cv=none; b=qyPWc/8Y3bn/LYQmQm8H94dburBBvNjoEcBSLO7I6FJ0eclN6cjckoztKaoIKiwFPyO33Q0Uay73UOK04LhNvD4hprV3VbLem0OCK4qsS3NQ+IPi6vsZC4JD9rinjacfvE3s4wkbgd8TpBAZjj11O9EGhcARqxtF/Lf1bfSFCCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792418517; c=relaxed/simple;
-	bh=QTirHrIn1Zc4NgTjLu0XMpXGjojBjDEi/jkUjkhP+xg=;
+	s=arc-20240116; t=1792418574; c=relaxed/simple;
+	bh=+1ZWmQmS7jC1pco+Ozx6kg7JXui4zpUeJ0lalaES/0E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JJ8ymA6z4Eb8WIcI+/4VJxaEaXSotxRSd8WxsEYZVSXKvKWiF/USwihF4si4OOrmdl1WcDEDGT4q++OJ1mKk6NJf4/DqdYB1RFG5hEiyEORMUTiDK96CTpGtvhTgKnSW6/eO9jJqV5fxziO0YskdhevFaZK6kvny7CTMx1iiSSg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aPmLKmmy; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=QKNcRLJ6DsCnzu0nNrfl9u6WZFzGABXj6sBiDOTvzl5VxUxL3OxUEZdjE8osTcaGhLnzwP3wKMFEed+m7JZOEiuU9GSD85cV4MqsLjtaaOeiwB4OjuRaE0h2E4sltSmeWZqup7Qut6M3lPy/fzVxI3WwaSct2BaOSrGx+b8DYdE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DqXoXndN; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aPmLKmmy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BE7C1F000C7;
-	Mon, 19 Oct 2026 14:01:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DqXoXndN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F86A1F000C4;
+	Mon, 19 Oct 2026 14:02:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792418514;
-	bh=FfMEqOk9tEAGb7JSgvHuG1mrEWOKhoUT079PF0wQ09Q=;
+	s=k20260515; t=1792418571;
+	bh=kvnjUFG/xYwm+NO+qD6stlC04XHUVrYTPecZAg78TVo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=aPmLKmmyA1ZlDfopwxi6ieXbvagkYrtwhQyCun9izbbgET1l3+uWQqEw9Ibos6ngR
-	 BxLFrGanZ1/sKrDFKs4pUqSi8467Ie/13aNgdrXjVcAHT0iEtaJhOX7pH3bvOKeIG2
-	 8lxKulmNUplHkWW6LhTBC4RAItxoKvC5if+e5X+44c3ziIMWlU8jCzt92TkmUt1eFF
-	 YELhQgsyra/79IVHs63cxegJZTT6Ija8qyjXyKm6N/c+xBxlrXlet4ixYl/VG2nem4
-	 1C9dlJtHIN3AtScgSzyFuLBIBgIs9VFbtCEhIwsabCZxC+EfH/CPjBzUk28s6sGN/6
-	 kK0/1Ww9d0NYw==
+	b=DqXoXndNKnS8fnPbfriMzHZ+67xbnT+aM4apZ4mCSmVhejV08Btca1t0aLb/BzPK8
+	 MKkfNKtn+BJh2P5re4b/Q2WSKc/jsYWbzZwXlmYtTwyjHE1QXMKJU2e1EaeMcUYfHd
+	 XDp39gUf+Alh8xwIVxGgrZ8f8iCRSNvRFzsxXZGxV65F7+NavVTPsTDelD2XxOrFIU
+	 4J2W42vFcqaTDRUK9sc6syMq0vd+PGhws6I78Ipc8KfUPvtd1F9Fsan3BMeSQ4qDRm
+	 4GBQWhxWqxr4rY0gwtI+9q97fRyG8qqe2QmOgmmh5CBQF61ExTPQMlw8HUYtPRjEY1
+	 wCvnSpb3Zy30g==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Guanghui Feng <guanghuifeng@linux.alibaba.com>,
-	Guixin Liu <kanie@linux.alibaba.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joerg.roedel@amd.com>,
+Cc: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
-	dwmw2@infradead.org,
+	robin.clark@oss.qualcomm.com,
 	joro@8bytes.org,
-	will@kernel.org,
 	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-6.12] iommu/vt-d: Fix CACHE_TAG_NESTING_DEVTLB polluting shared variables in flush loop
-Date: Mon, 19 Oct 2026 09:49:53 -0400
-Message-ID: <20261019135441.1420968-302-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.18-5.10] iommu/qcom: Check pm_runtime_resume_and_get() return in probe
+Date: Mon, 19 Oct 2026 09:50:33 -0400
+Message-ID: <20261019135441.1420968-342-sashal@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261019135441.1420968-1-sashal@kernel.org>
 References: <20261019135441.1420968-1-sashal@kernel.org>
@@ -57,49 +57,29 @@ X-stable-base: Linux 6.18.57
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+From: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
 
-[ Upstream commit 3846e469c1ba1407260066070bff5c88ee39a4c7 ]
+[ Upstream commit e910315ae08a23bc953daed10b1c518abac1df49 ]
 
-In cache_tag_flush_range(), the CACHE_TAG_NESTING_DEVTLB case modifies the
-shared local variables 'addr' and 'mask' before falling through to
-CACHE_TAG_DEVTLB. This causes all subsequent CACHE_TAG_DEVTLB entries in
-the same loop iteration to incorrectly use the full-range flush parameters
-(addr=0, mask=MAX_AGAW_PFN_WIDTH) instead of the precisely calculated PSI
-range. This is not the intended behavior, as regular DEVTLB entries should
-always perform targeted range-based invalidation.
+The SMMU_INTR_SEL_NS register write in qcom_iommu_device_probe() uses
+pm_runtime_get_sync() without checking the return value. If runtime
+resume fails the subsequent writel_relaxed() would access hardware with
+clocks potentially disabled.
 
-Fix this by having CACHE_TAG_NESTING_DEVTLB directly call
-cache_tag_flush_devtlb_psi() with the full-range constants and break,
-instead of modifying shared variables and falling through. This ensures
-CACHE_TAG_DEVTLB always uses the original calculated addr and mask for
-precise range flush.
+Switch to pm_runtime_resume_and_get() which handles the usage-count
+cleanup on failure, check the return value, and unwind the already
+registered iommu device on error.
 
-This change slightly affects trace_cache_tag_flush_range() behavior.
-Previously, after addr/mask were overwritten, the tracepoint could record
-a full-range flush even when the caller requested a narrower range.
-
-The tracepoint should reflect caller intent. Although this helper may
-widen the actual hardware invalidation range for implementation reasons,
-that does not change what the caller requested, so logging the requested
-range is the correct behavior.
-
-If the actual invalidation range sent to hardware is needed, it is already
-visible via the qi_submit trace event, which records the invalidation
-descriptors emitted by the driver.
-
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Signed-off-by: Mukesh Ojha <mukesh.ojha@oss.qualcomm.com>
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
 
 LLM Generated explanations, may be completely bogus:
 
-The remaining thread parse confirms two vendors independently hit the
-same flush-loop bug. I’ll wrap the nine-phase analysis against this 6.12
-tree only.
+I have the tree version, the probe path, series context, and review
+thread. Compiling the nine-phase analysis and verdict next.
 
 ---
 
@@ -107,44 +87,47 @@ tree only.
 
 **Step 1.1: PARSE THE SUBJECT LINE**
 
-Record: **[iommu/vt-d] [Fix] [CACHE_TAG_NESTING_DEVTLB mutates shared
-`addr`/`mask` in `cache_tag_flush_range()`, so later tags in the same
-loop use a full-range flush instead of the calculated PSI range]**
+Record: **[iommu/qcom]** **[Check]** Check `pm_runtime_resume_and_get()`
+return in probe. “Check” here is a missing-error-handling fix, not a
+feature.
 
 **Step 1.2: PARSE ALL COMMIT MESSAGE TAGS**
 
 Record:
-- **Signed-off-by:** Guanghui Feng (author, Alibaba), Guixin Liu
-  (Alibaba), Lu Baolu (Intel VT-d maintainer), Joerg Roedel (IOMMU
-  maintainer)
+- **Reviewed-by:** Konrad Dybcio \<konrad.dybcio@oss.qualcomm.com\>
+  (Qualcomm reviewer)
+- **Signed-off-by:** Mukesh Ojha \<mukesh.ojha@oss.qualcomm.com\>
+  (author)
+- **Signed-off-by:** Will Deacon \<will@kernel.org\> (IOMMU/SMMU
+  maintainer who applied it)
 - **No Fixes:** tag (expected for this review pipeline)
 - **No Cc: stable** (expected)
-- **No Reported-by / Tested-by / Reviewed-by / Acked-by / Link** on the
-  committed message
-- Independent earlier submission of the same bug exists (Baidu; see
-  Phase 4)
+- **No Reported-by / Tested-by / Link / Acked-by**
+- Ignore any pipeline “Signed-off-by: Sasha Levin” / “[Upstream commit
+  …]” markers (none in the real commit)
 
 **Step 1.3: ANALYZE THE COMMIT BODY TEXT**
 
 Record:
-- **Bug:** In `cache_tag_flush_range()`, `CACHE_TAG_NESTING_DEVTLB`
-  writes `addr = 0` and `mask = MAX_AGAW_PFN_WIDTH` then `fallthrough`s
-  into `CACHE_TAG_DEVTLB`. Those locals are computed once before the
-  loop, so every later tag sees the full-range values.
-- **Symptom:** Regular DevTLB (and, in this tree, later IOTLB)
-  invalidations become global/full-range instead of the caller’s PSI
-  range. Tracepoint can also log a full-range flush when the caller
-  asked for a narrower range.
-- **Version info:** None in the message. Introduced with cache-tag
-  helpers (v6.11); present in this 6.12 tree.
-- **Root cause:** Shared loop variables overwritten for one tag type,
-  then reused for all later tags.
+- **Bug:** `qcom_iommu_device_probe()` does `pm_runtime_get_sync()` then
+  `writel_relaxed()` to `SMMU_INTR_SEL_NS` without checking the PM call.
+- **Symptom:** If runtime resume fails, MMIO is written with clocks
+  possibly off. On Qualcomm that can hang the interconnect / SError, and
+  probe still returns success so interrupt routing may be wrong.
+- **Root cause:** ignored `pm_runtime_get_sync()` return; that API also
+  leaves the usage count up on failure (the new API drops it).
+- **Fix:** `pm_runtime_resume_and_get()`, check `ret`, unwind
+  `iommu_device_unregister` + existing sysfs remove.
+- **Version info:** none in the message. Code dates to the original
+  driver (v4.14).
 
 **Step 1.4: DETECT HIDDEN BUG FIXES**
 
-Record: **Not hidden.** Subject and body are an explicit logic-bug fix.
-The extra tracepoint paragraph is a side effect of stopping the
-overwrite, not the reason for the change.
+Record: Not disguised. Explicit error-path / unclocked-access fix. The
+“usage-count cleanup” wording is slightly overstated at this site
+because the old code always called `pm_runtime_put_sync()` after the
+write; the real bugs are the unclocked `writel` and probe succeeding
+after a failed resume.
 
 ---
 
@@ -153,51 +136,39 @@ overwrite, not the reason for the change.
 **Step 2.1: INVENTORY THE CHANGES**
 
 Record:
-- **File:** `drivers/iommu/intel/cache.c` only
-- **Net:** 2 insertions, 3 deletions (5-line change)
-- **Function:** `cache_tag_flush_range()`
-- **Scope:** single-file surgical fix
+- File: `drivers/iommu/arm/arm-smmu/qcom_iommu.c` (+5 / −1)
+- Function: `qcom_iommu_device_probe()`
+- Scope: single-file surgical probe error path
 
 **Step 2.2: UNDERSTAND THE CODE FLOW CHANGE**
 
-Record:
-- **Before:** `CACHE_TAG_NESTING_DEVTLB` mutates `addr`/`mask`, falls
-  through, flushes that tag as a full DevTLB, and leaves the mutated
-  values for later iterations.
-- **After:** That case calls `cache_tag_flush_devtlb_psi(domain, tag, 0,
-  MAX_AGAW_PFN_WIDTH)` and `break`s. Later
-  `CACHE_TAG_DEVTLB`/`CACHE_TAG_IOTLB` tags keep the original PSI
-  `addr`/`mask`.
-- **Path:** mapping-change invalidation (`intel_iommu_tlb_sync`,
-  superpage switch, SVM range invalidate), not probe/error-only.
-
-Verified in this checkout (`cache.c` 437–478): the buggy `addr = 0; mask
-= MAX_AGAW_PFN_WIDTH; fallthrough;` is present.
+Record: Before (only when `qcom_iommu->local_base` is set):
+`pm_runtime_get_sync` → always `writel_relaxed(0xffffffff, local_base +
+SMMU_INTR_SEL_NS)` → `pm_runtime_put_sync` → return 0. After:
+`pm_runtime_resume_and_get`; on failure `goto err_iommu_unregister`
+(unregister IOMMU, remove sysfs, return error); on success same write +
+put as before.
 
 **Step 2.3: IDENTIFY THE BUG MECHANISM**
 
-Record: **[Logic / correctness]** Shared loop state is clobbered. Nested
-DevTLB still needs a full device-cache flush (comment is unchanged). The
-fallthrough was a convenient way to reuse the DevTLB helper and
-accidentally changed flush parameters for every later tag.
-
-Consequence in this tree:
-- Later `CACHE_TAG_DEVTLB`: full-range Dev-IOTLB instead of PSI (over-
-  invalidation).
-- Later `CACHE_TAG_IOTLB` / `CACHE_TAG_NESTING_IOTLB`:
-  `cache_tag_flush_iotlb(..., addr, pages, mask, ih)` with `addr=0`,
-  `mask=MAX_AGAW_PFN_WIDTH` (52) and original `pages`. On the nest-
-  parent S2 domain (`use_first_level` is false; see Phase 5/6) that
-  typically becomes domain-selective IOTLB (`mask > cap_max_amask_val`)
-  — still covering, but far broader than PSI.
+Record:
+- **Category:** (a) error-path unwind + (g) missing return check, which
+  prevents unclocked MMIO.
+- **Mechanism:** `qcom_iommu_resume()` enables iface/bus/tbu clocks via
+  `clk_bulk_prepare_enable()`. If that (or SCM restore) fails, the old
+  path still wrote `SMMU_INTR_SEL_NS`. Switch to
+  `pm_runtime_resume_and_get()` is required: `pm_runtime_get_sync()` can
+  return `1` (already active), so `if (ret)` on get_sync would mis-
+  handle success.
 
 **Step 2.4: ASSESS THE FIX QUALITY**
 
-Record: **Obviously correct.** Same full-range DevTLB flush for nesting,
-without mutating shared locals. No new locking, APIs, or data
-structures. Regression risk is low: nested DevTLB still gets a full
-flush; other tags get the range the caller computed. Tracepoint then
-logs the requested range, which is the stated intent.
+Record: Minimal and correct. `pm_runtime_resume_and_get()` returns 0 or
+negative (`include/linux/pm_runtime.h`). Unwind matches
+`qcom_iommu_device_remove()`. Regression risk is low: only the RPM-
+failure path starts failing probe instead of succeeding after a possibly
+unclocked write. If clocks cannot be enabled, failing probe is the right
+outcome.
 
 ---
 
@@ -205,48 +176,43 @@ logs the requested range, which is the stated intent.
 
 **Step 3.1: BLAME THE CHANGED LINES**
 
-Record:
-- Buggy `addr`/`mask`/`fallthrough` introduced in **`c4d27ffaa8eb0`**
-  (“iommu/vt-d: Add cache tag invalidation helpers”, Lu Baolu,
-  2024-04-24).
-- **`git describe --contains c4d27ffaa8eb0`:**
-  `x86_boot_for_v6.11_rc1~...` → first appeared in **v6.11**.
-- **`git merge-base --is-ancestor c4d27ffaa8eb0 HEAD`:** yes. Present
-  for the whole 6.12 lifetime.
+Record: The `if (qcom_iommu->local_base)` write was added in
+**0ae349a0f33fb0** (“iommu/qcom: Add qcom_iommu”, Rob Clark,
+2017-08-09), first in **v4.14-rc1**. Present in this tree (`git merge-
+base --is-ancestor 0ae349a0f33fb0 HEAD`). Long-lived bug, not new code.
 
 **Step 3.2: FOLLOW THE FIXES: TAG**
 
-Record: **No Fixes: tag.** Equivalent “buggy commit” is `c4d27ffaa8eb0`,
-which is in this tree.
+Record: No Fixes: tag. Buggy code is the original 2017 driver, not a
+recent regression.
 
 **Step 3.3: CHECK FILE HISTORY FOR RELATED CHANGES**
 
-Record (recent `drivers/iommu/intel/cache.c`):
-- `ffd774c34774f` qi_batch NULL with nested parent
-- `705c1cdf1e73c` batched cache invalidation
-- `3297d047cd7f5` refactor IOTLB/Dev-IOTLB flush (this is why 6.12’s
-  `cache_tag_flush_iotlb` still takes `pages`)
-- `c4d27ffaa8eb0` original helpers (bug intro)
+Record: Same-day IOMMU pull (Will Deacon, 2026-07-22):
+- `c579f18e79599` — adds `err_sysfs_remove` (**soft prerequisite** for
+  the new goto)
+- `bf69e515b1802` — `devm_pm_runtime_enable()` (series 2/6; changes
+  nearby error labels)
+- **`e910315ae08a2`** — this commit (series 3/6)
+- Later 4/6–6/6 are other bugs in the same file, not needed for this
+  hunk
 
-Standalone fix, not patch 2/3 of a functional series. It was later
-folded as 03/19 in “Intel IOMMU updates for v7.3”, but it does not
-depend on the other patches in that pull.
+Standalone for the probe RPM check, but the hunk assumes
+`err_sysfs_remove` exists. That label is in this tree.
 
 **Step 3.4: CHECK THE AUTHOR'S OTHER COMMITS**
 
-Record: Guanghui Feng has `31fd1e0281621` (“Fix intel iommu iotlb sync
-hardlockup and retry”) in this Intel IOMMU tree. Guixin Liu has no other
-hits here. Lu Baolu is the VT-d maintainer and signed off. Two vendors
-independently posted the same bug (Alibaba and Baidu).
+Record: Mukesh Ojha (Qualcomm) sent the “iommu/qcom: Misc Fixes” series.
+Not the file’s listed maintainer (Rob Clark); Konrad reviewed, Will
+applied. Related author commits on this file are the rest of that
+series.
 
 **Step 3.5: CHECK FOR DEPENDENT/PREREQUISITE COMMITS**
 
-Record: **No functional prerequisites.**
-`cache_tag_flush_devtlb_psi(domain, tag, addr, mask)` exists here with
-that signature. Surrounding context differs (`pages` still passed to
-IOTLB flush and the tracepoint; `cache_tag_flush_all` is still its own
-loop, not a wrapper). The 3-line change backports with a context tweak,
-not extra commits.
+Record: Needs `err_sysfs_remove` from `c579f18e79599` (cover letter:
+series sits on Haoxiang Li’s sysfs cleanup).
+`pm_runtime_resume_and_get()` exists in this tree. Can apply standalone
+**on this checkout**. Does not need 4/6–6/6.
 
 ---
 
@@ -255,101 +221,72 @@ not extra commits.
 **Step 4.1: FIND THE ORIGINAL PATCH DISCUSSION**
 
 Record:
-- Original: Message-ID
-  `20260623060122.3796325-1-guanghuifeng@linux.alibaba.com`
-  (2026-06-23), 3-message thread via `b4 mbox`.
-- Lu Baolu (2026-06-27): same issue already posted by Baidu:
-  `https://lore.kernel.org/linux-
-  iommu/20260605003950.1720-1-lirongqing@baidu.com/`
-- Lu Baolu (2026-07-27): **“Queued for v7.3-rc1.”**
-- No NAKs. No reviewer concern about correctness.
-- v2 of the Intel pull added the tracepoint clarification; the code
-  change is unchanged from v1.
+- **b4 dig:** v2 3/6, https://patch.msgid.link/20260717144608.3216274-4-
+  mukesh.ojha@oss.qualcomm.com
+- **Revisions:** v1 3/8 (2026-06-23) → v2 3/6 (2026-07-17). Same hunk;
+  v1 still had `err_pm_disable` (removed by 2/6).
+- Konrad R-b on v1 with no requested changes: Message-ID
+  `f636b144-807f-4a10-bf44-d06b169fce21@oss.qualcomm.com`
+- Will applied the whole v2 series 2026-07-22; no NAKs
+- No reviewer asked for Cc: stable
 
 **Step 4.2: CHECK WHO REVIEWED THE PATCH**
 
-Record: Recipients were the IOMMU maintainers (Woodhouse, Lu, Roedel,
-Deacon, Murphy) and `iommu@lists.linux.dev`. Lu Baolu signed off and
-queued it; Joerg applied it. No separate Reviewed-by on the committed
-text. Kevin Tian was CCed on the pull, not recorded as a reviewer of
-this hunk.
+Record: To/Cc included Rob Clark, Will Deacon, Joerg Roedel, Robin
+Murphy, `iommu@lists.linux.dev`, `linux-arm-msm`. Konrad R-b; Will
+merged.
 
 **Step 4.3: SEARCH FOR THE BUG REPORT**
 
-Record: No syzbot/bugzilla. **Two independent vendor patches:**
-1. Li RongQing (Baidu), 2026-06-05: “Prevent variable pollution in
-   `cache_tag_flush_range()`” — per-iteration `flush_addr`/`flush_mask`
-   copies, including the IOTLB path.
-2. Guanghui Feng (Alibaba), 2026-06-23 — the version that landed (direct
-   full-range call + `break`).
-
-Baidu pinged after 12 days; Lu queued it. That is “bothers people,” not
-a theoretical review nit.
+Record: No Reported-by, syzbot, or bugzilla. Author analysis of the
+error path, not a user crash report.
 
 **Step 4.4: CHECK FOR RELATED PATCHES AND SERIES**
 
-Record: Landed as **03/19** of Lu Baolu’s “Intel IOMMU updates for
-v7.3”. Other patches in that series are unrelated (UCTP, tboot, context
-teardown, etc.). This hunk is self-contained. Several *other* fixes from
-that pull are already in this `pending-6.12` tree; this one is not.
+Record: Cover: “[PATCH v2 0/6] iommu/qcom: Misc Fixes”. Independent
+fixes in one file. This patch does not need 4/6 (pgtbl leak), 5/6 (mutex
+publish), or 6/6 (ctx_probe clocks). 2/6 only shifts nearby labels.
 
 **Step 4.5: CHECK STABLE MAILING LIST HISTORY**
 
-Record: `lore.kernel.org/stable` fetch returned 403. **UNVERIFIED**
-whether stable@ already discussed this specific subject. No evidence it
-was rejected for stable.
+Record: gnuweeb `/stable/?q=qcom_iommu+pm_runtime_resume_and_get` had no
+discussion of this fix. Not previously rejected for stable.
 
 ---
 
 ## PHASE 5: CODE SEMANTIC ANALYSIS
 
-**Step 5.1: KEY FUNCTIONS**
+**Step 5.1: IDENTIFY KEY FUNCTIONS IN THE DIFF**
 
-Record: `cache_tag_flush_range()`; helper `cache_tag_flush_devtlb_psi()`
-(unchanged).
+Record: `qcom_iommu_device_probe()`; new label `err_iommu_unregister`
+calling `iommu_device_unregister()`.
 
 **Step 5.2: TRACE CALLERS**
 
-Record (this tree):
-- `intel_iommu_tlb_sync()` in `iommu.c` — unmap/Iotlb gather; **common
-  VFIO/iommufd map change path**
-- `switch_to_super_page()` in `iommu.c`
-- `intel_nested_cache_invalidate_user()` in `nested.c` — flushes the
-  **nested S1 domain** (IOTLB/DEVTLB only; NESTING tags live on S2)
-- `intel_arch_invalidate_secondary_tlbs()` in `svm.c` — SVA
-
-The pollution matters when the domain being flushed **has
-`CACHE_TAG_NESTING_DEVTLB` on its list**, i.e. the **S2 nest-parent**,
-on S2 map changes (`intel_iommu_tlb_sync` on that domain).
+Record: `.probe = qcom_iommu_device_probe` on `qcom-iommu`. Triggered by
+DT `qcom,msm-iommu-v1` / `v2` during boot (or bind). Not a syscall.
+`local_base` is optional (first MEM resource); the RPM get/write runs
+only if that resource exists.
 
 **Step 5.3: TRACE CALLEES**
 
-Record: `calculate_psi_aligned_address` → lock → per-tag
-`cache_tag_flush_iotlb` / `cache_tag_flush_devtlb_psi` →
-`qi_batch_add_*` / `qi_submit_sync`.
+Record: `pm_runtime_resume_and_get` → `qcom_iommu_resume` →
+`clk_bulk_prepare_enable` and possibly `qcom_scm_restore_sec_cfg`. Then
+`writel_relaxed` to `SMMU_INTR_SEL_NS` (0x2000), `pm_runtime_put_sync`.
 
 **Step 5.4: FOLLOW THE CALL CHAIN**
 
-Record: Nested attach (`cache_tag_assign_domain`) puts NESTING_* tags on
-`domain->s2_domain`. Nest parent is allocated with
-`paging_domain_alloc(dev, false)` so **`use_first_level` is false**.
-Userspace (iommufd/VFIO nested vIOMMU) changing S2 mappings triggers
-`intel_iommu_tlb_sync` → `cache_tag_flush_range` on S2. **Reachable from
-VM/device assignment, not a debug-only path.**
-
-Tag order (`list_add_tail`): per nested ATS device, `NESTING_IOTLB` then
-`NESTING_DEVTLB`. With **two or more** nested ATS devices, after the
-first `NESTING_DEVTLB`, later IOTLB/DEVTLB tags see polluted
-`addr`/`mask`. Mixed host-on-S2 + nested-on-S2 with nested attached
-first is the `CACHE_TAG_DEVTLB` case the commit describes.
+Record: Boot/device probe on MSM8916-class SoCs. Unprivileged users can
+rebind if they can unbind the driver; typical trigger is boot. Path is
+real on those boards.
 
 **Step 5.5: SEARCH FOR SIMILAR PATTERNS**
 
-Record: `cache_tag_flush_all()` in this tree already handles
-`CACHE_TAG_DEVTLB` and `CACHE_TAG_NESTING_DEVTLB` together via
-`cache_tag_flush_devtlb_all()` **without** mutating shared range locals.
-`cache_tag_flush_range_np()` does not touch DevTLB. The range path is
-the inconsistent one.
+Record: Same file still uses unchecked `pm_runtime_get_sync` in
+`domain_free`, `attach_dev`, `identity_attach`, `unmap`,
+`flush_iotlb_all`. Comments there already warn about unclocked TLB
+access. This commit only fixes probe. Sibling 6/6 adds a checked resume
+around ctx-bank FSR access.
 
 ---
 
@@ -357,92 +294,71 @@ the inconsistent one.
 
 **Step 6.1: DOES THE BUGGY CODE EXIST IN THIS TREE?**
 
-Record:
-- **Tree:** `pending-6.12`, `git describe HEAD` =
-  `p-6.12-3-gc504cf0baa3d8`, `make kernelversion` = **6.12.111**
-- Buggy code: `drivers/iommu/intel/cache.c` lines 458–468
-- Introduced v6.11 (`c4d27ffaa8eb0`), **before** 6.12 branched
-- `git log --grep='polluting shared'` on this path: **empty** — fix
-  **not** already applied
+Record: Local tree is **v7.3-rc4** (`git describe HEAD` =
+`v7.3-rc4-27-gf0100363d8c37`, `VERSION=7 PATCHLEVEL=3 SUBLEVEL=0
+EXTRAVERSION=-rc4`). Driver is present. The unclocked-write pattern
+existed here from v4.14 until `e910315ae08a2`. HEAD already has the
+fixed form in `qcom_iommu_device_probe()` (lines 866–880). Evaluation is
+technical merit for this tree’s code, not “already landed.”
 
 **Step 6.2: CHECK FOR BACKPORT COMPLICATIONS**
 
-Record: **Minor context rework, not a redesign.** This tree still has:
-- `cache_tag_flush_iotlb(domain, tag, addr, pages, mask, ih)`
-- `trace_cache_tag_flush_range(tag, start, end, addr, pages, mask)`
-- a full `cache_tag_flush_all()` loop
-
-Mainline hunk context dropped `pages` and collapsed
-`cache_tag_flush_all` into a wrapper. The three changed lines
-(`addr`/`mask`/`fallthrough` → direct call + `break`) match this file
-as-is.
+Record: **Clean apply** on this tree: `err_sysfs_remove` and
+`devm_pm_runtime_enable` are present. Hunk matches current/pre-fix
+context.
 
 **Step 6.3: CHECK IF RELATED FIXES ARE ALREADY HERE**
 
-Record: No equivalent fix. `fallthrough` at line 468 is still the only
-one in this file.
+Record: No alternate fix for this probe RPM check. Sysfs unwind
+(`c579f18e79599`) is here and is what this goto chains into.
 
 ---
 
 ## PHASE 7: SUBSYSTEM AND MAINTAINER CONTEXT
 
-**Step 7.1: SUBSYSTEM AND CRITICALITY**
+**Step 7.1: IDENTIFY THE SUBSYSTEM AND ITS CRITICALITY**
 
-Record: **Intel VT-d IOMMU cache invalidation.** Criticality:
-**IMPORTANT** (DMA isolation / nested virtualization). Not core mm/VFS,
-but wrong Dev-IOTLB/IOTLB parameters affect VFIO/iommufd nested guests
-with ATS devices.
+Record: **IOMMU / Qualcomm legacy SMMU** (`drivers/iommu/arm/arm-
+smmu/qcom_iommu.c`). **IMPORTANT** for MSM8916/8917/8937/8939/8953/8976
+(DT still uses `qcom,msm-iommu-v1`). Not core MM/VFS; IOMMU failures
+break DMA/display/modem on those SoCs.
 
-**Step 7.2: SUBSYSTEM ACTIVITY**
+**Step 7.2: ASSESS SUBSYSTEM ACTIVITY**
 
-Record: Actively maintained; this `pending-6.12` branch already carries
-other VT-d fixes from the same v7.3 era pull. Cache-tag code has been
-stable in structure since 6.11 aside from batching.
+Record: Mature “legacy qcom_iommu” (author’s words). Occasional
+correctness fixes in 2026, not heavy churn. Long-lived bug, more
+relevant for stable.
 
 ---
 
 ## PHASE 8: IMPACT AND RISK ASSESSMENT
 
-**Step 8.1: WHO IS AFFECTED**
+**Step 8.1: DETERMINE WHO IS AFFECTED**
 
-Record: **Config/driver-specific:** `CONFIG_INTEL_IOMMU` + nested
-translation (`IOMMU_HWPT_ALLOC_NEST_PARENT` / iommufd nested) + ATS
-devices so `CACHE_TAG_*DEVTLB` tags exist. Typical cloud VFIO/vIOMMU.
-Not every 6.12 box.
+Record: **Driver/platform-specific**, `CONFIG_QCOM_IOMMU`, older
+Qualcomm ARM64 boards listed above. Not universal.
 
-**Step 8.2: TRIGGER CONDITIONS**
+**Step 8.2: DETERMINE THE TRIGGER CONDITIONS**
 
-Record: S2 mapping changes while nested ATS devices are attached and
-more than one relevant cache tag follows a `NESTING_DEVTLB` on the list
-(multiple nested ATS devices, or nested-then-host on the same S2).
-Privileged/VMM path (iommufd), not an unprivileged syscall smash. Easy
-to hit in production nested setups; two cloud vendors filed it
-independently.
+Record: Probe, and only if `local_base` is mapped **and** runtime resume
+fails (`clk_bulk_prepare_enable` or SCM restore). Uncommon on healthy
+hardware; realistic on clock/GDSC/SCM failure. Not a normal userspace
+trigger.
 
-**Step 8.3: FAILURE MODE SEVERITY**
+**Step 8.3: DETERMINE THE FAILURE MODE SEVERITY**
 
-Record: **Wrong IOMMU invalidation parameters → overly broad IOTLB/Dev-
-IOTLB flushes** (global Device-TLB / domain-selective IOTLB instead of
-PSI).
+Record: Unclocked MMIO → possible **bus hang / SError** (**HIGH** if it
+fires). Otherwise probe succeeds with `SMMU_INTR_SEL_NS` not programmed
+(**MEDIUM** functional). Trigger rarity → overall **MEDIUM–HIGH**, still
+a real hang class, not cosmetic.
 
-Verified **not** stale-translation under-invalidation on this tree’s
-nest parent: S2 is `paging_domain_alloc(dev, false)`, so the first-level
-`piotlb(addr=0, original pages)` mis-flush does not apply.
-
-Severity: **MEDIUM–HIGH** for nested ATS (I/O stalls, ATS storms, lost
-PSI benefit on a hot unmap path). Not oops/corruption in the verified
-6.12 S2 path. Matches stable-rules **“oh, that's not good”** and, given
-Baidu+Alibaba, a **notable performance/correctness issue that bothers
-production users**.
-
-**Step 8.4: RISK-BENEFIT RATIO**
+**Step 8.4: CALCULATE RISK-BENEFIT RATIO**
 
 Record:
-- **Benefit:** Restore intended PSI DevTLB/IOTLB invalidation on nested
-  S2 flushes; avoid global ATS invalidation for later devices; tiny,
-  local change.
-- **Risk:** Very low (3 lines, same helper, nesting still full-flushes).
-- **Ratio:** Favorable for 6.12-stable.
+- **Benefit:** Avoid hang/abort and false-successful probe when clocks
+  cannot come up; fail cleanly and unwind registration.
+- **Risk:** Very low (6-line error path, reviewed, standard API).
+- **Ratio:** Favorable.
 
 ---
 
@@ -451,139 +367,126 @@ Record:
 **Step 9.1: COMPILE THE EVIDENCE**
 
 **FOR:**
-- Real logic bug in VT-d nested cache invalidation, present since v6.11,
-  in this 6.12.111 tree
-- Two independent vendor reports (Baidu 2026-06-05, Alibaba 2026-06-23);
-  maintainer queued it
-- 5-line, obviously correct; no new API
-- User-visible extra global Device-TLB/IOTLB invalidations on nested S2
-  map updates
-- `cache_tag_flush_all()` already avoided this pattern; range path did
-  not
-- No functional dependencies missing here
+- Real unclocked MMIO on a documented-sensitive Qualcomm path
+- Small (+5/−1), obviously correct
+- `pm_runtime_resume_and_get` is the right API (get_sync’s `1` is
+  success)
+- Konrad R-b, Will merged; no NAKs
+- Driver in this tree since v4.14; DT still ships for several SoCs
+- Same-file comments treat unclocked access as a real hang risk
+- Prerequisites (`err_sysfs_remove`, `pm_runtime_resume_and_get`) are in
+  this tree
+- Matches stable’s “oops, hang, … or some ‘oh, that’s not good’ issue”
 
 **AGAINST:**
-- Not a crash, UAF, or proven stale-TLB corruption on this tree’s S2
-  path (error is conservative over-flush)
-- Nested+ATS is not universal
-- Hunk needs a small context backport (`pages` / `cache_tag_flush_all`
-  shape)
-- No Fixes/Cc: stable on the commit (not a negative per the pipeline
-  rules)
+- No user/syzbot report; error path is uncommon
+- Series patch 3/6 (but functionally independent)
+- Other `get_sync` sites in the file remain unchecked
+- Usage-count leak at this site was already balanced by `put_sync`
 
-**UNRESOLVED:**
-- lore.kernel.org HTTP 403; stable@ history not fetched (thread
-  recovered via `b4 mbox`)
-- Exact mainline SHA not in this checkout (no `git log --all`)
+**UNRESOLVED:** lore.kernel.org HTTP 403; discussion recovered via `b4
+dig` mbox, gnuweeb, and openwall. No evidence of a field crash, only
+code-path analysis.
 
-**Step 9.2: STABLE RULES CHECKLIST**
+**Step 9.2: APPLY THE STABLE RULES CHECKLIST**
 
-1. Obviously correct and tested? **PASS** — maintainer queued; two
-   vendors; trivial control-flow fix
-2. Fixes a real bug that affects users? **PASS** — Baidu and Alibaba
-   both submitted it
-3. Important issue? **PASS** (with the documented “oh, that's not good”
-   / notable nested-ATS invalidation impact) — not oops/corruption here,
-   but wrong IOMMU flush parameters on a production nested path
-4. Small and contained? **PASS** — 5 lines, one function
+1. Obviously correct and tested? **PASS** — API contract matches;
+   maintainer applied after R-b
+2. Fixes a real bug that affects users? **PASS** — unclocked write and
+   successful probe after failed resume on shipped MSM8916-class IOMMU
+3. Important issue? **PASS** — hang/SError class; trigger is rare but
+   severity is not “trivial”
+4. Small and contained? **PASS** — 6 lines, one function
 5. No new features or APIs? **PASS**
-6. Can apply to the local tree? **PASS** — buggy lines exist; needs
-   minor context adjustment, not missing helpers
+6. Can apply to the local tree? **PASS** — code and labels exist here
 
-**Step 9.3: EXCEPTION CATEGORIES**
+**Step 9.3: CHECK FOR EXCEPTION CATEGORIES**
 
-Record: None (not a device ID/quirk/DT/build/doc exception). Qualifies
-as a normal small bugfix.
+Record: None (not a device ID, quirk table, DT, build, or doc fix).
+Qualifies as a normal small bugfix.
 
-**Step 9.4: DECISION**
+**Step 9.4: MAKE YOUR DECISION**
 
-This 6.12 tree has the bug. The fix is a three-line control-flow
-correction in Intel VT-d nested invalidation. It does not need later
-refactors. Over-flush is still a real, production-visible IOMMU bug
-(independent Alibaba and Baidu reports), and the patch is the lowest-
-risk way to restore the intended PSI range. It should be backported
-here.
+This is a small, reviewed probe-path fix that stops a `writel` to SMMU
+MMIO when runtime resume (clocks) has failed, and fails probe instead of
+continuing. That is a real stability bug on a still-used Qualcomm IOMMU,
+the change is contained, and this checkout has the driver plus the sysfs
+unwind label the hunk uses. Benefit outweighs risk.
 
 ---
 
-## What the commit solves (for 6.12)
+### What the commit solves for this tree
 
-`cache_tag_flush_range()` computes one PSI `addr`/`mask`, then walks
-every cache tag. Nested DevTLB must flush the whole device cache, so the
-original code stuffed `addr=0` / `mask=MAX_AGAW_PFN_WIDTH` into those
-shared locals and fell through. Later tags on that S2 domain (other
-nested ATS devices, or regular DevTLB) then issued a full-range
-invalidation instead of the range the caller asked for. On 6.12 that is
-extra-wide IOTLB/Dev-IOTLB traffic, not a verified stale-mapping hole,
-but it is incorrect invalidation on the nested map-update path.
+`qcom_iommu_device_probe()` programmed `SMMU_INTR_SEL_NS` after
+`pm_runtime_get_sync()` with no check. Resume enables the IOMMU clocks;
+on failure the write can hit unclocked hardware (hang/SError) and probe
+still returned 0. The fix uses `pm_runtime_resume_and_get()`, returns
+the error, and unregisters the IOMMU device.
 
-## Risk vs benefit
-
-Benefit is restoring targeted invalidation for a path cloud VFIO/iommufd
-actually uses. Risk is a 3-line change that keeps the nested full flush
-and only stops clobbering later tags.
-
-## Concerns
-
-Backport cannot be a blind `git am` of the mainline hunk: this tree
-still passes `pages` into `cache_tag_flush_iotlb` and the tracepoint,
-and `cache_tag_flush_all()` is still a separate loop. Edit only the
-`CACHE_TAG_NESTING_DEVTLB` arm.
+It meets stable rules: obviously correct, real hang-class bug, ~6 lines,
+no new API. Risk is confined to the already-broken clock-failure path.
 
 ---
 
-Verification:
-- [Phase 1] Parsed tags: SOBs Feng/Liu/Lu/Roedel; no Fixes/Reported-
-  by/Cc:stable
-- [Phase 2] Diff: 2+/3- in `cache_tag_flush_range()`; replace
-  mutate+fallthrough with direct `cache_tag_flush_devtlb_psi(..., 0,
-  MAX_AGAW_PFN_WIDTH)` + break
-- [Phase 2] Read `cache.c` 437–510 in this tree: buggy fallthrough still
-  at 466–468
-- [Phase 3] `git blame`: intro `c4d27ffaa8eb0` (v6.11); `git merge-base
-  --is-ancestor` yes
-- [Phase 3] `git log --grep='polluting shared'` on path: not present
-- [Phase 3] `cache_tag_flush_iotlb` still has `pages` (`3297d047cd7f5`);
-  no missing helper
-- [Phase 4] `b4 mbox` original thread: Lu notes Baidu duplicate; queued
-  for v7.3-rc1; no NAK
-- [Phase 4] Baidu thread `20260605003950.1720-1-lirongqing@baidu.com`:
-  same bug, IOTLB path included
-- [Phase 4] UNVERIFIED: lore.kernel.org/stable HTTP 403
-- [Phase 5] Callers: `intel_iommu_tlb_sync`, `switch_to_super_page`,
-  nested user invalidate, SVM
-- [Phase 5] Nest parent: `paging_domain_alloc(dev, false)` at
-  `iommu.c:3606` → `use_first_level` false
-- [Phase 5] NESTING tags assigned to `domain->s2_domain` in
-  `cache_tag_assign_domain()`
-- [Phase 6] `git describe HEAD` p-6.12-3-gc504cf0baa3d8; `make
-  kernelversion` 6.12.111
-- [Phase 8] Failure mode: over-wide DevTLB/IOTLB invalidation; not
-  verified as under-invalidate on this S2 path
-- UNVERIFIED: mainline SHA (commit not in this checkout; `--all` not
-  used)
+### Verification
+
+- **[Phase 1]** Parsed `e910315ae08a2`: R-b Konrad Dybcio; SOB Mukesh
+  Ojha, Will Deacon; no Fixes/Reported-by/stable Cc
+- **[Phase 2]** Diff: +5/−1 in `qcom_iommu_device_probe()`;
+  `pm_runtime_get_sync` → checked `pm_runtime_resume_and_get` +
+  `err_iommu_unregister`
+- **[Phase 2]** Confirmed `pm_runtime_resume_and_get()` returns 0 or
+  negative (`include/linux/pm_runtime.h`); `get_sync` may return 1
+- **[Phase 2]** Confirmed resume path: `qcom_iommu_resume()` →
+  `clk_bulk_prepare_enable()`
+- **[Phase 3]** Blame: write from `0ae349a0f33fb0` (v4.14-rc1); `merge-
+  base --is-ancestor` true
+- **[Phase 3]** `c579f18e79599` and `bf69e515b1802` are ancestors of
+  HEAD
+- **[Phase 4]** `b4 dig -c e910315ae08a2`: v2 3/6 of “Misc Fixes”; v1
+  3/8 same hunk
+- **[Phase 4]** `b4 dig -a/-w/-m`: Konrad R-b, Will applied 1/6–6/6;
+  recipients were IOMMU/QCOM lists; no NAK
+- **[Phase 4]** Stable-list search: no prior discussion of this fix
+- **[Phase 5]** Probe is platform driver for `qcom,msm-iommu-v1/v2`; DT
+  hits in msm8916/8917/8937/8939/8953/8976
+- **[Phase 6]** `git describe HEAD` = `v7.3-rc4-27-gf0100363d8c37`;
+  Makefile 7.3.0-rc4; driver present; hunk matches
+- **[Phase 8]** Failure mode: unclocked MMIO hang/SError if RPM resume
+  fails at probe; severity HIGH if hit, trigger uncommon
+- **UNVERIFIED:** lore.kernel.org 403 (mbox/mirrors used instead); no
+  field reproducer found
+
+The fix is small, surgical, and meets the stable criteria for this tree.
 
 **YES**
 
- drivers/iommu/intel/cache.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
-index 385ae5cfb30d4..e6bc730fac3b0 100644
---- a/drivers/iommu/intel/cache.c
-+++ b/drivers/iommu/intel/cache.c
-@@ -468,9 +468,8 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
- 			 * affected by a change in S2. So just flush the entire
- 			 * device cache.
- 			 */
--			addr = 0;
--			mask = MAX_AGAW_PFN_WIDTH;
--			fallthrough;
-+			cache_tag_flush_devtlb_psi(domain, tag, 0, MAX_AGAW_PFN_WIDTH);
-+			break;
- 		case CACHE_TAG_DEVTLB:
- 			cache_tag_flush_devtlb_psi(domain, tag, addr, mask);
- 			break;
+diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+index 9bee85259c69e..fbe4bd3ec0c42 100644
+--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
++++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -863,13 +863,17 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	if (qcom_iommu->local_base) {
+-		pm_runtime_get_sync(dev);
++		ret = pm_runtime_resume_and_get(dev);
++		if (ret)
++			goto err_iommu_unregister;
+ 		writel_relaxed(0xffffffff, qcom_iommu->local_base + SMMU_INTR_SEL_NS);
+ 		pm_runtime_put_sync(dev);
+ 	}
+ 
+ 	return 0;
+ 
++err_iommu_unregister:
++	iommu_device_unregister(&qcom_iommu->iommu);
+ err_sysfs_remove:
+ 	iommu_device_sysfs_remove(&qcom_iommu->iommu);
+ err_pm_disable:
 -- 
 2.53.0
 
