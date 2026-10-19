@@ -1,158 +1,121 @@
-Received: from mail-dl1-f43.google.com (mail-dl1-f43.google.com [74.125.82.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41AC93E8C70
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 08:06:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A88548DB58;
+	Mon, 19 Oct 2026 08:12:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792397188; cv=none; b=s/yZkdGUoDRw9PbnfEaZI82wWs7SUMSIFrCiJ+LiqnZhbB6/0DtTiSKE5Y+zV4AOuNKGSCjoz0h05u1PZTZHNe4Ux70f38g/Td5QInh8dBaVmflZtq1grO3dP37Qn39UElnt7rrsLx2q4Qos93yjVAlVFn8NaJ5sCQohA96etmo=
+	t=1792397545; cv=none; b=cvT4zwR+tWZbLL9XH4AYZOVRHhnUgkgOQsBxK8N/J/pZ2ASI+Ud7kS2qRt2CcIbTOBl5Ar/7eQ6I9KjEWG74i1CHD1MV7WWHjVaDWW4f8Qq3MpY+rboWOiJVgdNnRN3VGs/N0T9EtN0J6Y8QdqKN44cit8Fso3BZdhpqmSZACmU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792397188; c=relaxed/simple;
-	bh=FY0qcanD1yswML7l/dRsnVFaY2lJmQx9u8YM3zGuotM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=epWbD9WkYkpwSfEm7xUV8BgS9alg5e0q5O/ASzLqm9/jPLGYH6qj9avKh40dHE/pwUiRCEtEPX6lu07eU6wuH8UM14z0+EgDADWwsDdOcBKPv1d+Ry17d+9j1CH2wNRNiXriRFwRHKFGI/gX8NxR0PEwQxoYMafcV5D619hKrV0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=u/+VTvo6; arc=none smtp.client-ip=74.125.82.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1792397545; c=relaxed/simple;
+	bh=F62E0+/4F4qgGcCGX2HCnm0q1KbdUrG+InmuZKUrUBY=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Uu7wHmrw9XP2F6UKPeKKvsN4FV+lNOHLVRUuNzJqXV+0mcGPKnLlyXPY4ZUdwBFp8BV9g48u1Z9x7X+FfkZJz81NHSEsJx7UvAE0PCLprHsY0M0XVAMULXXjJ5wRu58KB+h1O12V46Cp+xO7uOlAgwyi7yFNs6maue+AgvYwa8k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aP1TSt7p; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="u/+VTvo6"
-Received: by mail-dl1-f43.google.com with SMTP id a92af1059eb24-169be2dfbacso6608c88.0
-        for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 01:06:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792397186; x=1793001986; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=zKlllSkaDqzD1U/0lTr5RBP4KobTu9kcdCFVa+N+5rc=;
-        b=u/+VTvo6y6EFrbd3IAahnAuYGIera+lV05GbE4Q93MBFwwQvqDFacX+F40hDn0w+I7
-         +BUsZ9vfolmcL2/DajjaI06PR5Kk83g3T0AD7DV68wnJSzJKu8J+A3pSKSos+uRrFAj7
-         wBJ6G9q33MFsjWMPYOYduPNXGNfpP/RuYe11+7v4Rf41u7mOUSwoDKoWIrnRnX8o1bY0
-         /oHCXw8ZZJYygY3FinzI26ZHAtv8lypxsUuZmplJH1CXPip3xCe/Ahga7j2Vj6DJWq6c
-         KpxlWIdrIA1Q0BrNE1w/fHn2pcmAtyoRfhetVFqLV8IKnfDHAGeIlHJpZYMLRy60eB33
-         2UmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792397186; x=1793001986;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=zKlllSkaDqzD1U/0lTr5RBP4KobTu9kcdCFVa+N+5rc=;
-        b=dygQWIyI4uGvlmmBCCsiGiGZwkwOZ28O2z6LqFPoqo/UwcUtorldei14WcFSGTDa0f
-         PruYDwu57Se51VitYfIFxAIweXsOuT6088Z6rEQIQWJ1X2nVuShmNeAtN39NjstxvpfI
-         +CGrfVlI1+5tkn3E+VIJI5HyjxoFQzvoQUT5Wfo4Ko7ZjnaORcb3LCPwLBnn2zYkMJNX
-         SIhgORqE9sa9rj801Tnk3XkV1a21PB8IoKSbS1BDMazeDxSFdgfw++dt3kgD/bQUK39+
-         A35/d37uQ/XT4Fs4s6lnccBSjsdcvkp80YpQL/ahv/CRuLLQbVKOOq+w14EBC1sv7/lS
-         Kn9Q==
-X-Forwarded-Encrypted: i=1; AKwUvByhJFscJuUk01/FtiJvNmwUoBpRrFVVbickEQjdMA1r6qTrnx2KmLzAbO0TTwDNDLXU/NLcHA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJqTpnUFK+ok8Puo3YylMzXKzEQx3zazMJ4JyoU+tGWJ0KvUicl
-	6RtBnpURgcugxykbcHmcL2AnKJWLSGp6Ek2LQh9T7aTXBaeNgc2nrDqT4TJZ5PUgZg==
-X-Gm-Gg: AYBFou21uOo9G7ewrjVE9y+lTIfFGzXoeGj/9GZ118mYGrp4qgaEVWYLBMN977NJqU3
-	qMS3eJGBEzWl+j+3u73PEQvNEFFxS1JjB4uYy0+/Y1Oa71LpXuD5SYfP3zUmA2pUxK8zBmuNNsA
-	0K0KSbVBZ3njybLR6rXmgwsCgxqPicKrqTi+LeqgCrgdCEKgGmorDUnMUF82BHYeFwNg4ICdecO
-	hWelXTeOKBqDBwoeWU3AV73zWzCCvtlmns5QIpajuqyTTyzerrlMBJr1Qz8GVywOG9gLJVT6goi
-	Ue6+lIhbvObTdu7qydkIDfhNyHz0ubxW5RNo81cjhnQ89PqqsbtsfJJOwW9j5Lr2ejtECR82y5u
-	Xv65UhCjl5Wq6UPrsukXHIAqcfsDmjPWCVUqMjRk3YMltsGQSmh07sV/IRb1zlg+GeUf7/Mzuk9
-	1WfjFg5YcGCeWR7VkwPD7m6yo/Zoqe8+X2p0NBNK4D49FyL4IliooDfLN0Kdd77aA9FwlSZveNL
-	NbVmyJMmTxCGwQ+/u34CEeCGOYrw0HmnmC3BAPjuYUXIyA=
-X-Received: by 2002:a05:7023:d0c:b0:184:6afb:b26c with SMTP id a92af1059eb24-185b79b5548mr344812c88.18.1792397184354;
-        Mon, 19 Oct 2026 01:06:24 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36082e81a06sm28999611eec.26.2026.10.19.01.06.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2026 01:06:23 -0700 (PDT)
-Date: Mon, 19 Oct 2026 08:06:13 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rafael@kernel.org,
-	Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev
-Subject: Re: [PATCH v11 11/16] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
- gate CMDQ submissions
-Message-ID: <atXPdbcX0XADEdh7@google.com>
-References: <20260929034510.2023173-1-praan@google.com>
- <20260929034510.2023173-12-praan@google.com>
- <ar1yNtr7Kp2OTcDd@nvidia.com>
- <ar3yWUmi8E0k37Ml@google.com>
- <ar6gY9grmdMZcN/M@nvidia.com>
- <20261002164748.GD3481470@ziepe.ca>
- <asAeCz_rmpe5hbsh@google.com>
- <asUvUf4PZJ7JCLXp@nvidia.com>
- <20261017174912.GK14213@ziepe.ca>
- <atO7jTV+XNReShT+@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aP1TSt7p"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1792397544; x=1823933544;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=F62E0+/4F4qgGcCGX2HCnm0q1KbdUrG+InmuZKUrUBY=;
+  b=aP1TSt7pDhuUIHqSgcfDRGsH1BikajoB0bWS2swFUBrY1Du5TCfCg/0C
+   r92jl7sSRxLY+qP159C3xJGgCPe9chT0fEmyscY/UJ4XDzDqtSxtiRea1
+   rYOGXq37oU5rJLLZp0O1R6fEAdfFzAurSWwnNr6VCX3hsCikX4tY5UCV9
+   lVTKNqjCvyhrNSNcMqzc8/c6v8beI+biE9iBl0Js3qZYxwHfEVzEqhWmF
+   C6bEvNJhkSanWRhnoDM8vz73N9m+KknRXhdh1UC7j5Rh9co3qJH+pnhIv
+   wvCBBTWVj6Kb5g2CEe3/Pv5w9JCwgocvQQtbdog6xe+h+/gTgT87qvNwq
+   g==;
+X-CSE-ConnectionGUID: Q4Dl0sYnS42ggCHUjQyspw==
+X-CSE-MsgGUID: vw9w0ZmQTG+4tqJ9thc9gA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1068087"
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="1068087"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 01:12:24 -0700
+X-CSE-ConnectionGUID: o4RJNjPFS7+qPLJGv+t2Xg==
+X-CSE-MsgGUID: SZROF/7MQSCwkJgaMC1W5g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
+   d="scan'208";a="2472391"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 01:12:20 -0700
+Message-ID: <23a3c630-a3ad-4874-b13c-b8795cd194a6@linux.intel.com>
+Date: Mon, 19 Oct 2026 16:12:18 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <atO7jTV+XNReShT+@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "x86@kernel.org" <x86@kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Kiryl Shutsemau
+ <kas@kernel.org>, "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+ "Li, Xiaoyao" <xiaoyao.li@intel.com>, "Gao, Chao" <chao.gao@intel.com>,
+ Binbin Wu <binbin.wu@linux.intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/4] coco/tdx-host: Initialize trusted DMA on all
+ capable IOMMUs
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Xu Yilun <yilun.xu@linux.intel.com>,
+ "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
+References: <20261015010705.1973284-1-baolu.lu@linux.intel.com>
+ <20261015010705.1973284-5-baolu.lu@linux.intel.com>
+ <atCPY6LzHd4y0Ywh@yilunxu-OptiPlex-7050> <20261015173707.GV14213@ziepe.ca>
+ <5ca5f1c4-4c3c-47f1-b79c-c1fe06b20ee4@linux.intel.com>
+ <CO1PR11MB4836E2CB05E1448BB42047458C9B2@CO1PR11MB4836.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <CO1PR11MB4836E2CB05E1448BB42047458C9B2@CO1PR11MB4836.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Oct 17, 2026 at 11:16:45AM -0700, Nicolin Chen wrote:
-> On Sat, Oct 17, 2026 at 02:49:12PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Oct 06, 2026 at 10:26:41AM -0700, Nicolin Chen wrote:
-> > > > pci_dev_reset_iommu_prepare/done() pair (with slight refactoring) in EP's
-> > > > suspend/resume?
-> > > 
-> > > That sounds right to me, though a different API for suspend/resume
-> > > will be required. And call them in pci_pm_runtime_suspend/resume()
-> > > maybe.
-> > > 
-> > > Jason, how do you think about this?
-> > 
-> > Maybe lets just start by refusing power management when ATS is on? For
-> > PCIe devices too?
-> > 
-> > It isn't just ARM that has this issue, every iommu is busted if you
-> > suspend the PCI device while an ATS domain is still active..
+On 10/16/2026 3:17 PM, Tian, Kevin wrote:
+>>    - The TDX Connect architecture places requirements on the host
+>>      iommu driver while the secure IOMMU is being set up. For example,
+>>      the host iommu driver must block the enhanced command (ECMD)
+>>      interface while the TDH.IOMMU.SETUP SEAMCALL runs, and it must
+>>      reserve the upper half of the domain ID space. These steps have
+>>      to happen atomically under the iommu driver's own locks. As a
+>>      result, the Intel iommu driver needs to merge the two steps above
+>>      into one.
+> Didn't get this. Both ECMD and DID reservation are TDX specific things.
+> How are they related to the two steps in the ARM sides and why calls
+> for merging?
 > 
-> So, should we put that refuse guard in pci_pm_runtime_suspend()?
-> 
-> I am thinking about splitting the iommu and pci patches out of my
-> smmmuv3_atc_timeout series. They could be get merged alone.
-> 
-> Then, we add a new API for pci_pm_runtime_suspend/resume() with a
-> new BLOCKED_SUSPEND reason in the list:
+> and why are they must be done atomically? they are conditions to
+> execute TDH.IOMMU.SETUP, but it is perfectly fine to reserve DID
+> at an early point then block ECMD later...
 
-The guard doesn't sound too bad, but what if we refactor the reset APIs
-instead and use them from the PCI core to disable ATS + flush the ATC
-right before the EP suspends, as discussed earlier? That'd fix it for
-every IOMMU without taking PM away from anyone.
+You are right, "atomically" was too strong. Only the ECMD block has to
+bracket TDH.IOMMU.SETUP. So I plan to restructure it as follows:
 
-FWIW, AFAICT VT-d and AMD-Vi already enable ATS for ATS-capable devices
-attached to the default DMA domain, so a blanket refusal might end up
-disabling RPM for some internal devices (e.g. dGPUs / NVMe) that rely on
-it today.
+- dmar_tdxcs_init_prepare(dev, &params): resolve the device's DRHD and
+   take a reference on its secure-mode state. For the first user,
+   validate the preconditions (TE/QI/SM enabled), reserve the upper half
+   of the DID space (failing with -EBUSY if any of it is in use), block
+   ECMD and return what tdx-host needs (register base, NUMA node, etc).
+   If the unit is already in Secure TDX mode, just report that so
+   tdx-host skips TDH.IOMMU.SETUP.
 
-On the PCI side, I could roughly:
+- dmar_tdxcs_init_done(dev, result): unblock ECMD, then either mark the
+   unit as being in Secure TDX mode or roll back (including the DID
+   reservation), based on the SEAMCALL result. It must be called
+   whenever init_prepare() returns success.
 
-  - Base on Nicolin's split out iommu/pci patches (blocked reason list)
-  - Add a suspend flavour of pci_dev_reset_iommu_prepare/done() with a
-    BLOCKED_SUSPEND reason, i.e. RID/PASIDs parked on the blocking
-    domain, group->domain retained (so dma_map/unmap keep working),
-    ATS-capable devices only
-  - Call prepare() in pci_pm_runtime_suspend() after the driver's
-    callback but before D3, and done() in pci_pm_runtime_resume() after
-    D0 + pci_restore_state() but before the driver's callback. Same for
-    the system sleep (noirq) paths
-  - Keep the guard only as a fallback, i.e. -EBUSY the suspend if
-    prepare() fails
+- dmar_tdxcs_release(dev): drop the reference; the last user releases
+   the DID reservation and clears the Secure TDX mode state after
+   tdx-host issues TDH.IOMMU.CLEAR.
 
-That flushes the ATC while the EP can still respond and stops any new
-ATC_INVs to it. On the SMMU side, we'd then never see a suspended ATS
-master with ATS still enabled, so a WARN_ON_ONCE() at suspend would do.
-
-WDYT?
+These are called from tdx_tsm_link_connect()/disconnect(). Any failure,
+whether a precondition, DID reservation or the SEAMCALL itself, aborts
+connect with the corresponding error.
 
 Thanks,
-Praan
+baolu
