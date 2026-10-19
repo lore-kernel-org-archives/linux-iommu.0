@@ -1,112 +1,177 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 085F74963B1;
-	Mon, 19 Oct 2026 08:17:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7186E455629
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 08:18:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792397841; cv=none; b=iR0QEZVwhT+6re0QLr74XKKyAWUaiUh4FkqaoO7NPv7gYXziSDBAgiiGaVzW99mnNXxl/TyT6tp/JR7lE4tyl+laKo5wH0CDTfh1nj3CKARxgXGb4AhUFMYNJSez10CZJTj5+Gs78s9tgqcpxf8SzxAq+QkjX44NrKrEmNtGfW8=
+	t=1792397899; cv=none; b=HW/yJ3PIwzmNRF9Di2tIQnXaUaIe9dTOhqy4XIHLTXKbB+3ba8Lm5YlfGOKhpqco3uyQfPk7PI/0oaNu++i2CniEzyxIQqcxcSLVjB6Fhl3uMQxfv/tvHsd/ygrQ2q8YG80twHDVdET57NMoD9kcByugW8JyI8cjcgJu/lw9Fx8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792397841; c=relaxed/simple;
-	bh=txTlcIq2wibIcgS8dD5RBq7NnIQjb9KfqaLxlilPlVw=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=kOnQvTYxGbnCmjcPf3OqARpqMdE8duLYRYOCXK/BTZMjkARJeo2VuDbsmN8/O1XWpB6ih+6JAcbiV1XC4sTBdFxx9D+UFe6M96y39OZQkh4x5DD5Qx3rAOCgoJCoLUGh62c3YA8RzhCE0pPTa4uMsu8dSBUORWr1B7lhgjU+EHg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=G+7ngSuv; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1792397899; c=relaxed/simple;
+	bh=zJbXzUjdtRbnDRMSD0ZFUF3Ql50Yc48q8DhOcPiIqao=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XWmE2s8nxD8rQaxfFaDw8sJRLk2x+dO8wMQBI+ZKZ1xXg2mEuG15dcXTz2xbXfpJ47AQ5uwTHKtfiK1Yz6WpDLXnJxaHrIFz9hYcW5eIJyMMR/xSvfDqP9gf9ZkucQpGH4za2V8kcIz1lg8FKaWc0MHTOxkvZpOFs+IA4W8fISs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=edlYLvyz; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G+7ngSuv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792397839; x=1823933839;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=txTlcIq2wibIcgS8dD5RBq7NnIQjb9KfqaLxlilPlVw=;
-  b=G+7ngSuv4QkHtAeir5usNaDUyTSqLJPN9RUTAFqaPctRvZkkSp6IJ1WJ
-   fPWBkG/KJZYyBA5CVznlY552dIgAdS2xRCiFx2ou3J2NYt0tAvEZ4WpNG
-   1XPoUL4WZT3i7MVJ2C3337DgeD2FtOyQf0P/Qym1foPxyr5FcwVRKH3hX
-   cll4pvwrq0TBo1eidNnaH2zspfsLwlJvWz0WrziXT+pabOgcKqkUk5nEA
-   mqMDHFvqtWKxjkIDynMnKSbt7TU/wWaKWA1f63t9fScO6MGHkcMDud+CO
-   rUo6VTSmr+3JIiXzRFIBMACIf//NcU0UTn5fAyug9V5QRxFrtUrTpE2Ws
-   Q==;
-X-CSE-ConnectionGUID: zG6sMSChTt2H28Z6gYjYcA==
-X-CSE-MsgGUID: 11TsCZLuQr+CbGCOCo/cnA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1074048"
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1074048"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 01:17:19 -0700
-X-CSE-ConnectionGUID: 9SFcXbK0TjiYCAUtng654Q==
-X-CSE-MsgGUID: LpGE1KfzSmSNwVY0EWctBA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2539942"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 01:17:16 -0700
-Message-ID: <79df33cf-f5b8-45de-8ccf-1d2d8e841892@linux.intel.com>
-Date: Mon, 19 Oct 2026 16:17:13 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="edlYLvyz"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2e9f6a16afcso17705ad.1
+        for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 01:18:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1792397898; x=1793002698; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=wjpKNxbRFa0QN2xvZXyNEaUJwKZqQxqRu5XGn6mWryk=;
+        b=edlYLvyzt5NtgoM4YILG77WtkY2aw+ADU2TzSb1VL8z1FbYYD+LLmUuioArQ5J/htj
+         eVSJXEVmBjh+4bUvDZMUBnfHwsDaoYO6xQwDcCqWgJK0brL5Zuc1i7O15s9QdwEr5Qgj
+         CETRt5XMSNnIcqHDqPTYJtJb5Xg9au2sF7M2j8JfmLCrlNAs79ce8kRyvVZO0qPTNj39
+         VwgOl+mbvDJbaJ4mCpZX4vTCV+V/hspBSUSm1XYOLKKEzLJXmHu0G1IunmctLc10gDZL
+         /HFSyovPRDcqBMNxVbfkHr4cT81hcWpCOBhYoekhq2EDj0fIQYwo4MlQgodPPSn9boe5
+         CElA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792397898; x=1793002698;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=wjpKNxbRFa0QN2xvZXyNEaUJwKZqQxqRu5XGn6mWryk=;
+        b=uRXFuOYwcVnl8vTXeG5F5r9X99qI+hNtSbgCzaqRu7YEzH038KNAjE2TU8NDSU5GTh
+         rrk2PGeCuX7yfGUImngdPfjt3W9L3JUrQ9OOJV3gsoaiCA9cG7PiaVqwCF+azeHw/J4j
+         Q3gjKRGctMwTNwu/SKHIqzOS12Z9NNFlCw24P75ZdqaJc5Ev+MzkWUplERkXow/BIWVt
+         MRVO0dqLXNw8HFqWs+/Hg8CIcJgoSRbrzR2aDRkLpbXEwB7Z5zGkEwMqfMNnKtAhTuhx
+         vXoNBxjzcb/nENHIyWuatHCxO+ulibO8/Fg+HPMMe1a+si8A59hI2YkbX5kZ6S0swKwI
+         pgJg==
+X-Gm-Message-State: AFq9FYKMCpz0TLmPpZKM3ulYY94kl+NNG4jXbVtiiUD13VUFbaK10P8N
+	9FkGloARMj19lP4j3mlOX1rdWMBh5lmLhxnrhQ6WPE7sAY9VysMPm63HpLUaVaz8kQ==
+X-Gm-Gg: AYBFou3f0nRsRBS7+BM0B0wGzTkxeP3n8Tz+4sTZnnUO8cJJGB1tJqqSrkdDrHLaseS
+	nl0MifQnEM4+GtB2Zf7ta8tT25g4cFpz4AYrszuwNLVL6EPgTz8TeqCb9tuUDfQep1zOa5pb7u3
+	+png+Isy90megCgtYYsCEU0p0NZ1IvGs7YBVvcyh6jjBrelQNAG3UlPTl9cNt1aulydMf5Y2+u4
+	/CoPxRfbO2cVV2sY3BNSp6rDvi+YjTU+BcqPllGnXp2ih7y8u8zPpWBnZ3uo51viztFJYVnYfbQ
+	aktl7Jd5O+4KdWwlvLRZo99tpSKtbcC3cSVybz/N3unQ5gYJCVY68Kwr7NYx8m93v3Q9RzrheAD
+	MjwrunRN0O4C5iHVRORqAqfYJesoaB4C00B6wjsvDY5iMpUxoL7hu1a71JWPKpDnNhwljtGI0tf
+	MlxAe8LQRwpe35nxIK7jNu+4ZhMvEFt6d4UopuSJvOUb4LD5ZBBPrtemo2lMgCCUdIn8YQ103OS
+	FdxMAAbapmsCx+fRvNkjXPlBOFWaE6mS4kqGQ==
+X-Received: by 2002:a17:903:1967:b0:2d5:db38:8010 with SMTP id d9443c01a7336-2e9b332b4d8mr6634505ad.15.1792397897247;
+        Mon, 19 Oct 2026 01:18:17 -0700 (PDT)
+Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-89f58017244sm3517077b3a.47.2026.10.19.01.18.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2026 01:18:16 -0700 (PDT)
+Date: Mon, 19 Oct 2026 08:18:08 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Thomas Gleixner <tglx@kernel.org>
+Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh <smostafa@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org, Radu Rendec <radu@rendec.net>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rafael@kernel.org,
+	Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev,
+	sashiko-bot@kernel.org
+Subject: Re: [PATCH v11 07/16] genirq/msi: Cache MSI message in
+ irq_chip_write_msi_msg()
+Message-ID: <atXSQFvKWo_xAw9l@google.com>
+References: <20260929034510.2023173-1-praan@google.com>
+ <20260929034510.2023173-8-praan@google.com>
+ <875wz4eyqe.ffs@fw13>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Xu Yilun <yilun.xu@linux.intel.com>,
- iommu@lists.linux.dev, x86@kernel.org, linux-coco@lists.linux.dev,
- kvm@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
- Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
- <rick.p.edgecombe@intel.com>, xiaoyao.li@intel.com,
- Chao Gao <chao.gao@intel.com>, Binbin Wu <binbin.wu@linux.intel.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] coco/tdx-host: Initialize trusted DMA on all
- capable IOMMUs
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20261015010705.1973284-1-baolu.lu@linux.intel.com>
- <20261015010705.1973284-5-baolu.lu@linux.intel.com>
- <atCPY6LzHd4y0Ywh@yilunxu-OptiPlex-7050> <20261015173707.GV14213@ziepe.ca>
- <5ca5f1c4-4c3c-47f1-b79c-c1fe06b20ee4@linux.intel.com>
- <20261016145843.GF14213@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261016145843.GF14213@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <875wz4eyqe.ffs@fw13>
 
-On 10/16/2026 10:58 PM, Jason Gunthorpe wrote:
-> On Fri, Oct 16, 2026 at 03:03:23PM +0800, Baolu Lu wrote:
->> On 10/16/2026 1:37 AM, Jason Gunthorpe wrote:
->>> On Thu, Oct 15, 2026 at 04:31:31PM +0800, Xu Yilun wrote:
->>>
->>>> An alternative could be, bringing up one IOMMU when an associated
->>>> device requests link encryption. Then a no-tdx-support iommu fails the
->>>> encryption request naturally.
->>> That is what ARM is planning to do. I think it is reasonable to
->>> trigger creation of the secure iommu when the TSM is connected to TDX.
->>>
->>> Fail connect if the iommu could not be created.
->> Yes, agreed. The Intel iommu driver could use per-device interfaces,
->> just as ARM is planning. There are some differences, though.
->>
->> ARM's interaction with the iommu driver in viommu_init() appears to
->> consist of two steps:
->>
->>   - arm_smmu_get_realm_params(dev, &params): get and validate the
->>     physical iommu information from the arm-smmu-v3 driver;
->>   - cca_psmmu_get(&params): activate the physical smmu for Realm use.
-> Okay, I haven't looked, not sure what is in cca_psmmu_get() yet
+On Wed, Oct 14, 2026 at 11:52:41PM +0200, Thomas Gleixner wrote:
+> On Tue, Sep 29 2026 at 03:45, Pranjal Shrivastava wrote:
+> > Currently, PCI MSI caches the composed MSI message into the MSI
+> > descriptor inside __pci_write_msi_msg(), whereas platform MSI and other
+> > device MSI domains do not cache the message in the core, forcing
+> > individual drivers to manually copy the message into desc->msg if they
+> > need to restore it across power transitions.
+> >
+> > Cache desc->msg in irq_chip_write_msi_msg() before invoking the chip
+> > callback so all hierarchical MSI domains automatically record the
+> > latest message. Document why the redundant assignment in
+> > __pci_write_msi_msg() must remain for direct callers outside the
+> > irq_chip hierarchy.
+> >
+> > Suggested-by: Thomas Gleixner <tglx@kernel.org>
+> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> > ---
+> >  drivers/pci/msi/msi.c | 6 ++++++
+> >  kernel/irq/msi.c      | 9 +++++++++
+> >  2 files changed, 15 insertions(+)
+> >
+> > diff --git a/drivers/pci/msi/msi.c b/drivers/pci/msi/msi.c
+> > index 80a9db417dc8..f7bedc31d486 100644
+> > --- a/drivers/pci/msi/msi.c
+> > +++ b/drivers/pci/msi/msi.c
+> > @@ -257,6 +257,12 @@ void __pci_write_msi_msg(struct msi_desc *entry, struct msi_msg *msg)
+> >  		pci_write_msg_msi(dev, entry, msg);
+> >  	}
+> >  
+> > +	/*
+> > +	 * Although irq_chip_write_msi_msg() already caches the message,
+> > +	 * keep the assignment here for callers that invoke
+> > +	 * __pci_write_msi_msg() or pci_write_msi_msg() directly outside
+> > +	 * the irq_chip hierarchy.
+> > +	 */
+> >  	entry->msg = *msg;
+> >  
+> >  	if (entry->write_msi_msg)
+> > diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+> > index fb5f372215bf..df460a574d80 100644
+> > --- a/kernel/irq/msi.c
+> > +++ b/kernel/irq/msi.c
+> > @@ -634,6 +634,15 @@ static unsigned int msi_domain_get_hwsize(struct device *dev, unsigned int domid
+> >  static inline void irq_chip_write_msi_msg(struct irq_data *data,
+> >  					  struct msi_msg *msg)
+> >  {
+> > +	struct msi_desc *desc = irq_data_get_msi_desc(data);
+> > +
+> > +	/*
+> > +	 * PCI Multi-MSI shares a single descriptor across all vectors and
+> > +	 * the device stores only the base message. Cache the message of the
+> > +	 * first interrupt only, so that sub-vectors cannot overwrite it.
+> > +	 */
+> > +	if (desc->irq == data->irq)
+> > +		desc->msg = *msg;
+> >  	data->chip->irq_write_msi_msg(data, msg);
+> >  }
 > 
->> So the Intel iommu driver will probably end up with interfaces like:
->>
->>   - dmar_tdxcs_iommu_init(struct device *dev, ...);
->>   - dmar_tdxcs_iommu_release(struct device *dev, ...);
->>
->> These would be called from the connect and disconnect callbacks of
->> the TDX link ops:
-> It seems OK
+> Sashiko reported correctly:
 > 
-> It sounds like you will have a one time init of the secure iommu at
-> the time the first PCI device wants to use the TSM? It seems like no
-> problem.
+> > [Severity: Critical]
+> > Does this code cause a NULL pointer dereference for domains without an
+> > msi_desc object?
+> 
+> So this needs to be:
+> 
+> 	if (desc && desc->irq == data->irq)
+> 		desc->msg = *msg;
+> 
+> Did not think about that, but that also means that this patch was not
+> tested on any recent (less than 10 years old) Intel x86 platform or a
+> x86 VM exposing HPET...
+> 
 
-Yes.
+Ack, I'll fix that, and yes, I've tested this on arm64 platforms only.
+I'll pick up a recent Intel x86 platform as well, to test this.
+
+> Thanks,
+> 
+>         tglx
+> 
+> 
+
+Thanks,
+Praan
