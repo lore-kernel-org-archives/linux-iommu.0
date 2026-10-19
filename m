@@ -1,200 +1,173 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012020.outbound.protection.outlook.com [52.101.53.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5163497B79
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 08:28:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792398520; cv=none; b=WZySNMVPlNaRoUlW25rqcjSx3uOzzK+dnCTKQj/LZqjoOAYXjwt8coP1EHvSm/dp1LZUDNOJvyftcZYKeaB8zPhPQaCOzQzv6i/zf/qt+ZsVBqc2K4dMtVQc1ulzVQLBF1NOceM1Cb4nFQGWRzyjEz4ileiVSN4R+zNO91Md58w=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792398520; c=relaxed/simple;
-	bh=7DGY4PHn22mBzSP+68tHwAmdJNJRgkdOyySSFzFXVIM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZQFOXUl9xoBCRiiRyvZ+pyUUt6aVwrbn7mOl9c/70aR1eYB+NWSAwfe6Me/waOCGu2a0WjOtCVwa2frtYSHK0H2tAe8D/PZXwyLKP7maeRk0Vzh7x/SdyUQppIKmkZJMIFtHzrkiXXc/0vHUhCrsATVvU3pG/1raUO7yy4tRK48=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Gvrx9ILQ; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF23E39099C
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 08:35:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.20
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792398931; cv=fail; b=Uo54Mp2tRvTnHr4mZk/ZD07BDnyW8FM+sbMU9DrDpHOEziv+KiEMnb36M/Yvmj+/7iVd9vr1JUv8/eLjxiSWBwbs3S5mxNJqxUmtDeDh0FOYtQDZWOe65IiiLeXSERSeHeYH3CQV3YO6jHMQ5UbJJVPur+a2ubdPLoDNfzMeQww=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792398931; c=relaxed/simple;
+	bh=dLiltPx5yDZ+41JEqWEh5iyQTMBeZjqs9Un+TU7Bm4A=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=mCHl0MUBXZWyDUiLBxzmMjeZXcAFZDQhEOfBYk8VkQpy2xQQnQlG1CakdaXJSmGPxPtnYSJnG7k9UIGpi28Z/m6ip3SJAiBmJgtSY6Nnj9sbU+WbXSCGoHLtmxdDkslowEVxICzpe2RD+jJjYTzmAAzvamEJc6mx/sOhrmsTTxc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=K0WCYA5M; arc=fail smtp.client-ip=52.101.53.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Gvrx9ILQ"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2e9f6a16afcso18725ad.1
-        for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 01:28:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792398518; x=1793003318; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=QNi/4g2rcbVBYZWdEY3YYi0+ZnogZXZN5660dVgk0m4=;
-        b=Gvrx9ILQpFI3takUgzMtgyw9+4MBtlXdxKFZT7wZH1Ng/uVGgPC+c1MQtBNfXMWDI/
-         BDOtwYmhvOUZA4J41OUqDUJTWKlEJZFSYjIPQTwkueKSHtXrCBMHQLKTVeRTGOKcFeY2
-         i83T8CyZM+RyLk/Cn27lNrHhD2o6fWGnUkC2GqmTi+y40plm9bD0MV/20rJnPEfeuuMo
-         31Q87nW8ZHArlh1+Tc9mLKNpeuN5GGNNJ/wYk6kV8JNdT8Enq9YPWva+9yp4axK/hxP6
-         kMFsX0QqAVMJVkgNLoGK8xwGRrEqtmM6fircf1PNB/U0mKNI+XXfDfC/R4V6JdPUbUt0
-         dRhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792398518; x=1793003318;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QNi/4g2rcbVBYZWdEY3YYi0+ZnogZXZN5660dVgk0m4=;
-        b=MqTtiGzPnxypVLMy68x7mOOeTd8ek73iLdtRqrpK92+1oLocwbYf5BjogwJYbY+Qxz
-         yI63Jw1KXoCcDCEDSkrV53nJzFWxvblB4+iu4naXaWTxb6iqA/KDM4XtnunFalhaN5KJ
-         V1t1cijgYiVz7rbjKmQ2d7TiO+I7nir4TaAqL/MiKXwvf87fJzNBnJJOfafno/d4+WzV
-         5yFDtlo770RTG9u8EUHAW5V4EQ2xL4UwZCA9tV7tlR4x7uE0bAZN+P2nEjHxsdTlQqvO
-         SeOHJfWUXFR8TzATPenB2FvLGKW1lLhhlZ/euunr9dl25qhxezdNVNmmwt76hOGtNtbI
-         546A==
-X-Forwarded-Encrypted: i=1; AKwUvByehT1bPJ8+dOawNNkf8acaeA15y1VBF+k+nZAOiwn+FRr94btDH8C45TROJZ98Mdg8siCzkw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIgAURjV99oes154e9EnFt/8x+3GKzv97s0KnPmQUxFIMar9DJ0
-	AnWaOIJVjP/s8xMoxXj4kGpTIeL5WSbf4mGUq3mGwi47JM+x9XOb/gCo4v35goIY5A==
-X-Gm-Gg: AYBFou3LgAwTHygPkyn0p6DJVPc6bbrFHhbyOXk0UG/gBinvd5faS0nBQGzN7an5FLh
-	1RTWjuAASimWOonCCiGEHPrZ5q3T8AyXwdDKIdPwdiOuMj4XvQegNDjgTM+oCsmaZUu/x3hE8Fz
-	s5mRA05mfSmsFHTngMhwjTR9tO8vwzkfUlgwC095511d59OJW8CPThDJuaOJLp9SYvsB/Z8i0fM
-	swjDrbDv1PNHhNkkjFtlG1sYJGZ91G4RwayIWDWwqHnwd1RkUpKUJLsGEcBQwp5Cp9HFvpyVu0t
-	DgvGmFG08gqG3k/td5SjbuVHQRipJbELnhX52copxqJxldGPfC42ni2hFYjEgsByxQ2J1ZvIMoq
-	n5RR/5XAiZ1qCy5HjL0cuuYbxeqr1vx+zldWrKYBJrnwbiO5gLkDI0oHmKz7Kpj1CSzvczYcIwR
-	vaxky0xoMKD94OsQSnTuOiaIgfoZHIu4/uyJBU913LuUagxxCwRejjKq+EsObQZFZi6X+aoyttW
-	i6CtVBtKJgqKCMhfxJCjDBPCCI3JNRqXOsJ
-X-Received: by 2002:a17:903:1a10:b0:2df:8e89:3bff with SMTP id d9443c01a7336-2e9b334381emr6523115ad.17.1792398517740;
-        Mon, 19 Oct 2026 01:28:37 -0700 (PDT)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3acc4872861sm16015390a91.7.2026.10.19.01.28.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2026 01:28:37 -0700 (PDT)
-Date: Mon, 19 Oct 2026 08:28:29 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Daniel Mentz <danielmentz@google.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rafael@kernel.org,
-	Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev
-Subject: Re: [PATCH v11 11/16] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
- gate CMDQ submissions
-Message-ID: <atXUrdEeHHAnKhBk@google.com>
-References: <20260929034510.2023173-1-praan@google.com>
- <20260929034510.2023173-12-praan@google.com>
- <asZSQRSYBjbUaaH0@willie-the-truck>
- <370a947c-601b-434c-befd-4896ed523ced@arm.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="K0WCYA5M"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=MJ276DLqutFSc94TTlp+eetCnsg0dXHB5f7wsoizuiRxL6rwIgrWSJofgV78bHBN5esfnvmo287UDyQU/EhqJfq1Rrs5LWhSen6GX16pk/KKIJgPgVGqvmv8O5r6Nh0nKiJm+oszn3OJsdbxDGQ6npjytQpzBT5qrs66pq/FYmaLYljMTWYWE/HCEGcwy332unDpLOdlvCHqHlfCemEG/woyxBo8dP3Zk0gvt1quBDMc0Fw8JIM4Ti1K8ocOljCw/IwAW0MlCnUq2sXoKpPMN3Q/irGPug0rAHTH0VfyLYVSTefzCDOhx9BeYcoTcDy79uegyIT20FYyHq0Bg5K2aQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xvYeLvvThNkTrVYlZn/edMs2YeARUsHCbWHZ1EaDRc8=;
+ b=hI3F+C6A7AAGek5EdPW+XzLz6kioz3FFPWpVLqVdmwhsJ3+J1WUbbl0PYqInT0ghA2+r/DzX9iY949YvuecLDHAms/tW3a2DnEGnnGuq7UJuEE4JZa8EAYDNYjRvw1HLz1BxyQipueo5w2mUV3G+gRiou78ct8QvZRpNoKU+IMUquhq3rcrvp5J5OSPlbk1gWyfQun1FSxV19GFmhjB7hqp6Lu6N08g6p+19AoMStIRjRNn1fHBs2I+E2/cpokeLxTBhowwbV2Uta62FMbXBypu2irt7vcc5BjFZ3SLgQAAnwJf1v8DjHPW5ATGDvgEXVuVVDcJhUTILR1QViWdQWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xvYeLvvThNkTrVYlZn/edMs2YeARUsHCbWHZ1EaDRc8=;
+ b=K0WCYA5M52ITmuzJdedeI1Egg3U4fvibTGzd8WD6mVF7KEANRy8ft1DjJyaERZCltBTe7ZlY6myHteexFjgLCAie/EoOqwo6JrO5YbuHWcs5MQXmW7gOxdTOoy7h+64aAeT/AgP0ZFXo558xEjGxlhHt5cOyIjCdgbe+t8FYaCk=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by DM6PR12MB4298.namprd12.prod.outlook.com (2603:10b6:5:21e::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.17; Mon, 19 Oct
+ 2026 08:35:27 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0522.017; Mon, 19 Oct 2026
+ 08:35:27 +0000
+Message-ID: <d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com>
+Date: Mon, 19 Oct 2026 10:35:22 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 03/26] dma-buf: Add dma_buf_mapping_attach()
+To: Karl Mehltretter <kmehltretter@gmail.com>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Cc: Alistair Popple <apopple@nvidia.com>, Dongwon Kim
+ <dongwon.kim@intel.com>, dri-devel@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, Leon Romanovsky <leonro@nvidia.com>,
+ linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
+ Matthew Brost <matthew.brost@intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>
+References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+ <3-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+ <20261016202653.97339-1-kmehltretter@gmail.com>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20261016202653.97339-1-kmehltretter@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR20CA0037.namprd20.prod.outlook.com
+ (2603:10b6:208:235::6) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <370a947c-601b-434c-befd-4896ed523ced@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|DM6PR12MB4298:EE_
+X-MS-Office365-Filtering-Correlation-Id: dbd02e52-3976-42a1-6967-08df2dbbed32
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|23010399003|7416014|376014|10067099003|56012099006|22082099003|18002099003|11063799006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	AF28d2DQF31WjdsbsN35R7VOyv4lywinfuKy1LkxopKK3wCJ5GHN/+QqHRB0KfsEUtt9Bd6i2JCCNcPsB5yjv3LRs0FN3PwxPXssJU2zFUQdLzjNRfMr0jXaqkU01fWHn7DU3NNL7OiZyYCieMZWrR5B3TsAsq/ALmP9jnfSWVE7nlHGlCABssXPb31s59osAlKph9/twRu17Q81GPG8r5Yy+um9n7r7wlR8ocaZaEquJzS+BplqqxN+h99nWgOs00NQpMYB4tKIksCcS7ehIvJXX31k5aeyATKYBwMadH7Gvum8pJYHJ7OgJcs3HZF9LdVPKcWkXEFx03q/xaTeEl+Otd6MjOSMXR8h/9Ooy5f1eSP21l472epVwNGDPddGkit+f7eJkEhX10GUpRnxJ35P59pPzRTGb+Ni2CkQLFJ4IiEv2BJWNKg1wvFH7j3KmQv452QSk5OKMZhf2OtcfNO26Bae/c5OGFL7hMH42BzCFrsHtcXUHje1lsltc6H/J69yeyoJCLkxljNsT+71ZV7aikrle/jZ5MmS1C1jkqM57xGa+fQwOSieJne5CZYrogrOCQjf2PLl97o8ueXdYG6YDsPIl8N0EGXCgtGeii41elijGbRGxKYryMmCK6yuxJhtDPtukiiv+Eox/VStx/bP/Rdvcd4vcA6a7fIITKM=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(23010399003)(7416014)(376014)(10067099003)(56012099006)(22082099003)(18002099003)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SDBuQ3Y1VTF2YnhxVUVLZSt6amZTOXdDS0NGeWoxd0Q1OUNWNXdEcDM0clVE?=
+ =?utf-8?B?djZLa2R3ZFJiTCtKK2ZRRVpWNVdXcW1aTnY1MmdUWnRReUl6Wmp0K01QME1K?=
+ =?utf-8?B?Skp6OFdna25NQ1pTTml1MFNrbnRsQTgrVVZad0R5aDByYWUyRzdFSlFpSlBT?=
+ =?utf-8?B?L0lXczJIaWN0U2R1T2hxcGdROTBranVuaktpckN0WlhYWjgvSnpyU0wxNTdD?=
+ =?utf-8?B?aUNIcERsc1lwK21jTi9Lem9XSzhqbms3bW1jeUUyWjZ1TVk2Ukloblk5ZExP?=
+ =?utf-8?B?Ui9Ndi9Gd25zUW5MTTdGdTVtTE5XQ0hvOTgvOHptakVEY1Fsb29VajFUZEt3?=
+ =?utf-8?B?eTZSV0tMcmYrdHhLcGQxKzk3RzF1VUVQL1BSbU1rdGhxVDNtc2hPc0M3dmxt?=
+ =?utf-8?B?eWhKRDlXZGxRRERkeHFMbWd3N2xZYVhMbll2SXlaR0xwOEFlaktxZDd6bVRN?=
+ =?utf-8?B?VHljcjdCT0h6Q1h1NXZ3ZXdOZWVOdEFFK3I0cFNVTHNBTUlVRmxjR0FWMFgx?=
+ =?utf-8?B?emsxWTU4RThyM29DUFUwRDZXSVgrT3VpSmR5T3pTK0U4MkZQeWJObUQwc2xz?=
+ =?utf-8?B?aVgwdFJOTnpMUXZpekVteXQ0K0pldlZ3TnAwa2NGS1VBcGlxVnBaVWJGVWk2?=
+ =?utf-8?B?azV6Ym5OSnNDN29pQlEycmVDRkl0VTFyVzBOTEk4ek9OVDBtUkJOcW4rMkp3?=
+ =?utf-8?B?bmxhYWw2OStjZFhxL0tkLzVkb3JPRGEzVnpWWnhTaXdFT21HZS9pRTErWUNy?=
+ =?utf-8?B?Q2o0UHdURFdtRG4ySHFBSHZGam4rZVdMZFhhYkhBQzM0WmJtNU5uTW5tRjVF?=
+ =?utf-8?B?OHhReHFHNk5zSFF4enNibHZLejI2bVgwdXNxZmtuanp1ZXEwQkxVNGFHL2lJ?=
+ =?utf-8?B?OEd0SUpHcjNRK3Fac01tWWI5NnM4UUFDdFh6V0srQndaN1hGUzQ2dHBMMEF3?=
+ =?utf-8?B?Qzc4RnduN3Jtc1VBVFlMNm1YbStJS3VmU3VXdnhtbzBnM1RBQ29JT0FYZmh2?=
+ =?utf-8?B?NTEwMm8wZElQTmRVaGJ4UGVLSzRERnFBalhJUk9OSEZqbW82bnRDTTdGMzNQ?=
+ =?utf-8?B?dS9abWJ6YjlhRWFxSTZpZVQ5Y2N5amhQam5KWVc0dkJ1RGEzbWExaUg1QmJT?=
+ =?utf-8?B?ekNmOFp1Rkpvb29tTGJPZVBVNUR1akFTRlVlaTNTZEdwTEw0R2hkcU13cE9r?=
+ =?utf-8?B?VkRtWmF6djdMenVNQXBsdnk0L2pPVGpJQWhDTGppVnYwTUZBajIyMGtQaG1O?=
+ =?utf-8?B?Rk0rQ0NNZ2FqWERzTSthNXgwZXB1amhIK1dtdjBkVGdXK3RqN1U4cGRhU3hw?=
+ =?utf-8?B?aHg1OGVUdzZ6L1F2dU9vQkRBSkVoYkdBaWt6MVI1cEpLY3pIdTJ3Y1B2aG9j?=
+ =?utf-8?B?US9CYW5SWmlieEkzL1NySFBVQ2JzWmFWMEFqckRRYVVvMDlNZkI1T2xVVnVs?=
+ =?utf-8?B?b1lhOWIyQUR1SitBZ2k1Zjh4OFdBbUFsRno0bThHTVZIWUVISk5ROEdMMXQ0?=
+ =?utf-8?B?dTBPSVV0OFFKdlhRTzFQM3h2S1hQVENHam1UVGRPZ0JCSXBQTWtqUjI3V0p2?=
+ =?utf-8?B?c1ZOWCtSMitiYjRnZk1UUXR6SG1aNjQ2YjEvWGZoVy9XL3FvWGpsU0E4Qlg2?=
+ =?utf-8?B?K0RLNVJaeC9JUnFib0xKK3YzalM4N05jMUZxZjhveG5rR3FrN2JRbGRlSXRs?=
+ =?utf-8?B?enJHcThYc3VXMjFpTUJrY1g2ejFjVWpKN0pDaDBkZ0FyVzBqNGkvMGlqTExB?=
+ =?utf-8?B?ZkFRaUdkdHl3L21pR0I0akg4UGZxdFRxWWZ3dENGL3AxWFZCRUx6c241b044?=
+ =?utf-8?B?Q0IvejU4WEhISCtyNlA1cGVZeHlzazVIQ25ZYU1ZcDRnVStBQVNpa1VPS2ZP?=
+ =?utf-8?B?aFhmNDQ0SmNmai95QTJPU1ZOMWZxbWlMSFRBa0NCaUNhSEh3RG1qU1JnWXVL?=
+ =?utf-8?B?RHBEbS9FYlp0bGtTRUladS8zQlVDZFZLZGpMMHMxQVFwZlh1TEtmbU51Q3lh?=
+ =?utf-8?B?NHpQTHl0NGlMczFneDhCVHVyQ2VjaTg5Qm82N2trWXpVUSt0S3Ara0xDS1Ux?=
+ =?utf-8?B?Nks0dGRWejd3SzlhN1gwbjk4TU5EUEZoS0dRUEw1YlNQa1JmdW5GQ3dWb0NV?=
+ =?utf-8?B?Zm0vUnAxeHREd204Zm5XOUhHVHFiOEIxMkYyL21XUE5JOFN4cTkyZDk5aTQx?=
+ =?utf-8?B?QXg1ZXZPSnRoZzRaR2dzQ3ZtRFZmNThxUHlQVnpDN05RMHhLb1JRdU5DdGVZ?=
+ =?utf-8?B?aTB0dFlLYWFCOUtGbyt1MlBQN09xaHpOSU9ieHJrRGZIRXZsTHdJZThNRXVF?=
+ =?utf-8?Q?fo71wjf7WLk0DuT9FK?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dbd02e52-3976-42a1-6967-08df2dbbed32
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2026 08:35:27.3569
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1XeSSBXd10eIzM8UfDY7YaJE4R6yiYzkeftH8hy3fhSEtsybaD8/bQUzxT1uAHM+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4298
 
-On Tue, Oct 13, 2026 at 12:35:40PM +0100, Robin Murphy wrote:
-> On 07/10/2026 3:08 pm, Will Deacon wrote:
-> > On Tue, Sep 29, 2026 at 03:45:05AM +0000, Pranjal Shrivastava wrote:
-> > > Introduce a new bit flag, CMDQ_PROD_STOP_FLAG (bit 30), in the command
-> > > queue's producer index to safely gate command submissions during device
-> > > suspension.
-> > > 
-> > > The flag embeds the suspend state directly into the existing global state
-> > > The flag is checked in the cmpxchg loop in arm_smmu_cmdq_issue_cmdlist(),
-> > > which acts as a Point of Commitment, ensuring that no indices are
-> > > reserved or committed once the SMMU begins suspending.
-> > 
-> > I'm not familiar with the term "Point of Commitment". Is that something
-> > you came up with? Without a general definition, I think I'd prefer to
-> > avoid using it, especially as it sounds like something to do with the
-> > Arm memory system (where we already have architectural terms such as
-> > "Point of Coherency".
-> > > This prevents a situation of "abandoned batches" where indices are
-> > > incremented but commands are never written, which would otherwise
-> > > lead to timeout during the drain poll.
-> > > 
-> > > Update queue_inc_prod_n() to preserve this flag during index
-> > > calculations, ensuring that any in-flight commands that successfully
-> > > passed the point of commitment can proceed to completion while the
-> > > flag remains set.
-> > > 
-> > > Suggested-by: Daniel Mentz <danielmentz@google.com>
-> > > Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > Signed-off-by: Pranjal Shrivastava <praan@google.com>
-> > > ---
-> > >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 35 +++++++++++++++++++--
-> > >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  5 +++
-> > >   2 files changed, 38 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > index a123810fac57..7f89e2306942 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > @@ -218,7 +218,8 @@ static int queue_sync_prod_in(struct arm_smmu_queue *q)
-> > >   static u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
-> > >   {
-> > >   	u32 prod = Q_POS(q, q->prod) + n;
-> > > -	return Q_OVF(q->prod) | Q_POS(q, prod);
-> > > +
-> > > +	return Q_OVF(q->prod) | Q_STOP(q->prod) | Q_POS(q, prod);
-> > >   }
-> > >   static void queue_poll_init(struct arm_smmu_device *smmu,
-> > > @@ -726,13 +727,42 @@ int __arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
-> > >   	do {
-> > >   		u64 old;
-> > > +		/*
-> > > +		 * If the SMMU is suspended/suspending, any new CMDs are elided.
-> > > +		 * This loop is the Point of Commitment. If we haven't cmpxchg'd
-> > > +		 * our new indices yet, we can safely bail. Once the indices are
-> > > +		 * committed, we MUST write valid commands to those slots to
-> > > +		 * avoid indefinite polling in the drain function.
-> > > +		 */
-> > > +		if (Q_STOP(llq.prod)) {
-> > > +			local_irq_restore(flags);
-> > > +			return 0;
-> > > +		}
-> > > +
-> > >   		while (!queue_has_space(&llq, n + sync)) {
-> > >   			local_irq_restore(flags);
-> > > +
-> > > +			/* Avoid waiting for space if the SMMU is suspending */
-> > > +			if (Q_STOP(READ_ONCE(cmdq->q.llq.prod)))
-> > > +				return 0;
-> > > +
-> > >   			if (arm_smmu_cmdq_poll_until_not_full(smmu, cmdq, &llq))
-> > >   				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
-> > 
-> > It's a bit grotty to have the extra READ_ONCE() here. Why not make
-> > arm_smmu_cmdq_poll_until_not_full() return if the stop bit is set?
-> > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > > index deefb17e31eb..794b258550dd 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> > > @@ -394,6 +394,11 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
-> > >   #define CMDQ_ERR_CERROR_ATC_INV_IDX	3
-> > >   #define CMDQ_PROD_OWNED_FLAG		Q_OVERFLOW_FLAG
-> > > +#define CMDQ_PROD_STOP_FLAG		(1U << 30)
-> > 
-> > I'm unsure about this. Bit 30 of the cmdq prod register is RES0, so it's
-> > plausible that the architecture allocates that bit for something in future.
-> > For example, if the index field was extended, then I think that would
-> > cause problems for the driver.
-> > 
-> > Do we have to put the stop flag in the producer value, or can it just be
-> > a flag elsewhere in memory?
+On 10/16/26 22:26, Karl Mehltretter wrote:
+> On Tue, Feb 17, 2026 at 08:11:34PM -0400, Jason Gunthorpe wrote:
+>> +	match_args.attach = attach;
+>> +	if (dmabuf->ops->match_mapping) {
+>> +		ret = dmabuf->ops->match_mapping(&match_args);
+>> +	}
+>> +
+>>  	attach->dmabuf = dmabuf;
+>>  	attach->importer_ops = importer_ops;
+>>  	attach->importer_priv = importer_priv;
 > 
-> Logically, it feels like this should happen earlier in the process anyway -
-> if we're entering a state where we don't want to accept _any_ new command
-> submissions, then surely arm_smmu_get_cmdq() should just start saying "No,
-> there is no valid queue to submit this command." to everything?
+> I may misunderstand the intended contract. match_mapping() runs while the
+> attachment is still zeroed and without dmabuf->resv held.
 > 
+> Patch 11's amdgpu callback needs importer_ops and importer_priv, so its XGMI
+> match cannot work here. Patch 12's VFIO callback asserts dmabuf->resv and
+> reads priv->vdev, which cleanup changes under that lock.
+> 
+> Should the core initialize the attachment and hold dmabuf->resv for
+> match_mapping(), or should callbacks avoid attachment and lock-protected
+> state?
 
-We can do that as well, but it can only be an early-out.. the STOP_FLAG
-may not be set when arm_smmu_get_cmdq() looks at it, but get set right
-after, before we reserve our slots in arm_smmu_cmdq_issue_cmdlist(). So
-we'd still need the check at the point where we actually commit, i.e.
-the cmpxchg on llq.prod.
+Right. This completely misplaced.
 
-Thanks,
-Praan
+The matching can't be done at attachment time, but rather needs to be done before creating a mapping while holding the resv lock so that the matching decision can't change.
+
+Regards,
+Christian.
+
+> 
+> Thanks,
+> Karl
+
