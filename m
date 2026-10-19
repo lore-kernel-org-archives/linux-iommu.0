@@ -1,45 +1,46 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010056.outbound.protection.outlook.com [52.101.56.56])
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010008.outbound.protection.outlook.com [52.101.201.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A454F55C9
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 13:08:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AD8F4F55AB
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 13:08:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.8
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792415309; cv=fail; b=CC0sSlLBbtheKqFnfETmXTuvr/QvTRXJZVGsgRaMcmXCOMmCeJEcTPlogfCTrab1seGIJPXq65ZplEygFgna+F2Pak+XMkF6usGHuHRSCaz+yu66sqX80kelVlsRSMqOE9V5h1XnIAIbGuzYihdaXfNWTdzuncIFpVupRY6ChKA=
+	t=1792415330; cv=fail; b=abWjAmz3S+IiZxgFQqwWz3kGruHofil9oLIARioejrKHY8dd2Tc2fdoUK+YjeKlr3Dp5xcL7HWpU7flQjQbpBpPbzk2XeW4MAXqcnn4GtXQnpo5/GXsGHncHieNxG1JvddYCQB5Y4Y1gb30fg0N1wZ3WeTZK0e1bG3UTf1If4MM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792415309; c=relaxed/simple;
-	bh=1Jrtcr0/CS+OVCJf0QRPaI6CdQbaZ+GDLpJslfXZeZo=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=hhdd8zZBJ3SRy1BdLdMANnQIrxxcpr2B2pHp1mS0dL2zS3hhAgZiFrUdx0ePaZD8izRdD3Hy98peojLdUIr7TVLWMqt8vBIMbsj9b2f2cAaXmTZDMnbJ/l42cPtuWME/Bwoa43CxSJyAvcOiDpl8wqS9YLLtXVvaEQRNn2Gb87g=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=v5q0vG3o; arc=fail smtp.client-ip=52.101.56.56
+	s=arc-20240116; t=1792415330; c=relaxed/simple;
+	bh=Di9NLDCBHikRT3enWVpRvZydgdoFVpuTrCBd9uUrXIY=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uhfXjGo421sDhUScj2n+oxECfL/NYWJCxYtT2IWiT2MOdfq7uLXhc1pJv4ywx3SOnC7jTZw4qRv8JB50eM+VrQEsLEPjIsW+/3QnJU0JxdOGQQDy9+2to0W0fgsaAG3LlgdXkflut5iUcD0GMdFfBuA5n3hlgy7b+H2Zc5Cb5lw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=cqgkDfBR; arc=fail smtp.client-ip=52.101.201.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="v5q0vG3o"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="cqgkDfBR"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JZOBU7YxZGB3RWBhVT7EKBUJIvV35eshDy8zjTkooReJgF/3HA0F61HJHBnpWdDI2CKzF/Whv09PK1PQrHp/1pMbUgL4xQRkxhTHUUlBcmQQVA7egosU9vfbbtrTkrjdaNR1+bHK1Inh2BcFmm+G1eA2HT/OYWUYeUW7Hq9nrhfG3rg7mDjgSqrbhjV1TYdmVkYqBSNOVpBx/Gr2NLk+1GiXIk9SdRiwd4w3zSkEV2z54NqSxoQ2AVnhf6+x3tTwIdbFvZg1RRnkVwJFonhG9vXejyyS/lA21r1+ObHK/BxwVn54sjQuduARsggRxS20Uazgw5Bq8Ttv+2EMlkG4SQ==
+ b=U18IQhX7SvE876Sg/ucjHR/7YDR8RKW9PtdMdltITfaSNbtWEOMKF2LEq8Mu1c3FQxe4sZeeVJlGurUcp+hINRE/zIXtgV7MDnO1++Hc+CvCIEIyS+byAA3UHUQJS1PiQS9A6pedQiQfMXUQD8ZYzBImsuNBFwrwpoY3Uc6v53IB+i0mIrFVxbTdiB64hGz44dFM1WopqNx06M6iPUkQpd94mLweViOjWJJHUw7pqq3u8LiUJHC0WnbHAHqXR32q8LVcDBAy4NC8V40YLpITyJWCpQ1iqv/22WAkVbAFJgJjA//w8jGn/ASnoQHUG0RwIou+1HvYt2CrJS5Cwm/6qw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HIc3N7etWNw70yACoOjlSKAB8rRtNg0f3BDP9Jx2iHA=;
- b=QjgCjEY+cDhoLm03tZ7el7s9Hat6eWUB/iZggK9YjQuvlMoKTzJet11gwqg+QeIGNaB55F2K/GPr6qUhN6VlS2dz2RrcM1yfaEmlGjcKMnUBtLRMt+O9JUmlWpnySsAPpeh5nWvZeExd3dFuewfitumTD3gUATtoj9/PQKKDqgKqgBVXTSGGgOHkawT8ksm03X3xzvfRsDnXuX2foVINIWzIccJ3QZ1NLmjZlMi36ZVH9ZYxJ9ilv9mKr4ZeYG31XDbQr6/lyrB0RrHqlAZquz/r3Q+1//1kQ2yCEkAVsZeiLqtgSeDxj3A8QXHPtG3KsFaZ+rQMldccJEL48kPEFA==
+ bh=IFlpmdbBzUv9s2j2f2lbUP9bgXxGMcl++OXI++ElY2o=;
+ b=cDMeKxo1xy++/crhU25573tZYqKssegqtvM9IIhgzABVInCjECR4SOXR+UxWdoUAS7nrxqFLrErQx6a337mKUjab3i679JlxOX9G4ON3oSTFV1XJmZMs+WtrDlKjouQ7w2QhgfrNaZhZgqpB/DfozHcHxAVw1kYR/vgV1V37uCc0ZzsUBfTQwxrDmq9vIA8CEtPOk8gkhnSy5+yvdlCKaVp5Ti/zl7qdv5sFdoXuUshdevuYxUOWDoSxO5s12p3cArconvW4FxPtr6uHPpT31tsV6owWEUkvhGi8AN/UgO+hw59o7w3TmnRbAseslK89jp/KPkgtQFlqGWmDYVN2Ew==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HIc3N7etWNw70yACoOjlSKAB8rRtNg0f3BDP9Jx2iHA=;
- b=v5q0vG3ojA2qRYMd8MdtO60aV1rEyXKBZ9U9/ghTZp7Kvngue5jfer3sUaMyIo+Uzl03apEai3rIAIBFPi3PNmJIEnIjxyFNctyummQx4mUEuYfmm2I3XELOquOhwakI5u/GPCWR8re/vnqo27r0o089uPr3Y8RmwtsSh2orMok=
-Received: from BN9PR03CA0624.namprd03.prod.outlook.com (2603:10b6:408:106::29)
- by SJ5PPF75EAF8F39.namprd12.prod.outlook.com (2603:10b6:a0f:fc02::999) with
+ bh=IFlpmdbBzUv9s2j2f2lbUP9bgXxGMcl++OXI++ElY2o=;
+ b=cqgkDfBRlu/0+lKLuAf9NEfTErcVx+li1xU6RjGy3mo/fwhjRzE0zuUZH2cqTQf7kviTy6++wJxHc/XGxxVa+fZ/Du/ueCJ8vtzTGD1jyOkStYLZbYVCq0R2pH85LKdQYgHtlb+OuvzOEaLkNOGjUQxPyuMJQWVFB3zNyvljtr0=
+Received: from BN9PR03CA0987.namprd03.prod.outlook.com (2603:10b6:408:109::32)
+ by IA0PR12MB8974.namprd12.prod.outlook.com (2603:10b6:208:488::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.19; Mon, 19 Oct
- 2026 13:08:23 +0000
-Received: from BN5PEPF00046987.namprd02.prod.outlook.com
- (2603:10b6:408:106:cafe::ac) by BN9PR03CA0624.outlook.office365.com
- (2603:10b6:408:106::29) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.522.19 via Frontend Transport; Mon,
- 19 Oct 2026 13:08:23 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.18; Mon, 19 Oct
+ 2026 13:08:44 +0000
+Received: from BN5PEPF0004698A.namprd02.prod.outlook.com
+ (2603:10b6:408:109:cafe::a) by BN9PR03CA0987.outlook.office365.com
+ (2603:10b6:408:109::32) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.522.4 via Frontend Transport; Mon, 19
+ Oct 2026 13:08:44 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,22 +48,24 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- BN5PEPF00046987.mail.protection.outlook.com (10.167.245.36) with Microsoft
+ BN5PEPF0004698A.mail.protection.outlook.com (10.167.245.39) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.522.6 via Frontend Transport; Mon, 19 Oct 2026 13:08:23 +0000
+ 15.21.522.6 via Frontend Transport; Mon, 19 Oct 2026 13:08:44 +0000
 Received: from BLRANKISONI.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 19 Oct
- 2026 08:08:11 -0500
+ 2026 08:08:31 -0500
 From: Ankit Soni <Ankit.Soni@amd.com>
 To: <iommu@lists.linux.dev>
 CC: <vasant.hegde@amd.com>, <suravee.suthikulpanit@amd.com>,
 	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
 	<linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/2] iommu/amd: Honor IVINFO[PAsize] for paging domains
-Date: Mon, 19 Oct 2026 13:08:00 +0000
-Message-ID: <cover.1792156095.git.Ankit.Soni@amd.com>
+Subject: [PATCH 1/2] iommu/amd: Move page-table setup into init_pgtable_params()
+Date: Mon, 19 Oct 2026 13:08:01 +0000
+Message-ID: <e41769912ec11799e1d4bdd3b892412da5ffb466.1792156095.git.Ankit.Soni@amd.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1792156095.git.Ankit.Soni@amd.com>
+References: <cover.1792156095.git.Ankit.Soni@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,50 +78,163 @@ X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN5PEPF00046987:EE_|SJ5PPF75EAF8F39:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5e12e663-3c6c-4711-b2e1-08df2de20e3e
+X-MS-TrafficTypeDiagnostic: BN5PEPF0004698A:EE_|IA0PR12MB8974:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5082d171-6d1e-41d8-92ce-08df2de21a84
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|376014|82310400026|36860700016|56012099006|11063799006|261009223027099003|10067099003|18002099003|3023799007;
+	BCL:0;ARA:13230040|23010399003|82310400026|36860700016|1800799024|376014|6133799003|18002099003|22082099003|10067099003|261009223027099003|11063799006|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	1NNv5IseDsrJHh47MRN2vRw2st8HDb4QhDGVDPCXq3kuNiEVhHs3FJgpIkbLJRkxAfF3N2yTSDYZhDUVkz7GmjkYsMYd8u4pdOQYWXB83vB/zCPRA718LwQjR+paAE8tMa9UbSsAgUgvq8dN4c0VXcPaYf/+iauzWAHPZiH/qDlxDgbjghqZ2ussYcLkaCanADJub1gyFp0voJfYb6RpMDrc3F66b+LzkpawdWtqiAEGgCk15ezoJNdWaMSe8s2e3C5ml5/ACpZNK/7Mn+7L05jKdSkd38Fo81pGZsT3UsNblf7CY6tVgvT3VXig1BWquEAVhma9yhrdv4I02hJJebT7MfVPN2bp7PuPVGgsocchhjfwpXphR4AVDaJ+JMnwvB/8kDv+OXhhEdwGThVFFQsBObjQ9YwGUBPwkMTY4gaY+snd8hFPWaYqCU7AuSQA5s/LrSoes8xGWQpStW461Sc4bsC+rFNq4jVBibDGEPp8ZNZSLW1TuvGB9zg8heHbUHsWmzdh47RQtf6JCFaTs9UBi1LFGwaPB8AfUl0wiuPqKuvZEXN7nBItkLkglcF/SrdL2Sw0k7LpJjxVf+cYDOC1LY4wFZAExD4BRDo6J4Hd5gGJdsoSIDqZ0tDGcFT5EChqASR8RN/qysWbQxtTTym79IRa2q+a1JsVDuZ3cu4KC9FdwJkUU5C8DziISdHr
+	rgmMA3hMikhJ8+6DoLVzYgtIP7jvg6tRq/vzuFBVhHqfxZ+MfZCS+fwf2nqwalWrZwk9fqI84J0ODkayPYFsm8Bbc74ztSKt9eCYMAcBg6ogiqR7jT1FYgPLsb+rtOJv0743Wrkt40fSBXtlqloZfPqhPgfKip99gHWwxdWWraIbuB7oa3YH1kqEICrizp7MncxymG0WXxpFR6QCP/NYMqGcfwRKCliVdnQPlmFngbQM1GC80CfxRZSKR6SKzGKlaIdkttKFctstfCzPBdjlKXVoESSV47kdOkFDpdDqjqfPUDJ5QxM4JAQ2o0L1oetQrlLzZeBI5H2JVLaciL/KMMCz53Kj7fKxjZWucZsyussgJf5P+ZCD7Q31smbZZS81Zfz/hgcdKhO4PAPcrBuw4ob52KbZLGPzwNlg8lzHyVGjzUCbL7gbyKL4aYwvuGOCiRI0Em+olhNdV6TaZZk7jgjKxnUjfjb0RSYF8I+0HpWfjH+NSH+OFM7M6bhdiLOnzYftwcrzHbzhBMC+6QTYIub2RJ0gJx7hXq582Fr4AzhQ/fGzSqhVWKrZ7jV0Ud4PNPmzAcCPIK8PKbAAfNI/Q0bqZ8urQi75ZtpOS3wRDjkmhYv0otofAFGPyO2FrtV1CXLePWZe74k6PudH4bCK2NByve3DfbYe+FzubdMyFxI/0subt1Nqh5qAfwR+KMNpRw91Ze0ZH+axT3NckVY0PQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(82310400026)(36860700016)(56012099006)(11063799006)(261009223027099003)(10067099003)(18002099003)(3023799007);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(36860700016)(1800799024)(376014)(6133799003)(18002099003)(22082099003)(10067099003)(261009223027099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	GeEJCjW4oF45fMKibpp4Y4Waz3JC0co0I3iXgA8SLmUoGi7CKA5D5tZoaOFaX5pGyDj1jHVmuxuRA0CCDG9NeCzg3tbD2Ks7J+aIzwJh5AeIqr5yNx8k8KnG/+vrnW5KBUI5DYZhkP5BPq9HQtTqR27HF02asxlvUHOFLgLI7XvpqllhEZZO88fWBdqcJ9BIDcBykwi+jawnibdiKJpMhRP+8lpIdosqr9/yBmj7ZXTM3ulXoa3td2WqjdsUTDPPs0XvAL4Ebc5gDt4VxVg/IaOg+djWGVIB8VNMJS5025McpBPK7+OtLT4kNP5Ecmaw0L+XbvluViLR+SQ/RhUe8HUm0tKaMQ/pgShWpoASJnWXg1FXmbXZrRcvKK50VyTEIuthYkMqBqNmGhbBTmxsezcc6FG6aMlpX4C6izvMTOJ+BIgoIam9JuKxqJ6gYJ4u
+	KleYjQpT/rSprOwv0IIQIajO5+xo3ZcvydfS+15rkqZ+OOsPdxNZMS9L76vopDcTg91mkNdsZPh+q18GOhXuxvNt4RNL8WJQlj82/lQddfK02CqX5YogoeFnEM4SoPJfPS5HXTsD1WCn02cBO5gquB6Z5BEsgXJf5qZPG9yMs7LNhb1TSMPVHsUf7zWKIRQo7dt6LJyY4Z/8ix18oP/oea0d3PAxe6hceicjxk8uQywWEl4jJsr3pjs9mnZc3EM7gCQqItqWcw3V/J0GpO4ukw9A5V/uR0qZXOXNKnzoc8miTeDnbedQULAuMfpiApxhbRL3hWryJCBkZzeS94Fzcm2zuMerPEr1c86DZqAYWLaNxe5zfg6kr+uAigfrzp3tTi6Fuwo4yZcfoshElGYbUtmuA8F40333xg7GsgbaaHFd2csVZCh4OcztTIikBRaH
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2026 13:08:23.4355
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2026 13:08:44.0204
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e12e663-3c6c-4711-b2e1-08df2de20e3e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5082d171-6d1e-41d8-92ce-08df2de21a84
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN5PEPF00046987.namprd02.prod.outlook.com
+	BN5PEPF0004698A.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ5PPF75EAF8F39
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8974
 
-The AMD IOMMU driver hardcodes a 52-bit output address size when it
-creates paging domains. This series honors the PAsize reported in ACPI
-IVRS IVinfo instead, so maps cannot exceed what firmware or a VM
-advertises. Patch 1 moves page-table setup into init_pgtable_params()
-after the IVHD walk, with no functional change intended. Patch 2 uses that
-helper for PAsize and applies it to paging domains.
+early_amd_iommu_init() currently sets guest page-table level, host
+address size, and v1/v2 fallback inline after the IVHD walk. That
+clutters the function.
 
-Ankit Soni (2):
-  iommu/amd: Move page-table setup into init_pgtable_params()
-  iommu/amd: Adhere to IVINFO[PAsize] for output address limits
+Move the page-table setup into a separate function. No functional
+change.
 
- drivers/iommu/amd/amd_iommu.h       |  1 +
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/init.c            | 95 ++++++++++++++++-------------
- drivers/iommu/amd/iommu.c           |  4 +-
- 4 files changed, 58 insertions(+), 43 deletions(-)
+Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
+---
+ drivers/iommu/amd/init.c | 88 +++++++++++++++++++++-------------------
+ 1 file changed, 47 insertions(+), 41 deletions(-)
 
-
-base-commit: 90201351a862182bdabfc1ad1c97b1e1b6ed5931
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index edcc187b8f14..89da993d7d15 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3194,6 +3194,52 @@ static void __init ivinfo_init(void *ivrs)
+ 	amd_iommu_ivinfo = *((u32 *)(ivrs + IOMMU_IVINFO_OFFSET));
+ }
+ 
++static void __init init_pgtable_params(void)
++{
++	u8 vasize, efr_hats;
++
++	vasize = FIELD_GET(IOMMU_IVINFO_VASIZE, amd_iommu_ivinfo);
++	if (!vasize)
++		vasize = 64;
++
++	/* 5 level guest page table */
++	if (cpu_feature_enabled(X86_FEATURE_LA57) &&
++	    FIELD_GET(FEATURE_GATS, amd_iommu_efr) == GUEST_PGTABLE_5_LEVEL)
++		amd_iommu_gpt_level = PAGE_MODE_5_LEVEL;
++
++	efr_hats = FIELD_GET(FEATURE_HATS, amd_iommu_efr);
++	if (efr_hats != 0x3) {
++		/*
++		 * efr[HATS] bits specify the maximum host translation level
++		 * supported, with LEVEL 4 being initial max level.
++		 */
++		amd_iommu_hpt_vasize = min_t(unsigned int, vasize,
++					 (efr_hats + PAGE_MODE_4_LEVEL - 1) * 9 + 21);
++	} else {
++		pr_warn_once(FW_BUG "Disable host address translation due to invalid translation level (%#x).\n",
++			     efr_hats);
++		amd_iommu_hatdis = true;
++	}
++
++	if (amd_iommu_pgtable == PD_MODE_V2) {
++		if (!amd_iommu_v2_pgtbl_supported()) {
++			pr_warn("Cannot enable v2 page table for DMA-API. Fallback to v1.\n");
++			amd_iommu_pgtable = PD_MODE_V1;
++		}
++	}
++
++	if (amd_iommu_hatdis) {
++		/*
++		 * Host (v1) page table is not available. Attempt to use
++		 * Guest (v2) page table.
++		 */
++		if (amd_iommu_v2_pgtbl_supported())
++			amd_iommu_pgtable = PD_MODE_V2;
++		else
++			amd_iommu_pgtable = PD_MODE_NONE;
++	}
++}
++
+ /*
+  * This is the hardware init function for AMD IOMMU in the system.
+  * This function is called either from amd_iommu_init or from the interrupt
+@@ -3226,7 +3272,6 @@ static int __init early_amd_iommu_init(void)
+ 	struct acpi_table_header *ivrs_base;
+ 	int ret;
+ 	acpi_status status;
+-	u8 efr_hats, max_vasize;
+ 
+ 	if (!amd_iommu_detected)
+ 		return -ENODEV;
+@@ -3256,10 +3301,6 @@ static int __init early_amd_iommu_init(void)
+ 
+ 	ivinfo_init(ivrs_base);
+ 
+-	max_vasize = FIELD_GET(IOMMU_IVINFO_VASIZE, amd_iommu_ivinfo);
+-	if (!max_vasize)
+-		max_vasize = 64;
+-
+ 	amd_iommu_target_ivhd_type = get_highest_supported_ivhd_type(ivrs_base);
+ 	DUMP_printk("Using IVHD type %#x\n", amd_iommu_target_ivhd_type);
+ 
+@@ -3271,42 +3312,7 @@ static int __init early_amd_iommu_init(void)
+ 	if (ret)
+ 		goto out;
+ 
+-	/* 5 level guest page table */
+-	if (cpu_feature_enabled(X86_FEATURE_LA57) &&
+-	    FIELD_GET(FEATURE_GATS, amd_iommu_efr) == GUEST_PGTABLE_5_LEVEL)
+-		amd_iommu_gpt_level = PAGE_MODE_5_LEVEL;
+-
+-	efr_hats = FIELD_GET(FEATURE_HATS, amd_iommu_efr);
+-	if (efr_hats != 0x3) {
+-		/*
+-		 * efr[HATS] bits specify the maximum host translation level
+-		 * supported, with LEVEL 4 being initial max level.
+-		 */
+-		amd_iommu_hpt_vasize = min_t(unsigned int, max_vasize,
+-					 (efr_hats + PAGE_MODE_4_LEVEL - 1) * 9 + 21);
+-	} else {
+-		pr_warn_once(FW_BUG "Disable host address translation due to invalid translation level (%#x).\n",
+-			     efr_hats);
+-		amd_iommu_hatdis = true;
+-	}
+-
+-	if (amd_iommu_pgtable == PD_MODE_V2) {
+-		if (!amd_iommu_v2_pgtbl_supported()) {
+-			pr_warn("Cannot enable v2 page table for DMA-API. Fallback to v1.\n");
+-			amd_iommu_pgtable = PD_MODE_V1;
+-		}
+-	}
+-
+-	if (amd_iommu_hatdis) {
+-		/*
+-		 * Host (v1) page table is not available. Attempt to use
+-		 * Guest (v2) page table.
+-		 */
+-		if (amd_iommu_v2_pgtbl_supported())
+-			amd_iommu_pgtable = PD_MODE_V2;
+-		else
+-			amd_iommu_pgtable = PD_MODE_NONE;
+-	}
++	init_pgtable_params();
+ 
+ 	/* Disable any previously enabled IOMMUs */
+ 	if (!is_kdump_kernel() || amd_iommu_disabled)
 -- 
 2.43.0
 
