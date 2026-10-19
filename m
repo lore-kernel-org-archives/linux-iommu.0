@@ -1,139 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 680F0353A72
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 12:43:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767903033E1
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 12:57:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792413816; cv=none; b=IiuaFjFxg/CQ7qPoBQtl33KtBDoXeF0V59zeNaGh8CkbD46acw2UnzX0ZypwJXS+R4SKR6HHwMJ2xwRXaswoHlgvlhDDft72+jrWWiNTkhcc2grobUmgG0qia+k44wURxrqOk0rb9CuTYu9UuBctFGZuxHbXveeUQ8qt6KWllEs=
+	t=1792414654; cv=none; b=D81aSJj7VaA5HFghz3wPQ7zzfsI/Rf4TlKyS+Uw+N2lJMs55Hgfuoprfe060Vc9u/qhdHUrCGnRL7Sti4TkNF2oYBP9Bz4nx/Kw5+Xlgjmdbub0UnzYlCOBjGsTyL/eXZwMcuP3dviYDx2FfaHHmWml4Cr8jTkRp1DH7MiXUWoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792413816; c=relaxed/simple;
-	bh=238uZAb8Xby9vgq722b7Q+enZtERPQOtoIL6OY7D3AE=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=fC9zRGQqtrb+blxvBErCVtF9vlDa/q5hu3ND3B0tkEM1kMh/q7017CKgKge3x438mpQYnmPK1tKPIR/CoYuLcMz1KVeT/WnUbUDJ/tiPk10ep6xDj99jw63EE8GZYfpoKSl2FoYiNVAXjLddaYU6HYb/o3AB74rj5J8dsAT5mnA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ACqZDARd; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1792414654; c=relaxed/simple;
+	bh=DPtgRhzyzAeLmGS47IlPoFEDwn+LdYIoM5JOg6vn1jI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Tluk4X5GCJKefgYQ9NzS1jq1vaj8YxA2I32MS2aGunFoPUSUuZvAQMYXQ+VZzN+lVnCP9eYQPrOyL6f9c5iJ0isgaCr7o9qx99MmhwZOPPh2ZKVcT8KIuajapULpWwKxDEQqlTqNL1qKwVqn3essARvSVfscmv2IB86pvhOVbkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rVxOb3++; arc=none smtp.client-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ACqZDARd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792413815; x=1823949815;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=238uZAb8Xby9vgq722b7Q+enZtERPQOtoIL6OY7D3AE=;
-  b=ACqZDARd2XwG8fzVgwwSO+DDCxhI8hU2/XIVJPWDCYuDOBaNM3E/qnxj
-   dqh98M1kL97yGBNwhU8ugOguJsxk/x6F704ICJln+XYQwKXhPzEug2/32
-   KxrzgFrTQt9k/WjIsTRdGj3+T6bEDxMMWB/eO3YncRjMbAmYUzCVuS01R
-   oaoSVSApgSv0kBBx9J8TK9d7aeNvEMeTG+o7S8vRhDRLp0YHD01K1G/oQ
-   uyuQRvp1QIJ1mumuahpOz7rcxr6068xQTK8idd2IH5eRMns4k37AGTy/+
-   9+BBsJIEwPJ4hK0QxurzAWihOcvqgR1NOq3gnUZ8eXpZVo/8xN9naYjfx
-   A==;
-X-CSE-ConnectionGUID: +5EvRH14SzqcQuaNIJE/CQ==
-X-CSE-MsgGUID: zyYf3LR2RJS7wNbY6iI9RA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1094068"
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1094068"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 05:43:35 -0700
-X-CSE-ConnectionGUID: S3iMLuh3RcmBMkb6/mvuVQ==
-X-CSE-MsgGUID: Zy3Lz4VLRX2BAPtjuNm+OA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2891613"
-Received: from jkrzyszt-mobl2.ger.corp.intel.com (HELO [10.245.244.14]) ([10.245.244.14])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 05:43:32 -0700
-Message-ID: <8d4cb20b70ac4c3f36d8d631769757158af2ac8e.camel@linux.intel.com>
-Subject: Re: [PATCH RFC 03/26] dma-buf: Add dma_buf_mapping_attach()
-From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
-To: Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>, Karl
- Mehltretter <kmehltretter@gmail.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alistair Popple <apopple@nvidia.com>, Dongwon Kim
- <dongwon.kim@intel.com>, 	dri-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, 	iommu@lists.linux.dev, Kevin Tian
- <kevin.tian@intel.com>, Leon Romanovsky	 <leonro@nvidia.com>,
- linaro-mm-sig@lists.linaro.org, 	linux-media@vger.kernel.org, Matthew Brost
- <matthew.brost@intel.com>, Simona Vetter <simona.vetter@ffwll.ch>, Sumit
- Semwal <sumit.semwal@linaro.org>, Vivek Kasireddy	
- <vivek.kasireddy@intel.com>
-Date: Mon, 19 Oct 2026 14:43:29 +0200
-In-Reply-To: <d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com>
-References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
-	 <3-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
-	 <20261016202653.97339-1-kmehltretter@gmail.com>
-	 <d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-2.fc43) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rVxOb3++"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-48dee593f18so1522164f8f.3
+        for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 05:57:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792414652; x=1793019452; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=lf9FLL6T5/Kb7gEctiirso0+WOoWDflrhqqlYLNOZeU=;
+        b=rVxOb3++fZXi3ZlTzH2UE7lgL3ythTUGCC6hztJI9Lxq5MhQiCqifIktGlQYbqGX5m
+         AdtoLMQxd4o+fUQRMuWcLaUuybdszdEwijPvyZq6CT39nJdmIACyY9wJZVVK1/suj+Al
+         y9bhaBcJrXts7ICMB6d4fj9prAKvcUsv/+GkSaRP1IdlMaBiJdFqitTbz0vyZlnxQXlo
+         aUOqz8LtY1IdR7HJKZhHKTLpnzIgLG7U6IH0D5i+TSU3reYM3BQ5cf/0D5pno0eUtbNj
+         uqAiXSH5cl2eYzGGD3B3om+VcLkxsgO3zGLQO5ZN/lkj+fanifvDFDn2XMMkuCL16oyk
+         gt4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792414652; x=1793019452;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=lf9FLL6T5/Kb7gEctiirso0+WOoWDflrhqqlYLNOZeU=;
+        b=hTHsmEBnMPSo1jAibGxOgTRV4FXYatCkTTHwP9NN1v7Yh9B+sa6WnqoVmrSK3uJ1hF
+         Xbl1giGSx9hWOe2MbbgYSMRMO89g7crharVz15p3chYLrWbaDgaDjPBsjyIR4xI0UMst
+         iqdqIsKL2gJZVOwo/dfzMxzbagACNJcIFK+KdglvnVRYKB9JTWcIFbWdQldqDD3+4XZA
+         7sQ/tGi7bY9ig4tjKSa1oKcLKar6mTGykTAMV0pTGty0N+pQgQF1RR/WOSHwDwN5SC4v
+         rB/lT7nlL3NMyzoSVRIkZ/XPPybWZPconu1yJ1ykQEUUMzlozlU/gU0kOoPK0cRydVyH
+         5KPA==
+X-Forwarded-Encrypted: i=1; AKwUvBwBkdtPtDb7MxLHwlb6yC8O4LBIBfiGu2azci72BcvM7vCPufvG0dvEsrL6MMv6hPiDX4IaCg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIWD2u0VIU/HDODTHnBOH228pjxonS/o5Ojm4/SXiYtCI7dzkBA
+	gZVowGnxeLHNxlB8k3qhqpaKBPbEcaB9N87eNHgfRXJ06bAi9MjUFqQm
+X-Gm-Gg: AYBFou1C/vmIMV+HU4fHpxcsImxtV0UJfwLdzXM9zDcGAn4P7gqkFP7bUkaEexqMswB
+	MQEy1n5u+wCl9/XXggNgCqUXmKb10s5hPErHyvGMYxbu/rmKNc++uvSJCX4y6lRAXKTRdmZaqdZ
+	8QPYqp/i/Ub4MWqGuYkvYZ8eepwDo+u2DUl+tXA359V1HfWG0eHmKXhF541ETf9DqE5m42Ncxs7
+	FC7jRe/zR4SzvLpZFO0FLal2hrzqZXE8FFQKoDuZLOVIrkLiyVxVZH6fOySNbhw+OPN2ricdRJ4
+	t48oWaF7V9/FFPveC+rkBDVzio5vpDOSIYh/WL9q9dvrJg3njnSlDgl1ycnXuS+ltI1u7cHf48X
+	yqBMdA1DsTmuStIwwtZrEe1BgxZKbBAWEutpaQWhzGrByftM5dGHX3b4bBwVNkvl67HMVym0qPv
+	R9uTzU0UBRwZUZFkhisQ9p5Yem9uJPaGNuOPAcsEiTd4aPgsiVLiTPeoaRG9mqcCIkRJ1euPcOp
+	97sY7WTNUFV
+X-Received: by 2002:a05:6000:4b15:b0:48e:1421:ed49 with SMTP id ffacd0b85a97d-48e14220c4amr6571820f8f.18.1792414651426;
+        Mon, 19 Oct 2026 05:57:31 -0700 (PDT)
+Received: from [192.168.69.3] ([91.189.216.255])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48dfdcc0f20sm22643828f8f.11.2026.10.19.05.57.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Oct 2026 05:57:30 -0700 (PDT)
+Message-ID: <2c73e54a-d2b1-48cc-827c-6c29c6664697@gmail.com>
+Date: Mon, 19 Oct 2026 14:57:29 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/12] iommu: qcom_iommu: implement support for instances
+ on MSM8974
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Bjorn Andersson <andersson@kernel.org>, Luca Weiss <luca.weiss@fairphone.com>
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
+References: <20260809-msm8974-iommu-upstream-v1-0-87f5cd492560@oss.qualcomm.com>
+Content-Language: pl-PL
+From: =?UTF-8?Q?Micha=C5=82_Szczepaniak?= <m.szczepaniak.000@gmail.com>
+In-Reply-To: <20260809-msm8974-iommu-upstream-v1-0-87f5cd492560@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2026-10-19 at 10:35 +0200, Christian K=C3=B6nig wrote:
-> On 10/16/26 22:26, Karl Mehltretter wrote:
-> > On Tue, Feb 17, 2026 at 08:11:34PM -0400, Jason Gunthorpe wrote:
-> > > +	match_args.attach =3D attach;
-> > > +	if (dmabuf->ops->match_mapping) {
-> > > +		ret =3D dmabuf->ops->match_mapping(&match_args);
-> > > +	}
-> > > +
-> > > =C2=A0	attach->dmabuf =3D dmabuf;
-> > > =C2=A0	attach->importer_ops =3D importer_ops;
-> > > =C2=A0	attach->importer_priv =3D importer_priv;
-> >=20
-> > I may misunderstand the intended contract. match_mapping() runs
-> > while the
-> > attachment is still zeroed and without dmabuf->resv held.
-> >=20
-> > Patch 11's amdgpu callback needs importer_ops and importer_priv, so
-> > its XGMI
-> > match cannot work here. Patch 12's VFIO callback asserts dmabuf-
-> > >resv and
-> > reads priv->vdev, which cleanup changes under that lock.
-> >=20
-> > Should the core initialize the attachment and hold dmabuf->resv for
-> > match_mapping(), or should callbacks avoid attachment and lock-
-> > protected
-> > state?
->=20
-> Right. This completely misplaced.
->=20
-> The matching can't be done at attachment time, but rather needs to be
-> done before creating a mapping while holding the resv lock so that
-> the matching decision can't change.
+On 09/08/2026 22:15, Dmitry Baryshkov wrote:
+> Qualcomm MSM8974 platform has five SMMU instances, used by display, GPU,
+> Venus, VFE (camera) and JPEG encoder. Each of them follows ARM SMMU v1
 
-So question is what exactly should the contract be?
-Looking at the pcie_p2p negotiation today it looks somewhat like.
+Hi Dmitry,
 
-1) Importer and exporter agree at attach time what mappings are allowed
-pending placement conditions and other attachers.
-2) At map-time the mapping is negotiated taking all constraints into
-account.
-3) The negotiated mapping is valid until an invalidate_mappings()
-callback is received.
+As requested, for the series:
 
-Following this would allow a re-implementation of pcie_p2p as a mapping
-type and would allow a controlled link-severing to send an
-invalidate_mappings() notifier and the mappings to be re-negotiated.
-
-Importers requiring an early hint as to what the actual mapping would
-look like would need to be prepared to re-consider at map-time, with a
-reasonable assumption that the reconsideration and re-mapping would
-happen seldom enough.
+Tested-by: Michał Szczepaniak <m.szczepaniak.000@gmail.com> # Motorola 
+Moto X 2014 (MSM8974PRO-AC)
 
 Thanks,
-Thomas
+Michał
 
-
-
->=20
-> Regards,
-> Christian.
->=20
-> >=20
-> > Thanks,
-> > Karl
