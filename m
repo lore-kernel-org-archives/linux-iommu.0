@@ -1,47 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-alma10-1.taild15c8.ts.net [100.103.45.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD58A54FEA5;
-	Mon, 19 Oct 2026 13:56:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 505EA5B79A1;
+	Mon, 19 Oct 2026 14:00:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=100.103.45.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792418218; cv=none; b=jiPr+LYacBCtrQIze0pFg6ZJJjU/JKLyHPdmZfTe+AI1XcXaQMIcp/cBI6hoQDCXZesSc2Lcgi302K0ul+OaSUEZ5/r2FBg9Mr+WACtzCHyAULuXeg1s9sH8wdTzQ2ajlB+M0wJmZsxAgkmmlBjg6r3X/rkSgYGhcs7oCJEsnS8=
+	t=1792418448; cv=none; b=s1Xz+FLKILQJNHL0ccu2cfsFn3NsVN7ngdAsJCW+pqbjRgbI9hl6loV4BTMyiBD2poPbioEsruCpaJds8pY7upWnOq28gnSG51CO+rDBOJTbWGR5pGr2xu0ZcuExk6lw4e1kpuN18oYxP+dXBLcNcg6PEFezMqc8lW5ReoPWvzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792418218; c=relaxed/simple;
-	bh=C2NHdwmkdP+R0GfepbhFteRJdcXzzHx4S7tYxJwWVxY=;
+	s=arc-20240116; t=1792418448; c=relaxed/simple;
+	bh=WxDbETXTCvk7MDK8LMlTz8PpFXUsuAQ8lxlFUWSJNes=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rFTrPVSKOTpQFFgK2/09TVy1O6xujWnbpN3bydsi7hVn78aIefgtRtqwqGvp7UE0a8YMsCxOVqlxjMBYPms/JXZcBXTdR7hA5NoxlKOjZ06n+tesV/XaGGNPIO/wg3/9q/fyZQ2edc/pBIXYHr/Avi4ww6X0uPHZUkrlqPYWY1M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Oc5d6Uoq; arc=none smtp.client-ip=100.103.45.18
+	 MIME-Version:Content-Type; b=tyVGU5XsqRHHZdhgCiJpRCMSeVkGcgHDg9QPRW8CLiCqy7Pp2WK5bLKktZiKGcKqlLdb08HYz6VjBPZSIAhNcQy95qcbgjoxz3xqwVYFIOi+9TN+4a1gnS554S/klEItbfQQDK4vOHP1aEua9keGgwZ/OHDgVwnfi83NGxBpBJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SkRPM+wV; arc=none smtp.client-ip=100.103.45.18
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Oc5d6Uoq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3225E1F000C7;
-	Mon, 19 Oct 2026 13:56:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SkRPM+wV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BFB61F000C4;
+	Mon, 19 Oct 2026 14:00:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792418211;
-	bh=DyG2ttCOyqXPCZbpZC5m/iC13lqRJk3G9Hi3hmoWeCE=;
+	s=k20260515; t=1792418445;
+	bh=jEwxnsQF6sHZjugZq/00AG00Xt7EceYd4qsDmz22KOc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Oc5d6UoqFpu0ZYwcKfA7fVpYVLV6hsxFzvTNSx3vNM4KMDy9OXB/QzTh+VvnjfAqN
-	 QBPptDw2s+6gDxMqCLzrse8lfBTP8lh36TETE4W5XZWL115PQYSlKl73Z/1T/t8iTQ
-	 YLudFJ82+xldZlJjjyIhOLs/cEzSaMThoXWQggQyp7wOC+V3dCb3Dqcgpkoq2OKFrJ
-	 qf3xP9RxE8ppgX6xOcdamIwNlr2XV7MuwVpPUCQb2qsbdOuYmdwKAPBp39lD7vy8Re
-	 xtah0Vwx91328VIVip8VZEVzAunbnijW1YZxeu03e9eYtMsdr1hSdpu3q9ORAciwO8
-	 72tRdNOuxI90A==
+	b=SkRPM+wVvki+CaYEessUE0RLQnRVLnA1kvQC0H3vr196yfIJk17Vv217irKKt1uGM
+	 11OhZbKvuDQoMIITOL19iJdi3GXwyuuKZl4AHMO4duBxLsae65iKOWJRTuceIlEQwM
+	 9NjCltvtSfttfxULd/qDxMJG+RJ0FDZ5wi8DN1BUNkbb8R+l1N2pIaoxof05ReGpIm
+	 nzXKEjYKyOs0EjrVjjguwZFaT05PxL4rghAeZINFYHHYVDkdzK8bL4SfUyI+pp6ogd
+	 JTN154p5T7OtPJG1ehiHRuWDS0iDLlj3ursSyMSy+whGuKyEC4Tu0eDG5gYv8LvXcd
+	 P5yuK32kshVug==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
-	Gaultier Delbarre <Gaultier.Delbarre@amd.com>,
-	Wei Huang <wei.huang2@amd.com>,
-	Ankit Soni <Ankit.Soni@amd.com>,
-	Joerg Roedel <joerg.roedel@amd.com>,
+Cc: Nicolin Chen <nicolinc@nvidia.com>,
+	Will Deacon <will@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
+	thierry.reding@kernel.org,
 	joro@8bytes.org,
-	will@kernel.org,
+	jonathanh@nvidia.com,
+	linux-tegra@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH AUTOSEL 6.18-6.12] iommu/amd: Fix missing CMD_COMPLETE_PPR response for invalid PPR requests
-Date: Mon, 19 Oct 2026 09:46:22 -0400
-Message-ID: <20261019135441.1420968-91-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.18-6.12] iommu/tegra241-cmdqv: Rate-limit the error ISR's log message
+Date: Mon, 19 Oct 2026 09:49:05 -0400
+Message-ID: <20261019135441.1420968-254-sashal@kernel.org>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261019135441.1420968-1-sashal@kernel.org>
 References: <20261019135441.1420968-1-sashal@kernel.org>
@@ -57,374 +57,284 @@ X-stable-base: Linux 6.18.57
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Vasant Hegde <vasant.hegde@amd.com>
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-[ Upstream commit bc1f5ec826bfa510e7138e2be5aad23907850874 ]
+[ Upstream commit a86c36163c9722545d27e92bdad8418fdcaa8b1d ]
 
-The AMD IOMMU spec, requires the host to respond with a CMD_COMPLETE_PPR
-command when an EVENT_TYPE_INV_PPR_REQ event is received with the RX bit
-cleared. This response was missing in the current implementation, leaving
-invalid PPR requests unacknowledged.
+tegra241_cmdqv_isr() logs the error-map registers on every error interrupt.
+A malfunctioning device, or a guest deliberately faulting its own VCMDQs,
+can raise these interrupts rapidly, and the unconditional dev_warn() then
+floods the kernel log.
 
-Introduce amd_iommu_report_ppr_err() to handle EVENT_TYPE_INV_PPR_REQ
-events. The new function logs the invalid PPR request and when the RX
-bit is cleared, sends CMD_COMPLETE_PPR response.
+Rate-limit the message with dev_warn_ratelimited(), and pass the error-map
+registers straight to it so their four MMIO reads run only when the limiter
+prints, instead of building the string on every interrupt.
 
-Reported-by: Gaultier Delbarre <Gaultier.Delbarre@amd.com>
-Co-developed-by: Wei Huang <wei.huang2@amd.com>
-Signed-off-by: Wei Huang <wei.huang2@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
-Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
+Assisted-by: Claude:claude-opus-4-8
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
 
 LLM Generated explanations, may be completely bogus:
 
-I have enough to decide: the INV_PPR_REQ path is in this 6.12 tree, the
-completion helper already exists, and the fix is a small spec-compliance
-change to stop PRI stalls.
+The local checkout is **v7.3-rc4**. The driver and the unconditional ISR
+`dev_warn()` are present here; the change is a small, self-contained
+log-flood / guest-DoS mitigation, so it belongs in this tree.
 
 ===============================================================
 PHASE 1: COMMIT MESSAGE FORENSICS
 ===============================================================
 
 **Step 1.1: PARSE THE SUBJECT LINE**
-
-Record: **[iommu/amd] [Fix] missing CMD_COMPLETE_PPR response for
-invalid PPR requests.** The subject is an explicit bug fix in the AMD
-IOMMU driver: invalid PPR (Page Request) events were logged but not
-acknowledged to hardware.
+Record: **[iommu/tegra241-cmdqv] [Rate-limit] [stop the error ISR from
+printing on every interrupt]**
 
 **Step 1.2: PARSE ALL COMMIT MESSAGE TAGS**
-
 Record:
-- **Reported-by:** Gaultier Delbarre (AMD) — real hardware/spec issue
-  found inside AMD, not a theoretical cleanup.
-- **Co-developed-by / Signed-off-by:** Wei Huang (AMD), Vasant Hegde
-  (AMD IOMMU maintainer/author).
-- **Reviewed-by:** Ankit Soni (AMD).
-- **Signed-off-by:** Joerg Roedel (IOMMU maintainer).
-- **No Fixes: tag** (expected for this review pipeline).
-- **No Cc: stable** (expected).
-- **No syzbot, Link, Tested-by, or Acked-by.**
-- Ignore any pipeline-added Sasha Levin SOB / Upstream commit markers.
+- **Fixes:** none (expected)
+- **Reported-by:** none
+- **Tested-by:** none
+- **Reviewed-by / Acked-by:** none on the commit itself
+- **Link:** none
+- **Cc: stable:** none on this patch
+- **Assisted-by:** Claude:claude-opus-4-8
+- **Signed-off-by:** Nicolin Chen (NVIDIA; author), Will Deacon (arm-
+  smmu maintainer; applied it)
+- Pipeline markers such as Sasha Levin SOB / “[Upstream commit]” were
+  not on the real commit (`a86c36163c972`)
+
+Notable: no user/syzbot report. The cover letter says the series came
+from **Sashiko** (LLM) review, not a production crash.
 
 **Step 1.3: ANALYZE THE COMMIT BODY TEXT**
-
 Record:
-- **Bug:** AMD IOMMU spec requires the host to issue `CMD_COMPLETE_PPR`
-  when an `EVENT_TYPE_INV_PPR_REQ` event arrives with the RX bit
-  **cleared**. The driver only printed `INVALID_PPR_REQUEST` and
-  returned.
-- **Symptom:** Invalid PPR/PRI requests stay unacknowledged. The device
-  keeps the outstanding page-request slot; further PRI traffic can stall
-  (DMA/GPU/SVA hang), rather than a kernel oops.
-- **Root cause:** Event-log handler treated INV_PPR_REQ as log-only; the
-  completion path used for valid PPR (`amd_iommu_complete_ppr()`) was
-  never invoked.
-- **Fix:** New `amd_iommu_report_ppr_err()` logs the event and, if RX=0,
-  sends `CMD_COMPLETE_PPR` with `IOMMU_PAGE_RESP_FAILURE`.
-- **Version info in message:** none.
+- **Bug:** `tegra241_cmdqv_isr()` logs error-map registers with
+  unconditional `dev_warn()` on every error interrupt.
+- **Symptom:** kernel log flood.
+- **Trigger (stated):** malfunctioning device, or a **guest deliberately
+  faulting its own VCMDQs**, raising interrupts rapidly.
+- **Root cause:** every interrupt builds a 256-byte string (including
+  four extra MMIO reads) and prints it.
+- **Fix:** `dev_warn_ratelimited()`, and pass the MMIO reads as printk
+  args so they run only when the limiter actually prints.
+- **Version info:** none in the message.
 
 **Step 1.4: DETECT HIDDEN BUG FIXES**
-
-Record: **Not a hidden fix.** The subject and body state a spec-mandated
-missing hardware response. This is a protocol/hang fix, not a style
-cleanup.
+Record: Not a disguised cleanup. It is an explicit flood/DoS mitigation.
+It does not fix a UAF, leak, or crash by itself.
 
 ===============================================================
 PHASE 2: DIFF ANALYSIS - LINE BY LINE
 ===============================================================
 
 **Step 2.1: INVENTORY THE CHANGES**
-
 Record:
-- `drivers/iommu/amd/amd_iommu_types.h`: +1 (`EVENT_FLAG_PPR_RX 0x001`).
-- `drivers/iommu/amd/iommu.c`: ~+33/-6. New
-  `amd_iommu_report_ppr_err()`; `iommu_print_event()` INV_PPR_REQ case
-  now calls it; unused local `tag` removed.
-- **Scope:** single-driver surgical fix. ~38 lines net. No API/ABI
-  change.
+- File: `drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c` (+7 / −9)
+- Function: `tegra241_cmdqv_isr()`
+- Scope: **single-file surgical** (one logging site)
 
 **Step 2.2: UNDERSTAND THE CODE FLOW CHANGE**
-
 Record:
-- **Before:** `iommu_print_event()` on type 0x9 extracted PASID/tag,
-  `dev_err()`, break. No IOMMU command.
-- **After:** same log, then if `!(flags & EVENT_FLAG_PPR_RX)` look up
-  the PCI device, check IOMMU private data, call existing
-  `amd_iommu_complete_ppr(..., IOMMU_PAGE_RESP_FAILURE, tag)`.
-- **Path:** threaded IRQ event-log poll (`amd_iommu_int_thread_evtlog` →
-  `iommu_poll_events` → `iommu_print_event`), not a syscall hot path.
-  Error/exception path for invalid hardware page requests.
+- **Before:** ISR always `snprintf()`s into `char err_str[256]`, always
+  does four `CMDQ_ERR_MAP` MMIO reads, always `dev_warn()`.
+- **After:** no stack buffer; `dev_warn_ratelimited(...)` with the four
+  `readl_relaxed()` calls as arguments.
+- Path: **error interrupt path** (threaded IRQ). Error *handling* after
+  the log is unchanged.
+
+Verified `dev_level_ratelimited()` in `include/linux/dev_printk.h`: the
+`__VA_ARGS__` are only substituted inside `if (__ratelimit(&_rs))`, so
+those MMIO reads run only when a line is printed.
 
 **Step 2.3: IDENTIFY THE BUG MECHANISM**
-
-Record: **Hardware protocol / hang (logic/correctness).** Missing
-command on an exception event. Analogous to Intel VT-d
-`handle_bad_prq_event()`, which already submits a page-group response
-for invalid PRQ. Not UAF/leak/race/overflow.
+Record:
+- **Category:** ISR log flood / availability (guest-triggered printk
+  storm), plus extra MMIO on every interrupt.
+- **Not:** UAF, leak, deadlock, OOB, or NULL deref.
+- **Hardware workaround?** No.
 
 **Step 2.4: ASSESS THE FIX QUALITY**
-
 Record:
-- **Obviously correct** for the common case: RX=0 → complete with
-  FAILURE using the same helper as `ppr.c` already uses for “nobody
-  cared” PPR entries.
-- **Minimal:** one flag, one helper, one call-site change.
-- **Regression risk: low.** Patterns match existing event/PPR handling
-  (`pci_get_domain_bus_and_slot` + `pci_dev_put` already used from
-  `amd_iommu_report_page_fault()` in this same function).
-  `iommu_queue_command()` takes `iommu->lock` with
-  `raw_spin_lock_irqsave`; `iommu_print_event()` does not hold that
-  lock.
-- **Known incompleteness (accepted in the committed form):** if
-  `pci_get_domain_bus_and_slot()` fails or there is no IOMMU priv, it
-  still returns without COMPLETE_PPR. Ankit Soni raised that on list;
-  the committed diff still has those early returns, and Ankit still
-  Reviewed-by. Those are devices not in the PCI tree / not bound — the
-  PRI-using devices this matters for have both.
-- **Follow-up in the same series (not this commit):** patch 4 rate-
-  limits the log; patch 5 fixes GN derivation (`pri_tlp` vs v2 page-
-  table). This commit uses existing `amd_iommu_complete_ppr()` (GN from
-  `pri_tlp`), which is already how every COMPLETE_PPR in **this** tree
-  is built. Not a new regression vs current 6.12 behavior.
+- Obviously correct: standard `*_ratelimited` pattern already used in
+  other IOMMU fault paths (`arm-smmu-v3.c`, `virtio-iommu.c`, AMD/Intel,
+  etc.).
+- Minimal; no unrelated edits.
+- Regression risk: **very low**. Worst case is fewer error-map dumps in
+  dmesg (intended). Error recovery is untouched.
+- Red flags: LLM-assisted; no `Fixes:`/`Reported-by`. Not a new API.
 
 ===============================================================
 PHASE 3: GIT HISTORY INVESTIGATION
 ===============================================================
 
 **Step 3.1: BLAME THE CHANGED LINES**
-
 Record:
-- INV_PPR_REQ case introduced in **e7f63ffc1bf19** (“iommu/amd: Update
-  logging information for new event type”, 2018-05-01, Gary R Hook) —
-  log-only from the start.
-- PASID extraction: 470eb3b31134ad (Suravee, 2019).
-- Log format: later Vasant Hegde updates (b36a5b0f1cedbb / pci_seg).
-- Buggy behavior (log, no COMPLETE_PPR) has been in-tree for years,
-  including this 6.12 checkout.
+- Unconditional `dev_warn()` + `snprintf` were in the original driver:
+  `918eb5c856f6` (“Add in-kernel support for NVIDIA Tegra241 (Grace)
+  CMDQV”), **2024-08-30**, first in **v6.12-rc1**.
+- This tree is **v7.3-rc4**, so that code is in this lineage.
 
 **Step 3.2: FOLLOW THE FIXES: TAG**
-
-Record: **No Fixes: tag.** The missing response became operationally
-important once PRI/PPR completion existed: **978d626b8f1a2**
-(“iommu/amd: Add IO page fault notifier handler”, Wei Huang, 2024-04-18)
-added `amd_iommu_complete_ppr()` and PPR log handling. That commit **is
-an ancestor of HEAD**.
+Record: No `Fixes:` tag. N/A. The logging has been there since the
+driver was added.
 
 **Step 3.3: CHECK FILE HISTORY FOR RELATED CHANGES**
-
-Record:
-- This commit is **patch 3/5** of “iommu/amd: PRI related cleanup and
-  fixes” (Vasant Hegde, 2026-07-27).
-  1. Device ID in invalid PASID log — **already in this tree**
-     (`5a5cd58b1533e`).
-  2. `PPR_TAG_LAST_PAGE()` macro — cleanup; **not required** for this
-     patch.
-  3. **This fix** — missing COMPLETE_PPR.
-  4. Rate-limit INVALID_PPR_REQUEST — depends on 3; current 6.12 already
-     logs unbounded `dev_err` here, so 3 alone is not a log-flood
-     regression.
-  5. GN bit in COMPLETE_PPR — separate correctness fix; refactors
-     `amd_iommu_complete_ppr()`.
-- Recent `iommu.c` churn is attach/flush locking, not this event case.
-  **Standalone for the bug it fixes.**
+Record: This is **v2 11/11** of “Fix error-interrupt races and VINTF
+lifecycle bugs” (Nicolin Chen, 2026-07-14). Cover letter: ordered
+**most-critical-first**; this is the last, smallest issue (“ISR flooding
+the kernel log under repeated guest errors”).
+Standalone: it only changes the log line and does **not** need the
+earlier UAF/lifecycle patches to be correct.
 
 **Step 3.4: CHECK THE AUTHOR'S OTHER COMMITS**
-
-Record: Vasant Hegde is the AMD IOMMU driver author on this tree (many
-`drivers/iommu/amd/` commits). Wei Huang added the 2024 IOPF/PPR
-notifier. This is a maintainer-area fix, not a drive-by.
+Record: Nicolin Chen is the NVIDIA CMDQV contributor for this file; Will
+Deacon applied the series. Same-day siblings are real
+lifecycle/UAF/bounds fixes. This one is the leftover logging hardening.
 
 **Step 3.5: CHECK FOR DEPENDENT/PREREQUISITE COMMITS**
-
-Record: **Can apply standalone on this tree.** Required symbols all
-exist:
-- `amd_iommu_complete_ppr()` (`iommu.c` ~1827, declared in
-  `amd_iommu.h`)
-- `PPR_PASID()`, `IOMMU_PAGE_RESP_FAILURE`,
-  `pci_get_domain_bus_and_slot`, `dev_iommu_priv_get`, `iommu->pci_seg`
-- `EVENT_TYPE_INV_PPR_REQ` case already present
-- Patches 2/4/5 not required for this change to compile or to send a
-  completion.
+Record: None required. `dev_warn_ratelimited` is old. The hunk applies
+to the original ISR as well as the post-series ISR.
 
 ===============================================================
 PHASE 4: MAILING LIST AND EXTERNAL RESEARCH
 ===============================================================
 
 **Step 4.1: FIND THE ORIGINAL PATCH DISCUSSION**
-
 Record:
-- Series: [PATCH 0/5] iommu/amd: PRI related cleanup and fixes, Vasant
-  Hegde, 2026-07-27.
-- Patch 3: https://ratatoskr.run/linux-iommu/2026/07/17321958
-- Cover: https://ratatoskr.run/linux-iommu/2026/07/17321955
-- Review: https://ratatoskr.run/linux-iommu/2026/07/17327932 (Ankit
-  Soni, 2026-07-28): suggested issuing COMPLETE_PPR even when
-  `pdev`/priv is missing, via
-  `build_complete_ppr()`/`iommu_queue_command()`. **No NAK.** Committed
-  code matches v1 (early returns kept) and carries Ankit’s Reviewed-by.
-- **UNVERIFIED:** `b4 dig -c` needs a SHA not in this checkout. `b4
-  mbox` of msgid `26cfa307-6c33-41f9-a7a0-fbf202b38a00@amd.com` returned
-  an unrelated IRT-cache thread. lore.kernel.org search URLs returned
-  **403**. No evidence of a later v2 that replaced this diff.
+- `b4 dig -c a86c36163c972` → https://patch.msgid.link/2e9d088c059037d5f
+  c23532820444720b870d2c7.1784059577.git.nicolinc@nvidia.com
+- **v1** (2026-07-02) and **v2** (2026-07-14); committed version is **v2
+  11/11**.
+- No NAK on this patch. Review noise in the thread was about **patch
+  10/11** (dropped); Will applied 01–09 and 11.
+- No reviewer asked for `Cc: stable` on *this* patch. Patch 07/11 in the
+  same series did have `Cc: stable` (unrelated vSID check).
+- WebFetch to lore returned **403**; thread was read from the b4 mbox
+  instead.
 
 **Step 4.2: CHECK WHO REVIEWED THE PATCH**
-
-Record: Recipients/maintainers on the series include Joerg Roedel (SOB
-on the commit), Ankit Soni (Reviewed-by), Wei Huang (co-developer).
-Appropriate AMD IOMMU reviewers.
+Record (`b4 dig -w`): Nicolin Chen, Will Deacon, Robin Murphy, Joerg
+Roedel, Jason Gunthorpe; lists `iommu@`, `linux-arm-kernel`, `linux-
+tegra`. Maintainer **Will Deacon applied it** (“Applied (apart from
+patch 10)”).
 
 **Step 4.3: SEARCH FOR THE BUG REPORT**
-
-Record: Reporter is AMD (Gaultier Delbarre). No public syzbot/bugzilla
-link. This is spec non-compliance observed on AMD hardware/firmware, not
-a fuzzer crash.
+Record: No syzbot/bugzilla link. Origin is **Sashiko** static review,
+described in the cover letter. Nicolin also noted Sashiko false
+positives (including a wrong “level-triggered / kdump storm” claim);
+CMDQV is **edge-triggered**, so an *unacked* pending error does not re-
+assert. **Each new error still fires the ISR**, which is the remaining
+flood path this patch addresses.
 
 **Step 4.4: CHECK FOR RELATED PATCHES AND SERIES**
-
-Record: 5-patch PRI series. Patch 1 already backported here. 2 is
-cosmetic. 3 is the hang/protocol fix. 4 is log-rate-limit on top of 3. 5
-is GN-bit correctness for all COMPLETE_PPR, plus using event-flag GN on
-this new path. **This commit is self-contained;** 5 is a nice follow-up,
-not a hard apply dependency.
+Record: 11-patch series; this patch is independent logging. Not blocked
+on the dropped 10/11.
 
 **Step 4.5: CHECK STABLE MAILING LIST HISTORY**
-
-Record: **UNVERIFIED** — lore.kernel.org/stable returned 403. No local
-`git log --grep=CMD_COMPLETE_PPR` hits in this tree.
+Record: **UNVERIFIED** via lore.kernel.org/stable (HTTP 403). The
+submitted 11/11 message itself has no `Cc: stable`.
 
 ===============================================================
 PHASE 5: CODE SEMANTIC ANALYSIS
 ===============================================================
 
-**Step 5.1: IDENTIFY KEY FUNCTIONS IN THE DIFF**
+semcode MCP: **not available**. Used `git grep` / file reads.
 
-Record: Added `amd_iommu_report_ppr_err()`. Modified
-`iommu_print_event()`. Calls existing `amd_iommu_complete_ppr()`.
+**Step 5.1: IDENTIFY KEY FUNCTIONS**
+Record: `tegra241_cmdqv_isr()` only.
 
 **Step 5.2: TRACE CALLERS**
-
-Record:
-- `iommu_print_event()` ← `iommu_poll_events()` ←
-  `amd_iommu_int_thread_evtlog()` / `amd_iommu_int_thread()` (threaded
-  IRQ).
-- `amd_iommu_complete_ppr()` already called from
-  `iommu_call_iopf_notifier()` and `amd_iommu_page_response()` in
-  `ppr.c` (same IRQ-thread class for PPR log).
+Record: Registered in `__tegra241_cmdqv_probe()` via
+`request_threaded_irq(..., tegra241_cmdqv_isr, IRQF_ONESHOT, ...)`. Not
+a hardirq; still a hot error path. Hardware: NVIDIA Tegra241 (Grace)
+CMDQ-V (`CONFIG_TEGRA241_CMDQV`).
 
 **Step 5.3: TRACE CALLEES**
-
-Record: `PPR_PASID()`, `pci_get_domain_bus_and_slot()`,
-`dev_iommu_priv_get()`, `amd_iommu_complete_ppr()` →
-`build_complete_ppr()` + `iommu_queue_command()` (command buffer, may
-`udelay` under `iommu->lock` on full buffer — existing behavior).
+Record: `readl_relaxed` of VINTF/CMDQ error maps;
+`dev_warn_ratelimited`; then `tegra241_vintf0_handle_error` /
+`tegra241_vintf_user_handle_error`. Those handlers are unchanged.
 
 **Step 5.4: FOLLOW THE CALL CHAIN**
-
-Record: **Reachable in production** on AMD IOMMU hardware with PPR
-(Guest Translation + PPR + EPHSUP: `amd_iommu_gt_ppr_supported()`). PPR
-log is enabled in `enable_iommus_ppr()`. PRI is enabled on SVA-capable
-domain attach (`pdev_enable_caps()`). Userspace/devices that use
-SVA/PASID/PRI (AMD GPU SVM, some VFIO) can generate PPR; invalid ones
-produce INV_PPR_REQ in the event log. Not a syscall bug; a device
-DMA/PRI stall.
+Record: Reachable when CMDQV is enabled (Grace SMMU). A guest with a
+user VINTF/VCMDQ can generate command-queue errors; each new error
+latches and interrupts. That is a userspace/VM-reachable path, not a
+theoretical internal-only site.
 
 **Step 5.5: SEARCH FOR SIMILAR PATTERNS**
-
-Record: `ppr.c` already completes invalid/unhandled PPR log entries with
-`IOMMU_PAGE_RESP_FAILURE`. Intel `handle_bad_prq_event()` always
-responds to invalid PRQ when LPIG is set. This patch closes the AMD
-event-log gap for the same class of bug.
+Record: Rate-limited IOMMU fault logs are the normal pattern elsewhere.
+This driver was the outlier with a raw `dev_warn()` in the ISR.
 
 ===============================================================
 PHASE 6: CROSS-REFERENCING AGAINST THE LOCAL TREE
 ===============================================================
 
 **Step 6.1: DOES THE BUGGY CODE EXIST IN THIS TREE?**
-
-Record: **Yes.** Local tree is **6.12.111** (`p-6.12-3-gc504cf0baa3d8`,
-Makefile VERSION/PATCHLEVEL/SUBLEVEL 6/12/111).
-
-```973:979:drivers/iommu/amd/iommu.c
-        case EVENT_TYPE_INV_PPR_REQ:
-                pasid = PPR_PASID(*((u64 *)__evt));
-                tag = event[1] & 0x03FF;
-                dev_err(dev, "Event logged [INVALID_PPR_REQUEST ...
-                break;
-```
-
-No `EVENT_FLAG_PPR_RX`, no `amd_iommu_report_ppr_err()`. Bug introduced
-as log-only in 2018; completion helper present since 978d626b8f1a2 (in
-this tree).
+Record:
+- `git describe HEAD` → **v7.3-rc4-27-gf0100363d8c37**
+- `make kernelversion` → **7.3.0-rc4**
+- Driver file exists; original ISR logging from `918eb5c856f6` (v6.12).
+- `git merge-base --is-ancestor a86c36163c972 HEAD` → **yes** (already
+  merged here). That is not used as “already selected for stable”; it
+  only confirms this lineage has the driver and the fix.
 
 **Step 6.2: CHECK FOR BACKPORT COMPLICATIONS**
-
-Record: **Expected apply: clean or trivial context.** 6.12
-`iommu_print_event()` lacks a later `ctrl = readq(MMIO_CONTROL_OFFSET)`
-local that appears in the mainline hunk context; the INV_PPR_REQ case,
-`report_page_fault` insertion point, and `EVENT_FLAG_I` site match. No
-conflicting local change to this switch arm.
+Record: **Clean apply** on this tree (already applied). The hunk does
+not depend on later ISR locking. On a tree that still has the original
+`snprintf`/`dev_warn` ISR, it would apply with at most trivial context.
 
 **Step 6.3: CHECK IF RELATED FIXES ARE ALREADY HERE**
-
-Record: No existing COMPLETE_PPR on INV_PPR_REQ. Related:
-`5a5cd58b1533e` (series patch 1, log-only), `1de4443f85e44` (pci_dev_put
-after PPR faults). **This specific bug is unfixed here.**
+Record: No earlier equivalent rate-limit. `a2ee315db4261` only uses
+`WARN_ON_ONCE` for out-of-bounds map bits; it does not throttle the
+“unexpected error reported” line.
 
 ===============================================================
 PHASE 7: SUBSYSTEM AND MAINTAINER CONTEXT
 ===============================================================
 
 **Step 7.1: IDENTIFY THE SUBSYSTEM AND ITS CRITICALITY**
-
-Record: **drivers/iommu/amd** — **IMPORTANT** (not core mm/VFS). AMD
-IOMMU is default DMA isolation on AMD x86; PRI/PPR is a subset
-(SVA/IOPF), but a hung PRI-capable device (GPU) is user-visible.
+Record: **drivers/iommu/arm/arm-smmu-v3** (NVIDIA Grace CMDQ-V).
+**PERIPHERAL/IMPORTANT for that platform**: only `CONFIG_TEGRA241_CMDQV`
+/ Tegra241 (Grace) systems, including virtualization hosts using user
+VINTFs.
 
 **Step 7.2: ASSESS SUBSYSTEM ACTIVITY**
-
-Record: Actively maintained in 6.12 (flush, attach locking, SNP log
-sizes, PPR). Mature driver; this event type is old. Fix is not for
-brand-new code missing from 6.12.
+Record: Actively developed in 2026 (large Sashiko fix series + iommufd
+work). Logging bug itself is old (v6.12).
 
 ===============================================================
 PHASE 8: IMPACT AND RISK ASSESSMENT
 ===============================================================
 
 **Step 8.1: DETERMINE WHO IS AFFECTED**
-
-Record: **Platform/config-specific:** AMD IOMMU + PPR/PRI-capable
-devices (SVA/PASID). Not every AMD desktop, but real 6.12 users
-(ROCm/KFD SVM, IOMMU page-fault devices).
+Record: **platform-specific / config-specific** — NVIDIA Grace +
+`CONFIG_TEGRA241_CMDQV`. Hosts that expose guest VCMDQs are the
+interesting population.
 
 **Step 8.2: DETERMINE THE TRIGGER CONDITIONS**
-
-Record: Hardware logs INV_PPR_REQ (invalid PRI/PPR). RX=0 means software
-**must** complete. Trigger is device-generated, not a userspace syscall.
-Unprivileged code on an SVA-bound device can cause invalid page
-requests. Timing: not a race; missing response every time RX=0.
+Record: CMDQV error IRQ. Commonness: rare on healthy HW; can be
+**frequent** if a device malfunctions or a **guest injects VCMDQ
+errors**. Unprivileged guest with VCMDQ access can trigger it. Not every
+boot.
 
 **Step 8.3: DETERMINE THE FAILURE MODE SEVERITY**
-
-Record: **Device/PRI hang (HIGH), not a kernel panic.** Unacked PRI
-consumes outstanding page-request slots (PRI enable uses 32 outstanding
-in `pdev_enable_cap_pri()`). Device DMA can stall; GPU/compute jobs
-hang. Matches stable-rules “hang” / hardware protocol failure. Reporter
-is AMD — they saw it.
+Record:
+- Direct effect: dmesg/console flood; extra MMIO + `snprintf` on every
+  interrupt.
+- Indirect: printk/console contention, lost messages, possible stalls on
+  a slow console.
+- Not an oops, UAF, or data corruption.
+- **Severity: MEDIUM** (availability / “oh, that’s not good”), with a
+  stated guest DoS path.
 
 **Step 8.4: CALCULATE RISK-BENEFIT RATIO**
-
 Record:
-- **Benefit: high** for AMD PRI/SVA users (prevents stuck page-request
-  state).
-- **Risk: low** (~30 lines, existing helper, same IRQ-thread context as
-  PPR completion, no lock-order novelty vs `report_page_fault`).
-- **Ratio:** favorable. Worst extra load is queuing COMPLETE_PPR under a
-  PPR flood; spec requires that, and command-buffer timeout already
-  exists.
+- **Benefit:** medium for Grace virtualization hosts; low for everyone
+  else.
+- **Risk:** very low (7 lines, logging only).
+- **Ratio:** favorable. Official stable rules allow “oh, that’s not
+  good” and require an exploit explanation for “could be a problem”
+  issues; the message gives that explanation.
 
 ===============================================================
 PHASE 9: FINAL SYNTHESIS
@@ -432,174 +342,124 @@ PHASE 9: FINAL SYNTHESIS
 
 **Step 9.1: COMPILE THE EVIDENCE**
 
-**FOR backporting:**
-- Real spec bug: missing `CMD_COMPLETE_PPR` for INV_PPR_REQ with RX=0.
-- User-visible hang (PRI/DMA stall), reported by AMD.
-- Buggy log-only path exists in this 6.12 tree; completion helper
-  already here.
-- Small, obviously correct, uses existing `amd_iommu_complete_ppr()`.
-- Reviewed by AMD; SOB from Joerg Roedel.
-- Intel already answers invalid PRQ the same way.
-- No new APIs/features.
+FOR:
+- Real, described flood: guest or bad device can fire the error IRQ
+  repeatedly; each new error still interrupts (edge-triggered, latched
+  per event).
+- Tiny, obviously correct, matches other IOMMU drivers.
+- Error handling unchanged; MMIO for the log runs only when printing.
+- Driver and buggy logging exist in **this** 7.3-rc4 tree (since v6.12).
+- Applied by the arm-smmu maintainer; no NAK on this patch.
+- Official rules: not a trivia cleanup; exploit path is written down.
 
-**AGAINST:**
-- Not a kernel oops/UAF; only PRI-capable AMD devices.
-- Series follow-ups 4 (ratelimit) and 5 (GN bit) are not in this commit;
-  5 says `pri_tlp` is the wrong GN source — but that is **already** how
-  6.12 completes all PPRs.
-- Corner-case still skips completion without `pdev`/priv.
-- No Fixes:/Cc: stable (not a negative per pipeline rules).
+AGAINST:
+- No production `Reported-by`; LLM-found.
+- Least-critical patch in its series (11/11).
+- Threaded IRQ (`IRQF_ONESHOT`), so not a hardirq printk.
+- Unacked-guest *storm* was already ruled out as a false positive; this
+  only limits *new*-error spam.
+- Not a crash/corruption/UAF.
 
-**UNRESOLVED:**
-- Exact mainline SHA (`b4 dig -c` not possible without it).
-- Stable-list discussion (lore 403).
-- Whether a v2 addressed Ankit’s always-complete suggestion (committed
-  diff matches v1).
+UNRESOLVED:
+- Could not query lore.kernel.org/stable (403).
+- No Tested-by.
 
 **Step 9.2: APPLY THE STABLE RULES CHECKLIST**
-
-1. Obviously correct and tested? **PASS** — spec-aligned; AMD-
-   developed/reviewed; Joerg SOB. (Tested-by not in message; author +
-   reviewer are the hardware vendor.)
-2. Fixes a real bug that affects users? **PASS** — unacked invalid PPR;
-   Reported-by AMD.
-3. Important issue (crash, security, corruption, deadlock)? **PASS** —
-   hang / hardware protocol stall (HIGH), not cosmetic.
-4. Small and contained? **PASS** — ~30 lines, two files, one driver.
-5. No new features or APIs? **PASS** — uses existing complete-PPR
-   command.
-6. Can apply to the local tree? **PASS** — buggy code and helpers
-   present; apply should be clean or trivial context.
+1. Obviously correct and tested? **PASS** — standard ratelimit;
+   maintainer applied. No extra tester tag.
+2. Fixes a real bug that affects users? **PASS** — log flood / guest-
+   driven interrupt spam on Grace CMDQV; users of that hardware exist.
+3. Important issue? **PASS** (low end) — not oops/corruption; it is an
+   explained availability issue (“oh, that’s not good” / guest printk
+   DoS), which the documented rules allow.
+4. Small and contained? **PASS** — ~16 lines, one function.
+5. No new features or APIs? **PASS**.
+6. Can apply to the local tree? **PASS** — pre-image exists here; apply
+   is clean.
 
 **Step 9.3: CHECK FOR EXCEPTION CATEGORIES**
-
-Record: Not a device-ID/quirk/DT/build/doc exception. Qualifies as a
-**normal hang/protocol bug fix**.
+Record: None (not a device ID, quirk table, DT, build, or docs fix).
+Qualifies as a normal small bugfix, not via an exception.
 
 **Step 9.4: MAKE YOUR DECISION**
+This tree contains the Tegra241 CMDQV driver and the original
+unconditional ISR `dev_warn()`. The patch is a 7-line, obviously correct
+rate-limit that closes a guest-reachable log flood without touching
+recovery logic. Benefit is limited to Grace CMDQV, but risk is
+negligible, so it meets the bar for this tree.
 
-This should be backported to **this** 6.12.y tree. The INV_PPR_REQ
-handler has never sent COMPLETE_PPR; 6.12 already has PRI/PPR completion
-for the PPR log. The patch is small, uses that helper, and prevents
-device-side PRI stalls on AMD IOMMU.
-
-The problem is a missing hardware response, not a new feature. Stable
-users with AMD IOMMU + PRI/SVA can hang outstanding page requests; the
-fix is ~30 lines and matches code already used from `ppr.c`. Patch 5 (GN
-bit) is a separate improvement already latent in 6.12’s `pri_tlp` usage
-and is not required for this commit to help.
+What it solves for users here: a VM or failing CMDQ can spam the host
+log and extra MMIO on every error IRQ. That is not a panic, but it is a
+real host-side availability nuisance on this platform.
 
 Verification:
-- [Phase 1] Parsed tags: Reported-by Gaultier Delbarre (AMD); Co-
-  developed-by Wei Huang; SOB Vasant Hegde + Joerg Roedel; Reviewed-by
-  Ankit Soni; no Fixes/Cc:stable/syzbot.
-- [Phase 2] Diff: +EVENT_FLAG_PPR_RX; new amd_iommu_report_ppr_err();
-  INV_PPR_REQ calls complete_ppr on RX=0; ~33/-6 lines.
-- [Phase 3] git blame 973-979 iommu.c: e7f63ffc1bf19 (2018) introduced
-  log-only INV_PPR_REQ.
-- [Phase 3] 978d626b8f1a2 is ancestor of HEAD (`git merge-base --is-
-  ancestor` succeeded); amd_iommu_complete_ppr exists at iommu.c:1827.
-- [Phase 3] git log --oneline --grep=CMD_COMPLETE_PPR --
-  drivers/iommu/amd/: empty (fix not in this tree).
-- [Phase 3] Series patch 1 already present: 5a5cd58b1533e.
-- [Phase 4] Ratatoskr: series 0/5 17321955, patch 3 17321958, Ankit
-  review 17327932 (corner case, no NAK).
-- [Phase 4] b4 dig -c: **UNVERIFIED** (SHA not in tree). b4 mbox of
-  26cfa307-… pulled the wrong thread.
-- [Phase 4] lore.kernel.org and lore stable search: **UNVERIFIED** (HTTP
-  403).
-- [Phase 5] Callers: amd_iommu_int_thread_evtlog → iommu_poll_events →
-  iommu_print_event (threaded IRQ). complete_ppr already used from ppr.c
-  in the PPR IRQ thread.
-- [Phase 5] Intel analog: handle_bad_prq_event() in
-  drivers/iommu/intel/prq.c submits QI page-group response.
-- [Phase 6] git describe HEAD: p-6.12-3-gc504cf0baa3d8; make
-  kernelversion: 6.12.111; buggy INV_PPR_REQ case present;
-  EVENT_FLAG_PPR_RX absent.
-- [Phase 6] 6.12 iommu_print_event lacks later `ctrl` MMIO read;
-  INV_PPR_REQ hunk still matches.
-- [Phase 7] Subsystem drivers/iommu/amd, IMPORTANT, actively maintained.
-- [Phase 8] Failure mode: unacked PRI → device hang; severity HIGH;
-  trigger AMD PPR/PRI hardware.
-- UNVERIFIED: mainline SHA; v2 of series; stable@ discussion.
+- [Phase 1] Tags: Assisted-by Claude; SOB Nicolin Chen + Will Deacon; no
+  Fixes/Reported-by/Cc: stable on this commit
+- [Phase 2] Diff: `tegra241_cmdqv_isr()` snprintf+dev_warn →
+  dev_warn_ratelimited; +7/−9
+- [Phase 2] Confirmed `dev_level_ratelimited` only evaluates args when
+  `__ratelimit()` allows print
+- [Phase 3] `git blame` / original file: logging from `918eb5c856f6`
+  (v6.12-rc1)
+- [Phase 3] `git describe --contains 918eb5c856f6` →
+  v6.12-rc1~149^2^2~19
+- [Phase 3] Series: v2 11/11; parent is VINTF0 leak fix, not a
+  functional prereq
+- [Phase 4] `b4 dig -c a86c36163c972`: lore/patch.msgid.link match; v1
+  then v2
+- [Phase 4] `b4 dig -a`: v1 2026-07-02, v2 2026-07-14 (applied)
+- [Phase 4] `b4 dig -w`: iommu maintainers on To/Cc; Will applied 11/11,
+  dropped 10/11
+- [Phase 4] mbox: cover letter lists log flood; no comments/NAK on
+  11/11; Cc: stable only on 07/11
+- [Phase 4] WebFetch lore/stable: 403; stable-list search UNVERIFIED
+- [Phase 5] Caller: `request_threaded_irq` in `__tegra241_cmdqv_probe`;
+  CONFIG_TEGRA241_CMDQV
+- [Phase 6] `git describe HEAD` → v7.3-rc4-27-gf0100363d8c37; `make
+  kernelversion` → 7.3.0-rc4
+- [Phase 6] `git merge-base --is-ancestor a86c36163c972 HEAD` → ancestor
+  (code exists here)
+- [Phase 8] Failure mode: printk flood / guest DoS, severity MEDIUM
+- UNVERIFIED: lore.kernel.org/stable discussion (HTTP 403)
 
 **YES**
 
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/iommu.c           | 38 ++++++++++++++++++++++++-----
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 16 +++++++---------
+ 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index dee077bd149b7..5f43a0fcdd1e3 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -158,6 +158,7 @@
- #define EVENT_FLAGS_SHIFT	0x10
- #define EVENT_FLAG_RW		0x020
- #define EVENT_FLAG_I		0x008
-+#define EVENT_FLAG_PPR_RX	0x001
- 
- /* feature control bits */
- #define CONTROL_IOMMU_EN	0
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index e64e6da08a5f7..49587eafc0a8f 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -883,10 +883,40 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
- 		pci_dev_put(pdev);
- }
- 
-+static void amd_iommu_report_ppr_err(struct amd_iommu *iommu, volatile u32 *event,
-+				     u16 devid, u64 address, int flags)
-+{
-+	struct pci_dev *pdev;
-+	struct device *dev = iommu->iommu.dev;
-+	u32 pasid = PPR_PASID(*((u64 *)event));
-+	int tag = event[1] & 0x03FF;
-+
-+	dev_err(dev, "Event logged [INVALID_PPR_REQUEST device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x tag=0x%03x]\n",
-+		iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-+		pasid, address, flags, tag);
-+
-+	/* Skip COMPLETE_PPR_REQUEST response if RX=1 */
-+	if (flags & EVENT_FLAG_PPR_RX)
-+		return;
-+
-+	pdev = pci_get_domain_bus_and_slot(iommu->pci_seg->id, PCI_BUS_NUM(devid),
-+					   devid & 0xff);
-+	if (!pdev)
-+		return;
-+
-+	if (!dev_iommu_priv_get(&pdev->dev)) {
-+		pci_dev_put(pdev);
-+		return;
-+	}
-+
-+	amd_iommu_complete_ppr(&pdev->dev, pasid, IOMMU_PAGE_RESP_FAILURE, tag);
-+	pci_dev_put(pdev);
-+}
-+
- static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+index fdbd487848e64..8c9530873ed98 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
++++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+@@ -350,21 +350,19 @@ static irqreturn_t tegra241_cmdqv_isr(int irq, void *devid)
  {
- 	struct device *dev = iommu->iommu.dev;
--	int type, devid, flags, tag;
-+	int type, devid, flags;
- 	volatile u32 *event = __evt;
- 	int count = 0;
- 	u64 address, ctrl;
-@@ -960,11 +990,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
- 		amd_iommu_report_rmp_hw_error(iommu, event);
- 		break;
- 	case EVENT_TYPE_INV_PPR_REQ:
--		pasid = PPR_PASID(*((u64 *)__evt));
--		tag = event[1] & 0x03FF;
--		dev_err(dev, "Event logged [INVALID_PPR_REQUEST device=%04x:%02x:%02x.%x pasid=0x%05x address=0x%llx flags=0x%04x tag=0x%03x]\n",
--			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
--			pasid, address, flags, tag);
-+		amd_iommu_report_ppr_err(iommu, event, devid, address, flags);
- 		break;
- 	default:
- 		dev_err(dev, "Event logged [UNKNOWN event[0]=0x%08x event[1]=0x%08x event[2]=0x%08x event[3]=0x%08x\n",
+ 	struct tegra241_cmdqv *cmdqv = (struct tegra241_cmdqv *)devid;
+ 	void __iomem *reg_vintf_map = REG_CMDQV(cmdqv, VINTF_ERR_MAP);
+-	char err_str[256];
+ 	u64 vintf_map;
+ 
+ 	/* Use readl_relaxed() as register addresses are not 64-bit aligned */
+ 	vintf_map = (u64)readl_relaxed(reg_vintf_map + 0x4) << 32 |
+ 		    (u64)readl_relaxed(reg_vintf_map);
+ 
+-	snprintf(err_str, sizeof(err_str),
+-		 "vintf_map: %016llx, vcmdq_map %08x:%08x:%08x:%08x", vintf_map,
+-		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(3))),
+-		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(2))),
+-		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(1))),
+-		 readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(0))));
+-
+-	dev_warn(cmdqv->dev, "unexpected error reported. %s\n", err_str);
++	dev_warn_ratelimited(
++		cmdqv->dev,
++		"unexpected error reported. vintf_map: %016llx, vcmdq_map %08x:%08x:%08x:%08x\n",
++		vintf_map, readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(3))),
++		readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(2))),
++		readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(1))),
++		readl_relaxed(REG_CMDQV(cmdqv, CMDQ_ERR_MAP(0))));
+ 
+ 	/* Handle VINTF0 and its LVCMDQs */
+ 	if (vintf_map & BIT_ULL(0)) {
 -- 
 2.53.0
 
