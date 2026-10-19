@@ -1,143 +1,185 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75CB048DB37
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 07:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE24A48987A
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 08:02:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792394839; cv=none; b=Js7NzH18bBwPQDZ6VpNM1nPRHkbJia0Gtr4g81dM/6IhHgZp+dRLDHLgqdGG2Utw7Ucr0WWOAFDI+L1h3TY/yFNSRGy2cxJzn5nl9H0tnfuPfs7YdPa4sgLgmkarKPtjpHGn+Ckt6bcLgU4l1mxAlYix8VoYl0haP2XTGLVseQc=
+	t=1792396962; cv=none; b=LUg7W3oZD7f4j/3X5YBmbIj0/wL+9Ge1z115y/Lg47G2t0l1LjNYl4I7zjDOr8O7lCq6M29ZkGThcHSpLTXqIua3oTIhYiNwWrrsplr8cfMeTGC42I5+GGfJ+NMEp+iAtXdhdq68VCouAuFH83+UH9bIn7Ak85+DQoHdXpCEqwM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792394839; c=relaxed/simple;
-	bh=0T98m1ELRc4eTtBMW8+nPuPgIS0HZy+hRlapM4lfh7g=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=ZFVAjQrtKmKjOQr2xyVQ8TA8QprYSguya1lZbj6znzy2Rs4RrULVCP9Zz8w3F44an7BiKjjFC2vZVWTJSQInuh9iG3OOTRZLg6kMoMCXC1y+Wv6Fq4gEh+m4yHNyPL2peL5+EWxJyvPle2YGYwCcyTRP7iHTsXTkp2AbuPKu1do=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I6TLGGkT; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1792396962; c=relaxed/simple;
+	bh=6YV1jIyhie2HywPvxhBM7kASTJm/y5FD1q8Bn0YGL7w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DX20qoVIu1QDtmO/Jo9RnT/s6sdHV0bNtUz+YkvPJNazNUo1xurR0IkV75KZR4M28Nm6pBS2LVX8pMpjeaMJBnNvnLjSXEAnra1EJqAoCzn84LyNe+kSzHT32DckKVNDlKYkuC8d4xJeUJKuIt/ARrr5QFAO6+jwmsw2xS+Mb8k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YP/mMGt0; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I6TLGGkT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792394838; x=1823930838;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=0T98m1ELRc4eTtBMW8+nPuPgIS0HZy+hRlapM4lfh7g=;
-  b=I6TLGGkTJZ8ZMMAHp5vz8pZC963V+67E1T2FnSI8qWdd+4mlCj3a4ymT
-   nNFgAD0416NkXAdgerQjMt7rb4g4erqjFtsSP3vYnyX/7ymHgmcUum/4Q
-   T8JV8QD1mwGnWXG/uE887t7w2k5M27GOULVtYYqm0yUxZHPnbDUucFr5k
-   7qv8Q3vNY/aOnGYqGGs5JB34FTioofd+c22pRK+98jlHQ6mlBxQtopsLp
-   cwMEWUUOsIdL5N+7CfnPgMT9y7Nc0L1R8McRx181OZKT7bsJmsweK4kCL
-   YMA52GZ8TGvdYrfhqzYpt1Y3bE666r0x81TzCPqGcEITlYEN8Qu2XeITC
-   A==;
-X-CSE-ConnectionGUID: G7+9Ake2S+imszY2hdtpPA==
-X-CSE-MsgGUID: mNlyxhiVQ0GC0jrvAfWHtQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1070551"
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="1070551"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 00:27:17 -0700
-X-CSE-ConnectionGUID: ABrjHQwhQfC7Fzeh5vgpCQ==
-X-CSE-MsgGUID: UqkibW+DSqiD7OLmcaTHLA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,167,1787036400"; 
-   d="scan'208";a="2826014"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2026 00:27:15 -0700
-Message-ID: <ea131a99-d3f0-4d52-a076-d80d84d690e8@linux.intel.com>
-Date: Mon, 19 Oct 2026 15:27:13 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YP/mMGt0"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2e8623790f8so66395ad.0
+        for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 01:02:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1792396961; x=1793001761; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=U96zIc88mN0rNQvIVq2ht+DBQv4Z66PcnccoKG6Xats=;
+        b=YP/mMGt0Tj1gHIH8U4ZkFo7p1sQscvOy99tbZJ7oYB7pP/ZHxrtEwCxrDm4NSxr6tN
+         Ec9bKEZ9grxGew6DnvqfmnFJvrxJbu6RiwXuoynBjTVOKqV0tXVJOKK6mVrI7LgNEXFT
+         Q+B0ZdyIfEV1xQIhSdZd387lQ6RI9MrzPnHg52G7x5N3B/9XECxvdIvfCNfMJwcOE0/0
+         wlzMdF1oXkfCfNoK7cn0Ns3RBvv1xz2xodVy3v198h+MACFyDwwrDlxovblqm1zlvikF
+         hoy8ZKDoAkP0IMnTrEF8sleqQgvLnNuwwWEE/O/nRSFqCB3N/3RIGzaMb7aqQ7U22I0t
+         SCMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792396961; x=1793001761;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=U96zIc88mN0rNQvIVq2ht+DBQv4Z66PcnccoKG6Xats=;
+        b=dnJIFRxthxeI3hE2gs2OsSXLzSEIWEIaVgnMbbPZPhDkADWf2yza1Ez5wVOb2ldzGQ
+         LP0GSaBfyQDkb2bTH7IkDp+qDzUxEqisXpfAEH2nB/m3mHxyJY0vE8cvuP3UVe3UEA8u
+         uMzELzZTP8/QFceiiILV0dKBNUxP0wgdhVxwHHDXwdelEmPoQQNY6dTMHHcMYI/ANvPD
+         RZlxFyu7PW+L7nwuDmYdd2uwQak26iGYA0JR8AXJs7arcAX+aohMfEusmeNrgs4wMMeC
+         ihtr9n6PzuSfCRhKrDBr3MDjJShBhtgnP/5rkBNKFY/q10854R29mB8A1rwRltAeHLoq
+         cL/w==
+X-Forwarded-Encrypted: i=1; AKwUvByW9mf5zETnJbXv6gH/MEiBcpHiR6YR80+F4Vp5bGPKcS8HYeN4Dq8iagJMnJE5SGQaSVGDRw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKl/9JJ+s5m/FXrVco1EOFUnuqpjr5ZqAGjef/TFM9AgXazyRjA
+	y3S0qoBfQfGXdIFklp+vKcbnutkijtP1sT7/p9c38e2qyBIUp6SNxr/lTSIJa4cT4Q==
+X-Gm-Gg: AYBFou0RsuVBmaXssWQqXhcnKPVu5i81OXBtBZQatFTZP27mebdjWV6cAH0eOeKeMRE
+	asMxXumxpxHtJzxpCcSMrBiJQWtI4A9njzXPg6m62BUIi5I0ykjjRbhg6mDdP545BlS6+y7fFog
+	MxGoCxu1yMcwR42dWnEV48bszJwD3BK10lLRI0OcOtnhX3wePq0jOzE6SEUIVzOzyKGAbnQ08Bo
+	hHYQAJHQvaQR53vaNcvvY7wLvI19vO0oSB4tJeUI+I7TYXomCaCnNxwyD+HM9XQ2zvTSv1keE9j
+	pRp3aHykpCKdTWQvKq2qyDgN7+BAOIgLDhfc0eOZ8fKMIMB4fZ8OxdO1PKDh78KD8SLdSLp9Rqp
+	K2UH0n30NgbTb5q4X2y8ls+Jt9CtOWOvRy3zd1wOdiXutfXBOx4YZ2trjATDGEWgnvB5Tk05cb3
+	2SntosHD01K4tJ0TC5o5fsA63rcAQ1mlDIw0L0ya6uzmVni2Pi9w+jo3CeXvUUgiB+SLbtVOswu
+	vlAfqs7jtrRXaiRDFWlrNm+9KhtMPfJCEFOQg==
+X-Received: by 2002:a17:903:388d:b0:2df:96ca:d7c7 with SMTP id d9443c01a7336-2e9b324cc9dmr6595855ad.10.1792396960066;
+        Mon, 19 Oct 2026 01:02:40 -0700 (PDT)
+Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2e97e8353b1sm35762345ad.39.2026.10.19.01.02.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2026 01:02:39 -0700 (PDT)
+Date: Mon, 19 Oct 2026 08:02:31 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Ashish Mhetre <amhetre@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Thomas Gleixner <tglx@kernel.org>, Radu Rendec <radu@rendec.net>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, rafael@kernel.org,
+	Danilo Krummrich <dakr@kernel.org>, driver-core@lists.linux.dev
+Subject: Re: [PATCH v11 11/16] iommu/arm-smmu-v3: Add CMDQ_PROD_STOP_FLAG to
+ gate CMDQ submissions
+Message-ID: <atXOl-9C_HNvDT1E@google.com>
+References: <20260929034510.2023173-1-praan@google.com>
+ <20260929034510.2023173-12-praan@google.com>
+ <ar1yNtr7Kp2OTcDd@nvidia.com>
+ <ar3yWUmi8E0k37Ml@google.com>
+ <ar6gY9grmdMZcN/M@nvidia.com>
+ <20261002164748.GD3481470@ziepe.ca>
+ <asAeCz_rmpe5hbsh@google.com>
+ <asUvUf4PZJ7JCLXp@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, robin.murphy@arm.com, joro@8bytes.org
-Subject: Re: iommu/dma: SATA RMRR reservation omission in shared group on HP
- Gen8
-To: Renato Machelett <renato@machelett.com>, iommu@lists.linux.dev,
- kernel-team@lists.ubuntu.com
-References: <02b201dd5ea3$02b88430$08298c90$@machelett.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <02b201dd5ea3$02b88430$08298c90$@machelett.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <asUvUf4PZJ7JCLXp@nvidia.com>
 
-On 10/18/2026 9:50 AM, Renato Machelett wrote:
-> Hello,
+On Tue, Oct 06, 2026 at 10:26:41AM -0700, Nicolin Chen wrote:
+> On Fri, Oct 02, 2026 at 09:11:39PM +0000, Pranjal Shrivastava wrote:
+> > On Fri, Oct 02, 2026 at 01:47:48PM -0300, Jason Gunthorpe wrote:
+> > > On Thu, Oct 01, 2026 at 11:03:15AM -0700, Nicolin Chen wrote:
+> > > 
+> > > > > So we can't issue ATC_INVs during suspend (the EP is already down), nor
+> > > > > during resume (the SMMU resumes *before* the EP is made active). The EP
+> > > > > can't use its ATC while suspended, and if it loses power/resets on the
+> > > > > way back to D0 (from D3cold, or D3hot with No_Soft_Reset=0), it comes 
+> > > > > back with an empty ATC.. same assumption the PCI reset path makes today
+> > > > > (pci_dev_reset_iommu_prepare()).
+> > > > 
+> > > > In that case, would the STOP flag be too late? It's only set in
+> > > > the middle of the SMMU suspend. So, an ATC command (via doamin
+> > > > invalidation) might be issued prior to the Point of Commitment,
+> > > > which will be timed out due to the unresponding EP?
+> > > 
+> > > How can you ever fix that?
+> > 
+> > The unfortunate reality is that this gap exists in the kernel even
+> > today.. upstream SMMUv3 has no RPM, so it's always on, while the EPs can
+> > runtime suspend independently. So an ATC_INV can already be issued to
+> > an EP that has suspended. I'd argue RPM improves this slightly, since
+> > once the STOP flag is set everything is elided, so the window closes at
+> > SMMU suspend instead of never.
 > 
-> I am hitting a recurring DMA PTE collision issue on an HP ProLiant DL320e Gen8 v2 (Xeon E3-1230 v3, Intel C222 Lynx Point PCH, BIOS P80 tested with both 03/28/2014 and 04/04/2019) on Ubuntu 24.04 with 6.8.0-146-generic. In Ubuntu's 6.8.0-147-generic source, drivers/iommu/dma-iommu.c is byte-identical.
+> That doesn't sound very convincing though...
+>
+
+All I'm saying is that today, EPs can get suspended without the SMMU
+ever knowing, making the SMMU aware of it helps with that.. although I
+agree we need a policy here.
+
+> > > How does power management really work, is it expected that the end
+> > > device is already quieted by its driver?
+> > > 
+> > 
+> > Yes, power management would topo-sort all dependencies and invoke
+> > suspend callbacks accordingly, i.e. in our case the suspend callbacks of
+> > all SMMU clients would be called before the SMMU's suspend callback.
 > 
-> On Ubuntu Launchpad, bug 2160616 (https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2160616) reported the same 0xf1f7e collisions on HP Gen8 hardware and was marked as a duplicate of bug 2158934 (the PCIe ACS quirk regression reverted in 6.8.0-136.136). However, 6.8.0-146 already contains that ACS revert and still reproduces these collisions with intel_iommu=on, because on the Intel C222 PCH 00:1f.0 (LPC bridge, 8086:8c4e) and 00:1f.2 (AHCI SATA controller, 8086:8c02) are multifunction siblings without ACS hardware and share IOMMU group 8:
+> If that's guaranteed, we should probably -EBUSY the suspend if one
+> STE isn't aborted.
 > 
->    pci 0000:00:1f.0: Adding to iommu group 8
->    pci 0000:00:1f.2: Adding to iommu group 8
+
+That'd only work for (ATS-enabled) PCI devices.. for platform devices,
+the STE stays as is across RPM by design (no ATC, and the TLB/CFG state
+is covered by the invalidate-all on resume).
+
+> > > Could the first step in power management install a blocked STE? Then
+> > > we don't have to worry about ATC desync and that automatically stops
+> > > generating new ATC invalidations if we go and detact the domains too
+> > > 
+> > 
+> > Partially.. at SMMU suspend we set GBPA to abort and clear SMMUEN, so
+> > nothing gets through while the SMMU is off. But that's global and only
+> > happens after all EPs are down, it doesn't stop ATC_INVs in the window
+> > Nicolin pointed out.
+> > 
+> > One way to ensure the ATC state is relying on the PCIe spec to lose ATC
+> > content during D0 entry from D3cold, or D3hot with No_Soft_Reset=0). 
+> > 
+> > Another way to enforce this, is to *somehow* ask the endpoint drivers
+> > disable ATS during *their* suspend, i.e. in the EP's driver's suspend
+> > they could call pci_disable_ats or a better suited helper from pci core
+> > and the in the pm_resume / rpm_resume they could call it's equivalent 
+> > pci_enable_ats, counterpart ensuring a clean ATS state. Or maybe the
 > 
-> The ProLiant DMAR table defines 23 pages of RMRR (0xf1f7e000-0xf1f94fff) scoped to 00:1f.2 (SATA), but not to 00:1f.0 (LPC).
+> pci_enable/disable_ats is used by IOMMU drivers only.
 > 
-> My source analysis points to drivers/iommu/dma-iommu.c (matching the Oct 2024 thread at https://lists.openwall.net/linux-kernel/2024/10/24/1195):
-> 1. During bus probing (bus_iommu_probe -> iommu_setup_default_domain, drivers/iommu/iommu.c:2014, :3150), iommu_create_device_direct_mappings() installs 00:1f.2's 23 identity PTEs (0xf1f7e003..0xf1f94003) into group 8's hardware IOMMU page table.
-> 2. When bus_iommu_probe() finalizes group 8 in member order (00:1f.0 first, 00:1f.2 second), iommu_dma_init_domain() (drivers/iommu/dma-iommu.c:701-727) initializes iovad->start_pfn and calls iova_reserve_iommu_regions() for 00:1f.0 (which has no RMRRs), then takes the already-initialized iovad->start_pfn early return (lines 701-713) for 00:1f.2 without reserving 00:1f.2's RMRRs in the IOVA allocator.
-> 3. Because iommu_dma_alloc_iova() prefers allocations below 4 GiB (pci_32bit_workaround), ordinary ahci disk I/O can allocate these unreserved vPFNs (0xf1f7e..0xf1f94):
+
+Can't the PCI core call it too? I agree the endpoint drivers may not be
+aware of ATS, but there should be some way for us to flush + disable the
+ATC after the EP driver's suspend & before the EP sleeps (and so before
+the SMMU's suspend is called)?
+
+> > pci_dev_reset_iommu_prepare/done() pair (with slight refactoring) in EP's
+> > suspend/resume?
 > 
->    DMAR: ERROR: DMA PTE for vPFN 0xf1f7e already set (to f1f7e003 not 11f04e003)
->    WARNING: CPU: 3 PID: 2210 at drivers/iommu/intel/iommu.c:2227 __domain_mapping+0x2b5/0x320
->    Call Trace:
->     <TASK>
->     intel_iommu_map_pages+0xe1/0x140
->     __iommu_map+0x121/0x280
->     iommu_map_sg+0xbf/0x1f0
->     iommu_dma_map_sg+0x463/0x4f0
->     __dma_map_sg_attrs+0x35/0xd0
->     dma_map_sg_attrs+0xe/0x30
->     ata_qc_issue+0x131/0x320
+> That sounds right to me, though a different API for suspend/resume
+> will be required. And call them in pci_pm_runtime_suspend/resume()
+> maybe.
 > 
-> 4. In __domain_mapping() (drivers/iommu/intel/iommu.c:2218), cmpxchg64_local(&pte->val, 0ULL, pteval) sees the pre-existing RMRR identity PTE (0xf1f7e003) and logs the warning, but does not fail the mapping, leaving the identity translation in place. A subsequent DMA transfer could therefore access the RMRR page instead of the intended RAM buffer (I also observed cached ext4 inode checksum errors on this host, though I have not proven the completed DMA link directly). Subsequent DMA unmapping in dma_pte_clear_level() (drivers/iommu/intel/iommu.c:1097) calls dma_clear_pte(), clearing the covered identity PTE so repeated allocations at that vPFN need not produce another warning.
-> 
-> Separately, when testing Ubuntu Noble HWE 7.0.0-38-generic on the same host, drivers/iommu/dma-iommu.c still has the same initialized-domain early return before per-device reservation, and I also observed immediate VT-d faults during boot ("DMAR: [DMA Write NO_PASID] Request device [00:1f.2] fault addr 0xf4c00000 [fault reason 0x0c] non-zero reserved fields in PTE", CAP=0xd2008c20660462, ECAP=0xf010da) followed by ATA Emask 0x40 (AC_ERR_SYSTEM) failures. This kernel uses drivers/iommu/generic_pt/fmt/vtdss.h, whose permission handling in vtdss_pt_iommu_set_prot() differs from the legacy implementation (no longer OR'ing bit 0 on IOMMU_WRITE), though I have not established which specific PTE field caused the 0x0c fault.
-> 
-> I am currently running with intel_iommu=off as a workaround. Is there an existing fix or backport for this shared-group reservation omission?
 
-Thank you for the report. This issue still appears to exist in the
-latest upstream kernel:
+Ack.
 
-static int iommu_dma_init_domain(struct iommu_domain *domain, struct 
-device *dev)
-{
-...
-         /* start_pfn is always nonzero for an already-initialised domain */
-         if (iovad->start_pfn) {
-                 if (1UL << order != iovad->granule ||
-                     base_pfn != iovad->start_pfn) {
-                         pr_warn("Incompatible range for DMA domain\n");
-                         return -EFAULT;
-                 }
-
-                 return 0;
-         }
-...
-}
-
-The early return is still there. Have you tried reserving the second
-device's RMRR in the IOVA allocator as well? Something like:
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 68ee57800fef..e9b39009f109 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -704,7 +704,7 @@ static int iommu_dma_init_domain(struct iommu_domain 
-*domain, struct device *dev
-                         return -EFAULT;
-                 }
-
--               return 0;
-+               return iova_reserve_iommu_regions(dev, domain);
-         }
-
-         init_iova_domain(iovad, 1UL << order, base_pfn);
-
-This would at least confirm your analysis.
-
-Thanks,
-baolu
+Praan
