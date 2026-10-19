@@ -1,200 +1,132 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EAB71AC45D
-	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 01:30:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8265A3CEB90
+	for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 03:25:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.97
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792373452; cv=none; b=G/0/OBdOq54o1o3tApMAZQ9ZKE5na5vSXnlElKo7BI9y/oMHf1li9596J2adkeTW0PuJNyJGlhpLhkaP42lCx1SeMGUlLKZsJFQZ3tCGproj3KB9c0UgpEk2V6Fc0/tiWFQ8wJksU6T8zZMZW7eam3M3Uv2v97Q8HIqdmfKh8pA=
+	t=1792380312; cv=none; b=Q93EOB4aAomiT3Kf2vIDYACPgjgfn+KE0r6+SnOdCZNFWj2sc8PevJA9O6ehaQzhAMW33k/Bz0PAbw1CVgRjl5sHGnvb2Dp2Al9UdL82xEwrKFXvJ/D1vpIjvGT8W85sTEvZeAD+kdxKEuhLksDIVGBmadOE790APsh6tQhuRck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792373452; c=relaxed/simple;
-	bh=Z0ySzCm4p42xcebUysLz6g5Qcv04uD1bUD2zrOIOm3I=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=pb4XTCKA/B2eFHWKqGZwGya5XxMpyoV8VSW1e99m5MBE/CjAdzgJPpKQUgLbPas/0Oppsy3xQxedJyNs81GNH7NbBxFqckNQ9xwu1opvtleTdV3E8S74gYv+ojXmVEOMV655reXJB4GWLCp+4rVOe77tp5bEndqHt+lEgYMMpL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m+X1yHQB; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1792380312; c=relaxed/simple;
+	bh=pHz7bBiMvgjVfQBo5baHnlnPFWb6vMs4JgxMC1w2pOA=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=WO76zShbxr/fSp3HQv3wDAs66ylRMoSV5Xu3YxWAnW+CdpwZQj2t7lCpO2UnJNfYhZNewe8o7vt7fPPq1UXZ7JCO8qPQ5lW/H5VN7Z673GBUFGebq6vAw+2nV4VdsDAyJpFQP/1vQG4e05o7q1ADtyMjhBp5yB9JZRYcyo6fDoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=lj5VHmAX; arc=none smtp.client-ip=115.124.30.97
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m+X1yHQB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792373451; x=1823909451;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Z0ySzCm4p42xcebUysLz6g5Qcv04uD1bUD2zrOIOm3I=;
-  b=m+X1yHQBKfla096Fzt9RcvU15vbI7VOKBAbM2tiAZgSGFpg2ysVtViuw
-   BlY4u2i03aMWoAvYsuYHc/Nlof2gNB/iwTL3smEs8zlVhk6uIESxEDOP6
-   AvGwCo8Gk+Z9y/z4ZmaM3aZrqpFYztyQcsCyVZ8vcyptEgu3tsVoO+W0E
-   hcO8N7sRPoGFSyG3ZheBdiLA6uW5FM4pvfbbqbZ8hgxsRBnf8z0KQR0kw
-   SGClkK9zspfgKRj8fwscbhaDGtfshS+pF3+s3bgAblTKB65a1nDNSLAZC
-   GvV5GJhRvDm0/5RvWHpBB73jyUDOCOuRl7sHsL8+lU5aijGAd8DlobRm0
-   w==;
-X-CSE-ConnectionGUID: LS7p2qTUQficee6f/9NYGw==
-X-CSE-MsgGUID: 5Xow0knOT7KbicGh9mj65A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11939"; a="1069105"
-X-IronPort-AV: E=Sophos;i="6.27,166,1787036400"; 
-   d="scan'208";a="1069105"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2026 18:30:50 -0700
-X-CSE-ConnectionGUID: suzdxA2UT0KxVmfEucdcag==
-X-CSE-MsgGUID: vq2OGzu7S2ugJghDyoXBHA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,166,1787036400"; 
-   d="scan'208";a="2765006"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2026 18:30:47 -0700
-Message-ID: <3a78df93-845a-4432-8aa1-fc4939f4f400@linux.intel.com>
-Date: Mon, 19 Oct 2026 09:30:44 +0800
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="lj5VHmAX"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1792380300; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=29GF85zmWOT6R4wUdm9iWEGkKC6rqMmG98g3ZEC4smI=;
+	b=lj5VHmAX1qSx7FlByDPPspzsqyvaS3sISuSSkjfOX92nkUo2qY0s6gQh1JCABJlglsUy+LGEkr9pki3D5JEEtptN4HNlcIfcGGabDbfLg6J9gGrNPClVwxKw7r/CicEiJ/ui9+cL5RdBB6hPMaFnU2W30JxHDqZwI7m8lgZNhmQ=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R751e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0XD-YOHi_1792380296;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XD-YOHi_1792380296 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Mon, 19 Oct 2026 11:24:57 +0800
+From: fangyu.yu@linux.alibaba.com
+To: jgg@nvidia.com
+Cc: Ankit.Soni@amd.com,
+	fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	joerg.roedel@amd.com,
+	joro@8bytes.org,
+	kevin.tian@intel.com,
+	linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com,
+	vasant.hegde@amd.com,
+	will@kernel.org
+Subject: Re: [PATCH] iommupt/kunit: Read an exact NR_SECONDARY_PAGETABLE snapshot for the leak check 
+Date: Mon, 19 Oct 2026 11:24:55 +0800
+Message-Id: <20261019032455.36913-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20261016152343.GH13920@nvidia.com>
+References: <20261016152343.GH13920@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Ning Sun <ning.sun@intel.com>,
- Michal Camacho Romero <michal.camacho.romero@intel.com>, x86@kernel.org,
- iommu@lists.linux.dev, tboot-devel@lists.sourceforge.net,
- linux-kernel@vger.kernel.org, Mateusz Mowka <mateusz.mowka@intel.com>,
- Adam Pawlicki <adamx.pawlicki@intel.com>,
- Pawel Randzio <pawel.randzio@intel.com>
-Subject: Re: [PATCH v5 2/2] iommu/vt-d: Disable PMRs and skip force-IOMMU when
- TXT TPRs are active
-To: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>,
- Thomas Gleixner <tglx@kernel.org>
-References: <7f637b22-110b-4e49-b083-6062bcad37c4@linux.intel.com>
- <20261012102211.1739615-1-michal.camacho.romero@linux.intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261012102211.1739615-1-michal.camacho.romero@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 10/12/2026 6:22 PM, Michal Camacho Romero wrote:
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 2e3b3ab216f8..ea32730701cf 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -2558,11 +2558,18 @@ static int __init probe_acpi_namespace_devices(void)
->   	return 0;
->   }
->   
-> -static __init void tboot_force_iommu(void)
-> +static __init void tboot_force_iommu(s64 num_of_enabled_tprs)
->   {
->   	if (!tboot_enabled() || intel_iommu_tboot_noforce)
->   		return;
->   
-> +	/*
-> +	 * If TPR is enabled we don't need to force IOMMU, TPR set by SINIT
-> +	 * ACM will take care of DMA protection.
-> +	 */
-> +	if (tboot_is_tpr_protection_enabled(num_of_enabled_tprs))
-> +		return;
-> +
+>> >> +/*
+>> >> + * The global NR_SECONDARY_PAGETABLE counter is batched per-CPU and folded
+>> >> + * into the global value asynchronously, sum the global value and the per-CPU
+>> >> + * deltas to get an exact snapshot.
+>> >> + *
+>> >> + * The global value must be read without the clamp of global_node_page_state():
+>> >> + * the raw counter is transiently negative whenever a folded free batch
+>> >> + * outweighs allocation deltas still pending on other CPUs, and clamping
+>> >> + * before adding the deltas back would overestimate and report phantom leaks.
+>> >> + * global_node_page_state_monotonic() is normally reserved for monotonic
+>> >> + * counters because a raw negative read is garbage as a page count, but the
+>> >> + * sum with the pending deltas always restores the exact non-negative value.
+>> >> + */
+>> >> +static unsigned long pt_kunit_nr_secondary_pagetable(void)
+>> >> +{
+>> >> +	unsigned long nr = global_node_page_state_monotonic(NR_SECONDARY_PAGETABLE);
+>> >> +
+>> >> +#ifdef CONFIG_SMP
+>> >> +	int nid, cpu;
+>> >> +
+>> >> +	cpus_read_lock();
+>> >> +	for_each_online_cpu(cpu)
+>> >> +		for_each_online_node(nid)
+>> >> +			nr += per_cpu_ptr(NODE_DATA(nid)->per_cpu_nodestats,
+>> >> +					  cpu)->vm_node_stat_diff[NR_SECONDARY_PAGETABLE];
+>> >> +	cpus_read_unlock();
+>> >> +#endif
+>> >
+>> >This should not be outside the mm code that manages this data
+>> >structure.
+>> >
+>>
+>> You're right. However, I couldn't find a way to solve this by
+>> modifying only the iommupt KUnit code.
+>>
+>> >I think the kunit runner executes this in some environment that
+>> >doesn't trigger this delay? At least I've never seen this assert?
+>> >
+>>
+>> I can reproduce the assert stably on an x86 machine by booting a
+>> 4-core riscv64 QEMU.
+>
+>Possibly kunit runner doesn't enable smp. Can you investigate? Maybe
+>we can solve this by disabling the check on !SMP
+>
 
-I don't quite follow this. The TPRs are disabled once DMA remapping is
-enabled in intel_iommu_init(). After that, the IOMMU is the only runtime
-DMA protection, which is why tboot forces it on in the first place.
+Hi Jason,
 
-With this change, booting with intel_iommu=off on a TPR-capable platform
-would no longer force the IOMMU on. What happens next?
+I looked into this, and you're right: the default KUnit config does
+not enable SMP. All runs below were done on the current tree without
+the proposed fix.
 
-- If the TPRs are left enabled, devices can't DMA into the protected
-   ranges, so the system is likely broken.
+1) Default KUnit command, without SMP - the tests pass:
 
-- If the TPRs are later disabled, the measured launch has no DMA
-   protection at all.
+  $ ./tools/testing/kunit/kunit.py run 'riscv_64_iommu*' \
+        --arch x86_64 --kunitconfig drivers/iommu/generic_pt
 
-Neither seems acceptable. I may have overlooked or misunderstood
-something, so please explain.
+The generated .config contains "# CONFIG_SMP is not set", and the
+run completes with:
 
->   	if (!dmar_can_force_on(DMAR_FORCEON_TBOOT))
->   		panic("tboot: Failed to force IOMMU on\n");
->   
-> @@ -2584,7 +2591,15 @@ int __init intel_iommu_init(void)
->   	 * Intel IOMMU is required for a TXT/tboot launch or platform
->   	 * opt in, so enforce that.
->   	 */
-> -	tboot_force_iommu();
-> +	void __iomem           *txt_heap = NULL;
-> +	struct acpi_table_dtpr *dtpr     = tboot_get_dtpr_table(&txt_heap);
-> +	s64 num_of_enabled_tprs = 0;
+  Testing complete. Ran 21 tests: passed: 18, skipped: 3
 
-Too much tboot internal state leaks into the IOMMU driver. Could tboot
-keep this state internally and expose only simple helpers, for example
-tboot_tpr_active() and tboot_tpr_disable()?
+2) The same command with SMP enabled - the tests fail:
 
-> +	if (dtpr) {
-> +		/* For the existing DTPR Table, verify TPRs activity status */
-> +		num_of_enabled_tprs = tboot_check_tprs(dtpr, &txt_heap);
-> +	}
-> +	
-> +	tboot_force_iommu(num_of_enabled_tprs);
->   	if (!dmar_policy_force_on())
->   		platform_optin_force_iommu();
->   
-> @@ -2623,7 +2638,8 @@ int __init intel_iommu_init(void)
->   		 * calling SENTER, but the kernel is expected to reset/tear
->   		 * down the PMRs.
->   		 */
-> -		if (intel_iommu_tboot_noforce) {
-> +		if (intel_iommu_tboot_noforce ||
-> +			tboot_is_tpr_protection_enabled(num_of_enabled_tprs)) {
+  $ ./tools/testing/kunit/kunit.py run 'riscv_64_iommu*' \
+        --arch x86_64 --kunitconfig drivers/iommu/generic_pt \
+        --kconfig_add CONFIG_SMP=y --qemu_args="-smp 4"
 
-tboot_noforce should apply to TPRs as well. See the comment on its
-definition:
+The run fails consistently. In the example above, 14 of 21 tests
+failed. With the proposed fix, the same command passes with 18
+passed and 3 skipped.
 
-/*
-  * Skip forcing iommu on and avoid tboot-related kernel panics during
-  * initialization when set to 1 (via intel_iommu=tboot_noforce).
-  */
-int intel_iommu_tboot_noforce;
-
-It's a debugging feature to avoid kernel panics during early boot.
-
->   			for_each_iommu(iommu, drhd)
->   				iommu_disable_protect_mem_regions(iommu);
->   		}
-> @@ -2697,7 +2713,24 @@ int __init intel_iommu_init(void)
->   			iommu_enable_translation(iommu);
->   
->   		iommu_disable_protect_mem_regions(iommu);
-> +
-
-Unnecessary change.
-
->   	}
-> +
-> +	if (tboot_is_tpr_protection_enabled(num_of_enabled_tprs) && dtpr) {
-> +		/*
-> +		 * TPRs are enabled. It is necessary to disable active TPRs
-> +		 * to enable DMA usage by the system.
-> +		 */
-> +		num_of_enabled_tprs = tboot_disable_tprs(dtpr, &txt_heap,
-> +		                                         num_of_enabled_tprs);
-> +		if (num_of_enabled_tprs != 0)
-> +			panic("tboot: Failed to disable TPRs. DMA is still blocked.\n");
-> +	}
-> +
-> +	/* Release the TXT heap memory if it was allocated */
-> +	if (txt_heap)
-> +		tboot_free_txt_heap_mem(&txt_heap);
-> +
->   	up_read(&dmar_global_lock);
->   
->   	pr_info("Intel(R) Virtualization Technology for Directed I/O\n");
-> @@ -2707,6 +2740,9 @@ int __init intel_iommu_init(void)
->   	return 0;
->   
->   out_free_dmar:
-> +	if (txt_heap)
-> +		tboot_free_txt_heap_mem(&txt_heap);
-> +
->   	intel_iommu_free_dmars();
->   	up_write(&dmar_global_lock);
->   	return ret;
-> -- 2.55.0
+3) Could you clarify what you meant by "disabling the check on !SMP"?
 
 Thanks,
-baolu
+Fangyu
+
+>Jason
