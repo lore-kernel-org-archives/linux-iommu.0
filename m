@@ -1,115 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.37
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792515598;
-	b=cp4nIVN0hcUUhxoNhRlc/2tou2AkWIHpb3G3vgciN+PbWyFQxzFhIXGLQUzBn2AaXYlV
-	 I9lzHx+dT3S6eE4j/vDTo79asi2w3lDFIuJqJ1A8XGivCNZhAbKQrUn3qklESLj0245u+
-	 kJ05WjDr4cE21qD8UhVbdWidp6SgLTwjsgwdzpJeRRsHkn/MqhNnPf4B6QKiAl9RJhclq
-	 i2H6FjRllBa6UgH/yy6sw2i6LmiXu9IOPALmD2otuhtVLk69xy2MeWlku41mCwWwMK5Qy
-	 E71f1CnguTkgQkbWTGuPupZdQoEtq4WNyPVnnFdBCJ7LbjaYI+viTj06yGgrZzleNBA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792515598;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=iZYsJK9DZp6FZSpfbfNmBNvtUH4DYpATPXfy0vHCOP0=;
-	b=WX48kT/HUuzJ++WyhZRXqdrKyDLZ/YKwnQoEDSSPidQPQN/MjtL6PXkf4TXtmFOT5NTv
-	 UnltBXveJJz1Nm4EKxUnusMiaypfddyx+GRvfiman7sLcd7mEDVpe3bbV6NemlXSTa08r
-	 KXuOVKkSWAH8GfiaBkqitTf1/NPSQaDMK6t1x2CwAwNgRDZ07MzvC6UT1WDHsJvAvV6Rn
-	 BO/5/QxgOLhPS6fEhaEvF7OOlIKzGMs2QBtunYU9XhR/vKnmzWVMZ/aejETCSNMGR4SL+
-	 6EVZIm6Iu8gpBokS3oH9vX9jKRuZN/UWAFw35kNEdPCTtG82FVD4QtNDKv1mWE63zNw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=Kv+QQ8DM;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.37
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011037.outbound.protection.outlook.com [52.101.52.37])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.179
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792515813;
+	b=F39gjPg81CVmyTKYpjwnr1PyXteLsnoFzXIiu3HZTO6lIiUYxKQnejX2qQA4eMrRlb3+
+	 rBkfFry+pZVy1P/KWIlqF2+dl92jpsD41OB2YHHBuwPgjU0rzyYZHsO+PYsgDx4wCHWEX
+	 EpVvVORckHnhqSLN7kY+0a7TFKGmPEOYsYM7s3TKhBtdb0ldwFuRcOwvK1DGs5Aiy5LIg
+	 qTEEpYskz3VZ3LrU98IOnVocQRhIcmTG4rHy+smLLSCwz0pUhp0IJ0U0VQ7FMWHhwntIs
+	 q4SCqJoeVVnAt98gVXWVfz3oiMcy8OCRIrO0bv1JQ38daqEO4of4orL9wdH5autiDsA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792515813;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=PdL12cit1+z6d3jeLw0+naLR3nXNXmktozH9BnIvo4w=;
+	b=c745mJH8MSCeK5OHi56xZNczVAAW+iEihPaV81aLKbMV8+UXDyrOwA5oPJ+RT7cVcDVJ
+	 2mRbSyl5sONw4ReoR4GoZxaSd2+mfi31bW+t6f1rwtiW6H5/2yXo8GbHDrcUAadx4WP1b
+	 nUJ95mxVp3VVR/SUvDFFtlJ/8RhLqG1wB1UwWLHzoV529YqZy1woLw14UhJYGIFqJ6D/0
+	 ZcivA0f6xNrNJ69yPgbZpbVkrDAHScthOkQrdA67rML2CbE1qe667oHXPmI2i0a3UiJwe
+	 C0Lrf1yK7FydZBR2iKGOjIDOAhNG3VQ5SZ4OuwdJEOB3n9bCN9v2iTwiH1igi7hCJuA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qQms9V2g;
+	arc=none smtp.remote-ip=209.85.222.179
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2CCE606A32E
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 16:59:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C2CCE606A32E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04DB760A2602
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 17:03:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 04DB760A2602
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=Kv+QQ8DM
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bvZuD1dImgrMUMDlBJDi2cRi5NkDxsmViDT2hm0S3EDlg3OMulT2eyA3VLn+t0y/zC1l03xUVvPp4Tp9RnfMKfMMB1x5Uf0oEtbQuUwwnt1tAvuQyWiPWYx0MszTInHmPAGPamV6xaXkFOPuv+fQBIJnLlwaLvl/g15dfzAeBEC/5G2L4Vni/ff+oYKSyC7vxEZQPOVeXNI4pwxZzAHdlhKxbQzbXJW0mvfqTbGjhyWsGQblisP0n1/vCO11XDXKlBkI7dKErgEdus0cqZ7D2SpFVuc7NcXl7jgjZUSjK5k98IMM6PGy9OHyzVl8hrSVNs1uFoz1w2zDWVQt/kgvng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iZYsJK9DZp6FZSpfbfNmBNvtUH4DYpATPXfy0vHCOP0=;
- b=iXuC3jdLkw9YJGNNynhAi2oHXAU4nqg4ljRX/l4A5OMvUIw+DpvaI3WruFTIT/TG/WWjjfOztLGyJfAqkRYZ0WuwvdvKAXfPdt88Xr/G8+RKXqVJCGtMW79REJkfYgxWikqdPrADD8PKn+ratu/+XHRazbh4CI+t+XaHITmJs6pAYdkURZAaVf9mD3zbFOgH63YbsOMJv8KexjJf0iGUxB+B0U0hSc29UlxxjQJ4VPDxPE2yHl14PFn/P2HkGC6Bie6kf1/OUyPOfQjtf2Bvkxi3e6n7c7MehqTkXyTZzxgv+ZqdGRMx8TbPxFCGJgng4bO8RHojtmMqtcVKn/b0Vg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iZYsJK9DZp6FZSpfbfNmBNvtUH4DYpATPXfy0vHCOP0=;
- b=Kv+QQ8DMmw+1AA4s6/45thICu5kMKlYlZoC1XEQ67c/nuH/Y9Kb+Fqiyf9qZK9ubyT09sfHrtdThwaxHBvRp1+/Irx3V4w15bFc/8b3t5EJe/uEVIG+E2bod3P8Xasf0iaTp8WaTyxzZr50Sg89FFjZ1PFW/IRL/9gaVJn7gU2Ltjb6UQY7OYNgEB2j6dbJ2Jq8aQ5jlCc4Ofss8BrXHHbFIgDEJXnx8KztBuE3BieJ7VIMal0+ybh8pjqLG8I6a/2gApAmP0r4/UNJvSxooHGW5PJvi/4cWJn+1rz9Qct0gtJNFa7SeqrKbvLSIrv2mOPx7+rV1lps4CAdS4nK+gg==
-Received: from CH0PR03CA0412.namprd03.prod.outlook.com (2603:10b6:610:11b::24)
- by DM4PR12MB7767.namprd12.prod.outlook.com (2603:10b6:8:100::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Tue, 20 Oct
- 2026 16:59:39 +0000
-Received: from IA0PEPF00000039.namprd03.prod.outlook.com
- (2603:10b6:610:11b:cafe::88) by CH0PR03CA0412.outlook.office365.com
- (2603:10b6:610:11b::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.522.20 via Frontend Transport; Tue,
- 20 Oct 2026 16:59:38 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- IA0PEPF00000039.mail.protection.outlook.com (10.167.249.70) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.546.15 via Frontend Transport; Tue, 20 Oct 2026 16:59:38 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Tue, 20 Oct
- 2026 09:59:14 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.49; Tue, 20 Oct 2026 09:59:13 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49 via Frontend
- Transport; Tue, 20 Oct 2026 09:59:12 -0700
-Date: Tue, 20 Oct 2026 09:59:10 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Mostafa Saleh <smostafa@google.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jgg@nvidia.com>, <praan@google.com>, <kevin.tian@intel.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <jamien@nvidia.com>, <kas@kernel.org>,
-	Cristian Prundeanu <cpru@amazon.com>, Breno Leitao <leitao@kernel.org>
-Subject: Re: [PATCH v11 05/11] iommu/arm-smmu-v3: Disable the EVTQ and the
- PRIQ in a kdump kernel
-Message-ID: <ated3gfYqw3QC0+G@nvidia.com>
-References: <cover.1791226953.git.nicolinc@nvidia.com>
- <fdebf9f372ebabd7a44581a2068d6fcbff058783.1791226953.git.nicolinc@nvidia.com>
- <atdPBqd1-xLNZ1hs@google.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qQms9V2g
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-93e635220b4so323144185a.1
+        for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 10:03:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792515812; x=1793120612; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=PdL12cit1+z6d3jeLw0+naLR3nXNXmktozH9BnIvo4w=;
+        b=qQms9V2gAItqF1LE/2eya+jGx+tPvFIDpgZbKWMFpOpfAevgX0n6u3uIHMDTCX7hg0
+         bcTZuMCH1MQ7l113kA+cmnqKyfNVrDkphZhp+3DKR82+4k6DFObLkhm0XJvIbbYhhAOd
+         qUpkPV1FzriSTvaDsvbCWzBN5z9W3zR7Ip+vuAMZz6CIHISepZnbJ4ULY2CSuReyZq7M
+         Lu4IckIQeqg0ZONSYJ4oUY+s5bikMgynl1WrDDaAyQQFVXNeLVqata5JpKUBc5Bl6IJb
+         eLsLixajuwjLbCVp22VWiGY1ymfrMJK/HT1k1fYpV49qxx+gtnDHqkpmPVX9pup2yB9l
+         5MLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792515812; x=1793120612;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=PdL12cit1+z6d3jeLw0+naLR3nXNXmktozH9BnIvo4w=;
+        b=xPDe3ooJQaeoz8wX5K7VoJ1nt6/UtzDGfNY2O5OxhYRvz9NEXuz+6orj/0CXbQSa9Z
+         Mr1edV+4ix6K15qfBkvPKBUq/BQC3VKjg9WvT00WMaiRlwAk0xKOYsrTSxa6ijNJh4AY
+         l8fcjh4f8jw2SijZfEhzsIqhrobxWDaGQBlzujsz9XK/AcLCd/qxGbg3ldJEGsK9mSC+
+         b6AT8gYhODZocscAtcTzJ6y/OrE3GxicW5Ctjd9NyCtMN69UYLCTXG87BH1Kd/BUfvqf
+         +kEfmoWyzsmmguuH7gFrrNSmQx7j6AdJqW+yFUZc/YsTER+taI1YLMljGSeX8iGqwZPP
+         3bcQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxhMg033knSVsTQm5GDCLK7KvCdBAD1wnFypU02lQ95UDSOYiQDW/wKzR5Q3lcpKhmDtYpcIA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJajnkalYJUyEIW6u2IKIIejdHkCuCOE4LMBOH7mR/Xf/bi8B94
+	n+8zeff9WwfCdM7VNaA+/B9Y2LhmVM8ufRXhiSEf8dUI6LGmUGWWx1Hp
+X-Gm-Gg: AYBFou17m1n7Tu7q0bpX4W1J/dkIAXOaBpDXQ5j0PTx04CgwoGvG4j/ZFEuNZ8vocAf
+	kWLrGmLop+OvOq7FEC7W5U02NtI1mRjUUdf8ltv6ipKnZBSI03dTkQOP8+Fy9mhP9BWlbP49uMt
+	HvKz1VuxOooVnUmFWqV/2oMtoajEYXogEi9fygJAQpmXAi+cm5uevebDp7zsV3e7qx6GNcjuQdI
+	wb1CKzM3y6H2ATODi70qihDZk7WOsUAE5UEbErZaJNiSDSjSGqEXloKPxmg+Hj1L7zqAXtMZSr0
+	PfrOlgYGq+T0UKs6BtvatQii6DCrK6L0mITwB9vC1Dj1ieVpm1WggFIt+xRSAi9bAJCY5R9Pyca
+	AWymEA2wyQMgf+kxaRpypDtryllFBkCA+zguTnkcgFeyAqRWcYX3PSJ3VVcWmsRpM/eePaw+6/I
+	mOshry3icc0PJ5ZJ/0RvoQv1XQ984yQ4KP0GBxTWsdeGmKWk3e5nAS2yN7c2eKs4hoLBelxBj9A
+	42WfcbVl8rps8DozJQUUA==
+X-Received: by 2002:a05:620a:294c:b0:93f:26f6:6bab with SMTP id af79cd13be357-93f29ccce99mr1849718785a.18.1792515811784;
+        Tue, 20 Oct 2026 10:03:31 -0700 (PDT)
+Received: from i4-gl-tmk5904.ad.psu.edu ([130.203.156.186])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-93f56c6e030sm31479985a.1.2026.10.20.10.03.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Oct 2026 10:03:30 -0700 (PDT)
+From: Yuho Choi <oss.patchbox@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Samuel Holland <samuel@sholland.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Yuho Choi <oss.patchbox@gmail.com>
+Subject: [PATCH v1] iommu/sun50i: Report TLB invalidation timeouts from iotlb_sync_map
+Date: Tue, 20 Oct 2026 13:03:11 -0400
+Message-ID: <20261020170324.1223144-2-oss.patchbox@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -119,57 +101,128 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <atdPBqd1-xLNZ1hs@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA0PEPF00000039:EE_|DM4PR12MB7767:EE_
-X-MS-Office365-Filtering-Correlation-Id: 34f7e9aa-af69-4744-7067-08df2ecb8710
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|36860700016|82310400026|23010399003|56012099006|4143699003|11063799006|261009223027099003|10067099003|22082099003|18002099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	OeRR4KSRtlpvu9DstKF5L//G3nTduch9YMbh+Db6Ks4FJMu2Nf2ddPz2FZEnA308PrXQY4jHGRSihp9M2F/HeA+jfBCvdNcGj2Nh6qCjnEFe1qJYrrlrHU+yMdiwJnc1o6bAWcE+j9YB43PofGNwHvpCQctIrnmcFa2Eo+1Jg8rTSxmWUw8CZAwQ25MRP9SWd6D8hR+VZbd6FYZ+xoRPni8ghSGIGk/P2vq45mQYlfJm7VcKZwa+76dCq2A+ALXxDvRBCCfraTMbHtUwXkXJDDiGZ63WlNqJn1vR+S0kk1F5dxnYyDwRTRjzaA2/FwtWUVFCjltOlwK3myySbEHYMXeYIkQpUUDb9si8M+pNvzkTzMFrQ4nzCpNz7gfmsIzKFi0yWMKCfRTho1nNU37uwMFxzW5H3iWuc9ddPTh/JxtsZfjsOcs2yqtD/9wWYwY8PjgwDv4Ib2Y27VbOVNM/GFf+4BkOZzG6dTubIUXyy/Nram6/Mhnfrz7eyUcdtK8gSyt8UpeLgHC58VlxW2f1X73nh4Zn0p+JcXMwwK8TMBqkzU6rs3CWZNS63Ml0EAcd2UaNNYTIMw4qQwgUW103O7eO+d0AVfFrghIX32Z2Esdpr9KgHrnplWTeNWs/bKqfyJ/7RFWfZCMhjlXw9LyfZMCBkUTxZByDgnPcYS7nxHq7xgZTAJ0v4sHN6ILHawjV2fyvQpmJLxjBKR61dChU7A==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(36860700016)(82310400026)(23010399003)(56012099006)(4143699003)(11063799006)(261009223027099003)(10067099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Oek2teeSg3SXmRLKDoy/zeUufTnhzeFWU+nPzu/8s1XSiuk1PruEsflknj/1Vxn2uh0W1B8/L7mSqp5Jf9TF4t0xgFtgYkLXWxPRiYGN/sCIWHACWo3kkFHHstfJGIqDg/nf2gC82NIfQVpRZFzJt1rpiONl9Ron1m/Lk9MLz9IEWo6HPFo2aXgAN3sQ2tCo68dXwjxLaP5FP85pFl5X9X+glisCdm9iBCBqJ4vB9fytgmds6uTb0244oLQdqtGqWjDGUCwJDRkZq0iC3eUK3alfjbUfmttGkZ3hYtT8MslqGpXyli0/nl9GEoI2ocyHo2TQZmRZQ60uxcgkvA4Ix59W0yIqOiJX8IkD3zUQvSSXKs6zBImj1MhBuRrJTuCtM1cjnNT6u+4faHkhU7+qJnD434eTypCnu57j+whHaZD2jOROPvnu9V7utpoYzpBK
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2026 16:59:38.7346
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34f7e9aa-af69-4744-7067-08df2ecb8710
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	IA0PEPF00000039.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7767
+Content-Transfer-Encoding: 8bit
 
-On Tue, Oct 20, 2026 at 11:22:46AM +0000, Mostafa Saleh wrote:
-> On Mon, Oct 05, 2026 at 12:30:48PM -0700, Nicolin Chen wrote:
-> > @@ -5576,6 +5573,15 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
-> >  	if (arm_smmu_sva_supported(smmu))
-> >  		smmu->features |= ARM_SMMU_FEAT_SVA;
-> >  
-> > +	/*
-> > +	 * A kdump kernel wants neither queue: the crashed kernel's CDs and page
-> > +	 * tables might be corrupted, spamming events, and page requests cannot
-> > +	 * be served. A disabled queue discards new records without raising any
-> > +	 * global error.
-> > +	 */
-> 
-> I find this a bit confusing. If the CD or page table of the crashed kernel are
-> corrupted how is it safe to adopt them later in this series?
+sun50i_iommu_iotlb_sync_map() invalidates the TLB and PTW cache entries
+around a newly mapped range, as the IOMMU can otherwise keep using stale
+entries for it (see commit e563cc0c787c ("iommu/sun50i: Implement
+.iotlb_sync_map")). When an invalidation times out, it only prints a
+warning and the callback still returns 0, so iommu_map() reports success
+for a mapping that the IOMMU may not be using yet.
 
-The adoption code runs some sanity test against STE and CD. But we
-have no guarantee that every bit in CD and PTEs is sane.
+Since commit fa4c4507099f ("iommu: Allow .iotlb_sync_map to fail and
+handle s390's -ENOMEM return"), iommu_map() unmaps the range and fails
+when .iotlb_sync_map() returns an error. Return the result of the
+invalidations, after still issuing all of them and restoring auto
+gating. The page fault handler keeps ignoring it. The unmap path is not
+changed, as .iotlb_sync() and .flush_iotlb_all() cannot report a
+failure.
 
-The point here is that, if one bit in CD or PTEs is ever corrupted,
-at least we don't spam the system with events.
+Signed-off-by: Yuho Choi <oss.patchbox@gmail.com>
+---
+This was found with a static analysis tool from ongoing, not yet
+published research, and confirmed by code inspection. It has not been
+reproduced on hardware; a timeout is not expected on working hardware.
+Compile-tested only (ARCH=arm64 defconfig with SUN50I_IOMMU=y, W=1).
 
-Nicolin
+ drivers/iommu/sun50i-iommu.c | 42 ++++++++++++++++++++++--------------
+ 1 file changed, 26 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
+index be3f1ce696ba2..74ca3625ae25c 100644
+--- a/drivers/iommu/sun50i-iommu.c
++++ b/drivers/iommu/sun50i-iommu.c
+@@ -298,8 +298,8 @@ static void sun50i_table_flush(struct sun50i_iommu_domain *sun50i_domain,
+ 	dma_sync_single_for_device(iommu->dev, dma, size, DMA_TO_DEVICE);
+ }
+ 
+-static void sun50i_iommu_zap_iova(struct sun50i_iommu *iommu,
+-				  unsigned long iova)
++static int sun50i_iommu_zap_iova(struct sun50i_iommu *iommu,
++				 unsigned long iova)
+ {
+ 	u32 reg;
+ 	int ret;
+@@ -313,10 +313,12 @@ static void sun50i_iommu_zap_iova(struct sun50i_iommu *iommu,
+ 					reg, !reg, 1, 2000);
+ 	if (ret)
+ 		dev_warn(iommu->dev, "TLB invalidation timed out!\n");
++
++	return ret;
+ }
+ 
+-static void sun50i_iommu_zap_ptw_cache(struct sun50i_iommu *iommu,
+-				       unsigned long iova)
++static int sun50i_iommu_zap_ptw_cache(struct sun50i_iommu *iommu,
++				      unsigned long iova)
+ {
+ 	u32 reg;
+ 	int ret;
+@@ -329,29 +331,36 @@ static void sun50i_iommu_zap_ptw_cache(struct sun50i_iommu *iommu,
+ 					reg, !reg, 1, 2000);
+ 	if (ret)
+ 		dev_warn(iommu->dev, "PTW cache invalidation timed out!\n");
++
++	return ret;
+ }
+ 
+-static void sun50i_iommu_zap_range(struct sun50i_iommu *iommu,
+-				   unsigned long iova, size_t size)
++static int sun50i_iommu_zap_range(struct sun50i_iommu *iommu,
++				  unsigned long iova, size_t size)
+ {
++	int ret;
++
+ 	assert_spin_locked(&iommu->iommu_lock);
+ 
+ 	iommu_write(iommu, IOMMU_AUTO_GATING_REG, 0);
+ 
+-	sun50i_iommu_zap_iova(iommu, iova);
+-	sun50i_iommu_zap_iova(iommu, iova + SPAGE_SIZE);
++	/* Issue all invalidations even if one of them times out. */
++	ret = sun50i_iommu_zap_iova(iommu, iova);
++	ret = sun50i_iommu_zap_iova(iommu, iova + SPAGE_SIZE) ?: ret;
+ 	if (size > SPAGE_SIZE) {
+-		sun50i_iommu_zap_iova(iommu, iova + size);
+-		sun50i_iommu_zap_iova(iommu, iova + size + SPAGE_SIZE);
++		ret = sun50i_iommu_zap_iova(iommu, iova + size) ?: ret;
++		ret = sun50i_iommu_zap_iova(iommu, iova + size + SPAGE_SIZE) ?: ret;
+ 	}
+-	sun50i_iommu_zap_ptw_cache(iommu, iova);
+-	sun50i_iommu_zap_ptw_cache(iommu, iova + SZ_1M);
++	ret = sun50i_iommu_zap_ptw_cache(iommu, iova) ?: ret;
++	ret = sun50i_iommu_zap_ptw_cache(iommu, iova + SZ_1M) ?: ret;
+ 	if (size > SZ_1M) {
+-		sun50i_iommu_zap_ptw_cache(iommu, iova + size);
+-		sun50i_iommu_zap_ptw_cache(iommu, iova + size + SZ_1M);
++		ret = sun50i_iommu_zap_ptw_cache(iommu, iova + size) ?: ret;
++		ret = sun50i_iommu_zap_ptw_cache(iommu, iova + size + SZ_1M) ?: ret;
+ 	}
+ 
+ 	iommu_write(iommu, IOMMU_AUTO_GATING_REG, IOMMU_AUTO_GATING_ENABLE);
++
++	return ret;
+ }
+ 
+ static int sun50i_iommu_flush_all_tlb(struct sun50i_iommu *iommu)
+@@ -409,12 +418,13 @@ static int sun50i_iommu_iotlb_sync_map(struct iommu_domain *domain,
+ 	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
+ 	struct sun50i_iommu *iommu = sun50i_domain->iommu;
+ 	unsigned long flags;
++	int ret;
+ 
+ 	spin_lock_irqsave(&iommu->iommu_lock, flags);
+-	sun50i_iommu_zap_range(iommu, iova, size);
++	ret = sun50i_iommu_zap_range(iommu, iova, size);
+ 	spin_unlock_irqrestore(&iommu->iommu_lock, flags);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static void sun50i_iommu_iotlb_sync(struct iommu_domain *domain,
+
+base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
+-- 
+2.43.0
+
