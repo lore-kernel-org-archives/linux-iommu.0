@@ -1,109 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.41
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792478323;
-	b=mrmD16qyyO4sh82meyJHBcJOUcIg9thX7pjLvSUqvD2idd0115vnj66De+MVP/nPlohU
-	 IElUUHIn7O5n/K7fnej5LzAFSUhn71P2rdRPHEoFz4rFMMgU4FeIfs+7eCLhoVTe4ytZH
-	 B5mysmS6ykqSvfAymOlj3AgBbaK6gtqMDMaDROGjUlhjaMsWaJS/XIi9aWHBpx0OYd1aT
-	 Ee7q7gOkBvywR96kYhvRBt3ft9uOu/mlnetPE0Ae+neTN3UWCEuEWVPHxven1BUIGx1PJ
-	 OJv3uwogfM5pHFjUlbIzZ3sKikXUscCTD/M+JT+lC4SctmaCg7iF8D60hRiMTIkRYMQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792478323;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=lxQS80DRMWPUuTe1dt16GF2tEumPDF9CfvG4Nh6yKLM=;
-	b=wgWy4zrCJ9KvlMtAJhlxd5KfRmcs6GI2FTXpLxUpBVdIuBazuEVzGRrBJ0mWGiILAfjl
-	 lIu89U/KOae+VrEwrpJuqshQ106HIN9gcDcnGdAo2otwkNwD4Dvd+SGAmSCL9Zz+0l1qq
-	 W98qKzJQMV64Q6RdbIXYijb8+t/uzKQp/s3/N1szLUkmJFJ+AvdxB9LUgVyj7UZKlC7c9
-	 MNaceZ61OX5kfQQQ11u3HdBSLSP/2mm7F8TryswSav6F8nBs8xgqKQ7Ub8JV/+YE9JNLY
-	 XHEaAe16o6boBGmufbBRGH+txX4ewH0iO4oqwjkqg89pkuy+5gJ61Xr4ctzUFd1yoUg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ffftlOzv;
-	arc=none smtp.remote-ip=209.85.221.41
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.62
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792479827;
+	b=1Dmpf8lMHKzCOjcvEdgpmtIebTS3FeH/Z8DvDuu0nPxmLRmC8v3et+8rypTx4TkMs2EZ
+	 nDgUa+UdCnkoDJGRVGhYrDKUutUneJVHJ11rdMv0pVrDc6DaSWl0ztNY754EU2+QqnWZE
+	 ztbkenIJJKwJ0+cwjV8tJg7wn/Kdkn8Nz08WWPvkhvnbJjROiwTuRn+m16YdY4N+W6ITh
+	 DxZ0xKexHd/MQcCoecZXzwWzReDP7SJL4KTGt7OuRuaexfn9eIFt1mpCy7EeWow6OZG4v
+	 M4nrUrjsExFC5lmuB8YLeZ7RUTFK7xIgPAhaldwC2swShBNAGi9eqUSSVwEQB6GFByw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792479827;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=yK0J6qY3sd69gFDpDkaE1bSLOP5GqLHxHfkAYssUQtM=;
+	b=4KjnV/lsAYfR/85P64kfWOU8ZHaXO8qx+p1kR462o299mJlBy6u+xpI1SBnFlT4ejYBN
+	 d+YMnFanbNheamh4nYu4H/7SHsTmfhTuLN11ZrbULX4is4Mi1bvCUrxMz+FsK2uHCz2pY
+	 KGZDHWz3QNKFTJOGsvoIpN3D1F3RogRTCW9H+qYMgSHW+zteOEvlEArwP+IApmkJLYX7K
+	 /IN8GXfUMIulXK8tZCj10v1zWWeg4duPUymAJICdbQVAIbJsnYu/44waWf/sd9ZoKebgh
+	 MmQsb71MlImJpDzekMFZRJZxgqhcL/xBDieIDNxs5pKnQfsDZKo8O0XNnV7BJAz09Kg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=xvVaaSbT;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.62
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013062.outbound.protection.outlook.com [40.93.201.62])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13886606A32D
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 06:38:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 13886606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36D46606A319
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 07:03:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 36D46606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=ffftlOzv
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-48b0584ad71so1986073f8f.0
-        for <iommu@lists.linux.dev>; Mon, 19 Oct 2026 23:38:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792478320; x=1793083120; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=lxQS80DRMWPUuTe1dt16GF2tEumPDF9CfvG4Nh6yKLM=;
-        b=ffftlOzvhhEouPvq+GTUhUb537srHRdveKiG9KKxfaFhXH9SYg5x7UX64gbqbVkppe
-         0ug1CCkzgwQEJnwlQRd4b3E1URjqipOG71UhP6ADTvSDpHzrgBWkg8YdGEj/SFNCVy+r
-         RoMFsM3/XlkGjHoUc/n9LiTwxIP2MvDTjxCqYqIY9AmIdNyQkO9+U1OW7wFBgUQGUEiU
-         7jT/kcslq05SWTfH1FYu4lCspmXhv0ErRyWgnwgDo4wgx2E4h+F4zshTAKBofLzXGkbC
-         rxi2ZmPj9a1Co+Anh+hH0S6/4oXpi6nfW1w9Ed80WLo2WsaOqbQMF9GgyUl1CVvkYaME
-         hfPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792478320; x=1793083120;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=lxQS80DRMWPUuTe1dt16GF2tEumPDF9CfvG4Nh6yKLM=;
-        b=xWuhaoJplEz40JK7bOuno8IEdfTaUkicwyYqK8nuGGc6ZK0ufgf8wsQg5I5FOtYokD
-         9AgMpnwg7Nl+v5vfzqGR/kgwn2pVreozFlKa5E+HC4OiQD8auId4nGuF1nWbRRjbRw0/
-         2yc/XzCGhnj645lQgFt5pq0YNE3XD+Y05OHry52tv3cWfXRJCfFohwzZv0+uoYvpwgQn
-         RoBY97mGRabdbvbNcwivwkAE49h4afg0ATIqU371Z1CmoOjxSSFaV4kSi+jC5CsfFg8a
-         DovB8HOBx55NVOSZ/iyhzg6nPBappCDA5FXqPppj/LjY+R2tLTIuPgRZp0O8DUwazwyS
-         IPGw==
-X-Forwarded-Encrypted: i=1; AKwUvBzPDDxUMJSb9rq2V4sGs1zocH9SuoBe9WNRUMGrndr245QcKecsanYbj8ifemPMn3JIikobuw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYI8GhacBo2+P3M59G1ltQI99M81+6zmmxKSDggM1SnIWXxOT2nK
-	aX7eJhhpTV0bWcf5sJ+/Rq5ozUInWJhs+1CH5dwsxxrOayTnXW4VqrWx
-X-Gm-Gg: AYBFou3TYzcXkcgQAKschO2LEvx5sGznFOgU6pjO6g5CZHNHxNEdxI//eR51tQDvgVO
-	4wwdGRaNnMLjOen4WNfZaQMSwke09FelOVBIr8Pzg+CT3L5psPYGUMAZ9s8s4e8k/ZGipWdjoDd
-	auTz1/XerBLYTf/YP+LuBvs9SxjI82DSFj7rYTP+T8XoHgxkHpcUdMEpl73aYTuhCrN2SJu27CA
-	m2Bq5KTubh6KCDpCGNo8Qc2rSkrWiGKM18U6HR4dIuKUBaea64bDe0mrVbtluG9zgTrjGRJ3RuK
-	6iF2E7FA015eQ6nruDZ4ykMtekDivnlDA9s3nQRpcAg0R4nFRsNwFXp5OB6F4cd/XwuMW47xNjg
-	KEZtM7blutKqhVJWEs6U2ZaQRfjYqx786AX9pOgH4oy21bJ0ciXGU30xYxysNakwi5kXsVvdjZ3
-	nqXha+59TT+pqEWkxbTrWEpZvDKmyi6eITpCS6IpSqSTwMdnydTzk8IsQSmquTExQjsU1qAuAWE
-	OQo8SSJk37s62vpewXiFkB1QVKdmCtFxSqRg5EK+oYlDFIzZOe56pkDFg3SL45VaqkEoioXpJPl
-	szXAsFNlf3DcXZ8h/rAo2vOq2d26ikIDCbi1JnpnQ8V8g/7SD9yT4U4kSd4S95fyJ3IogKlFWw8
-	CZQ==
-X-Received: by 2002:adf:e196:0:b0:48e:1d81:5b86 with SMTP id ffacd0b85a97d-48e1d815babmr3213729f8f.52.1792478320234;
-        Mon, 19 Oct 2026 23:38:40 -0700 (PDT)
-Received: from localhost.localdomain (dynamic-2a02-3100-9c92-6501-2169-eb9c-7ad3-f5db.310.pool.telefonica.de. [2a02:3100:9c92:6501:2169:eb9c:7ad3:f5db])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e1d820714sm3916393f8f.35.2026.10.19.23.38.38
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 19 Oct 2026 23:38:39 -0700 (PDT)
-From: Karl Mehltretter <kmehltretter@gmail.com>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=xvVaaSbT
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=HLujvodZxR9WZAIJ6yqMCP7dleiSfJTU8uQ4WaKoUf0AKuAwFEu8HPzR/b/reZGDpozpqg53LyOikwgf19CAedyC6drXPvLAcRIGOsq9tvC+J5L8vkhKfLUjx5f7SGqHfxbllJh3wt5sFKyAldIlBTnCMP+lbUgD7x4hZPv35JyFc0H07DLG3bT7XcYiPRdazSccchfOsvx2m0EHmaQtXyyPDDLYRbVL9HrDYgLhAwVsZhAuXshV6MsriHCx/4lBXSydXMoApt5jwMI/699dpMbSbX++98M9mpGW0CEyTGqK9xoYwZ3Cor20xUfD8COV2t24qWa5ehdMe/IzAQ4Uyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yK0J6qY3sd69gFDpDkaE1bSLOP5GqLHxHfkAYssUQtM=;
+ b=xpmgNiy3IOAgGThZGWpvnMdSq0UF3kjFa9bfCNuwXKEv7f1jmKF++e8FmuWH91rpC5aWGJq1/PN3Tywf+xU4b2IYHa8dEJZ8B8TJUGNzCsYNxTR8kZnniKMxnwZCMmIW3llqPEQ0hElc/SYXRr1JsZ54xXjGdHz41YGP6SJ92InPoU9h/nISr7g5tur+E6tNWalCxAKDxNYOwPEEoT0kLUiI2tQJaxBjhJcdrE+Y4gBZWlARQ7lD43WFGaU8QOWl7rjPHs5frIrzV3e7rfrFMDF/cPlUtm2BN7ULXW4BatTHTnddAmBV6fbrb3eTyYIin4VhTpqQI8klzIUCDA9TQg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yK0J6qY3sd69gFDpDkaE1bSLOP5GqLHxHfkAYssUQtM=;
+ b=xvVaaSbTtpIBq5dsl0GR0x21migSo5U6ZLQDOHOHES7wyxb92tAxKsW8qQlx4ikz3FGrUXk4JGuZWlMWi+eI2LnV+XGYbdLcJ0ot5xDb/H8LoQLeyxeUB3YpLfHhx741gRSdUewzwXkvj4fKHVyAxVPAjP1J6dH2JsvVs23+9qA=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by CHXPR12MB999219.namprd12.prod.outlook.com (2603:10b6:610:2fd::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Tue, 20 Oct
+ 2026 07:01:38 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0546.012; Tue, 20 Oct 2026
+ 07:01:38 +0000
+Message-ID: <41bd4593-5918-4cda-922b-251805c25b60@amd.com>
+Date: Tue, 20 Oct 2026 09:01:33 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 03/26] dma-buf: Add dma_buf_mapping_attach()
 To: Jason Gunthorpe <jgg@nvidia.com>,
-	Alistair Popple <apopple@nvidia.com>
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Alistair Popple <apopple@nvidia.com>
 Cc: Karl Mehltretter <kmehltretter@gmail.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <shuah@kernel.org>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org
-Subject: [RFC PATCH 6/6] iommufd/selftest: Check DMA-buf pin and map failure cleanup
-Date: Tue, 20 Oct 2026 08:37:45 +0200
-Message-Id: <6f4c8996cb3849e7c6586f0908903e52a38dd02f.1792477872.git.kmehltretter@gmail.com>
-X-Mailer: git-send-email 2.39.5 (Apple Git-154)
-In-Reply-To: <cover.1792477872.git.kmehltretter@gmail.com>
-References: <cover.1792477872.git.kmehltretter@gmail.com>
+ Dongwon Kim <dongwon.kim@intel.com>, dri-devel@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, Leon Romanovsky <leonro@nvidia.com>,
+ linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
+ Matthew Brost <matthew.brost@intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>
+References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+ <3-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+ <20261016202653.97339-1-kmehltretter@gmail.com>
+ <d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com>
+ <8d4cb20b70ac4c3f36d8d631769757158af2ac8e.camel@linux.intel.com>
+ <20261019133031.GQ13920@nvidia.com>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20261019133031.GQ13920@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR2P281CA0148.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:98::6) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -113,419 +110,156 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|CHXPR12MB999219:EE_
+X-MS-Office365-Filtering-Correlation-Id: 97bff890-64ca-4f20-d95d-08df2e77fc75
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|7416014|376014|23010399003|1800799024|10067099003|56012099006|3023799007|18002099003|22082099003|4143699003|11063799006;
+X-Microsoft-Antispam-Message-Info:
+	jQyqjeAa0Z+QzRA0if+T2AgWuV3F3pl0t9UTLt1IaFi0y1JU10cPrXQ4DwaCDykNoat3ydJTL1KqCPzno5jdug5Drs31hcwb4RmMBEWqi+ZG7C8CIm5JeZhVk+zibQEUW/Ri8SjIQiiK2LMlmcqnjDHaSlp9dri+hf4ELg9uA6dCCCDMR69EaJ+tdsXn6SsXyZ4aHC2JMm8II2GTVT84PFTXiZhC5OJttT7YVvFMeAOxN5XYCK/29PsjJchtPpv/BPyrOdrH1jxuHbdMFOu2BFJpceLZZjkVt/yIXyFKxgZveyPMwVO3LGMLfgq2gmGndUaPBnA6msrjt98P0q9u4kJDO6YMp7DWZoujuMmWjpSutJEnItuVApxlQgG036sVzdNuKA/ceol8cwqLpxgQ3+XAgoLxKI3HvDYyUpZQUuH/pwuU3W3WtlDAjndF/wkchk/htlGaZqt1HEIgQ3eC3TXt6z0yvCXhgChUi/qfJM4hTP/cRgklENdOwb3XYAyItMiT0wJO4VwipMhfwD4ZGrCLpYEelcBUB8IuonKkYrIEh97eL+FZz9NUrEcQni+jaG1nbuHRxpUeBaX/ms3Qo0WZiWJ9siSb6l85pwZRsYRZbSVLcEFtVKgi1SSlSPZWAfAiITkQLho4rnCQDhsUVnlcaMhd73/FrCZzCfVMbg8=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(23010399003)(1800799024)(10067099003)(56012099006)(3023799007)(18002099003)(22082099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bFZHenYvRGY2dlNNSko3S2tqRGpxOUNuMDhIajNhU05rRnNESjdRc1lrTVdC?=
+ =?utf-8?B?T0ZkOXl2Y2J0TFl0Z3p1ZTJqK2hPVzRkUGs4a3kzai9nbFYweUsvdFo1SjlD?=
+ =?utf-8?B?RWErMmJoYjduV2ptK2RNcGN3b2ptL2d1eGMyZWxESk9IdmxQRTZlT0d6cXhK?=
+ =?utf-8?B?MTdTWEE3M2tuVWVmYU9yRjlLNklwTEVVaTJqbldjdEFOUUt5bmFQTmlJdmI0?=
+ =?utf-8?B?YUcyWVN1blVYU1BEdm0zOEpzOWcwS3JnSGFjZTA5RmlURjlaVm1BV2o3Tnhr?=
+ =?utf-8?B?Y2ZxOUlDc21BMXpKa0tiWEd3N0c2bVZBNnNHQmtiMmMrUFZHZmZjRTNFdUVj?=
+ =?utf-8?B?bU9vTytteEpsWkhKb0ZzeFYyVnE0YlZlR0NLeldoTW1QdWtMRHpNd1lFL2FX?=
+ =?utf-8?B?R1NVdXREM1pRd2tTajZYeThWK2lQbmtNL1ZrMjVBY1hYeDhnclNTbGtQdGho?=
+ =?utf-8?B?WFdkdldnVGthWGhENGlLS290RkgyNEcrb2Foc2tORWVLbE10VzJmR1RQMC8y?=
+ =?utf-8?B?d2c2ZFdoZXd4ejNNNXlaWWhDVVVDVllVWDlRNTlDMTAxVXUydVZWSXNFTmZ6?=
+ =?utf-8?B?VzA1Q1ZqN2x1aE4yWEdJcko1Y0JFZTZHRzRNRklNbFl1MXRLZVJ4TXlRM1Nr?=
+ =?utf-8?B?OVVodE1YRHhSU0RwL25Jc2d3dGRqNnUrOGJSYUNyZmtvdk5QMVIweHVOT280?=
+ =?utf-8?B?M21zc3o4UFBNWnZ5eUpzOVlqajAwdHpVVWFFWGUxdTg1enh1dVoyd0ZRZjdq?=
+ =?utf-8?B?dVJvY0VMdWR6a1R4N1kyS3M3Wi9IWW9PcjhOOGNNRVdKN3JlSFZvdDNPYWkz?=
+ =?utf-8?B?aEVXTDBJMno4WFV2YTlkNXZsZHBTeCt6RGR4NXhLV01xdloxZjF5SVg5b01D?=
+ =?utf-8?B?QUV2bVU3S3p4dEIwQ0hVUGswcUVGbUZxMWMvRXB5RWt5V0lZMDhDczN6emgr?=
+ =?utf-8?B?YVUvVkdCT3QwUERHdTRXa0hzM1FXa0ZyNXBacThJRHBad1AzS2pCUm5Tc3dI?=
+ =?utf-8?B?UnVqYVRCZlBxQW0wNnhrN1ArdVVQb2crL0dHR2lMYmwyVUNSMkM1M3Fab3o4?=
+ =?utf-8?B?OUVHTVVESnJxeFp2SFZPMXdid1lvUzV6eWFMdG5pejEwaVNjeHRVbzB6RjBp?=
+ =?utf-8?B?MzhUb3BnV0lYUUJTRU4wbTcrczZrak1hanBzb29WMDkyTWRTNUplMmtrc3ZR?=
+ =?utf-8?B?bFE0NmpQeWZwbXROUFE2b1BxRnppY2RIV091RGVZUGMySmU5VUlRSUhBNllX?=
+ =?utf-8?B?M2tlRUpBZDllbjNDUUd0VkN5NWZrS0h1N2lTYjRYb0dpRmJDQkR3UnRMYkxr?=
+ =?utf-8?B?c3FuZFRiS2IyNFVXWXVqYWxOU2h0TWdJc09hZno0d3ZMNzFjaG1vcE5nZGdl?=
+ =?utf-8?B?dE1JQk9nK2lqb216aitlTEg5NzdGWHJNNENIdUhmVlR6c1gvZmFFbGhZdWVZ?=
+ =?utf-8?B?MEtTMjE0VXI4TzkrZWNzT1MzWFJUTzB6WWNqZGwvdWw2cXczRk44T1g3aVZG?=
+ =?utf-8?B?RGRwUlhQcms0TGZ3VU1KMEFmYjRqTW5BMVNHQkJ5Vk9iV3BSTEduVmt6bXFI?=
+ =?utf-8?B?MUV0T2FVa0hERUJ2UW52ZFZaLzhiOVlnQ2xBNlhwem9haEhTUU1pRlVRWXdi?=
+ =?utf-8?B?ZmF6MGIyMldkU1hmcnpJU2hKb05ZZkJkSmR6bkxzOXFkNnFaZERPcjYwL0V6?=
+ =?utf-8?B?aXY1Rm1MTHpQZ3lDQnBYK2FNMzB0MW5wQ3FiS2hPK2E1UmFyTXgza2c0NXA0?=
+ =?utf-8?B?bWxicmZYQTc3enZVRGRJWjh6MmZDM3RjeGoxRG50czV3L0ZaQ3hNTm5sVXFo?=
+ =?utf-8?B?SUVoNXozVGg3bGJiY0JtOXF3NStkS21CdTg5K0lOc2NIRUtTcmpiK3EwTVNo?=
+ =?utf-8?B?dGFlc1NMR2lKM3BPdjZDNU9JOEh6WFhDMjBSV20zNUNIekxJV2h0N1g3S1dn?=
+ =?utf-8?B?L2NGQnhqSk40UWlQaDNpSFFYVVkyd1ZhVStSVXpSdTh1Q1ZucTZIZGFsbXFk?=
+ =?utf-8?B?QUx2WGNjencyd3ZZekRQUkp1NDRNaUhpYUloN0xCYWtRcHIyN29HRGsxZDNE?=
+ =?utf-8?B?SzZDdmRWRW1aS1YrNGpMc0EvVzBOTmYwckFSNml4d1NzZW9zem0vVDkvR2JB?=
+ =?utf-8?B?VG01Ukc5Z2lXeXlKWDlzY01MeWgxbUFkMHRIeGhqZDlXcGkyaU9MaGw0a0Iy?=
+ =?utf-8?B?WVI5czdueE9ialc1ODI2SEdXM2I1UVRVZkxPZ3JuTElia0EvcWFmS1liQmtG?=
+ =?utf-8?B?czgzTUtjZ2Z1bUhObUxKVUJEMFNKU3VYRlZQZWxDYTBlM3VvY0V5M1lvYVc1?=
+ =?utf-8?Q?vDJfvB7NZrO5szOHQl?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97bff890-64ca-4f20-d95d-08df2e77fc75
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2026 07:01:38.3126
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VQRBRHpI3DcSTP/0xoNC2XhsngvHtwrHXonxy3I2efo0wl5GH/5D0emWss6s8WTk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CHXPR12MB999219
 
-The PAL selftest exporter has no pin callback, so it cannot exercise the
-importer's dma_buf_pin() error path. An error there must reach userspace
-without mapping the buffer or unpinning an unsuccessful pin.
+On 10/19/26 15:30, Jason Gunthorpe wrote:
+> On Mon, Oct 19, 2026 at 02:43:29PM +0200, Thomas Hellström wrote:
+>> On Mon, 2026-10-19 at 10:35 +0200, Christian König wrote:
+>>> On 10/16/26 22:26, Karl Mehltretter wrote:
+>>>> On Tue, Feb 17, 2026 at 08:11:34PM -0400, Jason Gunthorpe wrote:
+>>>>> +	match_args.attach = attach;
+>>>>> +	if (dmabuf->ops->match_mapping) {
+>>>>> +		ret = dmabuf->ops->match_mapping(&match_args);
+>>>>> +	}
+>>>>> +
+>>>>>  	attach->dmabuf = dmabuf;
+>>>>>  	attach->importer_ops = importer_ops;
+>>>>>  	attach->importer_priv = importer_priv;
+>>>>
+>>>> I may misunderstand the intended contract. match_mapping() runs
+>>>> while the
+>>>> attachment is still zeroed and without dmabuf->resv held.
+>>>>
+>>>> Patch 11's amdgpu callback needs importer_ops and importer_priv, so
+>>>> its XGMI
+>>>> match cannot work here. Patch 12's VFIO callback asserts dmabuf-
+>>>>> resv and
+>>>> reads priv->vdev, which cleanup changes under that lock.
+>>>>
+>>>> Should the core initialize the attachment and hold dmabuf->resv for
+>>>> match_mapping(), or should callbacks avoid attachment and lock-
+>>>> protected
+>>>> state?
+>>>
+>>> Right. This completely misplaced.
+>>>
+>>> The matching can't be done at attachment time, but rather needs to be
+>>> done before creating a mapping while holding the resv lock so that
+>>> the matching decision can't change.
+>>
+>> So question is what exactly should the contract be?
+>> Looking at the pcie_p2p negotiation today it looks somewhat like.
+>>
+>> 1) Importer and exporter agree at attach time what mappings are allowed
+>> pending placement conditions and other attachers.
+>> 2) At map-time the mapping is negotiated taking all constraints into
+>> account.
+>> 3) The negotiated mapping is valid until an invalidate_mappings()
+>> callback is received.
+>>
+>> Following this would allow a re-implementation of pcie_p2p as a mapping
+>> type and would allow a controlled link-severing to send an
+>> invalidate_mappings() notifier and the mappings to be re-negotiated.
+>>
+>> Importers requiring an early hint as to what the actual mapping would
+>> look like would need to be prepared to re-consider at map-time, with a
+>> reasonable assumption that the reconsideration and re-mapping would
+>> happen seldom enough.
+> 
+> The idea was the supported mapping types are fixed properties of the
+> importer and exporter.
+> 
+> Like iommufd is not suddenly going to start understanding ualink after
+> an invalidation.
 
-Add per-buffer error injection and reservation-protected lifecycle
-counters. Check pin and map failure cleanup, then clear each fault and
-retry the same buffer to verify balanced successful cleanup.
+Yeah but I think we can sort things out early on.
 
-Also reject unknown control flags, nonzero reserved fields, invalid errno
-values and configuration changes while an attachment exists.
+E.g. even if both devices can do PCI P2P we can't use it when they are not under the same root complex and there is no routing between root complexes.
 
-Signed-off-by: Karl Mehltretter <kmehltretter@gmail.com>
----
- drivers/iommu/iommufd/iommufd_test.h          |  24 ++++
- drivers/iommu/iommufd/selftest.c              | 111 ++++++++++++++++
- tools/testing/selftests/iommu/iommufd.c       | 121 ++++++++++++++++++
- tools/testing/selftests/iommu/iommufd_utils.h |  30 +++++
- 4 files changed, 286 insertions(+)
+Or both devices have an XGMI connection with other devices but are not physically connected to each other, etc...
 
-diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
-index dae7d808b..d516a5aad 100644
---- a/drivers/iommu/iommufd/iommufd_test.h
-+++ b/drivers/iommu/iommufd/iommufd_test.h
-@@ -32,6 +32,7 @@ enum {
- 	IOMMU_TEST_OP_DMABUF_GET,
- 	IOMMU_TEST_OP_DMABUF_REVOKE,
- 	IOMMU_TEST_OP_MD_CHECK_DMABUF,
-+	IOMMU_TEST_OP_DMABUF_CONTROL,
- };
- 
- enum {
-@@ -80,6 +81,21 @@ enum {
- /* Reserved for special pasid replace test */
- #define IOMMU_TEST_PASID_RESERVED 1024
- 
-+enum {
-+	IOMMU_TEST_DMABUF_SET_ERRORS = 1 << 0,
-+};
-+
-+struct iommu_test_dmabuf_stats {
-+	__u32 attach_calls;
-+	__u32 detach_calls;
-+	__u32 pin_calls;
-+	__u32 pin_successes;
-+	__u32 unpin_calls;
-+	__u32 map_calls;
-+	__u32 map_successes;
-+	__u32 unmap_calls;
-+};
-+
- struct iommu_test_cmd {
- 	__u32 size;
- 	__u32 op;
-@@ -201,6 +217,14 @@ struct iommu_test_cmd {
- 			__aligned_u64 length;
- 			__aligned_u64 offset;
- 		} check_dmabuf;
-+		struct {
-+			__s32 dmabuf_fd;
-+			__u32 flags;
-+			/* Positive errno, or zero to disable injection. */
-+			__s32 pin_errno;
-+			__s32 map_errno;
-+			struct iommu_test_dmabuf_stats out_stats;
-+		} dmabuf_control;
- 	};
- 	__u32 last;
- };
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index df1e7d125..ffa26d6e9 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -1960,6 +1960,10 @@ struct iommufd_test_dma_buf {
- 	size_t length;
- 	unsigned int npages;
- 	bool revoked;
-+	int pin_errno;
-+	int map_errno;
-+	unsigned int attach_count;
-+	struct iommu_test_dmabuf_stats stats;
- 	struct page *pages[] __counted_by(npages);
- };
- 
-@@ -1973,6 +1977,49 @@ static void iommufd_test_dma_buf_release(struct dma_buf *dmabuf)
- 	kfree(priv);
- }
- 
-+static int iommufd_test_dma_buf_attach(struct dma_buf *dmabuf,
-+				       struct dma_buf_attachment *attach)
-+{
-+	struct iommufd_test_dma_buf *priv = dmabuf->priv;
-+
-+	dma_resv_lock(dmabuf->resv, NULL);
-+	priv->attach_count++;
-+	priv->stats.attach_calls++;
-+	dma_resv_unlock(dmabuf->resv);
-+	return 0;
-+}
-+
-+static void iommufd_test_dma_buf_detach(struct dma_buf *dmabuf,
-+					struct dma_buf_attachment *attach)
-+{
-+	struct iommufd_test_dma_buf *priv = dmabuf->priv;
-+
-+	dma_resv_lock(dmabuf->resv, NULL);
-+	priv->attach_count--;
-+	priv->stats.detach_calls++;
-+	dma_resv_unlock(dmabuf->resv);
-+}
-+
-+static int iommufd_test_dma_buf_pin(struct dma_buf_attachment *attach)
-+{
-+	struct iommufd_test_dma_buf *priv = attach->dmabuf->priv;
-+
-+	dma_resv_assert_held(attach->dmabuf->resv);
-+	priv->stats.pin_calls++;
-+	if (priv->pin_errno)
-+		return -priv->pin_errno;
-+	priv->stats.pin_successes++;
-+	return 0;
-+}
-+
-+static void iommufd_test_dma_buf_unpin(struct dma_buf_attachment *attach)
-+{
-+	struct iommufd_test_dma_buf *priv = attach->dmabuf->priv;
-+
-+	dma_resv_assert_held(attach->dmabuf->resv);
-+	priv->stats.unpin_calls++;
-+}
-+
- static struct dma_buf_phys_list *
- iommufd_dma_pal_map_phys(struct dma_buf_attachment *attachment)
- {
-@@ -1981,6 +2028,9 @@ iommufd_dma_pal_map_phys(struct dma_buf_attachment *attachment)
- 
- 	dma_resv_assert_held(attachment->dmabuf->resv);
- 
-+	priv->stats.map_calls++;
-+	if (priv->map_errno)
-+		return ERR_PTR(-priv->map_errno);
- 	if (priv->revoked)
- 		return ERR_PTR(-ENODEV);
- 
-@@ -1993,12 +2043,17 @@ iommufd_dma_pal_map_phys(struct dma_buf_attachment *attachment)
- 		phys->phys[i].paddr = page_to_phys(priv->pages[i]);
- 		phys->phys[i].len = PAGE_SIZE;
- 	}
-+	priv->stats.map_successes++;
- 	return phys;
- }
- 
- static void iommufd_dma_pal_unmap_phys(struct dma_buf_attachment *attach,
- 				       struct dma_buf_phys_list *phys)
- {
-+	struct iommufd_test_dma_buf *priv = attach->dmabuf->priv;
-+
-+	dma_resv_assert_held(attach->dmabuf->resv);
-+	priv->stats.unmap_calls++;
- 	kfree(phys);
- }
- 
-@@ -2017,6 +2072,10 @@ static int iommufd_dma_buf_match_mapping(struct dma_buf_match_args *args)
- }
- 
- static const struct dma_buf_ops iommufd_test_dmabuf_ops = {
-+	.attach = iommufd_test_dma_buf_attach,
-+	.detach = iommufd_test_dma_buf_detach,
-+	.pin = iommufd_test_dma_buf_pin,
-+	.unpin = iommufd_test_dma_buf_unpin,
- 	.release = iommufd_test_dma_buf_release,
- 	.match_mapping = iommufd_dma_buf_match_mapping,
- };
-@@ -2101,6 +2160,56 @@ static int iommufd_test_dmabuf_revoke(struct iommufd_ucmd *ucmd, int fd,
- 	return rc;
- }
- 
-+static int iommufd_test_dmabuf_control(struct iommufd_ucmd *ucmd)
-+{
-+	struct iommu_test_cmd *cmd = ucmd->cmd;
-+	struct iommufd_test_dma_buf *priv;
-+	struct dma_buf *dmabuf;
-+	int rc = 0;
-+
-+	if (cmd->id || cmd->__reserved || cmd->last ||
-+	    cmd->dmabuf_control.flags & ~IOMMU_TEST_DMABUF_SET_ERRORS)
-+		return -EOPNOTSUPP;
-+	if (cmd->dmabuf_control.pin_errno < 0 ||
-+	    cmd->dmabuf_control.pin_errno > MAX_ERRNO ||
-+	    cmd->dmabuf_control.map_errno < 0 ||
-+	    cmd->dmabuf_control.map_errno > MAX_ERRNO)
-+		return -EINVAL;
-+	if (!(cmd->dmabuf_control.flags & IOMMU_TEST_DMABUF_SET_ERRORS) &&
-+	    (cmd->dmabuf_control.pin_errno || cmd->dmabuf_control.map_errno))
-+		return -EINVAL;
-+
-+	dmabuf = dma_buf_get(cmd->dmabuf_control.dmabuf_fd);
-+	if (IS_ERR(dmabuf))
-+		return PTR_ERR(dmabuf);
-+	if (dmabuf->ops != &iommufd_test_dmabuf_ops) {
-+		rc = -EOPNOTSUPP;
-+		goto out_put;
-+	}
-+
-+	priv = dmabuf->priv;
-+	dma_resv_lock(dmabuf->resv, NULL);
-+	if (cmd->dmabuf_control.flags & IOMMU_TEST_DMABUF_SET_ERRORS) {
-+		/* Do not change the outcome of an attachment already in use. */
-+		if (priv->attach_count) {
-+			rc = -EBUSY;
-+			goto out_unlock;
-+		}
-+		priv->pin_errno = cmd->dmabuf_control.pin_errno;
-+		priv->map_errno = cmd->dmabuf_control.map_errno;
-+	}
-+	cmd->dmabuf_control.pin_errno = priv->pin_errno;
-+	cmd->dmabuf_control.map_errno = priv->map_errno;
-+	cmd->dmabuf_control.out_stats = priv->stats;
-+out_unlock:
-+	dma_resv_unlock(dmabuf->resv);
-+	if (!rc)
-+		rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-+out_put:
-+	dma_buf_put(dmabuf);
-+	return rc;
-+}
-+
- static int iommufd_test_md_check_dmabuf(struct iommufd_ucmd *ucmd,
- 					unsigned int mockpt_id, int dmabuf_fd,
- 					unsigned long iova, size_t length,
-@@ -2244,6 +2353,8 @@ int iommufd_test(struct iommufd_ucmd *ucmd)
- 		return iommufd_test_dmabuf_revoke(ucmd,
- 						  cmd->dmabuf_revoke.dmabuf_fd,
- 						  cmd->dmabuf_revoke.revoked);
-+	case IOMMU_TEST_OP_DMABUF_CONTROL:
-+		return iommufd_test_dmabuf_control(ucmd);
- 	case IOMMU_TEST_OP_MD_CHECK_DMABUF:
- 		return iommufd_test_md_check_dmabuf(
- 			ucmd, cmd->id, cmd->check_dmabuf.dmabuf_fd,
-diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 2673f9f15..771cdf958 100644
---- a/tools/testing/selftests/iommu/iommufd.c
-+++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -1586,6 +1586,127 @@ TEST_F(iommufd_ioas, dmabuf_simple)
- 	close(dfd);
- }
- 
-+TEST_F(iommufd_ioas, dmabuf_pin_failure)
-+{
-+	struct iommu_test_dmabuf_stats stats;
-+	__u64 iova;
-+	int dfd;
-+
-+	test_cmd_get_dmabuf(PAGE_SIZE, &dfd);
-+	test_cmd_dmabuf_errors(dfd, EBUSY, 0);
-+	test_err_ioctl_ioas_map_file(EBUSY, dfd, 0, PAGE_SIZE, &iova);
-+	test_cmd_dmabuf_stats(dfd, &stats);
-+	EXPECT_EQ(1, stats.attach_calls);
-+	EXPECT_EQ(1, stats.detach_calls);
-+	EXPECT_EQ(1, stats.pin_calls);
-+	EXPECT_EQ(0, stats.pin_successes);
-+	EXPECT_EQ(0, stats.unpin_calls);
-+	EXPECT_EQ(0, stats.map_calls);
-+	EXPECT_EQ(0, stats.map_successes);
-+	EXPECT_EQ(0, stats.unmap_calls);
-+
-+	/* Retry the same buffer after clearing the injected error. */
-+	test_cmd_dmabuf_errors(dfd, 0, 0);
-+	test_ioctl_ioas_map_file(dfd, 0, PAGE_SIZE, &iova);
-+	if (variant->mock_domains)
-+		test_cmd_check_dmabuf(self->hwpt_id, dfd, iova, PAGE_SIZE, 0);
-+	EXPECT_ERRNO(EBUSY,
-+		     _test_cmd_dmabuf_control(self->fd, dfd,
-+					      IOMMU_TEST_DMABUF_SET_ERRORS,
-+					      EBUSY, 0, NULL));
-+	test_ioctl_ioas_unmap(iova, PAGE_SIZE);
-+	test_cmd_dmabuf_stats(dfd, &stats);
-+	EXPECT_EQ(2, stats.attach_calls);
-+	EXPECT_EQ(2, stats.detach_calls);
-+	EXPECT_EQ(2, stats.pin_calls);
-+	EXPECT_EQ(1, stats.pin_successes);
-+	EXPECT_EQ(1, stats.unpin_calls);
-+	EXPECT_EQ(1, stats.map_calls);
-+	EXPECT_EQ(1, stats.map_successes);
-+	EXPECT_EQ(1, stats.unmap_calls);
-+	close(dfd);
-+}
-+
-+TEST_F(iommufd_ioas, dmabuf_map_failure)
-+{
-+	struct iommu_test_dmabuf_stats stats;
-+	__u64 iova;
-+	int dfd;
-+
-+	test_cmd_get_dmabuf(PAGE_SIZE, &dfd);
-+	test_cmd_dmabuf_errors(dfd, 0, ENOMEM);
-+	test_err_ioctl_ioas_map_file(ENOMEM, dfd, 0, PAGE_SIZE, &iova);
-+	test_cmd_dmabuf_stats(dfd, &stats);
-+	EXPECT_EQ(1, stats.attach_calls);
-+	EXPECT_EQ(1, stats.detach_calls);
-+	EXPECT_EQ(1, stats.pin_calls);
-+	EXPECT_EQ(1, stats.pin_successes);
-+	EXPECT_EQ(1, stats.unpin_calls);
-+	EXPECT_EQ(1, stats.map_calls);
-+	EXPECT_EQ(0, stats.map_successes);
-+	EXPECT_EQ(0, stats.unmap_calls);
-+
-+	test_cmd_dmabuf_errors(dfd, 0, 0);
-+	test_ioctl_ioas_map_file(dfd, 0, PAGE_SIZE, &iova);
-+	if (variant->mock_domains)
-+		test_cmd_check_dmabuf(self->hwpt_id, dfd, iova, PAGE_SIZE, 0);
-+	test_ioctl_ioas_unmap(iova, PAGE_SIZE);
-+	test_cmd_dmabuf_stats(dfd, &stats);
-+	EXPECT_EQ(2, stats.attach_calls);
-+	EXPECT_EQ(2, stats.detach_calls);
-+	EXPECT_EQ(2, stats.pin_calls);
-+	EXPECT_EQ(2, stats.pin_successes);
-+	EXPECT_EQ(2, stats.unpin_calls);
-+	EXPECT_EQ(2, stats.map_calls);
-+	EXPECT_EQ(1, stats.map_successes);
-+	EXPECT_EQ(1, stats.unmap_calls);
-+	close(dfd);
-+}
-+
-+TEST_F(iommufd_ioas, dmabuf_control_validation)
-+{
-+	struct iommu_test_cmd cmd = {
-+		.size = sizeof(cmd),
-+		.op = IOMMU_TEST_OP_DMABUF_CONTROL,
-+	};
-+	int dfd;
-+
-+	test_cmd_get_dmabuf(PAGE_SIZE, &dfd);
-+	cmd.dmabuf_control.dmabuf_fd = dfd;
-+	cmd.__reserved = 1;
-+	EXPECT_ERRNO(EOPNOTSUPP, ioctl(self->fd, IOMMU_TEST_CMD, &cmd));
-+	cmd.__reserved = 0;
-+	cmd.last = 1;
-+	EXPECT_ERRNO(EOPNOTSUPP, ioctl(self->fd, IOMMU_TEST_CMD, &cmd));
-+	cmd.last = 0;
-+	cmd.id = 1;
-+	EXPECT_ERRNO(EOPNOTSUPP, ioctl(self->fd, IOMMU_TEST_CMD, &cmd));
-+	cmd.id = 0;
-+	EXPECT_ERRNO(EOPNOTSUPP,
-+		     _test_cmd_dmabuf_control(self->fd, dfd, 2, 0, 0, NULL));
-+	EXPECT_ERRNO(EINVAL,
-+		     _test_cmd_dmabuf_control(self->fd, dfd,
-+					      IOMMU_TEST_DMABUF_SET_ERRORS,
-+					      -EBUSY, 0, NULL));
-+	EXPECT_ERRNO(EINVAL,
-+		     _test_cmd_dmabuf_control(self->fd, dfd,
-+					      IOMMU_TEST_DMABUF_SET_ERRORS,
-+					      4096, 0, NULL));
-+	EXPECT_ERRNO(EINVAL,
-+		     _test_cmd_dmabuf_control(self->fd, dfd,
-+					      IOMMU_TEST_DMABUF_SET_ERRORS,
-+					      0, -ENOMEM, NULL));
-+	EXPECT_ERRNO(EINVAL,
-+		     _test_cmd_dmabuf_control(self->fd, dfd,
-+					      IOMMU_TEST_DMABUF_SET_ERRORS,
-+					      0, 4096, NULL));
-+	EXPECT_ERRNO(EINVAL,
-+		     _test_cmd_dmabuf_control(self->fd, dfd, 0, EBUSY, 0, NULL));
-+	EXPECT_ERRNO(EINVAL,
-+		     _test_cmd_dmabuf_control(self->fd, dfd, 0, 0, ENOMEM, NULL));
-+	close(dfd);
-+}
-+
- TEST_F(iommufd_ioas, dmabuf_multi_page)
- {
- 	__u64 iova;
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 35fd91d35..177a67f0e 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -593,6 +593,36 @@ static int _test_cmd_revoke_dmabuf(int fd, int dmabuf_fd, bool revoked)
- #define test_cmd_revoke_dmabuf(dmabuf_fd, revoke) \
- 	ASSERT_EQ(0, _test_cmd_revoke_dmabuf(self->fd, dmabuf_fd, revoke))
- 
-+static int _test_cmd_dmabuf_control(int fd, int dmabuf_fd, unsigned int flags,
-+				    int pin_errno, int map_errno,
-+				    struct iommu_test_dmabuf_stats *stats)
-+{
-+	struct iommu_test_cmd cmd = {
-+		.size = sizeof(cmd),
-+		.op = IOMMU_TEST_OP_DMABUF_CONTROL,
-+		.dmabuf_control = {
-+			.dmabuf_fd = dmabuf_fd,
-+			.flags = flags,
-+			.pin_errno = pin_errno,
-+			.map_errno = map_errno,
-+		},
-+	};
-+	int rc;
-+
-+	rc = ioctl(fd, IOMMU_TEST_CMD, &cmd);
-+	if (!rc && stats)
-+		*stats = cmd.dmabuf_control.out_stats;
-+	return rc;
-+}
-+
-+#define test_cmd_dmabuf_errors(dfd, pin_error, map_error)                    \
-+	ASSERT_EQ(0, _test_cmd_dmabuf_control(                             \
-+		self->fd, dfd, IOMMU_TEST_DMABUF_SET_ERRORS, pin_error,     \
-+		map_error, NULL))
-+
-+#define test_cmd_dmabuf_stats(dfd, stats) \
-+	ASSERT_EQ(0, _test_cmd_dmabuf_control(self->fd, dfd, 0, 0, 0, stats))
-+
- #define test_cmd_check_dmabuf(_hwpt_id, _dmabuf_fd, _iova, _length, _offset) \
- 	({                                                                   \
- 		struct iommu_test_cmd check_cmd = {                          \
--- 
-2.39.5 (Apple Git-154)
+That is something which doesn't change unless you physically change the system.
+> Further, I had the (perhaps naive) expectation that the interconnect
+> option was not something that would change during mapping. I did not
+> think you would loose your PCIe option if ualink becomes available, or
+> vice versa. Though on deeper reflection I suppose someone could build
+> HW so you might loose your ualink option if the dmabuf is moved to
+> system memory while PCIe would still work.
+
+Yeah, that is definitely not correct.
+
+We have the clear requirement here that when one interconnect physically fails that we can still do things like let the work reach the next checkpoint, then it is taken of the HW, and the HW suspended for repair, then resumed and then work can continue....
+
+Similarly we have on the graphics side the requirement that physical placement can be moved to system memory because of some other device attaching, pinning for scanout or something suddenly requires the backing store to be contiguously allocated etc,,,
+
+So there are vast requirements that a buffer changes location when the mapping changes. I mean it is kind of pointless to have a feature like ODP to suspend your traffic if the underlying physical location of the memory can't change.
+
+Christian.
+> Making the decision right before map seems like a reasonable
+> enhancement, but I can no longer remember off hand if that would cause
+> complications :)
+> 
+> Jason
 
