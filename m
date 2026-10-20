@@ -1,85 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792495022;
-	b=yfGGE9Pif+N8ENQ0zB12Ra68jYPFllk4/1MYEer1ehIzvZXco9trngw9BCfOR3gMH2/w
-	 AhkC2tQ59Py6/tjSD5vufKVM9KslEELJpfTA76zWZ3lsYzjAOvSK5iTvI3elKR1dkqQOL
-	 bi/RfbNGQfalMoYQNzTHk4VPMXvFdQN+k5DNrv/8yufont3vqyt9msv/55YcSwv8J8und
-	 SNcfCV3f4eUlIxjOI2JIyeOrdPe6waCt+lgNxD3tME6rTfZeG/bqxQXADWvGmYdVhmMf3
-	 /LBpkDEbyXN3ejR1GrAqa88x6QlCKaeTfXOmvYQjMGjrcNuw0Ig1Fbwcu5ON5WTTGFA==
+	t=1792495375;
+	b=HHMZ6y5aYh3LHmFU3d9GGuzb3LQzGuhFu8Dn3NKF22tD1/9IfDGLKlgsSHgcbYsK57pE
+	 8WfxP2GNB3zf1Qn9HHT8nSn4VhrgnibRpcfOhXndSrl4tKGBU1xK0WaE3VuLw/SSJrlwM
+	 4sw/4Gkn0c+lfTHYkKIDls09DCQ5Yw4vuUlqqwcW9fdEDcCGuHV2pOah+Y/wXhTsDofpc
+	 B0+iBz4Gfi+AsO34pKI5hrBZrRvuLbBNho0a9YkuVMhJf8eV72KtQRdTTo2iGrtMR381w
+	 wSzsq1aRJcfth/eLThZFTeoWRhHjoSaB8XMIgxn6c7GQfxbhn2bGjDnh60QMNoaFAgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792495022;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792495375;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=bVNQzZPkVhaJesZfY8LQ/WfX4unos7POmP6IgKPN9ZE=;
-	b=5oSZF/EbkbBd+sflPB/DYjT24+jtp74EkUROQQm/Iz1XPl6QIDPycBF+3DQMT6VQSAEz
-	 oJiQxN3pP+yH4v4Aq0Z1lAZXCnOw+MiCUrxQ5/+niOA42ONu9AxPO80/XGSG+1LL5irD9
-	 VgHzkSUZlxRiz+2fSR6z04fKKcohA/g9q7vlxsoNUiXn52f8K/aTzI4+b2ovioijnYHE+
-	 5Cy/RHwtiVJ07FUDSsEkLCJvvEnao2F5MI0Mb+kZg9Dan4yucqb22YI44hcgrqF0XXKmk
-	 i2rkfZQb86YWAZ8MKmGE7EJ7F7vON0aQyRmJYUxLloYTO/6YSAkBXNB5SKZ1adzVDRw==
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=ZhRLvzJzPI5U781F/KKbvaLNO/DRwhdbN5Luxo3sgyY=;
+	b=JqMWHe4KvYXbp3NF0/2Md2bejJRgZshr9Uyp9LKqaCE1SkBP/fk6N9VEdk7rK2s2rBrV
+	 BPB66qkGTlP/aZ0/koHzTNRH6E3r0q0V4OsyoiteIELFUR/44n7o6+rMJn3oGX9Oajklu
+	 YQTvCnrGDAhyESbxHt4b/ZdfJ99pk5GpgjDLgIuY5WVZXaHEL73tpg4R7KVGb6PBZaTfF
+	 q3HfHvRj9lg5pA3/N7clGYtU9vRzqwnpOtRisc7QSPTYu5OoKeQVqUDgpVcINfGO22UU9
+	 Il6TAZEgGRL7/dGa8n5qVlhEk3VObXUyNdxftvDNx4V0lKTX/LTvpnXU6ofB/mkD4wA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=iekBfk1c;
-	arc=none smtp.remote-ip=209.85.128.45
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Jt4R9hUH;
+	arc=none smtp.remote-ip=209.85.128.42
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63521606A319
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 11:17:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63521606A319
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96F14606A319
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 11:22:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 96F14606A319
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=iekBfk1c
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4a1d2ec9aadso41135e9.1
-        for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 04:17:01 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Jt4R9hUH
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4a1d2ec9aadso41465e9.1
+        for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 04:22:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792495020; x=1793099820; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=bVNQzZPkVhaJesZfY8LQ/WfX4unos7POmP6IgKPN9ZE=;
-        b=iekBfk1caDpxtapwLDVhX0oSm/RHkMJAOSTd62NOfb5+lurL4R0Nra3JX2sG1JIMc5
-         EaF0ReUtVjkZt5XHs9Upu3HutIlL5YEJucwUapbLt+Es/WLvh+51pNkUdMiVYZTokpOq
-         LJpk07uYqgu++dTJ714BkpNDuxgorDj112pZVVU/sBquUNHp0r8vj3icvPvDpChi6btt
-         aNqFiEMnFLPLWBH+Lyk6OMPWvv+yMBDRe9VFpH9ox36Z80dMs0eSDh2yslxUSv10KXq/
-         8y47H+cdpbsxmsRC1CDRonmIxlQyOn5oM68qPdCnK6K4U4jhVw4a1IuMTt4wNfe720V2
-         hxsw==
+        d=google.com; s=20251104; t=1792495373; x=1793100173; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ZhRLvzJzPI5U781F/KKbvaLNO/DRwhdbN5Luxo3sgyY=;
+        b=Jt4R9hUHHbg1ZFBcanSWqTIFzUNCUapf5NBk0d4S2p8Si8iI+7nOg5ABbr/2pUqvme
+         1NFzDifPuWttg8UmwiOZAzo5z/hQ5hbRpb1D7kZBJW+L5i3pDUP2OoP5fKvChFyyK/eW
+         +3cfMPlNm/QSk7Z3Bua3DcH3I/C2PzHsJ8+fnVfKNcrzanmXPdiNXIll6xQClWFsUgT6
+         Be/NEWN/SG3FXy8p7KhD5ms2sEeyVQS8xD9KfXKUwSmC2PKMjopqEk56DhnQWVCCLNlc
+         pRnFLgJ/RYMoYNr75UaM8NLgd+9e4bjQ4Lkq+Z6FaelW6m+Jwi0rG1nQt8lAJqRaogGI
+         5LzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792495020; x=1793099820;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=bVNQzZPkVhaJesZfY8LQ/WfX4unos7POmP6IgKPN9ZE=;
-        b=E1+ek2GL29DtzT71k2/yH5yYM5xuPY5gw+slCG50/+wYE8MnaRpLbv/1VgCvvVW9Bc
-         c7YncFHne6zzSsHHfpJ5yidw1dy46jnUg7OXcuGgWaCpHZr2wkanmKbLmp+zU6sD99Ma
-         UiQWq0aDW59Ic3iHSrckX0sBdceOJHPCxbvST+sbaZjOkZz8yrVzQtGlfbBJmd3pkAQ/
-         aZlvQ+clztXcbeFInBrd91NLrneK7GR0FRcMQPrnNFjETK+KTT76bNUpJGGQPI2vZCX8
-         zBiRr6UNXDBpWzHxHCrxn8WcKykal1UyWN9bqIMDyjDLMDHGmzTpx+hQia0dGa+9Ch3K
-         X/Zg==
-X-Forwarded-Encrypted: i=1; AKwUvBx8qNfPhQSrbIeyltPn9olTfg9PuzDBw+Jrj/5Xd3N9qINxRJOHIx5jl66dW9S5853D7gO3yQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYILstNu8uBM5c1R4LdIboVQ3f7wg2FcuURVrHlX2SqcJdt0Qtv3
-	g0zPmTIE2fZS1tQI7XbKsxxySiZRd/56x/VG33R944BrDEltkW/gmfcyf3YhID1J8Q==
-X-Gm-Gg: AYBFou2CNMBtdsepb2kJNvlkkxKoUXA8d6pqBByR+39zPWZ/j6lqMGQKKCLQIPQMCAO
-	dqSX6v04dL9dLDYSbXz3UfdTMe5kVxCCGeJpC3ZUvHUMkSVStNsvCTEUSJJjvu+IeXVQUgiayZW
-	cfjACyU8Z8n1MfUFmdsqsov3P4rfRYwiRF42ONOU2+zjmLvS6m42n8vxAweHr0gVmcZvKbXOIHk
-	TP7Cd1YkUzgCjb8vMAOEiz6FiCCzFZDw/d2joXduJvd2N+STAoN3TRnFZyc9qVZxMVPgMoY/Y1U
-	aY+7UbfYRZOVW74becfYQbw6ZSGVL1uQ4w8WLoq+OaBAzLyHtEC6ccbwpULd4QD7I+wNRMtojcA
-	FpEtw3DO1zsntIb9UxPH2tai+bvaZNrR+uS9JisPMxj/bbElk1QwXX2GdS+q3ZX2jNQiwgYgKIn
-	paOqAYE+9D8eL8B9S2+n/2HvcYekl8KDvw3o4tg0/gxAKRfMcHh9NbRiQQ/MvS+H6GrPmorIt+c
-	cnQlwtJg3He5xskW3mUxmWrwA==
-X-Received: by 2002:a05:600c:a3a5:b0:4a1:a48c:17eb with SMTP id 5b1f17b1804b1-4a1f59a5836mr572995e9.11.1792495019224;
-        Tue, 20 Oct 2026 04:16:59 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1792495373; x=1793100173;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZhRLvzJzPI5U781F/KKbvaLNO/DRwhdbN5Luxo3sgyY=;
+        b=N3OxnU9LSlMyaI5CLpwWr4RRguhHOC3doqQEeZkQblOfiQPFPPfsY6v1QYfgjvRA48
+         0IuH5MX82e8/gccV+sp/1OKJ43Lo2QIsprwqUJ/v7NvXavHP9O0HJ/9UZkjIdoxBdf3t
+         ecNByMlKU2YXKQFJ8XaOzNw0K0r5oV5+HSUtTT4FAmHHC746be2eDF05VHwRohiMoKlK
+         h5LMG8T+naD+SV2kA8Jx0tWoXWqIxDkjbuXgr4YA61JxZQUOjzxfM7E6leuXiusFq2GU
+         kkkbv8c0nZuvj+h0F2i72Cx/7AXf8MnKj+TJE1SLo2H2GzvAAKzWNYmcnk/ZZ0p3lT5T
+         jWWA==
+X-Forwarded-Encrypted: i=1; AKwUvBz2BKoiGuH5OUP3cYJ3D2i6Kgo3/McBn/PeqZ7HiQvVPyIjno9oYKocHExPs4bz7UIem/SoOg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIPwiMYf3XtADlyXLnwKe04qDQrEoe4mvD8qK0Qm6kD9RV/ZJBZ
+	hxjKF9+guqxKpUFPfludJ6a88RIuV2lohLEuFw4HdMJtV0CH/GElqctL5VECbNy+EQ==
+X-Gm-Gg: AYBFou0pGPRaOKvSr9V5yYulAy/u75uyS2NzX7vq/nEFf/PlGho3PlSfJ3QhOejqczY
+	dlc7yNPRC53Lz3wrEYyI+qrmXDG/bdBIu7hhNSDtaaPEnWr1lVu6legBx71c6wpilkcerJwdWqd
+	5l5F2CXdtzLst6i6OqA4FPHOThbWRuDHlngy7FhJHpx05HUQREuWGv6xS16J1yfAsUtpS2hybm7
+	pIIicoQ0qDXYi5fZ74Sc5JjYfOpMDQw0Rrf6CTkZHsZbJyYVxvwk18CEV2vxvQmEbsM3LBQmEZU
+	bVccz3WlpFT/j0Nnuh627kRnzOA/PFZxhqr/4K3FQO5WrQNEFunPtZSq4vNZXwW8WGcl2odFTOF
+	jl7eZIj1+wxit4aLwVUfTs39da4GbDWCRDT7oJMhgnMDitNW9448urN3gzrK6UEpUBFUOZlfkQG
+	qvJqMLjfZmbFI3uiCCAQwjYNsgQ/Tc2WKZJkKj9dxjcci4gxNfeDi2hJVPVD0BYH02G+OuSxTab
+	0uuUJKK7B9rFqUX8HxvjwEuvHBikx/XdgW0GQb2
+X-Received: by 2002:a05:600d:640e:10b0:4a1:98b1:1de9 with SMTP id 5b1f17b1804b1-4a1f59c151cmr652475e9.13.1792495372639;
+        Tue, 20 Oct 2026 04:22:52 -0700 (PDT)
 Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e1d82fe82sm5139903f8f.51.2026.10.20.04.16.58
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e1d8208b1sm5787276f8f.33.2026.10.20.04.22.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Oct 2026 04:16:58 -0700 (PDT)
-Date: Tue, 20 Oct 2026 11:16:54 +0000
+        Tue, 20 Oct 2026 04:22:50 -0700 (PDT)
+Date: Tue, 20 Oct 2026 11:22:46 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
@@ -88,11 +87,11 @@ Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
 	linux-kernel@vger.kernel.org, jamien@nvidia.com, kas@kernel.org,
 	Cristian Prundeanu <cpru@amazon.com>,
 	Breno Leitao <leitao@kernel.org>
-Subject: Re: [PATCH v11 04/11] iommu/arm-smmu-v3: Add ARM_SMMU_FEAT_EVTQ for
- the event queue
-Message-ID: <atdNpl732M7D4dXz@google.com>
+Subject: Re: [PATCH v11 05/11] iommu/arm-smmu-v3: Disable the EVTQ and the
+ PRIQ in a kdump kernel
+Message-ID: <atdPBqd1-xLNZ1hs@google.com>
 References: <cover.1791226953.git.nicolinc@nvidia.com>
- <250a57bbdd232bbb1e3511b7768a1c9ae3d204e6.1791226953.git.nicolinc@nvidia.com>
+ <fdebf9f372ebabd7a44581a2068d6fcbff058783.1791226953.git.nicolinc@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -102,218 +101,71 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <250a57bbdd232bbb1e3511b7768a1c9ae3d204e6.1791226953.git.nicolinc@nvidia.com>
+In-Reply-To: <fdebf9f372ebabd7a44581a2068d6fcbff058783.1791226953.git.nicolinc@nvidia.com>
 
-On Mon, Oct 05, 2026 at 12:30:47PM -0700, Nicolin Chen wrote:
-> The driver programs and enables the event queue unconditionally, while the
-> PRI queue has an ARM_SMMU_FEAT_PRI gating each of its touch points. Yet a
-> kdump kernel wants to leave both of the queues alone, which would take an
-> is_kdump_kernel() test at every one of those places.
+On Mon, Oct 05, 2026 at 12:30:48PM -0700, Nicolin Chen wrote:
+> A kdump kernel cannot use either queue. The crashed kernel's CDs and page
+> tables might be corrupted, so events would spam the EVTQ, and there is no
+> way to serve the page requests that would arrive at the PRIQ.
 > 
-> Add an ARM_SMMU_FEAT_EVTQ that the probe always sets, as the event queue is
-> architecturally mandatory, and gate the queue's allocation, its interrupt,
-> its MSI vector, and its CR0 and IRQ_CTRL enables on it. A subsequent change
-> will turn the queue off in a single place.
+> The reset routine still enables both of the queues and then masks the two
+> enable bits back out, having already programmed the queue bases and taken
+> the interrupts of both.
 > 
-> No functional change intended.
+> Clear ARM_SMMU_FEAT_EVTQ and ARM_SMMU_FEAT_PRI in the probe instead, so as
+> to entirely skip the queue initialization and handling in a kdump kernel.
 > 
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Suggested-by: Will Deacon <will@kernel.org>
+> Link: https://lore.kernel.org/all/amiBagGKn-Aym1DK@willie-the-truck/
 > Acked-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
 > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > Tested-by: Breno Leitao <leitao@kernel.org>
 > Tested-by: Cristian Prundeanu <cpru@amazon.com>
 > Assisted-by: LLM
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 756825e004774..42cd30c79211e 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -5247,9 +5247,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+>  		return ret;
+>  	}
+>  
+> -	if (is_kdump_kernel())
+> -		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+> -
+>  	/* Enable the SMMU interface */
+>  	enables |= CR0_SMMUEN;
+>  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
+> @@ -5576,6 +5573,15 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>  	if (arm_smmu_sva_supported(smmu))
+>  		smmu->features |= ARM_SMMU_FEAT_SVA;
+>  
+> +	/*
+> +	 * A kdump kernel wants neither queue: the crashed kernel's CDs and page
+> +	 * tables might be corrupted, spamming events, and page requests cannot
+> +	 * be served. A disabled queue discards new records without raising any
+> +	 * global error.
+> +	 */
 
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
-
-There is a nit below though.
+I find this a bit confusing. If the CD or page table of the crashed kernel are
+corrupted how is it safe to adopt them later in this series?
 
 Thanks,
 Mostafa
 
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 89 ++++++++++++++-------
->  2 files changed, 61 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 8f2c0b1cc4a8d..559bfa8cbc5e0 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -972,6 +972,7 @@ struct arm_smmu_device {
->  #define ARM_SMMU_FEAT_BBML2		(1 << 24)
->  #define ARM_SMMU_FEAT_HAFT		(1 << 25)
->  #define ARM_SMMU_FEAT_DS		(1 << 26)
-> +#define ARM_SMMU_FEAT_EVTQ		(1 << 27)
->  	u32				features;
->  
->  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 6ff61565f7583..756825e004774 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2381,7 +2381,8 @@ static irqreturn_t arm_smmu_combined_irq_thread(int irq, void *dev)
->  {
->  	struct arm_smmu_device *smmu = dev;
->  
-> -	arm_smmu_evtq_thread(irq, dev);
-> +	if (smmu->features & ARM_SMMU_FEAT_EVTQ)
-> +		arm_smmu_evtq_thread(irq, dev);
->  	if (smmu->features & ARM_SMMU_FEAT_PRI)
->  		arm_smmu_priq_thread(irq, dev);
->  
-> @@ -2390,7 +2391,12 @@ static irqreturn_t arm_smmu_combined_irq_thread(int irq, void *dev)
->  
->  static irqreturn_t arm_smmu_combined_irq_handler(int irq, void *dev)
->  {
-> -	arm_smmu_gerror_handler(irq, dev);
-> +	struct arm_smmu_device *smmu = dev;
-> +	irqreturn_t ret = arm_smmu_gerror_handler(irq, dev);
+> +	if (is_kdump_kernel())
+> +		smmu->features &= ~(ARM_SMMU_FEAT_EVTQ | ARM_SMMU_FEAT_PRI);
 > +
-> +	/* Without either queue, the thread would have nothing to drain */
-> +	if (!(smmu->features & (ARM_SMMU_FEAT_EVTQ | ARM_SMMU_FEAT_PRI)))
-> +		return ret;
->  	return IRQ_WAKE_THREAD;
->  }
->  
-> @@ -4763,11 +4769,14 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
->  		return ret;
->  
->  	/* evtq */
-> -	ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, smmu->page1,
-> -				      ARM_SMMU_EVTQ_PROD, ARM_SMMU_EVTQ_CONS,
-> -				      EVTQ_ENT_DWORDS, "evtq");
-> -	if (ret)
-> -		return ret;
-> +	if (smmu->features & ARM_SMMU_FEAT_EVTQ) {
-> +		ret = arm_smmu_init_one_queue(smmu, &smmu->evtq.q, smmu->page1,
-> +					      ARM_SMMU_EVTQ_PROD,
-> +					      ARM_SMMU_EVTQ_CONS,
-> +					      EVTQ_ENT_DWORDS, "evtq");
-> +		if (ret)
-> +			return ret;
-> +	}
->  
->  	if ((smmu->features & ARM_SMMU_FEAT_SVA) &&
->  	    (smmu->features & ARM_SMMU_FEAT_STALLS)) {
-> @@ -4950,7 +4959,15 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
->  
->  	/* Clear the MSI address regs */
->  	writeq_relaxed(0, smmu->base + ARM_SMMU_GERROR_IRQ_CFG0);
-> -	writeq_relaxed(0, smmu->base + ARM_SMMU_EVTQ_IRQ_CFG0);
-> +
-> +	/* PRIQ's vector needs EVTQ's to be kept */
-> +	WARN_ON_ONCE(!(smmu->features & ARM_SMMU_FEAT_EVTQ) &&
-> +		     (smmu->features & ARM_SMMU_FEAT_PRI));
-> +
-
-I can't see how we can end up in this case, I’d suggest dropping it
-if I am not missing something.
-
-
-> +	if (smmu->features & ARM_SMMU_FEAT_EVTQ)
-> +		writeq_relaxed(0, smmu->base + ARM_SMMU_EVTQ_IRQ_CFG0);
-> +	else
-> +		nvec--;
->  
->  	if (smmu->features & ARM_SMMU_FEAT_PRI)
->  		writeq_relaxed(0, smmu->base + ARM_SMMU_PRIQ_IRQ_CFG0);
-> @@ -4987,16 +5004,20 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
->  	arm_smmu_setup_msis(smmu);
->  
->  	/* Request interrupt lines */
-> -	irq = smmu->evtq.q.irq;
-> -	if (irq) {
-> -		ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
-> -						arm_smmu_evtq_thread,
-> -						IRQF_ONESHOT,
-> -						"arm-smmu-v3-evtq", smmu);
-> -		if (ret < 0)
-> -			dev_warn(smmu->dev, "failed to enable evtq irq\n");
-> -	} else {
-> -		dev_warn(smmu->dev, "no evtq irq - events will not be reported!\n");
-> +	if (smmu->features & ARM_SMMU_FEAT_EVTQ) {
-> +		irq = smmu->evtq.q.irq;
-> +		if (irq) {
-> +			ret = devm_request_threaded_irq(smmu->dev, irq, NULL,
-> +							arm_smmu_evtq_thread,
-> +							IRQF_ONESHOT,
-> +							"arm-smmu-v3-evtq", smmu);
-> +			if (ret < 0)
-> +				dev_warn(smmu->dev,
-> +					 "failed to enable evtq irq\n");
-> +		} else {
-> +			dev_warn(smmu->dev,
-> +				 "no evtq irq - events will not be reported!\n");
-> +		}
->  	}
->  
->  	irq = smmu->gerr_irq;
-> @@ -5029,7 +5050,7 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
->  static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  {
->  	int ret, irq;
-> -	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
-> +	u32 irqen_flags = IRQ_CTRL_GERROR_IRQEN;
->  
->  	/* Disable IRQs first */
->  	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
-> @@ -5055,6 +5076,8 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->  	} else
->  		arm_smmu_setup_unique_irqs(smmu);
->  
-> +	if (smmu->features & ARM_SMMU_FEAT_EVTQ)
-> +		irqen_flags |= IRQ_CTRL_EVTQ_IRQEN;
->  	if (smmu->features & ARM_SMMU_FEAT_PRI)
->  		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
->  
-> @@ -5173,16 +5196,21 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  		smmu, arm_smmu_make_cmd_op(CMDQ_OP_TLBI_NSNH_ALL));
->  
->  	/* Event queue */
-> -	writeq_relaxed(smmu->evtq.q.q_base, smmu->base + ARM_SMMU_EVTQ_BASE);
-> -	writel_relaxed(smmu->evtq.q.llq.prod, smmu->page1 + ARM_SMMU_EVTQ_PROD);
-> -	writel_relaxed(smmu->evtq.q.llq.cons, smmu->page1 + ARM_SMMU_EVTQ_CONS);
-> -
-> -	enables |= CR0_EVTQEN;
-> -	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> -				      ARM_SMMU_CR0ACK);
-> -	if (ret) {
-> -		dev_err(smmu->dev, "failed to enable event queue\n");
-> -		return ret;
-> +	if (smmu->features & ARM_SMMU_FEAT_EVTQ) {
-> +		writeq_relaxed(smmu->evtq.q.q_base,
-> +			       smmu->base + ARM_SMMU_EVTQ_BASE);
-> +		writel_relaxed(smmu->evtq.q.llq.prod,
-> +			       smmu->page1 + ARM_SMMU_EVTQ_PROD);
-> +		writel_relaxed(smmu->evtq.q.llq.cons,
-> +			       smmu->page1 + ARM_SMMU_EVTQ_CONS);
-> +
-> +		enables |= CR0_EVTQEN;
-> +		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> +					      ARM_SMMU_CR0ACK);
-> +		if (ret) {
-> +			dev_err(smmu->dev, "failed to enable event queue\n");
-> +			return ret;
-> +		}
->  	}
->  
->  	/* PRI queue */
-> @@ -5330,6 +5358,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
->  	u32 reg;
->  	bool coherent = smmu->features & ARM_SMMU_FEAT_COHERENCY;
->  
-> +	/* The event queue is architecturally mandatory, unlike the PRI queue */
-> +	smmu->features |= ARM_SMMU_FEAT_EVTQ;
-> +
->  	/* IDR0 */
->  	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR0);
->  
+>  	dev_info(smmu->dev, "oas %lu-bit (features 0x%08x)\n",
+>  		 smmu->oas, smmu->features);
+>  	return 0;
 > -- 
 > 2.43.0
 > 
