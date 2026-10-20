@@ -1,49 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792495751;
-	b=XCYT/VjEJLo7PhoI9xYabmPC7fWBhso02KaMbAlvbW1dmRG7XDY362H3Az3aS1KND4mY
-	 qRdGVexaPxvWrmyVf6Gqklrlz1RLB9mNAxPC/sw7a/3cX7nPaEaP5OA8S60OF6FyWLdtu
-	 9NBk1H9hiAxb8i46iHgya4qVr5Dt5VVGMAi7pV+CF9/mTydi4BKH4MHbS+SOfOvmL55HM
-	 xDWTrWnTWWtl9p3vz3e5Jzyi5ZIKu07n+W4q6GAiifpy/yOG51XXoiDbXyIgL15U0XFc8
-	 9PnDsA5qm9RcXnigoZ3VunbB1MN8QzkpsLyWIbGfjNgT0wg5+jo5txBCaY791aoHwEw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792495751;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=lvOImHjk9+PSZt/dZxaP6lDjW+Q8Usn4Xh93yDh43jg=;
-	b=OhmF52Lg8cfRjcwZ8bND1gwM0CfOkJFkD05s15kfaLFVmS+p9CDTw3F23Ws1YvwokGBZ
-	 oA2bhJKlhUZUSiLwk7wiH8QBxxRVtXfkFOcrJAHprJ7+y5awn8k9ia09sH+dJToWvWIaM
-	 lT5SIPZphrZnEMoprh3ZUzkOCLMcXGF1zBDiS2d6HSjgQ1V0Gh/XFU+JQWfik8x1nrKqq
-	 SGUqmxzRaU8WtwjpT5EXwV76HLUIs0gOhxB3DiBWUXy4OXeENzOR1J7uUET/kTopxnAYq
-	 DqN/Tt8iKsBYBNL05KVnCuZ+Cf9F+pj3Svw6YV5dMN0RDKdhprWOeexmTKS7nrdzlgQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=ldbNPAVz;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01C5C606A319
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 11:29:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 01C5C606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.169
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792495984;
+	b=FY7cgxULjYGmQeZn7UoDL4kmcCwoekvnVcwplucPTQmLVNaHyKR3tU9fX12vLwg6Ygok
+	 NTdV2yRwqVFUHLWI3pmWF5G4AfUZjQ28UdodVMIuUxkkOL+4aif1BnV/BRw2IQfvdTtPC
+	 HrpliP9xSODL7tSbGS5JOZu8S4qY6A0u6TRprravWjTcU/glT9k4AU6m90upMo9vZEXN2
+	 8E6I7+SHA28rsr+ZfY9+/z8p0X73dpAfNj1X0218dqiszfLbmAMjNBEfWQI0cwZtxELil
+	 CGMpXJ7ENRAtSCVnJLR7M4dyHuBbZCVooqKElbitB4ugRYlea5LoSFDdK1pCXaG28fw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792495984;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
+	 Content-Type;
+	bh=6w7JRuFovvwwUBTh/FtHv2xuiuhqO2jha1lfwIcoggA=;
+	b=4DRc4BkAs1/IyEQUgPr69pB8my3KAKaavrqHqZmlYM4IiTvs278tqQesZ1imgDHEsMav
+	 t6Eymi4KqIoOQHRPTgl0BUPlA7iPVXfwA21zSIFZfsxgsGYNTrMVHTNAxAjvc2sXhHCYu
+	 opTE2uBgtLXCcSUflfyTUWjHWbMCgKJdKKfsGfMBlvItxlLzM4OWqUYcP7j2cnQcZ9Z2i
+	 /etBBeXvyjT4eWF7THNuwWXEHydt/BEDU/H9UgzuvPUKKi3h0JrShedLHcchRSCnWKopj
+	 Dhzq5uvjbpNumrLCsPRA/Lq9I4YIR3YwJiyure7+6tqZDlGKP8I4bHS1StLC0TgakUw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=none header.from=kiddier.org;
+	spf=pass smtp.mailfrom=kiddier.org;
+	dkim=pass header.d=kiddier.org header.i=@kiddier.org header.a=rsa-sha256 header.s=google header.b=Kg2eU5L1;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.221.169
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4767B606A31E
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 11:33:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4767B606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kiddier.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kiddier.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=ldbNPAVz
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 04FE21596;
-	Tue, 20 Oct 2026 04:29:06 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 55BE03F7B4;
-	Tue, 20 Oct 2026 04:29:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1792495749; bh=lPExewzubDO61zAC5f5szD4RLVzqEIiHTrrWFFbXWiU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ldbNPAVz3IGbNhuOHCkg9AxOAasSipoy6B5lGBDzvn/l+iQ+xrMGjWe9+CJcsFl11
-	 6SP4SsUPLz31dVdUWoNT+EX1DN80XrhHO69Qp0pChRZFwxSOXLiZHUB06wU7fItPn9
-	 6t/Ojv9c6iy2iP/FPyS1UkbN/qZvM71rUcPMepAk=
-Message-ID: <be6cd787-8502-4499-ad62-597c1b9b7702@arm.com>
-Date: Tue, 20 Oct 2026 12:28:54 +0100
+	dkim=pass (1024-bit key, unprotected) header.d=kiddier.org header.i=@kiddier.org header.a=rsa-sha256 header.s=google header.b=Kg2eU5L1
+Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-5eadf48fb2dso129263e0c.1
+        for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 04:33:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792495983; cv=none;
+        d=google.com; s=arc-20260327;
+        b=dsmgS1F/MT8Zg3Nzb29jsgEdybo6Y+yzYTGy7CDi791frQtE+5k1CdZcmIawlKhoUN
+         U0Qbvq9V+epGtlO1aIbzOp379QGG/nnFL4i4sLRPwE2SUte5gNpsU6kdIjIIaiYbxPFK
+         zCKQXIaZV0Y4zIE1p+l0On8Ic6HrOcuhCvBmi44NlCNJgeqp8BV9FFfgE9Y+p1OzeHvS
+         +ZlvH4Z9GEHM/Xh8002gQcAVQOpgM20lYr6XCjPKJ5wsdHzl0NQAY4b/+ynzHy7XUWOn
+         J/zNrU4/BzTtK2HTOqr06Pmbixcx+LK3rnaDejqe6or5Fof4+X3UnJeBYSecgL1wEggv
+         Qhqw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=6w7JRuFovvwwUBTh/FtHv2xuiuhqO2jha1lfwIcoggA=;
+        fh=FVosQ+n8LmKo45faEkMcQhDT5I8ISa8o/FujY/OMFIE=;
+        b=sGJeIXNbYVoORsAo/WofCZACQ0vF+frrpiXL2Y2JrMNc0jDXcISLobBUdfljAaqNCu
+         lBBIeddlmZyHONAEfFhyVVn6x4A7krXaIgwbEagUc95FFXNihOW/1gyM2+td+gk8SJKb
+         T+zWg6idehH3AzvD5PwqGLt82t57cr+wzaK/DdmVFr4h/HfcBrisZv/Rn6gvLLp4WeIK
+         ECOQu8ubtYJ/dn/DD77Sc8oDDAoo/Q71DpK0ewW52tcAn/AXHtrGVGWwWdhrxFTmKvf4
+         Dc3zZcZflpwmzxu8sTUgGCCFQLTzbLjpJZLrIP2Jt4/p6u+DrCSXGEpDvN/6SlZVOAjq
+         0gUQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kiddier.org; s=google; t=1792495983; x=1793100783; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=6w7JRuFovvwwUBTh/FtHv2xuiuhqO2jha1lfwIcoggA=;
+        b=Kg2eU5L1ZH1/rhyBK1HBZXlrJ3dThch+WIhyXGs/eDNfqSCXg4Cpdw861WyMrsHEqQ
+         RGhnrBOp/up7ePk56uyKQPyWbzpmvQ4vQZTWE62gmhZtDm3vu8wn2nObjH1KBy6lOYiq
+         hxrx1yEV5BQthb7uNJHUwRBSEMZT+k4K6mork=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792495983; x=1793100783;
+        h=content-type:cc:to:subject:message-id:date:from:mime-version
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=6w7JRuFovvwwUBTh/FtHv2xuiuhqO2jha1lfwIcoggA=;
+        b=OMchmbFJIe8ByyBS8vxRJOL+dTmlZnTE03VXazfiWbvDjqE2ZLyagi7eJkjgoW7xIg
+         1f9oi0WOC8RDULhoSqt6frYQyt27Z1GINlU/m2fgwnNaFFSKHuScHrN8/QS1aOkD+wK4
+         DdGkL916NiyG4HY2aODKAnz5nbNDxTDZ4yakuLSA8CJXwfoCWAxUSWt4nrAHvIwvGEiP
+         086Pu/6+Bkz81EhEHBCq1suTxL2Z1Rns4e8DEx3rvioy+HefQ0jvCaRN8Qft0/mbTUDG
+         eWZXl4KHtjYxP0Phu8WW4v3aXop0Ifb5GKJphbrxBNoXfc5cu1VL6jdCj7K2N6Vv+1TN
+         oQrg==
+X-Forwarded-Encrypted: i=1; AKwUvBzPelHnMnSuR32528EN4dLL41Jq+aMds8DjlGNdL9zKXPTGrvgV6oDbYJErcysyep/84sL+CQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJQ7y+hzNvQ98T81mTBS632vDKazbr6TtiDNwP4MKV2Ayu2H28+
+	r6f7ETlPaXUxi1fHu/Mzz1psFJnS5HlL/Ie6VKOOO1V5HL53qjcwOnKmo+jy8Y1GFweeE3hUWzZ
+	vjkBMdP3s7iw1N96Y27B9UdjpIfKXVmXIkGH4Bt/ISA==
+X-Gm-Gg: AYBFou1nWQprwGVIH6GDcBgqYtDunxypMbwIe2eTAgDO07VKUYLSXGPYGphlzaECHzN
+	WTn8W267LMVqeVy+IrkSYJHIF2+Auuu7TZsYv3B0BqVLUGR9Id6ZWKCNZCPQ9OuBrS/MrKpnbfR
+	FlYpJUJdjlZSZsVuABQJR+6MopQDiJuKDnkM4lJ1t47eGJx4oV1bi+OzUHRnSsYeDLCrhJBeRIv
+	qybCHSdOwtHodbvkc9DbwjQ842nIumXCQAiWkZAeJHUE3c0qIwMKHjdFZ2nM0k6kBUb94TYVtZ+
+	PbL9A+UiuIjLjU7ihLSYlvHHf21qwZz3tXI6KsnQ+6UykSa8nZJliYnI8g==
+X-Received: by 2002:a05:6122:4307:b0:5e9:7458:9bb2 with SMTP id
+ 71dfb90a1353d-5eaaa392b1emr2875328e0c.5.1792495982934; Tue, 20 Oct 2026
+ 04:33:02 -0700 (PDT)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,161 +97,101 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 07/11] iommu: Let 32-bit ARM drivers opt into a DMA API
- default domain
-To: Mikko Perttunen <mperttunen@nvidia.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>,
- Thierry Reding <thierry.reding@kernel.org>, David Airlie
- <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Jonathan Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Krzysztof Kozlowski <krzk@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Peter Griffin <peter.griffin@linaro.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>,
- Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
-References: <20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com>
- <20261016-b4-arm32-iommu-dma-cookie-v2-7-b06842a01938@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20261016-b4-arm32-iommu-dma-cookie-v2-7-b06842a01938@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Peter Kiddier <peter@kiddier.org>
+Date: Tue, 20 Oct 2026 22:32:51 +1100
+X-Gm-Features: AclHuK_5AI531dlJobOpneIUNwUkuWTyVSnUQajyWhdToxWSB6hT9Bldv5uGkoQ
+Message-ID: <CA+3E589O46nj=c1Y+Rwk_nPZZKEUjFvMfWaAFmQ2-7De9iUxFw@mail.gmail.com>
+Subject: [REGRESSION] BCM4355 Wi-Fi fails with Intel IOMMU on 7.3.0-2-t2-noble
+To: linux-wireless@vger.kernel.org
+Cc: brcm80211@lists.linux.dev, iommu@lists.linux.dev, 
+	arend.vanspriel@broadcom.com, regressions@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 16/10/2026 7:46 am, Mikko Perttunen wrote:
-> iommu_get_default_domain_type() unconditionally forces IDENTITY on
-> 32-bit ARM as ARM_DMA_USE_IOMMU installs its own UNMANAGED domain on top
-> of whatever the group already had. Now that the ARM DMA API state is an
-> ordinary domain cookie, IOMMU drivers can ask for a real
-> IOMMU_DOMAIN_DMA default domain instead. Drop the override so that
-> ->def_domain_type is honoured, and let a driver-requested DMA domain
-> through the !CONFIG_IOMMU_DMA guard when ARM_DMA_USE_IOMMU can back it.
-> 
-> IOMMU_DOMAIN_DMA stays strictly opt-in on 32-bit ARM and is never the
-> fallback to avoid unexpected changes, as drivers today return 0 from
-> ->def_domain_type while expecting the legacy behaviour.
-> 
-> Behaviour is therefore unchanged for every existing 32-bit ARM IOMMU
-> driver:
-> 
-> - exynos-iommu, omap-iommu, rockchip-iommu, msm_iommu, ipmmu-vmsa,
->    mtk_iommu*, sun50i-iommu and qcom_iommu have no ->def_domain_type,
->    so iommu_get_def_domain_type() returns the unchanged cur_type of 0,
->    which is forced to IDENTITY as before.
-> - arm-smmu returns IDENTITY for legacy bindings and 0 otherwise, which
->    ends up in the same place.
-> - tegra-smmu returns IDENTITY explicitly, and keeps doing so until a
->    later patch.
-> 
-> Also move the static_assert on the two DMA API implementations being
-> mutually exclusive to drivers/iommu/dma-iommu.h, next to the
-> declarations that depend on it.
-> 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> ---
->   drivers/iommu/dma-iommu.h |  3 +++
->   drivers/iommu/iommu.c     | 20 +++++---------------
->   2 files changed, 8 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-> index 71b23cb698c0..24fa4165450f 100644
-> --- a/drivers/iommu/dma-iommu.h
-> +++ b/drivers/iommu/dma-iommu.h
-> @@ -12,6 +12,9 @@
->    * IOMMU_DOMAIN_DMA default domains. Only one provider can be compiled in at a
->    * time.
->    */
-> +static_assert(!(IS_ENABLED(CONFIG_IOMMU_DMA) &&
-> +		IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)));
-> +
+Hello,
 
-Don't the first couple of patches already make this redundant, since 
-such a build would now fail anyway due to multiple definitions of 
-iommu_setup_dma_ops() etc.?
+I am reporting a Wi-Fi regression on a 2018 Apple MacBook Air with a
+T2 chip, running Linux Mint Zena based on Ubuntu 24.04.
 
->   #if defined(CONFIG_ARM_DMA_USE_IOMMU)
->   
->   #include <asm/dma-iommu.h>
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 5fbb76d44a1e..0d812c4b9f08 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1884,18 +1884,6 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
->   
->   	lockdep_assert_held(&group->mutex);
->   
-> -	/*
-> -	 * ARM32 drivers supporting CONFIG_ARM_DMA_USE_IOMMU can declare an
-> -	 * identity_domain and it will automatically become their default
-> -	 * domain. Later on ARM_DMA_USE_IOMMU will install its UNMANAGED domain.
-> -	 * Override the selection to IDENTITY.
-> -	 */
-> -	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
-> -		static_assert(!(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) &&
-> -				IS_ENABLED(CONFIG_IOMMU_DMA)));
-> -		driver_type = IOMMU_DOMAIN_IDENTITY;
-> -	}
-> -
->   	for_each_group_device(group, gdev) {
->   		driver_type = iommu_get_def_domain_type(group, gdev->dev,
->   							driver_type);
-> @@ -1913,11 +1901,13 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
->   
->   	/*
->   	 * If the common dma ops are not selected in kconfig then we cannot use
-> -	 * IOMMU_DOMAIN_DMA at all. Force IDENTITY if nothing else has been
-> -	 * selected.
-> +	 * IOMMU_DOMAIN_DMA at all, unless this is ARM32 and the driver asked
-> +	 * for it explicitly, where CONFIG_ARM_DMA_USE_IOMMU provides the
-> +	 * implementation. Force IDENTITY if nothing else has been selected.
->   	 */
->   	if (!IS_ENABLED(CONFIG_IOMMU_DMA)) {
-> -		if (WARN_ON(driver_type == IOMMU_DOMAIN_DMA))
-> +		if (WARN_ON(driver_type == IOMMU_DOMAIN_DMA &&
-> +			    !IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
+The Broadcom BCM4355 Wi-Fi device works with kernel 7.2.11-3-t2-noble
+but fails with 7.3.0-2-t2-noble. Disabling the Intel IOMMU using
+intel_iommu=off restores Wi-Fi on 7.3.0-2.
 
-This ends up looking a bit odd, and not clear that it's still more or 
-less the same special-case workaround seemingly being removed in the 
-hunk above.
+Hardware:
+- Apple MacBook Air 2018 (MacBookAir8,1)
+- Wi-Fi: Broadcom BCM4355 802.11ac Wireless LAN SoC
+- PCI ID: 14e4:43dc (subsystem 106b:0843)
+- Driver: brcmfmac
+- Interface: wlp2s0
 
-At this point I'd rather push any remaining identity special cases into 
-the relevant drivers, however I'm somewhat more confident that there may 
-not actually need to be any:
+Test results:
 
-- exynos-iommu, omap-iommu, rockchip-iommu, msm_iommu: AFAICS these all 
-only ever have a single client device, so the per-group implicit domain 
-should be equivalent to the per-device explicit one, so they should not 
-be impacted by switching (provided the "throw away the ARM domain" idiom 
-in some of their client drivers becomes non-destructive as mentioned)
+- 7.2.11-3-t2-noble, default kernel command line: Wi-Fi works.
+- 7.3.0-2-t2-noble, default kernel command line: Wi-Fi fails.
+- 7.3.0-2-t2-noble with intel_iommu=off: Wi-Fi works.
+- Reloading brcmfmac on the failing configuration does not restore Wi-Fi.
 
-- mtk_iommu, sun50i-iommu, qcom_iommu, arm_smmu: While Kconfig might 
-allow building them, I'm not sure we really support the first 3 on 
-32-bit at all, but again since these all have no special CONFIG_ARM 
-group handling anyway then either they must work out as above or they're 
-already broken, and thus at most the change might un-break them.
+On the failing 7.3.0-2 boot, the driver detects the device, loads its
+firmware and creates wlp2s0:
 
-- mtk_iommu_v1 and ipmmu-vmsa probably wouldn't care given that they end 
-up attaching to their own shared domain anyway - they just can't wait to 
-be able to use a proper singleton group to rip all that out :D
+brcmfmac 0000:02:00.0: enabling device (0000 -> 0002)
+brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4355c1-pcie for
+chip BCM4355/12
+brcmfmac: brcmf_c_process_txcap_blob: TxCap blob found, loading
+brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4355/12 wl0: Jul  8 2023
+17:49:51 version 9.30.503.0.32.5.87 FWID 01-e74b9cb0
+brcmfmac 0000:02:00.0 wlp2s0: renamed from wlan0
 
-The main reason for forcing identity was to meet the expectations of the 
-existing ARM DMA ops setup, but if we're now touching the ARM code to 
-properly tie that in to the IOMMU flow, then I think we can just do the 
-right thing.
+However, Wi-Fi subsequently stops responding. The kernel log reports
+errors including:
 
-Thanks,
-Robin.
+brcmf_msgbuf_query_dcmd: Timeout on response for query command
+brcmf_cfg80211_scan: scan error (-5)
+brcmf_run_escan: error (-5)
+brcmf_msgbuf_tx_ioctl: Failed to reserve space in commonring
+brcmf_cfg80211_get_channel: chanspec failed (-5)
 
->   			return -1;
->   		if (!driver_type)
->   			driver_type = IOMMU_DOMAIN_IDENTITY;
-> 
+There is also an error creating the P2P interface:
 
+brcmf_cfg80211_add_iface: add iface p2p-dev-wlp2s0 type 10 failed: err=-52
+
+I tried reloading the driver using:
+
+sudo modprobe -r brcmfmac_wcc
+sudo modprobe -r brcmfmac
+sudo modprobe brcmfmac
+
+The driver and firmware loaded again, but Wi-Fi remained unusable.
+
+The firmware files are present under /lib/firmware/brcm/, and the
+firmware version reported by the driver is the same on the working and
+failing kernels.
+
+The brcmfmac module metadata differs between the kernels:
+
+Working kernel 7.2.11-3-t2-noble:
+srcversion: 3B6176FDB720DDE8E7C596B
+
+Failing kernel 7.3.0-2-t2-noble:
+srcversion: 3DCA38D52402541701276CF
+
+I did not find obvious PCIe AER or fatal errors in the failing boot's
+kernel log.
+
+It has been suggested testing intel_iommu=off after reloading
+brcmfmac. The driver reload did not help, but booting with
+intel_iommu=off restored Wi-Fi.
+
+This strongly suggests an interaction between Intel IOMMU handling and
+the BCM4355/brcmfmac driver in the 7.3.0-2-t2-noble kernel.
+
+I have not tested a vanilla upstream kernel, so I cannot yet confirm
+whether this reproduces outside the T2 kernel packages. Unfortunately,
+I have limited time available for further testing, so I may not be
+able to investigate additional requests promptly. I wanted to report
+the reproducible behaviour and the intel_iommu=off workaround in case
+it helps identify the regression.
+
+Could you advise on further diagnostics, or whether this should be
+investigated as an IOMMU or brcmfmac regression?
+
+Thank you.
