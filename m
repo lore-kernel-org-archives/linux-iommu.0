@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.133
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792489296;
-	b=XCUnv/EmVscRWUuOlSEKDxk41TV6D+0st3QiKLeZwH9PxGqidwF9dFG7GIue8Tycqs+P
-	 YBFyKtpLTgXUh/U1Y8iQ+MExOlWMWeE9yYnX3VvdK+tT+odcX3Inq4j9PpeTuGEPvu//p
-	 Gdow7fJQp+i4njn6OXqyQ3VZPjgpq+Acasc9zcB+fYb/rtSNbvbm2ksM6H4L6zHTr63e5
-	 gbEEcTmRm1H2sVhdXBtxARZlTmR9UvCfx9lPy/XpHOjUmRWZnlOB/GfARP9c0ODmGy3dA
-	 Q9ElpL3Qm6K4WT0DgxoqLciwyfGgJdBx6nmILBJrp1tA/FKIwRUYQA4nEqI1H+EpOtg==
+	t=1792489300;
+	b=HBA23FDNcQkFdpE+kEEZk0x2gA5TTXpjSCItmL2gGW0/v5xc2bZaC1aXZ9WgbK8H0Gy4
+	 XuG3am+wyh1bDkZlF2Vmpz1INquNjl6kqkBH2a4Ajk4+9GiYLp+00gRte6LS7yErVke/1
+	 bNzdOrDZtuCiXoQTuVdYwRstkNbBGPO8+hcOtUiq6ggTIB2SJlfdLZv4aRtXiQKKhMGSs
+	 eFqdC4ezI9djlqCOGqniVzd/V1q4ql7gbW0PTadrp144dZhNMBRNtupfnJAPuj4EuFBol
+	 S6BxHH07eGX3ZecXLmGrecHlfx4z8lKi4sP/uEuCpn7fCPCUxYOKt29rEBi7EM8dgwQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792489296;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792489300;
 	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
 	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=w/TFYSOmTxMahb2Mic63Cn7ip3pO1iiyLlcNDtOGyto=;
-	b=KjEBK4vU7GL6A2g/M2+gXPB/e3mQf7evojMqF2LWhHcp5rPWi6Zi0eBZ7yPsKTfVZIV6
-	 CFEEsZwb5RJtWA4WVD7d6SrbeSNJKFJF6HOtxdGrqIyKeb9a9BBeudic+ufFzaGqGpY3R
-	 GsffebXh1Uuc9v5K9eKiyj/QHWcgwrTTFtGv+MsXDcRa300/MXz+jRdy9I2xeDB1SpwLq
-	 KERVvxa/Ycm1UkVY7qR9lB8fb/7Mokx+yauTc9UCsxGV7lD8oEbFt7hLpXg+28AD24Pve
-	 8Wi7WqkazZ+Yy8y7Mj5p8WbwSrYmZJrjg01MCJXaoqcmCWcugSTdejQzKov4F0QUZ6Q==
+	bh=RWu/puVJ24xC3wGWoddID7UrDVPs6J4eX8hoo+uZKZs=;
+	b=xoEqBjFpRFCeG5+jFyIpUvnmrimvWf9AIucu5Dcz1KMP2DoxwsHUXBm7wyD1OjVPWdz0
+	 67vYGpLdcX2oe2auRVLUELhYgiJ9stiGQ5cyKeUftPePUwg7e28WO5a89RFsZvz6WeElL
+	 bKB2UZOOoVCAm6IYKypqtVaTw1473HFgmpXN1cogkLcMu/ZE3SPEB/LhJmpBfjiSwPJwd
+	 OdYiz9HtbO5W4X9YWlMno13BKNxbLVZPde5ff3/0D2jFY00+cF/PMB3EKyLPR7otUByGl
+	 ijPMahYJy/NbvyJgpD789hn0OilZkYC0NnCcp7qg9ZM7V7sXQ/GLm5FlJ8JLC2IIrug==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.alibaba.com;
 	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=aUegThch;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=PnNS9XQf;
 	arc=none smtp.remote-ip=115.124.30.133
 Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E09260A4AFA
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 09:41:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E09260A4AFA
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12A7F60A2610
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 09:41:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 12A7F60A2610
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=aUegThch
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=PnNS9XQf
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1792489293; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=w/TFYSOmTxMahb2Mic63Cn7ip3pO1iiyLlcNDtOGyto=;
-	b=aUegThchgjiynBBUhe5MnD75RAxXY5BnKQ1wfbNTlfMHN+slxDABKudzC29yI0WtLC9I9mwbjy2cbrBhTENSfN+BJ9YApCRHAJO1Tgqc/nx/np60TIpU0/MglhRetEfwaPWmcaS/CRtaYcM1bkk2wVumgKPPNUuh/U072ZczOpU=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=29;SR=0;TI=SMTPD_---0XDCspaC_1792489287;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDCspaC_1792489287 cluster:ay36)
+	t=1792489297; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=RWu/puVJ24xC3wGWoddID7UrDVPs6J4eX8hoo+uZKZs=;
+	b=PnNS9XQftzuEHa/gQAjjTSx7LAiz+CX2LBm1fUEsyYsq+Jytt3IIyvsbvn/CfSC9hSSciITTTiwfC1tYX4NW1rEtTS50rY/k2pqg+iSkqrsdV0Wj9t1EYZAg6rStZK8xDydk+jt5bInsivupKY3byPsuiTNe/PNGdPYsg9v+Iew=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R511e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=30;SR=0;TI=SMTPD_---0XDCspbB_1792489291;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDCspbB_1792489291 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 20 Oct 2026 17:41:30 +0800
+          Tue, 20 Oct 2026 17:41:35 +0800
 From: fangyu.yu@linux.alibaba.com
 To: tomasz.jeznach@linux.dev,
 	joro@8bytes.org,
@@ -71,10 +71,11 @@ Cc: fangyu.yu@linux.alibaba.com,
 	linux-kernel@vger.kernel.org,
 	linux-riscv@lists.infradead.org,
 	kvm-riscv@lists.infradead.org,
-	Nutty Liu <nutty.liu@hotmail.com>
-Subject: [RFC PATCH v5 05/10] iommu/riscv: support GSCID and GVMA invalidation command
-Date: Tue, 20 Oct 2026 17:41:01 +0800
-Message-Id: <20261020094106.92722-6-fangyu.yu@linux.alibaba.com>
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Andrew Jones <ajones@ventanamicro.com>
+Subject: [RFC PATCH v5 06/10] RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
+Date: Tue, 20 Oct 2026 17:41:02 +0800
+Message-Id: <20261020094106.92722-7-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 In-Reply-To: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
 References: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
@@ -89,179 +90,31 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Zong Li <zong.li@sifive.com>
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
 
-This patch adds a ID Allocator for GSCID and a wrap for setting up
-GSCID in IOTLB invalidation command.
+Enable KVM/VFIO support on RISC-V architecture.
 
-Set up iohgatp to enable second stage table and flush stage-2 table if
-the GSCID is set.
-
-The GSCID of domain should be freed when release domain. GSCID will be
-allocated for parent domain in nested IOMMU process.
-
-Signed-off-by: Zong Li <zong.li@sifive.com>
+Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
 Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
 ---
- drivers/iommu/riscv/iommu-bits.h |  7 ++++
- drivers/iommu/riscv/iommu.c      | 62 ++++++++++++++++++++++++++------
- 2 files changed, 58 insertions(+), 11 deletions(-)
+ arch/riscv/kvm/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-index f2ef9bd3cde9..65d1f2250011 100644
---- a/drivers/iommu/riscv/iommu-bits.h
-+++ b/drivers/iommu/riscv/iommu-bits.h
-@@ -720,6 +720,13 @@ static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_command *cmd)
- 	cmd->dword1 = 0;
- }
- 
-+static inline void riscv_iommu_cmd_inval_gvma(struct riscv_iommu_command *cmd)
-+{
-+	cmd->dword0 = FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_CMD_IOTINVAL_OPCODE) |
-+		      FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA);
-+	cmd->dword1 = 0;
-+}
-+
- static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cmd,
- 						  u64 addr)
- {
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 3e1c8863ba0d..c31fb4c52205 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -48,6 +48,10 @@
- static DEFINE_IDA(riscv_iommu_pscids);
- #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
- 
-+/* IOMMU GSCID allocation namespace. */
-+static DEFINE_IDA(riscv_iommu_gscids);
-+#define RISCV_IOMMU_MAX_GSCID		(BIT(16) - 1)
-+
- /* Device resource-managed allocations */
- struct riscv_iommu_devres {
- 	void *addr;
-@@ -841,6 +845,7 @@ struct riscv_iommu_domain {
- 	struct list_head bonds;
- 	spinlock_t lock;		/* protect bonds list updates. */
- 	int pscid;
-+	int gscid;
- };
- PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
- 
-@@ -1003,7 +1008,7 @@ static void riscv_iommu_tlbi_calc(struct riscv_iommu_tlbi *tlbi,
- }
- 
- static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
--					  int pscid,
-+					  int pscid, int gscid,
- 					  struct riscv_iommu_tlbi *tlbi)
- {
- 	bool use_nl = tlbi->non_leaf &&
-@@ -1011,8 +1016,13 @@ static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
- 	struct riscv_iommu_command cmd;
- 	unsigned int i;
- 
--	riscv_iommu_cmd_inval_vma(&cmd);
--	riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
-+	if (gscid) {
-+		riscv_iommu_cmd_inval_gvma(&cmd);
-+		riscv_iommu_cmd_inval_set_gscid(&cmd, gscid);
-+	} else {
-+		riscv_iommu_cmd_inval_vma(&cmd);
-+		riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
-+	}
- 
- 	/*
- 	 * If non-leaf entries were changed and the IOMMU doesn't
-@@ -1096,7 +1106,7 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
- 		if (iommu == prev)
- 			continue;
- 
--		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, &tlbi);
-+		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, domain->gscid, &tlbi);
- 		prev = iommu;
- 	}
- 
-@@ -1230,6 +1240,7 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
- 
- 		WRITE_ONCE(dc->fsc, new_dc->fsc);
- 		WRITE_ONCE(dc->ta, new_dc->ta & RISCV_IOMMU_PC_TA_PSCID);
-+		WRITE_ONCE(dc->iohgatp, new_dc->iohgatp);
- 		/* Update device context, write TC.V as the last step. */
- 		dma_wmb();
- 		WRITE_ONCE(dc->tc, tc);
-@@ -1280,16 +1291,19 @@ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
- 
- 	WARN_ON(!list_empty(&domain->bonds));
- 
--	if ((int)domain->pscid > 0)
-+	if (domain->pscid > 0)
- 		ida_free(&riscv_iommu_pscids, domain->pscid);
-+	if (domain->gscid > 0)
-+		ida_free(&riscv_iommu_gscids, domain->gscid);
- 
- 	pt_iommu_deinit(&domain->riscvpt.iommu);
- 	kfree(domain);
- }
- 
--static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_mode)
-+static bool riscv_iommu_fsc_supported(struct riscv_iommu_device *iommu,
-+				      int mode)
- {
--	switch (pgd_mode) {
-+	switch (mode) {
- 	case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39:
- 		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39;
- 
-@@ -1302,6 +1316,22 @@ static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_m
- 	return false;
- }
- 
-+static bool riscv_iommu_iohgatp_supported(struct riscv_iommu_device *iommu,
-+					  int mode)
-+{
-+	switch (mode) {
-+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV39X4:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39X4;
-+
-+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV48X4:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48X4;
-+
-+	case RISCV_IOMMU_DC_IOHGATP_MODE_SV57X4:
-+		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57X4;
-+	}
-+	return false;
-+}
-+
- static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
- 					    struct device *dev,
- 					    struct iommu_domain *old)
-@@ -1314,11 +1344,21 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
- 
- 	pt_iommu_riscv_64_hw_info(&domain->riscvpt, &pt_info);
- 
--	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
--		return -ENODEV;
-+	if (domain->gscid) {
-+		if (!riscv_iommu_iohgatp_supported(iommu, pt_info.iohgatp_mode))
-+			return -ENODEV;
-+
-+		dc.iohgatp =
-+			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
-+			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->gscid) |
-+			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn);
-+	} else {
-+		if (!riscv_iommu_fsc_supported(iommu, pt_info.fsc_iosatp_mode))
-+			return -ENODEV;
- 
--	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
--	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-+		dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
-+			 FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-+	}
- 	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
- 	     RISCV_IOMMU_PC_TA_V;
+diff --git a/arch/riscv/kvm/Kconfig b/arch/riscv/kvm/Kconfig
+index ec2cee0a39e0..54ee90f010ef 100644
+--- a/arch/riscv/kvm/Kconfig
++++ b/arch/riscv/kvm/Kconfig
+@@ -30,8 +30,10 @@ config KVM
+ 	select KVM_GENERIC_HARDWARE_ENABLING
+ 	select KVM_MMIO
+ 	select VIRT_XFER_TO_GUEST_WORK
++	select KVM_VFIO
+ 	select SCHED_INFO
+ 	select GUEST_PERF_EVENTS if PERF_EVENTS
++	select SRCU
+ 	help
+ 	  Support hosting virtualized guest machines.
  
 -- 
 2.50.1
