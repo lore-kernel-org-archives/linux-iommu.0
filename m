@@ -1,67 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.64
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792507587;
-	b=OnuS8CQKxay7HwL6ahK1C05IQVvb+XzzCmsmkq/UcT+EijFEZbfkCIJkNuzyS1cP0Xo9
-	 Xj+a53yMYEwTpIVsu0A93rXabVs53T34LeKfzXWUZf+boDTb+w7sqKM3PXpk8Bxm99GAG
-	 Liq9Xb2J1jNIqxYhfs3OJQDTuRW/aoAXnwRMuRUtYS1Afpm8iHrZ4RGIOsmBchl34jtCu
-	 wa9F0J7Vgd9WlYPp5/FvtUydcE2ADlQtQB4b5IMXnN7HC+1V93NAECeZGBqgc/ekTUKbY
-	 V3RtQHSr9/nhpJ+E+1U1nt/CmvI0vYOD9rdIdoohfM7jqLJTfx7yciVLJWIB1YsJzjA==
+	t=1792510236;
+	b=xkZmh0QOV8DItYmNjXrXYMtcqNTyd5gIOdk0m5hiQbxSQ0gO9CIyl10G8j4Pnz0xwGkC
+	 +uyez7nkOZbnbJZYjxJZc29JiP+bp4j2mhCuZrYdgibvDUEN5aDFEY3xM/YkrFvG6EwFj
+	 XlXxQ5bEEUhf7smtgFYhGzG4c//bWA97mQRCSTfS4FC7bI8IQ9Qd/TpI8Y/aMl64sYHoL
+	 Juvi0hG/vkLVgx7kAfWyNXldqKGCBtyRz5wm4TKeZhnnhBQPUEdFhnmcAB4Z9jsl/HZtA
+	 rNBXpxJWAcyHQcSrodEHKoVNFeAOnafiOzSJTZJJyN75e705ZFY/ZOXkgqIqEKY4C7w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792507587;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:CC:Subject:User-Agent:
-	 In-Reply-To:References:Message-ID:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=a/YVQ5+8FFxd+OKTrecEbQdO7nAgyOE7j7VKGjXUilE=;
-	b=5SjkqDJ3gA7caPgo9aURuLui1g+gIkpPwwcudjRIBhT0gCWPKz9plrfPk3xz80GVh+in
-	 8C4XJE70JqcYYOocjD3CdRilxskwkfB9Cj2IHhbMclj24rDwqWucV9lsSqTGvI6hao6iW
-	 UDwjPIDjNd+PkyTLtSSnaiIaklWnrlNwiAVbrzInefT3GW1+auRy5wxrO8jnFvypkQIUY
-	 oAlkB82M+0SgCZAAJD8B46dAJcq1irCzPM/0Zwn7cBFpYfSUs1IvZm2OruXwo+2dwQUtL
-	 kQ8Q173cvg7LtuD0Q50HXAgQZE8s3IJpjRz0i98zcs10kM3OIEein49xpjK2F4nr9RQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792510236;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=FXgaLSYZ83aSOhpB3j6nH7HqeJaxN9MwPk9cCwVPoEg=;
+	b=E5S5rkgOd3cU/k21XQMmuWzlJREeLS5VykthtZcNWKOZZ72wxDUs5iUa7j1NRWzSw0Nm
+	 8bsantMIxJDCCfPaI+EQ4hmiDZAe8f8/41XZF6zPmVsNoDeYyH/+CHyYl71WMy2hfjTCo
+	 x2FqEphFvlz+bBYmmsYJjDoJ5RM6jXZvxM4zbdQqHTLA1yoHXJEmTgp53/TVcEiVpIPji
+	 PlycGMDn8qt4TRs5/IbnvE1vv2G3jpqdBrrBAsjy5SevSle4VqfO4+Wp00v99Vsy4Bqz2
+	 e4Mup7w5XgOCUOE7QgxLtgJuXk3lHfJSBGmQ2Texl0E2i3Cq/ExLz1BwoE24rNX+I7g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=ZpfLJXHX;
-	arc=none smtp.remote-ip=95.215.58.64
-Received: from mta1.migadu.com (out-64.mta1.migadu.com [95.215.58.64])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CC3160A2600
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 14:46:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1CC3160A2600
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b="LusYo5e/";
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A7BF2606A329
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 15:30:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7BF2606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=ZpfLJXHX
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=a/YVQ5+8FFxd+OKTrecEbQdO7nAgyOE7j7VKGjXUilE=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1792507578; v=1; x=1793112378;
- b=ZpfLJXHX5UiA4Yoq+0nKJqYhTXkr/ywQl21YNzPjCxzJzZQ4t4j7FNvUYD8QKJHm0nzwIBer
- TfRvDNdU9wlDVkF5B3uoESXSGA46hEO7XYvC+wxq2TZki/tsBEV5A3yWJ6xWnMU5D3sp/i/wHcu
- Hscb3mJiY0bibcIaCFpkJwug=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id f82142b7c0acb158;
-	Tue, 20 Oct 2026 14:46:18 +0000
-X-Mizu-Trace-ID: f82142b7c0acb158
-X-Migadu-Flow: FLOW_OUT
-Date: Tue, 20 Oct 2026 20:16:11 +0530
-From: Aditya Garg <aditya.garg@linux.dev>
-To: "Perlow, Jason" <jperlow@gmail.com>, baolu.lu@linux.intel.com,
- dwmw2@infradead.org
-CC: iommu@lists.linux.dev, Bjorn Helgaas <bhelgaas@google.com>,
- linux-pci@vger.kernel.org, arend.vanspriel@broadcom.com,
- linux-wireless@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_intel-iommu=3A_DMAR_PTE_Read_fault?=
- =?US-ASCII?Q?_crash-loops_a_PCIe_wifi_device=2C_v7=2E?=
- =?US-ASCII?Q?3-rc7_-=3E_v7=2E3_final_regression=2C_repr?=
- =?US-ASCII?Q?oduces_on_one_unit_out_of_five_tested?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com>
-References: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com>
-Message-ID: <53BF6325-C030-4280-B21F-4B6C0FF941B0@linux.dev>
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=LusYo5e/
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B008516F8;
+	Tue, 20 Oct 2026 08:30:31 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 823C23F7B4;
+	Tue, 20 Oct 2026 08:30:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1792510234; bh=uX61sNx/pMOXT8smCyah17rnMVB+Ex6Ja4uPMIwFAAg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=LusYo5e/E9i+iF1dMk4IpxTeUvZsvx2T1cz4iq5jALW9HTUcRxR4K6412qCsht28i
+	 M1Pj/Fz4RmC/EkQHLKa/8gqjVUH82jWPY+ITsoiZewYZKLNr+Q3hpsYBD7tPJ3HL2/
+	 APV4RlGoaBr+cY6wATyO0XqANhu+8yQlXbwkpsKs=
+Message-ID: <605a143f-d452-408f-9fcf-259af8ad004b@arm.com>
+Date: Tue, 20 Oct 2026 16:30:30 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -71,140 +53,294 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 11/11] iommu/tegra-smmu: Use a DMA API default domain
+ per swgroup
+To: Mikko Perttunen <mperttunen@nvidia.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>,
+ Thierry Reding <thierry.reding@kernel.org>, David Airlie
+ <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+References: <20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com>
+ <20261016-b4-arm32-iommu-dma-cookie-v2-11-b06842a01938@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20261016-b4-arm32-iommu-dma-cookie-v2-11-b06842a01938@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 16/10/2026 7:46 am, Mikko Perttunen wrote:
+> Everything is now in place for the Tegra SMMU to give devices a real
+> IOMMU_DOMAIN_DMA default domain.
+> 
+> Some device drivers still rely on explicit domains (and being able to
+> detach a legacy ARM DMA domain if any), so DMA default domains are
+> enabled on a per-swgroup basis via a use_dma_api flag. As drivers are
+> converted to DMA API usage we can eventually get rid of this. Initially
+> the flag is enabled for TegraDRM and Host1x devices.
+> 
+> On multi_v7_defconfig (where CONFIG_ARM_DMA_USE_IOMMU was always
+> enabled), this will fix TegraDRM probing with certain probe orderings
+> where the legacy implementation's lack of support for multiple devices
+> in one IOMMU group would cause breakage.
+> 
+> On tegra_defconfig, as this now enables CONFIG_ARM_DMA_USE_IOMMU, all
+> devices move to either the legacy ARM DMA path or the new one. This
+> should in principle not cause issues as the drivers would already have
+> been verified on multi_v7_defconfig.
+> 
+> Also set .release_domain to the identity domain to ensure the AS is
+> released appropriately now that the domain can be non-static.
+> 
+> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+> ---
+>   drivers/iommu/Kconfig           |  1 +
+>   drivers/iommu/tegra-smmu.c      | 59 ++++++++++++++++++++++++++++++++++++++---
+>   drivers/memory/tegra/tegra114.c | 13 +++++----
+>   drivers/memory/tegra/tegra124.c | 10 ++++---
+>   drivers/memory/tegra/tegra30.c  | 16 ++++++-----
+>   include/soc/tegra/mc.h          |  7 +++++
+>   6 files changed, 87 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 6e07bd69467a..817e84e0e6ab 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -252,6 +252,7 @@ config TEGRA_IOMMU_SMMU
+>   	depends on TEGRA_AHB
+>   	depends on TEGRA_MC
+>   	select IOMMU_API
+> +	select ARM_DMA_USE_IOMMU if ARM
+>   	help
+>   	  This driver supports the IOMMU hardware (SMMU) found on NVIDIA Tegra
+>   	  SoCs (Tegra30 up to Tegra210).
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 6779528a9e7c..1c1910f25553 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -994,16 +994,31 @@ static int tegra_smmu_of_xlate(struct device *dev,
+>   
+>   static int tegra_smmu_def_domain_type(struct device *dev)
+>   {
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct tegra_smmu *smmu = dev_iommu_priv_get(dev);
+> +	unsigned int i;
+> +
+> +	if (!fwspec || !smmu)
+> +		return IOMMU_DOMAIN_IDENTITY;
 
+Dead code - by this point tegra_smmu_probe_device() has already run (and 
+we've literally reached this call via dev_iommu_ops(dev)) so the device 
+is definitely valid.
 
-On 20 October 2026 8:10:21=E2=80=AFpm IST, "Perlow, Jason" <jperlow@gmail=
-=2Ecom> wrote:
->Hardware: Intel CoffeeLake-H platforms, various=2E The affected device is=
- a
->Broadcom BCM4364 802=2E11ac PCIe wifi adapter (14e4:4464) at 0000:05:00=
-=2E0 on
->an Apple MacBookPro16,1 (T2 Mac)=2E Aditya, including you directly since =
-this
->is T2 hardware; copying iommu/pci/wireless because the fault signature an=
-d
->the fact that it reproduces on only one of five tested machines looks lik=
-e
->it needs eyes on the core IOMMU/PCI path, not the driver=2E
+> +
+>   	/*
+> -	 * FIXME: For now we want to run all translation in IDENTITY mode, due
+> -	 * to some device quirks. Better would be to just quirk the troubled
+> -	 * devices.
+> +	 * Only clients known to work with the DMA API get a DMA default domain.
+> +	 * The rest keep running in identity mode.
+>   	 */
+> -	return IOMMU_DOMAIN_IDENTITY;
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		const struct tegra_smmu_swgroup *group;
+> +
+> +		group = tegra_smmu_find_swgroup(smmu, fwspec->ids[i]);
+> +		if (!group || !group->use_dma_api)
 
-Nice that's the third bug report of this issue today:
+Similarly, dev->iommu_group is already assigned with whatever valid 
+group tegra_smmu_device_group() returned, so you could perhaps just do a 
+single iteration over smmu->groups for the lookup.
 
-1=2E https://www=2Email-archive=2Ecom/ubuntu-bugs@lists=2Eubuntu=2Ecom/msg=
-6317918=2Ehtml
+Thanks,
+Robin.
 
-2=2E https://lore=2Ekernel=2Eorg/lkml/CA+3E58-2N-uVNsmwvOGDKZvtnDQ1DF=3DGz=
-FbTyRLuN8FpAd4qdg@mail=2Egmail=2Ecom/
+> +			return IOMMU_DOMAIN_IDENTITY;
+> +	}
+> +
+> +	return IOMMU_DOMAIN_DMA;
+>   }
+>   
+>   static const struct iommu_ops tegra_smmu_ops = {
+>   	.identity_domain = &tegra_smmu_identity_domain,
+> +	.release_domain = &tegra_smmu_identity_domain,
+>   	.def_domain_type = &tegra_smmu_def_domain_type,
+>   	.domain_alloc_paging = tegra_smmu_domain_alloc_paging,
+>   	.probe_device = tegra_smmu_probe_device,
+> @@ -1108,6 +1123,40 @@ static void tegra_smmu_debugfs_exit(struct tegra_smmu *smmu)
+>   	debugfs_remove_recursive(smmu->debugfs);
+>   }
+>   
+> +/*
+> + * The default domain type is a property of the IOMMU group, so all swgroups in
+> + * one group must agree on use_dma_api. Otherwise the core sees conflicting
+> + * def_domain_type and falls back to identity for the whole group.
+> + */
+> +static void tegra_smmu_check_groups(struct tegra_smmu *smmu)
+> +{
+> +	const struct tegra_smmu_soc *soc = smmu->soc;
+> +	unsigned int i, j;
+> +
+> +	for (i = 0; i < soc->num_groups; i++) {
+> +		const struct tegra_smmu_group_soc *group = &soc->groups[i];
+> +		int dma_api = -1;
+> +
+> +		for (j = 0; j < group->num_swgroups; j++) {
+> +			const struct tegra_smmu_swgroup *swgrp;
+> +
+> +			swgrp = tegra_smmu_find_swgroup(smmu,
+> +							group->swgroups[j]);
+> +			if (!swgrp)
+> +				continue;
+> +
+> +			if (dma_api < 0)
+> +				dma_api = swgrp->use_dma_api;
+> +			else if (swgrp->use_dma_api != !!dma_api)
+> +				break;
+> +		}
+> +
+> +		WARN(j < group->num_swgroups,
+> +		     "SMMU group %s mixes DMA API and identity swgroups\n",
+> +		     group->name);
+> +	}
+> +}
+> +
+>   struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+>   				    const struct tegra_smmu_soc *soc,
+>   				    struct tegra_mc *mc)
+> @@ -1142,6 +1191,8 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+>   	smmu->dev = dev;
+>   	smmu->mc = mc;
+>   
+> +	tegra_smmu_check_groups(smmu);
+> +
+>   	smmu->pfn_mask =
+>   		BIT_MASK(mc->soc->num_address_bits - SMMU_PTE_SHIFT) - 1;
+>   	dev_dbg(dev, "address bits: %u, PFN mask: %#lx\n",
+> diff --git a/drivers/memory/tegra/tegra114.c b/drivers/memory/tegra/tegra114.c
+> index 2883c4f91144..024c63bdd480 100644
+> --- a/drivers/memory/tegra/tegra114.c
+> +++ b/drivers/memory/tegra/tegra114.c
+> @@ -1029,15 +1029,18 @@ static const struct tegra_mc_client tegra114_mc_clients[] = {
+>   
+>   static const struct tegra_smmu_swgroup tegra114_swgroups[] = {
+>   	{ .name = "dc",        .swgroup = TEGRA_SWGROUP_DC,        .reg = 0x240,
+> -	  .defer_enable = true },
+> +	  .defer_enable = true, .use_dma_api = true },
+>   	{ .name = "dcb",       .swgroup = TEGRA_SWGROUP_DCB,       .reg = 0x244,
+> -	  .defer_enable = true },
+> +	  .defer_enable = true, .use_dma_api = true },
+>   	{ .name = "epp",       .swgroup = TEGRA_SWGROUP_EPP,       .reg = 0x248 },
+> -	{ .name = "g2",        .swgroup = TEGRA_SWGROUP_G2,        .reg = 0x24c },
+> +	{ .name = "g2",        .swgroup = TEGRA_SWGROUP_G2,        .reg = 0x24c,
+> +	  .use_dma_api = true },
+>   	{ .name = "avpc",      .swgroup = TEGRA_SWGROUP_AVPC,      .reg = 0x23c },
+> -	{ .name = "nv",        .swgroup = TEGRA_SWGROUP_NV,        .reg = 0x268 },
+> +	{ .name = "nv",        .swgroup = TEGRA_SWGROUP_NV,        .reg = 0x268,
+> +	  .use_dma_api = true },
+>   	{ .name = "hda",       .swgroup = TEGRA_SWGROUP_HDA,       .reg = 0x254 },
+> -	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250 },
+> +	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250,
+> +	  .use_dma_api = true },
+>   	{ .name = "msenc",     .swgroup = TEGRA_SWGROUP_MSENC,     .reg = 0x264 },
+>   	{ .name = "ppcs",      .swgroup = TEGRA_SWGROUP_PPCS,      .reg = 0x270 },
+>   	{ .name = "vde",       .swgroup = TEGRA_SWGROUP_VDE,       .reg = 0x27c },
+> diff --git a/drivers/memory/tegra/tegra124.c b/drivers/memory/tegra/tegra124.c
+> index a38fbf2baf6c..17068aaf163f 100644
+> --- a/drivers/memory/tegra/tegra124.c
+> +++ b/drivers/memory/tegra/tegra124.c
+> @@ -1071,13 +1071,14 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
+>   
+>   static const struct tegra_smmu_swgroup tegra124_swgroups[] = {
+>   	{ .name = "dc",        .swgroup = TEGRA_SWGROUP_DC,        .reg = 0x240,
+> -	  .defer_enable = true },
+> +	  .defer_enable = true, .use_dma_api = true },
+>   	{ .name = "dcb",       .swgroup = TEGRA_SWGROUP_DCB,       .reg = 0x244,
+> -	  .defer_enable = true },
+> +	  .defer_enable = true, .use_dma_api = true },
+>   	{ .name = "afi",       .swgroup = TEGRA_SWGROUP_AFI,       .reg = 0x238 },
+>   	{ .name = "avpc",      .swgroup = TEGRA_SWGROUP_AVPC,      .reg = 0x23c },
+>   	{ .name = "hda",       .swgroup = TEGRA_SWGROUP_HDA,       .reg = 0x254 },
+> -	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250 },
+> +	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250,
+> +	  .use_dma_api = true },
+>   	{ .name = "msenc",     .swgroup = TEGRA_SWGROUP_MSENC,     .reg = 0x264 },
+>   	{ .name = "ppcs",      .swgroup = TEGRA_SWGROUP_PPCS,      .reg = 0x270 },
+>   	{ .name = "sata",      .swgroup = TEGRA_SWGROUP_SATA,      .reg = 0x274 },
+> @@ -1093,7 +1094,8 @@ static const struct tegra_smmu_swgroup tegra124_swgroups[] = {
+>   	{ .name = "sdmmc2a",   .swgroup = TEGRA_SWGROUP_SDMMC2A,   .reg = 0xa98 },
+>   	{ .name = "sdmmc3a",   .swgroup = TEGRA_SWGROUP_SDMMC3A,   .reg = 0xa9c },
+>   	{ .name = "sdmmc4a",   .swgroup = TEGRA_SWGROUP_SDMMC4A,   .reg = 0xaa0 },
+> -	{ .name = "vic",       .swgroup = TEGRA_SWGROUP_VIC,       .reg = 0x284 },
+> +	{ .name = "vic",       .swgroup = TEGRA_SWGROUP_VIC,       .reg = 0x284,
+> +	  .use_dma_api = true },
+>   	{ .name = "vi",        .swgroup = TEGRA_SWGROUP_VI,        .reg = 0x280 },
+>   };
+>   
+> diff --git a/drivers/memory/tegra/tegra30.c b/drivers/memory/tegra/tegra30.c
+> index 0ee4715413ba..df6b5a499ccc 100644
+> --- a/drivers/memory/tegra/tegra30.c
+> +++ b/drivers/memory/tegra/tegra30.c
+> @@ -1140,19 +1140,23 @@ static const struct tegra_mc_client tegra30_mc_clients[] = {
+>   
+>   static const struct tegra_smmu_swgroup tegra30_swgroups[] = {
+>   	{ .name = "dc",   .swgroup = TEGRA_SWGROUP_DC,   .reg = 0x240,
+> -	  .defer_enable = true },
+> +	  .defer_enable = true, .use_dma_api = true },
+>   	{ .name = "dcb",  .swgroup = TEGRA_SWGROUP_DCB,  .reg = 0x244,
+> -	  .defer_enable = true },
+> +	  .defer_enable = true, .use_dma_api = true },
+>   	{ .name = "epp",  .swgroup = TEGRA_SWGROUP_EPP,  .reg = 0x248 },
+> -	{ .name = "g2",   .swgroup = TEGRA_SWGROUP_G2,   .reg = 0x24c },
+> +	{ .name = "g2",   .swgroup = TEGRA_SWGROUP_G2,   .reg = 0x24c,
+> +	  .use_dma_api = true },
+>   	{ .name = "mpe",  .swgroup = TEGRA_SWGROUP_MPE,  .reg = 0x264 },
+>   	{ .name = "vi",   .swgroup = TEGRA_SWGROUP_VI,   .reg = 0x280 },
+>   	{ .name = "afi",  .swgroup = TEGRA_SWGROUP_AFI,  .reg = 0x238 },
+>   	{ .name = "avpc", .swgroup = TEGRA_SWGROUP_AVPC, .reg = 0x23c },
+> -	{ .name = "nv",   .swgroup = TEGRA_SWGROUP_NV,   .reg = 0x268 },
+> -	{ .name = "nv2",  .swgroup = TEGRA_SWGROUP_NV2,  .reg = 0x26c },
+> +	{ .name = "nv",   .swgroup = TEGRA_SWGROUP_NV,   .reg = 0x268,
+> +	  .use_dma_api = true },
+> +	{ .name = "nv2",  .swgroup = TEGRA_SWGROUP_NV2,  .reg = 0x26c,
+> +	  .use_dma_api = true },
+>   	{ .name = "hda",  .swgroup = TEGRA_SWGROUP_HDA,  .reg = 0x254 },
+> -	{ .name = "hc",   .swgroup = TEGRA_SWGROUP_HC,   .reg = 0x250 },
+> +	{ .name = "hc",   .swgroup = TEGRA_SWGROUP_HC,   .reg = 0x250,
+> +	  .use_dma_api = true },
+>   	{ .name = "ppcs", .swgroup = TEGRA_SWGROUP_PPCS, .reg = 0x270 },
+>   	{ .name = "sata", .swgroup = TEGRA_SWGROUP_SATA, .reg = 0x278 },
+>   	{ .name = "vde",  .swgroup = TEGRA_SWGROUP_VDE,  .reg = 0x27c },
+> diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+> index ea67972fd585..1cbd990fc0f4 100644
+> --- a/include/soc/tegra/mc.h
+> +++ b/include/soc/tegra/mc.h
+> @@ -78,6 +78,13 @@ struct tegra_smmu_swgroup {
+>   	 * tegra_smmu_enable_translation().
+>   	 */
+>   	bool defer_enable;
+> +
+> +	/*
+> +	 * Set once the clients behind this swgroup are known to work with an
+> +	 * IOMMU_DOMAIN_DMA default domain. All swgroups of a
+> +	 * tegra_smmu_group_soc must agree.
+> +	 */
+> +	bool use_dma_api;
+>   };
+>   
+>   struct tegra_smmu_group_soc {
+> 
 
->
->SYMPTOM
->
->Between a locally-built v7=2E3-rc7 kernel and a v7=2E3 final kernel (same
->=2Econfig template, same patch series beyond one T2-specific AER quirk th=
-at
->is upstream in final and therefore held out of our patch set), the BCM436=
-4
->wifi firmware on ONE affected unit crash-loops continuously:
->
->brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4364b3-pcie for chip
->BCM4364/4
->brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4364/4 wl0: =2E=2E=2E
->ieee80211 phy0: brcmf_fw_crashed: Firmware has halted or crashed
->
->repeating every ~6s, indefinitely=2E dmesg shows the actual mechanism -- =
-a
->real IOMMU DMAR page fault on the wifi device, timed to the same cadence =
-as
->the firmware crash:
->
->DMAR: DRHD: handling fault status reg 3
->DMAR: [DMA Read NO_PASID] Request device [0000:05:00=2E0] fault addr
->0xffeff000 [fault reason 0x06] PTE Read access is not set
->
->Four such faults logged at uptime 13=2E4s/19=2E4s/25=2E3s/31=2E2s, each i=
-mmediately
->followed by a brcmf_fw_crashed event=2E intel_iommu=3Doff removes the fau=
-lt and
->the crash entirely (8+ minutes stable, single clean firmware load, stable
->AP association)=2E The prior v7=2E3-rc7 kernel on the SAME unit has zero =
-DMAR
->faults and zero firmware crashes with IOMMU on by default, so this is a
->regression introduced somewhere in the rc7->final window on this unit, no=
-t
->a long-standing issue=2E
->
->REPRODUCES ON 1 OF 5 MACHINES TESTED
->
->We ran the identical kernel build (and, where applicable, the identical
->firmware blob) across five machines and only one faults:
->
->* Affected unit (MacBookPro16,1, T2, BCM4364 wifi): faults as above=2E
->* Second MacBookPro16,1 (same generation, different configuration within
->the 16,1 line -- we have not enumerated every hardware delta): same kerne=
-l
->binary, same firmware blob, IOMMU also active by default (iommu: Default
->domain type: Translated, identical to the affected unit) -- zero DMAR
->faults, brcmfmac stable=2E
->* Three non-Mac x86_64 machines spanning three more wifi vendors (Intel
->iwlwifi AX201, Intel iwlwifi Centrino 2230, Realtek rtw89 8852BE) -- IOMM=
-U
->active and translating on all three, zero DMAR faults, all three wifi chi=
-ps
->loaded firmware and ran cleanly=2E
->
->So across four different wifi silicon vendors and five physical machines,
->IOMMU is actively translating DMA on every one of them and only the singl=
-e
->affected unit faults=2E This looks like a host-specific or
->hardware-configuration-specific trigger rather than a blanket rc7->final
->regression that would hit every machine with this kernel=2E We do not yet
->know what distinguishes the affected unit (ACPI RMRR table contents, exac=
-t
->PCIe link training time, and IOMMU group/domain-attach ordering are the
->candidates we have not yet isolated)=2E
->
->WHAT WE RULED OUT BEFORE WRITING IN
->
->* AER/ANFE quirk on the T2 Secure Enclave device: its PCI ID match is exa=
-ct
->(Apple SEP, 106b:1802) and does not touch the wifi device (14e4:4464); re=
-al
->PCI topology on the affected unit also shows SEP and wifi on separate roo=
-t
->ports (00:1b=2E0 -> [04] vs 00:1c=2E0 -> [05] off the PCH), so there's no
->shared-root-port mechanism either=2E
->* brcmfmac driver source: git diff v7=2E3-rc7=2E=2Ev7=2E3 --
->drivers/net/wireless/broadcom/brcm80211/ is empty=2E
->* Our own config template: byte-identical between the rc7 and final build=
-s=2E
->* The upstream Kconfig stanza for INTEL_IOMMU_DEFAULT_ON
->(drivers/iommu/intel/Kconfig): byte-identical text between v7=2E3-rc7 and
->v7=2E3 (default y, no depends on)=2E
->
->THE ONE ANOMALY WE CAN'T YET EXPLAIN
->
->Despite the last two items above being unchanged, the actual generated
->=2Econfig has CONFIG_INTEL_IOMMU_DEFAULT_ON unset after make olddefconfig
->against the rc7 source tree, but =3Dy after the same process against the
->final source tree, even though our template explicitly answers "#
->CONFIG_INTEL_IOMMU_DEFAULT_ON is not set" in both cases=2E Our working th=
-eory
->is that some other symbol started selecting/implying INTEL_IOMMU_DEFAULT_=
-ON
->between rc7 and final -- which would override an explicitly-seeded "not
->set" answer during olddefconfig resolution -- but we have not identified
->which one=2E Happy to bisect further, or provide the full =2Econfig /
->additional dmesg, if that would help narrow it=2E
->
->CURRENT STATUS
->
->intel_iommu=3Doff on the affected unit's kernel command line is our accep=
-ted
->fix for this specific machine while the root cause is unresolved; we are
->not disabling IOMMU fleet-wide, since four of the five test machines show
->no problem with it on=2E Posting here in case this fault signature is
->recognized, or in case others on different T2 or non-T2 hardware see the
->same thing on v7=2E3 final=2E
