@@ -1,106 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.62
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792479827;
-	b=1Dmpf8lMHKzCOjcvEdgpmtIebTS3FeH/Z8DvDuu0nPxmLRmC8v3et+8rypTx4TkMs2EZ
-	 nDgUa+UdCnkoDJGRVGhYrDKUutUneJVHJ11rdMv0pVrDc6DaSWl0ztNY754EU2+QqnWZE
-	 ztbkenIJJKwJ0+cwjV8tJg7wn/Kdkn8Nz08WWPvkhvnbJjROiwTuRn+m16YdY4N+W6ITh
-	 DxZ0xKexHd/MQcCoecZXzwWzReDP7SJL4KTGt7OuRuaexfn9eIFt1mpCy7EeWow6OZG4v
-	 M4nrUrjsExFC5lmuB8YLeZ7RUTFK7xIgPAhaldwC2swShBNAGi9eqUSSVwEQB6GFByw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792479827;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=yK0J6qY3sd69gFDpDkaE1bSLOP5GqLHxHfkAYssUQtM=;
-	b=4KjnV/lsAYfR/85P64kfWOU8ZHaXO8qx+p1kR462o299mJlBy6u+xpI1SBnFlT4ejYBN
-	 d+YMnFanbNheamh4nYu4H/7SHsTmfhTuLN11ZrbULX4is4Mi1bvCUrxMz+FsK2uHCz2pY
-	 KGZDHWz3QNKFTJOGsvoIpN3D1F3RogRTCW9H+qYMgSHW+zteOEvlEArwP+IApmkJLYX7K
-	 /IN8GXfUMIulXK8tZCj10v1zWWeg4duPUymAJICdbQVAIbJsnYu/44waWf/sd9ZoKebgh
-	 MmQsb71MlImJpDzekMFZRJZxgqhcL/xBDieIDNxs5pKnQfsDZKo8O0XNnV7BJAz09Kg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=xvVaaSbT;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.62
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013062.outbound.protection.outlook.com [40.93.201.62])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.118
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792489280;
+	b=bynJD4yzKaEqakllgR07OYPZTw3Ye3fUftIUUs/ZQ4a/5ytWhRphZrUsAAPLqlrWb+8d
+	 hYTmRSC/wbXrshOss1GBHHxPmFeQ5mXo4/5K38aD++3KSdfi4zQvT65c0B8nbrLmuZFg/
+	 uXWNlSKN4OmX9tNJEzLWF+iEo/cTOR6euePTRY3wOE8paO+iPRBHSMDVAX/OZR6BFdsvn
+	 viriY8bJ6T5anDbzLhTOkCa52ljmQl9rFzco8zYOrOvjGDfYgo6nFhAK4Wml3a1VAake2
+	 dFA9IOiJAlxmwmv8lU1FXcQQHDe+X2Rx5lqk8NZ2bYY6mJFyZASAk1aLuofUuKVYt9g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792489280;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-Id:X-Mailer:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=kcaNBbiUMzKXzNSISjdYUCG67KZVrDK5XLEKTAvzTD8=;
+	b=Im6UJiQ8G+F+ZATX6ZJIIJZTSgK6/Cepbz0svuaJHmCUXWUguyc6x59hpmSvGeY4G+8g
+	 nES3wDgiaMJ+dyQn+qOaHat68dXzxq4NmPs4rnzbIBJVaCkhR1Rh8cpbhh4yvnWPGLr8D
+	 o31Uar2i0PXAEzpnz/iDawKS/lE7TvMbxQHyrak2Ii7vHj67Ym28rvj21K7vJYsnR9fTo
+	 zuQDYArsI5G9Ulc3Pwv5mIzGWdpEPk5Vn+RjILRsmocWF2VJFY+fe8QcPV+an2Z+aG/by
+	 mLbi4EWbaYY5rgHhpjfMhUQuHL3eUcjQK/OTCZs8V4k97p5Dp1zno8uEnt8PieMJBsQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oOrn0Mel;
+	arc=none smtp.remote-ip=115.124.30.118
+Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36D46606A319
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 07:03:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 36D46606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAFDD606A31C
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 09:41:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DAFDD606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=xvVaaSbT
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HLujvodZxR9WZAIJ6yqMCP7dleiSfJTU8uQ4WaKoUf0AKuAwFEu8HPzR/b/reZGDpozpqg53LyOikwgf19CAedyC6drXPvLAcRIGOsq9tvC+J5L8vkhKfLUjx5f7SGqHfxbllJh3wt5sFKyAldIlBTnCMP+lbUgD7x4hZPv35JyFc0H07DLG3bT7XcYiPRdazSccchfOsvx2m0EHmaQtXyyPDDLYRbVL9HrDYgLhAwVsZhAuXshV6MsriHCx/4lBXSydXMoApt5jwMI/699dpMbSbX++98M9mpGW0CEyTGqK9xoYwZ3Cor20xUfD8COV2t24qWa5ehdMe/IzAQ4Uyg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yK0J6qY3sd69gFDpDkaE1bSLOP5GqLHxHfkAYssUQtM=;
- b=xpmgNiy3IOAgGThZGWpvnMdSq0UF3kjFa9bfCNuwXKEv7f1jmKF++e8FmuWH91rpC5aWGJq1/PN3Tywf+xU4b2IYHa8dEJZ8B8TJUGNzCsYNxTR8kZnniKMxnwZCMmIW3llqPEQ0hElc/SYXRr1JsZ54xXjGdHz41YGP6SJ92InPoU9h/nISr7g5tur+E6tNWalCxAKDxNYOwPEEoT0kLUiI2tQJaxBjhJcdrE+Y4gBZWlARQ7lD43WFGaU8QOWl7rjPHs5frIrzV3e7rfrFMDF/cPlUtm2BN7ULXW4BatTHTnddAmBV6fbrb3eTyYIin4VhTpqQI8klzIUCDA9TQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yK0J6qY3sd69gFDpDkaE1bSLOP5GqLHxHfkAYssUQtM=;
- b=xvVaaSbTtpIBq5dsl0GR0x21migSo5U6ZLQDOHOHES7wyxb92tAxKsW8qQlx4ikz3FGrUXk4JGuZWlMWi+eI2LnV+XGYbdLcJ0ot5xDb/H8LoQLeyxeUB3YpLfHhx741gRSdUewzwXkvj4fKHVyAxVPAjP1J6dH2JsvVs23+9qA=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by CHXPR12MB999219.namprd12.prod.outlook.com (2603:10b6:610:2fd::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Tue, 20 Oct
- 2026 07:01:38 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0546.012; Tue, 20 Oct 2026
- 07:01:38 +0000
-Message-ID: <41bd4593-5918-4cda-922b-251805c25b60@amd.com>
-Date: Tue, 20 Oct 2026 09:01:33 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 03/26] dma-buf: Add dma_buf_mapping_attach()
-To: Jason Gunthorpe <jgg@nvidia.com>,
- =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
- Alistair Popple <apopple@nvidia.com>
-Cc: Karl Mehltretter <kmehltretter@gmail.com>,
- Dongwon Kim <dongwon.kim@intel.com>, dri-devel@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>, Leon Romanovsky <leonro@nvidia.com>,
- linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
- Matthew Brost <matthew.brost@intel.com>,
- Simona Vetter <simona.vetter@ffwll.ch>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>
-References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
- <3-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
- <20261016202653.97339-1-kmehltretter@gmail.com>
- <d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com>
- <8d4cb20b70ac4c3f36d8d631769757158af2ac8e.camel@linux.intel.com>
- <20261019133031.GQ13920@nvidia.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20261019133031.GQ13920@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR2P281CA0148.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:98::6) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oOrn0Mel
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1792489275; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
+	bh=kcaNBbiUMzKXzNSISjdYUCG67KZVrDK5XLEKTAvzTD8=;
+	b=oOrn0MellT+LylF9SfCLBr2TKQo1lm3UOX+pEOgSkAxLn3LLfG7oMi2Dtml2H987gSw8ERputZM1elyz3UW+/A9lM7/6dTq/1bi13sqZNymQ4W035xk33PRnhHqZ0lHy4sf/rEFIJb0DixQmNEPWeS4wdmDvUH0FbrhF9VTr+Ss=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDCspNU_1792489269;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDCspNU_1792489269 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 20 Oct 2026 17:41:12 +0800
+From: fangyu.yu@linux.alibaba.com
+To: tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	baolu.lu@linux.intel.com,
+	jroedel@suse.de,
+	zong.li@sifive.com,
+	andrew.jones@linux.dev,
+	anup@brainfault.org,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	atish.patra@linux.dev,
+	skhawaja@google.com,
+	vasant.hegde@amd.com,
+	joerg.roedel@amd.com,
+	tanchi25@mails.ucas.ac.cn,
+	gong.shuai@sanechips.com.cn
+Cc: fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	kvm-riscv@lists.infradead.org
+Subject: [RFC PATCH v5 00/10] iommu/riscv: Add hardware dirty tracking for second-stage domains
+Date: Tue, 20 Oct 2026 17:40:56 +0800
+Message-Id: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -110,156 +84,133 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|CHXPR12MB999219:EE_
-X-MS-Office365-Filtering-Correlation-Id: 97bff890-64ca-4f20-d95d-08df2e77fc75
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|7416014|376014|23010399003|1800799024|10067099003|56012099006|3023799007|18002099003|22082099003|4143699003|11063799006;
-X-Microsoft-Antispam-Message-Info:
-	jQyqjeAa0Z+QzRA0if+T2AgWuV3F3pl0t9UTLt1IaFi0y1JU10cPrXQ4DwaCDykNoat3ydJTL1KqCPzno5jdug5Drs31hcwb4RmMBEWqi+ZG7C8CIm5JeZhVk+zibQEUW/Ri8SjIQiiK2LMlmcqnjDHaSlp9dri+hf4ELg9uA6dCCCDMR69EaJ+tdsXn6SsXyZ4aHC2JMm8II2GTVT84PFTXiZhC5OJttT7YVvFMeAOxN5XYCK/29PsjJchtPpv/BPyrOdrH1jxuHbdMFOu2BFJpceLZZjkVt/yIXyFKxgZveyPMwVO3LGMLfgq2gmGndUaPBnA6msrjt98P0q9u4kJDO6YMp7DWZoujuMmWjpSutJEnItuVApxlQgG036sVzdNuKA/ceol8cwqLpxgQ3+XAgoLxKI3HvDYyUpZQUuH/pwuU3W3WtlDAjndF/wkchk/htlGaZqt1HEIgQ3eC3TXt6z0yvCXhgChUi/qfJM4hTP/cRgklENdOwb3XYAyItMiT0wJO4VwipMhfwD4ZGrCLpYEelcBUB8IuonKkYrIEh97eL+FZz9NUrEcQni+jaG1nbuHRxpUeBaX/ms3Qo0WZiWJ9siSb6l85pwZRsYRZbSVLcEFtVKgi1SSlSPZWAfAiITkQLho4rnCQDhsUVnlcaMhd73/FrCZzCfVMbg8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(23010399003)(1800799024)(10067099003)(56012099006)(3023799007)(18002099003)(22082099003)(4143699003)(11063799006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bFZHenYvRGY2dlNNSko3S2tqRGpxOUNuMDhIajNhU05rRnNESjdRc1lrTVdC?=
- =?utf-8?B?T0ZkOXl2Y2J0TFl0Z3p1ZTJqK2hPVzRkUGs4a3kzai9nbFYweUsvdFo1SjlD?=
- =?utf-8?B?RWErMmJoYjduV2ptK2RNcGN3b2ptL2d1eGMyZWxESk9IdmxQRTZlT0d6cXhK?=
- =?utf-8?B?MTdTWEE3M2tuVWVmYU9yRjlLNklwTEVVaTJqbldjdEFOUUt5bmFQTmlJdmI0?=
- =?utf-8?B?YUcyWVN1blVYU1BEdm0zOEpzOWcwS3JnSGFjZTA5RmlURjlaVm1BV2o3Tnhr?=
- =?utf-8?B?Y2ZxOUlDc21BMXpKa0tiWEd3N0c2bVZBNnNHQmtiMmMrUFZHZmZjRTNFdUVj?=
- =?utf-8?B?bU9vTytteEpsWkhKb0ZzeFYyVnE0YlZlR0NLeldoTW1QdWtMRHpNd1lFL2FX?=
- =?utf-8?B?R1NVdXREM1pRd2tTajZYeThWK2lQbmtNL1ZrMjVBY1hYeDhnclNTbGtQdGho?=
- =?utf-8?B?WFdkdldnVGthWGhENGlLS290RkgyNEcrb2Foc2tORWVLbE10VzJmR1RQMC8y?=
- =?utf-8?B?d2c2ZFdoZXd4ejNNNXlaWWhDVVVDVllVWDlRNTlDMTAxVXUydVZWSXNFTmZ6?=
- =?utf-8?B?VzA1Q1ZqN2x1aE4yWEdJcko1Y0JFZTZHRzRNRklNbFl1MXRLZVJ4TXlRM1Nr?=
- =?utf-8?B?OVVodE1YRHhSU0RwL25Jc2d3dGRqNnUrOGJSYUNyZmtvdk5QMVIweHVOT280?=
- =?utf-8?B?M21zc3o4UFBNWnZ5eUpzOVlqajAwdHpVVWFFWGUxdTg1enh1dVoyd0ZRZjdq?=
- =?utf-8?B?dVJvY0VMdWR6a1R4N1kyS3M3Wi9IWW9PcjhOOGNNRVdKN3JlSFZvdDNPYWkz?=
- =?utf-8?B?aEVXTDBJMno4WFV2YTlkNXZsZHBTeCt6RGR4NXhLV01xdloxZjF5SVg5b01D?=
- =?utf-8?B?QUV2bVU3S3p4dEIwQ0hVUGswcUVGbUZxMWMvRXB5RWt5V0lZMDhDczN6emgr?=
- =?utf-8?B?YVUvVkdCT3QwUERHdTRXa0hzM1FXa0ZyNXBacThJRHBad1AzS2pCUm5Tc3dI?=
- =?utf-8?B?UnVqYVRCZlBxQW0wNnhrN1ArdVVQb2crL0dHR2lMYmwyVUNSMkM1M3Fab3o4?=
- =?utf-8?B?OUVHTVVESnJxeFp2SFZPMXdid1lvUzV6eWFMdG5pejEwaVNjeHRVbzB6RjBp?=
- =?utf-8?B?MzhUb3BnV0lYUUJTRU4wbTcrczZrak1hanBzb29WMDkyTWRTNUplMmtrc3ZR?=
- =?utf-8?B?bFE0NmpQeWZwbXROUFE2b1BxRnppY2RIV091RGVZUGMySmU5VUlRSUhBNllX?=
- =?utf-8?B?M2tlRUpBZDllbjNDUUd0VkN5NWZrS0h1N2lTYjRYb0dpRmJDQkR3UnRMYkxr?=
- =?utf-8?B?c3FuZFRiS2IyNFVXWXVqYWxOU2h0TWdJc09hZno0d3ZMNzFjaG1vcE5nZGdl?=
- =?utf-8?B?dE1JQk9nK2lqb216aitlTEg5NzdGWHJNNENIdUhmVlR6c1gvZmFFbGhZdWVZ?=
- =?utf-8?B?MEtTMjE0VXI4TzkrZWNzT1MzWFJUTzB6WWNqZGwvdWw2cXczRk44T1g3aVZG?=
- =?utf-8?B?RGRwUlhQcms0TGZ3VU1KMEFmYjRqTW5BMVNHQkJ5Vk9iV3BSTEduVmt6bXFI?=
- =?utf-8?B?MUV0T2FVa0hERUJ2UW52ZFZaLzhiOVlnQ2xBNlhwem9haEhTUU1pRlVRWXdi?=
- =?utf-8?B?ZmF6MGIyMldkU1hmcnpJU2hKb05ZZkJkSmR6bkxzOXFkNnFaZERPcjYwL0V6?=
- =?utf-8?B?aXY1Rm1MTHpQZ3lDQnBYK2FNMzB0MW5wQ3FiS2hPK2E1UmFyTXgza2c0NXA0?=
- =?utf-8?B?bWxicmZYQTc3enZVRGRJWjh6MmZDM3RjeGoxRG50czV3L0ZaQ3hNTm5sVXFo?=
- =?utf-8?B?SUVoNXozVGg3bGJiY0JtOXF3NStkS21CdTg5K0lOc2NIRUtTcmpiK3EwTVNo?=
- =?utf-8?B?dGFlc1NMR2lKM3BPdjZDNU9JOEh6WFhDMjBSV20zNUNIekxJV2h0N1g3S1dn?=
- =?utf-8?B?L2NGQnhqSk40UWlQaDNpSFFYVVkyd1ZhVStSVXpSdTh1Q1ZucTZIZGFsbXFk?=
- =?utf-8?B?QUx2WGNjencyd3ZZekRQUkp1NDRNaUhpYUloN0xCYWtRcHIyN29HRGsxZDNE?=
- =?utf-8?B?SzZDdmRWRW1aS1YrNGpMc0EvVzBOTmYwckFSNml4d1NzZW9zem0vVDkvR2JB?=
- =?utf-8?B?VG01Ukc5Z2lXeXlKWDlzY01MeWgxbUFkMHRIeGhqZDlXcGkyaU9MaGw0a0Iy?=
- =?utf-8?B?WVI5czdueE9ialc1ODI2SEdXM2I1UVRVZkxPZ3JuTElia0EvcWFmS1liQmtG?=
- =?utf-8?B?czgzTUtjZ2Z1bUhObUxKVUJEMFNKU3VYRlZQZWxDYTBlM3VvY0V5M1lvYVc1?=
- =?utf-8?Q?vDJfvB7NZrO5szOHQl?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97bff890-64ca-4f20-d95d-08df2e77fc75
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2026 07:01:38.3126
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VQRBRHpI3DcSTP/0xoNC2XhsngvHtwrHXonxy3I2efo0wl5GH/5D0emWss6s8WTk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CHXPR12MB999219
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 10/19/26 15:30, Jason Gunthorpe wrote:
-> On Mon, Oct 19, 2026 at 02:43:29PM +0200, Thomas Hellström wrote:
->> On Mon, 2026-10-19 at 10:35 +0200, Christian König wrote:
->>> On 10/16/26 22:26, Karl Mehltretter wrote:
->>>> On Tue, Feb 17, 2026 at 08:11:34PM -0400, Jason Gunthorpe wrote:
->>>>> +	match_args.attach = attach;
->>>>> +	if (dmabuf->ops->match_mapping) {
->>>>> +		ret = dmabuf->ops->match_mapping(&match_args);
->>>>> +	}
->>>>> +
->>>>>  	attach->dmabuf = dmabuf;
->>>>>  	attach->importer_ops = importer_ops;
->>>>>  	attach->importer_priv = importer_priv;
->>>>
->>>> I may misunderstand the intended contract. match_mapping() runs
->>>> while the
->>>> attachment is still zeroed and without dmabuf->resv held.
->>>>
->>>> Patch 11's amdgpu callback needs importer_ops and importer_priv, so
->>>> its XGMI
->>>> match cannot work here. Patch 12's VFIO callback asserts dmabuf-
->>>>> resv and
->>>> reads priv->vdev, which cleanup changes under that lock.
->>>>
->>>> Should the core initialize the attachment and hold dmabuf->resv for
->>>> match_mapping(), or should callbacks avoid attachment and lock-
->>>> protected
->>>> state?
->>>
->>> Right. This completely misplaced.
->>>
->>> The matching can't be done at attachment time, but rather needs to be
->>> done before creating a mapping while holding the resv lock so that
->>> the matching decision can't change.
->>
->> So question is what exactly should the contract be?
->> Looking at the pcie_p2p negotiation today it looks somewhat like.
->>
->> 1) Importer and exporter agree at attach time what mappings are allowed
->> pending placement conditions and other attachers.
->> 2) At map-time the mapping is negotiated taking all constraints into
->> account.
->> 3) The negotiated mapping is valid until an invalidate_mappings()
->> callback is received.
->>
->> Following this would allow a re-implementation of pcie_p2p as a mapping
->> type and would allow a controlled link-severing to send an
->> invalidate_mappings() notifier and the mappings to be re-negotiated.
->>
->> Importers requiring an early hint as to what the actual mapping would
->> look like would need to be prepared to re-consider at map-time, with a
->> reasonable assumption that the reconsideration and re-mapping would
->> happen seldom enough.
-> 
-> The idea was the supported mapping types are fixed properties of the
-> importer and exporter.
-> 
-> Like iommufd is not suddenly going to start understanding ualink after
-> an invalidation.
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-Yeah but I think we can sort things out early on.
+The RISC-V IOMMU architecture defines an AMO_HWAD capability (Hardware
+Access/Dirty update) that allows the IOMMU to atomically set the A/D bits
+in second-stage PTEs on DMA access.  When DC.tc.GADE is asserted, the IOMMU
+autonomously sets D on the first write to a page mapped by an iohgatp
+domain.  This series wires that capability up to the iommufd dirty-tracking
+interface (IOMMU_HWPT_SET_DIRTY_TRACKING / IOMMU_HWPT_GET_DIRTY_BITMAP) and
+reports IOMMU_CAP_DIRTY_TRACKING.
 
-E.g. even if both devices can do PCI P2P we can't use it when they are not under the same root complex and there is no routing between root complexes.
+Design notes
+------------
 
-Or both devices have an XGMI connection with other devices but are not physically connected to each other, etc...
+* The feature is scoped to second-stage (iohgatp) domains only; these are
+  the domains created for KVM / VFIO device pass-through when userspace
+  allocates an HWPT with IOMMU_HWPT_ALLOC_NEST_PARENT or
+  IOMMU_HWPT_ALLOC_DIRTY_TRACKING.  First-stage (iosatp) domains are not
+  touched by this series.
 
-That is something which doesn't change unless you physically change the system.
-> Further, I had the (perhaps naive) expectation that the interconnect
-> option was not something that would change during mapping. I did not
-> think you would loose your PCIe option if ualink becomes available, or
-> vice versa. Though on deeper reflection I suppose someone could build
-> HW so you might loose your ualink option if the dmabuf is moved to
-> system memory while PCIe would still work.
+* The page-table side plugs into the existing generic_pt dirty hook
+  framework (amdv1 / vtdss style).  RISC-V adds the three required PTE
+  ops – is_write_dirty / make_write_clean / make_write_dirty.
 
-Yeah, that is definitely not correct.
+Testing
+-------
 
-We have the clear requirement here that when one interconnect physically fails that we can still do things like let the work reach the next checkpoint, then it is taken of the HW, and the HW suspended for repair, then resumed and then work can continue....
+* Test on QEMU RISC-V, a nvme and an e1000e device was passed through
+  to an L2 guest via vfio-pci + iommufd.
 
-Similarly we have on the graphics side the requirement that physical placement can be moved to system memory because of some other device attaching, pinning for scanout or something suddenly requires the backing store to be contiguously allocated etc,,,
+* generic_pt KUnit: the existing test_dirty case now runs and passes for
+  the RISC-V 64-bit format.
 
-So there are vast requirements that a buffer changes location when the mapping changes. I mean it is kind of pointless to have a feature like ODP to suspend your traffic if the underlying physical location of the memory can't change.
+Follow-up work
+--------------
+* Build a dedicated end-to-end test case that drives the full flow
+  (HWPT_ALLOC with DIRTY_TRACKING -> attach -> IOAS_MAP -> generate real
+  DMA -> SET_DIRTY_TRACKING -> GET_DIRTY_BITMAP -> verify bitmap against
+  expected IOVA footprint) so that the behaviour can be regression-tested
+  beyond the KUnit PTE-level coverage.
 
-Christian.
-> Making the decision right before map seems like a reasonable
-> enhancement, but I can no longer remember off hand if that would cause
-> complications :)
-> 
-> Jason
+* If possible, rebase and retest on top of the updated "iommu irqbypass"
+  patchset.
+
+LLM-based coding assistants were used for code exploration, patch
+review, test execution, and drafting/editing messages and this cover
+letter. I reviewed and finalized all resulting code and text.
+
+---
+Changes in v5:
+    - Propagate the GADE bit from the new device context into the hardware
+      DC in riscv_iommu_iodir_update(), so the pre-enabled GADE actually
+      reaches the hardware. (Per Gong Shuai)
+    - Issue a global IOTINVAL.GVMA in riscv_iommu_iodir_set_mode(), so that
+      second-stage translations cached before a DDTP mode change (e.g. by
+      a previous kernel after kexec) are flushed as the specification
+      requires. (Per Tan Chi)
+    - Rebased on top of v7.3, with [1] and [2] applied.
+    - Link to v4:
+      https://lore.kernel.org/linux-riscv/20260915032828.11250-1-fangyu.yu@linux.alibaba.com/
+Changes in v4 (Jason's suggestions):
+    - Rebased the series on top of [1] and [2].
+    - Drop the RISC-V-specific pt_num_items_lg2() top-level special case.
+    - Validate page-table address widths by translation stage: accept only
+      Sv39/Sv48/Sv57 widths for first-stage tables and only Sv39x4/Sv48x4/
+      Sv57x4 widths for second-stage tables.
+    - Replace the aliased first-stage/second-stage MODE union with
+      independent FSC/IOSATP and IOHGATP MODE fields.
+    - Add pt_dirty_supported() to restrict RISC-V generic_pt dirty tracking
+      to second-stage tables.
+    - Link to v3:
+      https://lore.kernel.org/linux-riscv/20260821132749.82070-1-fangyu.yu@linux.alibaba.com/
+Changes in v3 (Andrew Jones's suggestions):
+    - Rebased the series on top of Andrew Jones' generic_pt RISC-V supported
+      feature mask fix, which adds PT_FEAT_RISCV_SVPBMT to the supported feature
+      set.
+    - Added PT_FEAT_RISCV_S2 to the RISC-V generic_pt supported feature mask and
+      KUnit feature matrix.
+    - Kept PT_FEAT_SIGN_EXTEND only for first-stage RISC-V KUnit configs; second
+      stage configs now use PT_FEAT_RISCV_S2 without sign-extension semantics.
+    - Split RISC-V IOMMU capability checks into first-stage FSC and second-stage
+      IOHGATP helpers.
+    - Updated second-stage paging domain setup to use GPA widths 41/50/59 and to
+      avoid PT_FEAT_SIGN_EXTEND.
+    - Link to v2:
+      https://lore.kernel.org/linux-riscv/20260507113706.11400-1-fangyu.yu@linux.alibaba.com/
+Changes in v2 (Jason's suggestions):
+    - Introduced a single PT_FEAT_RISCV_S2: second-stage selection is driven
+      purely by this feature bit.
+    - Switched from dynamic DC.tc.GADE toggling to static pre-enable.
+    - domain_alloc_paging_flags: follow the switch/case design from other
+      drivers.
+    - Drop IOMMU_CAP_DEFERRED_FLUSH in riscv_iommu_capable.
+    - Remove the .hw_info-related patch.
+    - Link to v1:
+      https://lore.kernel.org/linux-riscv/20260428131359.34872-1-fangyu.yu@linux.alibaba.com/
+
+[1] https://lore.kernel.org/linux-iommu/1-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com/
+[2] https://lore.kernel.org/linux-iommu/20260818092444.42755-1-andrew.jones@oss.qualcomm.com/
+
+Fangyu Yu (6):
+  iommupt: Add RISC-V Second-stage (iohgatp) page table support
+  iommupt: Add RISC-V dirty tracking PTE ops
+  iommu/riscv: Add domain_alloc_paging_flags for second-stage domain
+  iommu/riscv: Pre-enable GADE for second-stage domains
+  iommu/riscv: Add dirty tracking support for second-stage domains
+  iommu/riscv: Add IOTINVAL.GVMA invalidations
+
+Tomasz Jeznach (2):
+  iommu/riscv: report iommu capabilities
+  RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
+
+Zong Li (2):
+  iommu/riscv: use data structure instead of individual values
+  iommu/riscv: support GSCID and GVMA invalidation command
+
+ arch/riscv/kvm/Kconfig                       |   2 +
+ drivers/iommu/generic_pt/fmt/iommu_riscv64.c |   2 +-
+ drivers/iommu/generic_pt/fmt/riscv.h         | 158 +++++++++++--
+ drivers/iommu/riscv/iommu-bits.h             |   7 +
+ drivers/iommu/riscv/iommu.c                  | 235 +++++++++++++++----
+ include/linux/generic_pt/common.h            |   4 +
+ include/linux/generic_pt/iommu.h             |   11 +
+ 7 files changed, 347 insertions(+), 72 deletions(-)
+
+-- 
+2.50.1
 
