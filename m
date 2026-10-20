@@ -1,108 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.14
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792506687;
-	b=QPWNYZa1ql9IdJQcyoz31hz7v6BHlLjH6HrEy5u8Z4/zyu//AQbzCV+ZRAumP+kIy0t8
-	 Aw+g5/RaprKhQODY+sI+XuvkfXm26crjDIhyGjcYC12r6wWQiCjCy7doxoKCze5mZYJeK
-	 pH+0x4FodHmqlm7v2nt7feVUEwsgWcslc5cx/RSjl3V3Afko0MTMY/dA3u/5CPmLH6NFB
-	 oj1k8dJBA2N3bdkYqL67dqu5lj6WFHTVXg41tuL33JBnBfECBUFkaYRs5wNZuN6lTuzWK
-	 J/7n2zOcuMmuweuEPodkqXVPBa9HJqfPz+PeOX9AYDs3SSU/kGjvr2Jb3oa632mcFXw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792506687;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=nvCTX6PvMxi4ptfog3u3efkFV3irSr6g4j28/VZ8jDE=;
-	b=DpmbrLYfR1m3eHmfjL2XPF8fSsaB8IxNL6uCpQpAOLFtQ5G1w9b+Jl+Rjx+URCAl1CIT
-	 wvNAKob5YmJwXGj1vJsm7MxOZ+vTlAIdf827+9f5Qcp8Sz1yOCuopdsj4fgxrzuqNfLWp
-	 bK5EQ95TjefM2n5a0j5+TGAHyABeGzX83+aGHaA8CWPvBrlEJ69VTFMRhxatjFzU0icTR
-	 UFZJQCcOHiRiVogP4tpASxElV+iswBjfPOU0OyuxjXYzz3+JJinm+8BkweLcL6jRQ+h/r
-	 swKdQtLDxtzhcg5l/UgUxN4tPhp9eGFwBHSQKpphLhz5ARVQ3faXfQjF6UgEf5Yq7qQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=toABl04A;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.14
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012014.outbound.protection.outlook.com [52.101.53.14])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.64
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792507587;
+	b=OnuS8CQKxay7HwL6ahK1C05IQVvb+XzzCmsmkq/UcT+EijFEZbfkCIJkNuzyS1cP0Xo9
+	 Xj+a53yMYEwTpIVsu0A93rXabVs53T34LeKfzXWUZf+boDTb+w7sqKM3PXpk8Bxm99GAG
+	 Liq9Xb2J1jNIqxYhfs3OJQDTuRW/aoAXnwRMuRUtYS1Afpm8iHrZ4RGIOsmBchl34jtCu
+	 wa9F0J7Vgd9WlYPp5/FvtUydcE2ADlQtQB4b5IMXnN7HC+1V93NAECeZGBqgc/ekTUKbY
+	 V3RtQHSr9/nhpJ+E+1U1nt/CmvI0vYOD9rdIdoohfM7jqLJTfx7yciVLJWIB1YsJzjA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792507587;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:CC:Subject:User-Agent:
+	 In-Reply-To:References:Message-ID:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=a/YVQ5+8FFxd+OKTrecEbQdO7nAgyOE7j7VKGjXUilE=;
+	b=5SjkqDJ3gA7caPgo9aURuLui1g+gIkpPwwcudjRIBhT0gCWPKz9plrfPk3xz80GVh+in
+	 8C4XJE70JqcYYOocjD3CdRilxskwkfB9Cj2IHhbMclj24rDwqWucV9lsSqTGvI6hao6iW
+	 UDwjPIDjNd+PkyTLtSSnaiIaklWnrlNwiAVbrzInefT3GW1+auRy5wxrO8jnFvypkQIUY
+	 oAlkB82M+0SgCZAAJD8B46dAJcq1irCzPM/0Zwn7cBFpYfSUs1IvZm2OruXwo+2dwQUtL
+	 kQ8Q173cvg7LtuD0Q50HXAgQZE8s3IJpjRz0i98zcs10kM3OIEein49xpjK2F4nr9RQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=ZpfLJXHX;
+	arc=none smtp.remote-ip=95.215.58.64
+Received: from mta1.migadu.com (out-64.mta1.migadu.com [95.215.58.64])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E1BC606A31F
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 14:31:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8E1BC606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CC3160A2600
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 14:46:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1CC3160A2600
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=toABl04A
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=iPcO12wrSU1J/+4XjFPtMkBgLPMRITe7wmxIbFNhId35hO06p9/cOVDlJu9rD4/fWVg+Q0TShGAykednXr2M2mVJp+drrDvoBJaWffOCSLQVxL6eQudkXTkbDPdQ3zsCvDrLp8nmHIOeOpSnxPQd1R0qAxM8IJqpN6gML/1cNGR2boku6XGiYXYBVLr6mrXcnVLCS0WgOWAAujU10KjS0zB+mOCNfLCOuVToAqDXgHc0eg2VC7bSiLk9FCFxaVP7flnWz9sz0cDuBK+bHdJy1K6AkYIYHRVLtoIKgOSsqFujMG45j6HbYLaCCffpVX1Qp2I3f8NT0gHnEIMAXbf2Cg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nvCTX6PvMxi4ptfog3u3efkFV3irSr6g4j28/VZ8jDE=;
- b=xI6nBFPua7g5UegHXcL6rCwcWU0eXnk4MRULrOiY+wrbBrWzmMNRdZ6GPu4+qFKd/iMKeVpdvUoT9Vg/cw+Zrw7FF5aD9RzAmhgp9j+WCt1nDMXArZjJdHXuakt/l7S8B5LKXJ1soofmAohxMz5OY+rJdWbIelwyjoDNwCEbFgv4K9208aHG/DAp00SwFSe+MFYnhHyR4jzUczUJXrp71zLdf5eR8E2XhwaphLo8OQSCqW5/3NbiLOLdP5m96StO5tG7/Ov8yUQs1iewyf80YkdKUzppedaxXt9acdQs7h44tcX0NSWzZHErN2HRPZDNf+kp5ubgPlvSgYWoVmGfDA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nvCTX6PvMxi4ptfog3u3efkFV3irSr6g4j28/VZ8jDE=;
- b=toABl04ARyyYDixD5WRIvVmeV9ygso9X3BHTzrWbvSLJjc6setRrQRVsgV5THeWeAdj2IbuMszjL5zZrPdvBA88pEgb0JIkZI3Cd7xm+BHH4HsIYD7YiVYNoZrwS7T2dzYkl+8V/e91kWHf7pjDQlETv5Jy6oXRFaTrtA+SSx6Xp5pjKaukCzXpzXOLAFizWj0Dnykm6gb4kftorfcC2qmt2IG4a75goXY3QH5WN+rS0/Msv2ZKvky5NA4dLnzmMSzTPquM5sLp+Arz2B4U7wCWLk3lJGT4KLCcVJD8asqltFc9E2q4LvFFJCnYEGQVr6B5vjwS0twhGc5e/4M+Nkg==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by DS0PR12MB7969.namprd12.prod.outlook.com
- (2603:10b6:8:146::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Tue, 20 Oct
- 2026 14:31:16 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0546.012; Tue, 20 Oct 2026
- 14:31:16 +0000
-Date: Tue, 20 Oct 2026 11:31:15 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
-Cc: Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Karl Mehltretter <kmehltretter@gmail.com>,
-	Dongwon Kim <dongwon.kim@intel.com>,
-	dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
-	iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Leon Romanovsky <leonro@nvidia.com>, linaro-mm-sig@lists.linaro.org,
-	linux-media@vger.kernel.org,
-	Matthew Brost <matthew.brost@intel.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>
-Subject: Re: [PATCH RFC 03/26] dma-buf: Add dma_buf_mapping_attach()
-Message-ID: <20261020143115.GE3008132@nvidia.com>
-References: <0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
- <3-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
- <20261016202653.97339-1-kmehltretter@gmail.com>
- <d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com>
- <8d4cb20b70ac4c3f36d8d631769757158af2ac8e.camel@linux.intel.com>
- <20261019133031.GQ13920@nvidia.com>
- <41bd4593-5918-4cda-922b-251805c25b60@amd.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <41bd4593-5918-4cda-922b-251805c25b60@amd.com>
-X-ClientProxiedBy: BN0PR03CA0024.namprd03.prod.outlook.com
- (2603:10b6:408:e6::29) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=ZpfLJXHX
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=a/YVQ5+8FFxd+OKTrecEbQdO7nAgyOE7j7VKGjXUilE=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1792507578; v=1; x=1793112378;
+ b=ZpfLJXHX5UiA4Yoq+0nKJqYhTXkr/ywQl21YNzPjCxzJzZQ4t4j7FNvUYD8QKJHm0nzwIBer
+ TfRvDNdU9wlDVkF5B3uoESXSGA46hEO7XYvC+wxq2TZki/tsBEV5A3yWJ6xWnMU5D3sp/i/wHcu
+ Hscb3mJiY0bibcIaCFpkJwug=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id f82142b7c0acb158;
+	Tue, 20 Oct 2026 14:46:18 +0000
+X-Mizu-Trace-ID: f82142b7c0acb158
+X-Migadu-Flow: FLOW_OUT
+Date: Tue, 20 Oct 2026 20:16:11 +0530
+From: Aditya Garg <aditya.garg@linux.dev>
+To: "Perlow, Jason" <jperlow@gmail.com>, baolu.lu@linux.intel.com,
+ dwmw2@infradead.org
+CC: iommu@lists.linux.dev, Bjorn Helgaas <bhelgaas@google.com>,
+ linux-pci@vger.kernel.org, arend.vanspriel@broadcom.com,
+ linux-wireless@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_intel-iommu=3A_DMAR_PTE_Read_fault?=
+ =?US-ASCII?Q?_crash-loops_a_PCIe_wifi_device=2C_v7=2E?=
+ =?US-ASCII?Q?3-rc7_-=3E_v7=2E3_final_regression=2C_repr?=
+ =?US-ASCII?Q?oduces_on_one_unit_out_of_five_tested?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com>
+References: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com>
+Message-ID: <53BF6325-C030-4280-B21F-4B6C0FF941B0@linux.dev>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -112,116 +71,140 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|DS0PR12MB7969:EE_
-X-MS-Office365-Filtering-Correlation-Id: 989b20d3-7774-4ef2-a95a-08df2eb6cc91
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|366016|1800799024|23010399003|56012099006|4143699003|11063799006|10067099003|22082099003|18002099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	J00ElV5tAFiZaM9aMUC0DS3oqTd3G/jLlWBgU3DBCE75PrubphImCK8sXcYZAut0Uj9dZDZRPlECEtwpSFxqw8qCCxg4sKtZvTyFld4wjeONTHM9PDYH0K6p7FVZx/g5b8h5ZDJBZIYeDa35sJAwA9cMCL5laHGGpzGgJO5Q26KU5H6GjPeoqeCYRFz2TNGVYyo+lsGTr7YUiYl6yj7AZAblNrTEE89pwI24KnwkYzE1o/VJsUFwZL4MgwbD9cX8fUSlD4sLq/O3yav159J85+6x7lqRCBZWjLJsjFdhbV/DhRqehXkiVXGWfh4J0l48a7BiQPmm6Sjws2rpdWrlEcp37yBrTmoxdngJ4HGT+dLm0LDSd0BY2NaSn4yOClXxzHoz49YSZzMDSx3lcvs6JhzJs1dBR2NpXSQi8q23WHU79RJTyZAXxJOejVwa6ClaVpmK2q4G3HLdqrGRDmslLrBiNsFerx3YUtfiBcLDz9pAZj/Mpt/Y7vTU60+9bTWPwuRelZGZyQNqO/85v2flO9VFRXRF/QumpoeT0t4JmeehqQyTHQwyrw9gRmtE5ziZrdVs2zKW2tnCvfboffMPhvGKn7dwlV5KLEb+aHk+rCsVPBJcU2pJR8ZdzDFE1uGF1dB6WqddDP/P1EjOOyOyntA4o/EOVGEKu2X4gY0NQw8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024)(23010399003)(56012099006)(4143699003)(11063799006)(10067099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SWxGNHU1eFRYN3FKT2p5STM3cjFBRXh3SllaWjFyZm5tbUhyWWp5TXVoNXlr?=
- =?utf-8?B?dzQ5Yy9lVjVpMW53NkFhL0NRbmpsR2hMMC9JSDU1bnY2ZnE5YUgxZ0pkQWVH?=
- =?utf-8?B?cVhDWUZrZEtjRXhnNktBR0l5bmNkRmU5WXBua2xYQnB4U1ZSRUxTOFcrOThm?=
- =?utf-8?B?clpxMUlCeVRmNE5hY0ZKckxjVU5NNDBJQlpnR2R3MVc0NjdYdEpySzEzOHNN?=
- =?utf-8?B?ZGFMWWdxK0o5UG00dGoxMlhpamo4NzZhWUZnUHBtTWVlZGx3d3IzWHEyQjdk?=
- =?utf-8?B?ZkFyY3ZrcWpqbDlHVWpkRzlkTnJtSVozQnM4MUk1QkVNM212dGFNZzVhaFVD?=
- =?utf-8?B?Ymt5c05TUC9ndjM3OElsYVpGTTRUUGhXckEvUFZCM1lzRDdyMWJKY3FCUzZB?=
- =?utf-8?B?RU5ZWXdWTmdCTkVjL0RNckhMUFQySjcyTDlZcGFLekQ0M2FCc3FDQjM1cUwz?=
- =?utf-8?B?WVA5dStzNGlkS0pGN096cDJ3UllYSFNhQ2xiTEJSMnBiL3RyejhuSm1BTFFZ?=
- =?utf-8?B?WFhlM0F4TXQ4aElrS1dEQzlJMzc2UGVXUEJaMkJQVVNTZHFWL3gvT3lwM0lN?=
- =?utf-8?B?SllldFQ1ZzFIcUxjN3cwakVSTmJxLzJUTGx6YU41K2ZYTjFkT1dIb2RFU05C?=
- =?utf-8?B?dWNHTHRUNkNLbjQ4TnVjbVJqYjRHV0ZHTFBjUlU2ZGJZaUlJM1RnMDhlSytJ?=
- =?utf-8?B?WXR0d0tNRmNhdzRVWERyeUpDdE00L0E2STFHVlp2VU8wN3lLZEFUYjNTNEQz?=
- =?utf-8?B?WE1IbWQvQjlxQ3BGQzJmMFhaWW1JdWlZNjdndlFWMGZFcmxqM054alE4RFUy?=
- =?utf-8?B?YkFLK2MwSS9jQlRtUm56UHdMSHNxQ0M2RDNwODloUmR5Zi9paGt6WjloU2px?=
- =?utf-8?B?cytJZmZ5Mkxqenc0aGRVam8yTkxwQnFyalJnUUxjL0dCeDdjOXJKM1ZiMkx6?=
- =?utf-8?B?Y1BHbjUza25WemVIM3RYZlhaYjBXYmI0SWwxWCtrUFQrOUFHR2Y3VlBSRUNn?=
- =?utf-8?B?MnZocVZXYkwvUzFTSStxeUZaeTRkOTFsTkhHT1NXd0ltV28rVnFNMEFvY1Uv?=
- =?utf-8?B?YXNxK2xNaHlLM3Y5d3RTLy9YZnl5ZkMwblF1QmVwd0htSi9BbGZoYytmQ1Er?=
- =?utf-8?B?MTYwSHhxWlRHVy9zRmlXZXhBVllRejY5N2NhRStWREFKelpnQk1RZzFIYk9t?=
- =?utf-8?B?Wmc4NHI0YWFKZzVkZTg5VUVnYm1COEgwVEFLZ29EOVhDSlJIMHZSOXl2cTBj?=
- =?utf-8?B?c3dIZFNsVVJMS1lUY3BSS1VrZHEyQnhqWmg3clVKRU1WRnQ1R2VjSlZONkl2?=
- =?utf-8?B?aGhFckhLMGNvbm0zYUtGZEFDVGdLTE1waTB6MCtxY3VBZlNzU3ZsOHAzaVp0?=
- =?utf-8?B?TVVHS1VPamZMRjRYdHlOR3FueDNnV2JUeWw4bVhsSUROWktocGtFS0FieHZO?=
- =?utf-8?B?OGtnWGRZdGRQN1VyK2FNK0s3L0dDNzM3b1BINGwyMGtzZ3VqVUh0OWttMkND?=
- =?utf-8?B?a0V0dXlvNVM3WlM1SkFObUhLV3ZCdFcvdkpTWFAwYjNMMHpxb0JUNjFjMzFj?=
- =?utf-8?B?bllZNzBFL05UTmhSMklWallram9MbWxCbVdVR2NYM3JGVjhMbGw2S1l6SS8r?=
- =?utf-8?B?dG5IMVByRkxWbEF2Nmo1OVBsTzZkV2l1TnlteTZsVlB4Z0E3ZjlEWDZweXp4?=
- =?utf-8?B?OXVGQnM4eEloSy9sbFNYSW8rRkl6Y29GcnZGS0Y1Y0FOTVUycGRnVzl4UDJH?=
- =?utf-8?B?c1lSelZFdzZuaEc3V1lPaTlkcGYzemRYUlZqSmNxalVaVHhkNlVUN1JUYTVH?=
- =?utf-8?B?ZDFNdnRDTmRTWFpobk43RlUwTEY1T2VVVTNGZkJ3T2J1ZXNzM2xDL3JscWYx?=
- =?utf-8?B?VnZUQlJFNHdpckUwQ0pLMVdncFpKU3B4REhjZ0p2bUJqMHlTYUd3Q0wvNmor?=
- =?utf-8?B?T3p5SlhWSzlRcVIzaGJQZHBCOWlzZERMUFJFOG8yUVJOcERnVFRZUXoxajJE?=
- =?utf-8?B?MlJLWDl1MGtBTjRpOEpqWGRFWjdicHRVankybHhNTzlwa3d5RVhobTAvSHpL?=
- =?utf-8?B?VTQzdSs0czdlNGFQc01NRTBpUjBBNjROS1dUYzR3ZkllUDJLNHV4L1ZwMjhG?=
- =?utf-8?B?WGErc0IvQ3BYUENld094bWdnY0tSM1ZabWhjNGk0OXk4cUZKNjBEbHFUMXpt?=
- =?utf-8?B?OVFvbm1LSkFJSGlFTkROZVdhMWo5dEc1L2UvT25xdVRVNXNHZWVhK3MrUFJu?=
- =?utf-8?B?OFFlZlBGSEZ1bnRTeWlqUFFhTnZMem1ZZWVpWHVHTHJ5SjNRVFRyTWlLS3ZI?=
- =?utf-8?Q?kU+TSuBSD6VjyhYda+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 989b20d3-7774-4ef2-a95a-08df2eb6cc91
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2026 14:31:16.2178
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZK+9r0ZYUUo4t6MvudCKoSs5Z8Yy3gTW38F7Lngx1RfHYgUjIP1NDeXib9nasxnz
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7969
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 20, 2026 at 09:01:33AM +0200, Christian König wrote:
-> > Like iommufd is not suddenly going to start understanding ualink after
-> > an invalidation.
-> 
-> Yeah but I think we can sort things out early on.
 
-Yeah, if ther is some value thing can be excluded right from the
-start.
 
-> > Further, I had the (perhaps naive) expectation that the interconnect
-> > option was not something that would change during mapping. I did not
-> > think you would loose your PCIe option if ualink becomes available, or
-> > vice versa. Though on deeper reflection I suppose someone could build
-> > HW so you might loose your ualink option if the dmabuf is moved to
-> > system memory while PCIe would still work.
-> 
-> Yeah, that is definitely not correct.
-> 
-> We have the clear requirement here that when one interconnect
-> physically fails that we can still do things like let the work reach
-> the next checkpoint, then it is taken of the HW, and the HW
-> suspended for repair, then resumed and then work can continue....
-> 
-> Similarly we have on the graphics side the requirement that physical
-> placement can be moved to system memory because of some other device
-> attaching, pinning for scanout or something suddenly requires the
-> backing store to be contiguously allocated etc,,,
-> 
-> So there are vast requirements that a buffer changes location when
-> the mapping changes. I mean it is kind of pointless to have a
-> feature like ODP to suspend your traffic if the underlying physical
-> location of the memory can't change.
+On 20 October 2026 8:10:21=E2=80=AFpm IST, "Perlow, Jason" <jperlow@gmail=
+=2Ecom> wrote:
+>Hardware: Intel CoffeeLake-H platforms, various=2E The affected device is=
+ a
+>Broadcom BCM4364 802=2E11ac PCIe wifi adapter (14e4:4464) at 0000:05:00=
+=2E0 on
+>an Apple MacBookPro16,1 (T2 Mac)=2E Aditya, including you directly since =
+this
+>is T2 hardware; copying iommu/pci/wireless because the fault signature an=
+d
+>the fact that it reproduces on only one of five tested machines looks lik=
+e
+>it needs eyes on the core IOMMU/PCI path, not the driver=2E
 
-At least here, I am not aware of anyone actually using the ODP
-capabilities to move and migrate memory. It seems by far and away the
-most common use case is permanently pin things.
+Nice that's the third bug report of this issue today:
 
-It seems like in these very complicated chips the placement of the
-memory is a critical decision, if it moves around the performance is
-so destroyed you may as well not bother.
+1=2E https://www=2Email-archive=2Ecom/ubuntu-bugs@lists=2Eubuntu=2Ecom/msg=
+6317918=2Ehtml
 
-I know this is not everyone and every use case, but it has been a bit
-eye opening we built all this complex ODP stuf and I struggle to
-justify it with an actual real user.
+2=2E https://lore=2Ekernel=2Eorg/lkml/CA+3E58-2N-uVNsmwvOGDKZvtnDQ1DF=3DGz=
+FbTyRLuN8FpAd4qdg@mail=2Egmail=2Ecom/
 
-But yes, we should try to build it as you describe.
-
-Thanks,
-Jason
+>
+>SYMPTOM
+>
+>Between a locally-built v7=2E3-rc7 kernel and a v7=2E3 final kernel (same
+>=2Econfig template, same patch series beyond one T2-specific AER quirk th=
+at
+>is upstream in final and therefore held out of our patch set), the BCM436=
+4
+>wifi firmware on ONE affected unit crash-loops continuously:
+>
+>brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4364b3-pcie for chip
+>BCM4364/4
+>brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4364/4 wl0: =2E=2E=2E
+>ieee80211 phy0: brcmf_fw_crashed: Firmware has halted or crashed
+>
+>repeating every ~6s, indefinitely=2E dmesg shows the actual mechanism -- =
+a
+>real IOMMU DMAR page fault on the wifi device, timed to the same cadence =
+as
+>the firmware crash:
+>
+>DMAR: DRHD: handling fault status reg 3
+>DMAR: [DMA Read NO_PASID] Request device [0000:05:00=2E0] fault addr
+>0xffeff000 [fault reason 0x06] PTE Read access is not set
+>
+>Four such faults logged at uptime 13=2E4s/19=2E4s/25=2E3s/31=2E2s, each i=
+mmediately
+>followed by a brcmf_fw_crashed event=2E intel_iommu=3Doff removes the fau=
+lt and
+>the crash entirely (8+ minutes stable, single clean firmware load, stable
+>AP association)=2E The prior v7=2E3-rc7 kernel on the SAME unit has zero =
+DMAR
+>faults and zero firmware crashes with IOMMU on by default, so this is a
+>regression introduced somewhere in the rc7->final window on this unit, no=
+t
+>a long-standing issue=2E
+>
+>REPRODUCES ON 1 OF 5 MACHINES TESTED
+>
+>We ran the identical kernel build (and, where applicable, the identical
+>firmware blob) across five machines and only one faults:
+>
+>* Affected unit (MacBookPro16,1, T2, BCM4364 wifi): faults as above=2E
+>* Second MacBookPro16,1 (same generation, different configuration within
+>the 16,1 line -- we have not enumerated every hardware delta): same kerne=
+l
+>binary, same firmware blob, IOMMU also active by default (iommu: Default
+>domain type: Translated, identical to the affected unit) -- zero DMAR
+>faults, brcmfmac stable=2E
+>* Three non-Mac x86_64 machines spanning three more wifi vendors (Intel
+>iwlwifi AX201, Intel iwlwifi Centrino 2230, Realtek rtw89 8852BE) -- IOMM=
+U
+>active and translating on all three, zero DMAR faults, all three wifi chi=
+ps
+>loaded firmware and ran cleanly=2E
+>
+>So across four different wifi silicon vendors and five physical machines,
+>IOMMU is actively translating DMA on every one of them and only the singl=
+e
+>affected unit faults=2E This looks like a host-specific or
+>hardware-configuration-specific trigger rather than a blanket rc7->final
+>regression that would hit every machine with this kernel=2E We do not yet
+>know what distinguishes the affected unit (ACPI RMRR table contents, exac=
+t
+>PCIe link training time, and IOMMU group/domain-attach ordering are the
+>candidates we have not yet isolated)=2E
+>
+>WHAT WE RULED OUT BEFORE WRITING IN
+>
+>* AER/ANFE quirk on the T2 Secure Enclave device: its PCI ID match is exa=
+ct
+>(Apple SEP, 106b:1802) and does not touch the wifi device (14e4:4464); re=
+al
+>PCI topology on the affected unit also shows SEP and wifi on separate roo=
+t
+>ports (00:1b=2E0 -> [04] vs 00:1c=2E0 -> [05] off the PCH), so there's no
+>shared-root-port mechanism either=2E
+>* brcmfmac driver source: git diff v7=2E3-rc7=2E=2Ev7=2E3 --
+>drivers/net/wireless/broadcom/brcm80211/ is empty=2E
+>* Our own config template: byte-identical between the rc7 and final build=
+s=2E
+>* The upstream Kconfig stanza for INTEL_IOMMU_DEFAULT_ON
+>(drivers/iommu/intel/Kconfig): byte-identical text between v7=2E3-rc7 and
+>v7=2E3 (default y, no depends on)=2E
+>
+>THE ONE ANOMALY WE CAN'T YET EXPLAIN
+>
+>Despite the last two items above being unchanged, the actual generated
+>=2Econfig has CONFIG_INTEL_IOMMU_DEFAULT_ON unset after make olddefconfig
+>against the rc7 source tree, but =3Dy after the same process against the
+>final source tree, even though our template explicitly answers "#
+>CONFIG_INTEL_IOMMU_DEFAULT_ON is not set" in both cases=2E Our working th=
+eory
+>is that some other symbol started selecting/implying INTEL_IOMMU_DEFAULT_=
+ON
+>between rc7 and final -- which would override an explicitly-seeded "not
+>set" answer during olddefconfig resolution -- but we have not identified
+>which one=2E Happy to bisect further, or provide the full =2Econfig /
+>additional dmesg, if that would help narrow it=2E
+>
+>CURRENT STATUS
+>
+>intel_iommu=3Doff on the affected unit's kernel command line is our accep=
+ted
+>fix for this specific machine while the root cause is unresolved; we are
+>not disabling IOMMU fleet-wide, since four of the five test machines show
+>no problem with it on=2E Posting here in case this fault signature is
+>recognized, or in case others on different T2 or non-T2 hardware see the
+>same thing on v7=2E3 final=2E
