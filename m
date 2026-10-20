@@ -1,97 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792495375;
-	b=HHMZ6y5aYh3LHmFU3d9GGuzb3LQzGuhFu8Dn3NKF22tD1/9IfDGLKlgsSHgcbYsK57pE
-	 8WfxP2GNB3zf1Qn9HHT8nSn4VhrgnibRpcfOhXndSrl4tKGBU1xK0WaE3VuLw/SSJrlwM
-	 4sw/4Gkn0c+lfTHYkKIDls09DCQ5Yw4vuUlqqwcW9fdEDcCGuHV2pOah+Y/wXhTsDofpc
-	 B0+iBz4Gfi+AsO34pKI5hrBZrRvuLbBNho0a9YkuVMhJf8eV72KtQRdTTo2iGrtMR381w
-	 wSzsq1aRJcfth/eLThZFTeoWRhHjoSaB8XMIgxn6c7GQfxbhn2bGjDnh60QMNoaFAgg==
+	t=1792495751;
+	b=XCYT/VjEJLo7PhoI9xYabmPC7fWBhso02KaMbAlvbW1dmRG7XDY362H3Az3aS1KND4mY
+	 qRdGVexaPxvWrmyVf6Gqklrlz1RLB9mNAxPC/sw7a/3cX7nPaEaP5OA8S60OF6FyWLdtu
+	 9NBk1H9hiAxb8i46iHgya4qVr5Dt5VVGMAi7pV+CF9/mTydi4BKH4MHbS+SOfOvmL55HM
+	 xDWTrWnTWWtl9p3vz3e5Jzyi5ZIKu07n+W4q6GAiifpy/yOG51XXoiDbXyIgL15U0XFc8
+	 9PnDsA5qm9RcXnigoZ3VunbB1MN8QzkpsLyWIbGfjNgT0wg5+jo5txBCaY791aoHwEw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792495375;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=ZhRLvzJzPI5U781F/KKbvaLNO/DRwhdbN5Luxo3sgyY=;
-	b=JqMWHe4KvYXbp3NF0/2Md2bejJRgZshr9Uyp9LKqaCE1SkBP/fk6N9VEdk7rK2s2rBrV
-	 BPB66qkGTlP/aZ0/koHzTNRH6E3r0q0V4OsyoiteIELFUR/44n7o6+rMJn3oGX9Oajklu
-	 YQTvCnrGDAhyESbxHt4b/ZdfJ99pk5GpgjDLgIuY5WVZXaHEL73tpg4R7KVGb6PBZaTfF
-	 q3HfHvRj9lg5pA3/N7clGYtU9vRzqwnpOtRisc7QSPTYu5OoKeQVqUDgpVcINfGO22UU9
-	 Il6TAZEgGRL7/dGa8n5qVlhEk3VObXUyNdxftvDNx4V0lKTX/LTvpnXU6ofB/mkD4wA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792495751;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=lvOImHjk9+PSZt/dZxaP6lDjW+Q8Usn4Xh93yDh43jg=;
+	b=OhmF52Lg8cfRjcwZ8bND1gwM0CfOkJFkD05s15kfaLFVmS+p9CDTw3F23Ws1YvwokGBZ
+	 oA2bhJKlhUZUSiLwk7wiH8QBxxRVtXfkFOcrJAHprJ7+y5awn8k9ia09sH+dJToWvWIaM
+	 lT5SIPZphrZnEMoprh3ZUzkOCLMcXGF1zBDiS2d6HSjgQ1V0Gh/XFU+JQWfik8x1nrKqq
+	 SGUqmxzRaU8WtwjpT5EXwV76HLUIs0gOhxB3DiBWUXy4OXeENzOR1J7uUET/kTopxnAYq
+	 DqN/Tt8iKsBYBNL05KVnCuZ+Cf9F+pj3Svw6YV5dMN0RDKdhprWOeexmTKS7nrdzlgQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Jt4R9hUH;
-	arc=none smtp.remote-ip=209.85.128.42
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96F14606A319
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 11:22:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 96F14606A319
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=ldbNPAVz;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 01C5C606A319
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 11:29:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 01C5C606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=Jt4R9hUH
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4a1d2ec9aadso41465e9.1
-        for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 04:22:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792495373; x=1793100173; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=ZhRLvzJzPI5U781F/KKbvaLNO/DRwhdbN5Luxo3sgyY=;
-        b=Jt4R9hUHHbg1ZFBcanSWqTIFzUNCUapf5NBk0d4S2p8Si8iI+7nOg5ABbr/2pUqvme
-         1NFzDifPuWttg8UmwiOZAzo5z/hQ5hbRpb1D7kZBJW+L5i3pDUP2OoP5fKvChFyyK/eW
-         +3cfMPlNm/QSk7Z3Bua3DcH3I/C2PzHsJ8+fnVfKNcrzanmXPdiNXIll6xQClWFsUgT6
-         Be/NEWN/SG3FXy8p7KhD5ms2sEeyVQS8xD9KfXKUwSmC2PKMjopqEk56DhnQWVCCLNlc
-         pRnFLgJ/RYMoYNr75UaM8NLgd+9e4bjQ4Lkq+Z6FaelW6m+Jwi0rG1nQt8lAJqRaogGI
-         5LzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792495373; x=1793100173;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=ZhRLvzJzPI5U781F/KKbvaLNO/DRwhdbN5Luxo3sgyY=;
-        b=N3OxnU9LSlMyaI5CLpwWr4RRguhHOC3doqQEeZkQblOfiQPFPPfsY6v1QYfgjvRA48
-         0IuH5MX82e8/gccV+sp/1OKJ43Lo2QIsprwqUJ/v7NvXavHP9O0HJ/9UZkjIdoxBdf3t
-         ecNByMlKU2YXKQFJ8XaOzNw0K0r5oV5+HSUtTT4FAmHHC746be2eDF05VHwRohiMoKlK
-         h5LMG8T+naD+SV2kA8Jx0tWoXWqIxDkjbuXgr4YA61JxZQUOjzxfM7E6leuXiusFq2GU
-         kkkbv8c0nZuvj+h0F2i72Cx/7AXf8MnKj+TJE1SLo2H2GzvAAKzWNYmcnk/ZZ0p3lT5T
-         jWWA==
-X-Forwarded-Encrypted: i=1; AKwUvBz2BKoiGuH5OUP3cYJ3D2i6Kgo3/McBn/PeqZ7HiQvVPyIjno9oYKocHExPs4bz7UIem/SoOg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIPwiMYf3XtADlyXLnwKe04qDQrEoe4mvD8qK0Qm6kD9RV/ZJBZ
-	hxjKF9+guqxKpUFPfludJ6a88RIuV2lohLEuFw4HdMJtV0CH/GElqctL5VECbNy+EQ==
-X-Gm-Gg: AYBFou0pGPRaOKvSr9V5yYulAy/u75uyS2NzX7vq/nEFf/PlGho3PlSfJ3QhOejqczY
-	dlc7yNPRC53Lz3wrEYyI+qrmXDG/bdBIu7hhNSDtaaPEnWr1lVu6legBx71c6wpilkcerJwdWqd
-	5l5F2CXdtzLst6i6OqA4FPHOThbWRuDHlngy7FhJHpx05HUQREuWGv6xS16J1yfAsUtpS2hybm7
-	pIIicoQ0qDXYi5fZ74Sc5JjYfOpMDQw0Rrf6CTkZHsZbJyYVxvwk18CEV2vxvQmEbsM3LBQmEZU
-	bVccz3WlpFT/j0Nnuh627kRnzOA/PFZxhqr/4K3FQO5WrQNEFunPtZSq4vNZXwW8WGcl2odFTOF
-	jl7eZIj1+wxit4aLwVUfTs39da4GbDWCRDT7oJMhgnMDitNW9448urN3gzrK6UEpUBFUOZlfkQG
-	qvJqMLjfZmbFI3uiCCAQwjYNsgQ/Tc2WKZJkKj9dxjcci4gxNfeDi2hJVPVD0BYH02G+OuSxTab
-	0uuUJKK7B9rFqUX8HxvjwEuvHBikx/XdgW0GQb2
-X-Received: by 2002:a05:600d:640e:10b0:4a1:98b1:1de9 with SMTP id 5b1f17b1804b1-4a1f59c151cmr652475e9.13.1792495372639;
-        Tue, 20 Oct 2026 04:22:52 -0700 (PDT)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e1d8208b1sm5787276f8f.33.2026.10.20.04.22.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Oct 2026 04:22:50 -0700 (PDT)
-Date: Tue, 20 Oct 2026 11:22:46 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, jgg@nvidia.com,
-	praan@google.com, kevin.tian@intel.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, jamien@nvidia.com, kas@kernel.org,
-	Cristian Prundeanu <cpru@amazon.com>,
-	Breno Leitao <leitao@kernel.org>
-Subject: Re: [PATCH v11 05/11] iommu/arm-smmu-v3: Disable the EVTQ and the
- PRIQ in a kdump kernel
-Message-ID: <atdPBqd1-xLNZ1hs@google.com>
-References: <cover.1791226953.git.nicolinc@nvidia.com>
- <fdebf9f372ebabd7a44581a2068d6fcbff058783.1791226953.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=ldbNPAVz
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 04FE21596;
+	Tue, 20 Oct 2026 04:29:06 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 55BE03F7B4;
+	Tue, 20 Oct 2026 04:29:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1792495749; bh=lPExewzubDO61zAC5f5szD4RLVzqEIiHTrrWFFbXWiU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=ldbNPAVz3IGbNhuOHCkg9AxOAasSipoy6B5lGBDzvn/l+iQ+xrMGjWe9+CJcsFl11
+	 6SP4SsUPLz31dVdUWoNT+EX1DN80XrhHO69Qp0pChRZFwxSOXLiZHUB06wU7fItPn9
+	 6t/Ojv9c6iy2iP/FPyS1UkbN/qZvM71rUcPMepAk=
+Message-ID: <be6cd787-8502-4499-ad62-597c1b9b7702@arm.com>
+Date: Tue, 20 Oct 2026 12:28:54 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -101,71 +53,161 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fdebf9f372ebabd7a44581a2068d6fcbff058783.1791226953.git.nicolinc@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 07/11] iommu: Let 32-bit ARM drivers opt into a DMA API
+ default domain
+To: Mikko Perttunen <mperttunen@nvidia.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>,
+ Thierry Reding <thierry.reding@kernel.org>, David Airlie
+ <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+References: <20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com>
+ <20261016-b4-arm32-iommu-dma-cookie-v2-7-b06842a01938@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20261016-b4-arm32-iommu-dma-cookie-v2-7-b06842a01938@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Oct 05, 2026 at 12:30:48PM -0700, Nicolin Chen wrote:
-> A kdump kernel cannot use either queue. The crashed kernel's CDs and page
-> tables might be corrupted, so events would spam the EVTQ, and there is no
-> way to serve the page requests that would arrive at the PRIQ.
+On 16/10/2026 7:46 am, Mikko Perttunen wrote:
+> iommu_get_default_domain_type() unconditionally forces IDENTITY on
+> 32-bit ARM as ARM_DMA_USE_IOMMU installs its own UNMANAGED domain on top
+> of whatever the group already had. Now that the ARM DMA API state is an
+> ordinary domain cookie, IOMMU drivers can ask for a real
+> IOMMU_DOMAIN_DMA default domain instead. Drop the override so that
+> ->def_domain_type is honoured, and let a driver-requested DMA domain
+> through the !CONFIG_IOMMU_DMA guard when ARM_DMA_USE_IOMMU can back it.
 > 
-> The reset routine still enables both of the queues and then masks the two
-> enable bits back out, having already programmed the queue bases and taken
-> the interrupts of both.
+> IOMMU_DOMAIN_DMA stays strictly opt-in on 32-bit ARM and is never the
+> fallback to avoid unexpected changes, as drivers today return 0 from
+> ->def_domain_type while expecting the legacy behaviour.
 > 
-> Clear ARM_SMMU_FEAT_EVTQ and ARM_SMMU_FEAT_PRI in the probe instead, so as
-> to entirely skip the queue initialization and handling in a kdump kernel.
+> Behaviour is therefore unchanged for every existing 32-bit ARM IOMMU
+> driver:
 > 
-> Suggested-by: Will Deacon <will@kernel.org>
-> Link: https://lore.kernel.org/all/amiBagGKn-Aym1DK@willie-the-truck/
-> Acked-by: Kiryl Shutsemau (Meta) <kas@kernel.org>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Tested-by: Breno Leitao <leitao@kernel.org>
-> Tested-by: Cristian Prundeanu <cpru@amazon.com>
-> Assisted-by: LLM
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> - exynos-iommu, omap-iommu, rockchip-iommu, msm_iommu, ipmmu-vmsa,
+>    mtk_iommu*, sun50i-iommu and qcom_iommu have no ->def_domain_type,
+>    so iommu_get_def_domain_type() returns the unchanged cur_type of 0,
+>    which is forced to IDENTITY as before.
+> - arm-smmu returns IDENTITY for legacy bindings and 0 otherwise, which
+>    ends up in the same place.
+> - tegra-smmu returns IDENTITY explicitly, and keeps doing so until a
+>    later patch.
+> 
+> Also move the static_assert on the two DMA API implementations being
+> mutually exclusive to drivers/iommu/dma-iommu.h, next to the
+> declarations that depend on it.
+> 
+> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
+>   drivers/iommu/dma-iommu.h |  3 +++
+>   drivers/iommu/iommu.c     | 20 +++++---------------
+>   2 files changed, 8 insertions(+), 15 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 756825e004774..42cd30c79211e 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -5247,9 +5247,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
->  		return ret;
->  	}
->  
-> -	if (is_kdump_kernel())
-> -		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
-> -
->  	/* Enable the SMMU interface */
->  	enables |= CR0_SMMUEN;
->  	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
-> @@ -5576,6 +5573,15 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
->  	if (arm_smmu_sva_supported(smmu))
->  		smmu->features |= ARM_SMMU_FEAT_SVA;
->  
-> +	/*
-> +	 * A kdump kernel wants neither queue: the crashed kernel's CDs and page
-> +	 * tables might be corrupted, spamming events, and page requests cannot
-> +	 * be served. A disabled queue discards new records without raising any
-> +	 * global error.
-> +	 */
+> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
+> index 71b23cb698c0..24fa4165450f 100644
+> --- a/drivers/iommu/dma-iommu.h
+> +++ b/drivers/iommu/dma-iommu.h
+> @@ -12,6 +12,9 @@
+>    * IOMMU_DOMAIN_DMA default domains. Only one provider can be compiled in at a
+>    * time.
+>    */
+> +static_assert(!(IS_ENABLED(CONFIG_IOMMU_DMA) &&
+> +		IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)));
+> +
 
-I find this a bit confusing. If the CD or page table of the crashed kernel are
-corrupted how is it safe to adopt them later in this series?
+Don't the first couple of patches already make this redundant, since 
+such a build would now fail anyway due to multiple definitions of 
+iommu_setup_dma_ops() etc.?
+
+>   #if defined(CONFIG_ARM_DMA_USE_IOMMU)
+>   
+>   #include <asm/dma-iommu.h>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 5fbb76d44a1e..0d812c4b9f08 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1884,18 +1884,6 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
+>   
+>   	lockdep_assert_held(&group->mutex);
+>   
+> -	/*
+> -	 * ARM32 drivers supporting CONFIG_ARM_DMA_USE_IOMMU can declare an
+> -	 * identity_domain and it will automatically become their default
+> -	 * domain. Later on ARM_DMA_USE_IOMMU will install its UNMANAGED domain.
+> -	 * Override the selection to IDENTITY.
+> -	 */
+> -	if (IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)) {
+> -		static_assert(!(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU) &&
+> -				IS_ENABLED(CONFIG_IOMMU_DMA)));
+> -		driver_type = IOMMU_DOMAIN_IDENTITY;
+> -	}
+> -
+>   	for_each_group_device(group, gdev) {
+>   		driver_type = iommu_get_def_domain_type(group, gdev->dev,
+>   							driver_type);
+> @@ -1913,11 +1901,13 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
+>   
+>   	/*
+>   	 * If the common dma ops are not selected in kconfig then we cannot use
+> -	 * IOMMU_DOMAIN_DMA at all. Force IDENTITY if nothing else has been
+> -	 * selected.
+> +	 * IOMMU_DOMAIN_DMA at all, unless this is ARM32 and the driver asked
+> +	 * for it explicitly, where CONFIG_ARM_DMA_USE_IOMMU provides the
+> +	 * implementation. Force IDENTITY if nothing else has been selected.
+>   	 */
+>   	if (!IS_ENABLED(CONFIG_IOMMU_DMA)) {
+> -		if (WARN_ON(driver_type == IOMMU_DOMAIN_DMA))
+> +		if (WARN_ON(driver_type == IOMMU_DOMAIN_DMA &&
+> +			    !IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
+
+This ends up looking a bit odd, and not clear that it's still more or 
+less the same special-case workaround seemingly being removed in the 
+hunk above.
+
+At this point I'd rather push any remaining identity special cases into 
+the relevant drivers, however I'm somewhat more confident that there may 
+not actually need to be any:
+
+- exynos-iommu, omap-iommu, rockchip-iommu, msm_iommu: AFAICS these all 
+only ever have a single client device, so the per-group implicit domain 
+should be equivalent to the per-device explicit one, so they should not 
+be impacted by switching (provided the "throw away the ARM domain" idiom 
+in some of their client drivers becomes non-destructive as mentioned)
+
+- mtk_iommu, sun50i-iommu, qcom_iommu, arm_smmu: While Kconfig might 
+allow building them, I'm not sure we really support the first 3 on 
+32-bit at all, but again since these all have no special CONFIG_ARM 
+group handling anyway then either they must work out as above or they're 
+already broken, and thus at most the change might un-break them.
+
+- mtk_iommu_v1 and ipmmu-vmsa probably wouldn't care given that they end 
+up attaching to their own shared domain anyway - they just can't wait to 
+be able to use a proper singleton group to rip all that out :D
+
+The main reason for forcing identity was to meet the expectations of the 
+existing ARM DMA ops setup, but if we're now touching the ARM code to 
+properly tie that in to the IOMMU flow, then I think we can just do the 
+right thing.
 
 Thanks,
-Mostafa
+Robin.
 
-> +	if (is_kdump_kernel())
-> +		smmu->features &= ~(ARM_SMMU_FEAT_EVTQ | ARM_SMMU_FEAT_PRI);
-> +
->  	dev_info(smmu->dev, "oas %lu-bit (features 0x%08x)\n",
->  		 smmu->oas, smmu->features);
->  	return 0;
-> -- 
-> 2.43.0
+>   			return -1;
+>   		if (!driver_type)
+>   			driver_type = IOMMU_DOMAIN_IDENTITY;
 > 
+
