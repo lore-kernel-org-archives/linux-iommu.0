@@ -1,47 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.118
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.101
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792489280;
-	b=bynJD4yzKaEqakllgR07OYPZTw3Ye3fUftIUUs/ZQ4a/5ytWhRphZrUsAAPLqlrWb+8d
-	 hYTmRSC/wbXrshOss1GBHHxPmFeQ5mXo4/5K38aD++3KSdfi4zQvT65c0B8nbrLmuZFg/
-	 uXWNlSKN4OmX9tNJEzLWF+iEo/cTOR6euePTRY3wOE8paO+iPRBHSMDVAX/OZR6BFdsvn
-	 viriY8bJ6T5anDbzLhTOkCa52ljmQl9rFzco8zYOrOvjGDfYgo6nFhAK4Wml3a1VAake2
-	 dFA9IOiJAlxmwmv8lU1FXcQQHDe+X2Rx5lqk8NZ2bYY6mJFyZASAk1aLuofUuKVYt9g==
+	t=1792489281;
+	b=UnhgbQ2MG5Sr14+wjWW3zAzife1u045JgU1eCqFeW24NQ+iPz84G+NfmAHWvS1p7ABtU
+	 5UmQhbMndxRUVOlYK2z2Pe3jT7SYolW80oZO/jEIeenZRQeP//ClWfxY2QQHF3xWUXVff
+	 UspeME4XHXVqgZP317+A+sHNWxx+KGqmmjPEw/54RWAvQzVSDohOfqSmAvTG3OuEVZUh8
+	 PA0GSrprdgSnQ81xDat+G6e1tOC1HoUMtpobgYbkZ48EhmWdEmKWO8ehZURb6kP9aWhh6
+	 nk5FU8FzFseGedaEhyZqzl35F3IgMrdu+GwmAW2edQtzeJ8eBwKwqjbYHTNkZZ8+0AQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792489280;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792489281;
 	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-Id:X-Mailer:MIME-Version:Content-Type:
+	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=kcaNBbiUMzKXzNSISjdYUCG67KZVrDK5XLEKTAvzTD8=;
-	b=Im6UJiQ8G+F+ZATX6ZJIIJZTSgK6/Cepbz0svuaJHmCUXWUguyc6x59hpmSvGeY4G+8g
-	 nES3wDgiaMJ+dyQn+qOaHat68dXzxq4NmPs4rnzbIBJVaCkhR1Rh8cpbhh4yvnWPGLr8D
-	 o31Uar2i0PXAEzpnz/iDawKS/lE7TvMbxQHyrak2Ii7vHj67Ym28rvj21K7vJYsnR9fTo
-	 zuQDYArsI5G9Ulc3Pwv5mIzGWdpEPk5Vn+RjILRsmocWF2VJFY+fe8QcPV+an2Z+aG/by
-	 mLbi4EWbaYY5rgHhpjfMhUQuHL3eUcjQK/OTCZs8V4k97p5Dp1zno8uEnt8PieMJBsQ==
+	bh=vV2Y5T1kVnTXHiV+qTqs8GbZEVnLFhK5H2hev57N6Io=;
+	b=aorQT5Bto2yyBPjrL4zSNhWuZZVieZhSXluB/UloSGBq0XdWg+GN8hv0LYbyWLmNxLAj
+	 F205x4CNNUo7LQi7Dd/UPulHOElI7bPjaxlxpCF22ajWVAnb/w/5d+SPaP/J+3zXTQkcF
+	 dxvrw7uCzFop7HIKKlFnKVCXZanZPF8cfnnlZ7y8LhUFYzZV0eL6VvCZZcPbthAoUxMb/
+	 kBp+v2xePZ8kQaR+xnOoUl2Sy8QfG4zUaURdAnh00Vzm6tj/VJ4V4+90ZJFZMFYkC/QWs
+	 +tn6jJ8BhP18fOMKaqzoM/zXWOCDZ+6Rpl6tgMq1KRXyvNEiSE3M1vpvjrcJ90EyZgQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.alibaba.com;
 	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oOrn0Mel;
-	arc=none smtp.remote-ip=115.124.30.118
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=xbbLont9;
+	arc=none smtp.remote-ip=115.124.30.101
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAFDD606A31C
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 09:41:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DAFDD606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F7C6606A331
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 09:41:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3F7C6606A331
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oOrn0Mel
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=xbbLont9
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1792489275; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
-	bh=kcaNBbiUMzKXzNSISjdYUCG67KZVrDK5XLEKTAvzTD8=;
-	b=oOrn0MellT+LylF9SfCLBr2TKQo1lm3UOX+pEOgSkAxLn3LLfG7oMi2Dtml2H987gSw8ERputZM1elyz3UW+/A9lM7/6dTq/1bi13sqZNymQ4W035xk33PRnhHqZ0lHy4sf/rEFIJb0DixQmNEPWeS4wdmDvUH0FbrhF9VTr+Ss=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDCspNU_1792489269;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDCspNU_1792489269 cluster:ay36)
+	t=1792489277; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=vV2Y5T1kVnTXHiV+qTqs8GbZEVnLFhK5H2hev57N6Io=;
+	b=xbbLont9+DZBpNUKgAdTyGhLTPZEGA7sbS4I/VIMw0IXKkx7md5Nx9NZw/d112bIYXNC9wyTGIaM5PX0HchCj3SMKsrT23tdyDBUcZJDsoG44yYtxeBEYsrP/Sj+ZxU/o/pRZgrNzwF7xMM//spgWsVl8BsAcr7C7R0Pdm7qR5I=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDCspQX_1792489273;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDCspQX_1792489273 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 20 Oct 2026 17:41:12 +0800
+          Tue, 20 Oct 2026 17:41:15 +0800
 From: fangyu.yu@linux.alibaba.com
 To: tomasz.jeznach@linux.dev,
 	joro@8bytes.org,
@@ -71,10 +71,12 @@ Cc: fangyu.yu@linux.alibaba.com,
 	linux-kernel@vger.kernel.org,
 	linux-riscv@lists.infradead.org,
 	kvm-riscv@lists.infradead.org
-Subject: [RFC PATCH v5 00/10] iommu/riscv: Add hardware dirty tracking for second-stage domains
-Date: Tue, 20 Oct 2026 17:40:56 +0800
-Message-Id: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
+Subject: [RFC PATCH v5 01/10] iommupt: Add RISC-V Second-stage (iohgatp) page table support
+Date: Tue, 20 Oct 2026 17:40:57 +0800
+Message-Id: <20261020094106.92722-2-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
+References: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,133 +86,231 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-The RISC-V IOMMU architecture defines an AMO_HWAD capability (Hardware
-Access/Dirty update) that allows the IOMMU to atomically set the A/D bits
-in second-stage PTEs on DMA access.  When DC.tc.GADE is asserted, the IOMMU
-autonomously sets D on the first write to a page mapped by an iohgatp
-domain.  This series wires that capability up to the iommufd dirty-tracking
-interface (IOMMU_HWPT_SET_DIRTY_TRACKING / IOMMU_HWPT_GET_DIRTY_BITMAP) and
-reports IOMMU_CAP_DIRTY_TRACKING.
+Add support for Sv39x4/Sv48x4/Sv57x4 Second-stage page tables used by
+the RISC-V IOMMU iohgatp register. The x4 root page table is 16 KiB
+instead of the usual 4 KiB, covering 2 extra GPA bits (hw_max_vasz_lg2
+= 41/50/59).
 
-Design notes
-------------
-
-* The feature is scoped to second-stage (iohgatp) domains only; these are
-  the domains created for KVM / VFIO device pass-through when userspace
-  allocates an HWPT with IOMMU_HWPT_ALLOC_NEST_PARENT or
-  IOMMU_HWPT_ALLOC_DIRTY_TRACKING.  First-stage (iosatp) domains are not
-  touched by this series.
-
-* The page-table side plugs into the existing generic_pt dirty hook
-  framework (amdv1 / vtdss style).  RISC-V adds the three required PTE
-  ops – is_write_dirty / make_write_clean / make_write_dirty.
-
-Testing
--------
-
-* Test on QEMU RISC-V, a nvme and an e1000e device was passed through
-  to an L2 guest via vfio-pci + iommufd.
-
-* generic_pt KUnit: the existing test_dirty case now runs and passes for
-  the RISC-V 64-bit format.
-
-Follow-up work
---------------
-* Build a dedicated end-to-end test case that drives the full flow
-  (HWPT_ALLOC with DIRTY_TRACKING -> attach -> IOAS_MAP -> generate real
-  DMA -> SET_DIRTY_TRACKING -> GET_DIRTY_BITMAP -> verify bitmap against
-  expected IOVA footprint) so that the behaviour can be regression-tested
-  beyond the KUnit PTE-level coverage.
-
-* If possible, rebase and retest on top of the updated "iommu irqbypass"
-  patchset.
-
-LLM-based coding assistants were used for code exploration, patch
-review, test execution, and drafting/editing messages and this cover
-letter. I reviewed and finalized all resulting code and text.
-
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 ---
-Changes in v5:
-    - Propagate the GADE bit from the new device context into the hardware
-      DC in riscv_iommu_iodir_update(), so the pre-enabled GADE actually
-      reaches the hardware. (Per Gong Shuai)
-    - Issue a global IOTINVAL.GVMA in riscv_iommu_iodir_set_mode(), so that
-      second-stage translations cached before a DDTP mode change (e.g. by
-      a previous kernel after kexec) are flushed as the specification
-      requires. (Per Tan Chi)
-    - Rebased on top of v7.3, with [1] and [2] applied.
-    - Link to v4:
-      https://lore.kernel.org/linux-riscv/20260915032828.11250-1-fangyu.yu@linux.alibaba.com/
-Changes in v4 (Jason's suggestions):
-    - Rebased the series on top of [1] and [2].
-    - Drop the RISC-V-specific pt_num_items_lg2() top-level special case.
-    - Validate page-table address widths by translation stage: accept only
-      Sv39/Sv48/Sv57 widths for first-stage tables and only Sv39x4/Sv48x4/
-      Sv57x4 widths for second-stage tables.
-    - Replace the aliased first-stage/second-stage MODE union with
-      independent FSC/IOSATP and IOHGATP MODE fields.
-    - Add pt_dirty_supported() to restrict RISC-V generic_pt dirty tracking
-      to second-stage tables.
-    - Link to v3:
-      https://lore.kernel.org/linux-riscv/20260821132749.82070-1-fangyu.yu@linux.alibaba.com/
-Changes in v3 (Andrew Jones's suggestions):
-    - Rebased the series on top of Andrew Jones' generic_pt RISC-V supported
-      feature mask fix, which adds PT_FEAT_RISCV_SVPBMT to the supported feature
-      set.
-    - Added PT_FEAT_RISCV_S2 to the RISC-V generic_pt supported feature mask and
-      KUnit feature matrix.
-    - Kept PT_FEAT_SIGN_EXTEND only for first-stage RISC-V KUnit configs; second
-      stage configs now use PT_FEAT_RISCV_S2 without sign-extension semantics.
-    - Split RISC-V IOMMU capability checks into first-stage FSC and second-stage
-      IOHGATP helpers.
-    - Updated second-stage paging domain setup to use GPA widths 41/50/59 and to
-      avoid PT_FEAT_SIGN_EXTEND.
-    - Link to v2:
-      https://lore.kernel.org/linux-riscv/20260507113706.11400-1-fangyu.yu@linux.alibaba.com/
-Changes in v2 (Jason's suggestions):
-    - Introduced a single PT_FEAT_RISCV_S2: second-stage selection is driven
-      purely by this feature bit.
-    - Switched from dynamic DC.tc.GADE toggling to static pre-enable.
-    - domain_alloc_paging_flags: follow the switch/case design from other
-      drivers.
-    - Drop IOMMU_CAP_DEFERRED_FLUSH in riscv_iommu_capable.
-    - Remove the .hw_info-related patch.
-    - Link to v1:
-      https://lore.kernel.org/linux-riscv/20260428131359.34872-1-fangyu.yu@linux.alibaba.com/
-
-[1] https://lore.kernel.org/linux-iommu/1-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com/
-[2] https://lore.kernel.org/linux-iommu/20260818092444.42755-1-andrew.jones@oss.qualcomm.com/
-
-Fangyu Yu (6):
-  iommupt: Add RISC-V Second-stage (iohgatp) page table support
-  iommupt: Add RISC-V dirty tracking PTE ops
-  iommu/riscv: Add domain_alloc_paging_flags for second-stage domain
-  iommu/riscv: Pre-enable GADE for second-stage domains
-  iommu/riscv: Add dirty tracking support for second-stage domains
-  iommu/riscv: Add IOTINVAL.GVMA invalidations
-
-Tomasz Jeznach (2):
-  iommu/riscv: report iommu capabilities
-  RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
-
-Zong Li (2):
-  iommu/riscv: use data structure instead of individual values
-  iommu/riscv: support GSCID and GVMA invalidation command
-
- arch/riscv/kvm/Kconfig                       |   2 +
  drivers/iommu/generic_pt/fmt/iommu_riscv64.c |   2 +-
- drivers/iommu/generic_pt/fmt/riscv.h         | 158 +++++++++++--
- drivers/iommu/riscv/iommu-bits.h             |   7 +
- drivers/iommu/riscv/iommu.c                  | 235 +++++++++++++++----
+ drivers/iommu/generic_pt/fmt/riscv.h         | 109 +++++++++++++++----
  include/linux/generic_pt/common.h            |   4 +
- include/linux/generic_pt/iommu.h             |   11 +
- 7 files changed, 347 insertions(+), 72 deletions(-)
+ include/linux/generic_pt/iommu.h             |  11 ++
+ 4 files changed, 102 insertions(+), 24 deletions(-)
 
+diff --git a/drivers/iommu/generic_pt/fmt/iommu_riscv64.c b/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
+index 1bb74114fb02..fa61839e5599 100644
+--- a/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
++++ b/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
+@@ -8,7 +8,7 @@
+ 	(BIT(PT_FEAT_SIGN_EXTEND) | BIT(PT_FEAT_FLUSH_RANGE) | \
+ 	 BIT(PT_FEAT_RISCV_SVNAPOT_64K) |                      \
+ 	 BIT(PT_FEAT_DETAILED_GATHER) |                        \
+-	 BIT(PT_FEAT_RISCV_SVPBMT))
++	 BIT(PT_FEAT_RISCV_SVPBMT) | BIT(PT_FEAT_RISCV_S2))
+ #define PT_FORCE_ENABLED_FEATURES BIT(PT_FEAT_DETAILED_GATHER)
+ 
+ #include "iommu_template.h"
+diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic_pt/fmt/riscv.h
+index ae9a76514416..d4445e463fa9 100644
+--- a/drivers/iommu/generic_pt/fmt/riscv.h
++++ b/drivers/iommu/generic_pt/fmt/riscv.h
+@@ -37,7 +37,16 @@ enum {
+ 	PT_MAX_OUTPUT_ADDRESS_LG2 = 34,
+ 	PT_MAX_TOP_LEVEL = 1,
+ #else
+-	PT_MAX_VA_ADDRESS_LG2 = 57,
++	/*
++	 * PT_MAX_VA_ADDRESS_LG2 is the upper bound accepted by the generic
++	 * pt_iommu_init() range check.  It must cover both first-stage and
++	 * second-stage (G-stage) modes:
++	 *
++	 *   First-stage  (fsc/iosatp): Sv39=39, Sv48=48, Sv57=57
++	 *   Second-stage (iohgatp):    Sv39x4=41, Sv48x4=50, Sv57x4=59
++	 *
++	 */
++	PT_MAX_VA_ADDRESS_LG2 = 59,
+ 	PT_MAX_OUTPUT_ADDRESS_LG2 = 56,
+ 	PT_MAX_TOP_LEVEL = 4,
+ #endif
+@@ -126,6 +135,12 @@ riscvpt_entry_num_contig_lg2(const struct pt_state *pts)
+ 
+ static inline unsigned int riscvpt_num_items_lg2(const struct pt_state *pts)
+ {
++	/*
++	 * It is not allowed to call pt_num_items_lg2() at the top level, this
++	 * API restriction is specifically an optimization avoid overheads
++	 * dealing with concatenated tables here.
++	 */
++	PT_WARN_ON(pts->level == pts->range->top_level);
+ 	return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64));
+ }
+ #define pt_num_items_lg2 riscvpt_num_items_lg2
+@@ -261,20 +276,41 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
+ 		       const struct pt_iommu_riscv_64_cfg *cfg)
+ {
+ 	struct pt_riscv *table = &iommu_table->riscv_64pt;
+-
+-	switch (cfg->common.hw_max_vasz_lg2) {
+-	case 39:
+-		pt_top_set_level(&table->common, 2);
+-		break;
+-	case 48:
+-		pt_top_set_level(&table->common, 3);
+-		break;
+-	case 57:
+-		pt_top_set_level(&table->common, 4);
+-		break;
+-	default:
+-		return -EINVAL;
++	unsigned int top_level;
++
++	if (pt_feature(&table->common, PT_FEAT_RISCV_S2)) {
++		/* Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4. */
++		switch (cfg->common.hw_max_vasz_lg2) {
++		case 41:
++			top_level = 2;
++			break;
++		case 50:
++			top_level = 3;
++			break;
++		case 59:
++			top_level = 4;
++			break;
++		default:
++			return -EINVAL;
++		}
++	} else {
++		/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57. */
++		switch (cfg->common.hw_max_vasz_lg2) {
++		case 39:
++			top_level = 2;
++			break;
++		case 48:
++			top_level = 3;
++			break;
++		case 57:
++			top_level = 4;
++			break;
++		default:
++			return -EINVAL;
++		}
+ 	}
++
++	pt_top_set_level(&table->common, top_level);
+ 	table->common.max_oasz_lg2 =
+ 		min(PT_MAX_OUTPUT_ADDRESS_LG2, cfg->common.hw_max_oasz_lg2);
+ 	return 0;
+@@ -292,30 +328,57 @@ riscvpt_iommu_fmt_hw_info(struct pt_iommu_riscv_64 *table,
+ 	PT_WARN_ON(top_phys & ~PT_TOP_PHYS_MASK);
+ 
+ 	/*
+-	 * See Table 3. Encodings of iosatp.MODE field" for DC.tx.SXL = 0:
+-	 *  8 = Sv39 = top level 2
+-	 *  9 = Sv38 = top level 3
+-	 *  10 = Sv57 = top level 4
++	 * Both first-stage (fsc/iosatp) and second-stage (iohgatp) share the
++	 * same MODE numeric values for a given top level:
++	 *   top_level 2 -> MODE 8  (Sv39 / Sv39x4)
++	 *   top_level 3 -> MODE 9  (Sv48 / Sv48x4)
++	 *   top_level 4 -> MODE 10 (Sv57 / Sv57x4)
++	 *
++	 * See "Table 3. Encodings of iosatp.MODE field" (DC.tc.SXL = 0) and
++	 * "Table 2. Encoding of iohgatp.MODE field" in the RISC-V IOMMU spec.
+ 	 */
+-	info->fsc_iosatp_mode = top_range->top_level + 6;
++	if (pt_feature(&table->riscv_64pt.common, PT_FEAT_RISCV_S2))
++		info->iohgatp_mode = top_range->top_level + 6;
++	else
++		info->fsc_iosatp_mode = top_range->top_level + 6;
+ }
+ #define pt_iommu_fmt_hw_info riscvpt_iommu_fmt_hw_info
+ 
+ #if defined(GENERIC_PT_KUNIT)
+ static const struct pt_iommu_riscv_64_cfg riscv_64_kunit_fmt_cfgs[] = {
+-	[0] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++	/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57 */
++	[0] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 39 },
+-	[1] = { .common.features = 0,
++	[1] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 48 },
+-	[2] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++	[2] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
+ 		.common.hw_max_oasz_lg2 = 56,
+ 		.common.hw_max_vasz_lg2 = 57 },
++	/*
++	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
++	 */
++	[3] = { .common.features = BIT(PT_FEAT_RISCV_S2) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 41 },
++	[4] = { .common.features = BIT(PT_FEAT_RISCV_S2),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 50 },
++	[5] = { .common.features = BIT(PT_FEAT_RISCV_S2) |
++				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++		.common.hw_max_oasz_lg2 = 56,
++		.common.hw_max_vasz_lg2 = 59 },
+ };
+ #define kunit_fmt_cfgs riscv_64_kunit_fmt_cfgs
++/* Sign extension is only valid for first-stage configs, not S2. */
+ enum {
+-	KUNIT_FMT_FEATURES = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
++	KUNIT_FMT_FEATURES = BIT(PT_FEAT_SIGN_EXTEND) |
++			     BIT(PT_FEAT_RISCV_SVNAPOT_64K) |
++			     BIT(PT_FEAT_RISCV_S2),
+ };
+ #endif
+ 
+diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
+index 07ef1c8341a4..f2e130c2b804 100644
+--- a/include/linux/generic_pt/common.h
++++ b/include/linux/generic_pt/common.h
+@@ -197,6 +197,10 @@ enum {
+ 	 * Support Svpbmt extension: encode page-based memory type (PBMT) in PTEs.
+ 	 */
+ 	PT_FEAT_RISCV_SVPBMT,
++	/*
++	 * Using second-stage / iohgatp address translation.
++	 */
++	PT_FEAT_RISCV_S2,
+ 
+ };
+ 
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index dd0edd02a48a..2eed9b78f56c 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -328,7 +328,18 @@ struct pt_iommu_riscv_64_cfg {
+ 
+ struct pt_iommu_riscv_64_hw_info {
+ 	u64 ppn;
++	/*
++	 * First-stage (fsc/iosatp) MODE encoding:
++	 *   8 = Sv39, 9 = Sv48, 10 = Sv57
++	 * Used to program DC.fsc.iosatp.MODE.
++	 */
+ 	u8 fsc_iosatp_mode;
++	/*
++	 * Second-stage (iohgatp) MODE encoding:
++	 *   8 = Sv39x4, 9 = Sv48x4, 10 = Sv57x4
++	 * Used to program DC.iohgatp.MODE.
++	 */
++	u8 iohgatp_mode;
+ };
+ 
+ IOMMU_FORMAT(riscv_64, riscv_64pt);
 -- 
 2.50.1
 
