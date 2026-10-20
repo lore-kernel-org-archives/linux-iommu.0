@@ -1,47 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.101
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.132
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792489281;
-	b=UnhgbQ2MG5Sr14+wjWW3zAzife1u045JgU1eCqFeW24NQ+iPz84G+NfmAHWvS1p7ABtU
-	 5UmQhbMndxRUVOlYK2z2Pe3jT7SYolW80oZO/jEIeenZRQeP//ClWfxY2QQHF3xWUXVff
-	 UspeME4XHXVqgZP317+A+sHNWxx+KGqmmjPEw/54RWAvQzVSDohOfqSmAvTG3OuEVZUh8
-	 PA0GSrprdgSnQ81xDat+G6e1tOC1HoUMtpobgYbkZ48EhmWdEmKWO8ehZURb6kP9aWhh6
-	 nk5FU8FzFseGedaEhyZqzl35F3IgMrdu+GwmAW2edQtzeJ8eBwKwqjbYHTNkZZ8+0AQ==
+	t=1792489285;
+	b=sVZW0ahUP4Y7NAo/T3xCJa/dBRkxrAZt27/dDFBNXpcrZPNPU2J75N0av6u8tUNS5lyE
+	 RCD8Axpx6LySB5fBznAJ94r2SnUR13Xd2oe2/Zl094f24P5Wud+DS7ensnml0/BtrTTOv
+	 sinVzur86Hx3Sr6YKQVUGwDQGgcW4CtfGmH1rkS7E1cI7+q8uwThrKsIAWJYECeYDaEAg
+	 hkQKeic29Ue9qWkgWkExCWJN2mFpVXT3kxJDpckLIpqwLnJn5iJ0eXBEEscA0gblI38Rd
+	 SdlMc127J2iV8CP7OXL/fDPXyafrkevZB9a3Qd49RsAspVH5TSIRsKiB2n9wh1HGV7w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792489281;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792489285;
 	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
 	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=vV2Y5T1kVnTXHiV+qTqs8GbZEVnLFhK5H2hev57N6Io=;
-	b=aorQT5Bto2yyBPjrL4zSNhWuZZVieZhSXluB/UloSGBq0XdWg+GN8hv0LYbyWLmNxLAj
-	 F205x4CNNUo7LQi7Dd/UPulHOElI7bPjaxlxpCF22ajWVAnb/w/5d+SPaP/J+3zXTQkcF
-	 dxvrw7uCzFop7HIKKlFnKVCXZanZPF8cfnnlZ7y8LhUFYzZV0eL6VvCZZcPbthAoUxMb/
-	 kBp+v2xePZ8kQaR+xnOoUl2Sy8QfG4zUaURdAnh00Vzm6tj/VJ4V4+90ZJFZMFYkC/QWs
-	 +tn6jJ8BhP18fOMKaqzoM/zXWOCDZ+6Rpl6tgMq1KRXyvNEiSE3M1vpvjrcJ90EyZgQ==
+	bh=Sy7Dz8kDPuI6hXGm4YE8UuMimPAELhzLRPTNDzmDeE8=;
+	b=pK71dq3xXgkxnDlsAC7SOk41h030x2D1WeFMhWxiwiW4o+PnIQYxeXVuCv1LRUeKVGFE
+	 dep4kZ8yp5yLbAdisvnFG4z0HP4zCwcofn1JEp13Wfx2RIYosXy4HaWYFzai0vE3ALucb
+	 TvGTAz1Ct8shGisOwoZis24ZHllAvXKHJSnGkhLTOKg8ALlTz0YGr7PDzeDwR24SnvVWg
+	 6gIFiE7l7MiK3EK3li0gOpvnLo+rIXHuVFY8u0gzS7CneDFXxiuxZ8c9mSe1cG9RgTDKG
+	 DXOdaZROYyjaDYhkwY90fMoDjHWj2IZoEV3Ii779EjEcScldtJNDt4jHxef0aT8Mt+g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.alibaba.com;
 	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=xbbLont9;
-	arc=none smtp.remote-ip=115.124.30.101
-Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=VTNdg0Xz;
+	arc=none smtp.remote-ip=115.124.30.132
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F7C6606A331
-	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 09:41:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3F7C6606A331
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8654260A2623
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 09:41:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8654260A2623
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=xbbLont9
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=VTNdg0Xz
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1792489277; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=vV2Y5T1kVnTXHiV+qTqs8GbZEVnLFhK5H2hev57N6Io=;
-	b=xbbLont9+DZBpNUKgAdTyGhLTPZEGA7sbS4I/VIMw0IXKkx7md5Nx9NZw/d112bIYXNC9wyTGIaM5PX0HchCj3SMKsrT23tdyDBUcZJDsoG44yYtxeBEYsrP/Sj+ZxU/o/pRZgrNzwF7xMM//spgWsVl8BsAcr7C7R0Pdm7qR5I=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDCspQX_1792489273;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDCspQX_1792489273 cluster:ay36)
+	t=1792489281; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=Sy7Dz8kDPuI6hXGm4YE8UuMimPAELhzLRPTNDzmDeE8=;
+	b=VTNdg0Xz+wh2qGNlOkPonDFhUFYpHr8GS9FB30M9QaROdK6xQBhPPVgQn6kRFmD/SJfVHw0W/KbOdOcEECe6eCKmV2MZqEh8PS7nCcudTenPaKr22YLMaNsPAqx7rd2xzmGNtstnns+ZBfgd8gwPlYwaAq3fCO+nZbrapxkadkw=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDCspS7_1792489276;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDCspS7_1792489276 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Tue, 20 Oct 2026 17:41:15 +0800
+          Tue, 20 Oct 2026 17:41:19 +0800
 From: fangyu.yu@linux.alibaba.com
 To: tomasz.jeznach@linux.dev,
 	joro@8bytes.org,
@@ -71,9 +71,9 @@ Cc: fangyu.yu@linux.alibaba.com,
 	linux-kernel@vger.kernel.org,
 	linux-riscv@lists.infradead.org,
 	kvm-riscv@lists.infradead.org
-Subject: [RFC PATCH v5 01/10] iommupt: Add RISC-V Second-stage (iohgatp) page table support
-Date: Tue, 20 Oct 2026 17:40:57 +0800
-Message-Id: <20261020094106.92722-2-fangyu.yu@linux.alibaba.com>
+Subject: [RFC PATCH v5 02/10] iommupt: Add RISC-V dirty tracking PTE ops
+Date: Tue, 20 Oct 2026 17:40:58 +0800
+Message-Id: <20261020094106.92722-3-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
 In-Reply-To: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
 References: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
@@ -90,227 +90,83 @@ Content-Transfer-Encoding: 8bit
 
 From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-Add support for Sv39x4/Sv48x4/Sv57x4 Second-stage page tables used by
-the RISC-V IOMMU iohgatp register. The x4 root page table is 16 KiB
-instead of the usual 4 KiB, covering 2 extra GPA bits (hw_max_vasz_lg2
-= 41/50/59).
+Implement the three dirty-tracking hooks required by the generic page
+table framework for the RISC-V format:
+
+  pt_entry_is_write_dirty():
+    Check the D bit (bit 7) in the PTE.
+
+  pt_entry_make_write_clean():
+    Clear the D bit across the full contiguous range.
+
+  pt_entry_make_write_dirty():
+    Atomically set D via try_cmpxchg64() on a single PTE.
 
 Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 ---
- drivers/iommu/generic_pt/fmt/iommu_riscv64.c |   2 +-
- drivers/iommu/generic_pt/fmt/riscv.h         | 109 +++++++++++++++----
- include/linux/generic_pt/common.h            |   4 +
- include/linux/generic_pt/iommu.h             |  11 ++
- 4 files changed, 102 insertions(+), 24 deletions(-)
+ drivers/iommu/generic_pt/fmt/riscv.h | 49 ++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
-diff --git a/drivers/iommu/generic_pt/fmt/iommu_riscv64.c b/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
-index 1bb74114fb02..fa61839e5599 100644
---- a/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
-+++ b/drivers/iommu/generic_pt/fmt/iommu_riscv64.c
-@@ -8,7 +8,7 @@
- 	(BIT(PT_FEAT_SIGN_EXTEND) | BIT(PT_FEAT_FLUSH_RANGE) | \
- 	 BIT(PT_FEAT_RISCV_SVNAPOT_64K) |                      \
- 	 BIT(PT_FEAT_DETAILED_GATHER) |                        \
--	 BIT(PT_FEAT_RISCV_SVPBMT))
-+	 BIT(PT_FEAT_RISCV_SVPBMT) | BIT(PT_FEAT_RISCV_S2))
- #define PT_FORCE_ENABLED_FEATURES BIT(PT_FEAT_DETAILED_GATHER)
- 
- #include "iommu_template.h"
 diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic_pt/fmt/riscv.h
-index ae9a76514416..d4445e463fa9 100644
+index d4445e463fa9..2f4838eb44af 100644
 --- a/drivers/iommu/generic_pt/fmt/riscv.h
 +++ b/drivers/iommu/generic_pt/fmt/riscv.h
-@@ -37,7 +37,16 @@ enum {
- 	PT_MAX_OUTPUT_ADDRESS_LG2 = 34,
- 	PT_MAX_TOP_LEVEL = 1,
- #else
--	PT_MAX_VA_ADDRESS_LG2 = 57,
-+	/*
-+	 * PT_MAX_VA_ADDRESS_LG2 is the upper bound accepted by the generic
-+	 * pt_iommu_init() range check.  It must cover both first-stage and
-+	 * second-stage (G-stage) modes:
-+	 *
-+	 *   First-stage  (fsc/iosatp): Sv39=39, Sv48=48, Sv57=57
-+	 *   Second-stage (iohgatp):    Sv39x4=41, Sv48x4=50, Sv57x4=59
-+	 *
-+	 */
-+	PT_MAX_VA_ADDRESS_LG2 = 59,
- 	PT_MAX_OUTPUT_ADDRESS_LG2 = 56,
- 	PT_MAX_TOP_LEVEL = 4,
- #endif
-@@ -126,6 +135,12 @@ riscvpt_entry_num_contig_lg2(const struct pt_state *pts)
- 
- static inline unsigned int riscvpt_num_items_lg2(const struct pt_state *pts)
- {
-+	/*
-+	 * It is not allowed to call pt_num_items_lg2() at the top level, this
-+	 * API restriction is specifically an optimization avoid overheads
-+	 * dealing with concatenated tables here.
-+	 */
-+	PT_WARN_ON(pts->level == pts->range->top_level);
- 	return PT_TABLEMEM_LG2SZ - ilog2(sizeof(u64));
+@@ -223,6 +223,55 @@ static inline void riscvpt_attr_from_entry(const struct pt_state *pts,
  }
- #define pt_num_items_lg2 riscvpt_num_items_lg2
-@@ -261,20 +276,41 @@ riscvpt_iommu_fmt_init(struct pt_iommu_riscv_64 *iommu_table,
- 		       const struct pt_iommu_riscv_64_cfg *cfg)
- {
- 	struct pt_riscv *table = &iommu_table->riscv_64pt;
--
--	switch (cfg->common.hw_max_vasz_lg2) {
--	case 39:
--		pt_top_set_level(&table->common, 2);
--		break;
--	case 48:
--		pt_top_set_level(&table->common, 3);
--		break;
--	case 57:
--		pt_top_set_level(&table->common, 4);
--		break;
--	default:
--		return -EINVAL;
-+	unsigned int top_level;
+ #define pt_attr_from_entry riscvpt_attr_from_entry
+ 
++/*
++ * Dirty tracking: RISC-V PTEs use D (bit 7) as the hardware dirty bit.
++ * When Svnapot 64K is active a leaf entry spans 16 consecutive PTEs; we
++ * must check / clear all of them so that no dirty indication is lost.
++ */
++static inline bool riscvpt_entry_is_write_dirty(const struct pt_state *pts)
++{
++	unsigned int num_contig_lg2 = riscvpt_entry_num_contig_lg2(pts);
++	const pt_riscv_entry_t *tablep =
++		pt_cur_table(pts, pt_riscv_entry_t) +
++		log2_set_mod(pts->index, 0, num_contig_lg2);
++	const pt_riscv_entry_t *end = tablep + log2_to_int(num_contig_lg2);
 +
-+	if (pt_feature(&table->common, PT_FEAT_RISCV_S2)) {
-+		/* Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4. */
-+		switch (cfg->common.hw_max_vasz_lg2) {
-+		case 41:
-+			top_level = 2;
-+			break;
-+		case 50:
-+			top_level = 3;
-+			break;
-+		case 59:
-+			top_level = 4;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+	} else {
-+		/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57. */
-+		switch (cfg->common.hw_max_vasz_lg2) {
-+		case 39:
-+			top_level = 2;
-+			break;
-+		case 48:
-+			top_level = 3;
-+			break;
-+		case 57:
-+			top_level = 4;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
- 	}
++	for (; tablep != end; tablep++)
++		if (READ_ONCE(*tablep) & RISCVPT_D)
++			return true;
++	return false;
++}
++#define pt_entry_is_write_dirty riscvpt_entry_is_write_dirty
 +
-+	pt_top_set_level(&table->common, top_level);
- 	table->common.max_oasz_lg2 =
- 		min(PT_MAX_OUTPUT_ADDRESS_LG2, cfg->common.hw_max_oasz_lg2);
- 	return 0;
-@@ -292,30 +328,57 @@ riscvpt_iommu_fmt_hw_info(struct pt_iommu_riscv_64 *table,
- 	PT_WARN_ON(top_phys & ~PT_TOP_PHYS_MASK);
- 
- 	/*
--	 * See Table 3. Encodings of iosatp.MODE field" for DC.tx.SXL = 0:
--	 *  8 = Sv39 = top level 2
--	 *  9 = Sv38 = top level 3
--	 *  10 = Sv57 = top level 4
-+	 * Both first-stage (fsc/iosatp) and second-stage (iohgatp) share the
-+	 * same MODE numeric values for a given top level:
-+	 *   top_level 2 -> MODE 8  (Sv39 / Sv39x4)
-+	 *   top_level 3 -> MODE 9  (Sv48 / Sv48x4)
-+	 *   top_level 4 -> MODE 10 (Sv57 / Sv57x4)
-+	 *
-+	 * See "Table 3. Encodings of iosatp.MODE field" (DC.tc.SXL = 0) and
-+	 * "Table 2. Encoding of iohgatp.MODE field" in the RISC-V IOMMU spec.
- 	 */
--	info->fsc_iosatp_mode = top_range->top_level + 6;
-+	if (pt_feature(&table->riscv_64pt.common, PT_FEAT_RISCV_S2))
-+		info->iohgatp_mode = top_range->top_level + 6;
-+	else
-+		info->fsc_iosatp_mode = top_range->top_level + 6;
- }
- #define pt_iommu_fmt_hw_info riscvpt_iommu_fmt_hw_info
- 
- #if defined(GENERIC_PT_KUNIT)
- static const struct pt_iommu_riscv_64_cfg riscv_64_kunit_fmt_cfgs[] = {
--	[0] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
-+	/* First-stage (fsc/iosatp): Sv39 / Sv48 / Sv57 */
-+	[0] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND) |
-+				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
- 		.common.hw_max_oasz_lg2 = 56,
- 		.common.hw_max_vasz_lg2 = 39 },
--	[1] = { .common.features = 0,
-+	[1] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND),
- 		.common.hw_max_oasz_lg2 = 56,
- 		.common.hw_max_vasz_lg2 = 48 },
--	[2] = { .common.features = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
-+	[2] = { .common.features = BIT(PT_FEAT_SIGN_EXTEND) |
-+				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
- 		.common.hw_max_oasz_lg2 = 56,
- 		.common.hw_max_vasz_lg2 = 57 },
-+	/*
-+	 * Second-stage (iohgatp): Sv39x4 / Sv48x4 / Sv57x4.
-+	 */
-+	[3] = { .common.features = BIT(PT_FEAT_RISCV_S2) |
-+				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
-+		.common.hw_max_oasz_lg2 = 56,
-+		.common.hw_max_vasz_lg2 = 41 },
-+	[4] = { .common.features = BIT(PT_FEAT_RISCV_S2),
-+		.common.hw_max_oasz_lg2 = 56,
-+		.common.hw_max_vasz_lg2 = 50 },
-+	[5] = { .common.features = BIT(PT_FEAT_RISCV_S2) |
-+				      BIT(PT_FEAT_RISCV_SVNAPOT_64K),
-+		.common.hw_max_oasz_lg2 = 56,
-+		.common.hw_max_vasz_lg2 = 59 },
- };
- #define kunit_fmt_cfgs riscv_64_kunit_fmt_cfgs
-+/* Sign extension is only valid for first-stage configs, not S2. */
- enum {
--	KUNIT_FMT_FEATURES = BIT(PT_FEAT_RISCV_SVNAPOT_64K),
-+	KUNIT_FMT_FEATURES = BIT(PT_FEAT_SIGN_EXTEND) |
-+			     BIT(PT_FEAT_RISCV_SVNAPOT_64K) |
-+			     BIT(PT_FEAT_RISCV_S2),
- };
- #endif
- 
-diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
-index 07ef1c8341a4..f2e130c2b804 100644
---- a/include/linux/generic_pt/common.h
-+++ b/include/linux/generic_pt/common.h
-@@ -197,6 +197,10 @@ enum {
- 	 * Support Svpbmt extension: encode page-based memory type (PBMT) in PTEs.
- 	 */
- 	PT_FEAT_RISCV_SVPBMT,
-+	/*
-+	 * Using second-stage / iohgatp address translation.
-+	 */
-+	PT_FEAT_RISCV_S2,
- 
- };
- 
-diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
-index dd0edd02a48a..2eed9b78f56c 100644
---- a/include/linux/generic_pt/iommu.h
-+++ b/include/linux/generic_pt/iommu.h
-@@ -328,7 +328,18 @@ struct pt_iommu_riscv_64_cfg {
- 
- struct pt_iommu_riscv_64_hw_info {
- 	u64 ppn;
-+	/*
-+	 * First-stage (fsc/iosatp) MODE encoding:
-+	 *   8 = Sv39, 9 = Sv48, 10 = Sv57
-+	 * Used to program DC.fsc.iosatp.MODE.
-+	 */
- 	u8 fsc_iosatp_mode;
-+	/*
-+	 * Second-stage (iohgatp) MODE encoding:
-+	 *   8 = Sv39x4, 9 = Sv48x4, 10 = Sv57x4
-+	 * Used to program DC.iohgatp.MODE.
-+	 */
-+	u8 iohgatp_mode;
- };
- 
- IOMMU_FORMAT(riscv_64, riscv_64pt);
++static inline void riscvpt_entry_make_write_clean(struct pt_state *pts)
++{
++	unsigned int num_contig_lg2 = riscvpt_entry_num_contig_lg2(pts);
++	pt_riscv_entry_t *tablep =
++		pt_cur_table(pts, pt_riscv_entry_t) +
++		log2_set_mod(pts->index, 0, num_contig_lg2);
++	pt_riscv_entry_t *end = tablep + log2_to_int(num_contig_lg2);
++
++	for (; tablep != end; tablep++)
++		WRITE_ONCE(*tablep, READ_ONCE(*tablep) & ~(pt_riscv_entry_t)RISCVPT_D);
++}
++#define pt_entry_make_write_clean riscvpt_entry_make_write_clean
++
++static inline bool riscvpt_entry_make_write_dirty(struct pt_state *pts)
++{
++	pt_riscv_entry_t *tablep =
++		pt_cur_table(pts, pt_riscv_entry_t) + pts->index;
++	pt_riscv_entry_t new = pts->entry | RISCVPT_D;
++
++	return try_cmpxchg64(tablep, &pts->entry, new);
++}
++#define pt_entry_make_write_dirty riscvpt_entry_make_write_dirty
++
++static inline bool riscvpt_dirty_supported(struct pt_common *common)
++{
++	return pt_feature(common, PT_FEAT_RISCV_S2);
++}
++#define pt_dirty_supported riscvpt_dirty_supported
++
+ /* --- iommu */
+ #include <linux/generic_pt/iommu.h>
+ #include <linux/iommu.h>
 -- 
 2.50.1
 
