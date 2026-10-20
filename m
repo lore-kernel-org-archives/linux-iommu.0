@@ -1,67 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.110
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792437527;
-	b=qPY/y/Zpu4nvvNWC+7TD55OSYBJrN0KbTVYuMnqhI6Wy/B7RqnhG5gFHedLzR/uG3r4+
-	 mLPCkODX0uuDFEjfH2NPaUyExTGEI9demq5ZlSGEhLTxTlhC/1M+L6GOzCdcRWvavk5X2
-	 wijxw7dZymxutPL7lLlQzlW2M7u9Cfhv3vsG5ycxdc/shDip+Yw3rf0yFHD/AznRjInkQ
-	 D0WJeuY5FjZR5MlWV7IYCR1Yjttk5JynvFGtV8IIoOm2QIXbkgQr9lRzwm/hoAwJEs1QX
-	 y4J9x7Ad5uvtlX8eKy+wbm6q0AMMH4CHn99qBJwqJQ7FkrkcpZCiOjNjXebe/Lu3+dg==
+	t=1792459452;
+	b=HzZAEec7yR5A0fkXAIi2KtN0H+5Dw4+/kzBVBsw0Q9OqdQW+rvCmfG+AAtHWd4GPyF0l
+	 Ci9E+cUNIjbK8UyYwRceN5PIA2nGtcU7OmR/MxYMBzJzgpRO4eCESR5k/fVutS4ell+Dg
+	 mKfQ9a0s5q74Vf9Iolk5VHB+XCn13yyBVm/O2IibQIY9vLJaQiWeM5KcCYQs8AjhhcSAI
+	 3dNFP6u8p309zx/S0/2jDXZeQr1V/dB3ec+4zxstarId0nJGIl8I3qe2quUlGlQl8f6li
+	 9Ad03BX1j5SgJZ6OXCPPZkqyH5ZmHREMGQbPmOCmbp3uid8YTJqopFcpGe1RK9hmJbA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792437527;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=77mlLPeWieg1gPE9ZVsd30acJWkC/9GBsg5MHF+AKxs=;
-	b=A55zkVs25sZqZCxY6eud3xELUsoY74BJM0G3mON6OC8ZLt/oRvvX3wJx5KdZ/49KgiZX
-	 ubjq59zQYWvkw9lCfqXEq3PytS37+LRNmj1OcR1g0o8wKRubEPGc9+pxJsEdReqM9iFvZ
-	 wqY00t/TDlFP6VODevTCBR/DUGZVO7WzlV2dqJ+plB526Tquok5yxuBnoOBG+bYEf+2Uu
-	 3EqytGXOe6j/24HjWIkQqvG4fY0EYDqaBkiIgtIq7w91mARyrgTqswC3+WDliId9yRft3
-	 kweomInmyCP5948sm84mwJzsIRCTHaEaYfhnvtXjtRQjfyXQpDMRd7iseI9Fg49EmEw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792459452;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=q3EOLIaJ2qdXdEiMGxALnePEn7hmKAP9M8QU5KMiV3E=;
+	b=tTsEdKwcLomq71EUKHrHKScY/VZP9+3D1fj9iFZTYCYH0PjSZBEMFtEix7eznnYhHcc7
+	 GRqRTQm/0RxtfZo9g0z38MzzKXrZrTjcjF5nWwQ88xE2frwtbW73MooVyhnBIlEx+ACcp
+	 b1/tr7OYupNrmhJZ6dDJfOo4WtFdE16ixmPm0ygfI/ZyTZrAbB1sH2xlm6+QS2EMIdrza
+	 2PEAphi+CLeAm8ZoLMG80HZiS1TAaE2CAX7aWhiPOYiYL2i+mfOghuHfXXwT6rLDf1BRp
+	 xHYqfGUy7LZkvR/2nM0k7xS5VW1U7oIwW7eLkzc+J34KkE12Fv8SVghtxQxFHpBN4VQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Sc8vkZXo;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=mjeZVoE+;
+	arc=none smtp.remote-ip=115.124.30.110
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50686606A31D;
-	Mon, 19 Oct 2026 19:18:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22605606A319
+	for <iommu@lists.linux.dev>; Tue, 20 Oct 2026 01:24:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22605606A319
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Sc8vkZXo
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC4E51F000C5;
-	Mon, 19 Oct 2026 19:18:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792437526;
-	bh=77mlLPeWieg1gPE9ZVsd30acJWkC/9GBsg5MHF+AKxs=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=Sc8vkZXorvzEGiY+LTRN6fEVRb6T2XdkonoSOpCOZ99dDlclFWXdAjTQzLo55Kja+
-	 932j/jmJktfh0c/WttptWZOh5I9zbZL57LJ/70JPW6RB9MAy/sJj7hrADPlbGFd+D8
-	 eeSXvklCAyOzanZ3JWVuxsfOFe18y4ZQJtWe2Pkd4cLoJef/pF3++QAjondU+Pdn9g
-	 dujZFbDGxAIYKSZ9tTyMkY+vBOiUJxYTllh9R09mMFN190XHAqxSyvINACudxH1uSo
-	 CbXmLOyhnCQ002lb5K0f1ajSB/A+r6h/S2iZC53DsHfbZRjmNvpVAZomX+VyY6SRgO
-	 gqeNX1nCz852w==
-Date: Mon, 19 Oct 2026 14:18:45 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v11 00/19] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
-Message-ID: <20261019191845.GA2219127@bhelgaas>
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=mjeZVoE+
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1792459448; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=q3EOLIaJ2qdXdEiMGxALnePEn7hmKAP9M8QU5KMiV3E=;
+	b=mjeZVoE+15fONT/jj1qHIOZzMEkbmDKw5rJBuPWkIfzNrWYnnxpXcgSBda3g5JD+KXBfN1zJEQnKWysM06+Z57T9BF8d1oHRZOu+wT6nSFLQyHACzecFWt5fe1BkpWir18OGe5cmffoEeM4Cop6qbTLnp43Ubk6CkDxSAcWK974=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDB1Dh._1792459444;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDB1Dh._1792459444 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Tue, 20 Oct 2026 09:24:06 +0800
+From: fangyu.yu@linux.alibaba.com
+To: tanchi25@mails.ucas.ac.cn
+Cc: alex@ghiti.fr,
+	andrew.jones@oss.qualcomm.com,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	atish.patra@linux.dev,
+	baolu.lu@linux.intel.com,
+	fangyu.yu@linux.alibaba.com,
+	gsh517025@gmail.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	joerg.roedel@amd.com,
+	joro@8bytes.org,
+	jroedel@suse.de,
+	kevin.tian@intel.com,
+	kvm-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	tomasz.jeznach@linux.dev,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [RFC PATCH v4 10/10] iommu/riscv: Add IOTINVAL.GVMA after updating DDT/PDT entries 
+Date: Tue, 20 Oct 2026 09:24:03 +0800
+Message-Id: <20261020012403.22247-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20261019133536.1610-1-tanchi25@mails.ucas.ac.cn>
+References: <20261019133536.1610-1-tanchi25@mails.ucas.ac.cn>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -71,54 +86,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261019183537.GI64621@unreal>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Oct 19, 2026 at 09:35:37PM +0300, Leon Romanovsky wrote:
-> On Wed, Oct 14, 2026 at 05:49:53PM +0300, Leon Romanovsky wrote:
-> > On Wed, Oct 14, 2026, at 16:23, Bjorn Helgaas wrote:
-> > > On Wed, Oct 14, 2026 at 09:53:47AM +0300, Leon Romanovsky wrote:
-> > >> On Tue, Oct 13, 2026 at 05:25:08PM +0300, Leon Romanovsky wrote:
-> > >> > PCI P2PDMA applies Request and Completion Redirect throughout both paths.
-> > >> > This misclassifies asymmetric and nested switches, and reports one answer
-> > >> > for every kind of TLP.
-> > >> > 
-> > >> > Three ACS controls act on TLP attributes the Requester chooses rather
-> > >> > than on the topology: Translation Blocking and Direct Translated P2P act on
-> > >> > a Request's Address Type, and Completion Redirect skips Completions carrying
-> > >> > Relaxed Ordering.
-> > >> > 
-> > >> > Evaluate each direction at the path divergence, decide every class from the
-> > >> > one walk, and treat a client with ATS enabled as translating unless its
-> > >> > driver declares per-mapping ATS.
-> > >> > 
-> > >> > This completes the P2PDMA side; dma-buf and mlx5 follow separately.
-> > >> > 
-> > >> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > >> > ---
-> > >> > Changes in v11:
-> > >> 
-> > >> 
-> > >> Bjorn,
-> > >> 
-> > >> Could you please save me from the AI-bot attack? Every rebase seems to
-> > >> uncover another bizarre pre-existing issue. It never ends.
-> > >
-> > > Can you elaborate?  I'm not sure what you'd like me to do here.  I
-> > > don't control the Sashiko reviews, and I thought Sashiko was recently
-> > > changed to put pre-existing issues in a database but not in the email
-> > > responses.
-> > 
-> > AI reviews are not deterministic and every resubmission gives us slightly different result, which is in this phase of submission is  full of hallucinated flows not applicable to the upstream.
-> > 
-> > In addition to upstream Sashiko, i run everything through local one with slightly better models which hallucinating even more.
-> > 
-> > I would ask you to merge the series so it gets real exposure in addition to my kunit and specific hw setup.
-> 
-> Bjorn,
-> 
-> We're in the merge window now, so I don't expect such a large series to be
-> merged. What about the next cycle? Should I send v12 after -rc1, or wait?
+>Hi Fangyu,
+>
+>I wonder if riscv_iommu_iodir_set_mode() also needs a global
+>IOTINVAL.GVMA now that second-stage translations are supported.
+>
+>It currently issues IODIR.INVAL_DDT and IOTINVAL.VMA after updating
+>DDTP, but cached G-stage translations may still remain, for example
+>when the IOMMU is reinitialized after a previous kernel used
+>second-stage domains.
+>
+>Would a global IOTINVAL.GVMA (GV=0) be needed here as well?
+>
 
-After -rc1 would be good.
+Good catch.
+
+Per the spec, adding an IOTINVAL.GVMA here is more accurate when
+second-stage translation is enabled.
+
+I'll add an IOTINVAL.GVMA in set_mode() in the next version.
+
+Thanks,
+Fangyu
+
+>Thanks,
+>Tan Chi
+>
