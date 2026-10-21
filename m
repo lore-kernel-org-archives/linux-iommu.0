@@ -1,68 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.227.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792574917;
-	b=qUFtKAIuOpBA5P1i0q5H+lM/brFEtHEoLL+lJnnI7WGYAHtuSfVB2dO2dmImZyrTzDZw
-	 XEKeB8WUF9cYC6fvHyW27QhP7X2pu3hiT06wNQ+HnQfPSleX3fPZLzQ12/lFC7DIfKRAv
-	 AsKqRTmPHUjIsOf1+Gj6rmyAXQwiIKnFmugEq2mZ5XBBs+V5Tva0VtPm0qKFOnQbY6Th9
-	 shtL06wjdku31lmma4sAC+Hf1pwH9yWQyyd8NAnECXRCHsPs+D5ND3dPUwh0RaTDvmI0j
-	 v0QBiHnsUdMeR2ACu+uadtH74XWrx/f7dNqhBBoxOJvd3VIJmMWUUYAvflNNRR+jeUw==
+	t=1792576138;
+	b=uvAK8BeAqCJ9AKQRGmunk6TCo+Dlr9HzlCaQtcClUx1SYl37HS4JJxKBeN4gWm/4RXNA
+	 SZAiuYH28tvlq1Tc4SkCpTE/DOMGUb+6ed3hBMzdyFbeit85QW/kpVlu7dCUdsNb6NsK+
+	 4H+yhKmKWO79FtNiZkY2fK0o++NM2sDjMdGLgXPrlmkUMI+m6SWBtgYmRXnhUgS1Hh7xX
+	 cele0sIMAdylCCFdZ53Jwx1mb44bU11S7K1EwxQe1Wq5OiBUp9HldoDP+W9FTXIoDbeEo
+	 WHINtZVfIfMZ3LNxfRJ4XcJUJPmSKgD95O2jvcL8trwU5p/wVD7kWy2v+MLY50kaluw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792574917;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
-	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=Cg6EqZtqP98/9Z7wtmnm+wkEmJNwp6tKXCKPiybtwoA=;
-	b=EfvPsyMFumn20WsbpenKSa1neppRHsPrqMlLGWvoB6YU5Sx6sgtJYZ+NA+MdmaqTIfKL
-	 8SPewuhIve4rtI+8e+1CsLdfl3nExz1yysbY2WIZRec4uTHD7nEy2iMu6EkzJ0uxTTA+H
-	 NYaqOvtWKDPrth7+weYvDNLm7M8/+Pa50qEjvlOrw89DYp7AZ/SqNevmfttb0xZ+pxnQp
-	 z+Elf132Iev3TBVD0gnJrt7JK2/R9EnvEx22qiUqee9Lt3zQ4HUXe6rtuWxFbgEpeSFmT
-	 RS1DA59odgKtlshl7BqA9ENmEnR3g6qvO0YSwzB1dYDvf5XN7ZbNHWMhNxWty/raBMA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792576138;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=qb8CCyZKDo3DU8wu9akhVT7quX2USeXAOK8NbuiE3KM=;
+	b=k1StPeHZnsMYgBRXj+qGjonIQue7m03Q1LmEm/FejuGqqgYv1oLuOweLvvpOWAEvXdsm
+	 P4ueuS5GUIA7XdYi4vKIIf/8JrprlNx/CJu+3zz7cfe8T4N0Qs7Xxqrnc8z/biNOBfsMH
+	 KpKFNsdTGDOrbtht8ybDHKbAmNq9TtEP4hC8dnc+P5z9R4j+7cSUF25SdMOqnnlT8Rc6z
+	 eZW9tRaFgaexJAqdhWNSq0ZMQWYLFnWTWrEZy+2Mgtgtmna+67qoVDvNwiLT+aOJJPVUx
+	 ZvVWJeb13P2Z8t3QFJnJ0k/lDiKkJukMOL0UCG3/ZmIK1mU7Xf5isSJ7rOp3CaROKTA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=dtrurpMG;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b="W9Xsm/L1";
+	arc=none smtp.remote-ip=74.125.227.131
+Received: from mail-pj2-f3.google.com (mail-pj2-f3.google.com [74.125.227.131])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12BF606A31A
-	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 09:28:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E12BF606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECB89606A31D
+	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 09:48:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ECB89606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=dtrurpMG
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261021092828euoutp02be486d54e971478583213044e5835a95~ggWG4X40W0370303703euoutp026
-	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 09:28:28 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261021092828euoutp02be486d54e971478583213044e5835a95~ggWG4X40W0370303703euoutp026
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1792574908;
-	bh=Cg6EqZtqP98/9Z7wtmnm+wkEmJNwp6tKXCKPiybtwoA=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=dtrurpMG3tUW6hceKrsHChi9/xiHHXs95JtCTnPDNPjpVcd3aBbO2ez0n6cimJ24W
-	 ZUBC2sRY7P/WaZ/oi8ehwMk6swMseJYvMzhMFQiDSWWRiVLhmYdLAcduMJNyccCqmZ
-	 yerRu1EXzu6/gtUBsZPSig4OqA8xwxo2uYjqyDCs=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261021092826eucas1p167036f47ed4ccf542f3f7b33d253277c~ggWFXHzWl0180301803eucas1p1V;
-	Wed, 21 Oct 2026 09:28:26 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261021092826eusmtip15bad0e29e446461c6685d2dca2531770~ggWE1VmFv2716227162eusmtip1G;
-	Wed, 21 Oct 2026 09:28:26 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, John Garry
-	<john.garry@linux.dev>, Qingfang Deng <qingfang.deng@linux.dev>, Francesco
-	Valla <francesco@valla.it>, "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
-	Sasha Levin <sashal@kernel.org>, Leon Romanovsky <leon@kernel.org>
-Subject: [GIT PULL] dma-mapping updates for Linux 7.4
-Date: Wed, 21 Oct 2026 11:28:00 +0200
-Message-ID: <20261021092802.3294826-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=W9Xsm/L1
+Received: by mail-pj2-f3.google.com with SMTP id d9443c01a7336-2e831901331so3017215ad.1
+        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 02:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792576137; x=1793180937; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=qb8CCyZKDo3DU8wu9akhVT7quX2USeXAOK8NbuiE3KM=;
+        b=W9Xsm/L114qOVc+H9WnV3LSeZJNA5/nyEVFjvokmHXiU3AJws1E1dPvPBzj0tPaCPr
+         0XuMG7NaPyzGOEvVzCTy74kvzV0HlNS2j/xZ0QX7WWd5fktl0kedzxKNmGi7okcxmxVc
+         jzHzPkbQQ8G7PY9FXe0n2jalhWbZuGOUs2TShXuFsHfn82Lc2SKA+yUb/9ZeyUUqy2kJ
+         PCxz1JxHJZgQGb3DzxO8YtAaN+13poc5N3hXWhSQAHr4VQnjyeLzbEJMRsiorEjS0o7r
+         1HflssKVpl1jrLXWH/pSTOEZ+jqM3amEzq5AYsbuumOTPFZ+phh0bcP0s0aWxPlh4fEO
+         JrIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792576137; x=1793180937;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=qb8CCyZKDo3DU8wu9akhVT7quX2USeXAOK8NbuiE3KM=;
+        b=BTDjtoYfS9078mTFSIVVoGdOm/VSpdI1AoNzZ6e0tWMfo7v/I8E87PhI8BO539Oy3M
+         r73r5LukrRI8aKklETyOFOBoUS01s39nGAQA2UZ6JbimPHHTBi7WhhgTt3P11cmQUrxR
+         j7i82b+sR59PSaDvP2gCVkpqGextMcb6X5Lq97udiFT0Cyv+qM3UQuCuHgDKjdJmokR1
+         gAgrbIBZxJ1RGtFjePJDJq2yw+Bc5AZrKP4CYDAh0DWvVg3I5XgLnsbBrMl1lKcXzb9+
+         AoUK2XQciIZeGY6Z9LPFw9Fk/O3CeEhVB5kHLoLlYcUVsvW6tn9Bhmcg4Q7y/BcKSyw1
+         yqyQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxTDWguIMgmu4OXPHyUVNymZ/RlQG2kz870xhjadkxJgs+xSm1XN4Kt9z8/apoE8ih4+9h9dg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKX5LNucxGyaoTAztftbb65cGxg2DdqXRUPdAcrPabs4Pd/NalX
+	U8UxkLh8uwYNlcu0nbIdoYMDDvvxfU2OqWe8SgB7gBW4TIm52nlAoe8a
+X-Gm-Gg: AYBFou0fjYCtnfcuieSbnctYhF1IK5F22RKePn8XI5Vq45PYRSBZQUxoto8W2XlaHSb
+	jhYmiPxAXokz3gKHDGFEy+ZlFCfZIYBmBWEiLsPlrdg/KqsIua7yibcmxPNvKn2Eui3ibLfGTn8
+	BQlfrK403mq3PifyIhyqmJrMqNS1MNFp8LBTBiOZWOLHdjW3w/5gWoWPmSxHUYmR7EC5znYpvsl
+	af+e9daEPcFQ/PdhkSfeCp4G8G8/a3UvsUqn9tx1djDYHi7e1PUkTvFBP+rJAfa6/5dHtSUHu8P
+	h8bOc6jj1uw8aBQvJw7s6LIegmhdWhxZXdDKAoRL4umKXdcfxTp1ubVyOe3LtYzw7DJRaa06Ij5
+	3PUkwBt3VuJQW/nkO1hhHtW4b5VDH54n+H8iNvyUBLNS/S+BBfX6cZiEHO/ArU/NgincRsY9ZqX
+	oO865ya15zU5dCc8ZbR04+uu75pNLNpq1cVlCMDnByzwoCiQoAILhuuSJmOjZafHzD6tjpHv5gj
+	SSZbqnF9eld+OsGlYN9+5Q1t/05QRuTR5NbaZgIz+fmGWu9y+2QykRjDqbbeIE=
+X-Received: by 2002:a17:902:f60e:b0:2ea:192a:13b8 with SMTP id d9443c01a7336-2ea43a13e4fmr10496695ad.20.1792576137131;
+        Wed, 21 Oct 2026 02:48:57 -0700 (PDT)
+Received: from [10.125.112.22] ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ea3b486970sm8858055ad.62.2026.10.21.02.48.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Oct 2026 02:48:56 -0700 (PDT)
+Message-ID: <a1665f9e-3116-47bc-974e-98dce408fa37@gmail.com>
+Date: Wed, 21 Oct 2026 17:48:37 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,96 +91,169 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 3/8] crash_core: serialize crash header preparation
+ against hotplug
+To: Jinjie Ruan <ruanjinjie@huawei.com>, robh@kernel.org,
+ baoquan.he@linux.dev, rppt@kernel.org, m.szyprowski@samsung.com
+Cc: catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
+ chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, tglx@kernel.org,
+ mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+ hpa@zytor.com, saravanak@kernel.org, akpm@linux-foundation.org,
+ pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+ kexec@lists.infradead.org, linux-mm@kvack.org, iommu@lists.linux.dev
+References: <20261021083011.2170525-1-chenwandun1@gmail.com>
+ <20261021083011.2170525-4-chenwandun1@gmail.com>
+ <12e4e687-1ff0-41b2-bdf8-7f48b29e1f2f@huawei.com>
+Content-Language: en-US
+From: Wandun <chenwandun1@gmail.com>
+In-Reply-To: <12e4e687-1ff0-41b2-bdf8-7f48b29e1f2f@huawei.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261021092826eucas1p167036f47ed4ccf542f3f7b33d253277c
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261021092826eucas1p167036f47ed4ccf542f3f7b33d253277c
-X-EPHeader: CA
-X-CMS-RootMailID: 20261021092826eucas1p167036f47ed4ccf542f3f7b33d253277c
-References: <CGME20261021092826eucas1p167036f47ed4ccf542f3f7b33d253277c@eucas1p1.samsung.com>
 
-The following changes since commit cee9395acd8043be0644b25c34bfa86623f2b935:
 
-  Linux 7.3-rc1 (2026-08-30 13:34:40 -0700)
 
-are available in the Git repository at:
+On 10/21/26 17:13, Jinjie Ruan wrote:
+> 
+> 
+> 在 2026/10/21 16:30, Wandun Chen 写道:
+>> From: Wandun Chen <chenwandun@lixiang.com>
+>>
+>> crash_prepare_headers() counts memory ranges before populating the
+>> allocated crash_mem array. The weak implementation used by ARM64,
+>> RISC-V and LoongArch walks memblock.memory, while x86 performs the same
+>> two-pass operation over system RAM resources. Concurrent memory hotplug
+>> can change range source between the two walks and make the populate
+>> pass overflow cmem->ranges.
+>>
+>> Take device_hotplug_lock when preparing crash headers during
+>> kexec_file_load(). The x86/riscv memory hotplug path already takes
+>> device_hotplug_lock, so call __crash_prepare_headers() directly
+>> to avoid recursive locking.
+>>
+>> Sashiko reported this issue in [1].
+>>
+>> Fixes: 3751e728cef2 ("arm64: kexec_file: add crash dump support")
+>> Fixes: 1bcca8620a91 ("LoongArch: Add crash dump support for kexec_file")
+>> Fixes: 8acea455fafa ("RISC-V: Support for kexec_file on panic")
+>> Fixes: dd5f726076cc ("kexec: support for kexec on panic using new system call")
+>> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+>> Link: https://sashiko.dev/#/message/20260806101002.1F84E1F000E9@smtp.kernel.org [1]
+>> Acked-by: Baoquan He <baoquan.he@linux.dev>
+>> ---
+>>  arch/riscv/kernel/crash.c  |  2 +-
+>>  arch/x86/kernel/crash.c    |  2 +-
+>>  include/linux/crash_core.h |  2 ++
+>>  kernel/crash_core.c        | 17 +++++++++++++++--
+>>  4 files changed, 19 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/arch/riscv/kernel/crash.c b/arch/riscv/kernel/crash.c
+>> index fe5a4b306aae..ac8df2edf2a7 100644
+>> --- a/arch/riscv/kernel/crash.c
+>> +++ b/arch/riscv/kernel/crash.c
+>> @@ -70,7 +70,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
+>>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
+>>  	 * memory resources.
+>>  	 */
+>> -	if (crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
+>> +	if (__crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
+>>  		pr_err("unable to create new elfcorehdr");
+>>  		goto out;
+>>  	}
+>> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+>> index e6f23933a6df..bef008a0cb22 100644
+>> --- a/arch/x86/kernel/crash.c
+>> +++ b/arch/x86/kernel/crash.c
+>> @@ -465,7 +465,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
+>>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
+>>  	 * memory resources.
+>>  	 */
+>> -	if (crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+>> +	if (__crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+>>  		pr_err("unable to create new elfcorehdr");
+>>  		goto out;
+>>  	}
+>> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
+>> index bc087124cd78..28e7a81cf263 100644
+>> --- a/include/linux/crash_core.h
+>> +++ b/include/linux/crash_core.h
+>> @@ -61,6 +61,8 @@ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_ma
+>>  				       void **addr, unsigned long *sz);
+>>  extern int crash_prepare_headers(int need_kernel_map, void **addr,
+>>  				 unsigned long *sz, unsigned long *nr_mem_ranges);
+>> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>> +			    unsigned long *nr_mem_ranges);
+>>  extern int crash_exclude_core_ranges(struct crash_mem **cmem);
+>>  
+>>  struct kimage;
+>> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+>> index faa0f22dbb41..8a861a946e26 100644
+>> --- a/kernel/crash_core.c
+>> +++ b/kernel/crash_core.c
+>> @@ -16,6 +16,7 @@
+>>  #include <linux/mm.h>
+>>  #include <linux/cpuhotplug.h>
+>>  #include <linux/memblock.h>
+>> +#include <linux/device.h>
+>>  #include <linux/kmemleak.h>
+>>  #include <linux/crash_core.h>
+>>  #include <linux/reboot.h>
+>> @@ -344,8 +345,8 @@ int crash_exclude_core_ranges(struct crash_mem **cmem)
+>>  	return 0;
+>>  }
+>>  
+>> -int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>> -			  unsigned long *nr_mem_ranges)
+>> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>> +			    unsigned long *nr_mem_ranges)
+>>  {
+>>  	unsigned int max_nr_ranges;
+>>  	struct crash_mem *cmem;
+>> @@ -382,6 +383,18 @@ int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>>  	return ret;
+>>  }
+>>  
+>> +int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>> +			  unsigned long *nr_mem_ranges)
+>> +{
+>> +	int ret;
+>> +
+>> +	lock_device_hotplug();
+>> +	ret = __crash_prepare_headers(need_kernel_map, addr, sz, nr_mem_ranges);
+>> +	unlock_device_hotplug();
+> 
+> I think this patch conflicts with my changes and would also conflict
+> with the implementation of arm64 crash hotplug.
+> 
+> https://lore.kernel.org/all/20260921090450.807575-15-ruanjinjie@huawei.com/
+> 
+Have these patches already been merged? My current work is based on the latest
+linux-next. If they have already been merged into the maintainer's branch,
+please let me know, I will update my tree and rebase/re-adapt my changes accordingly.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-7.4-2026-10-21
 
-for you to fetch changes up to 4733f2966433b7f926f70c9dc461c33cd5c10835:
+Also, regarding the changes in kernel/crash_core.c: it looks like we modified
+the same spot, the change is not wrong, is that right?
 
-  dma-debug: Skip cacheline tracking for MMIO mappings (2026-10-14 15:07:22 +0200)
+> arm64 crash hotplug:
+> https://lore.kernel.org/all/20260918100442.3841135-18-ruanjinjie@huawei.com/
 
-----------------------------------------------------------------
-dma-mapping updates for Linux 7.4:
+In addition, if arm64 gains crash hotplug support, the code there would indeed
+need to be modified (to avoid a deadlock). As of now, arm64 crash hotplug
+support has not been merged yet either, has it? I just want to make sure I
+haven't missed anything.
 
-- several SWIOTLB initialization cleanups (Aneesh Kumar K.V, Francesco
-Valla)
-
-- exact page allocation for DMA pages (Qingfang Deng)
-
-- tools/dma build fixes (Sasha Levin)
-
-- minor fixes for various corner cases (Marek Szyprowski, Leon
-Romanovsky) and code cleanup (John Garry)
-
-----------------------------------------------------------------
-Aneesh Kumar K.V (Arm) (3):
-      dma: swiotlb: Rename swiotlb_size_or_default()
-      dma: swiotlb: Consolidate slab rounding
-      dma: swiotlb: Track whether the pool size was explicitly set
-
-Francesco Valla (1):
-      dma: swiotlb: use KiB in restricted pool allocation log
-
-John Garry (1):
-      dma-mapping: rename dma_opt_mapping_size()
-
-Leon Romanovsky (1):
-      dma-debug: Skip cacheline tracking for MMIO mappings
-
-Marek Szyprowski (2):
-      MAINTAINERS: Add files to the DMA MAPPING HELPERS entry
-      dma-direct: Restore arch_dma_alloc() for the DMA_ATTR_NO_KERNEL_MAPPING case
-
-Qingfang Deng (1):
-      dma-mapping: use exact allocation for DMA pages
-
-Sasha Levin (2):
-      tools/dma: fix building with O=
-      tools/dma: fix building from the top level with O=
-
- Documentation/core-api/dma-api.rst   |  2 +-
- MAINTAINERS                          |  1 +
- arch/arm/xen/mm.c                    |  2 +-
- arch/arm64/mm/init.c                 |  2 +-
- arch/riscv/mm/init.c                 |  2 +-
- arch/x86/include/asm/crash_reserve.h |  4 +--
- drivers/iommu/dma-iommu.c            | 12 ++++----
- drivers/nvme/host/pci.c              |  2 +-
- drivers/scsi/scsi_transport_sas.c    | 12 ++++----
- include/linux/dma-map-ops.h          |  4 +--
- include/linux/dma-mapping.h          |  4 +--
- include/linux/gfp.h                  |  2 +-
- include/linux/iommu-dma.h            |  2 +-
- include/linux/swiotlb.h              |  2 +-
- kernel/dma/contiguous.c              |  6 ++--
- kernel/dma/debug.c                   |  7 +++--
- kernel/dma/direct.c                  | 30 +++++++++++++++-----
- kernel/dma/mapping.c                 | 10 +++----
- kernel/dma/ops_helpers.c             | 11 +++++---
- kernel/dma/swiotlb.c                 | 54 +++++++++++++++++-------------------
- mm/page_alloc.c                      |  2 +-
- tools/dma/Makefile                   | 10 +++++--
- 22 files changed, 106 insertions(+), 77 deletions(-)
-
-----------------------------------------------------------------
-
-Thanks!
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> 
+>> +
+>> +	return ret;
+>> +}
+>> +
+>>  /**
+>>   * crash_exclude_mem_range - exclude a mem range for existing ranges
+>>   * @mem: mem->range contains an array of ranges sorted in ascending order
+> 
 
