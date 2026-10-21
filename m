@@ -1,68 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792562280;
-	b=adE4BAo918EUAUYnR7D7E2XNgzj2WjvIYd81Jkvj/JL63/9dsjcIue5Zv0l+YL2/4pvu
-	 QVjVl9wdTwzbP31/ZznXmWKEm2tvJ3HKWRr95MSxKf9c862SiP/Q89pkXFjVun4UUQT7r
-	 7sLS4euyVTSbFYg1gvlGIe+0NsSTeMIw7AnkNqmCjDH17F+x8BsYe519kfSwKvzBDx6/z
-	 wt9vP9PNN3RYL3tqN7juoULBCafJ1IqYZ4OeW2xSOUi62mjDZjR2abDX7TFpl3RMyouxF
-	 xIQX+ujAMPsvllSHhngCi6Ys/YJ/0gEPtSy9pwLL2Ktm6Kxab7lks5pBNplumNwrrUQ==
+	t=1792563225;
+	b=cax/Y5ahwwPsPhNzWUi2Co7cp7Y+eHHSnOTmITCDArwo3D4s0K0FRV1ofZlTU4DCK8tY
+	 3PhheORTABllBRWANWKdn/gN7hcxhIwya3f8o76hsdEf+xk8KYR6qxatFSiYv6wrgMKRW
+	 4W1P3+5E3kSru9niK73Xcn8bf27oljctkk03UFXX7yndvx+XrgnYRVGs67XcakWr9lMuh
+	 jPnWFpgmtMc7wT52friy/B5sJhgR08yYoJx0r25kymsJU2L3n0dJUZRFZa/8mhLSY6kkA
+	 j6jBoxkagOACty/jcqVg5Mc0iLpXWsllSCqPOq8JpgDxL1uB+aeoMBdqljU7eSsoNiw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792562280;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792563225;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
 	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
 	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=G8dYOpxn7MC+ZuaGnfx+ivHYE4BwvuIFkRKXEM8ocss=;
-	b=XcD+LmheIuwTAot7uoIuLb8mkqvxNnHqkyPUo8nooiFrlbpj0qM3WRV03A4QzdNkWLs/
-	 77qs8Mvg3B8TrEnyCpHx8lhcG4NW0zpibvW6rWQsHBf7ujy15QST/S5AttyDOii2H9mzm
-	 P49JJfZLd6YbyuoYJahBctTjmtqQYUM6vPsGgS58yvOwtdjsbqin910FKSjKJL0VPKOID
-	 lfeO0qQOLKgJDkJXvgqxJKwcT/Xg7FRjIVeaWuQeZu9HDPtlusBskPEO0wCXJGkVUDZtu
-	 x0a6opk8riROHznAS0fXHiFgea3orSQ3X1+Pj6WeqURtGEzGImROf1r6I/ByK9RJmhQ==
+	bh=POTt6D1OgauRrY8k1vEWEZeF2cYhNnrrsYVlV43I0WA=;
+	b=h1W/N3c8ttahW1tuuHFXspkRpdhWRv/WNOYLJs2gK3RSYe0mxcU27kdHIUWAQ1FLHIjK
+	 NenwKx15xEhAOLSqxoRhlYnBgRJM7NyZ3l2Cwc8p1qcmSawSDjAnI3Ypdi1ztCV15N2YC
+	 iQlZnX0CW/vjso1c6dOclfJdbQUytDav5l/2wIi4PbKzcOjk13JrI7mGaSx20aH1RkMYj
+	 PmE1EYZWIizhsLIcHO4qaGZLSxXW2TVjD91qtR3YWquL2M+CsnanP1Y37XCqZO+rxEZx2
+	 9T9qINLp4cZ/t3TkTdUok/1ObFLA/9r/IWuBFtP5ytnHaf+RhnH2CLxcymP2JklvguQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=T5Wk1+WC;
-	arc=none smtp.remote-ip=192.198.163.15
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Dz7CgAHA;
+	arc=none smtp.remote-ip=198.175.65.15
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BEC3606A31A;
-	Wed, 21 Oct 2026 05:57:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3BEC3606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F03606A324
+	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 06:13:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 44F03606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=T5Wk1+WC
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Dz7CgAHA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792562280; x=1824098280;
+  t=1792563225; x=1824099225;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=H7Us3csM7KlqfmOQtYVzQN6z5KTrQAj7QwzbfGFGHNY=;
-  b=T5Wk1+WCQT5QqdOIvHlcfbIuesT/Svk1Ecw+Cg+HYdAIs+PiumPSeaPJ
-   RacyYYf6MEh2XfvlmenBSgn0nd4+liEQ2nkC+RIZlHgyrr5nTLyLpgTZG
-   DV/SUwsUh97rqBsjwLCG1s9wf/h1VOltJBvwhQiTLFYi6nOlCcJQikycd
-   vb1452D/xw2+EpgOKZr+lGfF2JaSFTv3jg7VRTryS9S4PxReQeU/ewbNd
-   pIwqqizSSHZHrvWitlMPeF8CIwad0bwXO8dXLqrspfO3tp8VjVva2f0WI
-   Syh8TPCsra9OUjWnMaJpoSGffXZCNLYMYEQS2N2bktgJfP1AQBB41IWdG
-   g==;
-X-CSE-ConnectionGUID: P9aYScA2TGK0udrcXyEGFw==
-X-CSE-MsgGUID: K0tFR3+jRha0AC/BJzeHCw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11941"; a="1290586"
+  bh=zoRAmnpBls2Nylk53pHmCqUXQ+xNgPqiQAFCKXRHWUU=;
+  b=Dz7CgAHA95NsIn3nkFUb+8jUL7WoUt9bVQoq4JWe9h1fAXsR8Fy/fc9X
+   35n2EASQMdi4A4o01GR6xs+T9OMN8rlHcd0DaeCg0qmSW/PQMp1XWccVM
+   cV1qaUBcgdEUxJEtrVHEHPujejsL/hcVJlH5JwuLIi/TYX4o4/u0ZKDJa
+   3rZQfOSrR21RZMWCmRIUusBbQ+Qp9xhm3d1aTnaag6BJn2IcUEzMcweM6
+   iWupuQdX6oacllJ+u9q//Ndf1X5WB1i9PHEbZjYMtbsATbsfkK5EiFWWH
+   fzh7cn5qYZkORGdprUvFXM0t6lgcjl2YzGk5X2fEDAHXTaH0tIHV/tvNo
+   Q==;
+X-CSE-ConnectionGUID: v0Vb5vpxRFih7xs6mIC4vw==
+X-CSE-MsgGUID: bFm7M0lZSI27SELuqHQ6Cw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11941"; a="1281497"
 X-IronPort-AV: E=Sophos;i="6.27,169,1787036400"; 
-   d="scan'208";a="1290586"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 22:57:59 -0700
-X-CSE-ConnectionGUID: doxQZF4GRc2o6suR8aK/ng==
-X-CSE-MsgGUID: Off98YcyQr2i3X7DBKcVGg==
+   d="scan'208";a="1281497"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 23:13:44 -0700
+X-CSE-ConnectionGUID: q9De8LF1Tz+6m/1zFAuAlg==
+X-CSE-MsgGUID: cWHIF8jUQ1+92Y77y8Qvzg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,169,1787036400"; 
-   d="scan'208";a="3067035"
+   d="scan'208";a="2946911"
 Received: from blu2-desk.sh.intel.com (HELO [10.239.156.26]) ([10.239.156.26])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 22:57:56 -0700
-Message-ID: <50cac102-9b50-4d0d-af58-8aac51a6d51c@linux.intel.com>
-Date: Wed, 21 Oct 2026 13:57:53 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2026 23:13:42 -0700
+Message-ID: <2c840dcf-4292-4579-a62d-f9766b7cb780@linux.intel.com>
+Date: Wed, 21 Oct 2026 14:13:40 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,118 +73,137 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [REGRESSION] BCM4355 Wi-Fi fails with Intel IOMMU on
- 7.3.0-2-t2-noble
-To: Peter Kiddier <peter@kiddier.org>, linux-wireless@vger.kernel.org
-Cc: brcm80211@lists.linux.dev, iommu@lists.linux.dev,
- arend.vanspriel@broadcom.com, regressions@lists.linux.dev
-References: <CA+3E589O46nj=c1Y+Rwk_nPZZKEUjFvMfWaAFmQ2-7De9iUxFw@mail.gmail.com>
+Subject: Re: intel-iommu: DMAR PTE Read fault crash-loops a PCIe wifi device,
+ v7.3-rc7 -> v7.3 final regression, reproduces on one unit out of five tested
+To: "Perlow, Jason" <jperlow@gmail.com>, Aditya Garg <aditya.garg@linux.dev>,
+ dwmw2@infradead.org
+Cc: iommu@lists.linux.dev, Bjorn Helgaas <bhelgaas@google.com>,
+ linux-pci@vger.kernel.org, arend.vanspriel@broadcom.com,
+ linux-wireless@vger.kernel.org
+References: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <CA+3E589O46nj=c1Y+Rwk_nPZZKEUjFvMfWaAFmQ2-7De9iUxFw@mail.gmail.com>
+In-Reply-To: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 10/20/26 19:32, Peter Kiddier wrote:
-> Hello,
+On 10/20/26 22:40, Perlow, Jason wrote:
+> Hardware: Intel CoffeeLake-H platforms, various. The affected device is 
+> a Broadcom BCM4364 802.11ac PCIe wifi adapter (14e4:4464) at 
+> 0000:05:00.0 on an Apple MacBookPro16,1 (T2 Mac). Aditya, including you 
+> directly since this is T2 hardware; copying iommu/pci/wireless because 
+> the fault signature and the fact that it reproduces on only one of five 
+> tested machines looks like it needs eyes on the core IOMMU/PCI path, not 
+> the driver.
 > 
-> I am reporting a Wi-Fi regression on a 2018 Apple MacBook Air with a
-> T2 chip, running Linux Mint Zena based on Ubuntu 24.04.
+> SYMPTOM
 > 
-> The Broadcom BCM4355 Wi-Fi device works with kernel 7.2.11-3-t2-noble
-> but fails with 7.3.0-2-t2-noble. Disabling the Intel IOMMU using
-> intel_iommu=off restores Wi-Fi on 7.3.0-2.
+> Between a locally-built v7.3-rc7 kernel and a v7.3 final kernel 
+> (same .config template, same patch series beyond one T2-specific AER 
+> quirk that is upstream in final and therefore held out of our patch 
+> set), the BCM4364 wifi firmware on ONE affected unit crash-loops 
+> continuously:
 > 
-> Hardware:
-> - Apple MacBook Air 2018 (MacBookAir8,1)
-> - Wi-Fi: Broadcom BCM4355 802.11ac Wireless LAN SoC
-> - PCI ID: 14e4:43dc (subsystem 106b:0843)
-> - Driver: brcmfmac
-> - Interface: wlp2s0
+> brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4364b3-pcie for 
+> chip BCM4364/4
+> brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4364/4 wl0: ...
+> ieee80211 phy0: brcmf_fw_crashed: Firmware has halted or crashed
 > 
-> Test results:
+> repeating every ~6s, indefinitely. dmesg shows the actual mechanism -- a 
+> real IOMMU DMAR page fault on the wifi device, timed to the same cadence 
+> as the firmware crash:
 > 
-> - 7.2.11-3-t2-noble, default kernel command line: Wi-Fi works.
-> - 7.3.0-2-t2-noble, default kernel command line: Wi-Fi fails.
-> - 7.3.0-2-t2-noble with intel_iommu=off: Wi-Fi works.
-> - Reloading brcmfmac on the failing configuration does not restore Wi-Fi.
+> DMAR: DRHD: handling fault status reg 3
+> DMAR: [DMA Read NO_PASID] Request device [0000:05:00.0] fault addr 
+> 0xffeff000 [fault reason 0x06] PTE Read access is not set
 > 
-> On the failing 7.3.0-2 boot, the driver detects the device, loads its
-> firmware and creates wlp2s0:
-> 
-> brcmfmac 0000:02:00.0: enabling device (0000 -> 0002)
-> brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4355c1-pcie for
-> chip BCM4355/12
-> brcmfmac: brcmf_c_process_txcap_blob: TxCap blob found, loading
-> brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4355/12 wl0: Jul  8 2023
-> 17:49:51 version 9.30.503.0.32.5.87 FWID 01-e74b9cb0
-> brcmfmac 0000:02:00.0 wlp2s0: renamed from wlan0
-> 
-> However, Wi-Fi subsequently stops responding. The kernel log reports
-> errors including:
-> 
-> brcmf_msgbuf_query_dcmd: Timeout on response for query command
-> brcmf_cfg80211_scan: scan error (-5)
-> brcmf_run_escan: error (-5)
-> brcmf_msgbuf_tx_ioctl: Failed to reserve space in commonring
-> brcmf_cfg80211_get_channel: chanspec failed (-5)
-> 
-> There is also an error creating the P2P interface:
-> 
-> brcmf_cfg80211_add_iface: add iface p2p-dev-wlp2s0 type 10 failed: err=-52
-> 
-> I tried reloading the driver using:
-> 
-> sudo modprobe -r brcmfmac_wcc
-> sudo modprobe -r brcmfmac
-> sudo modprobe brcmfmac
-> 
-> The driver and firmware loaded again, but Wi-Fi remained unusable.
-> 
-> The firmware files are present under /lib/firmware/brcm/, and the
-> firmware version reported by the driver is the same on the working and
-> failing kernels.
-> 
-> The brcmfmac module metadata differs between the kernels:
-> 
-> Working kernel 7.2.11-3-t2-noble:
-> srcversion: 3B6176FDB720DDE8E7C596B
-> 
-> Failing kernel 7.3.0-2-t2-noble:
-> srcversion: 3DCA38D52402541701276CF
-> 
-> I did not find obvious PCIe AER or fatal errors in the failing boot's
-> kernel log.
-> 
-> It has been suggested testing intel_iommu=off after reloading
-> brcmfmac. The driver reload did not help, but booting with
-> intel_iommu=off restored Wi-Fi.
-> 
-> This strongly suggests an interaction between Intel IOMMU handling and
-> the BCM4355/brcmfmac driver in the 7.3.0-2-t2-noble kernel.
-> 
-> I have not tested a vanilla upstream kernel, so I cannot yet confirm
-> whether this reproduces outside the T2 kernel packages. Unfortunately,
-> I have limited time available for further testing, so I may not be
-> able to investigate additional requests promptly. I wanted to report
-> the reproducible behaviour and the intel_iommu=off workaround in case
-> it helps identify the regression.
-> 
-> Could you advise on further diagnostics, or whether this should be
-> investigated as an IOMMU or brcmfmac regression?
-> 
-> Thank you.
-> 
+> Four such faults logged at uptime 13.4s/19.4s/25.3s/31.2s, each 
+> immediately followed by a brcmf_fw_crashed event. intel_iommu=off 
+> removes the fault and the crash entirely (8+ minutes stable, single 
+> clean firmware load, stable AP association). The prior v7.3-rc7 kernel 
+> on the SAME unit has zero DMAR faults and zero firmware crashes with 
+> IOMMU on by default, so this is a regression introduced somewhere in the 
+> rc7->final window on this unit, not a long-standing issue.
 
-Can you reproduce this issue with the mainline kernel?
+Can you confirm that the IOMMU is actually enabled and translating on
+the rc7 boot? Please check that boot's kernel log for:
 
-Do you see any IOMMU fault messages in the kernel log? You can check
-by running:
+DMAR: IOMMU enabled
+iommu: Default domain type: Translated
 
-   # dmesg | grep DMAR
+> 
+> REPRODUCES ON 1 OF 5 MACHINES TESTED
+> 
+> We ran the identical kernel build (and, where applicable, the identical 
+> firmware blob) across five machines and only one faults:
+> 
+> * Affected unit (MacBookPro16,1, T2, BCM4364 wifi): faults as above.
+> * Second MacBookPro16,1 (same generation, different configuration within 
+> the 16,1 line -- we have not enumerated every hardware delta): same 
+> kernel binary, same firmware blob, IOMMU also active by default (iommu: 
+> Default domain type: Translated, identical to the affected unit) -- zero 
+> DMAR faults, brcmfmac stable.
+> * Three non-Mac x86_64 machines spanning three more wifi vendors (Intel 
+> iwlwifi AX201, Intel iwlwifi Centrino 2230, Realtek rtw89 8852BE) -- 
+> IOMMU active and translating on all three, zero DMAR faults, all three 
+> wifi chips loaded firmware and ran cleanly.
+> 
+> So across four different wifi silicon vendors and five physical 
+> machines, IOMMU is actively translating DMA on every one of them and 
+> only the single affected unit faults. This looks like a host-specific or 
+> hardware-configuration-specific trigger rather than a blanket rc7->final 
+> regression that would hit every machine with this kernel. We do not yet 
+> know what distinguishes the affected unit (ACPI RMRR table contents, 
+> exact PCIe link training time, and IOMMU group/domain-attach ordering 
+> are the candidates we have not yet isolated).
+> 
+> WHAT WE RULED OUT BEFORE WRITING IN
+> 
+> * AER/ANFE quirk on the T2 Secure Enclave device: its PCI ID match is 
+> exact (Apple SEP, 106b:1802) and does not touch the wifi device 
+> (14e4:4464); real PCI topology on the affected unit also shows SEP and 
+> wifi on separate root ports (00:1b.0 -> [04] vs 00:1c.0 -> [05] off the 
+> PCH), so there's no shared-root-port mechanism either.
+> * brcmfmac driver source: git diff v7.3-rc7..v7.3 -- drivers/net/ 
+> wireless/broadcom/brcm80211/ is empty.
+> * Our own config template: byte-identical between the rc7 and final builds.
+> * The upstream Kconfig stanza for INTEL_IOMMU_DEFAULT_ON (drivers/iommu/ 
+> intel/Kconfig): byte-identical text between v7.3-rc7 and v7.3 (default 
+> y, no depends on).
+> 
+> THE ONE ANOMALY WE CAN'T YET EXPLAIN
+> 
+> Despite the last two items above being unchanged, the actual 
+> generated .config has CONFIG_INTEL_IOMMU_DEFAULT_ON unset after make 
+> olddefconfig against the rc7 source tree, but =y after the same process 
+> against the final source tree, even though our template explicitly 
+> answers "# CONFIG_INTEL_IOMMU_DEFAULT_ON is not set" in both cases. Our
 
-Have you tried narrowing down the cause with boot options such as
-iommu=pt or intel_iommu=on,sm_off?
+If CONFIG_INTEL_IOMMU_DEFAULT_ON was not set in your rc7 build, and
+intel_iommu=on was not on the command line, the Intel IOMMU was
+disabled by default on rc7. In that case, rc7 could never report a
+DMAR fault, and the "regression" is only that v7.3 final enabled the
+IOMMU.
+
+Could you boot the rc7 kernel on the affected unit with intel_iommu=on
+and see whether the same fault shows up? If it does, there is no
+rc7->final regression in the IOMMU code. It would be an existing DMA
+issue with brcmfmac/BCM4364.
+
+> working theory is that some other symbol started selecting/implying 
+> INTEL_IOMMU_DEFAULT_ON between rc7 and final -- which would override an 
+> explicitly-seeded "not set" answer during olddefconfig resolution -- but 
+> we have not identified which one. Happy to bisect further, or provide 
+> the full .config / additional dmesg, if that would help narrow it.
+> 
+> CURRENT STATUS
+> 
+> intel_iommu=off on the affected unit's kernel command line is our 
+> accepted fix for this specific machine while the root cause is 
+> unresolved; we are not disabling IOMMU fleet-wide, since four of the 
+> five test machines show no problem with it on. Posting here in case this 
+> fault signature is recognized, or in case others on different T2 or non- 
+> T2 hardware see the same thing on v7.3 final.
 
 Thanks,
 baolu
