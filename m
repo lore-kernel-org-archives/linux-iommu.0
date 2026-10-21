@@ -1,99 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.71
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792590837;
-	b=GH7OapMMPwYCZMQB21bM+nWLg6s3e7Prg4gRMLR4LSwDPYw5YxSBsa8X702XYqjDJmAL
-	 NNJCS7ZDSuk35LqubaJaZ/A+iQYAAggCBBzyddLf9Q1TkHxmuoY4bJAP6MSdwydXzdl0k
-	 PmGkQCjyv4ggF5x5B8Vye/a+zowccvmBlWXL+FjI+THcp7jRI3D3uc7s97tRZ0gHvN3mr
-	 2lWosAPdIt2GGhPWQZASvGYnVP2zMBp+mGhYdjLhj9G1YwKgsTTDTYYwz5Xr1gAU3sQL5
-	 UuIGUuvanLR4KlXWEAqt/OYiILTLWGvdMoPv2+0Rt+cHU1XTFHvUoedbL8toOEx3fRA==
+	t=1792593123;
+	b=vgaFze3QytQVfCAbstJocKvJbmH6o+IkqPdDHUCwPV/VGn4saCQWoCUR/dvHqH6YIdBZ
+	 pn4YpClgfDTGixMqP2xs06s9P/PfrUJpbOOjFHbaTjC3opsN8fwPLircAfAiAeXtWIZag
+	 7/hm+wNWZkQqE1tAc5GGDtc4Dr6YUP9YLBb3KZ+pNrnDlIm9d7wZ5OXukpXsJWVPVC7Ea
+	 Cw6grCSDkj5dBS9litA1rLzMlZ9Gf38WeCxPeh0JLNrKQxZJWNPKBfn7dBNo1QDrrqR2M
+	 acEIjKHw12AguKaROQxt7e5MfCtIpBGVNUV7Ya5kWNMPtufihrZnYs+Ka9nVWAcxfLA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792590837;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792593123;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:CC:
-	 Subject:User-Agent:In-Reply-To:References:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=HVdfobikX7vFrw+sXsu570+snU46eClKPnzChHPF63s=;
-	b=RBu8nT0+cMOsDT8zBLaWs5+0TW1bgmAiYBCGb6dvovLWwYwJH7td2Ygn7Zueo76CkOof
-	 jHzL2sxrtmoSLQ0XQ858ZnVqBoxdK4Bn4fGjXZxffifAlU5iddppdxlLtjwKdEI9wHL30
-	 qjM+uRcsQO6NfZGQ4FmtAydUoWHmOc3KEsqNFRAM895x4IOq51EveM269b4WSPmBeys+m
-	 G1vC3faSgl+zH2hxTKVsjbHkMEuXEyev1N5m9HinIye8BJDa2vSf0WxEl7u+L91HhtCfq
-	 yonzU3mCgT/f+K6EeFQhtxk/FRfnMnofM40z6W129RXbc6pCYfmUoXfkXM6lZUwNTMg==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
+	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=QazYBGvrND8GI8lJcSkyL4fj9MMsXahwbNAM7/zrdo0=;
+	b=qGyr6KhI3aOO+BhqxCfKgFjaBsqlEFmdnTEd4GzHDVXorYwZMdnz+Ncwha0QoMkmGoUk
+	 l0V5TH/R1fB5krJ5p4SJOVlgYAx3e/n3VRl/8HPTkJ9HZ7XhMpN3mAyiynLBI3t0deb/S
+	 XEoUfhSIzSMppKyyrRoz/dKI9MuvSycWw0kzZ+tyZP1/66m9Bv/IXTqosrFYbRxeuCEah
+	 phZaDz8BYUKFUabxpEfvmK2NezjOzKh3Bg4U1H29erbPtE8Ewg7aNzBowx54LL+19mPT8
+	 Ct4wVN3uZMdiZntIBca3NUpdD6vKfqMaMj9ljKlvwVEQd1COU+8TKaaetQ0A/MjcDrA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Lh7y+1d+;
-	arc=none smtp.remote-ip=209.85.128.182
-Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--mclapinski.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b="RPlsU+n/";
+	arc=none smtp.remote-ip=209.85.128.71
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACCF0606A329
-	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 13:53:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ACCF0606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A5D606A31E
+	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 14:32:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 49A5D606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--mclapinski.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=Lh7y+1d+
-Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-8ab43af5e97so8649677b3.1
-        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 06:53:56 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=RPlsU+n/
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4a01ba12198so13543205e9.1
+        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 07:32:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792590836; x=1793195636; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :references:in-reply-to:user-agent:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=HVdfobikX7vFrw+sXsu570+snU46eClKPnzChHPF63s=;
-        b=Lh7y+1d+OgKKwx4Y2G2yjQ1YIT8qu8Nvkplp8TuhuCHHgQNSQOJlbC2rReOGllj3ed
-         qQZ7y3dZCAlQxauZNaNxFqq9W5hlhk/0ihsvLj+EmUcQlL3AvV9YJclOFYJ8NwlDJmqy
-         Oxpll8vrXgQmyXPQaOj7gn1CMQS4iV6pEze2GXmoc9vrqLh1lP876M+fdDRBq2KZTEQl
-         PD5PKCzCwW8ENRNCHRoh/U3Gc9Pa92bNv1N6IjWYbGTgy0SgKm+KSY3hlmku/EXMgy9w
-         HO4iFf2VUNTmEt2cg8NZNgQyRPBuwTqDO47Y+DaCHFPuV8VU8qLWiuZX2aXaP8UwUwcB
-         9K5w==
+        d=google.com; s=20251104; t=1792593120; x=1793197920; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=QazYBGvrND8GI8lJcSkyL4fj9MMsXahwbNAM7/zrdo0=;
+        b=RPlsU+n/cejqbAnltVpn2kCvEsdwRQRs4unsNvm59AMN4Ii568b+9010TUyibtMFGS
+         xETrsGP/p3nLMIvks+5FHPfR7gBMnMDuQkpNcPEnvOhGnSgl1dT/OLIzEATu3iPIO8wO
+         tMhwoN6278rB4azJm1EeXOWziktHur6yirJRpuJc80osdu+2F+4urSFJtUiq1PP6CUS9
+         WRVBnG8Zow5i7B1Hp/Tl8Q0tk7t/QcbpP6SBMRe2M3Imr6NJqjBDt7P2Za7ofATalbvI
+         gbjD4Dtn0dj9J4+QqTQUKosvIAbCRyl4k+EJyubXcS60FlmnD1pXkJglmbZEHWt6xfni
+         GGJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792590836; x=1793195636;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :references:in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1792593120; x=1793197920;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=HVdfobikX7vFrw+sXsu570+snU46eClKPnzChHPF63s=;
-        b=iYbn4HIHv0Qn1kUqwMF0EkPCMPRYj8vQTeyfn9YN9tTJTI22Phq9sp+e41EQ5KlA0E
-         Dc/5/AJr+9ilrgyrNZtNiIr0ACxs99qM8UGGsUhG1sCPJtEwDCTtNfUNwN9SZOGQu0bW
-         Ziv7lS7nrQ3UqW5015lzBMMh/PjnS5J1CiZTn8VVDhhWRydw3J/bpdq+CEULKk1IAhmI
-         iHg/xKAIDf/EEGqlmivCUSiBShw5KtbY7JHfrEV/9UpT2FQeSHQQV7sqNqc9HcnRq5Jd
-         Sl44KSucfEIU+d/4tXXA/Xa2B5Lfjd9RMceb/hRvAaDuq0R5D5qAMjLq6iHDpy6/6iEo
-         sYEQ==
-X-Gm-Message-State: AFq9FYJ46TGztwR+YeuA3F+dpHKgALT3HdhENYCQPrvlkyvKjyokjNC5
-	dOpNTQiw6svMHftg5LBIt/cps/Pfb1CwWu5uLbsvxEVdFffvsvorFdAI
-X-Gm-Gg: AYBFou0YZ72nUMgr+hjNCF1Avjip4PXZvg/fxmWkA7mxcnZhx0qVT77qOoV1lqGNkX6
-	/YlaKC6GyWK6zV0KKwbPmg/6oGx8JdYQpsASKkEKtr9lD/a4e8xH4TEngAZCJkIKoIX/ek6AZq6
-	1j0s4Ttdbh6uz4kNh6SgTt9yJTG3UV9ejwZQ988xWd/+2hApAqQ+j+0bl6i1w7iXVlNX1ZEywzW
-	NTCFnRHehghJnV2wtN1neQCnfKIClg5ey0sQ0hJQW7QS5SjjysnTj3U0jLZ8aM4N6xRnsc5K7sh
-	PZ8mWmHPRzkdbN+ms+Ww89jhcsoM6iqxyRJ2Zzb0J3R+YwyQT3Gmg/mdiAzJX98oyRVU8qirTlg
-	R2KoANboKf5KV8zH9BwQEFBSF5+/DR3/5oCLQfPY1joezoEwYvhGEXrSmCZP5fR5ZG322AkIu+3
-	Bys1Rv3y1cEQeI4w7pcqzYEqDXRhRCsIogPgrlHcG8J4NOIXtukJA5sdh8yol+qbW/uKUwrY6Ue
-	l1Ef3nMN8eE5WtIFV8LXWU511k3uQjjJjvZxeC32hBTP4VqRssJhGloqygkUOIqis1QAP1naOjY
-	n0ZItlIQdpbhWm6S35D8hSLM0I9ZiBjnbzwAQFoCxxvOQuHqqFkyL1GzV/sQ6DOejla97knnJGO
-	n6kgoLoAfwIqw7HLl0oL7/SXZP5u5udK1pvvq8SePzAlGgicqdPnw6rkfJZVvp9Y=
-X-Received: by 2002:a05:690c:a0a9:20b0:8b0:ce9f:29a5 with SMTP id 00721157ae682-8b133cff2camr7680127b3.18.1792590835386;
-        Wed, 21 Oct 2026 06:53:55 -0700 (PDT)
-Received: from ehlo.thunderbird.net (212.153.88.200.l.sta.codetel.net.do. [200.88.153.212])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b13014b813sm11517467b3.38.2026.10.21.06.53.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Oct 2026 06:53:53 -0700 (PDT)
-Date: Wed, 21 Oct 2026 09:53:50 -0400
-From: Jason Perlow <jperlow@gmail.com>
-To: Arend van Spriel <arend.vanspriel@broadcom.com>,
- Baolu Lu <baolu.lu@linux.intel.com>, Aditya Garg <aditya.garg@linux.dev>,
- dwmw2@infradead.org
-CC: iommu@lists.linux.dev, Bjorn Helgaas <bhelgaas@google.com>,
- linux-pci@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_intel-iommu=3A_DMAR_PTE_Read_fault?=
- =?US-ASCII?Q?_crash-loops_a_PCIe_wifi_device=2C_v7=2E?=
- =?US-ASCII?Q?3-rc7_-=3E_v7=2E3_final_regression=2C_repr?=
- =?US-ASCII?Q?oduces_on_one_unit_out_of_five_tested?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <40118d49-2e79-45c7-8e50-58e05a44d24d@broadcom.com>
-References: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com> <2c840dcf-4292-4579-a62d-f9766b7cb780@linux.intel.com> <74570358-8085-4767-BF76-D865CA95853E@gmail.com> <40118d49-2e79-45c7-8e50-58e05a44d24d@broadcom.com>
-Message-ID: <EDE0E273-27FD-4069-9129-FCBB48D12ABB@gmail.com>
+        bh=QazYBGvrND8GI8lJcSkyL4fj9MMsXahwbNAM7/zrdo0=;
+        b=VZEPXLjjEqzpU+Ry6x80/VS/T1FubIDIOlmgZycZEfKrgHXkix7jkcKb8s1krcHRvb
+         0JPbPMggp0PCCf7x/5docv6+6vD/75yJ+YYDY9e9zzqtqz3Hyraad6+IqJrPq6Ufj9Ih
+         hD5q5QcCfTp09Q0gO0D5iQO5zXywX5mEkmIK+Sk4jjW9XstQC9Nrbiv4ykuSmSYYLGES
+         wY9jWOP/50YFd/rzDLOSOj0g2BqxiWzcd6RQ5b6+wBqAff6NL2d9LQehfVifZhFTOSHv
+         rZmDtzPgc79y04b5BwxARQxuO9LeAE/2u226QzgkBHAKVlvISxxNQv4yyfaqLC5gYN72
+         /BIg==
+X-Forwarded-Encrypted: i=1; AKwUvByC+FLRV9pfjEPrgym7dcwnWw/sFIG6wB0e7aochTdAPc0Hc8UY3agWowz3UUGMCJztk59LPg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLzNhLMNkqMQnkbNU24Ldstk9Jyg9sgj4kciQyW7x1eGj68nTdr
+	9rt1jr7nVRLJZrdc+hLFDVpcEvivSuSzqVgqSH3AZt6vDLW3xCboIJQ1wLwhjHvFpvDAdjK/dRE
+	yyUplAl4xNijbl+W/joMgYQ==
+X-Received: from wmdp11.prod.google.com ([2002:a05:600c:5cb:b0:4a1:fe70:d25d])
+ (user=mclapinski job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:4f91:b0:4a1:a7f8:c124 with SMTP id 5b1f17b1804b1-4a1fdd0c00bmr46588075e9.7.1792593120273;
+ Wed, 21 Oct 2026 07:32:00 -0700 (PDT)
+Date: Wed, 21 Oct 2026 16:31:54 +0200
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -102,34 +75,175 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.56.0.212.g129ede20d9-goog
+Message-ID: <20261021143154.2638232-1-mclapinski@google.com>
+Subject: [PATCH] iommu/dma: Allocate flush queues on first use
+From: Michal Clapinski <mclapinski@google.com>
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: Logan Odell <loganodell@google.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Michal Clapinski <mclapinski@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
+iommu_dma_init_domain() allocates the per-CPU flush queue of a DMA-FQ
+domain upfront. That is 10KiB per possible CPU, so on a 224-CPU machine
+it costs 2.2MiB and ~570us per domain. Since every device gets probed at
+boot, large servers pay this for hundreds of domains in pci_iommu_init(),
+even though many of them (PCIe ports, CPU uncore devices, ...) will
+never do streaming DMA.
 
+dma-iommu already copes with a flush queue appearing on a live domain,
+as the sysfs DMA -> DMA-FQ transition does just that. So only allocate
+it on the domain's first unmap, from a workqueue since unmaps can happen
+in atomic context, and use strict invalidation until it is in place. If
+the allocation fails, downgrade the domain to IOMMU_DOMAIN_DMA as before.
 
-> Thanks for the pointer=2E
->
->The only DMA related commit that I could think of was indeed the DMA dire=
-ction change=2E Hope restoring DMA_BIDIRECTIONAL fixes it=2E
->
->Regards,
->Arend
+On a 224-CPU Sapphire Rapids server with 431 IOMMU groups, this cuts the
+time spent in pci_iommu_init() from 330ms to 83ms.
 
+Signed-off-by: Michal Clapinski <mclapinski@google.com>
+---
+ drivers/iommu/dma-iommu.c | 78 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 72 insertions(+), 6 deletions(-)
 
-Restoring DMA_BIDIRECTIONAL for the RX pool fixes it=2E
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 1f624f241ac1..e61cd016b424 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -56,6 +56,11 @@ struct iommu_dma_options {
+ 	unsigned int	fq_timeout;
+ };
+ 
++/* Bits in iommu_dma_cookie::fq_flags */
++enum {
++	IOMMU_DMA_FQ_REQUESTED,		/* fq_work has been queued */
++};
++
+ struct iommu_dma_cookie {
+ 	struct iova_domain iovad;
+ 	struct list_head msi_page_list;
+@@ -74,6 +79,10 @@ struct iommu_dma_cookie {
+ 	atomic_t fq_timer_on;
+ 	/* Domain for flush queue callback; NULL if flush queue not in use */
+ 	struct iommu_domain *fq_domain;
++	/* Domain to allocate a flush queue for on its first unmap, if any */
++	struct iommu_domain *fq_lazy_domain;
++	unsigned long fq_flags;
++	struct work_struct fq_work;
+ 	/* Options for dma-iommu use */
+ 	struct iommu_dma_options options;
+ };
+@@ -330,7 +339,12 @@ static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
+ 	return 0;
+ }
+ 
+-/* sysfs updates are serialised by the mutex of the group owning @domain */
++/*
++ * sysfs updates are serialised by the mutex of the group owning @domain. They
++ * only ever target a domain of type IOMMU_DOMAIN_DMA. iommu_dma_fq_work(), the
++ * only other caller, acts on a domain of type IOMMU_DOMAIN_DMA_FQ and only
++ * changes it to IOMMU_DOMAIN_DMA once it is done, so they can't race.
++ */
+ int iommu_dma_init_fq(struct iommu_domain *domain)
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+@@ -363,6 +377,48 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
+ 	return 0;
+ }
+ 
++static void iommu_dma_fq_work(struct work_struct *work)
++{
++	struct iommu_dma_cookie *cookie = container_of(work,
++						       struct iommu_dma_cookie,
++						       fq_work);
++	struct iommu_domain *domain = cookie->fq_lazy_domain;
++
++	/*
++	 * On failure, fall back to strict invalidation as iommu_dma_init_domain()
++	 * would, and say so in the domain type, so that it is reported correctly
++	 * and writing DMA-FQ to the group's sysfs type can retry. That only acts
++	 * on IOMMU_DOMAIN_DMA domains, so it can't run concurrently with us.
++	 * Don't take the group mutex here: the group may be waiting for us in
++	 * iommu_put_dma_cookie() with it held.
++	 */
++	if (iommu_dma_init_fq(domain))
++		WRITE_ONCE(domain->type, IOMMU_DOMAIN_DMA);
++}
++
++/*
++ * A flush queue is a sizeable per-CPU allocation, but it is only of any use
++ * once a driver unmaps DMA through the domain. Many domains never get there,
++ * e.g. those of bridges and other devices that are probed by the IOMMU core
++ * but never do DMA, so set the flush queue up on the first unmap rather than
++ * when the domain is initialised. Unmaps keep using strict invalidation until
++ * the flush queue is in place. This may be called from atomic context, so do
++ * the allocation from a workqueue.
++ *
++ * The work is queued at most once per domain. Check the flag before trying to
++ * set it, so that concurrent unmaps don't all have to take its cache line
++ * exclusively until the flush queue is in place.
++ */
++static void iommu_dma_request_fq(struct iommu_dma_cookie *cookie)
++{
++	if (likely(!cookie->fq_lazy_domain) ||
++	    test_bit(IOMMU_DMA_FQ_REQUESTED, &cookie->fq_flags) ||
++	    test_and_set_bit(IOMMU_DMA_FQ_REQUESTED, &cookie->fq_flags))
++		return;
++
++	queue_work(system_dfl_wq, &cookie->fq_work);
++}
++
+ /**
+  * iommu_get_dma_cookie - Acquire DMA-API resources for a domain
+  * @domain: IOMMU domain to prepare for DMA-API usage
+@@ -379,6 +435,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
+ 		return -ENOMEM;
+ 
+ 	INIT_LIST_HEAD(&cookie->msi_page_list);
++	INIT_WORK(&cookie->fq_work, iommu_dma_fq_work);
+ 	domain->cookie_type = IOMMU_COOKIE_DMA_IOVA;
+ 	domain->iova_cookie = cookie;
+ 	return 0;
+@@ -428,6 +485,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+ 	struct iommu_dma_msi_page *msi, *tmp;
+ 
+ 	if (cookie->iovad.granule) {
++		cancel_work_sync(&cookie->fq_work);
+ 		iommu_dma_free_fq(cookie);
+ 		put_iova_domain(&cookie->iovad);
+ 	}
+@@ -715,11 +773,17 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
+ 
+ 	iommu_dma_init_options(&cookie->options, dev);
+ 
+-	/* If the FQ fails we can simply fall back to strict mode */
+-	if (domain->type == IOMMU_DOMAIN_DMA_FQ &&
+-	    (!iommu_domain_supports_fq(dev, domain) ||
+-	     iommu_dma_init_fq(domain)))
+-		domain->type = IOMMU_DOMAIN_DMA;
++	/*
++	 * The flush queue is allocated on first use, see iommu_dma_request_fq().
++	 * If it can't be used, or its allocation fails, we simply stay in
++	 * strict mode.
++	 */
++	if (domain->type == IOMMU_DOMAIN_DMA_FQ) {
++		if (iommu_domain_supports_fq(dev, domain))
++			cookie->fq_lazy_domain = domain;
++		else
++			domain->type = IOMMU_DOMAIN_DMA;
++	}
+ 
+ 	return iova_reserve_iommu_regions(dev, domain);
+ }
+@@ -835,6 +899,8 @@ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
+ 	size = iova_align(iovad, size + iova_off);
+ 	iommu_iotlb_gather_init(&iotlb_gather);
+ 	iotlb_gather.queued = READ_ONCE(cookie->fq_domain);
++	if (!iotlb_gather.queued)
++		iommu_dma_request_fq(cookie);
+ 
+ 	unmapped = iommu_unmap_fast(domain, dma_addr, size, &iotlb_gather);
+ 	WARN_ON(unmapped != size);
+-- 
+2.56.0.212.g129ede20d9-goog
 
-v7=2E3 plus the change below, intel_iommu=3Don (05:00=2E0 in a DMA-FQ
-domain), MacBookPro16,1 / BCM4364/4: 15 minutes of traffic, 7=2E25 GB
-received, 899/899 pings, 0 DMAR faults, 0 firmware crashes=2E Without
-it the faults start within seconds of attach=2E
-
--	msgbuf->rx_pktids =3D brcmf_msgbuf_init_pktids(NR_RX_PKTIDS,
--						     DMA_FROM_DEVICE);
-+	msgbuf->rx_pktids =3D brcmf_msgbuf_init_pktids(NR_RX_PKTIDS,
-+						     DMA_BIDIRECTIONAL);
-
-TX stays DMA_TO_DEVICE; no faults on it=2E I can send this as a proper
-patch with Fixes: f0ba5fd51ff2 and Cc stable, unless you'd rather
-revert the whole commit=2E
