@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792584336;
-	b=jK7sm6+j/FSIPiJJMJkLFNNWbaUGsfrlb/O5CHWIkiZhhp/aiQvuaoceCJsHSleqZsmY
-	 L4RKymhDGtAYMAQg5oMrLM0XUtIuc6KLK5KSnez4m2V4PQlZ17RcXooClA8H653Q9J6/2
-	 R4uiWjDSxtevFGt6U4RgpdYfntTxI3h8/zuDtZD7+kXXsFNUQHOgTcKeglTjJGMDFIdRI
-	 Z11IJ4ym61YUfsJR/m6q0sHgx9knI0M0q6uC07mKCvn3/s0n6LOrj5uuHLjXJP8hrjN/+
-	 54zfMcC0Iq9B1iBPcCJZ4Q5roHLAnt84TCo06iveXTW4Kh+hiizt++nv3WjieHyTW9A==
+	t=1792584346;
+	b=munMhyQmLq7wNrfrGguDY74t47svOK2nTgnmKwfI3+94u389/bNQHC7Uc/Pw9Q/lZiNX
+	 VcIO5wJKhXq7fIflnMchNAZxCl5FWMKD1ikruYX9H5OcO3eo/hbIOyUzjlEUOMBWYzR5m
+	 wbQyLnr+HQ1YWHlMBlrQU0U3GkWevhAjJMV6UMJKrW28+qf0VaxvzNYq5QYxL4Z571X8+
+	 fO8Z87wjLIb5SgM9IlcGsV0HYH8aciaWyLaIlVzzgu9pbb6vwsTBb1dvlQCRceicbSbbq
+	 F4oX51kdAx2uD+YeN+l0Dxfw2ZA22gl16sh6TjIy1jp+KNgWWInQYHHiUJZAUgJvqoQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792584336;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792584346;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=ze9st+CWG9+vAvDSNFCM7xaKkAlJJhDjRG5Nao1FAl8=;
-	b=1fr5q5/L79ADe5J9jt8bAONAubpndyzF4LQz6/ZqY9eqNy7hfpN4dpQOA/+lYiKaphha
-	 K6kX6oq8DNg4hJUG19olF18m6rNQ6Wh/X+vFgl54GtabzsizUEPfU9XMjJKdOjw0yApjK
-	 MIEpAidzUp+dc6LSGRNhxyP3oE9PM0Y6UAWQyR4C2OrJmKlXt7S0IqgOpOnpwdv2CBXCb
-	 5KLZINahCoxWzDh3gfu25M40Y1vWLrNVkRwbX4Dc4ZX61Wlwj8rYcOeU37EsUMjhBbbCp
-	 WaQTjtBWGcZJKvYvndAzIHvqDWN9O8eikWtjDj29Eb1R8QHrSIa8JTcpp7Hcwi4/OFg==
+	bh=lGoVj4Mpg7wY1tcmzcgHoP/Jxqw0xclPQNOED92gT+w=;
+	b=pKmLEekbHFT72XB93/yAPicDqN/XClTnUP3PVvCsAcHhXiViWbWZVGKLS9btnUM88o9T
+	 fgnyiuW7vnNDA3Qhhc3e1RdP1w5CD7Bxg4iHrBzNN9ZRTqtujULaJuZQemeX28Jitee3/
+	 /k/8aGzW31XvuBmUbyhdyxraiwTLSXGRvFBGeki2SnGyfC2A5MlLsJBEaAxk7OwmaOe5P
+	 N2eQFGv+bVF9QAhLQ45Jn4u5c88JyA/Ctqhjv1a8jFuwghmu37Jp9LhnqOPhdzIv2Gg2U
+	 Cr+QwLVrctLYdjhvHiJ1+Cw3ZHFM7bDaarI7eKiuPRVjzfUr+nIoLr8X2y/TcSbdfUg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B3at8DuL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WGpBd8No;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1719C606A319;
-	Wed, 21 Oct 2026 12:05:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEDE9606A31A;
+	Wed, 21 Oct 2026 12:05:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=B3at8DuL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 271DC1F000C6;
-	Wed, 21 Oct 2026 12:05:20 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WGpBd8No
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 389261F000CC;
+	Wed, 21 Oct 2026 12:05:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792584335;
-	bh=ze9st+CWG9+vAvDSNFCM7xaKkAlJJhDjRG5Nao1FAl8=;
+	s=k20260515; t=1792584345;
+	bh=lGoVj4Mpg7wY1tcmzcgHoP/Jxqw0xclPQNOED92gT+w=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=B3at8DuLrC5l/J796GuQjjPsFztYOpPguy7HUZ4WBb4pYI26lpU059vat7wNYEOG/
-	 9XUhhPzyU0cg8CAigzvgV1aGJ8GatwbNdnldd7+RNiA69dP8lgMMnINqjRLnHloIYo
-	 UAX3bOkI1jM1KMcgG2XI/te1m8/Yu9n1dAP249cTGbcfBkNayRBBrGPhpchGHhDMc3
-	 qdPv82y89AXhbJi+oKs6nzAFn+cl/d/83iOwrysb+a+TH3yYcomXJ4hVixhMZ8/yRw
-	 uU28D2O1zKiNZfVB6zJ/QTGZA79DkscMNvScM5JCX7dsE4p4v+tZNiMPJmOjudpFN1
-	 EJ7c/aDoHtrSw==
-Message-ID: <b2cf0c52-4c31-4b17-b341-029b82ddbd7f@kernel.org>
-Date: Wed, 21 Oct 2026 14:05:17 +0200
+	b=WGpBd8No1L3NW8cgKmFv2abaJ4sKKsQKhkEaR+UdDCW6lWt4yAjqWF39G8cG4XDMW
+	 rw+kOHxZAOAclT2jlV5iy8F74SLvQWF+Xau5AlQ76GVetV9wtQC2ZeR8Ffqi8Jn5UU
+	 2p+/uS68oWgMxIB/XUwY4jXP5Ny9DyE5MdVed9PeU1WpI1zaE+pIJ3i/491Y74vjM2
+	 Cs27b2gaK5CdBhFPSqXc9Cpucc+IrNyEGHKgvWsC3dYfOLv8yxvPqpmkj2vQVMMzoJ
+	 VhZdAQXskoHdRKxNdd7TamDDGE8mj+sc89fiKkMSoidRQXPL+OvT3XLgt1YauUOd2K
+	 jopUWhDfYn+Nw==
+Message-ID: <64603812-672f-43ba-9c5b-783d666d0ac0@kernel.org>
+Date: Wed, 21 Oct 2026 14:05:35 +0200
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -128,30 +128,16 @@ On 15/10/2026 09:38, Jayant Shekhar wrote:
 > through host-visible display registers. The MSM DRM backend therefore needs
 > to build its KMS objects from the firmware capabilities and device-tree
 > display graph.
+> 
+> Complete DCP KMS registration, including power and IOMMU integration,
+> capability handling, display-graph parsing, and creation of DRM planes,
+> CRTCs, encoders, bridges, and connectors.
+> 
+> Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
+> Assisted-by: LLM
 
 
-...
-
-> +
-> +		remote_np = of_graph_get_remote_port_parent(ep_np);
-> +		of_node_put(ep_np);
-> +		if (!remote_np)
-> +			continue;
-> +
-> +		if (!of_device_is_available(remote_np)) {
-> +			of_node_put(remote_np);
-> +			continue;
-> +		}
-> +
-> +		if (of_node_name_prefix(remote_np, "dsi")) {
-
-Where did you document the ABI?
-
-> +			if (dsi_idx >= ARRAY_SIZE(dpu_kms->dsi_bridge)) {
-> +				dev_err(dev->dev, "too many DSI outputs\n");
-> +				ret = -E2BIG;
-> +				goto out;
-> +			}
+Your tag is the last one.
 
 Best regards,
 Krzysztof
