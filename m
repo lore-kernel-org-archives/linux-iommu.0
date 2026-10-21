@@ -1,100 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.43.33
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792564414;
-	b=bZCbzK6/TF9/OrXFUwlQVGFFTiX3suN1YZVQXVyqDLAaU8mDEIv33rci5XOLCJEy98oL
-	 EanmuP60gP0FxRYamKB1/p4obsJm1/RsQ4sfV0esjeX1I/0Q6+abNlxs7ZbpiSLFWOQPx
-	 whOAS5LVsO3qZzWxQY6yT5bG5gCGkfE8yFwqock6SFKJfGM6FEasa8f8ow+pQlTfHn/lm
-	 dpohLHAao2kKnALzHuCltUfXGwtGLhK+tzZb7YkN1JRAA24blTPe4YWp4mmECX6i7m2se
-	 HGvw99DbyIvIKGJSUMKlyCn8Wx51nGQwcBAAyEyHWVGlTbhK4NuKzMYn/7ohBySsV6A==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792564414;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=aBAgSot5H9jUvIaDfZxQG/vSA8fxqZOBo3R1F8vEZ9U=;
-	b=UQ1PWWPSvQT31Z4f7QYhNRxdukPwFW5ftZX5O7k9fRn85CX21QnTisJ9+mRfIrfwguhk
-	 hFhQSxYSyTOemv6yTSuNllB98q3V7LIbBnXIuv1S0NFGj/jI/Oh6/U+4rmwfWSQDDOsqi
-	 YxrJNNG4ZO0mXuiRGFoU7/82TDvU7KfSENi530/qXzlrn8zlm9bg75DiO/nuSSVjpzN1w
-	 fS28siCvKA7bTsc9dOTCs939LQlZZJC7w4h/UhL/GZzS4JqDaZtQkZf4Q7UUI7QlpQzGI
-	 oXF1BA7IAWjOCeQz1FkEJ6gw4GLxRU5x17rmeZ8XK2xJ4Z5yN2kkr0aLf/lYzUfiZDA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=A6Pzix4I;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.43.33
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012033.outbound.protection.outlook.com [52.101.43.33])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.181
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792568036;
+	b=DKnkWnVaNMz9QxS1QUtPBLrUGGIIuw1Zac3hICKChbt8nJCDJlFq0eH8Zg7Yjd4c5Ybx
+	 3JqsJTxbVbMyrprgquPsZKMItsy9upq8oIHMfK/Q5TI1Uw1/qFFSHG1RpSAr9aXqGXWvT
+	 CcX84JLLmx4imlqot+X2FSAVXRAFxE/GdIfVh1hYwDtKPMxW+d07d9CZHq7T9spdu4vW3
+	 gODasQd4eeY6nt9FfoJ8ARkgfmNKkX0UVOKf2NUWaq6y1XVleKpaX50gqOJ6maHptVvGX
+	 w3sNof/x0x63nLxUkhlHoMv8QsNgC4INB19c6sGoPXeS3WPXLW83zV2UMJ02aZ0mSzA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792568036;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:CC:
+	 Subject:User-Agent:In-Reply-To:References:Message-ID:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=S/WUWG78WudYvh8ovm7Px4vUVyJzHUUoo0t8APESyAg=;
+	b=ZsKVsUkqMDrKfSQEUQDMsAtuY+oL9tTGch5brTV+YwhGn6Qh0xvXVQ/h8GBW8cyWDkiU
+	 A08abNJZCjIrYlsajuKwXK7cnX4vq4ZieVYIpFruT3jzD4E1T8epRtjAO3UzJp64kHRqj
+	 bEMhJz7auW7haHfKOjlS4SIn9f+JOckBUNoXMUmnrlDPNeoqUVIQqbQPkH7jGQ+qvlEbJ
+	 ruBDsZ2jY9twTGNOJ36yUhtSuwaaqmbDX+0/XVpm0ec78tVrTpQEJeSieo5H5WNiE9AeG
+	 FOcUxS8SZWYE1gFq46heUTr/Ez9n62DfU7drcLPB9lgwBy6GWnv+dwijAVyUf/SHWlA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=e2RzCG4r;
+	arc=none smtp.remote-ip=209.85.128.181
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26268606A327
-	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 06:33:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 26268606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32029606A31B
+	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 07:33:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32029606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=A6Pzix4I
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=soT0fnTk8WTvDzII8m5ceLtC1EambHOEXdPQtrpL4b3d9XUkHNExP17ox5CBnnwGwsbHX9sXZnF3FDKFH8PwOVuI1eVKR8Ca8Uo8cjSSE97wQx+hs+qzv+pK3l/LIx5AB7t8aLd1vCSsEyA2iQ97I4UZEq3eRBBZJuW1x45prOHge3+lg6+5hPXjT1kHwOMxa+oqIt46eOyB/YSclCBaUbP8Yge06SNydfJa/pVXkXRT/Az4UTGFFeJ08TZq/Sx84LHcnVqoEz5uyA6zlrMydVzOMedZ/2hWjefRCZ2TsvReZDHfHiK0x/4W6W/Z6JKnoKdFEOfwMxVDkz9cp+hlsQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aBAgSot5H9jUvIaDfZxQG/vSA8fxqZOBo3R1F8vEZ9U=;
- b=Ky5+/M///+x3Hz0/D92Dm1HMhFiLzOe+hChadIdGCZszcledoiBFSohytWbYrDQ2haRArFmOnC7jAbxFpPS4wRtMuLqxX7FLrftVwbCVTAtGQ/7TTMlSaJYagjXii43s2p3T+LgM0aoATpv9dGPdXiedGpOeDRLdqY/pKE/VRrU/NUMpcN0B0RzN5aht8d4z2rUyS1x49RthRlfQPpZwGOPstBFz9vySxNy0BfYT4/GO1Zt1gWFBV8nZ2Svbe7KNWr57GJvyeeLtcbpWldpVIcgqGexk3uzjbdJvZwzbEUn+572O5w/vY1Yq7YWdem1bWL4dq9fJ3Ur0K8ZQI7OytQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aBAgSot5H9jUvIaDfZxQG/vSA8fxqZOBo3R1F8vEZ9U=;
- b=A6Pzix4IA2N6D1ttjQpbiK3wtWgTGpGWDkpfn2TsL+Ok0U00PLtxMuwORjeqyZl0eB823CKY506WM/On3k9Rcbr/s+Suhy1GBXBHQdympk22zLzdmPCvaEoFAzfAgiPjJ2Xr4StTd0TU9WxvE3ixsJwS5b9zlMJfg2SJnRPz2xE=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
- by LV1PR12MB999306.namprd12.prod.outlook.com (2603:10b6:408:3f8::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Wed, 21 Oct
- 2026 06:33:31 +0000
-Received: from BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
- ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0522.017; Wed, 21 Oct 2026
- 06:33:29 +0000
-Message-ID: <dfc3edc2-534e-47fd-ab3d-2a66e57e47bb@amd.com>
-Date: Wed, 21 Oct 2026 12:03:20 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 22/24] iommu/amd: Add translate-device-id alloc/free
- with vIOMMU owner
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- jgg@nvidia.com
-Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
- jon.grimm@amd.com, santosh.shukla@amd.com, Sairaj.K@amd.com,
- jay.chen@amd.com, Ming.Shu@amd.com, SooJin.Tan@amd.com, chrisl@kernel.org,
- wvw@google.com, wnliu@google.com, dantuluris@google.com, kpsingh@google.com,
- alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com,
- guanghuifeng@linux.alibaba.com
-References: <20260930092344.5616-1-suravee.suthikulpanit@amd.com>
- <20260930092344.5616-23-suravee.suthikulpanit@amd.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20260930092344.5616-23-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MA0PR01CA0053.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:ac::8) To BL4PR12MB9505.namprd12.prod.outlook.com
- (2603:10b6:208:591::16)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=e2RzCG4r
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-8b0d126f631so3751387b3.2
+        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 00:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792568035; x=1793172835; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:mime-version:message-id
+         :references:in-reply-to:user-agent:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=S/WUWG78WudYvh8ovm7Px4vUVyJzHUUoo0t8APESyAg=;
+        b=e2RzCG4rkltoYNu1DiT5M/TJmJ6zuiQnUfPHripD9KcblM0lXowcqiQ4MzHXrlvYal
+         Xc4KFlozcTOv/czKWqmhsusbtazIfiV6Tf80sDV9ScB6shu0Fa8g68ct4uZ5NKjsaslY
+         K+2ZAvZyCU+GHv7T3LglnH8T+ObQvMqBuuf9qaf/pZBl6c+cQicrB11t9fJO9BrO7rQ4
+         lNT3x8yRavx8UCuZlW8yxqBdZK9JEc+dx8NsFqIGwVqe1yB/eiTlThVmRsYSnw09PSje
+         mUKzO1QahOlT14wcBclgTZf4hWsv4U9s6KhNT9Ol6rjne+1d5Q9S+ogMNbCCDy9JA5wc
+         jYkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792568035; x=1793172835;
+        h=content-transfer-encoding:content-type:mime-version:message-id
+         :references:in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=S/WUWG78WudYvh8ovm7Px4vUVyJzHUUoo0t8APESyAg=;
+        b=peGq+1cgkDYaNOM4psvsSsIy8FEwPLhzgpYHqlwHQFAh/VwEwjPaZxKso7SmMD9tsi
+         0h1iju/byLFHSKB8BHKMncCF4dE/lw71A2++Qp5Lt2yop/+JkaZqID3V2UuMqPSHn1Fv
+         J8rOlMjmItxHaphUT0OFEvT4IqkQFN9sWIqLek0CTAbCHc4fQORsj7AtJWtiufz4Xa+E
+         1hPQlLpmAceaLYc/6jW+x2Sr97Nh6ztF9VXrXk8C75rjzzaI2gHHW5fcXbhvRgqmGHSx
+         I0dIAyrrfQNe4sk8c3MVEKQzvtXhkthS9gEkUNhNzYo9QTplAfq83+ls6FRzqGqoBdZH
+         TU8g==
+X-Gm-Message-State: AFq9FYLWW9fifL4is51eAdJ1GvPPU1H5+/pwgCM8Luo/WkG66Assv3oV
+	FN6evgtPu3ZL3FSySLBcVw+/s+exrncaDnKnI7Xd/nXVAUMULyqSBz2i
+X-Gm-Gg: AYBFou17So8wHs45Zg9AJwn7I5PvOOB2n5ITRa0bzvlCqTSHLzt0zte9wsOgX6MQmdz
+	CDquBXUmBp66u70K/P0+PBQ2Rm8bLbzGIXrz34YRj7RRj9DlxV0CLEgs7otZsl7/ptlCGChc+sL
+	CF0UQlSvgvvf1fDj6c6Um2KObH8vOQThC9FNmxcd9UnTBZt8BWw6AKxIWRGvO7pD3DgSPWPPDIG
+	QTwF9mnjxzBEk/aGOdm3QwBb6AA7i8tYXlH0iwoCXpY0z8f4onwqyI4ZPbVpjiD8mvK4x1fH4UR
+	mfRwYE4YEilrZAZ0+icqTF+6OLJvtMrx9Dd2KbS4fXKQOQZdtOw0LlmW/C2ZLzsx9pe4O+AmZqD
+	BaoQ0MKFQBkru7Blgl1S4XDY4vaf2rtj8bB/ap9FsHowOtjiOW+zaox1wYcF8bKMFcOvMfEhGNc
+	9/sb6WcwFJqlM/pGWxaS5se5Hv3kffhGYszJr4i+JlLAFjboxm+g0mcZYk35hs38Do8u823TXP8
+	zyCElXfy/wMfK8pSQJ9wLTUBtZOAaaCD71rl8GoYj+0nPXNrn8UNiHV4Sp2wqY4mTzU18YDr+Lm
+	iktYA7ZpscAB/LQelUI3SAPGgWo2C4bQB5YSbkd+tgyIrgxi3Ua3fnNm4fmi/QsXpMbLGjyeR3Z
+	r3P/dCCncW5y5A9EJ2uQG4C1y2AaqxxjZJlKO1dYiKB6kZ3HnqqGTObIq8cDpSBw=
+X-Received: by 2002:a05:690c:698a:b0:8b0:9e27:fcd0 with SMTP id 00721157ae682-8b133caac65mr6808817b3.21.1792568035078;
+        Wed, 21 Oct 2026 00:33:55 -0700 (PDT)
+Received: from ehlo.thunderbird.net (212.153.88.200.l.sta.codetel.net.do. [200.88.153.212])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b1300715cfsm7838277b3.14.2026.10.21.00.33.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Oct 2026 00:33:53 -0700 (PDT)
+Date: Wed, 21 Oct 2026 03:33:28 -0400
+From: Jason Perlow <jperlow@gmail.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, Aditya Garg <aditya.garg@linux.dev>,
+ dwmw2@infradead.org
+CC: iommu@lists.linux.dev, Bjorn Helgaas <bhelgaas@google.com>,
+ linux-pci@vger.kernel.org, arend.vanspriel@broadcom.com,
+ linux-wireless@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_intel-iommu=3A_DMAR_PTE_Read_fault?=
+ =?US-ASCII?Q?_crash-loops_a_PCIe_wifi_device=2C_v7=2E?=
+ =?US-ASCII?Q?3-rc7_-=3E_v7=2E3_final_regression=2C_repr?=
+ =?US-ASCII?Q?oduces_on_one_unit_out_of_five_tested?=
+User-Agent: Thunderbird for Android
+In-Reply-To: <2c840dcf-4292-4579-a62d-f9766b7cb780@linux.intel.com>
+References: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com> <2c840dcf-4292-4579-a62d-f9766b7cb780@linux.intel.com>
+Message-ID: <74570358-8085-4767-BF76-D865CA95853E@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,139 +103,148 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|LV1PR12MB999306:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5b9cde62-b951-43dd-8ef9-08df2f3d3868
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|7416014|23010399003|1800799024|22082099003|18002099003|10067099003|3023799007|4143699003|261009223027099003|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	16VAyouj915QhMyv4dzs3bfrrygVulfZOscd4g/MR9+elrZi9AbP1j1gAfp98/2G65l5p8cgT9mii4Le7GzyGI0O4Zxuf5Fi2xY1CNcROcwEz5hkN7zxTBdgmqbKFZwG38KJaPUC5sYkWmYrrZ4tZm+yy/1V0V/IHUmo/tvCyKdDZ2obpiKMGlL1YKrzvAve84wchHSrXTIwWeZmTS4mZ/tbIZMR4mYdAiWXacrv5qI+IGz+Of5F+jBXLV931v6pGfdPAStHJxbxmUiKa4z7lyk+rxPLvMiSkR6bRf30JVTmliQ4FprNMxfGrPJ/zUt3EdPqLZnVyz8Tnm7tfYZnXv4JLNEz/Jae38i+TOV8u0DXqgWqNlO68uJvC64z8ys9oNFW4VJZ2PtgIzokEU79q4ajhXd1dcC2H94R2WRQLh+APdo4EacA6tabU5+gQ+3fOfYPY52McFkCvEx1OcYcY27Banye7QC14vBPshYovhUoAFWjdV2+SwSPe4dEkaEtsvlpKxVWHXvc1RHzp/49YnuhlZVYrm+fEWfuC50T+FMTtxoTZy5p7sJtKN3em3Pt/wAdM9D+ksqOYO/f3ScA2rGf+7yqDtP58GMMrvUZ1xxd/Fw/ty7v0PFFPK2bJ5BqoWYo96787/qqnrSRz4tP7WTtnkhh4Ti+Wd+98LIvQrE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(23010399003)(1800799024)(22082099003)(18002099003)(10067099003)(3023799007)(4143699003)(261009223027099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aEEzdGpXUXB2MVZ1MWlzb1RMMXJNZU9JNWxWaWg5RjRieGptQjR6U09MZ2ZD?=
- =?utf-8?B?OXgrTEFGQ1Vvejk0T0QycWpBVnV2ZWppd0pEWnFpL2lmdzByS2ZGeGphUE1D?=
- =?utf-8?B?VWNZdWszYzhYN2YvdzJ4WDlzTU42ZXpCakhqNU9jc2d5aHgyWElmMWszZGZl?=
- =?utf-8?B?aldCQU56WGhzQ3JkR0FOTUZIRDFNWDlIZGtMdHAzTmxxaWRpYU96OHhHVmc3?=
- =?utf-8?B?ZkFXM3k1VFk1NEhsVUE2UmFiM1ZjZWk2cGtrTkVwZDFlVERhd2hkMmlhaE9X?=
- =?utf-8?B?WjF2N0EwUUtDSjFhazVyQnZUQTJIT2FKY2luOENrSjFRQW9LZU1TKzhmREZU?=
- =?utf-8?B?K2M5cEVtRVN5aWlnQjN6bUtLbTc0OTdIZ2NwVkR1M1BUZlRqdGQ1T2VPUHRr?=
- =?utf-8?B?bVlMUjJSdXBrZng5bWpkckFTTUV6SkxjTUdKUEg2MlBCRFdMb0xuTm1Xa1FF?=
- =?utf-8?B?NnNNRGNlNEZlVEZDcVNpUjF3eG9uSjNOM25OcndTR0JpeFJTYzNxbUNxNzI1?=
- =?utf-8?B?eEczaFE3dEgyTC91blZIbnNlUWJHRTV6amExZlZGTDAwTEZ3V2hlQVhLaEpz?=
- =?utf-8?B?aVJWV04wK25KY251Z29aWk50ek0yV0lJSCtMWHJ5OUhZQUhCTklHM0t5VXJL?=
- =?utf-8?B?WjFHSnNoeVg4RmtXNFo3OEhLQyszdmZieGhYdCttNGFLck5leXBSWTR0N2VE?=
- =?utf-8?B?bWhrMXBJYUVQeGlCK1FHZlEwQWs4cTVTSjIrcFIxaFRwMk5vY0g2SWd2UXRE?=
- =?utf-8?B?YjQ5UWZCMm5RZTdHN0s0OHR3UDJpRmpjbGM4RzlDYnpwdHBZVlJ4QldwMTVY?=
- =?utf-8?B?b3hpd0dFQ3ZUcG1RNEFGUktlSEovMWkycVdONGJZZ0hsdGREVElYZ3hJWHlM?=
- =?utf-8?B?V0dJL0Y3elNVM1B2d21QOHp5aXhwSllNaDZ3U2w5d3NJeXpSQkdlcktoMmV4?=
- =?utf-8?B?RWdnZzQwelJhc1kvemZrNEVYanY0RlZHVzAvS3JJUHpLWGNFUWNFM3dtaitO?=
- =?utf-8?B?NUVoR0JTMXc0cWI3MU94N0JLWFFtZlVubUpJemNMSUtuM0dycnllczdSZTQ3?=
- =?utf-8?B?a2h0dVE0WitsSjF3T0l2RHdjMDlBaFB6SkQ1aHc5QVpDUmhKVXlucFRtYTFw?=
- =?utf-8?B?QkRHVmhtMjlWdW0vSGthcWlpZStna0YwbWtzd2Y3NG9wTWV2Sm1jazFWaDY0?=
- =?utf-8?B?dkkrbS9nSmJPM0tBZ2tiRCtibGVwM3hrLzZmN3NibWk4WUhyYTMyRnNvckp0?=
- =?utf-8?B?aE1TS1J6NTJ4U1Boc0VJUG1GcHpzR0pZNndYdXhDdmtLNUg0MSt2VGlkZHZT?=
- =?utf-8?B?a3pRSXFiSG1lWTNRSk5TOVo3cXZtVlJ2QTZDWXJTNGduSVVlK0ZJeDZKSitE?=
- =?utf-8?B?MHo3Tjc3YVVEcVl5TmtpZ0ZpUTNiZC9FVGc4ckZZTldHKzF6bWR6OEkrU0Vm?=
- =?utf-8?B?YVdPM2JoellxZjM5dEJFZ1RYVHgzZ3hWaFV3KzZTd0o4aUdpSjZHM2ZDSTVr?=
- =?utf-8?B?QnZXak9FbEtJZXZRN3hPMFRKa3NCRlZxcjlRZlpqY1JuQTdTdlUzOFVUN2N4?=
- =?utf-8?B?ZnJKS1lzalJTaVNNU0h4d29XWXdBemRPTFdMTENid2ZGZGcxbS9kOXk1Ti9r?=
- =?utf-8?B?cEptSEczL0VqQlJVUm5nQWRLZHV6RkR2MThqeFRHNlE2cmhwWmgrY1JPTjFy?=
- =?utf-8?B?cWE0UTJSbnRxblQ1bERyZUpJQURxbC9mQ05rN0NtR2VESFgvRllna2FTUFdG?=
- =?utf-8?B?bDUzVEtLZUE0NHRzQndkMTFnWWkwUE0zWTFGR1JCd2trVzUxUGFJY0RwU0Fs?=
- =?utf-8?B?OHEwcVdkKzZzNnV3dlFpNUd6M2M0UVE4d2cweWs4ZHJobHBuYnRkSi9yZnRF?=
- =?utf-8?B?d0dKbHJuZjhENEdSWTNRZmlRQm5GWThwNzJNaW9PQ1VCQmk2a25YNDRpcjU0?=
- =?utf-8?B?NkNXOGdmU0xmNXl6YVRvTU5WVG0razVGR1dtdW5wZFU3dWpjVFdXckdDTWVq?=
- =?utf-8?B?UzVFcVJjdTZHc1g3SzY3bUxZZU0zeVFTT0xVNTN5Qkl4S3dKVkdEcGpEeWdG?=
- =?utf-8?B?U0k5NlpCWU5qV0ZCM0piajRpRHc0a0ZDUlZCbFdOODRjbmt3ZElBWmxvbWdV?=
- =?utf-8?B?cnVrYmdxdkJXMFZDRmw1Zm5XdkZPL3NRZkNqNEh6OHdKeUNqamtpTFN0Tmoy?=
- =?utf-8?B?a05qR1k5VVhmWk1rL3IxWGxhN213aHFqU3o5akNKSndqMlZ1QmpNVEF5TEo1?=
- =?utf-8?B?WTlxbzIweXlrbkF0WFU1VmUrenEzc25ESWhmWDZKTzg1dFdYbVV2NFkxUmJT?=
- =?utf-8?Q?UoVFf5CUpMp7Op4eKj?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b9cde62-b951-43dd-8ef9-08df2f3d3868
-X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2026 06:33:29.7333
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4rs2xYWgjxt8R4qOnc/jcPr3W1PVWgoOLNNfCfmDfxvS1n6EldgHT4Drh/NkXzfmEeGgbK1M+mLh/lzeeNJrDQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV1PR12MB999306
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
+Yes, done=2E rc7 with intel_iommu=3Don on the same MacBookPro16,1 shows
+the same fault: 95 DMAR faults, each followed by brcmf_fw_crashed, in
+one boot=2E So no rc7 -> final regression in the IOMMU code=2E
 
+It is a v7=2E2 -> v7=2E3-rc1 regression in brcmfmac, from f0ba5fd51ff2
+("wifi: brcmfmac: Set DMA direction for msgbuf packet IDs")=2E RX
+buffers are now mapped DMA_FROM_DEVICE (prot 0x6, no IOMMU_READ) and
+the BCM4364 firmware reads them:
 
-On 9/30/2026 2:53 PM, Suravee Suthikulpanit wrote:
-> Extend the per-segment translate-device-id pool to record the owning
-> struct amd_iommu_viommu in the xarray.  Add amd_iommu_trans_devid_alloc()
-> and amd_iommu_trans_devid_free() to allocate ids from last_bdf down
-> to 0 so each id indexes the device and alias tables, then return them
-> on teardown.  Free loads the xarray slot and erases it only when the
-> owner matches @aviommu.
+  36=2E512689 map   iova=3D0xffeff2c0 size=3D2048 prot=3D0x6 (brcmf_msgbuf=
+_rxbuf_data_post)
+  41=2E110125 DMAR: [DMA Read NO_PASID] Request device [0000:05:00=2E0] fa=
+ult addr 0xffeff000 [fault reason 0x06] PTE Read access is not set
+  41=2E139317 brcmf_fw_crashed: Firmware has halted or crashed
 
-AI (Claude Opus 5.5) generated comment (seems correct, copy-pasting as is)
+The fault comes before the crash=2E Before that commit the direction
+stayed 0 (DMA_BIDIRECTIONAL)=2E=20
 
+Thanks for the pointer=2E
 
-The pool marks a RID as used only if it went through
-amd_iommu_probe_device() (plus its PCI DMA aliases) or is the IOMMU
-itself.  Are there RIDs the hardware uses that never reach
-probe_device()?  For example:
-
-  - IOAPIC/HPET RIDs from IVRS special device entries
-
-
-With this patch there are two per-segment xarrays indexed by the same
-thing, a device table slot: pci_seg->dev_data_xa and
-pci_seg->trans_devid_xa.  The translate dev_data and the IOMMU's own
-dev_data are kept out of dev_data_xa, and that breaks the DTE locking.
-The interrupt remapping code finds the DTE lock by devid:
-
-        static void set_dte_irq_entry(struct amd_iommu *iommu, u16 devid,
-                                      struct irq_remap_table *table)
-        {
-                ...
-                struct iommu_dev_data *dev_data = search_dev_data(iommu, devid);
-
-                if (dev_data)
-                        spin_lock(&dev_data->dte_lock);
-
-                new = READ_ONCE(dte->data[2]);
-                ...
-                WRITE_ONCE(dte->data[2], new);
-
-For a translate slot search_dev_data() returns NULL, so this
-read-modify-write of data[2] runs without a lock while
-write_dte_upper128() may be updating the same word under
-trans_dev_data->dte_lock.  That can happen as soon as the pool hands
-out a RID that also has an IRQ remapping table, such as an IOAPIC or
-HPET RID that is not reserved today.
-
-Could the two xarrays be merged into a single per-segment "DTE slot
-owner" table? Something like:
-
-  empty                       free, the translate allocator may use it
-  xa_mk_value(RESERVED)       used by hardware but has no dev_data
-                              (IVRS IOAPIC/HPET/ACPIHID, IVHD entries
-                              not yet enumerated)
-  struct iommu_dev_data *     the driver programs this DTE; an owner
-                              field says host device, alias, IOMMU
-                              self, or vIOMMU translate (with the
-                              aviommu pointer)
-
-
-My comment:
-
-I did some analysis and may be having single xa_array makes it easy to maintain.
-Any free slot in dev_data_xa is free for translation DTE. We can have additional
-flag in dev_data to track the translation devid vs actual devid. So that we can
-add checks to catch allocaton/free bugs. What do you think?
-
-
--Vasant
-
-
-
+On October 21, 2026 2:13:40 AM AST, Baolu Lu <baolu=2Elu@linux=2Eintel=2Ec=
+om> wrote:
+>On 10/20/26 22:40, Perlow, Jason wrote:
+>> Hardware: Intel CoffeeLake-H platforms, various=2E The affected device =
+is a Broadcom BCM4364 802=2E11ac PCIe wifi adapter (14e4:4464) at 0000:05:0=
+0=2E0 on an Apple MacBookPro16,1 (T2 Mac)=2E Aditya, including you directly=
+ since this is T2 hardware; copying iommu/pci/wireless because the fault si=
+gnature and the fact that it reproduces on only one of five tested machines=
+ looks like it needs eyes on the core IOMMU/PCI path, not the driver=2E
+>>=20
+>> SYMPTOM
+>>=20
+>> Between a locally-built v7=2E3-rc7 kernel and a v7=2E3 final kernel (sa=
+me =2Econfig template, same patch series beyond one T2-specific AER quirk t=
+hat is upstream in final and therefore held out of our patch set), the BCM4=
+364 wifi firmware on ONE affected unit crash-loops continuously:
+>>=20
+>> brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4364b3-pcie for ch=
+ip BCM4364/4
+>> brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4364/4 wl0: =2E=2E=2E
+>> ieee80211 phy0: brcmf_fw_crashed: Firmware has halted or crashed
+>>=20
+>> repeating every ~6s, indefinitely=2E dmesg shows the actual mechanism -=
+- a real IOMMU DMAR page fault on the wifi device, timed to the same cadenc=
+e as the firmware crash:
+>>=20
+>> DMAR: DRHD: handling fault status reg 3
+>> DMAR: [DMA Read NO_PASID] Request device [0000:05:00=2E0] fault addr 0x=
+ffeff000 [fault reason 0x06] PTE Read access is not set
+>>=20
+>> Four such faults logged at uptime 13=2E4s/19=2E4s/25=2E3s/31=2E2s, each=
+ immediately followed by a brcmf_fw_crashed event=2E intel_iommu=3Doff remo=
+ves the fault and the crash entirely (8+ minutes stable, single clean firmw=
+are load, stable AP association)=2E The prior v7=2E3-rc7 kernel on the SAME=
+ unit has zero DMAR faults and zero firmware crashes with IOMMU on by defau=
+lt, so this is a regression introduced somewhere in the rc7->final window o=
+n this unit, not a long-standing issue=2E
+>
+>Can you confirm that the IOMMU is actually enabled and translating on
+>the rc7 boot? Please check that boot's kernel log for:
+>
+>DMAR: IOMMU enabled
+>iommu: Default domain type: Translated
+>
+>>=20
+>> REPRODUCES ON 1 OF 5 MACHINES TESTED
+>>=20
+>> We ran the identical kernel build (and, where applicable, the identical=
+ firmware blob) across five machines and only one faults:
+>>=20
+>> * Affected unit (MacBookPro16,1, T2, BCM4364 wifi): faults as above=2E
+>> * Second MacBookPro16,1 (same generation, different configuration withi=
+n the 16,1 line -- we have not enumerated every hardware delta): same kerne=
+l binary, same firmware blob, IOMMU also active by default (iommu: Default =
+domain type: Translated, identical to the affected unit) -- zero DMAR fault=
+s, brcmfmac stable=2E
+>> * Three non-Mac x86_64 machines spanning three more wifi vendors (Intel=
+ iwlwifi AX201, Intel iwlwifi Centrino 2230, Realtek rtw89 8852BE) -- IOMMU=
+ active and translating on all three, zero DMAR faults, all three wifi chip=
+s loaded firmware and ran cleanly=2E
+>>=20
+>> So across four different wifi silicon vendors and five physical machine=
+s, IOMMU is actively translating DMA on every one of them and only the sing=
+le affected unit faults=2E This looks like a host-specific or hardware-conf=
+iguration-specific trigger rather than a blanket rc7->final regression that=
+ would hit every machine with this kernel=2E We do not yet know what distin=
+guishes the affected unit (ACPI RMRR table contents, exact PCIe link traini=
+ng time, and IOMMU group/domain-attach ordering are the candidates we have =
+not yet isolated)=2E
+>>=20
+>> WHAT WE RULED OUT BEFORE WRITING IN
+>>=20
+>> * AER/ANFE quirk on the T2 Secure Enclave device: its PCI ID match is e=
+xact (Apple SEP, 106b:1802) and does not touch the wifi device (14e4:4464);=
+ real PCI topology on the affected unit also shows SEP and wifi on separate=
+ root ports (00:1b=2E0 -> [04] vs 00:1c=2E0 -> [05] off the PCH), so there'=
+s no shared-root-port mechanism either=2E
+>> * brcmfmac driver source: git diff v7=2E3-rc7=2E=2Ev7=2E3 -- drivers/ne=
+t/ wireless/broadcom/brcm80211/ is empty=2E
+>> * Our own config template: byte-identical between the rc7 and final bui=
+lds=2E
+>> * The upstream Kconfig stanza for INTEL_IOMMU_DEFAULT_ON (drivers/iommu=
+/ intel/Kconfig): byte-identical text between v7=2E3-rc7 and v7=2E3 (defaul=
+t y, no depends on)=2E
+>>=20
+>> THE ONE ANOMALY WE CAN'T YET EXPLAIN
+>>=20
+>> Despite the last two items above being unchanged, the actual generated =
+=2Econfig has CONFIG_INTEL_IOMMU_DEFAULT_ON unset after make olddefconfig a=
+gainst the rc7 source tree, but =3Dy after the same process against the fin=
+al source tree, even though our template explicitly answers "# CONFIG_INTEL=
+_IOMMU_DEFAULT_ON is not set" in both cases=2E Our
+>
+>If CONFIG_INTEL_IOMMU_DEFAULT_ON was not set in your rc7 build, and
+>intel_iommu=3Don was not on the command line, the Intel IOMMU was
+>disabled by default on rc7=2E In that case, rc7 could never report a
+>DMAR fault, and the "regression" is only that v7=2E3 final enabled the
+>IOMMU=2E
+>
+>Could you boot the rc7 kernel on the affected unit with intel_iommu=3Don
+>and see whether the same fault shows up? If it does, there is no
+>rc7->final regression in the IOMMU code=2E It would be an existing DMA
+>issue with brcmfmac/BCM4364=2E
+>
+>> working theory is that some other symbol started selecting/implying INT=
+EL_IOMMU_DEFAULT_ON between rc7 and final -- which would override an explic=
+itly-seeded "not set" answer during olddefconfig resolution -- but we have =
+not identified which one=2E Happy to bisect further, or provide the full =
+=2Econfig / additional dmesg, if that would help narrow it=2E
+>>=20
+>> CURRENT STATUS
+>>=20
+>> intel_iommu=3Doff on the affected unit's kernel command line is our acc=
+epted fix for this specific machine while the root cause is unresolved; we =
+are not disabling IOMMU fleet-wide, since four of the five test machines sh=
+ow no problem with it on=2E Posting here in case this fault signature is re=
+cognized, or in case others on different T2 or non- T2 hardware see the sam=
+e thing on v7=2E3 final=2E
+>
+>Thanks,
+>baolu
