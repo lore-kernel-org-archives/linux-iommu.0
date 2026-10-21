@@ -1,72 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.71
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.72
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792593123;
-	b=vgaFze3QytQVfCAbstJocKvJbmH6o+IkqPdDHUCwPV/VGn4saCQWoCUR/dvHqH6YIdBZ
-	 pn4YpClgfDTGixMqP2xs06s9P/PfrUJpbOOjFHbaTjC3opsN8fwPLircAfAiAeXtWIZag
-	 7/hm+wNWZkQqE1tAc5GGDtc4Dr6YUP9YLBb3KZ+pNrnDlIm9d7wZ5OXukpXsJWVPVC7Ea
-	 Cw6grCSDkj5dBS9litA1rLzMlZ9Gf38WeCxPeh0JLNrKQxZJWNPKBfn7dBNo1QDrrqR2M
-	 acEIjKHw12AguKaROQxt7e5MfCtIpBGVNUV7Ya5kWNMPtufihrZnYs+Ka9nVWAcxfLA==
+	t=1792596332;
+	b=QMF07a9mNWZV0Q5A6Q0ydJuKLdGXDOFtsz61i++Bss2tCSFtcy1isq1QUT1S3WTXf11N
+	 2Z8C7/CI2MuW/cxnQpKBP+bcmaLz7KltWGROJM/Az/Qdbc/xKurvXHesGIrCHY8LoSfz8
+	 TzdD8mkZzGm6VZ9XYPNPy3QwLNATKhZz8+2NrBANolseHKTDU7Cn86pFQVlM8rYDN0I1V
+	 Phn0zUPQlvAZGzuEH0f2rtAWrTrdldTt9aPlyI7nh86BTooEHCtwGzHatTaVVS2ArVCml
+	 QhMdaS4GN4jIK5XdCDxjRA2FWsnds7Nl+upeCyYGk5BGE5QjZoxvhnqkEELB36hsaeA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792593123;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792596332;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
 	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
-	bh=QazYBGvrND8GI8lJcSkyL4fj9MMsXahwbNAM7/zrdo0=;
-	b=qGyr6KhI3aOO+BhqxCfKgFjaBsqlEFmdnTEd4GzHDVXorYwZMdnz+Ncwha0QoMkmGoUk
-	 l0V5TH/R1fB5krJ5p4SJOVlgYAx3e/n3VRl/8HPTkJ9HZ7XhMpN3mAyiynLBI3t0deb/S
-	 XEoUfhSIzSMppKyyrRoz/dKI9MuvSycWw0kzZ+tyZP1/66m9Bv/IXTqosrFYbRxeuCEah
-	 phZaDz8BYUKFUabxpEfvmK2NezjOzKh3Bg4U1H29erbPtE8Ewg7aNzBowx54LL+19mPT8
-	 Ct4wVN3uZMdiZntIBca3NUpdD6vKfqMaMj9ljKlvwVEQd1COU+8TKaaetQ0A/MjcDrA==
+	bh=W0oLRP7RmrwK+s1WyDoN9zSSlBczsPl1G7flMYO8vs0=;
+	b=o7++TfaKzrrarByLcahRdZNfQV8/BcUsjYsvMmCzHhb2osveO3OCP3yfvGMRje+Sb/nQ
+	 J//8HTUrZPqIYFYJKQUCjGaxbP1LOT5A8VmP3udInYRjEoP7a8PKuqdmCHrCCvHLigYnf
+	 mKH/sd4Ts9/ZLBMGzr2qoiI86oryflLskUIR073Uv4ejALIgXBUZ90J9TWNvvmTsGMHyx
+	 c9gnZeExRV/6Gv7iqNj+fgEKMEgTAy2omzrQIqBI5bAAap8lhbTLaO3kM4w117iQ21E0o
+	 8okLfndKPagFbssxtgM6kAy1HYRfSozKiWRTKNiSjcdvxSPhdsZ6+L6IRRSpYo8hhMg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--mclapinski.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b="RPlsU+n/";
-	arc=none smtp.remote-ip=209.85.128.71
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com [209.85.128.71])
+	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=WYFJDkq7;
+	arc=none smtp.remote-ip=209.85.218.72
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A5D606A31E
-	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 14:32:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 49A5D606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DC67606A326
+	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 15:25:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4DC67606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--mclapinski.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=RPlsU+n/
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4a01ba12198so13543205e9.1
-        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 07:32:02 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=WYFJDkq7
+Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c293e604f0eso78282966b.3
+        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 08:25:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792593120; x=1793197920; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1792596329; x=1793201129; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:mime-version:date:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=QazYBGvrND8GI8lJcSkyL4fj9MMsXahwbNAM7/zrdo0=;
-        b=RPlsU+n/cejqbAnltVpn2kCvEsdwRQRs4unsNvm59AMN4Ii568b+9010TUyibtMFGS
-         xETrsGP/p3nLMIvks+5FHPfR7gBMnMDuQkpNcPEnvOhGnSgl1dT/OLIzEATu3iPIO8wO
-         tMhwoN6278rB4azJm1EeXOWziktHur6yirJRpuJc80osdu+2F+4urSFJtUiq1PP6CUS9
-         WRVBnG8Zow5i7B1Hp/Tl8Q0tk7t/QcbpP6SBMRe2M3Imr6NJqjBDt7P2Za7ofATalbvI
-         gbjD4Dtn0dj9J4+QqTQUKosvIAbCRyl4k+EJyubXcS60FlmnD1pXkJglmbZEHWt6xfni
-         GGJw==
+        bh=W0oLRP7RmrwK+s1WyDoN9zSSlBczsPl1G7flMYO8vs0=;
+        b=WYFJDkq7UtxTJl4w3T2qFUc0DOSV3taSqd1Z2QCfexA4ZfLes1IzyYkBaxn4Z+HXrc
+         9L3sXs2EVfAG9XtO09IXr7SdzBzNKw98pkVSIVlowRiVMhB8hsLm75OjmvQmo7TArYkz
+         +H83jXcyhx/bfZ16HWAPAiJJplWkbyH2XLNMw46SdQDbga7PIj6pa73oRV+VZfWZ45pj
+         TdETUmtAlFHiMoFhVtPhZN6vBBjqO+7Dc2ctj66fsBa4uQkX0dxyiAHtxugE7z7uwxnB
+         0hOr8XCGqYTaSYe6NQ9AHZlqVCL9ebqxPE+/jpA70ALvY8ozFPtnXWE7axaTMl7A9LRR
+         RS6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792593120; x=1793197920;
+        d=1e100.net; s=20260707; t=1792596329; x=1793201129;
         h=content-type:cc:to:from:subject:message-id:mime-version:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=QazYBGvrND8GI8lJcSkyL4fj9MMsXahwbNAM7/zrdo0=;
-        b=VZEPXLjjEqzpU+Ry6x80/VS/T1FubIDIOlmgZycZEfKrgHXkix7jkcKb8s1krcHRvb
-         0JPbPMggp0PCCf7x/5docv6+6vD/75yJ+YYDY9e9zzqtqz3Hyraad6+IqJrPq6Ufj9Ih
-         hD5q5QcCfTp09Q0gO0D5iQO5zXywX5mEkmIK+Sk4jjW9XstQC9Nrbiv4ykuSmSYYLGES
-         wY9jWOP/50YFd/rzDLOSOj0g2BqxiWzcd6RQ5b6+wBqAff6NL2d9LQehfVifZhFTOSHv
-         rZmDtzPgc79y04b5BwxARQxuO9LeAE/2u226QzgkBHAKVlvISxxNQv4yyfaqLC5gYN72
-         /BIg==
-X-Forwarded-Encrypted: i=1; AKwUvByC+FLRV9pfjEPrgym7dcwnWw/sFIG6wB0e7aochTdAPc0Hc8UY3agWowz3UUGMCJztk59LPg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLzNhLMNkqMQnkbNU24Ldstk9Jyg9sgj4kciQyW7x1eGj68nTdr
-	9rt1jr7nVRLJZrdc+hLFDVpcEvivSuSzqVgqSH3AZt6vDLW3xCboIJQ1wLwhjHvFpvDAdjK/dRE
-	yyUplAl4xNijbl+W/joMgYQ==
-X-Received: from wmdp11.prod.google.com ([2002:a05:600c:5cb:b0:4a1:fe70:d25d])
- (user=mclapinski job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:4f91:b0:4a1:a7f8:c124 with SMTP id 5b1f17b1804b1-4a1fdd0c00bmr46588075e9.7.1792593120273;
- Wed, 21 Oct 2026 07:32:00 -0700 (PDT)
-Date: Wed, 21 Oct 2026 16:31:54 +0200
+        bh=W0oLRP7RmrwK+s1WyDoN9zSSlBczsPl1G7flMYO8vs0=;
+        b=OfPiH0HOU2NWy/vrZiY+/HLHP5tW6cwL8GPuE/ZWXrxYH/sh7TpKmb06BH37sl9Bhw
+         Xv5Wrf84Qkfm9PRnQ7NyNM6NnrcdiynmIppCNpPOrwYg6WbBTTcA+/DjLxQCuvJNqJMg
+         cARia3fCEnPyY92H9Feh5E4jsEqn9nC7QoHlMN3qPjhgF/7Hmue2yO3Nlku2xGaeBLsa
+         rXi0t74PSIqp/TUe/lBSjg60X7tL9uSs7mZJCkUe2l+CRmn9GrCKozpUeZsQEXA+sTkN
+         MZeRp6yx9AxHgGgjk9q+EbhQt54FRCm1Ql+b+92IAHFuUinJfK3QhWDSiFlqYQoUVtqs
+         /RjQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzc819FhYNm8ymklvZvr1+2nFcoyharzTwTsoRJG07jwcVHo3oSsv2/v6fkDEOvhEPJIjFNQA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKIg7Vdgw5Qm5DLEvu2KWYTQWwj22TEMxTmUeRzbMAuBLQrEuZ0
+	5dP5oh8+DRqBHpWlDFImnIZUJzLUyqSx/3Ogvf3j7g5EKHU1Keb6pOY1hWR/+KSaz4cuLQNza4i
+	BiEEMvbxU6ZVta48f4Q==
+X-Received: from edqo20.prod.google.com ([2002:aa7:c514:0:b0:6b1:dfff:2ee9])
+ (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:906:dc8e:b0:c44:14d:d95d with SMTP id a640c23a62f3a-c46796ec9bcmr208718966b.23.1792596329153;
+ Wed, 21 Oct 2026 08:25:29 -0700 (PDT)
+Date: Wed, 21 Oct 2026 15:25:23 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,173 +77,143 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.56.0.212.g129ede20d9-goog
-Message-ID: <20261021143154.2638232-1-mclapinski@google.com>
-Subject: [PATCH] iommu/dma: Allocate flush queues on first use
-From: Michal Clapinski <mclapinski@google.com>
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Logan Odell <loganodell@google.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Michal Clapinski <mclapinski@google.com>
+Message-ID: <20261021152527.375070-1-tarunsahu@google.com>
+Subject: [RFC PATCH v2 0/4] liveupdate: Feature header ABI and named handler
+From: Tarun Sahu <tarunsahu@google.com>
+To: Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
+	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
+	David Matlack <dmatlack@google.com>, jgg@nvidia.com, robin.murphy@arm.com, 
+	loganodell@google.com, oupton@kernel.org, kevin.tian@intel.com, 
+	alex@shazbot.org, dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, 
+	will@kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com
+Cc: linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
+	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
+	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Tarun Sahu <tarunsahu@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-iommu_dma_init_domain() allocates the per-CPU flush queue of a DMA-FQ
-domain upfront. That is 10KiB per possible CPU, so on a 224-CPU machine
-it costs 2.2MiB and ~570us per domain. Since every device gets probed at
-boot, large servers pay this for hundreds of domains in pci_iommu_init(),
-even though many of them (PCIe ports, CPU uncore devices, ...) will
-never do streaming DMA.
+Live Update Orchestrator (LUO) and its file handlers currently validate
+handed-over KHO state using monolithic compatibility strings ("luo-v5",
+"memfd-v2"). Any change to a serialized structure, even an optional
+additive field, requires bumping the compatibility string, breaking live
+update between adjacent kernel versions across both forward updates and
+rollbacks. This series introduces the feature flags per serialized
+struct to communicate between the kernel about their active and required
+features. Having feature flags increase the compatibility matching
+granularity.
 
-dma-iommu already copes with a flush queue appearing on a live domain,
-as the sysfs DMA -> DMA-FQ transition does just that. So only allocate
-it on the domain's first unmap, from a workqueue since unmaps can happen
-in atomic context, and use strict invalidation until it is in place. If
-the allocation fails, downgrade the domain to IOMMU_DOMAIN_DMA as before.
+This series also renames the file-handler and FLB compatible identifier to
+name, extends LIVEUPDATE_SESSION_PRESERVE_FD so userspace can
+optionally select which registered file handler preserves a file
+descriptor by name, and replaces monolithic version strings in serialized
+payloads with a fixed-size 2-bit pair feature header
+(struct luo_feature_hdr). So in future, If a change to a subsystem
+preservation can not be handled with feature flags, we can attach a new
+handler to support the preservation.
 
-On a 224-CPU Sapphire Rapids server with 431 IOMMU groups, this cuts the
-time spent in pci_iommu_init() from 330ms to 83ms.
+This change is motivated by the LPC discussion.
 
-Signed-off-by: Michal Clapinski <mclapinski@google.com>
----
- drivers/iommu/dma-iommu.c | 78 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 72 insertions(+), 6 deletions(-)
+Named File Handler Selection
+============================
+With fine-grained compatibility tracked via feature headers, the
+handler and FLB compatible field is renamed to name. When a subsystem
+needs a genuinely incompatible new handler alongside an existing one for
+the same file type, struct liveupdate_session_preserve_fd now includes
+char handler[LIVEUPDATE_HNDL_NAME_LENGTH] after token (keeping
+min_size at 16 bytes for backward compatibility):
+- Empty handler (or 16-byte struct): selects the first registered
+  handler whose .can_preserve() accepts the fd, keeping default callers
+  on the original rollback-safe handler.
+- Non-empty handler: selects the registered handler with that exact
+  name and verifies .can_preserve() accepts the fd.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 1f624f241ac1..e61cd016b424 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -56,6 +56,11 @@ struct iommu_dma_options {
- 	unsigned int	fq_timeout;
- };
- 
-+/* Bits in iommu_dma_cookie::fq_flags */
-+enum {
-+	IOMMU_DMA_FQ_REQUESTED,		/* fq_work has been queued */
-+};
-+
- struct iommu_dma_cookie {
- 	struct iova_domain iovad;
- 	struct list_head msi_page_list;
-@@ -74,6 +79,10 @@ struct iommu_dma_cookie {
- 	atomic_t fq_timer_on;
- 	/* Domain for flush queue callback; NULL if flush queue not in use */
- 	struct iommu_domain *fq_domain;
-+	/* Domain to allocate a flush queue for on its first unmap, if any */
-+	struct iommu_domain *fq_lazy_domain;
-+	unsigned long fq_flags;
-+	struct work_struct fq_work;
- 	/* Options for dma-iommu use */
- 	struct iommu_dma_options options;
- };
-@@ -330,7 +339,12 @@ static int iommu_dma_init_fq_percpu(struct iommu_dma_cookie *cookie)
- 	return 0;
- }
- 
--/* sysfs updates are serialised by the mutex of the group owning @domain */
-+/*
-+ * sysfs updates are serialised by the mutex of the group owning @domain. They
-+ * only ever target a domain of type IOMMU_DOMAIN_DMA. iommu_dma_fq_work(), the
-+ * only other caller, acts on a domain of type IOMMU_DOMAIN_DMA_FQ and only
-+ * changes it to IOMMU_DOMAIN_DMA once it is done, so they can't race.
-+ */
- int iommu_dma_init_fq(struct iommu_domain *domain)
- {
- 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-@@ -363,6 +377,48 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
- 	return 0;
- }
- 
-+static void iommu_dma_fq_work(struct work_struct *work)
-+{
-+	struct iommu_dma_cookie *cookie = container_of(work,
-+						       struct iommu_dma_cookie,
-+						       fq_work);
-+	struct iommu_domain *domain = cookie->fq_lazy_domain;
-+
-+	/*
-+	 * On failure, fall back to strict invalidation as iommu_dma_init_domain()
-+	 * would, and say so in the domain type, so that it is reported correctly
-+	 * and writing DMA-FQ to the group's sysfs type can retry. That only acts
-+	 * on IOMMU_DOMAIN_DMA domains, so it can't run concurrently with us.
-+	 * Don't take the group mutex here: the group may be waiting for us in
-+	 * iommu_put_dma_cookie() with it held.
-+	 */
-+	if (iommu_dma_init_fq(domain))
-+		WRITE_ONCE(domain->type, IOMMU_DOMAIN_DMA);
-+}
-+
-+/*
-+ * A flush queue is a sizeable per-CPU allocation, but it is only of any use
-+ * once a driver unmaps DMA through the domain. Many domains never get there,
-+ * e.g. those of bridges and other devices that are probed by the IOMMU core
-+ * but never do DMA, so set the flush queue up on the first unmap rather than
-+ * when the domain is initialised. Unmaps keep using strict invalidation until
-+ * the flush queue is in place. This may be called from atomic context, so do
-+ * the allocation from a workqueue.
-+ *
-+ * The work is queued at most once per domain. Check the flag before trying to
-+ * set it, so that concurrent unmaps don't all have to take its cache line
-+ * exclusively until the flush queue is in place.
-+ */
-+static void iommu_dma_request_fq(struct iommu_dma_cookie *cookie)
-+{
-+	if (likely(!cookie->fq_lazy_domain) ||
-+	    test_bit(IOMMU_DMA_FQ_REQUESTED, &cookie->fq_flags) ||
-+	    test_and_set_bit(IOMMU_DMA_FQ_REQUESTED, &cookie->fq_flags))
-+		return;
-+
-+	queue_work(system_dfl_wq, &cookie->fq_work);
-+}
-+
- /**
-  * iommu_get_dma_cookie - Acquire DMA-API resources for a domain
-  * @domain: IOMMU domain to prepare for DMA-API usage
-@@ -379,6 +435,7 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
- 		return -ENOMEM;
- 
- 	INIT_LIST_HEAD(&cookie->msi_page_list);
-+	INIT_WORK(&cookie->fq_work, iommu_dma_fq_work);
- 	domain->cookie_type = IOMMU_COOKIE_DMA_IOVA;
- 	domain->iova_cookie = cookie;
- 	return 0;
-@@ -428,6 +485,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
- 	struct iommu_dma_msi_page *msi, *tmp;
- 
- 	if (cookie->iovad.granule) {
-+		cancel_work_sync(&cookie->fq_work);
- 		iommu_dma_free_fq(cookie);
- 		put_iova_domain(&cookie->iovad);
- 	}
-@@ -715,11 +773,17 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev
- 
- 	iommu_dma_init_options(&cookie->options, dev);
- 
--	/* If the FQ fails we can simply fall back to strict mode */
--	if (domain->type == IOMMU_DOMAIN_DMA_FQ &&
--	    (!iommu_domain_supports_fq(dev, domain) ||
--	     iommu_dma_init_fq(domain)))
--		domain->type = IOMMU_DOMAIN_DMA;
-+	/*
-+	 * The flush queue is allocated on first use, see iommu_dma_request_fq().
-+	 * If it can't be used, or its allocation fails, we simply stay in
-+	 * strict mode.
-+	 */
-+	if (domain->type == IOMMU_DOMAIN_DMA_FQ) {
-+		if (iommu_domain_supports_fq(dev, domain))
-+			cookie->fq_lazy_domain = domain;
-+		else
-+			domain->type = IOMMU_DOMAIN_DMA;
-+	}
- 
- 	return iova_reserve_iommu_regions(dev, domain);
- }
-@@ -835,6 +899,8 @@ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
- 	size = iova_align(iovad, size + iova_off);
- 	iommu_iotlb_gather_init(&iotlb_gather);
- 	iotlb_gather.queued = READ_ONCE(cookie->fq_domain);
-+	if (!iotlb_gather.queued)
-+		iommu_dma_request_fq(cookie);
- 
- 	unmapped = iommu_unmap_fast(domain, dma_addr, size, &iotlb_gather);
- 	WARN_ON(unmapped != size);
+2-Bit Pair Feature Header (struct luo_feature_hdr)
+==================================================
+Each serialized ABI structure (struct luo_ser, struct memfd_luo_ser)
+starts with a fixed 128-byte struct luo_feature_hdr containing:
+- size: byte size of the enclosing serialized structure from the source
+  kernel.
+- flags[15]: 15 chained 64-bit feature flags entries. Each entry
+  encodes up to 31 features as 2-bit pair (req, active) states
+  (enum luo_feat_state: LUO_FEAT_DISABLED = 0b00,
+  LUO_FEAT_OPTIONAL = 0b01, LUO_FEAT_REQUIRED = 0b11) plus
+  LUO_FEAT_EXT_MASK (bits[63:62] = 0b11) chaining to the next entry
+  (up to 465 features total). Because the header is fixed at 128 bytes,
+  payload field offsets never shift when extended flags entries are used.
+
+Each subsystem defines its feature states as a static const u8 array
+indexed by its feature enum, which luo_feature_hdr_init() packs into
+the payload feature header. During deserialization,
+luo_feature_hdr_validate() checks the header from the source kernel
+against the feature array in the target kernel according to the
+per-feature (req, active) truth table:
+
+  Source Target Action
+  (1,0)  (x,x)  Reject -EINVAL: invalid source kernel (req without active)
+  (x,x)  (1,0)  Reject -EINVAL + WARN_ON_ONCE: invalid target kernel
+  (0,0)  (0,0)  Accept: feature absent
+  (0,0)  (0,1)  Accept: feature absent
+  (0,0)  (1,1)  Reject -EOPNOTSUPP: target kernel requires the feature
+  (0,1)  (0,0)  Accept: ignore payload data
+  (1,1)  (0,0)  Reject -EOPNOTSUPP: source kernel requires the feature
+  (x,1)  (x,1)  Accept: use payload data
+
+Structure Evolution
+===================
+The relative order and offsets of fields in serialized structures must
+remain unchanged as features are added or retired. New fields are always
+appended at the end of the structure under a new feature flag, and
+retired fields are kept in place so that the offsets of subsequent
+fields never shift. If the type or format of a field needs to change,
+the existing field and feature are kept intact (and retired when no
+longer needed) and a new feature flag with a new appended field of the
+new type is added.
+
+In the target kernel, fields of a LUO_FEAT_REQUIRED feature are
+guaranteed to be present once luo_feature_hdr_validate() succeeds,
+whereas fields of a LUO_FEAT_OPTIONAL feature should be accessed only
+after verifying that the feature is active in the source kernel header:
+
+  if (luo_feature_is_active(&ser->features, FEAT_X))
+          val = ser->x_field;
+
+Changes since RFC v1 [1]:
+- Renamed file-handler and FLB compatible to name and added optional
+  handler selection by name in LIVEUPDATE_SESSION_PRESERVE_FD.
+- Replaced the 3-mask (supp, req, active) + variable-length FDT and
+  feature-section design with a fixed 128-byte struct luo_feature_hdr
+  embedding size and 15 chained 64-bit 2-bit pair (req, active)
+  flags entries directly in struct luo_ser and struct memfd_luo_ser.
+- Replaced compile-time bitmask macros with a static const u8 feature
+  array per subsystem packed by luo_feature_hdr_init() and validated
+  in a single pass by luo_feature_hdr_validate().
+
+[1] https://lore.kernel.org/all/20260903023452.721732-1-loganodell@google.com/
+
+Tarun Sahu (4):
+  liveupdate: Rename handler compatible to name
+  liveupdate: Select file handler by name in the preserve ioctl
+  liveupdate: Replace compatibility string with a 2-bit pair feature
+    header
+  mm: memfd_luo: Add the 2-bit pair feature header
+
+ drivers/pci/liveupdate.c         |  10 +-
+ include/linux/kho/abi/luo.h      | 367 +++++++++++++++++++++++++++----
+ include/linux/kho/abi/memfd.h    |  39 +++-
+ include/linux/kho/abi/pci.h      |   2 +-
+ include/linux/liveupdate.h       |  18 +-
+ include/uapi/linux/liveupdate.h  |  15 +-
+ kernel/liveupdate/luo_core.c     |  27 ++-
+ kernel/liveupdate/luo_file.c     |  64 ++++--
+ kernel/liveupdate/luo_flb.c      |  16 +-
+ kernel/liveupdate/luo_internal.h |   3 +-
+ kernel/liveupdate/luo_session.c  |   7 +-
+ lib/tests/liveupdate.c           |  22 +-
+ mm/memfd_luo.c                   |  16 +-
+ 13 files changed, 481 insertions(+), 125 deletions(-)
+
 -- 
 2.56.0.212.g129ede20d9-goog
 
