@@ -1,99 +1,119 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.181
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.228.2
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792568036;
-	b=DKnkWnVaNMz9QxS1QUtPBLrUGGIIuw1Zac3hICKChbt8nJCDJlFq0eH8Zg7Yjd4c5Ybx
-	 3JqsJTxbVbMyrprgquPsZKMItsy9upq8oIHMfK/Q5TI1Uw1/qFFSHG1RpSAr9aXqGXWvT
-	 CcX84JLLmx4imlqot+X2FSAVXRAFxE/GdIfVh1hYwDtKPMxW+d07d9CZHq7T9spdu4vW3
-	 gODasQd4eeY6nt9FfoJ8ARkgfmNKkX0UVOKf2NUWaq6y1XVleKpaX50gqOJ6maHptVvGX
-	 w3sNof/x0x63nLxUkhlHoMv8QsNgC4INB19c6sGoPXeS3WPXLW83zV2UMJ02aZ0mSzA==
+	t=1792571431;
+	b=yBKWG6kxr3+rAd47rKO3aT3qrIXI0LvVUpP7Ts45UQmR1cr+HB6yaBznAgkBiLDOx6B1
+	 KMQHE+6yPtzuBBWYADdfZaSATM/97W0kE0NM6Yc6ksjwS9eA1KLiPbVGMEv9uoSvHPX+C
+	 Q48G32LKtlvCe6eba2gd0M/fWUT/SyugAjxGbSPJdQEHfPTGAlEbdy78ztzKaegswscx3
+	 4leyCAVZP8VpyMssUtHdX+i4pZoQexVGBtyOoR9ikuwSB8tnN7Fnkh4CJYxdvAm8bCtvc
+	 Zf7VPrGMA4dgZCNjhn9+N+f5OuReLH+0yQHES7M4atHOpmUK6GVmw2gwxJ+8/yTnQIg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792568036;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792571431;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:CC:
-	 Subject:User-Agent:In-Reply-To:References:Message-ID:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=S/WUWG78WudYvh8ovm7Px4vUVyJzHUUoo0t8APESyAg=;
-	b=ZsKVsUkqMDrKfSQEUQDMsAtuY+oL9tTGch5brTV+YwhGn6Qh0xvXVQ/h8GBW8cyWDkiU
-	 A08abNJZCjIrYlsajuKwXK7cnX4vq4ZieVYIpFruT3jzD4E1T8epRtjAO3UzJp64kHRqj
-	 bEMhJz7auW7haHfKOjlS4SIn9f+JOckBUNoXMUmnrlDPNeoqUVIQqbQPkH7jGQ+qvlEbJ
-	 ruBDsZ2jY9twTGNOJ36yUhtSuwaaqmbDX+0/XVpm0ec78tVrTpQEJeSieo5H5WNiE9AeG
-	 FOcUxS8SZWYE1gFq46heUTr/Ez9n62DfU7drcLPB9lgwBy6GWnv+dwijAVyUf/SHWlA==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=z2i7Do+cloqJgPeb5aYLDs8IqOGcJVVvWxpYdA4Y6+Q=;
+	b=RbwT14+97tJz13dga21LdFBGFUyPVcfKde6kMm+FdmCy0xNezADKSyK00YnnYzWs2fOx
+	 nsCKHEuM8Ec3cWXkPUPHDPt/hTtFuPO3gF3gkU5ALHX5uEPrrCKXCiFJiNKTR8FEsCPon
+	 KMejovJHkMksQwfU8Iaov0cKlLUdjdZd0cqED0Jo9xOnMkWgzrxHaVBLET97TIAFKkFUe
+	 fjAWVjJyChBx+zLik49okU79JsWpEmj1XaJYtxTW7ms2PqPJWA9X48o0qfOfOewhASCnI
+	 b2DwcFK+lszfhcbHieBgM+YKIjMhtKpymNDTmcas49ecizF0DpdUdOR1wCAuIMghhVw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=e2RzCG4r;
-	arc=none smtp.remote-ip=209.85.128.181
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=C3X75oLK;
+	arc=none smtp.remote-ip=74.125.228.2
+Received: from mail-pz2-f2.google.com (mail-pz2-f2.google.com [74.125.228.2])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32029606A31B
-	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 07:33:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 32029606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B23606A31F
+	for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 08:30:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C8B23606A31F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=e2RzCG4r
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-8b0d126f631so3751387b3.2
-        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 00:33:56 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=C3X75oLK
+Received: by mail-pz2-f2.google.com with SMTP id 41be03b00d2f7-ccc451ef3a7so38474a12.1
+        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 01:30:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792568035; x=1793172835; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :references:in-reply-to:user-agent:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=S/WUWG78WudYvh8ovm7Px4vUVyJzHUUoo0t8APESyAg=;
-        b=e2RzCG4rkltoYNu1DiT5M/TJmJ6zuiQnUfPHripD9KcblM0lXowcqiQ4MzHXrlvYal
-         Xc4KFlozcTOv/czKWqmhsusbtazIfiV6Tf80sDV9ScB6shu0Fa8g68ct4uZ5NKjsaslY
-         K+2ZAvZyCU+GHv7T3LglnH8T+ObQvMqBuuf9qaf/pZBl6c+cQicrB11t9fJO9BrO7rQ4
-         lNT3x8yRavx8UCuZlW8yxqBdZK9JEc+dx8NsFqIGwVqe1yB/eiTlThVmRsYSnw09PSje
-         mUKzO1QahOlT14wcBclgTZf4hWsv4U9s6KhNT9Ol6rjne+1d5Q9S+ogMNbCCDy9JA5wc
-         jYkg==
+        d=gmail.com; s=20251104; t=1792571430; x=1793176230; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=z2i7Do+cloqJgPeb5aYLDs8IqOGcJVVvWxpYdA4Y6+Q=;
+        b=C3X75oLKXR8/5+DI3bIoPwiWXV9ReiT54/GW5X+uM2BDMwnnTnHMyKZfFBZ0aMZkJO
+         WL9XPiMBtr5rNbvg851386WFWRhnk2sESIy6cp+S7kwQGR47FL35AmK63WMecVN5w+lC
+         gVOW9zOgZ/Wz19gKZCK33zYSFHYMg1BzmrMft4DuZJzleCONaigcRsF0aaIpiwWmlCKZ
+         YHd9SgDvtlGJNDabQXuMXg/Mfk3g+R/BlsN1VbYeMgRi+FfJ+4bm9Mrg8nniEVr7rnj2
+         Yg5AgKPJaaF7ToADURgC81YxVoOBdMKwAq6PN+W8w38wzd5R9sSnijg5bUkZ/eMctDQ/
+         yBAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792568035; x=1793172835;
-        h=content-transfer-encoding:content-type:mime-version:message-id
-         :references:in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=S/WUWG78WudYvh8ovm7Px4vUVyJzHUUoo0t8APESyAg=;
-        b=peGq+1cgkDYaNOM4psvsSsIy8FEwPLhzgpYHqlwHQFAh/VwEwjPaZxKso7SmMD9tsi
-         0h1iju/byLFHSKB8BHKMncCF4dE/lw71A2++Qp5Lt2yop/+JkaZqID3V2UuMqPSHn1Fv
-         J8rOlMjmItxHaphUT0OFEvT4IqkQFN9sWIqLek0CTAbCHc4fQORsj7AtJWtiufz4Xa+E
-         1hPQlLpmAceaLYc/6jW+x2Sr97Nh6ztF9VXrXk8C75rjzzaI2gHHW5fcXbhvRgqmGHSx
-         I0dIAyrrfQNe4sk8c3MVEKQzvtXhkthS9gEkUNhNzYo9QTplAfq83+ls6FRzqGqoBdZH
-         TU8g==
-X-Gm-Message-State: AFq9FYLWW9fifL4is51eAdJ1GvPPU1H5+/pwgCM8Luo/WkG66Assv3oV
-	FN6evgtPu3ZL3FSySLBcVw+/s+exrncaDnKnI7Xd/nXVAUMULyqSBz2i
-X-Gm-Gg: AYBFou17So8wHs45Zg9AJwn7I5PvOOB2n5ITRa0bzvlCqTSHLzt0zte9wsOgX6MQmdz
-	CDquBXUmBp66u70K/P0+PBQ2Rm8bLbzGIXrz34YRj7RRj9DlxV0CLEgs7otZsl7/ptlCGChc+sL
-	CF0UQlSvgvvf1fDj6c6Um2KObH8vOQThC9FNmxcd9UnTBZt8BWw6AKxIWRGvO7pD3DgSPWPPDIG
-	QTwF9mnjxzBEk/aGOdm3QwBb6AA7i8tYXlH0iwoCXpY0z8f4onwqyI4ZPbVpjiD8mvK4x1fH4UR
-	mfRwYE4YEilrZAZ0+icqTF+6OLJvtMrx9Dd2KbS4fXKQOQZdtOw0LlmW/C2ZLzsx9pe4O+AmZqD
-	BaoQ0MKFQBkru7Blgl1S4XDY4vaf2rtj8bB/ap9FsHowOtjiOW+zaox1wYcF8bKMFcOvMfEhGNc
-	9/sb6WcwFJqlM/pGWxaS5se5Hv3kffhGYszJr4i+JlLAFjboxm+g0mcZYk35hs38Do8u823TXP8
-	zyCElXfy/wMfK8pSQJ9wLTUBtZOAaaCD71rl8GoYj+0nPXNrn8UNiHV4Sp2wqY4mTzU18YDr+Lm
-	iktYA7ZpscAB/LQelUI3SAPGgWo2C4bQB5YSbkd+tgyIrgxi3Ua3fnNm4fmi/QsXpMbLGjyeR3Z
-	r3P/dCCncW5y5A9EJ2uQG4C1y2AaqxxjZJlKO1dYiKB6kZ3HnqqGTObIq8cDpSBw=
-X-Received: by 2002:a05:690c:698a:b0:8b0:9e27:fcd0 with SMTP id 00721157ae682-8b133caac65mr6808817b3.21.1792568035078;
-        Wed, 21 Oct 2026 00:33:55 -0700 (PDT)
-Received: from ehlo.thunderbird.net (212.153.88.200.l.sta.codetel.net.do. [200.88.153.212])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-8b1300715cfsm7838277b3.14.2026.10.21.00.33.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Oct 2026 00:33:53 -0700 (PDT)
-Date: Wed, 21 Oct 2026 03:33:28 -0400
-From: Jason Perlow <jperlow@gmail.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Aditya Garg <aditya.garg@linux.dev>,
- dwmw2@infradead.org
-CC: iommu@lists.linux.dev, Bjorn Helgaas <bhelgaas@google.com>,
- linux-pci@vger.kernel.org, arend.vanspriel@broadcom.com,
- linux-wireless@vger.kernel.org
-Subject: =?US-ASCII?Q?Re=3A_intel-iommu=3A_DMAR_PTE_Read_fault?=
- =?US-ASCII?Q?_crash-loops_a_PCIe_wifi_device=2C_v7=2E?=
- =?US-ASCII?Q?3-rc7_-=3E_v7=2E3_final_regression=2C_repr?=
- =?US-ASCII?Q?oduces_on_one_unit_out_of_five_tested?=
-User-Agent: Thunderbird for Android
-In-Reply-To: <2c840dcf-4292-4579-a62d-f9766b7cb780@linux.intel.com>
-References: <CABZrw2GfC8SEPiGOUD42um57nKZAghjHz8N1DhMsw8sOC7OAxA@mail.gmail.com> <2c840dcf-4292-4579-a62d-f9766b7cb780@linux.intel.com>
-Message-ID: <74570358-8085-4767-BF76-D865CA95853E@gmail.com>
+        d=1e100.net; s=20260707; t=1792571430; x=1793176230;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=z2i7Do+cloqJgPeb5aYLDs8IqOGcJVVvWxpYdA4Y6+Q=;
+        b=eY1bR2fb0tx3Euosmss+rY1DvV+s8eXkAVNJDbVf4aXNTXqxPJtYMbVs5t7XaabMn5
+         wJJUITQqaGMdysU4DV5gEbNE2f8Y83mXPcL4dq3uXG16t0H6FyGAtfSRH2KrcKs2NB1U
+         zdQER00XNToRfv2wchOsQOkK28MVmyttrjrKMj5jQ3RG4Ub8+mQdEZ1WXcy4yDsRlW0K
+         z138Z6zxK0IGDKmSK1RJiSPLckiDOkmVb9Apefz7AMtf6YzVQgLrDMvyFUS19Xm6Kpto
+         uMqR0eUrUpegin3QSJWVYZouxVmIQXY0BltYBJQlLUnuZSBaIKF+atu2uU+ehJ5da7ne
+         cMsQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxsRG2COQpzvztgXNmikvXZZKhTSYSyJszZd9XEuqc7VZ7Ak1s6LouRZJvod6lsCg/PuQ9nkQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIND4NCTuwhhuJOIaxH9iuTFUgGivT0gK8SuH13+gOLa9uiyexP
+	/ale8djIWb+bGTsseqRwDXNiAbQmsItZcL4kK/r4V5U1ZECV8tY5Q3id
+X-Gm-Gg: AYBFou3WguNfjNXLgKzOKV5iBySJ11QJqGpjar3M7If0z3g+PnPgKp+wvW1dBV+iuFp
+	DwNFHW5Rxz8kRB6qOKD6m4IZOHZ5kj7PKwXBNyKkw25Nd5YsNv6CeHqgjJ64gXSy7EzqO8U/Zcd
+	cxY/ty04XKxcJvj/hXi8dQ/4tkrZet/Eb2hYgvJJcChsvfte1PryRJ3HUbnfL9NjwfTHHUbRX/R
+	1FD4Vbf1B7jrW/iv649Lhi9+sYoLYsoNCU0cG7GRVrC9+M1SX7Luxddy/KRVPxstnILmJSyxUE2
+	HdB8sAuJNqGf8xwBpyzurZ4xlwlUp6sWlRcZwXksvXnhln45RACzKz5KPIfEGmezUe8PIJx84Ex
+	5DekU7xXz5e5C9f/TO9MYMT1wfg4mgYDYEIHVt0qFeYpEPcdGDMaNv+HpyZKbfdvYqgD0w4zU8v
+	mQnFccGIyFrNwPwuE3bDTpMoBcsboM5wJLFlgdREeLKkX3RnZSqISU3CPDqFqbPSSYMyQLUJiWN
+	F2UkHpxRp9od3oa08e65LBVuI+YZ6zjqI2lWg+XDA/KV6MGGoSFJsjBlAN/EnQnOSSm
+X-Received: by 2002:a05:6a00:918c:b0:8a0:2344:c44b with SMTP id d2e1a72fcca58-8a089d5de3cmr958437b3a.40.1792571429981;
+        Wed, 21 Oct 2026 01:30:29 -0700 (PDT)
+Received: from intel.company.local ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8a0895e273bsm600653b3a.41.2026.10.21.01.30.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Oct 2026 01:30:28 -0700 (PDT)
+From: Wandun Chen <chenwandun1@gmail.com>
+To: robh@kernel.org,
+	baoquan.he@linux.dev,
+	rppt@kernel.org,
+	m.szyprowski@samsung.com
+Cc: catalin.marinas@arm.com,
+	will@kernel.org,
+	mark.rutland@arm.com,
+	chenhuacai@kernel.org,
+	kernel@xen0n.name,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	saravanak@kernel.org,
+	akpm@linux-foundation.org,
+	pasha.tatashin@soleen.com,
+	pratyush@kernel.org,
+	ruirui.yang@linux.dev,
+	robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	loongarch@lists.linux.dev,
+	linux-riscv@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	kexec@lists.infradead.org,
+	linux-mm@kvack.org,
+	iommu@lists.linux.dev
+Subject: [PATCH v9 0/8] kdump: reduce vmcore size and capture time
+Date: Wed, 21 Oct 2026 16:30:03 +0800
+Message-ID: <20261021083011.2170525-1-chenwandun1@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,148 +123,132 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Yes, done=2E rc7 with intel_iommu=3Don on the same MacBookPro16,1 shows
-the same fault: 95 DMAR faults, each followed by brcmf_fw_crashed, in
-one boot=2E So no rc7 -> final regression in the IOMMU code=2E
+From: Wandun Chen <chenwandun@lixiang.com>
 
-It is a v7=2E2 -> v7=2E3-rc1 regression in brcmfmac, from f0ba5fd51ff2
-("wifi: brcmfmac: Set DMA direction for msgbuf packet IDs")=2E RX
-buffers are now mapped DMA_FROM_DEVICE (prot 0x6, no IOMMU_READ) and
-the BCM4364 firmware reads them:
+On SoCs that carve out large firmware-owned reserved memory (GPU,
+camera ISP, ...), kdump currently dumps those carveouts as part of
+system RAM even though their contents are firmware state that is not
+useful for kernel crash analysis.
 
-  36=2E512689 map   iova=3D0xffeff2c0 size=3D2048 prot=3D0x6 (brcmf_msgbuf=
-_rxbuf_data_post)
-  41=2E110125 DMAR: [DMA Read NO_PASID] Request device [0000:05:00=2E0] fa=
-ult addr 0xffeff000 [fault reason 0x06] PTE Read access is not set
-  41=2E139317 brcmf_fw_crashed: Firmware has halted or crashed
+ACPI systems already filter reserved memory out of the vmcore through
+their existing path: firmware reports those carveouts as unusable in
+the EFI memory map, they get MEMBLOCK_NOMAP set in memblock.memory
+(is_usable_memory(), efi-init.c), and the ELF header builder has
+always skipped nomap regions; only DT-based systems currently fail
+to filter these regions, which is what this series addresses.
 
-The fault comes before the crash=2E Before that commit the direction
-stayed 0 (DMA_BIDIRECTIONAL)=2E=20
+This series introduces a MEMBLOCK_NODUMP flag (suggested by Rob) in
+memblock to filter reserved memory on DT-based architectures. A new
+flag is needed because MEMBLOCK_NOMAP can only express regions without
+a linear mapping, while MEMBLOCK_NODUMP can filter regions that are
+linearly mapped. Reserved regions are marked MEMBLOCK_NODUMP by default
+so kdump omits them; reusable CMA regions are different because their
+pages are handed back to the buddy allocator and may carry crash-relevant
+data.
 
-Thanks for the pointer=2E
+Since the reserved memory regions are filtered out, the vmcore is
+smaller in size and faster to produce.
 
-On October 21, 2026 2:13:40 AM AST, Baolu Lu <baolu=2Elu@linux=2Eintel=2Ec=
-om> wrote:
->On 10/20/26 22:40, Perlow, Jason wrote:
->> Hardware: Intel CoffeeLake-H platforms, various=2E The affected device =
-is a Broadcom BCM4364 802=2E11ac PCIe wifi adapter (14e4:4464) at 0000:05:0=
-0=2E0 on an Apple MacBookPro16,1 (T2 Mac)=2E Aditya, including you directly=
- since this is T2 hardware; copying iommu/pci/wireless because the fault si=
-gnature and the fact that it reproduces on only one of five tested machines=
- looks like it needs eyes on the core IOMMU/PCI path, not the driver=2E
->>=20
->> SYMPTOM
->>=20
->> Between a locally-built v7=2E3-rc7 kernel and a v7=2E3 final kernel (sa=
-me =2Econfig template, same patch series beyond one T2-specific AER quirk t=
-hat is upstream in final and therefore held out of our patch set), the BCM4=
-364 wifi firmware on ONE affected unit crash-loops continuously:
->>=20
->> brcmfmac: brcmf_fw_alloc_request: using brcm/brcmfmac4364b3-pcie for ch=
-ip BCM4364/4
->> brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM4364/4 wl0: =2E=2E=2E
->> ieee80211 phy0: brcmf_fw_crashed: Firmware has halted or crashed
->>=20
->> repeating every ~6s, indefinitely=2E dmesg shows the actual mechanism -=
-- a real IOMMU DMAR page fault on the wifi device, timed to the same cadenc=
-e as the firmware crash:
->>=20
->> DMAR: DRHD: handling fault status reg 3
->> DMAR: [DMA Read NO_PASID] Request device [0000:05:00=2E0] fault addr 0x=
-ffeff000 [fault reason 0x06] PTE Read access is not set
->>=20
->> Four such faults logged at uptime 13=2E4s/19=2E4s/25=2E3s/31=2E2s, each=
- immediately followed by a brcmf_fw_crashed event=2E intel_iommu=3Doff remo=
-ves the fault and the crash entirely (8+ minutes stable, single clean firmw=
-are load, stable AP association)=2E The prior v7=2E3-rc7 kernel on the SAME=
- unit has zero DMAR faults and zero firmware crashes with IOMMU on by defau=
-lt, so this is a regression introduced somewhere in the rc7->final window o=
-n this unit, not a long-standing issue=2E
->
->Can you confirm that the IOMMU is actually enabled and translating on
->the rc7 boot? Please check that boot's kernel log for:
->
->DMAR: IOMMU enabled
->iommu: Default domain type: Translated
->
->>=20
->> REPRODUCES ON 1 OF 5 MACHINES TESTED
->>=20
->> We ran the identical kernel build (and, where applicable, the identical=
- firmware blob) across five machines and only one faults:
->>=20
->> * Affected unit (MacBookPro16,1, T2, BCM4364 wifi): faults as above=2E
->> * Second MacBookPro16,1 (same generation, different configuration withi=
-n the 16,1 line -- we have not enumerated every hardware delta): same kerne=
-l binary, same firmware blob, IOMMU also active by default (iommu: Default =
-domain type: Translated, identical to the affected unit) -- zero DMAR fault=
-s, brcmfmac stable=2E
->> * Three non-Mac x86_64 machines spanning three more wifi vendors (Intel=
- iwlwifi AX201, Intel iwlwifi Centrino 2230, Realtek rtw89 8852BE) -- IOMMU=
- active and translating on all three, zero DMAR faults, all three wifi chip=
-s loaded firmware and ran cleanly=2E
->>=20
->> So across four different wifi silicon vendors and five physical machine=
-s, IOMMU is actively translating DMA on every one of them and only the sing=
-le affected unit faults=2E This looks like a host-specific or hardware-conf=
-iguration-specific trigger rather than a blanket rc7->final regression that=
- would hit every machine with this kernel=2E We do not yet know what distin=
-guishes the affected unit (ACPI RMRR table contents, exact PCIe link traini=
-ng time, and IOMMU group/domain-attach ordering are the candidates we have =
-not yet isolated)=2E
->>=20
->> WHAT WE RULED OUT BEFORE WRITING IN
->>=20
->> * AER/ANFE quirk on the T2 Secure Enclave device: its PCI ID match is e=
-xact (Apple SEP, 106b:1802) and does not touch the wifi device (14e4:4464);=
- real PCI topology on the affected unit also shows SEP and wifi on separate=
- root ports (00:1b=2E0 -> [04] vs 00:1c=2E0 -> [05] off the PCH), so there'=
-s no shared-root-port mechanism either=2E
->> * brcmfmac driver source: git diff v7=2E3-rc7=2E=2Ev7=2E3 -- drivers/ne=
-t/ wireless/broadcom/brcm80211/ is empty=2E
->> * Our own config template: byte-identical between the rc7 and final bui=
-lds=2E
->> * The upstream Kconfig stanza for INTEL_IOMMU_DEFAULT_ON (drivers/iommu=
-/ intel/Kconfig): byte-identical text between v7=2E3-rc7 and v7=2E3 (defaul=
-t y, no depends on)=2E
->>=20
->> THE ONE ANOMALY WE CAN'T YET EXPLAIN
->>=20
->> Despite the last two items above being unchanged, the actual generated =
-=2Econfig has CONFIG_INTEL_IOMMU_DEFAULT_ON unset after make olddefconfig a=
-gainst the rc7 source tree, but =3Dy after the same process against the fin=
-al source tree, even though our template explicitly answers "# CONFIG_INTEL=
-_IOMMU_DEFAULT_ON is not set" in both cases=2E Our
->
->If CONFIG_INTEL_IOMMU_DEFAULT_ON was not set in your rc7 build, and
->intel_iommu=3Don was not on the command line, the Intel IOMMU was
->disabled by default on rc7=2E In that case, rc7 could never report a
->DMAR fault, and the "regression" is only that v7=2E3 final enabled the
->IOMMU=2E
->
->Could you boot the rc7 kernel on the affected unit with intel_iommu=3Don
->and see whether the same fault shows up? If it does, there is no
->rc7->final regression in the IOMMU code=2E It would be an existing DMA
->issue with brcmfmac/BCM4364=2E
->
->> working theory is that some other symbol started selecting/implying INT=
-EL_IOMMU_DEFAULT_ON between rc7 and final -- which would override an explic=
-itly-seeded "not set" answer during olddefconfig resolution -- but we have =
-not identified which one=2E Happy to bisect further, or provide the full =
-=2Econfig / additional dmesg, if that would help narrow it=2E
->>=20
->> CURRENT STATUS
->>=20
->> intel_iommu=3Doff on the affected unit's kernel command line is our acc=
-epted fix for this specific machine while the root cause is unresolved; we =
-are not disabling IOMMU fleet-wide, since four of the five test machines sh=
-ow no problem with it on=2E Posting here in case this fault signature is re=
-cognized, or in case others on different T2 or non- T2 hardware see the sam=
-e thing on v7=2E3 final=2E
->
->Thanks,
->baolu
+The series is based on linux-next and is organized as follows:
+
+Patches 1-3: Preparation and bugfixes: switch riscv crash_mem to
+             memblock, fold the duplicated per-arch memblock walks
+             into the weak defaults, and serialize crash header
+             preparation against memory hotplug.
+Patches 4-7: NODUMP infrastructure: switch crash_core to
+             for_each_mem_region(), introduce the MEMBLOCK_NODUMP
+             flag, add a dumpable flag to struct reserved_mem, and
+             mark /reserved-memory entries with MEMBLOCK_NODUMP.
+Patch 8:     Skip MEMBLOCK_NODUMP regions when building the vmcore
+             ELF header.
+
+v8 --> v9:
+1. Patch 7: Avoid a potential boot panic on SH when NODUMP marking requires
+   memblock resizing before it is allowed, found by Sashiko in [1]. SH supports
+   neither CONFIG_KEXEC_FILE nor CONFIG_CRASH_HOTPLUG, so skip marking when
+   both are disabled.
+
+v6 --> v8 (v7 mainly tried to fix the initrd issue on release in v6,
+that approach is superseded here):
+1. Stop marking /memreserve/ regions with NODUMP. v6 marked
+   /memreserve/ regions with NODUMP. But a bootloader may specify
+   a /memreserve/ entry for memory that the kernel later frees
+   (e.g. the initrd), and those pages would then be wrongly
+   filtered out of the vmcore after being reused as normal memory.
+   The v7 fix (clearing the flag in free_reserved_area()) caused
+   a lockless runtime mutation of memblock.memory [2]. Better solutions
+   exist but need extra preparation, so temporarily dropped the patch
+   that introduced the problem to keep this series simple in v8.
+2. Fix a build failure in patch 2 with both ARCH_KEEP_MEMBLOCK and
+   MEMORY_HOTPLUG are unset. There the memblock arrays live in
+   .init.data, and the weak defaults referencing them create section
+   mismatches, which turn into build errors when SECTION_MISMATCH_WARN_ONLY
+   is also unset.
+3. RISCV recently gained crash hotplug support, so adapt its handler
+   like x86 in patch 3: use __crash_prepare_headers() instead of
+   crash_prepare_headers() to avoid self-deadlock.
+4. Update the cover letter per review feedback: describe how ACPI
+   systems filter reserved memory and why a new flag is needed
+   instead of reusing NOMAP.
+
+v6 --> v7:
+1. Fix a stale MEMBLOCK_NODUMP flag issue [3]. Memory reserved and
+   marked as NODUMP may later be freed (the initrd, for example),
+   so the NODUMP flag must be cleared accordingly. Since the fix is
+   part of the NODUMP infrastructure introduced by patch 5, it has
+   been folded into that patch.
+2. Drop the "generic" related description in the cover letter.
+3. Collect the Acked-by and Reviewed-by tags received during the v6
+   review (thanks to Baoquan, Mike, Rob and Marek). Patch 5 is the
+   only one without a tag, as its Reviewed-by was dropped when the
+   fix was folded in.
+4. Drop patch 1 of v6, which has been merged separately.
+
+
+v5 --> v6:
+1. Serialize crash header preparation against memory hotplug to avoid
+   out-of-bounds or use-after-free issues.
+2. MEMBLOCK_NODUMP marking is now done after memblock allows resizing,
+   avoiding a panic from too few regions before resize is permitted.
+3. Reordered the patches, put pre-existing bugfixes earlier in the series.
+
+[1] https://sashiko.dev/#/patchset/20261016061549.4181390-1-chenwandun1@gmail.com?part=7
+[2] https://lore.kernel.org/lkml/20260922090252.B01541F000FF@smtp.kernel.org/
+[3] https://sashiko.dev/#/message/20260917220750.GA4013814-robh%40kernel.org
+
+v5: https://lore.kernel.org/lkml/20260806093519.2907771-1-chenwandun1@gmail.com/
+v4: https://lore.kernel.org/lkml/20260630074715.4126796-1-chenwandun1@gmail.com/
+
+Wandun Chen (8):
+  riscv: build crash_mem ranges from memblock instead of resource tree
+  crash_core: fold duplicated memblock arch hooks into the weak default
+  crash_core: serialize crash header preparation against hotplug
+  crash_core: replace for_each_mem_range() with for_each_mem_region()
+  memblock: introduce MEMBLOCK_NODUMP flag
+  of: reserved_mem: add dumpable flag to opt-in vmcore
+  of: reserved_mem: mark /reserved-memory entries with MEMBLOCK_NODUMP
+  crash_core: skip MEMBLOCK_NODUMP regions when building vmcore ELF
+    header
+
+ arch/arm64/kernel/machine_kexec_file.c     | 29 ------------
+ arch/loongarch/kernel/machine_kexec_file.c | 27 -----------
+ arch/riscv/Kconfig                         |  2 +-
+ arch/riscv/kernel/crash.c                  |  2 +-
+ arch/riscv/kernel/machine_kexec_file.c     | 33 --------------
+ arch/x86/kernel/crash.c                    |  2 +-
+ drivers/of/fdt.c                           |  1 +
+ drivers/of/of_private.h                    |  1 +
+ drivers/of/of_reserved_mem.c               | 18 ++++++++
+ include/linux/crash_core.h                 |  2 +
+ include/linux/memblock.h                   |  9 ++++
+ include/linux/of_reserved_mem.h            |  1 +
+ kernel/crash_core.c                        | 53 +++++++++++++++++++++-
+ kernel/dma/contiguous.c                    |  1 +
+ mm/memblock.c                              | 16 +++++++
+ 15 files changed, 103 insertions(+), 94 deletions(-)
+
+-- 
+2.43.0
+
