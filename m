@@ -1,113 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.10
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792686624;
-	b=soT1a3c8mLSIEhv/snAAV2Pm72FxUqIaVoZnCkKz5THHojv6xfMYtksWRXmb/DT2v9cF
-	 9vQgB36d8JuBDEHXkbBx+gI2hmZsjtQQ8YOnAeLadTarJig32oZsYft0w9OCFe/bSM4LE
-	 Sdo7csQqwTf0vJDkJDNnvo466erWwdWGs2qhK+L5YUENzO/8UQ+SA8MMnldA51qyWFBDa
-	 1CLWUpm6lcEthEw06TAxFOlSOZlldfk2eieBbJo/fObiH7PQnAy00pw1B5odj2UV23Sk/
-	 +OeIaXt5am+36op3/kCynfznLN9/5WmwQKtckRVIwHqrKjkG/CYUIFg/3jOGiyG+ygg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792686624;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To:X-NV-OnPremToCloud:
-	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=CwMT+VrHaSOm6RhYgZ1wrmIP2lYYLpaYBuZobeicSkM=;
-	b=eTN8GegitfIm/CrPJsgMyLw7KdVe3eDA4Dpi/YIEL2hqLNmuGbC8fyLS3barhdSlxazt
-	 sTuov7qIDoF7Cc1XPIcCZmhMgU9iirwK5ns9ouBmjOFu/srXrwwFrNC0dZOGq39+u+u45
-	 PCJyDx3vpbHZ4yxEdNLSSkER0ni3G8S/0W9WjueDEhIOsePc5L32F0DyvfSkIpZ8+1c8H
-	 bW7AaDXGLXMtlVLCWW697i9AkoJVZ7ijOlBVmI/+SuJnp0fW5n3+sUceOsU3NH7d+oAuL
-	 6KdMK+ZqObAfgjYAv7yE/B5SY38038hLEEgYLAG2Z4g3ZeoLEbHNu5IX+vP6sUJsNiA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=Pzl5jWa2;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.10
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012010.outbound.protection.outlook.com [40.93.195.10])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.42
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792686836;
+	b=K9jQ+8T1vey1o1USN7oEcXrxVRsGVXAZWjfnAm059WyG1QAax9epcCFB/JmSOTcAH6QJ
+	 JgHa2cdWWrTiaCDyDdlR1L8jlbhqkwxdn764UxCcHSYcEi3nztNHt/oskgYd13zd7nG/b
+	 CAxkZqO+17XawVDpiRfz/KCK3uYS4NGJSnkIiWiQXIWEmXhYgviwyBE/ptSE4VaDLe9go
+	 JOM6Z5TRhGYGN6YPLKpFIhohPiI76QY0gbMEW51uAZAIMG853VtlqkRXfDQA0gnTE4n1M
+	 oQAY98hwB8qKcwHjjnyLEFmb/2ILAiHU+cAlDGLZIczIc3+YFFSg+WHwK8wrXvUB4Lw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792686836;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=68+IeagKgDrW1nl1tCiiDqs5Zxn2UgVcp46ojvUcCbA=;
+	b=WHBD+DJwAl5s4Z8sJHKilo+g77m8DpE2ps8UmiuI65j5FPoIu/m2fIj8mtcCV68PjiXa
+	 wbewhsaHFT1W3tYkiWFLrC+EoU/KJ54T1Q7oSqp1RqGMkiJHZVy5lxUWZWmfJSsTPylRR
+	 MDtgBDuqeOWV/65V9JOxVSmg+JI1S9Jo+DJTMr3lKnECLnee4kR8Q3D+/QBsgF3y1y1Op
+	 IXzDO3SUFBFe2IQo8vU34e9ZyAZ6uonor8tnbFkKmPgVuuZhtOK7nhMRLh2oCbCAHbz9d
+	 53rn56cOwNkQRw5COoiT4vk8aRLBBapQDjk84EYLTplgSxvpyJYsTYFOPMBubhs556Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qaiM1DEa;
+	arc=none smtp.remote-ip=209.85.219.42
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A66B7606A31B
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 16:30:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A66B7606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D4EC606A31E
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 16:33:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4D4EC606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=Pzl5jWa2
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UTCRqJBz8M55leACshfm0O2+GwI0i7Y4Prq9XGBwYU1bRJim07LyneTpMUrvN0vsyIp3xpm0ywUnbtIPJ+eE1Ji4aCQz3snglMklogcdPRMAcPxJSK8wdpbculm0PDSvp8s0f2h9mQnxFwSTeg4eVmO2tY+j4qOB31phsfaUTDTtUmqS4fNHSbhqARvni3ZkeAs/wz1cBY55XJqGlZDm8Zn8l7XTJw/pSqnx4IdWCG2FRAsis8vFCbZFdoSslZ/YP7pAxFmVy2JqZyzl9pxAZaiEcYhgpzNld8H0LLgl9OjkR6A4cLFyDIoBJAcv4Gr5msbjFZ8YDUsluhkAZ0bW2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CwMT+VrHaSOm6RhYgZ1wrmIP2lYYLpaYBuZobeicSkM=;
- b=VmqhWNGf009zMzIk00LNyUII5ONKEsyrB892IYRLzMj4/1zGG1GfoGTMyV8/HAtGUJ2xHg6pmqGR32CsIyw6RvzFJYIjE0ImpLfqe4ZTyKERGCqeCpylBrEdPatcQi2FSpP246Tu7jeQgqhYZ2owkgQ9Z/3naILvLmI2IaRLeDjlMP16l5S97vz3mX/eqz6wEFPvTjhfB4gI2gjtfF2Lq0Lin/y3ND6AIhzB87mN6q+uTLL+J15y2W1Xk4CBBIxVyTmYQHMKy+jU9OqELeoF66cQQ7lhqkqwaCh4CnrAN2jQ8YcRfzw0tEUjpXDk1qSkyigKgeh5quf6wePifu+cZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=hust.edu.cn smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CwMT+VrHaSOm6RhYgZ1wrmIP2lYYLpaYBuZobeicSkM=;
- b=Pzl5jWa2An1XhJdKxRSnbhxSgHfwMBFVsqIBkS/6eA4WnKofFlzSsKZGh4DsAS4owXyoWIdLK4d+EvfWMY+ynMjmGKjLBw3XcOZ9ARRhfZx8vKYpcjGdzs0Gg0EmAD3iWwAA13NuKobJ4S7yHZI+RZbuOwWLRAfuTydj5IVvn0wlF0yPzTN96ojZcDUKJu1tfJ+tq5CBw0+MDBC8qoDZ8BvJtN/5q6z1nNAEbWYAPbwpPwpfx0Ae+J5T4ragbxW0PCQXsV6pvor3Uuujvmh8JiXrLZrBomPR4N6q4s5djPHdK2Got98xkSeEVArmJHm7aIj8i7XNaqL7t14QOXdzPA==
-Received: from MW4PR04CA0198.namprd04.prod.outlook.com (2603:10b6:303:86::23)
- by DSVPR12MB999309.namprd12.prod.outlook.com (2603:10b6:8:41f::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.16; Thu, 22 Oct
- 2026 16:30:17 +0000
-Received: from CO1PEPF0001885B.namprd02.prod.outlook.com
- (2603:10b6:303:86:cafe::95) by MW4PR04CA0198.outlook.office365.com
- (2603:10b6:303:86::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.546.18 via Frontend Transport; Thu,
- 22 Oct 2026 16:30:16 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.161) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- CO1PEPF0001885B.mail.protection.outlook.com (10.167.249.244) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.546.15 via Frontend Transport; Thu, 22 Oct 2026 16:30:15 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Thu, 22 Oct
- 2026 09:29:50 -0700
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.49; Thu, 22 Oct
- 2026 09:29:49 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
- Transport; Thu, 22 Oct 2026 09:29:48 -0700
-Date: Thu, 22 Oct 2026 09:29:46 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: =?utf-8?B?5b6Q5pmX57+U?= <xuhx@hust.edu.cn>
-CC: <joro@8bytes.org>, <will@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <bhelgaas@google.com>,
-	<linux-pci@vger.kernel.org>
-Subject: Re: iommu: PCI reset helpers' lock-free entry reads race the
- iommu_device_unregister() traversal -> group use-after-free or NULL  deref
- inside the reset path
-Message-ID: <ato5+lrj843ctUE+@nvidia.com>
-References: <2f9a772a.14c19.1a163edffb0.Coremail.xuhx@hust.edu.cn>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=qaiM1DEa
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-91b834592afso937816d6.0
+        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 09:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792686835; x=1793291635; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=68+IeagKgDrW1nl1tCiiDqs5Zxn2UgVcp46ojvUcCbA=;
+        b=qaiM1DEaOhw0u3fobOoWvg8EPzfHlUGr51vRoJEPQaw0UUPDIHEtiEtPwjnj22GGox
+         Sn2vBwzlYP934LnUVZ+BJmui967tZ9Cuuj7VoWkKeGcXp13Qw+UEywTmOtNPLNeYDvSN
+         AHGiIXllQu9D7p2g02P3FPb0WDE9+er7p8oAukHQzEHvBsTwnkvwV0dCgdUpXDUKtDKJ
+         1vT7iEp7dsuENhQQiR81dwNUElgaFMarArRbIFIKZ79G6wsKdU5NtWmd3Lo8mdK/GPUL
+         TSKelGQrag+7Twqan5p4FQPl8Kj4rsUWzk4co77BWK5gM421uZ3HCcnLSr++D/3pbdpW
+         ckNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792686835; x=1793291635;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=68+IeagKgDrW1nl1tCiiDqs5Zxn2UgVcp46ojvUcCbA=;
+        b=fr1nicSI6y2EGGU2rFTPF+iS8afqMxKyPvJ/yLlm8owX4R039/O2mIQwUVz3O1WXcW
+         P43rGaBJPLmvz+TVuJ4kXLtZYJeMO+c6oKWLfWMAasoCaguqtym/m9kdv/UKVxbj0Vj4
+         QK5I7lWYHEaLw7RhzKbcb8HipVo57JpQtOaV5Kbc0Wum5bdXYlusOlX/s85x8fbWN8Pc
+         SX+x3gqnFaH/eHfOF//fxsiSTh8CaoVK6fvIWeTKtqMklsJpN/dlfy10pKs3rLftmnTF
+         jtJL7coqqC3HO/uI0vVPzp0okd8EWPXxJGybUp7STOL+8YS5iPivqTCujzku4QZJKKp9
+         Xn/A==
+X-Forwarded-Encrypted: i=1; AKwUvBySFfG78C5sGAiYh9Vcl+tybjB/AQ9ffuNuHcV5r3a3q1/RLMJnsuN5GOiTUDcIWbGkd1xv2A==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJFYJ/KN8bCkc6QYiqi81Oh4GpLhaAckvkkUe2cnfBKCyZAKJMU
+	DfCMZRdoHOrtL/54BMGGHu7GcMclrmy5hBj9mYAhPbrZS59Z47CGiwaf
+X-Gm-Gg: AYBFou16CRrLffkagwwqLXJY4++U7riv48BopLYZVMj80kryR8YD5xeazx3tpsAmBur
+	Aot0s2+ZHpD2klvTMOiNMM/YUQ8Qt7K46DDkxWAKex5jflXBpiXhY1I6msDFzMDN6y+xQk+udGK
+	zGVZYOmjz2PZPmnrwS7eCv1+LugTpASq67Hq16pioS379fiw4WXd7ewsa8FBZJcagVG9xaZALhR
+	kxA8Af508TJ0qDFYUTM3/aHwL/f5GPBsv264OW1bDXsvmoB3NfGYpmTPP5VczZtWliNWLV1AJfx
+	7CCQ3C+Z1Rh5sIQoqVpiM1zpjt1H7cIa4xreaSRde3nFRVe2OtobsMK7ziszeX32kejlnlA1Sy/
+	lu+lRH4mWotXWni1s5fb+zho8g4uPqpVgMpjA/9gUUc3boOZ38guj5IyQY0Ttg7kN3MFTczrguF
+	uBGuHzk+tXhEwO7j8IgqKDiqvLfEuMYLQ9huZGrxPNKJqCjfl2o6IDm9JlyXVfvOg9e3GTCdsbg
+	e/+dNCPz8fa3v9dyJFkfRQPfhRJNin5XRLaW09EhWtfZYldqSJAu3Q9uip5PsPjih7LdKuc7IJO
+	an8xEPQQFVY+gJ1J5Lhf2LrO
+X-Received: by 2002:a05:6214:2026:b0:91b:5d3a:4fcc with SMTP id 6a1803df08f44-91c12f57cd8mr99901036d6.57.1792686834990;
+        Thu, 22 Oct 2026 09:33:54 -0700 (PDT)
+Received: from i4-gl-tmk5904.ad.psu.edu ([130.203.156.186])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91c36f0abedsm1511396d6.3.2026.10.22.09.33.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2026 09:33:54 -0700 (PDT)
+From: Yuho Choi <oss.patchbox@gmail.com>
+To: Sven Peter <sven@kernel.org>,
+	Janne Grunau <j@jannau.net>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Neal Gompa <neal@gompa.dev>,
+	Robin Murphy <robin.murphy@arm.com>,
+	asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Yuho Choi <oss.patchbox@gmail.com>
+Subject: [PATCH v1] iommu/apple-dart: Report TLB flush failures from iotlb_sync_map
+Date: Thu, 22 Oct 2026 12:33:40 -0400
+Message-ID: <20261022163350.23743-2-oss.patchbox@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -117,61 +102,70 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <2f9a772a.14c19.1a163edffb0.Coremail.xuhx@hust.edu.cn>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF0001885B:EE_|DSVPR12MB999309:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8aa1d4ea-3abe-4a65-ce75-08df3059c0a5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|376014|36860700016|82310400026|56012099006|11063799006|5023799004|261021123027099003|261021121427099003|261021135927099003|10067099003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	UFyX4iPWvyaU8m60fzRMONorAq3mrwiXCpqqP0etasMKIETq1tdeCqTImLdme8JfUwfFKnCGpfjUd+z/GTZgesIKfysqTfWus2/qoiTqlnO7EabniagkSz+FeExXPwI6jtuBPZsNOctWuww94oId/e6n8uJ/UkC10w9BzrP/Xb2xlDcPO+2Jw75nF55bBbOlmXOELN8PtSM17WMayb4DtnxyIOXO6cg9yhyaGE1JIhDzwSWWr9CJejUR/9PWj5PJniNir2CqDk7rp3Q+bVjKs07NqqJsqh7jDsIEqsvSFTcs/8RDYqWz9gHwlGSBNc01bfDy71zGiXlw9aQubjmeFj75yAKOppB2UUFZycd11UjQXJj5M73jFqNUnknceI0fDVktZqr+2TwpY5UfylvFb9Y4uXeldg1mtuTbyrlvNhECHN2IDUnGwTRzrXsFUq2kEQQaqytTqVQkqNdYS0tIu7zniFF6qiq99wVWuRxTW/r3OEPlO3giPClisybQBFhVnDdUVvFCUw4ltlumNNUuSlxQrYqtxWtDL0OAjyyDLoDzDmXBzsgBKdI1W8tzCiXaQwGGXz2kuYIwKSqTTFSL/mZ1j2eLvFxE8VuVOk8c/snyCC8Sc+5xD0jZ3BdzeZ4XuJaLr36ZZ439MOdSrjukjBxOIJji7KKFwXL/9SfMb/wUOmhOfJ++USJUJE2BLfygjk3t3UshbZzWyzga2rCxqA==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(36860700016)(82310400026)(56012099006)(11063799006)(5023799004)(261021123027099003)(261021121427099003)(261021135927099003)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	eTVY8hOz93NNi27aMeHpQPPp6rBfTvdLh2GlFM5m0YljGopZbjidQLFxymkYv5LiaXau1rgGBy7KxwJiiB6kL3HShaLwaljfefE9yfx7t1EzuMiBQL/4XJ7dnp+/YpX5TQ5LHTTuuQVroGREW65bWz9Oqx+fLmMTppubSsifmX5TnBgaOgfgCRHTwKjoowyMI5SBp0VtEA1dNKbAnl+2rHCjTHEK456qPr+7fSYU+KRXv3TmkQYVT5HK+MGj/T7ef3nxkcPjwzMFdU7T7OC59vTWdWupOuebUyYzkDiD67ycLkNYLGIDM3BWCkKWITmNp44z/xWqiiO43Y20edeUnqbFETxrW0Afb943WUTYJQp02zrYh8f8ZrVthk9XDcGZENfb6Ot084WFJ8SwdRoYYn+WlqDI80HkzrHpBwsYHenIIPSrIlK31rAu2vJjaiJe
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 16:30:15.0818
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8aa1d4ea-3abe-4a65-ce75-08df3059c0a5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF0001885B.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DSVPR12MB999309
 
-On Thu, Oct 22, 2026 at 10:05:04PM +0800, 徐晗翔 wrote:
-> The PCI reset IOMMU helpers read pdev->dev.iommu_group and
-> dev->iommu before taking any lock, and the whole PCI reset body
-> (FLR alone sleeps 100ms) runs between their prepare and done halves
-> -- meanwhile the iommu_device_unregister() traversal can tear the
-> device's group away entirely, so the helper's post-reset half locks
-> an already-freed group (use-after-free spinlock) or walks
-> &NULL->devices (NULL deref oops).
+apple_dart_iotlb_sync_map() flushes the TLBs of every DART the domain
+is attached to after a new mapping has been written. The
+invalidate_tlb() callbacks return -ETIMEDOUT when the busy bit does not
+clear in time, but apple_dart_domain_flush_tlb() drops the result and
+the callback always returns 0, so iommu_map() reports success although
+the flush did not complete.
 
-Unplugging an IOMMU instance while a device behind it is still
-alive? That doesn't sound like a reasonable use case to me.
+Since commit fa4c4507099f ("iommu: Allow .iotlb_sync_map to fail and
+handle s390's -ENOMEM return"), iommu_map() unmaps the range and fails
+when .iotlb_sync_map() returns an error. Return the error from
+apple_dart_domain_flush_tlb(), after still flushing every DART of the
+domain.
 
-> The kernel's own comment above
-> these helpers states the contract -- "callers must ensure there will
-> be no racy iommu_release_device() call, which otherwise would UAF the
-> dev->iommu_group pointer" (drivers/iommu/iommu.c:4027-4032) -- but
-> the unregister traversal is precisely an iommu_release_device()
-> source that no reset-path caller can ensure against: it takes no
-> device lock, so the device_lock the reset path holds (which does
-> serialize device_del) protects nothing here.
+Signed-off-by: Yuho Choi <oss.patchbox@gmail.com>
+---
+The unmap path is not changed, as .iotlb_sync() and
+.flush_iotlb_all() cannot report a failure.
 
-The contract in the kdocs literally means iommu_release_device()
-must not be called during a reset. So, iommu_device_unregister()
-invoking iommu_release_device() violates that contract.
+ drivers/iommu/apple-dart.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-Nicolin
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index b160fb464c5f..1119769f9f51 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -494,9 +494,9 @@ static int apple_dart_hw_reset(struct apple_dart *dart)
+ 	return dart->hw->invalidate_tlb(&stream_map);
+ }
+ 
+-static void apple_dart_domain_flush_tlb(struct apple_dart_domain *domain)
++static int apple_dart_domain_flush_tlb(struct apple_dart_domain *domain)
+ {
+-	int i, j;
++	int i, j, ret = 0;
+ 	struct apple_dart_atomic_stream_map *domain_stream_map;
+ 	struct apple_dart_stream_map stream_map;
+ 
+@@ -506,8 +506,11 @@ static void apple_dart_domain_flush_tlb(struct apple_dart_domain *domain)
+ 		for (j = 0; j < BITS_TO_LONGS(stream_map.dart->num_streams); j++)
+ 			stream_map.sidmap[j] = atomic_long_read(&domain_stream_map->sidmap[j]);
+ 
+-		stream_map.dart->hw->invalidate_tlb(&stream_map);
++		/* Flush every DART even if one of them fails. */
++		ret = stream_map.dart->hw->invalidate_tlb(&stream_map) ?: ret;
+ 	}
++
++	return ret;
+ }
+ 
+ static void apple_dart_flush_iotlb_all(struct iommu_domain *domain)
+@@ -524,8 +527,7 @@ static void apple_dart_iotlb_sync(struct iommu_domain *domain,
+ static int apple_dart_iotlb_sync_map(struct iommu_domain *domain,
+ 				     unsigned long iova, size_t size)
+ {
+-	apple_dart_domain_flush_tlb(to_dart_domain(domain));
+-	return 0;
++	return apple_dart_domain_flush_tlb(to_dart_domain(domain));
+ }
+ 
+ static phys_addr_t apple_dart_iova_to_phys(struct iommu_domain *domain,
+
+base-commit: c03c1a14507dfaf8b856c2608f9ac216021fc222
+-- 
+2.43.0
+
