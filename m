@@ -1,87 +1,44 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.227.134
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=85.214.250.239
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792655109;
-	b=qDpjj24RKCb1dMor3OaTRHLLfo2N8tKvto7ODZVyYjsQaV2WBjHgWUEn+trjooTFsbc/
-	 IC2GTGL7P6x8B1vW+gsy4TPWO0bpwJuCBnkc/klbF5R0qbNB5nADCOanBFkTkZlCc07v2
-	 9Y5YxV/S5X0SWtR5Gvzi74BzTyIRP4/3GIkC61Btxktw962BHbJ4ZrdWT4tYC5R/gsTES
-	 kUmqoE5mHyNDf64NLguPPbRUckPvB0NSdFQuL1bhkoyVJrAq9zFdPKzG/nTgyXslT1KGM
-	 CBABWO6fhli/a0k8rECHqawEDnshwYmw+IaluCoYrzVp/KmGvDIX5cMRBwxaz0lHDzw==
+	t=1792655890;
+	b=DVVWF24hRjUJmAnFBpuXA6qqLKNcQCvXH25qVZMmLx49+b8FvtW+BGjtduDs6Erx6wAs
+	 dEebXb7QiYOjrAhi300HWGvALXBN6rqG68S0/y5DfGPR7l7VRbKTLjaFnO3dFx0g5IQMw
+	 8IQWUAtQ/p7LQKKzPVuoc/TLR+4t3H22mNCTAlDFJX/Q7fw/DD6xB82l5ttVoKVeDd7ye
+	 /UIqkDgYelE2FmLBLJ6OmB2uXs3N8Hc23hTZYzRoUXyRjrTVkIb1LgfRJ69usz/gDOBho
+	 eoCuLo+ztNNnFxKPGLttICLnuEHP81srMirZL2VFQp9ifk4J2VVROsEsnhW8Yokf5CA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792655109;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=HDXHwat4zLpbZennBEg7uZauJYVMECCPqpPno/TLnRE=;
-	b=4frQDXLB8EfUTUoFU0gFbbQvuGp59WJazW+OmdObyG6eH1P3u9Kd+teCOjE8pzH0i4ah
-	 HyUATxtvU62Lan+6XE/IflStfLLxQ9qKDp2g5dL47M2hAxfnkqGugUJo4le5nZ2KydW8I
-	 vxboCYw1afmfs/c3s8SXjHXfVPfOeSWdacO8Kzvkzc5BUdUrBL7e+WnQbhrr1/A87u4/S
-	 baY16bC63LegZVf42riK5eKS6HBsDaGt+rJknMyleLGcrYriM4KncYnoXcz3dfnD5ndMT
-	 RXIWvEFqxUzaMAD5LAdvubIPlOTBATp4p60KmhF61REsnZYxBD0ksfimyxe8NTliYhA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792655890;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:
+	 MIME-Version:Content-Type:Content-Disposition;
+	bh=yiyHDy8Y250tnW9FZf9O9LEqU4J4sES5GaiRIAh9GNE=;
+	b=OWXcHUge/hWxhiehGvFHJrnxhv58j9uxLqAdFfVcEv+cyfrytD1NMzCAqrt2ANOJB1e1
+	 xXQWZ7ZncJ3bV0Cql9DRgSb+aIXOhfgTIkszd9AXQYsaRPpwzfeCdh7C2zNRLWeRYayq3
+	 twmmD6J2+3Kyxf30uhvyHJfrj3TwxmJ3ePvgbhFxWNQjgzDuBeMT7ZKo8XpYmvbIRUs2a
+	 QP6BsiJ4gjy7Kcoubu7H2YrdS7RsOzZKLXN9Cq18avdfds2JQFV6r4DIC6bAZjAIinbbF
+	 yIlbyrZ/4bKeHM4AEVEzQwlxFFH/GCxfZV+JRre6UASyoTU2jxqkbF8D9KL+58mparA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=rk25qGEr;
-	arc=none smtp.remote-ip=74.125.227.134
-Received: from mail-pj2-f6.google.com (mail-pj2-f6.google.com [74.125.227.134])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=none header.from=8bytes.org;
+	spf=pass smtp.mailfrom=8bytes.org;
+	arc=none smtp.remote-ip=85.214.250.239
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7DE65606A31D
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 07:58:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7DE65606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Received: from 8bytes.org (p200300f6af404a004d3fc2495c623980.dip0.t-ipconnect.de [IPv6:2003:f6:af40:4a00:4d3f:c249:5c62:3980])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97B5606A31E
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 07:45:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A97B5606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=rk25qGEr
-Received: by mail-pj2-f6.google.com with SMTP id 98e67ed59e1d1-3964e7720afso933626a91.1
-        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 00:45:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792655108; x=1793259908; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=HDXHwat4zLpbZennBEg7uZauJYVMECCPqpPno/TLnRE=;
-        b=rk25qGEr/mTVyStsgBtqsLniSoLzdvMNydpDTzZOO+QRVoQvy1Vc9UbICzdhK5FlOK
-         RcHVNLlP6F/hdXPassNhSlfjycQ/3YGhWoRHpQLCyKpdQ6ET1eQjvi6KaGFps6KITwSr
-         4EQikr03yMhv84uGDBLpOb+PwXbplBEuEC2EalWoUmYJN2KBxtgizBtQlSZQ+r823Av9
-         2iysbajYAOY4NaIM7PMz+xm4uJ52+9s0kjs4OLIaZESCn9w5SRwmDEcN6q0QhOspzt1C
-         guTvA1mqt08cwTI3lbjEdckDsBCnYbjeN5rUAK3NTNizCmSv/kjzPPmXnl4i+2uMZjX6
-         HWbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792655108; x=1793259908;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=HDXHwat4zLpbZennBEg7uZauJYVMECCPqpPno/TLnRE=;
-        b=WLC8WnEes1UelLGgQHhdLymDSVXhX1/oC5bO41AZEeSpdHQnq0xws8KfMV0rJStght
-         Af4jxwZyQAzacg1cJfvwWP08+3r7X9KdynzeBChYCzMGLb5bb8EEbrmtYNUgTlPM0UqS
-         6rISdt2DB14J3l0MnWCg4hzSHPfSeAT+QaXnifIDa908exNtX/2s8YDnsCGl2a9LJQ2l
-         XjBoqOl5axb1H/W2p28HFHrH4Fqpx/ZY7s/K+HBcIAT3UAZKb4fJQJb7RPKJsem5ibk/
-         +7p/fqJQvOMNbUYe1G9WIZqD1OJ3fi8gLE+MgGcIaRIldwaH7+KnqxDtd6BZlXHGMpQo
-         e76w==
-X-Forwarded-Encrypted: i=1; AKwUvBx2YTMptqWR6omAY9HiidTq1kqoJ4yWlOPEPHNkcRdpROjoK6VLzigHPSI72urup53J9luflQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKKWF60Zm74+VO4oqPt5SPi9InUvyoxqRYTwkDWcq55IPYFZPEW
-	4jMcy6iloOaPOBEuwQxWh52FEY12v6w/G7PPj4id6T35p8aw3Gs/heLO
-X-Gm-Gg: AYBFou0Rr3U+xR3uLy4aGse2oqtQ0LINbAuNXSwZvNQj9yDNXO5rXy63gtkx/A7nQTO
-	eHF+iT4WYbFoUPc5TCWg86lE6igWNIRcnQBPff8P04vPro9Do7a3kedOJqTWuW4iSBIxJ/NpZKP
-	aksCCp+FA+IIDH9iyXu5fH1cQ/S3NkzA51P7Ac4lMaZRYpAqWdg9QAibYE94ihlzP0kz7k0Ll1d
-	QJ5WemENCMKfyBp3wOyTvdmvfmi4DOhU9PMS+3/fi5saSJIwaiCH5jhPGuTrBzmO+dHjWbImKa6
-	fYbey3QG2R6fOdflNBA4eCOs/3SYaZUl//oviliqWjHex87biYXj9BFTWEBNaVe4WsSyzK7ZQIY
-	TpQHRYtqqEGyBKEsZsMyYK7cC0CI/PWDakFPAse7GRl0hV0h/j2T6aAWSI8o0rykTLNPT/DQ47S
-	XnVHHgouxBSmXQ+2N65fZKv+mOGkewmaQw2a77xi6oxu8rsbqcOLHN0AZunCsJRICtSKVdGfVDB
-	CvFFluLUT/LymBS23KHenyvim/74J2fYnGRPqO2lxopHQxbZmJor+/1iacR6u4=
-X-Received: by 2002:a17:90b:5870:b0:3ab:5758:3766 with SMTP id 98e67ed59e1d1-3ad8707700dmr3724932a91.51.1792655107849;
-        Thu, 22 Oct 2026 00:45:07 -0700 (PDT)
-Received: from [10.125.112.22] ([122.11.210.25])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ada49366fdsm2945920a91.14.2026.10.22.00.44.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Oct 2026 00:45:06 -0700 (PDT)
-Message-ID: <098ff899-81b9-4ccc-a143-1e324446258f@gmail.com>
-Date: Thu, 22 Oct 2026 15:44:48 +0800
+	by mail.8bytes.org (Postfix) with ESMTPSA id B498D1C1958;
+	Thu, 22 Oct 2026 09:58:01 +0200 (CEST)
+Date: Thu, 22 Oct 2026 09:58:00 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Updates for Linux v7.4
+Message-ID: <atnAm_7wyGt6wsK7@8bytes.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -91,208 +48,294 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 3/8] crash_core: serialize crash header preparation
- against hotplug
-To: Jinjie Ruan <ruanjinjie@huawei.com>
-Cc: catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
- chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
- palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, tglx@kernel.org,
- mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
- hpa@zytor.com, saravanak@kernel.org, akpm@linux-foundation.org,
- pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
- robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
- linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
- kexec@lists.infradead.org, linux-mm@kvack.org, iommu@lists.linux.dev,
- robh@kernel.org, baoquan.he@linux.dev, rppt@kernel.org,
- m.szyprowski@samsung.com
-References: <20261021083011.2170525-1-chenwandun1@gmail.com>
- <20261021083011.2170525-4-chenwandun1@gmail.com>
- <12e4e687-1ff0-41b2-bdf8-7f48b29e1f2f@huawei.com>
- <a1665f9e-3116-47bc-974e-98dce408fa37@gmail.com>
- <31d63208-3ef2-420f-a0c2-d9d6d49c5e21@huawei.com>
-Content-Language: en-US
-From: Wandun <chenwandun1@gmail.com>
-In-Reply-To: <31d63208-3ef2-420f-a0c2-d9d6d49c5e21@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+Hi Linus,
 
+This PR slightly violates the everything-must-be-ready-before-the-merge-window
+rule, as I rebuilt the next branch on-top of the final v7.3 tag in order to not
+include the fixes merged in v7.3-rc7. There is also a MAINTAINERS update patch
+which I applied this week.
 
-On 10/22/26 10:00, Jinjie Ruan wrote:
-> 
-> 
-> 在 2026/10/21 17:48, Wandun 写道:
->>
->>
->> On 10/21/26 17:13, Jinjie Ruan wrote:
->>>
->>>
->>> 在 2026/10/21 16:30, Wandun Chen 写道:
->>>> From: Wandun Chen <chenwandun@lixiang.com>
->>>>
->>>> crash_prepare_headers() counts memory ranges before populating the
->>>> allocated crash_mem array. The weak implementation used by ARM64,
->>>> RISC-V and LoongArch walks memblock.memory, while x86 performs the same
->>>> two-pass operation over system RAM resources. Concurrent memory hotplug
->>>> can change range source between the two walks and make the populate
->>>> pass overflow cmem->ranges.
->>>>
->>>> Take device_hotplug_lock when preparing crash headers during
->>>> kexec_file_load(). The x86/riscv memory hotplug path already takes
->>>> device_hotplug_lock, so call __crash_prepare_headers() directly
->>>> to avoid recursive locking.
->>>>
->>>> Sashiko reported this issue in [1].
->>>>
->>>> Fixes: 3751e728cef2 ("arm64: kexec_file: add crash dump support")
->>>> Fixes: 1bcca8620a91 ("LoongArch: Add crash dump support for kexec_file")
->>>> Fixes: 8acea455fafa ("RISC-V: Support for kexec_file on panic")
->>>> Fixes: dd5f726076cc ("kexec: support for kexec on panic using new system call")
->>>> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
->>>> Link: https://sashiko.dev/#/message/20260806101002.1F84E1F000E9@smtp.kernel.org [1]
->>>> Acked-by: Baoquan He <baoquan.he@linux.dev>
->>>> ---
->>>>  arch/riscv/kernel/crash.c  |  2 +-
->>>>  arch/x86/kernel/crash.c    |  2 +-
->>>>  include/linux/crash_core.h |  2 ++
->>>>  kernel/crash_core.c        | 17 +++++++++++++++--
->>>>  4 files changed, 19 insertions(+), 4 deletions(-)
->>>>
->>>> diff --git a/arch/riscv/kernel/crash.c b/arch/riscv/kernel/crash.c
->>>> index fe5a4b306aae..ac8df2edf2a7 100644
->>>> --- a/arch/riscv/kernel/crash.c
->>>> +++ b/arch/riscv/kernel/crash.c
->>>> @@ -70,7 +70,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
->>>>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
->>>>  	 * memory resources.
->>>>  	 */
->>>> -	if (crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
->>>> +	if (__crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
->>>>  		pr_err("unable to create new elfcorehdr");
->>>>  		goto out;
->>>>  	}
->>>> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
->>>> index e6f23933a6df..bef008a0cb22 100644
->>>> --- a/arch/x86/kernel/crash.c
->>>> +++ b/arch/x86/kernel/crash.c
->>>> @@ -465,7 +465,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
->>>>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
->>>>  	 * memory resources.
->>>>  	 */
->>>> -	if (crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
->>>> +	if (__crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
->>>>  		pr_err("unable to create new elfcorehdr");
->>>>  		goto out;
->>>>  	}
->>>> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
->>>> index bc087124cd78..28e7a81cf263 100644
->>>> --- a/include/linux/crash_core.h
->>>> +++ b/include/linux/crash_core.h
->>>> @@ -61,6 +61,8 @@ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_ma
->>>>  				       void **addr, unsigned long *sz);
->>>>  extern int crash_prepare_headers(int need_kernel_map, void **addr,
->>>>  				 unsigned long *sz, unsigned long *nr_mem_ranges);
->>>> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
->>>> +			    unsigned long *nr_mem_ranges);
->>>>  extern int crash_exclude_core_ranges(struct crash_mem **cmem);
->>>>  
->>>>  struct kimage;
->>>> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
->>>> index faa0f22dbb41..8a861a946e26 100644
->>>> --- a/kernel/crash_core.c
->>>> +++ b/kernel/crash_core.c
->>>> @@ -16,6 +16,7 @@
->>>>  #include <linux/mm.h>
->>>>  #include <linux/cpuhotplug.h>
->>>>  #include <linux/memblock.h>
->>>> +#include <linux/device.h>
->>>>  #include <linux/kmemleak.h>
->>>>  #include <linux/crash_core.h>
->>>>  #include <linux/reboot.h>
->>>> @@ -344,8 +345,8 @@ int crash_exclude_core_ranges(struct crash_mem **cmem)
->>>>  	return 0;
->>>>  }
->>>>  
->>>> -int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
->>>> -			  unsigned long *nr_mem_ranges)
->>>> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
->>>> +			    unsigned long *nr_mem_ranges)
->>>>  {
->>>>  	unsigned int max_nr_ranges;
->>>>  	struct crash_mem *cmem;
->>>> @@ -382,6 +383,18 @@ int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
->>>>  	return ret;
->>>>  }
->>>>  
->>>> +int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
->>>> +			  unsigned long *nr_mem_ranges)
->>>> +{
->>>> +	int ret;
->>>> +
->>>> +	lock_device_hotplug();
->>>> +	ret = __crash_prepare_headers(need_kernel_map, addr, sz, nr_mem_ranges);
->>>> +	unlock_device_hotplug();
->>>
->>> I think this patch conflicts with my changes and would also conflict
->>> with the implementation of arm64 crash hotplug.
->>>
->>> https://lore.kernel.org/all/20260921090450.807575-15-ruanjinjie@huawei.com/
->>>
->> Have these patches already been merged? My current work is based on the latest
->> linux-next. If they have already been merged into the maintainer's branch,
->> please let me know, I will update my tree and rebase/re-adapt my changes accordingly.
->>
->>
->> Also, regarding the changes in kernel/crash_core.c: it looks like we modified
->> the same spot, the change is not wrong, is that right?
-> 
-> Hi Wandun,
-> 
-> However, I think someone should have informed me in advance; otherwise,
-> doing duplicate fix work is pointless.
-> 
-> I see that part of your patch series modifies code I previously changed,
-> but I was not CC'd.
+Everything else in this PR was ready before the merge window and the final
+merge went through my usual testing as well. With that in mind, please
+consider:
 
-Hi Jinjie,
+The following changes since commit c03c1a14507dfaf8b856c2608f9ac216021fc222:
 
-Sorry for not CC'ing you. I keep the per-patch Cc lists short because
-large recipient sets have caused my sends to be cut off midway before,
-(I'm still trying to track down exactly where the problem is) you should
-have been on the list that's my miss. You'll be on the Cc of every future
-version.
-> 
->>
->>> arm64 crash hotplug:
->>> https://lore.kernel.org/all/20260918100442.3841135-18-ruanjinjie@huawei.com/
->>
->> In addition, if arm64 gains crash hotplug support, the code there would indeed
->> need to be modified (to avoid a deadlock). As of now, arm64 crash hotplug
->> support has not been merged yet either, has it? I just want to make sure I
->> haven't missed anything.
-> 
-> Yes, you are right. If your patch series will be merged soon, I will
-> develop based on it.
+  Linux 7.3 (2026-10-18 13:14:58 -1000)
 
-Also thanks for your reminder, otherwise I might later overlook the case
-where arm64 has already gained crash hotplug support, and introduce bugs
-as a result.
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v7.4
 
-Best regards,
-Wandun>
->>
->>>
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>>  /**
->>>>   * crash_exclude_mem_range - exclude a mem range for existing ranges
->>>>   * @mem: mem->range contains an array of ranges sorted in ascending order
->>>
->>
-> 
+for you to fetch changes up to 20bfd25757659ff8229eeed6f048c76f9a11a4a3:
 
+  Merge branches 'apple/dart', 'arm/smmu/updates', 'arm/smmu/bindings', 'hyper-v', 'samsung/exynos', 'riscv', 'broadcom', 'intel/vt-d', 'amd/amd-vi' and 'core' into next (2026-10-20 09:43:47 +0200)
+
+----------------------------------------------------------------
+IOMMU updates for v7.4:
+
+  - Core:
+    - Detect scatterlist length overflows and finalize deferred domain
+      attachments before mapping MSI pages.
+    - Consolidate x86 MSI reserved-region handling and clean up internal DMA
+      and SVA helpers.
+
+  - AMD IOMMU:
+    - Add IOMMU PerfOpt support, enabled by amdgpu for supported integrated
+      GPUs in identity domains.
+    - Restrict forced identity mapping to GPUs that require it.
+    - Fix kdump device-table allocation and reuse, ATS configuration error
+      handling, and an interrupt-remapping allocation leak.
+    - Clean up device probing and initialization.
+    - Add Vasant Hegde as an AMD IOMMU maintainer.
+
+  - ARM SMMUv2:
+    - Device-tree binding updates for Qualcomm Maili and Nord SoCs.
+
+  - ARM SMMUv3:
+    - Work around hardware integration issue on Google Tensor G5 SoCs where all
+      DMA transactions appear as instruction fetches.
+    - Allow command queue size to be configured on the kernel command-line.
+    - Reduce queue sizes when running as a kdump kernel.
+    - Fix some pre-existing issues in the driver and kunit tests reported by
+      Sashiko.
+    - Fix handling of Arm hardware errata relating to the contiguous hint
+      when using SVA.
+    - Rework the TLB invalidation logic in preparation for enabling iommu-pt in
+      future.
+    - Minor cleanups in preparation for improving support for kdump.
+
+  - Apple DART:
+    - Support device-tree DMA aperture specifications.
+
+  - Broadcom:
+    - Add BCM2712 IOMMU support for Raspberry Pi 5 display and multimedia
+      devices, including the generic page-table format and shared TLB cache
+      management.
+
+  - Hyper-V:
+    - Add a para-virtualized guest IOMMU driver with guest-managed stage-1 page
+      tables and page-selective IOTLB invalidation.
+
+  - Intel VT-d:
+    - Enhanced IQE fault handling for batched multiple descriptors,
+    - Optimization of page-table level calculation in compute_vasz_lg2_ss(),
+    - Fixes for several pre-existing issues reported by Sashiko,
+    - General cleanup and refinement.
+
+  - RISC-V:
+    - Report cache-coherency capability for coherent devices, enabling
+      VFIO/iommufd use.
+
+  - Samsung Exynos:
+    - Support SysMMUs without BLOCK mode, fixing their enable sequence and TLB
+      invalidation.
+    - Improve v7 fault diagnostics with transaction information.
+
+----------------------------------------------------------------
+Andrew Jones (1):
+      iommu/riscv: Report cache coherency capability
+
+Daniel Drake (5):
+      iommu_pt: Fix test_pgsize_boundary() failure on narrow-OA formats
+      dt-bindings: iommu: Add Broadcom BCM2712 IOMMU
+      dt-bindings: display: brcm,bcm2835-hvs: Document iommus property
+      iommu/generic_pt: Add Broadcom BCM2712 page table format
+      iommu: Add Broadcom BCM2712 IOMMU driver
+
+Federico Parola (1):
+      iommu: Finalize deferred attachments when mapping MSI pages
+
+Guanghui Feng (1):
+      iommu/vt-d: Fix IQE handling to cover all descriptors in submission range
+
+Janne Grunau (2):
+      dt-bindings: iommu: dart: Support specifying the DMA aperture
+      iommu: apple-dart: Support specifying the DMA aperture in the DT
+
+Jason Gunthorpe (7):
+      iommu/arm-smmu-v3: Handle ARM erratum for CONT under invalidation with SVA
+      iommu/arm-smmu-v3: Pass the parameters for the invalidation in a struct
+      iommu/arm-smmu-v3: Move pgsize out of arm_smmu_inv
+      iommu/arm-smmu-v3: Optimize range invalidation for latency
+      iommu/arm-smmu-v3: Keep track in arm_smmu_invs if range invalidation is used
+      iommu/arm-smmu-v3: Precompute the invalidation commands
+      iommu/arm-smmu-v3: Populate the tlbi at the top of the call chain
+
+Jingyi Wang (1):
+      dt-bindings: arm-smmu: Document GPU SMMU on Qualcomm Maili SoC
+
+Joerg Roedel (2):
+      MAINTAINERS: Make Vasant Hegde AMD IOMMU maintainer
+      Merge branches 'apple/dart', 'arm/smmu/updates', 'arm/smmu/bindings', 'hyper-v', 'samsung/exynos', 'riscv', 'broadcom', 'intel/vt-d', 'amd/amd-vi' and 'core' into next
+
+Kiryl Shutsemau (Meta) (2):
+      iommu/arm-smmu-v3: Add a cmdq_max_n_shift module parameter
+      iommu/arm-smmu-v3: Default queue depths to one page in a kdump kernel
+
+Krzysztof Karas (1):
+      iommu/dma: Catch scatterlist length overflows
+
+Li RongQing (1):
+      iommu/amd: Fix leak of data->entry in irq_remapping_alloc() error path
+
+Lu Baolu (7):
+      iommu/vt-d: Avoid out-of-range shift in qi_desc_dev_iotlb_pasid()
+      iommu/vt-d: Do not ignore context table copy failures
+      iommu/vt-d: Handle DID reservation errors when copying context tables
+      iommu/vt-d: Reserve scalable-mode DIDs from PASID entries during copy
+      iommu/vt-d: Use old domain parameter when attaching the blocking domain
+      iommu/vt-d: Fix iopf refcount leak in nested attach
+      iommu/vt-d: Drop old iopf ref only after attach succeeds
+
+Mario Limonciello (2):
+      iommu/amd: Add PerfOpt IOMMU performance optimization support
+      drm/amdgpu: Enable PerfOpt IOMMU perf optimization when GPU in identity domain
+
+Markuss Broks (4):
+      iommu/exynos: detect SysMMUs without BLOCK mode
+      iommu/exynos: fix the enable sequence for no-block SysMMUs
+      iommu/exynos: fix TLB invalidation for no-block SysMMUs
+      iommu/exynos: decode the v7 fault transaction info
+
+Matt Fleming (2):
+      iommu/amd: Program device table when kdump reuse fails
+      iommu/amd: Don't allocate kdump device table from DMA32
+
+Mostafa Saleh (5):
+      iommu/arm-smmu-v3: Ensure L2 tables are visible before L1 ptrs
+      iommu/arm-smmu-v3-test: Fix arm_smmu_v3_test_debug_print_used_bits()
+      iommu/arm-smmu-v3-test: Add missing error checks for inv array
+      iommu/arm-smmu-v3-test: Fix OOB in arm_smmu_v3_invs_test_verify()
+      iommu/arm-smmu-v3-test: Fix UBSAN error
+
+Nicolin Chen (4):
+      iommu/arm-smmu-v3: Disable the impl before disabling the SMMU on shutdown
+      iommu/arm-smmu-v3: Add arm_smmu_attach_release()
+      iommu/arm-smmu-v3: Add Q_POS() macro
+      iommu/arm-smmu-v3: Don't rb_erase() a never-inserted stream node
+
+Peter Griffin (2):
+      dt-bindings: iommu: arm,smmu-v3: Add arm,instdata-override property
+      iommu/arm-smmu-v3: Add support for arm,instdata-override DT property
+
+Pranjal Shrivastava (3):
+      iommu/amd: Refactor device probe and capability initialization
+      iommu/amd: Remove iommu_ignore_device()
+      iommu/amd: Fail probe on ATS configuration failure
+
+Robin Murphy (2):
+      iommu: Make iommu-dma helpers private
+      iommu/dma: Clean up redundant MSI cookie check
+
+Rong Zhang (3):
+      iommu/amd: Do not request ACS when IOMMU is not going to be initialized
+      iommu/amd: Disallow implicit START_STATE => IVRS_DETECTED transition
+      iommu/amd: Remove ad-hoc checks that are never true
+
+Shawn Guo (1):
+      dt-bindings: arm-smmu: Document Adreno SMMU for Nord SoC
+
+Vasant Hegde (2):
+      iommu/amd: Force identity mode for selected GPUs only
+      iommu/amd: Move GA log allocation to init
+
+Wei Liu (1):
+      hyperv: Introduce new hypercall interfaces used by Hyper-V guest IOMMU
+
+Yu Zhang (6):
+      Drivers: hv: Add logical device ID registry for vPCI devices
+      iommu/x86: Add architectural MSI reserved region helper
+      iommu/hyperv: Add para-virtualized IOMMU support for Hyper-V guest
+      iommu/hyperv: Add page-selective IOTLB flush support
+      iommu/hyperv: Add missing PCI dependency for the guest IOMMU driver
+      iommu/hyperv: Make hv_iommu_device static
+
+Zhaoyu Liu (1):
+      iommu/sva: remove iommu_sva_present flag
+
+Zhenzhong Duan (1):
+      iommu/vt-d: Fix page table level calculation in compute_vasz_lg2_ss()
+
+ Documentation/arch/arm64/silicon-errata.rst        |   3 +-
+ .../bindings/display/brcm,bcm2835-hvs.yaml         |   3 +
+ .../devicetree/bindings/iommu/apple,dart.yaml      |  12 +-
+ .../devicetree/bindings/iommu/arm,smmu-v3.yaml     |  10 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   4 +
+ .../bindings/iommu/brcm,bcm2712-iommu.yaml         |  54 ++
+ .../bindings/iommu/brcm,bcm2712-iommuc.yaml        |  40 ++
+ MAINTAINERS                                        |  14 +-
+ arch/x86/hyperv/hv_init.c                          |   4 +
+ arch/x86/include/asm/iommu.h                       |  20 +
+ arch/x86/include/asm/mshyperv.h                    |   4 +
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h                |   1 +
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |  50 ++
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c            |  12 +
+ drivers/hv/hv_common.c                             | 115 ++++
+ drivers/iommu/Kconfig                              |  18 +-
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/amd/amd_iommu.h                      |   3 +
+ drivers/iommu/amd/amd_iommu_types.h                |   7 +
+ drivers/iommu/amd/init.c                           | 192 ++++--
+ drivers/iommu/amd/iommu.c                          | 438 ++++++++++---
+ drivers/iommu/apple-dart.c                         |  74 ++-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |   1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  29 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c   |  57 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 604 +++++++++++++-----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  77 ++-
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     |   2 +-
+ drivers/iommu/bcm2712-iommu-cache.c                |  84 +++
+ drivers/iommu/bcm2712-iommu-cache.h                |   9 +
+ drivers/iommu/bcm2712-iommu.c                      | 550 +++++++++++++++++
+ drivers/iommu/dma-iommu.c                          |  32 +-
+ drivers/iommu/exynos-iommu.c                       |  37 +-
+ drivers/iommu/generic_pt/.kunitconfig              |   1 +
+ drivers/iommu/generic_pt/Kconfig                   |  10 +
+ drivers/iommu/generic_pt/fmt/Makefile              |   2 +
+ drivers/iommu/generic_pt/fmt/bcm2712.h             | 288 +++++++++
+ drivers/iommu/generic_pt/fmt/defs_bcm2712.h        |  18 +
+ drivers/iommu/generic_pt/fmt/iommu_bcm2712.c       |   6 +
+ drivers/iommu/generic_pt/kunit_iommu_pt.h          |   2 +-
+ drivers/iommu/hyperv/Kconfig                       |  15 +
+ drivers/iommu/hyperv/Makefile                      |   1 +
+ drivers/iommu/hyperv/hv-iommu-guest.c              | 682 +++++++++++++++++++++
+ drivers/iommu/hyperv/iommu.h                       |  44 ++
+ drivers/iommu/intel/dmar.c                         |  72 ++-
+ drivers/iommu/intel/iommu.c                        | 167 ++++-
+ drivers/iommu/intel/iommu.h                        |  17 +-
+ drivers/iommu/intel/nested.c                       |   2 +
+ drivers/iommu/iommu-priv.h                         |   4 +
+ drivers/iommu/iommu-sva.c                          |  14 +-
+ drivers/iommu/iommu.c                              |   4 +
+ drivers/iommu/riscv/iommu.c                        |  12 +
+ drivers/pci/controller/pci-hyperv.c                |  21 +-
+ include/asm-generic/mshyperv.h                     |   4 +
+ include/hyperv/hvgdk_mini.h                        |  10 +
+ include/hyperv/hvhdk_mini.h                        | 155 +++++
+ include/linux/amd-iommu.h                          |  13 +-
+ include/linux/generic_pt/common.h                  |   6 +
+ include/linux/generic_pt/iommu.h                   |  12 +
+ include/linux/hyperv.h                             |   8 +
+ include/linux/iommu.h                              |   2 -
+ 61 files changed, 3690 insertions(+), 463 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
+ create mode 100644 Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml
+ create mode 100644 drivers/iommu/bcm2712-iommu-cache.c
+ create mode 100644 drivers/iommu/bcm2712-iommu-cache.h
+ create mode 100644 drivers/iommu/bcm2712-iommu.c
+ create mode 100644 drivers/iommu/generic_pt/fmt/bcm2712.h
+ create mode 100644 drivers/iommu/generic_pt/fmt/defs_bcm2712.h
+ create mode 100644 drivers/iommu/generic_pt/fmt/iommu_bcm2712.c
+ create mode 100644 drivers/iommu/hyperv/Kconfig
+ create mode 100644 drivers/iommu/hyperv/hv-iommu-guest.c
+ create mode 100644 drivers/iommu/hyperv/iommu.h
+
+Please pull.
+
+Thanks,
+
+	Joerg
