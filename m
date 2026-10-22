@@ -1,89 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.55
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792687918;
-	b=PMQTPrymM+pEkkKCGtWvJeNELRZ7suJmGr8mmFk2zdqoAzlaSIxkmhirLQ5UsqMAiDwy
-	 gK6o7W2bvGgHQmM69ZxcB2ygdShgsYoIsv75we6Djcvegl0LTyjfBa+oFx7IggDSjAoK2
-	 3CNrwL7OcdGnSfZffBDfgaGtfLkC/vy+tH7bwuUSYoEuC+pbJCQjd8ugMUmLTi75efDjq
-	 MZVduTYUaxSfQ9SoOilKQ2iCokSPth2IX3I5ynv4EO6wVkpkhHQldHJBbG1l/BELbcD/u
-	 Sk4979k0FkrXlcyjP8CnkvKVsGeL6HLqqOFm9k6oDpeQ0fZd3YdUbCSJvYZ9i4aQtqw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792687918;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:Content-Type:Content-Disposition:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=b9VwIDlGRVXO4HoUkwoV5Blr0nvcxqT11g7GRHsFce0=;
-	b=FY5J38Vj4RQJUoh+g5Mb5lghOu98l8EgVPT98Y62U0ihhyRizeniHNKrvwpSJDH2PJE2
-	 mkBgir/LxqOTKhfLj8ySdGFt+YOCf6kvaQZ2fQT2MZ22CF6dW6Q5hhBEvCd1ski7+8Yqc
-	 ctTSNDRK9B84qUe45LRDaTY9wZoxme+ZJQFf1TAnOEILKG77fn+RYa08nJEhbMOA29p8w
-	 eprb0c7IvCWUN2xwYi1iMQcz+RGafxjh2kcd7y6sAPKTj3bgQglZV6VaBpMLwF2ntqbb1
-	 N8ondGI1rPB/TrAKeD7cFQVV9cD8/FjasQq2A4qnny0PSt10B1ghYrXh7upqupGyAUA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=pnljgyt6;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.55
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012055.outbound.protection.outlook.com [40.93.195.55])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.171
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792691482;
+	b=FqJ1+6G9z3ca/NbPZRo+Kfq428XGEHh/li4YTuns/I/IyF0ZnrZdKHxbNKo4akHgvoP6
+	 JtVde2g3Iw98tb/S+in1vlsirNYpxtDuevNOJINrsiR0CTXQYkjlXg35INUGb5oE1j/cP
+	 bRh5Y+PFG1q+0MxCY3IyQCKxAh6RKnGb0pjeBIMmnYlGu6bu4R35AC80a1az9mdNYx+nu
+	 Sge0OhKDwieAmequ+1vQBR/JLawwEN5Ap7gAAb6I8QRPWErvLpOPV8G+hoi0vXUkpulcK
+	 rSKfNRk4yuRW4N37WP9bdQv16C9LFMP5C8pQTTE2mRsF4l5tB50m2oKxXopByXfNs+Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792691482;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=VXuE27163XQs95Y17MHXQoRtZevE9c0I3KUjJaU7M5M=;
+	b=WJ5fQfM+k8YpoKs0MAc4oxQ6CdrRTQu47S0R4PeftRsJXIEsfdVP/f40zMvOaq+ZckyQ
+	 CWRoGe93TMqot2fT2QQp2XvW5Ucl4HvCLZpeNzGa7yFsxw0YllHuiz/q73zuT1QgQxF8d
+	 LRTFW1B+jABwTlCCGT+OqzgFK79jTvv5hLhKz7pYE0GSqTtVD6nR71QCueXjZkw3+fEIM
+	 YoCI4IYH9t/gh2ZG0CT31U4aJEu9E1Yu/x/44BQk7sJrJWsKYu0kwHGzdO3J4fymQhdYN
+	 J7yVkbMlGj+7lte7LODnrynJY4yErZKOCg+forVciUFJPiYKE3pnoKng8SLixuc0m5g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=rhOaAi2c;
+	arc=none smtp.remote-ip=209.85.214.171
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59AE6606A31D
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 16:51:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59AE6606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A858606A31D
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 17:51:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9A858606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=pnljgyt6
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CkdJJQVWYTGsVWPEJGEKzjl0whELJAMl2Diu/r5sYXqIT5ARMbwdBG4en1aapovwTpybppH7Y+lLrDuQLtIFJZBg5u1CDbpbFyp4tpELVZQ1h1c2zZb7J7KHcdmP9U8hEw3We7EAkWellV2ukM485cST3WI+hfvbiPxT0MNhQVjhYKEqTSFIbRF2+xZSTnaKYWOqI3mXarmsXv9mrTDIJROTFAuB43PTUIDZz98kU20p36UzcpxhXVh3zuzA7za4xQ6wE2405L7xm5imbSsVDHn6V+q2gnLrUlzdCHZgtdqmW2CrMEHvtZwb3FM0xENDl5wkMXmeOMr/4pWE4eYq6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b9VwIDlGRVXO4HoUkwoV5Blr0nvcxqT11g7GRHsFce0=;
- b=Dbj20+jJKbCM5QWIYz/8idQNIZ4T/EoBO4VPBXBGQGoyjOzAeEIOmqQRv055LZxHBDCdnQ8VQrid6/FSq6xqMD6X728fijiXNb5rxbL1qD0hPVfLdNKhHJWiTCdVvZm+7Ro+k+6wtLCZ4N6XzJt57mGM00W3zdxRgwBwk1F4v5pMIUrvbGqxC8iTBQE5y0bTN21m7HbkYqpJCIiJyDKjy9OsXS2/haPhNnqSyiyvCsbvls2JRUESL0VAG7Gp3TUhWPjZwblv4/dG8FFseku095tm6qqS4at9GDvJrrQqqllUYVEgBLe1bwZMsVVTXOkb4/mHqJeXK74O3IbNFJx1iA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b9VwIDlGRVXO4HoUkwoV5Blr0nvcxqT11g7GRHsFce0=;
- b=pnljgyt6DsUKlHz6eAjLyu0WVpGo1KJSdzjBEKMzBCLrkHRGpmuaYmPQt3aOjTQHXMsSw6jSoGZxpaijE3eyZx6T+Cllke7PIvbAWraedREpB0x8eHU+m7z+UuhIUfB+CNw5OI1Fc6P51/uULB781N4fgCJbWNNsrWgQuekqu1lAt7X0uh4ZV+ly8y51Y5YtG32oWvOMo8tXcfOjoLkpXNL8u7Rm2g02enEPqumkTAoNVEimhNOCT2qvFWWD8mYANFUHovQVLbaBaf9PJKlcmIgVnVe8fPmrPtihIuoLE4W3JTeaD3A34YoxIMGgSsn1+wIvn3cQ7FdCdq/SBI35kQ==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by IA1PR12MB6434.namprd12.prod.outlook.com
- (2603:10b6:208:3ae::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Thu, 22 Oct
- 2026 16:51:52 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0546.016; Thu, 22 Oct 2026
- 16:51:52 +0000
-Date: Thu, 22 Oct 2026 13:51:51 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
-Subject: [GIT PULL] Please pull IOMMUFD subsystem changes
-Message-ID: <20261022165151.GA3692244@nvidia.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="mFUbxSPnBhmcY4Wd"
-Content-Disposition: inline
-X-ClientProxiedBy: YT2PR01CA0023.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:38::28) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=rhOaAi2c
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2e95bd1c14cso14715ad.2
+        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 10:51:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1792691481; x=1793296281; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=VXuE27163XQs95Y17MHXQoRtZevE9c0I3KUjJaU7M5M=;
+        b=rhOaAi2cGCAjHoc6KXmahWbKa7F3QQ+QJR8WC1bdWHlGozPi8DPra0ZKH9CYgsZRVD
+         6O/5e3Fo3dePdi2XPISLDobwfggC+FYlUUHTWRIP2E5/NAOdVFXLytBHjOgBGRGaExeL
+         Hls20/HxZyCFK/zFWe1WE2F4cT8X0qKNeNWLnIhTcN1m0ZoyKqmrng+wLgm+U5ZebzPA
+         6HzB03P0zUI2LSpYIvSgiWL9tJ9vhiABavkDIimU3Vf2oKqqESmgc9RNnIGuJe/zI1dn
+         +ValRDJkWofgwPRcNxPEEOyur62We7ImYLpmXZovZVf0qwK9fi0vocoD7kRmhh33Uhh+
+         PwDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792691481; x=1793296281;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=VXuE27163XQs95Y17MHXQoRtZevE9c0I3KUjJaU7M5M=;
+        b=d/hU3Bb7BFcPc8VG6FaAK/INiAJP/ln585kOqEF9dsdyGtJFS1ZqTzF5lWNyv3XHE2
+         danhjthYEl/E4TxCu+uCQmwT72OQFVejT+sLWgWqCY3nIlU0SelD4dPazZZkAKOvTrOP
+         ZHr3smjBobz5yIBQd7gJvJXQ7osTnvnTBcQ3gnU270Tq3Tq7y47vZmKhm1D6Mj8UbQWQ
+         hrz9NXq0Rr74mpSaAhtYQbW/nR6i1TVP/ufMUa4RlQ7doVtJyk/chqMxPAaQ+ehLuhHy
+         TDaIWOEF9dvQ7XfyXLh3CXo0Gt8sJW6evwRiL+JovFw0QnpI1isVDJDQQI35Nl43TPfg
+         1FCQ==
+X-Forwarded-Encrypted: i=1; AKwUvBxpb1YF/z2S4QVJD45OzkV6fKxvn940Tjy/b+KTeyyZGNUNuOSXxW3xAiweNcJlT2dvPAqmWQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKEt8N7YIYL4qCIW7o3dR89IyRw5ppVKF9Y9+XGHeUhgAWoaf+e
+	2uxVl8yXDdwPRulzS4whqVQBkwfhfR15JKHDOz6bTakXqBQnHtPO+A7x12mDra/NLw==
+X-Gm-Gg: AYBFou3hz1dwQROKtJh3tt869E9Kg6JNg29jk/jAx87YnoGWGbB7xOtWgoQvgane41h
+	Q1+1qVD5vOBp99DcVmYE2n21ByKgMIVWmMJoHGaryZ8qLCQYfvoIqefsx3Ondtt6wsD5Tevx6Ci
+	btqmQqonLV/6Ou6Vop1mX9mdG+mekb0NoaCv4LntoZa5X+B2NhyFZQpZTO7RkkZYA5vlq5TclM0
+	T9zt5hGo56p/RhYGlrfHfktHfwEDlxYgKUGphW3HcKzjDFHpVUFVFN73cAh6OEKwU6/kkq87rPw
+	sf+1ae3AME9Te9p5aCNlaDyV+3ZK8uOH+ndAshhzO9//2avSXCzptH01QGkzV8K1/BoC56hQGv+
+	lB1Vi1LYWR6BUGd0OvM0FpJ02J1rZ9wFawr9qYzL+lZjdmac8RnPbGlTcQKPA6QE3zWAAwyUizT
+	2koh0BFbeYDD2/V/3GeAYuCFOy/J65NHU1bcwM9yO9D6g4LdPTYhHqCfLrpSjjBwArMHCXIS/An
+	jtLa4CKuYHOb8aJSxAjDTYJ/deGEF+XP7FmSoW2k4ZzrApaYTVJ09h2HXU2ZyUGDONffwkizSRe
+	LadKtlNOEokGF8lN
+X-Received: by 2002:a17:902:e547:b0:2e9:502a:ddbb with SMTP id d9443c01a7336-2ea43c9f6bcmr53298445ad.45.1792691480085;
+        Thu, 22 Oct 2026 10:51:20 -0700 (PDT)
+Received: from google.com (64.75.127.34.bc.googleusercontent.com. [34.127.75.64])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ea7b346c43sm1644745ad.13.2026.10.22.10.51.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2026 10:51:19 -0700 (PDT)
+Date: Thu, 22 Oct 2026 17:51:16 +0000
+From: David Matlack <dmatlack@google.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: tarunsahu@google.com, Andrew Morton <akpm@linux-foundation.org>,
+	joro@8bytes.org, Mike Rapoport <rppt@kernel.org>,
+	Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de,
+	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com,
+	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org,
+	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com,
+	will@kernel.org, Alexander Graf <graf@amazon.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com,
+	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
+	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	kexec@lists.infradead.org, skhawaja@google.com, kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
+ a 2-bit pair feature header
+Message-ID: <atpNFEFIlqAoYIwH@google.com>
+References: <CA+CK2bAQbmq3ArP3XMErF_8RC2CUwvgpLY0H83D0nCJTaVKYyA@mail.gmail.com>
+ <9huzecdi6go0.fsf@tarunix.c.googlers.com>
+ <CALzav=dLdJoVy=B1pv0FAurD9OhAzLSTjJNbtjTdJRmSqaB0yw@mail.gmail.com>
+ <CA+CK2bAQRMAEXZyHTEuUN0_Fo59Sn0hBmYbme_J9ewjx6gPyJQ@mail.gmail.com>
+ <atlKsD-aJB3mJr2j@google.com>
+ <CA+CK2bABt4OZO31TenVF2+uBUWVwViWbvfE00=0xbAw=f7K9SA@mail.gmail.com>
+ <atl7peoVHdP5hz7z@google.com>
+ <CA+CK2bBFXnJA1kddbLKGq0DAHDgjYhsTSQQay-xeX7jJC1V_UQ@mail.gmail.com>
+ <CALzav=e=ho2gVrn+7KpZ3ZyasvH2u15-pC-RSRSS7KcMfKqUJQ@mail.gmail.com>
+ <CA+CK2bAJo8dnTOyKMgnnMnk-SCXbTsv+JCLEOWkjyj-wqtEkHg@mail.gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,161 +118,119 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|IA1PR12MB6434:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0b07d16d-47c8-40e6-a162-08df305cc5b3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|23010399003|376014|1800799024|6133799003|18002099003|10067099003|261021121427099003|3023799007|261021135927099003|261021123027099003|261009223027099003|11063799006|56012099006;
-X-Microsoft-Antispam-Message-Info:
-	yjnziu8gi9QegbPBF+FhPUuTQt4ajjfNKY3gwlVxpM8kgxUKc50DvXN/s5MTz/qE1QhxhSBQo59s8qFDKvFbhxg5riJvwmP9vOFrJPAibzZpRAiMGyj0p/mJN+DASHLY+0/VKMmn1TZv7P/20Isp6eq+fLHRofXwxyxrGI57fij+JYSggJE6NZ4kxxkfTrHr1r5fmgeC+yxprhjZR0vcVZlOWQTyvOHqpBAxYMnsMsVq5iRzlIQjbYCnR34hQOVpWw6UziM7QoOSZmTFEcWpiDFoFsSGGzUt1WPS8GQFU0mY2nIbmcfN5kiEsaqDpGN4O4vNuQ0zrqFSIwaa9aV30Gq5f9LqQ6vDEHGGXPs5jK+PhqTFazVXpxlN+Cl7IIYGIuX2l3mMmgWPY02YHS6ui+dsm70+uk8/ZacWsQ6xDGGRRfHXD9+v5qe20fZG46AEiMaAT04bSrhrNttp9wZuKpls9lGenej8KDS11tDbqeQisL2fH5T8vb+fyIkQg1SAYKlNYAtGLdBS8aSFr/6IyLnT33kVdohkwxN1hnl95USO1RkJ3+gvY/QUBtflaMpCw3VJ+QyqK5Muh0iiGzwFkK+CBbC+xdZecabeirRYGeBWIzQEYkxq9xpI7Oqlc7wkq3wkZMCC0iqSlmnD2gNFz2U0La+4DtfYP+4uru2YmXs=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(376014)(1800799024)(6133799003)(18002099003)(10067099003)(261021121427099003)(3023799007)(261021135927099003)(261021123027099003)(261009223027099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?lYCTdUsHLKkn5ev9XznH5+cXryAXbvhmhOBKCQL/jV1NXLcSSmnFMV6sMyC9?=
- =?us-ascii?Q?4dBq8EOfCo/REsFodu4kMAVF0kHenCZjI/+r5BmBWwxvchWZwdteIpjBJsH+?=
- =?us-ascii?Q?WlAKSYTk5lqBUvkUlJiu4iS3WVJhM+WoSjU4db+LglGJA7DDcKutzYbp4zrC?=
- =?us-ascii?Q?/EZHKcXJwKylAE5tS6thV8uxauVcbezb3Dg+EF+s6vdjWBiApVa+eunYz4fu?=
- =?us-ascii?Q?uWXLVRZK97BfNP5g7rklX1dMt/2aqYJS24FnWY+ekYK8hORihtEOTar2adLj?=
- =?us-ascii?Q?/TDe4BuKv/pxF5fx6evgaAst+jPRIKWouc/G8431pw/E22KzONcmnXA4hJEh?=
- =?us-ascii?Q?LSmOtBtRg0uBnOzQh6bs8FGepzFC0/IQSnz9sKLPV2AdtDW0e1qAs5amvNV/?=
- =?us-ascii?Q?u40zjCSpQ25NExDeKriBJafcgkqsxWJ30LYC7KHJFiZ6qDs2zgs68KR2Gw5+?=
- =?us-ascii?Q?bjfLHqxKVxt4CLEdhUu2PNLq7cYUrUNd5+yGlixRTgUmpjmtdnZHPkParXKr?=
- =?us-ascii?Q?2GQiWq8XWmjkce+gmr+rneVrhCL0hc/eogfetym2+KOJMqgdWvO+47jxIHsZ?=
- =?us-ascii?Q?8E9Ym+WhtrhmUNv2dfd1kplUQBYyApxF1OsblKBGRFOeqJSH+L55/Z3ZpzLH?=
- =?us-ascii?Q?I0BM0BaYpqC7ALHTUK/VP1hiiUGUM3LoqClFreYW5tBgxF5Qk7OKkFr3oUiy?=
- =?us-ascii?Q?ItlGC9N3OLxqJN+1RZHWqbgYBjfMw0ds2DKe7NKbEmHGXfuYI79KK0UcSacB?=
- =?us-ascii?Q?g3il/G3CRFs8pRj/46hRC1kciia5xJ2Gle3b3fCtmDD2aZxdK3kJOmufdzyQ?=
- =?us-ascii?Q?Lh/C7ZQ05rUuXEYYICcoHLM5aluR5VKa9XRQkCuR+Z4xzKbpmRvFb1qZsXV3?=
- =?us-ascii?Q?asKnHkmaVDkcQqshtgaqem5OIQz44stCWummeGLYobo0gNRVhkAij6J3F5gs?=
- =?us-ascii?Q?+nX1LG/LbL7z4T6Q4bhCWvtIoeykUpXP4GNN8GWyP9HtJLhhjiwk3X4BmoQZ?=
- =?us-ascii?Q?i8iEOeKzbcZ/RG3W+/XS844ATZ5zg/bLty8oobd/jybi6lr77aIFtchrrAj3?=
- =?us-ascii?Q?WbLLF/z84xgHMgaxFzMfNvm7xTtc0N6aftyljMiXgaQwQY1RN11fqkE183Qj?=
- =?us-ascii?Q?kqO7aGBCWRchOCl5Qjygw6zyOI1zUbuGLd0F8TOvwF9vprLfyxwgQ+oFqadx?=
- =?us-ascii?Q?ti98YRigLr0oKJP5SDSgEAMLcFxD6pKSBAseFOmFdP5bFFYBs5ZCQbnMBd3I?=
- =?us-ascii?Q?tGqAagEai1A3I+4IMOF8C3x4DssF3vKPGVC1PQJK80OiskV0kljF3BAq2lMk?=
- =?us-ascii?Q?o7Gms0cwRGDnNti8YNVyLyCaiHpDCMr9dTbFgfyc0ChVKQydKMQqSHQrnNTK?=
- =?us-ascii?Q?jUvVXtuP7kUiqNJjuikGKjKPAjboTRKyYeY95X6IQaBJ721NRDfJC5sEQT2t?=
- =?us-ascii?Q?TKvbSHvM429q6qidvT5t+FHooVIXt9d79F/s2LOMKW5YoBSSDqsIRGV0cF2G?=
- =?us-ascii?Q?5pgCzYlr+VRKpmAGUjWQOtNH1Q9EB+j9FPsCCNetq6Rtw7NpKt1FjXgHC45h?=
- =?us-ascii?Q?OOnq624K85ol6OtGGVy/FRQR8GpaC/dVGMVmwudHCkwAjOL3UffND4uCeTOo?=
- =?us-ascii?Q?VOejQ/0N+12JCMAuP0WszkXx1R+xF1IqxjISqneM9a6aJJ+LIrKUIMyKjtbJ?=
- =?us-ascii?Q?IkZfU/jpqot0LzCODlzQatKO59bFUCeSZ9ZRCs1zh1yaeTEE?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b07d16d-47c8-40e6-a162-08df305cc5b3
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 16:51:52.2947
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: r5+cAbQF8qS5GOq4lj7j+5K4BUU3PfhLuC4RLWX8Am1/MR88XBqk0owIaxgqFlXq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6434
-
---mFUbxSPnBhmcY4Wd
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+CK2bAJo8dnTOyKMgnnMnk-SCXbTsv+JCLEOWkjyj-wqtEkHg@mail.gmail.com>
 
-Hi Linus,
+On 2026-10-22 12:11 AM, Pasha Tatashin wrote:
+> On Wed, Oct 21, 2026 at 11:53 PM David Matlack <dmatlack@google.com> wrote:
 
-Small set of iommufd updates this cycle, pretty much all bug fixes
+> > > #define DECLARE_LUO_SER(name, expected_size, ext_flags_count, payload_type) \
+> > >     struct name {                                                           \
+> > >         __u32 size;                                                         \
+> > >         __u32 flags;                                                        \
+> > >         __u64 ext_flags[ext_flags_count];                                   \
+> > >         payload_type payload;                                               \
+> > >     };                                                                      \
+> > >     static_assert(sizeof(struct name) == (expected_size),                   \
+> > >                   "LUO struct " #name " size mismatch!")
+> > >
+> > > For example:
+> > >
+> > > struct luo_memfd_payload {
+> > >     __u64 pos;
+> > >     __u64 size;
+> > > };
+> > >
+> > > DECLARE_LUO_SER(luo_memfd_ser, 24, 0, struct luo_memfd_payload);
+> >
+> > This looks pretty reasonable but I would name the payload
+> > luo_memfd_ser. The combined struct that DECLARE_LUO_SER() creates
+> > should never be used directly since the offset of the payload in that
+> > struct is only valid in the current kernel. So I would give that
+> > struct a special name that makes it obvious you shouldn't be using it.
+> 
+> Lets drop the fourth macro argument and generate the combined struct name:
+> 
+> #define DECLARE_LUO_SER(name, expected_size, ext_flags_count)              \
+>     struct name##_hdr {                                                    \
+>         __u32 size;                                                        \
+>         __u32 flags;                                                       \
+>         __u64 ext_flags[ext_flags_count];                                  \
+>         struct name payload;                                               \
+>     };                                                                     \
+>     static_assert(sizeof(struct name##_hdr) == (expected_size),            \
+>                   "LUO struct " #name " size mismatch!")
+> 
+> For example:
+> 
+> struct luo_memfd_ser {
+>     __u64 pos;
+>     __u64 size;
+> };
+> 
+> DECLARE_LUO_SER_HDR(luo_memfd_ser, 24, 0);
 
-Thanks,
-Jason
+I think we are getting close, bu I have two remaining concerns:
 
-The following changes since commit cee9395acd8043be0644b25c34bfa86623f2b935:
+ * Reserving bits in each flags word for continuation leaves gaps
+   in the flag space that users have to know to skip.
 
-  Linux 7.3-rc1 (2026-08-30 13:34:40 -0700)
+ * struct name##_hdr only matches structs written by the current kernel
+   (in terms of length of array and offset of payload).
 
-are available in the Git repository at:
+How about this instead:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+struct luo_ser_hdr {
+    __u32 size;        /* Size of header + payload in bytes */
+    __u32 nr_flags;    /* Number of features encoded in flags[] */
+    __u64 flags[];
+};
 
-for you to fetch changes up to 04bcf84613346b973a8cc0c59238b6b5bc902688:
+Each feature occupies 2 bits of flags[], so feature N is always bits
+[2N+1:2N] of flags[N / 32], with no gaps:
 
-  iommupt: Do not allow PTEs to be split when dirty logging (2026-10-15 13:56:22 -0300)
+  00: Feature not present
+  01: Feature present, safe to ignore if not supported
+  11: Feature present, must be supported by the next kernel
+  10: Invalid
 
-----------------------------------------------------------------
-iommufd v7.4 merge window pull request
+The length of flags[] and the header size are computed directly rather
+than by walking continuation bits:
 
-Several bug fixes, probably found by AI based on the emails:
+static inline u32 luo_ser_nr_flag_words(const struct luo_ser_hdr *hdr)
+{
+    return DIV_ROUND_UP(hdr->nr_flags, 32);
+}
 
-- Several edge cases in the self test
+static inline size_t luo_ser_hdr_size(const struct luo_ser_hdr *hdr)
+{
+    return struct_size(hdr, flags, luo_ser_nr_flag_words(hdr));
+}
 
-- Reject malformed invalidation commands in case the VMM let them through
+static inline void *luo_ser_payload(const struct luo_ser_hdr *hdr)
+{
+    return (void *)hdr + luo_ser_hdr_size(hdr);
+}
 
-- Rework how the invalidation interface works to the drivers to be more
-  robust and fix several Sashiko issues
+and bounds checking is just luo_ser_hdr_size(hdr) <= hdr->size. The
+payload is always 8-byte aligned.
 
-- Correct several error unwind paths
+Payload structs are then declared on their own, with no header:
 
-- UAF during eventq file release
+struct luo_memfd_ser {
+    __u64 pos;
+    __u64 size;
+};
+LUO_SER_ASSERT_SIZE(luo_memfd_ser, 16);
 
-- Reject more malformed usage of the dirty tracking by the VMM
+The static_assert covers the payload to catch embedded structs changing
+size.  Asserting the header doesn't add anything since its size varies
+by kernel. And because flags[] is a flexible array, the header can't be
+embedded in front of a payload in a combined struct; it can only be
+reached through luo_ser_payload().
 
-----------------------------------------------------------------
-Andrea Parri (3):
-      iommufd: Keep dmabuf PFNs MMIO when filling another domain
-      iommufd: Reject a zero-length dirty bitmap request
-      iommufd/iova_bitmap: Ensure that iova_bitmap_set() handles the full IOVA
-
-Donggeun Yoo (1):
-      iommufd: Keep reserved IOVA ranges when a replace within one IOAS fails
-
-Eva Kurchatova (1):
-      iommufd/selftest: Skip when the mock device is not there
-
-Jason Gunthorpe (1):
-      iommupt: Do not allow PTEs to be split when dirty logging
-
-Karl Mehltretter (1):
-      iommufd: Fix iommufd_hw_capabilities reference in kernel-doc
-
-Nicolin Chen (5):
-      iommu/arm-smmu-v3-iommufd: Reject unsupported bits in invalidation commands
-      iommufd: Iterate the cache invalidation array in the core
-      iommufd/selftest: Convert cache invalidation mocks to the core array loop
-      iommu/arm-smmu-v3-iommufd: Convert cache invalidation to the core array loop
-      iommu/vt-d: Convert nested cache invalidation to the core array loop
-
-Nirmoy Das (1):
-      iommufd: Fix event queue release use-after-free
-
-Qinyun Tan (1):
-      iommufd/selftest: Return dmabuf fd from IOMMU_TEST_OP_DMABUF_GET again
-
-Samarth Narang (1):
-      iommufd/iova_bitmap: Fail GET_DIRTY_BITMAP when a bitmap page cannot be pinned
-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    | 197 ++++++++++++++++-----
- drivers/iommu/generic_pt/iommu_pt.h                |  30 +---
- drivers/iommu/intel/nested.c                       |  54 +++---
- drivers/iommu/iommufd/device.c                     |   8 +-
- drivers/iommu/iommufd/eventq.c                     |   4 +-
- drivers/iommu/iommufd/hw_pagetable.c               |  25 +--
- drivers/iommu/iommufd/io_pagetable.c               |   5 +-
- drivers/iommu/iommufd/iova_bitmap.c                |  26 ++-
- drivers/iommu/iommufd/pages.c                      |  13 +-
- drivers/iommu/iommufd/selftest.c                   | 153 ++++++++--------
- include/linux/iommu.h                              |   6 +-
- include/linux/iommufd.h                            |   2 +
- include/uapi/linux/iommufd.h                       |  12 +-
- tools/testing/selftests/iommu/iommufd.c            |  24 ++-
- tools/testing/selftests/iommu/iommufd_fail_nth.c   |  14 +-
- 15 files changed, 375 insertions(+), 198 deletions(-)
-
---mFUbxSPnBhmcY4Wd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCato/JQAKCRCFwuHvBreF
-YZxoAQCJwoZzNNx85eDR2Md5V80eDIgeHkmSXypkjVA8xlqmWgEAmX3fRO0rnhX5
-b0/MrCg852RslQi5/jqgjr8LmddMlgI=
-=zc6c
------END PGP SIGNATURE-----
-
---mFUbxSPnBhmcY4Wd--
+I think the only downside is that the header increases to 16-bytes when
+there is at least 1 flag. But I don't think we need to be so concerned
+about an 8 byte difference...
