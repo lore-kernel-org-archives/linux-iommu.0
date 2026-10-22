@@ -1,89 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.227.134
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792654172;
-	b=cCelk7UK1bE9NBhwUmHI4jJQ9psllrt1LA5ZxVMz1pnFt/6hEfWHkYJ75fP1p4CHD6YS
-	 Ph14jsMA3GsnIOSBT3P9Zc1h/niuX/JZ2uWE6wjIdmg3HvGooY8D4k8CrHae+5BdHy5Q+
-	 tTMWCbAwUQM1Lvj7vHwAwUvAcPT/i2wEKuCgyqglFx7fmDsZSQZFOri0eGKnI4u49/DP2
-	 UxiAj+bRD3qtO+DVdoj7jTZHHFKXgVWrXM83QbT9TSDiUiTpYFhO64XQlnssliXIkg3Zw
-	 MynsQBPJsxgv44UNTziHgTq2rMUnhZJN2hdvRShDWOhzduTqe7LjIWEgRrZ8aD1kIqQ==
+	t=1792655109;
+	b=qDpjj24RKCb1dMor3OaTRHLLfo2N8tKvto7ODZVyYjsQaV2WBjHgWUEn+trjooTFsbc/
+	 IC2GTGL7P6x8B1vW+gsy4TPWO0bpwJuCBnkc/klbF5R0qbNB5nADCOanBFkTkZlCc07v2
+	 9Y5YxV/S5X0SWtR5Gvzi74BzTyIRP4/3GIkC61Btxktw962BHbJ4ZrdWT4tYC5R/gsTES
+	 kUmqoE5mHyNDf64NLguPPbRUckPvB0NSdFQuL1bhkoyVJrAq9zFdPKzG/nTgyXslT1KGM
+	 CBABWO6fhli/a0k8rECHqawEDnshwYmw+IaluCoYrzVp/KmGvDIX5cMRBwxaz0lHDzw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792654172;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Subject:
-	 From:To:Cc:Date:In-Reply-To:References:Organization:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version;
-	bh=tBzpmFaMSQMSyD1iaBULKux96i8RKUtHkECGcsya8FY=;
-	b=QM0XzDGvoqS4gwPnx2RmIaI8DduYHUPRDT+lDaIxk+rt6PlDi0xWh3qyPpUEJ4NqbBap
-	 aOFt6cKu/TDgP2Nq98+vcRwxf+ja1iByBABy9vEtpzBV3SbfrBn1K3RuAfZGHK1aOoa1z
-	 1lZQ+D+FJRVBQ8x9LpAbF8GwcJHGB3Ca96xqd26gs2GtVq0Nu1IotIrrNLbgv74L+Vc5w
-	 AndMJfQgdHJgKesySNX+fehZv/PE+tDpRwJEAQpYbfRxNLneM0r3tjNqx5oRx9K8qUn6t
-	 Hxoj+Q/AM8bfdv2VAgQuUl8Q+QRtwAR3Sw3Y1pcqXPovixfpsn5bNwSIuLiH/br2xzA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792655109;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=HDXHwat4zLpbZennBEg7uZauJYVMECCPqpPno/TLnRE=;
+	b=4frQDXLB8EfUTUoFU0gFbbQvuGp59WJazW+OmdObyG6eH1P3u9Kd+teCOjE8pzH0i4ah
+	 HyUATxtvU62Lan+6XE/IflStfLLxQ9qKDp2g5dL47M2hAxfnkqGugUJo4le5nZ2KydW8I
+	 vxboCYw1afmfs/c3s8SXjHXfVPfOeSWdacO8Kzvkzc5BUdUrBL7e+WnQbhrr1/A87u4/S
+	 baY16bC63LegZVf42riK5eKS6HBsDaGt+rJknMyleLGcrYriM4KncYnoXcz3dfnD5ndMT
+	 RXIWvEFqxUzaMAD5LAdvubIPlOTBATp4p60KmhF61REsnZYxBD0ksfimyxe8NTliYhA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=a8ER9OFI;
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=rk25qGEr;
+	arc=none smtp.remote-ip=74.125.227.134
+Received: from mail-pj2-f6.google.com (mail-pj2-f6.google.com [74.125.227.134])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10240606A31D
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 07:29:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 10240606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A97B5606A31E
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 07:45:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A97B5606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=a8ER9OFI
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1792654173; x=1824190173;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=iTNmgRNbwvR3yKajP5+NPQHqD/ADmHr1tlEg7gAxXD8=;
-  b=a8ER9OFI8kW2khz6T96ZsCGHoMrihDKvGn+vIbTwtKjxkNSbd6sVLoOD
-   0E4+dpkW9waFESokGv6rfcpmopgFhO5cmpvZbN/Ppq/p5luCosCorvssF
-   Bdp4YV+5KHRyFgOyRMpsf7iOHSfHSWWnIaDmwLUime++QoXjhnLt9qrcj
-   VXpxZJwpl3dJqNyicA2ghlNJOx4Iu6JSYh8G1Gf85slFR4aF0RjZ2Lhyy
-   GxjiurD8ERVT8vdw8e5ncCiX6tRfCmxEzw4Vw2MTAWqEWjlMrBQh16opk
-   z18hUd0BJNmKV5Lb9+HE1skhndqZs417uK4MJ6nRlFACsmz3WEpL0UNZV
-   A==;
-X-CSE-ConnectionGUID: 7bM7NMFUTXe1KqPQCCu6kA==
-X-CSE-MsgGUID: 6Uc+ONTKT++Hxb3tWDH7FA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11942"; a="1267519"
-X-IronPort-AV: E=Sophos;i="6.27,171,1787036400"; 
-   d="scan'208";a="1267519"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 00:29:28 -0700
-X-CSE-ConnectionGUID: 3sdOY2nIRCideIdpdGyCtQ==
-X-CSE-MsgGUID: GMvpY4WSTKWy+XXTgqVlhA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,171,1787036400"; 
-   d="scan'208";a="3176651"
-Received: from slindbla-desk.ger.corp.intel.com (HELO [10.245.245.180]) ([10.245.245.180])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2026 00:29:24 -0700
-Message-ID: <299044eebbc363b2100b09ce64450b4bd47b61a5.camel@linux.intel.com>
-Subject: Re: [PATCH RFC 01/26] dma-buf: Introduce DMA-buf mapping types
-From: Thomas =?ISO-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>
-To: Alistair Popple <apopple@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Christian Koenig	
- <christian.koenig@amd.com>, Dongwon Kim <dongwon.kim@intel.com>, 
-	dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org, 
-	iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>, Leon Romanovsky	
- <leonro@nvidia.com>, linaro-mm-sig@lists.linaro.org, 
-	linux-media@vger.kernel.org, Matthew Brost <matthew.brost@intel.com>,
- Simona Vetter <simona.vetter@ffwll.ch>, Sumit Semwal
- <sumit.semwal@linaro.org>, Vivek Kasireddy	 <vivek.kasireddy@intel.com>
-Date: Thu, 22 Oct 2026 09:29:21 +0200
-In-Reply-To: <atm2X5E-ta4QfGnu@nvdebian.thelocal>
-References: <1-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
-	 <b5d1bc79fae01fd9b511e06ed796130314ff841b.camel@linux.intel.com>
-	 <20261021123755.GL3008132@nvidia.com>
-	 <598bc83d8070c9bcb364a336b91d1e6c6fff4256.camel@linux.intel.com>
-	 <atm2X5E-ta4QfGnu@nvdebian.thelocal>
-Organization: Intel Sweden AB, Registration Number: 556189-6027
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 (3.58.3-2.fc43) 
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=rk25qGEr
+Received: by mail-pj2-f6.google.com with SMTP id 98e67ed59e1d1-3964e7720afso933626a91.1
+        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 00:45:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1792655108; x=1793259908; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=HDXHwat4zLpbZennBEg7uZauJYVMECCPqpPno/TLnRE=;
+        b=rk25qGEr/mTVyStsgBtqsLniSoLzdvMNydpDTzZOO+QRVoQvy1Vc9UbICzdhK5FlOK
+         RcHVNLlP6F/hdXPassNhSlfjycQ/3YGhWoRHpQLCyKpdQ6ET1eQjvi6KaGFps6KITwSr
+         4EQikr03yMhv84uGDBLpOb+PwXbplBEuEC2EalWoUmYJN2KBxtgizBtQlSZQ+r823Av9
+         2iysbajYAOY4NaIM7PMz+xm4uJ52+9s0kjs4OLIaZESCn9w5SRwmDEcN6q0QhOspzt1C
+         guTvA1mqt08cwTI3lbjEdckDsBCnYbjeN5rUAK3NTNizCmSv/kjzPPmXnl4i+2uMZjX6
+         HWbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792655108; x=1793259908;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=HDXHwat4zLpbZennBEg7uZauJYVMECCPqpPno/TLnRE=;
+        b=WLC8WnEes1UelLGgQHhdLymDSVXhX1/oC5bO41AZEeSpdHQnq0xws8KfMV0rJStght
+         Af4jxwZyQAzacg1cJfvwWP08+3r7X9KdynzeBChYCzMGLb5bb8EEbrmtYNUgTlPM0UqS
+         6rISdt2DB14J3l0MnWCg4hzSHPfSeAT+QaXnifIDa908exNtX/2s8YDnsCGl2a9LJQ2l
+         XjBoqOl5axb1H/W2p28HFHrH4Fqpx/ZY7s/K+HBcIAT3UAZKb4fJQJb7RPKJsem5ibk/
+         +7p/fqJQvOMNbUYe1G9WIZqD1OJ3fi8gLE+MgGcIaRIldwaH7+KnqxDtd6BZlXHGMpQo
+         e76w==
+X-Forwarded-Encrypted: i=1; AKwUvBx2YTMptqWR6omAY9HiidTq1kqoJ4yWlOPEPHNkcRdpROjoK6VLzigHPSI72urup53J9luflQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKKWF60Zm74+VO4oqPt5SPi9InUvyoxqRYTwkDWcq55IPYFZPEW
+	4jMcy6iloOaPOBEuwQxWh52FEY12v6w/G7PPj4id6T35p8aw3Gs/heLO
+X-Gm-Gg: AYBFou0Rr3U+xR3uLy4aGse2oqtQ0LINbAuNXSwZvNQj9yDNXO5rXy63gtkx/A7nQTO
+	eHF+iT4WYbFoUPc5TCWg86lE6igWNIRcnQBPff8P04vPro9Do7a3kedOJqTWuW4iSBIxJ/NpZKP
+	aksCCp+FA+IIDH9iyXu5fH1cQ/S3NkzA51P7Ac4lMaZRYpAqWdg9QAibYE94ihlzP0kz7k0Ll1d
+	QJ5WemENCMKfyBp3wOyTvdmvfmi4DOhU9PMS+3/fi5saSJIwaiCH5jhPGuTrBzmO+dHjWbImKa6
+	fYbey3QG2R6fOdflNBA4eCOs/3SYaZUl//oviliqWjHex87biYXj9BFTWEBNaVe4WsSyzK7ZQIY
+	TpQHRYtqqEGyBKEsZsMyYK7cC0CI/PWDakFPAse7GRl0hV0h/j2T6aAWSI8o0rykTLNPT/DQ47S
+	XnVHHgouxBSmXQ+2N65fZKv+mOGkewmaQw2a77xi6oxu8rsbqcOLHN0AZunCsJRICtSKVdGfVDB
+	CvFFluLUT/LymBS23KHenyvim/74J2fYnGRPqO2lxopHQxbZmJor+/1iacR6u4=
+X-Received: by 2002:a17:90b:5870:b0:3ab:5758:3766 with SMTP id 98e67ed59e1d1-3ad8707700dmr3724932a91.51.1792655107849;
+        Thu, 22 Oct 2026 00:45:07 -0700 (PDT)
+Received: from [10.125.112.22] ([122.11.210.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ada49366fdsm2945920a91.14.2026.10.22.00.44.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Oct 2026 00:45:06 -0700 (PDT)
+Message-ID: <098ff899-81b9-4ccc-a143-1e324446258f@gmail.com>
+Date: Thu, 22 Oct 2026 15:44:48 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,171 +91,208 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-
-On Thu, 2026-10-22 at 18:20 +1100, Alistair Popple wrote:
-> On 2026-10-22 at 17:59 +1100, Thomas Hellstr=C3=B6m
-> <thomas.hellstrom@linux.intel.com> wrote...
-> > On Wed, 2026-10-21 at 09:37 -0300, Jason Gunthorpe wrote:
-> > > On Wed, Oct 21, 2026 at 08:24:40AM +0200, Thomas Hellstr=C3=B6m wrote=
-:
-> > > > > struct dma_buf_mapping_exp_ops
-> > > > > =C2=A0=C2=A0 Base type for the per-mapping type exporter provided
-> > > > > functions.
-> > > > > This
-> > > > > =C2=A0=C2=A0 would be the map/unmap callbacks. Each mapping type =
-can
-> > > > > provide
-> > > > > its own
-> > > > > =C2=A0=C2=A0 functions for map/unmap type operations with optimal=
- type
-> > > > > signatures.
-> > > >=20
-> > > > Does it make sense to try to land this patch first, plus a
-> > > > conversion
-> > > > of pcie_p2p so we could agree on what the contract should look
-> > > > like?
-> > >=20
-> > > I think it would be good to focus on this patch as the main
-> > > 'crux' of
-> > > the series. The API contract is the main agreement. I'm relucant
-> > > to
-> > > merge code that has no users, so it woudl be ebtter to go up to
-> > > at
-> > > least through SGT.
-> >=20
-> > I agree about unused code, but wouldn't a pcie_p2p conversion to a
-> > mapping type be a valid use-case?
->=20
-> In some ways I think having both sgt and the pcie_p2p conversion is
-> helpful as
-> it demonstrates how different mapping types are used. I agree the
-> important bit
-> is settling on the contract though. Adding a pcie_p2p conversion on
-> top doesn't
-> look too hard though. Thomas would you be ok if I rebased and posted
-> some of
-> your patches[1] adding pcie_p2p on top of the mapping types + SGT
-> conversion
-> v2 I'm getting ready to send to demonstrate usage? Or would you
-> rather do that
-> after I send?
-
-Please go ahead and use them as you wish. That was only a quick mostly
-AI-generated POC.
-
-Thanks,
-Thomas
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 3/8] crash_core: serialize crash header preparation
+ against hotplug
+To: Jinjie Ruan <ruanjinjie@huawei.com>
+Cc: catalin.marinas@arm.com, will@kernel.org, mark.rutland@arm.com,
+ chenhuacai@kernel.org, kernel@xen0n.name, pjw@kernel.org,
+ palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, tglx@kernel.org,
+ mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+ hpa@zytor.com, saravanak@kernel.org, akpm@linux-foundation.org,
+ pasha.tatashin@soleen.com, pratyush@kernel.org, ruirui.yang@linux.dev,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
+ kexec@lists.infradead.org, linux-mm@kvack.org, iommu@lists.linux.dev,
+ robh@kernel.org, baoquan.he@linux.dev, rppt@kernel.org,
+ m.szyprowski@samsung.com
+References: <20261021083011.2170525-1-chenwandun1@gmail.com>
+ <20261021083011.2170525-4-chenwandun1@gmail.com>
+ <12e4e687-1ff0-41b2-bdf8-7f48b29e1f2f@huawei.com>
+ <a1665f9e-3116-47bc-974e-98dce408fa37@gmail.com>
+ <31d63208-3ef2-420f-a0c2-d9d6d49c5e21@huawei.com>
+Content-Language: en-US
+From: Wandun <chenwandun1@gmail.com>
+In-Reply-To: <31d63208-3ef2-420f-a0c2-d9d6d49c5e21@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 
->=20
-> [1] -
-> https://gitlab.freedesktop.org/thomash/xe-vibe/-/commit/7452df0fc858a7dc5=
-ccac0e2037852cb7ab64d61
->=20
-> =C2=A0- Alistair
->=20
-> > > =C2=A0
-> > > > s/mapping/interconnect/? My gut feeling is that "interconnect"
-> > > > best
-> > > > describes what's typically going on, but "mapping" perhaps
-> > > > better
-> > > > describes all cases.
-> > >=20
-> > > My intention was to cover more than just the phyiscal transport.
-> > > We
-> > > do
-> > > really want to get away from scatterlist, so having PCIe map with
-> > > scatterlist and PCIe map with <something else> still ends up with
-> > > two
-> > > mapping types in the system.
-> > >=20
-> > > This is why I choose the name over interconnect.
-> > >=20
-> > > > Location of common protocols which typically carry cross-
-> > > > subsystem
-> > > > dependencies?
-> > > > drivers/dma-buf/mapping_types? drivers/dma-buf/interconnects?
-> > >=20
-> > > I'd encourage people to design more like PCI where the actual
-> > > *interconnect* has its own home and there is just some minor call
-> > > outs
-> > > from dmabuf to help the matching logic.
-> > >=20
-> > > > As discussed previously:=20
-> > > > Agree on theoretically possible matches at attach time, Match
-> > > > at
-> > > > mapping time and guarantee the match is valid until
-> > > > invalidate_mappings().
-> > >=20
-> > > I was thinking about this some more, and I'm less sure now.
-> > >=20
-> > > If I think about mlx5, in a multi-path PCIe configuration, it can
-> > > move
-> > > the translation around within a single PCIe path, but it cannot
-> > > move
-> > > it to another path without creating disruption for the
-> > > application. This is a HW limitation in how the internal routing
-> > > works..
-> > >=20
-> > > I strongly suspect this will be the norm for any hardware that
-> > > doesn't
-> > > rely on decorated page tables to select the IO path..
-> > >=20
-> > > So, while I agree we should support hardware that can fully
-> > > change
-> > > the
-> > > path on each and every map, we also need to suport hardware that
-> > > must
-> > > pin the path during attach.
-> > >=20
-> > > Probably this points to needing a 'pin' operation for the mapping
-> > > selection after attach.
-> > >=20
-> > > > > +/*
-> > > > > + * Match items are generated by the importer using the
-> > > > > DMA_BUF_IMAPPING_*() and
-> > > > > + * the exporter using the DMA_BUF_EMAPPING_*() functions.
-> > > > > Each
-> > > > > mapping type
-> > > > > + * defines its own signature with its own data to make the
-> > > > > match
-> > > > > and
-> > > > > attachment.
-> > > > > + */
-> > > > > +struct dma_buf_mapping_match {
-> > > > > +	const struct dma_buf_mapping_type *type;
-> > > > > +	const struct dma_buf_mapping_exp_ops *exp_ops;
-> > > > > +	union {
-> > > > > +		/* Each mapping_type has unique match
-> > > > > parameters
-> > > > > here */
-> > > > > +	};
-> > > >=20
-> > > > Do we really need to add all global mapping types here? Then
-> > > > we'd
-> > > > need
-> > > > something for driver-private mapping types as well.
-> > >=20
-> > > IIRC it is fixed size up front like this because of how the
-> > > structure's memory is managed in this design..
-> > >=20
-> > > If you want a driver private thing then I'd add a 'u64
-> > > driver_private[2]' to the union and the driver can cast over it.
-> > >=20
-> > > But this is the kernel, if you want to add an xe_mapping_type,
-> > > then
-> > > just add it. I don't know we need to do driver private things.
-> >=20
-> > I guess it's my wish to separate components. Couldn't this lead to
-> > excessive includes and unnecessary dma-buf recompilations when
-> > mostly
-> > unrelated headers are touched? Except possibly for memory size,
-> > core
-> > dma-buf shouldn't need to know about this, it's a mapping private
-> > thing?
-> >=20
-> > /Thomas
-> >=20
-> >=20
-> > >=20
-> > > Jason
+
+On 10/22/26 10:00, Jinjie Ruan wrote:
+> 
+> 
+> 在 2026/10/21 17:48, Wandun 写道:
+>>
+>>
+>> On 10/21/26 17:13, Jinjie Ruan wrote:
+>>>
+>>>
+>>> 在 2026/10/21 16:30, Wandun Chen 写道:
+>>>> From: Wandun Chen <chenwandun@lixiang.com>
+>>>>
+>>>> crash_prepare_headers() counts memory ranges before populating the
+>>>> allocated crash_mem array. The weak implementation used by ARM64,
+>>>> RISC-V and LoongArch walks memblock.memory, while x86 performs the same
+>>>> two-pass operation over system RAM resources. Concurrent memory hotplug
+>>>> can change range source between the two walks and make the populate
+>>>> pass overflow cmem->ranges.
+>>>>
+>>>> Take device_hotplug_lock when preparing crash headers during
+>>>> kexec_file_load(). The x86/riscv memory hotplug path already takes
+>>>> device_hotplug_lock, so call __crash_prepare_headers() directly
+>>>> to avoid recursive locking.
+>>>>
+>>>> Sashiko reported this issue in [1].
+>>>>
+>>>> Fixes: 3751e728cef2 ("arm64: kexec_file: add crash dump support")
+>>>> Fixes: 1bcca8620a91 ("LoongArch: Add crash dump support for kexec_file")
+>>>> Fixes: 8acea455fafa ("RISC-V: Support for kexec_file on panic")
+>>>> Fixes: dd5f726076cc ("kexec: support for kexec on panic using new system call")
+>>>> Signed-off-by: Wandun Chen <chenwandun@lixiang.com>
+>>>> Link: https://sashiko.dev/#/message/20260806101002.1F84E1F000E9@smtp.kernel.org [1]
+>>>> Acked-by: Baoquan He <baoquan.he@linux.dev>
+>>>> ---
+>>>>  arch/riscv/kernel/crash.c  |  2 +-
+>>>>  arch/x86/kernel/crash.c    |  2 +-
+>>>>  include/linux/crash_core.h |  2 ++
+>>>>  kernel/crash_core.c        | 17 +++++++++++++++--
+>>>>  4 files changed, 19 insertions(+), 4 deletions(-)
+>>>>
+>>>> diff --git a/arch/riscv/kernel/crash.c b/arch/riscv/kernel/crash.c
+>>>> index fe5a4b306aae..ac8df2edf2a7 100644
+>>>> --- a/arch/riscv/kernel/crash.c
+>>>> +++ b/arch/riscv/kernel/crash.c
+>>>> @@ -70,7 +70,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
+>>>>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
+>>>>  	 * memory resources.
+>>>>  	 */
+>>>> -	if (crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
+>>>> +	if (__crash_prepare_headers(true, &elfbuf, &elfsz, NULL)) {
+>>>>  		pr_err("unable to create new elfcorehdr");
+>>>>  		goto out;
+>>>>  	}
+>>>> diff --git a/arch/x86/kernel/crash.c b/arch/x86/kernel/crash.c
+>>>> index e6f23933a6df..bef008a0cb22 100644
+>>>> --- a/arch/x86/kernel/crash.c
+>>>> +++ b/arch/x86/kernel/crash.c
+>>>> @@ -465,7 +465,7 @@ void arch_crash_handle_hotplug_event(struct kimage *image, void *arg)
+>>>>  	 * Create the new elfcorehdr reflecting the changes to CPU and/or
+>>>>  	 * memory resources.
+>>>>  	 */
+>>>> -	if (crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+>>>> +	if (__crash_prepare_headers(IS_ENABLED(CONFIG_X86_64), &elfbuf, &elfsz, NULL)) {
+>>>>  		pr_err("unable to create new elfcorehdr");
+>>>>  		goto out;
+>>>>  	}
+>>>> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
+>>>> index bc087124cd78..28e7a81cf263 100644
+>>>> --- a/include/linux/crash_core.h
+>>>> +++ b/include/linux/crash_core.h
+>>>> @@ -61,6 +61,8 @@ extern int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_ma
+>>>>  				       void **addr, unsigned long *sz);
+>>>>  extern int crash_prepare_headers(int need_kernel_map, void **addr,
+>>>>  				 unsigned long *sz, unsigned long *nr_mem_ranges);
+>>>> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>>>> +			    unsigned long *nr_mem_ranges);
+>>>>  extern int crash_exclude_core_ranges(struct crash_mem **cmem);
+>>>>  
+>>>>  struct kimage;
+>>>> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
+>>>> index faa0f22dbb41..8a861a946e26 100644
+>>>> --- a/kernel/crash_core.c
+>>>> +++ b/kernel/crash_core.c
+>>>> @@ -16,6 +16,7 @@
+>>>>  #include <linux/mm.h>
+>>>>  #include <linux/cpuhotplug.h>
+>>>>  #include <linux/memblock.h>
+>>>> +#include <linux/device.h>
+>>>>  #include <linux/kmemleak.h>
+>>>>  #include <linux/crash_core.h>
+>>>>  #include <linux/reboot.h>
+>>>> @@ -344,8 +345,8 @@ int crash_exclude_core_ranges(struct crash_mem **cmem)
+>>>>  	return 0;
+>>>>  }
+>>>>  
+>>>> -int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>>>> -			  unsigned long *nr_mem_ranges)
+>>>> +int __crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>>>> +			    unsigned long *nr_mem_ranges)
+>>>>  {
+>>>>  	unsigned int max_nr_ranges;
+>>>>  	struct crash_mem *cmem;
+>>>> @@ -382,6 +383,18 @@ int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>>>>  	return ret;
+>>>>  }
+>>>>  
+>>>> +int crash_prepare_headers(int need_kernel_map, void **addr, unsigned long *sz,
+>>>> +			  unsigned long *nr_mem_ranges)
+>>>> +{
+>>>> +	int ret;
+>>>> +
+>>>> +	lock_device_hotplug();
+>>>> +	ret = __crash_prepare_headers(need_kernel_map, addr, sz, nr_mem_ranges);
+>>>> +	unlock_device_hotplug();
+>>>
+>>> I think this patch conflicts with my changes and would also conflict
+>>> with the implementation of arm64 crash hotplug.
+>>>
+>>> https://lore.kernel.org/all/20260921090450.807575-15-ruanjinjie@huawei.com/
+>>>
+>> Have these patches already been merged? My current work is based on the latest
+>> linux-next. If they have already been merged into the maintainer's branch,
+>> please let me know, I will update my tree and rebase/re-adapt my changes accordingly.
+>>
+>>
+>> Also, regarding the changes in kernel/crash_core.c: it looks like we modified
+>> the same spot, the change is not wrong, is that right?
+> 
+> Hi Wandun,
+> 
+> However, I think someone should have informed me in advance; otherwise,
+> doing duplicate fix work is pointless.
+> 
+> I see that part of your patch series modifies code I previously changed,
+> but I was not CC'd.
+
+Hi Jinjie,
+
+Sorry for not CC'ing you. I keep the per-patch Cc lists short because
+large recipient sets have caused my sends to be cut off midway before,
+(I'm still trying to track down exactly where the problem is) you should
+have been on the list that's my miss. You'll be on the Cc of every future
+version.
+> 
+>>
+>>> arm64 crash hotplug:
+>>> https://lore.kernel.org/all/20260918100442.3841135-18-ruanjinjie@huawei.com/
+>>
+>> In addition, if arm64 gains crash hotplug support, the code there would indeed
+>> need to be modified (to avoid a deadlock). As of now, arm64 crash hotplug
+>> support has not been merged yet either, has it? I just want to make sure I
+>> haven't missed anything.
+> 
+> Yes, you are right. If your patch series will be merged soon, I will
+> develop based on it.
+
+Also thanks for your reminder, otherwise I might later overlook the case
+where arm64 has already gained crash hotplug support, and introduce bugs
+as a result.
+
+
+Best regards,
+Wandun>
+>>
+>>>
+>>>> +
+>>>> +	return ret;
+>>>> +}
+>>>> +
+>>>>  /**
+>>>>   * crash_exclude_mem_range - exclude a mem range for existing ranges
+>>>>   * @mem: mem->range contains an array of ranges sorted in ascending order
+>>>
+>>
+> 
+
