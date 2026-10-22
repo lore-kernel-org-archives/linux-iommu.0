@@ -1,97 +1,111 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.50
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792702458;
-	b=koB15RU5DfI2KooyFEJMcPZXjq1Gz1PV1TYktfYCMxtob97eoYq2dRp9ytp97iWQX34C
-	 JftWGE05m8GqoCA8dBSOs8wijXPYFWaJEeHKYsAXvSr0SX97ak3u+HM/dB0IVq52zd6vr
-	 silC0WEEA/192QB2bxyF4k4WB06z4nheMcg22YUeB8t458rEugFMSu6UCUMToKRlA60/8
-	 fViHZGuZ+0bVVErhPEAXBy1umhBrJX9jywVDVWVCzZ8pNug3D4t3OBTxC75DS8YaObT68
-	 vsf4sOvgTo+6zhknO973Nd6d/MVMhz1yCLt1HiIrg2FmjTD2rfB/G04GXQY5HQsIaRQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792702458;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=q7AHGxYo2F1tyAP4/knTgDUev2PNwFvE7RNfo85FnlQ=;
-	b=mlO6Q2j0rFU6BXldyA7+5hr6bYAAoMvqaqEuXQne2pR0VaK0vfC302FOZqwvCzhc9sVK
-	 LaJQPu6yH1uwXMnF4ZTm8D7Np/7xUI3NZwvIhUxe5RmP31COD5Z8l4lQOEWFv/tO+GlH8
-	 vvCVoBxePeVJbK2zpQmDw/dcEl5wdF1H6K5tsNJxB1DP3zD+y0sVIhey1Zgn6EUnZqlLf
-	 g4hmObW3rhgppXJck1A6H9+lOav3WD2lSKlUu1lEweP7wxUqrFxNhFmzfE8sEkT7ir40U
-	 62DY+e5Nxp55MWh0nVpVQz2a93cnYeKJACqbSL/jYR+9QxqyE75A15AYpp09wPGNp5A==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=soleen.com;
-	spf=pass smtp.mailfrom=soleen.com;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.50
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792705607;
+	b=1v7ly6tsDTAdiAz5eCYAZUg4r0cLwNa91K9Uxrab7tnLeGgis+zaNL/KYBVgs9ZXxj9G
+	 gPxuq+egqEm5Wlt0M2nmN98uAXM9f22dRVmwoEKzYRNHfVkssfQACF/3BHPhgX/sJuh5x
+	 LaVKE/IW/eJJOOdXPpUdH5abp8xQTYyHBImw52skK1XMciXnD/Q+iYNggFGQa6KrsEMAq
+	 XvoSXXIA/KgMgcX2YwT1gXlmNwNLSPEWa2IkdgYPw6U1txc4ysowU9vWs03238ChDllEM
+	 Li8KjZ1TVC9HQSAr+uhPvponKAS8XfrlKYlvQmaLi3j2pGCc2gFb+gBxQzlemABbKEA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792705607;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Message-ID:
+	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-Proofpoint-GUID:X-Authority-Analysis:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=6QE+P56C2nYaSieRX/rS/N9gClwTb0YY8JP9mDQoasU=;
+	b=zwQEbrXt1p6yYDQQyW0xC29EIYam9JrR1wOs9qNYaXiLb0WjNLQbFwakZw4C+Zm3BpAq
+	 ls08oVtyOwgSNKZqNgADJawkIeV+zjDoqn2r6YIYqINtdLQk/jt1MHJmCY6l6gQtnQRJ0
+	 WTRXk6PD09/sAZyg75xO9jBQ5kke6sqBiO85Kq6DN+OBybBPqlBx9IDDJ3/7ksrGOrrfI
+	 uDoI0hJrTxPhgjCddzB1xQr+ASDpaPJezD7EfB8q8FSjyWiVlOKtSrNB4MhpxU60mLtDy
+	 IbheFGVbDkXMnPLiGYljrbSU5QLojtYy/ilm9huqtmXXr09KLXzGD2YskOcN3UXiz5A==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=UNq+hvA9;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=hjlzmnCd;
+	arc=none smtp.remote-ip=205.220.180.131
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8EF8606A31A
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 20:54:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B8EF8606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-6afafc89b48so235843a12.2
-        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 13:54:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792702446; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lGIsO+I6Uy0qfnf1ezbD0o1y8VYKTpF5uostSxZmpFon4C9twTf3n4nmTNu58t+ygD
-         EJeSgOv5pcWVAtmTnwN79DZW5LgpGPQGN73qIbXiZDzMY4qRgEvHxYx5vO0dsQZIxoaM
-         8Xb1R8xTjHrQ7PlL9pwXnlZkNmLPrZsRfywMtcNTn3VQavdJ9+Ey8AKvAYXf3gHPENg4
-         oK1RvtQJSN1X0GkcByrAvAZzXNLXnb2YeKwznJFzXETTyb8S2fJLNPNrEFx3MPYSGrNH
-         XpCmvNWQlHAhF8HGCNe1v5PNJZ0XThTfRcTUfkYX1U5hUdF7iu7a3VvyL9ktv5tv59g5
-         EiJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=q7AHGxYo2F1tyAP4/knTgDUev2PNwFvE7RNfo85FnlQ=;
-        fh=CL1Sijr326n/etn5hkLboRnh7nzEZ69m/mMVFrXBCHA=;
-        b=JWuxJL5Z8KegWmVEyPKXSpIbQvg0Tak7craY1Fq2OknUOhx3lByqHdRSAnIaV88J9m
-         eH0cIZRKkJVYF+tzjfJ9BeBvU9iWfDAPuQjFPOLIe56wtOFhqeevksqscZKw14swwZbm
-         JzoplKQVas57DiuV/9FVGvIjvqfy37y3CRsAT1bkRUb5xBk4mCOGQn7CEvM707NhHoiR
-         3Z6qs6UtOXKFNvKoqiSRSpDXOmcWkqY7/jXzM6YNm7chXrRcHCfj4GIh+I3VqaxBa6iU
-         Lbq264GBUwJ8vktMGOwbtFuujhIgKci/737p0yuvpZl+Hr5jdShW/O1g2+jMISoh9OJU
-         uOYw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18A75606A31D
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 21:46:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 18A75606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=UNq+hvA9;
+	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=hjlzmnCd
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69MJs20E1189912
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 21:46:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	6QE+P56C2nYaSieRX/rS/N9gClwTb0YY8JP9mDQoasU=; b=UNq+hvA9A8DEwJLN
+	NSYfFSTtglUNNRNcKnXpBoF+eJxXXmuGdMTgqw7kmS6wZSsb8jP0zZbtAYPZSzvI
+	sKxCKw85TSNNzD8r8KAvtkuj309mg2YOI9eQdAS7L1XUYlYegnK3AIzwdnpPabzR
+	ts1NDX3Mhqs5NgWyklR+me2lpJcGfo2BgTM6lffe6lljiqxNlxwjjqWlaMcYRcZn
+	7/v6+pT603Hh7qLgcO3a3t8hIvCiz5xj+hQQuoDccw+7GKskfaEsyKy2wsD1D5s8
+	e5B3IBFArInFKq54Cfemsc0cdvi8cf0svwEMsRslmd1Xlg78ZZ+q/UsIiFXWZdty
+	4wjHaQ==
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hfqmj8q4w-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 21:46:40 +0000 (GMT)
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-35c3c370b17so427447eec.0
+        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 14:46:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1792702446; x=1793307246; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=q7AHGxYo2F1tyAP4/knTgDUev2PNwFvE7RNfo85FnlQ=;
-        b=VdVH63vb9xA8RkT7KWzbSVlWrBVOx+ImJJbH9fAseT+6IlStbk92F61SsEQc91MEVL
-         yf6rsGBqlAATCj5KV7sOmITHmY+iYukqYTNkmAucj9rfJJCLw7xGf7lwzOBEn4vgkz4f
-         UWdM7/uCFOZLTrmNw7/w//a16bh9QIUi9/uptGl7lBUfCs50jkaCeUC9YkgoetLswVtQ
-         aW5odN4kKcW0gRnR+L095hrlYbntWgQvi+m2Jnw/lD7KJjBicbtJ2loesm/lumlzBrmL
-         O9hwFp83uCronAW2UHdRQczUt9RX2KQfTkbiWcyRyb0oIa/RGg5AD4jQsNpdSdE9PdY4
-         cwhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792702446; x=1793307246;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=oss.qualcomm.com; s=google; t=1792705600; x=1793310400; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=q7AHGxYo2F1tyAP4/knTgDUev2PNwFvE7RNfo85FnlQ=;
-        b=1qYgf/t4Ra/MteX1El9FGtHDr8lO6qI+a6IJdgrqHRk6pcFIj21AfCOBCdqHXiw9bX
-         axYJcBykNSW12XnXbJd8IgK83MFr7EQElldAZ1RDM8i01m7MWxet1FVaCEHoTJOWvBg6
-         B0m8KycRtjqvYlDOLFEDqZsDyZcy41dMazjFs5RWb1C22R+qg9jCgYEVamXmG9DFVAr1
-         GCyB+TwlUcrnT2yIBAnD8fJTlFWg9ogGQ9WYQSFlUhYyVJ9SSFi7rNeT9CshE25JGGLN
-         gggP0RXdByGe7vfV/fZSMrswSbzjtH1JEuQk5/Cyf47giVSj3COjFlulNE+mCbXDEFlG
-         lvdQ==
-X-Forwarded-Encrypted: i=1; AKwUvBwflMtfMTYXN1YSaiIFlD3VWvfU2BjHRVtaZ/F64NAHbU6S6muYA+3iZ6XZMYQ/NPnoVkqpVg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLM4iiUJF4KLfkglZKej0BQYIki83PaIaYe9h122up69ONDSCD1
-	/owOb0JYquO3H9uug5RmPrc/I+7cJ3mjuE0SDDbuJab2n5ntoEiL1UBjB78uL1/2ZqJflEeQ6yC
-	1j/jrB8ddZAegCec+PU4/hkpSUo/SGG5RGXcshDP8bw==
-X-Gm-Gg: AYBFou0uEj1rfEMC3ihIjmq+nFLzWlCtDnDxdcvJvo+iyUhVaTR2O+SzjLnSX0q2Kd6
-	lFCMgX2VANP/JowiUA2X/uAU+wpytIW9JHLp7g+AjpYRmiMY1RUIvYAv7aHrytIz/0WUp30+ZVX
-	122dY7Z55GMvBT7OS0bExZCuEqlviNy2F3z2XIEHqqcAN5NUzu96sUF0WLDybiqyOO1is12aMSY
-	jA91OFuEMiktbquM92KqSdb9rMMEcXvPZ7UlFXB1Ez7GaQ9T4SwYy68UYUP8P1pxfuxKKgtZyKs
-	93iuCe7/VUUhaZSuLCGjgbW8xgDtkWC8sXIf8EpEJK0pTnJZLfkVTdQ7OWDtMP6onbPiPw1ol9E
-	W1fA59oM40idzNZwQNY91u1/lXr6QjyvnGq2B7RrCFabE13wb3t5qtiS9W9TqhMZD1HYZ
-X-Received: by 2002:a05:6402:321c:b0:6b1:c299:b3f8 with SMTP id
- 4fb4d7f45d1cf-6b432c1a486mr859420a12.33.1792702445990; Thu, 22 Oct 2026
- 13:54:05 -0700 (PDT)
+        bh=6QE+P56C2nYaSieRX/rS/N9gClwTb0YY8JP9mDQoasU=;
+        b=hjlzmnCdQFwedQoDapMqP8fyTnib0k/ddL+nFur7rMQIlUtVQd06O+i5K96Jj65KZl
+         aWm727cgntYjfb7py1AMsdftfnQBARBPP6IsZ9AetlQT5e6i/jN1pIIlwURVsH811PLz
+         OSIHYbb5eNRZ0U+bmVSFTOWD51x1n2ItAV3b7HDOjuwbr+b2rsq6fFGtWJvrWRdXWtUG
+         rdGW9OSq1IAr2vHrWpGBkUqGqmo8Ukp8KXMQUWSfSdCEdidk8yzgvyc4fAo+s5MqW90j
+         AAET7zezjO0w11gbAncH0yzpKrCWpW2xduQ6hmfkIjXGLywusJvggfGHdJLqQLlgEuZB
+         YiYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792705600; x=1793310400;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=6QE+P56C2nYaSieRX/rS/N9gClwTb0YY8JP9mDQoasU=;
+        b=1FGH5qmcUThfH0SeJz1xfgtIDnRBIHQaQgO53o21EQuR9OXEJANE7esRrgZvl4glGN
+         CX0goHcokGOZZM8+EPsioQSqL5xdEhSAHDTIzkP70BXm0dWy/m4ITm5FLILHNXLenpvk
+         qcbyIAWhdt2U2V41MOntQsoLnUjaIBNyXguxOuxdnAtIpwVmYiblSWBJmPz/NLJzdp1X
+         dAO1xLyAtx5rbMf8motKNIjLvPwpRPufegmKLe/tSUyfLyFAyJKnmMO021r6Qf3qk8XJ
+         WfHTLppbj+tDj5ggtvZ4vxpkZwvxfGfz+8KHFphRmTrM11FkllDL4TE8nHJ7EgdySexG
+         PdHg==
+X-Forwarded-Encrypted: i=1; AKwUvBwo7J2EE1Jiaxqxa+RJr8GDsUgvEkJcE65kl6TF/6yBhAWpqiCXzhcsuBVFSgVBM41O0aHKcQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJkvm/Y2sHQSUI/YcoJVk1aFFcDwPasLNOM0cQ+WO/KF4uHmFlH
+	i9135ygKfWJFZkwDxRv7FVaoY+YdsAQBO+Ii8ukvRxSZQzmJrVNI1BR+NWQCm9/ni5g/rh26T2M
+	QnzQQFdSEcsC/P5iR9jdP+cKoCnfUa+mAmNDbz2ha4lZR5jmT/cM6o+oTxQ==
+X-Gm-Gg: AYBFou2SZFjWA4mlMpnWssyUP17MUeGvRT5Y6ANuG+DknftV83kWN6SRw3UdSjNvD93
+	5dkJ181wmQvGtm45Tun0BedX2Mx57ZngCZImPj30RD0VdFJ7olSJl7qgMnp5QBMZhteQtGHi4wQ
+	Y+kMzzXNxchFQqCzOX036UJGyawtgrWbWC3D1Npp/nfdndQ6fAIrOZn1afoqIcATNMqt4Dc2L5Y
+	Jogl4od044dAgF/2PUBByFVWs5uwsMu2S3mFJ5ehICbpPcwffME5DDfO8uDp8aSln539bfDTyGV
+	vsWgs/ltGghW2T1T1gJSOM7UW1iskAdU9Cn7S1UipNpBYINAinpTjWVXcOnkfmBUKe45zVOTcFJ
+	a1StD/K/h8YWXhVyQDTU3m6kb
+X-Received: by 2002:a05:7022:1e13:b0:18b:48c3:287c with SMTP id a92af1059eb24-195c693fa23mr494663c88.41.1792705599649;
+        Thu, 22 Oct 2026 14:46:39 -0700 (PDT)
+X-Received: by 2002:a05:7022:1e13:b0:18b:48c3:287c with SMTP id a92af1059eb24-195c693fa23mr494632c88.41.1792705599029;
+        Thu, 22 Oct 2026 14:46:39 -0700 (PDT)
+Received: from [192.168.1.13] ([106.222.228.226])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-195e9e9c4c7sm954775c88.4.2026.10.22.14.46.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Oct 2026 14:46:37 -0700 (PDT)
+Message-ID: <fcb86c33-1893-47bb-80eb-20acd65f3805@oss.qualcomm.com>
+Date: Fri, 23 Oct 2026 03:16:27 +0530
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -101,200 +115,129 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <CA+CK2bAQbmq3ArP3XMErF_8RC2CUwvgpLY0H83D0nCJTaVKYyA@mail.gmail.com>
- <9huzecdi6go0.fsf@tarunix.c.googlers.com> <CALzav=dLdJoVy=B1pv0FAurD9OhAzLSTjJNbtjTdJRmSqaB0yw@mail.gmail.com>
- <CA+CK2bAQRMAEXZyHTEuUN0_Fo59Sn0hBmYbme_J9ewjx6gPyJQ@mail.gmail.com>
- <atlKsD-aJB3mJr2j@google.com> <CA+CK2bABt4OZO31TenVF2+uBUWVwViWbvfE00=0xbAw=f7K9SA@mail.gmail.com>
- <atl7peoVHdP5hz7z@google.com> <CA+CK2bBFXnJA1kddbLKGq0DAHDgjYhsTSQQay-xeX7jJC1V_UQ@mail.gmail.com>
- <CALzav=e=ho2gVrn+7KpZ3ZyasvH2u15-pC-RSRSS7KcMfKqUJQ@mail.gmail.com>
- <CA+CK2bAJo8dnTOyKMgnnMnk-SCXbTsv+JCLEOWkjyj-wqtEkHg@mail.gmail.com> <atpNFEFIlqAoYIwH@google.com>
-In-Reply-To: <atpNFEFIlqAoYIwH@google.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Thu, 22 Oct 2026 16:53:28 -0400
-X-Gm-Features: AclHuK_o-bcMo-_bEmG9OJEk39HO6mWdZ96jtolFahfwsqDnw1LYQXgLWQ4gcJk
-Message-ID: <CA+CK2bB2C3Am5ssRuzYpfiU7_vB81vxMGc19HQLq7N=_7YrbTg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
- a 2-bit pair feature header
-To: David Matlack <dmatlack@google.com>
-Cc: tarunsahu@google.com, Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
-	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
-	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com, 
-	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org, 
-	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
-	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
-	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 03/13] drm/msm: look for lpac from dts
+To: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar
+ <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, iommu@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
+ <20260705-descriptive-name-lpac-upstream-v1-3-01d50c3e0c99@gmail.com>
+ <rwohvfbsw2brpxrfg26egu5arwe6g7n2etelo33eegmu5cz65k@3syofuxzsjrc>
+ <dc5aef2e-600e-4e97-b76b-dcc8bd72c709@gmail.com>
+ <m4vwrqt6yyaawpvkyrqfzs3kbipbhygmtrhphuthl2gmjvkgyt@u2d3dnvl2phy>
+ <54cb37bb-aaa5-4c5d-a563-acca4822dd35@oss.qualcomm.com>
+ <t5gu6ciwmxdb2jghc44gtixdsbedkgy4yzke5sgawjrr2h362u@ahvhh3yfe6lx>
+ <wtun2cfukyzxlsfiz2izsejd33k4jpapwqa3uqih5drcsrkff5@e6llkke5dayw>
+ <1f6db59c-b7a9-41a1-8022-6713365fa09e@gmail.com>
+Content-Language: en-US
+From: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+In-Reply-To: <1f6db59c-b7a9-41a1-8022-6713365fa09e@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: mdQhMqHhPfqWBu0NqU4gafxj5A5ksKmK
+X-Authority-Analysis: v=2.4 cv=cPR1IVeN c=1 sm=1 tr=0 ts=6ada8440 cx=c_pps
+ a=cFYjgdjTJScbgFmBucgdfQ==:117 a=ipsIN8yD8anPosRfiFfp5w==:17
+ a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
+ a=VwQbUJbxAAAA:8 a=9jRdOu3wAAAA:8 a=InArmlTPJEDsLdIP4zgA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=scEy_gLbYbu1JhEsrz4S:22 a=ZE6KLimJVUuLrTuGpvhn:22
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIyMDA4NiBTYWx0ZWRfX6VR+1FwmCUQa
+ lIWxRKlBo8BdeuKDeVnYRKxJdnVHOPpIj07mKfYVQJVmrSgL5sF03BMYquAvKDYe0mAl8kw75+w
+ gV4sSHxmXoIKtjvMw2KYy8yw1DIYrCs=
+X-Proofpoint-ORIG-GUID: mdQhMqHhPfqWBu0NqU4gafxj5A5ksKmK
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIyMDA4NiBTYWx0ZWRfX8OH0xond6QGM
+ dUer6IwbfvPGmbMQvZCcFfj4rK6x424E7vL6+qVBuqBHtk8f6jXt0IZ8PNqdYvIaeMFg83rOw4L
+ SCFHetXebXNppAUPmBY4QMY4lSN7UCUlQPKGLDpc+lVd5bJgC/omA8CzRrR1YzxWRN+HwB2iiaN
+ WntdkSjOurCHlae6Pw6lrurQHpRoor+M180iXmPOPe/dRseE5EoHAgm7p3LWQv6Nx0t9Hye4cDM
+ l1VSOFDthgG1Tc6XKkB70/YqyUsGLVhVcFPdeOG5Yyyzsa2cGD/7FK4axUvuvE0ZmGjtRcQYLcb
+ JWT7O+6/MuA/8BNI6dgtAauZ95obiLiwNQRgcimbqdztDDk/jc1ds2k5XcavXLIvQ834qQMmJEW
+ GK5cXB2LPhxQd9+RX/CLjsN2ABKay2ooBTEy+bCyx5bVb9C+5sAlj7rt3/q+4k0XLWAMzKyQ7AP
+ Psi/ZGc7HxqyhDc6VSg==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-10-22_06,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0 suspectscore=0
+ impostorscore=0 priorityscore=1501 malwarescore=0 clxscore=1011 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610220086
 
-On Thu, Oct 22, 2026 at 1:51=E2=80=AFPM David Matlack <dmatlack@google.com>=
- wrote:
->
-> On 2026-10-22 12:11 AM, Pasha Tatashin wrote:
-> > On Wed, Oct 21, 2026 at 11:53=E2=80=AFPM David Matlack <dmatlack@google=
-.com> wrote:
->
-> > > > #define DECLARE_LUO_SER(name, expected_size, ext_flags_count, paylo=
-ad_type) \
-> > > >     struct name {                                                  =
-         \
-> > > >         __u32 size;                                                =
-         \
-> > > >         __u32 flags;                                               =
-         \
-> > > >         __u64 ext_flags[ext_flags_count];                          =
-         \
-> > > >         payload_type payload;                                      =
-         \
-> > > >     };                                                             =
-         \
-> > > >     static_assert(sizeof(struct name) =3D=3D (expected_size),      =
-             \
-> > > >                   "LUO struct " #name " size mismatch!")
-> > > >
-> > > > For example:
-> > > >
-> > > > struct luo_memfd_payload {
-> > > >     __u64 pos;
-> > > >     __u64 size;
-> > > > };
-> > > >
-> > > > DECLARE_LUO_SER(luo_memfd_ser, 24, 0, struct luo_memfd_payload);
-> > >
-> > > This looks pretty reasonable but I would name the payload
-> > > luo_memfd_ser. The combined struct that DECLARE_LUO_SER() creates
-> > > should never be used directly since the offset of the payload in that
-> > > struct is only valid in the current kernel. So I would give that
-> > > struct a special name that makes it obvious you shouldn't be using it=
-.
-> >
-> > Lets drop the fourth macro argument and generate the combined struct na=
-me:
-> >
-> > #define DECLARE_LUO_SER(name, expected_size, ext_flags_count)          =
-    \
-> >     struct name##_hdr {                                                =
-    \
-> >         __u32 size;                                                    =
-    \
-> >         __u32 flags;                                                   =
-    \
-> >         __u64 ext_flags[ext_flags_count];                              =
-    \
-> >         struct name payload;                                           =
-    \
-> >     };                                                                 =
-    \
-> >     static_assert(sizeof(struct name##_hdr) =3D=3D (expected_size),    =
-        \
-> >                   "LUO struct " #name " size mismatch!")
-> >
-> > For example:
-> >
-> > struct luo_memfd_ser {
-> >     __u64 pos;
-> >     __u64 size;
-> > };
-> >
-> > DECLARE_LUO_SER_HDR(luo_memfd_ser, 24, 0);
->
-> I think we are getting close, bu I have two remaining concerns:
->
->  * Reserving bits in each flags word for continuation leaves gaps
->    in the flag space that users have to know to skip.
 
-Yes, but callers should never manipulate the raw flag words directly,
-and we can provide simple accessor macros or inlines that take a
-contiguous feature ID (0, 1, 2, ...)
 
-enum luo_memfd_feats {
-    LUO_MEMFD_FEAT_HUGETLB =3D 0,
-    LUO_MEMFD_FEAT_SEALS   =3D 1,
-    /* ... */
-    LUO_MEMFD_FEAT_FOO     =3D 15, /* Automatically lands in
-ext_flags[0] bits 0:1 */
-    LUO_MEMFD_NR_FEATS
-};
+On 10/22/2026 6:24 PM, Anna Maniscalco wrote:
+> On 7/9/26 9:39 PM, Dmitry Baryshkov wrote:
+>> On Thu, Jul 09, 2026 at 05:54:23PM +0300, Dmitry Baryshkov wrote:
+>>> On Thu, Jul 09, 2026 at 07:12:39PM +0530, Akhil P Oommen wrote:
+>>>> On 7/7/2026 10:09 PM, Dmitry Baryshkov wrote:
+>>>>> On Tue, Jul 07, 2026 at 05:02:43PM +0200, Anna Maniscalco wrote:
+>>>>>> On 7/6/26 5:04 PM, Dmitry Baryshkov wrote:
+>>>>>>> On Sun, Jul 05, 2026 at 09:13:37PM +0200, Anna Maniscalco wrote:
+>>>>>>>> In order to associate the SID used by LPAC to it's own domain and
+>>>>>>>> context bank we need a separate node on the DTS.
+>>>>>>> Can we use iommu-map instead of adding a new device using the same
+>>>>>>> addresses? You provide zero explanations, but it seems like you are
+>>>>>>> trying to separate a part of the GPU into a separate device, but it's
+>>>>>>> unnecessary.
+>>>>>> What I was trying to say is that we need to map sid0 and sid1 to different
+>>>>>> context banks.
+>>>>>>
+>>>>>>  From what I recall, so long as we use the same dt node, the iommu drivert
+>>>>>> provides no way of doing this.
+>>>>>>
+>>>>>> What kgsl does is having a node for the iommu and then subnodes for gfx lpac
+>>>>>> and secure.
+>>>>>>
+>>>>>> The address on the lpac device doesn't really matter. I have very limted
+>>>>>> knowledge of DTSs but I think we could just leave it out altogether?
+>>>>> I think, you were poined to the Glymur Iris patches. Another option is
+>>>>> the QDA driver being submitted too. Both ot them use iommu-map to
+>>>>> describe the same usecase - a set of SIDs which are used by the device
+>>>>> but which should not be a part of the defaut set. With it in place you
+>>>>> don't need to have separate qcom,lpac devices, no additional properties,
+>>>>> etc.
+>>>>>
+>>>>> I'd recommend following the same approach.
+>>>> iiuc, the conclusion in this recent thread is to use child nodes for a
+>>>> similar case:
+>>>> https://lore.kernel.org/all/20260618151745.GD231643@ziepe.ca/
+>>> Let me check internally.
+>> After a brief discussion: it can be either, depending on what suites
+>> better (and if you can persuade DMA / IOMMU maintainers to let one extra
+>> bus or not).
+>>
+> One thing sashiko is pointing out is that new dt should work with hold kernel so, in general moving sid1 from there would break it since old kernels don't know how to handle them separately.
+> 
 
-if (luo_ser_get_feat(hdr, LUO_MEMFD_FEAT_HUGETLB)) {
-    /* handle hugetlb */
-}
++ Bjorn/Konrad
 
->  * struct name##_hdr only matches structs written by the current kernel
->    (in terms of length of array and offset of payload).
+Not sure how strict is the requirement for compatibility with older kernel version. An
+option in your case could be just do an override in the board dts file of the
+Steam Frame.
 
-This is not an issue on the incoming path, we never cast incoming data
-to struct name##_hdr or access ->payload directly. Instead, we parse
-the incoming buffer, dynamically compute the header size from the
-continuation bits, and cast the payload offset to "struct name *"
-based on the negotiated feature flags.
+-Akhil.
 
->
-> How about this instead:
->
-> struct luo_ser_hdr {
->     __u32 size;        /* Size of header + payload in bytes */
->     __u32 nr_flags;    /* Number of features encoded in flags[] */
->     __u64 flags[];
-> };
->
-> Each feature occupies 2 bits of flags[], so feature N is always bits
-> [2N+1:2N] of flags[N / 32], with no gaps:
->
->   00: Feature not present
->   01: Feature present, safe to ignore if not supported
->   11: Feature present, must be supported by the next kernel
->   10: Invalid
->
-> The length of flags[] and the header size are computed directly rather
-> than by walking continuation bits:
->
-> static inline u32 luo_ser_nr_flag_words(const struct luo_ser_hdr *hdr)
-> {
->     return DIV_ROUND_UP(hdr->nr_flags, 32);
-> }
->
-> static inline size_t luo_ser_hdr_size(const struct luo_ser_hdr *hdr)
-> {
->     return struct_size(hdr, flags, luo_ser_nr_flag_words(hdr));
-> }
->
-> static inline void *luo_ser_payload(const struct luo_ser_hdr *hdr)
-> {
->     return (void *)hdr + luo_ser_hdr_size(hdr);
-> }
->
-> and bounds checking is just luo_ser_hdr_size(hdr) <=3D hdr->size. The
-> payload is always 8-byte aligned.
->
-> Payload structs are then declared on their own, with no header:
->
-> struct luo_memfd_ser {
->     __u64 pos;
->     __u64 size;
-> };
-> LUO_SER_ASSERT_SIZE(luo_memfd_ser, 16);
->
-> The static_assert covers the payload to catch embedded structs changing
-> size.  Asserting the header doesn't add anything since its size varies
-> by kernel. And because flags[] is a flexible array, the header can't be
-> embedded in front of a payload in a combined struct; it can only be
-> reached through luo_ser_payload().
->
-> I think the only downside is that the header increases to 16-bytes when
-> there is at least 1 flag. But I don't think we need to be so concerned
-> about an 8 byte difference...
+> Not sure how to address this.
+> 
+> Best regards,
 
-I would prefer to keep the default header at 8 bytes. With 15 features
-fitting directly inside the base __u32 flags word, adding the first 15
-features to a struct keeps the header at 8 bytes and does not shift
-the payload.
-
-Computation-wise it is also very similar: for the 99% of structs that
-have <=3D 15 features, LUO_FLAGS_CONT is 0, so computing the header size
-is just a single bit test with no loop. Even if a struct ever needs
-ext_flags, the loop will walk at most one or two extra words.
-
-Pasha
