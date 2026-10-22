@@ -1,110 +1,158 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.176
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792691840;
-	b=zOjAfCZ6NQ1K/UR9zYoGU/QgR//u5kqaXtRO/Mp2Kr1vF+S/uPc/4NP7ujcapeolPID+
-	 I2U57z3sJ4PxjeQ/0baV5jCtm6xN3PwdNkedm8MpuMneJOnEB/b9CSlq6jQCsRY1ccE5I
-	 8CK7SOVISm/ZHhkEMJBERUQ0o1e+XEKbi19TySedvNWOUzP38wc96Km06qk8JwYKEx+M/
-	 Z2hNB6CdG2ANbrLfbMQ+VIi3LIYPyHaidsGr9KjOcplR2o81hVcRDoJZCtPW51orSqauo
-	 gHuRxVnyRho08nHde4MP7ia4R4toJDtv6L/AwqaFotSlLaYKBDGEZyZjlojzukVYD6w==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792691840;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=8EgRcbuDfKORZQpY0utOTTMffHlpWo5to8q3utLizKM=;
-	b=2hPGOGelVFCxlmO/BUMESz6P2LdOtJid9Cb1qnqlYIo+ycDZB6AnndsS5bQwaJ+M/SBS
-	 7a704gQy/6Qhnh7AIc65qs5rIK7RqwJgIXtFtnIwkla4BidtuW7bx1xOucvktniqrA3fh
-	 8bEx8qoV3XVU95F3XhOVpUnXLNrdANOeEgQmcSDoH8lYEnXt73fw52Mj4thf04SMDdUsv
-	 CIRBMF8O3wHyf28tHTohi8FgCmCuU76QXK18NW1+5cynSUNCawScLk8v2qZIjZ50f5RLt
-	 NO0Q0zIgnDn+oQ97ZTlHegw75kS08cyd6o3rYCY10wqV24I/gWJZIe9X9yFk+St7XmA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b="UUZGv/9a";
-	arc=none smtp.remote-ip=209.85.214.176
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.14.8
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792691882;
+	b=KNRUTeAglRc47U3HHKyZ9c5etnit19dmOi1KhGtD0dD/Sc6RqczhJi8tWzI96g7o+OZ3
+	 92wwoWC7UkQgexF79d2qMGgA7UcWDj5+btww6tqHlAKbl0GS80TAXes4ss6jpVO/7a4Lb
+	 0jZQ7zf64kifSzKDiVeTLMjjigd47PAuPnhROiunpIugepLt/enhtKpMkuU+9YARglKAU
+	 w0wt3x/hL+T1jgYYyBGSlPq4dkbxKy2Nagd8/DSaaz0I3UwGbjTJVa7nuM0O0/d0xRwSG
+	 RgdY/ZXyY1M/JruIs8CIAjmefmKU0dzmTuK8VxH7Nwz6/hBQcilAOsOYklZX/VuIYGw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792691882;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 msip_labels:x-ms-exchange-messagesentrepresentingtype:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:
+	 X-MS-Exchange-CrossTenant-rms-persistedconsumerorg:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=Al1YF6Q6y6xoEDHIM6UUhKBvJP6jwZPU2G8ULc9n3uk=;
+	b=fy48U1bqLD/cyod4hAnTSeTdRba397SkqeSGvLIz20d40l9qnbQb77N5lSh63Vs2rlal
+	 eHVixPfU5mP+M+icHnJBE2wFevnZWu2jBXgeH43LMjKFkrmv8wiwoXG8bvGre6uxuA5KB
+	 paUw0bLP9Cm7U/LKwrZXrj0OoOPJ37kQDI0uoVG5OsP3WYGtHKs8dPPnPLeCcLDvH0Ccg
+	 Hf6oeJgQXjBas0joETP8fS33q+Rf4kAk4TZcxvHRduXDgHuT7XjwJA4SowgQLTAs8SeGV
+	 ogwfE5xTV+1h4mpJ40UF2+70zEeZmBkfhtVp2hMwIsJB8JUz526XluNSRrbtrOsPnjg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=outlook.com;
+	spf=pass smtp.mailfrom=outlook.com;
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=M1jcOnMS;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.14.8
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazolkn19012008.outbound.protection.outlook.com [52.103.14.8])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687E4606A31D
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 17:57:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 687E4606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77FA5606A31B
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 17:58:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 77FA5606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=UUZGv/9a
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2ea4f255ba1so26445ad.2
-        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 10:57:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792691840; x=1793296640; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8EgRcbuDfKORZQpY0utOTTMffHlpWo5to8q3utLizKM=;
-        b=UUZGv/9ajUqdLGXLn0MF+j0DIrUdv8Q7Li+z69ilh3CAiUHlVGTVT0ngNGq3ZqcG5n
-         KbKwfFscFEPP1eESah+78UrMNWU449iGN5iXXu1QzMVHcI0FMUJPfGgJDzkicuVcBctE
-         JKXJ+/hDpVOPlh0VIEG7ONZGxBv/oojEuYwytCX7tdvy/S3gjKacyLZ7QSF5eYpl18dG
-         mrRQ0ne7/h206gEbOwockKJIKgRmw6WITfKJz6LDJZSOkINYqX9SnEKplKB2u6AZUZKh
-         XUuTton8GpiT28VvCzAkYmXhTneuqBS4GKsGNqt6IFYQ4A8mkWJ0MK6lIwahASv0PRv4
-         GMzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792691840; x=1793296640;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=8EgRcbuDfKORZQpY0utOTTMffHlpWo5to8q3utLizKM=;
-        b=Eces0ppKrJCsgo7q7jXcvpRndKXO+VL/WdLLB+aP4uQo3yO+liR1EsN9/oUity8Koq
-         +eKVWgO9cL89SV0Or6UjtoMEuiQNPftzdtejKL0fb6f3cCfcoN2TUleS7m/4j5msCO1h
-         bH9dzuGevX9gTr1mMpvm45E8L1vvn5uzFZN8eLlsu75vyC1qQMGNv+VCsthj8dS8huPD
-         RqLssO0t52RYtB78xYyuopEu7MVwB+atXcYCNr8GglQK9HCM6LV0KiYOrEtmT2VetT6G
-         AFEPR59i2obd4xaIFd+uxUZFU/hGfwBQDiiyDpaErjMtB/vlMEeeuSOIW7doNE10Z0M0
-         PYLg==
-X-Forwarded-Encrypted: i=1; AKwUvBw7sQZpAEuU7dRHDHGexjh7owzvPKRnXx2Aa8wpb8/SzBSSSurAhEccP59gLM+2MRS0XmHz1A==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIX61t/dywEz7858kUOmfIqaCXK/e4c31iC/IV6o0rmvaYoY4OX
-	On6VqAYLpGm0Z21On6EVQ5ly3pFD1YcHg8fmHwKz0xqPDfUnhVMidzKO/tPS6Kj8Wg==
-X-Gm-Gg: AYBFou1/VMYKOIMq7fEaWIxaeQjJNGO7WWtidSCMM1n8BRklNHQyr0PPIh9qGBQMrN2
-	TwQin25a/bKaAuiDbR3b0LfG2UluAB17xUBraw0hktCiSthZDYDP+fXQG7S/njYycwc5T/SSooY
-	+LtH4XN8lU43KZh3PRqqSlbwdDG85b0Jw8TGOq5/kQof8b8KXjvMj1nX+gHNA54yCFP7a0CXkNL
-	K+9uFPmWsBdjlNVytG7aMK78XyoXjItH1GJCxgZmTUp8khlCTnKb1keQoGj06QS36KkyNOeUFpx
-	exW1mvGJHka4UZZhT+jBmnh3t+r3+lBBbvxYyH/aOi8ZsPNq8torPCq06WV9xu2Cub/V51j6L1c
-	SSfj249bnB1VdwtHBygPqhe0beISsJquow8Y/DgxQoFNgw8ivr1XxPmCinl4VloR4RN/7cw/jZl
-	9amtPwNjk+anQEf3ePM600PWJuoBGRkUZtx+BkzvUwVSX4ZWX7JZXu6E05ovW/yC+Tt6JETo0Pt
-	CY1oa53UjQVQE2qycsgiTnId6+mbjF1oB5+XzS3bDre6MRAAO2lrn7drbZ/xPBtYdEpTa/L1HXk
-	okkBR6ixW7vNNqnBsolDPw==
-X-Received: by 2002:a17:903:19ef:b0:2e9:61bf:6591 with SMTP id d9443c01a7336-2ea7c33be70mr1491705ad.45.1792691839016;
-        Thu, 22 Oct 2026 10:57:19 -0700 (PDT)
-Received: from google.com (192.150.203.35.bc.googleusercontent.com. [35.203.150.192])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ea7b34dadbsm1687675ad.26.2026.10.22.10.57.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2026 10:57:18 -0700 (PDT)
-Date: Thu, 22 Oct 2026 17:57:15 +0000
-From: David Matlack <dmatlack@google.com>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Tarun Sahu <tarunsahu@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org,
-	Mike Rapoport <rppt@kernel.org>,
-	Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de,
-	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com,
-	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org,
-	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com,
-	will@kernel.org, Alexander Graf <graf@amazon.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
-	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	kexec@lists.infradead.org, skhawaja@google.com, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 2/4] liveupdate: Select file handler by name in
- the preserve ioctl
-Message-ID: <atpOe-blcgW-uDd4@google.com>
-References: <20261021152527.375070-1-tarunsahu@google.com>
- <20261021152527.375070-3-tarunsahu@google.com>
- <CA+CK2bCnS8wcVDbOymBGeJB6pDUkknOpF22EynbwSV=D5=J4ow@mail.gmail.com>
- <atlEdhPjlyTPDWmG@google.com>
- <CA+CK2bAxgtx2gZ-UE2HqwAU8=h9K5RE3xozBs1njgLo1-CaPvA@mail.gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=M1jcOnMS
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ql7wriKxEqxWbf5SRRoV+DGomtLn3LniMobEdLTp6VJUQVKwAfZt8QbRCL9eqh1QLa+womKnCC2mzM349mD3jLP12+lM9/ltQC3D5/TTS+r9bNIEBaHKDkCslrBSH74+N21BO59+kgfhnb7yHp2GmozOTnQn6XY/o2GTvmZgtZNnWF67cZ09N+oMLLZAXJMUv5uJEK8oHl2VKMPMyXyqQrWNLcAgSteV1gLXkVCuPQ8p8hZURDnH5xY9+i1eq7104MbdrFtxHol98hmRnwCXzO42dfVAm28wRH0/ZV2RXw2s1NzY6qoL8xzuMKPoru16MmTZO3EGxtdYy0sxslN+IA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Al1YF6Q6y6xoEDHIM6UUhKBvJP6jwZPU2G8ULc9n3uk=;
+ b=CLi0+AGBe+9O9jzAFJ0dGPGuTB0U9QTFJ6/Ic1klO1nTo/ge+IoXDQt7Omes+f2E1m8cDrFAF0pCiY+Bj+Rwtb7IQhdafIcFrvq8CDCoQpWCxqIFTCXVR32aWpQ2t2SQ7ZmZeESx5WF9vQvUhJMW7MOkySEljyiMrZK722Ih2xR3bORs9iTl30qDa80elGb4MeM6BkF0eyR52UXLkskIKAYnRcgQULCHRp/22RZRwKFY4oSkMvgy64mK8da0FEvtI44H+7Zvo4jAESFi4VBYPHJXSv2820MnkwdULqBVthrfq7gC1vpSp6GXKUSGlXyMjWOIJpKofbADIy+ZZtejew==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Al1YF6Q6y6xoEDHIM6UUhKBvJP6jwZPU2G8ULc9n3uk=;
+ b=M1jcOnMSm7ezo1KCwHRui+NHEgXYMayebQYl3XXzX746/SdAOqUpIQDt1wSPhh2QZoXmZn8ey+gTHc7+V/kxzVJwNDR5rOuOR4SadY12J7+0VkKyj0ZwljHBfnVJHGTCkzM/HhiyeaxtTslooo+P05wr26X0sQ4q5xj5SQboL+yupCSuzmOKtapBzugY++Cxj+yJ6B5uTXu+bbBU6RZDAxZjpuzC6ckevcHWFR29JOd3IXCUWkqBzxNHkpg6ECKd8tjHpshanW53xAaBS8WdAbNmSm9OggT16RGaIj9cYBIGYAwyN8HK1gTg6g3hWGe4cyWhNnTFkVMITYRE7pwBdg==
+Received: from RO2P152MB5105.LAMP152.PROD.OUTLOOK.COM (2603:10d6:10:ba::14) by
+ CPWP152MB4109.LAMP152.PROD.OUTLOOK.COM (2603:10d6:103:f9::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.546.16; Thu, 22 Oct 2026 17:57:55 +0000
+Received: from RO2P152MB5105.LAMP152.PROD.OUTLOOK.COM
+ ([fe80::f919:4e42:f4eb:ecc4]) by RO2P152MB5105.LAMP152.PROD.OUTLOOK.COM
+ ([fe80::f919:4e42:f4eb:ecc4%5]) with mapi id 15.21.0546.012; Thu, 22 Oct 2026
+ 17:57:55 +0000
+From: =?Windows-1252?Q?C=E9sar_Zapata?= <el_caesar@outlook.com>
+To: "joro@8bytes.org" <joro@8bytes.org>
+CC: "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"vasant.hegde@amd.com" <vasant.hegde@amd.com>, "will@kernel.org"
+	<will@kernel.org>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [BUG][AMD IOMMU][VFIO] IVMD exclusion ranges block GPU passthrough on
+ ASUS GA403UI, reproduced on 7.4-rc0
+Thread-Topic: [BUG][AMD IOMMU][VFIO] IVMD exclusion ranges block GPU
+ passthrough on ASUS GA403UI, reproduced on 7.4-rc0
+Thread-Index: AQHdYkwdalKASy9EAkqg+eUxSukTOLcJ19/V
+Date: Thu, 22 Oct 2026 17:57:54 +0000
+Message-ID:
+ <RO2P152MB51051CB0D23C926C671EAC708D652@RO2P152MB5105.LAMP152.PROD.OUTLOOK.COM>
+References:
+ <RO2P152MB51059B868259A82B182943F48D652@RO2P152MB5105.LAMP152.PROD.OUTLOOK.COM>
+In-Reply-To:
+ <RO2P152MB51059B868259A82B182943F48D652@RO2P152MB5105.LAMP152.PROD.OUTLOOK.COM>
+Accept-Language: es-ES, en-US
+Content-Language: es-ES
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+msip_labels:
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: RO2P152MB5105:EE_|CPWP152MB4109:EE_
+x-ms-office365-filtering-correlation-id: 1e4dc19d-a015-4dea-9b2f-08df3065ffb9
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|31061999003|24021099003|6050399003|24121999003|15030799006|22091999003|51005399006|15080799012|19110799012|8060799015|8062599012|41001999006|40105399003|1602099012|10035399007|26121999007|3430499035|19061999003|102099032|440099028|4302099013|3412199025;
+x-microsoft-antispam-message-info:
+ =?Windows-1252?Q?psfEcUnSole7IOoF2xP/43MUBAma9YqVay+rrVRYjBuZeX0EwSXRfWNX?=
+ =?Windows-1252?Q?bVNzMAOkBsMWQEbi7ProzC8xhvu3y+bGKDeBZAc/Z1RgvK4UrWzhak2R?=
+ =?Windows-1252?Q?YZOHx2vz+lI2ZZllgOZuJqpR8wlLu+nxcN9CscQo2vSoyA570HpbcPm0?=
+ =?Windows-1252?Q?vQ/HDY4a1GrfiZHCJ72vJslHgyhVUKVtjjsX5+OpD2CHxeXUWdAPI7cR?=
+ =?Windows-1252?Q?mQy+A4YPbqwH5hhs9Nxrw4Oh9+b6jXB2n6UzqzU/cUbK6rD5XQzs4OBK?=
+ =?Windows-1252?Q?M72PvrPbZlCh78xyIQWCmBw3WqDm7Q9+5csRY7CZ/RxSBOFETFQH4tCi?=
+ =?Windows-1252?Q?oexK3Rgqn3RnmWALr40A+6WOpHHl7fAo6wclD0CRUnZBVr71nx5mMA/J?=
+ =?Windows-1252?Q?bOVpN2pTVLUOYbSuBGMywhnF2dPJ1ojGQzfUs7O4dSb+/ECmjFrvOMrs?=
+ =?Windows-1252?Q?zgUVrlBzx4NyIWJGrO/PhI9PvVmcm7ZwQ1iSt7Uv8z1JwAVyeY799u2w?=
+ =?Windows-1252?Q?yfHiyj2KcbJ1IffvGhx4EMlTo7qo1xoajxHffyOtmkEZD7c49eVrR3fT?=
+ =?Windows-1252?Q?0gX2fhY+TPyx74Uc2CMq4kTtdSJba7pKV07CkTKpkKWjdJoeajAc1HmG?=
+ =?Windows-1252?Q?ZRqt/jeyeRKDmKrc9c5EckrNPypUiOpAhuH4aqsxN/1cGaXNeR18DzEm?=
+ =?Windows-1252?Q?fFWTKT5KbVJm6mYkXQZZVdQAvKgHU4S4EHRlmyZz2f+nupXXXr8pcKZB?=
+ =?Windows-1252?Q?bJcgrdSX2QvfMced+ep3jneGn/iuIirgctZKep3P7czJAMLEztLml9Vc?=
+ =?Windows-1252?Q?of5uJS07/9AYsOZ5ff2f4bshHjMsemhwC0voOc9R4vnTYiT8DQXJ1YbI?=
+ =?Windows-1252?Q?wGG8IK5vHI2QmvtuvUs3BDfLKL020mCOWaQOdytIhuFSvl6MCeSpCV+s?=
+ =?Windows-1252?Q?lQX6FJQDa0Z9zNSGNHmPbVc9BIXZavFSRZ6w3r4/6jjC4bFcW8/mnYjE?=
+ =?Windows-1252?Q?j8ut+Joe+txO2iwlnIJA9QbAohsVjGSMjZkzyPyE5b4ArQqp/nKnqWwV?=
+ =?Windows-1252?Q?dFUSu5s88Os1YW74DczEWILu8SlKEt55waGXQiPAmHRhGL7Kk3etLuef?=
+ =?Windows-1252?Q?GOKXKKnb+6QFyN/sWxPIrGDo6KLwCSuUXqM3AlS5q6ubOJNsrOOz3jOe?=
+ =?Windows-1252?Q?c42N5tDi7s8bWZ5Iy52alXhOfoVWJ8LzZoIed1flP1oiaiOYWXWD3J4U?=
+ =?Windows-1252?Q?A+mvPLJ5M6zv2vO6VVs=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?Windows-1252?Q?Loeh8s/L7fnHpBdgwz2nY1wP9WMtT5PV4pELxijP3rBctrGtReJDjjTj?=
+ =?Windows-1252?Q?aVHibwH9OOmxPNZNPqxWnbkyOpxxYDi5r5N4ie5t7en3FNHi9P1D4iYX?=
+ =?Windows-1252?Q?Np45INGZcuI2hcYV7UrYrSn4dBAFmIyUjVuBjiyFRvPEXW2LZwA10DlI?=
+ =?Windows-1252?Q?fz11UYB3VnT8de1N1f16hZmdl46Jmc0s6Vi0pQP+UkHTY1gw3Sxne147?=
+ =?Windows-1252?Q?WEejfXdYpwSWArLMplrSlaE+ekracDAeDv3O9rhDAqxX8uDJJXINzAqe?=
+ =?Windows-1252?Q?h184LpWK7v8XMm3pmQx5TiSZEIfevs0eqZz2JnezhpyIgqj3YYroBcQr?=
+ =?Windows-1252?Q?1oMAXJ1pIjnXUemtagwYq/5tU4LdIntR1qYXtvMH2WUbGzUZwbHbtgxO?=
+ =?Windows-1252?Q?h0XsersZBH53MIW2DYQzVJ1O7ZZWVD83xpXuObv9RQTy+LPmP6kv9KHN?=
+ =?Windows-1252?Q?28FkwYxFwoev63hLxLBvS4XnhsrD9iBkoHfVjHEyN4rAoDrxiWxg94jO?=
+ =?Windows-1252?Q?b3xZaNYbRQ1h+wPU5+0CVlXQJthi7S7jMYRjW/VgVaVSxuGF9/OS+zHy?=
+ =?Windows-1252?Q?P2YV1MjcKhRKRLsDvRV1EES/MPQw02OkYu6wbjUDR5qo1s6zlYQI90rj?=
+ =?Windows-1252?Q?Jw2G3Q559mBgVRehyxgWfJER8IHw7fw4z17BpFPFebmf+2Emie/EDrQj?=
+ =?Windows-1252?Q?WQJkiYrz8SrDNrrAK3wNxRxyNUpNSCINPON0kZmP3W3PQQrCWD5FUSP9?=
+ =?Windows-1252?Q?qvOQ6wjvJD7n0ZEVSbAGxHgfsDMpUIq7Ont3aysvexo+kKkZldeE+UX1?=
+ =?Windows-1252?Q?cTQJ1kIt03cdlUyo5RFSfC6XJFZCenll+XO6/OclNrwvzADg9M7pxM8a?=
+ =?Windows-1252?Q?v5KqafkyeQ+0hlFzyaB8qqTBvrJrxC9ebu1LNSWRHqfNSslDjHYiq8T5?=
+ =?Windows-1252?Q?TGTKeyd6gBYlFcCRFUgm/jgxRtTMtNEx1kSFrLtYFLGcQdEV5fYemESP?=
+ =?Windows-1252?Q?VGxV2yFtk3XJ8DRMa2Ild1ZjTedS9O29cD7mmrVHcDeXSoDkJeG6X8OL?=
+ =?Windows-1252?Q?0mAAbUiDemdMlQfij/yx/cmzvtuADhr6rxOA6JKrbMj7rq3yzk+jIcdD?=
+ =?Windows-1252?Q?SLWC4gAvACXlU3l5pUQS5eU2uTkKe/LqOLrOLFLeBKN40S10xGhNFi9/?=
+ =?Windows-1252?Q?1yyUDkhaWx+pQGwHBbHBZBUC65wlmd7lEtWdceMXDLzxCorEf/hM64xt?=
+ =?Windows-1252?Q?5gbmLwpuWSZs1B5gU+1+XPmcAIpzxif7ee5QJArmFF9FbUdFdJYe/xOJ?=
+ =?Windows-1252?Q?ViNi9OfqgVxTb00yF5N8w9SYCSCZz+jWqM3AbR6yMXq5S5PC4mj0bC3f?=
+ =?Windows-1252?Q?2dLWwjMiX1R+pw7yBQ3JfJa7xI3CmCNcz4wQHFApuO25KHZXyLAuaOFu?=
+ =?Windows-1252?Q?r9J0czQhocOHw/hp2eSoWOy2dRAF2tv+k8h3/p3AxIdNRPuO6uQ19taa?=
+ =?Windows-1252?Q?MO3ZTIsv?=
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -114,76 +162,148 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+CK2bAxgtx2gZ-UE2HqwAU8=h9K5RE3xozBs1njgLo1-CaPvA@mail.gmail.com>
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: RO2P152MB5105.LAMP152.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e4dc19d-a015-4dea-9b2f-08df3065ffb9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2026 17:57:54.9799
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CPWP152MB4109
 
-On 2026-10-21 09:14 PM, Pasha Tatashin wrote:
-> On Wed, Oct 21, 2026 at 7:02 PM David Matlack <dmatlack@google.com> wrote:
-> >
-> > On 2026-10-21 01:17 PM, Pasha Tatashin wrote:
-> > > On Wed, Oct 21, 2026 at 11:25 AM Tarun Sahu <tarunsahu@google.com> wrote:
-> > > >
-> > > > Currently luo_preserve_file() iterates over luo_file_handler_list and
-> > > > picks the first registered handler whose .can_preserve() callback
-> > > > returns true. When a subsystem introduces a new, backwards-incompatible
-> > > > file handler alongside an existing one for the same file type, userspace
-> > > > has no way to choose which handler preserves a file descriptor, nor can
-> > > > the kernel keep the existing rollback-safe handler as the default while
-> > > > allowing callers to opt into the new handler.
-> > >
-> > > That is not how it will work. If we are in the .can_preserve() call,
-> > > it means the user has already decided which file handlers to use. We
-> > > need to do that before any preservation happens; otherwise, we could
-> > > run into conflicts on FLBs i.e. FH of different version require
-> > > different FLBs.
-> > >
-> > > Therefore, there should be a luoctl call (i.e via a new ioctl to set
-> > > compatability) that provides the kernel with the specs file of the
-> > > target kernel we are updating to, allowing the kernel to select the
-> > > compatible file handlers. Since .can_preserve() is called when the
-> > > user is already preserving files, the specification must have already
-> > > been supplied, or the kernel should fall back to using the default
-> > > (i.e., latest) file handlers.
-> >
-> > I don't think that is the right direction. IMO the kernel should not be
-> > choosing which file handler to use, userspace should be. If userspace
-> > gets it wrong and chooses a file handler the next kernel does not
-> > support, that's on them.
-> >
-> > The problem with the kernel making a decision about file handlers is
-> > then userspace does not know what arguments to pass in. We are adding
-> > custom per-file handler arguments to PRESERVE_FD and RETRIEVE_FD. If the
-> > kernel is picking which file handler to use, say for a memfd, then
-> > userspace doesn't know which arguments to pass in.
-> 
-> It is not the kernel deciding on its own which handler to use; it is
-> the system admin (or host orchestrator) that configures LUO before the
-> LU process starts, because the sysadmin knows what kernel we are
-> rebooting into and the LUO specs of that target kernel. Meanwhile, the
-> process calling PRESERVE_FD (e.g., a VMM) only knows about its own FDs
-> and should not have to track target kernel serialization versions.
-> 
-> Also, the PRESERVE_FD and RETRIEVE_FD arguments are uABI tied to the
-> FD type, not to a specific internal handler version. They are stable,
-> and we can expand them the same way any ioctl argument is expanded
-> (via size and flags), without ever shrinking or breaking them. We
-> should not play the game of providing completely different uABI
-> argument structs for different versions of a file handler. If a caller
-> passes a new feature in the uABI args that the currently configured
-> file handler version does not support, PRESERVE_FD simply returns
-> -EOPNOTSUPP, just like any other extensible ioctl.
-
-If we require that PRESERVE_FD and RETRIEVE_FD uAPI is stable across
-different file handlers for the same file type, then my concern is
-resolved.
-
-> More generally, we are rebooting the host into a single target kernel,
-> so compatibility is a session-level property, not a per-FD property.
-> If we need an upfront global ioctl anyway, configuring the target
-> compatibility upfront in one place is much cleaner than exposing FLBs
-> to userspace and splitting version selection between a global ioctl
-> and per-FD PRESERVE_FD calls.
-
-That's a good point. Ok let's not do per-FD FH selection.
+=A0=0A=
+Hello,=0A=
+I would like to report a reproducible AMD IOMMU/VFIO issue on an ASUS ROG Z=
+ephyrus G14 GA403UI, now confirmed using an upstream Linux Mainline Vanilla=
+ 7.4.0-rc0 kernel without the proprietary NVIDIA driver.=0A=
+=0A=
+The firmware publishes broad IVMD exclusion ranges that Linux exposes as IO=
+MMU_RESV_DIRECT. Consequently, VFIO refuses to establish an IOMMU domain fo=
+r an otherwise isolated NVIDIA GPU.=0A=
+=0A=
+System information=0A=
+System: ASUS ROG Zephyrus G14 GA403UI_GA403UI=0A=
+CPU: AMD Ryzen 9 8945HS=0A=
+BIOS: GA403UI.311, 06/09/2025=0A=
+Distribution: Fedora 44 Workstation=0A=
+Virtualization: QEMU/KVM with libvirt 12.0.0=0A=
+AMD-Vi: Enabled and operational=0A=
+=0A=
+Kernels tested=0A=
+Fedora 7.2.8-200.fc44.x86_64 =97 VFIO failure reproduced=0A=
+Fedora 7.2.11-200.fc44.x86_64 =97 IOMMU_RESV_DIRECT persists=0A=
+Stable Vanilla 7.3.0-363.vanilla.fc44.x86_64 =97 IOMMU_RESV_DIRECT persists=
+=0A=
+Mainline Vanilla 7.4.0-0.rc0.261022.7be4bc52.302.vanilla.fc44.x86_64 =97 VF=
+IO failure fully reproduced=0A=
+=0A=
+The Mainline test used the in-tree nouveau driver, not the proprietary NVID=
+IA driver.=0A=
+=0A=
+PCI devices and IOMMU group=0A=
+The devices being assigned are:=0A=
+0000:01:00.0 [10de:2860] NVIDIA AD106M / GeForce RTX 4070 Laptop GPU=0A=
+0000:01:00.1 [10de:22bd] NVIDIA High Definition Audio Controller=0A=
+Both functions are isolated in IOMMU group 14, with no unrelated devices.=
+=0A=
+The internal display is driven by the AMD iGPU (65:00.0), allowing the grap=
+hical session to be stopped without disabling the host display hardware.=0A=
+=0A=
+Reserved regions=0A=
+On Mainline 7.4.0-rc0:=0A=
+$ cat /sys/kernel/iommu_groups/14/reserved_regions=0A=
+=0A=
+0x0000000097d36000 0x0000000097d37fff direct=0A=
+0x00000000fee00000 0x00000000feefffff msi=0A=
+0x000000fd00000000 0x000000ffffffffff reserved=0A=
+The same direct region is exposed for many other IOMMU groups, including gr=
+oups 0 through 17.=0A=
+ACPI IVRS / IVMD=0A=
+=0A=
+The firmware IVRS table contains two IVMD type 0x22 entries with exclusion =
+flag 0x08, covering requester IDs 0x0000=960x0fff.=0A=
+Their memory ranges are:=0A=
+0x97d36000=960x97d36fff=0A=
+0x97d37000=960x97d37fff=0A=
+Relevant raw IVRS bytes:=0A=
+00C0: 48 00 00 00 22 01 00 01 22 08 20 00 00 00 FF 0F=0A=
+00D0: 00 00 00 00 00 00 00 00 00 70 D3 97 00 00 00 00=0A=
+00E0: 01 00 00 00 00 00 00 00 22 08 20 00 00 00 FF 0F=0A=
+00F0: 00 00 00 00 00 00 00 00 00 60 D3 97 00 00 00 00=0A=
+0100: 01 00 00 00 00 00 00 00=0A=
+These exclusion entries appear to be responsible for the IOMMU_RESV_DIRECT =
+region affecting the GPU.=0A=
+=0A=
+Reproduction on upstream Mainline 7.4.0-rc0=0A=
+Boot the Mainline Vanilla kernel.=0A=
+Confirm that 01:00.0 uses nouveau and 01:00.1 uses snd_hda_intel.=0A=
+Connect to the host via SSH.=0A=
+Stop GDM and verify that no users remain on the DRM devices.=0A=
+Start an existing Windows 11 QEMU/KVM guest using both PCI functions with l=
+ibvirt managed=3D'yes'.=0A=
+The GPU is successfully rebound to vfio-pci during VM startup.=0A=
+=0A=
+However, VFIO reports:=0A=
+vfio-pci 0000:01:00.0: Firmware has requested this device have a 1:1 IOMMU =
+mapping, rejecting configuring the device without a 1:1 mapping. Contact yo=
+ur platform vendor.=0A=
+The VM fails to start.=0A=
+Libvirt subsequently rolls back the assignment and restores:=0A=
+01:00.0 -> nouveau=0A=
+01:00.1 -> snd_hda_intel=0A=
+=0A=
+This demonstrates that PCI driver binding and unbinding work, but VFIO cann=
+ot establish the required IOMMU domain.=0A=
+=0A=
+The same kernel error was previously reproduced on Fedora 7.2.8 with the pr=
+oprietary NVIDIA driver, followed by successful rollback to the NVIDIA host=
+ driver.=0A=
+=0A=
+No ACS override, allow_unsafe_interrupts, vfio-pci.ids=3D, IOMMU bypass par=
+ameters, or local kernel patches were used.=0A=
+=0A=
+Related upstream work=0A=
+This appears closely related to the AMD IOMMU IVMD handling series:=0A=
+[PATCH v2 0/4] iommu/amd: IVMD handling cleanup and ivmd=3D boot override=
+=0A=
+https://lore.kernel.org/all/20260424092213.16976-1-suravee.suthikulpanit@am=
+d.com/=0A=
+=0A=
+In particular, the proposed change to avoid converting IVMD exclusion regio=
+ns into mandatory unity mappings appears relevant to this system.=0A=
+=0A=
+A separate test report from October 1, 2026, also describes broad IVMD excl=
+usion ranges and their conversion from direct to reserved after applying th=
+e v2 series:=0A=
+https://lists.openwall.net/linux-kernel/2026/10/01/120=0A=
+=0A=
+I have not yet applied that patch series to this system, and I cannot confi=
+rm whether it resolves the full VFIO assignment failure here.=0A=
+Fedora bug report https://bugzilla.redhat.com/show_bug.cgi?id=3D2559096=0A=
+The Fedora report has been updated with the full Mainline 7.4.0-rc0 reprodu=
+ction and kernel log.=0A=
+=0A=
+Available diagnostic information=0A=
+I can provide:=0A=
+Complete ACPI IVRS table (ivrs.dat)=0A=
+Decoded IVRS table (ivrs.dsl)=0A=
+Complete kernel log from the Mainline 7.4.0-rc0 failure (attached)=0A=
+lspci -nnk output=0A=
+IOMMU group topology=0A=
+Reserved regions from all groups=0A=
+Relevant libvirt domain XML=0A=
+=0A=
+I am willing to test an updated AMD IOMMU patch series or a diagnostic kern=
+el build, and report the resulting reserved regions, VFIO assignment behavi=
+or, and host recovery.=0A=
+=0A=
+Could you confirm whether the current AMD IVMD handling work is expected to=
+ address this case, or whether additional firmware/platform diagnostics wou=
+ld be useful?=0A=
+=0A=
+Regards=0A=
+=0A=
+C=E9sar Z.=0A=
