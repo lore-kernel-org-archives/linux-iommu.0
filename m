@@ -1,99 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792674769;
-	b=JBDDAfWKNKzZ+Il4VIf8zM7bktf3J5X4L0nTEziItlfywAZVMzSyMMA848O3zEMb5it3
-	 CYyxCIQ404HH2JQ4D9ft2tuQhO7Tk//qlxogAm2k7kKvmygEWaUsIGf8qfdsa+PNofrDA
-	 Vt1nbgqBqDNu0IQ1xqfTjPBcgsBWwIxsHmqlaiuaxelozLOV/cgPY0VTccfzXHmMsbs+y
-	 C7y0tScMedINhtcCgwFyjWbDIH1MN2TaY5mdqUsms8XqAOSc+MwsX58wpdKsaG1bR9jNG
-	 s9lbKoa8XGUfA1/LtEwKO5ZCBl3ExVxIo+4k8csgqscUcTK4LpkspnTU3iq7pmVZaJw==
+	t=1792674990;
+	b=vQUXY2bdZJlz0w41lQR/NcKhvm2nxEFW7rJ4DtdY7ScmoP4BgxLkW83uSY3OB9UHS0jp
+	 fOI+HDRtSlpo3YPXm/c/BDJd5wburZiT8Alxe5FND8Fsj+N4mmtaXa4Q/zDpE+7COf+jM
+	 LgE4tmyZbyUZMRjhdFBbOXU8aFkCAhme0LwkLgQOH9lEQBC3gXB7hJoMAdxwrggcPMwj5
+	 eytAYDUp5nI6exrZSgcBxn0N4oNBRv7Enbh1q2zlRnW1TvTbwP3VXD/MRKSVE4L9WqoVk
+	 1kOvlAb0F1xC8oI6KN3cjFoTBYgEZXJziu4f3zEeeIiPs3H6F+4grgZuAHdnaab/DUQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792674769;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=nfYEKhh0NOwW5bByBsDPAiJ4npQywhU8FLsAEbKDB48=;
-	b=RIF1FGZ7UFIEBreTowxL1ui+j3JIkqtv7WoOKypd7q3yvTcB3rGzpJKh+o/tNU/mmU2g
-	 miJRpTqzI5DKiMUCoHjGAcV4QOsyudmMEFm/YsADzduygN+C83/PwhLWdvaL2xHfQFnVn
-	 tsAomfkMIaeS81ITy9wUsvb6CneTJ0e7cy5VlefKePgZRZtR/ljuko6BSV/YWtR3o/swy
-	 SJ5c5vl94Lae/47VK3HH3rRTOAe21p+I0KoMqCLJqg4dNzCr7jBE+XLyGi4LdOV/WXrOx
-	 Fm8ifxqqwJjFgV/tiuJUdLt84PQZxij6Iau0YP+6/FsamkYOCjWwmLouVErfH6zUWFA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792674990;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=95gIZ/rOhUqAkfRUZlhwY8It1fpNlrmqRnyk+6vFBTo=;
+	b=kQLVmCLWUWyRw3rfWFH3m67U1WhkNcofOGwF85aSUAe5cL5OBNfQyN3k3pAYq0F3YyXU
+	 YmNrWmpzUTUYBa0Yq/yv3qTVVQ9/tyVn7Y4F/4Wzjb9HjUe/pgED12MU0jov4K5YC5XCs
+	 RSFgBirina+ygK6D7dt2YPs6aOYQcx5RgLbgJx73zlQ8RysTnOJPB3qPTBfgiodJHL02y
+	 caZ5Z4+tU3yPZ9MVxEClpQDb1N1uA8tRCEAJeUr1xQK/VYqlKVUvlLw3p1DkwM4ODHflh
+	 +ygvU2ytHqc/5yfkzSVjeHCo5lanpjiEC3Db/ZoQUtp4ry+n4RFt28WdviYgHn6rviQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UlxjVqIM;
-	arc=none smtp.remote-ip=209.85.210.46
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14032606A326
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 13:12:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 14032606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Po2Gv+pN;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67268606A325
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 13:16:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67268606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=UlxjVqIM
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-8256106635eso975974a34.0
-        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 06:12:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1792674768; x=1793279568; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=nfYEKhh0NOwW5bByBsDPAiJ4npQywhU8FLsAEbKDB48=;
-        b=UlxjVqIMdrqnGob8x/sXGGKL28hyViltGZKokblTP8GESw0sl/Ff+iibd58N2LFy4P
-         7tlAtXOdbKI1Yw0E3e9IOb6gL0VtAtOnLL5Rr4CKYBYy1CyNAtz3IhVCr2ThaAwK3hzb
-         54u7WAlgq56fxnb1ZXEAPD9sSMRXPCYxDnWMlC7WfediiAzwx+5b6Y78QWnqOovQ8qki
-         sgr30CmSktukgE30dJZIZXqiXw0l7EVq+BgUOrQ7HyCZuSKyOHePXEjzV6/1cqX3a2T1
-         vkDNb1usQlC7B+kIyH/kxemwbuejEhD9wa2TjTy6QRL802C02bY/DP8BCdJXAKQGJMFt
-         zhNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792674768; x=1793279568;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=nfYEKhh0NOwW5bByBsDPAiJ4npQywhU8FLsAEbKDB48=;
-        b=oBPkwE29X+yFHJzz9TpOl8b25/1ywXSXMOZt6vE4UiPpW1+wll6mX0NpuU0WASsZqu
-         5MWCVboGOG0VMBNWmT0XunaW+upALMdu78z+/pAsYhTBlaPI2AunrxmQTEI4HE2HLqOp
-         2Si78bI3EnLoxl/7jAyV4Jt1gHPvAGDvkmKTzUX+Jj+MGe+W17uE8oy02/ID2rSihNVD
-         7PAQPE269yy/WxGUYFm4vCi2+5rwnKQFCZVPa+YQ5BpFmheZ8L/f07mNkhMWf6BdNq1Z
-         X5W+2D/4y0yQmugP0GuYX4UQKhL1xRaUCYn3sqI/Xh6fHc3ZpAjVfxMYIEah/dI1Bal6
-         fQdg==
-X-Forwarded-Encrypted: i=1; AKwUvByjyBVEA8Q7rUF1QLvxkAcusWJtIDZ+Ma0lDlcjvrtFaOfrBYoB+O9Kmr/RaUMUie4R3Rspbw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJsDxZmAzGWZSeorvltY5e0wpGGct/AIAxn4ceBUxBlMGAbW6m/
-	w5UDGnJrX93fehyz4JULHwdO43zwMEgTNJhNYDtgZWH01bMiGRDAq+hb
-X-Gm-Gg: AYBFou01Gcon3rwPxu1MgLRsQv1LLnKf3p0n6uc8Smiecra2BTn6NWHC5Kf5S1TlkMp
-	dgxWS9Wa9GDk2xo//o4czIcTwQNKZXIpm+DnTEBDtZtJ+5dfCuAAaZaStgsikwzf5vbpvnRAo7t
-	Sg9uvoG+tc2mdMyRawI4ZiUwW5TfoYsA+LYjhy2z0ihi7DePpbvdlesjU3xr78Tax9frTeXvFXN
-	B8m7Mx4gSOjTvSc/fIQfO4QeiAPZQP1vrdrrlAWPVO2KIFAyyPfuGz6Qbp8Hmefo7A7Np8I3mkR
-	n2RgfPU9gcwlnajBPk52QbMz8treFiWZySJvh0D6vB/otohLjuXRvIetXzTJNOKrYqayGvarY0i
-	irgMniZ9WDXnCS76JqZ5GoLNClt3zGS+0TC/MlzPWx4BJbl78V/1t6MNSRsjzyiFH5X3KTkoXEX
-	10onMaVNSfWtjTIxx+KGELqEGTWfVfVZNGcQT4blOfP6z2iZG6n1tEzjfdBWE4rLQseYSWoGC0y
-	Ux4Alc/sW8fp4wiRScQIhhBUS5pgVrBVWm2K98uywN7jfBtFAdqZ8sJENj8XvCh9ptaJGxbMT35
-	8wqQd8vOmXfOsnfFHnc8k4WTWfHkCQeb5dc6cQ==
-X-Received: by 2002:a05:6808:30a6:b0:4b9:a88b:888e with SMTP id 5614622812f47-5535be9e63cmr3845871b6e.36.1792674768107;
-        Thu, 22 Oct 2026 06:12:48 -0700 (PDT)
-Received: from 1u1g-b650-0212.nvidia.com ([72.25.70.131])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-552b6da2902sm4259863b6e.11.2026.10.22.06.12.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2026 06:12:46 -0700 (PDT)
-From: Samarth Narang <samarth.colleges@gmail.com>
-To: Jason Gunthorpe <jgg@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Andrea Parri <parri.andrea@gmail.com>,
-	Shuah Khan <shuah@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Samarth Narang <samarth.colleges@gmail.com>
-Subject: [PATCH 0/2] iommu: Propagate iova_bitmap_set() errors through read_and_clear_dirty
-Date: Thu, 22 Oct 2026 06:10:13 -0700
-Message-ID: <20261022131015.3281745-1-samarth.colleges@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Po2Gv+pN
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B2C01476;
+	Thu, 22 Oct 2026 06:16:25 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9A693F673;
+	Thu, 22 Oct 2026 06:16:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1792674988; bh=VtjlyhfnDPej66ib6QAEpVj/N8t0KLq/+awBY3pvJWI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Po2Gv+pN5qUlVoTfmfm6+EiT9jkBnsjCdYxUB1uttjzopZ2ujfpPncmF8NG5AUHA/
+	 ntV3DmM0O4FOtoaFsSCaE9vCLLGuGeVUWR3sgYLD5Vfg3x3t/YZ8m3si9+Ow2OnH08
+	 xitDAI80+tuIJ7Q2ABl3pIfc3FZeSehoHXU+QxHE=
+Message-ID: <6406c7b1-5e37-4c22-83c2-089c35ef54bf@arm.com>
+Date: Thu, 22 Oct 2026 14:16:05 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,43 +53,372 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 04/11] ARM: dma-mapping: Implement and expose DMA setup
+ functions
+To: Mikko Perttunen <mperttunen@nvidia.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>,
+ Thierry Reding <thierry.reding@kernel.org>, David Airlie
+ <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+References: <20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com>
+ <20261016-b4-arm32-iommu-dma-cookie-v2-4-b06842a01938@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20261016-b4-arm32-iommu-dma-cookie-v2-4-b06842a01938@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This is a follow-up series on a6ec38d74c08 ("iommufd/iova_bitmap: Fail
-GET_DIRTY_BITMAP when a bitmap page cannot be pinned"), which keeps the
-first iova_bitmap_set() error in the iova_bitmap so the ioctl fails. As
-Jason suggested, this series propagates the error up the call chain
-instead.
+On 16/10/2026 7:46 am, Mikko Perttunen wrote:
+> ARM DMA domains are currently allocated by the ARM DMA code, with struct
+> dma_iommu_mapping owning the domain and the IOVA bookkeeping. To allow
+> the IOMMU core to own DMA domains as is the case with other
+> architectures, we have to allow that code to allocate the domain and get
+> the cookie from the ARM DMA code.
+> 
+> Implement ARM versions of iommu_get/put_dma_cookie that create a struct
+> dma_iommu_mapping that doesn't have its own domain, as well as
+> iommu_setup/teardown_dma_ops that set the device's archdata.mapping,
+> allowing ARM DMA ops to seamlessly work on these devices.
+> 
+> The code is protected by CONFIG_ARM_DMA_USE_IOMMU and mutually exclusive
+> with the same-named functions in the dma-iommu code; and not reachable
+> yet.
+> 
+> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
+> ---
+>   arch/arm/include/asm/dma-iommu.h |  17 ++++++
+>   arch/arm/mm/dma-mapping.c        | 118 ++++++++++++++++++++++++++++++++++-----
+>   drivers/iommu/dma-iommu.h        |  50 +++++++++++------
+>   3 files changed, 154 insertions(+), 31 deletions(-)
+> 
+> diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
+> index 2ce4c5683e6d..85cf9b05faab 100644
+> --- a/arch/arm/include/asm/dma-iommu.h
+> +++ b/arch/arm/include/asm/dma-iommu.h
+> @@ -19,6 +19,14 @@ struct dma_iommu_mapping {
+>   	size_t			bits;		/* per bitmap */
+>   	dma_addr_t		base;
+>   
+> +	/*
+> +	 * Set for mappings created by arm_iommu_create_mapping(), where
+> +	 * @domain is owned by the mapping.
+> +	 * Clear for mappings that are a cookie of a domain owned by the IOMMU
+> +	 * core.
+> +	 */
+> +	bool			owns_domain;
 
-Patch 1 makes iova_bitmap_set() and iommu_dirty_bitmap_record() return
-an error, and makes the iommupt and io-pgtable-arm dirty walkers stop on
-it before clearing the IOPTE. We only clear the dirty bit after it has
-been recorded in the user bitmap, which prevents a failed
-GET_DIRTY_BITMAP from losing the dirty state of the IOPTEs. This should
-also address the case Andrea raised for the -EPROTO path: with this
-series, an entry that did not fit stays dirty for the retry.
+Do we strictly need this, or could we in fact already tell the 
+difference via iommu_is_dma_domain()? (Since ARM-API-owned domains via 
+iommu_paging_domain_alloc() will be IOMMU_DOMAIN_UNMANAGED)
 
-Patch 2 adds a corresponding selftest. It fails on the current for-next
-and passes with patch 1.
+> +
+>   	spinlock_t		lock;
+>   	struct kref		kref;
+>   };
+> @@ -32,5 +40,14 @@ int arm_iommu_attach_device(struct device *dev,
+>   					struct dma_iommu_mapping *mapping);
+>   void arm_iommu_detach_device(struct device *dev);
+>   
+> +#ifdef CONFIG_ARM_DMA_USE_IOMMU
+> +struct iommu_domain;
+> +
+> +void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain);
+> +void iommu_teardown_dma_ops(struct device *dev);
+> +int iommu_get_dma_cookie(struct iommu_domain *domain);
+> +void iommu_put_dma_cookie(struct iommu_domain *domain);
+> +#endif
+> +
+>   #endif /* __KERNEL__ */
+>   #endif
+> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
+> index 4284950a9246..f2d3e8ec3487 100644
+> --- a/arch/arm/mm/dma-mapping.c
+> +++ b/arch/arm/mm/dma-mapping.c
+> @@ -1531,6 +1531,79 @@ static void __arm_iommu_free_mapping(struct dma_iommu_mapping *mapping)
+>   	kfree(mapping);
+>   }
+>   
+> +static int __arm_iommu_init_cookie(struct iommu_domain *domain,
+> +				   dma_addr_t base, u64 size)
+> +{
+> +	struct dma_iommu_mapping *mapping;
+> +
+> +	if (domain->cookie_type != IOMMU_COOKIE_NONE)
+> +		return -EEXIST;
+> +
+> +	mapping = __arm_iommu_alloc_mapping(base, size);
+> +	if (IS_ERR(mapping))
+> +		return PTR_ERR(mapping);
+> +
+> +	mapping->domain = domain;
+> +	domain->cookie_type = IOMMU_COOKIE_ARM_DMA;
+> +	domain->arm_cookie = mapping;
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * iommu_get_dma_cookie - Set up a domain cookie for ARM IOMMU-based DMA API
+> + * @domain: IOMMU_DOMAIN_DMA domain being configured
+> + *
+> + * Allocates IOVA bookkeeping for the domain based on the domain's specified
+> + * geometry. The aperture can currently be at most 4GB in size, otherwise
+> + * fails with -ERANGE.
 
-Tested on x86_64 in a 2 vCPU QEMU/KVM guest with the iommufd selftest
-(mock iommupt domain, CONFIG_DEBUG_GENERIC_PT=y): the new test is the
-only change in outcome, with no WARN in dmesg.
+Bit of a corner case, but I think that might technically break on 
+stage-2-only arm-smmu implementations like MMU-400 where the default 
+aperture will be 40 bits. It's probably better to explicitly cap our 
+request to 4GB here to preserve the current behaviour.
 
-Samarth Narang (2):
-  iommu: Return iova_bitmap_set() errors from read_and_clear_dirty
-  iommufd/selftest: Test GET_DIRTY_BITMAP with an unpinnable bitmap page
+> + */
+> +int iommu_get_dma_cookie(struct iommu_domain *domain)
+> +{
+> +	dma_addr_t base = domain->geometry.aperture_start;
+> +	u64 size;
+> +
+> +	if (base > domain->geometry.aperture_end)
+> +		return -EINVAL;
+> +
+> +	size = (u64)domain->geometry.aperture_end - base + 1;
+> +
+> +	return __arm_iommu_init_cookie(domain, base, size);
+> +}
+> +
+> +/**
+> + * iommu_put_dma_cookie - Free domain cookie for ARM IOMMU-based DMA API
+> + * @domain: the domain being freed
+> + */
+> +void iommu_put_dma_cookie(struct iommu_domain *domain)
+> +{
+> +	__arm_iommu_free_mapping(domain->arm_cookie);
+> +}
+> +
+> +/**
+> + * iommu_setup_dma_ops - Record a device's DMA API domain cookie
+> + * @dev: the device
+> + * @domain: the group's new default domain
+> + *
+> + * Records the cookie of @domain on @dev, or clears it if @domain is not a DMA
+> + * API domain. The DMA ops themselves are per driver binding and are installed
+> + * by arch_setup_dma_ops().
+> + */
+> +void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain)
+> +{
+> +	to_dma_iommu_mapping(dev) = iommu_is_dma_domain(domain) ?
+> +				    domain->arm_cookie : NULL;
 
- drivers/iommu/generic_pt/iommu_pt.h     | 29 +++++++++-----
- drivers/iommu/io-pgtable-arm.c          |  5 ++-
- drivers/iommu/iommufd/iova_bitmap.c     | 18 ++++++---
- include/linux/iommu.h                   | 27 ++++++++-----
- include/linux/iova_bitmap.h             |  9 +++--
- tools/testing/selftests/iommu/iommufd.c | 50 +++++++++++++++++++++++++
- 6 files changed, 110 insertions(+), 28 deletions(-)
+It feels like we should actually set the dma_ops here for a real default 
+domain. Sure it might make things a little more complex in the interim, 
+but it'll be more logical when we come to remove the other path.
 
+> +}
+> +
+> +/**
+> + * iommu_teardown_dma_ops - Clear a device's DMA API domain cookie
+> + * @dev: the device
+> + */
+> +void iommu_teardown_dma_ops(struct device *dev)
+> +{
+> +	to_dma_iommu_mapping(dev) = NULL;
+> +}
+> +
+>   /**
+>    * arm_iommu_create_mapping
+>    * @dev: pointer to the client device (for IOMMU calls)
+> @@ -1541,28 +1614,32 @@ static void __arm_iommu_free_mapping(struct dma_iommu_mapping *mapping)
+>    * IO address ranges, which is required to perform memory allocation and
+>    * mapping with IOMMU aware functions.
+>    *
+> + * Unlike a default domain set up by the IOMMU core, the returned mapping owns
+> + * the domain it describes and releases it along with the last reference.
+> + *
+>    * The client device need to be attached to the mapping with
+>    * arm_iommu_attach_device function.
+>    */
+>   struct dma_iommu_mapping *
+>   arm_iommu_create_mapping(struct device *dev, dma_addr_t base, u64 size)
+>   {
+> -	struct dma_iommu_mapping *mapping;
+> -
+> -	mapping = __arm_iommu_alloc_mapping(base, size);
+> -	if (IS_ERR(mapping))
+> -		return mapping;
+> +	struct iommu_domain *domain;
+> +	int err;
+>   
+> -	mapping->domain = iommu_paging_domain_alloc(dev);
+> -	if (IS_ERR(mapping->domain)) {
+> -		int err = PTR_ERR(mapping->domain);
+> +	domain = iommu_paging_domain_alloc(dev);
+> +	if (IS_ERR(domain))
+> +		return ERR_CAST(domain);
+>   
+> -		__arm_iommu_free_mapping(mapping);
+> +	err = __arm_iommu_init_cookie(domain, base, size);
+> +	if (err) {
+> +		iommu_domain_free(domain);
+>   		return ERR_PTR(err);
+>   	}
+>   
+> -	kref_init(&mapping->kref);
+> -	return mapping;
+> +	domain->arm_cookie->owns_domain = true;
+> +	kref_init(&domain->arm_cookie->kref);
+> +
+> +	return domain->arm_cookie;
+>   }
+>   EXPORT_SYMBOL_GPL(arm_iommu_create_mapping);
+>   
+> @@ -1571,8 +1648,8 @@ static void release_iommu_mapping(struct kref *kref)
+>   	struct dma_iommu_mapping *mapping =
+>   		container_of(kref, struct dma_iommu_mapping, kref);
+>   
+> +	/* Frees mapping too, via iommu_put_dma_cookie(). */
+>   	iommu_domain_free(mapping->domain);
+> -	__arm_iommu_free_mapping(mapping);
+>   }
+>   
+>   static int extend_iommu_mapping(struct dma_iommu_mapping *mapping)
+> @@ -1595,8 +1672,13 @@ static int extend_iommu_mapping(struct dma_iommu_mapping *mapping)
+>   
+>   void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping)
+>   {
+> -	if (mapping)
+> -		kref_put(&mapping->kref, release_iommu_mapping);
+> +	if (!mapping)
+> +		return;
+> +
+> +	if (WARN_ON(!mapping->owns_domain))
+> +		return;
+> +
+> +	kref_put(&mapping->kref, release_iommu_mapping);
+>   }
+>   EXPORT_SYMBOL_GPL(arm_iommu_release_mapping);
+>   
+> @@ -1660,6 +1742,14 @@ void arm_iommu_detach_device(struct device *dev)
+>   		return;
+>   	}
+>   
+> +	/*
+> +	 * This pairs with arm_iommu_attach_device() on a driver-owned mapping.
+> +	 * A mapping which is merely the cookie of a core-owned default domain
+> +	 * must not be torn down from here.
+> +	 */
+> +	if (WARN_ON(!mapping->owns_domain))
 
-base-commit: 04bcf84613346b973a8cc0c59238b6b5bc902688
--- 
-2.53.0
+As mentioned, if we can't reasonably hide the proper default domains 
+from external users of to_dma_iommu_mapping(), then I don't think we 
+should warn here, just treat it as a quiet no-op - the reason for the 
+"kick out the ARM domain" idiom is that it's in the way of attaching to 
+a driver-owned domain (whether that be a bare iommu_domain or another 
+ARM dma_iommu_mapping), but a real default domain is inherently out of 
+the way already. That way we can freely convert the rest of the drivers 
+to use default domains without impacting their users, then clean up the 
+detach pattern from the client drivers separately afterwards.
+
+Thanks,
+Robin.
+
+> +		return;
+> +
+>   	iommu_detach_device(mapping->domain, dev);
+>   	kref_put(&mapping->kref, release_iommu_mapping);
+>   	to_dma_iommu_mapping(dev) = NULL;
+> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
+> index 349d6a57e5a0..71b23cb698c0 100644
+> --- a/drivers/iommu/dma-iommu.h
+> +++ b/drivers/iommu/dma-iommu.h
+> @@ -7,25 +7,24 @@
+>   
+>   #include <linux/iommu.h>
+>   
+> -#ifdef CONFIG_IOMMU_DMA
+> +/*
+> + * Both dma-iommu.c and arch/arm/mm/dma-mapping.c implement functions to set up
+> + * IOMMU_DOMAIN_DMA default domains. Only one provider can be compiled in at a
+> + * time.
+> + */
+> +#if defined(CONFIG_ARM_DMA_USE_IOMMU)
+> +
+> +#include <asm/dma-iommu.h>
+> +
+> +#elif defined(CONFIG_IOMMU_DMA)
+>   
+>   void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain);
+>   void iommu_teardown_dma_ops(struct device *dev);
+>   
+>   int iommu_get_dma_cookie(struct iommu_domain *domain);
+>   void iommu_put_dma_cookie(struct iommu_domain *domain);
+> -void iommu_put_msi_cookie(struct iommu_domain *domain);
+>   
+> -int iommu_dma_init_fq(struct iommu_domain *domain);
+> -
+> -void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+> -
+> -int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
+> -		     phys_addr_t msi_addr);
+> -
+> -extern bool iommu_dma_forcedac;
+> -
+> -#else /* CONFIG_IOMMU_DMA */
+> +#else
+>   
+>   static inline void iommu_setup_dma_ops(struct device *dev,
+>   				       struct iommu_domain *domain)
+> @@ -36,11 +35,6 @@ static inline void iommu_teardown_dma_ops(struct device *dev)
+>   {
+>   }
+>   
+> -static inline int iommu_dma_init_fq(struct iommu_domain *domain)
+> -{
+> -	return -EINVAL;
+> -}
+> -
+>   static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
+>   {
+>   	return -ENODEV;
+> @@ -50,6 +44,28 @@ static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   {
+>   }
+>   
+> +#endif
+> +
+> +#ifdef CONFIG_IOMMU_DMA
+> +
+> +void iommu_put_msi_cookie(struct iommu_domain *domain);
+> +
+> +int iommu_dma_init_fq(struct iommu_domain *domain);
+> +
+> +void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
+> +
+> +int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
+> +		     phys_addr_t msi_addr);
+> +
+> +extern bool iommu_dma_forcedac;
+> +
+> +#else /* CONFIG_IOMMU_DMA */
+> +
+> +static inline int iommu_dma_init_fq(struct iommu_domain *domain)
+> +{
+> +	return -EINVAL;
+> +}
+> +
+>   static inline void iommu_put_msi_cookie(struct iommu_domain *domain)
+>   {
+>   }
+> 
 
