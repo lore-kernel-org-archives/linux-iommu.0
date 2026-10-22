@@ -1,49 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792674990;
-	b=vQUXY2bdZJlz0w41lQR/NcKhvm2nxEFW7rJ4DtdY7ScmoP4BgxLkW83uSY3OB9UHS0jp
-	 fOI+HDRtSlpo3YPXm/c/BDJd5wburZiT8Alxe5FND8Fsj+N4mmtaXa4Q/zDpE+7COf+jM
-	 LgE4tmyZbyUZMRjhdFBbOXU8aFkCAhme0LwkLgQOH9lEQBC3gXB7hJoMAdxwrggcPMwj5
-	 eytAYDUp5nI6exrZSgcBxn0N4oNBRv7Enbh1q2zlRnW1TvTbwP3VXD/MRKSVE4L9WqoVk
-	 1kOvlAb0F1xC8oI6KN3cjFoTBYgEZXJziu4f3zEeeIiPs3H6F+4grgZuAHdnaab/DUQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792674990;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=95gIZ/rOhUqAkfRUZlhwY8It1fpNlrmqRnyk+6vFBTo=;
-	b=kQLVmCLWUWyRw3rfWFH3m67U1WhkNcofOGwF85aSUAe5cL5OBNfQyN3k3pAYq0F3YyXU
-	 YmNrWmpzUTUYBa0Yq/yv3qTVVQ9/tyVn7Y4F/4Wzjb9HjUe/pgED12MU0jov4K5YC5XCs
-	 RSFgBirina+ygK6D7dt2YPs6aOYQcx5RgLbgJx73zlQ8RysTnOJPB3qPTBfgiodJHL02y
-	 caZ5Z4+tU3yPZ9MVxEClpQDb1N1uA8tRCEAJeUr1xQK/VYqlKVUvlLw3p1DkwM4ODHflh
-	 +ygvU2ytHqc/5yfkzSVjeHCo5lanpjiEC3Db/ZoQUtp4ry+n4RFt28WdviYgHn6rviQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Po2Gv+pN;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 67268606A325
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 13:16:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67268606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.26
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792675823;
+	b=i7mcubJCZkU/fPWuCswooXP/pWOrDOr4lD3PCYg+3n4cQe/CO9JPkYuXwrt0leNgAREI
+	 jhIWMafQAmYNjvOqFYvbeaoSCbwZKUeH+GPtF+KRq89/UzFTM9mfZtbsEBPm8Gyo5cqCk
+	 xQ1bUZezWcB69uZTkJxKVMQ7MUksy+GNsGAWMcLANSdKahb4tVy5dAtc50vV8SbJBpKR4
+	 tvWNo0RRcXI1g55NLwPfSLFoMXDZWpDn4o4E2AEviI6/+KUpioMxYAV4jd9nd5HyO5mCS
+	 CzaGSqCZ7/YRc52xkq6L4qIzaF8RUjHwk3izXgx1E7uCPU0D3Lq8D0REuzGPxw1IZrw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792675823;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=pTcl00j1OPpmyqOqO/eot6rKBqByxj2eXdhEQBe7icE=;
+	b=3kuzSDeVrFj2/SAcKzDaaOfKcYDhti6kwLaSRYl9fztYIs5fVyqTbIWha7KUMsbnwzOC
+	 g+CwUCiR/806vUq1hTPV5CuwVqMuqJHbg/jgfRegbp/PI6Eb4z0SQe7WYzBlwz3vnUXB7
+	 P1VlWqrxm9mCJvfsiQ14XQRDtXGLSNiC5eUvZm4XXE5l19lNd89CP2ESNKwWAAWhzhlLy
+	 SaSXVhHvLFXVcFKEN+rqRsutAcF/OnGETq77u4dIANJesSnV0+giyYH7OIl1/Ig5Wx/AN
+	 B63x6AoFq81bCizx4bPSIiDTDifZfRzxzUypE2eIA+0Tl0UIrGDJMDe3jD1TI7qj3og==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=hNXvjwHN;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.26
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011026.outbound.protection.outlook.com [52.101.52.26])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51073606A331
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 13:30:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 51073606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Po2Gv+pN
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1B2C01476;
-	Thu, 22 Oct 2026 06:16:25 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9A693F673;
-	Thu, 22 Oct 2026 06:16:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1792674988; bh=VtjlyhfnDPej66ib6QAEpVj/N8t0KLq/+awBY3pvJWI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Po2Gv+pN5qUlVoTfmfm6+EiT9jkBnsjCdYxUB1uttjzopZ2ujfpPncmF8NG5AUHA/
-	 ntV3DmM0O4FOtoaFsSCaE9vCLLGuGeVUWR3sgYLD5Vfg3x3t/YZ8m3si9+Ow2OnH08
-	 xitDAI80+tuIJ7Q2ABl3pIfc3FZeSehoHXU+QxHE=
-Message-ID: <6406c7b1-5e37-4c22-83c2-089c35ef54bf@arm.com>
-Date: Thu, 22 Oct 2026 14:16:05 +0100
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=hNXvjwHN
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cN2VY7+JKp3yCbk4ejPHhpHavPP1E003oeOJ8dMW6lAZDkUIk4YKTkNtREbssoijPl41+sMZiW/HF+0ZQnvCTmTV+izRwsoC4UW/Uns6KIXRPb/+e5JDePk8DAO2eD8G0DiRXvw0gi24eWpUlbX+kVc3xnsW1lqYv6KDAqANcBizFlPouyUHExn6COwJmJNT4AbTojTlwZa53yRemgtA1vqoGfAhZy1105iWbFHnlsmYwiQnBR1QoG0KlI0HReyzn4HfYw835hHCl7sBiG/8cP7ke/CGRpvXYWYHmFtv1jKPDLEQ7m+waDWjCxmpqTo198ixSjTv7huEMaya7sHcng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pTcl00j1OPpmyqOqO/eot6rKBqByxj2eXdhEQBe7icE=;
+ b=syF74JJMvuYjGpkm4mp0/0CPMK6GqytiymO/fZSlFx2ji5JSTzgFiIdGNsdn8hvNxaXMIg47izfyNunr7FV9mkP3+1zZCK+eu8oUFeb7ahIY+TVmNnQHqB6NGurDD9smJ98Qm8264BqpFPu2/Praq3Ml9el58az4UBy3/XZ7KpBAwxSwqgt3PplZVP/qQFnGt3Bxw0k5cwuUsPxQOQnpeYiOD7PJnOPqwH9+11wao66sYNNVSdcacw7jvzE2q9D/GeT6HEXaZzS/lET3w7HUpKy26ZnJ/wUCESxIKKrs6l76PivJ9NNCDgZSoZ1L26O35eULzaq5JpTyg0gyBbvS1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pTcl00j1OPpmyqOqO/eot6rKBqByxj2eXdhEQBe7icE=;
+ b=hNXvjwHND7VCT8TOKlV5Ud0RoW8NzX5F6Ybrr40opPj8AtOp+Z85vtfCwNR9dOLV1Cwnp88nDEsx85hnv+mdad0qTdyVUZEZ6/zNB0df6UqAnlKBwkwyz7YT/t80FoSfwhJGSElSCqIf7bMRxI1wknSdTP/mpMzN7jT9XYb7aqs=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by PH7PR12MB5736.namprd12.prod.outlook.com (2603:10b6:510:1e3::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.16; Thu, 22 Oct
+ 2026 13:30:17 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0546.012; Thu, 22 Oct 2026
+ 13:30:17 +0000
+Message-ID: <7b4dc988-5dbd-40e4-b17a-47b6eaf4bf81@amd.com>
+Date: Thu, 22 Oct 2026 15:30:11 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 01/26] dma-buf: Introduce DMA-buf mapping types
+To: Alistair Popple <apopple@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Dongwon Kim <dongwon.kim@intel.com>, dri-devel@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, iommu@lists.linux.dev,
+ Kevin Tian <kevin.tian@intel.com>, Leon Romanovsky <leonro@nvidia.com>,
+ linaro-mm-sig@lists.linaro.org, linux-media@vger.kernel.org,
+ Matthew Brost <matthew.brost@intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>
+References: <1-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com>
+ <b5d1bc79fae01fd9b511e06ed796130314ff841b.camel@linux.intel.com>
+ <20261021123755.GL3008132@nvidia.com> <atmurtZOhKwwGjV3@nvdebian.thelocal>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <atmurtZOhKwwGjV3@nvdebian.thelocal>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BLAPR03CA0118.namprd03.prod.outlook.com
+ (2603:10b6:208:32a::33) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,372 +105,187 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 04/11] ARM: dma-mapping: Implement and expose DMA setup
- functions
-To: Mikko Perttunen <mperttunen@nvidia.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>,
- Thierry Reding <thierry.reding@kernel.org>, David Airlie
- <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Jonathan Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Krzysztof Kozlowski <krzk@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Peter Griffin <peter.griffin@linaro.org>,
- Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>,
- Jernej Skrabec <jernej.skrabec@gmail.com>,
- Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Rob Clark <robin.clark@oss.qualcomm.com>,
- Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
-References: <20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com>
- <20261016-b4-arm32-iommu-dma-cookie-v2-4-b06842a01938@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20261016-b4-arm32-iommu-dma-cookie-v2-4-b06842a01938@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|PH7PR12MB5736:EE_
+X-MS-Office365-Filtering-Correlation-Id: 73190f50-df86-49bc-6e3f-08df30409c60
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|376014|7416014|56012099006|4143699003|11063799006|261021121427099003|261009223027099003|10067099003|22082099003|18002099003|6133799003|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	nRHzcom1AZbaAyuyCDaRt6lw8Y72XZxEWXGEXvIY220iwZgUcx4ZW3OG1tpdi1Ry1xXvIvglQY38Rwx+X5ZXG6OVc1l8c5SNODcCWzZb1CD4zPEd2wszfU0uOjf6IGLy86el5dfExxrSz1dlHoFf/roq9r4w1kzkf6hL23E6/VbLBlH76gGhAWOa+5z8VRYHDrKJ2pExv5Yo/+LTmDJQPW7mMl930PvHQU+cFrjyI/DCOOcVwEBzl1t0aLHzMFxd1nbZL756pvYoMJivzUJK4mk+i/HWYCldmgJ18ZdTKaG8VDpQ8dofbMV2+yJsMiz6nRz644lC9p+5DQfi+SWU0ZVz5lCtpJDEgnZ9c99FkL3BvFHcs4mFDNWUuE20NbPSZL2Stt3hZ9e86JPetHxp1r/Sr84e4o9q7Frp3qvbXWWfEGpMqPv3SB655dfL8RKOpre//gge/ovnrFkdYtt+ZJEZ6SSOsFNGif0ceMQoVcNQ4BFIpyi4Od2J8wybxe9hh7pIItKeQubF+hlPNzRxe2DeRFBKG9ZGIhrITNyYDTyB1OuppfZJv1IR7KxxezqXHtOdmC2UFsKNzmEeFsU3Sd4pIqaTaTp1bN5OoZ62N8ePrFcoPc69DJ/5z0l29a/T9rsM/OsyXov0zbnGGD/1KbzCdFvDIeavddMpccYpJBQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(376014)(7416014)(56012099006)(4143699003)(11063799006)(261021121427099003)(261009223027099003)(10067099003)(22082099003)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?USttTFpzUmJlejI0SXF5azQyWm9WQTNrKzhhUTlkZEpNQXZpMHljc0ZraUtH?=
+ =?utf-8?B?cXUzeElxQllXbllnUWgyalJjYXV4UlFiK2FSSldqOTN0QjB2b0J2a3FWMFBl?=
+ =?utf-8?B?MDR6VnpqN05wWWtNbEY1STlzOVpYZUQxWjR4cEdQRkozS1J3L0FoRWtFV2NF?=
+ =?utf-8?B?QVY2VDRNMFNxU2NPc084ZUNWS2lQUVdMTmlOOHc2TGxOYU1pWHU1dS91aC9V?=
+ =?utf-8?B?Szk5WTJLZ3BSSTcxOWlJREV5emlsbnNVdVVnQlFTOGdpS3BZbFFDNU1VZFcz?=
+ =?utf-8?B?eTZKQVVyYi9TYWR2RlVmSHdueGQ1UFJ6K0x0Z3BiSUxtS1RZMHZNeCtsUTZm?=
+ =?utf-8?B?Z1NkOVNGSUtvRGZmYTlKRzNWNmdHQnRoSmFlcTNWOGl6TFhZTEJHY3c5L1hN?=
+ =?utf-8?B?TlFQSlJKTEw0aCs1Z0xwNkhxWFY4QUdQMDZCT2FNT3BQeG52NDlRRGw3R3BQ?=
+ =?utf-8?B?VkNUd05jWWpBNWNFaEF4dVRMY2p3UzdiTnpoV2lMNkhrcmxHQUNRYURnK2Ja?=
+ =?utf-8?B?d1A5c1MzaG1rTUpKWWhNc253L3ZKUE01em5GOTJGOXRlMGdZQ1RQTm8vTGtW?=
+ =?utf-8?B?OHNyUjg5eXFHY0k3N3I5dU4rZzh1V2VyN0VJME12cU5GTDh5M1k0NDMrUHNQ?=
+ =?utf-8?B?bUliVFhheVphRG9vdXRQWWtQQUg3cVprRmZCTVk5VHZSZmhZRFpoVXd3UEN4?=
+ =?utf-8?B?QTJjODBKcWdDVXZHb3R2eGtMQ2JONXNudVhIWlVWbC9UVjM2UnJOd0Y2VDhE?=
+ =?utf-8?B?NkkxdWNKanVzdncrYTdVYkhqbmNTWk5KZ3VUVUh3TDgzQUQ1a29UNTlGOVpR?=
+ =?utf-8?B?VGc3UXZVeWRBZTY2Qkd2ZkNlOHpkSEdIOUhqUHpNSVllVXAvY1UyTDJlWmhQ?=
+ =?utf-8?B?S0FwUVNoYytjNXJPS3YwdGNuRjRUV202SFRFSXVwUk50L2RMYk9na0U4cnA0?=
+ =?utf-8?B?YkZRUW54T3lRR3RVWTJ4eTJ4Wnkvek9DWFRNa1JOMStwTEo4M2M1NWlXTGZM?=
+ =?utf-8?B?eEttc1BFZEpOeDErMlNoZ1M3eTZ1bHBPVURaVkluRTJHdDFqa3hqeHEvV01U?=
+ =?utf-8?B?MUVCY2U3aGNWUnROTUxJOENqOG9OSUV0SDVDeUZJblBSQ0tYNXpVdGxDZ0Zm?=
+ =?utf-8?B?ZXJvdmxhWXFhb0hZeTd1YmpTTVJ5YUQ4RnJiZk1ybDlIWjRERHZTQzI0a0ZP?=
+ =?utf-8?B?UVFiM1NzcHdaOXdGSnlDS3htdXFwZE9KZ0pubmJMM3BmSU1jcktNQllob3p2?=
+ =?utf-8?B?QTkzQm9JL1hwZ21hNU1YWGdYN1h5aEM3cEhLUDE0R3UyOEFscUxTMU5yNzhy?=
+ =?utf-8?B?WFdOTjY0dXdyK0hnRDR2WmZsMlFpQUVHMkVPR280RDJvNDRFU2lyTlZwVzFs?=
+ =?utf-8?B?VWcyNVdoazl6VzJlVUxHemVsb3IvSGlPMTBmNUt2NHRSZ0xZSUJQY0xHOUE4?=
+ =?utf-8?B?aU1reFJKQStaODZ6ZzRSbFlNZHpRTS9ubVlOK0hNN24rY3pNUUlhKzBDa1cv?=
+ =?utf-8?B?RFhTdVBBTS84MnBmWjF6amhhZlMwR21DNVFaYnBpSnR0THNLd3UrV0xCUkdm?=
+ =?utf-8?B?UGJDdnhkNkUrdG85bmxQT3dKbzMweUZZLzBLOWdTa1Z3TGZuNmNMUERMa29t?=
+ =?utf-8?B?QjI1WllacXQrNURidzRUSU11cUVQNkw4L0UvYjBOWlA0TDZqZUFXWmYvZHVR?=
+ =?utf-8?B?UXZ2RzEyNUZ4cmFVZ2czT2JlcTJPYkw3NGw4M0hZa0l2QmZEci8xaW0vQ3lN?=
+ =?utf-8?B?NDQvWFNqOTducm9RUDBBVHZ3VTlvUU1WWWVEc1FzSUNnK1hJVTBQalFyNTFM?=
+ =?utf-8?B?dzJyY3VtUDFYZ2xWemJxVmtJTitsSnh5bTFjMk1IUjBERk5rajVnQkdKbHlN?=
+ =?utf-8?B?bTRVUDc5b0YraitXbGFXVWJOcUJGVmVOMTNzdndmNjBTalkwWFFHUzJLT2h3?=
+ =?utf-8?B?RUUvd2o1U01QTkV5cUl6TVFBN2FlemY4dEFhV3hnSDlrSGNTTkFRcnNwM0Fs?=
+ =?utf-8?B?Qk9WbWFoUndhd1M2L0NSS09VWWJvTWV0SHpiMkFqcEpxaHc5QS9hS1VVdUJu?=
+ =?utf-8?B?UGdGdFphYVhEa2hRTUxsNGVNZldmVjUzU0U1ZG4vU1Z5Z2p5cWhnZzZvbjNV?=
+ =?utf-8?B?a05GK0lKVkZMajJTa1NpL3V4VDdsamNvRVlWOXd2Zm9hMnFvMEJsMjd3MXV5?=
+ =?utf-8?B?MmkrdGdLTzhWSnpGaVhPMC9URzJ0U09pNVJYbXlIaGJtR1d2WG5QKzAzODVx?=
+ =?utf-8?B?ZGoyc3RFTG5wdUg4SDZROWtnTWNDRmRRSzNiTkEvUWpkbjZjUy9jdlNmS1FO?=
+ =?utf-8?Q?XyIrJK9fnfdR4fF1fx?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 73190f50-df86-49bc-6e3f-08df30409c60
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 13:30:17.6000
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: if7RAX/syMIplZuaxOBa8fzCmVEpdY9Zk5qkNEQfpdvFfmbldYQZ2cgItPnH8UVb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5736
 
-On 16/10/2026 7:46 am, Mikko Perttunen wrote:
-> ARM DMA domains are currently allocated by the ARM DMA code, with struct
-> dma_iommu_mapping owning the domain and the IOVA bookkeeping. To allow
-> the IOMMU core to own DMA domains as is the case with other
-> architectures, we have to allow that code to allocate the domain and get
-> the cookie from the ARM DMA code.
+On 10/22/26 08:52, Alistair Popple wrote:
+> On 2026-10-21 at 23:37 +1100, Jason Gunthorpe <jgg@nvidia.com> wrote...
+>> On Wed, Oct 21, 2026 at 08:24:40AM +0200, Thomas Hellström wrote:
+>>>> struct dma_buf_mapping_exp_ops
+>>>>    Base type for the per-mapping type exporter provided functions.
+>>>> This
+>>>>    would be the map/unmap callbacks. Each mapping type can provide
+>>>> its own
+>>>>    functions for map/unmap type operations with optimal type
+>>>> signatures.
+>>>
+>>> Does it make sense to try to land this patch first, plus a conversion
+>>> of pcie_p2p so we could agree on what the contract should look like?
+>>
+>> I think it would be good to focus on this patch as the main 'crux' of
+>> the series. The API contract is the main agreement. I'm relucant to
+>> merge code that has no users, so it woudl be ebtter to go up to at
+>> least through SGT.
+>>  
+>>> s/mapping/interconnect/? My gut feeling is that "interconnect" best
+>>> describes what's typically going on, but "mapping" perhaps better
+>>> describes all cases.
+>>
+>> My intention was to cover more than just the phyiscal transport. We do
+>> really want to get away from scatterlist, so having PCIe map with
+>> scatterlist and PCIe map with <something else> still ends up with two
+>> mapping types in the system.
+>>
+>> This is why I choose the name over interconnect.
+>>
+>>> Location of common protocols which typically carry cross-subsystem
+>>> dependencies?
+>>> drivers/dma-buf/mapping_types? drivers/dma-buf/interconnects?
+>>
+>> I'd encourage people to design more like PCI where the actual
+>> *interconnect* has its own home and there is just some minor call outs
+>> from dmabuf to help the matching logic.
+>>
+>>> As discussed previously: 
+>>> Agree on theoretically possible matches at attach time, Match at
+>>> mapping time and guarantee the match is valid until
+>>> invalidate_mappings().
+>>
+>> I was thinking about this some more, and I'm less sure now.
+>>
+>> If I think about mlx5, in a multi-path PCIe configuration, it can move
+>> the translation around within a single PCIe path, but it cannot move
+>> it to another path without creating disruption for the
+>> application. This is a HW limitation in how the internal routing
+>> works..
+>>
+>> I strongly suspect this will be the norm for any hardware that doesn't
+>> rely on decorated page tables to select the IO path..
+>>
+>> So, while I agree we should support hardware that can fully change the
+>> path on each and every map, we also need to suport hardware that must
+>> pin the path during attach.
+>>
+>> Probably this points to needing a 'pin' operation for the mapping
+>> selection after attach.
 > 
-> Implement ARM versions of iommu_get/put_dma_cookie that create a struct
-> dma_iommu_mapping that doesn't have its own domain, as well as
-> iommu_setup/teardown_dma_ops that set the device's archdata.mapping,
-> allowing ARM DMA ops to seamlessly work on these devices.
+> If I'm understanding things correctly we're expecting a change in path between
+> attach and map time to be rare in practice. Therefore the need to handle this
+> case is mostly as a fallback to not break things. So instead of pinning could
+> new attachments just invalidate all existing incompatible attachments on the
+> list by setting eg. attach->valid = 0?
+
+No, that would result in ping/pong behavior which is something we explicitly try to avoid.
+
+This is also not something uncommon, it happens multiple times a second on a standard X11 Linux desktop when a new buffer is started to be scanned out on an A+A or A+I laptop.
+
+Regards,
+Christian.
+
 > 
-> The code is protected by CONFIG_ARM_DMA_USE_IOMMU and mutually exclusive
-> with the same-named functions in the dma-iommu code; and not reachable
-> yet.
+> Attachment could also scan existing attachments to preferentially pick matching
+> mapping_types that are compatible with existing attachments, thus avoiding
+> invalidation where possible.
 > 
-> Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
-> ---
->   arch/arm/include/asm/dma-iommu.h |  17 ++++++
->   arch/arm/mm/dma-mapping.c        | 118 ++++++++++++++++++++++++++++++++++-----
->   drivers/iommu/dma-iommu.h        |  50 +++++++++++------
->   3 files changed, 154 insertions(+), 31 deletions(-)
+> Map time functions (eg. dma_buf_sgt_map_attachment) would check attach->valid
+> and return a failure if a subsequent attachment/event had invalidated the
+> mapping type.
 > 
-> diff --git a/arch/arm/include/asm/dma-iommu.h b/arch/arm/include/asm/dma-iommu.h
-> index 2ce4c5683e6d..85cf9b05faab 100644
-> --- a/arch/arm/include/asm/dma-iommu.h
-> +++ b/arch/arm/include/asm/dma-iommu.h
-> @@ -19,6 +19,14 @@ struct dma_iommu_mapping {
->   	size_t			bits;		/* per bitmap */
->   	dma_addr_t		base;
->   
-> +	/*
-> +	 * Set for mappings created by arm_iommu_create_mapping(), where
-> +	 * @domain is owned by the mapping.
-> +	 * Clear for mappings that are a cookie of a domain owned by the IOMMU
-> +	 * core.
-> +	 */
-> +	bool			owns_domain;
-
-Do we strictly need this, or could we in fact already tell the 
-difference via iommu_is_dma_domain()? (Since ARM-API-owned domains via 
-iommu_paging_domain_alloc() will be IOMMU_DOMAIN_UNMANAGED)
-
-> +
->   	spinlock_t		lock;
->   	struct kref		kref;
->   };
-> @@ -32,5 +40,14 @@ int arm_iommu_attach_device(struct device *dev,
->   					struct dma_iommu_mapping *mapping);
->   void arm_iommu_detach_device(struct device *dev);
->   
-> +#ifdef CONFIG_ARM_DMA_USE_IOMMU
-> +struct iommu_domain;
-> +
-> +void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain);
-> +void iommu_teardown_dma_ops(struct device *dev);
-> +int iommu_get_dma_cookie(struct iommu_domain *domain);
-> +void iommu_put_dma_cookie(struct iommu_domain *domain);
-> +#endif
-> +
->   #endif /* __KERNEL__ */
->   #endif
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 4284950a9246..f2d3e8ec3487 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -1531,6 +1531,79 @@ static void __arm_iommu_free_mapping(struct dma_iommu_mapping *mapping)
->   	kfree(mapping);
->   }
->   
-> +static int __arm_iommu_init_cookie(struct iommu_domain *domain,
-> +				   dma_addr_t base, u64 size)
-> +{
-> +	struct dma_iommu_mapping *mapping;
-> +
-> +	if (domain->cookie_type != IOMMU_COOKIE_NONE)
-> +		return -EEXIST;
-> +
-> +	mapping = __arm_iommu_alloc_mapping(base, size);
-> +	if (IS_ERR(mapping))
-> +		return PTR_ERR(mapping);
-> +
-> +	mapping->domain = domain;
-> +	domain->cookie_type = IOMMU_COOKIE_ARM_DMA;
-> +	domain->arm_cookie = mapping;
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * iommu_get_dma_cookie - Set up a domain cookie for ARM IOMMU-based DMA API
-> + * @domain: IOMMU_DOMAIN_DMA domain being configured
-> + *
-> + * Allocates IOVA bookkeeping for the domain based on the domain's specified
-> + * geometry. The aperture can currently be at most 4GB in size, otherwise
-> + * fails with -ERANGE.
-
-Bit of a corner case, but I think that might technically break on 
-stage-2-only arm-smmu implementations like MMU-400 where the default 
-aperture will be 40 bits. It's probably better to explicitly cap our 
-request to 4GB here to preserve the current behaviour.
-
-> + */
-> +int iommu_get_dma_cookie(struct iommu_domain *domain)
-> +{
-> +	dma_addr_t base = domain->geometry.aperture_start;
-> +	u64 size;
-> +
-> +	if (base > domain->geometry.aperture_end)
-> +		return -EINVAL;
-> +
-> +	size = (u64)domain->geometry.aperture_end - base + 1;
-> +
-> +	return __arm_iommu_init_cookie(domain, base, size);
-> +}
-> +
-> +/**
-> + * iommu_put_dma_cookie - Free domain cookie for ARM IOMMU-based DMA API
-> + * @domain: the domain being freed
-> + */
-> +void iommu_put_dma_cookie(struct iommu_domain *domain)
-> +{
-> +	__arm_iommu_free_mapping(domain->arm_cookie);
-> +}
-> +
-> +/**
-> + * iommu_setup_dma_ops - Record a device's DMA API domain cookie
-> + * @dev: the device
-> + * @domain: the group's new default domain
-> + *
-> + * Records the cookie of @domain on @dev, or clears it if @domain is not a DMA
-> + * API domain. The DMA ops themselves are per driver binding and are installed
-> + * by arch_setup_dma_ops().
-> + */
-> +void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain)
-> +{
-> +	to_dma_iommu_mapping(dev) = iommu_is_dma_domain(domain) ?
-> +				    domain->arm_cookie : NULL;
-
-It feels like we should actually set the dma_ops here for a real default 
-domain. Sure it might make things a little more complex in the interim, 
-but it'll be more logical when we come to remove the other path.
-
-> +}
-> +
-> +/**
-> + * iommu_teardown_dma_ops - Clear a device's DMA API domain cookie
-> + * @dev: the device
-> + */
-> +void iommu_teardown_dma_ops(struct device *dev)
-> +{
-> +	to_dma_iommu_mapping(dev) = NULL;
-> +}
-> +
->   /**
->    * arm_iommu_create_mapping
->    * @dev: pointer to the client device (for IOMMU calls)
-> @@ -1541,28 +1614,32 @@ static void __arm_iommu_free_mapping(struct dma_iommu_mapping *mapping)
->    * IO address ranges, which is required to perform memory allocation and
->    * mapping with IOMMU aware functions.
->    *
-> + * Unlike a default domain set up by the IOMMU core, the returned mapping owns
-> + * the domain it describes and releases it along with the last reference.
-> + *
->    * The client device need to be attached to the mapping with
->    * arm_iommu_attach_device function.
->    */
->   struct dma_iommu_mapping *
->   arm_iommu_create_mapping(struct device *dev, dma_addr_t base, u64 size)
->   {
-> -	struct dma_iommu_mapping *mapping;
-> -
-> -	mapping = __arm_iommu_alloc_mapping(base, size);
-> -	if (IS_ERR(mapping))
-> -		return mapping;
-> +	struct iommu_domain *domain;
-> +	int err;
->   
-> -	mapping->domain = iommu_paging_domain_alloc(dev);
-> -	if (IS_ERR(mapping->domain)) {
-> -		int err = PTR_ERR(mapping->domain);
-> +	domain = iommu_paging_domain_alloc(dev);
-> +	if (IS_ERR(domain))
-> +		return ERR_CAST(domain);
->   
-> -		__arm_iommu_free_mapping(mapping);
-> +	err = __arm_iommu_init_cookie(domain, base, size);
-> +	if (err) {
-> +		iommu_domain_free(domain);
->   		return ERR_PTR(err);
->   	}
->   
-> -	kref_init(&mapping->kref);
-> -	return mapping;
-> +	domain->arm_cookie->owns_domain = true;
-> +	kref_init(&domain->arm_cookie->kref);
-> +
-> +	return domain->arm_cookie;
->   }
->   EXPORT_SYMBOL_GPL(arm_iommu_create_mapping);
->   
-> @@ -1571,8 +1648,8 @@ static void release_iommu_mapping(struct kref *kref)
->   	struct dma_iommu_mapping *mapping =
->   		container_of(kref, struct dma_iommu_mapping, kref);
->   
-> +	/* Frees mapping too, via iommu_put_dma_cookie(). */
->   	iommu_domain_free(mapping->domain);
-> -	__arm_iommu_free_mapping(mapping);
->   }
->   
->   static int extend_iommu_mapping(struct dma_iommu_mapping *mapping)
-> @@ -1595,8 +1672,13 @@ static int extend_iommu_mapping(struct dma_iommu_mapping *mapping)
->   
->   void arm_iommu_release_mapping(struct dma_iommu_mapping *mapping)
->   {
-> -	if (mapping)
-> -		kref_put(&mapping->kref, release_iommu_mapping);
-> +	if (!mapping)
-> +		return;
-> +
-> +	if (WARN_ON(!mapping->owns_domain))
-> +		return;
-> +
-> +	kref_put(&mapping->kref, release_iommu_mapping);
->   }
->   EXPORT_SYMBOL_GPL(arm_iommu_release_mapping);
->   
-> @@ -1660,6 +1742,14 @@ void arm_iommu_detach_device(struct device *dev)
->   		return;
->   	}
->   
-> +	/*
-> +	 * This pairs with arm_iommu_attach_device() on a driver-owned mapping.
-> +	 * A mapping which is merely the cookie of a core-owned default domain
-> +	 * must not be torn down from here.
-> +	 */
-> +	if (WARN_ON(!mapping->owns_domain))
-
-As mentioned, if we can't reasonably hide the proper default domains 
-from external users of to_dma_iommu_mapping(), then I don't think we 
-should warn here, just treat it as a quiet no-op - the reason for the 
-"kick out the ARM domain" idiom is that it's in the way of attaching to 
-a driver-owned domain (whether that be a bare iommu_domain or another 
-ARM dma_iommu_mapping), but a real default domain is inherently out of 
-the way already. That way we can freely convert the rest of the drivers 
-to use default domains without impacting their users, then clean up the 
-detach pattern from the client drivers separately afterwards.
-
-Thanks,
-Robin.
-
-> +		return;
-> +
->   	iommu_detach_device(mapping->domain, dev);
->   	kref_put(&mapping->kref, release_iommu_mapping);
->   	to_dma_iommu_mapping(dev) = NULL;
-> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-> index 349d6a57e5a0..71b23cb698c0 100644
-> --- a/drivers/iommu/dma-iommu.h
-> +++ b/drivers/iommu/dma-iommu.h
-> @@ -7,25 +7,24 @@
->   
->   #include <linux/iommu.h>
->   
-> -#ifdef CONFIG_IOMMU_DMA
-> +/*
-> + * Both dma-iommu.c and arch/arm/mm/dma-mapping.c implement functions to set up
-> + * IOMMU_DOMAIN_DMA default domains. Only one provider can be compiled in at a
-> + * time.
-> + */
-> +#if defined(CONFIG_ARM_DMA_USE_IOMMU)
-> +
-> +#include <asm/dma-iommu.h>
-> +
-> +#elif defined(CONFIG_IOMMU_DMA)
->   
->   void iommu_setup_dma_ops(struct device *dev, struct iommu_domain *domain);
->   void iommu_teardown_dma_ops(struct device *dev);
->   
->   int iommu_get_dma_cookie(struct iommu_domain *domain);
->   void iommu_put_dma_cookie(struct iommu_domain *domain);
-> -void iommu_put_msi_cookie(struct iommu_domain *domain);
->   
-> -int iommu_dma_init_fq(struct iommu_domain *domain);
-> -
-> -void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
-> -
-> -int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
-> -		     phys_addr_t msi_addr);
-> -
-> -extern bool iommu_dma_forcedac;
-> -
-> -#else /* CONFIG_IOMMU_DMA */
-> +#else
->   
->   static inline void iommu_setup_dma_ops(struct device *dev,
->   				       struct iommu_domain *domain)
-> @@ -36,11 +35,6 @@ static inline void iommu_teardown_dma_ops(struct device *dev)
->   {
->   }
->   
-> -static inline int iommu_dma_init_fq(struct iommu_domain *domain)
-> -{
-> -	return -EINVAL;
-> -}
-> -
->   static inline int iommu_get_dma_cookie(struct iommu_domain *domain)
->   {
->   	return -ENODEV;
-> @@ -50,6 +44,28 @@ static inline void iommu_put_dma_cookie(struct iommu_domain *domain)
->   {
->   }
->   
-> +#endif
-> +
-> +#ifdef CONFIG_IOMMU_DMA
-> +
-> +void iommu_put_msi_cookie(struct iommu_domain *domain);
-> +
-> +int iommu_dma_init_fq(struct iommu_domain *domain);
-> +
-> +void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
-> +
-> +int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
-> +		     phys_addr_t msi_addr);
-> +
-> +extern bool iommu_dma_forcedac;
-> +
-> +#else /* CONFIG_IOMMU_DMA */
-> +
-> +static inline int iommu_dma_init_fq(struct iommu_domain *domain)
-> +{
-> +	return -EINVAL;
-> +}
-> +
->   static inline void iommu_put_msi_cookie(struct iommu_domain *domain)
->   {
->   }
+> Importers with invalidated attachments would then have to retry creating the
+> attachment, probably getting a different mapping_type. Would this be acceptable?
+> Or do some importers absolutely require the mapping_type to never change once
+> the intial match/attachment has happened?
 > 
+>  - Alistair
+> 
+>>>> +/*
+>>>> + * Match items are generated by the importer using the
+>>>> DMA_BUF_IMAPPING_*() and
+>>>> + * the exporter using the DMA_BUF_EMAPPING_*() functions. Each
+>>>> mapping type
+>>>> + * defines its own signature with its own data to make the match and
+>>>> attachment.
+>>>> + */
+>>>> +struct dma_buf_mapping_match {
+>>>> +	const struct dma_buf_mapping_type *type;
+>>>> +	const struct dma_buf_mapping_exp_ops *exp_ops;
+>>>> +	union {
+>>>> +		/* Each mapping_type has unique match parameters
+>>>> here */
+>>>> +	};
+>>>
+>>> Do we really need to add all global mapping types here? Then we'd need
+>>> something for driver-private mapping types as well.
+>>
+>> IIRC it is fixed size up front like this because of how the
+>> structure's memory is managed in this design..
+>>
+>> If you want a driver private thing then I'd add a 'u64
+>> driver_private[2]' to the union and the driver can cast over it.
+>>
+>> But this is the kernel, if you want to add an xe_mapping_type, then
+>> just add it. I don't know we need to do driver private things.
+>>
+>> Jason
 
