@@ -1,76 +1,150 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.72
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792673410;
-	b=JnaiULO0+Qcz42MmZqVlbdZ5/YbmfJyLu9HKc8QxlvdnkJ4UkNmQo/2/vMPYAW4vDBqU
-	 ajmw+FwRLv28HloHshh2rg4RugCuwDV90FPg8cDcmxqYfjOPEFrQSGCOb36jXYXsgpO6M
-	 ZlOOs7Ny4+hFDM5rToKB1dvvfK73FfDgwv0mnPQyGrtvlNEcnd2ET69xZo29BfyGGT91/
-	 sdaGU2XAiKPmAtkG5vkX0djIws6SIoBgEWsUAPkJLauVCwpEi0ZX4MlVQkv5kWEhcZtdh
-	 ecPFmxrQQGEAP9zmo5YzQ8nvGHIDP1baGydDDHVwWTaEcnLYzs7mAe0kVpy61viQ40Q==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792673410;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=opPc+eRANnsL3IgwnH1KHoUHY5QiZX1lM2OixXujM5s=;
-	b=XcUJhuQqMQ1XSRFLPB4ZjeFeagmPwpfjEVqMMRjUbwnxGi4emIKLM6/fHTccrL5aZbYH
-	 NBVKUxeYZk0NeY3TjG3Lkhj7kDqKgaKG+02fhkp4x1Gil+KU5yGr8yIQzEutNes2paJN8
-	 6Jmcy4q7GJm8bODQLDVDpojCzAYjUeh7NI2gG3IKmEmzX936sJWRPoTB45v9Tmg27FdiF
-	 4zBSF4JuENT1QIxL1eGqA/hc9WJMUxyOQB4YMkbt0UhG9JgiOz+FB5+7rEjUqRXuczOHa
-	 SzBo0TWW88mnVSfMB1e+J8oNa8oUrAilDLwkaYMFwDSLjNz9j6uaIp7jlQ+xDSO/xlQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=EPna1kNV;
-	arc=none smtp.remote-ip=209.85.218.72
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=2 smtp.remote-ip=40.107.162.56
+ARC-Seal: i=3; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1792673437;
+	b=oYp3FG8ns5Z8+i9v+FK/678RbyhzHbkGD6P/akLWB7+2B122G8Pvt2jYqWlWOuqIyT42
+	 ROul9jIpobdghv8lg2nXTPQ8udQvOsscIY6TLx1yS2igtm1jk1fE28pvHWKviAusQlbf9
+	 gyO6LTiEo+BrF//xlK2mfjSqIJ10YO5zZC086NxG4JsQV0Xn8kck6b2HigWZZKm4XkoqC
+	 liTHKm94u2x5tDEBMcOiXv/4FZ4zZxdZjSiEt96a7Z9iwG8rCO5eXq6C7OmYO7ybtoARp
+	 qw/JCEKZMa2QwZT8YLGHnhumU3/FvDWgBDNgGs+DJQSQs3pYn85FcLNOqx7OFRTiR6Q==
+ARC-Message-Signature: i=3; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792673437;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:
+	 DKIM-Signature:Authentication-Results-Original:Received:Received:
+	 Message-ID:Date:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 X-ClientProxiedBy:MIME-Version:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:x-checkrecipientrouted:
+	 NoDisclaimer:X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam-Untrusted:
+	 X-Microsoft-Antispam-Message-Info-Original:
+	 X-Forefront-Antispam-Report-Untrusted:X-Exchange-RoutingPolicyChecked:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:
+	 X-EOPAttributedMessage:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+	 X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=ZeV09RcbZ5kICauzzsb/mRJ4Sty/g29cQKuS/ioyrqc=;
+	b=EdmiTKnq89BZC9MeMJQazNn3NHrvENcQ/XSZPm0nmZZBsXWnehGGIEOY39+G0AVrg40H
+	 tHTqQcVgqgzmCGzw4QeQR1D1NXkjnOOKHyq+sK1JIb3AAOfQhFprPNp/zD6hod7uaTKec
+	 K80oy/38iKS3Theb4WyBCsr/2hNK6IbzeIJwQ3CQXgky1x22Zxq3ku37jDx6HbaDyie4+
+	 ZAs2wI/0wRZvRfxL+Fk5zs2VJ3iNkpJZrtTS6RNZ5aSPwcTco9XmYRkDT4n27rOQf97Wm
+	 wZ9aU7w2x+01hLLN72R78xCp7gVGGahZoxp8/vFVr5hzfVojr3XlEikbA7sJKGem9MQ==
+ARC-Authentication-Results: i=3; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=selector1 header.b=sFJLzCLW;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=selector1 header.b=sFJLzCLW;
+	arc=pass header.oldest-pass=2 smtp.remote-ip=40.107.162.56
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013056.outbound.protection.outlook.com [40.107.162.56])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86161606A31B
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 12:50:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 86161606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFB4606A31A
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 12:50:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AFB4606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=EPna1kNV
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c438ca31778so143386566b.2
-        for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 05:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792673408; x=1793278208; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=opPc+eRANnsL3IgwnH1KHoUHY5QiZX1lM2OixXujM5s=;
-        b=EPna1kNVZ1yoTLgBfHy9sYyFGFMnIrA5G0Fc6Jt00ChiJ/SRxzziwOWQ5GA15B5YS9
-         rtFbTPLQoepSwVKeFsRxy3WX/xcRORzCuAYHOeIi+v26kGR4idzgYohzdMubvOFrxXAW
-         Rp9P5BlItuZWeyW7hnVZkPWmUcyF4CZDfOz5AW3syg2rNIplpGEg1CGA1kXsvWrZkNS8
-         CmK5ssdVa9ojJPX1QVX/rBJ1CsXYM6Gzf8vM8ZA/3UcqQuZZp2KYvym7saUy3I0FN9ka
-         NBVgFO0lPUhbIGmS+beX24NbpUAkpaZKrikX22QuR5306Y8Uuz4XYkXA/8qvbSrCkChn
-         sUZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792673408; x=1793278208;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=opPc+eRANnsL3IgwnH1KHoUHY5QiZX1lM2OixXujM5s=;
-        b=C/Pt3ZPXBIpGRsrinRbm+9TvzZh2C5rI1cAE0+xoXyvdxQCffK9VvVqvxwUMnFW/Mn
-         fi3sap+EHF8Lti/mq7mSJLNrGsSlkPHHuv3u7UwbeirQEfhce+0WVOrKVWqnePljA6Q1
-         9nM+SCKqIAMqzppYThs9GohCe/Gr9Y9ipWJuVGOQtc06hW0NrZBZqpCHthCapqSinjDu
-         mqm3LR6Ipx+Jzj6UAqqIL+dn03p+/S3sc0eMr3eyZsbyDVNLX9p9MryJ//KX/oT1dWDn
-         oxWMA5tkttPrku3j4RZeLMoHqLBTMl8e3QDMuByfi8/kk26NDJBshVO7ktcn5/RpwDh0
-         68vg==
-X-Forwarded-Encrypted: i=1; AKwUvBx0xkMtKcxRfCXmvNAzEp5bUJLvlwPEYLYLHnZUPBVwAcmzHhsCuS09RGGFz9hmAIPMBo7YwQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJxN1KptIMXM68gadP9+ehSKFMCreKC1HJQjNJhyRqg2zHbgVj/
-	8GylURNEHoYBDix8HWuyQJvB98vvDOe5YdBXsNxLVC8MpEQhZCUFFyNX8a1Iq7F1/lSw0wFDQ3k
-	PCU9WyfBqTSjhQooN1Q==
-X-Received: from ejcty16.prod.google.com ([2002:a17:907:c710:b0:c29:490f:9a3d])
- (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:9406:b0:c31:73b8:39b3 with SMTP id a640c23a62f3a-c4679796deemr525575766b.30.1792673407508;
- Thu, 22 Oct 2026 05:50:07 -0700 (PDT)
-Date: Thu, 22 Oct 2026 12:50:06 +0000
-In-Reply-To: <CA+CK2bCnS8wcVDbOymBGeJB6pDUkknOpF22EynbwSV=D5=J4ow@mail.gmail.com>
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=selector1 header.b=sFJLzCLW;
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=selector1 header.b=sFJLzCLW
+ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
+ b=c1KjkUqEFPT5zvQIEkgN7nNWpkGNQJ4lhYBvbRaf5SKvVism5Np95OQcLyDd1Yq+fAQ5hYgR0uKpifGyIrfapi8HTj4lKmIB+J8ThtFZZgHB9Js4d/q0TVGoqC0G1OzlY0SE07EeElfH/aktFFPyCjhxAp68/ncvQmnyJ9c12N6TllbA7q3sy6cFQcPRjYAaQBWIXQvRLemCYnvLtyuPRORzsokeGAcb03k/7/k3jMyrf3h9EnO0xYBzdGCb6dG16tJoc728HE1Pnve6VgRmZRfHniUjKYqhqNkyhCEw4KGYysRYRnRgzsItWYr5LWhNxUawuXbjbCjfFbfKwvT2Vw==
+ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZeV09RcbZ5kICauzzsb/mRJ4Sty/g29cQKuS/ioyrqc=;
+ b=eLLRCIa8AFYLGzIf/lS339Dm22B0Mpq3donAjGS0hdGGx876Z+84InH4pKZzPQ5GCrx+dJFvXq5lKfQ8fuvDZ94+y+0T5CCzqa7H659Q/PIUqCZ86OJ9oTuMjgyL77curPXEu22Kk7B57W03BHzCCXd0NCjwVbN2B8bBesWlYnQfYTvEDoSlw5lg8qO3Tcdrm3X95Gwi7h7NWJB7GX+tIRf51IvnOiKuCPi2nqYCXsMjSuqNLL7Yc6cwaQgwk2qfyVBUKPThDIe8PMXDlmEhX/O28uQm7v3OEgLUm9AoS/SpjdTjlGsb8V/JMswXho0OYbAlLBhRSK3D7fo7UkQS5w==
+ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=pass (sender ip is
+ 4.158.2.129) smtp.rcpttodomain=nvidia.com smtp.mailfrom=arm.com; dmarc=pass
+ (p=none sp=none pct=100) action=none header.from=arm.com; dkim=pass
+ (signature was verified) header.d=arm.com; arc=pass (0 oda=1 ltdi=1
+ spf=[1,1,smtp.mailfrom=arm.com] dkim=[1,1,header.d=arm.com]
+ dmarc=[1,1,header.from=arm.com])
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZeV09RcbZ5kICauzzsb/mRJ4Sty/g29cQKuS/ioyrqc=;
+ b=sFJLzCLWPbnrOjLY18LlQSmw5CPNp8iB8m5+jpq6LHqdTB2L8GVvCypuue2XaYUbUjPCmCYkERV33tr7pXB608Pr7z6opsOc719WQ/n8XDlZHORmq+ksbPcTWAxQIlxX2FzFO6G7vG+OtIrkgnSL5fjDlthbDUKimZasI5jak3E=
+Received: from AS9PR05CA0094.eurprd05.prod.outlook.com (2603:10a6:20b:498::9)
+ by MI7PR08MB123078.eurprd08.prod.outlook.com (2603:10a6:290:10a::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Thu, 22 Oct
+ 2026 12:50:32 +0000
+Received: from CPH1EPF00000529.eurprd05.prod.outlook.com
+ (2603:10a6:20b:498:cafe::50) by AS9PR05CA0094.outlook.office365.com
+ (2603:10a6:20b:498::9) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.546.16 via Frontend Transport; Thu,
+ 22 Oct 2026 12:50:32 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 4.158.2.129) smtp.mailfrom=arm.com; dkim=pass (signature was verified)
+ header.d=arm.com;dmarc=pass action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 4.158.2.129 as permitted sender) receiver=protection.outlook.com;
+ client-ip=4.158.2.129; helo=outbound-uk1.az.dlp.m.darktrace.com; pr=C
+Received: from outbound-uk1.az.dlp.m.darktrace.com (4.158.2.129) by
+ CPH1EPF00000529.mail.protection.outlook.com (10.167.241.164) with Microsoft
+ SMTP Server (version=TLS1_3, cipher=TLS_AES_256_GCM_SHA384) id 15.21.546.15
+ via Frontend Transport; Thu, 22 Oct 2026 12:50:32 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CiU+SAwMH1RUI1ZnJKNBSCMFn9NzvRDftigyGSn0rH0SD1KNqXwdgnnZDlCnQbEw8LTG8lydQztf8vz5qLsBl7mX8jzt+mfylbAq5tAadZs+KHH6gJFjT9pMYIDcM4b704ufYfMocF/yMKH19yFRGjIppA2+39UlBGkYaz4ug42j5GPNXbrbcgIoujYF4MbYQ0P+mpIkzj9BlOPGDHANW1gtrFUvDI3JcyTL69BUtUmwNbqet4pwZ77t+EteMP+oe74q2Ta9CXHkO5eSl1dtMCtKJtQLp8jZk6WcS5SPL83hlIncJAOpBXyOXVkYWscXVGQ4K7XwSSkahgNuCqesaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZeV09RcbZ5kICauzzsb/mRJ4Sty/g29cQKuS/ioyrqc=;
+ b=LWF0uevTJhIqDIfqUxJmWrFxL6kREOy3ojXu5nlFRAxYKKFSlciKDz0quSM6heEAxrk+t3mI+NolGESR24OLeBtSv3n64mEjAslZXxaOorf2vjtKUVXj/FraKYoxksYacFNgnVXIealCUJBxPfAFgXqGJaJzjX2UH0jY3O10NelFNW6ulQeXtNrDtPisyck9NMAjuWgmRhlfI5F6VvY4ScAY8t0UskxOayQnbHwqLL/7TfIhURcBOIzcE9flbIu4k+gmN5GTO9aKA39q+Mv44QIU9ZR9U16DSiQgaeEoOMAj7tAqsnTMz2fzqc5FWITOT6yt2D9RXxzbI9Sil2TKEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arm.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZeV09RcbZ5kICauzzsb/mRJ4Sty/g29cQKuS/ioyrqc=;
+ b=sFJLzCLWPbnrOjLY18LlQSmw5CPNp8iB8m5+jpq6LHqdTB2L8GVvCypuue2XaYUbUjPCmCYkERV33tr7pXB608Pr7z6opsOc719WQ/n8XDlZHORmq+ksbPcTWAxQIlxX2FzFO6G7vG+OtIrkgnSL5fjDlthbDUKimZasI5jak3E=
+Authentication-Results-Original: mx.microsoft.com 1; dkim=none (message not
+ signed) header.d=none;dmarc=none action=none header.from=arm.com;
+Received: from GV1PR08MB10691.eurprd08.prod.outlook.com
+ (2603:10a6:150:162::11) by AM9PR08MB6068.eurprd08.prod.outlook.com
+ (2603:10a6:20b:2dc::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Thu, 22 Oct
+ 2026 12:50:00 +0000
+Received: from GV1PR08MB10691.eurprd08.prod.outlook.com
+ ([fe80::dd4e:5d51:17f9:9375]) by GV1PR08MB10691.eurprd08.prod.outlook.com
+ ([fe80::dd4e:5d51:17f9:9375%4]) with mapi id 15.21.0546.012; Thu, 22 Oct 2026
+ 12:49:57 +0000
+Message-ID: <315919c0-909e-442b-afd6-cb9f10664e42@arm.com>
+Date: Thu, 22 Oct 2026 13:49:55 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v11 06/11] iommu/arm-smmu-v3: Add ARM_SMMU_OPT_KDUMP_ADOPT
+ for kdump kernel
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, praan@google.com,
+ kevin.tian@intel.com, smostafa@google.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, jamien@nvidia.com, kas@kernel.org,
+ Cristian Prundeanu <cpru@amazon.com>, Breno Leitao <leitao@kernel.org>
+References: <cover.1791226953.git.nicolinc@nvidia.com>
+ <ee4257b62324aa75d7140f1f4a49aa0f78586fff.1791226953.git.nicolinc@nvidia.com>
+ <9f500b81-792f-47b9-a8a9-1415ff11b699@arm.com> <atj7XTdjC0CIVDQY@nvidia.com>
+ <ab304d36-c655-4a3b-b1ab-e4b7292bfd24@arm.com>
+ <20261022122254.GB3008132@nvidia.com>
+Content-Language: en-US
+From: John Garry <john.garry@arm.com>
+In-Reply-To: <20261022122254.GB3008132@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO3P265CA0022.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:387::13) To GV1PR08MB10691.eurprd08.prod.outlook.com
+ (2603:10a6:150:162::11)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -79,312 +153,61 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261021152527.375070-1-tarunsahu@google.com> <20261021152527.375070-3-tarunsahu@google.com>
- <CA+CK2bCnS8wcVDbOymBGeJB6pDUkknOpF22EynbwSV=D5=J4ow@mail.gmail.com>
-Message-ID: <9huzik2t5281.fsf@tarunix.c.googlers.com>
-Subject: Re: [RFC PATCH v2 2/4] liveupdate: Select file handler by name in the
- preserve ioctl
-From: tarunsahu@google.com
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
-	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
-	David Matlack <dmatlack@google.com>, jgg@nvidia.com, robin.murphy@arm.com, 
-	loganodell@google.com, oupton@kernel.org, kevin.tian@intel.com, 
-	alex@shazbot.org, dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, 
-	will@kernel.org, Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, 
-	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org, 
-	linux-arch@vger.kernel.org, sagis@google.com, linux-mm@kvack.org, 
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev, linux-pci@vger.kernel.org, 
-	kexec@lists.infradead.org, skhawaja@google.com, kvm@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-TrafficTypeDiagnostic:
+	GV1PR08MB10691:EE_|AM9PR08MB6068:EE_|CPH1EPF00000529:EE_|MI7PR08MB123078:EE_
+X-MS-Office365-Filtering-Correlation-Id: b6d66548-eb12-4967-64ab-08df303b0f24
+x-checkrecipientrouted: true
+NoDisclaimer: true
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted:
+ BCL:0;ARA:13230040|23010399003|7416014|376014|1800799024|366016|22082099003|10067099003|18002099003|11063799006|4143699003|56012099006;
+X-Microsoft-Antispam-Message-Info-Original:
+ scC8SuL3oUf56wfa7zBZ5B6hSNSp2+jTrO2d9Gs722ymKZsfywRV8Vx8m7sik5+LacV7h+Q/pgWEPsouS3OJz+fR5ct5iEtS5P2sqiS1f24sbO+oPvhH15LkKoPSfUWr/0+rs3eGwt7JRJOQmyuRE8SHEkEbJpXRB5roYsmWS9KI0fjy72H+zAjP9FWfhNg3pbNQ8T9yEIdT8PT3XD1QHbllV71YW+B5+9V1qhC8kZiGa+i2N5hEQi0FMpFUDdXhfF+DRWtFMJVdaTpcl1Ygjk2DyzmO42wZ3F4+SFH16azkGRmlK+0tKmcERmO/BwM0IMjs3O5XS3874wudsfJnXaj8baJko0dz7EkYZUdjjzSn7BcEqgRIdQKTqpDycIssXtd4MemlF7akRjMWCr7UEvOllb8iJCe/VMQNpPYf/2VpVSJXgOaOYQX5cc1rESK66BN9XUXxqCQseewjwPr9m0kN/d/3gn28WlQXM9aRW9Bws9foDFLt2Pa4bphY5vTqu++EphPSot1JUpqiP6tb9o/TNyOzh/RDt32aaBi8I26T69vIPnBthgQCyJc8iyprSHRfUndCJrPUNsufULSrAcA3apcOXtfIxeJxaIbAV7ffm/tAZsb/10f4W7pTGtyitV1c4RQK52ykb1VpXa8vPw==
+X-Forefront-Antispam-Report-Untrusted:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV1PR08MB10691.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(1800799024)(366016)(22082099003)(10067099003)(18002099003)(11063799006)(4143699003)(56012099006);DIR:OUT;SFP:1101;
+X-Exchange-RoutingPolicyChecked:
+ rkEiWnE2UD1kmVaTXKxZXVFIaLsckaBA0aim+jKGrZ9xFwO1cBKkpoTKkK8dxPR6MCH7KBdteLOfJ6mtsbKJE5we43IR5YHDh5lvh8+eW7InWLw9uXfRbJ4QUhCGPHIROOqkcYlrp+H5C0nruSKxtFAtJOALWvjRNm32KitC0msJT5vabonbLplERTS7E92HMru9oed2Jo+FebBbbFGusSRNlLnG1uVy7J5HeJkU4yd3xiG4dUxtZBWm2UMVRnDZMY8DkxgR5MibxABb954//HxEWgcGAuc2X1V+yF22AexzRIlwTtlCkgcZDTAb6krRZEd9aZiPknsfEqeKBbJWOg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR08MB6068
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped:
+ CPH1EPF00000529.eurprd05.prod.outlook.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id-Prvs:
+	87423eed-4c3a-4613-ffd3-08df303af9e2
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|14060799003|23010399003|82310400026|36860700016|1800799024|35042699022|7416014|22082099003|10067099003|18002099003|4143699003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	dOdgBkPP1lnXdo6g0A3MD4MuKmCG/N4CCnK3HvRPiliQknisoXRObr9se6JbryDrflkAHGapE85FMy48VcKg+OCeZzgpMMN68gbTuLLqfRvm/svGgB5XtOfWjokL2jmhvfvZUsZfjNLzodbjZy7uKQf9jRQltOoeljfA/yKwr88rVQvui7HKBihEV9kFdLH+lDu2vRjflb0Pmztk0GQKns1eTDqDCa8Tea7MA/Whp1RyHFVxb9MmComFPxi9VFTu6a2FOByiXIk4R21mpPRNt9yd+rOFghnoNfePfs8+3b4KfyjuPa47okusr2eJLIICMqNQ5zJINkUh2n1svjglHi7cMbgubc985XqzEF63BBypt3kGrqXNqt+gPUjVUmGfisL2eXEhyWgUpDCRVd2BOgfUxoukJVLHd9x+sm4/xUkBn567IV4y4lko/zSOCcoQBa6i4CY0tO6C4LWcxB/3NCO5qzFeism9WLMDoV3CB4LcfvVTY8AtER72nmUjIzyz9Ld5+pzTwwq7LWuMXnhLoaEKtoP35lCWIPq/kwr3oaOHn9HXDSKUy+7S7cBX4qtwtYTpXJ7M9wEEhc4EgWelwtqihNqBqaJg6tjkjTkzj2/JzCdRI4R/wulUpW1XnZPZIW8l2WsM7YrvcGF8UOtLffqeMfo52FRbVizPLbSomnqlw2P/j2CvLLIXriXD58JX
+X-Forefront-Antispam-Report:
+	CIP:4.158.2.129;CTRY:GB;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:outbound-uk1.az.dlp.m.darktrace.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(14060799003)(23010399003)(82310400026)(36860700016)(1800799024)(35042699022)(7416014)(22082099003)(10067099003)(18002099003)(4143699003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	gfDLV+fG3iMVgV/tc45E+Jnbndaz8PiJ7hA9rxbWosiYHuBrXMAgRli6tEluUzNUEPKfPRRxqcqc85pTVTIPHaBCbAz+aEcJK1ZbwTyMrr7nYcrpDvRY/E4KWmrRmQuPoy461dH19YMCfKwYRXQklxwSY2Qa/lAZC3QDONScVd4ESHvNY+Oi/qdewyj5Jt1OwQt5M/kiNdtER0KJSLmcV12mHGI98PQlLyoN0TPJHLhadEBFh1x9wsROA7RPJniN3kmlbRz9fUSQVzKCDd8Oc13GF/jqAxevggOILToQjbGMsVIUzWEEOFPCh/321cVLvIES38xF0iscVbQaNizR0Q4CNYiWcTOUFLnVk8fqpWf13+f/Bl2uEQMwalzWcECCXXrAqpZH2AafKqW9U6msSgL3ywgwxQRY/ZNO0+LK85oqecTqJz1Q5txSxOO/Z2eE
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 12:50:32.3783
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6d66548-eb12-4967-64ab-08df303b0f24
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d;Ip=[4.158.2.129];Helo=[outbound-uk1.az.dlp.m.darktrace.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CPH1EPF00000529.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MI7PR08MB123078
 
+On 10/22/26 13:22, Jason Gunthorpe wrote:
+> On Thu, Oct 22, 2026 at 09:41:18AM +0100, John Garry wrote:
+> 
+>> No, that's the point. Currently you first try the adopt mechanism; if a
+>> problem is found there, you fall back to the normal full reset. My idea is
+>> that if a problem is found with the adopt mechanism, you just re-probe with
+>> the normal full reset method, so that you don't need to undo some adopt work
+>> during the probe.
+> It is hard to convay information across a re-prode to tell the
+> second probe to act differently.
 
-I have gone through the discussion in reply to this thread between
-@dmatlack and @pasha
-
-I am not sure If I understood the discussion correctly.
-
-userspace IOCTL for FLB compatiblity might not necessary as each FLBs are
-registered with the file handler. So when new file handler introduced in th=
-e
-system, new flb handlers can be registered that is compatible with this
-new file handler. I have tried to explain this below.
-
-Pasha Tatashin <pasha.tatashin@soleen.com> writes:
-
-> On Wed, Oct 21, 2026 at 11:25=E2=80=AFAM Tarun Sahu <tarunsahu@google.com=
-> wrote:
->>
->> Currently luo_preserve_file() iterates over luo_file_handler_list and
->> picks the first registered handler whose .can_preserve() callback
->> returns true. When a subsystem introduces a new, backwards-incompatible
->> file handler alongside an existing one for the same file type, userspace
->> has no way to choose which handler preserves a file descriptor, nor can
->> the kernel keep the existing rollback-safe handler as the default while
->> allowing callers to opt into the new handler.
->
-> That is not how it will work.
-> If we are in the .can_preserve() call,
-> it means the user has already decided which file handlers to use.
-
-That is not true.
-
-From the documentation of the luo_preserve_file(): 3rd point.
-
-* This function orchestrates the first phase of preserving a file. It perfo=
-rms
- * the following steps:
- *
- * 1. Validates that the @token is not already in use within the file_set.
- * 2. Ensures the file_set's memory for files serialization is allocated
- *    (allocates if needed).
-=3D>* 3. Iterates through registered handlers, calling can_preserve() to fi=
-nd one
- *    compatible with the given @fd.
- * 4. Calls the handler's .preserve() operation, which saves the file's sta=
-te
- *    and returns an opaque private data handle.
- * 5. Adds the new instance to the file_set's internal list.
- *
-
-luo_preserve_file():
-
-	list_private_for_each_entry(fh, &luo_file_handler_list, list) {
-		if (fh->ops->can_preserve(fh, file)) {
-			if (try_module_get(fh->ops->owner))
-				err =3D 0;
-			break;
-		}
-	}
-
-
-the first handler whose can_preserve return true will be selected as the
-FH;
-
-later in code:
-
-      	err =3D fh->ops->preserve(&args);
-
-So can_preserve() is called on every handler for a fd and once it finds
-the FH which reutrns true, it uses its preserve call to preserve the file.
-
-> We
-> need to do that before any preservation happens; otherwise, we could
-> run into conflicts on FLBs i.e. FH of different version require
-> different FLBs.
-
-My change below will select the user passed handler directly if it is
-valid otherwise it fallbacks to looping .can_preserve based selection.
-
-****For flb****:
-
-Registration of flb handlers happens with original
-subsytem fd handler, for example, for iommu
-
- iommu_liveupdate_register_flb(&iommufd_ser_handler); ->liveupdate_register=
-_flb(fh, flb);
-
-This function takes the FH argument. So every FH has direct relation
-with their flbs.
-
-If new FH will be introduced within the system, it must register
-compatible flbs handlers with it by liveupdate_register_flb.
-
-Currently, FLB objects are preserved with the first dependent file's
-preservation. and each flb handler in fh->flb_list (was associated
-using each flb handler registration) will call its ops to preserve itself.
-
-Same on retrieval side, handler name is preserved so the flb name is
-also preserved. And they can just call their respects ops to retrieve
-themselves.
-
-What about If user try to preserve other dependent but same subsystem
-files with different handler. Kernel must reject this. I have not
-integrated this support. Which can also be added as part of this series.
-Let me know if this sounds good, Then I will add that in the V3?
-
-~Tarun
-
->
-> Therefore, there should be a luoctl call (i.e via a new ioctl to set
-> compatability) that provides the kernel with the specs file of the
-> target kernel we are updating to, allowing the kernel to select the
-> compatible file handlers. Since .can_preserve() is called when the
-> user is already preserving files, the specification must have already
-> been supplied, or the kernel should fall back to using the default
-> (i.e., latest) file handlers.
->
->>
->> Append char handler[LIVEUPDATE_HNDL_NAME_LENGTH] to struct
->> liveupdate_session_preserve_fd immediately after token, keeping
->> IOCTL_OP min_size at offsetofend(..., token) so callers passing the
->> original 16-byte structure continue to work:
->> - When handler is empty (all-zero, or zero-filled when userspace
->>   passes the 16-byte structure), luo_preserve_file() selects the first
->>   registered handler whose .can_preserve() callback accepts the fd.
->> - When handler is non-empty, it must be null-terminated within
->>   LIVEUPDATE_HNDL_NAME_LENGTH bytes (returning -EINVAL otherwise);
->>   luo_preserve_file() looks up the registered handler with that exact
->>   name (returning -ENOENT if unknown) and verifies that its
->>   .can_preserve() callback accepts the fd (returning -EINVAL if not).
->>
->> The retrieve ioctl is unchanged because the handler is identified by the
->> name stored in the serialized payload from the source kernel.
->>
->> Signed-off-by: Tarun Sahu <tarunsahu@google.com>
->> ---
->>  include/uapi/linux/liveupdate.h  | 12 +++++++++---
->>  kernel/liveupdate/luo_file.c     | 21 ++++++++++++++++++---
->>  kernel/liveupdate/luo_internal.h |  3 ++-
->>  kernel/liveupdate/luo_session.c  |  7 ++++++-
->>  4 files changed, 35 insertions(+), 8 deletions(-)
->>
->> diff --git a/include/uapi/linux/liveupdate.h b/include/uapi/linux/liveup=
-date.h
->> index 509c6236720d..2413b19dabc1 100644
->> --- a/include/uapi/linux/liveupdate.h
->> +++ b/include/uapi/linux/liveupdate.h
->> @@ -126,9 +126,14 @@ struct liveupdate_ioctl_retrieve_session {
->>
->>  /**
->>   * struct liveupdate_session_preserve_fd - ioctl(LIVEUPDATE_SESSION_PRE=
-SERVE_FD)
->> - * @size:  Input; sizeof(struct liveupdate_session_preserve_fd)
->> - * @fd:    Input; The user-space file descriptor to be preserved.
->> - * @token: Input; An opaque, unique token for preserved resource.
->> + * @size:    Input; sizeof(struct liveupdate_session_preserve_fd)
->> + * @fd:      Input; The user-space file descriptor to be preserved.
->> + * @token:   Input; An opaque, unique token for preserved resource.
->> + * @handler: Input; Optional null-terminated file handler name (max len=
-gth
->> + *           %LIVEUPDATE_HNDL_NAME_LENGTH including null terminator) se=
-lecting
->> + *           which registered handler preserves @fd. If empty (all-zero=
-, or
->> + *           omitted when passing the 16-byte structure), the kernel se=
-lects
->> + *           the first registered handler whose .can_preserve() accepts=
- @fd.
->>   *
->>   * Holds parameters for preserving a file descriptor.
->>   *
->> @@ -152,6 +157,7 @@ struct liveupdate_session_preserve_fd {
->>         __u32           size;
->>         __s32           fd;
->>         __aligned_u64   token;
->> +       char            handler[LIVEUPDATE_HNDL_NAME_LENGTH];
->>  };
->>
->>  #define LIVEUPDATE_SESSION_PRESERVE_FD                                 =
-\
->> diff --git a/kernel/liveupdate/luo_file.c b/kernel/liveupdate/luo_file.c
->> index fb81239bedf3..be20e0f1e0aa 100644
->> --- a/kernel/liveupdate/luo_file.c
->> +++ b/kernel/liveupdate/luo_file.c
->> @@ -207,6 +207,8 @@ static bool luo_token_is_used(struct luo_file_set *f=
-ile_set, u64 token)
->>   * @file_set: The file_set to which the preserved file will be added.
->>   * @token:    A unique, user-provided identifier for the file.
->>   * @fd:       The file descriptor to be preserved.
->> + * @handler:  Optional NUL-terminated handler name. If NULL or empty, t=
-he first
->> + *            registered handler whose .can_preserve() accepts @fd is s=
-elected.
->>   *
->>   * This function orchestrates the first phase of preserving a file. Upo=
-n entry,
->>   * it takes a reference to the 'struct file' via fget(), effectively ma=
-king LUO
->> @@ -238,11 +240,13 @@ static bool luo_token_is_used(struct luo_file_set =
-*file_set, u64 token)
->>   *         -EBUSY if the file descriptor is already preserved by anothe=
-r session.
->>   *         -EBADF if the file descriptor is invalid.
->>   *         -ENOSPC if the file_set is full.
->> - *         -ENOENT if no compatible handler is found for the file type.
->> + *         -ENOENT if no matching handler is registered or accepts @fd.
->> + *         -EINVAL if the named handler cannot preserve @fd.
->>   *         -ENOMEM on memory allocation failure.
->>   *         Other erros might be returned by .preserve().
->>   */
->> -int luo_preserve_file(struct luo_file_set *file_set, u64 token, int fd)
->> +int luo_preserve_file(struct luo_file_set *file_set, u64 token, int fd,
->> +                     const char *handler)
->>  {
->>         struct liveupdate_file_op_args args =3D {0};
->>         struct liveupdate_file_handler *fh;
->> @@ -266,6 +270,18 @@ int luo_preserve_file(struct luo_file_set *file_set=
-, u64 token, int fd)
->>         err =3D -ENOENT;
->>         down_read(&luo_register_rwlock);
->>         list_private_for_each_entry(fh, &luo_file_handler_list, list) {
->> +               if (handler && handler[0]) {
->> +                       if (strcmp(fh->name, handler))
->> +                               continue;
->> +                       if (!fh->ops->can_preserve(fh, file)) {
->> +                               err =3D -EINVAL;
->> +                               break;
->> +                       }
->> +                       if (try_module_get(fh->ops->owner))
->> +                               err =3D 0;
->> +                       break;
->> +               }
->> +
->>                 if (fh->ops->can_preserve(fh, file)) {
->>                         if (try_module_get(fh->ops->owner))
->>                                 err =3D 0;
->> @@ -274,7 +290,6 @@ int luo_preserve_file(struct luo_file_set *file_set,=
- u64 token, int fd)
->>         }
->>         up_read(&luo_register_rwlock);
->>
->> -       /* err is still -ENOENT if no handler was found */
->>         if (err)
->>                 goto err_fput;
->>
->> diff --git a/kernel/liveupdate/luo_internal.h b/kernel/liveupdate/luo_in=
-ternal.h
->> index dac6644bfb18..911ffedec9f3 100644
->> --- a/kernel/liveupdate/luo_internal.h
->> +++ b/kernel/liveupdate/luo_internal.h
->> @@ -101,7 +101,8 @@ int __init luo_session_setup_incoming(u64 sessions_p=
-a);
->>  int luo_session_serialize(void);
->>  int luo_session_deserialize(void);
->>
->> -int luo_preserve_file(struct luo_file_set *file_set, u64 token, int fd)=
-;
->> +int luo_preserve_file(struct luo_file_set *file_set, u64 token, int fd,
->> +                     const char *handler);
->>  void luo_file_unpreserve_files(struct luo_file_set *file_set);
->>  int luo_file_freeze(struct luo_file_set *file_set,
->>                     struct luo_file_set_ser *file_set_ser);
->> diff --git a/kernel/liveupdate/luo_session.c b/kernel/liveupdate/luo_ses=
-sion.c
->> index f48e9a4185f9..194ef45907c1 100644
->> --- a/kernel/liveupdate/luo_session.c
->> +++ b/kernel/liveupdate/luo_session.c
->> @@ -266,8 +266,13 @@ static int luo_session_preserve_fd(struct luo_sessi=
-on *session,
->>         struct liveupdate_session_preserve_fd *argp =3D ucmd->cmd;
->>         int err;
->>
->> +       if (strnlen(argp->handler, sizeof(argp->handler)) =3D=3D
->> +           sizeof(argp->handler))
->> +               return -EINVAL;
->> +
->>         guard(mutex)(&session->mutex);
->> -       err =3D luo_preserve_file(&session->file_set, argp->token, argp-=
->fd);
->> +       err =3D luo_preserve_file(&session->file_set, argp->token, argp-=
->fd,
->> +                               argp->handler);
->>         if (err)
->>                 return err;
->>
->> --
->> 2.56.0.212.g129ede20d9-goog
->>
+For sure, maybe a special code to be checked could be stashed somewhere. 
+But, again, if this is not going to make the driver probe much cleaner, 
+then not worth it.
