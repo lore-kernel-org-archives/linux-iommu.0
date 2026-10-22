@@ -1,101 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.54
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792642338;
-	b=NeMrtzIvqSca9bN3bjs8pM3HN4D7DM+bRA828XnLQILz8J5oGXrntBARvaVQSa6Jr6MV
-	 v/6Gaz+9zrRwyDY+btSdlxLlOi1ceOuDxW9w4UnXhikHsCq+t0pECRB++7RYrFPKzt6rW
-	 Vk5QCnehXPW5hEdkYWHTBX3KIxcJczVLokM49JQIUnw5y+0+J4RFa4Yn9CKxiu5i7gZ7t
-	 vAwfBh9uHiPsZj1GBwlQBkCQ0QaAHrt3XNbVKJXepbwU1kTGHS0pdaXDctbed1/2VhlLK
-	 2Xeb4Sp5QmfCv1erMK5M1FbcPgLNODCQFSXMbs0TvrIoQvY5116f/HlWT24vmq+2SRA==
+	t=1792647147;
+	b=dL53g7/iBkRQ9vvy8q6UWt8B4O62BleHYOpuS5bRSUa6kMjIZZ1FAW+looPM5gOjeYSX
+	 1W6HIVCqzGGJEcJAO/uK8NzBXZeTgF/CLkIy/nRTj6ZfcRtt3TBCEi11XwvKLmprrDbY4
+	 J4YryQm9q/+uez2e5LgYtPs2kM4Tk7l2QQset+jDMGk8jQHtLB3fltyGiVQEqSBufC5Pb
+	 MzkiGACnZEIC/mIGp94Jk6zvU89AkYR2qvgzd2j5Qy8REj8URPQC0vF13t8h5b/v9upUM
+	 B3z2mV5wPPYy8koYnqCBGAVYWsIDH5W2oL99IF6Y7i1bTkbIZ6ROdqXZdItYTB0grCA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792642338;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=vprUskQTUd+SPbnT8TFojrEtK+oeOiPvhjewwpNbp/8=;
-	b=LBTMk7l3HTqj0DJZFoAb2sHzCB4ZCf/cp/ktZErwXd1Wdf+PIdSsM1U/sOBIGYW/grGk
-	 uGBFN95Oyl5OEfUnC1LGkYP+v6iZaYxEpmkT1SPru7XWLEoq1UOfbRFFL5Nr6jrmoadot
-	 2n/auegTaR1CbBEk6upmFsQVr4UR5NoAuu1oO4T+J2/alEFjQVzU14O9HtsI+m1kSaCgb
-	 IElJFZqdpAPf11zvWcxQpjLYJ9v5HWTewSQuYPH8SZdBzywgpIs3sdr0cneeoMbzqHn7D
-	 2DGkyuS4IDxPL37iWI68VMUDXCJt7owYMCWc74GwOAHwzYPH7v/YtLwWTEpgqnB+5bg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792647147;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=GoyFVEQmrmpDs5Spa00paVrQpesVfiNMtphiwTnAmQY=;
+	b=gqHZROaG1QhdUBQwgZyfRWw7/cjAxRbSH/yViEcDtQUHJIrInH9VKaAIqqC9/A0x4u+L
+	 sTq+g7XGBwBO9LoI4ewx1tgfQOTr9Y75tAWD0jF7/EH4ol0TUq6GCJq/BtCn/bXCc/DzO
+	 qF6dE4N1Cee7jNvMQMBMu1mMlDsJ8jAHqaD9PTuLuDq7HvMcVx1MW8j+p1mOq48gAgs6t
+	 scONzCOPNtSf+siUZck2w/fIGLXLmEBiXbeTwW1X2qU9Q2mPsmG5kMnVY8rCWgwOlwGSa
+	 PhuRsloV8qjIA4ZeDRZtjEd9xPpr+F2HEu0rsDE56NxV+/rBXCQdW4teUQY0HwMx+pw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=soleen.com;
-	spf=pass smtp.mailfrom=soleen.com;
-	dkim=pass header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=URELnTGD;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.42
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=ueYFD8Y1;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.54
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011054.outbound.protection.outlook.com [40.93.194.54])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D538606A31F
-	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 04:12:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8D538606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CB22606A31B
+	for <iommu@lists.linux.dev>; Thu, 22 Oct 2026 05:32:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5CB22606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=URELnTGD
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6b1a86c0316so1781215a12.0
-        for <iommu@lists.linux.dev>; Wed, 21 Oct 2026 21:12:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792642336; cv=none;
-        d=google.com; s=arc-20260327;
-        b=ovl3fExrEM7Jl0wRKhspCBcFX9L6rw3DiXZa98Po3QyXGxJteJYtn3C/f5GhwIlRPB
-         f+uuhVMgtAc4th9k2mvgWR/DqkrFCrRJGUFHPnqb9eYYxoGkwjN8z49JqV9N+foNo4MF
-         VQKaLjQDg5MWVqu2t799AP37bsxgcqTpqS2h4pbkenzD9UXv2Ecn5MnTIHGtbG4LOxCt
-         abRx3XK/Z9BPG/ur422vP41PyStWchWa0/P2H2d1F3U4h3iCNZBz3CKjjL3FCvVy6lC6
-         e9CeDxMmyAO97Dz+b55YoTQ9IyXkQ5Uf+M7Eui1lzpmf21mFw8FUU+B0jfQ7Z1xZ/6vF
-         tlIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=vprUskQTUd+SPbnT8TFojrEtK+oeOiPvhjewwpNbp/8=;
-        fh=DIVe8VFYQF+5WCbv3lbPhP780oVqNFuq0ZDl3iIkXZU=;
-        b=F4GLq+Xnxswc/Qh3ZYar4V2/pDZZC4mqAP9ajLShOhJ9/6Rj8GmFOEhtoec53YnkXw
-         8QVWbOOY8O7xopWgv4exjTQFzDGiM5Lzm954rgSHrT7gjY2VlKjHOk7+qA146kvZ+7uV
-         CEOTadGhgQUOznKv6o8sEnSqWWmr/JRSm6s6wpTKSNBhRIBkdkqJBYrV3ENxHfoidrmw
-         Cw+U2wN0nNICrS2sY77BsktsCfqFIk+9uOHOFg5NLtOrwG/idGFhUQN8WH0/L7XSm3cd
-         4GnJCcIS4bkI6KxL8TpZ9qHEhaNm6YfypAzCh34dhv6vEICE+8C5SGS3YcwITA6SZQkA
-         cE2w==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1792642336; x=1793247136; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=vprUskQTUd+SPbnT8TFojrEtK+oeOiPvhjewwpNbp/8=;
-        b=URELnTGDTEFT3a59Exg9C44vVdmWLcMYEeJZW40MPXNL8jgW6rEXI4tjEehy8+wT3p
-         Uq3LA2VIDHYpCkXF3kj+5Rvu+fGpxyekTmQTGZip9gs/NBCDR3aSXn97NdO8vMkc5/j2
-         5iekOlHajKUZ6ncXC9EZeude7kX0+3jXvExKhlHe/sFwE6i8c6B4YlPGqDvvYxTYFmi6
-         KyeNxE+Bb+zk6Rekv7zKceYKfB+TF0aBJebxEQHXpEnm7vqZoMZwn8Yxh1IJXyQDJlSy
-         WrybG35BPzdrNEWXdkxcgHcGzCtcF5OpxB6TIguhPBLfEmE24kPfPch4/+DnBhRO/1eB
-         RmIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792642336; x=1793247136;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=vprUskQTUd+SPbnT8TFojrEtK+oeOiPvhjewwpNbp/8=;
-        b=b//VNrwoePAyvDhvcXxWrQNOQUXE1MH7S5wktRyVu/nF+3HyFXLnTsg0VJPMkMQUGQ
-         7seG/NiBMMR79Isubf/4TDgjMhUl/bd0Pr4jhKP2Q0VnaM7/0JM/7MVHk7EpQtuweHAI
-         E3ha3/tPU1+mtqjATFync9HJYfYh9zDNVGkC2v2MJvpbObiXTqJrIstSifRgbmjfjggR
-         LZCoANtE4dHwJCpdxNk0pbvutdH5XfzwiCOMnSK8vwebe7yjn+Y5QSilWHu2Kd+hqG/I
-         giQidOui3FqLFbFCVncm+96ZnlkuPFRGFmnQ3SpWi08Zk1v9ROy4HnV83R00fChBPME+
-         Q+tg==
-X-Forwarded-Encrypted: i=1; AKwUvBx8YEyNjU+on1ZLhyRibmoiSNAqduYgCxioap6LJcFe1LQq55ppMy5a00x2bksirvcG6+BEzw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYK9HjT/xZOXHkOy8VugdotzI4nW12LiUTREcL1Qt7rnNak8Kk3M
-	W7dn8vY9UauDF26nv2NpnXEEGyRpdKN4DazPBFlrEXaZbBOjb//TbKdUcLUMUnd3M3Bg0jjE7WT
-	ssMR7xnD0wxMHf1MziTZTdtQ9TaEi36DAje/2xY1f7A==
-X-Gm-Gg: AYBFou0Fpo80ujGDKP4TFumMd08Qwh0rho48bC6EenPZPEVw9s7GC37qX+1t/0vhInA
-	MEZPU2WOOeCkBF+Hgre0+UFtbCAUkoX8xyn9gzwQfiTxdBIjvHnOmdKIhDgK0LJEzmZnH8GYfzx
-	EYA6ZSPbUjRP/FaBS5wsKUo99mYJBAu6oLFzpmvQ4Bjqr549OKh6N32bxQxsqzvuFd09tdqbIkH
-	joEPoaL/aEA5XpNjHME5UKiMXJU/4S7NOF+jc4+RL74fexS+yNsQ3/FTvn/C7AvZKXJP9EXJbLM
-	M/3vAgx8iujka4UoOq5MfPQkdou3E3khbquVj7UkRpeNSos/iqU+QhEJ9p8nj9yR3Zl2THzbefC
-	FDX8q6uXqFhZL88ZlvD93DLMoidUXqGR2I62hAjRbLWQVON9sPUqnhO+oB0Nj7UP58b+8sA+9uG
-	/ZYP+TeVr6hRT3bpXQTDjKz+ez3T0=
-X-Received: by 2002:a05:6402:5d4:b0:6ab:e30:c9a7 with SMTP id
- 4fb4d7f45d1cf-6b408e80bddmr3221542a12.10.1792642335878; Wed, 21 Oct 2026
- 21:12:15 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=ueYFD8Y1
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=U/fIyF/hOLYbKshgqcZZfxAY0bS/fnqfzVoZAtPZCFiYDAKsLCcREZc87CHPyCJXYznWwtPSEeKQrsCS2ySPDoq5X/qCeAJWUi24u6KkPx4Rc7op/rN1Ti0Nd40rgoRgkCXBt05IWFw9Tz2YyCeXEQuvZqYtSFwET8DvmsXiqb/tDRskP8caqMtEJ1f3DegY8z5kH8riOI7tw7maNDZ92pAAgsvrxdAZqbtDoDj8+hDZTz0jGP8HJRZbRQPRdsIJKI+2IZNfoCBkZ32ivuh9FrgNQcUW2kdhQlYHDDx4sYkaz+FgPWSFt4s6W8XKmAcY2ke/crmsmTuyeoP4RaQ85A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GoyFVEQmrmpDs5Spa00paVrQpesVfiNMtphiwTnAmQY=;
+ b=JUrYFh9JY+e4Z0R7eHs9ZOw8qbRvg8hth7iKWjq8ryo8MUDpS0lLL95e5VaVMQi0KD9MJ9W6yr8DEg7rtMex8Vo4T43JYPRUyDpIUU6ZtXmV/octWqXTHtkARLbVBHHJzjBBOkIgIrh9Vz5zQaYdmCrNBgc/udzULzedO843SpcQYsTbz75TKrYNg1XrqUo+TGRhQ4wRkSQTg1M1W9UbSV7gHsBKh0n+NIEJu7k2inE6GPJscCFz8zQYSSKjawHGVts4p3MlLl7Z2NOGVqu5ew7yx443//YBEx6OpvhwUsJvPKB/mVLrgEAOmIbcxC8yA/5bu6hPI7nvVieCuGgF8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GoyFVEQmrmpDs5Spa00paVrQpesVfiNMtphiwTnAmQY=;
+ b=ueYFD8Y12xKQCFQ9RZ+s9NpW22BY/yrZ2N+ntbtu28Gh77npxO2xQ93qf2ipmN0bOlIbb9CnJc/pp4p4QikyHjcqAWMOcLRArff8o9bMSIhlwiyNyQ9IyGTdu8cgTCbjkKlIg4zPSZX2VG5a2YzOsjEpJokPfIHNGk6MlL8mkDY=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com (2603:10b6:8:388::22)
+ by MN2PR12MB4064.namprd12.prod.outlook.com (2603:10b6:208:1d3::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.15; Thu, 22 Oct
+ 2026 05:32:21 +0000
+Received: from DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19]) by DSVPR12MB999171.namprd12.prod.outlook.com
+ ([fe80::b7ec:f444:4560:9f19%6]) with mapi id 15.21.0546.012; Thu, 22 Oct 2026
+ 05:32:17 +0000
+Message-ID: <a6e93726-ff61-4f41-8da5-d45e9cfd4fcb@amd.com>
+Date: Thu, 22 Oct 2026 12:32:08 +0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 02/24] iommu/amd: Introduce
+ EVENT_TYPE_GUEST_EVENT_FAULT
+To: Vasant Hegde <vasant.hegde@amd.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, joro@8bytes.org, jgg@nvidia.com
+Cc: yi.l.liu@intel.com, kevin.tian@intel.com, nicolinc@nvidia.com,
+ jon.grimm@amd.com, santosh.shukla@amd.com, Sairaj.K@amd.com,
+ jay.chen@amd.com, Ming.Shu@amd.com, SooJin.Tan@amd.com, chrisl@kernel.org,
+ wvw@google.com, wnliu@google.com, dantuluris@google.com, kpsingh@google.com,
+ alejandro.j.jimenez@oracle.com, joao.m.martins@oracle.com,
+ guanghuifeng@linux.alibaba.com
+References: <20260930092344.5616-1-suravee.suthikulpanit@amd.com>
+ <20260930092344.5616-3-suravee.suthikulpanit@amd.com>
+ <787b4f08-fd74-4597-8508-fe4ccaf75a24@amd.com>
+Content-Language: en-US
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <787b4f08-fd74-4597-8508-fe4ccaf75a24@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: JH0PR01CA0175.apcprd01.prod.exchangelabs.com
+ (2603:1096:990:75::23) To DSVPR12MB999171.namprd12.prod.outlook.com
+ (2603:10b6:8:388::22)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,271 +104,291 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261021152527.375070-1-tarunsahu@google.com> <20261021152527.375070-4-tarunsahu@google.com>
- <CA+CK2bAQbmq3ArP3XMErF_8RC2CUwvgpLY0H83D0nCJTaVKYyA@mail.gmail.com>
- <9huzecdi6go0.fsf@tarunix.c.googlers.com> <CALzav=dLdJoVy=B1pv0FAurD9OhAzLSTjJNbtjTdJRmSqaB0yw@mail.gmail.com>
- <CA+CK2bAQRMAEXZyHTEuUN0_Fo59Sn0hBmYbme_J9ewjx6gPyJQ@mail.gmail.com>
- <atlKsD-aJB3mJr2j@google.com> <CA+CK2bABt4OZO31TenVF2+uBUWVwViWbvfE00=0xbAw=f7K9SA@mail.gmail.com>
- <atl7peoVHdP5hz7z@google.com> <CA+CK2bBFXnJA1kddbLKGq0DAHDgjYhsTSQQay-xeX7jJC1V_UQ@mail.gmail.com>
- <CALzav=e=ho2gVrn+7KpZ3ZyasvH2u15-pC-RSRSS7KcMfKqUJQ@mail.gmail.com>
-In-Reply-To: <CALzav=e=ho2gVrn+7KpZ3ZyasvH2u15-pC-RSRSS7KcMfKqUJQ@mail.gmail.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Thu, 22 Oct 2026 00:11:39 -0400
-X-Gm-Features: AclHuK_pCDHndbxcQ4IiuuWok4wCO_ZxudIta9yn_V-W6vImOs3uvaPF1BC9RHM
-Message-ID: <CA+CK2bAJo8dnTOyKMgnnMnk-SCXbTsv+JCLEOWkjyj-wqtEkHg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
- a 2-bit pair feature header
-To: David Matlack <dmatlack@google.com>
-Cc: tarunsahu@google.com, Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
-	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
-	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com, 
-	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org, 
-	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
-	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
-	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DSVPR12MB999171:EE_|MN2PR12MB4064:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7e98ca59-7f57-4984-de21-08df2ffdd5e4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|23010399003|56012099006|4143699003|11063799006|261021123027099003|261021121427099003|261009223027099003|10067099003|18002099003|22082099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	wStmrKnVxmvKKuuy/wG5lesZG6/xfzoK9QxzqKuOTY/cWr+DcTo05/DaZy7yw24rzIcYLl6+Qlchlb3x/315DF8Z0h2IM9be0DkMe5bEo4bxpiXf+JaHgH33nIh+Cmdn2g67Fwlw8cK48tJw916JlM/yt+FPlUJzbd3mSzbrZcJHq0Xk9s2SrN1ABs16F694ugwssou21d4FVem01Fphc5Ff8gPaDXQTa3yhYJUAYXtwFcfcx7CgNHfvQpMT2N+iHPUUm2YlYoDZdYDV7x9g9JKZU9JqZzXdvlhSxK3K7aFE+RZSfalc4R8jMAvWIYDJ9NanX8ykxaWpK4NLwkhNQlW4FF6I7xIuuQr2woipOX2XDDZoPZLRHbqKrPtMTALKJAJTUfIwu07gPcAEFPYM6hg2b6Zszx7COMSJEii464w6vQXPwwfienJHjguLEImcPGNuJ6N/tkuvZF8ktfSLlS1GsM+ksLotbXjPfYIQdd05GmyTAURh9kGl66h7Mcq6UhjkAs74rJtCcLZzm0YQDhmflOo1Uyktmo2X7Bh1jAlI0HgOrQd8+KJGOq6tfU+HGr4xV9IXaJpjC0IcgByb7nC+vLgkw+Is7sMu8Hz/TW2XwvGt2mYAovGC1JYGHAuGTpN3+JipzOXjVUldoIqMHgpLGXBtrUHM4sLolVZUUdI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DSVPR12MB999171.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(23010399003)(56012099006)(4143699003)(11063799006)(261021123027099003)(261021121427099003)(261009223027099003)(10067099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cmVHaTM1R2YwRmVVc1JaeklDRDRHQTJwMDdwYTV2cFJObzY5TFZ1aU5jMjl2?=
+ =?utf-8?B?N3lXczdha09aN1phdUlmNE9SNG9PRGVNM1FONHNGSGNPamJwcUV2RlgwWjdh?=
+ =?utf-8?B?Z0hNZXBweXZvU2tPZnphSmViMG4rN2NJUVNKRzBjOXNOdmd5anlZT09tSmk1?=
+ =?utf-8?B?YytCMEZ4azZqOFlUR2pBRElaR2JRblpRZ0dzRlNHQXZ0dlpPeDZtTXFyR0Fq?=
+ =?utf-8?B?RWlqUzNaeVhNRHBFOVROS0RjTFFUWFhtSktNaDdtd00zS0ZYcG1Dbktzc0VL?=
+ =?utf-8?B?WllsckVqclZBTVFaSVR3bGZqT0VoRkJSVjV5UUVRVTAvZEdmcGhNVUhCaW5W?=
+ =?utf-8?B?d3phQXNZaEI2OG9lKzY1UEk3YWVuc0Z1ZFRNNHYzV0lzL0FFOTQ0WkRYK2E0?=
+ =?utf-8?B?aWN3ZTZWSytMUWFHKzdXWUtHNUc1V3V2dVRYb1BzcXZWaGtLZGQ0QjJReUdF?=
+ =?utf-8?B?UUM4WVJBTlVqTDkwSzRJcklkMHBMVkd3M2dkdnJZKzFYaWx0L2N3UitIaURF?=
+ =?utf-8?B?OFowTUN5Z201VTZya0JCWG1mS3BPeEVGM29HV3JYMlhwK2l4dGZvS01SejJ0?=
+ =?utf-8?B?OThPWEVEVitudEl4UExWS1hRWG1HZS9SU2FKOC9yK21jK2x6Z2NTV2UwbDly?=
+ =?utf-8?B?VU5IMWF4dDhVTDhNbTJ5bFRwbHlSQWgxK0FmWnBpbS9BMlZaT0FQNVVmUW55?=
+ =?utf-8?B?c3lTR3JjQ1VkOWNKeEwrZE1BM0E1OEJZSHN6bGZxelYzYTJMSEZ6NFNNdTYz?=
+ =?utf-8?B?OThjb3BjdGl0YkVoTWNtZytNdGQ3YTR4R3Znd29Bam5LYWVlTm0xbGlzSk5p?=
+ =?utf-8?B?WEpmQzVoUmsrbGZISGJGenF4aTNnQUF1anNUcGVLa0xiM3RMSnJTd0QvU2U0?=
+ =?utf-8?B?MHU4ais3ZVJUa29GMlJjSmZyU040VExWRno2UUZLVVNpVUpYLzl3YlJEYmo4?=
+ =?utf-8?B?Wm5CQVZRbzkrVUF5OWtXdGNINnQzemcxSHhBaE9VUGJOQ3ZoUzBHaXV3bC9S?=
+ =?utf-8?B?TjRWOGVKaUREdWpPUnZEdXJLN213ZXg2eTdhTjMvSW00MnhLZEhpODZvc1NZ?=
+ =?utf-8?B?amkyaFIyQ2FjWE1yQWRDVnR6U0UzOTA5bFlNQk1YbCtvMkRZbjgyN3Vnb29G?=
+ =?utf-8?B?TGdXcXhFMlhwbzhkU0w0UkhCQjRCclk2cFY0Y3J2NmN6VFdQSHhTTGRkbnBk?=
+ =?utf-8?B?eFg4dlc3cjlMKytGQTVuNkd5YXByeW83L1ArQUNzZmZyZUJNTlhpcUJZRFk1?=
+ =?utf-8?B?cDEya2R5SGgrMitRejhCbSt1TFB1aGUvenFmUzVTYXh0bEtZQ0tleU54Z3Rq?=
+ =?utf-8?B?bmZadTUxOWEyMTBTdXZiVWhJeXpqNDNVSmJKb3VuekpZRTVlQUdYN0xZamFr?=
+ =?utf-8?B?aFQxSkhrREhOZEttNVlrNytvQ3huZ1JTK3R0YTFvUXpRQkx3NWFoM1VCQlZ2?=
+ =?utf-8?B?bGlXNVVlQzJqMGcydFNndkovcDFJNEwrUzdkSU9YbHVNd01USWc5czRiblJu?=
+ =?utf-8?B?ZTVpMUJzLzRRSEJMTzdkeUpaWWZtWXZCYzZQMzFPUDN2Ym9xcmhxWnpRNXRX?=
+ =?utf-8?B?QTk1bWQyOXJ3N1NtbXZ0Zm5ubFFQRkxDMkJ5K3pQL3JkK3hEaGlsc0x3ME1J?=
+ =?utf-8?B?ZW4ydDB2eThRcjFQR20vVEVjT2IraTBIdnBnanVFbHdHdnFsODhPb29nUXUv?=
+ =?utf-8?B?NnpLTXNqOG9RMGQ4dDYzMFQ0YVZNUlJZc0tBMHEyS3pjYWNmT1pLeW84RHNy?=
+ =?utf-8?B?Ly9jUm9CK0VXeFB6ODlmK2VXeW1hazRJelVycXlhMFBTSGRNWUliUjlrNGxz?=
+ =?utf-8?B?Nlh3NGZscWNwdHBHUFdROHVSQkRES2pjK2xMSU5vWGVJcHp1Zk1qWWhMQkts?=
+ =?utf-8?B?ZjFKejJXeGVDbmFqOWdwRDVQRk1Ga0ZkSDNOT2hhQWxnOFFkV2M5WWgvK2or?=
+ =?utf-8?B?K1I1elNXMTJRelZMdmxFRnU0ekxUaTRYWkdKZ2dnamllcDZCSjdXckJBUDRq?=
+ =?utf-8?B?YTVlOSsxQXQ2NGNnR0lYank5YXRJSTlrUjlCc0htRUpwbk9CaFZ2dno0Q1Ar?=
+ =?utf-8?B?VWNDeHJDdExlbmNVM052OWZsNkN5MVNZZDdpeU1kUjJIL00yUEpoUmNKdGZv?=
+ =?utf-8?B?U0x6M0tKV0dld3Y2bVp0cXdiTlA2TXI4a0lhdkF2MmN5a3RLK0lmemx5VUZn?=
+ =?utf-8?B?RW8vaHo1aGRGWC96YnRrR2pJc1ZWMWVFOWZtNnlMNm9mTUJGSGtNQXViS0t0?=
+ =?utf-8?B?WVpReDFReDZTM0l3T0lEeU5zTmpXOXF6UElLdjlZenl6SGtaSFBhV1ZjMTBo?=
+ =?utf-8?B?S2ZWcHEwbFFZaDBzM3o0S01HaWlwaDloQldHZjZNVXk0Zko2ZjZaUT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7e98ca59-7f57-4984-de21-08df2ffdd5e4
+X-MS-Exchange-CrossTenant-AuthSource: DSVPR12MB999171.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Oct 2026 05:32:17.4996
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: N711iAQyms3C3FpdGGkDlGAr4/Mb9yV0MmniIzSI5TjcSCHW3wpGIl5JF/N4PVefhIGNnfuNUFgJ3qjgb2XujA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4064
 
-On Wed, Oct 21, 2026 at 11:53=E2=80=AFPM David Matlack <dmatlack@google.com=
-> wrote:
+Vasant,
+
+On 10/19/2026 1:10 PM, Vasant Hegde wrote:
+> 
+> 
+> On 9/30/2026 2:53 PM, Suravee Suthikulpanit wrote:
+>> INSERT_GUEST_EVENT with non-zero reserved bits logs
+>> GUEST_EVENT_FAULT followed by the original guest event.
+>> Consume both event-log slots, wrapping via
+>> evt_buf+(head+EVTLOG_ENTRY_SIZE)%size, and dump the guest
+>> payload raw so it is not decoded as a host event.
+>>
+>> Wait until occupancy is at least two entries, not merely
+>> until live tail is not the pair offset. Re-read the
+>> event-log tail each poll iteration so a return of 2 cannot
+>> advance head past a stale cached tail and walk empty slots
+>> with the type-0 erratum retry.
+>>
+>> Retry a type-0 guest slot up to LOOP_TIMEOUT, the same way
+>> erratum 732 waits for the primary slot. Return 2 only when
+>> that slot is already in [head, live_tail). Return 1 if the
+>> pair never appears in tail. Rate-limit the guest-triggered
+>> logs.
+>>
+>> Log an invalid guest-event when the pair slot is still
+>> missing or type 0 after that wait, instead of stalling
+>> the event log.
+> 
+> 
+> As per spec:
+>    GUEST_EVENT_FAULT event is always written in pairs with a guest event entry
+> immediately after it into the event log.
 >
-> On Wed, Oct 21, 2026 at 8:32=E2=80=AFPM Pasha Tatashin
-> <pasha.tatashin@soleen.com> wrote:
-> >
-> > On Wed, Oct 21, 2026 at 10:57=E2=80=AFPM David Matlack <dmatlack@google=
-.com> wrote:
-> > >
-> > > On 2026-10-21 09:26 PM, Pasha Tatashin wrote:
-> > > > On Wed, Oct 21, 2026 at 7:28=E2=80=AFPM David Matlack <dmatlack@goo=
-gle.com> wrote:
-> > > > >
-> > > > > On 2026-10-21 02:50 PM, Pasha Tatashin wrote:
-> > > > > > On Wed, Oct 21, 2026 at 2:47=E2=80=AFPM David Matlack <dmatlack=
-@google.com> wrote:
-> > > > > > >
-> > > > > > > On Wed, Oct 21, 2026 at 11:40=E2=80=AFAM <tarunsahu@google.co=
-m> wrote:
-> > > > > > > >
-> > > > > > > > Pasha Tatashin <pasha.tatashin@soleen.com> writes:
-> > > > > > > >
-> > > > > > > > > On Wed, Oct 21, 2026 at 11:25=E2=80=AFAM Tarun Sahu <taru=
-nsahu@google.com> wrote:
-> > > > > > > > >>
-> > > > > > > > >> LUO and its file handlers validate handed-over state wit=
-h monolithic
-> > > > > > > > >> compatibility strings ("luo-v5", "memfd-v2"). Any change=
- to a serialized
-> > > > > > > > >> structure, even an optional additive one, must bump the =
-string, which
-> > > > > > > > >> breaks live update between adjacent kernels. Replace the=
- string in
-> > > > > > > > >> struct luo_ser with a feature header, so that the target=
- kernel can
-> > > > > > > > >> accept or reject the source kernel state per feature.
-> > > > > > > > >>
-> > > > > > > > >> struct luo_feature_hdr is a fixed 128-byte header: the s=
-erialized
-> > > > > > > > >
-> > > > > > > > > This patch is all wrong; 128 bytes is far too large. For =
-every _ser
-> > > > > > > > > struct, we only need 8 bytes instead.
-> > > > > > > >
-> > > > > > > > NOO, It is not. It is intended to avoid complex mess with u=
-nnecessary
-> > > > > > > > over-engineering.
-> > > > > >
-> > > > > > 128-byte per serialized struct is not starter.
-> > > > > >
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > > The first 4 bytes are the size, and the next 4 bytes are =
-flags (i.e.,
-> > > > > > > > > 30 feature flags + 2 reserved bits for flags extension). =
-The last two
-> > > > > > > > > bits of the flags indicate whether an extended flags fiel=
-d is present.
-> > > > > > > > > Each extended flags field is 8 bytes, and its last two bi=
-ts indicate
-> > > > > > > > > that yet another extended flags field follows.
-> > > > > > > >
-> > > > > > > > If we will have dynamic extension of flags, Think about thi=
-s.
-> > > > > > >
-> > > > > > > To support dynamic extensions in a backward compatible way yo=
-u want
-> > > > > > > something like this:
-> > > > > > >
-> > > > > > > struct luo_feature_hdr {
-> > > > > > >    size
-> > > > > > >    flags
-> > > > > >
-> > > > > > __u32 size
-> > > > > > __u32 flags
-> > > > > >
-> > > > > > >    extensions  // offset of first luo_feature_extensions (or =
-0)
-> > > > > >
-> > > > > > __u64 extensions[0]  --> but the size should be specificed in
-> > > > > > declaration macro that I showed in the next patch.
-> > > > >
-> > > > > I think you may have misunderstood what I meant. In my proposal,
-> > > > > extensions is an offset to the first extension, not an array of
-> > > > > extensions that immediately follow the header.
-> > > > >
-> > > > > If the extensions immediately follow the header, then the number =
-of
-> > > > > extensions is baked into the struct layout. Every field after the=
-m sits
-> > > > > at an offset that depends on how many extensions there are. If we=
- ever
-> > > > > need one more extension, all the fields shift and old and new ker=
-nels
-> > > > > can no longer read each other's struct. That is the problem Tarun
-> > > >
-> > > > We can structure it cleanly by nesting the payload: something like
-> > > > struct { struct header {...}h; struct serialize_data { ... }p; };
-> > > > That way, the header can expand dynamically at the front, while all
-> > > > fields inside `serialize_data` stay at fixed offsets relative to th=
-e
-> > > > start
-> > > > of the payload.
-> > > >
-> > > > Since the header size is self-describing via continuation bits (e.g=
-.,
-> > > > the last two bits indicating whether another flag word follows), LU=
-O
-> > > > can
-> > > > easily compute where the payload begins in the incoming blob. This
-> > > > keeps the implementation simple, avoids linked lists of offsets.
-> > >
-> > > Oh interesting. I agree a dynamically sized header at the front can w=
-ork
-> > > and is simpler than a linked list.
-> > >
-> > > So the header and the payload need to be separate, and the payload is
-> > > located with pointer arithmetic on the header. For example:
-> > >
-> > > struct luo_ser_hdr {
-> > >     u32 size;    /* Size of the payload in bytes */
-> > >     u32 flags;    /* Bits [31:30] indicate an extension word follows =
-*/
-> > >     /* u64 extension words follow while the continuation bits are set=
- */
-> > > };
-> > >
-> > > /* Size of the header, including any extension words. */
-> > > size_t luo_ser_hdr_size(const struct luo_ser_hdr *hdr);
-> > >
-> > > static inline void *luo_ser_payload(const struct luo_ser_hdr *hdr)
-> > > {
-> > >     return (void *)hdr + luo_ser_hdr_size(hdr);
-> > > }
-> > >
-> > > On preserve:
-> > >
-> > >     hdr =3D kho_alloc_preserve(luo_ser_hdr_size_for(nr_ext) + sizeof(=
-*ser));
-> > >     luo_ser_hdr_init(hdr, sizeof(*ser), ...);
-> > >     ser =3D luo_ser_payload(hdr);
-> > >     ...
-> > >     args->serialized_data =3D virt_to_phys(hdr);
-> > >
-> > > On retrieve:
-> > >
-> > >     hdr =3D phys_to_virt(args->serialized_data);
-> > >     err =3D luo_ser_hdr_validate(hdr, ...);
-> > >     if (err)
-> > >         return err;
-> > >
-> > >     ser =3D luo_ser_payload(hdr);
-> > >
-> > > What would size mean in luo_ser_hdr? The size of the payload or the s=
-ize
-> > > of the combined luo_ser_hdr + payload. luo_ser_hdr is self describing=
- so
-> > > maybe it's just the size of the payload?
-> >
-> > > What would size mean in luo_ser_hdr? The size of the payload or the s=
-ize
-> > > of the combined luo_ser_hdr + payload. luo_ser_hdr is self describing=
- so
-> > > maybe it's just the size of the payload?
-> >
-> > Either works, but having size cover the combined hdr + payload
-> > provides a few extra guarantees:
-> >
-> > 1. A single static_assert validates the entire serialized struct at
-> > compile time, including the header and the number of ext_flags
-> > elements.
-> > 2. Bounds checking while traversing the header continuation bits on
-> > retrieve: we can sanity-check that luo_ser_hdr_size(hdr) <=3D hdr->size
-> > so we never walk past the end of the serialized blob if there is
-> > memory corruption.
-> >
-> > If we declare the payload struct separately and pass it into the
-> > macro, handlers also get a clean type for luo_ser_payload(hdr):
-> >
-> > #define DECLARE_LUO_SER(name, expected_size, ext_flags_count, payload_t=
-ype) \
-> >     struct name {                                                      =
-     \
-> >         __u32 size;                                                    =
-     \
-> >         __u32 flags;                                                   =
-     \
-> >         __u64 ext_flags[ext_flags_count];                              =
-     \
-> >         payload_type payload;                                          =
-     \
-> >     };                                                                 =
-     \
-> >     static_assert(sizeof(struct name) =3D=3D (expected_size),          =
-         \
-> >                   "LUO struct " #name " size mismatch!")
-> >
-> > For example:
-> >
-> > struct luo_memfd_payload {
-> >     __u64 pos;
-> >     __u64 size;
-> > };
-> >
-> > DECLARE_LUO_SER(luo_memfd_ser, 24, 0, struct luo_memfd_payload);
->
-> This looks pretty reasonable but I would name the payload
-> luo_memfd_ser. The combined struct that DECLARE_LUO_SER() creates
-> should never be used directly since the offset of the payload in that
-> struct is only valid in the current kernel. So I would give that
-> struct a special name that makes it obvious you shouldn't be using it.
+> Why not add one additional check in iommu_poll_events() such that:>    if event at head is GUEST_EVENT_FAULT and actual fault event is
+> not-yet-written by HW just return.
+>    If subsequent event is also written then handle the event.
+> 
+> and increase head pointer accordingly.
 
-Lets drop the fourth macro argument and generate the combined struct name:
+I would like to keep the code for handling GUEST_EVENT_FAULT (including 
+the logic for checking guest event pair entry) in iommu_print_event() to 
+simplify the code readability.
 
-#define DECLARE_LUO_SER(name, expected_size, ext_flags_count)              =
-\
-    struct name##_hdr {                                                    =
-\
-        __u32 size;                                                        =
-\
-        __u32 flags;                                                       =
-\
-        __u64 ext_flags[ext_flags_count];                                  =
-\
-        struct name payload;                                               =
-\
-    };                                                                     =
-\
-    static_assert(sizeof(struct name##_hdr) =3D=3D (expected_size),        =
-    \
-                  "LUO struct " #name " size mismatch!")
+Originally, I try to handle the case where the guest event pair may 
+arrive late, but that adds complexity to the tail polling logic. For v7, 
+I can simplify the logic to just report GUEST_EVENT_FAULT event with 
+missing guest eventinstead then.
 
-For example:
+>> ....
+>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>> index 43a5690721af..2df81e29519e 100644
+>> --- a/drivers/iommu/amd/iommu.c
+>> +++ b/drivers/iommu/amd/iommu.c
+>> @@ -942,8 +942,18 @@ static void amd_iommu_report_ppr_err(struct amd_iommu *iommu, volatile u32 *even
+>>   	pci_dev_put(pdev);
+>>   }
+>>   
+>> -static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+>> +static u32 evtlog_used(u32 head, u32 tail)
+>>   {
+>> +	return (tail + amd_iommu_evtlog_size - head) % amd_iommu_evtlog_size;
+>> +}
+>> +
+>> +/*
+>> + * Decode one event-log slot (or a GUEST_EVENT_FAULT pair).
+>> + * Returns the number of slots consumed.
+>> + */
+>> +static unsigned int iommu_print_event(struct amd_iommu *iommu, u32 head)
+>> +{
+>> +	void *__evt = iommu->evt_buf + head;
+>>   	struct device *dev = iommu->iommu.dev;
+>>   	int type, devid, flags;
+>>   	volatile u32 *event = __evt;
+>> @@ -965,7 +975,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+>>   		/* Did we hit the erratum? */
+>>   		if (++count == LOOP_TIMEOUT) {
+>>   			pr_err("No event written to event log\n");
+>> -			return;
+>> +			return 1;
+> 
+> This will cause head to progress event though there is no event. 
 
-struct luo_memfd_ser {
-    __u64 pos;
-    __u64 size;
-};
+Actually, there is an event (since the head != tail) but with (type == 0 
+: invalid event). So, we need to discard the entry and increment head.
 
-DECLARE_LUO_SER_HDR(luo_memfd_ser, 24, 0);
+>>   		}
+>>   		udelay(1);
+>>   		goto retry;
+>> @@ -975,7 +985,7 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+>>   
+>>   	if (type == EVENT_TYPE_IO_FAULT) {
+>>   		amd_iommu_report_page_fault(iommu, devid, pasid, address, flags, vflags);
+>> -		return;
+>> +		return 1;
+>>   	}
+>>   
+>>   	switch (type) {
+>> @@ -1023,9 +1033,90 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+>>   	case EVENT_TYPE_INV_PPR_REQ:
+>>   		amd_iommu_report_ppr_err(iommu, event, devid, address, flags);
+>>   		break;
+>> +	case EVENT_TYPE_GUEST_EVENT_FAULT:
+>> +	{
+>> +		u16 gid = FIELD_GET(EVENT_GID_MASK, event[1]);
+>> +		u32 next = (head + EVTLOG_ENTRY_SIZE) % amd_iommu_evtlog_size;
+>> +		u32 *guest;
+>> +		u32 live_tail, w0, w1, w2, w3;
+>> +		int guest_type, wait;
+>> +
+>> +		dev_err_ratelimited(dev, "Event logged [GUEST_EVENT_FAULT gid=%#x flags=0x%04x vflags=%#x]\n",
+>> +				    gid, flags, vflags);
+>> +
+>> +		/*
+>> +		 * GUEST_EVENT_FAULT is paired with the original guest
+>> +		 * event in the next log slot (possibly wrapped). The
+>> +		 * poll-time tail can predate that slot. Wait until
+>> +		 * occupancy is at least two entries, then retry a
+>> +		 * type-0 pair slot the same way erratum 732 waits
+>> +		 * for DMA visibility. Return 2 only when that slot
+>> +		 * is already in [head, live_tail). iommu_poll_events()
+>> +		 * re-reads tail each iteration so head cannot skip
+>> +		 * past tail.
+>> +		 */
+>> +		wait = 0;
+>> +		for (;;) {
+>> +			live_tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+>> +			if (evtlog_used(head, live_tail) >=
+>> +			    2 * EVTLOG_ENTRY_SIZE)
+>> +				break;
+>> +			if (++wait == LOOP_TIMEOUT) {
+> 
+> I think we should avoid avoid this loop in interrupt handler path.
+
+I am removing this loop.
+
+>> +				dev_err_ratelimited(dev, "Event logged [GUEST_EVENT_FAULT invalid guest-event (does not exist)]\n");
+>> +				if (!amd_iommu_snp_en)
+>> +					memset(__evt, 0, EVTLOG_ENTRY_SIZE);
+>> +				return 1;
+>> +			}
+>> +			udelay(1);
+>> +		}
+>> +
+>> +		guest = (u32 *)(iommu->evt_buf + next);
+>> +		wait = 0;
+>> +		for (;;) {
+>> +			w1 = READ_ONCE(guest[1]);
+>> +			guest_type = (w1 >> EVENT_TYPE_SHIFT) & EVENT_TYPE_MASK;
+>> +			if (guest_type)
+>> +				break;
+>> +			if (++wait == LOOP_TIMEOUT) {
+>> +				w0 = READ_ONCE(guest[0]);
+>> +				w2 = READ_ONCE(guest[2]);
+>> +				w3 = READ_ONCE(guest[3]);
+>> +				dev_err_ratelimited(dev, "Event logged [GUEST_EVENT_FAULT invalid guest-event %08x %08x %08x %08x]\n",
+>> +						    w0, w1, w2, w3);
+>> +				if (!amd_iommu_snp_en) {
+>> +					memset(__evt, 0, EVTLOG_ENTRY_SIZE);
+>> +					memset(guest, 0, EVTLOG_ENTRY_SIZE);
+>> +				}
+>> +				/* Occupancy already includes this slot.
+>> +				 * Skip it so a late DMA fill is not
+>> +				 * decoded as a host event.
+>> +				 */
+>> +				return 2;
+>> +			}
+>> +			udelay(1);
+>> +		}
+>> +
+>> +		w0 = READ_ONCE(guest[0]);
+>> +		w2 = READ_ONCE(guest[2]);
+>> +		w3 = READ_ONCE(guest[3]);
+>> +		dev_err_ratelimited(dev, "Event logged [GUEST_EVENT_FAULT guest-event %08x %08x %08x %08x]\n",
+>> +				    w0, w1, w2, w3);
+>> +
+>> +		/*
+>> +		 * Erratum 732: clear both pair slots so a stale guest
+>> +		 * event is not decoded on the next poll. The second
+>> +		 * slot may wrap to the start of the ring. Skip on SNP;
+>> +		 * that buffer is not writable.
+>> +		 */
+>> +		if (!amd_iommu_snp_en) {
+>> +			memset(__evt, 0, EVTLOG_ENTRY_SIZE);
+>> +			memset(guest, 0, EVTLOG_ENTRY_SIZE);
+>> +		}
+>> +		return 2;
+>> +	}
+>>   	case EVENT_TYPE_VIOMMU_HW_ERR:
+>>   	{
+>> -		u16 gid = event[0] & 0xFFFF;
+>> +		u16 gid = FIELD_GET(EVENT_GID_MASK, event[0]);
+>>   		u8 src = (event[0] >> 16) & 0x3;
+>>   
+>>   		dev_err(dev, "Event logged [VIOMMU_HW_ERR gid=%#x address=%#llx src=%#x flags=0x%04x vflags=%#x]\n",
+>> @@ -1044,24 +1135,27 @@ static void iommu_print_event(struct amd_iommu *iommu, void *__evt)
+>>   	 * SNP enabled system.
+>>   	 */
+>>   	if (!amd_iommu_snp_en)
+>> -		memset(__evt, 0, 4 * sizeof(u32));
+>> +		memset(__evt, 0, EVTLOG_ENTRY_SIZE);
+>> +
+>> +	return 1;
+>>   }
+>>   
+>>   static void iommu_poll_events(struct amd_iommu *iommu)
+>>   {
+>>   	u32 head, tail;
+>> +	unsigned int n;
+>>   
+>>   	head = readl(iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
+>> -	tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+>> -
+>> -	while (head != tail) {
+>> -		iommu_print_event(iommu, iommu->evt_buf + head);
+>> +	for (;;) {
+>> +		tail = readl(iommu->mmio_base + MMIO_EVT_TAIL_OFFSET);
+> 
+> We should read tail outside the loop. Otherwise we may stuck in interrupt
+> handler context for long time and cause softlockups.
+
+I am simplifying this logic.
+
+Thanks,
+Suravee
