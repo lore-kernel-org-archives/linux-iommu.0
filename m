@@ -1,105 +1,111 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.181
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792763343;
-	b=x93zMd/DMEukEl99VXIOeHLj9UIwYlVn7t3nIA0ShulvMp+CW0qUe4T2TKu0ofEj2zUJ
-	 f47e/UI2jqzQR7BKJA/y2H3Xu4WC1N10TGa7l6NNPEMLK6YlfFg0C/J+vEirJqElELxnV
-	 3My86O/FRQGNmQdv44z4W+cNQ5QQFO9x7JXr6/WdNNZNRg50Eby9sKiMWSV2tg0FotR76
-	 aqTRdY48YzkMShZnGJ2KAfP7bmed7nyFQFyFOj1/b0sYBIuCz1GScWvweC6OEX950mRJK
-	 HV1kbpA9NuGXSiXUbVyX9I7NPxGKEBl21tu+fCpO42DTxNuru5Ltd/k0H+DmufW7x0g==
+	t=1792763419;
+	b=ZHGIq6rgsDa84NIv9MwpOeZsTPa0m5QLtxATHdxB2QpG4B4x5l5njTIeh566aJUuKrG+
+	 K0KT7apdHudNwxOsuFqPoSvZT0EtHLHqEOgbieYUE+6bGasjdkqVv9Xwgza6Hq6+q0+XN
+	 jPlrSpsMre+VBqjiEx7l/rjl1Htq7QGCLgNAcZT8Xdns8GGgSOQ5KQJCM/vd+NAbyEvGR
+	 3hczo/TPN6SZKb2QQrXQplSn+fag1jvH7WJIVZF4SEVGkTvAT9odM9adMJw2KQjKQELNx
+	 AvGWULRX7b07+2prZDGIY2CvPNSAm7MpzPlhYaE6enFBRZ87BEnvx/xq0IFI6gXV+MA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792763343;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792763419;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=WZKXP8VTOXU0OFEfLxvR9auLXjQRH/E3aKS3dlf0WJ8=;
-	b=m0oV8ClBC/PRiklZDxBOkdm4vjVyoqOlsZ13RuoFxxA9DDylbIGav2mlSF6fHluBBQEj
-	 qDG16RAC7NAV/nLToivefiuWjQgGS04lsoXHhp9tlEPp/ZwEgyUSc7Jo7vqXrmL2KLG0o
-	 Yd0s5C/vW5/kH9ElWTuSsLmZXb5MYHJ4U0CzI3BwpBfaDY/KlFycw5Z3ejtqq4F03PZpm
-	 k76v0779QMV728Pw/NtpOyqMJh4czuakWz8SjO/W5zx6ppbwuZxiFmeroUzEoqsVunmwh
-	 Rg5Rw5OkzExEyks4Sid2TEJqJvvaCv2rgKQg9UzQmKybyOM6BxuPzUzS2gT2vnnKK/Q==
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=8FyuJnnll3uJwbR+wT99CVBO9fzREsmjzeqnUECMRTY=;
+	b=0DVkNjnpilcx+G/9UID8FC/365mwVHxyJwv2Um6q35bVQplRYOBBDsef/uOzny858m19
+	 sWuoaDARFRZ/N4Iuqh24LTlFqgQhOOfw9yjEv6ZRQZ2o4m8gZycdl9XbZsKW+q3zsUjU3
+	 o6tKO3gCPJpFcTpNTpi6/2UVv0jHJQGCk6eN+WCEU/fe+C50Ar72YY88YSr7AVEK1kSD2
+	 7A1zCMDgWjLwYeozBVs2k5BVUZYax0cOJThxWfRpgNjaCA2FSOG1xpoiE2WyfzNFMdn9T
+	 440STWgMXneREKYNqfQbl72SVi2c4EjLx/IBnu1K3aYHZZyk+3rBlsJGFIs4MvYLFtg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=VDn4LM70;
-	arc=none smtp.remote-ip=209.85.222.181
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	arc=none smtp.remote-ip=209.85.216.54
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DE59606A31A
-	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 13:49:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9DE59606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=VDn4LM70
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-93e503815adso96066885a.1
-        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 06:49:02 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06215606A31D
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 13:50:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 06215606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-3acb512a7a0so488226a91.1
+        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 06:50:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1792763341; x=1793368141; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=WZKXP8VTOXU0OFEfLxvR9auLXjQRH/E3aKS3dlf0WJ8=;
-        b=VDn4LM70zX8a+2rPv6BohNyTWk7FkA6imWIXv+2qvj8qkLdLwtXGdwhae0j0FUWvT4
-         OZp5vqycxlw9sNIdUlCJhx+qR7HVxyLc1uV3+ZuO+SXnTMEcsHs1NCRFNqo/yiwWXfI1
-         aOoL5Qs221sPy9bxJUYxzXdDSC86BqHGf2SE5nYpFZ3Xl5PIAKWxiEVxnPtU3Z7nvfGQ
-         Mu/FLynXD/3dUxptTVe0gY3Q1sv2AdXWpdGc8ixDzHHNLkSB6g3r3RNlNID6xNQEhCNx
-         MekRi2g6yGcMg8CknUn27XzSwUxD9IADiC9bq543hR0GtQPzDaVeh+o+03fEpEsD5ZBt
-         CRrg==
+        d=google.com; s=20251104; t=1792763418; x=1793368218; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=8FyuJnnll3uJwbR+wT99CVBO9fzREsmjzeqnUECMRTY=;
+        b=KPwT/HJ6horIKi23Rq8ERXOA7CxMMCLFhxpXAn0iJcR+i6JW2S/JPevtTssiy1/B/D
+         QkDqb/Vo84n98i1mJwuyEIEck2vbUhTvdx477HUj6Kpr7ky+2/o/MmcHzySoFLUq8tQ/
+         lJQ9dKL4RdkxIC9yBsZP9pRRXIoW7HguLJ2V9BqaTN0vDBeCXuCe2Bz9heiebY2k887m
+         U1HN8G8/yNCH9Nf2xSe//99kC2jdcf+Shb3q+jBowGeQMuhF3C+G5l/l7690crC7yfvd
+         ExJDD4WLTeuf9asQZ6uWobI3JRl2ujAw6wHpbcU1XV49lVYwEm7jOwFxxzXAvpF+zrPe
+         IW7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792763341; x=1793368141;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=WZKXP8VTOXU0OFEfLxvR9auLXjQRH/E3aKS3dlf0WJ8=;
-        b=Pi135nori5fK34IWksUu1B/VQ/mXJ2TSHEDJ2fMcCsQuFqY/BrZPk4ezNhc7PfSN5F
-         8Xc7y0nhAb3vJ5HLY6xC9JPHVAAr9XOE5M9Qcczmv62Ozrrbg6fTJp2ViSz3RoeMCbXB
-         cI0fyQgmU9wd0lUps1oBN7nhmlq5vNH1Q2l1jgLA8JolvBb+5heNjiJCsPQ0nt5QkwhK
-         i5Lpa21lme2ZQlZ4vx6jUUIA83oAJx229itqhBSq9WR8Tr0S9wthUoUh7erBJSV+YOpw
-         K5bx82tKXX1cPSXWPNREzh1P7EVyoG7Ehreurl02ETg3iZLlRXmgu7ZwD5sJBRN+AMsu
-         sSvg==
-X-Forwarded-Encrypted: i=1; AKwUvBz0g8mhAlxB0F2riJzNv2oD7q5eaz0J8ER9sci+yQHr+Tb2sFyLAmLDE/oMhXmFrV9M0jlCzA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLe3Gvmsd+ViLvuxSy92Udho+1VL4pKdyYsb1og+wKRx+2743Yx
-	l1mFlL2VXEqEFpen8Kjt9V6DXNl0WoFftAKjzt+xwDMKi0mfxafvZ9SyzUlKWDPFydU=
-X-Gm-Gg: AYBFou0pq+n9cQ8/l+6g9m2/qkbETn8FJQZG/ynWb0hzfaA9Wir/xlif2t580JBsu9n
-	Sh/FS3ApszbwoyS5nLcMxdX1dcjtMdr/xIcFh1SUYxjGITPehdgO1yANkQqJxGJhtYUMHwzOHjG
-	CST1EVH+bWMOi/BqanwQ0R4/jBw7NtBeXmoip577r5QgI+N6Q9Cz99sa0MyO1R5aNsO/0+l4oW1
-	F32rDcxYzSuDozbTvM2npnSvYR1cxXGeDrS1PTevkZ+svjcdwxnlFMcvv1sLCnSIzFVIzgG1Prp
-	+9bUUt/VXQMb32wd43sCYI7tP3O0ukN+JkuSsnAKNk/ftStyIs92mCW6BHJCqJmn8XclJ1TFc4N
-	x+jzFD2pQr8cPHboI/VnM5TD0G5Fk4ua643H89Yqu+Z7Nk2wiwLKBTvpuLd7F5OkpF4w3TleOOR
-	4xcoprofZYHNie6Dx7j8cpwO9UZPdLGrY6N1xUUkexFfKStcVpBV6GueYnDv3lEAObZ6JWdJfnB
-	3GFZ1BnlFkg5tX0mbdAqQgwzFJ6lvsnk+0J3uoKT5/RMsCuTdQ//qkm471fjtoMb8GGLIEeIQxb
-	NkENG8NflLGqNqwpPA2hHUo=
-X-Received: by 2002:a05:620a:439e:b0:93f:1cd7:734b with SMTP id af79cd13be357-93f6f796974mr406212285a.34.1792763341610;
-        Fri, 23 Oct 2026 06:49:01 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-94047b1c97esm21136585a.30.2026.10.23.06.49.01
+        d=1e100.net; s=20260707; t=1792763418; x=1793368218;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=8FyuJnnll3uJwbR+wT99CVBO9fzREsmjzeqnUECMRTY=;
+        b=trD/WXDcNTAXpOTHMlXWbPGteXh4DuxO6GPUhQK9xGt0wM6+/diCZg3c7X8Z1/gkxB
+         dPCKnyuUBLY7wcPiIYkzRxYOlR11UgkmOpQkdjSStlThUfwNqNGRCa3VLb7y/2LjXIrv
+         enc6iTNOQRP25nIhqqxeW+1vPF2XgWfyBCPf9WZ9BwMILAHuUIY4fpGoG66oriBaH3Fd
+         p7QiW5oehzV8X6DALzsyF6LhLGa9lU3zdq9lSbYgY2zeWgEfVZ/nCmie0jvsLxHn7cs2
+         mAeHb1yeuKV/PRNg0bV6mHFM8EpJ4JE6x3txd15p/9jXwjyLrdc5NF2NILfoCmHiKikj
+         arEw==
+X-Forwarded-Encrypted: i=1; AKwUvBzZsUoBJCLDhQ4cVzxLTUWWALt4K2m4HHe1Dgg0I1Y0+1RyaOjQChxDAojcHrplI5Qe/40Khw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIc0qLhpulpMpAP5vp7lALPeV/8arm+uFhjXKXcSsEYMbJjTT9d
+	FeDFRBPzth85WZEh0PO4T9MZXSL+LnAihMnRKbMsRgfLGA4U1gJdWGCelF0koBlz7Q==
+X-Gm-Gg: AYBFou282iGS2poDj39wej1/EedzkA0aTGWIONWdtsUJOsSKV7ul0DHvdMvuJomehWf
+	2Xk73o8afKwtooG+JAVSMN3+ku2fRZv7cq9+dfp/ANn3i0aJ50jvd7QDi07KNcMFns7GTvuixqu
+	altvLMyeC+oexwpDWAXV9NnDLw21P4BPgUgfDeJ0uzJXNEiL6wJsqHj0xFPg3y05kXh+53bDQ0G
+	hM0M9swA2XRCGKiS1o083ZpiAaxuJMqUU9TM+M2n66his0vyTKKwdOIl9x3eWMC1iFuFDYoTF3p
+	1EqoqmrxydIxCECsjmIH0SzdaXeHeYaG/cne6hXbSK80zPIlTkN57dsWrsmLQwOLE8A74HwHMsc
+	S0vJ5cHomknk0rXaYikuiOM9BHmHDLR2SVHNRumUtmGT4fNC4OpEl5qap5Xl0Yc1m8sHeF1r32q
+	inJk2Po+2rRl5aYVVseiij+dyFVQr4tGafHPKttIGXig28ggkjBv+NriFofvP2I07n3YDZFhLau
+	muHj6hRZTvICbCahkH4s4IkjVwzuwC46J6UaXpEOBMpmgVOIk40iTKuq09bbkTLAaG39FIj84AC
+	O5Qb/JiOPgoAUA36sy9VLvFXUJ3bFfMGccBXkg==
+X-Received: by 2002:a17:90b:5906:b0:3ab:3437:554f with SMTP id 98e67ed59e1d1-3adce0073a2mr1983207a91.29.1792763417701;
+        Fri, 23 Oct 2026 06:50:17 -0700 (PDT)
+Received: from google.com (64.75.127.34.bc.googleusercontent.com. [34.127.75.64])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ea94677c91sm545015ad.4.2026.10.23.06.50.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 06:49:01 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xKFdk-0000000GhLJ-2S35;
-	Fri, 23 Oct 2026 10:49:00 -0300
-Date: Fri, 23 Oct 2026 10:49:00 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex@shazbot.org>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	David Matlack <dmatlack@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Pranjal Shrivastava <praan@google.com>
-Subject: Re: [RFC PATCH 3/3] iommu/arm-smmu-v3: Add support for hitless
- replace of S1 domains
-Message-ID: <20261023134900.GB3977851@ziepe.ca>
-References: <20260925011308.3381953-1-skhawaja@google.com>
- <20260925011308.3381953-4-skhawaja@google.com>
- <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
+        Fri, 23 Oct 2026 06:50:16 -0700 (PDT)
+Date: Fri, 23 Oct 2026 13:50:13 +0000
+From: David Matlack <dmatlack@google.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: tarunsahu@google.com, Andrew Morton <akpm@linux-foundation.org>,
+	joro@8bytes.org, Mike Rapoport <rppt@kernel.org>,
+	Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de,
+	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com,
+	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org,
+	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com,
+	will@kernel.org, Alexander Graf <graf@amazon.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com,
+	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
+	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	kexec@lists.infradead.org, skhawaja@google.com, kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
+ a 2-bit pair feature header
+Message-ID: <attmFVIFU_mS0Y7p@google.com>
+References: <CALzav=dLdJoVy=B1pv0FAurD9OhAzLSTjJNbtjTdJRmSqaB0yw@mail.gmail.com>
+ <CA+CK2bAQRMAEXZyHTEuUN0_Fo59Sn0hBmYbme_J9ewjx6gPyJQ@mail.gmail.com>
+ <atlKsD-aJB3mJr2j@google.com>
+ <CA+CK2bABt4OZO31TenVF2+uBUWVwViWbvfE00=0xbAw=f7K9SA@mail.gmail.com>
+ <atl7peoVHdP5hz7z@google.com>
+ <CA+CK2bBFXnJA1kddbLKGq0DAHDgjYhsTSQQay-xeX7jJC1V_UQ@mail.gmail.com>
+ <CALzav=e=ho2gVrn+7KpZ3ZyasvH2u15-pC-RSRSS7KcMfKqUJQ@mail.gmail.com>
+ <CA+CK2bAJo8dnTOyKMgnnMnk-SCXbTsv+JCLEOWkjyj-wqtEkHg@mail.gmail.com>
+ <atpNFEFIlqAoYIwH@google.com>
+ <CA+CK2bB2C3Am5ssRuzYpfiU7_vB81vxMGc19HQLq7N=_7YrbTg@mail.gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -109,26 +115,154 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+CK2bB2C3Am5ssRuzYpfiU7_vB81vxMGc19HQLq7N=_7YrbTg@mail.gmail.com>
 
-On Fri, Oct 23, 2026 at 02:43:28PM +0100, Robin Murphy wrote:
-> > @@ -3664,8 +3726,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev,
-> >   		struct arm_smmu_cd target_cd;
-> >   		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
-> > -		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-> > -					&target_cd);
-> > +		arm_smmu_replace_cd_entry(master, IOMMU_NO_PASID, cdptr,
-> > +					  &target_cd);
+On 2026-10-22 04:53 PM, Pasha Tatashin wrote:
+> On Thu, Oct 22, 2026 at 1:51 PM David Matlack <dmatlack@google.com> wrote:
+> > On 2026-10-22 12:11 AM, Pasha Tatashin wrote:
+
+> > > Lets drop the fourth macro argument and generate the combined struct name:
+> > >
+> > > #define DECLARE_LUO_SER(name, expected_size, ext_flags_count)              \
+> > >     struct name##_hdr {                                                    \
+> > >         __u32 size;                                                        \
+> > >         __u32 flags;                                                       \
+> > >         __u64 ext_flags[ext_flags_count];                                  \
+> > >         struct name payload;                                               \
+> > >     };                                                                     \
+> > >     static_assert(sizeof(struct name##_hdr) == (expected_size),            \
+> > >                   "LUO struct " #name " size mismatch!")
+> > >
+> > > For example:
+> > >
+> > > struct luo_memfd_ser {
+> > >     __u64 pos;
+> > >     __u64 size;
+> > > };
+> > >
+> > > DECLARE_LUO_SER_HDR(luo_memfd_ser, 24, 0);
+> >
+> > I think we are getting close, bu I have two remaining concerns:
+> >
+> >  * Reserving bits in each flags word for continuation leaves gaps
+> >    in the flag space that users have to know to skip.
 > 
-> No, we cannot blindly do this for arbitrary ->attach_dev calls - the
-> majority of S1->S1 transitions are going to be moving back and forth between
-> the default domain and user domains, where there is zero expectation, let
-> alone guarantee, that the translations would be equivalent and thus not
-> liable to lead to TLB conflict aborts or amalgamation hell.
+> Yes, but callers should never manipulate the raw flag words directly,
+> and we can provide simple accessor macros or inlines that take a
+> contiguous feature ID (0, 1, 2, ...)
+> 
+> enum luo_memfd_feats {
+>     LUO_MEMFD_FEAT_HUGETLB = 0,
+>     LUO_MEMFD_FEAT_SEALS   = 1,
+>     /* ... */
+>     LUO_MEMFD_FEAT_FOO     = 15, /* Automatically lands in
+> ext_flags[0] bits 0:1 */
+>     LUO_MEMFD_NR_FEATS
+> };
+> 
+> if (luo_ser_get_feat(hdr, LUO_MEMFD_FEAT_HUGETLB)) {
+>     /* handle hugetlb */
+> }
 
-Heh, yeah this probably only works properly with BBML2 or something so
-the temporary ASID doesn't explode.
+Sure but why deal with all the complexity just to save 8 bytes? All of
+these structs are allocated on folios and there are kilobytes of unused
+space to fit this header. And even if we optimize that we are talking
+about 8 bytes per FH/FLB... or 16 bytes for structs with arch-specific
+sub-structs like the KVM ones.
 
-Jason
+> >  * struct name##_hdr only matches structs written by the current kernel
+> >    (in terms of length of array and offset of payload).
+> 
+> This is not an issue on the incoming path, we never cast incoming data
+> to struct name##_hdr or access ->payload directly. Instead, we parse
+> the incoming buffer, dynamically compute the header size from the
+> continuation bits, and cast the payload offset to "struct name *"
+> based on the negotiated feature flags.
+
+How?
+
+This is the only data structure that describes the header. Are you
+saying the incoming path will parse the header purely with a void *? Or
+use this header but just be careful not to access payload?
+
+We should have one header structure that can be used on the incoming and
+outgoing path. We should not have one header data structure that can be
+used on the outgoing path and one that can be used on the incoming
+path.
+
+Also we need a standard header that can be shared across all structs,
+not a per struct header. Otherwise you will need to do weird casting and
+overlays to implement the shared helper routines that parse it.
+
+> > How about this instead:
+> >
+> > struct luo_ser_hdr {
+> >     __u32 size;        /* Size of header + payload in bytes */
+> >     __u32 nr_flags;    /* Number of features encoded in flags[] */
+> >     __u64 flags[];
+> > };
+> >
+> > Each feature occupies 2 bits of flags[], so feature N is always bits
+> > [2N+1:2N] of flags[N / 32], with no gaps:
+> >
+> >   00: Feature not present
+> >   01: Feature present, safe to ignore if not supported
+> >   11: Feature present, must be supported by the next kernel
+> >   10: Invalid
+> >
+> > The length of flags[] and the header size are computed directly rather
+> > than by walking continuation bits:
+> >
+> > static inline u32 luo_ser_nr_flag_words(const struct luo_ser_hdr *hdr)
+> > {
+> >     return DIV_ROUND_UP(hdr->nr_flags, 32);
+> > }
+> >
+> > static inline size_t luo_ser_hdr_size(const struct luo_ser_hdr *hdr)
+> > {
+> >     return struct_size(hdr, flags, luo_ser_nr_flag_words(hdr));
+> > }
+> >
+> > static inline void *luo_ser_payload(const struct luo_ser_hdr *hdr)
+> > {
+> >     return (void *)hdr + luo_ser_hdr_size(hdr);
+> > }
+> >
+> > and bounds checking is just luo_ser_hdr_size(hdr) <= hdr->size. The
+> > payload is always 8-byte aligned.
+> >
+> > Payload structs are then declared on their own, with no header:
+> >
+> > struct luo_memfd_ser {
+> >     __u64 pos;
+> >     __u64 size;
+> > };
+> > LUO_SER_ASSERT_SIZE(luo_memfd_ser, 16);
+> >
+> > The static_assert covers the payload to catch embedded structs changing
+> > size.  Asserting the header doesn't add anything since its size varies
+> > by kernel. And because flags[] is a flexible array, the header can't be
+> > embedded in front of a payload in a combined struct; it can only be
+> > reached through luo_ser_payload().
+> >
+> > I think the only downside is that the header increases to 16-bytes when
+> > there is at least 1 flag. But I don't think we need to be so concerned
+> > about an 8 byte difference...
+> 
+> I would prefer to keep the default header at 8 bytes. With 15 features
+> fitting directly inside the base __u32 flags word, adding the first 15
+> features to a struct keeps the header at 8 bytes and does not shift
+> the payload.
+> 
+> Computation-wise it is also very similar: for the 99% of structs that
+> have <= 15 features, LUO_FLAGS_CONT is 0, so computing the header size
+> is just a single bit test with no loop. Even if a struct ever needs
+> ext_flags, the loop will walk at most one or two extra words.
+
+Please explain why it is so important to keep the header 8 bytes that we
+have to jump through all these hoops to map a contiguous flag space
+onto a u32 + u64[] array structure where certain bits are reserved and
+have to be skipped.
