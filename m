@@ -1,105 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.174
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792762549;
-	b=Awv1rkPndkM0HUl8S8zaRRKhj2DPG1GVcAg84d1IoZIXm08jYmwji/iUfxkt4in+F8YP
-	 O1jdFzi5DvCNXwo8zXvlSfjCh4CvzzEZW93gUsbtYun+nM+3VkiKJj7/W+t26NgeLor8Q
-	 m0H5t0E/ms7PoYHqf1exjJFG0SdZeVluzsBJoTydof+flgKqvwhLNJxozpvV9U9tRHdi/
-	 mlzT6f4g+DlUsHCtgKS018EKZcBmUoeJi2qkzWuyibq8xVIlSDJQMfgiV6J+wJ9tXeXIL
-	 K1H3JsAu9iJxG1Eqx5lH/vMqiXjJn5br3E+uAiTvmnuQb0sv5eqF5AxnPW9POhqGuYA==
+	t=1792763013;
+	b=F17LfKQi621zVjn4Jcf4inGwUVfk6QECHyNDUl9Vs3ss8S7g9fNJDsIzUIiAPgO6N7kK
+	 yIRb49Q+Ve0HJvav6hXjPStn3Q2v27Qv3HUhAHL6SXiSb3j+xqER8EAy6F+w/MfXjf893
+	 uHQkEd3Zj4HOKLEifU1ozaC9WDRh+9/xpxCP9DpRFrEsarKb5DoXmf+ETDthqstQKncAv
+	 xShmIXvoalC1ImBry/mZCfmaWcDSiFDRLKJKcPnteitau11PkZ6sRX0gyPif1W+agQsXk
+	 AfQqnTXvz5hUTmbW1r1UnFQafGfCyHRNa1OquOghMM50vSTL/dBsx1hDsk1LTxAe1CA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792762549;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=9CmvWQCO9ciSR83HG89op2Z5oG5Iu+ZEx0weEptYBic=;
-	b=q9AeIUz3tzPHXrCY7MF7DVYIKlpki+UzdE09eklnd+aRadHg97Aj7u6oRE9UIAx0nBpS
-	 utAV5mZeVaIxPq9zTvTqQjsE6RVAZNTBkAW27oRQyYMZP5v3eikqqfzmeeyfzJPFPpLs5
-	 PCw1+9PNTYrip5nQeVTD/e/wr7poQMpt30Xe1oBJkzp0gZjKK7qoL71u/eY6Mo86ey7A8
-	 FMURwXW0Gp2zB0w/IAVoH///umGNYIvBFzmUl3chVrU/091prsfFHcYlIP0kFM2L4cuH5
-	 A3/uuxzrroRHpmUwNZ8u2eTtXLAy1O4+pX85GII6/hhHw2588n6ZCoYQcuJN63WKnIg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792763013;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=4I8C7LS9Ebq+RsUKShRZmElkynjaFDjGXMud7w6ijM8=;
+	b=UwBEUws3SfAAH41REhuJ42ne1hWkyZzZyceGdkQHHF0J3UIcYJr7266gOqgRHcGmRbFx
+	 NzOaoPsJmjOzqUn5amhy2sKRF4s5KvTDdf0CnRvAgZk/sX0egVkL1/EdQBVAjF3vCUbW/
+	 y9mF3I+mK3PnqBPoI4sE2nMZM1dewi385INUkZw82fp2c9BVAPSa8otiCcLtogndIwAUs
+	 +dddCSBwocrVErsNGAN/RwAcXwT+CFY2yr0QiZs1xn/7pUF5LFHxC4jx8/Kq+OWncQzss
+	 IcK2DK3NcnKEHDYql/SZWhuFR/0qjaxpQrSQL2F+i3G7PNrgDTaeNGalmmlXEPULA0A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=naW1q8+J;
-	arc=none smtp.remote-ip=209.85.222.174
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 039D3606A31A
-	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 13:35:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 039D3606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=jlUDdA7Q;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61545606A31D
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 13:43:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 61545606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=naW1q8+J
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-93f259cdc86so79154785a.3
-        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 06:35:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1792762548; x=1793367348; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=9CmvWQCO9ciSR83HG89op2Z5oG5Iu+ZEx0weEptYBic=;
-        b=naW1q8+J4VAIZpOspmaT9vOoLubxRaH7bx8Lz4o3fieFMYeIA4DAwObCXtL37qNVqa
-         g33JwP2uxOi2uTJn8ErfMW53DKYLm+/uFL4hRZbDkyalaEOSzcMLjMef2+p7Pqu0dUNa
-         SN9+jWrP11psqWNJDkQ4tbYYwNifdfq+bECc5cbcsTPD7zkLtbKAaQuIMIwRwavWlJCy
-         rtSzDXcLaIEpRN+326OzxjQz9s6trt4w9wkN3rDCpN0CQuXmSCt3bS9IX620gmYPCLqK
-         GTpNBYwOSlOEln/zDWtkfAweXtLmm8mm3meFxedcCwIentaI2TJbgkJy2TXVxUP6xVTV
-         icJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792762548; x=1793367348;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=9CmvWQCO9ciSR83HG89op2Z5oG5Iu+ZEx0weEptYBic=;
-        b=ZMnh9U+2kt5gIkkqAdHJ3FWQ7dUM4p/AUMMrAOyl7eVRCvfKIQXAsvwIkcS37Tw3Qp
-         Eau0BFy/na6mMDXbKeqlWoK/QEqiXqSuS7ef4CqWWLJhoZsjejTmPkRWZ2vKxIkC8pWN
-         CuBoID+YNwUhlqsFaLNH4eSB14F40nvBrDpoJKRt0MJS6zXbnBfJmVa/S48LG4y6C+I/
-         GXkE+U7lE5Lflz1eLB6a2iVC6+q8NqWKOChTgMR6l0QrwKlW+fg3qrk6wriva9XVAGy7
-         urjRY02vnHJ0Zohg9lOV76dZPZEourZ3SoSuPHsYMZXOTY9HoXLI8MFjlqwbF6OfHFVK
-         PZvg==
-X-Forwarded-Encrypted: i=1; AKwUvBwlCWIcKI7FVj+XX90iBaRj75lN3H9SySBo4o54hKumTRZC9IBFBn72HiAk5nC3pAYzspHOQQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJR/bFTr8gTCrNlyW6VyiRdZ9esdIb2aYWbxRjNvUUAJHSJHkb3
-	7Viqp+Bk15jms5JXNmcahSm9gc83OH4yCu5k1w61cVb5wI8Yk60nFcL6NQPSqa52GBk=
-X-Gm-Gg: AYBFou3qUJ+KZJLjc3CEnQBuQswgiQn/ZQ6lobJzvkcUPQPdHHdmlk/GLUZY4zRyu8A
-	Wyh3WqQspWtFk5ENIveHvygmhySsZWIjEvpLggX3YJqI75mNPP3gWF950eyKX2B9GMTTl2SAvm4
-	YGBnT54TCJTBE8eF1Jw47u3yrwgBHXzO//zmFo+zt9uiiOWibcnDGpxFK4QnwuL1ByWr3s+KOeb
-	8hcpa98POGfKIbrDkYjuQB0i0dEmIwOAg/HCW/CKGA1k5RMyHmhSX753p6nSSxgZEVhsZ3xGCQo
-	PYIzOdEfbryj7lnjT/EFNtrmEikzYnw3Rb4JMgReLA9jxxZRSZWS875+oOZYE6dnxqLh8/lgUrc
-	vuLIDbVXwHsPDW19L2Bsh4noNWwV8oiLITxIwLRf98lseoyANkU90++nCXjwruyjEvQtoidMEx8
-	8lECpWPFp8U5IfOIF9Z4z5cHQ/tS4wS6zyZBygIk0rMqtAzu/qdRpfrm5sDmfvykPYvIP+b0zYm
-	boMXYzkINoeJpvySNW/oL2TtgF5GmaX3lIHG8WgrE5YOELQzXsQ3Za2apIeCQ3sAxvqGh9qJTv2
-	Tl7qBTTQS0UAoI4yMpPyjjOIqrA6ZGj+6o11s+g=
-X-Received: by 2002:a05:620a:45a7:b0:93e:6723:9de8 with SMTP id af79cd13be357-93f6f823981mr398926785a.59.1792762547650;
-        Fri, 23 Oct 2026 06:35:47 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-94047b4f603sm17521885a.40.2026.10.23.06.35.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 06:35:47 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xKFQw-0000000Gghx-2aEb;
-	Fri, 23 Oct 2026 10:35:46 -0300
-Date: Fri, 23 Oct 2026 10:35:46 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yuho Choi <oss.patchbox@gmail.com>
-Cc: Tomasz Jeznach <tomasz.jeznach@linux.dev>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Fangyu Yu <fangyu.yu@linux.alibaba.com>,
-	Zong Li <zong.li@sifive.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-	Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] iommu/riscv: Keep page table pages when IOTLB
- invalidation fails
-Message-ID: <20261023133546.GK3381610@ziepe.ca>
-References: <20261020053435.1179054-4-oss.patchbox@gmail.com>
- <20261020053435.1179054-5-oss.patchbox@gmail.com>
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=jlUDdA7Q
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E2F01C00;
+	Fri, 23 Oct 2026 06:43:28 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BFFD83F959;
+	Fri, 23 Oct 2026 06:43:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1792763011; bh=fCH8Bmguz7AIGj8B74jO3aVsHYpkx2Drb51PhaFvVVA=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=jlUDdA7Q6YhVFyc3r63QNHS9/fYgwiCfXdlLas7xY55jXXVRMEOVNu1pW87w4JKC8
+	 cU2SnHFz2xhR0mLxjQkYnOVkHvEo0x1jyT3tWrZovDoR8l0gGMtADTPqsqbDajasrn
+	 COO49/fSsUfhMquBHURVeAEupUdXM/sWVp+tOG/k=
+Message-ID: <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
+Date: Fri, 23 Oct 2026 14:43:28 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -109,22 +53,142 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261020053435.1179054-5-oss.patchbox@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 3/3] iommu/arm-smmu-v3: Add support for hitless
+ replace of S1 domains
+To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Pranjal Shrivastava <praan@google.com>
+References: <20260925011308.3381953-1-skhawaja@google.com>
+ <20260925011308.3381953-4-skhawaja@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260925011308.3381953-4-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 20, 2026 at 01:34:23AM -0400, Yuho Choi wrote:
-> riscv_iommu_iotlb_sync() frees the page table pages on gather->freelist
-> right after riscv_iommu_iotlb_inval(), which does not report whether the
-> invalidation commands could be queued or whether IOFENCE.C completed.
-> If either fails, the pages go back to the page allocator while the IOMMU
-> may still hold cached entries pointing to them, and whatever their next
-> owner writes there can then be walked as page table entries.
+On 25/09/2026 2:13 am, Samiullah Khawaja wrote:
+> S1 domains are programmed by CD entries in the CD table. During a new
+> domain attach these are updated using write_cd_entry. Since ASID and
+> TTB0 are in different 64-bit words, the write_cd_entry considers it a
+> non-hitless update and sets V=0. This means such an update is disruptive
+> and would generate translation faults if there are ongoing DMAs.
+> 
+> Replace the CD entries by using an unused temporary ASID in following
+> sequence to allow hitless replacement of CD entry,
+> 
+> - Update the CD entry with temporary ASID.
+> - Update the CD entry with the target TTB0.
+> - Update the CD entry with the target ASID.
+> 
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 ++++++++++++++++++++-
+>   1 file changed, 64 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 5732f3ba0122..59f4b8cf89f6 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1641,6 +1641,68 @@ void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
+>   	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
+>   }
+>   
+> +/* Invalidate every stage-1 TLB entry tagged with @asid. */
+> +static void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
+> +{
+> +	enum arm_smmu_cmdq_opcode op = (smmu->features & ARM_SMMU_FEAT_E2H) ?
+> +					       CMDQ_OP_TLBI_EL2_ASID :
+> +					       CMDQ_OP_TLBI_NH_ASID;
+> +
+> +	arm_smmu_cmdq_issue_cmd_with_sync(smmu,
+> +					  arm_smmu_make_cmd_tlbi(op, asid, 0));
+> +}
 
-Invalidation is not allowed to fail. Drivers always have to free the
-pages.
+Feels like this should probably use the existing invalidation machinery...
 
-The system is irrecoverably broken if the iommu driver blows up so
-much it cannot invalidate.
+> +
+> +static void arm_smmu_cd_set_asid(struct arm_smmu_cd *cd, u16 asid)
+> +{
+> +	cd->data[0] &= ~cpu_to_le64(CTXDESC_CD_0_ASID);
+> +	cd->data[0] |= cpu_to_le64(FIELD_PREP(CTXDESC_CD_0_ASID, asid));
+> +}
+> +
+> +static void arm_smmu_replace_cd_entry(struct arm_smmu_master *master, int ssid,
+> +				      struct arm_smmu_cd *cdptr,
+> +				      const struct arm_smmu_cd *target)
+> +{
+> +	struct arm_smmu_device *smmu = master->smmu;
+> +	struct arm_smmu_cd stage;
+> +	u32 tmp_asid;
+> +
+> +	lockdep_assert_held(&arm_smmu_asid_lock);
+> +
+> +	/*
+> +	 * Nothing is translating through an invalid CD, and an update that
+> +	 * invalidates one cannot be made hitless anyway.
+> +	 */
+> +	if (!(cdptr->data[0] & cpu_to_le64(CTXDESC_CD_0_V)) ||
+> +	    !(target->data[0] & cpu_to_le64(CTXDESC_CD_0_V)))
+> +		goto write_directly;
+> +
+> +	if (xa_alloc(&arm_smmu_asid_xa, &tmp_asid, XA_ZERO_ENTRY,
+> +		     XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL))
+> +		goto write_directly;
+> +
+> +	/* Copy the existing cd entry and update only the ASID. */
+> +	stage = *cdptr;
+> +	arm_smmu_cd_set_asid(&stage, tmp_asid);
+> +	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
+> +
+> +	/* Copy the target cd entry and update ASID to the temporary ASID. */
+> +	stage = *target;
+> +	arm_smmu_cd_set_asid(&stage, tmp_asid);
+> +	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
+> +
+> +	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
+> +
+> +	/* Update to the target cd entry as it should be hitless now. */
+> +	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
+> +
+> +	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
+> +	xa_erase(&arm_smmu_asid_xa, tmp_asid);
+> +	return;
+> +
+> +write_directly:
+> +	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
+> +}
+> +
+>   void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
+>   			 struct arm_smmu_master *master,
+>   			 struct arm_smmu_domain *smmu_domain)
+> @@ -3664,8 +3726,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev,
+>   		struct arm_smmu_cd target_cd;
+>   
+>   		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
+> -		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
+> -					&target_cd);
+> +		arm_smmu_replace_cd_entry(master, IOMMU_NO_PASID, cdptr,
+> +					  &target_cd);
 
-Jason
+No, we cannot blindly do this for arbitrary ->attach_dev calls - the 
+majority of S1->S1 transitions are going to be moving back and forth 
+between the default domain and user domains, where there is zero 
+expectation, let alone guarantee, that the translations would be 
+equivalent and thus not liable to lead to TLB conflict aborts or 
+amalgamation hell.
+
+This needs to be in a dedicated "I know what I'm doing and I fully 
+accept the consequences if I get it wrong" call path.
+
+Thanks,
+Robin.
+
+>   		arm_smmu_make_cdtable_ste(&target, master, state.ats_enabled,
+>   					  STRTAB_STE_1_S1DSS_SSID0);
+>   		arm_smmu_install_ste_for_dev(master, &target);
+
