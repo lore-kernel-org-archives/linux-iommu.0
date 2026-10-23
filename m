@@ -1,46 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792769347;
-	b=gVXMOIRoNuNofTlrc5Ka6vSNF1No9kCs+jmvdlquAhcIM00ejv7vTO7lI5oV/AD/6+NK
-	 cuLRGj9CY56xLxLMc3f3RuwbpBJBjZxOpxeQ1c/96uLtDfFEmtIl6LlZ7cgU7OB8Qsb6d
-	 JmEx+7woL2zjzUNHs5Olr8o60acz7yI4LhciAF6IRso9EpcNWMVhdnnorjTZ8KomtWapR
-	 1rU6JV2veRoGg7FH885ZvFVILMYoAz+i5IXw++7qUynBU7XKYgO+RnKRmqqPgHyWt+uyH
-	 3IiGfW+UEcP2miloDLl0WYDfxSaz/nqJ0CUKKcKNta7OEmA5cLOy6Vsn4xF3ouaLlBA==
+	t=1792770110;
+	b=RhlNPwCdAtN1WblfWOH09k3pC9DTphmktIUDHZborI3eehPErNarZ4llcrRr/XRD1QrY
+	 XJWRNkbiG9bmA5QD588FH9HwrCccQbQSfv+rGDrn3m9hgDVt/ntxD4MqS3Q0co7HKDsxe
+	 4r5xqR/fWrRRsTBHxrzGnRuZSe7mtFf/RuQNPxY8UpUCcJnjaxtWRkkrFqQYK6/uhMSHt
+	 KFe7U6Gd4ix1EN488+hAQVxddRjKiReC4Tpf24sDc/Wwor8YzvfFa8lIVVFasZMZJnnIq
+	 kJ0nk5f3zv1Bx84KuJV4vgqxvzjBAEvq+psghIyscNFxvqs/OGDqCps6/jjWq810m7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792769347;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:From:Subject:To:Cc:References:
+	a=rsa-sha256; c=relaxed/relaxed; t=1792770110;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:From:
 	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=WuI4eN17B4C+OLPySzEF18wjfbpCjU6xL2dwOt9LOIM=;
-	b=vj8rG6HrNuupjy6bsZATCPZ5bQR71XUca8GMBstXGSvDjaLTz15PSHbt/dResII8m+Uk
-	 NFV/CUCsidRi5ennFNe0yTNKCXMHitXSjYbEuZTUqbFNMUW6DzY8aL7N6khM2MD8emP67
-	 vZN3yjt5RwjzJ6BGVBKiUtCgSbslbrA8htf6/PX04J48FJzdsht8inlom/qksNDVdKsVP
-	 jWqNb+ycMo5FZgPTZN11l8XdJ000ocstVYLdSP0JHLaaZKYlrgBzHuSShEozlPohG8flL
-	 UOBnhl2bpqZOLhef4eNkc1WFYYXnrpwhv58bUvhVqoMFnYMMhJsBnn1cTvM4eiGkDow==
+	bh=p4zYTNJnmB4RId87xSly9GxhAKztPRW2cESt3l+Nt3I=;
+	b=jMK6nEMMO0rwhTQxv3r3UjDP5SMPWlj7nF2JK9GaNzuk3NOyO5vvV9+h+oF0ObSvfXxT
+	 utk3tja7FRCOHZvDjuu94MnzKKVUxSwLoi/r/X6oWE6Dpvv/18lveMTD7vLeP/aPCWQmx
+	 +Uiec0oW84286vyA0m/UNGRvyp2cTLUfZJqzHnfnU8I/7d/IknjVzXMZNLAl/KaWsvhAX
+	 wD7UWnsEZHS+scg2akT28UF0MtCoOr+GlRJoBCnsTWu6gG+BFKfpw+PYYmlgPbnraGv15
+	 Lcj68VreD9w3zbP6VxWMTr/IlWZ6KJWjhqBJYSp1XtylnZzg4DOK5oS134f7o9eOcqw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7BB98606A327
-	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 15:29:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7BB98606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 991761C14;
-	Fri, 23 Oct 2026 08:29:02 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E965F3F673;
-	Fri, 23 Oct 2026 08:29:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1792769345; bh=rpTZxMbDyCTwm1qN1rvzPWmDGskbXmAYWwCB18O1Agk=;
-	h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-	b=LxObpB0rNBboXyuEi/cHdpT/+mZDjDJ2kGqkiRfugUNbWUpN+VT1nEZKUlLIg7NfS
-	 4KvWNgzODO2LNZuP1H6beXfb79SByyja8amUgfEc03A1gY2rduy/gTXmj7idtn6Zni
-	 /VD7Brn4g4b51dsdwNYroipbn+UmzbD95jDoPOLM=
-Message-ID: <70ce461e-3c7e-40a5-9a23-082a0ad2f8f1@arm.com>
-Date: Fri, 23 Oct 2026 16:29:00 +0100
+	dmarc=pass header.from=linaro.org;
+	spf=pass smtp.mailfrom=linaro.org;
+	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=nqdlI001;
+	arc=none smtp.remote-ip=209.85.221.49
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4718160A3828
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 15:41:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4718160A3828
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=nqdlI001
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-48c45111bebso585588f8f.0
+        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 08:41:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1792770108; x=1793374908; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=p4zYTNJnmB4RId87xSly9GxhAKztPRW2cESt3l+Nt3I=;
+        b=nqdlI001Q+gE1EacG9fmDumGihcBXJ5a7M+BIP037/wLC2pLtvjPssX06r5bHQ3hoy
+         1Pk7PPYcdLMfcIHsYFRwtjFTYUgoFowfmoWnazJHdC5fXhAVf8ebJFGreexOHE5tAjOR
+         J2P+05KslnIBKMS5qeUkIGuwpCweT7MQ04VHtb0t7bvrJQ5+90kSiEjh/+GY7gNws991
+         pY1tqF/q3VIX83wge48zFNuf57BQX4r6261jofhIQmYCf3+TIHl9DZQczy1SQ+GerekT
+         Ie9MeIntP42+o/2Bdc5I0YACrKTj492tuH5Bg11W14U4gA1B3W5eqwhUKntgSPCSdZJd
+         KDkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792770108; x=1793374908;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=p4zYTNJnmB4RId87xSly9GxhAKztPRW2cESt3l+Nt3I=;
+        b=pYq50HZUSnuuc0Ae8YeKpTS5+862uxIawMImzFpvPNhHquIKVyONYtMhn1apNT0q5o
+         QO7rAEHks0AKG1okm/CEGT0nAToPcm1yJwwsTf+DUL/ohphTgeUHgimrBF9nyYWeWsIH
+         afTz7uk4wUR2osunSaRiVYzJasxQgBTBrlACJBiBrROGqib7dxFt5gBfAlaobOhjeF22
+         oH+W+72Z2DNaecu0DE7kacnueEGWU54QaELDc3qK1yNianLBCsU1xd4trtXaJtcShYW2
+         nQajVjIgR1Dt1Nwr/fMsgRSn0EXJ3Wzj13EIDbfij3f45LtGGjw5FXn0qdwOnSQZsBKI
+         O1pg==
+X-Forwarded-Encrypted: i=1; AKwUvBySXrvyMQlsgDZNPpG+sV3jacUE4tSy5Y/WhyCm1e07F3JaVf+Y7ZIUvzXLeqtwDec7UPWQfQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJBdpvOYecEUIfHuiqd78+erOPuyqHI6ML9K+PmqLszJu39fAYS
+	vQ3xk29Q8OkgeGDpdoDgTvOSmmwQ+DbKjamSdXJScHHx9pIHpAqtRiqxYlPo9nkiUZA=
+X-Gm-Gg: AYBFou2xaL+zwxARjwZDrQqjndn9y+vcSzVCy1fwDR6IxRLNHVbQaTHbdIpLDduU1LE
+	G1BwCUE0ii/aLozLqOG4Mx4G0r0SUctLVg2G/NxVefF7HVAjcMvTHBj1HlTbQZtncsDHtm/aRK6
+	qdBHV698P/4p4INQ4gL3sRC2u9Pcuzvc27VDkHzhtUURwCfbNn7zNHx51ds13fm0tO8I1+7Hkpw
+	Cef8w+zjpqR1PIIxO6PdyX+ujsmtDJnC9m3OgCYWr700aVg4qgJczbv1/3qIZMw5+aWe9x6yfHY
+	6wxayxvqhJovY2zrMnGvHqSFeQt6OBYbPO2GZDRHXKKRoeR2L2q8QUJzoNHXvIP0X3Lqy8UJc6B
+	ruK9DY83h2zA5qyWth5GUwq1Jhxl+RgRihcGBlVP0uRhL1lnhtPyVB5TDQUsjxbzkXo0pKPT38H
+	8z0bL9fnQzWVlx73wVPFKGVMyGGrnbo8OHG0WtcDCgG8R2EGADndhS1Mruk0B65XbtFCCyNMjuE
+	3+YKQoeT3e1CGEnIo80ymsrtJURMPBnHhnrhpxTuBH+nPVWw46YY7XluJ3rRvxnF8Tm
+X-Received: by 2002:a05:6000:178a:b0:48d:f58f:c98 with SMTP id ffacd0b85a97d-48e385a5db6mr4346612f8f.40.1792770107560;
+        Fri, 23 Oct 2026 08:41:47 -0700 (PDT)
+Received: from [192.168.0.167] ([109.76.107.26])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3d400365sm532405f8f.25.2026.10.23.08.41.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Oct 2026 08:41:46 -0700 (PDT)
+Message-ID: <99a419c3-81a8-4b37-b9c7-2dd56978162d@linaro.org>
+Date: Fri, 23 Oct 2026 16:41:44 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -51,199 +90,253 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: iommu: iommu_device_unregister() traversal racing concurrent
- client removal -> group use-after-free / refcount underflow (unconditional
- iommu_group_put, unlocked TOCTOU reads)
-To: =?UTF-8?B?5b6Q5pmX57+U?= <xuhx@hust.edu.cn>, joro@8bytes.org,
- will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <4eed6353.14843.1a162dc1a8f.Coremail.xuhx@hust.edu.cn>
+Subject: Re: [PATCH v5 04/13] iommu: of_iommu: Add support for "iommu-ranges"
+ on a device node
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+ Dikshita Agarwal <dikshita.agarwal@oss.qualcomm.com>,
+ Abhinav Kumar <abhinav.kumar@linux.dev>, Bryan O'Donoghue <bod@kernel.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>,
+ Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Stephan Gerhold <stephan.gerhold@linaro.org>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Abel Vesa <abelvesa@kernel.org>
+Cc: linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux.dev,
+ Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+References: <20260926-vpu_iommu_iova_handling-v5-0-0322ca5dc10c@oss.qualcomm.com>
+ <20260926-vpu_iommu_iova_handling-v5-4-0322ca5dc10c@oss.qualcomm.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 Content-Language: en-GB
-In-Reply-To: <4eed6353.14843.1a162dc1a8f.Coremail.xuhx@hust.edu.cn>
+In-Reply-To: <20260926-vpu_iommu_iova_handling-v5-4-0322ca5dc10c@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 22/10/2026 10:05 am, 徐晗翔 wrote:
-> When iommu_device_unregister()'s bus traversal releases a client
-> device, nothing prevents iommu_release_device() from running on the
-> same device a second time from the device_del() bus notifier -- and
-> the release path's unlocked double-read of dev->iommu_group plus its
-> unconditional iommu_group_put() (outside the "device actually found"
-> branch) turn that double execution into a use-after-free of the group
-> and its devices kobject, or a refcount underflow that frees the group
-> early while other members still point at it.  Confirmed with KASAN on
-> mainline 7.3: in a 3000-round race, 7 slab-use-after-free reports in
-> kobject_put/refcount_warn_saturate with a closed three-stack witness
-> (group allocated by the probe side, freed by the unregister traversal,
-> touched again by the removal side), plus a NULL deref in
-> __iommu_probe_device.
+On 26/09/2026 07:34, Vikash Garodia wrote:
+> Reserving an IOVA address using "iommu-addresses" requires it to be
+> placed in the reserved-memory node. But when "iommu-addresses" is the
+> only property being described and there is no backing "reg" (i.e. no
+> actual reserved system memory), it does not really belong under
+> /reserved-memory. A device IOVA range is specific to its own address
+> space, and does not describe the system physical memory to make it
+> qualify under reserved-memory. Given this, place "iommu-addresses"
+> inside reserved-memory only when it is paired with a "reg", otherwise,
+> define it within the device own node. It was discussed here:
+> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
 > 
-> The two kernel paths involved have no lock in common: the traversal
-> (remove_iommu_group(), drivers/iommu/iommu.c:273) and the bus notifier
-> (device_del -> BUS_NOTIFY_REMOVED_DEVICE -> iommu_bus_notifier,
-> iommu.c:1815) both funnel into iommu_release_device() (iommu.c:778),
-> which takes neither iommu_probe_device_lock nor the group lock before
-> its first read.  The kernel itself documents the hazard in the PCI
-> reset helpers ("callers must ensure there will be no racy
-> iommu_release_device() call, which otherwise would UAF the
-> dev->iommu_group pointer", iommu.c:4029-4031) -- that contract is a
-> caller-side convention with no mechanism behind it, and the traversal
-> and the notifier are exactly the callers that were never made to
-> ensure it.  Triggering needs a runtime-unregistrable IOMMU instance
-> (virtio-iommu sysfs unbind, several platform IOMMUs) plus a concurrent
-> client device removal (PCI remove/rescan, hotplug) -- both
-> administrator actions, but each entirely legitimate on its own.
+> Existing "iommu-addresses" property expects a phandle, which does
+> not make sense when the property is defined within the device node.
+> Introduce a new property, "iommu-ranges", to specify the device
+> specific IOVA ranges when there is no backing "reg".
+> 
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> ---
+>   drivers/iommu/of_iommu.c | 128 ++++++++++++++++++++++++++++++++++++++++++++---
+>   1 file changed, 121 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index a18bb60f6f3dfdba853b6e16dd2a8616f6a731c7..9766a6944d0e11a6cd8b74b1b89428acffe3dfdf 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -190,6 +190,111 @@ iommu_resv_region_get_type(struct device *dev,
+>   	return IOMMU_RESV_RESERVED;
+>   }
+>   
+> +/**
+> + * of_iommu_derive_resv_regions - derive reserved regions which
+> + *                                are outside of iommu-ranges
+> + * @dev: device for which to get reserved regions
+> + * @list: reserved region list
+> + *
+> + * A device can describe its own usable IOVA ranges directly on its node
+> + * via "iommu-ranges". Everything not under those ranges is derived
+> + * as a reserved region so the IOMMU allocator won't use it. Entries may
+> + * appear in any order in the property.
+> + */
+> +static void of_iommu_derive_resv_regions(struct device *dev, struct list_head *list)
+> +{
+> +	struct of_iommu_range {
+> +		struct list_head node;
+> +		phys_addr_t start;
+> +		phys_addr_t end;
+> +	} *pos, *new, *next_range;
+> +	int size, prot = IOMMU_READ | IOMMU_WRITE;
+> +	struct iommu_resv_region *region;
+> +	const __be32 *maps, *end;
+> +	struct list_head *prev;
+> +	phys_addr_t next = 0;
+> +	LIST_HEAD(ranges);
+> +
+> +	maps = of_get_property(dev->of_node, "iommu-ranges", &size);
+> +	if (!maps)
+> +		return;
+> +
+> +	end = maps + size / sizeof(__be32);
+> +
+> +	while (maps < end) {
+> +		phys_addr_t iova, iova_end;
+> +		size_t length;
+> +
+> +		maps = of_translate_dma_region(dev->of_node, maps, &iova, &length);
+> +		if (!maps) {
+> +			dev_err(dev, "%pOF: failed to parse iommu-ranges\n",
+> +				dev->of_node);
+> +			break;
+> +		}
+> +
+> +		if (!length)
+> +			continue;
+> +
+> +		iova_end = iova + length - 1;
+> +
+> +		if (iova_end < iova) {
+> +			dev_err(dev, "%pOF: iommu-ranges overflows address space\n",
+> +				dev->of_node);
+> +			continue;
+> +		}
+> +
+> +		prev = &ranges;
+> +		list_for_each_entry(pos, &ranges, node) {
+> +			if (pos->start > iova)
+> +				break;
+> +			prev = &pos->node;
+> +		}
+> +
+> +		new = kmalloc_obj(*new);
+> +		if (!new)
+> +			continue;
+> +
+> +		new->start = iova;
+> +		new->end = iova_end;
+> +		list_add(&new->node, prev);
+> +	}
+> +
+> +	if (list_empty(&ranges))
+> +		return;
+> +
+> +	if (of_dma_is_coherent(dev->of_node))
+> +		prot |= IOMMU_CACHE;
+> +
+> +	list_for_each_entry_safe(pos, next_range, &ranges, node) {
+> +		if (pos->start > next) {
+> +			region = iommu_alloc_resv_region(next, pos->start - next, prot,
+> +							 IOMMU_RESV_RESERVED, GFP_KERNEL);
+> +			if (region)
+> +				list_add_tail(&region->list, list);
+> +		}
+> +
+> +		if (pos->end == PHYS_ADDR_MAX)
+> +			goto exit;
+> +
+> +		if (pos->end >= next)
+> +			next = pos->end + 1;
+> +
+> +		list_del(&pos->node);
+> +		kfree(pos);
+> +	}
+> +
+> +	region = iommu_alloc_resv_region(next, PHYS_ADDR_MAX - next + 1,
+> +					 prot, IOMMU_RESV_RESERVED, GFP_KERNEL);
+> +	if (region)
+> +		list_add_tail(&region->list, list);
+> +
+> +exit:
+> +	list_for_each_entry_safe(pos, next_range, &ranges, node) {
+> +		list_del(&pos->node);
+> +		kfree(pos);
+> +	}
+> +}
+> +
+>   /**
+>    * of_iommu_get_resv_regions - reserved region driver helper for device tree
+>    * @dev: device for which to get reserved regions
+> @@ -214,10 +319,14 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>   
+>   		memset(&phys, 0, sizeof(phys));
+>   
+> +		maps = of_get_property(it.node, "iommu-addresses", &size);
+> +		if (!maps)
+> +			continue;
+> +
+>   		/*
+> -		 * The "reg" property is optional and can be omitted by reserved-memory regions
+> -		 * that represent reservations in the IOVA space, which are regions that should
+> -		 * not be mapped.
+> +		 * "iommu-addresses" must be used in combination with a "reg" that provides
+> +		 * the physical address and size of this memory region, for an identity 1:1
+> +		 * IOVA mapping to that physical memory.
+>   		 */
+>   		if (of_property_present(it.node, "reg")) {
+>   			err = of_address_to_resource(it.node, 0, &phys);
+> @@ -226,11 +335,11 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>   					it.node, err);
+>   				continue;
+>   			}
+> -		}
+> -
+> -		maps = of_get_property(it.node, "iommu-addresses", &size);
+> -		if (!maps)
+> +		} else {
+> +			dev_err(dev, "%pOF: iommu-addresses requires a reg property\n",
+> +				it.node);
+>   			continue;
+> +		}
 
-Drivers really shouldn't allow unbinding - if we can pull an IOMMU out 
-from underneath client devices with active DMA (especially to translated 
-addresses), a theoretical race against device hot-remove is hardly the 
-biggest problem facing the system in that case...
+The if/else doesn't belong in a path entitled 'Add support for 
+"iommu-ranges"' as this changes he behaviour of iommu-addresses 
+independently of whatever iommu-ranges does.
 
-Properly-implemented modular drivers can only be removed if and when 
-they have no client devices - which in practice means they're usually 
-non-removable - so one way or another this race would not exist.
+The reg update part basically has nothing to do with this series at all 
+i.e. the code you depend on later in this series doesn't declare 
+iommu-addresses so... this is an update to align with a DT schema change.
 
-That does still leave the case of unwinding from iommu_device_register() 
-failure, but again that's already a sufficiently unexpected and serious 
-condition that we can't necessarily expect the system to continue in a 
-usable state at all, and if you want to start worrying about hot-remove 
-during IOMMU registration that's probably a much bigger can of worms anyway.
+https://github.com/devicetree-org/dt-schema/pull/207
 
-Thanks,
-Robin.
+Perhaps splitting this into two patches as an iommu-series would be best.
+>   
+>   		end = maps + size / sizeof(__be32);
+>   
+> @@ -258,6 +367,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>   				}
+>   				type = iommu_resv_region_get_type(dev, &phys, iova, length);
+>   
+> +				if (type != IOMMU_RESV_DIRECT)
+> +					continue;
+> +
 
-> 
-> The detailed description:
-> 
-> * Test environment / affected version
-> 
->    Linux version 7.3.0 (gcc 13.3.0, GNU ld 2.42) #1 SMP PREEMPT_DYNAMIC
->    -- vanilla mainline 7.3 release tarball (kernel.org, unmodified),
->    rebuilt with CONFIG_KASAN_GENERIC=y, CONFIG_IOMMU_SUPPORT=y,
->    CONFIG_IOMMU_API=y, QEMU/KVM x86_64 guest.  All functions cited
->    below are byte-identical in 7.1.5 and 7.3 (function-level diff);
->    line numbers are from 7.3.
-> 
-> * The two racing entries into the same release path
-> 
->    A (instance unregister traversal):
->        iommu_device_unregister() (iommu.c:316)
->          -> bus_for_each_dev(..., remove_iommu_group)   /* :319 */
->          -> remove_iommu_group()                        /* :273 */
->               if (dev->iommu && dev->iommu->iommu_dev == data)   /* :275 */
->                       iommu_release_device(dev);
-> 
->    B (client removal notification):
->        device_del() -> BUS_NOTIFY_REMOVED_DEVICE (fired without the
->        device_lock held) -> iommu_bus_notifier() (iommu.c:1815)
->          -> iommu_release_device(dev)
-> 
->    Neither path takes iommu_probe_device_lock (which the probe side
->    uses to make dev->iommu stable, iommu.c:626/715); the group lock is
->    only acquired deep inside, after the unlocked reads.  The device
->    model does not serialize them: klist_del() only marks the node dead
->    and drops one reference, and the traversal's iterator pins the node
->    with kref_get -- so A's callback and B's notifier run concurrently
->    for the same device.
-> 
-> * What breaks inside iommu_release_device() (iommu.c:778-789)
-> 
->        group = dev->iommu_group;             /* :781, unlocked read #1 */
->        if (group)
->                __iommu_group_remove_device(dev);
->        if (dev->iommu)
->                dev_iommu_free(dev);          /* :788, unlocked free when
->                                                  the group is gone */
-> 
->    __iommu_group_remove_device() (iommu.c:751) then re-reads
->    dev->iommu_group (read #2 at :753) and locks it (:755) -- between
->    the two reads the other side can complete the whole removal inside
->    the group lock (iommu_deinit_device() clears dev->iommu_group at
->    :611 and frees the param at :613), so:
-> 
->    - read #2 yields NULL -> mutex_lock(NULL) -> oops; or
->    - read #2 yields the same group, the find loop finds nothing (the
->      other side already list_del'ed it) and the code falls through to
->      the UNCONDITIONAL iommu_group_put(group) at :775 -- a put with no
->      matching get, because the only get paired with :775 is the group
->      membership reference (iommu_group_add_device(), iommu.c:1338),
->      which the winner already consumed.
-> 
->    The group's reference sits on its devices kobject
->    (kobject_get/put(group->devices_kobj), iommu.c:1448/1462), so the
->    extra put either frees the group immediately (single-member,
->    no-external-ref topology -> every later access, including the
->    loser's own mutex_unlock and kobject_put, is a UAF) or drops the
->    kref early (refcount underflow -> premature kfree while other
->    members / the singleton pointer still reference it).
-> 
->    Two more crossings of the same root, for completeness:
->    - remove_iommu_group()'s second dereference at :275
->      (dev->iommu->iommu_dev) races the param free (dev_iommu_free()
->      clears dev->iommu and kfrees the param), including the
->      probe-failure cleanup inside iommu_init_device() (iommu.c:544),
->      which holds the probe lock that the traversal does not take:
->      UAF read of the param.
->    - the "group == NULL but param != NULL" branch free at :788 races
->      the locked free at :613: double free of param/fwspec, or a
->      NULL+0x28 read in the loser's path.
-> 
-> * Evidence (7.3, KASAN)
-> 
->    Reproducer attached (iommurace.c): registers a fake IOMMU instance
->    through the real exported core API and drives both entries with
->    real platform-bus devices -- kthread A loops
->    iommu_device_register/unregister, kthread B loops client
->    platform_device_add/del.  Usage:
-> 
->      insmod iommurace.ko
->      echo setup > /sys/module/iommurace/parameters/action
->      echo "ab 3000" > /sys/module/iommurace/parameters/action
->      echo status > /sys/module/iommurace/parameters/action
-> 
->    One 3000-round run (4 vCPU): 7 slab-use-after-free reports
->    (kobject_put x4, refcount_warn_saturate x3 -- the refcount
->    underflow family) plus one NULL deref at
->    __iommu_probe_device+0x2ad (address 0x28) as B's probe walked state
->    the concurrent unregister had already torn down; the module
->    reference count stays pinned at 1 afterwards (the poisoned state
->    skips the deinit that would module_put).  First report, closed
->    three-stack witness:
-> 
->      access:  slab-use-after-free in kobject_put
->               by task iommurace_b (client removal side)
->      allocated: kobject_create_and_add <- iommu_group_alloc
->                 <- __iommu_probe_device <- iommu_probe_device
->                 <- iommu_bus_notifier        (removal side's earlier probe)
->      freed:     kfree <- kobject_put <- remove_iommu_group+0x67
->                 <- bus_for_each_dev
->                 <- iommu_device_unregister  (traversal side)
-> 
->    This is exactly the "extra put frees the group / underflows the
->    kref" interleaving described above.  (Sequential baselines --
->    register/unregister loops and client add/del without the race --
->    produce zero reports during the test phases.  Note for running the
->    module: leave it loaded after the race actions; the poisoned state
->    intentionally pins its refcount, and the module's own rmmod path
->    has an unrelated software-node teardown ordering splat on 7.3.)
-> 
-> * Trigger model / affected configurations
-> 
->    Any build where an IOMMU instance can be unregistered at runtime:
->    virtio-iommu (sysfs unbind), several platform IOMMU drivers (some
->    set suppress_bind_attrs; PCI hot-unplug paths remain), plus any
->    concurrent client removal the platform produces (PCI remove/rescan,
->    device_del on hotpluggable buses).  Both sides are administrator
->    actions; the consequence is kernel memory corruption (UAF
->    read/write, double free, premature group release leaving dangling
->    dev->iommu_group / singleton pointers for later users).
-> 
-> Thanks for taking a look.
-> 
-> Regards,
-> Hanxiang Xu
-> xuhx@hust.edu.cn
-> 
+If you look in iommu_resv_region_get_type() you can emit
+
+         dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] 
+as reservation\n", phys,
+                  &start, &end);
+         return IOMMU_RESV_RESERVED;
+
+on a mismatch - which is not what the code will do now. Mismatch will 
+warn and then not map.
+
+So maybe dev_err() saying you won't map - in the new patch for reg. 
+Either way this isn't a change specific to iommu-ranges.
+
+>   				region = iommu_alloc_resv_region(iova, length, prot, type,
+>   								 GFP_KERNEL);
+>   				if (region)
+> @@ -265,6 +377,8 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>   			}
+>   		}
+>   	}
+> +
+> +	of_iommu_derive_resv_regions(dev, list);
+>   #endif
+>   }
+>   EXPORT_SYMBOL(of_iommu_get_resv_regions);
 > 
 
