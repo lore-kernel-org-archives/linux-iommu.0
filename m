@@ -1,47 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792743859;
-	b=Aj6Ivcp6W8soyg9IxGX2upAe7eZYlyaCnzjqygJbBHZKv+av3P+mtBIgHTeDz2nQC3VC
-	 6UpqaBlba55zHwQNQ0vIoP85cpu3Mxhfl3G6zXNjPrt0A8lTuUQrWy8B0jl5VlVNOlNL1
-	 ehdi4lYafzc6WRrzNTGA4/oShQ7cRk/Ly3XxWznI5dX2YauUgpN7spMG3K6i/22gdOPBN
-	 DZWIXntggyolhJ4voTjgdU0bQ8FKJntgN8lLmrt4zu02etztJxSQjPZ3egrJn/45xldHE
-	 fYugmcYGNEACQfLEdrXbsSmciSqZ5AYETfO0oSqhpbX6N0aUvsktRZh2Q8Y07gjlIPg==
+	t=1792757462;
+	b=0tWtMeyPkjAVokBH1akx/TjOZgEH/+rcuy7RX51sQMlsnzZA3CMM0cxRIoAkCPikqvRN
+	 iIbROodqDJSKd0l0fT5t0hR85TqpI+tiPGl9UfTLRk863mrK1QvpT35Ews8No9OpxB0VD
+	 /5zPTj5JtrOXnY2P+b2JhHuHe9JtvkLOH4tIhjWoGMJJ0FuvuldPrJMXMXlRsdGUbHkRy
+	 0p8lN3pvGqKpgV5oJ2LiYzLAKibHiWfCXFf3/t04aZLUZTsC0gL3DyxS3Y6pIM1nr3Ik+
+	 n4xW5UM0W85jvozq0B0Rhnq0hYVEj6OcfvYSZKqnusG40rsxu/fygVu0KWNqAIZjgMg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792743859;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=mWiKy2uNdp2dmO6iNZ8w+iaJQX4LQ1vYisT9qIA+1bg=;
-	b=lbDdUDS+01r4VzBmTmsjAvCPnJ/2tGEoTHO8Li7f48AIKSILmP2fgl9UjfOhyRYMBQJ+
-	 axY4MFMAj3fipH0pojeZjwZyavbDB7xNzvGVTYe3P15dsTCvnu4GqpR4xCNaUomYzfFgw
-	 F6ZnB+r9Yod3Goq2gIs2lSf4ULgzJPcLjVqgBFYSUk7CloCivyCWhGXKdF3qzs0eqD6Bc
-	 T4aeF9oNo4+bCSJ1oP/tVHje0J6oZ/JSQ8e8Wu7Y6v6BP+Wq7WhajGT4+3tAiEK1ew+so
-	 opcBJtYj2ECqGemNS4gu+CbnEghU8985okzYEYnbzetiU1WCl3MSjG+TlbJV1wt5PhA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792757462;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=+9ABaSJ2TNSe2zyjJ/G3TozbAp2nZSVkr4JqPJVrOhM=;
+	b=KaF7r0cvk9Dm5En2/Lktydb3W3PY7X2dxt85JfEeZ5EgwdELatnv0+o5fIykxNRo2/Mu
+	 eqnub7j9TDLpAhWE0Jlit9uwjiaqbQOdLEQURqIp2fvs+NCRbOv+sluf12mc+5NrfH7A+
+	 KDenqV8kAlmOxz0o1DZ2hNQ3NSGXuTrOFzyHklWKqat0jhd/4oP5FPJH9muEssjfrINkG
+	 uYSQ7rnDwjlIWkB3L0y3C1F1rE4S3gPAcsS85qymow7o82ZkZyeu7WAb/Prs26IYYqtfv
+	 GNmathTAbY4mSOlELx8pIZ7mZEdGe0+VMrRvUAFBd31s0ZZs4/tleeHkqAjtSNWzvCw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QA2FRdq5;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEBA5606A31A;
-	Fri, 23 Oct 2026 08:24:18 +0000 (UTC)
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=gkbyTeQN;
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 04589606A31B
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 12:11:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 04589606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QA2FRdq5
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8D141F01825;
-	Fri, 23 Oct 2026 08:24:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1792743858;
-	bh=mWiKy2uNdp2dmO6iNZ8w+iaJQX4LQ1vYisT9qIA+1bg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=QA2FRdq59Z5YayCTXaUlGu5kPgHp87ZyGlXnL/zfkJcWuh41crw1juhEOMcDSCXOG
-	 YpQB/xalslR9JwmoPk/w4j7TYfz4p6jaOZQyYuI4Lvmmx0NVo0+JpytW4A9iLnQQjT
-	 M9+iigJvN6arBhU8a1vixcLonUkeCODClew7iEnE8cDNRXVaaLeDYXYrRqz7ziYnr3
-	 cdt6APUX7g0lGY1VUnWfusEFf8j17iA4ZQGCfCgfJHevA0ls7SnEN2UmhCsTQ4yEb3
-	 ITDhPPJ88GGfGewJ5irLsGrqtAOkwhFqSXg9ICTf7IEM5QGjTGuvBLzI4T59ssTVZQ
-	 3cpOV9u+NqT4Q==
-Message-ID: <a8be1a0b-591b-47d2-be21-137e1cb93dc9@kernel.org>
-Date: Fri, 23 Oct 2026 10:24:08 +0200
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=gkbyTeQN
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E425B1692;
+	Fri, 23 Oct 2026 05:10:56 -0700 (PDT)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0E1713F7B4;
+	Fri, 23 Oct 2026 05:10:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1792757460; bh=JWiVKkvqMbPQUX28W4bEe8+RRzv3aXiMK1aPbISQRoo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=gkbyTeQN2CCbuK7ji0WSOlNL2NUd3bU79bZU3Du8DyjyL4x3DTnF0oottBvtMuLpS
+	 yfp3kipdCxmmP1RXAilIcKX0BcYzkexbMxwckHAwvl9nvh+Jp+G5hXXEs/rGhPedmc
+	 vZ1DdIPPqqxCcbiqCL+tLjrfCVGG6boDgtTI/wEA=
+Message-ID: <40a2e1a2-138b-42bf-94ea-a42fda128c22@arm.com>
+Date: Fri, 23 Oct 2026 13:10:56 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -52,94 +54,141 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 01/13] dt-bindings: display: msm: Add Qualcomm DCP
- bindings
-To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
- Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar
- <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>,
- Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Sumit Semwal <sumit.semwal@linaro.org>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Philipp Stanner <phasta@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-msm@vger.kernel.org,
- dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- iommu@lists.linux.dev
-References: <20261015-jshekhar-drm-msm-dcp-v1-v1-0-48aad0fe4f72@oss.qualcomm.com>
- <20261015-jshekhar-drm-msm-dcp-v1-v1-1-48aad0fe4f72@oss.qualcomm.com>
- <20261015-heavy-clam-of-sunshine-8fe831@quoll>
- <ae967eb1-cc54-4733-9e89-bc375e1cbfd6@oss.qualcomm.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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
-In-Reply-To: <ae967eb1-cc54-4733-9e89-bc375e1cbfd6@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [RFC PATCH 0/3] iommu/arm-smmu-v3: Add support for hitless
+ replace of CD entries
+To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Pranjal Shrivastava <praan@google.com>
+References: <20260925011308.3381953-1-skhawaja@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20260925011308.3381953-1-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 23/10/2026 10:10, Jayant Shekhar wrote:
->>> +properties:
->>> +  reg:
->>> +    maxItems: 1
->>> +    description: Index of this DSI host among its siblings.
->>> +
->>> +  status: true
->> I see slop, I finished here. Mind this maintainers summit words - if you
->> use AI, you must use good one, not the shloppy slop.
+On 25/09/2026 2:13 am, Samiullah Khawaja wrote:
+> This patch series adds support for replacing IOMMU domains with S1 page
+> tables hitlessly, that is without disrupting the ongoing DMAs. This is
+> one of the dependencies of the Liveupdate IOMMU support for Arm SMMUv3.
+> 
+> S1 domains are programmed by CD entries in the CD table. During a new
+> domain attach these are updated using arm_smmu_write_cd_entry(). Since
+> ASID and TTB0 are in different 64-bit words, arm_smmu_write_cd_entry()
+> considers it a non-hitless update and sets V=0. This means such an
+> update is disruptive and would generate translation faults if there are
+> ongoing DMAs.
+> 
+> Replace the CD entries by using an unused temporary ASID in the
+> following sequence to allow hitless replacement of CD entry,
+> 
+> - Update the CD entry with temporary ASID.
+> - Update the CD entry with the target TTB0.
+> - Invalidate the temporary ASID.
+> - Update the CD entry with target ASID.
+> - Invalidate and release the temporary ASID.
+
+Why bother transitioning through a 3rd ASID? The old and new pagetables 
+must contain the same translations anyway, so why not just: switch ASID, 
+switch TTB, invalidate old ASID?
+
+It's perhaps worth noting that for correctness either way this also very 
+much depends on no concurrent map/unmap operations being able to happen 
+in either hwpt while the switch is ongoing, but then I guess it already 
+depends on the caller guaranteeing that the hwpts hold identical 
+translations, which we can't realistically verify at the driver level 
+either...
+
+Thanks,
+Robin.
+
+> The series adds a vfio selftest that triggers a continuous DMA and does
+> the hwpt replace while the DMA is ongoing. Since domain replacement is a
+> race with the translation requests, the test does it multiple times to
+> capture the small window where IOMMU faults can occur.
+> 
+> Without this change we can observe the SMMU faults in the kernel logs
+> and with it the SMMU faults do not occur.
+> 
+> This is only tested on qemu with the emulated SMMUv3 and an out of tree
+> NVMe vfio selftest driver, not on real hardware. Following are not
+> covered and can be done later,
+> 
+> - S2 domains have the same problem, S2VMID is in STE qword 2 and S2TTB is
+>    in qword 3. These need the same handling with a temporary VMID.
+> - ATS is not tested, the test environment runs with pci=noats.
+> 
+> Testing:
+> 
+> Without Fix:
+> 
+>    TAP version 13
+>    1..2
+>    # Starting 2 tests from 2 test cases.
+>    #  RUN           vfio_iommufd_replace_hwpt_test.domain_replace.memcpy ...
+>    [   33.267749] vfio-pci 0000:00:0a.0: enabling device (0000 -> 0002)
+>    [   33.270709] vfio-pci 0000:00:0a.0: resetting
+>    [   33.385682] vfio-pci 0000:00:0a.0: reset done
+>    [   37.128021] arm-smmu-v3 9050000.smmuv3: event 0x0a received:
+>    [   37.131885] arm-smmu-v3 9050000.smmuv3:      0x000000500000000a
+>    [   37.134585] arm-smmu-v3 9050000.smmuv3:      0x0000000000000000
+>    [   37.136961] arm-smmu-v3 9050000.smmuv3:      0x0000000000000000
+>    [   37.139631] arm-smmu-v3 9050000.smmuv3:      0x0000000000000000
+>    [   37.142188] arm-smmu-v3 9050000.smmuv3: event: C_BAD_CD client: 0000:00:0a.0 sid: 0x50 ssid: 0x0
+> 
+>    ...
+>    ...
+> 
+> With Fix:
+> 
+>    TAP version 13
+>    1..2
+>    # Starting 2 tests from 2 test cases.
+>    #  RUN           vfio_iommufd_replace_hwpt_test.domain_replace.memcpy ...
+>    [   33.418253] vfio-pci 0000:00:0a.0: enabling device (0000 -> 0002)
+>    [   33.421218] vfio-pci 0000:00:0a.0: resetting
+>    [   33.539750] vfio-pci 0000:00:0a.0: reset done
+>    #            OK  vfio_iommufd_replace_hwpt_test.domain_replace.memcpy
+>    ok 1 vfio_iommufd_replace_hwpt_test.domain_replace.memcpy
+>    #  RUN           vfio_iommufd_replace_hwpt_test.noreplace.memcpy ...
+>    [   88.416453] vfio-pci 0000:00:0a.0: resetting
+>    [   88.531989] vfio-pci 0000:00:0a.0: reset done
+>    #            OK  vfio_iommufd_replace_hwpt_test.noreplace.memcpy
+>    ok 2 vfio_iommufd_replace_hwpt_test.noreplace.memcpy
+> 
+> Looking forward to your feedback on this.
+> 
+> Dependencies:
+> The patch series includes a patch from the vfio selftest multi iommu
+> series as it is required for the hwpt_replace vfio selftest. It is part
+> of this series since the original code doesn't apply cleanly on the
+> base.
+> https://lore.kernel.org/all/20260505221518.619123-1-skhawaja@google.com/
+> 
+> Related Work:
+> Liveupdate IOMMU patch series:
+> https://lore.kernel.org/all/20260921004834.2601285-1-skhawaja@google.com/
+> Liveupdate IOMMU feature patchset breakdown:
+> https://docs.google.com/document/d/1enDn-uPE9U77U-xHEnzn6HHGKiePSAtMIP8EDU3NO0M
+> 
+> Samiullah Khawaja (3):
+>    vfio: selftests: Add support of creating iommus from iommufd
+>    vfio: selftests: Add iommufd hwpt replace test
+>    iommu/arm-smmu-v3: Add support for hitless replace of S1 domains
+> 
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  66 ++++++-
+>   tools/testing/selftests/vfio/Makefile         |   1 +
+>   .../vfio/lib/include/libvfio/iommu.h          |   2 +
+>   .../lib/include/libvfio/vfio_pci_device.h     |   2 +
+>   tools/testing/selftests/vfio/lib/iommu.c      |  60 +++++-
+>   .../selftests/vfio/lib/vfio_pci_device.c      |  25 ++-
+>   .../vfio/vfio_iommufd_hwpt_replace_test.c     | 171 ++++++++++++++++++
+>   7 files changed, 316 insertions(+), 11 deletions(-)
+>   create mode 100644 tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test.c
 > 
 > 
-> Will remove this in v2.
+> base-commit: 3d7783543c2646af69ad65825e810060494bea21
 
-And please also remove other sloppy-code produced by your AI as well.
-
-Best regards,
-Krzysztof
