@@ -1,100 +1,144 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792798270;
-	b=2a2Oe9ppT+9Bxasw2XnP1820xau52+gr0mAwMfyLkYITgkvsuVdwgvmzIQ31GWH6e3iX
-	 s50Q8dywCvK35NLQaZ1ZcbwqMY19PExZId3RZMEI0iB4jt8lpuJ3A4ZEb3o6Ubr67ewHr
-	 LW3yMmO3+yY7jeadeh6zAnbw54aqy9/tKXmy9mQr7gwcbbV/k4wBAFmbwlu0krUgJ5+eX
-	 dD1ffQRNE3TTROVmhvIzYHvyQWW9x5vS+UcaAxvPg4OK0wyYXo/d+z1YKYgax5OkiVAs3
-	 9oZROWb0MXhS9kkIUzp49asu/uBzcEOWLpB7W+zS1+j2zILp0HQz4XA4pED3ZD+at7w==
+	t=1792798614;
+	b=ai5uMTR1Hho/KuUkPxAW2N+nlaAdISPbeql/QVJSrotQhLOnJriXzWaI0Oxn56WF/zFl
+	 noe8CTv3YH5BjYdpoDxlAQb3pGzrWm7QaeSTGz3SSK/uRb0Oy5LlS2jyCr8CtASgPrxMR
+	 +Ed+qieVdiv/tWaHkYKCk+jKsKLwVqDmiGOuJlrrXSsVsr1NXZ/32SCB0f/onxN8wVW84
+	 ymQ79GIhyQcHJ6l2fTGymsxjHwL5E8hOq/4anTJq/7ZJjr1LJF5r6lWVsnSCh39dwGy90
+	 pwTNM0IigcfqT/hnx3EWit5FdG+dCNYKY/y/iodwm8NabDX+sYd6vdgt83krFcMwpGw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792798270;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=PWqyUavBnfNEo1DMfRHoVS39e8foN13m8UB6fhUtUw8=;
-	b=HWgHgKkS6TXUnqsf3gbnidMofQG2lFoF5mHWPi8VLzlXqBvp5Jjhq9obV6/gq3wLvCP3
-	 +96+KZm0QfO/OJjFlrTRe43YLeO7Y1gMb0KxdZp9/lnEUTySwGd87CY+wkRT+oxLfEfV0
-	 7VE2g1lBh0dNTt9bFRRXRrJXtL7OXmxnZcIgl9SC3Y0KcoLJMrxVLg61lTMwdDc3MvkRy
-	 +NBdGKQcD6wBpKZ8ZiDAxRRmoN0Pk8b02CtloWb9iddjRb4WtQZMY0SJ7spP/czwxM0RD
-	 G5ZzGOfLO/6sFUBVnWSWU2MA1DHxCtsXbzANVFbW7aX8htSEJSDH9VQsrX2LVbOiY/A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792798614;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
+	 To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
+	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=Mgo2dnohmbku8+6gd0EG9FENz+puwwm3rQ80la31iuE=;
+	b=IDacQNvmzS64NJsv7nm1wescwtWTG8IrwtGOXCzdcDSr4roaH3yEQjFxV7A/40sxjbcH
+	 DQ+Ixes77AH0vuK+WKxp5YQOtd600LnH6km1ZLAdkJ9O2fpmBgk+MCAUkH3EEmUU/bm7k
+	 9P9CON99STTBAExUEyfBDFGbBIqXnym+BkzD8ms8OJCsgsKmxhnR4olTQrXC6161Lryn6
+	 tpujbjTOjZUY2Gl8hiEC2TYRUVzkEzhmEz14rEWWFuwLhEb7nirM8BwgyTgAqBBIDdLys
+	 aZpGIUwv4ed+9JjCNMJHmGciUp/2ixMAIWOj058Wh/9mXwDWj1hnYbsCQLq1Siq/8lA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=gD6jYL9B;
-	arc=none smtp.remote-ip=209.85.214.174
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=moYOHMFI;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=eiLEwO4w;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6961C606A31B
-	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 23:31:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6961C606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F6C9606A31F
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 23:36:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0F6C9606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=gD6jYL9B
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2e9f6a16afcso11535ad.1
-        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 16:31:09 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=moYOHMFI;
+	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=eiLEwO4w
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69NLvcUd3471173
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 23:36:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Mgo2dnohmbku8+6gd0EG9FENz+puwwm3rQ80la31iuE=; b=moYOHMFI/3MRcJDz
+	ZA8WnN7yEfSkWsyYp8v9+QFucDkTCQC8SKcTMqg6RzdAtSjs3QzyZzQWJj0B/Ck0
+	RUVQ95Vua/zwF3kcxhebMt86PgFMZy42QbaGG1wXhzJI9u5QVSOEYPxzcdwRGL5g
+	v8e/Cwpg5r/HTWQirguGNfljG9bsB9eUsY068Ty7mtfFWZ0WCbFD0USBCprfm2Cv
+	tP4D5MY2tkdIdOtYAMZUXZa5Di76LOUTGCgvyc8GSjD9Fx7Ln0TieTpXRURC96qg
+	+UKV4UvxmqsF+PWNhqI2HT9ElC6Wn/6oWhECs9FABEYmXr70LNHco9j/K0M4FKGi
+	fs/lwA==
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hgcrugvuj-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 23:36:53 +0000 (GMT)
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-93ecdc701a2so192775685a.3
+        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 16:36:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792798269; x=1793403069; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=PWqyUavBnfNEo1DMfRHoVS39e8foN13m8UB6fhUtUw8=;
-        b=gD6jYL9BVFlwKLwyqKKPSpXht1HyOdAtUYtSOaGDa2fG8FFxDh3luDLuRqVCPdnp7A
-         td+YzABu66F/Tr1mLM75KURd6gKZU/R8XsQqVfF/dnJWxoCXdhNq5gyj8jhrRM2d8Ffs
-         NynTgeDqsde/48MW0iHlXStktoCU0on5K3OzDjMNhs+RBETOw+LNFbT5lh9u9d4GCrRV
-         Tixx/qE7SvsFUonRZRYBP5qBjMzzFN8YhxcmuiQCwOKhlc0QxrLLgGi/IMA95Z2puJu1
-         QtCpKUpSa6EYQlFPyaKuwRxanVD92TiYIx8jZJ3bQ55+OicKiDa6wtZM5FZh/J/NpHWm
-         TlBg==
+        d=oss.qualcomm.com; s=google; t=1792798612; x=1793403412; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Mgo2dnohmbku8+6gd0EG9FENz+puwwm3rQ80la31iuE=;
+        b=eiLEwO4w4a8T+O3TLWWYr5DvMTjYtJ9yxQRnofyKy/tJISE1K1gzhReGFcT60Y86Y5
+         LiWyAsMcsq+IdrMcJwLc9tXThabdG1ziJ+VqAXk9pPoEZnPwPt1+RSGLUutQsuZteD6V
+         YHbhDaKPSI9Q6z8xK36x9y3DS1U3SZyXBp4fV6V4xLgVde0AoZ/Qem3FlnT+LQc8lsmD
+         Uzyv28J3Vn5+8wBbYCZweVUiSVppD3DQlwQgCtiOpEElEJ/38e3GJEBS1qp2sna8sS4K
+         lRt0zPauAA/q0uiKpRiVp+jrFEJbhkEwBhFRxXTWdDCyfA2KD89aX17uJ3L9DG9q2p7z
+         DsVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792798269; x=1793403069;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=PWqyUavBnfNEo1DMfRHoVS39e8foN13m8UB6fhUtUw8=;
-        b=X3PLpOsupXMaIgcbrVEaatG9tD55YL7mwWEcorZLnJmgLR1Aqtn+5KT9vkJJ8DrKnd
-         CpuYJ/VY2eUql7IlzAk049YXAmAlAkgsVPkXP/q/XuwVTk83S4Q/saiFZkM85hYmp+e7
-         lJKR56Ti2Rn6THSkmcc55toUhpapWEla/KdJz5+h0FGu0TTImYsceQMAA658BBSMVGk1
-         7HLJqWTk0JoVZUEfEAccRo97MLCG1DIxAUYzkyWQZTDOe7l4BkQNdOUg9J8HU3ocNbto
-         9qpPKzGnpsEvaFnmvLsyKyP2ooydNCFBsEykJXHAovSW1KaFDAnniq/pQ6NRGICNM+yU
-         ZuZQ==
-X-Forwarded-Encrypted: i=1; AKwUvByd2uW/N2J5jZuenqoLDnTcr0hvcOssCMvv85gyvxVk/ZY+XyG4E1/0Qu+tQ/NzxJuBg0z+yg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJS5GVvDRk7SxainRlDF85Pe2/qoUvM4tsqtEa4yumKZOHMfJbO
-	Bi6YvY6ZyzDwWGHWOwhAEG4WS9rranDyljdGUh6Cb5G/lDdikTiSYq+nmX3XTD+mmN/OYL4TDmV
-	4tO1MCA==
-X-Gm-Gg: AYBFou0t6yUF3FhotZEzMrvM+FaR/M5rw1VAtuYnxnRQKX8rk9b0Mr8KPDNUTsod/aR
-	tDZMeYOJPrBXRxEQkUR+xxh05ZvpUWdeJ4XXyRvK4Oq7g/YlfUiahCgN6fCzJRrSQ3oDxStdQPv
-	y3vboNlqYY6yPCdNdq7PnBVrzqNikZ4mkD6CillKNLLEaNC7XR4imZaY4vpLwWYhxXFBjATxM/R
-	MCREy6etdVcCL1jr6iQRckHtNjdTt8mYbo03h8V98sllaiuEKozXH4X6EL0L1/AiN+xY0GyxR7v
-	6R96HROFzm8LTKQPi8u8UIDePlVsPPrYoxlhZ1Ju0fKY4f/R4n5+WhiyOoCByxr6sBBipKcExKS
-	MniHExRv2DBQHWiSBeGMj9pY31uHU1BK720n/YJ3hsheG0g1t4dN+hvFsvR0YR7RRRpcxlwKjud
-	C4WT3y80RykwBXkC0quWIcBnffhqAniELJ2aQVb4qwnViS5Q+Bu6FTU7ydvbAs1AYZLY9Tx9hL9
-	YBWlc9yNKCFj3j6HuA/+FP7PQxFHn8PZdopUNlzhXQ/KSufODLnLm/Mq15UgeExAnGGJFlkTJ0a
-	VIV/q8DdjFSiLxqaflVbC4FheQ2q0ePTVW26DStVOfLQKXKg
-X-Received: by 2002:a17:903:1cc:b0:2e6:1917:fa with SMTP id d9443c01a7336-2ea9d12a727mr853705ad.7.1792798268197;
-        Fri, 23 Oct 2026 16:31:08 -0700 (PDT)
-Received: from google.com (163.1.145.34.bc.googleusercontent.com. [34.145.1.163])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebb27a1bsm707176a91.15.2026.10.23.16.31.05
+        d=1e100.net; s=20260707; t=1792798612; x=1793403412;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=Mgo2dnohmbku8+6gd0EG9FENz+puwwm3rQ80la31iuE=;
+        b=WtDWIe/EV7Go8sxvyqu6w10bzHhH53RKDFVCnAGNy9sD6fhf96ECXzx5QgxShDXU5U
+         s/EHIMx1oF6VjOhoC9BzWvMaZx8qxWW1kWu6KykELWLrvVRRww2XxBSHf1CulKegMKHB
+         8B1LDMsd4Myoj7usEVCuarFzxk4lBxm8OfS6hRlum+bgsg0S7pP8KoD4uE3hddXBw2yC
+         A6opkwadPtdNws44UGnH1NZ41kHzkOOESKEzOlQrl8cUlhex+Q3aWhgCh8y7NgE0xGIz
+         GoCS9R7cOd+v+5GVnGv2BAGYxvwOuZ0ywhBoGO5pohk8zIdb5gGty6htyOK8MO7qTxAT
+         /HYA==
+X-Forwarded-Encrypted: i=1; AKwUvBwfPMNVa3KVbTlWMrxGdqpyhE1IV7jUhrqBK4yYcbTejZXDiJOL7IXG7kefGmj0FT6SK0artg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIfQ9JQb0heJC8NPuUISLrsK5lLDm5TO3xZLE5NToimk6sgxl/u
+	dpeRx/sHqDpKpNyWgM2hFm0SiXCKeB/CezT1/9kb/CZGGmf78Bivg+AO+p+KDDTfCQCfUAoGdte
+	qI+1riAPZ41TxeCBmvzar8wf96ZZspSwnhaM1IUviww+FPiJSyO9uZw/5hw==
+X-Gm-Gg: AYBFou3mMmcdSFdJBk3ci2BHSa1foa21w4TyO2HYmBvyc4h6pEhCe1uJV1ETDDq7wXa
+	lXZXozhHTdK+rK49TE0bj5TLfRoq2KPJ8iR4vQTvLnoqdY/YPDNe1zANsNG7S0HtRKEokusbQcM
+	J79aKYi03Mc+zqLP26FtUzGloY5TCZDwnE1+Y67nLsJtA5k0G6o3b7WK+ZZi3WtZQt8cbZ1zFEy
+	ot5gnFljAU0EvO51E0nJgwtLmXsweST8GBRphpoVkUyBxDQmgh3yES6CpKo99nFknjQWL3JoPPX
+	JlLZb0EcX7auHsC63zJXpbMXT6Dd1zI2dUBXR7Kzm2yQ46kVZe1N/WorEUBwxJ9LyFsKikd6PjF
+	9+VQGaJOb5rgGR4pixooMn78EKMZtYnwXBemOtpJXIikUW6zHgqEdR8aoFl8srGJGjIBILSN6Rp
+	SmQs/jHqQJgjD/
+X-Received: by 2002:a05:620a:370b:b0:93b:eb9a:ca47 with SMTP id af79cd13be357-940ef938f5fmr84044585a.31.1792798611959;
+        Fri, 23 Oct 2026 16:36:51 -0700 (PDT)
+X-Received: by 2002:a05:620a:370b:b0:93b:eb9a:ca47 with SMTP id af79cd13be357-940ef938f5fmr84041285a.31.1792798611386;
+        Fri, 23 Oct 2026 16:36:51 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfb7a6b051sm67463e87.14.2026.10.23.16.36.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 16:31:05 -0700 (PDT)
-Date: Fri, 23 Oct 2026 23:31:03 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Pranjal Shrivastava <praan@google.com>
-Subject: Re: [RFC PATCH 3/3] iommu/arm-smmu-v3: Add support for hitless
- replace of S1 domains
-Message-ID: <atvppceAqBVx8G9S@google.com>
-References: <20260925011308.3381953-1-skhawaja@google.com>
- <20260925011308.3381953-4-skhawaja@google.com>
- <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
+        Fri, 23 Oct 2026 16:36:49 -0700 (PDT)
+Date: Sat, 24 Oct 2026 02:36:47 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, iommu@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH RFC 03/13] drm/msm: look for lpac from dts
+Message-ID: <o2zmplbtmoueumw3iqejfsdmucp5f66woa5hmw3vodbe66reab@syn2ashugzyg>
+References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
+ <20260705-descriptive-name-lpac-upstream-v1-3-01d50c3e0c99@gmail.com>
+ <rwohvfbsw2brpxrfg26egu5arwe6g7n2etelo33eegmu5cz65k@3syofuxzsjrc>
+ <dc5aef2e-600e-4e97-b76b-dcc8bd72c709@gmail.com>
+ <m4vwrqt6yyaawpvkyrqfzs3kbipbhygmtrhphuthl2gmjvkgyt@u2d3dnvl2phy>
+ <54cb37bb-aaa5-4c5d-a563-acca4822dd35@oss.qualcomm.com>
+ <t5gu6ciwmxdb2jghc44gtixdsbedkgy4yzke5sgawjrr2h362u@ahvhh3yfe6lx>
+ <wtun2cfukyzxlsfiz2izsejd33k4jpapwqa3uqih5drcsrkff5@e6llkke5dayw>
+ <1f6db59c-b7a9-41a1-8022-6713365fa09e@gmail.com>
+ <fcb86c33-1893-47bb-80eb-20acd65f3805@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,139 +148,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fcb86c33-1893-47bb-80eb-20acd65f3805@oss.qualcomm.com>
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDIzMDA5MyBTYWx0ZWRfX6f2cgQUSpqvM
+ fIUP43VLdH25n9owHShM8W4HTWE4oQWcE1EdFSo6uHpmx4yDdwp1c1G/dXJGFiCn0aKXBq6sM/k
+ pOicOI3EvdkFoF0+b6Z2ZYmKQZhBZ6Y=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDIzMDA5MyBTYWx0ZWRfX6KSzPZX15HYp
+ NPk+OHvbazGJqUW09KhsoHg0MaXt+EdSgiL4r+hlccUbgtIZCOS9MfxUQfkOUvhwEYXn7RyPaRg
+ CvR2gJs514nBz82ABnxbJu9ZYWA5jeIpdskm8PfDLLI2oAeCHGp10YTT+8cjPC5CK8InmI3JAQV
+ xdsE7yMbzjB5F0QQIZ2FFxiN0S4cGRV3/sZNdZDMOf1pTN6MCiLUk79kBnfYsjO72/1Lw3AfQ5+
+ Z6duXcOgLaZ0k2VHldBgaji7dcEL/WmoCjBSKHKoN9prG9/LmsBQ2cd35BZjo2HSiH44clRB0uN
+ fZJYAZcm9LxmO732OcIHVh82wg9qH7lXsHU4gWgKlMCkRl8q+utIwC0wWgpF0mL9nqVAFEjXWxh
+ Wm93ZDcxd+6ALZOSlhb1LEyFE0M6Cy8P7/nspwSZ2Yq1aoumX/6VNv7jEPDpUfj5IGuFzGE2hdS
+ VD+jdYTJwd6CSCyGPpw==
+X-Authority-Analysis: v=2.4 cv=Ju5kP84C c=1 sm=1 tr=0 ts=6adbef95 cx=c_pps
+ a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=8nJEP1OIZ-IA:10
+ a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22 a=VwQbUJbxAAAA:8
+ a=9jRdOu3wAAAA:8 a=s7fkfekX88plzggl2-cA:9 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10
+ a=NFOGd7dJGGMPyQGDc5-O:22 a=ZE6KLimJVUuLrTuGpvhn:22
+X-Proofpoint-GUID: eYFc0-RjD5sbwdZI-rMaORNlePXj0gTA
+X-Proofpoint-ORIG-GUID: eYFc0-RjD5sbwdZI-rMaORNlePXj0gTA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-10-23_06,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 spamscore=0 impostorscore=0 suspectscore=0 phishscore=0
+ clxscore=1015 adultscore=0 priorityscore=1501 lowpriorityscore=0
+ malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
+ definitions=main-2610230093
 
-On Fri, Oct 23, 2026 at 02:43:28PM +0100, Robin Murphy wrote:
->On 25/09/2026 2:13 am, Samiullah Khawaja wrote:
->>S1 domains are programmed by CD entries in the CD table. During a new
->>domain attach these are updated using write_cd_entry. Since ASID and
->>TTB0 are in different 64-bit words, the write_cd_entry considers it a
->>non-hitless update and sets V=0. This means such an update is disruptive
->>and would generate translation faults if there are ongoing DMAs.
->>
->>Replace the CD entries by using an unused temporary ASID in following
->>sequence to allow hitless replacement of CD entry,
->>
->>- Update the CD entry with temporary ASID.
->>- Update the CD entry with the target TTB0.
->>- Update the CD entry with the target ASID.
->>
->>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->>---
->>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 ++++++++++++++++++++-
->>  1 file changed, 64 insertions(+), 2 deletions(-)
->>
->>diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>index 5732f3ba0122..59f4b8cf89f6 100644
->>--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>@@ -1641,6 +1641,68 @@ void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
->>  	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
->>  }
->>+/* Invalidate every stage-1 TLB entry tagged with @asid. */
->>+static void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
->>+{
->>+	enum arm_smmu_cmdq_opcode op = (smmu->features & ARM_SMMU_FEAT_E2H) ?
->>+					       CMDQ_OP_TLBI_EL2_ASID :
->>+					       CMDQ_OP_TLBI_NH_ASID;
->>+
->>+	arm_smmu_cmdq_issue_cmd_with_sync(smmu,
->>+					  arm_smmu_make_cmd_tlbi(op, asid, 0));
->>+}
->
->Feels like this should probably use the existing invalidation machinery...
+On Fri, Oct 23, 2026 at 03:16:27AM +0530, Akhil P Oommen wrote:
+> 
+> 
+> On 10/22/2026 6:24 PM, Anna Maniscalco wrote:
+> > On 7/9/26 9:39 PM, Dmitry Baryshkov wrote:
+> >> On Thu, Jul 09, 2026 at 05:54:23PM +0300, Dmitry Baryshkov wrote:
+> >>> On Thu, Jul 09, 2026 at 07:12:39PM +0530, Akhil P Oommen wrote:
+> >>>> On 7/7/2026 10:09 PM, Dmitry Baryshkov wrote:
+> >>>>> On Tue, Jul 07, 2026 at 05:02:43PM +0200, Anna Maniscalco wrote:
+> >>>>>> On 7/6/26 5:04 PM, Dmitry Baryshkov wrote:
+> >>>>>>> On Sun, Jul 05, 2026 at 09:13:37PM +0200, Anna Maniscalco wrote:
+> >>>>>>>> In order to associate the SID used by LPAC to it's own domain and
+> >>>>>>>> context bank we need a separate node on the DTS.
+> >>>>>>> Can we use iommu-map instead of adding a new device using the same
+> >>>>>>> addresses? You provide zero explanations, but it seems like you are
+> >>>>>>> trying to separate a part of the GPU into a separate device, but it's
+> >>>>>>> unnecessary.
+> >>>>>> What I was trying to say is that we need to map sid0 and sid1 to different
+> >>>>>> context banks.
+> >>>>>>
+> >>>>>>  From what I recall, so long as we use the same dt node, the iommu drivert
+> >>>>>> provides no way of doing this.
+> >>>>>>
+> >>>>>> What kgsl does is having a node for the iommu and then subnodes for gfx lpac
+> >>>>>> and secure.
+> >>>>>>
+> >>>>>> The address on the lpac device doesn't really matter. I have very limted
+> >>>>>> knowledge of DTSs but I think we could just leave it out altogether?
+> >>>>> I think, you were poined to the Glymur Iris patches. Another option is
+> >>>>> the QDA driver being submitted too. Both ot them use iommu-map to
+> >>>>> describe the same usecase - a set of SIDs which are used by the device
+> >>>>> but which should not be a part of the defaut set. With it in place you
+> >>>>> don't need to have separate qcom,lpac devices, no additional properties,
+> >>>>> etc.
+> >>>>>
+> >>>>> I'd recommend following the same approach.
+> >>>> iiuc, the conclusion in this recent thread is to use child nodes for a
+> >>>> similar case:
+> >>>> https://lore.kernel.org/all/20260618151745.GD231643@ziepe.ca/
+> >>> Let me check internally.
+> >> After a brief discussion: it can be either, depending on what suites
+> >> better (and if you can persuade DMA / IOMMU maintainers to let one extra
+> >> bus or not).
+> >>
+> > One thing sashiko is pointing out is that new dt should work with hold kernel so, in general moving sid1 from there would break it since old kernels don't know how to handle them separately.
 
-I see, I can use the arm_smmu_inv_flush_iotlb_tag() to issue
-invalidation for the ASID.
->
->>+
->>+static void arm_smmu_cd_set_asid(struct arm_smmu_cd *cd, u16 asid)
->>+{
->>+	cd->data[0] &= ~cpu_to_le64(CTXDESC_CD_0_ASID);
->>+	cd->data[0] |= cpu_to_le64(FIELD_PREP(CTXDESC_CD_0_ASID, asid));
->>+}
->>+
->>+static void arm_smmu_replace_cd_entry(struct arm_smmu_master *master, int ssid,
->>+				      struct arm_smmu_cd *cdptr,
->>+				      const struct arm_smmu_cd *target)
->>+{
->>+	struct arm_smmu_device *smmu = master->smmu;
->>+	struct arm_smmu_cd stage;
->>+	u32 tmp_asid;
->>+
->>+	lockdep_assert_held(&arm_smmu_asid_lock);
->>+
->>+	/*
->>+	 * Nothing is translating through an invalid CD, and an update that
->>+	 * invalidates one cannot be made hitless anyway.
->>+	 */
->>+	if (!(cdptr->data[0] & cpu_to_le64(CTXDESC_CD_0_V)) ||
->>+	    !(target->data[0] & cpu_to_le64(CTXDESC_CD_0_V)))
->>+		goto write_directly;
->>+
->>+	if (xa_alloc(&arm_smmu_asid_xa, &tmp_asid, XA_ZERO_ENTRY,
->>+		     XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL))
->>+		goto write_directly;
->>+
->>+	/* Copy the existing cd entry and update only the ASID. */
->>+	stage = *cdptr;
->>+	arm_smmu_cd_set_asid(&stage, tmp_asid);
->>+	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
->>+
->>+	/* Copy the target cd entry and update ASID to the temporary ASID. */
->>+	stage = *target;
->>+	arm_smmu_cd_set_asid(&stage, tmp_asid);
->>+	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
->>+
->>+	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
->>+
->>+	/* Update to the target cd entry as it should be hitless now. */
->>+	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
->>+
->>+	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
->>+	xa_erase(&arm_smmu_asid_xa, tmp_asid);
->>+	return;
->>+
->>+write_directly:
->>+	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
->>+}
->>+
->>  void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
->>  			 struct arm_smmu_master *master,
->>  			 struct arm_smmu_domain *smmu_domain)
->>@@ -3664,8 +3726,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev,
->>  		struct arm_smmu_cd target_cd;
->>  		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
->>-		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
->>-					&target_cd);
->>+		arm_smmu_replace_cd_entry(master, IOMMU_NO_PASID, cdptr,
->>+					  &target_cd);
->
->No, we cannot blindly do this for arbitrary ->attach_dev calls - the 
->majority of S1->S1 transitions are going to be moving back and forth 
->between the default domain and user domains, where there is zero 
->expectation, let alone guarantee, that the translations would be 
->equivalent and thus not liable to lead to TLB conflict aborts or 
->amalgamation hell.
->
->This needs to be in a dedicated "I know what I'm doing and I fully 
->accept the consequences if I get it wrong" call path.
+The rule is the opposite: new kernels must continue to work with the old
+DTs. If the new DT breaks with the older kernel, just specify it in the
+cover letter so that Bjorn doesn't merge DT changes before the driver
+changes find the way into his tree.
 
-Agreed.
+> > 
+> 
+> + Bjorn/Konrad
+> 
+> Not sure how strict is the requirement for compatibility with older kernel version. An
+> option in your case could be just do an override in the board dts file of the
+> Steam Frame.
 
-I will update this to only be triggered with explicit request from the
-Core to satisfy my live update use case where a preserved iommu domain
-is being replaced by a new domain setup by the user.
+Anyway, would it be a problem? Does GPU normally use SID 1? Or is it
+only used by the LPAC?
 
-Thanks,
-Sami
->
->Thanks,
->Robin.
->
->>  		arm_smmu_make_cdtable_ste(&target, master, state.ats_enabled,
->>  					  STRTAB_STE_1_S1DSS_SSID0);
->>  		arm_smmu_install_ste_for_dev(master, &target);
->
+> 
+> -Akhil.
+> 
+> > Not sure how to address this.
+> > 
+> > Best regards,
+> 
+
+-- 
+With best wishes
+Dmitry
