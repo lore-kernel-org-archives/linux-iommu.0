@@ -1,49 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792757462;
-	b=0tWtMeyPkjAVokBH1akx/TjOZgEH/+rcuy7RX51sQMlsnzZA3CMM0cxRIoAkCPikqvRN
-	 iIbROodqDJSKd0l0fT5t0hR85TqpI+tiPGl9UfTLRk863mrK1QvpT35Ews8No9OpxB0VD
-	 /5zPTj5JtrOXnY2P+b2JhHuHe9JtvkLOH4tIhjWoGMJJ0FuvuldPrJMXMXlRsdGUbHkRy
-	 0p8lN3pvGqKpgV5oJ2LiYzLAKibHiWfCXFf3/t04aZLUZTsC0gL3DyxS3Y6pIM1nr3Ik+
-	 n4xW5UM0W85jvozq0B0Rhnq0hYVEj6OcfvYSZKqnusG40rsxu/fygVu0KWNqAIZjgMg==
+	t=1792762217;
+	b=VTM+xSJDe9BSEphzypiQdjYYhhkIABvowUFGwK2hd+bjRtDoeTE2MjdKeOxedpq/B8sZ
+	 2ugz9EzDbDRjhwyiS2DkS/54bWPFfYZRxic5prd20kc04jcIDa/1osvcgk9m/5/1CtUaM
+	 G8hIK8q4TrJ093PK7bjOpD9UXAMowwxsSfCzpJM6uGc06xnhZ8MsUO8tktLcZzvF2GuF2
+	 gbQxj5dKb9V+Ix9mqsBRSRCxfRMvQTRMaxIZQ11lPFYJ9MqCjIBdMH+iZJWT3REFB34PM
+	 PxHrbt5fsQQJI2h/dgOj9+w/9O7tjl3CBIsU3nY5tis5M0WV3iJyhWkszApt3tCQZ4w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792757462;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=+9ABaSJ2TNSe2zyjJ/G3TozbAp2nZSVkr4JqPJVrOhM=;
-	b=KaF7r0cvk9Dm5En2/Lktydb3W3PY7X2dxt85JfEeZ5EgwdELatnv0+o5fIykxNRo2/Mu
-	 eqnub7j9TDLpAhWE0Jlit9uwjiaqbQOdLEQURqIp2fvs+NCRbOv+sluf12mc+5NrfH7A+
-	 KDenqV8kAlmOxz0o1DZ2hNQ3NSGXuTrOFzyHklWKqat0jhd/4oP5FPJH9muEssjfrINkG
-	 uYSQ7rnDwjlIWkB3L0y3C1F1rE4S3gPAcsS85qymow7o82ZkZyeu7WAb/Prs26IYYqtfv
-	 GNmathTAbY4mSOlELx8pIZ7mZEdGe0+VMrRvUAFBd31s0ZZs4/tleeHkqAjtSNWzvCw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1792762217;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=uRmgUY58lYpE+OAASwZeJvigPvl80FuNSTlXSW3pqM4=;
+	b=wo9MmeDOHpANQTIqvVJj80zXyr50i8nqYtDK43Xj4YRwXStUELwZxIGFSQ7imd1flz/U
+	 FYvFRQtuqKwwVrdnnv9XvS5J/UC5+Y3+A0Ns3XkeST9vhVFvpW4ri3RKvkXCq6N6cS3DN
+	 nNVKZfuN62pB2JLLwfsQhR2wjMCIGwr591bEhsp4vYMaPvf0jiAi82II4Z+vGEHZbmRcL
+	 VIWMz85ZvvSZJ+mn/Frb+9n8Hw5Sd12WqUL1BubkmYs5og96FhPpGBvNg6ZihExPj/87P
+	 2vo+vfUD0tZvBEafNAdBypKH1DZmCZbifmlhB703yDeqLqwAJvMHRRpOnabYgHqnweg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=gkbyTeQN;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 04589606A31B
-	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 12:11:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 04589606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=IIkpyJxw;
+	arc=none smtp.remote-ip=209.85.219.42
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B357606A325
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 13:30:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6B357606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=gkbyTeQN
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E425B1692;
-	Fri, 23 Oct 2026 05:10:56 -0700 (PDT)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0E1713F7B4;
-	Fri, 23 Oct 2026 05:10:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1792757460; bh=JWiVKkvqMbPQUX28W4bEe8+RRzv3aXiMK1aPbISQRoo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=gkbyTeQN2CCbuK7ji0WSOlNL2NUd3bU79bZU3Du8DyjyL4x3DTnF0oottBvtMuLpS
-	 yfp3kipdCxmmP1RXAilIcKX0BcYzkexbMxwckHAwvl9nvh+Jp+G5hXXEs/rGhPedmc
-	 vZ1DdIPPqqxCcbiqCL+tLjrfCVGG6boDgtTI/wEA=
-Message-ID: <40a2e1a2-138b-42bf-94ea-a42fda128c22@arm.com>
-Date: Fri, 23 Oct 2026 13:10:56 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=IIkpyJxw
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-91befbcad6dso15201756d6.3
+        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 06:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1792762215; x=1793367015; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=uRmgUY58lYpE+OAASwZeJvigPvl80FuNSTlXSW3pqM4=;
+        b=IIkpyJxwyFmTfkBKp42KP1thVVl68sgK9Cel0TOTh1WYLMPLSVSEEoA8AiWy8mGgox
+         VPD8pKrzTmVU4cKEIZ9U2HfgioBGMGfJ4vJW2vrY/aLApZn6lgcgAdr+qvIMXrdGFcIk
+         LDfkKaYP8DII2fwVNqKvdsl9jMk8/1ZW+I8UkiCGLtoY41CNUlQ8eYDYocPZpny9OxBF
+         IlFarac6OX06jFJYeYbAnDMTnS91BtzMX8mPVyO8sSARh6FHLWdzLNK+VzNn5bJSNhIY
+         Fv3Jw4iljAQw22zjCx6XUbhHQ5uSDsjRTXsIkHJZ3x4hm2xhuWNCmYPX4sF5cxkH2HOS
+         ALGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792762215; x=1793367015;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=uRmgUY58lYpE+OAASwZeJvigPvl80FuNSTlXSW3pqM4=;
+        b=hyzVDR2LQ6isnmYcLdaBlXkcqPVgcebp+KsYT1SeWQ/89NLiX+FHrIsu3KkpMpEmb4
+         I5TQLPIaKLRSH5ATm1v+f13L9uU/mTNisVXJa+0kQqxU+T6XfFdq5rl3SbF0hwfWbDHH
+         S8gRbVJhdEsGw+nvjY1hsGjnp8xKYV5ae5RKy/v7+AQTBVl2jlI1YOdRSY2LYA1q9Aaf
+         gbMeCYTnHx1pTHM+HVpATMIaSNdMcI7HtOe3FgbW4ZRqrojK5WY3nloNIgn3TVfxW+uh
+         jVUtcO2AsidbvjMBqqdYaoFssygC/+e2jw2zhfZ/fpj4z6M9XGUkY1qaYcXgADvBVG6N
+         lCIQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwo5NN5vzCYPrZwjekPUWCiwByGJXPqQ4739suTOrECBSJCHRFqyXCNd57pKKEsLdhZ6GGbtw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLl2SKlwbdi4y06q4/rBCWshAGfmrPJJQVKlV/zRxlXp4+SBqQy
+	V7JTdXjVe3VzP57tzT1GXACm3oHbnZIUg+6d8tqRqT8KVWwZXs6GWEmcDfE3DKk+/88=
+X-Gm-Gg: AYBFou2eVgvWKW84CZaPjQQE/jDRbDHqyXSssMnh8Fypau6gxBgE9GTI+PnSHe/U5SV
+	zD6xCoMgmB5L7g0Atll1+1dIqqqUHFdWndD6vXikyTvJhYEqkWutHj10VJHgw0hXuWYELZUv0Yy
+	RjT4/9bawGYrXCj7MQj22YvyAjvWkp/0yZ5WUBukuRABKjpcBfwNx6iCcQ3MqQGuMYhuX86BimX
+	SMp7tyU3y2Royq5jKH6cjOYsAHxNkuApbDlgQpcPyd5ckAQqMkpWe5F7mDgiGHdNaPkRqhTY11c
+	kV0v/j/hbfBSVnmLLBfAMzC4Q4s0haZdVqTOB5/uPnAYCSOAnCq/Cz1UdNAdz3XjauYzc52S8NI
+	Yjhpe7q8K5i+RC9xDF/PuCN+v6ZroTz+Qn+v3Yo8MrfrmMoHBSvhhP8yYacGqoRlaLdivuhIPIC
+	xhR1EN3GRjEw9o8cecmE2Qt3M03mOy+DwhBUPxgVOfqgi9MhLR63htUCvB1VNdE9dN3LioYS1Gk
+	co7KIyFg7qSsIqdx/ehRfC8tE5RTDBUea7fLDnOFhKw8DWZdRmcuwO6xYPyp04fW7LJguUNRqfs
+	BxXKhaiZ8odnjc6b1fkHZukyPueSF6PjdOz18ih2+MrHJqEm/BorZukMDko=
+X-Received: by 2002:a05:620a:28d6:b0:93f:1d5:9973 with SMTP id af79cd13be357-93f6f85a4admr388371885a.73.1792762215070;
+        Fri, 23 Oct 2026 06:30:15 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-94047b43ba1sm16517585a.39.2026.10.23.06.30.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2026 06:30:14 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xKFLZ-0000000GgNS-3Otq;
+	Fri, 23 Oct 2026 10:30:13 -0300
+Date: Fri, 23 Oct 2026 10:30:13 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Joerg Roedel <joerg.roedel@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] MAINTAINER: Make Vasant Hegde AMD IOMMU maintainer
+Message-ID: <20261023133013.GI3381610@ziepe.ca>
+References: <20261015160119.1005966-1-joro@8bytes.org>
+ <29b82596-b8a8-44b3-b1db-f438c5d18114@amd.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,142 +104,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/3] iommu/arm-smmu-v3: Add support for hitless
- replace of CD entries
-To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>, Lu Baolu <baolu.lu@linux.intel.com>,
- Pranjal Shrivastava <praan@google.com>
-References: <20260925011308.3381953-1-skhawaja@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20260925011308.3381953-1-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <29b82596-b8a8-44b3-b1db-f438c5d18114@amd.com>
 
-On 25/09/2026 2:13 am, Samiullah Khawaja wrote:
-> This patch series adds support for replacing IOMMU domains with S1 page
-> tables hitlessly, that is without disrupting the ongoing DMAs. This is
-> one of the dependencies of the Liveupdate IOMMU support for Arm SMMUv3.
+On Fri, Oct 16, 2026 at 07:41:11PM +0530, Vasant Hegde wrote:
 > 
-> S1 domains are programmed by CD entries in the CD table. During a new
-> domain attach these are updated using arm_smmu_write_cd_entry(). Since
-> ASID and TTB0 are in different 64-bit words, arm_smmu_write_cd_entry()
-> considers it a non-hitless update and sets V=0. This means such an
-> update is disruptive and would generate translation faults if there are
-> ongoing DMAs.
 > 
-> Replace the CD entries by using an unused temporary ASID in the
-> following sequence to allow hitless replacement of CD entry,
+> On 10/15/2026 9:31 PM, Jörg Rödel wrote:
+> > From: Joerg Roedel <joerg.roedel@amd.com>
+> > 
+> > Vasant reviews and tests most of the AMD IOMMU patches and is critical
+> > for maintaining the driver. Make him an official maintainer.
+> > 
+> > Cc: Vasant Hegde <vasant.hegde@amd.com>
+> > Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> > Cc: Will Deacon <will@kernel.org>
+> > Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
 > 
-> - Update the CD entry with temporary ASID.
-> - Update the CD entry with the target TTB0.
-> - Invalidate the temporary ASID.
-> - Update the CD entry with target ASID.
-> - Invalidate and release the temporary ASID.
+> Acked-by: Vasant Hegde <vasant.hegde@amd.com>
 
-Why bother transitioning through a 3rd ASID? The old and new pagetables 
-must contain the same translations anyway, so why not just: switch ASID, 
-switch TTB, invalidate old ASID?
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-It's perhaps worth noting that for correctness either way this also very 
-much depends on no concurrent map/unmap operations being able to happen 
-in either hwpt while the switch is ongoing, but then I guess it already 
-depends on the caller guaranteeing that the hwpts hold identical 
-translations, which we can't realistically verify at the driver level 
-either...
-
-Thanks,
-Robin.
-
-> The series adds a vfio selftest that triggers a continuous DMA and does
-> the hwpt replace while the DMA is ongoing. Since domain replacement is a
-> race with the translation requests, the test does it multiple times to
-> capture the small window where IOMMU faults can occur.
-> 
-> Without this change we can observe the SMMU faults in the kernel logs
-> and with it the SMMU faults do not occur.
-> 
-> This is only tested on qemu with the emulated SMMUv3 and an out of tree
-> NVMe vfio selftest driver, not on real hardware. Following are not
-> covered and can be done later,
-> 
-> - S2 domains have the same problem, S2VMID is in STE qword 2 and S2TTB is
->    in qword 3. These need the same handling with a temporary VMID.
-> - ATS is not tested, the test environment runs with pci=noats.
-> 
-> Testing:
-> 
-> Without Fix:
-> 
->    TAP version 13
->    1..2
->    # Starting 2 tests from 2 test cases.
->    #  RUN           vfio_iommufd_replace_hwpt_test.domain_replace.memcpy ...
->    [   33.267749] vfio-pci 0000:00:0a.0: enabling device (0000 -> 0002)
->    [   33.270709] vfio-pci 0000:00:0a.0: resetting
->    [   33.385682] vfio-pci 0000:00:0a.0: reset done
->    [   37.128021] arm-smmu-v3 9050000.smmuv3: event 0x0a received:
->    [   37.131885] arm-smmu-v3 9050000.smmuv3:      0x000000500000000a
->    [   37.134585] arm-smmu-v3 9050000.smmuv3:      0x0000000000000000
->    [   37.136961] arm-smmu-v3 9050000.smmuv3:      0x0000000000000000
->    [   37.139631] arm-smmu-v3 9050000.smmuv3:      0x0000000000000000
->    [   37.142188] arm-smmu-v3 9050000.smmuv3: event: C_BAD_CD client: 0000:00:0a.0 sid: 0x50 ssid: 0x0
-> 
->    ...
->    ...
-> 
-> With Fix:
-> 
->    TAP version 13
->    1..2
->    # Starting 2 tests from 2 test cases.
->    #  RUN           vfio_iommufd_replace_hwpt_test.domain_replace.memcpy ...
->    [   33.418253] vfio-pci 0000:00:0a.0: enabling device (0000 -> 0002)
->    [   33.421218] vfio-pci 0000:00:0a.0: resetting
->    [   33.539750] vfio-pci 0000:00:0a.0: reset done
->    #            OK  vfio_iommufd_replace_hwpt_test.domain_replace.memcpy
->    ok 1 vfio_iommufd_replace_hwpt_test.domain_replace.memcpy
->    #  RUN           vfio_iommufd_replace_hwpt_test.noreplace.memcpy ...
->    [   88.416453] vfio-pci 0000:00:0a.0: resetting
->    [   88.531989] vfio-pci 0000:00:0a.0: reset done
->    #            OK  vfio_iommufd_replace_hwpt_test.noreplace.memcpy
->    ok 2 vfio_iommufd_replace_hwpt_test.noreplace.memcpy
-> 
-> Looking forward to your feedback on this.
-> 
-> Dependencies:
-> The patch series includes a patch from the vfio selftest multi iommu
-> series as it is required for the hwpt_replace vfio selftest. It is part
-> of this series since the original code doesn't apply cleanly on the
-> base.
-> https://lore.kernel.org/all/20260505221518.619123-1-skhawaja@google.com/
-> 
-> Related Work:
-> Liveupdate IOMMU patch series:
-> https://lore.kernel.org/all/20260921004834.2601285-1-skhawaja@google.com/
-> Liveupdate IOMMU feature patchset breakdown:
-> https://docs.google.com/document/d/1enDn-uPE9U77U-xHEnzn6HHGKiePSAtMIP8EDU3NO0M
-> 
-> Samiullah Khawaja (3):
->    vfio: selftests: Add support of creating iommus from iommufd
->    vfio: selftests: Add iommufd hwpt replace test
->    iommu/arm-smmu-v3: Add support for hitless replace of S1 domains
-> 
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  66 ++++++-
->   tools/testing/selftests/vfio/Makefile         |   1 +
->   .../vfio/lib/include/libvfio/iommu.h          |   2 +
->   .../lib/include/libvfio/vfio_pci_device.h     |   2 +
->   tools/testing/selftests/vfio/lib/iommu.c      |  60 +++++-
->   .../selftests/vfio/lib/vfio_pci_device.c      |  25 ++-
->   .../vfio/vfio_iommufd_hwpt_replace_test.c     | 171 ++++++++++++++++++
->   7 files changed, 316 insertions(+), 11 deletions(-)
->   create mode 100644 tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test.c
-> 
-> 
-> base-commit: 3d7783543c2646af69ad65825e810060494bea21
-
+Jason
