@@ -1,111 +1,131 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792763419;
-	b=ZHGIq6rgsDa84NIv9MwpOeZsTPa0m5QLtxATHdxB2QpG4B4x5l5njTIeh566aJUuKrG+
-	 K0KT7apdHudNwxOsuFqPoSvZT0EtHLHqEOgbieYUE+6bGasjdkqVv9Xwgza6Hq6+q0+XN
-	 jPlrSpsMre+VBqjiEx7l/rjl1Htq7QGCLgNAcZT8Xdns8GGgSOQ5KQJCM/vd+NAbyEvGR
-	 3hczo/TPN6SZKb2QQrXQplSn+fag1jvH7WJIVZF4SEVGkTvAT9odM9adMJw2KQjKQELNx
-	 AvGWULRX7b07+2prZDGIY2CvPNSAm7MpzPlhYaE6enFBRZ87BEnvx/xq0IFI6gXV+MA==
+	t=1792764070;
+	b=CNbsnHKWJHeGu5Uukwi2+toT4N6ZmXvy6DdO/fzbNPrJ59VJU2D+Kl5sG9yc5ZJjdJ4y
+	 RATtZV8OZgFN3ucS5Q7W2gvVQK4uXhYf4PbxD5y35Zch67VjFnJ+iKLqbK5U+JAf0wvMq
+	 M913S8Av11MFARXgvqFy3L4/B6NOELWVZmbZlKDWIhkVh8D9R5lZtbAVIwfm81N9QJ9Q3
+	 +bEQVJ3MBNXpA8EwC3afY7SjW3n99knHuggzgbCOI3aZMOPvw2nKr0+ox8cv6vvTZuEBD
+	 fGuLNIdc6YBLZ+PN2Wu0IkHf/3CrJgxxck8I8Wl+S853YDJ/NlBFZXaikuGyFpHdQ9Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792763419;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792764070;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
 	 In-Reply-To;
-	bh=8FyuJnnll3uJwbR+wT99CVBO9fzREsmjzeqnUECMRTY=;
-	b=0DVkNjnpilcx+G/9UID8FC/365mwVHxyJwv2Um6q35bVQplRYOBBDsef/uOzny858m19
-	 sWuoaDARFRZ/N4Iuqh24LTlFqgQhOOfw9yjEv6ZRQZ2o4m8gZycdl9XbZsKW+q3zsUjU3
-	 o6tKO3gCPJpFcTpNTpi6/2UVv0jHJQGCk6eN+WCEU/fe+C50Ar72YY88YSr7AVEK1kSD2
-	 7A1zCMDgWjLwYeozBVs2k5BVUZYax0cOJThxWfRpgNjaCA2FSOG1xpoiE2WyfzNFMdn9T
-	 440STWgMXneREKYNqfQbl72SVi2c4EjLx/IBnu1K3aYHZZyk+3rBlsJGFIs4MvYLFtg==
+	bh=EtyMFPm1AoXY1rEO0WfbSM6JxPHkULRdHaFEkgfjDaI=;
+	b=zpv5sS3XZ1kx5x1vp7c8C+ljhAW6jusWCjR2imIMnyCeCG0Qz9iPhdAHYFPRazyfmK27
+	 rB0S3W4FRb8gYoiIZBaRs5HrezviOd+PkQwer0ffVyIH/3DpdRL1vojQy8/hgBYR1ZtGf
+	 d3SmuscYA+2AyXcV977tqGmwFSmmqfHr/EzOQy0L8Vhcv8EskVWjWOgqZh8YZnZVzyX+Y
+	 CNxN2jVqmXQ+ryCdqorigmgeyw6Mj5DAMp2D+KDVgEyXS+kzoug46aqHNVqfExWE8y6cc
+	 SllQP4HrR4kcgYxcobAXPp05EFBcuffnKrSTUmjRubGHHeoyL7uW8C/saGc+1G5ocNA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	arc=none smtp.remote-ip=209.85.216.54
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=LMz91tFs;
+	arc=none smtp.remote-ip=209.85.160.170
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06215606A31D
-	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 13:50:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 06215606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-3acb512a7a0so488226a91.1
-        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 06:50:18 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB0CD606A31E
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 14:01:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB0CD606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=LMz91tFs
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-53664b4860bso8394041cf.1
+        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 07:01:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792763418; x=1793368218; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1792764069; x=1793368869; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8FyuJnnll3uJwbR+wT99CVBO9fzREsmjzeqnUECMRTY=;
-        b=KPwT/HJ6horIKi23Rq8ERXOA7CxMMCLFhxpXAn0iJcR+i6JW2S/JPevtTssiy1/B/D
-         QkDqb/Vo84n98i1mJwuyEIEck2vbUhTvdx477HUj6Kpr7ky+2/o/MmcHzySoFLUq8tQ/
-         lJQ9dKL4RdkxIC9yBsZP9pRRXIoW7HguLJ2V9BqaTN0vDBeCXuCe2Bz9heiebY2k887m
-         U1HN8G8/yNCH9Nf2xSe//99kC2jdcf+Shb3q+jBowGeQMuhF3C+G5l/l7690crC7yfvd
-         ExJDD4WLTeuf9asQZ6uWobI3JRl2ujAw6wHpbcU1XV49lVYwEm7jOwFxxzXAvpF+zrPe
-         IW7w==
+        bh=EtyMFPm1AoXY1rEO0WfbSM6JxPHkULRdHaFEkgfjDaI=;
+        b=LMz91tFsGE+bi9Ry9kL+paLAvwNCbCgVvXEI6GhfnfkYpG13gCFyl3Qz9PdFPgOuu1
+         qvekepVIX+QFfDFA+N0S2D0GeGWmNJZpjhG3vK2G6i+pesk21UsGTniUAHNx6pmPqza9
+         1g99r3ObuSNi3TcXQHXgvgCXB+ULTohCKC/sOaj0KMRVSLdw+oPkhc0BsL2WmGM+vDbI
+         EXXUXZP+GRosDXXQEIR1b4IzFErqfU4tO9jmCpIgDDs3qVEOKDAXT5uXi0KVqJj8oRd/
+         pfMS0p+BStisZUPNFqTJJUSmIx9+VDtG48JYbrlC0v4+m0D4f//oJGsmaR0NxTSKYfvb
+         24JQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792763418; x=1793368218;
+        d=1e100.net; s=20260707; t=1792764069; x=1793368869;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :content-type:mime-version:references:message-id:subject:cc:to:from
          :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=8FyuJnnll3uJwbR+wT99CVBO9fzREsmjzeqnUECMRTY=;
-        b=trD/WXDcNTAXpOTHMlXWbPGteXh4DuxO6GPUhQK9xGt0wM6+/diCZg3c7X8Z1/gkxB
-         dPCKnyuUBLY7wcPiIYkzRxYOlR11UgkmOpQkdjSStlThUfwNqNGRCa3VLb7y/2LjXIrv
-         enc6iTNOQRP25nIhqqxeW+1vPF2XgWfyBCPf9WZ9BwMILAHuUIY4fpGoG66oriBaH3Fd
-         p7QiW5oehzV8X6DALzsyF6LhLGa9lU3zdq9lSbYgY2zeWgEfVZ/nCmie0jvsLxHn7cs2
-         mAeHb1yeuKV/PRNg0bV6mHFM8EpJ4JE6x3txd15p/9jXwjyLrdc5NF2NILfoCmHiKikj
-         arEw==
-X-Forwarded-Encrypted: i=1; AKwUvBzZsUoBJCLDhQ4cVzxLTUWWALt4K2m4HHe1Dgg0I1Y0+1RyaOjQChxDAojcHrplI5Qe/40Khw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIc0qLhpulpMpAP5vp7lALPeV/8arm+uFhjXKXcSsEYMbJjTT9d
-	FeDFRBPzth85WZEh0PO4T9MZXSL+LnAihMnRKbMsRgfLGA4U1gJdWGCelF0koBlz7Q==
-X-Gm-Gg: AYBFou282iGS2poDj39wej1/EedzkA0aTGWIONWdtsUJOsSKV7ul0DHvdMvuJomehWf
-	2Xk73o8afKwtooG+JAVSMN3+ku2fRZv7cq9+dfp/ANn3i0aJ50jvd7QDi07KNcMFns7GTvuixqu
-	altvLMyeC+oexwpDWAXV9NnDLw21P4BPgUgfDeJ0uzJXNEiL6wJsqHj0xFPg3y05kXh+53bDQ0G
-	hM0M9swA2XRCGKiS1o083ZpiAaxuJMqUU9TM+M2n66his0vyTKKwdOIl9x3eWMC1iFuFDYoTF3p
-	1EqoqmrxydIxCECsjmIH0SzdaXeHeYaG/cne6hXbSK80zPIlTkN57dsWrsmLQwOLE8A74HwHMsc
-	S0vJ5cHomknk0rXaYikuiOM9BHmHDLR2SVHNRumUtmGT4fNC4OpEl5qap5Xl0Yc1m8sHeF1r32q
-	inJk2Po+2rRl5aYVVseiij+dyFVQr4tGafHPKttIGXig28ggkjBv+NriFofvP2I07n3YDZFhLau
-	muHj6hRZTvICbCahkH4s4IkjVwzuwC46J6UaXpEOBMpmgVOIk40iTKuq09bbkTLAaG39FIj84AC
-	O5Qb/JiOPgoAUA36sy9VLvFXUJ3bFfMGccBXkg==
-X-Received: by 2002:a17:90b:5906:b0:3ab:3437:554f with SMTP id 98e67ed59e1d1-3adce0073a2mr1983207a91.29.1792763417701;
-        Fri, 23 Oct 2026 06:50:17 -0700 (PDT)
-Received: from google.com (64.75.127.34.bc.googleusercontent.com. [34.127.75.64])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ea94677c91sm545015ad.4.2026.10.23.06.50.16
+        bh=EtyMFPm1AoXY1rEO0WfbSM6JxPHkULRdHaFEkgfjDaI=;
+        b=XWd1hI8BXdykA5WDSDptdA3loLmQ03k0LeOq4yZ+DFD4uNPfxbeD9it1irOXxhcnTe
+         lpyp0GDiHsHQvrBbWnJdDmJ8Oi/nx0UyoAwwzjO5tLLR0/+uP95kx3zB0abWckQGB+oU
+         TXnRCJOTJr47g2fUsHZt5yUPsYRHhcoSY11JHSb15YMTbCrl/Iu8smCp5fuMeBnZZ1vg
+         LxFhNDwjYLhZ566Nw5jc4rVU8a2VShT5+DOXbt1ESYMuyVNytvKYRztcii3tjTmpP8yh
+         G/7UZHGu/nG1XtFnyjxy/kwpkBI3dvu13FhI9ThaodwCw6Z4bDeO2yaod6yrg6dgE2la
+         DPxw==
+X-Forwarded-Encrypted: i=1; AKwUvBxskD7GKhKCzADX1/94Nw7cuYqu36fdbTf+K2+ElVyX4LB8rs9YP9Uk0iK+n3ph/x1jDo+9MQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJpYyuTalCx05Ew4rVDpJzjlvpFqEhj0H8Y8dnfxmYZkagewZla
+	6sSSrwdOF5vvqnsf7AA74YBBmeKRwmP4rLjQWQpe6SHn9IouU9BKDoVC+1mQpyby7Fw=
+X-Gm-Gg: AYBFou35OD/lYM6v0OLcBvewQRHE2QIm7zkPGqQLq1s9mHwI6FLI/464WORFkkJbPa2
+	4P8jiepKh6+pi7tTTAL2e7pCpFtUac2+mFEH+0tfdexjFGbYeTh8lA9w3lKyNeQeHf43gjNnEho
+	X9QwLCZOGEeZ8sSwe+oit0pLdcESNfDOCAAdZnCvdCAFJe81z+o82kCzybwUYNvPMYKIFzsMdra
+	PLZw1PgRGeQUOFawyngiP6ckVqyaymgB3yu9s8BR3uAvO56E7er5cLRUe6WIU4VuGgn9frror/X
+	6cD53HXpv0OXZI1ZrypIIwlAO4GUs/ZQQhUvtwdAtfi1hpZwIKH12KiFzGYxLFKFlryCmsttYyW
+	o4DX4nzQBmLuxmaQZ5KXthMq/S93/ger3FzgEZc0RKSYWOdK2wBomQR8191OO9Eu93PnARcTbqj
+	FV4aSePACfuWQXzCcA7n7kBvQ2QRkzpMJ4dV2+c4ah1cW+szdFnmJTDfJC7Au/UVGYzze17YhpR
+	HrGi+t9nvHNZCmdE2/XMiEqe4vww0iYp5C/eKLneYQTDQZ6IyhFd/TxEI/pK1vmmCsO9h/zYLgY
+	xZXLg7jk7B+6EWKjbjc08XibsIVoHRU1d4ScCw==
+X-Received: by 2002:a05:622a:4d88:b0:535:92a6:22ec with SMTP id d75a77b69052e-536c263076fmr30716841cf.29.1792764068500;
+        Fri, 23 Oct 2026 07:01:08 -0700 (PDT)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-940479fc830sm24750685a.21.2026.10.23.07.01.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 06:50:16 -0700 (PDT)
-Date: Fri, 23 Oct 2026 13:50:13 +0000
-From: David Matlack <dmatlack@google.com>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: tarunsahu@google.com, Andrew Morton <akpm@linux-foundation.org>,
-	joro@8bytes.org, Mike Rapoport <rppt@kernel.org>,
-	Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de,
-	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com,
-	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org,
-	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com,
-	will@kernel.org, Alexander Graf <graf@amazon.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org,
-	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev,
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
-	kexec@lists.infradead.org, skhawaja@google.com, kvm@vger.kernel.org,
+        Fri, 23 Oct 2026 07:01:07 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xKFpT-0000000Ghww-1SWZ;
+	Fri, 23 Oct 2026 11:01:07 -0300
+Date: Fri, 23 Oct 2026 11:01:07 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Luigi Rizzo <lrizzo@google.com>
+Cc: "David Hildenbrand (Arm)" <david@kernel.org>,
+	Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Willem de Bruijn <willemb@google.com>,
+	Kuniyuki Iwashima <kuniyu@google.com>,
+	Joshua Washington <joshwash@google.com>,
+	Harshitha Ramamurthy <hramamurthy@google.com>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Michael Chan <michael.chan@broadcom.com>,
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev,
+	netdev@vger.kernel.org, linux-mm@kvack.org,
+	driver-core@lists.linux.dev, linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
- a 2-bit pair feature header
-Message-ID: <attmFVIFU_mS0Y7p@google.com>
-References: <CALzav=dLdJoVy=B1pv0FAurD9OhAzLSTjJNbtjTdJRmSqaB0yw@mail.gmail.com>
- <CA+CK2bAQRMAEXZyHTEuUN0_Fo59Sn0hBmYbme_J9ewjx6gPyJQ@mail.gmail.com>
- <atlKsD-aJB3mJr2j@google.com>
- <CA+CK2bABt4OZO31TenVF2+uBUWVwViWbvfE00=0xbAw=f7K9SA@mail.gmail.com>
- <atl7peoVHdP5hz7z@google.com>
- <CA+CK2bBFXnJA1kddbLKGq0DAHDgjYhsTSQQay-xeX7jJC1V_UQ@mail.gmail.com>
- <CALzav=e=ho2gVrn+7KpZ3ZyasvH2u15-pC-RSRSS7KcMfKqUJQ@mail.gmail.com>
- <CA+CK2bAJo8dnTOyKMgnnMnk-SCXbTsv+JCLEOWkjyj-wqtEkHg@mail.gmail.com>
- <atpNFEFIlqAoYIwH@google.com>
- <CA+CK2bB2C3Am5ssRuzYpfiU7_vB81vxMGc19HQLq7N=_7YrbTg@mail.gmail.com>
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+Message-ID: <20261023140107.GC3977851@ziepe.ca>
+References: <20261003212241.3432303-1-lrizzo@google.com>
+ <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
+ <CAMOZA0JaiKsRgDdjHkL_N+MshhcyLSv+cT9SzEbNsC_sumHvOw@mail.gmail.com>
+ <b31efcd5-149c-4edf-81a2-1744d363c390@kernel.org>
+ <CAMOZA0+6kAbwgNwGTsCT5AqpwcZKz4pziEGC9UpHkNCVoqrF-Q@mail.gmail.com>
+ <20261022201229.GH3381610@ziepe.ca>
+ <CAMOZA0KaanmevmvWS=M3gKfBeborzfCQTiF_xbSeYMWbozG7Mg@mail.gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -118,151 +138,108 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+CK2bB2C3Am5ssRuzYpfiU7_vB81vxMGc19HQLq7N=_7YrbTg@mail.gmail.com>
+In-Reply-To: <CAMOZA0KaanmevmvWS=M3gKfBeborzfCQTiF_xbSeYMWbozG7Mg@mail.gmail.com>
 
-On 2026-10-22 04:53 PM, Pasha Tatashin wrote:
-> On Thu, Oct 22, 2026 at 1:51 PM David Matlack <dmatlack@google.com> wrote:
-> > On 2026-10-22 12:11 AM, Pasha Tatashin wrote:
-
-> > > Lets drop the fourth macro argument and generate the combined struct name:
+On Thu, Oct 22, 2026 at 11:51:40PM +0200, Luigi Rizzo wrote:
+> On Thu, Oct 22, 2026 at 10:12 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >
+> > On Sat, Oct 17, 2026 at 07:11:28PM +0200, Luigi Rizzo wrote:
+> > > > We should probably just find a way to describe that this is a POOL that focuses
+> > > > on physical contiguity in some configured granularity.
 > > >
-> > > #define DECLARE_LUO_SER(name, expected_size, ext_flags_count)              \
-> > >     struct name##_hdr {                                                    \
-> > >         __u32 size;                                                        \
-> > >         __u32 flags;                                                       \
-> > >         __u64 ext_flags[ext_flags_count];                                  \
-> > >         struct name payload;                                               \
-> > >     };                                                                     \
-> > >     static_assert(sizeof(struct name##_hdr) == (expected_size),            \
-> > >                   "LUO struct " #name " size mismatch!")
+> > > Before embarking in a global renaming, I would like to get opinions on
+> > > acceptable alternative names (possibly with a short prefix usable for
+> > > identifiers in the code). I could think of the following
 > > >
-> > > For example:
-> > >
-> > > struct luo_memfd_ser {
-> > >     __u64 pos;
-> > >     __u64 size;
-> > > };
-> > >
-> > > DECLARE_LUO_SER_HDR(luo_memfd_ser, 24, 0);
+> > > DMA_PMAP (for PreMapped or Persistent Mapped)
+> > > or, ahemm...
+> > > DMA_PISA (Pooled IOMMU Superpage Allocator)
+> > > both using dmap_ for internal name prefixes
 > >
-> > I think we are getting close, bu I have two remaining concerns:
-> >
-> >  * Reserving bits in each flags word for continuation leaves gaps
-> >    in the flag space that users have to know to skip.
+> > Can someone explain what outside netdev would use this? And why you
+> > couldn't do this in the netdev page pool?
 > 
-> Yes, but callers should never manipulate the raw flag words directly,
-> and we can provide simple accessor macros or inlines that take a
-> contiguous feature ID (0, 1, 2, ...)
+> I can try.
 > 
-> enum luo_memfd_feats {
->     LUO_MEMFD_FEAT_HUGETLB = 0,
->     LUO_MEMFD_FEAT_SEALS   = 1,
->     /* ... */
->     LUO_MEMFD_FEAT_FOO     = 15, /* Automatically lands in
-> ext_flags[0] bits 0:1 */
->     LUO_MEMFD_NR_FEATS
-> };
+> Regarding users, the next target is disks (not included in this series)
+
+Disks don't use a memory pool, they do IO to folios allocated by the
+page cache.
+
+The only other candiates I know of besides page pool would be the
+existing dma pool users. I don't think they are so performance
+sensitive as netdev.
+
+IOW I think this entire series is only useful to netdev.
+
+> > It is not a common workload to have the DMA allocator be the one that
+> > allocates the memory. Usually we are DMA'ing from memory that was
+> > allocated someplace else.
 > 
-> if (luo_ser_get_feat(hdr, LUO_MEMFD_FEAT_HUGETLB)) {
->     /* handle hugetlb */
-> }
+> Aside from the fact that dma_alloc_attr()/dma_alloc_coherent()
+> does memory allocation + iova allocation/mapping,
+> this is not what happens here.
+> Maybe the confusion comes from one function name
+> (dma_map_alloc_pages()), but it doesn't map any thing.
 
-Sure but why deal with all the complexity just to save 8 bytes? All of
-these structs are allocated on folios and there are kilobytes of unused
-space to fit this header. And even if we optimize that we are talking
-about 8 bytes per FH/FLB... or 16 bytes for structs with arch-specific
-sub-structs like the KVM ones.
-
-> >  * struct name##_hdr only matches structs written by the current kernel
-> >    (in terms of length of array and offset of payload).
+> My code (in this version, and more in the upcoming release)
+> mainly implements a specialized memory allocator with an
+> API equivalent to alloc_pages() and variants, but ensures that
+> the order-N blocks come from contiguous 2MB blocks reserved on the fly.
 > 
-> This is not an issue on the incoming path, we never cast incoming data
-> to struct name##_hdr or access ->payload directly. Instead, we parse
-> the incoming buffer, dynamically compute the header size from the
-> continuation bits, and cast the payload offset to "struct name *"
-> based on the negotiated feature flags.
+> The physical addresses of these blocks are recognized by the
+> "dma allocator" (I suppose you meant the entity that allocates the IOVA range)
+> so that it can apply specialized IOMMU mappings backed by 2MB IOMMU leaves.
 
-How?
+Why? This seems completely divergent from how anything else works in
+DMA mapping, and I don't see a reason for it to be anything like
+this. Other than it makes page pool work a bit easier
 
-This is the only data structure that describes the header. Are you
-saying the incoming path will parse the header purely with a void *? Or
-use this header but just be careful not to access payload?
+Frankly this looks like you had AI to transpose a bunch netdev page
+pool into iommu.
 
-We should have one header structure that can be used on the incoming and
-outgoing path. We should not have one header data structure that can be
-used on the outgoing path and one that can be used on the incoming
-path.
+> Note that just feeding the pagepool with 2MB pages is not efficient because
+> the fragmentation in pagepool is done with a bump
+> allocator, so recycling blocks from a 2MB page is difficult
+> (it has to wait until all 512 blocks to become idle). My code
+> has a bitmap to track usage, so it naturally recycles at the block level.
 
-Also we need a standard header that can be shared across all structs,
-not a per struct header. Otherwise you will need to do weird casting and
-overlays to implement the shared helper routines that parse it.
-
-> > How about this instead:
-> >
-> > struct luo_ser_hdr {
-> >     __u32 size;        /* Size of header + payload in bytes */
-> >     __u32 nr_flags;    /* Number of features encoded in flags[] */
-> >     __u64 flags[];
-> > };
-> >
-> > Each feature occupies 2 bits of flags[], so feature N is always bits
-> > [2N+1:2N] of flags[N / 32], with no gaps:
-> >
-> >   00: Feature not present
-> >   01: Feature present, safe to ignore if not supported
-> >   11: Feature present, must be supported by the next kernel
-> >   10: Invalid
-> >
-> > The length of flags[] and the header size are computed directly rather
-> > than by walking continuation bits:
-> >
-> > static inline u32 luo_ser_nr_flag_words(const struct luo_ser_hdr *hdr)
-> > {
-> >     return DIV_ROUND_UP(hdr->nr_flags, 32);
-> > }
-> >
-> > static inline size_t luo_ser_hdr_size(const struct luo_ser_hdr *hdr)
-> > {
-> >     return struct_size(hdr, flags, luo_ser_nr_flag_words(hdr));
-> > }
-> >
-> > static inline void *luo_ser_payload(const struct luo_ser_hdr *hdr)
-> > {
-> >     return (void *)hdr + luo_ser_hdr_size(hdr);
-> > }
-> >
-> > and bounds checking is just luo_ser_hdr_size(hdr) <= hdr->size. The
-> > payload is always 8-byte aligned.
-> >
-> > Payload structs are then declared on their own, with no header:
-> >
-> > struct luo_memfd_ser {
-> >     __u64 pos;
-> >     __u64 size;
-> > };
-> > LUO_SER_ASSERT_SIZE(luo_memfd_ser, 16);
-> >
-> > The static_assert covers the payload to catch embedded structs changing
-> > size.  Asserting the header doesn't add anything since its size varies
-> > by kernel. And because flags[] is a flexible array, the header can't be
-> > embedded in front of a payload in a combined struct; it can only be
-> > reached through luo_ser_payload().
-> >
-> > I think the only downside is that the header increases to 16-bytes when
-> > there is at least 1 flag. But I don't think we need to be so concerned
-> > about an 8 byte difference...
+It doesn't seem like this little issue should motivate all this
+ 
+> Then there is the transmit path.
 > 
-> I would prefer to keep the default header at 8 bytes. With 15 features
-> fitting directly inside the base __u32 flags word, adding the first 15
-> features to a struct keeps the header at 8 bytes and does not shift
-> the payload.
-> 
-> Computation-wise it is also very similar: for the 99% of structs that
-> have <= 15 features, LUO_FLAGS_CONT is 0, so computing the header size
-> is just a single bit test with no loop. Even if a struct ever needs
-> ext_flags, the loop will walk at most one or two extra words.
+> For skb heads, one simple solution is to use tx head bounce buffers
+> some of the patches in the series show that option (the next version
+> implements a proper tx-copybreak).
 
-Please explain why it is so important to keep the header 8 bytes that we
-have to jump through all these hoops to map a contiguous flag space
-onto a u32 + u64[] array structure where certain bits are reserved and
-have to be skipped.
+> Otherwise we need to populate skb heads with pre-mapped
+> memory. In the next version I have a simple modification to
+> the slub code to accept an opt-in alternative to alloc_pages().
+> I considered using the pagepool, but the changes would be
+> similar and the layering seemed really odd, with a cache on top
+> of a cache.
+
+With AI there is no limit to the layering violations one can make :(
+
+> For transmit, there is a bit of impedance mismatch as well:
+> skb_page_frag_refill() does not know which device
+> we want to use (in fact, it is a per-task so there may be
+> many netdevs used by a task). We could tweak the pagepool
+> to be device-agnostic, but that would be a bit more
+> intrusive (more architecturally than in terms of code);
+> also we need to make sure dma_map() on those pages does the right thing
+> without trying to map/unmap the individual 4K fragments,
+> and we need to make sure the skb_free() etc does
+> not leak those pages into free_pages().
+
+This is all a page pool problem, has nothing to do with iommu or the
+common dma layer.
+
+You can already get optimally mapped 2M IOVA and memory out of the
+APIs we have. I can see no justification for the intrustive mess under
+this beyond it makes netdev page pool easier to hack on top.
+
+Every thing you listed boils down to 'netdev page pool work the way I
+want'
+
+Jason
