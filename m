@@ -1,98 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1792797042;
-	b=DxEL6i/0SZVQUFjcs+VuEGfU/1lDrVrKthmTl+cCnlEUrm0ak8jWWy94VlTSZhn4ROt0
-	 5bRtVtCety9o/fXwocf58PZk1ByiypQ+szBDNS3TFOVq432ZF6llLS05SaLCaUA/0KZnH
-	 TOtQLXW2rr5kkgUm+UXJJlpd5GWitU+GsBPmcP51qJADrQt/79UUUQg4WIRf8uOu2YFrC
-	 DOLFJpvwVfiZGwvaDfKtixWs+gW0tZXnf76AaAyl1+EHDmwriLhGz/58288a9FwsuRKuy
-	 ++uOUSA6WCaPPdJ+MkDzeH6aJiieyk2aAdVKDvUAOlJqhgFFuKtFNRgK7nFx4q6AB+Q==
+	t=1792798270;
+	b=2a2Oe9ppT+9Bxasw2XnP1820xau52+gr0mAwMfyLkYITgkvsuVdwgvmzIQ31GWH6e3iX
+	 s50Q8dywCvK35NLQaZ1ZcbwqMY19PExZId3RZMEI0iB4jt8lpuJ3A4ZEb3o6Ubr67ewHr
+	 LW3yMmO3+yY7jeadeh6zAnbw54aqy9/tKXmy9mQr7gwcbbV/k4wBAFmbwlu0krUgJ5+eX
+	 dD1ffQRNE3TTROVmhvIzYHvyQWW9x5vS+UcaAxvPg4OK0wyYXo/d+z1YKYgax5OkiVAs3
+	 9oZROWb0MXhS9kkIUzp49asu/uBzcEOWLpB7W+zS1+j2zILp0HQz4XA4pED3ZD+at7w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792797042;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792798270;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=Y/7UYsTuFvcPMA42JSSO+NZ9EnoRizOOg7pUXOjzzPY=;
-	b=fEWGGwhn2yxTQikjmrpGfDGE/1f4rNcaVvrQbymVGeeRXsBgzVNoG5tuyrWMmxYCSXfS
-	 EUiDCg82eKc0ZHxJaZ/7gp7AKtCc67hSorqGrcZ1zuXnRQxdCxu+CXv7AeEJCRUOXQRfy
-	 98QOvlKRco5Ii4zXeEbILwqz5277w7WNOHNIescLQtnA6DRaFHQajqRwGYKZBrKLJxF1B
-	 jemL95jqiU+GUbJGZCF/ikxRQjivpyh7+aoGQfVFV8uoeZNNfaUr79dzjsZNCrjp2ix4s
-	 M1SyPMYTGl9MSbTUqMNha6MQTAsf4TNCQ33IQMrzwWBlo2xXwruqxIiaw+9fyp2NpOA==
+	bh=PWqyUavBnfNEo1DMfRHoVS39e8foN13m8UB6fhUtUw8=;
+	b=HWgHgKkS6TXUnqsf3gbnidMofQG2lFoF5mHWPi8VLzlXqBvp5Jjhq9obV6/gq3wLvCP3
+	 +96+KZm0QfO/OJjFlrTRe43YLeO7Y1gMb0KxdZp9/lnEUTySwGd87CY+wkRT+oxLfEfV0
+	 7VE2g1lBh0dNTt9bFRRXRrJXtL7OXmxnZcIgl9SC3Y0KcoLJMrxVLg61lTMwdDc3MvkRy
+	 +NBdGKQcD6wBpKZ8ZiDAxRRmoN0Pk8b02CtloWb9iddjRb4WtQZMY0SJ7spP/czwxM0RD
+	 G5ZzGOfLO/6sFUBVnWSWU2MA1DHxCtsXbzANVFbW7aX8htSEJSDH9VQsrX2LVbOiY/A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=KUQBgOwT;
-	arc=none smtp.remote-ip=209.85.214.178
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=gD6jYL9B;
+	arc=none smtp.remote-ip=209.85.214.174
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AE55606A31A
-	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 23:10:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0AE55606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6961C606A31B
+	for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 23:31:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6961C606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=KUQBgOwT
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2e8d6fcbba0so8985ad.1
-        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 16:10:41 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=gD6jYL9B
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2e9f6a16afcso11535ad.1
+        for <iommu@lists.linux.dev>; Fri, 23 Oct 2026 16:31:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792797041; x=1793401841; darn=lists.linux.dev;
+        d=google.com; s=20251104; t=1792798269; x=1793403069; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Y/7UYsTuFvcPMA42JSSO+NZ9EnoRizOOg7pUXOjzzPY=;
-        b=KUQBgOwTrhRtamGX6PczJMQKkS+O4CHzEjnEHGIRBshyfir45G6cO985ZS8niNAkey
-         /0rS/wLI3VGtmt+uNyaiwMjFlN60jiz0JS4oG2l4/SHT2w6oODQ3m1oNzAKCXhswJIOm
-         KFTOwMiRMc3KsaZeGFB7EuJVp7FYIzUM5UZX72bdAOBJE92yRq3FAiMjpRRCGDm5rBtp
-         aH+ti+6gaCuht3kEW2pChrphUYrEaVXhJoTUnb79amUdsUI7wtCZj0Ay1TrZLtdskmi2
-         Yb6RxFLeRIneMbTaJNXQ6CMREP2mujsPHOJrhH2SsJgcEYdOIuS1/APalN3kjrQ5pU7M
-         99Aw==
+        bh=PWqyUavBnfNEo1DMfRHoVS39e8foN13m8UB6fhUtUw8=;
+        b=gD6jYL9BVFlwKLwyqKKPSpXht1HyOdAtUYtSOaGDa2fG8FFxDh3luDLuRqVCPdnp7A
+         td+YzABu66F/Tr1mLM75KURd6gKZU/R8XsQqVfF/dnJWxoCXdhNq5gyj8jhrRM2d8Ffs
+         NynTgeDqsde/48MW0iHlXStktoCU0on5K3OzDjMNhs+RBETOw+LNFbT5lh9u9d4GCrRV
+         Tixx/qE7SvsFUonRZRYBP5qBjMzzFN8YhxcmuiQCwOKhlc0QxrLLgGi/IMA95Z2puJu1
+         QtCpKUpSa6EYQlFPyaKuwRxanVD92TiYIx8jZJ3bQ55+OicKiDa6wtZM5FZh/J/NpHWm
+         TlBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792797041; x=1793401841;
+        d=1e100.net; s=20260707; t=1792798269; x=1793403069;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Y/7UYsTuFvcPMA42JSSO+NZ9EnoRizOOg7pUXOjzzPY=;
-        b=nPFLnRWhFP21DTP/3AbUvoinWXy8KubmSuVfvo3WoFhRLtmXImgand7vqdbnlSlXCO
-         asf7/cNm2iwC5CxFlsTZ6I4/PQtdAup6fQF0mbjOMi3Sj8Vf5eSP9pYEekkCQsZraWxR
-         ZMNMP4BVtyocXyGQRjZDFVBGsrwOi509Baw7JwDQO+BQFJoU7rJLmL0JhCd2NcLwciqF
-         MK50s7BrdEwd8X8k66XrBC7bjSJ24dSW+I/EvjqdrtSUHOpyHdW90AfwosTiAxPWmWFv
-         nciVOX/AdM75Y0tSxm3ywLic8bZqO+mtp0xU9oHrxAGKQwWhc5P6dzcwyrTNal68moTh
-         rC2Q==
-X-Forwarded-Encrypted: i=1; AKwUvByNBCHe2myAIgVcKMiy6Y0QZZAfmyll3V0qrScgTf1l4hyzddNPOAN0E1oDIGxGkOYxv+2S9A==@lists.linux.dev
-X-Gm-Message-State: AFq9FYL4+s0ksoFudpLQRiBV24y4I/J/3kgPWKY0e4c6iRxyMyT/0WgI
-	O9voZPRmGahxDCN8rkYGmoLk0+TRPF87sbZRibl48r8LWQVXHV74c73W3ZK+sbzURg==
-X-Gm-Gg: AYBFou3R6Puoe3U52IbwtXDhNFlcGczQYGUz4B28qWa4z5eCYkfLwgnhlYeUCp5Z4ns
-	+UHMU3yCddwDQcITfQ7avkTBXJVe5IlbMqEtTwMTRhNMZdW8HnMcHDYelpKyPvq7DKg3ludgULn
-	/aBdnTmKJ0t0w0XgojBoC7MUttz3xC8MjBVBkNBTB1XI4tWn7j0LL4QMIATQ3UYwQwTmU/H3JVN
-	kyHKbVsjivxS//3h0X9vlGvA2NBWSmKOpDh1TS6oMHsEfCYAyJsfAIMrPtuNW+od/2W1CH2iyKz
-	545h4wkJlVW9SsV/6XUMsfrsH/enZmUd1UvoINLLjwSjmOxuWiCPBb03SQsbm8ZxbBR3tHAKndf
-	aKg+o55TuXTaFBtGe7DieUa479RDnySphoJi0fMSmPzGARCBXzy/6tKEjdzT2Bs4ZGe1SQlKtdn
-	VpWRZAd/uHd9SGZ65TQmvIatLXxB50UbJ3sZeicsqKjgV70Yf+H6KlJcIINAGs5PYULCjCEwzc/
-	PyvV8EpG5oX1LOp++5/UqZAhv+DL+XEJXf0r0Yr+Qm/hznuBUuQBhjwO6Sl9bJ3FEShbffv++f6
-	cge7RqJZHE8VO1289UOgtlqqIAPJEHWX5rlsKbPjLNrXUhPG
-X-Received: by 2002:a17:903:19ce:b0:2e6:1735:f645 with SMTP id d9443c01a7336-2ea9d1089fdmr862725ad.4.1792797040825;
-        Fri, 23 Oct 2026 16:10:40 -0700 (PDT)
+        bh=PWqyUavBnfNEo1DMfRHoVS39e8foN13m8UB6fhUtUw8=;
+        b=X3PLpOsupXMaIgcbrVEaatG9tD55YL7mwWEcorZLnJmgLR1Aqtn+5KT9vkJJ8DrKnd
+         CpuYJ/VY2eUql7IlzAk049YXAmAlAkgsVPkXP/q/XuwVTk83S4Q/saiFZkM85hYmp+e7
+         lJKR56Ti2Rn6THSkmcc55toUhpapWEla/KdJz5+h0FGu0TTImYsceQMAA658BBSMVGk1
+         7HLJqWTk0JoVZUEfEAccRo97MLCG1DIxAUYzkyWQZTDOe7l4BkQNdOUg9J8HU3ocNbto
+         9qpPKzGnpsEvaFnmvLsyKyP2ooydNCFBsEykJXHAovSW1KaFDAnniq/pQ6NRGICNM+yU
+         ZuZQ==
+X-Forwarded-Encrypted: i=1; AKwUvByd2uW/N2J5jZuenqoLDnTcr0hvcOssCMvv85gyvxVk/ZY+XyG4E1/0Qu+tQ/NzxJuBg0z+yg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJS5GVvDRk7SxainRlDF85Pe2/qoUvM4tsqtEa4yumKZOHMfJbO
+	Bi6YvY6ZyzDwWGHWOwhAEG4WS9rranDyljdGUh6Cb5G/lDdikTiSYq+nmX3XTD+mmN/OYL4TDmV
+	4tO1MCA==
+X-Gm-Gg: AYBFou0t6yUF3FhotZEzMrvM+FaR/M5rw1VAtuYnxnRQKX8rk9b0Mr8KPDNUTsod/aR
+	tDZMeYOJPrBXRxEQkUR+xxh05ZvpUWdeJ4XXyRvK4Oq7g/YlfUiahCgN6fCzJRrSQ3oDxStdQPv
+	y3vboNlqYY6yPCdNdq7PnBVrzqNikZ4mkD6CillKNLLEaNC7XR4imZaY4vpLwWYhxXFBjATxM/R
+	MCREy6etdVcCL1jr6iQRckHtNjdTt8mYbo03h8V98sllaiuEKozXH4X6EL0L1/AiN+xY0GyxR7v
+	6R96HROFzm8LTKQPi8u8UIDePlVsPPrYoxlhZ1Ju0fKY4f/R4n5+WhiyOoCByxr6sBBipKcExKS
+	MniHExRv2DBQHWiSBeGMj9pY31uHU1BK720n/YJ3hsheG0g1t4dN+hvFsvR0YR7RRRpcxlwKjud
+	C4WT3y80RykwBXkC0quWIcBnffhqAniELJ2aQVb4qwnViS5Q+Bu6FTU7ydvbAs1AYZLY9Tx9hL9
+	YBWlc9yNKCFj3j6HuA/+FP7PQxFHn8PZdopUNlzhXQ/KSufODLnLm/Mq15UgeExAnGGJFlkTJ0a
+	VIV/q8DdjFSiLxqaflVbC4FheQ2q0ePTVW26DStVOfLQKXKg
+X-Received: by 2002:a17:903:1cc:b0:2e6:1917:fa with SMTP id d9443c01a7336-2ea9d12a727mr853705ad.7.1792798268197;
+        Fri, 23 Oct 2026 16:31:08 -0700 (PDT)
 Received: from google.com (163.1.145.34.bc.googleusercontent.com. [34.145.1.163])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebe6946dsm622657a91.4.2026.10.23.16.10.39
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3adebb27a1bsm707176a91.15.2026.10.23.16.31.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2026 16:10:39 -0700 (PDT)
-Date: Fri, 23 Oct 2026 23:10:36 +0000
+        Fri, 23 Oct 2026 16:31:05 -0700 (PDT)
+Date: Fri, 23 Oct 2026 23:31:03 +0000
 From: Samiullah Khawaja <skhawaja@google.com>
-To: David Matlack <dmatlack@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, iommu@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
 	Pranjal Shrivastava <praan@google.com>
-Subject: Re: [RFC PATCH 2/3] vfio: selftests: Add iommufd hwpt replace test
-Message-ID: <atvop22fFX7tkt9G@google.com>
+Subject: Re: [RFC PATCH 3/3] iommu/arm-smmu-v3: Add support for hitless
+ replace of S1 domains
+Message-ID: <atvppceAqBVx8G9S@google.com>
 References: <20260925011308.3381953-1-skhawaja@google.com>
- <20260925011308.3381953-3-skhawaja@google.com>
- <atk_Jq9gEpU5kB8p@google.com>
+ <20260925011308.3381953-4-skhawaja@google.com>
+ <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,246 +106,137 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <atk_Jq9gEpU5kB8p@google.com>
+In-Reply-To: <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
 
-On Wed, Oct 21, 2026 at 10:39:34PM +0000, David Matlack wrote:
->On 2026-09-25 01:13 AM, Samiullah Khawaja wrote:
->> Add a test that does iommufd hwpt replace while a DMA is ongoing. This
->> verifies the hitless replace of IOMMU domain without disrupting the DMA.
+On Fri, Oct 23, 2026 at 02:43:28PM +0100, Robin Murphy wrote:
+>On 25/09/2026 2:13 am, Samiullah Khawaja wrote:
+>>S1 domains are programmed by CD entries in the CD table. During a new
+>>domain attach these are updated using write_cd_entry. Since ASID and
+>>TTB0 are in different 64-bit words, the write_cd_entry considers it a
+>>non-hitless update and sets V=0. This means such an update is disruptive
+>>and would generate translation faults if there are ongoing DMAs.
 >>
->> Note that the new domain is attached after mapping the required DMA
->> memory at the same IOVA in the new domain.
+>>Replace the CD entries by using an unused temporary ASID in following
+>>sequence to allow hitless replacement of CD entry,
 >>
->> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->
->Aside from the MODE_IOMMUFD nit,
->
->Reviewed-by: David Matlack <dmatlack@google.com>
->
->> ---
->>  tools/testing/selftests/vfio/Makefile         |   1 +
->>  .../vfio/vfio_iommufd_hwpt_replace_test.c     | 171 ++++++++++++++++++
->>  2 files changed, 172 insertions(+)
->>  create mode 100644 tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test.c
+>>- Update the CD entry with temporary ASID.
+>>- Update the CD entry with the target TTB0.
+>>- Update the CD entry with the target ASID.
 >>
->> diff --git a/tools/testing/selftests/vfio/Makefile b/tools/testing/selftests/vfio/Makefile
->> index 2c32c48db509..01d0e808871b 100644
->> --- a/tools/testing/selftests/vfio/Makefile
->> +++ b/tools/testing/selftests/vfio/Makefile
->> @@ -8,6 +8,7 @@ else
->>  CFLAGS = $(KHDR_INCLUDES)
->>  TEST_GEN_PROGS += vfio_dma_mapping_test
->>  TEST_GEN_PROGS += vfio_dma_mapping_mmio_test
->> +TEST_GEN_PROGS += vfio_iommufd_hwpt_replace_test
->>  TEST_GEN_PROGS += vfio_iommufd_setup_test
->>  TEST_GEN_PROGS += vfio_pci_device_test
->>  TEST_GEN_PROGS += vfio_pci_device_init_perf_test
->> diff --git a/tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test.c b/tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test.c
->> new file mode 100644
->> index 000000000000..3ec243aae626
->> --- /dev/null
->> +++ b/tools/testing/selftests/vfio/vfio_iommufd_hwpt_replace_test.c
->> @@ -0,0 +1,171 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +#include <string.h>
->> +#include <sys/ioctl.h>
->> +#include <sys/mman.h>
->> +
->> +#include <linux/sizes.h>
->> +#include <linux/vfio.h>
->> +
->> +#include <libvfio.h>
->> +
->> +#include "kselftest_harness.h"
->> +
->> +static const char *device_bdf;
->> +
->> +static void region_setup(struct iommu *iommu,
->> +			 struct iova_allocator *iova_allocator,
->> +			 struct dma_region *region, u64 size)
->> +{
->> +	const int flags = MAP_SHARED | MAP_ANONYMOUS;
->> +	const int prot = PROT_READ | PROT_WRITE;
->> +	void *vaddr;
->> +
->> +	vaddr = mmap(NULL, size, prot, flags, -1, 0);
->> +	VFIO_ASSERT_NE(vaddr, MAP_FAILED);
->> +
->> +	region->vaddr = vaddr;
->> +	region->iova = iova_allocator_alloc(iova_allocator, size);
->> +	region->size = size;
->> +
->> +	iommu_map(iommu, region);
->> +}
->> +
->> +static void region_teardown(struct iommu *iommu, struct dma_region *region)
->> +{
->> +	iommu_unmap(iommu, region);
->> +	VFIO_ASSERT_EQ(munmap(region->vaddr, region->size), 0);
->> +}
->> +
->> +FIXTURE(vfio_iommufd_replace_hwpt_test) {
->> +	struct iommu *iommu;
->> +	struct vfio_pci_device *device;
->> +	struct iova_allocator *iova_allocator;
->> +	struct dma_region memcpy_region;
->> +
->> +	u64 size;
->> +	void *src;
->> +	void *dst;
->> +	iova_t src_iova;
->> +	iova_t dst_iova;
->> +};
->> +
->> +FIXTURE_SETUP(vfio_iommufd_replace_hwpt_test)
->> +{
->> +	struct vfio_pci_driver *driver;
->> +
->> +	self->iommu = iommu_init("iommufd");
+>>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>>---
+>>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 66 ++++++++++++++++++++-
+>>  1 file changed, 64 insertions(+), 2 deletions(-)
+>>
+>>diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>index 5732f3ba0122..59f4b8cf89f6 100644
+>>--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>@@ -1641,6 +1641,68 @@ void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
+>>  	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
+>>  }
+>>+/* Invalidate every stage-1 TLB entry tagged with @asid. */
+>>+static void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
+>>+{
+>>+	enum arm_smmu_cmdq_opcode op = (smmu->features & ARM_SMMU_FEAT_E2H) ?
+>>+					       CMDQ_OP_TLBI_EL2_ASID :
+>>+					       CMDQ_OP_TLBI_NH_ASID;
+>>+
+>>+	arm_smmu_cmdq_issue_cmd_with_sync(smmu,
+>>+					  arm_smmu_make_cmd_tlbi(op, asid, 0));
+>>+}
 >
->nit: iommu_init(MODE_IOMMUFD)
->
->This needs to be fixed in iommufd_iommu_init() in the previous patch as
->well.
->
->> +	self->device = vfio_pci_device_init(device_bdf, self->iommu);
->> +	self->iova_allocator = iova_allocator_init(self->iommu);
->> +
->> +	driver = &self->device->driver;
->> +
->> +	region_setup(self->iommu, self->iova_allocator, &self->memcpy_region, SZ_2M);
->> +	region_setup(self->iommu, self->iova_allocator, &driver->region, SZ_2M);
->
->The driver->region.size is now populated automatically based on what the
->driver needs. So you can just pass in driver->region.size here instead
->of hard-coding SZ_2M.
->
->> +
->> +	if (driver->ops)
->> +		vfio_pci_driver_init(self->device);
->> +
->> +	self->size = self->memcpy_region.size / 2;
->> +	self->src = self->memcpy_region.vaddr;
->> +	self->dst = self->src + self->size;
->> +
->> +	self->src_iova = to_iova(self->device, self->src);
->> +	self->dst_iova = to_iova(self->device, self->dst);
->> +}
->> +
->> +FIXTURE_TEARDOWN(vfio_iommufd_replace_hwpt_test)
->> +{
->> +	struct vfio_pci_driver *driver = &self->device->driver;
->> +
->> +	if (driver->ops)
->> +		vfio_pci_driver_remove(self->device);
->> +
->> +	region_teardown(self->iommu, &self->memcpy_region);
->> +	region_teardown(self->iommu, &driver->region);
->> +
->> +	iova_allocator_cleanup(self->iova_allocator);
->> +	vfio_pci_device_cleanup(self->device);
->> +	iommu_cleanup(self->iommu);
->> +}
->> +
->> +FIXTURE_VARIANT(vfio_iommufd_replace_hwpt_test) {
->> +	u32 attaches;
->> +};
->> +
->> +FIXTURE_VARIANT_ADD(vfio_iommufd_replace_hwpt_test, domain_replace) {
->> +	.attaches = 1000,
->
->Maybe we should replace memcpy_wait() with memcpy_poll() and move the
->wait loop out into the generic driver layer (vfio_pci_driver.c)
->repeatedly calling memcpy_poll(). The would let you do replaces until
->the memcpy is done instead of hard-coding a random number, and also lift
->more code out of the the drivers and into the generic core.
+>Feels like this should probably use the existing invalidation machinery...
 
-The purpose of this being here was to a N number of attaches/replaces as
-it might have chance to produce faults, as this is basically race. While
-I agree poll() is a useful op to have, but in the context of this test
-maybe it is an overkill.
+I see, I can use the arm_smmu_inv_flush_iotlb_tag() to issue
+invalidation for the ASID.
+>
+>>+
+>>+static void arm_smmu_cd_set_asid(struct arm_smmu_cd *cd, u16 asid)
+>>+{
+>>+	cd->data[0] &= ~cpu_to_le64(CTXDESC_CD_0_ASID);
+>>+	cd->data[0] |= cpu_to_le64(FIELD_PREP(CTXDESC_CD_0_ASID, asid));
+>>+}
+>>+
+>>+static void arm_smmu_replace_cd_entry(struct arm_smmu_master *master, int ssid,
+>>+				      struct arm_smmu_cd *cdptr,
+>>+				      const struct arm_smmu_cd *target)
+>>+{
+>>+	struct arm_smmu_device *smmu = master->smmu;
+>>+	struct arm_smmu_cd stage;
+>>+	u32 tmp_asid;
+>>+
+>>+	lockdep_assert_held(&arm_smmu_asid_lock);
+>>+
+>>+	/*
+>>+	 * Nothing is translating through an invalid CD, and an update that
+>>+	 * invalidates one cannot be made hitless anyway.
+>>+	 */
+>>+	if (!(cdptr->data[0] & cpu_to_le64(CTXDESC_CD_0_V)) ||
+>>+	    !(target->data[0] & cpu_to_le64(CTXDESC_CD_0_V)))
+>>+		goto write_directly;
+>>+
+>>+	if (xa_alloc(&arm_smmu_asid_xa, &tmp_asid, XA_ZERO_ENTRY,
+>>+		     XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL))
+>>+		goto write_directly;
+>>+
+>>+	/* Copy the existing cd entry and update only the ASID. */
+>>+	stage = *cdptr;
+>>+	arm_smmu_cd_set_asid(&stage, tmp_asid);
+>>+	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
+>>+
+>>+	/* Copy the target cd entry and update ASID to the temporary ASID. */
+>>+	stage = *target;
+>>+	arm_smmu_cd_set_asid(&stage, tmp_asid);
+>>+	arm_smmu_write_cd_entry(master, ssid, cdptr, &stage);
+>>+
+>>+	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
+>>+
+>>+	/* Update to the target cd entry as it should be hitless now. */
+>>+	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
+>>+
+>>+	arm_smmu_tlb_inv_asid(smmu, tmp_asid);
+>>+	xa_erase(&arm_smmu_asid_xa, tmp_asid);
+>>+	return;
+>>+
+>>+write_directly:
+>>+	arm_smmu_write_cd_entry(master, ssid, cdptr, target);
+>>+}
+>>+
+>>  void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
+>>  			 struct arm_smmu_master *master,
+>>  			 struct arm_smmu_domain *smmu_domain)
+>>@@ -3664,8 +3726,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev,
+>>  		struct arm_smmu_cd target_cd;
+>>  		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
+>>-		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
+>>-					&target_cd);
+>>+		arm_smmu_replace_cd_entry(master, IOMMU_NO_PASID, cdptr,
+>>+					  &target_cd);
+>
+>No, we cannot blindly do this for arbitrary ->attach_dev calls - the 
+>majority of S1->S1 transitions are going to be moving back and forth 
+>between the default domain and user domains, where there is zero 
+>expectation, let alone guarantee, that the translations would be 
+>equivalent and thus not liable to lead to TLB conflict aborts or 
+>amalgamation hell.
+>
+>This needs to be in a dedicated "I know what I'm doing and I fully 
+>accept the consequences if I get it wrong" call path.
+
+Agreed.
+
+I will update this to only be triggered with explicit request from the
+Core to satisfy my live update use case where a preserved iommu domain
+is being replaced by a new domain setup by the user.
 
 Thanks,
 Sami
 >
->It should be easy enough to swap the drivers from wait() to poll() model
->if you are feeling up for it. Not a blocker for this series though.
+>Thanks,
+>Robin.
 >
->> +};
->> +
->> +FIXTURE_VARIANT_ADD(vfio_iommufd_replace_hwpt_test, noreplace) {
->> +	.attaches = 0,
->> +};
->> +
->> +TEST_F_TIMEOUT(vfio_iommufd_replace_hwpt_test, memcpy, 120)
->> +{
->> +	struct dma_region memcpy_region = {}, driver_region = {};
->> +	struct vfio_pci_driver *driver = &self->device->driver;
->> +	struct iommu *iommu2 = NULL;
->> +	u64 size = 0;
->> +	int ret;
->> +	u32 i;
->> +
->> +	if (variant->attaches) {
->> +		iommu2 = iommufd_iommu_init(self->iommu->iommufd,
->> +					    self->device->dev_id);
->> +
->> +		memcpy_region = self->memcpy_region;
->> +		driver_region = self->device->driver.region;
->> +
->> +		iommu_map(iommu2, &memcpy_region);
->> +		iommu_map(iommu2, &driver_region);
->> +	}
->> +
->> +	if (driver->ops) {
->> +		memset(self->src, 'x', self->size);
->> +		memset(self->dst, 'y', self->size);
->> +
->> +		size = min_t(u64, driver->max_memcpy_size, self->size);
->> +
->> +		/*
->> +		 * Fill the device's queue. memcpy_start() returns with
->> +		 * max_memcpy_count transfers still outstanding.
->> +		 */
->> +		vfio_pci_driver_memcpy_start(self->device,
->> +					     self->src_iova,
->> +					     self->dst_iova,
->> +					     size, driver->max_memcpy_count);
->> +	}
->> +
->> +	/*
->> +	 * Replace the domain repeatedly while that transfer is in flight. Since
->> +	 * domain replacement is a race with the translation requests, it needs
->> +	 * to be done multiple times to capture the small window where iommu
->> +	 * faults can occur.
->> +	 *
->> +	 * The loop ends on the original domain, so the teardown below is safe.
->> +	 */
->> +	for (i = 0; i < variant->attaches; i++) {
->> +		vfio_pci_device_attach_iommu(self->device, iommu2);
->> +		vfio_pci_device_attach_iommu(self->device, self->iommu);
->> +	}
->> +
->> +	if (driver->ops) {
->> +		ret = vfio_pci_driver_memcpy_wait(self->device);
->> +
->> +		ASSERT_EQ(0, ret);
->> +		ASSERT_EQ(0, memcmp(self->src, self->dst, size));
->> +	}
->> +
->> +	if (iommu2) {
->> +		iommu_unmap(iommu2, &memcpy_region);
->> +		iommu_unmap(iommu2, &driver_region);
->> +		iommu_cleanup(iommu2);
->> +	}
->> +}
->> +
->> +int main(int argc, char *argv[])
->> +{
->> +	device_bdf = vfio_selftests_get_bdf(&argc, argv);
->> +
->> +	return test_harness_run(argc, argv);
->> +}
->> --
->> 2.56.0.rc1.315.gc6ed9934b7-goog
->>
+>>  		arm_smmu_make_cdtable_ste(&target, master, state.ats_enabled,
+>>  					  STRTAB_STE_1_S1DSS_SSID0);
+>>  		arm_smmu_install_ste_for_dev(master, &target);
+>
