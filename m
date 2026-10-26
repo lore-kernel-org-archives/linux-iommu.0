@@ -1,126 +1,111 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793010473;
-	b=wiRIAsWlcJqmumP3cGPA7eqBlrXIONkN9SRorWqt2pSKFZOlrr6B4kHRPKxcgvC4dSp3
-	 IT0FFDlqRiyO0k8vaBAI83GGaO64SQTQdq0sMaUFH2G+z+SjJ8gQYjTJYdJPtF8mqpyjq
-	 50qL2qD/5nWx7PX3o7kkOJ1BBf2qfHst6czePyIoZ6SgmDP4idPzCQmqQ1C1vsr7LdM9Q
-	 YG6ytzNb2vPlUxXA1fe2+a9pJK6pAW5P5S4oh2g7KQn+aszN48tG0+clKT8HUH/FnKG94
-	 bv/fIa+Ul2lsi67rAfvYn/2nDu0N393YfiXKC8l0ZG/FXCDPG1QVeKujjLh51w097bw==
+	t=1793011062;
+	b=r5syXs08Ba7OdSp2EJ8UmsUTX0CwrDAIxt5clXiXxtviVauLdscNq8avNl2avjFp67DT
+	 G+OyPZ963XDLuo3I1ErHDLqtiqxsSwRhUGOEUut35J4IrmKFLTqWMxS6rE4q/OuoB5+Pm
+	 FoNDGGpbO2rgchXRU3sXS7c4FRhwdZczHDjuwwcLvuIWc/ldPKMFCWQ8CvuPS0+tNc4PA
+	 rOTB6wS4fUUH0G6GJZ+ACfw3ftERpbh1flMWoEuPteDfi+9jT/OqYO7FnTIuG2WgS5sqV
+	 3kioF8fuwizd9C9F3aD0AzXYrphHcaT+3zJ9pEorI4f+n9OW7pUkzhI6DVUU5+D4CJQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793010473;
-	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
-	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 X-Received:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:In-Reply-To:X-Mimecast-Spam-Score:X-Mimecast-MFC-PROC-ID:
-	 X-Mimecast-Originator:Content-Type:Content-Disposition;
-	bh=bh0VMe2Rmm+7gUOYc0+0D8DAZImYcthIyBuGozvhEwo=;
-	b=DrGnrb+IRctfKFo0fZ2MpMvOx1jO4wyMc2VufBKvv3RUV5Y9kx2eHNQfAqQKwOdZyOB/
-	 dxPVB0+rC34QpmjRMr1/pm+ZBhoi8w8ua2h8lQmJd9ad+QXmYsBKrH/CfKN8RMV10clwH
-	 w6w9BTW0WL0LnW67hmkslPujEFl/ULKANetP+AlpzpGeT5pb5rJ1awXaMxHROhEdvZ6Hu
-	 MNOqUib4a3hOqKvVOwo6VcbSpfYkboB+PLzA5vJu09Qe3yQJA68GtpL77uYACILMaYz50
-	 Gznqm5g351TRwyF5qv21g82/I9U0ueh4YdwLRALnfBMjVjTvFAPTh98B+ZtBOUnjegw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793011062;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Message-ID:
+	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-Proofpoint-Spam-Info:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=;
+	b=4habHdU0kVTjWX6a1nYMwhNeLnPtGaWf0nWcVQiQiYHGtPI56IF1A4QOIrfMm5repKCw
+	 5ozGO8xSOJyjTpbu8I0T70+KscBGt6xJSiQMAnL5H+p6xrut6S9JhgIIebRhLCHN2SkHV
+	 gSqw4or9zfuaNMAO5qvgOqqL2lDvpVDMWDW3fTPCS2OcKwluTAb4mYQbsiHHUnWxjw6oT
+	 YMZvvozP9lpJ1fAR6LbwB0OB3XNXKJdSKCZOgZWr9DycF3hYes4fQIPfQVNS/pO7HpXSj
+	 4kMsWVK6El6Ohclt/mMZVCdrppn3Zzx7P8XTe8LjeiLO7jFIvqtU2FJRDnLlWDFaJJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=redhat.com;
-	spf=pass smtp.mailfrom=redhat.com;
-	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=Khda7wlK;
-	arc=none smtp.remote-ip=170.10.133.124
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=TpZsGSX6;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=iH7PmABt;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C47DE606A31D
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:27:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C47DE606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22187606A31E
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:37:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22187606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=Khda7wlK
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1793010471;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bh0VMe2Rmm+7gUOYc0+0D8DAZImYcthIyBuGozvhEwo=;
-	b=Khda7wlKgBX1HquEHaj8T+sZqOpGHk5kuuw7ZHI2WFLxo5xOpHzBax3m7mEopkaEw3q314
-	8+/WISFV3ROJyc/1GXSleRn8TNHJ4QEBWqylZne/hPKkFpAARDFwOFXTAXMO1r19zCKgQw
-	GZBr7Vc2zLOwN0Luk8M42HpXqx8Md/s=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-88-8cc-Cuf3MGmj2zj2q5HPIw-1; Mon, 26 Oct 2026 06:27:50 -0400
-X-MC-Unique: 8cc-Cuf3MGmj2zj2q5HPIw-1
-X-Mimecast-MFC-AGG-ID: 8cc-Cuf3MGmj2zj2q5HPIw_1793010469
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-48e0c896d05so2634110f8f.1
-        for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 03:27:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793010469; x=1793615269;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=TpZsGSX6;
+	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=iH7PmABt
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69QAPafr4067973
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:37:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=; b=TpZsGSX6x4fCHbKw
+	U8ef/568RxKDz0hovaxFvn9IInCc6pKY8/Sn3J7Cbt6yKqZr5KGpuZkWs9oe6j7k
+	brO5+mOteKXKVH5HZzNaziob0mdnSna+I/c9Up4HcMbd6mprqlDkbSmUutdRWsP+
+	eoa+c5k8kh9tObqrRBGOrjRsw4WJGbLPV4MsPhrjHrhfaDss//ip8gDbQn7ZD72+
+	l+QQlPfcVAdnMvjQgAfLhDg7A6URh6DAhD0A+pYAdoljS0JxoEy4D2Wu7xtHHsL+
+	cRCQRxsvNGOHaC8b82Ix7/gO/UBHgrG7XrIzmwzmfJPdUoxP39bSBmvh/XnrtdJ4
+	32Agig==
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com [209.85.219.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hj53q01e3-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:37:41 +0000 (GMT)
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-90c4d46037eso8545016d6.1
+        for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 03:37:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1793011060; x=1793615860; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=bh0VMe2Rmm+7gUOYc0+0D8DAZImYcthIyBuGozvhEwo=;
-        b=uYDX2vgZ13NZy/iwIFEHhIqRHOU5t4IW4J2S6eKIVSVUGVveZbfhkv+f1cCJb4O9qo
-         m7ghJFVdd1qVkdRfC1KqA8tOCKj6+13zAWD0J9cMm2grnHcYO+7dZx+dcm/RBBVXKz5c
-         3RG0LvayNlJTElFB2XgaFfBZHpHnaD2itGnV7xdZJ8V2S3T9Lhs6yoh25ea3mNklcCnP
-         6YKwG5EX5BfERVVqoepIRYEDAokG9lhCS+w9KexPpHIKTDg/C9xo8c1OyU7ub5ln9HwD
-         8e/8rw4l+KNewM+UsyTQPKoBW/GUmg1uGNXvGqBXr/mDOv+E/IQa7GPxt2UdT5o1ecVK
-         /IYA==
-X-Forwarded-Encrypted: i=1; AKwUvBzv3Un+O5iZnAMs0LnzsnBP422Oph6Qfas3yrVcjsSkEQcas78AM4xZ0Of67DIy4D3LMfNBmQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJJ8emyt1tCkFMcVOKVmJL4+394oUP464tc47NB24kNqVB1qBre
-	olm1k58d3ZYTAqo0QR4xKDI0qWh3EfSvObkdqViFj9FuCU8+jwKzLCAG/mufSX+ZWj93J8FGnJX
-	RDRh2y35916jjeSye3Y1E8hA1Tep2cqyJMOdFWzVwudtZwFfTyOa2sZ5e
-X-Gm-Gg: AYBFou0mPpiPYTsTpHEmVLd913rFyYXVYoP1ksXjOSj0M/NZSRXYp+glUF8B3fX9MWf
-	gHm4k3YFYA/3XJHh6FI+mtIyDiWOHiPcsuv1N08KlDFjh0DuNZexngwJIPrcAa9CSzXYhzCnuL7
-	NEmRETD4GGcMmDrwpAk7nWtRMRHxXbraomzNToTQhNp2un+wugcfeNOJzmP6g+JX2LzloC6Rj1M
-	feFpAJpvy+zL7+cEb2Jf/CEuemHDCtPPlkHIuS5JuERKRKtzFQt3Q08w/gTQzu5Y4w86bNt4N3k
-	Rt/QRFmQOUQ/pvNAnuXwBXKDztVWNwWtoaNEVuybJTXZFNn+bgqE7clUdzFyVvhSWww=
-X-Received: by 2002:a05:6000:220a:b0:48e:20ed:27f9 with SMTP id ffacd0b85a97d-48e3eac10b1mr11919747f8f.0.1793010468975;
-        Mon, 26 Oct 2026 03:27:48 -0700 (PDT)
-X-Received: by 2002:a05:6000:220a:b0:48e:20ed:27f9 with SMTP id ffacd0b85a97d-48e3eac10b1mr11919670f8f.0.1793010468317;
-        Mon, 26 Oct 2026 03:27:48 -0700 (PDT)
-Received: from redhat.com ([2a0d:6fc0:1536:fc00:b838:383:1c7:6e81])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ecde7easm15899811f8f.52.2026.10.26.03.27.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 03:27:47 -0700 (PDT)
-Date: Mon, 26 Oct 2026 06:27:42 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Abhinav Kumar <abhinav.kumar@linux.dev>,
-	Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jason Wang <jasowangio@gmail.com>,
-	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Philipp Stanner <phasta@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abel Vesa <abelvesa@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Flemin Jose <flemin.jose@oss.qualcomm.com>,
-	Mahadevan P <mahap@oss.qualcomm.com>,
-	virtualization@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v2 18/23] virtio: Add Qualcomm Platform Services Firmware
- Interface ID
-Message-ID: <20261026062229-mutt-send-email-mst@kernel.org>
-References: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
- <20261026-jshekhar-dcp-hlos-v2-18-7cf014efdee1@oss.qualcomm.com>
+        bh=Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=;
+        b=iH7PmABtvXI3KPWQ7Yky4ylMPR9mvgqGV5Acikoorz32FYsrFrS2XP14cPLxJQxrJP
+         El73ww/QeXnoRbGfE8jp/RUNzRDQ9UiltHmPDfCcco3mrj53cf+6TNNwiqseCpRHzV85
+         81aMPDbfCuOCCqTro5IBXJ38U9sLsb7YsdhLGgQjNLLUUGk1RnhphtAcn7EmklFLcQyd
+         GjWyEyuFgbp5T6Alw2MZIfR3xezMlcnuIGkGI3BFtKEc6DdCD7gPC/+uw0fbp1/fesb2
+         kIfa6TVfA/7MCk4pohRwKVnFNo6AEuz07/nDgLKhURcsWPcq2oofBf5oPnB4HqFFkoWf
+         qtuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793011060; x=1793615860;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=;
+        b=gW0Rn/yoembp+0AGYFAJcT9iu2ulPvc4BpwaSoT6lC/3KzOJi5NYRt6FsxqnkHR7NG
+         7vjfDe+rItEHYCafSx2u1bML8kXRTPOrUTFzFUy4orzyNI4Yis1tY/4T7Wg/RpgVeEIP
+         xqtvVBIr3tdiA8DAFcYTWr2zx8aXTte2xgU8s6p57uZej6I8DY5rzI7AGUXl49rY3w8y
+         OJ3bvWh6VhyT6JS6owGX7jJkKL6lhOfNpsa5ftB5A9gl0kyog5JRTc40Dauk6OShnFip
+         52GJtYN+BkGSWBfYOXiUiwec8/zX9UyNVsqZC2PqWwlOjKvGzB49TwZYf7UtxXb6CUm3
+         7kuw==
+X-Forwarded-Encrypted: i=1; AKwUvBxGGEv4LRkIy5p6Rc48R2oefY4fBERAGthtteVqQO5erjVWrLkqe1NOmanOMcXM1iM+JbUSFw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIGpt310ivYvCeuHJDpGP1hjWIo8kB2cq4JJvJ5xIPjKYC8ZQSm
+	OpyUFxrsmFoNDrCUVLb21yczncv7HcsrZ5mPjsiEfxV99L6B6Rhiocs0lmE5YTJ8B9U65lv5MDH
+	xskqo6/HDwtaunt+zn+EBW/R6iv9ntYOXn1pprBrfB6tXoTygiwBMVp1KYg==
+X-Gm-Gg: AYBFou2xYA6P0wAxQJq6496ehv9f/eFXG7HS+0Kw/icqRyNFMdNHFI7ZV+BXYviYuKA
+	AuCaZHjcODIjTeqDz6VCMZyFGCAj0h93wBlQZ4+Ng9+nvi6rutJicmNMqfKNRWuX7kBD9kfEbsn
+	xbNO8iykkoIUNJhUmJsa6d8jZpPN+IcfVJubwL97B+K+WQWrSecWzTZt6RuNgvjQxSGE9cqcSxn
+	sQg9YFpWDim2goJ7OsUysLWsNYFVyHhYfZ85fwozL3ThK60ZoTW/Q6hGu06ZbjoPzc1j938tAdm
+	XdtQafGDBmQpkwBsHxkT8GRkpylqscoLx3IhmXcuTFtki1LCkRS30UGS2rE+4SL0VJ+6z/HwdtR
+	Ln3n6wE1LKawUKgl6z80flg==
+X-Received: by 2002:a05:620a:4e84:b0:93a:ec4:e5f2 with SMTP id af79cd13be357-940ef9710femr1130935985a.6.1793011060061;
+        Mon, 26 Oct 2026 03:37:40 -0700 (PDT)
+X-Received: by 2002:a05:620a:4e84:b0:93a:ec4:e5f2 with SMTP id af79cd13be357-940ef9710femr1130929785a.6.1793011059540;
+        Mon, 26 Oct 2026 03:37:39 -0700 (PDT)
+Received: from [192.168.226.26] ([178.235.128.140])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b4459924bdsm3389733a12.37.2026.10.26.03.37.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Oct 2026 03:37:38 -0700 (PDT)
+Message-ID: <7b95f254-ccb0-4ce3-9b35-c605cacdf74f@oss.qualcomm.com>
+Date: Mon, 26 Oct 2026 11:37:34 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -130,54 +115,100 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-In-Reply-To: <20261026-jshekhar-dcp-hlos-v2-18-7cf014efdee1@oss.qualcomm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: Z4Dac9i_TAZUd25YBvmndI50TdE-2J8C9XXgP9U1ZRM_1793010469
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 03/13] drm/msm: look for lpac from dts
+To: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar
+ <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, iommu@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
+ <20260705-descriptive-name-lpac-upstream-v1-3-01d50c3e0c99@gmail.com>
+ <rwohvfbsw2brpxrfg26egu5arwe6g7n2etelo33eegmu5cz65k@3syofuxzsjrc>
+ <dc5aef2e-600e-4e97-b76b-dcc8bd72c709@gmail.com>
+ <m4vwrqt6yyaawpvkyrqfzs3kbipbhygmtrhphuthl2gmjvkgyt@u2d3dnvl2phy>
+ <54cb37bb-aaa5-4c5d-a563-acca4822dd35@oss.qualcomm.com>
+ <t5gu6ciwmxdb2jghc44gtixdsbedkgy4yzke5sgawjrr2h362u@ahvhh3yfe6lx>
+ <wtun2cfukyzxlsfiz2izsejd33k4jpapwqa3uqih5drcsrkff5@e6llkke5dayw>
+ <1f6db59c-b7a9-41a1-8022-6713365fa09e@gmail.com>
+ <fcb86c33-1893-47bb-80eb-20acd65f3805@oss.qualcomm.com>
+ <o2zmplbtmoueumw3iqejfsdmucp5f66woa5hmw3vodbe66reab@syn2ashugzyg>
+ <7d35f41a-c72b-4743-b8a4-0ba715be6756@gmail.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <7d35f41a-c72b-4743-b8a4-0ba715be6756@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI2MDA0MiBTYWx0ZWRfX15NOqE3H+uBH
+ sVr88+QHdir/EbAMdhNftbdMszKkXIPIZOJOCytZHvgNwuHA1y5L8bQNDyOkxKG5ustTorhUmaE
+ 0OnC3srnQ5VVXmQU62Q93ipeEQYbk2g=
+X-Proofpoint-ORIG-GUID: r7_E3dzkEB2cdYo2uOJgqOi-DckdYZma
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI2MDA0MiBTYWx0ZWRfX/j3GcIDbaYx3
+ l/jTVHgAIhwpJOTPhoQSf4lvqs6vHHc1BMqJeRuzLFSZz//s1YsYdQOvV4LJXjQuKYbJHmM0Xke
+ 9h9K5Ljk18YtUOSZ2Rt8MMIJH02tqz0LBZRnn9k0WWwCEMx88tYT4LGwVNYn4zI2U7JScUhYBUM
+ 4IwsCJTI1EiqU2uK/Hx4WUp87pfn9Da8OhIEPWBH+GgX6fjJcKa8+eLAOta3h+AnPJva2xh5I7r
+ IHXKeHjIvg8mIqB/usNxb6duq0iiBAZpudCmmLRdJaU3RasmrW1CPa0X82tW4E8WCKsMIgTR/8y
+ jpXKxcWuDDjxQdv68Lq5pcM/kw4PPjFdthswdQ01SUvKMHatfIBR5P/ky6gSU4/rKz/to97L4lP
+ hcMrrQ8YCbV9D3krzvt7wfMn9ORf6iLrDfxxZmEBFt391sqZklzgpa+KFiYoozqc06I43qaFkfY
+ VAHxWwZ3PihBZEie5Nw==
+X-Authority-Analysis: v=2.4 cv=D93SufRj c=1 sm=1 tr=0 ts=6adf2d75 cx=c_pps
+ a=oc9J++0uMp73DTRD5QyR2A==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
+ a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
+ a=vYu95guM48VmnKZvmccA:9 a=QEXdDO2ut3YA:10 a=iYH6xdkBrDN1Jqds4HTS:22
+X-Proofpoint-GUID: r7_E3dzkEB2cdYo2uOJgqOi-DckdYZma
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-10-26_01,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 spamscore=0 adultscore=0 lowpriorityscore=0 impostorscore=0
+ phishscore=0 suspectscore=0 malwarescore=0 priorityscore=1501 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610260042
 
-On Mon, Oct 26, 2026 at 11:51:28AM +0530, Jayant Shekhar wrote:
-> The Qualcomm Platform Services Firmware Interface (QPSFI) is exposed
-> as a VirtIO device with device ID 52. Define VIRTIO_ID_QPSFI in the
-> common VirtIO ID header so transport and function drivers use the
-> shared identifier.
-> 
-> Assisted-by: LLM
-> Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> ---
->  include/uapi/linux/virtio_ids.h | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/include/uapi/linux/virtio_ids.h b/include/uapi/linux/virtio_ids.h
-> index f9056af0c622..6c6f283733b1 100644
-> --- a/include/uapi/linux/virtio_ids.h
-> +++ b/include/uapi/linux/virtio_ids.h
-> @@ -70,6 +70,7 @@
->  #define VIRTIO_ID_GPIO			41 /* virtio gpio */
->  #define VIRTIO_ID_SPI			45 /* virtio spi */
->  #define VIRTIO_ID_MEDIA			48 /* virtio media */
-> +#define VIRTIO_ID_QPSFI			52 /* Qualcomm Platform Services Firmware Interface */
->  
->  /*
->   * Virtio Transitional IDs
+On 10/24/26 4:57 PM, Anna Maniscalco wrote:
+> On 10/24/26 1:36 AM, Dmitry Baryshkov wrote:
+>> On Fri, Oct 23, 2026 at 03:16:27AM +0530, Akhil P Oommen wrote:
 
-virtio IDs are allocated through the virtio TC.
+[...]
 
+>>>> One thing sashiko is pointing out is that new dt should work with hold kernel so, in general moving sid1 from there would break it since old kernels don't know how to handle them separately.
+>> The rule is the opposite: new kernels must continue to work with the old
+>> DTs. If the new DT breaks with the older kernel, just specify it in the
+>> cover letter so that Bjorn doesn't merge DT changes before the driver
+>> changes find the way into his tree.
+> Ah ok thanks for clarifying that.
+>>
+>>> + Bjorn/Konrad
+>>>
+>>> Not sure how strict is the requirement for compatibility with older kernel version. An
+>>> option in your case could be just do an override in the board dts file of the
+>>> Steam Frame.
+>> Anyway, would it be a problem? Does GPU normally use SID 1? Or is it
+>> only used by the LPAC?
+> It is a problem because, even if nothing touches the LPAC ring, it's firmware
+> will still initialize and that will cause page faults if sid1 isn't setup.
 
-Reserving this spcific one as a generic VIRTIO_ID_VENDOR is now under
-discussion on the virtio-comments mailing list:
+We're slowly coming to terms with the fact that all of our multimedia
+iommu setup was terribly wrong all the time. Venus/Iris recently had
+a flurry of breaking changes. We have to follow suit.
 
-https://lore.kernel.org/all/20261022091645-mutt-send-email-mst@kernel.org/
-
-Please
-- switch your driver to use that + qualcomm vendor id +
-  validating the device through the DT
-- do not merge this yet, before the virtio TC has reserved the
-  device ID.
-
-
-
-> -- 
-> 2.43.0
-
+Konrad
