@@ -1,111 +1,144 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793011062;
-	b=r5syXs08Ba7OdSp2EJ8UmsUTX0CwrDAIxt5clXiXxtviVauLdscNq8avNl2avjFp67DT
-	 G+OyPZ963XDLuo3I1ErHDLqtiqxsSwRhUGOEUut35J4IrmKFLTqWMxS6rE4q/OuoB5+Pm
-	 FoNDGGpbO2rgchXRU3sXS7c4FRhwdZczHDjuwwcLvuIWc/ldPKMFCWQ8CvuPS0+tNc4PA
-	 rOTB6wS4fUUH0G6GJZ+ACfw3ftERpbh1flMWoEuPteDfi+9jT/OqYO7FnTIuG2WgS5sqV
-	 3kioF8fuwizd9C9F3aD0AzXYrphHcaT+3zJ9pEorI4f+n9OW7pUkzhI6DVUU5+D4CJQ==
+	t=1793011793;
+	b=AXDE8Qy9QyhcKRPIaujqEmtMQUQySRO8OS8t12RvhbgbwsXRVCezULs6aZb8GvLqAlkq
+	 Wmknwlf1L75ieNFhWfk1sVs1y8pL2ehyVT3p1AG+xyC511Ln+3eWO9guOVSQ0HjixwBbl
+	 oPfcUjJTEmBTqW9FxrynWfE+YKaFj/Iqz4Bn4Nn8YXo3025E3dSknXZLJrW7ojeZp6I3g
+	 bW0eKvsKoMsh0nBCRzW4rBFNJQkuxla8dfM0NbhCVCazgICSGeyfeIeLyg1rpMJ3aEnfX
+	 SP4iX+F3LiywRv7rgAzuJHBQF+rWpLOnbfwQhvBBm6ajzas16YxRClErnUe2KxuejTg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793011062;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793011793;
 	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
 	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
+	 To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:X-Proofpoint-Spam-Info:
+	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
 	 X-Proofpoint-Spam-Details;
-	bh=Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=;
-	b=4habHdU0kVTjWX6a1nYMwhNeLnPtGaWf0nWcVQiQiYHGtPI56IF1A4QOIrfMm5repKCw
-	 5ozGO8xSOJyjTpbu8I0T70+KscBGt6xJSiQMAnL5H+p6xrut6S9JhgIIebRhLCHN2SkHV
-	 gSqw4or9zfuaNMAO5qvgOqqL2lDvpVDMWDW3fTPCS2OcKwluTAb4mYQbsiHHUnWxjw6oT
-	 YMZvvozP9lpJ1fAR6LbwB0OB3XNXKJdSKCZOgZWr9DycF3hYes4fQIPfQVNS/pO7HpXSj
-	 4kMsWVK6El6Ohclt/mMZVCdrppn3Zzx7P8XTe8LjeiLO7jFIvqtU2FJRDnLlWDFaJJw==
+	bh=FPVx73+o/2eZCSRturT4nizp7EjPIBp9bA02vRpn8yc=;
+	b=yCi6i8CjEnPcmJNHYYAZ07In/X7UX/I/JKShg90pJ1IYj7kZBfsZlmW9H/f4Nl7Kz2+0
+	 2W0M4iprrbkYpJd9AOPMeUnw33U9Ct7tJGtnq5wl5d5l38EQCh8syBPeaxJ36UFmlWGSW
+	 SPmHPnjwzvXeybHX7oG7U90Xl0tGc31T/Mq++T2+UE9lJ3g+oxXz5rIJbZN7WTKngcy0R
+	 f7moj1aCSMvVe63TUnG/OCZQgmOSVvFsI3gaiQVKBl3EYud2jTEyzIGEM67a9Qvocxgzs
+	 lNTDoKlZQ7moQL129j5W2EdwvW65exXiB4NxP9a82WegWeorTqSu3RSvs27sieqECkw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=oss.qualcomm.com;
 	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=TpZsGSX6;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=iH7PmABt;
-	arc=none smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=njiqU+LK;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=gJO8kt5Y;
+	arc=none smtp.remote-ip=205.220.180.131
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22187606A31E
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:37:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22187606A31E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BD29606A31E
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:49:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8BD29606A31E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=TpZsGSX6;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=iH7PmABt
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69QAPafr4067973
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:37:41 GMT
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=njiqU+LK;
+	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=gJO8kt5Y
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69QA3rpS3521873
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:49:50 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=; b=TpZsGSX6x4fCHbKw
-	U8ef/568RxKDz0hovaxFvn9IInCc6pKY8/Sn3J7Cbt6yKqZr5KGpuZkWs9oe6j7k
-	brO5+mOteKXKVH5HZzNaziob0mdnSna+I/c9Up4HcMbd6mprqlDkbSmUutdRWsP+
-	eoa+c5k8kh9tObqrRBGOrjRsw4WJGbLPV4MsPhrjHrhfaDss//ip8gDbQn7ZD72+
-	l+QQlPfcVAdnMvjQgAfLhDg7A6URh6DAhD0A+pYAdoljS0JxoEy4D2Wu7xtHHsL+
-	cRCQRxsvNGOHaC8b82Ix7/gO/UBHgrG7XrIzmwzmfJPdUoxP39bSBmvh/XnrtdJ4
-	32Agig==
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com [209.85.219.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hj53q01e3-1
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=FPVx73+o/2eZCSRturT4nizp
+	7EjPIBp9bA02vRpn8yc=; b=njiqU+LKqhmxkOs+b9fJ9ZBcjVSKyFZUris7RBz4
+	J7EP6QfsWbYHoLNJl2aq4bdQ5bbRMK58ci9g3S4b97eQ6F8nqbrfwQ9zkFuInmf0
+	HWeo5ntnl7PYkiOmMqqyCGczB1sDdy4a3GCP0UTFLd2jeluTGG8gH28x3cv1DNRB
+	m5fQI+IzKuXIxqmlpfrIb2DesDe9D15M77GZzXz5rodwBwQnTi4TbnJMjcp8wQ/+
+	5uX/YD9v0IgJXTDJpICLrZeyS4bOkB3Lq3MzFWPCZRcCL44UBmCA900b5GJJ47ti
+	oBX5G5esOtyf4JhxKqef2oKP9ceEv/A4HSh410+BIRZcnA==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hj4sf0553-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:37:41 +0000 (GMT)
-Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-90c4d46037eso8545016d6.1
-        for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 03:37:40 -0700 (PDT)
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 10:49:50 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-93f322ef7d3so642456085a.0
+        for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 03:49:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793011060; x=1793615860; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=;
-        b=iH7PmABtvXI3KPWQ7Yky4ylMPR9mvgqGV5Acikoorz32FYsrFrS2XP14cPLxJQxrJP
-         El73ww/QeXnoRbGfE8jp/RUNzRDQ9UiltHmPDfCcco3mrj53cf+6TNNwiqseCpRHzV85
-         81aMPDbfCuOCCqTro5IBXJ38U9sLsb7YsdhLGgQjNLLUUGk1RnhphtAcn7EmklFLcQyd
-         GjWyEyuFgbp5T6Alw2MZIfR3xezMlcnuIGkGI3BFtKEc6DdCD7gPC/+uw0fbp1/fesb2
-         kIfa6TVfA/7MCk4pohRwKVnFNo6AEuz07/nDgLKhURcsWPcq2oofBf5oPnB4HqFFkoWf
-         qtuw==
+        d=oss.qualcomm.com; s=google; t=1793011790; x=1793616590; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=FPVx73+o/2eZCSRturT4nizp7EjPIBp9bA02vRpn8yc=;
+        b=gJO8kt5Y/9FaaCnCpzSNB1pXSCm11m1XHamrwAhUltiZk01jWYKl6PVpSQZ8uFTj3g
+         Tm0Anf15sCVTcEi6xDtsdp+F7jM0IuO+riFk/ZXP4cHEpHqFPOPZC5mEvr6xt3uzlz3j
+         m/DNOZK9HU9ztEJCSmcynsXmvaqcrykaMisfrB/WGJkD03LVgAg4yvcmUw20ehBVOm6F
+         tLLu2DGl13+7eufH2Np6bleEClm5U+A/hzhntTXj1YWWaWcgNh310H5lalL9NRf6MWbU
+         uWPJ0EykMiRwEwuvk0TbJBqhvQd6KdGtd35uco4nMAl8JgLF8PXfViUzWIp6GQQ1Idqs
+         zgMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793011060; x=1793615860;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Gqjg8xNmhBbt2RfYvkv54a120ybeK1H1UlJE53Iy9OE=;
-        b=gW0Rn/yoembp+0AGYFAJcT9iu2ulPvc4BpwaSoT6lC/3KzOJi5NYRt6FsxqnkHR7NG
-         7vjfDe+rItEHYCafSx2u1bML8kXRTPOrUTFzFUy4orzyNI4Yis1tY/4T7Wg/RpgVeEIP
-         xqtvVBIr3tdiA8DAFcYTWr2zx8aXTte2xgU8s6p57uZej6I8DY5rzI7AGUXl49rY3w8y
-         OJ3bvWh6VhyT6JS6owGX7jJkKL6lhOfNpsa5ftB5A9gl0kyog5JRTc40Dauk6OShnFip
-         52GJtYN+BkGSWBfYOXiUiwec8/zX9UyNVsqZC2PqWwlOjKvGzB49TwZYf7UtxXb6CUm3
-         7kuw==
-X-Forwarded-Encrypted: i=1; AKwUvBxGGEv4LRkIy5p6Rc48R2oefY4fBERAGthtteVqQO5erjVWrLkqe1NOmanOMcXM1iM+JbUSFw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIGpt310ivYvCeuHJDpGP1hjWIo8kB2cq4JJvJ5xIPjKYC8ZQSm
-	OpyUFxrsmFoNDrCUVLb21yczncv7HcsrZ5mPjsiEfxV99L6B6Rhiocs0lmE5YTJ8B9U65lv5MDH
-	xskqo6/HDwtaunt+zn+EBW/R6iv9ntYOXn1pprBrfB6tXoTygiwBMVp1KYg==
-X-Gm-Gg: AYBFou2xYA6P0wAxQJq6496ehv9f/eFXG7HS+0Kw/icqRyNFMdNHFI7ZV+BXYviYuKA
-	AuCaZHjcODIjTeqDz6VCMZyFGCAj0h93wBlQZ4+Ng9+nvi6rutJicmNMqfKNRWuX7kBD9kfEbsn
-	xbNO8iykkoIUNJhUmJsa6d8jZpPN+IcfVJubwL97B+K+WQWrSecWzTZt6RuNgvjQxSGE9cqcSxn
-	sQg9YFpWDim2goJ7OsUysLWsNYFVyHhYfZ85fwozL3ThK60ZoTW/Q6hGu06ZbjoPzc1j938tAdm
-	XdtQafGDBmQpkwBsHxkT8GRkpylqscoLx3IhmXcuTFtki1LCkRS30UGS2rE+4SL0VJ+6z/HwdtR
-	Ln3n6wE1LKawUKgl6z80flg==
-X-Received: by 2002:a05:620a:4e84:b0:93a:ec4:e5f2 with SMTP id af79cd13be357-940ef9710femr1130935985a.6.1793011060061;
-        Mon, 26 Oct 2026 03:37:40 -0700 (PDT)
-X-Received: by 2002:a05:620a:4e84:b0:93a:ec4:e5f2 with SMTP id af79cd13be357-940ef9710femr1130929785a.6.1793011059540;
-        Mon, 26 Oct 2026 03:37:39 -0700 (PDT)
-Received: from [192.168.226.26] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b4459924bdsm3389733a12.37.2026.10.26.03.37.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Oct 2026 03:37:38 -0700 (PDT)
-Message-ID: <7b95f254-ccb0-4ce3-9b35-c605cacdf74f@oss.qualcomm.com>
-Date: Mon, 26 Oct 2026 11:37:34 +0100
+        d=1e100.net; s=20260707; t=1793011790; x=1793616590;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=FPVx73+o/2eZCSRturT4nizp7EjPIBp9bA02vRpn8yc=;
+        b=wW3bo3l95Ysb7cTx5lL1Xf0EtqjsBEgKDgqdyAFLno24DJp43Ic8v13V2bharLzMmm
+         9zgllfvneI6pAztxoV5/CtOorunobhrcntrFN/3I3o8oBD9lV6stWidIMv5hkAZ+bghf
+         nK5KsjD/BrWgQx/dRaBMy3WJRWoI8IuxD+gTiii807uuqlH+Tw0u/89qAeMcdWIOcJ7t
+         QigbpnEstscEFUgZtfaDYJDaV5/Yrf1X+ADfjWhKrCe1wr4LiqqP4P4yImdOwBNx0H1w
+         H9C91rCqesCwNViZ5MMNFbCBXFpPlFXqU6eBiiE8GP833KF18P04DEwLTw77y3j3PFnb
+         IkvQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwjENMQtZQk7rzDm5W+JcBB72tDCPleog8itb3iRyBBarmAve6DQ7qlA/LLkEKvPiekD3Zqgw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJfqAWedswS1jkoS+3v+PY/RZB3vZ5FfikeyaOeo3Bxfke+4fGo
+	GhKLLKKgX6+cXnSI/VkdaUrpgHfYTWj9ezVoGc9GGL9hBSl5YWYN0W4Ke7O1QUPkvudqK3bnHie
+	CGsrfzJX1GbQ2j2Q3XC+0iNzXHzbBPiBR/jWUOAJPvDxCwc92Eyk7oULwcg==
+X-Gm-Gg: AYBFou2O+X/D0sZ6JyPV/IveXLVNcv6BRaNykfGX6bTdJeLsMy+ViaTbWd1CHsZ/iK4
+	mcI6YI9hDSZc55pweFAr2KDcOLS/NpU/PhtY4HV4R4WQm0RnE7SjFAQwu16f6ZGzFcf+z1v6pk5
+	mfr8Qdvgp3BOzC7Gn/dFEGRPCm4xuOsujGwPBA0OSy3shGVsLZraR3dA6iSDZC/ExkoUoumEYwA
+	4RBAdHgxwv68fCr5b/XtE+ddldJPfVRJECWF98WdL5YXS9ZhDSktxIwqn/auZxia/YW4BvK5e2u
+	6sxf00tRvhT/6KP9zad+p5Zd5/2mfm3n6e6XVrCtlW4E8p3EIBiJDXQRTaWJy88erBGLdLfN4qg
+	QnZ2DU8RQ/fSWENGBIg4xBmBUbmO3xWpaI+9ONyAiK7rXVEqZMIX3+rnwrIjIxMP7kAQgMOYjId
+	6ZWOOQBLM5E8Vd
+X-Received: by 2002:a05:620a:462c:b0:93f:1dbf:6ceb with SMTP id af79cd13be357-940ef7d657amr872491285a.3.1793011789340;
+        Mon, 26 Oct 2026 03:49:49 -0700 (PDT)
+X-Received: by 2002:a05:620a:462c:b0:93f:1dbf:6ceb with SMTP id af79cd13be357-940ef7d657amr872486585a.3.1793011788666;
+        Mon, 26 Oct 2026 03:49:48 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfb7a6aba3sm1483503e87.17.2026.10.26.03.49.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2026 03:49:47 -0700 (PDT)
+Date: Mon, 26 Oct 2026 12:49:45 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowangio@gmail.com>,
+        Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Philipp Stanner <phasta@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Abel Vesa <abelvesa@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Flemin Jose <flemin.jose@oss.qualcomm.com>,
+        Mahadevan P <mahap@oss.qualcomm.com>, virtualization@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 11/23] drm/msm/dcp: Add DCP CRTCs and shared plane
+ state
+Message-ID: <xffnjqr7qruizfph63lucyml66xl54rftgug4dulyyopmogebf@nwbzhjcoypsy>
+References: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
+ <20261026-jshekhar-dcp-hlos-v2-11-7cf014efdee1@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -115,100 +148,1138 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 03/13] drm/msm: look for lpac from dts
-To: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Akhil P Oommen <akhilpo@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar
- <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
-References: <20260705-descriptive-name-lpac-upstream-v1-0-01d50c3e0c99@gmail.com>
- <20260705-descriptive-name-lpac-upstream-v1-3-01d50c3e0c99@gmail.com>
- <rwohvfbsw2brpxrfg26egu5arwe6g7n2etelo33eegmu5cz65k@3syofuxzsjrc>
- <dc5aef2e-600e-4e97-b76b-dcc8bd72c709@gmail.com>
- <m4vwrqt6yyaawpvkyrqfzs3kbipbhygmtrhphuthl2gmjvkgyt@u2d3dnvl2phy>
- <54cb37bb-aaa5-4c5d-a563-acca4822dd35@oss.qualcomm.com>
- <t5gu6ciwmxdb2jghc44gtixdsbedkgy4yzke5sgawjrr2h362u@ahvhh3yfe6lx>
- <wtun2cfukyzxlsfiz2izsejd33k4jpapwqa3uqih5drcsrkff5@e6llkke5dayw>
- <1f6db59c-b7a9-41a1-8022-6713365fa09e@gmail.com>
- <fcb86c33-1893-47bb-80eb-20acd65f3805@oss.qualcomm.com>
- <o2zmplbtmoueumw3iqejfsdmucp5f66woa5hmw3vodbe66reab@syn2ashugzyg>
- <7d35f41a-c72b-4743-b8a4-0ba715be6756@gmail.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <7d35f41a-c72b-4743-b8a4-0ba715be6756@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI2MDA0MiBTYWx0ZWRfX15NOqE3H+uBH
- sVr88+QHdir/EbAMdhNftbdMszKkXIPIZOJOCytZHvgNwuHA1y5L8bQNDyOkxKG5ustTorhUmaE
- 0OnC3srnQ5VVXmQU62Q93ipeEQYbk2g=
-X-Proofpoint-ORIG-GUID: r7_E3dzkEB2cdYo2uOJgqOi-DckdYZma
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI2MDA0MiBTYWx0ZWRfX/j3GcIDbaYx3
- l/jTVHgAIhwpJOTPhoQSf4lvqs6vHHc1BMqJeRuzLFSZz//s1YsYdQOvV4LJXjQuKYbJHmM0Xke
- 9h9K5Ljk18YtUOSZ2Rt8MMIJH02tqz0LBZRnn9k0WWwCEMx88tYT4LGwVNYn4zI2U7JScUhYBUM
- 4IwsCJTI1EiqU2uK/Hx4WUp87pfn9Da8OhIEPWBH+GgX6fjJcKa8+eLAOta3h+AnPJva2xh5I7r
- IHXKeHjIvg8mIqB/usNxb6duq0iiBAZpudCmmLRdJaU3RasmrW1CPa0X82tW4E8WCKsMIgTR/8y
- jpXKxcWuDDjxQdv68Lq5pcM/kw4PPjFdthswdQ01SUvKMHatfIBR5P/ky6gSU4/rKz/to97L4lP
- hcMrrQ8YCbV9D3krzvt7wfMn9ORf6iLrDfxxZmEBFt391sqZklzgpa+KFiYoozqc06I43qaFkfY
- VAHxWwZ3PihBZEie5Nw==
-X-Authority-Analysis: v=2.4 cv=D93SufRj c=1 sm=1 tr=0 ts=6adf2d75 cx=c_pps
- a=oc9J++0uMp73DTRD5QyR2A==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=Um2Pa8k9VHT-vaBCBUpS:22
- a=vYu95guM48VmnKZvmccA:9 a=QEXdDO2ut3YA:10 a=iYH6xdkBrDN1Jqds4HTS:22
-X-Proofpoint-GUID: r7_E3dzkEB2cdYo2uOJgqOi-DckdYZma
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261026-jshekhar-dcp-hlos-v2-11-7cf014efdee1@oss.qualcomm.com>
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI2MDA0MiBTYWx0ZWRfX/lDnbW66bDZK
+ YBW/WeoW5jKNhmfp+2U5texgBQMQ3pHJQASBaymKTYwFYNhytHiTRBdNPPRpMdQhu3zkbe5jEAl
+ xbQ1QOk9njLf4ybSXMuCYYTz+LCw7Mk=
+X-Authority-Analysis: v=2.4 cv=ZOdCCn7b c=1 sm=1 tr=0 ts=6adf304e cx=c_pps
+ a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22 a=EUspDBNiAAAA:8
+ a=HNynV2uSN_wXD6ujLfoA:9 a=CjuIK1q_8ugA:10 a=bTQJ7kPSJx9SKPbeHEYW:22
+X-Proofpoint-GUID: A_y6zs3g31BXaS4FeS6Dieo2LB0nu9KB
+X-Proofpoint-ORIG-GUID: A_y6zs3g31BXaS4FeS6Dieo2LB0nu9KB
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI2MDA0MiBTYWx0ZWRfX16TuK9Ohtga3
+ e6YK6I1zdByCmaAl5pONN2AsyvY8TZeLYoMfUQIuMc3mubnJ3FA9DW5J1/a4Ci8ofLiv6A/hcbB
+ gLBmQGkc2wmKPOgBBMALPDWhrJZefJscUDfA6i6Crdz4xu1vS4cLtnO1nRdkhezcJDF8keu6um1
+ OeJsifvvfRU5zJlyf5CFwZZHObdTJfqynoO2b0DgtzAnhlyFSE4lGU56mf+QxOH1F1uUvLra2Z5
+ A5jgRvLaDpAdEddxj5dyvLzI68TPj4IqcQXXSUF00GexDPvDuOgCWX3CsR5naXiNKduy9BEw+Tx
+ XeOEzFUVkdw7ElJbmtUrI9piTVMLqp7AU2VeNRNZuYErMH2APReJEdEmRTQQLoLTQIQqEnigG49
+ 32wkkKSxFWVOadSCVm3pFGSqE/b7wsx+ZGbb0aMyZ6SLDYw4rv6KrCKIMFReG6JBWEbqLCl4jGe
+ LrS1+D9DhX5aVGVk/6w==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
  definitions=2026-10-26_01,2026-10-21_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 spamscore=0 adultscore=0 lowpriorityscore=0 impostorscore=0
- phishscore=0 suspectscore=0 malwarescore=0 priorityscore=1501 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610260042
+ phishscore=0 clxscore=1015 lowpriorityscore=0 priorityscore=1501
+ malwarescore=0 adultscore=0 spamscore=0 bulkscore=0 impostorscore=0
+ suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
+ definitions=main-2610260042
 
-On 10/24/26 4:57 PM, Anna Maniscalco wrote:
-> On 10/24/26 1:36 AM, Dmitry Baryshkov wrote:
->> On Fri, Oct 23, 2026 at 03:16:27AM +0530, Akhil P Oommen wrote:
+On Mon, Oct 26, 2026 at 11:51:21AM +0530, Jayant Shekhar wrote:
+> Create the DRM CRTC objects and shared state needed to expose the
+> firmware-owned DCP pipeline through MSM DRM. Without CRTC state,
+> DRM cannot track firmware sessions, aggregate bandwidth, or validate
+> the display configuration.
+> 
+> Implement CRTC objects, display lookup and session state, CRTC
+> bandwidth aggregation, and the shared plane state used by validation
+> and plane programming.
+> 
+> Assisted-by: LLM
+> Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
+> ---
+>  drivers/gpu/drm/msm/Makefile              |   2 +
+>  drivers/gpu/drm/msm/dcp/dcp_crtc.c        | 725 ++++++++++++++++++++++++++++++
+>  drivers/gpu/drm/msm/dcp/dcp_crtc.h        | 104 +++++
+>  drivers/gpu/drm/msm/dcp/dcp_dpu_kms.c     |  21 +
+>  drivers/gpu/drm/msm/dcp/dcp_dpu_kms.h     |  54 +++
+>  drivers/gpu/drm/msm/dcp/dcp_plane_state.h |  37 ++
 
-[...]
+If you need plane state for the CRTCs, then put planes support before
+adding CRTCs.
 
->>>> One thing sashiko is pointing out is that new dt should work with hold kernel so, in general moving sid1 from there would break it since old kernels don't know how to handle them separately.
->> The rule is the opposite: new kernels must continue to work with the old
->> DTs. If the new DT breaks with the older kernel, just specify it in the
->> cover letter so that Bjorn doesn't merge DT changes before the driver
->> changes find the way into his tree.
-> Ah ok thanks for clarifying that.
->>
->>> + Bjorn/Konrad
->>>
->>> Not sure how strict is the requirement for compatibility with older kernel version. An
->>> option in your case could be just do an override in the board dts file of the
->>> Steam Frame.
->> Anyway, would it be a problem? Does GPU normally use SID 1? Or is it
->> only used by the LPAC?
-> It is a problem because, even if nothing touches the LPAC ring, it's firmware
-> will still initialize and that will cause page faults if sid1 isn't setup.
+>  6 files changed, 943 insertions(+)
+> 
+> diff --git a/drivers/gpu/drm/msm/Makefile b/drivers/gpu/drm/msm/Makefile
+> index 77c268aabca6..80341ce07d53 100644
+> --- a/drivers/gpu/drm/msm/Makefile
+> +++ b/drivers/gpu/drm/msm/Makefile
+> @@ -72,6 +72,8 @@ msm-display-$(CONFIG_DRM_MSM_MDP5) += \
+>  	disp/mdp5/mdp5_smp.o \
+>  
+>  msm-display-$(CONFIG_DRM_MSM_DCP) += \
+> +	dcp/dcp_crtc.o \
+> +	dcp/dcp_dpu_kms.o \
+>  	dcp/dcp_hfi_core.o \
+>  	dcp/dcp_hfi_crtc.o \
+>  	dcp/dcp_hfi_dsi.o \
+> diff --git a/drivers/gpu/drm/msm/dcp/dcp_crtc.c b/drivers/gpu/drm/msm/dcp/dcp_crtc.c
+> new file mode 100644
+> index 000000000000..ec4f74c2920f
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/dcp/dcp_crtc.c
+> @@ -0,0 +1,725 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> + * DCP CRTC implementation.
+> + */
+> +
+> +#include <linux/slab.h>
+> +#include <linux/spinlock.h>
+> +#include <linux/wait.h>
+> +
+> +#include <drm/drm_atomic.h>
+> +#include <drm/drm_atomic_helper.h>
+> +#include <drm/drm_blend.h>
+> +#include <drm/drm_crtc.h>
+> +#include <drm/drm_framebuffer.h>
+> +#include <drm/drm_rect.h>
+> +#include <drm/drm_vblank.h>
+> +
+> +#include <drm/drm_managed.h>
+> +
+> +#include "msm_drv.h"
+> +
+> +#include "dcp_crtc.h"
+> +#include "dcp_drv.h"
+> +#include "dcp_hfi.h"
+> +#include "dcp_dpu_kms.h"
+> +#include "dcp_plane_state.h"
+> +
+> +#include "hfi/hfi_defs_display.h"
+> +#include "hfi/hfi_properties_display.h"
+> +
+> +#define DCP_FRAME_DONE_TIMEOUT_MS	500
+> +
+> +static struct dcp_dpu_kms *dcp_crtc_get_kms(struct drm_crtc *crtc)
+> +{
+> +	struct msm_drm_private *priv = crtc->dev->dev_private;
+> +
+> +	return to_dcp_dpu_kms(priv->kms);
+> +}
+> +
+> +static struct drm_crtc_state *
+> +dcp_crtc_atomic_duplicate_state(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc_state *cstate;
+> +
+> +	if (WARN_ON(!crtc->state))
+> +		return NULL;
+> +
+> +	cstate = kzalloc_obj(*cstate, GFP_KERNEL);
+> +	if (!cstate)
+> +		return NULL;
+> +
+> +	__drm_atomic_helper_crtc_duplicate_state(crtc, &cstate->base);
+> +
+> +	cstate->topology_mixer_count =
+> +		to_dcp_crtc_state(crtc->state)->topology_mixer_count;
+> +	cstate->topology_bits_per_component =
+> +		to_dcp_crtc_state(crtc->state)->topology_bits_per_component;
+> +	memcpy(cstate->mixer_roi, to_dcp_crtc_state(crtc->state)->mixer_roi,
+> +	       sizeof(cstate->mixer_roi));
+> +	cstate->update_roi = to_dcp_crtc_state(crtc->state)->update_roi;
+> +	return &cstate->base;
+> +}
+> +
+> +static void dcp_crtc_atomic_destroy_state(struct drm_crtc *crtc,
+> +					  struct drm_crtc_state *state)
+> +{
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(state);
+> +
+> +	__drm_atomic_helper_crtc_destroy_state(state);
+> +	kfree(cstate);
+> +}
+> +
+> +static struct drm_crtc_state *
+> +dcp_crtc_atomic_create_state(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc_state *cstate;
+> +
+> +	cstate = kzalloc_obj(*cstate, GFP_KERNEL);
+> +	if (!cstate)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	__drm_atomic_helper_crtc_state_init(&cstate->base, crtc);
+> +	cstate->topology_mixer_count = 1;
+> +	cstate->topology_bits_per_component = 8;
+> +	return &cstate->base;
+> +}
+> +
+> +static void dcp_crtc_aggregate_bw(struct drm_crtc_state *crtc_state,
+> +				  bool enable)
+> +{
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(crtc_state);
+> +	struct drm_plane *plane;
+> +	const struct drm_plane_state *pstate;
+> +
+> +	cstate->dram_ib  = 0;
+> +	cstate->dram_ab  = 0;
+> +	cstate->llcc_ib  = 0;
+> +	cstate->llcc_ab  = 0;
+> +	cstate->core_clk = 0;
+> +
+> +	if (!enable)
+> +		return;
+> +
+> +	drm_atomic_crtc_state_for_each_plane_state(plane, pstate, crtc_state) {
+> +		if (!pstate->visible || !pstate->fb)
 
-We're slowly coming to terms with the fact that all of our multimedia
-iommu setup was terribly wrong all the time. Venus/Iris recently had
-a flurry of breaking changes. We have to follow suit.
+Can it be visible if there is no fb?
 
-Konrad
+> +			continue;
+> +
+> +		const struct dcp_plane_state *dcp_pstate = to_dcp_plane_state(pstate);
+> +
+> +		cstate->dram_ib  = max(cstate->dram_ib, dcp_pstate->fetch_bw);
+> +		cstate->dram_ab += dcp_pstate->fetch_bw;
+> +		cstate->llcc_ib  = max(cstate->llcc_ib, dcp_pstate->fetch_bw);
+> +		cstate->llcc_ab += dcp_pstate->fetch_bw;
+> +		cstate->core_clk = max(cstate->core_clk, dcp_pstate->clk);
+> +	}
+> +}
+> +
+> +static enum drm_mode_status
+> +dcp_crtc_mode_valid(struct drm_crtc *crtc,
+> +		    const struct drm_display_mode *mode)
+> +{
+> +	struct dcp_dpu_kms *kms = dcp_crtc_get_kms(crtc);
+> +	u32 max_width, max_height;
+> +
+> +	dcp_mode_limits(mode, kms->caps->max_width, kms->caps->max_height,
+> +			&max_width, &max_height);
+> +
+> +	return drm_mode_validate_size(mode, max_width, max_height);
+> +}
+> +
+> +static void dcp_crtc_atomic_begin(struct drm_crtc *crtc,
+> +				  struct drm_atomic_commit *state)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(crtc->state);
+> +	struct dcp_dpu_kms *dcp_kms = dcp_crtc_get_kms(crtc);
+> +	u32 mixer_count;
+> +	u32 session_id;
+> +	u32 i;
+> +	int ret;
+> +
+> +	if (!crtc->state->active)
+> +		return;
+
+Can't you just use DRM_PLANE_COMMIT_ACTIVE_ONLY?
+
+> +	if (!dcp_kms->commit_pm_active) {
+> +		cstate->hfi_error = -EIO;
+> +		return;
+> +	}
+> +
+> +	if (!dcp_crtc_get_session(crtc, &session_id)) {
+> +		cstate->hfi_error = -ENODEV;
+> +		return;
+> +	}
+> +
+> +	if (cstate->core_clk > 0 || cstate->dram_ib > 0) {
+> +		ret = dcp_hfi_crtc_set_bw(dcp_kms->hfi, session_id,
+> +					  cstate->dram_ib,  cstate->dram_ab,
+> +					  cstate->llcc_ib,  cstate->llcc_ab,
+> +					  cstate->core_clk);
+> +		if (ret) {
+> +			cstate->hfi_error = ret;
+> +			return;
+> +		}
+> +	}
+> +
+> +	mixer_count = cstate->topology_mixer_count;
+> +	if (mixer_count < 1 || mixer_count > DCP_MAX_MIXERS) {
+> +		cstate->hfi_error = -EINVAL;
+> +		return;
+> +	}
+> +	for (i = 0; i < mixer_count; i++) {
+> +		struct dcp_mixer_roi *roi = &cstate->mixer_roi[i];
+> +
+> +		if (!roi->w || !roi->h) {
+> +			drm_err(crtc->dev, "CRTC%u: invalid zero-sized LM%u ROI\n",
+> +				dcp_crtc->display_id, i);
+> +			cstate->hfi_error = -EINVAL;
+> +			return;
+> +		}
+> +
+> +		ret = dcp_hfi_crtc_set_resource(dcp_kms->hfi, session_id,
+> +						i, roi->w, roi->h, roi->x, roi->y);
+> +		if (ret) {
+> +			cstate->hfi_error = ret;
+> +			return;
+> +		}
+> +	}
+> +
+> +	ret = dcp_hfi_crtc_set_dest_roi(dcp_kms->hfi, session_id,
+> +					cstate->update_roi.x, cstate->update_roi.y,
+> +					cstate->update_roi.w, cstate->update_roi.h);
+> +	if (ret) {
+> +		cstate->hfi_error = ret;
+> +		return;
+> +	}
+> +}
+> +
+> +static void dcp_crtc_atomic_flush(struct drm_crtc *crtc,
+> +				  struct drm_atomic_commit *state)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(crtc->state);
+> +	struct dcp_dpu_kms *dcp_kms = dcp_crtc_get_kms(crtc);
+> +	unsigned long flags;
+> +	u32 session_id;
+> +	int ret;
+> +
+> +	if (!crtc->state->enable)
+> +		return;
+
+So, atomic_being happens only for active CRTCs, but atomic_flush also
+happens for enabled, but not active CRTCs. Why?
+
+> +	drm_dbg_driver(crtc->dev, "DCP_FLUSH CRTC%u mask=0x%x err=%d\n",
+> +		       dcp_crtc->display_id, crtc->state->plane_mask,
+> +		       cstate->hfi_error);
+> +
+> +	if (!dcp_crtc_get_session(crtc, &session_id)) {
+> +		drm_dbg_driver(crtc->dev,
+> +			       "CRTC%u: atomic flush without HFI session\n",
+> +			       dcp_crtc->display_id);
+> +		goto flush_done;
+> +	}
+> +
+> +	if (cstate->hfi_error)
+> +		goto flush_done;
+> +
+> +	ret = dcp_hfi_crtc_set_scan_sequence_id(dcp_kms->hfi, session_id,
+> +						++dcp_crtc->commit_seq_id);
+> +	if (ret)
+> +		goto flush_error;
+> +
+> +	ret = dcp_hfi_crtc_set_autorefresh(dcp_kms->hfi,
+> +					   session_id, true, 1);
+> +	if (ret)
+> +		goto flush_error;
+> +
+> +	goto flush_done;
+> +
+> +flush_error:
+> +	cstate->hfi_error = ret;
+> +
+> +flush_done:
+> +	spin_lock_irqsave(&crtc->dev->event_lock, flags);
+> +	dcp_crtc->event = crtc->state->event;
+> +	crtc->state->event = NULL;
+> +	spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
+> +}
+> +
+> +void dcp_crtc_set_session(struct drm_crtc *crtc, u32 session_id)
+> +{
+> +	struct dcp_crtc *dcp_crtc;
+> +	unsigned long flags;
+> +
+> +	if (!crtc)
+> +		return;
+
+Why?
+
+> +
+> +	dcp_crtc = to_dcp_crtc(crtc);
+> +	spin_lock_irqsave(&dcp_crtc->spin_lock, flags);
+> +	dcp_crtc->session_id = session_id;
+> +	dcp_crtc->session_valid = true;
+> +	spin_unlock_irqrestore(&dcp_crtc->spin_lock, flags);
+> +}
+> +
+> +void dcp_crtc_clear_session(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc *dcp_crtc;
+> +	unsigned long flags;
+> +
+> +	if (!crtc)
+> +		return;
+
+Why?
+
+> +
+> +	dcp_crtc = to_dcp_crtc(crtc);
+> +	spin_lock_irqsave(&dcp_crtc->spin_lock, flags);
+> +	dcp_crtc->session_valid = false;
+> +	dcp_crtc->session_id = 0;
+> +	spin_unlock_irqrestore(&dcp_crtc->spin_lock, flags);
+> +}
+> +
+> +bool dcp_crtc_get_session(struct drm_crtc *crtc, u32 *session_id)
+> +{
+> +	struct dcp_crtc *dcp_crtc;
+> +	unsigned long flags;
+> +	bool valid;
+> +
+> +	if (!crtc)
+> +		return false;
+
+Why?
+
+> +
+> +	dcp_crtc = to_dcp_crtc(crtc);
+> +	spin_lock_irqsave(&dcp_crtc->spin_lock, flags);
+> +	valid = dcp_crtc->session_valid;
+> +	if (valid && session_id)
+> +		*session_id = dcp_crtc->session_id;
+> +	spin_unlock_irqrestore(&dcp_crtc->spin_lock, flags);
+> +
+> +	return valid;
+> +}
+> +
+> +void dcp_crtc_set_topology_state(struct drm_crtc_state *state,
+> +				 u32 mixer_count,
+> +				 u32 bits_per_component)
+> +{
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(state);
+> +
+> +	cstate->topology_mixer_count = mixer_count;
+> +	cstate->topology_bits_per_component = bits_per_component;
+> +}
+> +
+> +void dcp_crtc_commit_kickoff(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +	struct dcp_dpu_kms *dcp_kms = dcp_crtc_get_kms(crtc);
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(crtc->state);
+> +	u32 session_id;
+> +	int ret;
+> +
+> +	if (cstate->hfi_error) {
+> +		drm_err(crtc->dev,
+> +			"DCP_TRIGGER CRTC%u suppressed after HFI error %d\n",
+> +			dcp_crtc->display_id, cstate->hfi_error);
+> +		return;
+> +	}
+> +
+> +	if (!dcp_crtc_get_session(crtc, &session_id)) {
+> +		drm_warn(crtc->dev,
+> +			 "CRTC%u: no active session, skipping FRAME_TRIGGER\n",
+> +			 dcp_crtc->display_id);
+> +		return;
+> +	}
+> +
+> +	/* MSM serializes commits, so only one frame completion may be pending. */
+> +	if (atomic_cmpxchg(&dcp_crtc->pending_kickoff_cnt, 0, 1)) {
+> +		drm_err(crtc->dev,
+> +			"CRTC%u: frame completion already pending\n",
+> +			dcp_crtc->display_id);
+> +		cstate->hfi_error = -EBUSY;
+> +		return;
+> +	}
+> +	dcp_crtc->pending_seq_id = dcp_crtc->commit_seq_id;
+> +
+> +	ret = dcp_hfi_display_commit(dcp_kms->hfi, session_id);
+> +	if (ret) {
+> +		drm_err(crtc->dev,
+> +			"HFI commit failed for CRTC%u (session=%u): %d\n",
+> +			dcp_crtc->display_id, session_id, ret);
+> +		atomic_dec(&dcp_crtc->pending_kickoff_cnt);
+> +		wake_up(&dcp_crtc->frame_done_wq);
+> +	}
+> +}
+> +
+> +void dcp_crtc_wait_for_commit_done(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +	unsigned long timeout = msecs_to_jiffies(DCP_FRAME_DONE_TIMEOUT_MS);
+> +
+> +	if (!atomic_read(&dcp_crtc->pending_kickoff_cnt))
+> +		return;
+> +
+> +	if (!wait_event_timeout(dcp_crtc->frame_done_wq,
+> +				atomic_read(&dcp_crtc->pending_kickoff_cnt) == 0,
+> +				timeout)) {
+> +		drm_err(crtc->dev,
+> +			"frame done timeout for CRTC%u\n",
+> +			dcp_crtc->display_id);
+> +		atomic_set(&dcp_crtc->pending_kickoff_cnt, 0);
+> +	}
+> +}
+> +
+> +void dcp_crtc_complete_commit(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +	unsigned long flags;
+> +
+> +	if (!crtc->state->active)
+> +		dcp_crtc_aggregate_bw(crtc->state, false);
+> +
+> +	spin_lock_irqsave(&crtc->dev->event_lock, flags);
+> +	if (dcp_crtc->event) {
+> +		drm_crtc_send_vblank_event(crtc, dcp_crtc->event);
+> +		dcp_crtc->event = NULL;
+> +	}
+> +	spin_unlock_irqrestore(&crtc->dev->event_lock, flags);
+> +}
+> +
+> +int dcp_crtc_vblank(struct drm_crtc *crtc, bool enable)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +	struct dcp_dpu_kms *dcp_kms = dcp_crtc_get_kms(crtc);
+> +	u32 session_id;
+> +	int ret;
+> +
+> +	if (!dcp_kms->hfi || !dcp_crtc_get_session(crtc, &session_id))
+
+Can HFI be NULL here?
+
+> +		return -ENODEV;
+> +
+> +	if (enable)
+> +		ret = dcp_hfi_display_event_register_async(dcp_kms->hfi,
+> +							   session_id, HFI_EVENT_VSYNC);
+> +	else
+> +		ret = dcp_hfi_display_event_deregister_async(dcp_kms->hfi,
+> +							     session_id, HFI_EVENT_VSYNC);
+> +	if (ret)
+> +		return ret;
+> +
+> +	WRITE_ONCE(dcp_crtc->vblank_enabled, enable);
+
+Why do you need vblank_enabled in addition to the
+drm_vblank_crtc::enabled?
+
+> +	return 0;
+> +}
+> +
+> +void dcp_crtc_vblank_callback(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +
+> +	if (!READ_ONCE(dcp_crtc->vblank_enabled))
+> +		return;
+> +
+> +	if (ktime_compare(dcp_crtc->vblank_cb_time, ktime_set(0, 0)) == 0)
+> +		dcp_crtc->vblank_cb_time = ktime_get();
+> +	else
+> +		dcp_crtc->vblank_cb_count++;
+> +	drm_crtc_handle_vblank(crtc);
+> +}
+> +
+> +void dcp_crtc_frame_done_callback(struct drm_crtc *crtc)
+> +{
+> +	struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +
+> +	atomic_add_unless(&dcp_crtc->pending_kickoff_cnt, -1, 0);
+> +	wake_up(&dcp_crtc->frame_done_wq);
+> +}
+> +
+> +static struct drm_crtc *dcp_crtc_find_by_session_id(struct dcp_drv *drv,
+> +						    u32 session_id)
+> +{
+> +	struct dcp_dpu_kms *dcp_kms;
+> +	struct drm_crtc *crtc;
+> +	u32 active_session_id;
+> +
+> +	if (!drv || !drv->kms)
+> +		return NULL;
+
+Why?
+
+> +
+> +	dcp_kms = drv->kms;
+> +
+> +	crtc = dcp_dpu_kms_get_crtc(dcp_kms, session_id);
+
+Hmm, why are you passing session_id here even though the function
+accepts display_id?
+
+> +	if (!crtc || !dcp_crtc_get_session(crtc, &active_session_id) ||
+> +	    active_session_id != session_id)
+> +		return NULL;
+> +
+> +	return crtc;
+> +}
+> +
+> +void dcp_crtc_hfi_vblank_cb(struct dcp_drv *drv, u32 session_id)
+> +{
+> +	struct drm_device *dev = drv && drv->kms ? drv->kms->dev : NULL;
+> +	struct drm_crtc *crtc = dcp_crtc_find_by_session_id(drv, session_id);
+> +
+> +	if (crtc)
+> +		dcp_crtc_vblank_callback(crtc);
+> +	else if (dev)
+
+Can dev be NULL here?
+
+> +		drm_err_ratelimited(dev,
+> +				    "unknown CRTC for HFI VSYNC session %u\n",
+> +				    session_id);
+> +}
+> +
+> +void dcp_crtc_hfi_frame_done_cb(struct dcp_drv *drv, u32 session_id, u32 sequence_id)
+> +{
+> +	struct drm_device *dev = drv && drv->kms ? drv->kms->dev : NULL;
+> +	struct drm_crtc *crtc = dcp_crtc_find_by_session_id(drv, session_id);
+> +
+> +	if (crtc) {
+
+Why? Also, if the !crtc can actually happen, handle it as something
+non-standard:
+
+if (!crtc) {
+	drm_err_ratelimited(...);
+	return;
+}
+
+struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+...
+
+
+> +		struct dcp_crtc *dcp_crtc = to_dcp_crtc(crtc);
+> +
+> +		/* A single pending commit makes equality valid across sequence wrap. */
+> +		if (sequence_id != dcp_crtc->pending_seq_id) {
+> +			drm_warn(crtc->dev,
+> +				 "CRTC%u: ignoring stale FRAME_SCAN_COMPLETE seq=%u expected=%u\n",
+> +				 dcp_crtc->display_id, sequence_id,
+> +				 dcp_crtc->pending_seq_id);
+> +			return;
+> +		}
+> +		dcp_crtc_frame_done_callback(crtc);
+
+Can't you inline it here?
+
+> +	} else if (dev)
+> +		drm_err_ratelimited(dev,
+> +				    "unknown CRTC for HFI frame-done session %u seq=%u\n",
+> +				    session_id, sequence_id);
+> +}
+> +
+> +static int dcp_crtc_setup_mixer_rois(struct drm_crtc *crtc,
+> +				     struct drm_crtc_state *crtc_state,
+> +				     struct dcp_crtc_state *cstate)
+> +{
+> +	const struct drm_plane_state *pstate;
+> +	struct drm_plane *plane;
+> +	const struct drm_display_mode *mode = &crtc_state->adjusted_mode;
+> +	u32 mixer_count = cstate->topology_mixer_count;
+> +	u32 mixer_width = mode->hdisplay / mixer_count;
+> +	u32 i;
+> +
+> +	if (!mixer_width)
+> +		return -EINVAL;
+> +
+> +	cstate->update_roi.x = 0;
+> +	cstate->update_roi.y = 0;
+> +	cstate->update_roi.w = mode->hdisplay;
+> +	cstate->update_roi.h = mode->vdisplay;
+> +	for (i = 0; i < mixer_count; i++) {
+> +		cstate->mixer_roi[i].x = (mode->hdisplay * i) / mixer_count;
+> +		cstate->mixer_roi[i].y = 0;
+> +		cstate->mixer_roi[i].w = (mode->hdisplay * (i + 1)) / mixer_count -
+> +			cstate->mixer_roi[i].x;
+> +		cstate->mixer_roi[i].h = mode->vdisplay;
+> +		drm_dbg_driver(crtc->dev,
+> +			       "DCP_CHECK CRTC%u LM%u roi=(%u,%u %ux%u)\n",
+> +				to_dcp_crtc(crtc)->display_id, i,
+> +				cstate->mixer_roi[i].x, cstate->mixer_roi[i].y,
+> +				cstate->mixer_roi[i].w, cstate->mixer_roi[i].h);
+> +	}
+> +
+> +	drm_atomic_crtc_state_for_each_plane_state(plane, pstate, crtc_state) {
+> +		bool fullscreen;
+> +		bool assigned = false;
+> +		u32 mixer_idx;
+> +
+> +		if (!pstate || !pstate->visible || !pstate->fb)
+> +			continue;
+> +
+> +		for (mixer_idx = 0; mixer_idx < mixer_count; mixer_idx++) {
+> +			struct dcp_mixer_roi *mixer = &cstate->mixer_roi[mixer_idx];
+> +
+> +			if (pstate->crtc_x >= mixer->x &&
+> +			    pstate->crtc_x + pstate->crtc_w <= mixer->x + mixer->w) {
+> +				assigned = true;
+> +				break;
+> +			}
+> +		}
+> +
+> +		/* Any plane may cover the complete split display. Plane type is
+> +		 * not a resource-selection mechanism in the universal-plane API.
+> +		 */
+> +		fullscreen = pstate->crtc_x == 0 && pstate->crtc_y == 0 &&
+> +			pstate->crtc_w == mode->hdisplay &&
+> +			pstate->crtc_h == mode->vdisplay;
+
+Why do we need to special-handle the fullscreen planes?
+
+> +
+> +		if (!assigned && !fullscreen && mixer_count > 1) {
+> +			/*
+> +			 * Split-pipe/source-split and multirect allocation are
+> +			 * deferred until the atomic pipe resource manager is added.
+> +			 * Reject planes needing multiple mixer rectangles for now.
+> +			 */
+> +			return -EOPNOTSUPP;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int dcp_crtc_atomic_check(struct drm_crtc *crtc,
+> +				 struct drm_atomic_commit *state)
+> +{
+> +	struct dcp_dpu_kms *dcp_kms = dcp_crtc_get_kms(crtc);
+> +	struct drm_crtc_state *crtc_state =
+> +		drm_atomic_get_new_crtc_state(state, crtc);
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(crtc_state);
+> +	struct drm_plane *plane;
+> +	const struct drm_plane_state *pstate;
+> +	u32 max_width, max_height;
+> +	u32 mixer_count;
+> +	int num_planes = 0;
+> +	int ret;
+> +
+> +	drm_dbg_atomic(crtc->dev, "CRTC%u: atomic_check enable=%d active=%d mode=%s\n",
+> +		       crtc->base.id, crtc_state->enable, crtc_state->active,
+> +		       crtc_state->mode.name[0] ? crtc_state->mode.name : "none");
+> +
+> +	if (!crtc_state->enable || !crtc_state->active)
+> +		return 0;
+> +
+> +	mixer_count = cstate->topology_mixer_count;
+> +	if (mixer_count < 1 || mixer_count > DCP_MAX_MIXERS) {
+> +		drm_err(crtc->dev,
+> +			"CRTC%u: invalid mixer count %u (limit 1..%u)\n",
+> +				crtc->base.id, mixer_count, DCP_MAX_MIXERS);
+
+No, don't let userspace spam the kernel log.
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = dcp_crtc_setup_mixer_rois(crtc, crtc_state, cstate);
+> +	if (ret)
+> +		return ret;
+> +
+> +	dcp_mode_limits(&crtc_state->adjusted_mode,
+> +			dcp_kms->caps->max_width, dcp_kms->caps->max_height,
+> +			&max_width, &max_height);
+> +
+> +	if (crtc_state->adjusted_mode.hdisplay > max_width ||
+> +	    crtc_state->adjusted_mode.vdisplay > max_height) {
+> +		drm_err(crtc->dev, "CRTC%u: mode %dx%d exceeds DCP caps %dx%d\n",
+> +			crtc->base.id,
+> +			crtc_state->adjusted_mode.hdisplay,
+> +			crtc_state->adjusted_mode.vdisplay,
+> +			dcp_kms->caps->max_width,
+> +			dcp_kms->caps->max_height);
+> +		return -E2BIG;
+> +	}
+> +
+> +	/* Limit visible planes to the firmware blend-stage count. */
+> +	drm_atomic_crtc_state_for_each_plane_state(plane, pstate, crtc_state) {
+> +		if (!pstate || !pstate->visible)
+> +			continue;
+> +		num_planes++;
+
+I think I commented here. Can't you use normalized zpos in plane's
+atomic_check instead?
+
+> +	}
+> +
+> +	if (num_planes > DCP_MAX_BLEND_STAGES) {
+> +		drm_err(crtc->dev, "CRTC%u: %d planes exceeds max blend stages %d\n",
+> +			crtc->base.id, num_planes,
+> +			DCP_MAX_BLEND_STAGES);
+> +		return -EINVAL;
+> +	}
+> +
+> +	dcp_crtc_aggregate_bw(crtc_state, true);
+> +
+> +	return 0;
+> +}
+> +
+> +static u32 dcp_crtc_get_vblank_counter(struct drm_crtc *crtc)
+> +{
+> +	return drm_crtc_vblank_count(crtc);
+> +}
+> +
+> +static void dcp_crtc_atomic_enable(struct drm_crtc *crtc,
+> +				   struct drm_atomic_commit *state)
+> +{
+> +	struct dcp_dpu_kms *dcp_kms = dcp_crtc_get_kms(crtc);
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(crtc->state);
+> +	u32 session_id;
+> +	int ret;
+> +
+> +	if (!dcp_crtc_get_session(crtc, &session_id))
+> +		return;
+> +
+> +	ret = dcp_hfi_crtc_set_power_mode(dcp_kms->hfi, session_id,
+> +					  HFI_MODE_DPMS_ON);
+> +	if (ret) {
+> +		drm_err(crtc->dev, "CRTC%u: DPMS ON failed: %d\n",
+> +			to_dcp_crtc(crtc)->display_id, ret);
+> +		cstate->hfi_error = ret;
+> +	}
+> +
+> +	drm_crtc_vblank_on(crtc);
+> +}
+> +
+> +static void dcp_crtc_atomic_disable(struct drm_crtc *crtc,
+> +				    struct drm_atomic_commit *state)
+> +{
+> +	struct dcp_dpu_kms *dcp_kms = dcp_crtc_get_kms(crtc);
+> +	struct dcp_crtc_state *cstate = to_dcp_crtc_state(crtc->state);
+> +	u32 session_id;
+> +	int ret;
+> +
+> +	if (dcp_crtc_get_session(crtc, &session_id)) {
+> +		ret = dcp_hfi_crtc_set_bw(dcp_kms->hfi, session_id, 0, 0, 0, 0, 0);
+> +		if (ret) {
+> +			drm_err(crtc->dev,
+> +				"CRTC%u: clearing bandwidth vote failed: %d\n",
+> +				to_dcp_crtc(crtc)->display_id, ret);
+> +			cstate->hfi_error = ret;
+> +		}
+> +
+> +		ret = dcp_hfi_crtc_set_power_mode(dcp_kms->hfi, session_id,
+> +						  HFI_MODE_DPMS_OFF);
+> +		if (ret) {
+> +			drm_err(crtc->dev, "CRTC%u: DPMS OFF failed: %d\n",
+> +				to_dcp_crtc(crtc)->display_id, ret);
+> +			cstate->hfi_error = ret;
+> +		}
+> +	}
+> +
+> +	drm_crtc_vblank_off(crtc);
+> +}
+> +
+> +static const struct drm_crtc_funcs dcp_crtc_funcs = {
+> +	.set_config             = drm_atomic_helper_set_config,
+> +	.page_flip              = drm_atomic_helper_page_flip,
+> +	.atomic_create_state    = dcp_crtc_atomic_create_state,
+> +	.atomic_duplicate_state = dcp_crtc_atomic_duplicate_state,
+> +	.atomic_destroy_state   = dcp_crtc_atomic_destroy_state,
+> +	.enable_vblank          = msm_crtc_enable_vblank,
+> +	.disable_vblank         = msm_crtc_disable_vblank,
+> +	.get_vblank_counter     = dcp_crtc_get_vblank_counter,
+> +};
+> +
+> +static const struct drm_crtc_helper_funcs dcp_crtc_helper_funcs = {
+> +	.atomic_check         = dcp_crtc_atomic_check,
+> +	.atomic_enable        = dcp_crtc_atomic_enable,
+> +	.atomic_disable       = dcp_crtc_atomic_disable,
+> +	.atomic_begin         = dcp_crtc_atomic_begin,
+> +	.atomic_flush         = dcp_crtc_atomic_flush,
+> +	.mode_valid           = dcp_crtc_mode_valid,
+> +};
+> +
+> +struct drm_crtc *dcp_crtc_init(struct dcp_dpu_kms *kms,
+> +			       struct drm_plane *primary_plane,
+> +			       u32 display_id)
+> +{
+> +	struct drm_device *dev = kms->dev;
+> +	struct dcp_crtc *dcp_crtc;
+> +	int ret;
+> +
+> +	dcp_crtc = drmm_kzalloc(dev, sizeof(*dcp_crtc), GFP_KERNEL);
+> +	if (!dcp_crtc)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	dcp_crtc->display_id = display_id;
+> +
+> +	spin_lock_init(&dcp_crtc->spin_lock);
+> +	init_waitqueue_head(&dcp_crtc->frame_done_wq);
+> +	atomic_set(&dcp_crtc->pending_kickoff_cnt, 0);
+> +
+> +	ret = drmm_crtc_init_with_planes(dev, &dcp_crtc->base,
+> +					 primary_plane, NULL,
+> +					 &dcp_crtc_funcs,
+> +					 NULL);
+> +	if (ret) {
+> +		drm_err(dev, "CRTC%u init failed: %d\n", display_id, ret);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+> +	drm_crtc_helper_add(&dcp_crtc->base, &dcp_crtc_helper_funcs);
+> +
+> +	drm_dbg_driver(dev, "CRTC%u initialized\n", display_id);
+> +	return &dcp_crtc->base;
+> +}
+> diff --git a/drivers/gpu/drm/msm/dcp/dcp_crtc.h b/drivers/gpu/drm/msm/dcp/dcp_crtc.h
+> new file mode 100644
+> index 000000000000..ae7046e8d97a
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/dcp/dcp_crtc.h
+> @@ -0,0 +1,104 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> + *
+> + * DCP CRTC implementation.
+> + */
+> +
+> +#ifndef __DCP_CRTC_H__
+> +#define __DCP_CRTC_H__
+> +
+> +#include <linux/completion.h>
+> +#include <linux/spinlock.h>
+> +
+> +#include <drm/drm_crtc.h>
+> +
+> +struct dcp_dpu_kms;
+> +struct drm_plane;
+> +
+> +#define DCP_MAX_MIXERS 6
+> +#define DCP_MAX_BLEND_STAGES 12
+> +
+> +static inline void dcp_mode_limits(const struct drm_display_mode *mode,
+> +				   u32 cap_width, u32 cap_height,
+> +				   u32 *max_width, u32 *max_height)
+> +{
+> +	*max_width = cap_width;
+> +	*max_height = cap_height;
+> +
+> +	if (mode->hdisplay < mode->vdisplay && cap_width > cap_height) {
+> +		*max_width = cap_height;
+> +		*max_height = cap_width;
+
+Why? I guess, the caps interface is just incorrect. We have two
+limitations: the maximum width and the maximum clock / bandwdith.
+maximum height doesn't seem to make any sense here.
+
+> +	}
+> +}
+> +
+> +struct dcp_mixer_roi {
+> +	u32 x;
+> +	u32 y;
+> +	u32 w;
+> +	u32 h;
+> +};
+
+Is this an HFI or an internal value? If it's the latter, please use
+drm_rect.
+
+> +
+> +struct dcp_crtc {
+> +	struct drm_crtc base;
+> +	u32 display_id;
+> +	u32 session_id;
+> +	bool session_valid;
+
+Why do we need a separate flag here? When is the session being set and
+when is it removed?
+
+> +	struct drm_pending_vblank_event *event;
+> +	wait_queue_head_t frame_done_wq;
+> +	atomic_t          pending_kickoff_cnt;
+> +	/* Protects CRTC-local vblank and commit state. */
+> +	spinlock_t        spin_lock;
+> +	u32     vblank_cb_count;
+> +	bool    vblank_enabled;
+> +	ktime_t vblank_cb_time;
+> +	bool    enabled;
+> +	u32 commit_seq_id;
+> +	u32 pending_seq_id;
+> +};
+> +
+> +struct dcp_crtc_state {
+> +	struct drm_crtc_state base;
+> +
+> +	u32 topology_mixer_count;
+> +	u32 topology_bits_per_component;
+> +	struct dcp_mixer_roi mixer_roi[DCP_MAX_MIXERS];
+> +
+> +	struct dcp_mixer_roi update_roi;
+
+It's set exactly to the display mode. Can we drop it?
+
+> +	int hfi_error;
+
+Why is it a part of the state? What does it mean if we got an HFI error?
+What is a recovery model? Is it fine to restart the session? Or is the
+whole device wedged?
+
+> +	u64 bw_ctl;
+> +
+> +	u64 dram_ib;
+> +	u64 dram_ab;
+> +	u64 llcc_ib;
+> +	u64 llcc_ab;
+> +	u64 core_clk;
+> +};
+> +
+> +#define to_dcp_crtc(x)       container_of(x, struct dcp_crtc, base)
+> +#define to_dcp_crtc_state(x) container_of(x, struct dcp_crtc_state, base)
+> +
+> +struct drm_crtc *dcp_crtc_init(struct dcp_dpu_kms *kms,
+> +			       struct drm_plane *primary_plane,
+> +			       u32 display_id);
+> +
+> +void dcp_crtc_commit_kickoff(struct drm_crtc *crtc);
+> +void dcp_crtc_wait_for_commit_done(struct drm_crtc *crtc);
+> +void dcp_crtc_complete_commit(struct drm_crtc *crtc);
+> +int dcp_crtc_vblank(struct drm_crtc *crtc, bool enable);
+> +void dcp_crtc_vblank_callback(struct drm_crtc *crtc);
+> +void dcp_crtc_frame_done_callback(struct drm_crtc *crtc);
+
+Are those used outside of dcp_crtc.c? If not, drop all the prototypes
+and definitions which are local to the module. Reorder the functions as
+required to remove the need for the forward declarations, where
+possible.
+
+> +struct dcp_drv;
+> +void dcp_crtc_hfi_vblank_cb(struct dcp_drv *drv, u32 session_id);
+> +void dcp_crtc_hfi_frame_done_cb(struct dcp_drv *drv, u32 session_id, u32 sequence_id);
+> +
+> +void dcp_crtc_set_session(struct drm_crtc *crtc, u32 session_id);
+> +void dcp_crtc_clear_session(struct drm_crtc *crtc);
+> +bool dcp_crtc_get_session(struct drm_crtc *crtc, u32 *session_id);
+> +void dcp_crtc_set_topology_state(struct drm_crtc_state *state,
+> +				 u32 mixer_count,
+> +				 u32 bits_per_component);
+> +
+> +#endif /* __DCP_CRTC_H__ */
+> diff --git a/drivers/gpu/drm/msm/dcp/dcp_dpu_kms.c b/drivers/gpu/drm/msm/dcp/dcp_dpu_kms.c
+> new file mode 100644
+> index 000000000000..44b1c2200aee
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/dcp/dcp_dpu_kms.c
+> @@ -0,0 +1,21 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> + * DCP KMS driver.
+> + */
+> +
+> +#include <drm/drm_crtc.h>
+> +
+> +#include "dcp_dpu_kms.h"
+> +
+> +struct drm_crtc *dcp_dpu_kms_get_crtc(struct dcp_dpu_kms *dcp_kms,
+> +				      u32 display_id)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < dcp_kms->num_crtcs; i++)
+> +		if (dcp_kms->crtcs[i].display_id == display_id)
+> +			return dcp_kms->crtcs[i].crtc;
+> +
+> +	return NULL;
+> +}
+> diff --git a/drivers/gpu/drm/msm/dcp/dcp_dpu_kms.h b/drivers/gpu/drm/msm/dcp/dcp_dpu_kms.h
+> new file mode 100644
+> index 000000000000..f8010fc5d32f
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/dcp/dcp_dpu_kms.h
+> @@ -0,0 +1,54 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> + * DCP KMS state.
+> + */
+> +
+> +#ifndef __DCP_DPU_KMS_H__
+> +#define __DCP_DPU_KMS_H__
+> +
+> +#include <linux/spinlock.h>
+> +
+> +#include "msm_drv.h"
+> +#include "msm_kms.h"
+> +
+> +struct dcp_hfi;
+> +struct dcp_caps;
+> +struct dcp_dsi_bridge;
+> +struct dcp_drv;
+> +struct drm_crtc;
+> +
+> +#define DCP_DPU_AUTOSUSPEND_DELAY_MS	5000
+> +#define DCP_DPU_MAX_CRTCS	4
+> +#define DCP_DPU_MAX_PLANES	12
+> +
+> +struct dcp_dpu_kms {
+> +	struct msm_kms		 base;
+> +	struct drm_device	*dev;
+> +	struct device		*pm_dev;
+> +	struct dcp_drv		*drv;
+> +	struct dcp_hfi		*hfi;
+> +	struct dcp_caps		*caps;
+> +	struct device_node	*dpus_np;
+> +	struct device		*iommu_dev;
+> +	bool			 rpm_enabled;
+> +	bool			 commit_pm_active;
+> +	struct dcp_dsi_bridge	*dsi_bridge[2];
+> +	struct {
+> +		struct drm_crtc *crtc;
+> +		u32 display_id;
+> +	} crtcs[DCP_DPU_MAX_CRTCS];
+> +	unsigned int num_crtcs;
+> +};
+> +
+> +#define to_dcp_dpu_kms(x) container_of(x, struct dcp_dpu_kms, base)
+> +struct drm_crtc *dcp_dpu_kms_get_crtc(struct dcp_dpu_kms *dcp_kms,
+> +				      u32 display_id);
+> +int dcp_dpu_kms_prepare_crtc_session(struct dcp_dpu_kms *dcp_kms,
+> +				     struct drm_crtc *crtc);
+> +
+> +int dcp_dpu_drm_obj_init(struct dcp_dpu_kms *dcp_kms);
+> +extern const struct msm_kms_funcs dcp_dpu_kms_funcs;
+> +int dcp_kms_init(struct drm_device *ddev);
+> +
+> +#endif /* __DCP_DPU_KMS_H__ */
+> diff --git a/drivers/gpu/drm/msm/dcp/dcp_plane_state.h b/drivers/gpu/drm/msm/dcp/dcp_plane_state.h
+> new file mode 100644
+> index 000000000000..aafa93cb69b9
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/dcp/dcp_plane_state.h
+> @@ -0,0 +1,37 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+> + *
+> + * DCP plane state definitions.
+> + */
+> +
+> +#ifndef __DCP_PLANE_STATE_H__
+> +#define __DCP_PLANE_STATE_H__
+> +
+> +#include <drm/drm_plane.h>
+> +
+> +#define DCP_PLANE_PROP_PKT_MAX_SIZE	512
+> +
+> +struct dcp_plane_state {
+> +	struct drm_plane_state base;
+> +
+> +	u64 fetch_bw;
+> +	u64 clk;
+> +
+> +	u8     prop_pkt[DCP_PLANE_PROP_PKT_MAX_SIZE];
+> +	size_t prop_pkt_size;
+> +	u32 prop_pkt_id;
+> +
+> +	bool needs_dirtyfb;
+> +
+> +	u32 src_img_w;
+> +	u32 src_img_h;
+> +
+> +	u32 hfi_pipe_id;
+> +	u32 hfi_format;
+> +};
+> +
+> +#define to_dcp_plane_state(x) \
+> +	container_of(x, struct dcp_plane_state, base)
+> +
+> +#endif /* __DCP_PLANE_STATE_H__ */
+> 
+> -- 
+> 2.43.0
+> 
+
+-- 
+With best wishes
+Dmitry
