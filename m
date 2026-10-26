@@ -1,99 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.176
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792971287;
-	b=TMPfqbhjrDDsBNN2q8+pnhWkZlRDUGZ88b8tkcsJyXKOPTgpvU/B5E7exOox9hxLhMsq
-	 REoro4N8H4Jv9aVyXuxVWR0CcNVNnqWHghvbeijAjRm54eiqAITCbmwhL3GSon12Bsd9b
-	 TRSxuIssHbhp4yMM69mvumEmOBHY8bd4SuOWqTIFwSyvN9d6PoUKdFO/x0l7XXs+zoKqa
-	 dPxNayetzAlEJumVF/aB3D+NesUxD8MRY85E7eV3myfn0a5JcLDs0IBVsfGnEd9kJSxtJ
-	 JvKoz8rGce4l5JDp2HyD7monvTslPd/eLzHvt/QhLFB5zPSlAGbL7UgCARNx9sdIqYQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792971287;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.176
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792984816;
+	b=BzO/ioVAEgZKfnK0tSr7UemlW0SJrIlss0rCqjliVdcKoghjfvkf8FzjkxKlljCW5tLx
+	 IQ6oNOW8DrkjNTm1EaNksVckPa5ZZ4usSSL7oD3zbR0RxMyoY/Nk4h/cXA4hnUc5ZTpQK
+	 +ZKtDv1aWoVjVL/jC9LjLVCb1sVtpj95noLiK69k47TdlGUBNwgxVVxtHBEWTrQwJryCO
+	 QxmStq6AVBKVt2FStNQfbjOmlv82AZwu9VF+VDZsPUyHr6uhe/OYflwNX3aw9jf4o9UdF
+	 KBP2ADBJZ6VE7pbIHDfCGFIVYI/tksGRKFAh13KztSEmBDskI4y3JgQCqI2665UbERQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792984816;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=rFWYZrVjrS/TFQfJR/4h0JKkNeZpD/BpXtbdF7kMWlw=;
-	b=aW2nsuzDrszoEA/XOQ4r3xvwYMjd4Gki6kt1KnBtKWI1QehZCPYrJUxDy8jnr5H3Giqu
-	 7a6tinbgJpbu8L4lOFVAaLqwv1n3MEKkZr9uq5ciRZgylxHBw1vZDwaj5RxvvfkX1KqXB
-	 tdmQLgim+AvK0Sw/ph+Ew7H/ItaETcWS8uAYMcrV3G+UcBKA38bA4ROAylvEUlaN2nGs6
-	 GHsdOpBpu4AaginET8i4nzMcisiQhOhe1SDk9VB6WUe4Sf/PRDlP61XHmXk2EWjN5yUq4
-	 Y2BLF/Ucrs1FWc+7VnABHcU8kzff8cxJXjRRQJfkihSTt/qd0BKwQULBs3dv931jPYw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=uKLY5EJD;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.176
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=WTKZttgdr/SAexmQekzblCSc0QECF1tZsnrq/gh32Uw=;
+	b=Hoy7flixNU88220PZ8Px1nwQQ6Pwz2MFd2rJCnndtUEYM2Sm4Djp19NUMB9cjulfO168
+	 qjeXNHaizJYZeBLXFNOMpqKKA51f9dAbbK/Oh1HkDiJGXWp1F8dgPkpKGkm/fMpfDgVJ3
+	 dtmFzKpvO2x015Apc29R6D66yeSFMDMVfY9EOIOl9ZlBNb3X5VRH4cUuJmYoogMy4E3NP
+	 FBrn3W4+YoeO1420K+UVBs2Vf4csvY3o2A99xAvW3E41rXSzQQDydyJqFCoM1VSf8r7Ts
+	 gQiaaMscCf7X2X2WKmEGetChsbBRxRPllHNJwfKgVrd1TrAs5VrCj9OgjV19YaKeJFg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=asu.edu;
+	spf=pass smtp.mailfrom=asu.edu;
+	dkim=pass header.d=asu.edu header.i=@asu.edu header.a=rsa-sha256 header.s=google header.b=MiKde4G6;
+	arc=none smtp.remote-ip=74.125.82.176
+Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ED3C606A322
-	for <iommu@lists.linux.dev>; Sun, 25 Oct 2026 23:34:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9ED3C606A322
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4246E606A31B
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 03:20:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4246E606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=asu.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=asu.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=uKLY5EJD
-Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-5383c97c8cfso188781cf.1
-        for <iommu@lists.linux.dev>; Sun, 25 Oct 2026 16:34:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792971286; cv=none;
-        d=google.com; s=arc-20260327;
-        b=UauQ/IPHqdWYvYsx0WJWs/L9kV55UNnhApNgeJM0qUqcWZaJV5qP4qFtubk8GmCLhs
-         e0TbWQS6AnzgKHs7Vzl4QseNBiqrQo9WhuXwORKwq/i2pSThkVMT5sCHTQTbKNVNkEnH
-         TEBDG6QXaonMpxqbSbxEWDofgvw7xD7c5x2e2MEURb27Nk9rZ7vAzTQNlhchKfG7hH2B
-         vgtaeRv/doNlt1QzoasLJ8ZAkzsQ6R1BxdRnSUsY6yjjqvBU91OvwSci+i2Nh/pemLvE
-         0/EPPgsCCasNEvN11jZc4HznIvs62RFq5MYnBkp7cIfk4T0FPR285dNKN9yTmh7yrur9
-         fvHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=rFWYZrVjrS/TFQfJR/4h0JKkNeZpD/BpXtbdF7kMWlw=;
-        fh=IuPAdZOGKJSxiKzvmtsc3MGAuB6YOQm4VGKvazlzsP8=;
-        b=cKcwqFRLnPvLjKfco+N4wHUSkpqHx0dQyukX5yqChJ84EGP1zd9IAtYjHJmTSSUmD9
-         Vsy9Cc2hFH0O7JD97/diycpKx8l7cpgRJ3GwuZnU9fQzKpb0GUWYrtUBFHVf6P3dAa2b
-         yqUqyNGVKYmUrBYtdb4cKs/DtEiGmCB8JBtTdokMfkvYq89j8DEDttCt8SkJ2PwFjonR
-         y7R+H0WdqjyUtHP1mNf7wMAQl9FyJyHSDLXrduFYIr+fGk6BxIt7Rk8GCkXuhPLpQP5t
-         ENk51pow5YmEco3jAQgz7FOW/mPoiC6huEDBRyFIjsDdiXc2qoaqBAzGmpPr6c1YopJM
-         B8Rw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key, unprotected) header.d=asu.edu header.i=@asu.edu header.a=rsa-sha256 header.s=google header.b=MiKde4G6
+Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-35943f55c06so3500240eec.0
+        for <iommu@lists.linux.dev>; Sun, 25 Oct 2026 20:20:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20251104; t=1792971286; x=1793576086; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rFWYZrVjrS/TFQfJR/4h0JKkNeZpD/BpXtbdF7kMWlw=;
-        b=uKLY5EJDJaGFRZYcnhuAxxDQLhNFsKDcEeFX5Fo1J4hqdJ6PPjbcxqn9OYRJHkwyK0
-         sKOjfo62QOv2ViZFr5lvnkzAYU79FgCAjFPVeVvI1jEOkOFwfNdG3x26SsYb9CZ4RmXP
-         Va7Bt1BSFD+IOIzTiOThr/Poi6F0llNx6YQ3RUhNm8QRYgVmMfXejfdq/rao/vrvEVEU
-         WphI6YoVpUMbNi4cBGWVKXuNoaI6rzPcbyqZz3yMxADi8kLDKuuLoyuRnkVn+M19nmks
-         86SvVIfcdsFxm3uW7d63GY7tun/AOSVVTxMf+oHii6hAa6+cgLb6fCHTJgjEoSx0ZyI9
-         yDhQ==
+        d=asu.edu; s=google; t=1792984814; x=1793589614; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=WTKZttgdr/SAexmQekzblCSc0QECF1tZsnrq/gh32Uw=;
+        b=MiKde4G6VQfIDWyS5Ia9BbAhGiyNh9YxNzMvgp0tsEU2Snbl9Qe+Ei4Xvy9wp5iqbK
+         hPZd2W7CQAyP5/tf/MiK3l09jGBIscxTyzmrLtcHBJY4q4rwS1i0JH6L9reWDs5M/d61
+         I5esbt4NL66/8YJqD/55n6B1DSabkQO6Tb9ORzfJ6ouC8ZvMGTQu+TZ6X6S8HX/10jRv
+         50Lvj1CZATbtFXYUEmwkC6+UxRe3+LznaHG+oz6kWEoP5hvtSiD5Pxpkjhv7P+aPatvX
+         3BwG7VYR1c3Rh1zoTzpFExl5M5hxqECDIEiaiHNh5E5+h3l+igRpl4WtBHIz2aZJH7Tu
+         jr5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792971286; x=1793576086;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=rFWYZrVjrS/TFQfJR/4h0JKkNeZpD/BpXtbdF7kMWlw=;
-        b=z87nrZkW23YFtFyjPJ4WNM4bcohwR+vX2dKIkGpn3/86wXRT48KGIYBJpqn+3ffwlu
-         pOr55AQAA1AYbQGKweUyacHoJcK+r5OvhcyHUCEinpiAI4ubq9Xs6hJjW6IcTfOEKZFE
-         xFS4VJ3DhHYDlH+HAVv5Fh3wa2OXYont7x0zPNR6dpLIKjuIB/BnSLUGBLsMp5J2E6qQ
-         WvCiHexHAmeoPpDU6E8PTyynRlz3yRby0klm7LGGgAP8x458B+x+RY4zRvW26iPS/8Qp
-         EX4ENQxhuttDfqxaplA3+oLx+mhW3vOLTkDbz7tb/Hz3ws8v0kOYvpBZPvwjlaIAfk1J
-         sJOQ==
-X-Gm-Message-State: AFq9FYJAvkEMg1GNJxq+vLCFFXkNmcU9jLAXoAFmVF0ZlsAosMiw5DBH
-	QHuBYN1H0H1bDi5ska0u9AQrXxkyUmR9mRPoaFdYofC5JDbQLQ/u7ZcHAxbZNKh72T4fmO6h7M2
-	TCf05oFi3/VVE7UMryl2xUDesmDloeTo5/h88esgntJjK9By5XxwmOPEb8fk=
-X-Gm-Gg: AYBFou3gz10zJ2sjyCppjLBzqSTa9jniRbMNA+nWlDa6vfZ8mjBt5+gQbKtnMHNTyvf
-	XAf3GJGlWPcVwQQSMaZnnMcjCscnJQFzHpKphcsHmrXTZ3vCmD8GJrYTYS6LEbjF/5ZY5r4uXGv
-	1q6uUf7uDK+CG9Qm3sBCnXLBTAHT1oTbLC8xyMMCUvzjas1ohU9JQ37+Ve1yhj4XWRp1CrznVli
-	okMjPl4VBo7le5bhqr1ohTabHFdeos+bZ0bEN3XTiVJEU8WZ4agneJLbFfP7mcSrBGiKXCJe0Ft
-	cdfc6gTpM8Lm5QZx+Y18NxeQI1UhskuxSgzlKBUXjrp972HEe1yIKVSCHeSosqZHB/yI86AFbPx
-	KarrNl2TlhbPUb04tNwrMO5pNIENddonm1Q==
-X-Received: by 2002:a05:622a:5806:b0:535:84ef:2e26 with SMTP id
- d75a77b69052e-5383b53f3afmr23124761cf.7.1792971285094; Sun, 25 Oct 2026
- 16:34:45 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1792984814; x=1793589614;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=WTKZttgdr/SAexmQekzblCSc0QECF1tZsnrq/gh32Uw=;
+        b=dIPrh4Wg03eZtGSGMb+17f1hsQxVPx93pBDC/C3pUrstVQlhdoD/xVUl9SkMvgzenX
+         irU41j+t+QHYTjApKidIJmV4SdEMQFJ/G/mQEbQWxLJ1cbE5NboimRoW4oHCzgsxTskZ
+         D9dRHiZfR2NRp/tIGl/2amdEMF90Soxt2el/IYvGhfeTWR74edg/1yzy+oP4LZ8HMxUC
+         0OWgCVbqqLjWzSpin/vgEnPQvV6iwEnyM829ttcHBzq3Yi0+ZFloIkPCUXnxa3iR+oGA
+         yD+GKZgmKfHPatIAJB2tDzWTb90uUMJlLwK4EvSUU4xKZUmcsPnp2C3W+ZR2/5cQmN1a
+         9rhw==
+X-Gm-Message-State: AFq9FYKMeJKK9PoV1qecbi5RFJT0kvdUyFWc2ctzAw6Br0N5aWH7ByT9
+	p5QgjzxzduC80IJAzVJKUWz9dQ9RsUNFrPfTJk5kGsgtIaYEBp8c+rql5bpknDnzPQ==
+X-Gm-Gg: AYBFou0QhH4Z/VxzbtPem8tDXebeqbRBTmhqiKsrO21YNZ6RWrJOsJ3fqze6po4bq2P
+	tSEA68iG1mCd3uTw23pKDpgb54zVQck6Nhp5ab/5R/cz/aVZUiuOIYIGyI8ARyuYWj/O/lu3smC
+	zFUtY4REltgAfNxcz+VIQpt0xW7HHkwU+nuvwAosACl/p17mTiWhN305khvZotjOW9ZgrGnyAba
+	+NLGPyC8KLJOd+fEDSm2FYKeHRcrxFDl+Mh0+nXhak6+I7EgqTAK7DJPDp8uDKXcxNZUzbEqeFP
+	260G/9DuVYgcHP9h1OHjT/Y8EDcX3eo8I9zis30HUgZxZ1956ZQCC/WQ/hOuG1sLSr8bD7TN7Mk
+	S7UnD8O4HLvEhXMP64xdKS998QfNqFCn4nGYgDvQ/r/628HYZwO5tpfvxrEEMU1j0sY8j7Z3tj3
+	ZEhua8a9J1VMJA89ikVwAdtdo+d0gSFkIzBLVLviM1OU3Ds6ggZIG3NV60titq/atBVClVx3XaU
+	kkznIWMr/IMpVPNV7G6jMfCPVhvSDmWaAMtg9zq8HP707XE09H+TzQezSatKu9muTjxq0OHdEU/
+	UPIMhAvh+EBC
+X-Received: by 2002:a05:693c:6093:b0:369:fe82:8d3f with SMTP id 5a478bee46e88-369fe828ebamr3830262eec.14.1792984814156;
+        Sun, 25 Oct 2026 20:20:14 -0700 (PDT)
+Received: from gio.localdomain (ip68-109-140-205.ph.ph.cox.net. [68.109.140.205])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-369e8db7e73sm21439295eec.20.2026.10.25.20.20.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Oct 2026 20:20:13 -0700 (PDT)
+From: Giorgi Kobakhia <gkobakhi@asu.edu>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Xiang Mei <xmei5@asu.edu>,
+	Giorgi Kobakhia <gkobakhi@asu.edu>,
+	stable@vger.kernel.org
+Subject: [PATCH] swiotlb: fix out-of-bounds read in swiotlb_release_slots()
+Date: Sun, 25 Oct 2026 20:20:07 -0700
+Message-ID: <20261026032007.1957949-1-gkobakhi@asu.edu>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,102 +95,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261004195027.227748-1-danielmentz@google.com> <20261016180521.GJ14213@ziepe.ca>
-In-Reply-To: <20261016180521.GJ14213@ziepe.ca>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Sun, 25 Oct 2026 16:34:34 -0700
-X-Gm-Features: AclHuK9W-YhajRJtMqxwo_KiR_knxSPaf7RrqxDVchqoNSjrX0LK8PI-lTwz6Ks
-Message-ID: <CAE2F3rD3WPfJYBu-HPwppwjzdXB1v5gRwu6Dy7rCrgBAs1JBnQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Align memory attributes for
- SMMU-originated accesses
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, will@kernel.org, robin.murphy@arm.com, 
-	joro@8bytes.org, nicolinc@nvidia.com, smostafa@google.com, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	dawei.li@linux.dev, praan@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Fri, Oct 16, 2026 at 11:05=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wro=
-te:
-> On Sun, Oct 04, 2026 at 07:50:27PM +0000, Daniel Mentz wrote:
-> > The SMMU specification defines several types of SMMU-originated memory
-> > accesses, including Stage 1 and Stage 2 translation table walks, stream
-> > table accesses (L1STD and STE fetches), CD table accesses (L1CD and CD
-> > fetches), and queue accesses (CMDQ fetch, EVENTQ write, PRIQ write).
-> >
-> > While the memory attributes used for Stage 1 and Stage 2 translation
-> > table walks are configured in io-pgtable-arm based on whether the SMMU
-> > is coherent (ARM_SMMU_FEAT_COHERENCY), the attributes for stream tables=
-,
-> > CD tables, and queues are currently hardcoded to Inner Shareable,
-> > Write-Back.
-> >
-> > On non-coherent systems, however, memory for stream tables, CD tables,
-> > and queues is allocated via dma_alloc_coherent() /
-> > dmam_alloc_coherent(), which provides CPU mappings with Normal
-> > Non-Cacheable attributes. Having a non-coherent SMMU access these
-> > buffers with Inner Shareable, Write-Back attributes results in
-> > mismatched memory attributes between the CPU and the SMMU.
-> >
-> > Configure the memory attributes for tables and queues in
-> > arm_smmu_device_reset() and arm_smmu_make_cdtable_ste() based on
-> > ARM_SMMU_FEAT_COHERENCY, matching the attributes used for translation
-> > table walks:
-> >
-> > - In SMMU_CR1, use Outer Shareable, Non-Cacheable for non-coherent
-> >   SMMUs, while retaining Inner Shareable, Write-Back for coherent SMMUs=
-.
-> >   This applies to stream table accesses as well as queue accesses (CMDQ
-> >   fetch, EVENTQ write, PRIQ write).
-> > - In STE.{S1CIR, S1COR, S1CSH}, use Outer Shareable, Non-Cacheable for
-> >   non-coherent SMMUs, while retaining Inner Shareable, Write-Back
-> >   Read-Allocate for coherent SMMUs. This applies to CD table accesses.
-> >
-> > Assisted-by: LLM
-> > Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> > Signed-off-by: Daniel Mentz <danielmentz@google.com>
-> > ---
-> > Changes in v2:
-> > - Rename local variables 'cache' and 'sh' to 'cr1_cache' and 'cr1_sh' i=
-n
-> >   arm_smmu_device_reset() (Nicolin, Will)
-> > - Collect Reviewed-by from Nicolin
-> > - Link to v1: https://lore.kernel.org/linux-iommu/20260929032229.353224=
-7-1-danielmentz@google.com/
-> >
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 37 +++++++++++++++------
-> >  1 file changed, 27 insertions(+), 10 deletions(-)
->
-> I think this looks OK
->
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->
-> Did you check the spec that this is every access? I remember there is
-> a table outlining every access and where the memory attribute lives?
+When buffer is freed, swiotlb_release_slots() tries to merge it with the
+following free space by reading the list value of the next slot.
 
-Hi Jason,
+    if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE))
+        count = mem->slots[index + nslots].list;
+    else
+        count = 0;
 
-Thanks for the review!
+If index is in the last segment of the pool and the pool size is not
+multiple of IO_TLB_SEGSIZE, index + nslots becomes equal to mem->nslabs
+leading to out of bound read.
 
-I checked section 13.8 ("Attributes for SMMU-originated accesses") in
-the SMMUv3 spec (ARM IHI 0070), and all other accesses are already
-covered:
+ BUG: KASAN: slab-out-of-bounds in swiotlb_release_slots
+ Read of size 2
 
-- STE fetches (SMMU_CR1.TABLE_*) and Queue accesses
-  (SMMU_CR1.QUEUE_*): updated by this patch.
-- CD fetches (STE.{S1CIR, S1COR, S1CSH}): updated by this patch.
-- Stage 1 and Stage 2 translation table walks (CD.{IR0, OR0, SH0} and
-  STE.{S2IR0, S2OR0, S2SH0}): already handled by io-pgtable-arm
-- VMS fetches: governed by SMMU_CR1.TABLE_* (and not used by the
-  driver).
-- Event queue, PRI queue, and GERROR MSIs (*_IRQ_CFG2):
-  arm_smmu_write_msi_msg() already programs these to
-  Device-nGnRE since they target an interrupt controller.
-- CMD_SYNC MSIs (CMD_SYNC.{MSIAttr, MSH}): the driver only uses
-  CMD_SYNC MSIs (CS_IRQ) when ARM_SMMU_OPT_MSIPOLL is set, and
-  arm_smmu_device_hw_probe() only enables ARM_SMMU_OPT_MSIPOLL when
-  coherent is true. When non-coherent, CS_SEV (or CS_NONE) is used and
-  MSIAttr/MSH are ignored.
+ Call trace:
+  swiotlb_release_slots (kernel/dma/swiotlb.c:1653)
+  __swiotlb_tbl_unmap_single (kernel/dma/swiotlb.c:1734)
+  dma_unmap_phys (./include/linux/swiotlb.h:262 kernel/dma/direct.h:102
+                    kernel/dma/mapping.c:218)
+  dma_unmap_page_attrs (kernel/dma/mapping.c:236)
 
-Daniel
+The commit 0b84e4f8b793 ("swiotlb: Add restricted DMA pool
+initialization") makes it possible to initialize a pool with an
+arbitrary size. Before it nslabs was multiple of IO_TLB_SEGSIZE and no
+OOB occurred.
+
+Add overflow check.
+
+Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
+Cc: stable@vger.kernel.org
+Assisted-by: LLM
+Tested-by: Xiang Mei <xmei5@asu.edu>
+Signed-off-by: Giorgi Kobakhia <gkobakhi@asu.edu>
+---
+ kernel/dma/swiotlb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index ded7016a46a7..1f18003be343 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1649,7 +1649,8 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr,
+ 	BUG_ON(aindex >= mem->nareas);
+ 
+ 	spin_lock_irqsave(&area->lock, flags);
+-	if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE))
++	if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE) &&
++	    index + nslots < mem->nslabs)
+ 		count = mem->slots[index + nslots].list;
+ 	else
+ 		count = 0;
+-- 
+2.43.0
+
