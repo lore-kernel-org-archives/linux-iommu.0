@@ -1,66 +1,66 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793008484;
-	b=FFbM3UmT+T/Z7Cab9eCZAP8fCC6NWi+CsQYjnxkLOHfOcj+yhPLCIfyRndqUG1PNmA+u
-	 7fJTLsK0jmVeGC8cxQOXKjodn2uiP0QJqIBNqVkVo7y/O+JVhbJNb9oPneDdEMLzhmI/1
-	 TX7qRLBNHk164W95LbSODvF4IJlfqN0nHjfAuQBHVSaW1p7ZIH1JYHX+QFBiMSQDPTXEq
-	 Huvcit+1Xy7wpVlVce6Cjilz905UTXL5PG3ZbYAsqsnVTmI+aEfnbH5g50bh4nGDrFwhd
-	 dhtGbUqITg8LWYJef3Klfw9QXHyj0VWeBPnodmsN6wGWPo68abNSuTTEgCxtjyhkWUw==
+	b=Gv5EQs6QqnaQa0/TmV4IMV1B9+X6NCRzH+AcdtTeAGrUd6d5/9v2urf1UD7J0K+B/5hn
+	 dPclPk/TyEQwj+9JCpZEdfd3laXTSXqyreGQ4NFWWeSyKgMBiJzCz+11Z+6XXXjzeoAor
+	 pIYY6VsWh+q35W2kpg5+iCFjFBE5C/6MosZvkuacr490maAP4Ad9PavCJK+CArWkegkcM
+	 AJoGZSdon+HexIkhtRf/OVESTBWLdxduaXMFXTi1NO53Fbq2oB8dXaItz+lpwKwol8MCd
+	 f4JLqAyrzuBhVUbSZxPq6STZjKlrCgG3qxipNXXJx2Dh4SKoc8ZySuQxSpGVZzZ7Rqw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793008484;
 	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:MIME-Version:
 	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
 	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=g5F29CYGzpyaMphPr1Ay74PbWfybCTO72tr2DJLko5s=;
-	b=jz5LCJaBFiXY9PBzT9P5CdBLR/SdkRpiMrng52iGS5oABaYopsTyB5vNzadC5jBwHwSG
-	 Rc9If7oG2AHeSZ4nyxsuMIwptaqyeLrooz96zlCBoL3a5SyYqSa+lYjLnJ7jT/kTSm6gE
-	 RHHHIUxXNUJIkXMCJeUzFgTo2IK5PWWbA8+vuDVM1/qhx+BYsC4Tqo0NybX8sjkHVj6ME
-	 jK1GVPqCXTcFtvpcTekffFOXAsAg9ksjZTTmhtW7aE838cTtgAqJEjSj18amC2Vpul8a2
-	 gq2X6+tMt+gpByXvEvnSYuBGZ/ggGYtxHun3sb5Sdrmin9tfYQY7wmJVIxPUv/Z3WgA==
+	bh=W3hVhpPdKeNN02AYtbG5/w1KwFA9zux4/7rF7tBrUlg=;
+	b=vLicCSAU1L+ER43jU8NINvni98kCsI1+NcwWg4obLheh+sB7XYF0nhxvGt4iQHDW5Snt
+	 HcxvGzrHKAU6GpDLM0/hQWXP3b5mQ5MdBo/EKHNbLtTYxWEJCG3iQzTFJa1Q+7waw1IRb
+	 FQgQZqUAYe9oCtNmJ/bLE0NK18Awfql9qSbwNqMn99VhnzVvNDJ+B3CjG0GjkhEiYmUra
+	 lLvLxskWSC6FvjlIorwYlW93u8X8ZyCXzGTkV0Jc0wELsdoTm9PxQ4h7cgJ9qGJEnMOB9
+	 w9iws8oflz1T7Lpx5J9R5wOduhfdwkCT7+njrnkUW4HJy7cPor48WX7dCO7jIcQyang==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=samsung.com;
 	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=N5471TYt;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Op6PLYQT;
 	arc=none smtp.remote-ip=210.118.77.11
 Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DA8B60A380A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBABE60A3804
 	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 09:54:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2DA8B60A380A
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EBABE60A3804
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=N5471TYt
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261026095436euoutp018962fc5b7c0d1715256ffadc5b05c6fa~iC7WRBoEm0332303323euoutp01E
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Op6PLYQT
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261026095436euoutp01b09594a41897d5fcc519b41b916be675~iC7Wqypv-0332303323euoutp01F
 	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 09:54:36 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261026095436euoutp018962fc5b7c0d1715256ffadc5b05c6fa~iC7WRBoEm0332303323euoutp01E
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261026095436euoutp01b09594a41897d5fcc519b41b916be675~iC7Wqypv-0332303323euoutp01F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
 	s=mail20170921; t=1793008476;
-	bh=g5F29CYGzpyaMphPr1Ay74PbWfybCTO72tr2DJLko5s=;
+	bh=W3hVhpPdKeNN02AYtbG5/w1KwFA9zux4/7rF7tBrUlg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=N5471TYtW/Bvg2rh6h+9Jn+zRI1gbZgVz2KdzEVVHtgYPr0Ezik+/HpzY73JhIkWH
-	 ZTRuGlbScG2djCzyme/XfoXYFFytfipvNxXncQ+zHEt+UTirB1XXgE5HbKQ/H9b+mq
-	 eFl+m4EXbN5mlJq76bubqdl6mggriZKlpObKrSfY=
+	b=Op6PLYQThs3o9WhYilJPOd6yuyq2yIQce7wcdsRGJbJjbdIpQtDtWaUXOhZhwfDZu
+	 ziGyIck1PoSIlwHeBX2meW4zZO8U+vF9jYa/ON6f86EPHuAfWNeiBmly8mF+MyT4DF
+	 5GPwWV3X5GzMcRgAFQV8JkvsJPYydjEQzlaA9p+s=
 Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261026095435eucas1p129baa137891d2e9f5408b47afd6c556c~iC7WCHumN1950419504eucas1p1Q;
-	Mon, 26 Oct 2026 09:54:35 +0000 (GMT)
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20261026095436eucas1p295baef3daff27873165c70d6d578c1b6~iC7WbUZpq2819828198eucas1p2Y;
+	Mon, 26 Oct 2026 09:54:36 +0000 (GMT)
 Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
 	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261026095435eusmtip2bcc574f43d3f9a26c454413514223b14~iC7VuXSvW1096710967eusmtip2Q;
+	20261026095435eusmtip2d32ee7313ebdb42c92622940079571b2~iC7WHsbsj1301813018eusmtip23;
 	Mon, 26 Oct 2026 09:54:35 +0000 (GMT)
 From: Marek Szyprowski <m.szyprowski@samsung.com>
 To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Petr Tesarik <petr.tesarik.ext@huawei.com>,
+	<robin.murphy@arm.com>, Nicolas Saenz Julienne <nsaenz@kernel.org>,
 	stable@vger.kernel.org
-Subject: [PATCH 3/5] dma: swiotlb: Remove default pool from the pools list
- on exit
-Date: Mon, 26 Oct 2026 10:54:14 +0100
-Message-ID: <20261026095423.966856-4-m.szyprowski@samsung.com>
+Subject: [PATCH 4/5] dma-pool: release CMA pages on atomic_pool_expand()
+ error path
+Date: Mon, 26 Oct 2026 10:54:15 +0100
+Message-ID: <20261026095423.966856-5-m.szyprowski@samsung.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261026095423.966856-1-m.szyprowski@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
@@ -73,51 +73,47 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261026095435eucas1p129baa137891d2e9f5408b47afd6c556c
+X-CMS-MailID: 20261026095436eucas1p295baef3daff27873165c70d6d578c1b6
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261026095435eucas1p129baa137891d2e9f5408b47afd6c556c
+X-RootMTR: 20261026095436eucas1p295baef3daff27873165c70d6d578c1b6
 X-EPHeader: CA
-X-CMS-RootMailID: 20261026095435eucas1p129baa137891d2e9f5408b47afd6c556c
+X-CMS-RootMailID: 20261026095436eucas1p295baef3daff27873165c70d6d578c1b6
 References: <20261026095423.966856-1-m.szyprowski@samsung.com>
-	<CGME20261026095435eucas1p129baa137891d2e9f5408b47afd6c556c@eucas1p1.samsung.com>
+	<CGME20261026095436eucas1p295baef3daff27873165c70d6d578c1b6@eucas1p2.samsung.com>
 
-With CONFIG_SWIOTLB_DYNAMIC enabled, the default memory pool is added to
-the io_tlb_default_mem.pools RCU list during initialization. When an IOMMU
-takes over DMA translation, swiotlb_exit() tears the default pool down and
-clears it with memset(), but leaves its node on the pools list. The list
-then contains a zeroed entry with a NULL next pointer, and any later walk
-of the list, for example mem_used() when reading the io_tlb_used debugfs
-file, dereferences an invalid pointer and crashes.
+atomic_pool_expand() may allocate the pool backing pages from CMA via
+dma_alloc_from_contiguous(), but the error path unconditionally frees
+them with __free_pages(). This hands CMA pages to the buddy allocator
+while leaving them marked as allocated in the CMA bitmap, permanently
+leaking CMA capacity on every failed expansion.
 
-Remove the default pool from the list before freeing it, and wait for an
-RCU grace period before clearing it, so that no reader can still see it.
+Try dma_release_from_contiguous() first and fall back to __free_pages()
+only for pages that did not come from CMA, as the code did before CMA
+allocation was temporarily removed from the pool.
 
-Fixes: 1aaa736815eb ("swiotlb: allocate a new memory pool when existing pools are full")
-Closes: https://sashiko.dev/#/bug/linux-f75998aa-65ea-4596-9bb4-fa83773012a3
+Fixes: d7e673ec2c8e ("dma-pool: Only allocate from CMA when in same memory zone")
+Closes: https://sashiko.dev/#/bug/linux-fdfc6e83-15e4-4980-9818-691b034397e7
 Cc: stable@vger.kernel.org
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- kernel/dma/swiotlb.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ kernel/dma/pool.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index db731f7891b7..51fb2d34f6f2 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -665,6 +665,12 @@ void __init swiotlb_exit(void)
- 		return;
- 
- 	pr_info("tearing down default memory pool\n");
-+#ifdef CONFIG_SWIOTLB_DYNAMIC
-+	spin_lock(&io_tlb_default_mem.lock);
-+	list_del_rcu(&mem->node);
-+	spin_unlock(&io_tlb_default_mem.lock);
-+	synchronize_rcu();
-+#endif
- 	tbl_vaddr = (unsigned long)phys_to_virt(mem->start);
- 	tbl_size = PAGE_ALIGN(mem->end - mem->start);
- 	slots_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), mem->nslabs));
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 00f422a1e896..381b3cb28368 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -152,7 +152,8 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
+ 	dma_common_free_remap(addr, pool_size);
+ free_page:
+ #endif
+-	if (!leak_pages)
++	if (!leak_pages &&
++	    !dma_release_from_contiguous(NULL, page, 1 << order))
+ 		__free_pages(page, order);
+ out:
+ 	return ret;
 -- 
 2.43.0
 
