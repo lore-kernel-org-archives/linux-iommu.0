@@ -1,69 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793001992;
-	b=SLNCCqZC2IWJaag8YxqF22R6LRC58rH0+xJcds7rPrSC109VFiq93+UK8kuabTC6qhIK
-	 +Z+nMFYcAixdazkZnxcSYqh4KU1fmdxTsLMm/9Pex8mw4xP/tKPEORwlPc1WKxo+j/6lb
-	 4bCeCMieouJWweNXzxg2Zgc4HgPSAfhzyMkHZa9uVooFIxlUdpz3GPTKld9pOlKq4+6xp
-	 VWHSeUB97MCplxeyuFfqGNc7jxFvg5Cq8hwTsFqTArMJaCyPT63ZFsR5b+s7D4SXKacZA
-	 QnCcK89QgjuOH1g7QlMb9P981zkG0SA+nh2t3B+MZbi6Bxomd6Rmo/jzaV7m4K378mg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793001992;
-	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
-	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
-	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
-	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=DUbfcD+mF5appbi7QLgptqZT1xJk72MGi2kCZUq9Hmc=;
-	b=yAZK/LUhwvTnErodzEm/po/a7wFXkYd3ZvkBXq+/HEIfh/XW4IIy42Yhv9rrz+7ta5pE
-	 F+fo5PqqsjEB38//DTjG8gFtc7ALmz6jxgYdiEDG7dGelbcYw55/MLMYRAs9vPin1WBw9
-	 G/H/vY49uHdJWL7P569dvw6ol7LiLKgWG1lVOOG7ayb500kS5tzKAjuiZAPv+TOK0OIAw
-	 Ev72hJ1QyskzisvGGS+GZd1kaFHQyRM3dhZYNeNr6hcv1glJ5M3P2bca63+XB0GpPBBDk
-	 PiyJKSml+yFDcFtBE3R6R1JhYcCVS9wUEjJNDNzFkP/PkYDppmgI3ZZAZE73tYmWxWA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=sanechips.com.cn;
-	spf=pass smtp.mailfrom=sanechips.com.cn;
-	arc=none smtp.remote-ip=160.30.148.34
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793003611;
+	b=Eff3zjWkjP+f1Zt0GzgOay9VAtThXAdwhUNEC89S04yfDd/qGcRXmJ3B3HpiaVMIqCJN
+	 T3VyXFsYnQEXplKD0075juPKg6weerxfOn4bEAOEsH4XMlucCpcHI93fQ5Mw+bKetixJA
+	 p+J56+ziWb68onddPmXDqwfxd1QSk9Ye+brD89MIOGlOFC+4CR5pHZ9wXSQpXhzMetodK
+	 fDXYu0d3YBxH0rduuhKLFOJEZjzVRBdqA3mfp2ZaEgz95Cot8SQbcahug/OZSe94XLPfg
+	 +zHb81gLz/U3fjOG5CBZTHBBlLzoCpP8zgD+zP9vUGPzoHTrGImJACz9NZH1xDlkFEQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793003611;
+	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=XQ7CboCxab8pAsYWIP610kHz8Zg6lfgejBrE8HM31Zs=;
+	b=KLsuB13gkb0+w4fIqPT3lTsLuYpECRpH0P8+5x1QlzhbSRkPUkxeXQEIFUyY3UJim1RM
+	 11adfzk+Oa9zgnenagVqXcUI46hqHy9am/KJxxiinBWurLWMRM2zgTzXcqyi+XgO6fcPz
+	 twzgoO9xbbB6nmkvMGmbmqENGABfSCW2FW1bWY2Cr4RAeYee8IL09QvWFzMuHuPL+02oY
+	 KzvuWIEnq8qNuHvQLq/tMiGNr6+uwKTs4UNLqotmgtFDsVl9lH/726uu6KYQv12HRpotX
+	 Gr1WHt0bAV+GffqlGMYG+X7JtHzNCX1ur/b2SMbM+/JIXtMsmSyKE9aEwH2QLceRxeQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=collabora.com;
+	spf=pass smtp.mailfrom=collabora.com;
+	dkim=pass header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=CsMkd8IX;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
+Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F191606A31D
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 08:06:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4F191606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jCmRL3fzxz4yjSf;
-	Mon, 26 Oct 2026 16:06:22 +0800 (CST)
-Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
-	by mse-fl1.zte.com.cn with SMTP id 69Q865A0064039;
-	Mon, 26 Oct 2026 16:06:05 +0800 (+08)
-	(envelope-from gong.shuai@sanechips.com.cn)
-Received: from ubuntu-35-gs (unknown [10.230.214.35])
-	by smtp (Zmail) with SMTP;
-	Mon, 26 Oct 2026 16:06:07 +0800
-X-Zmail-TransId: 3e816adf09e6027-1935f
-X-Zmail-LocalSMTP: 1
-X-Zmail-RealSender: gong.shuai@sanechips.com.cn
-From: Gong Shuai <gong.shuai@sanechips.com.cn>
-To: fangyu.yu@linux.alibaba.com
-Cc: alex@ghiti.fr, andrew.jones@oss.qualcomm.com, aou@eecs.berkeley.edu,
-        gsh517025@gmail.com, guoren@kernel.org, iommu@lists.linux.dev,
-        jgg@nvidia.com, jgg@ziepe.ca, joro@8bytes.org, jroedel@suse.de,
-        kvm-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, palmer@dabbelt.com, pjw@kernel.org,
-        robin.murphy@arm.com, tomasz.jeznach@linux.dev, will@kernel.org,
-        zong.li@sifive.com, Gong Shuai <gong.shuai@sanechips.com.cn>
-Subject: Re: [RFC PATCH v2 3/4] iommu/riscv: Add guest IMSIC GPA mapping helpers
-Date: Mon, 26 Oct 2026 16:06:04 +0800
-Message-ID: <20261026080604.184574-1-gong.shuai@sanechips.com.cn>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261016030138.91675-1-fangyu.yu@linux.alibaba.com>
-References: <20261016030138.91675-1-fangyu.yu@linux.alibaba.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AEF7606A31A
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 08:33:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AEF7606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=CsMkd8IX
+ARC-Seal: i=1; a=rsa-sha256; t=1793003602; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=IyrdESao9nTm9S0mfJqN5UgzSBIswn+wSMU9ZZ22Q0MCNpnvKA1GCw4NjTELztHi5jct1t8KQYPdbrfqT7Grdju61jcpasqqoxdZcB1bqWf7PZXrILHYvduId2KUqirblXuRLukz9NXqPbJXykyIAwTsM2wMcKblDe1GROqcNpM=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1793003602; h=Content-Type:Content-Transfer-Encoding:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To:Cc; 
+	bh=XQ7CboCxab8pAsYWIP610kHz8Zg6lfgejBrE8HM31Zs=; 
+	b=g2s802jJqB4dgWVaMoTWXyePntRv1Y51QiKg5bG+AjcOgk1EjY/BIB6D31ODKYBcZeTXihay+swd4yvBiMUMN9gAW9oPNjFatrsmcUD/L39cpIQsawULXJJZVUnxRy7LS0oZ7uLzR+uGwzUAMBGcZv+0AhiYd/CpNg6Y3WzDUGc=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1793003602;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To:Cc;
+	bh=XQ7CboCxab8pAsYWIP610kHz8Zg6lfgejBrE8HM31Zs=;
+	b=CsMkd8IXQTL323i3GjAip5yo+MRxELZ3R+0qUEUgkUWj/7u8mNXphT/AxF/injhq
+	/gQ48iHLZf6qCACGC5HB7b73Aa8Y1SOijcExb9+HPfNheGvhDVIqxLehbSMjjLAOYFT
+	83yA43kuzYLrbgl+t9ZbmNHw2a3njQvH35wGOpjk=
+Received: by smtp.zohomail.com with SMTPS id 1793003597851708.4815720368576;
+	Mon, 26 Oct 2026 01:33:17 -0700 (PDT)
+Message-ID: <50f5f070-49cc-4a1b-a100-5cf918fed54f@collabora.com>
+Date: Mon, 26 Oct 2026 09:33:14 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,79 +64,57 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/vsi: keep the runtime PM callbacks without PM_SLEEP
+To: Daniel Golle <daniel@makrotopia.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joerg.roedel@amd.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <e8114502dc91f5fb709509291fdd85e27545dfb6.1792716048.git.daniel@makrotopia.org>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <e8114502dc91f5fb709509291fdd85e27545dfb6.1792716048.git.daniel@makrotopia.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl1.zte.com.cn 69Q865A0064039
-X-TLS: YES
-X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Mon, 26 Oct 2026 16:06:22 +0800
-X-CLEAN: YES
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6ADF09FE.001/4jCmRL3fzxz4yjSf
 
-Hi Fangyu,
 
-> >Andrew has moved well past a v3
-> >
-> >I shouldn't be seeing code in iommu or irq drivers directly mapping into
-> >domains. That doesn't work, Andrew's latest series don't do this.
-> >
-> >It still needs to use the SW_MSI mechanism and related.
-> >
+Le 25/10/2026 à 14:27, Daniel Golle a écrit :
+> The runtime PM operations are handed to the driver core through
+> pm_sleep_ptr(), which is NULL unless CONFIG_PM_SLEEP is set.
 >
-> Andrew has posted two patch series in the community: one is the
-> MSI remap v6 series[1], and another is the IRQ bypass v3 series[2].
-> I think you are referring to the MSI remap v6 series. My patch was
-> based on the IRQ bypass v3 series, and I added this patch on top
-> of it.
+> Without system sleep support the IOMMU has no runtime PM callbacks at
+> all: its clocks are never enabled by the driver, the page table is not
+> restored when the power domain comes back, and iommu->enable stays set
+> while genpd powers the domain off.
+> The TLB flush issued from vsi_iommu_map() then writes to the unpowered
+> IOMMU, and the first buffer allocation of the RK3588 AV1 decoder ends
+> in an asynchronous SError.
 >
-> [1] https://lore.kernel.org/linux-iommu/179209292714.4133959.5997128071302263244.b4-review@b4/T/#t
-> [2] https://lore.kernel.org/linux-riscv/20260928143113.49838-1-andrew.jones@oss.qualcomm.com/
+> Use pm_ptr(), which keeps the operations whenever CONFIG_PM is set.
 >
-> >Nothing in the commit messages clearly explained what this is actually for
-> >without having to go dig up the riscv manuals again. Please explain how the
-> >interrupt translation works and what actual user visible problem this is
-> >trying to solve is.
-> >
->
-> The interrupt translation is based on Andrew's irq bypass patch
-> description.
->
-> RISC-V IOMMU defines an optional MSI page table feature, which can
-> be used to implement irq bypass by translating the vIMSIC GPA to
-> the pIMSIC HPA.
->
-> My patch complements that design. If the RISC-V IOMMU hardware does
-> not implement the MSI page table, then the second-stage page table
-> can be used instead to map vIMSIC GPA to pIMSIC HPA.
+> Fixes: 917ace84b770 ("iommu: Add verisilicon IOMMU driver")
 
-Using the regular stage-2 page table to translate MSI target
-addresses seems reasonable to me as a fallback for hardware without
-MSI_FLAT.
+Thanks for the patch.
 
-I would like to share my personal understanding of Jason's review.
-Please correct me if I missed his point.
+Reviewed-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 
-His concern seems to be about who owns and maintains these mappings.
-When the RISC-V IOMMU driver calls iommu_map directly on a paging
-domain managed by iommufd, the mappings are not visible to the domain
-owner. This makes it difficult to handle mapping lifetime and
-hardware page table replacement correctly.
-
-The current SW_MSI support does not appear to cover this use case
-directly. It allocates IOVAs for host MSI pages and records the
-resulting mappings. Guest forwarding instead requires mappings at
-fixed guest GPAs, with their target HPAs changing when vCPUs migrate.
-Supporting this through SW_MSI would therefore seem to require a
-nontrivial extension.
-
-Best regards,
-Shuai
-
+> Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+> ---
+>   drivers/iommu/vsi-iommu.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> Thanks,
-> Fangyu
+> diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
+> index 5dac20b143a55..1b447c0693936 100644
+> --- a/drivers/iommu/vsi-iommu.c
+> +++ b/drivers/iommu/vsi-iommu.c
+> @@ -780,7 +780,7 @@ static struct platform_driver rockchip_vsi_iommu_driver = {
+>   	.driver = {
+>   		   .name = "vsi_iommu",
+>   		   .of_match_table = vsi_iommu_dt_ids,
+> -		   .pm = pm_sleep_ptr(&vsi_iommu_pm_ops),
+> +		   .pm = pm_ptr(&vsi_iommu_pm_ops),
+>   		   .suppress_bind_attrs = true,
+>   	},
+>   };
 >
-> >--
-> >Jason
->
+> base-commit: bd1ecbb61afefc6a8b876ccbc31e9228b44e9eab
