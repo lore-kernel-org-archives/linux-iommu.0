@@ -1,116 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.71
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1792993130;
-	b=ctxEhQFUTkilxxD8h8INPWcwlsJbByFdJxC3HwjZgnhv9UBnqH7ysLzZSN7LWogcsau+
-	 VIvmv9BcGMJhidFwTRe9xB8ruYAwR7MlUpdyEG2RK8lMUcbj7LQhB57ot2imyvkQszyQi
-	 WJRnYDmU6UiwcDoJe/6oSZOQ3r6WDrPNeld65wYbIJpQcZMa1hn73MbP6qzzw+n+LdMD0
-	 dAGLw9S3YNfwPfhwEHHL3VME7QJ3uSWlPWc94qEuowzEwob/nDqOu/cUuWvgg1IGDFuGJ
-	 zBi06ZOWrcPCAz9/NBTYSqSLKTYBJnEIKTBhophXEow5+uSLvcolDEfWmgBjppSaEyw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1792993130;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=U9Zgt5dzUclq9HhFcitSUkfPZubgPfwHtPe8H0eLaHc=;
-	b=VuQTPuDIJDGrrtXzIE7hiop7EIjsH5hOClqKArnmj1rmRd/ZW/CIwJW54jP26c/E6J8f
-	 Kt3R2Tw6pVvAzAeqF87yqdPxPLQ72X3Dz1NTouoAzwnIiGZ0T2Xm3q5Vy04EstEkaccYo
-	 CuPCvBU7i1Gz8qfbXluxFbiJPBP8kBpcDd19+Np6I9NhRCZikMCmY0AHoyogZ7dwrGLCQ
-	 j3GibhjGHHHUQB6k+W5jEURtF9A7kCipJWaGeWHpL3J5jkFoNRqCOR4HsuI5pu6NX05fj
-	 9SU8UvkfbQaE3oQPYq/cVdwmsBEodXgMKOBKGu/XsZNRdpCWbT6i2fjgtG1QVGgDTGg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=aqeNHE6d;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.71
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012071.outbound.protection.outlook.com [52.101.53.71])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792995702;
+	b=FC92fU+qaTCI+PJTFEc5mI7Iy+Km5QjmcBXeTDWFJgbnLpqb6FFzj7BPD2k6pqhOEOt6
+	 Vf2b45hKUR4RzBKsMGYM4WhJrm+9qvN5jeR+CUj0LzjCiRkoIs4Risbz5Fsm6Pv3kq6f/
+	 X5ai6tfVo6aoRL0iBlaaQ1UalvoUERTOsm8c+zx/WA+G06y8TaadzMM1U5+72k4VrKxVJ
+	 sPYFvbWH9HCs9Dp/3xfh0bkCus6+x+3mAKdGMAMgcV4Boae30w2aglZok0JAMGWcjwG9K
+	 PPApHE8L506E+QQS3uJgytQJ199pKse3w3NBAUlwdblH4w/DATQp9WiXLIEaE/Cyzlw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792995702;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:From:
+	 Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Proofpoint-ORIG-GUID:
+	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=3Twx7A+M4Xf78zm3h7xdXXb3QEmDww6Luk+tlQyZzXQ=;
+	b=01CBRVuSj5ScFJ/DCjrxE/lgC3ygLDatU7qswNqIHwq2d4pkwe9pS62pWbRoVyPGdn4e
+	 QlpXCMLHrxOaMw8F3Xp2BR35Ql2E8qGiETCntuuppGMxaUI17I4K9MAwxO7CtMA5gBBqc
+	 EID43C7zRgS9nxbjfvSifT3lJdRlwOYlt00K5cjDk350UWmx+8OqxGSnsU/phdvBoacWY
+	 AwwZiyztk3F8kxh1Bg9I4jeOLsHS5rfYHmB2DDDPBzBVtwarhVILf9nro9p6rnbYUqXhl
+	 bkoJEtR0Sz2VzsZLKLRpE+qc9YnorMvH4Auv4UldmR+qGaYi1BkgLaENUa/bCLBncQQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=G6WpKsQm;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=NEDRB5rX;
+	arc=none smtp.remote-ip=205.220.180.131
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E0E960A381B
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 05:38:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E0E960A381B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A40BA606A320
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 06:21:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A40BA606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=aqeNHE6d
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GB5rgUipmtgDEbp2QsZIXAjQ4Ggo8weFoX2KZPx/16mkNLcKzrihXSvca0vx8LpMnPMFknHcHIBxrcYRMZdpo1qGH/HTLicQlyQge4yebpCQPDzSdSMuZXNbC4nxNxa+/VEO3icrTBLfiEHx1J+h35hxmaMuOi845pIApUUenNlztXmk5qc/hr9oUXhUbAXehryVbonk+cbifR0KYTB9uNBkWwrGOcFDhaRVib6mnzsLB59PJT0oPHDWRulKjzlEQ9r99wQX1I5Fo6o6abr1G0yMEZBtFhXRDzb5vm+TwpWQsJ0mPwaCI7wBgatYzuoAhvEGqCvGHak6FLonnvtTDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U9Zgt5dzUclq9HhFcitSUkfPZubgPfwHtPe8H0eLaHc=;
- b=CCsM9KxAFxV8YCjQJ4waH1k/4xssDe+f78APNv5HBxYlhDcVU1XDUpP5eM3Obc6kwFcgxEDevSPPNF5qbbBqWun5BW6aZIyIYvKv3yp99QY60TdhZbJDW50FuHUf2mzD1cHLwgMkgxQWPKAoOYSxwqRmxN3qMNR0IgIkROAf6jvMliAwGcq4v/Nb26jYkeegqknigsz8qUJucH6RYu/unynL2VZWO9i/Vdv09aSdYWQutNAAnNyucatp2HzsYBIB5oFseRb+vvdm0SXwe3+ZWLFtxpyT7T3St4gX1SaasmMl6HKB504xGcbvbN6cxQBoOJWs6rY2UZzue20mYwyKyA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U9Zgt5dzUclq9HhFcitSUkfPZubgPfwHtPe8H0eLaHc=;
- b=aqeNHE6drhE07DwRV+PIqHVhYliu1k3VI9tVF1ebAhhKA7n0CDjRWiUpep5rclNdhKBJNq1nkrZAtRo3FYl2k5E8VOXmmU3ZCaoDX5eZQUtkKPHqat1ZWzX7C/V8XPgc5pfdjCWqyLHGgnNrRTN1u2mCkeE5cVjG96Wpztat9Yyyll7/itsUX/+zXYPoU1Ka9R8YxBBEQfhOLxdfWcSMVofNX9IU42A4meXhzQyusVkPQMdnWlCqzKnkXo4LXwd/GOaa2oSuXnIuFykAfbsp4xQOEC11SCdxdxfGqfUE2C+jlu5xPqLI9Femi5KUO83Q2UHVU/D/2xeOBAUjNjggnQ==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from SA3PR12MB598757.namprd12.prod.outlook.com
- (2603:10b6:806:52d::14) by SJ0PR12MB6967.namprd12.prod.outlook.com
- (2603:10b6:a03:44b::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Mon, 26 Oct
- 2026 05:38:46 +0000
-Received: from SA3PR12MB598757.namprd12.prod.outlook.com
- ([fe80::e206:100:5946:a777]) by SA3PR12MB598757.namprd12.prod.outlook.com
- ([fe80::e206:100:5946:a777%5]) with mapi id 15.21.0546.021; Mon, 26 Oct 2026
- 05:38:46 +0000
-From: Alistair Popple <apopple@nvidia.com>
-To: dri-devel@lists.freedesktop.org,
-	christian.koenig@amd.com,
-	sumit.semwal@linaro.org,
-	jgg@nvidia.com
-Cc: Alistair Popple <apopple@nvidia.com>,
-	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	Simona Vetter <simona.vetter@ffwll.ch>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Dongwon Kim <dongwon.kim@intel.com>,
-	Leon Romanovsky <leonro@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Karl Mehltretter <kmehltretter@gmail.com>,
-	Baolu Lu <baolu.lu@linux.intel.com>,
-	Felix Kuehling <felix.kuehling@amd.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	intel-xe@lists.freedesktop.org,
-	amd-gfx@lists.freedesktop.org,
-	linux-media@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Alexey Kardashevskiy <aik@amd.com>,
-	zhipingz@meta.com,
-	treding@nvidia.com,
-	jhubbard@nvidia.com
-Subject: [PATCH 26/26] dma-buf: Add kunit tests for mapping type selection
-Date: Mon, 26 Oct 2026 16:36:17 +1100
-Message-ID: <20261026053623.202642-27-apopple@nvidia.com>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20261026053623.202642-1-apopple@nvidia.com>
-References: <20261026053623.202642-1-apopple@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SY6PR01CA0028.ausprd01.prod.outlook.com
- (2603:10c6:10:eb::15) To SA3PR12MB598757.namprd12.prod.outlook.com
- (2603:10b6:806:52d::14)
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=G6WpKsQm;
+	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=NEDRB5rX
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69Q4b6rf1907790
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 06:21:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=3Twx7A+M4Xf78zm3h7xdXX
+	b3QEmDww6Luk+tlQyZzXQ=; b=G6WpKsQmfek9XUwnfEGTbPY1LwxqrCjmowHN2i
+	H4iLObJkqcgMGfgq0Ssbmyvkj+xuvzzTE9d75IdrtoIUerymoQjQ1k3K42Vrg9mf
+	icZbZTMCKhJz0PjmVgkCIqVziOZqS5zLRprT9m0giiCvN6mLZg+j+e3xIMkDng4r
+	vvovmwBsSPd5J+LicnD+hAaaYk7ha/q3l1R1vkRc2TUnZPpFmAsFLNPsUls/XHqu
+	CHmmZQXrlnn75HNwkr5Rsc/aCeaOqZ2HEyB8+YYjke4B2AkdaktfD6eFhQ0vPwQn
+	/JceT+PA4rSgluYaDbKufAIKEE/qF1uhX+jKhzSPDqig5SVg==
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hgm0gn41h-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 06:21:40 +0000 (GMT)
+Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2e601800e58so48508825ad.2
+        for <iommu@lists.linux.dev>; Sun, 25 Oct 2026 23:21:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1792995699; x=1793600499; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=3Twx7A+M4Xf78zm3h7xdXXb3QEmDww6Luk+tlQyZzXQ=;
+        b=NEDRB5rXRZ2pEWvBzVy5I/PSuMsuW/HuT3pIREwMxz6md8POM7FPF7f+Ihmr7+niml
+         qTKQYUTD+iX8Zb9kzYQ2X9OXrJnmJcN4L+NC6y79XPqhnZWICtwt4YZ1kESdDc8nxvIs
+         9dDK7GJeiA83Rc6RFpVvLZTD88L5AiklGyAipnRbfOQiWPCZWuLnSLyDsjh/RvngVdUC
+         crEQ/0ZMBbU8vmifhsKZO0JQh5jW9Ts2/ijS+Usby3FcoGrBw/W1SgZQe3UzOhxQp2kJ
+         35HB7p/H+Wj6X45b5IeOTPpO5U1sb+gmBt+OP1DGpE21OB/VI4VpaJuTRXr0Prdi8Jc7
+         eV+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792995699; x=1793600499;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=3Twx7A+M4Xf78zm3h7xdXXb3QEmDww6Luk+tlQyZzXQ=;
+        b=VP1efsOIGq5RIe8s0kmqOiseDRlCDNUpgpeU1RUykHbBiiHXAnZjojY1mkbrmevGIX
+         lTug0N73wDfisjyzIqJhMihiRwxa6vsZ2PlVyvSn4tjJuN4jEyQ+h9Cc4jKCzTODfDi+
+         h4GRmYjCW+1gjWO2j9wGoSgLQm/+cMVhMPDkN/buW0CNbAkmbWI04YO1nArYCzH1C3iT
+         85tmJHKoZYqVlvdKU4vON7Wck5Ju3Wg8CGGQy5O6OFO21Pc0RL+ORam0GVG3mZx4FkI7
+         W1591COqOjSjVN8Rd9Yr2sC43mYLhNaeMA+Fx9GYU9C29sd0p7GB2aHrUUblrSE5ZajL
+         ulGQ==
+X-Forwarded-Encrypted: i=1; AKwUvBwibRSVCkCpADmFo3o2oMV6VBM6kw4jA44O5iVrZ/4XBY1MjOfka1mIQRlEsNvlNpXVdvm/7Q==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJHbhtvkyRP4dAxY1L9Er7uXVAoM7I5t3MBVtqSQpj74lN64ruw
+	g2VdcAjj0Sr/6iO8g6iR3lYBuCzNYGjhiRuuIpWySyoowhDTo3RcUaKd/Vp6wwAdQ597IdVGX3b
+	8CTcP8fvyzzQayfX2LfjpsJyKQj4GxVFQhi9mXxWu2cNBuOpIrO+mJTlOGw==
+X-Gm-Gg: AYBFou1RgfUHq47uPONZVlWmLjKsmzV+rG26+cYCvae77MdHmeqzgI9NooKbsNFsXAd
+	VFpYLJ8wtrs5qd+ePw93nC7RRni7byUiJ1CzYcsKqbs2Df8tYcnMtr0pL8bSUBMawkJHI15Yst8
+	Um1vTe6Kb4Du1Kh9vRj+1o2AdVe/e5wBqP+LLL32+jDRQUS/aucxsBqbtjqAcULgYV+ZOgdbr/f
+	ng0Cmh79AVNLFwPPkSZAahKajTYDLKrs3BDw7zu5gxorll+05oGF7FuauUTBjUrxyoYiml3wJH+
+	oNNsrrQzw8aux6zUMPy2yXaegOVEXP8dvUxDlizEZvfM9//X2K17XbXcDbNgwfxEXmopj6XDq6D
+	R9EV7moWyUCaFjOTSDcFZ5F6ySXkp9Ic3LQ==
+X-Received: by 2002:a17:902:c411:b0:2e5:d2b1:c70b with SMTP id d9443c01a7336-2ea9c8b0505mr57206495ad.60.1792995699091;
+        Sun, 25 Oct 2026 23:21:39 -0700 (PDT)
+X-Received: by 2002:a17:902:c411:b0:2e5:d2b1:c70b with SMTP id d9443c01a7336-2ea9c8b0505mr57206245ad.60.1792995698545;
+        Sun, 25 Oct 2026 23:21:38 -0700 (PDT)
+Received: from hu-jshekhar-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ea9b1a1c56sm12633415ad.44.2026.10.25.23.21.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Oct 2026 23:21:37 -0700 (PDT)
+From: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
+Subject: [PATCH v2 00/23] drm/msm/dcp: Add Qualcomm DCP display support
+Date: Mon, 26 Oct 2026 11:51:10 +0530
+Message-Id: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,404 +114,447 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA3PR12MB598757:EE_|SJ0PR12MB6967:EE_
-X-MS-Office365-Filtering-Correlation-Id: c56c8658-3380-4e8d-8829-08df3323678c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|366016|18002099003|22082099003|56012099006|5023799004|11063799006|261021121427099003|10067099003|261009223027099003|261022105027099003;
-X-Microsoft-Antispam-Message-Info:
-	1/8Ogwd/OVNaArnLN2n/UtMTIQnDYwUDwvoGd2ZlEqmZsLdLC25oTEpESJMtMI63C8E2FDCqjdrPfpM45atSXIvNWaUNtEEtYxdof8TRBBx8YHik3L1eA7xzCfPuOVzgNFYa8H+QdBUcP5URcMvkapS1tKXOrcpmwdLghIa/xtAAVkq6kzR78P41tvLwezcEgtrRaXAuJjAHYvmK5O/eGgKubsnLblVZgfP9MOOdkryxP+M5eDioilhjocCDY5E4AAx6sUQb6NExDrMp10gGVgnzi3iOMzJxzIRmN8pt523dufjsu0E0efrHXdIbpN95JsEm6nb44VUwFanDmZBteYp2xxZYYNReulmY+Nv8BwdybEm6Bx5bRTwPcnfgZ3A9Til64F2iHYEFvFGNgaVtS1N/G7wX/dmKAC9uS7yVe6eLp+PaZW9gDeDfbors0vmkYYKsQpx66CN2P1/rOEsr3EXHfcQKrrKic7XmUbicdj1Tv9EUFJOwsprZZJUs4IWTQ/+YUQlRSkq0U0uGugm/nOLKkUeh3YhIHZ4ZqbvOX6h33gNaYse29471OZuggiPXfHOCDzvQdn1JaGTEOBUOiFzvQo7pO088p8No6mYsOW+sMpByeOHhScswb5Nw9iM0LJtv8wHua++Y0cw1jeUEOuA16TzZcB79o8rZL33KCbQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA3PR12MB598757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(366016)(18002099003)(22082099003)(56012099006)(5023799004)(11063799006)(261021121427099003)(10067099003)(261009223027099003)(261022105027099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?8PB5x9cl/okdihhG/v8m1ZsaIKksosRkb2+1Pi/cu6wUYIjJiiCbuvmXNIfY?=
- =?us-ascii?Q?DYAiRkDo2uI986N/rP2fQPoYtxGQwlziV2NmsPjbpkMlcFnfrTvby3t+dG9L?=
- =?us-ascii?Q?HfBiRUJuRLnNpB8yzFMSU46W4CvDavfhf+pFstM6Ei+18qVc0K+CUTaqU5L3?=
- =?us-ascii?Q?I5zrRX3opsvuqmh3anBjzpb46PV/cAeP0bNK7S8sa6G1ClfWsetKi87ENLPY?=
- =?us-ascii?Q?kdF7EQ1X0CVFqktA6+K4pND9UdWMlx/MjYsGs5hxrAKEprEIcGQTIlbP8xBi?=
- =?us-ascii?Q?EsW/ApYuTdoVeAjWJrCt9456L/I75k0F0LltrKHJBDtmBdviYh1LH9cx7aqT?=
- =?us-ascii?Q?iJXLPfCQZ7TXcPIKL2f9tFDqQfwoLK8D5r7MLfjZ0u6VRgK7r+BMjdLuzP5B?=
- =?us-ascii?Q?F8E/SYB1GUhJFTlacXY6BxeBs8ctwNlw41K7s3eLF0lPCjEn8Emo/vI6M8Hp?=
- =?us-ascii?Q?A4gBK7DZLazbapAuaDE1y97abuBR0aINf/cqADQz7tHnq1oa/Pb1dHhRjngO?=
- =?us-ascii?Q?z797Tq/28+C9YTt1fymS/T4It6O9CdHdLNnlAm7URBrz5wTHjZdNLuPVPm6u?=
- =?us-ascii?Q?V2RxeJflVaTDdhYdWUiJQxcZj0SwUiuuoOOyo1sEFZsQOgdzhtNaOwWo05Cg?=
- =?us-ascii?Q?6hfuJiVSymfSlngRJ9yCxzVpqlUTHOkNIhxTQXQCuEBNYvXZtrUh8hqm6rUb?=
- =?us-ascii?Q?nxlZ12L0VXllJufkMFEUJTulrrvk6Hhl56LCqEpV8Ud85X4l9WHaJm95DpaG?=
- =?us-ascii?Q?cdtz5yQClRHxZECk2SGMxnPbGuvWnUGdfdcVFIUZVQQ08tP+Taq0RDopELcs?=
- =?us-ascii?Q?mCzj/OAO9NyqfZNhYOExyPGtrRuz743X0+dCsz6OXxzR+Ecn2POYP5jBfGkK?=
- =?us-ascii?Q?cM76YSsEUrAs2/VbJ818z3JV3DzFkAiLxu5bRPlEEe2fw/IIG/xIft2V5+D4?=
- =?us-ascii?Q?+a2YxUj/cQa3QZMGXXFJ+0fh1DACglXuVm4D8Ri/HwsKTThQy0ejtj/hDjhT?=
- =?us-ascii?Q?1dCWVj2OPGk6/NQC2ogZf8Edww7KlitCz0kq01RHwmX4WrOWWTCUVv5A6t/Q?=
- =?us-ascii?Q?/9gmhby5ce+NQFRR/VXRZiOyht0HoMrk+OFFlqJfuaS37nCWgdIPQ3Fd5F0m?=
- =?us-ascii?Q?cA60Ro+3pSeBrt5rdjIH6FvQwGtuPfCR+TSHvkuGcRU9ExETKQtIa/HCAQKe?=
- =?us-ascii?Q?QnRd+Pfuqq6zs7RHoMiPNZEbE9XAWtlWsYOc8hhzTJw9jFknZUQTDcoNEpwH?=
- =?us-ascii?Q?SmThjTKtZkS/8g5fX3QR0g/KO87K8cYLQEi8RxHFZ0bVFfxxYY3OfQqByLlK?=
- =?us-ascii?Q?VhEfGijWkvetkFgLQbeK7OUFjCJlDggB5WA+l29Et1VUiKkrRN0lpDSRtetB?=
- =?us-ascii?Q?n6GsY6v0EGLXB0HA6jSb48DMACHlXhgB/5yO5esHTGTH3YdVu48/OisH4O4b?=
- =?us-ascii?Q?66JMmWCO91RGaZc9Apg+pEX1CdthUfDUlfIXKKmGDLOQAjcr9T52ogmxLG8C?=
- =?us-ascii?Q?FEZ/UPtP9B/2LLWF5NXI2HDOk2jXBKF6WPQSh4Oie/t25JUxvWnoTUm5gyU/?=
- =?us-ascii?Q?oZDR/jbML4UysF0VDauj5pA/aOnj9bWo5KeC+mKF1PbZ6JrqRecTDpBjc9AQ?=
- =?us-ascii?Q?mtS5oKc/fCKPlndv+Tk9IQ17r1MY3phXhOwX4smMRQinhs10LxlWNqnIdgfx?=
- =?us-ascii?Q?GiNHea3NPaW5MY4ZgjB3ZAJwr2IIjcZ+M2FGqX5MOcQP/zQvUET/zWSua12g?=
- =?us-ascii?Q?JWRzpXXM4w=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c56c8658-3380-4e8d-8829-08df3323678c
-X-MS-Exchange-CrossTenant-AuthSource: SA3PR12MB598757.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2026 05:38:46.4849
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YB3y2dSKwJOAQ4btuldUOl0ScviD085WZVIpum88iUoL4jMVG/tRre0p0sow/kQ5pvQrEyt3XDMfSV9AH4khaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6967
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAFbx3moC/02PzW7DIBCEX8XiXCKg/NmnvEeVAz9LIY1jB2yrV
+ ZR3L9g9VFqtNNLsN7NPVCAnKGjonijDlkqa7lWwtw65aO6fgJOvGjHCJCWM4WuJ8BVNxt7NON6
+ mgp1yjFkSggKO6t2cIaTvnflxOXRZ7RXc0kDNEVNZpvyzh260+f74VPzj5xGPZdxzNtqGYK6N8
+ SQAD4qdp1JOj9Xc3DSOp7rQ5XWkZXis9ZHlqIBms7hY3xg6ABe8lEYIqwOzyrLglFfSayqCcc4
+ QrntPSOtoTQHc0GkZut5wzajmvqdEKeGC5FrLd1rtnPdcWMWBVUit8PoFc94axVMBAAA=
+X-Change-ID: 20261022-jshekhar-dcp-hlos-c7c22b0ff7e4
+To: Rob Clark <robin.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowangio@gmail.com>,
+        =?utf-8?q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Philipp Stanner <phasta@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Abel Vesa <abelvesa@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Flemin Jose <flemin.jose@oss.qualcomm.com>,
+        Mahadevan P <mahap@oss.qualcomm.com>
+Cc: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>,
+        virtualization@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        iommu@lists.linux.dev
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1792995687; l=16900;
+ i=jayant.shekhar@oss.qualcomm.com; s=20260925; h=from:subject:message-id;
+ bh=ZrA35rewL/liKPiVapL764mlCxI5Tw05AfRLImiCE2I=;
+ b=xJhEbT2fOWRu5KKdKtwjDJniLGCu8brc9WdEYZ+f84riE5ipPFlWBZfZFut/r2UBjZwNNCnuO
+ 9/NHsnJFMIGDbOA/ELk7mh7rs3aqhjG7LCvwMfPoUnDnKuXBJ9iDMx9
+X-Developer-Key: i=jayant.shekhar@oss.qualcomm.com; a=ed25519;
+ pk=saYTwtCCpug4b0Hz0jHFoATgDtdhFVicwMzDJo2z5ZE=
+X-Proofpoint-ORIG-GUID: mWm4dSF1Rp_Ja1OsEo3MkjgzVXWsVFhY
+X-Authority-Analysis: v=2.4 cv=UfTE26SN c=1 sm=1 tr=0 ts=6adef174 cx=c_pps
+ a=IZJwPbhc+fLeJZngyXXI0A==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=bC-a23v3AAAA:8 a=pGLkceISAAAA:8
+ a=tVI0ZWmoAAAA:8 a=QyXUC8HyAAAA:8 a=20KFwNOVAAAA:8 a=SRrdq9N9AAAA:8
+ a=KKAkSRfTAAAA:8 a=zd2uoN0lAAAA:8 a=tA7aZXjiAAAA:8 a=7CQSdrXTAAAA:8
+ a=e5mUnYsNAAAA:8 a=tCT4u7A45XCoIME4sw8A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=uG9DUKGECoFWVXl0Dc02:22 a=FO4_E8m0qiDe52t0p3_H:22 a=-BPWgnxRz2uhmvdm1NTO:22
+ a=cvBusfyB2V15izCimMoJ:22 a=kIIFJ0VLUOy1gFZzwZHL:22 a=a-qgeE7W1pNrGK8U0ZQC:22
+ a=Vxmtnl_E_bksehYqCbjh:22
+X-Proofpoint-GUID: mWm4dSF1Rp_Ja1OsEo3MkjgzVXWsVFhY
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI2MDAyNSBTYWx0ZWRfX+7shNxVoAoBp
+ 5UkOAWmeP2y36lcWbquX0I8KrXsFt/q8QTzcfEJtGoq6wmdULiJUl0p+9Jq7W785Oe6w2N8p3S4
+ rCegm77G/vvF8P8H7WIZ0g7UJ3cCtBiMcPXXCPMV2bI/d5NPeIPF2Zw8VX9A8A8K+GSCBXovGw7
+ EaQ3g361hlgYE+KACNGqO04l4p8nPN8SoHDZJJpBzY0A2hOHrdAhhACGC5kUsS0SxxcfBVRsk26
+ ydGnPMMXQTXt5kPHbvLOPmYcuNPEevPf4sPGENMuDdEJQrQRkliHD9PsVOuTWj9Ya7H1MDmND/k
+ 6u5ciGE2adHO88rNRwSuYzS3D3XYya64x6pA7OqyHWUoYNujdHNhDVcYZ1w+dOyqazua0HvcKiQ
+ ItP5WWigxZkNf0qBBSMtiVuzvfBlK8H+nnf4Ihk28m+l4/gjtkvH+kCYW6WQyVq/lIUjs1AdrKA
+ mL9Bml+CbhSnsH1oVIg==
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI2MDAyNSBTYWx0ZWRfXxYLCxXnRc21t
+ hjQGKcV0uu6jyuMDHrP2RawEviTSjnR9zeJ2FFGqrhnJRMetSxesk00QFX9bEac2swjb7dvxhPX
+ ZXJPiI5YImaGvfj8hKcU8CBebi+Or6A=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-10-26_01,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 lowpriorityscore=0 malwarescore=0 spamscore=0 bulkscore=0
+ suspectscore=0 impostorscore=0 phishscore=0 adultscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610260025
 
-Add an offer list and a select_mapping() callback to the mock exporter
-along with map/unmap for the two mock types.
+On Qualcomm platforms using the Display Co-Processor (DCP), the display
+hardware is owned and programmed by firmware. Linux does not access the
+display controller, DSI controller, DSI PHY, display clocks, or other
+display pipeline registers.
 
-Adds tests for the exporter/importer contract.
+The display pipeline must nevertheless be exposed through the DRM/KMS
+interfaces so userspace can perform modesetting, framebuffer updates,
+panel control, and page flips.
 
- - test_match_set_is_final: a later importer attaching, even one the
-   exporter answers differently, does not change an existing
-   attachment's match set or default. Later attachments influence what
-   the exporter selects at pin and map time, not previous attachments.
+This series adds a DCP KMS backend to MSM DRM. It represents the
+firmware-owned display pipeline and translates DRM operations into HFI
+commands.
 
- - test_select_at_map: the exporter chooses a non-default entry
-   at the first map and the result is tagged with it. A pin taken
-   under the live mapping inherits the type and the choice survives
-   unmap/remap even though the exporter would answer differently. Only
-   dma_buf_invalidate_mappings() allows the exporter to make a different
-   selection. An -EBUSY from selection leaves nothing established.
+DCP communicates with Linux over VirtIO and uses the HFI protocol for
+command and response handling, capability discovery, and display events.
 
- - test_select_at_pin: pin selects, and the choice survives map, unmap
-   and unpin so a pinned importer that is never invalidated keeps its
-   first type for the life of the import.
+This series adds:
 
-Assisted-by: LLM
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
+- Device-tree bindings for the Qualcomm DCP VirtIO transport wrapper,
+  firmware-visible IOVA ranges, separate transport and framebuffer IOMMU
+  contexts, IPCC power notification, interrupts, and the external DSI
+  display graph.
+
+- HFI protocol definitions and packet helpers for capability discovery,
+  modesetting, plane and CRTC configuration, DSI, and panel control.
+
+- A Qualcomm DCP transport wrapper which initializes the IPCC channel,
+  sends the required power notification, and registers the DCP VirtIO
+  device directly. The wrapper also implements the MMIO transport and
+  keeps VirtIO queue activity ordered with DCP power transitions.
+
+- VirtIO command and response queues. HFI command, response, and
+  capability buffers are allocated through the DMA API in the address
+  space visible to DCP firmware.
+
+- Synchronous command tracking, asynchronous response dispatch, timeout
+  handling, and queue teardown synchronization for safe device removal.
+
+- Capability discovery for displays, CRTCs, mixers, VIG and DMA pipes,
+  DSI interfaces, and panel resources.
+
+- DRM planes and CRTCs using the standard atomic-state model. DRM state is
+  translated into HFI properties for layer configuration, mixer limits,
+  bandwidth and clock properties, frame sequencing, and triggering.
+
+- An MSM KMS backend, DCP encoder, and DSI bridge. The backend reuses the
+  existing MSM DRM device, GEM and framebuffer handling, atomic commit
+  infrastructure, encoder, bridge, and connector support.
+
+- Asynchronous VSYNC, frame-scan completion, and error events propagated to
+  DRM for vblank and page-flip completion.
+
+- IPCC power notifications to wake DCP firmware and coordinate HFI queue
+  activity across firmware power transitions.
+
+DCP is integrated as an MSM KMS backend rather than a separate DRM device.
+This preserves the userspace-visible MSM DRM device and allows Linux to
+retain normal DRM/KMS semantics while display hardware remains owned by
+firmware.
+
+The initial implementation supports the DSI output described below and
+uses resources reported by firmware. Split-pipe, multirect, cursor-pipe,
+partial-update, DisplayPort, and writeback support are deferred.
+
+Tested on the Qualcomm Hawi MTP with an NT37801 DSC command-mode panel:
+
+- Display console at 1440x3200.
+- Panel initialization and DCS transfers complete successfully.
+
+Device Tree Topology
+====================
+
+  qcom,dcp-virtio
+  ├── transport IOMMU context
+  ├── firmware-visible iommu-ranges
+  ├── VirtIO and power-notify interrupts
+  ├── dcp-power-tx mailbox
+  └── dcp-subsystem
+      ├── compatible = "virtio,device34"
+      ├── framebuffer IOMMU context
+      ├── port@0
+      │   └── endpoint ─────────────── panel endpoint
+      └── dsi@0
+          └── panel@0
+
+The DCP INTF endpoint connects directly to the panel endpoint. Firmware
+internal paths, including the INTF-to-DSI connection, are not described in
+the device tree.
+
+Runtime Architecture
+====================
+
+  Linux DRM/KMS
+  └── DCP MSM KMS backend
+      ├── planes, CRTCs, encoder, connector, and DSI bridge
+      └── DRM atomic state and commit handling
+                  │
+                  ▼
+      DCP VirtIO function driver
+                  │
+                  ▼
+              VirtIO core
+                  │
+                  ▼
+      qcom,dcp-virtio transport wrapper
+      ├── IPCC initialization and power notification
+      ├── MMIO register access
+      ├── VirtIO queue setup and interrupt handling
+      ├── VirtIO device registration
+      └── suspend/resume power sequencing
+                  │
+                  ▼
+              DCP firmware
+              ├── HFI command and response handling
+              ├── display pipeline and VIG/DMA pipes
+              ├── DSI PHY and controller
+              └── display clocks and resource handling
+
+Probe and Initialization Order
+=============================
+
+  qcom,dcp-virtio platform probe
+                  │
+                  ▼
+  Initialize IPCC and send the DCP power notification
+                  │
+                  ▼
+  Access VirtIO MMIO registers and register the virtio_device
+                  │
+                  ▼
+  VirtIO core matches the DCP function driver
+                  │
+                  ▼
+  Initialize HFI and create command/response virtqueues
+                  │
+                  ▼
+  Send DEVICE_INIT and discover firmware capabilities
+                  │
+                  ▼
+  Register the MSM DRM/KMS backend
+
+The transport must complete IPCC initialization and power notification
+before it accesses the VirtIO MMIO registers. The DCP function driver is
+matched only after the transport registers the virtio_device.
+
+Dependencies
+============
+
+- The VPU IOMMU series provides the IOVA handling required by the DCP
+  VirtIO transport. The Hawi DT series provides the platform nodes and
+  IOMMU descriptions consumed by this series.
+
+  https://lore.kernel.org/all/20260926-vpu_iommu_iova_handling-v5-4-0322ca5dc10c@oss.qualcomm.com/
+
+- The QPSFI VirtIO device ID used by the DCP transport is proposed in the
+  following virtio-comment discussion:
+
+  https://lore.kernel.org/virtio-comment/20261021180031.7175-1-peter.hilber@oss.qualcomm.com/T/#u
+
+  This series adds the corresponding device ID to
+  include/uapi/linux/virtio_ids.h and uses it to bind the DCP VirtIO function
+  driver.
+
+Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
 ---
- drivers/dma-buf/st-dma-mapping.c | 277 +++++++++++++++++++++++++++++++
- 1 file changed, 277 insertions(+)
+Changes in v2:
+  - Compared with v1, the series is split into smaller patches. (Dmitry)
+  - Reworked the VirtIO transport integration so the Qualcomm
+    `qcom,dcp-virtio` wrapper performs the required IPCC power
+    notification before accessing the VirtIO MMIO registers and
+    registering the virtio_device. The transport registers the device
+    directly.
+  - Reworked the DT topology so the DCP INTF output connects directly to
+    the panel endpoint. The firmware-internal INTF-to-DSI path is no
+    described in DT. (Dmitry)
+  - Updated the DCP VirtIO binding to document the Qualcomm VirtIO
+    transport and VirtIO MMIO register layout, Qualcomm power-notify
+    interrupt, IOMMU contexts, mailbox, and firmware-visible IOVA
+    range. (Dmitry)
+  - Removed the interrupt-names property and used the defined interrupt
+    ordering for the VirtIO and power-notify interrupts. (Dmitry)
+  - Added panel bridge and component integration so panel bridges are
+    resolved through the DCP DSI host before DRM registration. (Dmitry)
+  - Tracked CRTCs using firmware display IDs instead of DRM CRTC
+    iteration order. (Dmitry)
+  - Moved DSI DCS-buffer mapping into KMS hardware initialization,
+    after the IOMMU VM became available, with rollback unmapping on
+    failure and before VM teardown.
+  - Reworked IPCC resource handling to use managed IRQ and mailbox
+    cleanup. (Dmitry)
+  - Moved IRQ-wake handling to the suspend and resume paths. (Dmitry)
+  - Removed the ipcc_valid state and made IPCC initialization and teardown
+    follow the channel lifetime. (Dmitry)
+  - Embedded the HFI capability cache and removed unused capability fields,
+    feature flags, and callback state. (Dmitry)
+  - Removed VirtIO config-change capability re-query handling because
+    capabilities are consumed during initialization.
+  - Removed the temporary self-component shim and registered DCP DSI hosts
+    as components. (Dmitry)
+  - Added optional GPU component matching for the display-only DCP DRM
+    device. (Dmitry)
+  - Made HFI packet-ID allocation atomic across wraparound using cmpxchg().
+    (Dmitry)
+  - Updated bandwidth aggregation to ignore invisible planes and planes
+    without framebuffers. (Dmitry)
+  - Moved DSI topology values into atomic bridge state while keeping static
+    panel configuration separate from per-commit state. (Dmitry)
+  - Removed the unused DP catalog and resource path. (Dmitry)
+  - Removed unused HFI hotplug and error callback plumbing. (Dmitry)
+  - Simplified HFI buffer release paths for callers already holding the
+    command lock. (Dmitry)
+  - Exported the generic MSM GPU-component matching helper for the DCP
+    backend.
+  - Replaced deprecated DRM logging macros with DRM device logging helpers.
+    (Dmitry)
+  - Removed unused includes and fixed indentation, naming, logging, and
+    error-handling issues. (Dmitry)
+  - Removed status in DT bindings and commit subject. (Krzysztof)
+  - Documented the DSI host DT ABI: DSI hosts use the generic dsi@N node
+    naming convention, and their reg properties identify the corresponding
+    DCP output index. (Krzysztof)
+  - Fixed the Assisted-by trailer order. (Dmitry, Krzysztof)
 
-diff --git a/drivers/dma-buf/st-dma-mapping.c b/drivers/dma-buf/st-dma-mapping.c
-index 9d0f1e389e15..22c1d73ea087 100644
---- a/drivers/dma-buf/st-dma-mapping.c
-+++ b/drivers/dma-buf/st-dma-mapping.c
-@@ -7,6 +7,7 @@
- #include <kunit/test.h>
- #include <linux/dma-buf.h>
- #include <linux/dma-buf-mapping.h>
-+#include <linux/dma-resv.h>
- #include <linux/errno.h>
- 
- /* Mock tracking state -- reset before each test */
-@@ -20,6 +21,14 @@ static const struct dma_buf_match_args *mock_finish_args_arg;
- static const struct dma_buf_mapping_match *mock_finish_exp_arg;
- static const struct dma_buf_mapping_match *mock_finish_imp_arg;
- 
-+/* Mapping types the configurable mock exporter currently offers */
-+static const struct dma_buf_mapping_match *mock_exp_offer;
-+static size_t mock_exp_offer_len;
-+
-+/* Which match set entry the selecting mock exporter picks, or an error */
-+static int mock_select_idx;
-+static int mock_select_err;
-+
- static int reset_mock_state(struct kunit *test)
- {
- 	mock_match_called = false;
-@@ -30,6 +39,10 @@ static int reset_mock_state(struct kunit *test)
- 	mock_finish_args_arg = NULL;
- 	mock_finish_exp_arg = NULL;
- 	mock_finish_imp_arg = NULL;
-+	mock_exp_offer = NULL;
-+	mock_exp_offer_len = 0;
-+	mock_select_idx = 0;
-+	mock_select_err = 0;
- 	return 0;
- }
- 
-@@ -357,6 +370,267 @@ static void test_mock_attach(struct kunit *test)
- 	dma_buf_put(dmabuf);
- }
- 
-+static int mock_dmabuf_offer_match_mapping(struct dma_buf_match_args *args)
-+{
-+	return dma_buf_match_mapping(args, mock_exp_offer, mock_exp_offer_len);
-+}
-+
-+static const struct dma_buf_ops mock_dmabuf_offer_ops = {
-+	.release = mock_dmabuf_release,
-+	.match_mapping = mock_dmabuf_offer_match_mapping,
-+};
-+
-+/*
-+ * The match set is final once attached. A later importer attaching, even one
-+ * the exporter answers differently, must not change an existing attachment.
-+ *
-+ * Later attachments influence what the exporter selects at pin or map time,
-+ * not what was previously negotiated.
-+ */
-+static void test_match_set_is_final(struct kunit *test)
-+{
-+	static const struct dma_buf_mapping_match offer_ab[] = {
-+		{ .type = &mock_type_a },
-+		{ .type = &mock_type_b },
-+	};
-+	static const struct dma_buf_mapping_match offer_b[] = {
-+		{ .type = &mock_type_b },
-+	};
-+	struct dma_buf_mapping_match imp1[] = {
-+		{ .type = &mock_type_a },
-+		{ .type = &mock_type_b },
-+	};
-+	struct dma_buf_mapping_match imp2[] = { { .type = &mock_type_b } };
-+	struct dma_buf_attachment *attach1, *attach2;
-+	struct dma_buf *dmabuf;
-+
-+	dmabuf = mock_dmabuf_export(&mock_dmabuf_offer_ops);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dmabuf);
-+
-+	mock_exp_offer = offer_ab;
-+	mock_exp_offer_len = ARRAY_SIZE(offer_ab);
-+	attach1 = dma_buf_mapping_attach(dmabuf, imp1, ARRAY_SIZE(imp1),
-+					 &mock_importer_ops, NULL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, attach1);
-+	KUNIT_ASSERT_EQ(test, attach1->nr_matches, 2);
-+	KUNIT_EXPECT_PTR_EQ(test, attach1->map_type.type, &mock_type_a);
-+
-+	/* Exporter's answer for new importers changes; attach1 does not */
-+	mock_exp_offer = offer_b;
-+	mock_exp_offer_len = ARRAY_SIZE(offer_b);
-+	attach2 = dma_buf_mapping_attach(dmabuf, imp2, ARRAY_SIZE(imp2),
-+					 &mock_importer_ops, NULL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, attach2);
-+	KUNIT_ASSERT_EQ(test, attach2->nr_matches, 1);
-+	KUNIT_EXPECT_PTR_EQ(test, attach2->map_type.type, &mock_type_b);
-+	KUNIT_EXPECT_EQ(test, attach1->nr_matches, 2);
-+	KUNIT_EXPECT_PTR_EQ(test, attach1->map_type.type, &mock_type_a);
-+
-+	dma_buf_detach(dmabuf, attach2);
-+	KUNIT_EXPECT_EQ(test, attach1->nr_matches, 2);
-+	KUNIT_EXPECT_PTR_EQ(test, attach1->map_type.type, &mock_type_a);
-+
-+	dma_buf_detach(dmabuf, attach1);
-+	dma_buf_put(dmabuf);
-+}
-+
-+/* Mock mapping result for the generic map path */
-+struct mock_mapping {
-+	struct dma_buf_mapping base;
-+	const struct dma_buf_mapping_type *made_by;
-+};
-+
-+static struct dma_buf_mapping *mock_type_map(struct dma_buf_attachment *attach,
-+					     enum dma_data_direction dir)
-+{
-+	struct mock_mapping *m = kzalloc_obj(*m);
-+
-+	if (!m)
-+		return ERR_PTR(-ENOMEM);
-+	m->base.type = attach->map_type.type;
-+	m->made_by = attach->map_type.type;
-+	return &m->base;
-+}
-+
-+static void mock_type_unmap(struct dma_buf_attachment *attach,
-+			    struct dma_buf_mapping *mapping,
-+			    enum dma_data_direction dir)
-+{
-+	kfree(container_of(mapping, struct mock_mapping, base));
-+}
-+
-+/* Exporter choosing the match set entry the test asks for */
-+static const struct dma_buf_mapping_match *
-+mock_dmabuf_select_mapping(struct dma_buf_attachment *attach)
-+{
-+	if (mock_select_err)
-+		return ERR_PTR(mock_select_err);
-+	return &attach->matches[mock_select_idx];
-+}
-+
-+static const struct dma_buf_ops mock_dmabuf_select_ops = {
-+	.release = mock_dmabuf_release,
-+	.match_mapping = mock_dmabuf_offer_match_mapping,
-+	.select_mapping = mock_dmabuf_select_mapping,
-+};
-+
-+/*
-+ * Exporter decides type at first map from the match set. The result is tagged
-+ * with it and the core holds the choice across unmap/remap until the attachment
-+ * has been explicitly invalidated.
-+ */
-+static void test_select_at_map(struct kunit *test)
-+{
-+	static const struct dma_buf_mapping_match offer_ab[] = {
-+		{ .type = &mock_type_a },
-+		{ .type = &mock_type_b },
-+	};
-+	struct dma_buf_mapping_match imp[] = {
-+		{ .type = &mock_type_a },
-+		{ .type = &mock_type_b },
-+	};
-+	struct dma_buf_attachment *attach;
-+	struct dma_buf_mapping *mapping;
-+	struct dma_buf *dmabuf;
-+
-+	mock_type_a.map = mock_type_map;
-+	mock_type_a.unmap = mock_type_unmap;
-+	mock_type_b.map = mock_type_map;
-+	mock_type_b.unmap = mock_type_unmap;
-+
-+	dmabuf = mock_dmabuf_export(&mock_dmabuf_select_ops);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dmabuf);
-+
-+	mock_exp_offer = offer_ab;
-+	mock_exp_offer_len = ARRAY_SIZE(offer_ab);
-+	attach = dma_buf_mapping_attach(dmabuf, imp, ARRAY_SIZE(imp),
-+					&mock_importer_ops, NULL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, attach);
-+	KUNIT_EXPECT_FALSE(test, attach->selected);
-+	KUNIT_EXPECT_PTR_EQ(test, attach->map_type.type, &mock_type_a);
-+
-+	dma_resv_lock(dmabuf->resv, NULL);
-+
-+	/* Exporter picks the second entry (mock_type_b) */
-+	mock_select_idx = 1;
-+	mapping = dma_buf_mapping_map(attach, DMA_BIDIRECTIONAL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, mapping);
-+	KUNIT_EXPECT_PTR_EQ(test, mapping->type, &mock_type_b);
-+	KUNIT_EXPECT_PTR_EQ(test, attach->map_type.type, &mock_type_b);
-+	KUNIT_EXPECT_TRUE(test, attach->selected);
-+
-+	/* A pin taken whilst mapping is live gets the same type */
-+	mock_select_idx = 0;
-+	KUNIT_EXPECT_EQ(test, dma_buf_pin(attach), 0);
-+	KUNIT_EXPECT_PTR_EQ(test, attach->map_type.type, &mock_type_b);
-+	dma_buf_unpin(attach);
-+
-+	dma_buf_mapping_unmap(attach, mapping, DMA_BIDIRECTIONAL);
-+
-+	/*
-+	 * Unmapped the exporter would now pick A, but no invalidate has
-+	 * happened so remap must get B again to avoid ping-ponging.
-+	 */
-+	KUNIT_EXPECT_TRUE(test, attach->selected);
-+	mapping = dma_buf_mapping_map(attach, DMA_BIDIRECTIONAL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, mapping);
-+	KUNIT_EXPECT_PTR_EQ(test, mapping->type, &mock_type_b);
-+	dma_buf_mapping_unmap(attach, mapping, DMA_BIDIRECTIONAL);
-+
-+	/* Only an explicit invalidation allows the type to change */
-+	dma_buf_invalidate_mappings(dmabuf);
-+	KUNIT_EXPECT_FALSE(test, attach->selected);
-+	/* map_type is kept for a pending unmap until the next selection */
-+	KUNIT_EXPECT_PTR_EQ(test, attach->map_type.type, &mock_type_b);
-+
-+	mapping = dma_buf_mapping_map(attach, DMA_BIDIRECTIONAL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, mapping);
-+	KUNIT_EXPECT_PTR_EQ(test, mapping->type, &mock_type_a);
-+	dma_buf_mapping_unmap(attach, mapping, DMA_BIDIRECTIONAL);
-+
-+	/* Exporter cannot serve this importer right now */
-+	dma_buf_invalidate_mappings(dmabuf);
-+	mock_select_err = -EBUSY;
-+	mapping = dma_buf_mapping_map(attach, DMA_BIDIRECTIONAL);
-+	KUNIT_EXPECT_EQ(test, PTR_ERR(mapping), -EBUSY);
-+	KUNIT_EXPECT_FALSE(test, attach->selected);
-+	mock_select_err = 0;
-+
-+	dma_resv_unlock(dmabuf->resv);
-+
-+	dma_buf_detach(dmabuf, attach);
-+	dma_buf_put(dmabuf);
-+
-+	mock_type_a.map = NULL;
-+	mock_type_a.unmap = NULL;
-+	mock_type_b.map = NULL;
-+	mock_type_b.unmap = NULL;
-+}
-+
-+/*
-+ * Pin selects too and the choice survives map, unmap and unpin. A pinned
-+ * importer that is never invalidated keeps its first type for the life of the
-+ * attachment.
-+ */
-+static void test_select_at_pin(struct kunit *test)
-+{
-+	static const struct dma_buf_mapping_match offer_ab[] = {
-+		{ .type = &mock_type_a },
-+		{ .type = &mock_type_b },
-+	};
-+	struct dma_buf_mapping_match imp[] = {
-+		{ .type = &mock_type_a },
-+		{ .type = &mock_type_b },
-+	};
-+	struct dma_buf_attachment *attach;
-+	struct dma_buf_mapping *mapping;
-+	struct dma_buf *dmabuf;
-+
-+	mock_type_a.map = mock_type_map;
-+	mock_type_a.unmap = mock_type_unmap;
-+	mock_type_b.map = mock_type_map;
-+	mock_type_b.unmap = mock_type_unmap;
-+
-+	dmabuf = mock_dmabuf_export(&mock_dmabuf_select_ops);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dmabuf);
-+
-+	mock_exp_offer = offer_ab;
-+	mock_exp_offer_len = ARRAY_SIZE(offer_ab);
-+	attach = dma_buf_mapping_attach(dmabuf, imp, ARRAY_SIZE(imp),
-+					&mock_importer_ops, NULL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, attach);
-+
-+	dma_resv_lock(dmabuf->resv, NULL);
-+
-+	mock_select_idx = 1;
-+	KUNIT_EXPECT_EQ(test, dma_buf_pin(attach), 0);
-+	KUNIT_EXPECT_TRUE(test, attach->selected);
-+	KUNIT_EXPECT_PTR_EQ(test, attach->map_type.type, &mock_type_b);
-+
-+	/* Map after pin uses the pinned type regardless of the exporter now */
-+	mock_select_idx = 0;
-+	mapping = dma_buf_mapping_map(attach, DMA_BIDIRECTIONAL);
-+	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, mapping);
-+	KUNIT_EXPECT_PTR_EQ(test, mapping->type, &mock_type_b);
-+	dma_buf_mapping_unmap(attach, mapping, DMA_BIDIRECTIONAL);
-+
-+	KUNIT_EXPECT_PTR_EQ(test, attach->map_type.type, &mock_type_b);
-+
-+	dma_buf_unpin(attach);
-+	KUNIT_EXPECT_TRUE(test, attach->selected);
-+	KUNIT_EXPECT_PTR_EQ(test, attach->map_type.type, &mock_type_b);
-+
-+	dma_resv_unlock(dmabuf->resv);
-+
-+	dma_buf_detach(dmabuf, attach);
-+	dma_buf_put(dmabuf);
-+
-+	mock_type_a.map = NULL;
-+	mock_type_a.unmap = NULL;
-+	mock_type_b.map = NULL;
-+	mock_type_b.unmap = NULL;
-+}
-+
- static const struct dma_exporter dma_exporter_params[] = {
- 	{ &mock_dmabuf_simple_sgt_ops, "simple_sgt" },
- 	{ &mock_dmabuf_two_exp_ops, "two_exp" },
-@@ -371,6 +645,9 @@ static struct kunit_case dma_mapping_cases[] = {
- 	KUNIT_CASE(test_match_importer_priority),
- 	KUNIT_CASE_PARAM(test_sgt_attach, dma_exporter_gen_params),
- 	KUNIT_CASE(test_mock_attach),
-+	KUNIT_CASE(test_match_set_is_final),
-+	KUNIT_CASE(test_select_at_map),
-+	KUNIT_CASE(test_select_at_pin),
- 	{}
- };
- 
--- 
-2.54.0
+- Link to v1: https://patch.msgid.link/20261015-jshekhar-drm-msm-dcp-v1-v1-0-48aad0fe4f72@oss.qualcomm.com
+
+To: Rob Clark <robin.clark@oss.qualcomm.com>
+To: Dmitry Baryshkov <lumag@kernel.org>
+To: Abhinav Kumar <abhinav.kumar@linux.dev>
+To: Jessica Zhang <jesszhan0024@gmail.com>
+To: Sean Paul <sean@poorly.run>
+To: Marijn Suijten <marijn.suijten@somainline.org>
+To: David Airlie <airlied@gmail.com>
+To: Simona Vetter <simona@ffwll.ch>
+To: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+To: Maxime Ripard <mripard@kernel.org>
+To: Thomas Zimmermann <tzimmermann@suse.de>
+To: Rob Herring <robh@kernel.org>
+To: Krzysztof Kozlowski <krzk+dt@kernel.org>
+To: Conor Dooley <conor+dt@kernel.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jason Wang <jasowangio@gmail.com>
+To: Eugenio Pérez <eperezma@redhat.com>
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
+To: Sumit Semwal <sumit.semwal@linaro.org>
+To: Christian König <christian.koenig@amd.com>
+To: Philipp Stanner <phasta@kernel.org>
+To: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konradybcio@kernel.org>
+To: Abel Vesa <abelvesa@kernel.org>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Flemin Jose <flemin.jose@oss.qualcomm.com>
+To: Mahadevan P <mahap@oss.qualcomm.com>
+To: Michael S. Tsirkin <mst@redhat.com>
+To: Jason Wang <jasowangio@gmail.com>
+To: Eugenio Pérez <eperezma@redhat.com>
+Cc: virtualization@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: freedreno@lists.freedesktop.org
+Cc: devicetree@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: virtualization@lists.linux.dev
+Cc: linux-media@vger.kernel.org
+Cc: linaro-mm-sig@lists.linaro.org
+Cc: iommu@lists.linux.dev
+
+---
+Jayant Shekhar (23):
+      dt-bindings: display: msm: Add Qualcomm DCP
+      drm/msm/dcp: Add HFI packet helpers
+      drm/msm/dcp: Add HFI device definitions
+      drm/msm/dcp: Add HFI display definitions
+      drm/msm/dcp: Add HFI panel definitions
+      drm/msm/dcp: Add HFI VirtIO transport
+      drm/msm/dcp: Handle asynchronous HFI responses
+      drm/msm/dcp: Add IPCC power notifications
+      drm/msm/dcp: Add generic HFI display commands
+      drm/msm/dcp: Add HFI DSI and panel commands
+      drm/msm/dcp: Add DCP CRTCs and shared plane state
+      drm/msm/dcp: Add DCP planes
+      drm/msm/dcp: Route HFI display events
+      drm/msm/dcp: Add DCP encoder
+      drm/msm/dcp: Add DCP DSI host and panel support
+      drm/msm/dcp: Integrate the DSI bridge with KMS
+      drm/msm/dcp: Register DCP display pipeline
+      virtio: Add Qualcomm Platform Services Firmware Interface ID
+      drm/msm/dcp: Add Qualcomm VirtIO transport wrapper
+      drm/msm/dcp: Add DCP VirtIO driver
+      drm/msm: Support KMS backends without a display IRQ
+      drm/msm: Register the DCP backend
+      arm64: dts: qcom: hawi: Add DCP support
+
+ .../bindings/display/msm/qcom,dcp-dsi.yaml         |   79 ++
+ .../devicetree/bindings/display/msm/qcom,dcp.yaml  |  123 +++
+ .../bindings/virtio/qcom,dcp-virtio.yaml           |  132 +++
+ arch/arm64/boot/dts/qcom/hawi-mtp.dts              |  129 +++
+ arch/arm64/boot/dts/qcom/hawi.dtsi                 |   40 +
+ drivers/gpu/drm/msm/Kconfig                        |   25 +
+ drivers/gpu/drm/msm/Makefile                       |   22 +
+ drivers/gpu/drm/msm/dcp/dcp_crtc.c                 |  739 +++++++++++++
+ drivers/gpu/drm/msm/dcp/dcp_crtc.h                 |  104 ++
+ drivers/gpu/drm/msm/dcp/dcp_dpu_kms.c              |  686 ++++++++++++
+ drivers/gpu/drm/msm/dcp/dcp_dpu_kms.h              |   59 +
+ drivers/gpu/drm/msm/dcp/dcp_drv.c                  |  191 ++++
+ drivers/gpu/drm/msm/dcp/dcp_drv.h                  |   46 +
+ drivers/gpu/drm/msm/dcp/dcp_dsi_bridge.c           | 1110 +++++++++++++++++++
+ drivers/gpu/drm/msm/dcp/dcp_dsi_bridge.h           |   76 ++
+ drivers/gpu/drm/msm/dcp/dcp_dsi_panel.h            |   94 ++
+ drivers/gpu/drm/msm/dcp/dcp_encoder.c              |   29 +
+ drivers/gpu/drm/msm/dcp/dcp_encoder.h              |   16 +
+ drivers/gpu/drm/msm/dcp/dcp_hfi.h                  |  275 +++++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_core.c             | 1155 ++++++++++++++++++++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_crtc.c             |  191 ++++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_dsi.c              |  252 +++++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_dsi_panel.c        |  592 ++++++++++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_encoder.c          |   64 ++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_kms.c              |  366 +++++++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_plane.c            |   63 ++
+ drivers/gpu/drm/msm/dcp/dcp_hfi_priv.h             |   48 +
+ drivers/gpu/drm/msm/dcp/dcp_ipcc.c                 |  173 +++
+ drivers/gpu/drm/msm/dcp/dcp_ipcc.h                 |   42 +
+ drivers/gpu/drm/msm/dcp/dcp_plane.c                | 1056 ++++++++++++++++++
+ drivers/gpu/drm/msm/dcp/dcp_plane.h                |   36 +
+ drivers/gpu/drm/msm/dcp/dcp_plane_state.h          |   37 +
+ drivers/gpu/drm/msm/dcp/dcp_virtio.c               |  258 +++++
+ drivers/gpu/drm/msm/dcp/dcp_virtio.h               |   25 +
+ drivers/gpu/drm/msm/dcp/dcp_virtio_transport.c     |  643 +++++++++++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_commands_device.h  |   78 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_commands_display.h |  105 ++
+ .../drm/msm/dcp/hfi/hfi_commands_display_events.h  |   90 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_commands_panel.h   |   27 +
+ drivers/gpu/drm/msm/dcp/hfi/hfi_defs_common.h      |  182 +++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_defs_device.h      |   61 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_defs_display.h     |  464 ++++++++
+ .../gpu/drm/msm/dcp/hfi/hfi_defs_display_color.h   |  247 +++++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_defs_panel.h       |  287 +++++
+ .../gpu/drm/msm/dcp/hfi/hfi_pack_unpack_common.h   |   79 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_packer.c           |  106 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_packer.h           |   65 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_packet.h           |   76 ++
+ .../gpu/drm/msm/dcp/hfi/hfi_properties_device.h    |  102 ++
+ .../gpu/drm/msm/dcp/hfi/hfi_properties_display.h   |  480 ++++++++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_properties_panel.h |  198 ++++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_unpacker.c         |  157 +++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_unpacker.h         |   77 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_utils.c            |   62 ++
+ drivers/gpu/drm/msm/dcp/hfi/hfi_utils.h            |   56 +
+ drivers/gpu/drm/msm/msm_drv.c                      |    8 +-
+ drivers/gpu/drm/msm/msm_drv.h                      |   10 +
+ drivers/gpu/drm/msm/msm_kms.c                      |    2 +-
+ include/uapi/linux/virtio_ids.h                    |    1 +
+ 59 files changed, 11992 insertions(+), 4 deletions(-)
+---
+base-commit: 9a482184d910775cf648863148944945b74e2815
+change-id: 20261022-jshekhar-dcp-hlos-c7c22b0ff7e4
+prerequisite-patch-id: eecfd66a55b8f2b7b2fc7d76d815facca0489d00
+
+Best regards,
+--  
+Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
 
