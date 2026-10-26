@@ -1,72 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.72
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793056222;
-	b=C0kErLf0ARoqIEi942gc83caWpAUGHOM/rhHMwzrkC9sQ8OUQYSbk9nsK5sRWfjdx7F5
-	 9I/92O9QwgQW8Y1NaF4sKoaD8kqOcBeAvH8raoZYrfBwtgL+3mJ/rDM7XKkymkWwKSPpb
-	 ezbKcSzuIwavAd4ah2NpYYEdu1ViQx6x1zpqzT3cGcgwKazFLY3uPzh90ZSZqHYd6zI0H
-	 CLM2lWG0YsAEhLccmrR0f53iM/64xBJqizb2bmdYFqlyjWAIKOuoVZ5OOkiw9bOEW4aXk
-	 obYajFrJWyE1VvlIzaxazJPyOiGEGLoQdRm0aSDXQmnf95+Qf2+dANRkfNQo0exjWuA==
+	t=1793057328;
+	b=FWZAb1tHF07KZh/YK2ft3GqFPVeAxlciczsygN9abK4f31ixlWFskdk58xD9jZ9Rsn23
+	 0MW9OYVp2GlYSJ7C79rWvtMTJO4+vteO2C6noCgtATUr4jS094wEqm3apr6s6KTmHQeFL
+	 iqFDo4v9bEh58X6dXo4B57v+iecuwJ5bsEbmabdprjE6xVnpg8cdJN/stQSoZJQpy4QyN
+	 r4CB92uqULzo31O2VPR5FTObT51rEAOnmoYrHO0jwUll7b1Goc/C76LUIOZgWe0IvIdcp
+	 5tGY4F79W7VjxlvWHIAXuBJmAuuB2lCBFZRfwbhqKlWGEcP6Vf072dkkpDUHikBqH2g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793056222;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Date:From:To:Cc:
-	 Subject:Message-ID:In-Reply-To:References:Organization:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
-	 X-Spam-Checker-Version;
-	bh=vAGCvmTxy6ZtJGt5CSWzyoyAFqmQYDKuR0TIL8Beruw=;
-	b=m7zk6Kt4Mrbtm4jIQ4ekzxpYUd4g6fkZ0ouKfLeA6jhi+FDbqpoCHmTjorG8Xl6WEbo+
-	 0UTOMTi9Scb+V9xtgbdPqGX/5Q8HjVHE67SQadB9gJKJt2J1xUV3Hs4tB6wjgl7QK9V6f
-	 oD8Z1XCi4t9d/FltOm/kkQNeGBkDrdZ+2z07fd+Dv4y8ckUxJZGQZavL13JprbOlVcNok
-	 IwFomWVQ3xuPWvEb7ngFC7zhipB5Nrc0L8D4uz9DrBQhw7CTLSjnVaf3117XjQW1SCteH
-	 +NgCPe/eY7cWWkvL7rJTYzRuJjxOIbbwIY+Siwqs3cyWf+lgtlQpuKAl1PKgNA+O2+g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793057328;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
+	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=RxRwD13OM0fFBvRZdfnXU3z0HVhv0MS7kXCqcjKQ5Ko=;
+	b=PEj2WrIL1jIjkI62yphnwSDlrlodwZdICPibMCgThol+SZHGypNVsCsedcXXMY1StPVk
+	 VKShSPSGSxc/QgK2xdLvzJmcOt0T/SSt4DohgorDfUJpf8A+hGXDsCzmlNK1PCgEIYzyH
+	 nJuOIM2DbG2rtp8EbEJDhPpOD++CB7QwGYK34zZ6UYup8Oep+sl9NEpiaw7w3pyylp7D9
+	 R63Al3nxmRnApgt3iB2z87E3RgaGy1VuoVMdyGshwMsAPCqz/RdbJinwIWCPzciDO4TyK
+	 oSD7CWPAIM41A1cbwF8K3wNo8NkJ4cE/JHEco99zJthGCpB1FjnNkpoglcSrSa3l42g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.microsoft.com;
-	spf=pass smtp.mailfrom=linux.microsoft.com;
-	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=PVDMz7B0;
-	arc=none smtp.remote-ip=13.77.154.182
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3C30A606A31A
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 23:10:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3C30A606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=sIIkcMB3;
+	arc=none smtp.remote-ip=209.85.208.72
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73FE9606A31D
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 23:28:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 73FE9606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=PVDMz7B0
-Received: from localhost (unknown [52.172.102.253])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0D73620B7166;
-	Mon, 26 Oct 2026 16:09:58 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0D73620B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1793056210;
-	bh=vAGCvmTxy6ZtJGt5CSWzyoyAFqmQYDKuR0TIL8Beruw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PVDMz7B0B4a18dyvgGY3eNUXdDo+pa0ROA5K1YlbuS11AmFFTVQ8CFHU/xby58w2M
-	 RE/O+ag02r/o5RZXrQ8sy4FjeQV3vJd2zb/5bchD3HDWL0ioOhN0mxdawBGcmmhMoP
-	 09eGcAPAWkN6VNvU4g3vuUsiRpefrI4WZamVd3JQ=
-Date: Mon, 26 Oct 2026 16:10:03 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen
- <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Wei Liu
- <wei.liu@kernel.org>, "K . Y . Srinivasan" <kys@microsoft.com>, Haiyang
- Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, Long Li
- <longli@microsoft.com>, linux-hyperv@vger.kernel.org, Joerg Roedel
- <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Arnd Bergmann <arnd@arndb.de>,
- linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, "Aneesh Kumar K .
- V" <aneesh.kumar@kernel.org>, Mukesh Rathor <mukeshrathor@microsoft.com>,
- John Starks <John.Starks@microsoft.com>, Souradeep Chakrabarti
- <schakrabarti@microsoft.com>, Yu Zhang <zhangyu1@linux.microsoft.com>,
- Easwar Hariharan <eahariha@linux.microsoft.com>, Alex Williamson
- <alex@shazbot.org>, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH RFC 1/9] iommu: Introduce external attach domain type
-Message-ID: <20261026161003.00003b71@linux.microsoft.com>
-In-Reply-To: <atiakDqtuED2cTM5@google.com>
-References: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
-	<20260925190742.1575380-2-jacob.pan@linux.microsoft.com>
-	<atiakDqtuED2cTM5@google.com>
-Organization: LSG
-X-Mailer: Claws Mail 3.21.0 (GTK+ 2.24.33; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20251104 header.b=sIIkcMB3
+Received: by mail-ed1-f72.google.com with SMTP id 4fb4d7f45d1cf-6b1d818b501so4309261a12.0
+        for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 16:28:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20251104; t=1793057326; x=1793662126; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RxRwD13OM0fFBvRZdfnXU3z0HVhv0MS7kXCqcjKQ5Ko=;
+        b=sIIkcMB3iyDF/ppS4I8hjYLJVicesWGQSB/63PeEboRMzbMZ0gP+4BPNjPWBjEgwTr
+         qIdfChnQGtIryKaW2QMGlOr3+UH9mJPh8E/vRZKWGOhaDVMeOUKnb9If8XK1SEo5D7pR
+         4it3/VFTg6RYU6Cle358lZTZw6wtqDej0FTy5acA4h/Yf+yYiLx3Rvbzpt4plZCbsiFC
+         sidhLAYcqw0OU1er/0CcVGuYIQw5qQS9Xg3MNNCdbPUEouG90h84yKRtXfh3tlJ6s5/y
+         J3+RAHmkElEvADdeZm+cXItBu5vmlmwJtNx6ds0StCwVoU7I0Jwo7EuFN9mbhts5Do01
+         1z6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793057326; x=1793662126;
+        h=content-type:cc:to:from:subject:message-id:references:mime-version
+         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=RxRwD13OM0fFBvRZdfnXU3z0HVhv0MS7kXCqcjKQ5Ko=;
+        b=h6M0IKX43Hmo+MNkLx+HijGzJ6yRMheDtGaZFgeYkmkY1u1QkGTopYWYIuTBgHkFMY
+         BFMahIwOxU0XnhrT3dbz7nOnDg9yMEm5SrMbRcGY8StgV+GrdsjBeZ+I1rxoJokdH4Qq
+         gnwuCPS/qtnD8F2yRsns9A2UFTJyvJwW/HeeL9/UOkzsVM1ODRtRfO+3hb0H9CeiG+Nt
+         WXDxEhXFwxhlr32FZfEiTXpui0rftxQrEF9PXTP4KpvrnTQ8MREIfzkk3DHfhTXePFCw
+         Ca8h5NUdF0b3qyUSVOtCZtuqVWjI6j8VgQsX8XkMKbJGuV2VQAD8HqfkQrjzOgEnnf/0
+         CaBw==
+X-Forwarded-Encrypted: i=1; AKwUvBxLUPJ10bJ0rgmGyLOO4dn4NgURsz2gBrE/DLnvdvX6bjbaiGNeoS2pJgX9BfRtj7JyZ7iHgQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJ3j1BlXyl+nEJ2wiCPvtwb510k9tdaf4QX3nNFZeqZ4Ng0vNTp
+	bfSHHBN6b7CPrxpLajzyB3CUmCLoRBejUhebiIeRy32wxEW/Vs7vBRFXdCIFY/YAOuyASHBunWg
+	ImA9ZbdnjXUdt+pkPJA==
+X-Received: from edxw25.prod.google.com ([2002:a05:6402:719:b0:6a7:4541:3de3])
+ (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6402:4026:b0:6b4:1037:2b87 with SMTP id 4fb4d7f45d1cf-6b44300b84fmr9392138a12.31.1793057325809;
+ Mon, 26 Oct 2026 16:28:45 -0700 (PDT)
+Date: Mon, 26 Oct 2026 23:28:45 +0000
+In-Reply-To: <at_CncIPYCxOVkLo@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,123 +77,163 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+References: <20261021152527.375070-1-tarunsahu@google.com> <20261021152527.375070-4-tarunsahu@google.com>
+ <atlQ_Er0Ig7CCSxv@google.com> <CALzav=f00C4yOAseNunW8GgQTDUGWT927Qy=TLm-3-J0TEDH8Q@mail.gmail.com>
+ <9huzzew0el59.fsf@tarunix.c.googlers.com> <at_CncIPYCxOVkLo@google.com>
+Message-ID: <9huzecdcghxu.fsf@tarunix.c.googlers.com>
+Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
+ a 2-bit pair feature header
+From: tarunsahu@google.com
+To: David Matlack <dmatlack@google.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
+	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
+	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com, 
+	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org, 
+	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, will@kernel.org, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, Alexander Graf <graf@amazon.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com, 
+	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
+	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
+	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Mostafa,
+David Matlack <dmatlack@google.com> writes:
 
-On Wed, 21 Oct 2026 10:57:20 +0000
-Mostafa Saleh <smostafa@google.com> wrote:
+> On 2026-10-26 11:50 AM, tarunsahu@google.com wrote:
+>> Right, Required bit should be source kernel payload property to tell
+>> target kernel that the payload must be handled to correctly deserialize
+>> the data. It should be source kernel (userspace) responsiblity to make
+>> sure it understand the target kernel before doing liveupdate.
+>> 
+>> Saying this, During deserialization, target kernel's required bit is not
+>> necessary. So I propose the following truth table.
+>> 
+>> Source hdr  Target supported[i]  Action
+>> ----------  -------------------  ----------------------------------
+>> 00          0 or 1               Accept: feature absent in payload
+>> 01          0                    Accept: ignore the feature data
+>> 01          1                    Accept: use the feature data
+>> 11          0                    Reject: -EOPNOTSUPP
+>> 11          1                    Accept: use the feature data
+>> 10          0 or 1               Reject: -EINVAL (invalid encoding)
+>
+> Yes, this matches what I had in mind for the semantics.
+>
+> To be explicit: the source kernel should set the bits for each Live
+> Update based on what is actually preserved, rather than generating the
+> header from a static per-kernel array. E.g. memfd would only mark a
+> feature present for memfds that actually use it. That's what allows
+> rollback to an older kernel as long as nothing being preserved depends
+> on the new feature.
+>
+> But looking at this again, I think the required bit is redundant. Whether
+> a feature can be safely ignored is a property of the feature itself, not
+> of any particular file. Every file that has a feature present will have
+> the same required bit for it. The only thing that actually varies per
+> file is whether the feature is present.
 
-> On Fri, Sep 25, 2026 at 12:07:34PM -0700, Jacob Pan wrote:
-> > Add IOMMU_DOMAIN_EXTERNAL for externally managed domains that move
-> > or attach devices to another VM address space provisioned by an
-> > external owner, such as a type 1 hypervisor.
-> > 
-> > This is not a paging domain and is not sysfs-selectable as a default
-> > domain type. It requires external owner context, such as a vIOMMU.
-> >   
-> 
-> Can't we use a IOMMU_DOMAIN_BLOCKED domain for that, AFAIU, the host
-> never inserts any mapping?
-Right, the host does not own or install any mappings.
+The required bit is subsystem property not the per-file. e.g. memfd_luo,
+it is set at compile time for a kernel. So every file will get that required
+bit set. It is not per file property.
 
-The external domain type is nevertheless useful for two reasons:
+struct u8 memfd_luo_feature_state {
+       [MEMFD_LUO_CORE_FEATURE] = LUO_FEATURE_REQUIRED
+}
 
-1. It allows the pvIOMMU driver's domain ops to do the MSHV & Xen attach
-and detach hypercalls 
-2. It allows an externally managed device to leverage the normal IOMMUFD
-device-to-HWPT attachment interface: VFIO_DEVICE_ATTACH_IOMMUFD_PT
-No new ioctls.
 
-It also makes the lifetime and ownership clear for IOMMUFD and
-hypervisor, the device can be returned back to host iommufd owned
-domains once detached.
+>
+> The required bit still has to be conveyed to the target somehow, since
+> the kernel that needs it is the one that doesn't know about the feature.
+> But it can be conveyed by the feature's number rather than an extra bit:
+> split the flag space into required features and optional features, and
+> assign each feature to one of them when it is defined. This is similar
+> to the required_flags and optional_flags approach in struct pci_ser [1].
+>
+> Keeping the same header shape as discussed with Pasha:
+>
+> struct kho_ser_hdr {
+>     __u32 size;           /* Size of header + payload in bytes */
+>     __u16 nr_required;    /* Number of required feature bits */
+>     __u16 nr_optional;    /* Number of optional feature bits */
+>     __u64 flags[];        /* Required bits, followed by optional bits */
+> };
+>
+> Required feature N is bit N of flags[], and optional feature N is bit
+> nr_required + N (using nr_required from the incoming header). The length
+> of flags[] is DIV_ROUND_UP(nr_required + nr_optional, 64). Both spaces
+> are numbered contiguously, so there are no gaps, and up to 64 features
+> still fit in a 16-byte header.
+>
+> Each bit just means the feature is present, so the truth table becomes:
+>
+> Source bit       Target supports  Action
+> ---------------  ---------------  ------------------------------
+> Not set          -                Accept: feature absent
+> Optional set     No               Accept: ignore the feature data
+> Optional set     Yes              Accept: use the feature data
+> Required set     No               Reject: -EOPNOTSUPP
+> Required set     Yes              Accept: use the feature data
+>
+> There is no invalid encoding left to check.
 
-In pKVM case, my understanding is that you have a emulated root SMMU
-which does not do hypercalls obviously. Then the external attach
-is done via an "out of tree uAPI through KVM/VFIO bridge IOCTLs that
-proxies those hypercalls."
 
-Therefore, if we were to park the device in blocking domain while doing
-external attach (as you suggested), this requires a new PV only uAPI
-that must support pkvm, MSHV, and Xen. So it does not fit in the flow
-supported by PV IOMMU root driver.
+IIUC, I believe this will not work.
 
-I don't have a better solution for both pv and emulated root IOMMU
-drivers. Perhaps others do?
+To Communicate between source and target, We are defining a protocol, A
+protocol which will be standard for all the kernel. And each bit location in
+flags must have the same meaning in both the source and target kernel.
 
-> Thanks,
-> Mostafa
-> 
-> > PV IOMMU drivers are expected to use it when moving a device to a
-> > guest VM with an already-created S2 IOPT.
-> > 
-> > Assisted-by: GPT-5.6 Sol
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> >  drivers/iommu/iommu.c | 2 ++
-> >  include/linux/iommu.h | 9 +++++++++
-> >  2 files changed, 11 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index cd1bca7ede9a..d0bd3ef00379 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -220,6 +220,8 @@ static const char
-> > *iommu_domain_type_str(unsigned int t) return "Translated";
-> >  	case IOMMU_DOMAIN_PLATFORM:
-> >  		return "Platform";
-> > +	case IOMMU_DOMAIN_EXTERNAL:
-> > +		return "External";
-> >  	default:
-> >  		return "Unknown";
-> >  	}
-> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > index ac43b8b93f14..ede77b90f0fd 100644
-> > --- a/include/linux/iommu.h
-> > +++ b/include/linux/iommu.h
-> > @@ -188,6 +188,7 @@ enum iommu_domain_cookie_type {
-> >  
-> >  #define __IOMMU_DOMAIN_NESTED	(1U << 6)  /* User-managed
-> > address space nested on a stage-2 translation        */
-> > +#define __IOMMU_DOMAIN_EXTERNAL	(1U << 7)  /* Externally
-> > managed translation */ 
-> >  #define IOMMU_DOMAIN_ALLOC_FLAGS ~__IOMMU_DOMAIN_DMA_FQ
-> >  /*
-> > @@ -207,6 +208,13 @@ enum iommu_domain_cookie_type {
-> >   *				  represented by mm_struct's.
-> >   *	IOMMU_DOMAIN_PLATFORM	- Legacy domain for drivers
-> > that do their own
-> >   *				  dma_api stuff. Do not use in
-> > new drivers.
-> > + *	IOMMU_DOMAIN_EXTERNAL	- Externally managed domain
-> > for moving/attaching
-> > + *				  devices to another VM address
-> > space
-> > + *				  provisioned by the external
-> > owner, such as
-> > + *				  a type 1 hypervisor. This is
-> > not a
-> > + *				  sysfs-selectable default
-> > domain type; it
-> > + *				  requires external owner
-> > context such as a
-> > + *				  vIOMMU.
-> >   */
-> >  #define IOMMU_DOMAIN_BLOCKED	(0U)
-> >  #define IOMMU_DOMAIN_IDENTITY	(__IOMMU_DOMAIN_PT)
-> > @@ -219,6 +227,7 @@ enum iommu_domain_cookie_type {
-> >  #define IOMMU_DOMAIN_SVA	(__IOMMU_DOMAIN_SVA)
-> >  #define IOMMU_DOMAIN_PLATFORM	(__IOMMU_DOMAIN_PLATFORM)
-> >  #define IOMMU_DOMAIN_NESTED	(__IOMMU_DOMAIN_NESTED)
-> > +#define IOMMU_DOMAIN_EXTERNAL	(__IOMMU_DOMAIN_EXTERNAL)
-> >  
-> >  struct iommu_domain {
-> >  	unsigned type;
-> > -- 
-> > 2.43.0
-> > 
-> >   
+Now in you approach, If Source kernel send feature N to target kernel,
+target kernel must understand Nth bit as the same feature. Even though
+the bit position in your approach is not fixed but they are fixed
+relative to their starting point.
 
+required: reference is 0th bit: So target kernel will undersatnd the
+          bit as the same feature as source kernel.
+optional: reference is nr_required: So target kernel will understand the
+          bit as the same feature as the source kernel.
+
+To make sure there is harmony between these two kernel. Even though a
+bit is not set in required for a feature that must be 0 in required
+range. and similarly for optional bits.
+
+So flags will look like 0b 0 0 1 1 0 0 0 1 0 0 1 1 1 0
+                               o o o o o o r r r r r r
+
+                        0b 0 0 0 0 0 0 0 0 1 1 1 1 1 1
+                                           o o o r r r <= This is wrong
+                                           because target can never know
+                                           which bit mean what feature.
+                                           So as you said there will be
+                                           no gaps which will not work here.
+
+So, Based on the first, We still using same number of bits and increased
+complexity and no gain.
+
+
+For the current appraoch and V3 [2]. Think the below one as msb is
+required bit and lsb is feature present in payload bit.
+
+00  FEATURE_ABSENT / DEPRECATED
+01  FEATURE_OPTIONAL
+11  FEATURE_REQUIRED
+10  IS INVALID (analogy: required set but feature is not present) which can
+have different meaning in future if in future, a need arises to reuse this
+field.
+
+Deserialization can happen per feature from right to left. without
+jumping back and forth.
+
+Because of all these reasons, I believe current approach presented in
+V3 [2] is the better. It is close to your PCI series with two flags
+field for required and optional except I combined both field into one
+flags. In your above approach you do have two counts but not having gaps
+(which is wrong) and the way you proposed to parse with an offset is different.
+
+Let me know what you think.
+
+[2] https://lore.kernel.org/all/20261026174217.603114-1-tarunsahu@google.com/
+>
+> [1] https://lore.kernel.org/linux-pci/20261013162529.1928093-1-dmatlack@google.com/
