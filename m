@@ -1,104 +1,69 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793001808;
-	b=grDS80uJcn7BUulqt/uxcwNV9gBOZsZe2/6EgM2LfLb4mmv1ZLvx+0gH5CO9/g0nd0er
-	 it/HI13lqiYanEQhmrCwMU3I99mui9jVwrpaeQkN78gjPXtugnfHUT+CP20drlQiOTdQH
-	 JMdRe8z3wb4H26VJtlEYVOcy+rK5hkSrlSMixNXt8XzlQjDAXefrwr5BcQh8CaO1/piQy
-	 +BtORTrf/gtElamu+qY6Vp1iQZlkdk8z47hXjuR8UJ+AXGnb2IMnsBhbjoYSoMTRBC7vc
-	 WHSENan/c6DOzzz3XQ7IzqvLRX+yVYY5CdzEVw6HKRjo5uzflHGsBxDWClxAMJvI9gA==
+	t=1793001992;
+	b=SLNCCqZC2IWJaag8YxqF22R6LRC58rH0+xJcds7rPrSC109VFiq93+UK8kuabTC6qhIK
+	 +Z+nMFYcAixdazkZnxcSYqh4KU1fmdxTsLMm/9Pex8mw4xP/tKPEORwlPc1WKxo+j/6lb
+	 4bCeCMieouJWweNXzxg2Zgc4HgPSAfhzyMkHZa9uVooFIxlUdpz3GPTKld9pOlKq4+6xp
+	 VWHSeUB97MCplxeyuFfqGNc7jxFvg5Cq8hwTsFqTArMJaCyPT63ZFsR5b+s7D4SXKacZA
+	 QnCcK89QgjuOH1g7QlMb9P981zkG0SA+nh2t3B+MZbi6Bxomd6Rmo/jzaV7m4K378mg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793001808;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=oue2gY3N148Z5QjebnGzECChsQECIfu8P/sF36ovlgA=;
-	b=ZIKTzLtLOC6btLkkyR8qbJi/j0oleYPn5nrsyOQYGHTIsIwczUyCyhxYFGitN8tFqmIB
-	 4M9zqFd956bvThFYQJaM24+wwl6ZqoDDDsHlrmAJsH9cphH0KePSZO8mCs/Xl5A81lzt0
-	 Qkyj/FJkLn8Z3EAi4xD7ank53NVQS2n2VLFgND24b6ytMQ0lx7m+rpvwgdPe1NrBgSaYE
-	 HSCfHr0jD80my1Hq71J2VeutVnR8lra1aVsMMrV1sCvR1frAYrEWnyXym62vMeZI9QuJe
-	 RPVYU+pE1gIxAlq45iRuX02IntXFwfQvBA93RPsMuVDRSQt5o7aDJE5oOAzokW6BMIw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793001992;
+	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
+	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
+	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
+	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
+	bh=DUbfcD+mF5appbi7QLgptqZT1xJk72MGi2kCZUq9Hmc=;
+	b=yAZK/LUhwvTnErodzEm/po/a7wFXkYd3ZvkBXq+/HEIfh/XW4IIy42Yhv9rrz+7ta5pE
+	 F+fo5PqqsjEB38//DTjG8gFtc7ALmz6jxgYdiEDG7dGelbcYw55/MLMYRAs9vPin1WBw9
+	 G/H/vY49uHdJWL7P569dvw6ol7LiLKgWG1lVOOG7ayb500kS5tzKAjuiZAPv+TOK0OIAw
+	 Ev72hJ1QyskzisvGGS+GZd1kaFHQyRM3dhZYNeNr6hcv1glJ5M3P2bca63+XB0GpPBBDk
+	 PiyJKSml+yFDcFtBE3R6R1JhYcCVS9wUEjJNDNzFkP/PkYDppmgI3ZZAZE73tYmWxWA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=iIzFb14l;
-	arc=none smtp.remote-ip=209.85.221.49
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=none header.from=sanechips.com.cn;
+	spf=pass smtp.mailfrom=sanechips.com.cn;
+	arc=none smtp.remote-ip=160.30.148.34
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6216606A31D
-	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 08:03:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B6216606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20251104 header.b=iIzFb14l
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-48c4649b35bso2746372f8f.3
-        for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 01:03:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1793001806; x=1793606606; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=oue2gY3N148Z5QjebnGzECChsQECIfu8P/sF36ovlgA=;
-        b=iIzFb14lylCYlZhVf+aB5Tr+Hxp77FupTPwRG1klLow4zLbhfE/CDxcCwrgxGsRu7m
-         SoJl5ltf0mT3Bl0emSdzPgTpQHoKk7ORCmD4ixJtpA8woLB2JprdjV/UQo1Uw1ixpfNC
-         Bf7h4+sbvPIvn+JFNvvysS6n3qjCwxNvUSzip+sXJMI+54TeyCK6ayf5+5Gpx4bTI/Yf
-         +7GpcdSgF1nPBEWs+61f6gjkldmH8MGOeDu/s2P/gzaX6E9GHP1PxB7LDLEZsvzBGehH
-         +Ao0FJMzg6FA9WW481SRjVqHnAyySuKx7lHPDSDv1tN28y4znjUYhhWjbOXMYDm28qEZ
-         X/0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793001806; x=1793606606;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=oue2gY3N148Z5QjebnGzECChsQECIfu8P/sF36ovlgA=;
-        b=yhliFnGglLFm2qJvFSyPwM1l94CrKq8CNuiTu5v/6Xl2r21Vz/j3T59c552xQGxb+o
-         DQ+g7JnE9OlhHhTnVioHpEBP5lAL2q4HD0WW40O6R0rwrr395M66XmSqPSFqTIQIdTzX
-         ogH9UYFPGPbr3mkjKwN8vnsjuGwMKdiaYGeulnF9GDttfcm+fJD17Al/aCPt7kSOP0uD
-         lm3CPALReZt6WJSAf+xsb+aOCmwXtTJCl+pP9AiXl3OXidF2rEqC8ys+43I0thX8INX3
-         df7HmvX7LWKu6tGFcTHeSqzQ39ULndoN/gkkMrrbD/bMREWQyCW0nO61OvNztIKUWWlF
-         YoVg==
-X-Forwarded-Encrypted: i=1; AKwUvByywWf/3ms++9evupl3T6M5Jtt8KLUpk/cHe+AkTcoj45pVW20dRGuwj9gxHsSrk5FjORMPaA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLtBeorZnnJT+k1doy+1RM0OM8IYJjzZqfvTah6lbgahzHTdsd6
-	7B3taUhrN7kOC8fuCWgK8TJpdBh1+Nv08uK3F60V7moXvH/Pa/bxtraS
-X-Gm-Gg: AYBFou0//MtR/mhDKJNOM4Tl+H+/roUkrh1qgXPYt5jgBdyUECaMYIJa9JkDTMd0oSB
-	h/yxU/tNd1rDKIMc4klBNO0ndtrB6bYNcP+UFrKimdfgxbalPKdpch9kgnyHPpNHEtRqVvcOL4q
-	iIcOn4KNB9xMvRru+tR1E/qVf1AlJf6AO2RM9C4Q5it4BigvvQoRjXUIBiVHXi1yXECNm9Wm18C
-	YSOBXMMXoJNoDqkOw4Ml0t75478EikYbX3HDUHaqmGb4KSzHGhq6mvO1wUqWrobGDQMflZuMCvP
-	I1Ka6mBFzKJFWCSvO6FTD0xLPX6/gxhg9BkH/eSTkAZ+XSnqOZz9uvBCCxMNYRw3PGa0mI2IcrY
-	u/94jB0W5SLfTt3ib2Alc+JWjmoNi4D6hKRC/M3PJeDU7550yadOjRFWZmtczxFIK0Fbr9kiReP
-	opjTISMXwt08FW0sRTWs/EcOKmnHHEfOClvpLumPuALb8tvZR334P6KpJO8q60cA3OC9iPLSesF
-	B/1GpQEPf2vG/AfSGr8vZqWoDCqKYw/JiO6URwuorZ7rIMzPbJI6QrAG+cvHR7BHVV58+hqMvdO
-	xe2kOlR8OXfRDXSf9ucqJ9sbh6gU7AjPjj1c9eHb0qC+yqubwQ/KHiX6u6UWjfuRkzUwYs4R7FU
-	GKqtEsKQq4T4YIiqYFqjZwJ1f90O6oyhfvoChiEV85er+68d+Yg70vM1UJXjQvw==
-X-Received: by 2002:a05:600c:3f12:b0:4a4:7a8d:c436 with SMTP id 5b1f17b1804b1-4a47a8dc6e6mr85645335e9.11.1793001805868;
-        Mon, 26 Oct 2026 01:03:25 -0700 (PDT)
-Received: from unknown748F3CBA5068 (dynamic-2a02-3100-b1a4-1201-5c78-89f4-99d8-70d7.310.pool.telefonica.de. [2a02:3100:b1a4:1201:5c78:89f4:99d8:70d7])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4a35a04ad39sm473163315e9.1.2026.10.26.01.03.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2026 01:03:25 -0700 (PDT)
-Date: Mon, 26 Oct 2026 09:03:22 +0100
-From: Karl Mehltretter <kmehltretter@gmail.com>
-To: Alistair Popple <apopple@nvidia.com>
-Cc: dri-devel@lists.freedesktop.org, christian.koenig@amd.com, 
-	sumit.semwal@linaro.org, jgg@nvidia.com, 
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>, Simona Vetter <simona.vetter@ffwll.ch>, 
-	Matthew Brost <matthew.brost@intel.com>, Vivek Kasireddy <vivek.kasireddy@intel.com>, 
-	Dongwon Kim <dongwon.kim@intel.com>, Leon Romanovsky <leonro@nvidia.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>, 
-	Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling <felix.kuehling@amd.com>, 
-	Alex Deucher <alexander.deucher@amd.com>, intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org, 
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, linux-rdma@vger.kernel.org, 
-	iommu@lists.linux.dev, Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, 
-	treding@nvidia.com, jhubbard@nvidia.com
-Subject: Re: [PATCH 05/26] dma-buf: Let the exporter select mapping type at
- pin/map
-Message-ID: <at8IQZ34wkHQ_5PL@gmail.com>
-References: <20261026053623.202642-1-apopple@nvidia.com>
- <20261026053623.202642-6-apopple@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F191606A31D
+	for <iommu@lists.linux.dev>; Mon, 26 Oct 2026 08:06:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4F191606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
+Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jCmRL3fzxz4yjSf;
+	Mon, 26 Oct 2026 16:06:22 +0800 (CST)
+Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
+	by mse-fl1.zte.com.cn with SMTP id 69Q865A0064039;
+	Mon, 26 Oct 2026 16:06:05 +0800 (+08)
+	(envelope-from gong.shuai@sanechips.com.cn)
+Received: from ubuntu-35-gs (unknown [10.230.214.35])
+	by smtp (Zmail) with SMTP;
+	Mon, 26 Oct 2026 16:06:07 +0800
+X-Zmail-TransId: 3e816adf09e6027-1935f
+X-Zmail-LocalSMTP: 1
+X-Zmail-RealSender: gong.shuai@sanechips.com.cn
+From: Gong Shuai <gong.shuai@sanechips.com.cn>
+To: fangyu.yu@linux.alibaba.com
+Cc: alex@ghiti.fr, andrew.jones@oss.qualcomm.com, aou@eecs.berkeley.edu,
+        gsh517025@gmail.com, guoren@kernel.org, iommu@lists.linux.dev,
+        jgg@nvidia.com, jgg@ziepe.ca, joro@8bytes.org, jroedel@suse.de,
+        kvm-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, palmer@dabbelt.com, pjw@kernel.org,
+        robin.murphy@arm.com, tomasz.jeznach@linux.dev, will@kernel.org,
+        zong.li@sifive.com, Gong Shuai <gong.shuai@sanechips.com.cn>
+Subject: Re: [RFC PATCH v2 3/4] iommu/riscv: Add guest IMSIC GPA mapping helpers
+Date: Mon, 26 Oct 2026 16:06:04 +0800
+Message-ID: <20261026080604.184574-1-gong.shuai@sanechips.com.cn>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261016030138.91675-1-fangyu.yu@linux.alibaba.com>
+References: <20261016030138.91675-1-fangyu.yu@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -108,61 +73,79 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261026053623.202642-6-apopple@nvidia.com>
+X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
+Content-Transfer-Encoding: 8bit
+X-MAIL:mse-fl1.zte.com.cn 69Q865A0064039
+X-TLS: YES
+X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
+X-SOURCE-IP: 10.5.228.132 unknown Mon, 26 Oct 2026 16:06:22 +0800
+X-CLEAN: YES
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6ADF09FE.001/4jCmRL3fzxz4yjSf
 
-On Mon, Oct 26, 2026 at 04:35:56PM +0100, Alistair Popple wrote:
-> +struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *attach,
-> +					enum dma_data_direction direction)
-> +{
-> +	struct sg_table *sg_table;
-> +	int ret;
-> +
-> +	might_sleep();
-> +
-> +	if (WARN_ON(!attach || !attach->dmabuf))
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	dma_resv_assert_held(attach->dmabuf->resv);
-> +
-> +	ret = dma_buf_mapping_select(attach);
-> +	if (ret)
-> +		return ERR_PTR(ret);
-> +
-> +	sg_table = __dma_buf_sgt_map_attachment(attach, direction);
-> +	if (IS_ERR(sg_table))
-> +		/* Nothing was established, so the choice may be made afresh */
-> +		attach->selected = false;
-> +
-> +	return sg_table;
-> +}
+Hi Fangyu,
 
-The map-failure report from Sashiko [1] reproduces with a KUnit test
-against the full series:
+> >Andrew has moved well past a v3
+> >
+> >I shouldn't be seeing code in iommu or irq drivers directly mapping into
+> >domains. That doesn't work, Andrew's latest series don't do this.
+> >
+> >It still needs to use the SW_MSI mechanism and related.
+> >
+>
+> Andrew has posted two patch series in the community: one is the
+> MSI remap v6 series[1], and another is the IRQ bypass v3 series[2].
+> I think you are referring to the MSI remap v6 series. My patch was
+> based on the IRQ bypass v3 series, and I added this patch on top
+> of it.
+>
+> [1] https://lore.kernel.org/linux-iommu/179209292714.4133959.5997128071302263244.b4-review@b4/T/#t
+> [2] https://lore.kernel.org/linux-riscv/20260928143113.49838-1-andrew.jones@oss.qualcomm.com/
+>
+> >Nothing in the commit messages clearly explained what this is actually for
+> >without having to go dig up the riscv manuals again. Please explain how the
+> >interrupt translation works and what actual user visible problem this is
+> >trying to solve is.
+> >
+>
+> The interrupt translation is based on Andrew's irq bypass patch
+> description.
+>
+> RISC-V IOMMU defines an optional MSI page table feature, which can
+> be used to implement irq bypass by translating the vIMSIC GPA to
+> the pIMSIC HPA.
+>
+> My patch complements that design. If the RISC-V IOMMU hardware does
+> not implement the MSI page table, then the second-stage page table
+> can be used instead to map vIMSIC GPA to pIMSIC HPA.
 
-  pin selects B -> map returns -EIO -> selected is cleared
-                -> retry selects A, with the original pin still held
+Using the regular stage-2 page table to translate MSI target
+addresses seems reasonable to me as a fallback for hardware without
+MSI_FLAT.
 
-The exporter pin count stays at 1. Preserving selected when it was true
-on entry makes the test pass. Patch 7 needs the same fix.
+I would like to share my personal understanding of Jason's review.
+Please correct me if I missed his point.
 
-Could dma_buf_mapping_select() report whether it made a new selection?
-Then the error path could undo only that choice, without dropping one
-established by an earlier pin or map.
+His concern seems to be about who owns and maintains these mappings.
+When the RISC-V IOMMU driver calls iommu_map directly on a paging
+domain managed by iommufd, the mappings are not visible to the domain
+owner. This makes it difficult to handle mapping lifetime and
+hardware page table replacement correctly.
 
-On the Sashiko failed-pin report:
-("Because the attachment is not pinned, the exporter may migrate the
-buffer elsewhere without invalidating it")
+The current SW_MSI support does not appear to cover this use case
+directly. It allocates IOVAs for host MSI pages and records the
+resulting mappings. Guest forwarding instead requires mappings at
+fixed guest GPAs, with their target HPAs changing when vCPUs migrate.
+Supporting this through SW_MSI would therefore seem to require a
+nontrivial extension.
 
-I don't think this follows from the documented contract.
-select_mapping() requires the exporter to keep the recorded type
-servable and invalidate before an incompatible move. That obligation
-still applies if ops->pin() fails.
+Best regards,
+Shuai
 
-Is retaining the selection after a failed pin intentional? If so, this
-can be added as a test documenting that alongside the map-failure
-regression test.
-
-Thanks,
-Karl
+>
+> Thanks,
+> Fangyu
+>
+> >--
+> >Jason
+>
