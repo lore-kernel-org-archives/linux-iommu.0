@@ -1,101 +1,143 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.74.76
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793101987;
-	b=vdPYIbSF2VkUVthvvBEpRj3AKmmGnMtc6gSJOrwRM0V2+O4OQ9WpzIezQc64mvrjqjTm
-	 zU/rztBPhF0AdYthNApx9DuA+hZoAPZAqcVELWf4Eo42LTiJYSbN6NTb/PWiuf1p+7cqa
-	 FOV5r+oGlgxwx/sW3Uli52ln7f29rMfACIZrbFzP3UgLfSTVap1KVrwTL1GYP/VgZVkJa
-	 FUobFRdtRtA98fxumC19NxrlArwqz7w+fhqEA5lsMDYTjc5tvO7vKoXQxOnsjjqrlX8qx
-	 qtkYYkdFSC7aTv0dM36O3cdJy/Flv5DGc//YF5ZD+y77FfkCyudrwG3kApzdzfI+NNw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793101987;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
-	 X-Microsoft-Original-Message-ID:MIME-Version:
-	 X-MS-Exchange-MessageSentRepresentingType:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=HS3ncY4U2L6vqsqXlTH9a+WYHFdTNj7GDa+xyTozurA=;
-	b=lGz/cSu4rC6tDND+Hkg1J8kKH615JYKmlFeEoIIR8SchQti9sUBIs3hlTbqOtZWkEO8x
-	 pZ7pR8oWQMu4fxbLKKg2xFZpf7H0lsTkZDhB33Y/EJrvjORxh0sHpQB/JL+X6wSou5OYo
-	 YO1bsbID62FLJ64gQDkiewYc2R/n4YQhb9IGdGDoyKwvoGiGoN7gyXipkrQcDu0dzAIV8
-	 LZZ8o2L6h00qyeLYHtc583kZeSuzN7yXpSBe+NgGxTD0RsqHt3JmsT2xAHO/TaOLv+AMy
-	 iy8ANEARoHvjEoPH636fwz/dLmUYtgvQOdvh4tXYv8D+wBcmLAxlOOdKoteahzGbBng==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=hotmail.com;
-	spf=pass smtp.mailfrom=hotmail.com;
-	dkim=pass header.d=hotmail.com header.i=@hotmail.com header.a=rsa-sha256 header.s=selector1 header.b=VJUlNKpe;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.74.76
-Received: from SEYPR02CU001.outbound.protection.outlook.com (mail-koreacentralazolkn19013076.outbound.protection.outlook.com [52.103.74.76])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793102331;
+	b=c4K5XpzNvm/Hm3kOdzIWMBUOJcVIrkAQ9s9CgubKv5POT7dmfP8BWoN1QYspWcyq9QKT
+	 664PkzqPdEzeyNm8/hj8GgTOLoVRIo3SYrpMoYgp6Ci0Q65axIJN2+HkNYRbD+7MlWdwu
+	 g80aAna1sv88JMd1IhIw7on0bcH/CXoz8yy6KQRmVv7pvySB8tLQPB+XHPS1NLADMJQfC
+	 VO+nP6X7w0f9msljVtp3M+NYKnlNVSFC6ffkeSkUdhulkXdR1xcQfMFegfZob/hX+oVgu
+	 DMJ++Z2RzQX3yug5k193CLkw1ii9rGKyzfZMGpQNXaXI9g1ceBaI8h0/Vg+ArtHVcYg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793102331;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
+	 To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-GUID:X-Proofpoint-ORIG-GUID:
+	 X-Proofpoint-Spam-Details-Enc:X-Authority-Analysis:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=;
+	b=ZHMUzCMDytprQf38JLtETHPlIohbXb3cKCLX6GcSOyzo/0Mr50J9/TPpWhqWjGrBC4/r
+	 ZIOzy5QM7FpFca76Uly8GmT4y8z7txBj5fJYR/AnIM6TxEiX1OiR+O3qb0ZJ7vc3au729
+	 IXx3HyyhPbPUPu+taARODyj8wrRGL82zt3lvKB2VGuEiFYMnptdtyhAVKvj/cVq5w9KWw
+	 we6yYx8/KhAfn7nZRUWWGWxj1bizR7HSwvmXg2b2+KeZq06HKcDhx6aDkXOmc6z+929Gr
+	 b+BEHNNlyP6/KojbygPbs36t+Tl3gp9UPqT2d1AbOfDSU2HuOSM4+Orc/MlM8ql8kAg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=kBfSKDWU;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=N0KpnqVH;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F01F606A323
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:53:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7F01F606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6632B606A31F
+	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:58:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6632B606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=hotmail.com header.i=@hotmail.com header.a=rsa-sha256 header.s=selector1 header.b=VJUlNKpe
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IbE1cvhkJayHGwuZ+/CE7eqDPaTWRTbQ+muXdTBzR5pFz+jdWVybcQz0+iTxeVsZKwyqxhfv/cOV3uW34XaGp7qgJFydYk3tvRAP2a7oLi9r+9rOpzTq1nJlLubaKTDKr2Io2iEzS0xAxYhhFP62gFaA82Aw7c4fLGl5Vi0BvKGUfM8aKpByxPfrb1RgRvvLwYS2yjqBVrB+jm9Vr+F9GBbf8G9Fryq+uyUN9F45QU/2yFMCt+J6XN7Jgbyq4qpwUH3kJtGgJEy8665ZPg0jsDVkyAsjQVWStu1WbhrMt37kHFVHpAOPMpN2zlVOB7cjwuF6ptS5AZ92z9h3jlc9ug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HS3ncY4U2L6vqsqXlTH9a+WYHFdTNj7GDa+xyTozurA=;
- b=IUGiYi3PrTYN/gVEqHblt65xYg8ThBo9hAKhcc1QgQzMoscqEdMoKc59zcB2l71kSAlLA+teFp2hdjrSyEoSuMmaJHsuBI1XuM5Il8aygqtFHtQs1Iao8dTVot8jZwSZHbdBTymWVNrSDFPD7rdhJ85xTrRZeCA0TzokAOVA283ZcPhxGCRXGaVj209ZiCu0oHEHXXLFuLJrSpvbdei9DsVEYLWTbEUwwxZntCXwHyBwBMt0Tvhb8KH3uyeR8B/s8I1jbbXvQ32G0qI4BoFkobuGw1nQlJ/O0eIwsZffEtCsNltKSwwRwXmzkuwstzqDq6RrYqjO+SfhJzJUHVQSwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HS3ncY4U2L6vqsqXlTH9a+WYHFdTNj7GDa+xyTozurA=;
- b=VJUlNKpe1K0FnmjAvhNBx8BpFLdPEM9ESMBz6FGiTE0wwn5tUeZRy7631Br0/ADSYF/OPr7ZQntI2rI15yGXvTjNQcrwhGeh+fHcL79RL0QR9qzr7goD2eIZD+oBiaYoOQxEeayFrvLdy9HVB+w6g8GtByBXxcT+MhCVPmD7YQRsHl/lufvXviP5svKi4VAHAOwXr3O+yP26ZpS47JT77JMZJ1OOf/gdbwWKR6Sj+fQDo/y00JzcO0zNp7pVLckyRPAMeQ74T5L6v02+iPJTpJBFRQ3FmySKgd+fcMWBHX6TKaT+xA4YLiysNWqcccU5YFzH7NfQJKBqiDpRGgc/YQ==
-Received: from TYZPR04MB7491.apcprd04.prod.outlook.com (2603:1096:405:40::7)
- by OSQPR04MB7948.apcprd04.prod.outlook.com (2603:1096:604:28f::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Tue, 27 Oct
- 2026 11:52:56 +0000
-Received: from TYZPR04MB7491.apcprd04.prod.outlook.com
- ([fe80::a450:2576:3b21:6230]) by TYZPR04MB7491.apcprd04.prod.outlook.com
- ([fe80::a450:2576:3b21:6230%3]) with mapi id 15.21.0546.021; Tue, 27 Oct 2026
- 11:52:56 +0000
-Message-ID:
- <TYZPR04MB749109BCE4854B21EC908E3AF3602@TYZPR04MB7491.apcprd04.prod.outlook.com>
-Date: Tue, 27 Oct 2026 19:52:46 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v5 09/10] iommu/riscv: Add dirty tracking support for
- second-stage domains
-To: fangyu.yu@linux.alibaba.com, tomasz.jeznach@linux.dev, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, pjw@kernel.org, palmer@dabbelt.com,
- aou@eecs.berkeley.edu, alex@ghiti.fr, baolu.lu@linux.intel.com,
- jroedel@suse.de, zong.li@sifive.com, andrew.jones@linux.dev,
- anup@brainfault.org, jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com,
- atish.patra@linux.dev, skhawaja@google.com, vasant.hegde@amd.com,
- joerg.roedel@amd.com, tanchi25@mails.ucas.ac.cn, gong.shuai@sanechips.com.cn
-Cc: guoren@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-riscv@lists.infradead.org, kvm-riscv@lists.infradead.org
-References: <20261020094106.92722-1-fangyu.yu@linux.alibaba.com>
- <20261020094106.92722-10-fangyu.yu@linux.alibaba.com>
-Content-Language: en-US
-From: "Nutty.Liu" <nutty.liu@hotmail.com>
-In-Reply-To: <20261020094106.92722-10-fangyu.yu@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TY4PR01CA0063.jpnprd01.prod.outlook.com
- (2603:1096:405:370::17) To TYZPR04MB7491.apcprd04.prod.outlook.com
- (2603:1096:405:40::7)
-X-Microsoft-Original-Message-ID:
- <59562aae-33f1-402f-a5df-3e612c225f3e@hotmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=kBfSKDWU;
+	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=N0KpnqVH
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69RAeCiJ3012104
+	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:58:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=; b=kBfSKDWUMiXE2MWx
+	UfYT9MTCvVbTk9XVkED0JWhz24h90TOvx3quBRZyIGkuBmeOcLVAASYHkSPc5jd9
+	20OL1qOFckWZdVF22xCb4DHsImDKQJ+HY0gE9Puoq8vfCxMql1dRBYs6BmAlVWkH
+	RckL2BFQH4slxrpmXRzhtbMnE3opd90cHsq4rPjmX5givw+9B3vXRWeJObmuRz6N
+	eIczvP7UgFt+gMQysBziSYzWN+aCk2AJj+H9AcxTNT5TBbx8jcMrNpGfkkboZj58
+	MM8fBhuJ041bi8ILWgKK1X+7Svs5sFcPpxWAhjOsO50G+lKkwvnJnlDOD4CQpqOn
+	EscHRw==
+Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com [209.85.217.72])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hje3davcj-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:58:50 +0000 (GMT)
+Received: by mail-vs1-f72.google.com with SMTP id ada2fe7eead31-7bf5c02f7a3so632415137.2
+        for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 04:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1793102329; x=1793707129; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=;
+        b=N0KpnqVHHMktm375/9fLv1qzb6VRb81Tg1itXnIrRX6ln7DosRbfv7/qsb3udBCRPb
+         1wDT+CXy+5eCRSr6phgEYlIBBEUVKU9kUqRlQ0ddKw1sQZudWy98iYH25NzrPsbPQRLP
+         79nlPaEHP9z8QtcqbAJi0sz3FQGoG5HY50QfNAVsTI7Vx8IXH3QnJwT1mG1FHhAA5WjE
+         YkkI01kSbjlBOzlHMpkhMxTz68PqbYK9g9oWLaV45Z7WkUzZyKEL5HeHMA0QF8W0SKMf
+         bSyDbzZ9ie6s2emLmNSbcwMD7TVuiawXxyOdY3ZEZrNfrGvCO36omjBkJT592E50D/kH
+         K5hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793102329; x=1793707129;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=;
+        b=KCefEYSsPKJkRi15S1ohWOEAR5yYxc1eDEPJUjx61uBTL5gJfrNz6X/STJAfpUUlzK
+         JY1vtmmzcal9JFsiS6SR668vRNKfN/b1TZF8tYcUFp1uWC+8RKhxAUv4OF0PIdX5Gjuz
+         g7ekUL/JTrvm+EXqVD6dJkKlMg8C/LZD4ajcu1WinEIwF1a3C5v03R4h7VWcXoUjy4PY
+         H4IL4sinP0a4tEjaRzwFLos4PJqIOAhO4rfTRh3VcvDJC8PGFZydLjh8pwSKpt4ISnZR
+         fq36YplNCMSmhDymk95yjYm16oFI8kxpgUiyt9y2yHELGM6u0cjLqcpWPO9oLU1NJAIM
+         D4ww==
+X-Forwarded-Encrypted: i=1; AKwUvBxpQPSzcxqSIkCCV9f9Fjkk5UDcmNHH8BFML/5NxDlZ6WwUWhR1uuWU5qlzfNwcTOeLn2DhTg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJLttJne1stFO7oaSnrPNkJlpk9y8vc4QsIDou4wkVt/QA/D0KG
+	bmV8VcLaF/asVFVQCxUgk/o1edABjC4wO9eQ/z+XvGf/eeH/pRgXXLVWuXEGZRlX5McCoYsNNUH
+	f9EB5j7ygz/IS4H+T5BCzR3wtcIV3UtGP7GowXtrJWwTMSgq+xjXKdR7c+A==
+X-Gm-Gg: AYBFou0b6DG2anQJhYgnXKlIxZg78ljEsjoAJN7sZQzhME9gLt8+LPr5lD7om7USyTl
+	9/y3qo1sruqayCeQACW0nuTWPDMwHSXGEHk7cSejJXn6HwifzyZYib8gi2qii13lCLWWmsHWEPN
+	TEnnI7o8x7oep+joQ6Y6rsiTQhi83nX2wIhb47Rwth8T2a4mqPKmvHXlROrAy73Pluyx7UQJluR
+	mNC6umui12CHCBpOqGXNwMnPseEyh1qSUmrkaSDKX9THKKeueUiz1g84H2f+ed8M9It1Ig4wlLi
+	YVsgD6VpQkHy4mTCzLMJUwX1Oma7cANRY32jBL3/kH5Hk6dKNjXreHCMM6dXn2owhuSkpk+ZXtJ
+	92wpy9i7Hy5KL+Lp1NyJctXtzHSAlPUZoBSq8EFIvj2ks8vHa8bD09eh2pKfCZGCZ7dO+nyugOZ
+	bDzI9bjuXu7Dgc
+X-Received: by 2002:a05:6102:2ad2:b0:7c3:875e:593b with SMTP id ada2fe7eead31-7ce5ce246dfmr3089882137.32.1793102329213;
+        Tue, 27 Oct 2026 04:58:49 -0700 (PDT)
+X-Received: by 2002:a05:6102:2ad2:b0:7c3:875e:593b with SMTP id ada2fe7eead31-7ce5ce246dfmr3089855137.32.1793102328285;
+        Tue, 27 Oct 2026 04:58:48 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfb7a6aca4sm2092776e87.15.2026.10.27.04.58.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 04:58:46 -0700 (PDT)
+Date: Tue, 27 Oct 2026 13:58:45 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Abhinav Kumar <abhinav.kumar@linux.dev>,
+        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowangio@gmail.com>,
+        Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Philipp Stanner <phasta@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Abel Vesa <abelvesa@kernel.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Flemin Jose <flemin.jose@oss.qualcomm.com>,
+        Mahadevan P <mahap@oss.qualcomm.com>, virtualization@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 00/23] drm/msm/dcp: Add Qualcomm DCP display support
+Message-ID: <55uzx3sa4jor5p7i5erhyuangyfvc3ssp5rgelagk4ysply2ip@3x46t7swwj56>
+References: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,165 +147,176 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: TYZPR04MB7491:EE_|OSQPR04MB7948:EE_
-X-MS-Office365-Filtering-Correlation-Id: b66ed4b7-720c-4c68-8ead-08df3420d6b2
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|15080799012|16051099003|12121999013|23021999003|22091999003|55001999006|24121999003|19101099003|2604032031799003|25010399006|4140399003|41001999006|51005399006|19110799012|8060799015|6090799003|5072599009|12091999003|40105399003|440099028|3412199025;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?dDJkZ3VMODVtdDFkSEFxYTJ4cng3UHo1MUFrbldXTThieTdxUmRrWE5CSnRM?=
- =?utf-8?B?T3BZZnpqWVdENXVlWEozM09aRm94SUsxb3FseWFZN1c4NDdrY241TXJmWS9v?=
- =?utf-8?B?T1Z4TGExQ0FTRnZGd0l4UGxDUzNiU2tQWFA0OVdVNkJuVk42YTZZSFNBcEtu?=
- =?utf-8?B?NVF5ZEZ5UVIyUWpCaHlvcmk5L0J4NTZYL2QyZHVncGpQNDR6YWFQTWdSNGRW?=
- =?utf-8?B?Vm9FTUduSldDeDZ5Vis1S1pFaDlJTnJpM1hWbFlTTjhPRXpNclp2RDlPZlkx?=
- =?utf-8?B?ZTd0Z0huYUg4NlZwYTVsN2xPT0kxNUp1M2tyZ0ZJZkR4SVVqdzVuOUw2eVFU?=
- =?utf-8?B?WVFuU0RvSGI4L29qQ0crWVJocWl1RTFkY3lZWndFTVZDQ3dmZTFrU3ZMdVVC?=
- =?utf-8?B?M0h5ZytSR1htdUdKd3lhS2MrbTdXMHhGQms2SUJVSmtKSldsNUFEMFNGRDV3?=
- =?utf-8?B?c1UzY1VWWnJWRTdYa2krUVB4aXh1VzJrN1dYRStOYkdlYXM2QkNSbjI0WVRt?=
- =?utf-8?B?Yk41SnBNWHBTdlVBblhmcnNaUnlad1FaSjFGZUhack9hbzRYRGU2U1RWOVg5?=
- =?utf-8?B?YXorajB1K1lJMlVpd25JbU9tNk8zZnN4UlhmWVV3OTN2RTE1L1FvK3orN0JD?=
- =?utf-8?B?bmRjMENnOWU5Y2FwQ2VHK3RGeEtQbkZSdFJ2RXowSFhrZE5ySnJwMlcrSkdl?=
- =?utf-8?B?a2NoelQ1YWtoemNSWUJlWW54Wm0zSitxQVFuRFpOMDBnNEQ0TEVUbE1NZmRi?=
- =?utf-8?B?NDhjZ0dsNy9vaDU3VUF5U0tXUXF4OEx4bFN1ZUh5YTh4alpkVUtCQlhWMDNl?=
- =?utf-8?B?cU1sVE5NQmhZa083aXZhcVJQSmtCVEpWTEtNVWJTYm10aGZNUmJKM3hFU05J?=
- =?utf-8?B?UmIvREhyOE56MFZ1dFlhNGlkMDVqZ1U2a3RmaVNmRkoxeWJiZERnbDU1TzRS?=
- =?utf-8?B?SUxLZ0MvWktaaGZxSTJLZG5ReHh6RlVJQ1BVWU82ZHZIampyTWhXcWVSbEdw?=
- =?utf-8?B?NmJTVFV4ZCtXc1h1d0FFU1BjNThiUWJWM1dZQU8xd0F0aUVXWk9ObC9FRzJR?=
- =?utf-8?B?ajhZelZUNHl5b1lxWWNjZjlFb3VvejF0d0ZnL3FwblhzUk5QWm8xeWlzQU1Y?=
- =?utf-8?B?RUgxY1VnMUtDTkQ0bG4yUUhja1NrSzJrMERURm50MDN6bnpJK2dGa0dSeVJU?=
- =?utf-8?B?QmtXMlRZdC9LdDJpbFhyWVVaQVkwYmVOZk5FaTl0LzVTSTBsWStxU0dQNVNt?=
- =?utf-8?B?NWxSYlUzeHp4dVFhbUJSMDhmdzJYdEMxZml5aGd5R0lzcGE2Z2hvQlNHby9I?=
- =?utf-8?B?T3g4WkxobUQ2STMvUlVTMURXYnpXSXlrcGRkR0ZRNFdPaEp6RGU5bXlhQVg5?=
- =?utf-8?B?M0NkRC90clpqQkJuUllEbm5QQXAzSGRpa0ZJWXRrYytjdk9uU3B5b3RYeGlR?=
- =?utf-8?B?NzZaa2xIWFRPVURTazQzMW5PV1F2Q29pMEcxd21STGNzLzk0dHZFem9Hemtk?=
- =?utf-8?B?b2VyUThBc251eEkzZlYxbUhoRnBEa1N4citEWkVRbUVuZlpTeFIxMnljbXpz?=
- =?utf-8?B?S2lwZW5PVS9zaEZ2cU9MejJkV0NHd0N0RjIxY3pzY1BRdUFkaGtRUm9oeHZ5?=
- =?utf-8?Q?k5RN+/sdprpr7OZBIFDn0+MOcJMSjHE5is5wb9qZ9j60=3D?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?N29ZcHJqbE9XemtyWC9uNHE1cjNaRzdDcGFaNVlKZXBvb2ZyckNTWWE2UEZz?=
- =?utf-8?B?YjFrejdpVjZOMytad3ZoWmFURjFsUTFCL3V4am5jVHhFd01DTTBXNVY0a0Y4?=
- =?utf-8?B?bnVVM2xpOFFiT1RETXMyNytFSno2NHVjSUJmM1Mzd0xHMnJDZHJxR3Z3K3Mw?=
- =?utf-8?B?Y29hUklNZENzbTd0R1lZeVNrKzNkdmp1dnNaYUdhSnF6djYvd3RoV1cwREFI?=
- =?utf-8?B?WnFPdXNLZ3V6c2dheTlCWVRtaVZyWmo3RWY3bTVSbis2cGdVRmd3NE1OM2V0?=
- =?utf-8?B?eXlHUEJJekJ3ckNKVGxRU1VIZkRrdnhpNEEraEVCdTQxQ1gxY3ozaDZ6cE5U?=
- =?utf-8?B?ZjdTL3FMUmpEQlRaUWtLZUppRmQ0Sll6a1VFdGlWd1pqV1hnYnZPVlJkc3R3?=
- =?utf-8?B?bmxNd0tEQksvMTJ0TXJzMUdTTjRJQTBvWXpqVUZyaktXTENkbFBaY3Y1ZFU1?=
- =?utf-8?B?UHgySmx1b3lVbGc5U1VSSW1wRm1aTGl0aGxLNmFKMjkySitGc1RvaFFYMDd4?=
- =?utf-8?B?REkwckkrd1pUWmVsa1E1MW9TOEdYR1pWSERUZ1QzdE90QUUxcnlaTFZ1N1Ju?=
- =?utf-8?B?WUhjYXl4cVB0V05FYmVVU2JTaFV6THViYkRmUUZESldVOVRLT1l0OGRsMDdV?=
- =?utf-8?B?eloyZ1plVytSWkI1R3gwbFdub2NMS05oUVgwc2d3UjlNRVZDUWtaNkRoTDFm?=
- =?utf-8?B?eFl2ckk5M0kvclBVY2tYT1oxWDEwMkZhaCsrYXFEbFV3R1RXeTBMclpHK3FE?=
- =?utf-8?B?SUt5L0NwL3UzaHNzN3liQUduVXdvenQxZE80SGxYSkoza2RhcnZ0dyswUFc3?=
- =?utf-8?B?QkVpc3k4TGdXRlIwRlNMY0ZsMXFnRVFSOExaRzd2ODZGL0d3MWgwQmliOFNF?=
- =?utf-8?B?ZU1zdGRuQkVJQXhGVElZdVIvRTAvdS8xK3RjdWJMd3QrWnNWb3hJREhad3lj?=
- =?utf-8?B?RitQWVBMaE56aXhMd2tsUWQ5NzBLNmwvbFRzTG5zWEtSbFd4WkFKdlplWmwr?=
- =?utf-8?B?a29HblJSNGsyVG9lUzFtZzQ5a3A5QjduNGNMMGhPOGtMTVNEOG9jT1FUT050?=
- =?utf-8?B?UVFxU0EwbXA0dTR0RS9BTzROZUxHd1pZNVc0bUZvYU03UDJtUml5a21UOGEw?=
- =?utf-8?B?R2pGQUI3MFlXc0lqQmFZZkhTRmJVSldHVmJKMTQ2VDJ3eTg4RGZlREFSTTVy?=
- =?utf-8?B?YkVRUGV6M2FyQklVckZraUVIM3hiaDAyOFZYN3F1MzEwN0thQXFNNmltclBo?=
- =?utf-8?B?a2JTcjlJSmFpRDZyeThKcEdzaEF1UXh0MnV0b3RPMUdLcXBnbUlWVDRtVjdH?=
- =?utf-8?B?dXF2Zi9XamlzcXN5T0xNdmJkdlNmQnRYdGpIVlpVcE9DWk9IN0xIN2I0bXVp?=
- =?utf-8?B?a0g1M0pkcnhVRXR4RGxYa2UycnhBY3RzYlZabGNjb2RFRGN2LzdHOTV5aGtM?=
- =?utf-8?B?K29SclcrTmoxUjB3a0Z6UWxGN3E3NTJyT0NUUjgxV0NadjRpaWZMZlNtVCtO?=
- =?utf-8?B?U21wWkpWTThlTHpLWTZKMkRTTVRnTzVkOHhiN05FSXdLR2F3aEZqek52d1hL?=
- =?utf-8?B?UTNhY0hPV2plOGtoa2xFRzA4cEY5REJxS1RHK2tLTlQwS2w4SHFHVlE2S0Y4?=
- =?utf-8?B?NnJWMUZucDNWZVAwSXM5R3ZYeTJvVnBNK3VlK1QxZjIrNG5oL3kydDVDaDRS?=
- =?utf-8?B?Snl6WVNCUk96WmlMT0Z6cmJiU2tybkJySjlwcjVRY29ZKy9Ubi9tTnZyYWp6?=
- =?utf-8?B?QjNIbHpzd0NndE03VW9SKzMwWUxmWjhqQlFma1U1MVc2OFFRdjRhV3FtTnFT?=
- =?utf-8?B?UW5zRUpTTmVUWW9SOWRxUEY5MUdWaU9xR1l6WXl1Y1lCTnhuVTQ0d0tiME94?=
- =?utf-8?Q?W+j6vgV4r1mk7?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-c3e7a.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: b66ed4b7-720c-4c68-8ead-08df3420d6b2
-X-MS-Exchange-CrossTenant-AuthSource: TYZPR04MB7491.apcprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2026 11:52:55.8326
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSQPR04MB7948
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI3MDA0NyBTYWx0ZWRfX8+0Dy1Wulqd9
+ 4Qpr10u9lgjxyLh7fwjC8QRZQiLoZQUitqaRK8rrXL80XGCLAsfdlfhnE60KmHhIQ4n6Dh1BmIu
+ 4IhiJ1TGoX21BnT0x92u20FVrOKvWto=
+X-Proofpoint-GUID: JDYvC0ewBsfB491m9xgNqACIMaQplr7g
+X-Proofpoint-ORIG-GUID: JDYvC0ewBsfB491m9xgNqACIMaQplr7g
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI3MDA0NyBTYWx0ZWRfX3v+rM/211t4i
+ RnfYyPRHZToDZseiKNIYcwHyyVzearLyzV3a5Kf/rhxRga4y9gF1oUILfwqGaaNhEbz7h4fQbaH
+ XPpScnPQd2PEJzmvyGuw6lBBeVGuWITleTdQfWbohxIJ7fkiCcuQWel7fhxi9SjYj9c9oWaSies
+ 8DSSlphJFhRL5ga9IgIA9AAAweSCdHhcYhC2x34MV8GbXLynC6b7jYmJDPwOdsnV0gYAg7rR7OT
+ OGk4an/iwXot+rsYhd4vj1RfWNLasFDl0jOLARMd5B75u/3lcjeeB084sFxEb1tbzvWxXOma99v
+ t9OUGNIR0jLvLRCqDcuJUlPe3uF/M0IWvAntsRrJhQoAFGe8z6Jxp0JFloboWhThu0VGwnyt55f
+ wn0J5A1a3iGC/989nM/kESEGrR5PKEz79MUzY6zQSIFxZDBexi7CkLSwdBSUYivnOAYv2yHQHsf
+ LDtOxdvPeoXklkppv/Q==
+X-Authority-Analysis: v=2.4 cv=SN/Xx+vH c=1 sm=1 tr=0 ts=6ae091fa cx=c_pps
+ a=DUEm7b3gzWu7BqY5nP7+9g==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22 a=sWvDS1lmqIG2hvCGZjwA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=-aSRE8QhW-JAV6biHavz:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-10-27_02,2026-10-21_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 spamscore=0 malwarescore=0 phishscore=0 adultscore=0
+ lowpriorityscore=0 clxscore=1015 priorityscore=1501 suspectscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
+ definitions=main-2610270047
+
+On Mon, Oct 26, 2026 at 11:51:10AM +0530, Jayant Shekhar wrote:
+> On Qualcomm platforms using the Display Co-Processor (DCP), the display
+> hardware is owned and programmed by firmware. Linux does not access the
+> display controller, DSI controller, DSI PHY, display clocks, or other
+> display pipeline registers.
+> 
+> The display pipeline must nevertheless be exposed through the DRM/KMS
+> interfaces so userspace can perform modesetting, framebuffer updates,
+> panel control, and page flips.
+> 
+> This series adds a DCP KMS backend to MSM DRM. It represents the
+> firmware-owned display pipeline and translates DRM operations into HFI
+> commands.
+> 
+> DCP communicates with Linux over VirtIO and uses the HFI protocol for
+> command and response handling, capability discovery, and display events.
+> 
+> This series adds:
+> 
+> - Device-tree bindings for the Qualcomm DCP VirtIO transport wrapper,
+>   firmware-visible IOVA ranges, separate transport and framebuffer IOMMU
+>   contexts, IPCC power notification, interrupts, and the external DSI
+>   display graph.
+> 
+> - HFI protocol definitions and packet helpers for capability discovery,
+>   modesetting, plane and CRTC configuration, DSI, and panel control.
+> 
+> - A Qualcomm DCP transport wrapper which initializes the IPCC channel,
+>   sends the required power notification, and registers the DCP VirtIO
+>   device directly. The wrapper also implements the MMIO transport and
+>   keeps VirtIO queue activity ordered with DCP power transitions.
+> 
+> - VirtIO command and response queues. HFI command, response, and
+>   capability buffers are allocated through the DMA API in the address
+>   space visible to DCP firmware.
+> 
+> - Synchronous command tracking, asynchronous response dispatch, timeout
+>   handling, and queue teardown synchronization for safe device removal.
+> 
+> - Capability discovery for displays, CRTCs, mixers, VIG and DMA pipes,
+>   DSI interfaces, and panel resources.
+> 
+> - DRM planes and CRTCs using the standard atomic-state model. DRM state is
+>   translated into HFI properties for layer configuration, mixer limits,
+>   bandwidth and clock properties, frame sequencing, and triggering.
+> 
+> - An MSM KMS backend, DCP encoder, and DSI bridge. The backend reuses the
+>   existing MSM DRM device, GEM and framebuffer handling, atomic commit
+>   infrastructure, encoder, bridge, and connector support.
+> 
+> - Asynchronous VSYNC, frame-scan completion, and error events propagated to
+>   DRM for vblank and page-flip completion.
+> 
+> - IPCC power notifications to wake DCP firmware and coordinate HFI queue
+>   activity across firmware power transitions.
+> 
+> DCP is integrated as an MSM KMS backend rather than a separate DRM device.
+> This preserves the userspace-visible MSM DRM device and allows Linux to
+> retain normal DRM/KMS semantics while display hardware remains owned by
+> firmware.
+> 
+> The initial implementation supports the DSI output described below and
+> uses resources reported by firmware. Split-pipe, multirect, cursor-pipe,
+> partial-update, DisplayPort, and writeback support are deferred.
+> 
+> Tested on the Qualcomm Hawi MTP with an NT37801 DSC command-mode panel:
+> 
+> - Display console at 1440x3200.
+> - Panel initialization and DCS transfers complete successfully.
+> 
+> Device Tree Topology
+> ====================
+> 
+>   qcom,dcp-virtio
+>   ├── transport IOMMU context
+>   ├── firmware-visible iommu-ranges
+>   ├── VirtIO and power-notify interrupts
+>   ├── dcp-power-tx mailbox
+>   └── dcp-subsystem
+>       ├── compatible = "virtio,device34"
+>       ├── framebuffer IOMMU context
+>       ├── port@0
+>       │   └── endpoint ─────────────── panel endpoint
+>       └── dsi@0
+>           └── panel@0
+> 
+> The DCP INTF endpoint connects directly to the panel endpoint. Firmware
+> internal paths, including the INTF-to-DSI connection, are not described in
+> the device tree.
+> 
+> Runtime Architecture
+> ====================
+> 
+>   Linux DRM/KMS
+>   └── DCP MSM KMS backend
+>       ├── planes, CRTCs, encoder, connector, and DSI bridge
+>       └── DRM atomic state and commit handling
+>                   │
+>                   ▼
+>       DCP VirtIO function driver
+>                   │
+>                   ▼
+>               VirtIO core
+>                   │
+>                   ▼
+>       qcom,dcp-virtio transport wrapper
+>       ├── IPCC initialization and power notification
+>       ├── MMIO register access
+>       ├── VirtIO queue setup and interrupt handling
+>       ├── VirtIO device registration
+>       └── suspend/resume power sequencing
+>                   │
+>                   ▼
+>               DCP firmware
+>               ├── HFI command and response handling
+>               ├── display pipeline and VIG/DMA pipes
+>               ├── DSI PHY and controller
+>               └── display clocks and resource handling
+
+Going through the series, I have come with the quite generic comment.
+Please split the series into two independent parts:
+- Documentation/devicetree/bindings/virtio/qcom,dcp-virtio.yaml
+  drivers/virtio/virtio_dcp_*.[ch]
+
+  Driver for the DCP + IPCC VirtIO host. The driver should not know
+  anything about the display interface.
+
+- Documentation/devicetree/bindings/display/msm
+  drivers/gpu/drm/msm/dcp
+
+  The actual driver for the DCP display engines. It must not know or
+  care at all about the particular VirtIO host (or SoC FWIW). It should
+  not use IPCC. If we pass it through to the VM via virtio-mmio or
+  virtio-pci it must work as is.
+
+Possibly submit those as two separate series.
 
 
-On 10/20/2026 5:41 PM, fangyu.yu@linux.alibaba.com wrote:
-> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->
-> Add hardware dirty tracking support for second-stage (iohgatp) domains
-> used in KVM VFIO device pass-through.
->
-> The RISC-V IOMMU can automatically set the dirty bit in PTEs on write
-> access when DC.tc.GADE is set and the hardware has AMO_HWAD capability.
-> Wire this up to the iommufd dirty tracking interface:
->
->    - riscv_iommu_set_dirty_tracking(): Always enabled dirty tracking for
->      second-stage domain.
->
->    - riscv_iommu_dirty_ops: Exposes set_dirty_tracking and the generic
->      page-table read_and_clear_dirty via IOMMU_PT_DIRTY_OPS(riscv_64).
->
->    - domain_alloc_paging_flags: Assigns dirty_ops to second-stage domains
->      when AMO_HWAD is advertised in hardware capabilities.
->
->    - riscv_iommu_capable: Reports IOMMU_CAP_DIRTY_TRACKING when
->      AMO_HWAD is present.
->
-> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
-
-Thanks,
-Nutty
-> ---
->   drivers/iommu/riscv/iommu.c | 21 +++++++++++++++++++++
->   1 file changed, 21 insertions(+)
->
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 9310b818c038..e3791e912af3 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -1376,6 +1376,21 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->   	return 0;
->   }
->   
-> +static int riscv_iommu_set_dirty_tracking(struct iommu_domain *iommu_domain,
-> +					  bool enable)
-> +{
-> +	/*
-> +	 * Always enabled and the dirty bitmap is cleared prior to
-> +	 * set_dirty_tracking().
-> +	 */
-> +	return 0;
-> +}
-> +
-> +static const struct iommu_dirty_ops riscv_iommu_dirty_ops = {
-> +	IOMMU_PT_DIRTY_OPS(riscv_64),
-> +	.set_dirty_tracking = riscv_iommu_set_dirty_tracking,
-> +};
-> +
->   static const struct iommu_domain_ops riscv_iommu_paging_domain_ops = {
->   	IOMMU_PT_DOMAIN_OPS(riscv_64),
->   	.attach_dev = riscv_iommu_attach_paging_domain,
-> @@ -1466,6 +1481,8 @@ riscv_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
->   			goto err_free;
->   		}
->   		cfg.common.features |= BIT(PT_FEAT_RISCV_S2);
-> +		if (iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD)
-> +			domain->domain.dirty_ops = &riscv_iommu_dirty_ops;
->   		break;
->   	default:
->   		ret = -EOPNOTSUPP;
-> @@ -1541,9 +1558,13 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
->   
->   static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
->   {
-> +	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-> +
->   	switch (cap) {
->   	case IOMMU_CAP_CACHE_COHERENCY:
->   		return true;
-> +	case IOMMU_CAP_DIRTY_TRACKING:
-> +		return !!(iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD);
->   	default:
->   		return false;
->   	}
+-- 
+With best wishes
+Dmitry
