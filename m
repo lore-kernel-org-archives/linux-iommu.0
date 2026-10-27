@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1793067970;
-	b=zO868NlXv4Hng1F+Vl+O+RkDtpEpkv2RBLa5FWA6UCVieeLViUntQSi7YisOk0N89PpW
-	 UHfwZIqp/ay9tCuFuHK0qhZR6TqFs97dCVGyHkpxTWkSFDmRVjAY4p4ps0bN2ymPm6nZl
-	 tsf+/DJ+dg+wWzx3wJ8tuVz5yOGvecC96lwwBSJ62jRulomYTDuWpWflXMNQ77n3ycZcJ
-	 0Caig1/SqNZGUsvXWkczrP+OLoLXAw04g1YrBT3xRRa5G7Wl8X7zhFoTNvv5b2Hmv59U7
-	 ZWB5a3Dn4o5W1Q7Wg5h4kbikg8wKXjRWRqBi1mQOs8dr3igFRVG41o8O7jSHTrvjSPA==
+	b=dRdCBuOAsTPlgdWUmu6LmBmyyVkkAZ/IoS73ZLA8xVZ7LxbCHkbuKLdHDOPlMxRQG32G
+	 T7pN9AKN2wVbIG4Jc4PQc+zduJFdzD6Q+EmA5O6SxwIi11131yk2KmvRmOZ8fWy6RTAid
+	 tJog+umhM/cKqDotyaKtjhbuVvERg7KuvVprZgebzGYYM2+ma8uPbdsXl8VrKNtiQBxea
+	 n8wSNm5/JDKyOpJfrtiNr6lOL2Bm3kkxc9o+KLBc3e8T4pK/lWjzpff1R1oRXABABskUI
+	 NLXg3vUqT533kNknqd8pNeWGDVFMnATy2b77HHPWucYfXqxmnnCUQGGVrW6KXStl6mw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793067970;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=FRi7a53vSaUstI4lBZCZ5kGYojGuHTb3PT4gnA7kik0=;
-	b=kdY0nYcrA+cTCT/c7bDJdoKOSdEZrDjEk6hnrd/BK8WGClmOJNMILt0xDd7lSdhtYfao
-	 3dPPsTG0/e52iaBMiqNGnCOYVX41hPW02ZLyTKQfPZPIgIueQA5RvUpqxUJbwK6NSFLC6
-	 TPdc9QBbpec3KVkn4wq0ObC/+VHAP3a1c5QuQCMhsFH1GOpPyoFiA5z3JVshMpUuty06+
-	 PhC6KptWcd7kk4QqR3uCFE00tXP+3JK8BkkeOnyHVVu8fK2j8fPwgKYYlmKozQEvKGNb9
-	 KAlmYQLdtX+tnQyhSnm89vCjxeDoB+erpMaGJwaaKqqRVjKdlFSOcX0An/AZ3fGbwzw==
+	bh=zZPsKrFfEctSjGRD/c9mT+Zv8pHiy2uqQqaVeOX5304=;
+	b=ousnCCfJWM9+/wA7taLl8iFQMKGkbEpdrdkQnRuLRz4zxaM6EN6FtZ/0oH1JnQN5ped7
+	 lF1sJ9xR75HDzyUvCERA1uLCX0aAmFJI8SJFtQ1vS1AXtj0nRcrhm9d8OgF+3TuVJHthN
+	 qIZmKcbyo13y1oMQzsqj/6CVE+ApDH73BUxjZf3SrG6y4OVvukFM0CukUNUIUL9PBuZqk
+	 EVDXE5qhu8q5q7fBdx+i+iFbMJ04nm/lc0lTfFFzWNJB4Ly1jVNLCg6tE6I0b3BeX0nB0
+	 exgAHeqnYJwxoOU4X3HfRBWGAUJqdCOgzksCsgI0dk1DqqPzavoIrT7m9wQPXZp+CcQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CB+oOqUf;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ABJtJM3j;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB277606A33D;
-	Tue, 27 Oct 2026 02:26:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6395F606A329;
+	Tue, 27 Oct 2026 02:26:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=CB+oOqUf
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 276361F01828;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ABJtJM3j
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA5DF1F01825;
 	Tue, 27 Oct 2026 02:26:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793067969;
-	bh=FRi7a53vSaUstI4lBZCZ5kGYojGuHTb3PT4gnA7kik0=;
+	s=k20260515; t=1793067970;
+	bh=zZPsKrFfEctSjGRD/c9mT+Zv8pHiy2uqQqaVeOX5304=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=CB+oOqUfQcdBlBk/zZOKUmENcRO35PO9xw+/Y2uoeigvEtSLJyC5gvDWvHOAQCSgU
-	 iezxiTQHc9ykZnb/Gd0pqaFKdN4kNk30rzR3syTqI8UdbSoTXcgecIl7GfGImy0zSh
-	 57hgNVEzGVLFjPiO69UiaT5DF8GX++Y3dFIW4OKmZTjeZNDMI60lNVrwcD0/t3nmsu
-	 T67fyAGG+itp5sYU7yS4/SOpkzCkjmWcs1LnjuTbIDCxjOT0uYD/URYVNqvsfGwOfi
-	 kSv5PY1dk63MJS1RO4PMyf8E1SXz4ID8Pdg+3AkJLT3zMAOpMAxjARBjPMphwMg3gA
-	 TVJ0zN0I7+Rcg==
+	b=ABJtJM3jXhugu5T2f3YkPSUZncLRq7Dm1NtdJxFxnjvbMq+BnMHQ60bMW+lF1mXCT
+	 ZmTfAHT4PJF9UoRP65w0RM5wFgG0BGlpNdaV8MQnxQnmwNNPC8ywpqkd8pnaVBfRpf
+	 hCxWsQwom7eIF9O+q0/koIJ7Z2sl6zDYO1crSgLLf8xVdzzSi1GiKCckA7KOPO27Uy
+	 yaqiU2Oi/w8gCfW47bwHdE0eWITOdT/8ptzIvZWo2f/Dp+b2Ln+fScBDsSPdoneIpY
+	 236VZ02k5UmSRR7f4E42Ez2CZkkGvq0G4vhKM/LDww3z2j7kS4j6rT32oFg3791/UI
+	 KjEnWmq52IdjQ==
 From: Jakub Kicinski <kuba@kernel.org>
 To: robin.murphy@arm.com,
 	m.szyprowski@samsung.com
@@ -52,9 +52,9 @@ Cc: tglx@kernel.org,
 	iommu@lists.linux.dev,
 	netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC 05/11] eth: libwx: restore the device's NUMA node after ring allocation
-Date: Mon, 26 Oct 2026 19:25:22 -0700
-Message-ID: <20261027022528.633359-6-kuba@kernel.org>
+Subject: [RFC 06/11] eth: libwx: use dma_alloc_coherent_node()
+Date: Mon, 26 Oct 2026 19:25:23 -0700
+Message-ID: <20261027022528.633359-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261027022528.633359-1-kuba@kernel.org>
 References: <20261027022528.633359-1-kuba@kernel.org>
@@ -69,54 +69,64 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-wx_setup_{rx,tx}_resources() temporarily switch the device to the node
-of the ring's q_vector to allocate the descriptor ring there. The
-original node is only restored if the allocation fails. When it
-succeeds the device is left on the node of the last ring allocated,
-or on NUMA_NO_NODE for rings without a q_vector. Everything allocated
-for the device afterwards, and anything else consulting the device's
-node, sees the wrong node.
+Use dma_alloc_coherent_node() to place the descriptor rings on the
+node of the ring's q_vector, instead of temporarily changing the node
+of the device. NUMA_NO_NODE (ring without a q_vector) means no
+preference, same as what set_dev_node(dev, NUMA_NO_NODE) resulted in.
 
-Restore the node right after the allocation, regardless of the result.
-
-Fixes: 850b971110b2 ("net: libwx: Allocate Rx and Tx resources")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/wangxun/libwx/wx_lib.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/wangxun/libwx/wx_lib.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/wangxun/libwx/wx_lib.c b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-index dcbf5811046e..dc31e3bc15aa 100644
+index dc31e3bc15aa..e6ef7b9f2358 100644
 --- a/drivers/net/ethernet/wangxun/libwx/wx_lib.c
 +++ b/drivers/net/ethernet/wangxun/libwx/wx_lib.c
-@@ -2910,11 +2910,10 @@ static int wx_setup_rx_resources(struct wx_ring *rx_ring)
- 	set_dev_node(dev, numa_node);
- 	rx_ring->desc = dma_alloc_coherent(dev, rx_ring->size,
- 					   &rx_ring->dma, GFP_KERNEL);
--	if (!rx_ring->desc) {
--		set_dev_node(dev, orig_node);
-+	set_dev_node(dev, orig_node);
-+	if (!rx_ring->desc)
+@@ -2888,7 +2888,6 @@ static int wx_alloc_page_pool(struct wx_ring *rx_ring)
+ static int wx_setup_rx_resources(struct wx_ring *rx_ring)
+ {
+ 	struct device *dev = rx_ring->dev;
+-	int orig_node = dev_to_node(dev);
+ 	int numa_node = NUMA_NO_NODE;
+ 	int size, ret;
+ 
+@@ -2907,10 +2906,9 @@ static int wx_setup_rx_resources(struct wx_ring *rx_ring)
+ 	rx_ring->size = rx_ring->count * sizeof(union wx_rx_desc);
+ 	rx_ring->size = ALIGN(rx_ring->size, 4096);
+ 
+-	set_dev_node(dev, numa_node);
+-	rx_ring->desc = dma_alloc_coherent(dev, rx_ring->size,
+-					   &rx_ring->dma, GFP_KERNEL);
+-	set_dev_node(dev, orig_node);
++	rx_ring->desc = dma_alloc_coherent_node(dev, rx_ring->size,
++						&rx_ring->dma, GFP_KERNEL,
++						numa_node);
+ 	if (!rx_ring->desc)
  		rx_ring->desc = dma_alloc_coherent(dev, rx_ring->size,
  						   &rx_ring->dma, GFP_KERNEL);
--	}
+@@ -2996,7 +2994,6 @@ static void wx_setup_headwb_resources(struct wx_ring *tx_ring)
+ static int wx_setup_tx_resources(struct wx_ring *tx_ring)
+ {
+ 	struct device *dev = tx_ring->dev;
+-	int orig_node = dev_to_node(dev);
+ 	int numa_node = NUMA_NO_NODE;
+ 	int size;
  
- 	if (!rx_ring->desc)
- 		goto err;
-@@ -3019,11 +3018,10 @@ static int wx_setup_tx_resources(struct wx_ring *tx_ring)
- 	set_dev_node(dev, numa_node);
- 	tx_ring->desc = dma_alloc_coherent(dev, tx_ring->size,
- 					   &tx_ring->dma, GFP_KERNEL);
--	if (!tx_ring->desc) {
--		set_dev_node(dev, orig_node);
-+	set_dev_node(dev, orig_node);
-+	if (!tx_ring->desc)
+@@ -3015,10 +3012,9 @@ static int wx_setup_tx_resources(struct wx_ring *tx_ring)
+ 	tx_ring->size = tx_ring->count * sizeof(union wx_tx_desc);
+ 	tx_ring->size = ALIGN(tx_ring->size, 4096);
+ 
+-	set_dev_node(dev, numa_node);
+-	tx_ring->desc = dma_alloc_coherent(dev, tx_ring->size,
+-					   &tx_ring->dma, GFP_KERNEL);
+-	set_dev_node(dev, orig_node);
++	tx_ring->desc = dma_alloc_coherent_node(dev, tx_ring->size,
++						&tx_ring->dma, GFP_KERNEL,
++						numa_node);
+ 	if (!tx_ring->desc)
  		tx_ring->desc = dma_alloc_coherent(dev, tx_ring->size,
  						   &tx_ring->dma, GFP_KERNEL);
--	}
- 
- 	if (!tx_ring->desc)
- 		goto err;
 -- 
 2.56.0
 
