@@ -1,99 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.69
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793126062;
-	b=J/ntoFiYEqTdMjRnZhfQEsiAjGVAZuVvhghNvDMXjT7PZ73nBISDAbFr9vSamTcdYmW3
-	 EOsmBBXxTaALBiU9q/6/NuGs6aTHIKnyxv2CrVVoCq2BgAxaS0oRwcmeOQ+e+5PPf5cou
-	 +GulCM+ktJaCaPHhsNIJSwcJTCqwoVn1WnWcb+LE/07XO0B4lOk0q38a/Aw4J7xaGfCFP
-	 91R9PbL8OCzSDxh839VaD3YzzweBo6SrYad3GRyO9kP1ZPsBuMUOv/U+SqlfFRqdmeUGC
-	 IgCTROVrK0LM1AY4hyzm6GLYAlAElEY8c1cJBSLe43V66N7SdVGCkRvXIV2VWqf6Seg==
+	t=1793138240;
+	b=kFzpOAicPxvW/nG7JORAUjgD2nrd+WvOMPwAjV+dPwjW3w4B9OZ5n/wJgIM2v9swOKlv
+	 Qfh7Qu3zxncUwURMyHjjhayuCxcNQVuMOImqhJlHsAy6P4oppa4vlAbpTGu1sCvvF/QHl
+	 HublouNCwtakIg/56BKANgeUKy8eScVt7HXIrtiSIZmgSvJystaMHXSw4zf9QeD4e3NLQ
+	 7mj0SKVwpHl3Fu+0z2thpHsVGkIvpn/tD67d9Hs2ahTYZ74kI/BbalF25thVK3+WLIz1l
+	 uz7qJ9HypQjeC+e6OWrR8L4Sxa0muaJI1A6ETNGh20KunOBpo/pooLqfLYODBlmAyOQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793126062;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793138240;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=BcXyn5Pt3Ud5pWl9ffP7/JMMW96ISxtzbbqlGIIDb20=;
-	b=xkwNCCirTJGmd4n96T/TsACA/QwBXbdsueVHMnrKlab524vWXgNTOEZmzKP62P4GtT9Z
-	 cCq95K6s59f3RifXxlAtrsPJJygdhFrD6Hhc2dbFeQjRCkEpUJbxqoJcE75EJfdeZFs/9
-	 oZkjlQ+FddftBE2/SkZWMQKfoThnesaFRTE6TvZIHcd7MdN7h1o+45O/xBcKQ8WbOnOO2
-	 O5AgJtkixdhhZIQYkdGjQvF5kE0C/9jguwVaYNVgjmfu9yNf5+XW0IlDeyKLyzUcFL9S5
-	 J9IEfS8nhMfDDVMxfkGAxea+GgMpIea7G8rYmAxw296SGa8cu0V4/ujENhVSvFZKwjA==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
+	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=INM4lTecUqg3+ORjH8the43AegIL5wVO95lrhujQQt0=;
+	b=tQlP1wBvCH8g6UK+KI49OvnZvpt0KwOksrAQJup7uduGTR4WBVtrzQ9LO8FMOd9FuS8I
+	 bV7pUQfL+wIhbFTEzHl9vdwfZC0rtSkabed8ThTt/jF5Od+KoKmpgclqYIzmV9InU0f3Z
+	 ldZmE5Q5By4hNrVgZCwWBcnRMRSngXCnz3LPvfYWKzCYlx9OqJz2UIT1RlA9RLz+axjgk
+	 0YOG+8iY+jmryLwWynwLPFNLSui0kwkuFF66z2dd4IE3xbAgGr3SwOSq4kRdk1JLesm/0
+	 /TkkQ3/IT0QYGZgpObvV4ss5p98SVn4qN0bvQeLHOLqqTTZK62kF6lwr4LA2Po7X3Ng==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=USvxqdOD;
-	arc=none smtp.remote-ip=209.85.160.171
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=kxsoicWg;
+	arc=none smtp.remote-ip=209.85.218.69
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99F6B606A31A
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 18:34:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 99F6B606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF9D606A31F
+	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 21:57:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8FF9D606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=USvxqdOD
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-53644ab1f7bso2393601cf.3
-        for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:34:21 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=kxsoicWg
+Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-c40aa03ded8so26392366b.2
+        for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 14:57:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793126060; x=1793730860; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=BcXyn5Pt3Ud5pWl9ffP7/JMMW96ISxtzbbqlGIIDb20=;
-        b=USvxqdODAqHbcxNJoN4OdHTP/j7DZiPTubDVL3oy0jiSkWXd1xeNHrN/USEuXCq+nR
-         UyZQ+tIL+WAE32L++c35N/4T6M4gNqdokWzb2h521pPqkJNV2NAhry1Ve2sg48VwQIe4
-         WK6wUVzzImBZMi//xoXVns+A56okCuGXdIIhXTD1le5+PbGmqO/KAT4GioxUDU/GRnh+
-         TpTb/VVZHjqK5tyZN7UbVH770KgCa0NU29xBxYGkKB9utgp+9Xknrix57+a/FBWXr0vz
-         6bnFSIr9G/+DeCsZA8vPWX8xQqLeR14I6zZkq5HJTyvsaHm+GZyX8Iv8xUl/NvlsWTnM
-         J4ww==
+        d=google.com; s=20260707; t=1793138234; x=1793743034; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:references:mime-version:in-reply-to:date:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=INM4lTecUqg3+ORjH8the43AegIL5wVO95lrhujQQt0=;
+        b=kxsoicWgG7G1+eLe9hFdJSwgP8qLVfrgCB2Zm6fy0Prna5EfvBeRzlhOf5yBottD++
+         vPnAvGJGZpH82myuYnNvj42kpluDlTVGvANSLPUnT/D1uVmhyPiJK9K6Mzn6AUrJIo14
+         noe0+cJQJMcVZX4QxvhfqvIm4r+NDmLv8WGU7ZkbfbI3Ol3heMYUizHZpMq9r8i1LN2q
+         WTp3rRb9/92FnRI6We2dvrqlCAxhfTuprzbl2ivz6uZYSlF93EZntrPp+BW1E6jVf5LL
+         bli1HDbTA4+ZaMQThfc/dKdYA8aoMa2WOhrud8Qp0qXVe/wMpR/OrFNZmZAByvpxoNaT
+         b24w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793126060; x=1793730860;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1793138234; x=1793743034;
+        h=content-transfer-encoding:content-type:cc:to:from:subject
+         :message-id:references:mime-version:in-reply-to:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=BcXyn5Pt3Ud5pWl9ffP7/JMMW96ISxtzbbqlGIIDb20=;
-        b=CxYfmDjeJurjdwjyVUPWbuWQ+SbeN6pINlgfPwKXGPxQ/pLYkqEQUXg8mwadGLRP3S
-         q22h2Mq/RSZr4tDEjaF3CU3xRedjl5FdXBgGJdS1iCDjx3itJ7T8fVF2mvlegJJhWGpy
-         u7LXASFuvO14X1+MaZ9JbpousnhRdPTL+rp3ezxZ8DYisDkACqmhhkuvW8EtFnJOUEwX
-         5s3GQj6qry281DbpeWvPL17Cl0rAwN2nTCaMhIzGKY82bqMIO88lBT0HSLluwf/xsHbd
-         ugyrdzA01PlCXAJrYmPSk5C4RcT5ApxKtHvcCxk4rpLnX/GT9bsjPcrvjwFIghBV4wj/
-         1+eA==
-X-Forwarded-Encrypted: i=1; AKwUvByMZhW0RNrI6vbBI8z6RGnd7VVGq0DG2xp0UsLEU0Are4Wdpny9rRYBeFbDUDoqMRzq+3NgJw==@lists.linux.dev
-X-Gm-Message-State: AFq9FYK+gLc4kNVhNYC9+hArp7erd9AN2WyzaWcIhmIcfsIQXTXt/GhE
-	Rvhvu5A8nE6tnWBSGOyLtrVaAW4opuMGvqWolf3YGBaY1xAyAjSzkyPeH3cwcbpmSN0=
-X-Gm-Gg: AYBFou2Zwq7oiWJ4lcrTVFIGj3gFFLzT98UU6cBS8xTW4D2TVPuq6t0GXtHYng7TcyX
-	UT/st854lXXQTPiHhfses1nloEnl91rnoN7yPiqp+bFfMZyFRlTNxphHxvfYycoa0qb/gpEiZ+S
-	tufFpTeuTyhcQBG3qCRJcdvyUmcR5AcyUORhodkL7Aun8E7j1hZCxKClVKJq0o45tdvTN54ILzJ
-	ZWoW/lnYfGatmPkIz4kRWHUu7JgO0lH5KzECBSo3fCMyCRfyzClF9grAPGVWDCxS45o1rwWNSLM
-	RBOeVui/5z2J9mjBsUyYZfGxiM8/XWqlrT8uQXXMMdYvqq2cZ666YfA+7NqVedwDxE5mHGKg8mJ
-	9Cifmf9M2iLo7qKWT8u7ckJor4t/JWxD7neAOsVLdxp+0SQMeLvt3IBBCtIVDu2Dn5Gs1C65Bp9
-	esKn2tN+oxu4GNcIfSGQN4TQBIBVaJOAl6BYGMdorVkV5vtB52dZ14alU0huxvPQ8OatQIFf5as
-	J0wc8HwJFtzIhXY+dBSQubAgaagIBNJqDXMxKkOSs51iJHwnHE/qrc/4+U47VMmhoPiQF+9cvdk
-	SWfDJTwDe7R5eXcVAh3YikLBGyZr2BGg52LY3w==
-X-Received: by 2002:a05:622a:4d07:b0:536:458d:525e with SMTP id d75a77b69052e-53fcc5c17c1mr1974831cf.37.1793126060344;
-        Tue, 27 Oct 2026 11:34:20 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-538394c518csm84854701cf.8.2026.10.27.11.34.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2026 11:34:19 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xLm02-0000000AgqP-3BXi;
-	Tue, 27 Oct 2026 15:34:18 -0300
-Date: Tue, 27 Oct 2026 15:34:18 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-Cc: alex@shazbot.org, iommu@lists.linux.dev, joro@8bytes.org,
-	kevin.tian@intel.com, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org
-Subject: Re: [PATCH v4 2/2] iommufd: Add IOMMU_GET_PCI_MMIO_WINDOWS ioctl
-Message-ID: <20261027183418.GJ1685504@ziepe.ca>
-References: <20261022193359.GF3381610@ziepe.ca>
- <20261025133000.205508-1-guanghuifeng@linux.alibaba.com>
- <20261025133000.205508-3-guanghuifeng@linux.alibaba.com>
+        bh=INM4lTecUqg3+ORjH8the43AegIL5wVO95lrhujQQt0=;
+        b=fDj0Nnk1Fh3UQndwigg1ciYUGPJpCrClCgmLRGFg3gc+GBsLx59Nf5hpJtAFLN1wuA
+         YDEBkw0dj23+J9xZ8GnlpUjnO/DxOyCEYF4yOK3R8zy0tYcJ7eHXqc1pjWsjcLeN94mv
+         Nt2gsAfXVCyedixi7m3ctcYut/Y9XwY2JINY3yrxyPpcGTZdV0pXAOVymlRwoGk6MPvU
+         477F2xdKlf5KmIPVayEUhdPSO4NNsXKbOIFhRcaLRywDUWaIejWaRpiXUqJcIDL7y2ek
+         IQA9oGd5wv2z5rdRGZj9LxbOBhdcaMHD8H7RdgFMeJToCzNGt2fNw+47Ysqv7x47QgTa
+         0hkg==
+X-Forwarded-Encrypted: i=1; AKwUvBwF6TL2j0SIBbaAZznMlHD5hyknG6+pGmkdZx+2CW86mxrDOaYmE9zIqbXQlbcQd4+LcsnoXA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIVo/p9KL+1seisz4MPQjepCpsEVhvTSX4bU0z9qkeI0YabTGMr
+	DJM1d7cki1HkKFmsGU7RoKpLfBK3MRcehjpKuUVzslAdPqe+sqjtf5JlFsS+jg/x+SE5bmJG59E
+	JSOGRiV4YYnncHq3DDw==
+X-Received: from ejkh2.prod.google.com ([2002:a17:906:7182:b0:c46:743f:a4b9])
+ (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:907:e84b:b0:c2e:3a72:ffbd with SMTP id a640c23a62f3a-c49bdf71b7bmr44517166b.41.1793138233642;
+ Tue, 27 Oct 2026 14:57:13 -0700 (PDT)
+Date: Tue, 27 Oct 2026 21:57:12 +0000
+In-Reply-To: <CALzav=dYKAP7pKfoPtz32X1cT_tH4LN0X47_jTO8_HOCT4Pi=w@mail.gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -102,81 +79,130 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261025133000.205508-3-guanghuifeng@linux.alibaba.com>
+Mime-Version: 1.0
+References: <20261021152527.375070-1-tarunsahu@google.com> <20261021152527.375070-4-tarunsahu@google.com>
+ <atlQ_Er0Ig7CCSxv@google.com> <CALzav=f00C4yOAseNunW8GgQTDUGWT927Qy=TLm-3-J0TEDH8Q@mail.gmail.com>
+ <9huzzew0el59.fsf@tarunix.c.googlers.com> <at_CncIPYCxOVkLo@google.com>
+ <auDT5MjXYq3lcQjE@google.com> <CALzav=dYKAP7pKfoPtz32X1cT_tH4LN0X47_jTO8_HOCT4Pi=w@mail.gmail.com>
+Message-ID: <9huztsm6958n.fsf@tarunix.c.googlers.com>
+Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
+ a 2-bit pair feature header
+From: tarunsahu@google.com
+To: David Matlack <dmatlack@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
+	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
+	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com, 
+	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org, 
+	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, will@kernel.org, 
+	Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com, 
+	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
+	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
+	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Oct 25, 2026 at 09:30:00PM +0800, Guanghui Feng wrote:
-> +
-> +/**
-> + * struct iommu_pci_mmio_window - a PCI host bridge MMIO window
-> + * @start: First PCI bus address of the window
-> + * @last: Inclusive last PCI bus address of the window
-> + *
-> + * A memory window claimed by the PCI host bridge that a device sits
-> + * behind.  These are PCI bus addresses (what appears in the TLP).
-> + * A PCIe switch could misinterpret DMA to these addresses as
-> + * peer-to-peer traffic and route it to the wrong device.
-> + */
-> +struct iommu_pci_mmio_window {
-> +	__aligned_u64 start;
-> +	__aligned_u64 last;
-> +};
+David Matlack <dmatlack@google.com> writes:
 
-We already have struct iommu_iova_range, don't need another one.
+> On Tue, Oct 27, 2026 at 9:40=E2=80=AFAM Pasha Tatashin
+> <pasha.tatashin@soleen.com> wrote:
+>>
+>> On 10-26 21:14, David Matlack wrote:
+>> > On 2026-10-26 11:50 AM, tarunsahu@google.com wrote:
+>> > > Right, Required bit should be source kernel payload property to tell
+>> > > target kernel that the payload must be handled to correctly deserial=
+ize
+>> > > the data. It should be source kernel (userspace) responsiblity to ma=
+ke
+>> > > sure it understand the target kernel before doing liveupdate.
+>> > >
+>> > > Saying this, During deserialization, target kernel's required bit is=
+ not
+>> > > necessary. So I propose the following truth table.
+>> > >
+>> > > Source hdr  Target supported[i]  Action
+>> > > ----------  -------------------  ----------------------------------
+>> > > 00          0 or 1               Accept: feature absent in payload
+>> > > 01          0                    Accept: ignore the feature data
+>> > > 01          1                    Accept: use the feature data
+>> > > 11          0                    Reject: -EOPNOTSUPP
+>> > > 11          1                    Accept: use the feature data
+>> > > 10          0 or 1               Reject: -EINVAL (invalid encoding)
+>> >
+>> > Yes, this matches what I had in mind for the semantics.
+>> >
+>> > To be explicit: the source kernel should set the bits for each Live
+>> > Update based on what is actually preserved, rather than generating the
+>> > header from a static per-kernel array. E.g. memfd would only mark a
+>> > feature present for memfds that actually use it. That's what allows
+>> > rollback to an older kernel as long as nothing being preserved depends
+>> > on the new feature.
+>> >
+>> > But looking at this again, I think the required bit is redundant. Whet=
+her
+>> > a feature can be safely ignored is a property of the feature itself, n=
+ot
+>> > of any particular file. Every file that has a feature present will hav=
+e
+>> > the same required bit for it. The only thing that actually varies per
+>> > file is whether the feature is present.
+>> >
+>> > The required bit still has to be conveyed to the target somehow, since
+>> > the kernel that needs it is the one that doesn't know about the featur=
+e.
+>> > But it can be conveyed by the feature's number rather than an extra bi=
+t:
+>> > split the flag space into required features and optional features, and
+>> > assign each feature to one of them when it is defined. This is similar
+>> > to the required_flags and optional_flags approach in struct pci_ser [1=
+].
+>> >
+>> > Keeping the same header shape as discussed with Pasha:
+>> >
+>> > struct kho_ser_hdr {
+>> >     __u32 size;           /* Size of header + payload in bytes */
+>> >     __u16 nr_required;    /* Number of required feature bits */
+>> >     __u16 nr_optional;    /* Number of optional feature bits */
+>> >     __u64 flags[];        /* Required bits, followed by optional bits =
+*/
+>> > };
+>> >
+>> > Required feature N is bit N of flags[], and optional feature N is bit
+>> > nr_required + N (using nr_required from the incoming header). The leng=
+th
+>> > of flags[] is DIV_ROUND_UP(nr_required + nr_optional, 64). Both spaces
+>> > are numbered contiguously, so there are no gaps, and up to 64 features
+>> > still fit in a 16-byte header.
+>> >
+>> > Each bit just means the feature is present, so the truth table becomes=
+:
+>> >
+>> > Source bit       Target supports  Action
+>> > ---------------  ---------------  ------------------------------
+>> > Not set          -                Accept: feature absent
+>> > Optional set     No               Accept: ignore the feature data
+>> > Optional set     Yes              Accept: use the feature data
+>> > Required set     No               Reject: -EOPNOTSUPP
+>> > Required set     Yes              Accept: use the feature data
+>> >
+>>
+>> I like this proposal. I bet most features are going to be either
+>> optional or required, and even if we ever have a magical
+>> sometimes-optional feature, it can have its own required flag. So, no
+>> need to pay double the cost on every flag.
+>>
+>> Just need to make sure that optional features always start from 0, in
+>> their own enum, so the offset can be computed correctly in the incoming
+>> kernel.
+>
+> Right. Instead of having a single 32-bit feature space where every
+> feature can either be optional or required, we have 2 16-bit feature
+> spaces, one for required features and one for optional features. Both
+> feature spaces span from 0 to 2^16-1, and then are packed into
+> flags[].
 
-> +
-> +/**
-> + * struct iommu_pci_mmio_windows - ioctl(IOMMU_GET_PCI_MMIO_WINDOWS)
-> + * @size: sizeof(struct iommu_pci_mmio_windows)
-> + * @flags: Must be 0
-> + * @dev_id: The device bound to iommufd to query
-> + * @num_windows: Input/output number of MMIO windows
-> + * @out_windows: Pointer to the output array of struct iommu_pci_mmio_window
-> + *
-> + * Query the memory windows of the PCI host bridge that @dev_id sits
-> + * behind.  This is advisory: the kernel does not reserve these ranges,
-> + * it only reports them so userspace can choose to keep its IOVA
-> + * allocations away from them and avoid accidental peer-to-peer DMA
-> + * routing.  The reported windows are pessimistic (the whole host bridge
-> + * window, not the precise BAR ranges that may actually conflict).
-> + *
-> + * Windows are reported in host bridge resource list order.  They are
-> + * typically non-overlapping (host bridge address decoders are exclusive)
-> + * but no sorting guarantee is made.  Userspace should treat them as a
-> + * set and compute the union if needed.
-> + *
-> + * If an IOAS has devices behind multiple host bridges, query each device
-> + * and take the union of the results.
-> + *
-> + * On input num_windows is the length of the out_windows array.  On
-> + * output it is the total number of windows.  The ioctl will return
-> + * -EMSGSIZE and set num_windows to the required value if num_windows is
-> + * too small.  In this case the caller should allocate a larger output
-> + * array and re-issue the ioctl.
-> + *
-> + * Return: 0 on success, -EOPNOTSUPP if @dev_id is not a PCI device,
-> + * -ENOENT if @dev_id is invalid, -EMSGSIZE if the output array is too
-> + * small.
-> + */
-> +struct iommu_pci_mmio_windows {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 dev_id;
-> +	__u32 num_windows;
-> +	__aligned_u64 out_windows;
-> +};
-> +#define IOMMU_GET_PCI_MMIO_WINDOWS \
-> +	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_GET_PCI_MMIO_WINDOWS)
->  #endif
 
-I wonder if this should have the word PCI in it..
+Okay sounds good. I will send the next version soon. Also I belive the
+design is decided, So I will drop the RFC tag also.
 
-Maybe this is 'recommended reserved regions' or something?
-
-This is also lacking a way to send the ranges back in so they create a
-restriction for the allocator.
-
-Jason
-
+~Tarun
