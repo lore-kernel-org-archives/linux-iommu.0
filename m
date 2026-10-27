@@ -1,109 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.71
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793107051;
-	b=qBvprjDeB1FI0xUxG2KjOfc+LEnhopSin1OZDavNUm0xMBhLu2d2TGrnsaBnHvhD0X3a
-	 ReGa2BlZdMCwdDsnDGugOrAAwLW8191+azwqh1bsIjwF+glNBWAi0JhPnxuIuxN/09XpP
-	 ahHTM7YXTVs4GFAZu1uKPZYQ5F+QmlTpq4NCH8sbq9MlPYGzZJ/yDo5n08h5d9MdDYxOb
-	 Jd18sjbj0GlPgVyciZFiv1bixQw4PhijaJINAawLECb4lxvlfi8qKkXNARpXAeLtnccfv
-	 /OKdUpTBdYxKogKPgdAlz2AV6OWHXbxdy3cG1cIC6BUsMyhGk5KwCxzhgE/nrA2bHlA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793107051;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=qVc7aJ/FLgHe8RzKaxEZe7c3vRMP4oiOukOZ2uiwvhc=;
-	b=j65La9evwlz3EyQWIWCeTJPGnBoKd7391cGnlI6ws/jQxFwkcduN8C6b5jgmtKeNGIHa
-	 VgsDeXFq+KmioT2RoEsHrQWjhMns9QfRzmyJjz8aRe/INjzdlJ3zqvp5EPeEsEfyhUDPF
-	 s8D6v4HjGnCyXHBrGqIN7GcjHkS+RVjkKIhPA7uAmBEzTLHZtF2ZWjcfZALpDSQFhlBuO
-	 GgjvmmrvPRI5kV4zDi1AcEslQSJRvAP6+WG+MYyY9ktOveY/ik9/50FytNu8YBXsjCITS
-	 lGOiNWeUoY4dkAnCckUd0zjHWrFVajykdv6R8qreIKEJW4D/Ehxe/6tBQKj3vUl/3gg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=t0mkpAPd;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.71
-Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012071.outbound.protection.outlook.com [40.93.195.71])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=5.75.144.95
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793107352;
+	b=sLoVbmpIKTT5+9Hyn0FpYlWmboV6U0wfh6oOxEYbfsLzu7migtc01FQKG4fSHMhinjM/
+	 wPRGfNAsFfXOMxV9HBtubgi2MDJPO+1KJnwZowLxx3JHz3MK+KXwmObgK7NW/7j3HXEJw
+	 Yc4MywaU/wNZyYL+gb9vMvGazD/VVunbLh2dQaD5k5O1b1d4Gn0GpWW5B4qTcW7MYApDx
+	 6Smsi6geI2Wfy4+jLCqBKWhT4aDTDItVKRV4tVrExi1+mRqe2PI46M/fXvYjIzoe8EG81
+	 wtn9r8KIOzvuYqf0cj50bCw8A6KF5CLLj8jM2HIBh9+YN7siG1jdTSK2nmSdW5L8FaQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793107352;
+	h=DMARC-Filter:DKIM-Signature:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=Xj67NiJh2Z4pdwze/JwyyrlvFS2Frq0bavp1aNAOF+Y=;
+	b=1kFgfqVHxlcT07LAG2XrJCe72Vs+lLfr/FaeKLsZk7iTipdkvfBd/nKPcNZmRr9jBRnp
+	 bmekFlKKUTeNApzNtH+p3/Q0k2i/zNiRv/Ddnz82MRq9FLKV/BM56AU6O6oWI8dv/rGiL
+	 nECbad71IoLNIIPJ12N+qbl+iqRHMMfXqBSwjQ1nLEBtORKWBOVvmBCkQGYLHo7hiX9uZ
+	 rxFdkG+s8R4mwHn+QSItcvQ63gA/yRxpaG2ennvsv5zEt7Fm6MEcRCThRD/RYjcNXjOlx
+	 OC67HgiE+uvhA2M5OxU9LQcQIuLvjr+GNp2T/PoRtzv2wONMKWzTJMZ8Z/4krtP1dHQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=mainlining.org;
+	spf=pass smtp.mailfrom=mainlining.org;
+	dkim=pass header.d=mainlining.org header.i=@mainlining.org header.a=rsa-sha256 header.s=202507r header.b=mxxbttXc;
+	dkim=pass header.d=mainlining.org header.i=@mainlining.org header.a=ed25519-sha256 header.s=202507e header.b=eTsWZ5U5;
+	arc=none smtp.remote-ip=5.75.144.95
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BB72606A31A
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 13:17:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2BB72606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1627D606A326
+	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 13:22:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1627D606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=t0mkpAPd
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=C3z9meoGaMzFC8BklbAXKC+hCR6relLgHcAEooE2LLRfCKhmKC+IVQ5PIl5qCP2ctKI2z8QYTGFJCu3ICXYBWIPnaIRb7tWjVFAzEEJTaZezCVjgl+6EoWRZ/ogVWsA6MhX749HW52RGRP93J5GbH0iw1QL8byG94PZaUn/VVh2HKA8B46R9CVJ52Y+JgJgbUt3bQVT8qiObWwAP/h64Z6n1p9K3D50TyRKq8IJpDIM5oxhaAAlEN1Fbm9kS8sxxcw8/6Nf/NDL4NpWkPp0HO5YaVJ9mJYJXhZHLqDKN1JcjQxws4RnBqIg0UJ6K++py/0C4vcAIIjp7a4+nwmPStw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qVc7aJ/FLgHe8RzKaxEZe7c3vRMP4oiOukOZ2uiwvhc=;
- b=cr5cMe+TyTxnjqwgA3ynB0JwmnmVCbcrqZ79ybpJC7OzI/YP6LctRK5EyBQtF20Jy5ilWA3OfySo7gS/EY9eKkCH0aV3kaBkvnYmGDNkwk8tC4Yub14hBUsDR/wJmf41JieYk7lUSFR+JVsBX1ZfGO64ekDZ7pBLAd4E5RiMga1a0GWhuHv9Pj6akWLCXwVD70AwYsurILM8A1JeDXYY991bvQb55pZEeSDy16qWwBWxl6xj+jelt3g+/cAc26zFQxNMBwfAkvvb26AwT+DxNjajx+bdBsJQbx/yYYWi5s+iMrLHKIu5FiEqKfnDpFXgaItAMofIJXhAlyfmijSYkw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qVc7aJ/FLgHe8RzKaxEZe7c3vRMP4oiOukOZ2uiwvhc=;
- b=t0mkpAPdnm2iZie4bKooOEJywyX2k6PWTi3NO5Hjp6LtMZ85i7JaWSlh5qI8x+bhVJBoM0fXbJv+X5F2wwJry1k563CDGTj79NrdxJqdauzVzGy4OOGN30VHxNRPJvMkOBu8YsRaCs82YgZ1cp5zxslCnDiChRXG4mYDhJDgQro=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by SA3PR12MB8000.namprd12.prod.outlook.com (2603:10b6:806:31f::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Tue, 27 Oct
- 2026 13:17:26 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0546.021; Tue, 27 Oct 2026
- 13:17:25 +0000
-Message-ID: <3a09ef96-45a6-486f-b482-fd34c27415af@amd.com>
-Date: Tue, 27 Oct 2026 14:17:16 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 23/26] treewide: Rename dma_buf_attach() to
- dma_buf_sgt_attach()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alistair Popple <apopple@nvidia.com>, dri-devel@lists.freedesktop.org,
- sumit.semwal@linaro.org, =?UTF-8?Q?Thomas_Hellstr=C3=B6m?=
- <thomas.hellstrom@linux.intel.com>, Simona Vetter <simona.vetter@ffwll.ch>,
- Matthew Brost <matthew.brost@intel.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>,
- Dongwon Kim <dongwon.kim@intel.com>, Leon Romanovsky <leonro@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>,
- Karl Mehltretter <kmehltretter@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
- <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
- intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
- linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
- jhubbard@nvidia.com
-References: <20261026053623.202642-1-apopple@nvidia.com>
- <20261026053623.202642-24-apopple@nvidia.com>
- <27307d58-9ca9-4624-a564-6e35fb4befb5@amd.com>
- <20261027123859.GE1671235@nvidia.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20261027123859.GE1671235@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BLAPR03CA0061.namprd03.prod.outlook.com
- (2603:10b6:208:329::6) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key, unprotected) header.d=mainlining.org header.i=@mainlining.org header.a=rsa-sha256 header.s=202507r header.b=mxxbttXc;
+	dkim=pass header.d=mainlining.org header.i=@mainlining.org header.a=ed25519-sha256 header.s=202507e header.b=eTsWZ5U5
+DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
+	h=From:To:Subject:Date:Message-ID; t=1793107318; bh=Xj67NiJh2Z4pdwze/Jwyyrl
+	vFS2Frq0bavp1aNAOF+Y=; b=mxxbttXc1kwRAw4uFr6Joln+wd89lpfwXB3f0rPAO4vYimMZh7
+	jvVbJ/fWa2pt91BX37u4bOR1QAyWdKL/UBi9irf9pvF6r1GsNgAAdAOBCggwJdYbYd8MGYbKBcb
+	IC8a5slECJdOA/6e+GRAJupr0Z3LlxDEoRrOPQqYt5QNtKh2g2rNfHOjHC4IEgG6U7P4aDgRLxE
+	4FrXQHIR1FTK9819rifvTRK2ku6pUXnTGP6noUTAxhSXGTmAep0w/Uo888MdzxZza7w9yo98LAC
+	w5cleacP1J8MXMNn+7DtOuZMy7sgE7iZVCS3leZn1nar8BkA2KG1+SoegpudNixb3pg==;
+DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
+	h=From:To:Subject:Date:Message-ID; t=1793107318; bh=Xj67NiJh2Z4pdwze/Jwyyrl
+	vFS2Frq0bavp1aNAOF+Y=; b=eTsWZ5U5a1kSPxUaMDFdlMnVdcfluYbi3UyR/neQ+3HarpYrgO
+	xKOLXAksCoxT2sfC1Nn2S6fCPflmtLkTAiCw==;
+Message-ID: <524ccb0f-8880-4552-8549-88a9d68e3faa@mainlining.org>
+Date: Tue, 27 Oct 2026 16:21:55 +0300
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -113,103 +57,221 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|SA3PR12MB8000:EE_
-X-MS-Office365-Filtering-Correlation-Id: 173ae5ad-f690-43ae-6d03-08df342ca42c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|23010399003|366016|6133799003|22082099003|18002099003|261026140227099003|56012099006|11063799006|4143699003|261021121427099003|10067099003|261022105027099003|261026121527099003;
-X-Microsoft-Antispam-Message-Info:
-	bfWwPUC+F8vxijDrWkh3g2l2iXHWwcZ5LvE4ceB03Ew3v26OT2EkPReRIwFxEVG8u0EACcos7Q9fNgjRYCTMiX313m6JUFfwH9uKTpDgU9AkwlfOZKFEyK1qE5PgGXP4SVMxR+8d+ISc5jNoTZJb6P8quUD+BcJHbuvjzb8xa3VmbQ1xCYUAjxDLLGyA627n3zznVBYRFIrVTCoTnB96nn6xCYZemBFZlogbtDA2djYK2YGFlQUY/rT8gPAma8KT2Dd5ts7m1Fd+j4fDP2A0GSD9F+UCuHpqZTuEleS6fpf7/fML9WE4NRgOb3Nomq0bOPLcRW3hwfOG282wmlQKlyk11ZQqeKdDGn9SK87/fW38jwCaaujffDL8yL9vNOhGNuAvjLWC4JKkxhkrpyTTDsAz4GhJHJ+zerlQryt/g7jOt+48nW8Iyi919TxyaX3V0BpYV3YNg0vevllBStS02zp5GL8j5rtyZ3UMxflf01tBWqt+6rH4nU387nWWe0TBE0xLTVY5SV5JT57OKOeq3RTRXpkCtMU2aFueOqxqSN8BrAgBEcAjwVo2AE2/GK0fVGlwHXVWzhk1j1Hji1H+yy3zNkebM4UxTL7v2zszWKtFjU4r2Ps5hlrkB8PFbJPeCdDDShK93SZ/vEMs20B7tgmXKkwqgb0oL/M4zN41g9k=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(23010399003)(366016)(6133799003)(22082099003)(18002099003)(261026140227099003)(56012099006)(11063799006)(4143699003)(261021121427099003)(10067099003)(261022105027099003)(261026121527099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VnBISzRkdzRSOVdNV0w4VWNISS9WV1FHZmkyUE91Tm1ndUZxTnZUdlVxQ1du?=
- =?utf-8?B?YklIU0Yva053WENoUE9HbHRHNFFib21yQ1JWREZXUmFnWmZ1Tjh6bHVJdVp5?=
- =?utf-8?B?NGFrbVJXWFhCSHdDK2xJK3JqMVNhR0l0VmZuU2Y4dk81ZVZ1ZmtJOE1wdlVZ?=
- =?utf-8?B?dDgvMjlIWXF0M3F1clFGSG5EZmg0TVdUazFNdEJoMWJZMlNjOXAxU1NadVFF?=
- =?utf-8?B?UlJMUHB1S1E5R2s1WWhWcHhmUks4VEJaVWpMcEUzQjRWeTgwcG9ZQkU3dnVo?=
- =?utf-8?B?VVB5YWcrMlRoNkdHZ0p4N0UvWkN5RVp5TXUvM0hHY2FmRU1ZdDlrYTlYZ1BS?=
- =?utf-8?B?L3RSQklBYUhmcmJZYkk5czI4Z3hJeWZCclBqTVdkT3hOUkw0SURTeWp1ZEdL?=
- =?utf-8?B?SWxHZE5tNnpvWWVaWmJDY21QTFJXdEFvV1dxWFl0Q2JVdy9mWVNBUXhzYm9Z?=
- =?utf-8?B?NEtFMm5EbWJHQ2l5QnZ3WnpmU3FNTmk4L1Z5eE5QTFd6MzRQQlFDM1Y5a3h0?=
- =?utf-8?B?Rnk1OUdXek5IL0xscXFMeUpHdmQzQzk4Vnh3dG1NK1ozNEN4Wm56Um5rZTht?=
- =?utf-8?B?UnlvNVlaUFAvTS83d2hCWC9aai85Y1BxMDBsNkNiNmhmQVdlUWNHdnVRL2th?=
- =?utf-8?B?L1cydGZDd1ZqWG9oZjJwVERBR3ZvTklFRDY2Ym5oeVhoWE5tQUM0WWx5OFVP?=
- =?utf-8?B?ZmowczRSTksxWUVZb1pIQVNId2NubmRvdmo1TWNvRmd2aDUyMytnajdNMURB?=
- =?utf-8?B?SjluU3ZFT1hWbWtrbWRsNmVwTkV5RUxEQytZTFA2TnptMkNEcWtObDlTMDAv?=
- =?utf-8?B?S3NFblVWOHZtY2F3VjgxMGc5ZWh0WVdjNXprTEc2SmxPOTB4eXZkTHhBT1JJ?=
- =?utf-8?B?aEtyMDErMUY0YXFOMGVQL0dCY1hTY0d5UHZtNHowRXZFTzJNWkFKdTlvbWgx?=
- =?utf-8?B?RkRqbG8wMlhmV1lWVi9Tc1E4QkpNRDlEZW5lcVA0eDJzWmlTRXhvaFFIcVd4?=
- =?utf-8?B?ay9BSkc5d09MS2lqeXBGQnV5Yml3WEJ4d2RJUzc0bVpMS3k4U280Sk5vaE9J?=
- =?utf-8?B?akxYZDI0MDlrb2F2cW1za1lIM21CMzdXQzdFNFFlREVEQ3BEUmY2SW1lNlNK?=
- =?utf-8?B?cjRTbGdsTm1iclZBSTRnMWMzNDhCdEhzc0ZoTjF0N1FCekFrN25iTDVKak90?=
- =?utf-8?B?dzdJendHbUltbFRTYWlObEJTT0RqYUd4QTQ2WElzM1A4RHpPazZnbkd0VFI2?=
- =?utf-8?B?aEhMS3JDRWcvTmo5ZEhONVNKTXBjeERsRzBBZERjR081Q2thZElXK3V1VEhD?=
- =?utf-8?B?MGwzb0tnRHV5RVZzWmtwUXozak5JODBhT3hCYXRTckhNdFlZOU5EVUt1SXdQ?=
- =?utf-8?B?OG1iT3BpeHA1djBYNUFQRHdMOHZNb3dqL3VvZ01lMVhqcjJtMmJkYmRlMnlw?=
- =?utf-8?B?N2pGMmJWRGFkb2lLbGRrZDVMZEhzc2FWRHRMMWN2dDZ0UWRrYmxRTjZ6eXJS?=
- =?utf-8?B?c1V2aVhTNnVmTExDVmZKUW5sZnRWYkdqVHZGYUtSSzNNYTNpcnE1YnRWRXEr?=
- =?utf-8?B?RHM1eUFMQStsMStaMlF4VlVOTk56eEsyN1hVY2dLdDJJYnNrMUorTFAyaDZm?=
- =?utf-8?B?VlozWEo4UVNSZmxiR25KRzVVNmJ2eExTRUcxVkxhUE1XRHd2OGNNNElrOGJm?=
- =?utf-8?B?cHM0dEhsc2ozM05qeUVXa1VBMXkxcFJPTVZLUHhxK1NJbXFXN0c1Q0hyK0dW?=
- =?utf-8?B?Tm1UaytOajk4a3pBQ0xucUtSTlRoS1ZkdVMzb3lBeGF2L1V4NEF2ZzRWRlho?=
- =?utf-8?B?dW9YMnh0OU9QM1hlRmNjOXdCcWg4emVRU3UrNnYrbmduVVR6SHFyTWk1TVE1?=
- =?utf-8?B?Z0JHanNJS0dIdlNocHBjNTNkYUE5KzU1bEEzNFM1ak1nQ3ZISWdKWEcyZ3hG?=
- =?utf-8?B?b2VQTllnaVV4Ri9CNXZCTjFyU3REWG5rVytNRWNiR1pmUG5QaHdJZ2hSdGhN?=
- =?utf-8?B?MWdidnVUKytNN3Jha1c3SXQ2bGpGVWo0cnIxQlE1KzdCYTUzUHRueDFlRXc2?=
- =?utf-8?B?dVNhNnRKK2VPdnpEbXZuWXhkVlNVQlRpaHR4M2lYNkdNb25jVDduSHFHendB?=
- =?utf-8?B?aEVhV1lhQ2RzOW9YL3JmRERmeEtzNnlqRmExSE51NEtuQWE5c3prZFJuRUxp?=
- =?utf-8?B?em5qTy9BZDdYMk9CNEwySWhRWEs5QWNwZmUzbHcrWHUxVlNXY0NSV1NYV3lW?=
- =?utf-8?B?emQ5N1Jpa0xod2RndlpDNmpvYlRKcWZhaFZWZ045TGs4M0kxWEx2aE1zWGVV?=
- =?utf-8?Q?QG/kn5yl8qzOTkSJ45?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 173ae5ad-f690-43ae-6d03-08df342ca42c
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2026 13:17:24.8809
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 49IhY6W+4wNODHOl5++jxYzs4scw3BTnYBPOIRwAoap/oeMI1YRt3433jK48/86u
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB8000
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 5/7] arm64: dts: qcom: Add initial support for MSM8952
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Srinivas Kandagatla <srini@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Konrad Dybcio <konradybcio@kernel.org>, Amit Kucheria <amitk@kernel.org>,
+ Thara Gopinath <thara.gopinath@gmail.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Bjorn Andersson <andersson@kernel.org>,
+ Abel Vesa <abelvesa@kernel.org>, Kees Cook <kees@kernel.org>,
+ Tony Luck <tony.luck@intel.com>, "Guilherme G. Piccoli"
+ <gpiccoli@igalia.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-pm@vger.kernel.org, linux-input@vger.kernel.org
+References: <20261011-msm8952-initial-support-v5-0-1857074992ec@mainlining.org>
+ <20261011-msm8952-initial-support-v5-5-1857074992ec@mainlining.org>
+ <cf9aa65d-5603-425e-b09e-0a5ae86fa551@oss.qualcomm.com>
+From: Muzaffer Kadir <muzafferkadir@mainlining.org>
+Content-Language: en-US
+In-Reply-To: <cf9aa65d-5603-425e-b09e-0a5ae86fa551@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 10/27/26 13:38, Jason Gunthorpe wrote:
-> On Tue, Oct 27, 2026 at 01:07:36PM +0100, Christian König wrote:
->> On 10/26/26 06:36, Alistair Popple wrote:
->>> From: Jason Gunthorpe <jgg@nvidia.com>
->>>
->>> This attach function always creates a SGT mapping type importer.
+Hi Konrad,
+
+Thanks a lot for review,
+
+On Mon, 26 Oct 2026 16:01:49 +0100, Konrad Dybcio wrote:
+> On 10/11/26 6:51 PM, Muzaffer Kadir via B4 Relay wrote:
+>> From: Muzaffer Kadir <muzafferkadir@mainlining.org>
 >>
->> Yeah that is a clear NO-GO. The attachment should be the same for
->> the new interface as well.
+>> Add initial support for MSM8952 SoC.
+>>
+>> AI help is used for calculating qfprom nodes.
+>>
+>> Downstream reference for port is [1] which is very lightly modified
+>> version of [2].
 > 
-> Not sure I understand this comment...
+> Generally this looks good, couple more comments
 > 
-> This was intended as a helper so that existing drivers can run through
-> the sgt based mapping type flow without having to open code it. It is
-> hardwired to only do sgt like this. If you want to use more than sgt
-> as your mapping type don't use this function
+> [...]
 > 
-> The point was to create a clear distinction in the API names when
-> things were in a SGT-only flow vs using the newer negotiable flow.
+>> +	soc: soc@0 {
+>> +		compatible = "simple-bus";
+>> +		ranges = <0 0 0 0xffffffff>;
+> 
+> this is equal to `ranges;`
 
-Well that is my point, the dma_buf_attach() or rather dynamic_attach() function should still be part of the new flow.
+Changing this to empty ranges would make ranges property
+to expect parent and child size-cells and address-cells to
+be equal but root size-cells and address-cells are 2 and soc
+size-cells and address-cells are 1.
 
-The only difference is that the importer ops given to the dynamic_attach() functions now also contain the information necessary for the negotiation.
+The Devicetree Specification describes an empty ranges as:
+"If the property is defined with an <empty> value, it
+specifies that the parent and child address space is identical,
+and no address translation is required."
+(Devicetree Specification v0.4, section 2.3.8)
 
-Regards,
-Christian.
+So this change creates these warnings:
+/soc@0:ranges: empty "ranges" property but its #address-cells (1) differs from / (2)
+/soc@0:ranges: empty "ranges" property but its #size-cells (1) differs from / (2)
+
+I will keep this unchanged.
 
 > 
->>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> [...]
 > 
-> Alistair since you rebased it you should put your SOB on every
-> patch...
 > 
-> Regards,
-> Jason
+>> +		sdhc_1: mmc@7824900 {
+>> +			compatible = "qcom,msm8952-sdhci", "qcom,sdhci-msm-v4";
+>> +			reg = <0x07824900 0x500>, <0x07824000 0x800>, <0x7824e00 0x200>;
+>> +			reg-names = "hc", "core", "cqhci";
+> 
+> Please break up these into one-per-line (also for properties below)
+> the last reg entry needs a leading zero
+> 
+> (in general one-per-line is cool)
+> 
+> [...]
+> 
+> 
+>> +		usb: usb@78db000 {
+>> +			compatible = "qcom,ci-hdrc";
+>> +			reg = <0x078db000 0x200>,
+>> +			      <0x078db200 0x200>;
+>> +			interrupts-extended = <&mpm 58 IRQ_TYPE_LEVEL_HIGH>,
+>> +					      <&mpm 49 IRQ_TYPE_LEVEL_HIGH>;
+>> +			clocks = <&gcc GCC_USB_HS_AHB_CLK>,
+>> +				 <&gcc GCC_USB_HS_SYSTEM_CLK>;
+>> +			clock-names = "iface",
+>> +				      "core";
+>> +			assigned-clocks = <&gcc GCC_USB_HS_SYSTEM_CLK>;
+>> +			assigned-clock-rates = <80000000>;
+>> +			resets = <&gcc GCC_USB_HS_BCR>;
+>> +			reset-names = "core";
+>> +			hnp-disable;
+>> +			srp-disable;
+>> +			adp-disable;
+>> +			ahb-burst-config = <0>;
+>> +			dr_mode = "otg";
+> 
+> dr_mode = otg is default - you can drop it
+> 
+> [...]
+> 
+>> +			pll_opp_table_c1: opp-table {
+>> +				compatible = "operating-points-v2";
+>> +
+>> +				opp-499200000 {
+>> +					opp-hz = /bits/ 64 <499200000>;
+>> +				};
+>> +
+>> +				opp-806400000 {
+>> +					opp-hz = /bits/ 64 <806400000>;
+>> +				};
+>> +
+>> +				opp-960000000 {
+>> +					opp-hz = /bits/ 64 <960000000>;
+>> +				};
+>> +
+>> +				opp-1094400000 {
+>> +					opp-hz = /bits/ 64 <1094400000>;
+>> +				};
+>> +
+>> +				opp-1344000000 {
+>> +					opp-hz = /bits/ 64 <1344000000>;
+>> +				};
+>> +
+>> +				opp-1440000000 {
+>> +					opp-hz = /bits/ 64 <1440000000>;
+>> +				};
+>> +
+>> +				opp-1516800000 {
+>> +					opp-hz = /bits/ 64 <1516800000>;
+>> +				};
+>> +
+>> +				opp-1651200000 {
+>> +					opp-hz = /bits/ 64 <1651200000>;
+>> +				};
+> 
+> Drop the last entry for the same reasons you explained
+> 
+> [...]
+> 
+> 
+>> +		a53pll_cci: clock@b1d0000 {
+>> +			compatible = "qcom,msm8939-a53pll";
+> 
+> This needs a 8952-specific compatible (bindings-only fallback
+> is fine)
+> 
+>> +			reg = <0x0b1d0000 0x40>;
+>> +			clocks = <&xo_board>;
+>> +			clock-names = "xo";
+>> +			#clock-cells = <0>;
+>> +		};
+>> +
+>> +		apcs2: mailbox@b1d1000 {
+>> +			compatible = "qcom,msm8939-apcs-kpss-global", "syscon";
+> 
+> Likewise
+>> +			reg = <0x0b1d1000 0x1000>;
+>> +			clocks = <&a53pll_cci>,
+>> +				 <&gcc GPLL0_VOTE>,
+>> +				 <&rpmcc RPM_SMD_XO_CLK_SRC>;
+>> +			clock-names = "pll",
+>> +				      "aux",
+>> +				      "ref";
+>> +			#clock-cells = <0>;
+>> +			#mbox-cells = <1>;
+>> +		};
+>> +
+>> +		adsp: remoteproc@c200000 {
+>> +			compatible = "qcom,msm8996-adsp-pil";
+> 
+> And likewise
+> 
+> also IMEM, DSI, RPMPD, RPMCC
+> 
+> [...]
+> 
+>> +	thermal-zones {
+>> +		aoss0-thermal {
+>> +			polling-delay-passive = <250>;
+> 
+> TSENS sensors are interrupt-driven so you don't need polling
+> 
+> AOSS is surely the wrong name - that hw didn't come until years
+> later than 8952 was released. I can't find a mapping of the
+> sensors for this SoC right now, so either drop these or give them
+> some generic names
 
+Understood, I will change these to generic names
+(excluding known ones from downstream)
+
+> 
+> [...]
+> 
+>> +	timer {
+>> +		compatible = "arm,armv8-timer";
+>> +		interrupts = <GIC_PPI 2 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 3 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 4 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>,
+>> +			     <GIC_PPI 1 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_LOW)>;
+>> +		clock-frequency = <19200000>;
+> 
+> Drop this property, it's only needed for very broken FWs
+
+For other parts I will change them as requested.
+
+Best Regards,
+Muzaffer Kadir
