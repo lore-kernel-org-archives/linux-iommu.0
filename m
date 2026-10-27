@@ -1,100 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.46
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793122706;
-	b=IwtpDSG0m4/34Tj6neqwYbOi/rp6Cl8JxEX040FSHRwuuhe7sLaejuHXmkROj/BfdTyZ
-	 uehT81dw6LvJLZCcJomH+RYXymQ7cznrt98i5bUDc5R8sCwbA/3jMxtGN07RR2oXF62tR
-	 wp1pPrTWKwXafKD5jlNwwVUiT0ZQG/LAvgar02ox439VaJqscHoWfvcRPo/XeCLjnrbn5
-	 K9As+rrVggHv31lUwsXM9G7z0AxCReVrJ4iuCd4U5lvN9trTjO/LgsqwjmGB7WhDg4aWb
-	 b1bz3iIR5MaifX+fyL57i0TqWnyWD2qMbCUh6eGZBJqc1bQOAl0MOWtdErrSJ5q3hMA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793122706;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=75xnGPQfUpxl4aF5uqa7AQlJeR6+8S5bvRDT/N741Fo=;
-	b=uI1PRtFETL3GfNOdqfNVbfJjtQUAW94Wuq6ezx4VG9W1Dl3RF/IsagLImy5PfbfBM642
-	 XiN3mTaM8Cegg+vQtxWFAszW6moQ22Z0JNBHvl0K3Yq4DO5nRuIenAqJeMQNcGrKZiGuw
-	 rbbniEjyahbOOXqoh97iuKoWoEZkJMxmw8NUIug8r5vD43vdJ30M/32cQoxn4uGlt7328
-	 iWQbT/9AfxhkyYLwYbWFfZJT85ZE4P/AyR491h4gDYV7afaMTbmr/lOoVXFFRPYeYFkD9
-	 AS//t7x2hNi49HOXqM6dMTjpVJutZdB4/McGiyhfdjZnPIU9ky27s1At/5TSB9Zhopw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=AJ+10usr;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.46
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793123579;
+	b=goZcs+bt+ex6JCqdU4r847WrJUN//LUMmDxeOjhUy08GUyk3P3meUEbBSHJeiEV/LNCq
+	 EC6AgUFxR3+fXL+dUA1f7BVqE11xYWTrWEmJZex82ehvK2SbSDFkX0yCflCKqpYnyJJiK
+	 zC7dyT9cmmcso+cTwx32YozmhmT9F3/M6YJD4BYsQ807cRwiVHxDxkXhidGr0ZG/sBy/b
+	 bVkCJSWM52LcC7Bs8QH8FbgHbvWrqTzx9SAmpYh7SzWzlodILbs27NSnXidJqa3AEbc1r
+	 v1R1rk7gLG7Gd4pgRdmZL3O7Ns4L5fSy6SBsAivJrSN2AyTvEU2JByFuqZGQUV9GFqw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793123579;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=vJ0QHCcipPb2AWZaDzcZqnVo6KqnFZDxJa1dLM/gdtQ=;
+	b=XnH7DsfvtMUSCLIS279JMOmdZ+ehMyyRFsW0aLbq5vK7nn9O5myZGH8dj/SIyb0N09sD
+	 FH1F82f1/y8q7fcZfJcOgZ454HUc3lV2NYNcJqVLyShuqURqtaGha1u7EtSX/x487OraJ
+	 WeTRn2/AxrtyW+s+Od1m5FIo5Cw1vxHmmptQKa++KOF2XcavZQBnrigpBpOGDJkcfFw+l
+	 c1BQDriHI6R79QTNuJjS3ARGcQkIl5HTwL6mK1OFm1dCHw69BFAASVMwXQ/iFHMlMUx3s
+	 /tyDCFoqG9bxJIvcSx2rPviQtbHVkfzSqK5rXo00HOWNYzu5xih0I7dY+yX1/TuhEmw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DE65Mu3m;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97139606A31D
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 17:38:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 97139606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 589A6606A31A;
+	Tue, 27 Oct 2026 17:52:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=AJ+10usr
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-c4322d310e7so12734366b.0
-        for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 10:38:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793122704; cv=none;
-        d=google.com; s=arc-20260327;
-        b=byo+nxjhZG24ucUhuxuLwKiKHi2urow5My+Clke4dfyR4d8xK2+GsEFqvKgKnmResu
-         5oQOhZyxGhYGuviNAuH4Ideq4yingcdJoBOsMDtWWM6enJleVxYJ3Q6zAnQJw+K4bSx2
-         96MkkYFC4sWACFgoOvYrIf3dVqyxyt9R5CMA76M+N9ekTdG0GIUVnupdhDUzVZydnfTH
-         fgLt8RudZCjd5y/TdKfKNGGagXaR4a69IUO7kBgT7bPx/x4OPbe+mYW2/opNxQRE6pMG
-         DflsUY1RdB+qSPT/nwwH3JOxBRFqxoMDsGyug7s+yqiWiTbn8sEau7VTNcdhQTNhhsB/
-         ExFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=75xnGPQfUpxl4aF5uqa7AQlJeR6+8S5bvRDT/N741Fo=;
-        fh=ciUyWwWB8WUxF7swZbZwCKmagkrt44X9EZuhYlmxb2Y=;
-        b=qxe067iIpRVk5ZltNh/lC6q/xJ/R3fsOztYw2f17y3IfTo3ti68yUoZTDySMNaI5ox
-         IfLcbUCqr2ozBhxovQKFKTCdX2XusIAw0gUs8tHy0HFfahTU5PDfPgomgYtMhWGj0j0e
-         REjyQMsjdnzzTbRLz6AuprQUZX4o3ovhxbNk2xvTqoWPyK9238EUMnybFoP2CDHe06+G
-         W9/LbQ/SWIcJkcwYEawnFjpZ1FqX3Io26Bh40/+vPteyAJvyv+htWtDXpfG5IQSYLF9h
-         TbYcX3YqNNmvkEk5I29jrGb4kdjOnJOH+ItODWBte0mpBf5Ejx0gHLjW1ujQ3yJwXxgg
-         57dQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793122704; x=1793727504; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=75xnGPQfUpxl4aF5uqa7AQlJeR6+8S5bvRDT/N741Fo=;
-        b=AJ+10usrmZjWNCyDncW1l6JD47/wAFJwDFJkObiLpkhi33w/YnrbT1dfWkC1YHfINQ
-         HlPyFw83ZMLLzCPZBd5ZVpEsJ2oCBEjny4eY3o/UG1y+wK+gEacmRKdHp2om1f5E0CGa
-         h2nUvDw2mi0kPGyJ+a6hqGRw9BeRNV9FGfyeCftbGPhYSohyiXTd1nB9eWSEw7lAeiTE
-         pHVKw1oRbzjlSqAyedWa+jl/Pj+psR1Ls7+Oj5BMO9N9X/NmN5Q+akwWK6FThBHAh8Mq
-         wheJ5vpHYk1LXCUuyDVUnG6SYIlsCRZ2hQJmAJExd4EMmnTS1nKb67OgI03bLgBebUgK
-         vKKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793122704; x=1793727504;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=75xnGPQfUpxl4aF5uqa7AQlJeR6+8S5bvRDT/N741Fo=;
-        b=m3q46n78K6WXJ6tG/f/9DG6YFP+0aCAg9ZMPhYDCbSTNJQCz1/qfvaTWuX9x0MvYhF
-         L9PqrpyVkVFjLQZlRm/z2W2ZoAjG18GQ8eytsAWPdWfmbY5sqRnPN2jUjBe/RVxqSroo
-         2lf6LuUq7o40xObVIacrISFYfrC+KMi3JACPvkhQ2gEBz+CvvhhGchEyx4zTeZalZDvM
-         0CUm4L4ON8qZZsi7dLUc7G4Nf3ZuT7uUiivgiKGm+z8vDY3pUdNGCGiLOuzzkuKf6+w9
-         lkvdjXYA2XNwRyT9cMpqy91Y8wN425pp2KedTKpTD5HxOmvQOrMTLbhNrWJUA1x/yJMw
-         dASg==
-X-Forwarded-Encrypted: i=1; AKwUvBy2/ZqTrrv01v3lkBMfhMyDseET7JRIs5DAkwBVRI3NL7U7w6T16YFBhzRVcQgIoLIqfaDG7w==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLSKYlci2/BbUsM6Q56f/64sHmQI/hmPpx7qaK+dHM27IZla8gB
-	Umz+n7z41pXsjwzwnui0NU5QD3sk+glvXcgKm9Bq6zTMcO6wnghIBtivBP5pxvVKtsu9MMGJltg
-	t96qi2FBIOgnD7xM8Dp6ky+GpbAHiOJRbnYCEKit4
-X-Gm-Gg: AYBFou2sQP1YrXN5z1Ux2GMPvI5StAWpuEQ0FQrHo0LHcSZkWXGCZBdPqTGYMFefhkN
-	ZWjEUfldOU3R+0UR2wG9cPvfZraEcSQiDjk/xXTTuGmciu18RaytyvxgEwRhY7gFZnOTJgiQHfB
-	PKoNyZM18HMYzAIXXTNXQNb0KTguWdZeck7FB6RNt9EkhRWyCq7hk2CyBLqPf43Ebd2+BQD6hLF
-	LoyubknxgiJl4j4FojYTdzx8jGoRt2g3/4XuLyYWxfVplkkCkQlO7wkl84eEtqO33B4rKIgv6m9
-	gxvlGN+2zfbmzYJHpZhDWMKT2Qvij0ctWhv0ajMFo4ybuYpp66smYzSgMP/krGeQMGknSO8H0G8
-	VpEmOuf/8Sa0j75D8bqIRw2BAWjqHsxyKfkCnOg==
-X-Received: by 2002:a17:907:d308:b0:c2e:378c:8ce3 with SMTP id
- a640c23a62f3a-c46bde8c44fmr1091193766b.32.1793122703439; Tue, 27 Oct 2026
- 10:38:23 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DE65Mu3m
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7B641F01825;
+	Tue, 27 Oct 2026 17:52:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793123579;
+	bh=vJ0QHCcipPb2AWZaDzcZqnVo6KqnFZDxJa1dLM/gdtQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=DE65Mu3mW/CbPd78yfnb8Q16QMuYBkR5FvHdPR4XjPV/vjHUsBXDigZvZntx2+diG
+	 zp+iITe+V+QGQAf1SEUEI/fyHmzF95wFfYb/U/IuB67qwlCwXsYKQ6LkGuwazRtCxt
+	 vbXo41X21tXoBZp5/cI373ZOIzSGycgRLIhWTECii4+ETEX6IPyQIfHYAPYVvVI2kC
+	 eykolA5kWOnPjUWrubXjUNnLoymDNaJEdSG83q4EyzHP2pH9hSPZ5ueZnKlG+KAiFm
+	 e7p9P9WuUNXjr741jRzdGLKbc0NlTo0GlD8DAz3ajuiD5iuNnrD+tVgXXDxQ+VDo5g
+	 IYwjFC7hifQMA==
+Date: Tue, 27 Oct 2026 10:52:53 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: robin.murphy@arm.com, tglx@kernel.org, dave.hansen@linux.intel.com,
+ x86@kernel.org, joro@8bytes.org, will@kernel.org, leon@kernel.org,
+ mbloch@nvidia.com, iommu@lists.linux.dev, netdev@vger.kernel.org
+Subject: Re: [RFC 04/11] dma-mapping: add dma_alloc_attrs_node() and
+ dma_alloc_coherent_node()
+Message-ID: <20261027105253.2c3d58a9@kernel.org>
+In-Reply-To: <008d1317-223e-4265-a5a4-4d2a602a2661@samsung.com>
+References: <20261027022528.633359-1-kuba@kernel.org>
+	<CGME20261027022613eucas1p2ac05630160507ff3a887186416e98c30@eucas1p2.samsung.com>
+	<20261027022528.633359-5-kuba@kernel.org>
+	<008d1317-223e-4265-a5a4-4d2a602a2661@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,121 +63,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261021152527.375070-1-tarunsahu@google.com> <20261021152527.375070-4-tarunsahu@google.com>
- <atlQ_Er0Ig7CCSxv@google.com> <CALzav=f00C4yOAseNunW8GgQTDUGWT927Qy=TLm-3-J0TEDH8Q@mail.gmail.com>
- <9huzzew0el59.fsf@tarunix.c.googlers.com> <at_CncIPYCxOVkLo@google.com> <auDT5MjXYq3lcQjE@google.com>
-In-Reply-To: <auDT5MjXYq3lcQjE@google.com>
-From: David Matlack <dmatlack@google.com>
-Date: Tue, 27 Oct 2026 10:37:56 -0700
-X-Gm-Features: AclHuK9nhZy1yfbGSOSB3h6FsOr-7RUqfg5DsC4iepC4uLqRp9MK3EAsOEkjOYw
-Message-ID: <CALzav=dYKAP7pKfoPtz32X1cT_tH4LN0X47_jTO8_HOCT4Pi=w@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
- a 2-bit pair feature header
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: tarunsahu@google.com, Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
-	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
-	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com, 
-	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org, 
-	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
-	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
-	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Oct 27, 2026 at 9:40=E2=80=AFAM Pasha Tatashin
-<pasha.tatashin@soleen.com> wrote:
->
-> On 10-26 21:14, David Matlack wrote:
-> > On 2026-10-26 11:50 AM, tarunsahu@google.com wrote:
-> > > Right, Required bit should be source kernel payload property to tell
-> > > target kernel that the payload must be handled to correctly deseriali=
-ze
-> > > the data. It should be source kernel (userspace) responsiblity to mak=
-e
-> > > sure it understand the target kernel before doing liveupdate.
-> > >
-> > > Saying this, During deserialization, target kernel's required bit is =
-not
-> > > necessary. So I propose the following truth table.
-> > >
-> > > Source hdr  Target supported[i]  Action
-> > > ----------  -------------------  ----------------------------------
-> > > 00          0 or 1               Accept: feature absent in payload
-> > > 01          0                    Accept: ignore the feature data
-> > > 01          1                    Accept: use the feature data
-> > > 11          0                    Reject: -EOPNOTSUPP
-> > > 11          1                    Accept: use the feature data
-> > > 10          0 or 1               Reject: -EINVAL (invalid encoding)
-> >
-> > Yes, this matches what I had in mind for the semantics.
-> >
-> > To be explicit: the source kernel should set the bits for each Live
-> > Update based on what is actually preserved, rather than generating the
-> > header from a static per-kernel array. E.g. memfd would only mark a
-> > feature present for memfds that actually use it. That's what allows
-> > rollback to an older kernel as long as nothing being preserved depends
-> > on the new feature.
-> >
-> > But looking at this again, I think the required bit is redundant. Wheth=
-er
-> > a feature can be safely ignored is a property of the feature itself, no=
-t
-> > of any particular file. Every file that has a feature present will have
-> > the same required bit for it. The only thing that actually varies per
-> > file is whether the feature is present.
-> >
-> > The required bit still has to be conveyed to the target somehow, since
-> > the kernel that needs it is the one that doesn't know about the feature=
-.
-> > But it can be conveyed by the feature's number rather than an extra bit=
-:
-> > split the flag space into required features and optional features, and
-> > assign each feature to one of them when it is defined. This is similar
-> > to the required_flags and optional_flags approach in struct pci_ser [1]=
-.
-> >
-> > Keeping the same header shape as discussed with Pasha:
-> >
-> > struct kho_ser_hdr {
-> >     __u32 size;           /* Size of header + payload in bytes */
-> >     __u16 nr_required;    /* Number of required feature bits */
-> >     __u16 nr_optional;    /* Number of optional feature bits */
-> >     __u64 flags[];        /* Required bits, followed by optional bits *=
-/
-> > };
-> >
-> > Required feature N is bit N of flags[], and optional feature N is bit
-> > nr_required + N (using nr_required from the incoming header). The lengt=
-h
-> > of flags[] is DIV_ROUND_UP(nr_required + nr_optional, 64). Both spaces
-> > are numbered contiguously, so there are no gaps, and up to 64 features
-> > still fit in a 16-byte header.
-> >
-> > Each bit just means the feature is present, so the truth table becomes:
-> >
-> > Source bit       Target supports  Action
-> > ---------------  ---------------  ------------------------------
-> > Not set          -                Accept: feature absent
-> > Optional set     No               Accept: ignore the feature data
-> > Optional set     Yes              Accept: use the feature data
-> > Required set     No               Reject: -EOPNOTSUPP
-> > Required set     Yes              Accept: use the feature data
-> >
->
-> I like this proposal. I bet most features are going to be either
-> optional or required, and even if we ever have a magical
-> sometimes-optional feature, it can have its own required flag. So, no
-> need to pay double the cost on every flag.
->
-> Just need to make sure that optional features always start from 0, in
-> their own enum, so the offset can be computed correctly in the incoming
-> kernel.
+On Tue, 27 Oct 2026 16:24:44 +0100 Marek Szyprowski wrote:
+> > +EXPORT_SYMBOL_GPL(dma_alloc_attrs_node);
+> > +
+> > +void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma=
+_handle,
+> > +		gfp_t flag, unsigned long attrs)
+> > +{
+> > +	return dma_alloc_attrs_node(dev, size, dma_handle, flag, attrs,
+> > +				    dev_to_node(dev));
+> > +}
+> >  EXPORT_SYMBOL(dma_alloc_attrs); =20
+>=20
+> Do we really need two exported symbols for dma_alloc_attrs()? I would pre=
+fer
+> to make dma_alloc_attrs() a static inline calling=C2=A0dma_alloc_attrs_no=
+de().
+>=20
+> Did I missed something obvious against that?
 
-Right. Instead of having a single 32-bit feature space where every
-feature can either be optional or required, we have 2 16-bit feature
-spaces, one for required features and one for optional features. Both
-feature spaces span from 0 to 2^16-1, and then are packed into
-flags[].
+License, I associate DMA API with hch so I thought we'd want to make
+the new symbol GPL-only? LMK if I'm overthinking this.
