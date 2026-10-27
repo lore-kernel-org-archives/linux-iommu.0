@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793067971;
-	b=0UJQUkl39MVjenGzluGxdPwO+p8ygitpJ9I/itScmCjhC843I+rc5/OaTG7JbyW2DGxu
-	 d8ogI8p5O9LQLzTvsNb5OSqTQH4GoY09iuaZ66TNaSvNNyNA8xAc58Y1e1kuGHdcuFNJi
-	 GFtERfRTV7oq0FupVMy8t8IHUlNFgyeHWjLACaOlF2wECjPttlSsReful2/f95GtvS+UW
-	 S8UGGgQFGuf8vYzebvNh6YPXaCVfxML42DIKUM+K6yg7bs6j3PHd3q5TQDwtXwJo4DDS3
-	 itAGiL1JLkeWZ7Qi/z8XNjmXDGh1b8H0gCCRtFgfO6Cke3R9oSSYq+mG/0fj/OGtBEg==
+	t=1793067972;
+	b=NkoUEWaa2+BFiy4tPy9/4gWBgkD/9zoOpli/dmlTQ4yUU2tJL1KmKQ6l9TjYqk9tEZYy
+	 L7ffEV5cwYub7nj9qERCX66PGk7HKOxu4mhhbAenSTNwEMoK/fztOuMFRNgA0/rXvdY1q
+	 czdranhfOLWzCr+ucpooPSv0HsariiphGadg51P5/KFwKMhfBORoUFv1Q5rDrw//IXpS0
+	 A6GQ1S0HPlJqC3zYqBYUAe6IT5Sw0n3EYq4MlrtZYd8++iDVaCxwzJ8Sc7yNe5SOmk0lm
+	 U4ibUJt7tW94djzYjUIdaJ2Bf3dRvzWKb/xhSBK9nvJJBqK/Obw4hAj/CS02AzYvLAQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793067971;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793067972;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=rErQTo2Nunqq6i62Mdon6M+XdYGNQOYXujl7TnxQuV8=;
-	b=a10yBfPeDNiFJDaMxSLCq5u5kj1F4aj1Ip1mn6x5DzuLrehGXAqEBTQn0egBGfWKvCY2
-	 IeScRl/cBrkpQPDGVvItxsRlOSfjTI6nIjHyBowQoOkqbtYPDdLXwIl1wuVYIb9ZGq8VJ
-	 rpAE55cy06dH0mJC/ciOvqg/wXW/N1MdxnsypCh582Qv9Kc1MYHausaHyCxsBLHAD7fbo
-	 lPp9A5XZ2IAOwdniHIVAJ2R892GPFH7FJzFphZWpaYdBusaOH3zPgDa2UQojnpKVukWx+
-	 ZUWzIwkyQf12Se7w0p8U7adqrQuFATCItjnp8jYByWae3MnUwT4Jo6t1hRtu176A7BQ==
+	bh=sFMJ9G+BCCkIGTPexs2eTVxqNd1RzrfJlfVrNTosRLA=;
+	b=mF4k9iGF2Mha6uzPzUFQps3opLWjlZJbwcXMFq7bRLFrpIN5+HGCQxnHWteUdoMLQug9
+	 lJnPXbiAdp4jUaMUz1N55pKp9Awc+cb8H6Hzb5ZO/IHCFr40QmP0ZRKspxVuYWTER5O55
+	 71d4TzDJ0vYr2694IkqxnKDdBXSq+6sIRqN/JrXWQ3ybe99Uq0IsZPnN1UC97xhWSuL7h
+	 3CEOK/4xE7fIfy2VVcFx19XM0XPj0S0BP6Iu5PTI+FvDE7lr+b8Ef1BS+LYmm++59mYpb
+	 FJD1z7+WKplhA1TMDLAz0v2Hg7kEeGvlJ8QB8x6LCRufWbo0XRLUrlr1LWEcBCRhRhw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fqhgXJdK;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Tias2084;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABB7E606A32E;
-	Tue, 27 Oct 2026 02:26:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B7CC606A32F;
+	Tue, 27 Oct 2026 02:26:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fqhgXJdK
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F85F1F031EE;
-	Tue, 27 Oct 2026 02:26:10 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Tias2084
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A664F1F031E0;
+	Tue, 27 Oct 2026 02:26:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793067970;
-	bh=rErQTo2Nunqq6i62Mdon6M+XdYGNQOYXujl7TnxQuV8=;
+	s=k20260515; t=1793067972;
+	bh=sFMJ9G+BCCkIGTPexs2eTVxqNd1RzrfJlfVrNTosRLA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=fqhgXJdKQ4PaG8z5B2zknj9MDC77/TbEOI3aoYkxcw2dWSBXHTKmhxeuraa1bUwaW
-	 AjXrSd60/JTJLrz6PCSDl2tLT4CfmKeTVgTaxKvlTZY59IUgXHy95YQ88nhk+IUKmE
-	 0eCQWwyInq95RPDzdY3KS6I8/OYZWr6cTExvgXHsgJzK+WyZ4LcHOT1Djhwa1gBDeh
-	 mv/sKskiACauRUN2MnQlrqTO9fVBFe01vMTZq/uu/PrP/2B6M+pwXdPDmcHiwUUEa/
-	 +/4RSpMTbD7B91dwStLkuLiMGXIWYMQmb1KG/DVfxXGREUFs4zH8Thv8KvfmCs4We8
-	 SlULTZQ+T1KPA==
+	b=Tias2084e9gMkncSNqg5FbzbyN8PJTgblajFs43jPT7r6lNl99xyFDj+OHYAWIm/D
+	 Op+oHB6dHaQabgTWZzyT7o4peOabLYIxeUXpWAcWRS8uYB/1w2D4mek/8G4pSgdGPb
+	 EjRbG6xIEFtPGwbpMrli3sipBu/2xhMjIgsLAfA74lqEnf96tSTYKBdL4SAfLlgom3
+	 5LD4dZbxqPgoEtL5eDvcT+zxLBj+bJIKYuRdyrzvGfh2hIwKjtOQRmjhFFQuvZ/Fru
+	 vg4ReMs2pXsrCnZUkCcMdtXiwsrGp+EraOg2RTya0TLe2dqlKa44rn2vnbgEK5XQrw
+	 g+n8c2g5Gkl8A==
 From: Jakub Kicinski <kuba@kernel.org>
 To: robin.murphy@arm.com,
 	m.szyprowski@samsung.com
@@ -52,9 +52,9 @@ Cc: tglx@kernel.org,
 	iommu@lists.linux.dev,
 	netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC 07/11] eth: ixgbe: use dma_alloc_coherent_node()
-Date: Mon, 26 Oct 2026 19:25:24 -0700
-Message-ID: <20261027022528.633359-8-kuba@kernel.org>
+Subject: [RFC 10/11] eth: mlx5: use dma_alloc_coherent_node()
+Date: Mon, 26 Oct 2026 19:25:27 -0700
+Message-ID: <20261027022528.633359-11-kuba@kernel.org>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261027022528.633359-1-kuba@kernel.org>
 References: <20261027022528.633359-1-kuba@kernel.org>
@@ -69,68 +69,101 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use dma_alloc_coherent_node() to place the descriptor rings on the
-node of the ring's q_vector, instead of temporarily changing the node
-of the device. NUMA_NO_NODE (ring without a q_vector) means no
-preference, same as what set_dev_node(dev, NUMA_NO_NODE) resulted in.
+Use dma_alloc_coherent_node() to allocate the DMA pool pages on the
+pool's node, instead of temporarily changing the node of the device.
+alloc_mutex only serialized those temporary changes, remove it.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 20 ++++++-------------
- 1 file changed, 6 insertions(+), 14 deletions(-)
+ include/linux/mlx5/driver.h                   |  2 --
+ .../net/ethernet/mellanox/mlx5/core/alloc.c   | 24 +++----------------
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  4 ----
+ 3 files changed, 3 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index f91856498eb2..770648f8ab89 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -7083,7 +7083,6 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
- int ixgbe_setup_tx_resources(struct ixgbe_ring *tx_ring)
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index abb99371ff13..c58cc5a8f8df 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -596,8 +596,6 @@ struct mlx5_priv {
+ 	struct mlx5_debugfs_entries dbg;
+ 
+ 	/* start: alloc stuff */
+-	/* protect buffer allocation according to numa node */
+-	struct mutex            alloc_mutex;
+ 	int                     numa_node;
+ 
+ 	struct mlx5_frag_buf_node_pools **frag_buf_node_pools;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
+index dcd281c4691d..936ce07aaefb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/alloc.c
+@@ -80,25 +80,6 @@ struct mlx5_dma_pool_stats {
+  * register it in a memory region at HCA virtual address 0.
+  */
+ 
+-static void *mlx5_dma_zalloc_coherent_node(struct mlx5_core_dev *dev,
+-					   size_t size, dma_addr_t *dma_handle,
+-					   int node)
+-{
+-	struct device *device = mlx5_core_dma_dev(dev);
+-	struct mlx5_priv *priv = &dev->priv;
+-	int original_node;
+-	void *cpu_handle;
+-
+-	mutex_lock(&priv->alloc_mutex);
+-	original_node = dev_to_node(device);
+-	set_dev_node(device, node);
+-	cpu_handle = dma_alloc_coherent(device, size, dma_handle,
+-					GFP_KERNEL);
+-	set_dev_node(device, original_node);
+-	mutex_unlock(&priv->alloc_mutex);
+-	return cpu_handle;
+-}
+-
+ static void mlx5_dma_pool_destroy(struct mlx5_dma_pool *pool)
  {
- 	struct device *dev = tx_ring->dev;
--	int orig_node = dev_to_node(dev);
- 	int ring_node = NUMA_NO_NODE;
- 	int size;
+ 	mutex_destroy(&pool->lock);
+@@ -139,8 +120,9 @@ mlx5_dma_pool_page_alloc(struct mlx5_dma_pool *pool)
+ 		goto err_free_page;
  
-@@ -7102,12 +7101,9 @@ int ixgbe_setup_tx_resources(struct ixgbe_ring *tx_ring)
- 	tx_ring->size = tx_ring->count * sizeof(union ixgbe_adv_tx_desc);
- 	tx_ring->size = ALIGN(tx_ring->size, 4096);
+ 	bitmap_fill(page->bitmap, blocks_per_page);
+-	page->buf = mlx5_dma_zalloc_coherent_node(pool->dev, PAGE_SIZE,
+-						  &page->dma, node);
++	page->buf = dma_alloc_coherent_node(mlx5_core_dma_dev(pool->dev),
++					    PAGE_SIZE, &page->dma, GFP_KERNEL,
++					    node);
+ 	if (!page->buf)
+ 		goto err_free_bitmap;
  
--	set_dev_node(dev, ring_node);
--	tx_ring->desc = dma_alloc_coherent(dev,
--					   tx_ring->size,
--					   &tx_ring->dma,
--					   GFP_KERNEL);
--	set_dev_node(dev, orig_node);
-+	tx_ring->desc = dma_alloc_coherent_node(dev, tx_ring->size,
-+						&tx_ring->dma, GFP_KERNEL,
-+						ring_node);
- 	if (!tx_ring->desc)
- 		tx_ring->desc = dma_alloc_coherent(dev, tx_ring->size,
- 						   &tx_ring->dma, GFP_KERNEL);
-@@ -7184,7 +7180,6 @@ int ixgbe_setup_rx_resources(struct ixgbe_adapter *adapter,
- 			     struct ixgbe_ring *rx_ring)
- {
- 	struct device *dev = rx_ring->dev;
--	int orig_node = dev_to_node(dev);
- 	int ring_node = NUMA_NO_NODE;
- 	int size;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 1a45474ce03d..b06e7c5c6110 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -1822,8 +1822,6 @@ int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
+ 	INIT_LIST_HEAD(&priv->bfregs.reg_head.list);
+ 	INIT_LIST_HEAD(&priv->bfregs.wc_head.list);
  
-@@ -7203,12 +7198,9 @@ int ixgbe_setup_rx_resources(struct ixgbe_adapter *adapter,
- 	rx_ring->size = rx_ring->count * sizeof(union ixgbe_adv_rx_desc);
- 	rx_ring->size = ALIGN(rx_ring->size, 4096);
- 
--	set_dev_node(dev, ring_node);
--	rx_ring->desc = dma_alloc_coherent(dev,
--					   rx_ring->size,
--					   &rx_ring->dma,
--					   GFP_KERNEL);
--	set_dev_node(dev, orig_node);
-+	rx_ring->desc = dma_alloc_coherent_node(dev, rx_ring->size,
-+						&rx_ring->dma, GFP_KERNEL,
-+						ring_node);
- 	if (!rx_ring->desc)
- 		rx_ring->desc = dma_alloc_coherent(dev, rx_ring->size,
- 						   &rx_ring->dma, GFP_KERNEL);
+-	mutex_init(&priv->alloc_mutex);
+-
+ 	priv->numa_node = dev_to_node(mlx5_core_dma_dev(dev));
+ 	priv->dbg.dbg_root = debugfs_create_dir(dev_name(dev->device),
+ 						mlx5_debugfs_root);
+@@ -1902,7 +1900,6 @@ int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
+ 	mlx5_frag_buf_pools_cleanup(dev);
+ err_frag_buf_pools_init:
+ 	debugfs_remove(dev->priv.dbg.dbg_root);
+-	mutex_destroy(&priv->alloc_mutex);
+ 	mutex_destroy(&priv->bfregs.wc_head.lock);
+ 	mutex_destroy(&priv->bfregs.reg_head.lock);
+ 	mutex_destroy(&dev->intf_state_mutex);
+@@ -1927,7 +1924,6 @@ void mlx5_mdev_uninit(struct mlx5_core_dev *dev)
+ 	mlx5_db_pools_cleanup(dev);
+ 	mlx5_frag_buf_pools_cleanup(dev);
+ 	debugfs_remove_recursive(dev->priv.dbg.dbg_root);
+-	mutex_destroy(&priv->alloc_mutex);
+ 	mutex_destroy(&priv->bfregs.wc_head.lock);
+ 	mutex_destroy(&priv->bfregs.reg_head.lock);
+ 	mutex_destroy(&dev->wc_state_lock);
 -- 
 2.56.0
 
