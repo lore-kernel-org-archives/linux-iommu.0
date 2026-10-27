@@ -1,69 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793090189;
-	b=YeGJe+b+KkmaW4Mfz7yFwtAGLwBQ1+C3x0zX2YTZU8jahRT43AVu2VxjllgVPKussV3h
-	 X5f+JnWXBH06leTLoVx/SmMRrEAToUC0QmHlTIb0p8nTi8RPQ2dfQkj6azLAgCT6cvEwJ
-	 L0LsRCeD31AFDS3rKXc89htagDMkDBj/z+LrEPMU/GY04XcdzTXKoLxo7lAPj0rPS4R5G
-	 98SjvWKp693eBIpg18AV/xqdWgflTBHQxWKUOPqHkj/1AMM0gFlbT8tlkk75bH/eEJnig
-	 LRkBbgNRMD0T4jD4uxhp9fNX7epZFEeuK3KJ0QVIoSNFWJo2Pz78QygwRewORK3vF0w==
+	t=1793091790;
+	b=0Qa3kfnVO74EB0VbYQo6f+zAfUsjOc6qUUAVSE3aPLFahj+XGja7+Nhqr0+0oSrIqrgE
+	 aJaVqtucITxR/Ggfa3aA2lglpOgnbXW1Ca2BK8H4BRndG72/Hm08pNYMGz0WHVs+tNRSz
+	 GuvFJiQWmuMvRcRImOrlx7m/oKxucNMZviYN1rvGV0S0pidkvrr4v0sOiRPjp9ErHktsI
+	 t2Vd9TlEt8AE9hEqqB9SnXxXb0kLxjOZqTLydsF9gUdDMKCHTVHDH9QTfyQoAsRw58vWg
+	 t/AJuAqRT7cy+ndIqaFaW9C8KlOhdJtbsAtowMHaGlMnPliVf4hvaHXMomPRcPGSoPw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793090189;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=X/TCTtmJ1Uzn5cvfiOwwzPpQbQnX/9Cz28E3PbzDHHY=;
-	b=lLDK4yYfeyzJWisZA0JYj22JM+bYlCnGkM+uIkAIqRzcSZQ1LlVa1HJ2NJKyaGRB/hUN
-	 9Mp0Cqp1yUcpOunjelqFcBj8aSBq8Leo/4d3K4nz96Tqqt5yppjcyI2sjaWjR6owSgmwR
-	 GWPl5KQLS/hwfywm8Mkb18PncayvKWf+FcG4CtQIKwlI3wb4pERsdirB9tMlVLEsamlhp
-	 /t00Yj6nrpUhWTGJdBIiammH+CQ5JFTbtplsB8EAekcfnZ4iLulSUvzSP+kf1yPg9E8RG
-	 8JNFAbffCpzNTrRgY9ubrr0bxdxILUiaB8eb5B3vwKt4qf1Jw/EVIPoq7O4qaIYQUuw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793091790;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:References:
+	 Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=iqtlHRoEM0vvXdiN1pSChQEoJkPogWICgssyXwrbAuY=;
+	b=0Vt4tZoDg9QlunNQa8hIbV7SuY9hW6B7Ou6amMPcu1NyR7oB5w5VFQsu8quZfkxSZLmr
+	 /+lbhA3o3Kcn79g2Ahd8HVW1h82UVYouHpPCVdXa1CQM782O3mVWc1KaQrYfdOC3/NyDx
+	 8YcJ4uOzQUnGCVFbIE13WpcZlJF3P3vuX7FnfuR0hViFk70/+TRr+dvsEYKs9VlEen7K7
+	 FuBMMnvJUxZkyvdn8jwWoXusJfacph+nqf1Qs8l5UpQkis/Ou74ZfSMT6HYL9ySyeuTru
+	 acFZOFwlcDoS5Ph9dM4coLJlYh9CMrXQR51LYCW44vrLLRTOmkE4Q4agg1HZffCV0tQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eBcR7j1F;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Kmxod7cL;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F2F3606A32A;
-	Tue, 27 Oct 2026 08:36:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54365606A31B;
+	Tue, 27 Oct 2026 09:03:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=eBcR7j1F
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 834BB1F01829;
-	Tue, 27 Oct 2026 08:36:27 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Kmxod7cL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5104E1F01825;
+	Tue, 27 Oct 2026 09:03:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793090188;
-	bh=X/TCTtmJ1Uzn5cvfiOwwzPpQbQnX/9Cz28E3PbzDHHY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=eBcR7j1FD8ZaPwOuxYVo7OHZISHaGCd6CdfIIh+SeoVK7QVM8uz+OtByok/4en1fY
-	 /yLqrqaGdkmjoNF2/HFSNo0DnSHcO1F8kRVQw3JjL34VL8e8B3RP3Q6q0DbXA85u4x
-	 o9Q0NwE6yJWlMJFaBB0PWfZpncktejqmVrgRYsD7+ba3uH7mfk0ioEQ5EQ4F93zHfE
-	 ECK8DmCDu3KiunY9J2DmcxeiSdhc8oI18ZssGODYeR0Bf5IaCBVLlaFh8tNOH2Gmw6
-	 ep/mM8k3VrrOSou04acoslWgWNsM7zb3DmVDcw2Btq94emsEwe/ZYYnqmqKkJWChk0
-	 8OZRF4yC4ZNBA==
-Date: Tue, 27 Oct 2026 09:36:24 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>, 
-	Dmitry Baryshkov <lumag@kernel.org>, Abhinav Kumar <abhinav.kumar@linux.dev>, 
-	Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, 
-	Jason Wang <jasowangio@gmail.com>, Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>, 
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Philipp Stanner <phasta@kernel.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Abel Vesa <abelvesa@kernel.org>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Flemin Jose <flemin.jose@oss.qualcomm.com>, Mahadevan P <mahap@oss.qualcomm.com>, 
-	virtualization@lists.linux.dev, linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v2 01/23] dt-bindings: display: msm: Add Qualcomm DCP
-Message-ID: <20261027-camouflaged-orca-of-debate-316694@quoll>
-References: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
- <20261026-jshekhar-dcp-hlos-v2-1-7cf014efdee1@oss.qualcomm.com>
+	s=k20260515; t=1793091789;
+	bh=iqtlHRoEM0vvXdiN1pSChQEoJkPogWICgssyXwrbAuY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=Kmxod7cL73elr6Mi/EzJm1COPARU19GsRzhJvGFXU2mKmaB29AJi21VM7hnSBk3eX
+	 +94VXqgU6n3Z0GO3PqdafD+Q1IVq4LlT6TABQaORBYaDBmGwT+dxCD3KQftUw2z0+v
+	 u8eOJsEipZNPnIJg5dJX0dh12gKT80223EUJi3UVOGEqUGZMEw+xpFx7CgKO2bj1DY
+	 jU9GYAk7TindClTNltb3YSovFcHNZkivaW2fYQX/Hj8AO0nrKwta8gncCK3HiQGxIi
+	 FNwCkgOpT161jXTQNSdKsNp5TiZxp+H0jvSsp3pyzXVFx+Mv2YjrB5xSry5wJzjYRm
+	 +hPAYTK+gF7Jw==
+From: =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
+To: Jakub Kicinski <kuba@kernel.org>, robin.murphy@arm.com,
+ m.szyprowski@samsung.com
+Cc: tglx@kernel.org, dave.hansen@linux.intel.com, x86@kernel.org,
+ joro@8bytes.org, will@kernel.org, leon@kernel.org, mbloch@nvidia.com,
+ iommu@lists.linux.dev, netdev@vger.kernel.org, Jakub Kicinski
+ <kuba@kernel.org>
+Subject: Re: [RFC 00/11] dma-mapping: add dma_alloc_attrs_node() and
+ dma_alloc_coherent_node()
+In-Reply-To: <20261027022528.633359-1-kuba@kernel.org>
+References: <20261027022528.633359-1-kuba@kernel.org>
+Date: Tue, 27 Oct 2026 10:03:06 +0100
+Message-ID: <87ld7j5xdh.fsf@all.your.base.are.belong.to.us>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -74,27 +62,49 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261026-jshekhar-dcp-hlos-v2-1-7cf014efdee1@oss.qualcomm.com>
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Oct 26, 2026 at 11:51:11AM +0530, Jayant Shekhar wrote:
-> DCP platforms place the display pipeline under firmware control, so Linux
+Jakub Kicinski <kuba@kernel.org> writes:
 
-What is a DCP platform?
+> Hi!
+>
+> I want to add NUMA-awareness to a networking driver (bnxt) and
+> I run into the inexistence of dma_alloc_coherent_node().
+>
+> On NUMA systems networking drivers want to allocate rings
+> and buffers close to the NAPI-handling core rather than
+> allocating all from where the device is connected.
+>
+> Looks like we have accumulated 6 drivers which do:
+>
+>        set_dev_node(dma_dev, numa_node);
+>        va =3D dma_alloc_coherent(...);
+>        set_dev_node(dma_dev, old_node);
+>
+> IMHO this looks like an ugly hack. Can we add an API
+> with the Node ID explicitly passed in?
+>
+>
+> In the unlikely case anyone feels the urgent need to merge
+> this please pull (so that we can also pull this into net-next):
+>
+>   git://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git tags/dma_a=
+lloc_coherent_node
+>
+> Jakub Kicinski (11):
+>   dma-contiguous: pass the NUMA node to dma_alloc_contiguous()
+>   dma-direct: pass the NUMA node to dma_direct_alloc()
+>   iommu/dma: pass the NUMA node to iommu_dma_alloc()
+>   dma-mapping: add dma_alloc_attrs_node() and dma_alloc_coherent_node()
+>   eth: libwx: restore the device's NUMA node after ring allocation
+>   eth: libwx: use dma_alloc_coherent_node()
+>   eth: ixgbe: use dma_alloc_coherent_node()
+>   eth: xgbe: use dma_alloc_coherent_node()
+>   eth: fungible: use dma_alloc_coherent_node()
+>   eth: mlx5: use dma_alloc_coherent_node()
+>   eth: mlx4: use dma_alloc_coherent_node()
 
-> cannot discover display resources through direct register access. The DRM
-> driver therefore needs device-tree descriptions of the Qualcomm transport
-> wrapper, display topology, IOMMU contexts, and panel connections.
-> 
-> Add bindings for the Qualcomm DCP transport wrapper and VirtIO display
-> subsystem. Document the IPCC power-notify resources, transport and
-> framebuffer IOMMU contexts, firmware-visible IOVA range, INTF graph, and
-> DSI panel connections. The wrapper creates a standard VirtIO-MMIO child
-> after the IPCC power-notify sequence has completed.
+Nice clean up on the driver side! I have some questions/nits for some
+patches. Regardless, for the series:
 
-It's still DT for real hardware, so I wonder why no SoC specific
-compatibles were used.
-
-Best regards,
-Krzysztof
-
+Reviewed-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
