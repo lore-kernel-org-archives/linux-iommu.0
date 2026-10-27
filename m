@@ -1,76 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.69
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.180
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793138240;
-	b=kFzpOAicPxvW/nG7JORAUjgD2nrd+WvOMPwAjV+dPwjW3w4B9OZ5n/wJgIM2v9swOKlv
-	 Qfh7Qu3zxncUwURMyHjjhayuCxcNQVuMOImqhJlHsAy6P4oppa4vlAbpTGu1sCvvF/QHl
-	 HublouNCwtakIg/56BKANgeUKy8eScVt7HXIrtiSIZmgSvJystaMHXSw4zf9QeD4e3NLQ
-	 7mj0SKVwpHl3Fu+0z2thpHsVGkIvpn/tD67d9Hs2ahTYZ74kI/BbalF25thVK3+WLIz1l
-	 uz7qJ9HypQjeC+e6OWrR8L4Sxa0muaJI1A6ETNGh20KunOBpo/pooLqfLYODBlmAyOQ==
+	t=1793139591;
+	b=QSsbQgsgYIMLDWjXsNJeWeH+XKIO86d4jIJc7XsXcQXxvuk3N3LFURZD6oPHTrb51nty
+	 iOwY9Mi6and36lWG9IwG4oKNJWasD6GJIQGjhdav61JqDHOzFVNy+ZLqDURWZB2F6dxI+
+	 IgAoBvrAQz0UbrPHH3sw/DfcVKV7Ue/eJLgUjlbAJShkX7w17hnv8Mrqgz/q9F9yKgcHi
+	 wKX2ReG2ZD9E3w1ocR+eRJcW9QO0ibZVv22/OYUlozq8bHe72i4w/42yoP69pYthUKeKk
+	 q69utr5BoEezjVMuaV2pYHQm6eQA3xjQMLco38DfUJjlhZbgJDqck7n79ZFR8MWEMLA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793138240;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793139591;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=INM4lTecUqg3+ORjH8the43AegIL5wVO95lrhujQQt0=;
-	b=tQlP1wBvCH8g6UK+KI49OvnZvpt0KwOksrAQJup7uduGTR4WBVtrzQ9LO8FMOd9FuS8I
-	 bV7pUQfL+wIhbFTEzHl9vdwfZC0rtSkabed8ThTt/jF5Od+KoKmpgclqYIzmV9InU0f3Z
-	 ldZmE5Q5By4hNrVgZCwWBcnRMRSngXCnz3LPvfYWKzCYlx9OqJz2UIT1RlA9RLz+axjgk
-	 0YOG+8iY+jmryLwWynwLPFNLSui0kwkuFF66z2dd4IE3xbAgGr3SwOSq4kRdk1JLesm/0
-	 /TkkQ3/IT0QYGZgpObvV4ss5p98SVn4qN0bvQeLHOLqqTTZK62kF6lwr4LA2Po7X3Ng==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=IRLDp0EVirBnKgldSRz7ToSM81j0nsSsdeqUHhLddpw=;
+	b=rcAp3SPHzViDVCtqjnyxB7L4dkqVu6uor/MnqeXfTb6zs7rCnqp7FbRlnqBUV+IM47zS
+	 U90r0X/xjMh7CrkpJq1k8mo5qs8I7XIWFe8dSdImXbOrSrYKzvXBSxo6lHVNDez0Dmals
+	 FaCNYe68E0Wqk5y/9fL7HiCDBoF9ZzdegUjumbMzhf4cEdx81NZIfSIHKR1jtSOtoxbjz
+	 8WIO8ThCUkXk2qtC/gQ/m8qcX0pbkSo+u/9GUrrtKGU2LHfouPn6O3NHwoKn+X21xL5VO
+	 IeFF631IyRxeiGnFGh23F93OJIYJrHRoGdQEZF/qeLjkR1Sapt26v67+8TOMseOOK2w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=kxsoicWg;
-	arc=none smtp.remote-ip=209.85.218.69
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=MoSOl7PI;
+	arc=none smtp.remote-ip=209.85.214.180
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FF9D606A31F
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 21:57:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8FF9D606A31F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72EA6606A31D
+	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 22:19:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72EA6606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=kxsoicWg
-Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-c40aa03ded8so26392366b.2
-        for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 14:57:15 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=MoSOl7PI
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2ea7f9c11e6so26215ad.0
+        for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 15:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793138234; x=1793743034; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=INM4lTecUqg3+ORjH8the43AegIL5wVO95lrhujQQt0=;
-        b=kxsoicWgG7G1+eLe9hFdJSwgP8qLVfrgCB2Zm6fy0Prna5EfvBeRzlhOf5yBottD++
-         vPnAvGJGZpH82myuYnNvj42kpluDlTVGvANSLPUnT/D1uVmhyPiJK9K6Mzn6AUrJIo14
-         noe0+cJQJMcVZX4QxvhfqvIm4r+NDmLv8WGU7ZkbfbI3Ol3heMYUizHZpMq9r8i1LN2q
-         WTp3rRb9/92FnRI6We2dvrqlCAxhfTuprzbl2ivz6uZYSlF93EZntrPp+BW1E6jVf5LL
-         bli1HDbTA4+ZaMQThfc/dKdYA8aoMa2WOhrud8Qp0qXVe/wMpR/OrFNZmZAByvpxoNaT
-         b24w==
+        d=google.com; s=20260707; t=1793139590; x=1793744390; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=IRLDp0EVirBnKgldSRz7ToSM81j0nsSsdeqUHhLddpw=;
+        b=MoSOl7PIkeGce068gAh7D8G+7RnRcf1PuJr9LdqRXqiM5yaz84Zo3Yw+KRrL2vptyy
+         cHSV/CR9uW20xoAgm9uIHG8CbWDVqZV2D590aJ9kKY1jqqg2qQhX/OXySZ0obh4LmXkF
+         6uzPaIl2mxI3Jlwm9VEtrmgll8gHm+5No5GwtTv6ZeCmrAv37EryrESfRlMQHwxGvUJx
+         6jWBOKW5rIB9qWJQY0wNFXIbNqrRBYlujKV7lvBZlvpCZ+1jT7cuTh4ZgfWZ1ohh/2VH
+         /mr1RrNXV5rQkz79T4kQldT+ALmrApbl72yXlYmslfyN8Mq9ztjsjWrXaDi89RkcjloH
+         IZZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793138234; x=1793743034;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
+        d=1e100.net; s=20260707; t=1793139590; x=1793744390;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=INM4lTecUqg3+ORjH8the43AegIL5wVO95lrhujQQt0=;
-        b=fDj0Nnk1Fh3UQndwigg1ciYUGPJpCrClCgmLRGFg3gc+GBsLx59Nf5hpJtAFLN1wuA
-         YDEBkw0dj23+J9xZ8GnlpUjnO/DxOyCEYF4yOK3R8zy0tYcJ7eHXqc1pjWsjcLeN94mv
-         Nt2gsAfXVCyedixi7m3ctcYut/Y9XwY2JINY3yrxyPpcGTZdV0pXAOVymlRwoGk6MPvU
-         477F2xdKlf5KmIPVayEUhdPSO4NNsXKbOIFhRcaLRywDUWaIejWaRpiXUqJcIDL7y2ek
-         IQA9oGd5wv2z5rdRGZj9LxbOBhdcaMHD8H7RdgFMeJToCzNGt2fNw+47Ysqv7x47QgTa
-         0hkg==
-X-Forwarded-Encrypted: i=1; AKwUvBwF6TL2j0SIBbaAZznMlHD5hyknG6+pGmkdZx+2CW86mxrDOaYmE9zIqbXQlbcQd4+LcsnoXA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYIVo/p9KL+1seisz4MPQjepCpsEVhvTSX4bU0z9qkeI0YabTGMr
-	DJM1d7cki1HkKFmsGU7RoKpLfBK3MRcehjpKuUVzslAdPqe+sqjtf5JlFsS+jg/x+SE5bmJG59E
-	JSOGRiV4YYnncHq3DDw==
-X-Received: from ejkh2.prod.google.com ([2002:a17:906:7182:b0:c46:743f:a4b9])
- (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:e84b:b0:c2e:3a72:ffbd with SMTP id a640c23a62f3a-c49bdf71b7bmr44517166b.41.1793138233642;
- Tue, 27 Oct 2026 14:57:13 -0700 (PDT)
-Date: Tue, 27 Oct 2026 21:57:12 +0000
-In-Reply-To: <CALzav=dYKAP7pKfoPtz32X1cT_tH4LN0X47_jTO8_HOCT4Pi=w@mail.gmail.com>
+        bh=IRLDp0EVirBnKgldSRz7ToSM81j0nsSsdeqUHhLddpw=;
+        b=TUiay7XqnAa1XJmOTFm3bKzIO6v3EPIAjD7EXxyMLwVRHKAODCAw3LyrQP/TtX2shJ
+         NZgpl011kng6+q6cCl3zv+Hvz/FS9/apoUM/SWO1x3LoF56QYaslxb9icyGlhS3RUMfU
+         afQaV/MVOweRadizPajH4sXPF4JJu474Yjsz/9HqjIjZVOpDNxrKas0rTkXdOmj3FlK0
+         XzueLaq4k6EgEo4I00cyhjfsneChRZBxVQGPkRPhJp61S4ketaCw/eaZlyXeI1NxCp52
+         4uRIp22v7qhGiAyR/ME2o2QE7Hfnir8n9mqwrI1BpdLkllCEPHEVrNNwKwyCpUWHqZBD
+         avWw==
+X-Forwarded-Encrypted: i=1; AKwUvBwlKprfjaiSmrvjCCYddB5eAWdxlkt0DdGaPb4HOzcwR5wI8qp6+rxqMqLmeepeMHqfRkhSeQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYLW9UAnkw8c+xHtpMbvf6kxcaADhpwkDfmFs54mzL6bAvq2NoaH
+	kcAi+70WDhIL8L15vWcQZiHFipEoc7D8TsN90zztjA1FRWwiEpA1JFKE3ry3YzcUiA==
+X-Gm-Gg: AYBFou3rH1v+RQ44H8r5y8LMUbNOREqE0dpWVFIpAkJjhW/cBehDQVZIIjNdC2a+1Nk
+	6WkaPecKxs6j8RRhW+oelOluNNXUjGRCbt+urbvZnY9DBX+USs3q/MHAnI6QIBac4kQ+/PqvHjl
+	NNjJpY2y0A8ZfKnmmpKWW63QjD99htM4SrRwJEcF8sVZLYrimCb8TkjO8lZprgI9rauU9U+Qr4+
+	e6i7SnzckOymlXLI/zmUFLW4JMGlx0DYwBcdS1ZPt24AmSxFP8rYm4wm4XDdaN5rstrf54B3VQt
+	9qt/9j7KOyhf2I8cm0OEudjiUN2fOF7WfRZZLPImznnhON34Fajq789vYIEHHCZsjKxX76MxZyV
+	Jvgjxpq7uHafBpzoz/C+Wyl8eQw83scZ8HBtbu2urWlK2N7rzk68Hd5bKj7U73dYEDTMhJGdXU+
+	4p9xMB4awjdbdGsN+IH/Qa6J9v72TCIw8gfld5TF+8X1tosdPiz6WPeW6upnh3W6N7edDKMtQ5K
+	Y/0Mydjji87PkNKW6V9u8yMXmplW4ZQR+qEp1uYPhXeYewPms8nFdFXtitcEjYY7a0oLtTD0qDT
+	pOVjtW7kiKaV8aPL/LjlayIxFepRaEBbYC2ETOKmNgVd7ZD6Gw==
+X-Received: by 2002:a17:902:dac7:b0:2e9:8c2b:979f with SMTP id d9443c01a7336-2eb018f7c12mr1057445ad.8.1793139589374;
+        Tue, 27 Oct 2026 15:19:49 -0700 (PDT)
+Received: from google.com (163.1.145.34.bc.googleusercontent.com. [34.145.1.163])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae5a48c2d3sm152945a91.5.2026.10.27.15.19.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2026 15:19:48 -0700 (PDT)
+Date: Tue, 27 Oct 2026 22:19:43 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, Pasha Tatashin <pasha.tatashin@soleen.com>, 
+	David Matlack <dmatlack@google.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Pranjal Shrivastava <praan@google.com>
+Subject: Re: [RFC PATCH 3/3] iommu/arm-smmu-v3: Add support for hitless
+ replace of S1 domains
+Message-ID: <auEf3eH6QoiM-f80@google.com>
+References: <20260925011308.3381953-1-skhawaja@google.com>
+ <20260925011308.3381953-4-skhawaja@google.com>
+ <3d1eb92f-3447-49f0-a210-fd4fa015304b@arm.com>
+ <20261023134900.GB3977851@ziepe.ca>
+ <d4570e2d-5b92-4f05-a8b3-34d5d5b299bd@arm.com>
+ <20261023142909.GG3977851@ziepe.ca>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -79,130 +105,54 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261021152527.375070-1-tarunsahu@google.com> <20261021152527.375070-4-tarunsahu@google.com>
- <atlQ_Er0Ig7CCSxv@google.com> <CALzav=f00C4yOAseNunW8GgQTDUGWT927Qy=TLm-3-J0TEDH8Q@mail.gmail.com>
- <9huzzew0el59.fsf@tarunix.c.googlers.com> <at_CncIPYCxOVkLo@google.com>
- <auDT5MjXYq3lcQjE@google.com> <CALzav=dYKAP7pKfoPtz32X1cT_tH4LN0X47_jTO8_HOCT4Pi=w@mail.gmail.com>
-Message-ID: <9huztsm6958n.fsf@tarunix.c.googlers.com>
-Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
- a 2-bit pair feature header
-From: tarunsahu@google.com
-To: David Matlack <dmatlack@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
-	Mike Rapoport <rppt@kernel.org>, Pratyush Yadav <pratyush@kernel.org>, maz@kernel.org, arnd@arndb.de, 
-	jgg@nvidia.com, robin.murphy@arm.com, loganodell@google.com, 
-	oupton@kernel.org, kevin.tian@intel.com, alex@shazbot.org, 
-	dwmw2@infradead.org, pbonzini@redhat.com, seanjc@google.com, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
-	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
-	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20261023142909.GG3977851@ziepe.ca>
 
-David Matlack <dmatlack@google.com> writes:
+On Fri, Oct 23, 2026 at 11:29:09AM -0300, Jason Gunthorpe wrote:
+>On Fri, Oct 23, 2026 at 03:04:23PM +0100, Robin Murphy wrote:
+>> On 23/10/2026 2:49 pm, Jason Gunthorpe wrote:
+>> > On Fri, Oct 23, 2026 at 02:43:28PM +0100, Robin Murphy wrote:
+>> > > > @@ -3664,8 +3726,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev,
+>> > > >    		struct arm_smmu_cd target_cd;
+>> > > >    		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
+>> > > > -		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
+>> > > > -					&target_cd);
+>> > > > +		arm_smmu_replace_cd_entry(master, IOMMU_NO_PASID, cdptr,
+>> > > > +					  &target_cd);
+>> > >
+>> > > No, we cannot blindly do this for arbitrary ->attach_dev calls - the
+>> > > majority of S1->S1 transitions are going to be moving back and forth between
+>> > > the default domain and user domains, where there is zero expectation, let
+>> > > alone guarantee, that the translations would be equivalent and thus not
+>> > > liable to lead to TLB conflict aborts or amalgamation hell.
+>> >
+>> > Heh, yeah this probably only works properly with BBML2 or something so
+>> > the temporary ASID doesn't explode.
+>>
+>> This is fundamental VMSA behaviour - see R_FVQCK in the Arm ARM. BBML only
+>> applies to the one specific case of identical VA->PA translations with
+>> identical attributes _only_ differing in the leaf level at which they are
+>> described.
 
-> On Tue, Oct 27, 2026 at 9:40=E2=80=AFAM Pasha Tatashin
-> <pasha.tatashin@soleen.com> wrote:
->>
->> On 10-26 21:14, David Matlack wrote:
->> > On 2026-10-26 11:50 AM, tarunsahu@google.com wrote:
->> > > Right, Required bit should be source kernel payload property to tell
->> > > target kernel that the payload must be handled to correctly deserial=
-ize
->> > > the data. It should be source kernel (userspace) responsiblity to ma=
-ke
->> > > sure it understand the target kernel before doing liveupdate.
->> > >
->> > > Saying this, During deserialization, target kernel's required bit is=
- not
->> > > necessary. So I propose the following truth table.
->> > >
->> > > Source hdr  Target supported[i]  Action
->> > > ----------  -------------------  ----------------------------------
->> > > 00          0 or 1               Accept: feature absent in payload
->> > > 01          0                    Accept: ignore the feature data
->> > > 01          1                    Accept: use the feature data
->> > > 11          0                    Reject: -EOPNOTSUPP
->> > > 11          1                    Accept: use the feature data
->> > > 10          0 or 1               Reject: -EINVAL (invalid encoding)
->> >
->> > Yes, this matches what I had in mind for the semantics.
->> >
->> > To be explicit: the source kernel should set the bits for each Live
->> > Update based on what is actually preserved, rather than generating the
->> > header from a static per-kernel array. E.g. memfd would only mark a
->> > feature present for memfds that actually use it. That's what allows
->> > rollback to an older kernel as long as nothing being preserved depends
->> > on the new feature.
->> >
->> > But looking at this again, I think the required bit is redundant. Whet=
-her
->> > a feature can be safely ignored is a property of the feature itself, n=
-ot
->> > of any particular file. Every file that has a feature present will hav=
-e
->> > the same required bit for it. The only thing that actually varies per
->> > file is whether the feature is present.
->> >
->> > The required bit still has to be conveyed to the target somehow, since
->> > the kernel that needs it is the one that doesn't know about the featur=
-e.
->> > But it can be conveyed by the feature's number rather than an extra bi=
-t:
->> > split the flag space into required features and optional features, and
->> > assign each feature to one of them when it is defined. This is similar
->> > to the required_flags and optional_flags approach in struct pci_ser [1=
-].
->> >
->> > Keeping the same header shape as discussed with Pasha:
->> >
->> > struct kho_ser_hdr {
->> >     __u32 size;           /* Size of header + payload in bytes */
->> >     __u16 nr_required;    /* Number of required feature bits */
->> >     __u16 nr_optional;    /* Number of optional feature bits */
->> >     __u64 flags[];        /* Required bits, followed by optional bits =
-*/
->> > };
->> >
->> > Required feature N is bit N of flags[], and optional feature N is bit
->> > nr_required + N (using nr_required from the incoming header). The leng=
-th
->> > of flags[] is DIV_ROUND_UP(nr_required + nr_optional, 64). Both spaces
->> > are numbered contiguously, so there are no gaps, and up to 64 features
->> > still fit in a 16-byte header.
->> >
->> > Each bit just means the feature is present, so the truth table becomes=
-:
->> >
->> > Source bit       Target supports  Action
->> > ---------------  ---------------  ------------------------------
->> > Not set          -                Accept: feature absent
->> > Optional set     No               Accept: ignore the feature data
->> > Optional set     Yes              Accept: use the feature data
->> > Required set     No               Reject: -EOPNOTSUPP
->> > Required set     Yes              Accept: use the feature data
->> >
->>
->> I like this proposal. I bet most features are going to be either
->> optional or required, and even if we ever have a magical
->> sometimes-optional feature, it can have its own required flag. So, no
->> need to pay double the cost on every flag.
->>
->> Just need to make sure that optional features always start from 0, in
->> their own enum, so the offset can be computed correctly in the incoming
->> kernel.
+Thinking about this more, in case of a conflict, what is the expected
+behaviour? Does it result in a DMA fault for the affected IOVA, or is it
+a catastrophic event for the SMMU itself, affecting other devices and
+the whole system?
 >
-> Right. Instead of having a single 32-bit feature space where every
-> feature can either be optional or required, we have 2 16-bit feature
-> spaces, one for required features and one for optional features. Both
-> feature spaces span from 0 to 2^16-1, and then are packed into
-> flags[].
+>Sigh, I thought ARM got past that 'tlb conflicts catch fire'.
+>
+>So, yeah we need a flag that says "I pinky swear these are identical
+>translations". And it has to be a kernel only flag since we can't let
+>userspace trigger this.
 
+Agreed, this should only be requestable through a kernel-only flag.
+ From the live update side, we would set it only when replacing the
+restored (preserved) domain with the new one, where the translations are
+identical by construction, including the page sizes used.
+>
+>Jason
 
-Okay sounds good. I will send the next version soon. Also I belive the
-design is decided, So I will drop the RFC tag also.
-
-~Tarun
+Thanks,
+Sami
