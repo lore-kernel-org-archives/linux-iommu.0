@@ -1,143 +1,107 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793102331;
-	b=c4K5XpzNvm/Hm3kOdzIWMBUOJcVIrkAQ9s9CgubKv5POT7dmfP8BWoN1QYspWcyq9QKT
-	 664PkzqPdEzeyNm8/hj8GgTOLoVRIo3SYrpMoYgp6Ci0Q65axIJN2+HkNYRbD+7MlWdwu
-	 g80aAna1sv88JMd1IhIw7on0bcH/CXoz8yy6KQRmVv7pvySB8tLQPB+XHPS1NLADMJQfC
-	 VO+nP6X7w0f9msljVtp3M+NYKnlNVSFC6ffkeSkUdhulkXdR1xcQfMFegfZob/hX+oVgu
-	 DMJ++Z2RzQX3yug5k193CLkw1ii9rGKyzfZMGpQNXaXI9g1ceBaI8h0/Vg+ArtHVcYg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793102331;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
-	 To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-GUID:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Spam-Details-Enc:X-Authority-Analysis:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=;
-	b=ZHMUzCMDytprQf38JLtETHPlIohbXb3cKCLX6GcSOyzo/0Mr50J9/TPpWhqWjGrBC4/r
-	 ZIOzy5QM7FpFca76Uly8GmT4y8z7txBj5fJYR/AnIM6TxEiX1OiR+O3qb0ZJ7vc3au729
-	 IXx3HyyhPbPUPu+taARODyj8wrRGL82zt3lvKB2VGuEiFYMnptdtyhAVKvj/cVq5w9KWw
-	 we6yYx8/KhAfn7nZRUWWGWxj1bizR7HSwvmXg2b2+KeZq06HKcDhx6aDkXOmc6z+929Gr
-	 b+BEHNNlyP6/KojbygPbs36t+Tl3gp9UPqT2d1AbOfDSU2HuOSM4+Orc/MlM8ql8kAg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=kBfSKDWU;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=N0KpnqVH;
-	arc=none smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.209.41
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793102770;
+	b=ysMGDBHG1Iz90fn2TaM3wE/44lDFYCZnb7qN2bVxHvrsUO0FRrsj4p1ZmVPl6lxoAgb1
+	 Wled4v+V3/uoShzhw0O0y47DdGejl3uZUn40CSJWPLlVipB5KO4mmpleoY2Dq5y2inoqL
+	 eePxgn7n23PdOt2E0TbKACZpjB3JEIwVtCCjcLyvP7sPk6bUtfEDLqmpiZf4ueMnoNQZG
+	 NnN9+HudV77xhXR7gWUj2t78F8OtkeLZjUFdhWygpaBVu9r1PVsts96av6Cfy27teqnaG
+	 VjX/qrLXKcnm5xk4iaIdOCH/YuLrOu5VhN7EJU6d2G9gTDPwD+P6JwmcwvH52BSAw2Q==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793102770;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=CUV4Br7Ca8wHwPrF+dwgtoKmnLHAP3rbbWCKAPurOO0=;
+	b=MT+IrZhnjnXdl1p88tt9nnJde5GrHHlGVD7oPnOKUvJdMcGjWb5LUcgrgnL3KopGn+GD
+	 nn0JYCbnUb/r4RxdhHlG2XqOR+lWpGqa6MagD2xEQl6T0hl9ci/SS7a92SNev3gof5nm4
+	 SQSyBsfTT9YD0ZqY3//gDPy/d+/AMTmOMPq/mSTOuNtTPi7JaNXXY/xi7QAvjXQIGptEw
+	 irJVNEwouVeMZsCuxpeE5h7Z7gjBVB3keI1oaZDWabXA3mb0DIUxEkrjmx7umZ1UwO5kT
+	 01T+x7TLjq3PxSHeFAIyEuCStAB/pLeM6wiONR3LoI8APcz2sYSfJyMMslnP2qiG2zQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=n3MI1MGV;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.209.41
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012041.outbound.protection.outlook.com [40.107.209.41])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6632B606A31F
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:58:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6632B606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9438606A31F
+	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 12:06:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E9438606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=kBfSKDWU;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=N0KpnqVH
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69RAeCiJ3012104
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:58:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=; b=kBfSKDWUMiXE2MWx
-	UfYT9MTCvVbTk9XVkED0JWhz24h90TOvx3quBRZyIGkuBmeOcLVAASYHkSPc5jd9
-	20OL1qOFckWZdVF22xCb4DHsImDKQJ+HY0gE9Puoq8vfCxMql1dRBYs6BmAlVWkH
-	RckL2BFQH4slxrpmXRzhtbMnE3opd90cHsq4rPjmX5givw+9B3vXRWeJObmuRz6N
-	eIczvP7UgFt+gMQysBziSYzWN+aCk2AJj+H9AcxTNT5TBbx8jcMrNpGfkkboZj58
-	MM8fBhuJ041bi8ILWgKK1X+7Svs5sFcPpxWAhjOsO50G+lKkwvnJnlDOD4CQpqOn
-	EscHRw==
-Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com [209.85.217.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hje3davcj-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 11:58:50 +0000 (GMT)
-Received: by mail-vs1-f72.google.com with SMTP id ada2fe7eead31-7bf5c02f7a3so632415137.2
-        for <iommu@lists.linux.dev>; Tue, 27 Oct 2026 04:58:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793102329; x=1793707129; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=;
-        b=N0KpnqVHHMktm375/9fLv1qzb6VRb81Tg1itXnIrRX6ln7DosRbfv7/qsb3udBCRPb
-         1wDT+CXy+5eCRSr6phgEYlIBBEUVKU9kUqRlQ0ddKw1sQZudWy98iYH25NzrPsbPQRLP
-         79nlPaEHP9z8QtcqbAJi0sz3FQGoG5HY50QfNAVsTI7Vx8IXH3QnJwT1mG1FHhAA5WjE
-         YkkI01kSbjlBOzlHMpkhMxTz68PqbYK9g9oWLaV45Z7WkUzZyKEL5HeHMA0QF8W0SKMf
-         bSyDbzZ9ie6s2emLmNSbcwMD7TVuiawXxyOdY3ZEZrNfrGvCO36omjBkJT592E50D/kH
-         K5hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793102329; x=1793707129;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=8WFUrHNWaio59C4MJug1pehFmtY/vUi9V1RMigc1CXo=;
-        b=KCefEYSsPKJkRi15S1ohWOEAR5yYxc1eDEPJUjx61uBTL5gJfrNz6X/STJAfpUUlzK
-         JY1vtmmzcal9JFsiS6SR668vRNKfN/b1TZF8tYcUFp1uWC+8RKhxAUv4OF0PIdX5Gjuz
-         g7ekUL/JTrvm+EXqVD6dJkKlMg8C/LZD4ajcu1WinEIwF1a3C5v03R4h7VWcXoUjy4PY
-         H4IL4sinP0a4tEjaRzwFLos4PJqIOAhO4rfTRh3VcvDJC8PGFZydLjh8pwSKpt4ISnZR
-         fq36YplNCMSmhDymk95yjYm16oFI8kxpgUiyt9y2yHELGM6u0cjLqcpWPO9oLU1NJAIM
-         D4ww==
-X-Forwarded-Encrypted: i=1; AKwUvBxpQPSzcxqSIkCCV9f9Fjkk5UDcmNHH8BFML/5NxDlZ6WwUWhR1uuWU5qlzfNwcTOeLn2DhTg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYJLttJne1stFO7oaSnrPNkJlpk9y8vc4QsIDou4wkVt/QA/D0KG
-	bmV8VcLaF/asVFVQCxUgk/o1edABjC4wO9eQ/z+XvGf/eeH/pRgXXLVWuXEGZRlX5McCoYsNNUH
-	f9EB5j7ygz/IS4H+T5BCzR3wtcIV3UtGP7GowXtrJWwTMSgq+xjXKdR7c+A==
-X-Gm-Gg: AYBFou0b6DG2anQJhYgnXKlIxZg78ljEsjoAJN7sZQzhME9gLt8+LPr5lD7om7USyTl
-	9/y3qo1sruqayCeQACW0nuTWPDMwHSXGEHk7cSejJXn6HwifzyZYib8gi2qii13lCLWWmsHWEPN
-	TEnnI7o8x7oep+joQ6Y6rsiTQhi83nX2wIhb47Rwth8T2a4mqPKmvHXlROrAy73Pluyx7UQJluR
-	mNC6umui12CHCBpOqGXNwMnPseEyh1qSUmrkaSDKX9THKKeueUiz1g84H2f+ed8M9It1Ig4wlLi
-	YVsgD6VpQkHy4mTCzLMJUwX1Oma7cANRY32jBL3/kH5Hk6dKNjXreHCMM6dXn2owhuSkpk+ZXtJ
-	92wpy9i7Hy5KL+Lp1NyJctXtzHSAlPUZoBSq8EFIvj2ks8vHa8bD09eh2pKfCZGCZ7dO+nyugOZ
-	bDzI9bjuXu7Dgc
-X-Received: by 2002:a05:6102:2ad2:b0:7c3:875e:593b with SMTP id ada2fe7eead31-7ce5ce246dfmr3089882137.32.1793102329213;
-        Tue, 27 Oct 2026 04:58:49 -0700 (PDT)
-X-Received: by 2002:a05:6102:2ad2:b0:7c3:875e:593b with SMTP id ada2fe7eead31-7ce5ce246dfmr3089855137.32.1793102328285;
-        Tue, 27 Oct 2026 04:58:48 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5bfb7a6aca4sm2092776e87.15.2026.10.27.04.58.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2026 04:58:46 -0700 (PDT)
-Date: Tue, 27 Oct 2026 13:58:45 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowangio@gmail.com>,
-        Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-        Philipp Stanner <phasta@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Abel Vesa <abelvesa@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Flemin Jose <flemin.jose@oss.qualcomm.com>,
-        Mahadevan P <mahap@oss.qualcomm.com>, virtualization@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v2 00/23] drm/msm/dcp: Add Qualcomm DCP display support
-Message-ID: <55uzx3sa4jor5p7i5erhyuangyfvc3ssp5rgelagk4ysply2ip@3x46t7swwj56>
-References: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=n3MI1MGV
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CimoqBVaSa4/USRfg/e9ZlN5usX+HNhhnNXOM/t5TJwvlZrMG/Ceuz00uGgHBF48PflTHCf5k2Zo6bhsvA7AodyNhSdNuC9L2Wf/qm307BuO4DrpfuFr2kmJ9Ev4VYpWZBdp234XQaurE0TfRkEcItiuWoefevLMeuT7y+PT2Itoj5TEB5cuJVkNWjL7nBZuZX25z5IxsebUAfnOQUD7N2SckPZ4yfT61sRJgvCHRQwk+fU9pMJ9VWFv1NbT7dEcNQeDdqqzXVktI2epVMWS4YYtDJz4S+GNsVQ/QCurqaiRvZoU1Rn7d+JN6OhAJOBP4RbcfkEAxTBRtySH8AzQJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CUV4Br7Ca8wHwPrF+dwgtoKmnLHAP3rbbWCKAPurOO0=;
+ b=vl1pDbL2sK22H6AuNKXissL/rXXhgVAQvD8v11eO2hDXvdOsPzIqbmwcDnn3BlIAHuFFo6/0snmQDXpPmBikuHsFyUzFjz8FLiEhjoVHcagxg1EO9TAe5GfKFtMKLkrfIWCpRSavxrno5p4fm+fxDLqimOa9ELQ7193DY22ciEpEa0aPDI6+D07j4JMgNfDdILUMYuQM7Ye3SBEJ1dm2eo2cUsSuC4cGOy9k4swsoS53SI8soaulrtnPpmGUdKo6lswzVc9SBfJOtCm0A9hBaAi3Ns3UX4J+xibgcCckyMLHot98ahRDDuLO04jPRDNFxh5gDzQVZ8hBzoRZRnG5cA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CUV4Br7Ca8wHwPrF+dwgtoKmnLHAP3rbbWCKAPurOO0=;
+ b=n3MI1MGVuXGwBgF+r2eI3Z4bhGYeG54CxBXelfco/HZSQklgs5iK8hnS09v8Xg7cu34pkzPYRjPOrHJ3WRtduXruzZItL+HeWxSe2Zt/upy7h+y5ix0E3b+FS2SNEJA4H0uw3glXeOr04XkdnKVBYN3pXWntSBBLT97eMM9kPIc=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by DSVPR12MB999172.namprd12.prod.outlook.com (2603:10b6:8:38b::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Tue, 27 Oct
+ 2026 12:06:02 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0546.021; Tue, 27 Oct 2026
+ 12:06:02 +0000
+Message-ID: <3151a820-c583-4968-8440-673a9e390446@amd.com>
+Date: Tue, 27 Oct 2026 13:05:55 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 21/26] treewide: Rename dma_buf_map_attachment(_unlocked)
+ to dma_buf_sgt_
+To: Alistair Popple <apopple@nvidia.com>, dri-devel@lists.freedesktop.org,
+ sumit.semwal@linaro.org, jgg@nvidia.com
+Cc: =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Matthew Brost <matthew.brost@intel.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>,
+ Dongwon Kim <dongwon.kim@intel.com>, Leon Romanovsky <leonro@nvidia.com>,
+ Kevin Tian <kevin.tian@intel.com>, Xu Yilun <yilun.xu@linux.intel.com>,
+ Karl Mehltretter <kmehltretter@gmail.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
+ <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
+ intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+ linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+ Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
+ jhubbard@nvidia.com
+References: <20261026053623.202642-1-apopple@nvidia.com>
+ <20261026053623.202642-22-apopple@nvidia.com>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20261026053623.202642-22-apopple@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0012.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a::22) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -147,176 +111,639 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDI3MDA0NyBTYWx0ZWRfX8+0Dy1Wulqd9
- 4Qpr10u9lgjxyLh7fwjC8QRZQiLoZQUitqaRK8rrXL80XGCLAsfdlfhnE60KmHhIQ4n6Dh1BmIu
- 4IhiJ1TGoX21BnT0x92u20FVrOKvWto=
-X-Proofpoint-GUID: JDYvC0ewBsfB491m9xgNqACIMaQplr7g
-X-Proofpoint-ORIG-GUID: JDYvC0ewBsfB491m9xgNqACIMaQplr7g
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDI3MDA0NyBTYWx0ZWRfX3v+rM/211t4i
- RnfYyPRHZToDZseiKNIYcwHyyVzearLyzV3a5Kf/rhxRga4y9gF1oUILfwqGaaNhEbz7h4fQbaH
- XPpScnPQd2PEJzmvyGuw6lBBeVGuWITleTdQfWbohxIJ7fkiCcuQWel7fhxi9SjYj9c9oWaSies
- 8DSSlphJFhRL5ga9IgIA9AAAweSCdHhcYhC2x34MV8GbXLynC6b7jYmJDPwOdsnV0gYAg7rR7OT
- OGk4an/iwXot+rsYhd4vj1RfWNLasFDl0jOLARMd5B75u/3lcjeeB084sFxEb1tbzvWxXOma99v
- t9OUGNIR0jLvLRCqDcuJUlPe3uF/M0IWvAntsRrJhQoAFGe8z6Jxp0JFloboWhThu0VGwnyt55f
- wn0J5A1a3iGC/989nM/kESEGrR5PKEz79MUzY6zQSIFxZDBexi7CkLSwdBSUYivnOAYv2yHQHsf
- LDtOxdvPeoXklkppv/Q==
-X-Authority-Analysis: v=2.4 cv=SN/Xx+vH c=1 sm=1 tr=0 ts=6ae091fa cx=c_pps
- a=DUEm7b3gzWu7BqY5nP7+9g==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22 a=sWvDS1lmqIG2hvCGZjwA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=-aSRE8QhW-JAV6biHavz:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-27_02,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 spamscore=0 malwarescore=0 phishscore=0 adultscore=0
- lowpriorityscore=0 clxscore=1015 priorityscore=1501 suspectscore=0
- bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2610190000
- definitions=main-2610270047
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|DSVPR12MB999172:EE_
+X-MS-Office365-Filtering-Correlation-Id: 883f6f9a-1e8e-415d-2f43-08df3422ab6f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|23010399003|1800799024|7416014|376014|261009220027099003|261009223327099003|261009221227099003|261022105027099003|261009223027099003|261009221727099003|261022075727099003|261021123027099003|261021121427099003|10067099003|56012099006|261026140227099003|6133799003|18002099003|22082099003|261026121527099003|11063799006|4143699003;
+X-Microsoft-Antispam-Message-Info:
+	vzs5s5FLgEL8M08g22mEhF9xfmIjw077zhHMhRhEvSN1/IE4HQui7ykEogJB7OY54Ugh+hgLePNRWSLYUuswvN7gi07shf/DicPB9RURAPC4S5TLHb4cGxvykA742o99fJTTe1T/43oCpwY4NW14NcQq7PwX4ijG75AlCKf4unORclLV3oodOK0/l+70EAbDZoBVZ8Ps38NAho+vr5Cb0jpdPmrr7gSM4noBXBlB6sOMahMUOdzOgULsYSFsc/ol55x7Vvg4uMzrmx/7xfWJIgidkwgrz8HZo+ubw3XM3XzVTR8SrIK6K+it7/qRX8eG+7UFqGoiO/cKKpGFWUYxhN2/H5R4WJop8uy6iV79RBZUGXSGchtgy3nZtKtJUljF3GnrjWycS7x2i3QiuBhwTKwnUqUtcFF+OJ15q2Tj6yYUPdVRjiggb8vL4NvmSuJD1CjkuPsiLHjilcrkczW8E1mmLiDuM+LV10FE+yvEDoY076e5xQq+zGof3AGh2uFthHW4jd6g1KUd/3Zgfd5ZNFRTHUWzZqP7DCEVbUKhDwcAOkZhlf8XJNHcNO8rVhEod+fHZkjN97XsPqxL8Hvlke87K2GO8Zl4m/anrwOnetw+ijPWS3OfH2yDx6z++KpOFUDkNnnL8NNq/aD20UE8tSPHndib4F2byi6FKBT0YG4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(23010399003)(1800799024)(7416014)(376014)(261009220027099003)(261009223327099003)(261009221227099003)(261022105027099003)(261009223027099003)(261009221727099003)(261022075727099003)(261021123027099003)(261021121427099003)(10067099003)(56012099006)(261026140227099003)(6133799003)(18002099003)(22082099003)(261026121527099003)(11063799006)(4143699003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Y2diaTVLSUd3aXVDK0ZZbVJwUVdTSjdUckV4ckpLUHp4bDFwMjFjeVBleUIx?=
+ =?utf-8?B?dVVlS3BtUTFBbW8xL3NTeG96KzlpZ0Q0b0daaW4wN3drS2ZHR04ycVRQOHdj?=
+ =?utf-8?B?NytGaFhhR29JaUdralpkZW5kYUR2VUIyZUdwdTU3VmNtZXpUbHFGc1ZiTHhT?=
+ =?utf-8?B?Ly93L0NkMUhOSURBbThXZTl1SGlUcU9XeGE0cmY2ZlF3ckdCaXdhbE5tS0ZP?=
+ =?utf-8?B?Ui9jTHJBbXF5Sndtc0h4a0JTS1l6WEF0ZWdPbmtEajdKSmIya3RzYjJ2cWp4?=
+ =?utf-8?B?U3JZMitFMHJTUm4xZDZaV1JtVmwvd3hpYUhZenhEZEFyTm5KZ3V3S3NvdEFZ?=
+ =?utf-8?B?ai8rcVlEeFVQcmprTzFGditjcmZjSjZJMlJtQ0dweUR3amlLZEN2eTJDKzh1?=
+ =?utf-8?B?aGhxS1AzN0t2enExSHJ3NlMwVEg4d1BBOU9WaHVIVkZQWXU4TzhQUXpGNjlL?=
+ =?utf-8?B?UWJZRllmYmlkd3M2NHpFK1JsaG13N1NoYXVxejlhaUNYS0lQNG1RUUdhd0RK?=
+ =?utf-8?B?WEZmYy9PcnlDUHgxcm1hTUZ0YWYzSDl5RnowSldmK0ZaQnJWbW00N3NKL2tB?=
+ =?utf-8?B?cEZsdnQ1eFljdi9rd2gvQUw0Q0RqVy9uM3l6d2FhWmxBdmtYMjNMaGlrN3l2?=
+ =?utf-8?B?Yjl2Y0VxeTFoRm5mMldpM1l3d016Q3lpSzkyYUVVOWpIT1VoWWI4dFJsckVU?=
+ =?utf-8?B?OGk5M0x3OUpsZ0pUZGJmL0lkckFUTnJwaENxUzkxdWdRVkRjUis4N0RSb2M5?=
+ =?utf-8?B?RVI3VnJUWHhqS0t2Vnp1WkNDY0czK25iMHozc0pGdUcvdW1lckFHNGNKUHYw?=
+ =?utf-8?B?OXh5NWtxWTVEajg4WC9MMHU2a3hWUnU1eXRrWHlKdW1sc0JBaGw3YTlJLzlh?=
+ =?utf-8?B?MG9UVFY0U0RsVzJmMGtRSjRsN1FkU1BvdkFNcGtpcDFod0g5S2FRd29VWktG?=
+ =?utf-8?B?L0phUjNKQStURWNHN2k4MmhhV0NHcWROWGh0bDhpUkZsbUt5RGhheFFXRENC?=
+ =?utf-8?B?QlRWbVNaei84YU0vZC9QbjdtRkxCUnRaZDZBYVBwWWxWL0ZXK0R2S09TOXFK?=
+ =?utf-8?B?bG90VCt3MEFTYU1tSW5wUnBnaHZITFdDc1hiZlRiQmlDakRCQ080UzEwUDBS?=
+ =?utf-8?B?ZkJOTHczT3dGRHVEUGRHTXJRM2sxdnBRdHNEUFU0c0FlR0FOdFRzaG5BcWVY?=
+ =?utf-8?B?RjdnRDYybVYvckRwME5UZDVrZ2NmaUN4SXdEY25qV0dOdTA5TXV3N2xqWGJG?=
+ =?utf-8?B?aUN1L2g3TEtIaldxQmNoNC9hN0lIMkczRXN1SWt1Wko2aHN2OGFxWE4rcnI0?=
+ =?utf-8?B?eFh6NmpyQkU3dUUxano3bVZDVTFPS3hOa095Y1Bzdml4VWZZdnNQY0ZJNGRx?=
+ =?utf-8?B?Q1kxZmUrRyt4RHlYZVBNSTcvUUM1S3hPZVk1TkZSd05aU1NjVTNtd24yNC9Y?=
+ =?utf-8?B?NzBXZDF2R2kxZ2dCTDVHVWR0bTJXQVRFZ2pYQjR3Um50ZUhqZE9BN20xb0NE?=
+ =?utf-8?B?Y3RUUFJBTmJ3STNXSzR4NFNyQkhwNnpScU1NWmFDelNZbGFUL0RwZmQ3Tmhp?=
+ =?utf-8?B?N2lzRCsxanVHenplakYyTU9zZzhOY1JJN3FtRnNsNy9vUjh3WXNpeXVsWjJq?=
+ =?utf-8?B?cDYvenZicjFuSjNIbjZLbHh6Y3l1eWpPRFlqTkt0eWo1QW1DTHNSa3ZnYmZr?=
+ =?utf-8?B?ckpwYTdyTGlhQngwYWVVTVJ3TlFtUFlNeWdUYmx6WXhNN0hJcEN4Ri9IcWd3?=
+ =?utf-8?B?M0NrbjFaaDVaYkpjYnZxeDFwczhURTBhdzJ2RkNSUTM2bGtOVkFtZSswT3hT?=
+ =?utf-8?B?ZWdRRFFudGRBTjdYakdDUG42NFRnYXluOHl3SFJEL0tkeXFPU2Ftbm5mM0tl?=
+ =?utf-8?B?ZWdicmhKTGRTbDBuRGhqcEp5eEZOV2RTVXhySTFua0tyVFhvQkt3NnFHUkt3?=
+ =?utf-8?B?cUpTVkZhMnQ0R25ZRU4veXI5ZTlZYUczbjRZcnBONWRHR1dYQWJxWHE3cjV1?=
+ =?utf-8?B?SkR2UmNnMCt3Njc1SGJLUXpiYnQ3ZE5yUUtuQmRhdEd2QkIrTGJYZktTVlFE?=
+ =?utf-8?B?d3R5amtqcUdHS09vSUg5Y1R5VkE5MzR1YXdLbTgrUUEzUXRoR3gyVE9UcHp5?=
+ =?utf-8?B?RHB1MVJXNnBHaEVUOE1Sa2piWU1LR0lIV2F3dDM4dEJPSWdQRXMxQ21Na0NX?=
+ =?utf-8?B?MXgrajJ3V3p4OWF2NmtNcWJ2RzBTR1JxNjFyeWRpWlA1YnJsblFFZXNqMklw?=
+ =?utf-8?B?dUw5dkRrdGlhcW9Ld3d0N2RoMW9RejM4akcyWnZMNFlKSEkvaTVraWJPTm4z?=
+ =?utf-8?Q?ESEUafNztzMCV4cC1C?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 883f6f9a-1e8e-415d-2f43-08df3422ab6f
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2026 12:06:02.2624
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jxpRtpWyrx5JF7QngGjoa+N0ElvH5yL3DMSONuMOFGiEQ0A8aKxm2XxC3Bsz2LUw
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DSVPR12MB999172
 
-On Mon, Oct 26, 2026 at 11:51:10AM +0530, Jayant Shekhar wrote:
-> On Qualcomm platforms using the Display Co-Processor (DCP), the display
-> hardware is owned and programmed by firmware. Linux does not access the
-> display controller, DSI controller, DSI PHY, display clocks, or other
-> display pipeline registers.
+On 10/26/26 06:36, Alistair Popple wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> The display pipeline must nevertheless be exposed through the DRM/KMS
-> interfaces so userspace can perform modesetting, framebuffer updates,
-> panel control, and page flips.
+> This map function only works with SGT importers.
 > 
-> This series adds a DCP KMS backend to MSM DRM. It represents the
-> firmware-owned display pipeline and translates DRM operations into HFI
-> commands.
-> 
-> DCP communicates with Linux over VirtIO and uses the HFI protocol for
-> command and response handling, capability discovery, and display events.
-> 
-> This series adds:
-> 
-> - Device-tree bindings for the Qualcomm DCP VirtIO transport wrapper,
->   firmware-visible IOVA ranges, separate transport and framebuffer IOMMU
->   contexts, IPCC power notification, interrupts, and the external DSI
->   display graph.
-> 
-> - HFI protocol definitions and packet helpers for capability discovery,
->   modesetting, plane and CRTC configuration, DSI, and panel control.
-> 
-> - A Qualcomm DCP transport wrapper which initializes the IPCC channel,
->   sends the required power notification, and registers the DCP VirtIO
->   device directly. The wrapper also implements the MMIO transport and
->   keeps VirtIO queue activity ordered with DCP power transitions.
-> 
-> - VirtIO command and response queues. HFI command, response, and
->   capability buffers are allocated through the DMA API in the address
->   space visible to DCP firmware.
-> 
-> - Synchronous command tracking, asynchronous response dispatch, timeout
->   handling, and queue teardown synchronization for safe device removal.
-> 
-> - Capability discovery for displays, CRTCs, mixers, VIG and DMA pipes,
->   DSI interfaces, and panel resources.
-> 
-> - DRM planes and CRTCs using the standard atomic-state model. DRM state is
->   translated into HFI properties for layer configuration, mixer limits,
->   bandwidth and clock properties, frame sequencing, and triggering.
-> 
-> - An MSM KMS backend, DCP encoder, and DSI bridge. The backend reuses the
->   existing MSM DRM device, GEM and framebuffer handling, atomic commit
->   infrastructure, encoder, bridge, and connector support.
-> 
-> - Asynchronous VSYNC, frame-scan completion, and error events propagated to
->   DRM for vblank and page-flip completion.
-> 
-> - IPCC power notifications to wake DCP firmware and coordinate HFI queue
->   activity across firmware power transitions.
-> 
-> DCP is integrated as an MSM KMS backend rather than a separate DRM device.
-> This preserves the userspace-visible MSM DRM device and allows Linux to
-> retain normal DRM/KMS semantics while display hardware remains owned by
-> firmware.
-> 
-> The initial implementation supports the DSI output described below and
-> uses resources reported by firmware. Split-pipe, multirect, cursor-pipe,
-> partial-update, DisplayPort, and writeback support are deferred.
-> 
-> Tested on the Qualcomm Hawi MTP with an NT37801 DSC command-mode panel:
-> 
-> - Display console at 1440x3200.
-> - Panel initialization and DCS transfers complete successfully.
-> 
-> Device Tree Topology
-> ====================
-> 
->   qcom,dcp-virtio
->   ├── transport IOMMU context
->   ├── firmware-visible iommu-ranges
->   ├── VirtIO and power-notify interrupts
->   ├── dcp-power-tx mailbox
->   └── dcp-subsystem
->       ├── compatible = "virtio,device34"
->       ├── framebuffer IOMMU context
->       ├── port@0
->       │   └── endpoint ─────────────── panel endpoint
->       └── dsi@0
->           └── panel@0
-> 
-> The DCP INTF endpoint connects directly to the panel endpoint. Firmware
-> internal paths, including the INTF-to-DSI connection, are not described in
-> the device tree.
-> 
-> Runtime Architecture
-> ====================
-> 
->   Linux DRM/KMS
->   └── DCP MSM KMS backend
->       ├── planes, CRTCs, encoder, connector, and DSI bridge
->       └── DRM atomic state and commit handling
->                   │
->                   ▼
->       DCP VirtIO function driver
->                   │
->                   ▼
->               VirtIO core
->                   │
->                   ▼
->       qcom,dcp-virtio transport wrapper
->       ├── IPCC initialization and power notification
->       ├── MMIO register access
->       ├── VirtIO queue setup and interrupt handling
->       ├── VirtIO device registration
->       └── suspend/resume power sequencing
->                   │
->                   ▼
->               DCP firmware
->               ├── HFI command and response handling
->               ├── display pipeline and VIG/DMA pipes
->               ├── DSI PHY and controller
->               └── display clocks and resource handling
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> [ also rename the io_uring zcrx caller, which the unmap rename
+>   used to pick up, so that this commit builds with CONFIG_IO_URING_ZCRX - apopple ]
+> Signed-off-by: Alistair Popple <apopple@nvidia.com>
 
-Going through the series, I have come with the quite generic comment.
-Please split the series into two independent parts:
-- Documentation/devicetree/bindings/virtio/qcom,dcp-virtio.yaml
-  drivers/virtio/virtio_dcp_*.[ch]
+I would make that the first patch in the set since dropping sgt from the interface is probably something everybody can agree on.
 
-  Driver for the DCP + IPCC VirtIO host. The driver should not know
-  anything about the display interface.
+And sqash that together with renaming dma_buf_unmap_attachment().
 
-- Documentation/devicetree/bindings/display/msm
-  drivers/gpu/drm/msm/dcp
+Regarding the new name I think dma_buf_sgt_(un)map_attachment() is a bit long and has the sgt at the wrong location.
 
-  The actual driver for the DCP display engines. It must not know or
-  care at all about the particular VirtIO host (or SoC FWIW). It should
-  not use IPCC. If we pass it through to the VM via virtio-mmio or
-  virtio-pci it must work as is.
+I would name the functions dma_buf_map_sgt() and dma_buf_unmap_sgt().
 
-Possibly submit those as two separate series.
+Regards,
+Christian.
 
+> ---
+>  drivers/accel/amdxdna/amdxdna_gem.c           |  2 +-
+>  drivers/accel/ivpu/ivpu_gem.c                 |  3 +-
+>  drivers/accel/qaic/qaic_data.c                |  4 +--
+>  drivers/dma-buf/dma-buf.c                     | 28 +++++++++----------
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c       |  3 +-
+>  drivers/gpu/drm/armada/armada_gem.c           | 14 ++++++----
+>  drivers/gpu/drm/drm_prime.c                   |  2 +-
+>  drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c    |  4 +--
+>  .../drm/i915/gem/selftests/i915_gem_dmabuf.c  |  3 +-
+>  drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c     |  2 +-
+>  drivers/gpu/drm/tegra/gem.c                   |  6 ++--
+>  drivers/gpu/drm/virtio/virtgpu_prime.c        |  2 +-
+>  drivers/gpu/drm/xe/xe_bo.c                    |  2 +-
+>  drivers/iio/industrialio-buffer.c             |  2 +-
+>  drivers/infiniband/core/umem_dmabuf.c         |  4 +--
+>  .../media/common/videobuf2/videobuf2-core.c   |  2 +-
+>  .../common/videobuf2/videobuf2-dma-contig.c   |  2 +-
+>  .../media/common/videobuf2/videobuf2-dma-sg.c |  2 +-
+>  .../platform/nvidia/tegra-vde/dmabuf-cache.c  |  2 +-
+>  drivers/misc/fastrpc.c                        |  3 +-
+>  drivers/usb/gadget/function/f_fs.c            |  2 +-
+>  drivers/xen/gntdev-dmabuf.c                   |  2 +-
+>  include/linux/dma-buf-mapping.h               |  4 +--
+>  include/linux/dma-buf.h                       | 10 +++----
+>  io_uring/zcrx.c                               |  3 +-
+>  net/core/devmem.c                             |  4 +--
+>  26 files changed, 63 insertions(+), 54 deletions(-)
+> 
+> diff --git a/drivers/accel/amdxdna/amdxdna_gem.c b/drivers/accel/amdxdna/amdxdna_gem.c
+> index 6253a720cc22..c679ec8230ff 100644
+> --- a/drivers/accel/amdxdna/amdxdna_gem.c
+> +++ b/drivers/accel/amdxdna/amdxdna_gem.c
+> @@ -898,7 +898,7 @@ amdxdna_gem_prime_import(struct drm_device *dev, struct dma_buf *dma_buf)
+>  		goto put_buf;
+>  	}
+>  
+> -	sgt = dma_buf_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
+> +	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(sgt)) {
+>  		ret = PTR_ERR(sgt);
+>  		goto fail_detach;
+> diff --git a/drivers/accel/ivpu/ivpu_gem.c b/drivers/accel/ivpu/ivpu_gem.c
+> index 4f2005a8d496..0342a3fc9185 100644
+> --- a/drivers/accel/ivpu/ivpu_gem.c
+> +++ b/drivers/accel/ivpu/ivpu_gem.c
+> @@ -54,7 +54,8 @@ static struct sg_table *ivpu_bo_map_attachment(struct ivpu_device *vdev, struct
+>  
+>  	sgt = bo->base.sgt;
+>  	if (!sgt) {
+> -		sgt = dma_buf_map_attachment(bo->base.base.import_attach, DMA_BIDIRECTIONAL);
+> +		sgt = dma_buf_sgt_map_attachment(bo->base.base.import_attach,
+> +						 DMA_BIDIRECTIONAL);
+>  		if (IS_ERR(sgt))
+>  			ivpu_err(vdev, "Failed to map BO in IOMMU: %ld\n", PTR_ERR(sgt));
+>  		else
+> diff --git a/drivers/accel/qaic/qaic_data.c b/drivers/accel/qaic/qaic_data.c
+> index ef0351b6dc9b..b8de1a1e2ab9 100644
+> --- a/drivers/accel/qaic/qaic_data.c
+> +++ b/drivers/accel/qaic/qaic_data.c
+> @@ -863,7 +863,7 @@ struct drm_gem_object *qaic_gem_prime_import(struct drm_device *dev, struct dma_
+>  
+>  	drm_gem_private_object_init(dev, obj, attach->dmabuf->size);
+>  	/*
+> -	 * skipping dma_buf_map_attachment() as we do not know the direction
+> +	 * skipping dma_buf_sgt_map_attachment() as we do not know the direction
+>  	 * just yet. Once the direction is known in the subsequent IOCTL to
+>  	 * attach slicing, we can do it then.
+>  	 */
+> @@ -889,7 +889,7 @@ static int qaic_prepare_import_bo(struct qaic_bo *bo, struct qaic_attach_slice_h
+>  	struct sg_table *sgt;
+>  	int ret;
+>  
+> -	sgt = dma_buf_map_attachment(obj->import_attach, hdr->dir);
+> +	sgt = dma_buf_sgt_map_attachment(obj->import_attach, hdr->dir);
+>  	if (IS_ERR(sgt)) {
+>  		ret = PTR_ERR(sgt);
+>  		return ret;
+> diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
+> index dc65752fb0fa..209a1dca19d0 100644
+> --- a/drivers/dma-buf/dma-buf.c
+> +++ b/drivers/dma-buf/dma-buf.c
+> @@ -678,7 +678,7 @@ static struct file *dma_buf_getfile(size_t size, int flags)
+>   *
+>   * 3. Once the buffer is attached to all devices userspace can initiate DMA
+>   *    access to the shared buffer. In the kernel this is done by calling
+> - *    dma_buf_map_attachment() and dma_buf_unmap_attachment().
+> + *    dma_buf_sgt_map_attachment() and dma_buf_unmap_attachment().
+>   *
+>   * 4. Once a driver is done with a shared buffer it needs to call
+>   *    dma_buf_detach() (after cleaning up any mappings) and then release the
+> @@ -958,7 +958,7 @@ dma_buf_pin_on_map(struct dma_buf_attachment *attach)
+>   *
+>   *     - dma_buf_pin()
+>   *     - dma_buf_unpin()
+> - *     - dma_buf_map_attachment()
+> + *     - dma_buf_sgt_map_attachment()
+>   *     - dma_buf_unmap_attachment()
+>   *     - dma_buf_vmap()
+>   *     - dma_buf_vunmap()
+> @@ -976,7 +976,7 @@ dma_buf_pin_on_map(struct dma_buf_attachment *attach)
+>   *     - dma_buf_mmap()
+>   *     - dma_buf_begin_cpu_access()
+>   *     - dma_buf_end_cpu_access()
+> - *     - dma_buf_map_attachment_unlocked()
+> + *     - dma_buf_sgt_map_attachment_unlocked()
+>   *     - dma_buf_unmap_attachment_unlocked()
+>   *     - dma_buf_vmap_unlocked()
+>   *     - dma_buf_vunmap_unlocked()
+> @@ -1302,7 +1302,7 @@ __dma_buf_sgt_map_attachment(struct dma_buf_attachment *attach,
+>  }
+>  
+>  /**
+> - * dma_buf_map_attachment - Returns the scatterlist table of the attachment;
+> + * dma_buf_sgt_map_attachment - Returns the scatterlist table of the attachment;
+>   * mapped into _device_ address space. Is a wrapper for map_dma_buf() of the
+>   * dma_buf_ops.
+>   * @attach:	[in]	attachment whose scatterlist is to be returned
+> @@ -1322,8 +1322,8 @@ __dma_buf_sgt_map_attachment(struct dma_buf_attachment *attach,
+>   * Important: Dynamic importers must wait for the exclusive fence of the struct
+>   * dma_resv attached to the DMA-BUF first.
+>   */
+> -struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *attach,
+> -					enum dma_data_direction direction)
+> +struct sg_table *dma_buf_sgt_map_attachment(struct dma_buf_attachment *attach,
+> +					    enum dma_data_direction direction)
+>  {
+>  	struct sg_table *sg_table;
+>  	int ret;
+> @@ -1346,7 +1346,7 @@ struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *attach,
+>  
+>  	return sg_table;
+>  }
+> -EXPORT_SYMBOL_NS_GPL(dma_buf_map_attachment, "DMA_BUF");
+> +EXPORT_SYMBOL_NS_GPL(dma_buf_sgt_map_attachment, "DMA_BUF");
+>  
+>  /* &dma_buf_mapping_type.map / .unmap for the SGT type */
+>  struct dma_buf_mapping *dma_buf_sgt_type_map(struct dma_buf_attachment *attach,
+> @@ -1382,17 +1382,17 @@ void dma_buf_sgt_type_unmap(struct dma_buf_attachment *attach,
+>  }
+>  
+>  /**
+> - * dma_buf_map_attachment_unlocked - Returns the scatterlist table of the attachment;
+> + * dma_buf_sgt_map_attachment_unlocked - Returns the scatterlist table of the attachment;
+>   * mapped into _device_ address space. Is a wrapper for map_dma_buf() of the
+>   * dma_buf_ops.
+>   * @attach:	[in]	attachment whose scatterlist is to be returned
+>   * @direction:	[in]	direction of DMA transfer
+>   *
+> - * Unlocked variant of dma_buf_map_attachment().
+> + * Unlocked variant of dma_buf_sgt_map_attachment().
+>   */
+>  struct sg_table *
+> -dma_buf_map_attachment_unlocked(struct dma_buf_attachment *attach,
+> -				enum dma_data_direction direction)
+> +dma_buf_sgt_map_attachment_unlocked(struct dma_buf_attachment *attach,
+> +				    enum dma_data_direction direction)
+>  {
+>  	struct sg_table *sg_table;
+>  
+> @@ -1402,12 +1402,12 @@ dma_buf_map_attachment_unlocked(struct dma_buf_attachment *attach,
+>  		return ERR_PTR(-EINVAL);
+>  
+>  	dma_resv_lock(attach->dmabuf->resv, NULL);
+> -	sg_table = dma_buf_map_attachment(attach, direction);
+> +	sg_table = dma_buf_sgt_map_attachment(attach, direction);
+>  	dma_resv_unlock(attach->dmabuf->resv);
+>  
+>  	return sg_table;
+>  }
+> -EXPORT_SYMBOL_NS_GPL(dma_buf_map_attachment_unlocked, "DMA_BUF");
+> +EXPORT_SYMBOL_NS_GPL(dma_buf_sgt_map_attachment_unlocked, "DMA_BUF");
+>  
+>  /**
+>   * dma_buf_unmap_attachment - unmaps and decreases usecount of the buffer;might
+> @@ -1417,7 +1417,7 @@ EXPORT_SYMBOL_NS_GPL(dma_buf_map_attachment_unlocked, "DMA_BUF");
+>   * @sg_table:	[in]	scatterlist info of the buffer to unmap
+>   * @direction:  [in]    direction of DMA transfer
+>   *
+> - * This unmaps a DMA mapping for @attached obtained by dma_buf_map_attachment().
+> + * This unmaps a DMA mapping for @attached obtained by dma_buf_sgt_map_attachment().
+>   */
+>  void dma_buf_unmap_attachment(struct dma_buf_attachment *attach,
+>  				struct sg_table *sg_table,
+> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+> index 016957cac1f2..169e1b27ff8e 100644
+> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c
+> @@ -954,7 +954,8 @@ static int amdgpu_ttm_backend_bind(struct ttm_device *bdev,
+>  			struct sg_table *sgt;
+>  
+>  			attach = gtt->gobj->import_attach;
+> -			sgt = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
+> +			sgt = dma_buf_sgt_map_attachment(attach,
+> +							 DMA_BIDIRECTIONAL);
+>  			if (IS_ERR(sgt))
+>  				return PTR_ERR(sgt);
+>  
+> diff --git a/drivers/gpu/drm/armada/armada_gem.c b/drivers/gpu/drm/armada/armada_gem.c
+> index 5cea1eab6e5c..506bc82f20d6 100644
+> --- a/drivers/gpu/drm/armada/armada_gem.c
+> +++ b/drivers/gpu/drm/armada/armada_gem.c
+> @@ -531,7 +531,7 @@ armada_gem_prime_import(struct drm_device *dev, struct dma_buf *buf)
+>  	get_dma_buf(buf);
+>  
+>  	/*
+> -	 * Don't call dma_buf_map_attachment() here - it maps the
+> +	 * Don't call dma_buf_sgt_map_attachment() here - it maps the
+>  	 * scatterlist immediately for DMA, and this is not always
+>  	 * an appropriate thing to do.
+>  	 */
+> @@ -542,20 +542,22 @@ int armada_gem_map_import(struct armada_gem_object *dobj)
+>  {
+>  	int ret;
+>  
+> -	dobj->sgt = dma_buf_map_attachment_unlocked(dobj->obj.import_attach,
+> -						    DMA_TO_DEVICE);
+> +	dobj->sgt = dma_buf_sgt_map_attachment_unlocked(dobj->obj.import_attach,
+> +							DMA_TO_DEVICE);
+>  	if (IS_ERR(dobj->sgt)) {
+>  		ret = PTR_ERR(dobj->sgt);
+>  		dobj->sgt = NULL;
+> -		DRM_ERROR("dma_buf_map_attachment() error: %d\n", ret);
+> +		DRM_ERROR("dma_buf_sgt_map_attachment() error: %d\n", ret);
+>  		return ret;
+>  	}
+>  	if (dobj->sgt->nents > 1) {
+> -		DRM_ERROR("dma_buf_map_attachment() returned an (unsupported) scattered list\n");
+> +		DRM_ERROR(
+> +			"dma_buf_sgt_map_attachment() returned an (unsupported) scattered list\n");
+>  		return -EINVAL;
+>  	}
+>  	if (sg_dma_len(dobj->sgt->sgl) < dobj->obj.size) {
+> -		DRM_ERROR("dma_buf_map_attachment() returned a small buffer\n");
+> +		DRM_ERROR(
+> +			"dma_buf_sgt_map_attachment() returned a small buffer\n");
+>  		return -EINVAL;
+>  	}
+>  	dobj->dev_addr = sg_dma_address(dobj->sgt->sgl);
+> diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+> index 7792caf87883..330b64b3324a 100644
+> --- a/drivers/gpu/drm/drm_prime.c
+> +++ b/drivers/gpu/drm/drm_prime.c
+> @@ -1005,7 +1005,7 @@ struct drm_gem_object *drm_gem_prime_import_dev(struct drm_device *dev,
+>  
+>  	get_dma_buf(dma_buf);
+>  
+> -	sgt = dma_buf_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
+> +	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(sgt)) {
+>  		ret = PTR_ERR(sgt);
+>  		goto fail_detach;
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+> index 5333e77e62e0..04c7b9a97681 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+> @@ -242,8 +242,8 @@ static int i915_gem_object_get_pages_dmabuf(struct drm_i915_gem_object *obj)
+>  
+>  	assert_object_held(obj);
+>  
+> -	sgt = dma_buf_map_attachment(obj->base.import_attach,
+> -				     DMA_BIDIRECTIONAL);
+> +	sgt = dma_buf_sgt_map_attachment(obj->base.import_attach,
+> +					 DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(sgt))
+>  		return PTR_ERR(sgt);
+>  
+> diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c
+> index 2fda549dd82d..fcfa819caa38 100644
+> --- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c
+> +++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c
+> @@ -293,7 +293,8 @@ static int igt_dmabuf_import_same_driver(struct drm_i915_private *i915,
+>  		goto out_import;
+>  	}
+>  
+> -	st = dma_buf_map_attachment_unlocked(import_attach, DMA_BIDIRECTIONAL);
+> +	st = dma_buf_sgt_map_attachment_unlocked(import_attach,
+> +						 DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(st)) {
+>  		err = PTR_ERR(st);
+>  		goto out_detach;
+> diff --git a/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c b/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c
+> index 23beaeefab67..569ee2d3ab6f 100644
+> --- a/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c
+> +++ b/drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c
+> @@ -121,7 +121,7 @@ struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
+>  
+>  	get_dma_buf(dma_buf);
+>  
+> -	sgt = dma_buf_map_attachment_unlocked(attach, DMA_TO_DEVICE);
+> +	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_TO_DEVICE);
+>  	if (IS_ERR(sgt)) {
+>  		ret = PTR_ERR(sgt);
+>  		goto fail_detach;
+> diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
+> index feb783ceb0d1..fcb9308f49f0 100644
+> --- a/drivers/gpu/drm/tegra/gem.c
+> +++ b/drivers/gpu/drm/tegra/gem.c
+> @@ -87,7 +87,8 @@ static struct host1x_bo_mapping *tegra_bo_pin(struct device *dev, struct host1x_
+>  			goto free;
+>  		}
+>  
+> -		map->sgt = dma_buf_map_attachment_unlocked(map->attach, direction);
+> +		map->sgt = dma_buf_sgt_map_attachment_unlocked(map->attach,
+> +							       direction);
+>  		if (IS_ERR(map->sgt)) {
+>  			dma_buf_detach(buf, map->attach);
+>  			err = PTR_ERR(map->sgt);
+> @@ -480,7 +481,8 @@ static struct tegra_bo *tegra_bo_import(struct drm_device *drm,
+>  			goto free;
+>  		}
+>  
+> -		bo->sgt = dma_buf_map_attachment_unlocked(attach, DMA_TO_DEVICE);
+> +		bo->sgt = dma_buf_sgt_map_attachment_unlocked(attach,
+> +							      DMA_TO_DEVICE);
+>  		if (IS_ERR(bo->sgt)) {
+>  			err = PTR_ERR(bo->sgt);
+>  			goto detach;
+> diff --git a/drivers/gpu/drm/virtio/virtgpu_prime.c b/drivers/gpu/drm/virtio/virtgpu_prime.c
+> index 3d5203ac19b6..de69590b5076 100644
+> --- a/drivers/gpu/drm/virtio/virtgpu_prime.c
+> +++ b/drivers/gpu/drm/virtio/virtgpu_prime.c
+> @@ -164,7 +164,7 @@ int virtgpu_dma_buf_import_sgt(struct virtio_gpu_mem_entry **ents,
+>  	if (ret <= 0)
+>  		return ret < 0 ? ret : -ETIMEDOUT;
+>  
+> -	sgt = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
+> +	sgt = dma_buf_sgt_map_attachment(attach, DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(sgt))
+>  		return PTR_ERR(sgt);
+>  
+> diff --git a/drivers/gpu/drm/xe/xe_bo.c b/drivers/gpu/drm/xe/xe_bo.c
+> index b4921a627ff3..4d93b8926ed6 100644
+> --- a/drivers/gpu/drm/xe/xe_bo.c
+> +++ b/drivers/gpu/drm/xe/xe_bo.c
+> @@ -771,7 +771,7 @@ static int xe_bo_move_dmabuf(struct ttm_buffer_object *ttm_bo,
+>  		ttm_bo->sg = NULL;
+>  	}
+>  
+> -	sg = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
+> +	sg = dma_buf_sgt_map_attachment(attach, DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(sg))
+>  		return PTR_ERR(sg);
+>  
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index a00985c92251..619181968ff9 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -1730,7 +1730,7 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
+>  	priv->dir = buffer->direction == IIO_BUFFER_DIRECTION_IN
+>  		? DMA_FROM_DEVICE : DMA_TO_DEVICE;
+>  
+> -	priv->sgt = dma_buf_map_attachment(attach, priv->dir);
+> +	priv->sgt = dma_buf_sgt_map_attachment(attach, priv->dir);
+>  	if (IS_ERR(priv->sgt)) {
+>  		err = PTR_ERR(priv->sgt);
+>  		dev_err(&indio_dev->dev, "Unable to map attachment: %d\n", err);
+> diff --git a/drivers/infiniband/core/umem_dmabuf.c b/drivers/infiniband/core/umem_dmabuf.c
+> index 39b5564a4c35..dd584f8dcd1c 100644
+> --- a/drivers/infiniband/core/umem_dmabuf.c
+> +++ b/drivers/infiniband/core/umem_dmabuf.c
+> @@ -29,8 +29,8 @@ int ib_umem_dmabuf_map_pages(struct ib_umem_dmabuf *umem_dmabuf)
+>  	if (umem_dmabuf->sgt)
+>  		goto wait_fence;
+>  
+> -	sgt = dma_buf_map_attachment(umem_dmabuf->attach,
+> -				     DMA_BIDIRECTIONAL);
+> +	sgt = dma_buf_sgt_map_attachment(umem_dmabuf->attach,
+> +					 DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(sgt))
+>  		return PTR_ERR(sgt);
+>  
+> diff --git a/drivers/media/common/videobuf2/videobuf2-core.c b/drivers/media/common/videobuf2/videobuf2-core.c
+> index b0a6084f1757..5cd53e06da0b 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-core.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-core.c
+> @@ -1464,7 +1464,7 @@ static int __prepare_dmabuf(struct vb2_buffer *vb)
+>  			vb->planes[plane].mem_priv = mem_priv;
+>  
+>  			/*
+> -			 * This pins the buffer(s) with dma_buf_map_attachment()). It's done
+> +			 * This pins the buffer(s) with dma_buf_sgt_map_attachment()). It's done
+>  			 * here instead just before the DMA, while queueing the buffer(s) so
+>  			 * userspace knows sooner rather than later if the dma-buf map fails.
+>  			 */
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> index 536f839258c6..0ce643940898 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+> @@ -706,7 +706,7 @@ static int vb2_dc_map_dmabuf(void *mem_priv)
+>  	}
+>  
+>  	/* get the associated scatterlist for this buffer */
+> -	sgt = dma_buf_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
+> +	sgt = dma_buf_sgt_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
+>  	if (IS_ERR(sgt)) {
+>  		pr_err("Error getting dmabuf scatterlist\n");
+>  		return -EINVAL;
+> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> index fba2027e6e8d..17191373c69c 100644
+> --- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> +++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+> @@ -569,7 +569,7 @@ static int vb2_dma_sg_map_dmabuf(void *mem_priv)
+>  	}
+>  
+>  	/* get the associated scatterlist for this buffer */
+> -	sgt = dma_buf_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
+> +	sgt = dma_buf_sgt_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
+>  	if (IS_ERR(sgt)) {
+>  		pr_err("Error getting dmabuf scatterlist\n");
+>  		return -EINVAL;
+> diff --git a/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c b/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c
+> index 7752064be783..8f3443fa0eb5 100644
+> --- a/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c
+> +++ b/drivers/media/platform/nvidia/tegra-vde/dmabuf-cache.c
+> @@ -102,7 +102,7 @@ int tegra_vde_dmabuf_cache_map(struct tegra_vde *vde,
+>  		goto err_unlock;
+>  	}
+>  
+> -	sgt = dma_buf_map_attachment_unlocked(attachment, dma_dir);
+> +	sgt = dma_buf_sgt_map_attachment_unlocked(attachment, dma_dir);
+>  	if (IS_ERR(sgt)) {
+>  		dev_err(dev, "Failed to get dmabufs sg_table\n");
+>  		err = PTR_ERR(sgt);
+> diff --git a/drivers/misc/fastrpc.c b/drivers/misc/fastrpc.c
+> index 85fed3a12f9c..fce849417eb7 100644
+> --- a/drivers/misc/fastrpc.c
+> +++ b/drivers/misc/fastrpc.c
+> @@ -911,7 +911,8 @@ static int fastrpc_map_attach(struct fastrpc_user *fl, int fd,
+>  		goto attach_err;
+>  	}
+>  
+> -	table = dma_buf_map_attachment_unlocked(map->attach, DMA_BIDIRECTIONAL);
+> +	table = dma_buf_sgt_map_attachment_unlocked(map->attach,
+> +						    DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(table)) {
+>  		err = PTR_ERR(table);
+>  		goto map_err;
+> diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+> index 09680534623e..fe3c43ba72c6 100644
+> --- a/drivers/usb/gadget/function/f_fs.c
+> +++ b/drivers/usb/gadget/function/f_fs.c
+> @@ -1567,7 +1567,7 @@ static int ffs_dmabuf_attach(struct file *file, int fd)
+>  	if (err)
+>  		goto err_free_priv;
+>  
+> -	sg_table = dma_buf_map_attachment(attach, dir);
+> +	sg_table = dma_buf_sgt_map_attachment(attach, dir);
+>  	dma_resv_unlock(dmabuf->resv);
+>  
+>  	if (IS_ERR(sg_table)) {
+> diff --git a/drivers/xen/gntdev-dmabuf.c b/drivers/xen/gntdev-dmabuf.c
+> index 028cd7295fd7..3bb05596920e 100644
+> --- a/drivers/xen/gntdev-dmabuf.c
+> +++ b/drivers/xen/gntdev-dmabuf.c
+> @@ -588,7 +588,7 @@ dmabuf_imp_to_refs(struct gntdev_dmabuf_priv *priv, struct device *dev,
+>  
+>  	gntdev_dmabuf->u.imp.attach = attach;
+>  
+> -	sgt = dma_buf_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
+> +	sgt = dma_buf_sgt_map_attachment_unlocked(attach, DMA_BIDIRECTIONAL);
+>  	if (IS_ERR(sgt)) {
+>  		ret = ERR_CAST(sgt);
+>  		goto fail_detach;
+> diff --git a/include/linux/dma-buf-mapping.h b/include/linux/dma-buf-mapping.h
+> index 91a55cbe0bb4..02d79d5615b5 100644
+> --- a/include/linux/dma-buf-mapping.h
+> +++ b/include/linux/dma-buf-mapping.h
+> @@ -171,7 +171,7 @@ void dma_buf_sgt_type_unmap(struct dma_buf_attachment *attach,
+>   *
+>   * When this type is matched the map/unmap functions are:
+>   *
+> - *  dma_buf_map_attachment()
+> + *  dma_buf_sgt_map_attachment()
+>   *  dma_buf_unmap_attachment()
+>   *
+>   * The struct sg_table returned by those functions has only the DMA portions
+> @@ -206,7 +206,7 @@ struct dma_buf_mapping_sgt_exp_ops {
+>  	/**
+>  	 * @map_dma_buf:
+>  	 *
+> -	 * This is called by dma_buf_map_attachment() and is used to map a
+> +	 * This is called by dma_buf_sgt_map_attachment() and is used to map a
+>  	 * shared &dma_buf into device address space, and it is mandatory. It
+>  	 * can only be called if @attach has been called successfully.
+>  	 *
+> diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
+> index 77a18b9817ac..ee6c97a5cecd 100644
+> --- a/include/linux/dma-buf.h
+> +++ b/include/linux/dma-buf.h
+> @@ -515,7 +515,7 @@ struct dma_buf_attach_ops {
+>   *
+>   * An attachment is created by calling dma_buf_attach(), and released again by
+>   * calling dma_buf_detach(). The DMA mapping itself needed to initiate a
+> - * transfer is created by dma_buf_map_attachment() and freed again by calling
+> + * transfer is created by dma_buf_sgt_map_attachment() and freed again by calling
+>   * dma_buf_unmap_attachment().
+>   */
+>  struct dma_buf_attachment {
+> @@ -614,8 +614,8 @@ void dma_buf_fd_install(struct dma_buf *dmabuf, int fd);
+>  struct dma_buf *dma_buf_get(int fd);
+>  void dma_buf_put(struct dma_buf *dmabuf);
+>  
+> -struct sg_table *dma_buf_map_attachment(struct dma_buf_attachment *,
+> -					enum dma_data_direction);
+> +struct sg_table *dma_buf_sgt_map_attachment(struct dma_buf_attachment *,
+> +					    enum dma_data_direction);
+>  void dma_buf_unmap_attachment(struct dma_buf_attachment *, struct sg_table *,
+>  				enum dma_data_direction);
+>  void dma_buf_invalidate_mappings(struct dma_buf *dma_buf);
+> @@ -625,8 +625,8 @@ int dma_buf_begin_cpu_access(struct dma_buf *dma_buf,
+>  int dma_buf_end_cpu_access(struct dma_buf *dma_buf,
+>  			   enum dma_data_direction dir);
+>  struct sg_table *
+> -dma_buf_map_attachment_unlocked(struct dma_buf_attachment *attach,
+> -				enum dma_data_direction direction);
+> +dma_buf_sgt_map_attachment_unlocked(struct dma_buf_attachment *attach,
+> +				    enum dma_data_direction direction);
+>  void dma_buf_unmap_attachment_unlocked(struct dma_buf_attachment *attach,
+>  				       struct sg_table *sg_table,
+>  				       enum dma_data_direction direction);
+> diff --git a/io_uring/zcrx.c b/io_uring/zcrx.c
+> index 86d580d4410d..3f8be77a50dc 100644
+> --- a/io_uring/zcrx.c
+> +++ b/io_uring/zcrx.c
+> @@ -182,7 +182,8 @@ static int io_import_dmabuf(struct io_zcrx_ifq *ifq,
+>  		goto err;
+>  	}
+>  
+> -	mem->sgt = dma_buf_map_attachment_unlocked(mem->attach, DMA_FROM_DEVICE);
+> +	mem->sgt = dma_buf_sgt_map_attachment_unlocked(mem->attach,
+> +						       DMA_FROM_DEVICE);
+>  	if (IS_ERR(mem->sgt)) {
+>  		ret = PTR_ERR(mem->sgt);
+>  		mem->sgt = NULL;
+> diff --git a/net/core/devmem.c b/net/core/devmem.c
+> index f4d60654ce7f..86b3c54933bb 100644
+> --- a/net/core/devmem.c
+> +++ b/net/core/devmem.c
+> @@ -241,8 +241,8 @@ net_devmem_bind_dmabuf(struct net_device *dev, void *vdev,
+>  		goto err_exit_ref;
+>  	}
+>  
+> -	binding->sgt = dma_buf_map_attachment_unlocked(binding->attachment,
+> -						       direction);
+> +	binding->sgt = dma_buf_sgt_map_attachment_unlocked(binding->attachment,
+> +							   direction);
+>  	if (IS_ERR(binding->sgt)) {
+>  		err = PTR_ERR(binding->sgt);
+>  		NL_SET_ERR_MSG(extack, "Failed to map dmabuf attachment");
 
--- 
-With best wishes
-Dmitry
