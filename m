@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793067968;
-	b=aU0s0RvD/nV5sg21ruoV5LYqx7j7UAbgofbevhJ7S3INcxdWBudRZOoF6hNflpLyFWhh
-	 Xbk4SbudhzP+gkMf3aPeLpv5aQ81XgBCkgqxGiQbLvitwOWC7yfkPj8DCA7XJmNQsQHFL
-	 HddPORlneXpC75pUdSaRsPu5YrNpQpoxFrjtqpLKJMNzmawlHmXWGGI5pInySUsVzZXDZ
-	 /PSJrScJ8Y59YYnAfbAWf2fgsG6s/kJToVXJxBgQYi/dKwGbyUOP17u8mp5EFUPCQxJM1
-	 0AlZVNcQNX/VFiuzm1BjKN4cJOvUwnzJ/x8C4UKS6GWm0zjqEDpzjripR9cYg9Mhzlg==
+	t=1793067973;
+	b=wHoERo90KPbdOuA4Zyr8Ssc2WwnQg8XSEPkQ5FK+Z0b/O5v1pcdEuhb7mLy4G/ybvg2G
+	 eA+I0qlY+527KG2/9f9YTt6sN3j31v4ZGrfYliUiTd45lGvDH5Wwu/cCXmQoGyqtSC/4X
+	 OIXUkuWZMcfrmTMvf9Idn1iCk1lB1na1HqYVuwWnoT4Qfm70qm+BpT4ZH0Oou8rWrv7Gg
+	 1qELDUuDlxfvimo6eh+fIxEfsLPXkoVBY7e8B3gzEjYHQkkY4hBOAQOSAPqN4aVlPugrq
+	 tWJ9e44PQZBSOjF4WzUvqUqIaH9JreBO+DMMIJ/u9NhKNmhOKT+hZXOtU4qLMC1C3dw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793067968;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793067973;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=xuZ4/lg/etQoE8kEsf9V4b1yZ+iMhAwdx828MV/Z+Ks=;
-	b=XsHbuV3Lpy134+hVkwWLqE2sJbFZ0rPWSL+1Dng33N1QLuUl5cQ6ob5ddatqdU8bV4bx
-	 N0YFTD//7W/nuFfIYc9oyaRDqbqMNntHvrviE0l3mUKvj3jJNMrqQCxyHW/mETza59O+P
-	 6RLbRf1wiSwtfKzb4G+LUPvi4nn3/icCB7bPiBrBUCQYfsqNLVbu1LCQKllLGeoQNoQ5U
-	 GK66wGh99n8zDaOgSyq6d+Vdp/CmhX1fEHyDSK/Y1KxUaJlTmZEM7PwGE/C9UvfPA59AA
-	 vp+r6X19mxEUk/8RXL+vGSp8x9a0mjUDj8gMpH/dbKEhjs4TB9rzBoylnMez39jRmLA==
+	bh=+fhQ87zw1kfozXsBG6wYTMDs1/rHV55pF74dX6fAbLw=;
+	b=wcJPKjgHJOUKqs0noNWbLWonDIz0xNtDIxQC7DvxhBGc9KT66tFcHHyvQ/1V45kaA47o
+	 mRWk4+CDIwQJZLICtKlLUyFsElyyY3N56kwm2slOUIGOpgtKmjWkQt80artyp2KRRqveT
+	 ei5fQuCblnGV8YZqg6Jv/RuneHUdEJ6akliJenYaYy9QGKETP8DbHnbeY3NQkBhzNpAcM
+	 vcGIoNZIeykk/vubRNiFvIBD9gRdHint8m2B1PlFMta+hPMuptIyoXTdBHmpZmz8FEIxa
+	 H+b/J72z7XtbQmLpji4elK2W9QrP2+apZIfZgIjwEW99rD7B+AKCOsRwcJr3qWU/rAg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UZNmvSkL;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RECmm0Bf;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A59C7606A31B;
-	Tue, 27 Oct 2026 02:26:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D10DB606A33F;
+	Tue, 27 Oct 2026 02:26:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UZNmvSkL
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EADA1F031E3;
-	Tue, 27 Oct 2026 02:26:07 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=RECmm0Bf
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 661B11F01828;
+	Tue, 27 Oct 2026 02:26:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793067967;
-	bh=xuZ4/lg/etQoE8kEsf9V4b1yZ+iMhAwdx828MV/Z+Ks=;
+	s=k20260515; t=1793067972;
+	bh=+fhQ87zw1kfozXsBG6wYTMDs1/rHV55pF74dX6fAbLw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=UZNmvSkL1JALNWOvvBfsJ83ATXOdCPKO7w7cC8N20xQDmU+VSRfGb9LVIyAFD8UNT
-	 VWWOpgdKbidmH0166ooYMAmTnUTcYGjf2nq6K3OfRyxYCn1KsgVBAJYacIiktlC7h+
-	 yTk54bpKH1lYo9XvSzPZKdopfzRNwn0mLAl3JeDJG1J1/VPSf8KIMaadZbEJBOuOfb
-	 Q3hr7L/bwzoobVhRFmG7JJrufBxIAdH3V5vcuDjYa6ZPR2B64ODgO615+zAaghCQ2E
-	 qnf8S8iw3qo0NqRjGRCaCKbCRL8C0OpY1DvoSe0BxMtp2nAH0TZpMTCLAsVvurBTLv
-	 5kgyq9MamcLCg==
+	b=RECmm0BfvtLsnubDzRMS2u/UQdIeTgeBTuxaap6qQ5q+9vbeEn2nT7LRTDOGZ9CRH
+	 1NluXLnFQCdTNKY7/978t2et4Uubr39cxdkt2lNcm3lQJi3wotbdfLqUGZlylyRURd
+	 83ku6NqjZZz30Z4iwnRcRl9DIgenb/fCoPsRBWBE+s0/N25p1CuvsEyGChKgCF/fIy
+	 aq8G3uKiDPQsSKjJYsWwrOsKhBNVfqiz/gyJ77he/HEXJxdJSAPwO1MTAUS/HYSAv6
+	 +GR5HvS8K/UnNOEFeD6WRfEdgyytAUd13kjtM1wItzMeuIuVPZmo/fP3EoZTat/P1M
+	 IldTbBZuoEUIQ==
 From: Jakub Kicinski <kuba@kernel.org>
 To: robin.murphy@arm.com,
 	m.szyprowski@samsung.com
@@ -52,9 +52,9 @@ Cc: tglx@kernel.org,
 	iommu@lists.linux.dev,
 	netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC 01/11] dma-contiguous: pass the NUMA node to dma_alloc_contiguous()
-Date: Mon, 26 Oct 2026 19:25:18 -0700
-Message-ID: <20261027022528.633359-2-kuba@kernel.org>
+Subject: [RFC 11/11] eth: mlx4: use dma_alloc_coherent_node()
+Date: Mon, 26 Oct 2026 19:25:28 -0700
+Message-ID: <20261027022528.633359-12-kuba@kernel.org>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261027022528.633359-1-kuba@kernel.org>
 References: <20261027022528.633359-1-kuba@kernel.org>
@@ -69,122 +69,163 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-dma_alloc_contiguous() picks the per-numa CMA area based on the node of
-the device. Let the callers pass the node in, so that the DMA allocators
-can be extended to place memory on a node other than the device's.
+mlx4_en temporarily changes the node of the device around
+mlx4_alloc_hwq_res() to place the queue buffers on the queue's node.
+This is racy against other users of the device's node, e.g. mlx4_ib
+allocating its own buffers at the same time.
 
-All callers pass dev_to_node() for now, no functional change.
+Add a node argument to mlx4_alloc_hwq_res() and use
+dma_alloc_coherent_node() for the queue buffer. mlx4_buf_alloc()
+and the en_netdev page keep using the device's node.
+
+The comment about the MTT allocation was stale, the MTT ICM is not
+coherent and uses mlx4_dev->numa_node, which set_dev_node() did not
+affect.
+
+The doorbell record pages, which mlx4_db_alloc() allocates on demand
+and shares between all queues, now always come from the device's node.
+So far they ended up on the node of whichever queue happened to need
+a new page.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- include/linux/dma-map-ops.h |  5 +++--
- drivers/iommu/dma-iommu.c   |  2 +-
- kernel/dma/contiguous.c     | 12 +++++-------
- kernel/dma/direct.c         |  2 +-
- kernel/dma/ops_helpers.c    |  5 +++--
- 5 files changed, 13 insertions(+), 13 deletions(-)
+ include/linux/mlx4/device.h                    |  2 +-
+ drivers/net/ethernet/mellanox/mlx4/alloc.c     | 12 ++++++------
+ drivers/net/ethernet/mellanox/mlx4/en_cq.c     |  9 ++-------
+ drivers/net/ethernet/mellanox/mlx4/en_netdev.c |  2 +-
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c     |  5 ++---
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c     |  5 ++---
+ 6 files changed, 14 insertions(+), 21 deletions(-)
 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 8fae2b7deb20..3f1e4cd3392e 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -102,7 +102,8 @@ struct page *dma_alloc_from_contiguous(struct device *dev, size_t count,
- 				       unsigned int order, bool no_warn);
- bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- 				 int count);
--struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp);
-+struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp,
-+				  int nid);
- void dma_free_contiguous(struct device *dev, struct page *page, size_t size);
+diff --git a/include/linux/mlx4/device.h b/include/linux/mlx4/device.h
+index f016263e1fcf..0d34e0e18580 100644
+--- a/include/linux/mlx4/device.h
++++ b/include/linux/mlx4/device.h
+@@ -1139,7 +1139,7 @@ int mlx4_db_alloc(struct mlx4_dev *dev, struct mlx4_db *db, unsigned int order);
+ void mlx4_db_free(struct mlx4_dev *dev, struct mlx4_db *db);
  
- void dma_contiguous_early_fixup(phys_addr_t base, unsigned long size);
-@@ -136,7 +137,7 @@ static inline bool dma_release_from_contiguous(struct device *dev,
+ int mlx4_alloc_hwq_res(struct mlx4_dev *dev, struct mlx4_hwq_resources *wqres,
+-		       int size);
++		       int size, int node);
+ void mlx4_free_hwq_res(struct mlx4_dev *mdev, struct mlx4_hwq_resources *wqres,
+ 		       int size);
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/alloc.c b/drivers/net/ethernet/mellanox/mlx4/alloc.c
+index 7ed4452e20a9..0621347112df 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/alloc.c
++++ b/drivers/net/ethernet/mellanox/mlx4/alloc.c
+@@ -553,7 +553,7 @@ u32 mlx4_zone_free_entries_unique(struct mlx4_zone_allocator *zones, u32 obj, u3
  }
- /* Use fallback alloc() and free() when CONFIG_DMA_CMA=n */
- static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
--		gfp_t gfp)
-+		gfp_t gfp, int nid)
+ 
+ static int mlx4_buf_direct_alloc(struct mlx4_dev *dev, int size,
+-				 struct mlx4_buf *buf)
++				 struct mlx4_buf *buf, int node)
  {
- 	return NULL;
- }
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 68ee57800fef..bb82ba3be440 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1627,7 +1627,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- 	struct page *page = NULL;
- 	void *cpu_addr;
+ 	dma_addr_t t;
  
--	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-+	page = dma_alloc_contiguous(dev, alloc_size, gfp, node);
- 	if (!page)
- 		page = alloc_pages_node(node, gfp, get_order(alloc_size));
- 	if (!page)
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 66093460584e..b5944ffefca7 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -402,22 +402,20 @@ static struct page *cma_alloc_aligned(struct cma *cma, size_t size, gfp_t gfp)
-  * @dev:   Pointer to device for which the allocation is performed.
-  * @size:  Requested allocation size.
-  * @gfp:   Allocation flags.
-+ * @nid:   NUMA node to allocate the memory on.
-  *
-  * tries to use device specific contiguous memory area if available, or it
-- * tries to use per-numa cma, if the allocation fails, it will fallback to
-- * try default global one.
-+ * tries to use per-numa cma of @nid, if the allocation fails, it will fallback
-+ * to try default global one.
-  *
-  * Note that it bypass one-page size of allocations from the per-numa and
-  * global area as the addresses within one page are always contiguous, so
-  * there is no need to waste CMA pages for that kind; it also helps reduce
-  * fragmentations.
-  */
--struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-+struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp,
-+				  int nid)
+@@ -561,8 +561,8 @@ static int mlx4_buf_direct_alloc(struct mlx4_dev *dev, int size,
+ 	buf->npages       = 1;
+ 	buf->page_shift   = get_order(size) + PAGE_SHIFT;
+ 	buf->direct.buf   =
+-		dma_alloc_coherent(&dev->persist->pdev->dev, size, &t,
+-				   GFP_KERNEL);
++		dma_alloc_coherent_node(&dev->persist->pdev->dev, size, &t,
++					GFP_KERNEL, node);
+ 	if (!buf->direct.buf)
+ 		return -ENOMEM;
+ 
+@@ -585,7 +585,7 @@ int mlx4_buf_alloc(struct mlx4_dev *dev, int size, int max_direct,
+ 		   struct mlx4_buf *buf)
  {
--#ifdef CONFIG_DMA_NUMA_CMA
--	int nid = dev_to_node(dev);
--#endif
--
- 	/* CMA can be used only in the context which permits sleeping */
- 	if (!gfpflags_allow_blocking(gfp))
- 		return NULL;
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index da665ca22d5c..9787a45f46f1 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -124,7 +124,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	WARN_ON_ONCE(!PAGE_ALIGNED(size));
+ 	if (size <= max_direct) {
+-		return mlx4_buf_direct_alloc(dev, size, buf);
++		return mlx4_buf_direct_alloc(dev, size, buf, dev->numa_node);
+ 	} else {
+ 		dma_addr_t t;
+ 		int i;
+@@ -749,7 +749,7 @@ void mlx4_db_free(struct mlx4_dev *dev, struct mlx4_db *db)
+ EXPORT_SYMBOL_GPL(mlx4_db_free);
  
- 	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
--	page = dma_alloc_contiguous(dev, size, gfp);
-+	page = dma_alloc_contiguous(dev, size, gfp, node);
- 	if (page) {
- 		if (dma_coherent_ok(dev, page_to_phys(page), size) &&
- 		    (allow_highmem || !PageHighMem(page)))
-diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-index 6b5f9208d31c..28a3c958158b 100644
---- a/kernel/dma/ops_helpers.c
-+++ b/kernel/dma/ops_helpers.c
-@@ -63,12 +63,13 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, enum dma_data_direction dir, gfp_t gfp)
+ int mlx4_alloc_hwq_res(struct mlx4_dev *dev, struct mlx4_hwq_resources *wqres,
+-		       int size)
++		       int size, int node)
  {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
-+	int nid = dev_to_node(dev);
- 	struct page *page;
- 	phys_addr_t phys;
+ 	int err;
  
--	page = dma_alloc_contiguous(dev, size, gfp);
-+	page = dma_alloc_contiguous(dev, size, gfp, nid);
- 	if (!page)
--		page = alloc_pages_node(dev_to_node(dev), gfp, get_order(size));
-+		page = alloc_pages_node(nid, gfp, get_order(size));
- 	if (!page)
- 		return NULL;
+@@ -759,7 +759,7 @@ int mlx4_alloc_hwq_res(struct mlx4_dev *dev, struct mlx4_hwq_resources *wqres,
  
+ 	*wqres->db.db = 0;
+ 
+-	err = mlx4_buf_direct_alloc(dev, size, &wqres->buf);
++	err = mlx4_buf_direct_alloc(dev, size, &wqres->buf, node);
+ 	if (err)
+ 		goto err_db;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_cq.c b/drivers/net/ethernet/mellanox/mlx4/en_cq.c
+index 0e92956e84cf..6c47509422f6 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_cq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_cq.c
+@@ -65,13 +65,8 @@ int mlx4_en_create_cq(struct mlx4_en_priv *priv,
+ 	cq->type = mode;
+ 	cq->vector = mdev->dev->caps.num_comp_vectors;
+ 
+-	/* Allocate HW buffers on provided NUMA node.
+-	 * dev->numa_node is used in mtt range allocation flow.
+-	 */
+-	set_dev_node(&mdev->dev->persist->pdev->dev, node);
+-	err = mlx4_alloc_hwq_res(mdev->dev, &cq->wqres,
+-				cq->buf_size);
+-	set_dev_node(&mdev->dev->persist->pdev->dev, mdev->dev->numa_node);
++	/* Allocate HW buffers on provided NUMA node */
++	err = mlx4_alloc_hwq_res(mdev->dev, &cq->wqres, cq->buf_size, node);
+ 	if (err)
+ 		goto err_cq;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+index 071564c54522..68f1eb57c32a 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_netdev.c
+@@ -3299,7 +3299,7 @@ int mlx4_en_init_netdev(struct mlx4_en_dev *mdev, int port,
+ 
+ 	/* Allocate page for receive rings */
+ 	err = mlx4_alloc_hwq_res(mdev->dev, &priv->res,
+-				MLX4_EN_PAGE_SIZE);
++				 MLX4_EN_PAGE_SIZE, mdev->dev->numa_node);
+ 	if (err) {
+ 		en_err(priv, "Failed to allocate page for rx qps\n");
+ 		goto out;
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index fe18606c2ab5..e2d97ecbafd2 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -292,9 +292,8 @@ int mlx4_en_create_rx_ring(struct mlx4_en_priv *priv,
+ 		 ring->rx_info, tmp);
+ 
+ 	/* Allocate HW buffers on provided NUMA node */
+-	set_dev_node(&mdev->dev->persist->pdev->dev, node);
+-	err = mlx4_alloc_hwq_res(mdev->dev, &ring->wqres, ring->buf_size);
+-	set_dev_node(&mdev->dev->persist->pdev->dev, mdev->dev->numa_node);
++	err = mlx4_alloc_hwq_res(mdev->dev, &ring->wqres, ring->buf_size,
++				 node);
+ 	if (err)
+ 		goto err_info;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_tx.c b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+index c5d564e5a581..9865ccd8d6e9 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_tx.c
+@@ -91,9 +91,8 @@ int mlx4_en_create_tx_ring(struct mlx4_en_priv *priv,
+ 	ring->buf_size = ALIGN(size * ring->sp_stride, MLX4_EN_PAGE_SIZE);
+ 
+ 	/* Allocate HW buffers on provided NUMA node */
+-	set_dev_node(&mdev->dev->persist->pdev->dev, node);
+-	err = mlx4_alloc_hwq_res(mdev->dev, &ring->sp_wqres, ring->buf_size);
+-	set_dev_node(&mdev->dev->persist->pdev->dev, mdev->dev->numa_node);
++	err = mlx4_alloc_hwq_res(mdev->dev, &ring->sp_wqres, ring->buf_size,
++				 node);
+ 	if (err) {
+ 		en_err(priv, "Failed allocating hwq resources\n");
+ 		goto err_bounce;
 -- 
 2.56.0
 
