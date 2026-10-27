@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793067972;
-	b=QrpsdH+zPFbLZDt3w4zOvEGaGJYJh8fMJLn5Q/jODhKYSm49DPc/FUrIlbT5VKUW/NtD
-	 bvKEcCR+m+KA1u8tb2nG3cKGpwnUSH+dgvI1K5oE0PIBWZPtyHACPcNbzm2nK52g38Jtb
-	 j+gmvHJ4Y5rGY+m1asvqeg+1hFXdQwXApG3S6LZVnQOsUXb4o3EhU/f3mchNE6lhOTjfn
-	 PMOkRSPje3HN72b7AwyknwjDRBSyWpoUqNdQWhvFpLeg+bsNCD8JxajUbKt59GtYgXI0X
-	 Y+mgB0yRpvNL3VmDoZRgJGNLDC6IeYxMex7iVvAuaV9R2uvfOtarHVc+6OF+vAOyF/g==
+	t=1793067981;
+	b=o5P/SQVLfSa1HwdXxVSCHSYZ2j6MnhLVd8UyGDvQNf8ol5wAyvBndwAdxpfrAbADii6R
+	 VdbjNB1hsLE8G6sL3wz+FPFdp3RQg1bMtXA2g2uO55xhPYnXoAphUAEs2ke4zfMXmIyoy
+	 9FZ00Jqu+azF3BRbxClYROXdSiVwF96ZXH2zv6iLB2I5/U7VTunU5bv72DL+5Inp0fdDW
+	 IHFYPu9M9Tkm9TvgVWeNV0GMVRR7BKWp2IPKhMe6O4gNqpShw58JZGvrrXfrqqpMX+vkc
+	 W8SYEOU6mw3gf2PVANLeUVjMmd7jgl+nU3inj+RGUwoWTM7hzc2ngGO+Xi+FtSYDZzQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793067972;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793067981;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=uw8bSrMf+yNyn4EuN9Pn7ejViHydp6zqrNBPnIcc/qo=;
-	b=r+Bm2v7uiKoax2WkMPM1m8qSAKp52GGFJqnJDlD7W8HOc2OwOzs/mMl1xk1lXtXjZAn8
-	 UupZsfr6Mt3k23DIy5Z1wuf/GqxaUMVOf9K2tct+hNM/2wx68ZnjIvEvzNdkPb3OcbmQY
-	 6If9v1daCes+9ZgcYIJpdv2JI2u7DiibNQkOcx6rmQyKtA79b9jn710wvXQG2lgc5n5Zi
-	 VjNHJbcNNOwiYzJGDYgq5LoYmIW5eauB4ZYRCOM6yWLZ/GuAxiN8cK5WFaqXFyOnlpAD0
-	 UKvR9LK7pQkJk1Rb1CVHr6z6Od4wzmTDfskaMRHwPgPV0FsuwAwgANPGWqSIXJYWeUA==
+	bh=WbuCZPg7LYGXmJwGaFCk6Kk9Ioa72ZlJTCfm3Uszomc=;
+	b=pjfcOOHK5YWWXCcu58WEGozJfGRBpcdOSmunurPAu+2EzYbsvYOiwe4G38JCPf1XWElD
+	 IC4a4ahAl56DW6r3H8HdZLw6dLeypscjzvzG9bT4ceRnIDPnWrKqiwV0puK1b67NYWO6C
+	 cyAOypN04mGSJy+etO/Ng/vv0R+kTtPVYnxah52CH85yoE9fY8vjvr7FGVjbk5E7KN2Nj
+	 sQWT+eqbmvaiaGxBSRhc9rhanopkovINio6SqkyIjIQoBV+OAHg10PNxPS1VbwTez8Arq
+	 dqjix4bEG1Ly7mXStCSd0nQ7r8kEZ2nJgYbBMh6hrDfS0TvYtoeFQizQZp7BevAYQag==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Sx+vhh/H";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OWhA5QWp;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B487B606A31D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67EDF606A326;
 	Tue, 27 Oct 2026 02:26:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Sx+vhh/H
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E8BA1F031E9;
-	Tue, 27 Oct 2026 02:26:11 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OWhA5QWp
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC2511F031E4;
+	Tue, 27 Oct 2026 02:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1793067971;
-	bh=uw8bSrMf+yNyn4EuN9Pn7ejViHydp6zqrNBPnIcc/qo=;
+	bh=WbuCZPg7LYGXmJwGaFCk6Kk9Ioa72ZlJTCfm3Uszomc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Sx+vhh/H7XH3WAEAV9KHzplLl1b3/GFlUF4lT86BFhW36UmC29MztNL7pF0bqVYF+
-	 e6E9rhG5+hiHpZYQaxzIp1OQCs9XTfRMvyaU30jYbl98Y/hJlJ6E5m/hxzsVM5ws6A
-	 VAWdCmfklm/RMqxbMCuQ1sPU7o3QGyF8e26WZnzxVVndFh88KrcVN018cLrHSLVrTz
-	 B4K9TfkRsFxPOfmGdYMILaIcWPaiZGCJxEP/bBznP0NNEqcqLRrircdE7TzXNyuzW0
-	 wLtOU6vUYClvDEvgRa3BuBsSu0OmLN2Gkr8ySofE5h92ecAQX2wNDUFv6gD6L+r307
-	 BjAT3VWDVPgDw==
+	b=OWhA5QWp9ganmKoTTlmhmDblXUvTtXQR0HOCkUzoqo5afOZxcEw+fCnDQLY/cGd+T
+	 M1+b0kRakXkm2rT9P6EcYic9nKwxOLBRzISTYggR2VFe9BU1OQh60hOM9E18egwIfW
+	 OEivsebVI89xKlB4roxpwc9nwS6pW+0JLv2Y7AoXLQZWrjrRLPW1s2BDpO9CEz7/I9
+	 paP5w+azokBso+LyPLdZN4/TH/DkUDoMcanjiyClbT9HDv+NvrlnLNXINEACma7C1l
+	 6Q0kuGMYLX6hNOmg2km8KBnAnCWruUCLK2N98/f8k+SFUjOtqj5VkQLwH0esf9OnVH
+	 TIHa4yAlkBOag==
 From: Jakub Kicinski <kuba@kernel.org>
 To: robin.murphy@arm.com,
 	m.szyprowski@samsung.com
@@ -52,9 +52,9 @@ Cc: tglx@kernel.org,
 	iommu@lists.linux.dev,
 	netdev@vger.kernel.org,
 	Jakub Kicinski <kuba@kernel.org>
-Subject: [RFC 09/11] eth: fungible: use dma_alloc_coherent_node()
-Date: Mon, 26 Oct 2026 19:25:26 -0700
-Message-ID: <20261027022528.633359-10-kuba@kernel.org>
+Subject: [RFC 08/11] eth: xgbe: use dma_alloc_coherent_node()
+Date: Mon, 26 Oct 2026 19:25:25 -0700
+Message-ID: <20261027022528.633359-9-kuba@kernel.org>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261027022528.633359-1-kuba@kernel.org>
 References: <20261027022528.633359-1-kuba@kernel.org>
@@ -69,43 +69,32 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use dma_alloc_coherent_node() in fun_alloc_ring_mem() to place the
-rings on the requested node, instead of temporarily changing the node
-of the device. NUMA_NO_NODE keeps meaning the device's node.
+Use dma_alloc_coherent_node() in xgbe_dma_alloc_node() to place
+the descriptor rings on the channel's node, instead of temporarily
+changing the node of the device.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/fungible/funcore/fun_queue.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/amd/xgbe/xgbe-desc.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/fungible/funcore/fun_queue.c b/drivers/net/ethernet/fungible/funcore/fun_queue.c
-index 0eca751a9534..17c8eba1bc34 100644
---- a/drivers/net/ethernet/fungible/funcore/fun_queue.c
-+++ b/drivers/net/ethernet/fungible/funcore/fun_queue.c
-@@ -21,21 +21,19 @@ void *fun_alloc_ring_mem(struct device *dma_dev, size_t depth,
- 			 int numa_node, dma_addr_t *dma_addr, void **sw_va,
- 			 volatile __be64 **wb_va)
+diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-desc.c b/drivers/net/ethernet/amd/xgbe/xgbe-desc.c
+index 7c8a19988a52..369cd00fb426 100644
+--- a/drivers/net/ethernet/amd/xgbe/xgbe-desc.c
++++ b/drivers/net/ethernet/amd/xgbe/xgbe-desc.c
+@@ -91,12 +91,8 @@ static void *xgbe_dma_alloc_node(struct device *dev, size_t size,
+ 				 dma_addr_t *dma, int node)
  {
--	int dev_node = dev_to_node(dma_dev);
- 	size_t dma_sz;
- 	void *va;
+ 	void *mem;
+-	int cur_node = dev_to_node(dev);
+-
+-	set_dev_node(dev, node);
+-	mem = dma_alloc_coherent(dev, size, dma, GFP_KERNEL);
+-	set_dev_node(dev, cur_node);
  
- 	if (numa_node == NUMA_NO_NODE)
--		numa_node = dev_node;
-+		numa_node = dev_to_node(dma_dev);
- 
- 	/* Place optional write-back area at end of descriptor ring. */
- 	dma_sz = hw_desc_sz * depth;
- 	if (wb)
- 		dma_sz += sizeof(u64);
- 
--	set_dev_node(dma_dev, numa_node);
--	va = dma_alloc_coherent(dma_dev, dma_sz, dma_addr, GFP_KERNEL);
--	set_dev_node(dma_dev, dev_node);
-+	va = dma_alloc_coherent_node(dma_dev, dma_sz, dma_addr, GFP_KERNEL,
-+				     numa_node);
- 	if (!va)
- 		return NULL;
++	mem = dma_alloc_coherent_node(dev, size, dma, GFP_KERNEL, node);
+ 	if (!mem)
+ 		mem = dma_alloc_coherent(dev, size, dma, GFP_KERNEL);
  
 -- 
 2.56.0
