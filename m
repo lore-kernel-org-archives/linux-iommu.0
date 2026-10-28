@@ -1,57 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793178022;
-	b=KzjXopbQOsHYDBFVIn3vm9UoYbiRP8F2NniA2XmQMZ5CAABE+FSQfasPyAm0W07P7JDt
-	 pIm6CLG1VVyj0hUbjxSfy4I0q8wHk2sD9lktiNsTM/HZ9Tt+PmVUsxOUSq4QlOnR1nsZ9
-	 UhHz/FEghYjX/M05T9EbL4ikUafUyo40wyP8kXOU5JFbvf49V2mBpurHuqMm1F1zPfDMn
-	 9t1RjL8PnsQZq4M1PrFWhj5jVM4wvHDvLfyQybYTlVhR9stwkTuwYy1c4cgGGxpS/NJ3R
-	 WJAH/lqbg5e4lGlY15h9n8qmx+tl99J3HXEuPqWbxPoaHFd2x8UwjDdP381BIACLrrg==
+	t=1793178312;
+	b=1DqCZnagfmqQQ/UburhSNHcbRtlpxU0Vx2nI+ZpzJgN7u8DL7C2hM9GjzRzYb0in8owI
+	 1xKCcIzUVUC/mnWPVJGAixpJW+Wx6p2bXSr+0mQU34t8CJOeJ+MqAS93l/7FJvhiD8XE/
+	 jP9Bz+z4VbNfPKJhmMJWJ3Gc167KUfmcS7sU5o24/hAEpzlwjr7PzFfGT4QrjCpciy1ek
+	 umDsYmTez4Ue/sa3OcMEReoj/om5mATaJGdIkZm0KGerRKlKPFT5ZIXUXEAZcBHfTh6il
+	 Pd2t6WBWbCIsuTpq0pU5CnBGq6SSHGpRcHGmfw2Pr3RVw5wJDqyKxx+WSIjv7ZANBHg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793178022;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=xUBEanmvLsCZxxqUO2LYzZZsXYxTAXtc6G9d2RVDe+U=;
-	b=NvuCPWefTypMArnH3DVh+EkZXgrndaMIhAhkJtgt0dXqBdFwmg/ewX0JV/+MbDur4++v
-	 mgUZWoIdXtz3mtAOL1xvhnatnx7TXohd0QxqodV8uFkL7pWn2y0fHBBazy1bZqUSDHcUz
-	 eCgsW0P3L57L/bF/5p8JYcml4ooFLxyQv9U67nAkrbHzdfyb9XWkOg8MdWfPJJo63Fp1I
-	 csSZya0l2CAl7dcy+SigbdT7pp6B3v4AbsnobVlhJcunwIkS1VbGSSpYCfoIXetX2Xaq5
-	 5JDLDGXiOZWRBPdjLj9vh8yEaYuweoOwBVcJXNsLMgEi/bc7YvLn3GYezzTueJyDgQw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793178312;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=VPrzUUX1/AgRAC3MboR4XO4tTZdV+G2Yhgi5aZTSkos=;
+	b=0AyBYLooT3BjD5LxTyILTu4swhQCvioHAUvCAummiEJIyWzJelLNY99SIxFoHqAMYM+e
+	 tOWaJHoJHCahLDwZ5HFkVzbFLHwwLqbKU432aBUKJ+gXXc881Ipa5Dll2588331UUGScv
+	 NBIoVNeytKkcQkqEfBUMSNqHMjX9IUo6FweKvg9QyaQExo7BIcPhuIVE6z4Z/4BCx9n8Y
+	 n85kaIo3Ba/cfdWIWuEgphe6TKtG6kDZ79YPUx6bI8szb6QW5EdomJah51LY+/e92nxPS
+	 t/AQr80zdl4oxX+h5C7w9RWznr2aNb8FWAFhbh3+Mu6qSSr9kQvxn0DlFYbka31e14g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=QP9LbBiO;
+	arc=none smtp.remote-ip=115.124.30.131
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9024606A321
-	for <iommu@lists.linux.dev>; Wed, 28 Oct 2026 09:00:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B9024606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261028090018euoutp026b6ff5a0b52b3057a8e40c94dc96aa27~ipehSrB310704307043euoutp02v
-	for <iommu@lists.linux.dev>; Wed, 28 Oct 2026 09:00:18 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261028090018euoutp026b6ff5a0b52b3057a8e40c94dc96aa27~ipehSrB310704307043euoutp02v
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1793178018;
-	bh=xUBEanmvLsCZxxqUO2LYzZZsXYxTAXtc6G9d2RVDe+U=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=mzpaW7yGaRCdXqKaTA1qvXLqu4Xw8BKIQDLVrdhAhFz8ReuZou/P5pdaoQF3TL9yu
-	 KN3u+EPM+QtO9tMn0AgYP6pv7Rta/Y+nN2UcLy4qa4JZGZktt1loKIEuIitgsDTTBL
-	 TmqyWOMiaTpynzc42sP/gJjwK6XEtQ2I4fovLT68=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261028090018eucas1p16fdcb990968a1f4c11cbe93025e277cb~ipegsB_XM0067300673eucas1p1M;
-	Wed, 28 Oct 2026 09:00:18 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261028090017eusmtip2383ec7d9f2b2324bf327f2384e5b0c6c~ipefzOang2938429384eusmtip2E;
-	Wed, 28 Oct 2026 09:00:17 +0000 (GMT)
-Message-ID: <de164c18-a80f-4081-a91c-c5d9e358e1f1@samsung.com>
-Date: Wed, 28 Oct 2026 10:00:16 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BCCB606A331
+	for <iommu@lists.linux.dev>; Wed, 28 Oct 2026 09:05:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0BCCB606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=QP9LbBiO
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1793178307; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=VPrzUUX1/AgRAC3MboR4XO4tTZdV+G2Yhgi5aZTSkos=;
+	b=QP9LbBiOZ4rsJgyxQ3TvGTYFhXBvgIMIms/zEZe1yy8sPEiDK+AL/zPJH0p8aPra5JnSvXwwj0q7uVh6y0RBCk8w5lmyiRypwl20dPiqG1oSlo+qkJD1LTrEFrH7zcKB1M19Z1/1scATxsneV3DiXKMXG/SK3nPk/P/Lk44QAg8=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R391e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0XDgOu9a_1793178293;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XDgOu9a_1793178293 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Wed, 28 Oct 2026 17:05:06 +0800
+From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+To: jgg@ziepe.ca
+Cc: alex@shazbot.org,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	kevin.tian@intel.com,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	robin.murphy@arm.com,
+	will@kernel.org
+Subject: [PATCH v6 0/3] iommufd: Recommended reservations query and opt-in IOAS reservation
+Date: Wed, 28 Oct 2026 17:04:50 +0800
+Message-ID: <20261028090453.2392991-1-guanghuifeng@linux.alibaba.com>
+X-Mailer: git-send-email 2.43.7
+In-Reply-To: <20261028071906.2325378-1-guanghuifeng@linux.alibaba.com>
+References: <20261028071906.2325378-1-guanghuifeng@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -61,51 +67,102 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [RFC 04/11] dma-mapping: add dma_alloc_attrs_node() and
- dma_alloc_coherent_node()
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: robin.murphy@arm.com, tglx@kernel.org, dave.hansen@linux.intel.com,
-	x86@kernel.org, joro@8bytes.org, will@kernel.org, leon@kernel.org,
-	mbloch@nvidia.com, iommu@lists.linux.dev, netdev@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261027105253.2c3d58a9@kernel.org>
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261028090018eucas1p16fdcb990968a1f4c11cbe93025e277cb
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261027022613eucas1p2ac05630160507ff3a887186416e98c30
-X-EPHeader: CA
-X-CMS-RootMailID: 20261027022613eucas1p2ac05630160507ff3a887186416e98c30
-References: <20261027022528.633359-1-kuba@kernel.org>
-	<CGME20261027022613eucas1p2ac05630160507ff3a887186416e98c30@eucas1p2.samsung.com>
-	<20261027022528.633359-5-kuba@kernel.org>
-	<008d1317-223e-4265-a5a4-4d2a602a2661@samsung.com>
-	<20261027105253.2c3d58a9@kernel.org>
 
-On 27.10.2026 18:52, Jakub Kicinski wrote:
-> On Tue, 27 Oct 2026 16:24:44 +0100 Marek Szyprowski wrote:
->>> +EXPORT_SYMBOL_GPL(dma_alloc_attrs_node);
->>> +
->>> +void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->>> +		gfp_t flag, unsigned long attrs)
->>> +{
->>> +	return dma_alloc_attrs_node(dev, size, dma_handle, flag, attrs,
->>> +				    dev_to_node(dev));
->>> +}
->>>  EXPORT_SYMBOL(dma_alloc_attrs);  
->> Do we really need two exported symbols for dma_alloc_attrs()? I would prefer
->> to make dma_alloc_attrs() a static inline calling dma_alloc_attrs_node().
->>
->> Did I missed something obvious against that?
-> License, I associate DMA API with hch so I thought we'd want to make
-> the new symbol GPL-only? LMK if I'm overthinking this.
+This series lets userspace learn which IOVA ranges the kernel
+recommends avoiding for a device, and optionally feed them back so
+the IOAS allocator enforces them.
 
-Right, I missed that GPL suffix in the new API.
+The motivating case is a PCI device behind a PCIe switch: DMA using
+IOVAs that fall inside the host bridge MMIO windows may be misrouted
+as peer-to-peer traffic instead of reaching the root complex for IOMMU
+translation.  The DMA IOVA layer already avoids these windows
+internally, but passthrough userspace had no way to learn about them.
+Per commit cd2c9fcf5c66 ("iommu/dma: Move PCI window region reservation back into dma specific path.")
+this information must not be forced through the IOMMU reserved-region
+API, so the series is fully opt-in:
 
-Best regards
+  Patch 1 adds iommu_for_each_pci_mmio_window(), a callback-based
+  iterator in the IOMMU core, and refactors dma-iommu.c to share it.
+
+  Patch 2 adds IOMMU_GET_RECOMMENDED_RESERVATIONS, a per-device query
+  returning recommended ranges (currently PCI host bridge MMIO
+  windows) as struct iommu_iova_range entries.  Advisory only.
+
+  Patch 3 adds IOMMU_IOAS_RESERVE_IOVAS, letting userspace send
+  chosen ranges back in to restrict the IOAS allocator: reserved
+  ranges disappear from IOMMU_IOAS_IOVA_RANGES and are rejected by
+  mapping.  Overlapping reservations are permitted, so the same
+  ranges recommended for several devices behind one host bridge can
+  each be reserved independently.
+
+Typical flow: bind device -> query recommendations -> reserve chosen
+ranges -> map.  Userspace that ignores the new ioctls sees no
+behaviour change.
+
+[1] https://lore.kernel.org/all/20260921115513.GK11599@ziepe.ca/
+[2] https://lore.kernel.org/all/20261027182947.GI1685504@ziepe.ca/
+[3] https://lore.kernel.org/all/20261027183418.GJ1685504@ziepe.ca/
+
+v5: https://lore.kernel.org/all/20261028071906.2325378-1-guanghuifeng@linux.alibaba.com/
+v4: https://lore.kernel.org/all/20261025133000.205508-1-guanghuifeng@linux.alibaba.com/
+v3: https://lore.kernel.org/all/20261004162213.3787623-1-guanghuifeng@linux.alibaba.com/
+v2: https://lore.kernel.org/all/20260921103922.1113752-1-guanghuifeng@linux.alibaba.com/
+v1: https://lore.kernel.org/all/20260921070234.897736-1-guanghuifeng@linux.alibaba.com/
+
+Changes since v5:
+- Patch 3: reject ranges with start or last >= ULONG_MAX with
+  -EOVERFLOW, matching the existing checks in IOMMU_IOAS_MAP/UNMAP/
+  COPY; on 32-bit kernels such ranges would be silently truncated
+  when passed to iopt_reserve_iova(), and a wrapped pair could even
+  insert an inverted node into the reserved interval tree (reported
+  by the Sashiko AI review of v5).
+- Patch 3: drop the iommufd_ucmd_respond() call - all fields of
+  struct iommu_ioas_reserve_iovas are inputs and the handler never
+  modifies them, matching iommufd_ioas_allow_iovas() which also
+  returns directly (reported by the Sashiko AI review of v5).
+
+Changes since v4 (all per Jason's review [2][3]):
+- Patch 1: drop the single-pointer wrapper struct in dma-iommu.c and
+  pass the iova_domain directly as callback data.
+- Patch 1: drop the typedef kdoc and trim the iterator kdoc to the
+  essential description.
+- Patch 1: WARN_ON(!bridge) instead of a silent check; inline the
+  start/end temporaries.
+- Patch 2: reuse struct iommu_iova_range instead of adding a new
+  per-window struct.
+- Patch 2: rename away from PCI-specific naming: the interface is now
+  IOMMU_GET_RECOMMENDED_RESERVATIONS reporting recommended reserved
+  regions, with PCI host bridge MMIO windows as the first source.
+- Patch 3 (new): add IOMMU_IOAS_RESERVE_IOVAS so userspace can send
+  the ranges back in to create a restriction for the allocator, as
+  requested in [3].  The NULL-owner cleanup in iopt_destroy_table()
+  is no longer conditional on CONFIG_IOMMUFD_TEST since production
+  userspace can now create such reservations.
+
+Changes since v3:
+- Helper redesigned as a callback iterator shared with dma-iommu.c
+  (v4 changes).
+
+Changes since v2:
+- Redesign from forced reservation to opt-in query (v3 changes).
+
+Guanghui Feng (3):
+  iommu: Add iommu_for_each_pci_mmio_window() iterator
+  iommufd: Add IOMMU_GET_RECOMMENDED_RESERVATIONS ioctl
+  iommufd: Add IOMMU_IOAS_RESERVE_IOVAS ioctl
+
+ drivers/iommu/dma-iommu.c               | 22 +++++---
+ drivers/iommu/iommu-priv.h              | 17 ++++++
+ drivers/iommu/iommu.c                   | 37 +++++++++++++
+ drivers/iommu/iommufd/device.c          | 65 ++++++++++++++++++++++
+ drivers/iommu/iommufd/io_pagetable.c    |  7 ++-
+ drivers/iommu/iommufd/ioas.c            | 51 +++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h |  2 +
+ drivers/iommu/iommufd/main.c            |  7 +++
+ include/uapi/linux/iommufd.h            | 73 +++++++++++++++++++++++++
+ 9 files changed, 271 insertions(+), 10 deletions(-)
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.43.7
 
