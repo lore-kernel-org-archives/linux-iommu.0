@@ -1,148 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.7.16
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793295583;
-	b=S5RNrmLpawKLeEnKyK6U6BAmCQfnY/CkEi82hbwpWhTL2v1ayz5MzUCsnWUfGA87WWxX
-	 cArsR1EY4ASp5LgnFFy0xIuqQ8FeTQczUMJrkENBajJFqvS/nfdGibzGs+zYKjh7WXtwi
-	 iqp+1IkYzvYMxrYnN8I6EYKnzYKBqOPNhSeAOgUjsIBtFvwiIbFCGMkTuB3231icpYb+g
-	 47IDfuDdUpIF+wJ3cr7kTSUWtkX3whR3/rFfnuD3mU4HTobqCgm3Oj6aReGyBGfoQvXr4
-	 qiyWw/n4NSOa19lWtHm50Cnqh4gtXGfPMhQlzP2jcUClqK+o1j4XeQtLRJ5kDv4OSAg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793295583;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
-	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
-	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
-	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
-	 x-ms-office365-filtering-correlation-id:x-microsoft-antispam:
-	 x-microsoft-antispam-message-info:
-	 x-ms-exchange-antispam-messagedata-chunkcount:
-	 x-ms-exchange-antispam-messagedata-0:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-originalarrivaltime:
-	 X-MS-Exchange-CrossTenant-fromentityheader:
-	 X-MS-Exchange-CrossTenant-id:
-	 X-MS-Exchange-CrossTenant-rms-persistedconsumerorg:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=L/evzt8Yf/AquoRl3xbKClrS38CkfN1//dy/8K2TETI=;
-	b=Tb1yVA/ty9JEBIF3FPghLd+Ejf0kozISwN3KjjO4y2IJh9jRr9Cz9yPYDzJY92bXclhQ
-	 skdACuS8GhByipfclh6XHVZ2QcaPm7fCESW5mk4rrYGai1wlzYmSPOkOJdMafTbdXwneM
-	 8Hxk6z+E42PBOMhM8ZhO5hICwex6/mp//ooVaxYaDlwY9wrYuBahxXIGLg4Aciio4W3D5
-	 l3JnUkWNL7mZFOCtlxpH9A1gk0eAQ0V6lK3oEZxTDnlKUT8X1zRJ8xrePSnVkx4yh/4df
-	 mTOmsOZv0wOCXiC0u11aDpbbOOV6MzgfCKtzoRiKapeoSuHCTuehGnaiZRlP0tLriWw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=outlook.com;
-	spf=pass smtp.mailfrom=outlook.com;
-	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=fiL1Zhk+;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.7.16
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazolkn19010016.outbound.protection.outlook.com [52.103.7.16])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.161.41
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793297495;
+	b=MyjYxjwt/PJlz8BoIKUStIDD3xwLxri5KjMehi3JBVz8mH9kQ+UKZDWKQlYaIadBGUiS
+	 ZlN3HOijwrhvKzA9g+Wml9Wan/Sk64R7118QCuyAGDLLiwYostudmX1+lequBrbVesYrw
+	 l4hiBBg/9LaIu7xSF+Q+jYD6afFnBXvI19xdNC/Tc7sy7xdAhDGyO0kkxPQPrfvajuAbQ
+	 TCXJTHKaq0TArs/zgcDIFAPD2wtCKKBVQl4wVMzKkPIXDpSn4pyGvaKrZyyrp4iCb17yb
+	 8sUoWzeyfHjRUW19IH0RPFDC8wg094mWSaTyDLfTxVwtpEnbgj2ExTJPCWhoV4QFGZg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793297495;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=gLjComLCp2esLTingR9be9ipRIp36YyskRA+PmDaCHo=;
+	b=pSrujPYwLpnDUTg6yK2j799N270fb2q/nm3SC1zFhnYtalVaubnyfH0kIcBsJaeTgfdJ
+	 PedSwgONQEGJDYjx09fydMhn6S8cCy7arR39qBYQJtKLMKptiqUnQP6Z41eoAgyPlGOny
+	 hT79SLKdOPjP+mTVN8LXx3wk4bFyO4kGtpe6BbYFO+HAewFxbyLOPT8qFI+1QLL9BPuMl
+	 SZzg5qC6v4mL+q1rccronc4VKxEgksYwN6EJj2Je/MOPW3VMzLqU6vRde+i7vJ/4T2FXK
+	 WHeCM/+2CuWd1HAKCJb7Kp4tW9zWQrwr8bMdCS6Dp0hvp9P/8+koaKeUo1jFpazfxvA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=ieee.org;
+	spf=pass smtp.mailfrom=ieee.org;
+	dkim=pass header.d=ieee.org header.i=@ieee.org header.a=rsa-sha256 header.s=google header.b=atvUF4gw;
+	arc=none smtp.remote-ip=209.85.161.41
+Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 889A1606A31C
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 17:39:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 889A1606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A4F5606AB43
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 18:11:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8A4F5606AB43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ieee.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ieee.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=fiL1Zhk+
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cnBCsY0vn7F5int+qt3BVH9FH8EbC5bQzB/MaC9umE5AoeKCU4S5DSVmVr9NzPb2r8l5MthzJUbEdQZwDuukJYbtr/mLWJ+s/6pn1eL5BE9RUfkLeOHEKFxISLfosO6N0ry43IBGt0cIdIbFPE1J0FxD8d0JmMrBsHZwRWsIw7HipEulOgsDJrKfCchiqMmthc2z7+0xsa3kVquICtB6eYGDB5Bhq1qH9BwBN+kzlppnzQVc6GkdBNlhv3yFWeNteoa03JSPQ3GfU+shteiYdn9YTgaGrEzJj7upF0CNb0Y29iFuB8Hm2JMrccXTJpziivtzm3X+Hwj4Jtr6x40rbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=L/evzt8Yf/AquoRl3xbKClrS38CkfN1//dy/8K2TETI=;
- b=aNDZ9GnFxHF11trhRoB4pUAGSexrGDq/n5hwf4BfUO+4EIoUQrFc025LfN2zEsXZkaBswuryeUBMEw8v7To7jo2i4N+8J+Lqz43a+ASWaMEbDwPVqCSQhZi4Fl5HZUg6Gsr72/QYmcFMvjHdNuIPAVH3JyDyG+boCVjsRnQvry9+tp+HJEOwPVob47tKKl0cWtSSPTVNhcbVNoJpWxn4aauzQVTDEb0UaeJvupWWOSBq4NnC88WxY0nGf2MGtccrwtvFsCERaBY899f2fQLU8VZrsA9DMNRcuEUwbVBkXIOi/sJqiBDWSXQMJn8eamN9fadepNQQOrKv8cE+lOQCxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=L/evzt8Yf/AquoRl3xbKClrS38CkfN1//dy/8K2TETI=;
- b=fiL1Zhk+6YDoEnY/rnaw3qtbCJ0pFmhSm6CEl4Gokxa/2dGCVcfgC69gDhKVKUIDglm8v9Bsh62IKfUEJznGyFK6VF2N1o5P0laofDopde5W07jAmIct9wZcqPv0uM5XX26ypL3N1gK9R+b3m3CcJpa/n25xhtHhyc/ytpEt2OI1zopY7qUt3oKFpfb8lsx15wTCR2zBKKqvFR+jUjX61yJWjR/tYqW0Ohnvaq9z2cvVfDuiU8IgmF4fQOUo0FxxgOI1V0PES9OkXjswY4WxoOOPHRXNs+2iCf55IVRTIk1/c7+HtLDmBJa9Aaboi6eYOiAjWAJTWCeAjvSBldCGUA==
-Received: from MN2PR02MB6863.namprd02.prod.outlook.com (2603:10b6:208:1d7::20)
- by SA1PR02MB9698.namprd02.prod.outlook.com (2603:10b6:806:385::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Thu, 29 Oct
- 2026 17:39:39 +0000
-Received: from MN2PR02MB6863.namprd02.prod.outlook.com
- ([fe80::da67:fd0f:d96d:ac53]) by MN2PR02MB6863.namprd02.prod.outlook.com
- ([fe80::da67:fd0f:d96d:ac53%4]) with mapi id 15.21.0569.008; Thu, 29 Oct 2026
- 17:39:39 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Giorgi Kobakhia <gkobakhi@asu.edu>, Marek Szyprowski
-	<m.szyprowski@samsung.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Xiang Mei
-	<xmei5@asu.edu>, "stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH] swiotlb: fix out-of-bounds read in
- swiotlb_release_slots()
-Thread-Topic: [PATCH] swiotlb: fix out-of-bounds read in
- swiotlb_release_slots()
-Thread-Index: AQFgKk/cI909fRkJAsTJbQaejYuCm7gPQD9Q
-Date: Thu, 29 Oct 2026 17:39:39 +0000
-Message-ID:
- <MN2PR02MB6863E09805FBA39C6779D209D46E2@MN2PR02MB6863.namprd02.prod.outlook.com>
-References: <20261026032007.1957949-1-gkobakhi@asu.edu>
-In-Reply-To: <20261026032007.1957949-1-gkobakhi@asu.edu>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: MN2PR02MB6863:EE_|SA1PR02MB9698:EE_
-x-ms-office365-filtering-correlation-id: 5ede9dae-9652-4caf-58c6-08df35e39bc8
-x-microsoft-antispam:
- BCL:0;ARA:14566002|12121999013|25010399006|4140399003|19110799012|37011999003|8062599012|31061999003|8060799015|13091999003|15080799012|55001999006|24021099003|12091999003|40105399003|52005399003|102099032|440099028|3412199025;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?9V6kGA9CuJ+9jWDSDfRhqpSKxBfBKklnTdlSMuE5v0lnI0yY2h6Igo1g3vyS?=
- =?us-ascii?Q?MYbQhEHJhTTOu8qPN3Se2wwe1outWgoC4+NaXG95E7t16vSr/ramIv7CNsPs?=
- =?us-ascii?Q?MCmc0KQ0KuruwArULxlf0WhjRz/TCz5/6pDpwyISeSwTZoUHwDvzlJ3CzTf4?=
- =?us-ascii?Q?n8TINc8fCxEPctK5d38gBGFj9QV1TlQRyAEZtpsFyyUrSvGplknrefHIpUMt?=
- =?us-ascii?Q?pIUE8LALnrmZ2FLR8qTPQ2QU/XbRFBD2HjtRncImLo2LazMvCQD5XaKqWJPt?=
- =?us-ascii?Q?5j3gALndta6DhIWFeKpF+BYtQ8H9sG/uiFexT9NERkeJczbEwUAavp8EbUlw?=
- =?us-ascii?Q?bXYbZ3Wb6L9YRCubtjqTOmCRhzJ8mI9OMouC/C77CHREgDilEg3eTw3bc3ks?=
- =?us-ascii?Q?Dio1Ow9M9rVy6x5/XrFGRaF6iK98XtpgPw/bHj5/KcSaZUcD8rozMIRb30KX?=
- =?us-ascii?Q?bIwX71Ywn069u1vr5exfsICjSoDhPIj4Klv7O6PR2qNFF8LrSFgFrOy9ppKy?=
- =?us-ascii?Q?KrLMjb5ASzQWFXlYMKCWRtPkduVPoW0mdbW7ehsLOJ75S2WDUZc/HQoRKCJw?=
- =?us-ascii?Q?P8LutwHwMMjsoGkr+uKCWMZNTbthGAICyBUDORVEnS/snI4i4ftdLbdUYFRL?=
- =?us-ascii?Q?Ko/HryqV68w5twUOJhwGf3mic5hDIt5zqyjNTTGzh/ngAHCeYKHMwbFFm/py?=
- =?us-ascii?Q?inqruvEDJYkVFz7L6OTz7oan7+uyesR8E8ES4O0VG1h4LMlN9HOtOI7Aq1sA?=
- =?us-ascii?Q?IdbjCq0DZc5bBGMmIRp3Mnq4Nf0KL9I+02mVkCEOP7K6b++UvStV5PvDHZk/?=
- =?us-ascii?Q?OgneMWkbGUbRi0mZqtmUiNyAMRBkw6JG2AoqnXjp0CSbTOB3zexQ6uQLU+Pl?=
- =?us-ascii?Q?67Zwg8NW3Ai4ZGf1H9vNs3HvlV1m6Wt8Kq6aCvnxOddqKjriAs60d1wYJJHn?=
- =?us-ascii?Q?KQBgeTY1rXXIrrKRYtybwVWVHBFr+pY+wQClWyZstMN3hSjONtEExtqj2efY?=
- =?us-ascii?Q?ma2PvHqelSxyUPUbiwir5xCMf7v0rABEMvmrUuWBkdoCTqui2lw2GI683n+l?=
- =?us-ascii?Q?zbzFiaCvo6exqJXrllj1RfKRm/dx5lB0Oo8ptGI0utLcYnT7ORg=3D?=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?PWMkHc7UkinMhTpR/YJA+fYSMgiUgUcJDclqQ22Atf6HnvdELlXkUhazCklO?=
- =?us-ascii?Q?7G3x/gXTsCXiCdIEonL3w/OQWgimCl86Dcjw/Ag32Ln3rXO7lrvymMPADYsD?=
- =?us-ascii?Q?d0A0D5XXHkg92v5n77Pk5osEvir64hPFXnTvJftzEot1VWZQ2+crahOdb0+n?=
- =?us-ascii?Q?MBuTi2MovVN8zQuHIuqDZM+8od+4Y+2fBygDcYT7ncOsr5bhSWKuwdi3Wibo?=
- =?us-ascii?Q?aK8hbePus2wJiMstuuwe2ROXsnD1mUfNtQhJ72l7b9D6oCXv9xhnx79p2TsO?=
- =?us-ascii?Q?zI8PJitjlL7MDQZWowJooQXoZEFMtfNFDNXUNS1kiUjrpMq6fKYkWJUDm/qr?=
- =?us-ascii?Q?uMm/WkfTNtKydsvMb2FSm+s9ZRxXfwQXMnGI+OBYxn1zQpqSj9TIm75zpBYi?=
- =?us-ascii?Q?aEehMBXyPbUibTYrOED3i4FvkUqo5UoYa88nuy6WtHPca8XAW5BQ0S2Jxz0N?=
- =?us-ascii?Q?n+3A4jU9DeGPfBIlbw4/tXK0a1NRvP0oUlQopej3TiGliYMR4/waHhPZ0iyQ?=
- =?us-ascii?Q?sRg4lb7iMFQ4tNyjtO4Pc3e8fXQmrIPWjoisGguRXjMA2U0nixmQoGThiPkd?=
- =?us-ascii?Q?CAGESgm3jL2GOoGntxUGBSVYsIEXLWBAahXqHWUPm4GC78RuOYGq9XmElgnT?=
- =?us-ascii?Q?ezWkr54W7HO+XxouZgcP7OPQVTTEpr7gSa+ONHjG37xQTVIczxjh4yKgL1wv?=
- =?us-ascii?Q?4iAPT5VXlYAmel/XaSKNDD9fm9OPV0otnYcLtrFksIHZnpvkp4Z9OnTJGFVS?=
- =?us-ascii?Q?UHEkwashAZq94ho5e4JO0KDjnErhNfbL8EmYt2cJ6E8FdQ0tnU+nqtpFiXyV?=
- =?us-ascii?Q?C2kLb3v1aAxVmQ7iOwPQAxPWeaD8nDB2EsT+x3OX0tlKOYS4yLH7+qY6ZsJH?=
- =?us-ascii?Q?UNZoSq8Qj0grfxq0NcvIH+ZvtEoUCa/c+FWP8NpTQMPZ9ZdOuc+lVHwLKPhi?=
- =?us-ascii?Q?L+njbQxIjZX/R4WAd+GiJHTJ/YF0ZeZK8C/G0OVDiwax/xMRK4N9jDqNjh1y?=
- =?us-ascii?Q?dYtgK1VAHBq1hx4l6T9mB1E+nio7Gr4Xwr5Xm8TKBs8Ia9cS0hYND1D1zdjn?=
- =?us-ascii?Q?5qsznURuFCN6CL0QqurH7roRWZ6bPgAJTfsHQX2ubYhLvUguwJ4mq5ZMMsOn?=
- =?us-ascii?Q?4kdF9LG2m20WqjeLsg70lc8tCDcz7eIi7xdjpyKeAURoaIpSAKP/ohd0vwaw?=
- =?us-ascii?Q?S4y2dp1ChYZWTYVhIvMZbKlTKPJLJgTCGAjL9TFoPn5NOuUdE1UYiB4/weMA?=
- =?us-ascii?Q?z4IJGoR+KyUkyQMEXFNo/6EXefC0XkfYH6QCE9K3z1J2aTbgCK4EdqKRmp6Q?=
- =?us-ascii?Q?5urxsSOO1zd2gO0gKyY+vmYtgXer8BDG3aBmjNLLwx7Yq50y94cjfpc8p5ul?=
- =?us-ascii?Q?8+btZHM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key, unprotected) header.d=ieee.org header.i=@ieee.org header.a=rsa-sha256 header.s=google header.b=atvUF4gw
+Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-6f74f6b46abso1358908eaf.0
+        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 11:11:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google; t=1793297492; x=1793902292; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=gLjComLCp2esLTingR9be9ipRIp36YyskRA+PmDaCHo=;
+        b=atvUF4gwmcPMsiIaDWedbAbCBy197wB5qj5u4BZVwwHdEcjTLLuLLueTt+TH6oG6Y7
+         IujC5Dt8yIns+NGVC9BI9PloCDt7aWp5tD+FeLauH4t5tkGLnIYJ6AVptLD3P/7yltRR
+         3dVMAml8q+ktHmxEaMi8gmp05ja9rA4EyGa+c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793297492; x=1793902292;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=gLjComLCp2esLTingR9be9ipRIp36YyskRA+PmDaCHo=;
+        b=0Gb0c7n7hMPoyOyYBowdEh2Hs6ru3o13uPD/+Niw3WvltVeiChF35NiyQ1MTsqhkEW
+         Be1vtdb59r6E5FC8mJ3A2vGZ2kLzmONJJ1oOjqgTNg6AvugS9SjFm7+MyiznPDWSMWsn
+         urjA/CUNN/mrGOF+xZM422B+KZ+v3/PBBQoIWPxSsqbkuTl4nimhBAoOG6cEB1dOBaH2
+         ZslbNxd0wbiQw1HN3UAX1Q27hmv+fNPxfkOV8XU96MiV1W1Ve5WUBUGDD4tKK0VG7Pod
+         6QaKbHAAcHhmWMP3UeYvAGGUIVhWBnIGY9njp1rlAkQipS2CmFS7GUSQ2u1D/7CQhFC0
+         kJBg==
+X-Forwarded-Encrypted: i=1; AKwUvBzpj2hjPnvj+1i44RXVx7TWyk6ovoipipuwGhezIdTLdCPLfThXa6fVVCXFCCCSMwBIMvVi2g==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJKiKKjdVa092XXnf89MI+bbL4tMxk3YztJZa/eT+L0nprpfiLf
+	2621Tym3apTBdN5wd2h5yz+FWijjPYo+Sd183oJ2JYselRYpVlq3IepZ8Q+MMppTvw==
+X-Gm-Gg: AYBFou3H71xYFU+MmjTyH11JbRbMzgeQHkAPfWHlm9yz4tKkMbgsFCMYs1ylYHl0RFb
+	FMIS+JuVtG6ttfr1qxd21k+EccKokHqxomyCfhZ+7rACTVHKTxG+yUIuOxpklvQHezDH5sV9RIE
+	LzWJvEMW4RM7C2KNgLPZxBmhVoOfiQ4Ud92CW4l9BDi01LTPQjT5XttS0tt7SlfMcS2iPnx3qPR
+	9kmAJQBwSwi94dU/sSVZMBeUiQNHu3nLZFOtPaHX/lApEDwSv8En5jyKQDvup3dh3aNa9RjcYri
+	+NeulCw8kMXQmbWOCDLmDa1OF0hfQnsyprmf0S3G6cy90kcBNuGrigw51gJ4CJfvSobvWJMudeQ
+	fEsDnfc195nE3rALo1N0Q/W5X4JkBjFH644srnWME0hkAE+1BAlD3sai6M+iieBRHakVXhT+Tvb
+	xRO27J30Ei1hYVZA+C+VqbiPsTSDWEm9Luab0FCnqygmMjkBvwHB+JeV9VT1Gd/4xGWoX1J9lBk
+	i8TGkAizvr4FvSVx8buRCno8f7CTP3NTDk03GArNENDoOegsfVuqWA24c1NBij+iNmp8bbdPseW
+	7vGaEzddH4/8UXAXm1h4c66RZ7S7m8FfBJ1CmSR3E4FE1A==
+X-Received: by 2002:a05:6820:5710:10b0:6de:aeea:5c89 with SMTP id 006d021491bc7-714f288a10fmr36729eaf.23.1793297492247;
+        Thu, 29 Oct 2026 11:11:32 -0700 (PDT)
+Received: from [172.22.22.28] ([73.62.185.64])
+        by smtp.googlemail.com with ESMTPSA id 586e51a60fabf-4a904856f09sm130363fac.3.2026.10.29.11.11.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 29 Oct 2026 11:11:31 -0700 (PDT)
+Message-ID: <4c7a6635-7382-4e57-ae16-6bc2ee694f46@ieee.org>
+Date: Thu, 29 Oct 2026 13:11:29 -0500
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -152,98 +89,161 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR02MB6863.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ede9dae-9652-4caf-58c6-08df35e39bc8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2026 17:39:39.6820
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR02MB9698
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] PM: runtime: change stub pm_runtime_get_if_active()
+ return 1 when !CONFIG_PM
+To: Frank.Li@oss.nxp.com
+Cc: Frank Li <Frank.Li@nxp.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>,
+ Karol Wachowski <karol.wachowski@linux.intel.com>,
+ Oded Gabbay <ogabbay@kernel.org>, Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Tvrtko Ursulin
+ <tursulin@ursulin.net>, Matthew Brost <matthew.brost@intel.com>,
+ Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Alex Elder <elder@kernel.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Sakari Ailus <sakari.ailus@linux.intel.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Guenter Roeck <linux@roeck-us.net>, Guan-Yu Lin <guanyulin@google.com>,
+ Mathias Nyman <mathias.nyman@linux.intel.com>, linux-pm@vger.kernel.org,
+ linux-usb@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ intel-gfx@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+ linux-hwmon@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+ netdev@vger.kernel.org, imx@lists.linux.dev, Rob Herring <robh@kernel.org>
+References: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
+Content-Language: en-US
+From: Alex Elder <elder@ieee.org>
+In-Reply-To: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Giorgi Kobakhia <gkobakhi@asu.edu> Sent: Sunday, October 25, 2026 8:2=
-0 PM
->=20
-> When buffer is freed, swiotlb_release_slots() tries to merge it with the
-> following free space by reading the list value of the next slot.
->=20
->     if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE))
->         count =3D mem->slots[index + nslots].list;
->     else
->         count =3D 0;
->=20
-> If index is in the last segment of the pool and the pool size is not
-> multiple of IO_TLB_SEGSIZE, index + nslots becomes equal to mem->nslabs
-> leading to out of bound read.
->=20
->  BUG: KASAN: slab-out-of-bounds in swiotlb_release_slots
->  Read of size 2
->=20
->  Call trace:
->   swiotlb_release_slots (kernel/dma/swiotlb.c:1653)
->   __swiotlb_tbl_unmap_single (kernel/dma/swiotlb.c:1734)
->   dma_unmap_phys (./include/linux/swiotlb.h:262 kernel/dma/direct.h:102
->                     kernel/dma/mapping.c:218)
->   dma_unmap_page_attrs (kernel/dma/mapping.c:236)
->=20
-> The commit 0b84e4f8b793 ("swiotlb: Add restricted DMA pool
-> initialization") makes it possible to initialize a pool with an
-> arbitrary size. Before it nslabs was multiple of IO_TLB_SEGSIZE and no
-> OOB occurred.
->=20
-> Add overflow check.
+On 10/29/26 11:30 AM, Frank.Li@oss.nxp.com wrote:
+> From: Frank Li <Frank.Li@nxp.com>
+> 
+> When CONFIG_PM is not enabled, all devices runtime PM state should be
+> treated as active.
 
-I can see that this is a legitimate problem. But I'm not sure this is the r=
-ight
-solution.
+Should be treated as if runtime PM were enabled for the device,
+and the runtime status is active.
 
-All other paths for creating a swiotlb pool ensure that nslabs is a multipl=
-e
-of IO_TLB_SEGSIZE. The better solution may be for rmem_swiotlb_device_init(=
-)
-to round-up nslabs to be a multiple of IO_TLB_SEGSIZE. My concern is
-that there may be other places in the swiotlb code where there is an
-implicit assumption that there are no partial segments at the end of
-a pool. It would take some effort for me to re-immerse myself in the
-swiotlb code to see if that's true, and I haven't done that. But my
-guess is that there's a good chance of such an assumption.
+It's a subtle distinction but the previous behavior returned
+EINVAL, which means "runtime PM is disabled for the device".
 
-What are the implications of potentially allocating slightly more memory
-for a restricted pool than is specified? It wouldn't be much additional
-memory since the segment size is 256 KiB.
+Anyway, for the IPA use of this function, this looks correct.
 
-Michael
+Acked-by: Alex Elder <elder@riscstar.com>
 
->=20
-> Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
-> Cc: stable@vger.kernel.org
-> Assisted-by: LLM
-> Tested-by: Xiang Mei <xmei5@asu.edu>
-> Signed-off-by: Giorgi Kobakhia <gkobakhi@asu.edu>
+> 
+> __pm_runtime_resume() returns 1 (called by pm_runtime_get()).
+> pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get().
+> stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
+> should return the same value as the stub pm_runtime_get(), which is 1.
+> 
+> Analysis of all callers and their behavior with old (-EINVAL) vs new (1):
+> 
+> Pattern A: if (!pm_runtime_get_if_active(dev)) -- no impact
+>    Both -EINVAL and 1 are non-zero, so !ret is false in both cases.
+>    Callers: drivers/accel/ethosu/ethosu_perfmon.c,
+>             drivers/gpu/drm/msm/adreno/a6xx_gmu.c,
+>             drivers/gpu/drm/msm/msm_perfcntr.c,
+>             drivers/gpu/drm/v3d/v3d_mmu.c,
+>             drivers/gpu/drm/v3d/v3d_perfmon.c (x4),
+>             drivers/media/i2c/gc08a3.c gc05a2.c og0ve1b.c ov6211.c,
+>             drivers/media/i2c/ccs/ccs-core.c s5kjn1.c lm3560.c (x2),
+>             drivers/media/i2c/s5k3m5.c thp7312.c imx283.c ov64a40.c,
+>             drivers/media/pci/intel/ipu6/ipu6-buttress.c,
+>             sound/hda/core/device.c
+> 
+> Pattern B: if (!ret) after get -- no impact
+>    Both -EINVAL and 1 are non-zero, !ret is false in both cases.
+>    drivers/gpu/drm/amd/pm/amdgpu_pm.c (comment says "allow access"
+>      in kernels without CONFIG_PM), drivers/pci/pci.c
+> 
+> Pattern C: ret > 0 / ret <= 0 / ret != 1 checks -- FIXED
+>    drivers/usb/core/offload.c: checks (!= 1), old -EINVAL caused
+>      -EBUSY even with !CONFIG_PM. Fixed: now returns 1, proceeds.
+>    drivers/accel/ivpu/ivpu_job.c: drm_WARN_ON(<= 0), old -EINVAL
+>      spuriously triggered WARN. Fixed: 1 > 0, no warn.
+>    drivers/gpu/drm/i915/intel_runtime_pm.c: checks (<= 0), old
+>      -EINVAL triggered error path. Fixed: 1 > 0, correct path.
+>    drivers/accel/ivpu/ivpu_sysfs.c: (> 0), old skipped freq read.
+>      Fixed: proceeds correctly without CONFIG_PM.
+>    drivers/gpu/drm/xe/xe_pm.c: wraps (> 0), all xe callers
+>      (xe_bo.c, xe_shrinker.c, xe_vsec.c, xe_ggtt.c, xe_guc_ct.c,
+>      xe_pxp.c) now correctly treat !CONFIG_PM as active.
+>    drivers/net/ipa/ipa_smp2p.c: power_on = (> 0), now correctly true.
+>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: (> 0), now correctly
+>      executes stall register update.
+>    drivers/staging/media/ipu7/ipu7-buttress.c: active (<= 0) early
+>      return now skipped, correctly proceeds.
+> 
+> Pattern D: explicit -EINVAL check
+>    drivers/hwmon/prom21-xhci.c: checks (> 0) then (== -EINVAL).
+>      Old: took -EINVAL fallback. New: takes (> 0) fast path.
+>      Both succeed when CONFIG_PM is disabled; functionally equivalent.
+>    drivers/hwmon/eic7700-pvt.c: call is guarded by IS_ENABLED(CONFIG_PM),
+>      stub is never reached. No impact.
+> 
+> Signed-off-by: Frank Li <Frank.Li@nxp.com>
 > ---
->  kernel/dma/swiotlb.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->=20
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index ded7016a46a7..1f18003be343 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -1649,7 +1649,8 @@ static void swiotlb_release_slots(struct device *de=
-v,
-> phys_addr_t tlb_addr,
->  	BUG_ON(aindex >=3D mem->nareas);
->=20
->  	spin_lock_irqsave(&area->lock, flags);
-> -	if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE))
-> +	if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE) &&
-> +	    index + nslots < mem->nslabs)
->  		count =3D mem->slots[index + nslots].list;
->  	else
->  		count =3D 0;
-> --
-> 2.43.0
->=20
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>
+> Cc: Karol Wachowski <karol.wachowski@linux.intel.com>
+> Cc: Oded Gabbay <ogabbay@kernel.org>
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> Cc: Tvrtko Ursulin <tursulin@ursulin.net>
+> Cc: Matthew Brost <matthew.brost@intel.com>
+> Cc: "Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>
+> Cc: David Airlie <airlied@gmail.com>
+> Cc: Simona Vetter <simona@ffwll.ch>
+> Cc: Alex Elder <elder@kernel.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: "Joerg Roedel" <joro@8bytes.org>
+> Cc: Rob Clark <robin.clark@oss.qualcomm.com>
+> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Guan-Yu Lin <guanyulin@google.com>
+> Cc: Mathias Nyman <mathias.nyman@linux.intel.com>
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-usb@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: intel-gfx@lists.freedesktop.org
+> Cc: intel-xe@lists.freedesktop.org
+> Cc: linux-hwmon@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: iommu@lists.linux.dev
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: linux-staging@lists.linux.dev
+> Cc: netdev@vger.kernel.org
+> Cc: imx@lists.linux.dev
+> Cc: Rob Herring (Arm) <robh@kernel.org>
+> ---
+>   include/linux/pm_runtime.h | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+> index 64921b10ac74f..de9e7518ecef2 100644
+> --- a/include/linux/pm_runtime.h
+> +++ b/include/linux/pm_runtime.h
+> @@ -280,7 +280,7 @@ static inline int pm_runtime_get_if_in_use(struct device *dev)
+>   }
+>   static inline int pm_runtime_get_if_active(struct device *dev)
+>   {
+> -	return -EINVAL;
+> +	return 1;
+>   }
+>   static inline int __pm_runtime_set_status(struct device *dev,
+>   					    unsigned int status) { return 0; }
 
