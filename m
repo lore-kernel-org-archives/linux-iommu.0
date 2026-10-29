@@ -1,24 +1,25 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793254309;
-	b=LdIJMsQ7XWdaS9IFmhZWWU+lxzTbCtwwDbGUE0qjks3rTQSmKnSa5ClGFPIHGPBSM/Be
-	 rtxyirqYhSuhRnGNLz9d4akYCaM3xygJCxr7MK0STNkpx+PBQJRR0aLsrXTZuy0SJeCOI
-	 wW9+GSQ6hqTfbq/st+3p+YeVqxDIm4FFlt2RiZ0gT0VX6U9QYW3q2EsT4kTytLWGuoZAP
-	 rH2hFugyMtpBO/Txr9wsm3ns2CIEDVXgnUEPPDk88b+lYXvReCNkwNC+bimqOsN8TJT/y
-	 jj6FqxFBNwuPMEe4ez9+t+NqlyHhm4ZmfGP+OfGz+Qump+wN4KM+hHe0e34LlOb/7Ig==
+	t=1793254310;
+	b=soERqlhwMTIBdExyrnXRZ2FkNJTWVqRXAFOYVCqFNk5YEVXwwxFkgZHAUJQu5gJpBfaL
+	 f27MDo4FUE+60MRcCA6P+RQgp1oF/ykseu2cRLV9xJAGkQGa8X0l9+hL1IHBTdz9eh6cT
+	 MbSygsnN0jzCfTULl+aA2J0SsFJUh0a7WYUqzN0YkQrSinFlTft+oT18NdBkVlti4pBE1
+	 n+kqxqiWsrPFgpug5nO7XBH4X5xEinlBUFLWJOr7hlBdoVtJIOYrz9Ep2NQkL2VfAqyn6
+	 MQZ4pIY8R4/47QA+936tMiU7R8EsblOLQdpZJNxMUhBS1YngCm6NeNfftfvzUKLA/Uw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793254309;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793254310;
 	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
 	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:MIME-Version:X-ZMAIL-USEORIGINALEMLTOOUTBOUND:
-	 Content-Transfer-Encoding:X-MAIL:X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:
-	 X-CLEAN:X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=o5Aatyda/Lp1zJ3BeWD36znaakeeIR6qZ3x93iE7EYU=;
-	b=lGi1lqyc53IzIEoNgGNWHBuehp+IiaPEW3zKdFI3c/OJvatyD52VvS47Q1c0/hb3m3tl
-	 xzL+MysCQQobR9eA66ZYq6Oc1iLQsKEZsIprIMVdBFX6gpg7r4e2Tngt9SnJrX7sSPLVb
-	 3fEbQTJgdGUPC9LgfZHQdnKCAKgKYUq9paEjxOknAMagcXc/ojPBCQYjNsU7Aac8M9sd2
-	 D29tdS7Kg+jzPuhP4h1ZykpsJWdLmcXTewqDsOHJqaAiRLJVcU43L7aXe1mDmfVtIZwiF
-	 /5BOxGbx/mvUHoWj/qhFi9/OE082i4C2tMGWX0Oj5FOnh0V7/02NntJx2FjRVMJfgDg==
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
+	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
+	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
+	bh=LQ1Dc1AEtemooe5ez0qeFSkjkwnLGLVYy6ElxNTY92k=;
+	b=VugSKqmdWR+Js1DJQ7wWZLFzyV0BNBXv5ym9oojq3f4AoTnk1DU+DeiKLuQ5vD38vnPD
+	 QPowwndeCIIY/XGMxdVzNfkLucjyxnDG5YP2SNCsw0W+xgzy0zjN/oiNW0QQ8JhTd5KQk
+	 ujy7hAGWWza7Pg0Cpg9Vji1YiRRm9B9Qc26X0Or17LHWh9NdIwk+Lzdvmkdnd+DedQsJX
+	 UvlHlA3BT71MCZDl2PboZQtNb1J60b05wtbRSXQQCjZI05Oyi7KWB8MZTY8WRi3r0ZKdV
+	 +TJFpYEwRdC7CJyfpvhNtWT0pNVVXwE/nCifPHSdt6TdtWkzZ8AB4Ri+aj3M8PqjfCg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=sanechips.com.cn;
 	spf=pass smtp.mailfrom=sanechips.com.cn;
@@ -27,25 +28,25 @@ Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E230606A32E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F19A8606A333
 	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:11:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E230606A32E
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F19A8606A333
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jFYlb3yv3z5PkGs;
-	Thu, 29 Oct 2026 14:11:39 +0800 (CST)
-Received: from szxlzmapp03.zte.com.cn ([10.5.231.207])
-	by mse-fl1.zte.com.cn with SMTP id 69T6BVfI003033;
-	Thu, 29 Oct 2026 14:11:31 +0800 (+08)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jFYlf6SKKz5PkGv;
+	Thu, 29 Oct 2026 14:11:42 +0800 (CST)
+Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
+	by mse-fl2.zte.com.cn with SMTP id 69T6BZTU044449;
+	Thu, 29 Oct 2026 14:11:35 +0800 (+08)
 	(envelope-from gong.shuai@sanechips.com.cn)
 Received: from ubuntu-35-gs (unknown [10.230.214.35])
 	by smtp (Zmail) with SMTP;
-	Thu, 29 Oct 2026 14:11:33 +0800
-X-Zmail-TransId: 3e816ae2e38e027-e7c7d
+	Thu, 29 Oct 2026 14:11:37 +0800
+X-Zmail-TransId: 3e816ae2e398027-e7d19
 X-Zmail-LocalSMTP: 1
 X-Zmail-RealSender: gong.shuai@sanechips.com.cn
 From: Gong Shuai <gong.shuai@sanechips.com.cn>
@@ -67,10 +68,12 @@ Cc: Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>,
         Zhao Qingye <zhao.qingye@sanechips.com.cn>,
         Gong Shuai <gong.shuai@sanechips.com.cn>,
         Gong Shuai <gsh517025@gmail.com>
-Subject: [RFC PATCH v2 0/9] iommu/riscv: Add nested translation (vIOMMU) support
-Date: Thu, 29 Oct 2026 14:11:22 +0800
-Message-ID: <20261029061131.584453-1-gong.shuai@sanechips.com.cn>
+Subject: [RFC PATCH v2 5/9] iommu/riscv: Add nested domain allocation
+Date: Thu, 29 Oct 2026 14:11:27 +0800
+Message-ID: <20261029061131.584453-6-gong.shuai@sanechips.com.cn>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261029061131.584453-1-gong.shuai@sanechips.com.cn>
+References: <20261029061131.584453-1-gong.shuai@sanechips.com.cn>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -82,179 +85,193 @@ Precedence: list
 MIME-Version: 1.0
 X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
 Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl1.zte.com.cn 69T6BVfI003033
+X-MAIL:mse-fl2.zte.com.cn 69T6BZTU044449
 X-TLS: YES
 X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Thu, 29 Oct 2026 14:11:39 +0800
+X-SOURCE-IP: 10.5.228.133 unknown Thu, 29 Oct 2026 14:11:42 +0800
 X-CLEAN: YES
 X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AE2E39B.001/4jFYlb3yv3z5PkGs
+X-Fangmail-MID-QID: 6AE2E39E.001/4jFYlf6SKKz5PkGv
 
-An IOMMU allows an OS to restrict device DMA to the intended memory.
-It also gives device drivers an IOVA space that is independent of the
-physical memory layout. A guest OS needs these capabilities when it
-directly controls a device, just as a native OS does.
+From: Wu Fei <wu.fei9@sanechips.com.cn>
 
-Exposing a vIOMMU to the guest is not enough for a passthrough device.
-DMA from the physical device must also obey the mappings that the guest
-creates through its vIOMMU. Otherwise the guest cannot use its IOMMU to
-protect guest memory or provide IOVA mappings for the assigned device.
+A nested domain describes two-stage translation through guest and
+host page tables. Iommufd exposes this domain as a nested hwpt.
 
-The RISC-V IOMMU architecture supports this usage with two-stage
-translation. Stage 1 applies the guest's vIOMMU configuration. Stage 2
-is controlled by the hypervisor and restricts the device to memory
-assigned to the VM. This division gives the guest control of its own
-DMA mappings without allowing the device to escape the VM.
+User space needs to provide the guest stage 1 configuration when
+allocating a nested hwpt. Validate the configuration before storing
+it for use in a physical device context.
 
-The Linux RISC-V IOMMU driver does not yet support this model through
-iommufd. A VMM cannot provide the guest stage 1 configuration to the
-physical IOMMU or synchronize its translation caches after the guest
-updates its page tables. This series adds the missing nested
-translation support so device passthrough can work with a guest that
-uses its own vIOMMU.
+Signed-off-by: Wu Fei <wu.fei9@sanechips.com.cn>
+Co-developed-by: Gong Shuai <gong.shuai@sanechips.com.cn>
+Signed-off-by: Gong Shuai <gong.shuai@sanechips.com.cn>
+---
+ drivers/iommu/riscv/iommu.c | 151 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 151 insertions(+)
 
-This is an RFC and comments on the design are welcome.
-
-Patch organization
-
-Patch 1 prepares device context handling for nested translation.
-Patches 2 and 3 add the uAPI for nested allocation and cache
-invalidation.
-Patches 4 to 6 add the vIOMMU, nested domains and cache invalidation.
-Patches 7 and 8 allow a VMM to discover the physical IOMMU
-capabilities.
-Patch 9 adds nested device attachment.
-
-Dependencies
-
-The series applies on top of linux-iommu/next at 20bfd25757659f with
-the generic iommu page table for SMMUv3 v2 [1], the RISC-V hardware
-dirty tracking series v5 [2], and the generic_pt fix that adds Svpbmt
-to the RISC-V supported feature mask.
-
-Testing
-
-The test requires MSI support, but the related dependencies are still
-under review, so the interrupt changes are not included in this series.
-The test needs the MSI remapping series v6 [3], the irqbypass series
-RFC v3 [4] and a KVM client from Andrew's github repo [5].A branch with
-the complete test stack, including the additional nested interrupt
-support, is available at github repo [6].
-
-The host is a RISC-V machine whose physical IOMMU is provided by an outer
-QEMU riscv-iommu model, which implements both translation stages. An NVMe
-controller under it is bound to vfio-pci and passed through to the guest.
-The guest is started by a QEMU built with the accel series [7][8], which
-exposes a first stage IOMMU to the guest and leaves the second stage to
-the host IOMMU. For simplicity the guest runs the same kernel as the host,
-and inside the guest it mainly uses the normal IOMMU driver and the NVMe
-driver.
-
-The layering of the setup is
-
-Host HW, a RISC-V virt machine from latest QEMU(v11.1.2), with a
-riscv-iommu model that implements two stage translation and with the NVMe
-controller
-
-    Host OS, the kernel with this series
-      riscv-iommu driver, second stage and MSI table vfio-pci and KVM
-
-        Guest HW, QEMU with the accel series [7][8]
-          riscv-iommu accel, first stage only
-
-            Guest OS, the same kernel as the host
-              riscv-iommu driver, NVMe driver
-
-A DMA address from the NVMe controller is translated by the guest first
-stage and then by the host second stage on the physical IOMMU. An MSI
-address is translated by the guest first stage into a guest IMSIC address,
-which the flat MSI table then resolves straight to the interrupt file of
-the target vCPU, instead of walking the second stage.
-
-    DMA    device --> guest first stage --> host second stage --> RAM
-    MSI    device --> guest first stage --> MSI table --> VS-file
-
-The host was started with
-
-$HOST_QEMU \
-  -M virt,aia=aplic-imsic,aia-guests=7,iommu-sys=on \
-  -cpu rva23s64,sv48=on -nographic \
-  -smp 16 -m 16G \
-  -kernel $HOST_KERNEL \
-  -append "root=/dev/vda rw earlycon=sbi console=ttyS0 iommufd.allow_unsafe_interrupts=1" \
-  -drive file=$HOST_ROOTFS,if=none,id=d0,format=qcow2 -device virtio-blk-device,drive=d0 \
-  -device pcie-root-port,id=port0,chassis=0,slot=0,addr=3.0 \
-  -drive file=fake-nvme-disk.img,if=none,id=nvme0,format=qcow2 \
-  -device nvme,drive=nvme0,serial=deadbeef,bus=port0,addr=0.0
-
-and the guest with
-
-$GUEST_QEMU \
-  -machine virt,accel=kvm,aia=aplic-imsic,aia-guests=5 \
-  -cpu host -nographic \
-  -smp 4 -m 4G \
-  -object iommufd,id=iommufd0 \
-  -device riscv-iommu-pci,addr=1.0,s-stage=on,g-stage=off,accel=on \
-  -device vfio-pci,host=0000:01:00.0,iommufd=iommufd0 \
-  -kernel $GUEST_KERNEL \
-  -append "root=/dev/vda rw earlycon=sbi console=ttyS0 iommu.passthrough=0 iommu.strict=1" \
-  -drive file=$GUEST_ROOTFS,if=none,id=d0,format=qcow2 -device virtio-blk-device,drive=d0
-
-Correctness was checked by running fio with verification enabled against
-the passed through disk.
-
-Known limitations and future work
-
-PASID and the process directory table are not supported, PDTV is rejected
-and PSCID is fixed at 0. The ATS, PRI and T2GPA fields are validated on
-the nested domain, but ATS.INVAL and the PRI queue are not forwarded. A
-vIOMMU is bound to a single physical IOMMU instance. The new uAPI types
-have no selftest coverage yet.
-
-Coding assistants based on LLMs were used during development for code
-exploration, patch review, test execution and for drafting and editing
-commit messages. We have reviewed and finalized all resulting code and
-text.
-
-Changes in v2:
-
-- Rebased on linux-iommu/next at 20bfd25757659f and the hardware
-  dirty tracking series v5 [2].
-- Rewrote the commit messages and updated the uAPI definitions (Jason's
-  suggestions).
-- Drop the MSI related patches (Jason's suggestions).
-- Link to v1:
-  https://lore.kernel.org/linux-riscv/20261015065232.604503-1-gong.shuai@sanechips.com.cn/
-
-
-[1] https://lore.kernel.org/linux-iommu/0-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com/
-[2] https://lore.kernel.org/linux-riscv/20261020094106.92722-1-fangyu.yu@linux.alibaba.com/
-[3] https://lore.kernel.org/all/20260925151659.419512-1-andrew.jones@oss.qualcomm.com/
-[4] https://lore.kernel.org/linux-riscv/20260928143113.49838-1-andrew.jones@oss.qualcomm.com/
-[5] https://github.com/jones-drew/linux/commits/riscv/iommu-irqbypass-rfc-v3-kvm/
-[6] https://github.com/leaprise/linux/tree/riscv/iommu-nested-rfc-v2
-[7] https://lore.kernel.org/qemu-devel/20261029054751.563493-1-gong.shuai@sanechips.com.cn/
-[8] https://github.com/leaprise/qemu/tree/riscv/iommu-nested-rfc-v2
-
-
-Gong Shuai (2):
-  iommu/riscv: Use DC.tc.V as the device context valid bit
-  iommu/riscv: Add vIOMMU cache invalidation
-
-Wu Fei (7):
-  iommufd: Add RISC-V IOMMU hwpt and vIOMMU types
-  iommufd: Add RISC-V IOMMU cache invalidation data type
-  iommu/riscv: Add vIOMMU object support
-  iommu/riscv: Add nested domain allocation
-  iommufd: Add RISC-V IOMMU hardware info type
-  iommu/riscv: Add riscv_iommu_hw_info
-  iommu/riscv: Add riscv_iommu_attach_dev_nested
-
- drivers/iommu/riscv/iommu-bits.h |  19 ++
- drivers/iommu/riscv/iommu.c      | 391 +++++++++++++++++++++++++++++--
- include/uapi/linux/iommufd.h     |  81 +++++++
- 3 files changed, 475 insertions(+), 16 deletions(-)
-
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index a8c19c9e45d4..371d60902eaa 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -1662,7 +1662,158 @@ struct riscv_viommu {
+ 	int gscid;
+ };
+ 
++struct riscv_iommu_nested_domain {
++	struct iommu_domain domain;
++	struct riscv_viommu *viommu;
++
++	u64 tc;
++	u64 iosatp;
++};
++
++#define to_riscv_iommu_nested_domain(domain) \
++	container_of(domain, struct riscv_iommu_nested_domain, domain)
++
++static void riscv_iommu_domain_nested_free(struct iommu_domain *domain)
++{
++	kfree(to_riscv_iommu_nested_domain(domain));
++}
++
++static const struct iommu_domain_ops riscv_iommu_nested_ops = {
++	.free = riscv_iommu_domain_nested_free,
++};
++
++static int riscv_iommu_validate_vdc(struct riscv_iommu_device *iommu,
++				    struct iommu_hwpt_riscv *arg)
++{
++	u64 tc = arg->dc[0];
++	u64 fsc = arg->dc[3];
++	u64 mode;
++
++	if (!(tc & RISCV_IOMMU_DC_TC_V)) {
++		arg->dc[0] = 0;
++		arg->dc[3] = 0;
++		return 0;
++	}
++
++	/*
++	 * Reject reserved/custom bits, the physical IOMMU may treat the
++	 * DC as misconfigured.
++	 */
++	if (tc & ~RISCV_IOMMU_DC_TC_DEFINED)
++		return -EINVAL;
++	if (fsc & ~(RISCV_IOMMU_DC_FSC_PPN | RISCV_IOMMU_DC_FSC_MODE))
++		return -EINVAL;
++
++	/* Process directory tables are not supported now. */
++	if (tc & RISCV_IOMMU_DC_TC_PDTV)
++		return -EOPNOTSUPP;
++
++	/* With PDTV=0 the DPE bit is reserved for future use. */
++	if (tc & RISCV_IOMMU_DC_TC_DPE)
++		return -EINVAL;
++
++	/* Only 64-bit (SXL=0) stage-1 is supported. */
++	if (tc & RISCV_IOMMU_DC_TC_SXL)
++		return -EOPNOTSUPP;
++
++	/* ATS/PRI/T2GPA/PRPR consistency. */
++	if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_ATS) &&
++	    (tc & (RISCV_IOMMU_DC_TC_EN_ATS | RISCV_IOMMU_DC_TC_EN_PRI |
++		   RISCV_IOMMU_DC_TC_PRPR)))
++		return -EINVAL;
++	if ((tc & RISCV_IOMMU_DC_TC_EN_PRI) &&
++	    !(tc & RISCV_IOMMU_DC_TC_EN_ATS))
++		return -EINVAL;
++	if ((tc & RISCV_IOMMU_DC_TC_PRPR) &&
++	    !(tc & RISCV_IOMMU_DC_TC_EN_PRI))
++		return -EINVAL;
++	if ((tc & RISCV_IOMMU_DC_TC_T2GPA) &&
++	    (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_T2GPA) ||
++	     !(tc & RISCV_IOMMU_DC_TC_EN_ATS)))
++		return -EINVAL;
++
++	/*
++	 * A/D update behavior on stage-2 PTEs is owned by the host,
++	 * decide it's value from the AMO_HWAD capability.
++	 */
++	tc &= ~RISCV_IOMMU_DC_TC_GADE;
++	if (iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD)
++		tc |= RISCV_IOMMU_DC_TC_GADE;
++
++	/*
++	 * A/D update behavior on stage-1 PTEs is owned by the guest but
++	 * needs AMO_HWAD support.
++	 */
++	if ((tc & RISCV_IOMMU_DC_TC_SADE) &&
++	    !(iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD))
++		return -EOPNOTSUPP;
++
++	/* SBE must match the IOMMU byte order unless END is supported. */
++	if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_END) &&
++	    (!!(tc & RISCV_IOMMU_DC_TC_SBE) !=
++	     !!(iommu->fctl & RISCV_IOMMU_FCTL_BE)))
++		return -EINVAL;
++
++	/* Validate the stage-1 mode. */
++	mode = FIELD_GET(RISCV_IOMMU_DC_FSC_MODE, fsc);
++	if (mode == RISCV_IOMMU_DC_FSC_MODE_BARE) {
++		/* No stage-1 translation, root pointer is unused. */
++		fsc = 0;
++	} else {
++		switch (mode) {
++		case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39:
++		case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV48:
++		case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV57:
++			break;
++		default:
++			return -EINVAL;
++		}
++		if (!riscv_iommu_fsc_supported(iommu, mode))
++			return -EOPNOTSUPP;
++	}
++
++	arg->dc[0] = tc;
++	arg->dc[3] = fsc;
++
++	return 0;
++}
++
++static struct iommu_domain *
++riscv_viommu_alloc_domain_nested(struct iommufd_viommu *viommu, u32 flags,
++				 const struct iommu_user_data *user_data)
++{
++	struct riscv_viommu *rv_viommu = container_of(viommu, struct riscv_viommu, core);
++	struct riscv_iommu_nested_domain *nested_domain;
++	struct iommu_hwpt_riscv arg;
++	int ret;
++
++	if (flags)
++		return ERR_PTR(-EOPNOTSUPP);
++
++	ret = iommu_copy_struct_from_user(&arg, user_data,
++					  IOMMU_HWPT_DATA_RISCV_S1, dc);
++	if (ret)
++		return ERR_PTR(ret);
++
++	ret = riscv_iommu_validate_vdc(rv_viommu->iommu, &arg);
++	if (ret)
++		return ERR_PTR(ret);
++
++	nested_domain = kzalloc_obj(*nested_domain, GFP_KERNEL_ACCOUNT);
++	if (!nested_domain)
++		return ERR_PTR(-ENOMEM);
++
++	nested_domain->domain.type = IOMMU_DOMAIN_NESTED;
++	nested_domain->domain.ops = &riscv_iommu_nested_ops;
++	nested_domain->viommu = rv_viommu;
++	nested_domain->tc = arg.dc[0];
++	nested_domain->iosatp = arg.dc[3];
++
++	return &nested_domain->domain;
++}
++
+ static const struct iommufd_viommu_ops riscv_viommu_ops = {
++	.alloc_domain_nested = riscv_viommu_alloc_domain_nested,
+ };
+ 
+ static size_t riscv_iommu_get_viommu_size(struct device *dev,
 -- 
 2.53.0
 
