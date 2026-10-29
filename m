@@ -1,79 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793254321;
-	b=5U+11mEKm0cSBleKTzXEnO5GDvqnq/H3p2+NP5xLW6OmR/RSUno41DVx+7DWdFIVfcNa
-	 aCSq97+dzocgH9PRcR0LFFUxmk116LcmYrzS0HHkXfZcGi3CNe78pY+y+YzqiIcpfET8w
-	 i1dI3br0tfPtxsNBPlhiKJI0g20zE1G98LSD2BUIq9+hD71EGMz4baazCIqUWrBqwH6S2
-	 7eAHVJ0fDZ8m+WYgJZejBxCeEcdjcfbFEwhAo8/KuvVJoyNntPtdaQyUkubs0duAK6eBw
-	 hWRIS5OpuW4daqKV0GiWCPJG9dhPW6eYqIdQMDc+NqydKUG1K8PC6VPoMSLVfyd5kzQ==
+	t=1793255175;
+	b=nFleB6lFyEZAa6vBOrBGKo+mvVnZpBOyIHbRUJdbBkX+Hh9t5mwLvDHrEH3Vw9IPPNv+
+	 FH39btr8IsZGqkZyWBz9MRnXzddM+EXAHE66UPM6degi70CQP1eIfq9yMfW/pB3+0who1
+	 lJbXgWS8XPArzNSKQaJMNuIuegMgonM8/GOX6K1YzStuthZPiZ2nAS6A7zZrU0mmvMUG0
+	 19dHEzTNrhRY1vQamghmiNEI6DsA9w2tQJI6BGJq2L7kHel/3bt35RaalWNg9idwvdsS7
+	 OtiAyvJyTBIFoWx6sAJ3A+GHJU5qYFTwc6c1xuT63k23Z+AKH0ExM7qWkb+fSgbo/BQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793254321;
-	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
-	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
-	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
-	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=zF/ZgoW7SM4KpPWZvgdoiWNpXWUAfyqBdr40/sCKlHI=;
-	b=WA7hDgI0ggrI3Pet2UAUZDo4s1jFgMQeCZlCTmZXxKpSpbQjcsuJrQzyDH/HekRPl9Z3
-	 t7+eS2XD0V6WzrO7O8m7oB5CZqca7YMgIrjKFViOFSMEMDyv191e8m9SMete/N8YRZlTF
-	 r+htcKDtWD7HdsG2rJW1imsIoLNFuITWeZD98nEDlHz6/hP91QqCDI0x8N0bUxEsUsMRB
-	 J1Ja1lEjB1mUid0J4kyink5sHO008tXuUpmA69MMZ9hzMoB1/rpbMCsL41ejGZ99jhOEM
-	 OfxuKzUPYFMfFdqy8fgh/OeYPW92cz6xoskkiThaPuPOx/rCXpnVH/bcX9yqyi529hg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793255175;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=SBYN8nHbrvBKRMqi5RXO8B9e5Gvye9Fzno6hvtSji7Y=;
+	b=oxIYZeGth3YlcQh7zM8yebVoNBuicykXOCNvyAfoaT817EXISCHaOLDphcvMQ667dXO9
+	 GaakrMLfESvGZ13Yxxdxbdlk433JMFAG/neSMnGasTqaWSB0qm9uUDNXAxz1gBY8UuTYs
+	 wLFDJFmwZDl5BHUy0LqNCzdIFwvdmVoxFLU9Fd5sxts6iHGs7hxpSBZd3tv8BdgLHRlIt
+	 k7AzyhdU9m+iPYcZWh7kzHh62HaLVQk4aVpeNVLmnn5kBTFmKr5vqDWLhirWIIGyT7KK8
+	 IRfVATrPqlUCfJb86TjL/10nEsAAw6jL+Nlm4ku7PZG3hDmgcTCECSTBl7EI1nyCWzQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=sanechips.com.cn;
-	spf=pass smtp.mailfrom=sanechips.com.cn;
-	arc=none smtp.remote-ip=160.30.148.34
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Uy6EMYl/";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C3C60A2612
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:11:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E9C3C60A2612
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jFYlp3mjdz5PkGr;
-	Thu, 29 Oct 2026 14:11:50 +0800 (CST)
-Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
-	by mse-fl1.zte.com.cn with SMTP id 69T6BcK6003178;
-	Thu, 29 Oct 2026 14:11:38 +0800 (+08)
-	(envelope-from gong.shuai@sanechips.com.cn)
-Received: from ubuntu-35-gs (unknown [10.230.214.35])
-	by smtp (Zmail) with SMTP;
-	Thu, 29 Oct 2026 14:11:40 +0800
-X-Zmail-TransId: 3e816ae2e39b027-e7d7a
-X-Zmail-LocalSMTP: 1
-X-Zmail-RealSender: gong.shuai@sanechips.com.cn
-From: Gong Shuai <gong.shuai@sanechips.com.cn>
-To: kvm@vger.kernel.org, kvm-riscv@lists.infradead.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev
-Cc: Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>,
-        Paul Walmsley <pjw@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
-        Tomasz Jeznach <tomasz.jeznach@linux.dev>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-        Andrew Jones <andrew.jones@oss.qualcomm.com>,
-        Fangyu Yu <fangyu.yu@linux.alibaba.com>,
-        Wu Fei <wu.fei9@sanechips.com.cn>,
-        Zhao Qingye <zhao.qingye@sanechips.com.cn>,
-        Gong Shuai <gong.shuai@sanechips.com.cn>,
-        Gong Shuai <gsh517025@gmail.com>
-Subject: [RFC PATCH v2 8/9] iommu/riscv: Add riscv_iommu_hw_info
-Date: Thu, 29 Oct 2026 14:11:30 +0800
-Message-ID: <20261029061131.584453-9-gong.shuai@sanechips.com.cn>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261029061131.584453-1-gong.shuai@sanechips.com.cn>
-References: <20261029061131.584453-1-gong.shuai@sanechips.com.cn>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3256606A31A;
+	Thu, 29 Oct 2026 06:26:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Uy6EMYl/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FE471F01825;
+	Thu, 29 Oct 2026 06:26:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793255174;
+	bh=SBYN8nHbrvBKRMqi5RXO8B9e5Gvye9Fzno6hvtSji7Y=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=Uy6EMYl/aUxbNk06a+gjS6GHbd/oi5C01+fRiJ3cltkIJv5OTsod38EsQWy7t7dBn
+	 NDZucBRCnlRrE4FcJs6mzCXn0iaHWOA6wKxFqhnUCvzeBY/iWWhXk9rPwjvD+faOvY
+	 7alUHiUmpBfPf8UWXje9fuyNYk2uOhOSqHViqFIToW9yyC98wxQiuMSwJCGyTPqjZi
+	 aBcbxR8E/UhECkrsVez64c5FKzV2tPz4fSYDyuznvLSCdvwJv/jyozbljN64q8rKF3
+	 RcC2WNFaDQDWyZ/AQKfhOM37vh9iY4cN7X1OogpQxyUPUKsonl3f93IY/HFPy4WMMr
+	 Vs+MMJgJNexVg==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v7 08/16] iommufd/viommu: Keep a reference to the KVM file
+In-Reply-To: <20261014105913.00001217@linux.microsoft.com>
+References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
+ <20261008055955.4014342-9-aneesh.kumar@kernel.org>
+ <20261014105913.00001217@linux.microsoft.com>
+Date: Thu, 29 Oct 2026 11:56:02 +0530
+Message-ID: <yq5aecd9aupx.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,60 +83,92 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
-Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl1.zte.com.cn 69T6BcK6003178
-X-TLS: YES
-X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Thu, 29 Oct 2026 14:11:50 +0800
-X-CLEAN: YES
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AE2E3A6.000/4jFYlp3mjdz5PkGr
+Content-Type: text/plain
 
-From: Wu Fei <wu.fei9@sanechips.com.cn>
+Jacob Pan <jacob.pan@linux.microsoft.com> writes:
 
-Implement the hw_info op to return the physical IOMMU capabilities
-register. This allows IOMMU_GET_HW_INFO to report the available host
-features to a VMM.
+> Hi Aneesh,
+>
+> On Thu,  8 Oct 2026 11:29:47 +0530
+> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+>
+>> From: Nicolin Chen <nicolinc@nvidia.com>
+>> 
+>> The TSM vDevice operations need access to the KVM associated with the
+>> device's vIOMMU. Save the device's KVM file in the iommufd_viommu
+>> when the vIOMMU is allocated, and take a file reference so it remains
+>> valid for the lifetime of the vIOMMU.
+>> 
+>> Release the reference when the vIOMMU is destroyed.
+>> 
+>> Based on an original patch by
+>> Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+>> 
+>> [nicolinc: hold kvm's users_count]
+>> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+>> [aneesh.kumar: Switch to use kvm_file]
+>> Cc: jgg@ziepe.ca
+>> Cc: kevin.tian@intel.com
+>> Cc: joro@8bytes.org
+>> Cc: will@kernel.org
+>> Cc: robin.murphy@arm.com
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> ---
+>>  drivers/iommu/iommufd/viommu.c | 5 +++++
+>>  include/linux/iommufd.h        | 1 +
+>>  2 files changed, 6 insertions(+)
+>> 
+>> diff --git a/drivers/iommu/iommufd/viommu.c
+>> b/drivers/iommu/iommufd/viommu.c index f7951057a1e5..b7489ed259bd
+>> 100644 --- a/drivers/iommu/iommufd/viommu.c
+>> +++ b/drivers/iommu/iommufd/viommu.c
+>> @@ -1,6 +1,7 @@
+>>  // SPDX-License-Identifier: GPL-2.0-only
+>>  /* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
+>>   */
+>> +#include <linux/file.h>
+>>  #include "iommufd_private.h"
+>>  
+>>  void iommufd_viommu_destroy(struct iommufd_object *obj)
+>> @@ -11,6 +12,8 @@ void iommufd_viommu_destroy(struct iommufd_object
+>> *obj) if (viommu->ops && viommu->ops->destroy)
+>>  		viommu->ops->destroy(viommu);
+>>  	refcount_dec(&viommu->hwpt->common.obj.users);
+>> +	if (viommu->kvm_file)
+>> +		fput(viommu->kvm_file);
+>>  	xa_destroy(&viommu->vdevs);
+>>  }
+>>  
+>> @@ -82,6 +85,8 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd
+>> *ucmd) }
+>>  
+>>  	xa_init(&viommu->vdevs);
+>> +	if (idev->kvm_file)
+>> +		viommu->kvm_file = get_file(idev->kvm_file);
+> So kvm_file will persist inside viommu even when no more vdevice exists
+> under the viommu. In that case, don't we need to check idev->kvm_file
+> matches viommu->kvm_file during vdevice allocation?
+>
+> Otherwise, it appears possible to associate a device belonging to a
+> different KVM VM with the existing vIOMMU, no?
+>
 
-Signed-off-by: Wu Fei <wu.fei9@sanechips.com.cn>
-Signed-off-by: Gong Shuai <gong.shuai@sanechips.com.cn>
----
- drivers/iommu/riscv/iommu.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+Agreed. I will add the below.
 
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 6bcf214016c3..44fab79110ac 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -1940,9 +1940,27 @@ static int riscv_viommu_init(struct iommufd_viommu *viommu,
- 	return 0;
- }
+modified    drivers/iommu/iommufd/viommu.c
+@@ -212,6 +212,11 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 		goto out_put_viommu;
+ 	}
  
-+static void *riscv_iommu_hw_info(struct device *dev, u32 *length,
-+				 enum iommu_hw_info_type *type)
-+{
-+	struct iommu_hw_info_riscv *info;
-+	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
++	if (idev->kvm_file != viommu->kvm_file) {
++		rc = -EINVAL;
++		goto out_put_idev;
++	}
 +
-+	info = kzalloc_obj(*info);
-+	if (!info)
-+		return ERR_PTR(-ENOMEM);
-+
-+	info->capabilities = iommu->caps;
-+	*length = sizeof(*info);
-+	*type = IOMMU_HW_INFO_TYPE_RISCV;
-+
-+	return info;
-+}
-+
- static const struct iommu_ops riscv_iommu_ops = {
- 	.of_xlate = riscv_iommu_of_xlate,
- 	.capable = riscv_iommu_capable,
-+	.hw_info = riscv_iommu_hw_info,
- 	.identity_domain = &riscv_iommu_identity_domain,
- 	.blocked_domain = &riscv_iommu_blocking_domain,
- 	.release_domain = &riscv_iommu_blocking_domain,
--- 
-2.53.0
+ 	if (viommu->iommu_dev) {
+ 		iommu_dev = iommufd_device_get_iommu_dev(idev);
+ 		if (!iommu_dev || viommu->iommu_dev != iommu_dev) {
 
+
+
+-aneesh
