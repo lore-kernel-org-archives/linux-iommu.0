@@ -1,105 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.182
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.52
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793279032;
-	b=BlALMmQd/mCLfWLu5Sxg/lz9u66/u5o/Sw0UCZOnJWgVcy+qxAtREmEZySiO0Pp8Ltvu
-	 iWtmp38C8PIgG1oOo1nBdfU/l5U4bll9zZcYd2dMMMDmYJVu8GBC7HbWFbdamXLbTxfsp
-	 nUv5dN4Q6JjU7Gq6M0zoKsSsu2mNn34EKiPeKy32XvhjYiL6Lfp7oIx697rIVHVdo3tmE
-	 zfUX6maCMajsd6La1dzCfo2mF6jRgDAVOzNZ3vzvm6ytbeeCOtodHBVm9alFpevBXD8jj
-	 zJTNmfZ72DswPn0mx35CHsYtOtx2WOw0zP3ksIeGUhFDFJIz6D7CfC6SXaKd3b0QOUg==
+	t=1793280353;
+	b=nhDzTTtS2/S75/verqbE3Qzo30KybSHSUjxfV6IFuoCnAoCOKgVIqZpWJHrTQepZmNMW
+	 XncsI5AHBWeYbFaHwhMtMTHMhgwMHoEAuhANdNu+2qyi8t2sWzPQUrb9jYxQFmZEI8K6i
+	 2MOdRy1YLOys1Pt5ycfdbIDskMD+uI4oiYUhEy6TUGD4Nv0YpBciyhkQDzFSmTB17dp8O
+	 AZmwMODxWuOVZnUR25SoMT7tyWaeOy913mCV38D8SwXWBV2Qpiqol32jgyH73Ib1Sgq17
+	 /xu+crxzG3hzLnTaspeHGRxJPEFBkXFNhJmZyo/h/KXzyBQA2RTlBXvbNymUpObwGYQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793279032;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793280353;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:In-Reply-To:References:MIME-Version:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=KF90/0GARuMWHyMTMB3Xwv0e5GgnH85LGW7qmrj44J0=;
-	b=Vh909g/GqacisPOYu7DvtlQkV3s/ci90fr5slMUO8wbj1aAy/8mls4m93jYMcRyglQWP
-	 x2Bc07OCmtRQclnm+AMcCFLQKOBL1YMkgj1Yi3K61iEP+d8IHG8cy9NVrGlX/2UZMAHz9
-	 a4XtKi+APDJGi54oBeZ4vw6K+bhqGu0qmBLgyKmsMe/n2hM8/qHMgwQYkiBSH/HMqC4rv
-	 HUzTMyF2D6VeNDwL5igU02OVvZrwEy9Jn+O1tevr3DDv60nDTIKgimiIlA17j9k+HlCdQ
-	 L8l9iH3D0qE9IV20IkHSipJOWBYjmVQMSNv47yDoYo83goyEPDd5N9+Zncr2I5Oh3tw==
+	bh=B4Ote2oNGmkpBbwqGPlhb6Bmy2+vfC8nA+hvmMRa0W0=;
+	b=1bdRj7X1dFqH5JNYjW43dsM4XbkXYHDuLUOfvENpn7EIDMWxvPtK6EVxvGBxlbu8+LXd
+	 8R0JvvuHOPcs7WQMlNWJI3AiKeYAJjS8fAyKc8Zjz8bpjt2b5TroDCSusot2Lsb9jFTyB
+	 /5nW03mrHR/qwmGty3LBUclBrE9ysX7mYV+dhjR3d54jULKUj/tK36yy9Lv824Gm4YOJL
+	 VwmC3A2MG9VwcpO7ug44Tel8lvgAeh2ksHq0+emDwUZQGlFTKBdA7urYKwx7oJ+QJ873C
+	 HtF6DM0UoVuKTtArPmtLJ3qmXYw0Q+Y60tUDDEOeOJdDS9z0ndZDvK4xq1qG6Ee2m5w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=CJ7okvH2;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.182
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=HgeJglMv;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.52
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99E10606A321
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 13:03:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 99E10606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56CA6606A332
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 13:25:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 56CA6606A332
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=CJ7okvH2
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-53653e30353so31942081cf.2
-        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:03:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793279030; cv=none;
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=HgeJglMv
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-917bab38b14so24543766d6.3
+        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:25:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1793280352; cv=none;
         d=google.com; s=arc-20260327;
-        b=Jj2MqDg9i2/ipbhChDrlTIz4jqh/FY3c93rkEWFxn3DUVg97LaH50vN18E9kyRXBFL
-         K42uMEZugYPbvPgY/6jFIDlzgwsGCi0z049G/JfyZkv5w9dWvfeYqf8WKQVwplhf7tj9
-         OV89Dyaj7KPn2zGbLYFCSksU3540f9nngOaz777LBMfF0hfjYv7CMcj1oNR/yKcH9iWm
-         6Fk+TO3/TB9FguOcDv5aNrp4ZT0dys+9Bz02gitkiLxQ7AZfKmN95LX+0KnSxfIbZvtc
-         revistG0rliWQmMExVGM0Mpx85yYfge/VgGZkXHr0G8xl1ogKtoTd0uCl538jDGGVJxl
-         mKrw==
+        b=aG8F4MgXTi9rah+ZVhQD1MUa3ssLvrs+MPc+ZarXkdJM7OhAdTdEh4VIv062mPU43p
+         58kfWsckK5PBnvgh0sHClZLmLS3+oYe05waKnf2lIwNwIWPwb3fxUDwTmW7RtB93cqmZ
+         XP1kVqG9eVk/YjiqXEL/Vsp6Ls1jiCMqVXZSd/ywTc0J2Pt1brsqO2im3CAJUZ03GYxQ
+         aynvzJjzCZ5oXPLk3tzFr2NWBHMbZLSCJ24G5JZ8qeGQhDHKhXmLveTmNSSVd4sT6nQN
+         4OGr8GcjpmSDqcVANLgHDv3UQ0nLH+OozHl84/59FOR/qTqqKCqY52Oms8IzFcgRz/dm
+         y0QA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
         h=cc:to:subject:message-id:date:mime-version:references:in-reply-to
          :from:dkim-signature;
-        bh=KF90/0GARuMWHyMTMB3Xwv0e5GgnH85LGW7qmrj44J0=;
-        fh=AoPzPXVcWxBKTcz58w2R7tt52h4UICv0AM/tTLP9Lus=;
-        b=pFFOP+z4kUnJW89REx1Dm0nTljSdjQH+2qid/S3pkUsDtFXdchPg3yEwrOwH7JaINb
-         yXHHG0rBTGCGhEKGReCDcVorJdYU0HWlMGEeYkGE5Grtq4mn5eq3LD9ttDH9yJQkgjVm
-         /5SujaIqmoIplFCtKqQkAg20IJ4nZkmmeTIWmURqkzp7ybXyXw4M9PQGR/zphV0JE9tc
-         e1eko8ksaxsDk6S5g1Msic6C+12mXX2qapQ3zxuuDrD7cIFfJ0dVgq/v4BXEP7B7EQBz
-         ZO3SY1KwgYN0GiUYW2S9PgiQa+uLCjfWn34XntTtJNSridGu1a6rps+9mwGZLPbNwT28
-         70nA==;
+        bh=B4Ote2oNGmkpBbwqGPlhb6Bmy2+vfC8nA+hvmMRa0W0=;
+        fh=fQ71HI8vwTSXg06bUvH6goc5nnEJOj47RTEghxTKMBc=;
+        b=LuKSPt1/uhJGOdP+tLpw74dpK63WSUSD0m5mF5unrwe2I6frEqJS6REauhfJMGFlgy
+         ImrbVvyjEyZoNOMBWxS7jzsLJkwIgV2hjuLFNaKG5oevbu8Rd6L4S4zfFXIaGuaLJMKe
+         IrlzOONneZauWAg3ehNFgeAOLbShD6BJGKZzjVVQBKdzQM/mvrJJREt79phqMo4SjUmm
+         Hx5ofYgB5+BlIoZCExh5Sufr2s+t9wd4wWshnNATDVMyYrHJ0Eok0ayQP3kXhJTQ6m5o
+         lOQqlbCa/m4BderW8184UymQi5ES8rzZen/E/A2fWzini2AJJaZRZ6OsNhvIhL34EdDv
+         L8CA==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793279030; x=1793883830; darn=lists.linux.dev;
+        d=google.com; s=20260707; t=1793280352; x=1793885152; darn=lists.linux.dev;
         h=content-type:cc:to:subject:message-id:date:mime-version:references
          :in-reply-to:from:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=KF90/0GARuMWHyMTMB3Xwv0e5GgnH85LGW7qmrj44J0=;
-        b=CJ7okvH2KOmyou6LsTFV7UZ/bM35c/mXkHSaWH/tz/FN2UP4pxV2fMu3lbTmVJXgyj
-         DTt+QW8pQ+2HO17+aqj2jHnjOUteE9Sg5tnXk0OSi2328kTsRUvhJqvEElruiDP7yDtW
-         o2nrpH5FfJ8XVJhaLiqik52doHvEyjnc3Uigq1Fzty8oIZmFizdIBVOnSlDfx7eiybWN
-         M/Ceq/7EjrdpWh1VtIDZs9AVzrLtAiHTs5jNWEIO9pXbdapqKWwMBst8NKC19FVqoM9T
-         fWQTas/GOTh3m6EIx79hZhmO9KczA2sG498QeUaZxkhbYl97ipCaujNPDxzBlxH8jlST
-         DOgw==
+        bh=B4Ote2oNGmkpBbwqGPlhb6Bmy2+vfC8nA+hvmMRa0W0=;
+        b=HgeJglMvflMrzZYwbdSLsY4l+vzyREokGmYx5oW01UkqpWAJPgUSPwHhuKV3n++eQo
+         bIHyZND4OSXCZEDFVO7hhJ4Ltg/kKgob2I+8GuaT0r69ZrgRdBzT0mKLqV54Bjwo2k8M
+         0p3mVcnIYRG8h3ibYEbYAm4tLKAsNl9/xPoffNvc1vit7tFiK66O0QW3PUJBF6gR9y9Y
+         EQuc5It/pOsglwUQZwR45ey6Kyq+qKBYlbQY8fJ11kkxH+q+q+DZnHv34vSxOAZiNnfu
+         I1ARxNaBF7dPt2QjD/vTNMZBb9jyEkbCtZOqOEcBnP6Xy4bT/037+zVKeNx4MtjOiHWZ
+         35lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793279030; x=1793883830;
+        d=1e100.net; s=20260707; t=1793280352; x=1793885152;
         h=content-type:cc:to:subject:message-id:date:mime-version:references
          :in-reply-to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=KF90/0GARuMWHyMTMB3Xwv0e5GgnH85LGW7qmrj44J0=;
-        b=Bejxs0zujpC3jBpUuTozfH0rzXn5tXXt/7VaXfIxIIeoOQa7tlbbkjIb6yvmfC0blF
-         aFp+039U2IMl3FetiVmXUgd7ptbh9zb9Rb1gIBALXi8nfAZfF3yg87uCbROyAIh+PnQa
-         dME1bucWKpxg5BWcsw0q9byMz8v965SPdn6J/DFgGBfTmLOl1cjUFj+khoOETrbzFZmf
-         PJ/V1BBXs1RZqbjGuaTy0i/4NEahse96x0RHgcYa62jv7Kauul/aSg3QtdaRk5UC0rwq
-         tfUOr2t3tEM6NJxSe2xnUGKOE4VySWAWuE2vwp96diEO29YVEyLO5mNkFk1zDQ4qT2x4
-         BPKw==
-X-Forwarded-Encrypted: i=1; AKwUvBxhGH2LWbLXlHhQ3ZBSpE/LsPepHKTQ4/vsQ++jAk/lVOumMBNv55k8CuuDXVRbsWdzJ36Ppg==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLjuOtRbkUXSgZfFHWvUq1T14636D6I9gROTHbW18HWt1TUMMEj
-	SAWSVd65lblt7KxsLkIOf2dOoBbYwy0klUBHbPJ8yYqOOT6mBeEafauiSgY5jTFrL2lKrZyjCzK
-	2qvjdQMEq85nQ2j9YU5aElFO6O2khx+EGLX4TSqov
-X-Gm-Gg: AYBFou37Nrg8/NKs8VZO9GGzrjAH5FqMQNCOuWZUyxTlDmcTeGnNsT0Jyw+a91miBFK
-	9FMBsw5e3wyN/Z56C7IkCWaGrFc/LNhMP6U49EyqYCZVdTIazYWj4XJSLCs3V65axc7yaBhIUIe
-	HWtnYKcgzsXJP/SNU2QxCB0FKZr5KdwMGDv1+HWqKyHoQsxQvNNLvqDE2mAOEhCp+4Ur05rqiP1
-	9Aq5mk+O7N4hXEGdjLkdVIE3ppKnPqILjnc3TYGC2ATU4ct7WsaZRH1tOVk+/o+qXHPWQ7ovnyI
-	0eluU8ec6mF7X4p0a6IJ8wU/4FbOQQtFAr9qldX346BXwv+U/yVaDfvnEZ1KUGfvCy9N0PMJoHh
-	EVMCVsPlOtymspa0VkVKeFInKnDm1gUNg7eNs++KZGaPGOcrQuNE=
-X-Received: by 2002:a05:622a:528f:b0:537:b9f5:e05 with SMTP id
- d75a77b69052e-53fcc7cc0camr87903901cf.69.1793279029444; Thu, 29 Oct 2026
- 06:03:49 -0700 (PDT)
+        bh=B4Ote2oNGmkpBbwqGPlhb6Bmy2+vfC8nA+hvmMRa0W0=;
+        b=QxqOBs/OTRm0AKKGGJCp9yzYqU54qmpvM4FXmMIYyi5/u49bMW8F2MEGye/0iEiqKE
+         7r3zVtfDEio/z1hJUCvaEZTqJnmc1Jxh0IdEXF+O5+OGmW4/FYVlla+BU3RCXZT1rqkk
+         e8c8Ut5LgxfNNp+7g2ctdBlqyw1mIxf4acfZgavyU7xUs3JmoN4s6PtL6qL5iNcTRf3B
+         xJpIZ15AxHUYfnlfG08mIe2lb2qDo1mSzLiaxwl+QZUTfY003grIFnCrxAlML+atmPJ7
+         cZqWUu6T1MZknczBUXic2mKHL62+zql/Zeo/bsUJ8QWKcDxQy0JIu4Mzko2lHFginGsl
+         nHMw==
+X-Forwarded-Encrypted: i=1; AKwUvBx/u7kQ6kv8Gaqc3x76U5gzmMbC3mkTV+VzD3LtSK0y7S0jYEKi3jZpdGz+Xr4u8hktMQt1Fg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYJ5urg6+CfE23/m7RWp2uRXhbyJFOQ7LHD0bJiFeLckK6zlEYZL
+	cPlRVSSvTwH8l/uB6WEN57iMtsJfLs91Yj1j1zUXFQmQfDbvtmi+0dmm0w1pX2Kfe6HLiv2idFe
+	SWtUp99Pi1CBfiz8vzyg42p7q6vaaZU3ZesARcc0/
+X-Gm-Gg: AYBFou2Jt6DzXrM5CnxCy6xaFIw0M+foudcqnugbHMURJSCaCCcSZTxnFaIx3OsTmfh
+	YGQFQW4Dg5QD/MH4EcpKfjcezsFihVvFiwUDjhYVSETLtaGZlJbyLs97Arqlw4oNNOvBZRF/DY/
+	ZrxPxZEh+7RymL88Mi7Q8BpJ30jXDHhc93+VTbw629Q0qJKrE2ypGQBAZZQOsh4UujffY42kEcx
+	AxuVd9RX5dqNU+/y1x3GMUIbXjIrWBkKJMhCkqRAtOxSdjJVbVC/2k+FNUQ87WG17qkI/z2s2p6
+	ZC2bCGfPbdjOo3WWB4bxmxxOEo0BoTPTjNaG6DARpEOTikG5P6CLIX3JUAsljdDkD4oFGky5LTW
+	Nq+12Qc8CsPGC0be+zhJ6JLDmNoBhVWk21YZGdhXSFmujzPslTs59/Vk/0mcGP2tMIYwd8HnolF
+	Xy+xpat1uCL2U=
+X-Received: by 2002:a05:6214:19ee:b0:912:488d:33ac with SMTP id
+ 6a1803df08f44-91c7cf7470emr79151836d6.17.1793280350607; Thu, 29 Oct 2026
+ 06:25:50 -0700 (PDT)
 Received: from 176938342045 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 29 Oct 2026 06:03:47 -0700
+ HTTPREST; Thu, 29 Oct 2026 06:25:49 -0700
 From: Ackerley Tng <ackerleytng@google.com>
-In-Reply-To: <20261027154649.91571-14-griffoul@gmail.com>
+In-Reply-To: <20261027154649.91571-2-griffoul@gmail.com>
 References: <20261022-gmem-alternative-providers-v2-0-5dd1dc6c660a@google.com>
- <20261027154649.91571-1-griffoul@gmail.com> <20261027154649.91571-14-griffoul@gmail.com>
+ <20261027154649.91571-1-griffoul@gmail.com> <20261027154649.91571-2-griffoul@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -109,11 +110,11 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Date: Thu, 29 Oct 2026 06:03:47 -0700
-X-Gm-Features: AclHuK_J4_B8WHMj3lc3Bqk_zMBRzyMWVypxyBk9aFiFYwwISWnD_-KRrJmOcto
-Message-ID: <CAEvNRgFYecSKycFLkxwyK7gWZqKTXTPJVetSZm8YBbo0kg9tTA@mail.gmail.com>
-Subject: Re: [RFC PATCH 13/14] samples/kvm: Back absent pages on demand in the
- sample provider
+Date: Thu, 29 Oct 2026 06:25:49 -0700
+X-Gm-Features: AclHuK-Bz4CQfeSbgKQ2yKQJOYhFvS_qYgj0QmmyZ6llJw96csH-9wohWKdAPuU
+Message-ID: <CAEvNRgGvxtgT=x3sLcasLZzCrtX+qEkHjPgs2yFRY0HRJvodag@mail.gmail.com>
+Subject: Re: [RFC PATCH 01/14] KVM: guest_memfd: Clamp the order of PFN mode
+ blocks to what KVM can map
 To: Fred Griffoul <griffoul@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Sean Christopherson <seanjc@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
 Cc: Alex Williamson <alex@shazbot.org>, Alexander Graf <graf@amazon.de>, 
@@ -155,21 +156,151 @@ Fred Griffoul <griffoul@gmail.com> writes:
 
 > From: Fred Griffoul <fgriffo@amazon.co.uk>
 >
-> The sample provider fails get_pfn() for an absent page and keeps its
-> frames on a punch hole, so tests cannot exercise a provider that backs
-> a hole when it is asked for a frame, one that backs more than the page
-> asked for, or one that frees the frames that a punch hole gives back.
->
-> Add MPS_NEW_FILE_FILL: get_pfn() then backs an absent page with the
-> whole 2 MiB block around it, and put_pfn_range() makes the pages absent
-> again.
+> KVM maps guest memory in 4K, 2M or 1G blocks, and uses guest_memfd's
+> max_order to choose. A folio of order N is physically aligned and never
+> mixes shared and private pages, so the order needs no check. A PFN mode
+> provider's frames need not be aligned
+
+I'll need to think about max_order > 0 more for PFNs. I put it out of my
+mind because my frame of mind is that only order-0 folios are supported
+today. Perhaps with PFNs it's actually a lot easier to support order >
+0.
+
+> and the provider does not know
+> which pages are private, yet kvm_gmem_get_pfn() passes its order to KVM
+> unchanged. KVM can then map a block over the wrong frames, or with one
+> attribute over shared and private pages.
 >
 
-Can what MPS_NEW_FILE_FILL is meant to illustrate be illustrated with
-the ioctl that sets memory present?
+Yes, makes sense that private/shared contiguity needs to be taken into
+account. I didn't consider this because order-0 is always safe to
+map. Thank you!
 
-> Assisted-by: Claude:claude-opus-5-5
-> Signed-off-by: Fred Griffoul <fgriffo@amazon.co.uk>
+>
+> [...snip...]
+>
+> -static void __kvm_gmem_invalidate_start(struct gmem_file *f, pgoff_t start,
+> +static void __kvm_gmem_invalidate_start(struct inode *inode,
+> +					struct gmem_file *f, pgoff_t start,
+>  					pgoff_t end,
+>  					enum kvm_gfn_range_filter attr_filter)
+>  {
+> +	const gfn_t blk = kvm_gmem_is_pfn_mode(GMEM_I(inode)) ?
+> +			  1UL << PUD_ORDER : 1;
+>  	bool flush = false, found_memslot = false;
+>  	struct kvm_memory_slot *slot;
+>  	struct kvm *kvm = f->kvm;
+> @@ -355,6 +360,16 @@ static void __kvm_gmem_invalidate_start(struct gmem_file *f, pgoff_t start,
+>
+>  		flush |= kvm_mmu_unmap_gfn_range(kvm, &gfn_range);
+>
+> +		/*
+> +		 * In PFN mode, a fault may map a block of up to PUD_ORDER
+> +		 * pages, sized before this invalidation (see
+> +		 * kvm_gmem_pfn_map_order()): make faults anywhere in the
+> +		 * blocks around the range retry.
+> +		 */
+> +		kvm_mmu_invalidate_range_add(kvm,
+> +					     round_down(gfn_range.start, blk),
+> +					     round_up(gfn_range.end, blk));
+> +
+
+Yes, we want to make the invalidation range larger, but not the range
+being zapped. We can't over-zap for CoCo VMs.
+
+Would it be better to refactor kvm_mmu_unmap_gfn_range() instead of
+doing kvm_mmu_invalidate_range_add() twice?
+
+>  #ifdef CONFIG_HAVE_KVM_ARCH_GMEM_INVALIDATE
+>  		kvm_arch_gmem_invalidate_range(kvm, &gfn_range);
+>  #endif
+> @@ -374,7 +389,7 @@ static void kvm_gmem_invalidate_start(struct inode *inode, pgoff_t start,
+>  	struct gmem_file *f;
+>
+>  	kvm_gmem_for_each_file(f, inode)
+> -		__kvm_gmem_invalidate_start(f, start, end, filter);
+> +		__kvm_gmem_invalidate_start(inode, f, start, end, filter);
+>  }
+>
+>  static void __kvm_gmem_invalidate_end(struct gmem_file *f, pgoff_t start,
+> @@ -670,7 +685,7 @@ static int kvm_gmem_release(struct inode *inode, struct file *file)
+>  	 * Zap all SPTEs pointed at by this file.  Do not free the backing
+>  	 * memory, as its lifetime is associated with the inode, not the file.
+>  	 */
+> -	__kvm_gmem_invalidate_start(f, 0, -1ul,
+> +	__kvm_gmem_invalidate_start(inode, f, 0, -1ul,
+>  				    kvm_gmem_get_all_gfns_filter(inode));
+>  	__kvm_gmem_invalidate_end(f, 0, -1ul);
+>
+> @@ -1535,6 +1550,44 @@ static struct folio *__kvm_gmem_get_pfn(struct file *file,
+>  	return folio;
+>  }
+>
+> +/*
+> + * The order a PFN mode block can be mapped at: the provider's order, no
+> + * larger than the alignment of @gfn and @pfn to @index allows, rounded down to
+> + * a page-table size, and never over pages that are not all shared or all
+> + * private, since KVM maps a block with a single attribute.  Called with the
+> + * invalidate lock held; an invalidation of any page of the block makes the
+> + * fault retry (see __kvm_gmem_invalidate_start()).
+> + */
+> +static int kvm_gmem_pfn_map_order(struct inode *inode, pgoff_t index,
+> +				  gfn_t gfn, kvm_pfn_t pfn, int order)
+> +{
+> +	u64 misalign = (gfn ^ index) | (pfn ^ index);
+> +	u64 attrs;
+> +
+> +	if (WARN_ON_ONCE(order < 0))
+> +		return 0;
+> +
+> +	order = min(order, PUD_ORDER);
+> +	if (misalign)
+> +		order = min_t(int, order, __ffs64(misalign));
+> +
+> +	if (order >= PUD_ORDER)
+> +		order = PUD_ORDER;
+> +	else if (order >= PMD_ORDER)
+> +		order = PMD_ORDER;
+> +	else
+> +		return 0;
+> +
+> +	attrs = kvm_gmem_get_attributes(inode,
+> +					mtree_load(&GMEM_I(inode)->attributes, index));
+> +	while (order &&
+> +	       !kvm_gmem_range_has_attributes(inode,
+> +					      ALIGN_DOWN(index, 1UL << order),
+> +					      1UL << order, attrs))
+> +		order = order == PUD_ORDER ? PMD_ORDER : 0;
+> +	return order;
+> +}
+> +
+
+I'll review this function more closely again. I think the mapping order
+should fit into how KVM does it. After taking guest_memfd's input on
+max_order, KVM then lets these parties possibly tune the max order down:
+
+1. lpage_info contains information about highest order due to memslot
+   alignment and alignment due to VM-level memory attributes
+2. CoCo platform can impose a max order
+3. Userspace mappings can impose a max order too.
+
+So I think we should follow the same model:
+
++ The provider reports the max_order based on it's contiguity
+  information, which is the actual contiguity of memory and
+  read-only attributes
++ guest_memfd further reduces max_order due to shared/private contiguity
++ After handing it to KVM, KVM further reduces the max order based on
+  the above.
+
+I think mappings for all other page tables (userspace and IOMMU) should
+also follow this approach.
+
+I guess the kvm_gmem_fault_user_mapping() equivalent of this max_order
+tuning is missing from this series. :) I think we should defer order > 0
+to a later series though. I think read-only-ness should be part of the
+first PFN mode series.
+
 >
 > [...snip...]
 >
