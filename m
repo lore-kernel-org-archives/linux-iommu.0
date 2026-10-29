@@ -1,59 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793265120;
-	b=0fbMRiqW8wG2LBFKZ1IbjFc098+wyX1IjGZjFLVyZ2VVrwcSMLWifeM96PYtourT2qh6
-	 WmGoQvlg1VYSyepjuhG9CI/vY9aTWdcfrLyKXCYcego5kPr8QRy6GVfnuO2hpwkT3d2sH
-	 iI1R6zFeRX5irzPDiZWqCi6PRJbDY570EVN49SCc9B2pRiLAChv9gGGiHKl/qn0+MMmz3
-	 TMlR+VcbgwSzTvdmAU5v20nuAEYcpIfYIoAnNLGX2kYgweNOoCYC5mHnXzWDVmdJrkBlo
-	 e7JpDHHnJN16Fn8ITs2ajLfIvoYY/pv7GZVrXXZWThZNcft1iM05t66qbTzeCvWN0KQ==
+	t=1793265432;
+	b=A6EIbhYWG9BOsYjOXKlBSUY+t/199bcB/stQYGcwtoYXlokwEn5meXdyvtoGbuL5YJ/H
+	 DizsqsQ5eNIgiSN3tsrUXoAB/jHOU+AJASJZST8hAFRw/p71IfmPtoH8PvrX0gBAOJX/0
+	 kMK2WqM8fl7Tukcbwb7V/4WU9LwW+iO4SrxrjFLxUI96JA5I85k1S/7vIgoHUSPYnvpsY
+	 a9g7PtT8AbxRiSKY+FSEvTJn+HNYWbd+3hVkCNTq5cY3RIMAalxOtv9FSU9TTPNbra+eK
+	 MSPrryVwGD4w6qDMdH2hT2W7l5pSHNfrp4f984ZUlhoVrAPzdT2lIavF7TVAGXuhhsg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793265120;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=dJDRsJcOuCta1CXkVGQ3wEnO6kiOTAbomKcjf+nX7kA=;
-	b=v5AqODm5grZnOC9TCWB8ygmO6ULtX/ubAAmQmDJVeUx/JWLB7zPo24vODQMyjTjfU1Kt
-	 zmSnI8O5IiNGDHjb0niuWrIx/SUXAB6FBJhg8Sim9lsnbNyvWLW78Vbxi8gDIt625TgWy
-	 ouarRpqKkNMDXq6paQ5QJvDTMWeflT8XLJDlAL6N7Ta5HXBUrfcbw03JwZimofWy396q+
-	 v9HV46rnlZVEXmWV5kP4evgxVbNwGH5JkTB4ll0Cevz5Rdsax/iiwANGQ1pLhoYc/Ey5W
-	 Dz7nhn2279jiMSqSaM0+dmZlRObck+6vOMGgzg3V2HssTp6IACMWpeEU4x0JShaFLUQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793265432;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=j4AXCr1qkQMPMUXdk2+Nfc8gbN/AQleiHbJ0XtECBWM=;
+	b=YqR14Pyda6NJHdQYYmHVlHqUAgHpeZ/7f6MLJiVLg4sqr47vsyXvFP1dYO0pBiYJOiD7
+	 rfhb66+T5tXLO9usebYIo7q3p7N5ffHTlobPHdc+aDNOCogT3sGWgABFSbuge1e5DNThF
+	 iISMhgCPZngTWvRaFSbCOhNgvHCCedM2hw+hADj5wUAO/jx7Sj3vy6uuTgK30/rkCdb5T
+	 4eoa4MDiad+bOFX02Nwqz5mDs5qBRdcTQwrc18CXwloUJq1xe/x7ll0MeFj8iPuS6FkTI
+	 vUqqJAzkGgC+XcHydDXCNSC1ynK1rwmsH4DrJZgcJW8notz0EarMOm3elSuKgiPaYvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W9RwNzbI;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=QHJ7LQ4D;
+	arc=none smtp.remote-ip=210.118.77.12
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 011F2606A31D;
-	Thu, 29 Oct 2026 09:11:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6CB606A31C
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 09:17:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5E6CB606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W9RwNzbI
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 485021F01825;
-	Thu, 29 Oct 2026 09:11:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793265119;
-	bh=dJDRsJcOuCta1CXkVGQ3wEnO6kiOTAbomKcjf+nX7kA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=W9RwNzbI1Aj/dvWxgmNqnW+NQWRJGQmXWrPDMtduvpEAUqD0M3WNRVEB4RorZH0Zn
-	 uVbCirRlQwdU64HVPGxqL3IIYrnaK8hHEAboWOompp1vS1srvyTN383Cl5iscMBd+u
-	 VUQ3wZbgNEX3ZIPklFbgxyHa+YEq++yENrW2JbQn8B3Kj8qdSg72ZtZDUGTN8PSw/T
-	 +Istz3KTMLLmAzIX2cGyO9hfhItKLzb7+Xail8SG4IEEgkiy76XXrjdz2ZJS6iskcz
-	 pUj4KiSEg946GljtoRDEg62fZXUgI9EPkcfyK5xAWLC9iZ+v+Xpum7PyH42Y+203jF
-	 qEBOgXRP2YJuQ==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: sashiko-reviews@lists.linux.dev, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev
-Subject: Re: [PATCH v7 16/16] PCI/TSM: wait for vdevice contexts before
- removing a DSM
-In-Reply-To: <20261013115953.GP13920@nvidia.com>
-References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
- <20261008055955.4014342-17-aneesh.kumar@kernel.org>
- <sashiko-outbox-163687@kernel.org> <yq5atsmr44r6.fsf@kernel.org>
- <20261012130739.GM13920@nvidia.com> <yq5aecduq6i1.fsf@kernel.org>
- <20261013115953.GP13920@nvidia.com>
-Date: Thu, 29 Oct 2026 14:41:55 +0530
-Message-ID: <yq5a4ie4c1lw.fsf@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=QHJ7LQ4D
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261029091709euoutp024c622853ed797580ae5718599d27f451~i9WgsSqcR1564015640euoutp02I
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 09:17:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261029091709euoutp024c622853ed797580ae5718599d27f451~i9WgsSqcR1564015640euoutp02I
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1793265429;
+	bh=j4AXCr1qkQMPMUXdk2+Nfc8gbN/AQleiHbJ0XtECBWM=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=QHJ7LQ4Dw27oX3qv160cTEp4QMeXJV/BB5f0s0kMifgUkxYTp2oRVStWq22+9QImV
+	 J2B2rK8QyhUpjpU6HeEHDVZMVk+FrhuTdZwPCZNfwdB1dbPCesbcpk4wRzwrtAzq0H
+	 TvpUSMYYauVelduEtADCtBZRZQzyHixCci0w623E=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261029091708eucas1p1eceac71c0d1f0166ae56525ddf6335fb~i9WgPz_By2993829938eucas1p1p;
+	Thu, 29 Oct 2026 09:17:08 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20261029091708eusmtip1df711fed790269113c0f17caa7dfb4c2~i9WfsHlhP2833428334eusmtip1U;
+	Thu, 29 Oct 2026 09:17:08 +0000 (GMT)
+Message-ID: <abae1606-cc43-4ad4-b486-3a6e6aeed1b9@samsung.com>
+Date: Thu, 29 Oct 2026 10:17:07 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -63,59 +64,86 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Betterbird (Windows)
+Subject: Re: [RFC 07/11] eth: ixgbe: use dma_alloc_coherent_node()
+To: =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, Jakub Kicinski
+	<kuba@kernel.org>
+Cc: robin.murphy@arm.com, tglx@kernel.org, dave.hansen@linux.intel.com,
+	x86@kernel.org, joro@8bytes.org, will@kernel.org, leon@kernel.org,
+	mbloch@nvidia.com, iommu@lists.linux.dev, netdev@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <87se1o51wu.fsf@all.your.base.are.belong.to.us>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261029091708eucas1p1eceac71c0d1f0166ae56525ddf6335fb
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261029084721eucas1p20638037770ab8e64e7c25196b49206e0
+X-EPHeader: CA
+X-CMS-RootMailID: 20261029084721eucas1p20638037770ab8e64e7c25196b49206e0
+References: <20261027022528.633359-1-kuba@kernel.org>
+	<20261027022528.633359-8-kuba@kernel.org>
+	<87ecdb5x8k.fsf@all.your.base.are.belong.to.us>
+	<20261027085133.2832f2f5@kernel.org>
+	<87wlr33z6z.fsf@all.your.base.are.belong.to.us>
+	<20261027112003.330bbded@kernel.org>
+	<CGME20261029084721eucas1p20638037770ab8e64e7c25196b49206e0@eucas1p2.samsung.com>
+	<87se1o51wu.fsf@all.your.base.are.belong.to.us>
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
-
-> On Tue, Oct 13, 2026 at 03:14:54PM +0530, Aneesh Kumar K.V wrote:
->> Jason Gunthorpe <jgg@nvidia.com> writes:
->> 
->> > On Mon, Oct 12, 2026 at 03:31:17PM +0530, Aneesh Kumar K.V wrote:
->> >
->> >> With this series, vdevices hold a reference to their parent vIOMMU,
->> >> which pins arm-cca-host. sysfs unbind is disabled, and the SMCCC
->> >> provider device has no hot-unplug path.
->> >
->> > It probably needs some logic like vfio has to prevent unregister from
->> > completing if there are active users. The module pin should prevent it
->> > from ever triggering, but as a safety precaution.
->> >
->> 
->> Are you suggesting that tsm_unregister() should return an error or wait,
->> as device removal does? Returning an error would be much easier to
->> implement by adding an unregistering flag to tsm_dev, set under
->> pci_tsm_rwsem after checking all pf0->context_users counters.
+On 29.10.2026 09:47, Björn Töpel wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
+>> On Tue, 27 Oct 2026 17:06:44 +0100 Björn Töpel wrote:
+>>> Jakub Kicinski <kuba@kernel.org> writes:
+>>>> On Tue, 27 Oct 2026 10:06:03 +0100 Björn Töpel wrote:  
+>>>>> Not really this series, but the fallback here is odd, no? I thought the
+>>>>> allocator already did cross-zone fallback?  
+>>>> Fair, I was too lazy to check. I'll remove the fallbacks in the same
+>>>> patch. Seems obvious enough. LMK if you prefer separate.  
+>>> Hmm. Seems like dma_alloc_contiguous() doesn't spill over to other
+>>> nodes. It only tries the per-NUMA CMA... so keeping it is bit more
+>>> robust. (Then again, I dunno...)
+>>>
+>>> I'd say keep it.
+>> Or we fold the retry into the helper? I tried to write the kdoc:
+>>
+>> /**
+>>  * dma_alloc_attrs_node - allocate coherent memory on a given NUMA node
+>>  * @dev: device to allocate the memory for
+>>  * @size: size of the allocation
+>>  * @dma_handle: returns the DMA address of the allocation
+>>  * @flag: GFP flags for the allocation
+>>  * @attrs: DMA_ATTR_* flags for the allocation
+>>  * @node: NUMA node to allocate the memory on, NUMA_NO_NODE for no preference
+>>  *
+>>  * Same as dma_alloc_attrs() but places the memory on @node rather than on the
+>>  * node of @dev. Like with kmalloc_node() the node is only a preference,
+>>  * the page allocator may fall back to other nodes if @node is out of memory.
+>>  * The contiguous memory allocator (CMA) does not: only the CMA area of @node
+>>  * and the global CMA area are tried. The allocation may fail even though the
+>>  * CMA area of another node, e.g. that of @dev, still has free space.
+>>  *
+>>  * Allocations served from per-device coherent pools or CMA areas, restricted
+>>  * or atomic pools, or by dma_map_ops implementations do not take @node into
+>>  * account.
+>>  *
+>>  * Return: the CPU address of the allocation, or NULL on failure.
+>>  */
+>>
+>> This feels like too much explaining of the internals for a commonly
+>> used APIs. If we retry in the helper all we have to say is basically
+>> "acts like kmalloc_node()".
+> Yeah, that's a lot.
 >
-> I didn't check it closely but the usual flow is for 'unregister' to
-> wait until everything is done using it, possibly with a shootdown
-> mechanism.
->
-> I'm not sure we can implement a sane shootdown for iommufd's
-> consumption of the tsm, but we can at least do the wait.
->
+>> WDYT?
+> Agree that it's odd that the caller need to know CMA internals, but I'm
+> not sure retrying the entire DMA allocation in the helper is the right
+> way. Can the fallback be handled in dma_alloc_contigous()? I would still
+> not do that in this series, but keep as is.
 
-This will require.
+Definitely, I would prefer to add such fallback to dma_alloc_contigous().
 
-@@ -116,6 +119,13 @@ struct tsm_dev {
- 	struct device dev;
- 	int id;
- 	const struct pci_tsm_ops *pci_ops;
-+	/* Serializes user acquisition against unregister */
-+	struct mutex users_lock;
-+	/* Written under users_lock, read with READ_ONCE() by bus code. */
-+	bool unregistering;
-+	/* Registration reference plus users that must finish before teardown. */
-+	refcount_t users;
-+	struct completion users_drained;
- };
- 
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-When a vIOMMU pins the tsm_dev, it must also increment users. This
-requires a new users_lock, since all existing locking is in pci_tsm.
-
-I can add this as a separate patch, and then we can decide whether to
-keep it. I wonder whether we can avoid this complexity, since the vIOMMU
-already pins the TSM backend module and we expect unregister to be
-called only from module_exit().
-
--aneesh
