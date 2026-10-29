@@ -1,141 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.19
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.52
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793292699;
-	b=Z9nANc2EZrfxN4WT8Pc8s9mB3IOPVC1unjNr/fxPJUNawKlnGhIG53d12/SXqVNYfvpF
-	 9XfHw2HHyIQLjgS0WfIEHuRxG019cCQQwfP7mV13PeeXB3twyQLvnKkHJzeDS94iEgx0m
-	 kkxHAwabHZSSh67Uljy4KWRHsV/EE37MWlSK8z4Xm7X6cCZJRy7+1KF1s0EOC/t4abz7P
-	 OtexwtOBNWesEhEvyFPn69gxgeBrMTJ5Q1Ed7LL++BItdRB/AIYyqcl9c2IoYN8lrHIYQ
-	 tXuzLpD2EgJ8eImQ5b2yTS8jc5tP24MHnu7eVjcTumGjmEKUpn2xvsJSB4TRkUc9bYw==
+	t=1793293675;
+	b=o6S6hLZouw4Eose9qpYbrKMKq1fpwZT8g3b/r2vFeShQhn6FB/mzQW1+sa45+FIi31nI
+	 ugwN8IXD8e2er6ktYIJSn19zUmao1UlIoer92Af1GRSwFz0EQf+Bx4KpXN7LgXDDNw1yT
+	 01W9nnAkthYNabO8hXHM1tTGyPvVD4ltUeTcoDxeQmOeA7aowZHLSGmB3aqr70AvB4NLk
+	 g3nfQ02HKvBxxY1HE2l6FO/sraUHmXViIt3gSCUw4PRxR8R1LyMD0Tk9yaPuvUlUMkCnS
+	 VUoKD/yHzSEdFDswwtCtQKP5HlvINBtpGj96V4LePyxNPOss+jFOYc7XKUkYX3atyDA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793292699;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=tSZqefhy6rxgPsDj2ZU1m/qdXPZYwA6HGz3L9O1XcT4=;
-	b=WInmOvGE9dL7f79CiE6BArdZon/DyBeTxjDtmeWqgcCVhMlrq9qa5IDsIEvG8uLlx6GV
-	 qRoQxQGW7RC4DzlV9UMX36bZAUIwylHqEiW9JoSAox4XJS2WVLfkodvow3CwPuRl3zi5R
-	 KSqMkCUhEYfcvgvhVjFPPtuA31AUlW4DDdqxmpx8ZQbHhLgD+W/erj23QqTZuf+/6SYP+
-	 sp/ahTp5A5+VURY2nISv/Rn8qLoG7B0P1hGvtSwXhhPlwt9iuqvCbauTtv5B/CV0WomXu
-	 kAnq44ZbvygdKv6l2tBXIveOi4A5ZMaPeWIU9/1ZDeFJMs+dsb5+FiZbIeDdWYk5cjQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793293675;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
+	b=yoEHhOMiDl6PY+OGTArcBRJQauf/mMXCfjxxFnY00IINy20ouLzyzlV48ZWQ4pl1pC/S
+	 MQB3d+kO1cAzqEDTr8dGOUlN065vHkpK4Vzf2uFd8qbuyaZt2QFLzVvImrU+2rI13jY1x
+	 qViEWiRnRah/TI2bKgfBAIcpThxeUPUFQQMsKkU9mDPeF/wiWt6ZhrXCIpS72rrVJdUVR
+	 lkK1R+P7xx1X16mWIdIp2zTZwNVPVbclNJI59jP8BX4D1/ldj5MGa0SGhNdaTsg6eFKdR
+	 dWIgTR8QPqn3WDL7kPL9ZptZOV79BQYRA7NFwCVxZp/YI7JJpivHcGjWEapUIundOhQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=JUTH1c+Q;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.19
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012019.outbound.protection.outlook.com [52.101.48.19])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GpSvzAUB;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.52
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EB60606A31C;
-	Thu, 29 Oct 2026 16:51:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8EB60606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED9F606A31F
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 17:07:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3ED9F606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=JUTH1c+Q
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pFOxEChLOFukunNMoxGn7uRwtjYxTwJczIbd1VUD639ImsBtrm79E9b8ToC5sAmbQku9G9av3dwlT81FgzfJbm5kaPTY9nsa+lF2qCdr87jOltPkFdfLpZ4Kj4hu9TcU4x6P2QI8uj1s2k7yI6VOicLqsbNG0imkKoxKUSkrMLjCcus4iP5r6fR3Fkq1OfEkaIJoXft6K1mlq6uIekEFeAkBJYup0ao2Tp+srgtGVZ19p16cV3zavY4ijRFDbEVq7wwOxxPIOh0lxkXxQwXld4eubTt0qEJZM6T/F/QyGPt+9vvEhMCqvwi/3FQUF7uDmFSoqYbdEy25r+pa5K6HAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tSZqefhy6rxgPsDj2ZU1m/qdXPZYwA6HGz3L9O1XcT4=;
- b=PowLgQRSDMGy5OFENejWKBDHZgLfjho1MWU9A5qERZv42eeyrFjWbhdhHvFfPxTv4oMCjHbMBHoyaMNuxPozq/Q7MwtuFiVGfRSoNsGNb3WCJO1bND+jcxmZbjWrjwqtI73vu0NWPIM9bnKCrHgbFo+dHmbcSVxUtE1vTtoKDZ7AjT7N6KpLhvVHE00STNsESxen+QfEskO7BpOtXy0xFgxiVRHgLiUFAcr5Cz0k32mY+ZYVsNOyj7D+hkkBxWij0vQFmiTZxDoPZN3ISf0R/vaYs+FMYoiXPEHwLmlZg/tsHtpXY2JipN8xCbA1S8HAhGyPE2uQgBNh6Ug23AAZ7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tSZqefhy6rxgPsDj2ZU1m/qdXPZYwA6HGz3L9O1XcT4=;
- b=JUTH1c+QbFKf3qUZMYQNVYjl77QlkrOk2QiOBlQwqeyuTyyGl9sHIrZs3OTA9gJ0LEXyFDyVERxhMXTAhekFGGA316B2iudHQq3U9HAuT2YIKIF8cCR5A/vU88PzDLnzdc/6itPSfgGsOm8JSSWv2K5jvO04ubcXefAIimwEKifGKdwQneXWqQYesGEyrzJGIirsq2zC44l6Jz0Xmdx/VatdTaGd+eoKxxW8+NwsRLZdPW8Z7IqOzDjCX0uwKJWQzwdk8pyXA6lZUM6kAguedq9tuK7K7zqVHFPuxUaAyKXc38uKV7ZeUFloiC7syl9i2ebKJJmo3umLI3SxpEPrjQ==
-Received: from CH0PR03CA0431.namprd03.prod.outlook.com (2603:10b6:610:10e::22)
- by CH9PR12MB962943.namprd12.prod.outlook.com (2603:10b6:610:310::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.9; Thu, 29 Oct
- 2026 16:51:28 +0000
-Received: from BN3PEPF00022BD5.namprd03.prod.outlook.com
- (2603:10b6:610:10e:cafe::9b) by CH0PR03CA0431.outlook.office365.com
- (2603:10b6:610:10e::22) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.8 via Frontend Transport; Thu, 29
- Oct 2026 16:51:28 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BN3PEPF00022BD5.mail.protection.outlook.com (10.167.248.100) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.569.4 via Frontend Transport; Thu, 29 Oct 2026 16:51:28 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Thu, 29 Oct
- 2026 09:51:07 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.56; Thu, 29 Oct 2026 09:51:06 -0700
-Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.181)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
- Transport; Thu, 29 Oct 2026 09:51:03 -0700
-Date: Thu, 29 Oct 2026 09:51:00 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Shameer Kolothum Thodi <skolothumtho@nvidia.com>, Catalin Marinas
-	<catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, "joro@8bytes.org"
-	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "rafael@kernel.org"
-	<rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, "aneesh.kumar@kernel.org"
-	<aneesh.kumar@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, Suzuki K Poulose
-	<suzuki.poulose@arm.com>, Gavin Shan <gshan@redhat.com>, Vikram Sethi
-	<vsethi@nvidia.com>, Anshuman Khandual <anshuman.khandual@arm.com>, "Shanker
- Donthineni" <sdonthineni@nvidia.com>, Mostafa Saleh <smostafa@google.com>,
-	"rppt@kernel.org" <rppt@kernel.org>, Thomas Huth <thuth@redhat.com>, "Marc
- Zyngier" <maz@kernel.org>, Ryan Roberts <ryan.roberts@arm.com>,
-	"kas@kernel.org" <kas@kernel.org>, Kohei Enju <enju.kohei@fujitsu.com>,
-	Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>, Ard Biesheuvel <ardb@kernel.org>,
-	James Morse <james.morse@arm.com>, Steven Price <steven.price@arm.com>,
-	Sang-Heon Jeon <ekffu200098@gmail.com>, Omar Sandoval <osandov@fb.com>,
-	Andrew Morton <akpm@linux-foundation.org>, Jinjie Ruan
-	<ruanjinjie@huawei.com>, Sam Edwards <cfsworks@gmail.com>, Douglas Anderson
-	<dianders@chromium.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
-	Chen-Yu Tsai <wenst@chromium.org>, Huacai Chen <chenhuacai@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>, Pranjal Shrivastava
-	<praan@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "driver-core@lists.linux.dev"
-	<driver-core@lists.linux.dev>, Sonang Patel <sonangp@nvidia.com>, "Ankit
- Agrawal" <ankita@nvidia.com>
-Subject: Re: [PATCH v1 2/8] firmware: arm_rmm: Add VSMMU commands and fields
-Message-ID: <auN5dAoteDHV/h+W@nvidia.com>
-References: <cover.1789010941.git.nicolinc@nvidia.com>
- <0623345baaf550da1339e040b59f1fda902e3390.1789010941.git.nicolinc@nvidia.com>
- <SJ0PR12MB861491CC7A4C567D01F9B951AB6F2@SJ0PR12MB8614.namprd12.prod.outlook.com>
- <20261028123509.GA2541714@nvidia.com>
- <auJBF+hDkx+uKixe@nvidia.com>
- <SJ0PR12MB8614E6DE095441E52698D7F9AB6E2@SJ0PR12MB8614.namprd12.prod.outlook.com>
- <20261029122818.GD3040767@nvidia.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GpSvzAUB
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c43fbcb4393so384331266b.0
+        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 10:07:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1793293672; cv=none;
+        d=google.com; s=arc-20260327;
+        b=jx1EE0GTw/RAZOuX+cPeaIpyqdA0Qy8q2hAUH1ttoQciI74Qhc8mHNUmRR+nUwFpkT
+         LN5nn1ARAOk11mYD+JsWTJQlcL3Y5+4z9MB/c3euExom1ZAQgY65pkb68Kq617vcsQWA
+         h9VLHXCxSH4Alq8dJuDQFBo51+7KkQ/nl0hAMQh40r8XpLlW/HFowqPhvvqX/B/ABQqA
+         D1HofN/OWdQy2abcuL9cUCz9cbVAZ+gVsciySVRuToIwVXPAOTGeRNI2+Z12q3+P85ua
+         F+xqn/4ED/OkhC0bv4JyQ85VIFzh4vg8k5aXCbabtBBfC5UT/2+rpbiz0MnHGuqVe9pA
+         St7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
+        fh=XGrTX5CU/p1f8vAGCtzTE7d/YBuF8ay+NGNaSxACvbY=;
+        b=chF4wq2vTc3GYyDSk+dP7XmA5xYRovQuu/qWy8Bbc1WeVTv9TNkZFfz2KMSm3oDaHS
+         jveA83ujjRPHWDSYLj24qG77dB9rmwDEwX2xgp0oJNILsFal3verbgFPEduJXAo4w6DN
+         urbUGpDUZUZsCTVgi9dl1llfOCwL4ekBn4gC4YWYCbUSKtzIC1MsZ8pVfjtXAbTnhPzp
+         szD3HzWw/xdudiGG+OOv9UtgCeZ/qMDpVOxleBiN0sBdV7UDo5ATg3jLvIWuRNAo3Xr0
+         9TUcrB7Emm76SvYgPQ7nuy+KE4Zmt9Uaf1da/tk66IVCaoI4JeLYBX7N+aeqmv57SvLT
+         3sgg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793293672; x=1793898472; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
+        b=GpSvzAUBXmt6WMDqX0vRUW/nrcU3oeD6EwyzUXPt0EXbwzV1z9pWNqTeOKCholoS+g
+         0/F67iAqxeavczt2b/TpCA405MJ4dNjFykcLHr6QZvqJCTKOURpgQ8b3Hhyq17QP/Lwj
+         JxEknQIS2iK6I8bbXc2DeBMX53nL7VKDIDynIRxIV9oNSbux7TLMlBM2eUZhH4dfVCBU
+         /yKkGQCOXYKSDCBH8hcGTTr/YCru6VA2o4PsAdfU6zdCZMwZSe5EyvxTtI2KXAaPy8cC
+         AykEcyv10d6YtwjZ8Yzi4GQp8cO+FBoKtuIZTVooHBGhzt17skt7EtdH4jsudRogYUUC
+         ox/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793293672; x=1793898472;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
+        b=CVh3AdfCivKvbkW5LBr2a8cpjeNJ56/dd5CTJ76ro0RNrxCA2cd845aRbd0ot2WIBG
+         1VdaslidYnUPDxzhTOutwYy/r5U84jsAU3JLjIoR8vio1BqW+DNTzEimISuD2CNWZiot
+         QRvvcJOjNnsRAGsApSjfqeb9y6Ku8qvZnrnbgSa0pOvnObbT6x8E1SJpgePXzfZ3Gwp2
+         RLmYYpEcnC8w9Mqf6pY07rCJ4VZDhdabVbUREsTLaWiLgHR0yD6S1nMC14yI4ccqgOBp
+         mhrCeeIqVib2X1OqShfAQQPm+DS5L0g17TP0eL5zYMmjt9oJeS82vlF/WfugEur9r4xC
+         T8rQ==
+X-Forwarded-Encrypted: i=1; AKwUvBzwLHggELSDawY7ZCf9FDRPbQmSG4S/+lSP/GzNZHWEXx98fie32oYCUkGBk463AFnfKWd2WQ==@lists.linux.dev
+X-Gm-Message-State: AFq9FYINm5kHU2UI+dU25+B2Er7HGyQC7wAYTnXIFY0kOIJOQyAnkEtQ
+	LmKxLvsind2kwicWSII/eYtHNDp4kSuNBWzV1oCKX4TZh0/52d8n1VJOUeuc6Kky1OqVUcSL9h+
+	eXdXVWbZY1lUNsd3+rhPjaHkvWnQg4VU=
+X-Gm-Gg: AYBFou0gLHrkSHerdeUz+ANkaCwkPJcAEjZ+Xftvpt1kYwi68GAsYGow8+UEw6RD4Pj
+	xwNqBsjxKXsJMWXWF1nuh6JJm6Devou4CYUuVazq3VcENQfIoemf7vRZIn+E9weDTWdUkd3QGgT
+	kAskp2Xau4jheUYSv0tSuw6gAAdamhNe4iBqicIhHHgLdmimiLnIpl8BXl/BcfAgGgFLGKUlOCS
+	7/LV6TrdvRzNBmpTpkvxaVoCmeCs7YDbq4GsufV4QkIlNiImQqIHx2C5dRu2OENyFnHdac99QPk
+	rQhKtcyTJdvjQaPuWER35T3dEb3AaS7pa3EDVUcG1NXzNV+Kv86H6VWZWcL1DADyeMmeG2oUoA0
+	58mw/lSkE4Y1xT9HnLYM6EofEWgakaOcS1s/lJUQLfleXA+Y4Mis+FwsBpIkd7ZsuGL+pymz4Ar
+	jEpQSik0xHrBwr9Kg=
+X-Received: by 2002:a17:906:7313:b0:c45:c030:732c with SMTP id
+ a640c23a62f3a-c49be03a73amr610119866b.41.1793293672256; Thu, 29 Oct 2026
+ 10:07:52 -0700 (PDT)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -145,84 +105,294 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20261029122818.GD3040767@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF00022BD5:EE_|CH9PR12MB962943:EE_
-X-MS-Office365-Filtering-Correlation-Id: f0271769-db46-4212-248d-08df35dce05f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|7416014|376014|1800799024|36860700016|82310400026|5023799004|4143699003|11063799006|56012099006|261009223027099003|261026121527099003|261022113327099003|261021135927099003|261021121427099003|10067099003|22082099003|18002099003|6133799003|3023799007;
-X-Microsoft-Antispam-Message-Info:
-	W8Pg9Azjhpw5T3oranOXS4K2kaGMU60WIgJeUqVxnwBSLFHwMl16YTbvk3OSkc1oI7wMY6OuDFz72L/7JF8ZyLyuu8Xr5HfcqZxXZXMop0pLkrOxWgCTKpgJa/fhZ/XOtTq2U62zKpLmeFKjN1pG8f9FmwISGsA6bbF9hkJLyqC+WWajSlt1yiIDQMggog28sancsT+5CEysG7SQaEyhDAFEkZ2fGfkoF2RQHp27R/HDS8DaJ0lobsA0qu0Z1zPlsRlb03Nkw+o67I5ml/y3fqE+SO+Fkh7cuaQOPAwA+CA+pk4REjYzEC2B19qnDcBhVALYgi1EGgirTJRcAHVCuMa9KiQAuXvF9x7jO6RHXdCsNZCwpuMzc7rW9PoLSFa49mZ7XPm0+gihWmwfvDP4orhk4C5y4VKONuXwFexMRwxBdsFgD9xNMhsirNfLyqY9n8AuSfipdcXW2CcsOF4vuoUo6Iiw1gd4PAifnHr8J954pvUGXO6YJo/gnO6fqGPSs5FWTNw+QzPrl/e0uNsL1kpzWXnjid9aurpyaKUNs1saXWMgyplhG48ow0kfeilPEEugmE5TkWhPdw+ZCWTjIPJ5CNTPH5ypgyivZApMckzUU35SWe6Hb1ZhaiegMUkoKRH+xquhLEqmZZ8m4677tXVlE10wkvhhAUn3H38W/Y1vFP07yF3rRCNMHx6Rh8YYwKeCO91S90uQNmr6OJ5zag==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(1800799024)(36860700016)(82310400026)(5023799004)(4143699003)(11063799006)(56012099006)(261009223027099003)(261026121527099003)(261022113327099003)(261021135927099003)(261021121427099003)(10067099003)(22082099003)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	wkS+yXhHtf9zm2m9DrRheUWrCzIJYUwqfBbRkNQ5vuATUjRUNrpv8e5/tODrvvwB/tjVmKIUQ2bZJJigJDt1+uKb07IiOVZzIzMgtcatD/A0JAZG+EWY8GXOwPs0KJXciYvd5Fv9QN2+ePbejxJL2BfxiJcKaN5t3wCH0yg63WLA66bDIunP1coBnupDMwXpRZzYRDuFCieIbu84PVqVfbn3Y7TYjsO3zvVLWJwGf/eTYp0DD1Jt5Y3Lf42b8DQVXSzsdcl7Yl6ZZrXWLTihLSabSDgJsB/LCEvbhwkHkL3gZrrognoZ3ONlqWnffi/5z+ovFOTu6HNZGnyHyTrntXuqPD9kGDHl7MTRoUge/yOzKgST/8b4+krOkRhSLYpih7twPKQhyuigyM1MMUmjUsStumbAZptA9UEHb0lDa4vHmFAh2YEhECtMXrqzAzeD
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2026 16:51:28.1508
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f0271769-db46-4212-248d-08df35dce05f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF00022BD5.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH9PR12MB962943
+References: <20261022-gmem-alternative-providers-v2-0-5dd1dc6c660a@google.com>
+ <20261027154649.91571-1-griffoul@gmail.com> <20261027154649.91571-2-griffoul@gmail.com>
+ <CAEvNRgGvxtgT=x3sLcasLZzCrtX+qEkHjPgs2yFRY0HRJvodag@mail.gmail.com>
+In-Reply-To: <CAEvNRgGvxtgT=x3sLcasLZzCrtX+qEkHjPgs2yFRY0HRJvodag@mail.gmail.com>
+From: Frederic Griffoul <griffoul@gmail.com>
+Date: Thu, 29 Oct 2026 17:07:41 +0000
+X-Gm-Features: AclHuK-XOTTZ577Y9tlQyUF1DU-1w6QS3FSXEW1jGcpzGvSeAxBjghFI3p-6WVU
+Message-ID: <CAF2vKzP7mKAsbDFfj-ndoYSxxZYbNzVO7uysb-XtKytR4zuC7w@mail.gmail.com>
+Subject: Re: [RFC PATCH 01/14] KVM: guest_memfd: Clamp the order of PFN mode
+ blocks to what KVM can map
+To: Ackerley Tng <ackerleytng@google.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>, Sean Christopherson <seanjc@google.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Alexander Graf <graf@amazon.de>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Alexey Kardashevskiy <aik@amd.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>, Ashish Kalra <ashish.kalra@amd.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
+	Bill Wendling <morbo@google.com>, Borislav Petkov <bp@alien8.de>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Christian Brauner <brauner@kernel.org>, 
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Connor Williamson <connordw@amazon.com>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	Dave Jiang <dave.jiang@intel.com>, David Hildenbrand <david@kernel.org>, 
+	David Rientjes <rientjes@google.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Erdem Aktas <erdemaktas@google.com>, Frank van der Linden <fvdl@google.com>, 
+	Gregory Price <gourry@gourry.net>, "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>, 
+	Ingo Molnar <mingo@redhat.com>, Jacob Pan <jacob.pan@linux.microsoft.com>, 
+	James Houghton <jthoughton@google.com>, Jan Kara <jack@suse.cz>, Jianxiong Gao <jxgao@google.com>, 
+	Joerg Roedel <joro@8bytes.org>, Joey Gouly <joey.gouly@arm.com>, 
+	John Starks <John.Starks@microsoft.com>, Jonathan Corbet <corbet@lwn.net>, 
+	Justin Stitt <justinstitt@google.com>, Lorenzo Stoakes <ljs@kernel.org>, Marc Zyngier <maz@kernel.org>, 
+	Michael Roth <michael.roth@amd.com>, Mike Rapoport <rppt@kernel.org>, 
+	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Oliver Upton <oupton@kernel.org>, 
+	Pratyush Yadav <pratyush@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Samiullah Khawaja <skhawaja@google.com>, 
+	Shuah Khan <shuah@kernel.org>, Steffen Eiden <seiden@linux.ibm.com>, 
+	Steven Price <steven.price@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Tarun Sahu <tarunsahu@google.com>, Thomas Gleixner <tglx@kernel.org>, 
+	Tom Lendacky <thomas.lendacky@amd.com>, Tycho Andersen <tycho@kernel.org>, 
+	Vishal Annapurve <vannapurve@google.com>, Vlastimil Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>, 
+	Xu Yilun <yilun.xu@linux.intel.com>, Yan Zhao <yan.y.zhao@intel.com>, 
+	Zenghui Yu <yuzenghui@huawei.com>, x86@kernel.org, 
+	Shuah Khan <skhan@linuxfoundation.org>, Fuad Tabba <fuad.tabba@linux.dev>, kvm@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+	linux-mm@kvack.org, llvm@lists.linux.dev, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Oct 29, 2026 at 09:28:18AM -0300, Jason Gunthorpe wrote:
-> On Thu, Oct 29, 2026 at 10:05:05AM +0000, Shameer Kolothum Thodi wrote:
-> > > On Wed, Oct 28, 2026 at 09:35:09AM -0300, Jason Gunthorpe wrote:
-> > > > On Wed, Oct 28, 2026 at 09:49:53AM +0000, Shameer Kolothum Thodi
-> > > wrote:
-> > > > > > +static inline unsigned long rsi_arch_dev_activate(phys_addr_t base,
-> > > > > > +						  unsigned long dev_type)
-> > > > > > +{
-> > > > > > +	struct arm_smccc_res res;
-> > > > > > +
-> > > > > > +	arm_smccc_1_1_invoke(SMC_RSI_ARCH_DEV_ACTIVATE, base,
-> > > > > > dev_type, &res);
-> > > > >
-> > > > > These calls leave unused input registers unspecified, whereas
-> > > > > DEN0137 bet3 B1.2 marks them SBZ. Could we explicitly zero them?
-> > > > >
-> > > > > "On calling an RMI or RSI command, any of X1- X16 which are not
-> > > > >  specified as input values in the command definition SBZ"
-> > > >
-> > > > That seems too broad, Linux doesn't even support the x8-x16 inputs in
-> > > > the macros. I think the spec has errd here.
-> > > >
-> > > > Requiring zeroing of x0-x7 is sort of reasonable. Any future use of
-> > > > x8-x16 (including outputs) should require a direct opt in of the OS to
-> > > > indicate it supports this bank of registers.
-> > > >
-> > > > Otherwise you probably need a new macro helper for this protocol..
-> > > 
-> > > We could probably replace it with:
-> > > 	arm_smccc_smc(SMC_RSI_ARCH_DEV_ACTIVATE, base, dev_type, 0,
-> > > 0, 0, 0, 0,
-> > > 		      &res);
-> > > 
-> > > This should specify those unused inputs.
-> > 
-> > Or we could use arm_smccc_1_2_smc() with zero initialized registers, as
-> > rsi_attestation_token_init() does. I think that would cover X8-X16 too.
-> 
-> Yeah, that seems to be the right thing to do.
-> 
-> > But other RSI wrappers don't do that consistently, so it's fine either
-> > way, I guess.
-> 
-> Seems like a bug, with the spec being specific here it should be
-> fixed.
+On Thu, Oct 29, 2026 at 06:25:49AM -0700, Ackerley Tng wrote:
+> Fred Griffoul <griffoul@gmail.com> writes:
+>
+> > +        kvm_mmu_invalidate_range_add(kvm,
+> > +                         round_down(gfn_range.start, blk),
+> > +                         round_up(gfn_range.end, blk));
+> > +
+>
+> Yes, we want to make the invalidation range larger, but not the range
+> being zapped. We can't over-zap for CoCo VMs.
+>
+> Would it be better to refactor kvm_mmu_unmap_gfn_range() instead of
+> doing kvm_mmu_invalidate_range_add() twice?
 
-I'll use arm_smccc_1_2_smc() in v2.
+Good point. As far as I can see, kvm_mmu_unmap_gfn_range() is only
+kvm_mmu_invalidate_range_add() plus kvm_unmap_gfn_range(), so
+guest_memfd could do the two steps itself: add the blocks around the
+range, then unmap the exact range. The zap stays exact and the range is
+added once. Or am I missing something about kvm_mmu_unmap_gfn_range()
+that a refactor would need to keep?
 
-Thanks
-Nicolin
+> So I think we should follow the same model:
+>
+> + The provider reports the max_order based on it's contiguity
+>   information, which is the actual contiguity of memory and
+>   read-only attributes
+> + guest_memfd further reduces max_order due to shared/private contiguity
+> + After handing it to KVM, KVM further reduces the max order based on
+>   the above.
+>
+> I think mappings for all other page tables (userspace and IOMMU) should
+> also follow this approach.
+
+Agreed. guest_memfd should then only reduce the order for shared and
+private pages, and drop the gfn alignment and the rounding to a
+page-table size, which KVM does. For the provider, "contiguity" would
+mean a naturally aligned block of contiguous frames with the same
+attributes, the frames aligned to the block too, so a mapping of that
+size is valid as is.
+
+One gap: KVM does not cover a memslot whose gfn and guest_memfd offset
+are not aligned to each other. On x86, kvm_alloc_memslot_metadata()
+disallows large pages when base_gfn and userspace_addr are misaligned,
+but nothing compares base_gfn with gmem.pgoff, and kvm_gmem_bind()
+takes any page-aligned offset. A gmem.pgoff check next to the
+userspace_addr one would keep that in KVM too.
+
+The export lookup in the series already works this way: it reports the
+provider's block, reduced for shared and private pages. iommufd maps
+PAGE_SIZE IOPTEs in this series, and will pick larger IOPTEs from that
+block later.
+
+> I guess the kvm_gmem_fault_user_mapping() equivalent of this max_order
+> tuning is missing from this series. :) I think we should defer order >
+> 0 to a later series though. I think read-only-ness should be part of
+> the first PFN mode series.
+
+Right, userspace mappings are PAGE_SIZE for now.
+
+Deferring order > 0 for KVM and userspace is fine with me. I'd like to
+keep the order in the export lookup, though: large IOPTEs matter for
+device performance, and I'm preparing iommupt changes to split and merge
+them in place.
+
+Fred
+
+On Thu, Oct 29, 2026 at 1:25=E2=80=AFPM Ackerley Tng <ackerleytng@google.co=
+m> wrote:
+>
+> Fred Griffoul <griffoul@gmail.com> writes:
+>
+> > From: Fred Griffoul <fgriffo@amazon.co.uk>
+> >
+> > KVM maps guest memory in 4K, 2M or 1G blocks, and uses guest_memfd's
+> > max_order to choose. A folio of order N is physically aligned and never
+> > mixes shared and private pages, so the order needs no check. A PFN mode
+> > provider's frames need not be aligned
+>
+> I'll need to think about max_order > 0 more for PFNs. I put it out of my
+> mind because my frame of mind is that only order-0 folios are supported
+> today. Perhaps with PFNs it's actually a lot easier to support order >
+> 0.
+>
+> > and the provider does not know
+> > which pages are private, yet kvm_gmem_get_pfn() passes its order to KVM
+> > unchanged. KVM can then map a block over the wrong frames, or with one
+> > attribute over shared and private pages.
+> >
+>
+> Yes, makes sense that private/shared contiguity needs to be taken into
+> account. I didn't consider this because order-0 is always safe to
+> map. Thank you!
+>
+> >
+> > [...snip...]
+> >
+> > -static void __kvm_gmem_invalidate_start(struct gmem_file *f, pgoff_t s=
+tart,
+> > +static void __kvm_gmem_invalidate_start(struct inode *inode,
+> > +                                     struct gmem_file *f, pgoff_t star=
+t,
+> >                                       pgoff_t end,
+> >                                       enum kvm_gfn_range_filter attr_fi=
+lter)
+> >  {
+> > +     const gfn_t blk =3D kvm_gmem_is_pfn_mode(GMEM_I(inode)) ?
+> > +                       1UL << PUD_ORDER : 1;
+> >       bool flush =3D false, found_memslot =3D false;
+> >       struct kvm_memory_slot *slot;
+> >       struct kvm *kvm =3D f->kvm;
+> > @@ -355,6 +360,16 @@ static void __kvm_gmem_invalidate_start(struct gme=
+m_file *f, pgoff_t start,
+> >
+> >               flush |=3D kvm_mmu_unmap_gfn_range(kvm, &gfn_range);
+> >
+> > +             /*
+> > +              * In PFN mode, a fault may map a block of up to PUD_ORDE=
+R
+> > +              * pages, sized before this invalidation (see
+> > +              * kvm_gmem_pfn_map_order()): make faults anywhere in the
+> > +              * blocks around the range retry.
+> > +              */
+> > +             kvm_mmu_invalidate_range_add(kvm,
+> > +                                          round_down(gfn_range.start, =
+blk),
+> > +                                          round_up(gfn_range.end, blk)=
+);
+> > +
+>
+> Yes, we want to make the invalidation range larger, but not the range
+> being zapped. We can't over-zap for CoCo VMs.
+>
+> Would it be better to refactor kvm_mmu_unmap_gfn_range() instead of
+> doing kvm_mmu_invalidate_range_add() twice?
+>
+> >  #ifdef CONFIG_HAVE_KVM_ARCH_GMEM_INVALIDATE
+> >               kvm_arch_gmem_invalidate_range(kvm, &gfn_range);
+> >  #endif
+> > @@ -374,7 +389,7 @@ static void kvm_gmem_invalidate_start(struct inode =
+*inode, pgoff_t start,
+> >       struct gmem_file *f;
+> >
+> >       kvm_gmem_for_each_file(f, inode)
+> > -             __kvm_gmem_invalidate_start(f, start, end, filter);
+> > +             __kvm_gmem_invalidate_start(inode, f, start, end, filter)=
+;
+> >  }
+> >
+> >  static void __kvm_gmem_invalidate_end(struct gmem_file *f, pgoff_t sta=
+rt,
+> > @@ -670,7 +685,7 @@ static int kvm_gmem_release(struct inode *inode, st=
+ruct file *file)
+> >        * Zap all SPTEs pointed at by this file.  Do not free the backin=
+g
+> >        * memory, as its lifetime is associated with the inode, not the =
+file.
+> >        */
+> > -     __kvm_gmem_invalidate_start(f, 0, -1ul,
+> > +     __kvm_gmem_invalidate_start(inode, f, 0, -1ul,
+> >                                   kvm_gmem_get_all_gfns_filter(inode));
+> >       __kvm_gmem_invalidate_end(f, 0, -1ul);
+> >
+> > @@ -1535,6 +1550,44 @@ static struct folio *__kvm_gmem_get_pfn(struct f=
+ile *file,
+> >       return folio;
+> >  }
+> >
+> > +/*
+> > + * The order a PFN mode block can be mapped at: the provider's order, =
+no
+> > + * larger than the alignment of @gfn and @pfn to @index allows, rounde=
+d down to
+> > + * a page-table size, and never over pages that are not all shared or =
+all
+> > + * private, since KVM maps a block with a single attribute.  Called wi=
+th the
+> > + * invalidate lock held; an invalidation of any page of the block make=
+s the
+> > + * fault retry (see __kvm_gmem_invalidate_start()).
+> > + */
+> > +static int kvm_gmem_pfn_map_order(struct inode *inode, pgoff_t index,
+> > +                               gfn_t gfn, kvm_pfn_t pfn, int order)
+> > +{
+> > +     u64 misalign =3D (gfn ^ index) | (pfn ^ index);
+> > +     u64 attrs;
+> > +
+> > +     if (WARN_ON_ONCE(order < 0))
+> > +             return 0;
+> > +
+> > +     order =3D min(order, PUD_ORDER);
+> > +     if (misalign)
+> > +             order =3D min_t(int, order, __ffs64(misalign));
+> > +
+> > +     if (order >=3D PUD_ORDER)
+> > +             order =3D PUD_ORDER;
+> > +     else if (order >=3D PMD_ORDER)
+> > +             order =3D PMD_ORDER;
+> > +     else
+> > +             return 0;
+> > +
+> > +     attrs =3D kvm_gmem_get_attributes(inode,
+> > +                                     mtree_load(&GMEM_I(inode)->attrib=
+utes, index));
+> > +     while (order &&
+> > +            !kvm_gmem_range_has_attributes(inode,
+> > +                                           ALIGN_DOWN(index, 1UL << or=
+der),
+> > +                                           1UL << order, attrs))
+> > +             order =3D order =3D=3D PUD_ORDER ? PMD_ORDER : 0;
+> > +     return order;
+> > +}
+> > +
+>
+> I'll review this function more closely again. I think the mapping order
+> should fit into how KVM does it. After taking guest_memfd's input on
+> max_order, KVM then lets these parties possibly tune the max order down:
+>
+> 1. lpage_info contains information about highest order due to memslot
+>    alignment and alignment due to VM-level memory attributes
+> 2. CoCo platform can impose a max order
+> 3. Userspace mappings can impose a max order too.
+>
+> So I think we should follow the same model:
+>
+> + The provider reports the max_order based on it's contiguity
+>   information, which is the actual contiguity of memory and
+>   read-only attributes
+> + guest_memfd further reduces max_order due to shared/private contiguity
+> + After handing it to KVM, KVM further reduces the max order based on
+>   the above.
+>
+> I think mappings for all other page tables (userspace and IOMMU) should
+> also follow this approach.
+>
+> I guess the kvm_gmem_fault_user_mapping() equivalent of this max_order
+> tuning is missing from this series. :) I think we should defer order > 0
+> to a later series though. I think read-only-ness should be part of the
+> first PFN mode series.
+>
+> >
+> > [...snip...]
+> >
