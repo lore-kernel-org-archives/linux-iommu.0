@@ -1,68 +1,169 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793259750;
-	b=Q6/jzVzoF3F3vDN7Yuwoe1d8IbQdhshZi0YSAaVMKP0+xTDnuzmMe5se73QR3DFnTlql
-	 kNLqEcb/jlQ5M8ID+1hBxIH8maqGneOFlP4g5YluWE3gzYL2lq49bYMFAfelfOF7ZTx1R
-	 vVm87CaUvXK4VXYSDUO1qTEy7j9EAtjwLaCAlI8bs0fRFUZ/hsPZAwLUUxLzKGTb4V8AI
-	 D2NeqK46d34l+n+oA2aPeJ57Ji7MGfkKTP3z51ZSGvSTWySM9/2NLTF5D7i3lorMCyknW
-	 dsDrCbJZpww+msVyd6xd8ahKxf3s4M5r50Re4aa9dv7WU9WgRZor85Rwh9g4ssm9q4Q==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793259750;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=uqtLDQD5xTS0V2akScr1AeCuZBi18jL8j7JRCM14Iek=;
-	b=f0Tb+fAhERIz0mp6Z6WFNVnhgtjCxBwOnX9jAo2tyM2zM3ltV07Eu6TzxbloAKteLMJI
-	 c3hu6IOaCl7GgzgE+t5d8HOdBjGOBdoEsSRLhDTdd3upyzRtJ6PRSFuMYJuSqXl+Bv7lP
-	 eXd4HUfQM0oLraPjbNDfso7BGDBP6QegKTz0ZSTzbCX+Rk4jVG94/qlrczyRmb6RWzxgE
-	 2jnRQ6LkulBoANPXd9VRYYZ6kXdWuUYxOF9WFmU2q9msCCusQYTGHBRxx+xAEOPT1wMgx
-	 WkpNppARhL3N8Zoy5cATYcq3r664MD1pMkcx9DrJ3myT4r2ilDTNw+OL06jUjnYfSQQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=djNC1Rw9;
-	arc=none smtp.remote-ip=198.175.65.20
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.201.0
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793260747;
+	b=V/z/H1PyM3TNkNZ2NlPe0DYHqTSneamo+wngFpo8uBooMyaugrksuy2l0JFPNS/HnQh+
+	 dafen3F1c2I7jfj+7GAHbKvoaGMLDTyDg19MQVYjPBfxiMEE+fRqNhxCUmLneJEA363AY
+	 NsnzvrXI+lxVHwpbde2igqkmdQqFfcTj+lU+XPGow4fnjEMhRRFVOhPkZxGxfeBFXInTM
+	 WFjIa6QxyuMj7t/h+l7y1jAHw9VY/p3TABtw/CJwspF8JMiahTrvWwx0WhTNsA2TifVKW
+	 I19Xf5wk1m82PYv4KCIDXwW5TjcSYT6X3FkCTDaSwusAzbZsIjdzFl3v5jj1m9CZkog==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793260747;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
+	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=h4SPeF3XTiM31B1zYroX9U/rQmkVAUVORfo85C3IF98=;
+	b=oF2otNAAk9IyefZvphaKdtJ9RPWUmGufSpk9IzHvDKNpjF2zIgwzLtHh2Vw6ic+xdvSk
+	 KvkJAZkgrRwMlYP+T6I3366ZpHparRxR6lWdCnJshZI1/nIehSCSOkjGmY5JVcH6E5xaU
+	 CTG5jxvsiuZx60+6BJ1R0MKdbfksRN/H2aml33tsj2q/kSRZ5CEHHvmIU1bv7g+qDNRWt
+	 Acn4wq8ZFD/oCfEULzZF6EVdgxPfsklpYmuN6soNUsa5anhOeTsKVoNCMKzzHxzjaZ3Xc
+	 cMViMi7wEVoTHWKFkhAAa2iVahN9g+BFhE9hhui8NY/Tp1xE6HEG0EUh2zXV4/JYCww==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=hv8BcknV;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.201.0
+Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013000.outbound.protection.outlook.com [40.107.201.0])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 472F1606A31A
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 07:42:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 472F1606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EA4A606A31D;
+	Thu, 29 Oct 2026 07:59:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2EA4A606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=djNC1Rw9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793259750; x=1824795750;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MVpVtdLQY4IkhjqzlWnwVcUPW52r2XOrV9LJwuyJ5k4=;
-  b=djNC1Rw9WbnjxgyKxSPeoG/tA56mEJCCp2eIq8otp+wwnxh4cPTWghmT
-   0IGHoQ2iObykXtCqFJZQEYK4nextG6C98Zwg7aMhKIYYhN28UT2xLdn+m
-   +HcMHpzx16DTQSKkcPytTtAx+/njBGf9fwVA70v37qfNYlmnAGaoxU0sR
-   rN7Q3ojYBXcELXwPL/smFFf5bUiYSJpippOPJjy2XH008TgMZXNa351OM
-   o8kXq8wI9JQZriQQwEgr9vTB04m+JYmOoPoyiq9D+nV9y082Gc21jlN8f
-   DpaoL7C+Pz++4Mfe+FqeqfsWNiExcKLKfyh3TacPexL20l0ONgJUDjp9D
-   w==;
-X-CSE-ConnectionGUID: ecEb/cTBQASH/2WiBqOBFA==
-X-CSE-MsgGUID: AfhmUlGbTqiYBGbXCpDo1g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11949"; a="2022963"
-X-IronPort-AV: E=Sophos;i="6.27,184,1787036400"; 
-   d="scan'208";a="2022963"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 00:42:29 -0700
-X-CSE-ConnectionGUID: kxMxIR/0T1ONe6fL/FYo9Q==
-X-CSE-MsgGUID: 3ztfeBnzRVClbEO5iW7CNQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,184,1787036400"; 
-   d="scan'208";a="5456510"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 00:42:24 -0700
-Message-ID: <0945bca7-fb1c-4bbe-b14d-1e9939738daf@linux.intel.com>
-Date: Thu, 29 Oct 2026 15:42:21 +0800
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=hv8BcknV
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=XQ8JeLJ3wAIFH+z7htOsdczlBIZbVEtBlbD3Odcle028FU5ricscjO02iTglvvPnR64sNbhA3m8oEIYJMKEKr3Efl7WoNu6q2yd0gkTu5VQXbxXViaJRD5A/WEX83cL8DnpqnFN2nXWlCLwWv774oU6EjcTJHD3e/MVHFLedDnXqn6odgPJ996p28ubLC87L4ZORgooediANuhQ8ug+fK30/eAkKnpDw3dKtcLpek0bnFjyvp9zWyJT5Qv7hlqWB1NtawvJDnH0NpuzO+nVvGeUMQ0OWe+QPzXnk+rtT9IyrC9cygTUiSvPT1VvMfOfyS1qh/R/VRmsF3bwOJoQo/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=h4SPeF3XTiM31B1zYroX9U/rQmkVAUVORfo85C3IF98=;
+ b=FmN4k9C9x94yBwOFwvIzVsmo8cxIGp9wXDof45Aiu631Zz3CNdnyIY/DZfx+oRSBW6avlytFd5PfFIV+9VAWSODqMhA7DKjW0eWdA7J5yxVMVPJpRorrg9TCucauVcewDmlMFZZcfmVLufXIfoFBKG6YDYYzrFvPoaSltK7AdITo6zOMzZnqY7ZqGKF+BsIL64GX95Lcc9MTtkVn7YCbfiqaRLnYRg5nYRhFMIuwTtuFNvL9XzO3sa8gnhvo76SWoaoKawUuEiGg3XPAI4jlutXCF+T1GSpHOvFCkFPyWxqPl6mnq9lR9LYbqJlGabJfACCbyKnBlzc1YFikxjIhaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=h4SPeF3XTiM31B1zYroX9U/rQmkVAUVORfo85C3IF98=;
+ b=hv8BcknV20sWdNImNZoXj4ple1UtPx8zzBwKVV8xOw8tifvoQa7cdLO+Jc3yIZBKvcFP+W4YHSmGpfkoQemMwIOFDZTW08C1soR7KrVXqKJlzaFLKB/5xAUWk5VRWU6SBFaqavDSsEgnM+x0SCADCLEnNUc4+xLtgkxpvJfDft7NpTZBc9IH+7frxFSojxVB6ejVVboFLquwwImvgM72kwktaph1t9/eYT0UVVnAyAAGnE32z1Ke73fvJaol5WcwI0f0q+GB9uV55o/Su3VYqUUpO3/2gVjFJyvHE8hd1ai37rXK8/KV8fzEpd56TDUsJuCpfA100UNn5sze/2Hwfg==
+Received: from SJ0PR12MB8614.namprd12.prod.outlook.com (2603:10b6:a03:47d::17)
+ by DM4PR12MB6232.namprd12.prod.outlook.com (2603:10b6:8:a5::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.546.20; Thu, 29 Oct 2026 07:58:56 +0000
+Received: from SJ0PR12MB8614.namprd12.prod.outlook.com
+ ([fe80::fe0a:6e6a:fe60:a43b]) by SJ0PR12MB8614.namprd12.prod.outlook.com
+ ([fe80::fe0a:6e6a:fe60:a43b%5]) with mapi id 15.21.0569.007; Thu, 29 Oct 2026
+ 07:58:56 +0000
+From: Shameer Kolothum Thodi <skolothumtho@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, Catalin Marinas
+	<catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, "joro@8bytes.org"
+	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "rafael@kernel.org"
+	<rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, "aneesh.kumar@kernel.org"
+	<aneesh.kumar@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Greg
+ Kroah-Hartman <gregkh@linuxfoundation.org>, Suzuki K Poulose
+	<suzuki.poulose@arm.com>, Gavin Shan <gshan@redhat.com>, Vikram Sethi
+	<vsethi@nvidia.com>, Anshuman Khandual <anshuman.khandual@arm.com>, Shanker
+ Donthineni <sdonthineni@nvidia.com>, Mostafa Saleh <smostafa@google.com>,
+	"rppt@kernel.org" <rppt@kernel.org>, Thomas Huth <thuth@redhat.com>, Marc
+ Zyngier <maz@kernel.org>, Ryan Roberts <ryan.roberts@arm.com>,
+	"kas@kernel.org" <kas@kernel.org>, Kohei Enju <enju.kohei@fujitsu.com>,
+	Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>, Ard Biesheuvel <ardb@kernel.org>,
+	James Morse <james.morse@arm.com>, Steven Price <steven.price@arm.com>,
+	Sang-Heon Jeon <ekffu200098@gmail.com>, Omar Sandoval <osandov@fb.com>,
+	Andrew Morton <akpm@linux-foundation.org>, Jinjie Ruan
+	<ruanjinjie@huawei.com>, Sam Edwards <cfsworks@gmail.com>, Douglas Anderson
+	<dianders@chromium.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
+	Chen-Yu Tsai <wenst@chromium.org>, Huacai Chen <chenhuacai@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>, Pranjal Shrivastava
+	<praan@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "driver-core@lists.linux.dev"
+	<driver-core@lists.linux.dev>, Sonang Patel <sonangp@nvidia.com>, Ankit
+ Agrawal <ankita@nvidia.com>
+Subject: RE: [PATCH v1 8/8] iommu/arm-smmu-v3: Probe a guest-level Realm VSMMU
+ via RSI commands
+Thread-Topic: [PATCH v1 8/8] iommu/arm-smmu-v3: Probe a guest-level Realm
+ VSMMU via RSI commands
+Thread-Index: AQHdQNVOuiO7B+HXKkGq3lGx7D+HHLcTYs/QgAAqUQCAAOQrkA==
+Date: Thu, 29 Oct 2026 07:58:56 +0000
+Message-ID:
+ <SJ0PR12MB8614BAF8E35987533269CAD9AB6E2@SJ0PR12MB8614.namprd12.prod.outlook.com>
+References: <cover.1789010941.git.nicolinc@nvidia.com>
+ <df25452641dc126eb334a1bfbe5eee16cc8a8953.1789010941.git.nicolinc@nvidia.com>
+ <SJ0PR12MB861403B542B8D63B2AACE18EAB6F2@SJ0PR12MB8614.namprd12.prod.outlook.com>
+ <auI6OGDh723S+6Dh@nvidia.com>
+In-Reply-To: <auI6OGDh723S+6Dh@nvidia.com>
+Accept-Language: en-US, en-GB
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SJ0PR12MB8614:EE_|DM4PR12MB6232:EE_
+x-ms-office365-filtering-correlation-id: b43e837b-e7f0-485f-b26c-08df35927b61
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|366016|23010399003|376014|7416014|22082099003|18002099003|261028144727099003|261026140227099003|3023799007|10067099003|38070700021|11063799006|261022075727099003|56012099006|261026121527099003|261022105027099003|261021135927099003|261021121427099003|261009223027099003|4143699003;
+x-microsoft-antispam-message-info:
+ 25qy3dXPqc/GrolmKIUa0MDLk/hoTH/3WbNW8ITVSrnRusNSlOqntjdRA1miI1oBfaLJIDT9eG7u74l0DiUdbXbyjQb2qAJvmID1I44WQU62rWmpCR2ZnoWcXBgCD5USVyItH4y6Q06Np+WzTX+6HQM+jxsRrLrprPvULu909DXh+ZIoaZ0iznBpEYGrjuPup0BYnppFqclHdJ5b+kt7y7Vy54jdURg5e7HwSTi0XSTvVbTqg3M3ZoJF5in0Fjr/z0GJxfLmXo/0yuoPF+EUbPbXjdcmU00fBeKVJFIyNya8/HAD1nLeZo63aS3wjNDe5Um8on4LNh23viIURsM9iH0/4gFp4N0cDPYv/OY7o4Yzb+WO1jQ+BUj324BNthV1o+X7C4sWqaHPeNPBwHCTAeFR4rAhItLeI63xa/4YQBOWHd7P0iim1CiCWiOkhQUBgC6qBCwgPpx79EkcfhLIsxYZZ8R/nuKj3agqN/allRjXvGPILY5xDy7uMdOmpzd9tam/hzQhs8IxzTBRw2iLyFb1e1xIB0tFUmtMFHUHg0V7zmbrP6/mEAgXQKXD0PnbxFf1Z8kHx8hPWONnJVxwlrE3331DlWLpt77suZZNNIdI+h2qTdfXmCD4pQaecOEt/T7IvfSS7IKlhvuF1iBFZN/TE8XfucJFvAuYxjAsQfPaAScCKpzTmeFRGbxGF0SoTultssxTFZFqBmwXxO74ix1Sbz1gHA4sTy9+ENMUgqs=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR12MB8614.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(23010399003)(376014)(7416014)(22082099003)(18002099003)(261028144727099003)(261026140227099003)(3023799007)(10067099003)(38070700021)(11063799006)(261022075727099003)(56012099006)(261026121527099003)(261022105027099003)(261021135927099003)(261021121427099003)(261009223027099003)(4143699003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?4FnAMSpNII5rpZ+cRzti5RqAhYqSqjNjzL7OniXJ68AvhSlWvRAzg/wpQwGh?=
+ =?us-ascii?Q?J66CtJ8Aj361F5TA9U6EJJidlxHz8haypAut0Ghrj7BAJ0RjgX2CxVqPvitD?=
+ =?us-ascii?Q?yUDJHhPXNpa3cDHNfbxKvNrdML15Znmk3UdWrUh39Qttp+Ed+bKNOTGC/NYn?=
+ =?us-ascii?Q?Cr45w/8MDX6AFWM2wttKBygzrvOMQZWKoYieBHOqzoyleQeWtNcRq/6E0QDv?=
+ =?us-ascii?Q?N86Wc/A+oUwVBt3v4JnTUjpXxaxIT/2bD812Y+Hkzet+JIrqTXY6DZR//mHl?=
+ =?us-ascii?Q?X6fRpV4gSmGnqIq4dYRVetlxQlcrXCFGrvXNsujsrIUmkCl/uwfOn2WvOAKh?=
+ =?us-ascii?Q?3vGAJ86N3yf4tqcPNi+i80Vio+WSGKS+8UF9QXhFEdkFGFJJaEzUJ31CjrCY?=
+ =?us-ascii?Q?6rTnVKeFWBeuMtHdygP6UxP6ID/rHs/AH+Bb5CjaxC9qW5CwUyxl1gOiLRUT?=
+ =?us-ascii?Q?WWRRcyzfBrr6g2mj2y/KMiZSzzwqRfAm/9ZDZWhepQOLaATHp3lSqFwiKZex?=
+ =?us-ascii?Q?Sc2F1WQk3IYVOdt8aWuRJ22GYHv0ZTi5Swe3D/IXD07MxwDDLA5eOImFlrZs?=
+ =?us-ascii?Q?kqh4yUYbXxzyx5x5xf1F+Rhgv29kXzWKRjIVKGFc2vq7hAFLYVGi6gNCvz7j?=
+ =?us-ascii?Q?QaOj/QJcorD9yWPUFKCl8WScMKmAh7glhWHw3QqNoJ+LkqaaLgssq8mKhkn0?=
+ =?us-ascii?Q?29PGaODTsbWmipJbSE1mEHu2BLL1oeoIXOAc4J7rp57zF80H1qFFMoiyJHOW?=
+ =?us-ascii?Q?1cfa6b7ML3ZwzrqGrVT6MVIWwBTGymDTaShNf6m3boqat5w+7yCerQHzu4Re?=
+ =?us-ascii?Q?8nxgfDNlzfLxskoGTSHO/bCgeghvYSLMjCRqb4b4eOWb5Ney1gBm4ajPajAm?=
+ =?us-ascii?Q?HzqP8NBGXMcBGubrTTgoVk6DhCZT8V/uM1a//J8o8BoLoCDurmcKLfrjvv0g?=
+ =?us-ascii?Q?c3WLOv02im7l+ChhJpAT5bNs6yVbzlZlGIqfV1tW5Bdlpco7V6gdCg+qiZHy?=
+ =?us-ascii?Q?qjWezbgF7Co+tIwWj2MgBHRWGgoBXyAYDHUd9hCbw2J0L6eVs6itLUW+YkIf?=
+ =?us-ascii?Q?rAHTbdiZPDdqL2AGnoeQA2SNiAaTqrzvVDnQ+zv7TwCMF7C0kRmA/nALIhRf?=
+ =?us-ascii?Q?cwRvdNH5T7ulTo5594+cALq+ILWqbvUOjT40gxHL46o7FuDAKjZzIPbjkbLx?=
+ =?us-ascii?Q?DAqO9TbCAVvO7N1Ulpot8NLCpUEkguN2ncDJh9JHQE4L24zVyxBVM48UDMUZ?=
+ =?us-ascii?Q?kkG9xe0NMoJPd75Ulh//V45IwE5puaL11unFz1QjyhNw5AFBBFLSM3BllGt+?=
+ =?us-ascii?Q?Fk95gSmKWBroaZEuOYSBEo90s1mUP3RLI60F4L6hOKfVy0pR+B+A8Uv9E0g2?=
+ =?us-ascii?Q?gOUFIOvA3BGyUpDNVVl1oZ2XUBCFBF0JMIDAvq7jMhFoBgpDXc3Th32XAGis?=
+ =?us-ascii?Q?F8Un60J1heLFmahvZlvP27CrHkXxVeyHwf1JAcONJ8yFh/UL8qYD1KzfGbq+?=
+ =?us-ascii?Q?htMoQNrbr6DZKqLVAahIUQVvfSWK7H8fVslzYC1WuDhiZuv9Jm/kEquw3aP3?=
+ =?us-ascii?Q?lmn7+bPaDzfhwfoJ2MJCiOfK7WOc1Ct9G6OEQJPBC1ecLtXSOSBCa9rw9wcx?=
+ =?us-ascii?Q?34vcarBOkBXA5hepVls3N2K0V9J5qSDxPP8maqK7Wg62Rk4jXYerxu4iVEBN?=
+ =?us-ascii?Q?DIYer75y6e/xf0kCZD0yDAp2MRgwd4RBgCz2dzZYyiB0Igy1Hi2wM+nN3NsU?=
+ =?us-ascii?Q?umLO1avYPA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,339 +173,85 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
- Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
- Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>,
- John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v6 11/18] iommu/vt-d: Preserve PASID table of preserved
- device
-To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- David Woodhouse <dwmw2@infradead.org>
-References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-12-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261025021930.674647-12-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR12MB8614.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b43e837b-e7f0-485f-b26c-08df35927b61
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2026 07:58:56.1053
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nhu8uiTdv+8JH26pGSHGFIBq1jn3AhSCus6NEirc2LoHPp1wRsDzEmgHNWE6RGQDPhaANCdvCu5xCByWXOxjlA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6232
 
-On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
-> In scalable mode the PASID table is used to fetch the io page tables.
-> Preserve and restore the PASID table of the preserved devices.
-> 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->   drivers/iommu/intel/iommu.c      |   3 +-
->   drivers/iommu/intel/liveupdate.c | 144 +++++++++++++++++++++++++++++--
->   drivers/iommu/intel/pasid.c      |  10 ++-
->   drivers/iommu/intel/pasid.h      |   8 ++
->   include/linux/kho/abi/iommu.h    |  19 ++++
->   5 files changed, 176 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 991ad9b2456e..ecec057f78dd 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -3473,7 +3473,8 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
->   			goto clear_rbtree;
->   		}
->   
-> -		if (!context_copied(iommu, info->bus, info->devfn)) {
-> +		if (!context_copied(iommu, info->bus, info->devfn) &&
-> +		    !dev_iommu_restored_state(dev)) {
->   			ret = intel_pasid_setup_sm_context(dev);
->   			if (ret)
->   				goto free_table;
-> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/liveupdate.c
-> index cf98b95bf8d2..36816d3651e6 100644
-> --- a/drivers/iommu/intel/liveupdate.c
-> +++ b/drivers/iommu/intel/liveupdate.c
-> @@ -14,6 +14,7 @@
->   #include <linux/pci.h>
->   
->   #include "iommu.h"
-> +#include "pasid.h"
->   #include "../iommu-pages.h"
->   
->   /* 2 tables per bus in scalable mode with upper table at odd bit */
-> @@ -393,6 +394,69 @@ void intel_iommu_handle_drhd_restore_failure(struct intel_iommu *iommu)
->   		      iommu->name);
->   }
->   
-> +enum pasid_lu_op {
-> +	PASID_LU_OP_PRESERVE = 1,
-> +	PASID_LU_OP_UNPRESERVE,
-> +	PASID_LU_OP_RESTORE,
-> +};
-> +
-> +static int pasid_lu_do_op(void *table, enum pasid_lu_op op)
-> +{
-> +	int ret = 0;
-> +
-> +	switch (op) {
-> +	case PASID_LU_OP_PRESERVE:
-> +		ret = iommu_preserve_pages(table);
-> +		break;
-> +	case PASID_LU_OP_UNPRESERVE:
-> +		iommu_unpreserve_pages(table);
-> +		break;
-> +	case PASID_LU_OP_RESTORE:
-> +		iommu_restore_pages(virt_to_phys(table));
-> +		break;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int pasid_lu_handle_pd(struct pasid_dir_entry *dir,
-> +			      u32 max_pasid, enum pasid_lu_op op)
-> +{
-> +	int max_pde = max_pasid >> PASID_PDE_SHIFT;
-> +	struct pasid_entry *table;
-> +	int i, ret;
-> +
-> +	for (i = 0; i < max_pde; i++) {
-> +		table = get_pasid_table_from_pde(&dir[i]);
-> +		if (!table)
-> +			continue;
-> +
-> +		ret = pasid_lu_do_op(table, op);
-> +		if (ret)
-> +			goto err;
-> +	}
-> +
-> +	ret = pasid_lu_do_op(dir, op);
-> +	if (ret)
-> +		goto err;
-> +
-> +	return 0;
-> +
-> +err:
-> +	if (op != PASID_LU_OP_PRESERVE)
-> +		return ret;
-> +
-> +	while (i > 0) {
-> +		table = get_pasid_table_from_pde(&dir[--i]);
-> +		if (!table)
-> +			continue;
-> +
-> +		pasid_lu_do_op(table, PASID_LU_OP_UNPRESERVE);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->   /**
->    * intel_iommu_preserve_device() - Intel IOMMU callback to preserve device state
->    * @dev: Target device
-> @@ -404,6 +468,7 @@ int intel_iommu_preserve_device(struct device *dev,
->   				struct iommu_device_ser *device_ser)
->   {
->   	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct pasid_table *pasid_table;
->   	int ret;
->   
->   	if (!dev_is_pci(dev)) {
-> @@ -434,6 +499,22 @@ int intel_iommu_preserve_device(struct device *dev,
->   
->   	device_ser->attachment.attachment_id = domain_id_iommu(info->domain,
->   							       info->iommu);
-> +
-> +	if (!sm_supported(info->iommu))
-> +		return 0;
-> +
-> +	pasid_table = intel_pasid_get_table(dev);
-> +	if (!pasid_table)
-> +		return -EINVAL;
-> +
-> +	ret = pasid_lu_handle_pd(pasid_table->table,
-> +				 pasid_table->max_pasid,
-> +				 PASID_LU_OP_PRESERVE);
-> +	if (ret)
-> +		return ret;
-> +
-> +	device_ser->intel.pasid_table = virt_to_phys(pasid_table->table);
-> +	device_ser->intel.max_pasid = pasid_table->max_pasid;
->   	return 0;
->   }
->   
-> @@ -445,15 +526,33 @@ int intel_iommu_preserve_device(struct device *dev,
->   void intel_iommu_unpreserve_device(struct device *dev,
->   				   struct iommu_device_ser *device_ser)
->   {
-> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> +	struct pasid_table *pasid_table;
-> +
-> +	if (!dev_is_pci(dev))
-> +		return;
-> +
-> +	if (!info)
-> +		return;
-> +
-> +	if (!sm_supported(info->iommu))
-> +		return;
-> +
->   	/*
->   	 * The context tables preserved during device preservation, in the
->   	 * preserve_device() callback, might be shared with other devices, so
-> -	 * those are unpreserved in the iommu unpreserve() callback. So this
-> -	 * callback is kept empty.
-> -	 *
-> -	 * Once device PASID tables are preserved, the unpreservation of PASID
-> -	 * tables will be added here.
-> +	 * those are unpreserved in the iommu unpreserve() callback.
->   	 */
-> +	if (!device_ser->intel.pasid_table)
-> +		return;
-> +
-> +	pasid_table = intel_pasid_get_table(dev);
-> +	if (!pasid_table)
-> +		return;
-> +
-> +	pasid_lu_handle_pd(pasid_table->table,
-> +			   pasid_table->max_pasid,
-> +			   PASID_LU_OP_UNPRESERVE);
->   }
->   
->   /**
-> @@ -499,3 +598,38 @@ void intel_iommu_unpreserve(struct iommu_device *iommu_dev,
->   	unpreserve_iommu_context_tables(iommu, ser);
->   	iommu_unpreserve_pages(iommu->root_entry);
->   }
-> +
-> +/**
-> + * intel_pasid_restore_table() - Restore preserved PASID table for a device
-> + * @dev: Restored device
-> + * @max_pasid: Maximum supported PASID
-> + *
-> + * Return: Pointer to restored PASID table directory, or NULL if not preserved.
-> + */
-> +void *intel_pasid_restore_table(struct device *dev, u64 max_pasid)
-> +{
-> +	struct iommu_device_ser *ser = dev_iommu_restored_state(dev);
-> +
-> +	if (!ser || !ser->intel.pasid_table)
-> +		return NULL;
-> +
-> +	/*
-> +	 * MAX PASID of a device should not change as it is read from
-> +	 * capabilities.
-> +	 */
-> +	if (ser->intel.max_pasid != max_pasid)
-> +		panic("%s: preserved max PASID %llu does not match %llu\n",
-> +		      dev_name(dev), ser->intel.max_pasid, max_pasid);
-> +
-> +	if (ser->intel.restored)
-> +		goto out;
-> +
-> +	if (pasid_lu_handle_pd(phys_to_virt(ser->intel.pasid_table),
-> +			       ser->intel.max_pasid, PASID_LU_OP_RESTORE))
-> +		panic("%s: failed to restore preserved PASID table\n",
-> +		      dev_name(dev));
-> +	ser->intel.restored = 1;
-> +
-> +out:
-> +	return phys_to_virt(ser->intel.pasid_table);
-> +}
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index e4f24d3f19a6..59cc69383799 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -13,6 +13,7 @@
->   #include <linux/cpufeature.h>
->   #include <linux/dmar.h>
->   #include <linux/iommu.h>
-> +#include <linux/iommu-liveupdate.h>
->   #include <linux/memory.h>
->   #include <linux/pci.h>
->   #include <linux/pci-ats.h>
-> @@ -60,8 +61,13 @@ int intel_pasid_alloc_table(struct device *dev)
->   
->   	size = max_pasid >> (PASID_PDE_SHIFT - 3);
->   	order = size ? get_order(size) : 0;
-> -	dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
-> -					1 << (order + PAGE_SHIFT));
-> +
-> +	max_pasid = 1 << (order + PAGE_SHIFT + 3);
-> +	if (dev_iommu_restored_state(dev))
-> +		dir = intel_pasid_restore_table(dev, max_pasid);
-> +	else
-> +		dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
-> +						1 << (order + PAGE_SHIFT));
->   	if (!dir) {
->   		kfree(pasid_table);
->   		return -ENOMEM;
-> diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-> index 48d3bb6b68de..801768cdea16 100644
-> --- a/drivers/iommu/intel/pasid.h
-> +++ b/drivers/iommu/intel/pasid.h
-> @@ -301,6 +301,14 @@ static inline void pasid_set_eafe(struct pasid_entry *pe)
->   
->   extern unsigned int intel_pasid_max_id;
->   int intel_pasid_alloc_table(struct device *dev);
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +void *intel_pasid_restore_table(struct device *dev, u64 max_pasid);
-> +#else
-> +static inline void *intel_pasid_restore_table(struct device *dev, u64 max_pasid)
-> +{
-> +	return NULL;
-> +}
-> +#endif
->   void intel_pasid_free_table(struct device *dev);
->   struct pasid_table *intel_pasid_get_table(struct device *dev);
->   int intel_pasid_setup_first_level(struct intel_iommu *iommu, struct device *dev,
-> diff --git a/include/linux/kho/abi/iommu.h b/include/linux/kho/abi/iommu.h
-> index 95354a12ba1d..08443f6cee6f 100644
-> --- a/include/linux/kho/abi/iommu.h
-> +++ b/include/linux/kho/abi/iommu.h
-> @@ -137,6 +137,21 @@ struct iommu_attachment_ser {
->   	u32 padding;
->   } __packed;
->   
-> +/**
-> + * struct iommu_device_intel_ser - Intel specific state of serialized device
-> + * @features: Bitmask of Intel device specific features
-> + * @restored: Whether the device state is restored
-> + * @pasid_table: Physical address of pasid table
-> + * @max_pasid: Maximum supported pasid
-> + */
-> +struct iommu_device_intel_ser {
-> +	u32 features;
-> +	u8 restored;
-> +	u8 padding[3];
-> +	u64 pasid_table;
-> +	u64 max_pasid;
-> +} __packed;
-> +
->   /**
->    * struct iommu_device_ser - Serialized state of a device
->    * @hdr: Common object header
-> @@ -146,6 +161,7 @@ struct iommu_attachment_ser {
->    * @iommu_phys: Physical address of the serialized IOMMU the device is behind
->    * @attachment: Attachment of the device to its domain
->    * @reserved: Reserved for future common fields.
-> + * @intel: Intel specific serialization data
->    */
->   struct iommu_device_ser {
->   	struct iommu_hdr_ser hdr;
-> @@ -155,6 +171,9 @@ struct iommu_device_ser {
->   	u64 iommu_phys;
->   	struct iommu_attachment_ser attachment;
->   	u64 reserved[2];
-> +	union {
-> +		struct iommu_device_intel_ser intel;
-> +	};
->   } __packed;
->   
->   /* There are maximum 256 buses, so maximum 512 context tables */
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+> -----Original Message-----
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: 28 October 2026 18:09
+> To: Shameer Kolothum Thodi <skolothumtho@nvidia.com>
+> Cc: Jason Gunthorpe <jgg@nvidia.com>; Catalin Marinas
+> <catalin.marinas@arm.com>; Will Deacon <will@kernel.org>;
+> joro@8bytes.org; Robin Murphy <robin.murphy@arm.com>;
+> rafael@kernel.org; Danilo Krummrich <dakr@kernel.org>; Marek Szyprowski
+> <m.szyprowski@samsung.com>; aneesh.kumar@kernel.org; Mark Rutland
+> <mark.rutland@arm.com>; Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org>; Suzuki K Poulose
+> <suzuki.poulose@arm.com>; Gavin Shan <gshan@redhat.com>; Vikram Sethi
+> <vsethi@nvidia.com>; Anshuman Khandual
+> <anshuman.khandual@arm.com>; Shanker Donthineni
+> <sdonthineni@nvidia.com>; Mostafa Saleh <smostafa@google.com>;
+> rppt@kernel.org; Thomas Huth <thuth@redhat.com>; Marc Zyngier
+> <maz@kernel.org>; Ryan Roberts <ryan.roberts@arm.com>; kas@kernel.org;
+> Kohei Enju <enju.kohei@fujitsu.com>; Shaopeng Tan
+> <tan.shaopeng@jp.fujitsu.com>; Ard Biesheuvel <ardb@kernel.org>; James
+> Morse <james.morse@arm.com>; Steven Price <steven.price@arm.com>;
+> Sang-Heon Jeon <ekffu200098@gmail.com>; Omar Sandoval
+> <osandov@fb.com>; Andrew Morton <akpm@linux-foundation.org>; Jinjie
+> Ruan <ruanjinjie@huawei.com>; Sam Edwards <cfsworks@gmail.com>;
+> Douglas Anderson <dianders@chromium.org>; Florian Fainelli
+> <florian.fainelli@broadcom.com>; Chen-Yu Tsai <wenst@chromium.org>;
+> Huacai Chen <chenhuacai@kernel.org>; Thomas Zimmermann
+> <tzimmermann@suse.de>; Pranjal Shrivastava <praan@google.com>; Ashish
+> Mhetre <amhetre@nvidia.com>; linux-arm-kernel@lists.infradead.org; linux-
+> kernel@vger.kernel.org; iommu@lists.linux.dev; driver-core@lists.linux.de=
+v;
+> Sonang Patel <sonangp@nvidia.com>; Ankit Agrawal <ankita@nvidia.com>
+> Subject: Re: [PATCH v1 8/8] iommu/arm-smmu-v3: Probe a guest-level Realm
+> VSMMU via RSI commands
+>=20
+> On Wed, Oct 28, 2026 at 08:41:13AM -0700, Shameer Kolothum Thodi
+> wrote:
+> > > @@ -5542,6 +5591,12 @@ static int arm_smmu_device_probe(struct
+> > > platform_device *pdev)
+> > >  	}
+> > >  	ioaddr =3D res->start;
+> > >
+> > > +	if (is_realm_world()) {
+> > > +		ret =3D arm_smmu_probe_realm_vsmmu(smmu, res);
+> > > +		if (ret)
+> > > +			return ret;
+> > > +	}
+> >
+> > If probe fails after activation succeeds above, wouldn't a module
+> > reload hit RSI_ERROR_DEVICE since the VSMMU is still ACTIVE?
+> >
+> > B5.4.1.2:
+> >
+> >  pre:  vsmmu.state =3D=3D VSMMU_ACTIVE
+> >  post: result =3D=3D RSI_ERROR_DEVICE
+> >
+> > How is recovery handled?
+>=20
+> There is no way to undo an activation. But what's the practical
+> use case for the SMMU driver to do a module reload?
+
+I was thinking of an allocation failure, then onlining more memory
+and retrying probe. Not sure how realistic that is in practice.
+
+Any idea why guest side deactivation isn't allowed? I couldn't find
+the rationale in the spec. Perhaps it needs additional synchronization.
+
+Thanks,
+Shameer
