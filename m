@@ -1,60 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793265432;
-	b=A6EIbhYWG9BOsYjOXKlBSUY+t/199bcB/stQYGcwtoYXlokwEn5meXdyvtoGbuL5YJ/H
-	 DizsqsQ5eNIgiSN3tsrUXoAB/jHOU+AJASJZST8hAFRw/p71IfmPtoH8PvrX0gBAOJX/0
-	 kMK2WqM8fl7Tukcbwb7V/4WU9LwW+iO4SrxrjFLxUI96JA5I85k1S/7vIgoHUSPYnvpsY
-	 a9g7PtT8AbxRiSKY+FSEvTJn+HNYWbd+3hVkCNTq5cY3RIMAalxOtv9FSU9TTPNbra+eK
-	 MSPrryVwGD4w6qDMdH2hT2W7l5pSHNfrp4f984ZUlhoVrAPzdT2lIavF7TVAGXuhhsg==
+	t=1793266665;
+	b=Eq9lzaH1zC3y6qPmVFHH8N7pTUyvYr4QEi3e97VpAudYAmfXtBLG2mQFLJKtk7zTxSNF
+	 MqhskGvUVXYazeq5chbY6BBSDqLvbqCX9q3KqIxgqysFEpLor1AtWJ7pIlGswUlMf6we9
+	 d532RcBkbMjni4yuG2AXmFPRAnZ3xel9AYvViSNAGQGPt297eZlTicIdczIHodXA4ry3x
+	 vzHrOhq8CYB2aHv4uwBQmS46WQiuQNa2EzfJLsEuubm4kFXUjmy20rXwfFaIxO81/QKoE
+	 t0WJXcztOSM03vDHBV75HzKVQnRNExsSlawgxzkq0v9vOmbRCdXHOEKCFsXB3+2s85g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793265432;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=j4AXCr1qkQMPMUXdk2+Nfc8gbN/AQleiHbJ0XtECBWM=;
-	b=YqR14Pyda6NJHdQYYmHVlHqUAgHpeZ/7f6MLJiVLg4sqr47vsyXvFP1dYO0pBiYJOiD7
-	 rfhb66+T5tXLO9usebYIo7q3p7N5ffHTlobPHdc+aDNOCogT3sGWgABFSbuge1e5DNThF
-	 iISMhgCPZngTWvRaFSbCOhNgvHCCedM2hw+hADj5wUAO/jx7Sj3vy6uuTgK30/rkCdb5T
-	 4eoa4MDiad+bOFX02Nwqz5mDs5qBRdcTQwrc18CXwloUJq1xe/x7ll0MeFj8iPuS6FkTI
-	 vUqqJAzkGgC+XcHydDXCNSC1ynK1rwmsH4DrJZgcJW8notz0EarMOm3elSuKgiPaYvw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793266665;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=b1L/YgA0unso+/Lv8s9MhtgPB5X7wkfHZu4ut24TmCk=;
+	b=YGULWsnAegFdkuZ+MwhXT0AtaXSrXoYLBV13KypWv2uehQo3SCZ3ZgHkTT3DtbuBrP3+
+	 FNAUefGK6G8DrrracbGIADNxIW0h5G93A9mMENlQo0khnH5cp7Y8gqUfR3qTL4B8nTwh0
+	 jd4NgGXhxhcQ5JVrCb4RY6wnpLqhrMGgjWU0D/+22qUGrhWEoJf+HT7os9iRKyMWwn5X4
+	 uCHuzOmWonaboU0J9nHe1mqBrowNdQuxHk+ywsKcEKvApN3gMCZ1kGZTpChkmHXd42jx9
+	 ir9XDXU3j4/dDpoVwFmul9E/2v5NWjImf0Yw+J4vaFh0F+vbFufytLK9MLFGLCwqalQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=QHJ7LQ4D;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GYVH+Mm9;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6CB606A31C
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 09:17:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5E6CB606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EAA160A2609;
+	Thu, 29 Oct 2026 09:37:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=QHJ7LQ4D
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261029091709euoutp024c622853ed797580ae5718599d27f451~i9WgsSqcR1564015640euoutp02I
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 09:17:09 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261029091709euoutp024c622853ed797580ae5718599d27f451~i9WgsSqcR1564015640euoutp02I
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1793265429;
-	bh=j4AXCr1qkQMPMUXdk2+Nfc8gbN/AQleiHbJ0XtECBWM=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=QHJ7LQ4Dw27oX3qv160cTEp4QMeXJV/BB5f0s0kMifgUkxYTp2oRVStWq22+9QImV
-	 J2B2rK8QyhUpjpU6HeEHDVZMVk+FrhuTdZwPCZNfwdB1dbPCesbcpk4wRzwrtAzq0H
-	 TvpUSMYYauVelduEtADCtBZRZQzyHixCci0w623E=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261029091708eucas1p1eceac71c0d1f0166ae56525ddf6335fb~i9WgPz_By2993829938eucas1p1p;
-	Thu, 29 Oct 2026 09:17:08 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261029091708eusmtip1df711fed790269113c0f17caa7dfb4c2~i9WfsHlhP2833428334eusmtip1U;
-	Thu, 29 Oct 2026 09:17:08 +0000 (GMT)
-Message-ID: <abae1606-cc43-4ad4-b486-3a6e6aeed1b9@samsung.com>
-Date: Thu, 29 Oct 2026 10:17:07 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GYVH+Mm9
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31D2D1F01829;
+	Thu, 29 Oct 2026 09:37:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793266665;
+	bh=b1L/YgA0unso+/Lv8s9MhtgPB5X7wkfHZu4ut24TmCk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=GYVH+Mm9omq5BAsPPLcumqvOBUW7yKv6qRkJyIck5tFwfRa1tUfjtE1geDCpsmBEP
+	 2RwHK9Cy8sS2rBXuKXJvctC4Bq6C2jK6S/gBMA9x1sxt6ydKYVAFfAqpCKD+Lbm+RW
+	 CTkFLp+EHxcq2Q+0N+MiEyq8LgEaRZKBHMQZslmLTNkQz52CiV4VANY5UuxTSJYiXc
+	 HSEiViC0iMwJEQOI2/cy1vL8wqYF36gfQSfNXAqFM2CsYJ00Xwib/fXPCJXdfkBwli
+	 uFbEJD7BvWk6qn89ZMam6ipKB0JOazajL/SM6VxCjG3IQq3Hghn8AUsKjF5s6ntxKr
+	 WS9/dwDL4KSwQ==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v7 10/16] iommufd: Add the vdevice TSM request ioctl
+In-Reply-To: <179321444123.2412245.6955528563980811144.b4-review@b4>
+References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
+ <20261008055955.4014342-11-aneesh.kumar@kernel.org>
+ <179321444123.2412245.6955528563980811144.b4-review@b4>
+Date: Thu, 29 Oct 2026 15:07:34 +0530
+Message-ID: <yq5a1p98c0f5.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,86 +84,186 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [RFC 07/11] eth: ixgbe: use dma_alloc_coherent_node()
-To: =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>, Jakub Kicinski
-	<kuba@kernel.org>
-Cc: robin.murphy@arm.com, tglx@kernel.org, dave.hansen@linux.intel.com,
-	x86@kernel.org, joro@8bytes.org, will@kernel.org, leon@kernel.org,
-	mbloch@nvidia.com, iommu@lists.linux.dev, netdev@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <87se1o51wu.fsf@all.your.base.are.belong.to.us>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261029091708eucas1p1eceac71c0d1f0166ae56525ddf6335fb
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261029084721eucas1p20638037770ab8e64e7c25196b49206e0
-X-EPHeader: CA
-X-CMS-RootMailID: 20261029084721eucas1p20638037770ab8e64e7c25196b49206e0
-References: <20261027022528.633359-1-kuba@kernel.org>
-	<20261027022528.633359-8-kuba@kernel.org>
-	<87ecdb5x8k.fsf@all.your.base.are.belong.to.us>
-	<20261027085133.2832f2f5@kernel.org>
-	<87wlr33z6z.fsf@all.your.base.are.belong.to.us>
-	<20261027112003.330bbded@kernel.org>
-	<CGME20261029084721eucas1p20638037770ab8e64e7c25196b49206e0@eucas1p2.samsung.com>
-	<87se1o51wu.fsf@all.your.base.are.belong.to.us>
+Content-Type: text/plain
 
-On 29.10.2026 09:47, Björn Töpel wrote:
-> Jakub Kicinski <kuba@kernel.org> writes:
->> On Tue, 27 Oct 2026 17:06:44 +0100 Björn Töpel wrote:
->>> Jakub Kicinski <kuba@kernel.org> writes:
->>>> On Tue, 27 Oct 2026 10:06:03 +0100 Björn Töpel wrote:  
->>>>> Not really this series, but the fallback here is odd, no? I thought the
->>>>> allocator already did cross-zone fallback?  
->>>> Fair, I was too lazy to check. I'll remove the fallbacks in the same
->>>> patch. Seems obvious enough. LMK if you prefer separate.  
->>> Hmm. Seems like dma_alloc_contiguous() doesn't spill over to other
->>> nodes. It only tries the per-NUMA CMA... so keeping it is bit more
->>> robust. (Then again, I dunno...)
->>>
->>> I'd say keep it.
->> Or we fold the retry into the helper? I tried to write the kdoc:
->>
->> /**
->>  * dma_alloc_attrs_node - allocate coherent memory on a given NUMA node
->>  * @dev: device to allocate the memory for
->>  * @size: size of the allocation
->>  * @dma_handle: returns the DMA address of the allocation
->>  * @flag: GFP flags for the allocation
->>  * @attrs: DMA_ATTR_* flags for the allocation
->>  * @node: NUMA node to allocate the memory on, NUMA_NO_NODE for no preference
->>  *
->>  * Same as dma_alloc_attrs() but places the memory on @node rather than on the
->>  * node of @dev. Like with kmalloc_node() the node is only a preference,
->>  * the page allocator may fall back to other nodes if @node is out of memory.
->>  * The contiguous memory allocator (CMA) does not: only the CMA area of @node
->>  * and the global CMA area are tried. The allocation may fail even though the
->>  * CMA area of another node, e.g. that of @dev, still has free space.
->>  *
->>  * Allocations served from per-device coherent pools or CMA areas, restricted
->>  * or atomic pools, or by dma_map_ops implementations do not take @node into
->>  * account.
->>  *
->>  * Return: the CPU address of the allocation, or NULL on failure.
->>  */
->>
->> This feels like too much explaining of the internals for a commonly
->> used APIs. If we retry in the helper all we have to say is basically
->> "acts like kmalloc_node()".
-> Yeah, that's a lot.
+Jason Gunthorpe <jgg@nvidia.com> writes:
+
+>> [ ... 300 lines skipped ... ]
+>> +/**
+>> + * enum iommu_vdevice_tsm_guest_req_op - Guest TSM request operations
+>> + * @TSM_REQ_VALIDATE_MMIO: Validate and map a guest MMIO range for the trusted
+>> + *                         device.
+>> + * @TSM_REQ_SET_TDI_STATE: Transition the trusted device to the unlocked,
+>> + *                         locked, or running state.
+>> + * @TSM_REQ_SEV_ENABLE_DMA: Enable DMA for an SEV device.
+>> + * @TSM_REQ_SEV_DISABLE_DMA: Disable DMA for an SEV device.
+>> + * @TSM_REQ_READ_OBJECT: Read bytes from a device object, such as a certificate,
+>> + *                       measurement, or interface report.
+>> + * @TSM_REQ_REGEN_OBJECT: Regenerate a device object, such as a measurement or
+>> + *                        interface report.
+>> + * @TSM_REQ_OBJECT_INFO: Query the size of a device object.
+>> + * @TSM_REQ_MAX: One past the last request operation; not a command.
+>> + *
+>> + * The request payload and response format depend on the TVM architecture.
+>> + */
+>> +enum iommu_vdevice_tsm_guest_req_op {
+>> +	TSM_REQ_VALIDATE_MMIO = 1,
+>> +	TSM_REQ_SET_TDI_STATE,
+>> +	TSM_REQ_SEV_ENABLE_DMA,
+>> +	TSM_REQ_SEV_DISABLE_DMA,
+>> +	TSM_REQ_READ_OBJECT,
+>> +	TSM_REQ_REGEN_OBJECT,
+>> +	TSM_REQ_OBJECT_INFO,
+>> +	TSM_REQ_MAX,
+>> +};
 >
->> WDYT?
-> Agree that it's odd that the caller need to know CMA internals, but I'm
-> not sure retrying the entire DMA allocation in the helper is the right
-> way. Can the fallback be handled in dma_alloc_contigous()? I would still
-> not do that in this series, but keep as is.
+> This is still no where close to being well defined enough.
+>
+> Everything here must tie back to defined spec references, listed in
+> the comments.
+>
+> I cannot guess what data is passed over any of these APIs, how things
+> like "REGEN_OBJECT" select which object to regen, or what the format
+> of those objects even is. The formats of req/resp are never specified.
+>
 
-Definitely, I would prefer to add such fallback to dma_alloc_contigous().
+The request and response payload formats are specific to each CoCo
+backend. Since iommufd treats the payloads as opaque and does not
+validate their contents, what would documenting those formats here
+achieve?
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+The limited validation is intended to prevent this from becoming a
+general-purpose multiplexer ioctl. It restricts the ioctl to a defined
+set of guest-initiated operations that the host forwards to the
+firmware. The path is essentially:
 
+guest -> vmexit -> VMM -> iommufd ioctl -> TSM backend -> firmware 
+
+> The comment for this should probably be *enormous*. Every arch should
+> explain what they do on every one of these ops, and it should be
+> identical if it is structured like this.
+>
+
+That would require documenting a significant amount of backend-specific
+detail in iommufd. Could we instead require each TSM backend's
+guest_request callback to document its request and response formats?
+
+
+> I have a strong guess almost none of this is actually general, but
+> lets find out.
+>
+> You can also put enum kdocs directly before each enum which helps alot
+> when they get as big as this stuff has to get.
+>
+> My guesses with no information
+> 1) VALIDATE_MMIO why would the hypervisor ever need this? Guest
+>    validates MMIO through secure communication to the secure world.
+>
+
+With VFIO PCI BARs backed by guest_memfd, the VMM can validate that the
+IPA and PA values provided by the guest belong to the VFIO device. We
+previously also used this operation to ask the CoCo TSM backend to map
+the device memory (the BAR regions). I have removed this operation from
+the latest series because that responsibility is now split between the
+VMM and guest_memfd. TDX and SNP still need to be updated accordingly.
+
+> 2) TDI_STATE I thought at least RMM did this with an RSI?
+>
+
+CCA uses RHI. The RHI reaches the VMM, which issues the ioctl to
+complete the request.
+
+> 3) ENABLE/DISABLE DMA, see #1, must not be done by hypervisor
+>    See my reply to Alexey:
+>    https://lore.kernel.org/linux-iommu/20261022123058.GC3008132@nvidia.com/
+>
+> 4) READ/REGEN/INFO, what are the objects? What format are they in? How
+>    do you select them?
+>
+
+These objects are cached by the hypervisor. For CCA, they include the
+certificate, measurement, interface report, and VCA. They are read in
+response to guest requests. The requests reach the VMM through an
+RHI, and the VMM issues the ioctl to read the requested object. REGEN
+refreshes the objects/evidence at the guest's request.
+
+>    Does this overlap with attestation subsystem? Should attestation
+>    subsystem be used to access the SPDM related data?
+>
+
+
+I had hoped we could use it, but I could not find an easy way to
+integrate the two. We need a simple way to read these evidence objects
+into userspace. I am not yet sure whether evidence-get can be used for
+that, since it does more than simply read the objects; it also updates
+evidence.generation, among other things.
+
+>
+> Update the comment to explain all this, don't need to answer here.
+>
+> We really need to do these defines along with implementations, that
+> probably will settle alot of the questions above.
+>
+>> +
+>> +/**
+>> + * struct iommu_vdevice_tsm_req - ioctl(IOMMU_VDEVICE_TSM_REQ)
+>> + * @size: sizeof(struct iommu_vdevice_tsm_req)
+>> + * @vdevice_id: vDevice ID the guest request is for
+>> + * @op: One of enum iommu_vdevice_tsm_guest_req_op, excluding TSM_REQ_MAX
+>> + * @tvm_arch: One of enum iommu_vdevice_tsm_guest_tvm_arch
+>> + * @req_len: Size in bytes of the input payload at @req_uptr, at most INT_MAX
+>> + * @resp_len: Size in bytes of the output buffer at @resp_uptr, at most INT_MAX
+>> + * @req_uptr: Userspace pointer to the guest-provided request payload
+>> + * @resp_uptr: Userspace pointer to the guest response buffer
+>> + * @out_tsm_code: TSM-specific result code returned by the TSM implementation
+>> + *
+>> + * Forward a TSM request to the TSM bound vDevice. This is intended for
+>> + * guest TSM/TDISP message transport where the host kernel only marshals
+>> + * bytes between userspace and the TSM implementation.
+>> + *
+>> + * The request operation is guest initiated. The vDEVICE implementation
+>> + * declares the TVM architecture and operations it accepts; iommufd checks
+>> + * both before forwarding the request.
+>> + *
+>> + * The request payload is read from @req_uptr/@req_len. If a response is
+>> + * expected, userspace provides @resp_uptr/@resp_len as writable storage for
+>> + * response bytes returned by the TSM path.
+>> + *
+>> + * The ioctl is only suitable for commands and results that the host kernel
+>> + * has no use, the host is only facilitating guest to TSM communication.
+>> + */
+>> +struct iommu_vdevice_tsm_req {
+>> +	__u32 size;
+>> +	__u32 vdevice_id;
+>> +	__u32 op;
+>> +	__u32 tvm_arch;
+>> +	__u32 req_len;
+>> +	__u32 resp_len;
+>> +	__aligned_u64 req_uptr;
+>> +	__aligned_u64 resp_uptr;
+>> +	__aligned_u64 out_tsm_code;
+>> +};
+>
+> Should the viommu_id be passed in as well, or we know it implicitly
+> from the vdevice_id?
+>
+
+We get final callback via
+
+vdev->viommu->ops->vdevice_tsm_req
+
+>
+> I think this is probably a fine generic API, it should probably not be
+> "TSM request" so that the other viommu people can reuse the transport.
+>
+> I would probably try to stick to exactly like the other APIs do with a
+> single enum. Two enums for op/arch is saying already that the ops are
+> not well defined.
+>
+> So maybe strip this patch out to have no tsm stuff, define no ops and
+> just give a command transport into the viommu driver?
+>
+
+Are you suggesting one ioctl per each guest request ops?
+
+-aneesh
