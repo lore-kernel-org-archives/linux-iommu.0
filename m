@@ -1,87 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793282016;
-	b=FsWjgoyEW0FKCaXpTFCCt1kZJY7q7jTNGgrPSfdKsVjQF4LWVLkU7RZon/xBod1+1qiC
-	 BagxryKqnNDHUPbi/EmWyG+4d30dhyvAOWTY4N8Sm26Z19EFCf/zsypFnphHXGAx9aFVT
-	 1ixYtG2C5W2lx3fhsIOzHsAM9oHM9iOasqGWUPQriEUej4wK1zux2UVrwNPe9lGh0t6to
-	 r00ZJ1f8ejnMBxhv5EDjUEXWqmrf+7gWtt8pLm1YDXLR9xO6NgGXwwzG49atDoOGSebeF
-	 ZhjPRIGpWLhhXkwbEKnYHnmNu/DaNVF3X2mBAiZFYt0vow+8YPkmy+L/Epn4U1ZfKxA==
+	t=1793282012;
+	b=b9lJ30FZPmcQ7FZOslX24U7BrBI4t9TQVSXW7FEUcPfdpawSWen5kO8RU9dkBNe0m/0z
+	 kcWlXXT0NPysQGO9G64oLUoZqA20kAON8BkVfahubVxhlE8NaqIXaJfglzvBBJvqZqy6H
+	 K8vIzHKITdm6+kbYqJ0cwg5OIatWMiiK2nSeJ3SHG12yKshAfq4SrRmkQEoOvbDPYXIwQ
+	 vHMCBaNTsiYHxAtlVd4+ViYlx9Sfwd5zqxBJpa7s73ZL5Rn09hUNoeNSSYO6ME027c391
+	 E0mTEMjMV7yxxXwE3yaFPiXPXug1fCL7QuUrEeIQpJsfXlC3g+IcPbjAAT3AxvjMONw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793282016;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793282012;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=IhFC/E+vn7Ne1GmfoUxjx/snlj06M4a6yUZTElbwzmM=;
-	b=CP07ua37tb1Jy84dt8G7zbuKJymroInobTAnEXJOYEnG20Q+8aGl6qDb63dx83b/HdbI
-	 K2nx6b8b4dodmb+16nxvXKCg5Zg6OWmFRpkMOYy6drFNmg8Ine4WBFfe2stXUveODTiEx
-	 zb+EV9Na8DdwwD92ox1F/5nqEzZ+fKhAxk01/3ZtxxDYlqq7xRdC08ELzMgEwoiutOud2
-	 S4eQnY8MJ/O7BtO2f3791dg3VPBnD5VahpBN6yR6YAcRz27pJfxOnJZddltx5tuxYAHRL
-	 VcFhaHqPbi3HWL9szoayZ5oSnbzHcB8l9eDAm3yfff4wM/G+WpS0GvvGU6NCJBodRqw==
+	bh=oLv91LE6Hr8ep188oveO3sPSclyk8z8F6MAQFei+jPI=;
+	b=YgJ4AQVvwIYmPrCxzRFU6y+AC7CNFarjZ0zwYo6Hu8kg31iq/viQ6TUn0PSeWHHbh6iI
+	 R7XxyCb6dXplpvHdWzziPHoWyOaVRlsHbLHjmbv0zuFzkmTPo9ZTsUSsT1Z9xRAdssgui
+	 K2E2MNmdrzIcQ+PaLPstv+Q8duKqjSIYlfhsfbilg74w+b0sQlxCPfQlQ4EmWXbyyZqKt
+	 PjJ5JR2F7ez+EItXfoVxdlJuR3fK+tHIi0nUPF7tIR7lYXjtB/TYNGJvCff/zzUTCStJV
+	 j7Q4r1CdjbqkwqoRigB73pfCWpAm/25BR7PUOKS6IUnidTNKdGKQQeRR/2s6hW9gS5g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HpRyw5cq;
-	arc=none smtp.remote-ip=209.85.221.48
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=cJ2l3jPm;
+	arc=none smtp.remote-ip=209.85.221.47
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01FB6606A81E
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 13:53:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 01FB6606A81E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15C4560A6F60
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 13:53:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 15C4560A6F60
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=HpRyw5cq
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-48b001cd92bso1179934f8f.2
-        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:53:35 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=cJ2l3jPm
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-48e4831c028so1779517f8f.0
+        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:53:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793282014; x=1793886814; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1793282010; x=1793886810; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=IhFC/E+vn7Ne1GmfoUxjx/snlj06M4a6yUZTElbwzmM=;
-        b=HpRyw5cqvIvYwUmcIKics7F05PjRnQUZL0fY+3zutUJ7c47x73QJ8nCUtqR5Z4BvIn
-         HLVZ1Y2PuXdUl13onSBf9QYGJqcT0LpLOOK7rWUEVv/ZKozP1hCo6kMWJR1SY70cWGgn
-         J0D2RtdA1jDR6oWyc5XNfa+MEXlvu0Zv492fLIXBHTeoF2fThjgXISDw0p7FWIin+uqs
-         6yWKBBpEnseOYcwGkrLB9LbyPhDPySE8gz5i5/55RBFIa7/XapOmHeK9aueH+Q7RuLaj
-         rWXJoXBjtkHBA2aC/5gXpfrYJG3f1nIi2f6GZSe+Tqx5eIqFM/GPMOpl7yIlf5AFeLZo
-         mtRw==
+        bh=oLv91LE6Hr8ep188oveO3sPSclyk8z8F6MAQFei+jPI=;
+        b=cJ2l3jPm/VmhvoSGeA6Igicio820Jn3RQ3/cVh/qZq9+EUdeZaTKQJhpREiG3Vg+/g
+         bQMKwL9j/K4PNWDJf04kFDxHqwBY4yXF2Fk+WqXb5ydKEQhco/HH17OTlQbc/WXxpp9E
+         ijgPDMP619Uhmf36domGJEtTB8XJC+BTYa2oHFFmollXRmaL65gcSrB/oVpJ5KGtF8+T
+         LG5ILPrE1576tFCKfTTIDF/RWUxtSE7UIIsFYr3gGQpMANzct6OjbuPl0oB8+ty6RMOx
+         UJw2wEzC5Vgt5eZR8A4MR04l2Pk04qxU/bcPHGeb1QM7ZUG2WiV1Zrq8+22eeSwWC0TO
+         MA6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793282014; x=1793886814;
+        d=1e100.net; s=20260707; t=1793282010; x=1793886810;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=IhFC/E+vn7Ne1GmfoUxjx/snlj06M4a6yUZTElbwzmM=;
-        b=JBH+A5GqzjAmXb+4AAcYbKVF9VLUMaAkYApauwGxIScHZNbSjD8aUaRXUGb+3LJOon
-         FxO1H6mVv7e/mGMfJrn+MgJZseA3vrSM2xN9JCjuxkwvkZwM3K0JtEC60qYAltDJO3IM
-         wyp+kGp4ZHz7LqGgFj/yWGSsLUJjqXSiKr/mhydSWR+qpTakdzofpqgMMhlrV62Kq0bu
-         p47SDtfLP+GB0pLEXAqFIkHfrHyoOiwkxSR4xaKrwqyCZL0h2Oq3hxRmQYwvhpLtXigY
-         kG9zpWtzgjkCkN9VAkIhdeLFev+G/Y+8GxmjFLwYhZN89q0A6CI+eDur0QORqPIm68Fe
-         7ZRg==
-X-Gm-Message-State: AFq9FYKXHhWlSa5zrZo1VSemD8vGVk/Cn17BQ9FwQ+9OzdCWON+fF9ht
-	Pa9D47rFD/JR2Vx0KvCmP8AS/+3jGdf+ZLKc39b+X5Uzpv8l1NIsdPU=
-X-Gm-Gg: AYBFou1jE2/xLZ9lHoFkqZhiSYLfyRbOq9l0EA2ftxnVF5LCAjbluYSZ3zDbgT/fI0i
-	O4OtLDCdmBoKkC4MOChziLLaxBC6pcHXLkrZ/iYxcI0RzeuMVROlsQAQXSuRYmmTwSnsjqTp9qa
-	ftNc1sFs42r9exEWm4IK+O2baWFLZMf/2muukTZtraeLHiKkfpsk7WPPsOwKBqVQ60qYYsgb0dY
-	s843xItfU2THoUY/+mt+uTReaXWHQ8uCj4IEauEwQnFGHGIyo3OkVdndBjyzYy4JMSQIqmH4sX3
-	OzKjCpHqiK4FNItPtn99W3qtUcU/NPXxU6GLHU/gQlj2wgI6NOQridZ2Hzp7dcwbPj6XZUoiF73
-	5ZVr/zrAngk/X/benTDW6ewr8PNuPQ6KdRv/ZrrSIYYJIICmTwywJZOeY/R2Gn3gJVcTvg3Qe+B
-	T7KN8tUuQROt5AgroKgMfcrcyHiDFdMcGHGCTjF6DuoQ2c0BkaSpAm/57spvGYV9onJ0dMeUViW
-	0TWNbTf6D33XiK+yGQz5DJ0mQ8snYJ3wabmfjiXeB8jtlhXkgpLU9wC/7IAzYejNwJ34w9Ywhn6
-	umbnZ40my2O3uodS8LGIjXha0X8WkSmV8L13rdH2BeVFZA==
-X-Received: by 2002:adf:f491:0:b0:48e:1421:ed49 with SMTP id ffacd0b85a97d-48e5d5909aamr9182569f8f.18.1793282014126;
-        Thu, 29 Oct 2026 06:53:34 -0700 (PDT)
+        bh=oLv91LE6Hr8ep188oveO3sPSclyk8z8F6MAQFei+jPI=;
+        b=xpQBgkYWWrO7f6NidCD+KcAIkKOPq8LuEKpyAxvQIh2aSIjkPCCAxIUMquChJWr1F8
+         GH0bKzvFWSX9xvpyhMNfMGRrpp+IAhmgOIgJYlVsYsoG13J28S/uV/avAVyG/uKMYmB2
+         L5IXPDGNdjCQB44tSIsGO+CmSxOxa/CQCdWBOks7ukicstzL/RbxdKxrZXTBI6M8XxjQ
+         hBOyvsZSB8Bu0G39p0heI6rzV/6Vq+vCTRDQAtMDxa4jEBSiWZ+kG7JZMI9olGdaOkjK
+         SI6jMGPz+JtmDd4i4eqTbZe0a5RkkJnDC/ngPqPCHRyRmjHdjl0kX4Z8sX2RIUmi0BRM
+         A45g==
+X-Gm-Message-State: AFq9FYIEaPaZksJ9BrLnYqih7Kbc54rE8s3bYKsLkwfRD0aFHaYc5ogA
+	q7rT55ZE/zKvBbjvoFtPr86aPZjCA4VYnk8+NmfUSm/YrCSOIm65TS4=
+X-Gm-Gg: AYBFou19iEQTgMD8EelVYpeo261VmB2mFIEpKPlmM0Zz2S0CcXo7QlXCu47cv/AAMEd
+	cZJwOAWXfay5DngIYOVsZhemNh40WTKe5cpOFMJQwdUtl5vAq+qo4opjJWM8KsHQ/ZypfHaA78G
+	1Yd9PKEkg/JngqIAkiazVXuC4OGyYBvFM7t6tAc7200wr3pC8pAsg34sQEMS6iN/WoSAHoGg/2q
+	8TCUqzOgWrgyxfR8LOo8h3TdINCXhsMHqdAYYDsgRR63/PuPlFmIw4u36mFHZ/bSWM4f6a3/En0
+	JHJC7Su/6kpH5arnSxlWhi5fAYzipz5sMYd5Bl7XjN13H71pHm1DK1AenLvkN6TEX/Qi/mSAgC6
+	cGL9G3wDv0A3eDj+XRzIsJo/Tdb4m3y6x88JwmmpVTwWTPwmBDjC9giJKkxqbxBM2pqZ/9NHnAZ
+	hj28xEbtP1du0KyGJi1Zf3psWccaUleyxgPj/Lj5sa5Wq4GfvtshXo7ylkCRTX36XVBB+cnB3kd
+	EUYT6Ns617HlY86nxogCaLmTFAzLBt81UQSMQdLvooMP3jjxj+3P6ASqTww5zTifP9OUcc1hO+z
+	tFbnSh7vBuo59m9w6B0R9hb0zELAvm70LIAGXTlvytIOsw==
+X-Received: by 2002:a5d:5e03:0:b0:48a:f354:aefe with SMTP id ffacd0b85a97d-48e5d468159mr13722390f8f.39.1793282010340;
+        Thu, 29 Oct 2026 06:53:30 -0700 (PDT)
 Received: from [192.168.1.67] ([2001:b07:2ec:601d:4b26:1672:75c7:805a])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebc3dcbsm33456468f8f.14.2026.10.29.06.53.32
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebc3dcbsm33456468f8f.14.2026.10.29.06.53.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 06:53:33 -0700 (PDT)
+        Thu, 29 Oct 2026 06:53:29 -0700 (PDT)
 From: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-Date: Thu, 29 Oct 2026 14:52:50 +0100
-Subject: [PATCH RFC v2 13/14] drm/msm: gate lpac behind modparam
+Date: Thu, 29 Oct 2026 14:52:48 +0100
+Subject: [PATCH RFC v2 11/14] drm/msm: set ctxbank and asid based on ring
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,7 +93,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261029-descriptive-name-lpac-upstream-v2-13-a21a5c850961@gmail.com>
+Message-Id: <20261029-descriptive-name-lpac-upstream-v2-11-a21a5c850961@gmail.com>
 References: <20261029-descriptive-name-lpac-upstream-v2-0-a21a5c850961@gmail.com>
 In-Reply-To: <20261029-descriptive-name-lpac-upstream-v2-0-a21a5c850961@gmail.com>
 To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
@@ -115,58 +115,53 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
  devicetree@vger.kernel.org, Anna Maniscalco <anna.maniscalco2000@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793281977; l=1928;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793281977; l=1658;
  i=anna.maniscalco2000@gmail.com; s=20240815; h=from:subject:message-id;
- bh=ZEwODnTsRSIiQzAvYlWfm8pmWhNZkrTmOspw3E7UZvA=;
- b=Z9dhvvnQgx4S38zM+b46UTdfg9SThPOIVSdAoOz7EGATYLcY7dL9exHHWjN9XuX2BOku7wLrT
- FTPWSEv0DrrDpKLv4feGQ8Wj41R/cQfHXOM+Z/TSHsGDJf0un1xYOaN
+ bh=JeZ/oDOWBrzzXnhSTsaX5dWsSADptm5HwF/DPV1Xv4k=;
+ b=4M7VMbDwjOepIjZPrdycOsvEBkNuot2Ltb1yMKAeV6IZ8onsZj759zJ8VBrGw6EwZ2ETpsOXr
+ 1DglU23L6d5AIGkk239c64rud6FZXnrAbBlSSiEjCojZ/rkF2k76XQ0
 X-Developer-Key: i=anna.maniscalco2000@gmail.com; a=ed25519;
  pk=0zicFb38tVla+iHRo4kWpOMsmtUrpGBEa7LkFF81lyY=
 
-Add a mod param to allow initializing and exposing the LPAC ring.
+qcom-arm-smmu always maps asid and ctxbank 1:1 and lpac is always 1
 
 Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
 ---
- drivers/gpu/drm/msm/adreno/adreno_device.c | 4 ++++
- drivers/gpu/drm/msm/msm_gpu.c              | 3 ++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-index 6e2333466d7f..51781a2e8a00 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-@@ -30,6 +30,10 @@ static bool skip_gpu;
- MODULE_PARM_DESC(no_gpu, "Disable GPU driver register (0=enable GPU driver register (default), 1=skip GPU driver register");
- module_param(skip_gpu, bool, 0400);
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index e82d0c0bc10f..57fc4035a753 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -247,7 +247,7 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
+ 	struct adreno_gpu *adreno_gpu = &a6xx_gpu->base;
+ 	phys_addr_t ttbr;
+ 	bool is_lpac = ring == a6xx_gpu->base.base.lpac_rb;
+-	u32 asid;
++	u32 asid, ctxbank;
+ 	u64 memptr = rbmemptr(ring, ttbr0);
  
-+int enable_lpac = 0;
-+MODULE_PARM_DESC(enable_lpac, "Enable LPAC (A7xx+ only) (1=on , 0=disable, -1=auto (default))");
-+module_param(enable_lpac, int, 0600);
+ 	if (ctx->seqno == ring->cur_ctx_seqno)
+@@ -256,6 +256,9 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
+ 	if (msm_iommu_pagetable_params(to_msm_vm(vm)->mmu, &ttbr, &asid))
+ 		return;
+ 
++	/* qcom-arm-smmu always maps asid and ctxbank 1:1 */
++	ctxbank = asid = is_lpac;
 +
- extern const struct adreno_gpulist a2xx_gpulist;
- extern const struct adreno_gpulist a3xx_gpulist;
- extern const struct adreno_gpulist a4xx_gpulist;
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 4244d9324cda..f6927c797fa5 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -889,6 +889,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 		const char *name, struct msm_gpu_config *config)
- {
- 	struct msm_drm_private *priv = drm->dev_private;
-+	extern int enable_lpac;
- 	int i, ret, nr_rings = config->nr_rings;
- 	void *memptrs;
- 	uint64_t memptrs_iova;
-@@ -1012,7 +1013,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 		memptrs_iova += sizeof(struct msm_rbmemptrs);
- 	}
+ 	if (adreno_gpu->info->family >= ADRENO_7XX_GEN1) {
+ 		/* Wait for previous submit to complete before continuing: */
+ 		OUT_PKT7(ring, CP_WAIT_TIMESTAMP, 4);
+@@ -313,7 +316,7 @@ static void a6xx_set_pagetable(struct a6xx_gpu *a6xx_gpu,
+ 		CP_SMMU_TABLE_UPDATE_1_TTBR0_HI(upper_32_bits(ttbr)) |
+ 		CP_SMMU_TABLE_UPDATE_1_ASID(asid));
+ 	OUT_RING(ring, CP_SMMU_TABLE_UPDATE_2_CONTEXTIDR(0));
+-	OUT_RING(ring, CP_SMMU_TABLE_UPDATE_3_CONTEXTBANK(0));
++	OUT_RING(ring, CP_SMMU_TABLE_UPDATE_3_CONTEXTBANK(ctxbank));
  
--	if (config->has_lpac) {
-+	if (config->has_lpac && enable_lpac != 0) {
- 		gpu->lpac_rb = msm_ringbuffer_new(gpu, nr_rings, memptrs, memptrs_iova);
- 
- 		if (IS_ERR(gpu->lpac_rb)) {
+ 	/*
+ 	 * Write the new TTBR0 to the memstore. This is good for debugging.
 
 -- 
 2.56.0
