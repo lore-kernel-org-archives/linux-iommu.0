@@ -1,87 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.46
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793282007;
-	b=x8HlI0kIpBN+p1a2Czw5QCiTuXhRNnyS9oluYxpBSiABdNz1kuzUkHOMngHRgzqZQXk0
-	 F56KtxVTKegH9LPeyJJnYLTkvxrKOW41Jo8Bc4xFbH3p3XQDW++2ajLrQ4cJvTq5Ki/FR
-	 6DDQ+f2XpdWutm1Y7qGm6CwAGF4mQvEXsoVKpdFdhKL4jng17pIuMDBg6MeHUtY5pvZfV
-	 nmafYiKqX9ocQc1vGqX8fhycoZQjugDhqpwkZTnnaQVqAVCzi3yI6/Fe4n9nVyoAyugPa
-	 EFvWub4Gm4p+xPLZP4hzAKpPPCF5xlTDUlWuhaCmtucUcE6hXPkkiFiEVSP96kj8mLA==
+	t=1793282014;
+	b=t7uRG3e6VYcQBgfwkTw1p8Z+EX66wZVr6KZFd3wX3I06HBJfN1A6wKK28pOi3nVy4roV
+	 ebs+zUIefYeKahxt+GaLq58kQzR54IVi08Bkd3OD13KoqNnnjxVeMfYQf2nKSdKuJb+6j
+	 WWM/VDPnZG0t0+7m/TC8kzd0rffeKk/MibmszRmdOnCLwC29w+i0q7cN69sxq7aXQy64d
+	 MtBrZWQ2S+Pa7pUk6ks1fM+V8Bw1bZJwigQryY9NzGce046Au+60vIYngPEXs2v8YyJFH
+	 n37Jq1SLgbFVUTCAQ+YnIv8OQRlSWGwNVQyl7/k3P0q1WPiBOGxh+gd/QzU7iGwUCEQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793282007;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793282014;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:Date:Subject:
 	 MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:
 	 References:In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:
 	 X-Developer-Key;
-	bh=SJAvZIZ6+wa++rRxCrb9LV21I8oimG6NFA16/NhWSCc=;
-	b=xQuiLrS6ayv6vBQvh9Lgdju/v21Ffo8ZYlpKb9KyOGBEFYpet6lFigw07OPZk7h0GW6g
-	 ul7TJNxbBjfV6fvkuwaf9NJBo8nTLGPA6CGyBg/T+lBxTWdQTiVi8asL4bX6JFmHheKdA
-	 ST1n6NybhNjw7KKFq5ZWDtPtOcNXQfxIpvY282ftLHGwYcBYUd0Y8l8G9Q7evQNz4N1od
-	 EGwdGuoCiYmWXS2fxdpC8UvRv3Myw9v62d6ucahQg0NHFQ+L2NCOCkN6ypOd0h4FlRxmm
-	 k6k7AJYookexQ0PwusLMBnXFec3jDGVeG3d+I1Ex1HyiUDvOXHXNJtuZMoHznMajGOg==
+	bh=di8FFXt+7vH5gfYVYXteeo4wVuKU9N2jDIanPPy0lSg=;
+	b=r4F7yLGSXxkuqsEx6MJc7LCWld2eHnMVKhoMgsUcbFkJVB/Emun8SQfH/FHhy/kPAUp7
+	 VTJ9zkAjsvJPaecf49uTR70fs92IXihg5CcIHRRWFOgL2GXlAe5pInXuEGamORGgICfhy
+	 QFq13h3cYRd/rqzPSgGQGjlKJjf3yiN4m37aoZR0Yy3fMkLLDFgL8+sqIBxy6XbZPT3bz
+	 acIkUIK2yWqVn+PRazy/zQialexVYZhbU+8E5NRN3DAOsIXVNmxIi+hAQDn0ASRariZkm
+	 YmjIsnc6q6YVB2OFVVA+CH+8xZ2iHgxaacxvIeNejLIC0vlmShgqoouJJUg/dgh60XA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fcUNoVf5;
-	arc=none smtp.remote-ip=209.85.221.41
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=oVjqESUj;
+	arc=none smtp.remote-ip=209.85.128.46
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E21660A261D
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 13:53:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7E21660A261D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2591E60A6F7D
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 13:53:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2591E60A6F7D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=fcUNoVf5
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-48e3b22e971so1164698f8f.0
-        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:53:26 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=oVjqESUj
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4a35d5d4a20so23667255e9.2
+        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 06:53:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793282005; x=1793886805; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1793282012; x=1793886812; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=SJAvZIZ6+wa++rRxCrb9LV21I8oimG6NFA16/NhWSCc=;
-        b=fcUNoVf5KldPcPhEtW+EWamwR6yYxxgkZ65j5OYrdIz8ElH3/8P/7+KtuI6HOo/sYx
-         nmtC2yh76peoSOKWlMdFgwSsNzJTgttzjvTjcwIGhoMsAz5EqCWOobMri/CGUdyCPLVF
-         CJ881c/xg59GsQxwNsbcSx9FOfU8O8HrW9CUEeFK5dJq+hhz0R8rxyiebal7rI9UnSec
-         pdEJIX6tmbFjLIM3ejpH63FQvsEBIYzMOt4QXyynHyHS+UY8iX7gu2m3M+c404BhOlqC
-         Crfu82jPdpshgCKcRZppB+WXyKSjl8T3rMPo5aUkNZ8/Zhz+cbqCa67StRQR9axcC+6p
-         YLyQ==
+        bh=di8FFXt+7vH5gfYVYXteeo4wVuKU9N2jDIanPPy0lSg=;
+        b=oVjqESUjqiqp05qfYFP2BKCPNYJU3rLdWeihORDsc9MBi5rZwYABw1eSOTaXuGzsBV
+         qO6VO0pbJO2lk4jxxBFpqoL65CUtiZRfl59psOJUGPtQzy1qmojdi3vg+f8Pj/yLxkhs
+         /5QtlP68N1ANNdVn96sPjNBjMxbBQsZXpPLtE8dKLd3cdrz6VmBro5LSgzEVBFimuxJF
+         CdZWBVmlRGDXVm5fdzry/mqMbVM307kPNmF1Qw4Xy31tOEYB3kwCGqxj/69cyxbsLxjh
+         Ja9brbCu5cinxguA6pt4dOkctbF1gMhFT8+jwmvVPnWL6CZD0XK7dsx+bj5sBAZvAR2X
+         Iq6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793282005; x=1793886805;
+        d=1e100.net; s=20260707; t=1793282012; x=1793886812;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=SJAvZIZ6+wa++rRxCrb9LV21I8oimG6NFA16/NhWSCc=;
-        b=g/iqbc6a0d0bTfAz+wUcx+V/mXHpjGBPkp/a7rvQfU3S+EUr/V8LoAUN/OCJzJ/zbe
-         /l5+ieUHD2KDjy3vbcDJo+kMVlK2Lafkzb+AMgcemTvPBeDY7bZjuhPMUxm9FG9pJqXT
-         Ed5m8QjDn67RRnVVqguI3kLFPpEnjw4lrj+A5FQV4pvlf9Mo6AgjCiu0Dmd2ks0/CGlk
-         LfbIC+8bG2NG2y4mynL8FyYTccCrruArI89yHr1OMn0B/Sku587cl6XloyH12yfU/Uey
-         ZgZzx4z2YqwFZUeYHZgvl2sTiY/1AqaVP/sqpk7MixGaBMh6lg2twpSObgGOt6TwwrTM
-         hIZQ==
-X-Gm-Message-State: AFq9FYIpA6JebUb3p0xL6ruVYBlgVtpfHTTJRiUQjwRRuiI1jLoW+uox
-	m3Eyn86FziGYHUM4E6xcx84PYU0AXW2+/Jk/OBh6VUAO3ShwrH194rw=
-X-Gm-Gg: AYBFou348RmyiF8JnSb00lBUN3MMCHnsb0gf/7OnO/36zQB5eiIzcuIXmpO6QUkr9F5
-	SXUTwbdHGAcDJpFt6YeBR7rtqcm21DT9PdNhZzvISPBsXHgcu3scIAkidxj8n3usQDrb9LIlBS9
-	fsFFPUyq75dUISZOPF7A2nA6c0bwVoC/Vm6FrkTYRdVQh7hl2m8TYOGSO2c5+y5CZSIBitvKXTs
-	fcUThrLkAcs6I9rPYa58hN9Blq1qKDulNZu0apzi6rzYQqbc7nM1MZbNird4NSIpVRxHHf4nyLW
-	cV7EV6GD1kW8NdXwWgpQfMilwK20LUJ0qbBYuZZecYLMxsWkWOYDZ76q06+0iHQ2FVINcNhf4Qz
-	ITP/6zoydDpQxlnJbySHZcKa1Zqg0QFJhyoI8xaKsGnoh1u1TQqFLYZc3Dr0p23AB4WFk4nmVFS
-	154FV7X55vvXasJ8CtCS9chA+VXrndu+9yOusdOtJNKeRh1Y+ScNvUnnwEwezOaCQaMiJ9Y8zln
-	mZYAh5Jm0kB31cY1cCjycr9q1XuBYmPc0XHpK6ld2K9DSh7EtqlGrmVo44LoI0//b0J7W76fDrd
-	DKdDO3k6kWDJqQtTYVWKtOtYdjvFODm7x0pUzepd+7TkbLwqwPZrpjKsJ/2hBtEwLzI=
-X-Received: by 2002:adf:fc8b:0:b0:48d:ca32:e90f with SMTP id ffacd0b85a97d-48e5d5e0167mr10244342f8f.55.1793282004707;
-        Thu, 29 Oct 2026 06:53:24 -0700 (PDT)
+        bh=di8FFXt+7vH5gfYVYXteeo4wVuKU9N2jDIanPPy0lSg=;
+        b=Fv/vzUSu4iaxrgBcQoOh2zufhwvmLuh19ht4o6WZjgq8u7ulHDi05uXFAa1vtg2G2x
+         dLZCa0wsM2VNT9t0uTEA+XCJSrMQbg+39jCI3ivUrHOKKtzdTZB0S3zbTO5VJ2uiEeR8
+         08WpYJL4N7yCBOAO85uOblOJLTTO7EInpgDIFPxmk1Tla00EotGT3F8SH1WrG6cSe/ea
+         5ejOwL2jud+59n9eLpj4YMvOvWn7Vk0bEsrdDFldeoZVxP7fAt64+q5FkzukN+GKQfZM
+         39wLZhtWSVkt6AI3WRu3hznYwVRRq7dkIXL9MCsgSTGDheVpkTuVPsto3u/Vt7W5bJwt
+         VbZw==
+X-Gm-Message-State: AFq9FYIbiSdkx8vwzK9QvZnr22M7vy0eUSpnZb736SPNSUfJu8GG7fEU
+	0bDO8nByCvsjtnQhfYO9s/E+Hjf7lZr7auDAV0h2mAda97ExEfLogss=
+X-Gm-Gg: AYBFou1JcCW335JtARCRuco95ZE6+mu3Qs24fih22dQKb7p3+t8Xv/DKzU/WncCkrcs
+	m2u6GdUZWHZV4/IkLtEKp82wTdJLnie1bjsUtg5l3q8exB7gDWCKVro8t/Fyo2qfJ2v1iQEZbUd
+	ru7e2f0SWF0wromq8WM2dnJ70T4maSAxj1wklLQzoursV/UUaycFoCurzLAFDwpfKh120dxNfYn
+	3js6ntxjLM7cFNKICCHyrWPFWRPqi5uYgOYRhlu79IokkBkr2EMUKt3NPS62tbLMPEszH2RioYB
+	zjiWRKyRwrDN5n///9L4t0VsVQybF5+GQgdr7tJxmmC7XzCVN/cGd5xuMLX+mwujy7FHmXCfaE+
+	JBM9ruE6Bn91ct9BgZpCflKqkQ4dQ92YQcHpc25D9/Gdhb3wtKuTbKo+N+me5LtvxCPqaK7f6CW
+	+1fhQTo6zfG6PmUl0/bw3OB7h8revQ6ybL2wW6BDV2Qwe6orv4uIPClvp5AqxAIW/Yv42R7184M
+	QyHStaZv9xbdPgC9eZRtd+Iqft5Hyh43pqTArTYZSPEM4+plQrazr9md2xjO9qTV+/BB8/Pi4FG
+	1KdPf2gDFN8XYoC1vKZ2Ip5oD4VotKnXCWTOTc4amjOE+A==
+X-Received: by 2002:a05:600c:8b38:b0:4a3:5a91:5f61 with SMTP id 5b1f17b1804b1-4a966c4062fmr131340985e9.14.1793282012331;
+        Thu, 29 Oct 2026 06:53:32 -0700 (PDT)
 Received: from [192.168.1.67] ([2001:b07:2ec:601d:4b26:1672:75c7:805a])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebc3dcbsm33456468f8f.14.2026.10.29.06.53.21
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e3ebc3dcbsm33456468f8f.14.2026.10.29.06.53.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2026 06:53:23 -0700 (PDT)
+        Thu, 29 Oct 2026 06:53:31 -0700 (PDT)
 From: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-Date: Thu, 29 Oct 2026 14:52:46 +0100
-Subject: [PATCH RFC v2 09/14] drm/msm: initialize LPAC ring
+Date: Thu, 29 Oct 2026 14:52:49 +0100
+Subject: [PATCH RFC v2 12/14] drm/msm: add lpac ring to devcoredump
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,7 +93,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261029-descriptive-name-lpac-upstream-v2-9-a21a5c850961@gmail.com>
+Message-Id: <20261029-descriptive-name-lpac-upstream-v2-12-a21a5c850961@gmail.com>
 References: <20261029-descriptive-name-lpac-upstream-v2-0-a21a5c850961@gmail.com>
 In-Reply-To: <20261029-descriptive-name-lpac-upstream-v2-0-a21a5c850961@gmail.com>
 To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
@@ -115,457 +115,83 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
  devicetree@vger.kernel.org, Anna Maniscalco <anna.maniscalco2000@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793281977; l=14622;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793281977; l=2731;
  i=anna.maniscalco2000@gmail.com; s=20240815; h=from:subject:message-id;
- bh=f8EvJqvvdp9FH4cgz4FrbTlGR+xPFycpbVbUqPhx1jA=;
- b=Dt6OFL2N3Hv33O2Q7m2QaCUpf7vR3F1zmc22Rbocf4QOj1Ni08wUyfKwBRJ9AX87bi2o7FRZP
- ZJyGCj3p0NwBn4HXCGLny+j9LZG3AZ3XzaMUQMlYRDodxwuZO930j9z
+ bh=SjlYjQ7B06EmsCE9KnnMd2bONmqc/uyNMNAcvp2x0Ec=;
+ b=Y4u2ENL4nkbD0aM3WvJ/ELGPfCSRXNJvoXA78hkmUU4GFxXHhBZNuc0iEh6bPVi314GSCwW/2
+ pbbFXwlzl23AkJnsI3vrmGEICHfTAEqdZf+4MgQRM3PA140b5G6lp9N
 X-Developer-Key: i=anna.maniscalco2000@gmail.com; a=ed25519;
  pk=0zicFb38tVla+iHRo4kWpOMsmtUrpGBEa7LkFF81lyY=
 
-Program all the register needed to start up LPAC and send initialization
-sequence.
-
-Additionally, now that the LPAC ring is live, make the code aware of it.
+Add the LPAC ring state to the devcoredump for debugging.
 
 Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
 ---
- drivers/gpu/drm/msm/adreno/a6xx_catalog.c  |   1 +
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 107 +++++++++++++++++++++++++++--
- drivers/gpu/drm/msm/adreno/adreno_device.c |   6 ++
- drivers/gpu/drm/msm/adreno/adreno_gpu.c    |  34 +++++----
- drivers/gpu/drm/msm/msm_gpu.c              |  47 ++++++++++---
- drivers/gpu/drm/msm/msm_gpu.h              |  10 +++
- 6 files changed, 179 insertions(+), 26 deletions(-)
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c | 19 ++++++++++---------
+ drivers/gpu/drm/msm/msm_gpu.h           |  2 +-
+ 2 files changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
-index 3e6f409d13a2..5ee00eead14c 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_catalog.c
-@@ -1394,6 +1394,7 @@ static const u32 a750_ifpc_reglist_regs[] = {
- 	REG_A6XX_SP_NC_MODE_CNTL,
- 	REG_A6XX_CP_DBG_ECO_CNTL,
- 	REG_A6XX_CP_PROTECT_CNTL,
-+	REG_A6XX_CP_LPAC_PROTECT_CNTL,
- 	REG_A6XX_CP_PROTECT(0),
- 	REG_A6XX_CP_PROTECT(1),
- 	REG_A6XX_CP_PROTECT(2),
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 8b3bb2fd433b..e7bc12de650c 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -168,6 +168,18 @@ void a6xx_flush(struct msm_gpu *gpu, struct msm_ringbuffer *ring)
- 
- 	update_shadow_rptr(gpu, ring);
- 
-+	if (ring == gpu->lpac_rb) {
-+		/* Copy the shadow to the actual register */
-+		ring->cur = ring->next;
-+
-+		/* Make sure to wrap wptr if we need to */
-+		wptr = get_wptr(ring);
-+
-+		a6xx_fenced_write(a6xx_gpu, REG_A7XX_CP_LPAC_RB_WPTR, wptr, BIT(3), false);
-+
-+		return;
-+	}
-+
- 	spin_lock_irqsave(&ring->preempt_lock, flags);
- 
- 	/* Copy the shadow to the actual register */
-@@ -730,6 +742,13 @@ static void a6xx_set_cp_protect(struct msm_gpu *gpu)
- 		  A6XX_CP_PROTECT_CNTL_ACCESS_FAULT_ON_VIOL_EN |
- 		  A6XX_CP_PROTECT_CNTL_LAST_SPAN_INF_RANGE);
- 
-+	if (gpu->lpac_rb) {
-+		gpu_write(gpu, REG_A6XX_CP_LPAC_PROTECT_CNTL,
-+			  A6XX_CP_PROTECT_CNTL_ACCESS_PROT_EN |
-+			  A6XX_CP_PROTECT_CNTL_ACCESS_FAULT_ON_VIOL_EN |
-+			  A6XX_CP_PROTECT_CNTL_LAST_SPAN_INF_RANGE);
-+	}
-+
- 	for (i = 0; i < protect->count - 1; i++) {
- 		/* Intentionally skip writing to some registers */
- 		if (protect->regs[i])
-@@ -972,6 +991,53 @@ static int a7xx_cp_init(struct msm_gpu *gpu)
- 	return a6xx_idle(gpu, ring) ? 0 : -EINVAL;
- }
- 
-+static int lpac_cp_init(struct msm_gpu *gpu)
-+{
-+	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-+	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
-+	struct msm_ringbuffer *ring = gpu->lpac_rb;
-+	u32 mask;
-+
-+	OUT_PKT7(ring, CP_ME_INIT, 7);
-+
-+	/* Use multiple HW contexts */
-+	mask = BIT(0);
-+
-+	/* Enable error detection */
-+	mask |= BIT(1);
-+
-+	/* Set default reset state */
-+	mask |= BIT(3);
-+
-+	/* Disable save/restore of performance counters across preemption */
-+	mask |= BIT(6);
-+
-+	/* Enable the register init list with the spinlock */
-+	mask |= BIT(8);
-+
-+	OUT_RING(ring, mask);
-+
-+	/* Enable multiple hardware contexts */
-+	OUT_RING(ring, 0x00000003);
-+
-+	/* Enable error detection */
-+	OUT_RING(ring, 0x20000000);
-+
-+	/* Operation mode mask */
-+	OUT_RING(ring, 0x00000002);
-+
-+	/* *Don't* send a power up reg list for concurrent binning (TODO) */
-+	/* Lo address */
-+	OUT_RING(ring, lower_32_bits(a6xx_gpu->pwrup_reglist_iova));
-+	/* Hi address */
-+	OUT_RING(ring, upper_32_bits(a6xx_gpu->pwrup_reglist_iova));
-+	/* BIT(31) set => read the regs from the list */
-+	OUT_RING(ring, BIT(31));
-+
-+	a6xx_flush(gpu, ring);
-+	return a6xx_idle(gpu, ring) ? 0 : -EINVAL;
-+}
-+
- /*
-  * Check that the microcode version is new enough to include several key
-  * security fixes. Return true if the ucode is safe.
-@@ -1096,7 +1162,7 @@ static int a6xx_ucode_load(struct msm_gpu *gpu)
- 	if ((adreno_gpu->base.hw_apriv || a6xx_gpu->has_whereami) &&
- 	    !a6xx_gpu->shadow_bo) {
- 		a6xx_gpu->shadow = msm_gem_kernel_new(gpu->dev,
--						      sizeof(u32) * gpu->nr_rings,
-+						      sizeof(u32) * (gpu->nr_rings + !!gpu->lpac_rb),
- 						      MSM_BO_WC | MSM_BO_MAP_PRIV,
- 						      gpu->vm, &a6xx_gpu->shadow_bo,
- 						      &a6xx_gpu->shadow_iova);
-@@ -1289,6 +1355,9 @@ static int hw_init(struct msm_gpu *gpu)
- 		gpu_write(gpu, REG_A6XX_UCHE_CACHE_WAYS, 0x4);
- 	}
- 
-+	if (gpu->lpac_rb)
-+		gpu_rmw(gpu, REG_A6XX_UCHE_DEBUG_CNTL_1, BIT(30), BIT(30));
-+
- 	if (adreno_is_a640_family(adreno_gpu) || adreno_is_a650_family(adreno_gpu)) {
- 		gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x02000140);
- 		gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x8040362c);
-@@ -1386,6 +1455,13 @@ static int hw_init(struct msm_gpu *gpu)
- 		gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, BIT(24));
- 	}
- 
-+	if (gpu->lpac_rb) {
-+		gpu_write(gpu, REG_A7XX_CP_LPAC_CHICKEN_DBG, 0x1);
-+
-+		gpu_write(gpu, REG_A7XX_SP_CHICKEN_BITS_2, BIT(4));
-+		gpu_write(gpu, REG_A7XX_SP_LPAC_CHICKEN_BITS_2, BIT(4));
-+	}
-+
- 	if (adreno_is_a690(adreno_gpu))
- 		gpu_write(gpu, REG_A6XX_UCHE_CMDQ_CONFIG, 0x90);
- 	/* Set dualQ + disable afull for A660 GPU */
-@@ -1437,13 +1513,19 @@ static int hw_init(struct msm_gpu *gpu)
- 	/* Set the ringbuffer address */
- 	gpu_write64(gpu, REG_A6XX_CP_RB_BASE, gpu->rb[0]->iova);
- 
-+	/* Set the ringbuffer address for lpac */
-+	if (gpu->lpac_rb)
-+		gpu_write64(gpu, REG_A7XX_CP_LPAC_RB_BASE, gpu->lpac_rb->iova);
-+
- 	/* Targets that support extended APRIV can use the RPTR shadow from
- 	 * hardware but all the other ones need to disable the feature. Targets
- 	 * that support the WHERE_AM_I opcode can use that instead
- 	 */
--	if (adreno_gpu->base.hw_apriv)
-+	if (adreno_gpu->base.hw_apriv) {
- 		gpu_write(gpu, REG_A6XX_CP_RB_CNTL, MSM_GPU_RB_CNTL_DEFAULT);
--	else
-+		if (gpu->lpac_rb)
-+			gpu_write(gpu, REG_A7XX_CP_LPAC_RB_CNTL, MSM_GPU_RB_CNTL_DEFAULT);
-+	} else
- 		gpu_write(gpu, REG_A6XX_CP_RB_CNTL,
- 			MSM_GPU_RB_CNTL_DEFAULT | AXXX_CP_RB_CNTL_NO_UPDATE);
- 
-@@ -1451,7 +1533,10 @@ static int hw_init(struct msm_gpu *gpu)
- 	if (a6xx_gpu->shadow_bo) {
- 		gpu_write64(gpu, REG_A6XX_CP_RB_RPTR_ADDR,
- 			shadowptr(a6xx_gpu, gpu->rb[0]));
--		for (unsigned int i = 0; i < gpu->nr_rings; i++)
-+		if (gpu->lpac_rb)
-+			gpu_write64(gpu, REG_A7XX_CP_LPAC_RB_RPTR_ADDR,
-+				shadowptr(a6xx_gpu, gpu->lpac_rb));
-+		for (unsigned int i = 0; i < (gpu->nr_rings + !!gpu->lpac_rb); i++)
- 			a6xx_gpu->shadow[i] = 0;
- 	}
- 
-@@ -1469,9 +1554,17 @@ static int hw_init(struct msm_gpu *gpu)
- 	for (i = 0; i < gpu->nr_rings; i++)
- 		gpu->rb[i]->cur_ctx_seqno = 0;
- 
-+	if (gpu->lpac_rb)
-+		gpu->lpac_rb->cur_ctx_seqno = 0;
-+
- 	/* Enable the SQE_to start the CP engine */
- 	gpu_write(gpu, REG_A6XX_CP_SQE_CNTL, 1);
- 
-+	/* Enable the LPAC SQE_to start the CP engine */
-+	//TODO is this needed? Doesn't fw do this at init?
-+	if (gpu->lpac_rb)
-+		gpu_write(gpu, REG_A6XX_CP_LPAC_SQE_CNTL, 1);
-+
- 	if (adreno_is_a7xx(adreno_gpu) && !a6xx_gpu->pwrup_reglist_emitted) {
- 		a7xx_patch_pwrup_reglist(gpu);
- 		a6xx_gpu->pwrup_reglist_emitted = true;
-@@ -1481,6 +1574,12 @@ static int hw_init(struct msm_gpu *gpu)
- 	if (ret)
- 		goto out;
- 
-+	if (gpu->lpac_rb) {
-+		ret = lpac_cp_init(gpu);
-+		if (ret)
-+			goto out;
-+	}
-+
- 	/*
- 	 * Try to load a zap shader into the secure world. If successful
- 	 * we can use the CP to switch out of secure mode. If not then we
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
-index 4d22223c3323..6e2333466d7f 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_device.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
-@@ -359,6 +359,9 @@ static void suspend_scheduler(struct msm_gpu *gpu)
- 
- 		drm_sched_wqueue_stop(sched);
- 	}
-+
-+	if (gpu->lpac_rb)
-+		drm_sched_wqueue_stop(&gpu->lpac_rb->sched);
- }
- 
- static void resume_scheduler(struct msm_gpu *gpu)
-@@ -370,6 +373,9 @@ static void resume_scheduler(struct msm_gpu *gpu)
- 
- 		drm_sched_wqueue_start(sched);
- 	}
-+
-+	if (gpu->lpac_rb)
-+		drm_sched_wqueue_start(&gpu->lpac_rb->sched);
- }
- 
- static int adreno_system_suspend(struct device *dev)
 diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 4389559e1d17..085e1b9044bc 100644
+index 085e1b9044bc..1ce172e5f73a 100644
 --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
 +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -655,6 +655,22 @@ struct drm_gem_object *adreno_fw_create_bo(struct msm_gpu *gpu,
- 	return bo;
- }
+@@ -785,25 +785,26 @@ int adreno_gpu_state_get(struct msm_gpu *gpu, struct msm_gpu_state *state)
  
-+static inline void init_ring(struct msm_ringbuffer *ring)
-+{
-+	ring->cur = ring->start;
-+	ring->next = ring->start;
-+	ring->memptrs->rptr = 0;
-+	ring->memptrs->bv_fence = ring->fctx->completed_fence;
-+
-+	/* Detect and clean up an impossible fence, ie. if GPU managed
-+	 * to scribble something invalid, we don't want that to confuse
-+	 * us into mistakingly believing that submits have completed.
-+	 */
-+	if (fence_before(ring->fctx->last_fence, ring->memptrs->fence)) {
-+		ring->memptrs->fence = ring->fctx->last_fence;
-+	}
-+}
-+
- int adreno_hw_init(struct msm_gpu *gpu)
- {
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-@@ -682,20 +698,12 @@ int adreno_hw_init(struct msm_gpu *gpu)
- 		if (!ring)
- 			continue;
+ 	ktime_get_real_ts64(&state->time);
  
--		ring->cur = ring->start;
--		ring->next = ring->start;
--		ring->memptrs->rptr = 0;
--		ring->memptrs->bv_fence = ring->fctx->completed_fence;
--
--		/* Detect and clean up an impossible fence, ie. if GPU managed
--		 * to scribble something invalid, we don't want that to confuse
--		 * us into mistakingly believing that submits have completed.
--		 */
--		if (fence_before(ring->fctx->last_fence, ring->memptrs->fence)) {
--			ring->memptrs->fence = ring->fctx->last_fence;
--		}
-+		init_ring(ring);
- 	}
- 
-+	if (gpu->lpac_rb)
-+		init_ring(gpu->lpac_rb);
-+
- 	return 0;
- }
- 
-@@ -1253,6 +1261,8 @@ int adreno_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 
- 	adreno_gpu_config.nr_rings = nr_rings;
- 
-+	adreno_gpu_config.has_lpac = !!(config->info->quirks & ADRENO_QUIRK_LPAC);
-+
- 	ret = adreno_get_pwrlevels(dev, gpu);
- 	if (ret)
- 		goto err_put_lpac_pdev;
-diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
-index 20581be10ca7..aa3d6ff456fd 100644
---- a/drivers/gpu/drm/msm/msm_gpu.c
-+++ b/drivers/gpu/drm/msm/msm_gpu.c
-@@ -739,8 +739,8 @@ static void retire_submits(struct msm_gpu *gpu)
- 	int i;
- 
- 	/* Retire the commits starting with highest priority */
 -	for (i = 0; i < gpu->nr_rings; i++) {
--		struct msm_ringbuffer *ring = gpu->rb[i];
 +	for (i = 0; i < gpu->nr_rings + !!gpu->lpac_rb; i++) {
 +		struct msm_ringbuffer *ring = i < gpu->nr_rings ? gpu->rb[i] : gpu->lpac_rb;
+ 		int size = 0, j;
  
- 		while (true) {
- 			struct msm_gem_submit *submit = NULL;
-@@ -782,6 +782,9 @@ void msm_gpu_retire(struct msm_gpu *gpu)
- 	for (i = 0; i < gpu->nr_rings; i++)
- 		msm_update_fence(gpu->rb[i]->fctx, gpu->rb[i]->memptrs->fence);
+-		state->ring[i].fence = gpu->rb[i]->memptrs->fence;
+-		state->ring[i].iova = gpu->rb[i]->iova;
+-		state->ring[i].seqno = gpu->rb[i]->fctx->last_fence;
+-		state->ring[i].rptr = get_rptr(adreno_gpu, gpu->rb[i]);
+-		state->ring[i].wptr = get_wptr(gpu->rb[i]);
++		state->ring[i].fence = ring->memptrs->fence;
++		state->ring[i].iova = ring->iova;
++		state->ring[i].seqno = ring->fctx->last_fence;
++		state->ring[i].rptr = get_rptr(adreno_gpu, ring);
++		state->ring[i].wptr = get_wptr(ring);
  
-+	if (gpu->lpac_rb)
-+		msm_update_fence(gpu->lpac_rb->fctx, gpu->lpac_rb->memptrs->fence);
-+
- 	kthread_queue_work(gpu->worker, &gpu->retire_work);
- }
+ 		/* Copy at least 'wptr' dwords of the data */
+ 		size = state->ring[i].wptr;
  
-@@ -975,21 +978,21 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 	}
+ 		/* After wptr find the last non zero dword to save space */
+ 		for (j = state->ring[i].wptr; j < MSM_GPU_RINGBUFFER_SZ >> 2; j++)
+-			if (gpu->rb[i]->start[j])
++			if (ring->start[j])
+ 				size = j + 1;
  
- 	memptrs = msm_gem_kernel_new(drm,
--		sizeof(struct msm_rbmemptrs) * nr_rings,
-+		sizeof(struct msm_rbmemptrs) * (nr_rings + config->has_lpac),
- 		check_apriv(gpu, MSM_BO_WC), gpu->vm, &gpu->memptrs_bo,
- 		&memptrs_iova);
+ 		if (size) {
+-			state->ring[i].data = kvmemdup(gpu->rb[i]->start, size << 2, GFP_KERNEL);
++			state->ring[i].data = kvmemdup(ring->start, size << 2, GFP_KERNEL);
+ 			if (state->ring[i].data)
+ 				state->ring[i].data_size = size << 2;
+ 		}
+@@ -1004,7 +1005,7 @@ void adreno_show(struct msm_gpu *gpu, struct msm_gpu_state *state,
  
- 	if (IS_ERR(memptrs)) {
- 		ret = PTR_ERR(memptrs);
--		DRM_DEV_ERROR(drm->dev, "could not allocate memptrs: %d\n", ret);
--		goto fail;
--	}
-+			DRM_DEV_ERROR(drm->dev, "could not allocate memptrs: %d\n", ret);
-+			goto fail;
-+		}
+ 	drm_puts(p, "ringbuffer:\n");
  
--	msm_gem_object_set_name(gpu->memptrs_bo, "memptrs");
-+		msm_gem_object_set_name(gpu->memptrs_bo, "memptrs");
- 
--	if (nr_rings > ARRAY_SIZE(gpu->rb)) {
--		DRM_DEV_INFO_ONCE(drm->dev, "Only creating %zu ringbuffers\n",
--			ARRAY_SIZE(gpu->rb));
-+		if (nr_rings > ARRAY_SIZE(gpu->rb)) {
-+			DRM_DEV_INFO_ONCE(drm->dev, "Only creating %zu ringbuffers\n",
-+				ARRAY_SIZE(gpu->rb));
- 		nr_rings = ARRAY_SIZE(gpu->rb);
- 	}
- 
-@@ -999,6 +1002,7 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 
- 		if (IS_ERR(gpu->rb[i])) {
- 			ret = PTR_ERR(gpu->rb[i]);
-+			gpu->rb[i] = NULL;
- 			DRM_DEV_ERROR(drm->dev,
- 				"could not create ringbuffer %d: %d\n", i, ret);
- 			goto fail;
-@@ -1008,6 +1012,20 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 		memptrs_iova += sizeof(struct msm_rbmemptrs);
- 	}
- 
-+	if (config->has_lpac) {
-+		gpu->lpac_rb = msm_ringbuffer_new(gpu, nr_rings, memptrs, memptrs_iova);
-+
-+		if (IS_ERR(gpu->lpac_rb)) {
-+			ret = PTR_ERR(gpu->lpac_rb);
-+			gpu->lpac_rb = NULL;
-+			DRM_DEV_ERROR(drm->dev,
-+						  "could not create lpac ringbuffer %d\n", ret);
-+			goto fail;
-+		}
-+
-+		//IMPORTANT when rebasing on preempt aware hangcheck initialise lpac_rb hangcheck_timer
-+	}
-+
- 	gpu->nr_rings = nr_rings;
- 
- 	refcount_set(&gpu->sysprof_active, 1);
-@@ -1031,6 +1049,11 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
- 		gpu->rb[i] = NULL;
- 	}
- 
-+	if (gpu->lpac_rb) {
-+		msm_ringbuffer_destroy(gpu->lpac_rb);
-+		gpu->lpac_rb = NULL;
-+	}
-+
- 	msm_gem_kernel_put(gpu->memptrs_bo, gpu->vm);
- 
- 	platform_set_drvdata(pdev, NULL);
-@@ -1050,6 +1073,10 @@ void msm_gpu_cleanup(struct msm_gpu *gpu)
- 		gpu->rb[i] = NULL;
- 	}
- 
-+	if (gpu->lpac_rb)
-+		msm_ringbuffer_destroy(gpu->lpac_rb);
-+	gpu->lpac_rb = NULL;
-+
- 	msm_gem_kernel_put(gpu->memptrs_bo, gpu->vm);
- 
- 	if (!IS_ERR_OR_NULL(gpu->vm)) {
+-	for (i = 0; i < gpu->nr_rings; i++) {
++	for (i = 0; i < gpu->nr_rings + !!gpu->lpac_rb; i++) {
+ 		drm_printf(p, "  - id: %d\n", i);
+ 		drm_printf(p, "    iova: 0x%016llx\n", state->ring[i].iova);
+ 		drm_printf(p, "    last-fence: %u\n", state->ring[i].seqno);
 diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
-index 271956e7f870..2f6a96e560b9 100644
+index 877f88ef90d9..6b05c2d45bb3 100644
 --- a/drivers/gpu/drm/msm/msm_gpu.h
 +++ b/drivers/gpu/drm/msm/msm_gpu.h
-@@ -30,6 +30,7 @@ struct msm_perfcntr_stream;
- struct msm_gpu_config {
- 	const char *ioname;
- 	unsigned int nr_rings;
-+	bool has_lpac;
- };
+@@ -640,7 +640,7 @@ struct msm_gpu_state {
+ 		void *data;
+ 		int data_size;
+ 		bool encoded;
+-	} ring[MSM_GPU_MAX_RINGS];
++	} ring[MSM_GPU_MAX_RINGS+1];
  
- /* So far, with hardware that I've seen to date, we can have:
-@@ -181,6 +182,8 @@ struct msm_gpu {
- 	struct msm_ringbuffer *rb[MSM_GPU_MAX_RINGS];
- 	int nr_rings;
- 
-+	struct msm_ringbuffer *lpac_rb;
-+
- 	/**
- 	 * sysprof_active:
- 	 *
-@@ -323,6 +326,13 @@ static inline bool msm_gpu_active(struct msm_gpu *gpu)
- 			return true;
- 	}
- 
-+	if (gpu->lpac_rb) {
-+		struct msm_ringbuffer *ring = gpu->lpac_rb;
-+
-+		if (fence_after(ring->fctx->last_fence, ring->memptrs->fence))
-+			return true;
-+	}
-+
- 	return false;
- }
- 
+ 	int nr_registers;
+ 	u32 *registers;
 
 -- 
 2.56.0
