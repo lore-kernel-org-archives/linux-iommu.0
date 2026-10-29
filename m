@@ -1,126 +1,141 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.60
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.19
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793291468;
-	b=IK3ujYqAs8R9bcbGBmTVgSo+ZnydiUW7GNBlBKwzTGphuz91oL1sD+t/LphV8pgqyr9M
-	 mMtY2oWRI9shw5CELqM3qM1cpwznIrmV2lkqDmkovPjj8HdRG2+a5zOy1yAvfqk6JJUeg
-	 aR9NXSWabByAVsx3QBuHI9z0bJXtHAClVqaPqjb1r0cvKRwgODtOAgzTZB+q1cgjbWcSp
-	 i/Qqj0KHLC769vEgrxlho7orM5gOvlMTjuhg7sZSpFlad6D4174QesG5UOD9y3sxtD0i7
-	 gCFeJv6H2lTg2gCfFXzwuzM5hMPyNO36ZR1oqOikDxMlgEZXaGnMc2meJeC6xC+4N0w==
+	t=1793292699;
+	b=Z9nANc2EZrfxN4WT8Pc8s9mB3IOPVC1unjNr/fxPJUNawKlnGhIG53d12/SXqVNYfvpF
+	 9XfHw2HHyIQLjgS0WfIEHuRxG019cCQQwfP7mV13PeeXB3twyQLvnKkHJzeDS94iEgx0m
+	 kkxHAwabHZSSh67Uljy4KWRHsV/EE37MWlSK8z4Xm7X6cCZJRy7+1KF1s0EOC/t4abz7P
+	 OtexwtOBNWesEhEvyFPn69gxgeBrMTJ5Q1Ed7LL++BItdRB/AIYyqcl9c2IoYN8lrHIYQ
+	 tXuzLpD2EgJ8eImQ5b2yTS8jc5tP24MHnu7eVjcTumGjmEKUpn2xvsJSB4TRkUc9bYw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793291468;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:Content-Transfer-Encoding:Content-Type:
-	 X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	a=rsa-sha256; c=relaxed/relaxed; t=1793292699;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
 	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
 	 X-Forefront-Antispam-Report:
 	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
 	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=e9PNCwj/XIJLcmHgICx+5abEvtPA2lHup7xvhFuDMGQ=;
-	b=DQJzUOaajNfuFnuBIabUNH86GYpF+mWtidqC2aetSLfJyNWz1/PHm/0NFH9FypQnb1kM
-	 nVp7U08BB1/9g1wDGrqUlWedpETje0aeKDv/IS1j4eW/e159kFKPpXEOvHmX49svvIpNo
-	 vKnfDLj54XYGfOxhiYUTV+21brjqFgEE4QIX2Foq6+Zp5Zfg+See5jvaj6Lu8XA5XJvnb
-	 074RJOOH7Hcr/Z4BoKiVXZYPSolvPG3BzFq3dbM/6UUEiVA509X9FkXCW6PqZaRBa7DwN
-	 ysNtAYqZdZLNeZCXYCTkP0StaJaYB9gWs2hntntIitDKVZDurWwVpZdSoa3WqwkNGrA==
+	bh=tSZqefhy6rxgPsDj2ZU1m/qdXPZYwA6HGz3L9O1XcT4=;
+	b=WInmOvGE9dL7f79CiE6BArdZon/DyBeTxjDtmeWqgcCVhMlrq9qa5IDsIEvG8uLlx6GV
+	 qRoQxQGW7RC4DzlV9UMX36bZAUIwylHqEiW9JoSAox4XJS2WVLfkodvow3CwPuRl3zi5R
+	 KSqMkCUhEYfcvgvhVjFPPtuA31AUlW4DDdqxmpx8ZQbHhLgD+W/erj23QqTZuf+/6SYP+
+	 sp/ahTp5A5+VURY2nISv/Rn8qLoG7B0P1hGvtSwXhhPlwt9iuqvCbauTtv5B/CV0WomXu
+	 kAnq44ZbvygdKv6l2tBXIveOi4A5ZMaPeWIU9/1ZDeFJMs+dsb5+FiZbIeDdWYk5cjQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.nxp.com;
-	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=JoarM11I;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.60
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010060.outbound.protection.outlook.com [52.101.84.60])
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=JUTH1c+Q;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.19
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012019.outbound.protection.outlook.com [52.101.48.19])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40E79606A31D;
-	Thu, 29 Oct 2026 16:31:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40E79606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EB60606A31C;
+	Thu, 29 Oct 2026 16:51:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8EB60606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=JoarM11I
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=JUTH1c+Q
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YFcGcdLuRilahGmHTOlVeUEven84WEpaLKZjo2LNz9SOqE3SStZeBe76YyQMHC5RPkCjkWxpzK1uzPKSySr49HD9kRL/gBgP+7j17DlIIofMQNXvgTh5Abyhbbk06eZ3LA8wEUJ+1jh2R2+gsfAVyk9BLVgR+fquMQXIC0vC3n3FOLaeobxHBxkUXZJGOVh41qtQwP0RaQlj8uKwJ6igjSxNrqiSjA/KpXpaeDqRBMTZylLb5r5BPwpMue0a9dy3yAp4BVuOnuQ2j2mb16RVgqaTzjOiX0FVEEVUsxjVrEi6LVV08c2ZKo4uqv8rBBLu3yfJe1UFZTDGuKUheS4pFQ==
+ b=pFOxEChLOFukunNMoxGn7uRwtjYxTwJczIbd1VUD639ImsBtrm79E9b8ToC5sAmbQku9G9av3dwlT81FgzfJbm5kaPTY9nsa+lF2qCdr87jOltPkFdfLpZ4Kj4hu9TcU4x6P2QI8uj1s2k7yI6VOicLqsbNG0imkKoxKUSkrMLjCcus4iP5r6fR3Fkq1OfEkaIJoXft6K1mlq6uIekEFeAkBJYup0ao2Tp+srgtGVZ19p16cV3zavY4ijRFDbEVq7wwOxxPIOh0lxkXxQwXld4eubTt0qEJZM6T/F/QyGPt+9vvEhMCqvwi/3FQUF7uDmFSoqYbdEy25r+pa5K6HAw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=e9PNCwj/XIJLcmHgICx+5abEvtPA2lHup7xvhFuDMGQ=;
- b=SU63X+xS8D/Ie1j8dzN+T5quKU/SVBY8eJS+YLuFWDtnvm5CDwN04wbhIjZlSBpLVrV7dGIk8/p6ISqWJfsIhoaaBflp7v4ykvpi6O7ktllkOlqjtbm8GMkwiZPWTzhcsxYNRhaUJA1OyXYfTh5UysPEfjuGgWEpwtsXb2qON6m6ODc7xRt40Mpaiizywmpy5tUZLi0iObRSfImmFKUqGeZ4sjS80VPIlm+QHdeNDZkPRReb9QsK4mlxLnZAJkopGv8TnUj2p17v6eZ+NWm1nKBgV8PRhaTJyeQ02yFdko7Ou3p+7yoS/cgEeacVy0H6aViYTfzmY0Mmoqop+1Y1Xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
+ bh=tSZqefhy6rxgPsDj2ZU1m/qdXPZYwA6HGz3L9O1XcT4=;
+ b=PowLgQRSDMGy5OFENejWKBDHZgLfjho1MWU9A5qERZv42eeyrFjWbhdhHvFfPxTv4oMCjHbMBHoyaMNuxPozq/Q7MwtuFiVGfRSoNsGNb3WCJO1bND+jcxmZbjWrjwqtI73vu0NWPIM9bnKCrHgbFo+dHmbcSVxUtE1vTtoKDZ7AjT7N6KpLhvVHE00STNsESxen+QfEskO7BpOtXy0xFgxiVRHgLiUFAcr5Cz0k32mY+ZYVsNOyj7D+hkkBxWij0vQFmiTZxDoPZN3ISf0R/vaYs+FMYoiXPEHwLmlZg/tsHtpXY2JipN8xCbA1S8HAhGyPE2uQgBNh6Ug23AAZ7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=e9PNCwj/XIJLcmHgICx+5abEvtPA2lHup7xvhFuDMGQ=;
- b=JoarM11IFtkri4Sq++PddiCrRY03RhdV/zQMTeqDPLm6SUiuwz24S5Rw0kSj23f9DhAFyAgl6xPiHz4zY61tjRozMO3zCE+b/WPkvpQiZNCwe+ZtKnspfU67ZmtVABc4PemYRh5D5MU7FZZjA/FNhd9LN8D5L/5mbKv2TSk6+rduQSEDgDS+lbRv1NuKEZHTF/pBcS1UhsR5iJtR2MBryLwYH8PuUFEbDVePfkVc05XvRmzjS/VZp8dRGjc/eVKPTjaHwHns9RjteYtCmR+1GrEjuEf9yWrHr6mTyuKlaNAuzMTqH3S+GvfflC4VWm9JiggKxUL0W6AGMJl9VYtTFw==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
- by GVXPR04MB10046.eurprd04.prod.outlook.com (2603:10a6:150:112::22) with
+ bh=tSZqefhy6rxgPsDj2ZU1m/qdXPZYwA6HGz3L9O1XcT4=;
+ b=JUTH1c+QbFKf3qUZMYQNVYjl77QlkrOk2QiOBlQwqeyuTyyGl9sHIrZs3OTA9gJ0LEXyFDyVERxhMXTAhekFGGA316B2iudHQq3U9HAuT2YIKIF8cCR5A/vU88PzDLnzdc/6itPSfgGsOm8JSSWv2K5jvO04ubcXefAIimwEKifGKdwQneXWqQYesGEyrzJGIirsq2zC44l6Jz0Xmdx/VatdTaGd+eoKxxW8+NwsRLZdPW8Z7IqOzDjCX0uwKJWQzwdk8pyXA6lZUM6kAguedq9tuK7K7zqVHFPuxUaAyKXc38uKV7ZeUFloiC7syl9i2ebKJJmo3umLI3SxpEPrjQ==
+Received: from CH0PR03CA0431.namprd03.prod.outlook.com (2603:10b6:610:10e::22)
+ by CH9PR12MB962943.namprd12.prod.outlook.com (2603:10b6:610:310::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.9; Thu, 29 Oct
- 2026 16:31:02 +0000
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b%6]) with mapi id 15.21.0569.007; Thu, 29 Oct 2026
- 16:31:02 +0000
-From: Frank.Li@oss.nxp.com
-To:
-Cc: Frank Li <Frank.Li@nxp.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>,
-	Karol Wachowski <karol.wachowski@linux.intel.com>,
-	Oded Gabbay <ogabbay@kernel.org>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tursulin@ursulin.net>,
-	Matthew Brost <matthew.brost@intel.com>,
-	"Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Alex Elder <elder@kernel.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel" <joro@8bytes.org>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Guan-Yu Lin <guanyulin@google.com>,
-	Mathias Nyman <mathias.nyman@linux.intel.com>,
-	linux-pm@vger.kernel.org,
-	linux-usb@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org,
-	linux-hwmon@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org,
-	linux-media@vger.kernel.org,
-	linux-staging@lists.linux.dev,
-	netdev@vger.kernel.org,
-	imx@lists.linux.dev,
-	Rob Herring <robh@kernel.org>
-Subject: [PATCH 1/1] PM: runtime: change stub pm_runtime_get_if_active() return 1 when !CONFIG_PM
-Date: Thu, 29 Oct 2026 12:30:37 -0400
-Message-ID: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
-X-Mailer: git-send-email 2.43.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SN7P222CA0013.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:124::11) To MI3PR04MB12438.eurprd04.prod.outlook.com
- (2603:10a6:290:76::14)
+ 2026 16:51:28 +0000
+Received: from BN3PEPF00022BD5.namprd03.prod.outlook.com
+ (2603:10b6:610:10e:cafe::9b) by CH0PR03CA0431.outlook.office365.com
+ (2603:10b6:610:10e::22) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.8 via Frontend Transport; Thu, 29
+ Oct 2026 16:51:28 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BN3PEPF00022BD5.mail.protection.outlook.com (10.167.248.100) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.569.4 via Frontend Transport; Thu, 29 Oct 2026 16:51:28 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Thu, 29 Oct
+ 2026 09:51:07 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Thu, 29 Oct 2026 09:51:06 -0700
+Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
+ Transport; Thu, 29 Oct 2026 09:51:03 -0700
+Date: Thu, 29 Oct 2026 09:51:00 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Shameer Kolothum Thodi <skolothumtho@nvidia.com>, Catalin Marinas
+	<catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, "joro@8bytes.org"
+	<joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, "rafael@kernel.org"
+	<rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, "aneesh.kumar@kernel.org"
+	<aneesh.kumar@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, Suzuki K Poulose
+	<suzuki.poulose@arm.com>, Gavin Shan <gshan@redhat.com>, Vikram Sethi
+	<vsethi@nvidia.com>, Anshuman Khandual <anshuman.khandual@arm.com>, "Shanker
+ Donthineni" <sdonthineni@nvidia.com>, Mostafa Saleh <smostafa@google.com>,
+	"rppt@kernel.org" <rppt@kernel.org>, Thomas Huth <thuth@redhat.com>, "Marc
+ Zyngier" <maz@kernel.org>, Ryan Roberts <ryan.roberts@arm.com>,
+	"kas@kernel.org" <kas@kernel.org>, Kohei Enju <enju.kohei@fujitsu.com>,
+	Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>, Ard Biesheuvel <ardb@kernel.org>,
+	James Morse <james.morse@arm.com>, Steven Price <steven.price@arm.com>,
+	Sang-Heon Jeon <ekffu200098@gmail.com>, Omar Sandoval <osandov@fb.com>,
+	Andrew Morton <akpm@linux-foundation.org>, Jinjie Ruan
+	<ruanjinjie@huawei.com>, Sam Edwards <cfsworks@gmail.com>, Douglas Anderson
+	<dianders@chromium.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
+	Chen-Yu Tsai <wenst@chromium.org>, Huacai Chen <chenhuacai@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>, Pranjal Shrivastava
+	<praan@google.com>, Ashish Mhetre <amhetre@nvidia.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "driver-core@lists.linux.dev"
+	<driver-core@lists.linux.dev>, Sonang Patel <sonangp@nvidia.com>, "Ankit
+ Agrawal" <ankita@nvidia.com>
+Subject: Re: [PATCH v1 2/8] firmware: arm_rmm: Add VSMMU commands and fields
+Message-ID: <auN5dAoteDHV/h+W@nvidia.com>
+References: <cover.1789010941.git.nicolinc@nvidia.com>
+ <0623345baaf550da1339e040b59f1fda902e3390.1789010941.git.nicolinc@nvidia.com>
+ <SJ0PR12MB861491CC7A4C567D01F9B951AB6F2@SJ0PR12MB8614.namprd12.prod.outlook.com>
+ <20261028123509.GA2541714@nvidia.com>
+ <auJBF+hDkx+uKixe@nvidia.com>
+ <SJ0PR12MB8614E6DE095441E52698D7F9AB6E2@SJ0PR12MB8614.namprd12.prod.outlook.com>
+ <20261029122818.GD3040767@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -130,172 +145,84 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20261029122818.GD3040767@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|GVXPR04MB10046:EE_
-X-MS-Office365-Filtering-Correlation-Id: c82e6468-2843-47df-01b8-08df35da0568
+X-MS-TrafficTypeDiagnostic: BN3PEPF00022BD5:EE_|CH9PR12MB962943:EE_
+X-MS-Office365-Filtering-Correlation-Id: f0271769-db46-4212-248d-08df35dce05f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|366016|23010399003|376014|1800799024|7416014|6133799003|18002099003|56012099006|11063799006|10067099003|261028144727099003|261021123027099003|261021121427099003|261009221727099003|261009223327099003|261009223027099003|261009221227099003|261009220027099003|261026140227099003|261022105027099003;
+	BCL:0;ARA:13230040|23010399003|7416014|376014|1800799024|36860700016|82310400026|5023799004|4143699003|11063799006|56012099006|261009223027099003|261026121527099003|261022113327099003|261021135927099003|261021121427099003|10067099003|22082099003|18002099003|6133799003|3023799007;
 X-Microsoft-Antispam-Message-Info:
-	4U2r5HKVzQxL9XoVisHoci6To+0AW9AAvXPaojbd7wtkEveOtxf4pRaYQIwfn1xXpbJc6gOcisQqX27DDe4CMklkRdDsWZjrdNZprBwHVrFQ33HHkopPOidj4bcDw3sT0ydVHaoGu4/hKHrxwH3RKJkGJyOAt8G6YNsjnL6KHaqieXiXyhoGwFwQGJ0clKfNp/AdTCVa5TopdTTBuxT0/Etm8UYbbHet6w+5OWcfntpNB58eWl7YMhs8zIWyDxoP7eM3xexTyWyhJrE34GP4s6y04oTsRzAW9C2yUAp7KAfEwNMD9STAlsoO6GdmkNHLkEDVLCE84NRjTJjDloQMVqiHTizUEqAnPnCdX7qMeZoul9GoeHs/W2y+WTlxeopdaPomwggu02vL3GA7B0UbXwe9RIlrdcopX84e5QU2m0DDCnpyghXpwht81sRKkC9gWJfopSp0kyrwNbYtJIlrMsJX9GWSvgwWInpC28DOMCNn/OV73S9VHhH768pkUAsQRJ2P/vjheDO7kZgYzH/iVQw58utlS+V2+PXjGMPmvvwCKOxqTjRt4chPSWhBU3TwNfFCnz8/2Usc9k3/x0hB45O7uOUinkM2ZX/uSGgrzc1NLxCSce7R4xVcZ77hsS3/rEjFAt5NiKylycDAToYA+PsVRaHYtML996XFcMvYhMA=
+	W8Pg9Azjhpw5T3oranOXS4K2kaGMU60WIgJeUqVxnwBSLFHwMl16YTbvk3OSkc1oI7wMY6OuDFz72L/7JF8ZyLyuu8Xr5HfcqZxXZXMop0pLkrOxWgCTKpgJa/fhZ/XOtTq2U62zKpLmeFKjN1pG8f9FmwISGsA6bbF9hkJLyqC+WWajSlt1yiIDQMggog28sancsT+5CEysG7SQaEyhDAFEkZ2fGfkoF2RQHp27R/HDS8DaJ0lobsA0qu0Z1zPlsRlb03Nkw+o67I5ml/y3fqE+SO+Fkh7cuaQOPAwA+CA+pk4REjYzEC2B19qnDcBhVALYgi1EGgirTJRcAHVCuMa9KiQAuXvF9x7jO6RHXdCsNZCwpuMzc7rW9PoLSFa49mZ7XPm0+gihWmwfvDP4orhk4C5y4VKONuXwFexMRwxBdsFgD9xNMhsirNfLyqY9n8AuSfipdcXW2CcsOF4vuoUo6Iiw1gd4PAifnHr8J954pvUGXO6YJo/gnO6fqGPSs5FWTNw+QzPrl/e0uNsL1kpzWXnjid9aurpyaKUNs1saXWMgyplhG48ow0kfeilPEEugmE5TkWhPdw+ZCWTjIPJ5CNTPH5ypgyivZApMckzUU35SWe6Hb1ZhaiegMUkoKRH+xquhLEqmZZ8m4677tXVlE10wkvhhAUn3H38W/Y1vFP07yF3rRCNMHx6Rh8YYwKeCO91S90uQNmr6OJ5zag==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(366016)(23010399003)(376014)(1800799024)(7416014)(6133799003)(18002099003)(56012099006)(11063799006)(10067099003)(261028144727099003)(261021123027099003)(261021121427099003)(261009221727099003)(261009223327099003)(261009223027099003)(261009221227099003)(261009220027099003)(261026140227099003)(261022105027099003);DIR:OUT;SFP:1101;
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(1800799024)(36860700016)(82310400026)(5023799004)(4143699003)(11063799006)(56012099006)(261009223027099003)(261026121527099003)(261022113327099003)(261021135927099003)(261021121427099003)(10067099003)(22082099003)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?PdUJudLuzgndgMBrstFMTSOSKKpy8Nv9mfyTLu/Ct4I2/N7BogkX0SQuHiCe?=
- =?us-ascii?Q?sdK+ls8AzCcW8JSPERpAMGTLhp94FxhqfDCAQ+h0FL8aJKJIReQzuITFuutc?=
- =?us-ascii?Q?/7rVdtx/srYC8EPf+d6GiINcU9tMWX/9BTgsVS8W3OwpkMPDZ1wBfPJuXElJ?=
- =?us-ascii?Q?1inKHOdvwGo1pNYH1m3+Z58oRgPQXV8XmZzOiccVlqDltuk8mGHYjzD/6hf0?=
- =?us-ascii?Q?DpMcfC7FpXLWqqcDRf8RTx6HnawVm0j8iJztdOgr8ONdxHOBQmstayKJPxjN?=
- =?us-ascii?Q?+UNIJk/sLuR2aPmF+TFaCbz9q9oBIGu6uRYTjNrsQkWQVAwXcpkkXzVaZ69o?=
- =?us-ascii?Q?efwg8TCmsLO1aYed++3xiVqZGgCta3aPTZg9q9zz8pbS0m1qmM5eEakhOAP8?=
- =?us-ascii?Q?o5qyhSKL9FIcxYSFg7UqGz02J9RiBdFzSH9BX7yDvLleKKyxCQ5eWh78QeoQ?=
- =?us-ascii?Q?bAdy8ZH041AruPGFhFBF9LxvP+JoWY/Y17LSHuyIewYb2RQ34MNMrBw/wIrV?=
- =?us-ascii?Q?VI+m/loG/XMlgfjuiJBKsP7tffnbBCQSehTEzBTc55MisdSpmnNUANvoBkbW?=
- =?us-ascii?Q?izu/hCPp50Ll0UjEYLEHKh+JlkmB/VV/FBgrQNETkTNZMkNGmXlo3fzp/hJd?=
- =?us-ascii?Q?izAvijIr68Pqk7WaqaCIUxmXsj4p132Y75UUcQXqh2G4xoS7j+36aC5RBgjp?=
- =?us-ascii?Q?Bx1io2OSvS9fHoauIFnjZ31noz3X16WVh2XLvEQyZSB62ms1UsTaxfmRb/a3?=
- =?us-ascii?Q?UFRTm8pZFvzQ/H32VKDV7dNN8eyzx8uDiMPms3zXbDv8vSfGEM1iOdeZtAoK?=
- =?us-ascii?Q?tuzTZ+ApH0xf/tIRxNL4WMT7JNHDk8cELtuiLaMP8NA1YHwHQ+1SWkK859tk?=
- =?us-ascii?Q?pwja07/Frse7aXYlEelpiNLIXKSBF3k0qstUay4XDAHVjxqyFXboIFK0IVI/?=
- =?us-ascii?Q?ysPSD3p9HKKx1wn++5OmKqC6kD4Dt+CCrlHsadHwAnh5G9WH+4Ta2+hNdg0H?=
- =?us-ascii?Q?yY1/I4xuQ1eoXvT2L4jQQBObH69hj0N4Fy07GqvH8hX8CNRmERStA9g5WGJe?=
- =?us-ascii?Q?efc7Qdt7W/eVEM21UTwUHJRO/tU/uGqtPvnrJmr9h6aBf+bxAy/rVaC7jFII?=
- =?us-ascii?Q?60ljuUHzNTbVayW6VtOEjH99ytHMsKp1mRR7z1LcTbXSPLsK8PxkzsnMwctc?=
- =?us-ascii?Q?eOBUNKWQDn1+kjdHjpFaRQ41NGd8IqAKmfFrJIfXrWgYWt0bASvt5xTLjcP1?=
- =?us-ascii?Q?LC6KS2MfwSBk2J3frSJQFiY/Os1oJS5MM8/g8fZVkVWvMX/eFJQkTSXQk9R4?=
- =?us-ascii?Q?Z9yTKW0JalgGrGVS3bvM1lIK4S3iuhz5Uo6gR0Eh+FdVpmNoPr6M6+pWek+9?=
- =?us-ascii?Q?qpwVe9VRnnlGAZ8/NLRA0nvY+NOA8RAorRwBQLbRrd0ON/XlYYmOZKd33mLS?=
- =?us-ascii?Q?tcM/QAy/T6ZYlEXPpAvb98cIN5I3YsRLBwNWFPIAb39p+LWC0UM0wTlNs5+r?=
- =?us-ascii?Q?43WJXGSOhpgKAe8KBaxN5Sh93ZwTz43sjCVO+q4inHsL8MHhQnK9nwOkNnPW?=
- =?us-ascii?Q?GkcYlJMciRMHazX9A7ogE12SHKvnb7e8nxU8vSuv/Lx7XoagLWbFrr3OekDb?=
- =?us-ascii?Q?45orQ8AmnO1FqBCqjz43zTbDKQmK0+ar2a/x8WCvdbB4SUAfZjjDi/3BFWWG?=
- =?us-ascii?Q?bCAldjIcqidzJfcjHbUbgpvQDDmHobX5ob1mTAQwftkR8zRNdpipPzgjJdkw?=
- =?us-ascii?Q?vnwQ1/4N0n3hGXPYeisgy6DrEjdE9IbAU4TKgXTgq9WJI37x7YTq?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c82e6468-2843-47df-01b8-08df35da0568
-X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2026 16:31:02.1238
+	wkS+yXhHtf9zm2m9DrRheUWrCzIJYUwqfBbRkNQ5vuATUjRUNrpv8e5/tODrvvwB/tjVmKIUQ2bZJJigJDt1+uKb07IiOVZzIzMgtcatD/A0JAZG+EWY8GXOwPs0KJXciYvd5Fv9QN2+ePbejxJL2BfxiJcKaN5t3wCH0yg63WLA66bDIunP1coBnupDMwXpRZzYRDuFCieIbu84PVqVfbn3Y7TYjsO3zvVLWJwGf/eTYp0DD1Jt5Y3Lf42b8DQVXSzsdcl7Yl6ZZrXWLTihLSabSDgJsB/LCEvbhwkHkL3gZrrognoZ3ONlqWnffi/5z+ovFOTu6HNZGnyHyTrntXuqPD9kGDHl7MTRoUge/yOzKgST/8b4+krOkRhSLYpih7twPKQhyuigyM1MMUmjUsStumbAZptA9UEHb0lDa4vHmFAh2YEhECtMXrqzAzeD
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2026 16:51:28.1508
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oqehOsuVKGRBcXoZfzfOpv1Ig0XTNviKWlwjaqHGvQy2no2bqwL5nrI2LSSJN6k+G8jEN99CU+NyGuQZs0ytCHei8wRMnJbglZg8gCzHwHMYPCoHJYQHm2pkDi+WxWoQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR04MB10046
+X-MS-Exchange-CrossTenant-Network-Message-Id: f0271769-db46-4212-248d-08df35dce05f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF00022BD5.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH9PR12MB962943
 
-From: Frank Li <Frank.Li@nxp.com>
+On Thu, Oct 29, 2026 at 09:28:18AM -0300, Jason Gunthorpe wrote:
+> On Thu, Oct 29, 2026 at 10:05:05AM +0000, Shameer Kolothum Thodi wrote:
+> > > On Wed, Oct 28, 2026 at 09:35:09AM -0300, Jason Gunthorpe wrote:
+> > > > On Wed, Oct 28, 2026 at 09:49:53AM +0000, Shameer Kolothum Thodi
+> > > wrote:
+> > > > > > +static inline unsigned long rsi_arch_dev_activate(phys_addr_t base,
+> > > > > > +						  unsigned long dev_type)
+> > > > > > +{
+> > > > > > +	struct arm_smccc_res res;
+> > > > > > +
+> > > > > > +	arm_smccc_1_1_invoke(SMC_RSI_ARCH_DEV_ACTIVATE, base,
+> > > > > > dev_type, &res);
+> > > > >
+> > > > > These calls leave unused input registers unspecified, whereas
+> > > > > DEN0137 bet3 B1.2 marks them SBZ. Could we explicitly zero them?
+> > > > >
+> > > > > "On calling an RMI or RSI command, any of X1- X16 which are not
+> > > > >  specified as input values in the command definition SBZ"
+> > > >
+> > > > That seems too broad, Linux doesn't even support the x8-x16 inputs in
+> > > > the macros. I think the spec has errd here.
+> > > >
+> > > > Requiring zeroing of x0-x7 is sort of reasonable. Any future use of
+> > > > x8-x16 (including outputs) should require a direct opt in of the OS to
+> > > > indicate it supports this bank of registers.
+> > > >
+> > > > Otherwise you probably need a new macro helper for this protocol..
+> > > 
+> > > We could probably replace it with:
+> > > 	arm_smccc_smc(SMC_RSI_ARCH_DEV_ACTIVATE, base, dev_type, 0,
+> > > 0, 0, 0, 0,
+> > > 		      &res);
+> > > 
+> > > This should specify those unused inputs.
+> > 
+> > Or we could use arm_smccc_1_2_smc() with zero initialized registers, as
+> > rsi_attestation_token_init() does. I think that would cover X8-X16 too.
+> 
+> Yeah, that seems to be the right thing to do.
+> 
+> > But other RSI wrappers don't do that consistently, so it's fine either
+> > way, I guess.
+> 
+> Seems like a bug, with the spec being specific here it should be
+> fixed.
 
-When CONFIG_PM is not enabled, all devices runtime PM state should be
-treated as active.
+I'll use arm_smccc_1_2_smc() in v2.
 
-__pm_runtime_resume() returns 1 (called by pm_runtime_get()).
-pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get().
-stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
-should return the same value as the stub pm_runtime_get(), which is 1.
-
-Analysis of all callers and their behavior with old (-EINVAL) vs new (1):
-
-Pattern A: if (!pm_runtime_get_if_active(dev)) -- no impact
-  Both -EINVAL and 1 are non-zero, so !ret is false in both cases.
-  Callers: drivers/accel/ethosu/ethosu_perfmon.c,
-           drivers/gpu/drm/msm/adreno/a6xx_gmu.c,
-           drivers/gpu/drm/msm/msm_perfcntr.c,
-           drivers/gpu/drm/v3d/v3d_mmu.c,
-           drivers/gpu/drm/v3d/v3d_perfmon.c (x4),
-           drivers/media/i2c/gc08a3.c gc05a2.c og0ve1b.c ov6211.c,
-           drivers/media/i2c/ccs/ccs-core.c s5kjn1.c lm3560.c (x2),
-           drivers/media/i2c/s5k3m5.c thp7312.c imx283.c ov64a40.c,
-           drivers/media/pci/intel/ipu6/ipu6-buttress.c,
-           sound/hda/core/device.c
-
-Pattern B: if (!ret) after get -- no impact
-  Both -EINVAL and 1 are non-zero, !ret is false in both cases.
-  drivers/gpu/drm/amd/pm/amdgpu_pm.c (comment says "allow access"
-    in kernels without CONFIG_PM), drivers/pci/pci.c
-
-Pattern C: ret > 0 / ret <= 0 / ret != 1 checks -- FIXED
-  drivers/usb/core/offload.c: checks (!= 1), old -EINVAL caused
-    -EBUSY even with !CONFIG_PM. Fixed: now returns 1, proceeds.
-  drivers/accel/ivpu/ivpu_job.c: drm_WARN_ON(<= 0), old -EINVAL
-    spuriously triggered WARN. Fixed: 1 > 0, no warn.
-  drivers/gpu/drm/i915/intel_runtime_pm.c: checks (<= 0), old
-    -EINVAL triggered error path. Fixed: 1 > 0, correct path.
-  drivers/accel/ivpu/ivpu_sysfs.c: (> 0), old skipped freq read.
-    Fixed: proceeds correctly without CONFIG_PM.
-  drivers/gpu/drm/xe/xe_pm.c: wraps (> 0), all xe callers
-    (xe_bo.c, xe_shrinker.c, xe_vsec.c, xe_ggtt.c, xe_guc_ct.c,
-    xe_pxp.c) now correctly treat !CONFIG_PM as active.
-  drivers/net/ipa/ipa_smp2p.c: power_on = (> 0), now correctly true.
-  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: (> 0), now correctly
-    executes stall register update.
-  drivers/staging/media/ipu7/ipu7-buttress.c: active (<= 0) early
-    return now skipped, correctly proceeds.
-
-Pattern D: explicit -EINVAL check
-  drivers/hwmon/prom21-xhci.c: checks (> 0) then (== -EINVAL).
-    Old: took -EINVAL fallback. New: takes (> 0) fast path.
-    Both succeed when CONFIG_PM is disabled; functionally equivalent.
-  drivers/hwmon/eic7700-pvt.c: call is guarded by IS_ENABLED(CONFIG_PM),
-    stub is never reached. No impact.
-
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
----
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>
-Cc: Karol Wachowski <karol.wachowski@linux.intel.com>
-Cc: Oded Gabbay <ogabbay@kernel.org>
-Cc: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc: Tvrtko Ursulin <tursulin@ursulin.net>
-Cc: Matthew Brost <matthew.brost@intel.com>
-Cc: "Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>
-Cc: David Airlie <airlied@gmail.com>
-Cc: Simona Vetter <simona@ffwll.ch>
-Cc: Alex Elder <elder@kernel.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: "Joerg Roedel" <joro@8bytes.org>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>
-Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Guan-Yu Lin <guanyulin@google.com>
-Cc: Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc: linux-pm@vger.kernel.org
-Cc: linux-usb@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: intel-gfx@lists.freedesktop.org
-Cc: intel-xe@lists.freedesktop.org
-Cc: linux-hwmon@vger.kernel.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: iommu@lists.linux.dev
-Cc: linux-arm-msm@vger.kernel.org
-Cc: linux-media@vger.kernel.org
-Cc: linux-staging@lists.linux.dev
-Cc: netdev@vger.kernel.org
-Cc: imx@lists.linux.dev
-Cc: Rob Herring (Arm) <robh@kernel.org>
----
- include/linux/pm_runtime.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-index 64921b10ac74f..de9e7518ecef2 100644
---- a/include/linux/pm_runtime.h
-+++ b/include/linux/pm_runtime.h
-@@ -280,7 +280,7 @@ static inline int pm_runtime_get_if_in_use(struct device *dev)
- }
- static inline int pm_runtime_get_if_active(struct device *dev)
- {
--	return -EINVAL;
-+	return 1;
- }
- static inline int __pm_runtime_set_status(struct device *dev,
- 					    unsigned int status) { return 0; }
--- 
-2.43.0
-
+Thanks
+Nicolin
