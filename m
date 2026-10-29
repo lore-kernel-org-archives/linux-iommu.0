@@ -1,101 +1,148 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.7.16
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793293675;
-	b=o6S6hLZouw4Eose9qpYbrKMKq1fpwZT8g3b/r2vFeShQhn6FB/mzQW1+sa45+FIi31nI
-	 ugwN8IXD8e2er6ktYIJSn19zUmao1UlIoer92Af1GRSwFz0EQf+Bx4KpXN7LgXDDNw1yT
-	 01W9nnAkthYNabO8hXHM1tTGyPvVD4ltUeTcoDxeQmOeA7aowZHLSGmB3aqr70AvB4NLk
-	 g3nfQ02HKvBxxY1HE2l6FO/sraUHmXViIt3gSCUw4PRxR8R1LyMD0Tk9yaPuvUlUMkCnS
-	 VUoKD/yHzSEdFDswwtCtQKP5HlvINBtpGj96V4LePyxNPOss+jFOYc7XKUkYX3atyDA==
+	t=1793295583;
+	b=S5RNrmLpawKLeEnKyK6U6BAmCQfnY/CkEi82hbwpWhTL2v1ayz5MzUCsnWUfGA87WWxX
+	 cArsR1EY4ASp5LgnFFy0xIuqQ8FeTQczUMJrkENBajJFqvS/nfdGibzGs+zYKjh7WXtwi
+	 iqp+1IkYzvYMxrYnN8I6EYKnzYKBqOPNhSeAOgUjsIBtFvwiIbFCGMkTuB3231icpYb+g
+	 47IDfuDdUpIF+wJ3cr7kTSUWtkX3whR3/rFfnuD3mU4HTobqCgm3Oj6aReGyBGfoQvXr4
+	 qiyWw/n4NSOa19lWtHm50Cnqh4gtXGfPMhQlzP2jcUClqK+o1j4XeQtLRJ5kDv4OSAg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793293675;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
-	b=yoEHhOMiDl6PY+OGTArcBRJQauf/mMXCfjxxFnY00IINy20ouLzyzlV48ZWQ4pl1pC/S
-	 MQB3d+kO1cAzqEDTr8dGOUlN065vHkpK4Vzf2uFd8qbuyaZt2QFLzVvImrU+2rI13jY1x
-	 qViEWiRnRah/TI2bKgfBAIcpThxeUPUFQQMsKkU9mDPeF/wiWt6ZhrXCIpS72rrVJdUVR
-	 lkK1R+P7xx1X16mWIdIp2zTZwNVPVbclNJI59jP8BX4D1/ldj5MGa0SGhNdaTsg6eFKdR
-	 dWIgTR8QPqn3WDL7kPL9ZptZOV79BQYRA7NFwCVxZp/YI7JJpivHcGjWEapUIundOhQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793295583;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:
+	 X-MS-Exchange-CrossTenant-rms-persistedconsumerorg:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=L/evzt8Yf/AquoRl3xbKClrS38CkfN1//dy/8K2TETI=;
+	b=Tb1yVA/ty9JEBIF3FPghLd+Ejf0kozISwN3KjjO4y2IJh9jRr9Cz9yPYDzJY92bXclhQ
+	 skdACuS8GhByipfclh6XHVZ2QcaPm7fCESW5mk4rrYGai1wlzYmSPOkOJdMafTbdXwneM
+	 8Hxk6z+E42PBOMhM8ZhO5hICwex6/mp//ooVaxYaDlwY9wrYuBahxXIGLg4Aciio4W3D5
+	 l3JnUkWNL7mZFOCtlxpH9A1gk0eAQ0V6lK3oEZxTDnlKUT8X1zRJ8xrePSnVkx4yh/4df
+	 mTOmsOZv0wOCXiC0u11aDpbbOOV6MzgfCKtzoRiKapeoSuHCTuehGnaiZRlP0tLriWw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GpSvzAUB;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.218.52
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=outlook.com;
+	spf=pass smtp.mailfrom=outlook.com;
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=fiL1Zhk+;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.7.16
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazolkn19010016.outbound.protection.outlook.com [52.103.7.16])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED9F606A31F
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 17:07:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3ED9F606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 889A1606A31C
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 17:39:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 889A1606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=GpSvzAUB
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c43fbcb4393so384331266b.0
-        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 10:07:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793293672; cv=none;
-        d=google.com; s=arc-20260327;
-        b=jx1EE0GTw/RAZOuX+cPeaIpyqdA0Qy8q2hAUH1ttoQciI74Qhc8mHNUmRR+nUwFpkT
-         LN5nn1ARAOk11mYD+JsWTJQlcL3Y5+4z9MB/c3euExom1ZAQgY65pkb68Kq617vcsQWA
-         h9VLHXCxSH4Alq8dJuDQFBo51+7KkQ/nl0hAMQh40r8XpLlW/HFowqPhvvqX/B/ABQqA
-         D1HofN/OWdQy2abcuL9cUCz9cbVAZ+gVsciySVRuToIwVXPAOTGeRNI2+Z12q3+P85ua
-         F+xqn/4ED/OkhC0bv4JyQ85VIFzh4vg8k5aXCbabtBBfC5UT/2+rpbiz0MnHGuqVe9pA
-         St7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
-        fh=XGrTX5CU/p1f8vAGCtzTE7d/YBuF8ay+NGNaSxACvbY=;
-        b=chF4wq2vTc3GYyDSk+dP7XmA5xYRovQuu/qWy8Bbc1WeVTv9TNkZFfz2KMSm3oDaHS
-         jveA83ujjRPHWDSYLj24qG77dB9rmwDEwX2xgp0oJNILsFal3verbgFPEduJXAo4w6DN
-         urbUGpDUZUZsCTVgi9dl1llfOCwL4ekBn4gC4YWYCbUSKtzIC1MsZ8pVfjtXAbTnhPzp
-         szD3HzWw/xdudiGG+OOv9UtgCeZ/qMDpVOxleBiN0sBdV7UDo5ATg3jLvIWuRNAo3Xr0
-         9TUcrB7Emm76SvYgPQ7nuy+KE4Zmt9Uaf1da/tk66IVCaoI4JeLYBX7N+aeqmv57SvLT
-         3sgg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793293672; x=1793898472; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
-        b=GpSvzAUBXmt6WMDqX0vRUW/nrcU3oeD6EwyzUXPt0EXbwzV1z9pWNqTeOKCholoS+g
-         0/F67iAqxeavczt2b/TpCA405MJ4dNjFykcLHr6QZvqJCTKOURpgQ8b3Hhyq17QP/Lwj
-         JxEknQIS2iK6I8bbXc2DeBMX53nL7VKDIDynIRxIV9oNSbux7TLMlBM2eUZhH4dfVCBU
-         /yKkGQCOXYKSDCBH8hcGTTr/YCru6VA2o4PsAdfU6zdCZMwZSe5EyvxTtI2KXAaPy8cC
-         AykEcyv10d6YtwjZ8Yzi4GQp8cO+FBoKtuIZTVooHBGhzt17skt7EtdH4jsudRogYUUC
-         ox/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793293672; x=1793898472;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=0YjGbXSGdFWqGTw7iXBWdHWj/MRYXXZreyMjEGvCLmY=;
-        b=CVh3AdfCivKvbkW5LBr2a8cpjeNJ56/dd5CTJ76ro0RNrxCA2cd845aRbd0ot2WIBG
-         1VdaslidYnUPDxzhTOutwYy/r5U84jsAU3JLjIoR8vio1BqW+DNTzEimISuD2CNWZiot
-         QRvvcJOjNnsRAGsApSjfqeb9y6Ku8qvZnrnbgSa0pOvnObbT6x8E1SJpgePXzfZ3Gwp2
-         RLmYYpEcnC8w9Mqf6pY07rCJ4VZDhdabVbUREsTLaWiLgHR0yD6S1nMC14yI4ccqgOBp
-         mhrCeeIqVib2X1OqShfAQQPm+DS5L0g17TP0eL5zYMmjt9oJeS82vlF/WfugEur9r4xC
-         T8rQ==
-X-Forwarded-Encrypted: i=1; AKwUvBzwLHggELSDawY7ZCf9FDRPbQmSG4S/+lSP/GzNZHWEXx98fie32oYCUkGBk463AFnfKWd2WQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYINm5kHU2UI+dU25+B2Er7HGyQC7wAYTnXIFY0kOIJOQyAnkEtQ
-	LmKxLvsind2kwicWSII/eYtHNDp4kSuNBWzV1oCKX4TZh0/52d8n1VJOUeuc6Kky1OqVUcSL9h+
-	eXdXVWbZY1lUNsd3+rhPjaHkvWnQg4VU=
-X-Gm-Gg: AYBFou0gLHrkSHerdeUz+ANkaCwkPJcAEjZ+Xftvpt1kYwi68GAsYGow8+UEw6RD4Pj
-	xwNqBsjxKXsJMWXWF1nuh6JJm6Devou4CYUuVazq3VcENQfIoemf7vRZIn+E9weDTWdUkd3QGgT
-	kAskp2Xau4jheUYSv0tSuw6gAAdamhNe4iBqicIhHHgLdmimiLnIpl8BXl/BcfAgGgFLGKUlOCS
-	7/LV6TrdvRzNBmpTpkvxaVoCmeCs7YDbq4GsufV4QkIlNiImQqIHx2C5dRu2OENyFnHdac99QPk
-	rQhKtcyTJdvjQaPuWER35T3dEb3AaS7pa3EDVUcG1NXzNV+Kv86H6VWZWcL1DADyeMmeG2oUoA0
-	58mw/lSkE4Y1xT9HnLYM6EofEWgakaOcS1s/lJUQLfleXA+Y4Mis+FwsBpIkd7ZsuGL+pymz4Ar
-	jEpQSik0xHrBwr9Kg=
-X-Received: by 2002:a17:906:7313:b0:c45:c030:732c with SMTP id
- a640c23a62f3a-c49be03a73amr610119866b.41.1793293672256; Thu, 29 Oct 2026
- 10:07:52 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=fiL1Zhk+
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=cnBCsY0vn7F5int+qt3BVH9FH8EbC5bQzB/MaC9umE5AoeKCU4S5DSVmVr9NzPb2r8l5MthzJUbEdQZwDuukJYbtr/mLWJ+s/6pn1eL5BE9RUfkLeOHEKFxISLfosO6N0ry43IBGt0cIdIbFPE1J0FxD8d0JmMrBsHZwRWsIw7HipEulOgsDJrKfCchiqMmthc2z7+0xsa3kVquICtB6eYGDB5Bhq1qH9BwBN+kzlppnzQVc6GkdBNlhv3yFWeNteoa03JSPQ3GfU+shteiYdn9YTgaGrEzJj7upF0CNb0Y29iFuB8Hm2JMrccXTJpziivtzm3X+Hwj4Jtr6x40rbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=L/evzt8Yf/AquoRl3xbKClrS38CkfN1//dy/8K2TETI=;
+ b=aNDZ9GnFxHF11trhRoB4pUAGSexrGDq/n5hwf4BfUO+4EIoUQrFc025LfN2zEsXZkaBswuryeUBMEw8v7To7jo2i4N+8J+Lqz43a+ASWaMEbDwPVqCSQhZi4Fl5HZUg6Gsr72/QYmcFMvjHdNuIPAVH3JyDyG+boCVjsRnQvry9+tp+HJEOwPVob47tKKl0cWtSSPTVNhcbVNoJpWxn4aauzQVTDEb0UaeJvupWWOSBq4NnC88WxY0nGf2MGtccrwtvFsCERaBY899f2fQLU8VZrsA9DMNRcuEUwbVBkXIOi/sJqiBDWSXQMJn8eamN9fadepNQQOrKv8cE+lOQCxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=L/evzt8Yf/AquoRl3xbKClrS38CkfN1//dy/8K2TETI=;
+ b=fiL1Zhk+6YDoEnY/rnaw3qtbCJ0pFmhSm6CEl4Gokxa/2dGCVcfgC69gDhKVKUIDglm8v9Bsh62IKfUEJznGyFK6VF2N1o5P0laofDopde5W07jAmIct9wZcqPv0uM5XX26ypL3N1gK9R+b3m3CcJpa/n25xhtHhyc/ytpEt2OI1zopY7qUt3oKFpfb8lsx15wTCR2zBKKqvFR+jUjX61yJWjR/tYqW0Ohnvaq9z2cvVfDuiU8IgmF4fQOUo0FxxgOI1V0PES9OkXjswY4WxoOOPHRXNs+2iCf55IVRTIk1/c7+HtLDmBJa9Aaboi6eYOiAjWAJTWCeAjvSBldCGUA==
+Received: from MN2PR02MB6863.namprd02.prod.outlook.com (2603:10b6:208:1d7::20)
+ by SA1PR02MB9698.namprd02.prod.outlook.com (2603:10b6:806:385::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Thu, 29 Oct
+ 2026 17:39:39 +0000
+Received: from MN2PR02MB6863.namprd02.prod.outlook.com
+ ([fe80::da67:fd0f:d96d:ac53]) by MN2PR02MB6863.namprd02.prod.outlook.com
+ ([fe80::da67:fd0f:d96d:ac53%4]) with mapi id 15.21.0569.008; Thu, 29 Oct 2026
+ 17:39:39 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Giorgi Kobakhia <gkobakhi@asu.edu>, Marek Szyprowski
+	<m.szyprowski@samsung.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Xiang Mei
+	<xmei5@asu.edu>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] swiotlb: fix out-of-bounds read in
+ swiotlb_release_slots()
+Thread-Topic: [PATCH] swiotlb: fix out-of-bounds read in
+ swiotlb_release_slots()
+Thread-Index: AQFgKk/cI909fRkJAsTJbQaejYuCm7gPQD9Q
+Date: Thu, 29 Oct 2026 17:39:39 +0000
+Message-ID:
+ <MN2PR02MB6863E09805FBA39C6779D209D46E2@MN2PR02MB6863.namprd02.prod.outlook.com>
+References: <20261026032007.1957949-1-gkobakhi@asu.edu>
+In-Reply-To: <20261026032007.1957949-1-gkobakhi@asu.edu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MN2PR02MB6863:EE_|SA1PR02MB9698:EE_
+x-ms-office365-filtering-correlation-id: 5ede9dae-9652-4caf-58c6-08df35e39bc8
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|12121999013|25010399006|4140399003|19110799012|37011999003|8062599012|31061999003|8060799015|13091999003|15080799012|55001999006|24021099003|12091999003|40105399003|52005399003|102099032|440099028|3412199025;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?9V6kGA9CuJ+9jWDSDfRhqpSKxBfBKklnTdlSMuE5v0lnI0yY2h6Igo1g3vyS?=
+ =?us-ascii?Q?MYbQhEHJhTTOu8qPN3Se2wwe1outWgoC4+NaXG95E7t16vSr/ramIv7CNsPs?=
+ =?us-ascii?Q?MCmc0KQ0KuruwArULxlf0WhjRz/TCz5/6pDpwyISeSwTZoUHwDvzlJ3CzTf4?=
+ =?us-ascii?Q?n8TINc8fCxEPctK5d38gBGFj9QV1TlQRyAEZtpsFyyUrSvGplknrefHIpUMt?=
+ =?us-ascii?Q?pIUE8LALnrmZ2FLR8qTPQ2QU/XbRFBD2HjtRncImLo2LazMvCQD5XaKqWJPt?=
+ =?us-ascii?Q?5j3gALndta6DhIWFeKpF+BYtQ8H9sG/uiFexT9NERkeJczbEwUAavp8EbUlw?=
+ =?us-ascii?Q?bXYbZ3Wb6L9YRCubtjqTOmCRhzJ8mI9OMouC/C77CHREgDilEg3eTw3bc3ks?=
+ =?us-ascii?Q?Dio1Ow9M9rVy6x5/XrFGRaF6iK98XtpgPw/bHj5/KcSaZUcD8rozMIRb30KX?=
+ =?us-ascii?Q?bIwX71Ywn069u1vr5exfsICjSoDhPIj4Klv7O6PR2qNFF8LrSFgFrOy9ppKy?=
+ =?us-ascii?Q?KrLMjb5ASzQWFXlYMKCWRtPkduVPoW0mdbW7ehsLOJ75S2WDUZc/HQoRKCJw?=
+ =?us-ascii?Q?P8LutwHwMMjsoGkr+uKCWMZNTbthGAICyBUDORVEnS/snI4i4ftdLbdUYFRL?=
+ =?us-ascii?Q?Ko/HryqV68w5twUOJhwGf3mic5hDIt5zqyjNTTGzh/ngAHCeYKHMwbFFm/py?=
+ =?us-ascii?Q?inqruvEDJYkVFz7L6OTz7oan7+uyesR8E8ES4O0VG1h4LMlN9HOtOI7Aq1sA?=
+ =?us-ascii?Q?IdbjCq0DZc5bBGMmIRp3Mnq4Nf0KL9I+02mVkCEOP7K6b++UvStV5PvDHZk/?=
+ =?us-ascii?Q?OgneMWkbGUbRi0mZqtmUiNyAMRBkw6JG2AoqnXjp0CSbTOB3zexQ6uQLU+Pl?=
+ =?us-ascii?Q?67Zwg8NW3Ai4ZGf1H9vNs3HvlV1m6Wt8Kq6aCvnxOddqKjriAs60d1wYJJHn?=
+ =?us-ascii?Q?KQBgeTY1rXXIrrKRYtybwVWVHBFr+pY+wQClWyZstMN3hSjONtEExtqj2efY?=
+ =?us-ascii?Q?ma2PvHqelSxyUPUbiwir5xCMf7v0rABEMvmrUuWBkdoCTqui2lw2GI683n+l?=
+ =?us-ascii?Q?zbzFiaCvo6exqJXrllj1RfKRm/dx5lB0Oo8ptGI0utLcYnT7ORg=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?PWMkHc7UkinMhTpR/YJA+fYSMgiUgUcJDclqQ22Atf6HnvdELlXkUhazCklO?=
+ =?us-ascii?Q?7G3x/gXTsCXiCdIEonL3w/OQWgimCl86Dcjw/Ag32Ln3rXO7lrvymMPADYsD?=
+ =?us-ascii?Q?d0A0D5XXHkg92v5n77Pk5osEvir64hPFXnTvJftzEot1VWZQ2+crahOdb0+n?=
+ =?us-ascii?Q?MBuTi2MovVN8zQuHIuqDZM+8od+4Y+2fBygDcYT7ncOsr5bhSWKuwdi3Wibo?=
+ =?us-ascii?Q?aK8hbePus2wJiMstuuwe2ROXsnD1mUfNtQhJ72l7b9D6oCXv9xhnx79p2TsO?=
+ =?us-ascii?Q?zI8PJitjlL7MDQZWowJooQXoZEFMtfNFDNXUNS1kiUjrpMq6fKYkWJUDm/qr?=
+ =?us-ascii?Q?uMm/WkfTNtKydsvMb2FSm+s9ZRxXfwQXMnGI+OBYxn1zQpqSj9TIm75zpBYi?=
+ =?us-ascii?Q?aEehMBXyPbUibTYrOED3i4FvkUqo5UoYa88nuy6WtHPca8XAW5BQ0S2Jxz0N?=
+ =?us-ascii?Q?n+3A4jU9DeGPfBIlbw4/tXK0a1NRvP0oUlQopej3TiGliYMR4/waHhPZ0iyQ?=
+ =?us-ascii?Q?sRg4lb7iMFQ4tNyjtO4Pc3e8fXQmrIPWjoisGguRXjMA2U0nixmQoGThiPkd?=
+ =?us-ascii?Q?CAGESgm3jL2GOoGntxUGBSVYsIEXLWBAahXqHWUPm4GC78RuOYGq9XmElgnT?=
+ =?us-ascii?Q?ezWkr54W7HO+XxouZgcP7OPQVTTEpr7gSa+ONHjG37xQTVIczxjh4yKgL1wv?=
+ =?us-ascii?Q?4iAPT5VXlYAmel/XaSKNDD9fm9OPV0otnYcLtrFksIHZnpvkp4Z9OnTJGFVS?=
+ =?us-ascii?Q?UHEkwashAZq94ho5e4JO0KDjnErhNfbL8EmYt2cJ6E8FdQ0tnU+nqtpFiXyV?=
+ =?us-ascii?Q?C2kLb3v1aAxVmQ7iOwPQAxPWeaD8nDB2EsT+x3OX0tlKOYS4yLH7+qY6ZsJH?=
+ =?us-ascii?Q?UNZoSq8Qj0grfxq0NcvIH+ZvtEoUCa/c+FWP8NpTQMPZ9ZdOuc+lVHwLKPhi?=
+ =?us-ascii?Q?L+njbQxIjZX/R4WAd+GiJHTJ/YF0ZeZK8C/G0OVDiwax/xMRK4N9jDqNjh1y?=
+ =?us-ascii?Q?dYtgK1VAHBq1hx4l6T9mB1E+nio7Gr4Xwr5Xm8TKBs8Ia9cS0hYND1D1zdjn?=
+ =?us-ascii?Q?5qsznURuFCN6CL0QqurH7roRWZ6bPgAJTfsHQX2ubYhLvUguwJ4mq5ZMMsOn?=
+ =?us-ascii?Q?4kdF9LG2m20WqjeLsg70lc8tCDcz7eIi7xdjpyKeAURoaIpSAKP/ohd0vwaw?=
+ =?us-ascii?Q?S4y2dp1ChYZWTYVhIvMZbKlTKPJLJgTCGAjL9TFoPn5NOuUdE1UYiB4/weMA?=
+ =?us-ascii?Q?z4IJGoR+KyUkyQMEXFNo/6EXefC0XkfYH6QCE9K3z1J2aTbgCK4EdqKRmp6Q?=
+ =?us-ascii?Q?5urxsSOO1zd2gO0gKyY+vmYtgXer8BDG3aBmjNLLwx7Yq50y94cjfpc8p5ul?=
+ =?us-ascii?Q?8+btZHM=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,294 +152,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261022-gmem-alternative-providers-v2-0-5dd1dc6c660a@google.com>
- <20261027154649.91571-1-griffoul@gmail.com> <20261027154649.91571-2-griffoul@gmail.com>
- <CAEvNRgGvxtgT=x3sLcasLZzCrtX+qEkHjPgs2yFRY0HRJvodag@mail.gmail.com>
-In-Reply-To: <CAEvNRgGvxtgT=x3sLcasLZzCrtX+qEkHjPgs2yFRY0HRJvodag@mail.gmail.com>
-From: Frederic Griffoul <griffoul@gmail.com>
-Date: Thu, 29 Oct 2026 17:07:41 +0000
-X-Gm-Features: AclHuK-XOTTZ577Y9tlQyUF1DU-1w6QS3FSXEW1jGcpzGvSeAxBjghFI3p-6WVU
-Message-ID: <CAF2vKzP7mKAsbDFfj-ndoYSxxZYbNzVO7uysb-XtKytR4zuC7w@mail.gmail.com>
-Subject: Re: [RFC PATCH 01/14] KVM: guest_memfd: Clamp the order of PFN mode
- blocks to what KVM can map
-To: Ackerley Tng <ackerleytng@google.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>, Sean Christopherson <seanjc@google.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Alexander Graf <graf@amazon.de>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Alexey Kardashevskiy <aik@amd.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>, Ashish Kalra <ashish.kalra@amd.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
-	Bill Wendling <morbo@google.com>, Borislav Petkov <bp@alien8.de>, 
-	Catalin Marinas <catalin.marinas@arm.com>, Christian Brauner <brauner@kernel.org>, 
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Connor Williamson <connordw@amazon.com>, Dave Hansen <dave.hansen@linux.intel.com>, 
-	Dave Jiang <dave.jiang@intel.com>, David Hildenbrand <david@kernel.org>, 
-	David Rientjes <rientjes@google.com>, David Woodhouse <dwmw2@infradead.org>, 
-	Erdem Aktas <erdemaktas@google.com>, Frank van der Linden <fvdl@google.com>, 
-	Gregory Price <gourry@gourry.net>, "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>, 
-	Ingo Molnar <mingo@redhat.com>, Jacob Pan <jacob.pan@linux.microsoft.com>, 
-	James Houghton <jthoughton@google.com>, Jan Kara <jack@suse.cz>, Jianxiong Gao <jxgao@google.com>, 
-	Joerg Roedel <joro@8bytes.org>, Joey Gouly <joey.gouly@arm.com>, 
-	John Starks <John.Starks@microsoft.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Justin Stitt <justinstitt@google.com>, Lorenzo Stoakes <ljs@kernel.org>, Marc Zyngier <maz@kernel.org>, 
-	Michael Roth <michael.roth@amd.com>, Mike Rapoport <rppt@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Oliver Upton <oupton@kernel.org>, 
-	Pratyush Yadav <pratyush@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Samiullah Khawaja <skhawaja@google.com>, 
-	Shuah Khan <shuah@kernel.org>, Steffen Eiden <seiden@linux.ibm.com>, 
-	Steven Price <steven.price@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Tarun Sahu <tarunsahu@google.com>, Thomas Gleixner <tglx@kernel.org>, 
-	Tom Lendacky <thomas.lendacky@amd.com>, Tycho Andersen <tycho@kernel.org>, 
-	Vishal Annapurve <vannapurve@google.com>, Vlastimil Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>, 
-	Xu Yilun <yilun.xu@linux.intel.com>, Yan Zhao <yan.y.zhao@intel.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, x86@kernel.org, 
-	Shuah Khan <skhan@linuxfoundation.org>, Fuad Tabba <fuad.tabba@linux.dev>, kvm@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-mm@kvack.org, llvm@lists.linux.dev, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR02MB6863.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ede9dae-9652-4caf-58c6-08df35e39bc8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2026 17:39:39.6820
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR02MB9698
 
-On Thu, Oct 29, 2026 at 06:25:49AM -0700, Ackerley Tng wrote:
-> Fred Griffoul <griffoul@gmail.com> writes:
->
-> > +        kvm_mmu_invalidate_range_add(kvm,
-> > +                         round_down(gfn_range.start, blk),
-> > +                         round_up(gfn_range.end, blk));
-> > +
->
-> Yes, we want to make the invalidation range larger, but not the range
-> being zapped. We can't over-zap for CoCo VMs.
->
-> Would it be better to refactor kvm_mmu_unmap_gfn_range() instead of
-> doing kvm_mmu_invalidate_range_add() twice?
+From: Giorgi Kobakhia <gkobakhi@asu.edu> Sent: Sunday, October 25, 2026 8:2=
+0 PM
+>=20
+> When buffer is freed, swiotlb_release_slots() tries to merge it with the
+> following free space by reading the list value of the next slot.
+>=20
+>     if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE))
+>         count =3D mem->slots[index + nslots].list;
+>     else
+>         count =3D 0;
+>=20
+> If index is in the last segment of the pool and the pool size is not
+> multiple of IO_TLB_SEGSIZE, index + nslots becomes equal to mem->nslabs
+> leading to out of bound read.
+>=20
+>  BUG: KASAN: slab-out-of-bounds in swiotlb_release_slots
+>  Read of size 2
+>=20
+>  Call trace:
+>   swiotlb_release_slots (kernel/dma/swiotlb.c:1653)
+>   __swiotlb_tbl_unmap_single (kernel/dma/swiotlb.c:1734)
+>   dma_unmap_phys (./include/linux/swiotlb.h:262 kernel/dma/direct.h:102
+>                     kernel/dma/mapping.c:218)
+>   dma_unmap_page_attrs (kernel/dma/mapping.c:236)
+>=20
+> The commit 0b84e4f8b793 ("swiotlb: Add restricted DMA pool
+> initialization") makes it possible to initialize a pool with an
+> arbitrary size. Before it nslabs was multiple of IO_TLB_SEGSIZE and no
+> OOB occurred.
+>=20
+> Add overflow check.
 
-Good point. As far as I can see, kvm_mmu_unmap_gfn_range() is only
-kvm_mmu_invalidate_range_add() plus kvm_unmap_gfn_range(), so
-guest_memfd could do the two steps itself: add the blocks around the
-range, then unmap the exact range. The zap stays exact and the range is
-added once. Or am I missing something about kvm_mmu_unmap_gfn_range()
-that a refactor would need to keep?
+I can see that this is a legitimate problem. But I'm not sure this is the r=
+ight
+solution.
 
-> So I think we should follow the same model:
->
-> + The provider reports the max_order based on it's contiguity
->   information, which is the actual contiguity of memory and
->   read-only attributes
-> + guest_memfd further reduces max_order due to shared/private contiguity
-> + After handing it to KVM, KVM further reduces the max order based on
->   the above.
->
-> I think mappings for all other page tables (userspace and IOMMU) should
-> also follow this approach.
+All other paths for creating a swiotlb pool ensure that nslabs is a multipl=
+e
+of IO_TLB_SEGSIZE. The better solution may be for rmem_swiotlb_device_init(=
+)
+to round-up nslabs to be a multiple of IO_TLB_SEGSIZE. My concern is
+that there may be other places in the swiotlb code where there is an
+implicit assumption that there are no partial segments at the end of
+a pool. It would take some effort for me to re-immerse myself in the
+swiotlb code to see if that's true, and I haven't done that. But my
+guess is that there's a good chance of such an assumption.
 
-Agreed. guest_memfd should then only reduce the order for shared and
-private pages, and drop the gfn alignment and the rounding to a
-page-table size, which KVM does. For the provider, "contiguity" would
-mean a naturally aligned block of contiguous frames with the same
-attributes, the frames aligned to the block too, so a mapping of that
-size is valid as is.
+What are the implications of potentially allocating slightly more memory
+for a restricted pool than is specified? It wouldn't be much additional
+memory since the segment size is 256 KiB.
 
-One gap: KVM does not cover a memslot whose gfn and guest_memfd offset
-are not aligned to each other. On x86, kvm_alloc_memslot_metadata()
-disallows large pages when base_gfn and userspace_addr are misaligned,
-but nothing compares base_gfn with gmem.pgoff, and kvm_gmem_bind()
-takes any page-aligned offset. A gmem.pgoff check next to the
-userspace_addr one would keep that in KVM too.
+Michael
 
-The export lookup in the series already works this way: it reports the
-provider's block, reduced for shared and private pages. iommufd maps
-PAGE_SIZE IOPTEs in this series, and will pick larger IOPTEs from that
-block later.
+>=20
+> Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
+> Cc: stable@vger.kernel.org
+> Assisted-by: LLM
+> Tested-by: Xiang Mei <xmei5@asu.edu>
+> Signed-off-by: Giorgi Kobakhia <gkobakhi@asu.edu>
+> ---
+>  kernel/dma/swiotlb.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index ded7016a46a7..1f18003be343 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -1649,7 +1649,8 @@ static void swiotlb_release_slots(struct device *de=
+v,
+> phys_addr_t tlb_addr,
+>  	BUG_ON(aindex >=3D mem->nareas);
+>=20
+>  	spin_lock_irqsave(&area->lock, flags);
+> -	if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE))
+> +	if (index + nslots < ALIGN(index + 1, IO_TLB_SEGSIZE) &&
+> +	    index + nslots < mem->nslabs)
+>  		count =3D mem->slots[index + nslots].list;
+>  	else
+>  		count =3D 0;
+> --
+> 2.43.0
+>=20
 
-> I guess the kvm_gmem_fault_user_mapping() equivalent of this max_order
-> tuning is missing from this series. :) I think we should defer order >
-> 0 to a later series though. I think read-only-ness should be part of
-> the first PFN mode series.
-
-Right, userspace mappings are PAGE_SIZE for now.
-
-Deferring order > 0 for KVM and userspace is fine with me. I'd like to
-keep the order in the export lookup, though: large IOPTEs matter for
-device performance, and I'm preparing iommupt changes to split and merge
-them in place.
-
-Fred
-
-On Thu, Oct 29, 2026 at 1:25=E2=80=AFPM Ackerley Tng <ackerleytng@google.co=
-m> wrote:
->
-> Fred Griffoul <griffoul@gmail.com> writes:
->
-> > From: Fred Griffoul <fgriffo@amazon.co.uk>
-> >
-> > KVM maps guest memory in 4K, 2M or 1G blocks, and uses guest_memfd's
-> > max_order to choose. A folio of order N is physically aligned and never
-> > mixes shared and private pages, so the order needs no check. A PFN mode
-> > provider's frames need not be aligned
->
-> I'll need to think about max_order > 0 more for PFNs. I put it out of my
-> mind because my frame of mind is that only order-0 folios are supported
-> today. Perhaps with PFNs it's actually a lot easier to support order >
-> 0.
->
-> > and the provider does not know
-> > which pages are private, yet kvm_gmem_get_pfn() passes its order to KVM
-> > unchanged. KVM can then map a block over the wrong frames, or with one
-> > attribute over shared and private pages.
-> >
->
-> Yes, makes sense that private/shared contiguity needs to be taken into
-> account. I didn't consider this because order-0 is always safe to
-> map. Thank you!
->
-> >
-> > [...snip...]
-> >
-> > -static void __kvm_gmem_invalidate_start(struct gmem_file *f, pgoff_t s=
-tart,
-> > +static void __kvm_gmem_invalidate_start(struct inode *inode,
-> > +                                     struct gmem_file *f, pgoff_t star=
-t,
-> >                                       pgoff_t end,
-> >                                       enum kvm_gfn_range_filter attr_fi=
-lter)
-> >  {
-> > +     const gfn_t blk =3D kvm_gmem_is_pfn_mode(GMEM_I(inode)) ?
-> > +                       1UL << PUD_ORDER : 1;
-> >       bool flush =3D false, found_memslot =3D false;
-> >       struct kvm_memory_slot *slot;
-> >       struct kvm *kvm =3D f->kvm;
-> > @@ -355,6 +360,16 @@ static void __kvm_gmem_invalidate_start(struct gme=
-m_file *f, pgoff_t start,
-> >
-> >               flush |=3D kvm_mmu_unmap_gfn_range(kvm, &gfn_range);
-> >
-> > +             /*
-> > +              * In PFN mode, a fault may map a block of up to PUD_ORDE=
-R
-> > +              * pages, sized before this invalidation (see
-> > +              * kvm_gmem_pfn_map_order()): make faults anywhere in the
-> > +              * blocks around the range retry.
-> > +              */
-> > +             kvm_mmu_invalidate_range_add(kvm,
-> > +                                          round_down(gfn_range.start, =
-blk),
-> > +                                          round_up(gfn_range.end, blk)=
-);
-> > +
->
-> Yes, we want to make the invalidation range larger, but not the range
-> being zapped. We can't over-zap for CoCo VMs.
->
-> Would it be better to refactor kvm_mmu_unmap_gfn_range() instead of
-> doing kvm_mmu_invalidate_range_add() twice?
->
-> >  #ifdef CONFIG_HAVE_KVM_ARCH_GMEM_INVALIDATE
-> >               kvm_arch_gmem_invalidate_range(kvm, &gfn_range);
-> >  #endif
-> > @@ -374,7 +389,7 @@ static void kvm_gmem_invalidate_start(struct inode =
-*inode, pgoff_t start,
-> >       struct gmem_file *f;
-> >
-> >       kvm_gmem_for_each_file(f, inode)
-> > -             __kvm_gmem_invalidate_start(f, start, end, filter);
-> > +             __kvm_gmem_invalidate_start(inode, f, start, end, filter)=
-;
-> >  }
-> >
-> >  static void __kvm_gmem_invalidate_end(struct gmem_file *f, pgoff_t sta=
-rt,
-> > @@ -670,7 +685,7 @@ static int kvm_gmem_release(struct inode *inode, st=
-ruct file *file)
-> >        * Zap all SPTEs pointed at by this file.  Do not free the backin=
-g
-> >        * memory, as its lifetime is associated with the inode, not the =
-file.
-> >        */
-> > -     __kvm_gmem_invalidate_start(f, 0, -1ul,
-> > +     __kvm_gmem_invalidate_start(inode, f, 0, -1ul,
-> >                                   kvm_gmem_get_all_gfns_filter(inode));
-> >       __kvm_gmem_invalidate_end(f, 0, -1ul);
-> >
-> > @@ -1535,6 +1550,44 @@ static struct folio *__kvm_gmem_get_pfn(struct f=
-ile *file,
-> >       return folio;
-> >  }
-> >
-> > +/*
-> > + * The order a PFN mode block can be mapped at: the provider's order, =
-no
-> > + * larger than the alignment of @gfn and @pfn to @index allows, rounde=
-d down to
-> > + * a page-table size, and never over pages that are not all shared or =
-all
-> > + * private, since KVM maps a block with a single attribute.  Called wi=
-th the
-> > + * invalidate lock held; an invalidation of any page of the block make=
-s the
-> > + * fault retry (see __kvm_gmem_invalidate_start()).
-> > + */
-> > +static int kvm_gmem_pfn_map_order(struct inode *inode, pgoff_t index,
-> > +                               gfn_t gfn, kvm_pfn_t pfn, int order)
-> > +{
-> > +     u64 misalign =3D (gfn ^ index) | (pfn ^ index);
-> > +     u64 attrs;
-> > +
-> > +     if (WARN_ON_ONCE(order < 0))
-> > +             return 0;
-> > +
-> > +     order =3D min(order, PUD_ORDER);
-> > +     if (misalign)
-> > +             order =3D min_t(int, order, __ffs64(misalign));
-> > +
-> > +     if (order >=3D PUD_ORDER)
-> > +             order =3D PUD_ORDER;
-> > +     else if (order >=3D PMD_ORDER)
-> > +             order =3D PMD_ORDER;
-> > +     else
-> > +             return 0;
-> > +
-> > +     attrs =3D kvm_gmem_get_attributes(inode,
-> > +                                     mtree_load(&GMEM_I(inode)->attrib=
-utes, index));
-> > +     while (order &&
-> > +            !kvm_gmem_range_has_attributes(inode,
-> > +                                           ALIGN_DOWN(index, 1UL << or=
-der),
-> > +                                           1UL << order, attrs))
-> > +             order =3D order =3D=3D PUD_ORDER ? PMD_ORDER : 0;
-> > +     return order;
-> > +}
-> > +
->
-> I'll review this function more closely again. I think the mapping order
-> should fit into how KVM does it. After taking guest_memfd's input on
-> max_order, KVM then lets these parties possibly tune the max order down:
->
-> 1. lpage_info contains information about highest order due to memslot
->    alignment and alignment due to VM-level memory attributes
-> 2. CoCo platform can impose a max order
-> 3. Userspace mappings can impose a max order too.
->
-> So I think we should follow the same model:
->
-> + The provider reports the max_order based on it's contiguity
->   information, which is the actual contiguity of memory and
->   read-only attributes
-> + guest_memfd further reduces max_order due to shared/private contiguity
-> + After handing it to KVM, KVM further reduces the max order based on
->   the above.
->
-> I think mappings for all other page tables (userspace and IOMMU) should
-> also follow this approach.
->
-> I guess the kvm_gmem_fault_user_mapping() equivalent of this max_order
-> tuning is missing from this series. :) I think we should defer order > 0
-> to a later series though. I think read-only-ness should be part of the
-> first PFN mode series.
->
-> >
-> > [...snip...]
-> >
