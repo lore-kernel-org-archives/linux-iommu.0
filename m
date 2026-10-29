@@ -1,105 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.46
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.9
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793278364;
-	b=rbgdyQrLGW67oZhkgBCPQsrVOE2SN6elyTtw+k+sT7C+NMCVc9jIvhP5QTIXapsSk+Sj
-	 gYwkvyjYz54Uipa1d+WjOM3Zj4tEjhaBhJwmoux7scl0EBwA4gIYu7ggcvIBvBvezy8pz
-	 gZ2b2pqFxdEz+OhVorWx7J3LJtVgvaKfG1k8d5Wb+Utnu0u9GV69QSQifIf1VzahQp/Z3
-	 nruQqx0qCwTeEgoxBLkusRtmZCIuR9RwllICsUApGizHhf4N1U8jjrdCUp/Q7FWNrdXQx
-	 hriAaPJrZY1g+IyQPH8rASKr5bp1/tJnb905v0i2qlnm+wmLytK3XPk5jypGxlMOzTw==
+	t=1793278891;
+	b=lxWNYBDAT7oB45rNspNLmc70L8L3mluI1hn1nFy6Yezufo+4Gx/IoJk8LxhctmGxK7iG
+	 v/nRQOvue/uhHcwFI+B09JbBlU1/7mWZ34Q2TWlfw1c9r53uVDa3Wldh+mBEm57Q4BBHZ
+	 COqbJ+vBzx4ZewQc9FG6Otza2kJ9scz5v+Br+42/XorQt4fzrkIZE+97cj58oovzgYFYD
+	 mBCggK+hK0f1+H9yBtGeEWDCSu3kDGhCH3I8lxNXP8vcaQN+pBlvbaB0UR0CG++ATWUSP
+	 vNaLqHmpAcdoHL9LO9UFcfa9116Auf/UI+l2dtpn6/yPXJYkigrU9fXxckEy2F6u6yA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793278364;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:In-Reply-To:References:MIME-Version:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=zf2xViTkAeLxB49iEkeFNan7sx9Snfm1yj/XBegFK/Q=;
-	b=fuHR5/ZLnlC7/LkVPG5nnu+9gMdRwiAvGnlYv45MWai/IawuAHxtAzaj+ROXHUFN4Ct9
-	 m0k7ZUzU3+/HTsPcDJQoQ70yc8x11EyHiwdFoYr3Sp7nf8C8SIdmS9tXqhgKp+iSwsOh9
-	 p1kp3FzrBRIWZn02A5Q2utNrQVrH3vbKys4KzctjU1id+qEzA1RnhSzrPCAzjVFUWOhN+
-	 LJJhljUAqZTI7HkqamlZc2E5JN1+IzC5LrOUjKz5aSMaE1apzjXCDD3eXilM79UJed9Q6
-	 UuirvVL5UFmgN1cQHExRZ39MSD77GZqThATiOBBoSxZj5+S18WFhIPOF92Sa0jQwdcQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793278891;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:Content-Type:Content-Disposition:
+	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=pGL36HlwN1k+w+419NuZ1hy+7P6yE5rxCQ3PsoCFGcU=;
+	b=rvlFCpEdpC0yd/W98IqhKH66rtQ2G5hQ9alejB47RWmLkWOl382BcXqAmN4491iAOWWY
+	 qfk0Je2e7Ui9BaH8at0ZwZsCRt5HVZStY7ZntKbWpZar02kWgfByCWkJxyQoTYKiMw6kE
+	 hLKK+w6vLr0s2WhYQnBG7o/zmto9NqTr4a/5Q3SgsIbj+JormGcuiSPhjFKKbpl316F5t
+	 zResqx9gX2F7+O/0blL3tOLBVDxJiexTLiK39dHm+raMR1V6sG2wPCRVzrBDqPNktU1AT
+	 tTRZY+8v1rXVIfMsgGMw4R/nDnwF+/kkv2NqW4A0mojXlJUW9358XxwYPrKqUCFfFOQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=AV1Hgm0i;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.46
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b="m15azft/";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.9
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012009.outbound.protection.outlook.com [52.101.53.9])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DB5E606A31C
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 12:52:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9DB5E606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 860A8606A329;
+	Thu, 29 Oct 2026 13:01:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 860A8606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=AV1Hgm0i
-Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-91c63449320so21560126d6.1
-        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 05:52:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793278362; cv=none;
-        d=google.com; s=arc-20260327;
-        b=Gx7e912bZOh+nmQfZWtpJM1b0wMKSckptgGEn7SwaVMczsqnXLqcLU/9OIYMacTyXs
-         WhbXhxuNTOIo1R7FMSnpkYvoVCca8KNp+0SD7CzmIZhUJzQ1iUmy7Zyz5uBXI9SZZMgA
-         GtHI0XxPGQSj0/EingvJ1oCBJCfzHOAqH5lWl8RNpldKEmCDpBD4SDE5abCUrTGu5Z3H
-         ruE3TSM2BgnaOcXaCL6WpfOFZpCcyQmHzDi/9aE8aj8duJFHbvKfr6HX8JbnZ3jHkPZE
-         YlK8pJtjByR8lO/xRg+AM7/hGfq4mVGNaHgYA4qmcUifWikexkcD6CCv92S/eIUsecpK
-         1KqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:mime-version:references:in-reply-to
-         :from:dkim-signature;
-        bh=zf2xViTkAeLxB49iEkeFNan7sx9Snfm1yj/XBegFK/Q=;
-        fh=1Zl/ji5qzz7h17eFgsPAV9kJFz+ppNyp/UVzHtW1RQ0=;
-        b=JhWRWEjiD5O5Mbd5zLWX3xi2dh09DPC0mBDJ/uyG1ZIs/+dSGI7BIpiZyMi37PYpco
-         AiBsdJWMA879sd8tqSOlBJmWvwFDMzqd5v1cwsmYIxfnOQWDwaJVl0nfwi0chu8OfkWF
-         lgUDUh29n29DpdrqzrDr2i9Bn9a0YZP8BTo/xN6TuvK5ATiRrE4Lp9mdWa5S+FRRjhMs
-         HLMYbNV6V4HK/9N6Z0/YZS1KuOZXjjxfrHShoVcP0VAgcZSIEJLLPgk6+odDK8gGNEBQ
-         Cg4PtYK2dJLjeWmsNDd+lqdNSmbeZXzU11gLfrQjsXUoTS4efwNfE1tAEI70MSvG7L55
-         BKcA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793278362; x=1793883162; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:mime-version:references
-         :in-reply-to:from:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=zf2xViTkAeLxB49iEkeFNan7sx9Snfm1yj/XBegFK/Q=;
-        b=AV1Hgm0iFHWzZGsDVHXCb2IYpeVv6EW98uFBcMPayNo5zowTitCRsaZEsM86QmXaj4
-         hchpPqMY9PX1QQ2cPWm7vibDab93DeznX5yk7hBYy2fD7m6S9H37ihFFsJVywMnUn75w
-         hojAZQ+/1QdS3oLsp7dKNIsW+idqKsMz69t3b7KPR4Qk9zpRsv1l4rI05Ii8mXd52ucw
-         CK+xEBLrvAhnttPArV1xrrGrmOmUEPHf9svnbV+VbJXuZWsb0/+niZ1X5HYCsaKiAoKu
-         r5d7BhOrxqSShvA728f9VawWElGawpqef14vxNHyh+lc2pkaviE7a8Qx3izPK2q/RAK7
-         ajnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793278362; x=1793883162;
-        h=content-type:cc:to:subject:message-id:date:mime-version:references
-         :in-reply-to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=zf2xViTkAeLxB49iEkeFNan7sx9Snfm1yj/XBegFK/Q=;
-        b=g+Eq3qFgHRN/NHNEHu+tyNvHI5OxpJ5wtgoiWJsOIYXOeiikT/OGu5Pr9qzYCyk1qg
-         77vOsVHZuOvUEoW1nWetjZy7yvc//FmkwLOmIpS/LkA2b0sXARlicBhM3oV9C3JY3SJC
-         6EhwLJS4gzsbwl0a+1uVvXAKaReCTFUHMO3FgG6gOn9XusyOFqwhP0dHaiZEEBkF4op5
-         mXDd0Pt8okyhHyGw6kzo9Ay+SIE0s/c8SdovXTrHPF8rvgiKJ5EHClLTZRSJzE5tteSx
-         60uYux3/QnAmK97x01Gyg/p/5i0oei9I0yMBBxZnJr9hiV4ab7Nyu5ptkMlEP/11evp5
-         2C2A==
-X-Forwarded-Encrypted: i=1; AKwUvBxG7rKHO6sg7Hxs9RwdJgT12dxA1bioiSAD6Qky/p4/XDdJ2FMCEH3jUgqPzSTW7M8VlC2iPQ==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLcHTtsnYdKV0rYOQ1soqBtbApfLnpZ/al5nIP1yxPzPKhHou9F
-	0irlp4V+SeevqIjsG5U4K7Pz0lw8H41AYobRe07RzLMvqnQcd5xSIB+HOI2kv801NCe8uAg6h9Z
-	nYRjCK6gOkyNwZg9FNbE3xyp60CuMHB4G2++6Nhk9
-X-Gm-Gg: AYBFou1dlSlcYHZ7kSSKCPXDtG2nfDDzWrvNG2WhoSv0FmMgdgNiqIUFypBAqaGoTne
-	jFX1J7yeNTmpn5mQI3JVJ9qtxlzMp9RzKY3uNr+gkUhjsN02+PKjt5a/fhol6qaaR7AmAwRYrcB
-	OYCayyqSFY7b2rMYjhuivNIuxWRmMZmOWuw5q2vepNVEpX/j/LAZ5Q4GwIlKAePJACIIlh2/VvU
-	6N5dLZhn7OR2jyG2sSeoHIiZDBB5La6m9ZrDFccUHlMvDrjc3cdbzCPoa8zc0sWE8Pf45jg1nGc
-	QuNmw+pIG0FjPsafW5VnerEpNKkvj1ZWKEyZqMhm/f6B2LJIKOgJK8kPXEJ1FpycWvGqu+aaaTP
-	uErWaArDdovGkzvm8h429YJ2u8i2ENNhMR9b0rk0saMR/DufsTqmjzhonWgsoPajJ6A==
-X-Received: by 2002:ad4:5747:0:b0:91b:9496:6a18 with SMTP id
- 6a1803df08f44-91c7d1ae53bmr83041376d6.37.1793278361370; Thu, 29 Oct 2026
- 05:52:41 -0700 (PDT)
-Received: from 176938342045 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 29 Oct 2026 05:52:40 -0700
-From: Ackerley Tng <ackerleytng@google.com>
-In-Reply-To: <20261027154649.91571-12-griffoul@gmail.com>
-References: <20261022-gmem-alternative-providers-v2-0-5dd1dc6c660a@google.com>
- <20261027154649.91571-1-griffoul@gmail.com> <20261027154649.91571-12-griffoul@gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=m15azft/
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OwmR/YC1J7mvrUDJ6sLgPgE203B/B3QE9chJN0FVIU9Ipo59JPx+Rf+c70z545UqNGbI7zklaQtuu78z15YQ5l44Y0ggwwtMoRjjIggJZYLMylWYDjUH/zWakOL9tvbsYJikz7JIaYAw++QE+FU9qbDnkAw1TidWI9UYeysGuO2JJCy1qRP02Azfkm6UysuxqglEIyJlj7bsmcyM2mQwpCoQ1gzM6vAfJ8Bs/0JHRek0UHCYl0LvonzUh+5BESg2dp3kWeWcI677B3VaHGqjBK3+CRZDNVqFR6SvGMX60HgIs35dM3GPSTh/NakpLzYGApO1pG0ItkjE7uHgK1w+kA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pGL36HlwN1k+w+419NuZ1hy+7P6yE5rxCQ3PsoCFGcU=;
+ b=Hcw9UXjWSP/IgvuPxSC+ExDIodiTObFgauBUHnDMrrhLQhHJRSTK11Yp29b5LI0gDbRhFrDnzeh2lktkNfhbPouMspfhC7M5VmlazMnTrkAcY3x15Xi/QxdIDxj9OqMqFnlMDj5GxMpF/ickDcGSztuxBp8Q5AWo4Rn1dCTa89ylpd7hhsuDoW3qTF7EfXHQcLFUC4Y1aS4FmN9mZEa+8HvzRTBKoLcsVT9gm/UkeasVKknHhrk5P+grwfBJtogzVfKBYJLwTMvMfYolKORvmIdPgOzhEHqplidTkAJabQeO3x8CHlOcQMaDXz6gWnXeDd0o922NTVJLqZsk+xqDwA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pGL36HlwN1k+w+419NuZ1hy+7P6yE5rxCQ3PsoCFGcU=;
+ b=m15azft/W9jtgt2iKMMLpw+AfchZAJhbHW4CAKX45nSQWCLO2Rq4tFJTlcUs28Pv1se8le/uFHUmXt6hWs0e2dmYRKAPJPDr2vQ4/uc0SwLYOD91CZsjq6R23OYPp3rusXZ1es3pAiiKYnpZUPP8qX55U5oqM54hvNfblN00eZZFE0pzMHm8jXgSIdh0E9aKFVGo/5VM6//oBAw3cl/8g1mq/m412iPJvItFyCYpO/9PvjxdozZAmcqd/qGbu7oo3g1jzR0x6Tx3E6m094w/XPBZsG9YmuiY6wIKbl/im/pEzCRIVrE9va/df0HzHI4IMwd7iNdW/dMIdXx7usawDQ==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by SJ2PR12MB8806.namprd12.prod.outlook.com
+ (2603:10b6:a03:4d0::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.14; Thu, 29 Oct
+ 2026 13:01:18 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0569.007; Thu, 29 Oct 2026
+ 13:01:18 +0000
+Date: Thu, 29 Oct 2026 10:01:17 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v7 10/16] iommufd: Add the vdevice TSM request ioctl
+Message-ID: <20261029130117.GH3040767@nvidia.com>
+References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
+ <20261008055955.4014342-11-aneesh.kumar@kernel.org>
+ <179321444123.2412245.6955528563980811144.b4-review@b4>
+ <yq5a1p98c0f5.fsf@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5a1p98c0f5.fsf@kernel.org>
+X-ClientProxiedBy: YT4PR01CA0335.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:10a::26) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -109,118 +118,221 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Date: Thu, 29 Oct 2026 05:52:40 -0700
-X-Gm-Features: AclHuK85LBuCmtDdaaOWg4OEyIMQUVa8mDtLyPY6JdCBNPTut6N07RXjZEiRQWQ
-Message-ID: <CAEvNRgGn09qrCZjUM5sdqQohPWE62GN4c52iK7ZV_gi5wro_Ww@mail.gmail.com>
-Subject: Re: [RFC PATCH 11/14] KVM: guest_memfd: Add kvm_gmem_restore() for
- PFN mode providers
-To: Fred Griffoul <griffoul@gmail.com>, Paolo Bonzini <pbonzini@redhat.com>, 
-	Sean Christopherson <seanjc@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
-Cc: Alex Williamson <alex@shazbot.org>, Alexander Graf <graf@amazon.de>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Alexey Kardashevskiy <aik@amd.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>, 
-	Ashish Kalra <ashish.kalra@amd.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
-	Baolu Lu <baolu.lu@linux.intel.com>, Bill Wendling <morbo@google.com>, 
-	Borislav Petkov <bp@alien8.de>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Christian Brauner <brauner@kernel.org>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Connor Williamson <connordw@amazon.com>, Dave Hansen <dave.hansen@linux.intel.com>, 
-	Dave Jiang <dave.jiang@intel.com>, David Hildenbrand <david@kernel.org>, 
-	David Rientjes <rientjes@google.com>, David Woodhouse <dwmw2@infradead.org>, 
-	Erdem Aktas <erdemaktas@google.com>, Frank van der Linden <fvdl@google.com>, 
-	Gregory Price <gourry@gourry.net>, "H . Peter Anvin" <hpa@zytor.com>, Hugh Dickins <hughd@google.com>, 
-	Ingo Molnar <mingo@redhat.com>, Jacob Pan <jacob.pan@linux.microsoft.com>, 
-	James Houghton <jthoughton@google.com>, Jan Kara <jack@suse.cz>, Jianxiong Gao <jxgao@google.com>, 
-	Joerg Roedel <joro@8bytes.org>, Joey Gouly <joey.gouly@arm.com>, 
-	John Starks <John.Starks@microsoft.com>, Jonathan Corbet <corbet@lwn.net>, 
-	Justin Stitt <justinstitt@google.com>, Lorenzo Stoakes <ljs@kernel.org>, Marc Zyngier <maz@kernel.org>, 
-	Michael Roth <michael.roth@amd.com>, Mike Rapoport <rppt@kernel.org>, 
-	Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers <ndesaulniers@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, Oliver Upton <oupton@kernel.org>, 
-	Pratyush Yadav <pratyush@kernel.org>, Randy Dunlap <rdunlap@infradead.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Samiullah Khawaja <skhawaja@google.com>, 
-	Shuah Khan <shuah@kernel.org>, Steffen Eiden <seiden@linux.ibm.com>, 
-	Steven Price <steven.price@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
-	Tarun Sahu <tarunsahu@google.com>, Thomas Gleixner <tglx@kernel.org>, 
-	Tom Lendacky <thomas.lendacky@amd.com>, Tycho Andersen <tycho@kernel.org>, 
-	Vishal Annapurve <vannapurve@google.com>, Vlastimil Babka <vbabka@kernel.org>, Will Deacon <will@kernel.org>, 
-	Xu Yilun <yilun.xu@linux.intel.com>, Yan Zhao <yan.y.zhao@intel.com>, 
-	Zenghui Yu <yuzenghui@huawei.com>, x86@kernel.org, 
-	Shuah Khan <skhan@linuxfoundation.org>, Fuad Tabba <fuad.tabba@linux.dev>, kvm@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org, 
-	linux-mm@kvack.org, llvm@lists.linux.dev, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|SJ2PR12MB8806:EE_
+X-MS-Office365-Filtering-Correlation-Id: e4c6c65b-a8f8-4045-56ab-08df35bcb8bf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|23010399003|366016|1800799024|6133799003|22082099003|18002099003|10067099003|261026140227099003|261028144727099003|261022113327099003|261026130827099003|3023799007|261022115727099003|261021135927099003|261021130227099003|261021121427099003|261026121527099003|261021123027099003|261009223027099003|11063799006|261009221227099003|56012099006|261022105027099003|4143699003|261022075727099003;
+X-Microsoft-Antispam-Message-Info:
+	QVNpMD8U9SHu8boUvehsGOgW9U60Vq4WLXpoIE/Hp+Mbckyz7S+qbWfR42lU5QAwVU3XVUfORo7hr/LyWPtCBiNHopmgkEQFMpmSwKAtRC1MADPu2Q4SHunT1HHeESIln+Bya+RPDqkbFqKh4vlUK/pAVL/H5xafKie4j0xk4ItK6lAxpMRRMXN37w5p0H4JUVckWxZ8hVV3ptozofdP+wJLv5nOokBCYYC0q1IUWDzKkAPgklhQi+A3kew+HSI4z+J4fdblEknS4hxwESi+BXc9MmOP1H8LfyK10LrRJHHb+7Kf9HMuftTcqw/AOllM4+juixf2tr20/bHkMkn/Kb9Ux/XpFTUptWDGIpRjRZRHvokEH55GV+eIvK487sFhiWMr1sPxccyGmVddIyFqLSH5BixuKeIhNcIlWu/VLz9FsJdHKgI6AJgUUUzRwEuii70s1Byrr4O0oniNSt4eieTKJANNW1xyKB/O9iJ3S/yhxZn2QSThHXU+xuvjdBq7hFfRNekzCLLRhbdW9ZLNw094in05dFuZOPTqADXy2+Oj48e2Z3L/WQh9qgNa+UfKclq/aP9tiq4IhY1PrJNIhy36JBMTMPku6lvgKsPBgHo8FpEKu18PebmqlQZu5ajYbOfYFWloKquYEULMTQ9PtQSobO6bZJJKeO7nVLpHKZM=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(23010399003)(366016)(1800799024)(6133799003)(22082099003)(18002099003)(10067099003)(261026140227099003)(261028144727099003)(261022113327099003)(261026130827099003)(3023799007)(261022115727099003)(261021135927099003)(261021130227099003)(261021121427099003)(261026121527099003)(261021123027099003)(261009223027099003)(11063799006)(261009221227099003)(56012099006)(261022105027099003)(4143699003)(261022075727099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?DLeuEOMewFu6Bzasd9Rh3uMkTBUhIr+L9AwN7G+H9bImjtk8238jiOlMwroP?=
+ =?us-ascii?Q?WYN4NsnpbJXjTXtmL7Sweu8+sSOxb33Tdvbg8SoLLbJqvUv/uKqgXFNurTb5?=
+ =?us-ascii?Q?QQXN5ESf/XL9buropmOcueBNy5Jsqe5v/3UeON+J352QrMCg/pQIx7i6RSW/?=
+ =?us-ascii?Q?StJy7YpmdKqUaCW5JZPJe5cLCGP74ly0wZvX5It/P1uk/j/+uWuB9EmKcm9/?=
+ =?us-ascii?Q?d0xqFQhEXF674cavJWN9/f4b4Vf3qUUPhpR4IM90v0I89PhAAtQBX2Bf2jl5?=
+ =?us-ascii?Q?KnE29eA2PeO/w4ol6VHWlAGlTIn9jx8mxXocRur1us5zkK8gY5ItPdgJtJUS?=
+ =?us-ascii?Q?zl8H/Wk4N2ODtF4MPCyNHSoEdm8H+DMSaMJMZFzEfuHa7tjd9q/cKZ7Jkmu/?=
+ =?us-ascii?Q?h5tTjNOFdAUkToFUTso4/mbGOdY5pUNXegZExaxSi62BQVhrLDmUePXLF9dO?=
+ =?us-ascii?Q?lEJZAEPx5m1uVFnABdAgvoQ9YYp0dh1op/tVTqjWWzo+9UrEED5JDQnsJB8t?=
+ =?us-ascii?Q?x5rNn8f5lpsl7r72uOl7wtOXeahCLPkilgHm3zJsqdRGEPxsQvzWMWDvq4n3?=
+ =?us-ascii?Q?AvY5ZCGyIPEVb2EH5UcczNkXuk3JTQj1XNZxOHUSBmoD4hRZbpFQK7l7mfVp?=
+ =?us-ascii?Q?1VAnE16XaL8hPGtbvQ+623nysPvhXq1syyYRoIFtZryIejuUSLKssoPfGOUX?=
+ =?us-ascii?Q?5PUXdHch3zhDBYdBsy1pSOQkn+NO7kohRA4sxJyVDo+shEPFRZlMsZPxeCBJ?=
+ =?us-ascii?Q?zoRcl3H9L8IOz3uIzRgCDfIK+lDMBsmKUl2EDX/k2uuRGercfkirCNzS69kz?=
+ =?us-ascii?Q?0DV6AptWLw21RSQcihMdLAKDWR0QOXnFBO7/Ec+iv3Y/i3z35oM3X+FxzmfT?=
+ =?us-ascii?Q?K8OTWzYIMTtvk/IP1HKB6Rk8cr/dWiXbKerS/Fl+P9FA6w37UTODrzcAVyxR?=
+ =?us-ascii?Q?uYmGmFlbDeU3X8PnnPya7vHRye+w3YRgi4M/aKJNetN2RFEhjsTAJJ0zIC8o?=
+ =?us-ascii?Q?ehnhcgH4WC7q2b0KWlHCeHe2YB/4ioi8WLtAI97rGnUzR04bSUL2eMbGoOJ8?=
+ =?us-ascii?Q?LJtsWULBsNQhAmZ86JJuLjjILWvGUTuS3yjW0bf6ZSxyaeFNcSZ7RNoMYZvC?=
+ =?us-ascii?Q?Ipk5rHa8PNUSeojpkQas7Y2BiR8aVPnPqgb3jIbUX0q43dLYRcLUSB9pow9M?=
+ =?us-ascii?Q?ev2y049b55kkiZRxGhg/fPOEKhd+u48+qQ4m0BtXREc66cCC3HPwxhQz9NqZ?=
+ =?us-ascii?Q?19cZIOQxjyGuCC9IRgIJ8KBqsdsYrNtdJePAnuB5/pia86fMxyPJd2AYZX3K?=
+ =?us-ascii?Q?KrVrptXc1OG8tVg6oHhySvy9N9JI6z2Q3mjp7l+JJHybiV9HG2Cdl9Un4cSI?=
+ =?us-ascii?Q?R69ee5bwuqf7btrPgmmzfHUEqmhLQR4G/hnKhDCoNq5IHjxoYclpodaGrriB?=
+ =?us-ascii?Q?wZ7IzGC5+tIYhEcgCeGMvz0lCqpkmrj2KiiNjdGqaqE3QnpCULXhUJtsqw6J?=
+ =?us-ascii?Q?P6e/E4Be2QPt46FMMfCLms+2SF+9MbE9xs+StGui4cNzOFdJPugftj95sPPF?=
+ =?us-ascii?Q?LNNx0b+LNs+293FnVdzPc9tLK1hZ9xBmW9qa4NEZTQkxa0gUET9gQ2Lds/pP?=
+ =?us-ascii?Q?rKHNAEzZzfJxvBftQ4MI2PubkGikjlE0rnRknBKiobo4wO9Bp/Jkpl7PzUhf?=
+ =?us-ascii?Q?1anP87jbPHuCdFEtl15emQZEUcypJ/ecrM8b6HkAQSfGPzxX?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4c6c65b-a8f8-4045-56ab-08df35bcb8bf
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2026 13:01:18.0758
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xT4Vsu+6unE8074pr1Ce3YrdZSmiJwwAmlpdVyXupuGFufnClLNRGjSQyKdtEDvt
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8806
 
-Fred Griffoul <griffoul@gmail.com> writes:
+On Thu, Oct 29, 2026 at 03:07:34PM +0530, Aneesh Kumar K.V wrote:
+> Jason Gunthorpe <jgg@nvidia.com> writes:
+> 
+> >> [ ... 300 lines skipped ... ]
+> >> +/**
+> >> + * enum iommu_vdevice_tsm_guest_req_op - Guest TSM request operations
+> >> + * @TSM_REQ_VALIDATE_MMIO: Validate and map a guest MMIO range for the trusted
+> >> + *                         device.
+> >> + * @TSM_REQ_SET_TDI_STATE: Transition the trusted device to the unlocked,
+> >> + *                         locked, or running state.
+> >> + * @TSM_REQ_SEV_ENABLE_DMA: Enable DMA for an SEV device.
+> >> + * @TSM_REQ_SEV_DISABLE_DMA: Disable DMA for an SEV device.
+> >> + * @TSM_REQ_READ_OBJECT: Read bytes from a device object, such as a certificate,
+> >> + *                       measurement, or interface report.
+> >> + * @TSM_REQ_REGEN_OBJECT: Regenerate a device object, such as a measurement or
+> >> + *                        interface report.
+> >> + * @TSM_REQ_OBJECT_INFO: Query the size of a device object.
+> >> + * @TSM_REQ_MAX: One past the last request operation; not a command.
+> >> + *
+> >> + * The request payload and response format depend on the TVM architecture.
+> >> + */
+> >> +enum iommu_vdevice_tsm_guest_req_op {
+> >> +	TSM_REQ_VALIDATE_MMIO = 1,
+> >> +	TSM_REQ_SET_TDI_STATE,
+> >> +	TSM_REQ_SEV_ENABLE_DMA,
+> >> +	TSM_REQ_SEV_DISABLE_DMA,
+> >> +	TSM_REQ_READ_OBJECT,
+> >> +	TSM_REQ_REGEN_OBJECT,
+> >> +	TSM_REQ_OBJECT_INFO,
+> >> +	TSM_REQ_MAX,
+> >> +};
+> >
+> > This is still no where close to being well defined enough.
+> >
+> > Everything here must tie back to defined spec references, listed in
+> > the comments.
+> >
+> > I cannot guess what data is passed over any of these APIs, how things
+> > like "REGEN_OBJECT" select which object to regen, or what the format
+> > of those objects even is. The formats of req/resp are never specified.
+> >
+> 
+> The request and response payload formats are specific to each CoCo
+> backend. Since iommufd treats the payloads as opaque and does not
+> validate their contents, what would documenting those formats here
+> achieve?
 
-> From: Fred Griffoul <fgriffo@amazon.co.uk>
+Well if thats the case then no, this is entirely inappropriate.
+
+iommufd requires every single struct to be documented and
+described. We do not do undocumented opaque structs into drivers.
+
+So figure out exactly what needs to flow here, give it driver specific
+names for driver specific content and document everything.
+
+This should be done patch by patch as the drivers implement their
+stuff.
+
+If the data passed is different then it gets a different enum
+value. No sharing enum values for different structs because the
+drivers are different.
+
+You can say things like 'the content of the RHI message defined in
+XYZ' as operations.
+
+> The limited validation is intended to prevent this from becoming a
+> general-purpose multiplexer ioctl. 
+
+But we need that for other viommu use cases..
+
+> It restricts the ioctl to a defined set of guest-initiated
+> operations that the host forwards to the
+> firmware. The path is essentially:
+> 
+> guest -> vmexit -> VMM -> iommufd ioctl -> TSM backend -> firmware 
+
+Yeah, I'm not adverse to this, so long as it is fully documented and
+understandable how each system call maps to both the guest and
+firmware interfaces it is supporting.
+
+> > The comment for this should probably be *enormous*. Every arch should
+> > explain what they do on every one of these ops, and it should be
+> > identical if it is structured like this.
+> >
 >
-> A device cannot fault, so when a PFN mode provider gives frames to pages
-> that had none, or makes a read-only frame writable, a subsystem that
-> maps the file must be told.
+> That would require documenting a significant amount of backend-specific
+> detail in iommufd. Could we instead require each TSM backend's
+> guest_request callback to document its request and response formats?
 
-Totally makes sense that guest_memfd needs a way to actively map pages
-into the IOMMU page tables, rather than passively like for userspace
-page tables and stage 2 page tables.
+It needs to be in this header, that is the standard.
+ 
+> > My guesses with no information
+> > 1) VALIDATE_MMIO why would the hypervisor ever need this? Guest
+> >    validates MMIO through secure communication to the secure world.
+> >
+> 
+> With VFIO PCI BARs backed by guest_memfd, the VMM can validate that the
+> IPA and PA values provided by the guest belong to the VFIO device.
 
-When the memory is owned by guest_memfd, on a to-shared conversion,
-guest_memfd would do the mapping for IOMMU, which can't handle faults
-like Stage 2 or userspace page tables.
+Why? Who cares? It isn't a trusted validation, and there is a RSI that
+duplicates this?
 
-> kvm_gmem_revoke() does not fit: it would
-> zap the guest's and the VMM's mappings and reclaim frames that a guest
-> may already use.
->
+> We previously also used this operation to ask the CoCo TSM backend
+> to map the device memory (the BAR regions). I have removed this
+> operation from the latest series because that responsibility is now
+> split between the VMM and guest_memfd. TDX and SNP still need to be
+> updated accordingly.
 
-I'd drop this paragraph from the commit message, kvm_gmem_revoke() is
-the complete opposite and isn't a candidate at all for the goal, which
-is to notify importers that a page is now available (and they can map it
-in).
+Right, it should happen automatically as part of lock.
 
-> Add kvm_gmem_restore(), the counterpart to kvm_gmem_revoke() that the
-> sample provider leaves for users that cannot fault. It only updates the
-> exports, under the shared invalidate lock.
->
-> Assisted-by: Claude:claude-opus-5-5
-> Signed-off-by: Fred Griffoul <fgriffo@amazon.co.uk>
-> ---
->  arch/x86/kvm/Makefile       |  1 +
->  include/linux/guest_memfd.h | 37 ++++++++++++++++++++++---------------
->  virt/kvm/guest_memfd.c      | 35 +++++++++++++++++++++++++++++++++--
->  3 files changed, 56 insertions(+), 17 deletions(-)
->
-> diff --git a/arch/x86/kvm/Makefile b/arch/x86/kvm/Makefile
-> index 25fb3d6e2032..3255280884b5 100644
-> --- a/arch/x86/kvm/Makefile
-> +++ b/arch/x86/kvm/Makefile
-> @@ -63,6 +63,7 @@ exports_grep_trailer := --include='*.[ch]' -nrw $(srctree)/virt/kvm $(srctree)/a
->  				-e kvm_write_track_remove_gfn \
->  				-e kvm_file_to_kvm_fn \
->  				-e kvm_gmem_revoke \
-> +				-e kvm_gmem_restore \
+> > 2) TDI_STATE I thought at least RMM did this with an RSI?
+> 
+> CCA uses RHI. The RHI reaches the VMM, which issues the ioctl to
+> complete the request.
 
-provider --1--> guest_memfd --2--> IOMMU
+And then the seq numbers check that this went through OK?
 
-2 is definitely required, but why is 1 required?
+> > 3) ENABLE/DISABLE DMA, see #1, must not be done by hypervisor
+> >    See my reply to Alexey:
+> >    https://lore.kernel.org/linux-iommu/20261022123058.GC3008132@nvidia.com/
+> >
+> > 4) READ/REGEN/INFO, what are the objects? What format are they in? How
+> >    do you select them?
+> 
+> These objects are cached by the hypervisor. For CCA, they include the
+> certificate, measurement, interface report, and VCA. They are read in
+> response to guest requests. The requests reach the VMM through an
+> RHI, and the VMM issues the ioctl to read the requested object. REGEN
+> refreshes the objects/evidence at the guest's request.
 
-Between the first .get_pfn() or .lookup_pfn_range() () and
-.put_pfn_range() or kvm_gmem_revoke(), the provider should consider the
-memory in-use by guest_memfd.
+> >    Does this overlap with attestation subsystem? Should attestation
+> >    subsystem be used to access the SPDM related data?
+> >
+> 
+> 
+> I had hoped we could use it, but I could not find an easy way to
+> integrate the two. We need a simple way to read these evidence objects
+> into userspace. I am not yet sure whether evidence-get can be used for
+> that, since it does more than simply read the objects; it also updates
+> evidence.generation, among other things.
 
-When it's in-use by guest_memfd, then guest_memfd should use --2--> to
-map into IOMMU page tables as necessary.
+It should not do that, the generation has to follow the locked state,
+not the evidence collection.. See my remark to Dave
 
-When it's not in-use by guest_memfd, why would the provider force it
-into guest_memfd?
+I think the bigger issue was it had to use the VDEV flavour not the
+PDEV flavor of RMM commands, and it isn't obvious how we switch from
+PDEV to VDEV mode on the hypervisor..
 
-If the guest VM knows that the page is now usable (some other
-communication channel), it would touch the memory and do a .get_pfn(),
-that would be successful this time. Perhaps that's when --2--> needs to
-be performed?
+> > I think this is probably a fine generic API, it should probably not be
+> > "TSM request" so that the other viommu people can reuse the transport.
+> >
+> > I would probably try to stick to exactly like the other APIs do with a
+> > single enum. Two enums for op/arch is saying already that the ops are
+> > not well defined.
+> >
+> > So maybe strip this patch out to have no tsm stuff, define no ops and
+> > just give a command transport into the viommu driver?
+> >
+> 
+> Are you suggesting one ioctl per each guest request ops?
 
->  				-e kvm_gmem_export
->
->  # Force grep to emit a goofy group separator that can in turn be replaced with
->
-> [...snip...]
->
+One 'u32 op'
+
+Jason
