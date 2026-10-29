@@ -1,47 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.98
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.101
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793238090;
-	b=aI+7BtbCaLcQYFRaXkv8gXedwicpPNMHsoxBw38AV/MYmo4F1txGiDKlGeQ6ZxPgX+jz
-	 T+FEmOScpSeGigUSHZVHQdWhf6z2KSXd1PCM9Sx75ICkce9g9QWAcMPuon6adBbTOArhg
-	 ucqNlRcOcE0w0BOo3om92AVBolaOogRCDaqf4mtCnZEzVXyWOD/m2ML2bvm5PctK8uYWU
-	 UyIGBi715uUMPczBMmIN2sO+YzBK7Kcmqox4vLDjmqjOJSyGnrnZEgYllSC0zPO4tdLul
-	 UOxXZEb1py6V+WLZs+Ga4EhVD2JptIRXTzMq1avsfqntOCR6h09jpR3e+w7xTHHaySg==
+	t=1793238741;
+	b=jD3zLPgAjeKQh1W2gF9c+3A9IUymLJfsILISdzOmeZXYQ0D8yN/ojYoWh90RTVObiTn4
+	 UPSJA4AxdRu4B71+7G5ylrgPnBCqpqpYxnlmnK+2wvRndK6bq3GoBJ2HAR6t00fdFgge0
+	 fH0Xmp0xSrkvVMuqpVHCdsteFqNBLCzOUgPKeTb0xHpjvrJvl3hJww9ArRAZNQO0Y9DxX
+	 Of90KTmtLObnDFDUt6l9h9Hth/q2XPJUip04/85XNX8hz6pylPN3pbSIXB89dg4YMKFGF
+	 rs9d3ZUSVS74Yi8vmU3qJIHhtfZPOjT3ZFSG22zRvVDdXOvJQLmxPq3iAE7MRwspBkw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793238090;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793238741;
 	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
 	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=C7QU0MynSPZH9XIFESMQueT1x5DIy1wAFQgauvOVdHE=;
-	b=ZtEBDju7TwkO+yNXXCGY3BBkdy7qLo97lilyAnHhYTsnj0PmAkMYoK1kfJE75RHI/XLm
-	 J0Zn2UMQStqq2+WMouvo4oZsfZh2d1WfnN4Yuu8wN2Ey9mD9AgH9AF4QhTagVry/HqGRt
-	 A8M6HP/OUmnleYl6w7p3HHbS+0haYEnZEXoqBHbztomL+f9a8FtBK1wE+BNyEOvimFXh+
-	 jVDeLqUBepquSmPluD6aijw3QPFp3JiCehjcLm4rNkPZZul7JWWy5QmNWJ304Yz5+1iN2
-	 m9yone+hx3wnYsxhLLAXycFT+ZaanOvbv85J3mZC/HcRW8qo7o/y1LWNVNi8Js4lg9g==
+	bh=a+kTNEMlGRHVqhyrD9wjKCx3s2EeROQLPFxQ8ka5f9I=;
+	b=vRP1yiLqC7eDO6DXH5SlWD0UrGYndxDs3Jb7SgxODSag2/lv7raBlKx2jQloN9yv/HL/
+	 v0JVMqweS3QInvqgDwYWldCYunNaCkIQ+Xdvvmi/j8sZB7JAFrVg+naLD8myB98sl1Rtg
+	 SIku4CkU0q0kY60L7AKYJRSebIIvyEhzlqGiAoO8sKiusdHEKb3KYRfweTQZ1mcGgqIOk
+	 yULF7m3p4odOoXYxIUfeRDKw/NfRSzHMkaNCVEmyXE/IeDcCLPwVy6GimNlGJcOj3iyFx
+	 E//0GoahtwQV140k5uQZF1egijwdZj/OB5g8yE05RVN54ew+wEyP2XXZgALryAQnnYA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.alibaba.com;
 	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b="v/6d4aMX";
-	arc=none smtp.remote-ip=115.124.30.98
-Received: from out30-98.freemail.mail.aliyun.com (out30-98.freemail.mail.aliyun.com [115.124.30.98])
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=KOWEmtUL;
+	arc=none smtp.remote-ip=115.124.30.101
+Received: from out30-101.freemail.mail.aliyun.com (out30-101.freemail.mail.aliyun.com [115.124.30.101])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16BA9606A31D
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 01:41:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 16BA9606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7A6606A325
+	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 01:52:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F7A6606A325
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=v/6d4aMX
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=KOWEmtUL
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1793238085; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=C7QU0MynSPZH9XIFESMQueT1x5DIy1wAFQgauvOVdHE=;
-	b=v/6d4aMXYaOr7ue/G5H372yJbrktzf5kEgEBixMVm2NoqF425JpYLJpAZd0vge3HGNtMIQIC2oGEZb0MzdSGQttU+wZ4mjZJTCnokkViqFnxerl7AFgzVpjCT+4s24jAEX8+x6LbZPpJY0e+qe3auCwfFCUx7Nxg2pq2UG+OWI0=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDhzCnt_1793238081;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDhzCnt_1793238081 cluster:ay36)
+	t=1793238732; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=a+kTNEMlGRHVqhyrD9wjKCx3s2EeROQLPFxQ8ka5f9I=;
+	b=KOWEmtULoDa2JCruIYMNOqf1ogyQPkHfiiHqOv/sCbd5mWj717ui0B/5ihHhijf4hMMV9yek65Ugaxn4SLFmwAwvev3kEBmr/WsBoR0F2eIszCCENEsQxMegt+We1vrBLdwQ+IIxmhTIqhJ+WZvtDfTfjGgk0JmbaE215OdfWVM=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDhqoRO_1793238728;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDhqoRO_1793238728 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Thu, 29 Oct 2026 09:41:23 +0800
+          Thu, 29 Oct 2026 09:52:10 +0800
 From: fangyu.yu@linux.alibaba.com
 To: jgg@nvidia.com
 Cc: alex@ghiti.fr,
@@ -71,12 +71,12 @@ Cc: alex@ghiti.fr,
 	vasant.hegde@amd.com,
 	will@kernel.org,
 	zong.li@sifive.com
-Subject: Re: [RFC PATCH v5 07/10] iommu/riscv: Add domain_alloc_paging_flags for second-stage domain  
-Date: Thu, 29 Oct 2026 09:41:17 +0800
-Message-Id: <20261029014117.80953-1-fangyu.yu@linux.alibaba.com>
+Subject: Re: [RFC PATCH v5 00/10] iommu/riscv: Add hardware dirty tracking for second-stage domains  
+Date: Thu, 29 Oct 2026 09:52:07 +0800
+Message-Id: <20261029015207.82522-1-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <179320128834.2412245.6365239689333877950.b4-review@b4>
-References: <179320128834.2412245.6365239689333877950.b4-review@b4>
+In-Reply-To: <179320128818.2412245.14186677086155168748.b4-review@b4>
+References: <179320128818.2412245.14186677086155168748.b4-review@b4>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -88,77 +88,36 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
->> [ ... 22 lines skipped ... ]
->> -static struct iommu_domain *riscv_iommu_alloc_paging_domain(struct device *dev)
->> +static struct iommu_domain *
->> +riscv_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
->> +				      const struct iommu_user_data *user_data)
->>  {
->>  	struct pt_iommu_riscv_64_cfg cfg = {};
->>  	struct riscv_iommu_domain *domain;
->>  	struct riscv_iommu_device *iommu;
->>  	int ret;
->> +	const u32 supported_flags = IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
->> +				    IOMMU_HWPT_ALLOC_NEST_PARENT;
+>> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 >>
->> -	iommu = dev_to_iommu(dev);
->> -	if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57) {
->> -		cfg.common.hw_max_vasz_lg2 = 57;
->> -	} else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48) {
->> -		cfg.common.hw_max_vasz_lg2 = 48;
->> -	} else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39) {
->> -		cfg.common.hw_max_vasz_lg2 = 39;
->> -	} else {
->> -		dev_err(dev, "cannot find supported page table mode\n");
->> -		return ERR_PTR(-ENODEV);
->> -	}
->> -	cfg.common.hw_max_oasz_lg2 = 56;
->> +	if (flags & ~supported_flags)
->> +		return ERR_PTR(-EOPNOTSUPP);
+>> The RISC-V IOMMU architecture defines an AMO_HWAD capability (Hardware
+>> Access/Dirty update) that allows the IOMMU to atomically set the A/D bits
+>> in second-stage PTEs on DMA access.  When DC.tc.GADE is asserted, the IOMMU
+>> autonomously sets D on the first write to a page mapped by an iohgatp
+>> domain.  This series wires that capability up to the iommufd dirty-tracking
+>> interface (IOMMU_HWPT_SET_DIRTY_TRACKING / IOMMU_HWPT_GET_DIRTY_BITMAP) and
+>> reports IOMMU_CAP_DIRTY_TRACKING.
 >
->This probably isn't needed since the switch checks it?
+>These patches don't apply, so sashiko couldn't run:
 >
-
-Right, the switch already enumerates all valid combinations, and
-the default case returns -EOPNOTSUPP, so this check is
-redundant. I'll drop it, along with supported_flags, in v6.
-
->> [ ... 30 lines skipped ... ]
->> +	switch (flags) {
->> +	case 0:
->> +		cfg.common.features |= BIT(PT_FEAT_SIGN_EXTEND);
->> +		if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57) {
->> +			cfg.common.hw_max_vasz_lg2 = 57;
->> +		} else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48) {
->> +			cfg.common.hw_max_vasz_lg2 = 48;
->> +		} else if (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39) {
->> +			cfg.common.hw_max_vasz_lg2 = 39;
->> +		} else {
->> +			ret = -ENODEV;
->> +			goto err_free;
->> +		}
->> +		domain->pscid = ida_alloc_range(&riscv_iommu_pscids, 1,
->> +						RISCV_IOMMU_MAX_PSCID, GFP_KERNEL);
->> +		if (domain->pscid < 0) {
->> +			ret = -ENOMEM;
->> +			goto err_free;
->> +		}
->> +		break;
+>https://sashiko.dev/#/patchset/20261020094106.92722-1-fangyu.yu%40linux.alibaba.com
 >
->I'd prefer you make functions riscv_iommu_init_domain_s1/s2() to put
->this in, it will be clearer
+>> [ ... 86 lines skipped ... ]
+>> [1] https://lore.kernel.org/linux-iommu/1-v2-563ee63886f0+1209-iommupt_armv8_jgg@nvidia.com/
+>> [2] https://lore.kernel.org/linux-iommu/20260818092444.42755-1-andrew.jones@oss.qualcomm.com/
+>
+>Because of these extra patches I suppose.
+>
+>Please figure out how to fix this before you send it again..
+>
+>Also no base-commit trailer which helps sashiko apply them.
 >
 
-Agreed. In v6, I will move the page table mode selection, the
-PSCID/GSCID allocation, and the stage-specific feature bits
-into riscv_iommu_init_domain_s1/s2().
+Sure, I'll fix the apply issues and add a base-commit trailer in the
+next version.
 
 Thanks,
 Fangyu
 
->It looks ok otherwise
->
->Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->
 >--
 >Jason
