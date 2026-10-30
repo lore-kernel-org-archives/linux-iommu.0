@@ -1,103 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.34.181.151
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793350664;
-	b=rPsYXDULb/+ndZ/oMWk1pHjJC6VHmXPPKh4yQy/xH0TzcPFQtLCsu2y8sicPfGarjrdb
-	 M4f05108GHuZnk94EUCx9ucYSWcY+kVNhco6t+vEyEQbsZ4ptm0kO2FsA1kuIW19xDhd3
-	 AA3haXMtqzn9dY1w6TBLVodyRapmsli6HqW//vtYe78JRElc6erXei05arxn5YgYqzVEC
-	 NnGEtzEoMRF3ffNsuWFQDIZlwNtDE+VRGFUblv9EYbawLjmOr131/QdcrznVnMYlWK1Q2
-	 pqG9USlGOKVmEuDtObtoDuJNA/b/NTaiWK6v0Pk1QaFiTo5voI0H8ZxZ1kLeKPHmlgg==
+	t=1793354435;
+	b=MMYF92GCUNjdRdKNuFAoEMFdHi5TKUe7MJeqwWLZ4aKYgPYVw5W+VA7idjEPhg27MimS
+	 9Z0zlq4+VMDd4EwN5ZuR/7LGhv0LY8OA8xsILZhNl0XaMR3TaCLPKe97AXaGgd3iO1ab3
+	 iQ9etB7upI3gORjCcFe+ulSVkeSJzHj7aRl1NPFtuL98ex+6ElKGB6Rqn67Vn7KnAwv9X
+	 Be4ieVTqZuqvl1uPygE+RM4/LNb+9HsPsD0QCAkkKSNN9wQUznwyELYlNRxwP69RFXZso
+	 8swdLOYXn+rzP8B9BFgfIlHllfhNnqsjzbXqmRmHCNNpsc/f1dsVlYPatNWw/ET8fPw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793350664;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793354435;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:
-	 Organization:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=eGH1sgh8fHcD1YzHQAXXHU+ICjz/GR3arUB8DIO7xaI=;
-	b=nEL/mDNkuct6zMAMU+2b5vyV1kKVQucQ0WYjMZ9ms9KPSIPNSQtmDWyJ7AAXrUySILqX
-	 Fe5p1n8ZDAuinAbK1W5iHIWNlVd2baa35mxZaLn3RwugYau13af8OqqGjqeQ172TIcvO9
-	 m5uSem95FgEjnoVmJNEOJN6UixhyP8inClZvCfoiJZ6Dp2Tn78hOeAsivoaZkSNNCs59c
-	 yliushIjwOlxf2JOlNZgqdkX13rNi8lUnbNrIN1I/7FRCg/pBz2c8Xn2DOQrqfWD/yy/m
-	 rGoHLU0lxSpN7x/6Tq7SFHzxhTnqpw++ca0UHD193YhDX0fG1cRnDeAzHoVf5YS5N2w==
+	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
+	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 X-ClientProxiedBy;
+	bh=ler9Vb08uoWkkGJsgusT3UJ2fmGaAr/9sD2dowX7gwE=;
+	b=MpvPP5m2L4rDsQRn8Y5mWUojVppPP0EMh5Q6tliWr0wDRTE6RJsHDfWQyQ09lHGOSN/9
+	 xCLUzhyE6ytaYJvMLLgU2JwoDfEtb+FymvvNNpuJ4JJGTgwG9qKxH0l2AzlXkpFzrEb2l
+	 IoI6UArQGTy79A5ub3eBPYcPwCU0VgyqP6poZFvDK+5ifYUcFiBqqlW+NU5AvhMk3IeeC
+	 oTBRrwY7234FQYPNxaeYboW7PzA4XKdE2RqhRfWZDSGum9ZEg9BfAINVEe2vqa/Up7wuf
+	 nJ9VU1gmkqUcVCZM5x6un2aEFMPKjVxz4eXAcJQ0Mzredr21hVQISsyuSLiAnAgVmWw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=L79pU4vW;
-	arc=none smtp.remote-ip=198.175.65.13
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	dmarc=pass header.from=amazon.de;
+	spf=pass smtp.mailfrom=amazon.de;
+	dkim=pass header.d=amazon.de header.i=@amazon.de header.a=rsa-sha256 header.s=amazoncorp2 header.b=HUhq70I3;
+	arc=none smtp.remote-ip=52.34.181.151
+Received: from pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.34.181.151])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02E76606A31A;
-	Fri, 30 Oct 2026 08:57:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02E76606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCA4606A31F
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 10:00:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2CCA4606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=L79pU4vW
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793350664; x=1824886664;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XC9L0N0lGS0WxoaPGxJtRF+Dcu7w/yLaO4BtytOzzuQ=;
-  b=L79pU4vW7uY7s26CgOQnkqh84RSv936RavEmcjrDTUnS4Siipvtjaxv9
-   niC/LQALmZglumppct7FEwQIro1Gz/w674bkYPVoPpUs7WdYYrKj8S4dh
-   pzbje3C7Tok8W3ejcrBifgXwizUFSAgAZknUyf1X1uEdKEqzYRhBhmM0u
-   VNlUIdPpedishVRl3xlDdhyqLpVcFReAGuJNt3+ZcVVbHXOZqNHIQYCE2
-   8QV4MERFL9+uvL8WvzD28keURSTx3+k6K3S4QyMJ7JQJlkHCDQlO1o6kH
-   qSxXemxc78C/HhTKxmdFwkZvq4LJevHZJxeCyUkDpo2OWXghEEAascIs9
-   w==;
-X-CSE-ConnectionGUID: DeHXts5hTC+4YzbLIjnQrw==
-X-CSE-MsgGUID: M3P7cvM8TYK1oHwf8iFO7Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1987136"
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="1987136"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 01:57:43 -0700
-X-CSE-ConnectionGUID: 2ZQs9CufQJ2aI+tvMlBntg==
-X-CSE-MsgGUID: YTk54IPeRM2APeu2Ec1IKw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="5265993"
-Received: from ettammin-mobl3.ger.corp.intel.com (HELO kekkonen.fi.intel.com) ([10.245.244.19])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 01:57:35 -0700
-Received: from kekkonen.localdomain (localhost [IPv6:::1])
-	by kekkonen.fi.intel.com (Postfix) with SMTP id 2CDB9121B77;
-	Fri, 30 Oct 2026 10:57:36 +0200 (EET)
-Date: Fri, 30 Oct 2026 10:57:34 +0200
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6 krs, Bertel Jungin Aukio 5, 02600 Espoo
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
-To: Frank.Li@oss.nxp.com
-Cc: Frank Li <Frank.Li@nxp.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>,
-	Karol Wachowski <karol.wachowski@linux.intel.com>,
-	Oded Gabbay <ogabbay@kernel.org>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tursulin@ursulin.net>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Alex Elder <elder@kernel.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Guan-Yu Lin <guanyulin@google.com>,
-	Mathias Nyman <mathias.nyman@linux.intel.com>,
-	linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-staging@lists.linux.dev, netdev@vger.kernel.org,
-	imx@lists.linux.dev, Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 1/1] PM: runtime: change stub pm_runtime_get_if_active()
- return 1 when !CONFIG_PM
-Message-ID: <auRb_r8ZSSU-eHZA@kekkonen.localdomain>
-References: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
+	dkim=pass (2048-bit key, unprotected) header.d=amazon.de header.i=@amazon.de header.a=rsa-sha256 header.s=amazoncorp2 header.b=HUhq70I3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
+  t=1793354435; x=1824890435;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ler9Vb08uoWkkGJsgusT3UJ2fmGaAr/9sD2dowX7gwE=;
+  b=HUhq70I3xfLfFzBedmY+/ylM/XSLSUtcZPO3kG3yWr5yUlparGHUJZd3
+   gJqgVoRofkO02SqJC+U4W+ZvkZc8XwviFWLRbz9ew+MJt/o0hjIT5rOUV
+   36Fw2j8KLaKJqVPPu3HHL+yQEOoOETXUAgPhd8t7MZX7VONZ/xnfqKo4I
+   QSYXQpCVJxNrGnJyVlGgodkaaUhJEyiwvN93UdhYExZJGQ4PRGhtmsmMI
+   u8ZWheEvDTXDL7AB2kMD45Pw2onDEZai0tBrj18CGOUNCplHVN3iLB+xW
+   uYKfh0ZnMQuwZaurb1eC9K3Vqv2izK/ChuDmiQ1UFDQw5Qtq8PanHfuWY
+   Q==;
+X-CSE-ConnectionGUID: f41PGanPSUaMqPFAgY0gLw==
+X-CSE-MsgGUID: aXQZUxloQz+Q/vIVKiUTRA==
+X-IronPort-AV: E=Sophos;i="6.27,186,1787011200"; 
+   d="scan'208";a="32646804"
+Received: from ip-10-5-12-219.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.12.219])
+  by internal-pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 10:00:32 +0000
+Received: from EX19MTAUWC001.ant.amazon.com [205.251.233.53:26549]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.22.238:2525] with esmtp (Farcaster)
+ id 9c26f0e1-9b75-4adb-bb6b-4f1f1a420bc2; Fri, 30 Oct 2026 10:00:32 +0000 (UTC)
+X-Farcaster-Flow-ID: 9c26f0e1-9b75-4adb-bb6b-4f1f1a420bc2
+Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
+ Fri, 30 Oct 2026 10:00:32 +0000
+Received: from dev-dsk-mheyne-1b-8cc83676.eu-west-1.amazon.com (10.13.235.223)
+ by EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
+ Fri, 30 Oct 2026 10:00:30 +0000
+From: Maximilian Heyne <mheyne@amazon.de>
+To: <stable@vger.kernel.org>
+CC: Maximilian Heyne <mheyne@amazon.de>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "Nicolas
+ Saenz Julienne" <nsaenz@kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH] dma/pool: eliminate CMA alloc warning in atomic_pool_expand
+Date: Fri, 30 Oct 2026 10:00:00 +0000
+Message-ID: <20261030-ghent-tubes-5abba7d2@mheyne-amazon>
+X-Mailer: git-send-email 2.50.1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -107,30 +84,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: EX19D031UWC003.ant.amazon.com (10.13.139.252) To
+ EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-Hi Frank,
+atomic_pool_expand() allocates with decreasing page order first from the
+CMA and if that fails via alloc_pages(). If the cma allocation fails a
+warning, such as the following, is printed:
 
-Thanks for the patch.
+  cma: __cma_alloc_frozen: reserved: alloc failed, req-size: 4096 pages, ret: -16
+  cma: number of available pages:
+  cma: range 0: 1024@0
+  cma:
+  => 1024 free of 1024 total pages
+  DMA: preallocated 262144 KiB GFP_KERNEL pool for atomic allocations
 
-On Thu, Oct 29, 2026 at 12:30:37PM -0400, Frank.Li@oss.nxp.com wrote:
-> From: Frank Li <Frank.Li@nxp.com>
-> 
-> When CONFIG_PM is not enabled, all devices runtime PM state should be
-> treated as active.
-> 
-> __pm_runtime_resume() returns 1 (called by pm_runtime_get()).
-> pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get().
-> stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
-> should return the same value as the stub pm_runtime_get(), which is 1.
+In this case the allocation succeeded via alloc_pages and therefore,
+printing the warning is not necessary. Therefore, similar to commit
+463d439becb8 ("dma/pool: eliminate alloc_pages warning in
+atomic_pool_expand") silence the warning also for the CMA attempt.
 
-Shouldn't the same change be done to pm_runtime_get_if_in_use()? It's
-otherwise the same, except that it requires also the use count to be
-non-zero.
+Fixes: d7e673ec2c8e ("dma-pool: Only allocate from CMA when in same memory zone")
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+---
+ kernel/dma/pool.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 00f422a1e8966..aa44fd74db538 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -99,7 +99,7 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
+ 		pool_size = 1 << (PAGE_SHIFT + order);
+ 		if (cma_in_zone(gfp))
+ 			page = dma_alloc_from_contiguous(NULL, 1 << order,
+-							 order, false);
++							 order, true);
+ 		if (!page)
+ 			page = alloc_pages(gfp | __GFP_NOWARN, order);
+ 	} while (!page && order-- > 0);
 -- 
-Regards,
+2.50.1
 
-Sakari Ailus
