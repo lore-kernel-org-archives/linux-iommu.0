@@ -1,53 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.200
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793327804;
-	b=C/EIrqadvHH6dJrTTRCkSCBZLUM4NoBdzZvVAHekGWBIutw8RzQE3WBDG/l+SzfXyviV
-	 4cTU7LMMchlThj2ZnLGJAV86MT7F2x37keHffKN+qCeLD1IcXtA2OR8cZHViR8n7l/fm3
-	 yBExZL9larLRYKo0W/92x+Nqnt6OeUjcYCB4QPNient1lgedfgzWVT1z+7hcWW6Vb6k7c
-	 VaUD9zhk7gXR6PYpQqbZJzpDh4Hi7gzBiZgFZtM+clSOjUlyaWYhkE3sIiH5s57bXs5ni
-	 JLCzUx7FUvUT7TjnbAzkU+lfznUFnz0qAIEINXIj/aJ1z0+wVxDQCO+qsj9X2iUEOKQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793327804;
-	h=DMARC-Filter:Received:X-Google-DKIM-Signature:X-Gm-Message-State:
-	 MIME-Version:X-Received:Date:X-Google-Appengine-App-Id:
-	 X-Google-Appengine-App-Id-Alias:Message-ID:Subject:From:To:
-	 Content-Type;
-	bh=nzg7svtxDTS64P/SYLljyKCWug0ZFvOK1tCQQbwdXGo=;
-	b=OFZJpr0jITJHQiidCNjbqiEGOgS6BWsIWjE0maw5q3bRZXTudRppCF6jDqzLcrYaYZu7
-	 npJeT9oEB3nNb7qrkkho8Hdte+v8MEmSNw7BSz5Rcc/i1sMBe7zZI0nOxvtBNZl7le6PJ
-	 GRij2Elr6Ic7dvQAbtNRKU+Domgy+UTPu8uB2px9F6+J07uyy+CyQWRxiSB6rIBGuRyWM
-	 gxZoirBtGJ7bE4ORGVGbPKz6/2BMc0chkMXmNSHt+9fn7/FAgydCJId3ZqvcBE/b2Dbpj
-	 fFjf0BLCyJTGv62qcEymPO7Dd7G7T3X49pn9U9kEJphbk26k+ojpg6ZfQ3sr8dB/RYQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=fail header.from=syzkaller.appspotmail.com;
-	spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com;
-	arc=none smtp.remote-ip=209.85.167.200
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.57.29
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793327883;
+	b=BRRRoBDWuVWF4eJ7KoQ9S9gOhjhV20vmGuTG9cJSGh3SoXRuuHpf8iAAkA87o8IHeaw0
+	 D1ENt9Gm2cZB0cf8hUUH6I/dsj3dNgNRIVoplhvhLE7oZwj9RwW8pKFvFD/YSG8gY4w5k
+	 dQNhAvfj8tn8IAnY9UN8OHDsgivNei4uKvIcBCP4bQ0LUYePqFe30RY8npzJ3HnHtV8Pg
+	 1bBOMbiJkhTbcFtgJ2SRw7ZM3f8Y0bOi2+81lCPNSR1L1WXSMzyoKtMa4KseC51YHDRzx
+	 m2hrn8U0iXtvs4oVrbPEhrdOenC6HdjUJwA+/AHkkXVmJCnLc2rUSmd2DLj8nXMNtDQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793327883;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:In-Reply-To:References:Content-Transfer-Encoding:
+	 Content-Type:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:
+	 X-MS-Exchange-AntiSpam-MessageData-1:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=wc1eNZc+fY71rAknGBOCWvV2tYF3Dw+MSjlv5iF/Gt8=;
+	b=gExydfTrtowz1bDq3JgP9bOITp/6LIALjnjWrTtkFd75STDPeXqDA6FPwp2jPQeXLyL8
+	 QyajxPZssljT0iECmcqnuwVYfKzDH8e2BX9bBJDMfPv8nTUbs4m0Wa0FOvDCneYBD2B7p
+	 qyDsWNKo3WzifghNOw+zDU+cTgA0WG//nq4nRIRMMa2/AOieFpsvXYJgrHMVdccIBBPxJ
+	 Va+Fd96LbwItj0oXuGaZ8dkOJbh3mvRASrV3vy/RZnKOPmyA8gTgm3X0UwVSnV8e/jmzt
+	 GS//PzlPJMqNLoNjeIx+wI6JTnY9uUNzGy4TBvnnf0H0nWbgQW6TYnhpLa96OSffjow==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=o6kb7Etk;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.57.29
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011029.outbound.protection.outlook.com [52.101.57.29])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 854BA606A325
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 02:36:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 854BA606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-5384e381fbbso216893b6e.2
-        for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 19:36:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793327803; x=1793932603;
-        h=content-type:to:from:subject:message-id:date:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=nzg7svtxDTS64P/SYLljyKCWug0ZFvOK1tCQQbwdXGo=;
-        b=Qtnz3Kh7Fm9Mno07C/PYNmyp8FXcYeUnVlNQsnXYf9zlyA21GgytucV7DlWRLgQF3H
-         E746uhPEjR+CJXR15TsClxlYFlCxVHU5/9znOr5NoPekkSN4ld4YRDqJ4JYgiosYixRL
-         6nZzC/aSv9HcHAOgGzBzjXUBMBtAhwjxB5/VH3q/B5MYH6qy09K9zRI0FpGwE8SRqEom
-         vITUvvSqWMa1SZ5PtdsAtdcWUUHPj+P8TnhrVx0cQbrQF6NdSXfDMCLdlt4kAnPEfn7r
-         NN7cRF9+C4t5dJ0M1I3g9x7mzD0rU7exN0naxOC/imebkRo7CFmznNudUqQ+cJNrVPRf
-         dYuA==
-X-Gm-Message-State: AFq9FYJgTdMZG4FAU1c1EEY7BTbGw7ICHTao9JK9SeeoWzMU3AR4V97b
-	XP5KBeGlfxqzaGFxv7AgoZXcJyucQk/2vtCagouStnYFWXYYrjHCDhJorrOAiIDQFMVq+zcqMv6
-	l9q5WiQSInrvum+LFFiGsEuT4EBcQSMDqPJvjZUxhyOA6MPI+vUUJeTYBL0o=
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C8C2606A31C
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 02:38:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4C8C2606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=o6kb7Etk
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=xMFOdZPNgaq3s/ZTNQ07lC6kqfAFe+95f3H+yAyBUuhxQPKgGDq8mmOBuE1vpgih6ZyaUfEDCcgLQTuVs8bo2yNQ/FWUeozdko2OOGsYd6DAjo9TmYe78k01JwrEP1f171WdaGBt2UvVz6UvFcB1JwUetyRb6Vu0r8PbF8RN4q6OWm4Cayxge3folXp22pPgDiYgF8rfcSGnUNgAf5H5OV7c0C8f2MphWjb0vWx1NgDipEL1q7mKZxUDsAaOy9Wn5En4PX9ckLS+ioeOa7eIzlkvGv7rZh3KIxvcAzAUtcd48iNSmI4nb8LzkWFYss2DaBQBOuhfHiX9otnSbb8XRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wc1eNZc+fY71rAknGBOCWvV2tYF3Dw+MSjlv5iF/Gt8=;
+ b=JLGrHKtuDNApjT7yEre0O7XUxSsh3syU5fv0r1W5j0AQmMUPzqICsrdfVXTyCOJkPhvaoEa2k0VKBUE24ZjNCScPJrdkfnmysQNeZbJwBSbZWbAt4jqsEwbFXYfSMhrn2eMxG1oMW9HcqMFNk7fuMJ2rTxrGeNr45UG6WfkD16MFtk4GtCC4hG7z9knXjLBrN+3VQ7wqDRPIdWaZr3czroj9/uk9RA926FFO5U3NrdRL18XoEQApYtGa9HDGvXlQuFQRWg52aNz0h8PkCyN30sRscS+MQsVSjhAky5x66zY1+ScuVz3+vK14gGE+aOBjZedvYYkKzha0og236c2l2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wc1eNZc+fY71rAknGBOCWvV2tYF3Dw+MSjlv5iF/Gt8=;
+ b=o6kb7EtkQ4tug7GcTePWNKbYExtTT5ypVe8qLqmbf+hIkaUUxv/Xd1J01dPpEcYwuizY+RTW8dmAgF6qd18N8TzRUEdmLM7C+Hvjf7JkUkSzsbk1FuRM9357OmUOkrdAMSNl2gQLdqqBtdWChZ7f8oBLLHNLu11hhPGPiCy9zPJderd6K/V2pyLk0ykQG+xPpZ9FJjhso27ffkaCRnJzlFgnXLARqFsGTXLY1SenFSD96ZsSuLwtVSmffOPva3ZCF31mhlOKg9cURiTTeEYoGGV1z0WLDe2qH3tlEh1EGgdd12lDMoaS/21qJSWoZxkS1B9kINJojYISB885X5MipQ==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
+ by IA0PPFD4454CAA9.namprd12.prod.outlook.com (2603:10b6:20f:fc04::be5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.21; Fri, 30 Oct
+ 2026 02:37:59 +0000
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017%5]) with mapi id 15.21.0569.008; Fri, 30 Oct 2026
+ 02:37:58 +0000
+From: Mikko Perttunen <mperttunen@nvidia.com>
+To: linux-tegra@vger.kernel.org
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>,
+ Thierry Reding <thierry.reding@kernel.org>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Krishna Reddy <vdumpa@nvidia.com>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Peter Griffin <peter.griffin@linaro.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
+ Christoph Hellwig <hch@infradead.org>
+Subject:
+ Re: [PATCH v3 00/10] Make the 32-bit ARM DMA API work with normal IOMMU DMA
+ default domains (+ Tegra PoC)
+Date: Fri, 30 Oct 2026 11:37:53 +0900
+Message-ID: <wbo9prdIQW6DX3kU4aWbuA@nvidia.com>
+In-Reply-To: <auM2FAYVK192RzHb@infradead.org>
+References:
+ <20261026-b4-arm32-iommu-dma-cookie-v3-0-3901d74b1ff2@nvidia.com>
+ <auM2FAYVK192RzHb@infradead.org>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+X-ClientProxiedBy: TYCPR01CA0143.jpnprd01.prod.outlook.com
+ (2603:1096:400:2b7::15) To SJ2PR12MB9161.namprd12.prod.outlook.com
+ (2603:10b6:a03:566::20)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -57,104 +116,106 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Received: by 2002:a05:6808:4f6a:b0:4b9:a88b:8884 with SMTP id
- 5614622812f47-5640dc8f99amr783868b6e.26.1793327803631; Thu, 29 Oct 2026
- 19:36:43 -0700 (PDT)
-Date: Thu, 29 Oct 2026 19:36:43 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <6ae402bb.0c1d3ab6.e3d48.006d.GAE@google.com>
-Subject: [syzbot] [iommu?] memory leak in iommu_fwspec_init
-From: syzbot <syzbot+fe84fc6a684e0beb86e2@syzkaller.appspotmail.com>
-To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|IA0PPFD4454CAA9:EE_
+X-MS-Office365-Filtering-Correlation-Id: 410846b4-3b56-4410-3688-08df362ecedb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|10070799003|366016|23010399003|7416014|376014|1800799024|18002099003|6133799003|261026121527099003|22082099003|10067099003|11063799006|56012099006|5023799004|261021130227099003|261028144727099003|261022113327099003|261022105027099003|261021135927099003|261021121427099003|261022075727099003|261026140227099003|261022115727099003|4143699003|261021123027099003|261026130827099003;
+X-Microsoft-Antispam-Message-Info:
+	XxBr/7LokCXcmaWmdjkw7yVudUcWYfo8DA50AlJCY7978V70nRqYsfCqwFS+H7kdoKxeGo7WQZ3lbv1J0kQ74pzJopDd1WyT3U/tc6JG4xDKiworoheok/QPT79vu0WJE/QB9kr45ian0Q5q6bdqXblTt2MGJsnXxc3fXVlirF2t1J6f0C9pd6sGdyX24DvucUwsXg+A3WF5MOEwDA7npkNW3vUiwSNUovLFnoswe9Bi/xi+eXpVPPMuw1mWRiK7pOu39k9gIiEvo1Bc5L0XjNHlCO8dRdAtr6Ea0ZHPq1fEc/S/YXMrXZx3YvMV7jE0JdYsFUDMSWcVnWKuIX/n/45cTJNhKMTQZigd8XKQLoqAyqO52LlFL0zCnU+NNWw6eQqQZGonYIEBShoA9/4XumgnMiu8uWlv1UH+p1eoCqf9HzTS7RRx7irFfPrHYI6s4z+yJdhWTWYqUCVxDKWjzcffBzGp3rhbSIY0UDE68jz4YF0CQxSMwtlPu7FrIKmnKAK2o97Jo+VCm0KZ6ZoC9XlG8pMHHL/YOTv7h+I5I+WSuoGq2p3vhzknrcMtcvCCeREOSgJuyYOB4LKE9WGqoUWRj3e0HpXM5gcIf8G2u3yO7D3bAY4z5B4UhX6hfwKJ9REJ9odDJ+IYswjdeL2WtMRQevogwqU8HYwqNPL9rGE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(366016)(23010399003)(7416014)(376014)(1800799024)(18002099003)(6133799003)(261026121527099003)(22082099003)(10067099003)(11063799006)(56012099006)(5023799004)(261021130227099003)(261028144727099003)(261022113327099003)(261022105027099003)(261021135927099003)(261021121427099003)(261022075727099003)(261026140227099003)(261022115727099003)(4143699003)(261021123027099003)(261026130827099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cWd6U1UzVXNEU1M0SWtwN3FjNXNNQWNzQ2d0TTRBRG80MENKWUVBZ0FHOFJQ?=
+ =?utf-8?B?Wi9NRDlGT1Z1eGZ3QzFTeDU2clFQT29NUElVMjEwbjdXWHk2S21hVEF2VCt3?=
+ =?utf-8?B?dDR5ODljVVhBMkhJWEFPTHVoZ2NlREZ6emM2VFFNMGFoNnd1ZHJxcVJ6SU5a?=
+ =?utf-8?B?NHBYNTd3RVpHN0lJVHFBZ0tHTFU2QjUxL2xXbWIrTDJGRUVNTjhrOEZESzE2?=
+ =?utf-8?B?RjJxa3RVRHFGVDU4VmdWRWl3U3dBY2lKZzVUZ1Z2OTgzWkVNdzlvVG9PK2dG?=
+ =?utf-8?B?N0tlU1F6cGtYcDhFR25MZnFUVTFPRGdGYTBOTWM3eEdTVG5XeGdvYW1pcXlx?=
+ =?utf-8?B?Um9RT0Yrei9rQy8vZDU1WUZEcEx3bzVIczJtRXRXRlNWNTREKzVBSUtsWXo5?=
+ =?utf-8?B?N1pra1NOeC95VVZLQTZrQk1sTWFmdHRwVFlZZG9uYmlpV1ZJeHUrZFM5RjdI?=
+ =?utf-8?B?NEJvdDc4TDl1aVhqTFd3OWZMRDYxRXFMUFJXVjFFc0ppOFVjdmlueWk2WHQ5?=
+ =?utf-8?B?MVprMS9oUjJjaGY0cU9hYmszaEc2bXdyM3dpVDRpcWR5RDBOd2ExRUlzL05P?=
+ =?utf-8?B?R21JbDg3UGpKU3psYTdqNU0zZ2Q5b2pnNzdMRmhIb0QyN3owckZuRjFEM05k?=
+ =?utf-8?B?dnZpajAzbWUzTHBFOTJvL1JzNFM5cjdlbmU0c3NORVRzdmplL3M0emF1TGFH?=
+ =?utf-8?B?SkYxS01XWklFVkpuT1dCc3lZb0txb0srWUcyOWN5TmJEV0FlczB3ZGxRYXNM?=
+ =?utf-8?B?c2lKUUR3K3pXSHNlZWdEM2hkdWkzNk5ycnZadmw3VTlQRXNSYjFjclVMV0hO?=
+ =?utf-8?B?RDJQVkVhd1d3QkNuOGgxQnY2d2YwQWhXanNjWWtFTVFXZ0ZPVVZVVlJlRmpY?=
+ =?utf-8?B?SzNEWjN0QzFiZEhycjl6T3VuWkZ5akd1UWZ0OTRKV0pDQjczckxnMHBINTFo?=
+ =?utf-8?B?MUNLKy9JSjNKM2JDVzRLVk1CbzRLazV6SzdtK2VXa0NZelVNNkNpQVVWVFBn?=
+ =?utf-8?B?TW9WU09wOWIyaXRzU3g1WlpBRnFkRE16a2FyaGE4akRVc01RRW5Ka0lLOWRO?=
+ =?utf-8?B?eE43dXZBQ3Zodlh4N2ZOTi92UjVPWmFYWW5RaEYzNzZPZGxqRjc0akIvMVhH?=
+ =?utf-8?B?MjBiUzd4c1lQTWhRRzJKaHppYUFIc2xWTVAvQXdCelV2TEtFUERCZXZXM1dC?=
+ =?utf-8?B?WnBuQmZLTVdmQXBuUEZTeFN1K2lCbk1oUzVoMU1vWWZ2Mk5hZTVheTRub2VM?=
+ =?utf-8?B?NmJuQ0RtWFZmUXoxbXV3eGt3d2hFenlRYUQ0V2c3N1J1RHFuTE96dlFubUFr?=
+ =?utf-8?B?RkI3dDZETU5ERXhrR3d0Ky9iRUhILzZoMmZHQm1ndnpsenFXK3luc1ZOK20r?=
+ =?utf-8?B?dHlkUkNoUDBnYkxyQ3lIY3FBTXcrQjZSbjh4RTBSK2pLeHcwWVRheS91bEpY?=
+ =?utf-8?B?QnlpWElxYXRjT3RCODVOcDd2RjNraitmbDdKTnk2NEwrbWJRbnVnOVUrRktB?=
+ =?utf-8?B?ZnRiSDVFREFUUXczNzVweXJDVnAwMVJCQStITXV0b2dwazdkZmRUTWIxZUI2?=
+ =?utf-8?B?eEp3SjNGMXNHcnBKUWsvVUU2WlBSREZ1aWNvUEJqUjBtQUxacWFmL3QzYi9z?=
+ =?utf-8?B?YVVVMEdqSGsySGxCd05tUm9VT1c5eHUrTHRaaGNQT3FINHAzeUVIZ1luZHdL?=
+ =?utf-8?B?ckpaUk5sLzl6ODFaMCtvSVNRMmRaK2FqVUF4QkFUVzlWYmo3VkhkSEJKQUNu?=
+ =?utf-8?B?MGJUdEJGWVFHVnRNaXI0cS9IRCtIRGhPbC9YZkFFZmlqM2RjRXdFaVdQRS82?=
+ =?utf-8?B?REM3dlVLRVVuQTF2eTRoYnE0T2lLU1AxYkxBK1EzVDhYZjdBTkdzR05Cd25t?=
+ =?utf-8?B?YkpkTGRqTk5RWU5QRzlQcGtacEtKT0tTZ2RjcCtFSWVwQWpyMlFqUHZ2UW5u?=
+ =?utf-8?B?VEV5UHg2SE1Kd2NGNjRZNWxibVZ3NTBQZ0VxMWk0b1JnTThrV0dYZzV4b3U5?=
+ =?utf-8?B?b3ozK1dqZUFIM2VtVmVUd2VxWWQxT0MyRWxMcXdNWTd5bDFlUnNhYndWS3lp?=
+ =?utf-8?B?WVZLQXlmc3VSekVPMFZHaVcyRDdpbSt5R0I2RldqbWM1elYrY3NYTVdpTVh2?=
+ =?utf-8?B?QlhtWG8vdGF1L0pxWDRWNlNTM3o3RGV0ZVVva21KcnVqNkZSaEw0OVNaM0s4?=
+ =?utf-8?B?cFRoWkNGWDJyOVlhSWt5dkc5Vlo2Yyt2OGIrOXJpOUsvY0wwR3dzSm9vTzJI?=
+ =?utf-8?B?RzZ0THlDbmh4Y0JmWnJpQ1JxTmxUWDJCNXBCUTJ4SUplVGo5NndCa3lBbk01?=
+ =?utf-8?B?Z3UrVFZmRm5nUDlRUU9DVlE0UHk3dzQrWUpsYkcxdjArZGZJMUVQcWdORGx5?=
+ =?utf-8?Q?olnoEmRB6hcusETnPFohlcEEpPuNFG6QW/C2Heow7tuLL?=
+X-MS-Exchange-AntiSpam-MessageData-1: dhZ/qs2HuY1k6A==
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 410846b4-3b56-4410-3688-08df362ecedb
+X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Oct 2026 02:37:57.9195
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1ubgFdf+iq7eKQ+Z1IYVvlJA0lM+UNiOn1EjaEiy18SxOA7PciZN7crfZopuRyXMc9agyzCz42nim7z0lcF0bg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PPFD4454CAA9
 
-Hello,
+On Thursday, October 29, 2026 9:03=E2=80=AFPM Christoph Hellwig wrote:
+> On Mon, Oct 26, 2026 at 06:19:25PM +0900, Mikko Perttunen wrote:
+> > Robin suggested [1] that instead of teaching the legacy path about
+> > groups, we should explore modernizing the 32-bit ARM DMA code a bit by
+> > making it use domain cookies and have the core code own the domains, as
+> > is the case on other architectures. Still, ARM's own DMA code is kept t=
+o
+> > support existing drivers and APIs that expect it, and because dma-iommu
+> > is considered too big and unnecessary for 32-bit ARM.
+>=20
+> Now that the different domain handling is gone, what speaks against
+> just using the generic dma-iommu code for arm32?
+>=20
+>=20
 
-syzbot found the following issue on:
+Copying Robin's comment --
 
-HEAD commit:    65ba8f34ec88 Merge tag 'xtensa-20261027' of https://github..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15067d31580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fbf447a1375a1948
-dashboard link: https://syzkaller.appspot.com/bug?extid=fe84fc6a684e0beb86e2
-compiler:       gcc (Debian 14.2.0-19) 14.2.0, GNU ld (GNU Binutils for Debian) 2.44
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10b22a3c580000
+> TBH I rather feel like the time for converting ARM to iommu-dma has=20
+> passed - there are drivers which rely on specific behaviours of the ARM=20
+> IOVA allocator which iommu-dma does not match, and meanwhile iommu-dma=20
+> continues to grow more server-specific features which would be nothing=20
+> but bloat on ARMv7 systems with <=3D2GB of RAM and no virtualisation. At=
+=20
+> this point I'm inclined to treat the existing DMA ops as legacy code=20
+> like with alpha/sparc/etc.
 
-Downloadable assets:
-disk image: https://storage.googleapis.com/syzbot-assets/b4e738ce5f2b/disk-65ba8f34.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/1de9d1ecbbb6/vmlinux-65ba8f34.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/8a3d79b65181/bzImage-65ba8f34.xz
+Aside the bloat, it's indeed not a switch we could do in the short term=20
+given all the platforms that rely on ARM32 specific APIs or behavior.=20
+This series already opts out four platforms from just the default=20
+domains and sashiko implies we need to add more to that list. There=20
+could be an incremental path of removing existing hacky behavior and if=20
+we manage that, eventually code sharing could be considered.
 
-AI-generated root cause summary:
-A memory leak of `struct dev_iommu` occurs when `iommu_fwspec_init()` allocates
-`dev->iommu` via `dev_iommu_get()`, but subsequently fails on allocating the
-`iommu_fwspec` structure (e.g. via fault injection) and returns -ENOMEM without
-releasing `dev->iommu`. Furthermore, callers such as `iommu_mock_device_add()`
-do not invoke `dev_iommu_free()` on error from `iommu_fwspec_init()`. When
-device initialization fails and the device is released, `dev->iommu` remains
-allocated, causing an unreferenced object memory leak.
-
-full analysis:  https://syzkaller.appspot.com/x/ai_root_cause?x=fe84fc6a684e0beb86e2
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+fe84fc6a684e0beb86e2@syzkaller.appspotmail.com
-
-BUG: memory leak
-unreferenced object 0xffff88812bad6bc0 (size 64):
-  comm "syz.0.26", pid 5965, jiffies 4294941985
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace (crc 0):
-    kmemleak_alloc_recursive include/linux/kmemleak.h:44 [inline]
-    slab_post_alloc_hook mm/slub.c:4733 [inline]
-    slab_alloc_node mm/slub.c:5033 [inline]
-    __kmalloc_cache_noprof+0x35f/0x3f0 mm/slub.c:5676
-    _kmalloc_noprof include/linux/slab.h:991 [inline]
-    _kzalloc_noprof include/linux/slab.h:1312 [inline]
-    dev_iommu_get drivers/iommu/iommu.c:408 [inline]
-    dev_iommu_get drivers/iommu/iommu.c:399 [inline]
-    iommu_fwspec_init+0x20d/0x240 drivers/iommu/iommu.c:3086
-    iommu_mock_device_add+0x29/0x90 drivers/iommu/iommu.c:385
-    mock_dev_create drivers/iommu/iommufd/selftest.c:1026 [inline]
-    iommufd_test_mock_domain drivers/iommu/iommufd/selftest.c:1068 [inline]
-    iommufd_test+0x1a97/0x2ec0 drivers/iommu/iommufd/selftest.c:2104
-    iommufd_fops_ioctl+0x1ed/0x370 drivers/iommu/iommufd/main.c:556
-    vfs_ioctl fs/ioctl.c:51 [inline]
-    __do_sys_ioctl fs/ioctl.c:597 [inline]
-    __se_sys_ioctl fs/ioctl.c:583 [inline]
-    __x64_sys_ioctl+0xf4/0x140 fs/ioctl.c:583
-    do_syscall_x64 arch/x86/entry/syscall_64.c:61 [inline]
-    do_syscall_64+0xe9/0x530 arch/x86/entry/syscall_64.c:84
-    entry_SYSCALL_64_after_hwframe+0x77/0x7f
-
-connection error: failed to recv *flatrpc.ExecutorMessageRawT: EOF
+Mikko
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
-
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
-
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
-
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
-
-If you want to undo deduplication, reply with:
-#syz undup
