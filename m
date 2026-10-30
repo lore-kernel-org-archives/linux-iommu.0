@@ -1,83 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793336364;
-	b=e3oJQuFtGom8IeXqNzVbkkGr6T7BxpkK+PCzLY9F0JTxBfstRxGpFWSEkwAUM/AcFitL
-	 iNvsk3FNnp0p5yWppPpUhhIFCepsROL28a0Zz3WfND19EM07CRtmQIfWCAUnHBmLmK4PO
-	 MZCfCqiHrlTCPu2LWG+f/VJWU2kiESbFry4z5oDbSrohuyiG7KptBv+yESzFOcP+KJbOn
-	 ad05eLiLz6GTKqk43rjzVrHRL0h+QIhH8s828V4AYzcBxyvucwmgzeLAs7yrhA3EXJUO9
-	 YIl4urF2VtucC6rt8WrEvEwV4qK4ITEjFtkUJt5mivXUXCub5B0JhgaCglhfC37haSA==
+	t=1793337161;
+	b=Qg4D7ZLCgSMEWUz5Ws3RM8lu/EmLm6o4PjtlkudNHlSkjV2FJix3d+5eImn+l2paKZio
+	 1nzxN4Fh/nCJgNP5Ebwx6QdYQjxQEjywag15IxCKkyJbekfiMPangRknc88m8n4wuLgM2
+	 7jR934hdSOspXnDpqe8KHPUNYXkS0bW2sdY6HnePJSw1uV6GfGcapM9Bk2gnWe3RtQQlS
+	 zmzgDRstwB2bqHt2LDtUwtN7bly41ehqQq6D1RO0mSbkeDfv8bWSjs7eagP286swGheNY
+	 8SOmCEo1lpsNu+ur7tUm0diyG4ZwMvfp+Qq020fBuJDjiLAEOJU4guwBmf5vQG6Spvw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793336364;
-	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=0zUjVWLF5PXtLzAudZi15itmOHipn0n12lIE9/19W1o=;
-	b=s0CYXhKes6VVcj19JwhPtNwGIc8P9Bc5PEJBKKiMdrpfP5zPBPUgT4mdEx5LqWMGxMAY
-	 FjI/kjx7l5KlN9r0P3t4Ba2kvXeHLbjxLLdZKC/0dOHrMdiGHc6HaxJifhd3BqvtRuuwA
-	 nfthnIhALCf6i+IY4ttR94IR9kGqd4ACu4GI8Q6Uhw1cj/3oWzOg6FkNml0wAnjBpVULR
-	 sBsus6ahMCZHAkCkSCFzeZG2Xg+bgjTPqPnoj5DlS3CA0GgFp3d4b8zK9n048qIvS2AVj
-	 Hfxas20+ug1pqEcRhbkhpoW6NqYKwfgXN4bGLw4DrLg+Yyv/e2ABASA7B2qZ/OAqR2A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793337161;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=9zcaqLkIJCJ8/g2u2g9v1+SwkL0kqK7mo9nrgKHyYmU=;
+	b=gAAA1CsjgDxGU0RTuXNiWn6byzH7n8tRwnKYVb/W+vQWk1waOOsCi+CWmu7yM+IySwAU
+	 kOdyCqLJUUURyMVXpFxK0Gicj65bv3BORkr/jR9klVwdnl3gl4xS1Ni8kqoj5PrTqLgbH
+	 1WfblKGPeLuW898HdGkjNSZgUGV4mpJjQkcGVDPGTHUVDjRPhwc9roxahv5MmeKvY2wC3
+	 iQ43GJIfogtJ+f80gJZ7HwndknZPQQzSnd0WsfpzMQJP29b9zsbAnIkiXwW34cz3qr+k9
+	 oNuZdDErbPLxMKAJp2oj5OhNAm8p/+9k02lYa+8FNksEMVDXphPOFYfhiEicDbLuLWg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=alien8.de;
-	spf=pass smtp.mailfrom=alien8.de;
-	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=di8YMlMl;
-	arc=none smtp.remote-ip=65.109.113.108
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mi7nuHvo;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5370C606A31D
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 04:59:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5370C606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF79D606A31A
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 05:12:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CF79D606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=di8YMlMl
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 1B82940E050A;
-	Fri, 30 Oct 2026 04:59:21 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id 1tM-tdFSvD5Y; Fri, 30 Oct 2026 04:59:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1793336356; bh=0zUjVWLF5PXtLzAudZi15itmOHipn0n12lIE9/19W1o=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=di8YMlMlRdM6OXgt92tOrIG4JIdM4DzPtQv0gQADCrfCQs9s8BW1ysSE7sGUW5YzI
-	 moMDij4boj03QFl52SF4IO/flfxoVgc5k8FQ6E+mDbkionBRwgYGQZ3JnTSkp6M4PN
-	 WMdJVPCQpzHDXS61annpzAGKz6XAwzXgVE4KgGTOsCXTTDE924ApPsxRgxraSZ3Uth
-	 ehg9yVEX9kHfRlV56Wz6+eYoz5ylCzmoR/yAPzVeUHII/KrOFrNCquZMVwqXVXbN19
-	 cMKCJ9G1YLPzMyqDuG3Kfqz44oHCaO4vuoXLJkyUoZKLOFqX+V3yMLOKbrxMGK3h8i
-	 rA1fqlcV4luHL8QCC64QAyfufgYFbp+oQnkbQ1x65T20knjoAUyRHeOY4Wz1pQHFMB
-	 ll0mNTzdYsoJP354TXxbL8Vte/iPMD3cEAtJxzw58LwxpjeJpf0Mj1hlONVfDxgZxy
-	 HalKtrtCSYljJLMORqeBlyuVUoaLx1cI5UCsaL2F7+IbkQaQmQcCKySTQYKIWiQkvK
-	 +b8Fr2fZWtdW8RUMMX+E20x7GopN/wGgerQxMGYotM943RtXwS/kDoEjdL98ZRlIHI
-	 N/4U4ozijhjmk5qPy0FehyBrcd1cOj8GyfJjWVt3yZwhQGVLzk6NNTiVoiYbjf9Fmq
-	 oeQznu4wmLdChk7erkt68DIk=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::48])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2A78140E04D6;
-	Fri, 30 Oct 2026 04:59:03 +0000 (UTC)
-Date: Thu, 29 Oct 2026 21:59:00 -0700
-From: Borislav Petkov <bp@alien8.de>
-To: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Thomas Gleixner <tglx@kernel.org>,
-	Ning Sun <ning.sun@intel.com>,
-	Michal Camacho Romero <michal.camacho.romero@intel.com>,
-	x86@kernel.org, iommu@lists.linux.dev,
-	tboot-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-	Mateusz Mowka <mateusz.mowka@intel.com>,
-	Adam Pawlicki <adamx.pawlicki@intel.com>,
-	Pawel Randzio <pawel.randzio@intel.com>
-Subject: Re: [PATCH v7 1/2] x86/tboot: Add support for parsing DTPR table and
- disabling TPRs
-Message-ID: <20261030045900.GIauQkFDfs6GnUks0B@fat_crate.local>
-References: <cover.1793273244.git.michal.camacho.romero@linux.intel.com>
- <8549af9ea60b73e120be377877c26d929f1ad25e.1793273244.git.michal.camacho.romero@linux.intel.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=mi7nuHvo
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793337160; x=1824873160;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZFujzdybpllUA2fX9jvBk5gF4tQUbpjo+1BrXn9uaT8=;
+  b=mi7nuHvoN5QHkVvFZwyhB1oFU8MpVWlkWHhgU7IeEW3HK0Vt/5AUfdds
+   nDU4PUht3fq/OoyUA8xW2MrLGtn1INiPAKsMOrsdYO+NyLme12eglFghD
+   mhXMlAArJhDQFB+K+JR2KMd62ku4rEP+WJvbnRPvcdUArp1cabIrYhTPK
+   DWBV/EWkvwyB61Fhe0g/6YgU1XCXS6dl+U1M68UgDPUrGYKZYpM+qJiDf
+   b7DT5w2WXAWUTHMgymZcTs46P16i2ceoizPSthSb6Yul2YNs8v+stIWIg
+   KGEIgwaRzqxa9C2SjSZyVDOOz/fBNuqpXfONPXacV4H7mxF1/3G56AYJ1
+   A==;
+X-CSE-ConnectionGUID: pitlWaHcS6CybR3meljkcg==
+X-CSE-MsgGUID: 58xu1lq+QrGubBkp7cOFwQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1988270"
+X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
+   d="scan'208";a="1988270"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 22:12:39 -0700
+X-CSE-ConnectionGUID: OsTvw9aRQSiuXg/UtvodRg==
+X-CSE-MsgGUID: I6Ld2pQQSFODUThnUAzbNw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
+   d="scan'208";a="5462972"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 22:12:34 -0700
+Message-ID: <df75f891-05a0-4d47-8705-d6a00c81ff97@linux.intel.com>
+Date: Fri, 30 Oct 2026 13:12:31 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -87,460 +72,600 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <8549af9ea60b73e120be377877c26d929f1ad25e.1793273244.git.michal.camacho.romero@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
+ Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
+ Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 05/18] iommu: Implement device and IOMMU HW
+ preservation
+To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ David Woodhouse <dwmw2@infradead.org>
+References: <20261025021930.674647-1-skhawaja@google.com>
+ <20261025021930.674647-6-skhawaja@google.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20261025021930.674647-6-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 29, 2026 at 12:57:26PM +0100, Michal Camacho Romero wrote:
-> Tested-by: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
-
-I sure hope you did test it... :-)
-
-In any case, you don't need to add that tag to your own patch as that is
-implied.
-
-Reality tells a different story, unfortunately... :-/
-
-> Signed-off-by: Michal Camacho Romero <michal.camacho.romero@intel.com>
+On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
+> Add IOMMU ops to preserve/unpreserve the device state handled by the
+> IOMMU driver. This is IOMMU specific state of the device that needs to
+> be preserved for liveupdate. These ops can be implemented by the IOMMU
+> drivers that support preservation of devices that have their IOMMU
+> domains preserved. During device preservation the state of the
+> associated IOMMU is also preserved as dependency.
+> 
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 > ---
->  arch/x86/kernel/tboot.c | 515 ++++++++++++++++++++++++++++++++++++++--
->  include/linux/tboot.h   |  28 ++-
->  2 files changed, 523 insertions(+), 20 deletions(-)
-
-Below only stylistic issues we pay attention to in the tip tree. Pls have
-a look at 
-
-https://docs.kernel.org/process/maintainer-tip.html
-
-and fix up coding style to adhere to the tip tree's standard.
-
-> diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
-> index 46b8f1f16676e..47da21ad0f3e2 100644
-> --- a/arch/x86/kernel/tboot.c
-> +++ b/arch/x86/kernel/tboot.c
+>   drivers/iommu/iommu-priv.h       |   2 +
+>   drivers/iommu/iommu.c            |  72 +++++++++++-
+>   drivers/iommu/liveupdate.c       | 189 +++++++++++++++++++++++++++++++
+>   include/linux/iommu-liveupdate.h |  76 +++++++++++++
+>   include/linux/iommu.h            |  33 ++++++
+>   5 files changed, 371 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
+> index 1f9f886b2c10..6b0ef210b32f 100644
+> --- a/drivers/iommu/iommu-priv.h
+> +++ b/drivers/iommu/iommu-priv.h
+> @@ -21,6 +21,8 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+>   
+>   void dev_iommu_free(struct device *dev);
+>   
+> +bool iommu_group_is_singleton(struct iommu_group *group);
+> +
+>   const struct iommu_ops *iommu_ops_from_fwnode(const struct fwnode_handle *fwnode);
+>   
+>   static inline const struct iommu_ops *iommu_fwspec_ops(struct iommu_fwspec *fwspec)
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index b486b8bbd1fc..a66363789ca9 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
 > @@ -18,6 +18,7 @@
->  #include <linux/mm.h>
->  #include <linux/tboot.h>
->  #include <linux/debugfs.h>
-> +#include <acpi/actbl1.h>
->  
->  #include <asm/realmode.h>
->  #include <asm/processor.h>
-> @@ -42,6 +43,15 @@ static struct tboot *tboot __read_mostly;
->  
->  static u8 tboot_uuid[16] __initdata = TBOOT_UUID;
->  
-> +/* Global pointer to TXT HEAP base */
-> +static void __iomem *txt_heap;
+>   #include <linux/errno.h>
+>   #include <linux/host1x_context_bus.h>
+>   #include <linux/iommu.h>
+> +#include <linux/iommu-liveupdate.h>
+>   #include <linux/iommufd.h>
+>   #include <linux/idr.h>
+>   #include <linux/err.h>
+> @@ -328,6 +329,47 @@ void iommu_device_unregister(struct iommu_device *iommu)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_device_unregister);
+>   
+> +struct iommu_dev_iter {
+> +	struct iommu_device *iommu;
+> +	iommu_dev_iter_fn fn;
+> +};
 > +
-> +/* Global pointer to the DTPR table */
-> +static struct acpi_table_dtpr *dtpr;
-> +
-> +/* Number of active TPRs */
-> +static s64 num_of_enabled_tprs;
-> +
->  bool tboot_enabled(void)
->  {
->  	return tboot != NULL;
-> @@ -223,6 +233,143 @@ static int tboot_setup_sleep(void)
->  
->  #endif
->  
-> +static bool tboot_check_txt_heap_section_bounds(const u64 heap_end,
-> +						void *heap_section,
-> +						u64 *heap_section_size,
-> +						const char *section_name)
-
-Are those aligned on the opening brace? Check all our patches pls.
-
+> +static int _iommu_for_each_dev_cb(struct device *dev, void *data)
 > +{
-> +	if (!heap_section) {
-> +		pr_err("%s section is NULL\n", section_name);
-> +		return false;
-> +	}
+> +	struct iommu_dev_iter *iter = data;
 > +
-> +	if (!heap_section_size) {
-> +		pr_err("%s section size pointer is NULL\n", section_name);
-> +		return false;
-> +	}
+> +	if (dev->iommu && dev->iommu->iommu_dev == iter->iommu)
+> +		return iter->fn(dev, iter->iommu);
 > +
-> +	*heap_section_size = 0;
-> +
-> +	if ((u64)heap_section > heap_end || heap_end - (u64)heap_section < 8) {
-> +		pr_err("%s size field exceeds heap boundary\n", section_name);
-> +		return false;
-> +	}
-> +
-> +	/* Read the size of the current TXT Heap section */
-> +	*heap_section_size = *(u64 __force *)heap_section;
-> +
-> +	if (*heap_section_size < 8) {
-> +		pr_err("%s size is too small\n", section_name);
-> +		return false;
-> +	}
-> +
-> +	if (*heap_section_size > heap_end - (u64)heap_section) {
-> +		pr_err("%s exceeds heap boundary\n", section_name);
-> +		return false;
-> +	}
-> +
-> +	return true;
+> +	return 0;
 > +}
 > +
-> +static bool tboot_check_dtpr_size(const struct heap_ext_data_elt *elt)
+> +/**
+> + * iommu_for_each_dev() - Iterate over all devices attached to an IOMMU
+> + * @iommu: IOMMU instance
+> + * @fn: Callback to call for each device attached to @iommu
+> + *
+> + * Return: 0 on success, or negative error code.
+> + */
+> +int iommu_for_each_dev(struct iommu_device *iommu, iommu_dev_iter_fn fn)
 > +{
-> +	u64 dtpr_payload_size, dtpr_offset;
-> +	u32 i, ref_tpr_cnt;
+> +	struct iommu_dev_iter iter = {
+> +		.iommu = iommu,
+> +		.fn = fn,
+> +	};
+> +	int ret;
 > +
-> +	struct acpi_table_dtpr   *tmp_dtpr    = NULL;
-> +	struct acpi_tpr_instance *tpr_inst    = NULL;
-> +	struct acpi_tpr_aux_sr   *tpr_aux_srl = NULL;
-> +
-> +	if (!elt) {
-> +		pr_err("DTPR element heap extension data is NULL\n");
-> +		return false;
+> +	for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
+> +		ret = bus_for_each_dev(iommu_buses[i], NULL, &iter,
+> +				       _iommu_for_each_dev_cb);
+> +		if (ret)
+> +			return ret;
 > +	}
 > +
-> +	tmp_dtpr          = (struct acpi_table_dtpr *)elt->data;
-> +	dtpr_payload_size = elt->size - sizeof(*elt);
-> +
-> +	if (dtpr_payload_size < sizeof(struct acpi_table_dtpr)) {
-> +		pr_err("DTPR element payload too small for a DTPR header\n");
-> +		return false;
-> +	}
-> +
-> +	if (tmp_dtpr->header.length != dtpr_payload_size) {
-> +		pr_err("Mismatch between DTPR table length and payload size\n");
-> +		return false;
-> +	}
-> +
-> +	dtpr_offset = sizeof(struct acpi_table_dtpr);
-> +
-> +	if (dtpr_offset > dtpr_payload_size) {
-> +		pr_err("TPR header exceeds table's declared size\n");
-> +		return false;
-> +	}
-> +
-> +	if (tmp_dtpr->ins_cnt < 1) {
-> +		pr_err("DTPR table declares no TPR instances\n");
-> +		return false;
-> +	}
-> +
-> +	for (i = 0; i < tmp_dtpr->ins_cnt; i++) {
-> +		/* prove this instance's header is in bounds before reading it */
-> +		if (dtpr_offset + sizeof(struct acpi_tpr_instance) > dtpr_payload_size) {
-> +			pr_err("TPR instance No.%u header exceeds DTPR table size\n", i);
-> +			return false;
-> +		}
-> +
-> +		/* iterate to the current TPR instance */
-> +		tpr_inst = (struct acpi_tpr_instance *)((u8 *)tmp_dtpr + dtpr_offset);
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_for_each_dev);
 
-This line is not iterating over anything.
-
-Please check all your comments and tone them down.
+The function has no locking against iommu probe or release, so the
+callback can read dev->iommu while it is being freed or before it is
+fully set up.
 
 > +
-> +		if (tpr_inst->tpr_cnt < 2) {
-> +			pr_err("TPR Instance %u has less than 2 TPRs, further DTPR processing interrupted.\n",
-> +			       i);
-
-Ugly linebreak.
-
-Check the rest for more.
-
-> +			return false;
-> +		}
-> +
-> +		/* all instances must carry the same TPR count as the first */
-> +		if (i == 0) {
-
-		if (!i)
-
-> +			ref_tpr_cnt = tpr_inst->tpr_cnt;
-> +		} else if (tpr_inst->tpr_cnt != ref_tpr_cnt) {
-> +			pr_err("TPR Instance %u has inconsistent TPR count: expected %u, found %u\n",
-> +			       i, ref_tpr_cnt, tpr_inst->tpr_cnt);
-> +			return false;
-> +		}
-> +
-> +		/* iterate over each TPR instance */
-> +		dtpr_offset += sizeof(struct acpi_tpr_instance) +
-> +			       (u64)tpr_inst->tpr_cnt * sizeof(struct acpi_tpr_array);
-> +
-> +		/* verify TPR array size for this instance */
-> +		if (dtpr_offset > dtpr_payload_size) {
-> +			pr_err("TPR instance No.%u TPR entries exceed DTPR table size\n",
-> +			       i);
-> +			return false;
+>   #if IS_ENABLED(CONFIG_IOMMUFD_TEST)
+>   void iommu_device_unregister_bus(struct iommu_device *iommu,
+>   				 const struct bus_type *bus,
+> @@ -626,8 +668,8 @@ DEFINE_MUTEX(iommu_probe_device_lock);
+>   
+>   static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+>   {
+> +	struct group_device *gdev, *gdev2;
+>   	struct iommu_group *group;
+> -	struct group_device *gdev;
+>   	int ret;
+>   
+>   	/*
+> @@ -661,6 +703,13 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   		goto err_put_group;
+>   	}
+>   
+> +	for_each_group_device(group, gdev2) {
+> +		if (dev_iommu_has_preserved_state(gdev2->dev)) {
+> +			ret = -EBUSY;
+> +			goto err_free_gdev;
 > +		}
 > +	}
 > +
-> +	tpr_aux_srl = (struct acpi_tpr_aux_sr *)((u8 *)tmp_dtpr + dtpr_offset);
-> +	dtpr_offset += sizeof(u32);
+>   	/*
+>   	 * The gdev must be in the list before calling
+>   	 * iommu_setup_default_domain()
+> @@ -697,6 +746,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   
+>   err_remove_gdev:
+>   	list_del(&gdev->list);
+> +err_free_gdev:
+>   	__iommu_group_free_device(group, gdev);
+>   err_put_group:
+>   	iommu_deinit_device(dev);
+> @@ -3543,6 +3593,26 @@ bool iommu_group_dma_owner_claimed(struct iommu_group *group)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+>   
+> +/**
+> + * iommu_group_is_singleton() - Query if group contains exactly one device
+> + * @group: The group.
+> + *
+> + * Return: true if group contains exactly 1 device, false otherwise.
+> + */
+
+We discussed this interface before, and the consensus was that such an
+interface is not feasible, because the membership of an iommu_group is
+not fixed, given the hot-plug support of buses like PCI.
+
+I am fine with the usage model of ensuring the iommu group of a
+preserved device to be a singleton, but I don't think we even need such
+a kAPI. It should be handled case by case.
+> +bool iommu_group_is_singleton(struct iommu_group *group)
+> +{
+> +	bool ret;
 > +
-> +	if (dtpr_offset > dtpr_payload_size) {
-> +		pr_err("TPR SRL count field exceeds DTPR table size\n");
+> +	if (!group)
 > +		return false;
-> +	}
 > +
-> +	dtpr_offset += (u64)tpr_aux_srl->srl_cnt *
-> +		       sizeof(struct acpi_tpr_serialize_request);
-> +	if (dtpr_offset > dtpr_payload_size) {
-> +		pr_err("TPR SRL entries exceed DTPR table size\n");
-> +		return false;
-> +	}
+> +	mutex_lock(&group->mutex);
+> +	ret = (list_count_nodes(&group->devices) == 1);
+> +	mutex_unlock(&group->mutex);
 > +
-> +	if (dtpr_offset < dtpr_payload_size) {
-> +		pr_err("DTPR table is smaller than expected\n");
-> +		return false;
-> +	}
-> +
-> +	return true;
+> +	return ret;
 > +}
 > +
->  void tboot_shutdown(u32 shutdown_type)
->  {
->  	void (*shutdown)(void);
-
-...
-
-> @@ -514,3 +663,331 @@ struct acpi_table_header *tboot_get_dmar_table(struct acpi_table_header *dmar_tb
->  
->  	return dmar_tbl;
->  }
+>   static void iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
+>   				   struct iommu_domain *domain)
+>   {
+> diff --git a/drivers/iommu/liveupdate.c b/drivers/iommu/liveupdate.c
+> index b7eda5615189..d1d11b28ae79 100644
+> --- a/drivers/iommu/liveupdate.c
+> +++ b/drivers/iommu/liveupdate.c
+> @@ -43,6 +43,9 @@
+>   #include <linux/kexec_handover.h>
+>   #include <linux/kho_block.h>
+>   #include <linux/liveupdate.h>
+> +#include <linux/pci.h>
 > +
-> +static struct acpi_table_dtpr *tboot_get_dtpr_table(void)
+> +#include "iommu-priv.h"
+>   
+>   /**
+>    * struct iommu_ser_set - Set of serialized objects of one type
+> @@ -358,3 +361,189 @@ void iommu_unpreserve_domain(struct iommu_domain *domain)
+>   	liveupdate_flb_put_outgoing(&iommu_flb);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_unpreserve_domain);
+> +
+> +static int iommu_preserve_locked(struct iommu_device *iommu,
+> +				 struct iommu_flb_obj *flb_obj)
 > +{
-> +	void *heap_ptr, *config, *sinit_mle_end;
-> +	struct sinit_mle_data *sinit_mle;
-> +	struct heap_ext_data_elt *elt;
-> +	u64 heap_end, heap_size, sinit_mle_size, heap_section_size;
-
-The tip-tree preferred ordering of variable declarations at the
-beginning of a function is reverse fir tree order::
-
-	struct long_struct_name *descriptive_name;
-	unsigned long foo, bar;
-	unsigned int tmp;
-	int ret;
-
-The above is faster to parse than the reverse ordering::
-
-	int ret;
-	unsigned int tmp;
-	unsigned long foo, bar;
-	struct long_struct_name *descriptive_name;
-
-And even more so than random ordering::
-
-	unsigned long foo, bar;
-	int ret;
-	struct long_struct_name *descriptive_name;
-	unsigned int tmp;
-
-Please check all your code.
-
+> +	struct iommu_hw_ser *iommu_hw_ser;
+> +	int ret;
 > +
-> +	if (!tboot_enabled())
-> +		return NULL;
-> +	/*
-> +	 * ACPI tables may not be DMA protected by tboot, so use DMAR copy
-> +	 * SINIT saved in SinitMleData in TXT heap (which is DMA protected)
-> +	 */
+> +	if (!iommu->ops->preserve || !iommu->ops->unpreserve)
+> +		return -EOPNOTSUPP;
 > +
-> +	/* map config space in order to get heap addr */
-> +	config = ioremap(TXT_PUB_CONFIG_REGS_BASE, NR_TXT_CONFIG_PAGES *
-> +			 PAGE_SIZE);
-> +	if (!config)
-> +		return NULL;
-> +
-> +	/* now map TXT heap */
-> +	heap_size  = *(u64 __force *)(config + TXTCR_HEAP_SIZE);
-> +	if (!txt_heap)
-> +		txt_heap = ioremap(*(u64 __force *)(config + TXTCR_HEAP_BASE), heap_size);
-> +
-> +	iounmap(config);
-> +
-> +	if (!txt_heap) {
-> +		pr_err("Failed to map TXT heap\n");
-> +		return NULL;
+> +	lockdep_assert_held(&flb_obj->lock);
+> +	if (iommu->iommu_ser) {
+> +		iommu->iommu_ser->hdr.ref_count++;
+> +		return 0;
 > +	}
 > +
-> +	if (heap_size == 0 || (u64)txt_heap + heap_size < (u64)txt_heap) {
-> +		pr_err("TXT heap size invalid or overflows\n");
-> +		goto teardown;
+> +	iommu_hw_ser = iommu_ser_set_alloc(&flb_obj->iommu_set);
+> +	if (IS_ERR(iommu_hw_ser))
+> +		return PTR_ERR(iommu_hw_ser);
+> +
+> +	ret = iommu->ops->preserve(iommu, iommu_hw_ser);
+> +	if (ret) {
+> +		iommu_hw_ser->hdr.flags |= IOMMU_SER_FLAG_DELETED;
+> +		return ret;
 > +	}
 > +
-> +	heap_end   = (u64)txt_heap + heap_size;
+> +	iommu->iommu_ser = iommu_hw_ser;
+> +	return ret;
+> +}
 > +
-> +	/* walk heap to SinitMleData */
-> +	/* skip BiosData */
-> +	/* get BiosData section size */
-> +	if (!tboot_check_txt_heap_section_bounds(heap_end, txt_heap,
-> +						 &heap_section_size, "BiosData")) {
-> +		goto teardown;
+> +static void iommu_unpreserve_locked(struct iommu_device *iommu,
+> +				    struct iommu_flb_obj *flb_obj)
+> +{
+> +	struct iommu_hw_ser *iommu_hw_ser = iommu->iommu_ser;
+> +
+> +	lockdep_assert_held(&flb_obj->lock);
+> +	if (WARN_ON(!iommu_hw_ser))
+> +		return;
+> +
+> +	if (WARN_ON_ONCE(!iommu->ops->preserve ||
+> +			 !iommu->ops->unpreserve))
+> +		return;
+> +
+> +	iommu_hw_ser->hdr.ref_count--;
+> +	if (iommu_hw_ser->hdr.ref_count)
+> +		return;
+> +
+> +	iommu->iommu_ser = NULL;
+> +	iommu->ops->unpreserve(iommu, iommu_hw_ser);
+> +	iommu_hw_ser->hdr.flags |= IOMMU_SER_FLAG_DELETED;
+> +}
+> +
+> +/**
+> + * iommu_preserve_device() - Preserve device state across live update
+> + * @domain: Associated IOMMU domain
+> + * @dev: Device to preserve
+> + * @dma_owner_token: Token to identify DMA owner of this device
+> + *
+> + * Return: 0 on success, or negative error code.
+> + */
+> +int iommu_preserve_device(struct iommu_domain *domain,
+> +			  struct device *dev, u64 dma_owner_token)
+> +{
+> +	struct iommu_device_ser *device_ser;
+> +	struct iommu_flb_obj *flb_obj;
+> +	struct dev_iommu *iommu;
+> +	struct pci_dev *pdev;
+> +	int ret;
+> +
+> +	if (!dev_is_pci(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (!iommu_group_dma_owner_claimed(dev->iommu_group))
+> +		return -EINVAL;
+> +
+> +	if (!iommu_group_is_singleton(dev->iommu_group))
+> +		return -EOPNOTSUPP;
+> +
+> +	pdev = to_pci_dev(dev);
+> +	iommu = dev->iommu;
+> +	if (!iommu->iommu_dev->ops->preserve_device ||
+> +	    !iommu->iommu_dev->ops->unpreserve_device ||
+> +	    !iommu->iommu_dev->ops->preserve ||
+> +	    !iommu->iommu_dev->ops->unpreserve)
+> +		return -EOPNOTSUPP;
+> +
+> +	ret = liveupdate_flb_get_outgoing(&iommu_flb, (void **)&flb_obj);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mutex_lock(&flb_obj->lock);
+> +	if (!domain->domain_ser) {
+> +		ret = -EINVAL;
+> +		goto out_unlock;
 > +	}
-> +
-> +	/* skip OsMleData */
-> +	heap_ptr = txt_heap + heap_section_size;
-> +	/* get OsMleData section size */
-> +	if (!tboot_check_txt_heap_section_bounds(heap_end, heap_ptr,
-> +						 &heap_section_size, "OsMleData")) {
 
-Ugly linebreaks. Let it stick out. Ditto for the rest.
+Should we check that @domain is actually attached to the device? The
+iommu core tracks the device's domain attachment, so what happens if
+the caller's @domain doesn't match what the iommu core has recorded?
 
-> +		goto teardown;
+> +
+> +	if (dev_iommu_preserved_state(dev)) {
+> +		ret = -EBUSY;
+> +		goto out_unlock;
 > +	}
 > +
-> +	/* skip OsSinitData */
-> +	heap_ptr += heap_section_size;
-> +	/* get OsSinitData section size */
-> +	if (!tboot_check_txt_heap_section_bounds(heap_end, heap_ptr,
-> +						 &heap_section_size, "OsSinitData")) {
-> +		goto teardown;
+> +	device_ser = iommu_ser_set_alloc(&flb_obj->device_set);
+> +	if (IS_ERR(device_ser)) {
+> +		ret = PTR_ERR(device_ser);
+> +		goto out_unlock;
 > +	}
 > +
-> +	/* jump to the SinitMleData */
-> +	heap_ptr += heap_section_size;
-> +	sinit_mle_size = 0;
-> +	/* now points to SinitMleDataSize; set to SinitMleData */
-> +	if (!tboot_check_txt_heap_section_bounds(heap_end, heap_ptr,
-> +						 &sinit_mle_size, "SinitMleData")) {
-> +		goto teardown;
+> +	ret = iommu_preserve_locked(iommu->iommu_dev, flb_obj);
+> +	if (ret) {
+> +		device_ser->hdr.flags |= IOMMU_SER_FLAG_DELETED;
+> +		goto out_unlock;
 > +	}
 > +
-> +	heap_ptr += sizeof(u64);
-> +	sinit_mle = (struct sinit_mle_data *)heap_ptr;
-> +	sinit_mle_end = (void *)sinit_mle + sinit_mle_size;
-> +	if (sizeof(struct sinit_mle_data) > sinit_mle_size) {
-> +		pr_err("SinitMleData size is smaller than expected.\n");
-> +		goto teardown;
-> +	}
+> +	device_ser->attachment.domain_phys = virt_to_phys(domain->domain_ser);
+> +	device_ser->iommu_phys = virt_to_phys(iommu->iommu_dev->iommu_ser);
+> +	device_ser->devid = pci_dev_id(pdev);
+> +	device_ser->pci_domain_nr = pci_domain_nr(pdev->bus);
+> +	device_ser->dma_owner_token = dma_owner_token;
 > +
-> +	if (sinit_mle->version < 9) {
-> +		pr_err("Unsupported SinitMleData version: %u\n", sinit_mle->version);
-> +		goto teardown;
-> +	}
+> +	ret = iommu->iommu_dev->ops->preserve_device(dev, device_ser);
+> +	if (!ret) {
+> +		WRITE_ONCE(dev->iommu->device_ser, device_ser);
 > +
-> +	heap_ptr += sizeof(struct sinit_mle_data);
-> +	if (heap_ptr > sinit_mle_end) {
-> +		pr_err("SinitMleData header out of bounds.\n");
-> +		goto teardown;
-> +	}
-> +
-> +	/*
-> +	 * The SinitMleData extended-data area is a self-describing list of
-> +	 * variable-length elements with no stored element count; it is
-> +	 * terminated only by a HEAP_EXTDATA_TYPE_END element. Traversal must
-> +	 * therefore be driven by each element's own size field. Forward
-> +	 * progress and termination are guaranteed on every iteration:
-> +	 *   - the 8-byte header is bounds-checked before type/size are read,
-> +	 *   - elt->size >= sizeof(*elt) enforces a strictly-positive advance,
-> +	 *   - the "elt <= sinit_mle_end" cap bounds the number of steps.
-> +	 */
-> +	elt = sinit_mle->ext_data_elts;
-> +	do {
-> +		if ((u8 *)elt + sizeof(*elt) > (u8 *)sinit_mle_end) {
-> +			pr_err("SinitMleData element header out of bounds.\n");
-> +			goto teardown;
+> +		/* Validate that no sibling device was added concurrently */
+> +		if (!iommu_group_is_singleton(dev->iommu_group)) {
+> +			iommu->iommu_dev->ops->unpreserve_device(dev, device_ser);
+> +			WRITE_ONCE(dev->iommu->device_ser, NULL);
+> +			ret = -EOPNOTSUPP;
 > +		}
-> +
-> +		if (elt->size < sizeof(*elt)) {
-> +			pr_err("Invalid SinitMleData element size: %u\n", elt->size);
-> +			goto teardown;
-> +		}
-> +
-> +		if (elt->type == HEAP_EXTDATA_TYPE_END ||
-> +		    elt->type == HEAP_EXTDATA_TYPE_DTPR) {
-> +			break;
-> +		}
-> +
-> +		elt = (void *)elt + elt->size;
-> +	} while ((void *)elt <= sinit_mle_end);
-> +
-> +	if ((void *)elt >= sinit_mle_end) {
-> +		pr_err("Reached the end of SinitMleData without finding DTPR nor END element.\n");
-> +		goto teardown;
 > +	}
 > +
-> +	if (elt->type == HEAP_EXTDATA_TYPE_END) {
-> +		pr_err("DTPR element not found in SinitMleData\n");
-> +		goto teardown;
+> +	if (ret) {
+> +		device_ser->hdr.flags |= IOMMU_SER_FLAG_DELETED;
+> +		iommu_unpreserve_locked(iommu->iommu_dev, flb_obj);
+> +		goto out_unlock;
 > +	}
 > +
-> +	if ((u8 *)elt + elt->size > (u8 *)sinit_mle_end) {
-> +		pr_err("DTPR Table exceeds SinitMleData bounds.\n");
-> +		goto teardown;
-> +	}
+> +out_unlock:
+> +	mutex_unlock(&flb_obj->lock);
+> +	liveupdate_flb_put_outgoing(&iommu_flb);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_preserve_device);
 > +
-> +	if (!tboot_check_dtpr_size(elt)) {
-> +		pr_err("Invalid DTPR Table size.\n");
-> +		goto teardown;
-> +	}
+> +/**
+> + * iommu_unpreserve_device() - Unpreserve device state
+> + * @domain: Associated IOMMU domain
+
+@domain is not used anywhere in this function. Why is it needed?
+
+> + * @dev: Device to unpreserve
+> + */
+> +void iommu_unpreserve_device(struct iommu_domain *domain, struct device *dev)
+> +{
+> +	struct iommu_device_ser *iommu_device_ser;
+> +	struct iommu_flb_obj *flb_obj;
+> +	struct dev_iommu *iommu;
+> +	int ret;
 > +
-> +	return (struct acpi_table_dtpr *)elt->data;
+> +	if (!dev_is_pci(dev))
+> +		return;
 > +
-> +teardown:
-> +	tboot_free_txt_heap_mem();
+> +	if (!iommu_group_dma_owner_claimed(dev->iommu_group))
+> +		return;
+> +
+> +	iommu = dev->iommu;
+> +	if (WARN_ON(!iommu->iommu_dev->ops->unpreserve_device ||
+> +		    !iommu->iommu_dev->ops->unpreserve))
+> +		return;
+> +
+> +	ret = liveupdate_flb_get_outgoing(&iommu_flb, (void **)&flb_obj);
+> +	if (WARN_ON(ret))
+> +		return;
+> +
+> +	mutex_lock(&flb_obj->lock);
+> +	iommu_device_ser = dev_iommu_preserved_state(dev);
+> +	if (WARN_ON(!iommu_device_ser))
+> +		goto out_unlock;
+> +
+> +	iommu_device_ser->hdr.flags |= IOMMU_SER_FLAG_DELETED;
+> +	iommu->iommu_dev->ops->unpreserve_device(dev, iommu_device_ser);
+> +	WRITE_ONCE(dev->iommu->device_ser, NULL);
+> +
+> +	iommu_unpreserve_locked(iommu->iommu_dev, flb_obj);
+> +out_unlock:
+> +	mutex_unlock(&flb_obj->lock);
+> +	liveupdate_flb_put_outgoing(&iommu_flb);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_unpreserve_device);
+> diff --git a/include/linux/iommu-liveupdate.h b/include/linux/iommu-liveupdate.h
+> index caa9778eee2d..cdf8a82b7f1d 100644
+> --- a/include/linux/iommu-liveupdate.h
+> +++ b/include/linux/iommu-liveupdate.h
+> @@ -8,6 +8,7 @@
+>   #ifndef _LINUX_IOMMU_LIVEUPDATE_H
+>   #define _LINUX_IOMMU_LIVEUPDATE_H
+>   
+> +#include <linux/device.h>
+>   #include <linux/iommu.h>
+>   #include <linux/liveupdate.h>
+>   #include <linux/kho/abi/iommu.h>
+> @@ -15,8 +16,58 @@
+>   #ifdef CONFIG_IOMMU_LIVEUPDATE
+>   int iommu_liveupdate_register_flb(struct liveupdate_file_handler *handler);
+>   void iommu_liveupdate_unregister_flb(struct liveupdate_file_handler *handler);
+> +
+> +/**
+> + * dev_iommu_has_preserved_state() - Check if a device has live update state
+> + * @dev: Target device
+> + *
+> + * Unlike dev_iommu_preserved_state() and dev_iommu_restored_state(), this does
+> + * not dereference the serialized state, so it is safe to call without holding
+> + * a reference on the live update FLB.
+> + *
+> + * Return: true if @dev has preserved (outgoing) or restored (incoming) state.
+> + */
+> +static inline bool dev_iommu_has_preserved_state(struct device *dev)
+> +{
+> +	return dev->iommu && READ_ONCE(dev->iommu->device_ser);
+> +}
+> +
+> +/**
+> + * dev_iommu_preserved_state() - Get preserved state of a device
+> + * @dev: Target device
+> + *
+> + * Return: Pointer to preserved device state, or NULL if not preserved.
+> + */
+> +static inline void *dev_iommu_preserved_state(struct device *dev)
+> +{
+> +	struct iommu_device_ser *ser;
+> +
+> +	if (!dev->iommu)
+> +		return NULL;
+> +
+> +	ser = READ_ONCE(dev->iommu->device_ser);
+> +	if (ser && !(ser->hdr.flags & IOMMU_SER_FLAG_INCOMING))
+> +		return ser;
+> +
 > +	return NULL;
 > +}
 > +
-> +s64 tboot_teardown_tprs(void)
+>   int iommu_preserve_domain(struct iommu_domain *domain, struct iommu_domain_ser **ser);
+>   void iommu_unpreserve_domain(struct iommu_domain *domain);
+> +int iommu_preserve_device(struct iommu_domain *domain,
+> +			  struct device *dev, u64 dma_owner_token);
+> +void iommu_unpreserve_device(struct iommu_domain *domain, struct device *dev);
+> +
+> +/**
+> + * iommu_preserved_state() - Get preserved state of an IOMMU instance
+> + * @iommu: IOMMU hardware instance
+> + *
+> + * Return: Pointer to preserved state, or NULL if not preserved.
+> + */
+> +static inline void *iommu_preserved_state(struct iommu_device *iommu)
 > +{
-> +	s64 ret = 0;
-> +
-> +	if (tboot_is_tpr_protection_enabled() && dtpr)
-> +		ret = tboot_disable_tprs();	/* uses cached dtpr + txt_heap */
-> +
-> +	tboot_free_txt_heap_mem();	/* releases internal mapping */
-> +	dtpr = NULL;
-> +	return ret;			/* 0 = success / nothing to do */
+> +	return iommu->iommu_ser;
+> +}
+>   #else
+>   static inline int iommu_liveupdate_register_flb(struct liveupdate_file_handler *handler)
+>   {
+> @@ -27,6 +78,16 @@ static inline void iommu_liveupdate_unregister_flb(struct liveupdate_file_handle
+>   {
+>   }
+>   
+> +static inline bool dev_iommu_has_preserved_state(struct device *dev)
+> +{
+> +	return false;
 > +}
 > +
-> +void tboot_free_txt_heap_mem(void)
+> +static inline void *dev_iommu_preserved_state(struct device *dev)
 > +{
-> +	if (txt_heap) {
-> +		iounmap(txt_heap);
-> +		txt_heap = NULL;
-> +	}
+> +	return NULL;
 > +}
 > +
-> +bool tboot_is_tpr_protection_enabled(void)
+>   static inline int iommu_preserve_domain(struct iommu_domain *domain, struct iommu_domain_ser **ser)
+>   {
+>   	return -EOPNOTSUPP;
+> @@ -35,5 +96,20 @@ static inline int iommu_preserve_domain(struct iommu_domain *domain, struct iomm
+>   static inline void iommu_unpreserve_domain(struct iommu_domain *domain)
+>   {
+>   }
+> +
+> +static inline int iommu_preserve_device(struct iommu_domain *domain,
+> +					struct device *dev, u64 dma_owner_token)
 > +{
-> +	return num_of_enabled_tprs > 0;
+> +	return -EOPNOTSUPP;
 > +}
-> diff --git a/include/linux/tboot.h b/include/linux/tboot.h
-> index d2279160ef39d..d7c00024b26e0 100644
-> --- a/include/linux/tboot.h
-> +++ b/include/linux/tboot.h
-> @@ -24,10 +24,17 @@ enum {
->  #include <linux/acpi.h>
->  /* used to communicate between tboot and the launched kernel */
->  
-> +/*TXT Extended Data Element Types*/
-> +#define HEAP_EXTDATA_TYPE_END   0
-> +#define HEAP_EXTDATA_TYPE_DTPR 14
 > +
->  #define TB_KEY_SIZE             64   /* 512 bits */
->  
->  #define MAX_TB_MAC_REGIONS      32
->  
-> +/*TPR Base Disable BIT*/
-> +#define TPR_BASE_DISABLE_BIT  BIT(4)
+> +static inline void iommu_unpreserve_device(struct iommu_domain *domain, struct device *dev)
+> +{
+> +}
 > +
->  struct tboot_mac_region {
->  	u64  start;         /* must be 64 byte -aligned */
->  	u32  size;          /* must be 64 byte -granular */
+> +static inline void *iommu_preserved_state(struct iommu_device *iommu)
+> +{
+> +	return NULL;
+> +}
+>   #endif
+>   #endif /* _LINUX_IOMMU_LIVEUPDATE_H */
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 71e73c5181b5..35d028fe7126 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -684,6 +684,10 @@ __iommu_copy_struct_to_user(const struct iommu_user_data *dst_data,
+>    *               resources shared/passed to user space IOMMU instance. Associate
+>    *               it with a nesting @parent_domain. It is required for driver to
+>    *               set @viommu->ops pointing to its own viommu_ops
+> + * @preserve_device: Preserve state of a device for liveupdate.
+> + * @unpreserve_device: Unpreserve state that was preserved earlier.
+> + * @preserve: Preserve state of iommu translation hardware for liveupdate.
+> + * @unpreserve: Unpreserve state of iommu that was preserved earlier.
+>    * @owner: Driver module providing these ops
+>    * @identity_domain: An always available, always attachable identity
+>    *                   translation.
+> @@ -740,6 +744,13 @@ struct iommu_ops {
+>   			   struct iommu_domain *parent_domain,
+>   			   const struct iommu_user_data *user_data);
+>   
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +	int (*preserve_device)(struct device *dev, struct iommu_device_ser *device_ser);
+> +	void (*unpreserve_device)(struct device *dev, struct iommu_device_ser *device_ser);
+> +	int (*preserve)(struct iommu_device *iommu, struct iommu_hw_ser *iommu_ser);
+> +	void (*unpreserve)(struct iommu_device *iommu, struct iommu_hw_ser *iommu_ser);
+> +#endif
+> +
+>   	const struct iommu_domain_ops *default_domain_ops;
+>   	struct module *owner;
+>   	struct iommu_domain *identity_domain;
+> @@ -827,6 +838,7 @@ struct iommu_domain_ops {
+>    * @singleton_group: Used internally for drivers that have only one group
+>    * @max_pasids: number of supported PASIDs
+>    * @ready: set once iommu_device_register() has completed successfully
+> + * @iommu_ser: preserved iommu state of outgoing kernel for liveupdate.
+>    */
+>   struct iommu_device {
+>   	struct list_head list;
+> @@ -836,6 +848,10 @@ struct iommu_device {
+>   	struct iommu_group *singleton_group;
+>   	u32 max_pasids;
+>   	bool ready;
+> +
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +	struct iommu_hw_ser *iommu_ser;
+> +#endif
+>   };
+>   
+>   /**
+> @@ -875,6 +891,8 @@ struct iommu_fault_param {
+>    * @pci_32bit_workaround: Limit DMA allocations to 32-bit IOVAs
+>    * @require_direct: device requires IOMMU_RESV_DIRECT regions
+>    * @shadow_on_flush: IOTLB flushes are used to sync shadow tables
+> + * @device_ser: preserved (outgoing) or restored (incoming) liveupdate state
+> + *		of this device
+>    *
+>    * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+>    *	struct iommu_group	*iommu_group;
+> @@ -890,6 +908,9 @@ struct dev_iommu {
+>   	u32				pci_32bit_workaround:1;
+>   	u32				require_direct:1;
+>   	u32				shadow_on_flush:1;
+> +#ifdef CONFIG_IOMMU_LIVEUPDATE
+> +	struct iommu_device_ser		*device_ser;
+> +#endif
+>   };
+>   
+>   int iommu_device_register(struct iommu_device *iommu,
+> @@ -1204,6 +1225,18 @@ static inline void *dev_iommu_priv_get(struct device *dev)
+>   
+>   void dev_iommu_priv_set(struct device *dev, void *priv);
+>   
+> +/**
+> + * typedef iommu_dev_iter_fn - Callback for iterating IOMMU attached devices
+> + * @dev: Attached device
+> + * @iommu: IOMMU instance
+> + *
+> + * Return: 0 on success, or negative error code.
+> + */
+> +typedef int (*iommu_dev_iter_fn)(struct device *dev,
+> +				 struct iommu_device *iommu);
+> +
+> +int iommu_for_each_dev(struct iommu_device *iommu, iommu_dev_iter_fn fn);
+> +
+>   extern struct mutex iommu_probe_device_lock;
+>   int iommu_probe_device(struct device *dev);
+>   
 
-Please put side comments over the line they comment.
-
-check your whole code.
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Thanks,
+baolu
