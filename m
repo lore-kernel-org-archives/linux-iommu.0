@@ -1,109 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793365810;
-	b=czCMzW+Z86gSOE3AmQkxsgPR97YHF8NA6xVylE0UvJzuG/i2stQjXclBQtKPlx9DdzR6
-	 vOoXDZwEb5ON1zVPmWjQwz3Faa3OkEGcD91Z/HJ1YT5b7S9ME+smAaU3ph9E2ElQwAQUe
-	 U8oVakgZ98JC9gUXU1FVKGQpNoPMhRRpYH1PVbCKZGflaa5e3xXx061vhE/AElqnsJ82j
-	 7r75rdjSCsO6+wZFRc3THGeq+zPrwA8sTEVgFoRF1FdlY4YqvYJvbOQI8HHVTo/AIZfJF
-	 F1wOFIWgt9ZevbMfvibASURcb9Vhfp7SrWYtXu76GAOhKLY5l9GQ+yRKQQSKFWQkjtw==
+	t=1793367978;
+	b=J2UsOz4GiOXW2fVO4rNpTMFHHwN4rD6Yb9eSZqAprghz9PT4gkrfoMO5NsqjF4Cw4vqd
+	 8G2LCEkX3nTblX3n9nY6Kq9fTCAPferjObr70WXFdFiNOSxFdpWcflJfQATEIj1TT+b7T
+	 i/G8dxz16CC6lgXx+cYuyVhFVVOQEM98YgahfRWkHIf8v207aoXwcw3mZT46FUjWI87SJ
+	 7M3E58DvfG13bzRDcnlgvM8IgBw4az/y7mXjb1kLwonN5EYVBqbDMNct3fTkursUAIpAh
+	 7+mFH/DA1AM9ibgogDvZkN0PxC+d7OZl9tgZkI+Hsp5MOFET/gCT3a+UOnvtnwJr6xQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793365810;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
-	 X-Received:X-Received:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Spam-Info:X-Authority-Analysis:X-Proofpoint-GUID:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=ywCvlXy/LXKFqaxptvjDdPHYZDdYq6KYRB/vMQRsu30=;
-	b=AOFQUTrna3oG3Hq6XjGpEjyLKg+p74I3Ssm7fySAz7+urIbl4Gb8QiNkaMLzUFKm4ugO
-	 gENXXJc8P+JKcxSe6LLHAS6Gc65tB4fa1hIxDLkVmSWtoQBwP1HYMKSK13cpMLkk2DBnk
-	 LEghcfMvMitPzptgEABq9oFno5P/JyN89Dyo/EzFqZ/ZOyglG73fPY2tl1bjd9rEVpX2d
-	 nj9wxBeb9JQeu8s/xgRMCdG6lSZvnl82NJMj5ticCy3W6ap9rPGwHtzmxEo79xByiNFDm
-	 bF2ft5BFpbnk8mb3+lCGiQvwMM0GrggnJLn/TsdyeFNzeDv/dx2UiUJ/AyYKO7KObkQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793367978;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
+	 Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=Cel0vcm4G5w81qs6p/3zOaRkogZgkiMaq/fEg3zUQoI=;
+	b=muXgiaWYWZ39YEqHqlO9Gq75bMP6nwqAjXob/c7IIP5R9ossL42k7a2Q/9sbp0hq/lPh
+	 Zp0+0GXwWGL1qMDsrRRljfPReM4f8agEjcTktnXFCoznDl9krn/6wuCvWagx5+a5SpEH3
+	 zhTIXIdKrXtGos0QaB3zXTn1YRFgplENxAOCS6CimuwHGJ6UOJj4rcMH60NAw4sgOJ9c4
+	 omQXZ/FFSDjGnHs9WVwzAsubjgmowS//vl2xzoDxdJ/GoQoglhUkG6NpguvdkXtT6Adn5
+	 t83ilhJKKOj5cYYrI0yxrSvfNrv7+i7rNmZb6BkLFCJt4sWKaznpdh6tjAObHl9JPyA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Tjw7LyIU;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=jP5wIF1s;
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=ieee.org;
+	spf=pass smtp.mailfrom=ieee.org;
+	dkim=pass header.d=ieee.org header.i=@ieee.org header.a=rsa-sha256 header.s=google header.b=anzOZR+H;
+	arc=none smtp.remote-ip=209.85.167.179
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDCF9606A326
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 13:10:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DDCF9606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AA5C606A320
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 13:46:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8AA5C606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ieee.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ieee.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Tjw7LyIU;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=jP5wIF1s
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69UBGKYp3130276
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 13:10:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ywCvlXy/LXKFqaxptvjDdPHYZDdYq6KYRB/vMQRsu30=; b=Tjw7LyIUXUz7kTQZ
-	nHbzHNDytvKwXF7h6fO5R0T7IGPnebTHUPziPf71DnEPsGCP2xg9JiDcZ1BPoF90
-	ZFknm9PD/jcRLyWOM9Bn7r2tH5j/hZ7yciCwnxuOnWzEWRVCQiWBIuqkuDN6liSm
-	XcRVQZHfLXOydwZa0+rGTK4AalyAr4Ru73e7YYqk4ui4CsnextGljDS09InSXzEF
-	frM17HOq+y6Fnki1ziT8eLNBb3LcOZaEafigxUN9sUEI7OZYOqkgwm4XsGDdspzz
-	2Qh7ecy6OODRietSmf6tl9TMvx8gHcAinVyJJJox+NZEiitxIZTC7HWS9oQ9qPOE
-	msN7aA==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hme6qk3w6-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 13:10:08 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-93f3960dca5so5413185a.0
-        for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 06:10:08 -0700 (PDT)
+	dkim=pass (1024-bit key, unprotected) header.d=ieee.org header.i=@ieee.org header.a=rsa-sha256 header.s=google header.b=anzOZR+H
+Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-4ed6d69bdfaso463139b6e.3
+        for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 06:46:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793365808; x=1793970608; darn=lists.linux.dev;
+        d=ieee.org; s=google; t=1793367971; x=1793972771; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=ywCvlXy/LXKFqaxptvjDdPHYZDdYq6KYRB/vMQRsu30=;
-        b=jP5wIF1sJTi81WLGwv+qcqBj127lpNWqI4eseyGe8FfLuV+1sqdg3DBLvl6rR9IWLc
-         /yd8KTc6JS3WqmrNokiOEd722HOyVQ+QfKycBeEgwBoPL1yjNSPYYHnsKGcZfd7p4k1S
-         1YabW9sJOJ2AsubixxFpHY85YanmNnjhKX9BCDX7HbEPXwSa+FZyocHX0Gltuy9lG3VA
-         QZFPVJ+baUMCVWZiW52nwPE+taE3dc+U/PhRILSk8E1g17qh3ApO7C8FMl8s6vzkk2iC
-         IWQ3AEZno+ivV+EKWobsp8EYlupptLrOC3kkRw/Rffz/cVe86rS7v6sq7R2YprozJtXr
-         3BMg==
+        bh=Cel0vcm4G5w81qs6p/3zOaRkogZgkiMaq/fEg3zUQoI=;
+        b=anzOZR+H+dK6ExDZEutUyPXQRiYAnmo7mWGvRaJRanil0/s1rT6oAu82jXDlQMTmY0
+         SihZTqD8Xlzk/p0H4U1zHuR29KMhMR1vM8tn86I7sYKRmO0d2X072tivdKtllDCvMPa7
+         ulmPmXYshDlvdv3WS9QGD/v/KGwid4H2TUP1g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793365808; x=1793970608;
+        d=1e100.net; s=20260707; t=1793367971; x=1793972771;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=ywCvlXy/LXKFqaxptvjDdPHYZDdYq6KYRB/vMQRsu30=;
-        b=GS+4qRZmYIN3zILVH2giWlmN8W/IBLvgUEsjNiHkFTYpBF6SsqtxgBj5JjssqZl4mi
-         2Oicse1Q2vE/exbs/ZU3O3pfrqLtUcbjDq7z8vyYNzOnUxEF8ukTeX8l+GmzlMtrKp+E
-         GLe4J3q/D96qrnNX3LaRecJRHq/sI05l4kGzQkZnitxFA98dddBb2nCRmNeFBwNMGr2i
-         bUERbOn71wxmpvaO7Kxt1p4vNNjXf45WezAq/PEnH6rxtR9jeW3ByQUa/IjWExBqjXiO
-         uAMCxM6CFnoatrHaVoKiZCdeQpvXdimLnsg1Gx1rOp+GIeA3sT7VXYuSQ8ruwdNPA/Pq
-         lfAQ==
-X-Gm-Message-State: AFq9FYIfUmP+BS9C1xguMMS5MRHnGhGt26hA3wh33tiYy8X9snm+y+Q8
-	xRnryhTXmt7Op+dGcM0fenMeJUWNrKurZxrBu8g00fNO7bPI7h3ogUU/quAcnsTBlhYMaT0gapV
-	t8gX+zPGrW+NdPX4SP18ka4JAXCF0yq8mfYg/XPfsO2kdKZC0BQTtoTV+Yw==
-X-Gm-Gg: AYBFou1tGEcWyG846EDKevlpWBpLfTublAIG4gE/IUKPdmSLgUPMXbP/q+2Wp7LCIox
-	s9tMrJmKE42BMoQEvQ66NYVxbZS8wDHHxfJgCFqnmougoMalgyLVWYAnfEe3/Gx5jxJMxlqAkI+
-	9tGHlseUY8mKUmiZ9Wwhm4peHArFmg8yFsD6tz3ykXmXVIpipQMegdt3GYUIhmwVosyap/nSxXM
-	esP96J7XMyyHJ65C6cckluRSTa+77AX3BM9Yzxmtr1M0EIhCqBUxYQIPjXPmDNhoudyTmt0BrMM
-	BQo0oStsIfs+lxMoUroqIjMOoBGwm47hxU5+h85nrxZKpb5zN0YoT6oEEfX7bWVxwIyvxSmthj3
-	mduDJYMENkrUKn+zbm3K1Df2EJFpbbyjBAlD1XekBo0b0Krp8grqEkbo8ptvrebgMiFxoa5A=
-X-Received: by 2002:a05:620a:870e:10b0:940:f21a:eb64 with SMTP id af79cd13be357-944216f3e4amr392367085a.5.1793365807953;
-        Fri, 30 Oct 2026 06:10:07 -0700 (PDT)
-X-Received: by 2002:a05:620a:870e:10b0:940:f21a:eb64 with SMTP id af79cd13be357-944216f3e4amr392359485a.5.1793365807359;
-        Fri, 30 Oct 2026 06:10:07 -0700 (PDT)
-Received: from [10.169.205.110] ([178.235.128.140])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4cabc174d0sm65887066b.4.2026.10.30.06.10.02
+        bh=Cel0vcm4G5w81qs6p/3zOaRkogZgkiMaq/fEg3zUQoI=;
+        b=OJGl8HDr9bY/yGKBdcvqT3RDi4xznxxkm4iwD4Zjq2AVRRRC2C7yf5XbQaob1JicVC
+         40NNWOl6yeOr128/Se+2TYbts6iKcUVJEPoPjQmSqQsFy6n8Kfs2MITvcE05shTzgqoi
+         IIEu2MXktbgn9kOYJ9SB5hhfidwgRbcqXacbcpbgsWVWrdTyEY6G5bjpj4yFgzcK3hfE
+         WOzr+gR+I/62ZN0VL4Gs1K59i3TMjIKi1WdO9+kQ8ydz3ewgUihQenrB0y0gXTL0EhmS
+         F527V7zQJgVAysfovCyonf8WnHJOHrvXFHtCBhbO/PdGHWO24lL1Ebrfqk9g5/5SLCST
+         rExg==
+X-Forwarded-Encrypted: i=1; AKwUvBzaJDVpGuvB88U5BadrGKZsqrf7GHxIBG5ENr6W1yUbT9GDqDEXiDlvoWX7pyxocVYiHOvbyg==@lists.linux.dev
+X-Gm-Message-State: AFq9FYI//5zanAHM6VobmDniJftXtMyj91sQ4o3irxtAw84BC+HA/Afq
+	1Iegh0GFWRt97ZbwSTMGVl1P4hx91WURtyU2Oj8UAFOLA+11NsvkNmMbrVo3ERZpuw==
+X-Gm-Gg: AYBFou39qv40OAhtgcOo90UqsiwHqZEmdweGkL99LsX3SfLjSP+kPI+kg5BJYQv6VT+
+	D61vEBt5P9dOVujPcLiIM/9PyRYP8xb7X6D9i5d5h1lcIXegwsG92UVPojixo5FZcbhqhqPVvPJ
+	4H0dnlxdfOMejuRLd07cuIA+EsEbpp1iu6t+rR1Z9HkpVZ9pOcyQnPJ5/7QI5f/EdjJwZmV3QEF
+	Hnhj7T1ArLWHVv7n/PmfDzwK/dhFwBq/c6+uVbm7UhzRMH3vJwuc/l3b0WDxtkbA6eujOW8rqJw
+	3dWTerVbmDKeVWiW2B9q3HQ5rJWTDhe9vDDHZwgV3FgvGaynVmRGT8lQ3lEn8HQbw4MiRYZrCMV
+	LCT9PEpLAHhN62KGmP87srCa+SpVqVrEDHGrHDl3gQZkU9P23Z0TpdtEdsEPUskp/TeVCaF9vEV
+	8Lzb4g67olVwfJ38oEAkdb89pp6M0MFp7ysGe/pU9GcGAIFxHU1SGUa/504O7GRU0rtR2n4Sj6g
+	XGQKTFQG7RDyZNTHQ2kVvYkG8N4CsDiakVLG7SWBi/UFs3un//mdjrWQf4fIYJ1JRQ9842SENVx
+	tsjQO7gtcczVRfBlsnG9iioH
+X-Received: by 2002:a05:6808:151f:b0:4c3:6d56:77c2 with SMTP id 5614622812f47-5640de7e3a9mr1613306b6e.41.1793367971178;
+        Fri, 30 Oct 2026 06:46:11 -0700 (PDT)
+Received: from [172.22.22.28] ([73.62.185.64])
+        by smtp.googlemail.com with ESMTPSA id 5614622812f47-5640fdcef5asm1492922b6e.9.2026.10.30.06.46.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 30 Oct 2026 06:10:05 -0700 (PDT)
-Message-ID: <4f6e1534-5105-4a4a-83e6-4b2b846b67f9@oss.qualcomm.com>
-Date: Fri, 30 Oct 2026 14:10:01 +0100
+        Fri, 30 Oct 2026 06:46:10 -0700 (PDT)
+Message-ID: <9207a52e-2d42-4e10-b777-2988e84d7dbe@ieee.org>
+Date: Fri, 30 Oct 2026 08:46:07 -0500
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -114,114 +90,75 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v2 04/14] arm64: dts: qcom: sm8650: move smmu sid 1 to
- new lpac device
-To: Anna Maniscalco <anna.maniscalco2000@gmail.com>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Akhil P Oommen <akhilpo@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Abhinav Kumar
- <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jesszhan0024@gmail.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        devicetree@vger.kernel.org
-References: <20261029-descriptive-name-lpac-upstream-v2-0-a21a5c850961@gmail.com>
- <20261029-descriptive-name-lpac-upstream-v2-4-a21a5c850961@gmail.com>
+Subject: Re: [PATCH 1/1] PM: runtime: change stub pm_runtime_get_if_active()
+ return 1 when !CONFIG_PM
+To: Sakari Ailus <sakari.ailus@linux.intel.com>, Frank.Li@oss.nxp.com
+Cc: Frank Li <Frank.Li@nxp.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>,
+ Karol Wachowski <karol.wachowski@linux.intel.com>,
+ Oded Gabbay <ogabbay@kernel.org>, Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>, Tvrtko Ursulin
+ <tursulin@ursulin.net>, Matthew Brost <matthew.brost@intel.com>,
+ Thomas Hellstrom <thomas.hellstrom@linux.intel.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Alex Elder <elder@kernel.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Guenter Roeck <linux@roeck-us.net>, Guan-Yu Lin <guanyulin@google.com>,
+ Mathias Nyman <mathias.nyman@linux.intel.com>, linux-pm@vger.kernel.org,
+ linux-usb@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ intel-gfx@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+ linux-hwmon@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+ linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
+ netdev@vger.kernel.org, imx@lists.linux.dev, Rob Herring <robh@kernel.org>
+References: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
+ <auRb_r8ZSSU-eHZA@kekkonen.localdomain>
 Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20261029-descriptive-name-lpac-upstream-v2-4-a21a5c850961@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: Alex Elder <elder@ieee.org>
+In-Reply-To: <auRb_r8ZSSU-eHZA@kekkonen.localdomain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: D0iHNXn69Yru0ShUmqdDA5Jb_XVOWZ6b
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMwMDA1MiBTYWx0ZWRfX9vAv2hPvIRQE
- z7rb5fnKtgml2z8agBxaO0mKdYzVKvDIa4FGEHg35sQuveVbGMg4kr51VucDZulB2KyR5O+GcRB
- SqKhyvJiLpfsgog5n3aMBYtpqr0FV/E=
-X-Authority-Analysis: v=2.4 cv=DfSCOftW c=1 sm=1 tr=0 ts=6ae49730 cx=c_pps
- a=qKBjSQ1v91RyAK45QCPf5w==:117 a=PRfkaYvzSr8QmIIGAkY2Sg==:17
- a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=gowsoOTTUOVcmtlkKump:22
- a=pGLkceISAAAA:8 a=7uVtGDAPqmP0Npu4MUQA:9 a=QEXdDO2ut3YA:10
- a=NFOGd7dJGGMPyQGDc5-O:22
-X-Proofpoint-GUID: D0iHNXn69Yru0ShUmqdDA5Jb_XVOWZ6b
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMwMDA1MiBTYWx0ZWRfX6sW8IGn+Ei6Q
- GRoMsBU9Mi4uaECZNwEibKmDPIy9qUopskVnwVaNXgMf3AJ/qIlxPqFSPzUGmAi1L2qKYnB+W34
- j6wBLDm7zTu5h9JZLM7unKSYLnRMAY5zkpGv7Zslnif2Lc8kj5tUjrZA2H/z828y6C0FUcJ1Q6k
- mfdXEq0cMszpIcXnWEInushPNUdCOeXMthnnpMG8vlCZxWDzqvNGM+uZ9Be8TqdAZh9TNjUOL0H
- mPIqiRlPc1+UYds8JCdLdT++0Y3A3WDNmUN8wMJcNIgA0fI4Cza70MtM7eivkmx7jKaaNmYwXZ2
- Ar1g64/IVXJ0nXZnRLikd5gu3iN0dwtKb8QZGSqxTJ1gMXrgi8+0LJ0PqD1N0p90rz8a3g5Ikm2
- vnplZk1eoS82buCZTo18ZrZ/3oWOnVtNd0KeNLxR/LKWKquaWE+WlHzKs+mkPANFsEp6KOXxOxs
- uYb16bXoFGkKesY0BRQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-30_04,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 malwarescore=0 adultscore=0 priorityscore=1501 spamscore=0
- phishscore=0 bulkscore=0 lowpriorityscore=0 clxscore=1015 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610190000 definitions=main-2610300052
 
-On 10/29/26 2:52 PM, Anna Maniscalco wrote:
-> Previously both SID 0 and 1 where associated with the same domain.
+On 10/30/26 3:57 AM, Sakari Ailus wrote:
+> Hi Frank,
 > 
-> When LPAC is not used this is needed so firmware can acces memory when
-> initializing using the same page table as GFX.
+> Thanks for the patch.
 > 
-> To use LPAC however we need to move SID 1 to a different device.
+> On Thu, Oct 29, 2026 at 12:30:37PM -0400, Frank.Li@oss.nxp.com wrote:
+>> From: Frank Li <Frank.Li@nxp.com>
+>>
+>> When CONFIG_PM is not enabled, all devices runtime PM state should be
+>> treated as active.
+>>
+>> __pm_runtime_resume() returns 1 (called by pm_runtime_get()).
+>> pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get().
+>> stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
+>> should return the same value as the stub pm_runtime_get(), which is 1.
 > 
-> Signed-off-by: Anna Maniscalco <anna.maniscalco2000@gmail.com>
-> ---
->  arch/arm64/boot/dts/qcom/sm8650.dtsi | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8650.dtsi b/arch/arm64/boot/dts/qcom/sm8650.dtsi
-> index 1604bc8cff37..f47d1dbd06da 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8650.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8650.dtsi
-> @@ -4144,8 +4144,7 @@ gpu: gpu@3d00000 {
->  
->  			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH 0>;
->  
-> -			iommus = <&adreno_smmu 0 0x0>,
-> -				 <&adreno_smmu 1 0x0>;
-> +			iommus = <&adreno_smmu 0 0x0>;
->  
->  			operating-points-v2 = <&gpu_opp_table>;
->  
-> @@ -4158,6 +4157,12 @@ gpu: gpu@3d00000 {
->  
->  			status = "disabled";
->  
-> +			lpac: lpac {
-> +				compatible = "qcom,lpac";
+> Shouldn't the same change be done to pm_runtime_get_if_in_use()? It's
+> otherwise the same, except that it requires also the use count to be
+> non-zero.
+I think "yes."
 
-I'm debating what to do with the compatible here.. On one hand they
-shouldn't be generic (should be soc hw specific instead, but that
-feels a little overkill here) and it may be that we even don't need
-one, but the iommu driver needs to know what we need a 1:1 mapping
-hmm..
+I think the logic for !CONFIG_PM should basically pretend runtime
+PM is enabled for all devices, and they're all ACTIVE and effectively
+in use.
 
-Konrad
+That implies:
+- disable_depth == 0, so usage accounting would (if enabled) be done
+- runtime_status == RPM_ACTIVE (power is on, no delay)
+- usage_count > 0
+- runtime_error == 0
+- Maybe ignore_children is false?
 
-> +
-> +				iommus = <&adreno_smmu 1 0x0>;
-> +			};
-> +
->  			gpu_zap_shader: zap-shader {
->  				memory-region = <&gpu_micro_code_mem>;
->  			};
-> 
+This might not be complete (and could be wrong!).
+
+Some of the other dev_pm_info flags could probably be assumed false,
+because they represent states in transition between ACTIVE and other
+states.
+
+					-Alex
