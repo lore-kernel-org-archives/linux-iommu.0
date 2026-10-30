@@ -1,68 +1,192 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.14
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793344811;
-	b=jDqzOdmQpqf8YzQkjYXzC5BH7g3vGmbk3xwosaJwbKSf3PQ6T0a+XEkuDyfCLMemEA4+
-	 r7CKa99kAp3B6PNL/EYnf8E3pRLyBvV2wyWP0g0MF3r/XAwMeCFX2uM+GuTvOVYLKpuut
-	 DhmMgu7VzwQawXwBAbld/D+wd/O6CC/M2uHR3+t3w/JK84C4/Iehpu7WzKZ7zqL33VUcX
-	 p7jdVKQqGLXleSDdQSj3DoSI7JHjj2n8dHeA0xDBEZw2rvBXQ7w1UXN+NyPZDR40CWJxx
-	 o82egDTn6ai7OH1Bl8F+GP/ygvFzD+9MkrPnAdShuZaw00e5hOZjSt6hr1+mmFgD9+g==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793344811;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=198.175.65.9
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793346116;
+	b=es4zdQZYctg+QZth8epp+1DlEFDHJZwrn6lnyPCd3+wQDSISvMiPP2jISA3hYigb1OZ7
+	 4vnbjUPnBrxFvxFw3c8tSzjyeN0EeWiKppptevETrJ/aTsq9+hsDISkc+oSbKfAqrKXnF
+	 OLyazQzQtN182RQdGMJCH70BOBd+BXWy5moj2ItBtnL+U4qHdPIBm1QaEasyh/eBBr1XK
+	 vcH9QLZcBQ2lt5R3SaawfdiDvf0jxJduWnUrH+yg7sO5O3eNMG+LKwvA4GWsQWXlSi40t
+	 4rA2LQkACc//40PwpfVNWADTN/7g6/M07JyA4JRrfs03Ws92MD3snvhbQxxXxKShPoQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793346116;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=rmoLMwfiK+YL2vPo6QREPKDVZ8nBW1EiguldNrj3cJE=;
-	b=A4lphltDKtjNUm88cbCY9vneuMG5ui1vizmlmoT1d3379zxF4PY/KsE8Z97Y8MNs5F5q
-	 pC5ZR42O5nZ6gfL1KV5z3ohx22CoQdek1NpRyIxVlz0/DagvynNhP+JbasUU9yZYfYGVh
-	 2V/SlGyiK8TwtLDPyZ+NjDQK1IjkRUoYBHrZ2yN7+dmJKHb5bpAbRyq1JT3kWSTtWLI3R
-	 xxzbPMGu0BJlLOx8z0Oz2g0YFzrEJD9iicPW1ynRHZmTUVqczILSzr3/Uu9MH/z5XhSbn
-	 367deGgzTUC8snDruZP7DUhzlPVCRWwmX/9bWX5IwTQEKIlf1K7bpmJIJ5WiMrPVNTQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SnurgeD3;
-	arc=none smtp.remote-ip=198.175.65.14
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Received:
+	 Received:Received:Received:From:To:CC:Subject:Thread-Topic:
+	 Thread-Index:Date:Message-ID:References:In-Reply-To:Accept-Language:
+	 Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
+	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:
+	 X-Exchange-RoutingPolicyChecked:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+	bh=fIe2fVLq47lhu7tJbuwi/qLYYo/NCjmCC2mb46YXLSk=;
+	b=w6Vl0ze3saaX/uifFUYbVXnmpx4YkeVFtA+F4SRRElbnormpsJs0Nm7o5yaimd2RjsyR
+	 slg02m2KVIHJ38MTR92w0tyVfjovv6a+6KrDf7tR8KAJbxgJXPM6mlFOfiVTU/X3AszRM
+	 5VmgC90UKFlqQ1anKHSZfkxehgo8Nr56m12Sa6sl3ck23mng9fp0YRjt+XZ3q2dITKdFq
+	 Gv3FShbEtKF6VrXVbqoUhmTyN/Lb0TLGRblaVjGypB3hw1aQIfEz6tUkPxb+iuKhiE2M1
+	 0MT6V22LIzHbm1nxFKhVX+xvuGz0CvS0ZvWXcakEMC4I3nRSW9e17DNA6z2g2ZEIFKg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eBEKwnrH;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=198.175.65.9
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52D5D606A31C
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 07:20:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 52D5D606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C5FF606A31D;
+	Fri, 30 Oct 2026 07:41:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6C5FF606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SnurgeD3
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=eBEKwnrH
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793344811; x=1824880811;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=P88XNsKf3Vh/t34WvSz6tI7gRI9VLcNqq/npDRATwTM=;
-  b=SnurgeD3Mw2f4mMvzgXC4g1NL34iIvrk0QdGJ825xBI81gSuDAOTd2L2
-   7mq1kfhLyGCyJTDJiO7KBHL5uT+xjH+rzBewXtiDCXDLXW3UutynYT6uP
-   pQYnHDz3P5i8w1zsyW9hlblhdMnptNIr5EkhSIA5dDrteDqCLPB0T4y1U
-   6a8wUpt0l/1DMqX9c6P6Ix6jjBRFtO3Uu+vkurtoPPCCs4Zoh7btsRK8f
-   9l6dRncvis5+aluoKRwsAGEK//krIbpeQenqJ5+Gxm99g6wGsThftPBKv
-   Q2vl3Agay+rIkEvDHIDU1j/hD+Ea+D7U+00jZCFTQ12nowwQXHUswXgGP
-   g==;
-X-CSE-ConnectionGUID: zydkmr7RS8uzdgmn5sDKoA==
-X-CSE-MsgGUID: xXDxAlu3TwCVQF9WjDw7fw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1980826"
+  t=1793346114; x=1824882114;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=JKuq+enupRH8FUVKxT7u/K6ba3meoMAfmz2a+OPEpEc=;
+  b=eBEKwnrHd2ggrAuGZl193k6CKv6MhnPl14+deIyZx9nlM1zmBMmBp/o2
+   lCpSkE/6Bp9Eh87WU5mpjY+SsLUHQHSmCRf4hQObdYMgbxnG9fVxWg7K6
+   Kk+trCghWiUWNzWKt6ZQHmp6hw37EF9F7qvDeUAw/IMq2+XW/wLd+lQK5
+   Qc+uWygBhNz6FZ/WB99CpqejogsXOpAAIwW4euRfgDQJH3FwKL9EG17bP
+   AeXr96t/CglvQoSO15ykXZB/DgxtsPwgnu8hmiy1cX2pfouY0FxFzhG7m
+   Cf9PzCzS5Oyg4psl2N4Q0Lk70hNmn3PQjY+fczbtM4IbaP1iRAr82tfh7
+   Q==;
+X-CSE-ConnectionGUID: JlDrGPnwTHyH/XKoR4bmbg==
+X-CSE-MsgGUID: zYWEBhAARWuxM6iY0UZ1mQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1989542"
 X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="1980826"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 00:20:10 -0700
-X-CSE-ConnectionGUID: x2xPGva8Q3Syc7UDzQnT0w==
-X-CSE-MsgGUID: pcsz/cdMSJ613RnEYRDQ4w==
+   d="scan'208";a="1989542"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 00:41:53 -0700
+X-CSE-ConnectionGUID: 2PLduTI8QomvMyhx61Gx/A==
+X-CSE-MsgGUID: gzGB7z25RKec2sknnjShxw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="5327425"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 00:20:04 -0700
-Message-ID: <887b7c7e-38b8-4798-84a5-bf96bc13ef04@linux.intel.com>
-Date: Fri, 30 Oct 2026 15:20:02 +0800
+   d="scan'208";a="7152501"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by fmviesa012.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 00:41:53 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Fri, 30 Oct 2026 00:41:51 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56 via Frontend Transport; Fri, 30 Oct 2026 00:41:51 -0700
+Received: from CH4PR04CU002.outbound.protection.outlook.com (40.107.201.46) by
+ edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Fri, 30 Oct 2026 00:41:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=rhgt1yE+bTw2ktzMCE6BK9O/EC1QJ8XX3EVxGb0C/90b76qBZj9imaIhU+TcNYGcsKvbK3JCk28iyEziCxnD7AJvFB236nRgDVfFlmeKzCL3Vq2LnflUDIEvhw/q5oNdjUERKxzmZ6/CHyHdxWPRqxGVfuzvwxmv8GubufeqgaVsqgjWqwo9JJD4aqc8rx5B2xIpzeCZ2Z7A2o2ZDcWNm1jVRaEijbzCKEfNYaZrJFFLBSmkKg5ctwUbVQQPgDoQ/SUGIBf5ydavEX1UUO18lPysHPEWmgt0ONK/78cbxKklA7e/EVj7YYkFRcg9WL4bNTIQJOFTS0Fbm+zkYmL4Rw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fIe2fVLq47lhu7tJbuwi/qLYYo/NCjmCC2mb46YXLSk=;
+ b=NakxpWkvT6FnLJpP9hTVPgJCMjf7GG3tDPcL30Oah2rx8qE9LN+kmWuNAwM7YyuUCEiF3UPuatRpsVgS5D0qfcJBSt4rYGmcs3mWBwPmBf25N0D0n6dxO8Gku6oD5gH6XDsCx4wQnB2tOman4+Lh4R8gT+d/QeP7dXMpB9hb3pmKhed3v7cdttbEAlRnhCJaHGphMUVcYgE3bRkxK0CD8dtunxW9IYF20UEiAPFLZFVQhuEm8IeIwFRZpft58P5tmY1bZVKpBu4tzfohbdei3uK6cPnj497tHGaQXfuZyMH8TnKnno/jiQmbbSM8xqLt0EQ+mpYVDxTwWOOEWZp1dA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com (2603:10b6:303:9e::22)
+ by MW4PR11MB5910.namprd11.prod.outlook.com (2603:10b6:303:189::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.546.22; Fri, 30 Oct
+ 2026 07:41:37 +0000
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225]) by CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225%6]) with mapi id 15.21.0569.009; Fri, 30 Oct 2026
+ 07:41:36 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Aneesh Kumar K.V
+	<aneesh.kumar@kernel.org>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Alex Williamson
+	<alex@shazbot.org>, Alexey Kardashevskiy <aik@amd.com>, Bjorn Helgaas
+	<bhelgaas@google.com>, Catalin Marinas <catalin.marinas@arm.com>, Jacob Pan
+	<jacob.pan@linux.microsoft.com>, Joerg Roedel <joro@8bytes.org>, "Jonathan
+ Cameron" <jic23@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, "Krishna
+ Reddy" <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Nicolin Chen
+	<nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Samuel Ortiz
+	<sameo@rivosinc.com>, Shameer Kolothum
+	<shameerali.kolothum.thodi@huawei.com>, Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Suzuki K Poulose
+	<suzuki.poulose@arm.com>, Thierry Reding <thierry.reding@kernel.org>, "Vasant
+ Hegde" <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, Xu Yilun
+	<yilun.xu@linux.intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-coco@lists.linux.dev"
+	<linux-coco@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH v7 10/16] iommufd: Add the vdevice TSM request ioctl
+Thread-Topic: [PATCH v7 10/16] iommufd: Add the vdevice TSM request ioctl
+Thread-Index: AQHdVuqLnkDudTU10ECPGJY5vEDWKLcTcUiAgADzIwCAADjrgIABMt5Q
+Date: Fri, 30 Oct 2026 07:41:36 +0000
+Message-ID: <CO1PR11MB48352ED3E4DEB3A8B4F089AB8C6D2@CO1PR11MB4835.namprd11.prod.outlook.com>
+References: <20261008055955.4014342-1-aneesh.kumar@kernel.org>
+ <20261008055955.4014342-11-aneesh.kumar@kernel.org>
+ <179321444123.2412245.6955528563980811144.b4-review@b4>
+ <yq5a1p98c0f5.fsf@kernel.org> <20261029130117.GH3040767@nvidia.com>
+In-Reply-To: <20261029130117.GH3040767@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB4835:EE_|MW4PR11MB5910:EE_
+x-ms-office365-filtering-correlation-id: 12747bfd-aa90-4270-cbbe-08df36593a07
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|7416014|1800799024|23010399003|366016|376014|261026140227099003|4143699003|38070700021|261026130827099003|11063799006|261028144727099003|56012099006|3023799007|261021135927099003|261021121427099003|261021123027099003|261022115727099003|261022105027099003|261022113327099003|261009223027099003|261021130227099003|261026121527099003|261022075727099003|10067099003|22082099003|18002099003|6133799003;
+x-microsoft-antispam-message-info: ogTmrhSNkPSlZjFB35IcW14qQniKrbW7EJGtNOF7Jqhkx20umU7txUBiHe+iKwrqJ+wRreEqkGlB1/omCPdTSEILKy1YY6dRaIBaqxAx08QX7bTpztKEZCBM11XjA1pq2CTgEfidtdZA8GNx+jWWO61BhLxHmeDL1lvUTXuMQnlSUFRdDuWonj/WXGr/Y19c3KMh7Y5xY1uWGmIT6Cj4jzglu0D1dUqIQfO3iMS7WSsuFyomLr0McLYiVxVHzw2S4Yw2XkLFUoifLDtUnZoQN5/bHib+vRcQsDltBdXstz9AsiOvjb6QZhW6iXCp+G0hbzYqEv/ihRtgHS8PeDeUtrY/VPWbBlxkotgprnlXWYTDXF7WdW2P9opqnRWcvzAc1ufI1/AWtFNs+YpLmmcLwY+bhdMJBxd8NmjgMEKZb2kyHW9NejRBP24tHmEDve4XS9vEunRRxaFwXIM5cHqFQy9sGW201oj3S2dT6Eh+Ys+RDFd4IddsI2L+MFc7zC2hFq3Ny+FYGGNGktoWDFpiVJFDs+nR+JzeXxEjjA3rHg5JQx5qSYVJ6+ilJrbOgo+Uct7RdA40hfqaJMbk2Lf8rz4MNoUSOLdySn+I3LEYbEP0GLh7TdhdMy6mGYKDLtNf+GgpDZuXCokkr+qxdBYTi4BLsdMWCM3q+QbTwpIPIyw=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4835.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(1800799024)(23010399003)(366016)(376014)(261026140227099003)(4143699003)(38070700021)(261026130827099003)(11063799006)(261028144727099003)(56012099006)(3023799007)(261021135927099003)(261021121427099003)(261021123027099003)(261022115727099003)(261022105027099003)(261022113327099003)(261009223027099003)(261021130227099003)(261026121527099003)(261022075727099003)(10067099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KUO6kthG4mYxd3JTUJauyRaPjbaggDfcN8K9mBQhr6apIdvKYo72RyuJuMb/?=
+ =?us-ascii?Q?GqoIA5kigtJi84vm7KocC/7oKWRQEOffI5Zc0Hv4gPKSJorBTOELREcjBwYi?=
+ =?us-ascii?Q?a1gOZGNBUfUWonnlga5q5rWr80YYQKpsoiN7ooIJTg0gcQNcVfN7l+ujZiZh?=
+ =?us-ascii?Q?ELeomI2db7/LINblPZd88kJYDVylI/Wt1s9dVLGUv06AVgQY739uHPjn6TXB?=
+ =?us-ascii?Q?dI0qfIu8iB4/NnCRF3rXQhrc03t1zF8mdtlDZMKdWVqAEgabd4l5JbrWXAPO?=
+ =?us-ascii?Q?QRi+HB5A6GAOvaAKS1nv8Nn0aTrXjkMkKq2J3ILmi3HQFBZ2+Yq+NCoE8Usj?=
+ =?us-ascii?Q?nXKFtVlH5DYfVWutI75om2eJ89AeUttNLzYha7MEUFs5M2bXKHP444w3UTC/?=
+ =?us-ascii?Q?f/cNjgi4B4ijDylwL5IEDw+1OLjV33VpmPfdmhhohWa/BxvKxX62fLNUQOpB?=
+ =?us-ascii?Q?/an8Qd92KANIZHyrHTy/A/SbmoGnl+t4WCDusnCU6aYw0IvgrSPXlz1M2cK1?=
+ =?us-ascii?Q?fqlBdokxl4SlxchEqFJVV4jxdEbbCpHON8pkYJysznW99GmT8c4ANsma38Sz?=
+ =?us-ascii?Q?8hs1gJeoiVVZu+t8oHEQhuy8jaAvln20qElIWYdU7CxMuxBuNhurDWMK0tt0?=
+ =?us-ascii?Q?IvurPldC4E+aTsumY0qKPbKDMFIfO3z4ouw9k1CIULNQj/oxn2tNm3B8ZLXV?=
+ =?us-ascii?Q?3WhduALfTY7pGM4D22/lRoOeiJP7NZBij9p+ATLkS4+AxTjbHdWs6SjfsFBx?=
+ =?us-ascii?Q?Ot7VJ79npC750ISMXa7Oswnz/OHVo/zlEFGeJPA3z80K9SI2kJWcvctRzo+i?=
+ =?us-ascii?Q?Bhf6Un+OaRXEU41PSPbzRg7dwByZ8ygqCweNuyYvJyZM0FtSNc5rcSkjhdfW?=
+ =?us-ascii?Q?RXawaw1/v7SjTMfKVNin3xH5uctVtHeWd6/jiMMIC4+M2DyXmqa5z/KWKlJ5?=
+ =?us-ascii?Q?wT+WeVrQ6JOjtCyF0nQJWoBtbGN0NVBD4jC84sLOXhFT5jqar8Aot5c06ZeZ?=
+ =?us-ascii?Q?5OMHGqE/mh10ZdDy2WuxRKycemt6SFcMpFXg6EHQIzEUR6XeGcM9qdLEMxpS?=
+ =?us-ascii?Q?7Kzc99jGqJSbU8X1YW5H+n+vwrtBNelnpieFMZ8MtsNkr9qD88gLVHi1erK+?=
+ =?us-ascii?Q?8KFsHZjAAsc80jqq/1y8PDpHIJWHJtd5FFEEZ1C19UNOJMBIY8MlEbkES2xq?=
+ =?us-ascii?Q?ZuJnO4ugUnerpKEbVe+pUumJ/HLreyNntMTo4IluAxoiAN6tnWopYS0TonHd?=
+ =?us-ascii?Q?OSQYxiPSHHTLW0DywLmzogczBSG1+dGq0tHSvLSxhLs/MY73ICoeYCWPgxLw?=
+ =?us-ascii?Q?sv8sTg5EIPCgU/oKJauaULAitEWNxRAE1zzRHkrC/nvzNrGv4lBoEUK/02s0?=
+ =?us-ascii?Q?oewdSJCoGQiQ7NBGcMeJ2XiKzY2CZDNY5aWjAe7aAjavZyUrwvYYFXtpoj/i?=
+ =?us-ascii?Q?C4QwgdmsDGnEQz0tzDeXl3brdg2f2QTRoEMdmzzpHFplzs0lwVvRIGssv1GZ?=
+ =?us-ascii?Q?Y9SblOF6Ge+4FhQt3ihMS0AReby49cqGiDNmgGlCd5nh9RDwiVASsa7yEF1d?=
+ =?us-ascii?Q?uEjjV1V9BtIwnF/AboOL/1mOk7jyTj0wgcE0CDzOtOHm0i81+5okKtFY/E/R?=
+ =?us-ascii?Q?UXz57ACm7bxxk1tcHWRJiXCsOa6cVnfbZLNM8kNttb0bxW2sflAK7fOhn6DA?=
+ =?us-ascii?Q?5DRUw9NDoAEYkOhuM7C1VSN/rY3KBg0dwXhhB6cHlnDsgyAqZxz0v+c7Iogp?=
+ =?us-ascii?Q?ycW89BPi+A=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,293 +196,167 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, YiFei Zhu <zhuyifei@google.com>,
- Pranjal Shrivastava <praan@google.com>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
- Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma
- <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>,
- Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v6 14/18] iommufd: Implement ioctl to mark HWPT for
- preservation
-To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- David Woodhouse <dwmw2@infradead.org>
-References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-15-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261025021930.674647-15-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Exchange-RoutingPolicyChecked: 0wzsDmfhTX7cShrk6qolmuPvgOd4L7vN4IBLhSD7/REJaxBie5Z6CTsX+HS0DtDLk+J49M0FLXo00Q+W9Snmv5ctZg8fDyj4WFmEL1DmxSsHRIqYK5Yw0zFCiv0mcaAu5Use7oguEhf0xqwJh0UVqPgszWBOHjwbH3gb27u4eTTIBd9g+JuOrATgV0P+CAjw8jYz7NmM/yGKVWCxxvuuSFHE+4Yc/vcWfWTd9ch6Xrz6HiXbTVe2mj6EdrhzoErDtUuyS7Ew5Ax0u/KHdDMFBabe1shxEXqNSxl+dLf3ZOjCUwomOL3HWxsVB1FEQo6IlB8U2pVbn2bz/wGuJ4H5kw==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4835.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12747bfd-aa90-4270-cbbe-08df36593a07
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Oct 2026 07:41:36.2524
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: q8vpM9GeVXOfZKkUsJdJ89rycxnu7e96gT1q1sZrZIGSLBLviIlTmIn0SiL4lBuckcOpvT7d5IF/pUYTPec/xw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB5910
+X-OriginatorOrg: intel.com
 
-On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
-> From: YiFei Zhu <zhuyifei@google.com>
-> 
-> Userspace provides a token to mark the HWPT for preservation. Note that
-> this token is not the LUO token that is used to preserve the iommufd.
-> Once all the required HWPT are marked for preservation, the user can
-> preserve the iommufd into LUO. The iommufd will preserve the HWPTs that
-> are marked for preservation.
-> 
-> The marked HWPTs are tracked using a new XArray mark protected by a new
-> liveupdate mutex. This mutex will also be used during iommufd
-> preservation to protect against any race with the mark preserve ioctl.
-> 
-> The HWPT token will be used during restore to identify this HWPT. The
-> restoration logic is not implemented and will be added later.
-> 
-> Reviewed-by: Pranjal Shrivastava <praan@google.com>
-> Signed-off-by: YiFei Zhu <zhuyifei@google.com>
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->   MAINTAINERS                             |  1 +
->   drivers/iommu/iommufd/Makefile          |  1 +
->   drivers/iommu/iommufd/iommufd_private.h | 17 ++++++
->   drivers/iommu/iommufd/liveupdate.c      | 72 +++++++++++++++++++++++++
->   drivers/iommu/iommufd/main.c            |  9 ++++
->   include/uapi/linux/iommufd.h            | 27 ++++++++++
->   6 files changed, 127 insertions(+)
->   create mode 100644 drivers/iommu/iommufd/liveupdate.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 15e1da41b0cc..78af4e3dc106 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -13738,6 +13738,7 @@ M:	Samiullah Khawaja <skhawaja@google.com>
->   R:	Pranjal Shrivastava <praan@google.com>
->   L:	iommu@lists.linux.dev
->   S:	Maintained
-> +F:	drivers/iommu/iommufd/liveupdate.c
->   F:	drivers/iommu/liveupdate.c
->   F:	include/linux/iommu-liveupdate.h
->   F:	include/linux/kho/abi/iommu.h
-> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
-> index 67207914bb6e..cfd5b4b14ccb 100644
-> --- a/drivers/iommu/iommufd/Makefile
-> +++ b/drivers/iommu/iommufd/Makefile
-> @@ -12,6 +12,7 @@ iommufd-y := \
->   
->   iommufd-$(CONFIG_IOMMUFD_NOIOMMU) += hwpt_noiommu.o
->   iommufd-$(CONFIG_IOMMUFD_TEST) += selftest.o
-> +iommufd-$(CONFIG_IOMMU_LIVEUPDATE) += liveupdate.o
->   
->   obj-$(CONFIG_IOMMUFD) += iommufd.o
->   obj-$(CONFIG_IOMMUFD_DRIVER) += iova_bitmap.o
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index eb2e85b27e42..a33b32708afa 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -44,6 +44,11 @@ struct iommufd_ctx {
->   	struct file *file;
->   	struct xarray objects;
->   	struct xarray groups;
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +#define IOMMUFD_OBJ_LIVEUPDATE_MARK XA_MARK_1
-> +	/* @liveupdate_mutex: Protects the preservation of HWPTs. */
-> +	struct mutex liveupdate_mutex;
-> +#endif
->   	wait_queue_head_t destroy_wait;
->   	struct rw_semaphore ioas_creation_lock;
->   	struct maple_tree mt_mmap;
-> @@ -392,6 +397,9 @@ struct iommufd_hwpt_paging {
->   	bool auto_domain : 1;
->   	bool enforce_cache_coherency : 1;
->   	bool nest_parent : 1;
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +	u64 liveupdate_token;
-> +#endif
->   	/* Head at iommufd_ioas::hwpt_list */
->   	struct list_head hwpt_item;
->   	struct iommufd_sw_msi_maps present_sw_msi;
-> @@ -729,6 +737,15 @@ void iommufd_vdevice_abort(struct iommufd_object *obj);
->   int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd);
->   void iommufd_hw_queue_destroy(struct iommufd_object *obj);
->   
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +int iommufd_hwpt_liveupdate_mark_preserve(struct iommufd_ucmd *ucmd);
-> +#else
-> +static inline int iommufd_hwpt_liveupdate_mark_preserve(struct iommufd_ucmd *ucmd)
-> +{
-> +	return -ENOTTY;
-> +}
-> +#endif
-> +
->   #ifdef CONFIG_IOMMUFD_TEST
->   int iommufd_test(struct iommufd_ucmd *ucmd);
->   void iommufd_selftest_destroy(struct iommufd_object *obj);
-> diff --git a/drivers/iommu/iommufd/liveupdate.c b/drivers/iommu/iommufd/liveupdate.c
-> new file mode 100644
-> index 000000000000..5fb491ff3a3d
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/liveupdate.c
-> @@ -0,0 +1,72 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +/*
-> + * Copyright (C) 2026, Google LLC
-> + * Author: Samiullah Khawaja <skhawaja@google.com>
-> + */
-> +
-> +#define pr_fmt(fmt) "iommufd: " fmt
-> +
-> +#include <linux/file.h>
-> +#include <linux/iommufd.h>
-> +#include <linux/liveupdate.h>
-> +
-> +#include "iommufd_private.h"
-> +
-> +int iommufd_hwpt_liveupdate_mark_preserve(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_hwpt_liveupdate_mark_preserve *cmd = ucmd->cmd;
-> +	struct iommufd_ctx *ictx = ucmd->ictx;
-> +	struct iommufd_hwpt_paging *hwpt;
-> +	struct iommufd_object *obj;
-> +	unsigned long index;
-> +	bool marked = false;
-> +	int rc = 0;
-> +
-> +	hwpt = iommufd_get_hwpt_paging(ucmd, cmd->hwpt_id);
-> +	if (IS_ERR(hwpt))
-> +		return PTR_ERR(hwpt);
-> +
-> +	mutex_lock(&ictx->liveupdate_mutex);
-> +
-> +	xa_lock(&ictx->objects);
-> +
-> +	/* PRI use cases are not supported. */
-> +	if (hwpt->common.fault) {
-> +		rc = -EOPNOTSUPP;
-> +		goto out_unlock;
-> +	}
-> +
-> +	xa_for_each_marked(&ictx->objects, index, obj, IOMMUFD_OBJ_LIVEUPDATE_MARK) {
-> +		struct iommufd_hwpt_paging *hwpt_marked;
-> +
-> +		if (WARN_ON_ONCE(obj->type != IOMMUFD_OBJ_HWPT_PAGING))
-> +			continue;
-> +
-> +		hwpt_marked = to_hwpt_paging(container_of(obj, struct iommufd_hw_pagetable, obj));
-> +
-> +		if (hwpt_marked == hwpt)
-> +			marked = true;
-> +
-> +		if (hwpt_marked->liveupdate_token == cmd->hwpt_token) {
-> +			if (hwpt_marked == hwpt)
-> +				goto out_unlock;
-> +
-> +			rc = -EADDRINUSE;
-> +			goto out_unlock;
-> +		}
-> +	}
-> +
-> +	__xa_set_mark(&ictx->objects, hwpt->common.obj.id, IOMMUFD_OBJ_LIVEUPDATE_MARK);
-> +
-> +	if (marked)
-> +		pr_warn_ratelimited("Overwriting HWPT liveupdate token from: %llu to %llu\n",
-> +				    hwpt->liveupdate_token, cmd->hwpt_token);
-> +	hwpt->liveupdate_token = cmd->hwpt_token;
-> +
-> +out_unlock:
-> +	xa_unlock(&ictx->objects);
-> +	mutex_unlock(&ictx->liveupdate_mutex);
-> +	iommufd_put_object(ictx, &hwpt->common.obj);
-> +	return rc;
-> +}
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index 9a921b153162..fe8610fd58e3 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -333,6 +333,9 @@ static int iommufd_fops_open(struct inode *inode, struct file *filp)
->   	init_rwsem(&ictx->ioas_creation_lock);
->   	xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
->   	xa_init(&ictx->groups);
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +	mutex_init(&ictx->liveupdate_mutex);
-> +#endif
->   	ictx->file = filp;
->   	mt_init_flags(&ictx->mt_mmap, MT_FLAGS_ALLOC_RANGE);
->   	init_waitqueue_head(&ictx->destroy_wait);
-> @@ -395,6 +398,9 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
->   	 * iommufd_object_tombstone_user()
->   	 */
->   	xa_destroy(&ictx->objects);
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +	mutex_destroy(&ictx->liveupdate_mutex);
-> +#endif
->   
->   	WARN_ON(!xa_empty(&ictx->groups));
->   
-> @@ -440,6 +446,7 @@ union ucmd_buffer {
->   	struct iommu_hwpt_alloc hwpt;
->   	struct iommu_hwpt_get_dirty_bitmap get_dirty_bitmap;
->   	struct iommu_hwpt_invalidate cache;
-> +	struct iommu_hwpt_liveupdate_mark_preserve mark_preserve;
->   	struct iommu_hwpt_set_dirty_tracking set_dirty_tracking;
->   	struct iommu_ioas_alloc alloc;
->   	struct iommu_ioas_allow_iovas allow_iovas;
-> @@ -516,6 +523,8 @@ static const struct iommufd_ioctl_op iommufd_ioctl_ops[] = {
->   		 __reserved),
->   	IOCTL_OP(IOMMU_VIOMMU_ALLOC, iommufd_viommu_alloc_ioctl,
->   		 struct iommu_viommu_alloc, out_viommu_id),
-> +	IOCTL_OP(IOMMU_HWPT_LIVEUPDATE_MARK_PRESERVE, iommufd_hwpt_liveupdate_mark_preserve,
-> +		 struct iommu_hwpt_liveupdate_mark_preserve, hwpt_token),
->   #ifdef CONFIG_IOMMUFD_TEST
->   	IOCTL_OP(IOMMU_TEST_CMD, iommufd_test, struct iommu_test_cmd, last),
->   #endif
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 206fa667c782..93372689afec 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -58,6 +58,7 @@ enum {
->   	IOMMUFD_CMD_VEVENTQ_ALLOC = 0x93,
->   	IOMMUFD_CMD_HW_QUEUE_ALLOC = 0x94,
->   	IOMMUFD_CMD_IOAS_NOIOMMU_GET_PA = 0x95,
-> +	IOMMUFD_CMD_HWPT_LIVEUPDATE_MARK_PRESERVE = 0x96,
->   };
->   
->   /**
-> @@ -1390,4 +1391,30 @@ struct iommu_hw_queue_alloc {
->   	__aligned_u64 length;
->   };
->   #define IOMMU_HW_QUEUE_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HW_QUEUE_ALLOC)
-> +
-> +/**
-> + * struct iommu_hwpt_liveupdate_mark_preserve - ioctl(IOMMU_HWPT_LIVEUPDATE_MARK_PRESERVE)
-> + * @size: sizeof(struct iommu_hwpt_liveupdate_mark_preserve)
-> + * @hwpt_id: HW pagetable ID to preserve for liveupdate
-> + * @hwpt_token: Token to identify this hwpt upon restore
-> + *
-> + * The target HWPT will be preserved during iommufd preservation.
-> + * Only file-based memory mappings (e.g. memfd) are supported for HWPTs marked
-> + * for preservation. Mapping anonymous memory into a preserved HWPT will result
-> + * in a failure during the preservation phase.
-> + *
-> + * The hwpt_token is provided by userspace. If userspace enters a token
-> + * already in use within this iommufd, -EADDRINUSE is returned from this ioctl.
-> + *
-> + * Note: There is no 'unmark' operation, so any HWPTs pooled in userspace that
-> + * are marked for preservation must be destroyed after use.
-> + */
-> +struct iommu_hwpt_liveupdate_mark_preserve {
-> +	__u32 size;
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, October 29, 2026 9:01 PM
+>=20
+> On Thu, Oct 29, 2026 at 03:07:34PM +0530, Aneesh Kumar K.V wrote:
+> > Jason Gunthorpe <jgg@nvidia.com> writes:
+> >
+> > >> [ ... 300 lines skipped ... ]
+> > >> +/**
+> > >> + * enum iommu_vdevice_tsm_guest_req_op - Guest TSM request
+> operations
+> > >> + * @TSM_REQ_VALIDATE_MMIO: Validate and map a guest MMIO range
+> for the trusted
+> > >> + *                         device.
+> > >> + * @TSM_REQ_SET_TDI_STATE: Transition the trusted device to the
+> unlocked,
+> > >> + *                         locked, or running state.
+> > >> + * @TSM_REQ_SEV_ENABLE_DMA: Enable DMA for an SEV device.
+> > >> + * @TSM_REQ_SEV_DISABLE_DMA: Disable DMA for an SEV device.
+> > >> + * @TSM_REQ_READ_OBJECT: Read bytes from a device object, such as a
+> certificate,
+> > >> + *                       measurement, or interface report.
+> > >> + * @TSM_REQ_REGEN_OBJECT: Regenerate a device object, such as a
+> measurement or
+> > >> + *                        interface report.
+> > >> + * @TSM_REQ_OBJECT_INFO: Query the size of a device object.
+> > >> + * @TSM_REQ_MAX: One past the last request operation; not a
+> command.
+> > >> + *
+> > >> + * The request payload and response format depend on the TVM
+> architecture.
+> > >> + */
+> > >> +enum iommu_vdevice_tsm_guest_req_op {
+> > >> +	TSM_REQ_VALIDATE_MMIO =3D 1,
+> > >> +	TSM_REQ_SET_TDI_STATE,
+> > >> +	TSM_REQ_SEV_ENABLE_DMA,
+> > >> +	TSM_REQ_SEV_DISABLE_DMA,
+> > >> +	TSM_REQ_READ_OBJECT,
+> > >> +	TSM_REQ_REGEN_OBJECT,
+> > >> +	TSM_REQ_OBJECT_INFO,
+> > >> +	TSM_REQ_MAX,
+> > >> +};
+> > >
+> > > This is still no where close to being well defined enough.
+> > >
+> > > Everything here must tie back to defined spec references, listed in
+> > > the comments.
+> > >
+> > > I cannot guess what data is passed over any of these APIs, how things
+> > > like "REGEN_OBJECT" select which object to regen, or what the format
+> > > of those objects even is. The formats of req/resp are never specified=
+.
+> > >
+> >
+> > The request and response payload formats are specific to each CoCo
+> > backend. Since iommufd treats the payloads as opaque and does not
+> > validate their contents, what would documenting those formats here
+> > achieve?
+>=20
+> Well if thats the case then no, this is entirely inappropriate.
+>=20
+> iommufd requires every single struct to be documented and
+> described. We do not do undocumented opaque structs into drivers.
+>=20
+> So figure out exactly what needs to flow here, give it driver specific
+> names for driver specific content and document everything.
+>=20
+> This should be done patch by patch as the drivers implement their
+> stuff.
 
-Most iommufd commands have a "flags" member here, so that the uAPI
-struct can be extended later. Why is this one different?
+some could still be generalized, e.g. setting the TDI state. There
+doesn't sound a good reason to have vendor specific format for
+that.
 
-> +	__u32 hwpt_id;
-> +	__aligned_u64 hwpt_token;
-> +};
-> +#define IOMMU_HWPT_LIVEUPDATE_MARK_PRESERVE \
-> +	_IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_LIVEUPDATE_MARK_PRESERVE)
-> +
->   #endif
+Then if your suggestion of using the attestation subsystem here
+can work, those OBJECT related operations are generalized too.
 
-Otherwise, this patch looks good to me,
+In the end the set of vendor specific definition here might be small.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > > My guesses with no information
+> > > 1) VALIDATE_MMIO why would the hypervisor ever need this? Guest
+> > >    validates MMIO through secure communication to the secure world.
+> > >
+> >
+> > With VFIO PCI BARs backed by guest_memfd, the VMM can validate that the
+> > IPA and PA values provided by the guest belong to the VFIO device.
+>=20
+> Why? Who cares? It isn't a trusted validation, and there is a RSI that
+> duplicates this?
+
+TDX doesn't require this. It's a guest call directly to the secure world.
+
+>=20
+> > We previously also used this operation to ask the CoCo TSM backend
+> > to map the device memory (the BAR regions). I have removed this
+> > operation from the latest series because that responsibility is now
+> > split between the VMM and guest_memfd. TDX and SNP still need to be
+> > updated accordingly.
+>=20
+> Right, it should happen automatically as part of lock.
+>=20
+> > > 2) TDI_STATE I thought at least RMM did this with an RSI?
+> >
+> > CCA uses RHI. The RHI reaches the VMM, which issues the ioctl to
+> > complete the request.
+
+same for TDX, using GHCI to reach the VMM.
+
+>=20
+> And then the seq numbers check that this went through OK?
+
+which seq numbers in your mind?
+
+>=20
+> > > 3) ENABLE/DISABLE DMA, see #1, must not be done by hypervisor
+> > >    See my reply to Alexey:
+> > >    https://lore.kernel.org/linux-
+> iommu/20261022123058.GC3008132@nvidia.com/
+
+Not required by TDX.=20
+
+> > >
+> > > 4) READ/REGEN/INFO, what are the objects? What format are they in? Ho=
+w
+> > >    do you select them?
+> >
+> > These objects are cached by the hypervisor. For CCA, they include the
+> > certificate, measurement, interface report, and VCA. They are read in
+> > response to guest requests. The requests reach the VMM through an
+> > RHI, and the VMM issues the ioctl to read the requested object. REGEN
+> > refreshes the objects/evidence at the guest's request.
+>=20
+> > >    Does this overlap with attestation subsystem? Should attestation
+> > >    subsystem be used to access the SPDM related data?
+> > >
+> >
+> >
+> > I had hoped we could use it, but I could not find an easy way to
+> > integrate the two. We need a simple way to read these evidence objects
+> > into userspace. I am not yet sure whether evidence-get can be used for
+> > that, since it does more than simply read the objects; it also updates
+> > evidence.generation, among other things.
+>=20
+> It should not do that, the generation has to follow the locked state,
+> not the evidence collection.. See my remark to Dave
+>=20
+> I think the bigger issue was it had to use the VDEV flavour not the
+> PDEV flavor of RMM commands, and it isn't obvious how we switch from
+> PDEV to VDEV mode on the hypervisor..
+
+Can you elaborate this part in a general way? Want to better understand it
+in the TDX context...
