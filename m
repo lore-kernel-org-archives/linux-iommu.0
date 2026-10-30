@@ -1,68 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793317143;
-	b=HEvmrjxJdVM27YEKbok6UOxfRiqrGiOG4RoVMWsWk5utrbstByc0In8QbuEad8UbBjN8
-	 fXdR/5gr/Kh6/tukc6c6jFZSnBnRvWCedtF8smNatY1s49jJHRHAdeez694OhkE6osE0W
-	 1U+z7ECCq80TlH1g/35dbaLprKEQ/zc3Xt8kRZMh/JD7Kz+x0qfYs7fPl94WDuDuPy3F9
-	 PsCPUXPLXVBWgYK4v6Pc5vFVQ2SpcbI3giwwXvIApHxNHQTxvWfvjXkAzZmWDO76in9nG
-	 8tMhoyo9+H+tsuXxV/vt2Hz0VRgn4dXeAABPidBzBKrENTOUAqefwn4fDtmiGxA3TFw==
+	t=1793323614;
+	b=jqLG5VHHtNQ+WXVNqZX0Yl3lBBeVVw6o1zLZvi59qLcFvcS8QGMrvb4ubS5U2rciqMAw
+	 XMpRm7sPxZHR5arwcmQcL0/q4M72vSCuMkZiE7ibWFswLTTx/MZhs4Jj2yeKNj8iS3EfS
+	 VEq8VAXhEcJV2eorARm1jrqytfOXeAyut83WOA2RoaL9XCyuDF1JMctqwnyvpI4uK413F
+	 cvJCSKsnVfboHhmsy9uMgFOXVRuRY8pJaUIZXu336bnsL3QmUE7Ct4bSriRYNKTxwc8MO
+	 2xx3ZopCsvhoDeL3R2uDaa2gpt4mG0gP5nUtUC48sUK4XIFZHMCyuVJc5ocR+R5UN7Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793317143;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793323614;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
 	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=MayldR3d8IBms4sVIuPTrWKB+Oa3RX5tIH6ZU2Vm3LE=;
-	b=L7kWQrfRVSDKES8LUA9frKnckBhmju3jMuOuV+h0am7ccIcQCkL8tAk+2+miPkF2y9z/
-	 GYEJHSjeZDnVQlC+Ne8gZYf5VACyp2Ko6OIQrb3Bh9aQ6N/lrGE0nhQcgbnMGvZf3EXNF
-	 U+cAQglgwbbEA9coCw2whZFWVCWU1eWKWa/MA/EvesLY+N9lL4djpUFgBLw/+YqhxS3/6
-	 rD1d2JGBF2xy3Rt2m8SBByMp2lf1eBXbZNzyW4FED3jMfm/borYdu1Ow2cXT93EiaFsb6
-	 xVT0EG40f0vrkpIy6EvYHttY84q/oxRdRnaOdYhbnDyxDFzVQp1cZfbK6SCgjENXXPA==
+	bh=7TidQHqBf1ZuOvcJ+LuDnP0h7WFNpRTpS1kTxbluEbQ=;
+	b=IvBQbxv7d1qHpynyTnK2f/2fOOt1NxxzK8v9HwyB0Let1uf2Zfv5508rpTcblZz4FvXN
+	 //cv9TTo5mgk/tZnsStbmttfHg5tfSlaOQvfxVyastlOVTz9XzydVGImtHpMzJParToJd
+	 Vw4S9kgxcW8WYxkmLv0OHxh4RrWOJ/iP9xGpkJbJAYz5aDYFKa4T/pn8UBLXjjgDIww/O
+	 CdhR/NmFJsVfI8tp/9pMT3yjka196HMlmjzqbBEm3d2tFyaW9ruL/veIjLCMvC+8IkmCl
+	 Tpnjoo4Cv+cNPzRFoWAzWt/OQSq32O8Sc/gPIcZ5UzVHJ3gFr9fMuPmUQ0Kb0UmImdg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MK0gWIIa;
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="AnN/Hlyw";
+	arc=none smtp.remote-ip=192.198.163.7
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE1F9606A31D
-	for <iommu@lists.linux.dev>; Thu, 29 Oct 2026 23:39:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EE1F9606A31D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 812C2606A31A
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 01:26:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 812C2606A31A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=MK0gWIIa
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AnN/Hlyw
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793317142; x=1824853142;
-  h=message-id:date:mime-version:subject:to:cc:references:
+  t=1793323613; x=1824859613;
+  h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=GNvLU2yIbeuFnhRZLILES5O2I5YTIoobPa6rjUCSEeQ=;
-  b=MK0gWIIawDVpyTainvGL0I7vuosxQ3oDHbHzsx4O18s85C8EirIRXvZt
-   gQ8NbbfSJfSs2++XWurpUZiTTho1ZynQygJGyW1PH2xdQEgksnqw8nMiH
-   8DbADNrB0BWDa/9voWG76G4SUw46+DzrqBQBagsJci6LzXyNQW4CWGVVZ
-   R59493a+6q3qeMl3gaUtKPVjPcwG5644IQSjsN9U1eUuHuN37FUrhZuPu
-   SvjUl3i6s1kMcftFfpCoJiw1J5LOF2kttmeQQRtRewrb8LDbEpe1PTvgD
-   3J84qnOTAMV+bCq5QwcmLjr9bteYNwRz1qiYid5q1jq4aSjJcT7igsbRI
-   g==;
-X-CSE-ConnectionGUID: QrFVcQ3FRRikvclgRVIFDQ==
-X-CSE-MsgGUID: p3/kQek0RmWi6+TxIU9aHA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1977209"
+  bh=vsYaPtnLT+8StniLOIYrIhlEUEjfJqUbSGNkv3n7U7Q=;
+  b=AnN/Hlywa4JS/PqzUhHChIFX4In3qQyhXr3w/cyzwt3A3T3Q8C4LVGn2
+   4SoZ5Ce2z2gV3E95+cDsMaGOO+X0pTRpQs3SOIWr2+Z5haG0Ap2MxrF93
+   j1NAqjPfxnonAVnjas2aDLsf6Ll9MUQRjJk8atre88N9R0udh2uslrC4i
+   gD/1/elAr4XZztOiSH+pwSJ3bP2lkeZJH3w2LagzTa/FTnOmvEqOJCsFc
+   QSWVR0yzC4CNalvq5r/GDwGOxuZ9uOT30IKf6teljWcX1KKFMbbY1GJd0
+   nxaaTWQBbo9Yl7lpidPySpLxa/FmQECuYnFsACGW3wEMrwRqf1lFpWMDk
+   Q==;
+X-CSE-ConnectionGUID: 1k96Mi4USaG0q1k46puIGQ==
+X-CSE-MsgGUID: Nlo3FrLyT+OCFovR/jZDiQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1966075"
 X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="1977209"
+   d="scan'208";a="1966075"
 Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 16:39:01 -0700
-X-CSE-ConnectionGUID: PdH2IR+CRvSD3D3BEWZMZQ==
-X-CSE-MsgGUID: ONzVjv/3Si2P4nSEocDSlA==
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 18:26:52 -0700
+X-CSE-ConnectionGUID: 6z5Zy7HLTGmjyxLmLUNK4w==
+X-CSE-MsgGUID: sof9eSQbSoSaTMwE/9OSgw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="5614172"
-Received: from blu2-desk.sh.intel.com (HELO [10.239.156.26]) ([10.239.156.26])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 16:38:57 -0700
-Message-ID: <84fe2789-7bbc-436e-9141-e879d2e90ef9@linux.intel.com>
-Date: Fri, 30 Oct 2026 07:38:54 +0800
+   d="scan'208";a="5629341"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 18:26:47 -0700
+Message-ID: <d6e6abad-c3c7-4f99-996a-0030bf6ef166@linux.intel.com>
+Date: Fri, 30 Oct 2026 09:26:45 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,70 +73,81 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 13/18] iommu/vt-d: Handle reattach of the restored
- domain
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>,
+Cc: baolu.lu@linux.intel.com, Pranjal Shrivastava <praan@google.com>,
  Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
  Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
  Pratyush Yadav <pratyush@kernel.org>,
  Pasha Tatashin <pasha.tatashin@soleen.com>,
  David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
- Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>,
- John Starks <dev@jstarks.net>
+ Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma
+ <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 02/18] iommu/pages: Add APIs to
+ preserve/unpreserve/restore iommu pages
+To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ David Woodhouse <dwmw2@infradead.org>
 References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-14-skhawaja@google.com>
- <faeedd16-a271-4ced-be1a-7bd70860bcdc@linux.intel.com>
- <auPC2pByvuW5uHyH@google.com>
+ <20261025021930.674647-3-skhawaja@google.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <auPC2pByvuW5uHyH@google.com>
+In-Reply-To: <20261025021930.674647-3-skhawaja@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 10/30/26 06:34, Samiullah Khawaja wrote:
->>> diff --git a/drivers/iommu/intel/liveupdate.c b/drivers/iommu/intel/ 
->>> liveupdate.c
->>> index 36816d3651e6..665ebb81bd61 100644
->>> --- a/drivers/iommu/intel/liveupdate.c
->>> +++ b/drivers/iommu/intel/liveupdate.c
->>> @@ -394,6 +394,137 @@ void 
->>> intel_iommu_handle_drhd_restore_failure(struct intel_iommu *iommu)
->>>                iommu->name);
->>>  }
->>> +static void domain_detach_restored_iommu(struct dmar_domain *domain,
->>> +                     struct intel_iommu *iommu)
->>> +{
->>> +    struct iommu_domain_info *info;
->>> +
->>> +    guard(mutex)(&iommu->did_lock);
->>> +    info = xa_load(&domain->iommu_array, iommu->seq_id);
->>> +    if (--info->refcnt == 0) {
->>> +        xa_erase(&domain->iommu_array, iommu->seq_id);
->>> +        kfree(info);
->>> +    }
->>
->> This seems to be different from normal domain_detach_iommu(), which
->> looks like this,
->>
->>        if (--info->refcnt == 0) {
->>                ida_free(&iommu->domain_ida, info->did);
->>                xa_erase(&domain->iommu_array, iommu->seq_id);
->>                kfree(info);
->>        }
->>
->> why ida_free() is skipped in the restored path?
+On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
+> IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
+> the proper preservation and restoration of ioptdesc add helper
+> functions.
 > 
-> The restored device can be removed and probed again while the PASID and
-> context entries stay intact. So the restored did is not freed in this
-> path. Once the domain is reclaimed by the iommufd, then it takes the
-> normal detach path.
+> Reviewed-by: Pranjal Shrivastava<praan@google.com>
+> Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
+> ---
+>   drivers/iommu/iommu-pages.c | 109 ++++++++++++++++++++++++++++++++++--
+>   drivers/iommu/iommu-pages.h |  30 ++++++++++
+>   2 files changed, 135 insertions(+), 4 deletions(-)
+> 
 
-Can you please add a comment to explain this?
+[...]
 
-Thanks,
-baolu
+> +
+> +/**
+> + * iommu_restore_pages - Restore pages that were preserved in KHO
+> + * @phys: Physical address of page to restore
+> + */
+> +void iommu_restore_pages(u64 phys)
+> +{
+> +	struct ioptdesc *iopt;
+> +	struct folio *folio;
+> +	unsigned long pgcnt;
+> +	unsigned int order;
+> +
+> +	folio = kho_restore_folio(phys);
+> +	if (!folio)
+> +		panic("Failed to restore preserved IOMMU page %llx\n", phys);
+> +
+> +	iopt = folio_ioptdesc(folio);
+> +
+> +	/*
+> +	 * For the restored pages incoherent is set to false as these are not
+> +	 * mapped using the DMA_API. The remapping of these pages using DMA_API
+> +	 * is not needed as these are not going to be written to by the new
+> +	 * kernel.
+> +	 */
+> +	iopt->incoherent = false;
+> +
+> +	order = folio_order(folio);
+> +	pgcnt = 1UL << order;
+> +	iommu_folio_update_stats(folio, pgcnt);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_restore_pages);
+
+The pages were charged to the VMM's memcg in the old kernel (iommufd
+maps with GFP_KERNEL_ACCOUNT), but after the live update they are no
+longer charged to any memcg. I think that's fine, because the restored
+tables are immutable and will be replaced by ordinary ones after boot.
+
+This patch looks good to me,
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
