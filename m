@@ -1,60 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=207.54.90.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793356618;
-	b=HxKn4f8zMcwJ9+lJS4L0Guh2CQdsRvNjiO5D5vXq7gL0w8mLWaa4G+5xrwaTNf/SBSPE
-	 zej+SiBOBeezReFwlSIJ5zu2ZBsX2Su0qm7yYa9LQ0e5L9kyOcwih7c97d4cJN6RE24XC
-	 y4v89hpV6ispXn8yDbumrsDnPoVbzgUP+5XLg5PXcMOBpIfkOQB2424+uf/PHiGPf+d/B
-	 /3DaWlySVi573teQjS65ohmg2wfwZiM+VqkHjcTPvY5nNPyqYsEdMj98/FUovovHmWED9
-	 vdvP9gbkILxYBD0orrwjl5mHf6OCdaOE/XQiMtJ8zbrG6FmFoUb61LqJc5mJ+366Usw==
+	t=1793357437;
+	b=zJ/0JwTjNAPR7k956mXsYLUogXSuycZKGqr1fQEaaHQHGFVQAwhNsVF9PWZUYEx/eJFK
+	 klc4scVcJnphgLTpy6XCKvVSm3CSHRqHxXSO/nk6IIeZuEP7PrNx8fLzrG+S2gdndaB8V
+	 mbGOPXj4MR+dpFcNJg+vDmZGoET8Qku4VsOyf5YxMuKUylCRdm5YPjYIx6Qv+uYsy2kAY
+	 /tXdVfxvWxMe6OyiHIu3Kls3BFXkyvujzQ9d3F83Noa6Vk909nM1ahPfn7gFxx1fE5QDa
+	 HKTfE1AApMp8UXpLJqJFTNtRO0/Aqmx9MDq5cCirngEIVa1kuY3YxOOCASh/vumRrNw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793356618;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=oXQ15hDbnS1B2Y9Ac6zuPUxaceab5plrwxGQ/lap8W4=;
-	b=nCqdSNTDmKpKsVqvpgBkRWmpxg3cwQCdx9kNEVqwhpXibFoHMkk24u5GLEiYCBhoDaXy
-	 ezLpUXxf60o0WFnW+GWsWalSRpjZyoEdDsJ50Fxw/NFjtEEnqumlQ3wo7LVh7Sdvv2HM0
-	 o1EZEzBKL7+zhJoHohW3HhJWHpDO4y9YfRtWc/uWgrHAwZSY8l6Xat7PNpSV6BqxLgoN9
-	 hz02yWcbiJzybN1hPUQlXNOdJwYCxq4HEbMZI4kyCXh4pitcjd/YcONrJ0nhHw40nXOze
-	 XnD8vxAYYv6tHU0MZyyTqrXsU+rJ4V4x2vll8lepgPi03LqUFXvpURtV/u+Nn2hbRAg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793357437;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:Received:Received:Received:Date:
+	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=MZqMRfPEVUiuMNxLqgmTIf03oB0BvArhy/TSmIC7oCY=;
+	b=aUxE4oKeBFv8PdMQkNlmDiTpTG2w1JtylzXi3pERhUJSBN42uvxRz6El01WzOHgFrJgs
+	 H5t3maI/ZWH5PSo8xfCQDYKlbyD/U9PxuVwGJOxhS/SbcY9hZciLFQVFl/tj2okHQpghl
+	 LGRivPwu9a8YzPZmz9Cqe1DffdowSPeG+ObZY6sUlrAGXu/B9rgnFuGyCdW5ZAhLPN1Aw
+	 dhQtnT717TxpMaK6IbLvWLxRubzhBKYMOJNo7wkiUcv+1T2DAKO58EBhxqFPM2vG0cXUj
+	 IK2Klo5yEvvvb+FUFkZDdIc/PCR0rBIjEFLfpNU9bGxnwAQ8uqT78B2fKdmTm4U0CbA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Bn1maMdu;
-	arc=none smtp.remote-ip=210.118.77.11
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	dmarc=pass header.from=fujitsu.com;
+	spf=pass smtp.mailfrom=fujitsu.com;
+	dkim=pass header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=OUYPjiK8;
+	arc=none smtp.remote-ip=207.54.90.47
+Received: from esa1.hc1455-7.c3s2.iphmx.com (esa1.hc1455-7.c3s2.iphmx.com [207.54.90.47])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F6BC606A326
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 10:36:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3F6BC606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EFDF60A2631;
+	Fri, 30 Oct 2026 10:50:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3EFDF60A2631
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Bn1maMdu
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261030103654euoutp0175327810cc7f28894f9094ab94716eb2~jSFbSVapx2144021440euoutp01J
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 10:36:54 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261030103654euoutp0175327810cc7f28894f9094ab94716eb2~jSFbSVapx2144021440euoutp01J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1793356614;
-	bh=oXQ15hDbnS1B2Y9Ac6zuPUxaceab5plrwxGQ/lap8W4=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=Bn1maMduqupHB2mk79itTPg2YYb2s2eoTiTiCAQr3tKsoCqkIdjJg9ZyToXDicMeu
-	 QC/eykVusT+mvuqbMsJw99fOxSE4H3ZMEbhvSQNamO2BFBa89xl0LTJMLRvfqWADIe
-	 2qDnY/yqLt8qf51Cl8m0sEfa5siJiL4tsWYBI/pg=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261030103653eucas1p1e35145674aa26e829f4cde451eda2411~jSFa8BzoE1749317493eucas1p10;
-	Fri, 30 Oct 2026 10:36:53 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261030103652eusmtip25965ad5bbe769c2f2f82e49aa71e8d98~jSFZq8wI72310123101eusmtip2j;
-	Fri, 30 Oct 2026 10:36:52 +0000 (GMT)
-Message-ID: <6fb3327c-766c-433c-b49d-dc62470d7102@samsung.com>
-Date: Fri, 30 Oct 2026 11:36:52 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=OUYPjiK8
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
+  t=1793357443; x=1824893443;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8Bk02kov5eXaN4fQMM0pbL4dj5jWKbTsBzV8w285UiE=;
+  b=OUYPjiK8KKr+P7wB+ZViJqxu20flLzyi2Z3LkIdvolUqVeUaODwCYvOs
+   Pm1/jgbXZtyLnlXEQ0eLLwlJZeyj8j9sq8q5QMvXSrSOKuopHLpFJ/lmS
+   Y2zbW7UruEyJr8XaT+9G6GUuVgwc1297N7CYywvASeKhRJdn3q0kDurgT
+   ESr4E1LoQtZ8fGsVa/OAQlEK1IIR1MUhD6Nd0Zbb7+BedbLzdIFbHPoVY
+   oIGJzrirIxy/5tOmB9sdrrYZ7zaG+P2Ra7hugw1OBkbwKSzpsC/ZT5CKk
+   Wsq8oMzP89qO+siHNUcdYkFb09fhI6DZOxHnLZ5wDHUO6Ev8Odzn55Xve
+   A==;
+X-CSE-ConnectionGUID: IPljP3+7R4uzZqOOpSKg3g==
+X-CSE-MsgGUID: BvxVCy3EQbyXYoh16dx+Iw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="260094587"
+X-IronPort-AV: E=Sophos;i="6.27,186,1786978800"; 
+   d="scan'208";a="260094587"
+Received: from gmgwuk01.global.fujitsu.com ([172.187.114.235])
+  by esa1.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 19:50:35 +0900
+Received: from az2uksmgm3.o.css.fujitsu.com (unknown [10.151.22.200])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by gmgwuk01.global.fujitsu.com (Postfix) with ESMTPS id B285E1C00C90;
+	Fri, 30 Oct 2026 10:50:28 +0000 (UTC)
+Received: from az2uksmom2.o.css.fujitsu.com (unknown [10.151.22.203])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by az2uksmgm3.o.css.fujitsu.com (Postfix) with ESMTPS id 65CACC041E9;
+	Fri, 30 Oct 2026 10:50:28 +0000 (UTC)
+Received: from FCCLS0092175.localdomain (unknown [10.9.203.66])
+	by az2uksmom2.o.css.fujitsu.com (Postfix) with SMTP id EC18C140769F;
+	Fri, 30 Oct 2026 10:50:23 +0000 (UTC)
+Date: Fri, 30 Oct 2026 19:50:20 +0900
+From: Kohei Enju <enju.kohei@fujitsu.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
+	x86@kernel.org
+Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
+ sizing
+Message-ID: <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
+References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
+ <20260924060756.1325156-7-aneesh.kumar@kernel.org>
+ <asVs3doaJ4WrT3M2@willie-the-truck>
+ <asYZFXGyafRjjBS0@arm.com>
+ <asYiOgskwi8JYLe_@willie-the-truck>
+ <yq5awlrt3dwo.fsf@kernel.org>
+ <yq5av77c92oo.fsf@kernel.org>
+ <aseRzPshcoys7AJS@arm.com>
+ <yq5ao6d48dqr.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,153 +96,146 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v3 00/10] Make the 32-bit ARM DMA API work with normal
- IOMMU DMA default domains (+ Tegra PoC)
-To: Mikko Perttunen <mperttunen@nvidia.com>, Robin Murphy
-	<robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Russell King <linux@armlinux.org.uk>, Heiko Stuebner
-	<heiko@sntech.de>, Thierry Reding <thierry.reding@kernel.org>, David Airlie
-	<airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Jonathan Hunter
-	<jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>, Krzysztof
-	Kozlowski <krzk@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Peter Griffin <peter.griffin@linaro.org>, Alim Akhtar
-	<alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec
-	<jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, Yong Wu
-	<yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Rob
-	Clark <robin.clark@oss.qualcomm.com>, Geert Uytterhoeven
-	<geert+renesas@glider.be>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261026-b4-arm32-iommu-dma-cookie-v3-0-3901d74b1ff2@nvidia.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261030103653eucas1p1e35145674aa26e829f4cde451eda2411
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261026092047eucas1p2686ac1a0ce893a16711cf7a137d081ce
-X-EPHeader: CA
-X-CMS-RootMailID: 20261026092047eucas1p2686ac1a0ce893a16711cf7a137d081ce
-References: <CGME20261026092047eucas1p2686ac1a0ce893a16711cf7a137d081ce@eucas1p2.samsung.com>
-	<20261026-b4-arm32-iommu-dma-cookie-v3-0-3901d74b1ff2@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <yq5ao6d48dqr.fsf@kernel.org>
 
-On 26.10.2026 10:19, Mikko Perttunen wrote:
-> Depending on the probe ordering, TegraDRM does not currently probe on
-> kernels with CONFIG_ARM_DMA_USE_IOMMU enabled, such as with
-> multi_v7_defconfig. The Tegra SMMU puts several display and 2D/3D
-> clients into one IOMMU group, and the legacy 32-bit ARM DMA API path
-> creates one UNMANAGED domain per device and attaches it with
-> iommu_attach_device(). That only works for one device per group, so
-> every client after the first fails to attach,
-> iommu_device_use_default_domain() rejects the group with -EBUSY, and the
-> driver goes down with it. tegra_defconfig is currently working by virtue
-> of not enabling CONFIG_ARM_DMA_USE_IOMMU.
->
-> Robin suggested [1] that instead of teaching the legacy path about
-> groups, we should explore modernizing the 32-bit ARM DMA code a bit by
-> making it use domain cookies and have the core code own the domains, as
-> is the case on other architectures. Still, ARM's own DMA code is kept to
-> support existing drivers and APIs that expect it, and because dma-iommu
-> is considered too big and unnecessary for 32-bit ARM.
->
-> The series is in four parts:
->
-> - Patches 1-2 are preparation in the IOMMU core:
->   1. Add iommu_teardown_dma_ops, counterpart to iommu_setup_dma_ops.
->   2. Add cookie type for ARM's DMA domains.
-> - Patches 3-6 implement the DMA API side on 32-bit ARM:
->   3. Split up mapping alloc and init (bitmap alloc) code to separate
->      functions.
->   4. Implement parallel dma_ops / cookie APIs on ARM side.
->   5. Avoid domain allocation when IOMMU core does it.
->   6. Check upper DMA range limit during IOVA allocation.
-> - Patch 7 removes the forced IDENTITY default domain in core IOMMU
->   code and adds explicit IDENTITY defaults to a few individual IOMMU
->   drivers.
-> - Patches 8-10 convert Tegra:
->   8. Fixes device parameter in calls to dma_get_sgtable.
->   9. Allows deferring translation enable until driver handshake for
->      selected devices.
->   10. Switches to DMA default domain for selected Tegra devices.
->
-> This moves 32-bit ARM devices from the unmanaged IOMMU DMA domain to the
-> core-owned default DMA domain except for mtk_iommu_v1, ipmmu-vmsa,
-> omap-iommu, and msm_iommu. (tegra-smmu also stays on the legacy path
-> until the last patch in the series.) See commit 7 for further
-> information. Existing drivers are intended to continue working without
-> changes.
->
-> Patches 8-10 are provided for demonstration; we can deal with them 
-> separately if the rest of the series is accepted.
->
-> Patches 1,2,3,6 are applicable independently.
-> Patches 4,5 depend on the previous patches.
-> Patch 7 requires the prior patches to be in place.
->
-> Patches 1-7 only touch drivers/iommu/ and arch/arm/mm/ and associated 
-> headers.
+On 10/08 20:02, Aneesh Kumar K.V wrote:
+> Catalin Marinas <catalin.marinas@arm.com> writes:
+> 
+> > On Thu, Oct 08, 2026 at 11:03:27AM +0530, Aneesh Kumar K.V wrote:
+> >> Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+> >> > Will Deacon <will@kernel.org> writes:
+> >> >> On Wed, Oct 07, 2026 at 11:04:05AM +0100, Catalin Marinas wrote:
+> >> >>> On Tue, Oct 06, 2026 at 10:49:17PM +0100, Will Deacon wrote:
+> >> >>> > On Thu, Sep 24, 2026 at 11:37:54AM +0530, Aneesh Kumar K.V (Arm) wrote:
+> >> >>> > > @@ -496,7 +516,8 @@ swiotlb_select_pool_policy(unsigned int flags)
+> >> >>> > >  	if (swiotlb_force_disable)
+> >> >>> > >  		return SWIOTLB_POOL_NONE;
+> >> >>> > >  
+> >> >>> > > -	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+> >> >>> > > +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+> >> >>> > > +	    !restricted_dma_pool_present)
+> >> >>> > >  		return SWIOTLB_POOL_CC_GUEST;
+> >> >>> > 
+> >> >>> > I think this check on the restricted DMA pool is too general -- the pool
+> >> >>> > could be tied to a specific DMA-capable peripheral and so treating its
+> >> >>> > presence as a global property isn't right.
+> >> >>> 
+> >> >>> I agree it's a hack but that was the simplest way to avoid the pVMs
+> >> >>> getting a bounce buffer after this patch. More than happy to leave it
+> >> >>> out and reduce the buffer on cmdline or we come up with some better
+> >> >>> heuristics.
+> >> >>
+> >> >> Hrm, that does mean that reverting just this part will regress pVMs
+> >> >> because they'll suddenly be allocating a tonne more memory for an
+> >> >> entirely unused swiotlb buffer. So I think I'd prefer to drop the entire
+> >> >> series until this has been worked out properly.
+> >> >>
+> >> >>> Another option could be the arch code passing another flag that it
+> >> >>> doesn't want an encrypted pool (e.g. when running in a pKVM guest) but I
+> >> >>> don't particularly this either. The arch code doesn't know whether
+> >> >>> there's an alternative pool.
+> >> >>
+> >> >> At that point, the default size may as well be driven by the
+> >> >> drivers/virt/coco driver.
+> >> >>
+> >> >>> That said, such heuristics should have been a separate patch to make it
+> >> >>> easier to review/drop.
+> >> >>
+> >> >> I think the only right way to get a semi-accurate heuristic is to take
+> >> >> into account the set of dma-capable devices that will use the swiotlb
+> >> >> pool, but that's fiddly and should probably be tackled as a separate
+> >> >> series. Maybe a simpler hack in that direction would be to take the
+> >> >> SWIOTLB_POOL_CC_GUEST if _any_ device is going to use swiotlb? You'll
+> >> >> run into the usual problem of not being able to tell if a device is
+> >> >> DMA-capable or not, but you could probably look for a global restricted
+> >> >> DMA pool and, if that doesn't exist, check for per-device restricted pools
+> >> >> on dma-coherent devices (since restricted DMA isn't supported by ACPI) as
+> >> >> a reasonable approximation.
+> >> >
+> >> > So, something like this?
+> >> >
+> >> > 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+> >> > 	    swiotlb_cc_guest_needs_default_pool())
+> >> > 		return SWIOTLB_POOL_CC_GUEST;
+> >> >
+> >> 
+> >> Detecting a DMA-capable device is not straightforward, and if we get it
+> >> wrong, we will enable SWIOTLB_POOL_CC_GUEST unnecessarily. Would the
+> >> code below be a reasonable approximation of what you suggested?
+> >> 
+> >> Another option would be to make swiotlb_cc_guest_needs_default_pool() a
+> >> weak function that architectures can override. arm64 pKVM could then use
+> >> a different scheme (for this patch series default to false). Would that
+> >> be preferable?
+> >
+> > Even the rmem check for each device is still a hack that may bite us in
+> > the future (private devices for example would not need swiotlb). I'm
+> > thinking more and more of leaving the sizing an arch-specific decision,
+> > don't bother generalising it at all.
+> >
+> > On pKVM vs CCA guests, there's really nothing specific here to pKVM
+> > guests. The only difference is that confidential guests that so far have
+> > run without a swiotlb buffer will regress if their memory is tight. For
+> > confidential guests without dedicated rmem (either CCA or pKVM), I think
+> > our options are either command line swiotlb sizing or dynamic swiotlb.
+> >
+> > Could you respin your series while leaving out the generic sizing? IOW,
+> > no x86 code generalisation. We can discuss the best strategy on sizing
+> > later (I haven't checked how much of this series still makes sense
+> > without the generic sizing).
+> >
+> 
+> It would mostly consist of the first three cleanup patches, followed by
+> three patches that replace the addressing_limit argument with flags.
+> 
+> #define SWIOTLB_VERBOSE	(1 << 0) /* verbose initialization */
+> /* Initialize a pool for devices with limited DMA addressing. */
+> #define SWIOTLB_INIT_ADDRESSING_LIMIT	(1 << 1)
+> /* Initialize a pool that requires architecture remapping. */
+> #define SWIOTLB_INIT_REMAP		(1 << 2)
+> /* Initialize a pool for DMA to memory-encrypted host or guest memory. */
+> #define SWIOTLB_INIT_MEM_ENCRYPT		(1 << 3)
+> /* Initialize a pool for unaligned kmalloc bouncing. */
+> #define SWIOTLB_INIT_KMALLOC		(1 << 4)
+> /* Do not initialize a pool unless SWIOTLB is explicitly required. */
+> #define SWIOTLB_INIT_DEFAULT_OFF		(1 << 5)
+> 
+> This results in the large change below. I'm not sure we want to do this
+> for no real benefit other than making swiotlb_should_init() slightly
+> easier to follow.
+> 
+> static bool __init swiotlb_should_init(unsigned int flags)
+> {
+> 	if (swiotlb_force_disable)
+> 		return false;
+> 
+> 	if (swiotlb_force_bounce)
+> 		return true;
+> 
+> 	if (flags & (SWIOTLB_INIT_REMAP | SWIOTLB_INIT_MEM_ENCRYPT)))
+> 		return true;
+> 
+> 	/* Explicit requirements override an architecture's default opt-out. */
+> 	if (flags & SWIOTLB_INIT_DEFAULT_OFF)
+> 		return false;
+> 
+> 	return flags & (SWIOTLB_INIT_ADDRESSING_LIMIT | SWIOTLB_INIT_KMALLOC);
+> }
+>  [...]
 
+Hi Aneesh,
 
-I've tested this patchset on ARM 32bit based Exynos boards and it works
-fine, although I get the following warnings during boot:
+I can reproduce the CCA regression discussed in this thread:
+  https://lore.kernel.org/all/yq5azeyxyfol.fsf@kernel.org/#t
 
-platform 13400000.codec: Adding to iommu group 0
-iommu: Failed to allocate default IOMMU domain of type 0 for group (null) - Falling back to IOMMU_DOMAIN_DMA
-platform 11840000.jpeg-codec: Adding to iommu group 1
-iommu: Failed to allocate default IOMMU domain of type 0 for group (null) - Falling back to IOMMU_DOMAIN_DMA
+The guest runs out of SWIOTLB slots, causing disk I/O to fail and
+preventing the guest from booting.
 
-This looks like an issue in iommu core, which doesn't expect devices with
-iommu to come up so early.
+I would like to test the fix on real CCA hardware. Could you please Cc
+me when you respin the series? I follow LKML, but I may still miss the
+posting by chance.
 
-
-LLM proposes the following fix for it:
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 197a8f70c6de..612933306684 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -225,10 +225,8 @@ static const char *iommu_domain_type_str(unsigned int t)
-        }
- }
-
--static int __init iommu_subsys_init(void)
-+static void __init iommu_init_def_domain_type(void)
- {
--       struct notifier_block *nb;
--
-        if (!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API)) {
-                if (IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH))
-                        iommu_set_default_passthrough(false);
-@@ -254,6 +252,11 @@ static int __init iommu_subsys_init(void)
-                        iommu_dma_strict ? "strict" : "lazy",
-                        (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
-                                " (set via kernel command line)" : "");
-+}
-+
-+static int __init iommu_subsys_init(void)
-+{
-+       struct notifier_block *nb;
-
-        nb = kzalloc_objs(*nb, ARRAY_SIZE(iommu_buses));
-        if (!nb)
-@@ -2939,6 +2942,12 @@ EXPORT_SYMBOL_GPL(report_iommu_fault);
-
- static int __init iommu_init(void)
- {
-+       /*
-+        * Select the default domain type before any IOMMU driver can register
-+        * and create groups, which may happen before subsys_initcall.
-+        */
-+       iommu_init_def_domain_type();
-+
-        iommu_group_kset = kset_create_and_add("iommu_groups",
-                                               NULL, kernel_kobj);
-        BUG_ON(!iommu_group_kset);
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Thanks,
+Kohei
