@@ -1,60 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.124
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793328598;
-	b=AYkrf4zFV75oldSjQiEldAujQ4GbK/EQDpmdBrmg4q4PmqHlct9jiYv4IEFrW6ht8o23
-	 9wsaIU4VRhFVHOfbBFt0bt8z4en6SSW1E/aN6hVFkI4l6wn77cyWw175dc49zfuf+OMEx
-	 eJtNzEdbDYo51aUUZptePppfCA8OtnW1upqve3J1SaLFAh1kB+4Nytc5GrodP4CjRp2kF
-	 J9WXWqVnvgkX4HFWvlVIliGzKG0qF6LXc3BIMyVOhVuxnGs9H3kvTU07JPjIO5rm2CANa
-	 9ZGVlt5xowoAJMTXsY8hooJamMXBl31HOFqLrEubGMKVAoseSOdaTUBg6f/hiYPfpkA==
+	t=1793329649;
+	b=VUMB6AZXi4r0mRmwTfeWlTtYJ7gXUmxrcBwwi1n9WOT3QcL4L0HVusAuPzGaD+hpECqn
+	 VDZHs3CCdkEWrF3xiHVgh+VMrEfUHAtKd1fWerizpHyRDdr0rrHGLV3vBb3SqUrJpTs15
+	 txYxSVbuvH0FwOHBDnR54oo8gPaoxm/i4Kj6mTFaMLaKQDT9UFonRLcJykrMOrOZHfEop
+	 YumHNo6KmdOIn24I3He7t7N2IwqSqtqeRBeWTJ1UV5luXH4TjuVVLMYD9jJ6D8KLxSLX1
+	 MzO6zlGfRll3WqBNIVSMld8ZrYcbGwGJVNhJ2AzhWqCsm0mkAoqvX5zEHcFdtcOV2rg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793328598;
-	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=CfEmxolAK8lSlcJ/IDJ4OjlHBkMazQyT8J7ibClDgoI=;
-	b=ZFRJDW/PYfxzZMmI3gZoWToKL8s4KKskwieLDKppT2/wpsVi8ZzialzfyyzrcYyhHGLP
-	 wYBIf0wi30RiuFWo66LRiPE0TnN+rZ/DdxER/aGU7paVX3pvXZ6iR8UrIuWNo6EhrK2CN
-	 sPjnQYdSR5RG+Sl8MXrulvO27WnS3bOernm8YamfrmXqhAK+sALPIHgtxe6DzeAk3S79D
-	 9gKPszSANGbjZiVufEjNy5DoJXctieeJv5Rb2xdF1v8lPUU70jWu68hKWoIh5Ra1Y5EIR
-	 ihVPol338Z/QJFPw3v2miPs0iCOFFajbG6Mnswz+k4ryYaVmLNbHzB+PfpUtFAKvidg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793329649;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=aHgpdCEoD5lWUeN6+WJA5Jj9bBqBJTPp6GiL3jJIPFM=;
+	b=UZ29OapsTOhSJnVWfmie52Z61IVCkaD6CIKg0QJuQQHqWLT3g5cp/TJwQH0jPegE6Mfc
+	 JkaeEd/FbnlfcYezniBt0GrMS3QZbOzXTC7Sk7JkJxcwQXz1shJUV5vNxNCg3B66mat/U
+	 LO58/wJjMLADzv2QKKYho9pohrnVKQGMCE++piAadCFmFtj/4jdfwBGr/6Gj4jLjz+PBk
+	 ta+l9e6totYR4c6+vbOooWjpYCJedzkZP9jP/0S+S4t3XSlqpehFm2nSVznMoUT5ELnyf
+	 23EjnttkQI8HrABRrxg2lqqD9FlQT3HWaTze89ypq/jtKJ1j1dAPrsAaeI/D6Y64o0g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.alibaba.com;
-	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b="Na6KxF/1";
-	arc=none smtp.remote-ip=115.124.30.124
-Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ihYm97t3;
+	arc=none smtp.remote-ip=198.175.65.20
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF6D9606A31A
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 02:49:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DF6D9606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65B13606A31A
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 03:07:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 65B13606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=Na6KxF/1
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1793328589; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=CfEmxolAK8lSlcJ/IDJ4OjlHBkMazQyT8J7ibClDgoI=;
-	b=Na6KxF/102AdTUz136z8HdPBWN7K2OpcY6fLCIFV7ntQeUOYXMA0TxGnMETPUWWZ1x3iAbOi/k4GGPTO//4ABi1riQfMO3RwZqDZIhFtmdX4VP38tQOKcj+Lvr50235AwYqeFDd+8sCmn26NoFN/IPOcs0xSV3dIanAYu9i6rHI=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0XDkuzbU_1793328587;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDkuzbU_1793328587 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Fri, 30 Oct 2026 10:49:48 +0800
-From: fangyu.yu@linux.alibaba.com
-To: gong.shuai@sanechips.com.cn
-Cc: fangyu.yu@linux.alibaba.com,
-	iommu@lists.linux.dev,
-	kvm-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org
-Subject: Re: [RFC PATCH v5 03/10] iommu/riscv: report iommu capabilities 
-Date: Fri, 30 Oct 2026 10:49:46 +0800
-Message-Id: <20261030024946.93889-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20261030023104.51259-1-gong.shuai@sanechips.com.cn>
-References: <20261030023104.51259-1-gong.shuai@sanechips.com.cn>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ihYm97t3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793329648; x=1824865648;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=O/zzEIHYeFxsYEQca3VGErkJGqkPr5bCwH/rsaqactw=;
+  b=ihYm97t3a28CsECZdxHKRbZ78yldgfhKlvtJuTy98/HhzNe1+lL/GHNg
+   z2ERSVxR9ss8xYEsfCUvbMFO5ZbhU+jdHFQ/c6Sj6asKpT5F10F4F3S4c
+   vN1a1xqbhJBJj6fYF5IDFOQMsSN3UQpRPnfAO41sHMOBl4JoAiPDBja+K
+   9gn9esvxkk6U+Rb2LV0gJjDXJU9sWr3FFr/i0x5mw7EvKsvYjOSxHklUZ
+   KSKDLrlz+HT/GQPhMNKeL4vrkL0KH6h4YSKMubN9zJXmA4KughoFO5JLz
+   HvtKnx6+GVJH6WGinIAI3c77dN/wzO7uxeMQMh8VSOnEk1ZCWFt0MuRGQ
+   Q==;
+X-CSE-ConnectionGUID: yZACw+4aQPO646amr25srg==
+X-CSE-MsgGUID: x3FGME8BQrSP0szeJwMexA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="2110459"
+X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
+   d="scan'208";a="2110459"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 20:07:28 -0700
+X-CSE-ConnectionGUID: dRudyGz6TzmyUXOiJlCqUw==
+X-CSE-MsgGUID: bu7g0lICRlKoS+ecWB/B8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
+   d="scan'208";a="5403253"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 20:07:24 -0700
+Message-ID: <14cf71cd-35cd-45b1-a0fe-94d4a76e9e06@linux.intel.com>
+Date: Fri, 30 Oct 2026 11:07:20 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,63 +72,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
+ Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
+ Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 03/18] iommupt: Implement preserve/unpreserve/restore
+ callbacks
+To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ David Woodhouse <dwmw2@infradead.org>
+References: <20261025021930.674647-1-skhawaja@google.com>
+ <20261025021930.674647-4-skhawaja@google.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20261025021930.674647-4-skhawaja@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
->Hi Fangyu,
->
->> From: Tomasz Jeznach <tjeznach@rivosinc.com>
->>
->> Report RISC-V IOMMU capabilities required by VFIO subsystem
->> to enable PCIe device assignment.
->>
->> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
->> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
->
->This patch has already been merged
->https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3069e8f3e1e9bdf007316eadae4d1777065e7b78
->
+On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
+> Add iommupt ops for presevation, unpresevation and restoration of iommu
 
-Thanks for pointing that out. I'll drop this patch in the next version.
+... preservation, unpreservation ...
 
-Thanks,
-Fangyu
+> page tables for liveupdate. Use the existing page walker to preserve the
+> ioptdesc of the top_table and the lower tables.
+> 
+> Preserve top_level, VASZ and FEAT Sign Extended to restore the domain in
+> the next kernel. On restore, the domain has only the preserved features
+> enabled and all the other features are zeroed. This is ok since the
+> restored domain is made immutable and can only be freed. A kunit test is
+> added to verify that the IOMMU domain free can be done with trimmed
+> features.
+> 
+> Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
+> ---
+>   drivers/iommu/generic_pt/iommu_pt.h       | 155 ++++++++++++++++++++++
+>   drivers/iommu/generic_pt/kunit_iommu_pt.h |  30 +++++
+>   include/linux/generic_pt/iommu.h          |  30 +++++
+>   3 files changed, 215 insertions(+)
 
->Thanks,
->Shuai
->
->> ---
->>  drivers/iommu/riscv/iommu.c | 11 +++++++++++
->>  1 file changed, 11 insertions(+)
->>
->> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
->> index fe8e6d0f8a23..40beccedd39f 100644
->> --- a/drivers/iommu/riscv/iommu.c
->> +++ b/drivers/iommu/riscv/iommu.c
->> @@ -1444,6 +1444,16 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
->>  	return generic_device_group(dev);
->>  }
->>
->> +static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
->> +{
->> +	switch (cap) {
->> +	case IOMMU_CAP_CACHE_COHERENCY:
->> +		return true;
->> +	default:
->> +		return false;
->> +	}
->> +}
->> +
->>  static int riscv_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
->>  {
->>  	return iommu_fwspec_add_ids(dev, args->args, 1);
->> @@ -1505,6 +1515,7 @@ static void riscv_iommu_release_device(struct device *dev)
->>
->>  static const struct iommu_ops riscv_iommu_ops = {
->>  	.of_xlate = riscv_iommu_of_xlate,
->> +	.capable = riscv_iommu_capable,
->>  	.identity_domain = &riscv_iommu_identity_domain,
->>  	.blocked_domain = &riscv_iommu_blocking_domain,
->>  	.release_domain = &riscv_iommu_blocking_domain,
->> --
->> 2.50.1
+This patch looks good to me,
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
