@@ -1,97 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793362128;
-	b=ReoIWGgRYtWl1tBxIkqlgdFa6Vo8qWOAmuiEyvo3agbRKA7HFiwmmOkZz3rVnHKHVpAa
-	 3f3ojvczur1nOQTcHipFskhCISDMp7adRydL3MKkSPOsahLpr/utWZ6cXor+C+OAlrzOO
-	 ZhuxlTodv0dxqrcdrahpsX2JoRPsnBlWWkB9J+r83dkX8DS5SC55iipBc+2QJ0Nsqk4rf
-	 PmQkXD/e39iXlWxXR7QBBSq1PiCWVfAY/C+bKtVwZgkc9TCV0Oeg+1IEM4EqyT/LYC34R
-	 /W+TwhgAx/66t5zfh3S6A4tTy4FkYT6Cmbjiy5oVrBommburETQGtfxgObx/TMgZd+A==
+	t=1793362988;
+	b=xhdhVszoO2kX9wtHD/aBlhimY0jag5I22EiE07sste+6/FAvmK1BzGO5nljRc+QNDZ76
+	 Bt1rMVvH4dyW0FahSqX5rTRMz5TWDrkOHfeBgzbKn0vWGpgdPBWGKy2pNQ7Yk4ko/S9jr
+	 PgVQrQduScV1FOZRWWiVLrQzxRpscHmNj8++Yx7gcAvgczYfwjC6ej3QdNLMgJUzTNV7r
+	 g6yV9qHSSnFzNKbT8jnlzWNFrmBQjCoMhDfOSysCyi8bvzQIpHO//IAJTHYY/xKGD3Le0
+	 RWIIL/5pCaAXQSw0Fep/5wGOttoWCRKWSLEHzURnp6ICQz6foXGnL8qWc+dbVP3u1Jw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793362128;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:Date:From:To:
+	a=rsa-sha256; c=relaxed/relaxed; t=1793362988;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
 	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
 	 Content-Disposition:In-Reply-To;
-	bh=RRyBEpiuIAokrfRrdR0N3udD7wd3mhkcqcx+n5TQKaw=;
-	b=Hh0/C94WkYt9gkvOP9OdjMkfN3yU576PfavcubrXSFa8mEULYOkDUPusfFuDGaWfLrhd
-	 m7iWi2HRTK/JVsQ88hB7zNHIugmuNuuMEpPDOqKBppXotpW8ew2hyi0JOVffRBpNuWvRA
-	 TUeuWRvsAW0CzoqfPI5vOXzqtrFfQgKGbn8PgO/lPRfftiTvCRHTZI0QtRqyHyZN7gVyb
-	 7nqRQbYplVx2x4KnSPE5HTTyij/0QRm8rIW1ypTTYbwjsBNwqNpf/jdkdYB4WV4m4vrhG
-	 mBpMPk8ivCyqPhGriuT2iGAZcpKAjox1xk+CzIxtvdbJCKRQirhSbOIIdTTxP2whFRw==
+	bh=SrsqvXlC23t2i5m9ChfHqk9o6LLSXHvLDjxr/6Kvutc=;
+	b=VoWMC0z48b4Y6byjrNhp4+IixsxcX2Zxcg4cWRLTIOS1pfMbRTfXRm/teEwmYjPYqK+j
+	 jJ/yJ9D1FyIMzZS0GTSOXBw5elH8Rf+VrSTclm3pqZcIejqHJ/AOzNASoEddMZpYsH0Qm
+	 6x7xia9WMPKru+hLEWrflneh4aQKX15J78QpyB16396co/aS7/Ee9FEdT949h+8zMIKV8
+	 eWEExs6Nyk8nnVGz3TGDwnBlihPCQCd+A5+iE9wFN5gXU3sI5PGaDP7wec2s1J6IDm6y9
+	 qmu0wSRxrxL/c1qdHrH9UYxQFyeRRx94YkXVGUdyJWEFYMyjVRY+UF69CuTIYP8OMvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=RHhu993G;
-	arc=none smtp.remote-ip=209.85.222.172
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HTsisof6;
+	arc=none smtp.remote-ip=192.198.163.11
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10DD8606A31D
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 12:08:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 10DD8606A31D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36786606A31A;
+	Fri, 30 Oct 2026 12:23:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 36786606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=RHhu993G
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-93f560af6aeso77433685a.0
-        for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 05:08:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793362127; x=1793966927; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=RRyBEpiuIAokrfRrdR0N3udD7wd3mhkcqcx+n5TQKaw=;
-        b=RHhu993GHaL7pb6wWaBT5tPpLqvwNIC/orYEuGmoqIxtTb+2YcQmcLc1wZU3QwMP4W
-         9paTsDPdzd83pwiPjuxsVMyXffYu3Jw0A1rRQ8HOeueQwfdearitrUiPxqT0LtVJxdyt
-         K1uC7U7t0wX4HN1hzmkaf4W/ZRMlWKrv7jTc8X1zgkOu9ORpdDZQ6KX48f1XpClSfP0R
-         5TPvOSLk54ZfoDKwlfTi9nEoLirGcorap8owm5JdxrDR+T0m2FxQ+Js88UiFEpGKS4BD
-         AiU7tNRnhYueYa73xjqehy2DOD/54IJNIuuOPjF9QVW8IpKV3Xs16ag5oG77cJkOKYgi
-         QYrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793362127; x=1793966927;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=RRyBEpiuIAokrfRrdR0N3udD7wd3mhkcqcx+n5TQKaw=;
-        b=Rpk5E2nUTKxoGdbjHJ79MT+9VoMrqbigT/wl79rPcLJobjx4wIKLEi+dzrI7bSuMho
-         SQxFkD/hJE4HFqD74+DpzvTW6iAkk5MnVZdFr2L+8pmkmlKTNKN3/ipFNa7xq6T7hcyb
-         A2E9KG88SXodgdY2j/QENVNZoOzW748Im+wxmHNtR8kq/qSqQA8aHZC5XVwtF1OXEDWI
-         U8g1LYyx2jQK1NM9wg91ZaaiVE3HeRXsabV0nc9OpmJPY0mwahQPTCbsbkHsVBFyZptL
-         NhiYSosQ2Ty2gpnHtdMzMoq7cYrEYei5M/yg/e5ghdK3fzyA3HCZKTZnzh4i7pX+uqPO
-         6/iw==
-X-Gm-Message-State: AFq9FYLHW0QiQeejz441vfC2n3rJH+truIBKfZZtCP170wDetOzEBIyu
-	ySYuom7qyoKxaEzcGAVYwK5/IYAO7lE7BYLtti7ol9HZrlDNwqlqKdZhBSa79UNpGFQ=
-X-Gm-Gg: AYBFou1BWrkn2cbYKJpY3fEYIzZrUoRQ/mVKeyOhVgUCx0SoP2j4K9SB3N/Ti/Jxvpd
-	NEeckdW2K749693wPnb2tgDqIr0rTZll4hVP1hJUvd0aOaDsULOKSELylK8E1Pwzjf/G5DVHZFe
-	RLkfPG8QNpO1ME7bhXqx822EDi3LxjOBNoh7fj02t9zmDggHvd/CR/kwI2eFqpSYbtLF2WPKWCT
-	l9nsQm9JZ3iJ4bUZcd0B2gOTYoDX4aF5O/wIAcfgQSrsBDvmekxMNvrTArQMOcXIVNcLx8KQJok
-	XcqDV232oNr4Fl3wD8jOVkHq/R6JfEYC587faONgspiDk4Bkj305bQa3qHzEc6O87XEH5WZP5AC
-	P4xG1ev7tIn9fm/xvn6LvWWAy4ZBdGrfUnfGHHfuQVouPepol/glyDeOJRJX93PE8AhwRObABJ5
-	iYXXkjG3R5yccXq7WoENd8QCR4lCsnbTlI0Cly6ZYa2ODOemMDa4xE3hHt90csUunwVfozAXywf
-	W4RrNj2t2GLudjZzQt4SUl0ZxnqJEM/yDbfNK/9pplAyoBrci7zI7+OxTuBZUvymfuEixBJqqzW
-	58t6j3LgyJXYv2tGnJX4sjPSauKUDFLiu5n7UrKI51LXg9EntvdYLjb0FR2UJsf8qikftvLBCjL
-	ay6LRvj9FMWc=
-X-Received: by 2002:a05:620a:3703:b0:93f:3120:6c84 with SMTP id af79cd13be357-9442173fc02mr343438285a.36.1793362126885;
-        Fri, 30 Oct 2026 05:08:46 -0700 (PDT)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-94425a6b9b4sm126316885a.26.2026.10.30.05.08.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Oct 2026 05:08:45 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xMlPZ-00000000ZCc-062F;
-	Fri, 30 Oct 2026 09:08:45 -0300
-Date: Fri, 30 Oct 2026 09:08:45 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Kyle Zeng <kylebot@openai.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	linux-kernel@vger.kernel.org, outbounddisclosures@openai.com
-Subject: Re: [PATCH] iommufd: Reject opens until module initialization
- succeeds
-Message-ID: <20261030120845.GA3889730@ziepe.ca>
-References: <20261030042345.74537-1-kylebot@openai.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=HTsisof6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793362987; x=1824898987;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ID9kIcML3QOIWye5853SxH/ukl9r+Nhlp63hh+Bsm5I=;
+  b=HTsisof6j8MrzbljoC6Szyj3dlDV/rH+zHtqMloV/3ifqRiQmjsMtxCf
+   xO/ZbO2bDXA3Qm0shiHYruEXGLhs6dtqkahQQoNsVyqPkVPnPyeIaORXw
+   wQfqb8z2tTXu9xhpLiHBAhLs1FWcB5QvveaVTA64AlMTFiihp1FWZVeLC
+   HEFhBGoykyLkRLBY2e20cXHsIPybpoVPnf4RZaahMxxfJTEt+xrRvp7qG
+   n+3IfmyVEjVrowhmzhQdytoiEzRT4rVhYKc2ADDlCV/ekU7siZw8EgbMw
+   eYZES5sae4W2QxUYbAlwrMeOmT6tJCiNYhKtPA6R2OlqBpZbJJtujANW1
+   Q==;
+X-CSE-ConnectionGUID: 4xMO790vS/GD1TAB8H+F7Q==
+X-CSE-MsgGUID: GsmSG6AlRU2oEUyFj24CIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="2037396"
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="2037396"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 05:23:06 -0700
+X-CSE-ConnectionGUID: bP5UZm82QSG9AZNkt3Q4ow==
+X-CSE-MsgGUID: CpMiLXDgTmK3iwlFMHO/kQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="5748123"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by fmviesa001.fm.intel.com with ESMTP; 30 Oct 2026 05:23:04 -0700
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xMldM-00000000biW-3P3d;
+	Fri, 30 Oct 2026 12:23:00 +0000
+Date: Fri, 30 Oct 2026 20:22:10 +0800
+From: kernel test robot <lkp@intel.com>
+To: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Thomas Gleixner <tglx@kernel.org>, Ning Sun <ning.sun@intel.com>
+Cc: oe-kbuild-all@lists.linux.dev,
+	Michal Camacho Romero <michal.camacho.romero@intel.com>,
+	x86@kernel.org, iommu@lists.linux.dev,
+	tboot-devel@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+	Mateusz Mowka <mateusz.mowka@intel.com>,
+	Adam Pawlicki <adamx.pawlicki@intel.com>,
+	Pawel Randzio <pawel.randzio@intel.com>
+Subject: Re: [PATCH v7 1/2] x86/tboot: Add support for parsing DTPR table and
+ disabling TPRs
+Message-ID: <202610302057.2LOBfy3p-lkp@intel.com>
+References: <8549af9ea60b73e120be377877c26d929f1ad25e.1793273244.git.michal.camacho.romero@linux.intel.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,31 +92,151 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261030042345.74537-1-kylebot@openai.com>
+In-Reply-To: <8549af9ea60b73e120be377877c26d929f1ad25e.1793273244.git.michal.camacho.romero@linux.intel.com>
 
-On Thu, Oct 29, 2026 at 09:23:45PM -0700, Kyle Zeng wrote:
-> iommufd_init() publishes /dev/iommu before registering the optional
-> /dev/vfio/vfio compatibility node and running the optional self-test
-> initialization. Either later operation can fail. Since file operations
-> can acquire a reference to a COMING module, an already-open file can
-> survive the failed initialization and refer to freed iommufd module
-> memory.
+Hi Michal,
 
-What? This seems like a core bug not iommufd.
+kernel test robot noticed the following build warnings:
 
-files take refcounts on their modules when they open via this:
+[auto build test WARNING on tip/master]
+[also build test WARNING on tip/x86/core linus/master v7.3 next-20261029]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-static const struct file_operations iommufd_fops = {
-	.owner = THIS_MODULE,
+url:    https://github.com/intel-lab-lkp/linux/commits/Michal-Camacho-Romero/x86-tboot-Add-support-for-parsing-DTPR-table-and-disabling-TPRs/20261029-125726
+base:   tip/master
+patch link:    https://lore.kernel.org/r/8549af9ea60b73e120be377877c26d929f1ad25e.1793273244.git.michal.camacho.romero%40linux.intel.com
+patch subject: [PATCH v7 1/2] x86/tboot: Add support for parsing DTPR table and disabling TPRs
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20261030/202610302057.2LOBfy3p-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261030/202610302057.2LOBfy3p-lkp@intel.com/reproduce)
 
-If the module hasn't even loaded yet I would rather expect the core
-code to not allow the module refcount to be taken, and if it somehow
-succeeds then it shouldn't allow the module to get yanked out from
-under it.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202610302057.2LOBfy3p-lkp@intel.com/
 
-It is hard to guess what crashes to be more specific, but
-at least misc_deregister() is safe while files are open.
+All warnings (new ones prefixed by >>):
 
-Though I wonder how module auto loading works..
+   arch/x86/kernel/tboot.c: In function 'tboot_check_txt_heap_section_bounds':
+>> arch/x86/kernel/tboot.c:253:13: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     253 |         if ((u64)heap_section > heap_end || heap_end - (u64)heap_section < 8) {
+         |             ^
+   arch/x86/kernel/tboot.c:253:56: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     253 |         if ((u64)heap_section > heap_end || heap_end - (u64)heap_section < 8) {
+         |                                                        ^
+   arch/x86/kernel/tboot.c:266:45: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     266 |         if (*heap_section_size > heap_end - (u64)heap_section) {
+         |                                             ^
+   arch/x86/kernel/tboot.c: In function 'tboot_get_dtpr_table':
+   arch/x86/kernel/tboot.c:699:31: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     699 |         if (heap_size == 0 || (u64)txt_heap + heap_size < (u64)txt_heap) {
+         |                               ^
+   arch/x86/kernel/tboot.c:699:59: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     699 |         if (heap_size == 0 || (u64)txt_heap + heap_size < (u64)txt_heap) {
+         |                                                           ^
+   arch/x86/kernel/tboot.c:704:22: warning: cast from pointer to integer of different size [-Wpointer-to-int-cast]
+     704 |         heap_end   = (u64)txt_heap + heap_size;
+         |                      ^
+   arch/x86/kernel/tboot.c: In function 'tboot_check_tprs':
+   arch/x86/kernel/tboot.c:862:40: error: implicit declaration of function 'readq'; did you mean 'readl'? [-Wimplicit-function-declaration]
+     862 |                         tpr_base_val = readq(base);
+         |                                        ^~~~~
+         |                                        readl
+   In file included from include/asm-generic/bug.h:31,
+                    from arch/x86/include/asm/bug.h:195,
+                    from arch/x86/include/asm/alternative.h:9,
+                    from arch/x86/include/asm/atomic.h:7,
+                    from include/linux/atomic.h:7,
+                    from include/linux/rcupdate.h:25,
+                    from include/linux/init_task.h:5,
+                    from arch/x86/kernel/tboot.c:9:
+>> include/linux/kern_levels.h:5:25: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 5 has type 'int' [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:483:25: note: in definition of macro 'printk_index_wrap'
+     483 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:584:9: note: in expansion of macro 'printk'
+     584 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
+      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+         |                         ^~~~~~~~
+   include/linux/printk.h:584:16: note: in expansion of macro 'KERN_INFO'
+     584 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~~
+   arch/x86/kernel/tboot.c:863:25: note: in expansion of macro 'pr_info'
+     863 |                         pr_info("TPR instance %u, TPR %u:base 0x%llx, limit 0x%llx\n", i, j,
+         |                         ^~~~~~~
+   arch/x86/kernel/tboot.c: In function 'tboot_disable_tprs':
+>> include/linux/kern_levels.h:5:25: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 5 has type 'int' [-Wformat=]
+       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+         |                         ^~~~~~
+   include/linux/printk.h:483:25: note: in definition of macro 'printk_index_wrap'
+     483 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
+         |                         ^~~~
+   include/linux/printk.h:584:9: note: in expansion of macro 'printk'
+     584 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |         ^~~~~~
+   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
+      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+         |                         ^~~~~~~~
+   include/linux/printk.h:584:16: note: in expansion of macro 'KERN_INFO'
+     584 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+         |                ^~~~~~~~~
+   arch/x86/kernel/tboot.c:936:25: note: in expansion of macro 'pr_info'
+     936 |                         pr_info("TPR instance %u, TPR %u:base 0x%llx, limit 0x%llx\n", i, j,
+         |                         ^~~~~~~
+   arch/x86/kernel/tboot.c:941:33: error: implicit declaration of function 'writeq'; did you mean 'writel'? [-Wimplicit-function-declaration]
+     941 |                                 writeq(tpr_base_val | TPR_BASE_DISABLE_BIT, base);
+         |                                 ^~~~~~
+         |                                 writel
 
-Jason
+
+vim +253 arch/x86/kernel/tboot.c
+
+   235	
+   236	static bool tboot_check_txt_heap_section_bounds(const u64 heap_end,
+   237							void *heap_section,
+   238							u64 *heap_section_size,
+   239							const char *section_name)
+   240	{
+   241		if (!heap_section) {
+   242			pr_err("%s section is NULL\n", section_name);
+   243			return false;
+   244		}
+   245	
+   246		if (!heap_section_size) {
+   247			pr_err("%s section size pointer is NULL\n", section_name);
+   248			return false;
+   249		}
+   250	
+   251		*heap_section_size = 0;
+   252	
+ > 253		if ((u64)heap_section > heap_end || heap_end - (u64)heap_section < 8) {
+   254			pr_err("%s size field exceeds heap boundary\n", section_name);
+   255			return false;
+   256		}
+   257	
+   258		/* Read the size of the current TXT Heap section */
+   259		*heap_section_size = *(u64 __force *)heap_section;
+   260	
+   261		if (*heap_section_size < 8) {
+   262			pr_err("%s size is too small\n", section_name);
+   263			return false;
+   264		}
+   265	
+   266		if (*heap_section_size > heap_end - (u64)heap_section) {
+   267			pr_err("%s exceeds heap boundary\n", section_name);
+   268			return false;
+   269		}
+   270	
+   271		return true;
+   272	}
+   273	
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
