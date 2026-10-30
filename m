@@ -1,68 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=183.62.165.209
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793323614;
-	b=jqLG5VHHtNQ+WXVNqZX0Yl3lBBeVVw6o1zLZvi59qLcFvcS8QGMrvb4ubS5U2rciqMAw
-	 XMpRm7sPxZHR5arwcmQcL0/q4M72vSCuMkZiE7ibWFswLTTx/MZhs4Jj2yeKNj8iS3EfS
-	 VEq8VAXhEcJV2eorARm1jrqytfOXeAyut83WOA2RoaL9XCyuDF1JMctqwnyvpI4uK413F
-	 cvJCSKsnVfboHhmsy9uMgFOXVRuRY8pJaUIZXu336bnsL3QmUE7Ct4bSriRYNKTxwc8MO
-	 2xx3ZopCsvhoDeL3R2uDaa2gpt4mG0gP5nUtUC48sUK4XIFZHMCyuVJc5ocR+R5UN7Q==
+	t=1793327484;
+	b=eGc3aCkwS/BTB67ssR1m9mFOTwpRiFR8sV+SaxBNCkObY+OkUrv+Pig3I7MfIoIsB7aT
+	 GGmYfHg0cgsjCYw+lLzSoMch9uS9HBo4/LcvM5Q39CrekcEdQ92vbiHBY8aBezWZHgYym
+	 tnypnWHFtG0URxbg9o4JREYrCB9tZJgyJGcaaLl6SdDVvU//F2c5ufKxWD+zGqERPCmDe
+	 yqiouBNfINeJR0YMcsQu446U1FkdRJFnv2xOjeqv6JGIx56MnDi8GbKIrofM69xECtFXo
+	 E3FaGiFEbxl1BcIPZ66jSomC7rp16AD197veMSccS3aivpi/nQoIz9rEF0xvbwLX4Fg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793323614;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=7TidQHqBf1ZuOvcJ+LuDnP0h7WFNpRTpS1kTxbluEbQ=;
-	b=IvBQbxv7d1qHpynyTnK2f/2fOOt1NxxzK8v9HwyB0Let1uf2Zfv5508rpTcblZz4FvXN
-	 //cv9TTo5mgk/tZnsStbmttfHg5tfSlaOQvfxVyastlOVTz9XzydVGImtHpMzJParToJd
-	 Vw4S9kgxcW8WYxkmLv0OHxh4RrWOJ/iP9xGpkJbJAYz5aDYFKa4T/pn8UBLXjjgDIww/O
-	 CdhR/NmFJsVfI8tp/9pMT3yjka196HMlmjzqbBEm3d2tFyaW9ruL/veIjLCMvC+8IkmCl
-	 Tpnjoo4Cv+cNPzRFoWAzWt/OQSq32O8Sc/gPIcZ5UzVHJ3gFr9fMuPmUQ0Kb0UmImdg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793327484;
+	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
+	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
+	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
+	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
+	bh=F0TSJYgAt9wrDoqXicJayvqpbTvTCb9uspY/q/ePjKU=;
+	b=RXAzNqOlm9/IlHQWeH5pCo2JodyIkKfkFHCyM82S9qjC5JPsi+lDOZ17cr5PLwpo/Gij
+	 yvjUeQzHAfdyjBy063rgjqtCKQC1KpksWOgdt3po12WrOLOKtsDwLOo79oOGGQ1Zjg42i
+	 NbD3hC+SUstIybSSnoGEYdDWVqpAQy6TFKUEBcDmYwlMXyAh91ABYsPSHbxDbyZzm2ul3
+	 cJkhrZRR/UZeRnPYDa8OTMRGGafhwptSimfRmGIXn9GA7n1nJIk7Kio/o/0dbq6VhMaBm
+	 tIYuBgD4C7j2T1UJQYyvHgBdRHQ73XOxG/X9TfwkHuO1QKZJAbuTj6biYDGdcaVeZJg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="AnN/Hlyw";
-	arc=none smtp.remote-ip=192.198.163.7
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=sanechips.com.cn;
+	spf=pass smtp.mailfrom=sanechips.com.cn;
+	arc=none smtp.remote-ip=183.62.165.209
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 812C2606A31A
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 01:26:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 812C2606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=AnN/Hlyw
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793323613; x=1824859613;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=vsYaPtnLT+8StniLOIYrIhlEUEjfJqUbSGNkv3n7U7Q=;
-  b=AnN/Hlywa4JS/PqzUhHChIFX4In3qQyhXr3w/cyzwt3A3T3Q8C4LVGn2
-   4SoZ5Ce2z2gV3E95+cDsMaGOO+X0pTRpQs3SOIWr2+Z5haG0Ap2MxrF93
-   j1NAqjPfxnonAVnjas2aDLsf6Ll9MUQRjJk8atre88N9R0udh2uslrC4i
-   gD/1/elAr4XZztOiSH+pwSJ3bP2lkeZJH3w2LagzTa/FTnOmvEqOJCsFc
-   QSWVR0yzC4CNalvq5r/GDwGOxuZ9uOT30IKf6teljWcX1KKFMbbY1GJd0
-   nxaaTWQBbo9Yl7lpidPySpLxa/FmQECuYnFsACGW3wEMrwRqf1lFpWMDk
-   Q==;
-X-CSE-ConnectionGUID: 1k96Mi4USaG0q1k46puIGQ==
-X-CSE-MsgGUID: Nlo3FrLyT+OCFovR/jZDiQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="1966075"
-X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="1966075"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 18:26:52 -0700
-X-CSE-ConnectionGUID: 6z5Zy7HLTGmjyxLmLUNK4w==
-X-CSE-MsgGUID: sof9eSQbSoSaTMwE/9OSgw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,185,1787036400"; 
-   d="scan'208";a="5629341"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Oct 2026 18:26:47 -0700
-Message-ID: <d6e6abad-c3c7-4f99-996a-0030bf6ef166@linux.intel.com>
-Date: Fri, 30 Oct 2026 09:26:45 +0800
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2834F606A31E
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 02:31:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2834F606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
+Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxct.zte.com.cn (FangMail) with ESMTPS id 4jG4ps6VlHz5B1C7;
+	Fri, 30 Oct 2026 10:31:17 +0800 (CST)
+Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
+	by mse-fl1.zte.com.cn with SMTP id 69U2V9Yu030476;
+	Fri, 30 Oct 2026 10:31:09 +0800 (+08)
+	(envelope-from gong.shuai@sanechips.com.cn)
+Received: from ubuntu-35-gs (unknown [10.230.214.35])
+	by smtp (Zmail) with SMTP;
+	Fri, 30 Oct 2026 10:31:10 +0800
+X-Zmail-TransId: 3e816ae40168028-1fbe9
+X-Zmail-LocalSMTP: 1
+X-Zmail-RealSender: gong.shuai@sanechips.com.cn
+From: Gong Shuai <gong.shuai@sanechips.com.cn>
+To: fangyu.yu@linux.alibaba.com
+Cc: gong.shuai@sanechips.com.cn, iommu@lists.linux.dev,
+        kvm-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: Re: [RFC PATCH v5 03/10] iommu/riscv: report iommu capabilities
+Date: Fri, 30 Oct 2026 10:31:04 +0800
+Message-ID: <20261030023104.51259-1-gong.shuai@sanechips.com.cn>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261020094106.92722-4-fangyu.yu@linux.alibaba.com>
+References: <20261020094106.92722-4-fangyu.yu@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,82 +69,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Pranjal Shrivastava <praan@google.com>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma
- <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>,
- Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v6 02/18] iommu/pages: Add APIs to
- preserve/unpreserve/restore iommu pages
-To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- David Woodhouse <dwmw2@infradead.org>
-References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-3-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261025021930.674647-3-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
+Content-Transfer-Encoding: 8bit
+X-MAIL:mse-fl1.zte.com.cn 69U2V9Yu030476
+X-TLS: YES
+X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
+X-SOURCE-IP: 10.5.228.132 unknown Fri, 30 Oct 2026 10:31:17 +0800
+X-CLEAN: YES
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6AE40175.001/4jG4ps6VlHz5B1C7
 
-On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
-> IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
-> the proper preservation and restoration of ioptdesc add helper
-> functions.
-> 
-> Reviewed-by: Pranjal Shrivastava<praan@google.com>
-> Signed-off-by: Samiullah Khawaja<skhawaja@google.com>
+Hi Fangyu,
+
+> From: Tomasz Jeznach <tjeznach@rivosinc.com>
+>
+> Report RISC-V IOMMU capabilities required by VFIO subsystem
+> to enable PCIe device assignment.
+>
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
+
+This patch has already been merged
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=3069e8f3e1e9bdf007316eadae4d1777065e7b78
+
+Thanks,
+Shuai
+
 > ---
->   drivers/iommu/iommu-pages.c | 109 ++++++++++++++++++++++++++++++++++--
->   drivers/iommu/iommu-pages.h |  30 ++++++++++
->   2 files changed, 135 insertions(+), 4 deletions(-)
+>  drivers/iommu/riscv/iommu.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+>
+> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> index fe8e6d0f8a23..40beccedd39f 100644
+> --- a/drivers/iommu/riscv/iommu.c
+> +++ b/drivers/iommu/riscv/iommu.c
+> @@ -1444,6 +1444,16 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
+>  	return generic_device_group(dev);
+>  }
 > 
-
-[...]
-
-> +
-> +/**
-> + * iommu_restore_pages - Restore pages that were preserved in KHO
-> + * @phys: Physical address of page to restore
-> + */
-> +void iommu_restore_pages(u64 phys)
+> +static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
 > +{
-> +	struct ioptdesc *iopt;
-> +	struct folio *folio;
-> +	unsigned long pgcnt;
-> +	unsigned int order;
-> +
-> +	folio = kho_restore_folio(phys);
-> +	if (!folio)
-> +		panic("Failed to restore preserved IOMMU page %llx\n", phys);
-> +
-> +	iopt = folio_ioptdesc(folio);
-> +
-> +	/*
-> +	 * For the restored pages incoherent is set to false as these are not
-> +	 * mapped using the DMA_API. The remapping of these pages using DMA_API
-> +	 * is not needed as these are not going to be written to by the new
-> +	 * kernel.
-> +	 */
-> +	iopt->incoherent = false;
-> +
-> +	order = folio_order(folio);
-> +	pgcnt = 1UL << order;
-> +	iommu_folio_update_stats(folio, pgcnt);
+> +	switch (cap) {
+> +	case IOMMU_CAP_CACHE_COHERENCY:
+> +		return true;
+> +	default:
+> +		return false;
+> +	}
 > +}
-> +EXPORT_SYMBOL_GPL(iommu_restore_pages);
-
-The pages were charged to the VMM's memcg in the old kernel (iommufd
-maps with GFP_KERNEL_ACCOUNT), but after the live update they are no
-longer charged to any memcg. I think that's fine, because the restored
-tables are immutable and will be replaced by ordinary ones after boot.
-
-This patch looks good to me,
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> +
+>  static int riscv_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
+>  {
+>  	return iommu_fwspec_add_ids(dev, args->args, 1);
+> @@ -1505,6 +1515,7 @@ static void riscv_iommu_release_device(struct device *dev)
+> 
+>  static const struct iommu_ops riscv_iommu_ops = {
+>  	.of_xlate = riscv_iommu_of_xlate,
+> +	.capable = riscv_iommu_capable,
+>  	.identity_domain = &riscv_iommu_identity_domain,
+>  	.blocked_domain = &riscv_iommu_blocking_domain,
+>  	.release_domain = &riscv_iommu_blocking_domain,
+> -- 
+> 2.50.1
