@@ -1,80 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.34.181.151
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793354435;
-	b=MMYF92GCUNjdRdKNuFAoEMFdHi5TKUe7MJeqwWLZ4aKYgPYVw5W+VA7idjEPhg27MimS
-	 9Z0zlq4+VMDd4EwN5ZuR/7LGhv0LY8OA8xsILZhNl0XaMR3TaCLPKe97AXaGgd3iO1ab3
-	 iQ9etB7upI3gORjCcFe+ulSVkeSJzHj7aRl1NPFtuL98ex+6ElKGB6Rqn67Vn7KnAwv9X
-	 Be4ieVTqZuqvl1uPygE+RM4/LNb+9HsPsD0QCAkkKSNN9wQUznwyELYlNRxwP69RFXZso
-	 8swdLOYXn+rzP8B9BFgfIlHllfhNnqsjzbXqmRmHCNNpsc/f1dsVlYPatNWw/ET8fPw==
+	t=1793356618;
+	b=HxKn4f8zMcwJ9+lJS4L0Guh2CQdsRvNjiO5D5vXq7gL0w8mLWaa4G+5xrwaTNf/SBSPE
+	 zej+SiBOBeezReFwlSIJ5zu2ZBsX2Su0qm7yYa9LQ0e5L9kyOcwih7c97d4cJN6RE24XC
+	 y4v89hpV6ispXn8yDbumrsDnPoVbzgUP+5XLg5PXcMOBpIfkOQB2424+uf/PHiGPf+d/B
+	 /3DaWlySVi573teQjS65ohmg2wfwZiM+VqkHjcTPvY5nNPyqYsEdMj98/FUovovHmWED9
+	 vdvP9gbkILxYBD0orrwjl5mHf6OCdaOE/XQiMtJ8zbrG6FmFoUb61LqJc5mJ+366Usw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793354435;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
-	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
-	 X-ClientProxiedBy;
-	bh=ler9Vb08uoWkkGJsgusT3UJ2fmGaAr/9sD2dowX7gwE=;
-	b=MpvPP5m2L4rDsQRn8Y5mWUojVppPP0EMh5Q6tliWr0wDRTE6RJsHDfWQyQ09lHGOSN/9
-	 xCLUzhyE6ytaYJvMLLgU2JwoDfEtb+FymvvNNpuJ4JJGTgwG9qKxH0l2AzlXkpFzrEb2l
-	 IoI6UArQGTy79A5ub3eBPYcPwCU0VgyqP6poZFvDK+5ifYUcFiBqqlW+NU5AvhMk3IeeC
-	 oTBRrwY7234FQYPNxaeYboW7PzA4XKdE2RqhRfWZDSGum9ZEg9BfAINVEe2vqa/Up7wuf
-	 nJ9VU1gmkqUcVCZM5x6un2aEFMPKjVxz4eXAcJQ0Mzredr21hVQISsyuSLiAnAgVmWw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793356618;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=oXQ15hDbnS1B2Y9Ac6zuPUxaceab5plrwxGQ/lap8W4=;
+	b=nCqdSNTDmKpKsVqvpgBkRWmpxg3cwQCdx9kNEVqwhpXibFoHMkk24u5GLEiYCBhoDaXy
+	 ezLpUXxf60o0WFnW+GWsWalSRpjZyoEdDsJ50Fxw/NFjtEEnqumlQ3wo7LVh7Sdvv2HM0
+	 o1EZEzBKL7+zhJoHohW3HhJWHpDO4y9YfRtWc/uWgrHAwZSY8l6Xat7PNpSV6BqxLgoN9
+	 hz02yWcbiJzybN1hPUQlXNOdJwYCxq4HEbMZI4kyCXh4pitcjd/YcONrJ0nhHw40nXOze
+	 XnD8vxAYYv6tHU0MZyyTqrXsU+rJ4V4x2vll8lepgPi03LqUFXvpURtV/u+Nn2hbRAg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amazon.de;
-	spf=pass smtp.mailfrom=amazon.de;
-	dkim=pass header.d=amazon.de header.i=@amazon.de header.a=rsa-sha256 header.s=amazoncorp2 header.b=HUhq70I3;
-	arc=none smtp.remote-ip=52.34.181.151
-Received: from pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.34.181.151])
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Bn1maMdu;
+	arc=none smtp.remote-ip=210.118.77.11
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCA4606A31F
-	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 10:00:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2CCA4606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F6BC606A326
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 10:36:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3F6BC606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=amazon.de header.i=@amazon.de header.a=rsa-sha256 header.s=amazoncorp2 header.b=HUhq70I3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazoncorp2;
-  t=1793354435; x=1824890435;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ler9Vb08uoWkkGJsgusT3UJ2fmGaAr/9sD2dowX7gwE=;
-  b=HUhq70I3xfLfFzBedmY+/ylM/XSLSUtcZPO3kG3yWr5yUlparGHUJZd3
-   gJqgVoRofkO02SqJC+U4W+ZvkZc8XwviFWLRbz9ew+MJt/o0hjIT5rOUV
-   36Fw2j8KLaKJqVPPu3HHL+yQEOoOETXUAgPhd8t7MZX7VONZ/xnfqKo4I
-   QSYXQpCVJxNrGnJyVlGgodkaaUhJEyiwvN93UdhYExZJGQ4PRGhtmsmMI
-   u8ZWheEvDTXDL7AB2kMD45Pw2onDEZai0tBrj18CGOUNCplHVN3iLB+xW
-   uYKfh0ZnMQuwZaurb1eC9K3Vqv2izK/ChuDmiQ1UFDQw5Qtq8PanHfuWY
-   Q==;
-X-CSE-ConnectionGUID: f41PGanPSUaMqPFAgY0gLw==
-X-CSE-MsgGUID: aXQZUxloQz+Q/vIVKiUTRA==
-X-IronPort-AV: E=Sophos;i="6.27,186,1787011200"; 
-   d="scan'208";a="32646804"
-Received: from ip-10-5-12-219.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.12.219])
-  by internal-pdx-out-007.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 10:00:32 +0000
-Received: from EX19MTAUWC001.ant.amazon.com [205.251.233.53:26549]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.22.238:2525] with esmtp (Farcaster)
- id 9c26f0e1-9b75-4adb-bb6b-4f1f1a420bc2; Fri, 30 Oct 2026 10:00:32 +0000 (UTC)
-X-Farcaster-Flow-ID: 9c26f0e1-9b75-4adb-bb6b-4f1f1a420bc2
-Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Fri, 30 Oct 2026 10:00:32 +0000
-Received: from dev-dsk-mheyne-1b-8cc83676.eu-west-1.amazon.com (10.13.235.223)
- by EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Fri, 30 Oct 2026 10:00:30 +0000
-From: Maximilian Heyne <mheyne@amazon.de>
-To: <stable@vger.kernel.org>
-CC: Maximilian Heyne <mheyne@amazon.de>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "Nicolas
- Saenz Julienne" <nsaenz@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>
-Subject: [PATCH] dma/pool: eliminate CMA alloc warning in atomic_pool_expand
-Date: Fri, 30 Oct 2026 10:00:00 +0000
-Message-ID: <20261030-ghent-tubes-5abba7d2@mheyne-amazon>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Bn1maMdu
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261030103654euoutp0175327810cc7f28894f9094ab94716eb2~jSFbSVapx2144021440euoutp01J
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 10:36:54 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261030103654euoutp0175327810cc7f28894f9094ab94716eb2~jSFbSVapx2144021440euoutp01J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1793356614;
+	bh=oXQ15hDbnS1B2Y9Ac6zuPUxaceab5plrwxGQ/lap8W4=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=Bn1maMduqupHB2mk79itTPg2YYb2s2eoTiTiCAQr3tKsoCqkIdjJg9ZyToXDicMeu
+	 QC/eykVusT+mvuqbMsJw99fOxSE4H3ZMEbhvSQNamO2BFBa89xl0LTJMLRvfqWADIe
+	 2qDnY/yqLt8qf51Cl8m0sEfa5siJiL4tsWYBI/pg=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261030103653eucas1p1e35145674aa26e829f4cde451eda2411~jSFa8BzoE1749317493eucas1p10;
+	Fri, 30 Oct 2026 10:36:53 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261030103652eusmtip25965ad5bbe769c2f2f82e49aa71e8d98~jSFZq8wI72310123101eusmtip2j;
+	Fri, 30 Oct 2026 10:36:52 +0000 (GMT)
+Message-ID: <6fb3327c-766c-433c-b49d-dc62470d7102@samsung.com>
+Date: Fri, 30 Oct 2026 11:36:52 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,46 +64,153 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v3 00/10] Make the 32-bit ARM DMA API work with normal
+ IOMMU DMA default domains (+ Tegra PoC)
+To: Mikko Perttunen <mperttunen@nvidia.com>, Robin Murphy
+	<robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Russell King <linux@armlinux.org.uk>, Heiko Stuebner
+	<heiko@sntech.de>, Thierry Reding <thierry.reding@kernel.org>, David Airlie
+	<airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Jonathan Hunter
+	<jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>, Krzysztof
+	Kozlowski <krzk@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Peter Griffin <peter.griffin@linaro.org>, Alim Akhtar
+	<alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>, Jernej Skrabec
+	<jernej.skrabec@gmail.com>, Samuel Holland <samuel@sholland.org>, Yong Wu
+	<yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Rob
+	Clark <robin.clark@oss.qualcomm.com>, Geert Uytterhoeven
+	<geert+renesas@glider.be>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20261026-b4-arm32-iommu-dma-cookie-v3-0-3901d74b1ff2@nvidia.com>
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: EX19D031UWC003.ant.amazon.com (10.13.139.252) To
- EX19D001UWA001.ant.amazon.com (10.13.138.214)
+X-CMS-MailID: 20261030103653eucas1p1e35145674aa26e829f4cde451eda2411
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261026092047eucas1p2686ac1a0ce893a16711cf7a137d081ce
+X-EPHeader: CA
+X-CMS-RootMailID: 20261026092047eucas1p2686ac1a0ce893a16711cf7a137d081ce
+References: <CGME20261026092047eucas1p2686ac1a0ce893a16711cf7a137d081ce@eucas1p2.samsung.com>
+	<20261026-b4-arm32-iommu-dma-cookie-v3-0-3901d74b1ff2@nvidia.com>
 
-atomic_pool_expand() allocates with decreasing page order first from the
-CMA and if that fails via alloc_pages(). If the cma allocation fails a
-warning, such as the following, is printed:
+On 26.10.2026 10:19, Mikko Perttunen wrote:
+> Depending on the probe ordering, TegraDRM does not currently probe on
+> kernels with CONFIG_ARM_DMA_USE_IOMMU enabled, such as with
+> multi_v7_defconfig. The Tegra SMMU puts several display and 2D/3D
+> clients into one IOMMU group, and the legacy 32-bit ARM DMA API path
+> creates one UNMANAGED domain per device and attaches it with
+> iommu_attach_device(). That only works for one device per group, so
+> every client after the first fails to attach,
+> iommu_device_use_default_domain() rejects the group with -EBUSY, and the
+> driver goes down with it. tegra_defconfig is currently working by virtue
+> of not enabling CONFIG_ARM_DMA_USE_IOMMU.
+>
+> Robin suggested [1] that instead of teaching the legacy path about
+> groups, we should explore modernizing the 32-bit ARM DMA code a bit by
+> making it use domain cookies and have the core code own the domains, as
+> is the case on other architectures. Still, ARM's own DMA code is kept to
+> support existing drivers and APIs that expect it, and because dma-iommu
+> is considered too big and unnecessary for 32-bit ARM.
+>
+> The series is in four parts:
+>
+> - Patches 1-2 are preparation in the IOMMU core:
+>   1. Add iommu_teardown_dma_ops, counterpart to iommu_setup_dma_ops.
+>   2. Add cookie type for ARM's DMA domains.
+> - Patches 3-6 implement the DMA API side on 32-bit ARM:
+>   3. Split up mapping alloc and init (bitmap alloc) code to separate
+>      functions.
+>   4. Implement parallel dma_ops / cookie APIs on ARM side.
+>   5. Avoid domain allocation when IOMMU core does it.
+>   6. Check upper DMA range limit during IOVA allocation.
+> - Patch 7 removes the forced IDENTITY default domain in core IOMMU
+>   code and adds explicit IDENTITY defaults to a few individual IOMMU
+>   drivers.
+> - Patches 8-10 convert Tegra:
+>   8. Fixes device parameter in calls to dma_get_sgtable.
+>   9. Allows deferring translation enable until driver handshake for
+>      selected devices.
+>   10. Switches to DMA default domain for selected Tegra devices.
+>
+> This moves 32-bit ARM devices from the unmanaged IOMMU DMA domain to the
+> core-owned default DMA domain except for mtk_iommu_v1, ipmmu-vmsa,
+> omap-iommu, and msm_iommu. (tegra-smmu also stays on the legacy path
+> until the last patch in the series.) See commit 7 for further
+> information. Existing drivers are intended to continue working without
+> changes.
+>
+> Patches 8-10 are provided for demonstration; we can deal with them 
+> separately if the rest of the series is accepted.
+>
+> Patches 1,2,3,6 are applicable independently.
+> Patches 4,5 depend on the previous patches.
+> Patch 7 requires the prior patches to be in place.
+>
+> Patches 1-7 only touch drivers/iommu/ and arch/arm/mm/ and associated 
+> headers.
 
-  cma: __cma_alloc_frozen: reserved: alloc failed, req-size: 4096 pages, ret: -16
-  cma: number of available pages:
-  cma: range 0: 1024@0
-  cma:
-  => 1024 free of 1024 total pages
-  DMA: preallocated 262144 KiB GFP_KERNEL pool for atomic allocations
 
-In this case the allocation succeeded via alloc_pages and therefore,
-printing the warning is not necessary. Therefore, similar to commit
-463d439becb8 ("dma/pool: eliminate alloc_pages warning in
-atomic_pool_expand") silence the warning also for the CMA attempt.
+I've tested this patchset on ARM 32bit based Exynos boards and it works
+fine, although I get the following warnings during boot:
 
-Fixes: d7e673ec2c8e ("dma-pool: Only allocate from CMA when in same memory zone")
-Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
----
- kernel/dma/pool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+platform 13400000.codec: Adding to iommu group 0
+iommu: Failed to allocate default IOMMU domain of type 0 for group (null) - Falling back to IOMMU_DOMAIN_DMA
+platform 11840000.jpeg-codec: Adding to iommu group 1
+iommu: Failed to allocate default IOMMU domain of type 0 for group (null) - Falling back to IOMMU_DOMAIN_DMA
 
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 00f422a1e8966..aa44fd74db538 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -99,7 +99,7 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
- 		pool_size = 1 << (PAGE_SHIFT + order);
- 		if (cma_in_zone(gfp))
- 			page = dma_alloc_from_contiguous(NULL, 1 << order,
--							 order, false);
-+							 order, true);
- 		if (!page)
- 			page = alloc_pages(gfp | __GFP_NOWARN, order);
- 	} while (!page && order-- > 0);
+This looks like an issue in iommu core, which doesn't expect devices with
+iommu to come up so early.
+
+
+LLM proposes the following fix for it:
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 197a8f70c6de..612933306684 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -225,10 +225,8 @@ static const char *iommu_domain_type_str(unsigned int t)
+        }
+ }
+
+-static int __init iommu_subsys_init(void)
++static void __init iommu_init_def_domain_type(void)
+ {
+-       struct notifier_block *nb;
+-
+        if (!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API)) {
+                if (IS_ENABLED(CONFIG_IOMMU_DEFAULT_PASSTHROUGH))
+                        iommu_set_default_passthrough(false);
+@@ -254,6 +252,11 @@ static int __init iommu_subsys_init(void)
+                        iommu_dma_strict ? "strict" : "lazy",
+                        (iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
+                                " (set via kernel command line)" : "");
++}
++
++static int __init iommu_subsys_init(void)
++{
++       struct notifier_block *nb;
+
+        nb = kzalloc_objs(*nb, ARRAY_SIZE(iommu_buses));
+        if (!nb)
+@@ -2939,6 +2942,12 @@ EXPORT_SYMBOL_GPL(report_iommu_fault);
+
+ static int __init iommu_init(void)
+ {
++       /*
++        * Select the default domain type before any IOMMU driver can register
++        * and create groups, which may happen before subsys_initcall.
++        */
++       iommu_init_def_domain_type();
++
+        iommu_group_kset = kset_create_and_add("iommu_groups",
+                                               NULL, kernel_kobj);
+        BUG_ON(!iommu_group_kset);
+
+Best regards
 -- 
-2.50.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
