@@ -1,92 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=207.54.90.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.20
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793357437;
-	b=zJ/0JwTjNAPR7k956mXsYLUogXSuycZKGqr1fQEaaHQHGFVQAwhNsVF9PWZUYEx/eJFK
-	 klc4scVcJnphgLTpy6XCKvVSm3CSHRqHxXSO/nk6IIeZuEP7PrNx8fLzrG+S2gdndaB8V
-	 mbGOPXj4MR+dpFcNJg+vDmZGoET8Qku4VsOyf5YxMuKUylCRdm5YPjYIx6Qv+uYsy2kAY
-	 /tXdVfxvWxMe6OyiHIu3Kls3BFXkyvujzQ9d3F83Noa6Vk909nM1ahPfn7gFxx1fE5QDa
-	 HKTfE1AApMp8UXpLJqJFTNtRO0/Aqmx9MDq5cCirngEIVa1kuY3YxOOCASh/vumRrNw==
+	t=1793359225;
+	b=zMe+kJ2A16P5G41jJ+/ltyAM1Po0XvMd+G7KazFu4Rd3gBHzTLOCBrJat0DkedzJmCvO
+	 kjJaSM0BdEmeZqGB04HhzyMwZDqKPVHs153unQKbcNEYUdqG1iKs17PybEwhQ3n4X37oa
+	 D0CU8ec1hI4M8prDkEB15XxRYhR/8jSJ/I6kSTB29IIO8/ax/ydhd9bObouOY6yVBzTvd
+	 ApfeKncfceeckLRrJXysSnCjR928SdT2DAJMMzxZnzoFeT4rgT0oWfsCVazTfYGHPx3nO
+	 sVAv6xzeePTYXB9N1YunQ7Df5mxQ8RnxEaFWWVvdmgCpsviuBksVVCLAptW4ccribCQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793357437;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793359225;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:Received:Received:Received:Date:
-	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=MZqMRfPEVUiuMNxLqgmTIf03oB0BvArhy/TSmIC7oCY=;
-	b=aUxE4oKeBFv8PdMQkNlmDiTpTG2w1JtylzXi3pERhUJSBN42uvxRz6El01WzOHgFrJgs
-	 H5t3maI/ZWH5PSo8xfCQDYKlbyD/U9PxuVwGJOxhS/SbcY9hZciLFQVFl/tj2okHQpghl
-	 LGRivPwu9a8YzPZmz9Cqe1DffdowSPeG+ObZY6sUlrAGXu/B9rgnFuGyCdW5ZAhLPN1Aw
-	 dhQtnT717TxpMaK6IbLvWLxRubzhBKYMOJNo7wkiUcv+1T2DAKO58EBhxqFPM2vG0cXUj
-	 IK2Klo5yEvvvb+FUFkZDdIc/PCR0rBIjEFLfpNU9bGxnwAQ8uqT78B2fKdmTm4U0CbA==
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=ZgjACWD8TmGD6ItYEgH4yZBQTnRlm+I5e5K5UdreNQ8=;
+	b=1d1TBLFzn1UL2KDV+Nj1YofNaGmxGRIovpoojGRp7+lcLK2RPv8en3PBXeIs8Z1cqJSs
+	 0QlvJX41wzwBgONQkIKm1B3i9Wl/FMXuRD1rfNGzCUKu9yI3HBQoEUOKIPqhpQsg2nBwU
+	 DcUEA/7OD07UthA256X2D7AiMPyhUKL27Dng+y1/SPsLsHOHW2t310mI/t0DbowT8ML2q
+	 wgsQt4FJ6J+GBHp5cRH8tZLd9B/NOLZ57KaSCks9d0WIm3/Skzyh4mYJmVW+Axm1ydWsB
+	 W8uKjgF59BXcoZkAXksYDOj6tFjzIOwHh54NyhAdXI7Wp6qD70qqqHMerBZl+oyWA4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=fujitsu.com;
-	spf=pass smtp.mailfrom=fujitsu.com;
-	dkim=pass header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=OUYPjiK8;
-	arc=none smtp.remote-ip=207.54.90.47
-Received: from esa1.hc1455-7.c3s2.iphmx.com (esa1.hc1455-7.c3s2.iphmx.com [207.54.90.47])
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b="Hapfxe/7";
+	arc=none smtp.remote-ip=198.175.65.20
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EFDF60A2631;
-	Fri, 30 Oct 2026 10:50:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3EFDF60A2631
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C34F606A32D
+	for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 11:20:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C34F606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=OUYPjiK8
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
-  t=1793357443; x=1824893443;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8Bk02kov5eXaN4fQMM0pbL4dj5jWKbTsBzV8w285UiE=;
-  b=OUYPjiK8KKr+P7wB+ZViJqxu20flLzyi2Z3LkIdvolUqVeUaODwCYvOs
-   Pm1/jgbXZtyLnlXEQ0eLLwlJZeyj8j9sq8q5QMvXSrSOKuopHLpFJ/lmS
-   Y2zbW7UruEyJr8XaT+9G6GUuVgwc1297N7CYywvASeKhRJdn3q0kDurgT
-   ESr4E1LoQtZ8fGsVa/OAQlEK1IIR1MUhD6Nd0Zbb7+BedbLzdIFbHPoVY
-   oIGJzrirIxy/5tOmB9sdrrYZ7zaG+P2Ra7hugw1OBkbwKSzpsC/ZT5CKk
-   Wsq8oMzP89qO+siHNUcdYkFb09fhI6DZOxHnLZ5wDHUO6Ev8Odzn55Xve
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Hapfxe/7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793359224; x=1824895224;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sSJv1wW/6gae511k3v9IHw8Pvi5hNYOrvBwbpTN4jkY=;
+  b=Hapfxe/7jdAnt637Uvqtd88Ye6Wf6bGteRCkcjiWlFlAHc9IiN3m8c+Q
+   soS7sR2TgL5fOLBSVM9FFZVFE5HMPiRFKZcGNPuX/1ZCtWNp8sp0uIfer
+   vOliSVn4sUW/3UI372FusV3OeGa4hsxq1BvIt/Hk1S48dfkLMwRTnbVKh
+   brfTBczmbP4GCefmGU3lZyLs567wfRBHGG5im+A1saOTWbKq0JEL1MmcT
+   41JOn/CAVHsvsbBlOitsEhEhIcf+rZ+qpbP4IZEhf53mpKpuMu5+IiExt
+   t5pC9R/oW7/ZvrJL0vXd9DRrpMZ2tqhPuBJndLVmfczljhtm/We6FP2H5
    A==;
-X-CSE-ConnectionGUID: IPljP3+7R4uzZqOOpSKg3g==
-X-CSE-MsgGUID: BvxVCy3EQbyXYoh16dx+Iw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="260094587"
-X-IronPort-AV: E=Sophos;i="6.27,186,1786978800"; 
-   d="scan'208";a="260094587"
-Received: from gmgwuk01.global.fujitsu.com ([172.187.114.235])
-  by esa1.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 19:50:35 +0900
-Received: from az2uksmgm3.o.css.fujitsu.com (unknown [10.151.22.200])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by gmgwuk01.global.fujitsu.com (Postfix) with ESMTPS id B285E1C00C90;
-	Fri, 30 Oct 2026 10:50:28 +0000 (UTC)
-Received: from az2uksmom2.o.css.fujitsu.com (unknown [10.151.22.203])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by az2uksmgm3.o.css.fujitsu.com (Postfix) with ESMTPS id 65CACC041E9;
-	Fri, 30 Oct 2026 10:50:28 +0000 (UTC)
-Received: from FCCLS0092175.localdomain (unknown [10.9.203.66])
-	by az2uksmom2.o.css.fujitsu.com (Postfix) with SMTP id EC18C140769F;
-	Fri, 30 Oct 2026 10:50:23 +0000 (UTC)
-Date: Fri, 30 Oct 2026 19:50:20 +0900
-From: Kohei Enju <enju.kohei@fujitsu.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
-	x86@kernel.org
-Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
- sizing
-Message-ID: <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
-References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
- <20260924060756.1325156-7-aneesh.kumar@kernel.org>
- <asVs3doaJ4WrT3M2@willie-the-truck>
- <asYZFXGyafRjjBS0@arm.com>
- <asYiOgskwi8JYLe_@willie-the-truck>
- <yq5awlrt3dwo.fsf@kernel.org>
- <yq5av77c92oo.fsf@kernel.org>
- <aseRzPshcoys7AJS@arm.com>
- <yq5ao6d48dqr.fsf@kernel.org>
+X-CSE-ConnectionGUID: dKVzCnF+RnivgVZtxrXp0Q==
+X-CSE-MsgGUID: 4ielDDGURnSD7r9vQejEIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11950"; a="2145971"
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="2145971"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 04:20:23 -0700
+X-CSE-ConnectionGUID: YOSDu70mSSKsLG3Nc1943Q==
+X-CSE-MsgGUID: 5tWF51lgQ12dv7CjqVsXng==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="5303898"
+Received: from gklab-096-123.igk.intel.com ([10.91.96.123])
+  by orviesa005.jf.intel.com with ESMTP; 30 Oct 2026 04:20:19 -0700
+From: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
+To: Ning Sun <ning.sun@intel.com>,
+	Borislav Petkov <bp@alien8.de>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Michal Camacho Romero <michal.camacho.romero@intel.com>,
+	x86@kernel.org,
+	iommu@lists.linux.dev,
+	tboot-devel@lists.sourceforge.net,
+	linux-kernel@vger.kernel.org,
+	Mateusz Mowka <mateusz.mowka@intel.com>,
+	Adam Pawlicki <adamx.pawlicki@intel.com>,
+	Pawel Randzio <pawel.randzio@intel.com>,
+	Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
+Subject: [PATCH v8 1/2] x86/tboot: Add support for parsing DTPR table and disabling TPRs
+Date: Fri, 30 Oct 2026 12:18:24 +0100
+Message-ID: <5849c6e562b22d9c84ac16eb3c65a27cd5036ff3.1793357321.git.michal.camacho.romero@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261029134014.3498596-1-michal.camacho.romero@intel.com>
+References: <20261029134014.3498596-1-michal.camacho.romero@intel.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -96,146 +90,689 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <yq5ao6d48dqr.fsf@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On 10/08 20:02, Aneesh Kumar K.V wrote:
-> Catalin Marinas <catalin.marinas@arm.com> writes:
-> 
-> > On Thu, Oct 08, 2026 at 11:03:27AM +0530, Aneesh Kumar K.V wrote:
-> >> Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
-> >> > Will Deacon <will@kernel.org> writes:
-> >> >> On Wed, Oct 07, 2026 at 11:04:05AM +0100, Catalin Marinas wrote:
-> >> >>> On Tue, Oct 06, 2026 at 10:49:17PM +0100, Will Deacon wrote:
-> >> >>> > On Thu, Sep 24, 2026 at 11:37:54AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> >> >>> > > @@ -496,7 +516,8 @@ swiotlb_select_pool_policy(unsigned int flags)
-> >> >>> > >  	if (swiotlb_force_disable)
-> >> >>> > >  		return SWIOTLB_POOL_NONE;
-> >> >>> > >  
-> >> >>> > > -	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-> >> >>> > > +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
-> >> >>> > > +	    !restricted_dma_pool_present)
-> >> >>> > >  		return SWIOTLB_POOL_CC_GUEST;
-> >> >>> > 
-> >> >>> > I think this check on the restricted DMA pool is too general -- the pool
-> >> >>> > could be tied to a specific DMA-capable peripheral and so treating its
-> >> >>> > presence as a global property isn't right.
-> >> >>> 
-> >> >>> I agree it's a hack but that was the simplest way to avoid the pVMs
-> >> >>> getting a bounce buffer after this patch. More than happy to leave it
-> >> >>> out and reduce the buffer on cmdline or we come up with some better
-> >> >>> heuristics.
-> >> >>
-> >> >> Hrm, that does mean that reverting just this part will regress pVMs
-> >> >> because they'll suddenly be allocating a tonne more memory for an
-> >> >> entirely unused swiotlb buffer. So I think I'd prefer to drop the entire
-> >> >> series until this has been worked out properly.
-> >> >>
-> >> >>> Another option could be the arch code passing another flag that it
-> >> >>> doesn't want an encrypted pool (e.g. when running in a pKVM guest) but I
-> >> >>> don't particularly this either. The arch code doesn't know whether
-> >> >>> there's an alternative pool.
-> >> >>
-> >> >> At that point, the default size may as well be driven by the
-> >> >> drivers/virt/coco driver.
-> >> >>
-> >> >>> That said, such heuristics should have been a separate patch to make it
-> >> >>> easier to review/drop.
-> >> >>
-> >> >> I think the only right way to get a semi-accurate heuristic is to take
-> >> >> into account the set of dma-capable devices that will use the swiotlb
-> >> >> pool, but that's fiddly and should probably be tackled as a separate
-> >> >> series. Maybe a simpler hack in that direction would be to take the
-> >> >> SWIOTLB_POOL_CC_GUEST if _any_ device is going to use swiotlb? You'll
-> >> >> run into the usual problem of not being able to tell if a device is
-> >> >> DMA-capable or not, but you could probably look for a global restricted
-> >> >> DMA pool and, if that doesn't exist, check for per-device restricted pools
-> >> >> on dma-coherent devices (since restricted DMA isn't supported by ACPI) as
-> >> >> a reasonable approximation.
-> >> >
-> >> > So, something like this?
-> >> >
-> >> > 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
-> >> > 	    swiotlb_cc_guest_needs_default_pool())
-> >> > 		return SWIOTLB_POOL_CC_GUEST;
-> >> >
-> >> 
-> >> Detecting a DMA-capable device is not straightforward, and if we get it
-> >> wrong, we will enable SWIOTLB_POOL_CC_GUEST unnecessarily. Would the
-> >> code below be a reasonable approximation of what you suggested?
-> >> 
-> >> Another option would be to make swiotlb_cc_guest_needs_default_pool() a
-> >> weak function that architectures can override. arm64 pKVM could then use
-> >> a different scheme (for this patch series default to false). Would that
-> >> be preferable?
-> >
-> > Even the rmem check for each device is still a hack that may bite us in
-> > the future (private devices for example would not need swiotlb). I'm
-> > thinking more and more of leaving the sizing an arch-specific decision,
-> > don't bother generalising it at all.
-> >
-> > On pKVM vs CCA guests, there's really nothing specific here to pKVM
-> > guests. The only difference is that confidential guests that so far have
-> > run without a swiotlb buffer will regress if their memory is tight. For
-> > confidential guests without dedicated rmem (either CCA or pKVM), I think
-> > our options are either command line swiotlb sizing or dynamic swiotlb.
-> >
-> > Could you respin your series while leaving out the generic sizing? IOW,
-> > no x86 code generalisation. We can discuss the best strategy on sizing
-> > later (I haven't checked how much of this series still makes sense
-> > without the generic sizing).
-> >
-> 
-> It would mostly consist of the first three cleanup patches, followed by
-> three patches that replace the addressing_limit argument with flags.
-> 
-> #define SWIOTLB_VERBOSE	(1 << 0) /* verbose initialization */
-> /* Initialize a pool for devices with limited DMA addressing. */
-> #define SWIOTLB_INIT_ADDRESSING_LIMIT	(1 << 1)
-> /* Initialize a pool that requires architecture remapping. */
-> #define SWIOTLB_INIT_REMAP		(1 << 2)
-> /* Initialize a pool for DMA to memory-encrypted host or guest memory. */
-> #define SWIOTLB_INIT_MEM_ENCRYPT		(1 << 3)
-> /* Initialize a pool for unaligned kmalloc bouncing. */
-> #define SWIOTLB_INIT_KMALLOC		(1 << 4)
-> /* Do not initialize a pool unless SWIOTLB is explicitly required. */
-> #define SWIOTLB_INIT_DEFAULT_OFF		(1 << 5)
-> 
-> This results in the large change below. I'm not sure we want to do this
-> for no real benefit other than making swiotlb_should_init() slightly
-> easier to follow.
-> 
-> static bool __init swiotlb_should_init(unsigned int flags)
-> {
-> 	if (swiotlb_force_disable)
-> 		return false;
-> 
-> 	if (swiotlb_force_bounce)
-> 		return true;
-> 
-> 	if (flags & (SWIOTLB_INIT_REMAP | SWIOTLB_INIT_MEM_ENCRYPT)))
-> 		return true;
-> 
-> 	/* Explicit requirements override an architecture's default opt-out. */
-> 	if (flags & SWIOTLB_INIT_DEFAULT_OFF)
-> 		return false;
-> 
-> 	return flags & (SWIOTLB_INIT_ADDRESSING_LIMIT | SWIOTLB_INIT_KMALLOC);
-> }
->  [...]
+Add functions to locate and parse the DMA TXT Protection Ranges (DTPR)
+table from the TXT heap's SinitMleData extended data elements (requires
+SINIT MLE version >= 9).
 
-Hi Aneesh,
+* tboot_get_dtpr_table()                - function walks through the
+                                          TXT heap to find the DTPR
+                                          extended data element (type
+                                          HEAP_EXTDATA_TYPE_DTPR) and
+                                          returns pointer to the DTPR
+                                          table.
 
-I can reproduce the CCA regression discussed in this thread:
-  https://lore.kernel.org/all/yq5azeyxyfol.fsf@kernel.org/#t
+* tboot_check_txt_heap_section_bounds() - function checks if a given
+                                          TXT heap section is within
+                                          the bounds of the heap.
 
-The guest runs out of SWIOTLB slots, causing disk I/O to fail and
-preventing the guest from booting.
+* tboot_check_tprs()                    - function locates and caches
+                                          the DTPR table and counts the
+                                          number of the enabled TPRs.
 
-I would like to test the fix on real CCA hardware. Could you please Cc
-me when you respin the series? I follow LKML, but I may still miss the
-posting by chance.
+* tboot_is_tpr_protection_enabled()     - function reports whether any
+                                          TPR region is currently
+                                          enabled.
 
-Thanks,
-Kohei
+* tboot_disable_tprs()                  - function iterates over TPR
+                                          instances and disables each
+                                          active TPR region by setting
+                                          TPR_BASE_DISABLE_BIT (bit 4) in
+                                          the TPRn_BASE register via MMIO.
+
+* tboot_free_txt_heap_mem()             - function releases the ioremap
+                                          mapping of the TXT heap.
+
+* tboot_teardown_tprs()                 - function disables any enabled
+                                          TPRs and releases the TXT heap
+                                          mapping in a single call.
+
+Using these functions will allow the kernel to deactivate SINIT
+ACM-established TPRs prior to the Linux OS launch.
+
+Link: https://uefi.org/sites/default/files/resources/633933_Intel_TXT_DMA_Protection_Ranges_rev_0p73.pdf
+Link: https://cdrdv2-public.intel.com/315168/315168_TXT_MLE_DG_rev_017_7.pdf
+
+Signed-off-by: Michal Camacho Romero <michal.camacho.romero@linux.intel.com>
+---
+Changes since v7:
+- Renamed tboot_free_txt_heap_mem() to tboot_unmap_txt_heap().
+- Applied coding-style fixes suggested by Borislav Petkov
+
+ arch/x86/kernel/tboot.c | 507 ++++++++++++++++++++++++++++++++++++++--
+ include/linux/tboot.h   |  28 ++-
+ 2 files changed, 515 insertions(+), 20 deletions(-)
+
+diff --git a/arch/x86/kernel/tboot.c b/arch/x86/kernel/tboot.c
+index 46b8f1f16676e..ded0aab7ee68c 100644
+--- a/arch/x86/kernel/tboot.c
++++ b/arch/x86/kernel/tboot.c
+@@ -18,6 +18,7 @@
+ #include <linux/mm.h>
+ #include <linux/tboot.h>
+ #include <linux/debugfs.h>
++#include <acpi/actbl1.h>
+ 
+ #include <asm/realmode.h>
+ #include <asm/processor.h>
+@@ -42,6 +43,15 @@ static struct tboot *tboot __read_mostly;
+ 
+ static u8 tboot_uuid[16] __initdata = TBOOT_UUID;
+ 
++/* Global pointer to TXT HEAP base */
++static void __iomem *txt_heap;
++
++/* Global pointer to the DTPR table */
++static struct acpi_table_dtpr *dtpr;
++
++/* Number of active TPRs */
++static s64 num_of_enabled_tprs;
++
+ bool tboot_enabled(void)
+ {
+ 	return tboot != NULL;
+@@ -223,6 +233,139 @@ static int tboot_setup_sleep(void)
+ 
+ #endif
+ 
++static bool tboot_check_txt_heap_section_bounds(const u64 heap_end,
++						void *heap_section,
++						u64 *heap_section_size,
++						const char *section_name)
++{
++	if (!heap_section) {
++		pr_err("%s section is NULL\n", section_name);
++		return false;
++	}
++
++	if (!heap_section_size) {
++		pr_err("%s section size pointer is NULL\n", section_name);
++		return false;
++	}
++
++	*heap_section_size = 0;
++
++	if ((u64)heap_section > heap_end || heap_end - (u64)heap_section < 8) {
++		pr_err("%s size field exceeds heap boundary\n", section_name);
++		return false;
++	}
++
++	/* Read the size of the current TXT Heap section */
++	*heap_section_size = *(u64 __force *)heap_section;
++
++	if (*heap_section_size < 8) {
++		pr_err("%s size is too small\n", section_name);
++		return false;
++	}
++
++	if (*heap_section_size > heap_end - (u64)heap_section) {
++		pr_err("%s exceeds heap boundary\n", section_name);
++		return false;
++	}
++
++	return true;
++}
++
++static bool tboot_check_dtpr_size(const struct heap_ext_data_elt *elt)
++{
++	struct acpi_tpr_aux_sr *tpr_aux_srl = NULL;
++	struct acpi_tpr_instance *tpr_inst = NULL;
++	struct acpi_table_dtpr *tmp_dtpr = NULL;
++	u64 dtpr_payload_size, dtpr_offset;
++	u32 i, ref_tpr_cnt;
++
++	if (!elt) {
++		pr_err("DTPR element heap extension data is NULL\n");
++		return false;
++	}
++
++	tmp_dtpr          = (struct acpi_table_dtpr *)elt->data;
++	dtpr_payload_size = elt->size - sizeof(*elt);
++
++	if (dtpr_payload_size < sizeof(struct acpi_table_dtpr)) {
++		pr_err("DTPR element payload too small for a DTPR header\n");
++		return false;
++	}
++
++	if (tmp_dtpr->header.length != dtpr_payload_size) {
++		pr_err("Mismatch between DTPR table length and payload size\n");
++		return false;
++	}
++
++	dtpr_offset = sizeof(struct acpi_table_dtpr);
++
++	if (dtpr_offset > dtpr_payload_size) {
++		pr_err("TPR header exceeds table's declared size\n");
++		return false;
++	}
++
++	if (tmp_dtpr->ins_cnt < 1) {
++		pr_err("DTPR table declares no TPR instances\n");
++		return false;
++	}
++
++	for (i = 0; i < tmp_dtpr->ins_cnt; i++) {
++		/* prove this instance's header is in bounds before reading it */
++		if (dtpr_offset + sizeof(struct acpi_tpr_instance) > dtpr_payload_size) {
++			pr_err("TPR instance No.%u header exceeds DTPR table size\n", i);
++			return false;
++		}
++
++		/* point at the current TPR instance */
++		tpr_inst = (struct acpi_tpr_instance *)((u8 *)tmp_dtpr + dtpr_offset);
++
++		if (tpr_inst->tpr_cnt < 2) {
++			pr_err("TPR Instance %u has less than 2 TPRs, further DTPR processing interrupted.\n", i);
++			return false;
++		}
++
++		/* all instances must carry the same TPR count as the first */
++		if (!i) {
++			ref_tpr_cnt = tpr_inst->tpr_cnt;
++		} else if (tpr_inst->tpr_cnt != ref_tpr_cnt) {
++			pr_err("TPR Instance %u has inconsistent TPR count: expected %u, found %u\n", i, ref_tpr_cnt, tpr_inst->tpr_cnt);
++			return false;
++		}
++
++		/* advance past this instance's TPR array */
++		dtpr_offset += sizeof(struct acpi_tpr_instance) +
++			       (u64)tpr_inst->tpr_cnt * sizeof(struct acpi_tpr_array);
++
++		/* verify TPR array size for this instance */
++		if (dtpr_offset > dtpr_payload_size) {
++			pr_err("TPR instance No.%u TPR entries exceed DTPR table size\n", i);
++			return false;
++		}
++	}
++
++	tpr_aux_srl = (struct acpi_tpr_aux_sr *)((u8 *)tmp_dtpr + dtpr_offset);
++	dtpr_offset += sizeof(u32);
++
++	if (dtpr_offset > dtpr_payload_size) {
++		pr_err("TPR SRL count field exceeds DTPR table size\n");
++		return false;
++	}
++
++	dtpr_offset += (u64)tpr_aux_srl->srl_cnt *
++		       sizeof(struct acpi_tpr_serialize_request);
++	if (dtpr_offset > dtpr_payload_size) {
++		pr_err("TPR SRL entries exceed DTPR table size\n");
++		return false;
++	}
++
++	if (dtpr_offset < dtpr_payload_size) {
++		pr_err("DTPR table is smaller than expected\n");
++		return false;
++	}
++
++	return true;
++}
++
+ void tboot_shutdown(u32 shutdown_type)
+ {
+ 	void (*shutdown)(void);
+@@ -454,26 +597,28 @@ struct sha1_hash {
+ };
+ 
+ struct sinit_mle_data {
+-	u32               version;             /* currently 6 */
+-	struct sha1_hash  bios_acm_id;
+-	u32               edx_senter_flags;
+-	u64               mseg_valid;
+-	struct sha1_hash  sinit_hash;
+-	struct sha1_hash  mle_hash;
+-	struct sha1_hash  stm_hash;
+-	struct sha1_hash  lcp_policy_hash;
+-	u32               lcp_policy_control;
+-	u32               rlp_wakeup_addr;
+-	u32               reserved;
+-	u32               num_mdrs;
+-	u32               mdrs_off;
+-	u32               num_vtd_dmars;
+-	u32               vtd_dmars_off;
++	u32                      version;             /* currently 9 */
++	struct sha1_hash         bios_acm_id;
++	u32                      edx_senter_flags;
++	u64                      mseg_valid;
++	struct sha1_hash         sinit_hash;
++	struct sha1_hash         mle_hash;
++	struct sha1_hash         stm_hash;
++	struct sha1_hash         lcp_policy_hash;
++	u32                      lcp_policy_control;
++	u32                      rlp_wakeup_addr;
++	u32                      reserved;
++	u32                      num_mdrs;
++	u32                      mdrs_off;
++	u32                      num_vtd_dmars;
++	u32                      vtd_dmars_off;
++	u32                      proc_scrtm_status; /* version 8 or later only*/
++	struct heap_ext_data_elt ext_data_elts[];
+ } __packed;
+ 
+ struct acpi_table_header *tboot_get_dmar_table(struct acpi_table_header *dmar_tbl)
+ {
+-	void *heap_base, *heap_ptr, *config;
++	void *heap_ptr, *config;
+ 
+ 	if (!tboot_enabled())
+ 		return dmar_tbl;
+@@ -490,15 +635,15 @@ struct acpi_table_header *tboot_get_dmar_table(struct acpi_table_header *dmar_tb
+ 		return NULL;
+ 
+ 	/* now map TXT heap */
+-	heap_base = ioremap(*(u64 *)(config + TXTCR_HEAP_BASE),
++	txt_heap = ioremap(*(u64 *)(config + TXTCR_HEAP_BASE),
+ 			    *(u64 *)(config + TXTCR_HEAP_SIZE));
+ 	iounmap(config);
+-	if (!heap_base)
++	if (!txt_heap)
+ 		return NULL;
+ 
+ 	/* walk heap to SinitMleData */
+ 	/* skip BiosData */
+-	heap_ptr = heap_base + *(u64 *)heap_base;
++	heap_ptr = txt_heap + *(u64 *)txt_heap;
+ 	/* skip OsMleData */
+ 	heap_ptr += *(u64 *)heap_ptr;
+ 	/* skip OsSinitData */
+@@ -514,3 +659,327 @@ struct acpi_table_header *tboot_get_dmar_table(struct acpi_table_header *dmar_tb
+ 
+ 	return dmar_tbl;
+ }
++
++static struct acpi_table_dtpr *tboot_get_dtpr_table(void)
++{
++	u64 heap_end, heap_size, sinit_mle_size, heap_section_size;
++	void *heap_ptr, *config, *sinit_mle_end;
++	struct sinit_mle_data *sinit_mle;
++	struct heap_ext_data_elt *elt;
++
++	if (!tboot_enabled())
++		return NULL;
++	/*
++	 * ACPI tables may not be DMA protected by tboot, so use DMAR copy
++	 * SINIT saved in SinitMleData in TXT heap (which is DMA protected)
++	 */
++
++	/* map config space in order to get heap addr */
++	config = ioremap(TXT_PUB_CONFIG_REGS_BASE, NR_TXT_CONFIG_PAGES *
++			 PAGE_SIZE);
++	if (!config)
++		return NULL;
++
++	/* now map TXT heap */
++	heap_size  = *(u64 __force *)(config + TXTCR_HEAP_SIZE);
++	if (!txt_heap)
++		txt_heap = ioremap(*(u64 __force *)(config + TXTCR_HEAP_BASE), heap_size);
++
++	iounmap(config);
++
++	if (!txt_heap) {
++		pr_err("Failed to map TXT heap\n");
++		return NULL;
++	}
++
++	if (heap_size == 0 || (u64)txt_heap + heap_size < (u64)txt_heap) {
++		pr_err("TXT heap size invalid or overflows\n");
++		goto teardown;
++	}
++
++	heap_end   = (u64)txt_heap + heap_size;
++
++	/* walk heap to SinitMleData */
++	/* skip BiosData */
++	/* get BiosData section size */
++	if (!tboot_check_txt_heap_section_bounds(heap_end, txt_heap, &heap_section_size, "BiosData"))
++		goto teardown;
++
++	/* skip OsMleData */
++	heap_ptr = txt_heap + heap_section_size;
++	/* get OsMleData section size */
++	if (!tboot_check_txt_heap_section_bounds(heap_end, heap_ptr, &heap_section_size, "OsMleData"))
++		goto teardown;
++
++	/* skip OsSinitData */
++	heap_ptr += heap_section_size;
++	/* get OsSinitData section size */
++	if (!tboot_check_txt_heap_section_bounds(heap_end, heap_ptr, &heap_section_size, "OsSinitData"))
++		goto teardown;
++
++	/* jump to the SinitMleData */
++	heap_ptr += heap_section_size;
++	sinit_mle_size = 0;
++	/* now points to SinitMleDataSize; set to SinitMleData */
++	if (!tboot_check_txt_heap_section_bounds(heap_end, heap_ptr, &sinit_mle_size, "SinitMleData"))
++		goto teardown;
++
++	heap_ptr += sizeof(u64);
++	sinit_mle = (struct sinit_mle_data *)heap_ptr;
++	sinit_mle_end = (void *)sinit_mle + sinit_mle_size;
++	if (sizeof(struct sinit_mle_data) > sinit_mle_size) {
++		pr_err("SinitMleData size is smaller than expected.\n");
++		goto teardown;
++	}
++
++	if (sinit_mle->version < 9) {
++		pr_err("Unsupported SinitMleData version: %u\n", sinit_mle->version);
++		goto teardown;
++	}
++
++	heap_ptr += sizeof(struct sinit_mle_data);
++	if (heap_ptr > sinit_mle_end) {
++		pr_err("SinitMleData header out of bounds.\n");
++		goto teardown;
++	}
++
++	/*
++	 * The SinitMleData extended-data area is a self-describing list of
++	 * variable-length elements with no stored element count; it is
++	 * terminated only by a HEAP_EXTDATA_TYPE_END element. Traversal must
++	 * therefore be driven by each element's own size field. Forward
++	 * progress and termination are guaranteed on every iteration:
++	 *   - the 8-byte header is bounds-checked before type/size are read,
++	 *   - elt->size >= sizeof(*elt) enforces a strictly-positive advance,
++	 *   - the "elt <= sinit_mle_end" cap bounds the number of steps.
++	 */
++	elt = sinit_mle->ext_data_elts;
++	do {
++		if ((u8 *)elt + sizeof(*elt) > (u8 *)sinit_mle_end) {
++			pr_err("SinitMleData element header out of bounds.\n");
++			goto teardown;
++		}
++
++		if (elt->size < sizeof(*elt)) {
++			pr_err("Invalid SinitMleData element size: %u\n", elt->size);
++			goto teardown;
++		}
++
++		if (elt->type == HEAP_EXTDATA_TYPE_END ||
++		    elt->type == HEAP_EXTDATA_TYPE_DTPR) {
++			break;
++		}
++
++		elt = (void *)elt + elt->size;
++	} while ((void *)elt <= sinit_mle_end);
++
++	if ((void *)elt >= sinit_mle_end) {
++		pr_err("Reached the end of SinitMleData without finding DTPR nor END element.\n");
++		goto teardown;
++	}
++
++	if (elt->type == HEAP_EXTDATA_TYPE_END) {
++		pr_err("DTPR element not found in SinitMleData\n");
++		goto teardown;
++	}
++
++	if ((u8 *)elt + elt->size > (u8 *)sinit_mle_end) {
++		pr_err("DTPR Table exceeds SinitMleData bounds.\n");
++		goto teardown;
++	}
++
++	if (!tboot_check_dtpr_size(elt)) {
++		pr_err("Invalid DTPR Table size.\n");
++		goto teardown;
++	}
++
++	return (struct acpi_table_dtpr *)elt->data;
++
++teardown:
++	tboot_unmap_txt_heap();
++	return NULL;
++}
++
++void tboot_check_tprs(void)
++{
++	struct acpi_tpr_instance *tpr_inst;
++	struct acpi_tpr_array    *tpr_arr;
++	u32 *instance_cnt;
++	void __iomem *base;
++	u32 i, j;
++	u64 tpr_base_val;
++
++	dtpr = tboot_get_dtpr_table();
++
++	if (!txt_heap) {
++		pr_warn("Heap base is NULL.\n");
++		return;
++	}
++
++	if (!dtpr) {
++		pr_warn("DTPR Table is NULL.\n");
++		goto teardown;
++	}
++
++	if (!tboot_enabled()) {
++		pr_warn("TBOOT is not enabled. TPRs weren't set by TBOOT nor SINIT ACM.\n");
++		goto teardown;
++	}
++
++	instance_cnt = (u32 *)(&dtpr->ins_cnt);
++	tpr_inst = (struct acpi_tpr_instance *)(instance_cnt + 1);
++
++	for (i = 0; i < *instance_cnt; ++i) {
++		for (j = 0; j < tpr_inst->tpr_cnt; ++j) {
++			tpr_arr =  (struct acpi_tpr_array *)((u8 *)tpr_inst +
++				    sizeof(struct acpi_tpr_instance) +
++				    j * sizeof(struct acpi_tpr_array));
++
++			/*
++			 * Each TPR base address has already been verified by the SINIT ACM,
++			 * so it can be treated as trustworthy and used safely for I/O
++			 * mapping.
++			 */
++			base = ioremap(tpr_arr->base, 16);
++			if (!base) {
++				pr_warn("TPR Instance %u, TPR No.%u verification failure.\n",
++					i, j);
++				continue;
++			}
++
++			tpr_base_val = readq(base);
++			pr_info("TPR instance %u, TPR %u:base 0x%llx, limit 0x%llx\n", i, j,
++				tpr_base_val, readq((u8 __iomem *)base + 8));
++
++			/* Verify if the TPR base is enabled */
++			if ((tpr_base_val & (u64)TPR_BASE_DISABLE_BIT) == 0)
++				num_of_enabled_tprs++;
++
++			iounmap(base);
++		}
++
++		tpr_inst = (struct acpi_tpr_instance *)((u8 *)tpr_inst +
++			    sizeof(*tpr_inst) + j * sizeof(struct acpi_tpr_array));
++	}
++
++	pr_info("Number of enabled TPRs: %lld\n", num_of_enabled_tprs);
++	if (num_of_enabled_tprs > 0)
++		pr_info("TPR protection is active. PMR will be disabled\n");
++
++	return;
++
++teardown:
++	tboot_unmap_txt_heap();
++}
++
++s64 tboot_disable_tprs(void)
++{
++	struct acpi_tpr_instance *tpr_inst;
++	struct acpi_tpr_array    *tpr_arr;
++	u32 *instance_cnt;
++	void __iomem *base;
++	u32 i, j;
++	u64 tpr_base_val;
++	s64 ret = 0;
++
++	if (!txt_heap) {
++		pr_warn("TXT Heap base is NULL.\n");
++		return -1;
++	}
++
++	if (!dtpr) {
++		pr_warn("DTPR Table is NULL.\n");
++		ret = -1;
++		goto teardown;
++	}
++
++	if (!tboot_enabled()) {
++		pr_warn("TBOOT is not enabled. TPR weren't set by SINIT ACM and BIOS.\n");
++		ret = -1;
++		goto teardown;
++	}
++
++	instance_cnt = (u32 *)(&dtpr->ins_cnt);
++	tpr_inst = (struct acpi_tpr_instance *)(instance_cnt + 1);
++
++	for (i = 0; i < *instance_cnt; ++i) {
++		for (j = 0; j < tpr_inst->tpr_cnt; ++j) {
++			tpr_arr = (struct acpi_tpr_array *)((u8 *)tpr_inst +
++				   sizeof(struct acpi_tpr_instance) +
++				   j * sizeof(struct acpi_tpr_array));
++
++			/*
++			 * Each TPR base address has already been verified by the SINIT ACM,
++			 * so it can be treated as trustworthy and used safely for I/O
++			 * mapping.
++			 */
++			base = ioremap(tpr_arr->base, 16);
++			if (!base) {
++				pr_warn("TPR Instance %u, TPR No.%u disabling failure.\n",
++					i, j);
++				continue;
++			}
++
++			tpr_base_val = readq(base);
++			pr_info("TPR instance %u, TPR %u:base 0x%llx, limit 0x%llx\n", i, j,
++				tpr_base_val, readq((u8 __iomem *)base + 8));
++
++			/* If the given TPR is active, disable it */
++			if ((tpr_base_val & (u64)TPR_BASE_DISABLE_BIT) == 0) {
++				writeq(tpr_base_val | TPR_BASE_DISABLE_BIT, base);
++				num_of_enabled_tprs--;
++			}
++			iounmap(base);
++		}
++
++		tpr_inst = (struct acpi_tpr_instance *)((u8 *)tpr_inst +
++			    sizeof(*tpr_inst) + j * sizeof(struct acpi_tpr_array));
++	}
++
++	if (num_of_enabled_tprs > 0) {
++		pr_err("TPR disabling failed for some instances.\n");
++		pr_err("Number of still enabled TPRs: %lld\n", num_of_enabled_tprs);
++	} else if (num_of_enabled_tprs < 0) {
++		pr_err("Number of enabled TPRs is negative, which indicates an error.\n");
++		pr_err("TPR disabling resulted in a negative count: %lld\n",
++		       num_of_enabled_tprs);
++	} else {
++		pr_info("All of TPRs have been successfully disabled.\n");
++	}
++
++	ret = 0;
++	goto teardown;
++
++teardown:
++	tboot_unmap_txt_heap();
++	return ret;
++}
++
++s64 tboot_teardown_tprs(void)
++{
++	s64 ret = 0;
++
++	/* uses cached dtpr + txt_heap */
++	if (tboot_is_tpr_protection_enabled() && dtpr)
++		ret = tboot_disable_tprs();
++
++	/* releases internal mapping */
++	tboot_unmap_txt_heap();
++	dtpr = NULL;
++
++	/* 0 = success / nothing to do */
++	return ret;
++}
++
++void tboot_unmap_txt_heap(void)
++{
++	if (txt_heap) {
++		iounmap(txt_heap);
++		txt_heap = NULL;
++	}
++}
++
++bool tboot_is_tpr_protection_enabled(void)
++{
++	return num_of_enabled_tprs > 0;
++}
+diff --git a/include/linux/tboot.h b/include/linux/tboot.h
+index d2279160ef39d..fe83a5bf71750 100644
+--- a/include/linux/tboot.h
++++ b/include/linux/tboot.h
+@@ -24,10 +24,17 @@ enum {
+ #include <linux/acpi.h>
+ /* used to communicate between tboot and the launched kernel */
+ 
++/* TXT Extended Data Element Types */
++#define HEAP_EXTDATA_TYPE_END   0
++#define HEAP_EXTDATA_TYPE_DTPR 14
++
+ #define TB_KEY_SIZE             64   /* 512 bits */
+ 
+ #define MAX_TB_MAC_REGIONS      32
+ 
++/* TPR Base Disable BIT */
++#define TPR_BASE_DISABLE_BIT  BIT(4)
++
+ struct tboot_mac_region {
+ 	u64  start;         /* must be 64 byte -aligned */
+ 	u32  size;          /* must be 64 byte -granular */
+@@ -58,6 +65,15 @@ struct tboot_acpi_sleep_info {
+ 	u64 kernel_s3_resume_vector;
+ } __packed;
+ 
++/*
++ * structure for tboot extended data elements
++ */
++struct heap_ext_data_elt {
++	u32 type;
++	u32 size;
++	u8  data[];
++} __packed;
++
+ /*
+  * shared memory page used for communication between tboot and kernel
+  */
+@@ -122,19 +138,29 @@ struct tboot {
+ 			 0xaa, 0x19, 0xea, 0x4d, 0x5, 0x7a, 0x8}
+ 
+ bool tboot_enabled(void);
++extern s64 tboot_disable_tprs(void);
++extern s64 tboot_teardown_tprs(void);
++extern void tboot_check_tprs(void);
++extern void tboot_unmap_txt_heap(void);
+ extern void tboot_probe(void);
+ extern void tboot_shutdown(u32 shutdown_type);
+ extern struct acpi_table_header *tboot_get_dmar_table(
+ 				      struct acpi_table_header *dmar_tbl);
++extern bool tboot_is_tpr_protection_enabled(void);
+ 
+ #else
+ 
+-#define tboot_enabled()			0
++#define tboot_enabled()		0
++#define tboot_disable_tprs()	0
++#define tboot_teardown_tprs()	0
++#define tboot_check_tprs()	do { } while (0)
+ #define tboot_probe()			do { } while (0)
+ #define tboot_shutdown(shutdown_type)	do { } while (0)
+ #define tboot_sleep(sleep_state, pm1a_control, pm1b_control)	\
+ 					do { } while (0)
+ #define tboot_get_dmar_table(dmar_tbl)	(dmar_tbl)
++#define tboot_unmap_txt_heap() do { } while (0)
++#define tboot_is_tpr_protection_enabled() 0
+ 
+ #endif /* !CONFIG_INTEL_TXT */
+ 
+-- 
+2.43.0
+
