@@ -1,108 +1,108 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.163.135.74
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793474630;
-	b=SZ5hb7sjMAvESPMW0Zs7RvQwnWF968zWkBb/lb1xqDVn5TrD8CBMrz1xnmxi89fYw4Ii
-	 IBJKyx66Y+jf+Hv3BwTW5wKkwEUTh+wQFBPGO834x6pTJRmYwC6EZvPELm5jnXJbvjWgm
-	 43r33fQKpRLGLz/0Ld9qP2ztrdA6QBffl5ioJAyf3bKxa410AVri8T2+f0Xq6XZ5e4hPP
-	 DHQv83VdXB9zJ5e7E3SssM5pF8XfzD8kICD+RKONJnw0AH4J/hoK4f/Y/EcEXs3MGRWbP
-	 Ca9kl9n82m3vv5h8H3P5NqhJX9mbnLS2Q0E5K/MMD04o5SkBDV+zAOmLJUXRDWmJ21Q==
+	t=1793478814;
+	b=UPdlqgVRNe0pGXQ0Nw68pKKMgO0Nqhhxm7gF7cyFVbwYunCCot1mjiZoE6e/dV/bWMH1
+	 pS2lnURSHyULfnikVwqm5X72OpaEvY793zYJjfKo2mZbvyVI91GJnjEyMtVAybmCAV6F4
+	 EVKfgY8o5K4XvxfhKt0JsAknWQM5292dpYOcSb+O9s8y3rNzGWZBxcP1VfAm82BUXN5s9
+	 HZ+z9O8+d8YRxfSh38BcfqO71qBDOJEF9HedGWsoTZ+iHJHgBpEdI4fvhB1X3p+m6STlx
+	 1xnW0KU29AjJLKt7TQr3e+bn/L4QgUGoVaZIYCRaeqJscqd5lWpMubM4rnSaXOdSfOA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793474630;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=qee3FwDn+lR4Rdz4X353Tv1A8/aooI3LNRhrS8wuqjk=;
-	b=Snh/PEmJ+mcCvZ2Rb+9o2g3BhtZ1r+LAQgcNi0n7kPxZ2LMBQ1tvievXVP/1fSjLitGS
-	 fLvLuRRIzph3y9h12xGha1FLm0th6lJJh6UrmgWNSeDKOX50tCkVECJIC2b4XFEBrfSQ0
-	 jFmkM6az+x2pPKArHivqSEHibKT9g8LcMRzsjUG2UT+9WeEsf7z3PBnL0fHVAL6WJevDI
-	 PePiAVA4soxwn8THiP6KAGsiTFFeFToJjR6gb034/g5K5eoc/oSqSrvY9664HS68rIfk5
-	 TMbpMyqoum2YkiIUUaPFH6bFLFYPjlea2pcVSoth3vTutGyajBkf3+Mzqtix5Pqv3Sw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793478814;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
+	 X-Received:X-Received:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Proofpoint-Spam-Details-Enc:X-Authority-Analysis:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:X-Proofpoint-GUID:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=SUiGiQ0Y+CFpbO7hs7vpkUK0TSJwBq9jsvGhQh6Op/E=;
+	b=UkGgW42hBHqBzbC5D9TQFlb9552gqB4VH6DD27vw9em61GPXaiipdj4xUAwF0fThKBnB
+	 tqkyVeeVs1LxG4LSPhnhSzBTpdu5PzDxpOTAmybri5T/Y8WTECZHIN0lChCgMCJw3RtHg
+	 o5lJJXUUB6pqIMMxUdpne+N5tJd1MNy8bwPRE4GmQfNfG2hyX3D5N9mmU9jRqjuBSV9PJ
+	 AVL9NjTIFkocoyeMQAtZJhCGFwiED8jmXt1C6dYJ9gmlJtCPt/O55PA8Gy7mVTW0ibgZG
+	 1Mkc0U/3A5Y6mwKs8KwACMWLvllYaDI9mMnibNQT9KoXJTU5iXv0K07EMdWti7NxZUQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=fQpnYLpB;
-	arc=none smtp.remote-ip=209.85.214.180
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=columbia.edu;
+	spf=pass smtp.mailfrom=columbia.edu;
+	dkim=pass header.d=columbia.edu header.i=@columbia.edu header.a=rsa-sha256 header.s=pps01 header.b=riMMskYR;
+	dkim=pass header.d=columbia.edu header.i=@columbia.edu header.a=rsa-sha256 header.s=lionmail header.b=mSLCSc2O;
+	arc=none smtp.remote-ip=148.163.135.74
+Received: from mx0a-00364e01.pphosted.com (mx0a-00364e01.pphosted.com [148.163.135.74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 549E7606A31C
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 19:23:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 549E7606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3918606A31A
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 20:33:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C3918606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=columbia.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=columbia.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=fQpnYLpB
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2e8d6fcbba0so27915ad.1
-        for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 12:23:49 -0700 (PDT)
+	dkim=pass (2048-bit key, unprotected) header.d=columbia.edu header.i=@columbia.edu header.a=rsa-sha256 header.s=pps01 header.b=riMMskYR;
+	dkim=pass (2048-bit key, unprotected) header.d=columbia.edu header.i=@columbia.edu header.a=rsa-sha256 header.s=lionmail header.b=mSLCSc2O
+Received: from pps.filterd (m0167070.ppops.net [127.0.0.1])
+	by mx0a-00364e01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69VDmY0Q061873
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 16:33:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=columbia.edu; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=pps01; bh=SUiGiQ0Y+CFpbO7hs7vpkUK0TS
+	JwBq9jsvGhQh6Op/E=; b=riMMskYRDKEVqPF1V9/F+WFmw36SiRakiE1up0oOJb
+	KBdVIL1HF2g65uDc2o4i7VXxrEMf7igtE9sTy213J573b2lEBaErATvecMs+jVqM
+	r1ypEc9a96wtHAYdoVgwXzIHp35gy//E9I2CVhHnEHckgFeCalqg8Ui1Tn4zczmm
+	ZPX0D0qZD0TkYYvJyI0gkjMrLE0HWC2YwuBXLgTaISC/s540iZ/EbiNmrPTgYpzg
+	xp0qh61GBeXipwEGqXFlR9pIBqP5YRvsa7CHysuoLP19vX2dZSirk94zeUmsaEn0
+	H+OLoAGLns22/i6l6KpUWP9k5cMoPqWWM1AmpbV+rUlw==
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+	by mx0a-00364e01.pphosted.com (PPS) with ESMTPS id 4hnccxu71w-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 16:33:32 -0400 (EDT)
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-944101e6367so348427185a.1
+        for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 13:33:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793474629; x=1794079429; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=qee3FwDn+lR4Rdz4X353Tv1A8/aooI3LNRhrS8wuqjk=;
-        b=fQpnYLpBXvZBv/ZmB7ima3C8IupbjOdm7o6Y8Sp+O/snsATxxrGBzObUYW3ziky5yM
-         j0dijDgWfYduTP2mLMQwm0L8Ylw1Cb10irtqvKDH6VWN1bpUqP6GFtGigSTolReFvYh5
-         IyXl4dUevv8D2XT7CYnyIWcCVB7ad3JXzC6Sb7RwW/8MQJVyY2bXkOp0R7XhfZPS3P5+
-         oKnlnphw07Kc28amuicc60MnPBLbMIuYJ2TcLCbuez1ryDaRfsfC/5gaNaj/c2/G7B26
-         LF0Nx/q3iRQoEBYtSJEHUw0S4VW2SByN4C/e+qTQZUSo1RxYI4VTY3n2cH+1LuZT4bTD
-         UkGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793474629; x=1794079429;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=columbia.edu; s=lionmail; t=1793478812; x=1794083612; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:from:to:cc:subject:date:message-id
          :reply-to:content-type;
-        bh=qee3FwDn+lR4Rdz4X353Tv1A8/aooI3LNRhrS8wuqjk=;
-        b=JaFHGQFGYS8c6utkq3OGUixou43FlRtEJCk352F5r5ve3UZGw+WQPGcAlF5FgX6iPi
-         stmCUVY0ZbATyLLTIEF+iZMAUbjKsbMYGL5zcwS6T2ybPHDYeX9rrE6sdGeuLp+udJPZ
-         yF377iuvhYUwz7F4UG5+BwqU9fbehmdBFk7JIVWq5cJ+8JJSwFEzgFqGsDAkxc1POti+
-         Pv33crzJAcnShnupxrI41lBrne1rw4ZNhpsb9T7qjRsnvhXPc+1Yvp43I8hJCFE6Ft8o
-         HIQNSatwfv71yrlFF5lTG6VD03OP7IJTcpk8REksOw56z8g0NVPs6LByaefvFSroskb9
-         yxPA==
-X-Forwarded-Encrypted: i=1; AKwUvBxIIl9coZj/GtYnGklWCTp8v3eobw10zo/6YORR/d6tg6Rz7JMrLtprl7yAm8fd+azOipL84A==@lists.linux.dev
-X-Gm-Message-State: AFq9FYLtRDjcJdftB1FMnolZquish/jaQfyCCKgg56lSdzgRxRrqYqDl
-	bFrM7JNprNdZqgLSDJuYkmPhp/UTN4RRQxtF5kRbSgO/kZsGkSGn8RI8lxbYv4oPpw==
-X-Gm-Gg: AYBFou042GOAOBuqIyIgIQ6gOT7edagqL9m173QZJJrkAIDcx7D1aQNRKENJjyGfx3w
-	BCwn9BDAHsiLWA/lnRYW7o09kFveQFHbyOaqa01+oiwLUFCiPFx1Sh4Lrj0szBetjICObMKPoZP
-	X1EpliDA+clEhl3sbTTDdiknUsxygc95qRWtJrTnK/8XqdJlgAQTavcuP1WZjMBjzsqd+nm2lq8
-	uT6Q5RY8li4KlwnrcYYhsDfRAeshgKLarT9rXrd/EVv4GIYcXMXtrQI9Yhjj3i05g3LWcNrmNIo
-	tMJspSSsr9KQdHhWFtEnrKcQdnGR9zJv7LP0hQy9D+LvDGygv6gBbK7leDztqgz0zsul01wf0yN
-	xMLFhFYbNAuPLge3+6oRLr9wYpUrb4apWZ3CN6dJ38wSp0StJ6B+bXygyLjbN3QixFXKnKxYCJw
-	86EW5POOj9fbJU/6YQdnJEXqoqRSQoOyisvGJ4Ah80V/3iCpZw3Fxzf3e3+cO8/LSQ1atxQhe1Z
-	0mRSfbNqzjTjcr8fZJCrpCdKvK/MZwAmvfPMy3K7VPJAa2P1pCLiAfk7M0h+n/Yh/beg/1/7brN
-	v4YypjeujWgC653EiJGGn8KaUdo2Vw4KQX7OMEMw9uzAEjZ0viunJI7rN54tZgculKWu5m1SfRw
-	oP6froPJuWuTdh3fe7icnEQ==
-X-Received: by 2002:a17:903:3c70:b0:2ea:4a1:e8a4 with SMTP id d9443c01a7336-2eb1b8c029emr17347455ad.13.1793474627935;
-        Sat, 31 Oct 2026 12:23:47 -0700 (PDT)
-Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae6e8fb1ddsm12878243a91.5.2026.10.31.12.23.46
+        bh=SUiGiQ0Y+CFpbO7hs7vpkUK0TSJwBq9jsvGhQh6Op/E=;
+        b=mSLCSc2OUu3KzyqS6pDYEK40KI53TQSmNvy8MM4FqU9Irys+4yHvY7PJwI19OKbLMy
+         Mw6YlCIrBdXNk2sgpwgm9LsQsWufDlLjs3tAU7xL4Zz4aCi6G2vcq/WMESukcptubaLk
+         4QHWU1jTjRPWk3ul5b880O++FKsZxYJO3SNVM0q9xaAS4trvE3ckT3riDNq78PPJCTpU
+         BALg3N/RvMbTmvXHUFJmQIRqyCClapplVFFPwdrWkGGl6VPFO3pavhSTL/Y9vBKqOXer
+         VAG/SuAm1D1W2TB5YUfGCdjngggvoA2B7gVw66Z7Hkal4/cElQxpjWJyfYvkypQQuZzR
+         xVgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793478812; x=1794083612;
+        h=cc:to:content-transfer-encoding:content-type:mime-version
+         :message-id:date:subject:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=SUiGiQ0Y+CFpbO7hs7vpkUK0TSJwBq9jsvGhQh6Op/E=;
+        b=i3Qkx+i3PJ96B0BKrJW4BuWy6fcNlxUxxCQiDub7MQpkulEnLKkpXOXuU7SbAUf1tp
+         J/ed/M6n7sw9rfwCUMzMazLqLAvkMplti/nuXdqFGinnoVht3hMlflKK2Rss3Lddm+WK
+         1eYZnt6Rte/VcZRb+6884DzstSiP+TzXrG1UgMAfjoEBX9I5qsH4uqyye7uqhHeAXv/x
+         EXJuAkFA7q5fReVi/mFFpoUHw8eMucLi8vp5NiD1ei+PAYWk9gQXIDqz8vq6qq1ryvSD
+         SlNyv6pR7fyHa8PtPo0iVFECDwixoxclrldJhgE0EtYAxC/x68ieWetanlEEIb2b+Gn5
+         0fAQ==
+X-Gm-Message-State: AFq9FYKWbhH2sA7Sj6Wqff4T6X+MXVJvN/5vTm9PHRWW8pMt1JC+KnuK
+	LzXRfK4yBBMqwMbNoMH/7G1lyGXxOha5TXAoHFEQ3WswQN+w+vKqAvzJBfQcs1BKVSttaJBT8AR
+	n06OFvIYS2y+gI7VjHuba8XVKz5P/AqJUYyoioZaX+/mI72xdELCm
+X-Gm-Gg: AYBFou2MdEisuVexBP0O+SBaaTm2nIbo2+YSJmzvN84IsGwkLsuKtl/g11rMI2L+KwP
+	c1eogzDVMNgmNPpmNzONPI1I566by7p5eG2XXPbbiANu1aT8+TzZ4i3ojOAJAI42FYDufGt6dA4
+	0UbRjLRAigx1Ha7S8T32CzbYwjluMdIEqzTJtih8+O7brdarTzdAIqPEa59LjOU1OPBNDFPifI1
+	qplrPnNBZ2zlmhm5EJwHDlJiIyayEt8VW1wVdcZKM7KHGzOPKKVnzAXiLEAs9EIA9J/oFj0dEj8
+	Cdzo6xOhAL7rQtq6GBLB4KYSK7QriNhXEISAgFfvpRrmnFx/ZmAj/BNgCbTkld2VADXwy6RyhP9
+	lBs9VdpNUZmhLiLl9/M1tDHGRE65GV9IcP9nDdmkJWLK4Fvga423i7fJCs+w=
+X-Received: by 2002:a05:620a:6013:b0:93e:5de7:fd45 with SMTP id af79cd13be357-94413382637mr1224532185a.18.1793478811935;
+        Sat, 31 Oct 2026 13:33:31 -0700 (PDT)
+X-Received: by 2002:a05:620a:6013:b0:93e:5de7:fd45 with SMTP id af79cd13be357-94413382637mr1224531085a.18.1793478811503;
+        Sat, 31 Oct 2026 13:33:31 -0700 (PDT)
+Received: from [127.0.1.1] ([37.142.155.128])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-48e71b81c74sm10019650f8f.36.2026.10.31.13.33.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Oct 2026 12:23:47 -0700 (PDT)
-Date: Sat, 31 Oct 2026 19:23:44 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v6 05/18] iommu: Implement device and IOMMU HW
- preservation
-Message-ID: <auY_eWa6J567s1uU@google.com>
-References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-6-skhawaja@google.com>
- <df75f891-05a0-4d47-8705-d6a00c81ff97@linux.intel.com>
- <auTzN4NWuKsBvIZU@google.com>
- <51b23019-8ac2-4f6b-9be7-29f3635b472e@linux.intel.com>
- <auVfqaDhk25JUkYd@google.com>
- <7b059c0e-3b60-4d8c-b7d2-7dcb89a51c6f@linux.intel.com>
+        Sat, 31 Oct 2026 13:33:30 -0700 (PDT)
+From: Tal Zussman <tz2294@columbia.edu>
+Subject: [PATCH 0/2] iommufd: remove the last use of set_page_dirty_lock()
+Date: Sat, 31 Oct 2026 16:33:17 -0400
+Message-Id: <20261031-iommufd-folio-dirty-v1-0-2cef66d2d6d1@columbia.edu>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -112,128 +112,86 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7b059c0e-3b60-4d8c-b7d2-7dcb89a51c6f@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAI1Q5moC/yXMwQ5EMBCA4VeROZtEu0vEq2wcSmcYQTctGyLef
+ Yvjd/j/AwJ5oQBVcoCnnwRxc4RKE2h7M3eEYqNBZ7pQmcpR3DStbJHdKA6t+GXH0jTMb10qfhm
+ I5dcTy3ZfP/XjsDYDtcu1gvP8A2Hxrdl3AAAA
+X-Change-ID: 20261015-iommufd-folio-dirty-8abff4281f3a
+To: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jean-Philippe Brucker <jpb@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Tal Zussman <tz2294@columbia.edu>
+X-Mailer: b4 0.17-dev
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793478807; l=1411;
+ i=tz2294@columbia.edu; s=20250528; h=from:subject:message-id;
+ bh=eNe3oAs4Qkr5hSIiUWON/YrrFv+X7yStpz6+TWXlJBc=;
+ b=wSTu02Ccl25+NdBAeIyxiHEktfMw0UcSgwzuHdGHGICvU2T1FNmcw2CwKjP11wjvt5B+BZ/4F
+ uDFd4B5MfcWBCd3IobPHWNkxqmYvZuaSFF355H2Aw9luNORuzsNJFeL
+X-Developer-Key: i=tz2294@columbia.edu; a=ed25519;
+ pk=BIj5KdACscEOyAC0oIkeZqLB3L94fzBnDccEooxeM5Y=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMxMDA4MSBTYWx0ZWRfX/Zp97Jlwywnc
+ CAEMuvCQNFl0vwcaof+n08Ug+sMiwcCuTqnXr4SxmFxm/T90ZL+yevBtAldOOexOdSJDM7083ga
+ 8jl80YXcwnMTiFhjRv/cdV0I1eK6IEs3GzWNoSIaYV71W2jw0/4udbu7cUUb4iKiHrKjdx/J5Sb
+ Eo95PB3JdmGaXcG+YEO8vkWHWzAmKB5SVmG4Zidd4LLU5YSEh33Q8bwk8T9L61Xl0bIkaS4OR45
+ gPHt4Zacdl5v9QeV2Tld2+IZj9AamAOTb7a9Q/AGrmeyNAhvVYHqm9ZLVEro4ptWGLgnVB/J9iJ
+ bvUuJI7SGf+xKgvBMy6QvYYfbgf110qnLsekobD0gEaPW6S1LbxFrL1by/EdxyJWF5SoOXD6Kf+
+ m4JWknfi1Ki75AjIOcREeMrhRa7nZDndcxp06nRZ2MDPDZzCN5r/7ns+vzyJqhZ8Vuwy0YBriLH
+ bLT5+JWnYYS1U3TWYBQ==
+X-Authority-Analysis: v=2.4 cv=XKSl2ghE c=1 sm=1 tr=0 ts=6ae6509c cx=c_pps
+ a=qKBjSQ1v91RyAK45QCPf5w==:117 a=OyQKmhT2Qqi7aVZxTY5mBQ==:17
+ a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10 a=x7bEGLp0ZPQA:10 a=A0y_DWxS2BwA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=Da8U98TiO7q1upZEImrf:22 a=svvvyxlR1OQQkelhaPoB:22
+ a=B_Kq-j8faEqg3xUN6KgA:9 a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22
+X-Proofpoint-ORIG-GUID: mj24SnQ7Sohm9c8ZUGTrtmTHxyf5mdBN
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMxMDA4MSBTYWx0ZWRfX8TkVsNTIWThh
+ gpMbJr+o4Q0q8xXTcqGy2LoTHwOdSmw6jEInxgJ6N+xoDyoQK1Fz4/cUG0vI6B9OLYZk8TwF9Ux
+ YwvvIIsL9eqFAul6DNZ2CbjsINGNjqQqEhkrAFkM2F/nGX+8rZGO
+X-Proofpoint-GUID: mj24SnQ7Sohm9c8ZUGTrtmTHxyf5mdBN
+X-Proofpoint-Virus-Version: vendor=nai engine=6900 definitions=11952
+ signatures=596817
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=10 malwarescore=0 lowpriorityscore=10
+ clxscore=1011 bulkscore=10 suspectscore=0 phishscore=0 spamscore=0
+ adultscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610300000
+ definitions=main-2610310081
 
-On Sat, Oct 31, 2026 at 01:27:05PM +0800, Baolu Lu wrote:
->On 10/31/2026 11:39 AM, Samiullah Khawaja wrote:
->>On Sat, Oct 31, 2026 at 11:04:22AM +0800, Baolu Lu wrote:
->>>On 10/31/2026 9:45 AM, Samiullah Khawaja wrote:
->>>>>>+
->>>>>> #if IS_ENABLED(CONFIG_IOMMUFD_TEST)
->>>>>> void iommu_device_unregister_bus(struct iommu_device *iommu,
->>>>>>                  const struct bus_type *bus,
->>>>>>@@ -626,8 +668,8 @@ DEFINE_MUTEX(iommu_probe_device_lock);
->>>>>> static int __iommu_probe_device(struct device *dev, struct 
->>>>>>list_head *group_list)
->>>>>> {
->>>>>>+    struct group_device *gdev, *gdev2;
->>>>>>     struct iommu_group *group;
->>>>>>-    struct group_device *gdev;
->>>>>>     int ret;
->>>>>>     /*
->>>>>>@@ -661,6 +703,13 @@ static int __iommu_probe_device(struct 
->>>>>>device *dev, struct list_head *group_list
->>>>>>         goto err_put_group;
->>>>>>     }
->>>>>>+    for_each_group_device(group, gdev2) {
->>>>>>+        if (dev_iommu_has_preserved_state(gdev2->dev)) {
->>>>>>+            ret = -EBUSY;
->>>>>>+            goto err_free_gdev;
->>>>>>+        }
->>>>>>+    }
->>>>>>+
->>>>>>     /*
->>>>>>      * The gdev must be in the list before calling
->>>>>>      * iommu_setup_default_domain()
->>>>>>@@ -697,6 +746,7 @@ static int __iommu_probe_device(struct 
->>>>>>device *dev, struct list_head *group_list
->>>>>> err_remove_gdev:
->>>>>>     list_del(&gdev->list);
->>>>>>+err_free_gdev:
->>>>>>     __iommu_group_free_device(group, gdev);
->>>>>> err_put_group:
->>>>>>     iommu_deinit_device(dev);
->>>>>>@@ -3543,6 +3593,26 @@ bool 
->>>>>>iommu_group_dma_owner_claimed(struct iommu_group *group)
->>>>>> }
->>>>>> EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
->>>>>>+/**
->>>>>>+ * iommu_group_is_singleton() - Query if group contains 
->>>>>>exactly one device
->>>>>>+ * @group: The group.
->>>>>>+ *
->>>>>>+ * Return: true if group contains exactly 1 device, false otherwise.
->>>>>>+ */
->>>>>
->>>>>We discussed this interface before, and the consensus was that such an
->>>>>interface is not feasible, because the membership of an iommu_group is
->>>>>not fixed, given the hot-plug support of buses like PCI.
->>>>>
->>>>>I am fine with the usage model of ensuring the iommu group of a
->>>>>preserved device to be a singleton, but I don't think we even need such
->>>>>a kAPI. It should be handled case by case.
->>>>
->>>>The iommu_group membership can change, this is why we check it in two
->>>>places, both under group->mutex:
->>>>
->>>>- During preservation we check that the group is a singleton, and check
->>>>  again after setting device_ser.
->>>>- During probe we refuse to add a device to a group that has a preserved
->>>>  device.
->>>>
->>>>So if a device is added to the group while we are preserving, either the
->>>>probe fails because the group already has a preserved device, or the
->>>>preservation fails because the group is no longer a singleton. Could you
->>>>please elaborate what you mean by handling it case by case?
->>>
->>>I am fine with the singleton-group checking logic you described above,
->>>but I don't think we need a helper like iommu_group_is_singleton(). It
->>>drops group->mutex before returning, so its result may already be stale
->>>when the caller uses it. That makes it easy to misuse in the future.
->>>
->>>I'd prefer to open-code the check where group->mutex is already held, as
->>>iommu_attach_device() does today:
->>
->>struct iommu_group is private to drivers/iommu/iommu.c, and
->>iommu_preserve_device() is in liveupdate.c, so open coding it there is
->>tricky.
->>
->>You are correct that it drops the lock before returning. That is why I
->>recheck the singleton state after setting device_ser, which handles the
->>race.
->>
->>I was thinking of adding something like iommu_group_lock() and
->>iommu_group_unlock() for this, but the number of devices check also
->>needs struct iommu_group definition.
->>
->>To avoid misuse, I can add a comment on iommu_group_is_singleton() that
->>the result may be stale and the caller must recheck. What do you think?
->
->I would suggest something like this:
->
->size_t iommu_group_device_count(struct iommu_group *group)
->{
->        size_t count;
->
->        mutex_lock(&group->mutex);
->        count = list_count_nodes(&group->devices);
->        mutex_unlock(&group->mutex);
->
->        return count;
->}
->
->and, add a comment stating that the device count may change after the
->function returns, so the caller must recheck it.
+batch_rw() copies to and from pinned user pages one page at a time and
+dirties each with set_page_dirty_lock(). The second patch walks the pfn
+batch a folio at a time with memcpy_to_folio() and memcpy_from_folio()
+and marks each folio dirty once. It removes the last use of
+set_page_dirty_lock() in iommufd.
 
-Sounds good. I will replace iommu_group_is_singleton() with
-iommu_group_device_count() and add the comment.
+The issue fixed in the first patch was found while testing the second:
+iommufd_fail_nth turned up a dev_iommu leak in iommu_fwspec_init() under
+kmemleak. The fix is independent and could go through the iommu tree on
+its own.
 
->
->Thanks,
->baolu
+Tested on x86 under virtme-ng with KASAN and lockdep against the iommufd
+mock driver. The selftests and iommufd_fail_nth all pass.
 
-Thanks,
-Sami
+With ftrace timing iopt_pages_rw_slow() through the mock driver on a
+non-debug kernel, slow-path writes to THP-backed pages drop from ~1310 to
+~930 ns/page (now the same cost as a read), and writes to 4K folios drop
+~9%.
+
+---
+Tal Zussman (2):
+      iommu: free dev->iommu when iommu_fwspec_init() cannot allocate the fwspec
+      iommufd: copy to and from folios in batch_rw()
+
+ drivers/iommu/iommu.c         |  6 +++++-
+ drivers/iommu/iommufd/pages.c | 35 ++++++++++++++++++++---------------
+ 2 files changed, 25 insertions(+), 16 deletions(-)
+---
+base-commit: 04bcf84613346b973a8cc0c59238b6b5bc902688
+change-id: 20261015-iommufd-folio-dirty-8abff4281f3a
+
+Best regards,
+--  
+Tal Zussman <tz2294@columbia.edu>
+
