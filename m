@@ -1,68 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793424849;
-	b=XZiQ8s5Mipb6syPjxSy5fftmgoMTKIU76BMbkIPopivcxRb7lLt0uDnePQjKVcLDKwOb
-	 WeYZMzVQY6iW7MBhcV+fXRaEW30F4bfqXEwSHdNKBpIoDigHQRj1nPGkq+rXHH7DruqB3
-	 lrScn2+By3HTouBVutPRQSA2gy1fLFhDNEgV9BCwHkJFPc4bH925uvjMJy7Ke/JOZxvmg
-	 4lyU5iDskHHp7eX3qAJ4hxUfNEaW86yvsG2urqJkbQ1dnkMkdoTaLRhGlbbtF/AQmfIjD
-	 T97rP05/vCy2cPxRk0yQ4WIJt5sWKjepbIqGZDnd7y+A59sLQGSo+A6dAMWLj2ssDjA==
+	t=1793426181;
+	b=sj1wref12LH03UK0i/9ofUXHWElt+C/MR/vrzZ6bOz14hDuG5G5HoRL6Og9gIYnMmOYv
+	 rcmtXGTdeYc4aluSDI1eBZi0ev1QdrwQw9tlAyUvmi7iXfiWTFmqGQdCH6UM+cYkrUpTn
+	 HxRD8x/gMkj0EyYoMohD57DwcVW0lZXWqHRxq6b6QVPZiHEE0g33qHWUwu4r5d30S4qeu
+	 4yYmYFoNw32+dOlZDwJkpImZoMWZlTHHG8y6OLZAWEioglO1eTx0adYbxKArs/FQIoaV3
+	 U3GwdUSXmDviBvrqdBPM3l5XvWMgXr1AwHqyf5SpyMBhcA5Fg9JPKEaXMgqUwzkJx1g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793424849;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793426181;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
 	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
 	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=/VwbcVFoAg5lnb5ziZ5bsI4g8Kl0QWqGFO+0605f0UM=;
-	b=wIt7OMnfUuPekXA1V13PWaJn4aq0VZlTLRB7pyyMsoxyoVkNCMEw45EdF/tqvoMQqVpD
-	 ifZN41qZrLNHtAy/ij+wgcsgw8WfNZG+Su2A2AQYjgrRRDCDAJSA/HVFp6UpRQraTQBFt
-	 c2A6vn6rA12SA/955kFGp7Pej9q0fK45K5hYPCIEgCy9ggEmV9Ri3ful6IbXp/mNEA0AR
-	 iCsGxI2PXW0FV1d8meRFE6L8VYN9CW7H6aqgZGchBeGi6LiOnRq66Xcgz9bLup0TPAqNs
-	 0i49yLywC5RfQ9nd+KWTCxrh50z3MX4KrQXK0VHSsT1Btzk+N79N39QXEey0Gwlyukw==
+	bh=N7ZwaJ7vbMee9aorv3youp0owlQKKiWsc6xwL1/KdJ4=;
+	b=rH9wxhbtwy8Bljs051nhNDfr88PUERZEhzFPY7zPJDIlEEGI/jCDSqKUlY15um/v8XKo
+	 sebTlnZUnVim0sk6Bm2/SqUb9blZfm7Kw7NFtHaDRM27w/P/zTGAZJJAD5/953eZcNpgy
+	 RC4wrwc/6CXwH2+sUZMUF3UF/OHPUTPuLFi5VnlYY5KEQEzta4Ta4K1Ebzw19wAc6uPmg
+	 AmCrjyLmjeFZMfJ95pR2vtu0WYhisDU2mmX9eFoU9YojUwtjeVCY+XPKWkvUZ2sQXMtk2
+	 sXPogdZUPQXia0fJR5ze3ma10so2HCX4SPWMKhs3QEO+K/tbSkzKsKgXH72RnjX9rUw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZK+DtdfU;
-	arc=none smtp.remote-ip=198.175.65.11
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aKLdi0PH;
+	arc=none smtp.remote-ip=192.198.163.14
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D12A3606A31C
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 05:34:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D12A3606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 937E4606A31C
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 05:56:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 937E4606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZK+DtdfU
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aKLdi0PH
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793424848; x=1824960848;
+  t=1793426181; x=1824962181;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=+fcibPi2ZDVRjTuc7ggPd3G0vq20xPXdnRW/+shzkss=;
-  b=ZK+DtdfU2Dm1CqhLETfptaPwLpu7nI52fPj0zI0VkMENS0cr3FeXyGiZ
-   gOzENHdRq4X40HUI+K+fkILJNCWpblt4VZNHmH2OiLQ+5a7gC1UqnjbPs
-   sUlgOoEpY5EILHYsCxHFHTMcB48QOsOD/ahNf7td1V2TpZydeizCr7PJn
-   CnSRI81pqToEvCiyPAAEbO5Z252kwZACLBddnEt7dw+OPwS3NPm7oyIPd
-   yozW2tjIpScj6G/hCZk78id7YNcWrWKO4BiIKtTYFOdi5ASYF8vEQY8+2
-   UkngMLGImKUIqN7HCz036UbSPoy55Pt2duMhmTyBOPVRSwlizswtFRn/C
+  bh=n/Ma+Vo5Cq0vdWeRsNkNZSUCDb5boMlJRuQWnHLIVzk=;
+  b=aKLdi0PH1cSOc14ptDhanrOGD7MCHaYKmohyIQmz94qWaunfzNls7AlU
+   1aURrWG3o7RlV3/LQOE45JntFM0fXpldYwCkr0keUiZ2bRJgZMwJDohcV
+   A+EYracqNdQCPbXBYI0ReeSzTDQGHAvH/SuqePoFdGuU/Z1A/pxu4pzzm
+   YFJNIIa8wbhiRV/imdr9ooOBuZ4R+k3abECH0xc/Kgm4FSDd7s5/HS5f2
+   WMPrTUMR6lhkvg2ZEnejPeKg9KIISRWkxAwm4U1zTHvCyZQLCMgol5NnO
+   xaw0ktCtdXc/HbtZH85FhsT0nIWrcMz9lKNHqGBSsHAg8mJs8W3adAVsS
    g==;
-X-CSE-ConnectionGUID: MPj58DOoT7K0AGTGacJdMA==
-X-CSE-MsgGUID: wIcy0qCdShKw38wmMRrjWQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2068563"
+X-CSE-ConnectionGUID: 6AfWD2+2R2qRA8mVla42eg==
+X-CSE-MsgGUID: PZowqVnQTriYu1ONRG/02w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2220901"
 X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="2068563"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:34:07 -0700
-X-CSE-ConnectionGUID: F453hYEiQM+q6Op/y8/sww==
-X-CSE-MsgGUID: Z3Ms19v7S7KM2iyhLgEFog==
+   d="scan'208";a="2220901"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:56:20 -0700
+X-CSE-ConnectionGUID: IxzEUO4USva7/99YVRagNw==
+X-CSE-MsgGUID: uXSHQduPTyaAZA2NJIELYQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="5994725"
+   d="scan'208";a="5502480"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.249.52]) ([10.124.249.52])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:34:02 -0700
-Message-ID: <38384919-f0e5-4c93-b71b-065b96a74c38@linux.intel.com>
-Date: Sat, 31 Oct 2026 13:34:00 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:56:15 -0700
+Message-ID: <2574cbc8-8c2b-4458-9fcd-b077190084a3@linux.intel.com>
+Date: Sat, 31 Oct 2026 13:56:12 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,135 +73,153 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
- Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+Cc: baolu.lu@linux.intel.com, Pranjal Shrivastava <praan@google.com>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
  Pratyush Yadav <pratyush@kernel.org>,
  Pasha Tatashin <pasha.tatashin@soleen.com>,
  David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
- Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>,
- John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v6 05/18] iommu: Implement device and IOMMU HW
- preservation
-To: Samiullah Khawaja <skhawaja@google.com>
+ Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma
+ <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 17/18] vfio/pci: Preserve the iommufd state of the vfio
+ cdev
+To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ David Woodhouse <dwmw2@infradead.org>
 References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-6-skhawaja@google.com>
- <df75f891-05a0-4d47-8705-d6a00c81ff97@linux.intel.com>
- <auTzN4NWuKsBvIZU@google.com>
+ <20261025021930.674647-18-skhawaja@google.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <auTzN4NWuKsBvIZU@google.com>
+In-Reply-To: <20261025021930.674647-18-skhawaja@google.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 10/31/2026 9:45 AM, Samiullah Khawaja wrote:
-> On Fri, Oct 30, 2026 at 01:12:31PM +0800, Baolu Lu wrote:
->> On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
->>> Add IOMMU ops to preserve/unpreserve the device state handled by the
->>> IOMMU driver. This is IOMMU specific state of the device that needs to
->>> be preserved for liveupdate. These ops can be implemented by the IOMMU
->>> drivers that support preservation of devices that have their IOMMU
->>> domains preserved. During device preservation the state of the
->>> associated IOMMU is also preserved as dependency.
->>>
->>> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->>> ---
->>>  drivers/iommu/iommu-priv.h       |   2 +
->>>  drivers/iommu/iommu.c            |  72 +++++++++++-
->>>  drivers/iommu/liveupdate.c       | 189 +++++++++++++++++++++++++++++++
->>>  include/linux/iommu-liveupdate.h |  76 +++++++++++++
->>>  include/linux/iommu.h            |  33 ++++++
->>>  5 files changed, 371 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
->>> index 1f9f886b2c10..6b0ef210b32f 100644
->>> --- a/drivers/iommu/iommu-priv.h
->>> +++ b/drivers/iommu/iommu-priv.h
->>> @@ -21,6 +21,8 @@ static inline const struct iommu_ops 
->>> *dev_iommu_ops(struct device *dev)
->>>  void dev_iommu_free(struct device *dev);
->>> +bool iommu_group_is_singleton(struct iommu_group *group);
->>> +
->>>  const struct iommu_ops *iommu_ops_from_fwnode(const struct 
->>> fwnode_handle *fwnode);
->>>  static inline const struct iommu_ops *iommu_fwspec_ops(struct 
->>> iommu_fwspec *fwspec)
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index b486b8bbd1fc..a66363789ca9 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -18,6 +18,7 @@
->>>  #include <linux/errno.h>
->>>  #include <linux/host1x_context_bus.h>
->>>  #include <linux/iommu.h>
->>> +#include <linux/iommu-liveupdate.h>
->>>  #include <linux/iommufd.h>
->>>  #include <linux/idr.h>
->>>  #include <linux/err.h>
->>> @@ -328,6 +329,47 @@ void iommu_device_unregister(struct iommu_device 
->>> *iommu)
->>>  }
->>>  EXPORT_SYMBOL_GPL(iommu_device_unregister);
->>> +struct iommu_dev_iter {
->>> +    struct iommu_device *iommu;
->>> +    iommu_dev_iter_fn fn;
->>> +};
->>> +
->>> +static int _iommu_for_each_dev_cb(struct device *dev, void *data)
->>> +{
->>> +    struct iommu_dev_iter *iter = data;
->>> +
->>> +    if (dev->iommu && dev->iommu->iommu_dev == iter->iommu)
->>> +        return iter->fn(dev, iter->iommu);
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +/**
->>> + * iommu_for_each_dev() - Iterate over all devices attached to an IOMMU
->>> + * @iommu: IOMMU instance
->>> + * @fn: Callback to call for each device attached to @iommu
->>> + *
->>> + * Return: 0 on success, or negative error code.
->>> + */
->>> +int iommu_for_each_dev(struct iommu_device *iommu, iommu_dev_iter_fn 
->>> fn)
->>> +{
->>> +    struct iommu_dev_iter iter = {
->>> +        .iommu = iommu,
->>> +        .fn = fn,
->>> +    };
->>> +    int ret;
->>> +
->>> +    for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
->>> +        ret = bus_for_each_dev(iommu_buses[i], NULL, &iter,
->>> +                       _iommu_for_each_dev_cb);
->>> +        if (ret)
->>> +            return ret;
->>> +    }
->>> +
->>> +    return 0;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iommu_for_each_dev);
->>
->> The function has no locking against iommu probe or release, so the
->> callback can read dev->iommu while it is being freed or before it is
->> fully set up.
+On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
+> If the vfio cdev is attached to an iommufd, preserve the state of the
+> attached iommufd also. Basically preserve the iommu specific state of
+> the device and also the attach iommu HW unit.
 > 
-> It is only called from intel_iommu_shutdown(), which runs after the
-> other CPUs are stopped and interrupts are disabled, so probe and release
-> can't run. I will rename it to iommu_for_each_dev_unsafe(), document
-> that it must only be called at shutdown and drop the export, since the
-> only user is built in.
+> Once the device and its iommufd attachment is preserved, it cannot be
+> detached or attached to another IOAS until it is unpreserved.
+> 
+> Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+> ---
+>   drivers/vfio/device_cdev.c             | 10 +++++++++
+>   drivers/vfio/pci/vfio_pci_liveupdate.c | 28 ++++++++++++++++++++++++--
+>   2 files changed, 36 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
+> index b818aab92f76..4eb7ffd489bd 100644
+> --- a/drivers/vfio/device_cdev.c
+> +++ b/drivers/vfio/device_cdev.c
+> @@ -284,6 +284,11 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
+>   	}
+>   
+>   	mutex_lock(&device->dev_set->lock);
+> +	if (iommufd_device_is_preserved(device->iommufd_device)) {
+> +		ret = -EBUSY;
+> +		goto out_unlock;
+> +	}
+> +
+>   	if (attach.flags & VFIO_DEVICE_ATTACH_PASID)
+>   		ret = device->ops->pasid_attach_ioas(device,
+>   						     attach.pasid,
+> @@ -342,6 +347,11 @@ int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
+>   	}
+>   
+>   	mutex_lock(&device->dev_set->lock);
+> +	if (iommufd_device_is_preserved(device->iommufd_device)) {
+> +		mutex_unlock(&device->dev_set->lock);
+> +		return -EBUSY;
+> +	}
+> +
+>   	if (detach.flags & VFIO_DEVICE_DETACH_PASID)
+>   		device->ops->pasid_detach_ioas(device, detach.pasid);
+>   	else
+> diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio_pci_liveupdate.c
+> index f0ea37d98696..fb2141ee8942 100644
+> --- a/drivers/vfio/pci/vfio_pci_liveupdate.c
+> +++ b/drivers/vfio/pci/vfio_pci_liveupdate.c
+> @@ -106,6 +106,7 @@
+>   
+>   #include <linux/errno.h>
+>   #include <linux/file.h>
+> +#include <linux/iommufd.h>
+>   #include <linux/kexec_handover.h>
+>   #include <linux/kho/abi/vfio_pci.h>
+>   #include <linux/liveupdate.h>
+> @@ -114,6 +115,8 @@
+>   
+>   #include "vfio_pci_priv.h"
+>   
+> +MODULE_IMPORT_NS("IOMMUFD");
+> +
+>   static bool vfio_pci_liveupdate_can_preserve(struct liveupdate_file_handler *handler,
+>   					     struct file *file)
+>   {
+> @@ -154,15 +157,25 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
+>   	struct vfio_pci_core_device_ser *ser;
+>   	struct vfio_pci_core_device *vdev;
+>   	struct pci_dev *pdev;
+> -	int ret;
+> +	u64 iommufd_token;
+> +	int ret = 0;
 
-If it's only intended for the intel iommu driver, then it should be
-open-coded there. There is no need to add an immature interface like
-this to the core. It could be misused in the future.
+nit: no need to initialize ret.
 
-Thanks,
-baolu
+>   
+>   	vdev = container_of(device, struct vfio_pci_core_device, vdev);
+>   	pdev = vdev->pdev;
+>   
+> -	ret = pci_liveupdate_preserve(pdev);
+> +	mutex_lock(&device->dev_set->lock);
+> +	ret = iommufd_device_preserve(args->session,
+> +				      device->iommufd_device,
+> +				      &iommufd_token);
+> +	mutex_unlock(&device->dev_set->lock);
+> +
+>   	if (ret)
+>   		return ret;
+>   
+> +	ret = pci_liveupdate_preserve(pdev);
+> +	if (ret)
+> +		goto err_iommufd_unpreserve;
+> +
+>   	ser = kho_alloc_preserve(sizeof(*ser));
+>   	if (IS_ERR(ser)) {
+>   		ret = PTR_ERR(ser);
+> @@ -177,6 +190,12 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
+>   
+>   err_unpreserve:
+>   	pci_liveupdate_unpreserve(pdev);
+> +
+> +err_iommufd_unpreserve:
+> +	mutex_lock(&device->dev_set->lock);
+> +	iommufd_device_unpreserve(args->session,
+> +				  device->iommufd_device);
+> +	mutex_unlock(&device->dev_set->lock);
+>   	return ret;
+>   }
+>   
+> @@ -184,6 +203,11 @@ static void vfio_pci_liveupdate_unpreserve(struct liveupdate_file_op_args *args)
+>   {
+>   	struct vfio_device *device = vfio_device_from_file(args->file);
+>   
+> +	mutex_lock(&device->dev_set->lock);
+> +	iommufd_device_unpreserve(args->session,
+> +				  device->iommufd_device);
+> +	mutex_unlock(&device->dev_set->lock);
+> +
+>   	pci_liveupdate_unpreserve(to_pci_dev(device->dev));
+>   	kho_unpreserve_free(phys_to_virt(args->serialized_data));
+>   }
+
+Unpreservation isn't the exact reverse of preservation. Anything special
+here?
+
+Otherwise, this patch looks good to me,
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
