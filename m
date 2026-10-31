@@ -1,93 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793420732;
-	b=Q9TZhilV36ACUhWCW3mkH8TqBnTClWwpnOl5KItEoeYFJ/wDfe8yLb5uYz39Yf2fOgtz
-	 vjyMAgnsJwu7G3lj+z6hfU9jeMwnidsnUEIEY70b7yIkpWIo28KDY+/+I9EXrAGpvTFhW
-	 sOH+H1vEP12d3Qk/zx+OAXv1VDYOEC3kcGODNX9P8JO1zuntZTgtNo1UqJPG8bMNi5ceM
-	 EFS1m9aB9pvAYr031uZoavENP5HeDiGTZv+q9WrhqUcuGPRNl2UOLShRAAizdkd0wLaXV
-	 XDDzirH+fAb8E8T8b6+eAeh5DJNo/2HsrAmhdcOxgG/MPkPzABSpPcPKlEolzWvdyIQ==
+	t=1793424435;
+	b=rJf4Vb78UtQ9CpkbDOqsd1tCsIPY4WyLh3D06Ejtexd9wkQvanrD6Vx14aMxnTreBnKl
+	 nspHSdONXwhAdZonPbU+gqUXPr29WhKWjOlyDvoLWmBlz+RHG/8rwXXBBEsJoJlzBl2yE
+	 qTpCwLNi7IGh+0914nQTDEay87KbMYSyC6MBeSoM51Z7v0Tpp66IETKd3QmeyPPQAe8cT
+	 3gZ58Y8x/LmRIJ5RCBuwelpgbDEwm52dmBa3+n8+00wDTibhbtyJsIEN3/6s9wAGs0XqV
+	 wrjgbp3UTatmg4vKPUhwKdEh7Mgqo8WIlv3m8OVCqAnBkVHMrpoWfzr+DeGXHf+e0rg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793420732;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=HBqVKgD/J3O3UsdCswiaBpwuPrR9DAwLVOA8ARw7ulc=;
-	b=DFCoxhLBkXJvDO/rZPr6dK6RTrSrRGmQNGXuJVJEd309Vuts3DPpC6F+oWyKGnrjFQ+1
-	 YVteX/teHQjgtPmodnnO+AcsytmBRNSJjV6sfHmH7EGXPxN8B5FK9eCQqgMgTduTH7aiJ
-	 2yPyoAJoDWRrA1ffB6TM8TZ8U8NKTcOFoNDD6JfIs357aEFT1dcMAV4G2hP14X+nnE85W
-	 bTbHyd0WIAC1yzZ7bDTyhbw2/CcAgB+JnnT8bOzjghQvDPBV0XP9Rbcnim/kpstT09ncb
-	 zHXcUwwpju8cSSGF+iNNM+VIzxrN3P1005y/70VTlVGfj/99PhuwnOntH7K8MYOKpYg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793424435;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=sJ1i2sB19WjZsWpCLPMyCnOc+WH6sAraGwOCsPP3qWk=;
+	b=Cn5T6RDMQIf+KRYUPVYuPKF1BpInZhLpnIM6yurI8XHYOwjdQaExfHPRUur2LZUfbXH6
+	 vtpP84jG8e4aKieEouzlficqPw8wrphnHbkFtMTDZ/fRntJ6weon11KZA0EJ75GpYMNaj
+	 hEVwx0kBLyYpJcNl7TxTYuCVRK8D4OMRLMwPPS/RPFSwqtymGzRcw4BBezjxwRLaUPaLl
+	 tMDmugDFzqpRvvHlCjT3NcyYGowpMQMtZPgxx32ONDQuhn+1oRvwzUpHQRmXs9PBdsGVd
+	 zAeJ7p2UG8Alvk8ul7Fly9Ad/N4nrU36CCchLFHERLnlK3gx/YforK+/SmE0O5Bcrdg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=openai.com;
-	spf=pass smtp.mailfrom=openai.com;
-	dkim=pass header.d=openai.com header.i=@openai.com header.a=rsa-sha256 header.s=google header.b=FRA7yMG0;
-	arc=none smtp.remote-ip=209.85.167.182
-Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=U6+0nqv7;
+	arc=none smtp.remote-ip=192.198.163.7
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7DC4606A321
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 04:25:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C7DC4606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=openai.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=openai.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD819606A31D
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 05:27:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AD819606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=openai.com header.i=@openai.com header.a=rsa-sha256 header.s=google header.b=FRA7yMG0
-Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-53a448f86e0so908741b6e.1
-        for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 21:25:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=openai.com; s=google; t=1793420731; x=1794025531; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=HBqVKgD/J3O3UsdCswiaBpwuPrR9DAwLVOA8ARw7ulc=;
-        b=FRA7yMG0PyEpEVoR9K1qq7X5wodFl9yh1Jz/KYbOsS3oHmZsCj0JHuhXPxG0Y7rqTx
-         D/kQK0Q/e5MGqBNAI5yec8eGUr16z1hkcYh3ema5KPkn55g4khM9xwTWTzWkEU5w9ADr
-         x+kKyQkVXOFi6KdEzu2R1ZdR+m15PlHcXnPk0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793420731; x=1794025531;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=HBqVKgD/J3O3UsdCswiaBpwuPrR9DAwLVOA8ARw7ulc=;
-        b=gaUXiu1uV7x6gu0YFdKLI+GnboMZos5aHFodmEidIZp4ublju8rVRKY5A4ux7s9W0Z
-         pmyDeFWs27qYA0WxcY9vybN/+6EX30GGstI4q6UpjMdooVJZ1UzYXozUNNqHo2++eNun
-         Ukw/k/etoBoGQnFMpXZnwPgqJzRPR/6pT+C9AEYVBX402vCIONwzyu1Zmp6HxaN+l6co
-         kWRRYFyqeGE3Xou263fQAme3aCxhiA7Ug1MDiGodPoBHOPVNLG1t+bzUXc01YWenfPq8
-         yIQmMg14xgF83NaBkIkUZZChd7sS/sWX0r0VdAwY01zw+dSQLBwaGzUQi07ujTFsYwCt
-         f2dA==
-X-Gm-Message-State: AFq9FYIuk3k4OQdpz5++P3e+SlOK0hjWcCUkD2WL3jQki83sF41UcL4/
-	kyMiYrDSSpZx5xIZ+/c0+kGJQDEINgscic0xS5PLVMyAPL6o6TIu7XTt9qem+xFCHeNwJWNMYXG
-	6Asf5RTI=
-X-Gm-Gg: AYBFou30lSUsd0QOkDROWs3W4iB3A33K+89C2NPwKqE7meQRJyxTPrA716z4ZPaf8gh
-	p+qurbKH5317X4ycgIIVR0SwLxcBPiaeRNU1Fgj2UEyMSAoDHnY5X2spMHnEFCQ0uP7BpDa2v6X
-	crLGu7gqoFfQ1SnRzjg1luSg8wTJBa9y0Ki9rKogvhnFBVX56okm+LfJ8N5JE/u3V3/7Fo4o6Ho
-	u6Y91GwamtWajq2Gkuk/S/eH/N5CBiTfQY6/UVX+mvrDE21exwiUgqHknZARJpJUuLPXktWtE4x
-	il1WfozVpSYpMr/LgLGBvSRiGM2qwl0jXX3wAvLQ8PGfY50DSYfEkj9At8YRV1cCgROxn/GYkP/
-	J+D+QePIDu642R0Y2DWeHt1Os/9QV+EOHF63dxZW+5JpfbvDz3Pp/a4wP+58Er8P+f3zYkCckPp
-	uUcKlpWUXjsLk7/kFt7IZmpfaa6Dog9OpLVJWP7Nbx6U2EXtuRj916p+8z0SRz9yi2+bnT83mlV
-	YHA3WxyJgJP2IYtTBhLyj1qltmrDjobE096j6aAizcdyHOwaLxNGI0H32BiZzJaclAgD/HAOWoW
-	ruo+elwo0WCOPwkCZ/c4nPb6DSnps54EIrQ5SaWAuL7zWdNOsjgGe7SUFDe7j/cMv6Rwa+M2zXp
-	xfvN16HAV5CJm1VBjdiXsnVKaRDiMa5vWECoBxFav1HjtEdi3VIs=
-X-Received: by 2002:a05:6808:16a7:b0:4b9:e88f:89dd with SMTP id 5614622812f47-5640de8da6emr3144357b6e.43.1793420730742;
-        Fri, 30 Oct 2026 21:25:30 -0700 (PDT)
-Received: from com-75606.corp.openai.org ([199.47.143.7])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-5640fd93451sm3000260b6e.3.2026.10.30.21.25.29
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Fri, 30 Oct 2026 21:25:30 -0700 (PDT)
-From: Kyle Zeng <kylebot@openai.com>
-To: iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	outbounddisclosures@openai.com
-Subject: [PATCH 2/2] iommufd: Reject opens until module initialization succeeds
-Date: Fri, 30 Oct 2026 21:25:27 -0700
-Message-ID: <20261031042527.6418-2-kylebot@openai.com>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20261031042527.6418-1-kylebot@openai.com>
-References: <20261031042527.6418-1-kylebot@openai.com>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=U6+0nqv7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793424434; x=1824960434;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HorgvWPM7Wg7lJRLSZ/w7jpsG9fGBf5ZSc6uneNyf3A=;
+  b=U6+0nqv72QIpc2fEPdQxl37/PzV5q2/hD5yxHH5Pv2zSceIHN9INyYgS
+   GeWvVCoE+7qGre8nwfmQqLglY1uvkIhU4pp09yX2Y6uLM46IpmSBPEKPA
+   0uCt0gYW6u6vR7CFequC9rX90OuIBAPWsoB83tgGBGmhVHAZLckcm0ql+
+   usgS672L6VWm6s8Dx48tBpxmcn+mM3CO1PY25R2H4dZThy0dE3pDB7aSG
+   gWxwjQ9XR1H98x/M9xXAi9wl6HxxGvk6gFTBTlsiavg/f6LNfnKEBee0E
+   HmaPzgHhe0vWc0U2oEQV1T/mRg/684wkVcrr50KMbGuPY2rTb9Ef9tGma
+   Q==;
+X-CSE-ConnectionGUID: +b/Klh89Sy6fijkMwo/lfA==
+X-CSE-MsgGUID: AzkfFCiZSCCH82WbTTrAhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2069154"
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="2069154"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:27:13 -0700
+X-CSE-ConnectionGUID: CpMzmVyzRTmwuefiKAjO9A==
+X-CSE-MsgGUID: uS7oy4RhQLqJhtXiqh+oLw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
+   d="scan'208";a="5994163"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.249.52]) ([10.124.249.52])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:27:08 -0700
+Message-ID: <7b059c0e-3b60-4d8c-b7d2-7dcb89a51c6f@linux.intel.com>
+Date: Sat, 31 Oct 2026 13:27:05 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -97,79 +72,144 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
+ Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+ Pratyush Yadav <pratyush@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ David Matlack <dmatlack@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
+ Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 05/18] iommu: Implement device and IOMMU HW
+ preservation
+To: Samiullah Khawaja <skhawaja@google.com>
+References: <20261025021930.674647-1-skhawaja@google.com>
+ <20261025021930.674647-6-skhawaja@google.com>
+ <df75f891-05a0-4d47-8705-d6a00c81ff97@linux.intel.com>
+ <auTzN4NWuKsBvIZU@google.com>
+ <51b23019-8ac2-4f6b-9be7-29f3635b472e@linux.intel.com>
+ <auVfqaDhk25JUkYd@google.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <auVfqaDhk25JUkYd@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-iommufd_init() publishes /dev/iommu before registering the optional
-/dev/vfio/vfio compatibility node and running the optional self-test
-initialization. Either later operation can fail. Since file operations
-can acquire a reference to a COMING module, an already-open file can
-survive the failed initialization and refer to freed iommufd module
-memory.
+On 10/31/2026 11:39 AM, Samiullah Khawaja wrote:
+> On Sat, Oct 31, 2026 at 11:04:22AM +0800, Baolu Lu wrote:
+>> On 10/31/2026 9:45 AM, Samiullah Khawaja wrote:
+>>>>> +
+>>>>>  #if IS_ENABLED(CONFIG_IOMMUFD_TEST)
+>>>>>  void iommu_device_unregister_bus(struct iommu_device *iommu,
+>>>>>                   const struct bus_type *bus,
+>>>>> @@ -626,8 +668,8 @@ DEFINE_MUTEX(iommu_probe_device_lock);
+>>>>>  static int __iommu_probe_device(struct device *dev, struct 
+>>>>> list_head *group_list)
+>>>>>  {
+>>>>> +    struct group_device *gdev, *gdev2;
+>>>>>      struct iommu_group *group;
+>>>>> -    struct group_device *gdev;
+>>>>>      int ret;
+>>>>>      /*
+>>>>> @@ -661,6 +703,13 @@ static int __iommu_probe_device(struct device 
+>>>>> *dev, struct list_head *group_list
+>>>>>          goto err_put_group;
+>>>>>      }
+>>>>> +    for_each_group_device(group, gdev2) {
+>>>>> +        if (dev_iommu_has_preserved_state(gdev2->dev)) {
+>>>>> +            ret = -EBUSY;
+>>>>> +            goto err_free_gdev;
+>>>>> +        }
+>>>>> +    }
+>>>>> +
+>>>>>      /*
+>>>>>       * The gdev must be in the list before calling
+>>>>>       * iommu_setup_default_domain()
+>>>>> @@ -697,6 +746,7 @@ static int __iommu_probe_device(struct device 
+>>>>> *dev, struct list_head *group_list
+>>>>>  err_remove_gdev:
+>>>>>      list_del(&gdev->list);
+>>>>> +err_free_gdev:
+>>>>>      __iommu_group_free_device(group, gdev);
+>>>>>  err_put_group:
+>>>>>      iommu_deinit_device(dev);
+>>>>> @@ -3543,6 +3593,26 @@ bool iommu_group_dma_owner_claimed(struct 
+>>>>> iommu_group *group)
+>>>>>  }
+>>>>>  EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+>>>>> +/**
+>>>>> + * iommu_group_is_singleton() - Query if group contains exactly 
+>>>>> one device
+>>>>> + * @group: The group.
+>>>>> + *
+>>>>> + * Return: true if group contains exactly 1 device, false otherwise.
+>>>>> + */
+>>>>
+>>>> We discussed this interface before, and the consensus was that such an
+>>>> interface is not feasible, because the membership of an iommu_group is
+>>>> not fixed, given the hot-plug support of buses like PCI.
+>>>>
+>>>> I am fine with the usage model of ensuring the iommu group of a
+>>>> preserved device to be a singleton, but I don't think we even need such
+>>>> a kAPI. It should be handled case by case.
+>>>
+>>> The iommu_group membership can change, this is why we check it in two
+>>> places, both under group->mutex:
+>>>
+>>> - During preservation we check that the group is a singleton, and check
+>>>   again after setting device_ser.
+>>> - During probe we refuse to add a device to a group that has a preserved
+>>>   device.
+>>>
+>>> So if a device is added to the group while we are preserving, either the
+>>> probe fails because the group already has a preserved device, or the
+>>> preservation fails because the group is no longer a singleton. Could you
+>>> please elaborate what you mean by handling it case by case?
+>>
+>> I am fine with the singleton-group checking logic you described above,
+>> but I don't think we need a helper like iommu_group_is_singleton(). It
+>> drops group->mutex before returning, so its result may already be stale
+>> when the caller uses it. That makes it easy to misuse in the future.
+>>
+>> I'd prefer to open-code the check where group->mutex is already held, as
+>> iommu_attach_device() does today:
+> 
+> struct iommu_group is private to drivers/iommu/iommu.c, and
+> iommu_preserve_device() is in liveupdate.c, so open coding it there is
+> tricky.
+> 
+> You are correct that it drops the lock before returning. That is why I
+> recheck the singleton state after setting device_ser, which handles the
+> race.
+> 
+> I was thinking of adding something like iommu_group_lock() and
+> iommu_group_unlock() for this, but the number of devices check also
+> needs struct iommu_group definition.
+> 
+> To avoid misuse, I can add a comment on iommu_group_is_singleton() that
+> the result may be stale and the caller must recheck. What do you think?
 
-Gate the shared open callback until all fallible initialization has
-completed. Publish the ready flag with release semantics and read it
-with acquire semantics so successful opens see the initialized state.
+I would suggest something like this:
 
-An early rejected open also needs to drop its module-backed operations
-table. misc_open() holds misc_mtx across the callback, so deregistration
-waits for it, but the VFS's fops_put() on the failed open happens later.
-Restore the inode's core character-device operations before returning
--ENODEV, avoiding that remaining reference to the failed module.
+size_t iommu_group_device_count(struct iommu_group *group)
+{
+         size_t count;
 
-Fixes: 01f70cbb26ea ("iommufd: Allow iommufd to supply /dev/vfio/vfio")
-Fixes: 23a1b46f15d5 ("iommufd/selftest: Make the mock iommu driver into a real driver")
-Signed-off-by: Kyle Zeng <kylebot@openai.com>
----
- drivers/iommu/iommufd/main.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+         mutex_lock(&group->mutex);
+         count = list_count_nodes(&group->devices);
+         mutex_unlock(&group->mutex);
 
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 9a921b153162..781a8d63dda9 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -16,6 +16,7 @@
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/slab.h>
-+#include <linux/smp.h>
- #include <uapi/linux/iommufd.h>
- 
- #include "io_pagetable.h"
-@@ -30,6 +31,7 @@ struct iommufd_object_ops {
- };
- static const struct iommufd_object_ops iommufd_object_ops[];
- static struct miscdevice vfio_misc_dev;
-+static bool iommufd_ready;
- 
- struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
- 					     size_t size,
-@@ -316,6 +318,17 @@ static int iommufd_fops_open(struct inode *inode, struct file *filp)
- {
- 	struct iommufd_ctx *ictx;
- 
-+	/* Pairs with the ready publication at the end of iommufd_init(). */
-+	if (!smp_load_acquire(&iommufd_ready)) {
-+		/*
-+		 * misc_deregister() waits for this callback, but not the
-+		 * VFS's fops_put() after a failed open. Restore the core
-+		 * character-device operations before dropping misc_mtx.
-+		 */
-+		replace_fops(filp, fops_get(inode->i_fop));
-+		return -ENODEV;
-+	}
-+
- 	ictx = kzalloc_obj(*ictx, GFP_KERNEL_ACCOUNT);
- 	if (!ictx)
- 		return -ENOMEM;
-@@ -799,6 +812,8 @@ static int __init iommufd_init(void)
- 	ret = iommufd_test_init();
- 	if (ret)
- 		goto err_vfio_misc;
-+	/* Pairs with iommufd_fops_open(); no fallible setup may follow. */
-+	smp_store_release(&iommufd_ready, true);
- 	return 0;
- 
- err_vfio_misc:
--- 
-2.53.0
+         return count;
+}
 
+and, add a comment stating that the device count may change after the
+function returns, so the caller must recheck it.
+
+Thanks,
+baolu
