@@ -1,68 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793417516;
-	b=crsf/g1W5DU6YIQbSptSLafA508W+ehdSWNW7S53z92F8Xurp9owIABpxB2MPzuAo8MI
-	 rziRXqSgDj63j/VVDYSj7GvCzo8u8Z0T4wsX3ZRNhCZRkEWTOtu7+hyIBdRkXlwvqfBsS
-	 ICqYDa78iY+kT9M2Jr80boTAeI1S+D0OKcaGe02ltWVpT6Qneabsx9b90+K5wb65HufBA
-	 Vop/v9L4X/Um44lE1ndXjV/zMOloOj1bkBTqWj2INV6lE303zePQOCZfX/fwcX9KWsrsd
-	 QttSI7ci12kMftdSFucSPvTM3Sealfqma0R0VbxKJGncqmXPdXg1gyU2aRyewRKuDow==
+	t=1793417985;
+	b=0BVOyJnV2+IXAUEQAFdrWdune1HgitsJnXiQSERF1lq7cmaclW98A0MWK5SzHGX/RcZR
+	 UzR8g/X6XHvz37g1X5v5RVloIIKt6dIfbmpvtbCvmYIwCqLhgBxMtIhkZHVXk/TeJr2gB
+	 0kUgiLgXO152OQq2GznEx8t/6M9UpXsBcyjbwEYVU2tqQ/FMAMTc67aVgf/xjWrmLEMf1
+	 WNTP0+8q1AFNa+52cUUnh9wSPdAM7zojuS596zgCS/zbXH+aXRNB17b34mQd7nsTEuJb3
+	 t5cjixtKZUasf3jg72XtiOcvL4+CyKpNGkcylBWpP5o6Wc5GtWujV9FYW9TeZ6RVKsg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793417516;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=rLHbC4+lDDiHcUSzGiIbwk8Z172638Yn2PsS3vFu9uU=;
-	b=jkzfkqUtmLyVzUWQJ2lExk2W45TIv/I4w/L6gmiQGYxHXPDHV4NM2T8Ua9R9TV/tzuyN
-	 6YHcQI7gv6ckJ/CshshIB0E0VKS0n6ztiV78D+cm+99fI3MBiMFCr+lYHMbFIoyj1WIFM
-	 LwLz45o3JfTVw8JSBiCwdCMic++pOCEt3atRmFY1/IycubU31RNs8H27Q+JyngOFf0Hq4
-	 6npIwn+uV1ukUhjhBO9tLASMRd5in6znJNikJNkYvplvWcA092uiRapMnoJlk0sW+0LfO
-	 w3YB1PZc1C4KIQJcmYzrlKMyYG+E8KSoGMqJSQcF7PBUJAF1rmufgs9XE/gRF0Wu6uQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793417985;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=NXyWjDtz5Zwj67m+4i2xpy2FHpW9IbWNwHkPcCAx9Qo=;
+	b=FyVswGNGIbA7f+gJG4ByB7UTFq25fFhaWuIiqrVF5LxHN7PLSPQeOoy4r3aaMphAOZUl
+	 bumrFnqUYyhq649Eqe+S93qotYXRls1KuRtLb+QlknL2OhOd3JjLlo6mWdWZtxOXZwfuR
+	 SqBgcBSNykjTmtr5VKz1armexpu6/eHVYjCf06HGffxx8kcCUn1Cz2Ileytj/GjXW2+EA
+	 vWik4H/SKWjM1GGmu6ghWTZt00psWeFTuQaqykeBCzQsFGrrWi52h1BJiQgu4dZwRfs1+
+	 +zkrf/O84ZDhwvdrflvBSjW1p4WH8OyqTVvUcljMRbEZ6/81xNeBokfZBDrh4aA/vow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DIxRI63d;
-	arc=none smtp.remote-ip=198.175.65.15
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=cGpmHiTE;
+	arc=none smtp.remote-ip=209.85.214.182
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2DBB606A31C
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 03:31:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D2DBB606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C0E606A31A
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 03:39:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 92C0E606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=DIxRI63d
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793417515; x=1824953515;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=a1HqAOPP9Oaz4fcr/v/BgaOGnVyjVL1Un5uMnnR69Ko=;
-  b=DIxRI63dnPXRwC0qkp6P7CdUiVA1rlOe84zFR0FH0OYOmwqT6SZQeo9d
-   3zewd3pNA5TIsKiNC5na2uDmfQNJ5BBSf2H3zqB2nE45dYuZEQHr8p0yW
-   886nO9Hc//G5/XxT/uLKBsr2uBXxozEuU5CRhYXiDCu8NOVG4U9mo+mQV
-   e9BErCVhU3QlryXC7ygAFMnT5uxVq+4PXSjhLOXWdvXPMhVZbIcfCozdk
-   sd2Ggy9h018coTgzVacYeYCUV7WMMLAR8lC3VocDIseOaW0T1raNrV0B/
-   cDt6kOOr0X9tmm8phzaNkmKNY9YXk77ZRYfTzdc/wxs8GRWvzjlkkCsEP
-   g==;
-X-CSE-ConnectionGUID: QOcTxpiRTHqw/qtK/zQwZg==
-X-CSE-MsgGUID: WJ2tXXAyQ32cZSF09EFIsA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2188437"
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="2188437"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 20:31:54 -0700
-X-CSE-ConnectionGUID: xnfxOGolSbmMqgKJk+YThw==
-X-CSE-MsgGUID: 7oZumnmqQTiTG64vXHzjJQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="5742937"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.249.52]) ([10.124.249.52])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 20:31:50 -0700
-Message-ID: <07a7f12c-3cd8-4c03-9304-af89c32e0b46@linux.intel.com>
-Date: Sat, 31 Oct 2026 11:31:47 +0800
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=cGpmHiTE
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2e9f6a16afcso18845ad.1
+        for <iommu@lists.linux.dev>; Fri, 30 Oct 2026 20:39:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793417984; x=1794022784; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=NXyWjDtz5Zwj67m+4i2xpy2FHpW9IbWNwHkPcCAx9Qo=;
+        b=cGpmHiTEVW80KXnEcH43jHUvCycKtW1cvJgxnLZTZE1eGhk6XznkZcfstHI69XKqfQ
+         IDcqNZwbSBppiYbOU3QaJSTvJqtRmHUvdvOgomuupokbjFR2xPqJBzjK9drqLroMfDA2
+         zUkLjEARRiQamGyat7mcpgEONwobmNeuYD2UKPqUNdMniXNnbfWCiOKa+DRmb6yEg6GH
+         lPD8FFNpFOARTJza8S/krhuoxS/7aL/GqWk3f5gjHIAqmqOjfXwFQEExmsrvG1TZHv4C
+         ODs7yPAW4Zw2xTFzZjHD+epEcODqFFhO0y28vjGK7x2B4oM0+4DOoFC74p4iOpUOib1B
+         MiPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793417984; x=1794022784;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=NXyWjDtz5Zwj67m+4i2xpy2FHpW9IbWNwHkPcCAx9Qo=;
+        b=Vo2f4A4gW3Yhm+VI/AjaUwjBovbnYb7z75W6xINorkDahYdfFQmr2exreXo3/N36IJ
+         RN4MU1aCheqy1BRG1Y7eUBt0NV3lvDoVZC2Kff0KtmLO1ymwfxM6zqKbfbDu7H/AvJLj
+         Nfwhoj3VBIUr/noGTqRkQmRLlP6Y93rh33omi6blj1m5uHY6rtqRS74+e64x7+o1KCK8
+         f6ovZoVMnzHcvYScfZf+WMeF0gyH7FQtxzu9rlcuiiU3WfO8wEm6l1Yus1L//L/qSp1+
+         e9umxZMCantl/qIZ2Tv56HKmyBCS0gCmT4XbMALKbamBkmvYjazyNyBjDk+TwwuRb0vz
+         3p+w==
+X-Forwarded-Encrypted: i=1; AKwUvBw4KxhBjJ3kuSe/BVgLAHnjndlt57zsCxlFbWRKDpAuRHbOLLHzSNGa826ZBhENobuaMsk8KA==@lists.linux.dev
+X-Gm-Message-State: AFq9FYIKr+MWdGTBHTUrqXim3K4eyF+LF/bmms7/iPn8Ds36k7h6Xgim
+	IsPR/laDAQjJtN0ovkvSYxxPn+bQTpuux3dcAO1o8o2cRAljI56z/HsLgzbqJ9XaCg==
+X-Gm-Gg: AYBFou0nyYknz05FBJDRTP7I0OkqLZRPbls1/XsCrkllCDLRisaJ9SOTpNKp2OP/wuy
+	1fSIqJDR/vGwgbJUUEbP3gptdu5Qn2Xf8FuMRByNWsum1HKKYCov0yndlEvXdusraLfFCh9GccW
+	lk+tbZGqCH2ekaPTjXKI2T69pykB6nyw//xhgs99LkOG2LLHNs8QV4nwxOwn3mOLzKD0M7xWODS
+	EaS6S62yJnlyb5o2O3/FRoz1QrhA/Vv4kjp93sGF/plPhaFaLqiJjon7rqnbMkgXDt+AUkXOoZo
+	URjliRiI+RGrlHjbU3zvxB1u5OISnSwoNZWQcMkqhVkLf01NxblMY4I08jj3qy4+Fe17IyCQ/1d
+	PphkWmJPt+2Z7TiuNLRr9/BSCqjPbWalkntFYN0iElXPlsMqZ4p9zLOtapfpxoFbKuDuDYmtAeB
+	hDl/GtdqTIeZeO9G2iS3Kh3GnVSrdDjtd1P+SWHIn1ICR5Jlqd3K3aU+1ss12111QFw8h5/6EH1
+	PuXuzN6TZdeUaQMRVOX3CW4vjxfG2I0QDv84GFdp4ju4uH2LiulsxjQU9/i17PozjBzzRCANHfw
+	VmXDlWJxMDXaLQBe3ozzkwaO7+NMrikmTQWtVFessmId7Xxpxg3Z/9eK8c3+hY0gJ407GFhVo0k
+	VJuq/gMcFa1NyO1cSo4Vgf7I=
+X-Received: by 2002:a17:903:3904:b0:2e2:d665:6ad8 with SMTP id d9443c01a7336-2eb1b81b9e8mr15045105ad.4.1793417983213;
+        Fri, 30 Oct 2026 20:39:43 -0700 (PDT)
+Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae6e9583c1sm11236719a91.10.2026.10.30.20.39.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Oct 2026 20:39:41 -0700 (PDT)
+Date: Sat, 31 Oct 2026 03:39:36 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 05/18] iommu: Implement device and IOMMU HW
+ preservation
+Message-ID: <auVfqaDhk25JUkYd@google.com>
+References: <20261025021930.674647-1-skhawaja@google.com>
+ <20261025021930.674647-6-skhawaja@google.com>
+ <df75f891-05a0-4d47-8705-d6a00c81ff97@linux.intel.com>
+ <auTzN4NWuKsBvIZU@google.com>
+ <51b23019-8ac2-4f6b-9be7-29f3635b472e@linux.intel.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,324 +110,103 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Pranjal Shrivastava <praan@google.com>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma
- <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>,
- Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v6 16/18] iommufd: Add APIs to preserve/unpreserve a vfio
- cdev
-To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- David Woodhouse <dwmw2@infradead.org>
-References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-17-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261025021930.674647-17-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <51b23019-8ac2-4f6b-9be7-29f3635b472e@linux.intel.com>
 
-On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
-> Add APIs that can be used to preserve and unpreserve a vfio cdev. Use
-> the APIs exported by the IOMMU core to preserve/unpreserve device.
-> 
-> The LUO token of the preserved iommufd is fetched and returned back to
-> the caller as that can be used during restore to get the restored
-> iommufd.
-> 
-> Reviewed-by: Pranjal Shrivastava <praan@google.com>
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->   drivers/iommu/iommufd/device.c          | 156 ++++++++++++++++++++++++
->   drivers/iommu/iommufd/iommufd_private.h |   6 +
->   include/linux/iommufd.h                 |  29 +++++
->   3 files changed, 191 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> index a664c70a6fe7..c8ea2e288240 100644
-> --- a/drivers/iommu/iommufd/device.c
-> +++ b/drivers/iommu/iommufd/device.c
-> @@ -2,6 +2,7 @@
->   /* Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
->    */
->   #include <linux/iommu.h>
-> +#include <linux/iommu-liveupdate.h>
->   #include <linux/iommufd.h>
->   #include <linux/pci-ats.h>
->   #include <linux/slab.h>
-> @@ -686,6 +687,10 @@ int iommufd_hw_pagetable_attach(struct iommufd_hw_pagetable *hwpt,
->   	int rc;
->   
->   	mutex_lock(&igroup->lock);
-> +	if (iommufd_device_is_preserved(idev)) {
-> +		rc = -EBUSY;
-> +		goto err_unlock;
-> +	}
->   
->   	attach = xa_cmpxchg(&igroup->pasid_attach, pasid, NULL,
->   			    XA_ZERO_ENTRY, GFP_KERNEL);
-> @@ -868,6 +873,10 @@ iommufd_device_do_replace(struct iommufd_device *idev, ioasid_t pasid,
->   	int rc;
->   
->   	mutex_lock(&igroup->lock);
-> +	if (iommufd_device_is_preserved(idev)) {
-> +		rc = -EBUSY;
-> +		goto err_unlock;
-> +	}
->   
->   	attach = xa_load(&igroup->pasid_attach, pasid);
->   	if (!attach) {
-> @@ -1747,3 +1756,150 @@ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd)
->   	iommufd_put_object(ucmd->ictx, &idev->obj);
->   	return rc;
->   }
+On Sat, Oct 31, 2026 at 11:04:22AM +0800, Baolu Lu wrote:
+>On 10/31/2026 9:45 AM, Samiullah Khawaja wrote:
+>>>>+
+>>>> #if IS_ENABLED(CONFIG_IOMMUFD_TEST)
+>>>> void iommu_device_unregister_bus(struct iommu_device *iommu,
+>>>>                  const struct bus_type *bus,
+>>>>@@ -626,8 +668,8 @@ DEFINE_MUTEX(iommu_probe_device_lock);
+>>>> static int __iommu_probe_device(struct device *dev, struct 
+>>>>list_head *group_list)
+>>>> {
+>>>>+    struct group_device *gdev, *gdev2;
+>>>>     struct iommu_group *group;
+>>>>-    struct group_device *gdev;
+>>>>     int ret;
+>>>>     /*
+>>>>@@ -661,6 +703,13 @@ static int __iommu_probe_device(struct 
+>>>>device *dev, struct list_head *group_list
+>>>>         goto err_put_group;
+>>>>     }
+>>>>+    for_each_group_device(group, gdev2) {
+>>>>+        if (dev_iommu_has_preserved_state(gdev2->dev)) {
+>>>>+            ret = -EBUSY;
+>>>>+            goto err_free_gdev;
+>>>>+        }
+>>>>+    }
+>>>>+
+>>>>     /*
+>>>>      * The gdev must be in the list before calling
+>>>>      * iommu_setup_default_domain()
+>>>>@@ -697,6 +746,7 @@ static int __iommu_probe_device(struct 
+>>>>device *dev, struct list_head *group_list
+>>>> err_remove_gdev:
+>>>>     list_del(&gdev->list);
+>>>>+err_free_gdev:
+>>>>     __iommu_group_free_device(group, gdev);
+>>>> err_put_group:
+>>>>     iommu_deinit_device(dev);
+>>>>@@ -3543,6 +3593,26 @@ bool iommu_group_dma_owner_claimed(struct 
+>>>>iommu_group *group)
+>>>> }
+>>>> EXPORT_SYMBOL_GPL(iommu_group_dma_owner_claimed);
+>>>>+/**
+>>>>+ * iommu_group_is_singleton() - Query if group contains exactly 
+>>>>one device
+>>>>+ * @group: The group.
+>>>>+ *
+>>>>+ * Return: true if group contains exactly 1 device, false otherwise.
+>>>>+ */
+>>>
+>>>We discussed this interface before, and the consensus was that such an
+>>>interface is not feasible, because the membership of an iommu_group is
+>>>not fixed, given the hot-plug support of buses like PCI.
+>>>
+>>>I am fine with the usage model of ensuring the iommu group of a
+>>>preserved device to be a singleton, but I don't think we even need such
+>>>a kAPI. It should be handled case by case.
+>>
+>>The iommu_group membership can change, this is why we check it in two
+>>places, both under group->mutex:
+>>
+>>- During preservation we check that the group is a singleton, and check
+>>   again after setting device_ser.
+>>- During probe we refuse to add a device to a group that has a preserved
+>>   device.
+>>
+>>So if a device is added to the group while we are preserving, either the
+>>probe fails because the group already has a preserved device, or the
+>>preservation fails because the group is no longer a singleton. Could you
+>>please elaborate what you mean by handling it case by case?
+>
+>I am fine with the singleton-group checking logic you described above,
+>but I don't think we need a helper like iommu_group_is_singleton(). It
+>drops group->mutex before returning, so its result may already be stale
+>when the caller uses it. That makes it easy to misuse in the future.
+>
+>I'd prefer to open-code the check where group->mutex is already held, as
+>iommu_attach_device() does today:
 
-Why is there no such check in iommufd_hw_pagetable_detach()?
+struct iommu_group is private to drivers/iommu/iommu.c, and
+iommu_preserve_device() is in liveupdate.c, so open coding it there is
+tricky.
 
-> +
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +static bool _iommufd_device_has_pasid_attachments(struct iommufd_device *idev)
-> +{
-> +	struct iommufd_group *igroup = idev->igroup;
-> +	unsigned long start = IOMMU_NO_PASID;
-> +
-> +	if (xa_find_after(&igroup->pasid_attach, &start, UINT_MAX, XA_PRESENT))
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
-> +/**
-> + * iommufd_device_preserve() - Preserve an iommufd device across live update
-> + * @s: Live update session
-> + * @idev: Target iommufd device
-> + * @iommufd_tokenp: Pointer to store outgoing iommufd token
-> + *
-> + * Return: 0 on success, or negative error code.
-> + */
-> +int iommufd_device_preserve(struct liveupdate_session *s,
-> +			    struct iommufd_device *idev,
-> +			    u64 *iommufd_tokenp)
-> +{
-> +	struct iommufd_hwpt_paging *hwpt_paging;
-> +	struct iommufd_hw_pagetable *hwpt;
-> +	struct iommufd_attach *attach;
-> +	struct iommufd_group *igroup;
-> +	int ret;
-> +
-> +	if (!idev)
-> +		return -EINVAL;
-> +
-> +	if (iommufd_device_is_noiommu(idev))
-> +		return -EOPNOTSUPP;
-> +
-> +	igroup = idev->igroup;
-> +	mutex_lock(&igroup->lock);
-> +	if (idev->liveupdate_preserved) {
-> +		ret = -EBUSY;
-> +		goto out;
-> +	}
-> +
-> +	if (_iommufd_device_has_pasid_attachments(idev)) {
-> +		ret = -EOPNOTSUPP;
-> +		goto out;
-> +	}
-> +
-> +	attach = xa_load(&igroup->pasid_attach, IOMMU_NO_PASID);
-> +	if (!attach) {
-> +		ret = -ENOENT;
-> +		goto out;
-> +	}
-> +
-> +	if (!xa_load(&attach->device_array, idev->obj.id)) {
-> +		ret = -ENOENT;
-> +		goto out;
-> +	}
-> +
-> +	hwpt = attach->hwpt;
-> +	if (!hwpt_is_paging(hwpt)) {
-> +		ret = -EOPNOTSUPP;
-> +		goto out;
-> +	}
-> +
-> +	hwpt_paging = to_hwpt_paging(hwpt);
-> +	ret = liveupdate_get_token_outgoing(s, idev->ictx->file, iommufd_tokenp);
-> +	if (ret)
-> +		goto out;
-> +
-> +	if (!hwpt_paging->liveupdate_preserved) {
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	ret = iommu_preserve_device(hwpt_paging->common.domain,
-> +				    idev->dev,
-> +				    *iommufd_tokenp);
-> +
-> +	if (!ret) {
-> +		igroup->num_liveupdate_preserved++;
-> +		idev->liveupdate_preserved = true;
-> +	}
-> +out:
-> +	mutex_unlock(&igroup->lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_NS_GPL(iommufd_device_preserve, "IOMMUFD");
-> +
-> +/**
-> + * iommufd_device_unpreserve() - Unpreserve an iommufd device
-> + * @s: Live update session
-> + * @idev: Target iommufd device
-> + */
-> +void iommufd_device_unpreserve(struct liveupdate_session *s,
-> +			       struct iommufd_device *idev)
-> +{
-> +	struct iommufd_hwpt_paging *hwpt_paging;
-> +	struct iommufd_hw_pagetable *hwpt;
-> +	struct iommufd_attach *attach;
-> +	struct iommufd_group *igroup;
-> +
-> +	if (!idev)
-> +		return;
-> +
-> +	igroup = idev->igroup;
-> +	mutex_lock(&igroup->lock);
-> +	if (!idev->liveupdate_preserved)
-> +		goto out;
-> +
-> +	attach = xa_load(&igroup->pasid_attach, IOMMU_NO_PASID);
-> +	if (!attach) {
-> +		WARN(1, "IOMMU_NO_PASID attachment not found");
-> +		goto out;
-> +	}
-> +
-> +	hwpt = attach->hwpt;
-> +	if (WARN(!hwpt_is_paging(hwpt), "Attached HWPT is not a paging HWPT"))
-> +		goto out;
-> +
-> +	hwpt_paging = to_hwpt_paging(hwpt);
-> +	if (!hwpt_paging->liveupdate_preserved) {
-> +		WARN(1, "Attached domain is not preserved");
-> +		goto out;
-> +	}
-> +
-> +	iommu_unpreserve_device(hwpt_paging->common.domain, idev->dev);
-> +	igroup->num_liveupdate_preserved--;
-> +	idev->liveupdate_preserved = false;
-> +out:
-> +	mutex_unlock(&igroup->lock);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(iommufd_device_unpreserve, "IOMMUFD");
-> +
-> +/**
-> + * iommufd_device_is_preserved() - Check if an iommufd device is preserved
-> + * @idev: Target iommufd device
-> + *
-> + * Return: true if preserved, false otherwise.
-> + */
-> +bool iommufd_device_is_preserved(struct iommufd_device *idev)
-> +{
-> +	return idev && idev->igroup && idev->igroup->num_liveupdate_preserved;
-> +}
+You are correct that it drops the lock before returning. That is why I
+recheck the singleton state after setting device_ser, which handles the
+race.
 
-How is it different from
+I was thinking of adding something like iommu_group_lock() and
+iommu_group_unlock() for this, but the number of devices check also
+needs struct iommu_group definition.
 
-	return idev && idev->liveupdate_preserved;
-
-?
-
-Device preservation requires a singleton group, so these two are
-effectively the same. However, the latter seems more straightforward
-given the function's name. Or anything I overlooked?
-
-> +EXPORT_SYMBOL_NS_GPL(iommufd_device_is_preserved, "IOMMUFD");
-> +#endif
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 69d902b69b82..4760fffd2512 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -507,6 +507,9 @@ struct iommufd_group {
->   	struct xarray pasid_attach;
->   	struct iommufd_sw_msi_maps required_sw_msi;
->   	phys_addr_t sw_msi_start;
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +	int num_liveupdate_preserved;
-> +#endif
->   };
->   
->   /*
-> @@ -524,6 +527,9 @@ struct iommufd_device {
->   	bool enforce_cache_coherency;
->   	struct iommufd_vdevice *vdev;
->   	bool destroying;
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +	bool liveupdate_preserved;
-> +#endif
->   };
->   
->   static inline struct iommufd_device *
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index 6e7efe83bc5d..80382aceca18 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -9,6 +9,7 @@
->   #include <linux/err.h>
->   #include <linux/errno.h>
->   #include <linux/iommu.h>
-> +#include <linux/liveupdate.h>
->   #include <linux/refcount.h>
->   #include <linux/types.h>
->   #include <linux/xarray.h>
-> @@ -213,6 +214,15 @@ int iommufd_access_rw(struct iommufd_access *access, unsigned long iova,
->   int iommufd_vfio_compat_ioas_get_id(struct iommufd_ctx *ictx, u32 *out_ioas_id);
->   int iommufd_vfio_compat_ioas_create(struct iommufd_ctx *ictx);
->   int iommufd_vfio_compat_set_no_iommu(struct iommufd_ctx *ictx);
-> +
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +int iommufd_device_preserve(struct liveupdate_session *s,
-> +			    struct iommufd_device *idev,
-> +			    u64 *iommufd_tokenp);
-> +void iommufd_device_unpreserve(struct liveupdate_session *s,
-> +			       struct iommufd_device *idev);
-> +bool iommufd_device_is_preserved(struct iommufd_device *idev);
-> +#endif
->   #else /* !CONFIG_IOMMUFD */
->   static inline struct iommufd_ctx *iommufd_ctx_from_file(struct file *file)
->   {
-> @@ -397,4 +407,23 @@ static inline void iommufd_viommu_destroy_mmap(struct iommufd_viommu *viommu,
->   {
->   	_iommufd_destroy_mmap(viommu->ictx, &viommu->obj, offset);
->   }
-> +
-> +#if !IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE) || !IS_ENABLED(CONFIG_IOMMUFD)
-> +static inline int iommufd_device_preserve(struct liveupdate_session *s,
-> +					  struct iommufd_device *idev,
-> +					  u64 *iommufd_tokenp)
-> +{
-> +	return 0;
-
-Why does it return success when IOMMU_LIVEUPDATE is disabled?
-
-> +}
-> +
-> +static inline void iommufd_device_unpreserve(struct liveupdate_session *s,
-> +					     struct iommufd_device *idev)
-> +{
-> +}
-> +
-> +static inline bool iommufd_device_is_preserved(struct iommufd_device *idev)
-> +{
-> +	return false;
-> +}
-> +#endif
->   #endif
+To avoid misuse, I can add a comment on iommu_group_is_singleton() that
+the result may be stale and the caller must recheck. What do you think?
 
 Thanks,
-baolu
+Sami
