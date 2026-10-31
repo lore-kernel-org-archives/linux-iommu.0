@@ -1,124 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.168.131
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793460800;
-	b=jKtmSfCG7u6qfPsCgC6ZHalBlg52KKUD/UEgqH2ZkGyiW1NXdpqYRA+qvUd/hXF5kDL4
-	 J6tv7MF6lYVBq4qdDpvFsUpPeWmCoXkhGNN7o9d6sci8pZYI3h05ffX4UMvRIjpB6rHjc
-	 TK40Iavb63b48WwFFmBarkpgv+/0zt6dG0vzXTkn8Y8hhMAJuYYneaz9ikVf91IjPHfLF
-	 Jcr0ZyEyPBxCYW9ikEk4/8dRShRPIx/zNay/I4uXfCljGONmMrKas61bzzDPQHUNo+YNs
-	 83YIeli7ekR9VE0BQr85yK1ahF5uNt21CVU2B5vLOk53PJ9nbcNdfLg+BycAlROqLgw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793460800;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:MIME-Version:
-	 References:In-Reply-To:Reply-To:From:Date:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
-	 X-Authority-Analysis:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=+6KHp1DDQ2+j6W05RK3+UyPZGKExyceQhydv1qHVmKA=;
-	b=f31p++hNlbb5fLIt4y/2EXl1uWpcAeFIN8BStxiwdOy4KsiPBdi3G1TouGoJFP/szPF3
-	 nec34gzbKXkgab5wYCDWeDDVZWP2AL8uCDSsdRmhE984pxpi0iX7VQdYN4HBjg7grc76U
-	 dyeMKWqjMLWyl1qt4eHvQdya2fHsd9vrKSs2CeN7mZzgjp6sIKAaQF23kKCnSbnPwvt+d
-	 YXfAXMMLowXrczXSsdNhpnH1IwFYTxrnoHRPjnMYV+7g9LbZwaCREMiU5xwhZtL+i+bIr
-	 C+VSYZQMnimrjvyiNPBgstPAO+PTjLVSTja3k9JCnx6BYWy6UngAQnxRuUsibkxuQdg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Rx5uTZEZ;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=YNG1v9c1;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.179
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793474394;
+	b=gOg2wQFqBhZ9aVaSaAA7L0G047f1Yg1tB7kRFZK7yXY+AwTfGfS/4h1q+5h35hIjPP5j
+	 Clj2TDXf/ESm03Z3d6HuUTouykBHDatUpgUj60IkBhPkdzNrwDGqO+K+TK9a40HRd/yYy
+	 xQkFuSuyDUgBw2eHk7tVOTX6XanyZZhFawD7mI4UmK3l69N90rUBIJ8lCPSS8LScaUbvH
+	 gaF4l6ImCtFharur3KMEeFAQLkTlc16pp8ljyo2lYzrdSOsvR1CN5By7E6RTaNMfHD078
+	 HkRRHaVknbKsn+AuD4DLCYzmoAwyl8t3XBdPGqAKru/2NvOBkHkYS1RzKGhA16XFNVQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793474394;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=FI17lU+UEkaw3gnc3aMhItamMlJeUZRGnzTnl6hwNL4=;
+	b=15gS7HQaSJXlwiX9ZrdnBDQe9wb+VLSXyARV3o1JSiQrJwVgxNUD/Urt0K5tYyDEzSJl
+	 S8x1J9IOZdutpc51MqY0aSwQKPpc9uxN+TI8nNUoh7emHBx92+oqRGmXIUWLbtIJERH1T
+	 SiWg0JWh5ReuTQY/db5P4OuycZ3KpO1tOnDO8dGFo8oeLO6kban4PDS31Q+lVvVuHS+pQ
+	 DPqTBeqjbTVXADVO2Ue0fGdOFCMDtuOt75s/OhjIjZhPyTgPBj9GdDfstUL7QjPJ6l9Gt
+	 XjMAO0zYuEBkiWFfd3LobTrTCqbIPyFwi0f+NcDQ8pLOInhBIT+7OvmHMhCVRiUglQA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=YDQ+cz3G;
+	arc=none smtp.remote-ip=209.85.214.179
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B48A9606A31A
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 15:33:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B48A9606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 254F1606A31D
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 19:19:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 254F1606A31D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Rx5uTZEZ;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=YNG1v9c1
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 69VD06281233127
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 15:33:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:to; s=
-	qcppdkim1; bh=+6KHp1DDQ2+j6W05RK3+UyPZGKExyceQhydv1qHVmKA=; b=Rx
-	5uTZEZScz8k5imepm81GKYaWJzx92n6ZOlW7C1HaNVyfBqSFHxJDe6sIT05ZtUxR
-	bQL1gebz5vqWtcHRGuH3/VmY2OxCKvax1EpXf+CZpIaPz2S2ZuSA5kurJeY1z4wi
-	vYUOqRqiz7CC0E4uE8pmywnJzmaP8DOuPTbsJOtebPxLCdKWwkZU72HP9WvftqfE
-	U9Jyp3JSdSXW4uKjjW7/FhH/vrqCUiSupnInBUETS4KkLQugBk08jLTGYvuKVSWr
-	iouZ7hPZGyu/U3/XuYdId8OHlbssWu6r9lFwWrKNdSnmwtwdanYqLXjDx2/34fFi
-	KG8z+RxJYNz1fjYDTEtA==
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hn9m997bc-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 15:33:18 +0000 (GMT)
-Received: by mail-oi1-f200.google.com with SMTP id 5614622812f47-4b2d1eb484aso2308045b6e.2
-        for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 08:33:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1793460798; cv=none;
-        d=google.com; s=arc-20260327;
-        b=bzAIjmolBz1VnPh7qKH/KZiEICSA/MStEbgGTYPn/2NYOHiKXQbEqheP8Yqqg3TfOG
-         aIEZQ/OFVB+r4Y8HhX2LzzWD7wvH+jinA6wV47YfhBg2wk0EPD2ov/uI9SMHw2ywOGG4
-         zAYFKzBXm9iovKQUbXXiXlIwVQBbYOzDSnnYL6Rg4cbil/HUDTb5YtwndDgRG7mNdne4
-         /5fND01Y5b5od7TA4pqo18dw67SFKS2XmBDSW3XXdJ4i4pPPpZggcZDg3UYr8IGOFCJa
-         2ncZdFtClkzvhaRBTxSsSaLyUoyHGQ6s8M1gs4UfD1jMEPaWpuBn/9Gu7eeMrROP0Jbp
-         7T+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:dkim-signature;
-        bh=+6KHp1DDQ2+j6W05RK3+UyPZGKExyceQhydv1qHVmKA=;
-        fh=7luhhJMq0DhB41FVnLEIOZADmf7hUHus5PXl91n9hJE=;
-        b=LWvqxFoTDG03YbQuUnksL0mUuSO8fjiXerk8S9mnWyJ3mfWng1iUE3FCz/paBpPrmJ
-         Gi3byG8tRrEFdNwAVNSRQ3zuQcO3CzHGQTqV/NXMUUwM0vLsU5ZURQuv3aU/lB8iBj3e
-         WiXJdBL5NQSODyORlnQpc/OySttxSE4L5WB0mciUvM9QU5q1/n79K0Jz+W7N12wGstBS
-         ujAgUhsdCx9OdD/yi1JrJFrMft0YruUi6mFM9WQwcIqZ6vIVgiE7gYhBBc8lfJciDVZg
-         /cJRa4zoATRVrVRnX+C9uBuuwB9HTfMJWmPMe+IYedd2vaO5Xph1GIjKnmT2aD8ZBv/T
-         g9HA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=YDQ+cz3G
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2e8d6fcbba0so27615ad.1
+        for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 12:19:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793460798; x=1794065598; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:reply-to:in-reply-to:references:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=+6KHp1DDQ2+j6W05RK3+UyPZGKExyceQhydv1qHVmKA=;
-        b=YNG1v9c11HBJzMrNrThgnaVExxdxSuZopFOkP/ZIwE9HJZ8NbYBcitJAGz/o111n2F
-         Okw35c0+1XbNCqL3LiQLkMTAlAR8XTQdaPGGd3wKuCuxIsgDFcD7FuXpGhL5W0oX1dSI
-         HXRqStCz4TLVNzhzL0gG3ZxK1ZiloPu52i6z0JVux5LWqSAeuPQh1YDUXuezxNF6SU/f
-         2iysV+GbIXfT62atYN4J8IfESQ/7EZ1eKPxMfy7+SRolmRe0N90xtV1WIHeRKviUkJvb
-         4lq9h9eLmHS740IzVyIfI8TOf5it2j0xA5Sp6oReZJwsVYPvOhFiVAxM22fY58tcVhIQ
-         4eBA==
+        d=google.com; s=20260707; t=1793474392; x=1794079192; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=FI17lU+UEkaw3gnc3aMhItamMlJeUZRGnzTnl6hwNL4=;
+        b=YDQ+cz3GzRgApEo88OLjxSrWEyGC5nelgti8UY1XkRQ3BP2C+BafonCkQex7w+y0PF
+         aL6czEpFNegZDMPaYdug0mlMzjfQtIpcZK90jLXkun0QJgE4O8QKQkJFKX8ACzI//aHg
+         ZNlZA6icScg/gB8d+XkK+boUbYnH+4nL6h6FrwvlQMEzgVm3sxyJP802wIa85mh/TDWj
+         EP+whnTKlRpCLx1hFyOWbga0w7t0D3jMPiN//7YFE6BYMXu/hoygFrXvg9LArTbcH7xa
+         +fVvzZ6lOHz+66Yq1X3cRFdGYjb1kvyB+rSXqzA0Rkgj8ftTZoRzkH+mQV445PL98cMf
+         bpdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793460798; x=1794065598;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:reply-to:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+6KHp1DDQ2+j6W05RK3+UyPZGKExyceQhydv1qHVmKA=;
-        b=TM7LSbZ4lp2vSMIVsdUPIoT4807n7CAU25l9Je4l4mthCZzzJtFOcAVbmvcbxIJDs+
-         uZXh2bL/B5tOiGm7NM048uCDZxqXWrTrabulkT3fToHwxRiBa8ChkdtUqzOnqpIxi3Xj
-         kdAG+jzmntKFKgUYUBNZLkLtwRexrgvx7OHs0LURqTUZLvaToxa8ji4ifQE5MB05imuX
-         U2pgY3On1vbFKE0p2y43NEXWYMc2GZpPwpQ6FbAq4rtIT3T71bVzoIkS3trlHSWf/RO0
-         TspDtE1b7nPiC2yibxT9AMDmeNdd5Iy89+CFqXBZ8TuOfOL11tcWVDVYq4Q5pxUOAmUW
-         rzQA==
-X-Forwarded-Encrypted: i=1; AKwUvBwswKG9GF6fij7yRCcKHKlW+Tt+DCFFOJWR/lEXZWVD1sl5W5uCJHroMx9qPihvEsU80H8NMA==@lists.linux.dev
-X-Gm-Message-State: AFq9FYKX/WYCmHkomZu2aqjFNOqSC2KWcvy7/s5u46mBglceb/fy+vdo
-	/+GBZ4RyRPzcgVVpTDhMUCrN/sbbIZrJwXKS/znOAcPsfP9HQURUYisGglLxM077VaWJFGbiagt
-	cD25IT5JI5XotM8yd8vMhssEahIt3KSKrfMJdEgweX2pQ5/BgPj6DvwUi2Qs53T3qI15Z2m3OV9
-	FFTG6L8nvnzytB8fNzalyobHTc9U24Kv+1
-X-Gm-Gg: AYBFou2rURpTbqI+8KMs0/A+nbKzpIG/cvAEMGIQtxkarLdqKPh7M8+40nwNp5u9hhw
-	qRfx3+9JEQCqp3RECpba1f62zjwW7LYQE5hP1Q8k5cMvxfHq7BSeaVX157UTXAeyH9duBmDzJUH
-	AKmg5vnQdbJWpMAplKbYtEO6OyDtyRnfvI+sOcuvfCAS/CAfVjvmN1xYgDmA==
-X-Received: by 2002:a05:6808:30a6:b0:55b:f88d:919f with SMTP id 5614622812f47-5640de5c4eamr4534433b6e.53.1793460798013;
-        Sat, 31 Oct 2026 08:33:18 -0700 (PDT)
-X-Received: by 2002:a05:6808:30a6:b0:55b:f88d:919f with SMTP id
- 5614622812f47-5640de5c4eamr4534414b6e.53.1793460797558; Sat, 31 Oct 2026
- 08:33:17 -0700 (PDT)
+        d=1e100.net; s=20260707; t=1793474392; x=1794079192;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=FI17lU+UEkaw3gnc3aMhItamMlJeUZRGnzTnl6hwNL4=;
+        b=ltTJ21LgzXge99jp/RTTWwg2fuKsoK8OYjuDwKVrscW66uqTLdMg3j2akWnJY6vUVG
+         hnmqMFCl8ukU5izRvdiECn8qsZatOUIyLLkWNkNs4iKPp5JlbW+ZXuacV8uyph+9YaM2
+         1loLbkbLOv6oXIQjHqOBlwYNg8vL2pMTadE3ZBhfqohSNwz3NM4uNDHFCkLWpKAlt/A5
+         QUGJ3O5FshpQF+d+9rCSU63idcNnWZ1YTdZ7wfsKy/5BZSyrn7sclIIejPc54b6U166c
+         IBlsZyX2M1i6kI1dcx1feLRRgvSNupLchCmg/N4l8RT8bw58hcQfPjWrvFAhiWFm5i0R
+         zzGg==
+X-Forwarded-Encrypted: i=1; AKwUvBygit6QKNrGMRryIwohN1tZqFXA3A6Ad2ghrlZLn4WxpOVX5HDkKZduyJgcFVqFv5GyFGStDw==@lists.linux.dev
+X-Gm-Message-State: AFq9FYKQgwtE77n2C9me2oGikDJhS7R6r1vQcPtkPhGUeVj/y3grSQcD
+	QLT1j1OnzBWNYzFAPj0K8M+vvmf6uutJQJJB1AnLjYl4X++In/8SiL6mkN/HRLevIg==
+X-Gm-Gg: AYBFou2dtcw6f5RV86jhY7eB7n/BqPD9af08Bb4VWLOPYotuT+bOmBXYf+ZB7CwRzhy
+	GKyuCJ/jKiYVlpej+WoqKuhgcjG2+FsLYQolWVivWbp7IAiLXJ/pZgWvVhdZrINJmyrhr6hqMfd
+	3cUxBUIp4FCSGogRwAQtbjEhmlNWdixKNq0W3NUfbbXXJ4MeX3RFqh+a2S/rVUbxZQYbsF21yQd
+	gCImOWZDyil/xhZj5DUWoOkgfVBnS0+to/cJEq7IHZsg8DlNOau2yjfMu8JfNN5UMzcP+Kaou3M
+	NVd76VBq6Ri8uS8sgCCBZRxCSCvrqZuiH5GxqZlIYHxCJ0R0IPgYtc5TJTg/CscCucbXzn0V0Bt
+	MZXa5JGpx04fgm6FBhWwUJf8Jvwys0a1Na8x9JMpqVA81h1O4o1JPFwhdRQfSBomEq+jzIyfhJf
+	3vxCkeYxeI+SYoLjfdoaZmqja80LlbAGX25uHe8jnFxg0R11ulNO071Z6eLi+uUayMLn/r3tj/B
+	wbI0HaS70rYmQv5nVHrgEup/CcQwuUoh1yiUtVobTy2crgS5DcvOsNClBOW6PSLjbHFkbc5tyUL
+	PnSaYoblwu5N6ZWvQPw1LvIe1TmuzOVgT6NUBn5TK3G7tXiXh++lalc548JXDsb2vzGiCqV17j4
+	gliPzVBAnGXvHt+lp2jpW0A==
+X-Received: by 2002:a17:903:3c70:b0:2ea:4a1:e8a4 with SMTP id d9443c01a7336-2eb1b8c029emr17343335ad.13.1793474391728;
+        Sat, 31 Oct 2026 12:19:51 -0700 (PDT)
+Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae6e7d429fsm12698201a91.2.2026.10.31.12.19.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Oct 2026 12:19:49 -0700 (PDT)
+Date: Sat, 31 Oct 2026 19:19:47 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
+	Vipin Sharma <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 05/18] iommu: Implement device and IOMMU HW
+ preservation
+Message-ID: <auYtwy3DjRxq3Upi@google.com>
+References: <20261025021930.674647-1-skhawaja@google.com>
+ <20261025021930.674647-6-skhawaja@google.com>
+ <df75f891-05a0-4d47-8705-d6a00c81ff97@linux.intel.com>
+ <auTzN4NWuKsBvIZU@google.com>
+ <38384919-f0e5-4c93-b71b-065b96a74c38@linux.intel.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -128,102 +110,121 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261031-msm-smmu-identity-v1-0-a2a70580eebd@oss.qualcomm.com>
-In-Reply-To: <20261031-msm-smmu-identity-v1-0-a2a70580eebd@oss.qualcomm.com>
-Reply-To: rob.clark@oss.qualcomm.com
-From: Rob Clark <rob.clark@oss.qualcomm.com>
-Date: Sat, 31 Oct 2026 08:33:06 -0700
-X-Gm-Features: AclHuK9CSsE5d2RI7IGhCUXsadCiEmg1vr_YsLjfD1ZPNBmwTgEXoOH0UkuFoyw
-Message-ID: <CACSVV02xa+emUMd7Dp1rDSwa0e3wpyQBcPeZg-bXPL4U3kzQvg@mail.gmail.com>
-Subject: Re: [PATCH 0/3] iommu: qcom: Fix the MSM GPU and display with
- DMA-address based mappings
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-ORIG-GUID: aaBZy_ume-sC5SNDzM3Olq_7tSiAY_t1
-X-Proofpoint-GUID: aaBZy_ume-sC5SNDzM3Olq_7tSiAY_t1
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMDMxMDA2MSBTYWx0ZWRfX/NZgZ5rm5To4
- A8/UIADEm3k7/5GwzDsuAeW9bkx6x/CEnseZlZy2Xn91Z/5VIL0aafuFgvQuaqG5sg9vFakHwVj
- Fi34mAx8YsNRFyr+cHUaxxi63pRy63EDpJ5xzjfPX5F8ndrRWh702Kh01k09Rv2fabPTHZja/MZ
- zrcfjfqL1mggvoEJSBCnxHmTEvbIgkM57btMIzAEidjUczxlRt2Hu4u0JfDYemBcugiuwxSBCRQ
- vLYC/NECfFUrkcG/7cJTncSMSiiMw9x26atImsq+vy/3QCGBjyHG2Rnkn89DcCIQl+esshmYAEO
- CkHhHD6b6J/fwe+Up9UML1Ol7ou2CL1pfAnAP+BgwQMwiYw7EXyI4AInac2sc9EHXMhs8tYVO6U
- pli+vSNGWgqLT3kV6x7VyXSzpvFHOC+u30MJc5cJv0s9Wi9upZQVKnRxUw3Ps5jHOek08x+9PP7
- vMAkM3Y7uZil9CjFkkA==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMDMxMDA2MSBTYWx0ZWRfXzowSyurXQ/N2
- m8LLj5zDT3kY6tRO4gSCZZMdqX/1Uxa+WBsJPRDGpgXUGElwl2zRqs4dn2v0xY3p6+m+tE9Bz5Q
- O5OIhm7XIOOTfxC5edYk0zDFj7ZGPzc=
-X-Authority-Analysis: v=2.4 cv=cfVHPXDM c=1 sm=1 tr=0 ts=6ae60a3e cx=c_pps
- a=AKZTfHrQPB8q3CcvmcIuDA==:117 a=IkcTkHD0fZMA:10 a=660iZSQnnn4A:10
- a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=YMgV9FUhrdKAYTUUvYB2:22 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8
- a=QEYsvGaJyljY994YBNYA:9 a=QEXdDO2ut3YA:10 a=pF_qn-MSjDawc0seGVz6:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-10-31_03,2026-10-21_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 phishscore=0 lowpriorityscore=0 clxscore=1015 adultscore=0
- priorityscore=1501 spamscore=0 bulkscore=0 suspectscore=0 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2610300000 definitions=main-2610310061
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <38384919-f0e5-4c93-b71b-065b96a74c38@linux.intel.com>
 
-On Fri, Oct 30, 2026 at 3:05=E2=80=AFPM Dmitry Baryshkov
-<dmitry.baryshkov@oss.qualcomm.com> wrote:
+On Sat, Oct 31, 2026 at 01:34:00PM +0800, Baolu Lu wrote:
+>On 10/31/2026 9:45 AM, Samiullah Khawaja wrote:
+>>On Fri, Oct 30, 2026 at 01:12:31PM +0800, Baolu Lu wrote:
+>>>On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
+>>>>Add IOMMU ops to preserve/unpreserve the device state handled by the
+>>>>IOMMU driver. This is IOMMU specific state of the device that needs to
+>>>>be preserved for liveupdate. These ops can be implemented by the IOMMU
+>>>>drivers that support preservation of devices that have their IOMMU
+>>>>domains preserved. During device preservation the state of the
+>>>>associated IOMMU is also preserved as dependency.
+>>>>
+>>>>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>>>>---
+>>>> drivers/iommu/iommu-priv.h       |   2 +
+>>>> drivers/iommu/iommu.c            |  72 +++++++++++-
+>>>> drivers/iommu/liveupdate.c       | 189 +++++++++++++++++++++++++++++++
+>>>> include/linux/iommu-liveupdate.h |  76 +++++++++++++
+>>>> include/linux/iommu.h            |  33 ++++++
+>>>> 5 files changed, 371 insertions(+), 1 deletion(-)
+>>>>
+>>>>diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
+>>>>index 1f9f886b2c10..6b0ef210b32f 100644
+>>>>--- a/drivers/iommu/iommu-priv.h
+>>>>+++ b/drivers/iommu/iommu-priv.h
+>>>>@@ -21,6 +21,8 @@ static inline const struct iommu_ops 
+>>>>*dev_iommu_ops(struct device *dev)
+>>>> void dev_iommu_free(struct device *dev);
+>>>>+bool iommu_group_is_singleton(struct iommu_group *group);
+>>>>+
+>>>> const struct iommu_ops *iommu_ops_from_fwnode(const struct 
+>>>>fwnode_handle *fwnode);
+>>>> static inline const struct iommu_ops *iommu_fwspec_ops(struct 
+>>>>iommu_fwspec *fwspec)
+>>>>diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>>index b486b8bbd1fc..a66363789ca9 100644
+>>>>--- a/drivers/iommu/iommu.c
+>>>>+++ b/drivers/iommu/iommu.c
+>>>>@@ -18,6 +18,7 @@
+>>>> #include <linux/errno.h>
+>>>> #include <linux/host1x_context_bus.h>
+>>>> #include <linux/iommu.h>
+>>>>+#include <linux/iommu-liveupdate.h>
+>>>> #include <linux/iommufd.h>
+>>>> #include <linux/idr.h>
+>>>> #include <linux/err.h>
+>>>>@@ -328,6 +329,47 @@ void iommu_device_unregister(struct 
+>>>>iommu_device *iommu)
+>>>> }
+>>>> EXPORT_SYMBOL_GPL(iommu_device_unregister);
+>>>>+struct iommu_dev_iter {
+>>>>+    struct iommu_device *iommu;
+>>>>+    iommu_dev_iter_fn fn;
+>>>>+};
+>>>>+
+>>>>+static int _iommu_for_each_dev_cb(struct device *dev, void *data)
+>>>>+{
+>>>>+    struct iommu_dev_iter *iter = data;
+>>>>+
+>>>>+    if (dev->iommu && dev->iommu->iommu_dev == iter->iommu)
+>>>>+        return iter->fn(dev, iter->iommu);
+>>>>+
+>>>>+    return 0;
+>>>>+}
+>>>>+
+>>>>+/**
+>>>>+ * iommu_for_each_dev() - Iterate over all devices attached to an IOMMU
+>>>>+ * @iommu: IOMMU instance
+>>>>+ * @fn: Callback to call for each device attached to @iommu
+>>>>+ *
+>>>>+ * Return: 0 on success, or negative error code.
+>>>>+ */
+>>>>+int iommu_for_each_dev(struct iommu_device *iommu, 
+>>>>iommu_dev_iter_fn fn)
+>>>>+{
+>>>>+    struct iommu_dev_iter iter = {
+>>>>+        .iommu = iommu,
+>>>>+        .fn = fn,
+>>>>+    };
+>>>>+    int ret;
+>>>>+
+>>>>+    for (int i = 0; i < ARRAY_SIZE(iommu_buses); i++) {
+>>>>+        ret = bus_for_each_dev(iommu_buses[i], NULL, &iter,
+>>>>+                       _iommu_for_each_dev_cb);
+>>>>+        if (ret)
+>>>>+            return ret;
+>>>>+    }
+>>>>+
+>>>>+    return 0;
+>>>>+}
+>>>>+EXPORT_SYMBOL_GPL(iommu_for_each_dev);
+>>>
+>>>The function has no locking against iommu probe or release, so the
+>>>callback can read dev->iommu while it is being freed or before it is
+>>>fully set up.
+>>
+>>It is only called from intel_iommu_shutdown(), which runs after the
+>>other CPUs are stopped and interrupts are disabled, so probe and release
+>>can't run. I will rename it to iommu_for_each_dev_unsafe(), document
+>>that it must only be called at shutdown and drop the export, since the
+>>only user is built in.
 >
-> Rob's drm/msm series [1] writes the addresses dma_map_sgtable() returns
-> for the DRM device into the GPU and display page tables, so they have to
-> be physical addresses, i.e. the device must not use iommu-dma. On DPU
-> platforms that holds, the DRM device has no iommus of its own. On MDP5
-> platforms it is the MDP5 device, which ends up with iommu-dma: the GPU
-> then fails to start on db410c and sda660 and resets db820c. The last
-> two patches give it an identity default domain in qcom_iommu and
-> arm-smmu-qcom.
->
-> The first patch fixes qcom_iommu's flush_iotlb_all, which never
-> invalidated the TLB. Nothing relies on it today, but the series above
-> does, hence no Fixes tag.
->
-> The patches are independent of [1] and a no-op for the current drm/msm,
-> but have to land before it. Tested on top of [1] on db410c, db820c and
-> IFC6560 with and without these patches, and on Open-Q 835 (DPU) as a
-> control.
+>If it's only intended for the intel iommu driver, then it should be
+>open-coded there. There is no need to add an immature interface like
+>this to the core. It could be misused in the future.
 
-Thanks, this should mostly supersede my untested series[1], but I
-think msm_iommu.c still needs the same treatment?  Hopefully just the
-def_domain_type() part?
-
-BR,
--R
-
-[1] https://lore.kernel.org/all/20261029212344.346069-1-robin.clark@oss.qua=
-lcomm.com/
+Agreed. I will open code it in the VT-d driver in the next revision.
 
 >
-> [1] https://lore.kernel.org/r/20261027230452.130031-1-robin.clark@oss.qua=
-lcomm.com
->
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-> ---
-> Dmitry Baryshkov (3):
->       iommu/qcom: Invalidate the TLB in flush_iotlb_all
->       iommu/qcom: Use identity default domains for the MSM GPU and displa=
-y
->       iommu/arm-smmu-qcom: Use identity default domains for MDP5
->
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c |  7 ++++++-
->  drivers/iommu/arm/arm-smmu/qcom_iommu.c    | 26 ++++++++++++++++++++++++=
---
->  2 files changed, 30 insertions(+), 3 deletions(-)
-> ---
-> base-commit: f1ac44c32cba88ad65dcecd4a279661d14e93651
-> change-id: 20261030-msm-smmu-identity-6fda3323023b
->
-> Best regards,
-> --
-> With best wishes
-> Dmitry
->
+>Thanks,
+>baolu
+
+Thanks,
+Sami
