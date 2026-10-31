@@ -1,68 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.110
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793426181;
-	b=sj1wref12LH03UK0i/9ofUXHWElt+C/MR/vrzZ6bOz14hDuG5G5HoRL6Og9gIYnMmOYv
-	 rcmtXGTdeYc4aluSDI1eBZi0ev1QdrwQw9tlAyUvmi7iXfiWTFmqGQdCH6UM+cYkrUpTn
-	 HxRD8x/gMkj0EyYoMohD57DwcVW0lZXWqHRxq6b6QVPZiHEE0g33qHWUwu4r5d30S4qeu
-	 4yYmYFoNw32+dOlZDwJkpImZoMWZlTHHG8y6OLZAWEioglO1eTx0adYbxKArs/FQIoaV3
-	 U3GwdUSXmDviBvrqdBPM3l5XvWMgXr1AwHqyf5SpyMBhcA5Fg9JPKEaXMgqUwzkJx1g==
+	t=1793435431;
+	b=nP3/ErBmtqPi0UhI5rviak1WKWCZQtmgWwtIwqamE3yqZ6nXIcxVAuILBBs91iJ8qoSP
+	 vuy+XCTzUpzN17O/VujtHf+fyfUz0sxj0edK9GAFEh4dnNn0JQcCYfXEFSoFdOxPHirXW
+	 88EtSk6Zaah1leGZ/zN3G3PaFNFGw+8o7B6BiNSGr6QQZgBEin86zSt8Glc7WXiMtGmdo
+	 U5qsulvxrjuUsXroGUBQ6HFmRF09aR6SaeXucGFs9zL1TSJs3BMYLg8UOj93pvVzd0Bt2
+	 wZ9vhttxT4WDncq9eEjMCnXz1/fkfyTrt8ZdzeMYOQIRdq31yRHKsx9qPcXynZ8Jwhw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793426181;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=N7ZwaJ7vbMee9aorv3youp0owlQKKiWsc6xwL1/KdJ4=;
-	b=rH9wxhbtwy8Bljs051nhNDfr88PUERZEhzFPY7zPJDIlEEGI/jCDSqKUlY15um/v8XKo
-	 sebTlnZUnVim0sk6Bm2/SqUb9blZfm7Kw7NFtHaDRM27w/P/zTGAZJJAD5/953eZcNpgy
-	 RC4wrwc/6CXwH2+sUZMUF3UF/OHPUTPuLFi5VnlYY5KEQEzta4Ta4K1Ebzw19wAc6uPmg
-	 AmCrjyLmjeFZMfJ95pR2vtu0WYhisDU2mmX9eFoU9YojUwtjeVCY+XPKWkvUZ2sQXMtk2
-	 sXPogdZUPQXia0fJR5ze3ma10so2HCX4SPWMKhs3QEO+K/tbSkzKsKgXH72RnjX9rUw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793435431;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=L7nyEyulkh83KQxkSOLA26dfUTmVzFEVt1GSUDYgPpo=;
+	b=XBK8hnVffCmNHu8Cdz8E2cHHqHigA70kncb344Sku8h9KtaApCWW5eRKEXxCdE2pBAVK
+	 bVtE0oaOSPzTcYL6zPhWmP6ATk3D6YSHKx/k1ocRnrc/XDjiJ1wp320tzdQ8YEW2sc0vW
+	 5PdWe8ItAaAxal4+OW+5mGSniV2YseokMsK/n/YwGMvNu0u+EAdZyOHt2YJXvbs6iqKq2
+	 f+3czH5dWkB6Zij7vTKkcXmhjw7QGt21GxyGztcckjFVhRZD2OidgiL6KC5BBPshPwc8k
+	 Iw4Z77SriNIa9tUSZW9qycoHmfA4CHzqw0nL8/j2BAwvd3LmsMMtMDaomiostjhWosQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aKLdi0PH;
-	arc=none smtp.remote-ip=192.198.163.14
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b="oUX/DHlZ";
+	arc=none smtp.remote-ip=115.124.30.110
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 937E4606A31C
-	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 05:56:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 937E4606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22BA8606A31A
+	for <iommu@lists.linux.dev>; Sat, 31 Oct 2026 08:30:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22BA8606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=aKLdi0PH
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793426181; x=1824962181;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=n/Ma+Vo5Cq0vdWeRsNkNZSUCDb5boMlJRuQWnHLIVzk=;
-  b=aKLdi0PH1cSOc14ptDhanrOGD7MCHaYKmohyIQmz94qWaunfzNls7AlU
-   1aURrWG3o7RlV3/LQOE45JntFM0fXpldYwCkr0keUiZ2bRJgZMwJDohcV
-   A+EYracqNdQCPbXBYI0ReeSzTDQGHAvH/SuqePoFdGuU/Z1A/pxu4pzzm
-   YFJNIIa8wbhiRV/imdr9ooOBuZ4R+k3abECH0xc/Kgm4FSDd7s5/HS5f2
-   WMPrTUMR6lhkvg2ZEnejPeKg9KIISRWkxAwm4U1zTHvCyZQLCMgol5NnO
-   xaw0ktCtdXc/HbtZH85FhsT0nIWrcMz9lKNHqGBSsHAg8mJs8W3adAVsS
-   g==;
-X-CSE-ConnectionGUID: 6AfWD2+2R2qRA8mVla42eg==
-X-CSE-MsgGUID: PZowqVnQTriYu1ONRG/02w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11951"; a="2220901"
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="2220901"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:56:20 -0700
-X-CSE-ConnectionGUID: IxzEUO4USva7/99YVRagNw==
-X-CSE-MsgGUID: uXSHQduPTyaAZA2NJIELYQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,186,1787036400"; 
-   d="scan'208";a="5502480"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.249.52]) ([10.124.249.52])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Oct 2026 22:56:15 -0700
-Message-ID: <2574cbc8-8c2b-4458-9fcd-b077190084a3@linux.intel.com>
-Date: Sat, 31 Oct 2026 13:56:12 +0800
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oUX/DHlZ
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1793435427; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=L7nyEyulkh83KQxkSOLA26dfUTmVzFEVt1GSUDYgPpo=;
+	b=oUX/DHlZmZgTvTjgVylqc4j1hmMVpIBX+a/tWS/qEU01VpW+XhnaafQc2QFhBzsI9teDPD9GrPuhkOAJNDzUg1xdlpx80ISXpvl89CYEvOYo0tBrRqxoiHvmdAdKqdiELNWumNgGecUWHUipVDhLAfhVkGirA5a0zOW3P51EdVw=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037026112;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XDo-2kK_1793435423;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XDo-2kK_1793435423 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Sat, 31 Oct 2026 16:30:25 +0800
+From: fangyu.yu@linux.alibaba.com
+To: tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	baolu.lu@linux.intel.com,
+	jroedel@suse.de,
+	zong.li@sifive.com,
+	andrew.jones@linux.dev,
+	anup@brainfault.org,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	atish.patra@linux.dev,
+	skhawaja@google.com,
+	vasant.hegde@amd.com,
+	joerg.roedel@amd.com,
+	tanchi25@mails.ucas.ac.cn,
+	gong.shuai@sanechips.com.cn
+Cc: fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	kvm-riscv@lists.infradead.org
+Subject: [PATCH v6 03/10] iommupt: Add RISC-V dirty tracking PTE ops
+Date: Sat, 31 Oct 2026 16:30:07 +0800
+Message-Id: <20261031083014.15040-4-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20261031083014.15040-1-fangyu.yu@linux.alibaba.com>
+References: <20261031083014.15040-1-fangyu.yu@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,154 +86,88 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Pranjal Shrivastava <praan@google.com>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma
- <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>,
- Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v6 17/18] vfio/pci: Preserve the iommufd state of the vfio
- cdev
-To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- David Woodhouse <dwmw2@infradead.org>
-References: <20261025021930.674647-1-skhawaja@google.com>
- <20261025021930.674647-18-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261025021930.674647-18-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
-> If the vfio cdev is attached to an iommufd, preserve the state of the
-> attached iommufd also. Basically preserve the iommu specific state of
-> the device and also the attach iommu HW unit.
-> 
-> Once the device and its iommufd attachment is preserved, it cannot be
-> detached or attached to another IOAS until it is unpreserved.
-> 
-> Reviewed-by: Pranjal Shrivastava <praan@google.com>
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->   drivers/vfio/device_cdev.c             | 10 +++++++++
->   drivers/vfio/pci/vfio_pci_liveupdate.c | 28 ++++++++++++++++++++++++--
->   2 files changed, 36 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
-> index b818aab92f76..4eb7ffd489bd 100644
-> --- a/drivers/vfio/device_cdev.c
-> +++ b/drivers/vfio/device_cdev.c
-> @@ -284,6 +284,11 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
->   	}
->   
->   	mutex_lock(&device->dev_set->lock);
-> +	if (iommufd_device_is_preserved(device->iommufd_device)) {
-> +		ret = -EBUSY;
-> +		goto out_unlock;
-> +	}
-> +
->   	if (attach.flags & VFIO_DEVICE_ATTACH_PASID)
->   		ret = device->ops->pasid_attach_ioas(device,
->   						     attach.pasid,
-> @@ -342,6 +347,11 @@ int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
->   	}
->   
->   	mutex_lock(&device->dev_set->lock);
-> +	if (iommufd_device_is_preserved(device->iommufd_device)) {
-> +		mutex_unlock(&device->dev_set->lock);
-> +		return -EBUSY;
-> +	}
-> +
->   	if (detach.flags & VFIO_DEVICE_DETACH_PASID)
->   		device->ops->pasid_detach_ioas(device, detach.pasid);
->   	else
-> diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio_pci_liveupdate.c
-> index f0ea37d98696..fb2141ee8942 100644
-> --- a/drivers/vfio/pci/vfio_pci_liveupdate.c
-> +++ b/drivers/vfio/pci/vfio_pci_liveupdate.c
-> @@ -106,6 +106,7 @@
->   
->   #include <linux/errno.h>
->   #include <linux/file.h>
-> +#include <linux/iommufd.h>
->   #include <linux/kexec_handover.h>
->   #include <linux/kho/abi/vfio_pci.h>
->   #include <linux/liveupdate.h>
-> @@ -114,6 +115,8 @@
->   
->   #include "vfio_pci_priv.h"
->   
-> +MODULE_IMPORT_NS("IOMMUFD");
-> +
->   static bool vfio_pci_liveupdate_can_preserve(struct liveupdate_file_handler *handler,
->   					     struct file *file)
->   {
-> @@ -154,15 +157,25 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->   	struct vfio_pci_core_device_ser *ser;
->   	struct vfio_pci_core_device *vdev;
->   	struct pci_dev *pdev;
-> -	int ret;
-> +	u64 iommufd_token;
-> +	int ret = 0;
+From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-nit: no need to initialize ret.
+Implement the three dirty-tracking hooks required by the generic page
+table framework for the RISC-V format:
 
->   
->   	vdev = container_of(device, struct vfio_pci_core_device, vdev);
->   	pdev = vdev->pdev;
->   
-> -	ret = pci_liveupdate_preserve(pdev);
-> +	mutex_lock(&device->dev_set->lock);
-> +	ret = iommufd_device_preserve(args->session,
-> +				      device->iommufd_device,
-> +				      &iommufd_token);
-> +	mutex_unlock(&device->dev_set->lock);
-> +
->   	if (ret)
->   		return ret;
->   
-> +	ret = pci_liveupdate_preserve(pdev);
-> +	if (ret)
-> +		goto err_iommufd_unpreserve;
-> +
->   	ser = kho_alloc_preserve(sizeof(*ser));
->   	if (IS_ERR(ser)) {
->   		ret = PTR_ERR(ser);
-> @@ -177,6 +190,12 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
->   
->   err_unpreserve:
->   	pci_liveupdate_unpreserve(pdev);
-> +
-> +err_iommufd_unpreserve:
-> +	mutex_lock(&device->dev_set->lock);
-> +	iommufd_device_unpreserve(args->session,
-> +				  device->iommufd_device);
-> +	mutex_unlock(&device->dev_set->lock);
->   	return ret;
->   }
->   
-> @@ -184,6 +203,11 @@ static void vfio_pci_liveupdate_unpreserve(struct liveupdate_file_op_args *args)
->   {
->   	struct vfio_device *device = vfio_device_from_file(args->file);
->   
-> +	mutex_lock(&device->dev_set->lock);
-> +	iommufd_device_unpreserve(args->session,
-> +				  device->iommufd_device);
-> +	mutex_unlock(&device->dev_set->lock);
-> +
->   	pci_liveupdate_unpreserve(to_pci_dev(device->dev));
->   	kho_unpreserve_free(phys_to_virt(args->serialized_data));
->   }
+  pt_entry_is_write_dirty():
+    Check the D bit (bit 7) in the PTE.
 
-Unpreservation isn't the exact reverse of preservation. Anything special
-here?
+  pt_entry_make_write_clean():
+    Clear the D bit across the full contiguous range.
 
-Otherwise, this patch looks good to me,
+  pt_entry_make_write_dirty():
+    Atomically set D via try_cmpxchg64() on a single PTE.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/generic_pt/fmt/riscv.h | 49 ++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/drivers/iommu/generic_pt/fmt/riscv.h b/drivers/iommu/generic_pt/fmt/riscv.h
+index d4445e463fa9..2f4838eb44af 100644
+--- a/drivers/iommu/generic_pt/fmt/riscv.h
++++ b/drivers/iommu/generic_pt/fmt/riscv.h
+@@ -223,6 +223,55 @@ static inline void riscvpt_attr_from_entry(const struct pt_state *pts,
+ }
+ #define pt_attr_from_entry riscvpt_attr_from_entry
+ 
++/*
++ * Dirty tracking: RISC-V PTEs use D (bit 7) as the hardware dirty bit.
++ * When Svnapot 64K is active a leaf entry spans 16 consecutive PTEs; we
++ * must check / clear all of them so that no dirty indication is lost.
++ */
++static inline bool riscvpt_entry_is_write_dirty(const struct pt_state *pts)
++{
++	unsigned int num_contig_lg2 = riscvpt_entry_num_contig_lg2(pts);
++	const pt_riscv_entry_t *tablep =
++		pt_cur_table(pts, pt_riscv_entry_t) +
++		log2_set_mod(pts->index, 0, num_contig_lg2);
++	const pt_riscv_entry_t *end = tablep + log2_to_int(num_contig_lg2);
++
++	for (; tablep != end; tablep++)
++		if (READ_ONCE(*tablep) & RISCVPT_D)
++			return true;
++	return false;
++}
++#define pt_entry_is_write_dirty riscvpt_entry_is_write_dirty
++
++static inline void riscvpt_entry_make_write_clean(struct pt_state *pts)
++{
++	unsigned int num_contig_lg2 = riscvpt_entry_num_contig_lg2(pts);
++	pt_riscv_entry_t *tablep =
++		pt_cur_table(pts, pt_riscv_entry_t) +
++		log2_set_mod(pts->index, 0, num_contig_lg2);
++	pt_riscv_entry_t *end = tablep + log2_to_int(num_contig_lg2);
++
++	for (; tablep != end; tablep++)
++		WRITE_ONCE(*tablep, READ_ONCE(*tablep) & ~(pt_riscv_entry_t)RISCVPT_D);
++}
++#define pt_entry_make_write_clean riscvpt_entry_make_write_clean
++
++static inline bool riscvpt_entry_make_write_dirty(struct pt_state *pts)
++{
++	pt_riscv_entry_t *tablep =
++		pt_cur_table(pts, pt_riscv_entry_t) + pts->index;
++	pt_riscv_entry_t new = pts->entry | RISCVPT_D;
++
++	return try_cmpxchg64(tablep, &pts->entry, new);
++}
++#define pt_entry_make_write_dirty riscvpt_entry_make_write_dirty
++
++static inline bool riscvpt_dirty_supported(struct pt_common *common)
++{
++	return pt_feature(common, PT_FEAT_RISCV_S2);
++}
++#define pt_dirty_supported riscvpt_dirty_supported
++
+ /* --- iommu */
+ #include <linux/generic_pt/iommu.h>
+ #include <linux/iommu.h>
+-- 
+2.50.1
+
