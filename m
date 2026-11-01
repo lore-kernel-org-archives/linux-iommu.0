@@ -1,149 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.145
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.173
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793521560;
-	b=IwxKFvdUQkcOc4H2H/jTbew9T1VPPwImD7zTicc7IhxPb7KEmHO0nAO36e67WLyRz4m1
-	 B1vlauK7hHcHLuUPXoJGoAXFXexpYe+wuNivwnkT/MmMOB7uJ4A4OLzf8Xu9N/SBAnkmX
-	 pv1UAz48KilfYzV8Mw9wOBS4S2v0l09iMpmz1aGUE4WLwO2v2l4DEDAz8xkIX/LBo0xJw
-	 bhmCaKWgp7ywC3P1XEYSdCngxt+XWebWlKqElG2tjZILxXQ3Q3ZJj69ikYWhaCmQKllwJ
-	 oNs5QqwEHa4bCoAhsOJbC0LR6shVjJLoUYf81UZvoiGBil5814KobYqZdTcP+ubqvzg==
+	t=1793570103;
+	b=kwVNV2XpnS3n+8zTGA2KNwCCZJrWvC0gzH2eYwfgsC6M8y2XY08J6hr/SVGVW88XEAn+
+	 S7vXIIBr3s/SKc+zo1jOJXUtr+Pp6fgPbZccJOBeyivOI/nbNumbgEYvHetByKxMJTktv
+	 6u6AqCJQ6naf53kzEXXFci8x3+CWzv4AEu3sgNwxf09n8lAHM7d2xIoEzuOVTxeE4fyRv
+	 XqHA2PN79NpwEvvpkeEYgMMO3Rr2G/CQVLQLvGKfOP7ALiCJDM+g4IjvqCCep1J1UShpt
+	 FPv/NoUCGQaLey1jY5yt1ybpOqfEBkHxPYameM89dfjeEZAmLkiqwBMOHYA720iGXVw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793521560;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
-	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
-	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
-	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding;
-	bh=2zyzlQZVxKaIY0yOEUymbeRyYHxqKX5mByILgxzc0jg=;
-	b=mP8afeSORvUu3nr9ZMUXcH36/KlRwbbyD37KeuRu537Lpg9AFyRxaYzGGY9qZfTp1gVD
-	 0ER9peJIK5wk2ATQWEwR0fb9rNk5l+u/rdnCV7MubeMVWyb34Lrv8b0YDe0wyfkAMEPwt
-	 pRWH9/zq3MLLwF6SBeLFs8LaSfvgC56l2NNS0OMrMGE50n4Mn/LR5fLrXv+QSRge0Rtq2
-	 V7TPJQuoPXo7quWB7YL59H8+BiSrSbzTlToT6bak9VBTmaXiqiSegulHP1psDN/w9QB79
-	 PU/kmXO0rxHblCo/sWJfGNTjJFisNsbzt8FTOd3W3WoIEcqI4rrpVMmWQiklVkb+KZA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793570103;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=pH9FDk8PhOZqTZYMJF9VQ6qq2IvSDAE/glr1M5Bsspg=;
+	b=5L+f/AIwl2ED393kCyvcNzM5641mxjDNGRiOgrqUVkoEFZdGoBvumf0bbQg0GAAZnQX7
+	 SCOF2TLZJze9ptuDDmXTx0uzxFwnGnIJiRwQZu2rbCmuOFefZ1v+DmLIChQRb/v8CKHof
+	 iH/Mo6e187F7ER3SPiGxqahtZNEI3o69fqa8UIl9cdMuwymhnBNJJ3sXgMpY4WVES78+D
+	 nKMEcM+ciBI95TaXGDQjA2LXKGzrWC1YEeM6FnUNMb7s/0pBTa8pSh8D8U6JtfUnkki2G
+	 xvW+0kFG81sArn40KsIJeg1auOlGA7pkbxsk+HWjSF/mOMNgk5PereUFnZAkCux9cKA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gahingwoo.com;
-	spf=pass smtp.mailfrom=gahingwoo.com;
-	dkim=pass header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=OTpDs1e6;
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm2 header.b=H40mRjH3;
-	arc=none smtp.remote-ip=103.168.172.145
-Received: from fout-a2-smtp.messagingengine.com (fout-a2-smtp.messagingengine.com [103.168.172.145])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=gnuzhMsL;
+	arc=none smtp.remote-ip=209.85.214.173
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDA0A606A325
-	for <iommu@lists.linux.dev>; Sun,  1 Nov 2026 08:25:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CDA0A606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DC59606A327
+	for <iommu@lists.linux.dev>; Sun,  1 Nov 2026 21:55:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4DC59606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=OTpDs1e6;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm2 header.b=H40mRjH3
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfout.phl.internal (Postfix) with ESMTP id 3955DEC06A9
-	for <iommu@lists.linux.dev>; Sun,  1 Nov 2026 03:25:59 -0500 (EST)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-01.internal (MEProxy); Sun, 01 Nov 2026 03:25:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1793521558; x=
-	1793607958; bh=2zyzlQZVxKaIY0yOEUymbeRyYHxqKX5mByILgxzc0jg=; b=O
-	TpDs1e66qboqgxG2PpC16j2sH7TJddbo+oVPEpaRSHVhke3x8rRlmt4ycjx2R7dY
-	/69lyaSpRTAsqFoQwBaW9mPW6jcusRd3aF8upzuJ9K6kHQ+PyrhZYq6wUsF/Wu8e
-	ZS4xVSbT0GjLtXbfXNpnsh9zwz1vIwxFuRMplbkPlSHyhrSGsCdzb2Dgc+hHumep
-	r9DhNLBfFA3qAwym6jjttL07IQ9E2j1P8cBaz3AI6X41WZDI8fKCr6iYkel2jQdD
-	MTocZAlEsEkHjLZI0enuODUjZ/VRVCOFymLpl1ox7Xxi3L9S2n+t/97++/FO1hsm
-	Ge/cSWrJsJOTWtFe8vIDA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm2; t=1793521558; x=1793607958; bh=2
-	zyzlQZVxKaIY0yOEUymbeRyYHxqKX5mByILgxzc0jg=; b=H40mRjH3c0gCWrEa2
-	ZcN6DKuy5m+/f3cp+iLyt37jF1O4+mR6K4ASY7c3fsRQE5GgW41wu9hywDxNpZDO
-	Xo8oxi2DTsQTZBHWBP7c5gB6shFXnI3Y1hrb+CP2DrItG7us2bp04RQqyYk5/3gx
-	evDH44u9VE03Z3pTZ2mfKZzMgZJDleJ0fsDrH3++cdFlxyXZoLVbkH4eBrhP2vEp
-	BqFovapOWK277RrJmOS+tviulbq1vyF/51LHrlrBtQTFFtkJ675B/HvopAbyLNAk
-	3Kw3wvO7dS7tkBSI2omvUvdJVFkCktPVigfO+GzD+201SYtkSw0RtbjWpymaGw4s
-	+MlEw==
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-08;
-	repo=github.com/dkim2wg/interop; date=2026-10-28; sw=lmtpprox;
-	action=sign d=gahingwoo.com a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1793521558; d=gahingwoo.com;
-	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
-	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
-	s=fm1:rsa-sha256:g8E+pbcMPdLJXUfuU2lEGgGj8OtmRg9GLXk1t6irmOVP04D
-	pqg6aJYV3seT2DfmRKiz0xfnNITN2J8XeTMPFPRKpEMApoGgZLc94Z8O1Z594FhR
-	QlEVrWf41pTQGQbAcnMTgz1UoymScd+hvU99GK2FVmDZQWMdSbBFkFpLKnL5T/K5
-	mATG8+qG5cwQQxctb2UXb6T3Lw1SK4I0MQVl3CMVqbjjLqPBBu5aX/HtOZZQx7Y0
-	X90zRJnMfk1Seqam6VhetfpiDJHgik3QKDygAdkR/KFS+htAAFtABDzBhGEJiwYE
-	AcSxE9LmoCjA1d92ScIWfOhFN/aiZvfyjzMtQaw==;
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-08;
-	repo=github.com/dkim2wg/interop; date=2026-10-28; sw=lmtpprox;
-	action=mi-m=1; hc=11;
-	hn=cc,content-transfer-encoding,date,feedback-id,from,
-	in-reply-to,message-id,mime-version,references,subject,to;
-Message-Instance: m=1; h=sha256:wv/eGDeElSENTGA8Ghx+iULvw+yggP6rkdnx5gKwE3g=:lsPRW5tbvjV1yB2K11YVzDhVzncaGOx91nla6MReLdw=;
-X-ME-Sender: <xms:lvfmasrw7k8yaVKHeIUXNTqL-SMeEiOd4l2tWchfSFh9zGXbws60PQ>
-    <xme:lvfmak-mQ3jm6UQKwItz2aTDrt-nnpoMXb7djmqVRZpWuB-o8I5luVdQ8BeJ50re-
-    LsHErccyN4cwKeTjb7kjvFuNrVl0J_RXTclRRQPgREEsZluOt_iyO3H>
-X-ME-Received: <xmr:lvfmav4m4Ou89MxTcoRt5HJBrRJRbdlErDs4v_jRxEbpFdpuHyHDrgwZI1TyLdPCSHJcweyM>
-X-ME-Proxy-Cause: dmFkZTEio0HITRPU8VpT4PebgbYf+HqQTVmTBwoXIcaWhSPJQuOpCGNL4Feyfw1mm6jNto
-    aCqGt+GjGmHddQdDYMsFOcBW2fd2wbE1C2hSqpUPgYFBCtzpG0VAhrL+r+dSJb3xHPmeXu
-    bbiU80H+3s8diofjGu9JFbSOoisVQrvN3eDU6svi49hrmcI63rUfSkuUe5+aUvGFuszdig
-    Qnc72eHSOddgDW0HvcKHXNvldok2Sz2296F+6Jr1XxRzNWV9h54MRHCMGFMHXdGms8Xsm1
-    Bk/Rw1sBqh58/z5F2FEqlRBvxPnvur8T5rxLVrR8npGrMSSnol3N1co7aLduCklPXA/va/
-    YXTHoUsCnKY9azuEaJJ5cCfMAuVhudV4dodqOzomVIYegi3ufkxBF55rrFoq3iaq6LHP33
-    T76ZGeyGkijxFWxFlKRfgjr4wSs8XktqK9Cmvzz6H8XrlQbewx5zl72aflAIu/xJmUigHe
-    ihwQFF+zsQXm5SSJ7HLlnBh5Kz2GDn0QnNv3awq93FX17kx4AxbOt97kEUTVKpXIVoXzrT
-    xIXSHsKBUmxXWaF7TwhMQP2jYb2EtSIjvqSLK9L+56g8vFQOYlJ8YJwAmO1+lut35s9urn
-    QvjPedj4/VeZ9I8NgTPNqwLUBD/0eyh+oDkjX0x/7kEUCaaYL9QzhA12nA4A
-X-ME-Proxy: <xmx:lvfmag3kzYBO9WRsiDPs1ACndkAeqVnYC2zDsUlRioWhP2-sZPpzXw>
-    <xmx:lvfmapjkGvKVYjvQfdTwGLhPQ62aXV3SiAYxBQ8ES1P_HdZZl8eyvw>
-    <xmx:lvfmariUw_ppVMna6bgM_sYzZep3I-FyI8HA-J2lnXjfB91kZhx7bw>
-    <xmx:lvfmalK4-DC1STWBHZWukQl1gPsGcWwbudOWBVlx-nTZY2ajX8FAeA>
-    <xmx:lvfmam3Tn_xs7OPK_vb-d-tEDN15IQfKJm_Q4C2HTj2qrjyPjgnNri8T>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 1 Nov 2026 03:25:50 -0500 (EST)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: tomeu@tomeuvizoso.net,
-	heiko@sntech.de,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	ulfh@kernel.org,
-	p.zabel@pengutronix.de,
-	ogabbay@kernel.org,
-	zhangqing@rock-chips.com
-Cc: royalnet026@gmail.com,
-	abel.vesa@oss.qualcomm.com,
-	sebastian.reichel@collabora.com,
-	sidong.yang@furiosa.ai,
-	u.kleine-koenig@baylibre.com,
-	chaoyi.chen@rock-chips.com,
-	diederik@cknow-tech.com,
-	alchark@flipper.net,
-	leonard@lausen.nl,
-	jeff.hugo@oss.qualcomm.com,
-	rfoss@kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: [PATCH v15 15/15] arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
-Date: Sun,  1 Nov 2026 21:23:07 +1300
-Message-ID: <20261101082307.151957-16-gahing@gahingwoo.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261101082307.151957-1-gahing@gahingwoo.com>
-References: <20261101082307.151957-1-gahing@gahingwoo.com>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=gnuzhMsL
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2e9f6a16afcso49905ad.1
+        for <iommu@lists.linux.dev>; Sun, 01 Nov 2026 13:55:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793570103; x=1794174903; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=pH9FDk8PhOZqTZYMJF9VQ6qq2IvSDAE/glr1M5Bsspg=;
+        b=gnuzhMsLTz9dMMGheHTBUZAkZPitAvXrhojr/F+3656Kn/TLbXUWHMtKdzyUnpqqdz
+         dw2AI0ot2hiU7KAPcBCAlsRXrKSsw8FhAfwELziOFgOVrhrkAoAcWMjBq2ZsWq4/pTia
+         ceG98gXoqgLt5A0/mFvb5xi6E7vI3wXCNdx8RUNxAzrPFv4IT6O63eTAlMR4R1wgINYT
+         G8wds3Au+Vp1rQAOBkKiWFaHYPePZ6e+njyf6S2sJgEfo4xKihTyAqT8C10+kW8zj9nA
+         0nlwHPv6TSpDxdEXbDwNFCloIsXivXx0FBn75FCEaS+X5QkNLPhkz3+TECdteQ97cjF0
+         3Qfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793570103; x=1794174903;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=pH9FDk8PhOZqTZYMJF9VQ6qq2IvSDAE/glr1M5Bsspg=;
+        b=lR5vYxrw/mAQEq3Wt91yNLRd/Wt5YY9DHdtsIAfBqtHsrIWkGu6JaAltgeWJqwdt3O
+         fJaeA+6oKVqMdI3Fd9KrOQLL0bEb6H+BihlJuv3DKibj5F+mGYgXGFs1PvRnrfkPCCwd
+         KzI4L4B6grIwsGAEsJUDRK6pQV0q8mkKe1xXtofhMrpguabTzY3Z+GJslv86brLDLkQy
+         YEjvFdna7XGIMflCEuC34UmpESzkj22xBygo8VD/IY5Akc+mNk17+O/yuRQqz3qsVzsd
+         vKQoZKCX3DI0JL9uYC22ScbVLhoD9g3IACXGGspVgDUs7iOtHba91miyTTwxGpLC0Z4e
+         J1+w==
+X-Forwarded-Encrypted: i=1; AKwUvBxEI6SyEYCJEi4/ivYViomEgNDhD+4pHSPgOoUrPIP8/1+LyR6wmqCpFALSiCvHYI87EeRNMA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9tJCE/1nDxzmIuzOuMGxCvYmrsZzTyAnQbbZV+bRINdolc+aDG
+	yStiZdv9Ztbr3CXiTz71fB75W6RSkQSslFXjJOPzPfjKJFm4pDAZ2MhwPIKMnDeu8A==
+X-Gm-Gg: AYBFou13uvI92U8752kwGy7uTqbGwIA26YqcF1eqhg5zMEPGuoUdbSi2J1mhzkbRBui
+	nSkhJ85Bi6E1eMkb86CM5rG8vrWySKZpgmx/18qALCgT0lykhdcLpHVDi6H9s6lKx6PBIUU6BtX
+	EyIupqJiFZ8v2KCtc1rGOXZxpxhfOEYlNndZD0JWgjhiYqdka3lvFHQDnvW1Yqp/f1vUspOHD4g
+	23EqzbnBzFozav7wriXthVS+8KoAw0ez8cOVylwD+Trg8Onihhq4ZKyGfCvIpHRw56wn2Q2Axr+
+	Z39zEpvcW9H4mzY4f3X1ecvCY5616dJTC4CcLnTrd+nnKg9Miz1N/gxlW5EGE9HHPhXVD7/98ej
+	QvKc1qyzaaLUuGTraHwS8mlOHzzk62Ydf0ZXQPfM/O2YoIfUUSMaSyG8Z8k+aIHcnhUizmm28uq
+	491j9v/LlDu7egeqbNu2D7o3YUbfMXqctdzB22K5FtZrjnd6Yvkq6GX5ElfAZpWdhN0DwcHK2W6
+	9j/Q7E6ZIZl3YfvocAx0unYlXzXgnrQi8/17bv9yHHN5l01uzKkhDgQWtpguXEY4bjMjf6oHCec
+	hCfaudbW6i55lRmyRltX+51DDbVWmXFADm+QJA00K4hS8TWjyJgQ85qKU0HbWBZDtRZqBoUHGp2
+	svhvS4tfOMMco+a6MtHwAcZcMQiS8hJmsvkEeof0G5Q==
+X-Received: by 2002:a17:902:e5cb:b0:2ea:1fa0:8068 with SMTP id d9443c01a7336-2eb1ecbd412mr17712775ad.16.1793570101892;
+        Sun, 01 Nov 2026 13:55:01 -0800 (PST)
+Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae6e9bc6f7sm15137855a91.16.2026.11.01.13.54.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Nov 2026 13:55:00 -0800 (PST)
+Date: Sun, 1 Nov 2026 21:54:57 +0000
+From: Samiullah Khawaja <skhawaja@google.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>, 
+	Pranjal Shrivastava <praan@google.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
+	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma <vipinsh@google.com>, 
+	Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	John Starks <dev@jstarks.net>
+Subject: Re: [PATCH v6 17/18] vfio/pci: Preserve the iommufd state of the
+ vfio cdev
+Message-ID: <aubO8llyTiUc38u2@google.com>
+References: <20261025021930.674647-1-skhawaja@google.com>
+ <20261025021930.674647-18-skhawaja@google.com>
+ <2574cbc8-8c2b-4458-9fcd-b077190084a3@linux.intel.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -153,56 +108,132 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <2574cbc8-8c2b-4458-9fcd-b077190084a3@linux.intel.com>
 
-Enable both NPU cores and their IOMMUs on the ROCK 4D, and make vdd_npu_s0
-the NPU domain's supply so the rail is switched with the domain.
+On Sat, Oct 31, 2026 at 01:56:12PM +0800, Baolu Lu wrote:
+>On 10/25/2026 10:19 AM, Samiullah Khawaja wrote:
+>>If the vfio cdev is attached to an iommufd, preserve the state of the
+>>attached iommufd also. Basically preserve the iommu specific state of
+>>the device and also the attach iommu HW unit.
+>>
+>>Once the device and its iommufd attachment is preserved, it cannot be
+>>detached or attached to another IOAS until it is unpreserved.
+>>
+>>Reviewed-by: Pranjal Shrivastava <praan@google.com>
+>>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+>>---
+>>  drivers/vfio/device_cdev.c             | 10 +++++++++
+>>  drivers/vfio/pci/vfio_pci_liveupdate.c | 28 ++++++++++++++++++++++++--
+>>  2 files changed, 36 insertions(+), 2 deletions(-)
+>>
+>>diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
+>>index b818aab92f76..4eb7ffd489bd 100644
+>>--- a/drivers/vfio/device_cdev.c
+>>+++ b/drivers/vfio/device_cdev.c
+>>@@ -284,6 +284,11 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
+>>  	}
+>>  	mutex_lock(&device->dev_set->lock);
+>>+	if (iommufd_device_is_preserved(device->iommufd_device)) {
+>>+		ret = -EBUSY;
+>>+		goto out_unlock;
+>>+	}
+>>+
+>>  	if (attach.flags & VFIO_DEVICE_ATTACH_PASID)
+>>  		ret = device->ops->pasid_attach_ioas(device,
+>>  						     attach.pasid,
+>>@@ -342,6 +347,11 @@ int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
+>>  	}
+>>  	mutex_lock(&device->dev_set->lock);
+>>+	if (iommufd_device_is_preserved(device->iommufd_device)) {
+>>+		mutex_unlock(&device->dev_set->lock);
+>>+		return -EBUSY;
+>>+	}
+>>+
+>>  	if (detach.flags & VFIO_DEVICE_DETACH_PASID)
+>>  		device->ops->pasid_detach_ioas(device, detach.pasid);
+>>  	else
+>>diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio_pci_liveupdate.c
+>>index f0ea37d98696..fb2141ee8942 100644
+>>--- a/drivers/vfio/pci/vfio_pci_liveupdate.c
+>>+++ b/drivers/vfio/pci/vfio_pci_liveupdate.c
+>>@@ -106,6 +106,7 @@
+>>  #include <linux/errno.h>
+>>  #include <linux/file.h>
+>>+#include <linux/iommufd.h>
+>>  #include <linux/kexec_handover.h>
+>>  #include <linux/kho/abi/vfio_pci.h>
+>>  #include <linux/liveupdate.h>
+>>@@ -114,6 +115,8 @@
+>>  #include "vfio_pci_priv.h"
+>>+MODULE_IMPORT_NS("IOMMUFD");
+>>+
+>>  static bool vfio_pci_liveupdate_can_preserve(struct liveupdate_file_handler *handler,
+>>  					     struct file *file)
+>>  {
+>>@@ -154,15 +157,25 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
+>>  	struct vfio_pci_core_device_ser *ser;
+>>  	struct vfio_pci_core_device *vdev;
+>>  	struct pci_dev *pdev;
+>>-	int ret;
+>>+	u64 iommufd_token;
+>>+	int ret = 0;
+>
+>nit: no need to initialize ret.
 
-Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
----
- .../boot/dts/rockchip/rk3576-rock-4d.dts      | 22 +++++++++++++++++++
- 1 file changed, 22 insertions(+)
+I will fix this.
+>
+>>  	vdev = container_of(device, struct vfio_pci_core_device, vdev);
+>>  	pdev = vdev->pdev;
+>>-	ret = pci_liveupdate_preserve(pdev);
+>>+	mutex_lock(&device->dev_set->lock);
+>>+	ret = iommufd_device_preserve(args->session,
+>>+				      device->iommufd_device,
+>>+				      &iommufd_token);
+>>+	mutex_unlock(&device->dev_set->lock);
+>>+
+>>  	if (ret)
+>>  		return ret;
+>>+	ret = pci_liveupdate_preserve(pdev);
+>>+	if (ret)
+>>+		goto err_iommufd_unpreserve;
+>>+
+>>  	ser = kho_alloc_preserve(sizeof(*ser));
+>>  	if (IS_ERR(ser)) {
+>>  		ret = PTR_ERR(ser);
+>>@@ -177,6 +190,12 @@ static int vfio_pci_liveupdate_preserve(struct liveupdate_file_op_args *args)
+>>  err_unpreserve:
+>>  	pci_liveupdate_unpreserve(pdev);
+>>+
+>>+err_iommufd_unpreserve:
+>>+	mutex_lock(&device->dev_set->lock);
+>>+	iommufd_device_unpreserve(args->session,
+>>+				  device->iommufd_device);
+>>+	mutex_unlock(&device->dev_set->lock);
+>>  	return ret;
+>>  }
+>>@@ -184,6 +203,11 @@ static void vfio_pci_liveupdate_unpreserve(struct liveupdate_file_op_args *args)
+>>  {
+>>  	struct vfio_device *device = vfio_device_from_file(args->file);
+>>+	mutex_lock(&device->dev_set->lock);
+>>+	iommufd_device_unpreserve(args->session,
+>>+				  device->iommufd_device);
+>>+	mutex_unlock(&device->dev_set->lock);
+>>+
+>>  	pci_liveupdate_unpreserve(to_pci_dev(device->dev));
+>>  	kho_unpreserve_free(phys_to_virt(args->serialized_data));
+>>  }
+>
+>Unpreservation isn't the exact reverse of preservation. Anything special
+>here?
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-index f068794e48d4..72b251d396fe 100644
---- a/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3576-rock-4d.dts
-@@ -722,6 +722,10 @@ &pcie0 {
- 	status = "okay";
- };
- 
-+&pd_npu {
-+	domain-supply = <&vdd_npu_s0>;
-+};
-+
- &pinctrl {
- 	hdmi {
- 		hdmi_tx_on_h: hdmi-tx-on-h {
-@@ -779,6 +783,24 @@ wifi_en_h: wifi-en-h {
- 	};
- };
- 
-+&rknn_core_0 {
-+	npu-supply = <&vdd_npu_s0>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_0 {
-+	status = "okay";
-+};
-+
-+&rknn_core_1 {
-+	npu-supply = <&vdd_npu_s0>;
-+	status = "okay";
-+};
-+
-+&rknn_mmu_1 {
-+	status = "okay";
-+};
-+
- &sai6 {
- 	status = "okay";
- };
--- 
-2.43.0
+Nothing special. I will make it the exact reverse of preserve.
 
+>
+>Otherwise, this patch looks good to me,
+>
+>Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Thanks for the review,
+Sami
