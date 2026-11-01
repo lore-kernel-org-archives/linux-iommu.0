@@ -1,68 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793499206;
-	b=C+eeRAHTpVi0oyNQ8UvaRgcNdmMHrnvwJ1l0fz7HZ6PN2X2IemG59yUZ/Uq0cpVN7TJ8
-	 EUmtfxJQAUOaRxziV0OxDny8saqaQAGJP4de7yiT9VXGbN4OyzT5MMqb+hCzinMZ0DEue
-	 qb161h1mFf+BnTxYEoPPxf1AyAaJFK6NjLXci67YdcI2Egaq5IHTlkkyZqcwZ8imOvXdL
-	 ia4cCZ9ZYg4SFYnW5rtXYoKwd9LN0tmadsZkUohmQy4yqeBAJIldzzjrZWXOBklghT6di
-	 8HUSCERRb9zDQr/dIFKOZU5vBL9+c/30mN2QdCDsgWdCIUWIc53U/9nWMueZogWEF4Q==
+	t=1793506634;
+	b=YqiKp+h3dWFCZ6TG9e5sizqHPKQb0XJ3SQqobV1lb4e2S2KLP29zKQAL+j//9OTRW0HO
+	 vRzS4znXXoRqpENfRdKWGYalpuq+LcP3u901oExt1sk47wr68foiQb4GfzaL706ivLl8P
+	 YNywpM5C+SpIqMBKpmf9T5GPxfQxLQXQ4AX5CxdqljmIJimKWlN5miRtJ3D8TfrTPrt7w
+	 rzDDKfzq1dUzTJVpINWbu9mNYTSrivmkSIejPKWZg/g/Yz5Uz0SkpH7BypWPklWYcAINO
+	 n+hsaTmCM6z+Be4e+Si0TFlDImmFYGiRoLhyT9bkr/DjVku11zhfavR3ys1ZscuJM8w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793499206;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=Guk8hOxSxZsVVyDu6dmZjVN3ruStpWgA4u4UsRW4Y0o=;
-	b=DpkPe8Gpv9/17xFkW4BCAqILDf7Mmuy8zeb7QZb1WerE8iYsE7Wl2bFDrFHXo7CyhNZp
-	 czFB4sLzLlvKXalww0eaK+qmOq7BxLvYh6ePKH+9fE5gnxOxnbPTxiY68aNdb/MOp3Y3l
-	 DPBf/GcqGydqYbda+1pYqhIO1G2Cmz+nbvnGql0d0K10MSKzAXYJRu5437eYm51FvxpYT
-	 apXy8AxqxUT6OLz4lpbOseRNHcbZK2Yeygkwz1BI+DIfH7Ql/rr2wp+zgnKCapP8TkDfT
-	 gOPAcrdCaNkDClDux/OLStmiSBXHUb5epFbXH+6rPfCjJzKWFEa7X61DXVXuxAbLmng==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793506634;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=mUqu+6HsBuPxnZ0xvfhrdFnRGtvir4qjhgMAVr4T9Ko=;
+	b=TZsF4WtDpQtIBUQco5CYMqf7pyMAN2hcLnT70ccOgCAWICdFxn5dxyCiDWPciakeScyr
+	 R7r98aQtjDyr/1iC5ooNac1yADZB+JPfPbckmeRbUSrspkE8F/8YkYnjaNCLiKAI/Atmm
+	 fj8qJ6rYAG/xhW6c1Jo3X6/ChZL5/FAdwpTN19i9xXFtexMQ2f3AfW8Iw2+VIqQGIIpGF
+	 ixK8p/f/0ExwhB1SNCP42xNAL32Wm1CXiPcFHfyg9lkZbEpBb/p3afdt1iwmkVPrkqo93
+	 dXml2ExgRnbVik1lkmKbWKsZxCz2mkfAb1X7GirwLhPZBp7N1NlUi0mHkPCma8gABKA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BO4qeyBo;
-	arc=none smtp.remote-ip=192.198.163.18
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Szc8bvtd;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 990A0606A325
-	for <iommu@lists.linux.dev>; Sun,  1 Nov 2026 02:13:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 990A0606A325
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A0C606A324;
+	Sun,  1 Nov 2026 04:17:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=BO4qeyBo
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793499206; x=1825035206;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=QR9k1q5311EW/AfCDkoFYdwYVJyyH8f3uvJGyNJPUw8=;
-  b=BO4qeyBoAUgDVJc79j8TojQ3PsENhWXOotngB5MDYEU05qQNTOUuDENW
-   SdvYnXdLelAKsxF9UlHpkT/cBcnoeabL9A7nfg57GVR5lptD2VlL1yaGh
-   Xv9p0+Czl8jV9j5BUnhhu/lfw2IM8MRX9HzUOfKAqSZtiUN28V4W2mLWK
-   TWgDczQ+1vrqC6XfDr6H5nrORM6ENKHtlsGxO+FxGWbs4AbYJII0qVOTG
-   Y59TXhrIv/YDr18Nq2xCp2ouwB2mp0ltES4a4V16RQPykecB3DS2IuAWY
-   LBWLdm/ZKbq6d8KKkHjMiZdPTQGFApFenPxo61aqTWRrgFxog4K4E0iGq
-   w==;
-X-CSE-ConnectionGUID: cWID9NGjRyaBiMvFWlhtvg==
-X-CSE-MsgGUID: mglG8vq4TJSrC9S6KS3WuA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11952"; a="2252717"
-X-IronPort-AV: E=Sophos;i="6.27,189,1787036400"; 
-   d="scan'208";a="2252717"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 19:13:25 -0700
-X-CSE-ConnectionGUID: z6/eXgFfRZmxTEcwmpXpew==
-X-CSE-MsgGUID: AfEumrtbTcqAmATvoou2gA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,189,1787036400"; 
-   d="scan'208";a="5631974"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Oct 2026 19:13:23 -0700
-Message-ID: <762aa8ba-8e4a-420f-81d6-607c79d9363a@linux.intel.com>
-Date: Sun, 1 Nov 2026 10:13:20 +0800
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Szc8bvtd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B3681F000C1;
+	Sun,  1 Nov 2026 04:17:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793506633;
+	bh=mUqu+6HsBuPxnZ0xvfhrdFnRGtvir4qjhgMAVr4T9Ko=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=Szc8bvtdgyfePD3Lcy+welmLY8PIM/MtSN+SWIMLPjyxSAUjFYbtzX/kg/Gk5W6ob
+	 AYPG16F5BppYWK28ekq6B4oHkbVsa+lhdlIX9kk2K7luf1zP8bvyIiQlN7cxKLefnz
+	 AoI6Ac242CTEeqI3aifav4i4kabOUAzpWrpQTkliA8ZqivaSs5YfaonNvidpfoWMJa
+	 6jPJ8xnrDXxGgY7hl5m0qHxKAk5XJempL3eDIBY50vaX+CFknAYUnPM1R+RrTcypkl
+	 ukEcKPlOK+p0kKrGynfvdOLrmP1tOsJWpENln+kYeylBrjzAxWzp/+bUv9vsW/XkIc
+	 9w+/Glq+JuypQ==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Kohei Enju <enju.kohei@fujitsu.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	x86@kernel.org
+Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
+ sizing
+In-Reply-To: <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
+References: <20260924060756.1325156-1-aneesh.kumar@kernel.org>
+ <20260924060756.1325156-7-aneesh.kumar@kernel.org>
+ <asVs3doaJ4WrT3M2@willie-the-truck> <asYZFXGyafRjjBS0@arm.com>
+ <asYiOgskwi8JYLe_@willie-the-truck> <yq5awlrt3dwo.fsf@kernel.org>
+ <yq5av77c92oo.fsf@kernel.org> <aseRzPshcoys7AJS@arm.com>
+ <yq5ao6d48dqr.fsf@kernel.org> <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
+Date: Sun, 01 Nov 2026 09:47:05 +0530
+Message-ID: <yq5a8q3d9oe6.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,61 +67,149 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jpb@kernel.org>, Yi Liu <yi.l.liu@intel.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 2/4] iommu: Unpublish the attach handle before the
- PASID detach callback
-To: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org,
- Jason Gunthorpe <jgg@nvidia.com>
-References: <cover.1790718296.git.nicolinc@nvidia.com>
- <3d6731c5c3502380b4de3c90a1f6ba5547f0dd85.1790718296.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3d6731c5c3502380b4de3c90a1f6ba5547f0dd85.1790718296.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 9/30/2026 5:51 AM, Nicolin Chen wrote:
-> iommu_detach_device_pasid() erases the group->pasid_array entry only once
-> __iommu_remove_group_pasid() has returned, so the detaching handle stays
-> visible to iommu_attach_handle_get() for the whole of that callback, and
-> the caller frees it as soon as the detach returns.
-> 
-> Erase the entry ahead of the callback, for the same reason the group path
-> does: a fault raised in the meantime must not resolve to a domain that is
-> on its way out.
-> 
-> Fixes: 16603704559c ("iommu: Add attach/detach_dev_pasid iommu interfaces")
-> Cc:stable@vger.kernel.org
-> Assisted-by: LLM
+Kohei Enju <enju.kohei@fujitsu.com> writes:
 
-ditto
+> On 10/08 20:02, Aneesh Kumar K.V wrote:
+>> Catalin Marinas <catalin.marinas@arm.com> writes:
+>> 
+>> > On Thu, Oct 08, 2026 at 11:03:27AM +0530, Aneesh Kumar K.V wrote:
+>> >> Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+>> >> > Will Deacon <will@kernel.org> writes:
+>> >> >> On Wed, Oct 07, 2026 at 11:04:05AM +0100, Catalin Marinas wrote:
+>> >> >>> On Tue, Oct 06, 2026 at 10:49:17PM +0100, Will Deacon wrote:
+>> >> >>> > On Thu, Sep 24, 2026 at 11:37:54AM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> >> >>> > > @@ -496,7 +516,8 @@ swiotlb_select_pool_policy(unsigned int flags)
+>> >> >>> > >  	if (swiotlb_force_disable)
+>> >> >>> > >  		return SWIOTLB_POOL_NONE;
+>> >> >>> > >  
+>> >> >>> > > -	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
+>> >> >>> > > +	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+>> >> >>> > > +	    !restricted_dma_pool_present)
+>> >> >>> > >  		return SWIOTLB_POOL_CC_GUEST;
+>> >> >>> > 
+>> >> >>> > I think this check on the restricted DMA pool is too general -- the pool
+>> >> >>> > could be tied to a specific DMA-capable peripheral and so treating its
+>> >> >>> > presence as a global property isn't right.
+>> >> >>> 
+>> >> >>> I agree it's a hack but that was the simplest way to avoid the pVMs
+>> >> >>> getting a bounce buffer after this patch. More than happy to leave it
+>> >> >>> out and reduce the buffer on cmdline or we come up with some better
+>> >> >>> heuristics.
+>> >> >>
+>> >> >> Hrm, that does mean that reverting just this part will regress pVMs
+>> >> >> because they'll suddenly be allocating a tonne more memory for an
+>> >> >> entirely unused swiotlb buffer. So I think I'd prefer to drop the entire
+>> >> >> series until this has been worked out properly.
+>> >> >>
+>> >> >>> Another option could be the arch code passing another flag that it
+>> >> >>> doesn't want an encrypted pool (e.g. when running in a pKVM guest) but I
+>> >> >>> don't particularly this either. The arch code doesn't know whether
+>> >> >>> there's an alternative pool.
+>> >> >>
+>> >> >> At that point, the default size may as well be driven by the
+>> >> >> drivers/virt/coco driver.
+>> >> >>
+>> >> >>> That said, such heuristics should have been a separate patch to make it
+>> >> >>> easier to review/drop.
+>> >> >>
+>> >> >> I think the only right way to get a semi-accurate heuristic is to take
+>> >> >> into account the set of dma-capable devices that will use the swiotlb
+>> >> >> pool, but that's fiddly and should probably be tackled as a separate
+>> >> >> series. Maybe a simpler hack in that direction would be to take the
+>> >> >> SWIOTLB_POOL_CC_GUEST if _any_ device is going to use swiotlb? You'll
+>> >> >> run into the usual problem of not being able to tell if a device is
+>> >> >> DMA-capable or not, but you could probably look for a global restricted
+>> >> >> DMA pool and, if that doesn't exist, check for per-device restricted pools
+>> >> >> on dma-coherent devices (since restricted DMA isn't supported by ACPI) as
+>> >> >> a reasonable approximation.
+>> >> >
+>> >> > So, something like this?
+>> >> >
+>> >> > 	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+>> >> > 	    swiotlb_cc_guest_needs_default_pool())
+>> >> > 		return SWIOTLB_POOL_CC_GUEST;
+>> >> >
+>> >> 
+>> >> Detecting a DMA-capable device is not straightforward, and if we get it
+>> >> wrong, we will enable SWIOTLB_POOL_CC_GUEST unnecessarily. Would the
+>> >> code below be a reasonable approximation of what you suggested?
+>> >> 
+>> >> Another option would be to make swiotlb_cc_guest_needs_default_pool() a
+>> >> weak function that architectures can override. arm64 pKVM could then use
+>> >> a different scheme (for this patch series default to false). Would that
+>> >> be preferable?
+>> >
+>> > Even the rmem check for each device is still a hack that may bite us in
+>> > the future (private devices for example would not need swiotlb). I'm
+>> > thinking more and more of leaving the sizing an arch-specific decision,
+>> > don't bother generalising it at all.
+>> >
+>> > On pKVM vs CCA guests, there's really nothing specific here to pKVM
+>> > guests. The only difference is that confidential guests that so far have
+>> > run without a swiotlb buffer will regress if their memory is tight. For
+>> > confidential guests without dedicated rmem (either CCA or pKVM), I think
+>> > our options are either command line swiotlb sizing or dynamic swiotlb.
+>> >
+>> > Could you respin your series while leaving out the generic sizing? IOW,
+>> > no x86 code generalisation. We can discuss the best strategy on sizing
+>> > later (I haven't checked how much of this series still makes sense
+>> > without the generic sizing).
+>> >
+>> 
+>> It would mostly consist of the first three cleanup patches, followed by
+>> three patches that replace the addressing_limit argument with flags.
+>> 
+>> #define SWIOTLB_VERBOSE	(1 << 0) /* verbose initialization */
+>> /* Initialize a pool for devices with limited DMA addressing. */
+>> #define SWIOTLB_INIT_ADDRESSING_LIMIT	(1 << 1)
+>> /* Initialize a pool that requires architecture remapping. */
+>> #define SWIOTLB_INIT_REMAP		(1 << 2)
+>> /* Initialize a pool for DMA to memory-encrypted host or guest memory. */
+>> #define SWIOTLB_INIT_MEM_ENCRYPT		(1 << 3)
+>> /* Initialize a pool for unaligned kmalloc bouncing. */
+>> #define SWIOTLB_INIT_KMALLOC		(1 << 4)
+>> /* Do not initialize a pool unless SWIOTLB is explicitly required. */
+>> #define SWIOTLB_INIT_DEFAULT_OFF		(1 << 5)
+>> 
+>> This results in the large change below. I'm not sure we want to do this
+>> for no real benefit other than making swiotlb_should_init() slightly
+>> easier to follow.
+>> 
+>> static bool __init swiotlb_should_init(unsigned int flags)
+>> {
+>> 	if (swiotlb_force_disable)
+>> 		return false;
+>> 
+>> 	if (swiotlb_force_bounce)
+>> 		return true;
+>> 
+>> 	if (flags & (SWIOTLB_INIT_REMAP | SWIOTLB_INIT_MEM_ENCRYPT)))
+>> 		return true;
+>> 
+>> 	/* Explicit requirements override an architecture's default opt-out. */
+>> 	if (flags & SWIOTLB_INIT_DEFAULT_OFF)
+>> 		return false;
+>> 
+>> 	return flags & (SWIOTLB_INIT_ADDRESSING_LIMIT | SWIOTLB_INIT_KMALLOC);
+>> }
+>>  [...]
+>
+> Hi Aneesh,
+>
+> I can reproduce the CCA regression discussed in this thread:
+>   https://lore.kernel.org/all/yq5azeyxyfol.fsf@kernel.org/#t
+>
+> The guest runs out of SWIOTLB slots, causing disk I/O to fail and
+> preventing the guest from booting.
+>
+> I would like to test the fix on real CCA hardware. Could you please Cc
+> me when you respin the series? I follow LKML, but I may still miss the
+> posting by chance.
+>
 
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
-> ---
->   drivers/iommu/iommu.c | 6 +++++-
->   1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index a062a84686c29..19b880d23314b 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3818,8 +3818,12 @@ void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
->   	struct iommu_group *group = dev->iommu_group;
->   
->   	mutex_lock(&group->mutex);
-> -	__iommu_remove_group_pasid(group, pasid, domain);
-> +	/*
-> +	 * Unpublish the handle first, so it would not resolve to the detaching
-> +	 * domain once the driver is detaching it.
-> +	 */
->   	xa_erase(&group->pasid_array, pasid);
-> +	__iommu_remove_group_pasid(group, pasid, domain);
->   	mutex_unlock(&group->mutex);
->   }
->   EXPORT_SYMBOL_GPL(iommu_detach_device_pasid);
+The conclusion was to either use CONFIG_SWIOTLB_DYNAMIC or swiotlb kernel command line
+option
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+-aneesh
