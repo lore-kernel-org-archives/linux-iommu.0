@@ -1,73 +1,140 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.156
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793518139;
-	b=ZVX0KqF9/8rySpjRvapEpmmeN+ePYqYLVS89KoHvXgNda+EwUUyjY4tsgeCw6NP2wxCt
-	 pWvqgrmvoo3yYS9yqJsjptN1b25/bPPWcrAULR/QzioU9QwMufPlfXkrVQvIaWKMTL4Mc
-	 k3CGnDEn0Gb/QNN3UE0QwTFFFLnN2U6pJIfpj1Co4dJJLqGHYpiAvNgv4dGPZOFN6Y+ut
-	 rbLR1xkpMnq/VFkfxsI9D8FVOKsHahwY0NtXebIshtMNdmcinKEsGE4ZJmBxtXRtAEf9T
-	 cRXukCTt3XYMlCPzmufSNht1l8nmMZ93G0S/ol19igjY/LGoMh9pUoE6+bBX1VwEOrQ==
+	t=1793521406;
+	b=ZpaHEnq8eNpXS3OJvduPFyT3EW5P3I6PvZmZZ/jim6AGAXfiAa3Ji0HVBHvFt3Nni9K+
+	 Fljbj4m9BqrMVH6eoDCbBFNeOx4++FgHy2qFxGTmh0/tasBKs17ZSDXItdde2pz01wLrl
+	 P3Zvzh5K6b+hSfh1wsuRhLsg2wNDjPA375xasi4EFq2OfexI1o+g1jkEBNrCU9LZ8UG3w
+	 zH8sa5nI+X1k2QI1aavbj7OY1Xcthqiwnq+JJCDWQCvS75vVpKaP7AL5LETTr5fhUHiSE
+	 DvhfL/7tnhf3Ejd4ynT+HTwt87Kk9FJgevnATz7YCx+clJbiG04f/dwxsKj+dcUSw9A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793518139;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=ZEkTE9TgeFOprp8X/PqQu5dF595QKTp33C0W7LGmaFo=;
-	b=fpN8Grzt2ZfCFC4oybytFQn7IyTR4wiFYtIKaRKvHhMA6QTjnGNE6aN61o1Epa/03Vvk
-	 lMq50r424h8TyQCd8hTiji0CiZ/kq1yH8ukMM5sdThDkQk/ILgIs9dguQyB33seKC8WMq
-	 AmBNAbDf3EGAj4Tlo27JPt0sYz90J+TqSkScCnsldRKZQx8uRyN5ejOHQbq8EREOQ6RrL
-	 Aa3Xe0EknjT8T2sH18ZVJXUSyo2hEUEGYyVmT5tPKoUKlyxQkD54Xg4691LhtyX74QjbQ
-	 i4UA3GhBFAFKqX6tp0j31ChqRulblFaJ1f136HPkKojwPWyuzQ2imAcAIgrei2tfprg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793521406;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
+	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=MnTtWEka6kutfYJwgJvEjF90nDWSHBdCA9nwS6OCfpo=;
+	b=kI09zIE2IckWPhi7lZ32GYZWjgObzQRhtyiADNZ5AXzR+6/pKJSyoTEPy1kfR4BANg05
+	 rxIlUm/YeSYETX+2/bZJ5AKxFH+JYAie5UX51YrIegXNGCoftT0n55iLHDeNRKh6YtANR
+	 S1Bn0ZAOfDFLLv6lWkAL5+jklGVt6+qKIWR3AhiU2oXRyyk6LykcC5tDOYQPDpKUmMgvn
+	 L+iWEnMma6E1KgxWGhYyhsVlX3pSqcm5ZAgDD5Gt6OB0T/C9QNpiA87YuxwsF5rwePV79
+	 8K65tU5lYKf0v3WSbDdafL4ZIPsIPgdeY3fcFo7ncAzouMVIZIJIr3htGS46RVSk/Iw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K8xgiLEf;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=gahingwoo.com;
+	spf=pass smtp.mailfrom=gahingwoo.com;
+	arc=none smtp.remote-ip=103.168.172.156
+Received: from fhigh-a5-smtp.messagingengine.com (fhigh-a5-smtp.messagingengine.com [103.168.172.156])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8EA6606A324;
-	Sun,  1 Nov 2026 07:28:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K8xgiLEf
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 734D41F000C1;
-	Sun,  1 Nov 2026 07:28:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793518138;
-	bh=ZEkTE9TgeFOprp8X/PqQu5dF595QKTp33C0W7LGmaFo=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=K8xgiLEfZj/gyEaaz2uZMZEtINC0VjibSRUzhyA0UtxtVj7GBaePTRNRR5fWz/W9l
-	 xbPqnCcpLaOo0aRXU3RMM0zMN4VGVdy0m0nQmDoPizWSzBvPjHm9AkJpHifvSWqqVA
-	 3G7EEBcuXL7pKNXHrvz/ow7TSqx7rpRsWv4eFNlxaGzKnkewO7xsNcu8elCrWHzfjo
-	 eLhX7+EkulhuuyBzXYopkKEo5/fGiKchuInGtrXvWKoy/dUVy+Lb++wylvey4+ztZE
-	 9G8ROFw68lG4BH3Zg1puVCJ4P6+9BpO4NxGFID+CzmVs+ykCBaiKornyJlcnjea3/t
-	 x5PLjVjP9f2vg==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Ackerley Tng <ackerleytng@google.com>, linux-coco@lists.linux.dev
-Cc: Alex Williamson <alex@shazbot.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	David Hildenbrand <david@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Will Deacon <will@kernel.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Fred Griffoul <griffoul@gmail.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [RFC PATCH v2 02/13] KVM: guest_memfd: Support private/shared
- conversion of device memory
-In-Reply-To: <CAEvNRgFEKqVZcNYCL0LpB6BTyBFe+ot1x1nFfEqOrSTsu134PQ@mail.gmail.com>
-References: <20261017073149.1303738-1-aneesh.kumar@kernel.org>
- <20261017073149.1303738-3-aneesh.kumar@kernel.org>
- <CAEvNRgEh3E7NBc5_3Wq66Fss-mAYT6+4FWP5+=Co6+OVfVnQQQ@mail.gmail.com>
- <CAEvNRgFEKqVZcNYCL0LpB6BTyBFe+ot1x1nFfEqOrSTsu134PQ@mail.gmail.com>
-Date: Sun, 01 Nov 2026 12:58:48 +0530
-Message-ID: <yq5a33tl9fin.fsf@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 529ED606A325
+	for <iommu@lists.linux.dev>; Sun,  1 Nov 2026 08:23:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 529ED606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+Received: from phl-compute-06.internal (phl-compute-06.internal [10.202.2.46])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 79D3C1400304
+	for <iommu@lists.linux.dev>; Sun,  1 Nov 2026 03:23:19 -0500 (EST)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-06.internal (MEProxy); Sun, 01 Nov 2026 03:23:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to; s=fm1; t=1793521399; x=1793607799; bh=MnTtWEka6k
+	utfYJwgJvEjF90nDWSHBdCA9nwS6OCfpo=; b=Rih48zGUsykjIjP86RVuKFob6A
+	+1VFaTn0Jc2eFltzFUIN/udh7GWPfwJKtw2N7V5RoXyIRD6FlNmR/iqzpdl284Iz
+	5+mNC3F6VGhoL27Tj+Z0JJa3G93tt+UuDYUMUtZFK1//hhuv+TztQQtLzDP/eNz3
+	uef5GWwJSbKOs38b545coHcZzuv5NRDOniiRPDX2LZ4cA/bp6785w86pQVvjiW0t
+	F2epHhfLGWQkKLVMzbWXqE2Zp/UHqhDFmnQHSCb3R2mQOhlnIeSCgj2ZIu+kD/YJ
+	SQ75h1O8Ceaj1vSFW+fJGlYZimr4RoOZVXg+12sBrqUEPoPAKjuFCmF4aWUw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=
+	1793521399; x=1793607799; bh=MnTtWEka6kutfYJwgJvEjF90nDWSHBdCA9n
+	wS6OCfpo=; b=kElps4Rso5gKnV2hvq4/8UaW+2sWUdsaffunly0bWyyHMH7UvtY
+	qYkhePIxtbvMv9mNDB/Ar0QOp1X00IH49R176azXGS1cyOXCei53JYK6g9n+yB2a
+	TvEYk58PJASCIvUuaalNPuwb7T8dr8JoOIlLDVjdPOKVdMrlG+VhbKaMCkwdIJi2
+	P5L0+pEHV8PAxZ107R15dKWCd9BHyLPqCRqNenXGxJPMBQ9CrCovHmd3CO9U92Ba
+	lbHM951HZJVGby4ZkRWME/WlsocE+M5JqG4FA9Nrn7fEkQiuD+tWNZ27m7HA5MSj
+	reEbGrD1w0nWbAn7sed+iK4hlIPHee3BCfg==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-08;
+	repo=github.com/dkim2wg/interop; date=2026-10-28; sw=lmtpprox;
+	action=sign d=gahingwoo.com a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1793521399; d=gahingwoo.com;
+	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
+	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
+	s=fm1:rsa-sha256:Ha9I3XJsAKJ7zlFYsg7LSDHn4L3FN58eGvb2k3RrlOjRheQ
+	0Zt7lq6ql+pstSdjt+bRZEdXEuVyLHDFmz5S3sNMpCGP28CeQOB6bunhtk4h9sTW
+	ZCqCWoEVhpsWIKVcMad3kZbzB81vzN0A0ciC13GlI2VtCWHsGSWwIaBgp8kXdOP6
+	lV4Xqo7fwQViSSZNsu0YSh3XrlbV+IK9UQHk5fw30+A2K6PP3BqGps+NPvQotfUR
+	EQ6n/dBM/jhaVg+WYhhOXsHyCSFYk1hc4VK5YHJgS9R7XU541DSMSiBRi/W3Iu4+
+	el00P5YLuN0toq4lukzOqdT20vQJ8udp/N6GlFw==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-08;
+	repo=github.com/dkim2wg/interop; date=2026-10-28; sw=lmtpprox;
+	action=mi-m=1; hc=9;
+	hn=cc,content-transfer-encoding,date,feedback-id,from,
+	message-id,mime-version,subject,to;
+Message-Instance: m=1; h=sha256:JfG/4s9kr5LOw83hfTmWn8bZYCXatqWH/VXHwGE6wmI=:q6Wy4u1BZdM9upooJT5sWtgsT9bGNgvcJ03wEVu4wKY=;
+X-ME-Sender: <xms:9fbmajIbP1mWQ_S5mE2GVdpNbSAinStOUTKUrp6ygqK0WLyW0xvNPg>
+    <xme:9fbmapckX70YdmVsIbFaQDO8HLu-G0_y8Q1f3puDOpmnsMDxfvbmixAMHrxhz83aE
+    71wC0TyIJ_RttXsMalIC-LwbePAqPmBeXjesrnS6dLbTvPbN_h1QA>
+X-ME-Received: <xmr:9fbmaqabaeYvmZdffbKZa-f-qW4N4lpI8_RcuC2fKq-PIzMhkSV0c3WQA_TMgUqhQBb3YOIU>
+X-ME-Proxy-Cause: dmFkZTFtjYId+Bxsf3A2Q2pEfxajwPO86MXAjNaqaO6YP6cpGoebef1Y1F7Vv3E8yXlaBz
+    LitDEEGbKAIbp/lRSbaWfBVFbUmWZYDRQD57U/2OVswLfo6yJVDvSW4CuGxWdiChPoEu0w
+    eljEKlX7TL3JzJHaOTFFrADwBjpEwv3tlFcH1w8qvb7YJT8Z5Cdiqyj/6D2JHUA2cjBPxD
+    m6fvSyozFqx1DV1TOdCngAvShhgXC1PAWWhWRt2ihBgt7NKjhMOnPIARA/0+mf59lmSKB3
+    4vgTL0Bsj9t3KmVW7zqiKaWeEEdNNyRn3f+KtBeoX6SYteOvuwTfw+jjPOSQvuOc5LUjoA
+    j1apwFfmQO4VMCtljUQ/kw+DyO/Ir7B2o1hm2qoV1XKLWZSVCG627jEhaNlS8myYPfckZ1
+    ZeuvLVgfAlHibctijUt8Zz00NuPhsO+ETUA/9B2075fyFxwgX3c8VXbnCEy1njZdHSnK82
+    YO7Be/BCJuToq3CcdBycy1Yv0q5FtAI0umpYY4dl8kaHeAWelocGPzC1xqYum+wtxbfh1K
+    X57jKoAQVpNbtoxlKuFBMMJVpg0qg0MKlX06qUR6XvEfZnumz93Ie4jEB9msEPjgzyGwAN
+    dQY+AjRrrcZB4UePlUKsY2yEk+VW0o5SSTe868A6S0bFHMZQ819qsFfl2CDw
+X-ME-Proxy: <xmx:9fbmapV_A-frZ4p5qmIU23GRvqBH7mFcepbgl_bk1R_8jzRx-oZvLA>
+    <xmx:9fbmaoBNCvKXVXsi4sV87s7GyapToW63FDJNM70bq78k8LcYrTNkeQ>
+    <xmx:9fbmaoCv0_GuaqDLZbk_1a9LA9_IXniN3jQ9EmHXqfypIynaumIBVQ>
+    <xmx:9fbmanrPQ_v4FX_n8uHE51GfMX-y0xaZgitkfFTSqI1aBW9Z7bH64w>
+    <xmx:9_bmavVWyzs52DAMJBR3Hraur7NbEtHbgKEQrSY7m0ND9F6J47IezUX5>
+Feedback-ID: i7a5e4b5f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 1 Nov 2026 03:23:09 -0500 (EST)
+From: Jiaxing Hu <gahing@gahingwoo.com>
+To: tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	ulfh@kernel.org,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com,
+	abel.vesa@oss.qualcomm.com,
+	sebastian.reichel@collabora.com,
+	sidong.yang@furiosa.ai,
+	u.kleine-koenig@baylibre.com,
+	chaoyi.chen@rock-chips.com,
+	diederik@cknow-tech.com,
+	alchark@flipper.net,
+	leonard@lausen.nl,
+	jeff.hugo@oss.qualcomm.com,
+	rfoss@kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Jiaxing Hu <gahing@gahingwoo.com>
+Subject: [PATCH v15 00/15] accel/rocket: RK3576 NPU (RKNN) enablement
+Date: Sun,  1 Nov 2026 21:22:52 +1300
+Message-ID: <20261101082307.151957-1-gahing@gahingwoo.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,115 +144,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-Ackerley Tng <ackerleytng@google.com> writes:
+This adds the RK3576 NPU to accel/rocket.
 
-> Ackerley Tng <ackerleytng@google.com> writes:
->
->> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
->>
->>>
->>> [...snip...]
->>>
->>> +static int kvm_gmem_device_convert(struct inode *inode, pgoff_t start,
->>> +		pgoff_t nr_pages, const struct guest_memfd_device_request *req,
->>> +		const struct kvm_memory_slot *slot)
->>> +{
->>> +	struct gmem_inode *gi = GMEM_I(inode);
->>> +	u64 attrs = req ? KVM_MEMORY_ATTRIBUTE_PRIVATE : 0;
->>> +	bool prepared = false;
->>> +	int ret;
->>> +
->>> +	MA_STATE(mas, &gi->attributes, start, start + nr_pages - 1);
->>> +
->>> +	filemap_invalidate_lock(inode->i_mapping);
->>> +	if (__kvm_gmem_range_has_attributes(inode, start, nr_pages, attrs)) {
->>> +		ret = 0;
->>> +		goto out;
->>> +	}
->>> +
->>> +	if (req && !__kvm_gmem_range_has_attributes(inode, start, nr_pages, 0)) {
->>> +		ret = -EEXIST;
->>> +		goto out;
->>> +	}
->>> +
->>> +	ret = kvm_gmem_mas_preallocate(&mas, attrs, start, nr_pages);
->>> +	if (ret)
->>> +		goto out;
->>> +
->>> +	kvm_gmem_invalidate_start(inode, start, start + nr_pages, KVM_FILTER_SHARED);
->>> +	if (req && READ_ONCE(gi->device.kvm->vm_dead))
->>> +		ret = -EIO;
->>> +	else
->>> +		ret = gi->provider_ops->prepare_conversion(gi->provider, req);
->>> +	if (!ret) {
->>> +		prepared = true;
->>> +		if (req)
->>> +			ret = kvm_gmem_device_make_private(inode, slot, req, nr_pages);
->>
->> Is there a way to avoid making private from within the conversion flow?
->>
->> kvm_gmem_device_map() below already does it as part of vcpu_run.
->>
->> If we do the above, we'd be aligned with regular conversions, where
->> to-shared conversions eagerly update arch state (make_shared) but
->> to-private notifications to the firmware are done lazily.
->>
->
-> I was a bit confused above. IIUC to handle
-> RMI_EXIT_VDEV_VALIDATE_MAPPING, the conversion is not done from outside
-> the kernel, instead it is done in the vcpu_run completion hook.
->
+v15 is v14 rebased onto next-20261030. v14's 12/15 no longer applied
+there, because Sidong Yang's regcmd validation added two defines in the
+spot where 12/15 adds its own. Nothing else changed, and the tags carry
+over.
 
-All of that has changed in the latest series.
-kvm_complete_vdev_map_validate() now does the following. For the dependent
-changes in other subsystems, you may want to fetch the Git branch
-mentioned in the cover letter.
+Leonard Lausen has the series running on a NanoPi M5 and posted a board
+patch on top of it:
+https://lore.kernel.org/all/20261019090348.378183-2-leonard@lausen.nl/
 
-static void kvm_complete_vdev_map_validate(struct kvm_vcpu *vcpu)
-{
-	struct kvm *kvm = vcpu->kvm;
-	struct realm_rec *rec = &vcpu->arch.rec;
-	struct realm *realm = &kvm->arch.realm;
-	struct kvm_memory_slot *slot;
-	unsigned long start = rec->run->exit.dev_mem_base;
-	unsigned long top = rec->run->exit.dev_mem_top;
-	unsigned long rd = virt_to_phys(realm->rd);
-	unsigned long rec_phys = virt_to_phys(rec->rec_page);
-	int idx, ret;
+On Sashiko's two points about v14 9/15, I measured a CM5-IO. U-Boot
+hands over with the NPU domains on, and the power domain driver still
+probes. The NPU QoS is saved before its first power-on, so it is not
+zeroed. The domain whose QoS does get zeroed is the GPU, on mainline
+without this series, and that fix went out on its own:
+https://lore.kernel.org/all/20261101055633.101309-1-gahing@gahingwoo.com/
 
-	if (vcpu->run->cca_exit.response != KVM_ARM64_TIO_RESPONSE_APPROVE ||
-	    top <= start || !PAGE_ALIGNED(start | top | rec->run->exit.dev_mem_pa) ||
-	    !kvm_realm_is_private_address(realm, start) ||
-	    !kvm_realm_is_private_address(realm, top - 1))
-		goto reject;
-	idx = srcu_read_lock(&kvm->srcu);
-	slot = gfn_to_memslot(kvm, gpa_to_gfn(start));
-	if (!slot || (slot->flags & KVM_MEMSLOT_INVALID) ||
-	    !(slot->flags & KVM_MEMSLOT_GMEM_DEVICE) ||
-	    gpa_to_gfn(top - 1) >= slot->base_gfn + slot->npages ||
-	    slot->arch.device.vdev_id != rec->run->exit.vdev_id_1)
-		goto out_reject;
-	/* Userspace installs the mapping through guest_memfd before approval. */
-	if (!kvm_gmem_range_has_attributes(slot, gpa_to_gfn(start),
-					   gpa_to_gfn(top), KVM_MEMORY_ATTRIBUTE_PRIVATE))
-		goto out_reject;
-	while (start < top) {
-		unsigned long next, rmi_ret;
+1/15 is the patch that carries Igor Paunovic's name. It is also part
+of his DVFS series, so whichever lands first, the other drops it.
 
-		ret = rmi_rtt_dev_validate(rd, rec_phys, start, top, &next, &rmi_ret);
-		if (ret || rmi_ret || next <= start || next > top)
-			goto out_reject;
-		start = next;
-	}
-	srcu_read_unlock(&kvm->srcu, idx);
-	return;
-out_reject:
-	srcu_read_unlock(&kvm->srcu, idx);
-reject:
-	rec->run->enter.flags |= REC_ENTER_FLAG_DEV_MEM_RESPONSE;
-}
+Ulf offered to take 7, 9 and 10. 1 to 5, 11 and 12 go through accel,
+and 13 to 15 through rockchip. 15/15 needs 9, 10 and 12 to 14 first.
+Without 9, 10 and 13, the ROCK 4D takes an SError at boot when the NPU
+domain powers on.
+
+Link to v14: https://lore.kernel.org/all/20260924102135.92217-1-gahing@gahingwoo.com/
+
+Igor Paunovic (1):
+  accel/rocket: request the core clocks by name
+
+Jiaxing Hu (14):
+  accel/rocket: take the completion register writes under job_lock
+  accel/rocket: wait for a running IRQ handler before resetting a core
+  accel/rocket: let the core suspend after a reset
+  accel/rocket: factor the completion tail out of the IRQ handler
+  dt-bindings: npu: rockchip: add rockchip,rk3576-rknn-core
+  dt-bindings: power: rockchip: allow resets in a power domain node
+  dt-bindings: iommu: rockchip: describe the RK3576 NPU MMU
+  pmdomain: rockchip: add optional per-domain power-on settle delay
+  pmdomain: rockchip: cycle an optional power-domain reset on power-on
+  accel/rocket: select the per-core clock and reset counts from match
+    data
+  accel/rocket: add RK3576 NPU (RKNN) support
+  arm64: dts: rockchip: add NPU core domain clocks and resets to rk3576
+  arm64: dts: rockchip: add NPU (RKNN) nodes to rk3576
+  arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
+
+ .../bindings/iommu/rockchip,iommu.yaml        |  28 ++++
+ .../npu/rockchip,rk3588-rknn-core.yaml        |  47 +++++-
+ .../power/rockchip,power-controller.yaml      |   8 +
+ .../boot/dts/rockchip/rk3576-rock-4d.dts      |  22 +++
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi      |  86 +++++++++-
+ drivers/accel/rocket/rocket_core.c            |  32 +++-
+ drivers/accel/rocket/rocket_core.h            |  11 +-
+ drivers/accel/rocket/rocket_device.c          |   7 +-
+ drivers/accel/rocket/rocket_drv.c             |  42 ++++-
+ drivers/accel/rocket/rocket_drv.h             |   2 +
+ drivers/accel/rocket/rocket_job.c             | 157 +++++++++++++++---
+ drivers/pmdomain/rockchip/pm-domains.c        |  89 +++++++---
+ 12 files changed, 467 insertions(+), 64 deletions(-)
 
 
--aneesh
+base-commit: 7649ba73f9e7e1e04d0b46213e39c79ae09dd55c
+-- 
+2.43.0
+
