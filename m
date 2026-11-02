@@ -1,76 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.70
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793634736;
-	b=SFVb+kV3cnlqe3k49GE9oOpxUGr+D6/HXAuvEn7l3fNw7rDy1KLSkDwvity9QB4E/JeZ
-	 J5rtg/v+422TdsDwqmIheP1Yv3juq04vHoqLnlL4uSVl+ieO9lW7xVdlIKLAWavQxHWad
-	 VBa5b0cqIxuo6U0CX+4LEqjr40kx4BXiXQ1YRRz0SR2MmBqItpNE8gWkw3vkouu/Ix8Op
-	 egzy9wR6un3mQlUoAU7usOtQjVDTXRs/Ypu20WaWW3Jp2DtVOcnlsJUsQkOQ9RYrHzxLs
-	 ols17bPu/KLimtDCCYSAtcV/AgMO4O7IXw8+UutTHqwoHvMcAbe/uMU13VvW2s8/huA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793634736;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=j6RtsTbIlQ1+MerKC0xhFDG/d459vnICRyJwyVtriLE=;
-	b=NYDOJy3xTAkQhVfbP2A2qUpM7xcJTeexGr/nc6A24rRH7pBbvPwTvvAlbD4/vjCzyGQp
-	 oDTIon/Sjt4YRXzhQ0EIfTMyTaW6DOlXlGTIxgfRMcH5cat9ymSPXh5bFO+j13p051+Pm
-	 a/W4vWRVYW0QfLA0fthZ/c2OiB6lk2FVSrHsd9ADYGoRargNkQyMJ/Q30PyS51PSH4idN
-	 Q/QbScwNSsahJ9Ok3UJIvP+KsyjOOVMv/NV5b+LKF1cwgo8PyLoQDVpvi/5yfSHr6C+Ja
-	 0He2YmYgwgFVZLvJk4hc/MJUQRGv0SsHT7eysqOE7vDkr+qxZbReQTQiAoy2rD/YV8w==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=MuCaB+GT;
-	arc=none smtp.remote-ip=209.85.208.70
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.69
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793635329;
+	b=NvPxd97nxIf/FqtOs8tDInL24doOc0x8Rujsd0/gU5tU1ZYea9DoGW6bydiAKrks3pLw
+	 NRHeLgHvkUgc86ZgEsNyvWaAOd0nt0nGH49EbeM86m5fQBz6wU6hbfteVeDDQNA0/Og6y
+	 TTYw4B514HAwsHCutgBheqNU/COrrlSpNMTPqMIdKY/2u9z4Bg7F/a3vyDGxaG+32Co3K
+	 g0CxwtbUjLa9mVyS6RWnp+n0wZnQQpmmuHB7Pomjxyv/6T9RfWXd1S82V3Ak4V76t0sa1
+	 Icer0QZvz/abk4D5FhZ0YWAtyqoSTce4Siw620lmYwOR4/U64HbvElFIPbcFUopV8CA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793635329;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=TSW1GRvJhzMnDeLAb/ZRB3TRTOcMALI3gQ+NWY0m6Yg=;
+	b=y5bzz5Fu2BpD2d85F92RJ9iKda1yOnAlAl+5sI7ckWWtVNQLfHSBW81CRbHriQp9lGs0
+	 KzNBdocTc0aBpho7bIvZGhzu5mGnXXB1Puv+v6DcJjnC1iMTrwtInjN0v5NLQBgFZ7X9n
+	 ZyVDLJgaH3VRWclCIszYZ6dJn2o9UKgWW9OfNN9lU5XEAQc5YwMKPI4Xlx3hPzF2ugIdl
+	 JJ9ufZNo9uZaazJJGnKCbvY8k5xZNNTzUa8iD1xSXZgc37lbvLvTg5UaUyoGBnHCiSCF8
+	 Qe2S9ng36KUBCxklZN9qPDLeszYKt+QSz76HV48h3Q3dUL/sXSjb9u/InzdRptl1fEA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=OCDr2gKw;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.69
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011069.outbound.protection.outlook.com [40.93.194.69])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8D2B607904B
-	for <iommu@lists.linux.dev>; Mon,  2 Nov 2026 15:52:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B8D2B607904B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72DDE606A5A7
+	for <iommu@lists.linux.dev>; Mon,  2 Nov 2026 16:02:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72DDE606A5A7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=MuCaB+GT
-Received: by mail-ed1-f70.google.com with SMTP id 4fb4d7f45d1cf-6b499549f64so728706a12.3
-        for <iommu@lists.linux.dev>; Mon, 02 Nov 2026 07:52:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793634734; x=1794239534; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=j6RtsTbIlQ1+MerKC0xhFDG/d459vnICRyJwyVtriLE=;
-        b=MuCaB+GTYMxmcJtPAmojImXs1ZfJww+ULlr13ewzpSOz0MpqQVqZpeTWg8QkCp2Feb
-         C6yA4X5YAg8feQGj9dy6M3XU7v1PQ6mMK9TWcCRTYKkbPzHb/y9PB89tXWfGUe68HwWs
-         2XZMW3gCIIkZef+YzeZnn9TV4buF3ByLNd8FtWwLUYIgI+5RjbwaBzYz1weOF/+92Fxd
-         AV9kf9jRkZVm903V6ZLw6dHurRW3Ws+dlGMNZlWfeogcT2HB8nIZZe0p75QPUir+1E/p
-         Dktbij0jZ4BPuCXnmBgPMEj/1jYDSC4qHts71xx71M7p9Bcxj0o5hzHPLQthLybEl18y
-         mKiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793634734; x=1794239534;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=j6RtsTbIlQ1+MerKC0xhFDG/d459vnICRyJwyVtriLE=;
-        b=G+otJ9H6K91uW+gldG9n7v0sz3q0VCdGcXuD1Caligh5uuUUNiz6E9frIAoDpsmyp4
-         OEDm6vftLEfyDrq8ZB4bMCo9YwlY1/4UhfkOjB6/xSB/0l2CnKk/kmmXN7mMulqauf77
-         fXS3ZFkm9TK5xUFGkNLon8lChwpohPXf+tRlq7dAvAVPe89vl+rNU0yaH67JAvswsa/b
-         fv34zjW/Oofagfa0FhVX4DI3KEdY5PGmmaSXnhgvHlpYsBhRMfkaWfg7iIOsqfHThczD
-         5OXXR95URpPrNZVi4wg01kFMfCb0bcqyBvaao9al7kt2sgJt9Kvq1xaj49ZBqTiM2l5+
-         /gLA==
-X-Forwarded-Encrypted: i=1; AKwUvBxo4PbpxXJx8GxEqiHnw8/uKoZqQQ0jOz+durNDiCYYGUlqZ+HRthqkK4qW7amPsHpzmlmmKQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+qOGuNi2fnvCWSNOeOJGYBae5vGNHn9wFch/fN6AoqUOywYOYT
-	Dt7HTaR+mv5p8eGG7sL8P2e1CiETpOJm0TC/4V+kHMvkmJymv1JxoufWk1NY03xeQXsPogItQZ4
-	5H2xVTVPg1XMBGiVZAg==
-X-Received: from edwr13.prod.google.com ([2002:a05:6402:34d:b0:6ac:bd6a:1c30])
- (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
- 2002:aa7:cc09:0:b0:6ac:7737:e50d with SMTP id 4fb4d7f45d1cf-6b4d4d83eb2mr5865537a12.29.1793634733847;
- Mon, 02 Nov 2026 07:52:13 -0800 (PST)
-Date: Mon, 02 Nov 2026 15:52:12 +0000
-In-Reply-To: <auI02M-pZO_aQ4jn@google.com>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=OCDr2gKw
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=KHmH3WTl9X9FQCKnWB/dvf1cN+FfGibcfm+MAsNPw92S0srV4qAXTW998nDfvFbrazBt3y0qFQT1mjA3xKpTJZk7Ot51eZwvYk7RDmgP9tfLbc5iRsdt2eWboglkHgxScmLw32KrBTellRqS2PnWhKmVmKs17OaQ66L3x34p/Vbjv3C6wST1Vcd0D8oP+E5cSAnaSgiB1dH7F9ZC4FE71LP4YLJ5PB+eIG9wQ6QB/4/yojSCZ4zOHGnEkHD1qp5lppPj3UtNOuEvMrGli0ZaiSpgY4axdLOfqH29XyaeeiMfhyeABn3HtyEtTJMDV0egRcICSCr5I6xB1+ZHTj2lkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TSW1GRvJhzMnDeLAb/ZRB3TRTOcMALI3gQ+NWY0m6Yg=;
+ b=CWZuvHZvwdN9+lhp4Attiej8ND0FwyIxoSabwvhJF6YTLfKapoUga+25zTs3NefHGPavSC2Woie66mc+JkQ0LgPvcZKOjGda7urXCy0HgrprtOgbLMragNJnnsm90ftZbMWgeUfqjOaz+vZo3FyIQ86E5Ug2YF0huKi3b0wvlHv9K8ZhzwXo0+IaPfanUnPf273SGl/ftoPaAVt6xrmPpfd5GjBbz+v1xGuBjp6glitdbLSGNXpzjxUEgtUn9Z1Tv2Y6phtS8Ab/CfWuQMDJBCTa458NvED5cxxGIQXlR3r9qYL5uehoeXgqipHKeeJtIYBg8IsCGqX2C+L0K4dd9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TSW1GRvJhzMnDeLAb/ZRB3TRTOcMALI3gQ+NWY0m6Yg=;
+ b=OCDr2gKwLWk7/WnNmkS5p98AUIc3Vz7QBzgKsZcZX4Sh2rLOO7hZp7CJrEXhkKOIAvxhjJE5ViWKm2XwnXshRH7W3c5LLpOxUoWdGWQaXiawF0QfDavfiKSQJf07+Weh9cPN3RFtQT0WuAu90oOVLx1p96xYACRK7Pwg/mC0k8g=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by SJ1PR12MB6147.namprd12.prod.outlook.com (2603:10b6:a03:45a::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Mon, 2 Nov
+ 2026 16:02:03 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0569.011; Mon, 2 Nov 2026
+ 16:02:02 +0000
+Message-ID: <92c85732-9274-4bc1-83e4-0d3aa9941494@amd.com>
+Date: Mon, 2 Nov 2026 21:31:54 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Skip non-IVMD entries when parsing IVRS memory
+ definitions
+To: Akshay Jindal <Akshay.Jindal@amd.com>, iommu@lists.linux.dev
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20261018074549.1493086-1-Akshay.Jindal@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20261018074549.1493086-1-Akshay.Jindal@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5P287CA0168.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:a01:1ba::10) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -79,109 +98,98 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <CA+CK2bBFXnJA1kddbLKGq0DAHDgjYhsTSQQay-xeX7jJC1V_UQ@mail.gmail.com>
- <CALzav=e=ho2gVrn+7KpZ3ZyasvH2u15-pC-RSRSS7KcMfKqUJQ@mail.gmail.com>
- <CA+CK2bAJo8dnTOyKMgnnMnk-SCXbTsv+JCLEOWkjyj-wqtEkHg@mail.gmail.com>
- <atpNFEFIlqAoYIwH@google.com> <CA+CK2bB2C3Am5ssRuzYpfiU7_vB81vxMGc19HQLq7N=_7YrbTg@mail.gmail.com>
- <attmFVIFU_mS0Y7p@google.com> <CA+CK2bDXDWbww_d3sD6OZqpo37V1a3t76_ubbrXLQS=9DB3dWA@mail.gmail.com>
- <at-8vkVpN2SF3XgB@google.com> <2vxz8q3hoicx.fsf@kernel.org>
- <CALzav=eG5j2n5omO2Mxqw8xA4sZLduxdbBYFcnHpPn0PDpt9Hg@mail.gmail.com> <auI02M-pZO_aQ4jn@google.com>
-Message-ID: <9huzik2fz0wj.fsf@tarunix.c.googlers.com>
-Subject: Re: [RFC PATCH v2 3/4] liveupdate: Replace compatibility string with
- a 2-bit pair feature header
-From: tarunsahu@google.com
-To: Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>
-Cc: Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, joro@8bytes.org, 
-	Mike Rapoport <rppt@kernel.org>, maz@kernel.org, arnd@arndb.de, jgg@nvidia.com, 
-	robin.murphy@arm.com, loganodell@google.com, oupton@kernel.org, 
-	kevin.tian@intel.com, alex@shazbot.org, dwmw2@infradead.org, 
-	pbonzini@redhat.com, seanjc@google.com, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, Bjorn Helgaas <bhelgaas@google.com>, baolu.lu@linux.intel.com, 
-	linux-arm-kernel@lists.infradead.org, linux-arch@vger.kernel.org, 
-	sagis@google.com, linux-mm@kvack.org, kvmarm@lists.linux.dev, 
-	iommu@lists.linux.dev, linux-pci@vger.kernel.org, kexec@lists.infradead.org, 
-	skhawaja@google.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|SJ1PR12MB6147:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1fb95360-8045-453d-7e36-08df38faa22b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|261102123227099003|11063799006|56012099006|261009223027099003|261021121427099003|261022113327099003|10067099003|18002099003|22082099003|6133799003|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	nVOHbw+fhCDT8kMr6hc0QTajmhgXR8vi9hZOayA4gQeRaixJfCa1+2SQ3MtBYeza0cfDrsxSo4wwelWG/8AGBaz5glCQfBCtbRO5U2xNUF/b5kVPmPWFokpcWtoP+O8vw3am9EVcyK5xcVdmPNN4pb9nrTmSEugWJrOUu4iY9gwLD0ccvTeLv1wtYREutiICBLil/5xG+z0+JMrdjFrd7O4EH9iFdP5q+qajOVOsmpPlz64gV03GMJL5b7k774itYxQ77Lp0bhM3OZXeKCHCVvEqMIOcHuqqEVH/jk9VbixaQkYFDFnRxXEnwL18aSUkZ2mQLLPz0Syot38aQpJT66CIuypqWlmOyUA7uzc2cdg174VjNKLUnBpiM71oAWAMLVAJY7Umbwu5lzjSS2Xq6l5AgRrBN/GKQtwEzUjlZnHMlPa3R7hH2BlWBRIiTSt9o+Kct1DG2dUG72ZVwHmgiM6aMJlzq0MRURkeaeUJTHgN36GE9bUIP9dVkepkTPTHq32MejGfOWSbBDQ/qOwkjXAgaJpccilb0XrvkWzf1s+HmaTQCgzpXTPazZ6Phw6f3E2RLwaH4gYEQxeJUGlxlaSGWdyuqvYlLUfQNQEwt+9jAu6ggvzC/uEpACscEDF//ed3gFmdHMM7JtM3iwYEXIVrRUOBmljlKvP7JmLxX5g=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(261102123227099003)(11063799006)(56012099006)(261009223027099003)(261021121427099003)(261022113327099003)(10067099003)(18002099003)(22082099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?eGZYWVdnYlU1T1Nac05GNUdHWkxCanROZVBiUXlRVnVtODFNa1N5OWMvNVhH?=
+ =?utf-8?B?Z2xSODZKSG1Oclp5dVpQUzliVkNNelZRKzhGMk1ZV0h6WXV0N0laRjQwdkM3?=
+ =?utf-8?B?aWRkMzY1WVp6bjdncUZYYVhNeWc2eFQ5NVNwS2MvbVNzUnl5TmQ2RmluMUpC?=
+ =?utf-8?B?NmFia1Nzc3paeVRnbHBFVk15dlpvRVc3cFBteVF0ZUszendyU09ydDY4MzYy?=
+ =?utf-8?B?VEZETU5PN2podTMzaEw5cW1oNndqNnl5c0ptZTBpd1YvSlRwUG51QkMvYURz?=
+ =?utf-8?B?TDEwU0NvTzJmN3VITm9DYjkxOFo2NXYxYTkrSE9oTVFkaTZxVlVIUDlGTU5Q?=
+ =?utf-8?B?cmNRMTJJTGpMeFNsZm8vLzJNUDFWSUpYQXoxSFRrWGprVnF1OVRjY0xIWkdO?=
+ =?utf-8?B?TmYyTTlqcVVYSjM3M01aTVRCNEJENHdhamtLYndxZGUzS3RKYWc4QVQ3T2F0?=
+ =?utf-8?B?QjBDdzNQTWVZUi91OHJGZ0lNQUY2RE5scGlkZG9nakhKSUZ6dFBUeXplRVg3?=
+ =?utf-8?B?OEZNcWpBWUxhVjZXTGhqZmhyMUpRd0NPQUFUbWxCY3RCZGZ5WUw5UWFEYjY3?=
+ =?utf-8?B?eExrRVN3Vzg2Q0w3VldyUkFCeG5ZUlFPd01oMWtFUjZTQUZpOUtBdzZaY3Qy?=
+ =?utf-8?B?Zm5WM055dnVSTm9RNHpLKzc5WHlNT0M3bmpMMHpWV2NNd3dqQnJxMmJIY3hv?=
+ =?utf-8?B?RWhRSCtOWnZkODdXV3FqRGo4RGN0b1hkNHpXNUtQYlFTVzBRNmM1UlN0QU9v?=
+ =?utf-8?B?QU5mOGNXWjU5K3AwWGI1STQxTXBtQVhXRzh6T1VPUG1ycHE0ZWw2azd6UFEr?=
+ =?utf-8?B?TnI1MW40RXU4Qlp0Y3E4RDU2QTJ1UjhTRTJJUjNMa3o2b3QzQUFXV04wZS9I?=
+ =?utf-8?B?czNzWHprM2VMc1EyRlordWUxbmFOMUtRWll4Z2lBTGlzTUZxbXBtNWlicnlo?=
+ =?utf-8?B?bzlWeTU1SWJMVnhldEpCUnR5bkQ0WWFqVkg4NmRCNVQrS0V5VndMYmlaVUZU?=
+ =?utf-8?B?cUlvS0JYWlpJYTVncHZOeHpreFFvWjhwU0FubUthcUt6b1lhU1k0Sy9kQk8r?=
+ =?utf-8?B?OEg3KzNZY0hqbDRvOU1LcWM5K1Q2VU1HWEJjSVUwTmYzbDFKRENZYzJIdFdj?=
+ =?utf-8?B?SHZYNVlzZjJ2bTRUdXhtTVlXTGxEUWlKYUQvU3VIM2FTTmIxVEFZaU5tVkJx?=
+ =?utf-8?B?MExVa1h1OG92YnQ5ZnhJS295OFVKQkFnb3Mvb3k5QmF2Z0hTVmFEbkRMU0Jw?=
+ =?utf-8?B?eEtRMmtjUTBFS0VPOE9JVzE1cVZrdXlYaGNBckNvdFZKSnA4WmQ5U2p2SUUr?=
+ =?utf-8?B?UXhPcGxpRWhTaC9jZUNJQUZCcktkWGd1NDBPSVRONGlaQlYyS2t4di8rSnBX?=
+ =?utf-8?B?Ny9rckk2cDIzdnUrZ1hBTHZSbmRmaWttTnBxdTFmYWZJRXNndEd5M2prQitm?=
+ =?utf-8?B?ZDRwdXRlYzdKSlorQVdyUmVDclk1bUo0dUk1b3N5VmQ2TVBzb2VZRklIeUZ3?=
+ =?utf-8?B?SEhaS2lXUnFSY21iVkoxQXJZZEV3QlhMcFVBa3habGNFUWJqTWNPSEs2YkFM?=
+ =?utf-8?B?YVRXNUxTQllLNS9ZUUR3VUxMT011VWpuSTFFYzNSNEFVVmpkenJGc3BPNGNw?=
+ =?utf-8?B?Z280MlpMWnhaaVZKT3FiSkZLZ1RKek9xYUFmazEzSlhhc3B4eVFJcjFKOUND?=
+ =?utf-8?B?R0c5N01sMitkOGFCZVRyOU91UEszZE9nQWZYaHlleW9uOFhzLzYzYzZWRk1I?=
+ =?utf-8?B?YXhzNjMxZlRITk1tYzEyVzQzelRZTzlaNk1vY01SRWFIdXBMOS8rQjc3NW5q?=
+ =?utf-8?B?anlrcnRLdXVmNTZuV2lOUzlSNWg5TFhwVGVZWGZNOUJBZ2swdGwyU2JuK2dq?=
+ =?utf-8?B?TS84cUJEclEzMDJxSHUrRU9LZ2x6UXRWM3UyOE5NM3BGVkVRTjR3WXcwMmtm?=
+ =?utf-8?B?bVZIam5BelBjaTF1aXlpQ3JlYW5BUndxZlcwMWNoWDVjUXU2T0JDUUVwMG5a?=
+ =?utf-8?B?ZzFIVWwwMEZzb2VXVmdxTzRBbXRHZ05EZnp1Rk1tS0VZbXdWUGsvUnZ5NDA5?=
+ =?utf-8?B?RzBlTHBCc3lRNFRJb2RXWTBpYWZZakxjREZuWkNtL281Q0xDdDN6c2pMd1I0?=
+ =?utf-8?B?OFdSRndtMXU3R1psVG44NnV4TlQ2NGovdVVjSHlCRVBmL1FqWCthNmRlalUy?=
+ =?utf-8?B?Y2pnYjVtZ3hhUXdERC9ua0I2RmpqWkNXTWZvc1kwekhXS2VQa1hrTmJlYlUz?=
+ =?utf-8?B?N1Z0UHVFbWZOZzBFU2R6ck5Ld1FqTUFtUnNoaEd1VnJUSzJacGR2VEVzUE51?=
+ =?utf-8?B?R0tIcmlRdGdWcHF0aFY2MUNuWE1QRWltc2ZYSHI4aWp3c3pYUTdjQT09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1fb95360-8045-453d-7e36-08df38faa22b
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 16:02:02.7516
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nNiM+J8QHaSeTR3lt3BX+OVAM51TL8STky/eldRha4u3IFRY3Pt1rF11FX2csxiEkdOvLoDqkMxlMMyhZ8ANsA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6147
 
-Pasha Tatashin <pasha.tatashin@soleen.com> writes:
 
-> On 10-28 10:24, David Matlack wrote:
->> On Wed, Oct 28, 2026 at 10:17=E2=80=AFAM Pratyush Yadav <pratyush@kernel=
-.org> wrote:
->> >
->> > On Mon, Oct 26 2026, David Matlack wrote:
->> >
->> > > On 2026-10-25 04:38 PM, Pasha Tatashin wrote:
->> > >> On Fri, Oct 23, 2026 at 9:50=E2=80=AFAM David Matlack <dmatlack@goo=
-gle.com> wrote:
->> > >
->> > [...]
->> > >> The reason I care about keeping the header compact is that we are
->> > >> defining a foundational kernel ABI and want to use this header acro=
-ss
->> > >> almost every serialized data structure so we can evolve them later
->> > >> without breaking compatibility. While some top-level structs are on
->> > >> sparse folios today, other serialized structs are tightly packed, a=
-nd
->> > >> we are looking to add KHO slab support in the future where tightly
->> > >> packed allocations will be common.
->> > >
->> > > My intuition is we will have a small number of headers per preserved
->> > > file and per preserved FLB. One for the top-level struct and then
->> > > optionally a few more for sub-structs like arch-specific data. That =
-is
->> > > why I am less worried 8 bytes per header, even if we fix the folio
->> > > problem.
->> > >
->> > > Maybe where our visions differ is when there are collections of
->> > > serialized structs, like KHO blocks. For collections I don't think t=
-he
->> > > elements will each have their own headers. Otherwise the elements co=
-uld
->> > > be different sizes.
->> >
->> > kho_block today doesn't store entry_size in the serialized payload. It
->> > relies on its caller to do so. With extensible structures, this can ge=
-t
->> > messy. Sure, the owner of the kho_block_set can track the size somewhe=
-re
->> > in its payload, but perhaps we should store the size in
->> > kho_block_header_ser to begin with?
->>=20
->> +1000
->>=20
->> KHO block should track the entry size automatically and not rely on
->> the caller. Otherwise every caller is going to have to store the entry
->> size in the struct that owns the KHO block, like I had to do in the
->> PCI v10 series :(
->
-> I am fine with updating this as part of the versioning change so that we=
-=20
-> do not have to do it twice.
->
-> Tarun, could you pelase include entry size change into the next version a=
-s=20
-> well?
 
-Yes, This will be important to track the extensible serialized structure
-across kernel. For example struct luo_session_ser has larger size in N+1
-kernel which gets deserialized on the beginning of the boot so incoming
-block_set must use entry_size of the kernel N which we can update inside
-kho_block_set_restore(). And this updated incoming->block_set be used
-for iterator in luo_session_deserialize to properly walk through
-session_ser entries.
+On 10/18/2026 1:15 PM, Akshay Jindal wrote:
+> init_memory_definitions() walks every top-level subtable including the
+> IVHD blocks (type 0x10/0x11/0x40) in the IVRS ACPI table. It interprets
+> each one as a 'struct ivmd_header', solely on m->flags, without first
+> checking that the subtable's type actually is one of the IVMD types
+> (ACPI_IVMD_TYPE, ACPI_IVMD_TYPE_ALL, ACPI_IVMD_TYPE_RANGE).
+> 
+>     if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
+>             init_unity_map_range(m, table);
+> 
+> IVMD_FLAG_UNITY_MAP (0x01) occupies the same bit position as the IVHD
+> flags field's HtTunEn bit. Unlike real hardware, QEMU's AMD IOMMU
+> emulation sets HtTunEn unconditionally (flags=0xD1 for type 0x10,
+> 0x11 for type 0x11), so every QEMU-emitted IVHD block is misidentified
+> as a unity-map/exclusion-range IVMD entry, which subsequently results
+> in the creation of a bogus pci segment. Eg:
+> 
+>     AMD-Vi: PCI segment : 0x4000, last bdf : 0x0000
+> 
+> Fix by checking the subtable's type before treating it as IVMD.
+> 
+> Fixes: be2a022c0dd0 ("x86, AMD IOMMU: add functions to parse IOMMU memory mapping requirements for devices")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Akshay Jindal <Akshay.Jindal@amd.com>
 
-I will send v4 soon including this.
+Thanks. Queued for rc.
 
-~Tarun
-
->
-> Thanks,
-> Pasha
->
->>=20
->> > Anyway, not a problem this series needs to solve, but something we
->> > should eventually do.
+-Vasant
