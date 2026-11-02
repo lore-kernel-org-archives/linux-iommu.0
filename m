@@ -1,116 +1,123 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.13
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793645399;
-	b=dbrrbww6vEorpV76ANQIc3FXrlA3YJhGBT1wawzhrQYDj22Ykc6HWT1SJt3AKNqMVtT2
-	 +xQlrVcEDgaffMHrhSgU037uW1hGL1wiO6EGQu8BcUMH7TG5tgsuH+wWVS6g/G33+FRtD
-	 umHX7PcNhTVUBhIdv5TAnIvnxRVATbjBaXnP1KotzkutREulomMQiRsPzGMyU4OvxmQYq
-	 zJ4P+URuhoo1IFEilZKor+cdkEFKnowMR+x2c641/YmHNZo86NvA0a5YGoK6sN2Gf7Tds
-	 ZlKZoQSv3PLxJSVSPiOl3kYyyyEGrm8BHOHuVeHGMsTiZYmES8RNXsttp8XNSncsN4Q==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793645399;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=mZWTDYLtSuuAeaPS9c5bJrnsNCHpnkCyUvC96yDn2zE=;
-	b=ivurhi16b2T2bAaNSfHYFLQijgI4OzMxQvYQsPy9QeYf8moBpoqEukrkT/ni9uA3tchO
-	 yPbmwp5Hi2W5ATBGD5Hm1glyw1rePK1o2TD/7uah570dRVF06FEhfjiwfaeUBucPQFCe2
-	 OlSlnh59z/iHoXOK6DR98sOeLCOsBH+ppleKrESl1h3lcRAWancQwQbJkM8PIbHZ7fjUG
-	 YEPAG/P4+hxmprxyyCW828DwgJSv0061IP/uQsDHGBKsMXwN0mU2f5WEznu84Jij3ilLR
-	 HhfBd5yRekj5k191G1p3+IaukTEMldjw3TlwNNgpMtWjutkA4YTjzc733LTf8bojdFw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=gEJhuh+d;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.13
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012013.outbound.protection.outlook.com [52.101.48.13])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.149
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793654921;
+	b=fOiNT3yPQumvbKIhomg3tO6KnRaCXlmw+3x7vjv6ilp4TNUn56/C+MOKQCDXLtfU+BT0
+	 8/z+XobY1dZeU9OSgoAZ2evo5cs61N5hIcBGzawysXiQR2Ii5WM7vH3NzLnsIIMOy5V4x
+	 fP2Ck+c+uKlfjBlwCMLia6XEPqE4QdvcJ5/+fusqvFE9SQER91C4dTp8BiD24Eq1g65yF
+	 Xh5usmwxIvINddZulHcD/jAgoe89n0znWyIz2ggfyXrbB1Ej2Mpkt8zLVqVd1LOxS/iiS
+	 DLwX2t/tkjsDmoxgBz90Nb0X9bMpOTltnkj25T3Vg+WsUDfojA4tmqDZdM3vTDJF1pw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793654921;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
+	 Received:Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 X-Mailer:MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=TGm7htG/ot06XVnjyNlWivSivtfZ8/BMdXWpNsPs7Uc=;
+	b=lRVY1uJFePG0VxpmZOy0RvUlI+0cPJPABLwveXBPvCyN5ZzR8/BIHYeo8FRhP1+aCSW9
+	 G3jJTAtFHfvJJV1IZldaq7g5mZd4+PHMrvunJTYJfmNRl1PqSqMW3MxaGwRlMdlwwjkTg
+	 2XGXoIANr+h8zJNaqGxCqPykyIeDJ8s6T1A5s0LeAGYUeFxXbzbEVFrUUOOY7G/ECiARU
+	 7/ehLRzXfpKlcEVSglNgq+zzLdQgv36TKXa92XNOFt8rY3WgmZTvqfFXOIu7qli+koGRm
+	 KYNAQIIMpCq5yAkDAwHKUcFr8CMv2PT+lBqaJv2eMQuRfphvKjh4XKODfMicj1m+oCg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=shazbot.org;
+	spf=pass smtp.mailfrom=shazbot.org;
+	dkim=temperror header.d=shazbot.org header.i=@shazbot.org header.a=rsa-sha256 header.s=fm2 header.b="QXwOH/vh";
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm2 header.b=HH36+inY;
+	arc=none smtp.remote-ip=202.12.124.149
+Received: from fout-b6-smtp.messagingengine.com (fout-b6-smtp.messagingengine.com [202.12.124.149])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46CB0606A327
-	for <iommu@lists.linux.dev>; Mon,  2 Nov 2026 18:49:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 46CB0606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F8F5606A32D
+	for <iommu@lists.linux.dev>; Mon,  2 Nov 2026 21:28:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5F8F5606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=shazbot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shazbot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=gEJhuh+d
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=OvUCDARXyNmiC5gqLN07X0VH+HYYgsZWHcF+NBKCoD3FidQfuqwzMbHGxdYL6SecKi3dCzd8reEuo1m0XHsA5ILKsjQNe6hADWyvk2I3mdi9q9kAyzmtEr1gYuYwSEmShLfX8MxGjYddhleATsNZ//+nTDludH6Hsfg1nNk8RLuHU0VxT1cW2q37ldD0Dv0Dwr8rRy93RNdcOjgvWrB60AHiru/pr0O2jJOgmjfKEg45DEcjJj/ImhggTTCq9ppNZWR22HRtutBRHezPrsxIaI4RZ3qfI3Yb4p+97mvCtqkO56E5b7iUmJ5YUpEGoAhyTkB0bOPJc/C4S4MzRdMwGQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mZWTDYLtSuuAeaPS9c5bJrnsNCHpnkCyUvC96yDn2zE=;
- b=JPG/qyaLr3s/ecitt6aTG8iElC/85TJxmkYHIANh8lwRdJMou5nKmRTXXxkOu0saKOXnCgp2EjfQ4BKTarode/mqMLJPTW3+uQVTaETmHOUreAqs5LmaAzWShO8qQfr7/Yb69sQzWfW5oPGqADp2pBIOMmdqNpdZ+TTuCzu2cZsnSLwduuP3kG/ih0xPph6UenavLL0pUTRMM4jflxDoAN4W/QGJH9pMB8lLC/GrtFsDrGmTHmbmr/AUrarFPlOrA3GB6mhXpfKNO+cFmtO4MlN6A9VF/pvjOZOldjNeIUjUfDq83Wbz9/gWetXTYcwAVf9OJojSCLCdvgAJi8g/gQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=oss.nxp.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mZWTDYLtSuuAeaPS9c5bJrnsNCHpnkCyUvC96yDn2zE=;
- b=gEJhuh+duGPNS+ple9KbJKIdmsac+Pi0nxncuUDOuCjsy/NWugUu9/9U2mfhuv6JZZhqC4gFJ93qz90eHwK5rwiOpdwAZFcdzph4e53Dx1gycrsU5wXzC0mri+JHdUCJxglm+C1U2ea8od/PI7hmyMxcvN6hUeoQQNZkstx6pWEXH7/51w1RHKzJdyb6BeuebZGk8iHMyItSaPVxZUGjLaxoqlvjcFr3pmLppuV2ZK1DIkeUjOHqFSW/mVSKhZIcnLJTB01tXnR4PLOgMh6nMD74Q+m4vMtxvvnBaxxrpD9639BTFSiel/a1PPlBeW5m8HHxALOsADzha4lLzM/pXg==
-Received: from BL1P222CA0027.NAMP222.PROD.OUTLOOK.COM (2603:10b6:208:2c7::32)
- by PH7PR12MB5976.namprd12.prod.outlook.com (2603:10b6:510:1db::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Mon, 2 Nov
- 2026 18:49:44 +0000
-Received: from BN1PEPF00018073.namprd04.prod.outlook.com
- (2603:10b6:208:2c7:cafe::6e) by BL1P222CA0027.outlook.office365.com
- (2603:10b6:208:2c7::32) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.12 via Frontend Transport; Mon, 2
- Nov 2026 18:49:43 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN1PEPF00018073.mail.protection.outlook.com (10.167.245.201) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Mon, 2 Nov 2026 18:49:43 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Mon, 2 Nov
- 2026 10:49:24 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Mon, 2 Nov
- 2026 10:49:24 -0800
-Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
- Transport; Mon, 2 Nov 2026 10:49:22 -0800
-Date: Mon, 2 Nov 2026 10:49:20 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>, "Joerg Roedel (AMD)" <joro@8bytes.org>, "Thierry
- Reding" <thierry.reding@kernel.org>, Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>, Jean-Philippe Brucker
-	<jpb@kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-tegra@vger.kernel.org>, Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH RFC v7 7/7] iommu/arm-smmu-v3: Wire up shared-SID STE
- ordering and feature gating
-Message-ID: <aujbMKormSlNQMOm@nvidia.com>
-References: <20261030-smmu-shared-sid-ver7-2026-10-26-v7-0-961726ebd6ab@Example.Com>
- <20261030-smmu-shared-sid-ver7-2026-10-26-v7-7-961726ebd6ab@Example.Com>
+	dkim=temperror header.d=shazbot.org header.i=@shazbot.org header.a=rsa-sha256 header.s=fm2 header.b=QXwOH/vh;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm2 header.b=HH36+inY
+Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
+	by mailfout.stl.internal (Postfix) with ESMTP id 9DB551D000FE
+	for <iommu@lists.linux.dev>; Mon,  2 Nov 2026 16:28:33 -0500 (EST)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-04.internal (MEProxy); Mon, 02 Nov 2026 16:28:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shazbot.org; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1793654913;
+	 x=1793741313; bh=TGm7htG/ot06XVnjyNlWivSivtfZ8/BMdXWpNsPs7Uc=; b=
+	QXwOH/vhIXfDrZu1Qk0CXDGEmKgZr+WwAzEg+cvHEXzetsuX9JdR+BdqRSuKTid4
+	Vp6RJ6SHWh41j1555UWZWGqftlT6lmGsfqm5lVvaoBkehPj84W0LcqH8krim03Aw
+	2GRZ+hcPUrIpcBGVtNXW/1GTQWi685KoY8dLM62sJU8SidG0/lYc8zWS0Jqrpc4y
+	gVuThcfHE9YlGhBn02Y0aV24YDUilm0XuKpmNw4e1tIPOLyCxHBBzr7dr+P9Fqd8
+	+x1V4IvCdMvUf1EzrLbC1Gw+Q2OBvAqXzbN2n2pc44dreYCE0jE0IJ7J6FOG+nLq
+	oNCaOAnGF9vqkVwZQus+9Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1793654913; x=
+	1793741313; bh=TGm7htG/ot06XVnjyNlWivSivtfZ8/BMdXWpNsPs7Uc=; b=H
+	H36+inYiqZpVrJhWM4r4Set9S7Y4ecVfD3KC9SBzFOeuIATeMgTNSZe1/VUhrhRl
+	l5oAehtsBMUbneRsAFWQm47S0abvQhhbVR6m1qf7RxL0GVEH8dnT5ob8FxsPQ0SU
+	A1ri3f89G13AGaonzDa2Bqt1vw4d6Fxn+JMJWfU1vRCfYz7SgIBnNQj33mc66Fez
+	C76AEZViI0DlkCzdPh3jrj7IFZeSRukAuky52tEx3sVuwUmFI57OGKjM5Bv2ASQ9
+	hgnLA4Xd5B4N1WuPj2ScXvw6UtUcNhvDgKg8gWvobCYh05lJ/RFOpyBINHP2ZZXO
+	sMBNwIjtrq7kDLXnAyyrA==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-08;
+	repo=github.com/dkim2wg/interop; date=2026-10-28; sw=lmtpprox;
+	action=sign d=shazbot.org a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1793654913; d=shazbot.org;
+	mf=PGFsZXhAc2hhemJvdC5vcmc+;
+	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
+	s=fm2:rsa-sha256:uac+MN28rI+n84yuXgN6iEJ17ph5C3KKqMKG1cNc7v82m6G
+	VH8UI1p1jRpcRUWgLzDNiBjo0U4QY6DKAbBwNuSIIOUMCUy9+ParCk/6gJ0LQ+eQ
+	fM3VcjBoX7eHFTarWFBH82Rz+ZBmOGUZhzq9BK6LiVfHtBAEm1ETPbRTq55+u7hq
+	Nb7z++nwbl4SITvMYf9fKuoYx/81jjWtmfecNWG9oBe13JydCUKByrbgKVcs/rs6
+	TmHVcroCByISlDACyMMtfUbS3MG3bz+Hv+TKyHJzDnYbDB6350IWjC/dKOOWIwyt
+	Vbs6hTtI5cgNpd+zCf2uA4dFoO/HPugN3a974KA==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-08;
+	repo=github.com/dkim2wg/interop; date=2026-10-28; sw=lmtpprox;
+	action=mi-m=1; hc=12;
+	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
+	from,in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:fQhjXTHMSCFYw82lY+M39SpFziaJ40laPfR8sjV9ybc=:VH8M0/nV+qAehY48+/GbRvb8YZKsrkDGqiOxbaCH9ik=;
+X-ME-Sender: <xms:gQDpaqYkap5dV1xYYNADSvp4Z3UNhjDNSABOhEieUdidqhs-O8e6TQ>
+    <xme:gQDpapa83m0I5gvdO46VDbmb2EfL0pDKK7nRpkDexLegaBgc9pMSD51r2y08buktn
+    p7p98c5EZWNpD_Y5ayuvr3J6e8akUsUSQi40hYcBL5RR-8WyRjotKI>
+X-ME-Received: <xmr:gQDpanJgUFbHZJ8g0bcdKSJFkZy7_6o0w5ber55-us4st-mwBFS4h3PiwmfKgg>
+X-ME-Proxy-Cause: dmFkZTFaV+nXhVHS6u0I3Y+aHKbNt6XALkJlLTBxMAabrrMdV5swgz6nfNQeankIE4dplL
+    LR6XkZiaMnvltcX+zyCbZ/oNz4dopBkT2ix67Uk6FdBOB1EDVE3SQDs07ZfrQFHhUR39py
+    /wwMJDDKnpXDxMZXp0dy73waqetBx4SKOPOAb62nCDyV1Zn4inenhvmC/Om9mledTlkx0t
+    Pgi1p/YXbomzjqB7spBwHngbXpEG+IREMkqFw+vUSN/b2InXRHhoNBRfl5FMed8HJoUA3j
+    gV44Ci8CfEA/YkPfxX7IAn/zkr3AYtuuCPiHktW6lw4uNnf1BUjZ1jyfJYqM7SAsQsbyjs
+    qwoybRBeAuUeNEZa9+VaF50ftTC+dNauZCIyfdb7vzugHnJPlujkhcaTEh4X5/RqimjiF+
+    yeFImqTOz3TW+4A2nODTuIn9Mc1+FJVMiGXaLrZMi3wBF/Qn9Or/bLOkYhoqSlDE+SvATS
+    VxjDAyej2l7uv8SlufK/+8m2D+4Bx8v1F5y2EVl+KtO+onRrOolmiOWL2I4aBeGIP8N/6u
+    OiW4Rog6UdRa2OWjoHKyYVHRZlSVYdhcFGDTEurTrRv21sxdXz/mviz3HtFe9HHzzUxXwW
+    MNjPbK/RU5mHR5WqWI5RoNABfq8lZ7NimBDHjX9Z62ovYDZytxpLNknzCigQ
+X-ME-Proxy: <xmx:gQDpattcq-4Rt1y3w2gdouMexBSCcf2rHzhABtxastocGZ7xefxZeg>
+    <xmx:gQDpajUgZZ-BBuAoKzbw77I_rPYeUCb2O2Kii7v3Tt9WwbVgqihphQ>
+    <xmx:gQDpaggKZ22ohq8vIE4znStmFqNNFrM8ie4cOYCmEvpWXAkUs3QZWw>
+    <xmx:gQDpajqlwtiOSwvhk4cddDc8QchfPxh1uPPf8TbugLJFaDd0t3mOFg>
+    <xmx:gQDpakRHb22PhEfHh9AJ4g4BbtSffoPZXELItrMuJd4EkIfK_QL8BMvg>
+Feedback-ID: i03f14258:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 2 Nov 2026 16:28:32 -0500 (EST)
+Date: Mon, 2 Nov 2026 14:28:29 -0700
+From: Alex Williamson <alex@shazbot.org>
+To: Kyle Zeng <kylebot@openai.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Kevin Tian
+ <kevin.tian@intel.com>, outbounddisclosures@openai.com, alex@shazbot.org,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+Subject: Re: [PATCH 1/2] vfio: Publish the container after all fallible
+ initialization
+Message-ID: <20261102142829.3e2018c8@shazbot.org>
+In-Reply-To: <20261031042527.6418-1-kylebot@openai.com>
+References: <20261031042527.6418-1-kylebot@openai.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.52; x86_64-pc-linux-gnu)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,81 +127,178 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20261030-smmu-shared-sid-ver7-2026-10-26-v7-7-961726ebd6ab@Example.Com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF00018073:EE_|PH7PR12MB5976:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3dbecd4c-fca3-435f-66e8-08df39120f4b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|23010399003|82310400026|376014|7416014|1800799024|261021121427099003|261021135927099003|261022105027099003|261022075727099003|261009223027099003|261026121527099003|261026140227099003|261028144727099003|4143699003|11063799006|10067099003|56012099006|18002099003|261102123227099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	mOui/pV8prV7R0OdPuP9cS53SBGC6LPyy8sknDMTog0wg0HdDN/Sc47+U44W6cIZBRwL1iyQkPSwsfIPosjG1AR90HDhtGBLEZpAqmwlXhh2V427Rs9WVPUlC0IXSAEPCdQKkGBjTX/f83fpwwzyRtdalisewZN8d26jvu7Jw5AtWwJQCDpaLozw+0JnOhJ73agbkbSkLXjC/7zjqEqIgX+K8NRemVJ+0eZRjfi2t2ee5wDLVGUEcAv2TIGRe5WH7s++4jdbrsFLBEW5QDxguPSDRTAmPPGnX56Pe8OdSG3UG16iW4wq03GbuGv+o7jDVVSeAdlL+g84qb2mCzSNkVe9ARHvosw2n5fDogdgO8FwjxdfwQt5gsu1TapDAE6i3R592BecOARnlC2Zf/d8qa+Ne7HenTznOkD2OSPL3p2FIQe1mFo4qc02JxGl9z9dlFMO1Wjw0jwTzZx1uhZd34Z47COdsFnrwgNfLj7QYYbdy2V+F0PftUib9udhx38ydmzeBiFh7D8bBZocl726MO8cLvDuZu2PeP7SP0jXTPoRzgF+43K2bRgNmlJ4+zCsbf9+SNnyJJClB4162gctQNvLIYI5fR6fRbvwckivnQj4aDRTClJkl+IRJr0LA5HSz+I9JZBZVITRy4zMjlOxGCd9qkVEoE3DsKu7ZCjwDY6cUWCm+UcHp6VQDMubcL8acQW2svqMAFaqkQ38/ruzHA==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(82310400026)(376014)(7416014)(1800799024)(261021121427099003)(261021135927099003)(261022105027099003)(261022075727099003)(261009223027099003)(261026121527099003)(261026140227099003)(261028144727099003)(4143699003)(11063799006)(10067099003)(56012099006)(18002099003)(261102123227099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	bXJpJ+/odPLWxUFeQhh2kA4eeKpWpzsLQXgcfRhVWsDVAKcDuDLqzg/iRnK7ykdW59vJWkeAl9WUTINSCbL9r4YN2CV3wZEoiBS3Hdw6wyuRH+0s/nwD9RHIzQaMCUn25OBi6O3L+QWbyxzhyjEWFdsu49tqINh+Xub8cp6oO5Q6FOIDrX3FYRACqXqm9EbrtYL+nW9kscd+3uuM7Z2hdw4r3rKiAJwYCUYTkipD7v93OBZuess5Vm546d+q+TTFn2s0BhDG9etSiNTZ3qu0aHAzg3fuAD7cuqFDnBdG8amJ+ZE44UX7JL2PIN5XMxNJOgt6cm3yUHJ3PzBeot8M29TbR1Chgol6xOd30Y5sSgn61J/PBXyj2ggxCXQ+wMiTwYdNeodUPxIfFHPB8BYzzr1bx5qcBB00I1LDKUAU0nCjhkjPoKTZJg56du4XisiW
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Nov 2026 18:49:43.6915
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3dbecd4c-fca3-435f-66e8-08df39120f4b
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF00018073.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5976
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Oct 30, 2026 at 08:09:39PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
+On Fri, 30 Oct 2026 21:25:26 -0700
+Kyle Zeng <kylebot@openai.com> wrote:
+
+> vfio_group_init() publishes /dev/vfio/vfio before vfio_init() has
+> finished. The optional no-IOMMU backend is also registered after the
+> misc device. A concurrent open can therefore obtain a container while
+> the module is still COMING, even if a later initialization step fails.
 > 
-> With the per-domain CD table, every non-PASID sharer of a SID builds the
-> same normal-domain STE: same S1ContextPtr, S1DSS and S1CDMAX. Disable
-> stall and ATS for shared SIDs as well, so the remaining STE fields are
-> common too, and let any sharer program the STE. This also handles the
-> case where one device's driver attaches before the stream owner's driver:
-> the first attach now installs a valid STE instead of leaving the boot or
-> firmware STE in place.
+> The failed-module-init path frees the module without waiting for these
+> open files. misc_deregister() prevents new opens, but does not revoke
+> existing files, leaving their vfio_fops and callbacks in freed module
+> memory. An unprivileged first-autoload race can trigger this by exhausting
+> the global task limit before the IRQFD workqueue creates its rescuer.
+> A subsequent VFIO_GET_API_VERSION ioctl reports:
 > 
-> A release or blocked attach must not abort a shared STE while other
-> sharers remain, otherwise it would break their ongoing DMA. Skip those
-> writes while the SID is shared; the last master (no longer shared) still
-> tears the STE down. This also means removing one device from a shared
-> group no longer leaves the survivors aborted.
+>   BUG: KASAN: vmalloc-out-of-bounds in __se_sys_ioctl+0xaf/0x120
+>   Read of size 8 at addr ffffffffc089df70 by task vfio_race/1484
 > 
-> Fault events on shared SIDs cannot be attributed to a specific master,
-> so arm_smmu_find_master() returns NULL when the stream's shared_masters
-> list is non-empty.
+> Move container initialization out of vfio_group_init() and make it the
+> last fallible step in vfio_init(). Register the no-IOMMU backend before
+> the misc device, and unwind both resources in reverse order. Once an
+> open can reach vfio_fops, module initialization can no longer fail.
 > 
-> Disable SVA, PASID, vSMMU nesting, ATS and IOPF/stall for shared-SID
-> masters since all of them require an unambiguous SID-to-device mapping.
-> Reject sharing at insert_master() time if either master has stall enabled,
-> or if the existing master has PASID or ATS enabled.
+> Fixes: cba3345cc494 ("vfio: VFIO core")
+> Signed-off-by: Kyle Zeng <kylebot@openai.com>
+> ---
+>  drivers/vfio/container.c | 22 +++++++++++++---------
+>  drivers/vfio/group.c     |  9 +--------
+>  drivers/vfio/vfio_main.c |  8 ++++++++
+>  3 files changed, 22 insertions(+), 17 deletions(-)
 > 
-> Introduce arm_smmu_master_stall_enabled() to describe the policy actually
-> programmed into the hardware: a master stalls only if it asked for it and
-> its StreamID is not shared.
+> diff --git a/drivers/vfio/container.c b/drivers/vfio/container.c
+> index 003281dbf8bc..bd245e23a55d 100644
+> --- a/drivers/vfio/container.c
+> +++ b/drivers/vfio/container.c
+> @@ -577,29 +577,33 @@ int __init vfio_container_init(void)
+>  	mutex_init(&vfio.iommu_drivers_lock);
+>  	INIT_LIST_HEAD(&vfio.iommu_drivers_list);
+>  
+> +	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU)) {
+> +		ret = vfio_register_iommu_driver(&vfio_noiommu_ops);
+> +		if (ret)
+> +			goto err_mutex;
+> +	}
+> +
+>  	ret = misc_register(&vfio_dev);
+>  	if (ret) {
+>  		pr_err("vfio: misc device register failed\n");
+> -		return ret;
+> +		goto err_noiommu;
+>  	}
+>  
+> -	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU)) {
+> -		ret = vfio_register_iommu_driver(&vfio_noiommu_ops);
+> -		if (ret)
+> -			goto err_misc;
+> -	}
 
-Why do we need this? A stall_enabled master shouldn't share its
-SID in the first place.
+This looks wrong to me, an error loading the vfio-noiommu IOMMU backend
+shouldn't cause the subsystem to fail.
 
-> Add arm_smmu_is_shared_sid() as an inline helper in arm-smmu-v3.h so that
+I think this is fallout from a13b1e472b93 ("vfio: check
+vfio_register_iommu_driver() return value") that had no other
+justification for inducing this failure than the fact the registration
+function can return an error.
 
-Use arm_smmu_master_shares_sid or arm_smmu_master_has_shared_sid.
+The error return is necessary for the module init use cases, not here.
 
-> arm-smmu-v3-sva.c and arm-smmu-v3-iommufd.c can use it without repeating
-> the list_empty() pattern.
+Unwrapping that as an unchecked error avoids the re-ordering here and
+in vfio_container_cleanup() below, and this unnecessary unwind
+collateral.
+
+This should be a separate patch, and use the correct lists per the
+MAINTAINERS file (mising kvm@vger for vfio).
+
+>  	return 0;
+>  
+> -err_misc:
+> -	misc_deregister(&vfio_dev);
+> +err_noiommu:
+> +	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU))
+> +		vfio_unregister_iommu_driver(&vfio_noiommu_ops);
+> +err_mutex:
+> +	mutex_destroy(&vfio.iommu_drivers_lock);
+>  	return ret;
+>  }
+>  
+>  void vfio_container_cleanup(void)
+>  {
+> +	misc_deregister(&vfio_dev);
+>  	if (IS_ENABLED(CONFIG_VFIO_NOIOMMU))
+>  		vfio_unregister_iommu_driver(&vfio_noiommu_ops);
+> -	misc_deregister(&vfio_dev);
+>  	mutex_destroy(&vfio.iommu_drivers_lock);
+>  }
+>  
+> diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
+> index b2299e5bc6df..dc8f8a38723f 100644
+> --- a/drivers/vfio/group.c
+> +++ b/drivers/vfio/group.c
+> @@ -898,14 +898,10 @@ int __init vfio_group_init(void)
+>  	mutex_init(&vfio.group_lock);
+>  	INIT_LIST_HEAD(&vfio.group_list);
+>  
+> -	ret = vfio_container_init();
+> -	if (ret)
+> -		return ret;
+> -
+>  	/* /dev/vfio/$GROUP */
+>  	ret = class_register(&vfio_class);
+>  	if (ret)
+> -		goto err_group_class;
+> +		return ret;
+>  
+>  	ret = alloc_chrdev_region(&vfio.group_devt, 0, MINORMASK + 1, "vfio");
+>  	if (ret)
+> @@ -914,8 +910,6 @@ int __init vfio_group_init(void)
+>  
+>  err_alloc_chrdev:
+>  	class_unregister(&vfio_class);
+> -err_group_class:
+> -	vfio_container_cleanup();
+>  	return ret;
+>  }
+>  
+> @@ -925,5 +919,4 @@ void vfio_group_cleanup(void)
+>  	ida_destroy(&vfio.group_ida);
+>  	unregister_chrdev_region(vfio.group_devt, MINORMASK + 1);
+>  	class_unregister(&vfio_class);
+> -	vfio_container_cleanup();
+>  }
+> diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+> index 423ead48aafe..dfc48a9e0fe6 100644
+> --- a/drivers/vfio/vfio_main.c
+> +++ b/drivers/vfio/vfio_main.c
+> @@ -1852,10 +1852,17 @@ static int __init vfio_init(void)
+>  	if (ret)
+>  		goto err_alloc_dev_chrdev;
+>  
+> +	/* Publish /dev/vfio/vfio only after all other fallible setup. */
+> +	ret = vfio_container_init();
+> +	if (ret)
+> +		goto err_container;
+> +
+>  	vfio_debugfs_create_root();
+>  	pr_info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
+>  	return 0;
+>  
+> +err_container:
+> +	vfio_cdev_cleanup();
+>  err_alloc_dev_chrdev:
+>  	class_unregister(&vfio_device_class);
+>  err_dev_class:
+> @@ -1868,6 +1875,7 @@ static int __init vfio_init(void)
+>  static void __exit vfio_cleanup(void)
+>  {
+>  	vfio_debugfs_remove_root();
+> +	vfio_container_cleanup();
+>  	ida_destroy(&vfio.device_ida);
+>  	vfio_cdev_cleanup();
+>  	class_unregister(&vfio_device_class);
 > 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> base-commit: 70dd4ee72eb2d5793c62e71c14e3aba78e5a4e56
 
-Please check sashiko findings; all seems valid.
+Jason additionally asked[1] whether the try_module_get() via misc_open()
+-> fops_get() should be the real barrier, preventing open until the
+module has fully initialized.  That seems a valid question here as well.
+Thanks,
 
-https://sashiko.dev/#/patchset/20261030-smmu-shared-sid-ver7-2026-10-26-v7-0-961726ebd6ab%40Example.Com
+Alex
 
-Nicolin
+[1]https://lore.kernel.org/all/20261030120845.GA3889730@ziepe.ca/
