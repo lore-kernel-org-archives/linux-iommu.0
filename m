@@ -1,71 +1,50 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793626863;
-	b=LrwMM2bi+h9l/9ZQLXYN3XaXCApjzi7Ha3vOZ5CqUZvVf6cvLKIdlrw6cKEg0Z1zpPxp
-	 ysAu9fpr0vsbLhp6TA4mV6TloaB5W4xRsQeWF8xNhKZNKqA6VvNsL1YCTLcrDc8kjj8EZ
-	 jhVB3nM1IWDBYdKbodDtE5rYkuya+2HShryLtDYRuCisqe+C4stRGNwg+H7wSZ8E4+7ZO
-	 Co8PSn1XuS3nJc3VPC5P5p+7BrC3/7YL+lc5+yZO2B6kdP0DqTExDZYcGviB2Uhpd4/90
-	 1/VPpC5vYFfiICkfJoA2FTbq8utMHtKxNPHnsEPipvzP/jJY00p0zYj4aDl7H8oPBQA==
+	t=1793628031;
+	b=huUq4Ka8L4Y8ac83mNf0O1+2d7l4aiF+W24k4uCsCCzTfhs3+dqW4JqgCXsBZf8ib4ON
+	 xqb55YNQb8nlJeFXIB6ZniXutVl7u0I1sT9swvS6ILg7M1FtmJllS4IS2YWy53PPN+dT5
+	 6bn5fCp1+agZHWvfOeuk6RVJ7y6ra/qihOlkbSHQggBmpvLm1AkzvWKuQ3nRg2aPFQYbd
+	 F6ejKOxDUGvVPSFSCZNSxSx5/qiYD3HkJxVTnfNsgF8WPoF31F6ZSr5e7FtUPsIhiYVv8
+	 LP05JK3SNd2xva8ejwECtd3aHr7QcZBsbUewcJV8eAgbDatajZz44arCZo+FpQSUo7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793626863;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=pdjAuETj6QcMhvC8ZxVXiv5ojquYRwlbvdnRb3U3eDY=;
-	b=D8vU7GVcP9UNqeTMFIBoSknAr1+q3O+yjXfp9Yf5X6gEBBMbAyvqNh0uKb79lnf6tMQG
-	 RyOfipOjL1+abvSxIqLugXLHZz0WbmKKuJX8yfff3UZAN/GiHDtWTM7SRnJtmEBBN42gy
-	 zM+9TwJ6bKh/EU5D6hs7csqyyYtdJqmNV7qG3oZYptJdjiZy9LluV6rk0waGfwLE2BoU7
-	 IolNNhYzqT3eQs5XXLaJ8DgzKNkE6wCBsrND/+DBad6QHpoIoif0MdRk2y/YoFvrBaeD0
-	 iGuotAM+4xhdR6X3fB6JwGrQtkf2F8h8bPe5cHRit9K4gd1QcW/4tGTC06SfKrAHMdA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793628031;
+	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer;
+	bh=KaUEuxrRTuoQH6zZSnhhKmJ5p3zPxmMoHvVEVZALyo8=;
+	b=qLGJ+fvGg1QW4HrPq3mRTLVl6E7KtZSzgzLsOcsKu4Utw6Jz++cJv03bK8O5hdPqqF1b
+	 7X2NyIclcjdt04G7Zr0+GxqRFc8y/ntqtFjhkROKLqjuWOtL5DbDtOLb9BrL7DTt6dihQ
+	 zs8QrE2lVVlgSFrg8xaW8vnZDCnOjJU99GKuhRtYtd3UaM8665xQhdR09ommmlaAdGc2B
+	 oL8WLn6u3jMmoWyBpWpIqxI2393kdkAG3tPX/QYrwcyHU84LOTVAOg44P22+Mgf8ynjj/
+	 wHT5UhxHaHjwmmUKavVeEUMICD9ZlmxZEUgmpjpP/fZWBgsNdxmEqWpLyr/XfS3zrYg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MMbEDOY0;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fdb0qfS3;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF09C606A326;
-	Mon,  2 Nov 2026 13:41:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE7DB60A262E;
+	Mon,  2 Nov 2026 14:00:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MMbEDOY0
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7179B1F00A17;
-	Mon,  2 Nov 2026 13:40:55 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Fdb0qfS3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A0991F00A18;
+	Mon,  2 Nov 2026 14:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793626862;
-	bh=pdjAuETj6QcMhvC8ZxVXiv5ojquYRwlbvdnRb3U3eDY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=MMbEDOY0OmbpHnaLfTp/tGOscM0cLWYj9WB3bHalRtrnz7a2w4SfkqLrsfAOwGRuD
-	 4oJ0lUy3uXOr3VbYF/H2MX5DRxGfx6PQTmhezc8gVNtrb24rpSEBGipbSngP+YXujI
-	 ZicdHMN9ZeSpKUyPkyy+150wWID1ceyGaIEKMPUVNrgjNi9FPGz+xZF7iOslQSrcxR
-	 qdGlZ1nzVjjxSlYUIVaT8pSP1dGtm86BdpL1GTZ3c7iio3i3Ag5JX9BSHccm+3APRy
-	 vFWu3sDU3MKqgmvn3RGd5qXCNdkBalh2xKoumvjWpSC4Lg0U9A5IfO17qS5ha+U0OP
-	 yRJYC3Auf4ePg==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: linux-coco@lists.linux.dev
-Cc: Ackerley Tng <ackerleytng@google.com>,
-	Alex Williamson <alex@shazbot.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	David Hildenbrand <david@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Will Deacon <will@kernel.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Fred Griffoul <griffoul@gmail.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [RFC PATCH v3 00/13] KVM: guest_memfd: Add a common framework
- for device memory providers
-In-Reply-To: <20261101071928.2462549-1-aneesh.kumar@kernel.org>
-References: <20261101071928.2462549-1-aneesh.kumar@kernel.org>
-Date: Mon, 02 Nov 2026 19:10:50 +0530
-Message-ID: <yq5aa4nr5p25.fsf@kernel.org>
+	s=k20260515; t=1793628030;
+	bh=KaUEuxrRTuoQH6zZSnhhKmJ5p3zPxmMoHvVEVZALyo8=;
+	h=From:Subject:Date:To:Cc;
+	b=Fdb0qfS3NpYSqj4nEOvz9946diDzvK63nknJjAo1G38HjB9a4iYRKL4XsQSkz6kjf
+	 syI9hxlyC2kEez/3Z/rfyVbYgE0OP7IQXQBrVxqH7V3tsFgdk128gyThvQiV/q13C0
+	 BBFgAEvrtSPzzhDenud65Ysvn0gxiOFwP36imGhFluNIMimVtSjSJUYyfHQVptfsYg
+	 EUVT0IUDbUW/Q5DpmPCZCnIO697YWgmdpi4hc1dpXep13vklzYOwgy6aUYv7+SlNL8
+	 AZffxU5U05bA9BEPhmLp+E70uxukoxzWURLJAY1G6S8p/Cu0CyZ9i2tFkQ0/Y5nBG2
+	 zDXUcwsnHJ02w==
+From: "Mario Limonciello (AMD)" <superm1@kernel.org>
+Subject: [PATCH 0/2] lockdown: Prevent booting with lockdown enabled but
+ IOMMU disabled
+Date: Mon, 02 Nov 2026 08:00:24 -0600
+Message-Id: <20261102-lockdown-iommu-v1-0-00f3c2be4c9f@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,35 +54,72 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzNDA0MT3Zz85OyU/PI83cz83NxSXQOLZHMz4xTLNEvDlBQloK6CotS0zAq
+ widGxEH5xaVJWanIJyBil2loARlbfWXMAAAA=
+X-Change-ID: 20261014-lockdown-iommu-08c763d9f91dd
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Nicolas Bouchinet <nicolas.bouchinet@oss.cyber.gouv.fr>, 
+ Xiu Jianfeng <xiujianfeng@huawei.com>, Paul Moore <paul@paul-moore.com>, 
+ James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ linux-security-module@vger.kernel.org, 
+ "Mario Limonciello (AMD)" <superm1@kernel.org>
+X-Mailer: b4 0.16.0
 
-"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+Lockdown is a kernel LSM that restricts access to sensitive kernel
+resources (e.g. /dev/mem, kernel modules, perf, tracing, kprobes,
+BPF access to kernel memory). However, without IOMMU, any PCI/PCIe
+device can perform DMA to arbitrary physical memory, effectively
+bypassing all lockdown protections.
 
-> Confidential device assignment needs guest_memfd to manage device MMIO as
-> well as RAM. Device resources such as PCI BARs supply PFNs directly, and
-> their protected mappings need architecture-specific map and unmap
-> operations.
->
-> This series adds the common guest_memfd support needed by device memory
-> providers. It builds on the resource-provider API [1] and the existing
-> folio and RAM PFN backing support.
->
-> The VFIO provider, IOMMUFD integration and Arm CCA implementation are
-> available together at:
->
->   https://git.gitlab.arm.com/linux-arm/linux-cca.git cca/topics/cca-da-gmem-backend
->
+A malicious or compromised device can:
+  - Read kernel memory directly (encryption keys, credentials, secrets)
+  - Write to kernel memory directly (code patches, rootkits, backdoors)
+  - Circumvent all lockdown LSM checks (which run inside the kernel)
 
-An updated series is available at:
+This series adds a two-phase check to prevent booting with lockdown
+enabled and IOMMU disabled:
 
-  https://git.gitlab.arm.com/linux-arm/linux-cca.git cca/topics/cca-da-gmem-backend-v4
+1. Early check (in lockdown_lsm_init()): On x86, check the no_iommu
+   flag, which is set early by the "iommu=off" kernel cmdline option.
+   If lockdown is active and no_iommu is set, panic with a clear error.
 
-Most details remain unchanged. The VFIO/PCI code has received cleanups
-and updates, as summarized in the cover letter[1]. I will rebase the full
-series onto 7.4-rc1 before reposting it. If you would like to review v4
-before then, let me know and I can repost it.
+2. Late check (late_initcall): On all architectures, check
+   iommu_is_available() which returns true if any IOMMU driver
+   registered successfully. This catches cases where:
+   - IOMMU hardware is absent on the platform
+   - IOMMU was disabled by driver initialization failure
+   - IOMMU was not detected (broken firmware, missing ACPI tables)
 
-[1]
-https://git.gitlab.arm.com/linux-arm/linux-cca/-/blob/cca/topics/cca-da-gmem-backend-v4/cover.letter.gmem_vfio?ref_type=heads
+This follows the precedent set by s390 UV code which panics when
+security cannot be guaranteed ("System security cannot be guaranteed
+unless the system panics now").
 
--aneesh
+This also adds a generic iommu_is_available() API in the IOMMU
+subsystem, which is used by the lockdown check. Any IOMMU driver
+that successfully registers will automatically call
+iommu_set_available() from iommu_device_register().
+
+Signed-off-by: Mario Limonciello (AMD) <superm1@kernel.org>
+
+---
+Mario Limonciello (AMD) (2):
+      iommu: Add iommu_is_available() API
+      security: lockdown: Prevent boot with lockdown but no IOMMU
+
+ drivers/iommu/iommu.c        | 48 ++++++++++++++++++++++++++++++++
+ include/linux/iommu.h        | 14 ++++++++++
+ security/lockdown/lockdown.c | 65 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 127 insertions(+)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20261014-lockdown-iommu-08c763d9f91dd
+
+Best regards,
+--  
+Mario Limonciello <superm1@kernel.org>
+
