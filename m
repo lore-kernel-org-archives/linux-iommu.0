@@ -1,82 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.130
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793625725;
-	b=WLKvvT/+cGKWlLqWZ4f7EtpqLaPVIHachuuIH1w1Zw6IZv6x3abUAlxi4b+xsI4IBtZa
-	 REDkuFeHQ/7l70AERPR47119ia2Ztv3bV7kIz1KkwOnPiCOa0d+5jQ2413MTvIWvsF/Dv
-	 7yv2tJ2pKpgWELk4HPeGdBQXRGTFJ84IjuZkRvfI0NxkZiq2Tv+sBWEz8JJevkP0d3sZH
-	 EJyM1QXhdHoh8VfnbwFBpFvon6OTeDcXfLTJ+0JSyVAt/eFdiH6oVHDqaxsi9/gvCxMVs
-	 Hv8nWSNU1dD9F7mBINHeucFqqoh90QHQ61dxbOMCZkx+5PTpszENqJPmbW3g0ncHngQ==
+	t=1793626863;
+	b=LrwMM2bi+h9l/9ZQLXYN3XaXCApjzi7Ha3vOZ5CqUZvVf6cvLKIdlrw6cKEg0Z1zpPxp
+	 ysAu9fpr0vsbLhp6TA4mV6TloaB5W4xRsQeWF8xNhKZNKqA6VvNsL1YCTLcrDc8kjj8EZ
+	 jhVB3nM1IWDBYdKbodDtE5rYkuya+2HShryLtDYRuCisqe+C4stRGNwg+H7wSZ8E4+7ZO
+	 Co8PSn1XuS3nJc3VPC5P5p+7BrC3/7YL+lc5+yZO2B6kdP0DqTExDZYcGviB2Uhpd4/90
+	 1/VPpC5vYFfiICkfJoA2FTbq8utMHtKxNPHnsEPipvzP/jJY00p0zYj4aDl7H8oPBQA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793625725;
-	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=djgnkC1S9SsBayDDJz8CWP9esVizW3/CZWCKQKY14tA=;
-	b=ymmWv2hB9W3TVqQyXvLLe5FoavZCzfUQ8gKV8GtNlDkNM34OzOIRRpRDswjt4aGSTRDi
-	 8mZrbmMMNqspA6ppGNpq9jclPWl9dmt0/y4CIuoRpNkU0TUBQ0bF3+qCWxdGpMkm5sjwp
-	 8gflN7WnfNPqSRuf8iCuHdro0SWQsAS758MQHqZWt+2G8MdxTH2I8TE7CDyIP+z6ovp4f
-	 Swh2H1YnqTsV8w0j6rB1Xt0AUDlu4IJqHTdEjuoH54g1jCyYkjyWuRWQxakbrOZMluxfz
-	 cmK/6Mf5Nsm2ZKZPB1fKftiSy33KF26gNjvSz0M/Nar42jkSvlSfFtH+tit2sOmjvtA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793626863;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=pdjAuETj6QcMhvC8ZxVXiv5ojquYRwlbvdnRb3U3eDY=;
+	b=D8vU7GVcP9UNqeTMFIBoSknAr1+q3O+yjXfp9Yf5X6gEBBMbAyvqNh0uKb79lnf6tMQG
+	 RyOfipOjL1+abvSxIqLugXLHZz0WbmKKuJX8yfff3UZAN/GiHDtWTM7SRnJtmEBBN42gy
+	 zM+9TwJ6bKh/EU5D6hs7csqyyYtdJqmNV7qG3oZYptJdjiZy9LluV6rk0waGfwLE2BoU7
+	 IolNNhYzqT3eQs5XXLaJ8DgzKNkE6wCBsrND/+DBad6QHpoIoif0MdRk2y/YoFvrBaeD0
+	 iGuotAM+4xhdR6X3fB6JwGrQtkf2F8h8bPe5cHRit9K4gd1QcW/4tGTC06SfKrAHMdA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.alibaba.com;
-	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=s6kooDtb;
-	arc=none smtp.remote-ip=115.124.30.130
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MMbEDOY0;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C87B6606A324
-	for <iommu@lists.linux.dev>; Mon,  2 Nov 2026 13:22:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C87B6606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF09C606A326;
+	Mon,  2 Nov 2026 13:41:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=s6kooDtb
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1793625720; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=djgnkC1S9SsBayDDJz8CWP9esVizW3/CZWCKQKY14tA=;
-	b=s6kooDtbhWXqSHnQktLITnOxeaYS6+V2AtgCwSVH+rVACMXo6lTWsLDFTA4ibP6Y3JVO4D2fLicSBqTn2Lx0+3ShUISE/3EXIxNB4/QgYVG6iGtGFKxUydu6tNxklm7S6so+N2c5Gpw4pcO2aNB/XhBp1PAT2ZRszTDaPTw4W9c=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R931e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XE-KG9J_1793625716;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XE-KG9J_1793625716 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 02 Nov 2026 21:21:58 +0800
-From: fangyu.yu@linux.alibaba.com
-To: jgg@ziepe.ca
-Cc: alex@ghiti.fr,
-	andrew.jones@linux.dev,
-	anup@brainfault.org,
-	aou@eecs.berkeley.edu,
-	atish.patra@linux.dev,
-	baolu.lu@linux.intel.com,
-	fangyu.yu@linux.alibaba.com,
-	gong.shuai@sanechips.com.cn,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	joerg.roedel@amd.com,
-	joro@8bytes.org,
-	jroedel@suse.de,
-	kevin.tian@intel.com,
-	kvm-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	nutty.liu@hotmail.com,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	robin.murphy@arm.com,
-	skhawaja@google.com,
-	tanchi25@mails.ucas.ac.cn,
-	tomasz.jeznach@linux.dev,
-	vasant.hegde@amd.com,
-	will@kernel.org,
-	zong.li@sifive.com
-Subject: Re: [PATCH v6 09/10] iommu/riscv: Add dirty tracking support for second-stage domains 
-Date: Mon,  2 Nov 2026 21:21:51 +0800
-Message-Id: <20261102132151.52507-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20261102131356.GA274202@nvidia.com>
-References: <20261102131356.GA274202@nvidia.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MMbEDOY0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7179B1F00A17;
+	Mon,  2 Nov 2026 13:40:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793626862;
+	bh=pdjAuETj6QcMhvC8ZxVXiv5ojquYRwlbvdnRb3U3eDY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=MMbEDOY0OmbpHnaLfTp/tGOscM0cLWYj9WB3bHalRtrnz7a2w4SfkqLrsfAOwGRuD
+	 4oJ0lUy3uXOr3VbYF/H2MX5DRxGfx6PQTmhezc8gVNtrb24rpSEBGipbSngP+YXujI
+	 ZicdHMN9ZeSpKUyPkyy+150wWID1ceyGaIEKMPUVNrgjNi9FPGz+xZF7iOslQSrcxR
+	 qdGlZ1nzVjjxSlYUIVaT8pSP1dGtm86BdpL1GTZ3c7iio3i3Ag5JX9BSHccm+3APRy
+	 vFWu3sDU3MKqgmvn3RGd5qXCNdkBalh2xKoumvjWpSC4Lg0U9A5IfO17qS5ha+U0OP
+	 yRJYC3Auf4ePg==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: linux-coco@lists.linux.dev
+Cc: Ackerley Tng <ackerleytng@google.com>,
+	Alex Williamson <alex@shazbot.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	David Hildenbrand <david@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Will Deacon <will@kernel.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Fred Griffoul <griffoul@gmail.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [RFC PATCH v3 00/13] KVM: guest_memfd: Add a common framework
+ for device memory providers
+In-Reply-To: <20261101071928.2462549-1-aneesh.kumar@kernel.org>
+References: <20261101071928.2462549-1-aneesh.kumar@kernel.org>
+Date: Mon, 02 Nov 2026 19:10:50 +0530
+Message-ID: <yq5aa4nr5p25.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -86,43 +75,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
->> >@@ -1439,6 +1454,9 @@ static int riscv_iommu_init_domain_s2(struct device *dev,
->> > 	if (domain->gscid < 0)
->> > 		return -ENOMEM;
->> >
->> >+	if (iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD)
->> >+		domain->domain.dirty_ops = &riscv_iommu_dirty_ops;
->>
->> This sets dirty_ops based on whether the allocating device's IOMMU
->> supports AMO_HWAD. As I understand it, the domain/HWPT is not tied
->> to that IOMMU instance. A later attach may target a device behind
->> another instance without AMO_HWAD, and the attach can still succeed
->> with GADE disabled, potentially causing guest page faults.
->>
->> Shouldn't we therefore revalidate AMO_HWAD cap for domains with
->> dirty_ops and reject this combination?
->>
->> FYI, both AMD and Intel have attach-time dirty-tracking checks. See
->> drivers/iommu/intel/iommu.c:3195 and drivers/iommu/amd/iommu.c:3221.
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+
+> Confidential device assignment needs guest_memfd to manage device MMIO as
+> well as RAM. Device resources such as PCI BARs supply PFNs directly, and
+> their protected mappings need architecture-specific map and unmap
+> operations.
 >
->Right, need to check on every domain attach that the domain is
->compatible with the iommu instance.
+> This series adds the common guest_memfd support needed by device memory
+> providers. It builds on the resource-provider API [1] and the existing
+> folio and RAM PFN backing support.
+>
+> The VFIO provider, IOMMUFD integration and Arm CCA implementation are
+> available together at:
+>
+>   https://git.gitlab.arm.com/linux-arm/linux-cca.git cca/topics/cca-da-gmem-backend
 >
 
-Hi Shuai, Jason:
+An updated series is available at:
 
-Thanks for pointing that out.
+  https://git.gitlab.arm.com/linux-arm/linux-cca.git cca/topics/cca-da-gmem-backend-v4
 
-The domain is not tied to the allocating IOMMU instance, and
-riscv_iommu_attach_paging_domain() only sets GADE when the target
-instance advertises AMO_HWAD. As a result, attaching a dirty-tracking
-domain to a device behind an instance without AMO_HWAD would silently
-succeed. 
-I'll fix this in the next version.
+Most details remain unchanged. The VFIO/PCI code has received cleanups
+and updates, as summarized in the cover letter[1]. I will rebase the full
+series onto 7.4-rc1 before reposting it. If you would like to review v4
+before then, let me know and I can repost it.
 
-Thanks,
-Fangyu
+[1]
+https://git.gitlab.arm.com/linux-arm/linux-cca/-/blob/cca/topics/cca-da-gmem-backend-v4/cover.letter.gmem_vfio?ref_type=heads
 
->Jason
+-aneesh
