@@ -1,60 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793700653;
-	b=jHgbF8OWQZOUTHDiFKh4JY4jRjJzDNLV5tQqw6hxCx2CjjMN1Or6yavSlLQEqkxF2JDv
-	 R07p/mdWLLRINxGQ+wbywpgYD6p4nCKzF2dR5wPqPisU7FMF/exDx174jo85BXIwAx7g9
-	 u+pg/aAylWAI0F3gWORAn8NDa607irjzNCYzqIpOntV6iyu63FFF7HaVdEHzme7EX6II1
-	 mJX79c87sK06iT8lFtKpod1WjVpekwHJFiaygd3o2YHmT0N8hRJf+ET8Pr5luZ4liNWEz
-	 PDR7S1ZWOT+VTng+8e4eglNyyEl/eY6vIvAqbu3R2eADXNtHyMedFew19W98JD4fd3w==
+	t=1793700680;
+	b=v4ESybahf/cirx+8E8fAU+SNdmmhb3whnMrKTekgT4EC5XemtPPLQSCLCWHqfjOtpTni
+	 P7tJ1UN2MUZG828hMv/4lQkd4vKuK2Eo7LdSTR+Pn9fJvpjjQ57L07m+AxDpl4+whH2ih
+	 awKFgvdVCLuCK4ZqJGEm6sbaAaDL/StQZpeKPkNCNg/DnjeU9eNUvL8EazbnnujAGKzeG
+	 J5QbVDr0McbxcJQ/0NnYrfXnUin1sSMaLkluXbXi8vTDrzfgnuTEckQiAQOON3BcK0hkw
+	 KRVcp+s2GNGlqdZaaVG50TWkUTDuVbhPUh4hritJb0ajZ8i6I6fJp5+z9nx4LnS3kPw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793700653;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793700680;
 	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
 	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
 	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
 	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
 	 X-CMS-RootMailID:References;
-	bh=2miWXckXEf9/8fJq2kLZ6HHXh4pF31ZiQShBy3CvvJQ=;
-	b=XDGPy1xcd1NH+iqGUIWt2OZ3xUxiUWwlkKmeh6DxWzU/MxHTABJYruEEt2DBM+V1p3ax
-	 H6oqKiZFmpRLX7Zzt+O5WlqY0VuBxpuoVxczxFiTvRuQq3NAS7WjI7CPAbLO0iv7O6+aO
-	 hF8UawB7n1m8RPr1pg3nQPuBZLFmv1D33Be3xbjDBN6qud8lrGhMKcLmoO2uaxlFCPWOI
-	 QljU7NXXrpccbgqmiNuvacpCO57c+UVIKt7DoBwOZgx4srQO2Toid2jCBoAcqVcvT5lZq
-	 HPSeGnvMH7VyH+E1LfAxSV+/7J6hOiwMtbwGw1wcA04Bhy+Q2NR/FDxS/09Ih6IX9Dw==
+	bh=oEeAOkIMhm2brVx+57mg0HvmlruExTUNaN3KGm7ZRmQ=;
+	b=B9clPI08yqzRWncUf1LAU7WhLOhxNnoKKzPfxTNBVXHKwk/NanXMpuz7HYmf6ktwV3nG
+	 kl3otFgcDcFKJuju0qwQyFdYnj7cV6Y7R8Ehx9jMPfIvTUZDZBWpA6Y9IuXtuXOfj2j/v
+	 5DF0moKRFVCyfLCQFp2H6paM2tXK7NWw4tKVraOZ1j51C6ZKNyd6ARGwtqzVTLKqZPzcK
+	 MMZrgT41u/3qHXBWJNZXVre6mJTzghIfRrbeXDDpHD79kKEvsHB1A8FqiByaLiTA1CzOZ
+	 PagueM1nG9WDVsq/kDBtWbXOPkLg/ExoRLJbed81CTjcVw1YuKXJzk3KSWohy3TQLJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=samsung.com;
 	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=P6D9rRFE;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=W+HKkBv6;
 	arc=none smtp.remote-ip=210.118.77.12
 Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3925C606B112
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:10:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3925C606B112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ED74606A332
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:11:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6ED74606A332
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=P6D9rRFE
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=W+HKkBv6
 Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261103101049euoutp02207cc648f5d1d19576c89247af8de6e0~kgTy61HQg2903629036euoutp02n
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:10:49 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261103101049euoutp02207cc648f5d1d19576c89247af8de6e0~kgTy61HQg2903629036euoutp02n
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261103101116euoutp028ef9b82e5b9ee18dc7c534a4baf9a4ac~kgUMbxOR12903629036euoutp02z
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:11:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261103101116euoutp028ef9b82e5b9ee18dc7c534a4baf9a4ac~kgUMbxOR12903629036euoutp02z
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1793700649;
-	bh=2miWXckXEf9/8fJq2kLZ6HHXh4pF31ZiQShBy3CvvJQ=;
+	s=mail20170921; t=1793700676;
+	bh=oEeAOkIMhm2brVx+57mg0HvmlruExTUNaN3KGm7ZRmQ=;
 	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=P6D9rRFELTCereOoTaTTR2BoDm2AQJAUCJ6qJ5pqGgWyKUfcU21VeGmGdIZI3rjfq
-	 7/2xZdKsbuncpMyFJOdceQBRXZMEY2rZ+aLKUN/oK24x2foISLnuqxqgtwun76h4ML
-	 +6ju2atQwwopT1FHXFTchGy8kFEZOXsKRZPom06Y=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261103101048eucas1p2192952d7ccdf6cee02830269510aca7e~kgTyPtkgV1245512455eucas1p2H;
-	Tue,  3 Nov 2026 10:10:48 +0000 (GMT)
+	b=W+HKkBv6baZB/MFF4sW9EQIXMaH/WWcE0xLv30OQ1O3EWG5zu0LlDPyhpUo1rXQWO
+	 wP3pGtKk8BL5a/qRQQdn56Eash1rX+aexjjU29CJDaiMoDlrErCvRkS0FO/wcf9yAm
+	 I8vBGYoJwHVdGf4B7c7QwwC3yrse8D6SWUm4ERx8=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261103101116eucas1p1eadfbb1f322f96673fff2419c4cc5dac~kgUMEKwti2453024530eucas1p1v;
+	Tue,  3 Nov 2026 10:11:16 +0000 (GMT)
 Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261103101047eusmtip2f99b012249277f80088899badb6f04af~kgTwxvNxT3115731157eusmtip2h;
-	Tue,  3 Nov 2026 10:10:46 +0000 (GMT)
-Message-ID: <b1058c89-2e87-4035-b7be-76e93fe3ac07@samsung.com>
-Date: Tue, 3 Nov 2026 11:10:46 +0100
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20261103101114eusmtip1ab1d1332cf288f23ef33eca39d491c32~kgUKcvhCg3212232122eusmtip1W;
+	Tue,  3 Nov 2026 10:11:14 +0000 (GMT)
+Message-ID: <373ea0e8-d0c4-4071-9546-8c4df5d09393@samsung.com>
+Date: Tue, 3 Nov 2026 11:11:13 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -65,8 +65,8 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2 3/7] dma-mapping: Keep DMA memory private for capable
- devices
+Subject: Re: [PATCH v2 2/7] dma-mapping: Let a device declare that it
+ reaches private memory
 To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
 	joro@8bytes.org, Will Deacon <will@kernel.org>, Robin Murphy
 	<robin.murphy@arm.com>, Catalin Marinas <catalin.marinas@arm.com>,
@@ -80,166 +80,122 @@ Cc: Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman
 	shameerali.kolothum.thodi@huawei.com
 Content-Language: en-US
 From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <a2a5fe1a1c4d8c99d96874a166f77996d51f3cb7.1793676742.git.nicolinc@nvidia.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261103101048eucas1p2192952d7ccdf6cee02830269510aca7e
+In-Reply-To: <0697a7ab3e4c4b7703428644444fd13f8dbfccd9.1793676742.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20261103101116eucas1p1eadfbb1f322f96673fff2419c4cc5dac
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261103035025eucas1p2e556ed6dee063a472de0102b87fda0e3
+X-RootMTR: 20261103035021eucas1p17d005335232f75ad6f3b711b7c4b88d5
 X-EPHeader: CA
-X-CMS-RootMailID: 20261103035025eucas1p2e556ed6dee063a472de0102b87fda0e3
+X-CMS-RootMailID: 20261103035021eucas1p17d005335232f75ad6f3b711b7c4b88d5
 References: <cover.1793676742.git.nicolinc@nvidia.com>
-	<CGME20261103035025eucas1p2e556ed6dee063a472de0102b87fda0e3@eucas1p2.samsung.com>
-	<a2a5fe1a1c4d8c99d96874a166f77996d51f3cb7.1793676742.git.nicolinc@nvidia.com>
+	<CGME20261103035021eucas1p17d005335232f75ad6f3b711b7c4b88d5@eucas1p1.samsung.com>
+	<0697a7ab3e4c4b7703428644444fd13f8dbfccd9.1793676742.git.nicolinc@nvidia.com>
 
 On 03.11.2026 04:49, Nicolin Chen wrote:
-> Architecture code can require devices to use unencrypted memory. This makes
-> the DMA API use shared memory for coherent allocations and bounce streaming
-> mappings through SWIOTLB.
+> DMA devices in a confidential guest can access only shared memory, or both
+> private and shared memory. Some method outside the DMA API will confirm the
+> device is able to access private memory through DMA.
 >
-> A device marked with DEV_FLAG_DMA_CC_PRIVATE can reach private memory
-> directly. Add dma_require_decrypted() to combine force_dma_unencrypted()
-> with the new device flag, and use it throughout the generic DMA code.
+> Add DEV_FLAG_DMA_CC_PRIVATE and dma_set_cc_private(dev, bool).
 >
+> The flag must be stable while any DMA mapping exists.
+>
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-The change look good, but I'm not really happy to see the mix of unencrypted
-and decrypted terms. Wasn't there a consensus which one will be used?
+
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
 
 > ---
->  include/linux/dma-direct.h |  7 ++++++-
->  kernel/dma/direct.c        | 16 ++++++++--------
->  kernel/dma/mapping.c       |  2 +-
->  kernel/dma/swiotlb.c       |  2 +-
->  4 files changed, 16 insertions(+), 11 deletions(-)
+>  include/linux/device.h      |  4 ++++
+>  include/linux/dma-mapping.h |  4 ++++
+>  kernel/dma/mapping.c        | 21 +++++++++++++++++++++
+>  3 files changed, 29 insertions(+)
 >
-> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-> index daa31a1adf7b0..fb35ca27941cc 100644
-> --- a/include/linux/dma-direct.h
-> +++ b/include/linux/dma-direct.h
-> @@ -134,6 +134,11 @@ static inline bool force_dma_unencrypted(struct device *dev)
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 429e39f647cf9..01d7877d0b571 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -604,6 +604,8 @@ struct device_physical_location {
+>   *		ancestor device.
+>   * @DEV_FLAG_OFFLINE_DISABLED: If set, the device is permanently online.
+>   * @DEV_FLAG_OFFLINE: Set after successful invocation of bus type's .offline().
+> + * @DEV_FLAG_DMA_CC_PRIVATE: The device is able to access private (encrypted)
+> + *		memory, no shared memory bouncing is required from the DMA API.
+>   * @DEV_FLAG_COUNT: Number of defined struct_device_flags.
+>   */
+>  enum struct_device_flags {
+> @@ -617,6 +619,7 @@ enum struct_device_flags {
+>  	DEV_FLAG_OF_NODE_REUSED = 7,
+>  	DEV_FLAG_OFFLINE_DISABLED = 8,
+>  	DEV_FLAG_OFFLINE = 9,
+> +	DEV_FLAG_DMA_CC_PRIVATE = 10,
+>  
+>  	DEV_FLAG_COUNT
+>  };
+> @@ -834,6 +837,7 @@ __create_dev_flag_accessors(dma_coherent, DEV_FLAG_DMA_COHERENT);
+>  __create_dev_flag_accessors(of_node_reused, DEV_FLAG_OF_NODE_REUSED);
+>  __create_dev_flag_accessors(offline_disabled, DEV_FLAG_OFFLINE_DISABLED);
+>  __create_dev_flag_accessors(offline, DEV_FLAG_OFFLINE);
+> +__create_dev_flag_accessors(dma_cc_private, DEV_FLAG_DMA_CC_PRIVATE);
+>  
+>  #undef __create_dev_flag_accessors
+>  
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index efde0e5a58dc2..3cc38db4a7490 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -218,6 +218,7 @@ void *dma_vmap_noncontiguous(struct device *dev, size_t size,
+>  void dma_vunmap_noncontiguous(struct device *dev, void *vaddr);
+>  int dma_mmap_noncontiguous(struct device *dev, struct vm_area_struct *vma,
+>  		size_t size, struct sg_table *sgt);
+> +void dma_set_cc_private(struct device *dev, bool private);
+>  #else /* CONFIG_HAS_DMA */
+>  static inline dma_addr_t dma_map_page_attrs(struct device *dev,
+>  		struct page *page, size_t offset, size_t size,
+> @@ -357,6 +358,9 @@ static inline int dma_mmap_noncontiguous(struct device *dev,
+>  {
+>  	return -EINVAL;
 >  }
->  #endif /* CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED */
->  
-> +static inline bool dma_require_decrypted(struct device *dev)
+> +static inline void dma_set_cc_private(struct device *dev, bool private)
 > +{
-> +	return !dev_dma_cc_private(dev) && force_dma_unencrypted(dev);
 > +}
-> +
->  static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
->  		bool is_ram, unsigned long attrs)
->  {
-> @@ -146,7 +151,7 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size,
->  	 * requires unencrypted DMA addresses. Treat it as not DMA-capable
->  	 * so the caller can fall back to a suitable SWIOTLB pool.
->  	 */
-> -	if (!(attrs & DMA_ATTR_CC_SHARED) && force_dma_unencrypted(dev))
-> +	if (!(attrs & DMA_ATTR_CC_SHARED) && dma_require_decrypted(dev))
->  		return false;
+>  #endif /* CONFIG_HAS_DMA */
 >  
->  	if (is_ram && !IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT) &&
-> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-> index 25e9a86835fd3..b3b9ff090c590 100644
-> --- a/kernel/dma/direct.c
-> +++ b/kernel/dma/direct.c
-> @@ -41,7 +41,7 @@ static inline struct page *dma_direct_to_page(struct device *dev,
->  
->  u64 dma_direct_get_required_mask(struct device *dev)
->  {
-> -	bool require_decrypted = force_dma_unencrypted(dev);
-> +	bool require_decrypted = dma_require_decrypted(dev);
->  	phys_addr_t phys = ((phys_addr_t)max_pfn << PAGE_SHIFT) - 1;
->  	u64 max_dma = phys_to_dma_direct(dev, phys, require_decrypted);
->  
-> @@ -72,7 +72,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
->  
->  bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
->  {
-> -	bool require_decrypted = force_dma_unencrypted(dev);
-> +	bool require_decrypted = dma_require_decrypted(dev);
->  	dma_addr_t dma_addr = phys_to_dma_direct(dev, phys, require_decrypted);
->  
->  	if (dma_addr == DMA_MAPPING_ERROR)
-> @@ -226,7 +226,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
->  	struct page *page;
->  	void *cpu_addr;
->  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_decrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if (attrs & __DMA_ATTR_ALLOC_CC_SHARED) {
-> @@ -385,7 +385,7 @@ void dma_direct_free(struct device *dev, size_t size,
->  	 * If the allocation used decrypted/shared backing pages, restore
->  	 * the encryption state on free.
->  	 */
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_decrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if (attrs & __DMA_ATTR_ALLOC_CC_SHARED)
-> @@ -452,7 +452,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
->  	struct page *page;
->  	void *cpu_addr;
->  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_decrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if ((attrs & __DMA_ATTR_ALLOC_CC_SHARED) && dma_direct_use_pool(dev, gfp))
-> @@ -496,7 +496,7 @@ void dma_direct_free_pages(struct device *dev, size_t size,
->  	 * if the device had requested for an unencrypted buffer,
->  	 * convert it to encrypted on free
->  	 */
-> -	bool mark_mem_encrypted = force_dma_unencrypted(dev);
-> +	bool mark_mem_encrypted = dma_require_decrypted(dev);
->  
->  	/* If page is not from an atomic pool, dma_free_from_pool_page() fails */
->  	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
-> @@ -665,7 +665,7 @@ int dma_direct_mmap(struct device *dev, struct vm_area_struct *vma,
->  	const pgoff_t pgoff_end = vma_end_pgoff(vma);
->  	int ret = -ENXIO;
->  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_decrypted(dev))
->  		attrs |= DMA_ATTR_CC_SHARED;
->  
->  	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
-> @@ -814,7 +814,7 @@ size_t dma_direct_max_mapping_size(struct device *dev)
->  	/* If SWIOTLB is active, use its maximum mapping size */
->  	if (is_swiotlb_active(dev) &&
->  	    (dma_addressing_limited(dev) || is_swiotlb_force_bounce(dev) ||
-> -	     force_dma_unencrypted(dev)))
-> +	     dma_require_decrypted(dev)))
->  		return swiotlb_max_mapping_size(dev);
->  
->  	return SIZE_MAX;
+>  #ifdef CONFIG_IOMMU_DMA
 > diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index ded585b39fb92..0252473edd0b5 100644
+> index 82e701648d604..ded585b39fb92 100644
 > --- a/kernel/dma/mapping.c
 > +++ b/kernel/dma/mapping.c
-> @@ -673,7 +673,7 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->  		return NULL;
->  	}
+> @@ -501,6 +501,27 @@ static void dma_setup_need_sync(struct device *dev)
+>  static inline void dma_setup_need_sync(struct device *dev) { }
+>  #endif /* !CONFIG_DMA_NEED_SYNC */
 >  
-> -	if (force_dma_unencrypted(dev))
-> +	if (dma_require_decrypted(dev))
->  		attrs |= __DMA_ATTR_ALLOC_CC_SHARED;
->  
->  	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr)) {
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 2c57b49ac7c06..ddfc4533934a2 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -1550,7 +1550,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->  	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
->  
->  		/* swiotlb pool is incorrect for this device */
-> -		if (unlikely(mem->cc_shared != force_dma_unencrypted(dev)))
-> +		if (unlikely(mem->cc_shared != dma_require_decrypted(dev)))
->  			return (phys_addr_t)DMA_MAPPING_ERROR;
->  
->  	} else if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT)) {
+> +/**
+> + * dma_set_cc_private - Set whether @dev can DMA to private memory
+> + * @dev: device whose confidential-computing DMA access is being updated
+> + * @private: whether the device can DMA to private memory
+> + *
+> + * Called when a device is known to be able to DMA to private memory.
+> + * For architected CPU integrated devices their kernel drivers will
+> + * self-accept using a driver specific validation. Other devices will
+> + * have a userspace managed process.
+> + *
+> + * DMA mapping must not be active when this flag is changed. For CPU
+> + * integrated devices the driver should self accept early during probe
+> + * after validation. Other devices have this flag set automatically
+> + * before probing.
+> + */
+> +void dma_set_cc_private(struct device *dev, bool private)
+> +{
+> +	dev_assign_dma_cc_private(dev, private);
+> +}
+> +EXPORT_SYMBOL_GPL(dma_set_cc_private);
+> +
+>  /*
+>   * The whole dma_get_sgtable() idea is fundamentally unsafe - it seems
+>   * that the intention is to allow exporting memory allocated via the
 
 Best regards
 -- 
