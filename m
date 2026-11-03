@@ -1,98 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.176
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793695695;
-	b=hGSRtToN3/MdyzA+SZqWH7T8mZsS/c4jApNvt+7TbASMWkVTyl7mrRVOoY9zLORU8YXg
-	 0XvLitpoNU3ELmi18hk74lJ36sKdUqnpJ+zFlXtYReDk3EQawmrj39qMtGFRo2ID6rH8m
-	 ka51gtvq0DLTQUwnrPC0ITggu99Y32hgXXbMIx2Fax8nh3fJEyupRkdpNIG30jfecucy7
-	 2vPwfRGxg6nmL/Y0QZVBLNf7fp8W1WfB6GpryvAbb8FbC9xHEEehLTEhk1iDvFU6v1okg
-	 hvcW1IRfv+sESM4BhiEqub6q+C56zVmfyUslTQACT210uU8D7h4xu9uVe8xUhDtk6iA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793695695;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.176
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793697274;
+	b=d69f9jbCyxmzlinK65cPscgLzGR0uOwFFo8PLfTGfqQDKmDz5fiZZnRdp8QnwMIQHNgZ
+	 nern+UypFRvWf2eqwZYTP2qTpjH71zsy7/8XptDrl7h8hGzVgH5XKf5yP8NVJx0oLlqVZ
+	 DjoJrUs6u7uNwFXkm+CtdrUdeNiyA04qEBGLdRpHfDp4CwjDWkk4q8pDAHVeC7MfK39k2
+	 kQrXFZaaABvR48Qke5//CRrZubY33/WAcwlo+YaupQa8jLHd1zFJWhlPyH+cUBU1eq/LO
+	 5Bnyd1J9VzYY6qXiWboy+EpazpxL6R6voHp3L8VfePVKlqvdXgrx8tYm6vwfa3+DVvw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793697274;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=aoUFhuYQcJ6QU5ydKv9+uxtt5LR3lX/aX8ZyHdDkimw=;
-	b=yEDYo414ret+uXleCGrcUUCiAeJDH+i6Nm92nWmCZtqs4DinmRdKnBFPLolHieGnr0D0
-	 jJacLNPa1Fm9dHuRYemK/0uWZ6z2o3Xh7Vgf5eilMadyvBVWc0y+FDZ4IaGPQVXjhY6ud
-	 geCsu8E2BP9H59Fq+PnivGivAekLP6/XMwp4Vjp1k3lRW1Ap/4EBWwLlCkyiyHz4Qsvkd
-	 N15UHkoG/0pcILr8SpqpHh48QWJHKLGrgHhl5FcP2weGev+1m27l3XNkOaTTuSqFFcL/O
-	 pi2c4suexAFpN6y1mycl+efSDajNsanGPwrPK9zU7T9HzFMUdUgQ8tACvfUOxLDmLSA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="XS/xa+2d";
-	arc=none smtp.remote-ip=209.85.215.176
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=i14dmH5BR+9SimyzQMrEk5iidp8zGrGHl7mp1tLTg74=;
+	b=Hns5YjB+veOvht1qsTgJBaOZnRUR0vcvboLnaJArOYO8VARjZNcSicWOY5jZRTZU4iUf
+	 FhRWAdviZgguYR4fwZGi6RPGHB8FU72GxN1ww7FpwhMbHR3cQeb6Y3IaU82BUNtwlTmax
+	 +L9rlIB6mDLpGFjoZCBohI717hps8zgwYBhkDeQOR22mUSaPdzyv3Mo9EonibOgU7P435
+	 Am5I4RnJhez+cGnMUTfOZ+M30ZGlo+jYtm6dmfSRRaOHs2v4FfVLwx9kxsDZ/L32l8pvb
+	 sEvTNV81PO606o4usdCSCcUNGmFClsjbVvhFzXL+T4Y9q5G+LiQNA3sKiTBGLBJikJQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=UWtsNxlF;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.176
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6D3606A944
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 08:48:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4B6D3606A944
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E79D606A336
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 09:14:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7E79D606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=XS/xa+2d
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-cd62c570b5dso2591175a12.2
-        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 00:48:15 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=UWtsNxlF
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-54492d8a988so203961cf.0
+        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 01:14:34 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793697273; cv=none;
+        d=google.com; s=arc-20260327;
+        b=SKR62f2G1JNYFHLjXbmCyWarjvXpgzT6Vdyh+/Stzzbttd/OKZFDeePq+F51gHiRHF
+         sZCaOK23xesriyP3Yz0ERxMFd+RT38bCGYWdP5KhwztU7gmm9oaEHdzlhHWDa3EoegOy
+         FLjHPYCAJKkPkiRtb7SJuBsSW7lcVl7wNywH2GTLf7WLheBX0QlQ3VL1Ck0jTxQ5em3z
+         rCXDFTNz8I+Qv/jeriAMIaP5uwqSFg6MwZf+ELOO1N+5v3MZbme6/kEN2dhilValu7+Y
+         YNPIWMDopEoa0NxbEDUoFlRcXc/9ZBINWcYHAZBQB7yOs9Rw6cC25JuBVoyqRLCpuTcc
+         pebg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=i14dmH5BR+9SimyzQMrEk5iidp8zGrGHl7mp1tLTg74=;
+        fh=8Mb9hToxFUou3bOIG0COYbeKFXstf7oU3oOTq7B/zbE=;
+        b=DovCrCM4weh141uIF4CV/YXVtpxcoIQ5fwoYI54ql4UeueCd8RFAl/bOP2BGcAfG7p
+         JQyNLmMmrSDrVZT4VMqKR0QUfXo0slB4hV8e4PkVnf1pdKItJt0FYfD52mYAI6J2TjfU
+         QTT/lMQMSJ+LzDgRGnzkbh6Jt6UJZdD1EHGQ1H9X30fm6RDNs4t7uh9MXo2I8DRJBJXh
+         JGFjcfl4rmU8iPDKnj2t16lZV4EutlsThxbcNfJmM19ozu8w2LTweEA4WaUEw91wKdSI
+         7MzmohM5BaTGz2Xga2epNCtgqzYniNHyYwdF6GnxvAzEJMMryyoJGQo+nQSNJqD6iaHY
+         1Ylw==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793695694; x=1794300494; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=aoUFhuYQcJ6QU5ydKv9+uxtt5LR3lX/aX8ZyHdDkimw=;
-        b=XS/xa+2dl47KbU21SLfMK+w3fRzaPX6QzJsuAtsPZsGw30ITXqOpHyss8QCTnq0agw
-         f2bQ5qVfxlq0gEYx6qkv8BrfNI8U3BhwCD9Qz7woCBIOvLqcw3BYpOWKw5mqbWXNMUet
-         dxsc1aeqaK2qbt19kba4N4B3v2Iom/w6hGMlSXcyyR/XzHZkWTsOKRUrx91WX/27G45f
-         Qa3pdo159v3u/E0fPJm5+6JaJe9V1sxK4b8VX/nFlaQjORAWZdQvPNkNwi0KQXMK9PKU
-         YTnP09wRS04MH3CKazgzPS+6SsMNNq3HCKwPShKJv00cH/qrfdVeesnlUGUPxe5vPuKu
-         hOqQ==
+        d=google.com; s=20260707; t=1793697273; x=1794302073; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=i14dmH5BR+9SimyzQMrEk5iidp8zGrGHl7mp1tLTg74=;
+        b=UWtsNxlFdsDVZeJNt4xNwoT8N1zA9gB6+AXCml4JSJpObFQD6ThzDrh+WYT8f/HuWr
+         va1jROxT7dXmwUnZDuWkyJERPa3SCwjznkpxGtYmNR6ZH1LBlZuqiazhtqPx2qZyUFZw
+         CAWU1dhaWbie8DomaKgAEasTdtXnMIqEba1b0sZytBD4okBaSY6SSyFXuTdFt4GhgBbO
+         XXop+UBewOCmHvxSVga3FSzquANdKltiodZq3Tn7j/lcLQYhXiorpO4LLI4KFLajrkNn
+         bk4vzrROX6bM6yhc5lf8n3mK59si3fLYKws81xA59X+uveqhGoSYKOO4tpuYnLTk9nj7
+         gTDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793695694; x=1794300494;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=aoUFhuYQcJ6QU5ydKv9+uxtt5LR3lX/aX8ZyHdDkimw=;
-        b=CEmU0MiXTra1d7AkI6LHQ6Pb3TLXnYivb7lb8HKK3lwGwuAPOapwv0J9BOh2AVBk+p
-         OdwlyzvnphvAish/UgGcuR26XoLS/lsnYE4oJyidempxHLkNiN3P3dFvUA4WgeXxLqwd
-         aB5mqvKhsN02P80DTVK88qbyHxZNkD8ACrjPed1amgGQd6bTF5dmpZs0ULN0f1bNMa4C
-         C2ALwOH44KyqmPuTt7dc9QN1GXj9EHn79CJwO60YvwEleVAJjBT4i66BfXl8cHGFqPAr
-         0bgPyehnNjUW6sGDYYkG9WSyyA16/H3JCzmNc7BufEO37nAc6V+22guanVj3J8fW8FkG
-         vLdg==
-X-Forwarded-Encrypted: i=1; AKwUvByCW9aUOOSjXnOQySPAQcL6SOU0NIHecZ2HLE/VscAaDI1t2Whg2pTo9Tc50bBxIwpcPPhl5g==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/o7lzINuUtMPtdIHT4AkEfOkTLfPVX7+NhaUQVc/U37b6PbZNf
-	xNK3QtdC62Xzo3FuPq8o78ug3pe83Ygg1oOCunMPAKw6tNeWsudSdJya
-X-Gm-Gg: AYBFou15wIktm6ZDhIkfhe2b6O4cP0mP7iepZM/SZ2N6Wf81RzRD6g87As+kZ3r7/zL
-	d6w+SR0wHg8bO8uSWgMkLh2lpn2uk2nt3FYOm649wbHc6HgP6Efr/es7s4IpFpT6RcH/1mi/rb2
-	plP/2B7MkDjcJLLdZ/sQK3ANgkeiKeKEOzcz0sg5WEHO7UPfZH4j7peBXmOLJ3ulcj2AWrCoWBI
-	0NNovFCLYrXMx0FVHKzs3F359dtDif+PcAVv36pk/WbFvQYSG0LTk6dAp/oBrUvkV846vgGWLvn
-	MEMIv7p6ZK3polHb6jLlVY8ajvdaWpW9wUbLtrS/wm8KPHFZwNUqpLQUFOUuTq/s6Jxnt0YTMMu
-	ldNfY5kIP/Eg9AAkYuzXICLS2538GqI3ko+a83hgYH1bDpBg/kkO4W00hjvPDTQfvBxXusdbDFl
-	N7lTQ8Rs9hRx2hfPtf2ZALaziTFsRmjOGsV/ZoTUe2J9HeL1M7fbKHV1DybXNZU64KWX8La0DDk
-	iocXU3pXTqFcXuEFnJwQP2i/E1ylmXpLXCZyB+zsSBSVqP9iIyQoYtYqajqS8hHUvU5djgw04+B
-	jhzUbkJ5zKUgF3PHKNjYqqdC8dsfBClREbwhdy57fkn7oA9E
-X-Received: by 2002:a17:90b:3c0b:b0:3ab:9c73:130 with SMTP id 98e67ed59e1d1-3ae89764119mr10317018a91.33.1793695694619;
-        Tue, 03 Nov 2026 00:48:14 -0800 (PST)
-Received: from spiderman.taila3fd8c.ts.net ([202.112.47.77])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3ae880a46f1sm8608222a91.3.2026.11.03.00.48.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 00:48:14 -0800 (PST)
-From: Li Ximo <lixicaicai@gmail.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Wang Haoran <haoranwangsec@gmail.com>,
-	Li Ximo <lixicaicai@gmail.com>
-Subject: Re: [PATCH] iommu: Guard iommu_group_first_dev() against an empty device list
-Date: Tue,  3 Nov 2026 16:48:05 +0800
-Message-Id: <20261103084805.2465010-1-lixicaicai@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20261026143758.GA1674867@ziepe.ca>
-References: <20261026143758.GA1674867@ziepe.ca>
+        d=1e100.net; s=20260707; t=1793697273; x=1794302073;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=i14dmH5BR+9SimyzQMrEk5iidp8zGrGHl7mp1tLTg74=;
+        b=DoqD3xJvt58F+Nd5MggEgghUn3mLBw4C/Y4jJ9Zeu+ZH/5DMVv5ClfrvHWSjpvXhnr
+         0FcSkwI15Z171iWJSS93OOjZmpIms701brTBnzXHvXUlkkQJM8duppeaTf15lZOQzLWq
+         b/j7wpQw3LCQaGSkUVoZfyuCNv2mhRAadBCS2ARDnLNQrjk6hdaGOyT0+REhxAvTnEcM
+         NLqNcdus50YRpONyNjFtTZCzMoyE3fszo4VzkU89w4uIo0QDR7SYUbZW7fukK1g4HQZs
+         YMYqp6ToL8sdix9Hh0CHE1q0EBQxyuQR1L0TNk8WQNRJonYvjKECJmL/2IscYvePfO9Q
+         F/2Q==
+X-Forwarded-Encrypted: i=1; AKwUvBzXriKNA4G71iaY2H7GentCtc4HtCE43Lh26JPaBOeH7saQya6WOcYstnJX7WcfgDkUprNTlg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+HYhL20A8Xd+3poEPOs6w1J2z4mYkgmKEideno7DOB6qLv6K/v
+	XBWDjW2J2vBUrjGz+SKAsFuw8C84mOTGkDmVLGR2Pe9xzdsPHt0DVhXS4uzetlx3ShCoeizow9a
+	zsbzFeZMkmBUOIuEldnHzZIKv8u3VOMRfpZs7QsZ9
+X-Gm-Gg: AYBFou0oXRuypNQrwQ3FKBjFiPspyQ8oIx5QbTgWTizPHDyCqT3ye3L8HoY+UylhUPt
+	/H3PHmcUapH9UMcELWHMXmwNfbn+JwNG9LgiKomundCtyZKjJ2zpuig0wmLp63nb3aPhdusjLs1
+	cdI3bV8NKfUcA5RbZFCNirnbnGJPZWRZoqfwt0K9h2Y3tg13D+BAUyScE1in+7aiMqu/OfROHYC
+	q92G1xRJNTiXeJdCsjRyToE2z3wsqvcTuwjfoPQcJOnzbDYbK1xzIOhqDpMl1f5oXM5WY0W1hNV
+	o5UOzii4IQaMThEyTLuW50Pf8yw035WKvz6R/3QcXsg3pLLgrlQ1E5sO0aCBKFnH6d0l8cUduUN
+	cvbuko4bgU8tWQ9IhDpwNhP60uh6SQhDWBiiS7P5dEaa8EaNIduQHzX9PKKA=
+X-Received: by 2002:a05:622a:598b:b0:535:84ef:2e26 with SMTP id
+ d75a77b69052e-549dfce05fdmr11810771cf.7.1793697272817; Tue, 03 Nov 2026
+ 01:14:32 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -102,21 +104,76 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20261003212241.3432303-1-lrizzo@google.com> <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
+ <CAMOZA0JaiKsRgDdjHkL_N+MshhcyLSv+cT9SzEbNsC_sumHvOw@mail.gmail.com>
+ <b31efcd5-149c-4edf-81a2-1744d363c390@kernel.org> <CAMOZA0+6kAbwgNwGTsCT5AqpwcZKz4pziEGC9UpHkNCVoqrF-Q@mail.gmail.com>
+ <20261022201229.GH3381610@ziepe.ca> <CAMOZA0KaanmevmvWS=M3gKfBeborzfCQTiF_xbSeYMWbozG7Mg@mail.gmail.com>
+ <20261023140107.GC3977851@ziepe.ca> <CAMOZA0J+MOLv+s4PAvsAK1jbasnbQRyHffZw1VEKutH9Vr6ODw@mail.gmail.com>
+ <20261023145023.GH3977851@ziepe.ca> <20261103080933.GA4213@lst.de>
+In-Reply-To: <20261103080933.GA4213@lst.de>
+From: Luigi Rizzo <lrizzo@google.com>
+Date: Tue, 3 Nov 2026 10:13:56 +0100
+X-Gm-Features: AclHuK_l2TEIEs7qqznKn-9_c2yONWQ9t4tXrp8CyyoGHrPwnIyHLaBfgdlxlp4
+Message-ID: <CAMOZA0+Fhq0_Pm02xGWpex06vb2y5pVzuFxOk=URZB7aq0xJ5A@mail.gmail.com>
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+To: Christoph Hellwig <hch@lst.de>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, "David Hildenbrand (Arm)" <david@kernel.org>, Luigi Rizzo <rizzo.unipi@gmail.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, "David S . Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
+	Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Joshua Washington <joshwash@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>, 
+	Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+	Alexander Lobakin <aleksander.lobakin@intel.com>, Michael Chan <michael.chan@broadcom.com>, 
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev, netdev@vger.kernel.org, 
+	linux-mm@kvack.org, driver-core@lists.linux.dev, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jason,
-
-On Mon, Oct 26, 2026 at 11:37:58AM -0300, Jason Gunthorpe wrote:
-> Are any of these even possible to be called with an empty group? How?
+On Tue, Nov 3, 2026 at 9:09=E2=80=AFAM Christoph Hellwig <hch@lst.de> wrote=
+:
 >
-> The giant wall of text at the top failed to explain how this could
-> ever even happen.
+> On Fri, Oct 23, 2026 at 11:50:23AM -0300, Jason Gunthorpe wrote:
+> > > Disk I/O is still potentially affected by the same problems
+> > > (cost if io mapping/unmapping, iotlb thrashing, bounce buffers
+> > > in confidential computing...)
+> >
+> > The disk folks already have a proposal to address all of this using
+> > io_uring and preallocated buffers. I really doubt yet another version
+> > is going to be interesting there.
+>
+> Huh?  If you mean the dma-buf I/O it doesn't really have anything
+> to do with disks, except that this is the first user.  The dma-buf
+> iovec can work for every ->read_iter/->write_iter consumer, and
+> should be adopted more broadly.  Including by networking instead of
+> their own totally weird different world.
 
-You are right to push on this. After re-auditing the call paths on
-7.3, I could not demonstrate a reachable path that calls these helpers
-with an empty group. I was wrong to present this as a real bug without
-a demonstrated trigger. Please consider the patch withdrawn. Sorry for
-the noise, and thanks for the review.
+Christoph, is this the dma-buf series you are referring to ?
+https://lore.kernel.org/all/cover.1791975048.git.asml.silence@gmail.com/
 
-Best regards,
-Li Ximo
+I am not claiming that my proposal is a good fit for disk or accelerator I/=
+O,
+but every subsystem has different constraints, so it is not unreasonable
+that a proposal for (N)etwork and a proposal for (D)isk focus on the
+different bottlenecks (still there can be learning from looking at the
+other solution).
+
+As an example, in networking we have to deal with the following:
+- typically at least two buffers per packet (header+payload)
+- often, very small fragments (1400-ish MTU plus crumbles from
+  data in different buffers
+- extremely high I/O rate with almost no spatial locality, which is an IOTL=
+B
+  killer and the main reason behind my proposal and some of its complexity.
+- on tx no good way for the application to pre-reserve buffers
+  (buffers are sliced from a 32K per-task block,
+  going to possibly different destinations)
+
+cheers
+luigi
