@@ -1,68 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793721041;
-	b=zptBLQQPP2XFhuErYYB6Aee2yU0M07eOc6n23/uRnX2F6Hdz8rVDuf0Kyx+4XrkMuPM7
-	 UQBbBz1dajD1f9f74Z85+xZraTUIMRx4HLcAD02STtvQ3p+9CzcHZS04MSK24HtC33P1G
-	 6YDQMRjdVW5FZiv6lEsafdWbjMBikxCmhkRdSeX9RS9uYtda4Abc3ojPX1T52caoXOlpy
-	 MgojqzFMCK3LmvsjeslOuCsabGT7fKcQ3Lg+4bdLPq4X+saMPUVP6nQAo0ZJ4xLG0DbZo
-	 bTKs+z3/PfFOWtKKuOrmPszsAoZhNaQwTI6NxZMJR6a6yxavuD0NwvCeN9L63DkDfUA==
+	t=1793721303;
+	b=amdKtiIVZtLQyYWpTi9HfBtOcgBBAnrlnvNxJMTRvavUG8wPoxBsy4StmsNpLA5TizdH
+	 FxDt6bAdwtfI/tGViR/ezxlKXK9+tcQv2RE+WCPWpE/c1q59C1ks1vlWH7/XdystPT9Ts
+	 3/k8u7AxII48i7qa8XqEEIdwXWWurNHzoY5+h6JnaBavGh6eG1mkneuHv/MQU2VQnSGyZ
+	 I5v9z49w7KA9BvRFmAEiZHkHia1QdS1cNXixDn1Wm4LJEv+US3l49OLVwyyNRLCqaXsxz
+	 1Kq7oIX8mCu1Wz+yCBQOdakw48tjwwXr2UeggaEPpHxVbs0GUClnkNseGWa0tPHx3cQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793721041;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
-	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=jUuh6/lKK6xw8cS+kh/8Cmw6Ho/ruTgSGsuvxXQIYO8=;
-	b=SmeB6CvchNTxqTeeNbK1smKuyesKdkwXGgArLTNVYb2OyBznojW5mN5nDFv+Ka2PYldo
-	 gbVc9FzcCNFcLSmgkApPML1+Au9IXQQE3UFEHSr1X1VQ67VEmE2UrxnzWqKj8Wv0SctT1
-	 sRwa4FGGRgO7mTUMykG4HI5dAxC4CBxiy4/wRuvHSn0WplGBnn7Y28ufmVSLbY0MnteCw
-	 uyQ2oSi3YPLmyf4tM9Soi3d2S7QHsJsvt7kmtxnvykxaU/xC0I3amO+fSaQWTsq7VW/0Y
-	 x5gwfGVdf8jhP36Ry9vNyxIsU/UPhswfsibHsG3uloWVBk1kXlnAUHmWHLC1JwGmJ7Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793721303;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=fGhp2O/N0uN4OUEkdVSlSLYttb9l0vrzXnpdE47eUqI=;
+	b=05V7FEoJQOPXUZQUsOHyYHbftQ6xvVWXc6osBMuqgwVPBix3PnYTsoVoE/kKx28AHanM
+	 LmfanRSIJZW2G3gcw2iiJLSL7jpZoHcmuJVLEh0xLZxKswn8Z6UqeLqhI8dIoERIdNNU6
+	 a99CZmgYeOs8hVMC8G6dpx/S6KAnEwxgAjxyrY1QBvb6LrGYLjrt6F2+x1UoYClcrMjNL
+	 dyNo+oeJ/UyweLOsHdvlx4WBJ78MjrN79IxFzKR1AiVc67CAjQhNIx19uHNqQXyPSVUgn
+	 cEbcJtmoITVTmd1xQCuNJhCRtjLTdfCSQ/K2nOVduZRQG+kAtOasDUgNwVxsO+EGzNw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Y4X99kLo;
-	arc=none smtp.remote-ip=210.118.77.11
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lpS+OpaD;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A279606A327
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 15:50:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8A279606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CF79606EE86;
+	Tue,  3 Nov 2026 15:55:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Y4X99kLo
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261103155032euoutp019967bf5782167f9f45cd8bd8e17c9ff9~kk8aZ_yVG2111621116euoutp01e
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 15:50:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261103155032euoutp019967bf5782167f9f45cd8bd8e17c9ff9~kk8aZ_yVG2111621116euoutp01e
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1793721032;
-	bh=jUuh6/lKK6xw8cS+kh/8Cmw6Ho/ruTgSGsuvxXQIYO8=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=Y4X99kLobsyhQQc72bZN6GGWortvk3vdo9DBZoftuF5RFBNpQxCmCagZOLKawFJtz
-	 a5NkKdzx18Gg2yJNSHPbW0/diNAmKTA51VJuE8JXhxB38OAy2IFJkiOtdeUDShhji1
-	 6/9umFtZBTLDWQFheFJyeWTFVTMzSm6rohN7XvN4=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862~kk8aFg2gt2502125021eucas1p1S;
-	Tue,  3 Nov 2026 15:50:32 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261103155031eusmtip2766ca655008c9ad0bf3b91d2b60bdbd5~kk8ZpZzNZ2102621026eusmtip2L;
-	Tue,  3 Nov 2026 15:50:31 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Claire Chang <tientzu@chromium.org>, Konrad
-	Rzeszutek Wilk <konrad@kernel.org>, Giorgi Kobakhia <gkobakhi@asu.edu>,
-	Michael Kelley <mhklinux@outlook.com>, stable@vger.kernel.org
-Subject: [PATCH] dma: swiotlb: Round restricted DMA pool size down to
- IO_TLB_SEGSIZE
-Date: Tue,  3 Nov 2026 16:50:15 +0100
-Message-ID: <20261103155016.1107958-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lpS+OpaD
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D1711F00A1A;
+	Tue,  3 Nov 2026 15:55:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793721303;
+	bh=fGhp2O/N0uN4OUEkdVSlSLYttb9l0vrzXnpdE47eUqI=;
+	h=From:To:Cc:Subject:Date;
+	b=lpS+OpaDg/8PKdYML7pzVsZdHWVLpkwBjZlbrjiDf1Gb0RkcwUT1Clbt867Wozq9h
+	 S0DpCtaPzXFRzxvweaovKqaYaCUru/IOoSjrjUSWAXDKfK0NtjhVkKtiSUncJxEfJg
+	 Gnw73qWCD93M4YaI/bBd8CXpSA/pt2rLcGfTT8Ux8gM2YgNjhjQymI6Jy7ipHbQUNB
+	 zWLVrYMrdSvakoAV3kfKTp96oMvr62RtFOTVZeiMYmmKrR5wsKdFmS9Jef2EGoI/yj
+	 9fOndBMzOEcb+kuOYXURJ3cCNeFaLkDco/f45fwmaJ2yr7jz4az3eEubU3EQNaCpq9
+	 GpERD1uAUjX/A==
+From: Sasha Levin <sashal@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommufd/selftest: print size_t with %zu
+Date: Tue,  3 Nov 2026 10:55:01 -0500
+Message-ID: <20261103155501.534820-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,72 +60,39 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862
-X-EPHeader: CA
-X-CMS-RootMailID: 20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862
-References: <CGME20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862@eucas1p1.samsung.com>
 
-All other paths creating a swiotlb pool ensure that nslabs is a multiple
-of IO_TLB_SEGSIZE, and the swiotlb code relies on that. Since commit
-0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization") a
-restricted pool can have an arbitrary size taken from the device tree.
+On 32-bit architectures size_t is an unsigned int, and printing it with
+%lu warns:
 
-If the pool size is not a multiple of IO_TLB_SEGSIZE, the last segment is
-partial and swiotlb_release_slots() reads mem->slots[index + nslabs],
-which is one past the end of the slots array when the freed buffer ends
-at the end of the pool:
+  iommufd.c:2157:30: warning: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
 
- BUG: KASAN: slab-out-of-bounds in swiotlb_release_slots
- Read of size 2
+Use %zu.
 
-Round the pool size down to a multiple of IO_TLB_SEGSIZE, wasting a bit
-of memory, and warn about it.
-
-Reported-by: Giorgi Kobakhia <gkobakhi@asu.edu>
-Closes: https://lore.kernel.org/all/20261026032007.1957949-1-gkobakhi@asu.edu/
-Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
-CC: stable@vger.kernel.org
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/swiotlb.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
+Found with a 32-bit build of the selftests with a 64-bit time_t (gcc 16
+and clang 21 with -m32 -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64);
+KernelCI's 32-bit arm builds show the same warnings. The changed files
+build without format warnings there now, and the x86_64 builds don't
+change. The other selftests get the same kind of fix in separate
+patches.
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 2c57b49ac7c0..a68f35192582 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -2007,6 +2007,19 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 	 */
- 	if (!mem) {
- 		struct io_tlb_pool *pool;
-+		unsigned long aligned_nslabs = ALIGN_DOWN(nslabs, IO_TLB_SEGSIZE);
-+
-+		if (aligned_nslabs != nslabs) {
-+			dev_warn(dev, "Restricted DMA pool size %zu is not a multiple of %lu, rounding down to %lu bytes\n",
-+				 (size_t)rmem->size,
-+				 (unsigned long)IO_TLB_SEGSIZE << IO_TLB_SHIFT,
-+				 aligned_nslabs << IO_TLB_SHIFT);
-+			nslabs = aligned_nslabs;
-+		}
-+		if (!nslabs) {
-+			dev_err(dev, "Restricted DMA pool is too small\n");
-+			return -EINVAL;
-+		}
+ tools/testing/selftests/iommu/iommufd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index ca2b35e9d443a..c4d4f3659626e 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -2154,7 +2154,7 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
  
- 		mem = kzalloc_obj(*mem);
- 		if (!mem)
-@@ -2034,7 +2047,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 
- 			mem->cc_shared = true;
- 			ret = set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
--						   rmem->size >> PAGE_SHIFT);
-+						   (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
- 			if (ret) {
- 				dev_err(dev, "Failed to decrypt restricted DMA pool\n");
- 				kfree(pool->areas);
+ 	rc = posix_memalign(&self->buffer, HUGEPAGE_SIZE, mmap_buffer_size);
+ 	if (rc || !self->buffer) {
+-		SKIP(return, "Skipping buffer_size=%lu due to errno=%d",
++		SKIP(return, "Skipping buffer_size=%zu due to errno=%d",
+ 			   mmap_buffer_size, rc);
+ 	}
+ 	assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
 -- 
-2.43.0
+2.53.0
 
