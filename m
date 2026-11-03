@@ -1,79 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.175
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793667070;
-	b=ija2czfE18FYGJq+wQMG/zmfkoob6aUFNUMATFlH+1QsxREruTkNgoFB5i/uvPC1uP6u
-	 YJSlsd3U+lpRJO3DLUfNQipI0VDZ5Ap3do9R/IDMSRXoz5sqv8Myt4Dh4Zk695rxzJnqW
-	 kZlmZISOJFqlUlhFSYqGxhqv+EYhAaVli4uqsh5cIbDen7Tp5F01u7gNFeN+sMbAONpjc
-	 k3QoqEWjyq1yETm9V+R/li+h8Ha2sN9qSmxhCWU9RYR7yV0ei6TFrSa8eszr6LD/4Cyng
-	 VK6HBd0AyXbW73pH/Uan+SEOqTtHNCpPAYTNE6qcgSCl+DGdG3TemhYa59xsPyrc3XQ==
+	t=1793668363;
+	b=YP5FRZ6+OFsapLdWGaF7Rwt3SVU2Zepw7k6I8PMsHeWrsF49qR3Eh8b/ApbBip4t+zUU
+	 UvbLOJhSUxcZwjzIDTzZkKCWNhO2mU01S26Zyyzj7ljopLANFQvN6DU/m5aNqgRUCFB1q
+	 0/T2p7+se32d83mzYALanU6Fwe6dRWraWfl/oahbR6mVKOFRYhkmnT83iIYqxA1ItPdlA
+	 OXCgnoW0tYcm8lKX8xJqC/a03T/GJqn4g2cEDVhZW0w0tqz1/51raBPizpKcc9uTe7TbN
+	 vM+d3Q9Y7YvHbpJ5s+l9SjDgTl2i+OScH0hFykADJev9f3x3w37Wr0cQnc9Ib455m6w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793667070;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=EO1BnMjokjrVLF0VNQ/IWD9QGwGccXm6vVRtGn7sXpk=;
-	b=cAHouzOjd9c99wtBDaGtx1CW6T0s152Ga7U7gbfTtY55nSw9PM4EpQF7zhPVi1pcIRC0
-	 CQa197qVXZQtI49Dca9Tkl0sU4PKgnqRHDF7j/ap3WM7vJVGhrOL+KJC26Cm7XMwZ5f4W
-	 bTnZqmEDMMolxHfLXCKcXbJyibMyE6nA6R4rO92xSiEkOnFwRY54wJUs9wxOSKTbVZINd
-	 7MR/nusCqM7SACOPcxEFtktDwcrqWOF+Xd/2akfSAjtTo90aid3gqJfAkugiq/MDCaMYE
-	 S4Yw2IBy515lldztzuRLt5Ahio+DVXRZlbhjs/5vsmkVSxbrBZtch3GQzNxsZRCxQNQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793668363;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=eAMU6Rk2mC3IXoyZ+xiiwlzQCqVx9u1/gi5nvdpNwX8=;
+	b=YOU051pKQMHyJeCjZ3His4Yd7BlndRsaoxB3dof1DQ33JFoV/RLAFPqDD8VGUdgwq6EA
+	 kjLCvaVQkCjWcP8JLdU05dprh2CqKhWsU85IAdBkvxjUYw2s4S0iujzFmze2tb4y7i5NJ
+	 NbVatLD8oz03fSxVeTMk5fmGgNADwo70Pl/doQjG6vHtfX+GSMroblPoBD+pwY8q6+er2
+	 OkvtVNHYgx5751/619YeLCC0XrQHsnVQlOOP6GEmxhSrnVhdFNTW4nO7gMPyq9DKDSqXL
+	 W+9j8Tz1W0A7bHHn+sk1Aq6i33bkegAnsIpooj3GK98llSwkG5C5XmM+fLmRbBrAyEw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="gboT/HjU";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=bmuztMeX;
+	arc=none smtp.remote-ip=209.85.160.175
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC66B606A324;
-	Tue,  3 Nov 2026 00:51:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 693B6606A326
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 01:12:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 693B6606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gboT/HjU
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77371F000C1;
-	Tue,  3 Nov 2026 00:51:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793667069;
-	bh=EO1BnMjokjrVLF0VNQ/IWD9QGwGccXm6vVRtGn7sXpk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=gboT/HjUJac115ml+P2hDry3Ye5G9XLfBh+ioyglojs3EcDKOzMJiP+9ksKymUoyO
-	 yiMsIAx9ytbxOjzfC3iiBiv9v048Jt2Pwn6Pb3Iap/t9zfd8QapuFHrbQ6OFPJF1nF
-	 +MeuoARLHDcdfoFnxUYlkSZ1Mw0JeEuTBFFzhgKJolU1o6AxG5IZ4freFEr6VSQE/o
-	 ggy8TsOSZ6gMOkli713pBkOfAT5kEx8YTmJxrgvGJXbHz5XbKbGrjSatdgxFk0atoK
-	 MiIiK+Jk+io3mNfr2KxkLQDILfLwtLyN9qxpJKrkPJX4QW16w2NvtB2DOgzSHrteUX
-	 5ax3+jjfvHADQ==
-Date: Mon, 2 Nov 2026 16:51:07 -0800
-From: Wei Liu <wei.liu@kernel.org>
-To: Naman Jain <namjain@linux.microsoft.com>
-Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	"H . Peter Anvin" <hpa@zytor.com>, Wei Liu <wei.liu@kernel.org>,
-	"K . Y . Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	Michael Kelley <mhklinux@outlook.com>,
-	Long Li <longli@microsoft.com>, Nam Cao <namcao@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Kees Cook <kees@kernel.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Radu Rendec <radu@rendec.net>,
-	Sean Christopherson <seanjc@google.com>,
-	Kai Huang <kai.huang@intel.com>, Dmitry Ilvokhin <d@ilvokhin.com>,
-	Shradha Gupta <shradhagupta@linux.microsoft.com>,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	Thierry Reding <treding@nvidia.com>,
-	Jiri Wiesner <jwiesner@suse.de>,
-	Daniel J Blueman <daniel@quora.org>, linux-hyperv@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-pci@vger.kernel.org
-Subject: Re: [PATCH v6 0/4] x86/irq: Fix lost interrupts on CPU hot-unplug
-Message-ID: <20261103005107.GB1862133@liuwe-devbox-debian-v2.local>
-References: <20260923043023.3150498-1-namjain@linux.microsoft.com>
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=bmuztMeX
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-5366463571cso45319021cf.3
+        for <iommu@lists.linux.dev>; Mon, 02 Nov 2026 17:12:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1793668362; x=1794273162; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=eAMU6Rk2mC3IXoyZ+xiiwlzQCqVx9u1/gi5nvdpNwX8=;
+        b=bmuztMeXwgi+xvV3/MEwn/AR24EETQAiRk9Oc/a/iXdigAvuvG9xEWlfWuszz8t/3e
+         Fdg2eaAtiRSDVg5cyskPL+2A/0ch+PIP3k4wgqKaacQSLs5EXEwLneq8gjwg3ETSjogR
+         OUB1MgAOscALRxK7+akpyRLe7EIXCZt/5Uegu5IAJ4sr7HMBEIfUxKpI2gMDKpX3LV5t
+         cNvCUY3q8JOxTDnHSClOs8Jxw0KpbHY2NXrm5lt6ElVZGVewKhEBxlt/AkAxwRme1PIm
+         ePyAgsEjm7xIzQjHbvKJdAVFdL+4FfrmxoI6u2xFSrE/AfNOcRaZnGt+lrgggknEHn8C
+         dITg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793668362; x=1794273162;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=eAMU6Rk2mC3IXoyZ+xiiwlzQCqVx9u1/gi5nvdpNwX8=;
+        b=ab+jWgPD450Y8C83d5V7mj7Kfk7f0eROzrJZw4y54kH96OZkk4a6XdTPXmrkDe0seB
+         3tG0f8hlQbMlpBFRGzD/d9ky3EFM/NacnIb8jnR12WBmV1MDNuYRfIyxQsgIhTHi0owC
+         YUMwsL2aRFsgSmTfxwrBbE9shmpbGV5mN/pVUwWQZvi7EnM0mWDfnHHODKjnhkruAGSq
+         3/v/bfCwOc1IUQJgsViIKDUXZK9VIPSlYW4ZC4/eT+WD3tmq0vgBN3vqbskNuDxqWGkI
+         4Lg40qCvepbwgXtwnqoIPKfEyXANxahp4TqYWcS0CCbrmvv4mM4Yko+I4FPbW8cxqHpw
+         LJNg==
+X-Gm-Message-State: APuU4Z/sfjJh0oEBDTGQ5cU0AxngedY7wow+LphE5JvzJCKH7MClQQmQ
+	MaDnmyadzXtz0jMD46Zdge8O400DRaajU/L0YyvsLZZsVnX1AFGTFOiw7GFI7J+TE3s=
+X-Gm-Gg: AYBFou1KJ2iYyBp2ZGRgZMCts6WISN9d8I2OU/UvZkNy4sgEpGwATm0c5S5NUTbtmqq
+	aOKc/1V66xX7LF7GbnVCsm6yhUiBIi3LRMI2avEBZtvFtG8AOsC9JI1aeoyWvEr6dAbMbomS/Ze
+	KZ0adF1wGQQUXxFWm7zMpK6D0UM9OlcDX/1MTsQhGd5opHSYb9MMJNpAZ/N1gdseSqJ2zOezYgw
+	B0nBrC+/4oPwu7QOcqJ9BIdqS6c8+lpDcruCkJK6WGg+lBKk1LCALModbAXuXYffcPshjpa24Fv
+	zcvhHD/9SPQBJt3m65iO/7SUxBydyPrK+jpcZt01kP7mGaqmNPrDvO1e2RpkuYLewDcrBWAUZ4K
+	tm8PGngO2fsdlr30XpheNlOVoxBcN6y41OIHixZyjc2xbVKqHy1q7zAXDlKUBnGbTUccEXQieen
+	Lt2mCt8XpVAu/oDAySkTNavTDzsVLK5w4obuUBLyGtfyxUDWKtptBOC7NSQdd6LKEkNPB3VhwM5
+	gAIljFOtBKuGy20x50IhIVrz//+QgHcPfmRk53hkzLAAdq+MX0fj9LfJLMC/fodKXKhwa54UL0b
+	RmR+TeF3uBD0LPRKLGU1jgkjKgu8RITJCTk6LhH9zIrxyzR1DKED0Vf98trZiweOMo+9TyVdH7y
+	F33EgZ6qjluiKcn4WQeSYqzM4NXI8gpA=
+X-Received: by 2002:a05:622a:17ce:b0:535:e8c:4258 with SMTP id d75a77b69052e-542b7b0b9e9mr209257251cf.54.1793668362334;
+        Mon, 02 Nov 2026 17:12:42 -0800 (PST)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5498c379989sm12317581cf.19.2026.11.02.17.12.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2026 17:12:41 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xO34r-0000000BJux-09A2;
+	Mon, 02 Nov 2026 21:12:41 -0400
+Date: Mon, 2 Nov 2026 21:12:41 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Kyle Zeng <kylebot@openai.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Kevin Tian <kevin.tian@intel.com>, outbounddisclosures@openai.com
+Subject: Re: [PATCH 1/2] vfio: Publish the container after all fallible
+ initialization
+Message-ID: <20261103011241.GA2696898@ziepe.ca>
+References: <20261031042527.6418-1-kylebot@openai.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -85,38 +103,26 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260923043023.3150498-1-namjain@linux.microsoft.com>
+In-Reply-To: <20261031042527.6418-1-kylebot@openai.com>
 
-On Wed, Sep 23, 2026 at 04:30:19AM +0000, Naman Jain wrote:
-[...]
-> Changes since v1:
-> https://lore.kernel.org/all/20260728135117.2888175-1-namjain@linux.microsoft.com/#t
-> * Added Review tags
-> * Adding minor clarification in commit msg of patch 2 (Shradha)
-> 
-> Original RFC: https://lore.kernel.org/all/87y0f3jhd6.ffs@fw13/
-> 
-> Naman Jain (4):
->   x86/hyperv: Set irq_retrigger for root partition PCI/MSI irqchip
->   x86/irq: Use irq_chip_retrigger_hierarchy() in fixup_irqs()
->   x86/irq: Use irq_chip_retrigger_hierarchy() in msi_set_affinity()
->   x86/irq, iommu/amd, x86/hyperv, PCI: Drop redundant irq_retrigger
->     inits
-> 
+On Fri, Oct 30, 2026 at 09:25:26PM -0700, Kyle Zeng wrote:
+> vfio_group_init() publishes /dev/vfio/vfio before vfio_init() has
+> finished. The optional no-IOMMU backend is also registered after the
+> misc device. A concurrent open can therefore obtain a container while
+> the module is still COMING, even if a later initialization step fails.
 
-This series has been reviewed but not picked up. I queued it up to the
-hyperv tree. Let me know if you have objections.
+You didn't cc the vfio maintainers or the its list.
 
-Wei
+Nor did you refer to my prior remarks here:
 
->  arch/x86/kernel/apic/io_apic.c      |  2 --
->  arch/x86/kernel/apic/msi.c          |  4 +---
->  arch/x86/kernel/hpet.c              |  1 -
->  arch/x86/kernel/irq.c               | 18 ++++++++----------
->  drivers/iommu/amd/init.c            |  1 -
->  drivers/pci/controller/pci-hyperv.c |  1 -
->  6 files changed, 9 insertions(+), 18 deletions(-)
-> 
-> -- 
-> 2.43.0
-> 
+https://lore.kernel.org/all/20261030120845.GA3889730@ziepe.ca/
+
+> The failed-module-init path frees the module without waiting for these
+> open files.
+
+This is a cdev core bug. It should not allow the file to be opened
+until it has secured a module refcount. I don't know much about how
+the module refcounting mechanisms work, but it is unreasonable to fix
+it like you are doing here by hacking every misc user in the kernel.
+
+Jason
