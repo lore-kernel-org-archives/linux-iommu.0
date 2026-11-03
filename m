@@ -1,97 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.175
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793668363;
-	b=YP5FRZ6+OFsapLdWGaF7Rwt3SVU2Zepw7k6I8PMsHeWrsF49qR3Eh8b/ApbBip4t+zUU
-	 UvbLOJhSUxcZwjzIDTzZkKCWNhO2mU01S26Zyyzj7ljopLANFQvN6DU/m5aNqgRUCFB1q
-	 0/T2p7+se32d83mzYALanU6Fwe6dRWraWfl/oahbR6mVKOFRYhkmnT83iIYqxA1ItPdlA
-	 OXCgnoW0tYcm8lKX8xJqC/a03T/GJqn4g2cEDVhZW0w0tqz1/51raBPizpKcc9uTe7TbN
-	 vM+d3Q9Y7YvHbpJ5s+l9SjDgTl2i+OScH0hFykADJev9f3x3w37Wr0cQnc9Ib455m6w==
+	t=1793674325;
+	b=uRmbMx0XpuMutMEH6+Epp/Dz5sGc9MnsReHar55dx/4k9D6I7SpX4SSkxt4kLP/5OKq2
+	 p8R3Z5ps3pN851RG9pfEUiz58aP3HQUBxTDKrajHe4xztqRRXwprVkmwcpTn9a0kYp3nG
+	 rAzsNeqnkEBgn9b5+087XENJvW8cJT0tb5DB1aAMQmKqVu4Nlrs1j78ec0/ebox5Gmkp4
+	 dyZoYHwdJsYMZcCBK6e/oG40xIdolPsPHwpNB6v8wIKFs1YYTkAahu7dtYjNQZh3yKTnl
+	 3y3i+nua37OrkYOEqnCSJe5uHz8ha8sE8+mD/mlCni7kgIbUcF1g8mes0WpsQjLWP+A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793668363;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=eAMU6Rk2mC3IXoyZ+xiiwlzQCqVx9u1/gi5nvdpNwX8=;
-	b=YOU051pKQMHyJeCjZ3His4Yd7BlndRsaoxB3dof1DQ33JFoV/RLAFPqDD8VGUdgwq6EA
-	 kjLCvaVQkCjWcP8JLdU05dprh2CqKhWsU85IAdBkvxjUYw2s4S0iujzFmze2tb4y7i5NJ
-	 NbVatLD8oz03fSxVeTMk5fmGgNADwo70Pl/doQjG6vHtfX+GSMroblPoBD+pwY8q6+er2
-	 OkvtVNHYgx5751/619YeLCC0XrQHsnVQlOOP6GEmxhSrnVhdFNTW4nO7gMPyq9DKDSqXL
-	 W+9j8Tz1W0A7bHHn+sk1Aq6i33bkegAnsIpooj3GK98llSwkG5C5XmM+fLmRbBrAyEw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793674325;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding:
+	 X-Spam-Status:X-Spam-Checker-Version;
+	bh=LB7T7mSGj7gb2NVvd8ZxKJtsbTjQrh+GSEJ00NJnkNE=;
+	b=PrpgBIC7jq2CPfAyZpMyCm5K/4FoiBiFBhjRoRG6iZyfmJqnFSL5Sgxh67c2rF1nyUTv
+	 P39yp0U7oOTxmKm1EN0GG4TXt7uGtPeQslu7J+VGzcQBosL+y2+opGavFR+jg2PYnb3sX
+	 SPNR62eNVLQIuj8ddr3NUripDE3R+y5pN1yG20ParnJ/sGlzDaXZPnUmFDaNPq7oVFqpf
+	 fFTbQEsikwh2mAC2VAjUEefEvhYNzSNkq0RWRBpB/PpbVov++f8W5Ebi0ImkYqKLKOerb
+	 jNGm/xNz1mCBQK20asNcq+7CmqaBHjuG95Lp1e17hZP5tbtEEnvC2piKO6RbfFeXM6g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=bmuztMeX;
-	arc=none smtp.remote-ip=209.85.160.175
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 693B6606A326
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 01:12:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 693B6606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	dmarc=pass header.from=linux.microsoft.com;
+	spf=pass smtp.mailfrom=linux.microsoft.com;
+	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b="MKO4cDK/";
+	arc=none smtp.remote-ip=13.77.154.182
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2FE56606A324
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 02:52:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2FE56606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=bmuztMeX
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-5366463571cso45319021cf.3
-        for <iommu@lists.linux.dev>; Mon, 02 Nov 2026 17:12:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793668362; x=1794273162; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=eAMU6Rk2mC3IXoyZ+xiiwlzQCqVx9u1/gi5nvdpNwX8=;
-        b=bmuztMeXwgi+xvV3/MEwn/AR24EETQAiRk9Oc/a/iXdigAvuvG9xEWlfWuszz8t/3e
-         Fdg2eaAtiRSDVg5cyskPL+2A/0ch+PIP3k4wgqKaacQSLs5EXEwLneq8gjwg3ETSjogR
-         OUB1MgAOscALRxK7+akpyRLe7EIXCZt/5Uegu5IAJ4sr7HMBEIfUxKpI2gMDKpX3LV5t
-         cNvCUY3q8JOxTDnHSClOs8Jxw0KpbHY2NXrm5lt6ElVZGVewKhEBxlt/AkAxwRme1PIm
-         ePyAgsEjm7xIzQjHbvKJdAVFdL+4FfrmxoI6u2xFSrE/AfNOcRaZnGt+lrgggknEHn8C
-         dITg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793668362; x=1794273162;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=eAMU6Rk2mC3IXoyZ+xiiwlzQCqVx9u1/gi5nvdpNwX8=;
-        b=ab+jWgPD450Y8C83d5V7mj7Kfk7f0eROzrJZw4y54kH96OZkk4a6XdTPXmrkDe0seB
-         3tG0f8hlQbMlpBFRGzD/d9ky3EFM/NacnIb8jnR12WBmV1MDNuYRfIyxQsgIhTHi0owC
-         YUMwsL2aRFsgSmTfxwrBbE9shmpbGV5mN/pVUwWQZvi7EnM0mWDfnHHODKjnhkruAGSq
-         3/v/bfCwOc1IUQJgsViIKDUXZK9VIPSlYW4ZC4/eT+WD3tmq0vgBN3vqbskNuDxqWGkI
-         4Lg40qCvepbwgXtwnqoIPKfEyXANxahp4TqYWcS0CCbrmvv4mM4Yko+I4FPbW8cxqHpw
-         LJNg==
-X-Gm-Message-State: APuU4Z/sfjJh0oEBDTGQ5cU0AxngedY7wow+LphE5JvzJCKH7MClQQmQ
-	MaDnmyadzXtz0jMD46Zdge8O400DRaajU/L0YyvsLZZsVnX1AFGTFOiw7GFI7J+TE3s=
-X-Gm-Gg: AYBFou1KJ2iYyBp2ZGRgZMCts6WISN9d8I2OU/UvZkNy4sgEpGwATm0c5S5NUTbtmqq
-	aOKc/1V66xX7LF7GbnVCsm6yhUiBIi3LRMI2avEBZtvFtG8AOsC9JI1aeoyWvEr6dAbMbomS/Ze
-	KZ0adF1wGQQUXxFWm7zMpK6D0UM9OlcDX/1MTsQhGd5opHSYb9MMJNpAZ/N1gdseSqJ2zOezYgw
-	B0nBrC+/4oPwu7QOcqJ9BIdqS6c8+lpDcruCkJK6WGg+lBKk1LCALModbAXuXYffcPshjpa24Fv
-	zcvhHD/9SPQBJt3m65iO/7SUxBydyPrK+jpcZt01kP7mGaqmNPrDvO1e2RpkuYLewDcrBWAUZ4K
-	tm8PGngO2fsdlr30XpheNlOVoxBcN6y41OIHixZyjc2xbVKqHy1q7zAXDlKUBnGbTUccEXQieen
-	Lt2mCt8XpVAu/oDAySkTNavTDzsVLK5w4obuUBLyGtfyxUDWKtptBOC7NSQdd6LKEkNPB3VhwM5
-	gAIljFOtBKuGy20x50IhIVrz//+QgHcPfmRk53hkzLAAdq+MX0fj9LfJLMC/fodKXKhwa54UL0b
-	RmR+TeF3uBD0LPRKLGU1jgkjKgu8RITJCTk6LhH9zIrxyzR1DKED0Vf98trZiweOMo+9TyVdH7y
-	F33EgZ6qjluiKcn4WQeSYqzM4NXI8gpA=
-X-Received: by 2002:a05:622a:17ce:b0:535:e8c:4258 with SMTP id d75a77b69052e-542b7b0b9e9mr209257251cf.54.1793668362334;
-        Mon, 02 Nov 2026 17:12:42 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5498c379989sm12317581cf.19.2026.11.02.17.12.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2026 17:12:41 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xO34r-0000000BJux-09A2;
-	Mon, 02 Nov 2026 21:12:41 -0400
-Date: Mon, 2 Nov 2026 21:12:41 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Kyle Zeng <kylebot@openai.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Kevin Tian <kevin.tian@intel.com>, outbounddisclosures@openai.com
-Subject: Re: [PATCH 1/2] vfio: Publish the container after all fallible
- initialization
-Message-ID: <20261103011241.GA2696898@ziepe.ca>
-References: <20261031042527.6418-1-kylebot@openai.com>
+	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=MKO4cDK/
+Received: from mrdev.corp.microsoft.com (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 408FD20B7166;
+	Mon,  2 Nov 2026 18:51:49 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 408FD20B7166
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1793674309;
+	bh=LB7T7mSGj7gb2NVvd8ZxKJtsbTjQrh+GSEJ00NJnkNE=;
+	h=From:To:Cc:Subject:Date:From;
+	b=MKO4cDK/yIH2vLLKmfvTwAGoD4Xfny4JkVP+YYiLrV0OxxxpYIzwrgDFi9ETrWFiA
+	 AISttQrJCgVFazCcxLjzTFYRFbR4fNWDRCN3+W4/vmZghaDELE8lGy3JiafI6M6wUN
+	 nAgGLdslM9vuCB8hT+GYZ6woJomni6vIQSeI1hbw=
+From: Mukesh R <mrathor@linux.microsoft.com>
+To: linux-hyperv@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org
+Cc: jgg@nvidia.com,
+	jacob.pan@linux.microsoft.com,
+	haiyangz@microsoft.com,
+	wei.liu@kernel.org,
+	decui@microsoft.com,
+	tglx@kernel.org,
+	mingo@redhat.com,
+	bp@alien8.de,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	hpa@zytor.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	arnd@arndb.de,
+	mrathor@linux.microsoft.com
+Subject: [PATCH V3 0/5] Hyper-V: root VM iommu kernel only driver
+Date: Mon,  2 Nov 2026 18:51:45 -0800
+Message-ID: <20261103025150.3192119-1-mrathor@linux.microsoft.com>
+X-Mailer: git-send-email 2.51.2.vfs.0.1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -101,28 +75,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261031042527.6418-1-kylebot@openai.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Oct 30, 2026 at 09:25:26PM -0700, Kyle Zeng wrote:
-> vfio_group_init() publishes /dev/vfio/vfio before vfio_init() has
-> finished. The optional no-IOMMU backend is also registered after the
-> misc device. A concurrent open can therefore obtain a container while
-> the module is still COMING, even if a later initialization step fails.
+This short series introduces hyperv root VM iommu kernel only driver. This
+driver acts as liason between the hypervisor and iommu layer. Details are
+both in the actual commits and in the comments in the file implementing it.
 
-You didn't cc the vfio maintainers or the its list.
+Thanks,
+-Mukesh
 
-Nor did you refer to my prior remarks here:
+V0: based on upstream hyperv-next commit be0cfab740e5
 
-https://lore.kernel.org/all/20261030120845.GA3889730@ziepe.ca/
+V1:
+ - change order of lookup tree deletions to appease all AI agents,
+   carving out hv_iommu_hyp_unmap_pages() from hv_iommu_unmap_pages().
+ - change unique_id to ida subsystem management so we never ever run
+   out of domain ids.
+ - change hv_max_iova_width to hv_iommu_max_iova and generate proper
+   mask.
+ - some other minor changes.
 
-> The failed-module-init path frees the module without waiting for these
-> open files.
+V2:
+ - Add patch (0001) to allow gfp_flags to be passed to deposit pages
+   function.
+ - In last main patch:
+     o remove hv_iommu_setup_skip to skip devices being managed
+     o remove hv_special_domain()
+     o Add comments around pgsize_bitmap and IOMMU capabilities.
+     o Add to lookup tree before mapping iova in the map callback
+     o Unmap iova before removing from the tree in the unmap callback
 
-This is a cdev core bug. It should not allow the file to be opened
-until it has secured a module refcount. I don't know much about how
-the module refcounting mechanisms work, but it is unreasonable to fix
-it like you are doing here by hacking every misc user in the kernel.
+V3:
+ - Rebase to rc1 tag 6628e7d4c6b2 which contains both pviommu and the
+   deposit memory redesign patches.
+ - Add a tiny patch to rename hv_iommu_init() to hv_pviommu_init(), and
+   only call it for non-root.
 
-Jason
+Mukesh R (5):
+  mshv: Add gfp flags to deposit memory logic
+  PCI: hv: Export hv_build_devid_type_pci() and change return type
+  mshv: Import data structs around device domains from hyperv headers
+  iommu/hyperv: Only call pviommu init on non-root VMs
+  x86/hyperv: Implement root partition IOMMU kernel only driver
+
+ arch/x86/hyperv/hv_init.c             |   3 +-
+ arch/x86/hyperv/irqdomain.c           |   9 +-
+ arch/x86/include/asm/mshyperv.h       |   8 +-
+ arch/x86/kernel/pci-dma.c             |   2 +
+ drivers/hv/hv_proc.c                  |  20 +-
+ drivers/iommu/hyperv/Kconfig          |  13 +
+ drivers/iommu/hyperv/Makefile         |   1 +
+ drivers/iommu/hyperv/hv-iommu-guest.c |   2 +-
+ drivers/iommu/hyperv/hv-iommu-root.c  | 602 ++++++++++++++++++++++++++
+ include/asm-generic/mshyperv.h        |  17 +-
+ include/hyperv/hvgdk_mini.h           |   4 +
+ include/hyperv/hvhdk_mini.h           |  15 +
+ include/linux/hyperv.h                |   6 +
+ 13 files changed, 683 insertions(+), 19 deletions(-)
+ create mode 100644 drivers/iommu/hyperv/hv-iommu-root.c
+
+-- 
+2.51.2.vfs.0.1
+
