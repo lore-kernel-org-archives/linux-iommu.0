@@ -1,73 +1,57 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793702320;
-	b=UnJKZ4ZhtwX5pyfvtV4Y/vgsyP8bnTp3meAecCc+xTE2THXmi90JiVvQhyy5XCNll+fl
-	 82A5LmXa9sxIFNDLwyrIXfrUSVtEToD+fEfdU8ZhVRq5Sxb7tiyM9rY6w7646R6Ho8dQg
-	 NpykOgKLKbw382Ddr8YQ8zyNb148s7EKAlkZvBVEN1ckjc4AU+y+biFGr2fiH0jjhc2/U
-	 uOfVzSiMr2zbimGsooPv1vpo3kWK338LCe0mI0V2UNKriPRnhOy91rEbn9uKFz834F7zp
-	 rL+Dh838l+R5uJNs2RWlBTT9qPfGi/Wx4tIXuY26pdm16M/OxiAV7wA0IgyZ8lNfcGA==
+	t=1793703428;
+	b=wj/atSUDWLzK7gRrmRYgScs4skDzNd7flUrh4KfZqu7cSpOt7OTtKFxl6uhCOSgsHfHn
+	 xUGPPrzSUmtJN+Um2V5tAAanJNhcuORv0x3NLlO5zfGV3fZc92HZPD93uE4A+LLjq8Yy0
+	 VuRf1ICUlLU8BPc7KMdFlvdaps5tl+z+t0WglNTAsRrW4G8Snxs8QHeyI9Boagt66vGew
+	 qFYgauXCbShg+JR7KoBCWDdYrE+BBdXocRUrmJ16HaJuY1af2gx63J4FyJHW6zLtYQbp1
+	 I6HYwwuhq8EHg0MIcZJAzq2iuoEhcwdR0zZRDJsy4oi0to9z9uG8V2nO608dfkdxsKQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793702320;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=18p/3OUExDCqEZMFFUDX0fp7Tsm8MCYEZebkfiTkCgI=;
-	b=U57L5Byp4R5DzxJC5ut+zmZsWKvmB1d+iax9VaOdFuGNnr6aV2AORVNPnWXqKjtviXlv
-	 w4sbHS7c3N+DlkhejkQqZqt31LWSYBNy2/dEEw+YlFzll9PS6gz4X03hApCcQprYmudej
-	 RHLqc0jAuO6zW5vD0rWHcsBGQTE8ntIVNuh0kFsOqu9wvBufzNoV7h/YDVOo++sIkiPaK
-	 CN73lejLzd4Y0afCggeo1kTEeXLzyv4556aGWCC5JTq9zEuZ5qo3xxPy+s4T1/uqY91Yj
-	 EVrmsQLnAYlbNVNSJtxIaK89BbWzbrc2FIoUSPbHa6LpNqRlxKEBEYLl5OMa3z/2X/A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793703428;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=cFdQ6prKPN0fVpDGNOM9j75u/A7Rwlpi6Mh1u9hdWiA=;
+	b=mAptbpGM6sfZ0e/e/tHsTfgyIdONq0NmDUKaDy6LpWOljKeAPZ87yuzLBi6ZwB32NVyO
+	 y/pPQuCzixbwiwOHT+0TD2uRMXzRywf+C5Hv7TltG73gsx0hK4m/7cnz4Z8XuoirQqZRE
+	 dqp64Vf5HfILf5rJACCnkTpQBwhzBHaXV9GjQZ7PpSsoqh+j60UK8ncFM09rloDsl/ksW
+	 W5lrTlKnWhEFdgshfsCAbYp8KBpp7ywsNbEEZev2YOQn6SKbilUlDwyaQ27i33uom0e8Q
+	 1a13MhENQtsZRtp1voULWllrrHWj2i6op64UBOWjhasOHolUnUFbh9+KpGe3VS5qOBg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JmNmc5De;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	arc=none smtp.remote-ip=210.118.77.12
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40BC56074A09;
-	Tue,  3 Nov 2026 10:38:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JmNmc5De
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18D4E1F0093A;
-	Tue,  3 Nov 2026 10:38:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793702319;
-	bh=18p/3OUExDCqEZMFFUDX0fp7Tsm8MCYEZebkfiTkCgI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=JmNmc5De8ae+E0694Kb7AHeDeMBLb0gsWDIl+8tSDlprK4UoYh/OAJ85aS0TzHMNd
-	 asKOsnCAV+Yz+9soju42obCN9pdGUsruTh2EbPt5hv11JNxkRYh+nT3yaGHbCFz+mS
-	 suRLVwVz6xmJqoyQ7bnpgTAwPVCcsmB9g+PeL6bo/8apag/iXFOXpXlCTrHBPvtfus
-	 qp1Hv2pzgAToFxouF0+CLwSwwW81B/zWzHhxzWwJ7ohTMKevFNve+uQnekPvrx9aPn
-	 Sz78+LBMZr103t0CIQ1EQw92THfWYspLKEJctGOIJSjAfzUZ3NQ9DehGNISZcDYFvc
-	 6UJ9CqUQOnGLA==
-Date: Tue, 3 Nov 2026 11:38:37 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Muzaffer Kadir <muzafferkadir@mainlining.org>
-Cc: Srinivas Kandagatla <srini@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
-	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Rajendra Nayak <quic_rjendra@quicinc.com>, Bjorn Andersson <andersson@kernel.org>, 
-	Jassi Brar <jassisinghbrar@gmail.com>, Abel Vesa <abelvesa@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
-	Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
-	Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>, 
-	Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Krishna Manikandan <quic_mkrishn@quicinc.com>, 
-	Mathieu Poirier <mathieu.poirier@linaro.org>, Manivannan Sadhasivam <mani@kernel.org>, 
-	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
-	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
-	David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	freedreno@lists.freedesktop.org, linux-remoteproc@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v7 05/11] dt-bindings: mailbox: qcom: Add MSM8952 APCS
- compatible
-Message-ID: <20261103-rapid-turquoise-viper-70686b@quoll>
-References: <20261030-msm8952-initial-support-v7-0-ad748ace375d@mainlining.org>
- <20261030-msm8952-initial-support-v7-5-ad748ace375d@mainlining.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2FA2606F7D8
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:57:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E2FA2606F7D8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261103105659euoutp02a06b5c6a01cac2d62055fcc86092ed22~kg8HF8EHW1273312733euoutp02i
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:56:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261103105659euoutp02a06b5c6a01cac2d62055fcc86092ed22~kg8HF8EHW1273312733euoutp02i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1793703419;
+	bh=cFdQ6prKPN0fVpDGNOM9j75u/A7Rwlpi6Mh1u9hdWiA=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=ajY4zP2UxM2JFV5HrXBDx4ECGZq/ZnrC5yg91GsYcRX7X3ar4Uq64UWNQ9hPgXslM
+	 Wy3f6oMrSAY2E34y/m7WQ7x/+qNnqxLJlIN0aEl5u33i7deRWVPQo48N8+HEZV5Vo2
+	 E7tzlf7AAqyGCxrj8qUPWb7KFvewb69tzSxoFlO4=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261103105659eucas1p13666e7692d2b66477f7226dbb9ff0714~kg8G8z4GM0743307433eucas1p10;
+	Tue,  3 Nov 2026 10:56:59 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261103105659eusmtip2db0935c8ac86b48bb9ade39923c4d8e0~kg8Gm_qSB2162521625eusmtip27;
+	Tue,  3 Nov 2026 10:56:59 +0000 (GMT)
+Message-ID: <eaa6bd75-d81e-4432-a950-e38cf98e1d06@samsung.com>
+Date: Tue, 3 Nov 2026 11:56:58 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,20 +61,49 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261030-msm8952-initial-support-v7-5-ad748ace375d@mainlining.org>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma/pool: eliminate CMA alloc warning in
+ atomic_pool_expand
+To: Maximilian Heyne <mheyne@amazon.de>, stable@vger.kernel.org
+Cc: Robin Murphy <robin.murphy@arm.com>, Nicolas Saenz Julienne
+	<nsaenz@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20261030-ghent-tubes-5abba7d2@mheyne-amazon>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20261103105659eucas1p13666e7692d2b66477f7226dbb9ff0714
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261030100043eucas1p195785d2a92ca9ff72ce7dab2fc397f20
+X-EPHeader: CA
+X-CMS-RootMailID: 20261030100043eucas1p195785d2a92ca9ff72ce7dab2fc397f20
+References: <CGME20261030100043eucas1p195785d2a92ca9ff72ce7dab2fc397f20@eucas1p1.samsung.com>
+	<20261030-ghent-tubes-5abba7d2@mheyne-amazon>
 
-On Fri, Oct 30, 2026 at 12:02:36AM +0300, Muzaffer Kadir wrote:
-> Document the APCS mailbox compatible for the MSM8952.
-> 
-> Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
-> ---
->  Documentation/devicetree/bindings/mailbox/qcom,apcs-kpss-global.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
+On 30.10.2026 11:00, Maximilian Heyne wrote:
+> atomic_pool_expand() allocates with decreasing page order first from the
+> CMA and if that fails via alloc_pages(). If the cma allocation fails a
+> warning, such as the following, is printed:
+>
+>   cma: __cma_alloc_frozen: reserved: alloc failed, req-size: 4096 pages, ret: -16
+>   cma: number of available pages:
+>   cma: range 0: 1024@0
+>   cma:
+>   => 1024 free of 1024 total pages
+>   DMA: preallocated 262144 KiB GFP_KERNEL pool for atomic allocations
+>
+> In this case the allocation succeeded via alloc_pages and therefore,
+> printing the warning is not necessary. Therefore, similar to commit
+> 463d439becb8 ("dma/pool: eliminate alloc_pages warning in
+> atomic_pool_expand") silence the warning also for the CMA attempt.
+>
+> Fixes: d7e673ec2c8e ("dma-pool: Only allocate from CMA when in same memory zone")
+> Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Applied to dma-mapping-for-next. Thanks!
 
-Best regards,
-Krzysztof
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
