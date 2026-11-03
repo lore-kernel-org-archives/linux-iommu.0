@@ -1,16 +1,16 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.30
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.19
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793718865;
-	b=09wi9Eu9Kxzrp5uMEWFdvEbsKj9lnOMBCpkJx9n7yrDcYK0FmryrEuNivKU7nsABZKPn
-	 1hxPrm2uYpYBQ2wDNsO1wLTxvZ6k6lzkpd4D5bksgoY1gs+P8MQxj6ZQst/9IrI3mrdkr
-	 0/I41kgP5yJDJ+c/AMGI3uvGqnw6+ZNXIRs23JACcg2HyFV6GyAAqNlf7TsM3WWfHFZvY
-	 0RkNFuiNrZv4bSs9ply6hR6+oaURRqhNPUcXRKYvwewaQImCJkL2Iyfqq6XS/02G8swav
-	 n1zmyxqr8CUVyyUdiEsdLTbQ10gX6YS/55xV+NA6UyhymEyoooww/OxPM+7nNt5VBZg==
+	t=1793718872;
+	b=pQlcrIJodpSp+80eku4CHvZYC/rht5hOT9HETA1BXxLDWEkizOLdz9YR62jy9xb18xNT
+	 KJiI2IRUITNzV98iJD9H+/LmJdy83TQfjAyN93PRbd8cC5dt9u9aUg2XoUpdMz5BSqr9K
+	 oCT9j46Q09HMyoOXr3IPo5sSNFeMcf5rpNpcltdWGh5MXRXz5D03mySMj3wP02tKV+pVG
+	 AlanVAsHpZRNclNHE50ZJHB43YDQ1KokeKLJ+NHE2oChjuLHRqM2XbY4Cb6HF88ibgYWC
+	 PZVXCjcWz7S8D4HN8z4uk2EGdqizQ6BkNYb8BrawC6cpy1WyoKiOA+rFBLEK+bFlVlw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793718865;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:Subject:Date:
-	 Message-Id:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-ClientProxiedBy:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1793718872;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:Date:Subject:
+	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
+	 In-Reply-To:To:Cc:X-Mailer:X-ClientProxiedBy:MIME-Version:
 	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
 	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
 	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
@@ -24,66 +24,63 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=sOtX7PkRN1Jyr/oVNrw5aohKf6MVL4ZKej1loldoccM=;
-	b=BgfxbbFFlnYWGHmBLekwH4QheISX+oOJAkTWaiBUR98v3KwqvoEMDh3AZSG48yk9ndS2
-	 Sl8ggsbHVZj5AKwnSX/azuQm2CEXIrSrLJIk3qSgEfKFRifDUd+WMr5HHL+Wqt+ahGavF
-	 X9CWWM5F1pETvLSKJjEILbwsUfqHEJhBxbbLfyTGHJ8/gn/xp8mgxgf7lgR6Ez+NEh41X
-	 caAEXeGklXCpi8/+P0BhMOfj1MCCpFQe4qVazOcrlrovNk6GfNXIS6BfRKgEn6jYNOEGk
-	 f3foQoTjysX5dhEb5BpeIfCmxcnLJsPEzjzKtwZbcerH+iwI+kVYINNLLieDzHdGG0A==
+	bh=5K4KLkTkwJbdSe8VZn1LAj04sB2Giiu60O7ovFGPvqA=;
+	b=epHq3E2ap8drNLhunij29o64zaHKTsry4xUPD5LRfUdDdaYf9LNiVQv/N0u0wUmaH1k9
+	 Rucao2nqwbyzhAtq74K+BJJ5HBCSZTqBhd2fw9KI9yxxocDfDa/MvQzAKEH8+ombBTpiU
+	 oKSHIhdD4XRYPcPVAZGWYYm5A0Z9zNwPCTu5hzV1oOC2o2L3QCb39lpOPqR65Y/eZu70o
+	 6x0IxI25LHwAAKAlsSn5gD2hR2JXqnP4Nf/7MZmVyUTzTX+724RolBnVAjrdCpDaZtaxh
+	 PsOzhzaW1n99Lg3fzI0zr+muxeJO5SPSz6Z1kYsjBOC7LIq0YQI4IAArsMBrooqeSJw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=oss.nxp.com;
 	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=Xnl67xUF;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.30
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011030.outbound.protection.outlook.com [52.101.70.30])
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=pbjEjUrt;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.19
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013019.outbound.protection.outlook.com [52.101.72.19])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B92E606A79D;
-	Tue,  3 Nov 2026 15:14:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B92E606A79D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 220A9606BA3E;
+	Tue,  3 Nov 2026 15:14:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 220A9606BA3E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=Xnl67xUF
+	dkim=pass (2048-bit key, unprotected) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=pbjEjUrt
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=u2fZ4FCQWPFXW3h97R4GSxAPzEasRdQqJbLZbOGLhwrR863E7N1QS6B0NtJ2iV2Zdr/afwyAG5pXIi81xxi4a0hYf4HxxT/kumSf7W41HWntbZBCypw62YKulSgBW3OfXDJgwlQ3V24/hYSCQ8dfzIlfmkWF/Qr5twpmh4NW2z3SWFsqh5IePR7+WmpGKProedEQ2pMK0qhi6IDnPOfaWYsTzs8MRpnt08HTbJjr3d4sxZCyPWifAC2qfP70FxkeR46bLhIThpo0VlHLLNevcmxUh9ECEyhqYzeZIwYsfvZmpiDYoGJEKUQdIAcT69ACZf9cDGwGo9+Lb2RFNAtUMg==
+ b=Dyu6ikwt1WpU57YLe1d2yTSFotWM2fzGmOxL8CyL+tJinOvt4eRzRtl8Z00ogQkBdBtHxr0sH78F2l2stNcP1tY/Zh/1UpNcT3pFKk41FuFQYS+kmqEgvMQm15ZsBkTty4hBvGXsvNV3RhrnJ7WoppTXnNSRIPyOKTJ6bUKn7oY4d4J5wHM4RJBs1yDIzI3ltDUA2oEpMJxtzDCLkWSCO1UL6btkzX0XRW5MBQX2ACrNnGfzDMY4cyAROrofZsL6q9qiqQqHFCLTqJb0HAAOLkagdCB5F/SEeO3zbG7xPXgA1OAu5Wzlvf0QKGCmv0/12o1fxUQytABDawYcRfnCWg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sOtX7PkRN1Jyr/oVNrw5aohKf6MVL4ZKej1loldoccM=;
- b=iQbedh14eqGKcj8OKXtPl0cSVRdqK9yBuiwzVdwT80AnkbdHQMIVrjIB0mhr5PJ0mwywvxjv6P4pbOie+1qwP1DcbjrUeAN21YNYQ5YIcnO8779bLl/1xlH6+BOrwy2RxjX6XfLLKPSJrlT3mMM3115db9oP1wv/KN2sbMtsEAe0gqsSw2j3SYV2KM10Q1uAJLIcQaZb3lkySWxrsYl1zl6CVSu0w0zIl/LQYdqIwvD7mwi9vQ4MTI4uVtBuJD+fxvexFUW78wNSpUEphu65+y9UxO24yHv7x0gUpFflEJ1Q1NpwzNBK6WtjywnKbFEASWS+vVLmYdt3gOzSOY5JAA==
+ bh=5K4KLkTkwJbdSe8VZn1LAj04sB2Giiu60O7ovFGPvqA=;
+ b=Li+kulr2tjj9d2z5t7afnxe7cPSA1pwa6v3xHBzx2M7IUzLVKAcVl1Vk446rXTemjva9rGRIr/pVX7rLuGtn/xjnYu5NDsZYEmwrKtGBthc8o7B4npc2RqXxYEZmeGdfryVVldGroZP4+IEXkEmKiqFy9p2aj3CvGZEA9+m2LhIN4uUqVOt9XxKtAxaXM7nKmSrobCzh4gY3AnmVuvEaC6B3vaWHtW+wJIYgxwTL3AFaLToPgLklYG8u+IbP0DLE5/Kf32R9fGOhdLpHwHWOeK7jfkB2x8WBXiaNg+4vBYbgfyRMP45gtxo1k08pREot1GrU8W/tnBSi2CAuoj8qBQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector1-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sOtX7PkRN1Jyr/oVNrw5aohKf6MVL4ZKej1loldoccM=;
- b=Xnl67xUFS5TsdRl2XtIlQUg7TmODhG62MbnEOgVmTmpM5WHYQU4lBuC3dnAoPS+0h8n72xL+7nGGYZVMCfKse6AFvbydVfj/fHCE1LfEU1d0qRkhWkFG6au9o+0omL4WXneiUMCi2WYMRZJmmiTlE8tbp9PhnXQfD5KbqNV3Qg7PhEp+X3G0MBOrO/7q7matngQKbQWs0PwOAGnDjOHG5+PhdWPaFgWycw4AjdjCFGZb2yvS4PxxFNpqBCYKG4nO5JV+eqzolaXu18Vw4HRgt1wUGTbo/tVLtce0Bz3Br1THWTV0UnguhVZcPEbSImtcCCd1kPnm+a6iDCvNtL2Yuw==
+ bh=5K4KLkTkwJbdSe8VZn1LAj04sB2Giiu60O7ovFGPvqA=;
+ b=pbjEjUrtrlFh4SQg1wYNRyFSHonkmU/bzKLEwp2sj1C0oTN6fbbCqcyGxL8SiNjRlhOo7snWZ94x/sJQ3sDauBIaz+97PmIIxmC5vkfcWjqZUxAmCYqwS/Evt9EaTTgMFNSfhGA0AUEkeedePKiq+VapsfiswiiuMzb9rlDKUklMNbLYm1krb4gVkmcCnd0638UHuCVzD84AuMLN1ncJ8DHf4PqcDUQF/R4KJhJg8bsJXaK19/qm3oT1WYt3xPpfy7fZJCTzWabWwlGyaozEipXwIHDA7VGrKONuKda7QPN8fRyfwgeKKuvXjkOvNCgcMUlUg80pYGuhEFhjO7IBHg==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=oss.nxp.com;
 Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
- by MMZPR04MB025562.eurprd04.prod.outlook.com (2603:10a6:190:37::7) with
+ by GV1PR04MB10727.eurprd04.prod.outlook.com (2603:10a6:150:210::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Tue, 3 Nov
- 2026 15:14:20 +0000
+ 2026 15:14:25 +0000
 Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
  ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
  ([fe80::ac38:1699:6f18:c5d9%6]) with mapi id 15.21.0592.007; Tue, 3 Nov 2026
- 15:14:18 +0000
+ 15:14:24 +0000
 From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Subject: [PATCH v4 0/7] dmaengine: add DMA channel bus and fsl-edma
- per-channel IOMMU support
-Date: Tue, 03 Nov 2026 23:18:57 +0800
-Message-Id: <20261103-edma-iommu-v3-v4-0-470415d418c5@Example.Com>
+Date: Tue, 03 Nov 2026 23:18:58 +0800
+Subject: [PATCH v4 1/7] dmaengine: fsl-edma: unregister channels before
+ vchan cleanup
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAGH76WoC/3WNQQqDMBREryJ/3ZSYWMWuhNJTFBdRv/WXxkiiw
- SK5e6NdF2bzYObNBg4toYNrsoFFT47MGCE7JdAOanwioy4yCC7yNOWCYacVI6P1wrxkQjR5IYu
- 0aPsM4may2NN6+B71j93SvLCdd8neGMjNxn6OQy/33j93DGdlxzEXqrxk2FT3Venpjeeb0VCHE
- L4q2R35vgAAAA==
-X-Change-ID: 20261102-edma-iommu-v3-22b673717cf4
+Message-Id: <20261103-edma-iommu-v3-v4-1-470415d418c5@Example.Com>
+References: <20261103-edma-iommu-v3-v4-0-470415d418c5@Example.Com>
+In-Reply-To: <20261103-edma-iommu-v3-v4-0-470415d418c5@Example.Com>
 To: Frank Li <Frank.Li@nxp.com>, Vinod Koul <vkoul@kernel.org>, 
  "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>, Laxman Dewangan <ldewangan@nvidia.com>, 
@@ -100,8 +97,8 @@ Cc: Frank Li <Frank.Li@kernel.org>,
  devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  Peng Fan <peng.fan@nxp.com>
 X-Mailer: b4 0.16-dev-7bc12
-X-ClientProxiedBy: SI1PR02CA0011.apcprd02.prod.outlook.com
- (2603:1096:4:1f7::19) To AM8PR04MB7874.eurprd04.prod.outlook.com
+X-ClientProxiedBy: SI1PR02CA0036.apcprd02.prod.outlook.com
+ (2603:1096:4:1f6::20) To AM8PR04MB7874.eurprd04.prod.outlook.com
  (2603:10a6:20b:24d::9)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -113,266 +110,130 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|MMZPR04MB025562:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0d1181b-afdc-4fd6-4357-08df39bd2189
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|GV1PR04MB10727:EE_
+X-MS-Office365-Filtering-Correlation-Id: 28e1f6ef-7287-4641-24fa-08df39bd2523
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|19092799006|366016|7416014|376014|1800799024|261021123027099003|261021121427099003|261022105027099003|261009223027099003|261022075727099003|11063799006|921020|5023799004|261026140227099003|261026121527099003|261102124527099003|261028144727099003|10067099003|260925021911599003|56012099006|260925021311599003|260925022911599003|261102123227099003|6133799003|18002099003;
+	BCL:0;ARA:13230040|19092799006|366016|7416014|23010399003|1800799024|376014|10067099003|18002099003|22082099003|261102123227099003|261009223027099003|56012099006|261028144727099003|11063799006|921020|261026140227099003|261022105027099003|261021121427099003|261021123027099003;
 X-Microsoft-Antispam-Message-Info:
-	ehI5ZXz0AqCmOrLtyLnutMm46FBeyMvC+Yg2kP8T6c2kre9UCvl5GLrn1hL/1ICgBfbY2YJxtmlrclo2GctcKHmVyQctQ0bnWSl9fcq6DPK/TeGA6EQTDpfUyJPO5HhNrNM4Olp1jjxgssZniP38IdvEif1w4XSwFxFsYrzUtFg3ZOGbcnTOXClPjD+eO/J8W4GXoHA713t5NI/uOXrQQYLdGfkeag14fWSUwJ7LffsZ+6WNQNKyiRig6qoozz0x+xczkI3WL5DgQq3NeSi2nmy0mYBougXYEGKAS5gJLMhidhRRb/5PVc2QRKFI0qc/p8qNn1RO8OXDYRPu6RRjdHXM4Mp+PHGyBRUcBZk3aWYDQgjajzNFj6qFdbz1jxPmqyE4phQLB7h1a4mW0hC1z9+cJO667NVw5KT/eOqJr8ejlzyMsiWD12JMXp2USTcjO707OJBI3adz8aegWtaZdYHvbIfLF5nB+S3sgRbxsal4YjxzNwuvXsy51e2f00qwFpZ+mdx89yClrJ5aFeun3ZfzC4kKD0jdDYAAOL6CJhMF0EZ5LwJiQVEOMDPeQGD8Wn0OaBcKaXYm6zpCxDZxMYHMVYA+STYkKSUXd4AL7eEdnlAoD1b3S6V3ACNmsPZKFh8ncVI7QQAw0dVXiHzpYCsalEBdAhT16I+E8TgFVl0=
+	y4Req2FM8x2PJH+FQDF1AB99M5efmf5S3CvQINX6hQmfLVycaV0GOJmWAgrZWRkDwWNkv+mXJKUgNKXpwu1KEZ1+YW3Kwvj2dnWYoYy/jsT5aLJu6C/wjbKtVPb/TaaJL+Z1R8J1GF47wJsCNY2g12bOkjvtULXEdjzr9Nx/Tp0tTtCnz7uyALBUDEofQmS3lxuqN2cSmBP7YOwnDMnIpOlXLyTETdMUfgfS7QgOAQyJlP2ScDucDgKwfSNADyKJhMoL0Gwagi5wHafDa0htf6I2b+/mPW0LNbIKFuKcoa59S/wPQqiEKQISZGYtp8lPbNBenloPjFJOwObfJQ1BFcRMnXQPbRvxP7W5UPW1W/hyW/D3mJDh0fc68DKG+ziAPQMxG4DdljT1yh5u6rg2W4gjP61e8P+2p74msMSlJeNbNFk/tnAR7fJJnTrXG1gObSjQk46mW1vNdvQs957TW0tN2vC2kwG8rjYjmHq5XQ0+3T3xdM0O5Y3jQpZmD2kPtrsR3V2LAmmeMqPH3J8WsD4+K9PHKeXDGXRPMpSAee1YsC0+paYeOGd34O3JbOffaXo5odpvfV7GDWiqDUwTIYO3E9WIQrfPPSP22RLoxbz7neYH8SAa1YZ0GCpoPye5wvY7FFiGQCDk653mW5pZdrxlVbmSaWFlBLreqxJJUc5dQcUDf1X6itbAD35bx9KOPDmnzZBpPZRjpazhDUjNJg==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(19092799006)(366016)(7416014)(376014)(1800799024)(261021123027099003)(261021121427099003)(261022105027099003)(261009223027099003)(261022075727099003)(11063799006)(921020)(5023799004)(261026140227099003)(261026121527099003)(261102124527099003)(261028144727099003)(10067099003)(260925021911599003)(56012099006)(260925021311599003)(260925022911599003)(261102123227099003)(6133799003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(366016)(7416014)(23010399003)(1800799024)(376014)(10067099003)(18002099003)(22082099003)(261102123227099003)(261009223027099003)(56012099006)(261028144727099003)(11063799006)(921020)(261026140227099003)(261022105027099003)(261021121427099003)(261021123027099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?KzE5VU5TMmJDdGQ0RmFWamxrOWhxS09SalErVjJvUlJHVGE3a0g4WEh1WWw3?=
- =?utf-8?B?a1ZFRTIwNEFvb1RObFVGWG42MVNrdC9qcVNxNUlvU1poRnF1RkV6TzdERExT?=
- =?utf-8?B?dmVmWmQrbzZBbzVsUkZGV3dCN2JuQnF2Q0Z2NG5nWTBJYldJQjVIT0dmdHZl?=
- =?utf-8?B?Y1Q2NjBqaFNJWlZyM3JCVzlyenl1V09DTk9LSDNKN0swV200eEFNR0EzdHFT?=
- =?utf-8?B?ZFloSEdacHZNWUFNZGpIcmtHaW96dmZJZ3BUc3FFOXpuVnFBbXNLY0lHY01z?=
- =?utf-8?B?OFBLZ0MwcFU0NnM4K1BIY2Y4V1NSdUNhcTNPUWwvRTZyVVVlODdUV3VhNm8y?=
- =?utf-8?B?R2tQeHh2SVhBMmdZa2djdVFUTmpkNDg1dDE1cFVtN3RGcHBKOXpySTEyZ2dH?=
- =?utf-8?B?eFNjMnFVWThtS1VISDNTMkRHeDdBZE9SbUxKbisxbjBjMytvRkJudzJUZ25X?=
- =?utf-8?B?YXdaYzdDQVQ1ZS9BU0Iza0hyZlRKMUl6YWFkRmovdkdTYUJ3QjMvQWhBaUpB?=
- =?utf-8?B?Y2liL0RhY3JHODJSRzc1K3IwN1lQZ0hFNGFjUkhOaE50aHhCVnI2Rk40MUUx?=
- =?utf-8?B?b0tISzcwV1o1M1dsdEZQa0tpcythYlVpaElRcitOdUh5ZnRQcktmVEJ5UUo5?=
- =?utf-8?B?aVZCT3FSNnZKR0FzN05LV1FRQ0dlNlpIVWhtcXN1eDJlTU5xdWxMMU1Qem5u?=
- =?utf-8?B?V0hqdis3cWtPeUJwVlNwZkFrb1FPODhYS0QwVjZZeURLRDVjWUNGYUxVb2Yz?=
- =?utf-8?B?akdiOElpZ2R2d3ozL3FONytnNHVSelpVYitZdm8raitDWXB1cTFnZ2hSVDVJ?=
- =?utf-8?B?Wkp6ODgzRkhMblpzWU1PS0p6dDFDRzdMQ3V0Z0ZMV3QrYmY2NVlNSVozM252?=
- =?utf-8?B?ZVdLRnM0Wjc5SktrVGVrRm1IQ21NSjNKNTltditrcFZjK0pKQ1VidXlEQTgz?=
- =?utf-8?B?L0pZMlgxZXdoeVBPSHlVMTJTdDVjNDNrSGFUTWZTaGhZRTlKSnA5UkxqWk51?=
- =?utf-8?B?TVNzUjMwNVlsTko2ZHdiQXdBTjJISFZ0a1JiS2JsS3AvMDhMWmU4ZU5LOW0y?=
- =?utf-8?B?Q2ZqOGU1WjBSOUlZTUI2aVY1WjltNlpYWFE3cWEva25qR0NqdCtkN25QTk9J?=
- =?utf-8?B?NVlhSHdBSGNIU3ZvM2FwQ2o5YmV1emRhU2RGd1ZEd214clhYV2hVNFVmQ2Ri?=
- =?utf-8?B?UEZRcHBaaEpQb2puOGdFTERveVdwZGdxV2JuZmU0R0RJNHpRa2IrMkFQWmxP?=
- =?utf-8?B?WVc5SXYzYy95YWp4MG5kY0dhUmEyV3dqWlhxQlNVMUlzNElFSGtmMklQQ0M0?=
- =?utf-8?B?dkFxdlhCWFl2M0dHUERKQTFqODEvL25EZVFaVEIrUVpxZWpuMkVZaDBTTDIv?=
- =?utf-8?B?c0lLeU5VNjlNTFh5SVJHNDlPbFY4Njk0N1o2bXgwd2U3N1NDL0p1QkdRZk41?=
- =?utf-8?B?R00zdEVYZFBSNUlGYmZKUUFzYStBdFZVei94dDdqTVpoSEpja3k4TXpva1FG?=
- =?utf-8?B?MHQzektHTFlSSlVzZ2psL0kvODVxbTRaTUNIYTlwWFczdG9tNDhMcWVuV2tG?=
- =?utf-8?B?NHhnbmZiQ3ZESUREMUNhbGJDcHpDTUxrWXk3eXQ1WDExQXB4TWhCZTlscUFT?=
- =?utf-8?B?Tk5paDhRd09YSS9vRmdvMHVNMkF3V25jZy92UXdHTGN2a01SZWJTS0RNYWs4?=
- =?utf-8?B?eEdRQXUwTVJydTBJMFN3OU5GTGRPV2xtVFZYWUQ5ekxKS2xXd1V5UXdjLzNU?=
- =?utf-8?B?TzQ2SFZHdEVtRFNLL0RRWEdHWlZPOW1PQUg0d01yUXVQUGQ4OTA1eWlYVkNU?=
- =?utf-8?B?U2IwT1RQcjZRUWsveklWeVZZcENYWXhJekFyVitSTER2VHQ0dUF5OHE3RkxI?=
- =?utf-8?B?a1NEWnVYWDIvdzRTa2duQWVKRnBTQVRYdWMzV204WHY5OEVrbXp1Zk4zYXRV?=
- =?utf-8?B?QzJpYmRVdzRaQlJqaU1Kd0UzSENaLzdQamxzcWNLYW9sYnFDVE8zSlFGWGtS?=
- =?utf-8?B?OUVENXVYeE5aSktOMHhwc0VMWTd6UjNxQ2FsWUt5Z0V3eXRpdGx5YUhrV3pw?=
- =?utf-8?B?N0hrTUk4U0VhMUFTQXF2bXVKbFhBdzRqU0lxT1hzTm5HOEtPMGwzNi9JRGNq?=
- =?utf-8?B?cG9pcUJNTnVuNjY5M2Q4c0JyM0RYYTVUSFBjT0Q5STJxKzFEUTM5MXpqTWE5?=
- =?utf-8?B?MHdLc0NRN01kYXYvSjEwdXh6WENLaTV1TjdIV3Z6c0tXN242UzY1U3FYMmoz?=
- =?utf-8?B?ZnVadnlzN2MweEtlTVdpMUlHTVg0dTFNZ3hmNzl4QmVCa2FyVkcrN29tTnMw?=
- =?utf-8?B?SUVMNUdHa2hFSUJuMU1WWWUvYzBwV1g1aW1iWm9kWjNWOXlzaW5GZGtmeHdU?=
- =?utf-8?Q?l25iiOaxPGFAEmGd2jHQw3HVswVXuCFc2DEl8?=
+	=?utf-8?B?b2RKbG81cW1IY2F6R1JSV1VvVFFqV2tzR0ZBZU03N2hEMnQxUXoxODM2ODFX?=
+ =?utf-8?B?cWh2MWtPVUJHbkRxUTRHSGV0bHhuRTA2SlJqSngxMm9UR244d3ptaXhFbzA1?=
+ =?utf-8?B?UGlZNjYycXYvOG9hOWlkS0ZjbWs2VGRmTHA2ZkVhMkVkQXFBZWo4RVhCK05v?=
+ =?utf-8?B?M1Y0aEZ5YVM1b0pZZU1Lbk9wNDZ6SVJIL3J3NloxcUFra1hpdFpxaEQ2U215?=
+ =?utf-8?B?QWZJWXh2alFlMnJYQXBSaGYvSWZ0ME8xNnV1aWlJZjZ3Nkd0K1BDdlRMMURQ?=
+ =?utf-8?B?NEExZzZBZVZEaFl0YmNqUC9Bc05xNHlWcmI1WURST3NmMDdhTTZFazY1OTFW?=
+ =?utf-8?B?eVNqclAvM2dtbWxwQmxuRFNhSUJGTXlNbTFNRnhvRy9SOVhSbGp2cHlEdmtZ?=
+ =?utf-8?B?ZnVzUGZlZm1Gcmt5MVhFNDA2SklkSGNzcUdlc1ZYV2hVTWtuRFpvelhGQldQ?=
+ =?utf-8?B?L2w2SkZMK2hyV0hxTnN6emxrZHU3UGZ6RDFRYnJ0aW9SVXhHTTczNWlFQkxn?=
+ =?utf-8?B?MnpGT1RQYVhodm5rTGRnbyt3QzB6dlU3Y1oyZC9Lb21NZ3kxTzRwVmE0M2V5?=
+ =?utf-8?B?cFBTR2dJUXJPT1FpMEQ1eVc4Yk95V3lCTy9KQlB2cWJDL2JzdWV4a0k5YUpw?=
+ =?utf-8?B?ajVmcWdma1NmQ3V5cUNWdEhkYnAvWG9wQ2tqakVtSVZnNnZ4cVhJcjl5anpP?=
+ =?utf-8?B?SHptVHRQRWgwVnRxVnZ5L3BKeVU1WEh1U25oTHhwb1R3YnB1cmZjQWZvRHhs?=
+ =?utf-8?B?ZkovK0tWTXpDdmsxNm8zbG82WCtsVko4dzFKUFJiOWRkaEd4d3FTUzhJRmUr?=
+ =?utf-8?B?V2pIY0VZMlpQTUZKelhwRHVWWDdvQjNxRXNmQTgyeXViR2hQTlY4RXp6d2VG?=
+ =?utf-8?B?NzZUTlhmbWFiZnNaV1o4T0YvbDJJeWpaVEJsTGVBNmJXL09kazhWclYxeEpt?=
+ =?utf-8?B?N3A0aWgvWTNSaG1YKzB4WEFoV0ZrNWxjZ0VCcVYzd041SDhUOStJWU5BNHpT?=
+ =?utf-8?B?Y3N4aVZ3Nll4Sm5uU0dDUW44c0lMeGRFaTBMdWdyTHdLaS9rRWtpQ2tqejlS?=
+ =?utf-8?B?S0kvMzB0N00xRjJLUXMwdkdhRU5oZWtOTnRra2dFdEZ3eFhkM1NYRVNEbHFG?=
+ =?utf-8?B?c0dpVzBtVnA1cGhpYUNvNzl0anJuYUV4Yml3Tm1mU2NiQXl3bW1kNnl0WG84?=
+ =?utf-8?B?U1dpT2cza09OUlJCQlNIdXRmVlFQZzUzS3dMWW1lZU1qMVBVb2lrQjEvWE1C?=
+ =?utf-8?B?MWt6QW1jT29TaGxDNTZYUWlSRk9SbTB2dW1nTFJzVUozcWlYUzlQRCt1c2pw?=
+ =?utf-8?B?VVB2a1FEa0ZieHZSWGpHRVphLzkwWWtwb25Xd2ZPOTdmTzFVQ3htYWY1Z0pu?=
+ =?utf-8?B?blFGNzBXcGFwYzNYTllmdUR0dUFobWVmN2hrSUMzSjRoQ1hTS2ZYc2JHZW1v?=
+ =?utf-8?B?QlVUYzZjZWhKTHRnOHM4TjZ0WFRMT05JZ2NDSHMwVnlBK2grRm5ZT21FS2k4?=
+ =?utf-8?B?TjU0VUhGY0JlWFVUU0Fpd25pUExDQit1WGRvMURBNlM5Szg3MjFyMEt2Uk9n?=
+ =?utf-8?B?MzZhNmluZGZVVHRvUWl0amozQlRWaEtDS2RkNWdDNDJsSWRSYTd5VXRDUElz?=
+ =?utf-8?B?NGZxb2wxRVhub2pIbll3VVJPMDdibGgraEYxb21WODdYUVZXZkxjcC9PUTlG?=
+ =?utf-8?B?K0QzYzBOdXRYNnZDYWM1eE5OVXd6N3M3VGFqeXMyaGdjM0swa1Z6YkZVY1dV?=
+ =?utf-8?B?cHZRZ241cjd4SmgxeXhNcmhNUkxWRERaRElUek9mTk9IR2VpRmRKS3NJWXFB?=
+ =?utf-8?B?b21rQ1VmcEhPTTZjcTFOaEpadGVlL0FnRlJOQzlsVFFOL0FpK0VETENwYTY3?=
+ =?utf-8?B?ZTRJelMwZVNJdjV1aURseGJ4Rll6VWdlMnF1dUgvSXBzbUt2QzhMejVBMlps?=
+ =?utf-8?B?S0RLWXBHVmpsVmptV2c3Qmk2Tks4VWxmd1BKeVBuN09Nb01veHBORitndjlB?=
+ =?utf-8?B?TjdFUVNvRzJqUDRlTGVqdUtnM1B0NmNvRWxlYWVXdEdPbVgxc2dJOFYwUVlT?=
+ =?utf-8?B?MGpJbjk2RlJuMEhrWXBFZjEvbFoxOHYzb05LY2VVRlE2S2FVRGlVMWZqOXNC?=
+ =?utf-8?B?YURYRjUrT3N0eUJLNlUxM2gvYmxpZWJXNHlvSlBsa1FHVDRpelZPeGJJOGxz?=
+ =?utf-8?B?NG9IOHVrUGQ3Y2dqSzB3SVVyT2t5eVNNWnE1UW9CNjBLZGt1UlVUQXgyWUVM?=
+ =?utf-8?B?N2RkeDFmbTdlWkI2NW9MVy9yZnFaTllaalFyeU8vK0QzRzBpQURmaUZTU1ZM?=
+ =?utf-8?B?ckYvZXVXT1NDSE1iNXpJOW1ENjZvN21HbHNldGJqUW1kSlJTQUppeXViOGxo?=
+ =?utf-8?Q?x4kbOmR56XSJLzkIvOOuXwNXKMS8JAwRP6t9b?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0d1181b-afdc-4fd6-4357-08df39bd2189
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28e1f6ef-7287-4641-24fa-08df39bd2523
 X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 15:14:18.7616
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 15:14:24.7963
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oVTgfRqAn2l1fPs5wi0w5xsrXi7B0/4JhfcUYysRtGXSGFHQJyfWvZPNENrSMxRhXpmbuzXV6zb3UHBrIAYKcgHHPO4SxxBRZD1WYM17DLqEnyrmDCDOwAT5tTP7/kJV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MMZPR04MB025562
+X-MS-Exchange-CrossTenant-UserPrincipalName: gr7IGpjCjruBI+iXK3VFdyFZbWmQSmNvwUk3ogaIyMkI5DdwDDNkSoQccyR4BkSKK+SgHMpMrfJlSwpMgeXdzeEiW26rz6um74kZQqLE2OQ7ZE+cUk41ozak20zjI32F
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR04MB10727
 
-I used iommu-map for eDMA, but iommu experts rejected it:
-"Using iommu-map to describe synthetic dma_chan_dev devices that the
-kernel creates is the same kind of DT abuse from over here:"
-More info: https://lore.kernel.org/all/20260917144804.GI3196566@ziepe.ca/
+From: Peng Fan <peng.fan@nxp.com>
 
-So I followed here [2] as Krzysztof wrote for QCOM VPU:
-"Thanks Jason for context and detailed arguments. Robin did not chime in
-yet, but from what I understood the DT-child-node approach will be the
-way we should go here.
+Since commit 4035726a6b72 ("dmaengine: fsl-edma: Use managed API
+dmaenginem_async_device_register()"), dma_async_device_unregister() runs
+as a devres action after fsl_edma_remove(). However, fsl_edma_remove()
+still calls fsl_edma_cleanup_vchan() first, which removes every channel
+from dma_dev.channels.  When the devres action later runs,
+dma_async_device_unregister() sees an empty channel list and never
+unregisters the channel devices. They remain visible in /sys/class/dma.
 
-I accept above point of view and I am fine with this, thus Vishnu and
-Vikash - please go ahead with DT-child-node solution we had some time ago."
-[2] https://lore.kernel.org/linux-iommu/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
+Keep the vchan cleanup, but register it as a devres action before
+dmaenginem_async_device_register(). Devres actions run in reverse
+order, so the DMA channels are unregistered first and the vchan list is
+cleaned up afterwards. Remove the premature cleanup call from
+fsl_edma_remove().
 
-This series adds per-channel DT child node support to fsl-edma and, as a
-prerequisite, introduces a proper bus for DMA channel devices.
-
-The fsl-edma change allows each channel to carry its own reg, interrupts,
-iommus and power-domains properties. Parsing the child nodes is
-straightforward, but per-channel IOMMU configuration is not: the DMA engine
-currently creates struct dma_chan_dev as a class device without any bus, so
-of_dma_configure() has no bus to probe the IOMMU with, and the IOMMU core
-does not have a bus notifier for DMA channel devices.
-
-Drivers that need per-channel IOMMU support currently work around this by
-assigning dev->bus after dmaenginem_async_device_register().  That is unsafe
-because bus_add_device() already ran with bus == NULL and did not take a bus
-subsystem reference.  When the channel device is later unregistered,
-bus_remove_device() drops a reference that was never acquired, leading to a
-reference count underflow and a potential use-after-free.  Using
-platform_bus_type is also wrong: platform_match() and platform_uevent()
-expect the device to be embedded in a struct platform_device.
-
-A dedicated bus for DMA channel devices solves this.  The channel devices are
-converted from class devices to bus devices:
-
-  - the bus is registered early, before iommu_subsys_init() consumes
-    iommu_buses[];
-  - the match callback always reports no match, so no driver binds to a
-    channel device;
-  - channel devices are registered on the bus before device_register(), so
-    bus_add_device() and bus_remove_device() are balanced;
-  - the bus is added to iommu_buses[], so the existing IOMMU notifier
-    handles per-channel IOMMU probe and release.
-
-The existing /sys/class/dma interface is preserved with class_compat, the
-mechanism provided by the driver core for converting a class device family to
-bus devices. A compatibility class named "dma" keeps
-/sys/class/dma/dmaNchanM available, while the devices themselves live on the
-DMA bus. The uevent subsystem name remains "dma" because the bus has the same
-name as the old class. dma_dev_groups moves from the old class to the bus,
-and chan_dev_release is installed directly as the device release callback.
-
-While testing controller unbind, a pre-existing fsl-edma ordering bug was
-found: fsl_edma_remove() removed all channels from dma_dev.channels before the
-managed dma_async_device_unregister() action ran, so the channel devices and
-their IOMMU groups were never released. Patch 1 fixes that ordering, which is
-needed to make the bind/unbind lifecycle test meaningful.
-
-Patch breakdown
-
-1/7 dmaengine: fsl-edma: unregister channels before vchan cleanup
-
-    Keep the vchan cleanup, but run it from a devres action that is ordered
-    after the managed dma_async_device_unregister().  This restores proper
-    channel device and IOMMU group removal on controller unbind.
-
-2/7 dmaengine: add a bus for DMA channel devices
-
-    Add dma_chan_bus_type and register it from dma_bus_init().  The match
-    callback never matches.  There is no functional change yet.
-
-3/7 iommu: register the DMA channel bus for IOMMU notifications
-
-    Add dma_chan_bus_type to iommu_buses[] under CONFIG_DMA_ENGINE.
-    dma_bus_init() is an arch_initcall and runs before iommu_subsys_init(),
-    so the bus is registered before the IOMMU core consumes iommu_buses[].
-
-4/7 dmaengine: move channel devices to the DMA channel bus
-
-    Register each dma_chan_dev on the DMA bus before device_register(),
-    install the release callback directly, attach dma_dev_groups to the bus,
-    and switch the /sys/class/dma view to class_compat.  Remove the manual
-    post-registration bus assignment from the Tegra GPC DMA driver.
-
-5/7 dt-bindings: dma: fsl,edma: add per-channel child node support
-
-    Document optional dma-channel@<addr> child nodes with reg, interrupts,
-    iommus and power-domains properties.
-
-6/7 dmaengine: fsl-edma: support per-channel DT child nodes
-
-    Derive the channel index from the child MMIO address, populate the
-    per-channel IRQ, propagate -EPROBE_DEFER from of_irq_get(), and
-    configure the per-channel IOMMU on the channel device using
-    of_dma_configure().  Existing DTS without child nodes keeps working.
-
-7/7 arm64: dts: imx95: convert eDMA to per-channel child nodes
-
-    Describe the per-channel register regions and interrupts for i.MX95
-    eDMA.  The iommus properties are not added yet; they will be submitted
-    separately once the stream ID assignment is finalized.
-
-The only user-visible change from the bus introduction is that the device's
-"subsystem" link now points to /sys/bus/dma instead of /sys/class/dma. The
-/sys/class/dma/dmaNchanM path itself is unchanged, and both the bus and the
-compatibility class are named "dma".
-
-Patches 2-4 can be merged separately if preferred, but the fsl-edma patches
-depend on them. Patch 6 deliberately does not touch dev->bus; it relies on
-the DMA engine core registering the channel device on the DMA channel bus.
-
-The binding and driver support per-channel iommus, but patch 7 does not add
-them to the i.MX95 DTS yet. That DT update will be sent separately when the
-shared stream ID support are finalized.
-
-I put all the patches in one patchset to give people a full picture.
-If need to separate patches into multiple patchsets, I could do that
-in next version.
-
+Fixes: 4035726a6b72 ("dmaengine: fsl-edma: Use managed API dmaenginem_async_device_register()")
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
-Changes in v4:
-- Patch 1, patch 4 and patch 5 are unchanged.
-- Patch 2:
-  Register the DMA channel bus from core_initcall so it exists before any
-  IOMMU driver can call iommu_device_register(), which iterates
-  iommu_buses[].
-  Clean up the DMA unmap pools if dmaengine initialisation fails.
-  Clarify that the bus match callback always reports no match.
-- Patch 3:
-  Update the ordering rationale for IOMMU drivers that register before
-  arch_initcall. No functional change beyond patch 2's initcall move.
-- Patch 6:
-  - Validate child register resources: require them to be contained in the
-    controller resource and aligned to chreg_space_sz.
-  - Use div_u64() for the channel index calculation and reject values that
-    do not fit in an int, avoiding 32-bit __aeabi_uldivmod/__udivdi3 issues.
-  - Ignore child nodes beyond dma-channels, so imx95-navq.dts with
-    dma-channels = <30> still probes.
-  - Use BIT_ULL() for the 64-bit chan_masked bitmap, including channels
-    32-63 on 32-bit builds.
-  - Set chdev->dma_parms to the controller dma_parms so the per-channel
-    device keeps the 0x7fff segment size limit.
-  - Use dev_err_probe() for of_dma_configure() failures.
-  - Reject channels for which iommus did not result in an IOMMU mapping
-    instead of setting chan_dma_dev = true silently.
-  - If child nodes are used, require every unmasked channel to have an
-    available child node with a valid interrupt; otherwise fail probe with
-    an error asking for dma-channel-mask.
-  - Do not fall back to the parent flat interrupt array in child-node mode.
-  - Keep the shared error IRQ on the parent node.
-  - Clarify that child power-domains are not handled by this patch.
-- Patch 7:
-  - No functional change. The out-of-range child nodes used by
-    imx95-navq.dts are handled by patch 6.
-- The i.MX95 DTS still does not add per-channel iommus; that update will be
-  submitted separately.
-- Board test overlays are kept out of the upstream series.
-- Link to v3: https://patch.msgid.link/20261102-edma-iommu-v3-v3-0-9d0e62a954eb@Example.Com
+ drivers/dma/fsl-edma-main.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Changes in V3:
-- Patch [1-4] are new patches
-- Add R-b for patch 5
-- Patch 6: handle of_irq_get() -EPROBE_DEFER, drop the explicit bus
-  assignment to "chdev->bus" which is resolved by patch [2-4].
-- Rebased to linus/master v7.4-rc1
-Changes in V2:
-- Switch to add child node for dma channel.
-- Link to V1: https://lore.kernel.org/dmaengine/20260916-edma-iommu-v1-0-e1731968081e@nxp.com/
+diff --git a/drivers/dma/fsl-edma-main.c b/drivers/dma/fsl-edma-main.c
+index 630285c854824..30d548a723462 100644
+--- a/drivers/dma/fsl-edma-main.c
++++ b/drivers/dma/fsl-edma-main.c
+@@ -31,6 +31,11 @@ static void fsl_edma_synchronize(struct dma_chan *chan)
+ 	vchan_synchronize(&fsl_chan->vchan);
+ }
+ 
++static void fsl_edma_cleanup_vchan_action(void *data)
++{
++	fsl_edma_cleanup_vchan(data);
++}
++
+ static irqreturn_t fsl_edma_tx_handler(int irq, void *dev_id)
+ {
+ 	struct fsl_edma_engine *fsl_edma = dev_id;
+@@ -882,6 +887,12 @@ static int fsl_edma_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, fsl_edma);
+ 
++	ret = devm_add_action_or_reset(&pdev->dev,
++				       fsl_edma_cleanup_vchan_action,
++				       &fsl_edma->dma_dev);
++	if (ret)
++		return ret;
++
+ 	ret = dmaenginem_async_device_register(&fsl_edma->dma_dev);
+ 	if (ret)
+ 		return dev_err_probe(&pdev->dev, ret,
+@@ -906,7 +917,6 @@ static void fsl_edma_remove(struct platform_device *pdev)
+ 	struct fsl_edma_engine *fsl_edma = platform_get_drvdata(pdev);
+ 
+ 	fsl_edma_irq_exit(pdev, fsl_edma);
+-	fsl_edma_cleanup_vchan(&fsl_edma->dma_dev);
+ }
+ 
+ static int fsl_edma_suspend_late(struct device *dev)
 
----
-Peng Fan (7):
-      dmaengine: fsl-edma: unregister channels before vchan cleanup
-      dmaengine: add a bus for DMA channel devices
-      iommu: register the DMA channel bus for IOMMU notifications
-      dmaengine: move channel devices to the DMA channel bus
-      dt-bindings: dma: fsl,edma: add per-channel child node support
-      dmaengine: fsl-edma: support per-channel DT child nodes
-      arm64: dts: imx95: convert eDMA to per-channel child nodes
-
- .../devicetree/bindings/dma/fsl,edma.yaml          |  70 +-
- arch/arm64/boot/dts/freescale/imx95.dtsi           | 774 +++++++++++++++++----
- drivers/dma/dmaengine.c                            |  49 +-
- drivers/dma/fsl-edma-common.c                      |  10 +-
- drivers/dma/fsl-edma-common.h                      |   1 +
- drivers/dma/fsl-edma-main.c                        | 241 ++++++-
- drivers/dma/tegra186-gpc-dma.c                     |   1 -
- drivers/iommu/iommu.c                              |   4 +
- include/linux/dmaengine.h                          |   4 +
- 9 files changed, 995 insertions(+), 159 deletions(-)
----
-base-commit: 2637bdec0535a2044cd830eba9a79363651d9043
-change-id: 20261102-edma-iommu-v3-22b673717cf4
-
-Best regards,
---  
-OpenCode Assistant <opencode@Example.Com>
+-- 
+2.34.1
 
