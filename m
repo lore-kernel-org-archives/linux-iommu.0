@@ -1,71 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=51.210.91.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.8
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793713898;
-	b=jm5G2U+iEbIMmaknWOxpIAZNw6hWJJrXXwrCWqicyHGN5zcUgZlmCfYQm6o85kmK3mPG
-	 UXQAaGq1l4I640TrMWR+xUr80COA4iZmXezTuiPL3ol6E82mBYJo384sWQfC1EGnGa1vs
-	 lkldSWNhFFYhUa21MQaTqpaTFrHj3AQmy1EAa4Cuki8ELRVsbChfLiUO6rAFqseoHsdy7
-	 fx41CqsFaw0TQg0rR2pT6fRfF4PSebC0l6yW7kOWsBg9+oaczZuHuSSx5hf2j5mHsFHW1
-	 Kv0Dagv/hWOYkMVqVC09V9pWNjNy0roctl+BHo6zOsWEQtprmcDteh9qXt6JAyrDAlg==
+	t=1793714550;
+	b=iJbKsFpaj/GdH5JLCNAK0KPScJobKhxDc2Jv+BY3uLzct3HCjvON4oeqpJM6oCsPB8Vn
+	 t/rlfKvqDpc06TFTQzK7vQsS9ovOLBy9q8yHtIpZ/fOFl9D2uOc96C+8qck9cJBsHkyem
+	 PfreRIosVE4X9dN19pFw+RfheB5WDTM4dTZirO8xz1dsgn3G+AtTe+9MzmzFb1SSkOFF8
+	 +tEbAxLkFPdULWRzr08wRmlXv5036guEoJ+69DUHPViUmnNBfctQHn+/Te4eaBUle2ssc
+	 W43zv68rwdkyZLT4OPpOSi1TqF71AUvqS4DDZ187vDS7eHb5gKBtq6aCslclCDCHxsA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793713898;
-	h=DMARC-Filter:Received:Received:Received:Received:X-OVh-ClientIp:
-	 Message-ID:Subject:From:To:Cc:Date:Autocrypt:Content-Type:
-	 Content-Transfer-Encoding:User-Agent:MIME-Version:x-ovh-tracer-id:
-	 X-VR-SPAMSTATE:X-VR-SPAMSCORE:X-VR-SPAMCAUSE:DKIM-Signature;
-	bh=CobYPBDs7z1N+btRZF2lJZ5T4n0PenuOp7YKkuLtHWM=;
-	b=hGU3X8HlhMsp+V/GCA5hf1WQ0uRyWNIRWSbPaYyjmcvRy1lZ+RVuHF23F5vjQGVtChwH
-	 HnIf6KBbLDh0irh1OceVqmd8gLI/qiBFxX+NUILWVB5IQkjkv1I/9chOp6gOlVFhz3WA9
-	 JxbjOx96T8tpQlk9KyznmqSTG181J/mQXvZMGn+GWj3V9vs0g1jMmgd/zJNl2GM+u7SFb
-	 ZIiRcq/AIb56Bc7t9sQv39MYLbgOw4JHG/KbLRJ77TfqvukgcPWsOKA/iTPdQezNEco20
-	 bSKkDOqcZ6lC4yMQ4Wr4JcdLFMEIHZN5eh/IrxVG7myKS2JC7J5rUHrIRCMh3WFvUlg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793714550;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=U2kSEVRi2hxXG2GFOz4rcCNrV0dltOZ+Pl3QkTNM8Pc=;
+	b=XQ++BGVEj8Zn12NIQghkGTA/73c5aAeRLxbaAPXWf2nxZBS3Kl0k6y47Uww/IKw8w/Bf
+	 7y9AKhgCFKh1w71QNeI1p8ICEj8fFHXFbwyUcDpJAM3EUWkmW7UmrvcSUkrzaNrzCG4C/
+	 h076geQQeqLBEK9Su+63uystyzdaS7DDx+zUgmJx5I9Cip9AUXLHjImu21+RkaAHShuoa
+	 naFQUQ/gIp4X+7gGyVug90bqSClIV6MppBR52FdmDnjT/6SyeQcQ2SGRMAXAkxpaXMXdu
+	 4sDs4Bpf2tXzGpH79E31ImgThLEyxfYLi9SqNRy36ZGWt/YZTGf6A5Jq68aNLZ0oeQQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=guillain.net;
-	spf=pass smtp.mailfrom=guillain.net;
-	dkim=pass header.d=guillain.net header.i=@guillain.net header.a=rsa-sha256 header.s=ovhmo31693-selector1 header.b=pEbPnjhb;
-	arc=none smtp.remote-ip=51.210.91.34
-Received: from smtpout5.mo538.mail-out.ovh.net (smtpout5.mo538.mail-out.ovh.net [51.210.91.34])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dIF4YyTT;
+	arc=none smtp.remote-ip=192.198.163.8
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C62606EE95
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 13:51:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8C62606EE95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=guillain.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=guillain.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E103860A2603;
+	Tue,  3 Nov 2026 14:02:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E103860A2603
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=guillain.net header.i=@guillain.net header.a=rsa-sha256 header.s=ovhmo31693-selector1 header.b=pEbPnjhb
-Received: from director3.derp.mail-out.ovh.net (director3.derp.mail-out.ovh.net [79.137.60.223])
-	by mo538.mail-out.ovh.net (Postfix) with ESMTPS id 4jJqjs0NYCz5y5q;
-	Tue,  3 Nov 2026 13:51:29 +0000 (UTC)
-Received: from director3.derp.mail-out.ovh.net (director3.derp.mail-out.ovh.net. [127.0.0.1])
-        by director3.derp.mail-out.ovh.net (inspect_sender_mail_agent) with SMTP
-        for <joro@8bytes.org>; Tue,  3 Nov 2026 13:51:28 +0000 (UTC)
-Received: from mta3.priv.ovhmail-u1.ea.mail.ovh.net (unknown [10.110.58.197])
-	by director3.derp.mail-out.ovh.net (Postfix) with ESMTPS id 4jJqjr6Wbrz1xpd;
-	Tue,  3 Nov 2026 13:51:28 +0000 (UTC)
-Received: from guillain.net (unknown [10.1.6.7])
-	(Authenticated sender: jean-christophe@guillain.net)
-	by mta3.priv.ovhmail-u1.ea.mail.ovh.net (Postfix) with ESMTPSA id 1EF8C942064;
-	Tue,  3 Nov 2026 13:51:27 +0000 (UTC)
-Authentication-Results:garm.ovh; auth=pass (GARM-106R006abbba8fe-fb7b-4693-931e-c20f502f8157,
-                    15838527D7D3E0897ACBD919E55849F771FD37B2) smtp.auth=jean-christophe@guillain.net
-X-OVh-ClientIp:78.242.14.240
-Message-ID: <97e7c46b2c3b8a0af2a458649349798c4ecc55ff.camel@guillain.net>
-Subject: [REGRESSION] AMD IOMMU NULL pointer dereference during boot with
- v7.4-rc1
-From: Jean-Christophe Guillain <jean-christophe@guillain.net>
-To: iommu@lists.linux.dev
-Cc: vasant.hegde@amd.com, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Date: Tue, 03 Nov 2026 14:51:25 +0100
-Autocrypt: addr=jean-christophe@guillain.net; prefer-encrypt=mutual;
- keydata=mDMEaEmXaBYJKwYBBAHaRw8BAQdA1qyia8WH1pu6T8sC99WNMyKXooD/SVqJXsJOcnIux
- w20N0plYW4tQ2hyaXN0b3BoZSBHdWlsbGFpbiA8amVhbi1jaHJpc3RvcGhlQGd1aWxsYWluLm5ldD
- 6IlgQTFgoAPhYhBDk2+TsBtH9ETCTubi9QTbKhgBdPBQJoSZdoAhsBBQkSzAMABQsJCAcCBhUKCQg
- LAgQWAgMBAh4BAheAAAoJEC9QTbKhgBdPrq0A/icNhFTYLybFWWq1B42UvJLGs18MNRiT5aLdFv3R
- DfHVAQCvzsLrC/qz4rOyIpDzeb0biOu3fiDTcyvV3kPiu3xTDA==
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2-0+deb13u1 
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=dIF4YyTT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793714550; x=1825250550;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=21/dBFytCw06WfTSnztehqTIWH3fJ3UemgDQsPHVjOg=;
+  b=dIF4YyTTboUQu6daqPnfWosES/Wzgd0ka1i2WrKovstKerg+u4FtzG4W
+   ttQS8E85prPFCELWsKszsgi09I5X3USCSH0r4zMDZSHXynHAQZEFwibTy
+   EpHSa8vFjcnNJKR1I/Soj2WxKNs6XilV1IIWKgxlNIfcgHLFpac7mnggK
+   TR+eTILL25+7ql4HtU9DCZzYKL7YAzD15JC/ya1qxfLYgbsi/8d0biyRR
+   iz/l4jYyi826GrAiGW0zCimDhckuksSKdXGcQlUJN//d+Y9BiWkgUaQgV
+   zaIafSor9ZznlTRH8+w/7F4J/B65TDKNZpffhxYETYir1R88hxnywispV
+   A==;
+X-CSE-ConnectionGUID: FaIns5gURJiZZVOAuKOp0A==
+X-CSE-MsgGUID: GYIq29CHS+OlHoCKYoTlnw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11954"; a="2329161"
+X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
+   d="scan'208";a="2329161"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 06:02:29 -0800
+X-CSE-ConnectionGUID: Y42j3A5eTQ6QKttsrzyCkA==
+X-CSE-MsgGUID: 5M+a3Yp+QLeE0Ajy1Oi1EA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,193,1787036400"; 
+   d="scan'208";a="6755557"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by fmviesa009.fm.intel.com with ESMTP; 03 Nov 2026 06:02:23 -0800
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xOF5g-00000000ioO-0URQ;
+	Tue, 03 Nov 2026 14:02:20 +0000
+Date: Tue, 3 Nov 2026 22:01:24 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Frank Li <Frank.Li@nxp.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>
+Cc: oe-kbuild-all@lists.linux.dev,
+	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
+	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH v3 6/7] dmaengine: fsl-edma: support per-channel DT child
+ nodes
+Message-ID: <202611032138.hVbEmkem-lkp@intel.com>
+References: <20261102-edma-iommu-v3-v3-6-9d0e62a954eb@Example.Com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,69 +99,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-x-ovh-tracer-id: 16636297026079509502
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: dmFkZTGsVRszeTgPk2NN8a+Cg96FuZ3AaxnLFPQgchpPWgELqRgveZGx4cLaZMQfuSEhaW9PNnkuQFi7TIN3GlosTEE6BRxaLFNcX0PSveWAoXvh1RPAOVw8zWszBHZUFAaDJ+mnRkyXaH64kci2KXEjizqB1ebVcHfoPx0TlfyqvzMcDs4koDOfpEtby2MprXU6Jq7wkWsvMsRLXmL41nz7auH9KWM8TlMbCTXSI5lpAdc/xgRePNyPN9CC5QvVga3oLIBXHhi2LPxdaZ4XIVE33vk1S5pIoncCb+nLyfIRtLKJV/a53J1g4MWEtulAp9/BAtFp6ztW2SpVtJJhGw1k9489VEIbkVGnlulrTV5W1JXTD7+xvGObeUYSS9DIMIem7a5qyqfwwmfdXqFbet6hno4IYaNCi1SMQoufJBbnBQun07gEMUjBSRVpf6enW43HU3tFL5SAFiCH2S5zCGUf4L32q2nZOb7TEkDEs/B5jrZKagOpukEhN8zuc/CXKABJb8sKUmBNwbzfATnKYepjM07Hgpqr5fngepOOvRQMMiKfwHrN8p7z/t6hSfUFOSbOfLIsylEDz5TBmM79P7+iSGMeuuQbOdjHXG0E+/etD5P2so7ZHg8MgegIzoG0PXcOTbBZJQLfxEBWRA1V8mPyednKkZ7ae6/U/rPpCiixgVcBsg
-DKIM-Signature: a=rsa-sha256; bh=CobYPBDs7z1N+btRZF2lJZ5T4n0PenuOp7YKkuLtHWM=;
- c=relaxed/relaxed; d=guillain.net; h=From; s=ovhmo31693-selector1;
- t=1793713889; v=1;
- b=pEbPnjhb+EQtooMKtH8/PkjLmVxDQSGi/Ct04ScOYAnXJVDVzm8H5PC4k52dJm228lwT4ODi
- xEEkgjiCNaw5oyX6YqBhH2KPWwftr8Zr+1qbHVLLyXJV+FyJrPDGop4DqguhIjtgyUkGkgdHM5t
- yVT0zZBHe7aHRp1F2jB1Ws3miOmAJDCKQ4VHzymdvD7tBGOavkuYHMeRhJolHsnA1gtssruZ+Je
- MwoH07lYvBcJhSRkH/yCjvRk2OH86aEipMKplx3eu2W0qkDMoLofrzUDxaBNNyUg2bnSTtjnTMe
- b+fcGWEamJ9P42Ydh8Tn6hMdduSZvtD3bn34CbcuIE+sw==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261102-edma-iommu-v3-v3-6-9d0e62a954eb@Example.Com>
 
-Hello !
+Hi Peng,
 
-I am experiencing a boot regression in 7.4-rc1 on my computer. It boots
-normally with 7.3 but hangs with 7.4-rc1 after "Loading initial
-ramdisk...".
+kernel test robot noticed the following build errors:
 
-My system :
-- Lenovo, motherboard 3130
-- CPU: AMD PRO A10-9700E
-- Firmware: Lenovo UEFI, M1XKT57A, dated 2022-02-10
+[auto build test ERROR on 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4]
 
-Software :
-- Debian 12.15 (Bookworm)
-- Bootloader: GRUB, UEFI boot
-- GCC 12.2.0
+url:    https://github.com/intel-lab-lkp/linux/commits/Peng-Fan-OSS/dmaengine-fsl-edma-unregister-channels-before-vchan-cleanup/20261102-144955
+base:   6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+patch link:    https://lore.kernel.org/r/20261102-edma-iommu-v3-v3-6-9d0e62a954eb%40Example.Com
+patch subject: [PATCH v3 6/7] dmaengine: fsl-edma: support per-channel DT child nodes
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20261103/202611032138.hVbEmkem-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261103/202611032138.hVbEmkem-lkp@intel.com/reproduce)
 
-I added the following kernel command-line parameters to get more
-information : "earlycon=3Defifb keep_bootcon ignore_loglevel". It
-revealed a NULL pointer dereference in the AMD IOMMU driver :
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202611032138.hVbEmkem-lkp@intel.com/
 
-BUG: kernel NULL pointer dereference, address: 000000000000003c
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-RIP: 0010:amd_iommu_def_domain_type+0x73/0xb0
+All errors (new ones prefixed by >>):
 
-Call Trace:
- <TASK>
- iommu_setup_default_domain+0x25f/0x540
- iommu_device_register+0x162/0x290
- iommu_do_set_dev+0x11f/0x390
- ? __pfx_pci_iommu_init+0x10/0x10
- amd_iommu_init+0x10/0x40
- ? __pfx_pci_iommu_init+0x10/0x10
- pci_iommu_init+0x11/0x40
- do_one_initcall+0x53/0x310
- kernel_init_freeable+0x202/0x370
- ? __pfx_kernel_init+0x10/0x10
- kernel_init+0x1b/0x1c0
- ret_from_fork+0x217/0x300
- ? __pfx_kernel_init+0x10/0x10
- ret_from_fork_asm+0x1a/0x30
- </TASK>
+   ld: drivers/dma/fsl-edma-main.o: in function `fsl_edma_child_to_chan_id.isra.0':
+>> fsl-edma-main.c:(.text+0xa99): undefined reference to `__udivdi3'
 
-Kernel panic - not syncing: Attempted to kill init!
-exitcode=3D0x00000009
-
-Adding amd_iommu=3Doff to the kernel command line allows the system to
-boot successfully.
-
-#regzbot introduced: v7.3..v7.4-rc1
-
-Cheers,
-Jean-Christophe Guillain
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
