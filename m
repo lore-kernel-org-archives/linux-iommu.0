@@ -1,73 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=213.95.11.211
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793685992;
-	b=Fxf7vLz5lKH6YIv4FezZyHkpFga7Fwwiw1XD0DqXbcj1u3gFpBTG9+tFv4aoZmqTebK0
-	 P31GEBZYwN+PS9V2IZzPFClhpC8UPlinkdOtwQLSAXNGHbAB7rvNrNNulTrIyvjpJ9FG0
-	 6258oJMGulW4ugBHl7/8sZWe37LVCjIkBbXHfTrr+naecMc0ujr/nAciV1/t64eac+Iz1
-	 kKS32oQy6UCbSQcbAfjj/VVMP2DaodM1K79PC0eZwM6MBi6eKSzJsqIGYyQoFYod+4hqH
-	 5r9nRFclMigVe3QUa1G8GuIeurP36ZFW+u7bIXv36ygkhhb+6Qd1JXyCwJm78JxpkAA==
+	t=1793693379;
+	b=JHrnCe1wxyZg/mcluv4vn/hEmAjhVvsTmpKTACpIfq9+sL7USRgnrvDlbgGq37fVlPQt
+	 bwcoZudYbGEMhSC01yeOxe0hka/uVXmfGFf20OQgCEsBysT/L5XAqOyKSfTSxohouPRkv
+	 zG/a3NuoUnDNjgO3PYTaCxBQMZ1BCxDFJ1IgGHVAbEi+6b3srOGC6EWY6Ses/6YprEi9V
+	 zkP2rUKFlNSoeKNz8Dj0c2UP7lvEEBU9yXO25D8Sy7ppWKPbpErULfscKPVTLPuk8R6/n
+	 r7ZnVtFnVKYHvvcrKBohkWgQHztZEEcN9qEPVG3exaFi4QtTHHqlBfMfBSTk5IKpFUw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793685992;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=G7dBpgXDg8IWtuGJ7pMO6Cw0uUaelzS3qcqMb/c3wUQ=;
-	b=zsgKVxticxOAkHV8eP0ceduTom1j3qsgP1UQWgaUky/JNYhJB5AsjNSCp/ZoOs4Q0R7Z
-	 Zl5+XUgoO9aGtlEd76oXMxUqqELrs7f26JdFGgnnMw1eXRDbWv9KBDIP6Cz5vyx61SvUo
-	 AtZLmMSy8paBEqfn19r9ZgLc/uYpOpEOL3PjRP7KzTp0amXc1C9CR+jwrohR01id3YQD2
-	 Na+NUrCO3G14Viq10Lv0VwEPFsupt5jWB7eEzks9XNe61p8hgEuLAu8IxW1xhlWQqHOyI
-	 UeCuSroCH7qalyCkxjxOnE3fT5PmNkN0tFJP0isMLdn1OlwxVDvrjjj0y8A4BxW0lhA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793693379;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:User-Agent;
+	bh=2on3ft6XH1eubxEl0nHP4ZK9AQjcmYaJw++Tp033neA=;
+	b=Avvos8dEvTEaL71tzosDOPXps5k3XG3M9qnn9ECN7ejGO9rC9+BnZRRhCU26egXoTHP6
+	 QNowjEOhso2P7Qy8GHgPhEnRDwQKVjdQTlEY6GIu4PH9L9wk8ndDA/i3wrfFgHQSbcBYp
+	 BbapCreTR6vY8BdPzY1jpsp4aGvTDetRejVTUtyFb92lvzYEQhP8cxZps1tqWgONcuhX7
+	 LLt6UCvG9eTjMtKBi2yt0PV3XnAdAe93aogPhyLyRyMetI1VUT43/6/eOJJYzbh0oo0Qn
+	 U7plsJnfQcSLeiIpDTJO9z1XPoDzUM8Z9gUfIx+fOKWC0VMpINcvlSarQbSwYMk9S4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W5XQ1MrM;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=lst.de;
+	spf=pass smtp.mailfrom=lst.de;
+	arc=none smtp.remote-ip=213.95.11.211
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62C01606A32D;
-	Tue,  3 Nov 2026 06:06:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=W5XQ1MrM
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 698671F000C1;
-	Tue,  3 Nov 2026 06:06:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793685991;
-	bh=G7dBpgXDg8IWtuGJ7pMO6Cw0uUaelzS3qcqMb/c3wUQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=W5XQ1MrMLmf/v9KDbp37KF4erp9rYyVMWYf4qhsjtOmpcggSNBb4TC1ry8S93ONc6
-	 QN5zfcnA+fuC0KBHoUzOHZmOJLJu6RIrVX8iUsRocBOk5M3S5sxHGVfBSosyEWfQFh
-	 UvsowjKfA2nw1BqS1H0kOzAuPOfzTLALDfzUbRCtvcdAECvvXs8hHT/kXO8/fc9sSC
-	 b+yIi2F0CxqCvvuoENG9bhq1pb5jArRQvp7xR2njthtd6ZheQ1OU1Og5BO+/D05fgX
-	 dTAWOlCa7QmqwdQ3/yDnQ5D0+wHhcfhXUHE5x7SRab+cv3dRT3mHZJNLMTgU9emTGY
-	 MFxiv3lKDdh+g==
-From: Sven Peter <sven@kernel.org>
-To: Neal Gompa <neal@gompa.dev>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Keith Busch <kbusch@kernel.org>,
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71471606D804;
+	Tue,  3 Nov 2026 08:09:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 71471606D804
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 1E82268B05; Tue,  3 Nov 2026 09:09:34 +0100 (CET)
+Date: Tue, 3 Nov 2026 09:09:33 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Luigi Rizzo <lrizzo@google.com>,
+	"David Hildenbrand (Arm)" <david@kernel.org>,
+	Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	Christoph Hellwig <hch@lst.de>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Jens Axboe <axboe@kernel.dk>,
-	Janne Grunau <j@jannau.net>
-Cc: Sven Peter <sven@kernel.org>,
-	linux-nvme@lists.infradead.org,
-	asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Michael Reeves <michael.reeves077@gmail.com>
-Subject: Re: (subset) [PATCH 0/7] NVMe support for Apple M3, M3 Pro and M3 Max/Ultra devices
-Date: Tue,  3 Nov 2026 07:06:24 +0100
-Message-ID: <179368585837.109404.1193998615991501898.b4-ty@b4>
-X-Mailer: git-send-email 2.55.0
-In-Reply-To: <20260925-apple-m3-nvme-v1-0-5e832e2f4aa9@jannau.net>
-References: <20260925-apple-m3-nvme-v1-0-5e832e2f4aa9@jannau.net>
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	"David S . Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Jesper Dangaard Brouer <hawk@kernel.org>,
+	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+	Willem de Bruijn <willemb@google.com>,
+	Kuniyuki Iwashima <kuniyu@google.com>,
+	Joshua Washington <joshwash@google.com>,
+	Harshitha Ramamurthy <hramamurthy@google.com>,
+	Saeed Mahameed <saeedm@nvidia.com>,
+	Tariq Toukan <tariqt@nvidia.com>,
+	Tony Nguyen <anthony.l.nguyen@intel.com>,
+	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
+	Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Michael Chan <michael.chan@broadcom.com>,
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev,
+	netdev@vger.kernel.org, linux-mm@kvack.org,
+	driver-core@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+Message-ID: <20261103080933.GA4213@lst.de>
+References: <20261003212241.3432303-1-lrizzo@google.com> <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org> <CAMOZA0JaiKsRgDdjHkL_N+MshhcyLSv+cT9SzEbNsC_sumHvOw@mail.gmail.com> <b31efcd5-149c-4edf-81a2-1744d363c390@kernel.org> <CAMOZA0+6kAbwgNwGTsCT5AqpwcZKz4pziEGC9UpHkNCVoqrF-Q@mail.gmail.com> <20261022201229.GH3381610@ziepe.ca> <CAMOZA0KaanmevmvWS=M3gKfBeborzfCQTiF_xbSeYMWbozG7Mg@mail.gmail.com> <20261023140107.GC3977851@ziepe.ca> <CAMOZA0J+MOLv+s4PAvsAK1jbasnbQRyHffZw1VEKutH9Vr6ODw@mail.gmail.com> <20261023145023.GH3977851@ziepe.ca>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,37 +76,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261023145023.GH3977851@ziepe.ca>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Fri, 25 Sep 2026 10:22:47 +0200, Janne Grunau wrote:
-> Hej,
+On Fri, Oct 23, 2026 at 11:50:23AM -0300, Jason Gunthorpe wrote:
+> > Disk I/O is still potentially affected by the same problems
+> > (cost if io mapping/unmapping, iotlb thrashing, bounce buffers
+> > in confidential computing...)
 > 
-> this series adds NVMe support to all M3, M3 Pro and M3 Max/Ultra
-> devices. The hardware works the same way as T602x (M2 Pro/Max/Ultra). If
-> there were changes they don't affect the way the existing Linux drivers
-> use the hardware. So this series adds new per-SoC compatible strings to
-> the mailbox, SART (IOMMU) and ANS (NVMe host controller) bindings and
-> the device nodes.
-> 
-> [...]
+> The disk folks already have a proposal to address all of this using
+> io_uring and preallocated buffers. I really doubt yet another version
+> is going to be interesting there.
 
-Applied to local tree (apple-soc/dt-7.5), thanks!
-
-[2/7] dt-bindings: mailbox: Add Apple M3 compatibles
-      https://github.com/AsahiLinux/linux/commit/b96264bcbdd2
-[3/7] dt-bindings: iommu: apple,sart: Add Apple M3 compatibles
-      https://github.com/AsahiLinux/linux/commit/300a52ab04e4
-[4/7] dt-bindings: nvme: apple,nvme-ans: Add Apple M3 compatibles
-      https://github.com/AsahiLinux/linux/commit/5874c917ad89
-[5/7] arm64: dts: apple: t6030: Add NVMe device nodes
-      https://github.com/AsahiLinux/linux/commit/b876489f1f3a
-[6/7] arm64: dts: apple: t6031: Add NVMe device nodes
-      https://github.com/AsahiLinux/linux/commit/ff00db14d0f5
-[7/7] arm64: dts: apple: t8122: Add NVMe device nodes
-      https://github.com/AsahiLinux/linux/commit/acb925da4987
-
-Best regards,
--- 
-Sven Peter <sven@kernel.org>
+Huh?  If you mean the dma-buf I/O it doesn't really have anything
+to do with disks, except that this is the first user.  The dma-buf
+iovec can work for every ->read_iter/->write_iter consumer, and
+should be adopted more broadly.  Including by networking instead of
+their own totally weird different world.
 
