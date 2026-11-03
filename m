@@ -1,74 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=51.210.91.13
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793716427;
-	b=5HRGt0NwwjJ9vrZpNqR6P0QdqqlvQ3c4OgcCwMpo1v/oOyMMEW6rIPGNggkqg4tqxo4m
-	 dY4PMyvkylP8HP9KLrugqdWf70i0PW9YQG9N+rGlx3xK9SWbxEODFGEX3CmCkzHwB6dJR
-	 0Qe/A57Sa0hYc4Sj9K7xACO8gKuH3IriomSjwAmN1na5RBzk8+bgiphfo3cskppL0Dqbw
-	 5KHgzMrayD5+vasDQcJaOWEZSzrxZy6JNiSLGQjrhcyg08bya0ivBoS8/DJzbjWLt58W5
-	 MqLTLyxKciB/S6Cz0Irt3ekRFeMywi2KpTyHpyYyyE6lQOf8BBZNN3dp+6iLnLozwKg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793716427;
-	h=DMARC-Filter:Received:Received:Received:Received:X-OVh-ClientIp:
-	 Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:Autocrypt:
-	 Content-Type:Content-Transfer-Encoding:User-Agent:MIME-Version:
-	 x-ovh-tracer-id:X-VR-SPAMSTATE:X-VR-SPAMSCORE:X-VR-SPAMCAUSE:
-	 DKIM-Signature;
-	bh=eTPs+DvoE4zLEGX8NqUn0kd9ShkIk3CgigzEPX1cuXg=;
-	b=LbTiho0OImBVXcAi82s/9ZpfAxYBEOTsgozihXmM0KXoEm58Fr0xD/25if+QaCRKervg
-	 LmosTVqa3c887O2Xs8hm85XDTco9rykoErLhG+t4sTM3DUtoPxhvo/mQo3zOzTOEYvJsx
-	 fs9JVMpVPO+fQOkFzAMl53nfH34EcY5zLjx0nBjvuGSV4zdELuzwMzFxiNaztMBUpCa/G
-	 92cgmLUtnQbPmbJwnf420yoIZS5ZLt90HXzW25xeTFinvDu5Eh4Jlog0dOizxQOi0btv/
-	 1f0ZT6Ik6YExwc6mjorW4jRSX++b4lnY/P+1X+WxaBbOK+s/7CRH0mPQwP8qOvxR28Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=guillain.net;
-	spf=pass smtp.mailfrom=guillain.net;
-	dkim=pass header.d=guillain.net header.i=@guillain.net header.a=rsa-sha256 header.s=ovhmo31693-selector1 header.b=cFPFtkWt;
-	arc=none smtp.remote-ip=51.210.91.13
-Received: from smtpout4.mo536.mail-out.ovh.net (smtpout4.mo536.mail-out.ovh.net [51.210.91.13])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.43
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793716735;
+	b=f7oH9jGyW/ya7dc7gD+zLjI0Jac2bLmz29uN/Cqc50JpArI7nKEy6XeAL89DVnjbAZST
+	 pJ1XRu8aXzAIAr2pQQCEI1zC9dbYoauDMdB+JQOMQqQ4nLhZOvaImxT9wLU2amS/8EUce
+	 iGmIgBjmSN9PGBMkQOWNKz0J+LdgsFdwD0ekU6BkgovTw80gXxLCSB8SfcqzXXY8kd3pS
+	 O7t6+hVLQ86veWXMOfDus25LR1M1q+WPWz2EMWr8o4owlDcAjwO2nMmSZLIRtDiDJgSPG
+	 jZlji00Jhx3MFrDL90iobb+Etxk9biLnD9KHaCWm2H15eo22oNsPO8CBVvFpKqyb8hA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793716735;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=wScaEU7zbedwCZF7Taw4KIJKXyUEy34MOR8r6OQgxjo=;
+	b=pPzQ62l2dVzvOppbXxCLUeujUEy9YRe9jAca7Tm8/TYiMsIFAxb0bGYjb0oSfEo70TpV
+	 EMC+8L2REBAg6vr04MMXCjEY1k0NMLYYWT/4RofejlLy3yODFi+/1oAMhUsaaWnf856ho
+	 e9r0szkgKCoRU8G2U7iW3SvDYLV2HUgrXtNGMWBnPwBs6f6QQaKufvCM3gy3ClqTiEmC3
+	 Xxb7DM1c4I7K7+oZFm/kl5XwKUfRrlxg1A4cMSTX+KdEGJLZxUBIjsr+nr3/47oc5P4Qs
+	 MtNspCA5Lx5W7nOXTqExigDDk1PxxosGQ9Y6JsYBKe5bwEbUVJe88JX6apWoNaRBHoQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=jnWcfZrb;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.43
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013043.outbound.protection.outlook.com [40.93.201.43])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18C9C606D835
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 14:33:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 18C9C606D835
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=guillain.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=guillain.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EE73606A326
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 14:38:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9EE73606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=guillain.net header.i=@guillain.net header.a=rsa-sha256 header.s=ovhmo31693-selector1 header.b=cFPFtkWt
-Received: from director1.derp.mail-out.ovh.net (director1.derp.mail-out.ovh.net [79.137.60.221])
-	by mo536.mail-out.ovh.net (Postfix) with ESMTPS id 4jJrfV71k5z82pw;
-	Tue,  3 Nov 2026 14:33:38 +0000 (UTC)
-Received: from director1.derp.mail-out.ovh.net (director1.derp.mail-out.ovh.net. [127.0.0.1])
-        by director1.derp.mail-out.ovh.net (inspect_sender_mail_agent) with SMTP
-        for <joro@8bytes.org>; Tue,  3 Nov 2026 14:33:38 +0000 (UTC)
-Received: from mta2.priv.ovhmail-u1.ea.mail.ovh.net (unknown [10.110.113.144])
-	by director1.derp.mail-out.ovh.net (Postfix) with ESMTPS id 4jJrfV5m1Lz6Mby;
-	Tue,  3 Nov 2026 14:33:38 +0000 (UTC)
-Received: from guillain.net (unknown [10.1.6.8])
-	(Authenticated sender: jean-christophe@guillain.net)
-	by mta2.priv.ovhmail-u1.ea.mail.ovh.net (Postfix) with ESMTPSA id 0B8F93E2076;
-	Tue,  3 Nov 2026 14:33:37 +0000 (UTC)
-Authentication-Results:garm.ovh; auth=pass (GARM-95G0014bc1717f-501f-45f5-886f-64cb1d424e43,
-                    15838527D7D3E0897ACBD919E55849F771FD37B2) smtp.auth=jean-christophe@guillain.net
-X-OVh-ClientIp:78.242.14.240
-Message-ID: <aa03a31a5d700da89d2d20ce92a16c9629d20702.camel@guillain.net>
-Subject: Re: [REGRESSION] AMD IOMMU NULL pointer dereference during boot
- with v7.4-rc1
-From: Jean-Christophe Guillain <jean-christophe@guillain.net>
-To: iommu@lists.linux.dev
-Cc: vasant.hegde@amd.com, joro@8bytes.org, suravee.suthikulpanit@amd.com
-Date: Tue, 03 Nov 2026 15:33:36 +0100
-In-Reply-To: <97e7c46b2c3b8a0af2a458649349798c4ecc55ff.camel@guillain.net>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=jnWcfZrb
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=um5O3lakQcYnfryMrIXC+n4t/moQvleNNSXJFZx6z/YwL0C6MBtr0YGvpERpaVP1TEU4rgRZoBywWIOk2H9pX6RmWdpMZKJMaUcgz8dBLSsh1Yj2F0fOU3Low1CxgBNC1RpP+ZNOMSJc/yOlZ/68u9DGREa4Gr9XhgWH7vtwFBeMPiclhgzOqFhWWSTdoJoYXleMt0Dg9PA+SO1nC9ug5mQzqe6Rp3W1GOpMPW+aAg/NXvzOs8cYlyIYeOurBjB51Mtsv51f/9yxm5qVQy88c9o2ttBXfer+zLkjKabQuxEiQ+/jyBXOzc5ssVtHAv5sFYf1OXbyS25ZoPbz46GK0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=wScaEU7zbedwCZF7Taw4KIJKXyUEy34MOR8r6OQgxjo=;
+ b=axkfw+UODgYaVH5uo9pg5m9X0UOkxXnXPxKSzFdWPmUMl635GRaTQCOIpYPrZzQMlPmIyuNahmQeRPg+BJBWOzpvOfg1uNudnXZ82GLwnx2sZSYExqtnmcR8m39vyEsL/UR6Dfdw5jpUte2/KqVs6ibvcUHPzqgnf3Sw3FWy12w8PUqJsvnmxIgywSAcmbGqeVSZqgJIwT8bYhERqApA6VpT/w2LOIOBfHuKdHOyVcyOnXMkKr4cPe59cGxyspdRwRZf64bGxmZvsgobJC8dC9UnjhH8MGaFe3nzxjFWTLoho3XMIsVkgHONIxj/PHCHubJnidiuhW8BU/KdyVYkxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wScaEU7zbedwCZF7Taw4KIJKXyUEy34MOR8r6OQgxjo=;
+ b=jnWcfZrbkNMJcVungC16M0uJ9gX1R2TgvYb5xYSpv9qcQJnwkzGj0n03Fiahhy5r4wRTDHF1WAu0kdH+S2otonnFDE1iPXzoDwUYYAYJZK9FZkLW5zVtc0qyCURtU1v74C2bz+bgBm7pGEcvO7YdDjGrU1A1lVsCtLcOP5fw8aM=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by IA1PR12MB6282.namprd12.prod.outlook.com (2603:10b6:208:3e6::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Tue, 3 Nov
+ 2026 14:38:50 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0592.007; Tue, 3 Nov 2026
+ 14:38:50 +0000
+Message-ID: <6a3cf464-6c1b-460a-9ee5-5468ded48e0a@amd.com>
+Date: Tue, 3 Nov 2026 20:08:43 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [REGRESSION] AMD IOMMU NULL pointer dereference during boot with
+ v7.4-rc1
+To: Jean-Christophe Guillain <jean-christophe@guillain.net>,
+ iommu@lists.linux.dev
+Cc: joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ "Limonciello, Mario" <Mario.Limonciello@amd.com>
 References: <97e7c46b2c3b8a0af2a458649349798c4ecc55ff.camel@guillain.net>
-Autocrypt: addr=jean-christophe@guillain.net; prefer-encrypt=mutual;
- keydata=mDMEaEmXaBYJKwYBBAHaRw8BAQdA1qyia8WH1pu6T8sC99WNMyKXooD/SVqJXsJOcnIux
- w20N0plYW4tQ2hyaXN0b3BoZSBHdWlsbGFpbiA8amVhbi1jaHJpc3RvcGhlQGd1aWxsYWluLm5ldD
- 6IlgQTFgoAPhYhBDk2+TsBtH9ETCTubi9QTbKhgBdPBQJoSZdoAhsBBQkSzAMABQsJCAcCBhUKCQg
- LAgQWAgMBAh4BAheAAAoJEC9QTbKhgBdPrq0A/icNhFTYLybFWWq1B42UvJLGs18MNRiT5aLdFv3R
- DfHVAQCvzsLrC/qz4rOyIpDzeb0biOu3fiDTcyvV3kPiu3xTDA==
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2-0+deb13u1 
+ <aa03a31a5d700da89d2d20ce92a16c9629d20702.camel@guillain.net>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <aa03a31a5d700da89d2d20ce92a16c9629d20702.camel@guillain.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA5PR01CA0062.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:1b8::16) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -78,91 +99,96 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-x-ovh-tracer-id: 17348428717830720510
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: dmFkZTGRLeNKNLxg1rwE+di94xOKRcV0GqzRqzJbcf5UYwn48srotUFoNFA+cfN8+Wtc4XXbAuT0naCK8dkSOneDz6zelGrzVq3hCzDPdeqf7UDPkegyx6xds2p/ZHz2+c+y9F1JVFeOc/q8NDO64Yy3Y9AVnJ0K7l2JUowCY21vxlrM/74zxUbj/0jGe6tCaNQEtoA9cMUbjd8J5U9WB4dm0TsdH6YS/wfsGSy7oGtW5VMSqdbIyqMiVy+HMDIgVL20fKc4F0P07FJS8ZjclbRjkkEzlr15L5nMfbAit6GM2WKueWsOrKnODe1PED/8NAqg4Bn3gIbWJQqUhCpKa/koz+sRpRfJfLFZR8fRgna6lJhPFvrELCPYx/sDhokQYBXnEEBSfE5l0WmnzTZdN1pXyT2wvk4yPJimaesnkWZuuwRtVEh6eDu2GhzAw+88ce1ko6vfdhctddeht97dNNMoRW4+GqSLlA4mVZTORmjLK5gDS4Djh6Em0dF9frQDcgv7ru37/OmHxTJR1kQI4CQcIfmJkzUZCeJFkEEJ9eI7Iqqf73YR38jKOS33iRakGhvfrBJo2K4jW/b7lErmX/myknk0XnmfO7sW48ZEpxw74WVnBlleVo18HoxEK7caHRu4vpSuma6f0Gdp4Ylagd1v/7gymVgSW5aWKSwD93d5hNSsPw
-DKIM-Signature: a=rsa-sha256; bh=eTPs+DvoE4zLEGX8NqUn0kd9ShkIk3CgigzEPX1cuXg=;
- c=relaxed/relaxed; d=guillain.net; h=From; s=ovhmo31693-selector1;
- t=1793716419; v=1;
- b=cFPFtkWtWVOmoI6kX+B8FuByGTPDuHAdmTLsNhXEYQz2F9Sz54e5UGNNXx71NiZCvdHkTHTf
- aNma6ZhqNk/wZurEsRAlT9TWJDPwPVXFAV8A3TF6csMwsCNdF0DcVbB5kCJbY255J5p6xTjp1Q1
- c5xi4C+dZkwafsKa7g9niMEqZzdVdBhGXu1h54qVpgfQo7cWje7lMu9pIrZ4nglpLdhTiEnzxgP
- gn613LH9xE6DH6IPBdegUsJC3mc3/y28QobpWX/PKhkhZ+aWkteyM9Zwf9xbEqg60uYedHEHUpm
- Ck3JHfyhf8/rTI7b8i66LLMgR89GAIKjqQxmxmDl4+GFw==
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|IA1PR12MB6282:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5d5af6d7-24d6-4249-aef2-08df39b82cd6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|1800799024|376014|366016|11063799006|4143699003|56012099006|261028144727099003|261026140227099003|261022105027099003|261026121527099003|261022075727099003|261009223027099003|10067099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	9Y8e1fXUlwssKo37NRQiAEeAy+CEvYMthvzOEjHA93ZkoNshtNT/+kfqYZRU9Vo2kapRIk8T1A33Hy/41kazlmeM7Q4p2m8J8F8y32kREQw8ofHg0HSIDw8YilEzpskmzpepjwvSZRA2fOqa7m1Zw//66CEDn3qzgetW8BDDjwaFv/JfxohQFhu3l9VrUUVk5pOpB2IxDyRsZ+fUucRq7VsccTDy+b7k6MGXNiKjLwDns3EXgp4ZPjhQ5ts8vaf2vGBkxk0AhjeNTcIyFCD6bIktGKxNQRvNcqQ7AWHhlY5BOxp+1ZKcmHM4Q4YzDGSxivcONOClR9IjMAZPxhGXwSrBVbmsbML1d42LiloDr2lexafcIcVudVfsKNAsRr4MWOVmRr1h4Wq+gLiM/r64pCAOYdfkSunE8uPUGkxe5DxbimzsWjBz4issVfh+PSoP/xOrbmNe3fNQrJZWjQUDrTOf/yBCsJLp8zAu24zDLz5sRfpJysouPQ20OivyHCbeZXpP20spWrR22894+DRoFhtgVOJDAxTpUEEhDySOdD9sUs4/oGCCe/5N72dem10pIL0ccXrpKiwMKLVDxiyfPbl8qvSZc6J1OO+nAtF/G/O//LmsLqs1U1b7w0WmQJLTeHyqsNsDysUgDpaf+btPBU4mEinrDhgz7uYpYVlyrHQ=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(366016)(11063799006)(4143699003)(56012099006)(261028144727099003)(261026140227099003)(261022105027099003)(261026121527099003)(261022075727099003)(261009223027099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Y010bWhRUGVvUGhDWDNwQjRuZjhIT2ZRVjBrMDd0c1FaeGw4U3Q2aVNBRUlS?=
+ =?utf-8?B?cGNJU2J1NmxaN2pKYUE2OFhIdXk3K2VkcEJOZU1CTmhPZHVYczhvUys0WnNP?=
+ =?utf-8?B?SzdFdmhXeDhwSTY2UVZNaXNEd1JkbnkxUEhpSG4wdTliV2JZQnJJdXdTK1dn?=
+ =?utf-8?B?UDROaUVCWkkxalZXVDVLZk1Oc01VUGhUZy9mVXhQaFhRUXhZcFpKTHpVaE13?=
+ =?utf-8?B?b3B1K3UyclRVdGV5Sjk0ZnlLVTJDUXRyOWdPckNMMmU0ako1RU5xVjBrdkhj?=
+ =?utf-8?B?WUFXYUh0dXpaczlpcGJHY2MyY1Jyay81Z1BpRjNRVHl6bzJNQ2FsSWVHZEFv?=
+ =?utf-8?B?eU1HS0MyL1BjUVRCenkxbEJMdWFXMFRPME51REowaVBKeTVZZUVEaUJaTXd6?=
+ =?utf-8?B?RENTZ2hQMzZWbGw0SE50WlIwNEM1SFdkdytzdzZyN1ZZTzNqY1hYQmdsZ25X?=
+ =?utf-8?B?RWFINWliQWdhMFNXM3d3QTV2RkRXa09VMWNwNnZXcjdMd2JWdHJzYzBDb29y?=
+ =?utf-8?B?dnp6MDdsbkhBOXpxN0Q0Q2djcGcrVGNubnByaVZKMFdYY3JDZXhjL0o4Mncw?=
+ =?utf-8?B?VmNsTC9qYllWN3F4a25jZXYzZGlKMmx3VzJyRUFGcjlodjl2RkxjWHAveTVx?=
+ =?utf-8?B?R1E5aVFUa0Zac2Z1MC9HeGpKQ3JPbGxYL1JoOWEyKys4cjhOTjJYRW90OVZr?=
+ =?utf-8?B?NXNJMjJsMUNYd1JxclB6aWQ3WWM0WEM2QzVDK2xnSTFZWHhzWW5kc3BscDlS?=
+ =?utf-8?B?bUJueFEwWkUzYUltV24rWkpNQWlWVzFSd1JkOUVudWt0R1lESWJJZkY0TUZz?=
+ =?utf-8?B?bHZUaVhGVU5YREFqU3V6ckgyUjhVOGV0T0o4d2N4eE5XV2hubjk5MW5YZ0pk?=
+ =?utf-8?B?Uk1PQ3g1aWtOb1J4OUhQMGlRdnhBVkQzWFRCa1lZa0pPZVJxQXdMaEp4MUtl?=
+ =?utf-8?B?RkQzMVVUcDJMS3psb2pxOVRaVEpRSE4vVXZRekFiMEdTcHhvRzNjOFJpYkhw?=
+ =?utf-8?B?aVh0SzBlVWtLbVh6cm85VU5CeXNxWVhhU1FjalNHc2plNGZ4emE0NGJnOStB?=
+ =?utf-8?B?TXZ4Y21KVU4zOGgrQ0RrRnNLZWNUR0pCSEd0VTNJZFdMUFZlV25LemNxbTBB?=
+ =?utf-8?B?WURrU2plV3hkQmpGZVU3akJOUlVlam9RRzc0WGZDSyt6amFSSGtwR3VUKysz?=
+ =?utf-8?B?OGN4NDlVcXEwRm1NVVlNZG1RbUZYRWUrdGdYWnZPV2h2VisrRXlNdHkzT2tn?=
+ =?utf-8?B?TlVXUHBZekdnR2NDNlR4dG5rb2ZKcVlQZUlwNitERVJZRU9tUExJVVJVUnF5?=
+ =?utf-8?B?N1A5Ky9LN0l5V3hYWUQ2NWZsbnNudFVIUGxJQ296eUo1N3BNa1Q2US8rbllj?=
+ =?utf-8?B?TmpwczdNaUdTOFVjaUllNVpxdXhvZE5HSmlIdlphWWVFUkNaM3gyVnJQenph?=
+ =?utf-8?B?OXVjN1NTbG05TmFZajJzdHQ1SUptT2dQTU9uK0pzLzhTM2NFN3RZN01sSjV5?=
+ =?utf-8?B?K1VPVXE3QjFxdHZRUm9zWjZ5NEZqUUUvL1p3Znk3NUhTc2d4UXAvczdQT3Uy?=
+ =?utf-8?B?NGFma2M5MFFkbC8rYnZZUmw0VkNyWEYxVGtQWXVETXRoYVJ0QkVxbGhXTGhM?=
+ =?utf-8?B?RFVvaWNqU1doYlBjTmJ1RHRQcGFicE1XdFFwRythZWF6WVhoVHFtMi95Qml5?=
+ =?utf-8?B?YWdFK3JVYlk4U1dyWCtRNXE0aUZPQzBkeGhOSkthTEhyc1N1d1Evc2xZMkZV?=
+ =?utf-8?B?dG9QNGE4c1p1MjN4NGZQZlpVa2kxcjNjZ2tpMitLMnBhZ3V5RUdCS3QrekhG?=
+ =?utf-8?B?YnJxSlg0OVZKL2ZqenZkT0cwdk9zUGxPamxHaDhsb3dudndQTkxUK3VnRkpz?=
+ =?utf-8?B?NkNGWCsvSzRyZ3FDdFBEZGtRTUU0NmNoWlBhVWdIMEJzNHdyZlE2dy9uVFpQ?=
+ =?utf-8?B?dkIva0UybGt3cHhlL01Ha0pXVUlzQTV5UEt4bEFMaFNLb3VSVDM1V1BZUXRM?=
+ =?utf-8?B?Y2lvQXRMYnQ4SlErRnh2L3B5RUFHNXpuNFFtaU56RmZhK0w4THEyWGlXL3M2?=
+ =?utf-8?B?bnFFSnhFbFhlb1hnQ2xsYjZzVUtsNWFtM0JSYmxMcHNmYkdJM1EzcGlJQzZX?=
+ =?utf-8?B?alpDVmtpbzV5aXo1bzhXUXZXQnBNbFJHTFJ3RjBTMlNGRHhScm1aZTd0bWFZ?=
+ =?utf-8?B?NW5JRThXZjZUUlFUM1Bob0NkUjhuZXgyUzhqV3I4eHZnamRlQmVJU3V4a1dR?=
+ =?utf-8?B?ZWNjT2Jrb0ZNRkhENllRMVAzV0JwOXo4WGVTZVB5NHl4M3NPWFpIUGk1QUpt?=
+ =?utf-8?Q?pncv6Zonp4+Kru50//?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d5af6d7-24d6-4249-aef2-08df39b82cd6
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 14:38:50.0493
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TdyFL0cYxxjZxoYh02yK/ynVC0Vr2M35O+DQ38rvdKNClWP1NC0u3YuxIEjZWl/s+VhmmCeuWxrNGG6aqeELiw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6282
 
-Hello again !
+Jean,
 
-I managed to boot 7.4-rc1 successfully with a small patch.
 
-I'm not an experienced kernel developer, so I used an LLM to help me
-investigate the crash. The following analysis was suggested by the LLM,
-but I tested the proposed change myself on the affected machine.
+On 11/3/2026 8:03 PM, Jean-Christophe Guillain wrote:
+> Hello again !
+> 
+> I managed to boot 7.4-rc1 successfully with a small patch.
+> 
+> I'm not an experienced kernel developer, so I used an LLM to help me
+> investigate the crash. The following analysis was suggested by the LLM,
+> but I tested the proposed change myself on the affected machine.
+> 
+> The likely culprit is commit bf5bdfd1f8d4 ("iommu/amd: Force identity
+> mode for selected GPUs only").
+> 
+> This commit introduced the following line in
+> quirks_force_identity_mapping():
+> 
+> if (pci_upstream_bridge(pdev)->vendor == PCI_VENDOR_ID_ATI)
+>     return false;
 
-The likely culprit is commit bf5bdfd1f8d4 ("iommu/amd: Force identity
-mode for selected GPUs only").
+Thanks for debugging. We we added quirks_force_identity_mapping() we assumed
+upstream_bridge is always valid. Seems that was wrong.
 
-This commit introduced the following line in
-quirks_force_identity_mapping():
+Patch looks good to me. Can you send proper patch so that I can pick it up for rc ?
 
-if (pci_upstream_bridge(pdev)->vendor =3D=3D PCI_VENDOR_ID_ATI)
-    return false;
 
-According to the analysis, pci_upstream_bridge(pdev) can return NULL
-when a PCI device has no upstream bridge. In that case, accessing -
->vendor causes a NULL pointer dereference.
+-Vasant
 
-This seems consistent with the original oops:
-
-RIP: amd_iommu_def_domain_type+0x73/0xb0
-RAX: 0000000000000000
-CR2: 000000000000003c
-
-The LLM suggested checking the returned pointer before dereferencing
-it.
-
-I applied the following change to v7.4-rc1:
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 960e1dc05ec6..75e98e2e9d83 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3372,6 +3372,7 @@ static bool amd_iommu_is_attach_deferred(struct
-device *dev)
-
- static bool quirks_force_identity_mapping(struct pci_dev *pdev)
- {
-+       struct pci_dev *bridge;
-        int class =3D pdev->class >> 8;
-
-        /* AMD GPU vendor ID */
-@@ -3383,7 +3384,8 @@ static bool quirks_force_identity_mapping(struct
-pci_dev *pdev)
-            class !=3D PCI_CLASS_DISPLAY_OTHER)
-                return false;
-
--       if (pci_upstream_bridge(pdev)->vendor =3D=3D PCI_VENDOR_ID_ATI)
-+       bridge =3D pci_upstream_bridge(pdev);
-+       if (bridge && bridge->vendor =3D=3D PCI_VENDOR_ID_ATI)
-                return false;
-
-        /* It is the GPU in an APU, force identity domain */
-
-With this patch, the system boots successfully without amd_iommu=3Doff.
-
-dmesg shows that the AMD IOMMU is initialized :
-
-iommu: Default domain type: Translated
-AMD-Vi: Interrupt remapping enabled
-AMD-Vi: Virtual APIC enabled
-perf/amd_iommu: Detected AMD IOMMU #0 (2 banks, 4 counters/bank).
-amdgpu 0000:00:01.0: AMD-Vi: PerfOpt armed on IOMMU0
-
-So the patch fixes the boot regression on my hardware while keeping AMD
-IOMMU enabled.
-
-I cannot tell whether this is the correct fix for all affected systems,
-but I hope these findings will be useful.
-
-Cheers !
-Jean-Christophe Guillain
