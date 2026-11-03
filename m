@@ -1,102 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793734592;
-	b=24TWoDYoeZDIkeByRt9DHdwFtTNS3J+FcZYTvPV/60xS4aUcXmic2e9ez4bpkGaqS7mT
-	 +zNVZFtRIrXMRQr7OO3E2qTQW6cYncUkryi4XMxUuERiyzSXbpDPEjA42OWuaTqi039XL
-	 7joQlGbec0VNeSKo6d1ddu9ZW8mPFjA1OjjEhJ/Z6IFv5JcD6rJf9i1xyRiF2gJv0xeI/
-	 PCWUtf/swJQof4TJWS3+kiawBPQd/7m1idgh9/TPrqrU6CucHumNTmIEjsgAFOfQO+5Kh
-	 hAVOVAD8QsKM6E6+tS2IjPBXpAzWYa1QV978gLPIrrjqmjpWR7FeC3F5ITj7TUOpxkg==
+	t=1793734733;
+	b=bkHAhSmUeLUK2Kf2JktaRZnro41HUIBDVdQBsnP/l1bUVYrb2+pnAluN1+78GrzQm+R5
+	 rxF3wwig8OH7givJDt4xBghRPV+MiDerVPricSJgkBuAqg2dfYsPu3jlbd/F96mBI9JbW
+	 ML/gHM7Sn2fiYLAXc6OOBfdrgvNnaaN538r2r++PDSEFF87kWoBhubRKehbCn5ka2VM4C
+	 REsRXcGl2k2NXuLKbuqrPxEoj4EEg8rU9MaIMUmY7B3RrX1lzk0PnSCFm4scdyj1tkmDj
+	 IpPs3UdjWi+wtbykymTRad9+vrIQgtwxNSmxBkg6Edb4n16BxsPe6SJTc/Pfy75jksg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793734592;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793734733;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=uq8YUdEumE4c58BERrSl6Gv5Qqe1I7TfJJee/dW1I8E=;
-	b=LBF6OVyDT3hYyNmsfZ7iM38R29nAq5IAAGVEUh6x5rhlhveOr4knrHV3GsNwOdrbQF6Q
-	 xrSvtyTYVDLgwaFBiOOqUK8Kx6b1ZwsDXDoitqwQi8kZghOKYrSqg84YhAkl5HcA9fuyC
-	 6O8aMQKU0SC5ImVLZHvW4wBVGUQPuiR8cqUwyIANlP65xzBhanZiXhHRMIhIrBUEeR5UF
-	 gzRSSLDcTtjnMCJh9uRYZ5vOq225Q3EaiWhYD/Rpt3kgnH1F6RHRB+Q56FcUcwqNxmIZm
-	 eK1yJ6Hr9tCzP+OX7DCXZSKwbQ31batlRjjEbe0riWk019ixIcuHN6qxAi3E02M+9EA==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=TK3utwnIPX37GwcC6jBJrNjTtS9pS+ECr0ZBshoSLgk=;
+	b=0Q2XPoKPXzI4IPcBoGCmBt2joogToDhvitF9pLNCdxQ1Bst6J6rPReC7VD6oi5HCv3Ao
+	 gAwJi52EViaedcCxShKKRQze273MPgS0qLGpYHYmDzuZamPQne6zN4bvN/eZOHn4QY9b5
+	 bbtbiZWdSsoRqSjlLUMjBYI/m7g4QzCr/J2CXsuoRBO3td+FazZU58oUjRO52S73B7Qtq
+	 C7ot+HY3N2mKMi28RM/2+aMVjv/7iyB3F6dKMAafgZVpMFcBurdI595Kn0qa4vhKTVWB7
+	 0Kfrl0OU8+BBdVGldaoFKOLsA42gJ3lovcSeRSj0EhdDEQfY4TvQB4CIOnW2pWKf7OQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b="LQ3zV/RU";
-	arc=none smtp.remote-ip=209.85.222.182
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TX+afQ5O;
+	arc=none smtp.remote-ip=209.85.128.42
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72A16606A31B
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 19:36:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72A16606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD7C7606A324
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 19:38:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DD7C7606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=LQ3zV/RU
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-930c0f9c1b1so464138785a.1
-        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 11:36:31 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=TX+afQ5O
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4a9a8d6cea8so13886665e9.1
+        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 11:38:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793734590; x=1794339390; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=uq8YUdEumE4c58BERrSl6Gv5Qqe1I7TfJJee/dW1I8E=;
-        b=LQ3zV/RU1Rc5WbcAq1oVHFbXusRHzOLxK4aUQlD0EDf6UfqBK7cEWpda347K0Aa2HW
-         WxCQ6rK66IR+CkM1/epQMajcRVbJ6bxmELe2IXq4AqPTXLxg6F9EUg029p0JqduwQRud
-         jdn/Qiv+Gn6ngpFQ6K7v48g6GfXYTVyVEevWEPhuCMzYf5yneFsz3sdYkEpriLHDcDuR
-         uu3qL3JrFFC+yoWD5tlsig0z5dyo2f4IO1SH1dQJ+hdkhZRRIYBWqhdZlZWk32rLhjQ2
-         f6FamM12tQ/K/XOzjmUqC4JfwmD5NWeO5KeASSDCRyJ2sETFaQ2XsuDmVxlFiZt2MHYq
-         BW3w==
+        d=gmail.com; s=20260707; t=1793734731; x=1794339531; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=TK3utwnIPX37GwcC6jBJrNjTtS9pS+ECr0ZBshoSLgk=;
+        b=TX+afQ5OtmLi0K/jNFhb5EjLFNdHPjZexNLXbOdK2n5L5lLYEavfh1RJezjq0Ewnb8
+         uMFSW+ADG6GkMoE/+t5MPs5slp/rIsftxgRNBloTBYJpOSWoXuI4lnWWgjjMc7c6i9r/
+         FnpsINYLolXqce+OhmVw3GnOSYu1JyZW1mcc2VUzZ4QJQrjJUKVletpO7pdts0qA+O2O
+         G64bKp/+JAcwyQhOzFhvtfXS6xX1pIfP+/0ZTBb2utw+aMk+4705defFpSoGrnDRuwZ7
+         MShz/Pjj0dmSZj29lOYd/kbI3ZRBb66RbEb/ATVdtDsufZXApjfvENXVLF/vHz2g4Z74
+         7ktA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793734590; x=1794339390;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=uq8YUdEumE4c58BERrSl6Gv5Qqe1I7TfJJee/dW1I8E=;
-        b=02ntLvkwcC41l+6Szp6vMLSY+dOH8TxXI2gOqFj5nGSyXrPjp2KZh4iPvuI41l9xRe
-         lrXF1bo9KhPIz1IZ48YH5yvg8/fE0UTAb8U2qdl30YMg8yR2n+V6FPUtUhD5+8gWIbz5
-         oUx1uVdDbGcwm8y19RU6TPKl7WXZHbXMfaBeFv6thBq9ryJTWc0BLGl060lqgZjUPd55
-         Nk6xnzLmnVy/u5BOqRwqCe4wWAPd7hzEDEpRgZgacJlTDTUZNZWj0j98mSiJgQF+abG3
-         Cu9rdhCxgZaHmrXBZEqnBiQieQpdzgF4YoyXN3LjyXO6agq56gPCb3wXXJRpjU+81sIe
-         CudQ==
-X-Forwarded-Encrypted: i=1; AKwUvByj0EiIgHElwOVWYff1mBgJdVxWlS7RiMt9jvm7DgVuWATGXxQtHZ2hmuOHceuIHJszH8MKRw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+sIM5ejVLJ1t6XR8TOutGz7Ra5H/NjL86+WqTdYfTprluUfwBW
-	hacH+RUvqcR3mmgVeLGsHXmlI+9iPVVrGaj26N+98O/cQTz6A9H/BOvj98x1UQTOrGU=
-X-Gm-Gg: AYBFou138bWuhK4aJyE0+aLvfLSl7m7hM2taw20EtC8xDqrLpJuu+mwy72bskMlYbrh
-	3d7Wxg2vCaO/vsfm7mCsktOKL+j8fmOyTvzGSV0JmkPxN8l/MhX+Wyu6Zvl1E0SHVBeLVP1VsfG
-	TzRkNu0B8q9oiaWu/ONK1BNYxkSN1sGTPmG1L2Z7U6v7Sv8ii3g2vPm1NbB33/iC1GfQMIHcjRU
-	BXQCuIlq6e0BYTAVKlMOcuDyz6w/jdEJHpwQyR6LSjFYzV+87z5xbCUSKdupJxv7VS2SSv5BLjI
-	3yy+oFG8r98iq2qmQZGcKAdxOONzQ0BGRcAU4B27h4j3TIL78pcnN/Hfcji7V2Sy2Mnhm5mhFmZ
-	+zgq9/Nfel+licmBENH9V0aDttFXOjrTj/F+pcf8ovWMkXR26pgpLWnw958v5SefG7caaeDvC8c
-	9NPiwEyxA2jr0wDtNnwvFSccBwjV8mryWAPjtvkC1g6qqTLnTy3LviicoOJoOzHcsRC5kPi4+zw
-	Jv8e8U2qzcajRm6FY9yPgTKopjU/Hb93/PyGBP4mfkmES5L51GdEjZ5jeQSilYfUgxhu0SXBpn6
-	svY7Zo5Jethzve2CHf1B00KuQPDLBLC1mX8RjNILspgFECdO82kmeHci2zmeArrEsibHV319h6+
-	EpT0o9M9kKw==
-X-Received: by 2002:a05:620a:8013:b0:93c:2726:77ec with SMTP id af79cd13be357-944214cba5emr2106461085a.5.1793734590511;
-        Tue, 03 Nov 2026 11:36:30 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-945d4852ba3sm9839685a.31.2026.11.03.11.36.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 11:36:30 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xOKJ3-0000000Dn4k-1aHz;
-	Tue, 03 Nov 2026 15:36:29 -0400
-Date: Tue, 3 Nov 2026 15:36:29 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tal Zussman <tz2294@columbia.edu>
-Cc: Kevin Tian <kevin.tian@intel.com>,
+        d=1e100.net; s=20260707; t=1793734731; x=1794339531;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=TK3utwnIPX37GwcC6jBJrNjTtS9pS+ECr0ZBshoSLgk=;
+        b=y6nLD+eFfBPLc24Qu5JkSVT6Xlo6v12bmrVSBrRIYlV0N0UqF7l/u7zGtmse06tt5Q
+         N6jNQQ1RWVFhtYxHiapH/Pq5qq6jvBJAEolVRztI0TP6jKmnoIeMbR7Xv6a2UKlBsuz2
+         IX+j89rKSIL0/SeAcAR+lrXOPdqOZsiKsrBEd5XIFl5eFYe7PLd2KOoDoHbuxL3heIFH
+         eA8ZNMpYtbqtZ5VS0zgFB9eFEuPvIuZ1vAz8oG0bV1jfz86yo1NUEgSuF6GP3ZnMU0+Q
+         jn4U2SJN+AZPXJXtECkMECo51OqWhqcivQVsRPhQvDTqoWsmrTxRX3CCGAv9XKMr/Npr
+         cGVw==
+X-Forwarded-Encrypted: i=1; AKwUvBwsKEHJGSM+ewyea/rPK6aj+WrX6nxmnz4ltNKfOqUvnIUA5fs5LXx/FC+9VjF9V393qxBQbQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8EhZ8mp2wZ4SveOGt18QbE29fJP0iqURhtK6EdlOfpc5vfIdWb
+	4+PR5BmXEgaFgBHjtrs5YR765zqZ0zHh8xnbX0NqMQn9BCaKrelMK5LY
+X-Gm-Gg: AYBFou0aj1qCAZjxNX0+Ebyu9dEKmcdo/W+srYnjQCUUyzPfE+xBu3d8LV0mtxkhnPQ
+	OWmbSpw/DfOGP6rWYEZQahEVZxOj273B6Sztox+HiLnZWE3Mor79Gjc0VEvzrsQKkKftqEkhkh5
+	vzbVTY030ZeLsznNMycpB9E8WK5gDaE3AA5NItiH6+p861x19+zo+31G36mFbQuSxOY39ex2b+d
+	vJKOfn3TAGhH1xghP1ExdRgFNDUN3xwekXEVB//2QH+iJppklVgY0sel4E1AxKz/UqSQRpJwMHZ
+	78V1ZOK1y4pXjXGmI6e+n181PWnuD9NvhHOT8xi13F/Jf99LvOz/pLxoAwiOOIl/z9luyB3ew2M
+	P6vqIFavm1ayRXJ4Ifz2tkWTrPiIoEKSKPONx4/9i+QARuLIHnSyxZiRPIYt/vWu8VR3T7y4N21
+	vnYcHiiQREoMK8pMLy18Ar7IuMF4MbZPwFY7q4jtdQV91Df8PVQGZVI4e441hMdllA7NqPa3Tkp
+	mdwTtEKRpAU4l3dYljVDrwVb+XqkMcuN/qGs8qGtSzRCJ7VYornvQpilfeWNAprOh8AJ9z1XTi0
+	RuQNDfWYe5Tzyn883EigczmAS3oe9GqM9BxD8BXGXAX9eH1VUcOLUMvrgzYaUpnl8w+NEjdzJJ8
+	LSz9wKMRFYnaLAI5fY35W9PVNiYOwNFSEyKLABlIZa4vfdHMFyfU08CzSulM3XXRycg==
+X-Received: by 2002:a05:600c:848c:b0:4a3:5da2:38ae with SMTP id 5b1f17b1804b1-4ac17a3628emr326325635e9.14.1793734731206;
+        Tue, 03 Nov 2026 11:38:51 -0800 (PST)
+Received: from dev-dsk-fgriffo-1c-93421965.eu-west-1.amazon.com (54-240-197-234.amazon.com. [54.240.197.234])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b2a5372d8bsm87303325e9.0.2026.11.03.11.38.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 03 Nov 2026 11:38:50 -0800 (PST)
+From: Fred Griffoul <griffoul@gmail.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	linux-coco@lists.linux.dev
+Cc: Ackerley Tng <ackerleytng@google.com>,
+	Alex Williamson <alex@shazbot.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	David Hildenbrand <david@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
 	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jean-Philippe Brucker <jpb@kernel.org>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommufd: copy to and from folios in batch_rw()
-Message-ID: <20261103193629.GO3889730@ziepe.ca>
-References: <20261031-iommufd-folio-dirty-v1-0-2cef66d2d6d1@columbia.edu>
- <20261031-iommufd-folio-dirty-v1-2-2cef66d2d6d1@columbia.edu>
+	Kevin Tian <kevin.tian@intel.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Will Deacon <will@kernel.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	patches@lists.linux.dev
+Subject: Re: [RFC PATCH v3 07/13] KVM: guest_memfd: Support private/shared conversion of device memory
+Date: Tue,  3 Nov 2026 19:38:50 +0000
+Message-ID: <20261103193850.15363-1-griffoul@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20261101071928.2462549-8-aneesh.kumar@kernel.org>
+References: <20261101071928.2462549-8-aneesh.kumar@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -106,37 +116,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261031-iommufd-folio-dirty-v1-2-2cef66d2d6d1@columbia.edu>
+Content-Transfer-Encoding: 8bit
 
-On Sat, Oct 31, 2026 at 04:33:19PM -0400, Tal Zussman wrote:
-> batch_rw() copies one page at a time and, for writes, dirties each page
-> with set_page_dirty_lock(). Walk the pfn batch a folio at a time
-> instead, copying with memcpy_to_folio() and memcpy_from_folio() and
-> marking each folio dirty once. Convert the single-page copy in
-> iopt_pages_rw_page() to the same helper.
-> 
-> iopt_pages_rw_access() rejects dmabuf pages, so only pinned user memory
-> and memfd pages can reach batch_rw(), and those are always folios.
-> 
-> memcpy_to_folio() also flushes the dcache after the write, which the
-> open-coded memcpy() didn't.
-> 
-> This removes the last use of set_page_dirty_lock() in iommufd.
-> 
-> With ftrace timing iopt_pages_rw_slow() through the mock driver on a
-> non-debug kernel, slow-path writes to THP-backed pages drop from ~1310 to
-> ~930 ns/page (now the same cost as a read), and writes to 4K folios drop
-> ~9%.
-> 
-> Signed-off-by: Tal Zussman <tz2294@columbia.edu>
-> ---
->  drivers/iommu/iommufd/pages.c | 35 ++++++++++++++++++++---------------
->  1 file changed, 20 insertions(+), 15 deletions(-)
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
 
-This looks reasonable to me
+> +			if (!slot)
+> +				return -EINVAL;
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+[...]
 
-Jason
+> +			ret = kvm_arch_gmem_device_map(gi->device.kvm, slot, gpa,
+> +						       (u64)(high - first) << PAGE_SHIFT,
+> +						       PFN_PHYS(pfn));
+> +			if (ret)
+> +				return ret;
+
+Unless I'm missing something, these returns leave the pieces already
+mapped in place, while the attributes stay shared. A later conversion
+to shared would then find nothing to do, and a retry of this
+conversion would run into the pieces that are mapped.
+
+Would it make sense for the error path to unmap what was mapped, e.g.
+with kvm_gmem_invalidate_start() and KVM_FILTER_PRIVATE on the range?
+
+Fred
