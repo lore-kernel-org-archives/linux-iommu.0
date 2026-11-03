@@ -1,17 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.63
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.198.19
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793723144;
-	b=fbH8Ch4QoFi3+RjeKGI2d7NyHEVdnnpxU2WY1IFYj2Urp7OMLUhaAoZtwwFtrGiY8snn
-	 H2VDtodYCKhaUpBt4pcwLf+JaIvAqVtXVW0lHTmZEyuKzKl5qxOX64m0xUcBrDranScTN
-	 y7ezzhWgyQxIK+1WN88pzB4z0DP1AK3k7JDjIgPjCQlmp9irlXVg1Cx2MPok9cqDMyD3v
-	 JoUx1CxLmcrMvlEq9Y72RHLSrh1GXYFk4HwDFWaqjkZ2V6Jja23126pftY9hcX/shj+4F
-	 9C5pTtAIYo8J1xjjaJjGVNbkfUIFYVonLMfJ/lBfOAALSJK7HeFVLeI43NKyWHiLk0g==
+	t=1793723196;
+	b=ifYIw7EUxA3MHnFYyBdw96AOqlTd3UJxqGxIrVaRwJ9LoddsUFG5kR43DfHcB67mUAHa
+	 x6b629a1XlhYZRj4c1tzO3TpORvY3J9u3H+vO5icIRicE39GSbeYheFUfRQYOkvGsyE/b
+	 egU4ZMhecnMhCjy53ETubd+hSOgvr0tjiVqpOArSFcJG3W7aXZnHhYVK5UAuMKjrm0xq7
+	 +6YmGDz9zcM7ZPNasYtEMn43XkeeFPKDPIzdkvsbxGOiFmL4s7UhjXf52l3caCRsat7wb
+	 VhyW54sa7mAAT04Jf4yA4i5/ytpMf2IbHxhrFX80VhwQlHXvnkGzfEL5jVjfL3gs3tA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793723144;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793723196;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:Content-Type:
+	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding:Content-Type:
 	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
@@ -26,53 +26,53 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=3im34LmcRYA+cSiE+sBGk7UdCBE4SoKxb7+/feltjdY=;
-	b=RY1OBySsIgVAfiRwPn3Wh/8QK8a0LvwjrZCb80pozYQ1FqDQjGQUIJX8bJ93ZxUf5J2s
-	 ls4ttEQZLoWnrcMWqOBYuz+bOYamMucJuuh1OVdwepsN0hABXgnd/hpTc6cwxm7PwSa1h
-	 eYCM4qKcM+Aq/DZzIp3jEF/NDsuq1mx1U5TiVjBfHez1E5/eC7cubr95TuRbXClwsjS23
-	 ygB9mYW+c1wmen+5In2KGsCtDkuVHEXZF58prgzUOMF6M4E511LZa3Jwy+GG6WYzySI82
-	 hAZA/LyvFiov7XTfO4xnnJUyctDnyw0p5sRI56gG0w8vSMzdZQ9UKdgOfFQxlnPLb2A==
+	bh=6zyMxWVaLRlrzyt0tmMAewN95mt1HurEOoa5PZ+1XiM=;
+	b=lOXFrT6yxu/t8aorUoatH2x+H5748sWHmvBmkPSKepCCHG90C4onGGemm8r9UQk6fIHJ
+	 gCbQo9zX7d82KJL8jmUA3bNdFCEJ3/vUKyL+O2EOHffD1JC9/BO2sxUGgPZ2a+C8Zg0bp
+	 21XekEY+Otq4+x/QKvVyLWYXzABIGnJF3G30+H2y6z6I98B6fM5+K/NQWGdKBdkmKf7Ex
+	 x3vwmLmjYnXEDyYRmaQJpxmnwh9Lpx6SRFi+Y0gQ0lJJ3WWz10ZCEpDs87mJ6CyTW0gQu
+	 gVa+san5fSd5bMVMMRrA2HCLe+TZUePOyHXGxFbxflJ9zeUZ+GqHqWc9aKb4mhCCifA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=oSQtlEHv;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.63
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010063.outbound.protection.outlook.com [52.101.61.63])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=fa9GrIOj;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.198.19
+Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010019.outbound.protection.outlook.com [40.93.198.19])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B893606A33F
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 16:25:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1B893606A33F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13C10606A324
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 16:26:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 13C10606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=oSQtlEHv
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=fa9GrIOj
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=iZ/CP4lF1yI/NWFk8EF6P4c9PHdgiz+tCW7wiRCgCL/ZapCGKfTBBgiKESCMVZV0rhNoctZ9rLvi2gWQoghhMhN4AsIKAwNPkWpnUACZDXmhkJZVzoNnuLjYtiIl4/SYx4lbDd8YA+wK8lJYVYBKgZCuQJNP5nBpvXPCk/7itbPikceVlgf6Xz9MWdKrzehAoD96LVNDdNZaDP9Rsiae05/XIOwlV3bfWzC0lNba1EV9rOX3Y7Hvawq+dFlRlB+f1oLWU5MgY9Yf2Z4rT7Q/yMJAwxzUCr7T1H+XLuYjt5/5f8kwtlVcnjdOBiL2MKt8HEE0/op+3WTRiW1+KWORMQ==
+ b=xypmjGs1kSXMUZDFXKDayybtsseuc3iUrikOJx3ZN8G09pp9nk7Jpv1uQIpiN75Q6TRtfKbg5yQvhhQupWq1fKIG8lfJFPRrhKc3HVKQvVEAS1Urh7RMkIv6GqM/tQ9q/6LBszwaHsVlYk2x0fuxVFXRCPIs08E8qFN5FZibGweXq5qc/4BTYXiXrbqaMSdrG+Af0RUwLggUYK8EN3woULYIwN02CryxYe2DwWoXWMpEq8Sye+xHnxa8JcqpAVAFhdC7i8XTBFzJIIUJJ2twBj4bpHMIB84TAsblg/DmOVvFmM0a7znYB2LaVl92YgJpxTQaYVIR3RI8HGpNyGsinw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3im34LmcRYA+cSiE+sBGk7UdCBE4SoKxb7+/feltjdY=;
- b=vjInhPqiHu37AFiPgGAWMJF3Lnpn9GqtFMtwpHt2rMSSTJ2nyzPZ5rJJ1ZTHIV/yOS9wf46Ru9xiEU6iWnkQEn8/CRCdT85y8L0fMgAg0Zza/KvZPWluYzsFbJZXqbjmZKcNYxfTiW6eKJ89gK3XntCUsWiFQPxsng+S4tuEiY/Yo/N0wIabB8KSD9gBusYagekdTe1F3v5zXoMIMvP3MS57TQ73EIQeQqRCLsLR854UKg6IxhgHFQPxDyTFcdHFCLa/nOth8zOzvgPvD1EqjR+/878nsS8s+kba3UKqa23CX7Q9cvNzhN89hEG1+s5SwIBrrt/LP7Wx6O1zvc5/KA==
+ bh=6zyMxWVaLRlrzyt0tmMAewN95mt1HurEOoa5PZ+1XiM=;
+ b=QKDBFM6iVo4YjOmvcaRfS5jM4HvPUNDOD0KOmImCxJJUqCS/fX2idbBdy1GeN2UdyswhhpFbdEGNTCgH7ws2cgGubmxvGVLhA5aEEc9xA3pKdQ4iatSXPQLW0mwBcEnPou7MhjazIAbE4lDVc05CJp/d538B6fKFC0/v7tfk7q+DE3h5YdyGuzHP+7zEnJhjoZm6RT0YAzNeneoOJUnR6z1LXr/DuFYav5oiBtdoqI3GMBUW5+6wFDSVo7/cIsjl32yqQYtklk3cHbihfUW6i6LT036talb7IdSdSyk63s+4kHXAVKFGIZn/cazWshbEFQs8LVQ5yOAgeflQyMIo4Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3im34LmcRYA+cSiE+sBGk7UdCBE4SoKxb7+/feltjdY=;
- b=oSQtlEHvSDAkssEUG0mB1C7bPYGWQy6IHpAsL07JYnQ4B+RfCTLPpm6LBq68+xztF8E6BNN4Tcdkr579kWjAJxb7Bc9ofiPjg+4UPIvLV6vOBAXn28io6sHjxf+p7a1E1y3fgOTwl6kFUz9dsvUqm5zjHPAjKKq8UfTAlPZuKgU=
-Received: from BY3PR05CA0045.namprd05.prod.outlook.com (2603:10b6:a03:39b::20)
- by DS7PR12MB6189.namprd12.prod.outlook.com (2603:10b6:8:9a::17) with
+ bh=6zyMxWVaLRlrzyt0tmMAewN95mt1HurEOoa5PZ+1XiM=;
+ b=fa9GrIOjfxkvoyllV35c+8hEPOpOJcfs3i8E9F3yWTdAd8V0+VmiTDB5yTxWe31zbjH2lVg+0LPzEPuC0uOFWkCYJDwx1Ky7mXDz454HAOTWS7hpzSoYTIh5WcejgadPxDfT8GLEbQCWWR+aCLoQEFRl3pP5Ttf+KC/ItJk/fRY=
+Received: from CH0P220CA0008.NAMP220.PROD.OUTLOOK.COM (2603:10b6:610:ef::6) by
+ SA6PR12MB999201.namprd12.prod.outlook.com (2603:10b6:806:450::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Tue, 3 Nov
- 2026 16:25:19 +0000
-Received: from MW1PEPF00018894.namprd03.prod.outlook.com
- (2603:10b6:a03:39b:cafe::34) by BY3PR05CA0045.outlook.office365.com
- (2603:10b6:a03:39b::20) with Microsoft SMTP Server (version=TLS1_3,
+ 2026 16:24:49 +0000
+Received: from CH1PEPF0005BD5E.namprd02.prod.outlook.com
+ (2603:10b6:610:ef:cafe::95) by CH0P220CA0008.outlook.office365.com
+ (2603:10b6:610:ef::6) with Microsoft SMTP Server (version=TLS1_3,
  cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.8 via Frontend Transport; Tue, 3
- Nov 2026 16:25:19 +0000
+ Nov 2026 16:24:48 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -80,16 +80,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- MW1PEPF00018894.mail.protection.outlook.com (10.167.249.171) with Microsoft
+ CH1PEPF0005BD5E.mail.protection.outlook.com (10.167.244.247) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Tue, 3 Nov 2026 16:25:19 +0000
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb07.amd.com
+ 15.21.592.5 via Frontend Transport; Tue, 3 Nov 2026 16:24:48 +0000
+Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Tue, 3 Nov
- 2026 10:25:08 -0600
+ 2026 10:24:46 -0600
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
+ (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Tue, 3 Nov
+ 2026 10:24:46 -0600
 Received: from xhdradheys41.xilinx.com (10.180.168.240) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.53 via Frontend
- Transport; Tue, 3 Nov 2026 10:25:03 -0600
+ Transport; Tue, 3 Nov 2026 10:24:41 -0600
 From: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
 To: <robh@kernel.org>, <saravanak@kernel.org>, <akpm@linux-foundation.org>,
 	<david@kernel.org>, <ljs@kernel.org>, <liam@infradead.org>,
@@ -99,12 +103,10 @@ To: <robh@kernel.org>, <saravanak@kernel.org>, <akpm@linux-foundation.org>,
 CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-mm@kvack.org>, <iommu@lists.linux.dev>, <kexec@lists.infradead.org>,
 	Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Subject: [PATCH 4/4] mm/cma: drop the duplicate alignment check in rmem_cma_setup()
-Date: Tue, 3 Nov 2026 21:54:29 +0530
-Message-ID: <20261103162429.2053989-5-radhey.shyam.pandey@amd.com>
+Subject: [PATCH 0/4] kexec,mm/cma: do not run the next kernel from a fixed-base CMA area
+Date: Tue, 3 Nov 2026 21:54:25 +0530
+Message-ID: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
 X-Mailer: git-send-email 2.44.4
-In-Reply-To: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
-References: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -118,82 +120,75 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW1PEPF00018894:EE_|DS7PR12MB6189:EE_
-X-MS-Office365-Filtering-Correlation-Id: c1fe01bd-8512-4efa-6e98-08df39c70d3c
+X-MS-TrafficTypeDiagnostic: CH1PEPF0005BD5E:EE_|SA6PR12MB999201:EE_
+X-MS-Office365-Filtering-Correlation-Id: a2b4ae8e-8581-444c-18c2-08df39c6fb08
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|82310400026|7416014|376014|1800799024|36860700016|261022105027099003|261021121427099003|261021123027099003|921020|261026140227099003|261028144727099003|11063799006|56012099006|22082099003|261102123227099003|10067099003|18002099003;
+	BCL:0;ARA:13230040|1800799024|82310400026|7416014|376014|23010399003|36860700016|56012099006|10067099003|18002099003|261009223027099003|261022075727099003|921020|261102123227099003|261021123027099003|261021121427099003|261022115727099003|11063799006|261026121527099003;
 X-Microsoft-Antispam-Message-Info:
-	epst9tIK9Nw6Flg9AL8MdPpXv18W7619t7mIdXDosX4vle939uBUjZQPbpfv6Frp+qD+7BSO0ddR+F5qjuMn5R6HqbNlydD1v5IyaZCJgu+OHE/CX9jTVYZ3jxuDQRsahnnI92oLV8Aq66ap7qtbyvnd8Zh6TgxcxDyxTtAte2UvOHfPKYMI6Gnrmd7rwWCn64nUsEfmseAUR8KMuZhfS6pjmlXVGodMGpXGjNS8ziVobmtH+p7z5QcSXauP/7b0QsjgEM8bIPJgXAzALFdN/Qh3nAdqQ6p+ksR12wJy1qFMDnuEdLAoHTYYzx05r+HI+aXwJPOoIItvwal79OmUkyZ8bFjc5Go330jXyh7auRShYZquN6WgDvAsU1ioBcauV+P8vEI+2P+NN13xKhfAhqrGsXs9VBfdw/AzmxyGSTuJH751ZUaVgAkfsEUgXZGvjrNZlt5qEH5CNU19+SG2Wyn7quM/9k/VH2WV69P+CiiElwvO9JvGz/29yf2K4JX4N71EqWfJjdw8RlCSSt1Ur5m/8MxPj7O5ktKe/CAqPzEUjUpXrJ6J2flVinnvIBIZ013Xs55GwMsxqZ4Jn0FgABKYPKAmKcjipsJgo3d4jGi27hgf9ZuWm4sxN7ZensiCIeFhQ+RlWnkNZlipqie9QzLNVGceVzf/dp1VWY/6bJsapXSybpSSPfuE+x19aaPZYII0JSSIKdeUpNwXuv5cmG4W+VZRVc3HxOtyv0f25CSEbSbeyLjlim6GbUZGP4pa
+	LuLvjFVnDBrU91Q4OP1QehB+udeusNPB+vvs0j90Avj7BssmtFwsSk44ipPx0vuEzIbSoFEfJzKt0p6DIFQXKuiyIho98OXIX1fwhWzoDRcheUHmaHxwrBWX6R+lNY+zt2YzPCExmbviL5znD4p+PLmTvpI+H2AS7duxJOmHTBs9IXmXmz0BJw+AdsJD+AmRnOTnfI3UYXH/N2Fv5NW3bujojxwdpyuQmrlxxXQshFSudNzIE8Wo6lMR7KV43nusWgNVgEN3+fKflrJP/CXSCyHwykMT/vyB5oBSS+XaGLO1wfzy+PdsNMmrCJAkOuDH77PuK26BNDuAUrErSHAxlL9nG/MVAT/4uiV5RyWNlx2lAFYdQ0aMnLxG1H0U90F/GXsl7p0mLQTPdq8KeDmyaEveHcoAd/v+aP1vMk0XQ9kwlCoXjDrlAleBQsRj2h2yomkGrbpBDTSaMQ/jQwz/FtteeXxNWH7JZgvn/ImhK9ScFGTgHlPK+6UgruXAPWFqa2/dweNkWDTBuIYbK62/3hsuah9A6XNyIkuIeVPQMWRfV/rSmlGnHVlWjVruRZWiLhtrESn4okvFp+0hdYVXn9Kwaqjsdt4PoIMu+9UcJwvW5aUTT7FFd+MHx9yQZzUWYdWR5xzhVWlphCgfGTrkdRbM6Nw4CdsabJl8UrBVYm/9tYvFT0+Jv4c4PtXwYvkQ
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(82310400026)(7416014)(376014)(1800799024)(36860700016)(261022105027099003)(261021121427099003)(261021123027099003)(921020)(261026140227099003)(261028144727099003)(11063799006)(56012099006)(22082099003)(261102123227099003)(10067099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(7416014)(376014)(23010399003)(36860700016)(56012099006)(10067099003)(18002099003)(261009223027099003)(261022075727099003)(921020)(261102123227099003)(261021123027099003)(261021121427099003)(261022115727099003)(11063799006)(261026121527099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	zDh0DEnEi7HvHxB5stq29M/5hR5i/o7prngSgh/2Y2vfy90PFxmh88zHzoepdI2Wf/ARuFGww7eKgAXs9pfM+mr+3kpzgdg8uEgqPOljg5MND0DVfhmLkSosCHj1SHtW2yfyp1774g9Nre5GS34XVJ8dK6x3mI+CFz4gkXGaqOtZP6wN/gPCxJ86BhnPcokwS/sG1GjKHXO9g/IUEPWCGYwuRvhz7i20S3E4O25aezr1QQAYjoaiY3Vhs8d+OW6Znrgshw9sBKhWD0p7B+1kK7zBpGknG1ZWOxtI1wp+mkDv1mmc6jij4pqxEuUzmN2ZS3DBRFJF5jvytu6ayRiOKnr7m6a74gwNHkXImHrMdqqcRFNiWwMx1g+LL3E++SPCTrKuAjM1F4olu5CHzo93UvX3Wdp8JcWKUfFt2DO9UstktkBF0eP+m5ztEx0M3bYd
+	dNjv3IiiTvWJOExdT+n/aXaOt24uPeJgwW9EHjE7jKsEpmeVAQMMigmVO3akbgxqlZOB9FcA7UyxuzFLLdbpaV8G/qkqMN7IFVop+2uHY8g4467tfR/jKDHJzWwTVo+zdZEUAUYBwJ6HF4c24K6B5B/g8z3o3c8C2rL7fQ8Z5UkoYgj2QPNVcEXemXid2STOIMYcAQz1CluVSYC+Naz8Mn/COk1fPHz0VV/YY3N9jv6ihcPficU8XGbb/IdxQxYUa13gRp8w+d5MqLpmerGZI5tF5pcgu1lPIel2LSaKgGxRWA8yjGv+wVg+H6t0c8rlO/pfQ4yWnH3KPIxCuVU9jbLpRYZwkZazssrLRkcxIzprd4jpv6B+ClVf7RLAej2Z022rPMX1kgU+gFD6fhf6hrtBafhL9xmCnuFTqrHQzsKKvC/G9h3/TmrYo/ei237y
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 16:25:19.2118
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 16:24:48.7263
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1fe01bd-8512-4efa-6e98-08df39c70d3c
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2b4ae8e-8581-444c-18c2-08df39c6fb08
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	MW1PEPF00018894.namprd03.prod.outlook.com
+	CH1PEPF0005BD5E.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6189
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA6PR12MB999201
 
-cma_init_reserved_mem() already refuses a base or size that is not aligned
-to CMA_MIN_ALIGNMENT_BYTES, so the identical test in rmem_cma_setup() only
-repeats it one call earlier. Remove it and report the failure from
-cma_init_reserved_mem() instead, where the area name is available: the
-message now says which pool is misaligned, and every caller gets the
-diagnostic rather than just the device-tree path.
+Since commit 07d24902977e ("kexec: enable CMA based contiguous
+allocation"), kexec_locate_mem_hole() places the next kernel in the
+default CMA area and it runs from there in place. If that area has a
+fixed base the loaded kernel declares the range it is executing from
+as a shared-dma-pool, and cma_activate_area() frees its own image to
+the page allocator. On a VEK385 that corrupts kernel text within
+~300ms of /sbin/init starting.
 
-Suggested-by: Mike Rapoport <rppt@kernel.org>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
----
+Patch 1 is the fix and stands on its own. Patches 2 and 3 close the
+same hole for a device tree placing a shared-dma-pool over the kernel
+image with no kexec involved; patch 4 is an unrelated cleanup.
+
 Changes since RFC:
-- New patch
----
- kernel/dma/contiguous.c | 5 -----
- mm/cma.c                | 6 +++++-
- 2 files changed, 5 insertions(+), 6 deletions(-)
+- Patch 1 records CMA_DYNAMIC_BASE rather than CMA_FIXED_BASE.
+- New patch 2 answers the RFC's open question (Pratyush): -EBUSY from
+  node_init keeps the reservation, so refusing an overlapping pool no
+  longer frees [_text, _end) along with it.
+- Patch 3 reordered after it, returns -EBUSY, rejects a wrapping
+  base+size; both Reviewed-by tags dropped for the rework.
+- New patch 4 drops the duplicate alignment check (Mike).
 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 90937dc7c627..14450cf0f832 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -552,11 +552,6 @@ static int __init rmem_cma_setup(unsigned long node, struct reserved_mem *rmem)
- 	if (ret)
- 		return ret;
- 
--	if (!IS_ALIGNED(rmem->base | rmem->size, CMA_MIN_ALIGNMENT_BYTES)) {
--		pr_err("Reserved memory: incorrect alignment of CMA region\n");
--		return -EINVAL;
--	}
--
- 	ret = cma_init_reserved_mem(rmem->base, rmem->size, 0, rmem->name, &cma);
- 	if (ret) {
- 		pr_err("Reserved memory: unable to setup CMA region\n");
-diff --git a/mm/cma.c b/mm/cma.c
-index 3231a53161cd..68dea7070d69 100644
---- a/mm/cma.c
-+++ b/mm/cma.c
-@@ -326,8 +326,12 @@ int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
- 	}
- 
- 	/* ensure minimal alignment required by mm core */
--	if (!IS_ALIGNED(base | size, CMA_MIN_ALIGNMENT_BYTES))
-+	if (!IS_ALIGNED(base | size, CMA_MIN_ALIGNMENT_BYTES)) {
-+		pr_err("area %s (%pa, size %pa) is not aligned to %lu bytes\n",
-+		       name ?: "(unnamed)", &base, &size,
-+		       (unsigned long)CMA_MIN_ALIGNMENT_BYTES);
- 		return -EINVAL;
-+	}
- 
- 	ret = cma_new_area(name, size, order_per_bit, &cma);
- 	if (ret != 0)
+Tested on VEK385: with patch 1 kexec declines all three device-tree
+pools; without it the booted kernel refuses the overlapping pool.
+
+
+Link to RFC: https://lore.kernel.org/all/20261014145731.3431527-1-radhey.shyam.pandey@amd.com
+
+Radhey Shyam Pandey (4):
+  kexec: do not place the next kernel in a fixed-address CMA area
+  of: reserved_mem: keep the reservation when node_init returns -EBUSY
+  mm/cma: reject CMA areas that overlap the kernel image
+  mm/cma: drop the duplicate alignment check in rmem_cma_setup()
+
+ drivers/of/of_reserved_mem.c    | 14 +++++++++++
+ include/linux/cma.h             | 10 ++++++++
+ include/linux/of_reserved_mem.h |  5 ++++
+ kernel/dma/contiguous.c         |  5 ----
+ kernel/kexec_file.c             | 12 +++++++++
+ mm/cma.c                        | 43 ++++++++++++++++++++++++++++++++-
+ mm/cma.h                        |  2 ++
+ 7 files changed, 85 insertions(+), 6 deletions(-)
+
+
+base-commit: d6bcfc94eb4da6e089c5473970cd96727292fd97
 -- 
 2.44.4
 
