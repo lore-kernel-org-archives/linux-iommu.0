@@ -1,109 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.59
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793723346;
-	b=yuYKMLJUd8TIC5wIzB4LieQn2xuwqfFRsqR1ohU1b78jEJmJnWOHaF7SO7+d1svIDgbg
-	 bbveuoxHwb15xLe17Y1gq828c7t+UtMMeyPUxj7XeKjy26zKvTEXEBKgjzXkITS/amg+W
-	 lx5iL1Te56wtBNdSeRNsifsqyEeBJoDQrqyNu12At5qzPd0UPtJDZC4aJYuL5O4e1bADk
-	 Pk1EBie1Tpur1VzISDaHjXMRhbv/nCPp/Em4zKDXsWNI3PoaL6dJ+bR+RIbvxzPuQfDBp
-	 CEHpg3K//+HILt57wJ+8CbJF5y0H6lEKzeXflDEYjvUDUBNPdQPcCCFoTQ7znsPRAMQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793723346;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=Pjvtisfj0ShIvEUhY1wqdXjIdnKALWvBB/aKcW/zekM=;
-	b=OJfbWPy8UD8bCPi5wW79Q+ReTLx4QgS+AamxA2Bb58AbQf3sdy4YiOPV2dutyRGQTbkI
-	 uRw3KPglG1GOJXw7WxBk3KPLq4Ixaycn0T+C28hqSKzoRmNWRPJH/zg6wJ+xqGfNfIm7F
-	 jwN+imZKhl14CSYaGmwSCULHj3oOFMwn7O+mT8hHeJdSgdFJ2+S5vfEOWTHATzE0KZjzL
-	 GgDChktGxUjUu9zy+BR2oz7E3Qn8cgXK0DMVfU/TDW2lx8V7ydM8KdRkkCUyqQlfQ95W/
-	 eGp4PZvmWG0r2Nk7Hn8DHAHE3LXV7xQagIDw3kZj14qZ/R5heQkC5M4Rx6f3ca6olHw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=FcKrv1we;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.59
-Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011059.outbound.protection.outlook.com [52.101.62.59])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793723953;
+	b=Diy7jWqYmy3P/5WgMD05/ptUEubOeBISZ3RUnxzBzCgC1peIabjF+L3wpXRm7eAlKqmB
+	 a0MSuCIoO+/T4kCbgF8iTf3i1UX0QBvJFNanANWh9OOn252QB4dYF0f5yynPpG9XLaz8d
+	 hM+BrSDFpt2SgU8rF0t0Cl++R6kuHUP/ywR+sw3zQW9XqvV9GOFZUq2zn0rrn4wtfXtOv
+	 dds4PlXnUx2Zns+njGiwapRmwIcToZQYnsTHUhI28i9CE1ByZlhw5nMOxkISkAfhWFyFe
+	 NKmZhQYQ5OJepH5g64aqr3h9srPw5blVgW2hFZ+LFDMBhGVD1YZtfM288CM7aScO/7g==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793723953;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=V7CHaxJjio26zC0cpwOTJ7GJgFVKnUUB8e0VQq1U5gQ=;
+	b=my0dlfNmZQvVcdZKl+83Fsc+SDtTMr0V4KbdkrvBk+qVV2nrnnznhifyaulGZI9Nbq2K
+	 AVy/+Ezh1aNy+s9e9x0no1CxESiHkYt6EsuASRGeAQD2BSOB6NLwXj8OXcgROn37Jf76T
+	 l9NXTS0PzcO+Zeu41BL39x835lfi73MPdVH17RU/6AbEeowmNYMGPfD9NU4o63MNh1H1A
+	 f4O7EZAkNEZU2ykOXbKhgJ0+R9Sr+jLTMScBoTi3f9LBIdcO8fSJn0NH6P2qcTJGHtm57
+	 eXHfHM/LkTWDzJR7lIo449uRqvE67En51y0Coo0EfECk9Nv3vEueldQBVJCtQJuuLIg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TdBvAHNI;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9F8606A324
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 16:29:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0F9F8606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29596606D82E;
+	Tue,  3 Nov 2026 16:39:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=FcKrv1we
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tQCmZpO1w8C+ZgQB2ZiEJIk0ZtEcGOVPzPXn6U86KtZEI9kthOiFUH0Nw3ln4BO5D/zz2DAoGMe9IJviTs2s6SCLb8ye4/75WWs/zYesUGaDnM6dotvRkd/LB8NeCYyvrOKRzpn0VWJSEvbSBE0JW4NBOFEA6errGcarplwbxcxqhAMuZeZE+W4jF/2/nF3edkFuvZyW3reooMBEjK4fgsmJ6WJz+/8cyvGTadwxvqZXC+thhT18RV3p4W17X77yS3NCnJDR2GpJH3WM4macc5821iL1BbamZjvcXc98xSemRgSjcOntJo8Ck0Bc09rDwAtaOPWbgAnUk5QSUY4bnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pjvtisfj0ShIvEUhY1wqdXjIdnKALWvBB/aKcW/zekM=;
- b=kDrBI7eCg4iySzmFsUqEoakM4yE+AtS7Wo899pU2dUgf+wc9lAZR/eElF75UABltMNXjEyzKwUf1rFtcZSo0MA1NfupY4oeciG9PLmf1S9K9AlaXMJvuxVUbw5ULaYqMiIAIfxWlBHzOSmsykLlAlPe3ouXH8/eoN9cci6ismee0Uf3G72X75fNGI97tIKH3i9vxmA4SOkSagOxXnoOTE3fVUuXa43Bt79W0dLyOpM6jPqOJSLys0dUyZZ/0UlnorWzF6ypseKremxSVae69U5Tlgo8fwMf46hgOoGM7z7UlSaCuMx08mwv1U+v4FFQqIXEGDt7v1qvUPuoa2Mpy6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pjvtisfj0ShIvEUhY1wqdXjIdnKALWvBB/aKcW/zekM=;
- b=FcKrv1weFrU9sJBRNR6566wrUgQUQQXHe2btKi5ykrcnyOMh08jWS9wbhR3daBe/NvaTb1z/7X0JSHkpVkNbUuGuVru6ykkA5AHzuLJyXc2Wwu+mvc3Yif5klwuKYz0G1sgyG8V+azWVKE4TBD+t0/H4E+pow/Emhy8w0a8lSug=
-Received: from SJ0PR03CA0003.namprd03.prod.outlook.com (2603:10b6:a03:33a::8)
- by DS7PR12MB6336.namprd12.prod.outlook.com (2603:10b6:8:93::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.8; Tue, 3 Nov 2026 16:25:09 +0000
-Received: from MW1PEPF0001888E.namprd03.prod.outlook.com
- (2603:10b6:a03:33a:cafe::36) by SJ0PR03CA0003.outlook.office365.com
- (2603:10b6:a03:33a::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.12 via Frontend Transport; Tue, 3
- Nov 2026 16:25:09 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- MW1PEPF0001888E.mail.protection.outlook.com (10.167.249.165) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Tue, 3 Nov 2026 16:25:08 +0000
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Tue, 3 Nov
- 2026 10:24:57 -0600
-Received: from xhdradheys41.xilinx.com (10.180.168.240) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.53 via Frontend
- Transport; Tue, 3 Nov 2026 10:24:52 -0600
-From: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-To: <robh@kernel.org>, <saravanak@kernel.org>, <akpm@linux-foundation.org>,
-	<david@kernel.org>, <ljs@kernel.org>, <liam@infradead.org>,
-	<vbabka@kernel.org>, <rppt@kernel.org>, <surenb@google.com>,
-	<mhocko@suse.com>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
-	<baoquan.he@linux.dev>, <pasha.tatashin@soleen.com>, <pratyush@kernel.org>
-CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-mm@kvack.org>, <iommu@lists.linux.dev>, <kexec@lists.infradead.org>,
-	Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Subject: [PATCH 2/4] of: reserved_mem: keep the reservation when node_init returns -EBUSY
-Date: Tue, 3 Nov 2026 21:54:27 +0530
-Message-ID: <20261103162429.2053989-3-radhey.shyam.pandey@amd.com>
-X-Mailer: git-send-email 2.44.4
-In-Reply-To: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
-References: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TdBvAHNI
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1251E1F000C1;
+	Tue,  3 Nov 2026 16:39:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793723952;
+	bh=V7CHaxJjio26zC0cpwOTJ7GJgFVKnUUB8e0VQq1U5gQ=;
+	h=From:To:Cc:Subject:Date;
+	b=TdBvAHNIBiCJJBY5I1S+uoEa5ecgBwXwsRVhoUSH1ux5MYJu9206o9rs5ElSUGLok
+	 OXNwcM7ttaX5bSOZLAZ2llT/uQ3WAh6GNnqE52m3yVx9FWQpgu82M4qVxHJW5eUCT0
+	 qlplwpqd2UA+MJRQRpXsN8CmcCiGcchQoDMhNhKItMDQWJippImuH/bnHvE3Bv1VQX
+	 XsVp9O70ggB4iyeh4+p8D5x6cA+IK11qbfs8b0skK/pmJ/j8UGb+qXN3Rl/KSOBubw
+	 1mrPPLdkH0xSYsUO5VDqF19GrHIoQ2T0jeKydoMiDedrBTZP0WyiGEW5KGtRfGHny7
+	 dVk+5HlNbDO3A==
+From: Sasha Levin <sashal@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Shuah Khan <shuah@kernel.org>,
+	iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommufd/selftest: fix the unmap-all length on 32-bit architectures
+Date: Tue,  3 Nov 2026 11:39:10 -0500
+Message-ID: <20261103163910.640756-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -114,94 +60,100 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW1PEPF0001888E:EE_|DS7PR12MB6336:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1e1ee63c-3c51-45d5-0de9-08df39c70717
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|23010399003|1800799024|82310400026|36860700016|921020|11063799006|5023799004|56012099006|261009223027099003|261028144727099003|261022105027099003|261022075727099003|261022115727099003|261102123227099003|261021121427099003|261026140227099003|261026121527099003|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	P9wd7HB4gYRUgbfcn7PlGa9tGGWjmu7k7sHcL6iaBoH3vU1jYT1tEkabULr3w+zmntT1hm368I7v8oIC7k6tvnI7YbdirRhy/S8sr9+Z3f8XUGAeznnEVvxajZaRSAaAUzCgkgP1ybjyegY0WC4KFKkpHZcBMyIFVAnCqUVcZZ9BBDREtFiesmEa/Im8QSFPVGegj0szTsgsGit1h4QxmgsOJ6xdyGWAq7HI+Q8tb+vEoxKSZBGg8TrSA7p0Q5toeq47U03BN9TL5B7SZtuG+udgDZz3yv+RNE67YpT9oh9MQVNKDKMJatyqIfMleXnjgh/YzAzdYRvdKbjc47Khj4HCRXjChP/l5a9DtC/xEWHW8gQuE6oeiAUpwTeNjxh8z9unzRwIQDTJ0NTB2OnnyahQzEZ3pFk74NwWj08SrmO+rQDUSv6N9/f5sVUQ2pT02DDF8gZsS6EcIwQRlT95IkZGsitHlhCL82XdjVLcQ9T+BKPsgPSWAQ1tISnQtFmcckO/+cqXxEXKsU4lobgnJpUbHnm+E5gsfxOOHrOnUAoWCyDNkCi8HoUkARXhnbNsXCsm3h5OmDbXImtaaB/meJ60DV7SX5gAWjZ6/fJtSkul0oMQ/uWtbAKjHyMp5BgOJ5se0kebrqJX/dD53U5w2RiIHaQ+hSpy7Vq2IIxCgGBrDcchWJydaGSy/UX3nNfEUkVLdH5OVjACHjLYiWfr1jBQwLZeb0XO6eXRWZeYCSeh3t9sbxRDfOa2ljl9NboA
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(23010399003)(1800799024)(82310400026)(36860700016)(921020)(11063799006)(5023799004)(56012099006)(261009223027099003)(261028144727099003)(261022105027099003)(261022075727099003)(261022115727099003)(261102123227099003)(261021121427099003)(261026140227099003)(261026121527099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	epOc018vOFBmUnxxl2d/BTdrKnAy7mD01BGD4uZ8zb7VmxcOdmQ/Q9mxTSb/mKs7+qjAbZ7Wal+MTRP79qjtbiZcenSNbXVR71Z2jk84piNQWRumdx5ZMxdz5yZ7BNxNfAOnkB3XaWUuf9BvM0/ecIMAK4jL9R9zu8dzX5JhWDHQV/iXmRmXVKi6KCQpa4sudSb8cu/jmHz3Q7F641SelpGsvjowba1C/9UPrJALtCVBHdn+3hXJtaAOTVr3g1lgjPeiA34+4dDKWdu7DVEqps4qIePzAs3QNNhhvPAIpBJpjoI4obIMDENOsCC8ERDfM6KULaKylae/CvfE4aZorRs+EeYlhn2+OXhC1QibwBVxLs4SuF0oxlVYkq06z7a3TbsoxFEMqMYomvYRWr4JHXv5QPq+kSducKD0t1xQBcnzLzlaZdhcZe8FmCitDmUi
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 16:25:08.9295
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e1ee63c-3c51-45d5-0de9-08df39c70717
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MW1PEPF0001888E.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6336
 
-fdt_init_reserved_mem_node() treats any error from a region's init function
-as "this node is unusable" and calls memblock_phys_free() on the whole
-range, although the range was reserved earlier during the FDT scan by code
-unrelated to that init function. Give -EBUSY the meaning "cannot be used as
-described, but must stay reserved" and skip the release for it. Nothing
-returns -EBUSY from node_init today. The next patch does, to refuse a CMA
-pool overlapping the kernel image, which without this would free
-[_text, _end) rather than protect it.
+_test_ioctl_ioas_unmap() takes the length as a size_t, so on 32-bit
+architectures test_ioctl_ioas_unmap(0, UINT64_MAX), which asks to unmap
+everything, passes SIZE_MAX instead and doesn't test the unmap-all case:
 
-Suggested-by: Pratyush Yadav (Google) <pratyush@kernel.org>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+  iommufd.c:861:9: warning: conversion from 'long long unsigned int' to 'size_t' {aka 'unsigned int'} changes value from '18446744073709551615' to '4294967295' [-Woverflow]
+
+Take the length as uint64_t, like the length field of struct
+iommu_ioas_unmap. While at it, cast the pointers that go into 64-bit
+UAPI fields through uintptr_t, as casting them straight to uint64_t
+warns on 32-bit.
+
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Changes since RFC:
-- New patch
----
- drivers/of/of_reserved_mem.c    | 14 ++++++++++++++
- include/linux/of_reserved_mem.h |  5 +++++
- 2 files changed, 19 insertions(+)
+Found with 32-bit builds of the selftests (gcc 16 and clang 21 with
+-m32, with and without -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64);
+KernelCI's 32-bit arm builds show the same warnings. The changed files
+build without them now, and the x86_64 builds don't change.
 
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index 0fd1683cba01..d67a2b3a4d44 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -621,6 +621,20 @@ static void __init fdt_init_reserved_mem_node(unsigned long node, const char *un
+ tools/testing/selftests/iommu/iommufd.c       |  2 +-
+ tools/testing/selftests/iommu/iommufd_utils.h | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index ca2b35e9d443a..f96c262c6a245 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -2454,7 +2454,7 @@ TEST_F(iommufd, map_cmd)
+ 	struct vfio_iommu_type1_dma_map map_cmd = {
+ 		.iova = MOCK_APERTURE_START,
+ 		.size = PAGE_SIZE,
+-		.vaddr = (__u64)buffer,
++		.vaddr = (__u64)(uintptr_t)buffer,
+ 	};
  
- 	err = __reserved_mem_init_node(rmem, node);
- 	if (err != 0 && err != -ENODEV) {
-+		/*
-+		 * The region was reserved before its init function ran, so it
-+		 * is not ours to release. -EBUSY says the init function is
-+		 * declining it for a reason that outlives this node; freeing
-+		 * it would hand the range to the page allocator even though
-+		 * something else still owns it.
-+		 */
-+		if (err == -EBUSY) {
-+			pr_info("node %s init failed, keeping reservation\n",
-+				rmem->name);
-+			rmem->name = NULL;
-+			return;
-+		}
-+
- 		pr_info("node %s compatible matching fail\n", rmem->name);
- 		rmem->name = NULL;
+ 	map_cmd.argsz = 1;
+diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+index b4928cbd4d9c8..38339dc9f943b 100644
+--- a/tools/testing/selftests/iommu/iommufd_utils.h
++++ b/tools/testing/selftests/iommu/iommufd_utils.h
+@@ -198,7 +198,7 @@ static int _test_cmd_hwpt_alloc(int fd, __u32 device_id, __u32 pt_id, __u32 ft_i
+ 		.pt_id = pt_id,
+ 		.data_type = data_type,
+ 		.data_len = data_len,
+-		.data_uptr = (uint64_t)data,
++		.data_uptr = (uint64_t)(uintptr_t)data,
+ 		.fault_id = ft_id,
+ 	};
+ 	int ret;
+@@ -310,7 +310,7 @@ static int _test_cmd_hwpt_invalidate(int fd, __u32 hwpt_id, void *reqs,
+ 		.size = sizeof(cmd),
+ 		.hwpt_id = hwpt_id,
+ 		.data_type = data_type,
+-		.data_uptr = (uint64_t)reqs,
++		.data_uptr = (uint64_t)(uintptr_t)reqs,
+ 		.entry_len = lreq,
+ 		.entry_num = *nreqs,
+ 	};
+@@ -341,7 +341,7 @@ static int _test_cmd_viommu_invalidate(int fd, __u32 viommu_id, void *reqs,
+ 		.size = sizeof(cmd),
+ 		.hwpt_id = viommu_id,
+ 		.data_type = data_type,
+-		.data_uptr = (uint64_t)reqs,
++		.data_uptr = (uint64_t)(uintptr_t)reqs,
+ 		.entry_len = lreq,
+ 		.entry_num = *nreqs,
+ 	};
+@@ -695,7 +695,7 @@ static int _test_ioctl_ioas_map(int fd, unsigned int ioas_id, void *buffer,
+ 	})
  
-diff --git a/include/linux/of_reserved_mem.h b/include/linux/of_reserved_mem.h
-index 49da515859f2..4bf32f80785c 100644
---- a/include/linux/of_reserved_mem.h
-+++ b/include/linux/of_reserved_mem.h
-@@ -21,6 +21,11 @@ struct reserved_mem_ops {
- 	int	(*node_validate)(unsigned long fdt_node, phys_addr_t *align);
- 	int	(*node_fixup)(unsigned long fdt_node, phys_addr_t base,
- 			      phys_addr_t size);
-+	/*
-+	 * Returns 0 on success, -ENODEV if the node is not handled by these
-+	 * ops, or -EBUSY if the region cannot be used but must stay reserved.
-+	 * Any other error releases the region.
-+	 */
- 	int	(*node_init)(unsigned long fdt_node, struct reserved_mem *rmem);
- 	int	(*device_init)(struct reserved_mem *rmem,
- 			       struct device *dev);
+ static int _test_ioctl_ioas_unmap(int fd, unsigned int ioas_id, uint64_t iova,
+-				  size_t length, uint64_t *out_len)
++				  uint64_t length, uint64_t *out_len)
+ {
+ 	struct iommu_ioas_unmap cmd = {
+ 		.size = sizeof(cmd),
+@@ -832,7 +832,7 @@ static int _test_cmd_get_hw_info(int fd, __u32 device_id, __u32 data_type,
+ 		.dev_id = device_id,
+ 		.data_len = data_len,
+ 		.in_data_type = data_type,
+-		.data_uptr = (uint64_t)data,
++		.data_uptr = (uint64_t)(uintptr_t)data,
+ 		.out_capabilities = 0,
+ 	};
+ 	int ret;
+@@ -978,7 +978,7 @@ static int _test_cmd_viommu_alloc(int fd, __u32 device_id, __u32 hwpt_id,
+ 		.type = type,
+ 		.dev_id = device_id,
+ 		.hwpt_id = hwpt_id,
+-		.data_uptr = (uint64_t)data,
++		.data_uptr = (uint64_t)(uintptr_t)data,
+ 		.data_len = data_len,
+ 	};
+ 	int ret;
 -- 
-2.44.4
+2.53.0
 
