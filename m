@@ -1,132 +1,151 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793739746;
-	b=H3AGMF1iDztIBRaOWbDeCRIiCDa0DvqMXejD7rlnYlmJ6JcDiDQYuirzAyEEQbXlqIso
-	 CJ1r5Eg+cMYHKzCtdN9RKfs0AOqc1wXHkwv9TF2ok0lsPYu6EG7tBRKNMt7C4R+vp6pDA
-	 DddvHs0WJOainUJX/wUW5c/AOt9oSO8HqQMAcovNf7kMwmZH2eTKiBlxpYV+MdxVRAHbg
-	 khJgvOIBXER9Qw/60SFp1yEsxXZGYNDIUiLu5NY5tH0vq9km3LoLlwHYC1YJNTD19k+k8
-	 X+KVKYbuT5Ow84gLT37XXb9U53o/rMlKblw7xbfS8SfszSsv23oMhxU/97ln3evujDA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793739746;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:Date:From:
-	 To:Cc:Subject:Message-ID:In-Reply-To:References:Organization:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-GUID:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=7L/kjnfMz9A0ktTU8C0Qq6Ox8RbkPb5fZACdQWXlPe0=;
-	b=u+5OvU7bC3dzMx+6C2LlWvElzknqVNve1juTsuw7uQ6DRfgYrZhVT7qNksap1eQq2Wbc
-	 JrozWJkVjUIPAuobM0QOOoyidGr7ooYSiucVRZ6TijQ+RvixL3sDxmhBi7B1990LSonLK
-	 0Qm7mauHyQHo3F6nDOXos6HlUAK603Sd1CGipAkkoXS1xFLUZztNUaJcxRjyz1OHgXCta
-	 vRE0Y7MbRpui8dlui1Ny3JYznAW5z3vNy8lIX4rsEffZq7UYWuiyu4iwhVfGsulU1RA+W
-	 3k7kBG8dsXwu1961z0QJda8wxzHHGN8CycS6w4vQgdBxHii28U8P+ZP4gbuUxAgUfcw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=JPiOdnnW;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=RDS5Oljv;
-	arc=none smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.27
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793740696;
+	b=SxjfCYJuVhS8B+hM2C9RzQ2TtL927pleguTErqXE6SWgBhLkwD1vLQBPZT6WL9tVTFOy
+	 jol+47A+6SdqWBaK9pi/tzZdIkcID35cvP1Jjc8pbAg4osWmf06QT0wLLPSnE5NXcXXBA
+	 aHianCg24ftEHb/a0WEizKS9HiELzycN9lXOdO99sZABsj5JlEk1OFkKsD96YdlZ/iCrt
+	 nCA48OnWt1/z123JuPxZ9oDXCYDo8PCuFJREZ5wWieUlqY8lYYNFFoz4tCLdNx/gJkm41
+	 h3+CE9pCFhYs2PbtfZ9ejVeKGDxFhAFVlwcfNOloQE2BV+KWTdkrCtFbygw6yJ1YqDQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793740696;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:CC:Subject:
+	 Thread-Topic:Thread-Index:Date:Message-ID:References:In-Reply-To:
+	 Accept-Language:Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-AuthAs:X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:
+	 X-MS-Exchange-CrossTenant-rms-persistedconsumerorg:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=yFz5jL4s9vyAgtGOaidymvxXDCBNaKB+dyG6JKbPpAg=;
+	b=JkLOBdV+Onxh+EEHkqn9vwWCwQATOewI910io3U3KU4bvpfpy0/lkWfcW8XBwod2RnkB
+	 PPjWLoxO+K4BIDmy6ygAlzxc+jj2Bq1kSUWiwFnReWoQszbN5ApD3DfZaGNR69cUV6Wwo
+	 d5nAEu5ECYE7bS+zOVxbGRoOMquwAQDKEKNh0NIjlvuW1n+wnO6/+KAlwHzBuRQ80gecL
+	 uREOcHwnL+tH5D+tj4yVQx6C+mTkT7C9qFojzhTrBR00995+8J7yqPEltuz3zsRzg2Vu9
+	 pbKdO+zYa6dTIRGAqxS+3b49geUPuulNm56FnwBXKhU83WV0OwlNb6rOvaoYA7g7DYA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=outlook.com;
+	spf=pass smtp.mailfrom=outlook.com;
+	dkim=pass header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=Xq38+e+v;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.103.13.27
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazolkn19011027.outbound.protection.outlook.com [52.103.13.27])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AC0A606A330
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 21:02:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7AC0A606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A2DE606A332
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 21:18:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0A2DE606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=JPiOdnnW;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=RDS5Oljv
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A3IZ1G2445336
-	for <iommu@lists.linux.dev>; Tue, 3 Nov 2026 21:02:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	7L/kjnfMz9A0ktTU8C0Qq6Ox8RbkPb5fZACdQWXlPe0=; b=JPiOdnnWfA+/xFyI
-	p2nW9Dn4LDsEyt3BDwjrQ74Imw4QivpB7aKbeapzNwoDLT1rxw4hZSWvcpO4G/qF
-	L7sHNxtHvRHpdjWixSxng+oz9IAB8A0nVsZo9Di62/gBEeuyBSsQHC2l3Kp/1qAy
-	V7CmWUbAz4Z+7QL22LsTq5xQdlc7Bnmxujh9oGJJWlWc4pkhfddiJ1VoygyHNpuF
-	E3GRBPcnnVY0z4E3889Mng3st8diHFzMIdGY156fyWcMZXT19U7pPWMiylP150p/
-	lZ8IMzEXN7qujPBVHaZ8vHfqubNZC7GvahSpiXxoF1f32u1990e7pRm+6X6OL/yP
-	miP+WA==
-Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hqm2pgtn0-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 21:02:24 +0000 (GMT)
-Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-341eff9e381so9898494eec.1
-        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 13:02:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793739744; x=1794344544; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=7L/kjnfMz9A0ktTU8C0Qq6Ox8RbkPb5fZACdQWXlPe0=;
-        b=RDS5OljvogzL2sAgzAACYuVackOqUuwqK/VIZgvDJTDGO2yVJ4pEoUCVU4BQ6fNJsX
-         DbR7FrJUJki6YSWEW7bacTGu4n6ppLV5kIwl2rPvSvxEpmg50C6MHOE97wRg8EaC5+oh
-         Zkj/D3H+SSHk7qaxwGywGkx5yq2fzOWVWQf6HgmLTQOTVtamhe5jqzAO68F+DO+vL2CL
-         yjvhLkboHGw/ZNAwKYS6fNW6mriql7Z2aL4ZAdM34/N/MqOvmIM53Mq17533SCgRfhnV
-         K+sRtU4hUcdVrpC7dYVVEOH1mfgy2L86K2dmwDhpYXyu2vNCeDZUp/OmRPCOf8ohk5/B
-         9EMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793739744; x=1794344544;
-        h=content-transfer-encoding:content-type:mime-version:organization
-         :references:in-reply-to:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=7L/kjnfMz9A0ktTU8C0Qq6Ox8RbkPb5fZACdQWXlPe0=;
-        b=hwDHFhalJFS+2E7+zATduVc+GXDICTDRAiFv3oBE5OMUbja2p6P7IeyiViwgo9L/0j
-         cYnPeRwaQBFBRrQYEpMesYMeXcxFt+2ntSgCR4ZUmMtJUqs8xhbTHfBWj1RD+h//UOpg
-         VeD7t9fXFyx9ldEO7yAqUlEc83a5FzqoVftnZghssYcuxWZJ6AMHOUV7hxTQ0jR2yUhC
-         42Mkx6FltQo69GKMWfbG9Fn89smr+h9t0mOp0LOlzIh4tDO5PsMkj1KW+UVQQWBzM/1S
-         ceuY5bgu0SVJ4C1whyqu5Bncoc0NjoI1A7+MlbGwmiqhxtPObhJyT2eBqhg7WYmMVJMf
-         MYvw==
-X-Forwarded-Encrypted: i=1; AKwUvBzoxzA7u4bg8pM4zOTYz6I7nxeQPVUpqllYAEOh3MXb+LGQm4gh0L7E2HPGJGhUmz1yhKZSSQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9PodAANof/hF6f6wq5oCTJswqk55Xz2xCV70yPpXqhBFxfltn1
-	dDAkuJnqN/uTQ8z8xo0nsnnluG+QOg49WWr/uV9jMR68fdPmrgRMAaWumqbLHp1JFkup1cVZgHn
-	9WG8/i4tY3GeTZKZirC2MOzNLOVziG/v+jebMQ6FVgJr2mpVsoBLeGeVX6w==
-X-Gm-Gg: AYBFou2He7azIPA2s7X8d6skMhS6WYq+a4XmXp9OC8gkLJ9sURmj1bj15gMZSWr66L3
-	oWST318AEl3ndYiNrJ3uDW2Jp0Hszap1co+ImNclDmMuUuCi9OInF3OMtpS9hOrFyUEDspEM1P8
-	K9RBGVf/1hR4gneSTRXOVWcKAaB8MZAmZBYZM54hLxZQD21cgPq5BzryinMSg0GlALaJOxRlwHY
-	Gi2ygGlNTM+eKBrV4Pu1FfwbtcCEjLcbpEIQ2PCUQ+SZVLRA+qdQK1JAY+F+fJfb7gFlLkTps8C
-	xKm7bdqVT99UsGC9QUTkzF63DWHVo+logRCqcAb5T2lnNyaZc7108Tl9XYCeZKA5Rve+aU7u7qR
-	MsChGaJ9YK1ClkerU4+kuJja/jjHm9+9m2YeyxYw6ZA7arCXQ4ITvUJVKfkzDUvRBTA2OC62m8A
-	/7aCseakPvNLcFw0JFx05RySVixQ==
-X-Received: by 2002:a05:701b:2094:20b0:187:efba:9ba2 with SMTP id a92af1059eb24-1ac5e8e1decmr22023741c88.44.1793739743651;
-        Tue, 03 Nov 2026 13:02:23 -0800 (PST)
-X-Received: by 2002:a05:701b:2094:20b0:187:efba:9ba2 with SMTP id a92af1059eb24-1ac5e8e1decmr22023667c88.44.1793739742820;
-        Tue, 03 Nov 2026 13:02:22 -0800 (PST)
-Received: from localhost (i-global254.qualcomm.com. [199.106.103.254])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b245c2de58sm1260017c88.12.2026.11.03.13.02.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 13:02:22 -0800 (PST)
-Date: Tue, 3 Nov 2026 13:02:14 -0800
-From: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, <joro@8bytes.org>,
-        Bjorn Helgaas
- <bhelgaas@google.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy
- <robin.murphy@arm.com>, <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Joerg Roedel <joerg.roedel@amd.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dave Jiang
- <dave.jiang@intel.com>, Dan Williams <djbw@kernel.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <linux-acpi@vger.kernel.org>, <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH v1 2/5] PCI/CXL: Probe the underlying bus reset in
- cxl_reset_bus_function()
-Message-ID: <20261103130214.00000b82@oss.qualcomm.com>
-In-Reply-To: <auorjXgbVPXZNHZL@nvidia.com>
-References: <cover.1793729707.git.nicolinc@nvidia.com>
-	<6c09d2f78d4bb9db7f49fa14a6550f5176721121.1793729707.git.nicolinc@nvidia.com>
-	<auorjXgbVPXZNHZL@nvidia.com>
-Organization: Qualcomm
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key, unprotected) header.d=outlook.com header.i=@outlook.com header.a=rsa-sha256 header.s=selector1 header.b=Xq38+e+v
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tS1tX66EBneBd5Th7tnIDhF7rXDuXRNjmlXA8qbN0YEGp1HT89Yi5lJS/PKTx53hUKmB53FnBC66pjNA4nrwrN4r5dfSYf0UozcNW72ktbyfjZARbRUz2+DC13ER3FUkaq9t3gK8EDJlz7qsq2l8d0mi6w9aOTehZ05ddsKHupJTJ5aQzL1ONHesr9JNPh4ZWGRIbj7baueZa+qxejZQnMHlgImnzk5ZCBrQBgQHJHzzQm/c0kNlWC/YpGvxDEtwOI8diRXorXwl4N/t7IEADgQL88tFBSMS/xF9XmoH6QaSOQVoo7krVLsTDBEoGmUSHThMK3Z5YK9axud0ixcu3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yFz5jL4s9vyAgtGOaidymvxXDCBNaKB+dyG6JKbPpAg=;
+ b=r6PZd2hRYNPcbu2Y686bK6uKvFL2JI0OP0wRF48QeqLsRGiuQHMrOdnHitNbWOFrnpRt8IFAm/83VckDu96/tDBDlDFhmrOC+mkeDxqBuZc1ZjPtGFQoPYSFC0DflWOPWFwFqx597q1EX0CBcUwW8cuXw3KBmohQtmTGQ/gN00CoDAC1IekokrX53rrgul3p2JpPWXQpER50CDbNezQJ0lfVulixewp1MookE1rlrjQkmWgaWn0nc1wdZvMZR2djW8mB16kjCDzP90XhwGRcDWnz8icwxZ6xFduMf61aEzCeEsjVduu2ze/clOHc6K81nMyrZ6B6SDBOVXzNhpWf1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yFz5jL4s9vyAgtGOaidymvxXDCBNaKB+dyG6JKbPpAg=;
+ b=Xq38+e+vbUp094R9HOtmPl82kyn09camm4G6b5q68/QReka+x1Q/16KhAikYOMH2EK4TUvp/QB4ID6yWNswVUp2SddTiG3d+WykqGVohW9DS4yQrEDJRIefg+Ov/dBHcFjl83PRe8ufY8NLPx3mcuT2+/vaSt7yh6cNF524Qb3efYeS3LWRQwlGqXHiMLIXnCsJtV/8dZvlW/8LIkex2ncx3I/rkHwgiwRaGJ2vTUj2qwayXsRhF7dmsMYBRzJOQdAq20nqecqEVjGLe7lkn13jnHv0LUpAWoXDBrSuAgD/EMR+x7rwU1G3PRVI0aHgSWjhhwiEaRG4qInyCBBfFLA==
+Received: from MN2PR02MB6863.namprd02.prod.outlook.com (2603:10b6:208:1d7::20)
+ by SA3PR02MB10041.namprd02.prod.outlook.com (2603:10b6:806:39a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.8; Tue, 3 Nov 2026
+ 21:18:13 +0000
+Received: from MN2PR02MB6863.namprd02.prod.outlook.com
+ ([fe80::da67:fd0f:d96d:ac53]) by MN2PR02MB6863.namprd02.prod.outlook.com
+ ([fe80::da67:fd0f:d96d:ac53%4]) with mapi id 15.21.0569.011; Tue, 3 Nov 2026
+ 21:18:13 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+CC: Robin Murphy <robin.murphy@arm.com>, Claire Chang <tientzu@chromium.org>,
+	Konrad Rzeszutek Wilk <konrad@kernel.org>, Giorgi Kobakhia
+	<gkobakhi@asu.edu>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH] dma: swiotlb: Round restricted DMA pool size down to
+ IO_TLB_SEGSIZE
+Thread-Topic: [PATCH] dma: swiotlb: Round restricted DMA pool size down to
+ IO_TLB_SEGSIZE
+Thread-Index: AQHda6sVxPkkJEjXP0eh57b+lSuFRrcc0ESA
+Date: Tue, 3 Nov 2026 21:18:13 +0000
+Message-ID:
+ <MN2PR02MB686381EADCEECF16B23214D0D4692@MN2PR02MB6863.namprd02.prod.outlook.com>
+References:
+ <CGME20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862@eucas1p1.samsung.com>
+ <20261103155016.1107958-1-m.szyprowski@samsung.com>
+In-Reply-To: <20261103155016.1107958-1-m.szyprowski@samsung.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: MN2PR02MB6863:EE_|SA3PR02MB10041:EE_
+x-ms-office365-filtering-correlation-id: c5ec4536-fad1-4afb-bcd8-08df39eff84c
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|31061999003|55001999006|13091999003|37011999003|51005399006|24021099003|41001999006|15080799012|19110799012|8062599012|8060799015|4140399003|25010399006|3412199025|440099028|4302099013|102099032|1602099012|10035399007|40105399003;
+x-microsoft-antispam-message-info:
+ =?us-ascii?Q?oFghlKAdKgDUH1m5i9kprcazxb84ktqn1Q4ZcvB6sBWQ2wo6jZD/q4KOcMPu?=
+ =?us-ascii?Q?24gmFDmI6mZS64tZsbzY3Ud1iYoYCU33tJfORMGF46yfU8WlJvOPvT/9/fiB?=
+ =?us-ascii?Q?XE9QWvaZvUuHdJOm6orYBqMN8ydfNhDrTUBxeaxmtgPj8FYYRA94dA2QsFLE?=
+ =?us-ascii?Q?bLva8u2Vmn1km2rTZuixH8sas/tXoPvIndeMbf7tG5Drv4tFN4wMpl2u8oPB?=
+ =?us-ascii?Q?XR26r6G4fMFaJ17YVsvkUBKyueCTD4xcibRoBeTBvbPstJavaO8/K3M5r9rO?=
+ =?us-ascii?Q?RxF247k4KahqAlqq/usGRA3lpGndDIveN5fblGa1xD3O/+yzVS2OAt+jtgfY?=
+ =?us-ascii?Q?9qBKzZEfhNX0058UJm5cHMk2+6Jyihkz3H24e3UaQCmOuJkgeoV97PRI6C+G?=
+ =?us-ascii?Q?Cbr2weHPC3frkMepSHusVXBYrfW00z13Y86Ncc8M8hPKhFBoMtG4/C53dPPG?=
+ =?us-ascii?Q?tR+/xcyE9FXyTGhOYphcP0kBRTGdHLygs6Ld/c04tYHZCXKAN87Q+ndx0mPr?=
+ =?us-ascii?Q?DiO9R5ixZ6VzKQVzCnYjQGUQ4kee/j/m9YYhUIrvkUbtOeJjsuBpJFUkb7Sw?=
+ =?us-ascii?Q?dnIgW5AW0jBh2o6QnxUnhuq/n3vDU5hIWhrkCOVmW/Ep7xIdjQsfJZTZBxgx?=
+ =?us-ascii?Q?SWgk5bV86Nu0B6UErNAiRVNrLQZMlUSFrCDWRM57zSQxe5yzWSAOEnyJLH1V?=
+ =?us-ascii?Q?kudoRuruFnJl4VrH/gALLG4yb981E3G3y+lr9qy1XbIZaQ/vvjU+g3by9rX5?=
+ =?us-ascii?Q?RrAnLKhU4MRpwmbdX8kEISjZ8mZ8tzSpDJGJT99PF3ht1ShmBoQj1P4Li2bK?=
+ =?us-ascii?Q?NT6i33Z0W+UTrpOMQomRcFqdJWm5stQe4NSKTrutI0Lcv2XwksBXhmDYQewM?=
+ =?us-ascii?Q?ErZfwvyJ8KDpIPyKGchA9vQBieO80ByJLbffrTTHP5VXBZhCsGZrLn5pgxaG?=
+ =?us-ascii?Q?qNrVAAwr/8LXnCRLPXC5ME/Xf5Ds9VSxWAT94fxY0On1ACRtcfIrJINhzf/D?=
+ =?us-ascii?Q?69ah76jQ5svZDKcwIqYegsXDxp1VlQvdl6SVbBiuubCa1dquPgPO64wB8UFk?=
+ =?us-ascii?Q?7iKTvusWu4M54QxBShxoIoizizBzZ4JPs8BBBjE/5YV4cwZNPXs=3D?=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?iLOhBrz61MCe7oW2UZQ/MBZlyVuZMk4Hp+pPyL+M+XvCyI8ccoVfzQQ/Dx7z?=
+ =?us-ascii?Q?VaGa1HZsp69ELCwCc484JgFfWGIEs5bbru0rsq+rhCotiOcBh+Ds2tWQBx4Y?=
+ =?us-ascii?Q?tyyl74x8wDfrOXE2NkaZ/tfq2eLtKpO5VxWcS5ybYZJXCxCSMtSx4FGdDALt?=
+ =?us-ascii?Q?Oh7MsvEGrZtbFLu4cfWbHPtrVovMD0G6RNqhhMLeOTOUlaILFYSpXUaDsGLr?=
+ =?us-ascii?Q?x3grM/SAIqPfdXoghgIKPrgqF2g/8sZcyg15f0FlUZb+SpfN6I82niAicvJO?=
+ =?us-ascii?Q?2J4LvRW4UBnJehznnyA73AxF6K6wGIS71SpFcDVl4lGUhb86pBMIXV3zACfw?=
+ =?us-ascii?Q?PjjERQyJsclUgVC0lSB6s5FdcsHU+3gNIpq74d8SZ/oa6DahMRVoJtGsk4s8?=
+ =?us-ascii?Q?8kqXWOVGfcMJ7OE3g3jGk3UM0/BR50Jq7N7HvWBqNhly9k0j+aDVWodU7oRV?=
+ =?us-ascii?Q?SaXdNATf/4iBguvr+QYBRkmVh5cI038BvcrxecCp/kFM+gNNnY3AnLUZfTOS?=
+ =?us-ascii?Q?mS8AeB5NB0SY+ftl75TgslZerNW4u9QB66k9nVAg3qgBTkVRxNfyWy3xD11l?=
+ =?us-ascii?Q?7CT79qCpigKaE5wgvuzTo6GlOh3URFfjiN7pE2eNXAUvEne1Df7QWxKJgTMG?=
+ =?us-ascii?Q?6JFhcbXCWmyqnrkWt6WT337VHbS+pp/hIZDAIWr6vLRNPkoxBeV9lDDfNgmx?=
+ =?us-ascii?Q?ieHXjmospWtcSaFnGa5GbsHQU22qSuOT+CT0DcyFRPRlYKyXLyIskybHU5Gp?=
+ =?us-ascii?Q?BIZ84OSPr28t4mkF60/NslmRQuqtFW1fcBvMm9COEwPVArXcOIK8fOyFQnP9?=
+ =?us-ascii?Q?XgpjC52vMKhqo8Lnv8ON4LAR1aQLRGZSDD9L9iRLTxOHpePK4I3BPCqYCv4a?=
+ =?us-ascii?Q?f98Rrz5yAQgCrK0lAPN/K+yImwt/rTUXW77f3XVtINPPdeqEZK9SdOjbzN83?=
+ =?us-ascii?Q?i02s/Kx6m2vR6UvETqMawVOhMAquA3JABoogaE243dsDNCrc/ejPLf6OKFsE?=
+ =?us-ascii?Q?CB5ydziU/ZD9txsCnrnwgdCx8Y7qYmfNwYdcUV4pVGs4x3VX42Zz5J6BY+ec?=
+ =?us-ascii?Q?/NF7mmlKDh8eZr+fBmPPv+Rek06gSaRJXf+sSLGTVih9ubYTmmrOzXUaI8lt?=
+ =?us-ascii?Q?i3kXL8+LnsBxSsbz3E18ugFnSlRmUo08LSLm22BOcnJGtEdMjDlqPcEFWJv7?=
+ =?us-ascii?Q?MAROHen0yAgK/6V0NtZxUNyl3SrqlxNqlggCAsuFQbrggZo9o36M2iOsaX2L?=
+ =?us-ascii?Q?BzZLEFne448tm9tkRpnVzjRfy4IKLFQf4T0ckym6AZsjCq7Ya028dwroT3gD?=
+ =?us-ascii?Q?xxnn0WB5FsVxLGC9o2i570/zWCiJ5H2vJxivrqxp7EP6T8fCS5AwINYhJfRD?=
+ =?us-ascii?Q?RCh5Ua8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -136,74 +155,111 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTAzMDA4MyBTYWx0ZWRfX1UDLl4s4B2aQ
- /YJ6waT0t6ivsaIKZ8fVUg7NfmR5AKpNgX4JReNltPq59IQzW2ux8NfL1KuwRJJr/5gHbkIuYBl
- rbDOmTjE5GHNLhYSkwYC8B/SX/IBPK1lc3nFqR3gKloZnvjhfN5kLipoyAiRIy4xakyIDjRLvnr
- oldhDdYHTum+pDyVVYx/aPrJaJPVuCE7IBJPArcjkEmjcxB3DtN8iR6Y4yJmcYS4Y/RfG4ho1Jo
- RYiqgYol87pj4RfLFsPaPEr1vShJlXN6eoCtwqrKxZseTUCy8lw0/tlL125IAojQUknC8n+hR5C
- u6S2jJIRD+TKBalb6Qr8Fm+drdTanxxeUfos51fy6avJy938MRvTNgiNwWLw1P3k5OtiR1QTMhJ
- LlmFfHM9w5Hzdr1A9dPBx1RVO3bKT8HJBeLI9mqfWJy1KsFNxa4ZAx6proaTEtkukp4B6bYs/Xp
- 0FpHvb9nw2KzMqIXJaw==
-X-Proofpoint-GUID: UzyLqw0rlyUTd9EkTV7c-kGHVKhdh9FN
-X-Proofpoint-ORIG-GUID: UzyLqw0rlyUTd9EkTV7c-kGHVKhdh9FN
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTAzMDA4MyBTYWx0ZWRfX03HutZmv3G65
- PjOd3tHkXIjQdHrEKc3EYLf034bZz2FBARQL+cNvgx80XRBQcm8cMPAn4lwVd4cJKW93exHMU5A
- HVHxLmqejlgSGnrv2hLZSm3UuFqLDXs=
-X-Authority-Analysis: v=2.4 cv=c64+0h9l c=1 sm=1 tr=0 ts=6aea4be0 cx=c_pps
- a=cFYjgdjTJScbgFmBucgdfQ==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17
- a=kj9zAlcOel0A:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=eoimf2acIAo5FJnRuUoq:22
- a=VwQbUJbxAAAA:8 a=Ikd4Dj_1AAAA:8 a=EUspDBNiAAAA:8 a=Zdewuh5ThNVhPH2xqRoA:9
- a=CjuIK1q_8ugA:10 a=O8hF6Hzn-FEA:10 a=scEy_gLbYbu1JhEsrz4S:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-03_04,2026-11-03_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 spamscore=0 adultscore=0 malwarescore=0 bulkscore=0
- lowpriorityscore=0 phishscore=0 suspectscore=0 clxscore=1015
- priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2610300000
- definitions=main-2611030083
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR02MB6863.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5ec4536-fad1-4afb-bcd8-08df39eff84c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Nov 2026 21:18:13.5389
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR02MB10041
 
-On Tue, 3 Nov 2026 10:44:29 -0800
-Nicolin Chen <nicolinc@nvidia.com> wrote:
+From: Marek Szyprowski <m.szyprowski@samsung.com> Sent: Tuesday, November 3=
+, 2026 7:50 AM
+>=20
+> All other paths creating a swiotlb pool ensure that nslabs is a multiple
+> of IO_TLB_SEGSIZE, and the swiotlb code relies on that. Since commit
+> 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization") a
+> restricted pool can have an arbitrary size taken from the device tree.
+>=20
+> If the pool size is not a multiple of IO_TLB_SEGSIZE, the last segment is
+> partial and swiotlb_release_slots() reads mem->slots[index + nslabs],
+> which is one past the end of the slots array when the freed buffer ends
+> at the end of the pool:
+>=20
+>  BUG: KASAN: slab-out-of-bounds in swiotlb_release_slots
+>  Read of size 2
+>=20
+> Round the pool size down to a multiple of IO_TLB_SEGSIZE, wasting a bit
+> of memory, and warn about it.
 
-> On Tue, Nov 03, 2026 at 10:33:43AM -0800, Nicolin Chen wrote:
-> > cxl_reset_bus_function() reports "supported" to a probe after checking only
-> > that the upstream bridge carries a CXL port DVSEC. The underlying bus reset
-> > can still be unavailable, e.g. on a bus shared with other devices, so both
-> > the reset_methods[] array and the reset_method sysfs node end up listing a
-> > "cxl_bus" that is guaranteed to fail with -ENOTTY when it is attempted.
-> > 
-> > Probe the underlying pci_dev_reset_slot_function() and then, if it is not
-> > applicable, pci_parent_bus_reset(). These are the same two checks that the
-> > actual reset runs, so a shared-bus CXL device no longer advertises a method
-> > that can never succeed.
-> > 
-> > Probing via pci_reset_bus_function() would not work: its cxl_sbr_masked()
-> > check rejects every CXL port with a masked SBR, while the do-reset path in
-> > this function unmasks the SBR before resetting. Such a port would wrongly
-> > probe as unsupported.
-> > 
-> > Move the port control register read above the probe branch as well, so that
-> > probe runs the same checks. That read asserts no reset, and a failure means
-> > the device cannot be reset this way, which is a probe-time answer.
-> > 
-> > Also pass an explicit PCI_RESET_DO_RESET at the do-reset call site, since
-> > probe is always false at that point.
-> > 
-> > Fixes: 53c49b6e6dd2e ("PCI/CXL: Add 'cxl_bus' reset method for devices below CXL Ports")
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>  
-> 
-> Ah, I missed Jonathan's review tag during the split:
-> https://lore.kernel.org/linux-iommu/20260926001311.7c4be583@jic23-hlaptop/
-> 
-> Jonathan, would you mind giving another review tag here? It's the
-> exact same patch that you reviewed. Sorry for the inconvenience.
-> 
-Reviewed-by: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
+I'm not familiar with the macro scenarios where a device has a
+restricted pool specified in DT. But I wonder if it would be better to
+round up instead of down. DT has specified that the device should
+have a restricted DMA pool of a certain size, and rounding down gives
+the device a smaller pool than was requested. Could DMA operations
+then fail because of not having a large enough pool? Rounding down
+also allows the pool to end up being size zero, which this patch
+detects and results in a definite failure at device initialization time.
 
-> Nicolin
+What's the tradeoff in rounding up instead? The device restricted
+pool at least as large as requested. Presumably, being larger than
+requested doesn't cause any problems for the device or its driver.
+The downside is using up to 256 KiB more system memory than
+expected. In an embedded system with only a few MiB of system
+memory, maybe that's a relatively big problem. I don't know the
+scenarios well enough to judge whether using a bit more system
+memory is better or worse than the device not having all the
+restricted pool space it said it needed for DMA.
+
+Your commit message also mentions "wasting a bit of memory".
+What is wasted in the round down case? The rounding down is
+done before the pool memory is allocated. I would have thought
+the wasting would occur in the round up case, where the restricted
+pool is given more memory than the device said it needed.
+
+Michael
+
+>=20
+> Reported-by: Giorgi Kobakhia <gkobakhi@asu.edu>
+> Closes: https://lore.kernel.org/all/20261026032007.1957949-1-gkobakhi@asu=
+.edu/
+> Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
+> CC: stable@vger.kernel.org
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  kernel/dma/swiotlb.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 2c57b49ac7c0..a68f35192582 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -2007,6 +2007,19 @@ static int rmem_swiotlb_device_init(struct reserve=
+d_mem *rmem,
+>  	 */
+>  	if (!mem) {
+>  		struct io_tlb_pool *pool;
+> +		unsigned long aligned_nslabs =3D ALIGN_DOWN(nslabs, IO_TLB_SEGSIZE);
+> +
+> +		if (aligned_nslabs !=3D nslabs) {
+> +			dev_warn(dev, "Restricted DMA pool size %zu is not a multiple of %lu,=
+ rounding down to %lu bytes\n",
+> +				 (size_t)rmem->size,
+> +				 (unsigned long)IO_TLB_SEGSIZE << IO_TLB_SHIFT,
+> +				 aligned_nslabs << IO_TLB_SHIFT);
+> +			nslabs =3D aligned_nslabs;
+> +		}
+> +		if (!nslabs) {
+> +			dev_err(dev, "Restricted DMA pool is too small\n");
+> +			return -EINVAL;
+> +		}
+>=20
+>  		mem =3D kzalloc_obj(*mem);
+>  		if (!mem)
+> @@ -2034,7 +2047,7 @@ static int rmem_swiotlb_device_init(struct reserved=
+_mem *rmem,
+>=20
+>  			mem->cc_shared =3D true;
+>  			ret =3D set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+> -						   rmem->size >> PAGE_SHIFT);
+> +						   (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
+>  			if (ret) {
+>  				dev_err(dev, "Failed to decrypt restricted DMA pool\n");
+>  				kfree(pool->areas);
+> --
+> 2.43.0
 
