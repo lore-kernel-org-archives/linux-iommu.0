@@ -1,117 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.24
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793731506;
-	b=4+S1F4ucxnT9CHeP7G1IXq/i0yl5BKGohHF/l9XaPdEuRpYdjoFWno4/R7OgznCo7tDB
-	 BUabFQAkvxCBzvkSVIBnp5jkDf9b+y6l9BzVEVpe9yQ9EyGzuld7pWtXK3saOUb/uieX8
-	 4I9dypMEAqV2dRkdl84wDorFFlayoSwSXbFUwR3crmQZrkqXoRt6NKKJGM0i//idV6hDZ
-	 8+43M0ESRNr93IOf0in0Y46kJBSYvYKeahh95/54bK83J1SZ+cj6+yT/RPIfbg/xnJIow
-	 ORpjtbuD8QF+GnRfdglF8/hMXqBqa+hMZ4TM3FshvVceXwSeeuFzfDmIkCxMHNQB7Bg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793731506;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=UAJXeuBuEJYUIUWAM/1VKg2o5KMuSDYvbpSUQpIO8Fo=;
-	b=pIDPn3WI2n7PRyFQ1EWQlkFA/FcXQ8mzP8/hYVKQIPsj/8j+jgHOPit/Fnyc6HOFZIIY
-	 Fp0Klwjq6A/NaABz9z+NoVoI7lFGtX076ZN0k/DAopEZy6usTu0EXa0+nU+4GE731TvC+
-	 +zT8gK8vNSAguBdo5C+v6CElyv8wzA8g7e09puAGzslchR/oI/t1l6CZJg0RkV8N6R/Bp
-	 m/c8klt0BV6zI9STH1u07rcVdYiHbEdkfCAl4KiyWN7lAwVkOFDDPAjYwh2dYYUYLhAGC
-	 v3ZFo2ju4jfmzGPhK1FOyYid9REqEGZnhNBA7daOwJ7I2wH3fqEHMSBLK+Zny0IG3Tg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=h7A+V2V9;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.24
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010024.outbound.protection.outlook.com [52.101.56.24])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.52
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793734376;
+	b=ShNHerBoHDe4m6aTqJt3tjk5pbh/cRZx6Af17Hw8wzCvStppKaC2kEgQ77YplGEkf5Gi
+	 XX9wAIPCBBb+ndyF3bmxsZNZ+w3yId0wt2QvE7auB349ICjPCppIMCdE5anxmgdXXesED
+	 GLY91n5sME9QciTu0mCUmxy1u4Bao4CnYuXGT7X832GwbE+YAxCKAQYfLFDH6WTKYHYru
+	 YZkBjTpLyzB6OgPt+ztMwU/hfsdtpMT+XyHRqjogPER4AHhomW04Mf7MPYHwpVmNp8eon
+	 UT2XSKM7My5xLlGfQvyPNfElcKUVgFu/gV2V1X85sWpWR5rDKLIS0UsaGl17jjMN4EA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793734376;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=fS2oe2B5dSHImTbALo6NjH0E4DZsMbovYECl1gVRP0I=;
+	b=BpPUwo4eIlhbK46b2lkBw4IHTeEilwMoPj9eHJk/Lak4v4whGiETRFl31lNugG/bawUW
+	 9TFfs6eb3P+7WqOKw4N7loaTQJlZjTtUJ8e08Sy1YRAr/YJWYYssU6T0ln4nH3MV+Ea7a
+	 clI1Cg4besjANNqEHE1Fzs0iH7jXlXXWB2aLTk10OgDrm375IMzXxOD9hqld6CpWm+1pf
+	 btibVt7lmFGgi1H5nQYtZ5tL376FrLvfjDY11WbByhQddYisw5TPzgtXyT8i3onhUAbEk
+	 tcR88VSzz/0ynORdUW07I8UqTaQAwOxUKCB0TwIyMKVZlreDdDvOm78IaHaxtpGEJ1Q==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=fP3obffr;
+	arc=none smtp.remote-ip=209.85.219.52
+Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CEE9606A331
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 18:45:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8CEE9606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAA0606A33F
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 19:32:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9FAA0606A33F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=h7A+V2V9
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=MBHexpLKaveJ8Yeq2Ds///gB9TN/HW9exp3HwctZyoC0vpnQmqK+Yq4KZDMf3fBB+IaTvItMVT+M408C34hRFNT0pQZ2ddYL1a6wWhFNJkX/3507I9yfHvUtPzu3Pt7yoMblqrM14IeaX9H/VqcycYONdJjlGRl+oAUWQo50AnByOfZ6BhLsj7/mJmjIZCH9oak7zukfeU6co4mWG1mW4AigAKA+bIYDox0RnFe2A95r1W1NDcD9ya5krPvp78J21gxEDerbMYXrguSkDIjaA8NoJznzmzaM2SPfNdiz0Pj+sipyBzzeW21gI1rwU34BzGrQBf5Q96HApegC85f1zw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UAJXeuBuEJYUIUWAM/1VKg2o5KMuSDYvbpSUQpIO8Fo=;
- b=xeEG5iuzrf+ahAI/b1dZOAloyOdtuG5XaHC6NKKcsoHA0HV/FJAZkltCQDCdse7tffAT5jha47RmAEsd29+vy8FEEeKc4IHUWJhwTD3dt0uLAHBJDPxKXqdmG1Hmv81YZVsDNIKiao0T7wKtGUKKbySuIudE4FqHdNfRBfCMiHjj6pDod0kKhaQLClfz/iQu/ljEB+ezGFCXtUTaU+7Z5jYdDzmpmcJNaQzctoZn8/tkDuw/GkI+OE81UK+yetEanACWJqb4abyb5P1+w5S/UfHrw0iFJhRx4fPXryZrrm2VlFshG0oz6wWlLTTWqZoOylqupdS0R0KKMsy8nZLALg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=oss.qualcomm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UAJXeuBuEJYUIUWAM/1VKg2o5KMuSDYvbpSUQpIO8Fo=;
- b=h7A+V2V9ryqBpEx940plekN6oyLWrnd72RyIwwSQlqTNdb3o3Hbj0guJfobNZC7L8bjU+Hs+roYjvqUvi7teTvuCZJooXt91ramIPVCHjbjXwZF9YpiFepkHNHiRamnYQsdpyBIXRfuIedE2KIx0tWrTFyK92KvK5M58gP9t9AJgaT3ayGl7Qb6OqnPUTV+zgA5woYPtns01rELu8Kvy5D9Gf+Gik2LnNdrBOW6hSTegh2FGnTbjS5O2Q0WswfGFnJKZ9UDVMhJJa2MoH03xxDny9vqSUpXwp0I4MBWhtgRhp6XXsRpCVzHFMFoLhouNpe0yiWrvy/Y8jhAYzVWvFQ==
-Received: from MW4PR02CA0024.namprd02.prod.outlook.com (2603:10b6:303:16d::9)
- by CY1PR12MB9583.namprd12.prod.outlook.com (2603:10b6:930:fe::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.8; Tue, 3 Nov 2026
- 18:44:55 +0000
-Received: from SJ1PEPF000037AF.namprd03.prod.outlook.com
- (2603:10b6:303:16d:cafe::42) by MW4PR02CA0024.outlook.office365.com
- (2603:10b6:303:16d::9) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.8 via Frontend Transport; Tue, 3
- Nov 2026 18:44:55 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ1PEPF000037AF.mail.protection.outlook.com (10.167.244.187) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Tue, 3 Nov 2026 18:44:55 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Tue, 3 Nov
- 2026 10:44:35 -0800
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Tue, 3 Nov
- 2026 10:44:35 -0800
-Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
- Transport; Tue, 3 Nov 2026 10:44:32 -0800
-Date: Tue, 3 Nov 2026 10:44:29 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jonathan Cameron <jonathan.cameron@oss.qualcomm.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, <joro@8bytes.org>, Bjorn Helgaas
-	<bhelgaas@google.com>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
-	Joerg Roedel <joerg.roedel@amd.com>, Kevin Tian <kevin.tian@intel.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>, Dave Jiang
-	<dave.jiang@intel.com>, Dan Williams <djbw@kernel.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-acpi@vger.kernel.org>, <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH v1 2/5] PCI/CXL: Probe the underlying bus reset in
- cxl_reset_bus_function()
-Message-ID: <auorjXgbVPXZNHZL@nvidia.com>
-References: <cover.1793729707.git.nicolinc@nvidia.com>
- <6c09d2f78d4bb9db7f49fa14a6550f5176721121.1793729707.git.nicolinc@nvidia.com>
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=fP3obffr
+Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-91c763de878so218686d6.0
+        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 11:32:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1793734374; x=1794339174; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=fS2oe2B5dSHImTbALo6NjH0E4DZsMbovYECl1gVRP0I=;
+        b=fP3obffrB8PPIK+EnjEmzJI0EQ2WPTaVdS2h5BmaO3meEE+BAQfpwP1mBuO4pr7oqv
+         Y43DMYKtth/u5nvM8whNaDdxpPJ5TYcKkYqgN4c5C/yKC8Fg5xfiS3GRnglI7DdNM+xD
+         o6ZbbJ824hO2b4OZi7ZR4fmC25cDzosCQ/iFIxlc7JwswrncNpfj642axyM9M91mMYoS
+         Kds8y1nvJGegtg8wKJlS4kyxECCcv/0jXdYGd++U+SxHCG/30cBSfatG5KOEAR+SYEdY
+         NbXxvz4XwDxJ25q2XDrpG6HDaMY+2UZuw1iuMGEq7a71/GCUocfR1fQ9KFsjOP33ozCh
+         RoZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793734374; x=1794339174;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=fS2oe2B5dSHImTbALo6NjH0E4DZsMbovYECl1gVRP0I=;
+        b=Rzs2WPIMoWZIUhQEn3/g0l/xlJkWuca+Soe//bUe9+9kzU4sAqmXmdSIeKDfPjeHRp
+         UNAN3KQ3EOt809RZy48hDQjsuBL4kIrFPwjSzU2wr+w/c5YS8kZVw/nWA4AHCz1hwqyZ
+         kliTrbMZnlrbXaBupJiPkR1G0FtIJITZQdPouVH0qwUxS4Qz/0QfQHUVknpB40POB0/g
+         ebu+LtHiSV332w5e5UScfzHw4uTaDGWchZsLaw214QhvrSsuVKvbx9GAsY4TSaZq3fzA
+         pIoJ6tOfmwt4HKaf7TVj+SNeVxm0wqjASgQUgq10ZIDb0ipKj6M0GD3fftRge2piKy38
+         1ZFg==
+X-Forwarded-Encrypted: i=1; AKwUvBynYxBhPX9jok2gzr1nYx/BnpmRPZbMG/I1y8Nu7Chl+qJLiirZlQo2D8jZ0FOZAqwwTdo3oQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/CeKfPR9zAt+gb4mayeZ0q9SZflh14UVqRkuSBpdXiOe8pyGbG
+	en8+WyzQoLnVMJ0QgJ+PWKE3qqOSkypynER5DSMTdrVKohjD2Qsh4sk0RDF2mVRE50U=
+X-Gm-Gg: AYBFou1YxuPW1RxwH0knt/q6KF2D9+w6lvZ5IJyO5DaZ9J75TOHCUliboFIA0wxcHMi
+	8R2ztUYLUvcMQP6ccs9r8EB9RSTchO2s9v2ZinbkIG5i9fxjT9F4VuS/7LiLwRUADzDnNvuvyOQ
+	nIMUYksByPPtC5eGh9WdvXcSeI6nSN5idQpTyPjiu12sp0W5dR+J4LthiK+DJ8P0wVFUVv+Jfch
+	uKrDpWqB7uAzqtl4zNyZHMu+DP+N0rBo4TSTz+mjriBZF+XobhOuwAt30LcMYbBN+gka8W+hiIR
+	rVVM1qunawgdVVvcH2z+kzYhMnFsCZpFOk/zO8jT2iDJocqrPDviypCymPr1rLKqG60c6AQzrLL
+	7TP+eMA1eANI4qHTPHuKKQnuHARSPtAnGuCXOqtmpNN4xWdgLiWFODNuIqfWBo2XRg/hrQQyQJ4
+	muOhiymKPH/bAVD+EJFj36V50Dy0l0/PTQUCrcue8O5TkAVFPff7LzQtuZB/bsMOUV4Jcj8rSD7
+	Vby4OFQNUYHcUnK263uL1wmM7Fy+jW7wNTMKNJnjoGidBFWXqY7YAso5mfPvqc8hAzi6sxBxkgq
+	blk7k4YFAeZ7q5mo83VPIzdGl8JNRzDPBcnkIVh2qdqRF3R5QpxDGOMhvOwUfgrGAKf/2t4JfpG
+	NPKD6yng+LRu9aQfB8dRtmWIy7HUPOSw=
+X-Received: by 2002:a05:6214:5906:b0:91c:79f4:1eac with SMTP id 6a1803df08f44-91ca4b74df6mr227056866d6.34.1793734374301;
+        Tue, 03 Nov 2026 11:32:54 -0800 (PST)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91e7c575600sm1135846d6.7.2026.11.03.11.32.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2026 11:32:53 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xOKFZ-0000000DmXF-09NL;
+	Tue, 03 Nov 2026 15:32:53 -0400
+Date: Tue, 3 Nov 2026 15:32:53 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Tal Zussman <tz2294@columbia.edu>, Kevin Tian <kevin.tian@intel.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jean-Philippe Brucker <jpb@kernel.org>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iommu: free dev->iommu when iommu_fwspec_init()
+ cannot allocate the fwspec
+Message-ID: <20261103193253.GN3889730@ziepe.ca>
+References: <20261031-iommufd-folio-dirty-v1-0-2cef66d2d6d1@columbia.edu>
+ <20261031-iommufd-folio-dirty-v1-1-2cef66d2d6d1@columbia.edu>
+ <7e209fb2-4bda-4207-9109-c67c8df41e05@arm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -121,68 +108,83 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6c09d2f78d4bb9db7f49fa14a6550f5176721121.1793729707.git.nicolinc@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000037AF:EE_|CY1PR12MB9583:EE_
-X-MS-Office365-Filtering-Correlation-Id: 44111012-f6e2-4990-9c32-08df39da8dcf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|82310400026|36860700016|261022105027099003|4143699003|56012099006|261009223027099003|261009221227099003|261028144727099003|261021135927099003|261022075727099003|261026121527099003|261026140227099003|11063799006|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	S7NQam2mSTwXawhip3hRcMdUXGfU5fH2JwaMGiV0UU/fREPH9VbeNeW4YvHFdSUquk2IyKWkKB8uHISqI7ooGq1To+hEY7vwVHqlRrIhVKZcbUojB1CjT7Fkv4zxSoIZahX1sKr5B6bq3oPK4U9tUzXlJ70//FdR7yJRWCVWa8p+Nrt8/8K3oI94DW/szL2oV010kKy5DDQX9GFkxP5PVVX7ZTEzg2s1PnGK1sSS3PiBzPt2o7N7b3dz4Dipn6JwoIG5pg+OhO+tSOU8/SnYAvX6GVX84NTwlvE2P/3u7et9j8bDiALTM/tjDbSYHsF7Uc8s4toXwi4HWYntpM8AaRQ3JislSVbGyUIsQvepYJ/C9axuiJoNJCsG/+wwC4oqhQcF1eBSwGREIPikLitfdVCmadD8w5dTHwI9IvtQKLttTyryG4MVey/e0Pf/G3A230eA6RJRYZvjhNpXZ9ZBX8VZGvP4PA2G0029JgDR+WDnQhz6kJR5SBXLJ7X+GBFdHUqrnJCKKYOyRwvD11QEEERGWu/0PZDVMCJwqwzA8r+2bjxPlJ0ENm++FcG0iQz5BGFt0uezPrH+wyFw7mz3AkB0oCdIoCOr4Ki7vGqSl7E6s9ibV0WGsSh+tvkJCpzZQ/kBbVDsMKgdOwib7iB1GmsDEApA5Qkvjn30MXn+BeilwUqQcFWk54+6VIL0/0TDAh2yh7Sc5PVvUTKNgcugLA==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(82310400026)(36860700016)(261022105027099003)(4143699003)(56012099006)(261009223027099003)(261009221227099003)(261028144727099003)(261021135927099003)(261022075727099003)(261026121527099003)(261026140227099003)(11063799006)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	PU2cD42C6OPMSOGOPTKjdfPDnMQNGCn/3Qb4bJKoySfQn0wBVyNWa3WBfWPXHJMVWhBqbc+Qo9Qj8d+BLczZ5I5/1hTGON/LH0HwGRK2+nd/rFlVLa8XPzfswcvjbw4tIDfhIW7GBp/oF5zQ6KWUyHyX+RNbG9tGA2kTPjMhpMcvpk9rc/LN48+cKxowI9cAX4WBQGZc4eZyhxLg8m8U1hLkEI8RBAqW5Gi/87gHviISQLXpz0pC1COnnBa9cSI4U7wP31EymVFCc26z946XeA7/wodKPIEmcP2qbQHWdt3LNJKRrC9hxMAvyswQCeTyZUzblzuoVpSgnkt7X/BqBJwB2y1usQfuda9PRrrX33smVOtv/bKmPravpRqTinyDHNUOQH3/t6ss34t5VYxAlF6tWkSPaqsF4+lvFNyMOdvbL28OFtVXjctVIjZRKiJc
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 18:44:55.3363
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44111012-f6e2-4990-9c32-08df39da8dcf
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000037AF.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY1PR12MB9583
+In-Reply-To: <7e209fb2-4bda-4207-9109-c67c8df41e05@arm.com>
 
-On Tue, Nov 03, 2026 at 10:33:43AM -0800, Nicolin Chen wrote:
-> cxl_reset_bus_function() reports "supported" to a probe after checking only
-> that the upstream bridge carries a CXL port DVSEC. The underlying bus reset
-> can still be unavailable, e.g. on a bus shared with other devices, so both
-> the reset_methods[] array and the reset_method sysfs node end up listing a
-> "cxl_bus" that is guaranteed to fail with -ENOTTY when it is attempted.
+On Mon, Nov 02, 2026 at 04:51:05PM +0000, Robin Murphy wrote:
+> On 31/10/2026 8:33 pm, Tal Zussman wrote:
+> > iommu_fwspec_init() allocates dev->iommu with dev_iommu_get() and then
+> > the fwspec. If the fwspec allocation fails it returns -ENOMEM but leaves
+> > dev->iommu allocated, and it leaks.
+> > 
+> > kmemleak reports it when iommufd_fail_nth injects the allocation
+> > failure:
+> > 
+> >    unreferenced object 0xffff88811c138b00 (size 192):
+> >      comm "iommufd_fail_nt", pid 783
+> >      backtrace:
+> >        __kmalloc_cache_noprof
+> >        dev_iommu_get
+> >        iommu_fwspec_init
+> >        iommu_mock_device_add
+> >        iommufd_test
+> >        iommufd_fops_ioctl
+> > 
+> > Free dev->iommu on failure if this call allocated it. iommu_init_device()
+> > allocates it before calling into the driver and frees it on its own
+> > error path, so leave it alone in that case.
+> > 
+> > Fixes: 72acd9df18f1 ("iommu: Move iommu_fwspec to struct dev_iommu")
 > 
-> Probe the underlying pci_dev_reset_slot_function() and then, if it is not
-> applicable, pci_parent_bus_reset(). These are the same two checks that the
-> actual reset runs, so a shared-bus CXL device no longer advertises a method
-> that can never succeed.
-> 
-> Probing via pci_reset_bus_function() would not work: its cxl_sbr_masked()
-> check rejects every CXL port with a masked SBR, while the do-reset path in
-> this function unmasks the SBR before resetting. Such a port would wrongly
-> probe as unsupported.
-> 
-> Move the port control register read above the probe branch as well, so that
-> probe runs the same checks. That read asserts no reset, and a failure means
-> the device cannot be reset this way, which is a probe-time answer.
-> 
-> Also pass an explicit PCI_RESET_DO_RESET at the do-reset call site, since
-> probe is always false at that point.
-> 
-> Fixes: 53c49b6e6dd2e ("PCI/CXL: Add 'cxl_bus' reset method for devices below CXL Ports")
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> No, the bug is clearly the early return in 2a918911ed3d ("iommufd: Register
+> iommufd mock devices with fwspec"), so fix it there please.
+> iommu_fwspec_init() has always been designed to be called in conjunction
+> with iommu_probe_device() which handles cleanup appropriately.
 
-Ah, I missed Jonathan's review tag during the split:
-https://lore.kernel.org/linux-iommu/20260926001311.7c4be583@jic23-hlaptop/
+Asking AI to audit this found the other case I remember...
 
-Jonathan, would you mind giving another review tag here? It's the
-exact same patch that you reviewed. Sorry for the inconvenience.
+Yes: ACPI DMA configuration during driver binding can leave dev->iommu
+allocated after failure:
 
-Nicolin
+ really_probe()
+  -> dev->bus->dma_configure()
+    -> acpi_dma_configure_id()
+      -> acpi_iommu_configure_id()
+        -> IORT / RIMT / VIOT
+          -> acpi_iommu_fwspec_init()
+            -> iommu_fwspec_init()
+
+ If dev_iommu_get() allocates successfully and the subsequent fwspec
+ allocation fails, acpi_iommu_configure_id() (line 1614) does no
+ cleanup. acpi_dma_configure_id() (line 1670) ignores errors other than
+ -EPROBE_DEFER. This invocation has no enclosing iommu_init_device() to
+ unwind it.
+
+The OF path has its own manual free fix already, it doesn't rely on
+iommu_probe_device() to clean it. The other driver users are the only
+things actually protected by ops->probe_device().
+
+> > @@ -3074,6 +3074,7 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
+> >   {
+> >   	const struct iommu_device *iommu = iommu_from_fwnode(iommu_fwnode);
+> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> > +	bool new_iommu = !dev->iommu;
+> >   	if (!iommu)
+> >   		return driver_deferred_probe_check_state(dev);
+> > @@ -3088,8 +3089,11 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
+> >   	/* Preallocate for the overwhelmingly common case of 1 ID */
+> >   	fwspec = kzalloc_flex(*fwspec, ids, 1);
+> > -	if (!fwspec)
+> > +	if (!fwspec) {
+> > +		if (new_iommu)
+> > +			dev_iommu_free(dev);
+> >   		return -ENOMEM;
+> > +	}
+
+Just move this allocation before the dev_iommu_get() and free it if
+the get fails. Then the function has a more sensible calling
+convention that error means it doesn't need any unwinding. The
+new_iommu is a little too weird.
+
+Jason
