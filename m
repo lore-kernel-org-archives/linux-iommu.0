@@ -1,17 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.198.19
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.59
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793723196;
-	b=ifYIw7EUxA3MHnFYyBdw96AOqlTd3UJxqGxIrVaRwJ9LoddsUFG5kR43DfHcB67mUAHa
-	 x6b629a1XlhYZRj4c1tzO3TpORvY3J9u3H+vO5icIRicE39GSbeYheFUfRQYOkvGsyE/b
-	 egU4ZMhecnMhCjy53ETubd+hSOgvr0tjiVqpOArSFcJG3W7aXZnHhYVK5UAuMKjrm0xq7
-	 +6YmGDz9zcM7ZPNasYtEMn43XkeeFPKDPIzdkvsbxGOiFmL4s7UhjXf52l3caCRsat7wb
-	 VhyW54sa7mAAT04Jf4yA4i5/ytpMf2IbHxhrFX80VhwQlHXvnkGzfEL5jVjfL3gs3tA==
+	t=1793723346;
+	b=yuYKMLJUd8TIC5wIzB4LieQn2xuwqfFRsqR1ohU1b78jEJmJnWOHaF7SO7+d1svIDgbg
+	 bbveuoxHwb15xLe17Y1gq828c7t+UtMMeyPUxj7XeKjy26zKvTEXEBKgjzXkITS/amg+W
+	 lx5iL1Te56wtBNdSeRNsifsqyEeBJoDQrqyNu12At5qzPd0UPtJDZC4aJYuL5O4e1bADk
+	 Pk1EBie1Tpur1VzISDaHjXMRhbv/nCPp/Em4zKDXsWNI3PoaL6dJ+bR+RIbvxzPuQfDBp
+	 CEHpg3K//+HILt57wJ+8CbJF5y0H6lEKzeXflDEYjvUDUBNPdQPcCCFoTQ7znsPRAMQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793723196;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793723346;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding:Content-Type:
+	 Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:Content-Type:
 	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
@@ -26,53 +26,52 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=6zyMxWVaLRlrzyt0tmMAewN95mt1HurEOoa5PZ+1XiM=;
-	b=lOXFrT6yxu/t8aorUoatH2x+H5748sWHmvBmkPSKepCCHG90C4onGGemm8r9UQk6fIHJ
-	 gCbQo9zX7d82KJL8jmUA3bNdFCEJ3/vUKyL+O2EOHffD1JC9/BO2sxUGgPZ2a+C8Zg0bp
-	 21XekEY+Otq4+x/QKvVyLWYXzABIGnJF3G30+H2y6z6I98B6fM5+K/NQWGdKBdkmKf7Ex
-	 x3vwmLmjYnXEDyYRmaQJpxmnwh9Lpx6SRFi+Y0gQ0lJJ3WWz10ZCEpDs87mJ6CyTW0gQu
-	 gVa+san5fSd5bMVMMRrA2HCLe+TZUePOyHXGxFbxflJ9zeUZ+GqHqWc9aKb4mhCCifA==
+	bh=Pjvtisfj0ShIvEUhY1wqdXjIdnKALWvBB/aKcW/zekM=;
+	b=OJfbWPy8UD8bCPi5wW79Q+ReTLx4QgS+AamxA2Bb58AbQf3sdy4YiOPV2dutyRGQTbkI
+	 uRw3KPglG1GOJXw7WxBk3KPLq4Ixaycn0T+C28hqSKzoRmNWRPJH/zg6wJ+xqGfNfIm7F
+	 jwN+imZKhl14CSYaGmwSCULHj3oOFMwn7O+mT8hHeJdSgdFJ2+S5vfEOWTHATzE0KZjzL
+	 GgDChktGxUjUu9zy+BR2oz7E3Qn8cgXK0DMVfU/TDW2lx8V7ydM8KdRkkCUyqQlfQ95W/
+	 eGp4PZvmWG0r2Nk7Hn8DHAHE3LXV7xQagIDw3kZj14qZ/R5heQkC5M4Rx6f3ca6olHw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=fa9GrIOj;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.198.19
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010019.outbound.protection.outlook.com [40.93.198.19])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=FcKrv1we;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.59
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011059.outbound.protection.outlook.com [52.101.62.59])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13C10606A324
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 16:26:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 13C10606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F9F8606A324
+	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 16:29:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0F9F8606A324
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=fa9GrIOj
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=FcKrv1we
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xypmjGs1kSXMUZDFXKDayybtsseuc3iUrikOJx3ZN8G09pp9nk7Jpv1uQIpiN75Q6TRtfKbg5yQvhhQupWq1fKIG8lfJFPRrhKc3HVKQvVEAS1Urh7RMkIv6GqM/tQ9q/6LBszwaHsVlYk2x0fuxVFXRCPIs08E8qFN5FZibGweXq5qc/4BTYXiXrbqaMSdrG+Af0RUwLggUYK8EN3woULYIwN02CryxYe2DwWoXWMpEq8Sye+xHnxa8JcqpAVAFhdC7i8XTBFzJIIUJJ2twBj4bpHMIB84TAsblg/DmOVvFmM0a7znYB2LaVl92YgJpxTQaYVIR3RI8HGpNyGsinw==
+ b=tQCmZpO1w8C+ZgQB2ZiEJIk0ZtEcGOVPzPXn6U86KtZEI9kthOiFUH0Nw3ln4BO5D/zz2DAoGMe9IJviTs2s6SCLb8ye4/75WWs/zYesUGaDnM6dotvRkd/LB8NeCYyvrOKRzpn0VWJSEvbSBE0JW4NBOFEA6errGcarplwbxcxqhAMuZeZE+W4jF/2/nF3edkFuvZyW3reooMBEjK4fgsmJ6WJz+/8cyvGTadwxvqZXC+thhT18RV3p4W17X77yS3NCnJDR2GpJH3WM4macc5821iL1BbamZjvcXc98xSemRgSjcOntJo8Ck0Bc09rDwAtaOPWbgAnUk5QSUY4bnA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6zyMxWVaLRlrzyt0tmMAewN95mt1HurEOoa5PZ+1XiM=;
- b=QKDBFM6iVo4YjOmvcaRfS5jM4HvPUNDOD0KOmImCxJJUqCS/fX2idbBdy1GeN2UdyswhhpFbdEGNTCgH7ws2cgGubmxvGVLhA5aEEc9xA3pKdQ4iatSXPQLW0mwBcEnPou7MhjazIAbE4lDVc05CJp/d538B6fKFC0/v7tfk7q+DE3h5YdyGuzHP+7zEnJhjoZm6RT0YAzNeneoOJUnR6z1LXr/DuFYav5oiBtdoqI3GMBUW5+6wFDSVo7/cIsjl32yqQYtklk3cHbihfUW6i6LT036talb7IdSdSyk63s+4kHXAVKFGIZn/cazWshbEFQs8LVQ5yOAgeflQyMIo4Q==
+ bh=Pjvtisfj0ShIvEUhY1wqdXjIdnKALWvBB/aKcW/zekM=;
+ b=kDrBI7eCg4iySzmFsUqEoakM4yE+AtS7Wo899pU2dUgf+wc9lAZR/eElF75UABltMNXjEyzKwUf1rFtcZSo0MA1NfupY4oeciG9PLmf1S9K9AlaXMJvuxVUbw5ULaYqMiIAIfxWlBHzOSmsykLlAlPe3ouXH8/eoN9cci6ismee0Uf3G72X75fNGI97tIKH3i9vxmA4SOkSagOxXnoOTE3fVUuXa43Bt79W0dLyOpM6jPqOJSLys0dUyZZ/0UlnorWzF6ypseKremxSVae69U5Tlgo8fwMf46hgOoGM7z7UlSaCuMx08mwv1U+v4FFQqIXEGDt7v1qvUPuoa2Mpy6A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6zyMxWVaLRlrzyt0tmMAewN95mt1HurEOoa5PZ+1XiM=;
- b=fa9GrIOjfxkvoyllV35c+8hEPOpOJcfs3i8E9F3yWTdAd8V0+VmiTDB5yTxWe31zbjH2lVg+0LPzEPuC0uOFWkCYJDwx1Ky7mXDz454HAOTWS7hpzSoYTIh5WcejgadPxDfT8GLEbQCWWR+aCLoQEFRl3pP5Ttf+KC/ItJk/fRY=
-Received: from CH0P220CA0008.NAMP220.PROD.OUTLOOK.COM (2603:10b6:610:ef::6) by
- SA6PR12MB999201.namprd12.prod.outlook.com (2603:10b6:806:450::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Tue, 3 Nov
- 2026 16:24:49 +0000
-Received: from CH1PEPF0005BD5E.namprd02.prod.outlook.com
- (2603:10b6:610:ef:cafe::95) by CH0P220CA0008.outlook.office365.com
- (2603:10b6:610:ef::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.8 via Frontend Transport; Tue, 3
- Nov 2026 16:24:48 +0000
+ bh=Pjvtisfj0ShIvEUhY1wqdXjIdnKALWvBB/aKcW/zekM=;
+ b=FcKrv1weFrU9sJBRNR6566wrUgQUQQXHe2btKi5ykrcnyOMh08jWS9wbhR3daBe/NvaTb1z/7X0JSHkpVkNbUuGuVru6ykkA5AHzuLJyXc2Wwu+mvc3Yif5klwuKYz0G1sgyG8V+azWVKE4TBD+t0/H4E+pow/Emhy8w0a8lSug=
+Received: from SJ0PR03CA0003.namprd03.prod.outlook.com (2603:10b6:a03:33a::8)
+ by DS7PR12MB6336.namprd12.prod.outlook.com (2603:10b6:8:93::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.592.8; Tue, 3 Nov 2026 16:25:09 +0000
+Received: from MW1PEPF0001888E.namprd03.prod.outlook.com
+ (2603:10b6:a03:33a:cafe::36) by SJ0PR03CA0003.outlook.office365.com
+ (2603:10b6:a03:33a::8) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.569.12 via Frontend Transport; Tue, 3
+ Nov 2026 16:25:09 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -80,20 +79,16 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- CH1PEPF0005BD5E.mail.protection.outlook.com (10.167.244.247) with Microsoft
+ MW1PEPF0001888E.mail.protection.outlook.com (10.167.249.165) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Tue, 3 Nov 2026 16:24:48 +0000
-Received: from Satlexmb09.amd.com (10.181.42.218) by satlexmb07.amd.com
+ 15.21.592.5 via Frontend Transport; Tue, 3 Nov 2026 16:25:08 +0000
+Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Tue, 3 Nov
- 2026 10:24:46 -0600
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb09.amd.com
- (10.181.42.218) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Tue, 3 Nov
- 2026 10:24:46 -0600
+ 2026 10:24:57 -0600
 Received: from xhdradheys41.xilinx.com (10.180.168.240) by satlexmb08.amd.com
  (10.181.42.217) with Microsoft SMTP Server id 15.2.2562.53 via Frontend
- Transport; Tue, 3 Nov 2026 10:24:41 -0600
+ Transport; Tue, 3 Nov 2026 10:24:52 -0600
 From: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
 To: <robh@kernel.org>, <saravanak@kernel.org>, <akpm@linux-foundation.org>,
 	<david@kernel.org>, <ljs@kernel.org>, <liam@infradead.org>,
@@ -103,10 +98,12 @@ To: <robh@kernel.org>, <saravanak@kernel.org>, <akpm@linux-foundation.org>,
 CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<linux-mm@kvack.org>, <iommu@lists.linux.dev>, <kexec@lists.infradead.org>,
 	Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Subject: [PATCH 0/4] kexec,mm/cma: do not run the next kernel from a fixed-base CMA area
-Date: Tue, 3 Nov 2026 21:54:25 +0530
-Message-ID: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
+Subject: [PATCH 2/4] of: reserved_mem: keep the reservation when node_init returns -EBUSY
+Date: Tue, 3 Nov 2026 21:54:27 +0530
+Message-ID: <20261103162429.2053989-3-radhey.shyam.pandey@amd.com>
 X-Mailer: git-send-email 2.44.4
+In-Reply-To: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
+References: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,75 +117,91 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0005BD5E:EE_|SA6PR12MB999201:EE_
-X-MS-Office365-Filtering-Correlation-Id: a2b4ae8e-8581-444c-18c2-08df39c6fb08
+X-MS-TrafficTypeDiagnostic: MW1PEPF0001888E:EE_|DS7PR12MB6336:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1e1ee63c-3c51-45d5-0de9-08df39c70717
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|7416014|376014|23010399003|36860700016|56012099006|10067099003|18002099003|261009223027099003|261022075727099003|921020|261102123227099003|261021123027099003|261021121427099003|261022115727099003|11063799006|261026121527099003;
+	BCL:0;ARA:13230040|7416014|376014|23010399003|1800799024|82310400026|36860700016|921020|11063799006|5023799004|56012099006|261009223027099003|261028144727099003|261022105027099003|261022075727099003|261022115727099003|261102123227099003|261021121427099003|261026140227099003|261026121527099003|10067099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	LuLvjFVnDBrU91Q4OP1QehB+udeusNPB+vvs0j90Avj7BssmtFwsSk44ipPx0vuEzIbSoFEfJzKt0p6DIFQXKuiyIho98OXIX1fwhWzoDRcheUHmaHxwrBWX6R+lNY+zt2YzPCExmbviL5znD4p+PLmTvpI+H2AS7duxJOmHTBs9IXmXmz0BJw+AdsJD+AmRnOTnfI3UYXH/N2Fv5NW3bujojxwdpyuQmrlxxXQshFSudNzIE8Wo6lMR7KV43nusWgNVgEN3+fKflrJP/CXSCyHwykMT/vyB5oBSS+XaGLO1wfzy+PdsNMmrCJAkOuDH77PuK26BNDuAUrErSHAxlL9nG/MVAT/4uiV5RyWNlx2lAFYdQ0aMnLxG1H0U90F/GXsl7p0mLQTPdq8KeDmyaEveHcoAd/v+aP1vMk0XQ9kwlCoXjDrlAleBQsRj2h2yomkGrbpBDTSaMQ/jQwz/FtteeXxNWH7JZgvn/ImhK9ScFGTgHlPK+6UgruXAPWFqa2/dweNkWDTBuIYbK62/3hsuah9A6XNyIkuIeVPQMWRfV/rSmlGnHVlWjVruRZWiLhtrESn4okvFp+0hdYVXn9Kwaqjsdt4PoIMu+9UcJwvW5aUTT7FFd+MHx9yQZzUWYdWR5xzhVWlphCgfGTrkdRbM6Nw4CdsabJl8UrBVYm/9tYvFT0+Jv4c4PtXwYvkQ
+	P9wd7HB4gYRUgbfcn7PlGa9tGGWjmu7k7sHcL6iaBoH3vU1jYT1tEkabULr3w+zmntT1hm368I7v8oIC7k6tvnI7YbdirRhy/S8sr9+Z3f8XUGAeznnEVvxajZaRSAaAUzCgkgP1ybjyegY0WC4KFKkpHZcBMyIFVAnCqUVcZZ9BBDREtFiesmEa/Im8QSFPVGegj0szTsgsGit1h4QxmgsOJ6xdyGWAq7HI+Q8tb+vEoxKSZBGg8TrSA7p0Q5toeq47U03BN9TL5B7SZtuG+udgDZz3yv+RNE67YpT9oh9MQVNKDKMJatyqIfMleXnjgh/YzAzdYRvdKbjc47Khj4HCRXjChP/l5a9DtC/xEWHW8gQuE6oeiAUpwTeNjxh8z9unzRwIQDTJ0NTB2OnnyahQzEZ3pFk74NwWj08SrmO+rQDUSv6N9/f5sVUQ2pT02DDF8gZsS6EcIwQRlT95IkZGsitHlhCL82XdjVLcQ9T+BKPsgPSWAQ1tISnQtFmcckO/+cqXxEXKsU4lobgnJpUbHnm+E5gsfxOOHrOnUAoWCyDNkCi8HoUkARXhnbNsXCsm3h5OmDbXImtaaB/meJ60DV7SX5gAWjZ6/fJtSkul0oMQ/uWtbAKjHyMp5BgOJ5se0kebrqJX/dD53U5w2RiIHaQ+hSpy7Vq2IIxCgGBrDcchWJydaGSy/UX3nNfEUkVLdH5OVjACHjLYiWfr1jBQwLZeb0XO6eXRWZeYCSeh3t9sbxRDfOa2ljl9NboA
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(7416014)(376014)(23010399003)(36860700016)(56012099006)(10067099003)(18002099003)(261009223027099003)(261022075727099003)(921020)(261102123227099003)(261021123027099003)(261021121427099003)(261022115727099003)(11063799006)(261026121527099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(23010399003)(1800799024)(82310400026)(36860700016)(921020)(11063799006)(5023799004)(56012099006)(261009223027099003)(261028144727099003)(261022105027099003)(261022075727099003)(261022115727099003)(261102123227099003)(261021121427099003)(261026140227099003)(261026121527099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	dNjv3IiiTvWJOExdT+n/aXaOt24uPeJgwW9EHjE7jKsEpmeVAQMMigmVO3akbgxqlZOB9FcA7UyxuzFLLdbpaV8G/qkqMN7IFVop+2uHY8g4467tfR/jKDHJzWwTVo+zdZEUAUYBwJ6HF4c24K6B5B/g8z3o3c8C2rL7fQ8Z5UkoYgj2QPNVcEXemXid2STOIMYcAQz1CluVSYC+Naz8Mn/COk1fPHz0VV/YY3N9jv6ihcPficU8XGbb/IdxQxYUa13gRp8w+d5MqLpmerGZI5tF5pcgu1lPIel2LSaKgGxRWA8yjGv+wVg+H6t0c8rlO/pfQ4yWnH3KPIxCuVU9jbLpRYZwkZazssrLRkcxIzprd4jpv6B+ClVf7RLAej2Z022rPMX1kgU+gFD6fhf6hrtBafhL9xmCnuFTqrHQzsKKvC/G9h3/TmrYo/ei237y
+	epOc018vOFBmUnxxl2d/BTdrKnAy7mD01BGD4uZ8zb7VmxcOdmQ/Q9mxTSb/mKs7+qjAbZ7Wal+MTRP79qjtbiZcenSNbXVR71Z2jk84piNQWRumdx5ZMxdz5yZ7BNxNfAOnkB3XaWUuf9BvM0/ecIMAK4jL9R9zu8dzX5JhWDHQV/iXmRmXVKi6KCQpa4sudSb8cu/jmHz3Q7F641SelpGsvjowba1C/9UPrJALtCVBHdn+3hXJtaAOTVr3g1lgjPeiA34+4dDKWdu7DVEqps4qIePzAs3QNNhhvPAIpBJpjoI4obIMDENOsCC8ERDfM6KULaKylae/CvfE4aZorRs+EeYlhn2+OXhC1QibwBVxLs4SuF0oxlVYkq06z7a3TbsoxFEMqMYomvYRWr4JHXv5QPq+kSducKD0t1xQBcnzLzlaZdhcZe8FmCitDmUi
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 16:24:48.7263
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Nov 2026 16:25:08.9295
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2b4ae8e-8581-444c-18c2-08df39c6fb08
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e1ee63c-3c51-45d5-0de9-08df39c70717
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CH1PEPF0005BD5E.namprd02.prod.outlook.com
+	MW1PEPF0001888E.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA6PR12MB999201
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6336
 
-Since commit 07d24902977e ("kexec: enable CMA based contiguous
-allocation"), kexec_locate_mem_hole() places the next kernel in the
-default CMA area and it runs from there in place. If that area has a
-fixed base the loaded kernel declares the range it is executing from
-as a shared-dma-pool, and cma_activate_area() frees its own image to
-the page allocator. On a VEK385 that corrupts kernel text within
-~300ms of /sbin/init starting.
+fdt_init_reserved_mem_node() treats any error from a region's init function
+as "this node is unusable" and calls memblock_phys_free() on the whole
+range, although the range was reserved earlier during the FDT scan by code
+unrelated to that init function. Give -EBUSY the meaning "cannot be used as
+described, but must stay reserved" and skip the release for it. Nothing
+returns -EBUSY from node_init today. The next patch does, to refuse a CMA
+pool overlapping the kernel image, which without this would free
+[_text, _end) rather than protect it.
 
-Patch 1 is the fix and stands on its own. Patches 2 and 3 close the
-same hole for a device tree placing a shared-dma-pool over the kernel
-image with no kexec involved; patch 4 is an unrelated cleanup.
-
+Suggested-by: Pratyush Yadav (Google) <pratyush@kernel.org>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+---
 Changes since RFC:
-- Patch 1 records CMA_DYNAMIC_BASE rather than CMA_FIXED_BASE.
-- New patch 2 answers the RFC's open question (Pratyush): -EBUSY from
-  node_init keeps the reservation, so refusing an overlapping pool no
-  longer frees [_text, _end) along with it.
-- Patch 3 reordered after it, returns -EBUSY, rejects a wrapping
-  base+size; both Reviewed-by tags dropped for the rework.
-- New patch 4 drops the duplicate alignment check (Mike).
+- New patch
+---
+ drivers/of/of_reserved_mem.c    | 14 ++++++++++++++
+ include/linux/of_reserved_mem.h |  5 +++++
+ 2 files changed, 19 insertions(+)
 
-Tested on VEK385: with patch 1 kexec declines all three device-tree
-pools; without it the booted kernel refuses the overlapping pool.
-
-
-Link to RFC: https://lore.kernel.org/all/20261014145731.3431527-1-radhey.shyam.pandey@amd.com
-
-Radhey Shyam Pandey (4):
-  kexec: do not place the next kernel in a fixed-address CMA area
-  of: reserved_mem: keep the reservation when node_init returns -EBUSY
-  mm/cma: reject CMA areas that overlap the kernel image
-  mm/cma: drop the duplicate alignment check in rmem_cma_setup()
-
- drivers/of/of_reserved_mem.c    | 14 +++++++++++
- include/linux/cma.h             | 10 ++++++++
- include/linux/of_reserved_mem.h |  5 ++++
- kernel/dma/contiguous.c         |  5 ----
- kernel/kexec_file.c             | 12 +++++++++
- mm/cma.c                        | 43 ++++++++++++++++++++++++++++++++-
- mm/cma.h                        |  2 ++
- 7 files changed, 85 insertions(+), 6 deletions(-)
-
-
-base-commit: d6bcfc94eb4da6e089c5473970cd96727292fd97
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 0fd1683cba01..d67a2b3a4d44 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -621,6 +621,20 @@ static void __init fdt_init_reserved_mem_node(unsigned long node, const char *un
+ 
+ 	err = __reserved_mem_init_node(rmem, node);
+ 	if (err != 0 && err != -ENODEV) {
++		/*
++		 * The region was reserved before its init function ran, so it
++		 * is not ours to release. -EBUSY says the init function is
++		 * declining it for a reason that outlives this node; freeing
++		 * it would hand the range to the page allocator even though
++		 * something else still owns it.
++		 */
++		if (err == -EBUSY) {
++			pr_info("node %s init failed, keeping reservation\n",
++				rmem->name);
++			rmem->name = NULL;
++			return;
++		}
++
+ 		pr_info("node %s compatible matching fail\n", rmem->name);
+ 		rmem->name = NULL;
+ 
+diff --git a/include/linux/of_reserved_mem.h b/include/linux/of_reserved_mem.h
+index 49da515859f2..4bf32f80785c 100644
+--- a/include/linux/of_reserved_mem.h
++++ b/include/linux/of_reserved_mem.h
+@@ -21,6 +21,11 @@ struct reserved_mem_ops {
+ 	int	(*node_validate)(unsigned long fdt_node, phys_addr_t *align);
+ 	int	(*node_fixup)(unsigned long fdt_node, phys_addr_t base,
+ 			      phys_addr_t size);
++	/*
++	 * Returns 0 on success, -ENODEV if the node is not handled by these
++	 * ops, or -EBUSY if the region cannot be used but must stay reserved.
++	 * Any other error releases the region.
++	 */
+ 	int	(*node_init)(unsigned long fdt_node, struct reserved_mem *rmem);
+ 	int	(*device_init)(struct reserved_mem *rmem,
+ 			       struct device *dev);
 -- 
 2.44.4
 
