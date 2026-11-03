@@ -1,60 +1,73 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793700680;
-	b=v4ESybahf/cirx+8E8fAU+SNdmmhb3whnMrKTekgT4EC5XemtPPLQSCLCWHqfjOtpTni
-	 P7tJ1UN2MUZG828hMv/4lQkd4vKuK2Eo7LdSTR+Pn9fJvpjjQ57L07m+AxDpl4+whH2ih
-	 awKFgvdVCLuCK4ZqJGEm6sbaAaDL/StQZpeKPkNCNg/DnjeU9eNUvL8EazbnnujAGKzeG
-	 J5QbVDr0McbxcJQ/0NnYrfXnUin1sSMaLkluXbXi8vTDrzfgnuTEckQiAQOON3BcK0hkw
-	 KRVcp+s2GNGlqdZaaVG50TWkUTDuVbhPUh4hritJb0ajZ8i6I6fJp5+z9nx4LnS3kPw==
+	t=1793702320;
+	b=UnJKZ4ZhtwX5pyfvtV4Y/vgsyP8bnTp3meAecCc+xTE2THXmi90JiVvQhyy5XCNll+fl
+	 82A5LmXa9sxIFNDLwyrIXfrUSVtEToD+fEfdU8ZhVRq5Sxb7tiyM9rY6w7646R6Ho8dQg
+	 NpykOgKLKbw382Ddr8YQ8zyNb148s7EKAlkZvBVEN1ckjc4AU+y+biFGr2fiH0jjhc2/U
+	 uOfVzSiMr2zbimGsooPv1vpo3kWK338LCe0mI0V2UNKriPRnhOy91rEbn9uKFz834F7zp
+	 rL+Dh838l+R5uJNs2RWlBTT9qPfGi/Wx4tIXuY26pdm16M/OxiAV7wA0IgyZ8lNfcGA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793700680;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=oEeAOkIMhm2brVx+57mg0HvmlruExTUNaN3KGm7ZRmQ=;
-	b=B9clPI08yqzRWncUf1LAU7WhLOhxNnoKKzPfxTNBVXHKwk/NanXMpuz7HYmf6ktwV3nG
-	 kl3otFgcDcFKJuju0qwQyFdYnj7cV6Y7R8Ehx9jMPfIvTUZDZBWpA6Y9IuXtuXOfj2j/v
-	 5DF0moKRFVCyfLCQFp2H6paM2tXK7NWw4tKVraOZ1j51C6ZKNyd6ARGwtqzVTLKqZPzcK
-	 MMZrgT41u/3qHXBWJNZXVre6mJTzghIfRrbeXDDpHD79kKEvsHB1A8FqiByaLiTA1CzOZ
-	 PagueM1nG9WDVsq/kDBtWbXOPkLg/ExoRLJbed81CTjcVw1YuKXJzk3KSWohy3TQLJw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793702320;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=18p/3OUExDCqEZMFFUDX0fp7Tsm8MCYEZebkfiTkCgI=;
+	b=U57L5Byp4R5DzxJC5ut+zmZsWKvmB1d+iax9VaOdFuGNnr6aV2AORVNPnWXqKjtviXlv
+	 w4sbHS7c3N+DlkhejkQqZqt31LWSYBNy2/dEEw+YlFzll9PS6gz4X03hApCcQprYmudej
+	 RHLqc0jAuO6zW5vD0rWHcsBGQTE8ntIVNuh0kFsOqu9wvBufzNoV7h/YDVOo++sIkiPaK
+	 CN73lejLzd4Y0afCggeo1kTEeXLzyv4556aGWCC5JTq9zEuZ5qo3xxPy+s4T1/uqY91Yj
+	 EVrmsQLnAYlbNVNSJtxIaK89BbWzbrc2FIoUSPbHa6LpNqRlxKEBEYLl5OMa3z/2X/A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=W+HKkBv6;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JmNmc5De;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ED74606A332
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:11:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6ED74606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40BC56074A09;
+	Tue,  3 Nov 2026 10:38:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=W+HKkBv6
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261103101116euoutp028ef9b82e5b9ee18dc7c534a4baf9a4ac~kgUMbxOR12903629036euoutp02z
-	for <iommu@lists.linux.dev>; Tue,  3 Nov 2026 10:11:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261103101116euoutp028ef9b82e5b9ee18dc7c534a4baf9a4ac~kgUMbxOR12903629036euoutp02z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1793700676;
-	bh=oEeAOkIMhm2brVx+57mg0HvmlruExTUNaN3KGm7ZRmQ=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=W+HKkBv6baZB/MFF4sW9EQIXMaH/WWcE0xLv30OQ1O3EWG5zu0LlDPyhpUo1rXQWO
-	 wP3pGtKk8BL5a/qRQQdn56Eash1rX+aexjjU29CJDaiMoDlrErCvRkS0FO/wcf9yAm
-	 I8vBGYoJwHVdGf4B7c7QwwC3yrse8D6SWUm4ERx8=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261103101116eucas1p1eadfbb1f322f96673fff2419c4cc5dac~kgUMEKwti2453024530eucas1p1v;
-	Tue,  3 Nov 2026 10:11:16 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261103101114eusmtip1ab1d1332cf288f23ef33eca39d491c32~kgUKcvhCg3212232122eusmtip1W;
-	Tue,  3 Nov 2026 10:11:14 +0000 (GMT)
-Message-ID: <373ea0e8-d0c4-4071-9546-8c4df5d09393@samsung.com>
-Date: Tue, 3 Nov 2026 11:11:13 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=JmNmc5De
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18D4E1F0093A;
+	Tue,  3 Nov 2026 10:38:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793702319;
+	bh=18p/3OUExDCqEZMFFUDX0fp7Tsm8MCYEZebkfiTkCgI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=JmNmc5De8ae+E0694Kb7AHeDeMBLb0gsWDIl+8tSDlprK4UoYh/OAJ85aS0TzHMNd
+	 asKOsnCAV+Yz+9soju42obCN9pdGUsruTh2EbPt5hv11JNxkRYh+nT3yaGHbCFz+mS
+	 suRLVwVz6xmJqoyQ7bnpgTAwPVCcsmB9g+PeL6bo/8apag/iXFOXpXlCTrHBPvtfus
+	 qp1Hv2pzgAToFxouF0+CLwSwwW81B/zWzHhxzWwJ7ohTMKevFNve+uQnekPvrx9aPn
+	 Sz78+LBMZr103t0CIQ1EQw92THfWYspLKEJctGOIJSjAfzUZ3NQ9DehGNISZcDYFvc
+	 6UJ9CqUQOnGLA==
+Date: Tue, 3 Nov 2026 11:38:37 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Muzaffer Kadir <muzafferkadir@mainlining.org>
+Cc: Srinivas Kandagatla <srini@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Rajendra Nayak <quic_rjendra@quicinc.com>, Bjorn Andersson <andersson@kernel.org>, 
+	Jassi Brar <jassisinghbrar@gmail.com>, Abel Vesa <abelvesa@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
+	Brian Masney <bmasney+clk@redhat.com>, Jerome Brunet <jbrunet+clk@baylibre.com>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Dmitry Baryshkov <lumag@kernel.org>, 
+	Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang <jesszhan0024@gmail.com>, 
+	Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Krishna Manikandan <quic_mkrishn@quicinc.com>, 
+	Mathieu Poirier <mathieu.poirier@linaro.org>, Manivannan Sadhasivam <mani@kernel.org>, 
+	Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>, 
+	"Guilherme G. Piccoli" <gpiccoli@igalia.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, 
+	David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	freedreno@lists.freedesktop.org, linux-remoteproc@vger.kernel.org, linux-input@vger.kernel.org
+Subject: Re: [PATCH v7 05/11] dt-bindings: mailbox: qcom: Add MSM8952 APCS
+ compatible
+Message-ID: <20261103-rapid-turquoise-viper-70686b@quoll>
+References: <20261030-msm8952-initial-support-v7-0-ad748ace375d@mainlining.org>
+ <20261030-msm8952-initial-support-v7-5-ad748ace375d@mainlining.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,141 +77,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2 2/7] dma-mapping: Let a device declare that it
- reaches private memory
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	joro@8bytes.org, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Catalin Marinas <catalin.marinas@arm.com>,
-	rafael@kernel.org, Danilo Krummrich <dakr@kernel.org>, Johan Hovold
-	<johan@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, Pranjal Shrivastava <praan@google.com>,
-	Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, driver-core@lists.linux.dev, Sonang Patel
-	<sonangp@nvidia.com>, Ankit Agrawal <ankita@nvidia.com>,
-	shameerali.kolothum.thodi@huawei.com
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <0697a7ab3e4c4b7703428644444fd13f8dbfccd9.1793676742.git.nicolinc@nvidia.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261103101116eucas1p1eadfbb1f322f96673fff2419c4cc5dac
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261103035021eucas1p17d005335232f75ad6f3b711b7c4b88d5
-X-EPHeader: CA
-X-CMS-RootMailID: 20261103035021eucas1p17d005335232f75ad6f3b711b7c4b88d5
-References: <cover.1793676742.git.nicolinc@nvidia.com>
-	<CGME20261103035021eucas1p17d005335232f75ad6f3b711b7c4b88d5@eucas1p1.samsung.com>
-	<0697a7ab3e4c4b7703428644444fd13f8dbfccd9.1793676742.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261030-msm8952-initial-support-v7-5-ad748ace375d@mainlining.org>
 
-On 03.11.2026 04:49, Nicolin Chen wrote:
-> DMA devices in a confidential guest can access only shared memory, or both
-> private and shared memory. Some method outside the DMA API will confirm the
-> device is able to access private memory through DMA.
->
-> Add DEV_FLAG_DMA_CC_PRIVATE and dma_set_cc_private(dev, bool).
->
-> The flag must be stable while any DMA mapping exists.
->
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-
+On Fri, Oct 30, 2026 at 12:02:36AM +0300, Muzaffer Kadir wrote:
+> Document the APCS mailbox compatible for the MSM8952.
+> 
+> Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
 > ---
->  include/linux/device.h      |  4 ++++
->  include/linux/dma-mapping.h |  4 ++++
->  kernel/dma/mapping.c        | 21 +++++++++++++++++++++
->  3 files changed, 29 insertions(+)
->
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 429e39f647cf9..01d7877d0b571 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -604,6 +604,8 @@ struct device_physical_location {
->   *		ancestor device.
->   * @DEV_FLAG_OFFLINE_DISABLED: If set, the device is permanently online.
->   * @DEV_FLAG_OFFLINE: Set after successful invocation of bus type's .offline().
-> + * @DEV_FLAG_DMA_CC_PRIVATE: The device is able to access private (encrypted)
-> + *		memory, no shared memory bouncing is required from the DMA API.
->   * @DEV_FLAG_COUNT: Number of defined struct_device_flags.
->   */
->  enum struct_device_flags {
-> @@ -617,6 +619,7 @@ enum struct_device_flags {
->  	DEV_FLAG_OF_NODE_REUSED = 7,
->  	DEV_FLAG_OFFLINE_DISABLED = 8,
->  	DEV_FLAG_OFFLINE = 9,
-> +	DEV_FLAG_DMA_CC_PRIVATE = 10,
->  
->  	DEV_FLAG_COUNT
->  };
-> @@ -834,6 +837,7 @@ __create_dev_flag_accessors(dma_coherent, DEV_FLAG_DMA_COHERENT);
->  __create_dev_flag_accessors(of_node_reused, DEV_FLAG_OF_NODE_REUSED);
->  __create_dev_flag_accessors(offline_disabled, DEV_FLAG_OFFLINE_DISABLED);
->  __create_dev_flag_accessors(offline, DEV_FLAG_OFFLINE);
-> +__create_dev_flag_accessors(dma_cc_private, DEV_FLAG_DMA_CC_PRIVATE);
->  
->  #undef __create_dev_flag_accessors
->  
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index efde0e5a58dc2..3cc38db4a7490 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -218,6 +218,7 @@ void *dma_vmap_noncontiguous(struct device *dev, size_t size,
->  void dma_vunmap_noncontiguous(struct device *dev, void *vaddr);
->  int dma_mmap_noncontiguous(struct device *dev, struct vm_area_struct *vma,
->  		size_t size, struct sg_table *sgt);
-> +void dma_set_cc_private(struct device *dev, bool private);
->  #else /* CONFIG_HAS_DMA */
->  static inline dma_addr_t dma_map_page_attrs(struct device *dev,
->  		struct page *page, size_t offset, size_t size,
-> @@ -357,6 +358,9 @@ static inline int dma_mmap_noncontiguous(struct device *dev,
->  {
->  	return -EINVAL;
->  }
-> +static inline void dma_set_cc_private(struct device *dev, bool private)
-> +{
-> +}
->  #endif /* CONFIG_HAS_DMA */
->  
->  #ifdef CONFIG_IOMMU_DMA
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 82e701648d604..ded585b39fb92 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -501,6 +501,27 @@ static void dma_setup_need_sync(struct device *dev)
->  static inline void dma_setup_need_sync(struct device *dev) { }
->  #endif /* !CONFIG_DMA_NEED_SYNC */
->  
-> +/**
-> + * dma_set_cc_private - Set whether @dev can DMA to private memory
-> + * @dev: device whose confidential-computing DMA access is being updated
-> + * @private: whether the device can DMA to private memory
-> + *
-> + * Called when a device is known to be able to DMA to private memory.
-> + * For architected CPU integrated devices their kernel drivers will
-> + * self-accept using a driver specific validation. Other devices will
-> + * have a userspace managed process.
-> + *
-> + * DMA mapping must not be active when this flag is changed. For CPU
-> + * integrated devices the driver should self accept early during probe
-> + * after validation. Other devices have this flag set automatically
-> + * before probing.
-> + */
-> +void dma_set_cc_private(struct device *dev, bool private)
-> +{
-> +	dev_assign_dma_cc_private(dev, private);
-> +}
-> +EXPORT_SYMBOL_GPL(dma_set_cc_private);
-> +
->  /*
->   * The whole dma_get_sgtable() idea is fundamentally unsafe - it seems
->   * that the intention is to allow exporting memory allocated via the
+>  Documentation/devicetree/bindings/mailbox/qcom,apcs-kpss-global.yaml | 5 +++++
+>  1 file changed, 5 insertions(+)
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+
+Best regards,
+Krzysztof
 
