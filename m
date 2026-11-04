@@ -1,68 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793749064;
-	b=r/rQhe0JfnAm8CO8dkb63y+Eqqnt/9W1EajzMGaUJg4psFKTNhM3G6xTHYnhS5vAwDR6
-	 lieIoiFd/cor4HFBcy/JWr7sU43AwtsCtTz6iR3APh8Rcx42cyXjwkuKN1lHdlUQyYekx
-	 70b3Yw+Ppif6X4cMEze4TEKA/9/L+bq79CY6Mm54Z6XZ1XxH3a3DQXvVfxofroChlc2V6
-	 /ixQJyvPXhK33RgmUnBJ0OuiD4moHt2gSVDHqPrbaXmvmeuF4TZEl1YkaOKfL51ZCet87
-	 cdfk0x3BSrdcl8LSUTVXpTtfOnjNjqUswVDaVRtQSTr5vcEkRue5bVm6cLct+WgwgYQ==
+	t=1793769833;
+	b=D864Beidr/xC2RMqLaq9hI+ppfJadYy0ZqTu7U9vASrd5SM2md9LKNR3/mMNBU4ddsT9
+	 SIcuOglYfL+dPDTkObZ/yq5YHgkABBNJQON3IlXfL9yb6hAGcdi5GPBG1qydJ1N1FSpBJ
+	 oyfpKPk/Iu3s5XRiYZ4EniZ38CKmLkfKQnV/Y31R0pv4E6frZa7vXR723EPXu1Bp0OCEy
+	 D0CXfcVVcizWrrW6xPohDi5lo1SIR95XtMr7nRJ2UulNQuAAGPmxZENJiqzt+n624i5K/
+	 uwvA3HTcFXUs9DK6yl24JWNzpVnWL95oJEGqgx5B1HPEQ1JsivhhnCGhrE3jz5rq4ag==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793749064;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=4wfqiCZwxR1HfUPAhThr9gcJLD7YNx6kTBnqWyt9+bI=;
-	b=njvtOnwKJMW3FN6E5VQCdBguP09Ds5pf9MJKCtR9pJ0zGAyCuxqqdUOWV7AMIln08NMF
-	 UJGW2oP5jvEROg6J/XLt0muBhBopftNVP8rdOa97GTyO7WzaYagYKvuXRi/F//7UQ6w88
-	 pPCrMUlIEz6L8fM2NRPFm2loz87MBSNXswdnlmbvRF9OVqgoo2DqXIlmLNhL6s2hNDFEQ
-	 7MjdcE5yv/8ZqjWREXJLXK7jAdIveMBuafqu6yQ8mtiwREX2AY1HluswfrzeoPIpEBEG9
-	 Z8Ib6qJgHqwzRL5hh1FjKKIa2G1+KoReQfqdc+NUQ4FTL27qD+FJ5MJ40AAWbcq7GaA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793769833;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=GJ6oL+YulF4OVUAu/fWMcRhWnVaYgkq2HDmfs1oRGkM=;
+	b=HxEBw2ZPZRbhX7ApbJ9EiRYlqrgNhZ2xcWPPZu98OQ9LTQNvCUIdEOydVXr/3ufDvycI
+	 7kJuNFXbxQLAHiOf9xgr1aRm4b7H7mSSVNWFszMaHhvXdjzPpc48YTEsMsp24Fdc/sjYf
+	 ojEtivpC0AlAkUssgzP1ts1kMpB5dxh3fYYCFzQWKnmpuAaPee6JfvxNYpkhcVsN2vurh
+	 Ou56KTkGx7fvAu2ssPbhObHS1oX+CzW8CoH9s4yoSJtG3xfIxnQ0rRLnuevd45uj17OQM
+	 fQ/MNEs68/zfl6zAZBNZ4bifh58igtk1Y071qYA68oWDI0w4qstlHJl5LxfDVC2u05w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OF6RH6Xa;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RZQM3j65;
+	arc=none smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC412606A31B;
-	Tue,  3 Nov 2026 23:37:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E8EE606A326
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 05:23:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0E8EE606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OF6RH6Xa
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DFB01F000C1;
-	Tue,  3 Nov 2026 23:37:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793749063;
-	bh=4wfqiCZwxR1HfUPAhThr9gcJLD7YNx6kTBnqWyt9+bI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=OF6RH6XajejLEaRO0+BM9d4/sTm6iiR9bIeg3XYuSSa2A+LO5xgR2HmpjIEdeX6fW
-	 z3bMl5cSQIuuqrSouIOdJl+uCkv3nwz/KMTQPQT2lUg+vSbaQPIJ/CvQ83rOichkfM
-	 FwPnVMVNVwXi/9aVHMXY+pwwAcjESqhFUUmYjYdkPZbGWAntl3YDAvxuii2TG2PTMW
-	 +/GU17Tr0k9A7KTV7Q9vDfe/2OquHv4t5UckT5Psg3Q5BV26x76amGq8GcXRaGtN6Z
-	 3SmkHQLYucXN4npjf7JIu12aZwxaQ+1PB+0lCVi6LmUqhF5VtFlf2/NaOLxuO/uUMD
-	 9QxoYKERoXfwg==
-Date: Tue, 3 Nov 2026 17:37:42 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=RZQM3j65
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793769833; x=1825305833;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WFflTUijk7JC0dp7gEcVSMz/kNt7ENb3CP45Xu5kXuk=;
+  b=RZQM3j65vKX1FJdX79q4mJtJ3BvZ4pdt76OH0UJ6TLbkiTQm7Rs4mdvi
+   lYb03oPMBQ9r8Go7/MXJ768e5TaWzE/4Kb9siHLhmT+aVZW8w+8+I+qUX
+   CSiHQi54rCkwutHu+t/0KBDzs8x0sixcHJ1b5LVOM0kj9oZpDcoGAvD4E
+   EbSPqwiX+CZ/xI7rxxzWMI6ueALaEpiZrS3wFtrsMqSF2P9OBnWuUJuJR
+   o11LvA8dW4PQhVxBGbIucQZWt/GYXHOhjSCwLtzesf5DcaqlnRNbnR/6w
+   hUH2uz5cGC51jsuRms+c1bW4nB6d4d9yIMLNfaXHLHbbziVBxmc6aPVeb
+   A==;
+X-CSE-ConnectionGUID: FqrMrTp+QESpLEzEddyGRQ==
+X-CSE-MsgGUID: OeXiuUMSTtqLjtdW93kupA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2414129"
+X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
+   d="scan'208";a="2414129"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 21:23:52 -0800
+X-CSE-ConnectionGUID: G+zuNfXxQzuKPcXmxu3SyQ==
+X-CSE-MsgGUID: 5QDwmkjsQJC3sdrXQ5EGig==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
+   d="scan'208";a="6777201"
+Received: from allen-box.sh.intel.com ([10.239.48.101])
+  by fmviesa002.fm.intel.com with ESMTP; 03 Nov 2026 21:23:49 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
 	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: Re: [PATCH v12 00/19] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
-Message-ID: <20261103233742.GA1162403@bhelgaas>
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/2] iommu/vt-d: Fix SVA teardown races with process exit
+Date: Wed,  4 Nov 2026 13:10:56 +0800
+Message-ID: <20261104051059.1345010-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,29 +82,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261103-fix-p2p-acs-v4-0-v12-0-912101f93517@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 03, 2026 at 10:29:39AM +0200, Leon Romanovsky wrote:
-> PCI P2PDMA applies Request and Completion Redirect throughout both paths.
-> This misclassifies asymmetric and nested switches, and reports one answer
-> for every kind of TLP.
-> 
-> Three ACS controls act on TLP attributes the Requester chooses rather
-> than on the topology: Translation Blocking and Direct Translated P2P act on
-> a Request's Address Type, and Completion Redirect skips Completions carrying
-> Relaxed Ordering.
-> 
-> Evaluate each direction at the path divergence, decide every class from the
-> one walk, and treat a client with ATS enabled as translating unless its
-> driver declares per-mapping ATS.
-> 
-> This completes the P2PDMA side; dma-buf and mlx5 follow separately.
+When a process using SVA exits while a device still has DMA and page
+requests in flight for its PASID, the Intel IOMMU driver can mishandle
+the teardown of that PASID. This series aims to fix two such issues.
 
-Is there a one- or two-sentence explainer of why we want this?  I'm
-thinking in terms of what Linus will want in the merge request: a fix
-for something that's broken or some new functionality.  It sounds like
-this is solving a problem, but I don't know enough to translate the
-nitty-gritty details to the higher-level user-visible problem or
-feature.
+The first is a use-after-free in the iopf handling path. After the
+process exits, the later SVA unbind no longer drains the page request
+queue for the PASID before the SVA attach handle is freed. Page
+requests queued before the exit are then handled by
+iommu_sva_handle_iopf() on the freed handle.
+
+The second is a race between process exit and an SVA unbind of the
+PASID. The mm release callback can return before the unbind completes
+invalidating the PASID cache, IOTLB and device TLB. The exiting process
+may then free its page tables while the IOMMU and the device still hold
+translations that reference them.
+
+Please review and comments.
+
+Lu Baolu (2):
+  iommu/vt-d: Set FPD when tearing down a PASID entry with fault_ignore
+  iommu/vt-d: Serialize SVA unbind teardown with intel_mm_release()
+
+ drivers/iommu/intel/pasid.h | 11 +++++++++++
+ drivers/iommu/intel/iommu.c | 10 ++++++++++
+ drivers/iommu/intel/pasid.c | 30 +++++++++++-------------------
+ 3 files changed, 32 insertions(+), 19 deletions(-)
+
+-- 
+2.43.0
+
