@@ -1,71 +1,83 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.118
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793790152;
-	b=ntMmHN5EDxofDQ16a/Vz951ClvMwzdolNFT+PitlAbB9C1A/SJ27QzRasEKkInLHXyOw
-	 q+rzmkV64ZnrgN7KBfjuU0lHxEaWok0duk4oEgane0yk0dloeXMMgXvDdLUnaxNrmNsMu
-	 07rZW2APNsz/y5KK4RoLdXiBVi6QOeKWo0MXxvLWJzmgUjZ15cYVUfrWIJlDOU+Ut2ZuK
-	 NNTfwAuLUQnNCUQvs6zK7vd/dfZlIH3DPaw+jjBwpIlqWYGWNTozX14U3WuUiTEwPxh/z
-	 WyC1CK6WWeknqo+/3fN1ppiZkvWc8L3RRbkptbagg4iC6rTfwqg7S9f4qhfipEOfesQ==
+	t=1793791641;
+	b=VIW6H0xRT+y+jaHMazMOCkTDKlUVv63+kldr/8i0k3XimYpdvjmFA43uRuHG42q42GhL
+	 tEagyI3YfC4gmq9FJWGA7hMEec0rT+tzghXz5Qn7ggRCOdsR1yc0k7My2lMGRrbAObPut
+	 ByUh+qrzIshkYif0TRrxs3744H1qTu5+DH3mkdlTsgiSRRbEaa0KuKNntXh+tjyLNB1OZ
+	 G484XhfY4cIxA/nUYbQewEP7Y95+HVQBNyPtfMJwc1ModJIkNuMjYRCF1yKGAghYdH/jf
+	 VKvZCFi6jCE2J4A734luTYO+U/OPXmjkvloroSf2JAfgIgbHU9GyU8a+Xnstshnlzxw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793790152;
-	h=DMARC-Filter:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-	 Content-Type;
-	bh=D6EynbrAyE4kBCRtfAuXRbcm+KrJUZjKmPIkF+rnkGE=;
-	b=hP7HIw3Db2ZKP4M/9NeUDaBHreKhSVy4XMpqi1ZDmGTn0FLuUzsNjeeb6E2emJUEUM+W
-	 8JcfJXMwncFhAesvbcVVbQLDfFZHSQxn0f8yuJ3Xqp4gNiVRXU0+84q24/RzmhPkpLTRU
-	 2Zuoe6SJ3z+UxNkKcbztmNCedH43u0QSnBnCbO9cEG4uF6fHjKIPXUR8Wd/atpUbDMwg1
-	 tM+ICUDignEPmtXem1vaBFhVs/71Z+b1TaJ3cuhSILatKUCARl0KeVq9qpvIDJlvdBkqj
-	 OcnlvFaI8sySvL23dDVtLEUzJCIat5RkXdELE/KG+p5pJ4TPZ4b0gAja7ydGhzUDzNQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793791641;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=eSRpEyiCpq6q3r3x8lXM5Pt5HeYqMgK+KLNe7ym6hQM=;
+	b=qcx+ZAgXJUVpbHvgKL/ffbRhprFYoV7nzGbFYKpER28yWlx820tU5d6yJWU7xBNtidZH
+	 Zwt5hnVA71dPyN6K7+mMMTS+zeAXgdocQwxpjocAjl7scknzZTTAj7HhHY0WkGs8d3db2
+	 yIVLStZv9YlTzu2RNER5g3jD9UeQ9DTLvYZV+KU9798sUXBffMK6h3vWbdhuLRUlzeogH
+	 UkLlXhpgvY38Ve+6RlrX5Ke3HYSlHRDhWHdaL235Zkp+lvyU2WtM6cZUwUvw3HU5bRBDQ
+	 Ovyp3MXFBpDfzSyFbvyWJL3hZAaMkg1YjeOJGAskbV0GunfW8x+C9WkoOFhmgknRULg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=sntech.de;
-	spf=pass smtp.mailfrom=sntech.de;
-	dkim=pass header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=HprGKrTr;
-	arc=none smtp.remote-ip=185.11.138.130
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=aJysmVG6;
+	arc=none smtp.remote-ip=115.124.30.118
+Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87BDB606A326;
-	Wed,  4 Nov 2026 11:02:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 87BDB606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51985606D805
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 11:27:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 51985606D805
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=HprGKrTr
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
-	bh=D6EynbrAyE4kBCRtfAuXRbcm+KrJUZjKmPIkF+rnkGE=; b=HprGKrTrwC+A6mzuC5DOgjQHfS
-	9qs/Upv6aoKHG/RC8l/fMPvz6uAI9m6ULjaFh0EJqly5ovt/0VvP5KYdJRBwMz0rk+pft8OZzS+92
-	849Q7YRLbD4aNTLZ2CkjJrhujXha78Xa/8NaNc92aWMrJpPvzMccTJwnDxg/nlhP+kwRw5G1H9Z+A
-	Y4M9jo7W49Tk66EBbJDF8kT2pr7PJiZm5MPdKfgTeiH6C3Eu4ZnhChxCo5tiuZ7kkGPfu1Jtv0c4I
-	UpzG9FmCH0IyiUCX+ggLidwZAWo4lmOqV8jNDjPiI+y5VRvll40JKas30nrfAh0tiUYPPtgj6/v5A
-	7zta+zuw==;
-From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
-To: tomeu@tomeuvizoso.net, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- ulfh@kernel.org, p.zabel@pengutronix.de, ogabbay@kernel.org,
- zhangqing@rock-chips.com, Jiaxing Hu <gahing@gahingwoo.com>,
- chaoyi.chen@rock-chips.com
-Cc: royalnet026@gmail.com, abel.vesa@oss.qualcomm.com,
- sebastian.reichel@collabora.com, sidong.yang@furiosa.ai,
- u.kleine-koenig@baylibre.com, chaoyi.chen@rock-chips.com,
- diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl,
- jeff.hugo@oss.qualcomm.com, rfoss@kernel.org,
- dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
- iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- Jiaxing Hu <gahing@gahingwoo.com>, Conor Dooley <conor.dooley@microchip.com>
-Subject:
- Re: [PATCH v15 08/15] dt-bindings: iommu: rockchip: describe the RK3576 NPU
- MMU
-Date: Wed, 04 Nov 2026 12:02:02 +0100
-Message-ID: <15606397.O6BkTfRZtg@diego>
-In-Reply-To: <20261101082307.151957-9-gahing@gahingwoo.com>
-References:
- <20261101082307.151957-1-gahing@gahingwoo.com>
- <20261101082307.151957-9-gahing@gahingwoo.com>
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=aJysmVG6
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1793791637; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=eSRpEyiCpq6q3r3x8lXM5Pt5HeYqMgK+KLNe7ym6hQM=;
+	b=aJysmVG6wDCaBZ7s8EgxxqW0ZdYj5atcNO+3tRr7lf/sZyC++VlaEgXc+MhFiBjsoYrQbPeZCInd2YCKi95EtNpqQqDkIXZ/MshChRPkpwpycCD8b/+RVHvyZySDKmgZLW1vjgz27UCfli8zkiwKBUL5UFQCzT/yFfoZk9wUmaQ=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045133197;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=29;SR=0;TI=SMTPD_---0XE5bSHL_1793791633;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XE5bSHL_1793791633 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Wed, 04 Nov 2026 19:27:15 +0800
+From: fangyu.yu@linux.alibaba.com
+To: gong.shuai@sanechips.com.cn
+Cc: alex@ghiti.fr,
+	andrew.jones@linux.dev,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	atish.patra@linux.dev,
+	baolu.lu@linux.intel.com,
+	fangyu.yu@linux.alibaba.com,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	joerg.roedel@amd.com,
+	joro@8bytes.org,
+	jroedel@suse.de,
+	kevin.tian@intel.com,
+	kvm-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	nutty.liu@hotmail.com,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	tanchi25@mails.ucas.ac.cn,
+	tomasz.jeznach@linux.dev,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [PATCH v7 05/10] iommu/riscv: support GSCID and GVMA invalidation command 
+Date: Wed,  4 Nov 2026 19:27:12 +0800
+Message-Id: <20261104112712.68199-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20261104092111.119394-1-gong.shuai@sanechips.com.cn>
+References: <20261104092111.119394-1-gong.shuai@sanechips.com.cn>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,62 +87,118 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Am Sonntag, 1. November 2026, 09:23:00 Mitteleurop=C3=A4ische Normalzeit sc=
-hrieb Jiaxing Hu:
-> The RK3576 NPU MMUs are rk3568-iommu compatible but take five clocks
-> instead of two. Give them their own compatible and pin both clock counts =
-in
-> allOf.
->=20
-> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
-> ---
->  .../bindings/iommu/rockchip,iommu.yaml        | 28 +++++++++++++++++++
->  1 file changed, 28 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml =
-b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> index 6ce41d11ff5e..83d7e7c8e0c2 100644
-> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> @@ -26,6 +26,7 @@ properties:
->        - items:
->            - enum:
->                - rockchip,rk3576-iommu
-> +              - rockchip,rk3576-npu-iommu
->                - rockchip,rk3588-iommu
->            - const: rockchip,rk3568-iommu
-> =20
-> @@ -42,14 +43,22 @@ properties:
->      minItems: 1
-> =20
->    clocks:
-> +    minItems: 2
->      items:
->        - description: Core clock
->        - description: Interface clock
-> +      - description: Compute clock
-> +      - description: Convolution buffer core clock
-> +      - description: Convolution buffer interface clock
-> =20
->    clock-names:
-> +    minItems: 2
->      items:
->        - const: aclk
->        - const: iface
-> +      - const: npu
-> +      - const: aclk_cbuf
-> +      - const: hclk_cbuf
+>Hi Fangyu,
+>
+>> From: Zong Li <zong.li@sifive.com>
+>>
+>> This patch adds a ID Allocator for GSCID and a wrap for setting up
+>> GSCID in IOTLB invalidation command.
+>>
+>> Set up iohgatp to enable second stage table and flush stage-2 table if
+>> the GSCID is set.
+>>
+>> The GSCID of domain should be freed when release domain. GSCID will be
+>> allocated for parent domain in nested IOMMU process.
+>>
+>> Signed-off-by: Zong Li <zong.li@sifive.com>
+>> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+>> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
+>> ---
+>>  drivers/iommu/riscv/iommu-bits.h |  7 ++++
+>>  drivers/iommu/riscv/iommu.c      | 62 ++++++++++++++++++++++++++------
+>>  2 files changed, 58 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
+>> index f2ef9bd3cde9..65d1f2250011 100644
+>> --- a/drivers/iommu/riscv/iommu-bits.h
+>> +++ b/drivers/iommu/riscv/iommu-bits.h
+>> @@ -720,6 +720,13 @@ static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_command *cmd)
+>>  	cmd->dword1 = 0;
+>>  }
+>>
+>> +static inline void riscv_iommu_cmd_inval_gvma(struct riscv_iommu_command *cmd)
+>> +{
+>> +	cmd->dword0 = FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_CMD_IOTINVAL_OPCODE) |
+>> +		      FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA);
+>> +	cmd->dword1 = 0;
+>> +}
+>> +
+>>  static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cmd,
+>>  						  u64 addr)
+>>  {
+>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>> index 918fce4aa8c4..5546dfcd976c 100644
+>> --- a/drivers/iommu/riscv/iommu.c
+>> +++ b/drivers/iommu/riscv/iommu.c
+>> @@ -49,6 +49,10 @@
+>>  static DEFINE_IDA(riscv_iommu_pscids);
+>>  #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
+>>
+>> +/* IOMMU GSCID allocation namespace. */
+>> +static DEFINE_IDA(riscv_iommu_gscids);
+>> +#define RISCV_IOMMU_MAX_GSCID		(BIT(16) - 1)
+>> +
+>>  /* Device resource-managed allocations */
+>>  struct riscv_iommu_devres {
+>>  	void *addr;
+>> @@ -842,6 +846,7 @@ struct riscv_iommu_domain {
+>>  	struct list_head bonds;
+>>  	spinlock_t lock;		/* protect bonds list updates. */
+>>  	int pscid;
+>> +	int gscid;
+>>  };
+>>  PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
+>>
+>> @@ -1004,7 +1009,7 @@ static void riscv_iommu_tlbi_calc(struct riscv_iommu_tlbi *tlbi,
+>>  }
+>>
+>>  static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
+>> -					  int pscid,
+>> +					  int pscid, int gscid,
+>>  					  struct riscv_iommu_tlbi *tlbi)
+>>  {
+>>  	bool use_nl = tlbi->non_leaf &&
+>> @@ -1012,8 +1017,13 @@ static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
+>>  	struct riscv_iommu_command cmd;
+>>  	unsigned int i;
+>>
+>> -	riscv_iommu_cmd_inval_vma(&cmd);
+>> -	riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
+>> +	if (gscid) {
+>> +		riscv_iommu_cmd_inval_gvma(&cmd);
+>> +		riscv_iommu_cmd_inval_set_gscid(&cmd, gscid);
+>> +	} else {
+>> +		riscv_iommu_cmd_inval_vma(&cmd);
+>> +		riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
+>> +	}
+>
+>As I understand it, the same choice is needed in
+>riscv_iommu_bond_unlink().
+>
+>The missing GVMA command does not break anything today, because every
+>caller of bond_unlink() runs iodir_update() just before it, and that
+>already sends the GVMA for the old GSCID. But depending on that
+>ordering seems fragile, and the comment in bond_unlink(), "invalidate
+>all cached entries for domain's PSCID", is no longer true now that we
+>have S2 domains.
+>
 
-I'd really like more justification in the commit message, why these
-additional clocks are needed.
+There is no functional issue with the current code, since
+iodir_update() already performs the required invalidation.
 
-Not saying this is wrong, just should get a bit more explanation.
+That said, as this series adds S2 domain support,
+bond_unlink() should indeed be updated accordingly.
+Good catch.
 
+Thanks,
+Fangyu
 
-Heiko
-
-
+>The change, if you think it is needed, fits better in the last patch,
+>"iommu/riscv: Add IOTINVAL.GVMA invalidations". I am replying here
+>only because the code is very similar.
+>
+>Thanks,
+>Shuai
+>
