@@ -1,83 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.133
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793793017;
-	b=TY9g2ZmK+6a3u03/Oy/8XsoQx/8scAKe/jM82qzy03Ut149STVo9k/WdFLpZsYAP40P4
-	 vK9CJUPLbF/4u8f305dSJ5BgE+dd9U/sRguc0Y4lgJbewtGk3ccmZuO+VNv65lSL/9rAS
-	 emwtdAu8XaVHXIrMa+z2pzp/muMUPD3+ThudgdFfAm1QkdjPYmNAfFshQqomseAP/Q0ny
-	 ALJkEL4ge86XunXrqdd2dTr/UuzZoRIGdGO18h3cEIY0QuwQTmBVimtHBpPWkeIKD59sw
-	 /186sJ0xUZvr5LwA1jSQCt4tCMv/HflP5kUb0wFP+sxWLXaL1f2JSkc0ldwXvQNSe1Q==
+	t=1793796049;
+	b=C7QksRnDQw7lxNXdkInl6T+PMVsyUQd7erhJUlim9z8Ysf8f+hcuEsDdgjN3EU8MkyTp
+	 wo6uHQbXgLyUhcmKWcsHMqvkqo3jdtTnOCjllwlfxGWC5jhKpMqx+w9gc+c46ysXSriI9
+	 ZZub1w9Y11dF9xRiblLOjx0g5OlGmBGU3JIe33nzs+bZ5m+e3tOVgMSVdBgyd+BQcjUV2
+	 CoN4R2suj9UNIcYCPWbroIMW5yUlaYZyW7RmVXVmN4nf7wQSVQl2MiHDW4CUD/IeUqqDq
+	 pvd7BEwgopa9o+D1lXGRzNtm6ZWLA4vL1wdXRn+JBZgCd1C28e+ZeA4uTibs99adm2w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793793017;
-	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=dHmMS48ILVn+iA6DDXmhdMJgbhJve1Nt2JIcHMkfueY=;
-	b=yU8esl1pQUFmabZn6eE/BGT2cZn5/x7sXg+Pjfu+2ugAJwZwwrj6nYINJslrL6px0cVF
-	 bq6GjMrV+gVaqzqIkVZ3JvJT7QIqpZO8QhnRuRu9Ur7xcwPS8JXYrbmm1+E3ldxr1Sy5Y
-	 zyYRg6e2ptuC5mebMJpGnJqtw8mlr2mTcZznQ2DowDP/YvIJOAKleKsy9kcTVNG6EWh3B
-	 6DBkKbbrl4fgJ3bAGnSaaxKF7fYuYL9FGcrT2jh4UhHa6eknvHpEChYbQM0Fdk39dF3Pg
-	 oEWjsLptZO2wiiU5X0d8BIp8pFLUSzdiTd/2drm+ZT8SSmx4JuNVt9pWIZmfwJ+uQCQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793796049;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=Qu7Yw+WD0W+wi9N7j2myB2cji10J5fDY+ApcA841Sz0=;
+	b=TmRlZtNyHUQvSOFqlVd7dADiA3NI9hEDmpzoeVezopsvPNfuQrrlZYSqHVNmeDTmogUZ
+	 9e5sosSdRElK9/V8Rj839ZAcRSkq471aQqwXx33gxPV11ivp4288/idMOH3sVPdZuwzP/
+	 t5xwtUTLT0xDVWQRv4YM1CUUYMNcQkraa+RJkxijs5lRx+LPNeHNp8LQgNdJVrn3SG/KT
+	 rrtIAHBF1vCu5SEZ4KDd8zoyVbrwRftslOKenmsMIjL8mTnhbg+EmzoQGh+ECYYMhpooT
+	 6jq58s3b1kprusvFw8cK0jNummTm3pHMnvMY5OD96RnCpPMkAPlq/7DyAqJfWBikjKA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.alibaba.com;
-	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b="qcEj/cNz";
-	arc=none smtp.remote-ip=115.124.30.133
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCB11606A33D
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 11:50:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BCB11606A33D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b="Z8d/Rftc";
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA5BC606A32C
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 12:40:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CA5BC606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=qcEj/cNz
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1793793010; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=dHmMS48ILVn+iA6DDXmhdMJgbhJve1Nt2JIcHMkfueY=;
-	b=qcEj/cNz6Sp3dAVjfmkj6NnLl1p+uvmSeulbHGWBbf0Q6ciz1rLjSIyufkallqr+0TVoCsyCo1pXvlZVha9hT7ij66IQlpEoDyVUcuRQDQXWuwoOY096etNPP3DHMKoL7PX1aARzh3NiV+AhkmlpEx5g+UaqK7AOvS2mOLpCSBQ=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R651e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037033178;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=29;SR=0;TI=SMTPD_---0XE5lrbG_1793793006;
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XE5lrbG_1793793006 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 04 Nov 2026 19:50:08 +0800
-From: fangyu.yu@linux.alibaba.com
-To: gong.shuai@sanechips.com.cn
-Cc: alex@ghiti.fr,
-	andrew.jones@linux.dev,
-	anup@brainfault.org,
-	aou@eecs.berkeley.edu,
-	atish.patra@linux.dev,
-	baolu.lu@linux.intel.com,
-	fangyu.yu@linux.alibaba.com,
-	guoren@kernel.org,
-	iommu@lists.linux.dev,
-	jgg@nvidia.com,
-	jgg@ziepe.ca,
-	joerg.roedel@amd.com,
-	joro@8bytes.org,
-	jroedel@suse.de,
-	kevin.tian@intel.com,
-	kvm-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	nutty.liu@hotmail.com,
-	palmer@dabbelt.com,
-	pjw@kernel.org,
-	robin.murphy@arm.com,
-	skhawaja@google.com,
-	tanchi25@mails.ucas.ac.cn,
-	tomasz.jeznach@linux.dev,
-	vasant.hegde@amd.com,
-	will@kernel.org,
-	zong.li@sifive.com
-Subject: Re: [PATCH v7 09/10] iommu/riscv: Add dirty tracking support for second-stage domains 
-Date: Wed,  4 Nov 2026 19:50:01 +0800
-Message-Id: <20261104115001.71362-1-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20261104084503.118083-1-gong.shuai@sanechips.com.cn>
-References: <20261104084503.118083-1-gong.shuai@sanechips.com.cn>
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=Z8d/Rftc
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B39E42247;
+	Wed,  4 Nov 2026 04:40:43 -0800 (PST)
+Received: from [10.57.15.10] (unknown [10.57.15.10])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9316B3F628;
+	Wed,  4 Nov 2026 04:40:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1793796046; bh=5+mieZXs7MNZ6sx1ZeGlRyjEfTaZXcaiheHN4KGpcWE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Z8d/Rftc+Q2HeWZuWw7ukw5Gdmi0vl/xhp9ZizZjw5lfOEn+oQcL441mnR/5kg0cu
+	 i0U6AgxBZee+rjErsMfHAv0kHpCQqkVphcjRBIaN0pzAIt1E+1oN8jIAqoF6V/1Cv6
+	 SbR4JSBoLZVfaYUjz0XVmjAKT71XZPO4aLqMw0cs=
+Message-ID: <d7135fe4-5e92-4c42-8d6b-3afbc3b1bb33@arm.com>
+Date: Wed, 4 Nov 2026 12:40:42 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -87,161 +53,138 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma: swiotlb: Round restricted DMA pool size down to
+ IO_TLB_SEGSIZE
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Michael Kelley <mhklinux@outlook.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Claire Chang <tientzu@chromium.org>,
+ Konrad Rzeszutek Wilk <konrad@kernel.org>, Giorgi Kobakhia
+ <gkobakhi@asu.edu>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+References: <CGME20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862@eucas1p1.samsung.com>
+ <20261103155016.1107958-1-m.szyprowski@samsung.com>
+ <MN2PR02MB686381EADCEECF16B23214D0D4692@MN2PR02MB6863.namprd02.prod.outlook.com>
+ <8276a107-7115-48e3-a40a-2660fe1beaa5@samsung.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <8276a107-7115-48e3-a40a-2660fe1beaa5@samsung.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
->Hi Fangyu,
->
->> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->> 
->> Add hardware dirty tracking support for second-stage (iohgatp) domains
->> used in KVM VFIO device pass-through.
->> 
->> The RISC-V IOMMU can automatically set the dirty bit in PTEs on write
->> access when DC.tc.GADE is set and the hardware has AMO_HWAD capability.
->> Wire this up to the iommufd dirty tracking interface:
->> 
->>   - riscv_iommu_set_dirty_tracking(): Return success without toggling GADE.
->> 
->>   - riscv_iommu_dirty_ops: Exposes set_dirty_tracking and the generic
->>     page-table read_and_clear_dirty via IOMMU_PT_DIRTY_OPS(riscv_64).
->> 
->>   - domain_alloc_paging_flags: Assigns dirty_ops to second-stage domains
->>     when IOMMU_HWPT_ALLOC_DIRTY_TRACKING is requested.
->> 
->>   - riscv_iommu_capable: Reports IOMMU_CAP_DIRTY_TRACKING when
->>     AMO_HWAD is present.
->> 
->> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
->> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
->> ---
->>  drivers/iommu/riscv/iommu.c | 32 ++++++++++++++++++++++++++++++--
->>  1 file changed, 30 insertions(+), 2 deletions(-)
->> 
->> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
->> index b3f05dfdf278..ff1043afe973 100644
->> --- a/drivers/iommu/riscv/iommu.c
->> +++ b/drivers/iommu/riscv/iommu.c
->> @@ -1350,6 +1350,10 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->>  	if (domain->gscid) {
->>  		if (!riscv_iommu_iohgatp_supported(iommu, pt_info.iohgatp_mode))
->>  			return -EINVAL;
->> +		/* Dirty tracking requires AMO_HWAD on every attached IOMMU */
->> +		if (iommu_domain->dirty_ops &&
->> +		    !(iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD))
->> +			return -EINVAL;
->>  
->>  		dc.iohgatp =
->>  			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
->> @@ -1377,6 +1381,21 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->>  	return 0;
->>  }
->>  
->> +static int riscv_iommu_set_dirty_tracking(struct iommu_domain *iommu_domain,
->> +					  bool enable)
->> +{
->> +	/*
->> +	 * Always enabled and the dirty bitmap is cleared prior to
->> +	 * set_dirty_tracking().
->> +	 */
->> +	return 0;
->> +}
->> +
->> +static const struct iommu_dirty_ops riscv_iommu_dirty_ops = {
->> +	IOMMU_PT_DIRTY_OPS(riscv_64),
->> +	.set_dirty_tracking = riscv_iommu_set_dirty_tracking,
->> +};
->> +
->>  static const struct iommu_domain_ops riscv_iommu_paging_domain_ops = {
->>  	IOMMU_PT_DOMAIN_OPS(riscv_64),
->>  	.attach_dev = riscv_iommu_attach_paging_domain,
->> @@ -1418,7 +1437,8 @@ static int riscv_iommu_init_domain_s1(struct device *dev,
->>   */
->>  static int riscv_iommu_init_domain_s2(struct device *dev,
->>  				      struct riscv_iommu_domain *domain,
->> -				      struct pt_iommu_riscv_64_cfg *cfg)
->> +				      struct pt_iommu_riscv_64_cfg *cfg,
->> +				      u32 flags)
->>  {
->>  	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
->>  
->> @@ -1439,6 +1459,10 @@ static int riscv_iommu_init_domain_s2(struct device *dev,
->>  	if (domain->gscid < 0)
->>  		return -ENOMEM;
->>  
->> +	/* AMO_HWAD is checked by iommufd via IOMMU_CAP_DIRTY_TRACKING */
->> +	if (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING)
->> +		domain->domain.dirty_ops = &riscv_iommu_dirty_ops;
->> +
->>  	return 0;
->>  }
->>  
->> @@ -1481,7 +1505,7 @@ riscv_iommu_domain_alloc_paging_flags(struct device *dev, u32 flags,
->>  	case IOMMU_HWPT_ALLOC_NEST_PARENT:
->>  	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING:
->>  	case IOMMU_HWPT_ALLOC_DIRTY_TRACKING | IOMMU_HWPT_ALLOC_NEST_PARENT:
->> -		ret = riscv_iommu_init_domain_s2(dev, domain, &cfg);
->> +		ret = riscv_iommu_init_domain_s2(dev, domain, &cfg, flags);
->>  		break;
->>  	default:
->>  		ret = -EOPNOTSUPP;
->> @@ -1559,9 +1583,13 @@ static struct iommu_group *riscv_iommu_device_group(struct device *dev)
->>  
->>  static bool riscv_iommu_capable(struct device *dev, enum iommu_cap cap)
->>  {
->> +	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
->> +
->>  	switch (cap) {
->>  	case IOMMU_CAP_CACHE_COHERENCY:
->>  		return dev_is_dma_coherent(dev);
->> +	case IOMMU_CAP_DIRTY_TRACKING:
->> +		return !!(iommu->caps & RISCV_IOMMU_CAPABILITIES_AMO_HWAD);
->
->I'm not quite sure about this. Could there be a device that supports
->AMO_HWAD but not any of the S2 modes? GET_HW_INFO would report
->DIRTY_TRACKING as supported, but HWPT_ALLOC would then fail in
->riscv_iommu_init_domain_s2(). Should this check also include the
->S2 modes, like
->
->    AMO_HWAD && (SV39X4|SV48X4|SV57X4) ?
->
+On 2026-11-04 7:37 am, Marek Szyprowski wrote:
+> On 03.11.2026 22:18, Michael Kelley wrote:
+>> From: Marek Szyprowski <m.szyprowski@samsung.com> Sent: Tuesday, November 3, 2026 7:50 AM
+>>> All other paths creating a swiotlb pool ensure that nslabs is a multiple
+>>> of IO_TLB_SEGSIZE, and the swiotlb code relies on that. Since commit
+>>> 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization") a
+>>> restricted pool can have an arbitrary size taken from the device tree.
+>>>
+>>> If the pool size is not a multiple of IO_TLB_SEGSIZE, the last segment is
+>>> partial and swiotlb_release_slots() reads mem->slots[index + nslabs],
+>>> which is one past the end of the slots array when the freed buffer ends
+>>> at the end of the pool:
+>>>
+>>>   BUG: KASAN: slab-out-of-bounds in swiotlb_release_slots
+>>>   Read of size 2
+>>>
+>>> Round the pool size down to a multiple of IO_TLB_SEGSIZE, wasting a bit
+>>> of memory, and warn about it.
+>> I'm not familiar with the macro scenarios where a device has a
+>> restricted pool specified in DT. But I wonder if it would be better to
+>> round up instead of down. DT has specified that the device should
+>> have a restricted DMA pool of a certain size, and rounding down gives
+>> the device a smaller pool than was requested. Could DMA operations
+>> then fail because of not having a large enough pool? Rounding down
+>> also allows the pool to end up being size zero, which this patch
+>> detects and results in a definite failure at device initialization time.
+>>
+>> What's the tradeoff in rounding up instead?The device restricted
+>> pool at least as large as requested. Presumably, being larger than
+>> requested doesn't cause any problems for the device or its driver.
+>> The downside is using up to 256 KiB more system memory than
+>> expected. In an embedded system with only a few MiB of system
+>> memory, maybe that's a relatively big problem. I don't know the
+>> scenarios well enough to judge whether using a bit more system
+>> memory is better or worse than the device not having all the
+>> restricted pool space it said it needed for DMA.
+> 
+> The main problem with enlarging the restricted pool is that the memory
+> has been already allocated (reserved) by the generic of_reserved_mem
+> code before the rmem_swiotlb_device_init() is called. There might be
+> even another reserved region just after the one being processed by
+> rmem_swiotlb_device_init(). The reserved region might be specified in
+> the device tree exactly, by pointing its base address and size. In
+> such case the rmem_swiotlb_device_init() really cannot do anything
+> else than using the provided already allocated region partially.
+> The only thing that might be improved is freeing the 'wasted' part
+> of the region back to the memory allocator if You think that
+> printing a warning is not enough.
 
-Good question, I had also considered this.
+Realistically, the granularity of any physical memory protection system 
+is going to be based on at least 4KB pages, so I don't see much excuse 
+for any restricted pool not being aligned to at least the current 2KB 
+segment size - if anything I reckon we could just consider it a DT error 
+and fail the init rather than worry about rounding either way.
 
-From the IOMMU spec alone, I could not confirm whether
-AMO_HWAD implies support for S2 modes.
-
-However, I found this statement in the IOMMU spec:
-
-"The IOMMU must support all the virtual memory
-extensions that are supported by any of the harts in
-the system."
-
-For virtualization scenarios, we assume the CPU hart
-must support at least one S2 mode (hgatp). From this
-perspective, the IOMMU should support at least one S2
-mode in a virtualization setup, regardless of
-AMO_HWAD.
-
->BTW, in riscv_iommu_init_domain_s1/s2, why not return -EOPNOTSUPP
->instead of -ENODEV for "cannot find supported page table mode"?
->
-
-I used -ENODEV to follow the existing S1 behavior:
-no compatible paging mode is available on this IOMMU.
-
-While -EOPNOTSUPP would also be reasonable, I suggest
-keeping S1 and S2 consistent and leaving this unchanged
-in this series.
+Note that freeing parts of a restricted pool for any other use would not 
+be a thing anyway, as they are by definition not a "reusable" region.
 
 Thanks,
-Fangyu
+Robin.
+>> Your commit message also mentions "wasting a bit of memory".
+>> What is wasted in the round down case? The rounding down is
+>> done before the pool memory is allocated. I would have thought
+>> the wasting would occur in the round up case, where the restricted
+>> pool is given more memory than the device said it needed.
+>>
+>> Michael
+>>
+>>> Reported-by: Giorgi Kobakhia <gkobakhi@asu.edu>
+>>> Closes: https://lore.kernel.org/all/20261026032007.1957949-1-gkobakhi@asu.edu/
+>>> Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
+>>> CC: stable@vger.kernel.org
+>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>> ---
+>>>   kernel/dma/swiotlb.c | 15 ++++++++++++++-
+>>>   1 file changed, 14 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>>> index 2c57b49ac7c0..a68f35192582 100644
+>>> --- a/kernel/dma/swiotlb.c
+>>> +++ b/kernel/dma/swiotlb.c
+>>> @@ -2007,6 +2007,19 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+>>>   	 */
+>>>   	if (!mem) {
+>>>   		struct io_tlb_pool *pool;
+>>> +		unsigned long aligned_nslabs = ALIGN_DOWN(nslabs, IO_TLB_SEGSIZE);
+>>> +
+>>> +		if (aligned_nslabs != nslabs) {
+>>> +			dev_warn(dev, "Restricted DMA pool size %zu is not a multiple of %lu, rounding down to %lu bytes\n",
+>>> +				 (size_t)rmem->size,
+>>> +				 (unsigned long)IO_TLB_SEGSIZE << IO_TLB_SHIFT,
+>>> +				 aligned_nslabs << IO_TLB_SHIFT);
+>>> +			nslabs = aligned_nslabs;
+>>> +		}
+>>> +		if (!nslabs) {
+>>> +			dev_err(dev, "Restricted DMA pool is too small\n");
+>>> +			return -EINVAL;
+>>> +		}
+>>>
+>>>   		mem = kzalloc_obj(*mem);
+>>>   		if (!mem)
+>>> @@ -2034,7 +2047,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+>>>
+>>>   			mem->cc_shared = true;
+>>>   			ret = set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+>>> -						   rmem->size >> PAGE_SHIFT);
+>>> +						   (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
+>>>   			if (ret) {
+>>>   				dev_err(dev, "Failed to decrypt restricted DMA pool\n");
+>>>   				kfree(pool->areas);
+>>> --
+>>> 2.43.0
+>>
+> Best regards
 
->Thanks,
->Shuai
->
->>  	default:
->>  		return false;
->>  	}
->> -- 
->> 2.50.1
->> 
