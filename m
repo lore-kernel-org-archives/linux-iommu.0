@@ -1,54 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.49
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793821950;
-	b=b7KzeYl8Vq5xgPwDFCnUDHogrtnGHqIxNrv6nbSTr+48iBmwLeGCVghaJt9zgm5WhaIx
-	 wQ3iX9Dpd0dsSAOYymSy+ER/v7ijrkxwkNvZsrRiJEKMAfEXFVV01bVa+Ny8j3NQH4z3W
-	 2G/gfVOaSfgno/COe2GvkopP2/n9QcURmC2vaqIY+k5N8KwHdGyJvZ5LBmX2COHKnHxoD
-	 B/WJlf2pBrBGS5CtTAzygsp1/LkXhuENpZhSgTfVms2tMkQkO/eZcKF3weom0l5NHRJdW
-	 HYnFd3EGr5Kn02yo4FRzO9Rc20KZyZGf4Uk4G9oLyLTnFt3UY71+Dx0REFneBIyYFhQ==
+	t=1793822210;
+	b=Afut5xLGF0gw+/PY5UImhJhqf9DlQp9cFnb3D9ZrHJAVyI87MTUSyqKIDDITfSbgxwwV
+	 OmMG+mhqANBMfhRekpu/gdSZ7JspFqw4VIeSeNiKKARZFitj1Qg6WESm7c/M2gHKdW45K
+	 Bhue+mAOMknrOh1QJ5ZQC+vOY1dcErHNLldMwsrfT9mCX8xpzzznSFYLxBUS0pniG4H8w
+	 YVax3GfEFvA5J5HHB3tap5D19bcbMAtUIIIz1pkLebow2LZpCjT6+lFha9vmawF7p8T+2
+	 C5USURm4l/yaqPa/mbgU7Oplfgr8e0cpM+gy3USALI1tIBtgcLyI0yMfrNRQL6LKvrQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793821950;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=L07m2wog8AXR293hC7wTAXwEB108EvydUujWlLJOS7k=;
-	b=AOYykXl4hEGw3/0XKaYth/8bEvRc0ZWXfDlNvCb/CjUcPZxx5isFefbhoYTeBrSHh8hb
-	 XjT6pJAKTnjLhUJshv/Q4KThswJle3zranTsaU1BZBlZoFc1o0PWo7K7lTGAh/GAcKGIV
-	 74aSzJ0SCg8tUBYiMuCU4YoHMNugJvNIrJ3Ya5IORYjeXUdkybfpxDuqW/muadLPDHnb3
-	 /Hwuz1oBUwaOV7ZJ7p9YqTuwfobOGdaq6nPL1xQvHzdAdC8/pmoFjadJcSA2/PnnFoTgH
-	 /TFrV3fqpGVpEyT4thGRgeCXJJiNNQyBLapgDed482D8T1zzvWdVfBw2PEzJ2K9+wOw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793822210;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=H4EFhcspofR4b1uKve6jkW0t06ZcJnK+4e01jxgUvKY=;
+	b=FtF/bYdliHAZWnyEQdHwcccY3bkRcuiJ0VUrjKKW/4xZ+gvw0rQAWW9yaFPOA6IHyCGJ
+	 of1PSufzbxrq9WAJWUlaZfMBFPrwbakg48LDQE9tUjabhQX1F5MD3c4I39E+Jf1X39IO+
+	 +/M5UXEM34J3ltCtGRZc6Gbyeo7sl9kFzi6heTDDrCNm9F8Dkn9vO4C4B1fD+OqyA4Aip
+	 JaAB9Vp8Dnl796ggq2LB7S+SB6qGRJ9utgn0mSbBZEkIp2Ttmdgln/MpIRr2BSM0GpSXi
+	 2BzbQPRFECRhclEQoP9bMnfitJ87ty6aohlQpdyvc93I4qt1vXNSCnSA6+9mxRtYUBw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Tngz3kAr;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=FKmyTyXt;
+	arc=none smtp.remote-ip=209.85.219.49
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18C2E60D8785;
-	Wed,  4 Nov 2026 19:52:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5ABB60E7519
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 19:56:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A5ABB60E7519
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Tngz3kAr
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 153AC1F000C1;
-	Wed,  4 Nov 2026 19:52:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793821949;
-	bh=L07m2wog8AXR293hC7wTAXwEB108EvydUujWlLJOS7k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=Tngz3kArIJr/FCTQecjk4Shv6JJTM59ST2VF34ZadkpeYJ07PybUi07DSlO5i+Lcc
-	 BR3xuLP685IVZSVeTudkEydtaHvNT27bijsHdB/DfS5Op1gyYMOzm/YIwALKmnGEEd
-	 pnaWfctGLzgd/kpEHK1zF1zzbJO/XvUGti+HfhqM7r3HJeHonwfpn2a+Z+2CKBMObQ
-	 Pw82Y1W0REeHcm1tHA4k+WLMNBeS+eYtyl8WFgweX/UB5AfA6xoO2ECFibwrwsSAEY
-	 UNVm8tllZewsPCCMrK9apq0WrX7YsjkklLlsnx8gLtWN3piM8BYXfNireITBbtAyGY
-	 uClTjhZd5Mc7Q==
-Date: Wed, 4 Nov 2026 21:52:25 +0200
-From: Leon Romanovsky <leon@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=FKmyTyXt
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-917aca1aee5so14517086d6.2
+        for <iommu@lists.linux.dev>; Wed, 04 Nov 2026 11:56:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1793822208; x=1794427008; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=H4EFhcspofR4b1uKve6jkW0t06ZcJnK+4e01jxgUvKY=;
+        b=FKmyTyXtU7wSIX5ltluoTsYn7Jom/pgniiTPhZ9sgwUqFdE7QZ8CFtdcq9E6BsYVW1
+         7v7AvyhYyqDYMyef62Grql32CH/nsE84/6sSAs/aVdNM9PlduTH8agTWST9Cte73OC0Z
+         JZcnmcDVcvxFsvC+nvh1oiSFxBqHY7NesLLy5y1cEanurOhWKgHHyFZlCzT2LyprGwOt
+         EJWZu0ov2pzNZCb60Ggco2PJpOiIgDnngOyCF+vCTs6DXHK1eMtJKD04DpRDvBm2e772
+         jEvtac8fvL1tY1CpDzNkdNyzDXaHnE3YoBhiHIPfm9QAzV0iDkooGY0085mZ6yHBaES3
+         ptcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793822208; x=1794427008;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=H4EFhcspofR4b1uKve6jkW0t06ZcJnK+4e01jxgUvKY=;
+        b=W8dcMbNysX7nFXW7xWiF8rRB25430pic6bJmWEEWdF7jRbs7+lmJ7tzQ52CpTh91eR
+         972tzssNVHkATkOI2xu2Mq9d38glD9eK0cmE32uw5amSocNvXTQZl2uePD3AZuQr8EAg
+         gHprCiA8grlKe6dZx3RRRjzO9dpaF6yk0SqRb/K4/dwEUG+pa1iRO9jxL4c40ayRlsuE
+         NpI1dFDt98d/KTb1TI3dXgKIxq25nZfmx2tWeHuJRTpN8DYI5slSwc32os3sPTtOifw6
+         5wdAgixe6CpEE5Yz/C9M0P5zVAqkJKxoSggXq1JC7RjTfCittJJJbYij36+nMlyYtsOm
+         Bbsw==
+X-Forwarded-Encrypted: i=1; AKwUvBzFe91UOakIcgW8Frg1JFm0hsIQdEGFLOG4MOQYsiikHsLSm0JyDcLRTJrt7jrxpRaF6+b3dg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+ZBtgtNVE+TPcybfiPpQa1DAIdD4DJfwrPzEUPYBQ6LQwR2vlE
+	/4iswpC7COZbs0oR+9pU+7QkfbWwcPcryA2Q8OXgG/aKeb3tBEQoghE/oL33PMk7ezs=
+X-Gm-Gg: AYBFou0cdvJ8+HfsWNUOFdhf5OCfCo9DnA+uictVNFHZWyv5hL0ta1b0HcGZ0mxVCON
+	xj8yJp/nRXZbWhDD/z1gOWZCqYisj7oEFOJIVAsYwe5E6JmEXPRUgXHB1NnTEyqY0CteY70JZXy
+	mw1XKItSFrWo22C2GFl/6geKE9KJH4RoHFfxgfbpamnpAZTbxAAgv4+319GypXoDppbacaA8Plb
+	rpYLK6GeodEd1uu0KcCmu5k1tL65zYzAocEkt7SEqU4Y9xX78s+WPI+6hndxTn8/vlA+Rrv3OeU
+	C8QTTWYOfcpnHaMC6qHlBf7vrQpb1G2+rQHCWhjpZJmqlWlhmzzkdnyXddQR0x2SUpBhHdU5EP9
+	+IvbmKCSfZLO4NqVP1uTc12tnOpAhEIdbllpDrsnXjbOsIMWnKE2ss7vGtCSGPPuaOID6t6m7b3
+	VcNBk7VZgGaW7e61E/+JsoJIpKrh9eVO3/DKaSY+hNEGDqEenZ48N7t2Z7uaHhByVlhvjDewNOA
+	V8Ol+X7qwZzBVm1RHgPeTOVnwnL+wfbIH1f4W4M+oxG8L09NpxWv9DbkTLgDcT0cYG6dNCXQo2p
+	yjT3eFFcFGNvIo7K+WzmNd6Fd8eAx7hBOG5bQ/Ss3sihQaGBkg94hTncx4c9r1sT6CNAxTWZNYm
+	TCd8A5/uuQg==
+X-Received: by 2002:a05:6214:2dc2:b0:917:9cd8:f26f with SMTP id 6a1803df08f44-91ca4b1b1afmr281180966d6.25.1793822208495;
+        Wed, 04 Nov 2026 11:56:48 -0800 (PST)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91e7e7b1e92sm27199686d6.45.2026.11.04.11.56.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2026 11:56:47 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xOh6F-0000000HJlF-1F1D;
+	Wed, 04 Nov 2026 15:56:47 -0400
+Date: Wed, 4 Nov 2026 15:56:47 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
+Cc: Leon Romanovsky <leon@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
 	Logan Gunthorpe <logang@deltatee.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
 	"Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
 	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
 	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
@@ -62,7 +106,7 @@ Cc: Bjorn Helgaas <bhelgaas@google.com>,
 	Randy Dunlap <rdunlap@infradead.org>,
 	Sumit Semwal <sumit.semwal@linaro.org>
 Subject: Re: [PATCH v12 00/19] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
-Message-ID: <20261104195225.GI478286@unreal>
+Message-ID: <20261104195647.GD3889730@ziepe.ca>
 References: <20261104084328.GP264423@unreal>
  <20261104171412.GA1247928@bhelgaas>
 X-Mailing-List: iommu@lists.linux.dev
@@ -117,15 +161,6 @@ On Wed, Nov 04, 2026 at 11:14:12AM -0600, Bjorn Helgaas wrote:
 > Can we be any more specific?  E.g., what makes real-world systems
 > different from simple ones?  What does careful platform design mean?
 > Something about ordering beyond what PCIe requires?
-
-I needed this series for GB300. I never asked to see for out-of-tree patches
-to enable P2P on that system, but P2P did not work with the upstream kernel
-without this series. In complex systems, the routing path between two
-devices can include multiple PCI bridges with ACS settings. In simple
-case, ACS will be 0 and not used.
-
-Careful design ensures that P2P devices share common host bridge.
-
 > 
 > ACS P2P Completion Redirect affects Relaxed Ordering (RO) Completions.
 > Translation Blocking and Direct Translated P2P affect Requests with
@@ -134,19 +169,13 @@ Careful design ensures that P2P devices share common host bridge.
 > So I assume the existing P2P implementation breaks somehow when RO or
 > Translated addresses are used?  How does it break?
 
-Jason tried to document it in the comment above mlx5_umem_needs_ats().
+Let me try, something short for Linus:
 
-Thanks
+"Enhance detecting if the PCI fabric can support a peer to peer path
+by evaluating the full bi-directional fabric path over each of the
+three traffic type ACS controls. Expand the number of fabric
+configurations where the P2P algorithm makes the correct determination
+of support to include non-uniform ACS and situations where translated
+takes different routes from untranslated."
 
-> 
-> > The new code will allow peer-to-peer transfers between any two
-> > devices, for all types of PCI traffic, as long as the PCI path
-> > between them supports peer-to-peer.
-> > 
-> > This paves the way for PCI peer-to-peer support in VMs, which the
-> > upstream kernel does not currently support."
-> > 
-> > BTW:
-> > 1. The patch "PCI/P2PDMA: Document the TLP attribute assumptions"
-> >    attempts to explain the current situation.
-> > 2. The change is too large to present as a fix.
+Jason
