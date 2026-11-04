@@ -1,122 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793820702;
-	b=KACBBHpaO6h2n32h0f/NcZRz0oYrbTVdNXObXf5hgSgc8uE3gMpa96vKOPvOXBVsA2QE
-	 qU/5cAda7NOvneB1h5AC1Jia4EcAYyPVHv2V+k0XgFyKckhy8hTCuSBY0CRi3ZkvUw6Xr
-	 Wz0hhse674YViPhQb0TAnr5DMA7iqhZttx2UzfyZqzjNehN+trhw+waEOdjjL6LlWLsf+
-	 uE+kCZZhB/FvWGUfggX7AFCjuygU9X/GHV2n6lbj4yrMgCe3VnIFNEoWtDmmiedkow05C
-	 hgf8s5LeW7f/w2B5q0v4TTeWDig9R0ETx7rHUx2fphOwDNNIuVxwi8v+yQHAKVu06fQ==
+	t=1793821950;
+	b=b7KzeYl8Vq5xgPwDFCnUDHogrtnGHqIxNrv6nbSTr+48iBmwLeGCVghaJt9zgm5WhaIx
+	 wQ3iX9Dpd0dsSAOYymSy+ER/v7ijrkxwkNvZsrRiJEKMAfEXFVV01bVa+Ny8j3NQH4z3W
+	 2G/gfVOaSfgno/COe2GvkopP2/n9QcURmC2vaqIY+k5N8KwHdGyJvZ5LBmX2COHKnHxoD
+	 B/WJlf2pBrBGS5CtTAzygsp1/LkXhuENpZhSgTfVms2tMkQkO/eZcKF3weom0l5NHRJdW
+	 HYnFd3EGr5Kn02yo4FRzO9Rc20KZyZGf4Uk4G9oLyLTnFt3UY71+Dx0REFneBIyYFhQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793820702;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=U6VmJzWY8/ktSu1tEfSH85YFZcsMq7VS8KWsZUWMCkc=;
-	b=sEHGj8mfVD8/guwbeIhDsmYXb4JA6TIeZbQotGHBfAbj6SBM9jySymvvk3ld+DUD733/
-	 qlGH4Pm4KcIRcn4W3uv5bc+6/TrBCu1zzUaXAGkg3qZ/NMizS3geDFFqoJBPwdXX9KKjr
-	 jiaNiEyIDuyPz6C+e5bg9rmlb/XPyFWHHWziQUaSKH9CYw6X7JD0geIhSLFg9OC9KiHnh
-	 Xg88U4eOu+GWabqzgHEQS26gSnbuBKmVarosLHmIsJja2ocXjRfOXg90nzuxuyXcWmiaT
-	 6st/LG3DQ1Si9psyVJ4MZ/SfqQevQRqeVOl8e9ym3E5AHH43896gl+lwQ0ptNz1SBzA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793821950;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=L07m2wog8AXR293hC7wTAXwEB108EvydUujWlLJOS7k=;
+	b=AOYykXl4hEGw3/0XKaYth/8bEvRc0ZWXfDlNvCb/CjUcPZxx5isFefbhoYTeBrSHh8hb
+	 XjT6pJAKTnjLhUJshv/Q4KThswJle3zranTsaU1BZBlZoFc1o0PWo7K7lTGAh/GAcKGIV
+	 74aSzJ0SCg8tUBYiMuCU4YoHMNugJvNIrJ3Ya5IORYjeXUdkybfpxDuqW/muadLPDHnb3
+	 /Hwuz1oBUwaOV7ZJ7p9YqTuwfobOGdaq6nPL1xQvHzdAdC8/pmoFjadJcSA2/PnnFoTgH
+	 /TFrV3fqpGVpEyT4thGRgeCXJJiNNQyBLapgDed482D8T1zzvWdVfBw2PEzJ2K9+wOw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=aZF2fgHy;
-	arc=none smtp.remote-ip=209.85.222.170
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Tngz3kAr;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CA66607815F
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 19:31:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5CA66607815F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18C2E60D8785;
+	Wed,  4 Nov 2026 19:52:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=aZF2fgHy
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-930c0f9c1b1so110929385a.1
-        for <iommu@lists.linux.dev>; Wed, 04 Nov 2026 11:31:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793820700; x=1794425500; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=U6VmJzWY8/ktSu1tEfSH85YFZcsMq7VS8KWsZUWMCkc=;
-        b=aZF2fgHyE9mnvl3X61e2VkPAHfCrMPOYdf5ZhTibRly+mKA/yoqmTwxaXAme/LnatB
-         U330YTlRa0eLsuh43WR+VsEFLuqG0Wm6nrhzwZcabJnen5PMk4ajZT1qSDw4S+qA4Kds
-         pEhUCts9uYOBN6QiIb++T9QJiOMjWWepwmd9hXBA/DfEXusvFTyJiZfolHwdqqUPTj4v
-         ICON4Bpc/+Y4G1AXsvBhL9RrrdDeM5V6MZQkQ0ggVB5Rd9CEDrz85HO1vIGPN10kMl6t
-         6X3bQQd5UWPjDTsYMhGZR+dabKwDz9WlIjfaRNPWoRWsXpp/s6xXuwjv82eIWJT+UxTr
-         tCmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793820700; x=1794425500;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=U6VmJzWY8/ktSu1tEfSH85YFZcsMq7VS8KWsZUWMCkc=;
-        b=gkSVr5BU/XQN0iRu2z/2rwyYaWkX28Be68lEy+pokWHAlj/97GDf3bzX4tDdrd0FL7
-         9NLLHVqsGUh4uXD+CHIX8R8iNWN+5EG54FLODtKLh/Od0N20YA7SHxgBJcbP5w963Vii
-         42CA+5s+7O0dvLw+ZsUZBOEAvdyseCJlTm2tC5tE17L9utW3HKHD8epMPC9vtKu27keR
-         NDUjzN56/dFu8XcZA2H7S64G1GwoN85PdShfQusQWY6rGwIULFqmbRHrrMnZbqqWysWm
-         pPOa2Cv0jsl7TPY5s6BSd4joavD/EIdggbJNYNR/TNBptmQZFk550LRd7pC7k7FGtWEX
-         kNgA==
-X-Forwarded-Encrypted: i=1; AKwUvBwGUq6swV5JSyPU4vzAkinwTHS1l6z8I0C2cBG1PEkfJXFr80lziUBNaqLKgw9zHLmYh1kSwg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9wz5rqZiRc2ogDVh+m3fcI7hpbNObXrGgg3Q3FDq4+vMyUVi7i
-	Du/iHOecpqN/+L20wfeqS7ekCKQC5RcX9NvImHetInFTpP0K5sru6N6pvSBEMSXJXaE=
-X-Gm-Gg: AYBFou2gO8f+rdL8f+GypuRpVMtllPDtqRYSNpuztS0v3M9OI+dhXfqPTq3/YtXfnLr
-	4pHbeIvEu7nPQG8un7WTLezqw43CAnWn1wFY3XMW/EXhpofZpv0e9bWnlu3LH21xvirpmkucCF6
-	z7MeVqrlfdmEV7N3yfb734A5Hk6+xUWLLOjScLPLTUW+UjP+1sRhjg4hqtJ5WQk9fo8uwr9qr8L
-	g81RfkyBBGHNH0GXM16TT27IZtdH9aZzc0KtXhPl/0M0QwellXOELyyD1bwDKJ+8lTNd1zSAmc2
-	mZWTvgAHBpfLlSwwz1kESXhIMFSfQLEyDVpLeA+P+AQ/1pAxhalBTwDMJuIRrNLJX+DRxAcVdG7
-	FeztLGbL+Gsf3XwfquiTcqY9/8cLaaT/iim35T1a20+bqDtPAbZWsDjG3BaiFe0TdkLQ+KsVpV/
-	27ancTtCg4f7snK6grFN8oeYFvqK3+vFwKtrD92ccqvqTIYnQoWY+bumZS/Ciexrx/XJJ9X5wI6
-	8wNkFYrdVr/Pw2rWV3zFKt2EcL0vdDHAeUdFFLwdnGPBcwqJyKERj1mOwsLXrNplUnLRB02gONd
-	mKTf/VdLuL027+uOrD+E9xXdKklvurQC2DJ7YN1ERgxp7cyz8tqeVfHzAG98EhqxKHL46HLtgLa
-	dxswJMszxWA==
-X-Received: by 2002:a05:620a:1a24:b0:93c:6534:d04d with SMTP id af79cd13be357-9442167725emr2767779185a.35.1793820700269;
-        Wed, 04 Nov 2026 11:31:40 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-945d4844991sm278199585a.28.2026.11.04.11.31.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2026 11:31:39 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xOghv-0000000HG9b-0zIw;
-	Wed, 04 Nov 2026 15:31:39 -0400
-Date: Wed, 4 Nov 2026 15:31:39 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-tegra@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Tngz3kAr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 153AC1F000C1;
+	Wed,  4 Nov 2026 19:52:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793821949;
+	bh=L07m2wog8AXR293hC7wTAXwEB108EvydUujWlLJOS7k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Tngz3kArIJr/FCTQecjk4Shv6JJTM59ST2VF34ZadkpeYJ07PybUi07DSlO5i+Lcc
+	 BR3xuLP685IVZSVeTudkEydtaHvNT27bijsHdB/DfS5Op1gyYMOzm/YIwALKmnGEEd
+	 pnaWfctGLzgd/kpEHK1zF1zzbJO/XvUGti+HfhqM7r3HJeHonwfpn2a+Z+2CKBMObQ
+	 Pw82Y1W0REeHcm1tHA4k+WLMNBeS+eYtyl8WFgweX/UB5AfA6xoO2ECFibwrwsSAEY
+	 UNVm8tllZewsPCCMrK9apq0WrX7YsjkklLlsnx8gLtWN3piM8BYXfNireITBbtAyGY
+	 uClTjhZd5Mc7Q==
+Date: Wed, 4 Nov 2026 21:52:25 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v8 13/15] iommufd/viommu: Allow vIOMMUs without a parent
- HWPT
-Message-ID: <20261104193139.GB3889730@ziepe.ca>
-References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
- <20261104161632.3547423-14-aneesh.kumar@kernel.org>
- <auuBjRjQwXl7UvvO@nvidia.com>
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v12 00/19] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
+Message-ID: <20261104195225.GI478286@unreal>
+References: <20261104084328.GP264423@unreal>
+ <20261104171412.GA1247928@bhelgaas>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -128,28 +76,77 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <auuBjRjQwXl7UvvO@nvidia.com>
+In-Reply-To: <20261104171412.GA1247928@bhelgaas>
 
-On Wed, Nov 04, 2026 at 11:03:41AM -0800, Nicolin Chen wrote:
-> On Wed, Nov 04, 2026 at 09:46:30PM +0530, Aneesh Kumar K.V (Arm) wrote:
-> > VIOMMU_ALLOC currently requires a nesting parent HWPT_PAGING even when
-> > the selected vIOMMU implementation has no use for one. This would force
-> > implementations such as the following Arm Realm vIOMMU to create an
-> > unused parent.
+On Wed, Nov 04, 2026 at 11:14:12AM -0600, Bjorn Helgaas wrote:
+> On Wed, Nov 04, 2026 at 10:43:28AM +0200, Leon Romanovsky wrote:
+> > On Tue, Nov 03, 2026 at 05:37:42PM -0600, Bjorn Helgaas wrote:
+> > > On Tue, Nov 03, 2026 at 10:29:39AM +0200, Leon Romanovsky wrote:
+> > > > PCI P2PDMA applies Request and Completion Redirect throughout
+> > > > both paths.  This misclassifies asymmetric and nested switches,
+> > > > and reports one answer for every kind of TLP.
+> > > > 
+> > > > Three ACS controls act on TLP attributes the Requester chooses
+> > > > rather than on the topology: Translation Blocking and Direct
+> > > > Translated P2P act on a Request's Address Type, and Completion
+> > > > Redirect skips Completions carrying Relaxed Ordering.
+> > > > 
+> > > > Evaluate each direction at the path divergence, decide every
+> > > > class from the one walk, and treat a client with ATS enabled as
+> > > > translating unless its driver declares per-mapping ATS.
+> > > > 
+> > > > This completes the P2PDMA side; dma-buf and mlx5 follow
+> > > > separately.
+> > > 
+> > > Is there a one- or two-sentence explainer of why we want this?
+> > > I'm thinking in terms of what Linus will want in the merge
+> > > request: a fix for something that's broken or some new
+> > > functionality.  It sounds like this is solving a problem, but I
+> > > don't know enough to translate the nitty-gritty details to the
+> > > higher-level user-visible problem or feature.
+> > 
+> > Not AI; these are my own words with grammar fixes from AI:
+> > 
+> > "The existing implementation of PCI peer-to-peer assumed that all
+> > PCI TLPs were the same: ordered and carrying untranslated addresses.
+> > It did not account for the variety of traffic types defined by the
+> > PCI specification. As a result, only simple systems supported
+> > peer-to-peer transfers in the upstream kernel; real-world systems
+> > required out-of-tree patches and careful platform design.
 > 
-> IIRC, MSI on ARM still goes through the NS pathway. So, it wouldn't
-> be "unused" if the device attaches to it (or its nested hwpts)?
+> Can we be any more specific?  E.g., what makes real-world systems
+> different from simple ones?  What does careful platform design mean?
+> Something about ordering beyond what PCIe requires?
 
-It is unused by the RMM VIOMMU. I think that is what is Aneesh is
-explaining.
+I needed this series for GB300. I never asked to see for out-of-tree patches
+to enable P2P on that system, but P2P did not work with the upstream kernel
+without this series. In complex systems, the routing path between two
+devices can include multiple PCI bridges with ACS settings. In simple
+case, ACS will be 0 and not used.
 
-> By dropping the nesting parent from VIOMMU, it just simplifies the
-> attachment to an S1 paging hwpt, right?
+Careful design ensures that P2P devices share common host bridge.
 
-Yes.
+> 
+> ACS P2P Completion Redirect affects Relaxed Ordering (RO) Completions.
+> Translation Blocking and Direct Translated P2P affect Requests with
+> Translated addresses.
+> 
+> So I assume the existing P2P implementation breaks somehow when RO or
+> Translated addresses are used?  How does it break?
 
-The VMM must always maintain a S1 paging attachment that is the
-identity map of the VM on all devices, same action as when there is no
-viommu.
+Jason tried to document it in the comment above mlx5_umem_needs_ats().
 
-Jason
+Thanks
+
+> 
+> > The new code will allow peer-to-peer transfers between any two
+> > devices, for all types of PCI traffic, as long as the PCI path
+> > between them supports peer-to-peer.
+> > 
+> > This paves the way for PCI peer-to-peer support in VMs, which the
+> > upstream kernel does not currently support."
+> > 
+> > BTW:
+> > 1. The patch "PCI/P2PDMA: Document the TLP attribute assumptions"
+> >    attempts to explain the current situation.
+> > 2. The change is too large to present as a fix.
