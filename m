@@ -1,101 +1,76 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793809719;
-	b=Y+NT9ErIBUo2gAp4pYGdTBV/W+i3Wja9FkgC8Mpy07252zL4Zg01VwbzS+i1rqrJfRJy
-	 o3miuBPisRFyGld/a1KHZ6x0twP/BtR3hEAKogwZi2vunmO8HyJED/ycPfVmXSeVoPoPr
-	 j+E9rpdZplPa8BgWxSRSNb8Xz8SYMZiL8q4Byx1uC9pBKLWV5rE20KSDHDhqzTTnSGhwa
-	 iCcDIVs1jbMAqejzKUOeNxk9kKiZD7pxlwNPxDkZ1gIA01pUtVdyn9as0+L4X+ZKSgKMV
-	 xYZeu5Lf6gShZxguWFgzyRRRoza5vGPt9FSUDVjKg6azpmjxiHhGAlt74srsJvSYV8w==
+	t=1793810164;
+	b=ueTXTPM7PCtkuZZIbtPWbJCNY0v3QdqdJvY+USCbsbdT5E6mXTTirpYzKjHiF17CjcIH
+	 IGOtej1WaW6lo7FVXbJ1B4dW29iisT/yjMnIdvZmkcSoA3Sr6OEvmr5la+TnSinZNeg3y
+	 9aW881PXBY/Nbv1ObFE+Oo6IQKsRRXgq/QMxTLRj+7N9hfNj14bgpdf7ss5TlM6rIbeQF
+	 vQV7wH86VfMAN6BovVV7gkS69k8Cgsh0KiMV5Q+joKgiVpzPSbOrWi2WpKYtoaUteemkv
+	 KXKPQ5nk4WxyNsCSWDzwhDQMbig0/oKZQVk3w912oyU85lvGFd1S0+wkfLFzXGktSdQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793809719;
-	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=9SHHUSf+T2bKBl5zTKVc7+4D9udfNKOS0jVoto10SB4=;
-	b=OJbXbXbIMuLzq3xzRm6x4bfrUiDFs7G/1hfOuzBpHWALVKKGUk3usFwwY4rU+J3TWgxE
-	 5HckMeTC9U3oB6tpG3j7slmoqxa4UxRkhiRgoY8nNbdULi9k4fohkhgyb5+X1CSQsTgQi
-	 7jWm7h6qiBHoKDERKahyuvhOojSBmmHT8eoCiBRkuncVqVRPWXIMF5k/gb618gIhdPS08
-	 qrJxa4bq9lob2FfL4xmohHaltuKztDJQIlMHXzApIiGaet2Qa15h0NlNrkHRDgvW7yiBb
-	 ADt/8H6E6VRG0K4+c4tgsMSQFA8QSLb3BjIlLxDRwKWnT8T89Y3u4Bnvm7nJGhfJY1Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793810164;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Date:From:To:Cc:
+	 Subject:Message-ID:In-Reply-To:References:Organization:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
+	 X-Spam-Checker-Version;
+	bh=M+FVUGQeTnDaP8dcVVOqRxcNzHLQ2s/YnEy8ffSa8ug=;
+	b=QszEMfjy0oiRjkZsTG6twC9kruskiqNjRwTgdtknTUl0U4ePBUop2XOlXx55oseXDVjb
+	 RbBACbLg8AAQv7PTK6ZVd++Skp3lRd3e82onyRR++jTVFOc4crobB4zC1htGLHHnLvwqQ
+	 5CHkMxAxP5dhGSOb0kQ/F0iRoJ2du5bmtBIU68RVNhUfNWTZwNAwuJTEchMDLnu4Rq1Cd
+	 1dKz6ZLgz+ZGiUiB/7dk4vFwJ5bUjiP3Mz9lXgsv1EoXPia3ZmIZxMGnFjK1lr3Jd5ncx
+	 zIQe5DP8nsmYCsaPQMp7M4S8Xx0oTvp/eMtB0fNT81XdrFubiwdcZxRmCVu53wBuegA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=alien8.de;
-	spf=pass smtp.mailfrom=alien8.de;
-	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=V4xzcjyc;
-	arc=none smtp.remote-ip=65.109.113.108
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E52C606A31B;
-	Wed,  4 Nov 2026 16:28:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E52C606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
+	dmarc=pass header.from=linux.microsoft.com;
+	spf=pass smtp.mailfrom=linux.microsoft.com;
+	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=i4i+j7cT;
+	arc=none smtp.remote-ip=13.77.154.182
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B19E3606A31B;
+	Wed,  4 Nov 2026 16:36:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B19E3606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=V4xzcjyc
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 1641B40E0497;
-	Wed,  4 Nov 2026 16:28:35 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id TefcqjVVoH92; Wed,  4 Nov 2026 16:28:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1793809710; bh=9SHHUSf+T2bKBl5zTKVc7+4D9udfNKOS0jVoto10SB4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=V4xzcjycP1+Wtqc6wgEWimId3M/6+viYYgNJsoST2dIljcHhD25I2Te+BT7jUHbJV
-	 LEUPPuH+S8feP9TbHkuD4SQfsNtHRtRt4F5RqIzd8qUpvgJVHGNWkXKRBvUKdjTQHJ
-	 SAdte27vaf/P0mVli7w120P9DjOAx/3YfLxBkUfawzctmP+cw0J96TiAXlSvmRLWNy
-	 MzQG77HLLr7RGBuyHbfg3j0xE0lCmrEP4EROND+CgK06dv/fEdKHxvj6eseIthtgQR
-	 hDqKvbseNqN8ndDFVnnBkuKh8saLpViSnLllDhhiKOhNWl3WB+7Y2RaX7d2sswN7EQ
-	 rVB7gAcJcK441nZYuOtWBn9miFBB/FWlRC5I8QeSKbVPWv6Uiek078rhtAIGAWxC5n
-	 n9aXv/A1o/pHQTI3YhqHGUaik/BGG0dEHrbYmpVlNpVvV4W0Pzh8Uv3k8UbFfExpWe
-	 xba+MGCUsMopyIh/RbUyPNiLI+U9zpzRyiLjyqPraytYUSCGGm9iS4mAKZYxMuoXXY
-	 ehpeg7LASildxIapP+I6QDmtnuQCL0260ZCVEdKD90U0Yjhkfm35HYacMcWd1Fwnd3
-	 2XMoxLPJ4WjYZEQf8jTJ2lvVDXejFRPPjMtxoYnXqvSOSjA3PllhmOEwVNpiNrlVcw
-	 zbpjWjIJIp1driYqfHXNCdhY=
-Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C227C40E02C2;
-	Wed,  4 Nov 2026 16:27:50 +0000 (UTC)
-Date: Wed, 4 Nov 2026 08:27:47 -0800
-From: Borislav Petkov <bp@alien8.de>
-To: Vineet Gupta <vineet.gupta@linux.dev>
-Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-	Peter Zijlstra <peterz@infradead.org>,
-	Juri Lelli <juri.lelli@redhat.com>,
-	Vincent Guittot <vincent.guittot@linaro.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Tvrtko Ursulin <tursulin@ursulin.net>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, "Xin Li (Intel)" <xin@zytor.com>,
-	Brian Gerst <brgerst@gmail.com>,
-	Nikolay Borisov <nik.borisov@suse.com>,
-	linux-kernel@vger.kernel.org,
-	Dietmar Eggemann <dietmar.eggemann@arm.com>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-	Valentin Schneider <vschneid@redhat.com>,
-	K Prateek Nayak <kprateek.nayak@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>,
-	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, llvm@lists.linux.dev
-Subject: Re: [PATCH 0/4] Fix the x86 defconfig build with GCC 17
-Message-ID: <20261104162747.GAautdA2q2lw2gsth2@fat_crate.local>
-References: <20261104160722.1637541-1-vineet.gupta@linux.dev>
+	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=i4i+j7cT
+Received: from localhost (unknown [4.194.122.162])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 9C34420B7169;
+	Wed,  4 Nov 2026 08:35:35 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9C34420B7169
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1793810147;
+	bh=M+FVUGQeTnDaP8dcVVOqRxcNzHLQ2s/YnEy8ffSa8ug=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=i4i+j7cTR141SF+ryi2A1rilwpQLlb1tWKZCllB4w4XggXR2rgpH/PKKL5oXWsGME
+	 lUINehj74XCkboWP0/L1izrZBW2klf+04xYS6ecyyUJlqckWhiCPuAG6I0kD0nY7oS
+	 O5loheQsjIK3IuR1x6djo8hJJCGWR7oEGE+iZLH8=
+Date: Wed, 4 Nov 2026 08:35:45 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>, Alexey
+ Kardashevskiy <aik@amd.com>, Bjorn Helgaas <bhelgaas@google.com>, Catalin
+ Marinas <catalin.marinas@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Joerg
+ Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>, Jonathan
+ Hunter <jonathanh@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, Krishna
+ Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Nicolin Chen
+ <nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Samuel Ortiz
+ <sameo@rivosinc.com>, Shameer Kolothum
+ <shameerali.kolothum.thodi@huawei.com>, Steven Price
+ <steven.price@arm.com>, Suravee Suthikulpanit
+ <suravee.suthikulpanit@amd.com>, Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Thierry Reding <thierry.reding@kernel.org>, Vasant Hegde
+ <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, Xu Yilun
+ <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-tegra@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v8 07/15] iommufd/viommu: Keep a reference to the KVM
+ file
+Message-ID: <20261104083545.00003624@linux.microsoft.com>
+In-Reply-To: <20261104161632.3547423-8-aneesh.kumar@kernel.org>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+	<20261104161632.3547423-8-aneesh.kumar@kernel.org>
+Organization: LSG
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,21 +80,100 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20261104160722.1637541-1-vineet.gupta@linux.dev>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 04, 2026 at 08:07:17AM -0800, Vineet Gupta wrote:
-> Fix build warnings and failures (CONFIG_WERROR=y) with a GCC 17 build.
-> GCC 17 adds -Wconstant-logical-operand which is strict about operands
-> of && or || that fold to a constant other than 0 or 1.
+Hi Aneesh,
 
-Just from looking at it, my initial reaction would be to disable that option.
+On Wed,  4 Nov 2026 21:46:24 +0530
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
 
-Because, frankly, I don't see the point.
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> 
+> The TSM vDevice operations need access to the KVM associated with the
+> device's vIOMMU. Save the device's KVM file in the iommufd_viommu
+> when the vIOMMU is allocated, and take a file reference so it remains
+> valid for the lifetime of the vIOMMU.
+> 
+> Release the reference when the vIOMMU is destroyed.
+> 
+> Reject vdevice allocation when the device's KVM association differs
+> from the vIOMMU's, including when only one has a KVM association.
+> Allow allocation when both associations are NULL.
+> 
+> Based on an original patch by
+> Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> 
+> [nicolinc: hold kvm's users_count]
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> [aneesh.kumar: Switch to use kvm_file]
+> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> ---
+>  drivers/iommu/iommufd/viommu.c | 10 ++++++++++
+>  include/linux/iommufd.h        |  1 +
+>  2 files changed, 11 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommufd/viommu.c
+> b/drivers/iommu/iommufd/viommu.c index f7951057a1e5..0dbd382eeb98
+> 100644 --- a/drivers/iommu/iommufd/viommu.c
+> +++ b/drivers/iommu/iommufd/viommu.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+>  /* Copyright (c) 2024, NVIDIA CORPORATION & AFFILIATES
+>   */
+> +#include <linux/file.h>
+>  #include "iommufd_private.h"
+>  
+>  void iommufd_viommu_destroy(struct iommufd_object *obj)
+> @@ -11,6 +12,8 @@ void iommufd_viommu_destroy(struct iommufd_object
+> *obj) if (viommu->ops && viommu->ops->destroy)
+>  		viommu->ops->destroy(viommu);
+>  	refcount_dec(&viommu->hwpt->common.obj.users);
+> +	if (viommu->kvm_file)
+> +		fput(viommu->kvm_file);
+>  	xa_destroy(&viommu->vdevs);
+>  }
+>  
+> @@ -82,6 +85,8 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd
+> *ucmd) }
+>  
+>  	xa_init(&viommu->vdevs);
+> +	if (idev->kvm_file)
+> +		viommu->kvm_file = get_file(idev->kvm_file);
+>  	viommu->type = cmd->type;
+>  	viommu->ictx = ucmd->ictx;
+>  	viommu->hwpt = hwpt_paging;
+> @@ -171,6 +176,11 @@ int iommufd_vdevice_alloc_ioctl(struct
+> iommufd_ucmd *ucmd) goto out_put_viommu;
+>  	}
+>  
+> +	if (idev->kvm_file != viommu->kvm_file) {
+> +		rc = -EINVAL;
+> +		goto out_put_idev;
+> +	}
+> +
+>  	iommu_dev = iommufd_device_get_iommu_dev(idev);
+>  	if (!iommu_dev || viommu->iommu_dev != iommu_dev) {
+>  		rc = -EINVAL;
+> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> index b03ce0187454..c15d80f611b9 100644
+> --- a/include/linux/iommufd.h
+> +++ b/include/linux/iommufd.h
+> @@ -103,6 +103,7 @@ struct iommufd_viommu {
+>  	struct iommufd_ctx *ictx;
+>  	struct iommu_device *iommu_dev;
+>  	struct iommufd_hwpt_paging *hwpt;
+> +	struct file *kvm_file;
+>  
+>  	const struct iommufd_viommu_ops *ops;
+>  
+Reviewed-by: Jacob Pan <jacob.pan@linux.microsoft.com>
 
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+We may need to enable non-kvm file (such as mshv) eventually, but
+until then this looks good to me.
