@@ -1,81 +1,73 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.35
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793769839;
-	b=HfEHQmWDH/cQp/vwy22AbbO0JVH8IQ1g+9VThJ0O5V8/OsaZ6AVCqJ3TZ8TpKb06pMSX
-	 KOCY3NN4OxbUt4r1yBUsjcT0tJTuV7mLzMUFzhyvIRbR//FI/jNJ5QddBHYa7uUx/3oDx
-	 SPsubo6jileWU1OO9t3KXDfKJ1De/jphBPh5v6p+xqk/KWUkYqRLn5SgiTtFYM1Ut1lc1
-	 +Edx45VznYN8ItHoiD91I4wKoxJEm3gt+y8k+7/1Hy6OeNzPWSPQltJjrDkmCiRwcYgkU
-	 XSNjf4504Jm/PAgV1xqIfK1sNTsRNuZlUQ0df6eEKTvzbS0zISNfScrHr8IxRIQ6K8Q==
+	t=1793774757;
+	b=ZnqTLkWL+n8C9MecRdY3HaWKZHCbLXNBUA9eQj/JaIkHP5d5ZOKz2zl2Ob140xaVUq/j
+	 rqcG+M6MKBBvDLfWdYVrVvMHAMU89q0/w9LLhfTcizcdCHOZdD6AcfZis/V9mB2qJYvC8
+	 jlRHy1VL2FyaI6Cx3JleELFNnMXzk9Buf/oTwsDtxBhtqTXD8Y2KMc7mDcaogM1Cq/OYu
+	 R6hHUD0318pUnP3qLmggX1crj9/1i+on78Bx8FfxHG3qoDDWiNTa0OirvWHLZJtBxhmso
+	 l+hqXijDiEj/V2mwT2zX481Q/Y9KtfK8Ps+WCeVIiK29LrLApYqZ7Y10KlHNl+LxbyQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793769839;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=jdvZYk018mSPsmLuCOkqT6jhVzBjZ04iDcinjdGFt2U=;
-	b=nBrA47LyMWxb7+/1dTNrj08YC/Q2zn6Go6pHifrUUmg3D22ID+EqtaWWJhqmzLYJ8hEj
-	 vvnvq2M4MJEv1mikvrfyVN0y9CrRRob+QTsuZqzdVnmZO4Vd+RiLFJBgG9ZjSluVOBwPa
-	 PL1akEcDHflQX7Jela1HSyXe/xVCfx0d7shlGWGcUjg3/2CV0QsKetOC4c1JVviZBgzLR
-	 bVThT/9HgsFHGcXIYinCF8CNL/XUO1hHH6ZHdB5kAYPBwJ8Ij5ntPMypP1lSFLgt8aP4F
-	 0SKbmxoGQnKw4W1oQGXeAJnu726KHFCNXqQYNhZqCSctYOAqVECQD0qZNT3d0gv0xJQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793774757;
+	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
+	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
+	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
+	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
+	bh=clIQptAzz0QSjPQqw4pdzoEdWRP3GM/T5ORBpQ5q5qQ=;
+	b=IAUQXN9hMVNGTVaX/yDUPgm17NEEFo2bvijFit9jMd+XMf5atX8s+qX7cIj21wbyn5qg
+	 xyY3OS/+w3JlECu4XLqkRCn6fyqtV2O06C0jQq6vCoIDUcoBs8PzQnhMrdrq2B+MQWMvj
+	 vlFBbFYr0ZnVk6ZnGN8MucIkWpW7TtO/XIJbU9C/whUSXN8wb7Ui7/t9K15/AzkgXMTnr
+	 Md5Vkl5yS+Iw2tR1fWokHj7NZBquh4KtdMVQujJjtbHfdeK8QfjTPlgQW1aokq5zEUxnT
+	 zOV+MXMFbOGm8FMsS7qOGmJtIL39LADU+uOLody2Y6ZyjtVTx7aqM4bcDHdFhfOg5Xg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YIFMhKCZ;
-	arc=none smtp.remote-ip=198.175.65.10
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=sanechips.com.cn;
+	spf=pass smtp.mailfrom=sanechips.com.cn;
+	arc=none smtp.remote-ip=160.30.148.35
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 041FE606A330
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 05:23:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 041FE606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=YIFMhKCZ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793769839; x=1825305839;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=T0BB9X5RuLN1WPPjK6j7RgAFlyOTBCL4fcKWxpzmi2Y=;
-  b=YIFMhKCZhlteaKKkm6z+ywh1Fj79wsMDT9sxZtKVMmhLm2qcB/UFWwzh
-   R716jXywJZuceZAllL7eTT3ndW6dipV6hjQTTcpJ7c4qcRODUYh6TZ2mm
-   dtH8TnGTJPd8JDzNOjWvKJ1F24W9FDi+igalyhmAOERmTY+bxUJQjDf0U
-   hycgqqwlwtoXeLOlngS8ftSw0hwDrBCiL3hW8Hd+d0CoQOrjO1age/ez0
-   /jxUlrlwfP+LPSPhDvCWoxXT5M6JPH5nOhneHbiG1dMu0swdRobC84lEZ
-   Uy0PgC9womur9+LHBG6PViLzhFJeQAYGylojksl592n9BQHBNOjCv+sjA
-   w==;
-X-CSE-ConnectionGUID: OGmGmMHaTjaGJ/KKE32GPQ==
-X-CSE-MsgGUID: Kq6SzpwAQUGV3pmPpyMzhg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11955"; a="2414143"
-X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
-   d="scan'208";a="2414143"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Nov 2026 21:23:58 -0800
-X-CSE-ConnectionGUID: tytz82qARqaKNpv52+KZpA==
-X-CSE-MsgGUID: 4HsIcB60Sl2z1f5LPCvpHA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,194,1787036400"; 
-   d="scan'208";a="6777209"
-Received: from allen-box.sh.intel.com ([10.239.48.101])
-  by fmviesa002.fm.intel.com with ESMTP; 03 Nov 2026 21:23:55 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/2] iommu/vt-d: Serialize SVA unbind teardown with intel_mm_release()
-Date: Wed,  4 Nov 2026 13:10:58 +0800
-Message-ID: <20261104051059.1345010-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261104051059.1345010-1-baolu.lu@linux.intel.com>
-References: <20261104051059.1345010-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C533606A333
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 06:45:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C533606A333
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jKGDJ0s8Cz8Xrrf;
+	Wed, 04 Nov 2026 14:45:52 +0800 (CST)
+Received: from szxlzmapp04.zte.com.cn ([10.5.231.166])
+	by mse-fl2.zte.com.cn with SMTP id 6A46jiZE066518;
+	Wed, 4 Nov 2026 14:45:44 +0800 (+08)
+	(envelope-from gong.shuai@sanechips.com.cn)
+Received: from ubuntu-35-gs (unknown [10.230.214.35])
+	by smtp (Zmail) with SMTP;
+	Wed, 4 Nov 2026 14:45:46 +0800
+X-Zmail-TransId: 3e816aead493029-bd580
+X-Zmail-LocalSMTP: 1
+X-Zmail-RealSender: gong.shuai@sanechips.com.cn
+From: Gong Shuai <gong.shuai@sanechips.com.cn>
+To: fangyu.yu@linux.alibaba.com
+Cc: ajones@ventanamicro.com, alex@ghiti.fr, andrew.jones@linux.dev,
+        anup@brainfault.org, aou@eecs.berkeley.edu, atish.patra@linux.dev,
+        baolu.lu@linux.intel.com, gong.shuai@sanechips.com.cn,
+        guoren@kernel.org, iommu@lists.linux.dev, jgg@nvidia.com, jgg@ziepe.ca,
+        joerg.roedel@amd.com, joro@8bytes.org, jroedel@suse.de,
+        kevin.tian@intel.com, kvm-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+        palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com,
+        skhawaja@google.com, tanchi25@mails.ucas.ac.cn, tjeznach@rivosinc.com,
+        tomasz.jeznach@linux.dev, vasant.hegde@amd.com, will@kernel.org,
+        zong.li@sifive.com
+Subject: Re: [PATCH v7 06/10] RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
+Date: Wed,  4 Nov 2026 14:45:40 +0800
+Message-ID: <20261104064540.115560-1-gong.shuai@sanechips.com.cn>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261103120236.53474-7-fangyu.yu@linux.alibaba.com>
+References: <20261103120236.53474-7-fangyu.yu@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -85,73 +77,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
 Content-Transfer-Encoding: 8bit
+X-MAIL:mse-fl2.zte.com.cn 6A46jiZE066518
+X-TLS: YES
+X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
+X-SOURCE-IP: 10.5.228.133 unknown Wed, 04 Nov 2026 14:45:52 +0800
+X-CLEAN: YES
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6AEAD4A0.000/4jKGDJ0s8Cz8Xrrf
 
-intel_mm_release() can run concurrently with an unbind of the same PASID.
-The unbind clears the Present bit, drops iommu->lock and then invalidates
-the PASID cache, IOTLB and device TLB:
+Hi Fangyu,
 
-  iommu_sva_unbind_device()              exit_mmap()
-    blocking_domain_set_dev_pasid()        intel_mm_release()
-      intel_pasid_tear_down_entry()
-        pasid_clear_present()
-        spin_unlock(&iommu->lock)
-                                             intel_pasid_tear_down_entry()
-                                               !present && !FPD -> return
-                                           ... free page tables ...
-        ... invalidate caches ...
+> From: Tomasz Jeznach <tjeznach@rivosinc.com>
+> 
+> Enable KVM/VFIO support on RISC-V architecture.
+> 
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+> ---
+>  arch/riscv/kvm/Kconfig | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/riscv/kvm/Kconfig b/arch/riscv/kvm/Kconfig
+> index f7e4d0f9b156..13552cfc2cd3 100644
+> --- a/arch/riscv/kvm/Kconfig
+> +++ b/arch/riscv/kvm/Kconfig
+> @@ -28,8 +28,10 @@ config KVM
+>  	select KVM_GENERIC_HARDWARE_ENABLING
+>  	select KVM_GENERIC_PRE_FAULT_MEMORY
+>  	select VIRT_XFER_TO_GUEST_WORK
+> +	select KVM_VFIO
+>  	select SCHED_INFO
+>  	select GUEST_PERF_EVENTS if PERF_EVENTS
+> +	select SRCU
 
-intel_mm_release() then returns before the invalidations complete, and
-exit_mmap() can free the page tables while the IOMMU and the device still
-hold translations that reference them.
+This option is now meaningless, please remove it.
+See:
+https://lore.kernel.org/linux-riscv/20230105003813.1770367-5-paulmck@kernel.org/
 
-intel_mm_release() walks domain->dev_pasids and tears down each entry
-under domain->lock. Do the same in the blocking attach for an SVA domain:
-tear down the entry with fault_ignore under domain->lock, so that either
-intel_mm_release() completes the invalidations first, or it waits for the
-unbind to complete them.
+Thanks,
+Shuai
 
-Fixes: 4f0bdab175d6 ("iommu/vt-d: Make the blocked domain support PASID")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 10 ++++++++++
- drivers/iommu/intel/pasid.c |  2 +-
- 2 files changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5a2e705a2f2e..02d2c97da86b 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3699,6 +3699,16 @@ static int blocking_domain_set_dev_pasid(struct iommu_domain *domain,
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 
-+	if (old && old->type == IOMMU_DOMAIN_SVA) {
-+		struct dmar_domain *dmar_domain = to_dmar_domain(old);
-+		unsigned long flags;
-+
-+		/* intel_mm_release() must not return before invalidation. */
-+		spin_lock_irqsave(&dmar_domain->lock, flags);
-+		intel_pasid_tear_down_entry(info->iommu, dev, pasid, true);
-+		spin_unlock_irqrestore(&dmar_domain->lock, flags);
-+	}
-+
- 	intel_pasid_tear_down_entry(info->iommu, dev, pasid, false);
- 	iopf_for_domain_remove(old, dev);
- 	domain_remove_dev_pasid(old, dev, pasid);
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index d1c08d180788..00f9b0722eb5 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -237,7 +237,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
- 	}
- 
- 	if (!pasid_pte_is_present(pte)) {
--		if (!pasid_pte_is_fault_disabled(pte)) {
-+		if (!pasid_pte_is_fault_disabled(pte) || fault_ignore) {
- 			spin_unlock(&iommu->lock);
- 			return;
- 		}
--- 
-2.43.0
+>  	help
+>  	  Support hosting virtualized guest machines.
+>  
+> -- 
+> 2.50.1
 
