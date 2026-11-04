@@ -1,112 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.11.138.130
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793788073;
-	b=tRojAbwLi8IoFnUzK/xiHovzD5c/GEbnTQsyLg5l98Q6Z7ZZwwnjJ7i/jEvFQwb0ZBe9
-	 lEVK3GIrVb1kDCY+lp3NEoMD/5SO+QBKhiZexxoqy0Ixcs9fq3943PNybMEgIhBd6zdup
-	 LG8vIJk+gjkP1Op5BgAES+QuWxb4yrUJiVjJEXJ0h454D5iwRH/wjHSolRYOkZl414V10
-	 UZ+VOiCImGxyZjzKmb3v49pbazLBI93g5j6V24u3ImT+KJyUt0kf9Ie3q3yqvtPOjPAVu
-	 t00TrgBZZS9aJe9w5iteqZl1bQcIbGDIbmXo9CqipSoQRFH+Feuvi9RPsq3NDK5kFDA==
+	t=1793788085;
+	b=t6scjRysV5kARAZzeVUfx52BNl4rzW0xFrf5yVCwWXu6Du9TPeEM6Y9lGn0Kv2Vqwi2M
+	 wX/zbfbG2df0/HnC2LVjq5gYs/ksTo2v3nKWtuCSPQdkK6gZnpW2am7+5ttZsOSjkPgKk
+	 UZg8oNbFR7J8AV+YlqFCeyfaYMJV0vsIjdiIwcTFfaxYFKaQEs0tHJv1KAtaxhItMZZn1
+	 IrorLmnejyyzOeASeiV2S12cEjaGn6IKtQFZzZSg2sjoBQrI7piCnrh2ypSSrD10zjfQA
+	 cA/j+PNVnyhno7wYK42THunt/SOrHmkQPJrmOUk42ikqTuyfxXKMXWumMUgyzQmQAIg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793788073;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=oxlAWrEkafenvw/FjrtjbduyFLL/BjALYNiaNpikrTY=;
-	b=VhEEaP/wMLOdnV2hAzRaXA1wdbtkjJ/QG9z4gAxcY7FORHDxKwFDovE6uZ1xLKBun1zO
-	 xdy7gO9Gtn7z9wda678iS2mQU+WYcktYJB+F3q2A1uZDZzofmRXqtZLn7AeMqMa3jYW2f
-	 Q5GqRWdekW4YHxkjhUPHSFdXNJo7AwbGw50nTvFFLz7r1YPCT4gjR5waDx6FBleTshjFK
-	 GcyEPT4E8ToQG5u9H5cmvHr5svKp1by8594nx0WPiKiyKhz8PnCKe1Yv036C75jHSI4+K
-	 XPJXfm4ho7TDKTfOnFCrhhzIfOncoh/xuf4f1sXh7z3+moseE/3RLoAGa2+0Tpr05xg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793788085;
+	h=DMARC-Filter:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type;
+	bh=GLaKKMhflH6c9HMj7tkIQiYSGOrte1eESSKQrGjfr70=;
+	b=gPIsV7ZoiGMPjVIHqHdzdmnX76du6zIR7L4EyWWa2/TlxNc2sx2rDsDYSGTuxbZ3A1rR
+	 Cusrqkr0Rm3aHBeCEneyaYCBJs2TfMXJCvFZ6Y657i/XFqsMrEPJU2B4N4P/WKH1zHqSa
+	 T9Dqib9luuoO1B9XF8Y1tEM/h/01dy8V0RaXgwHI2BWBxx2LH4Upx32P/NJSuy2w08hJ5
+	 ydgO3LBjPd4w13MfNsYZLRMZhOfm2ZdL56KbyD0Q9+TSrQZJkxNr05M6uT/Yl73RhBr0o
+	 zH3UxKjZGEWRQ3JUw8+F10DZtg7zDwMklRo23j19P5qTN+8rtGPUW1nklapWNcH7qvw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=lo5VCC8I;
-	arc=none smtp.remote-ip=209.85.208.44
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=sntech.de;
+	spf=pass smtp.mailfrom=sntech.de;
+	dkim=pass header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=o5rbZXVq;
+	arc=none smtp.remote-ip=185.11.138.130
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 805F9606A32D
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 10:27:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 805F9606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72001606A332;
+	Wed,  4 Nov 2026 10:28:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72001606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=lo5VCC8I
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-6ae14cdc63aso7703a12.1
-        for <iommu@lists.linux.dev>; Wed, 04 Nov 2026 02:27:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1793788072; x=1794392872; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=oxlAWrEkafenvw/FjrtjbduyFLL/BjALYNiaNpikrTY=;
-        b=lo5VCC8I+VuwlLAQzPAIPhKfkd5UA5iWSdjEGpHEchENy0tmzPH6qWhqlD36tt/50o
-         cNHMDtA1DefU6487m1n0neyrh66kkTEMct/cQaFhD1o6R+mwZAM1J5RLcN9FqmbprclF
-         x2gNTFG+aKDDWN6LTr0hAG99GeupZgdmnkyEUQE8cnDItO7ogvMAUW0erCuWDMy+zZZu
-         PLtQaCvmjrEBFqpS2uxvFWL9xKsa5jxnVpzeRZAsdWawNSHfNW/W2kMOwmIEAyEqPjz/
-         IvGcQyc1+/3eMp/8sdRZlWslkVD+QF6s86ozKR9oUts6+r0kNrkkWOtDGT3Ozvdq8+mz
-         bOGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793788072; x=1794392872;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=oxlAWrEkafenvw/FjrtjbduyFLL/BjALYNiaNpikrTY=;
-        b=z/8tT1h8ytCVsOLUaiEl0KYTuxUd51/7kU/CDf7Aca0kTnUMmb1PQdbZwkw/jqD6Js
-         jrOXC5Zy6H68XEgVg3pWmpawWHNaUKpqSTvz5k5NKxhsHIjAa4MAZbWjO/yLPKURBWVo
-         BnlLRn4D0Qp0P5Z6Tb6PSoOYBfzf7zFwGAiwPKh0ksaolVsz5YZe6jPSgjPJrlRu5sFl
-         zOj57zpcf691STzDi3+396iEKUs9gHvb8D2ZXDudVh0UzvCeYby3GcliNDgzlW5G8tkx
-         /LnaoP8NpECp0WSqQHFdBFsFs+wGV8PofHXq+uwu+WvmsrAy+w39faXLRN/PuqvRAC09
-         Sg5w==
-X-Gm-Message-State: APuU4Z8JY0jjrCT3nlufaqCFofPH94pstHZzMBdhdt7cpxsR9IWwuoDG
-	q5/f8nPzHso35yWPm33AyGwv8Zv+O5if40KP0tAUTPw2bTH31k5aGp7Ju0SpPxa4xljnl2Ill4i
-	io1VwYA==
-X-Gm-Gg: AYBFou1N+WfD8Pl2L7+5T9ifRYcc9P0tyh/nkgXLnrS6AyIL8xvROWJGJtrIFZQR0st
-	Qk7gfllsIJY2HoxpN0S1ZGf0GkiWyWzevimG9aHDvGpX9QK8A/MfmWt59DrMrPOnXDBx/JxU9rk
-	V5os8anbXsbJf0U1EHe8WevBzuWXocueXv9FOrFiHxA27lmMDSP5hjcid7xzlJ1L6CpZPfL2rQa
-	84Fh9m0RGkvPG0Gb4oCvM1P8ptdyVm1O1Er4taiG629rb6VmJh4vvXdcif2IlZsIU9I3+6mJhG2
-	KPUkk164q4ebfJSbllCTUe5frfyzKSxpBW9NGV7cMxX+HuPdr9gQvEGRXcoXFf1Sk+NQuih8YBW
-	YtUnANTYTX2FiDv9A2HnisPwdmFw7afWO0kasUMDIsU7uSSYUgaMIqoIAQ2udvcb2lwHuBd8yvf
-	CLcVVGBSL6Q1ud+UQhLgvH4zXfexXflrEzUGrZDxVm5ThT5lOcq9UavVSQonHvEVAM5J4ElkcD8
-	K67/XIP8CjEGDcq1rZh3aowbCv4ozPZcLXLdPWMDNaFaomq3kFCob4yAYq4TwL2AWvD5Te+mOhG
-	4dePpwHAjJ0PjwYzU4wXWz5kWw1FvqpCgg921RDCpmLc2JpCpJ/6o51j+7afAFVH9vA7NMRfP5j
-	2Hig0kvu8pTmqrLGa
-X-Received: by 2002:a05:6402:20d9:b0:6b5:5cd3:5dc with SMTP id 4fb4d7f45d1cf-6b55cd3077fmr36964a12.1.1793788071437;
-        Wed, 04 Nov 2026 02:27:51 -0800 (PST)
-Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4d0e41d670sm54601366b.23.2026.11.04.02.27.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Nov 2026 02:27:50 -0800 (PST)
-Date: Wed, 4 Nov 2026 10:27:43 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Wei Liu <wei.liu@kernel.org>,
-	"K . Y . Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
-	linux-hyperv@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Arnd Bergmann <arnd@arndb.de>,
-	linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
-	Mukesh Rathor <mukeshrathor@microsoft.com>,
-	John Starks <John.Starks@microsoft.com>,
-	Souradeep Chakrabarti <schakrabarti@microsoft.com>,
-	Yu Zhang <zhangyu1@linux.microsoft.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>,
-	Alex Williamson <alex@shazbot.org>
-Subject: Re: [PATCH RFC 1/9] iommu: Introduce external attach domain type
-Message-ID: <ausIn5Txiy1uRjkY@google.com>
-References: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
- <20260925190742.1575380-2-jacob.pan@linux.microsoft.com>
- <atiakDqtuED2cTM5@google.com>
- <20261026161003.00003b71@linux.microsoft.com>
+	dkim=pass (2048-bit key, unprotected) header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=o5rbZXVq
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
+	bh=GLaKKMhflH6c9HMj7tkIQiYSGOrte1eESSKQrGjfr70=; b=o5rbZXVqXBOPz9MgAOGvVCI9OH
+	rfV9RhCslhaCfar5qBWNZHOGhTb40svSP/U9cZBARICeF1s85qeLm1BXEtT1FXRqf/AxyyViXG5JX
+	uIkNbXx6TybQeiCckwatSpovab7geUmVJWT0K8/k6CSMM106OEhaJ5IuD+HJk93478dgXIlLq1V4r
+	N9RVyxyPENrg82zAQ9/z5Ej+MN4xwZMgv64pxwVyEPWSqNSYhP4JmER2b3z8rz2+60vAtDieRB/ya
+	3mLn1L8ZILnwjvn3P0wwDdv+BlF8gERII7sgsrW/Io66GFLsiGRYShcjIZh/lpt2g4xaPqN5nSVLE
+	7GEI3XHg==;
+From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
+To: tomeu@tomeuvizoso.net, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ ulfh@kernel.org, p.zabel@pengutronix.de, ogabbay@kernel.org,
+ zhangqing@rock-chips.com, Jiaxing Hu <gahing@gahingwoo.com>
+Cc: royalnet026@gmail.com, abel.vesa@oss.qualcomm.com,
+ sebastian.reichel@collabora.com, sidong.yang@furiosa.ai,
+ u.kleine-koenig@baylibre.com, chaoyi.chen@rock-chips.com,
+ diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl,
+ jeff.hugo@oss.qualcomm.com, rfoss@kernel.org,
+ dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ Jiaxing Hu <gahing@gahingwoo.com>
+Subject:
+ Re: [PATCH v15 05/15] accel/rocket: factor the completion tail out of the IRQ
+ handler
+Date: Wed, 04 Nov 2026 11:27:41 +0100
+Message-ID: <8888361.5OynTdThKG@diego>
+In-Reply-To: <20261101082307.151957-6-gahing@gahingwoo.com>
+References:
+ <20261101082307.151957-1-gahing@gahingwoo.com>
+ <20261101082307.151957-6-gahing@gahingwoo.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -116,61 +74,81 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261026161003.00003b71@linux.microsoft.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On Mon, Oct 26, 2026 at 04:10:03PM -0700, Jacob Pan wrote:
-> Hi Mostafa,
-> 
-> On Wed, 21 Oct 2026 10:57:20 +0000
-> Mostafa Saleh <smostafa@google.com> wrote:
-> 
-> > On Fri, Sep 25, 2026 at 12:07:34PM -0700, Jacob Pan wrote:
-> > > Add IOMMU_DOMAIN_EXTERNAL for externally managed domains that move
-> > > or attach devices to another VM address space provisioned by an
-> > > external owner, such as a type 1 hypervisor.
-> > > 
-> > > This is not a paging domain and is not sysfs-selectable as a default
-> > > domain type. It requires external owner context, such as a vIOMMU.
-> > >   
-> > 
-> > Can't we use a IOMMU_DOMAIN_BLOCKED domain for that, AFAIU, the host
-> > never inserts any mapping?
-> Right, the host does not own or install any mappings.
-> 
-> The external domain type is nevertheless useful for two reasons:
-> 
-> 1. It allows the pvIOMMU driver's domain ops to do the MSHV & Xen attach
-> and detach hypercalls 
-> 2. It allows an externally managed device to leverage the normal IOMMUFD
-> device-to-HWPT attachment interface: VFIO_DEVICE_ATTACH_IOMMUFD_PT
-> No new ioctls.
-> 
-> It also makes the lifetime and ownership clear for IOMMUFD and
-> hypervisor, the device can be returned back to host iommufd owned
-> domains once detached.
-> 
-> In pKVM case, my understanding is that you have a emulated root SMMU
-> which does not do hypercalls obviously. Then the external attach
-> is done via an "out of tree uAPI through KVM/VFIO bridge IOCTLs that
-> proxies those hypercalls."
-> 
-> Therefore, if we were to park the device in blocking domain while doing
-> external attach (as you suggested), this requires a new PV only uAPI
-> that must support pkvm, MSHV, and Xen. So it does not fit in the flow
-> supported by PV IOMMU root driver.
+Am Sonntag, 1. November 2026, 09:22:57 Mitteleurop=C3=A4ische Normalzeit sc=
+hrieb Jiaxing Hu:
+> Move the part of rocket_job_handle_irq() that starts the next task or
+> retires the job into rocket_job_next_locked(). No functional change.
+>=20
+> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+> Reviewed-by: Igor Paunovic <royalnet026@gmail.com>
 
-I am not sure I understand this, how can the domain type change the
-uAPI? can you please point to what breaks in the code if a blocking
-domain was used?
+this makes the irq-handler more descriptive in what it does
 
-Thanks,
-Mostafa
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 
-> 
-> I don't have a better solution for both pv and emulated root IOMMU
-> drivers. Perhaps others do?
-> 
+> ---
+>  drivers/accel/rocket/rocket_job.c | 31 ++++++++++++++++++++-----------
+>  1 file changed, 20 insertions(+), 11 deletions(-)
+>=20
+> diff --git a/drivers/accel/rocket/rocket_job.c b/drivers/accel/rocket/roc=
+ket_job.c
+> index 152a9098634b..417d5ef06c09 100644
+> --- a/drivers/accel/rocket/rocket_job.c
+> +++ b/drivers/accel/rocket/rocket_job.c
+> @@ -365,6 +365,25 @@ static struct dma_fence *rocket_job_run(struct drm_s=
+ched_job *sched_job)
+>  	return ERR_PTR(ret);
+>  }
+> =20
+> +/* Start the job's next task, or retire it. Caller holds job_lock. */
+> +static void rocket_job_next_locked(struct rocket_core *core)
+> +{
+> +	lockdep_assert_held(&core->job_lock);
+> +
+> +	if (!core->in_flight_job)
+> +		return;
+> +
+> +	if (core->in_flight_job->next_task_idx < core->in_flight_job->task_coun=
+t) {
+> +		rocket_job_hw_submit(core, core->in_flight_job);
+> +		return;
+> +	}
+> +
+> +	iommu_detach_group(NULL, iommu_group_get(core->dev));
+> +	dma_fence_signal(core->in_flight_job->done_fence);
+> +	pm_runtime_put_autosuspend(core->dev);
+> +	core->in_flight_job =3D NULL;
+> +}
+> +
+>  static void rocket_job_handle_irq(struct rocket_core *core)
+>  {
+>  	pm_runtime_mark_last_busy(core->dev);
+> @@ -378,17 +397,7 @@ static void rocket_job_handle_irq(struct rocket_core=
+ *core)
+>  		rocket_pc_writel(core, OPERATION_ENABLE, 0x0);
+>  		rocket_pc_writel(core, INTERRUPT_CLEAR, 0x1ffff);
+> =20
+> -		if (core->in_flight_job) {
+> -			if (core->in_flight_job->next_task_idx < core->in_flight_job->task_co=
+unt) {
+> -				rocket_job_hw_submit(core, core->in_flight_job);
+> -				return;
+> -			}
+> -
+> -			iommu_detach_group(NULL, iommu_group_get(core->dev));
+> -			dma_fence_signal(core->in_flight_job->done_fence);
+> -			pm_runtime_put_autosuspend(core->dev);
+> -			core->in_flight_job =3D NULL;
+> -		}
+> +		rocket_job_next_locked(core);
+>  	}
+>  }
+> =20
+>=20
+
+
 
 
