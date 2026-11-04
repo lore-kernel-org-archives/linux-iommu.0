@@ -1,68 +1,109 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.45
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793787742;
-	b=XyaXbqR1uO7hH8ivhluHEtSo/HwGYbLhsuJYcyp3ZvLW5llewvsQbrGYVd0UkWHBiOZA
-	 yvzbE8WfCJVHHh57Eu7qKsCIL9fukSy0f8ZR0XT86AeC++CDKJ5lzGheZrN5pWXPls1BC
-	 I+ObNUImFqNSSob+GNJMWgtatJFh9s0y4n2YgZcK8/i/CsOygNPG4BfbiITAb7Xbgkspc
-	 qPn4tqqorgEkTem7QDqzR1cgAk/1p3n1t+wkYgJV7XSr+gSatp1eOuNdXcVbtDWpz74PB
-	 Eh3b+eqqtVrMyOKLSM+muA5THgbd/g1n1DLqBb4RX2w5e5N8GiZjuu3s2N0yY/TZqbw==
+	t=1793787810;
+	b=5BGBIuYkrDYY+SKz/YLwpUhHDVuyUUE0NbvpQs6GL7TOAAwnAlXLAZSlXZxC/6U1rZrN
+	 K0fJqpb47rEnboWAYWimVFB/RoHzhGQzs+knjPXy71gzvatPNAb973bmkZ5abpi1nqpm6
+	 4GhH+AXoZDyFrgTE2Z1bdiR8jdbnZye/i1B2hpmLxFnMjXIYAsiM/bWhigr3TKstDRXIb
+	 pyAqsm1pCT4paRGcXdVmOF3aysoKUp/5uAkYL5YnGTJa5mr0H7/XV5gZ47yTvik9GrC1Q
+	 W1Dl7jMB7TanR329tyTZqks9b9xYaXUzM3MqFqfpWtnX6/VePeNAq/+GTEcOEU+13YA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793787742;
-	h=DMARC-Filter:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-	 Content-Type;
-	bh=BvEDid5g6QRjHn3Z1Wkrnwm5AtJ8RllZNkH2qZNru5c=;
-	b=Jrx86wTH9LBo7Gw1nZlzdX7xF2nHsKlF0A1fwSeBAGK3OWDwbE8Emq5hjusPLyk4VETK
-	 QQwBEti5xqvyk5qjvNPOBwzaJ3UC7Ax+Jy0dfCyh7mNkATdW8Ck/Wji5HWNEQrXSAKuh1
-	 dVTdT6JIZfu+k423TjjWn5bJHRaeY1FT8+GHKwKcHA8ZcMk153lbdY6dKjm+0daoESDn1
-	 YMV+L3HL51XViL6bzS+xYQzKNxmM7aRaEuK/vqEbzZ7ziALnFaYgLPq3vEvZK7PayPq3/
-	 H+FamnMGScotvfMjMgAnpgRP3fSravHlp+l+fRH1xYX2vuQWspTCGLHCVsU9nK2TiPQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793787810;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=fP2wtbL8okahCme2REeuz/5kpLBhIsTYBbFIyLkDukQ=;
+	b=UqCdvP8HwvaTodJCBaCzO8hO8nf3t0Qoww6I7RyoHZt3lP1AJUVjRjgmUNtgGb/mFMgu
+	 BiWmgSNojkGeBeoCGSPzVMKpRV19aAlPvuUFPFYR9nEbbD0u6zR1Jvid7bx8sGo5aK7n/
+	 OAXjKmGTiusFRwLlrRKXB4TNqOoCJYufn6epOIQmvB3YH8qTweUL43Z2P4Zo6MbFWoeT2
+	 7AGfiKXqDv3xljcbSBWUhlnGgIxvf7ugUUYQuJhIOVjyG3af+2/3sz5r32onxI7kaC8Z9
+	 9KIH7gWlYAfrFJmLhJdddJpz3xU634Dih4NiIYO0CVAg7wue3PXX4IeI9vvphtVaqBA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=sntech.de;
-	spf=pass smtp.mailfrom=sntech.de;
-	dkim=pass header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=mnpXecqY;
-	arc=none smtp.remote-ip=185.11.138.130
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b="m/Aa4Em+";
+	arc=none smtp.remote-ip=209.85.208.45
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33068606A332;
-	Wed,  4 Nov 2026 10:22:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 33068606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B666606A328
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 10:23:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4B666606A328
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=mnpXecqY
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
-	bh=BvEDid5g6QRjHn3Z1Wkrnwm5AtJ8RllZNkH2qZNru5c=; b=mnpXecqYVSy9/XQTnCwe/QAZAT
-	oO5u9hSGJdyjtMfzeKLmcnySDE7Pfz7vhog/jVLohqgjCNPJB/gaqxJYvQqOah+IGy7rTskfqua9Z
-	Z71031F7JJC5OpNCUvjRL8w3G8oBL5t8D32sJMZx8fk6wMt83Nubl7nAPZX27fkdWACnPS5NWTCPt
-	C/Lq3OYdR04M2QtVUCc7LoOJboS0YKoelxMlb23u8m6CFaYZT+DtJU3eVSqFbCP83H0lUMHQuCdqU
-	T1Bu3zDGMij+udBlOhcK79QncRyN+sKcZ3uZ/iHhrpUccsz8pfP38qBskRoD1lolhDyy0DYiI1KQJ
-	HDXRPhDg==;
-From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
-To: tomeu@tomeuvizoso.net, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- ulfh@kernel.org, p.zabel@pengutronix.de, ogabbay@kernel.org,
- zhangqing@rock-chips.com, Jiaxing Hu <gahing@gahingwoo.com>
-Cc: royalnet026@gmail.com, abel.vesa@oss.qualcomm.com,
- sebastian.reichel@collabora.com, sidong.yang@furiosa.ai,
- u.kleine-koenig@baylibre.com, chaoyi.chen@rock-chips.com,
- diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl,
- jeff.hugo@oss.qualcomm.com, rfoss@kernel.org,
- dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
- iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- Jiaxing Hu <gahing@gahingwoo.com>
-Subject: Re: [PATCH v15 01/15] accel/rocket: request the core clocks by name
-Date: Wed, 04 Nov 2026 11:21:46 +0100
-Message-ID: <2231008.VsPgYW4pTa@diego>
-In-Reply-To: <3188623.WAvfycf1tz@diego>
-References:
- <20261101082307.151957-1-gahing@gahingwoo.com>
- <20261101082307.151957-2-gahing@gahingwoo.com> <3188623.WAvfycf1tz@diego>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=m/Aa4Em+
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6afac79b3a3so6873a12.1
+        for <iommu@lists.linux.dev>; Wed, 04 Nov 2026 02:23:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1793787809; x=1794392609; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=fP2wtbL8okahCme2REeuz/5kpLBhIsTYBbFIyLkDukQ=;
+        b=m/Aa4Em+k2DQKYWYnEaP40pYpw8VRaVS6htWkIrUairXj0++h+O+qFg/FiuxpWd4LB
+         Fre56A+oKtX8cnwMLWIxUd10+UuxQACw9aozz49XZBByxh7DeTDOwTirKOhaP6Kd/KBq
+         Bcqt+c+NnKdpKax5cEj8/wgFo8S3mzJdiY9RgcWJHCse8pRMKssRjt7OnvY9w4Moouu1
+         RogWwJFZHAzpqxZoMKYLM2/u5cT9qSn9m8LA+TPl5RjLk3lLlqLCBd0BKtJ1k5DWjR0T
+         x95w6jxMXIKV7uXWVqrys2jQ/7ctj2f4Mors+pa6RxbeRKSOQdtnp3z0dzqSAlU6M9is
+         z/hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793787809; x=1794392609;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=fP2wtbL8okahCme2REeuz/5kpLBhIsTYBbFIyLkDukQ=;
+        b=KpCSvAuJjvG4rhG319i1LycxpPsHPchEXsjIGeVieMCCk7AlwYRuCopWBKqfiP6aGN
+         DJJaDn2zsEH4OGcWSjyBWp1mF4Vn7XRvdSkjG/01gP40pLABpv9hJ8UCyvKKF/4LB6yY
+         ugRRLqw9bc7vx9Fx9sJk+c+S8VcQuvelM57vKnh8sBcYmSpK1ARqfiFdJeIowZPDmiQX
+         UW5cr+KUupDwR7V2+WsB9pGs1FYBniRcL589MucUDJPKRYqT/ikRvz+qFmQvJ+SR4zkE
+         700J5hW9ccRyGo+SQmMYo04gXr42eTKB+0egnMj/IkDdDMGb/ifa3Ytk94GH4KUowEQO
+         vKhQ==
+X-Gm-Message-State: APuU4Z8gy66+NjAAYuUSgwcWAcLISArOL1b03UqpKceNj/ADtk+udR0K
+	7zKPcwv1ys1K7kiKHtQyj3mEEKLUjUqra1/kMmg9eCVtUEUOfk4lzUV/T8olRlChTA==
+X-Gm-Gg: AYBFou0jPP8xUkq529l9pocE4Swb7k9qD1tBnTqth8OmYhuTc+iUm/dnBlP4H5ZMYGd
+	Hhh7tPma9kux47NlyN9tkshdGsRt4/XEp6XBC2T8k5/UAW9TrwItspz5r1KHqVximsLkHjvMiG/
+	jB7nTfsy4YTYumSA6cu4fOpVqohY2S0Hty11X4l0aJtByonN6hvRMCxVGi4pxQPN7xwxIi6KdDL
+	wO6rpAAsK+ZiHUcyCYXy4zSEtc8vNAyJF9e9Lq73CJvMGG1ESuUNMGyH7vYzMBBY0h8Bjk9942W
+	0kLe4Z8ikBgQeIRRoiuSfmtVs/xv2ouls+GTfQpJ7B2dIkWC57MPKbpwMwOvTB3IIEmnfWy3OEw
+	zC28oonWHkqJ4TL+hRl1PHG7Z1K+gU2Lu5UsfWNj459NsMHsk3f1bk+IOTVRspFQehR3oa7RQQ4
+	aEtYz/q0IV/RCXCFyMAYZTVw6eZIcbqDHgHmy1jNEtqSn0ZumvTFowebfPCQsC800cvs0h7ry+6
+	nbU5wL3xS6aS8iRbbtRtR2P7j9yijs3LBROHyIXdxi4P++VX3WL9VDcYgpze5S2HFYpkRch9K6Y
+	xP4GOjXQqzbIWIHWO0rN+nlruL0OTLk3m30f0pOiFqGjsbuKxk+XsyS2WRk0qETDLq+Xdg==
+X-Received: by 2002:a05:6402:a2ca:20b0:6b4:6725:f2c6 with SMTP id 4fb4d7f45d1cf-6b55abce7efmr53379a12.13.1793787808278;
+        Wed, 04 Nov 2026 02:23:28 -0800 (PST)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c4d0e1402c6sm55414666b.2.2026.11.04.02.23.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 04 Nov 2026 02:23:26 -0800 (PST)
+Date: Wed, 4 Nov 2026 10:23:22 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jacob Pan <jacob.pan@linux.microsoft.com>
+Cc: iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Wei Liu <wei.liu@kernel.org>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
+	linux-hyperv@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Arnd Bergmann <arnd@arndb.de>,
+	linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>,
+	Mukesh Rathor <mukeshrathor@microsoft.com>,
+	John Starks <John.Starks@microsoft.com>,
+	Souradeep Chakrabarti <schakrabarti@microsoft.com>,
+	Yu Zhang <zhangyu1@linux.microsoft.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>,
+	Alex Williamson <alex@shazbot.org>
+Subject: Re: [RFC PATCH 0/9] iommu/iommufd: Add hypervisor external attach
+Message-ID: <ausHmkhAegDEyeKV@google.com>
+References: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
+ <atiaKG86qcifKzBT@google.com>
+ <20261026114917.00005a22@linux.microsoft.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,89 +113,170 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261026114917.00005a22@linux.microsoft.com>
 
-Am Dienstag, 3. November 2026, 23:42:19 Mitteleurop=C3=A4ische Normalzeit s=
-chrieb Heiko St=C3=BCbner:
-> Am Sonntag, 1. November 2026, 09:22:53 Mitteleurop=C3=A4ische Normalzeit =
-schrieb Jiaxing Hu:
-> > From: Igor Paunovic <royalnet026@gmail.com>
-> >=20
-> > rocket_core_init() hands core->clks to devm_clk_bulk_get() without ever
-> > setting the .id members. The rocket_core array is allocated with
-> > devm_kcalloc() in rocket_device_init(), and rocket_probe() only fills in
-> > .rdev, .dev and .index, so all four clk_bulk_data entries are requested
-> > with a NULL con_id (unlike core->resets, whose ids are set a few lines
-> > above).
-> >=20
-> > clk_get(dev, NULL) ends up in of_clk_get_hw(np, 0, NULL), and
-> > of_parse_clkspec() only consults "clock-names" when a name was passed, =
-so
-> > the index stays 0 for all four entries. Every entry therefore ends up
-> > holding a handle to the *first* clock of the DT "clocks" property, i.e.
-> > ACLK_NPUn. Nothing fails: probe succeeds and the driver believes it owns
-> > four different clocks.
-> >=20
-> > The consequence is that rocket_device_runtime_resume() prepares and ena=
-bles
-> > the AXI clock four times, while hclk, pclk and - most importantly - the=
- NPU
-> > compute clock ("npu", SCMI_CLK_NPU on RK3588) are never prepared or ena=
-bled
-> > by this driver at all. The NPU still works only because the Rockchip
-> > power-domain driver sets GENPD_FLAG_PM_CLK and its attach_dev() callback
-> > walks the device node with of_clk_get() and adds every clock to the pm_=
-clk
-> > list, so genpd happens to keep the remaining clocks running. The bug is
-> > therefore latent today, but it means the driver holds no reference to t=
-he
-> > clock that actually feeds the NPU, which stands in the way of any future
-> > frequency scaling (OPP/devfreq) work.
-> >=20
-> > Found on an Orange Pi 5 Plus (RK3588) by reading the live clock tree:
-> > /sys/kernel/debug/clk/clk_summary shows four "fdab0000.npu" consumer
-> > handles on aclk_npu0 (and likewise on aclk_npu1/aclk_npu2 for the other=
- two
-> > cores), while hclk_npu0, pclk_npu_root and scmi_clk_npu have no
-> > "fdab0000.npu" consumer at all - their only consumers are the
-> > "npu@fdab0000" handles created by the power-domain driver via of_clk_ge=
-t().
-> >=20
-> > Set the ids explicitly, in the order mandated by the binding
-> > (Documentation/devicetree/bindings/npu/rockchip,rk3588-rknn-core.yaml):
-> > aclk, hclk, npu, pclk. After the change the driver holds one handle per
-> > distinct clock and clk_bulk_prepare_enable() covers all four.
-> >=20
-> > Note that this is a user-visible tightening for out-of-tree DTs: the old
-> > NULL-id requests resolved by index and succeeded no matter what
-> > "clock-names" contained, while the named requests fail probe with -ENOE=
-NT
-> > when one of the four names is missing. That is the right outcome for
-> > in-tree users - the binding requires exactly these four clock-names and
-> > rk3588-base.dtsi carries them on all three cores - but a DT that relied=
- on
-> > the permissive lookup goes from silently running on the wrong clock han=
-dles
-> > to not probing at all, so record the change here where git log will find
-> > it.
-> >=20
-> > Fixes: ed98261b4168 ("accel/rocket: Add a new driver for Rockchip's NPU=
-")
-> > Signed-off-by: Igor Paunovic <royalnet026@gmail.com>
-> > Tested-by: Sidong Yang <sidong.yang@furiosa.ai>
-> > Tested-by: Diederik de Haas <diederik@cknow-tech.com>  # NanoPC-T6 LTS,=
- NanoPC-T6 Plus
-> > Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-> > Reviewed-by: Jiaxing Hu <gahing@gahingwoo.com>
-> > Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
->=20
-> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
->=20
-> nit: the commit description could be way shorter, for that small change.
+On Mon, Oct 26, 2026 at 11:49:17AM -0700, Jacob Pan wrote:
+> Hi Mostafa,
+> 
+> On Wed, 21 Oct 2026 10:55:36 +0000
+> Mostafa Saleh <smostafa@google.com> wrote:
+> 
+> > On Fri, Sep 25, 2026 at 12:07:33PM -0700, Jacob Pan wrote:
+> > > Hi,
+> > > 
+> > > This RFC supports guest VM device assignment from a Linux host
+> > > using the Microsoft Hypervisor (MSHV). The goal is that a common
+> > > set of flows and infrastructure can be applied for Xen and other
+> > > type 1 hypervisors.
+> > > 
+> > > Background:
+> > > 
+> > > The IOMMUFD/VFIO stack used for device assignment has largely
+> > > evolved around the KVM/QEMU model, at least as the first enabling
+> > > target. In that model, the Linux host owns the host-side physical
+> > > IOMMU programming as well as the physical PCI devices.
+> > > 
+> > > Architecturally, MSHV and Xen differ from this KVM/QEMU ownership
+> > > model. At a high level:
+> > > 
+> > >   +------------------+
+> > >   | Guest VM         |
+> > >   | virtual IOMMU    |
+> > >   +--------+---------+
+> > >            | vIOMMU ops
+> > >            v
+> > >   +------------------+    external attach     +------------------+
+> > >   | MSHV             |<-----------------------| Linux host       |
+> > >   +--------+---------+                        +--------+---------+
+> > >            | programs                                  | owns
+> > >            v                                           v
+> > >   +------------------+                        +------------------+
+> > >   | HW IOMMU         |<---------------------->| PCI dev          |
+> > >   +------------------+          DMA           +------------------+
+> > > 
+> > > For MSHV, the specific ownership model is as follows:
+> > >   1. The Linux host OS owns the physical device and exposes it
+> > > through VFIO/IOMMUFD, but it does not directly own any of the IOMMU
+> > > hardware. 2. The device node (/dev/mshv) owns the VM partition file
+> > > used by userspace. 3. MSHV owns most of the physical IOMMU
+> > > programming, including stage-2 I/O page tables.
+> > >   4. The Linux MSHV root pvIOMMU driver bridges IOMMUFD/VFIO UAPIs
+> > > to hardware IOMMU programming through MSHV hypercalls.
+> > >   5. Guest virtual IOMMU emulation is done in MSHV rather than the
+> > > userspace VMM.
+> > >   6. Stage-2 IOPT may be shared between CPU and IOMMU. It is
+> > > managed by MSHV and abstracted from the Linux host, including TLB
+> > > synchronization.
+> > > 
+> > > These structural differences from the KVM/QEMU model create several
+> > > needs for IOMMUFD support:
+> > >   1. Move a device to a guest whose I/O page table is externally
+> > > managed. This patchset refers to that operation as external attach.
+> > > Unlike conventional IOMMU vendor drivers, where translation is
+> > > managed within the driver through paging domains, external attach
+> > > means that translation is managed outside the driver, such as by
+> > > the hypervisor. 2. Identify the guest-visible device across VMM,
+> > > host pvIOMMU driver, and hypervisor namespaces.
+> > >   3. Identify the guest partition in the host pvIOMMU driver for
+> > > device attach hypercalls.
+> > >   4. Tie the device-attachment lifetime to the hypervisor partition.
+> > >   5. Coordinate guest-memory pinning and mapping for DMA between
+> > > MSHV and the external IOMMU domain attachment.
+> > > 
+> > > External attach has a few caveats compared with KVM/QEMU, where
+> > > nesting is typically handled by the host IOMMU driver in one
+> > > transaction after the userspace VMM uses IOMMUFD to form nested
+> > > domains:
+> > > 
+> > >   1. MSHV creates a temporal split between host and guest
+> > > device-domain attach. The host first attaches S2 through a
+> > > hypercall; later, if virtual IOMMU is present, the guest
+> > >      allocates S1 and establishes nesting with MSHV directly
+> > > through a pvIOMMU or emulated vIOMMU.
+> > >   2. Guest-memory pinning before mapping is covered by the
+> > > MSHV/userspace VMM contract, not by the VFIO/IOMMUFD pin-and-map
+> > > DMA flow. 3. Device capabilities such as ATS and PASID need a
+> > > contract among MSHV, the userspace VMM, and the host pvIOMMU
+> > > driver. At the time of host external attach, only S2 is attached,
+> > > so the guest's later ATS/PASID usage is not yet known. For example,
+> > > whether to expose and enable PASID in the device could depend on
+> > > whether the userspace VMM creates a guest virtual IOMMU.
+> > > 
+> > > This RFC proposes an IOMMUFD external attach model for those cases.
+> > > The normal Linux-managed paging or nested domain is not the object
+> > > that ultimately owns the translation context. Instead, userspace
+> > > identifies a VM/domain object, binds a physical device to a
+> > > VM-visible device identity, and asks the host pvIOMMU driver to
+> > > attach the device to an externally managed address space.
+> > > 
+> > > The series makes that relationship explicit in IOMMUFD. The model
+> > > is anchored around a hypervisor vIOMMU object that represents the
+> > > per-VM partition abstraction. It introduces:
+> > > 
+> > >   1. IOMMU_DOMAIN_EXTERNAL for externally managed translation
+> > > domains. 2. IOMMU_VIOMMU_TYPE_HYPERVISOR for the file-backed VM
+> > > partition. 3. IOMMU_HWPT_EXTERNAL for user-visible external type
+> > > IOMMU domains.
+> > > 
+> > > It reuses the IOMMUFD vDEVICE object to carry the guest-VM-scoped
+> > > logical device ID visible to the hypervisor.
+> > >   
+> > 
+> > This is very similar to pKVM on arm64 also, where the IOMMU is managed
+> > by the hypervisor, and for device assignment, the host doesn't control
+> > it for the guest, but the hypervisor (in EL2), and there will be a
+> > channel between the guest and pKVM directly after the guest runs. 
+> > 
+> > The host only sets the virtual to physical topology (how many vIOMMUs,
+> > vSID -> SID mappings) and describes that for the hypervisor through
+> > hypercalls.
+> > In Android, we have an out of tree uAPI through KVM/VFIO bridge
+> > IOCTLs that proxies those hypercalls.
+> > 
+> > In that case, the host just creates a virtual IOMMU and the guest sees
+> > a paravirtual one which runs with single stage collapsed translation,
+> > although I don't see a difference on the host side if nested
+> > translation was used beyond an argument change to the hypercalls.
+> > 
+> By "argument change", do you mean that the host would pass the guest S1
+> context in the device-attach hypercall for nested translation? 
+> 
+> IMHO, I don't see any change needed for the host-side attach between hw
+> nested and collapsed single stage, if guest and host attach are
+> split. I think it is up to pKVM or MSHV to handle guest virtual iommu
+> mapping for both cases.
 
-note-to-self: also part of the DVFS series
+Although the hypervisor (pKVM, MSHV) is managing the guest IOMMU in that
+case, I believe the host should be able to decide the guest virtual
+toplology, as that will impact the firmware tables populated from the
+host for example, as in the nested case the guest will see an
+architectural SMMUv3 while in the collapsed case it will see a simple
+HVC based IOMMU.
 
+> 
+> > My goal is to converge to IOMMUFD and I believe this series is the way
+> > forward, By relying on the vDEVICE virtual toplogy uAPI and the
+> > external attach introduced here.
+> > 
+> > I will try to prototype something based on that to prove that it
+> > works. However that work has a dependency on the host SMMUv3 support
+> > [1] which needs to land first.
+> > 
+> > [1] https://lore.kernel.org/all/20261015200903.2735565-1-smostafa@google.com/
+> > 
+> Same here, our pviommu root driver must land first.
+> https://lore.kernel.org/linux-iommu/20260929223622.778617-5-mrathor@linux.microsoft.com/
+> 
+> My next step is to rebase on Aneesh's v7 such that we have a converged
+> iommufd viommu layer, i will remove mshv specific helper registration
+> in this series.
+> https://lore.kernel.org/linux-iommu/20261008055955.4014342-1-aneesh.kumar@kernel.org/
+> 
 
+I see, I will add this to my review list also.
 
+Thanks,
+Mostafa
 
