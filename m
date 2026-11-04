@@ -1,58 +1,67 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793807739;
-	b=VrrGBQ/cbbNDzysq6kl888kn9aBZm7Y5wj9SH16VzopgR7S0Mj29/4GTCon43gfm+toG
-	 nDTxn9FbX06r4DF3l50mN0BLgvS+PkeSQhlEmzUJLlOKJtcfb8E3Ha9DIab2shnTJZTcN
-	 GLVRIVbypc18uFdEloHdS6Meni0WcUBkoTWhXMlzf6t36noum05mwaX7sqHHlh0iGE8OO
-	 iZ4BuuctRbqptb8M1vkkQaBLOVL9ee2PAZDU6y0uND0MBUIds/CEmzTXx1lftz6SIrx+f
-	 uKPsufqrYI4rscr/IHCPxcRcy5ndxd6o+09VKX4YogfPj+zIbHKfpmuRqRAtPYOqk+w==
+	t=1793808229;
+	b=DqDHp580h3A0aZDIjI06rVEtKi6Qb6ISArJmNF81AKHaHsQaFAWVCoKT6O0Rzya0YGL+
+	 y8rFnsCJtXKYOim8AGxM/QWy0ye35bN7Qb5Lh+33Ug4PQkovHEGyBWqmziasKCcSNSWPS
+	 FL/jJjiEdAmy3BTiTgk1Nul5kLycR+1vSGjumRlQsJqJdimrZJKnBGJW8AxlZYeXPgimc
+	 0/Ed4nNIhZwrhWJeeMp2+6YaAhfzaTxfiacuGnDnLNOtuzFabPNtxEPUa1APAwEj1wgK5
+	 GUln7FGAXOwPpvpVQHxAn00cHsuxvW6TyTQHbzZSd3z78UkbzXLRiJo6whViYUcPQDA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793807739;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 MIME-Version:X-Developer-Signature:X-Developer-Key:
-	 Content-Transfer-Encoding;
-	bh=zOSM4S0j7JxWRoGxJGQTebxA0vWT3vagSHWkip5Jwnw=;
-	b=ZoU/MIjAXklTNogXTTPUeRrpUqUUcDYFwa3j8dPUIb8BGXx2aZcrCh0pyE9wUubeskkK
-	 kwB4A/LT5C5R3m57V1GGA0wj/euvSCBTCyKn/7fPQHda5mrjsR2qu1s8ftx5K6QBdVWCb
-	 IBpJXxPvFUS7GM7GOa7lc6zRcxwD5SEfVIDm+PM34wSZpqzsNipNOjU/WSUS1fsxDvagn
-	 mYmfinyBNrPCxI4p9R0o1gS9uBAAtyXoDAqRKHrBqiwSR0RnedqzUJfVYUc0WIwQIDcWl
-	 tGmd/vxcfoJrc81dGgvrATsYWgWzTL9VPm+Tp28AX+Plli2hMLKuUvJV6o/Md6AkdDA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793808229;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=4z0jvqdS/1LMWIjFo97DLyqM1S7YnHqeCK2uONFB0l0=;
+	b=MO83QFkT2YdfJtyKLkx/y023AZAobTdDtkE7doTUWNuxma6dgdWnThWwW3qx2EqNnI85
+	 Jn/ciP63h/cV7Ngbupc3wRSKxJARrtc6lqWEPe1B0VNk+oZDKZJ8qx2sLzxeo8AnRU2u1
+	 B+rRGNSia6VszK44Xnecs3ApB0LtkcKKqXKmGy60id317u9bIWPOq7Ytl6GAP7spkHyMV
+	 O/xI9K7t4rRPiK1VM/F+rlgE7Wpcu93p5K2l34Gxd6vYcML5CNPGVj5mjRAprMPkxyijp
+	 HiR9uzCl82LSSfCoSPtkJESd0dJQ5510lTErnZEsa08ziJIqCQNY67qSFQS637mVlBQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jdNUhNRo;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lvmssJKq;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7D25606A335;
-	Wed,  4 Nov 2026 15:55:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54AC606A337;
+	Wed,  4 Nov 2026 16:03:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jdNUhNRo
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD0151F00A02;
-	Wed,  4 Nov 2026 15:55:36 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lvmssJKq
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAF61F00A02;
+	Wed,  4 Nov 2026 16:03:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793807738;
-	bh=zOSM4S0j7JxWRoGxJGQTebxA0vWT3vagSHWkip5Jwnw=;
-	h=From:To:Cc:Subject:Date;
-	b=jdNUhNRozhYwFhyOJhZ+Jpr2A4URVxaUOlKbAoZwqojkoV2BYO+PBzBHhE412kiVP
-	 3cWQw0nSAHwSENRH5yQSP19yYKMQxHshojImcIWY3f9O3P6j9mVBe/gsdKqa9P3dQF
-	 SgtFq74f5FFSrWGXDfymxL3zLMiXexhl748HjUnoakQqJ64+hnaBGGwI1nnt754A5m
-	 dnnj2IjgcxpyrC8hwcThS68Y8vsHf05ycIbxMuPicW+IJ+u/5wzSy77srtMNvJ2+Ko
-	 bfxMADvlDZ1MPtkEZeintQSkryMo3Jg/XsV/CltGJ48/e52b1ioolV7eZWVYS9ZrgH
-	 1ZnyPaOcd54aw==
-From: Thorsten Blum <blum@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Michael Kelley <mhklinux@outlook.com>,
-	Will Deacon <will@kernel.org>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>
-Cc: Thorsten Blum <blum@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] dma: Remove redundant 0x prefixes
-Date: Wed,  4 Nov 2026 16:54:16 +0100
-Message-ID: <20261104155414.126812-3-blum@kernel.org>
-X-Mailer: git-send-email 2.56.0
+	s=k20260515; t=1793808228;
+	bh=4z0jvqdS/1LMWIjFo97DLyqM1S7YnHqeCK2uONFB0l0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=lvmssJKqKlBB8zb6lcm8q6aHeXG/qCiP+gUjcU9nvF+xGya/hGTMk+h5EqGwaP7Dg
+	 hCEjLaOMvxn99ux2L1vQ1WZcAx2UrUfxZq7tcVAtMx/fDv/Y5cU6wFg00SgqtSbZ+a
+	 /WXDF59xns9xcQX8OTZxjVf71BkxvniIjNyKm58RvBXNg83UcnxxNX2rY1B43JrSuJ
+	 8RqAyPwTf10OjQuQ7aJ8eKOoS80vk/S9VLlqiPDSLY5yZngtZ4hz6g28t2nn+PF25i
+	 8xKOs2XnzNhgBZUBhfQUJEOVMjBCn0dWJFHOAMfzJuGQi9BEpg3Gc3u0bauDSadtxU
+	 b+XunlvXOSbvg==
+Date: Wed, 4 Nov 2026 10:03:46 -0600
+From: Rob Herring <robh@kernel.org>
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jean-Philippe Brucker <jpb@kernel.org>,
+	Saravana Kannan <saravanak@kernel.org>,
+	Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux.dev, devicetree@vger.kernel.org,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+Subject: Re: [PATCH v6 2/2] of: Add support for "iommu-ranges" on a device
+ node
+Message-ID: <20261104160346.GD3951195-robh@kernel.org>
+References: <20261103-add_iommu_ranges-v6-0-361f3921a133@oss.qualcomm.com>
+ <20261103-add_iommu_ranges-v6-2-361f3921a133@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -62,46 +71,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1672; i=blum@kernel.org; h=from:subject; bh=E7f1zycy6qTlzep/1YJoHaDq24W0GDJTU1FDGEmYXN4=; b=owGbwMvMwCUWt7pQ4caZUj3G02pJDFmvQ9U46mM+GlaXnFjm2Gxg3cP1Q+J31MH1u7tOh20s5 lbyO6PfUcrCIMbFICumyPJg1o8ZvqU1lZtMInbCzGFlAhnCwMUpABP5to+R4e4jC4eYDcIieSdv yL0NDJas1rm6Y84vxsPPT7Fdm5LXX8DI0LuibJvQpIwk/0UMV/eJTv/2oeaXZl/0N55/53SFX/y 5xA4A
-X-Developer-Key: i=blum@kernel.org; a=openpgp; fpr=1D60735E8AEF3BE473B69D84733678FD8DFEEAD4
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261103-add_iommu_ranges-v6-2-361f3921a133@oss.qualcomm.com>
 
-The %pa format specifier already includes the 0x prefix. Remove the
-redundant prefixes to avoid printing 0x0x.
+On Tue, Nov 03, 2026 at 08:59:33PM +0530, Vikash Garodia wrote:
+> Reserving an IOVA address using "iommu-addresses" requires it to be
+> placed in the reserved-memory node. But when "iommu-addresses" is the
+> only property being described and there is no backing "reg" (i.e. no
+> actual reserved system memory), it does not really belong under
+> /reserved-memory. A device IOVA range is specific to its own address
+> space, and does not describe the system physical memory to make it
+> qualify under reserved-memory. Given this, place "iommu-addresses"
+> inside reserved-memory only when it is paired with a "reg", otherwise,
+> define it within the device own node. It was discussed here:
+> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
+> 
+> Existing "iommu-addresses" property expects a phandle, which does
+> not make sense when the property is defined within the device node.
+> "iommu-ranges" was introduced to specify the device specific IOVA ranges
+> when there is no backing "reg".
+> 
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+> ---
+>  drivers/iommu/of_iommu.c | 134 +++++++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 125 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 5c266511db78910d6fd221af5437cecff4931c22..0428ceb50dec58f11872b4fb64e283fa8d9046a3 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -185,11 +185,118 @@ iommu_resv_region_get_type(struct device *dev,
+>  	if (start == phys->start && end == phys->end)
+>  		return IOMMU_RESV_DIRECT;
+>  
+> -	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", phys,
+> -		 &start, &end);
+> +	dev_err(dev, "non-direct mapping [%pr] -> [%pap-%pap] is not supported\n", phys,
+> +		&start, &end);
+>  	return IOMMU_RESV_RESERVED;
+>  }
+>  
+> +/**
+> + * of_iommu_derive_resv_regions - derive reserved regions which
+> + *                                are outside of iommu-ranges
+> + * @dev: device for which to get reserved regions
+> + * @list: reserved region list
+> + *
+> + * A device can describe its own usable IOVA ranges directly on its node
+> + * via "iommu-ranges". Everything not under those ranges is derived
+> + * as a reserved region so the IOMMU allocator won't use it. Entries may
+> + * appear in any order in the property.
+> + */
+> +#if IS_ENABLED(CONFIG_OF_ADDRESS)
 
-Fixes: 9d4f645a1fd4 ("dma-debug: store a phys_addr_t in struct dma_debug_entry")
-Fixes: 823353b7cf0e ("swiotlb: Enforce page alignment in swiotlb_alloc()")
-Signed-off-by: Thorsten Blum <blum@kernel.org>
----
- kernel/dma/debug.c   | 4 ++--
- kernel/dma/swiotlb.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+Is this really needed? Assuming CONFIG_OF is enabled, this is only false 
+on Sparc. I don't think Sparc needs anything in this file. There 
+aren't any IOMMU drivers for Sparc unless COMPILE_TEST is enabled. So 
+maybe building of_iommu.c as a whole should depend on CONFIG_OF_ADDRESS?
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 36c1f7cbb2ae..4cb5f86a7228 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1034,8 +1034,8 @@ static void check_unmap(struct dma_debug_entry *ref)
- 		err_printk(ref->dev, entry, "device driver frees "
- 			   "DMA memory with different CPU address "
- 			   "[device address=0x%016llx] [size=%llu bytes] "
--			   "[cpu alloc address=0x%pa] "
--			   "[cpu free address=0x%pa]",
-+			   "[cpu alloc address=%pa] "
-+			   "[cpu free address=%pa]",
- 			   ref->dev_addr, ref->size,
- 			   &entry->paddr,
- 			   &ref->paddr);
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 2c57b49ac7c0..9f143a3361fc 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -1957,7 +1957,7 @@ struct page *swiotlb_alloc(struct device *dev, size_t size, unsigned long attrs)
- 
- 	tlb_addr = slot_addr(pool->start, index);
- 	if (unlikely(!PAGE_ALIGNED(tlb_addr))) {
--		dev_WARN_ONCE(dev, 1, "Cannot allocate pages from non page-aligned swiotlb addr 0x%pa.\n",
-+		dev_WARN_ONCE(dev, 1, "Cannot allocate pages from non page-aligned swiotlb addr %pa.\n",
- 			      &tlb_addr);
- 		swiotlb_release_slots(dev, tlb_addr, pool);
- 		return NULL;
+Rob
