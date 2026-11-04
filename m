@@ -1,93 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793776972;
-	b=CY/D17QCf9epBZ/bLEyvP+JAt+Rama++ZuB6fEk84uxGxe1w0rlyQJxT+bTYSdBK2z/h
-	 hnY6w9gALHmPBlchj+P8OzKFNfmHZI4dhsBpMruOIme+MUSxUVxoJ+5keb9HxTfxtYHVv
-	 P4/a0rrzUPHBAzAMMwyU1bxjAP5QjO9RCIgT20cMQIyE7Vt0Dhgl3N58cQn0P3U62odXV
-	 pd7IoyBKvwGTRMnygQMPsoyZ2sdQScFHgnufdiUV6eiXbwXiFFMmuqcwGLJeZewhUI88b
-	 qtOnPcpiU9NuPypOza7JyYL4mbH0V9Gxx2F8sSpBi2NOV+DTntQjG988YMBTwv0KGmQ==
+	t=1793777832;
+	b=dz9U18vauzmqGDT4COmY6Y7alhWLjrbPQj/28Smx6V1wOujuUq+H1WLNMSgaVjKRvhz2
+	 BuS4B9Rs8e5Gnu586GT1s5/x0m/pWxEVOiynXyJLvNb5cvoNVJOosxkLgrG0PI7LD/3at
+	 m/TVX09vr21u9IWYV2eRB2bvTG5eeY8sTB13C+EboYX6Rrttjma0Pn/8RruUnKFJYY/cR
+	 zKWLOa/6htQZC5uyFPkrpUsW79OZf2hM4zgCV8zOj0C8TY4ea0qHwsG9axqXdSKR+F+tE
+	 Y2HDujJOVcYGO4twfIN7JNL6Qn84ksrX15gC4C1yA9b7a42LbalfoEOLDi0i8a3PsBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793776972;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=amOqrW7TRxDYFxl6iI/KQH4BpM0KC+sLlSW8sb3QrDE=;
-	b=4tFWcMEBV5C2yJF2hiNJR4p8yH+1zoDltPPvTOSLEbcLrKCfKcMSxPbLr4RWjLDwjH+N
-	 iMuW/Ts64vWN6Q0k/IOVEWuDPpQ1znGxhk4X5/gmBL2JqeH9q9xUGeh+OEesza749w+rw
-	 Lr3VONfcsH53oyDIMZEJq7pzMFIfRP6vZXZ2UDcJ0qzsSnxz08BsvYypMMqzqTEtPvgn9
-	 cFbgxWz7bA7YvvToRIF8PKmQNakHBPt79weQqaew0tFpQ28MK1z0+1S4i0k1mylVFhEPB
-	 Y9iq3D2Q4Bvz4lsP9x6Irxu4RegJYUGR8SlSkr05qzWYfzNDAUUgOvZzUW7IOrUILog==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793777832;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=Fin16iwd8zeVB2XbqHtY/b1SBp98Yl5BOCuh6PYlXus=;
+	b=kT6Ynd562SUk1jErjqdJOyfXyRnLbkrdWzPc+spgH/NzTBCjG6OqSErEL0SzISuWrs9P
+	 jwSMrsElBYP9xewj+WXJ7n+94kKtIMtsDK52WzaZnlvuVmN967PsAxPUmAbbLDboFzS/w
+	 5WvCBZz7JAag0bnnVCIiJF4qpn1ZmkLvDc/7Chk7Kqltvciu4vJv5uXLpV/VZ5sGOZVF8
+	 nsGrCqPVxO8V8+x34psLm2Ul29NKDpjWmhOMFHoUDl19C5gyGJ8Sgc8tKAjU7fIJpJ26L
+	 ZXCm/GfhvPDUTPeD0PAvuxIAD6Y1Ad/4hC7KVvWVDoOpB+sa6O9NbqwjjOkGg9lhl2Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w6+LEF8y;
-	arc=none smtp.remote-ip=209.85.216.43
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=oRsgo2d1;
+	arc=none smtp.remote-ip=210.118.77.12
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09C38606A33C
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 07:22:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 09C38606A33C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62A82606A328
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 07:37:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 62A82606A328
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w6+LEF8y
-Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-3ae1a9e187aso74862a91.3
-        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 23:22:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793776971; x=1794381771; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=amOqrW7TRxDYFxl6iI/KQH4BpM0KC+sLlSW8sb3QrDE=;
-        b=w6+LEF8yUZtmrL4TJxMYKzwmRsfEaPzw8sxjm1vz3aGVsdWAQwyRT3SViyNmZ5EFBU
-         N6vXH7AXEVTOk1HmahU3VdFGxRbCK+hRkSbrCpi0giKs8wVQpU3ZacXX6lG6epEWTrCD
-         Nk26Q9SlbZ3PWmeXGUoFAfn6WcBFRQ3hl66qj92gjznqeXIthp+85nuCWx/QS1oEmDb1
-         fqUM1Be2Giqnatwt6vBCbFkUEoH7xr4yDUhJTt/zOMwmEGHCOsLKzedvqHPfUL+W8PT/
-         ATWfRMtPeZQvRexN6gVD5V7elzxjSjU4dD1gihRPrl99SpBw685FKuS4rwlRGPhm7zms
-         +OgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793776971; x=1794381771;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=amOqrW7TRxDYFxl6iI/KQH4BpM0KC+sLlSW8sb3QrDE=;
-        b=vMzMJ0xUgXAb2nBSQxWmeFSv16bz93dxRdxM8K8HG+6tx1n9Smc3u0OGhtVOUJUgA9
-         WsPEpwHDpjeoEXfF5EA9gfxJQYCx2HcZr+7YDgtOPXjkUQxRHCBzfsbXTds1C36PKBq9
-         Z8z/L638HFqfra8R55ucvhiFQHvddeRHa0NIkLgCjHP8KKgpIQI920J8RQhUl8QcrdDO
-         Iz9wZeHn52/M1+cyKyuQ3+/4fGRbDhgks7GE9ILOrHF9InrshGpw9ouaFXsf7oHi38wO
-         qLW0imqjGugnSsro1eQa5gWs2wT9AfvCtu+QcjvjZCKMXVBAenXPaqfcwABtnrwe5w8r
-         E5hw==
-X-Forwarded-Encrypted: i=1; AKwUvBz1N0MQn3tUTeuGtQY/H9VcqnVODtpgZazzRA4uz5ydNtZzhTHWSatiCpE3hNkSbSTqFfDMLQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z98eiF2nN2mhukewKO/yCymQaDB8pdUQp/s+BE4SISAawTr6fc+
-	uBZ9JziuEL+hNbmq3IIsY2kKxi4T6noAtsFV2XhTOsq5jbd1Y6nJyvIq
-X-Gm-Gg: AYBFou1UmSQ3UBWyxlXKa55AZ6l2PB0EMnCfe0UXHsLj0GLzxt5GGUgWkAx0VGUoeWO
-	4BzmSTZ5HB8btwRXfauFBuTpBlj7JVT2mBouPVdZgRO08WkX+Q36zGWPAWEwwtfGrN8in66wSFI
-	3gwmmsyMgHROW/1IaE4ZluaAzYYn7mAvaup2MiBUJiKBxvKqEzJuBAJDDMBscv21bBQVUxTs3ZS
-	U3MTwiUEsvOYW7Zj9ru9tvEfaGxzg0wqdII2zovFIljFLGat7T0sCGHhHdN1Dz2ZsKude+Fg6r9
-	AleywHyAPzRwtWlpQYtPAncQSf8Z6SjQql7alPTeYtBFbsX9ONiVWLnvk97F6MTJuPqcf4l5ZIp
-	fcsDnFzmhGvLvk+MRD6c1nZ1E4Cv78eZ5/9No4Fm7YdJ1QlK03KO2jw38eCmpncRvQ7675ddq29
-	ASieM3CuMtOwbQeY7WcwV8nNoaybIVIM0Tq2myLxYvvE/IMr3bpOg18yHz+kWi+vAfXb63D+KTu
-	KLIZIPxMlegnHA/n0QpCz4wTa826fBh9ZMu1s8OfkgsXcar/6k4/wtKAowXj6NEeMCSTfEmxgMP
-	PfPVdrhcdZV0uGvzAY+9012JBdcJMMQdtQdT4TDEAg==
-X-Received: by 2002:a05:6a21:f107:b0:3e2:1823:2b39 with SMTP id adf61e73a8af0-3e9288c9c22mr18484635637.2.1793776971244;
-        Tue, 03 Nov 2026 23:22:51 -0800 (PST)
-Received: from CRASHEDROM.localdomain ([142.249.36.161])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8b097fe109fsm533533b3a.8.2026.11.03.23.22.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Nov 2026 23:22:50 -0800 (PST)
-From: Chengyu Liu <lui2012qwq@gmail.com>
-To: joro@8bytes.org
-Cc: suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
-	iommu@lists.linux.dev,
-	Chengyu Liu <lui2012qwq@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH] iommu/amd: do not remove the shared IRQ domain on intcapxt failure
-Date: Wed,  4 Nov 2026 15:22:41 +0800
-Message-Id: <20261104072241.1617661-1-lui2012qwq@gmail.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=oRsgo2d1
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261104073708euoutp02a88192eaf18c39b3716970bc2f627aca~kx25ixp2i1255812558euoutp02C
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 07:37:08 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261104073708euoutp02a88192eaf18c39b3716970bc2f627aca~kx25ixp2i1255812558euoutp02C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1793777828;
+	bh=Fin16iwd8zeVB2XbqHtY/b1SBp98Yl5BOCuh6PYlXus=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=oRsgo2d10Xs5fjaGmy+g59SkBifdAXF8fkxLlnePByDdoW/aAWfyUWRP2EoMEdE9l
+	 L8MvDVD51dJP2anrj89xr1OGy69mAlXFjo19MkmQ2LYVmBFrNwQwyAVs9ONLmEyHdT
+	 D7O3O2ukNcvGMNrleLkax8SnrMZeGRblcHVcWqRE=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20261104073707eucas1p26b354ea66e62c86c08bfcbf21fde04d2~kx25Dfbbl0248702487eucas1p2-;
+	Wed,  4 Nov 2026 07:37:07 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261104073707eusmtip22cc96a6645008d9040cea9d940ec6d4a~kx24dAqup0090700907eusmtip2r;
+	Wed,  4 Nov 2026 07:37:07 +0000 (GMT)
+Message-ID: <8276a107-7115-48e3-a40a-2660fe1beaa5@samsung.com>
+Date: Wed, 4 Nov 2026 08:37:06 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -97,78 +64,136 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma: swiotlb: Round restricted DMA pool size down to
+ IO_TLB_SEGSIZE
+To: Michael Kelley <mhklinux@outlook.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Claire Chang
+	<tientzu@chromium.org>, Konrad Rzeszutek Wilk <konrad@kernel.org>, Giorgi
+	Kobakhia <gkobakhi@asu.edu>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <MN2PR02MB686381EADCEECF16B23214D0D4692@MN2PR02MB6863.namprd02.prod.outlook.com>
 Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261104073707eucas1p26b354ea66e62c86c08bfcbf21fde04d2
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862
+X-EPHeader: CA
+X-CMS-RootMailID: 20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862
+References: <CGME20261103155032eucas1p10934ce1bc0c0e2f1fa86891fb2626862@eucas1p1.samsung.com>
+	<20261103155016.1107958-1-m.szyprowski@samsung.com>
+	<MN2PR02MB686381EADCEECF16B23214D0D4692@MN2PR02MB6863.namprd02.prod.outlook.com>
 
-iommu_get_irqdomain() lazily creates a single irq domain and caches
-it in the global iommu_irqdomain, shared by all IOMMUs.  Both
-failure branches of __iommu_setup_intcapxt() call
-irq_domain_remove() on it, which frees the domain, but the global
-pointer is never cleared and keeps handing out the freed domain.
+On 03.11.2026 22:18, Michael Kelley wrote:
+> From: Marek Szyprowski <m.szyprowski@samsung.com> Sent: Tuesday, November 3, 2026 7:50 AM
+>> All other paths creating a swiotlb pool ensure that nslabs is a multiple
+>> of IO_TLB_SEGSIZE, and the swiotlb code relies on that. Since commit
+>> 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization") a
+>> restricted pool can have an arbitrary size taken from the device tree.
+>>
+>> If the pool size is not a multiple of IO_TLB_SEGSIZE, the last segment is
+>> partial and swiotlb_release_slots() reads mem->slots[index + nslabs],
+>> which is one past the end of the slots array when the freed buffer ends
+>> at the end of the pool:
+>>
+>>  BUG: KASAN: slab-out-of-bounds in swiotlb_release_slots
+>>  Read of size 2
+>>
+>> Round the pool size down to a multiple of IO_TLB_SEGSIZE, wasting a bit
+>> of memory, and warn about it.
+> I'm not familiar with the macro scenarios where a device has a
+> restricted pool specified in DT. But I wonder if it would be better to
+> round up instead of down. DT has specified that the device should
+> have a restricted DMA pool of a certain size, and rounding down gives
+> the device a smaller pool than was requested. Could DMA operations
+> then fail because of not having a large enough pool? Rounding down
+> also allows the pool to end up being size zero, which this patch
+> detects and results in a definite failure at device initialization time.
+>
+> What's the tradeoff in rounding up instead?The device restricted
+> pool at least as large as requested. Presumably, being larger than
+> requested doesn't cause any problems for the device or its driver.
+> The downside is using up to 256 KiB more system memory than
+> expected. In an embedded system with only a few MiB of system
+> memory, maybe that's a relatively big problem. I don't know the
+> scenarios well enough to judge whether using a bit more system
+> memory is better or worse than the device not having all the
+> restricted pool space it said it needed for DMA.
 
-The failure does not prevent reuse: register_syscore() runs in the
-IOMMU_ENABLED init state, one state before
-amd_iommu_enable_interrupts() runs in IOMMU_PCI_INIT, and the error
-paths never unregister it.  On resume, amd_iommu_resume() re-runs
-amd_iommu_enable_interrupts(); for an IOMMU whose setup failed,
-int_enabled was never set, so __iommu_setup_intcapxt() runs again,
-gets the freed domain from iommu_get_irqdomain() and passes it to
-irq_domain_alloc_irqs().
+The main problem with enlarging the restricted pool is that the memory
+has been already allocated (reserved) by the generic of_reserved_mem
+code before the rmem_swiotlb_device_init() is called. There might be
+even another reserved region just after the one being processed by
+rmem_swiotlb_device_init(). The reserved region might be specified in
+the device tree exactly, by pointing its base address and size. In
+such case the rmem_swiotlb_device_init() really cannot do anything
+else than using the provided already allocated region partially.
+The only thing that might be improved is freeing the 'wasted' part
+of the region back to the memory allocator if You think that
+printing a warning is not enough.
 
-The shared domain also makes a single failure affect the healthy
-IOMMUs: if IOMMU#0 set up fine and IOMMU#1's setup fails, the remove
-frees a domain that still has IOMMU#0's irqs mapped, tripping the
-WARN_ON(!radix_tree_empty) in irq_domain_remove().
 
-Keep the domain alive on failure; a later attempt (including the
-resume path) reuses the cached domain.  The request_threaded_irq()
-failure branch still backs out the allocated irq via
-irq_domain_free_irqs().
 
-Found by static analysis.
-
-Fixes: d1adcfbb520c ("iommu/amd: Fix IOMMU interrupt generation in X2APIC mode")
-Cc: stable@vger.kernel.org
-Signed-off-by: Chengyu Liu <lui2012qwq@gmail.com>
----
- drivers/iommu/amd/init.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 8a410d4aa3..78b11b04dd 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2522,6 +2522,13 @@ static int __iommu_setup_intcapxt(struct amd_iommu *iommu, const char *devname,
- 	int irq, ret;
- 	int node = dev_to_node(&iommu->dev->dev);
- 
-+	/*
-+	 * The IRQ domain is a cached singleton shared by all IOMMUs; a
-+	 * setup failure must not remove it, otherwise the global
-+	 * iommu_irqdomain is left dangling (and a shared domain could be
-+	 * freed while still mapped by another IOMMU).  Leave it in place
-+	 * so a later retry (e.g. resume) can use it.
-+	 */
- 	domain = iommu_get_irqdomain();
- 	if (!domain)
- 		return -ENXIO;
-@@ -2532,16 +2539,13 @@ static int __iommu_setup_intcapxt(struct amd_iommu *iommu, const char *devname,
- 	info.hwirq = hwirq;
- 
- 	irq = irq_domain_alloc_irqs(domain, 1, node, &info);
--	if (irq < 0) {
--		irq_domain_remove(domain);
-+	if (irq < 0)
- 		return irq;
--	}
- 
- 	ret = request_threaded_irq(irq, NULL, thread_fn, IRQF_ONESHOT, devname,
- 				   iommu);
- 	if (ret) {
- 		irq_domain_free_irqs(irq, 1);
--		irq_domain_remove(domain);
- 		return ret;
- 	}
- 
+>
+> Your commit message also mentions "wasting a bit of memory".
+> What is wasted in the round down case? The rounding down is
+> done before the pool memory is allocated. I would have thought
+> the wasting would occur in the round up case, where the restricted
+> pool is given more memory than the device said it needed.
+>
+> Michael
+>
+>> Reported-by: Giorgi Kobakhia <gkobakhi@asu.edu>
+>> Closes: https://lore.kernel.org/all/20261026032007.1957949-1-gkobakhi@asu.edu/
+>> Fixes: 0b84e4f8b793 ("swiotlb: Add restricted DMA pool initialization")
+>> CC: stable@vger.kernel.org
+>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>> ---
+>>  kernel/dma/swiotlb.c | 15 ++++++++++++++-
+>>  1 file changed, 14 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>> index 2c57b49ac7c0..a68f35192582 100644
+>> --- a/kernel/dma/swiotlb.c
+>> +++ b/kernel/dma/swiotlb.c
+>> @@ -2007,6 +2007,19 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+>>  	 */
+>>  	if (!mem) {
+>>  		struct io_tlb_pool *pool;
+>> +		unsigned long aligned_nslabs = ALIGN_DOWN(nslabs, IO_TLB_SEGSIZE);
+>> +
+>> +		if (aligned_nslabs != nslabs) {
+>> +			dev_warn(dev, "Restricted DMA pool size %zu is not a multiple of %lu, rounding down to %lu bytes\n",
+>> +				 (size_t)rmem->size,
+>> +				 (unsigned long)IO_TLB_SEGSIZE << IO_TLB_SHIFT,
+>> +				 aligned_nslabs << IO_TLB_SHIFT);
+>> +			nslabs = aligned_nslabs;
+>> +		}
+>> +		if (!nslabs) {
+>> +			dev_err(dev, "Restricted DMA pool is too small\n");
+>> +			return -EINVAL;
+>> +		}
+>>
+>>  		mem = kzalloc_obj(*mem);
+>>  		if (!mem)
+>> @@ -2034,7 +2047,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+>>
+>>  			mem->cc_shared = true;
+>>  			ret = set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+>> -						   rmem->size >> PAGE_SHIFT);
+>> +						   (nslabs << IO_TLB_SHIFT) >> PAGE_SHIFT);
+>>  			if (ret) {
+>>  				dev_err(dev, "Failed to decrypt restricted DMA pool\n");
+>>  				kfree(pool->areas);
+>> --
+>> 2.43.0
+>
+Best regards
 -- 
-2.25.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
