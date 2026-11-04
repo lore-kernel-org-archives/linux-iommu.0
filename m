@@ -1,73 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.35
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.216.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793774757;
-	b=ZnqTLkWL+n8C9MecRdY3HaWKZHCbLXNBUA9eQj/JaIkHP5d5ZOKz2zl2Ob140xaVUq/j
-	 rqcG+M6MKBBvDLfWdYVrVvMHAMU89q0/w9LLhfTcizcdCHOZdD6AcfZis/V9mB2qJYvC8
-	 jlRHy1VL2FyaI6Cx3JleELFNnMXzk9Buf/oTwsDtxBhtqTXD8Y2KMc7mDcaogM1Cq/OYu
-	 R6hHUD0318pUnP3qLmggX1crj9/1i+on78Bx8FfxHG3qoDDWiNTa0OirvWHLZJtBxhmso
-	 l+hqXijDiEj/V2mwT2zX481Q/Y9KtfK8Ps+WCeVIiK29LrLApYqZ7Y10KlHNl+LxbyQ==
+	t=1793776972;
+	b=CY/D17QCf9epBZ/bLEyvP+JAt+Rama++ZuB6fEk84uxGxe1w0rlyQJxT+bTYSdBK2z/h
+	 hnY6w9gALHmPBlchj+P8OzKFNfmHZI4dhsBpMruOIme+MUSxUVxoJ+5keb9HxTfxtYHVv
+	 P4/a0rrzUPHBAzAMMwyU1bxjAP5QjO9RCIgT20cMQIyE7Vt0Dhgl3N58cQn0P3U62odXV
+	 pd7IoyBKvwGTRMnygQMPsoyZ2sdQScFHgnufdiUV6eiXbwXiFFMmuqcwGLJeZewhUI88b
+	 qtOnPcpiU9NuPypOza7JyYL4mbH0V9Gxx2F8sSpBi2NOV+DTntQjG988YMBTwv0KGmQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793774757;
-	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
-	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
-	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
-	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=clIQptAzz0QSjPQqw4pdzoEdWRP3GM/T5ORBpQ5q5qQ=;
-	b=IAUQXN9hMVNGTVaX/yDUPgm17NEEFo2bvijFit9jMd+XMf5atX8s+qX7cIj21wbyn5qg
-	 xyY3OS/+w3JlECu4XLqkRCn6fyqtV2O06C0jQq6vCoIDUcoBs8PzQnhMrdrq2B+MQWMvj
-	 vlFBbFYr0ZnVk6ZnGN8MucIkWpW7TtO/XIJbU9C/whUSXN8wb7Ui7/t9K15/AzkgXMTnr
-	 Md5Vkl5yS+Iw2tR1fWokHj7NZBquh4KtdMVQujJjtbHfdeK8QfjTPlgQW1aokq5zEUxnT
-	 zOV+MXMFbOGm8FMsS7qOGmJtIL39LADU+uOLody2Y6ZyjtVTx7aqM4bcDHdFhfOg5Xg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793776972;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=amOqrW7TRxDYFxl6iI/KQH4BpM0KC+sLlSW8sb3QrDE=;
+	b=4tFWcMEBV5C2yJF2hiNJR4p8yH+1zoDltPPvTOSLEbcLrKCfKcMSxPbLr4RWjLDwjH+N
+	 iMuW/Ts64vWN6Q0k/IOVEWuDPpQ1znGxhk4X5/gmBL2JqeH9q9xUGeh+OEesza749w+rw
+	 Lr3VONfcsH53oyDIMZEJq7pzMFIfRP6vZXZ2UDcJ0qzsSnxz08BsvYypMMqzqTEtPvgn9
+	 cFbgxWz7bA7YvvToRIF8PKmQNakHBPt79weQqaew0tFpQ28MK1z0+1S4i0k1mylVFhEPB
+	 Y9iq3D2Q4Bvz4lsP9x6Irxu4RegJYUGR8SlSkr05qzWYfzNDAUUgOvZzUW7IOrUILog==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=sanechips.com.cn;
-	spf=pass smtp.mailfrom=sanechips.com.cn;
-	arc=none smtp.remote-ip=160.30.148.35
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w6+LEF8y;
+	arc=none smtp.remote-ip=209.85.216.43
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C533606A333
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 06:45:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7C533606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jKGDJ0s8Cz8Xrrf;
-	Wed, 04 Nov 2026 14:45:52 +0800 (CST)
-Received: from szxlzmapp04.zte.com.cn ([10.5.231.166])
-	by mse-fl2.zte.com.cn with SMTP id 6A46jiZE066518;
-	Wed, 4 Nov 2026 14:45:44 +0800 (+08)
-	(envelope-from gong.shuai@sanechips.com.cn)
-Received: from ubuntu-35-gs (unknown [10.230.214.35])
-	by smtp (Zmail) with SMTP;
-	Wed, 4 Nov 2026 14:45:46 +0800
-X-Zmail-TransId: 3e816aead493029-bd580
-X-Zmail-LocalSMTP: 1
-X-Zmail-RealSender: gong.shuai@sanechips.com.cn
-From: Gong Shuai <gong.shuai@sanechips.com.cn>
-To: fangyu.yu@linux.alibaba.com
-Cc: ajones@ventanamicro.com, alex@ghiti.fr, andrew.jones@linux.dev,
-        anup@brainfault.org, aou@eecs.berkeley.edu, atish.patra@linux.dev,
-        baolu.lu@linux.intel.com, gong.shuai@sanechips.com.cn,
-        guoren@kernel.org, iommu@lists.linux.dev, jgg@nvidia.com, jgg@ziepe.ca,
-        joerg.roedel@amd.com, joro@8bytes.org, jroedel@suse.de,
-        kevin.tian@intel.com, kvm-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        palmer@dabbelt.com, pjw@kernel.org, robin.murphy@arm.com,
-        skhawaja@google.com, tanchi25@mails.ucas.ac.cn, tjeznach@rivosinc.com,
-        tomasz.jeznach@linux.dev, vasant.hegde@amd.com, will@kernel.org,
-        zong.li@sifive.com
-Subject: Re: [PATCH v7 06/10] RISC-V: KVM: Enable KVM_VFIO interfaces on RISC-V arch
-Date: Wed,  4 Nov 2026 14:45:40 +0800
-Message-ID: <20261104064540.115560-1-gong.shuai@sanechips.com.cn>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261103120236.53474-7-fangyu.yu@linux.alibaba.com>
-References: <20261103120236.53474-7-fangyu.yu@linux.alibaba.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09C38606A33C
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 07:22:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 09C38606A33C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=w6+LEF8y
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-3ae1a9e187aso74862a91.3
+        for <iommu@lists.linux.dev>; Tue, 03 Nov 2026 23:22:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1793776971; x=1794381771; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=amOqrW7TRxDYFxl6iI/KQH4BpM0KC+sLlSW8sb3QrDE=;
+        b=w6+LEF8yUZtmrL4TJxMYKzwmRsfEaPzw8sxjm1vz3aGVsdWAQwyRT3SViyNmZ5EFBU
+         N6vXH7AXEVTOk1HmahU3VdFGxRbCK+hRkSbrCpi0giKs8wVQpU3ZacXX6lG6epEWTrCD
+         Nk26Q9SlbZ3PWmeXGUoFAfn6WcBFRQ3hl66qj92gjznqeXIthp+85nuCWx/QS1oEmDb1
+         fqUM1Be2Giqnatwt6vBCbFkUEoH7xr4yDUhJTt/zOMwmEGHCOsLKzedvqHPfUL+W8PT/
+         ATWfRMtPeZQvRexN6gVD5V7elzxjSjU4dD1gihRPrl99SpBw685FKuS4rwlRGPhm7zms
+         +OgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793776971; x=1794381771;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=amOqrW7TRxDYFxl6iI/KQH4BpM0KC+sLlSW8sb3QrDE=;
+        b=vMzMJ0xUgXAb2nBSQxWmeFSv16bz93dxRdxM8K8HG+6tx1n9Smc3u0OGhtVOUJUgA9
+         WsPEpwHDpjeoEXfF5EA9gfxJQYCx2HcZr+7YDgtOPXjkUQxRHCBzfsbXTds1C36PKBq9
+         Z8z/L638HFqfra8R55ucvhiFQHvddeRHa0NIkLgCjHP8KKgpIQI920J8RQhUl8QcrdDO
+         Iz9wZeHn52/M1+cyKyuQ3+/4fGRbDhgks7GE9ILOrHF9InrshGpw9ouaFXsf7oHi38wO
+         qLW0imqjGugnSsro1eQa5gWs2wT9AfvCtu+QcjvjZCKMXVBAenXPaqfcwABtnrwe5w8r
+         E5hw==
+X-Forwarded-Encrypted: i=1; AKwUvBz1N0MQn3tUTeuGtQY/H9VcqnVODtpgZazzRA4uz5ydNtZzhTHWSatiCpE3hNkSbSTqFfDMLQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z98eiF2nN2mhukewKO/yCymQaDB8pdUQp/s+BE4SISAawTr6fc+
+	uBZ9JziuEL+hNbmq3IIsY2kKxi4T6noAtsFV2XhTOsq5jbd1Y6nJyvIq
+X-Gm-Gg: AYBFou1UmSQ3UBWyxlXKa55AZ6l2PB0EMnCfe0UXHsLj0GLzxt5GGUgWkAx0VGUoeWO
+	4BzmSTZ5HB8btwRXfauFBuTpBlj7JVT2mBouPVdZgRO08WkX+Q36zGWPAWEwwtfGrN8in66wSFI
+	3gwmmsyMgHROW/1IaE4ZluaAzYYn7mAvaup2MiBUJiKBxvKqEzJuBAJDDMBscv21bBQVUxTs3ZS
+	U3MTwiUEsvOYW7Zj9ru9tvEfaGxzg0wqdII2zovFIljFLGat7T0sCGHhHdN1Dz2ZsKude+Fg6r9
+	AleywHyAPzRwtWlpQYtPAncQSf8Z6SjQql7alPTeYtBFbsX9ONiVWLnvk97F6MTJuPqcf4l5ZIp
+	fcsDnFzmhGvLvk+MRD6c1nZ1E4Cv78eZ5/9No4Fm7YdJ1QlK03KO2jw38eCmpncRvQ7675ddq29
+	ASieM3CuMtOwbQeY7WcwV8nNoaybIVIM0Tq2myLxYvvE/IMr3bpOg18yHz+kWi+vAfXb63D+KTu
+	KLIZIPxMlegnHA/n0QpCz4wTa826fBh9ZMu1s8OfkgsXcar/6k4/wtKAowXj6NEeMCSTfEmxgMP
+	PfPVdrhcdZV0uGvzAY+9012JBdcJMMQdtQdT4TDEAg==
+X-Received: by 2002:a05:6a21:f107:b0:3e2:1823:2b39 with SMTP id adf61e73a8af0-3e9288c9c22mr18484635637.2.1793776971244;
+        Tue, 03 Nov 2026 23:22:51 -0800 (PST)
+Received: from CRASHEDROM.localdomain ([142.249.36.161])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8b097fe109fsm533533b3a.8.2026.11.03.23.22.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2026 23:22:50 -0800 (PST)
+From: Chengyu Liu <lui2012qwq@gmail.com>
+To: joro@8bytes.org
+Cc: suravee.suthikulpanit@amd.com,
+	vasant.hegde@amd.com,
+	iommu@lists.linux.dev,
+	Chengyu Liu <lui2012qwq@gmail.com>,
+	stable@vger.kernel.org
+Subject: [PATCH] iommu/amd: do not remove the shared IRQ domain on intcapxt failure
+Date: Wed,  4 Nov 2026 15:22:41 +0800
+Message-Id: <20261104072241.1617661-1-lui2012qwq@gmail.com>
+X-Mailer: git-send-email 2.25.1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,52 +97,78 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
 Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl2.zte.com.cn 6A46jiZE066518
-X-TLS: YES
-X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.133 unknown Wed, 04 Nov 2026 14:45:52 +0800
-X-CLEAN: YES
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AEAD4A0.000/4jKGDJ0s8Cz8Xrrf
 
-Hi Fangyu,
+iommu_get_irqdomain() lazily creates a single irq domain and caches
+it in the global iommu_irqdomain, shared by all IOMMUs.  Both
+failure branches of __iommu_setup_intcapxt() call
+irq_domain_remove() on it, which frees the domain, but the global
+pointer is never cleared and keeps handing out the freed domain.
 
-> From: Tomasz Jeznach <tjeznach@rivosinc.com>
-> 
-> Enable KVM/VFIO support on RISC-V architecture.
-> 
-> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-> Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
-> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-> ---
->  arch/riscv/kvm/Kconfig | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/arch/riscv/kvm/Kconfig b/arch/riscv/kvm/Kconfig
-> index f7e4d0f9b156..13552cfc2cd3 100644
-> --- a/arch/riscv/kvm/Kconfig
-> +++ b/arch/riscv/kvm/Kconfig
-> @@ -28,8 +28,10 @@ config KVM
->  	select KVM_GENERIC_HARDWARE_ENABLING
->  	select KVM_GENERIC_PRE_FAULT_MEMORY
->  	select VIRT_XFER_TO_GUEST_WORK
-> +	select KVM_VFIO
->  	select SCHED_INFO
->  	select GUEST_PERF_EVENTS if PERF_EVENTS
-> +	select SRCU
+The failure does not prevent reuse: register_syscore() runs in the
+IOMMU_ENABLED init state, one state before
+amd_iommu_enable_interrupts() runs in IOMMU_PCI_INIT, and the error
+paths never unregister it.  On resume, amd_iommu_resume() re-runs
+amd_iommu_enable_interrupts(); for an IOMMU whose setup failed,
+int_enabled was never set, so __iommu_setup_intcapxt() runs again,
+gets the freed domain from iommu_get_irqdomain() and passes it to
+irq_domain_alloc_irqs().
 
-This option is now meaningless, please remove it.
-See:
-https://lore.kernel.org/linux-riscv/20230105003813.1770367-5-paulmck@kernel.org/
+The shared domain also makes a single failure affect the healthy
+IOMMUs: if IOMMU#0 set up fine and IOMMU#1's setup fails, the remove
+frees a domain that still has IOMMU#0's irqs mapped, tripping the
+WARN_ON(!radix_tree_empty) in irq_domain_remove().
 
-Thanks,
-Shuai
+Keep the domain alive on failure; a later attempt (including the
+resume path) reuses the cached domain.  The request_threaded_irq()
+failure branch still backs out the allocated irq via
+irq_domain_free_irqs().
 
->  	help
->  	  Support hosting virtualized guest machines.
->  
-> -- 
-> 2.50.1
+Found by static analysis.
+
+Fixes: d1adcfbb520c ("iommu/amd: Fix IOMMU interrupt generation in X2APIC mode")
+Cc: stable@vger.kernel.org
+Signed-off-by: Chengyu Liu <lui2012qwq@gmail.com>
+---
+ drivers/iommu/amd/init.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 8a410d4aa3..78b11b04dd 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -2522,6 +2522,13 @@ static int __iommu_setup_intcapxt(struct amd_iommu *iommu, const char *devname,
+ 	int irq, ret;
+ 	int node = dev_to_node(&iommu->dev->dev);
+ 
++	/*
++	 * The IRQ domain is a cached singleton shared by all IOMMUs; a
++	 * setup failure must not remove it, otherwise the global
++	 * iommu_irqdomain is left dangling (and a shared domain could be
++	 * freed while still mapped by another IOMMU).  Leave it in place
++	 * so a later retry (e.g. resume) can use it.
++	 */
+ 	domain = iommu_get_irqdomain();
+ 	if (!domain)
+ 		return -ENXIO;
+@@ -2532,16 +2539,13 @@ static int __iommu_setup_intcapxt(struct amd_iommu *iommu, const char *devname,
+ 	info.hwirq = hwirq;
+ 
+ 	irq = irq_domain_alloc_irqs(domain, 1, node, &info);
+-	if (irq < 0) {
+-		irq_domain_remove(domain);
++	if (irq < 0)
+ 		return irq;
+-	}
+ 
+ 	ret = request_threaded_irq(irq, NULL, thread_fn, IRQF_ONESHOT, devname,
+ 				   iommu);
+ 	if (ret) {
+ 		irq_domain_free_irqs(irq, 1);
+-		irq_domain_remove(domain);
+ 		return ret;
+ 	}
+ 
+-- 
+2.25.1
 
