@@ -1,72 +1,58 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793804768;
-	b=yFzMbLji+xWGnIdIwRzbT1725ub8OzwV+/EwFpn27OxPN20DohXQz2zJPGRBCKRdb7Y1
-	 QU4HUqc12t1kTlHva3i5SL+OsLmhNTqlXcWnQTafzi8yOvVN2CIeDljhgBWz48lc/nSBW
-	 xnJDD7NVVVCFxBvOpGYcZ+p9VIZoshIjkL3EHEox8pJ7pk4X2hxfSWIe02dOzaEQnqZvQ
-	 GFcpduCjpHhqgfeb7SuL7/ZttBPVw2ioBCY3ws68pROvlhxi9kGF3AjcJdmF4+p7V83zW
-	 D3ViTcuaKxt8yBsE6bbCRB186U+dUuXqVuqlYDB3lTRpVUuguureC0h9L2n6xhYrN0A==
+	t=1793807739;
+	b=VrrGBQ/cbbNDzysq6kl888kn9aBZm7Y5wj9SH16VzopgR7S0Mj29/4GTCon43gfm+toG
+	 nDTxn9FbX06r4DF3l50mN0BLgvS+PkeSQhlEmzUJLlOKJtcfb8E3Ha9DIab2shnTJZTcN
+	 GLVRIVbypc18uFdEloHdS6Meni0WcUBkoTWhXMlzf6t36noum05mwaX7sqHHlh0iGE8OO
+	 iZ4BuuctRbqptb8M1vkkQaBLOVL9ee2PAZDU6y0uND0MBUIds/CEmzTXx1lftz6SIrx+f
+	 uKPsufqrYI4rscr/IHCPxcRcy5ndxd6o+09VKX4YogfPj+zIbHKfpmuRqRAtPYOqk+w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793804768;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793807739;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=9XUu19nr/f7NGXbDq+W5w9qO3ygSqOJpP8i189RQgXI=;
-	b=ABSA3ygFNyKxB3uyDnKgcsKuQpL3gLEdMmWG9n9p/MiVFk05twLbiC5EJyM2oktXiJE+
-	 /d6DuZ/D4+nqbB2Doh+GPOH5yH2Oxm9lScs5/Ca8Igoizis6GaOO5BW8ddxEzdmQMOa13
-	 Ey47kiAK0NjbRV7GSHDMEEmRZktp6VQOlHGsvwB3M7XM7eN+YYA7y88ZdqZnRX640532W
-	 iQdOYphcldQYlRwLEg3FbakRx6Wp53A71d6pW7UcSuq8TxuS8oC8toLf2QBTEerJFviQM
-	 RPOtuCoDUex8Ywq50zpGyvQS/kWmtqVM1D2b4Nh1U0R+8e7khE4HQOtzR7lLL2EbW7Q==
+	 MIME-Version:X-Developer-Signature:X-Developer-Key:
+	 Content-Transfer-Encoding;
+	bh=zOSM4S0j7JxWRoGxJGQTebxA0vWT3vagSHWkip5Jwnw=;
+	b=ZoU/MIjAXklTNogXTTPUeRrpUqUUcDYFwa3j8dPUIb8BGXx2aZcrCh0pyE9wUubeskkK
+	 kwB4A/LT5C5R3m57V1GGA0wj/euvSCBTCyKn/7fPQHda5mrjsR2qu1s8ftx5K6QBdVWCb
+	 IBpJXxPvFUS7GM7GOa7lc6zRcxwD5SEfVIDm+PM34wSZpqzsNipNOjU/WSUS1fsxDvagn
+	 mYmfinyBNrPCxI4p9R0o1gS9uBAAtyXoDAqRKHrBqiwSR0RnedqzUJfVYUc0WIwQIDcWl
+	 tGmd/vxcfoJrc81dGgvrATsYWgWzTL9VPm+Tp28AX+Plli2hMLKuUvJV6o/Md6AkdDA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OQIYThW6;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jdNUhNRo;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0063F606A328;
-	Wed,  4 Nov 2026 15:06:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7D25606A335;
+	Wed,  4 Nov 2026 15:55:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OQIYThW6
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C5E1F00A15;
-	Wed,  4 Nov 2026 15:06:01 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jdNUhNRo
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD0151F00A02;
+	Wed,  4 Nov 2026 15:55:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793804767;
-	bh=9XUu19nr/f7NGXbDq+W5w9qO3ygSqOJpP8i189RQgXI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=OQIYThW66rDODt+C7H4yN0no9vsvbLmtEEKrtB56e7xJxpgN1y9zekCHkFpY3jL9t
-	 7a0MwO7m1Zsy9YWw/CRb6NiC7EprtPnsRwuWcCz151oTyImEDqKuzkgrR4rBQBb6as
-	 L0KL9VFMblMFQvIV36FTQ2AVAyZNO5r1rF7QWWA1ujc1xL6zVocbc8Vc1lQOaQtYa7
-	 /GBPO1jTz9DppgDA4juqTOe5LoX7Pqp65USZprlW0qqKvqxABAOHXzPcZWk1avQMXT
-	 e0tp6lGhhmqYiFUUiTW1eS0dPZsyS020Ng3uZ+hgkDgIefi1BBY9hKVN6Vc0n0qPFI
-	 bZBp7029JUJYA==
-From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-To: linux-coco@lists.linux.dev
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Ackerley Tng <ackerleytng@google.com>,
-	Alex Williamson <alex@shazbot.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	David Hildenbrand <david@kernel.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
+	s=k20260515; t=1793807738;
+	bh=zOSM4S0j7JxWRoGxJGQTebxA0vWT3vagSHWkip5Jwnw=;
+	h=From:To:Cc:Subject:Date;
+	b=jdNUhNRozhYwFhyOJhZ+Jpr2A4URVxaUOlKbAoZwqojkoV2BYO+PBzBHhE412kiVP
+	 3cWQw0nSAHwSENRH5yQSP19yYKMQxHshojImcIWY3f9O3P6j9mVBe/gsdKqa9P3dQF
+	 SgtFq74f5FFSrWGXDfymxL3zLMiXexhl748HjUnoakQqJ64+hnaBGGwI1nnt754A5m
+	 dnnj2IjgcxpyrC8hwcThS68Y8vsHf05ycIbxMuPicW+IJ+u/5wzSy77srtMNvJ2+Ko
+	 bfxMADvlDZ1MPtkEZeintQSkryMo3Jg/XsV/CltGJ48/e52b1ioolV7eZWVYS9ZrgH
+	 1ZnyPaOcd54aw==
+From: Thorsten Blum <blum@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Steven Price <steven.price@arm.com>,
-	Fred Griffoul <griffoul@gmail.com>,
+	Michael Kelley <mhklinux@outlook.com>,
+	Will Deacon <will@kernel.org>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Cc: Thorsten Blum <blum@kernel.org>,
 	iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	patches@lists.linux.dev
-Subject: [RFC PATCH v4 25/25] KVM: Document device-backed guest_memfd and VFIO usage
-Date: Wed,  4 Nov 2026 20:33:22 +0530
-Message-ID: <20261104150322.3516320-26-aneesh.kumar@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261104150322.3516320-1-aneesh.kumar@kernel.org>
-References: <20261104150322.3516320-1-aneesh.kumar@kernel.org>
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] dma: Remove redundant 0x prefixes
+Date: Wed,  4 Nov 2026 16:54:16 +0100
+Message-ID: <20261104155414.126812-3-blum@kernel.org>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -76,130 +62,46 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1672; i=blum@kernel.org; h=from:subject; bh=E7f1zycy6qTlzep/1YJoHaDq24W0GDJTU1FDGEmYXN4=; b=owGbwMvMwCUWt7pQ4caZUj3G02pJDFmvQ9U46mM+GlaXnFjm2Gxg3cP1Q+J31MH1u7tOh20s5 lbyO6PfUcrCIMbFICumyPJg1o8ZvqU1lZtMInbCzGFlAhnCwMUpABP5to+R4e4jC4eYDcIieSdv yL0NDJas1rm6Y84vxsPPT7Fdm5LXX8DI0LuibJvQpIwk/0UMV/eJTv/2oeaXZl/0N55/53SFX/y 5xA4A
+X-Developer-Key: i=blum@kernel.org; a=openpgp; fpr=1D60735E8AEF3BE473B69D84733678FD8DFEEAD4
 Content-Transfer-Encoding: 8bit
 
-Describe device setup, VFIO access restrictions, mappings and lock ordering.
+The %pa format specifier already includes the 0x prefix. Remove the
+redundant prefixes to avoid printing 0x0x.
 
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: Alex Williamson <alex@shazbot.org>
-Cc: David Hildenbrand <david@kernel.org>
-Cc: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+Fixes: 9d4f645a1fd4 ("dma-debug: store a phys_addr_t in struct dma_debug_entry")
+Fixes: 823353b7cf0e ("swiotlb: Enforce page alignment in swiotlb_alloc()")
+Signed-off-by: Thorsten Blum <blum@kernel.org>
 ---
- Documentation/virt/kvm/api.rst     | 50 ++++++++++++++++++++++++++----
- Documentation/virt/kvm/locking.rst | 27 ++++++++++++++++
- 2 files changed, 71 insertions(+), 6 deletions(-)
+ kernel/dma/debug.c   | 4 ++--
+ kernel/dma/swiotlb.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 4482d34ec281..289b42224258 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -6513,8 +6513,8 @@ The capability KVM_CAP_GUEST_MEMFD_FLAGS enumerates the `flags` that can be
- specified via KVM_CREATE_GUEST_MEMFD.  Currently defined flags:
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 36c1f7cbb2ae..4cb5f86a7228 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -1034,8 +1034,8 @@ static void check_unmap(struct dma_debug_entry *ref)
+ 		err_printk(ref->dev, entry, "device driver frees "
+ 			   "DMA memory with different CPU address "
+ 			   "[device address=0x%016llx] [size=%llu bytes] "
+-			   "[cpu alloc address=0x%pa] "
+-			   "[cpu free address=0x%pa]",
++			   "[cpu alloc address=%pa] "
++			   "[cpu free address=%pa]",
+ 			   ref->dev_addr, ref->size,
+ 			   &entry->paddr,
+ 			   &ref->paddr);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 2c57b49ac7c0..9f143a3361fc 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1957,7 +1957,7 @@ struct page *swiotlb_alloc(struct device *dev, size_t size, unsigned long attrs)
  
-   ============================= ================================================
--  GUEST_MEMFD_FLAG_MMAP         Enable using mmap() on the guest_memfd file
--                                descriptor.
-+  GUEST_MEMFD_FLAG_MMAP         Enable userspace mappings through guest_memfd,
-+                                including shared VFIO PCI BAR resources.
-   GUEST_MEMFD_FLAG_INIT_SHARED  Make all memory in the file shared during
-                                 KVM_CREATE_GUEST_MEMFD (memory files created
-                                 without INIT_SHARED will be marked private).
-@@ -6540,10 +6540,48 @@ provider. PFN_MODE selects the PFN callbacks; providers that supply device
- operations additionally require INIT_SHARED and a VM supporting protected
- device mappings.
- 
--KVM_SET_MEMORY_ATTRIBUTES2 converts device memory using guest_memfd offsets.
--For private conversion, KVM resolves the guest address through the memslot
--binding and obtains the physical address from the provider. Shared conversion
--removes the protected device mappings before publishing shared attributes.
-+For VFIO PCI device resources, resource_fd must refer to a VFIO device fd
-+bound to IOMMUFD, with a vDEVICE belonging to the same VM. Set USE_RESOURCE,
-+PFN_MODE and INIT_SHARED. File offsets use the VFIO region-offset namespace.
-+Memslots must cover page-aligned ranges within a single memory-mapped I/O
-+BAR that supports mmap. Dirty logging and read-only memslots are rejected
-+with EINVAL.
-+
-+Creation fails with EBUSY if the device already supplies another guest_memfd,
-+has VFIO BAR mappings, dma-buf exports or ioeventfd handlers, or userspace has
-+enabled VFIO runtime suspend. The device is resumed and must be in D0; it is
-+kept active until guest_memfd releases it.
-+
-+While guest_memfd uses the device, the following operations fail with EBUSY
-+through any VFIO fd referring to it, even if all ranges are shared:
-+
-+- BAR read/write, mmap, new ioeventfd registration and dma-buf export.
-+- VFIO_DEVICE_RESET, PCIe/AF function-level reset and hot reset affecting
-+  the device.
-+- Requests for D1, D2 or D3, enabling VFIO runtime suspend, and configuration
-+  writes that change Memory Enable or Bus Master Enable.
-+
-+Rejected configuration writes leave the hardware and virtual registers
-+unchanged. Unrelated configuration writes, queries and IRQ configuration
-+remain available.
-+
-+GUEST_MEMFD_FLAG_MMAP permits MAP_SHARED mappings through guest_memfd.
-+Without this flag, mmap fails with ENODEV.
-+
-+MSI-X SET_IRQS remains available. Userspace must keep the MSI-X table and
-+PBA pages shared while host-managed MSI-X is in use and reject guest private
-+mapping requests for those pages. The kernel does not enforce this policy.
-+
-+Use :ref:`KVM_SET_MEMORY_ATTRIBUTES2` to convert device memory by guest_memfd
-+offset. Private conversion uses the memslot binding and provider PFNs to
-+install protected device mappings before publishing private attributes.
-+Shared conversion removes those mappings before publishing shared attributes.
-+
-+Revocation and memslot deletion remove shared and private mappings without
-+changing file attributes. Private ranges still prevent device unlock after
-+these operations; userspace must share them or release the last guest_memfd
-+reference. Final release removes mappings and clears the private-range
-+summary before releasing the device resources.
- 
- When the KVM MMU performs a PFN lookup to service a guest fault, the fault will
- always be consumed from guest_memfd, regardless of whether it is a shared or a
-diff --git a/Documentation/virt/kvm/locking.rst b/Documentation/virt/kvm/locking.rst
-index 662231e958a0..a2a6b4dd9a1f 100644
---- a/Documentation/virt/kvm/locking.rst
-+++ b/Documentation/virt/kvm/locking.rst
-@@ -58,6 +58,33 @@ On x86:
-   kvm->arch.tdp_mmu_pages_lock and kvm->arch.mmu_unsync_pages_lock must
-   also take kvm->arch.mmu_lock
- 
-+For device-backed guest_memfd, conversion takes locks in this order:
-+
-+- inode->i_mapping->invalidate_lock for write
-+- IOMMUFD vDEVICE mmio_lock
-+- VFIO vdev->memory_lock for read, during PFN lookup
-+
-+The inode invalidate lock protects attributes and offset-to-GPA bindings.
-+The provider's lock()/unlock() callbacks hold mmio_lock across
-+invalidation, conversion and publication of attributes. Device unlock takes
-+the same mutex when checking for private ranges. Range revocation, memslot
-+unbind and final file cleanup use the same order.
-+
-+PFN lookup during faults takes the inode invalidate lock for read, then
-+memory_lock for read, without taking mmio_lock. memory_lock protects the
-+power and Memory Enable checks and BAR PFN lookup against PCI state
-+restore. Host faults retain the inode invalidate lock through PTE insertion.
-+
-+VFIO provider setup and release take gmem_lock for write, then
-+dev_set->lock, before taking mmio_lock. Both outer locks protect updates to
-+gmem_attached. VFIO file operations read this state under gmem_lock for
-+read; reset checks can instead use dev_set->lock.
-+
-+VFIO resumes the device and takes a runtime-PM reference before acquiring
-+mmio_lock during provider setup. It drops that reference after removing
-+the provider from the vDEVICE during release. Runtime PM callbacks do not
-+take the guest_memfd inode invalidate lock.
-+
- Everything else is a leaf: no other lock is taken inside the critical
- sections.
- 
--- 
-2.43.0
-
+ 	tlb_addr = slot_addr(pool->start, index);
+ 	if (unlikely(!PAGE_ALIGNED(tlb_addr))) {
+-		dev_WARN_ONCE(dev, 1, "Cannot allocate pages from non page-aligned swiotlb addr 0x%pa.\n",
++		dev_WARN_ONCE(dev, 1, "Cannot allocate pages from non page-aligned swiotlb addr %pa.\n",
+ 			      &tlb_addr);
+ 		swiotlb_release_slots(dev, tlb_addr, pool);
+ 		return NULL;
