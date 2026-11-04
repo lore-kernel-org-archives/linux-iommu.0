@@ -1,101 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.169
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793786979;
-	b=JxGO0DeZhVItZHRC9TC/OPk1w8k2gH++625plhbPgJAsePyxTvCm+Z19oEL+IQUoH0a9
-	 qWuujmM2YQOx8qVcDJRJXjUNoVTwWJnulJf4E8d5cj4MdN1SymMSuO0FS0YSJa3Hn/YOi
-	 qjKxeBNQ9b3ruk/ZO17ze31ccihVlknMNufmRBO+rlAcsxYmBgcHvne6x6mzc2rRsl5/y
-	 cA9a0b/+89sG6CqLgc/wj9wvjfYs113Z++GjcL8iBul0GJquDcLYzDEKtPxlAcgMamDCh
-	 XQyyID/OJ7EfIPf1wy3w8QJPNuBqOLk7wWlNh0JkNsQUNIAR2cVRnCRTE/EQsQwsIzA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793786979;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
-	b=y/3wcv/gyHeW0WIK0bx282f2t9M3O1tNpI8om3Igs4On/XR7ycQKSDHZ/4pq3wW4HEAo
-	 fwVKDD4KDq8FebScKC3SXSLTFH+eEyZ3XOnNt/K81tGpme+EmiQ8NTKc5KgQ09wlWJies
-	 3wYLd4LlrFiFzVrP/i+ouCAdmD3c2XfEWCSfaXMwDTf0c6DyJz5/tDm+23eJ1LSqryn0A
-	 oIjst8ovd5kfYxq1egV4X+GfLw4ZRfUeWUo+GHNVk2zPC8ETnt3gdxFnMPIUoJNN4MLBL
-	 ag8W00KdymPEiJuP/hOohnSUomC3KuJ/K9udWF30f67bo3PzT+Tg+v5423LxRdeA72g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=none header.from=tomeuvizoso.net;
-	spf=pass smtp.mailfrom=tomeuvizoso.net;
-	dkim=pass header.d=tomeuvizoso-net.20260707.gappssmtp.com header.i=@tomeuvizoso-net.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HmEXRWa5;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.169
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.11.138.130
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793787742;
+	b=XyaXbqR1uO7hH8ivhluHEtSo/HwGYbLhsuJYcyp3ZvLW5llewvsQbrGYVd0UkWHBiOZA
+	 yvzbE8WfCJVHHh57Eu7qKsCIL9fukSy0f8ZR0XT86AeC++CDKJ5lzGheZrN5pWXPls1BC
+	 I+ObNUImFqNSSob+GNJMWgtatJFh9s0y4n2YgZcK8/i/CsOygNPG4BfbiITAb7Xbgkspc
+	 qPn4tqqorgEkTem7QDqzR1cgAk/1p3n1t+wkYgJV7XSr+gSatp1eOuNdXcVbtDWpz74PB
+	 Eh3b+eqqtVrMyOKLSM+muA5THgbd/g1n1DLqBb4RX2w5e5N8GiZjuu3s2N0yY/TZqbw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793787742;
+	h=DMARC-Filter:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 Content-Type;
+	bh=BvEDid5g6QRjHn3Z1Wkrnwm5AtJ8RllZNkH2qZNru5c=;
+	b=Jrx86wTH9LBo7Gw1nZlzdX7xF2nHsKlF0A1fwSeBAGK3OWDwbE8Emq5hjusPLyk4VETK
+	 QQwBEti5xqvyk5qjvNPOBwzaJ3UC7Ax+Jy0dfCyh7mNkATdW8Ck/Wji5HWNEQrXSAKuh1
+	 dVTdT6JIZfu+k423TjjWn5bJHRaeY1FT8+GHKwKcHA8ZcMk153lbdY6dKjm+0daoESDn1
+	 YMV+L3HL51XViL6bzS+xYQzKNxmM7aRaEuK/vqEbzZ7ziALnFaYgLPq3vEvZK7PayPq3/
+	 H+FamnMGScotvfMjMgAnpgRP3fSravHlp+l+fRH1xYX2vuQWspTCGLHCVsU9nK2TiPQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=sntech.de;
+	spf=pass smtp.mailfrom=sntech.de;
+	dkim=pass header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=mnpXecqY;
+	arc=none smtp.remote-ip=185.11.138.130
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 543A0606A329
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 10:09:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 543A0606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tomeuvizoso.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tomeuvizoso.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33068606A332;
+	Wed,  4 Nov 2026 10:22:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 33068606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=tomeuvizoso-net.20260707.gappssmtp.com header.i=@tomeuvizoso-net.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HmEXRWa5
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-93e55db58cfso58489985a.1
-        for <iommu@lists.linux.dev>; Wed, 04 Nov 2026 02:09:38 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793786977; cv=none;
-        d=google.com; s=arc-20260327;
-        b=MitvF25BWgTC1lT09gI9jUIjrtCyETVPVauS6bmMFVze1iAm88XB6MSgozMjT36E6Y
-         bK8efcMYg36pv3t7H0eDT3Lq7178ospNeJaav+8LpuNZRGZbTEChz3t23Fi48Toby6TE
-         jkUPZQY5Q/S3N7TJVpXArFZZb2CppJn+WXJc2e1KMzf+lpAM/Hj0aMTn+tMuKO2FZEay
-         yCdcuC0yguKobhAYyuEWuZdKNEW5QDoYCBm+kGbynKJINvIjVEMBHL+yPsi93094amN0
-         ZgnusWvJPnKNBI/l9K3PISQOj3IAHmK0InEPRzRkZEoszQfEBqWqrnUH3pSaw/qayOlb
-         fp7Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
-        fh=eAXCzjnIXuTqn22TEf8XXoPvVnNbyXNEplIrlnFank0=;
-        b=BEhEvsupexjE2YzgiI7n/jWxG/Kfd+vgHJIj0yiopYzs/YlEJMH5gUnqt1z5vVAyMq
-         b72YfAISJxBm/2fT3CNhudKzxplri8rf0iR7eMM9cKjAqWlRb7Yn2YAD3aGUIpaXaDXp
-         UZmji8hBYooiEkV6A0cTuZL41Q/beX/iSgLsDEgHXJbCbUtna1j3FT2rpOXOPfyTBx3D
-         F9nOcIMGbtNWxRx6tZnpvnWsvo9k8e7Z0zDIFEXrLZbttJXuoszyMkYenS7TnaqRfMNl
-         +g+0+uohJ027lDbTrZHumWpsX2gtjY4VuUSNNVVxD/MUJYvgoe2gCM7k0hGhI2h7i82z
-         r4XQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tomeuvizoso-net.20260707.gappssmtp.com; s=20260707; t=1793786977; x=1794391777; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
-        b=HmEXRWa5ot6PlXKF9EGCZA+QIHYkHOc+X+6ZUMMSB3fUN7cUZwmOCUQmskx8DyKLcV
-         jF3cAkkKtmj4nCP1sOrrbagi9xu2gJVlVCCiOWeVsEICCq/67J43PAKwdO+jaQBg9KKC
-         M5bktdhRMCs93RkX/0gf4y5ttxsHk+4Yg/jSxCOXkk2rsq3n2k2IIOcDMnowZ4R49vMt
-         p27mJNW9+gY/Hb6LyIQo0zf7EgTls9xaZetKjxWZ+4alFPAMHwTuXMIK1Ns2VhIzbu1D
-         gUyKq7BVYOFZtTTnNa7aQ8uR668V0SNs5g1eEMxfSnejkqQ6ZX1MDCDQhBHhs+u7tZCX
-         enfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793786977; x=1794391777;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
-        b=bcHQkpkJcSt3onNyayzZoWH16H8vMV3lG/yLjfoSxlP/7waEzfDeWlz9tETtemKGRl
-         A9ru6BHA5EWVtbmprpkdGbfDhugqbExcq/nrDYpYfGMreNxb2Vl9hmna5m+4sV45oZ9i
-         /K1bg1yKz2Dk9TPZ1BRVs1ipEK/2pY3PkyFts4pNEWK5gMoyK/TMNW3D6MC3G82pAlgU
-         44slTOmkLbG0QgcygP3Q6Jnym7/mYVHuXgghhr01r+fNjCxepLgmDdWGQ0gUPSleymsg
-         zRVx5X80A795uP3pJLd/gSxuHcx4wg1ieS1hQQvx4jLJtlOG1RrMinnEM3HyJXiZDi98
-         3M3w==
-X-Forwarded-Encrypted: i=1; AKwUvByvso8tnMmgBDZwcrMWKykdBaUBpi6HLqKZvuvIwwqsFVGBU9t0AxWVsh11SuiPSYPaKZzuiw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+0imARhBOy4f6ObdD1f2DJOmO5qzM4frRR5tNUxPnSojjAYvhi
-	W/LMG0RnCVq0buXG4+LkYEgt1LgaJjfA/SmKBLXU3be21GNPI2/Qu7HrdQOL1S+ck/4shI14ktX
-	UmaPm2tbJoRSo6DhhvdYakR+WweOz81VQ27YlibfDOQ==
-X-Gm-Gg: AYBFou2rBRvAhEUW1kbnypP2CIfhgO95OyEeCw2XY84BG4gj68iZXjEyxJhJ/+yw2vd
-	8O97o7PGD19hzMb0817jisKtyS00RPkvM28LRYEfGNVH/0asz7hGiMLf63QQKKbND0zDXNde89E
-	C40cowVz7NYRMHXs46n79/N/dBgbQuNXF9Z65kYbQZMbcT5nt6hmi52qKOLgKtJ6ig85qsaPVWy
-	jvYgw5zaRmBQBAL0dMyOjZT3lZfttbrq/TfqsQtUyIEKNJfBwhM9OPC8O5pzphrpNeDxOZDFct0
-	bBMVzv9zg+QRg/qMXhjk3NlBp/CIlvL2GArY95md6+j0foVGgrOllkAK50qJmmH06mj26eY8s1q
-	u3RwuSktlA6FW3obqnYglvGmGdS/qDhZwVZHI5PQGeeraanEB4fkpHyZs7OBHStvxDAfkrnfuJ6
-	ncvWFrCAQpajXUPc59+A8=
-X-Received: by 2002:a05:620a:460b:b0:937:6de8:b40 with SMTP id
- af79cd13be357-944217194b4mr2663985585a.15.1793786977174; Wed, 04 Nov 2026
- 02:09:37 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=mnpXecqY
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
+	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
+	bh=BvEDid5g6QRjHn3Z1Wkrnwm5AtJ8RllZNkH2qZNru5c=; b=mnpXecqYVSy9/XQTnCwe/QAZAT
+	oO5u9hSGJdyjtMfzeKLmcnySDE7Pfz7vhog/jVLohqgjCNPJB/gaqxJYvQqOah+IGy7rTskfqua9Z
+	Z71031F7JJC5OpNCUvjRL8w3G8oBL5t8D32sJMZx8fk6wMt83Nubl7nAPZX27fkdWACnPS5NWTCPt
+	C/Lq3OYdR04M2QtVUCc7LoOJboS0YKoelxMlb23u8m6CFaYZT+DtJU3eVSqFbCP83H0lUMHQuCdqU
+	T1Bu3zDGMij+udBlOhcK79QncRyN+sKcZ3uZ/iHhrpUccsz8pfP38qBskRoD1lolhDyy0DYiI1KQJ
+	HDXRPhDg==;
+From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
+To: tomeu@tomeuvizoso.net, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ ulfh@kernel.org, p.zabel@pengutronix.de, ogabbay@kernel.org,
+ zhangqing@rock-chips.com, Jiaxing Hu <gahing@gahingwoo.com>
+Cc: royalnet026@gmail.com, abel.vesa@oss.qualcomm.com,
+ sebastian.reichel@collabora.com, sidong.yang@furiosa.ai,
+ u.kleine-koenig@baylibre.com, chaoyi.chen@rock-chips.com,
+ diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl,
+ jeff.hugo@oss.qualcomm.com, rfoss@kernel.org,
+ dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ Jiaxing Hu <gahing@gahingwoo.com>
+Subject: Re: [PATCH v15 01/15] accel/rocket: request the core clocks by name
+Date: Wed, 04 Nov 2026 11:21:46 +0100
+Message-ID: <2231008.VsPgYW4pTa@diego>
+In-Reply-To: <3188623.WAvfycf1tz@diego>
+References:
+ <20261101082307.151957-1-gahing@gahingwoo.com>
+ <20261101082307.151957-2-gahing@gahingwoo.com> <3188623.WAvfycf1tz@diego>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,107 +72,89 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261101082307.151957-1-gahing@gahingwoo.com>
-In-Reply-To: <20261101082307.151957-1-gahing@gahingwoo.com>
-From: Tomeu Vizoso <tomeu@tomeuvizoso.net>
-Date: Wed, 4 Nov 2026 11:09:25 +0100
-X-Gm-Features: AclHuK8sSyrPUh77ae7umfCvxuLdQ-s4Z2b2nFvZD8O11RHz5Wmhve3hcOyzmnA
-Message-ID: <CAPsqS2SOj-+VQxsFvMQ1Hqcep55J0yT++76QZ8or4a9kmF7Bdw@mail.gmail.com>
-Subject: Re: [PATCH v15 00/15] accel/rocket: RK3576 NPU (RKNN) enablement
-To: Jiaxing Hu <gahing@gahingwoo.com>
-Cc: heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, ulfh@kernel.org, 
-	p.zabel@pengutronix.de, ogabbay@kernel.org, zhangqing@rock-chips.com, 
-	royalnet026@gmail.com, abel.vesa@oss.qualcomm.com, 
-	sebastian.reichel@collabora.com, sidong.yang@furiosa.ai, 
-	u.kleine-koenig@baylibre.com, chaoyi.chen@rock-chips.com, 
-	diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl, 
-	jeff.hugo@oss.qualcomm.com, rfoss@kernel.org, dri-devel@lists.freedesktop.org, 
-	linux-rockchip@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On Sun, Nov 1, 2026 at 9:31=E2=80=AFAM Jiaxing Hu <gahing@gahingwoo.com> wr=
-ote:
->
-> This adds the RK3576 NPU to accel/rocket.
->
-> v15 is v14 rebased onto next-20261030. v14's 12/15 no longer applied
-> there, because Sidong Yang's regcmd validation added two defines in the
-> spot where 12/15 adds its own. Nothing else changed, and the tags carry
-> over.
->
-> Leonard Lausen has the series running on a NanoPi M5 and posted a board
-> patch on top of it:
-> https://lore.kernel.org/all/20261019090348.378183-2-leonard@lausen.nl/
->
-> On Sashiko's two points about v14 9/15, I measured a CM5-IO. U-Boot
-> hands over with the NPU domains on, and the power domain driver still
-> probes. The NPU QoS is saved before its first power-on, so it is not
-> zeroed. The domain whose QoS does get zeroed is the GPU, on mainline
-> without this series, and that fix went out on its own:
-> https://lore.kernel.org/all/20261101055633.101309-1-gahing@gahingwoo.com/
->
-> 1/15 is the patch that carries Igor Paunovic's name. It is also part
-> of his DVFS series, so whichever lands first, the other drops it.
->
-> Ulf offered to take 7, 9 and 10. 1 to 5, 11 and 12 go through accel,
-> and 13 to 15 through rockchip. 15/15 needs 9, 10 and 12 to 14 first.
-> Without 9, 10 and 13, the ROCK 4D takes an SError at boot when the NPU
-> domain powers on.
->
-> Link to v14: https://lore.kernel.org/all/20260924102135.92217-1-gahing@ga=
-hingwoo.com/
+Am Dienstag, 3. November 2026, 23:42:19 Mitteleurop=C3=A4ische Normalzeit s=
+chrieb Heiko St=C3=BCbner:
+> Am Sonntag, 1. November 2026, 09:22:53 Mitteleurop=C3=A4ische Normalzeit =
+schrieb Jiaxing Hu:
+> > From: Igor Paunovic <royalnet026@gmail.com>
+> >=20
+> > rocket_core_init() hands core->clks to devm_clk_bulk_get() without ever
+> > setting the .id members. The rocket_core array is allocated with
+> > devm_kcalloc() in rocket_device_init(), and rocket_probe() only fills in
+> > .rdev, .dev and .index, so all four clk_bulk_data entries are requested
+> > with a NULL con_id (unlike core->resets, whose ids are set a few lines
+> > above).
+> >=20
+> > clk_get(dev, NULL) ends up in of_clk_get_hw(np, 0, NULL), and
+> > of_parse_clkspec() only consults "clock-names" when a name was passed, =
+so
+> > the index stays 0 for all four entries. Every entry therefore ends up
+> > holding a handle to the *first* clock of the DT "clocks" property, i.e.
+> > ACLK_NPUn. Nothing fails: probe succeeds and the driver believes it owns
+> > four different clocks.
+> >=20
+> > The consequence is that rocket_device_runtime_resume() prepares and ena=
+bles
+> > the AXI clock four times, while hclk, pclk and - most importantly - the=
+ NPU
+> > compute clock ("npu", SCMI_CLK_NPU on RK3588) are never prepared or ena=
+bled
+> > by this driver at all. The NPU still works only because the Rockchip
+> > power-domain driver sets GENPD_FLAG_PM_CLK and its attach_dev() callback
+> > walks the device node with of_clk_get() and adds every clock to the pm_=
+clk
+> > list, so genpd happens to keep the remaining clocks running. The bug is
+> > therefore latent today, but it means the driver holds no reference to t=
+he
+> > clock that actually feeds the NPU, which stands in the way of any future
+> > frequency scaling (OPP/devfreq) work.
+> >=20
+> > Found on an Orange Pi 5 Plus (RK3588) by reading the live clock tree:
+> > /sys/kernel/debug/clk/clk_summary shows four "fdab0000.npu" consumer
+> > handles on aclk_npu0 (and likewise on aclk_npu1/aclk_npu2 for the other=
+ two
+> > cores), while hclk_npu0, pclk_npu_root and scmi_clk_npu have no
+> > "fdab0000.npu" consumer at all - their only consumers are the
+> > "npu@fdab0000" handles created by the power-domain driver via of_clk_ge=
+t().
+> >=20
+> > Set the ids explicitly, in the order mandated by the binding
+> > (Documentation/devicetree/bindings/npu/rockchip,rk3588-rknn-core.yaml):
+> > aclk, hclk, npu, pclk. After the change the driver holds one handle per
+> > distinct clock and clk_bulk_prepare_enable() covers all four.
+> >=20
+> > Note that this is a user-visible tightening for out-of-tree DTs: the old
+> > NULL-id requests resolved by index and succeeded no matter what
+> > "clock-names" contained, while the named requests fail probe with -ENOE=
+NT
+> > when one of the four names is missing. That is the right outcome for
+> > in-tree users - the binding requires exactly these four clock-names and
+> > rk3588-base.dtsi carries them on all three cores - but a DT that relied=
+ on
+> > the permissive lookup goes from silently running on the wrong clock han=
+dles
+> > to not probing at all, so record the change here where git log will find
+> > it.
+> >=20
+> > Fixes: ed98261b4168 ("accel/rocket: Add a new driver for Rockchip's NPU=
+")
+> > Signed-off-by: Igor Paunovic <royalnet026@gmail.com>
+> > Tested-by: Sidong Yang <sidong.yang@furiosa.ai>
+> > Tested-by: Diederik de Haas <diederik@cknow-tech.com>  # NanoPC-T6 LTS,=
+ NanoPC-T6 Plus
+> > Reviewed-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+> > Reviewed-by: Jiaxing Hu <gahing@gahingwoo.com>
+> > Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+>=20
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+>=20
+> nit: the commit description could be way shorter, for that small change.
 
-Hi,
+note-to-self: also part of the DVFS series
 
-Could you please add a GET_PARAM IOCTL to this series for userspace to
-query the hardware version? I think I would return an enum that
-matches the NPU DT compatibles one to one. Then userspace can have a
-hardware database indexed by that value with sram, register map, etc.
 
-Regards,
 
-Tomeu
 
-> Igor Paunovic (1):
->   accel/rocket: request the core clocks by name
->
-> Jiaxing Hu (14):
->   accel/rocket: take the completion register writes under job_lock
->   accel/rocket: wait for a running IRQ handler before resetting a core
->   accel/rocket: let the core suspend after a reset
->   accel/rocket: factor the completion tail out of the IRQ handler
->   dt-bindings: npu: rockchip: add rockchip,rk3576-rknn-core
->   dt-bindings: power: rockchip: allow resets in a power domain node
->   dt-bindings: iommu: rockchip: describe the RK3576 NPU MMU
->   pmdomain: rockchip: add optional per-domain power-on settle delay
->   pmdomain: rockchip: cycle an optional power-domain reset on power-on
->   accel/rocket: select the per-core clock and reset counts from match
->     data
->   accel/rocket: add RK3576 NPU (RKNN) support
->   arm64: dts: rockchip: add NPU core domain clocks and resets to rk3576
->   arm64: dts: rockchip: add NPU (RKNN) nodes to rk3576
->   arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
->
->  .../bindings/iommu/rockchip,iommu.yaml        |  28 ++++
->  .../npu/rockchip,rk3588-rknn-core.yaml        |  47 +++++-
->  .../power/rockchip,power-controller.yaml      |   8 +
->  .../boot/dts/rockchip/rk3576-rock-4d.dts      |  22 +++
->  arch/arm64/boot/dts/rockchip/rk3576.dtsi      |  86 +++++++++-
->  drivers/accel/rocket/rocket_core.c            |  32 +++-
->  drivers/accel/rocket/rocket_core.h            |  11 +-
->  drivers/accel/rocket/rocket_device.c          |   7 +-
->  drivers/accel/rocket/rocket_drv.c             |  42 ++++-
->  drivers/accel/rocket/rocket_drv.h             |   2 +
->  drivers/accel/rocket/rocket_job.c             | 157 +++++++++++++++---
->  drivers/pmdomain/rockchip/pm-domains.c        |  89 +++++++---
->  12 files changed, 467 insertions(+), 64 deletions(-)
->
->
-> base-commit: 7649ba73f9e7e1e04d0b46213e39c79ae09dd55c
-> --
-> 2.43.0
->
