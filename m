@@ -1,85 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=65.109.113.108
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793809394;
-	b=bOKLyCkYdxAGDfs0xnjoO/2oDi47/eh8Wjpcly4gVqYMEFxKZSEpe6JifVB5UAhlNqsf
-	 BtbE2aCeIb9PI1dY7g2OowIW0sXroQZlyvc8yAEErl7KlhTrOKQWocKcmR3eNU5WC2LbR
-	 VBQWkJWYlnsXkyJoZwWo8RnodXeDUmcHKJI8K9MzRicBTOMBmYR552HKDi4Hv+HjxhF8V
-	 tAHX9Ctn6BZXxlsOIUyPlFLaTURj6yDImxkqPhyYSRZqZ4oTfpm7gDYJ+7CMqBGhpiB9U
-	 cWcxbKnkeycsmDfPLBkHXIuDGsu5wSfLG/iOJwjd7Uev4TjZZJQqglSikCvA+qPxTTg==
+	t=1793809719;
+	b=Y+NT9ErIBUo2gAp4pYGdTBV/W+i3Wja9FkgC8Mpy07252zL4Zg01VwbzS+i1rqrJfRJy
+	 o3miuBPisRFyGld/a1KHZ6x0twP/BtR3hEAKogwZi2vunmO8HyJED/ycPfVmXSeVoPoPr
+	 j+E9rpdZplPa8BgWxSRSNb8Xz8SYMZiL8q4Byx1uC9pBKLWV5rE20KSDHDhqzTTnSGhwa
+	 iCcDIVs1jbMAqejzKUOeNxk9kKiZD7pxlwNPxDkZ1gIA01pUtVdyn9as0+L4X+ZKSgKMV
+	 xYZeu5Lf6gShZxguWFgzyRRRoza5vGPt9FSUDVjKg6azpmjxiHhGAlt74srsJvSYV8w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793809394;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=vocGYEw/5tonadEsgL+tN2/v9RawaaHXU9Cku3rNbjM=;
-	b=g1hZese30vBoxaN2g22tDhGfvVq7ENhHTKWKt2Z1wOOFSSgCa9B+/ST/cOG+35rcoXfy
-	 O6G6pElnLyr9iI+Ml6VE1HHt+/aX4nIadjaFneEz22CoEumTNPPLY2ndvmDQqjOdI2raW
-	 W4zrxhHuYwgdWYaDZk7U6I7GAMa90xFA6ZUEKUI6Bfks+medmZO0bnNVwha6NKUPQtiB9
-	 sCYJz4lBE2psWniZthotAFFVy6ls5vGBQxo0Qyaz+TL9HGAO4vVqwurzXTrMzgc55y2xW
-	 ZYNGty+VpF/pXk+4Tz7BtfnK8YogjjoqZ3KMppCyW7TA6qLgpceBbt2awaauZZxa5qA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793809719;
+	h=DMARC-Filter:Received:X-Virus-Scanned:Received:DKIM-Signature:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=9SHHUSf+T2bKBl5zTKVc7+4D9udfNKOS0jVoto10SB4=;
+	b=OJbXbXbIMuLzq3xzRm6x4bfrUiDFs7G/1hfOuzBpHWALVKKGUk3usFwwY4rU+J3TWgxE
+	 5HckMeTC9U3oB6tpG3j7slmoqxa4UxRkhiRgoY8nNbdULi9k4fohkhgyb5+X1CSQsTgQi
+	 7jWm7h6qiBHoKDERKahyuvhOojSBmmHT8eoCiBRkuncVqVRPWXIMF5k/gb618gIhdPS08
+	 qrJxa4bq9lob2FfL4xmohHaltuKztDJQIlMHXzApIiGaet2Qa15h0NlNrkHRDgvW7yiBb
+	 ADt/8H6E6VRG0K4+c4tgsMSQFA8QSLb3BjIlLxDRwKWnT8T89Y3u4Bnvm7nJGhfJY1Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linaro.org;
-	spf=pass smtp.mailfrom=linaro.org;
-	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=kdQJmj61;
-	arc=none smtp.remote-ip=209.85.128.48
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=alien8.de;
+	spf=pass smtp.mailfrom=alien8.de;
+	dkim=pass header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=V4xzcjyc;
+	arc=none smtp.remote-ip=65.109.113.108
+Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40346606D80D
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 16:23:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40346606D80D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E52C606A31B;
+	Wed,  4 Nov 2026 16:28:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2E52C606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=kdQJmj61
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4a2072b9832so12182535e9.1
-        for <iommu@lists.linux.dev>; Wed, 04 Nov 2026 08:23:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1793809391; x=1794414191; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=vocGYEw/5tonadEsgL+tN2/v9RawaaHXU9Cku3rNbjM=;
-        b=kdQJmj61fGHKGwx1dWASklCXYb2Tb47QaXXzlzfqZ6Y0VoSkXYa4rWD0fwo545mfCv
-         DvAXBH7Pr+2kHxi5i0a+lX0Ym+ajj6aGirn5v8hnL/NcR8DdYbM9qChmRwQ+Cc3Gomru
-         MqbakvtOjJlTpbus7yTNCjMmY5MyZ1l4gQo/v+9jdomiFEAuxBv5Qhrx2vyWeJ6keN+F
-         DKW4xbo7Az7l8Jw+xnVemDd/krlGcGBSjEed9Q5fVMG2ES21/X4MNY2VhNTqIe/7Wv7F
-         BCNEDDmd/JZHXYHrIDRf8zmOWZaxp29vOKlZMILZI0zt/aeY26WLRdclQvPZMMHyUdNT
-         pQNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793809391; x=1794414191;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=vocGYEw/5tonadEsgL+tN2/v9RawaaHXU9Cku3rNbjM=;
-        b=DPEEXPLqjnYKHLJrc5+9DzAJ9Kgn7QWP1RHdclDuAnWTDiwXI6xkF3ITDkghYOubHP
-         VJT//yPgchqXNeOP/orMM9+WRpEQ1eE6DvYQPGr7mgnmBtm4tNi+RU36k6KPHWcpT4pv
-         RTKXDm2r3V50R5vvCwlgEBdKsLYa24/3ff4k9G7U7aME4omx/5xBtMPhZk5RjjbrYm15
-         e+z1PdDo+HRSGU5vT88A1eY27L8O7LT1T76L0H6OjmNdIytB/CNV3sXpezGRdFWKHydG
-         ++xpXjorPY0H89mh77XYhR0y5E/uYWe15clEBXzYEwwzMQuBIHOtG5Dpx6vQerGzACNk
-         rFbw==
-X-Gm-Message-State: APuU4Z8pMNJWZLmvD8GoZ+UqHIG0jEg3pO9bL8r0AvWFpLi/N3MCA3PO
-	SFWuuhy1+rk6ZjDPriN55/SCgmoivW2+MKtskUIsetygzajRP95VDO87l0n5ZlXdB6s=
-X-Gm-Gg: AYBFou2ISWz3WbWtMH7BAGmEMt7rISTbX9eC4WKsWDobN2Mkh2DnJtf+SWc6EdbyrYP
-	nrpgs3PLbj/pJVBnVn9Y4Qr+Jh+RUDlyCODoEbGSRIG87XZGaAxRpIiWBqeOm0B/7mN+Kxn09dK
-	UGj96w9nLb1oHSF31W8N10feOnTm0g62Dn72P3mOi+mPoLDdT+cAGeSv85tRqDlEckNQGyLMT9+
-	ZwkuNAUvxsyHMOQJPSNhhpyemmdO80+hqyUEokgdwYS5UXo9l//yjfJEjnSroZKYNjAbH4I9vmt
-	CjOk1GHocrzIC6W36OymUA8AETmiVZ5dfqZNXiMnLRdrQv+d8eXGbRA/AUyj0/6FHmdrcVxrR70
-	oSeg/jevVSBFa6cE3ghnbi1lTlzN+V7ww0LKAvukM9B5p+0/s5QeUveZxBnjlf+NQ7CK8Zzi0sy
-	bftawKewOHVkNZrU3gxhzbYVqREh0z61oZ3bhcua/9OJNLyl0Pkfomxz4wnuuLlw+AZS8B1Fwq6
-	/O6fCHKSppcPxt99s9IPlGzZum0eSGHXJwCicCTkiekFw/cnEH9bPGBIcGJd2CVMqnjqErffk19
-	d4H/6l0IhjIHzXJJLyCVy3CGXjeDu66NHwIK9u+avg==
-X-Received: by 2002:a05:600c:1907:b0:4b4:a551:681a with SMTP id 5b1f17b1804b1-4b55c8743d8mr75395e9.3.1793809391436;
-        Wed, 04 Nov 2026 08:23:11 -0800 (PST)
-Received: from [192.168.0.167] ([109.76.163.117])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b2a80e0fe6sm168477495e9.1.2026.11.04.08.23.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Nov 2026 08:23:10 -0800 (PST)
-Message-ID: <f416b51a-0775-4834-9e1d-af8a72d9a1d8@linaro.org>
-Date: Wed, 4 Nov 2026 16:23:09 +0000
+	dkim=pass (4096-bit key, unprotected) header.d=alien8.de header.i=@alien8.de header.a=rsa-sha256 header.s=alien8 header.b=V4xzcjyc
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 1641B40E0497;
+	Wed,  4 Nov 2026 16:28:35 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
+Received: from mail.alien8.de ([127.0.0.1])
+	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id TefcqjVVoH92; Wed,  4 Nov 2026 16:28:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
+	t=1793809710; bh=9SHHUSf+T2bKBl5zTKVc7+4D9udfNKOS0jVoto10SB4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=V4xzcjycP1+Wtqc6wgEWimId3M/6+viYYgNJsoST2dIljcHhD25I2Te+BT7jUHbJV
+	 LEUPPuH+S8feP9TbHkuD4SQfsNtHRtRt4F5RqIzd8qUpvgJVHGNWkXKRBvUKdjTQHJ
+	 SAdte27vaf/P0mVli7w120P9DjOAx/3YfLxBkUfawzctmP+cw0J96TiAXlSvmRLWNy
+	 MzQG77HLLr7RGBuyHbfg3j0xE0lCmrEP4EROND+CgK06dv/fEdKHxvj6eseIthtgQR
+	 hDqKvbseNqN8ndDFVnnBkuKh8saLpViSnLllDhhiKOhNWl3WB+7Y2RaX7d2sswN7EQ
+	 rVB7gAcJcK441nZYuOtWBn9miFBB/FWlRC5I8QeSKbVPWv6Uiek078rhtAIGAWxC5n
+	 n9aXv/A1o/pHQTI3YhqHGUaik/BGG0dEHrbYmpVlNpVvV4W0Pzh8Uv3k8UbFfExpWe
+	 xba+MGCUsMopyIh/RbUyPNiLI+U9zpzRyiLjyqPraytYUSCGGm9iS4mAKZYxMuoXXY
+	 ehpeg7LASildxIapP+I6QDmtnuQCL0260ZCVEdKD90U0Yjhkfm35HYacMcWd1Fwnd3
+	 2XMoxLPJ4WjYZEQf8jTJ2lvVDXejFRPPjMtxoYnXqvSOSjA3PllhmOEwVNpiNrlVcw
+	 zbpjWjIJIp1driYqfHXNCdhY=
+Received: from stx.tnic (unknown [IPv6:2600:1700:38ca:c00::42])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
+	(No client certificate requested)
+	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C227C40E02C2;
+	Wed,  4 Nov 2026 16:27:50 +0000 (UTC)
+Date: Wed, 4 Nov 2026 08:27:47 -0800
+From: Borislav Petkov <bp@alien8.de>
+To: Vineet Gupta <vineet.gupta@linux.dev>
+Cc: Thomas Gleixner <tglx@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Tvrtko Ursulin <tursulin@ursulin.net>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Thomas =?utf-8?Q?Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>, "Xin Li (Intel)" <xin@zytor.com>,
+	Brian Gerst <brgerst@gmail.com>,
+	Nikolay Borisov <nik.borisov@suse.com>,
+	linux-kernel@vger.kernel.org,
+	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	K Prateek Nayak <kprateek.nayak@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,
+	intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org, llvm@lists.linux.dev
+Subject: Re: [PATCH 0/4] Fix the x86 defconfig build with GCC 17
+Message-ID: <20261104162747.GAautdA2q2lw2gsth2@fat_crate.local>
+References: <20261104160722.1637541-1-vineet.gupta@linux.dev>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -89,57 +105,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 2/2] of: Add support for "iommu-ranges" on a device
- node
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
- Saravana Kannan <saravanak@kernel.org>,
- Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
- Eric Auger <eric.auger@redhat.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- virtualization@lists.linux.dev, devicetree@vger.kernel.org,
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-References: <20261103-add_iommu_ranges-v6-0-361f3921a133@oss.qualcomm.com>
- <20261103-add_iommu_ranges-v6-2-361f3921a133@oss.qualcomm.com>
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Content-Language: en-GB
-In-Reply-To: <20261103-add_iommu_ranges-v6-2-361f3921a133@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20261104160722.1637541-1-vineet.gupta@linux.dev>
 
-On 03/11/2026 15:29, Vikash Garodia wrote:
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 5c266511db78910d6fd221af5437cecff4931c22..0428ceb50dec58f11872b4fb64e283fa8d9046a3 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -185,11 +185,118 @@ iommu_resv_region_get_type(struct device *dev,
->   	if (start == phys->start && end == phys->end)
->   		return IOMMU_RESV_DIRECT;
->   
-> -	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", phys,
-> -		 &start, &end);
-> +	dev_err(dev, "non-direct mapping [%pr] -> [%pap-%pap] is not supported\n", phys,
-> +		&start, &end);
->   	return IOMMU_RESV_RESERVED;
->   }
->   
+On Wed, Nov 04, 2026 at 08:07:17AM -0800, Vineet Gupta wrote:
+> Fix build warnings and failures (CONFIG_WERROR=y) with a GCC 17 build.
+> GCC 17 adds -Wconstant-logical-operand which is strict about operands
+> of && or || that fold to a constant other than 0 or 1.
 
-Same feedback as @ the last version of this.
+Just from looking at it, my initial reaction would be to disable that option.
 
-I still think this behaviour change should have its own patch that 
-preceds this patch so that the logical change is clearly explained and 
-understood as a standalone change.
+Because, frankly, I don't see the point.
 
-Supporting iommu-ranges != not mapping misaligned ranges.
+-- 
+Regards/Gruss,
+    Boris.
 
-Otherwise this change goes under the radar of the new functionality 
-addition.
-
----
-bod
+https://people.kernel.org/tglx/notes-about-netiquette
