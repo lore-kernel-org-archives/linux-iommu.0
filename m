@@ -1,67 +1,96 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.191
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793808229;
-	b=DqDHp580h3A0aZDIjI06rVEtKi6Qb6ISArJmNF81AKHaHsQaFAWVCoKT6O0Rzya0YGL+
-	 y8rFnsCJtXKYOim8AGxM/QWy0ye35bN7Qb5Lh+33Ug4PQkovHEGyBWqmziasKCcSNSWPS
-	 FL/jJjiEdAmy3BTiTgk1Nul5kLycR+1vSGjumRlQsJqJdimrZJKnBGJW8AxlZYeXPgimc
-	 0/Ed4nNIhZwrhWJeeMp2+6YaAhfzaTxfiacuGnDnLNOtuzFabPNtxEPUa1APAwEj1wgK5
-	 GUln7FGAXOwPpvpVQHxAn00cHsuxvW6TyTQHbzZSd3z78UkbzXLRiJo6whViYUcPQDA==
+	t=1793808462;
+	b=rT0JghCoqjVgB23OI0qNc3DRDQQi7JiHdfjXix6RDjypdzFYDBIAubX+5I3ZZcatfBNO
+	 HzODXdSyR84QchkDEkBPsB5fsK91w9DFUxxsS0nFVp6kjuzq0cGFkU7R6xzGXNBLEuuFY
+	 4Nz+Nk19iZ0MZohDWsfuunRjYvrJsgjD7JqUp2VzpO1kSKK/y9YcJ9evU3YYTZzMfqxcK
+	 8vSMQU2eF4DFI3usTCRuXErfesXdbEr5dNhYQ8XGG+ZzZOXqp0aFoE0bkeRtqWTTte9Aw
+	 fSWQg/n+FarYGFpRIb/ktptAHnSQP3kLG7HRTzRjRr7KRmoKLnxGnwZKgOgJR8d3g/g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793808229;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=4z0jvqdS/1LMWIjFo97DLyqM1S7YnHqeCK2uONFB0l0=;
-	b=MO83QFkT2YdfJtyKLkx/y023AZAobTdDtkE7doTUWNuxma6dgdWnThWwW3qx2EqNnI85
-	 Jn/ciP63h/cV7Ngbupc3wRSKxJARrtc6lqWEPe1B0VNk+oZDKZJ8qx2sLzxeo8AnRU2u1
-	 B+rRGNSia6VszK44Xnecs3ApB0LtkcKKqXKmGy60id317u9bIWPOq7Ytl6GAP7spkHyMV
-	 O/xI9K7t4rRPiK1VM/F+rlgE7Wpcu93p5K2l34Gxd6vYcML5CNPGVj5mjRAprMPkxyijp
-	 HiR9uzCl82LSSfCoSPtkJESd0dJQ5510lTErnZEsa08ziJIqCQNY67qSFQS637mVlBQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793808462;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
+	 X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=tUI0nKZKutgcYVVqywY0bgNqE6wcGLtzzloSBXTvSY0=;
+	b=xOqj3bKnDnEGd5sEYskcAt6q5m9LC0NU8Q8XzWHGlxtZY3RnCwA+dSZ5pDrGUstFvaCg
+	 p8/X+R4oWHzi2THL00LWVqRLaBlaxICSLJC37bcUQZxhzwLpxG5YGwaFnTT0XTpEq2iZx
+	 3NH0gjxriL6zbWrlZfCOwH5Ck+k9VG7tM29OR7AKd8O+ExPzVcG0FMj55r0MFzKakvgo+
+	 Mqt+2hNMewFnEhALxQCtPcS5mMKYOb+ewWdXj1tmZevefw/BIW1M7Tpa3nS+tbWS5/7yt
+	 QNO05CqzIMrNHexkhqRhCAcDjJeqLTf7HEXqB9ufHBbRtiJVuy0yyi6+OrayQ0MyAzg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lvmssJKq;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b="XQNU/is/";
+	arc=none smtp.remote-ip=91.218.175.191
+Received: from mta0.migadu.com (out-191.mta0.migadu.com [91.218.175.191])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54AC606A337;
-	Wed,  4 Nov 2026 16:03:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67229606A329
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 16:07:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67229606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lvmssJKq
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAF61F00A02;
-	Wed,  4 Nov 2026 16:03:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793808228;
-	bh=4z0jvqdS/1LMWIjFo97DLyqM1S7YnHqeCK2uONFB0l0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=lvmssJKqKlBB8zb6lcm8q6aHeXG/qCiP+gUjcU9nvF+xGya/hGTMk+h5EqGwaP7Dg
-	 hCEjLaOMvxn99ux2L1vQ1WZcAx2UrUfxZq7tcVAtMx/fDv/Y5cU6wFg00SgqtSbZ+a
-	 /WXDF59xns9xcQX8OTZxjVf71BkxvniIjNyKm58RvBXNg83UcnxxNX2rY1B43JrSuJ
-	 8RqAyPwTf10OjQuQ7aJ8eKOoS80vk/S9VLlqiPDSLY5yZngtZ4hz6g28t2nn+PF25i
-	 8xKOs2XnzNhgBZUBhfQUJEOVMjBCn0dWJFHOAMfzJuGQi9BEpg3Gc3u0bauDSadtxU
-	 b+XunlvXOSbvg==
-Date: Wed, 4 Nov 2026 10:03:46 -0600
-From: Rob Herring <robh@kernel.org>
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux.dev, devicetree@vger.kernel.org,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Subject: Re: [PATCH v6 2/2] of: Add support for "iommu-ranges" on a device
- node
-Message-ID: <20261104160346.GD3951195-robh@kernel.org>
-References: <20261103-add_iommu_ranges-v6-0-361f3921a133@oss.qualcomm.com>
- <20261103-add_iommu_ranges-v6-2-361f3921a133@oss.qualcomm.com>
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=XQNU/is/
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=8h6G/EKHbetMFLZ3FoTwPAwj6jQwPZCmaugSiKT4/5M=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1793808459; v=1; x=1794413259;
+ b=XQNU/is/dft3ETxtjnalCy4ZDdy1INN6nP91Ud3MGemBsNgDbMYrTU65cc0u6EwccevYOCUf
+ PjysVVkSQsy3EbBBbFIKb818S2ixg3BPIQD4p7qP5yRYuPtSkoRRb3cLjmGe69aebS2/tD96/XW
+ k9wvx0LQjVKBMNDKulLWg/qk=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id 64b2df2fbae2508c;
+	Wed, 04 Nov 2026 16:07:38 +0000
+X-Mizu-Trace-ID: 64b2df2fbae2508c
+X-Migadu-Flow: FLOW_OUT
+From: Vineet Gupta <vineet.gupta@linux.dev>
+To: Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	Peter Zijlstra <peterz@infradead.org>,
+	Juri Lelli <juri.lelli@redhat.com>,
+	Vincent Guittot <vincent.guittot@linaro.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Tvrtko Ursulin <tursulin@ursulin.net>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Matthew Brost <matthew.brost@intel.com>,
+	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>
+Cc: Vineet Gupta <vineet.gupta@linux.dev>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"Xin Li (Intel)" <xin@zytor.com>,
+	Brian Gerst <brgerst@gmail.com>,
+	Nikolay Borisov <nik.borisov@suse.com>,
+	linux-kernel@vger.kernel.org,
+	Dietmar Eggemann <dietmar.eggemann@arm.com>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	Ben Segall <bsegall@google.com>,
+	Mel Gorman <mgorman@suse.de>,
+	Valentin Schneider <vschneid@redhat.com>,
+	K Prateek Nayak <kprateek.nayak@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>,
+	intel-gfx@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	llvm@lists.linux.dev
+Subject: [PATCH 0/4] Fix the x86 defconfig build with GCC 17
+Date: Wed,  4 Nov 2026 08:07:17 -0800
+Message-ID: <20261104160722.1637541-1-vineet.gupta@linux.dev>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -71,67 +100,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261103-add_iommu_ranges-v6-2-361f3921a133@oss.qualcomm.com>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Nov 03, 2026 at 08:59:33PM +0530, Vikash Garodia wrote:
-> Reserving an IOVA address using "iommu-addresses" requires it to be
-> placed in the reserved-memory node. But when "iommu-addresses" is the
-> only property being described and there is no backing "reg" (i.e. no
-> actual reserved system memory), it does not really belong under
-> /reserved-memory. A device IOVA range is specific to its own address
-> space, and does not describe the system physical memory to make it
-> qualify under reserved-memory. Given this, place "iommu-addresses"
-> inside reserved-memory only when it is paired with a "reg", otherwise,
-> define it within the device own node. It was discussed here:
-> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
-> 
-> Existing "iommu-addresses" property expects a phandle, which does
-> not make sense when the property is defined within the device node.
-> "iommu-ranges" was introduced to specify the device specific IOVA ranges
-> when there is no backing "reg".
-> 
-> Suggested-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> ---
->  drivers/iommu/of_iommu.c | 134 +++++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 125 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 5c266511db78910d6fd221af5437cecff4931c22..0428ceb50dec58f11872b4fb64e283fa8d9046a3 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -185,11 +185,118 @@ iommu_resv_region_get_type(struct device *dev,
->  	if (start == phys->start && end == phys->end)
->  		return IOMMU_RESV_DIRECT;
->  
-> -	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", phys,
-> -		 &start, &end);
-> +	dev_err(dev, "non-direct mapping [%pr] -> [%pap-%pap] is not supported\n", phys,
-> +		&start, &end);
->  	return IOMMU_RESV_RESERVED;
->  }
->  
-> +/**
-> + * of_iommu_derive_resv_regions - derive reserved regions which
-> + *                                are outside of iommu-ranges
-> + * @dev: device for which to get reserved regions
-> + * @list: reserved region list
-> + *
-> + * A device can describe its own usable IOVA ranges directly on its node
-> + * via "iommu-ranges". Everything not under those ranges is derived
-> + * as a reserved region so the IOMMU allocator won't use it. Entries may
-> + * appear in any order in the property.
-> + */
-> +#if IS_ENABLED(CONFIG_OF_ADDRESS)
+Fix build warnings and failures (CONFIG_WERROR=y) with a GCC 17 build.
+GCC 17 adds -Wconstant-logical-operand which is strict about operands
+of && or || that fold to a constant other than 0 or 1.
 
-Is this really needed? Assuming CONFIG_OF is enabled, this is only false 
-on Sparc. I don't think Sparc needs anything in this file. There 
-aren't any IOMMU drivers for Sparc unless COMPILE_TEST is enabled. So 
-maybe building of_iommu.c as a whole should depend on CONFIG_OF_ADDRESS?
+In the past similar fixes have been done for clang, e.g.
 
-Rob
+  93f56de25937 2017-04-06 mac80211: Fix clang warning about constant operand in logical operation  [v4.12-rc1]
+  ...
+  dd7fe5d9fd6a 2024-01-17 rtc: max31335: Fix comparison in max31335_volatile_reg()                 [v6.8-rc1]
+
+The reason this trips only with gcc is that clang's toggle is more
+permissive:
+ - it checks RHS only, not constant LHS.
+ - Macros are not checked.
+
+Fix is to effectively make a macro or condition return 0 or 1.
+
+The patches are split up per subsystem and can go independently via
+respective trees:
+
+  1/4 x86/cpufeatures: the awk-generated *_MASK_BIT_SET() returns 0 or 1.
+  2/4 wait: ___wait_is_interruptible() with a constant state.
+  3/4 iommupt: PT_SUPPORTED_FEATURE() in the fvalog2_*() helpers.
+  4/4 drm/i915: IS_POWER_OF_2() in reg_bits.h, and two Kconfig timeouts.
+
+Tested on x86 defconfig with CONFIG_WERROR=y, at each patch:
+
+ - GCC 17 trunk (20261103): each patch removes only its own errors. The
+   build has no warnings after 4/4.
+ - GCC 16.1: the build has no warnings. The .text of each object file
+   does not change. The only differences come from the build timestamp
+   and the release string.
+
+Vineet Gupta (4):
+  x86/cpufeatures: Make {REQUIRED,DISABLED}_MASK_BIT_SET() return 0 or 1
+  wait: Make ___wait_is_interruptible() return 0 or 1
+  iommupt: Make PT_SUPPORTED_FEATURE() return 0 or 1
+  drm/i915: Avoid -Wconstant-logical-operand with GCC 17
+
+ arch/x86/tools/cpufeaturemasks.awk          | 4 ++--
+ drivers/gpu/drm/i915/gem/i915_gem_context.c | 2 +-
+ drivers/gpu/drm/i915/i915_config.c          | 2 +-
+ drivers/iommu/generic_pt/pt_defs.h          | 2 +-
+ include/drm/intel/reg_bits.h                | 2 +-
+ include/linux/wait.h                        | 2 +-
+ 6 files changed, 7 insertions(+), 7 deletions(-)
+
+-- 
+2.53.0-Meta
+
