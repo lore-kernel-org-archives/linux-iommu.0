@@ -1,72 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=183.62.165.209
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793784096;
-	b=slcYSoVQ4oGHU0+k/mCLUnkCJmJMeTniOj6qnYBjndDMxJ2FvHiixdtZM+EWP3Vr6IUQ
-	 de8efX+qtDv5lt74Vd7dXeuvkClNNvpPN6pHN/zKuxsk7ofSFG2tpcmNfyKHLLf4216qP
-	 FAYeb9KwP8YwRNCVotPLqj3gPUEJCcqeBnKBN+hJ1PeNXvwpXpzKvZQ7UtxU9RZHtPORw
-	 +X5nbxggkmX8ydMwII4k1W3SarqXjbbWuLiAoSquc3hgSgXW3NVfS7U2NaQXPFkoe5WYF
-	 ZGM09AG/WjDe34npzsFg8gGqvR31gQLJVTOrvRKllNFC0SXO5n/BjcIH6US6xt6U76g==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793784096;
-	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
-	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
-	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
-	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
-	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=l02k7HuERHdY3gvfUjsKRGhZjDezJ9lvCttCbYwWDlw=;
-	b=B3qGuSFKaPKfHEjUrfKME6/+v0+nuTghS6bgzBBKgKfNFxvEGATmbXVDfy4WXikWT5Jb
-	 UizUcrZWg5CqZJjYF0OZgZ8mqGh42SaQ8pYjNnpCIeuMcKT5q3/4EWTE2VLtR0fWCROl9
-	 +EewRlppGKoOgBPoiLcTe/WkuxKZNaLVUUHzGTzfFoZBqdkKcu0cXfH7c0/fEQIqLmTk/
-	 SjCTXOdAxpo/sJYf1Wfx2Mxah8V1R98kk4aagq9JFBNzIlYtSYxK2dh3zWXPG897GS3Sr
-	 983RTVJqB5a/xeEXcDdLrKEVw+4FiwdyOovgRerskSv4Dt6QGNurmli+IQGqtiTrdbw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=sanechips.com.cn;
-	spf=pass smtp.mailfrom=sanechips.com.cn;
-	arc=none smtp.remote-ip=183.62.165.209
-Received: from mxct.zte.com.cn (mxct.zte.com.cn [183.62.165.209])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.169
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793786979;
+	b=JxGO0DeZhVItZHRC9TC/OPk1w8k2gH++625plhbPgJAsePyxTvCm+Z19oEL+IQUoH0a9
+	 qWuujmM2YQOx8qVcDJRJXjUNoVTwWJnulJf4E8d5cj4MdN1SymMSuO0FS0YSJa3Hn/YOi
+	 qjKxeBNQ9b3ruk/ZO17ze31ccihVlknMNufmRBO+rlAcsxYmBgcHvne6x6mzc2rRsl5/y
+	 cA9a0b/+89sG6CqLgc/wj9wvjfYs113Z++GjcL8iBul0GJquDcLYzDEKtPxlAcgMamDCh
+	 XQyyID/OJ7EfIPf1wy3w8QJPNuBqOLk7wWlNh0JkNsQUNIAR2cVRnCRTE/EQsQwsIzA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793786979;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
+	b=y/3wcv/gyHeW0WIK0bx282f2t9M3O1tNpI8om3Igs4On/XR7ycQKSDHZ/4pq3wW4HEAo
+	 fwVKDD4KDq8FebScKC3SXSLTFH+eEyZ3XOnNt/K81tGpme+EmiQ8NTKc5KgQ09wlWJies
+	 3wYLd4LlrFiFzVrP/i+ouCAdmD3c2XfEWCSfaXMwDTf0c6DyJz5/tDm+23eJ1LSqryn0A
+	 oIjst8ovd5kfYxq1egV4X+GfLw4ZRfUeWUo+GHNVk2zPC8ETnt3gdxFnMPIUoJNN4MLBL
+	 ag8W00KdymPEiJuP/hOohnSUomC3KuJ/K9udWF30f67bo3PzT+Tg+v5423LxRdeA72g==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=none header.from=tomeuvizoso.net;
+	spf=pass smtp.mailfrom=tomeuvizoso.net;
+	dkim=pass header.d=tomeuvizoso-net.20260707.gappssmtp.com header.i=@tomeuvizoso-net.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HmEXRWa5;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.222.169
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD55A606A33A
-	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 09:21:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CD55A606A33A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
-Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mxct.zte.com.cn (FangMail) with ESMTPS id 4jKKgl3G1qz58fdJ;
-	Wed, 04 Nov 2026 17:21:23 +0800 (CST)
-Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
-	by mse-fl2.zte.com.cn with SMTP id 6A49LF4E026376;
-	Wed, 4 Nov 2026 17:21:15 +0800 (+08)
-	(envelope-from gong.shuai@sanechips.com.cn)
-Received: from ubuntu-35-gs (unknown [10.230.214.35])
-	by smtp (Zmail) with SMTP;
-	Wed, 4 Nov 2026 17:21:17 +0800
-X-Zmail-TransId: 3e816aeaf906029-d1e8b
-X-Zmail-LocalSMTP: 1
-X-Zmail-RealSender: gong.shuai@sanechips.com.cn
-From: Gong Shuai <gong.shuai@sanechips.com.cn>
-To: fangyu.yu@linux.alibaba.com
-Cc: alex@ghiti.fr, andrew.jones@linux.dev, anup@brainfault.org,
-        aou@eecs.berkeley.edu, atish.patra@linux.dev, baolu.lu@linux.intel.com,
-        gong.shuai@sanechips.com.cn, guoren@kernel.org, iommu@lists.linux.dev,
-        jgg@nvidia.com, jgg@ziepe.ca, joerg.roedel@amd.com, joro@8bytes.org,
-        jroedel@suse.de, kevin.tian@intel.com, kvm-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        nutty.liu@hotmail.com, palmer@dabbelt.com, pjw@kernel.org,
-        robin.murphy@arm.com, skhawaja@google.com, tanchi25@mails.ucas.ac.cn,
-        tomasz.jeznach@linux.dev, vasant.hegde@amd.com, will@kernel.org,
-        zong.li@sifive.com
-Subject: Re: [PATCH v7 05/10] iommu/riscv: support GSCID and GVMA invalidation command
-Date: Wed,  4 Nov 2026 17:21:11 +0800
-Message-ID: <20261104092111.119394-1-gong.shuai@sanechips.com.cn>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261103120236.53474-6-fangyu.yu@linux.alibaba.com>
-References: <20261103120236.53474-6-fangyu.yu@linux.alibaba.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 543A0606A329
+	for <iommu@lists.linux.dev>; Wed,  4 Nov 2026 10:09:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 543A0606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tomeuvizoso.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tomeuvizoso.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=tomeuvizoso-net.20260707.gappssmtp.com header.i=@tomeuvizoso-net.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=HmEXRWa5
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-93e55db58cfso58489985a.1
+        for <iommu@lists.linux.dev>; Wed, 04 Nov 2026 02:09:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793786977; cv=none;
+        d=google.com; s=arc-20260327;
+        b=MitvF25BWgTC1lT09gI9jUIjrtCyETVPVauS6bmMFVze1iAm88XB6MSgozMjT36E6Y
+         bK8efcMYg36pv3t7H0eDT3Lq7178ospNeJaav+8LpuNZRGZbTEChz3t23Fi48Toby6TE
+         jkUPZQY5Q/S3N7TJVpXArFZZb2CppJn+WXJc2e1KMzf+lpAM/Hj0aMTn+tMuKO2FZEay
+         yCdcuC0yguKobhAYyuEWuZdKNEW5QDoYCBm+kGbynKJINvIjVEMBHL+yPsi93094amN0
+         ZgnusWvJPnKNBI/l9K3PISQOj3IAHmK0InEPRzRkZEoszQfEBqWqrnUH3pSaw/qayOlb
+         fp7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
+        fh=eAXCzjnIXuTqn22TEf8XXoPvVnNbyXNEplIrlnFank0=;
+        b=BEhEvsupexjE2YzgiI7n/jWxG/Kfd+vgHJIj0yiopYzs/YlEJMH5gUnqt1z5vVAyMq
+         b72YfAISJxBm/2fT3CNhudKzxplri8rf0iR7eMM9cKjAqWlRb7Yn2YAD3aGUIpaXaDXp
+         UZmji8hBYooiEkV6A0cTuZL41Q/beX/iSgLsDEgHXJbCbUtna1j3FT2rpOXOPfyTBx3D
+         F9nOcIMGbtNWxRx6tZnpvnWsvo9k8e7Z0zDIFEXrLZbttJXuoszyMkYenS7TnaqRfMNl
+         +g+0+uohJ027lDbTrZHumWpsX2gtjY4VuUSNNVVxD/MUJYvgoe2gCM7k0hGhI2h7i82z
+         r4XQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tomeuvizoso-net.20260707.gappssmtp.com; s=20260707; t=1793786977; x=1794391777; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
+        b=HmEXRWa5ot6PlXKF9EGCZA+QIHYkHOc+X+6ZUMMSB3fUN7cUZwmOCUQmskx8DyKLcV
+         jF3cAkkKtmj4nCP1sOrrbagi9xu2gJVlVCCiOWeVsEICCq/67J43PAKwdO+jaQBg9KKC
+         M5bktdhRMCs93RkX/0gf4y5ttxsHk+4Yg/jSxCOXkk2rsq3n2k2IIOcDMnowZ4R49vMt
+         p27mJNW9+gY/Hb6LyIQo0zf7EgTls9xaZetKjxWZ+4alFPAMHwTuXMIK1Ns2VhIzbu1D
+         gUyKq7BVYOFZtTTnNa7aQ8uR668V0SNs5g1eEMxfSnejkqQ6ZX1MDCDQhBHhs+u7tZCX
+         enfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793786977; x=1794391777;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=GRB1e0g/RzNosgVh22Q4nbJS5JXGJ4/s7oJ6tqlGbYg=;
+        b=bcHQkpkJcSt3onNyayzZoWH16H8vMV3lG/yLjfoSxlP/7waEzfDeWlz9tETtemKGRl
+         A9ru6BHA5EWVtbmprpkdGbfDhugqbExcq/nrDYpYfGMreNxb2Vl9hmna5m+4sV45oZ9i
+         /K1bg1yKz2Dk9TPZ1BRVs1ipEK/2pY3PkyFts4pNEWK5gMoyK/TMNW3D6MC3G82pAlgU
+         44slTOmkLbG0QgcygP3Q6Jnym7/mYVHuXgghhr01r+fNjCxepLgmDdWGQ0gUPSleymsg
+         zRVx5X80A795uP3pJLd/gSxuHcx4wg1ieS1hQQvx4jLJtlOG1RrMinnEM3HyJXiZDi98
+         3M3w==
+X-Forwarded-Encrypted: i=1; AKwUvByvso8tnMmgBDZwcrMWKykdBaUBpi6HLqKZvuvIwwqsFVGBU9t0AxWVsh11SuiPSYPaKZzuiw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+0imARhBOy4f6ObdD1f2DJOmO5qzM4frRR5tNUxPnSojjAYvhi
+	W/LMG0RnCVq0buXG4+LkYEgt1LgaJjfA/SmKBLXU3be21GNPI2/Qu7HrdQOL1S+ck/4shI14ktX
+	UmaPm2tbJoRSo6DhhvdYakR+WweOz81VQ27YlibfDOQ==
+X-Gm-Gg: AYBFou2rBRvAhEUW1kbnypP2CIfhgO95OyEeCw2XY84BG4gj68iZXjEyxJhJ/+yw2vd
+	8O97o7PGD19hzMb0817jisKtyS00RPkvM28LRYEfGNVH/0asz7hGiMLf63QQKKbND0zDXNde89E
+	C40cowVz7NYRMHXs46n79/N/dBgbQuNXF9Z65kYbQZMbcT5nt6hmi52qKOLgKtJ6ig85qsaPVWy
+	jvYgw5zaRmBQBAL0dMyOjZT3lZfttbrq/TfqsQtUyIEKNJfBwhM9OPC8O5pzphrpNeDxOZDFct0
+	bBMVzv9zg+QRg/qMXhjk3NlBp/CIlvL2GArY95md6+j0foVGgrOllkAK50qJmmH06mj26eY8s1q
+	u3RwuSktlA6FW3obqnYglvGmGdS/qDhZwVZHI5PQGeeraanEB4fkpHyZs7OBHStvxDAfkrnfuJ6
+	ncvWFrCAQpajXUPc59+A8=
+X-Received: by 2002:a05:620a:460b:b0:937:6de8:b40 with SMTP id
+ af79cd13be357-944217194b4mr2663985585a.15.1793786977174; Wed, 04 Nov 2026
+ 02:09:37 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -76,210 +105,107 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
-Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl2.zte.com.cn 6A49LF4E026376
-X-TLS: YES
-X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.133 unknown Wed, 04 Nov 2026 17:21:23 +0800
-X-CLEAN: YES
-X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AEAF913.001/4jKKgl3G1qz58fdJ
+References: <20261101082307.151957-1-gahing@gahingwoo.com>
+In-Reply-To: <20261101082307.151957-1-gahing@gahingwoo.com>
+From: Tomeu Vizoso <tomeu@tomeuvizoso.net>
+Date: Wed, 4 Nov 2026 11:09:25 +0100
+X-Gm-Features: AclHuK8sSyrPUh77ae7umfCvxuLdQ-s4Z2b2nFvZD8O11RHz5Wmhve3hcOyzmnA
+Message-ID: <CAPsqS2SOj-+VQxsFvMQ1Hqcep55J0yT++76QZ8or4a9kmF7Bdw@mail.gmail.com>
+Subject: Re: [PATCH v15 00/15] accel/rocket: RK3576 NPU (RKNN) enablement
+To: Jiaxing Hu <gahing@gahingwoo.com>
+Cc: heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, ulfh@kernel.org, 
+	p.zabel@pengutronix.de, ogabbay@kernel.org, zhangqing@rock-chips.com, 
+	royalnet026@gmail.com, abel.vesa@oss.qualcomm.com, 
+	sebastian.reichel@collabora.com, sidong.yang@furiosa.ai, 
+	u.kleine-koenig@baylibre.com, chaoyi.chen@rock-chips.com, 
+	diederik@cknow-tech.com, alchark@flipper.net, leonard@lausen.nl, 
+	jeff.hugo@oss.qualcomm.com, rfoss@kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-rockchip@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Fangyu,
+On Sun, Nov 1, 2026 at 9:31=E2=80=AFAM Jiaxing Hu <gahing@gahingwoo.com> wr=
+ote:
+>
+> This adds the RK3576 NPU to accel/rocket.
+>
+> v15 is v14 rebased onto next-20261030. v14's 12/15 no longer applied
+> there, because Sidong Yang's regcmd validation added two defines in the
+> spot where 12/15 adds its own. Nothing else changed, and the tags carry
+> over.
+>
+> Leonard Lausen has the series running on a NanoPi M5 and posted a board
+> patch on top of it:
+> https://lore.kernel.org/all/20261019090348.378183-2-leonard@lausen.nl/
+>
+> On Sashiko's two points about v14 9/15, I measured a CM5-IO. U-Boot
+> hands over with the NPU domains on, and the power domain driver still
+> probes. The NPU QoS is saved before its first power-on, so it is not
+> zeroed. The domain whose QoS does get zeroed is the GPU, on mainline
+> without this series, and that fix went out on its own:
+> https://lore.kernel.org/all/20261101055633.101309-1-gahing@gahingwoo.com/
+>
+> 1/15 is the patch that carries Igor Paunovic's name. It is also part
+> of his DVFS series, so whichever lands first, the other drops it.
+>
+> Ulf offered to take 7, 9 and 10. 1 to 5, 11 and 12 go through accel,
+> and 13 to 15 through rockchip. 15/15 needs 9, 10 and 12 to 14 first.
+> Without 9, 10 and 13, the ROCK 4D takes an SError at boot when the NPU
+> domain powers on.
+>
+> Link to v14: https://lore.kernel.org/all/20260924102135.92217-1-gahing@ga=
+hingwoo.com/
 
-> From: Zong Li <zong.li@sifive.com>
-> 
-> This patch adds a ID Allocator for GSCID and a wrap for setting up
-> GSCID in IOTLB invalidation command.
-> 
-> Set up iohgatp to enable second stage table and flush stage-2 table if
-> the GSCID is set.
-> 
-> The GSCID of domain should be freed when release domain. GSCID will be
-> allocated for parent domain in nested IOMMU process.
-> 
-> Signed-off-by: Zong Li <zong.li@sifive.com>
-> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
-> ---
->  drivers/iommu/riscv/iommu-bits.h |  7 ++++
->  drivers/iommu/riscv/iommu.c      | 62 ++++++++++++++++++++++++++------
->  2 files changed, 58 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iommu/riscv/iommu-bits.h b/drivers/iommu/riscv/iommu-bits.h
-> index f2ef9bd3cde9..65d1f2250011 100644
-> --- a/drivers/iommu/riscv/iommu-bits.h
-> +++ b/drivers/iommu/riscv/iommu-bits.h
-> @@ -720,6 +720,13 @@ static inline void riscv_iommu_cmd_inval_vma(struct riscv_iommu_command *cmd)
->  	cmd->dword1 = 0;
->  }
->  
-> +static inline void riscv_iommu_cmd_inval_gvma(struct riscv_iommu_command *cmd)
-> +{
-> +	cmd->dword0 = FIELD_PREP(RISCV_IOMMU_CMD0_OPCODE, RISCV_IOMMU_CMD_IOTINVAL_OPCODE) |
-> +		      FIELD_PREP(RISCV_IOMMU_CMD0_FUNC, RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA);
-> +	cmd->dword1 = 0;
-> +}
-> +
->  static inline void riscv_iommu_cmd_inval_set_addr(struct riscv_iommu_command *cmd,
->  						  u64 addr)
->  {
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 918fce4aa8c4..5546dfcd976c 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -49,6 +49,10 @@
->  static DEFINE_IDA(riscv_iommu_pscids);
->  #define RISCV_IOMMU_MAX_PSCID		(BIT(20) - 1)
->  
-> +/* IOMMU GSCID allocation namespace. */
-> +static DEFINE_IDA(riscv_iommu_gscids);
-> +#define RISCV_IOMMU_MAX_GSCID		(BIT(16) - 1)
-> +
->  /* Device resource-managed allocations */
->  struct riscv_iommu_devres {
->  	void *addr;
-> @@ -842,6 +846,7 @@ struct riscv_iommu_domain {
->  	struct list_head bonds;
->  	spinlock_t lock;		/* protect bonds list updates. */
->  	int pscid;
-> +	int gscid;
->  };
->  PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
->  
-> @@ -1004,7 +1009,7 @@ static void riscv_iommu_tlbi_calc(struct riscv_iommu_tlbi *tlbi,
->  }
->  
->  static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
-> -					  int pscid,
-> +					  int pscid, int gscid,
->  					  struct riscv_iommu_tlbi *tlbi)
->  {
->  	bool use_nl = tlbi->non_leaf &&
-> @@ -1012,8 +1017,13 @@ static void riscv_iommu_iotlb_inval_iommu(struct riscv_iommu_device *iommu,
->  	struct riscv_iommu_command cmd;
->  	unsigned int i;
->  
-> -	riscv_iommu_cmd_inval_vma(&cmd);
-> -	riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
-> +	if (gscid) {
-> +		riscv_iommu_cmd_inval_gvma(&cmd);
-> +		riscv_iommu_cmd_inval_set_gscid(&cmd, gscid);
-> +	} else {
-> +		riscv_iommu_cmd_inval_vma(&cmd);
-> +		riscv_iommu_cmd_inval_set_pscid(&cmd, pscid);
-> +	}
+Hi,
 
-As I understand it, the same choice is needed in
-riscv_iommu_bond_unlink().
+Could you please add a GET_PARAM IOCTL to this series for userspace to
+query the hardware version? I think I would return an enum that
+matches the NPU DT compatibles one to one. Then userspace can have a
+hardware database indexed by that value with sram, register map, etc.
 
-The missing GVMA command does not break anything today, because every
-caller of bond_unlink() runs iodir_update() just before it, and that
-already sends the GVMA for the old GSCID. But depending on that
-ordering seems fragile, and the comment in bond_unlink(), "invalidate
-all cached entries for domain's PSCID", is no longer true now that we
-have S2 domains.
+Regards,
 
-The change, if you think it is needed, fits better in the last patch,
-"iommu/riscv: Add IOTINVAL.GVMA invalidations". I am replying here
-only because the code is very similar.
+Tomeu
 
-Thanks,
-Shuai
-
->  
->  	/*
->  	 * If non-leaf entries were changed and the IOMMU doesn't
-> @@ -1097,7 +1107,7 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
->  		if (iommu == prev)
->  			continue;
->  
-> -		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, &tlbi);
-> +		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, domain->gscid, &tlbi);
->  		prev = iommu;
->  	}
->  
-> @@ -1231,6 +1241,7 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
->  
->  		WRITE_ONCE(dc->fsc, new_dc->fsc);
->  		WRITE_ONCE(dc->ta, new_dc->ta & RISCV_IOMMU_PC_TA_PSCID);
-> +		WRITE_ONCE(dc->iohgatp, new_dc->iohgatp);
->  		/* Update device context, write TC.V as the last step. */
->  		dma_wmb();
->  		WRITE_ONCE(dc->tc, tc);
-> @@ -1281,16 +1292,19 @@ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
->  
->  	WARN_ON(!list_empty(&domain->bonds));
->  
-> -	if ((int)domain->pscid > 0)
-> +	if (domain->pscid > 0)
->  		ida_free(&riscv_iommu_pscids, domain->pscid);
-> +	if (domain->gscid > 0)
-> +		ida_free(&riscv_iommu_gscids, domain->gscid);
->  
->  	pt_iommu_deinit(&domain->riscvpt.iommu);
->  	kfree(domain);
->  }
->  
-> -static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_mode)
-> +static bool riscv_iommu_fsc_supported(struct riscv_iommu_device *iommu,
-> +				      int mode)
->  {
-> -	switch (pgd_mode) {
-> +	switch (mode) {
->  	case RISCV_IOMMU_DC_FSC_IOSATP_MODE_SV39:
->  		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39;
->  
-> @@ -1303,6 +1317,22 @@ static bool riscv_iommu_pt_supported(struct riscv_iommu_device *iommu, int pgd_m
->  	return false;
->  }
->  
-> +static bool riscv_iommu_iohgatp_supported(struct riscv_iommu_device *iommu,
-> +					  int mode)
-> +{
-> +	switch (mode) {
-> +	case RISCV_IOMMU_DC_IOHGATP_MODE_SV39X4:
-> +		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39X4;
-> +
-> +	case RISCV_IOMMU_DC_IOHGATP_MODE_SV48X4:
-> +		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48X4;
-> +
-> +	case RISCV_IOMMU_DC_IOHGATP_MODE_SV57X4:
-> +		return iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57X4;
-> +	}
-> +	return false;
-> +}
-> +
->  static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->  					    struct device *dev,
->  					    struct iommu_domain *old)
-> @@ -1315,11 +1345,21 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
->  
->  	pt_iommu_riscv_64_hw_info(&domain->riscvpt, &pt_info);
->  
-> -	if (!riscv_iommu_pt_supported(iommu, pt_info.fsc_iosatp_mode))
-> -		return -ENODEV;
-> +	if (domain->gscid) {
-> +		if (!riscv_iommu_iohgatp_supported(iommu, pt_info.iohgatp_mode))
-> +			return -EINVAL;
-> +
-> +		dc.iohgatp =
-> +			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
-> +			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID, domain->gscid) |
-> +			FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn);
-> +	} else {
-> +		if (!riscv_iommu_fsc_supported(iommu, pt_info.fsc_iosatp_mode))
-> +			return -ENODEV;
->  
-> -	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
-> -	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-> +		dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, pt_info.fsc_iosatp_mode) |
-> +			 FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, pt_info.ppn);
-> +	}
->  	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
->  	     RISCV_IOMMU_PC_TA_V;
->  
-> -- 
-> 2.50.1
-> 
+> Igor Paunovic (1):
+>   accel/rocket: request the core clocks by name
+>
+> Jiaxing Hu (14):
+>   accel/rocket: take the completion register writes under job_lock
+>   accel/rocket: wait for a running IRQ handler before resetting a core
+>   accel/rocket: let the core suspend after a reset
+>   accel/rocket: factor the completion tail out of the IRQ handler
+>   dt-bindings: npu: rockchip: add rockchip,rk3576-rknn-core
+>   dt-bindings: power: rockchip: allow resets in a power domain node
+>   dt-bindings: iommu: rockchip: describe the RK3576 NPU MMU
+>   pmdomain: rockchip: add optional per-domain power-on settle delay
+>   pmdomain: rockchip: cycle an optional power-domain reset on power-on
+>   accel/rocket: select the per-core clock and reset counts from match
+>     data
+>   accel/rocket: add RK3576 NPU (RKNN) support
+>   arm64: dts: rockchip: add NPU core domain clocks and resets to rk3576
+>   arm64: dts: rockchip: add NPU (RKNN) nodes to rk3576
+>   arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
+>
+>  .../bindings/iommu/rockchip,iommu.yaml        |  28 ++++
+>  .../npu/rockchip,rk3588-rknn-core.yaml        |  47 +++++-
+>  .../power/rockchip,power-controller.yaml      |   8 +
+>  .../boot/dts/rockchip/rk3576-rock-4d.dts      |  22 +++
+>  arch/arm64/boot/dts/rockchip/rk3576.dtsi      |  86 +++++++++-
+>  drivers/accel/rocket/rocket_core.c            |  32 +++-
+>  drivers/accel/rocket/rocket_core.h            |  11 +-
+>  drivers/accel/rocket/rocket_device.c          |   7 +-
+>  drivers/accel/rocket/rocket_drv.c             |  42 ++++-
+>  drivers/accel/rocket/rocket_drv.h             |   2 +
+>  drivers/accel/rocket/rocket_job.c             | 157 +++++++++++++++---
+>  drivers/pmdomain/rockchip/pm-domains.c        |  89 +++++++---
+>  12 files changed, 467 insertions(+), 64 deletions(-)
+>
+>
+> base-commit: 7649ba73f9e7e1e04d0b46213e39c79ae09dd55c
+> --
+> 2.43.0
+>
