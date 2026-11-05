@@ -1,101 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793881543;
-	b=eN86/4TY0AvyieL15K8ewiEj2Y9+2j5OuqWBPbUsXbvC0iKthCDmnOLNIPFkLifxrWta
-	 nKALDWAvHovwmUbWVjcFHpzK2nIdmhWaE+xUOVZlJZcQ38frbqgfqR7T+rwg2eOSLr4WE
-	 j+fDzVHxPFBcs9B8bURV0FhmVaMJULOq6sObgeTyKvjmZzIwbsCawozU0cbGsa1ugdD8p
-	 y9rzwFwrmOABKp2Zo1WV3TilNbfq65qQU3F6Eqy3zXsUgnUtuzIf+rwhXYiY55nWcNRol
-	 dE+Mw5bN7KXYHVeXlzTaXCNtKoKs2fgGDFgBF5TCn5VkbzMvfVrbLnE1RtcScKiWMPw==
+	t=1793884221;
+	b=UPLg6g2ltIMiRpvhfztZYE18Mxc5D46qrv6HuY5GJTKOshS9lKgU6hXHU8mcFjIKRo+Z
+	 JTl1HYH/DO2k5fseJXrCxqLwscHbJSOLbVYaoqMCZhUf1Tp55fZSlZFnhNc/tPOItJu0Q
+	 kjvzr0m2TeORMNIJaNlIDukHiMhzWudVyrm7SAYiKVR2oYN68H7lWeDEHc5vFmpkdRk/e
+	 DLQiOVWJm9Ua7gc/xmkaPKOPqJOuEvtFzDQ3iW1bglkWfJBCn2qBfhwSyDO23FW3cN6G5
+	 tlRR8M8Yf9sayXjD2oB9JAVVQ5/QlhYQCdjmopLG32UcFwJFK6QiK1uJw+aLgcM7j0Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793881543;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=ZSqGuWJBbHfF/m30cj+yySLDnLihqLhP2KpRjJlvDzk=;
-	b=GAI4dJz3A0DtRYu0R5+qiMAAtKnCcKmNT1UDaTqG58+h6AM99+z4FisCXhyu7MN8i0f/
-	 9DbKrVIO3ymfOzJp17Pd+91Rz0HiZ2CqbP/2CDjuWsSKIiySvgJ+mdMDD7iOsnmF+Lrlx
-	 A8gP2gNyjkNJkqzn60EzKE1EScTsJOYQjhqEYzdZnQgQEqsyCsLXoUItIKIu0enPsNVN+
-	 twWCAkGNXcqt0HLl7Qi7ppHFvgxBb9jzYHum/jxR3Rb/iG/uD+KYWu1dB98gRzHw4gLp2
-	 DND+GZdqHjPmUflJTBy6YeciWAcMw3Igopq16DFdOi5o8ET9kw9Hjnm0zxuoWzrwf1A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793884221;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=Fvb4JO7ZDYHlLGwkUVgcr7dfex0gx0tUQH0jioa0NDA=;
+	b=poz81lvvCUMh/D3nOwnDcivO6bf5Ar7gh+UXsmmErYLpMp3LAFONvrIKpYABL9Yaf/Aj
+	 argVOX7ZZuvJiHQeStNdPGeDO2utjaGO/mVRi77EePooDPHyGGpy8+ZrdUeTSxNSVrjdL
+	 ozdfxG0JQRTZ8U4WYGRQSU+Ove136c5/Zg6wRHfo7Rtb9kpOjW6udLdEs57czT0WgxJIv
+	 GMfZJPp2uxb44NJmYjojRHb0kOSOD152KKmlPZyalKVrCT7deZVmAS+veaWo2auN6Znya
+	 4Ca6NFSKKZYdZTUR6T5q9fjM8UvzW2macqf4fLwyrkY+W9a+he2vRHVNzxjRzK+9pgA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kfxrwzy5;
-	arc=none smtp.remote-ip=198.175.65.11
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=dPTZXbna;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64EBF606D815;
-	Thu,  5 Nov 2026 12:25:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 64EBF606D815
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D452606A32D;
+	Thu,  5 Nov 2026 13:10:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kfxrwzy5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793881542; x=1825417542;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hULj/pENj1t0ZvVqG5iuX9V9t0+YHM1767U5NdVTqL8=;
-  b=kfxrwzy5V7y5TV1PzWdqrxuI+TxSG64UhMazkPQPEtTFcXJTlDEOYPmM
-   tm6SqraMNgl4X0TJ5Kmwcu8m1rBhXv/AOzLjQ4PGdrjG9utGE4o1E6Wrh
-   mJv2EZuuLOnd7Re7iokMkMDFptMoIJeKgnDEhn2iWwlzU9iogXwwKByqH
-   1RgtUL5VwWOuxWW4xQ1ywsWG94Ap9UXugM1BA9D3HUf7G51YjOEtMKior
-   y/uP64pjKbl+DR6qSterZnfa+pJWN+Hd4MHJiq+g12bQQGlrJfMG/uMfM
-   hqWXxPTQcLvilTPR7kylvNGTAp1FNJGT7Y1niCpJVDHvTfZEw2oVKZnIy
-   Q==;
-X-CSE-ConnectionGUID: iPfnISy+SNGusP3prGntlw==
-X-CSE-MsgGUID: 42o5OzZJSFytVheX6ffwGQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2551246"
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="2551246"
-Received: from fmviesa012.fm.intel.com ([10.60.135.152])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 04:25:41 -0800
-X-CSE-ConnectionGUID: oFa3uUGWSeuMY0Gq5/nLlg==
-X-CSE-MsgGUID: WKcOzA8qSq+TnJol5dU2yQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="8760659"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by fmviesa012.fm.intel.com with ESMTP; 05 Nov 2026 04:25:34 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xOwX4-00000000mBP-1ah2;
-	Thu, 05 Nov 2026 12:25:30 +0000
-Date: Thu, 5 Nov 2026 20:24:42 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	iommu@lists.linux.dev
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
+	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=dPTZXbna
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 200571F000C1;
+	Thu,  5 Nov 2026 13:10:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
+	s=korg; t=1793884219;
+	bh=Fvb4JO7ZDYHlLGwkUVgcr7dfex0gx0tUQH0jioa0NDA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=dPTZXbnaU0ZHJ8FXpQSQDG9e4qeWzONxeoXKumor/CArasmlPPtNdWtmhxu7uzEck
+	 P1eEVY+hTIjDdP1uoDY8SaA9+TzLagQcJY2fIYcdYnBWSsIF+ScTQhOg6vLFtQOCdW
+	 fUjFfWCK7KWSrfvRHCvIG9d6xYwqBgHyE1Nr1kEA=
+Date: Thu, 5 Nov 2026 08:10:14 -0500
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
 	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: Re: [PATCH v8 01/15] PCI/TSM: Move core code into its own directory
-Message-ID: <202611052018.S2OsLHjD-lkp@intel.com>
-References: <20261104161632.3547423-2-aneesh.kumar@kernel.org>
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH 10/17] driver core: Expose device trust authorization
+ through sysfs
+Message-ID: <2026110514-bunkhouse-handset-6a3a@gregkh>
+References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
+ <20261105-device-trust-core-v1-10-1e536825b4eb@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -107,46 +86,92 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261104161632.3547423-2-aneesh.kumar@kernel.org>
+In-Reply-To: <20261105-device-trust-core-v1-10-1e536825b4eb@nvidia.com>
 
-Hi Aneesh,
+On Thu, Nov 05, 2026 at 01:42:23PM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> An initrd must authorize a disabled device after attestation even if a
+> built-in driver already attempted to probe it.
+> 
+> Expose requested trust_policy and read-only active trust. Allow explicit
+> disabled policy to advance once to adversary or full, fixing that decision
+> immediately. Reject later policy changes, including for a device claimed
+> before registration, while allowing same-value writes on live devices.
+> Keep initial unrestricted selection separate from explicit authorization
+> and bind-time commitment. Serialize writes with probing under the device
+> lock. Include the attributes in device ownership changes.
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  Documentation/ABI/testing/sysfs-devices-trust |  51 +++++++++++++
+>  MAINTAINERS                                   |   1 +
+>  drivers/base/base.h                           |   6 ++
+>  drivers/base/core.c                           |  15 +++-
+>  drivers/base/trust.c                          | 102 ++++++++++++++++++++++++++
+>  5 files changed, 174 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-devices-trust b/Documentation/ABI/testing/sysfs-devices-trust
+> new file mode 100644
+> index 0000000000000..97e07a174769c
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-devices-trust
+> @@ -0,0 +1,51 @@
+> +What:		/sys/devices/.../trust
+> +Date:		September 2026
+> +Contact:	driver-core@lists.linux.dev
+> +Description:
+> +		(RO) The active trust level for the device. The values are
+> +		"disabled", "adversary", and "full". Driver core resolves
+> +		the level before DMA configuration and probe, and retains it
+> +		through removal and DMA cleanup. Outside a bind transaction
+> +		the level is "disabled". This does not imply that policy is
+> +		writable or that the device has never operated.
+> +
+> +What:		/sys/devices/.../trust_policy
+> +Date:		September 2026
+> +Contact:	driver-core@lists.linux.dev
+> +Description:
+> +		(RW) The requested trust policy for the device. The initial
+> +		value may be selected by the bus before the device is
+> +		registered; otherwise it is "default". The policy is resolved
+> +		to an active trust level before the device is probed.
+> +
+> +		The values are "default", "disabled", "adversary", and
+> +		"full". "default" lets the bus select the active trust level.
+> +		"disabled" prevents a functional driver from binding.
+> +		"adversary" requests operation with the restrictions that the
+> +		bus and DMA layers can enforce for a potentially malicious
+> +		device; it does not isolate DMA by itself. "full" requests
+> +		normal operation.
+> +
+> +		Before an operating level is committed, policy may change
+> +		freely until "disabled" is selected. Explicit "disabled"
+> +		blocks binding while allowing a later write of "adversary" or
+> +		"full". Repeated rejected probes preserve this opportunity.
+> +		Authorization immediately fixes the requested policy.
+> +		Returning to "default" or "disabled", or selecting another
+> +		mode, fails.
+> +
+> +		Successful resolution to an allowed level commits policy
+> +		and operating level before driver or DMA setup. Both remain
+> +		fixed for the device object's lifetime, including through
+> +		failed or deferred probes, unbind, reset, and driver reload.
+> +		Later binds must resolve to the same level, including when
+> +		the policy is "default". A resolver error or disabled result
+> +		before commitment leaves the policy's writability unchanged.
 
-kernel test robot noticed the following build warnings:
+I understand you are aproaching this from a PCI point-of-view, but many
+busses do not care or have DMA at all, and need to actually talk to the
+device before being able to even "add" it to the kernel.  So you are
+making a driver core-specific policy based on mentioning DMA here, when
+really that should only be a bus-specific thing, right?  Some busses
+might require DMA to happen (i.e. USB needs their host controllers to
+use DMA to even talk to the device at all).
 
-[auto build test WARNING on 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4]
+So can this be written to be more vague and generic and then put the
+specifics in the bus-specific portion?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V-Arm/PCI-TSM-Move-core-code-into-its-own-directory/20261104-214618
-base:   6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-patch link:    https://lore.kernel.org/r/20261104161632.3547423-2-aneesh.kumar%40kernel.org
-patch subject: [PATCH v8 01/15] PCI/TSM: Move core code into its own directory
-config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20261105/202611052018.S2OsLHjD-lkp@intel.com/config)
-compiler: clang version 24.0.0git (https://github.com/llvm/llvm-project 812626a41399a1d464a0d69627ab45c83b8ebfb9)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261105/202611052018.S2OsLHjD-lkp@intel.com/reproduce)
+thanks,
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611052018.S2OsLHjD-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/pci/tsm/core.c:31:12: warning: variable 'pci_tsm_devsec_count' set but not used [-Wunused-but-set-global]
-      31 | static int pci_tsm_devsec_count;
-         |            ^
-   1 warning generated.
-
-
-vim +/pci_tsm_devsec_count +31 drivers/pci/tsm/core.c
-
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  25  
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  26  /*
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  27   * Count of TSMs registered that support physical link operations vs device
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  28   * security state management.
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  29   */
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  30  static int pci_tsm_link_count;
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31 @31  static int pci_tsm_devsec_count;
-3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  32  
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+greg k-h
