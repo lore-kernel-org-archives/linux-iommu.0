@@ -1,65 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793916879;
-	b=WsdB4LnO6lsPsjh205GcrATmr2n933X5I+j8tFvY4wU0rV+Fv4d4vavKXo7qitLHGe//
-	 +ALRHEB6bCE8U4KcCqTCkft5V5MS6wqBJFeLUI4YlSE5LG1q3wCbpGhJZ54Jk9rxAyomV
-	 SI2UotKDa4yOhqJzlkeq21yyeh178Lmv/Gh3hot85aPsxGMnbNPREH7vsgrWzu5TPGgep
-	 zJJc1YwXKf+EH11sJWz8g2XguYuijBMJ1z6tRJJNIVaMCyGhQbUolcfjwEMHNWJmT3Bnj
-	 HL1IyX4NaVWxlk8n35o816mfIfMkd+LosW3c5jNHtD/kkbH36dFYSGIJMJel9l2WMKA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793916879;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Date:From:To:Cc:
-	 Subject:Message-ID:In-Reply-To:References:Organization:X-Mailer:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
-	 X-Spam-Checker-Version;
-	bh=08xVfqwoODhdy7Z5d43JBdvRsvLM4il+VNHhvskDFF0=;
-	b=IzF/XmRtu365k1OWrL1yZ7uFo2vMd2b2L/V4JsCsm3VFcfHUxHzLRsB3oQhPCWReWFp3
-	 3/FBgy1OLYa+BbmxCU25LgeBj2lgxXeM2la51Yysch60/xYyKoqB6P8OS84O5pcUTvWjh
-	 P+4BxnTY9FwPpp/dWfQaEMljIGEbsMf1iawDOX6PcC7M/hhWoxnbnEB58qupsb0bS6wv4
-	 xJj7bcWWXsbfY6TKXjZrwlkMH9L5t2FsvC+IQ7vIGZCigXglmIrXuicS2ifMOkrW7WCek
-	 PlCIRITg3jCfGz1ez5va/yYyUfTQU/1EHlneQ0aPdOAEKhSFuyq/LOYhWRcmsc93TNg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.microsoft.com;
-	spf=pass smtp.mailfrom=linux.microsoft.com;
-	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b="Aa/Ir+WX";
-	arc=none smtp.remote-ip=13.77.154.182
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10B4B606A32C
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 22:14:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 10B4B606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.25
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793919922;
+	b=pxVwm64aiKq/7p5dcrDcQTc9FfNJHkVAF7ebIHxoSnIn4MN8vfTqT78MwHD1xokf3DeG
+	 2hV9c2KXXM37lGsxfO6M0CTkgU02Qa6fXrns1XnIjHS2fzXiX8J0+oEuB29tULgB2rVm4
+	 bn76U2ubJeYuD0Al9Rg6rkCY7SJizeio03BP6eSEdkUn43eUWHdYHmVQRwwaHD4RQLcXO
+	 Xz5WUIGAnz8CRX0dKe0pUUAe1xVuAMeCxvcSKks01GUXcTHwfzecLRL9KRwPfbq4HzTKX
+	 2z8HqJf3N0bOM9sOKAqCOGUaufT9wAnCZCJR9d2zpA1x2QnVuPVkxeWDQOf5FGA6ZUg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793919922;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=7fxv+Mgc4jzx/ARU/ADxbdsbHp6BAtARa07JZS/UXRc=;
+	b=cuRF1XL3hZO9m+OVHJBxJ4ICilpbcmEdZYZyVs01EnxLXwqy75+7Yft3C52UccxVvIwH
+	 Hwy88APLcWSo+5pBDe5IjiUJEU97lgAYDA6L8QKs/XFtMFHIj9niXwE8cq3udkJNA9JGK
+	 soHrnCG77/wWp9ceuBSqcS7/czPZt9N7MWXePUHb/prezh8NGkgy1kztfRDZOXER0y92O
+	 VErmx4MxPkUVDokj8RFIb1FTSZI+TrZyKffXf6dg4sEdF7Qn/d2KmuvdxIg2ot2wBTnVP
+	 IsRzUQlfDVtD4pojMKB+gR07zi/GHhrAerhY/q5GJYps+CdihySfcSa64uUWuL1F2qQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=k8rEVzNX;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.25
+Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011025.outbound.protection.outlook.com [52.101.52.25])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 235E0606D801;
+	Thu,  5 Nov 2026 23:05:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 235E0606D801
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=Aa/Ir+WX
-Received: from localhost (unknown [4.194.122.144])
-	by linux.microsoft.com (Postfix) with ESMTPSA id AB48120B7167;
-	Thu,  5 Nov 2026 14:14:16 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AB48120B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1793916862;
-	bh=08xVfqwoODhdy7Z5d43JBdvRsvLM4il+VNHhvskDFF0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Aa/Ir+WX1H0Ko9TPtatYspe0gu2F5PzZuWlQLEQ2FqIVIXJDN9GaWZzINB55qH9km
-	 oiujQMpQQ5V3HVkeokWtV9BxZqhzNzSCyqZikhFHzL29NmMHWiJy2opEgOgd/mHMjJ
-	 02rR1s9YNBcScvDQ9JSz+bI81jMPBdlZN/zK5aO0=
-Date: Thu, 5 Nov 2026 14:14:27 -0800
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Yuho Choi <oss.patchbox@gmail.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Wei Liu <wei.liu@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Haiyang
- Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, Yu Zhang
- <zhangyu1@linux.microsoft.com>, Easwar Hariharan
- <easwar.hariharan@linux.microsoft.com>, Michael Kelley
- <mhklinux@outlook.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- iommu@lists.linux.dev, linux-hyperv@vger.kernel.org,
- linux-kernel@vger.kernel.org, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH v1] iommu/hyperv: Don't free a paging domain the
- hypervisor did not delete
-Message-ID: <20261105141427.00005946@linux.microsoft.com>
-In-Reply-To: <20261105192738.70664-2-oss.patchbox@gmail.com>
-References: <20261105192738.70664-2-oss.patchbox@gmail.com>
-Organization: LSG
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=k8rEVzNX
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=IjKxUpK8/Mj9fIczcbipIPoVdJzCRXdOHR5XUdSMEpXxSFeXu1uMFphE/5dlBY8MmWuhKK+APbZSzQ5tJTy4DM+88bt2v7zWJa682mXXRSv4m8KW0OnCfs9hJ9UKSbIt/Uh7KUNdKulb/0wGJAaXZ2ysW19XJF3qZeNCfqSxeIbxpdXd0F7R7hS1GUAZipxFw4WEKDLadAXwbKJgWyMFmcuGquCog3tXcVxy6x3Vnke+C2Z8HZt7CK+uA8ofu/vA0oBQ/ql4lFBcH6Qg4L5F6uwaG3L02kyR6gxJcE+/ifpbap4OVYRDl39+Bm/yx0K2EE1t321MsVVYtMZ1PunHfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7fxv+Mgc4jzx/ARU/ADxbdsbHp6BAtARa07JZS/UXRc=;
+ b=CfEaUbICV0NszAGkS5PxqDt4JvcNCFlqWVZsPzUmIDieCKbB+8OmkfHn5Cph6qbTNdjHTDfYhsFl2WpgjyTE0KcGLIZ4wGjSBL47Ym4a3yFOLjQueHO4KZEY11LLpJWtqiZbbpJT9eEsxmF/f+Vzkxa0u7fupSG1dI0vSHIs5hNVDZgrWS78e5vMoyhjStbRXHKBs9/TvfSqXLZxJ5dRZbnNHz+8brptjYi6mdppMO2eKZ3b13H3Iyol3xZ/ihAyo1Vfi0e1cpH5Jmm/+cSuvBcRip8ADq+XhyUTmSySAhGyWTUl5w4MmCnZYN9/CftwalHyqBnghTY7j9CIZCkCVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7fxv+Mgc4jzx/ARU/ADxbdsbHp6BAtARa07JZS/UXRc=;
+ b=k8rEVzNXtnitzzpEXJttbzPIvJ2/gtHB5U4r/vTpWQJK9zQDDJ9hFDDN87jgqbDGFhfBPwEHUbgEtsw3dREVZ0/i1b3RB/TDjre86yGdU9fo00+lqXU4ZNsztbA8CT2vp5ATIbnuxDqf6NzIXcLojoGOfzJvKI1jQgQq5BJYFjRYysg8ZjPjT5EgmnI9vU3xb8nn6bP5DpLMeQxS1lpS877z+KuGHfOd7dSxbxE6ukmkOVzJHm119XXt1RK8BkLr5x0uJaXzVGDww0JB823bz8jUB5kHDHxe11u0gnCM/0Tjogd6Lev5H4vf4GFA1TxIGyL1e1hgp/z3DV8i77SUyw==
+Received: from PH8PR07CA0037.namprd07.prod.outlook.com (2603:10b6:510:2cf::17)
+ by LV2PR12MB999096.namprd12.prod.outlook.com (2603:10b6:408:353::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Thu, 5 Nov
+ 2026 23:05:17 +0000
+Received: from PH5PEPF0000002B.namprd04.prod.outlook.com
+ (2603:10b6:510:2cf:cafe::17) by PH8PR07CA0037.outlook.office365.com
+ (2603:10b6:510:2cf::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.10 via Frontend Transport; Thu, 5
+ Nov 2026 23:05:16 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.161) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ PH5PEPF0000002B.mail.protection.outlook.com (10.167.243.5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.615.4 via Frontend Transport; Thu, 5 Nov 2026 23:05:16 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Thu, 5 Nov
+ 2026 15:05:00 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Thu, 5 Nov
+ 2026 15:04:59 -0800
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
+ Transport; Thu, 5 Nov 2026 15:04:55 -0800
+Date: Thu, 5 Nov 2026 15:04:52 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Mostafa Saleh <smostafa@google.com>
+CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<kvmarm@lists.linux.dev>, <iommu@lists.linux.dev>, <catalin.marinas@arm.com>,
+	<will@kernel.org>, <maz@kernel.org>, <oliver.upton@linux.dev>,
+	<joey.gouly@arm.com>, <suzuki.poulose@arm.com>, <yuzenghui@huawei.com>,
+	<joro@8bytes.org>, <jgg@ziepe.ca>, <mark.rutland@arm.com>,
+	<qperret@google.com>, <tabba@google.com>, <vdonnefort@google.com>
+Subject: Re: [PATCH v9 13/25] iommu/arm-smmu-v3-kvm: Add MMIO emulation
+Message-ID: <au0LlPl2xwJvtfCu@nvidia.com>
+References: <20261015200903.2735565-1-smostafa@google.com>
+ <20261015200903.2735565-14-smostafa@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -69,115 +118,95 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20261015200903.2735565-14-smostafa@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH5PEPF0000002B:EE_|LV2PR12MB999096:EE_
+X-MS-Office365-Filtering-Correlation-Id: 578f56c2-5365-403d-cac9-08df3b9141bb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700016|23010399003|376014|7416014|1800799024|22082099003|10067099003|18002099003|4143699003|11063799006|56012099006|261009223027099003|261021135927099003;
+X-Microsoft-Antispam-Message-Info:
+	J3BJQwZXmp3qLORK6ij2/p4udviYzYAFoaCnW0vlNys0Apwa//s1XqDXHyOZdTDb1L+I675T1La1FRwz8B2+pYoo6SsevFRNleKlFFQCGVjmLIXqbHNevQ7SjbLo5uOn7YDjdT7CdsOlpAJ98zUGzqPBSpvbAo9j34GIO0UDZanmN4HSxLfn2/gC0kgMoe8Ewk0TaURqgE/cA/5jwm73TZlZPcFgzMSL9j7/53A60tEQ3nEH419lKmOt4aqeGFKv3mO5U0Ql7RvjNOZrufg7TCQ1Ne6lXIofzCruUj5kLPeY2Sq81talY/119J/YDQJ60/gJhvyVec4ZFlOptAlmo5EFxSM2Ig/TSqJ7UmJegSjxG48deMO/m69j4AK8otz5g/yjCOUVKvILFL5UoJn0BSzhPukfK6JgwUTqFBq28eYVmaW6MBEdfwnV8kmMbGVWOS4TZOfVuNzG+INFRqVRXsAbr3vEQ+xC8C7ELTVm1jvypKL4dwoGMBI0C37jAWHgxUfpcHgqseTpFWFZUcbLa/exxlseJf3KgkxbtBu1CSiK89HUUjmKdKMNJwXvjJjCs0sGqRbMG1VDc4teSAHvFqjNvUlpRNqu1TW/Jo/u+aJDpep0wy6r/Nrx2KZmaOukPdDt4Epg2EngEo8q56FRvKtEta+z7wRcYday17jB/QuwA7s58KxfZuiS4UOm24qyeROhdQxyZeHSL9rTUaSNtg==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(23010399003)(376014)(7416014)(1800799024)(22082099003)(10067099003)(18002099003)(4143699003)(11063799006)(56012099006)(261009223027099003)(261021135927099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	2mJn4icKzoiLt2T4GtEcX0V8ojcj8D2xg8OOYkV6kEVxNk7mk5n1vCChONov3rjYKQ9p6+ZskSwDdX2Z7ddeakJaFQRvDZxuuqhsp80PY1XaIEXN+DOTaPL2c7bl08dva2A0ouavso+Xqy22icQq+oPrheli2lqaej19wEjyUUv8uYLyut29hhHTFTYZHjaOKt4THDLJOsmBnlxE/3QDzbveaEeC5eYGRbuivywQyHasHpxlj0FlCiJMK+qH+Wf8VizmC5aR2sHYuFpmqm/B8gjTqkwbEtucgETuzJCOHYWASDY/pHfnp99San0CrjeMYzpE9ufQo+o6xrOfTsA1y+yai2ofpE6xc5VsPCWwL8hjHIHEZVQn3xewWQFKEdA2ZmZGVWWWRkZIVSBG3f+GVmxp14RAJZhv6C4/CcstpbbfP3ufdTOHotzw4ZxKbckD
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 23:05:16.8059
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 578f56c2-5365-403d-cac9-08df3b9141bb
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	PH5PEPF0000002B.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB999096
 
-Hi Yuho,
-
-On Thu,  5 Nov 2026 14:27:08 -0500
-Yuho Choi <oss.patchbox@gmail.com> wrote:
-
-> hv_iommu_paging_domain_free() frees all page-table pages with
-> pt_iommu_deinit() and only then asks the hypervisor to delete the
-> device domain that points at them. If HVCALL_DELETE_DEVICE_DOMAIN
-> fails, hv_delete_device_domain() only logs the error, returns the
-> domain ID to the IDA, and the domain is freed anyway.
-> 
-> The hypervisor then keeps a device domain whose page tables have been
-> freed and can be reused for anything. The ID is also handed out again
-> by the next paging domain allocation, while the hypervisor still has a
-> domain with that ID.
-> 
-> Delete the domain before freeing its page tables, and keep the ID, the
-> page tables and the domain if the hypervisor fails to delete it.
-> 
-> Fixes: 2690d4156b51 ("iommu/hyperv: Add para-virtualized IOMMU
-> support for Hyper-V guest") Signed-off-by: Yuho Choi
-> <oss.patchbox@gmail.com> ---
-> Compile-tested only (x86_64 with HYPERV and HYPERV_PVIOMMU,
-> W=1); I have no Hyper-V guest with the para-virtualized IOMMU to test
-> it on.
-> 
->  drivers/iommu/hyperv/hv-iommu-guest.c | 17 +++++++++++++----
->  1 file changed, 13 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/hyperv/hv-iommu-guest.c
-> b/drivers/iommu/hyperv/hv-iommu-guest.c index
-> 876a22f21f1e..205c642c8d40 100644 ---
-> a/drivers/iommu/hyperv/hv-iommu-guest.c +++
-> b/drivers/iommu/hyperv/hv-iommu-guest.c @@ -107,7 +107,7 @@ static
-> int hv_create_device_domain(struct hv_iommu_domain *hv_domain) return
-> hv_result_to_errno(status); }
->  
-> -static void hv_delete_device_domain(struct hv_iommu_domain
-> *hv_domain) +static int hv_delete_device_domain(struct
-> hv_iommu_domain *hv_domain) {
->  	u64 status;
->  	unsigned long flags;
-> @@ -122,11 +122,15 @@ static void hv_delete_device_domain(struct
-> hv_iommu_domain *hv_domain) 
->  	local_irq_restore(flags);
->  
-> -	if (!hv_result_success(status))
-> +	if (!hv_result_success(status)) {
-> +		/* The domain still exists, so its ID cannot be
-> reused */ hv_status_err(status, "HVCALL_DELETE_DEVICE_DOMAIN
-> failed\n");
-> +		return hv_result_to_errno(status);
-> +	}
->  
->  	ida_free(&hv_domain->hv_iommu->domain_ids,
->  		 hv_domain->device_domain.domain_id.id);
-> +	return 0;
->  }
->  
->  static int
-> @@ -466,11 +470,16 @@ static void hv_iommu_paging_domain_free(struct
-> iommu_domain *domain) {
->  	struct hv_iommu_domain *hv_domain =
-> to_hv_iommu_domain(domain); 
-> +	/*
-> +	 * If the hypervisor still has the domain, it may still use
-> its page
-> +	 * tables, so leak them.
-> +	 */
-> +	if (hv_delete_device_domain(hv_domain))
-> +		return;
+On Thu, Oct 15, 2026 at 08:08:44PM +0000, Mostafa Saleh wrote:
+> +static bool smmu_dabt_device(struct hyp_arm_smmu_v3_device *smmu,
+> +			     struct user_pt_regs *regs,
+> +			     u64 esr, u32 off)
+> +{
+> +	bool is_write = esr & ESR_ELx_WNR;
+> +	unsigned int len = BIT((esr & ESR_ELx_SAS) >> ESR_ELx_SAS_SHIFT);
+> +	int rd = (esr & ESR_ELx_SRT_MASK) >> ESR_ELx_SRT_SHIFT;
+> +	const u64 read_write = -1ULL;
+> +	const u64 no_access = 0;
+> +	u64 mask = no_access;
+> +	const u64 read_only = is_write ? no_access : read_write;
+> +	bool is_xzr = (rd == 31);
+> +	u64 val = is_xzr ? 0 : regs->regs[rd];
 > +
->  	/* Free all remaining mappings */
->  	pt_iommu_deinit(&hv_domain->pt_iommu);
->  
-> -	hv_delete_device_domain(hv_domain);
-> -
->  	kfree(hv_domain);
->  }
-Looks good but I think it is incomplete.
+> +	switch (off) {
+> +	case ARM_SMMU_IDR0:
+> +		if (len != sizeof(u32))
+> +			break;
 
-if both hv_configure_device_domain and hv_delete_device_domain both
-fails in hv_create_configure_device_domain, then unwind code will do
-pt_iommu_deinit thus have the same UAF problem.
+Maybe add a small helper to list all 64-bit registers:
 
-        ret = hv_create_configure_device_domain(hv_domain, &settings);
-        if (ret)
-                goto err_pt_deinit;
-
-        return &hv_domain->domain;
-
-err_pt_deinit:
-        pt_iommu_deinit(&hv_domain->pt_iommu); 
-
-hv_create_configure_device_domain(struct hv_iommu_domain
-*hv_domain, const struct hv_device_domain_settings *settings)
+static unsigned int smmu_reg_width(u32 off)
 {
-        int ret;
-
-        ret = hv_create_device_domain(hv_domain);
-        if (ret)
-                return ret;
-
-        ret = hv_configure_device_domain(hv_domain, settings);
-        if (ret)
-                hv_delete_device_domain(hv_domain);//fails here
-
-        return ret;
+        switch (off) {
+        case ARM_SMMU_CMDQ_BASE:
+        case ARM_SMMU_STRTAB_BASE:
+        case ARM_SMMU_EVTQ_BASE:
+        case ARM_SMMU_PRIQ_BASE:
+        case ARM_SMMU_EVTQ_IRQ_CFG0:
+        case ARM_SMMU_PRIQ_IRQ_CFG0:
+        case ARM_SMMU_GERROR_IRQ_CFG0:
+                return sizeof(u64);
+        default:
+                return sizeof(u32);
+        }
 }
+
+Then it'd be tighter by testing the width once, prior to switch (off)?
+
+> +	/* Allowed RO 32 bit registers. */
+> +	case ARM_SMMU_IIDR:
+> +	case ARM_SMMU_IDR5:
+> +	case ARM_SMMU_IDR3:
+> +	case ARM_SMMU_IDR1:
+> +	case ARM_SMMU_IRQ_CTRLACK:
+> +	case ARM_SMMU_GERROR:
+> +		if (len != sizeof(u32))
+> +			break;
+> +		mask = read_only;
+> +		break;
+> +	}
+> +
+> +	if (WARN_ON(!mask))
+> +		goto out_ret;
+
+Your cover letter mentions "WARNs are fatal in the hypervisor".
+
+Is this WARN_ON fatal?
+
+Nicolin
