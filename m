@@ -1,124 +1,129 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.180
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793899480;
-	b=b8v7VvOS/kN80lndHbfqa9ZG9T2o/UlJCN8p7fM51QAug/kqadZrKLpb6VwzrHHsPuku
-	 0j48RSRFni7G1pdVsKIuAc3pGSno45qDw3J375P0NKNXMd+xuGsrV3OtepYvQTWF9jwJk
-	 7u3nK8r8cD3qksVPSNwJ0ZlBI6M9wzyFRAcWmxwGQHO/x4tyubkD1+w3VpsWhGrrYxSG4
-	 r3OOuehh/vyaKMwl44dM/tAbGo0IzuVs6c/nXp27w/9IAoXMBcBu8kter7D8zpajly2+f
-	 HGSkpLNl40Vp1N+uQPutxSsfGkS34NzUc4ykT7Qy5T1wD+g5o3umymXuOGaYE7Qqcrw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793899480;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=+Sc9yPGaNTmoDAc39XzEsbXpXvtl7Fk3dFBI/g/ZPmw=;
-	b=Zsnhy+8AxLM/VOXE9OCbglHk+4K7ldMm+ebC4I1iaImI8IIFrc2ku7EdXnybvudOvy4T
-	 mVRS9h1YVso1BzDzJzjdw6Cuno+THFPf88dRR5NEkPCJfkLYrB9NYL9W5uwOxw7mF/sI2
-	 70SHu23NMQPh4cu8vS31V4Osy6xqTljuaoidwpVnMbwHU8qNXtTSvQV6wEJ1w5Q5BYbEy
-	 /NIy2pIbz38NQYd7qyP1CCElMn3JMHmDsBxSkwZuXJvbRYIBSCQ10L29zq1+Xq01MbGEW
-	 P+GsQqUv4qh4UrC5GTnSWY6mF2p1Njl1dM6e4dEUQpYJCGYSziewt9s0T3jJa5/mA9Q==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=rowland.harvard.edu;
-	spf=fail smtp.mailfrom=g.harvard.edu;
-	dkim=pass header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=wB0U56+d;
-	arc=none smtp.remote-ip=209.85.160.180
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.14
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793900726;
+	b=Q5A101CdzjWlhtMcojngTmo/NMNeNhq36amGx8EyNXw7Vd00K1K6edexuImqtzg4p8Yr
+	 z+Y7ZeU5UgVIkjSBs1sorHsstUwaDUt1C0wdnCJoHd0Gi79pJp0y3KzLhLbCRHoJYY103
+	 1mvOe9WeZULQsdwxNHZF8a860WE1WvOw03Zpv09NsPiGPfSIKWMPpI2HaYToPlpt9cgoq
+	 FrPjK998JDyE8VGqcvuMbqgIptq/1DR5K3UA+kgDWEKSKqOKi2jF4fm8uhJ3Hg2Pmu0CM
+	 3H6u8YEcdZiw0qBCkETkVnIc6czJUup5JcJWK/mr0zy192GXUCLHMYFA5ynAQQGun8w==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793900726;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=Qzs2U1JxN/gcqr9rlImwtlc7EXXTLf4lHDlbpcuaqBY=;
+	b=iprNZiYKF8N5lOfAdWEnvMqULgSWhME0gm9cKuXpqiE+T3W7u/CrghtyqUM8Hnq9Sl0i
+	 lEV25hZ3ReRtXphpCNftwl3XrgEmumDrmSXSX01MU4l/xVzjI728RoiWb0iRGZBr1YXKl
+	 uPRWlZDbmZOsdXcppqZUGG246eQcdDmeaE3FcqzSmTLuHJp8Vjy0/R/MNiIPGGnpI2HLr
+	 EKNRxcwdJQThx5lpTHjQco1wTtbpOmcJnavTnNSGhJ1INhZqn9c5SsGcPTD0MlOdA/3ku
+	 BqMs6ZsXXul8BekKiE8cM+s9eUBoM/Q/MulvBb0sfNXNeqiEYWa2RN7rWL4gAaAdbSA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=nvaSF4yz;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.14
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011014.outbound.protection.outlook.com [40.93.194.14])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D28F606D83D
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 17:24:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7D28F606D83D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rowland.harvard.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=g.harvard.edu
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 851DD606A328;
+	Thu,  5 Nov 2026 17:45:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 851DD606A328
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=wB0U56+d
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-53c4b82919fso26190051cf.0
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 09:24:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rowland.harvard.edu; s=google; t=1793899478; x=1794504278; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=+Sc9yPGaNTmoDAc39XzEsbXpXvtl7Fk3dFBI/g/ZPmw=;
-        b=wB0U56+dnYBxAhJZFcxp3M39nx4FSrFxtybQsmVG9510aidN1tTt2xu21n0Z8XZUl9
-         +tAANCx1VKfE25ZiSElnEP3niYVUgWlPhnfIeYrHpueGCSwuhRwqofAAV0Zg2XqWgcgV
-         MRTkgzQ0sVKh/we+x3qoAaqL8e7zQ1yFg8iugG1Cta+wXy5QIPvBpf+ddNexlD3Ikh8Y
-         rkPSCCgKXv16KXdM3lvKvhh215QThS7LW/nhLJA1jmhpyLFsPYmYL2GyMC3q0hNQNB2o
-         9vGU96QdPvzaMQlEfcPEBqvJXZKr/QW4cFzjtb+jUdPoRsVI/RBBBQZYmWCfetdbCI5l
-         BuvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793899478; x=1794504278;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=+Sc9yPGaNTmoDAc39XzEsbXpXvtl7Fk3dFBI/g/ZPmw=;
-        b=fvYH2ZWvcUIPJ1VMtozQWiSf4DTm/lTpwA6intMiVKVLbM+8xrjeUL8puMKmS8bADV
-         Q7bgzG0CQvTR+HrLapT4hFhvXi7zpBXBvCrcAmP1jC873VSt1huFfjOW/VbSWXoCJQnP
-         fMbeAc0pXSgcj6sIDgn1pgS+lj8/7YYsRFRgsyA1JdoJfv7xl6FxXQMu+t0Usdka1uA+
-         Dq4QYDmydwMO+vOiW7qcz8PPdYmuiMpMs+PNEtlXkM5L1xGIeDZFit126Y8gkLGQ9+Cf
-         QpXaOcEMRzs+84GpwZveX4GWXtmb06iGlDwBqUtbG/RUxJ5vCiTFZ6exIsMctKy+hpeZ
-         l8qg==
-X-Forwarded-Encrypted: i=1; AKwUvByHc+jbHqYA3hOjs4sp0xE+pQI/fe3s9mLzKxXe4pIbxJxEoZQugDNr6N78fa+6fwBtWvMq7w==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+BWiSPWkq6xdU3tecamEA626P5EPeS0kEZlcSwXX7f8dC7fkc3
-	dqkRulR2vOIgcxvnRhnL2QoRVepstXVGXPm2OU4OH5L+U6BQ5m1nyXXVa5flkJyKEw==
-X-Gm-Gg: AYBFou3uU1elvrzOiF20dQVfWYqvbuj4JFMW5VziXE57+tGDys22G0QUv95Ba/GT7Mt
-	RG/V9YYwAv4iwrqkXm0vs4IfSjThGUpWS/N+x5UaT3t7kSlhx4vsTlpGpQ1dkH3RE127iB/kEFQ
-	2wFr6VLen7IaPtkzjV7BKQi308kYrEi3uzLpmgQOiZBMDULC0mt+TNpsqBoeSsNILxA17pJ+y9S
-	6LbqPxuJHnTOMevMBAIdniSjKTdrWRL5LelTRUePB8SJV7PHA9O2WHpqKN9tkvZAgTbjacIcG10
-	d/hbHrmjHJpNrVdtjnLst1vmeg1pbXXQYla5tf4YPVqb8DOGtDUMz25ptqogIhIyaB1B6i0mEsF
-	VJXJkspWotSeYf+X2/fvSDuotmIZau7H2MMLIY87VQqMtDy+udSXyIyZ9t83V59HF7TVqnqW6f5
-	IsrwOHAwlSePSOqY0QLfnNkxloH3HoSfv8fIIVF4huL9tw3CLtJ4kdJDvd17u/xSnEg2Mb0W8cO
-	hpHDV84zOo9hzE0ifpM03ZPSFcQ/Mxm4mS3XGI1KZaR95IfzR/xi5z0rEBrnu/2/j44NImyPfZy
-	WFnydPoirE6MLNqsO6d1lAN7UlO1
-X-Received: by 2002:a05:622a:2515:b0:536:52ae:d92c with SMTP id d75a77b69052e-542b6e55bebmr328898701cf.35.1793899478212;
-        Thu, 05 Nov 2026 09:24:38 -0800 (PST)
-Received: from rowland.harvard.edu ([2601:19b:d01:d210::66b0])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-54b10a6ca24sm57130131cf.14.2026.11.05.09.24.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 09:24:37 -0800 (PST)
-Date: Thu, 5 Nov 2026 12:24:33 -0500
-From: Alan Stern <stern@rowland.harvard.edu>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH 05/17] USB: Lock registered interfaces during manual
- driver binding
-Message-ID: <bb83fe3c-cebb-4bc8-bfc9-24df1cf72b0b@rowland.harvard.edu>
-References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
- <20261105-device-trust-core-v1-5-1e536825b4eb@nvidia.com>
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=nvaSF4yz
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=NnEfB3x54H4UC0LLS9wkqQQuVAaF2zVxWmR4sGdzxeTHEBFA4+guVXE7JjjeojKGBK9NYNFMsL4tOf1MFZ+9xwg1ROPqnJ/arTOZcfZ4YaVFC5V+miN6tO5DG02iplakjrpRUzwazChB32UXP1F1oHtwcVQAEFDyIYIFXi+ZFK2w4K8CBINmh+0L2FdPf1BaFxNHtD0k3CGPbXw/ksYsPGaj/5vu0YgkPdDY2b7zMGnaUdtTAYcwesecFYADUagVj+kPXIdCik3+Br0frSHvS4mTmvbvfu36Frk+540LmEYo8rc9foLBqQ6LHrBEg2lV10phCbFADet1rsFdJCOsxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Qzs2U1JxN/gcqr9rlImwtlc7EXXTLf4lHDlbpcuaqBY=;
+ b=qoucA5rEkoih3f0RY8Y1n7vl3PPv0MUAMrJUcypBgALSb4L9aFtirmjrAjSBbiZHdXMbfZw0njdnOfR7pqlkWAEoMBqOz/Yl4SFdeYmuDRL2jCcRtmEDNb3O4epAYDUdOydRcEv3X5zqt9FUv/jnNCRztRMATdxJ+qbutTgDnxmQ36arOuC0mMeAXxkm3a/9sqJ0W6aN3uqvNlbs3sQOTP9S/BwfX1hB1ilHK+G7jqnqEyB+S0VIX/XLi41tkTMX4wWkcA0Cbm3gXTqWs71QpsP5E1XbjE6ZkmGz3W/TmaQQMM6SNNT7S2MLM6toLm0PMa/sIK0oWt1Uct3FPHZevA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Qzs2U1JxN/gcqr9rlImwtlc7EXXTLf4lHDlbpcuaqBY=;
+ b=nvaSF4yz7lSPi1uhN9L0bYsTT+hujtPKC32gxe/B0bwsc7yQ2yxsn+OxSL6D48FxVjjR6pZamQPePHZCJiMUoXjkF/rFZ1FZNcyFy/2FBHG0zKI485XGJlVjqLci0cZSuKO6t51jJQTtXuNTy3pAA/yq/F9FdS/OREbBd+6g1ADxajwma0oh9/MLaDdIfVFjSOEe1CH2e2e2WTmmgAVS6zx+UA97dLAb5U/daRhJtDoLu3rdm2HC1nQaD4TafiOWZL1+eN46a4ZJncyKL+qTHS8yft3cciIKmas8/BGkWdGgz/cyyBZWxK6vqppJMh8rEhTXiSjQ68FoS8Agh8uTUw==
+Received: from BN9PR03CA0943.namprd03.prod.outlook.com (2603:10b6:408:108::18)
+ by PH7PR12MB6660.namprd12.prod.outlook.com (2603:10b6:510:212::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.10; Thu, 5 Nov
+ 2026 17:45:18 +0000
+Received: from BN7PEPF000000A5.namprd05.prod.outlook.com
+ (2603:10b6:408:108:cafe::7b) by BN9PR03CA0943.outlook.office365.com
+ (2603:10b6:408:108::18) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.10 via Frontend Transport; Thu, 5
+ Nov 2026 17:45:17 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.118.233) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN7PEPF000000A5.mail.protection.outlook.com (10.167.245.229) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.615.4 via Frontend Transport; Thu, 5 Nov 2026 17:45:17 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Thu, 5 Nov
+ 2026 09:44:52 -0800
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Thu, 5 Nov 2026 09:44:51 -0800
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.182)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
+ Transport; Thu, 5 Nov 2026 09:44:45 -0800
+Date: Thu, 5 Nov 2026 09:44:42 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+CC: Jason Gunthorpe <jgg@ziepe.ca>, <iommu@lists.linux.dev>, Alex Williamson
+	<alex@shazbot.org>, Alexey Kardashevskiy <aik@amd.com>, Bjorn Helgaas
+	<bhelgaas@google.com>, Catalin Marinas <catalin.marinas@arm.com>, Jacob Pan
+	<jacob.pan@linux.microsoft.com>, Joerg Roedel <joro@8bytes.org>, "Jonathan
+ Cameron" <jic23@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, "Kevin
+ Tian" <kevin.tian@intel.com>, Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner
+	<lukas@wunner.de>, Robin Murphy <robin.murphy@arm.com>, Samuel Ortiz
+	<sameo@rivosinc.com>, Shameer Kolothum
+	<shameerali.kolothum.thodi@huawei.com>, Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Suzuki K Poulose
+	<suzuki.poulose@arm.com>, Thierry Reding <thierry.reding@kernel.org>, "Vasant
+ Hegde" <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, Xu Yilun
+	<yilun.xu@linux.intel.com>, <kvm@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-coco@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+	<linux-tegra@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>, Shuah Khan
+	<skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v8 13/15] iommufd/viommu: Allow vIOMMUs without a parent
+ HWPT
+Message-ID: <auzAivzpzSUHjEQj@nvidia.com>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-14-aneesh.kumar@kernel.org>
+ <auuBjRjQwXl7UvvO@nvidia.com>
+ <20261104193139.GB3889730@ziepe.ca>
+ <yq5afqxf97a1.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -128,91 +133,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20261105-device-trust-core-v1-5-1e536825b4eb@nvidia.com>
+In-Reply-To: <yq5afqxf97a1.fsf@kernel.org>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN7PEPF000000A5:EE_|PH7PR12MB6660:EE_
+X-MS-Office365-Filtering-Correlation-Id: 54cb11e0-a066-4517-c3ef-08df3b648e1f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|376014|1800799024|23010399003|82310400026|36860700016|11063799006|261022075727099003|4143699003|261021121427099003|56012099006|261026140227099003|261009223027099003|261021135927099003|261028144727099003|261022105027099003|261102123227099003|10067099003|18002099003|22082099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	S5WpNuLZYts4Aw+82HFrSBoE5JtvGqLV/wqvP1b7gzzSNPOkg6SsRFeaoKXjosp+Y72N93JXz7lLT8nHIcrxU85tPl7Fx2giU6EgxQYywAXpScRqy3cDndS1v+Vq8x9Vf7CfHWzPyGgDvjJELkxGHX70JHXZ5e89scITADZBEDvjUnDYxscN2Z8wOPZOURrSfwbyL8r3wvx+Wj/SLlkkJvT0bE1AHLMY6/dPnuXsEzEWUuulE0WDgY8OToIeA6lEROR5Z0OH1io/lI7Ik2V6/4zQy9m5/vVQUd9BkatdG6HNL6OzU8aF0GluXwg4DrfFzadrO1nGPwHbdojCJRJSZgw/4iiAUP6VXQVe+DICny3K0imtkl4pYZ31tP+bXasN9dWz7dbPXEg+5Kb+s5vTEAOMwgYlZiHXw7ONiUd0S5SFebkL2ZRfElaUVkovaHoJu9V1bmQPawRyiU8bYJPEfklOqsRgzEOTdocyQmFaS05foWk+akrGij4lbc5jv6T9SOggzHfBgtkxDSaBoOCliAQRRSJcPV0LDwkMEfMIomVO8CyEZKFWOD0AL4veMj/UZMxkDGuGoW+ePMEM/ozY7q++v24dn3OJsFuAc4uQRzAzSmVIaIopB3QTnPLrQOK6/Jn00cZd0smhkHz3U07VMpQFun+dyWNG0rYgu+O/rzTR5n9/GsRDpOyJIHPdGOshgeRak5hG3BSW4m423Ol2zw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(23010399003)(82310400026)(36860700016)(11063799006)(261022075727099003)(4143699003)(261021121427099003)(56012099006)(261026140227099003)(261009223027099003)(261021135927099003)(261028144727099003)(261022105027099003)(261102123227099003)(10067099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	d8hVi+JscFBs+QaBybuTlRigcLAcKy2HynGk25s1LVRsOE5rH98CtxLmjNcHxqQzJVqFn0JhZvf9952aEP78Bx4yaD6crkAra8gxsc9XivfjrLsnbHKu8jusPirxlodPWAdymUfJBqKYnBlJblnPN0ZvrKVhFOYv1nQthLfozvahNhQYpsVJyFqdhPvTRCq/tK1W+a6UfcmEA3fN7220E+wIYM5RGrXxFJVTXXR3io0ihwcIbv7C2PuWJQahTJQ5iYJEQLpyytRfnbZ4th3Z8NZOC1nvUKZ9GkkSc/rCyqj4r9/OpdpvggujAgJnbRcUqOk7bKM8nQklnRgBhGJSvdBB5bAyrjvMnhqSpb4Bsh85aHMWJtPE5YtMhB+50IMDz7vqMF7zqz1dmcHYpTXHQXu0OcBMJoxB9N5QarM3V6A25hBnOsnLy2aChDGMRbzM
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 17:45:17.5609
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54cb11e0-a066-4517-c3ef-08df3b648e1f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN7PEPF000000A5.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6660
 
-On Thu, Nov 05, 2026 at 01:42:18PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, Nov 05, 2026 at 10:58:06AM +0530, Aneesh Kumar K.V wrote:
+> Jason Gunthorpe <jgg@ziepe.ca> writes:
+> > On Wed, Nov 04, 2026 at 11:03:41AM -0800, Nicolin Chen wrote:
+> >> By dropping the nesting parent from VIOMMU, it just simplifies the
+> >> attachment to an S1 paging hwpt, right?
+> >
+> > Yes.
+> >
+> > The VMM must always maintain a S1 paging attachment that is the
+> > identity map of the VM on all devices, same action as when there is no
+> > viommu.
+> >
 > 
-> Interface claims hold the USB device lock, but device_bind_driver()
-> requires the target interface lock. Without it, trust-policy writes can
-> race admission.
+> I am currently creating an S2 paging attachment. This results in a
+> configuration with S1 disabled and S2 enabled, which is used by all
+> untrusted devices.
 
-This says nothing about usb_driver_release_refused_claim() and the code 
-related to it.  It is an incomplete description of the patch.
+For validation, that would work. Yet "no viommu" should would be S1
+paging, i.e. hwpt allocated without IOMMU_HWPT_ALLOC_NEST_PARENT.
 
-Note that nothing prevents drivers from using an interface they claim 
-before that interface is registered.  For your scheme to work properly, 
-you should make sure the claim is authorized when 
-usb_driver_claim_interface() is called, not when the interface is 
-registered.
+For reference, QEMU has this:
+https://github.com/qemu/qemu/blob/master/hw/vfio/iommufd.c#L467
 
-Alan Stern
-
-> +/*
-> + * The driver core refused to bind an interface that a sibling claimed before
-> + * it was registered, and dropped the claim. Let the claimant release the
-> + * interface instead of operating it with a bound interface but no driver.
-> + */
-> +void usb_driver_release_refused_claim(struct usb_interface *iface,
-> +				      struct device_driver *claimant)
-> +{
-> +	struct device *dev = &iface->dev;
-> +
-> +	device_lock(dev);
-> +	if (!dev->driver && iface->condition == USB_INTERFACE_BOUND) {
-> +		dev->driver = claimant;
-> +		usb_unbind_interface(dev);
-> +		dev_set_drvdata(dev, NULL);
-> +		dev->driver = NULL;
-> +	}
-> +	device_unlock(dev);
-> +}
-> +
->  /* returns 0 if no match, 1 if match */
->  int usb_match_device(struct usb_device *dev, const struct usb_device_id *id)
->  {
-> diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-> index a738d03c23eac..d35a7710c8ef4 100644
-> --- a/drivers/usb/core/message.c
-> +++ b/drivers/usb/core/message.c
-> @@ -2264,6 +2264,7 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
->  	 */
->  	for (i = 0; i < nintf; ++i) {
->  		struct usb_interface *intf = cp->interface[i];
-> +		struct device_driver *claimant;
->  
->  		if (intf->dev.of_node &&
->  		    !of_device_is_available(intf->dev.of_node)) {
-> @@ -2277,7 +2278,14 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
->  			dev_name(&intf->dev), configuration,
->  			intf->cur_altsetting->desc.bInterfaceNumber);
->  		device_enable_async_suspend(&intf->dev);
-> +		claimant = intf->dev.driver;
-> +		if (claimant && !try_module_get(claimant->owner))
-> +			claimant = NULL;
->  		ret = device_add(&intf->dev);
-> +		if (!ret && claimant && !intf->dev.driver)
-> +			usb_driver_release_refused_claim(intf, claimant);
-> +		if (claimant)
-> +			module_put(claimant->owner);
->  		if (ret != 0) {
->  			dev_err(&dev->dev, "device_add(%s) --> %d\n",
->  				dev_name(&intf->dev), ret);
-> diff --git a/drivers/usb/core/usb.h b/drivers/usb/core/usb.h
-> index a9b37aeb515be..293340a48b6c5 100644
-> --- a/drivers/usb/core/usb.h
-> +++ b/drivers/usb/core/usb.h
-> @@ -49,6 +49,8 @@ extern int usb_set_isoch_delay(struct usb_device *dev);
->  extern int usb_get_bos_descriptor(struct usb_device *dev);
->  extern void usb_release_bos_descriptor(struct usb_device *dev);
->  extern int usb_set_configuration(struct usb_device *dev, int configuration);
-> +void usb_driver_release_refused_claim(struct usb_interface *iface,
-> +				      struct device_driver *claimant);
->  extern int usb_choose_configuration(struct usb_device *udev);
->  extern int usb_generic_driver_probe(struct usb_device *udev);
->  extern void usb_generic_driver_disconnect(struct usb_device *udev);
-> 
-> -- 
-> 2.56.0
+Thanks
+Nicolin
