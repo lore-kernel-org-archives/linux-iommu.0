@@ -1,86 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=141.105.120.124
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793893547;
-	b=blZ8EntqAG2AAdKtM5z4kj1AbeUCAh6gVRbnx5Do/8ZwANky1L11bIfoCL85hw8Jq9Kf
-	 9VHcTRToGwr8sNJRNGR06XNDzFkZFvKdWrYrd+AUywf45gWCpWkQSiV3YXoEx8GOcJJgv
-	 qrBTsLvJ5ATe/ciaoyH7qUawXYsNjhoq7cCrnDOn+kCNtZOsFfvI7Jt9JExC20twkInbT
-	 bSAeYH2Tv5ezlRDDkuKQ41EVkiN3eGNMWOMRjLZsi/b4dz1/YseIm49qJLSJGQlPYuz88
-	 fMz+BYyXIndJSJOCdx82EqqrDPzHCnnWQ3LMtrzAMZJ7ni9GQrayv8qbzJHBeHhATVQ==
+	t=1793895464;
+	b=eSr7/BQplePkjQHkuv6PzE1RKwiPV1b6/G/i/VJDd0VvMyL58vXMJI9oaQh46PgDthK0
+	 ZN13nWw85L7X12GELDTccbsXf+85aqBhyvu0R3PCe0jZYYQiVdHOrjNXAVZw8XLrDRdiR
+	 dybMtyLLY2EHyC0724NDdJYT9DAWMU474Ba0VUp4ZunJ82pf5iZ3UII8u1Oknn4Cu5YSc
+	 0I93/e6p3Ve8XYwXlnHuU0/p5/JdP7nj+kAvmbfonpB2wZItxRVSCWvKIif+0brGO44Ai
+	 T8XD6sMLt/6oYuZPVoO3T76mA6IH1MdHKniM7Nuz0NS6DjO+M9LmNgxzAjRxouR6n+Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793893547;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=r8nVCxRr/caFl0VvSs+H/hiL0jp8irU+aVqqr+Vt2CA=;
-	b=5rCkrfhqEUdRWyn1iIXmwQgrtgT4LbKFpJ60UfX6syAKo/04RngVzk06VfhkSXDuB7ry
-	 wPhnmbLnNwB1Cw5cHK0gGR34q01sCk+cYJhkmQ+a9EMxOhBoYg1hMxaJop1u5SaaHa2RR
-	 8bsfmYlx9gvnM9cfVtTrzMyl9SQVrdPpwPG4x8aANRxEme7mH/hqPGZLgosAjTL6fsOoK
-	 Vc/VrXoNGN3k87v96D1Cu6/xiC8bgmrYPzT9u4JDVLMhlU8bJ33bmzBjE2wuO0auVT4cB
-	 nviGlB66VcV/5eqlByb5AxZmDQUpnxn7/oDVGfOKVmUdyMPQanGJVaG7vBUemXgWIgg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793895464;
+	h=DMARC-Filter:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=45BMwDl5+k3yl6C4+VgHK+KgYa2hgKR/ezUXr9zZDnA=;
+	b=aXQ7yPUTWmffDnqKyri4hx/qctKWTOmEDlgbwcy7240MBp6h3YMvE33G9FTxytEVoZTM
+	 Y6stQO22nvObUEDUAGLW14deZnodMlFrCCAOZUVMjSFbWjVvH8U8Btxf4dTI//vXjtK7H
+	 atYwkwaGt2YfV4l0MgmanTbq/+dtEHJ/cZ+52QIvkRJJA68GDwar4nkmgyV9vNGzexZ9P
+	 0VMTAWEw/RzGiwiaNpYyriO45tjq0951YlFBjDsXV00Vki9WJ4W3oxW53z4DkQOwZyvCY
+	 xSTnz43WH48AwETRO4KytTB8PhsBFjS6YpEh9VQz0zztqOg42I7RQZtmYO5okwL+Dhw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=meaN+OhO;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=lankhorst.se;
+	spf=pass smtp.mailfrom=lankhorst.se;
+	dkim=pass header.d=lankhorst.se header.i=@lankhorst.se header.a=rsa-sha256 header.s=default header.b=LiGqdCVf;
+	arc=none smtp.remote-ip=141.105.120.124
+Received: from lankhorst.se (unknown [141.105.120.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BD15606A33E;
-	Thu,  5 Nov 2026 15:45:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9A4B606A33C
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 16:17:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A9A4B606A33C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lankhorst.se
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lankhorst.se
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.a=rsa-sha256 header.s=korg header.b=meaN+OhO
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B873B1F00A20;
-	Thu,  5 Nov 2026 15:45:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxfoundation.org;
-	s=korg; t=1793893546;
-	bh=r8nVCxRr/caFl0VvSs+H/hiL0jp8irU+aVqqr+Vt2CA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=meaN+OhOvNMzUiSpkbxD6EVBd0OEbPvrP1jGl/qwyY0z+wE5jdB+PgyFec94YPgqy
-	 S4EvLxBoXRhzFxyRbbnsnlivK8Ca0AftS8DmC7SltX8mquIL1iPg+W2fY6Ru9PmF2d
-	 q5KtVgSP6lw2tQlIVqFt0mj9cI6SeYB7128uF+1w=
-Date: Thu, 5 Nov 2026 10:45:44 -0500
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH 10/17] driver core: Expose device trust authorization
- through sysfs
-Message-ID: <2026110540-blazing-wifi-5082@gregkh>
-References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
- <20261105-device-trust-core-v1-10-1e536825b4eb@nvidia.com>
- <2026110514-bunkhouse-handset-6a3a@gregkh>
- <20261105132729.GB8298@unreal>
- <2026110535-engulf-precut-cf10@gregkh>
- <9d896ebb-6892-4cac-a7c5-41def47f0be0@arm.com>
- <2026110556-sculpture-immovable-ca8b@gregkh>
- <0438755d-dc1f-4c8c-b274-5555ef3d49a3@arm.com>
+	dkim=pass (2048-bit key, unprotected) header.d=lankhorst.se header.i=@lankhorst.se header.a=rsa-sha256 header.s=default header.b=LiGqdCVf
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=lankhorst.se;
+	s=default; t=1793895455;
+	bh=sQcybDD0TFEKFGLjkC5J5HLRe1kKfr3bprl/6+1sRdw=;
+	h=Date:Subject:To:References:From:In-Reply-To:From;
+	b=LiGqdCVf46YxCnpoQZd83wAPplv4qbvls59YegWhExqo9VqC+Ps5ldIWkOn2agoZP
+	 ZMXQqyPn8v2JWb0WVUOzST3N2QAj7aURdKGa3qhzvlROGXU7vrnoHvPVIRF7IdHuzO
+	 +viukXbom4levRafdMCl/BqMKYR+tPU/xqK5AyRuJ+eup24NxbiNpf3j79O9RtGKCO
+	 0P7KMFS8NmhaQAo2WDpHO+KxUzysVOYFtZ7TWVbD+xjHO/kqCG/4ebx50Fg3qVHL78
+	 Hs0qZ5TwA7BG5c/HOGZG/mICcNXwtsmVDrm1fjfMqu0fD8ZO/+rDxUFBYgH0KNP3dL
+	 MszzCu1UAZKkg==
+Message-ID: <1a573649-adb5-43c7-93e5-c691af670ab5@lankhorst.se>
+Date: Thu, 5 Nov 2026 17:18:31 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -90,152 +54,284 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0438755d-dc1f-4c8c-b274-5555ef3d49a3@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/23] DMA-buf mapping types
+To: Alistair Popple <apopple@nvidia.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Matthew Brost <matthew.brost@intel.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>,
+ Dongwon Kim <dongwon.kim@intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Xu Yilun <yilun.xu@linux.intel.com>,
+ Karl Mehltretter <kmehltretter@gmail.com>,
+ Baolu Lu <baolu.lu@linux.intel.com>, Felix Kuehling
+ <felix.kuehling@amd.com>, Alex Deucher <alexander.deucher@amd.com>,
+ dri-devel@lists.freedesktop.org, intel-xe@lists.freedesktop.org,
+ amd-gfx@lists.freedesktop.org, linux-media@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org, linux-rdma@vger.kernel.org,
+ iommu@lists.linux.dev, Keith Busch <kbusch@kernel.org>,
+ Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+ Sagi Grimberg <sagi@grimberg.me>, linux-nvme@lists.infradead.org,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Simon Horman <horms@kernel.org>, Mina Almasry <almasrymina@google.com>,
+ netdev@vger.kernel.org, Alexey Kardashevskiy <aik@amd.com>,
+ zhipingz@meta.com, treding@nvidia.com, jhubbard@nvidia.com,
+ Jason Gunthorpe <jgg@ziepe.ca>, Leon Romanovsky <leon@kernel.org>
+References: <20261105-dma_mapping_type_v4-v2-0-78b8dc9ae80a@nvidia.com>
+Content-Language: en-US
+From: Maarten Lankhorst <dev@lankhorst.se>
+In-Reply-To: <20261105-dma_mapping_type_v4-v2-0-78b8dc9ae80a@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 05, 2026 at 02:26:39PM +0000, Robin Murphy wrote:
-> On 2026-11-05 2:03 pm, Greg Kroah-Hartman wrote:
-> > On Thu, Nov 05, 2026 at 01:59:20PM +0000, Robin Murphy wrote:
-> > > On 2026-11-05 1:40 pm, Greg Kroah-Hartman wrote:
-> > > > On Thu, Nov 05, 2026 at 03:27:29PM +0200, Leon Romanovsky wrote:
-> > > > > On Thu, Nov 05, 2026 at 08:10:14AM -0500, Greg Kroah-Hartman wrote:
-> > > > > > On Thu, Nov 05, 2026 at 01:42:23PM +0200, Leon Romanovsky wrote:
-> > > > > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > > 
-> > > > > > > An initrd must authorize a disabled device after attestation even if a
-> > > > > > > built-in driver already attempted to probe it.
-> > > > > > > 
-> > > > > > > Expose requested trust_policy and read-only active trust. Allow explicit
-> > > > > > > disabled policy to advance once to adversary or full, fixing that decision
-> > > > > > > immediately. Reject later policy changes, including for a device claimed
-> > > > > > > before registration, while allowing same-value writes on live devices.
-> > > > > > > Keep initial unrestricted selection separate from explicit authorization
-> > > > > > > and bind-time commitment. Serialize writes with probing under the device
-> > > > > > > lock. Include the attributes in device ownership changes.
-> > > > > > > 
-> > > > > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > > > > ---
-> > > > > > >    Documentation/ABI/testing/sysfs-devices-trust |  51 +++++++++++++
-> > > > > > >    MAINTAINERS                                   |   1 +
-> > > > > > >    drivers/base/base.h                           |   6 ++
-> > > > > > >    drivers/base/core.c                           |  15 +++-
-> > > > > > >    drivers/base/trust.c                          | 102 ++++++++++++++++++++++++++
-> > > > > > >    5 files changed, 174 insertions(+), 1 deletion(-)
-> > > > > > > 
-> > > > > > > diff --git a/Documentation/ABI/testing/sysfs-devices-trust b/Documentation/ABI/testing/sysfs-devices-trust
-> > > > > > > new file mode 100644
-> > > > > > > index 0000000000000..97e07a174769c
-> > > > > > > --- /dev/null
-> > > > > > > +++ b/Documentation/ABI/testing/sysfs-devices-trust
-> > > > > > > @@ -0,0 +1,51 @@
-> > > > > > > +What:		/sys/devices/.../trust
-> > > > > > > +Date:		September 2026
-> > > > > > > +Contact:	driver-core@lists.linux.dev
-> > > > > > > +Description:
-> > > > > > > +		(RO) The active trust level for the device. The values are
-> > > > > > > +		"disabled", "adversary", and "full". Driver core resolves
-> > > > > > > +		the level before DMA configuration and probe, and retains it
-> > > > > > > +		through removal and DMA cleanup. Outside a bind transaction
-> > > > > > > +		the level is "disabled". This does not imply that policy is
-> > > > > > > +		writable or that the device has never operated.
-> > > > > > > +
-> > > > > > > +What:		/sys/devices/.../trust_policy
-> > > > > > > +Date:		September 2026
-> > > > > > > +Contact:	driver-core@lists.linux.dev
-> > > > > > > +Description:
-> > > > > > > +		(RW) The requested trust policy for the device. The initial
-> > > > > > > +		value may be selected by the bus before the device is
-> > > > > > > +		registered; otherwise it is "default". The policy is resolved
-> > > > > > > +		to an active trust level before the device is probed.
-> > > > > > > +
-> > > > > > > +		The values are "default", "disabled", "adversary", and
-> > > > > > > +		"full". "default" lets the bus select the active trust level.
-> > > > > > > +		"disabled" prevents a functional driver from binding.
-> > > > > > > +		"adversary" requests operation with the restrictions that the
-> > > > > > > +		bus and DMA layers can enforce for a potentially malicious
-> > > > > > > +		device; it does not isolate DMA by itself. "full" requests
-> > > > > > > +		normal operation.
-> > > > > > > +
-> > > > > > > +		Before an operating level is committed, policy may change
-> > > > > > > +		freely until "disabled" is selected. Explicit "disabled"
-> > > > > > > +		blocks binding while allowing a later write of "adversary" or
-> > > > > > > +		"full". Repeated rejected probes preserve this opportunity.
-> > > > > > > +		Authorization immediately fixes the requested policy.
-> > > > > > > +		Returning to "default" or "disabled", or selecting another
-> > > > > > > +		mode, fails.
-> > > > > > > +
-> > > > > > > +		Successful resolution to an allowed level commits policy
-> > > > > > > +		and operating level before driver or DMA setup. Both remain
-> > > > > > > +		fixed for the device object's lifetime, including through
-> > > > > > > +		failed or deferred probes, unbind, reset, and driver reload.
-> > > > > > > +		Later binds must resolve to the same level, including when
-> > > > > > > +		the policy is "default". A resolver error or disabled result
-> > > > > > > +		before commitment leaves the policy's writability unchanged.
-> > > > > > 
-> > > > > > I understand you are aproaching this from a PCI point-of-view, but many
-> > > > > > busses do not care or have DMA at all, and need to actually talk to the
-> > > > > > device before being able to even "add" it to the kernel.  So you are
-> > > > > > making a driver core-specific policy based on mentioning DMA here, when
-> > > > > > really that should only be a bus-specific thing, right?  Some busses
-> > > > > > might require DMA to happen (i.e. USB needs their host controllers to
-> > > > > > use DMA to even talk to the device at all).
-> > > > > > 
-> > > > > > So can this be written to be more vague and generic and then put the
-> > > > > > specifics in the bus-specific portion?
-> > > > > 
-> > > > > Yes, of course. The main point is that drivers must not communicate with
-> > > > > or configure hardware before attestation is approved. DMA is the PCI
-> > > > > way to communicate with hardware.
-> > > > 
-> > > > That's a very vague statement of "must not communicate with".  Busses
-> > > > HAVE to talk to the device to determine what the device even is before
-> > > > it can add it to its internal bus list.  That's just how the hardware
-> > > > works, you can't say "no talking at all" otherwise that means that you
-> > > > never even know if a device is there (and for some busses, you'll miss
-> > > > the device entirely as they can only be found when the "host controller"
-> > > > tells the kernel that a device showed up, not later by manually
-> > > > scanning.)
-> > > > 
-> > > > Think about reading PCI device ids, or USB configuration information,
-> > > > that's a bus-core thing.  Are you really thinking that non of this can
-> > > > be read from a device under this "policy"?
-> > > 
-> > > Yup, and that's true even in the PCI TDISP case - there's a major amount of
-> > > "communication" and "configuration" involved in that. The principle which
-> > > should (hopefully) generalise is that a bus/host controller driver can
-> > > always interrogate its child device to perform whatever attestation and
-> > > general configuration is appropriate, but we won't hand off any _control_ of
-> > > that device to a specific device driver (nor enable potentially-impactful
-> > > bus-level features like DMA, interrupts, etc. if relevant) without the
-> > > requisite agreement between the bus code and the user.
-> > 
-> > I agree, that's fine, the bus core should always be able to talk to the
-> > device, the "barrier" is where the device is handed to a driver for that
-> > bus.  That's what I'm trying to say here, DMA is often needed before
-> > that can ever happen, so no claims of "no dma is happening" should be
-> > here.
-> 
-> For the case of USB and co. it's also still fine - just perhaps wants some
-> clearer wording - since the endpoint itself is not performing DMA
-> operations. It might send some message which causes the host controller
-> device to DMA to/from a buffer owned by the host controller driver, but
-> that's perfectly OK since the host controller itself is not on its own bus,
-> and must have already been accepted by the PCI/platform/whatever code to get
-> to that point.
-> 
-> Now if we had some bonkers kind of bus where the only way to identify an
-> endpoint was to give it DMA addresses to have it read a command descriptor
-> and write out its own data directly, then indeed there would be little hope
-> of being able to enforce much of a trust model for that...
+For the whole series:
 
-Look at how USB typec code handles many parts of the device discovery
-process.  Lots of data is read and written for loads of different things
-that the device provides and the kernel has to "trust" to be correct.
-It's very very complex and DMA and other buffers and resources are quite
-involved here.  We have tried to "harden" most of these paths now, but
-odds are we haven't found them all...
+Acked-by: Maarten Lankhorst <dev@lankhorst.se>
 
-thanks,
+Great to see the non-sgt mapping types finally being a first class option in dma-buf.
 
-greg k-h
+On 11/5/26 07:40, Alistair Popple wrote:
+> This is v2 of the DMA-buf mapping types series [1]. It keeps the framework
+> and the SGT conversions from the RFC but defers the final mapping type
+> selection until the first pin/map of the buffer.
+>
+> At pin/map the exporter chooses one of the types matched, taking the other
+> attachments and the buffer's placement into account. That choice is held by the
+> core until the exporter explicitly invalidates the attachment. This ensures
+> unmap/remap cannot cause buffer movement and ping/pong.
+>
+> Future work will build on top of this series to add an iommufd importer type
+> per the plan in [2], separate out PCIe P2P as its own mapping type and convert
+> XGMI to an exclusive mapping type.
+>
+> Why mapping types
+> -----------------
+>
+> Since its introduction, DMA-buf has only supported using scatterlist for
+> the exporter and importer to exchange address information.  This is not
+> sufficient for all use cases as dma_addr_t is a very specific and limited
+> type that should not be abused for things unrelated to the DMA API.
+>
+> There are several motivations for addressing this now:
+>  1) VFIO to IOMMUFD and KVM requires a physical address, not a dma_addr_t
+>     scatterlist, it cannot be represented in the scatterlist structure
+>  2) xe vGPU requires the host driver to accept a DMABUF from VFIO of its
+>     own VF and convert it into an internal VRAM address on the PF
+>  3) We are starting to look at replacement datastructures for
+>     scatterlist
+>  4) Ideas around UALink/etc are suggesting not using the DMA API
+>  5) Private interconnects, such as XGMI, are forced to work around this using
+>     driver-specific hacks.
+>
+> None of these can be achieved using scatterlist. This series introduces a
+> "mapping type" mechanism allowing dma-buf to negotiate compatibility between
+> different types and support alternate mapping options. See the description of
+> patch 2 for more details.
+>
+> Selecting mapping type
+> ----------------------
+>
+> Importers and exporters list possible mapping types with the exporter
+> responsible for selecting the final type at pin/map time under the dma_resv
+> lock. A matching phase at attachment time eliminates types which statically
+> cannot be supported for a given exporter/importer.
+>
+> This was done in response to review comments on the RFC. Karl found that the
+> RFC's match callback ran on an uninitialised attachment [3]. Christian noted
+> that the final decision has to be made under the dma_resv lock before a
+> mapping is created, not at attach [4], and Thomas proposed the three steps
+> followed here: agree the possible types at attach, select at map, hold the
+> selection until invalidate_mappings() [5]. Christian also noted that remaps
+> must not change type or placement as that makes buffers ping/pong [6].
+>
+> The dma-buf core enforces that last point by calling select_mapping() only on
+> the first pin/map after attach or after an invalidate. The pin/map type can
+> therefore only change once the exporter has explicitly invalidated the mapping.
+>
+> Future work
+> -----------
+>
+> This series stops at the SGT type so that the framework and the
+> attach/pin/map contract can be reviewed on their own. I already have
+> proof-of-concept conversions of both PCIe P2P (building on Thomas's work [7])
+> and XGMI to separate mapping types. If those would be helpful for reviewing
+> this series let me know and I will post them.
+>
+> Alternatively this series could be split up with patches 1-9 & 22-23 adding the
+> general framework and the rest adding the conversions later.
+>
+> Further work, per [2], is an iommufd importer type to replace the private
+> vfio/iommufd interface and allow other DMA-bufs to be imported into iommufd.
+>
+> Testing
+> -------
+>
+> - KUnit dma-buf-mapping suite (patches 22 and 23) passes.
+> - Every patch compile-tested with a config enabling all converted drivers.
+>
+> Changes since v1 [9]
+> --------------------
+>
+> - Rebased onto v7.4-rc1. The rename also covers the new nvme-pci DMA-buf
+>   importer and devmem's switch to pinning. xe's dynamic-debug knob for the
+>   p2pdma distance check (3bc497a40178) is dropped, since the check is now
+>   done by the core at match time, and amdgpu's PREEMPT-domain import
+>   decision (78cdd96ab497) asks the negotiated match set instead of
+>   attach->peer2peer.
+> - The dma_buf_map_attachment()/dma_buf_unmap_attachment() rename is now the
+>   first patch, squashed into one, and uses the shorter dma_buf_map_sgt() and
+>   dma_buf_unmap_sgt() names (Christian [9]).
+> - Dropped dma_buf_mapping_attach() and the dma_buf_sgt_attach() /
+>   dma_buf_sgt_dynamic_attach() renames. Importers that support more than
+>   the SGT type list them in a static dma_buf_attach_ops
+>   ->supported_mapping_types table. The importing device is passed to the
+>   mapping types through the match arguments rather than stored in each
+>   entry. dma_buf_attach() and dma_buf_dynamic_attach() are unchanged for
+>   everyone else (Christian [9]).
+> - The selected type is an index into the attachment's match set, read
+>   through dma_buf_attach_map_type(), instead of a copy in attach->map_type.
+>   finish_match() fills the match set entry directly and select_mapping()
+>   returns the index.
+> - A failed pin or map only undoes a selection it made itself, so a map
+>   failing under a held pin keeps the pinned type and a failed first pin
+>   leaves the attachment unselected; KUnit tests for both (Karl [10]).
+> - dma_buf_match_mapping() returns -EOPNOTSUPP when the two sides have no
+>   type in common, keeping -EINVAL for an empty list, which restores the
+>   error xe's own tests expect (Sashiko).
+> - New DMA_SGT_EXPORTER_REQUIRES_P2P flavour that requires a P2P capable
+>   importer without a pci_p2pdma_distance() check at match time, used by
+>   vfio and uverbs so iommufd's non-PCI device can still attach and so no
+>   pci_dev is dereferenced outside the dma_resv lock (Sashiko).
+> - The SGT P2P distance check is quiet, as it was in xe and amdgpu before
+>   the conversion (Sashiko).
+> - Fixed a NULL importer_ops dereference in dma_buf_dynamic_attach() and the
+>   NULL check order in dma_buf_unmap_sgt() (Sashiko).
+> - Signed-off-by added to every patch (Jason). Patch 4 is now authored by me
+>   with Jason as co-developer, as little of the original remains.
+> - Not addressed: the Tegra fault with CONFIG_DMABUF_DEBUG that Karl
+>   reported [12] is a pre-existing Tegra bug being fixed separately.
+>
+> Changes since RFC v1 [1]
+> ------------------------
+>
+> - Dropped the PAL type and its vfio/iommufd users (RFC 21-25).
+> - Rebased onto v7.3-rc5: move_notify is now invalidate_mappings,
+>   CONFIG_DMABUF_MOVE_NOTIFY is gone, new amdxdna/panfrost/panthor
+>   exporters converted, kzalloc_obj().
+> - Patch 1 records the whole match set in a fixed-size array in the
+>   attachment; patch 3 initialises the attachment before match_mapping()
+>   (Karl); patch 15 holds a pci_dev reference instead of asserting the resv
+>   lock (Baolu).
+> - New patches 5, 6 and 7: exporter selection at pin/map with core-enforced
+>   stickiness, match set queries, and dma_buf_mapping_map()/unmap().
+> - xe and amdgpu conversions written against the final API; amdgpu's XGMI
+>   override rewrites the recorded match set entry.
+> - New patch 26 with KUnit tests for the selection contract.
+>
+> [1] https://lore.kernel.org/all/0-v1-b5cab63049c0+191af-dmabuf_map_type_jgg@nvidia.com/
+> [2] https://lore.kernel.org/all/20260422150000.GK3199414@nvidia.com/
+> [3] https://lore.kernel.org/all/20261016202653.97339-1-kmehltretter@gmail.com/
+> [4] https://lore.kernel.org/all/d08a26ed-ded7-4447-bf7b-88597ee7df0e@amd.com/
+> [5] https://lore.kernel.org/all/8d4cb20b70ac4c3f36d8d631769757158af2ac8e.camel@linux.intel.com/
+> [6] https://lore.kernel.org/all/7b4dc988-5dbd-40e4-b17a-47b6eaf4bf81@amd.com/
+> [7] https://gitlab.freedesktop.org/thomash/xe-vibe/-/commit/7452df0fc858a7dc5ccac0e2037852cb7ab64d61
+> [8] https://lore.kernel.org/all/20261026053623.202642-1-apopple@nvidia.com/
+> [9] https://lore.kernel.org/all/3151a820-c583-4968-8440-673a9e390446@amd.com/
+> [10] https://lore.kernel.org/all/7193d384-5e28-4f85-8004-1dc9318d5c1c@amd.com/
+> [11] https://lore.kernel.org/all/at8IQZ34wkHQ_5PL@gmail.com/
+> [12] https://lore.kernel.org/all/auAIO0y09SXk34CN@gmail.com/
+>
+> ---
+> Alistair Popple (5):
+>       dma-buf: Negotiate the mapping type in dma_buf_dynamic_attach()
+>       dma-buf: Let the exporter select mapping type at pin/map
+>       dma-buf: Add match set queries for exporter placement decisions
+>       dma-buf: Add dma_buf_mapping_map() returning a type-tagged mapping
+>       dma-buf: Add kunit tests for mapping type selection
+>
+> Jason Gunthorpe (18):
+>       treewide: Rename dma_buf_(un)map_attachment() to dma_buf_(un)map_sgt()
+>       dma-buf: Introduce DMA-buf mapping types
+>       dma-buf: Add the SGT DMA mapping type
+>       dma-buf: Route SGT related actions through the attachment's mapping type
+>       dma-buf: Allow single exporter drivers to avoid the match_mapping function
+>       drm: Check the SGT ops for drm_gem_map_dma_buf()
+>       dma-buf: Convert all the simple exporters to use SGT mapping type
+>       drm/vmwgfx: Use match_mapping instead of dummy calls
+>       accel/habanalabs: Use the SGT_P2P mapping type
+>       drm/xe/dma-buf: Use the SGT mapping type
+>       drm/amdgpu: Use the SGT mapping type
+>       vfio/pci: Change the DMA-buf exporter to use mapping_type
+>       RDMA/uverbs: Use the SGT_P2P mapping type
+>       dma-buf: Update dma_buf_phys_vec_to_sgt() to use the SGT mapping type
+>       iio: buffer: convert to use the SGT mapping type
+>       functionfs: convert to use the SGT mapping type
+>       dma-buf: Remove unused SGT stuff from the common structures
+>       dma-buf: Add kunit tests for mapping type
+>
+>  drivers/accel/amdxdna/amdxdna_cbuf.c               |   8 +-
+>  drivers/accel/amdxdna/amdxdna_gem.c                |  11 +-
+>  drivers/accel/amdxdna/amdxdna_ubuf.c               |   8 +-
+>  drivers/accel/habanalabs/common/memory.c           |  54 +-
+>  drivers/accel/ivpu/ivpu_gem.c                      |   6 +-
+>  drivers/accel/ivpu/ivpu_gem_userptr.c              |  11 +-
+>  drivers/accel/qaic/qaic_data.c                     |   6 +-
+>  drivers/dma-buf/Makefile                           |   1 +
+>  drivers/dma-buf/dma-buf-mapping.c                  | 291 ++++++-
+>  drivers/dma-buf/dma-buf.c                          | 266 ++++--
+>  drivers/dma-buf/heaps/cma_heap.c                   |  12 +-
+>  drivers/dma-buf/heaps/system_heap.c                |  13 +-
+>  drivers/dma-buf/st-dma-mapping.c                   | 896 +++++++++++++++++++++
+>  drivers/dma-buf/udmabuf.c                          |   8 +-
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c        | 136 ++--
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c            |   4 +-
+>  drivers/gpu/drm/armada/armada_gem.c                |  28 +-
+>  drivers/gpu/drm/drm_prime.c                        |  28 +-
+>  drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c         |  16 +-
+>  drivers/gpu/drm/i915/gem/i915_gem_object.c         |   2 +-
+>  .../gpu/drm/i915/gem/selftests/i915_gem_dmabuf.c   |   4 +-
+>  drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c   |   8 +-
+>  drivers/gpu/drm/msm/msm_gem_prime.c                |   7 +-
+>  drivers/gpu/drm/omapdrm/omap_gem_dmabuf.c          |   9 +-
+>  drivers/gpu/drm/panfrost/panfrost_gem.c            |  13 +-
+>  drivers/gpu/drm/panthor/panthor_gem.c              |  11 +-
+>  drivers/gpu/drm/tegra/gem.c                        |  26 +-
+>  drivers/gpu/drm/virtio/virtgpu_prime.c             |  19 +-
+>  drivers/gpu/drm/vmwgfx/vmwgfx_prime.c              |  32 +-
+>  drivers/gpu/drm/xe/xe_bo.c                         |  16 +-
+>  drivers/gpu/drm/xe/xe_dma_buf.c                    |  79 +-
+>  drivers/iio/industrialio-buffer.c                  |  13 +-
+>  drivers/infiniband/core/umem_dmabuf.c              |   8 +-
+>  drivers/infiniband/core/uverbs_std_types_dmabuf.c  |  30 +-
+>  drivers/iommu/iommufd/selftest.c                   |  18 +-
+>  drivers/media/common/videobuf2/videobuf2-core.c    |   2 +-
+>  .../media/common/videobuf2/videobuf2-dma-contig.c  |  23 +-
+>  drivers/media/common/videobuf2/videobuf2-dma-sg.c  |  18 +-
+>  drivers/media/common/videobuf2/videobuf2-vmalloc.c |  13 +-
+>  .../media/platform/nvidia/tegra-vde/dmabuf-cache.c |   6 +-
+>  drivers/misc/fastrpc.c                             |  18 +-
+>  drivers/nvme/host/pci-dmabuf.c                     |   6 +-
+>  drivers/tee/tee_heap.c                             |  13 +-
+>  drivers/usb/gadget/function/f_fs.c                 |   9 +-
+>  drivers/vfio/pci/vfio_pci_dmabuf.c                 |  26 +-
+>  drivers/xen/gntdev-dmabuf.c                        |  27 +-
+>  include/linux/dma-buf-mapping.h                    | 420 ++++++++++
+>  include/linux/dma-buf.h                            | 234 ++++--
+>  include/trace/events/dma_buf.h                     |   2 +-
+>  io_uring/zcrx.c                                    |   6 +-
+>  net/core/devmem.c                                  |   8 +-
+>  samples/vfio-mdev/mbochs.c                         |  10 +-
+>  sound/soc/fsl/fsl_asrc_m2m.c                       |  12 +-
+>  53 files changed, 2415 insertions(+), 536 deletions(-)
+> ---
+> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+> change-id: 20261105-dma_mapping_type_v4-f71180b977e8
+>
+> Best regards,
+> --  
+> Alistair Popple <apopple@nvidia.com>
+>
+
