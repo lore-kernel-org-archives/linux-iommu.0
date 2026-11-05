@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1793876105;
-	b=w5jmdCaGp5hBrmX1VwV16o2YkUt6dGf4uXjrdJhaXPyTlKj57iiQXrFpHbQku0zXCkFe
-	 8cYmYse+zV3G8BsU+kEt8MvLx4Gk3hIErPpRaUtj7uwK7tNKleSuE011ltIeqmwLIlDOy
-	 TsHOvZJHz2PEoWGOyWqNk/RuA2LVTEIWF1peheo+5LBj9INjWIAUs42lYeSYLkQ6Nt3Y9
-	 7aQm29q6Y7I9xmy1yNYdrmHOknPXhHMw/qOQcUGJvV0aP/xxUIjRkpW23wf7hpSvmDilX
-	 pl/gkQ0muZGymNyq/Vk9NQSWgEN/LXzTCgKRTftMe1pbv7s81Rh/xvpIgrVClo6lXYg==
+	b=NknYKDf6+5AOEk8nfqGiZPk1xWEdvdQ4mqFp4Zz88oP0h0sgD9U2Mi1pwSf7zGg3YBIH
+	 ivxCOTWGE2Vw4HHsfRpgbyAM2gudws8xMCZbvK4JEREKFDOdeIBc6Ecl9iomVUMNaXK2+
+	 PQOe7FdvI4AyLZNh/ISxqz0HAXt6jW4wTKHdc8EYHF86snudRRiec/JKbVq/jd5zIYv32
+	 o+i2oJ88BGyl0DI4QyN2QHw8C9Pyr6fTk8PiUcEIG3ejV/AtRYg/ouxIc9ZVcnJlKx/WK
+	 V9R0PMHNLjUqmGHCi7gqTWjBCUgEXiK2k871PrDtrwr0Zb1JwVhE+fy9AQsvzyRG5Zw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1793876105;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=uGUhG/4kegYC9lMeZbNb8t81bDNVOH7gztwwXEebXhc=;
-	b=257d7SfuXbBqAReXWrTSe0/bs+RnpUao5siJfjQreu89TYO6DIoj4HugLOSXqDEqQbeG
-	 WtgD+Rhb/T1opknfwMdGKxvcKWkw4YsQJcELmlcQk4RX8bxAIit8vlQDD4D2WxUcPcPw2
-	 UCvOSfr+6ibHpq9Iett3yiDF44d8AEoHN7YhGAB5pKeF8LQUZCQzvtzZ0CYZw/fWUkS7F
-	 w2OykmWyYD9H9vO+uMdeZrpwawdqbsnedNu2x7EfgucH5ie9mT0E/U+HtMUTRXKsgD2rh
-	 aYtTG7GTkH7j/DXZLCxIkJXdvRzkeVnfeW1WveuqpWaS1Dbiq5lE34IXctpE/vzPGmQ==
+	bh=0Eo/flAh5ZGhOeGiv+neAc3dXiHz3sx2uOGMjplfqp4=;
+	b=NJ4EOZsZP2Zy1K1qE504JS6afgf1tLstneNvRr3kBbLONM69P+uvajU3h5aSBr7H+RSk
+	 tgQR3Z7LMps9ftNEHUFkRhLsvjuoCeNMlnqN9VNcI8ri0yRkEEzGcRlJ2bgq37T4OYesa
+	 WZ2GtdNM74twx4llSj5dy5eUSetURtcOl+ffQgx8dCYsvzgR/tHtrRiMnWocb6bMpAzio
+	 HO/2UhurxjzzjnskPgTjDls1pQgDGfOLQplj2MWrVlpVVH6lMi953YVsu2CnXDa9XpJxl
+	 5xZuevi4UUl8FEt+Ia97ReHrH/qp5mZQ5WHG506GQRvpAp1w/Iux9MHqXIhc1FEJSaQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ust6rJ5E;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="jOx3uC/b";
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D35606A33F;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3387F606A32F;
 	Thu,  5 Nov 2026 10:55:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Ust6rJ5E
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jOx3uC/b
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1793876105;
-	b=eX6ulAtxJSezZS9Uw7TEjZ1c3buOtr8XFgV6yrX/nHyfiFULlT8X8k5f3LlPupe5Gnbb
-	 dW6s8XEXp6LtENKwmObvZE8gxHkOiZ/xl40EQyXWROCHW5BodvQgP85QHLuK9gzVG5JUU
-	 rYTkpF4wee822OjZurKP9r4kv5yFYtMqPQjSH44BKcLtEWXWEzryIn7BG3o7u5uhpPKNw
-	 eZ+VYqpxq0Qf9LZjgDYBhXAqwYi4Sl2+ufmQaj7ixxWJUiLPTmSh9XT5mpuRxPdGBtdAz
-	 XOIlLFpFyqBo5K1GsNeoqnJYth8V35IiaA47WjHe/hqRDZedCc8Rw5+BJgGqkH/psnQ==
+	t=1793876104;
+	b=uxB+ThI5RbP6SqHUUPNYZ8J6TZIjzL7nR99YnIpUptij0b+RbPvgC+5vUnZJQk0dPkpw
+	 A/0UO7+f2VNsfimUlLq33Ytgu6rHNpZdYQaZGH5DfhpSiBP+tARZYmVkVxC1+alLRrEqI
+	 9snOqbzwbmndaq70ev6EdVd2rrleOdJJkJwmCNtE5Ilom/4Uolp9srIQe56AVmMPN81Bg
+	 S04LhDQszrl9l62ABypYza2bRr0Pofc3Ru+VgI1m7lQc7O0RjtI0mS9DJEbR3zIeqCgxp
+	 4ib1eb8J9VOM0AYjGItgThGj09XAqmSR/Dwbsul7f2C8tFeQA/6YJUju2/fftL8KMwQ==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1793876105;
+	c=relaxed/relaxed; t=1793876104;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=uGUhG/4kegYC9lMeZbNb8t81bDNVOH7gztwwXEebXhc=;
-	b=P0q5t3SngQHsPvwKV9274YHKYEXLJVV9vVOX4IIbTOy5SQNmTVM2EGrk6fc2fYUaPy2l
-	 9zh4pU/wWCDIpU1fmeNpL/N2zlGRjMJ7lo6ALvV+iSGAj0I+kbxnCIfAxqGVPtX4Ez2sE
-	 Wi/brirYFW+fOmzfCnAXp5yrfXsPvoleEus8s3KZDXsDrI/kCGZq09a9fSuwTva6wmwnz
-	 TuGKjd75c51rn0rbiHDa1QOV5lmPm7agOefY3nNOiUXzmkxC3p/K+mlZ6YxqBIBShM8HH
-	 BaQqnDwNf6yEaoM6mb86I/BbyLZcVUPsYzqqgU7x6Fkh7wRRiEOYCtAqLWkUsvzJpCA==
+	bh=0Eo/flAh5ZGhOeGiv+neAc3dXiHz3sx2uOGMjplfqp4=;
+	b=q9Fc5FEIlLvH9W/Zcdmaob9odKEGWScNKlry5caMQkl7i4Zuyay/ygmQHep2os9Zm21L
+	 FnfpVuseuE6og/6i5+sog9VGvprvtJ96440+nvy+4YjVL36+8lm+jOT+sSnHov8HQpk2b
+	 7ca8MA5CM7CwT7KoircdhsddtlnRUHEP/vcDvvOQ9GrXNBi7nE+RCkNrU3Z7ZXnY2IHvO
+	 tXt3jNcuUF0V5pAo1E3CEESRCvbs9V1CeahFRf7Qg3rnXzwc0BnmU2MNiq97bBLg1INCj
+	 o4oj/7QwKPEFS8K52EHpkoLBUJ24JCIVtmM91wuRViEGrX1Oep5GH3EPeyPHhAH8Cmg==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 9072F1F00A1A;
+	by smtp.kernel.org (Postfix) with ESMTPS id 9F0061F00A1B;
 	Thu,  5 Nov 2026 10:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793876105;
-	bh=uGUhG/4kegYC9lMeZbNb8t81bDNVOH7gztwwXEebXhc=;
+	s=k20260515; t=1793876104;
+	bh=0Eo/flAh5ZGhOeGiv+neAc3dXiHz3sx2uOGMjplfqp4=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=Ust6rJ5EirVnRu2jw8iP5TYRMxGGIT0dfmvlwwAwdBrOFn4Ztnv86AjVtysyDut0d
-	 Ddfwu9IuNgxi2zJOIhgqFo+3Lp4kLx1zxUBxOAR4nI9P+K7lM6fKO4J6fS34ETT/Z3
-	 J2ElLguJs4r2hnB38RzSWJR2SAR8a6ShmM1TOOeVNy2KcInqQrJUrWBoCOdEyj49h0
-	 r4Akiwr+PmQO/m1+OsPWLxPLvybIoCKZN6QRDoRintwu1AlS7FemCEeomi0mQr1tyk
-	 w4wjFze2E8PoejThgEy3b2QWN3leQXoRoR//qNxxJz308AMYbfrZI8wglkX+1/lmPx
-	 JZ0ufxBTwzzWg==
+	b=jOx3uC/blgpeK0cwDpak+L0fqzNPwZUDCnTIaEHh4FdmoE9lnwLNQfLWqVQJqbJQw
+	 cs2SDKR9Y9OUTEuxMIoOutzIWeK77NBvYOFvXeYpFK7mNMcIl4dndeuGsBnLy/duIm
+	 t17ZJ/+/iXAxOmKTJnDb7lng+oZnl0GCvnEiCgG3s+vLY3l/vdCaFCvIjQpUoZVuyS
+	 OoDcQ6CWXLo6YyxJ+KAPAKHdfEbzgo19M0hiBnc9WfIhM+uQid5TFD/c6q7NhSXrbT
+	 ThoIbGzhYkBf2KlQDmehSHl1FnacAMNPoYPIWt7sStV22bwD5hlzbAMfLpeZSGutlN
+	 Ek5WiViiXbSqg==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 1E954471E1;
+	by lkml.kernel.org (Postfix) with ESMTP id 2CB51471E5;
 	Thu,  5 Nov 2026 10:55:03 +0000 (UTC)
 From: Muzaffer Kadir via B4 Relay <devnull+muzafferkadir.mainlining.org@kernel.org>
-Date: Thu, 05 Nov 2026 13:54:07 +0300
-Subject: [PATCH v8 03/11] dt-bindings: watchdog: qcom-wdt: Document MSM8952
- watchdog
+Date: Thu, 05 Nov 2026 13:54:08 +0300
+Subject: [PATCH v8 04/11] dt-bindings: sram: qcom,imem: Document MSM8952
+ compatible
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,7 +84,7 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261105-msm8952-initial-support-v8-3-311ae8e8f14b@mainlining.org>
+Message-Id: <20261105-msm8952-initial-support-v8-4-311ae8e8f14b@mainlining.org>
 References: <20261105-msm8952-initial-support-v8-0-311ae8e8f14b@mainlining.org>
 In-Reply-To: <20261105-msm8952-initial-support-v8-0-311ae8e8f14b@mainlining.org>
 To: Srinivas Kandagatla <srini@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -122,11 +122,11 @@ Cc: David Heidelberg <david@ixit.cz>, phone-devel@vger.kernel.org,
  Muzaffer Kadir <muzafferkadir@mainlining.org>, 
  Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793876100; l=902;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1793876100; l=823;
  i=muzafferkadir@mainlining.org; s=20260816; h=from:subject:message-id;
- bh=CVXmuzbvh1yrXvbAPQPnGHqHjpewg6nuUS4b1kM2YZs=;
- b=/1yNGZLtQnjGcwViYL3Zd6KAb3MfgFAi2DskVQ7c03EGd1LGGUNpaKWXPtvWcvzJYp9yHUAN5
- HzCxj3jpdJGB/1sGwup2eYb03eWzzYzpzMLqbvaI3PFtXpW/dZxzWss
+ bh=zJBupVape6ZlIyOXe+U5V6odCjgZTNQlYKK8oIpndf4=;
+ b=pylaM1buz9GHKjkj+t38gaqW0b/RagcSeY/h2pJ0qZqu07PCgfSW4HgP6imZTPGcMdJNPilTP
+ V+qNZ7rKygKASWTIrmGQbXEMEgcQpX1GAc+QTkW28dm879HMX+16Zu8
 X-Developer-Key: i=muzafferkadir@mainlining.org; a=ed25519;
  pk=4zkv4suQ3cYcO4Z7CrV8JSSjEGLBGepUtvQCFjgnYIU=
 X-Endpoint-Received: by B4 Relay for muzafferkadir@mainlining.org/20260816
@@ -137,26 +137,26 @@ Content-Transfer-Encoding: 7bit
 
 From: Muzaffer Kadir <muzafferkadir@mainlining.org>
 
-Document the watchdog found on MSM8952.
+Document the IMEM block found on the MSM8952.
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Muzaffer Kadir <muzafferkadir@mainlining.org>
 ---
- Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml | 1 +
+ Documentation/devicetree/bindings/sram/qcom,imem.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-index 4ff61102e407..38f86ccd1ffd 100644
---- a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-@@ -29,6 +29,7 @@ properties:
-               - qcom,apss-wdt-kaanapali
-               - qcom,apss-wdt-maili
-               - qcom,apss-wdt-msm8226
-+              - qcom,apss-wdt-msm8952
-               - qcom,apss-wdt-msm8974
-               - qcom,apss-wdt-msm8994
-               - qcom,apss-wdt-nord
+diff --git a/Documentation/devicetree/bindings/sram/qcom,imem.yaml b/Documentation/devicetree/bindings/sram/qcom,imem.yaml
+index 2f120376a8f4..5d7b226cc587 100644
+--- a/Documentation/devicetree/bindings/sram/qcom,imem.yaml
++++ b/Documentation/devicetree/bindings/sram/qcom,imem.yaml
+@@ -19,6 +19,7 @@ properties:
+       - enum:
+           - qcom,apq8064-imem
+           - qcom,msm8226-imem
++          - qcom,msm8952-imem
+           - qcom,msm8974-imem
+           - qcom,msm8976-imem
+           - qcom,qcs404-imem
 
 -- 
 2.56.0
