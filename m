@@ -1,68 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.150.252.255
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793859051;
-	b=bC2s69R+sS78cVo9QhdysdZt2zq1lQWG9iAQsgksYM0OyFNfYDl+cFk3vUVVk00uAQUR
-	 dbaGQPKySaSxIB0Z/hVoTl2uD1mctu2PbeQ/cCkL/dtUIkPf7INcaHL1Yr7vOiJ4Nljk1
-	 EdQtjOKeTB3sVE32XjVTsyITtBQWzJo+ccvT8PLXxWi0hnsWI5qe6VMX1ylKvqswuAGB3
-	 GaDzeMEwWW11igf6ghiGgVxAuCzluJeHiRY8bwAJf/aTeNMXU9YCUbS+Yuq9KgQDQgms3
-	 Vkz/DI2v4yQNg3kSX7Xvo3C7UnLTzgCg4a75PksCE2pCSTZVlPZYAmFceHzJrmlHZhw==
+	t=1793859883;
+	b=z4UZyLG0sF7NPk6rioezXlDI3bttBR8tFxxNSbVbu6MuAOM1wf1wGASY7PDRdfaVOMqC
+	 6jbMy3tCo9ElAvQfQmbNsSI6kkfJxcIXY/dx0QBKKJIO0sA0W+qTd1tOSQ6J7rOfajJeA
+	 1HOFIIc0t+vJCtpRlO+1mdf3JypSydGq1dBb6a+okXSlUvS2lAvTuD4/rmtRrBOJNeeib
+	 G4/RtajdHUpuXAQNGEOzcxiWCTrP4a15B2lb+UjiPZX/KL+5sTt8+EZtoKUv5rgLM9HHn
+	 zfwh3MxY1rjr8b2uw8DNwVv3wwUNtJaM49Cnbc88e/wRyrk3l9eRV80BWEOjb3c0ZAA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793859051;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=+5BTrBne3OQ1DvExgeoc8tKlSX9T8xOtBCF+DWKH+FQ=;
-	b=tiZozTnDnMrl6Hvxiu3i74666BrFzAFh6voIQAWAi6W0ZYmxdt/t2kZ+kHv49jAtTkB4
-	 vvuCN9SChUrSsdr/hJT9oJfl8Xt0/fdSKwF1jSwF+43e2td5v4vczZ7xXwCBLYZHOySes
-	 v+BmVzPrxElDFB/AsaFYnGIdjKwqkLuPijV7Pei3rRt6IE5xMlMSphUwlC0VTVh0e8vOv
-	 ytpjuoDiunoidmMsfnU1Ux50KjxE3fILs2UiZyI0GStLlPEK672phxR+RitnGJeeOUSnX
-	 Odj4JJMatqSEkx5EKsJJElrzZdhT6KtdPuHn7TYO58+mac6//H/hi5u/vKB0D86yang==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793859883;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Atmail-Id:
+	 X-atmailcloud-spam-action:X-atmailcloud-route;
+	bh=hJBpd4KkjRj8+RQGhW1sVcpFG7gcniHHpENlVgG3zqY=;
+	b=IK9OaczzmzYnI3YARI+zLyBAuKRKbsMvOAoytWRIp3BrU39B7/OnxKRIXjTQjjAHzVZM
+	 dzm53dslIYKLrE91AKtkMNQNys4Hxv1PhchMjP6VqMxbQkKMOrK2EuUvDXw6x2nS8BTcA
+	 zvNhcFqnfQCI899xkbamiP4R54Dkx1i9irLn+ENsyiygP9/eFlTkYyqLQMuwy1iMP5r3i
+	 qaEjUziBqHx1RJYcZqeQvCZ1L7Jn0zZ6AoQ2XXoK9Kb5KnWXItybxDznmQLVkypWj1kmf
+	 5DUVVF4UNS6I1SYWIfKiqT0GOzkprPrBWhZi2UzdvcQvh9tl4dlv5aX2tKkL9itJ6Pw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bng7nz7Y;
-	arc=none smtp.remote-ip=192.198.163.18
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=internode.on.net;
+	spf=pass smtp.mailfrom=internode.on.net;
+	dkim=pass header.d=internode.on.net header.i=@internode.on.net header.a=rsa-sha256 header.s=202309 header.b=UI7deVco;
+	arc=none smtp.remote-ip=103.150.252.255
+Received: from omr-01.pc5.atmailcloud.com (omr-01.pc5.atmailcloud.com [103.150.252.255])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8506E606A31B;
-	Thu,  5 Nov 2026 06:10:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8506E606A31B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB135606A31B;
+	Thu,  5 Nov 2026 06:24:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AB135606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=internode.on.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=internode.on.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bng7nz7Y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793859050; x=1825395050;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=baB3kBDGVPEF+a5Is1SFhYiKMmbqMXCz7Q2FtU0s8D4=;
-  b=Bng7nz7YZBg9sceE8w7hBkmKDt6uonJfUFqqLRbur33eUhybSyGb0sZk
-   wNlAPUWSKnPBXndhPfA4RXYJ5KVyGte95xihgYSD3A7Ca/6YkM6Sfq5un
-   8pNQZQuUMD0IQM+Azgfpd08XnzmDHWrQPnyBvUOxk1WkxLwdpSfS0ljlj
-   4KyY0fhfYg/SrNzOcIwFGWNHW5riMxbqQh15gAywDpjyt5DzvAdAOK//S
-   4UdGI+0vL4/6mYxaZsO0Afo5DbCQGrVIlLejslzjxaRgt7c0VeOSGkVU4
-   8Xj2LanCbpdAuc7E8yZB0b3sTSQkUaApWgXnc9sS6FAaD27BaECp5Uad9
-   A==;
-X-CSE-ConnectionGUID: 7I5irVrOS8yoyGgvhCFRng==
-X-CSE-MsgGUID: 88504i0jRJqqe9SUZVHXuw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2672477"
-X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="2672477"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:10:50 -0800
-X-CSE-ConnectionGUID: 2YwIL/d2QmiYsRKmhMHdQg==
-X-CSE-MsgGUID: pj4yiNuLRi6ZKOjNbx1kyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="8688640"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:10:46 -0800
-Message-ID: <f60d1d10-b2cb-465d-8588-a61d26bbd648@linux.intel.com>
-Date: Thu, 5 Nov 2026 14:10:44 +0800
+	dkim=pass (2048-bit key, unprotected) header.d=internode.on.net header.i=@internode.on.net header.a=rsa-sha256 header.s=202309 header.b=UI7deVco
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=internode.on.net; s=202309; h=Content-Type:From:To:Subject:MIME-Version:
+	Date:Message-ID; bh=hJBpd4KkjRj8+RQGhW1sVcpFG7gcniHHpENlVgG3zqY=; b=UI7deVcoE
+	3BtwKcVsem/vkmvG6IQ70dPuZMnUo+ZphMSzolyxjXNyFA1B8+sZ12RJCK1/gcVR1CQX4v15q9YNo
+	9gbOmefyVyHy+7R4s9upV1/i27+ujhPUA+qZdCdbH94fMUJfoGeDWLIkTvksWMSrveH7XrwRw5fO7
+	rsQftwx9mTLjkMe7NM7kZF1Mso7h2uLHQlbhv2YTW02vpf41ykFryq5J1fetIHbwFqRusXF8vOBoy
+	WDZwgDp+tsS7nQ5Io/V7B+Bt2brKb+pDPWsdxtc1JcBiTVYq9yIDIeJINTpneox/IlyKFhHuwxRGV
+	UFe7/ngHIe6aVYExoZdvmcFDQ==;
+Received: from cmr-tmc.internal.pc5.atmailcloud.com (cmr-tmc.internal.pc5.atmailcloud.com [192.168.1.2]) 
+	by omr-01.pc5.atmailcloud.com (Exim/cmr-tmc.i-0248c2ced204c1c85) with ESMTPS
+	(envelope-from <arthur.marsh@internode.on.net>)
+	id 1xOqti-00000002wTU-1FjL ;
+	Thu, 05 Nov 2026 06:24:30 +0000
+Received: from 87.121.95.148.v4.dyn.launtel.au ([87.121.95.148] helo=[10.1.1.121])
+	 by cmr-tmc.i-0248c2ced204c1c85 with esmtpsa
+	(envelope-from <arthur.marsh@internode.on.net>)
+	id 1xOqtg-0000000CxmF-0i4N;
+	Thu, 05 Nov 2026 06:24:30 +0000
+Message-ID: <52e19b20-de2b-4c05-be96-6eb71791eddb@internode.on.net>
+Date: Thu, 5 Nov 2026 16:54:19 +1030
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,71 +64,93 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "x86@kernel.org" <x86@kernel.org>,
- "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Kiryl Shutsemau
- <kas@kernel.org>, "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
- "Li, Xiaoyao" <xiaoyao.li@intel.com>, "Gao, Chao" <chao.gao@intel.com>,
- Binbin Wu <binbin.wu@linux.intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/4] coco/tdx-host: Initialize trusted DMA on all
- capable IOMMUs
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Xu Yilun <yilun.xu@linux.intel.com>,
- "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-References: <20261015010705.1973284-1-baolu.lu@linux.intel.com>
- <20261015010705.1973284-5-baolu.lu@linux.intel.com>
- <atCPY6LzHd4y0Ywh@yilunxu-OptiPlex-7050> <20261015173707.GV14213@ziepe.ca>
- <5ca5f1c4-4c3c-47f1-b79c-c1fe06b20ee4@linux.intel.com>
- <CO1PR11MB4836E2CB05E1448BB42047458C9B2@CO1PR11MB4836.namprd11.prod.outlook.com>
- <23a3c630-a3ad-4874-b13c-b8795cd194a6@linux.intel.com>
- <CO1PR11MB48354B1C84A6BD16CA2FFCA88C652@CO1PR11MB4835.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <CO1PR11MB48354B1C84A6BD16CA2FFCA88C652@CO1PR11MB4835.namprd11.prod.outlook.com>
+Subject: Re: [PATCH v2] iommu/amd: Force identity mode for selected GPUs only
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: alexander.deucher@amd.com, bhelgaas@google.com, felix.kuehling@amd.com,
+ iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org,
+ linux-pci@vger.kernel.org, mario.limonciello@amd.com, robin.murphy@arm.com,
+ suravee.suthikulpanit@amd.com, will@kernel.org
+References: <20260824085821.5422-1-vasant.hegde@amd.com>
+ <20261105024454.654-1-user@am64>
+ <c03d9f24-789a-4f19-b3a1-b189df7b2d2b@amd.com>
+Content-Language: en-AU, en-GB
+From: Arthur Marsh <arthur.marsh@internode.on.net>
+In-Reply-To: <c03d9f24-789a-4f19-b3a1-b189df7b2d2b@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Atmail-Id: arthur.marsh@internode.on.net
+Authentication-Results: cmr-tmc.au-east.atmailcloud.com; auth=pass smtp.auth=arthur.marsh@internode.on.net
+X-atmailcloud-spam-action: 
+X-atmailcloud-route: unknown
 
-On 10/22/2026 12:07 PM, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Monday, October 19, 2026 4:12 PM
->>
->> On 10/16/2026 3:17 PM, Tian, Kevin wrote:
->>>>     - The TDX Connect architecture places requirements on the host
->>>>       iommu driver while the secure IOMMU is being set up. For example,
->>>>       the host iommu driver must block the enhanced command (ECMD)
->>>>       interface while the TDH.IOMMU.SETUP SEAMCALL runs, and it must
->>>>       reserve the upper half of the domain ID space. These steps have
->>>>       to happen atomically under the iommu driver's own locks. As a
->>>>       result, the Intel iommu driver needs to merge the two steps above
->>>>       into one.
->>> Didn't get this. Both ECMD and DID reservation are TDX specific things.
->>> How are they related to the two steps in the ARM sides and why calls
->>> for merging?
->>>
->>> and why are they must be done atomically? they are conditions to
->>> execute TDH.IOMMU.SETUP, but it is perfectly fine to reserve DID
->>> at an early point then block ECMD later...
->> You are right, "atomically" was too strong. Only the ECMD block has to
->> bracket TDH.IOMMU.SETUP. So I plan to restructure it as follows:
->>
->> - dmar_tdxcs_init_prepare(dev, &params): resolve the device's DRHD and
->>     take a reference on its secure-mode state. For the first user,
->>     validate the preconditions (TE/QI/SM enabled), reserve the upper half
->>     of the DID space (failing with -EBUSY if any of it is in use), block
->>     ECMD and return what tdx-host needs (register base, NUMA node, etc).
->>     If the unit is already in Secure TDX mode, just report that so
->>     tdx-host skips TDH.IOMMU.SETUP.
->>
->> - dmar_tdxcs_init_done(dev, result): unblock ECMD, then either mark the
->>     unit as being in Secure TDX mode or roll back (including the DID
->>     reservation), based on the SEAMCALL result. It must be called
->>     whenever init_prepare() returns success.
-> We should continue blocking ECMD after the IOMMU successfully
-> enters the TDX mode.
 
-Updated.
+On 5/11/26 14:02, Vasant Hegde wrote:
+> Yeah. Unfortunately this patch introduced a regression. Can you please try below
+> patch?
+>
+> https://lore.kernel.org/linux-iommu/20261103151607.435642-1-jean-christophe@guillain.net/
+>
+> -Vasant
 
-Thanks,
-baolu
+Thanks, booted OK with the patch applied.
+
+FYI
+
+lspci -nnttv
+
+-[0000:00]-+-00.0  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) Processor Root Complex [1022:1410]
+           +-00.2  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) I/O Memory Management Unit [1022:1419]
+           +-01.0  Advanced Micro Devices, Inc. [AMD/ATI] Richland 
+[Radeon HD 8670D] [1002:990c]
+           +-01.1  Advanced Micro Devices, Inc. [AMD/ATI] Trinity HDMI 
+Audio Controller [1002:9902]
+           +-04.0-[01]----00.0  Realtek Semiconductor Co., Ltd. 
+RTL8111/8168/8211/8411 PCI Express Gigabit Ethernet Controller [10ec:8168]
+           +-10.0  Advanced Micro Devices, Inc. [AMD] FCH USB XHCI 
+Controller [1022:7814]
+           +-10.1  Advanced Micro Devices, Inc. [AMD] FCH USB XHCI 
+Controller [1022:7814]
+           +-11.0  Advanced Micro Devices, Inc. [AMD] FCH SATA 
+Controller [AHCI mode] [1022:7801]
+           +-12.0  Advanced Micro Devices, Inc. [AMD] FCH USB OHCI 
+Controller [1022:7807]
+           +-12.2  Advanced Micro Devices, Inc. [AMD] FCH USB EHCI 
+Controller [1022:7808]
+           +-13.0  Advanced Micro Devices, Inc. [AMD] FCH USB OHCI 
+Controller [1022:7807]
+           +-13.2  Advanced Micro Devices, Inc. [AMD] FCH USB EHCI 
+Controller [1022:7808]
+           +-14.0  Advanced Micro Devices, Inc. [AMD] FCH SMBus 
+Controller [1022:780b]
+           +-14.1  Advanced Micro Devices, Inc. [AMD] FCH IDE Controller 
+[1022:780c]
+           +-14.3  Advanced Micro Devices, Inc. [AMD] FCH LPC Bridge 
+[1022:780e]
+           +-14.4-[02]--+-06.0  Creative Labs 
+EMU10k2/CA0100/CA0102/CA10200 [Sound Blaster Audigy Series] [1102:0004]
+           |            +-06.1  Creative Labs SB Audigy Game Port 
+[1102:7003]
+           |            \-06.2  Creative Labs SB Audigy FireWire Port 
+[1102:4001]
+           +-14.5  Advanced Micro Devices, Inc. [AMD] FCH USB OHCI 
+Controller [1022:7809]
+           +-18.0  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) Processor Function 0 [1022:1400]
+           +-18.1  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) Processor Function 1 [1022:1401]
+           +-18.2  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) Processor Function 2 [1022:1402]
+           +-18.3  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) Processor Function 3 [1022:1403]
+           +-18.4  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) Processor Function 4 [1022:1404]
+           \-18.5  Advanced Micro Devices, Inc. [AMD] Family 15h (Models 
+10h-1fh) Processor Function 5 [1022:1405]
+
+
+Regards,
+
+Arthur.
+
