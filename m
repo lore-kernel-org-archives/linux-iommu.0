@@ -1,95 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793880777;
-	b=drDnIjIhnBjmu5JxgZ0hUzgE2ewQDTw8S/YMDGOX9LatFW9zuUuhekpMZ7vQzNOgNH4z
-	 LmT62FjDD3QkCfpXeDX5iNK/LYjDaA7BUzv4t6gRo+ifxrD3U39tu7jgMgbu9MvC9Zq3d
-	 Cr/2FJT31l5uUU9iKXM53nHvGrWPBh/JSRoCxJ19SA6dktYk/HywOGEhHcRIh5GYrGs0l
-	 03GhBIm9CxcGfemUXA63dk5bpcdE29odSk9BSHvIX057MWXRKdSPQbjoWvYghs9W1wmXl
-	 Zx5VoROwHSpo//TQmtW+DW/yxHrncR1C7cjrIUP2vVe9MVkBDzLYEKkfIQHUFGkB1Jg==
+	t=1793881543;
+	b=eN86/4TY0AvyieL15K8ewiEj2Y9+2j5OuqWBPbUsXbvC0iKthCDmnOLNIPFkLifxrWta
+	 nKALDWAvHovwmUbWVjcFHpzK2nIdmhWaE+xUOVZlJZcQ38frbqgfqR7T+rwg2eOSLr4WE
+	 j+fDzVHxPFBcs9B8bURV0FhmVaMJULOq6sObgeTyKvjmZzIwbsCawozU0cbGsa1ugdD8p
+	 y9rzwFwrmOABKp2Zo1WV3TilNbfq65qQU3F6Eqy3zXsUgnUtuzIf+rwhXYiY55nWcNRol
+	 dE+Mw5bN7KXYHVeXlzTaXCNtKoKs2fgGDFgBF5TCn5VkbzMvfVrbLnE1RtcScKiWMPw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793880777;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=q1/unUnFUI+RMJoEtRyXiSsukSzB8ZtOlFEjmFIV99Y=;
-	b=XO/9BLwhi0tbkwzrcayubTzScuZCeJjRhRyhAwGmYL8Jd3KPrbUd9r0f2RCkHVkGSbPe
-	 BssgioGxdY57IKEGh6KfaVXvxFVbR28k+E8kT+A2KpR3mdYyYVwgJ2Ix9KQNhKxKH+8vn
-	 0Saxd8Qb3T/OxAUobsgmK+PVmn5e9S//ypdH1a/CM6ejIdL5wpA+pppK7zD6LjGb1Ysfv
-	 ++kvPelxDQGBgFG3Cq/FkUx94H6kOxmGK3SrlAfHt9gvMQlH384PBjHHYJJcIBW+38M5I
-	 t+rgmv9TgBPjgNvgYcpuSqhG70YaqMZ7ejVF4T4E5HVXgqYa0QfXEOp9MnO29HskzJg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793881543;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
+	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=ZSqGuWJBbHfF/m30cj+yySLDnLihqLhP2KpRjJlvDzk=;
+	b=GAI4dJz3A0DtRYu0R5+qiMAAtKnCcKmNT1UDaTqG58+h6AM99+z4FisCXhyu7MN8i0f/
+	 9DbKrVIO3ymfOzJp17Pd+91Rz0HiZ2CqbP/2CDjuWsSKIiySvgJ+mdMDD7iOsnmF+Lrlx
+	 A8gP2gNyjkNJkqzn60EzKE1EScTsJOYQjhqEYzdZnQgQEqsyCsLXoUItIKIu0enPsNVN+
+	 twWCAkGNXcqt0HLl7Qi7ppHFvgxBb9jzYHum/jxR3Rb/iG/uD+KYWu1dB98gRzHw4gLp2
+	 DND+GZdqHjPmUflJTBy6YeciWAcMw3Igopq16DFdOi5o8ET9kw9Hjnm0zxuoWzrwf1A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IvCWBvJQ;
-	arc=none smtp.remote-ip=74.125.82.170
-Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kfxrwzy5;
+	arc=none smtp.remote-ip=198.175.65.11
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85ACB606D806
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 12:12:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 85ACB606D806
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64EBF606D815;
+	Thu,  5 Nov 2026 12:25:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 64EBF606D815
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=IvCWBvJQ
-Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-36a1947498bso5045872eec.1
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 04:12:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793880777; x=1794485577; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=q1/unUnFUI+RMJoEtRyXiSsukSzB8ZtOlFEjmFIV99Y=;
-        b=IvCWBvJQ4rRMCDperL6HeM1wtVAJWcVNJmkT9E3PCTunCuHRqOtfsNNvoVCW7U8fdk
-         ZWvbbqaXFNKBPDW/7nTriMtSaRlx5uDGz/5YzqRj5PZ9CF9il7Gj0yq4z3Ka1JcxNZiz
-         q+rI0wpZBG/HiU9/OHwZ2Be1oNbPkIC3y+Sq/CyFdSHiKqlXxUAT+n845iUB1OlYQG/d
-         +mPoylBkSxml5JbZS71ShTZWzpKkzX/anD5xZ9rebR1DTw9fFUwrzN0wiP5F0fbxzmRl
-         4upSb6nAdOwNltM8/CnubNnFaLq5aistM0e78CkqSMUPzPmdFhd4F7GotL2YF2IwkdUg
-         dotA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793880777; x=1794485577;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=q1/unUnFUI+RMJoEtRyXiSsukSzB8ZtOlFEjmFIV99Y=;
-        b=OT3R4SNiF7fC/Q/PbVpIS6UMcGL82su6zRlqPdYaUd1BSL+Lj1bCqHa1eG9STHC8rx
-         efnVXrkhnYyzOTnZBBjb6kQHOrGg9Idho5QivTzIV1jYaZIyDEFbMPRshjEpq6B89KOE
-         TxYECO6ss3gZwuqaqDI0zquBqpL/lKxRSqKs6TrPSvVUlRhjK/89bPgA38mafPvjihn5
-         WcaAZFFIbA+ro6gyNReU6mnkb6kcjdYfLsjz4xvtQtqw8O0m7OowN4U9YnY8cQ3qpB+9
-         x7eKynSpvPS/DpSZ0jhGp3bIYg7e5Q6l0oFR9lw7TTqP4T9zAtpNIpOymaMNW4wLP7++
-         XgPA==
-X-Forwarded-Encrypted: i=1; AKwUvBxKkAL/KPcUv3fTzOr3woPE1HrEv3Hh6NqMOMFRVKjCW43K5VWePFdISNtsOZcql8ZqOH2VWQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9BmTOV4reQ8mGLrYQxxHtDGTcx5uRVzgHs734V7Y9LzuMRmq4l
-	sOFjzR4Sj4Q113D/s+mE/0gXWwWRzrr/td2a1DR2ib4n5NRtOQWXkrdZ
-X-Gm-Gg: AYBFou1G21XnzrEbhTGJltrwImcbSPaZN6dWutl+WwV3my7HZZCjz6Kk0/knicE4SEF
-	5g8WW3yoYuHmsLtxar72sgcPPf7jNSHw1BefzB/eW5LjpUWvrffFJ54q6JpSYDxvABTJ/lI2E7O
-	ZZNNAvwXwjlVdRgUhyo5wOwWpP1u5CPeCs/ru0oAnRP6MGOTUiH688I3ASKjY3Fn/kV/I+UH7MJ
-	5WM6NnzkjW9zHlMYaSc/5FxjTLD5eZubP6Jmb1IvZdFi2I10jqBaAuqR0hI+FYT+DUJQlohfR1j
-	wLdvB94yyNAPIrrNWs2zRX4z21XZNxCjD+gly2/uoAwEhTgL14q68ZsNcKhtzN3JlccDWAsQqn0
-	q0Zzh4zK0B/+UI+M7JqJJL4DdkkE0zicSsuC2rPcKtAaOOB3RNXwrK2LMGPYLt08vHNd+4ipREp
-	nptzfVnzuOxDoIDhDfElgI6jMP7BwjNHAScLPLzoVwvIKyFSxiIBDBQDN1rup8QwLchvV3xB8mb
-	uiN95L7jSbxKB2W5jAsn7yZBkijwuFfUlaI7xXi8iQt8rOHT0z1itKFEAe8ICZzCSWGSFddz2a7
-	/Dp84gvo3OEcLWplVfI52rBIokPGscZxvAhcd2zPbqYB/7WGCScxzg==
-X-Received: by 2002:a05:701b:2082:b0:143:271a:3df2 with SMTP id a92af1059eb24-1ac5eea21f1mr26280362c88.44.1793880776417;
-        Thu, 05 Nov 2026 04:12:56 -0800 (PST)
-Received: from Yee-680G4.lan ([46.16.129.105])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36db94376b1sm10519159eec.10.2026.11.05.04.12.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 04:12:56 -0800 (PST)
-From: YeeLi <seven.yi.lee@gmail.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: robin.murphy@arm.com,
-	jgg@ziepe.ca,
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=kfxrwzy5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793881542; x=1825417542;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hULj/pENj1t0ZvVqG5iuX9V9t0+YHM1767U5NdVTqL8=;
+  b=kfxrwzy5V7y5TV1PzWdqrxuI+TxSG64UhMazkPQPEtTFcXJTlDEOYPmM
+   tm6SqraMNgl4X0TJ5Kmwcu8m1rBhXv/AOzLjQ4PGdrjG9utGE4o1E6Wrh
+   mJv2EZuuLOnd7Re7iokMkMDFptMoIJeKgnDEhn2iWwlzU9iogXwwKByqH
+   1RgtUL5VwWOuxWW4xQ1ywsWG94Ap9UXugM1BA9D3HUf7G51YjOEtMKior
+   y/uP64pjKbl+DR6qSterZnfa+pJWN+Hd4MHJiq+g12bQQGlrJfMG/uMfM
+   hqWXxPTQcLvilTPR7kylvNGTAp1FNJGT7Y1niCpJVDHvTfZEw2oVKZnIy
+   Q==;
+X-CSE-ConnectionGUID: iPfnISy+SNGusP3prGntlw==
+X-CSE-MsgGUID: 42o5OzZJSFytVheX6ffwGQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2551246"
+X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
+   d="scan'208";a="2551246"
+Received: from fmviesa012.fm.intel.com ([10.60.135.152])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 04:25:41 -0800
+X-CSE-ConnectionGUID: oFa3uUGWSeuMY0Gq5/nLlg==
+X-CSE-MsgGUID: WKcOzA8qSq+TnJol5dU2yQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
+   d="scan'208";a="8760659"
+Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
+  by fmviesa012.fm.intel.com with ESMTP; 05 Nov 2026 04:25:34 -0800
+Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1xOwX4-00000000mBP-1ah2;
+	Thu, 05 Nov 2026 12:25:30 +0000
+Date: Thu, 5 Nov 2026 20:24:42 +0800
+From: kernel test robot <lkp@intel.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
 	iommu@lists.linux.dev
-Subject: [PATCH 2/2] iommupt: add a KUnit test for unmapping an empty range
-Date: Thu,  5 Nov 2026 20:12:27 +0800
-Message-Id: <20261105121227.622631-3-seven.yi.lee@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261105121227.622631-1-seven.yi.lee@gmail.com>
-References: <20261105121227.622631-1-seven.yi.lee@gmail.com>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <helgaas@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v8 01/15] PCI/TSM: Move core code into its own directory
+Message-ID: <202611052018.S2OsLHjD-lkp@intel.com>
+References: <20261104161632.3547423-2-aneesh.kumar@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -99,72 +105,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261104161632.3547423-2-aneesh.kumar@kernel.org>
 
-From: yeeli <seven.yi.lee@gmail.com>
+Hi Aneesh,
 
-Unmapping a range that holds no mappings must not record anything in
-the IOTLB gather. Otherwise iova + len - 1 underflows and the flush
-covers the whole domain, or widens a range that was already gathered.
+kernel test robot noticed the following build warnings:
 
-Check that the gather stays empty for a hole at IOVA 0 and at a
-non-zero IOVA. Without the previous fix the first case turns the gather
-into [0, ULONG_MAX] and the second one flips it to [iova, iova - 1].
+[auto build test WARNING on 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4]
 
-Signed-off-by: yeeli <seven.yi.lee@gmail.com>
----
- drivers/iommu/generic_pt/kunit_iommu_pt.h | 31 +++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V-Arm/PCI-TSM-Move-core-code-into-its-own-directory/20261104-214618
+base:   6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+patch link:    https://lore.kernel.org/r/20261104161632.3547423-2-aneesh.kumar%40kernel.org
+patch subject: [PATCH v8 01/15] PCI/TSM: Move core code into its own directory
+config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20261105/202611052018.S2OsLHjD-lkp@intel.com/config)
+compiler: clang version 24.0.0git (https://github.com/llvm/llvm-project 812626a41399a1d464a0d69627ab45c83b8ebfb9)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261105/202611052018.S2OsLHjD-lkp@intel.com/reproduce)
 
-diff --git a/drivers/iommu/generic_pt/kunit_iommu_pt.h b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-index 9fc71db74234..59a9386f1474 100644
---- a/drivers/iommu/generic_pt/kunit_iommu_pt.h
-+++ b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-@@ -427,6 +427,36 @@ static void test_mixed(struct kunit *test)
- 	check_iova(test, start, oa, len);
- }
- 
-+/*
-+ * Unmapping a range that holds no mappings must not record anything in
-+ * the IOTLB gather. Otherwise iova + len - 1 underflows and the flush
-+ * covers the whole domain, or widens a range that was already gathered.
-+ */
-+static void test_unmap_hole(struct kunit *test)
-+{
-+	struct kunit_iommu_priv *priv = test->priv;
-+	struct iommu_iotlb_gather gather;
-+
-+	/* A hole at IOVA 0 must not turn the gather into [0, ULONG_MAX]. */
-+	iommu_iotlb_gather_init(&gather);
-+	KUNIT_ASSERT_EQ(
-+		test,
-+		iommu_unmap_fast(&priv->domain, 0, priv->smallest_pgsz, &gather),
-+		0);
-+	KUNIT_EXPECT_EQ(test, gather.start, ULONG_MAX);
-+	KUNIT_EXPECT_EQ(test, gather.end, 0);
-+
-+	/* Neither may a hole at a non-zero IOVA widen the gather. */
-+	iommu_iotlb_gather_init(&gather);
-+	KUNIT_ASSERT_EQ(
-+		test,
-+		iommu_unmap_fast(&priv->domain, priv->smallest_pgsz,
-+				 priv->smallest_pgsz, &gather),
-+		0);
-+	KUNIT_EXPECT_EQ(test, gather.start, ULONG_MAX);
-+	KUNIT_EXPECT_EQ(test, gather.end, 0);
-+}
-+
- static struct kunit_case iommu_test_cases[] = {
- 	KUNIT_CASE_FMT(test_increase_level),
- 	KUNIT_CASE_FMT(test_map_simple),
-@@ -435,6 +465,7 @@ static struct kunit_case iommu_test_cases[] = {
- 	KUNIT_CASE_FMT(test_random_map),
- 	KUNIT_CASE_FMT(test_pgsize_boundary),
- 	KUNIT_CASE_FMT(test_mixed),
-+	KUNIT_CASE_FMT(test_unmap_hole),
- 	{},
- };
- 
--- 
-2.34.1
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202611052018.S2OsLHjD-lkp@intel.com/
 
+All warnings (new ones prefixed by >>):
+
+>> drivers/pci/tsm/core.c:31:12: warning: variable 'pci_tsm_devsec_count' set but not used [-Wunused-but-set-global]
+      31 | static int pci_tsm_devsec_count;
+         |            ^
+   1 warning generated.
+
+
+vim +/pci_tsm_devsec_count +31 drivers/pci/tsm/core.c
+
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  25  
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  26  /*
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  27   * Count of TSMs registered that support physical link operations vs device
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  28   * security state management.
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  29   */
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  30  static int pci_tsm_link_count;
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31 @31  static int pci_tsm_devsec_count;
+3225f52cde56f4 drivers/pci/tsm.c Dan Williams 2025-10-31  32  
+
+--
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
