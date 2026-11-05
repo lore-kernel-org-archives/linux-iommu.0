@@ -1,127 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.169
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793909259;
-	b=eZgldeYS/82eJprsqHD6Vl5KDsiPABsVT3D9j2leeDnBkoKCInj5etwc5ndyO3Yvxrzr
-	 viMg4lxtkL9rk28MtF0OaPJhV5iED/0+coUwV2pDmR9bW3AvLO/BY1T9eHYesqBKeDckc
-	 kcdeetMWXtd+R1TnmxfyafQrUWDbej/RYzGqxj8JjwUBpeqH2ukECHlBAvZc+BNwaDPVJ
-	 Uwh0FisrDkiSnLpUzuFERdyqZKxEHmvBJY20EwlmLVyeS0ss4un9GbRjUZlLxivp3/amu
-	 wirh7glix3+IMRQEb0SOH+hI7zsuJGJVJX0PbRft4swRFGsYYWwALxbRedkUftPEEtA==
+	t=1793910667;
+	b=MT6vjU1h8wN7uS99goNNuwEMNnGj3VZTJ3YwKmvj+f4mTWFv7GNJkQX5Zsz39WYlL0L6
+	 kKT2tPzgeIPbcC4pYv+rQd51IOKAUGzikBoIrtBrzqi6jNWHQkaxsUigN2GwAL11B+/98
+	 5z3Yre7PAbc/3LpRbP8tSfINtaqAOpDYJEkJFXdaBzn5NM0IJES1ggGKmntn/7vfiThU7
+	 S6EfcdN4RKCYCH2b5kfyIBu/bUpqpS9Bv8HuL0Fg21zUJbtNxAvjPQPiOlCu7X8FmEDzS
+	 TSDeZurQpE5htf14x5tYc44ZTB4JheVWXNX2mCLQQ+TUuu21nWaxHekR8lq5JPGFD3Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793909259;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793910667;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=z52AWMMx/NPlxXG7BPdw5LHgxa12llcgL1Kha+Q5UfY=;
-	b=hQu1WJUI7d3UWfan9hauXj/s4IF+j/pB2Cz2XcfhXq0Mya3sDnYoJ8KGkWQgESzDooSb
-	 jw1q2Bt5hWddgNVgHz0hbQNYcfOt8HOv8QD/DEkxV5S4iQdrhUqM9zdvdU+a7Bzu4dUgD
-	 9RFIPXrCN2L8Mh6LjdsphvIBAjwUUHdrvXwWP+eMewvtflK+Eg+DTlY0gYCUsuQ9koJnj
-	 xGY8UfCi1rQ0cH0M+UT2OIULIziPnUPDqw4WRlM/mFuXo4x931V19KGL6dMomHCvMbJ0p
-	 tcmIQotqYlC6UAp8lDsklGoBxPimeiEFlO0BWdKpm1kD7uW9n60o7Rm7PccGJ+ovgwA==
+	bh=vn/nQy7tt6P3ngQqcb52WlxWUAoV6PqlWG/Vx0RkwMM=;
+	b=EHAS+vgQ38elFXW7k8tzhet7GT2iFkwfxMHPtBbR0Nd8n1NEnPj0pDyFOlTkApi20CZL
+	 6LxyfDLN0EcrJPWnATLMUO9lN6tKYYHcyzEZFadNDihWe5QRHhYg3P9PujziddVgcSDvX
+	 q7j3Hu2z4vyUDT+7nlQWJhpnCeVoP5Q5B8KpD/9swtmvLLwCJL+ywPlEcSs74hJI+TItW
+	 TIIE1FU3p2NLmoSe/VmJkixMgBd3PqzWLqS3fU6LIiqw+6G7zqhSoJiBymjZGxyLnPX0Z
+	 8RkMaCAMx59HGSi2AqD+Pg3GkxE+Hz03s8iNwf/Fh3I+C+AS6SlQQ+6vpQQqdoTUm5g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=ziepe.ca;
 	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=SAR9OnkU;
-	arc=none smtp.remote-ip=209.85.221.169
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b="QeKcS/ht";
+	arc=none smtp.remote-ip=209.85.222.50
+Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com [209.85.222.50])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77066082BCD
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 20:07:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B77066082BCD
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63E72606A328
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 20:31:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63E72606A328
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=SAR9OnkU
-Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-5e9528732b4so1906793e0c.0
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 12:07:38 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=QeKcS/ht
+Received: by mail-ua1-f50.google.com with SMTP id a1e0cc1a2514c-99071945aa7so1215780241.3
+        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 12:31:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793909257; x=1794514057; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1793910666; x=1794515466; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=z52AWMMx/NPlxXG7BPdw5LHgxa12llcgL1Kha+Q5UfY=;
-        b=SAR9OnkUfh8Bk57D1h9VhG+n+xp6rS+jFsjk46kHoRXHVLX9haAbLHq+wxnKVLEXEe
-         w9ew4dTvVCWZAVaNkBSvF+kc4KemD2YCY7zR3oIavVuYN8HZ1lSFKYLaYYuoaNHWCnwm
-         cDm+xoDMw0z5CiBEM2d4yQlvVeVKvnxAYh2AFFNMrM8X0oQDSkhFLd461s/fYfptyNB2
-         cIOEZjwSH+nYssA2XUyFiEocrR+0i2JJi2RCdLYWTdYZjWEi+a9PK0TfDnoD5dXhB8IU
-         FTpq575un/jRIEe8hDw4Y+yBtZxvaA5EZtmy78v9qP/a2PTPwEObDdnHE4w9CJyiYgE6
-         xgeA==
+        bh=vn/nQy7tt6P3ngQqcb52WlxWUAoV6PqlWG/Vx0RkwMM=;
+        b=QeKcS/htQn8xA4zo/BVIl7BG1hXne0lIOpYH1DAPhpG3wpI1gYb+/Y3ZnXA0sguo4Z
+         qVtAahR5N/l5lypqZSZs/RfBmY2Ipa3469VzOrwuXkITE8HmfoflNRMkm1PJjHsgbh3O
+         jqzqxytTAcv+KUMkP+W1LZzeXF5LkPv9k0CjPYDO5P1DMASdV1UZ7rzQNM8DIobnCts9
+         0ArJo30ukO5eDPGFZ2JrefmSqSJekfHZqabLiKCWs+GLOQ5wWJI3xOXHqg01vdV0wZZU
+         34+wQf3YG2LpyyblHFW/X0KcMK3e8Evcz3rBcRz3tbrPkEKnwakkSdVLC+vbg+yWMpaQ
+         qzuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793909257; x=1794514057;
+        d=1e100.net; s=20260707; t=1793910666; x=1794515466;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=z52AWMMx/NPlxXG7BPdw5LHgxa12llcgL1Kha+Q5UfY=;
-        b=DyI6nGQdph/dDqznikSX6mSqX6f4bZuMBTShHyuTu1jsqS7ajPHAMeowIEZK+x7P4i
-         0af6WJnum4NyEJMn6RYdZ19COsEj8KGZ0+w5WzpAKVLuCjTngpa2OOtmAZDDAhJDdZ9+
-         wia2qxyfMaESD6WbP1Yc6Yc43srZzaVl4wTV7BJ3C10rpzVwBISW5gShgotO9YHAEYFA
-         m6tM9kT28gxKBYnfeVpvLMYNpnE8yWUUPZA3hgo23UcmVMAyIKpEuNXSP8LzxcSbLbBs
-         dLOt3KBZm1RwBmYi7HZL7uyOkXsay50Cr+0qX5oLeat4hq3s/FbPX7oD2HtoKuajkI8C
-         3Q/w==
-X-Forwarded-Encrypted: i=1; AKwUvBx3NHlAmNWGOCL6SA/Cl/DuvfLCZZKdHL8QhXWDW5hadp3PZdReH7PDfeNMQczN5CUtJWEO4w==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+nvnvRQAOAkAJZFx0fBkz7QaxPyFfs+nVk3KY8ViiR/iUvsF93
-	bvyCKy9uuf9I/R+AF5v6Lkc7cH4owGW3NcZzc3mk+5VjYSg+J6lplNp8Gow3xSoYYPo=
-X-Gm-Gg: AYBFou0R64X0JwtNYG7FqRg/FLILqjqmUGmIh50akpvf2CL3/CDv7EzIodKw5ry1neF
-	azM5ndQm4lXxSsWOSiso9LNg0/+LwElXVw1RIJOw8X5EeEGvtLnT5f+ri2mWL6yFoLDuI1CG+Vu
-	raChRIvM8hRTwg+C20eKS+E3OI/6elakZkBL6wxv1oPyE0mim6cEEEUgKmXtnAwvoXv9/uv9OQo
-	VbQNNqXc8s0kY1K1F1XbX1dME2RRndHEOmyelENwUOXAdKpIGzG9RkfBatrpKeRCfvLYsf+KsVr
-	JC3WWw2bd6xaJNrFEPPeb253Y+l98wQ8Ovz0OTzHl0o4LiBBv9yCDHMV8zMJF+0G/7uztLxswa5
-	Lq2aeSW9g8+mzFQhPCrPQZ6faCHYME3o9iv8FryYEaF5++gPhTH/rvEK8sTLLvPmo7pPEFriRPX
-	qjXHq9Cib8UnbPtrW+z+8QN5q6Ol/khlVVsGWeEbOjJz+fciF/PQFuuwPduultfG+U6u0yn71tO
-	hQlLRuPp+FdstT3rsrxusx12O/ozz6CEHMsjedtsSsQiTWJZuCIPPEX8Q5cbgWix/Sd8TFXp+2K
-	yrBekGf63AAkIiCMzvCpCvnm1ERg5khJ50P/NIx3wfAK6AilLvOWWScS8zGs3e5S705JVVUyaYB
-	+83j4IfTx7A==
-X-Received: by 2002:a05:6102:390f:b0:7c3:99a3:314a with SMTP id ada2fe7eead31-7d2a1509e88mr658597137.9.1793909257584;
-        Thu, 05 Nov 2026 12:07:37 -0800 (PST)
+        bh=vn/nQy7tt6P3ngQqcb52WlxWUAoV6PqlWG/Vx0RkwMM=;
+        b=Hk6kUdReVEc1Q0kuJejglM5i2TMkX3Ghuo6zsD++ob9IOrWvIZobjHKEv5u4k/QAPI
+         egMtQ/7t+3myQpD439BYD7iXUefOHOmXzJkGJReLYz/c/J52XTG0kxT0igEWaH2pzpBR
+         w5kwNPFe5YwbUen7mm98Dq8XCl1py2PC1oCCErt62AzvhBzen/53gIKsvjaaJrUtk2mG
+         F4jns05IRiO39gj+WygWJonWHy0jvS0feGe9rw55/uKJ74PJAekjCnaJBw+AdQGVLUi5
+         gpmrGUAcoWrmKX1iEWlVbMtNvRCLke2WuCMnTweQcKr/5JM3QosI3zy3oSxYpyBL3ADz
+         hrww==
+X-Forwarded-Encrypted: i=1; AKwUvBzXHsKA6obToXr/4p/sW3aLuWf7Xfr+LbpJUMIrLwjXfq11RrCQVhBooInFs9jIIG2GsTEzaA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9iSs0YMZwSrHXZRgC8nMjvq46oEwP8McFhdKVuUjzgGu1sdt2H
+	fQ6ZtjmxUZ/LDHUle7fkd6MkSYKUVgZEj9TELUqoWYrGb/s2FZ+rwqwWTMVtDkLGTUE=
+X-Gm-Gg: AYBFou0r085qj961+MGBU6dpnvezigYoA4X5YkPMFLN1CxvHa8av70jRNIyaIil1h9i
+	pj0ISwMnlRNbP1oxyKOHKu8ojaZXCxZzDD0GK/fiJtciyrWk5KluFzyHellR0XpjtCILk+x2MRs
+	XYkTVgRiVi/T4qlz2avvmDGw8BHm01+dAcs7uDaqO5fzKGU2UVYl83edqxAcQucBmt2nTudsG3W
+	VC9xbViG2jCRTpYH6xvRVYSxAjcTX+/Az8uHpHCIzjMLNSY4BrVX0KxvYd0Atb+JS62UFn27gal
+	XUuINI1DB4i5wUyWAHYK3BS5T/0exBp3uUQgPMxV3pOP5BuT61lYe8H9fgZWBdRvbcauCYnkHzd
+	tfV5+3d0LnhssczyXAWLvKWoHEMixe0dFja8DNCZOVYF6UNxgj0dHOsT1p937RvZA9hjiQtA3wj
+	/x8SEcLoFMoFII0/vv1sEqicPIS08frBuNVRHGVOWONzAaDqRTy3JbRXOHqyMQpl82sRHdZqYEV
+	4XJFwKQOfjC+IIgTeV3/4ZTADr+tSIeZCIJsS9fEjELwyvrCkiXdXgPo5jqSgqUufd71guiYyac
+	lEB81rQbPk9mBKBV42mdLZdqVptFSJVL/rU6WlE1GJo/5EV2bE5QyrGPDUe7Laq0TFnbBbc/oN+
+	NjNvLlGDgyw==
+X-Received: by 2002:a05:6102:e0b:b0:7d2:7266:2c8a with SMTP id ada2fe7eead31-7d2a165f989mr692943137.32.1793910661522;
+        Thu, 05 Nov 2026 12:31:01 -0800 (PST)
 Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ecb6d79d9fsm2610604e0c.7.2026.11.05.12.07.36
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7d26fd3e101sm5070410137.3.2026.11.05.12.31.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 12:07:36 -0800 (PST)
+        Thu, 05 Nov 2026 12:31:01 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1xP3kF-00000003dYX-3Q5c;
-	Thu, 05 Nov 2026 16:07:35 -0400
-Date: Thu, 5 Nov 2026 16:07:35 -0400
+	id 1xP46u-00000003hoW-1qsZ;
+	Thu, 05 Nov 2026 16:31:00 -0400
+Date: Thu, 5 Nov 2026 16:31:00 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
-	Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
+To: Yuho Choi <oss.patchbox@gmail.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Wei Liu <wei.liu@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Yu Zhang <zhangyu1@linux.microsoft.com>,
+	Easwar Hariharan <easwar.hariharan@linux.microsoft.com>,
 	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-tegra@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v8 13/15] iommufd/viommu: Allow vIOMMUs without a parent
- HWPT
-Message-ID: <20261105200735.GF663069@ziepe.ca>
-References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
- <20261104161632.3547423-14-aneesh.kumar@kernel.org>
- <auuBjRjQwXl7UvvO@nvidia.com>
- <20261104193139.GB3889730@ziepe.ca>
- <yq5afqxf97a1.fsf@kernel.org>
- <auzAivzpzSUHjEQj@nvidia.com>
- <20261105182106.GD663069@ziepe.ca>
- <auzNkAGFLH6da8fq@nvidia.com>
+	Michael Kelley <mhklinux@outlook.com>, iommu@lists.linux.dev,
+	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] iommu/hyperv: Don't free a paging domain the
+ hypervisor did not delete
+Message-ID: <20261105203100.GG663069@ziepe.ca>
+References: <20261105192738.70664-2-oss.patchbox@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -133,38 +111,17 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <auzNkAGFLH6da8fq@nvidia.com>
+In-Reply-To: <20261105192738.70664-2-oss.patchbox@gmail.com>
 
-On Thu, Nov 05, 2026 at 10:40:16AM -0800, Nicolin Chen wrote:
-> On Thu, Nov 05, 2026 at 02:21:06PM -0400, Jason Gunthorpe wrote:
-> > On Thu, Nov 05, 2026 at 09:44:42AM -0800, Nicolin Chen wrote:
-> > > On Thu, Nov 05, 2026 at 10:58:06AM +0530, Aneesh Kumar K.V wrote:
-> > > > Jason Gunthorpe <jgg@ziepe.ca> writes:
-> > > > > On Wed, Nov 04, 2026 at 11:03:41AM -0800, Nicolin Chen wrote:
-> > > > >> By dropping the nesting parent from VIOMMU, it just simplifies the
-> > > > >> attachment to an S1 paging hwpt, right?
-> > > > >
-> > > > > Yes.
-> > > > >
-> > > > > The VMM must always maintain a S1 paging attachment that is the
-> > > > > identity map of the VM on all devices, same action as when there is no
-> > > > > viommu.
-> > > > >
-> > > > 
-> > > > I am currently creating an S2 paging attachment. This results in a
-> > > > configuration with S1 disabled and S2 enabled, which is used by all
-> > > > untrusted devices.
-> > > 
-> > > For validation, that would work. Yet "no viommu" should would be S1
-> > > paging, i.e. hwpt allocated without IOMMU_HWPT_ALLOC_NEST_PARENT.
-> > 
-> > It doesn't matter, consistently using a single S2 for everything is
-> > probably better..
-> 
-> Hmm, I am confused: if we use a nesting parent, why do we need to
-> allow a viommu without a parent HWPT here?
+On Thu, Nov 05, 2026 at 02:27:08PM -0500, Yuho Choi wrote:
+> hv_iommu_paging_domain_free() frees all page-table pages with
+> pt_iommu_deinit() and only then asks the hypervisor to delete the
+> device domain that points at them. If HVCALL_DELETE_DEVICE_DOMAIN
+> fails, hv_delete_device_domain() only logs the error, returns the
+> domain ID to the IDA, and the domain is freed anyway.
 
-It is because it doesn't *use* it. It is a confusing to pass in a hwpt
-that is never used for anything.
+Isn't there a WARN_ON on this path? I recall asking for one ..
 
-Jason
+So long as that is there this is the right way to continue
+
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
