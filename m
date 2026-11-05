@@ -1,49 +1,126 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793908384;
-	b=mZDI2eGpOWtYvlnEMz5l9TvIcz2SUbHaWBNf2yq3W8+spKJqz+uLs8B6yKe3QUJnOuQG
-	 IPCJmXYDJu53R+opcNXZE+GaBax7hHEEXJJejmSbr2cfKq04bYD7cLJ8omgvQJg9SrbEp
-	 NOx/0zZl/pUGJ2N01rPUAX9s9VLJz2CpjeKnt+hgG9GBaWkRulkQt1OOpROUDUNCqWNOS
-	 QL3C6poHYFwrElrDk45EcKv1IMwJuzuUrc9lDxmwrhfpyelDoU4zo5wUMWQxAnpofLKf0
-	 OOp9wa3nXXQpbgVB7nZnrfi2zVRieH/rjYZAyDyL/DPjB9RGcYG1UPsvttvc3dhXFng==
+	t=1793909064;
+	b=rpa57J3rZQbVRNgaot6wWh/O7V74OxhgweMy5yR+9aq6BDbPoN0kpl2AD821EUWSk0C/
+	 elX5QGoHC5CUidQ+u2RGw00U4IOWA4Ql+l7MFCV4fU1CdFekVOPAUVbf3vHE5+eIWONps
+	 LIf7jS9bl4Eyfd/OFxRhQ6123eQb+NZcSrUdh6KE406MXNkAhQXO0DoG6vsAw32Z/L/H3
+	 okFDDWM1w4s0G+Fv52p4TnoS8KT6r/7ThmxSXskiSbkPooHfsOqrtO5mnAfglX2GmurNJ
+	 BekEvx/lfZwmyEk3HLXtmZhpiltc13XvILdRSXvp92QuGY1uYCLAoYwOMhpS5SREgxg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793908384;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 X-Spam-Status:X-Spam-Checker-Version;
-	bh=U1Jdue00BGFqywykSunZ46/p5KrmDrwoufmlu4fOFFU=;
-	b=r2TF+7PJAUddnig5hNMmMmhxl7YCcBXJXY5eta8w9p1Ngfyl8nyNzffFdWU79PDrkfhj
-	 2WwjNVbMq1TGJWajiDBpRwYnO7wChGVqFtCkMMJlNIanLQs/vz0L0XiPfmH27Eujjt6wL
-	 rrm9XtdjZ54PwzScWHXZFOi5/5WpibLeeVBdJ2A7jQ9VqHR3x1yw2t+rM75eq3FkoR4NQ
-	 xyoX1mUx2zGFvc0svkG1/PIt72m0InyNtdTRw3DVBB5VvfBHK4M0qqGp9BB7436UeGRR4
-	 U/OroqyPX+UZda81t9wXvsZwfNkAPMCHZlF3J8QWR1o/LOnlHm7v+ObNv4kBA2auK7g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793909064;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=Aw5degZrQHo3V3rpws5+g22RRHe/seP3Fa1C54u6MN0=;
+	b=4M/YcuAnwqnfgcOv51YKcPzD2C7fh8uwibhNLyU5/GqowZdO8awE45JGXaIFY0yDsbDC
+	 T6MJ8UwWtRCEmpx7sXlaFvarYLcGo7pErzHN9Dok731zsTs9W6LpNmII8qMZaYDBqkqPl
+	 XZnMsN7IiiVEpJHLr12ub0iZKZyNP6WQzOWxeb3Gsb/mQMqrzSw3f0Svv9iqXkXxNV3lK
+	 PAkS48XXNFgH/Uuu2eeNO7Kt4qQkf+kySBogyt2HC9dm4aRJ9ckHQx7Ws3BzCdN+nzQRY
+	 zMiIwl7qkxL7iw9k7lHTB2Z+U2jMZxtRduyMFp+ofnXHhk3mnxYxQ/105cWnC06L7RQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.microsoft.com;
-	spf=pass smtp.mailfrom=linux.microsoft.com;
-	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b="U/9eZprh";
-	arc=none smtp.remote-ip=13.77.154.182
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 71DCA606A33C
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 19:53:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 71DCA606A33C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	dmarc=pass header.from=rowland.harvard.edu;
+	spf=fail smtp.mailfrom=g.harvard.edu;
+	dkim=pass header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=oW8Pm7KW;
+	arc=none smtp.remote-ip=209.85.160.170
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FF8C606A329
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 20:04:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1FF8C606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rowland.harvard.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=g.harvard.edu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=U/9eZprh
-Received: from [192.168.166.159] (unknown [67.168.101.66])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 925BD20B7166;
-	Thu,  5 Nov 2026 11:52:46 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 925BD20B7166
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1793908367;
-	bh=U1Jdue00BGFqywykSunZ46/p5KrmDrwoufmlu4fOFFU=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=U/9eZprh3TcyRNg4Qz70hF5sZLajLC0+MZyi0iUbPi1OEgI6Ni78c8p9K2x5Qpt70
-	 v2E1kImuwPrbu2NlKO8zFkXcDcDInrH2PDLWiita7wac4SZgag23Z4i5AjhE0nx7uW
-	 ZWWRNpvFT1m4IpYqqmKA6TG2Kc+HRbe8Wpjedcck=
-Message-ID: <b321af97-a39e-4b26-9dfb-e47e5d1dc044@linux.microsoft.com>
-Date: Thu, 5 Nov 2026 11:53:01 -0800
+	dkim=pass (2048-bit key, unprotected) header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=oW8Pm7KW
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-53397554beaso21893501cf.3
+        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 12:04:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rowland.harvard.edu; s=google; t=1793909062; x=1794513862; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=Aw5degZrQHo3V3rpws5+g22RRHe/seP3Fa1C54u6MN0=;
+        b=oW8Pm7KWbFyYpX1ChRbjfDIxL/XoQnn4kqQO600FJv3JNU1NQeGTNZVRv+eMclYy1s
+         l4zMYL19kKnMiWAllTfWIOITILeU+deZHz1TYVnSiPREFK1IX4fsVgf3SfKG1fxDIrvk
+         OaT2iJMA/V2oewcEf/s4nkaZt4O+26Em2f6BkBBwt82v2iIt6DzpaE+pvsTxBtM3USSu
+         qrCa8R9Khgeja799CE5PIIacuEFGxEUijPfAfi4wCOKn9s1YlToYWtwWw5nbGt9xZLMW
+         /sdCsI2TDpNNN7ReNImPI+OsiVtk1HHMGKYPf49yRjgjSc9WP5Ng9muWjol4UH3KK1cG
+         b7QA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1793909062; x=1794513862;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Aw5degZrQHo3V3rpws5+g22RRHe/seP3Fa1C54u6MN0=;
+        b=EdQ1+ib/P0VmktzrvHcc/6rCdd938TdjLWY9k9vSMC/LWmf+nPrDUQ/FGaythYnifq
+         3DYI+SB4HHW4lLkB0dpD9TCEm5T7RNobUlkP9waiDH3erH3UyOsG1Pcn0Jsxw9UgKLLC
+         ML6jgbwF32b9C4agVkfw5VKyiH2MgiBskbEbAYOjDNOprmzRQCzJV2TSe4ypyGi9uOX/
+         7zPG7hkNNMh+PUzfQUX8HqX1rJBeKbimMoeFyDwGh7kU5SBvSCh+epoj+njekZYnWsTC
+         So95DZqKyDcmuTYRfUTPGWSJ06/lPeg99FIqDIlj4eRClksbdJY8H67vDqUCRqlks9Py
+         XxRA==
+X-Forwarded-Encrypted: i=1; AKwUvBxHi5ECqhA31ZTO/uYvpOXHR9PpowGqssEEOTk0C5KYOw4OSeaKhLixK0TErDpAyw0ln6bs4Q==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/WtRI7dWdB1TESQoeiEI0s4vehMnjKJSwHty4Xjvqsr/kIGcfW
+	FN3DnBh4nrrZ2nCgGiUwhMWu2L/V/Ig6842pd/WzPYR4DrBam0brXLkbKqKmrGb89A==
+X-Gm-Gg: AYBFou1KEV3Vnr32XsONn9MSw4AVxffHDaIHU1sMnrdNFnszT9uuYX54fZMAxGt1F6l
+	LEc7A4nd/Og9qkDPIRbG3YVI71/RgxS0n6G2e73zYicifMCUOwQbOejApOQOvQdseANzyUFfHg7
+	rO68T3eHhsNJ6LSVDb6zazyhtU8acl4U9fEwhjDpbw6TDNOiahmWhK3CEzm2yVBVLoGUz+4khrm
+	YXdETu3M7UI/b8YPOaT2Rj4W5O0SXDxiDj3qYop7MXHVXwrQ6DZw0hoxrxnsaT7lh6dcsFf5BIq
+	MpShe/+iW3l/bVKj8ogPei1Pq6jJ/TW986XN/gHnX7J9kcO5OHrD3tRkbN8dtZTq+Ou/QBjwgWE
+	phY6q/dgadqK3IrFx0aPTf4QBKqXIvo4GFmUQRwDnKOLlhY3LCVfsE8/wSE2HGkOuz8BLNgID6V
+	jsIIo2SkRbyk2iALlQd3XfKGAzqZyp0qoO9lvU37+/ynQhii+PIttjXt44vpFJDLjU5F8lvK17D
+	3rw26WIEYqV6HNvP9Svo8QtKQTI2W3A5pBHFI2B9Y2RLcwVc5RnTk19mc4kZWJJs0+O/n8nKvGY
+	lrNns2NPgnruc/j2ktS9PcuL6TVa
+X-Received: by 2002:a05:622a:418d:b0:536:60e1:c87d with SMTP id d75a77b69052e-54e14266a2dmr6509601cf.35.1793909061778;
+        Thu, 05 Nov 2026 12:04:21 -0800 (PST)
+Received: from rowland.harvard.edu ([2601:19b:d01:d210::66b0])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-54e270167afsm1403061cf.25.2026.11.05.12.04.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Nov 2026 12:04:21 -0800 (PST)
+Date: Thu, 5 Nov 2026 15:04:18 -0500
+From: Alan Stern <stern@rowland.harvard.edu>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH 05/17] USB: Lock registered interfaces during manual
+ driver binding
+Message-ID: <bf756e50-c77e-40f2-916d-e88887426806@rowland.harvard.edu>
+References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
+ <20261105-device-trust-core-v1-5-1e536825b4eb@nvidia.com>
+ <bb83fe3c-cebb-4bc8-bfc9-24df1cf72b0b@rowland.harvard.edu>
+ <20261105184442.GF8298@unreal>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,50 +130,107 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Wei Liu <wei.liu@kernel.org>, easwar.hariharan@linux.microsoft.com,
- Robin Murphy <robin.murphy@arm.com>, Haiyang Zhang <haiyangz@microsoft.com>,
- Dexuan Cui <decui@microsoft.com>, Yu Zhang <zhangyu1@linux.microsoft.com>,
- Jacob Pan <jacob.pan@linux.microsoft.com>,
- Michael Kelley <mhklinux@outlook.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- iommu@lists.linux.dev, linux-hyperv@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] iommu/hyperv: Don't free a paging domain the
- hypervisor did not delete
-To: Yuho Choi <oss.patchbox@gmail.com>
-References: <20261105192738.70664-2-oss.patchbox@gmail.com>
-From: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Content-Language: en-US
-In-Reply-To: <20261105192738.70664-2-oss.patchbox@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261105184442.GF8298@unreal>
 
-On 11/5/2026 11:27, Yuho Choi wrote:
-> hv_iommu_paging_domain_free() frees all page-table pages with
-> pt_iommu_deinit() and only then asks the hypervisor to delete the
-> device domain that points at them. If HVCALL_DELETE_DEVICE_DOMAIN
-> fails, hv_delete_device_domain() only logs the error, returns the
-> domain ID to the IDA, and the domain is freed anyway.
+On Thu, Nov 05, 2026 at 08:44:42PM +0200, Leon Romanovsky wrote:
+> On Thu, Nov 05, 2026 at 12:24:33PM -0500, Alan Stern wrote:
+> > On Thu, Nov 05, 2026 at 01:42:18PM +0200, Leon Romanovsky wrote:
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > 
+> > > Interface claims hold the USB device lock, but device_bind_driver()
+> > > requires the target interface lock. Without it, trust-policy writes can
+> > > race admission.
+> > 
+> > This says nothing about usb_driver_release_refused_claim() and the code 
+> > related to it.  It is an incomplete description of the patch.
+> > 
+> > Note that nothing prevents drivers from using an interface they claim 
+> > before that interface is registered.  For your scheme to work properly, 
+> > you should make sure the claim is authorized when 
+> > usb_driver_claim_interface() is called, not when the interface is 
+> > registered.
 > 
-> The hypervisor then keeps a device domain whose page tables have been
-> freed and can be reused for anything. The ID is also handed out again
-> by the next paging domain allocation, while the hypervisor still has a
-> domain with that ID.
-> 
-> Delete the domain before freeing its page tables, and keep the ID, the
-> page tables and the domain if the hypervisor fails to delete it.
-> 
-> Fixes: 2690d4156b51 ("iommu/hyperv: Add para-virtualized IOMMU support for Hyper-V guest")
-> Signed-off-by: Yuho Choi <oss.patchbox@gmail.com>
-> ---
-> Compile-tested only (x86_64 with HYPERV and HYPERV_PVIOMMU,
-> W=1); I have no Hyper-V guest with the para-virtualized IOMMU to test
-> it on.
-> 
->  drivers/iommu/hyperv/hv-iommu-guest.c | 17 +++++++++++++----
->  1 file changed, 13 insertions(+), 4 deletions(-)
-> 
-Good catch!
+> This patch is unrelated to authorization;
 
-Reviewed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+I meant "authorization" in its generic sense.  When you don't trust 
+something, you don't authorize it to do anything.  Pretend I had written 
+"the interface being claimed is trusted" in place of "the claim is 
+authorized" above.
+
+>  it ensures that the lock is
+> acquired when the driver is bound.
+
+That may have been your intention when the patch was created, but if you 
+read the patch you'll see that it includes a whole bunch of material 
+not related to locking during binding.  Namely, this part:
+
+> > > +/*
+> > > + * The driver core refused to bind an interface that a sibling claimed before
+> > > + * it was registered, and dropped the claim. Let the claimant release the
+> > > + * interface instead of operating it with a bound interface but no driver.
+> > > + */
+> > > +void usb_driver_release_refused_claim(struct usb_interface *iface,
+> > > +				      struct device_driver *claimant)
+> > > +{
+> > > +	struct device *dev = &iface->dev;
+> > > +
+> > > +	device_lock(dev);
+> > > +	if (!dev->driver && iface->condition == USB_INTERFACE_BOUND) {
+> > > +		dev->driver = claimant;
+> > > +		usb_unbind_interface(dev);
+> > > +		dev_set_drvdata(dev, NULL);
+> > > +		dev->driver = NULL;
+> > > +	}
+> > > +	device_unlock(dev);
+> > > +}
+> > > +
+> > >  /* returns 0 if no match, 1 if match */
+> > >  int usb_match_device(struct usb_device *dev, const struct usb_device_id *id)
+> > >  {
+> > > diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+> > > index a738d03c23eac..d35a7710c8ef4 100644
+> > > --- a/drivers/usb/core/message.c
+> > > +++ b/drivers/usb/core/message.c
+> > > @@ -2264,6 +2264,7 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
+> > >  	 */
+> > >  	for (i = 0; i < nintf; ++i) {
+> > >  		struct usb_interface *intf = cp->interface[i];
+> > > +		struct device_driver *claimant;
+> > >  
+> > >  		if (intf->dev.of_node &&
+> > >  		    !of_device_is_available(intf->dev.of_node)) {
+> > > @@ -2277,7 +2278,14 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
+> > >  			dev_name(&intf->dev), configuration,
+> > >  			intf->cur_altsetting->desc.bInterfaceNumber);
+> > >  		device_enable_async_suspend(&intf->dev);
+> > > +		claimant = intf->dev.driver;
+> > > +		if (claimant && !try_module_get(claimant->owner))
+> > > +			claimant = NULL;
+> > >  		ret = device_add(&intf->dev);
+> > > +		if (!ret && claimant && !intf->dev.driver)
+> > > +			usb_driver_release_refused_claim(intf, claimant);
+> > > +		if (claimant)
+> > > +			module_put(claimant->owner);
+> > >  		if (ret != 0) {
+> > >  			dev_err(&dev->dev, "device_add(%s) --> %d\n",
+> > >  				dev_name(&intf->dev), ret);
+> > > diff --git a/drivers/usb/core/usb.h b/drivers/usb/core/usb.h
+> > > index a9b37aeb515be..293340a48b6c5 100644
+> > > --- a/drivers/usb/core/usb.h
+> > > +++ b/drivers/usb/core/usb.h
+> > > @@ -49,6 +49,8 @@ extern int usb_set_isoch_delay(struct usb_device *dev);
+> > >  extern int usb_get_bos_descriptor(struct usb_device *dev);
+> > >  extern void usb_release_bos_descriptor(struct usb_device *dev);
+> > >  extern int usb_set_configuration(struct usb_device *dev, int configuration);
+> > > +void usb_driver_release_refused_claim(struct usb_interface *iface,
+> > > +				      struct device_driver *claimant);
+> > >  extern int usb_choose_configuration(struct usb_device *udev);
+> > >  extern int usb_generic_driver_probe(struct usb_device *udev);
+> > >  extern void usb_generic_driver_disconnect(struct usb_device *udev);
+
+Was this meant to be two separate patches that somehow got combined into 
+one?
+
+Alan Stern
