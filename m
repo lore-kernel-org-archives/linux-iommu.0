@@ -1,80 +1,98 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793873217;
-	b=hiD6sKHdEqN4UUbkUQCdxMSukSvigBDxBz24l2+OCl4oiYlofsJgY3SnLGLI/A++BDNN
-	 yeIgzY3bumEOOqg22mciH627DY8wnkqQczAzkJnoDhtpc3JkVnTFhLXqHb7OQ8fHMfGAa
-	 ktt79HuUvteWduwpgmb/Ar8nF3lblsmVxF2y3T/vgjVdHyoM9KKByXOzq13YhAw/Al8c/
-	 ej0+0/pbEimqEsvhgIGcu5/UpJyVulJ4O9dDIkMAj6YyZWSsGdX9maNAUrLrbw5TFXk1X
-	 CvUCZRckqtSY6n410HGi6XsZ5BbEeZQDCHqn7Vf/pG3UUlGh8DcngT9xF8CqBc+RFIg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793873217;
-	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
-	 Content-Transfer-Encoding;
-	bh=atDUoK7LP0tXf2UYnBDz0baVdX4vZOm1YVTmwcTXCi0=;
-	b=EPRZtLY/0CBTRXNMKzJlI1rePn+NoEB+p765WIE86x/7Qz6VfVOlWTsM9lJcQHhdAHe0
-	 JToey0QbzVvhyoiMwsFSMzJidhb4nA5ECbqI/hbafdvUlbWfkjnrIEC/p0jmCa08nfnGe
-	 h+ISe62EunpPwP2RW8v8RH9ZtSY1IxlDKg/DK6j2U5s2d3XilHPGEmBp4ZleLvhLJKTf5
-	 fMNXn7aSP71s0fq9lZVP3I1/3zQ2C30tkjEWE80ci6sfAukj7vn6M7xc91DRlu+/B/unV
-	 k5mZRT/dx61n8yjVE3frAVstFlWWDT6nnjQ9yBO9W6JyBug2uyhRcDd4A1TDHldzMBA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oxGHp3VY;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.27
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793874330;
+	b=YXR/uPnq7mLcm0sNfLVk6UtOFv3bibzuoNA8g0uMgQdP85PEfOQUGOSyF+StSc13okFX
+	 Otkc7AgfOhcewizrAWcmdkPpeq2aiKuEbLR6oh/p9m0UymWq5y/x689naYh14QqzAfUAU
+	 cvOUziKUsPvD+KlLj38K+Z/2BNll7cwiC5Q9VrYubeBcTfar5Cu6bP212IGTlt/n+BUn+
+	 eIYccNqi32PlHsxEW/1U43JKzQ9/fbo8jViv9ugT4FZcnnnGNg6cVEFBrKRQmVNzycmv8
+	 6MBBJd5KTExxARO7SsNPx+i2292ydbxojl5kypQ1cqTejRmA/fWaksaQJs2Pny3umJw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793874330;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:From:To:Cc:References:Content-Language:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=7g4AnHz1b45ylnVeVQvuDBjdf3MBOm/p+0a96v3wy0I=;
+	b=4oUy/FJxrlxXZ5+o8Kq3u6Q0E8L9fiKTxpu2T0Djax4AQKX79E7oICllAyfXYI9LJXc8
+	 HXlBVYOAmozVQu7bSToTfNyuT4ac20exA5EY2X9mYdP658D5xyq5fzgVw6ReucSWGecF2
+	 XfZhvowZT47HNldUGF/pvQ6Mu/HIKDX0B3F/ZmkcjXnoKGreR2IurgX9ljKi9fId0QQoH
+	 N2ez6jizeaeRHPggHghVdRYBp28uZAQeWmXPvc8Ixf0Af4/DqemjYNfaWcwKx4WGhnp1/
+	 efSPkFiSPRosP2xKcAY9CFXoCd2+XYrhfC3tWF+um2U09Ls20HWgdd7aAJz3P8k2/jw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=zdS8i2c9;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.195.27
+Received: from SN4PR2101CU001.outbound.protection.outlook.com (mail-southcentralusazon11012027.outbound.protection.outlook.com [40.93.195.27])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 916E7606E342;
-	Thu,  5 Nov 2026 10:06:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E84EE606A32C
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 10:25:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E84EE606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oxGHp3VY
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59FAB1F00A1B;
-	Thu,  5 Nov 2026 10:06:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793873217;
-	bh=atDUoK7LP0tXf2UYnBDz0baVdX4vZOm1YVTmwcTXCi0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=oxGHp3VYjAu9cjtXxbJMU9f9Djbn9yVECTnQsRTgdguTMrozbyx36CDqSkKey11k5
-	 1CQb/SkNNaIXgb67JhYCnYW7P4Stwd53KeSRNNKqYUxqb/ydE0LqBa+10dLbeJA2mm
-	 drywf+xlgzuYZj4q1AteQLae/ilJzZMfhACh/xu1gZpLZoA8oMDvE4wPmCT/7f0ZLw
-	 pWpiclmTYBg5Muyj6amCb0ura8knn0nd7z6tnD9tv1q8Qb3kTHHheQ6pA7Xyv2sRak
-	 JDj0IGomFEnbewCFFDOJNuM9lvfZknJao6XOkrJlKU9YTxRcSXIRLE4XfFYl/yM9sW
-	 fQJfts8GaZU0Q==
-From: Leon Romanovsky <leon@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Leon Romanovsky <leon@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	=?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-	=?utf-8?q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>
-Cc: linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Tushar Dave <tdave@nvidia.com>,
-	linux-media@vger.kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linaro-mm-sig@lists.linaro.org,
-	linux-rdma@vger.kernel.org,
-	kvm@vger.kernel.org,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	Alex Williamson <alex@shazbot.org>,
-	Ankit Agrawal <ankita@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH v13 19/19] PCI/P2PDMA: Test the routing of clients with ATS enabled
-Date: Thu,  5 Nov 2026 12:04:50 +0200
-Message-ID: <20261105-fix-p2p-acs-v4-0-v13-19-3dd065907c3b@nvidia.com>
-X-Mailer: git-send-email 2.56.0
-In-Reply-To: <20261105-fix-p2p-acs-v4-0-v13-0-3dd065907c3b@nvidia.com>
-References: <20261105-fix-p2p-acs-v4-0-v13-0-3dd065907c3b@nvidia.com>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=zdS8i2c9
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=fipkPoxhtyZGQIrjVJSQDKkNH+ueftCHeXfpefOg6blZIqWnV9Cl0Ngym6eoghOmnTVFRYMBGxKallbSS+VWcOHauYLyrTwcFV9VzTgdZrssYphfdXavAb4RqcgQmc7eDKsZwWqHHkPuXwSicLsZu2vRkr9NN+bJCzmB8hATP3s4m4hf8ciTwYjhdZ/JOkN5gTroJvEmbmHAUPUOR7Gomc9FoKGhCSlxgvF+RX+t/5ncjkAPETvm0pb1SfIeUKq7V2jqgoneHxVP5p9J3u1helXfkB0LA7OInce7sLkbgMU8VJWXoRsZqEAkW9y7YSte7EJ7JuES5f4KJiVNwa4K6A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7g4AnHz1b45ylnVeVQvuDBjdf3MBOm/p+0a96v3wy0I=;
+ b=S8j7/PYbyKAGDgtoUq3GVvCTXoW1EyYLU155qJCTNzX2Mj9jjTRM9WQ+N5YZNlbLUHzgv5t4aChoeacKtFJqyZ1lJWfvj5nzirMBeZ02698ubYPGT9SKwuf22WooOEYDqNiekQgQW4/rf82R6QmwTikR0EuzLAzxxpicFxpa+6lcPjPMt8krIc00bii1EGwNrK8FnasVE9UKtOe5nnOgBJFnZc8XOCfrSviacANoI27OhsJ73ZNvtXmeEOwSAzaFK09ERxxOtS5hDjT/Z2nX6tx/j/AsNYGh3ppWgthuqU0zdez37MDDPkTVuebURVWXMt/pPq4mga2PJuyYjX9DPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7g4AnHz1b45ylnVeVQvuDBjdf3MBOm/p+0a96v3wy0I=;
+ b=zdS8i2c9aXaibUbKh6JF94HuczCrKn3IzXUePG3czhTPXtUFalHuDVpuu1jMZmkE+XsaQ89FHKE2XxpmG333FCtD20B+0NET8kty/e9Ki3FPRsHn9+TEwc6lMDhyVaiBuUygwyhmcqq/qCpl5KHtscs/dXHDB5XG2JmXywUeuYg=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com (2603:10b6:208:591::16)
+ by DS5PPFA3734E4BA.namprd12.prod.outlook.com (2603:10b6:f:fc00::65c) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.10; Thu, 5 Nov
+ 2026 10:25:25 +0000
+Received: from BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83]) by BL4PR12MB9505.namprd12.prod.outlook.com
+ ([fe80::73aa:eb8c:a86b:5a83%5]) with mapi id 15.21.0592.009; Thu, 5 Nov 2026
+ 10:25:24 +0000
+Message-ID: <efd2a9cc-dcbb-4f45-8dd7-7fcd713830ec@amd.com>
+Date: Thu, 5 Nov 2026 15:55:17 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5] iommu/amd: Enable PerfOpt automatically for integrated
+ GPUs
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: "Mario Limonciello (AMD)" <superm1@kernel.org>,
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Alex Deucher <alexander.deucher@amd.com>,
+ Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+References: <20261022-superm1-perf-opt-next-v5-1-dfef0b78b7b9@kernel.org>
+ <4206ec86-c6aa-447a-a5d1-4d2e89a31b5c@amd.com>
+Content-Language: en-US
+In-Reply-To: <4206ec86-c6aa-447a-a5d1-4d2e89a31b5c@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MA0PR01CA0069.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:a01:ad::10) To BL4PR12MB9505.namprd12.prod.outlook.com
+ (2603:10b6:208:591::16)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,226 +102,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.15-dev-18f8f
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL4PR12MB9505:EE_|DS5PPFA3734E4BA:EE_
+X-MS-Office365-Filtering-Correlation-Id: 20603a5d-4952-432a-fa1f-08df3b271a49
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|366016|1800799024|261026140227099003|11063799006|4143699003|56012099006|261022075727099003|261021121427099003|261022105027099003|261102123227099003|261028144727099003|261026121527099003|261102130727099003|18002099003|22082099003|6133799003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	9SYyg8p9VTVizQJashi0VhLb1+P6V2YX/r42htB87d8g4xpd0FIQd7j+Rqy22QVTGMdGtA66LBXn6jhlWUOQPzvxhPho/2hNosAv5QMofAG867czfAkutURsoZ0wOhiC92DVG3m99ih0PLEwrlFQTdBabFu8QtzbLG5xmQhKE6eM0141p60uxNVXaOs5tcM2Dmnag8b8zxgkBCKDnwisTKVKxgs7DlebsUfnsY1sXXsfSNBHOEQOFjK1t4F5+TAAcKMNiSbpyKACYGE/Zfj3v4Bw4OkwbSntFaq3+Vf/TV6XfXn1Y4ypEFA1JcQaAQTvCDqi7CiSmzG2zRCkX330uzt7Q3ixg7xTe0AxAHLyzi/yInV7XNXf7NNCK6XaSJR+yaz9f5Dqlq4doz6iITsGNqXQe+CURxCqZoUTh3V3M+HmOQeMAM+3oF7hmsMULiuY0PuoaU2bS0+VnMxVXosqok/cf8LsEPfFwHUVoDfAB14w80glck0lnS+zHRjSMUuaFJia0fIu2Larxs9YROvdxhdAU03D2SiAc8F56E7oWzXA4KNtir/n+tiYG7tyvbI9MpVB+ibHefZ1KA3wlcggmu9n1sVEGyovTrXYsbmtjVgpIKF442Gq2oI+1URPTLSBwCaW7w/GURWNlSAppcCd31K9JY/nBJ9qDTTlNvNtCFE=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL4PR12MB9505.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(366016)(1800799024)(261026140227099003)(11063799006)(4143699003)(56012099006)(261022075727099003)(261021121427099003)(261022105027099003)(261102123227099003)(261028144727099003)(261026121527099003)(261102130727099003)(18002099003)(22082099003)(6133799003)(10067099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VmVjMCtYQ3Jxa3VDM2FTeUp3SlV1clpTdmNxY25IY2tEdkI1L3VOY2ZHK3lN?=
+ =?utf-8?B?MmcyOUxEbTR3SjgyQ3U3MWZmQTUrUEp5M1VyKzZhWHZjQmxmWDF6cllVQmZ4?=
+ =?utf-8?B?TWUzRlg4czVGTHJ4MmF0QUorSzN1R0lZcEdXVUhuMlpwU2hLQTNiV0h6dDRH?=
+ =?utf-8?B?OHFoQTNwdGZpcURYaXI5TEtmVjJ5VHlLdkF4RnR3QkhMVGJnY1pTbjZPWGp6?=
+ =?utf-8?B?QStySXAzSTB1RTA3THNZa2Znc0ErTms0UWF1QmZrR0ptQWxMUGpnWEVvUGRh?=
+ =?utf-8?B?YWk1RW9zZXBOYmNhMkhnSHN2ZEhCRmNWd2hWc2dLMEhMMUxZZXNCZkZYaGtl?=
+ =?utf-8?B?OHVuTFJKT1Y2WmpycGtoOUlwZW9LZm1aWGpKUnFJNURJWFRpS1ZyQ2VMRTJW?=
+ =?utf-8?B?VGlkT0tnUHZMMHBrRUU4dTZvcDl1NFU0VzMxZ3RqNXVWdFg0K3BXSkRUYXdQ?=
+ =?utf-8?B?NnppOVZ3L2ZHL1NHWUNTUUsyWlVXVUZxQUZSQWhwQWczL3Z3ejV4VUxpcTli?=
+ =?utf-8?B?ZmljU3NnaFp5cmp4UVZmYVJ0RXdrbFprdHdFMFl2bTFCbVAvWTVvbWViSzhW?=
+ =?utf-8?B?YXhSa2svS251dk5wd2xZRWUzZFlLQkljTVlkdHIxV1UzS3FnMWFsK1A0R1d1?=
+ =?utf-8?B?K0phNEliekRUY2tsZHVUVFgzSHEyMEkydnltaEdJWC9qMUtud2daSEFpdlAv?=
+ =?utf-8?B?K3JZYXNYOE9Bc0pUa05kN0g3Y2RmcXIrQUFGY2RXeGJWUnBEak1xZmFUOGZZ?=
+ =?utf-8?B?d0VUcXVpOHg5c1VhSDMvSUlCbGFZSUROSDllNmY4OC9maWZkVnZoZmw2M3I3?=
+ =?utf-8?B?SUVjTkhwcWtwdDVXRDBhaUJYampFd2ZEK3c4ajF3NU5vamNaVU92dDRJSHNz?=
+ =?utf-8?B?bDVGMnVXYVBFYUZjaXlnT1crZVZOeWFmOWM5NEdXWFUyY3M3a2F0bCt4bnlq?=
+ =?utf-8?B?by8yeFQvVzMxKzdLUGJSRi9tdlFEVCtmUmVTKzhabnVvUGFFRE80UWZZRng0?=
+ =?utf-8?B?SnpJRE9Td1dOVmZiaGNIOWxtWFdyYTNpR0lRZUNwcWMxQ1J1bkUvaUMwTjF5?=
+ =?utf-8?B?MGlnU3hWV1RzNW92a2VyUjdMcTQ5VEU2T2lwdWhsRGNqM2ZsTi8rVVIrN3J6?=
+ =?utf-8?B?akJpREdFZ3dMRG5oYTE3Z2FEaUtsZmw2cE9Ibk1odE1BREJrT2J3anovMlRI?=
+ =?utf-8?B?UXQySi9nT0xjTCsxWGhOclBZWTlJSEpaVjVIRnZEWUs0ektDQ2JWMFRXT2Zq?=
+ =?utf-8?B?YXB1WXk5a0hRUnNHNlNjZDR0L1YvbjVEcXpmc3NYL05qT3pZb2cvYnZLckJy?=
+ =?utf-8?B?MFV1Tjg2M0dYeENWNGFjV2ZwQmxRTm5UWGFSOUhDQkxkTGZrRS9tMTJieENW?=
+ =?utf-8?B?UklWZHd1ZWR4M05BV1lMQWcxVEVvVW1MZnFObFU1UGxFRmw2Q01TelZGdmNi?=
+ =?utf-8?B?M0ZXME5yT2psaE9DYmVUOFpQWUdINXdoeER4VGltWGF4M0dXSGxIb3VyL1FR?=
+ =?utf-8?B?MzNxUXlPZXVSV3l2RjRXNFB6czNQd0pQUDJOYjBrbk90bXlFMkJhT0x1YTRm?=
+ =?utf-8?B?aHNaSEdTd0ZiOWZnay9OOC8zbmo3YTcyeXd5S285dVhsTUpadWZMdy9HajhU?=
+ =?utf-8?B?T1FoQ0UwcHYzeDVCejgyN2c5V3ZvRlMyU1VhVEphWnNDS1lMUTZubjFzS2JE?=
+ =?utf-8?B?a2JydFJicG15cEFROTd6dG9UZXlEVG9heVlQcmF3YmlaeDBIdmhkSGNVdmdS?=
+ =?utf-8?B?YVN5cmdnUk1GMEc3eENoaWZPam1QSnowZU1paFBiUktwdFFjajJXZW9GRUt2?=
+ =?utf-8?B?VU5CaE1pYjBhVDJtczYzNElRQlZVVDNnQVFLNHNsTnM3SU9lVHFZTmdWclN0?=
+ =?utf-8?B?dVppWEkrVmhhNnU0dDhrYm13bUFJVHk0eFVSSi9UVVNtY1FxRllxNXRsVnpC?=
+ =?utf-8?B?RnpiZFp0Q29aVTM0QlBDQ1RPZ3BwcHE3cVZJQ0h0bCt5RGdLK2kveVROZFkr?=
+ =?utf-8?B?TWZ4SE1SWUJmTzdVOGZqZmtVSlpJZmRaL3J6eU5SeUFkSVlldjdhSjRTeWFQ?=
+ =?utf-8?B?UFp5TkhFMUtub1VSbVlsZnpLeHV1ME5BN01udVZ6bW43WHJNOW5MVGxLSVZa?=
+ =?utf-8?B?TjhWZXNKQmhkYVlwOEt0MWNtLzl0TmdYWWZlVHE3bzhNSUZWNVNydWNpOTRh?=
+ =?utf-8?B?U0gyZ2d0YmNvbXhKc3h4N0lUTUZEVXVLalNnWXc3TCtDK2FCMU5yYVcyVGlP?=
+ =?utf-8?B?VHRsRklKTXpRRXBWT0ZoZlMwZTBGeVloY1kwVWVhNjhPc1gxTHJIN05qKzF4?=
+ =?utf-8?Q?lDSwQy+/3UAXhpInfR?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20603a5d-4952-432a-fa1f-08df3b271a49
+X-MS-Exchange-CrossTenant-AuthSource: BL4PR12MB9505.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 10:25:24.1711
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uTPXSwX9OiMofQgz3//TzuZC4FyKS6UKW/h/aKqbTSG2+88y94yvPmy3Y08BvJQ7M85guUnfLiaSpfntvAozsw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPFA3734E4BA
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Alex,
 
-A client that enables ATS for the whole device must never be handed a
-bus address, and Translation Blocking must reject its peer-to-peer
-traffic even when the caller asks for the default class. That has to
-hold for answers taken from the cache as well.
 
-Cover those on the fabricated fabric, together with a client that
-declared per-mapping ATS keeping the per-class answers and a client
-without ATS answering for the Untranslated Requests it will issue.
+On 11/2/2026 8:26 PM, Vasant Hegde wrote:
+> 
+> 
+> On 10/23/2026 2:16 AM, Mario Limonciello (AMD) wrote:
+>> PerfOpt is usable by integrated GPUs in identity mode. Enable it from
+>> the IOMMU driver's domain attachment paths instead of requiring an
+>> amdgpu policy knob and exported enable/disable interfaces.
+>>
+>> Mark supported integrated GPUs as PerfOpt-eligible when selecting their
+>> default identity domain. Skip GCR3 setup and ATS/PRI/PASID enablement for
+>> these identity attachments, then enable PerfOpt after installing the DTE.
+>> Clear PerfOpt before attaching an eligible GPU to a translated or blocked
+>> domain, including unmanaged domains used by VFIO. Propagate failures to
+>> clear bypass, but keep a completed identity attachment successful if the
+>> optional PerfOpt enable fails.
+>>
+>> Clear inherited PerfOpt state during initialization, including when a crash
+>> kernel reuses device tables. Read feature support directly from hardware
+>> because cached features may not be available yet, and stop initialization
+>> if the initial clear fails.
+>>
+>> Each IOMMU has at most one PerfOpt-eligible GPU, so track activation with a
+>> boolean under the IOMMU lock. Preserve this state while clearing hardware
+>> at suspend and shutdown, and restore the bit on resume only where it was
+>> active. Do not enable PerfOpt unconditionally during early IOMMU
+>> initialization.
+>>
+>> Remove the amdgpu parameter, driver callbacks, and exported interfaces.
+>> Translated attachments retain their normal device capability setup.
+>>
+>> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+>> Signed-off-by: Mario Limonciello (AMD) <superm1@kernel.org>
+> 
+> Looks good. Queued for rc.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/pci/p2pdma.c       |   8 +--
- drivers/pci/pci.h          |   6 +++
- drivers/pci/pci_acs_test.c | 123 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 134 insertions(+), 3 deletions(-)
+Can you ack this patch so that we can pick it through IOMMU tree?
 
-diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index e81b9070bb4ef..a0f572e117d8d 100644
---- a/drivers/pci/p2pdma.c
-+++ b/drivers/pci/p2pdma.c
-@@ -1467,14 +1467,15 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
- }
- EXPORT_SYMBOL_IF_KUNIT(calc_map_type_and_dist);
- 
--static unsigned int pci_p2pdma_client_tlp_flags(struct pci_dev *client,
--						unsigned int tlp_flags)
-+VISIBLE_IF_KUNIT unsigned int
-+pci_p2pdma_client_tlp_flags(struct pci_dev *client, unsigned int tlp_flags)
- {
- 	if (client->ats_enabled)
- 		return tlp_flags | PCI_P2PDMA_TLP_TRANSLATED;
- 
- 	return tlp_flags & ~PCI_P2PDMA_TLP_TRANSLATED;
- }
-+EXPORT_SYMBOL_IF_KUNIT(pci_p2pdma_client_tlp_flags);
- 
- /*
-  * A client that translates every address it is handed cannot be handed a bus
-@@ -1486,7 +1487,7 @@ static unsigned int pci_p2pdma_client_tlp_flags(struct pci_dev *client,
-  * Take the Address Type from @tlp_flags rather than reading the ATS Enable
-  * bit again, so the policy and the class it applies to always agree.
-  */
--static enum pci_p2pdma_map_type
-+VISIBLE_IF_KUNIT enum pci_p2pdma_map_type
- pci_p2pdma_client_map_type(struct pci_dev *provider, struct pci_dev *client,
- 			   bool per_mapping, unsigned int tlp_flags,
- 			   enum pci_p2pdma_map_type type)
-@@ -1505,6 +1506,7 @@ pci_p2pdma_client_map_type(struct pci_dev *provider, struct pci_dev *client,
- 
- 	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
- }
-+EXPORT_SYMBOL_IF_KUNIT(pci_p2pdma_client_map_type);
- 
- /* Whether the driver of @client called pcim_p2pdma_set_ats_per_mapping(). */
- static bool pci_p2pdma_client_per_mapping(struct pci_dev *client)
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index f76e4dbacae13..70fc29c42c274 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -1148,6 +1148,12 @@ enum pci_p2pdma_map_type calc_map_type_and_dist(struct pci_dev *provider,
- 						int *dist,
- 						unsigned int tlp_flags,
- 						bool verbose);
-+unsigned int pci_p2pdma_client_tlp_flags(struct pci_dev *client,
-+					 unsigned int tlp_flags);
-+enum pci_p2pdma_map_type
-+pci_p2pdma_client_map_type(struct pci_dev *provider, struct pci_dev *client,
-+			   bool per_mapping, unsigned int tlp_flags,
-+			   enum pci_p2pdma_map_type type);
- #endif
- 
- #ifdef CONFIG_PCI_QUIRKS
-diff --git a/drivers/pci/pci_acs_test.c b/drivers/pci/pci_acs_test.c
-index f6eb7dea7d8cd..b0e5e2eac97cc 100644
---- a/drivers/pci/pci_acs_test.c
-+++ b/drivers/pci/pci_acs_test.c
-@@ -1228,6 +1228,125 @@ static void acs_walk_unreadable_control_test(struct kunit *test)
- 			PCI_P2PDMA_MAP_NOT_SUPPORTED);
- }
- 
-+/*
-+ * Route the way pci_p2pdma_map_type_tlp() does once it has a client: the
-+ * client decides which flags apply, and the answer is then checked against
-+ * what the client can be handed.
-+ */
-+static enum pci_p2pdma_map_type acs_client_map(struct acs_fabric *f,
-+					       bool per_mapping,
-+					       unsigned int tlp_flags)
-+{
-+	enum pci_p2pdma_map_type type;
-+	int dist;
-+
-+	if (!per_mapping)
-+		tlp_flags = pci_p2pdma_client_tlp_flags(f->client, tlp_flags);
-+	type = calc_map_type_and_dist(f->provider, f->client, &dist, tlp_flags,
-+				      false);
-+	return pci_p2pdma_client_map_type(f->provider, f->client, per_mapping,
-+					  tlp_flags, type);
-+}
-+
-+/*
-+ * A client with ATS enabled for the whole device translates whatever it is
-+ * handed, so it never gets bus addresses even on a direct route, and
-+ * Translation Blocking rejects it even when its caller asks for the default
-+ * class.
-+ */
-+static void acs_client_ats_test(struct kunit *test)
-+{
-+	struct acs_fabric f = {};
-+
-+	acs_build_fabric(test, &f);
-+	f.client->ats_enabled = 1;
-+
-+	KUNIT_EXPECT_EQ(test, acs_client_map(&f, false, 0),
-+			PCI_P2PDMA_MAP_THRU_HOST_BRIDGE);
-+
-+	f.client_leaf->acs_cap = 0x100;
-+	f.client_leaf->acs_capabilities = PCI_ACS_TB;
-+	f.client_leaf_cfg.ctrl = PCI_ACS_TB;
-+
-+	KUNIT_EXPECT_EQ(test, acs_client_map(&f, false, 0),
-+			PCI_P2PDMA_MAP_NOT_SUPPORTED);
-+}
-+
-+/*
-+ * The cache holds what the topology allows, filled when the client first
-+ * asked. A client whose ATS was enabled after that must still be kept off the
-+ * bus addresses the cache recorded.
-+ */
-+static void acs_client_ats_cached_test(struct kunit *test)
-+{
-+	enum pci_p2pdma_map_type type[PCI_P2PDMA_TLP_CLASSES], hit;
-+	struct acs_fabric f = {};
-+	unsigned long cached;
-+	unsigned int flags;
-+	int dist;
-+
-+	acs_build_fabric(test, &f);
-+	for (flags = 0; flags < PCI_P2PDMA_TLP_CLASSES; flags++)
-+		type[flags] = calc_map_type_and_dist(f.provider, f.client,
-+						     &dist, flags, false);
-+	cached = pci_p2pdma_map_types_pack(type);
-+
-+	f.client->ats_enabled = 1;
-+	flags = pci_p2pdma_client_tlp_flags(f.client, 0);
-+	hit = pci_p2pdma_map_types_unpack(cached, flags);
-+
-+	KUNIT_EXPECT_EQ(test,
-+			pci_p2pdma_client_map_type(f.provider, f.client, false,
-+						   flags, hit),
-+			PCI_P2PDMA_MAP_THRU_HOST_BRIDGE);
-+}
-+
-+/*
-+ * A client that declared per-mapping ATS picks the Address Type per mapping,
-+ * so it keeps the per-class answers even with ATS enabled.
-+ */
-+static void acs_client_ats_per_mapping_test(struct kunit *test)
-+{
-+	struct acs_fabric f = {};
-+
-+	acs_build_fabric(test, &f);
-+	f.client->ats_enabled = 1;
-+
-+	KUNIT_EXPECT_EQ(test, acs_client_map(&f, true, 0),
-+			PCI_P2PDMA_MAP_BUS_ADDR);
-+	KUNIT_EXPECT_EQ(test,
-+			acs_client_map(&f, true, PCI_P2PDMA_TLP_TRANSLATED),
-+			PCI_P2PDMA_MAP_BUS_ADDR);
-+
-+	f.client_leaf->acs_cap = 0x100;
-+	f.client_leaf->acs_capabilities = PCI_ACS_TB;
-+	f.client_leaf_cfg.ctrl = PCI_ACS_TB;
-+
-+	KUNIT_EXPECT_EQ(test, acs_client_map(&f, true, 0),
-+			PCI_P2PDMA_MAP_BUS_ADDR);
-+	KUNIT_EXPECT_EQ(test,
-+			acs_client_map(&f, true, PCI_P2PDMA_TLP_TRANSLATED),
-+			PCI_P2PDMA_MAP_NOT_SUPPORTED);
-+}
-+
-+/*
-+ * A client with ATS disabled cannot issue Translated Requests, so a caller
-+ * asking about them gets the answer for the Untranslated ones it will issue.
-+ */
-+static void acs_client_no_ats_test(struct kunit *test)
-+{
-+	struct acs_fabric f = {};
-+
-+	acs_build_fabric(test, &f);
-+	f.dn1->acs_cap = 0x100;
-+	f.dn1->acs_capabilities = PCI_ACS_RR | PCI_ACS_DT;
-+	f.dn1_cfg.ctrl = PCI_ACS_RR | PCI_ACS_DT;
-+
-+	KUNIT_EXPECT_EQ(test,
-+			acs_client_map(&f, false, PCI_P2PDMA_TLP_TRANSLATED),
-+			PCI_P2PDMA_MAP_THRU_HOST_BRIDGE);
-+}
-+
- static struct kunit_case pci_acs_test_cases[] = {
- 	KUNIT_CASE_PARAM(pci_acs_p2pdma_request_test,
- 			 acs_request_gen_params),
-@@ -1272,6 +1391,10 @@ static struct kunit_case pci_acs_test_cases[] = {
- 			 acs_intel_tb_gen_params),
- 	KUNIT_CASE(acs_walk_unreadable_control_test),
- 	KUNIT_CASE(acs_map_types_pack_test),
-+	KUNIT_CASE(acs_client_ats_test),
-+	KUNIT_CASE(acs_client_ats_cached_test),
-+	KUNIT_CASE(acs_client_ats_per_mapping_test),
-+	KUNIT_CASE(acs_client_no_ats_test),
- 	{}
- };
- 
-
--- 
-2.56.0
+-Vasant
 
