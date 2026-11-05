@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.15
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.40
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793852220;
-	b=PvKOnvudxL/6aGU/P30iKpe4KEAvAXhElCUS+OxlZPwaND8ftys1J6DoHpp+XYPbh2ZW
-	 z5TY/t/WL2A46+r2tVXknAY8OSDS5np/rInoios/fgkxkgJjpukB6soBt16End8l05oxb
-	 9hcQEBhXwFMDqit0p0XFzpd/wAziVJKPHa4JDQ7OeiDj7e25W0ufGeMKKzcu5hLIz/LXb
-	 LmGyqS1Y8DgfGDCbrfKDB9fUtkEFnbCB9bAw77MNb2fUKbzzuWVD4fBs6cyabRxkunxku
-	 E6GQo0IbF+rC1/twTSxEvJ6SHhLYuzuvxq7XiZnyks01x1g3+16MdTJcg7rQAt//BXg==
+	t=1793852239;
+	b=Jk1wvssods0ovRIfVsbEAyRsFxqKt42An8tPQajOSTVmpeQm11H804M5A48/OkOyOPTC
+	 jJj/S0tDbW6puIcxPpGJLFiaKFqg/rvi6fmGWBUV5RmgerniNUz3JX36NeCZzFTXdGtNE
+	 aelaZM6GePey+tVDC7vBDv1QTbFuSWAmGh58I3ngq6M4dgP02xa4aQM5ocMzzo6kS2i+v
+	 k4JAQaZpEYCBSxnOEoNNK1c9jA8jZH/z5AiOMCV2QtBDW880WFeHwYH6F/E3k2kAgt5Gv
+	 o/3pNrKrd/uPSHKrx9djk3H78wvvHx1O19ASiL6Q91nwiGWwfAoO2EE+BWzXnfgU+vw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793852220;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793852239;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
@@ -26,53 +26,53 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=+1oZhB0P9/JbpbO7GDGV8oaLFrcDSNjbXAeexPjMhE8=;
-	b=yfMIMuNHfHSPVoYC88bcykJ2byYakmSbEMBp8oQSYqnAHACey0Kam1L+/TWkP039NBjJ
-	 Px8Tf+s/7fDzfKbDB7LSq5v2vqIOdFmX+CWy0/mEFwQxOIKau4C43x4JQVCV+wzND81+k
-	 EhNo1CjapfbVyxMrRsZU+B8gfv60+WbpFFRi/qo9dOtFcs5JfFTEXQJnLXVks5IEraKEE
-	 piFOoPwnOKEaHn6/8P8Rxur6scWc3xxP/ijJAw4h9E7qaYcrp095BXgrdyVlsqjUyXwQu
-	 2Z9QMyjzaP6oIY5NtLUrUZtB01vmkd8XfP0XoTeIWyVjAWYFKaA6KfLtXpsVcBzDI8Q==
+	bh=psQsaNNKS6DfMRgcksTfW345uJyB0dWreMzRkjM0m9I=;
+	b=lJPQSavOicK8tX/8z2TnG9Zikv3/ZtJaJdj3qhTS/YaVp09bTbQUbqy5FLQSpeoWX9fj
+	 i2V0e49mwl+CC60ExKARZEMhviMZV6882GLncclo2tktcAdOlSfYFFyiwXnP7474YFCBH
+	 itMmVz4EjLyEnQZXVCYiciVeXLh2ibcwKF3gLkiW3oBbk/DhV/DVSs8pbhA9oJOdIxzni
+	 3pkX277eGt3DckrcipGA5hp0VlVhAFywtIb4MErQ/+PvoOKbRkjsHcM876dhCjtxC/wqU
+	 PtWj8dELwMkbYsR/G3pmpk9I6zJ+SyP/0peeApJCKlD3FUqrMZEZXoo8hvBFPcHoNvA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=AGmCvisp;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.15
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010015.outbound.protection.outlook.com [52.101.56.15])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=YIOmOe84;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.40
+Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013040.outbound.protection.outlook.com [40.93.201.40])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 381FB606A326
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 04:17:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 381FB606A326
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D3FB606A326
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 04:17:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9D3FB606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=AGmCvisp
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=YIOmOe84
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nPC/yN3nwD7cKPFRFKvZlhwIIkZa5d8jGGTDBDT23e+MO7w92/YF+Sst03sRFpfcYB1+nHXQ0sSQkm1Wyos9tnR0QY0OykwKwtlpd1ibmFeIekj4LrrS9qT/pugNbBFCbE8k5+qZOKjMaYUsgx6eNA2LRLbb/ThV6usCbhJLY+lcsbbjekGACorao58m1XZ5piXpnRnVv/pdBfaMx8ioRoOtt+0+7P9otvovJSXgcnac5m9wJTW5BhcBhTA8sRlp3wM1u2eT1GqZuTIkFXY1/4pe0tun1sxnrdfuiawo7OskBGhyd0x4Sns4cdHfgfmKUvdtEa90PNd5gW0BsWryLQ==
+ b=CIV2KZ1jZxuI753voZ0E2R1EzPhE/bjEgf1LYxit4Kxo0TFzn7+/ebxcn1/4IELqbh+sP43O9oZRS61dh8bJzLw5hq6ABK1//EEPPV0jmUeKMs2FkgzQs9EFRJ4PmshnGWxwlRWjIRA0XzV/Wro/jWYBwMKeeuSMlE7BDVZ5OheIB0NC2A94r1fDTOLrd3Hj9eJXfS8gnbiC1H0J6rR8qKzeGK0mH0eDn1RXvoNzoqj5spZ5ocG0CbF/VVxClx2Xyl8hLBOhxlJo6ydb4hsGr7MjbjI37gG96B7TOHecKL8Bj5VJZiQrOufaQGJh134vsSiRgHBvNUdBJPEKJPgidQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+1oZhB0P9/JbpbO7GDGV8oaLFrcDSNjbXAeexPjMhE8=;
- b=Of0KjwoAtb15AwD05Uy10ySYrVCTUWDm/jOtiEYjPdckkYSCXxqqLcD6zuDW9O7IQsAFFLMsy+IlrLlQWu32O7SroF2FwkzVyEQ0dfb+dNzWLBYwcncR8U0gGBgiAU4c7ooht1RR5dLOoJ2i/ih8RWSV2CVi/RXdZRGZ4MLJzWjm5fsGUmO//TCxaIq4n1ip6ALzBULI4nSsnYSaYX2mKwnYSUqj/VMM+HhWSfA+NiASECfZ1XBAcRpjxyjlIbIMqpYiL2mltNTuF6+ReiZGl52xIZWU3tdHTJsTAZXG5otpC+ok3s2kAZUIGQUf8CQbmc0hjtoB8c1jXeOuUXhQqg==
+ bh=psQsaNNKS6DfMRgcksTfW345uJyB0dWreMzRkjM0m9I=;
+ b=q/glIT9UXWTIfjQCMvalkv07cmuVFYGiSErYhf7SqDPxe8/pylez1qW/5jb2iJfILk1kabwcbHn9Z2AeScIV0WIrHU+93kg7APfc7yVr35DSjI2wrYHKgt7G1urxsCqZ0pGXVd5U5Bfns2Cn6nf2rg27ppOWgRRdFP9aYY29MfFC2+1l/T1RLrQFFV927ydjqi7SClPIb+B13757abKg6lwrWhkWNpB5YkQip1GUIG9d6MFcNLIWbaDQAnR8JPHdFoNX+YXmslFRkMJuDz8MOf9e48sahzKDBvfks/3jHMbBeV1QNjsdAqbP10kDvEwgwrZUyEhrLxA73+U9igt0/g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+1oZhB0P9/JbpbO7GDGV8oaLFrcDSNjbXAeexPjMhE8=;
- b=AGmCvisphHO1T+SEVQsArGBMu2JId0+VYnAkhAx0beJ6O57t2frAaI4QUe4dSnMsekwbWF2GjSWttbW3Xse4ZcpYMfaEme85tVSUSb6I6zyY25u1Pcwb59H41rgBeqewM90w/juEKHquHZysSyHl0EuZyAV/tPX557IFCtFb8Z8=
-Received: from BY3PR10CA0019.namprd10.prod.outlook.com (2603:10b6:a03:255::24)
- by LV5PR12MB9803.namprd12.prod.outlook.com (2603:10b6:408:306::15) with
+ bh=psQsaNNKS6DfMRgcksTfW345uJyB0dWreMzRkjM0m9I=;
+ b=YIOmOe840MSquF5RD1mY02IBTWjhlDggGiYZEzyn5cP6RjviB8cy3QkMdVg84gusmzz7Um6mbfZS6UG6I6gsc1djenlhRT+Flo+R6QcvwUUw1P6/+hVBuIMI02AWsoC8YbGD5cJR1VLL0COKD0rN7+uv5kiXeiPxOkfyzjLcWrk=
+Received: from SJ0PR03CA0069.namprd03.prod.outlook.com (2603:10b6:a03:331::14)
+ by IA0PR12MB8326.namprd12.prod.outlook.com (2603:10b6:208:40d::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.8; Thu, 5 Nov 2026
- 04:16:57 +0000
-Received: from SJ1PEPF000037AD.namprd03.prod.outlook.com
- (2603:10b6:a03:255:cafe::1f) by BY3PR10CA0019.outlook.office365.com
- (2603:10b6:a03:255::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.10 via Frontend Transport; Thu, 5
- Nov 2026 04:16:56 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.9; Thu, 5 Nov 2026
+ 04:17:12 +0000
+Received: from SJ1PEPF000037A9.namprd03.prod.outlook.com
+ (2603:10b6:a03:331:cafe::2e) by SJ0PR03CA0069.outlook.office365.com
+ (2603:10b6:a03:331::14) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.472.20 via Frontend Transport; Thu, 5
+ Nov 2026 04:17:12 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -80,20 +80,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- SJ1PEPF000037AD.mail.protection.outlook.com (10.167.244.180) with Microsoft
+ SJ1PEPF000037A9.mail.protection.outlook.com (10.167.244.182) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Thu, 5 Nov 2026 04:16:56 +0000
+ 15.21.592.5 via Frontend Transport; Thu, 5 Nov 2026 04:17:12 +0000
 Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Wed, 4 Nov
- 2026 22:16:53 -0600
+ 2026 22:17:08 -0600
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <will@kernel.org>, <robin.murphy@arm.com>,
 	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH 2/4] iommu/amd: Hold the device mutex across a page-fault report
-Date: Thu, 5 Nov 2026 04:16:01 +0000
-Message-ID: <20261105041603.399016-3-vasant.hegde@amd.com>
+Subject: [PATCH 3/4] iommu/amd: Call the GA log notifier inside an RCU read section
+Date: Thu, 5 Nov 2026 04:16:02 +0000
+Message-ID: <20261105041603.399016-4-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20261105041603.399016-1-vasant.hegde@amd.com>
 References: <20261105041603.399016-1-vasant.hegde@amd.com>
@@ -112,88 +112,101 @@ X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF000037AD:EE_|LV5PR12MB9803:EE_
-X-MS-Office365-Filtering-Correlation-Id: 621f7d99-6161-4936-e94f-08df3af3a149
+X-MS-TrafficTypeDiagnostic: SJ1PEPF000037A9:EE_|IA0PR12MB8326:EE_
+X-MS-Office365-Filtering-Correlation-Id: c5f8e578-29fd-4312-f2db-08df3af3aab1
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|23010399003|36860700016|82310400026|11063799006|5023799004|261009223027099003|261021123027099003|261021121427099003|261028144727099003|261026140227099003|261022113327099003|56012099006|261022075727099003|261102123227099003|261026121527099003|261022105027099003|10067099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|376014|23010399003|1800799024|36860700016|82310400026|261022075727099003|11063799006|56012099006|261009223027099003|261021123027099003|261021121427099003|261102123227099003|261028144727099003|261026140227099003|261022105027099003|10067099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	Ph2JpUuWv6JNFEcHd9debU+zj431h+ZBm+yYpgcua5ge6/vxVtmfUmQ1JLjJ4GRsJt+2NEZVkNTiHzUnorFGOHIrlnZ85DSKAcaYg3b4vBrYI+Ex2DTjqX/9L+FCsXTlwe4CxYDkoZT9TOWlBFjStUd1uZfTCc+7M4NdaFBFmtiAbn6C4TvI70jEYz9tb4xX11COrCdnDVJUBlyBIo+GCbeM3L7rrLNrZeKUimaM0oNduxHPCOId69oISIlxpnw1u0lVFvqzwguOGHNFePoLA3mRUIVm95Y6Oxfc8BmLJuOmv6JiZHhLHTL4d0qYPRjyWSrmqmQPE0tieUx+K1tUO1OL+o7SUnrBUKZh/Ebp1CvG44LJCzTl528GJn+5/CaSkeomZxPgd1pCWdiJHWXttDf4X/+8L5UYRn4weZYV5N1AwVrdjmoll5Ok/Xa23ysxC0W2JsMjr9dIBdjYzN5CuOmZ7WwroiLwhoBPNDp8VxJMICJA2ufOD+QQI7ZlloWYFM5gG4426VGf+5mOzarvJp+2oG9yvJ6PhunVWwYazncoDY0jzQw/Ionwlbo7037p9HymvYQMIPgeguKMevMstXVw7VrW0wt/EjZIZuO/+x2qvTMm4Yw9PBkd3qzfOHJojb+sd7DcekN5BxL1f1uEtq6Maj/oFSKUSY7EZKThEUVXjrsbiuR9XpQaZbyqVVwv
+	C3c2gU/9T8u15JDMrGLP9DYsIRGbHNF4Wgz5U4E2q1pL/8TnswDqRuzj1vbTb+KoLL0U7yKaZnhj1bcf6mF/DNNhFujW8DllaaAoh7SYgW2cD9XIzg+6FiBw5B1r5XKjHURwj+iB1sR4m5UYZvS9kLymronwzqE0Jj/lf7Uaa5UdBlBCsdZkbiV7bOW+WnnABn9dY1y/mrOYG5JV7Lmacc5bkLXUqS1r0dBPltRJ0vp/IBMpBmZijNaBKjoT40JelhHqx/jFBPlWBw7SSLX+N7YvPrIs+ctZxxWcQFyNDWSGqKDf1CFUxQcXFWlssnEceYGD68nrzUTEV+VKPibLt437R3ZuZPieSTQWKp29QqhKv9lhgoBr3PuPguIQhAHRNUIg695RVBbiM3e/hlrVCBQJMNPkGLgJHBGnJ0tpIWOqgKhIf3I1rSNxs5lHl7/wViS0FpOE63x3KdKVTHZDurxAQ8LaFrWgA6I7wdLW0ptJYGZoxpLHF8Zn9jPe/vkKssO456102eL+JmQV4MgOgQrcDTFxwVDLy/z0GlgyHbdbJ5ul/q9oRUgeJ9hw7IJSbbHYy+KxlRJckX9WJ8Vxjlc8nxrMCoOsLM3J4LmE5on9z2U9gedvsEvYypECzw4svjjIDznQS+bAGTr29RQaPp+5Pk+f5lJvPw/ggvtTDbTdzKcutCiapVT9oWdAfff+rcGa+nI0spUivURX4Y5PGQ==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(1800799024)(23010399003)(36860700016)(82310400026)(11063799006)(5023799004)(261009223027099003)(261021123027099003)(261021121427099003)(261028144727099003)(261026140227099003)(261022113327099003)(56012099006)(261022075727099003)(261102123227099003)(261026121527099003)(261022105027099003)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(23010399003)(1800799024)(36860700016)(82310400026)(261022075727099003)(11063799006)(56012099006)(261009223027099003)(261021123027099003)(261021121427099003)(261102123227099003)(261028144727099003)(261026140227099003)(261022105027099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	H/O+LxZ59UGtqT6Bcdg+XPs5xv/iEI87aJ0HhY1ZBxcboSIRKPgkIghI0r+ZszfGkBDPEgdmNPbg3Qwj5JZ8rMzyxIrt3uSxsEmf/OckVbaA1aidiaCEYIKhkiyEnmSaMy+7piQxrfbnu+/4uRKC3X0hgR0sdp82iiPSYeDndOcb5Mu8MIWy3C0A3zIkRHPuPEFhKFNk9zOfj2RrneDHbGpIAE95F8CQTsCtmIj3hE0V7ehNQ6/f9uj+toQLaemek9Zl8QcIzDEhuvYOzLI8/fYhz8Uwrocqgfm3YVttAXt7llRcQFEzTp2mxc9DepitO4NeM7iDoA3h6dAg61ZVMLbOv292ItK3PZegP9MunRmtW+FigHpkISySitKGoFjfyp5eMgd1LG21WUhjTRItqcm1wrE+VMpjPEV3PPWK1x14htReQI1nwnkhi74XC2cL
+	hpqPwPqC4RA0490B5IsWofVjTfGQJ1+gEerhyDD1OLUnlUjj4OBAu8CWBTCMxhq+MaYdIIEhjCBEIX0s/Gqyi/XlN/F2lzxyc+6aNob0niF3INWA/WV+u+tHMY7JbSjEwYXzvPnl2JVWIZhEK6EhG+Y+yPLMRb3RM63LPZBq7MI19Xt7x5rcayRE2OeeL/rkV6I9v7jcn02xgwEQBZNeDHiBdjyoBRKyNUvPZdXiOBlOAL4nUUN5GmrV3P6FUvnxoTOas4UogBBu+BLJANNMlugGBvg8+HxU+zudbchwtwpLzE0fmoCqdM2Wy9aCwTZiQ0okIRiOUH6ln4f+zVDT7AnksP2xMVFpK6sFXq42aoL+q1sIYORfvhYq30y65hW+8dRvt2DdbRSJ4NpCaWit3yg/UVtofcLzrOE3H4z+xWUKft8S/hN1WedCq8yIvPpp
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 04:16:56.6067
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 04:17:12.3899
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 621f7d99-6161-4936-e94f-08df3af3a149
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5f8e578-29fd-4312-f2db-08df3af3aab1
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF000037AD.namprd03.prod.outlook.com
+	SJ1PEPF000037A9.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV5PR12MB9803
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8326
 
-amd_iommu_report_page_fault() read dev_data->domain outside any lock and
-then dereferenced it in report_iommu_fault(). detach_device() clears that
-pointer under dev_data->mutex and the domain is freed only after detach
-returns. Nothing prevented a concurrent detach from freeing the domain
-between the read and the report, leading to a potential use-after-free.
+On unregister, amd_iommu_register_ga_log_notifier() calls
+synchronize_rcu() so the module owning the notifier can be safely
+unloaded once in-flight callers finish. But the GA log handler never
+entered an RCU read side section and loaded the pointer twice (once to
+test for NULL, once to call it). The grace period therefore did not cover
+the call: a concurrent unregister could make the second load see NULL, or
+free the notifier's module while it was still executing.
 
-The fault runs in the threaded IRQ handler, which can sleep, so the same
-mutex can cover both the lookup and the report. Hold dev_data->mutex
-across reading dev_data->domain and calling report_iommu_fault(), so the
-domain cannot be detached and freed while it is in use.
+Mark iommu_ga_log_notifier as __rcu, publish it with
+rcu_assign_pointer(), and in the handler snapshot it once under
+rcu_read_lock() with rcu_dereference(), testing and calling that single
+snapshot. synchronize_rcu() now correctly waits for in-flight calls.
 
 Assisted-by: Cursor
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/iommu.c | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ drivers/iommu/amd/iommu.c | 29 +++++++++++++++++------------
+ 1 file changed, 17 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 2d475a35c2b7..0efe6a58f6f9 100644
+index 0efe6a58f6f9..8c09be157750 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -831,8 +831,21 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
- 		 * prevent logging it.
- 		 */
- 		if (IS_IOMMU_MEM_TRANSACTION(flags)) {
-+			struct protection_domain *domain;
-+			int handled = -ENODEV;
-+
-+			mutex_lock(&dev_data->mutex);
-+			domain = dev_data->domain;
-+			if (domain)
-+				handled = report_iommu_fault(&domain->domain,
-+							     &pdev->dev, address,
-+							     IS_WRITE_REQUEST(flags) ?
-+							     IOMMU_FAULT_WRITE :
-+							     IOMMU_FAULT_READ);
-+			mutex_unlock(&dev_data->mutex);
-+
- 			/* Device not attached to domain properly */
--			if (dev_data->domain == NULL) {
-+			if (!domain) {
- 				pr_err_ratelimited("Event logged [Device not attached to domain properly]\n");
- 				pr_err_ratelimited("  device=%04x:%02x:%02x.%x domain=0x%04x\n",
- 						   iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid),
-@@ -840,11 +853,7 @@ static void amd_iommu_report_page_fault(struct amd_iommu *iommu,
- 				goto out;
- 			}
+@@ -1019,11 +1019,11 @@ static void iommu_poll_events(struct amd_iommu *iommu)
+ }
  
--			if (!report_iommu_fault(&dev_data->domain->domain,
--						&pdev->dev, address,
--						IS_WRITE_REQUEST(flags) ?
--							IOMMU_FAULT_WRITE :
--							IOMMU_FAULT_READ))
-+			if (!handled)
- 				goto out;
+ #ifdef CONFIG_IRQ_REMAP
+-static int (*iommu_ga_log_notifier)(u32);
++static int (* __rcu iommu_ga_log_notifier)(u32);
+ 
+ int amd_iommu_register_ga_log_notifier(int (*notifier)(u32))
+ {
+-	iommu_ga_log_notifier = notifier;
++	rcu_assign_pointer(iommu_ga_log_notifier, notifier);
+ 
+ 	/*
+ 	 * Ensure all in-flight IRQ handlers run to completion before returning
+@@ -1059,17 +1059,22 @@ static void iommu_poll_ga_log(struct amd_iommu *iommu)
+ 
+ 		/* Handle GA entry */
+ 		switch (GA_REQ_TYPE(log_entry)) {
+-		case GA_GUEST_NR:
+-			if (!iommu_ga_log_notifier)
+-				break;
+-
+-			pr_debug("%s: devid=%#x, ga_tag=%#x\n",
+-				 __func__, GA_DEVID(log_entry),
+-				 GA_TAG(log_entry));
+-
+-			if (iommu_ga_log_notifier(GA_TAG(log_entry)) != 0)
+-				pr_err("GA log notifier failed.\n");
++		case GA_GUEST_NR: {
++			int (*notifier)(u32 ga_tag);
++
++			rcu_read_lock();
++			notifier = rcu_dereference(iommu_ga_log_notifier);
++			if (notifier) {
++				pr_debug("%s: devid=%#x, ga_tag=%#x\n",
++					 __func__, GA_DEVID(log_entry),
++					 GA_TAG(log_entry));
++
++				if (notifier(GA_TAG(log_entry)) != 0)
++					pr_err("GA log notifier failed.\n");
++			}
++			rcu_read_unlock();
+ 			break;
++		}
+ 		default:
+ 			break;
  		}
- 
 -- 
 2.31.1
 
