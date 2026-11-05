@@ -1,82 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793856498;
-	b=cZmR/JHxcaSfZw3zs+7DG5BPH3lrWdeZwrtQYacTMY3RoKZYNzqJzXXeWzZhr56GPC/E
-	 SaEWTv2bSdSSGXz+sZYDVGiy7/bO8dY6cD5iIsoDi0qOOI9MLsSLmNSQIBbi5lkWzWsun
-	 oeGKs7Pja7pabg8+q2ptSG4GbJf0Pc2TYvqazMfNwP3qXu/qc+MFeIfx2BWk4WuGXGZYn
-	 hOR2jMHunDCedo/0lg5mZcmmoD3EnUNot5HrdrdykpbEs4RG9PIV659rv6i3448MZ92UQ
-	 AnqVncRTpH/GPmEDbnmLUGx7JYZuJA0mCC8aOcV4zOkqBiiCvFznEheBIOPQERoqlVA==
+	t=1793858796;
+	b=PoaNWlzfpN3gcfKgixRBDAXlExCgva1PiOD2g0jFSlGitdZflnsKp7btcUtl3uuE9ERN
+	 Iy12CvIMqXAng4LA9v8pBZa26D3t7xTFxtTRBiqAQTrTFtuh8IpHey1kVCqZ1MtASnlaZ
+	 m9KLsCOx4GAxcSDqzNSOC/DhVMEIt50Jjr911Hn8skRHmnUJI5b8b03I75sJCs0Bqf6ho
+	 Fgi5gCSrmAQThE9OZ8YJhjpbOaHf/OZoaRFp4hgAey+qZfd2f103dazc3E8SKQ7KWagl9
+	 20Z0Fi6Q0cWM4IUrJ6uDw9poGgcUUT6eShfyarHR6EDeprApSTpsJYCuZn+TW/qaMJg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793856498;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=HcoU1mf7kO9fvwMNLAx61kTpoNrJasMlL0pCTHLa1Co=;
-	b=YaWgLZX/r5skNzx9BX1NJPi5J0UZh6zIRGi1v7RPrUwWFGaAT23Y1nReVxc2P1+z76eQ
-	 GEp3iwAQYx3Yo6WiSmbLh60LAb2fysXwH23zsJIikwCtr+tevoAuIlmWrd9qqMiUl8Azf
-	 2CG7QykqWOI/6wmGYsCi5fu0ar7Z8wmL+/emrslZgk2ilDcMgDxtFuTZjHhzk56W2dX6j
-	 h2cL0prtvbFM7koJbSYaG6blZMEz3o8HZZZNIvRgA0tx4zHMPgpQ77JwLdp5UcVRq+ZWO
-	 y+Kq89Q0Gr4fwzkR3BBssz6vSreAruUOXanloDJEq+AWjeh7iAF4SvSze9WD2r0JOYA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793858796;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=hlm+rn+oysNQEGjSF8tAU2VzC9EojVXk66lwsMDmr7U=;
+	b=spfNmQShEtuzix2cPfJGFoDoWZRD7QO3cy8co9BbKpH+aaaLSgwdcDli9wl/M8AZgcG2
+	 M0nmJmhdzmuAjVIJT40CObZG+c0/WCaViLcG7iJTtxts3cKq9PfxB6NWqb1HbqKsEkTcK
+	 lXkhNMVjLNhyjITnvRZsi3lv0Y1boMOB7+LX0Oo8HIDC+J+tLokhh8Pf9JEp7EbQOq38a
+	 sH0E2sPkd+dRNxzJHqfjXD/D+EGC5mfvItF0HooK5E6bCo1TsYR0+G1QRHv3BalXXm3Cy
+	 6LXgisAzUoeYvgjKB+ZTmka/kWJX3M+A15OZOOFxUKQBpsqAM7Xldk/SiME3Kuw37cw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="KBrD/Ngd";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Sqj84r+D;
+	arc=none smtp.remote-ip=192.198.163.13
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27111606A31B;
-	Thu,  5 Nov 2026 05:28:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAE7C606A31B;
+	Thu,  5 Nov 2026 06:06:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CAE7C606A31B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KBrD/Ngd
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ADF31F000C1;
-	Thu,  5 Nov 2026 05:28:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793856497;
-	bh=HcoU1mf7kO9fvwMNLAx61kTpoNrJasMlL0pCTHLa1Co=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=KBrD/Ngds9bqLOcBa7RpvNd4iMkexWpa+DzC6+ffKh1NhLEcaCBmEuvd0SpOEEPHV
-	 8jL17aLET5sVc1/TAi2tTazVETSBSX1k5gdhp8dNc51yhlt825KrAfTsm/PLVPQfs1
-	 9DrfPotW/M5CJ7LWNRkY9NQVWMQL33DBsrkDB24mg07HUa2Aj8OlTXilnd46qOgQEv
-	 k3CuSvDbuwDNqcLyuF0M2036cdvl79e8QDDblmq3o0qYsa+f6X05yCvSN7xzjURY4I
-	 9npdc1/J6QCtCKe6MDyezbs+VUY/TM6+1/uf5gFICQVmA2vkwcCTCg1cwzx5WXcGu5
-	 d6UQgbCzYGvFg==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-tegra@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v8 13/15] iommufd/viommu: Allow vIOMMUs without a parent
- HWPT
-In-Reply-To: <20261104193139.GB3889730@ziepe.ca>
-References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
- <20261104161632.3547423-14-aneesh.kumar@kernel.org>
- <auuBjRjQwXl7UvvO@nvidia.com> <20261104193139.GB3889730@ziepe.ca>
-Date: Thu, 05 Nov 2026 10:58:06 +0530
-Message-ID: <yq5afqxf97a1.fsf@kernel.org>
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Sqj84r+D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793858795; x=1825394795;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=e1Atk2ZmfPf0LeQVA4o58INUz/taOCt0EIF6/hjQxu8=;
+  b=Sqj84r+DxXe7/Nj4F6lVzK7c5MN1epEYaNy/+g1RU63ncMonWVW/er2G
+   wHmgMNCjXAGJHY4w4GDqRd6HU9dnjcX16lXWESyKzB2DQKgsRhUCr72t8
+   Wb8GLSInCQyGmm1h97e1VjTIluG/HCl0S0B0vt6RK9nMhbUq+IeAtz/yN
+   30NNLXgGyRaD4ETteHni5pjSNUpaTs9KKyLX/jAu42r08/zh/vaWV1XLe
+   VqoZT93wTXLrpg/ZHqw/8zQcLQEpWVx+0gRrB7u02ZrPao8S+7oZIlo7Z
+   yWpqM4lj2udWkug58b6BUq2avSXLk0UE6ASvQ5fbiMh/tJiIb8P+4Ngon
+   g==;
+X-CSE-ConnectionGUID: Lp+kl8i9S0elbmv0zRdKcg==
+X-CSE-MsgGUID: 6C4tKEAhQBCZNZA19w6mAg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2628742"
+X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
+   d="scan'208";a="2628742"
+Received: from fmviesa011.fm.intel.com ([10.60.135.151])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:06:35 -0800
+X-CSE-ConnectionGUID: cl2az8UQR/ar1xXQbOTzxA==
+X-CSE-MsgGUID: biV5YcuiTEaTHjQdSSRgUg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
+   d="scan'208";a="8688050"
+Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:06:31 -0800
+Message-ID: <d52dba58-5f8a-4980-b9d0-0b1e0df48f82@linux.intel.com>
+Date: Thu, 5 Nov 2026 14:06:27 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -86,63 +72,213 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, x86@kernel.org,
+ linux-coco@lists.linux.dev, kvm@vger.kernel.org,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
+ <rick.p.edgecombe@intel.com>, xiaoyao.li@intel.com,
+ Chao Gao <chao.gao@intel.com>, Binbin Wu <binbin.wu@linux.intel.com>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] x86/virt/tdx: Add SEAMCALL wrappers for IOMMU
+ setup/clear
+To: Xu Yilun <yilun.xu@linux.intel.com>
+References: <20261015010705.1973284-1-baolu.lu@linux.intel.com>
+ <20261015010705.1973284-2-baolu.lu@linux.intel.com>
+ <atBz5cj0wQZv/fLN@yilunxu-OptiPlex-7050>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <atBz5cj0wQZv/fLN@yilunxu-OptiPlex-7050>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+On 10/15/2026 2:34 PM, Xu Yilun wrote:
+> On Thu, Oct 15, 2026 at 09:07:02AM +0800, Lu Baolu wrote:
+>> Add SEAMCALL wrappers for TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR.
+> 
+> We need this patch been reviewed by x86 reviewers. x86 convention
+> doesn't start with the implementation, so remove it.
+> 
+> We can start with a generic description of what the 2 SEAMCALLs are
+> doing in general and why. Maybe move some of your description in next
+> paragraph ahead.
 
-> On Wed, Nov 04, 2026 at 11:03:41AM -0800, Nicolin Chen wrote:
->> On Wed, Nov 04, 2026 at 09:46:30PM +0530, Aneesh Kumar K.V (Arm) wrote:
->> > VIOMMU_ALLOC currently requires a nesting parent HWPT_PAGING even when
->> > the selected vIOMMU implementation has no use for one. This would force
->> > implementations such as the following Arm Realm vIOMMU to create an
->> > unused parent.
->> 
->> IIRC, MSI on ARM still goes through the NS pathway. So, it wouldn't
->> be "unused" if the device attaches to it (or its nested hwpts)?
->
-> It is unused by the RMM VIOMMU. I think that is what is Aneesh is
-> explaining.
->
+Agreed.
 
-We create an IOMMU_HWPT_ALLOC_NEST_PARENT HWPT outside the vIOMMU and
-attach it before allocating the vIOMMU. This HWPT is used for untrusted
-devices and MSI-X.
+> 
+>>
+>> TDH.IOMMU.SETUP transitions an IOMMU and related I/O stack into Secure
+>> TDX Mode. During this transition, the TDX module validates and protects
+>> relevant I/O resources from further untrusted host access, providing the
+>> trusted foundation required before enabling TEE-IO security protocols
+>> (e.g. SPDM/IDE).
+>>
+>> TDH.IOMMU.CLEAR performs the reverse operation and tears down the Secure
+>> TDX Mode state for the target IOMMU.
+>>
+>> The caller is responsible for allocating the required pages and
+>> populating the parameter page in the ABI-defined format.
+>>
+>> See Intel TDX Connect ABI Specification [1], Section 3.2 (TDX Connect
+>> Host-Side (SEAMCALL) Interface Functions).
+>>
+>> Thanks to Xu Yilun for the initial draft.
+> 
+> Feel free to drop it. Not that important.
 
-The sequence is:
-	ret = __iommufd_configure_device(kvm, vdev);
-	ret = iommufd_get_hwpt(vdev, hwpt_flags, &hwpt_id);
-	ret = iommufd_attach_hwpt(vdev, hwpt_id);
-	ret = iommufd_create_vdevice(kvm, vdev);
-        	viommu = iommufd_alloc_viommu(kvm, vdev, vdev->link_tsm_name);
-		if (ioctl(iommu_fd, IOMMU_VDEVICE_ALLOC, &alloc_vdev)) {
+Dropped.
 
+> 
+>>
+>> [1] https://cdrdv2.intel.com/v1/dl/getContent/858625
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   arch/x86/include/asm/tdx.h  |  2 ++
+>>   arch/x86/virt/vmx/tdx/tdx.h |  2 ++
+>>   arch/x86/virt/vmx/tdx/tdx.c | 56 +++++++++++++++++++++++++++++++++++++
+>>   3 files changed, 60 insertions(+)
+>>
+>> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+>> index 89e97d5761d8..8b5411d3eb67 100644
+>> --- a/arch/x86/include/asm/tdx.h
+>> +++ b/arch/x86/include/asm/tdx.h
+>> @@ -176,6 +176,8 @@ u64 tdh_mem_page_remove(struct tdx_td *td, u64 gpa, enum pg_level level, u64 *ex
+>>   u64 tdh_phymem_cache_wb(bool resume);
+>>   u64 tdh_phymem_page_wbinvd_tdr(struct tdx_td *td);
+>>   u64 tdh_phymem_page_wbinvd_hkid(u64 hkid, kvm_pfn_t pfn);
+>> +u64 tdh_iommu_setup(u64 reg_base, void *root, u64 *tdx_iommu_id);
+>> +u64 tdh_iommu_clear(u64 tdx_iommu_id);
+>>   #else
+>>   static inline void tdx_init(void) { }
+>>   static inline u32 tdx_get_nr_guest_keyids(void) { return 0; }
+>> diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
+>> index bdfd0e1e337a..d7beb42cf972 100644
+>> --- a/arch/x86/virt/vmx/tdx/tdx.h
+>> +++ b/arch/x86/virt/vmx/tdx/tdx.h
+>> @@ -49,6 +49,8 @@
+>>   #define TDH_SYS_SHUTDOWN		52
+>>   #define TDH_SYS_UPDATE			53
+>>   #define TDH_SYS_DISABLE			69
+>> +#define TDH_IOMMU_SETUP			128
+>> +#define TDH_IOMMU_CLEAR			129
+>>   
+>>   /*
+>>    * SEAMCALL leaf:
+>> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
+>> index 1b9ff749dd8e..5d31c1b0890a 100644
+>> --- a/arch/x86/virt/vmx/tdx/tdx.c
+>> +++ b/arch/x86/virt/vmx/tdx/tdx.c
+>> @@ -2034,3 +2034,59 @@ void tdx_sys_disable(void)
+>>   	if (ret && (ret & TDX_SW_ERROR) != TDX_SW_ERROR)
+>>   		pr_err("TDH.SYS.DISABLE failed: 0x%016llx\n", ret);
+>>   }
+>> +
+>> +/*
+>> + * Wrapper for TDH.IOMMU.SETUP leaf, which transitions the IOMMU and related
+>> + * I/O stack into Secure TDX Mode.
+> 
+> Other tdh_*() wrappers don't have the general descriptions. We all know
+> these are wrappers for some SEAMCALL leafs.
+> 
+> So if there is no special thing to note, remove it.
 
-Alloc viommu does the below:
-	viommu->_viommu.size = sizeof(struct iommu_viommu_alloc);
-	viommu->_viommu.flags =  0;
-	viommu->_viommu.type = kvm__arch_get_viommu_type(kvm);
-	viommu->_viommu.dev_id = vdev->bound_devid;
-	viommu->_viommu.hwpt_id = 0;
+Removed for both wrappers.
 
-	if (ioctl(iommu_fd, IOMMU_VIOMMU_ALLOC, &viommu->_viommu)) {
-		vfio_dev_err(vdev, "failed to allocate VIOMMU %d", -errno);
-		free(viommu);
-		return NULL;
-	}
+> 
+>> + *
+>> + * The @root page format is defined by the TDX Connect ABI spec (Table 3.35,
+>> + * Structure of IOMMU_MT Parameter): the first two entries describe the size
+>> + * and HPA (Host Physical Address) of the two contiguous buffers for the
+>> + * invalidation queue; the remaining entries provide HPAs of
+>> + * IOMMU_MT_PAGES_COUNT metadata pages. IOMMU_MT_PAGES_COUNT is obtained from
+>> + * trusted IOMMU global metadata.
+>> + */
+>> +u64 tdh_iommu_setup(u64 reg_base, void *root, u64 *tdx_iommu_id)
+> 
+> IIUC, the void *root is a vague type, no type safty. Is it better we
+> define an explicit structure that mirrors the in-memory ABI? Something
+> like:
+> 
+>    struct tdx_iommu_metadata {
+> 	u64 iq1_pa;
+> 	u64 iq2_pa;
+> 	DECLARE_FLEX_ARRAY(u64, mt_pa);
+>    };
+> 
+> Or,
+> 
+>    struct tdx_iommu_metadata {
+> 	u64 iq1_pa;
+> 	u64 iq2_pa;
+> 	u64 mt_pa[510];
+>    };
+> 
+>    static_assert(sizeof(struct tdx_iommu_metadata) == 4096);
 
->
->> By dropping the nesting parent from VIOMMU, it just simplifies the
->> attachment to an S1 paging hwpt, right?
->
-> Yes.
->
-> The VMM must always maintain a S1 paging attachment that is the
-> identity map of the VM on all devices, same action as when there is no
-> viommu.
->
+Good point. I updated the code with the following:
 
-I am currently creating an S2 paging attachment. This results in a
-configuration with S1 disabled and S2 enabled, which is used by all
-untrusted devices.
+   #define TDX_IOMMU_MT_IQ_NR	2
+   #define TDX_IOMMU_MT_MAX_PAGES	(PAGE_SIZE / sizeof(u64) - 
+TDX_IOMMU_MT_IQ_NR)
 
--aneesh
+   /* IOMMU_MT parameter page for TDH.IOMMU.SETUP (ABI spec Table 3.35). */
+   struct tdx_iommu_mt_param {
+       u64 iq[TDX_IOMMU_MT_IQ_NR];	/* HPA | number of 4K pages */
+       u64 mt[TDX_IOMMU_MT_MAX_PAGES];	/* HPA of each metadata page */
+   };
+   static_assert(sizeof(struct tdx_iommu_mt_param) == PAGE_SIZE);
+
+   u64 tdh_iommu_setup(u64 reg_base, struct tdx_iommu_mt_param *param,
+               u64 *tdx_iommu_id);
+
+> 
+>> +{
+>> +	struct tdx_module_args args = {
+>> +		.rcx = reg_base,
+>> +		.rdx = __pa(root),
+>> +	};
+>> +	u64 ret;
+>> +
+>> +	/*
+>> +	 * Don't loop forever:
+>> +	 *
+>> +	 *  - TDX_INTERRUPTED_RESUMABLE guarantees forward progress between
+>> +	 *    calls.
+>> +	 *  - On TDX_INTERRUPTED_RESUMABLE, all registers except RAX remain
+>> +	 *    unchanged.
+>> +	 */
+>> +	do {
+>> +		ret = seamcall_ret(TDH_IOMMU_SETUP, &args);
+>> +	} while (ret == TDX_INTERRUPTED_RESUMABLE);
+>> +
+>> +	*tdx_iommu_id = args.rcx;
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_FOR_MODULES(tdh_iommu_setup, "tdx-host");
+>> +
+>> +/*
+>> + * Wrapper for TDH.IOMMU.CLEAR leaf, which terminates Secure TDX Mode for the
+>> + * target IOMMU and restores control of related hardware resources to the host.
+>> + */
+>> +u64 tdh_iommu_clear(u64 tdx_iommu_id)
+>> +{
+>> +	struct tdx_module_args args = {
+>> +		.rcx = tdx_iommu_id,
+>> +	};
+>> +	u64 ret;
+>> +
+>> +	do {
+>> +		ret = seamcall(TDH_IOMMU_CLEAR, &args);
+>> +	} while (ret == TDX_INTERRUPTED_RESUMABLE);
+>> +
+>> +	return ret;
+>> +}
+>> +EXPORT_SYMBOL_FOR_MODULES(tdh_iommu_clear, "tdx-host");
+>> -- 
+>> 2.43.0
+>>
+
+Thanks,
+baolu
