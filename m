@@ -1,68 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793858796;
-	b=PoaNWlzfpN3gcfKgixRBDAXlExCgva1PiOD2g0jFSlGitdZflnsKp7btcUtl3uuE9ERN
-	 Iy12CvIMqXAng4LA9v8pBZa26D3t7xTFxtTRBiqAQTrTFtuh8IpHey1kVCqZ1MtASnlaZ
-	 m9KLsCOx4GAxcSDqzNSOC/DhVMEIt50Jjr911Hn8skRHmnUJI5b8b03I75sJCs0Bqf6ho
-	 Fgi5gCSrmAQThE9OZ8YJhjpbOaHf/OZoaRFp4hgAey+qZfd2f103dazc3E8SKQ7KWagl9
-	 20Z0Fi6Q0cWM4IUrJ6uDw9poGgcUUT6eShfyarHR6EDeprApSTpsJYCuZn+TW/qaMJg==
+	t=1793859051;
+	b=bC2s69R+sS78cVo9QhdysdZt2zq1lQWG9iAQsgksYM0OyFNfYDl+cFk3vUVVk00uAQUR
+	 dbaGQPKySaSxIB0Z/hVoTl2uD1mctu2PbeQ/cCkL/dtUIkPf7INcaHL1Yr7vOiJ4Nljk1
+	 EdQtjOKeTB3sVE32XjVTsyITtBQWzJo+ccvT8PLXxWi0hnsWI5qe6VMX1ylKvqswuAGB3
+	 GaDzeMEwWW11igf6ghiGgVxAuCzluJeHiRY8bwAJf/aTeNMXU9YCUbS+Yuq9KgQDQgms3
+	 Vkz/DI2v4yQNg3kSX7Xvo3C7UnLTzgCg4a75PksCE2pCSTZVlPZYAmFceHzJrmlHZhw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793858796;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793859051;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
 	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
 	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=hlm+rn+oysNQEGjSF8tAU2VzC9EojVXk66lwsMDmr7U=;
-	b=spfNmQShEtuzix2cPfJGFoDoWZRD7QO3cy8co9BbKpH+aaaLSgwdcDli9wl/M8AZgcG2
-	 M0nmJmhdzmuAjVIJT40CObZG+c0/WCaViLcG7iJTtxts3cKq9PfxB6NWqb1HbqKsEkTcK
-	 lXkhNMVjLNhyjITnvRZsi3lv0Y1boMOB7+LX0Oo8HIDC+J+tLokhh8Pf9JEp7EbQOq38a
-	 sH0E2sPkd+dRNxzJHqfjXD/D+EGC5mfvItF0HooK5E6bCo1TsYR0+G1QRHv3BalXXm3Cy
-	 6LXgisAzUoeYvgjKB+ZTmka/kWJX3M+A15OZOOFxUKQBpsqAM7Xldk/SiME3Kuw37cw==
+	bh=+5BTrBne3OQ1DvExgeoc8tKlSX9T8xOtBCF+DWKH+FQ=;
+	b=tiZozTnDnMrl6Hvxiu3i74666BrFzAFh6voIQAWAi6W0ZYmxdt/t2kZ+kHv49jAtTkB4
+	 vvuCN9SChUrSsdr/hJT9oJfl8Xt0/fdSKwF1jSwF+43e2td5v4vczZ7xXwCBLYZHOySes
+	 v+BmVzPrxElDFB/AsaFYnGIdjKwqkLuPijV7Pei3rRt6IE5xMlMSphUwlC0VTVh0e8vOv
+	 ytpjuoDiunoidmMsfnU1Ux50KjxE3fILs2UiZyI0GStLlPEK672phxR+RitnGJeeOUSnX
+	 Odj4JJMatqSEkx5EKsJJElrzZdhT6KtdPuHn7TYO58+mac6//H/hi5u/vKB0D86yang==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Sqj84r+D;
-	arc=none smtp.remote-ip=192.198.163.13
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bng7nz7Y;
+	arc=none smtp.remote-ip=192.198.163.18
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAE7C606A31B;
-	Thu,  5 Nov 2026 06:06:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CAE7C606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8506E606A31B;
+	Thu,  5 Nov 2026 06:10:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8506E606A31B
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Sqj84r+D
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=Bng7nz7Y
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793858795; x=1825394795;
+  t=1793859050; x=1825395050;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=e1Atk2ZmfPf0LeQVA4o58INUz/taOCt0EIF6/hjQxu8=;
-  b=Sqj84r+DxXe7/Nj4F6lVzK7c5MN1epEYaNy/+g1RU63ncMonWVW/er2G
-   wHmgMNCjXAGJHY4w4GDqRd6HU9dnjcX16lXWESyKzB2DQKgsRhUCr72t8
-   Wb8GLSInCQyGmm1h97e1VjTIluG/HCl0S0B0vt6RK9nMhbUq+IeAtz/yN
-   30NNLXgGyRaD4ETteHni5pjSNUpaTs9KKyLX/jAu42r08/zh/vaWV1XLe
-   VqoZT93wTXLrpg/ZHqw/8zQcLQEpWVx+0gRrB7u02ZrPao8S+7oZIlo7Z
-   yWpqM4lj2udWkug58b6BUq2avSXLk0UE6ASvQ5fbiMh/tJiIb8P+4Ngon
-   g==;
-X-CSE-ConnectionGUID: Lp+kl8i9S0elbmv0zRdKcg==
-X-CSE-MsgGUID: 6C4tKEAhQBCZNZA19w6mAg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2628742"
+  bh=baB3kBDGVPEF+a5Is1SFhYiKMmbqMXCz7Q2FtU0s8D4=;
+  b=Bng7nz7YZBg9sceE8w7hBkmKDt6uonJfUFqqLRbur33eUhybSyGb0sZk
+   wNlAPUWSKnPBXndhPfA4RXYJ5KVyGte95xihgYSD3A7Ca/6YkM6Sfq5un
+   8pNQZQuUMD0IQM+Azgfpd08XnzmDHWrQPnyBvUOxk1WkxLwdpSfS0ljlj
+   4KyY0fhfYg/SrNzOcIwFGWNHW5riMxbqQh15gAywDpjyt5DzvAdAOK//S
+   4UdGI+0vL4/6mYxaZsO0Afo5DbCQGrVIlLejslzjxaRgt7c0VeOSGkVU4
+   8Xj2LanCbpdAuc7E8yZB0b3sTSQkUaApWgXnc9sS6FAaD27BaECp5Uad9
+   A==;
+X-CSE-ConnectionGUID: 7I5irVrOS8yoyGgvhCFRng==
+X-CSE-MsgGUID: 88504i0jRJqqe9SUZVHXuw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11956"; a="2672477"
 X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="2628742"
+   d="scan'208";a="2672477"
 Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:06:35 -0800
-X-CSE-ConnectionGUID: cl2az8UQR/ar1xXQbOTzxA==
-X-CSE-MsgGUID: biV5YcuiTEaTHjQdSSRgUg==
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:10:50 -0800
+X-CSE-ConnectionGUID: 2YwIL/d2QmiYsRKmhMHdQg==
+X-CSE-MsgGUID: pj4yiNuLRi6ZKOjNbx1kyQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,196,1787036400"; 
-   d="scan'208";a="8688050"
+   d="scan'208";a="8688640"
 Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:06:31 -0800
-Message-ID: <d52dba58-5f8a-4980-b9d0-0b1e0df48f82@linux.intel.com>
-Date: Thu, 5 Nov 2026 14:06:27 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Nov 2026 22:10:46 -0800
+Message-ID: <f60d1d10-b2cb-465d-8588-a61d26bbd648@linux.intel.com>
+Date: Thu, 5 Nov 2026 14:10:44 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,212 +73,71 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, x86@kernel.org,
- linux-coco@lists.linux.dev, kvm@vger.kernel.org,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
- Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
- <rick.p.edgecombe@intel.com>, xiaoyao.li@intel.com,
- Chao Gao <chao.gao@intel.com>, Binbin Wu <binbin.wu@linux.intel.com>,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] x86/virt/tdx: Add SEAMCALL wrappers for IOMMU
- setup/clear
-To: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "x86@kernel.org" <x86@kernel.org>,
+ "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Kiryl Shutsemau
+ <kas@kernel.org>, "Edgecombe, Rick P" <rick.p.edgecombe@intel.com>,
+ "Li, Xiaoyao" <xiaoyao.li@intel.com>, "Gao, Chao" <chao.gao@intel.com>,
+ Binbin Wu <binbin.wu@linux.intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/4] coco/tdx-host: Initialize trusted DMA on all
+ capable IOMMUs
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Xu Yilun <yilun.xu@linux.intel.com>,
+ "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
 References: <20261015010705.1973284-1-baolu.lu@linux.intel.com>
- <20261015010705.1973284-2-baolu.lu@linux.intel.com>
- <atBz5cj0wQZv/fLN@yilunxu-OptiPlex-7050>
+ <20261015010705.1973284-5-baolu.lu@linux.intel.com>
+ <atCPY6LzHd4y0Ywh@yilunxu-OptiPlex-7050> <20261015173707.GV14213@ziepe.ca>
+ <5ca5f1c4-4c3c-47f1-b79c-c1fe06b20ee4@linux.intel.com>
+ <CO1PR11MB4836E2CB05E1448BB42047458C9B2@CO1PR11MB4836.namprd11.prod.outlook.com>
+ <23a3c630-a3ad-4874-b13c-b8795cd194a6@linux.intel.com>
+ <CO1PR11MB48354B1C84A6BD16CA2FFCA88C652@CO1PR11MB4835.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <atBz5cj0wQZv/fLN@yilunxu-OptiPlex-7050>
+In-Reply-To: <CO1PR11MB48354B1C84A6BD16CA2FFCA88C652@CO1PR11MB4835.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 10/15/2026 2:34 PM, Xu Yilun wrote:
-> On Thu, Oct 15, 2026 at 09:07:02AM +0800, Lu Baolu wrote:
->> Add SEAMCALL wrappers for TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR.
-> 
-> We need this patch been reviewed by x86 reviewers. x86 convention
-> doesn't start with the implementation, so remove it.
-> 
-> We can start with a generic description of what the 2 SEAMCALLs are
-> doing in general and why. Maybe move some of your description in next
-> paragraph ahead.
-
-Agreed.
-
-> 
+On 10/22/2026 12:07 PM, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Monday, October 19, 2026 4:12 PM
 >>
->> TDH.IOMMU.SETUP transitions an IOMMU and related I/O stack into Secure
->> TDX Mode. During this transition, the TDX module validates and protects
->> relevant I/O resources from further untrusted host access, providing the
->> trusted foundation required before enabling TEE-IO security protocols
->> (e.g. SPDM/IDE).
+>> On 10/16/2026 3:17 PM, Tian, Kevin wrote:
+>>>>     - The TDX Connect architecture places requirements on the host
+>>>>       iommu driver while the secure IOMMU is being set up. For example,
+>>>>       the host iommu driver must block the enhanced command (ECMD)
+>>>>       interface while the TDH.IOMMU.SETUP SEAMCALL runs, and it must
+>>>>       reserve the upper half of the domain ID space. These steps have
+>>>>       to happen atomically under the iommu driver's own locks. As a
+>>>>       result, the Intel iommu driver needs to merge the two steps above
+>>>>       into one.
+>>> Didn't get this. Both ECMD and DID reservation are TDX specific things.
+>>> How are they related to the two steps in the ARM sides and why calls
+>>> for merging?
+>>>
+>>> and why are they must be done atomically? they are conditions to
+>>> execute TDH.IOMMU.SETUP, but it is perfectly fine to reserve DID
+>>> at an early point then block ECMD later...
+>> You are right, "atomically" was too strong. Only the ECMD block has to
+>> bracket TDH.IOMMU.SETUP. So I plan to restructure it as follows:
 >>
->> TDH.IOMMU.CLEAR performs the reverse operation and tears down the Secure
->> TDX Mode state for the target IOMMU.
+>> - dmar_tdxcs_init_prepare(dev, &params): resolve the device's DRHD and
+>>     take a reference on its secure-mode state. For the first user,
+>>     validate the preconditions (TE/QI/SM enabled), reserve the upper half
+>>     of the DID space (failing with -EBUSY if any of it is in use), block
+>>     ECMD and return what tdx-host needs (register base, NUMA node, etc).
+>>     If the unit is already in Secure TDX mode, just report that so
+>>     tdx-host skips TDH.IOMMU.SETUP.
 >>
->> The caller is responsible for allocating the required pages and
->> populating the parameter page in the ABI-defined format.
->>
->> See Intel TDX Connect ABI Specification [1], Section 3.2 (TDX Connect
->> Host-Side (SEAMCALL) Interface Functions).
->>
->> Thanks to Xu Yilun for the initial draft.
-> 
-> Feel free to drop it. Not that important.
+>> - dmar_tdxcs_init_done(dev, result): unblock ECMD, then either mark the
+>>     unit as being in Secure TDX mode or roll back (including the DID
+>>     reservation), based on the SEAMCALL result. It must be called
+>>     whenever init_prepare() returns success.
+> We should continue blocking ECMD after the IOMMU successfully
+> enters the TDX mode.
 
-Dropped.
-
-> 
->>
->> [1] https://cdrdv2.intel.com/v1/dl/getContent/858625
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   arch/x86/include/asm/tdx.h  |  2 ++
->>   arch/x86/virt/vmx/tdx/tdx.h |  2 ++
->>   arch/x86/virt/vmx/tdx/tdx.c | 56 +++++++++++++++++++++++++++++++++++++
->>   3 files changed, 60 insertions(+)
->>
->> diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
->> index 89e97d5761d8..8b5411d3eb67 100644
->> --- a/arch/x86/include/asm/tdx.h
->> +++ b/arch/x86/include/asm/tdx.h
->> @@ -176,6 +176,8 @@ u64 tdh_mem_page_remove(struct tdx_td *td, u64 gpa, enum pg_level level, u64 *ex
->>   u64 tdh_phymem_cache_wb(bool resume);
->>   u64 tdh_phymem_page_wbinvd_tdr(struct tdx_td *td);
->>   u64 tdh_phymem_page_wbinvd_hkid(u64 hkid, kvm_pfn_t pfn);
->> +u64 tdh_iommu_setup(u64 reg_base, void *root, u64 *tdx_iommu_id);
->> +u64 tdh_iommu_clear(u64 tdx_iommu_id);
->>   #else
->>   static inline void tdx_init(void) { }
->>   static inline u32 tdx_get_nr_guest_keyids(void) { return 0; }
->> diff --git a/arch/x86/virt/vmx/tdx/tdx.h b/arch/x86/virt/vmx/tdx/tdx.h
->> index bdfd0e1e337a..d7beb42cf972 100644
->> --- a/arch/x86/virt/vmx/tdx/tdx.h
->> +++ b/arch/x86/virt/vmx/tdx/tdx.h
->> @@ -49,6 +49,8 @@
->>   #define TDH_SYS_SHUTDOWN		52
->>   #define TDH_SYS_UPDATE			53
->>   #define TDH_SYS_DISABLE			69
->> +#define TDH_IOMMU_SETUP			128
->> +#define TDH_IOMMU_CLEAR			129
->>   
->>   /*
->>    * SEAMCALL leaf:
->> diff --git a/arch/x86/virt/vmx/tdx/tdx.c b/arch/x86/virt/vmx/tdx/tdx.c
->> index 1b9ff749dd8e..5d31c1b0890a 100644
->> --- a/arch/x86/virt/vmx/tdx/tdx.c
->> +++ b/arch/x86/virt/vmx/tdx/tdx.c
->> @@ -2034,3 +2034,59 @@ void tdx_sys_disable(void)
->>   	if (ret && (ret & TDX_SW_ERROR) != TDX_SW_ERROR)
->>   		pr_err("TDH.SYS.DISABLE failed: 0x%016llx\n", ret);
->>   }
->> +
->> +/*
->> + * Wrapper for TDH.IOMMU.SETUP leaf, which transitions the IOMMU and related
->> + * I/O stack into Secure TDX Mode.
-> 
-> Other tdh_*() wrappers don't have the general descriptions. We all know
-> these are wrappers for some SEAMCALL leafs.
-> 
-> So if there is no special thing to note, remove it.
-
-Removed for both wrappers.
-
-> 
->> + *
->> + * The @root page format is defined by the TDX Connect ABI spec (Table 3.35,
->> + * Structure of IOMMU_MT Parameter): the first two entries describe the size
->> + * and HPA (Host Physical Address) of the two contiguous buffers for the
->> + * invalidation queue; the remaining entries provide HPAs of
->> + * IOMMU_MT_PAGES_COUNT metadata pages. IOMMU_MT_PAGES_COUNT is obtained from
->> + * trusted IOMMU global metadata.
->> + */
->> +u64 tdh_iommu_setup(u64 reg_base, void *root, u64 *tdx_iommu_id)
-> 
-> IIUC, the void *root is a vague type, no type safty. Is it better we
-> define an explicit structure that mirrors the in-memory ABI? Something
-> like:
-> 
->    struct tdx_iommu_metadata {
-> 	u64 iq1_pa;
-> 	u64 iq2_pa;
-> 	DECLARE_FLEX_ARRAY(u64, mt_pa);
->    };
-> 
-> Or,
-> 
->    struct tdx_iommu_metadata {
-> 	u64 iq1_pa;
-> 	u64 iq2_pa;
-> 	u64 mt_pa[510];
->    };
-> 
->    static_assert(sizeof(struct tdx_iommu_metadata) == 4096);
-
-Good point. I updated the code with the following:
-
-   #define TDX_IOMMU_MT_IQ_NR	2
-   #define TDX_IOMMU_MT_MAX_PAGES	(PAGE_SIZE / sizeof(u64) - 
-TDX_IOMMU_MT_IQ_NR)
-
-   /* IOMMU_MT parameter page for TDH.IOMMU.SETUP (ABI spec Table 3.35). */
-   struct tdx_iommu_mt_param {
-       u64 iq[TDX_IOMMU_MT_IQ_NR];	/* HPA | number of 4K pages */
-       u64 mt[TDX_IOMMU_MT_MAX_PAGES];	/* HPA of each metadata page */
-   };
-   static_assert(sizeof(struct tdx_iommu_mt_param) == PAGE_SIZE);
-
-   u64 tdh_iommu_setup(u64 reg_base, struct tdx_iommu_mt_param *param,
-               u64 *tdx_iommu_id);
-
-> 
->> +{
->> +	struct tdx_module_args args = {
->> +		.rcx = reg_base,
->> +		.rdx = __pa(root),
->> +	};
->> +	u64 ret;
->> +
->> +	/*
->> +	 * Don't loop forever:
->> +	 *
->> +	 *  - TDX_INTERRUPTED_RESUMABLE guarantees forward progress between
->> +	 *    calls.
->> +	 *  - On TDX_INTERRUPTED_RESUMABLE, all registers except RAX remain
->> +	 *    unchanged.
->> +	 */
->> +	do {
->> +		ret = seamcall_ret(TDH_IOMMU_SETUP, &args);
->> +	} while (ret == TDX_INTERRUPTED_RESUMABLE);
->> +
->> +	*tdx_iommu_id = args.rcx;
->> +
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL_FOR_MODULES(tdh_iommu_setup, "tdx-host");
->> +
->> +/*
->> + * Wrapper for TDH.IOMMU.CLEAR leaf, which terminates Secure TDX Mode for the
->> + * target IOMMU and restores control of related hardware resources to the host.
->> + */
->> +u64 tdh_iommu_clear(u64 tdx_iommu_id)
->> +{
->> +	struct tdx_module_args args = {
->> +		.rcx = tdx_iommu_id,
->> +	};
->> +	u64 ret;
->> +
->> +	do {
->> +		ret = seamcall(TDH_IOMMU_CLEAR, &args);
->> +	} while (ret == TDX_INTERRUPTED_RESUMABLE);
->> +
->> +	return ret;
->> +}
->> +EXPORT_SYMBOL_FOR_MODULES(tdh_iommu_clear, "tdx-host");
->> -- 
->> 2.43.0
->>
+Updated.
 
 Thanks,
 baolu
