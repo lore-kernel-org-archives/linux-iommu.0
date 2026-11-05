@@ -1,103 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.67
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793854535;
-	b=XNeTK0Lub1K1hZSVTMyKKoCxHSTysuSUbixHCSFB9WD3WuG0hoFlQYd+XTh5Ru+KBqJP
-	 bDnqRiUTj1FkXZy4qu+uazMAn6d5P/DjVLqmYwG5cWveL0cY4Nc51T3+IlX0lmC5Kcaom
-	 9OHhOggq4ZmpPvQ8gEu2uDUWKroNg4+1jzP+mQzkBQ6yZQmVjVnuM6d3pqlHdv4fMFs2c
-	 /iTE/w2Qj8dHQO9RB8u9/PvDShhj5yDeh1C4jgS4EtxaPLGQOJUhIItcEb2xh1Q4oC/q3
-	 jnwjRR1TiKPqhHGFfv1NEWEwj9n/gN9ojvBJu2JdQU/RHfX6UlLqudcjLtnDC/v87NQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793854535;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
-	 X-ClientProxiedBy:X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=atHOi52IHl34610mBWXg8PudsIDahL9bdk0UItircRw=;
-	b=2lhrsO4q7xNIBUGzoGdGAvVfLgIEFh70qB+wYzYX/piLKMk/HFu08LptH8INM6fOKefv
-	 kSl3JTmISR7DBaWsiN4MSmVL1pZGLbS0KrsLhehPi6udQeflbLrBY/d0dXDiF2/HkK+nU
-	 VVuWfr83fRnZg1PVeYTtrALU3US7HZdSrOvWfSBe7uRCS8Q9s3FWZQv0QBBsZ6Prssg7a
-	 S7mnZo+ISqsZRYTAopTj5hGCYijmR0uTb+XAqkISFeDdtfrRdOwsQzDSXGV+/BzuuUKY8
-	 Qmc5YEP1pOiH01E8VI3O/JxtUSdyLLfJK9eak4py9ZOwEv8JDGRI5PWfPOtmO9Kv9sA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=0VTdqQe5;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.67
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010067.outbound.protection.outlook.com [52.101.61.67])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793856498;
+	b=cZmR/JHxcaSfZw3zs+7DG5BPH3lrWdeZwrtQYacTMY3RoKZYNzqJzXXeWzZhr56GPC/E
+	 SaEWTv2bSdSSGXz+sZYDVGiy7/bO8dY6cD5iIsoDi0qOOI9MLsSLmNSQIBbi5lkWzWsun
+	 oeGKs7Pja7pabg8+q2ptSG4GbJf0Pc2TYvqazMfNwP3qXu/qc+MFeIfx2BWk4WuGXGZYn
+	 hOR2jMHunDCedo/0lg5mZcmmoD3EnUNot5HrdrdykpbEs4RG9PIV659rv6i3448MZ92UQ
+	 AnqVncRTpH/GPmEDbnmLUGx7JYZuJA0mCC8aOcV4zOkqBiiCvFznEheBIOPQERoqlVA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793856498;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=HcoU1mf7kO9fvwMNLAx61kTpoNrJasMlL0pCTHLa1Co=;
+	b=YaWgLZX/r5skNzx9BX1NJPi5J0UZh6zIRGi1v7RPrUwWFGaAT23Y1nReVxc2P1+z76eQ
+	 GEp3iwAQYx3Yo6WiSmbLh60LAb2fysXwH23zsJIikwCtr+tevoAuIlmWrd9qqMiUl8Azf
+	 2CG7QykqWOI/6wmGYsCi5fu0ar7Z8wmL+/emrslZgk2ilDcMgDxtFuTZjHhzk56W2dX6j
+	 h2cL0prtvbFM7koJbSYaG6blZMEz3o8HZZZNIvRgA0tx4zHMPgpQ77JwLdp5UcVRq+ZWO
+	 y+Kq89Q0Gr4fwzkR3BBssz6vSreAruUOXanloDJEq+AWjeh7iAF4SvSze9WD2r0JOYA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="KBrD/Ngd";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 211A6606A32D
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 04:55:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 211A6606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27111606A31B;
+	Thu,  5 Nov 2026 05:28:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=0VTdqQe5
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WqSiOqgWxcbChwUOr7dehi5P5gd26Vnw7vaQoZsYp2hqZSipXor7F7wjUyRYt2tgqeqUofievGUUD+I5BLS6STuZKIBkBswFRF2kZ57rNFDyQqaUQpYYAWoT8qSOyS6Ix72jbBMFxP9oWAzGApKlGcuvQcaMTJq5KBNQIWkeQbEtFdSk9vh3BIvV3YT2mXUduSNHAn7MC4h4aBMeyXS8EN8wyMQWSESa5e/hUIe/aLJdTrJxruT4xiT2h56ALVmJl6CV+PJhT57WnpdcWQ+/f4u739pxnett8Kn3d/TOYj+OkZFTtVBaGWuHuCv65eAnxEQFsWURMbJshz30DuA26A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=atHOi52IHl34610mBWXg8PudsIDahL9bdk0UItircRw=;
- b=g/ImDf8HeANt43VV2M8hGEybekoV1ncuwQMWjdY0sJ8ih7FxFcZSlwKep4A7b9EbfcG494jkXPiicYdsaDbEgOPKJsVhd/saOZTfe7ygYkzhSjltEcCbgmMIXglD4HR/CMxgUmc5BGujenp5yzhVcyqbR3r5EqdnF5cjD9Cztdhn10uNZr2icdUAyLLQicGPH8wEute0tnrLmX6DY2bKf7ciEqvPgw4cWz42VXzoZ3DtV/w38F2wuLkSwAm3etFS8VzZ6EsI167PtQwzsWG+MSbawYkOPd5gBEKbl1JgvDq6DCbqqBSZ6iYVV8JkeIr6ur3Iret8k/Sg4rWTVfgm2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=atHOi52IHl34610mBWXg8PudsIDahL9bdk0UItircRw=;
- b=0VTdqQe5TzSskdFk7bzIOOyPupZBX6mWvlkKxE04GqaQNytCCm/cWBZSfcogwlra7gNbegmteysBXnubFAX5fEJP15jdp8AQgHKEE4kgiPbmodR0T/FvSkUaIUgXfBKsGqQzlqVifZpm1NneslTrzVGJpKh/i1JN7Ey7iAjPf8c=
-Received: from BN9PR03CA0846.namprd03.prod.outlook.com (2603:10b6:408:13d::11)
- by SJ2PR12MB8720.namprd12.prod.outlook.com (2603:10b6:a03:539::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Thu, 5 Nov
- 2026 04:51:24 +0000
-Received: from BN6PEPF00000075.namprd03.prod.outlook.com
- (2603:10b6:408:13d:cafe::8c) by BN9PR03CA0846.outlook.office365.com
- (2603:10b6:408:13d::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.10 via Frontend Transport; Thu, 5
- Nov 2026 04:51:23 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- BN6PEPF00000075.mail.protection.outlook.com (10.167.248.202) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.592.5 via Frontend Transport; Thu, 5 Nov 2026 04:51:23 +0000
-Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Wed, 4 Nov
- 2026 22:51:20 -0600
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, <jgg@nvidia.com>, Vasant Hegde
-	<vasant.hegde@amd.com>
-Subject: [PATCH 12/12] iommu/amd: Drain the PPR log before removing a device from the IOPF queue
-Date: Thu, 5 Nov 2026 04:48:01 +0000
-Message-ID: <20261105044801.399466-13-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261105044801.399466-1-vasant.hegde@amd.com>
-References: <20261105044801.399466-1-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KBrD/Ngd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ADF31F000C1;
+	Thu,  5 Nov 2026 05:28:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793856497;
+	bh=HcoU1mf7kO9fvwMNLAx61kTpoNrJasMlL0pCTHLa1Co=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=KBrD/Ngds9bqLOcBa7RpvNd4iMkexWpa+DzC6+ffKh1NhLEcaCBmEuvd0SpOEEPHV
+	 8jL17aLET5sVc1/TAi2tTazVETSBSX1k5gdhp8dNc51yhlt825KrAfTsm/PLVPQfs1
+	 9DrfPotW/M5CJ7LWNRkY9NQVWMQL33DBsrkDB24mg07HUa2Aj8OlTXilnd46qOgQEv
+	 k3CuSvDbuwDNqcLyuF0M2036cdvl79e8QDDblmq3o0qYsa+f6X05yCvSN7xzjURY4I
+	 9npdc1/J6QCtCKe6MDyezbs+VUY/TM6+1/uf5gFICQVmA2vkwcCTCg1cwzx5WXcGu5
+	 d6UQgbCzYGvFg==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: iommu@lists.linux.dev, Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v8 13/15] iommufd/viommu: Allow vIOMMUs without a parent
+ HWPT
+In-Reply-To: <20261104193139.GB3889730@ziepe.ca>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-14-aneesh.kumar@kernel.org>
+ <auuBjRjQwXl7UvvO@nvidia.com> <20261104193139.GB3889730@ziepe.ca>
+Date: Thu, 05 Nov 2026 10:58:06 +0530
+Message-ID: <yq5afqxf97a1.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -107,96 +86,63 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN6PEPF00000075:EE_|SJ2PR12MB8720:EE_
-X-MS-Office365-Filtering-Correlation-Id: a2d28431-b055-4eca-f391-08df3af8711d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|36860700016|376014|82310400026|11063799006|56012099006|261021121427099003|261021123027099003|261009223027099003|261102123227099003|261026121527099003|261026140227099003|261028144727099003|261022105027099003|10067099003|18002099003|22082099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	xZUnz0gK2gGXqqM6SrYM1+WWrHL71PduR5o3+dxuZ1laeAHwOeqtL2Rbs67QslxsDgDbnlzzISSWQAMNoaNfXh2aPeukbrrypGkeT3xsweu7Zk0BBSvqJHKgJkMmWh2yDfF8+u+qaAmdLe0pqsy4mRzu+5jMXj9Twm5yJFcl31j3jA/0GHCf0iwR4aCryq8h0fgo9VwWVcfz7rJa8nWx+fDQh2yHhqnbvDDlhpT7dj7TmF9U+bJTLhXuLbir4UyOoJyP5u4Qo23taeMdHP4p13REwYcw6wtxFRIxOZZmVf3vEl/VqRj6UUEo25Q19n56Vv+Tnuz8qYH7wCWq7mz58jqV1hf20ggz0YmjxahMaNnqB9PdQN/8FNLmbwu/tHJdIBQBi10QRaYRftOAA59v9WEbtWeAgKOSlzpGIjJkGaRbKj1Gx8rDtW8FnBh1pdzcCd/wtcFKrmuPp9T+EnxJV29SBjRiFQswPcdqF6BUu8vg+eh9+VPsys2ZYfZYaKDVYcMzKAcLQ6GjKfvEBNYC35U0n/+mSuwe5wdYEVXl+/Mm3mtQIUWW8f2WXciuE1fQk0mZ+LnlQNxSEJELRnrKBbapWHZjnP70HzsGfq+wn6y2SF7Qhani+2LJbXvo/OtN8CPjj/tSeRoCZmK/YLjDiWnu/P6j9jeap7ThKP5J3AmRIcaeRXw4EaPoU73x7lbrCZCGm9b9DpapDcIcvWYvMg==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(36860700016)(376014)(82310400026)(11063799006)(56012099006)(261021121427099003)(261021123027099003)(261009223027099003)(261102123227099003)(261026121527099003)(261026140227099003)(261028144727099003)(261022105027099003)(10067099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	DEaxCM3pLntnlhHYAui06ZolOPvxift7PDNW6sImMc1YUw7FLR8WimYMO+BQFiajR3e8NAHRGM41rFI2/d7H43JbfZLSFzfjtPHtc1+DV5X1T3OWVWKIbHp9SuoUS6fyFYxSsou42aT7gHDTPMIYL4CBMhrI/5A0IXJXLVtj3QeQloXory+MUbemvkKGK8oLKB72PYLTp6eMW0MEBLDgAAGtozOWPXALAKMleOdzKnOLpssu+wpPajatvdFR5Yi2uafP1qVUWJuCPtSFbZiktOCZAfU3ERlFKeZ5vpnjyOY9NF8PXcVjkz/rPla6deRzihGEYYZTd8uBNvSpR2/C2zca88u5KeTNnv7NjWgX34N3sTLwfPpRSEvsuPKanEaDO+qO9kqOmWpcEd2IDjcCEznfm+r+ed+8vyNYvbjCojOM0sTYdsIYq1HIeACTNZSM
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 04:51:23.3546
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2d28431-b055-4eca-f391-08df3af8711d
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN6PEPF00000075.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8720
 
-detach_device() flushes the software fault queue and removes the
-device from the IOPF queue before it clears the DTE. The DTE is what
-enables PPR, so the IOMMU can still log a page request after
-fault_param is gone. iommu_report_device_fault() warns when it finds
-a handler and no fault parameter.
+Jason Gunthorpe <jgg@ziepe.ca> writes:
 
-Clear and invalidate the DTE first. A device on the IOPF queue then
-drains the PPR log and is removed from the queue. Disable the PCI
-capabilities after that, for every device, so PRI stays enabled
-until the logged requests have been answered.
+> On Wed, Nov 04, 2026 at 11:03:41AM -0800, Nicolin Chen wrote:
+>> On Wed, Nov 04, 2026 at 09:46:30PM +0530, Aneesh Kumar K.V (Arm) wrote:
+>> > VIOMMU_ALLOC currently requires a nesting parent HWPT_PAGING even when
+>> > the selected vIOMMU implementation has no use for one. This would force
+>> > implementations such as the following Arm Realm vIOMMU to create an
+>> > unused parent.
+>> 
+>> IIRC, MSI on ARM still goes through the NS pathway. So, it wouldn't
+>> be "unused" if the device attaches to it (or its nested hwpts)?
+>
+> It is unused by the RMM VIOMMU. I think that is what is Aneesh is
+> explaining.
+>
 
-Assisted-by: Cursor
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/iommu.c | 24 ++++++++++++------------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+We create an IOMMU_HWPT_ALLOC_NEST_PARENT HWPT outside the vIOMMU and
+attach it before allocating the vIOMMU. This HWPT is used for untrusted
+devices and MSI-X.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 8750ac32f382..df37b4bfd15c 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2400,25 +2400,25 @@ static void detach_device(struct device *dev)
- 	if (WARN_ON(!dev_data->domain))
- 		goto out;
- 
--	/* Remove IOPF handler */
-+	/* Clear DTE and flush the entry */
-+	spin_lock_irqsave(&domain->lock, flags);
-+	dev_update_dte(dev_data, false);
-+	amd_iommu_domain_flush_all(domain);
-+	list_del(&dev_data->list);
-+	spin_unlock_irqrestore(&domain->lock, flags);
-+
-+	/*
-+	 * Stop new page requests, then finish the ones already logged.
-+	 * Disable the PCI capabilities only after that, for every device.
-+	 */
- 	if (dev_data->ppr) {
--		iopf_queue_flush_dev(dev);
-+		amd_iommu_drain_ppr_log(dev_data);
- 		amd_iommu_iopf_remove_device(iommu, dev_data);
- 	}
- 
- 	if (dev_is_pci(dev))
- 		pdev_disable_caps(to_pci_dev(dev));
- 
--	spin_lock_irqsave(&domain->lock, flags);
--
--	/* Clear DTE and flush the entry */
--	dev_update_dte(dev_data, false);
--
--	/* Flush IOTLB and wait for the flushes to finish */
--	amd_iommu_domain_flush_all(domain);
--	list_del(&dev_data->list);
--	spin_unlock_irqrestore(&domain->lock, flags);
--
- 	/*
- 	 * GCR3[0] belongs to the paging domain w/ v2 page table.
- 	 * A device without PASID has no other entries, so the
--- 
-2.31.1
+The sequence is:
+	ret = __iommufd_configure_device(kvm, vdev);
+	ret = iommufd_get_hwpt(vdev, hwpt_flags, &hwpt_id);
+	ret = iommufd_attach_hwpt(vdev, hwpt_id);
+	ret = iommufd_create_vdevice(kvm, vdev);
+        	viommu = iommufd_alloc_viommu(kvm, vdev, vdev->link_tsm_name);
+		if (ioctl(iommu_fd, IOMMU_VDEVICE_ALLOC, &alloc_vdev)) {
 
+
+Alloc viommu does the below:
+	viommu->_viommu.size = sizeof(struct iommu_viommu_alloc);
+	viommu->_viommu.flags =  0;
+	viommu->_viommu.type = kvm__arch_get_viommu_type(kvm);
+	viommu->_viommu.dev_id = vdev->bound_devid;
+	viommu->_viommu.hwpt_id = 0;
+
+	if (ioctl(iommu_fd, IOMMU_VIOMMU_ALLOC, &viommu->_viommu)) {
+		vfio_dev_err(vdev, "failed to allocate VIOMMU %d", -errno);
+		free(viommu);
+		return NULL;
+	}
+
+>
+>> By dropping the nesting parent from VIOMMU, it just simplifies the
+>> attachment to an S1 paging hwpt, right?
+>
+> Yes.
+>
+> The VMM must always maintain a S1 paging attachment that is the
+> identity map of the VM on all devices, same action as when there is no
+> viommu.
+>
+
+I am currently creating an S2 paging attachment. This results in a
+configuration with S1 disabled and S2 enabled, which is used by all
+untrusted devices.
+
+-aneesh
