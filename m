@@ -1,105 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.169
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793910667;
-	b=MT6vjU1h8wN7uS99goNNuwEMNnGj3VZTJ3YwKmvj+f4mTWFv7GNJkQX5Zsz39WYlL0L6
-	 kKT2tPzgeIPbcC4pYv+rQd51IOKAUGzikBoIrtBrzqi6jNWHQkaxsUigN2GwAL11B+/98
-	 5z3Yre7PAbc/3LpRbP8tSfINtaqAOpDYJEkJFXdaBzn5NM0IJES1ggGKmntn/7vfiThU7
-	 S6EfcdN4RKCYCH2b5kfyIBu/bUpqpS9Bv8HuL0Fg21zUJbtNxAvjPQPiOlCu7X8FmEDzS
-	 TSDeZurQpE5htf14x5tYc44ZTB4JheVWXNX2mCLQQ+TUuu21nWaxHekR8lq5JPGFD3Q==
+	t=1793910900;
+	b=jIhlIWI0lM6CTOvh1W9iikRiCBOHuBckBb9UfvkCt75qKrBV37LmVFgLAuyJBj3q1Dr6
+	 OG95eLERK6aNFGZw2DbE0/RwtYFVexrOi/TwzzNOllzpzHZhwYnRuKR6qmN1WXepuHkJ9
+	 TczcMxO0rQ8PRQJ/j9SdEwgyONRxl/jcqFIArqo4OxLL7jr4ahAGKXRNjx1qTEaWHabij
+	 GMh9/ty/bgtLtuDG9gqrrl2ow1sXfc9eLscb+C/G/Be9jkAg8ARkn35g4XlpA6qdB5WsY
+	 oe8Yg1C+4zNo/v1GAYgTpG4SsED+GSlgR7IjOUxSyplWD89bMwqJQACOG7nUJppeCfg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793910667;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793910900;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=vn/nQy7tt6P3ngQqcb52WlxWUAoV6PqlWG/Vx0RkwMM=;
-	b=EHAS+vgQ38elFXW7k8tzhet7GT2iFkwfxMHPtBbR0Nd8n1NEnPj0pDyFOlTkApi20CZL
-	 6LxyfDLN0EcrJPWnATLMUO9lN6tKYYHcyzEZFadNDihWe5QRHhYg3P9PujziddVgcSDvX
-	 q7j3Hu2z4vyUDT+7nlQWJhpnCeVoP5Q5B8KpD/9swtmvLLwCJL+ywPlEcSs74hJI+TItW
-	 TIIE1FU3p2NLmoSe/VmJkixMgBd3PqzWLqS3fU6LIiqw+6G7zqhSoJiBymjZGxyLnPX0Z
-	 8RkMaCAMx59HGSi2AqD+Pg3GkxE+Hz03s8iNwf/Fh3I+C+AS6SlQQ+6vpQQqdoTUm5g==
+	bh=aFjl/l4WKV+VfugNVUlnSUSxj2ZFcfM53muFdv6vcfQ=;
+	b=zy8muS2HCYu2dmxTBsuFE4oz/QWrltWSSosszLgYehU5/gE80ZAhZ4fr9i/oKuQYCibz
+	 Enxi72BK7991TpNPBAVXYWSetCYqtagqPayEShdwLvkYhv9xdlS4m9SETjUdM080rDxK+
+	 MUO7YffY9n47fTVYp4SyqM00wabNFZsPOMdTZJotpR4gqu0gxQtZwS1v1ZQ0q9PSAnQ+O
+	 DZEQRtUtoyvSUjTwxSKNypuWFnw2vAPLPpy88t8sqwjOliIHBI8PoDhdNlhtTofKdiPvv
+	 Ml7/IkkXwZAPRRG/UbhXKTgcRzyqVRDkfVGFIrZ8fXneTyCdiIZ4FCpiw10eWx/36kA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b="QeKcS/ht";
-	arc=none smtp.remote-ip=209.85.222.50
-Received: from mail-ua1-f50.google.com (mail-ua1-f50.google.com [209.85.222.50])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=y9tRp2Ql;
+	arc=none smtp.remote-ip=74.125.82.169
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63E72606A328
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 20:31:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63E72606A328
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3093606A330
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 20:34:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C3093606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=QeKcS/ht
-Received: by mail-ua1-f50.google.com with SMTP id a1e0cc1a2514c-99071945aa7so1215780241.3
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 12:31:07 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=y9tRp2Ql
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-353804b591eso4388098eec.0
+        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 12:34:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793910666; x=1794515466; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1793910899; x=1794515699; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=vn/nQy7tt6P3ngQqcb52WlxWUAoV6PqlWG/Vx0RkwMM=;
-        b=QeKcS/htQn8xA4zo/BVIl7BG1hXne0lIOpYH1DAPhpG3wpI1gYb+/Y3ZnXA0sguo4Z
-         qVtAahR5N/l5lypqZSZs/RfBmY2Ipa3469VzOrwuXkITE8HmfoflNRMkm1PJjHsgbh3O
-         jqzqxytTAcv+KUMkP+W1LZzeXF5LkPv9k0CjPYDO5P1DMASdV1UZ7rzQNM8DIobnCts9
-         0ArJo30ukO5eDPGFZ2JrefmSqSJekfHZqabLiKCWs+GLOQ5wWJI3xOXHqg01vdV0wZZU
-         34+wQf3YG2LpyyblHFW/X0KcMK3e8Evcz3rBcRz3tbrPkEKnwakkSdVLC+vbg+yWMpaQ
-         qzuw==
+        bh=aFjl/l4WKV+VfugNVUlnSUSxj2ZFcfM53muFdv6vcfQ=;
+        b=y9tRp2QlnJZOxg2xzvaAXeJWaX8ASQis8B5nbD8rESEO+ZhLyTFHMTN2cYi7JJmtUQ
+         veiAHnEzkrKVkuKTDD4IWrYSYG01DOMRuCHdbTpiZvQ1INQEVryxnFYsMsksvTFZEn66
+         C27R7xgFNUCIXsc2yNk08MV25utLuGEsvR00X7TIL1njS2mpmk9m+1buq7w7k9u3naBw
+         fbrU10LTynbvULOZ5SCGwDdPoGx/SKQLdbhtNxv1wsPORsVPO9Q2bANuBCfkt2sMKFUU
+         3hdDSlAyn0Ga4yGqZUbUA2c9BXi91bqCIVFY4iwsAIMet2GXlt0dqRNVNsui6yxuvbYE
+         8wBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793910666; x=1794515466;
+        d=1e100.net; s=20260707; t=1793910899; x=1794515699;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=vn/nQy7tt6P3ngQqcb52WlxWUAoV6PqlWG/Vx0RkwMM=;
-        b=Hk6kUdReVEc1Q0kuJejglM5i2TMkX3Ghuo6zsD++ob9IOrWvIZobjHKEv5u4k/QAPI
-         egMtQ/7t+3myQpD439BYD7iXUefOHOmXzJkGJReLYz/c/J52XTG0kxT0igEWaH2pzpBR
-         w5kwNPFe5YwbUen7mm98Dq8XCl1py2PC1oCCErt62AzvhBzen/53gIKsvjaaJrUtk2mG
-         F4jns05IRiO39gj+WygWJonWHy0jvS0feGe9rw55/uKJ74PJAekjCnaJBw+AdQGVLUi5
-         gpmrGUAcoWrmKX1iEWlVbMtNvRCLke2WuCMnTweQcKr/5JM3QosI3zy3oSxYpyBL3ADz
-         hrww==
-X-Forwarded-Encrypted: i=1; AKwUvBzXHsKA6obToXr/4p/sW3aLuWf7Xfr+LbpJUMIrLwjXfq11RrCQVhBooInFs9jIIG2GsTEzaA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9iSs0YMZwSrHXZRgC8nMjvq46oEwP8McFhdKVuUjzgGu1sdt2H
-	fQ6ZtjmxUZ/LDHUle7fkd6MkSYKUVgZEj9TELUqoWYrGb/s2FZ+rwqwWTMVtDkLGTUE=
-X-Gm-Gg: AYBFou0r085qj961+MGBU6dpnvezigYoA4X5YkPMFLN1CxvHa8av70jRNIyaIil1h9i
-	pj0ISwMnlRNbP1oxyKOHKu8ojaZXCxZzDD0GK/fiJtciyrWk5KluFzyHellR0XpjtCILk+x2MRs
-	XYkTVgRiVi/T4qlz2avvmDGw8BHm01+dAcs7uDaqO5fzKGU2UVYl83edqxAcQucBmt2nTudsG3W
-	VC9xbViG2jCRTpYH6xvRVYSxAjcTX+/Az8uHpHCIzjMLNSY4BrVX0KxvYd0Atb+JS62UFn27gal
-	XUuINI1DB4i5wUyWAHYK3BS5T/0exBp3uUQgPMxV3pOP5BuT61lYe8H9fgZWBdRvbcauCYnkHzd
-	tfV5+3d0LnhssczyXAWLvKWoHEMixe0dFja8DNCZOVYF6UNxgj0dHOsT1p937RvZA9hjiQtA3wj
-	/x8SEcLoFMoFII0/vv1sEqicPIS08frBuNVRHGVOWONzAaDqRTy3JbRXOHqyMQpl82sRHdZqYEV
-	4XJFwKQOfjC+IIgTeV3/4ZTADr+tSIeZCIJsS9fEjELwyvrCkiXdXgPo5jqSgqUufd71guiYyac
-	lEB81rQbPk9mBKBV42mdLZdqVptFSJVL/rU6WlE1GJo/5EV2bE5QyrGPDUe7Laq0TFnbBbc/oN+
-	NjNvLlGDgyw==
-X-Received: by 2002:a05:6102:e0b:b0:7d2:7266:2c8a with SMTP id ada2fe7eead31-7d2a165f989mr692943137.32.1793910661522;
-        Thu, 05 Nov 2026 12:31:01 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7d26fd3e101sm5070410137.3.2026.11.05.12.31.00
+        bh=aFjl/l4WKV+VfugNVUlnSUSxj2ZFcfM53muFdv6vcfQ=;
+        b=C9ZUj6h18o1n8T56MgpJUj1vfaMJU7t0Q4k+10u4RnXoJ+uXLgeFQTsWBboDH5JI7O
+         oQogkTSK6bPc+32ORSKTu7xbzzSPCHtr800oJt/Oh0UCETstg5L09YD82UMU+0ADv3/M
+         /LA/vjZCAQuXiyBSZrbsp3XrNDaSbcY9sg7FlWHe5Ga0YGCloBcsQGzKUqZgsuj5s/Yq
+         rjh150MdDqHNuZ62RI7t/wK3JSzPPyLmFBu/gwCa2CTypAHbgEKpTXyKLvA5zl1CbqPs
+         o4ZLQYcTJrGxnFHlQqBS9y4X/3thbrgKOhmgADNfsBJ5VNwyrPwOSjToOJTX3OJkQlzb
+         Q/qA==
+X-Forwarded-Encrypted: i=1; AKwUvBxHPQsTr+RIFC+ykUSSdJZZgUb8FTbrbSVrCPmNMZlXS+L8UittROtgWScuFhjESXj8lct7xw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+vCY2qCbDlNBCzBS8f2ycEDdO1CAoYuyKjGoCvxUARn6SzN9EJ
+	Obi+VGMZjqak6UQT7HHc3aj5sP/PWTO5LGS74cdvqH97m+IyBMackwHK
+X-Gm-Gg: AYBFou3QqQLCNUA6H4IJn/cdpqFGw2Q+cej5he5fng0SpABiiAmeDz2TkyoTLEPQY0s
+	piHmo9a7Dhk6Kgu31StW/TFR+uKYvXnGLLt/LbU34AhKHMQyIfTe1O6Y8QWM4bKlDrIbis/+WKV
+	Bf0BXRF/NCOH3tZ5Wt/K1Gf3O/TE3hbgk0eH6U5MPqxutu1VuziKs5cQvoqD7H3142tVi1FCBve
+	V5XUhTd92+R9HzhFD2GtiP+JBsAigpZO4rXHpcvdY3zlP/RdcDJTkvYh0/cGm4VYlPdlcVMiEch
+	Rld4TJ0wxCH3LZVL762GY2oj+vj+7saF6rZDXzSBb1Skotj4mpx2+53c9N8+Aedespyg/is7HTQ
+	nQImfyL9OkE30+/gJx2ZlJV2Ywhfy/KWlH5CJ0EWZSTVl9ofSLkz2JfvaqB52J9vDUMRTc1HOTL
+	JyEq8KuYZqepuOfwYr9Y9PaSUBWymtcz8Sb9M8BcTBIDmDfMVDGYKoIW51Ekns9m9c+NSPcDeB0
+	N2mgQ4fHtjVhhCLNWHwbon39wbx6OdK2f1sFBfgJ0VfyxyqLJ4pqZ4C+MT1h5RANPQiEtOkv/ge
+	al5gaC83KFVMlluoXUUK2ARd3Q8n5r7hpjLti2OnWonOrLB5IP92c7s9d7XvIgsLFKQfTpw=
+X-Received: by 2002:a05:701b:2050:20b0:166:5552:780a with SMTP id a92af1059eb24-1b25d31e5a2mr163714c88.8.1793910898553;
+        Thu, 05 Nov 2026 12:34:58 -0800 (PST)
+Received: from google.com ([2a00:79e0:2ebe:8:c8f4:b7d9:252f:4483])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36f722ed274sm649631eec.18.2026.11.05.12.34.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 12:31:01 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xP46u-00000003hoW-1qsZ;
-	Thu, 05 Nov 2026 16:31:00 -0400
-Date: Thu, 5 Nov 2026 16:31:00 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Yuho Choi <oss.patchbox@gmail.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Wei Liu <wei.liu@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Dexuan Cui <decui@microsoft.com>,
-	Yu Zhang <zhangyu1@linux.microsoft.com>,
-	Easwar Hariharan <easwar.hariharan@linux.microsoft.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Michael Kelley <mhklinux@outlook.com>, iommu@lists.linux.dev,
-	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] iommu/hyperv: Don't free a paging domain the
- hypervisor did not delete
-Message-ID: <20261105203100.GG663069@ziepe.ca>
-References: <20261105192738.70664-2-oss.patchbox@gmail.com>
+        Thu, 05 Nov 2026 12:34:57 -0800 (PST)
+Date: Thu, 5 Nov 2026 12:34:53 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>, Andrew Lunn <andrew@lunn.ch>, 
+	Heiner Kallweit <hkallweit1@gmail.com>, Russell King <linux@armlinux.org.uk>, 
+	"David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Johannes Berg <johannes@sipsolutions.net>, 
+	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+	Randy Dunlap <rdunlap@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Johan Hovold <johan@kernel.org>, 
+	Eric Dumazet <edumazet@kernel.org>, Marcel Holtmann <marcel@holtmann.org>, 
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Nipun Gupta <nipun.gupta@amd.com>, 
+	Nikhil Agarwal <nikhil.agarwal@amd.com>, Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>, 
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev, linux-input@vger.kernel.org, 
+	netdev@vger.kernel.org, linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org, 
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org, linux-doc@vger.kernel.org, 
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH 02/17] Input: serio - attach manual drivers through the
+ driver core
+Message-ID: <auzno3uoL5Pfojfl@google.com>
+References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
+ <20261105-device-trust-core-v1-2-1e536825b4eb@nvidia.com>
+ <auy2plYVi723Qt42@google.com>
+ <20261105191940.GI8298@unreal>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -111,17 +118,77 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261105192738.70664-2-oss.patchbox@gmail.com>
+In-Reply-To: <20261105191940.GI8298@unreal>
 
-On Thu, Nov 05, 2026 at 02:27:08PM -0500, Yuho Choi wrote:
-> hv_iommu_paging_domain_free() frees all page-table pages with
-> pt_iommu_deinit() and only then asks the hypervisor to delete the
-> device domain that points at them. If HVCALL_DELETE_DEVICE_DOMAIN
-> fails, hv_delete_device_domain() only logs the error, returns the
-> domain ID to the IDA, and the domain is freed anyway.
+On Thu, Nov 05, 2026 at 09:19:40PM +0200, Leon Romanovsky wrote:
+> On Thu, Nov 05, 2026 at 09:05:29AM -0800, Dmitry Torokhov wrote:
+> > On Thu, Nov 05, 2026 at 01:42:15PM +0200, Leon Romanovsky wrote:
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > 
+> > > Manual serio binding connects a driver before driver core can admit the
+> > > device. A rejected binding therefore arrives after functional setup.
+> > > 
+> > > Keep the port ID check and use device_driver_attach() for the existing bus
+> > > probe path. Driver core then serializes admission and handles probe failure
+> > > before publishing the binding.
+> > > 
+> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > ---
+> > >  drivers/input/serio/serio.c | 24 +++---------------------
+> > >  1 file changed, 3 insertions(+), 21 deletions(-)
+> > > 
+> > > diff --git a/drivers/input/serio/serio.c b/drivers/input/serio/serio.c
+> > > index 54dd26249b027..604440244c1ca 100644
+> > > --- a/drivers/input/serio/serio.c
+> > > +++ b/drivers/input/serio/serio.c
+> > > @@ -81,28 +81,10 @@ static int serio_match_port(const struct serio_device_id *ids, struct serio *ser
+> > >  
+> > >  static int serio_bind_driver(struct serio *serio, struct serio_driver *drv)
+> > >  {
+> > > -	int error;
+> > > -
+> > > -	if (serio_match_port(drv->id_table, serio)) {
+> > > -
+> > > -		serio->dev.driver = &drv->driver;
+> > > -		if (serio_connect_driver(serio, drv)) {
+> > > -			serio->dev.driver = NULL;
+> > > -			return -ENODEV;
+> > > -		}
+> > > +	if (!serio_match_port(drv->id_table, serio))
+> > > +		return 0;
+> > >  
+> > > -		error = device_bind_driver(&serio->dev);
+> > > -		if (error) {
+> > > -			dev_warn(&serio->dev,
+> > > -				 "device_bind_driver() failed for %s (%s) and %s, error: %d\n",
+> > > -				 serio->phys, serio->name,
+> > > -				 drv->description, error);
+> > > -			serio_disconnect_driver(serio);
+> > > -			serio->dev.driver = NULL;
+> > > -			return error;
+> > > -		}
+> > > -	}
+> > > -	return 0;
+> > > +	return device_driver_attach(&drv->driver, &serio->dev);
+> > 
+> > I am not sure how safe it is, serio (and gameport) have pretty elaborate
+> > structure and locking rules because they can recurse into themselves (to
+> > support case of Synaptics touch-pads with pass-through PS/2 ports).
+> > 
+> > But this call is for user-initiated probing anyways, I am not sure if it
+> > even needs "trust" handling.
+> 
+> This patch does not change the locking; the lock was already held on paths such
+> as the rescan path. This change makes that explicit.
 
-Isn't there a WARN_ON on this path? I recall asking for one ..
+Does this enforce synchronous probing?
 
-So long as that is there this is the right way to continue
+Anyway, I would like to get rid of this special probing in serio core.
+Given that the code path is only triggered by explicit user request I do
+not believe we need to worry about supporting trust notion here, so
+please drop it from the series.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Thanks.
+
+-- 
+Dmitry
