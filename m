@@ -1,125 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.217.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793902869;
-	b=IlB+j2gL4ZXOTDxCvcM5ceYnzD8qGkkEk3GHiQPodc4Nsqiez9IyY09LN1lHQLV4bTgC
-	 4O5fWg95HWwL4JvIMhdRcbjnE1z9Gk+9CBJFX95tETRPVetcc1vepXyWQWxbTRA4xXY7O
-	 vy3+tc/Ezm9o8JmuLmIhkDFD6SDdm7r9h1fgeflvi06NZbo87tHd2gntzQSZlrJgbSYP0
-	 726wV2eWyA3ZC9P8M7Ss3xHp2rsX8mZBTT90bzr9ibyh+te3Hc3UGS3nW/LdRbK8g83//
-	 pXW8DaCUzKpWtiQ0RVZTBBsIWROKp1vzzsXXQbVGEajVI8XYoucRAWKZo9YHSd71qzA==
+	t=1793903188;
+	b=cFM0+pzysVFTp+ZQ5cSZTjmmpwFyMz3EpbFRkvFuDpyCin/F5No5Ml/nEDhIeer/MV6J
+	 po2TvQq+RHCW+nZEBYxCUfbbkyEF8xpaWCPnAV0MxID6+fBFZg6d6QnC5qDrPLg0vpLeX
+	 Mli8SmHCE66PPt1WLy/wBeAc+srP2oURiQBTYhS0pUeuqczi/V0IlhguDu2DE390Tl4DA
+	 XMcmHnKdBW8VvT6FJD0GbEEXs2jhBAmHlKpb+dhJ7bT6dv7X1JHpy9ZFgmhDM6+mrBZYO
+	 lQpYA6SifEHIy4IoCYtqCHDxq0mSEVzcadB7DYdPxkIuBKR1z5VkbuWyAuO2ZDOXhww==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793902869;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=jskhMrN6L8/ity8GI6Per+nZ8wI0zDQt0quVEnFZ+Iw=;
-	b=r/JKA/r4xVq7neH5+JGrOQltEY6lzISTAzbw14s+RSEOdLrSh3U1LEXlx8YGJW50s+Cb
-	 DIg0kwHly8BhzYIvf+2bYirO6ttfU3LXMnQiaWYAFT6VQYkqyfbX8ktzVSL9f8vG5rVUk
-	 +PsrAcOqXPntaPtQNCYK4HnXvClJNLJvDXgI87L4fpNNIrPCjbaLAO1epTz8gedR3j4uB
-	 4a9naQuYNUHOZ5tYYyze25f5qlxMP5Ro/oaCC3ANK+LMeOCyQBOpiEnhEyo4iFKEXpcfH
-	 g1kEuubNF798ukKaGXTLlHiWABAZM02/JQGCdFXeeSyLeeo3BQThCwfu5i1jPEAC4qw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793903188;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=/R0hL4pC4E1+M4yPEUjAb9DEswCGIx3z9hc5cmLnrn8=;
+	b=RYbn3/hxRfDGlhYufbFPel9k+IJBb/WkzM6TuPi74pX12Y/kSUV5CDcdqK8c3kzBx71Z
+	 TYIrcpzOQpzdxPcOSpEHVq16URrYuDRVOGWqeSEv3NQEmKnzU9iTCqMmkzWkofnbCB/5+
+	 AJTrFn+5nOXPdEo1aenNb7O/W7T5Gt6MvndMHAZvsFBvVXta3q4sNDnNX2QyqSMCKpFwR
+	 dpPyPm6M7QaH6/RP/veODloWicMlvhHqzrJw9CIBj7UkrzxafIgFw4qoXaI4P6GT1rLbo
+	 aP0irO+QEPK2WP/WDHgYoGn308x6xFAFKODSynwujMSV+1Yr7vIzAXeoQQzL2lreKuQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=b4esm3gb;
-	arc=none smtp.remote-ip=209.85.217.43
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="WSADaA2/";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0681B606A330
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 18:21:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0681B606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D977D606A31B;
+	Thu,  5 Nov 2026 18:26:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=b4esm3gb
-Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-7c3b6e8225dso1406164137.2
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 10:21:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793902867; x=1794507667; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=jskhMrN6L8/ity8GI6Per+nZ8wI0zDQt0quVEnFZ+Iw=;
-        b=b4esm3gbcJb6r8rlxSrAFNW7GNp1jiAn7vD/jRWmyRDIARqOI59yeN/ZgYDUuIAnNR
-         650DXg7xGrbkQfs7Xqn4VPihl0TgBqDHTHYkfX1/SvTtG1LsaEv7IQVtg1j0e/tFFWA3
-         hV3AHreU1LmIBWc0App9ZYKGGoSdS+HJCN3lpu9vgodI2VykFVEqeL+6DO023gPyku2B
-         FgG/RxyOtp/pfRLeuADdaFvXFeI5T6KjVj3M2IFptmX+OHP+Q1k94Nk4+bwRFZyUhONf
-         6ke6Ji79sSPhJZnGDGc30ZciD5y9bfDhE2ltVrTSjQm58h5gTepPchgnqx/WHNEsdeRa
-         nBFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793902867; x=1794507667;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=jskhMrN6L8/ity8GI6Per+nZ8wI0zDQt0quVEnFZ+Iw=;
-        b=AysgSZy+EDNJ1B8wgh4BWQnB7+CRiTyFCkliaNkF19JGsrjM11vGj0KgCaDVvR3kkH
-         IgeVOBEWpH3IfZrhWLmTuc5u60v9O2p1MLLDKZHfuiIFMQTHpG3f1EjoRuonQOTYgZiL
-         GR6/Usp0bWdG1JerNvmZgZknC6BiWBwKZLO4X1WygEyytyXXq3HD11Rkl2CoVNsix8kp
-         Fr+a0ObNsZkcnNGQcMqgZnnPlkxCHTRTblJ4WfTpYsFqHY8MHbseeenpoXhiurUh69hB
-         D+eHAi7uSm1dQdb7t9fHWjsX65ZqpYFcTTihvQQlm8PZZCsJ4BI8ApZKGFq0/x8T2kY1
-         4KRg==
-X-Forwarded-Encrypted: i=1; AKwUvBwAALAVptzDjW6+u7JQSn/p5xCT5B50I7HESPXg/oH9RucIHEIx0CRHGJH8TK8ZalBFzwPfiw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+Ym4TaSl7Etwgatbu2FDCL8/vCbVN/h0uumLW4+7gxajEMJCc7
-	2BZmkDDllD9vJHjJxmN2vIhl0xuTFelZeXE9Uw9m7zIWptZNFf84mLXuZkng93qolk4=
-X-Gm-Gg: AYBFou2htrIbv5/Z2aZPKXkvpIHWxQmsBEi+nrVqHtIjkQOXOH9h49g/lv9Jp/aXOUv
-	Ld8mOLuh65u1TULqLy+dtdmDa+ulPiCzhYzWAh5iLlZsezBalxCucBtkxk4TNZ705CXZi6Jr99l
-	h/E1kaEIfYvCFqHYSHq3nsMJGtJi64kh8Rg6HCxfq+ScciWWc9a2QpN7FOUcHErBC+bg/Xortgg
-	uw4cUaNYPYYtXgt/+aI9N0iAVud7O+8R+Jt1CsBumm37lAafKbVW6aap/bhPr0FbVAQBOKwp1Op
-	n5zWJyuSBm/nT8xxNWompjTT/oHsqLoFEhkSMcEL2MnHAlYnmMGk0sabRcWfXtNafb85IXtAoiA
-	M3FFlBQMyuZtqN2MXdo+EGERbgXWu9S6n6UYpJcGqr3XSGwO5GN78hJSKYIlkYjEoFE7zx6I9oX
-	k6MN2ojF+0YZn/nCbrSlRb6IDzyNRUxL9h2AET/M6txcBzKuAziXW6fIhKUCeXcHptUjLY49DK4
-	dfXLQFG7Be56DTAP42Or30YHmB/r+oPmde3ZaClVbig7s1Zhd9KEl3lwEZyE1tuiLlznMm7Lkyi
-	KfAe3IL5CD0f8K1UbKYUDcVF6Whlnvj6Xn9YFzmrLaQxgSaaOwjFPEalL+FAyiuq5d28XXDs8e9
-	j2Jcse9tFBw==
-X-Received: by 2002:a05:6102:5706:b0:7cc:2712:caf2 with SMTP id ada2fe7eead31-7d2a1628b19mr348440137.23.1793902867469;
-        Thu, 05 Nov 2026 10:21:07 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-998da178b59sm5242293241.12.2026.11.05.10.21.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 10:21:06 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xP25C-00000003LsF-0vAz;
-	Thu, 05 Nov 2026 14:21:06 -0400
-Date: Thu, 5 Nov 2026 14:21:06 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
-	Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	linux-tegra@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WSADaA2/
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AEC1F000C1;
+	Thu,  5 Nov 2026 18:26:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793903187;
+	bh=/R0hL4pC4E1+M4yPEUjAb9DEswCGIx3z9hc5cmLnrn8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=WSADaA2/B0njymg1oF8Zt+aQWjkjZp7YNB/CPyp9J98Lqyl4v6ZjN9fdw7/g/aDHs
+	 chIL9JCou1TsxyZomGHv2ZBjLQZ9Z1DMWTUjRpmHis5a1j1jVyAEUyc+4ePcQsFPhd
+	 OPBs016zO1yFXnt4RNHofu1Kp5EDvzii20mg9cT1xiXd9rLrrVGa/442/RYi2She4m
+	 EYJhTmYBt2Rvig1iLH8Imhje9jvJRWYRfaZbM8Jt178SF2ils406aYXkle+Zdk/FLn
+	 gDUCaggZAfj1BLbk+EODCjDPXj1SZjVg3T1elHfRmQ6s3AYErm9i4G5kIxtD/aXjgb
+	 Fehrul5E5Cuyg==
+Date: Thu, 5 Nov 2026 20:26:22 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, "Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v8 13/15] iommufd/viommu: Allow vIOMMUs without a parent
- HWPT
-Message-ID: <20261105182106.GD663069@ziepe.ca>
-References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
- <20261104161632.3547423-14-aneesh.kumar@kernel.org>
- <auuBjRjQwXl7UvvO@nvidia.com>
- <20261104193139.GB3889730@ziepe.ca>
- <yq5afqxf97a1.fsf@kernel.org>
- <auzAivzpzSUHjEQj@nvidia.com>
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH 17/17] PCI: Replace untrusted state with device trust
+Message-ID: <20261105182622.GD8298@unreal>
+References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
+ <20261105-device-trust-core-v1-17-1e536825b4eb@nvidia.com>
+ <2026110526-aerobics-correct-4c06@gregkh>
+ <20261105131856.GA8298@unreal>
+ <20261105140352.GF3889730@ziepe.ca>
+ <2026110558-tartar-juicy-036a@gregkh>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -131,33 +92,68 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <auzAivzpzSUHjEQj@nvidia.com>
+In-Reply-To: <2026110558-tartar-juicy-036a@gregkh>
 
-On Thu, Nov 05, 2026 at 09:44:42AM -0800, Nicolin Chen wrote:
-> On Thu, Nov 05, 2026 at 10:58:06AM +0530, Aneesh Kumar K.V wrote:
-> > Jason Gunthorpe <jgg@ziepe.ca> writes:
-> > > On Wed, Nov 04, 2026 at 11:03:41AM -0800, Nicolin Chen wrote:
-> > >> By dropping the nesting parent from VIOMMU, it just simplifies the
-> > >> attachment to an S1 paging hwpt, right?
-> > >
-> > > Yes.
-> > >
-> > > The VMM must always maintain a S1 paging attachment that is the
-> > > identity map of the VM on all devices, same action as when there is no
-> > > viommu.
-> > >
+On Thu, Nov 05, 2026 at 10:43:00AM -0500, Greg Kroah-Hartman wrote:
+> On Thu, Nov 05, 2026 at 10:03:52AM -0400, Jason Gunthorpe wrote:
+> > On Thu, Nov 05, 2026 at 03:18:56PM +0200, Leon Romanovsky wrote:
+> > > On Thu, Nov 05, 2026 at 08:12:51AM -0500, Greg Kroah-Hartman wrote:
+> > > > On Thu, Nov 05, 2026 at 01:42:30PM +0200, Leon Romanovsky wrote:
+> > > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > > 
+> > > > > Convert the PCI specific untrusted to use the common device trust
+> > > > > level. Adversarial means the same thing untrusted does.
+> > > > 
+> > > > What about for USB?  Will that "move" to use this common trust level?
+> > > > If not, I don't think it's very "common" :)
+> > > 
+> > > It supposed to work for all buses out-of-the box, at least this is the
+> > > intention.
 > > 
-> > I am currently creating an S2 paging attachment. This results in a
-> > configuration with S1 disabled and S2 enabled, which is used by all
-> > untrusted devices.
+> > You mean DISABLED/FULL should work with this patch series on USB
+> > right? Meaning the core code will not bind a USB driver when DISABLED?
+> > 
+> > I was wondering if some of the broader things we are doing on PCIe
+> > also apply to USB, like device authentication. I don't know alot about
+> > USB, but I got AI to help me find some relavent spec information.
+> > 
+> >  https://usb.org/authentication
+> > 
+> > This looks like the parallel to PCIe SPDM device authentication. I
+> > would expect it to work broadly the same way as PCIe if anyone wanted
+> > to implement it:
 > 
-> For validation, that would work. Yet "no viommu" should would be S1
-> paging, i.e. hwpt allocated without IOMMU_HWPT_ALLOC_NEST_PARENT.
+> No real need to as no one actually made a USB device with that spec :)
+> 
+> There was some patches on the linux-usb list 6 months or so ago to try
+> to implement it, but it stalled due to there not even be any devices to
+> test it for.
+> 
+> > 1) USB discovery discovers authentication support and creates an
+> >    attestation subsystem device for it
+> > 2) The struct device starts up with trust = DISABLED
+> > 3) Userspace runs the crypto flow through attestation subsystem. This
+> >    is extremely similar looking to PCIe SPDM:
+> >     1. GET_DIGESTS -> device returns a hash for each certificate chain
+> >        slot it has.
+> >     2. GET_CERTIFICATE -> device returns its certificate chain, read
+> >        in pieces.
+> >     3. CHALLENGE (nonce) -> device returns CHALLENGE_AUTH: the chain
+> >        hash, a salt, a hash of its descriptors, and a signature over the
+> >        challenge and the response.
+> > 4) Userspace inspects the above and approves the device
+> > 5) trust = FULL, driver is probed.
+> > 
+> > But I supposed Greg is asking about /sys/bus/usb/devices/DEVICE/authorized ..
+> 
+> Yes, that is exactly what I am asking about.
 
-It doesn't matter, consistently using a single S2 for everything is
-probably better..
+I used AI assistance to create the conversion, which produced two patches.
+The first exports `device_trust_set_policy()` to support
+`/sys/,,,/authorized` and `/sys/.../interface_authorized_default`.
+The second adds calls to the `device_trust_*()` functions.
 
-The VMM should try to minimize the number of hwpts involved, ideally
-just one per NUMA
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?h=device-trust-core-v2&id=98f5d11580d736a7878323dfb7238cd08c6c76af
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/commit/?h=device-trust-core-v2&id=f10f8e448540982699438dce369fef6cbfabcba5
 
-Jason
+Thanks
