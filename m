@@ -1,102 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=159.226.251.25
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793890221;
-	b=ZXHm4Vdum6lcEAB0Xojqws2inELEQBDrjnqRCPWkHMRhfjbqFt+Mdb69BTd2GCFWsH5F
-	 N41uxeazQrzrZ9P9HxeiVRcEV+Z1BQjGjKn9ptyHgL8wKnE1KNU9rJmiCHDHUiMqCid5P
-	 5dAWRMuvr4uawT4mRyFj/eL0hHe03GefXAuSnIxgJUVUNCjYwm/WoRGutwH5SIWGLAWDu
-	 ulT9SSd+iFMHTK1atsQGXXHWILIsmr/lSG3XAhH2a5hTnbAWdOORDB4frEi4SoQfSvWMl
-	 KhZb74sBIl7LoJvlE4RuoB0nqI8fgvSOmt24yOt7I8ZJ/bFC18TvtspjVxj/kO+CWHw==
+	t=1793890228;
+	b=1jpxFSPe3HOADeYhumW4r50aUOFX1JkbNsHyU04UkAQacZDW6mKfHwTxNfEhbDfmrQLA
+	 i6/20mpGLNqMrlW7+Sd/s+VewMxjoioPW0mjRCsovN3wKZnCs8ZvAfV82Ae8LH8hCSqM1
+	 f1zgGoMkfRnqpqqD1M0D9ZIHl3K4LP2A4OOAqGMcxGMNipdl/u+e0PRigtzyrWHNA7lpn
+	 eKhjc+5V9EUv3FROcqQtDkPEbSHM9jWDLjCcXkU8Eki9yJEbAmCYh6giQlHBNTaXSrr/R
+	 PI/v+zXM6FBtNtCpcFfQl/C9QBKC/wxLHoUHL6cc7Xans7KVxxSOdYBhpljDH2rn0Rg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793890221;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Date:From:To:
-	 Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=zngDh/hn+d+IfbRxuQD9941zh0dh76DUZmGv37oN1yw=;
-	b=xDyJJtbIue4LpXZ4ZZB2ImKqOSAdb43E9WTUzjol2UIGEwUy9tpL+ownRbaPkGnEjzje
-	 s7PbbTuFSFtneN5mkFS2cj/Ej5BJ4JiWj34e3OlVY5pATjnxkwzhWTQPFIdx8A4wOZqZ0
-	 wNAfwyaP/UGziJE12SSG9VdGZaIP/U4UItjjX71VsZmcenIeyPhe1KcjHeOBYcQjZLWsN
-	 iWwKDIwO0SLCW5jsdfwIy5iI5IESyrlBSuvBRb/fyVgKSTcbb6/kPwpNehjZ+XcERnu11
-	 fUYHeMGI8B3CwVdwriiqq9e7SO1HjJkWUHmct9wDBE3y/H0fI5fh/IaKcJIO4YEdydg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793890228;
+	h=DMARC-Filter:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 X-CM-TRANSID:X-Coremail-Antispam:X-Originating-IP:X-CM-SenderInfo;
+	bh=CnKjFzowyt5YtK9g8a4fqFJqn6kC/XB1Nfz7/IvB6uk=;
+	b=W4vJsBd6NtWGUWoLzlYoHgvaATqwHHBX3z/EiEKkMXojcZ4AzGEgAaw531BtdgvsSWgC
+	 9ArTitb0FKCFNAIATVyjEvIJbqfrbXqnxZsasV2BgdfPadMkqlpcTp/nMbeULqxunqJQo
+	 I6ciSETvE7MGLZmVZSq2qbw88wYWAOuPJbaX4QfUFZdl+aCmSBCBNW8aJeIkwiuYH2Lqk
+	 LKXL2mvjzSRWHyZGK7PVPKtQroENLwZF8XdywVUwJ7ebHYQx31y7SOWwfIrX6EX7yRBOH
+	 LCCBFLGb7Huq/AF33azL8Fj05DC8lBy+NcSYYBTnuOZ2fkizQkeBbX8bMbJtuuXko2A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=intel.com;
-	spf=pass smtp.mailfrom=intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CaH54igg;
-	arc=none smtp.remote-ip=192.198.163.7
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=none header.from=mails.ucas.ac.cn;
+	spf=pass smtp.mailfrom=mails.ucas.ac.cn;
+	arc=none smtp.remote-ip=159.226.251.25
+Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A559606A32C;
-	Thu,  5 Nov 2026 14:50:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9A559606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CaH54igg
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1793890220; x=1825426220;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pR76mBghhXMOKm2t2fE0Nbyxh5lA9YdTCI2eN6g0oNY=;
-  b=CaH54iggLRDvQu+fJy5qc9rHlSnF6nsEVdBBbu3Ar6gIvJuB8AHBpkPM
-   kCA7K7QuaiBsHFbRWy9TTYTaWKa3D7Zt92JuZ/ksDLmMqCKsttD1DpZom
-   pkVIgwhUNfwLRm54cVXI0rSfvLC036msgNFCu8F4xD0jLJU64AJ8/51Qu
-   6BabFNr6P1nwSVwlm3ZlksDHdPa8gS8Nm3pLNYVRLO9CytwaN93oP88zt
-   CMOm2lBojG4H/vZuJGRvjmXoCkdBqh1xbiG8vEPM9udN0dDqdjQTboPRM
-   QleP0cr+b4qYN72v4nHfL9cyupgrhozEzja8wYoOC23dG7xOG85PP0/Ux
-   g==;
-X-CSE-ConnectionGUID: 8nFN23+4ToK1NBAfvUWTRg==
-X-CSE-MsgGUID: k24zrZWCRV6iiH0/lgrymQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2551310"
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="2551310"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 06:50:19 -0800
-X-CSE-ConnectionGUID: /dk8MTNSRPGYLMVUiJXO/Q==
-X-CSE-MsgGUID: pVjBF9RvTTCjveglukFKDg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
-   d="scan'208";a="7151193"
-Received: from lkp-server01.sh.intel.com (HELO 0caa9d2d175c) ([10.239.97.150])
-  by orviesa009.jf.intel.com with ESMTP; 05 Nov 2026 06:50:13 -0800
-Received: from kbuild by 0caa9d2d175c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1xOyn4-00000000mLb-00W9;
-	Thu, 05 Nov 2026 14:50:10 +0000
-Date: Thu, 5 Nov 2026 22:49:53 +0800
-From: kernel test robot <lkp@intel.com>
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	iommu@lists.linux.dev
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <helgaas@kernel.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: Re: [PATCH v8 11/15] iommufd/viommu: Select vIOMMU operations before
- allocation
-Message-ID: <202611052227.TxHIjde3-lkp@intel.com>
-References: <20261104161632.3547423-12-aneesh.kumar@kernel.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAAB1606A33D
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 14:50:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EAAB1606A33D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mails.ucas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mails.ucas.ac.cn
+Received: from k3-03 (unknown [159.226.43.8])
+	by APP-05 (Coremail) with SMTP id zQCowAC3T7WIl+xqYLNgAA--.7023S2;
+	Thu, 05 Nov 2026 22:49:53 +0800 (CST)
+From: Tan Chi <tanchi25@mails.ucas.ac.cn>
+To: gong.shuai@sanechips.com.cn
+Cc: kvm@vger.kernel.org,
+	kvm-riscv@lists.infradead.org,
+	linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	anup@brainfault.org,
+	atish.patra@linux.dev,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pbonzini@redhat.com,
+	seanjc@google.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	andrew.jones@oss.qualcomm.com,
+	fangyu.yu@linux.alibaba.com,
+	wu.fei9@sanechips.com.cn,
+	zhao.qingye@sanechips.com.cn,
+	gsh517025@gmail.com
+Subject: Re: [RFC PATCH v2 9/9] iommu/riscv: Add riscv_iommu_attach_dev_nested
+Date: Thu,  5 Nov 2026 22:49:44 +0800
+Message-ID: <20261105144944.10193-1-tanchi25@mails.ucas.ac.cn>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261029061131.584453-10-gong.shuai@sanechips.com.cn>
+References: <20261029061131.584453-10-gong.shuai@sanechips.com.cn>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -106,47 +74,54 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261104161632.3547423-12-aneesh.kumar@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:zQCowAC3T7WIl+xqYLNgAA--.7023S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Ar15JryfZr1DAF43WryfZwb_yoW8Gr17pr
+	Z2gFWSyFn5XryF9r1kZw48GryFgF93Aa17WF15K3s2vwsxJ3srtrnxKay2va4SyrykX3W7
+	Xw1q9FsrXFWUu3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBGb7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I2
+	0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+	A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
+	jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+	8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x2
+	0xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18Mc
+	Ij6I8E87Iv67AKxVWxJVW8Jr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48J
+	M4IIrI8v6xkF7I0E8cxan2IY04v7MxkF7I0En4kS14v26r4a6rW5MxkIecxEwVAFwVW5Xw
+	CF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j
+	6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64
+	vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0x
+	vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jDb1bUUUUU=
+X-CM-SenderInfo: pwdquxrlsvqzpdlo2hpxfd2hldfou0/
 
-Hi Aneesh,
+Hi Shuai and Fei,
 
-kernel test robot noticed the following build warnings:
+I noticed a potential issue with fixing the physical DC's PSCID to 0.
 
-[auto build test WARNING on 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4]
+In QEMU, different VFIO devices can have separate stage-1 HWPTs while
+sharing the same vIOMMU and stage-2 parent. This means two devices may
+have different first-stage page table roots but the same host GSCID
+and PSCID=0.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Aneesh-Kumar-K-V-Arm/PCI-TSM-Move-core-code-into-its-own-directory/20261104-214618
-base:   6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-patch link:    https://lore.kernel.org/r/20261104161632.3547423-12-aneesh.kumar%40kernel.org
-patch subject: [PATCH v8 11/15] iommufd/viommu: Select vIOMMU operations before allocation
-config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20261105/202611052227.TxHIjde3-lkp@intel.com/config)
-compiler: clang version 22.1.8 (https://github.com/llvm/llvm-project ca7933e47d3a3451d81e72ac174dcb5aa28b59d1)
-rustc: rustc 1.96.0 (ac68faa20 2026-05-25)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20261105/202611052227.TxHIjde3-lkp@intel.com/reproduce)
+According to the RISC-V IOMMU specification, DC.ta.PSCID identifies
+the first-stage address space when PDTV=0 and the first stage is not
+Bare. Could this cause the physical IOMMU to reuse cached translations
+across different stage-1 address spaces? Even broader invalidations
+would not prevent such cache aliasing.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202611052227.TxHIjde3-lkp@intel.com/
+There also seems to be a related issue in patch 6.
+riscv_viommu_cache_invalidate() unconditionally forces PSCV=1 and
+PSCID=0. However, an IOTINVAL.VMA with PSCV=0 also invalidates global
+mappings, while PSCV=1 excludes them. This appears to narrow the
+guest's requested invalidation scope and could leave stale global
+translations cached.
 
-All warnings (new ones prefixed by >>):
+One possible approach might be to use the PSCID from the guest-provided
+DC.ta when allocating the nested domain, and preserve the guest's PSCID
+and PSCV settings during invalidation while substituting the host GSCID.
+I'm not sure whether additional considerations are needed for PSCID
+reuse or domain lifetime, though.
 
->> drivers/iommu/amd/iommufd.c:81:40: warning: unused variable 'amd_viommu_ops' [-Wunused-const-variable]
-      81 | static const struct iommufd_viommu_ops amd_viommu_ops = {
-         |                                        ^~~~~~~~~~~~~~
-   1 warning generated.
+Thanks,
+Tan Chi
 
-
-vim +/amd_viommu_ops +81 drivers/iommu/amd/iommufd.c
-
-757d2b1fdf5b7d6 Suravee Suthikulpanit 2026-01-15  76  
-757d2b1fdf5b7d6 Suravee Suthikulpanit 2026-01-15  77  /*
-757d2b1fdf5b7d6 Suravee Suthikulpanit 2026-01-15  78   * See include/linux/iommufd.h
-757d2b1fdf5b7d6 Suravee Suthikulpanit 2026-01-15  79   * struct iommufd_viommu_ops - vIOMMU specific operations
-757d2b1fdf5b7d6 Suravee Suthikulpanit 2026-01-15  80   */
-757d2b1fdf5b7d6 Suravee Suthikulpanit 2026-01-15 @81  static const struct iommufd_viommu_ops amd_viommu_ops = {
-
---
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
