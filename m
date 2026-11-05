@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793873178;
-	b=M46doPBAdUS+oK1ihq+UJh9l+DQg4g7l6l8Kp8z9xhnk1LMI3tSNoWoY3V7f/cTa89k1
-	 BgglziKH++XNQOWb6oaWFX4X9lC7QQApNR5NdihpcCjAMd7zhuH4tNZ3bx5SAnm3Hgh16
-	 GBN/a5c6I1UuTNPyx8WzLanyy/6PVUxePun8f3axMvecqUTbfaa/ChscbXhbp8SlRhET7
-	 yeq5m2nG+05RWSC0JAltFmuU/POLmNhtTdttw+b/DYi6kSPzeFIBp8qME8ZatoXzl6O3p
-	 IVuIEeMuy1wSrV1suMD3nIYiLhZSeqcUZHuhcF+P3JNQnp9QD7Wtn4uvy1n+kpghb9w==
+	t=1793873185;
+	b=smmTqpHBeGzrAMxVLw9qPXJQhDHvfA07gdbRIIxVOSfQdu59MuTFMHXRjdNmMqP84Nou
+	 1sIYJlrc2Q37VFnGnbPWUh4M5nylujhWvDzms7hOUf+2xZN6rGaOAHt1kaWeZ0iz/hpFQ
+	 6uWEwfGu4vxQk07Am711v+gKDrWdH4v6V/k2JIdK1+a/5bJRgBVsdyP4ETktT6bjsnE7h
+	 TzRXTOK0GKTqtdgPkYGKmmPoeng+C8EdkBIZztZX5MaqFffuhu98NyHwSURfaP6ZOC/Ov
+	 t87DASVe/YfBAbT3L8xu9x7rpAwj8uVUN6zbeUrrI3WvDzhPzL36GV16hF0s06w49fQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793873178;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793873185;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
 	 Content-Transfer-Encoding;
-	bh=rhtql+vM6ZB/bHRf54yo/Qw/22uUqR/sQ/wTnHlHfSc=;
-	b=EUZ+votAK+FqL4IjQLWozJ2DuuRIueoUFhO8fx6aMkSr002mLUpemwepIQkf8PHXWw+6
-	 pm8T1oke44o5+qtlPFZMA+Z+xHhehdyE3mCRQUj7sIv7fKgbbQF8eWTmCchs9vzszTkdk
-	 tGvvSN3ShuubUBn41YW/chrwfN4nsJj+0DVxoPFLbGClWi9Q0AIdRlVzJ5nmcj/aIugz7
-	 aPlwKdZmA5+V7dUUIo1P1tVGi1nwkcaVg2qjHG5BUcHJ5p1Q+E9Q5NygANk1ENZIXv14E
-	 3JC5oNBMSsRKHKPE8w7GtO1QcZx8oulElCHMmnAulpd0fzH0/97YtMQBL0gCekwFPCw==
+	bh=1wSg0P0JlpDTru459JdaTZtxJPYqqxs66LTFgnBwoG0=;
+	b=QQC42n9+CfLTxqlZgYOZOaH4v0GL0zKlgQxVrKBqy7AWFFIDGjuhSkeSukv9jdGCxxCE
+	 7gyi2EOK0M8L8IW46ChhkAsCttdLC7FWAbAsfC82BIQwPLAXO+gNQNEUP5I48ygmxV4pg
+	 oQ2Pu3MCHCroA9M5rrQSEkKpe/W2Pk3wxkfbi5m3dAFsQoj8fdV/IOVwqomk7eHynQg/Y
+	 aBMolZRzLUDs8YumW4JK0U3AXmdQK+6RFnl4ZKjCdjrEUgTqYAO3o4pLUMlXLsNFKpyam
+	 xCLD1piHObbRVC3G7D3M1QHC+lvHh8b420WT2V8PL/3uIzaGuDHwvOSOouVJlqk27QQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Np4LXNrj;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hs+XDWX3;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14F43606D835;
-	Thu,  5 Nov 2026 10:06:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92DAE60A260E;
+	Thu,  5 Nov 2026 10:06:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Np4LXNrj
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DA51F00A28;
-	Thu,  5 Nov 2026 10:06:16 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Hs+XDWX3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 349271F00A1B;
+	Thu,  5 Nov 2026 10:06:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793873177;
-	bh=rhtql+vM6ZB/bHRf54yo/Qw/22uUqR/sQ/wTnHlHfSc=;
+	s=k20260515; t=1793873185;
+	bh=1wSg0P0JlpDTru459JdaTZtxJPYqqxs66LTFgnBwoG0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Np4LXNrj5tooHkTa/RKVOyul+SA6Al/nreoDiRzorsc2iV3dsCUIC2v8j810BFesd
-	 nS0+JybOrlTKY+rHhGBSHKMaqfYhtrFK40mAxxZQlfyD5CzPdRMi12gnXieTbdcEQ2
-	 8HRvd5IJ5CWfw0eqTT+kKhhdTuAG+b5uwB/0b7HFthRebazpchRf15cVV3HOXqPsIM
-	 Ip+dpe1HMjdvie+CcFvS3/jnfpfjUa/doUPUANbXF9dL4Al+lgSGpv2oQgCUJ3orvD
-	 mWaTQ3N5Y7kJj2a81WxoNjrdEmYx4u9IagBwdTo3xYhgt3+HyoFH7lqMMsFZQy97CA
-	 128PpaHPDAyPQ==
+	b=Hs+XDWX3hyjpS0fjz84Ko2yPFchlZ+d1AQJFkSEHg7J8dLrtYITMGeNLX/z1Waw2A
+	 9/i77nZQgprsqSVNTvWKo83llgrPVtv8tZZNBqCBpdqTHBOnAi+SKpQ+N76u8fcn6t
+	 yWlPs95AIMPcJnA95FuUxFgpxf+CCgifp4AScFqYDw89bQQ0kjiJk5THZ9vWBiEAPX
+	 3YxHhBOaOyGcJDFYy1XhJDD2yy5vX7jaLbrHuML4pkuE5NhRMrtX/TK7tOz5wgQXFk
+	 dCh9AZ0zXQDB/2A5yv+aqnSy3TxZZfX3ziCWw9T3+8gYETWyd62RxbWZn/iIaYilZn
+	 dlm9YPql0lcNg==
 From: Leon Romanovsky <leon@kernel.org>
 To: Bjorn Helgaas <bhelgaas@google.com>,
 	Logan Gunthorpe <logang@deltatee.com>,
@@ -69,9 +69,9 @@ Cc: linux-pci@vger.kernel.org,
 	Shuah Khan <skhan@linuxfoundation.org>,
 	Randy Dunlap <rdunlap@infradead.org>,
 	Sumit Semwal <sumit.semwal@linaro.org>
-Subject: [PATCH v13 09/19] PCI/P2PDMA: Route Relaxed Ordering Completions directly
-Date: Thu,  5 Nov 2026 12:04:40 +0200
-Message-ID: <20261105-fix-p2p-acs-v4-0-v13-9-3dd065907c3b@nvidia.com>
+Subject: [PATCH v13 06/19] PCI/P2PDMA: Document directional ACS routing
+Date: Thu,  5 Nov 2026 12:04:37 +0200
+Message-ID: <20261105-fix-p2p-acs-v4-0-v13-6-3dd065907c3b@nvidia.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261105-fix-p2p-acs-v4-0-v13-0-3dd065907c3b@nvidia.com>
 References: <20261105-fix-p2p-acs-v4-0-v13-0-3dd065907c3b@nvidia.com>
@@ -90,84 +90,90 @@ Content-Transfer-Encoding: 8bit
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-ACS P2P Completion Redirect leaves Completions carrying Relaxed Ordering
-alone, per PCIe r7.0 sec 6.12.1.1. A Completion copies that attribute from
-its Request, so a client setting it on Non-Posted Requests need not use the
-host bridge solely because Completion Redirect is enabled.
+P2PDMA documentation describes ACS controls as path-wide, although Request
+and Completion controls apply to different transaction directions at the
+path divergence. Functions sharing one PCIe link may instead have no
+internal peer route even with redirect controls clear.
 
-Route Completions directly for PCI_P2PDMA_TLP_RELAXED_CPL unless a device
-quirk redirects them or the Completer lacks an internal route to its
-sibling. Neither restriction promises a Relaxed Ordering exception. No
-caller selects these classes yet.
+Document the Requester and Completer roles, the directional controls and
+the forwarding requirements at shared ancestors for host routes. Explain
+that unusable forwarding leaves direct routes available, while clearing
+redirect controls cannot create an unsupported internal sibling route.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/pci/p2pdma.c | 16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt | 11 ++++----
+ Documentation/driver-api/pci/p2pdma.rst         | 35 +++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index 35d4aafbed260..2d5a9488da41b 100644
---- a/drivers/pci/p2pdma.c
-+++ b/drivers/pci/p2pdma.c
-@@ -580,11 +580,15 @@ pci_acs_p2pdma_request(u16 ctrl, unsigned int tlp_flags)
- /*
-  * Decide how a peer-to-peer Completion at an ACS-capable ingress port routes.
-  * PCIe r7.0 sec 6.12.1.1: no ACS control other than P2P Completion Redirect
-- * affects a Completion.
-+ * affects a Completion, and that one leaves Completions carrying the Relaxed
-+ * Ordering attribute alone.
-  */
- static enum pci_acs_p2pdma_state
- pci_acs_p2pdma_completion(u16 ctrl, unsigned int tlp_flags)
- {
-+	if (tlp_flags & PCI_P2PDMA_TLP_RELAXED_CPL)
-+		return PCI_ACS_P2PDMA_DIRECT;
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 0b3c140babd94..f7e116703ffcd 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5251,11 +5251,12 @@ Kernel parameters
+ 				Specify one or more PCI devices (in the format
+ 				specified above) separated by semicolons.
+ 				Each device specified will have the PCI ACS
+-				redirect capabilities forced off which will
+-				allow P2P traffic between devices through
+-				bridges without forcing it upstream. Note:
+-				this removes isolation between devices and
+-				may put more devices in an IOMMU group.
++				P2P Request Redirect, Completion Redirect, and
++				Egress Control features forced off. This may
++				allow P2P traffic through bridges that would
++				otherwise be redirected upstream. Note: this
++				removes isolation between devices and may
++				cause affected devices to share an IOMMU group.
+ 		config_acs=
+ 				Format:
+ 				<ACS flags>@<pci_dev>[; ...]
+diff --git a/Documentation/driver-api/pci/p2pdma.rst b/Documentation/driver-api/pci/p2pdma.rst
+index 80f8fec9b0e90..91e6367151f1d 100644
+--- a/Documentation/driver-api/pci/p2pdma.rst
++++ b/Documentation/driver-api/pci/p2pdma.rst
+@@ -15,6 +15,41 @@ then based on the ACS settings the transaction can route entirely within
+ the PCIe hierarchy and never reach the root port. The kernel will evaluate
+ the PCIe topology and always permit P2P in these well-defined cases.
+ 
++The client is the PCIe Requester and the provider is the Completer, whether
++the client reads or writes provider memory. For devices on separate links
++below the same Root Port, their paths first meet in a Switch, where they
++diverge.
++A Request enters that Switch through the Downstream Port above the
++Requester, the Requester-side port. If ACS P2P Request Redirect is enabled
++there, the Request is routed upstream; otherwise it is routed back
++downstream through the Downstream Port leading to the Completer, the
++Completer-side port. The path of Completions from a read likewise depends on
++ACS P2P Completion Redirect in the Completer-side port. An enabled Egress
++Control is conservatively treated as a Request redirect.
 +
- 	return ctrl & PCI_ACS_CR ? PCI_ACS_P2PDMA_REDIRECT :
- 				   PCI_ACS_P2PDMA_DIRECT;
- }
-@@ -740,6 +744,7 @@ static void pci_p2pdma_warn_redir(struct pci_dev *client,
-  *		than upstream, so it is where the Request controls apply.
-  * @cpl_ctrl:	ACS Control of the Completer-side divergence port, likewise for
-  *		the Completions travelling back.
-+ * @cpl_quirk:	A device quirk reports Completion Redirect at that port.
-  * @req_upstream: The Requester has no internal route to its sibling.
-  * @cpl_upstream: The Completer has no internal route to its sibling.
-  * @unreadable:	First port whose ACS Control could not be read, if any.
-@@ -749,6 +754,7 @@ static void pci_p2pdma_warn_redir(struct pci_dev *client,
- struct pci_p2pdma_acs_path {
- 	u16 req_ctrl;
- 	u16 cpl_ctrl;
-+	bool cpl_quirk;
- 	bool req_upstream;
- 	bool cpl_upstream;
- 	struct pci_dev *unreadable;
-@@ -766,11 +772,16 @@ pci_p2pdma_request_state(const struct pci_p2pdma_acs_path *path,
- 	return pci_acs_p2pdma_request(path->req_ctrl, tlp_flags);
- }
- 
-+/*
-+ * ACS P2P Completion Redirect leaves Relaxed Ordering Completions alone. A
-+ * device quirk that reports Completion Redirect does not promise that, so
-+ * treat every Completion through that port as redirected.
-+ */
- static enum pci_acs_p2pdma_state
- pci_p2pdma_completion_state(const struct pci_p2pdma_acs_path *path,
- 			    unsigned int tlp_flags)
- {
--	if (path->cpl_upstream)
-+	if (path->cpl_quirk || path->cpl_upstream)
- 		return PCI_ACS_P2PDMA_REDIRECT;
- 
- 	return pci_acs_p2pdma_completion(path->cpl_ctrl, tlp_flags);
-@@ -1141,6 +1152,7 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
- 	if (a_child && b_child) {
- 		if (!pci_acs_p2pdma_ctrl(a_child, &path.cpl_ctrl))
- 			path.unreadable = a_child;
-+		path.cpl_quirk = pci_acs_p2pdma_quirk(a_child, PCI_ACS_CR);
- 		if (!pci_acs_p2pdma_ctrl(b_child, &path.req_ctrl) &&
- 		    !path.unreadable)
- 			path.unreadable = b_child;
++Below the divergence, the route toward the other branch is already upstream,
++so those P2P redirect controls do not affect it. Redirect controls for the
++reverse transaction directions do not affect the mapping. P2P DMA is routed
++through the host bridge when either applicable port redirects. If an ACS
++Control register needed for a route cannot be read, that route is rejected.
++
++Functions sharing one PCIe link can instead route internally within their
++device. An ACS capability without Request or Completion Redirect support
++means that the corresponding internal route does not exist. Device-specific
++ACS quirks can report the same restriction for functions without ACS, and
++SR-IOV functions without ACS cannot support internal peer traffic. These
++restrictions apply only between functions sharing the link, including ARI
++functions and VFs; they do not redirect traffic to a separate device.
++
++When traffic continues upstream beyond the divergence, ACS Upstream Forwarding
++must be enabled, or provided by a device-specific quirk, at every shared
++Downstream and Root Port on the way to the host bridge. This includes ports
++above a shared Switch Upstream Port as well as ports shared by sibling
++functions. Missing forwarding support or unreadable forwarding controls reject
++the host route while leaving direct routes available. The host bridge must
++also support P2P. Clearing redirect controls cannot create an internal route
++that the device does not support.
++
+ This evaluation assumes clients issue strictly ordered Requests carrying an
+ Untranslated address. Its result is not defined when clients use Relaxed
+ Ordering or issue ATS-translated Requests because those TLP attributes can
 
 -- 
 2.56.0
