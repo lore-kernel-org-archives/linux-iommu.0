@@ -1,126 +1,127 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.169
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793909064;
-	b=rpa57J3rZQbVRNgaot6wWh/O7V74OxhgweMy5yR+9aq6BDbPoN0kpl2AD821EUWSk0C/
-	 elX5QGoHC5CUidQ+u2RGw00U4IOWA4Ql+l7MFCV4fU1CdFekVOPAUVbf3vHE5+eIWONps
-	 LIf7jS9bl4Eyfd/OFxRhQ6123eQb+NZcSrUdh6KE406MXNkAhQXO0DoG6vsAw32Z/L/H3
-	 okFDDWM1w4s0G+Fv52p4TnoS8KT6r/7ThmxSXskiSbkPooHfsOqrtO5mnAfglX2GmurNJ
-	 BekEvx/lfZwmyEk3HLXtmZhpiltc13XvILdRSXvp92QuGY1uYCLAoYwOMhpS5SREgxg==
+	t=1793909259;
+	b=eZgldeYS/82eJprsqHD6Vl5KDsiPABsVT3D9j2leeDnBkoKCInj5etwc5ndyO3Yvxrzr
+	 viMg4lxtkL9rk28MtF0OaPJhV5iED/0+coUwV2pDmR9bW3AvLO/BY1T9eHYesqBKeDckc
+	 kcdeetMWXtd+R1TnmxfyafQrUWDbej/RYzGqxj8JjwUBpeqH2ukECHlBAvZc+BNwaDPVJ
+	 Uwh0FisrDkiSnLpUzuFERdyqZKxEHmvBJY20EwlmLVyeS0ss4un9GbRjUZlLxivp3/amu
+	 wirh7glix3+IMRQEb0SOH+hI7zsuJGJVJX0PbRft4swRFGsYYWwALxbRedkUftPEEtA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793909064;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793909259;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=Aw5degZrQHo3V3rpws5+g22RRHe/seP3Fa1C54u6MN0=;
-	b=4M/YcuAnwqnfgcOv51YKcPzD2C7fh8uwibhNLyU5/GqowZdO8awE45JGXaIFY0yDsbDC
-	 T6MJ8UwWtRCEmpx7sXlaFvarYLcGo7pErzHN9Dok731zsTs9W6LpNmII8qMZaYDBqkqPl
-	 XZnMsN7IiiVEpJHLr12ub0iZKZyNP6WQzOWxeb3Gsb/mQMqrzSw3f0Svv9iqXkXxNV3lK
-	 PAkS48XXNFgH/Uuu2eeNO7Kt4qQkf+kySBogyt2HC9dm4aRJ9ckHQx7Ws3BzCdN+nzQRY
-	 zMiIwl7qkxL7iw9k7lHTB2Z+U2jMZxtRduyMFp+ofnXHhk3mnxYxQ/105cWnC06L7RQ==
+	bh=z52AWMMx/NPlxXG7BPdw5LHgxa12llcgL1Kha+Q5UfY=;
+	b=hQu1WJUI7d3UWfan9hauXj/s4IF+j/pB2Cz2XcfhXq0Mya3sDnYoJ8KGkWQgESzDooSb
+	 jw1q2Bt5hWddgNVgHz0hbQNYcfOt8HOv8QD/DEkxV5S4iQdrhUqM9zdvdU+a7Bzu4dUgD
+	 9RFIPXrCN2L8Mh6LjdsphvIBAjwUUHdrvXwWP+eMewvtflK+Eg+DTlY0gYCUsuQ9koJnj
+	 xGY8UfCi1rQ0cH0M+UT2OIULIziPnUPDqw4WRlM/mFuXo4x931V19KGL6dMomHCvMbJ0p
+	 tcmIQotqYlC6UAp8lDsklGoBxPimeiEFlO0BWdKpm1kD7uW9n60o7Rm7PccGJ+ovgwA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=rowland.harvard.edu;
-	spf=fail smtp.mailfrom=g.harvard.edu;
-	dkim=pass header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=oW8Pm7KW;
-	arc=none smtp.remote-ip=209.85.160.170
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=SAR9OnkU;
+	arc=none smtp.remote-ip=209.85.221.169
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FF8C606A329
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 20:04:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1FF8C606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rowland.harvard.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=g.harvard.edu
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77066082BCD
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 20:07:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B77066082BCD
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=rowland.harvard.edu header.i=@rowland.harvard.edu header.a=rsa-sha256 header.s=google header.b=oW8Pm7KW
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-53397554beaso21893501cf.3
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 12:04:22 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=SAR9OnkU
+Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-5e9528732b4so1906793e0c.0
+        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 12:07:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rowland.harvard.edu; s=google; t=1793909062; x=1794513862; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1793909257; x=1794514057; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=Aw5degZrQHo3V3rpws5+g22RRHe/seP3Fa1C54u6MN0=;
-        b=oW8Pm7KWbFyYpX1ChRbjfDIxL/XoQnn4kqQO600FJv3JNU1NQeGTNZVRv+eMclYy1s
-         l4zMYL19kKnMiWAllTfWIOITILeU+deZHz1TYVnSiPREFK1IX4fsVgf3SfKG1fxDIrvk
-         OaT2iJMA/V2oewcEf/s4nkaZt4O+26Em2f6BkBBwt82v2iIt6DzpaE+pvsTxBtM3USSu
-         qrCa8R9Khgeja799CE5PIIacuEFGxEUijPfAfi4wCOKn9s1YlToYWtwWw5nbGt9xZLMW
-         /sdCsI2TDpNNN7ReNImPI+OsiVtk1HHMGKYPf49yRjgjSc9WP5Ng9muWjol4UH3KK1cG
-         b7QA==
+        bh=z52AWMMx/NPlxXG7BPdw5LHgxa12llcgL1Kha+Q5UfY=;
+        b=SAR9OnkUfh8Bk57D1h9VhG+n+xp6rS+jFsjk46kHoRXHVLX9haAbLHq+wxnKVLEXEe
+         w9ew4dTvVCWZAVaNkBSvF+kc4KemD2YCY7zR3oIavVuYN8HZ1lSFKYLaYYuoaNHWCnwm
+         cDm+xoDMw0z5CiBEM2d4yQlvVeVKvnxAYh2AFFNMrM8X0oQDSkhFLd461s/fYfptyNB2
+         cIOEZjwSH+nYssA2XUyFiEocrR+0i2JJi2RCdLYWTdYZjWEi+a9PK0TfDnoD5dXhB8IU
+         FTpq575un/jRIEe8hDw4Y+yBtZxvaA5EZtmy78v9qP/a2PTPwEObDdnHE4w9CJyiYgE6
+         xgeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793909062; x=1794513862;
+        d=1e100.net; s=20260707; t=1793909257; x=1794514057;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=Aw5degZrQHo3V3rpws5+g22RRHe/seP3Fa1C54u6MN0=;
-        b=EdQ1+ib/P0VmktzrvHcc/6rCdd938TdjLWY9k9vSMC/LWmf+nPrDUQ/FGaythYnifq
-         3DYI+SB4HHW4lLkB0dpD9TCEm5T7RNobUlkP9waiDH3erH3UyOsG1Pcn0Jsxw9UgKLLC
-         ML6jgbwF32b9C4agVkfw5VKyiH2MgiBskbEbAYOjDNOprmzRQCzJV2TSe4ypyGi9uOX/
-         7zPG7hkNNMh+PUzfQUX8HqX1rJBeKbimMoeFyDwGh7kU5SBvSCh+epoj+njekZYnWsTC
-         So95DZqKyDcmuTYRfUTPGWSJ06/lPeg99FIqDIlj4eRClksbdJY8H67vDqUCRqlks9Py
-         XxRA==
-X-Forwarded-Encrypted: i=1; AKwUvBxHi5ECqhA31ZTO/uYvpOXHR9PpowGqssEEOTk0C5KYOw4OSeaKhLixK0TErDpAyw0ln6bs4Q==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/WtRI7dWdB1TESQoeiEI0s4vehMnjKJSwHty4Xjvqsr/kIGcfW
-	FN3DnBh4nrrZ2nCgGiUwhMWu2L/V/Ig6842pd/WzPYR4DrBam0brXLkbKqKmrGb89A==
-X-Gm-Gg: AYBFou1KEV3Vnr32XsONn9MSw4AVxffHDaIHU1sMnrdNFnszT9uuYX54fZMAxGt1F6l
-	LEc7A4nd/Og9qkDPIRbG3YVI71/RgxS0n6G2e73zYicifMCUOwQbOejApOQOvQdseANzyUFfHg7
-	rO68T3eHhsNJ6LSVDb6zazyhtU8acl4U9fEwhjDpbw6TDNOiahmWhK3CEzm2yVBVLoGUz+4khrm
-	YXdETu3M7UI/b8YPOaT2Rj4W5O0SXDxiDj3qYop7MXHVXwrQ6DZw0hoxrxnsaT7lh6dcsFf5BIq
-	MpShe/+iW3l/bVKj8ogPei1Pq6jJ/TW986XN/gHnX7J9kcO5OHrD3tRkbN8dtZTq+Ou/QBjwgWE
-	phY6q/dgadqK3IrFx0aPTf4QBKqXIvo4GFmUQRwDnKOLlhY3LCVfsE8/wSE2HGkOuz8BLNgID6V
-	jsIIo2SkRbyk2iALlQd3XfKGAzqZyp0qoO9lvU37+/ynQhii+PIttjXt44vpFJDLjU5F8lvK17D
-	3rw26WIEYqV6HNvP9Svo8QtKQTI2W3A5pBHFI2B9Y2RLcwVc5RnTk19mc4kZWJJs0+O/n8nKvGY
-	lrNns2NPgnruc/j2ktS9PcuL6TVa
-X-Received: by 2002:a05:622a:418d:b0:536:60e1:c87d with SMTP id d75a77b69052e-54e14266a2dmr6509601cf.35.1793909061778;
-        Thu, 05 Nov 2026 12:04:21 -0800 (PST)
-Received: from rowland.harvard.edu ([2601:19b:d01:d210::66b0])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-54e270167afsm1403061cf.25.2026.11.05.12.04.19
+        bh=z52AWMMx/NPlxXG7BPdw5LHgxa12llcgL1Kha+Q5UfY=;
+        b=DyI6nGQdph/dDqznikSX6mSqX6f4bZuMBTShHyuTu1jsqS7ajPHAMeowIEZK+x7P4i
+         0af6WJnum4NyEJMn6RYdZ19COsEj8KGZ0+w5WzpAKVLuCjTngpa2OOtmAZDDAhJDdZ9+
+         wia2qxyfMaESD6WbP1Yc6Yc43srZzaVl4wTV7BJ3C10rpzVwBISW5gShgotO9YHAEYFA
+         m6tM9kT28gxKBYnfeVpvLMYNpnE8yWUUPZA3hgo23UcmVMAyIKpEuNXSP8LzxcSbLbBs
+         dLOt3KBZm1RwBmYi7HZL7uyOkXsay50Cr+0qX5oLeat4hq3s/FbPX7oD2HtoKuajkI8C
+         3Q/w==
+X-Forwarded-Encrypted: i=1; AKwUvBx3NHlAmNWGOCL6SA/Cl/DuvfLCZZKdHL8QhXWDW5hadp3PZdReH7PDfeNMQczN5CUtJWEO4w==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+nvnvRQAOAkAJZFx0fBkz7QaxPyFfs+nVk3KY8ViiR/iUvsF93
+	bvyCKy9uuf9I/R+AF5v6Lkc7cH4owGW3NcZzc3mk+5VjYSg+J6lplNp8Gow3xSoYYPo=
+X-Gm-Gg: AYBFou0R64X0JwtNYG7FqRg/FLILqjqmUGmIh50akpvf2CL3/CDv7EzIodKw5ry1neF
+	azM5ndQm4lXxSsWOSiso9LNg0/+LwElXVw1RIJOw8X5EeEGvtLnT5f+ri2mWL6yFoLDuI1CG+Vu
+	raChRIvM8hRTwg+C20eKS+E3OI/6elakZkBL6wxv1oPyE0mim6cEEEUgKmXtnAwvoXv9/uv9OQo
+	VbQNNqXc8s0kY1K1F1XbX1dME2RRndHEOmyelENwUOXAdKpIGzG9RkfBatrpKeRCfvLYsf+KsVr
+	JC3WWw2bd6xaJNrFEPPeb253Y+l98wQ8Ovz0OTzHl0o4LiBBv9yCDHMV8zMJF+0G/7uztLxswa5
+	Lq2aeSW9g8+mzFQhPCrPQZ6faCHYME3o9iv8FryYEaF5++gPhTH/rvEK8sTLLvPmo7pPEFriRPX
+	qjXHq9Cib8UnbPtrW+z+8QN5q6Ol/khlVVsGWeEbOjJz+fciF/PQFuuwPduultfG+U6u0yn71tO
+	hQlLRuPp+FdstT3rsrxusx12O/ozz6CEHMsjedtsSsQiTWJZuCIPPEX8Q5cbgWix/Sd8TFXp+2K
+	yrBekGf63AAkIiCMzvCpCvnm1ERg5khJ50P/NIx3wfAK6AilLvOWWScS8zGs3e5S705JVVUyaYB
+	+83j4IfTx7A==
+X-Received: by 2002:a05:6102:390f:b0:7c3:99a3:314a with SMTP id ada2fe7eead31-7d2a1509e88mr658597137.9.1793909257584;
+        Thu, 05 Nov 2026 12:07:37 -0800 (PST)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ecb6d79d9fsm2610604e0c.7.2026.11.05.12.07.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 12:04:21 -0800 (PST)
-Date: Thu, 5 Nov 2026 15:04:18 -0500
-From: Alan Stern <stern@rowland.harvard.edu>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
+        Thu, 05 Nov 2026 12:07:36 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xP3kF-00000003dYX-3Q5c;
+	Thu, 05 Nov 2026 16:07:35 -0400
+Date: Thu, 5 Nov 2026 16:07:35 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev,
+	Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
 	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
 	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH 05/17] USB: Lock registered interfaces during manual
- driver binding
-Message-ID: <bf756e50-c77e-40f2-916d-e88887426806@rowland.harvard.edu>
-References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
- <20261105-device-trust-core-v1-5-1e536825b4eb@nvidia.com>
- <bb83fe3c-cebb-4bc8-bfc9-24df1cf72b0b@rowland.harvard.edu>
- <20261105184442.GF8298@unreal>
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v8 13/15] iommufd/viommu: Allow vIOMMUs without a parent
+ HWPT
+Message-ID: <20261105200735.GF663069@ziepe.ca>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-14-aneesh.kumar@kernel.org>
+ <auuBjRjQwXl7UvvO@nvidia.com>
+ <20261104193139.GB3889730@ziepe.ca>
+ <yq5afqxf97a1.fsf@kernel.org>
+ <auzAivzpzSUHjEQj@nvidia.com>
+ <20261105182106.GD663069@ziepe.ca>
+ <auzNkAGFLH6da8fq@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -132,105 +133,38 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261105184442.GF8298@unreal>
+In-Reply-To: <auzNkAGFLH6da8fq@nvidia.com>
 
-On Thu, Nov 05, 2026 at 08:44:42PM +0200, Leon Romanovsky wrote:
-> On Thu, Nov 05, 2026 at 12:24:33PM -0500, Alan Stern wrote:
-> > On Thu, Nov 05, 2026 at 01:42:18PM +0200, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@nvidia.com>
+On Thu, Nov 05, 2026 at 10:40:16AM -0800, Nicolin Chen wrote:
+> On Thu, Nov 05, 2026 at 02:21:06PM -0400, Jason Gunthorpe wrote:
+> > On Thu, Nov 05, 2026 at 09:44:42AM -0800, Nicolin Chen wrote:
+> > > On Thu, Nov 05, 2026 at 10:58:06AM +0530, Aneesh Kumar K.V wrote:
+> > > > Jason Gunthorpe <jgg@ziepe.ca> writes:
+> > > > > On Wed, Nov 04, 2026 at 11:03:41AM -0800, Nicolin Chen wrote:
+> > > > >> By dropping the nesting parent from VIOMMU, it just simplifies the
+> > > > >> attachment to an S1 paging hwpt, right?
+> > > > >
+> > > > > Yes.
+> > > > >
+> > > > > The VMM must always maintain a S1 paging attachment that is the
+> > > > > identity map of the VM on all devices, same action as when there is no
+> > > > > viommu.
+> > > > >
+> > > > 
+> > > > I am currently creating an S2 paging attachment. This results in a
+> > > > configuration with S1 disabled and S2 enabled, which is used by all
+> > > > untrusted devices.
 > > > 
-> > > Interface claims hold the USB device lock, but device_bind_driver()
-> > > requires the target interface lock. Without it, trust-policy writes can
-> > > race admission.
+> > > For validation, that would work. Yet "no viommu" should would be S1
+> > > paging, i.e. hwpt allocated without IOMMU_HWPT_ALLOC_NEST_PARENT.
 > > 
-> > This says nothing about usb_driver_release_refused_claim() and the code 
-> > related to it.  It is an incomplete description of the patch.
-> > 
-> > Note that nothing prevents drivers from using an interface they claim 
-> > before that interface is registered.  For your scheme to work properly, 
-> > you should make sure the claim is authorized when 
-> > usb_driver_claim_interface() is called, not when the interface is 
-> > registered.
+> > It doesn't matter, consistently using a single S2 for everything is
+> > probably better..
 > 
-> This patch is unrelated to authorization;
+> Hmm, I am confused: if we use a nesting parent, why do we need to
+> allow a viommu without a parent HWPT here?
 
-I meant "authorization" in its generic sense.  When you don't trust 
-something, you don't authorize it to do anything.  Pretend I had written 
-"the interface being claimed is trusted" in place of "the claim is 
-authorized" above.
+It is because it doesn't *use* it. It is a confusing to pass in a hwpt
+that is never used for anything.
 
->  it ensures that the lock is
-> acquired when the driver is bound.
-
-That may have been your intention when the patch was created, but if you 
-read the patch you'll see that it includes a whole bunch of material 
-not related to locking during binding.  Namely, this part:
-
-> > > +/*
-> > > + * The driver core refused to bind an interface that a sibling claimed before
-> > > + * it was registered, and dropped the claim. Let the claimant release the
-> > > + * interface instead of operating it with a bound interface but no driver.
-> > > + */
-> > > +void usb_driver_release_refused_claim(struct usb_interface *iface,
-> > > +				      struct device_driver *claimant)
-> > > +{
-> > > +	struct device *dev = &iface->dev;
-> > > +
-> > > +	device_lock(dev);
-> > > +	if (!dev->driver && iface->condition == USB_INTERFACE_BOUND) {
-> > > +		dev->driver = claimant;
-> > > +		usb_unbind_interface(dev);
-> > > +		dev_set_drvdata(dev, NULL);
-> > > +		dev->driver = NULL;
-> > > +	}
-> > > +	device_unlock(dev);
-> > > +}
-> > > +
-> > >  /* returns 0 if no match, 1 if match */
-> > >  int usb_match_device(struct usb_device *dev, const struct usb_device_id *id)
-> > >  {
-> > > diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-> > > index a738d03c23eac..d35a7710c8ef4 100644
-> > > --- a/drivers/usb/core/message.c
-> > > +++ b/drivers/usb/core/message.c
-> > > @@ -2264,6 +2264,7 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
-> > >  	 */
-> > >  	for (i = 0; i < nintf; ++i) {
-> > >  		struct usb_interface *intf = cp->interface[i];
-> > > +		struct device_driver *claimant;
-> > >  
-> > >  		if (intf->dev.of_node &&
-> > >  		    !of_device_is_available(intf->dev.of_node)) {
-> > > @@ -2277,7 +2278,14 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
-> > >  			dev_name(&intf->dev), configuration,
-> > >  			intf->cur_altsetting->desc.bInterfaceNumber);
-> > >  		device_enable_async_suspend(&intf->dev);
-> > > +		claimant = intf->dev.driver;
-> > > +		if (claimant && !try_module_get(claimant->owner))
-> > > +			claimant = NULL;
-> > >  		ret = device_add(&intf->dev);
-> > > +		if (!ret && claimant && !intf->dev.driver)
-> > > +			usb_driver_release_refused_claim(intf, claimant);
-> > > +		if (claimant)
-> > > +			module_put(claimant->owner);
-> > >  		if (ret != 0) {
-> > >  			dev_err(&dev->dev, "device_add(%s) --> %d\n",
-> > >  				dev_name(&intf->dev), ret);
-> > > diff --git a/drivers/usb/core/usb.h b/drivers/usb/core/usb.h
-> > > index a9b37aeb515be..293340a48b6c5 100644
-> > > --- a/drivers/usb/core/usb.h
-> > > +++ b/drivers/usb/core/usb.h
-> > > @@ -49,6 +49,8 @@ extern int usb_set_isoch_delay(struct usb_device *dev);
-> > >  extern int usb_get_bos_descriptor(struct usb_device *dev);
-> > >  extern void usb_release_bos_descriptor(struct usb_device *dev);
-> > >  extern int usb_set_configuration(struct usb_device *dev, int configuration);
-> > > +void usb_driver_release_refused_claim(struct usb_interface *iface,
-> > > +				      struct device_driver *claimant);
-> > >  extern int usb_choose_configuration(struct usb_device *udev);
-> > >  extern int usb_generic_driver_probe(struct usb_device *udev);
-> > >  extern void usb_generic_driver_disconnect(struct usb_device *udev);
-
-Was this meant to be two separate patches that somehow got combined into 
-one?
-
-Alan Stern
+Jason
