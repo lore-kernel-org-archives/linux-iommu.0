@@ -1,132 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.180
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793896023;
-	b=LvCoio0L0PsTO4W4f2zzvaoYjrs/oQzqWvh/BNcpuKTwfqXa+E5ga1QpnhHT2mR/esvV
-	 fglhsF1nfSnWcOEC1/9eCY+J5oLQu9LxTCakpcE600yM+S6rfPaHobm46wYGo1bLdIqFs
-	 r3MgsF/Rmm1MCl29tTOfM+Us1SR1KXTiiC6cxSgiTnSk5kIbdAK4O67aU+2I4JAzxparB
-	 QMinkT9j5UaA5Wh+2sgv+W63tKft5fEwMn5KsEzeLqOFbR9fNvySEEUetUwVXO4pUxK3X
-	 /Gm/V4ULhA6G2zOZhRmI28e4f75ckm0CzmDp4PcEj7iUXgQtJjU/kE8tzJrCMlHrdIw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793896023;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=auiIKhbmoRZT4mFY+NhWtro4ChWc0LCFT6CcONkj2hM=;
-	b=0QIdNwg27s0efpVKKgKhFdP7AxJKC/5BrB0F79ViuW2bc7JHtCMz/bPW/hyoYn0X75lR
-	 B2oZCRE/V4R85C5/J6arbnx3QH46tJEHSK2dix3b6O2Rm97QNxooS4K37pdxVDs6/p949
-	 TlPvHshXimKZ/XqLf2584GbA7xTOr94+MOyMybToS01SyeWRh6+lXO7t9b3dRem1+Fb8d
-	 R+evShm0/Ez62uDFywxcUg2iiY/xr9CFMBwI5tQjipf76vlH6xiYbdCFqvoZo1AQvbOny
-	 6vpAFXL4bO58cGmcbKzgGqVf8kGyYER0s+OnbKb/U94/aRlT6FxWlmE1tyy4F4w9Ebg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=H1OQVHcQ;
-	arc=none smtp.remote-ip=209.85.221.180
-Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com [209.85.221.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.4
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793896360;
+	b=OLO/EBEpg8k3xHspZFc9kPsDFD/fUt1//X6TRcW8v88A1GQLuOvCLiPktbhgpnF/kUK3
+	 Wzf9fNeHTAg9ubzk/iJvIQbfG6DnBW06V9tn7IKH1sXxkWiug/SQBQ1rjUC2LiQToCCB1
+	 GH9nQKqeSIV7tFL88+sJkBMyD5mXpN1nwOBfEBaAH5YzRIbC/R9z0aT88asipVckHBW14
+	 iKEJvNUy3wIiz7KigsNMNTMk+wpxzhSQIrUCa11pejpBVUDjX1skFCArcl6LILfDsh4bf
+	 fA+JKH1jcuQPuafMYQK2sdgPyRr8kAag3KQtISGXemfyXgSIMzHTbem7CO18HauMl3Q==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793896360;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 X-ClientProxiedBy:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=cX7evaUAZUk3NtOD+vQb+hpJ0xjqrO25biFLy5tUjRg=;
+	b=ieKtOG3+UwoQWlF3gzSaT2DNCT/F6igcRDhzBi4Lnlnes1pNhIGkxu093Zt1P4xKHgJk
+	 jQjVqrnw9GV9lXzVs+J27047aiL7fyXqVKwZlu6DgGUaPt58juh5BzfD+8UaVqaUYpZXg
+	 gaOwefIqggRKfWy21yO04Mufk5sZ4Vd9B7NqGWuLFvfKjnTg7TDu2TY2UPysuvwbPxHSR
+	 mib7FfWFgooyHP3ZBIDIbXE5A9LzatMakRYlGk16rpClm8/Motynb+qappQSsoE2CFNfR
+	 LpPJcFpywKA2DZ8TE6eGI4W4m/aCmrb9iOBXLzNtfV1uPbj9oGGF+VMqo/DVLqMv8gA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=sqm5mziB;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.4
+Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012004.outbound.protection.outlook.com [52.101.48.4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888B6606A33F
-	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 16:27:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 888B6606A33F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A0B6606EE84
+	for <iommu@lists.linux.dev>; Thu,  5 Nov 2026 16:32:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7A0B6606EE84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=H1OQVHcQ
-Received: by mail-vk1-f180.google.com with SMTP id 71dfb90a1353d-5ead5ff47caso754296e0c.0
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 08:27:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793896021; x=1794500821; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=auiIKhbmoRZT4mFY+NhWtro4ChWc0LCFT6CcONkj2hM=;
-        b=H1OQVHcQ1uAjCjVR8BRgJ48YlfatlDz4giWern+6CduNzr5+DwC1ER44CbAFxGx0Gv
-         ToxPmzQ7/J+YZpDH1rNcL+CbPzjbvrtlVGghwQtrdptiawPkP2U9QsW6i15STQcANPjp
-         w4viNeXRjgOodbGSjAvkJLEZiyL/bsSJuSDDQNeCa3jDQYbnHCV/uzQMDQ0MQSfKrXUJ
-         qu4lYckMSRhMHHXv1v2ChvIJGU/JFtGDF0AejhYQ6ajAmFp11x5kUEysunILL2dD0TLA
-         bnkR1dvFpyEOAsYZNxFf78CeltEyOQjkAUnGlkkiWJtqIsVAKQhZlQdnYobqU0Rk2zdP
-         uSOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793896021; x=1794500821;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=auiIKhbmoRZT4mFY+NhWtro4ChWc0LCFT6CcONkj2hM=;
-        b=Mb6BCLnFFanPUjQQMc/hu7A7H9AIgSQ7Ot3Z3bKFps0IS6WoEHT3FvxZw/MdJ7a9WR
-         IUxWgThw9RXIcwIr8cwl0fz2GGKGme2DjvN5Mv8mLafNugzR3YlFcRgmiVsaq3v9tS/m
-         xG6LnmOZW8A9Gz+9m0mtT7Ni/JehJLcDSVb4uo100b3lYxqSzxmfmwFJg4LVQIqZVoTu
-         gREJ/iJuFp+LRguCRRmiJKSG6cV9/Ei6U9+U3FRv2qbMju+MlYWmk3v23k3N9YVoCrns
-         A2OOx3XbZTuHniQf9+6jH78RF4pNGHmHO/OlUEdzyvY/szc4kFt+8W8OSL1Bsrm8NxUb
-         aegg==
-X-Forwarded-Encrypted: i=1; AKwUvBwK7gCmrVDB8ZqX/ZEYig++2EeUZLQcD2hIc9wbUNGOqzL3Rdhp5KBcb2sWvbLERvFHKHqrgg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z94dnzlod9iq1G6t7uqwws3dcWfIewv3VPVr3v5HWITF8lVPy5P
-	EH4fa73hX9WvlCglycINR8O2VQmrWdOsMfahaXYj0PNf0XtkmkXrtMf0Q0ciO+CgfJM=
-X-Gm-Gg: AYBFou0PyQFQFMcw5PdSplYtMGAukYNJkn4Yb4sCAYQmDjkwpC/qAuU4MQY1LeG6rM3
-	L6ObNiaNEJBVmyjTRJjI60zuGg8jBv37h3g1nno081vOuKeDoXU6fxgdRX5QT1G9Yhz22XGEHgB
-	r9KenOd2xdAKnSv7DrwJVcuZ7yKIH5EDfV8Si8IwXzy0U37sfosm8iXYPVql9yI3mq1uWN9zVwi
-	OQx+NvMKwFG/9+JnUv0OCnchOzSqXLZH0UxSyKEAWKjhV+K90n6IuZwcfHV6b8cZgG/Hr3fHZaF
-	J7QW6mIs/x17QZWkjDsYVELVv2iWzNjmpFCmbG5b7jU4FkMbclBocS/onhs7smX/XRDHDkrNI2n
-	jvxnxfljGDtqG3m0VM/e7S0SQL4Qjsh7xp7wkOL7mN5YkIPIvTga+hDVe07fBrXjH/lXjkZuVH9
-	8M5M2hC5Ig63zWndSN4KD5Wx3eNjKT++k0NgNlxMIMdcLUK76LJOcXqiP5yPeU4UJEfTxfXNBly
-	dVIgMRjzmmxfzngoPxydNpM0l7jNdPdDa2TlDgK2sCdhrxezFY1gMrOe8jxo6uVBtMJ2eCaPKYq
-	ciFMJDLpHoweUCMH9LggTPiqQ9mLGZRWLeXxmLdsqNlhX0usrrzs5x/VtY8mAD7pMS0m4pIkB/L
-	kT/VDnFvIxweHY3oCzxrthKNwdIGddbs=
-X-Received: by 2002:a05:6102:3f9f:b0:7cc:174b:f7bc with SMTP id ada2fe7eead31-7d2a15715c3mr29296137.15.1793896021174;
-        Thu, 05 Nov 2026 08:27:01 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-7d26fef4ed3sm4667110137.11.2026.11.05.08.27.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Nov 2026 08:27:00 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xP0Il-000000032XP-37xT;
-	Thu, 05 Nov 2026 12:26:59 -0400
-Date: Thu, 5 Nov 2026 12:26:59 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 17/17] PCI: Replace untrusted state with device trust
-Message-ID: <20261105162659.GB663069@ziepe.ca>
-References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
- <20261105-device-trust-core-v1-17-1e536825b4eb@nvidia.com>
- <2026110526-aerobics-correct-4c06@gregkh>
- <20261105131856.GA8298@unreal>
- <20261105140352.GF3889730@ziepe.ca>
- <2026110558-tartar-juicy-036a@gregkh>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=sqm5mziB
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Kw69URQspin0NL7zE2d1+3TiXGRlMjZovfNpmI2WWTc3+MqWaSqwRQz0teUUpnJKl9rPR6DKFtSFGahFs7GzKfUYz/YoowT/55txu5U4ToZRRcN6RaGu078pAKH2XGxGP9xT14IZkPCYs/4kXujybOa+G3j55ffjWGQG4wJaNeSkHgkbNxrnabUHeQ5fYOS4Bpl1WjH4j8apAcsJsiahNzBZ14pRVjyto4rqzePXiidLmcIix9ymnVSJObUbYNax6A8etw06cFEZE5JhesFd7fRb/alaTW5GjkS17G5dXmz5uZ6vq809STze7CVCJl+bh6WLwEIrFoUKS1Kv2QJ1qA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cX7evaUAZUk3NtOD+vQb+hpJ0xjqrO25biFLy5tUjRg=;
+ b=SNRPvfdZeGj2dNUQhJWrzgsS73phCb0ZYjHvjx5T4xTCwquhnigrCfMjLUFxetjO/0TUl4Fuue2qc/Y1OUbfTi+dAFxNjw2n1oTxECjiHm3YRanas4KQJ/WRLkACjDKTepLxL0AKsfvBzPSXKn/2zByJzbI/X+Mi5AyCNG4v59SgDmQ9SP+865iPWNP+MXrhrzNNIxfxBvQzXLCKQleJxj00LYpxEViEolbR/XJn+mBvL3BGVhC5b5slQSdM01khN2//YRgpHI0OSkvai2eabb6skdLHZOTzXxC4ixuAseCjJFXOt01NAWpDyAaVvF/8nTLRhDZmDNi1N6tYLrk6XQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cX7evaUAZUk3NtOD+vQb+hpJ0xjqrO25biFLy5tUjRg=;
+ b=sqm5mziBYCLCBBx3+R1kL0vYevJDktw8tgoxGExG+OEH9iFa+pK0JVyaQzIgWCWG68aHFkkMsc+wdegtCkbOq4qQkYziQTLByCYbTfC3/tuuitQWQADUGiLf1haCg5jSAiw1VWzUIRxaDJqSb4RAwE8Isz6AAwobPal6eIpD64c=
+Received: from PH7P220CA0045.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:32b::17)
+ by IA5PR12MB999323.namprd12.prod.outlook.com (2603:10b6:208:605::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.10; Thu, 5 Nov
+ 2026 16:32:34 +0000
+Received: from PH5PEPF00000030.namprd04.prod.outlook.com
+ (2603:10b6:510:32b:cafe::28) by PH7P220CA0045.outlook.office365.com
+ (2603:10b6:510:32b::17) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.10 via Frontend Transport; Thu, 5
+ Nov 2026 16:32:34 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ PH5PEPF00000030.mail.protection.outlook.com (10.167.243.10) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.615.4 via Frontend Transport; Thu, 5 Nov 2026 16:32:34 +0000
+Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Thu, 5 Nov
+ 2026 10:32:32 -0600
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <joro@8bytes.org>
+CC: <iommu@lists.linux.dev>
+Subject: [PATCH 0/5][PULL REQUEST] AMD-Vi updates for v7.4-rcX
+Date: Thu, 5 Nov 2026 16:32:14 +0000
+Message-ID: <20261105163219.601561-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -136,31 +103,79 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2026110558-tartar-juicy-036a@gregkh>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH5PEPF00000030:EE_|IA5PR12MB999323:EE_
+X-MS-Office365-Filtering-Correlation-Id: 32503a1f-645f-4eb4-3bc9-08df3b5a6538
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700016|376014|23010399003|1800799024|10067099003|18002099003|56012099006|11063799006|261022075727099003|261009223027099003|261028144727099003|261022105027099003|261021123027099003|261021121427099003|261102123227099003|261026121527099003|261026140227099003|261022113327099003;
+X-Microsoft-Antispam-Message-Info:
+	paXxzlvRvLcXXn5fN5l5GbzyU3nea8WZdfJEDn8uKrFWmtg7wDaCRNw2+XzispvwnTEHJKPBBZpgaF24+CiWE6fDX1iy0cY5oSyiz7Lmy2shLJ/xkBc+u4TvFs0T/OaGxkw3dHBNz04z32YA9JxMAEvw/Iq974XQ4G2arcEko6SY8g2Nsb94c9mQxe5S5nnRf7FEIA/AObuRBBZRrAfV0UrJy7LL1tD+7f4HZWTRBwd/MdSrw9HnftYoYzobVSLgyUhI0om4oLiIQYjbnUMdWUf4OLpxAyI2ZJYnxLZLlTzq4F46nH4TE3MtqwzO08eFiMQ5Ybm+YWhW+luKbq6RLnLnA1gryffj+iWRMh4dyJk+6CYDu/vowygN6uOEgvKonHaOPqU3fv+nX0SktyDLOwTTqxeTffOgxUmtZ8x//YxnNccdcXYtT1r+PezFhzXqFlealCz7cWlxkWY+AFmGc3CC12z8ENnRBrRBaL97T46D5VAYbsIe/fsxq36tnDEQXTKZFxAuMxjs5PDFfXKx8vH0QIWX0DAwADwBplX9go3vZF5y29LrS8K0MQE2QZUib+9UIF3SNUIQTr3nE/gRQ1x6qgN1tutdXtzKcZd4zFcgGOJ5DW+IWXUN09W9Xwd0FbscB16VF1yeGBK1effX3mdJD3JHk5Akqsa1g3Y1HfmmEXAGdl8arChkPCMV4jgK
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(376014)(23010399003)(1800799024)(10067099003)(18002099003)(56012099006)(11063799006)(261022075727099003)(261009223027099003)(261028144727099003)(261022105027099003)(261021123027099003)(261021121427099003)(261102123227099003)(261026121527099003)(261026140227099003)(261022113327099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	dCTgf2Zu5zZsgRnUUNqmUotZTIDJQfFxcDtYlqrDFceyxrg+C8g+3nryXwlMqCuxnj3LCxdCmPKAVSezuxWO0uMyOXfALsvIvAANfyiIVh4+72i+DVTRe5J+qH1fp9DqFKyHRsCImq0yl8n5tMCtIF/5bIAwFO1DM9hHieZuk5Zb9qX0+mck8scbkA7S4Y00xVJR5jIkwHHTTNJkqHQnZeBlpxFl6nvFQWjxkxXtnAmwLpsiAmqs5yUuwQ52BDQcarNfy1ypm44WIolGbnzqgLmD32A4kb3nUTwKrTy9NmzFG5nbVLCBiDx5n01ubBMt13vCAUCztSfFxFslhxMAZuXCZ56GwnQituMlACj6EzP9/2cYUZ/EsTMgxJR23LIRG2EKfu3nVGDz+HcblgO4gzFJGZKiS5sbHkG4TUqxz0QWYuCd1quntGtVjRw2zGA7
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 16:32:34.0413
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 32503a1f-645f-4eb4-3bc9-08df3b5a6538
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	PH5PEPF00000030.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA5PR12MB999323
 
-On Thu, Nov 05, 2026 at 10:43:00AM -0500, Greg Kroah-Hartman wrote:
+Hi Joerg,
 
-> > But I supposed Greg is asking about /sys/bus/usb/devices/DEVICE/authorized ..
-> 
-> Yes, that is exactly what I am asking about.
+This series includes fixes for:
+  - Boot issue on some of the AMD laptops
+  - Making perfOpt as default. This is slightly larger change for rc.
+    But this removes the command line option introduced during merge
+    window and makes this feature contained inside IOMMU driver.
+  - Few other minor fixes
 
-It looks like that does the same basic idea of delaying driver binding
-that this series does. Hopefully Leon can harmonize it to use the
-shared trust level flag instead of a usb specific flag and retain all
-the uABI around it.
+These patches are based on top of v7.4-rc1 (commit 6628e7d4c6b2). Please
+consider pulling below AMD IOMMU fixes for v7.4-rcX.
 
-But, even with this v1 the user can choose to use the generic trust
-level and ignore the USB specific authorized and get the same
-functional outcome.
 
-> And I know there are other types of devices that will want to use this
-> type of thing (i.e. SPDM seems to be spreading to other new bus types),
-> so it's good to have and get right.
+-Vasant
 
-Yes, we are investing alot of time right now in trying to get SPDM
-uAPI right when we bring the general framework into the
-kernel. Everyone needing SPDM should be able to re-use it.
 
-Jason
+Akshay Jindal (1):
+  iommu/amd: Skip non-IVMD entries when parsing IVRS memory definitions
+
+Dheeraj Kumar Srivastava (1):
+  iommu/amd: Clear amd_iommu_snp_en if snp_rmptable_init() fails
+
+Jean-Christophe Guillain (1):
+  iommu/amd: Fix NULL pointer dereference for GPUs without upstream
+    bridge
+
+Kevin Mitchell (1):
+  iommu/amd: remove obsolete domain pointer warning on release
+
+Mario Limonciello (AMD) (1):
+  iommu/amd: Enable PerfOpt automatically for integrated GPUs
+
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h        |   1 -
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |  50 ----
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c    |  12 -
+ drivers/iommu/amd/amd_iommu.h              |   3 +-
+ drivers/iommu/amd/amd_iommu_types.h        |   6 +-
+ drivers/iommu/amd/init.c                   | 106 ++++----
+ drivers/iommu/amd/iommu.c                  | 273 ++++-----------------
+ include/linux/amd-iommu.h                  |  11 -
+ 8 files changed, 115 insertions(+), 347 deletions(-)
+
+-- 
+2.31.1
+
