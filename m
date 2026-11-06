@@ -1,105 +1,44 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.199
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=85.214.250.239
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793979564;
-	b=cN49VofRhky1ekdI042iXCZI11weF2or2CwpPrBA1N06nbd1SSI3L8Lr6orPPnUg8WoA
-	 a0MihzZgSN5J0kMO4AmehKVX/bWy/BkvwJvd1Z3HM0keUgddmFwBed1DFbIQpDfkHarQu
-	 PDfLb5gkhXnAO6Qdhej8lA8No4URY7sCwlzSLAXLgbvRf1eVThbj5Hv/KaPGuBM5a3rYc
-	 zIhG2fTgYsej/xhdGwIhzX5vsS3IRj9ZZ6HGagCXg//1FmfF0lvvYGR1p7jLF2Plz/Hj1
-	 46DnGE45+Gkco3UYLVRAgHJQMu5OPLLyO0/jFvEAzj0mdkE73kFb9Z+eqGNHptlRe/g==
+	t=1793979943;
+	b=j7I3PuGeAJe9uh9KlfqQ1vLJ7AIo2+05dNQ36R59z1Axu+nMuxG3nWbbzaNkPfp2nOmf
+	 Utk/Icvl3XbHxfh+MmJAO224UrvH5T1k9zQo1cQgbfeDovbuirJWo23Vwn9E2c2CRtdDR
+	 obJ0cvZHYwWquOKqe25hewr2Ae0EyL3bwdP4R4PWlQCTWtTqmKDVbb0Bs2VTp8852HafM
+	 s3UhjpVgsQDjZB1E1NwkDuf5vFXwkFITlXw1uO+PV0tc8Lv4+KEPz6WASsSEdouw01XzW
+	 DR6hfAjH30CBpGH+e3R11sjTIHPod5GUmDiY2wkVl2PNQnjdqqTHrvFEJYJkCfQQkfw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793979564;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
-	 X-Mailer:In-Reply-To:References:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=4tmGxuQStKCk7w+onoi1RLdqwI1kArXig6jzABebmog=;
-	b=gvyzyjVTDGtgsJgdFQa1PYb9f5uAi+ojJeyonUsufLR03QkJ0n0ff54ZrfFKSa41vweH
-	 bvU6X+PssrUGYlgOyxLMoIhRtuBd/ouCIUo+LRTQy/RYUudDvrLCjOmFJ4Jm7opFaxtKK
-	 wRbUCeDEcIpBOmqEHWA36zTD9ndxwBJhioDJuosgp+K1a6CkI08YpqffzpWpTMCPFzYiC
-	 8R/JeeoMBBB4x1n28bgF/vdAXr5d7bourTPglgwILWVbQ5UC4t/qjK9uf0GbeiOkiKWoq
-	 f6oYePBLR9ryB3nNYSeKHvj4v4b/CaZGhbwWtnZ70ylr/5i4K3RAEp4YUZu2gLm/haw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793979943;
+	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:
+	 MIME-Version:Content-Type:Content-Disposition;
+	bh=f1Vggd/CSfV+sAUe31A7z9uDKw+GeX3Dxz7Go8iocug=;
+	b=UVG4fOYCA2BXgBbniXnEPCOCs7y73atGzafnRJQke5Z5YEBF32D9v9X/Ly/+SY6zGt68
+	 MIjkQhXbWhZh/Sw0p4C4lMRVx4wLzKZaKdFoo9mwLDyb5YNkQWj492ZHtXZyxiB3LD+kW
+	 o7FtNSVCK3Qdaj3AMyiBSbvtk35hOokkl8Pl6GVCaQ+QUdgAKhZXrWNjlqVt63C5lCUGL
+	 pj/+fRXhnOlARFcfUKJGNIGqOPQndXYyp0e0KQ3QJAUkGmAOizlt5MzVjtHxl305lTvUk
+	 LvcLvz+JPdfQWyglGOktOlIsWN13GOZoQREOL6WghOjqfEgEWOeVxk6rTH9oXb8Kesw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=CmzgYoZC;
-	arc=none smtp.remote-ip=95.215.58.199
-Received: from mta1.migadu.com (out-199.mta1.migadu.com [95.215.58.199])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=none header.from=8bytes.org;
+	spf=pass smtp.mailfrom=8bytes.org;
+	arc=none smtp.remote-ip=85.214.250.239
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3958D606A32F
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 15:45:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3958D606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Received: from 8bytes.org (p200300f6af404a00c8b813848b737b26.dip0.t-ipconnect.de [IPv6:2003:f6:af40:4a00:c8b8:1384:8b73:7b26])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9305B606A329
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 15:39:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9305B606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=CmzgYoZC
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=cxp+oaexrpUE0cyElicHmhKBrNrP/fzOSAf3exqA3F4=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1793979561; v=1; x=1794584361;
- b=CmzgYoZCoSCoPOD8d4J2CNcL+azM+zYCz75PcmISXevWmg5vTMxyEjplZCkCK5TM1Om8yZ6V
- Zbx3Wd/Y4LxkocPiaUzZIXerQYHYqPH79yMQI8F7Y4Qt8r5e7Ub4KBDOVvOGzoyHoXX09hBsmQG
- 4dbcIPuXWKdimO8uWiqmyp2U=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id be0c1e5625ffc958;
-	Fri, 06 Nov 2026 15:39:21 +0000
-X-Mizu-Trace-ID: be0c1e5625ffc958
-X-Migadu-Flow: FLOW_OUT
-From: Lance Yang <lance.yang@linux.dev>
-To: david@kernel.org
-Cc: akpm@linux-foundation.org,
-	ljs@kernel.org,
-	liam@infradead.org,
-	vbabka@kernel.org,
-	rppt@kernel.org,
-	surenb@google.com,
-	mhocko@suse.com,
-	willy@infradead.org,
-	jack@suse.cz,
-	ziy@nvidia.com,
-	baolin.wang@linux.alibaba.com,
-	nico.pache@linux.dev,
-	ryan.roberts@arm.com,
-	dev.jain@arm.com,
-	baohua@kernel.org,
-	lance.yang@linux.dev,
-	usama.arif@linux.dev,
-	kas@kernel.org,
-	matthew.brost@intel.com,
-	joshua.hahnjy@gmail.com,
-	byungchul@sk.com,
-	gourry@gourry.net,
-	ying.huang@linux.alibaba.com,
-	apopple@nvidia.com,
-	peterx@redhat.com,
-	hannes@cmpxchg.org,
-	songliubraving@fb.com,
-	riel@surriel.com,
-	hughd@google.com,
-	will@kernel.org,
-	aneesh.kumar@kernel.org,
-	npiggin@gmail.com,
-	peterz@infradead.org,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	joro@8bytes.org,
-	robin.murphy@arm.com,
-	steven.sistare@oracle.com,
-	jhubbard@nvidia.com,
-	linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-arch@vger.kernel.org,
-	iommu@lists.linux.dev,
-	stable@vger.kernel.org
-Subject: Re: [PATCH 4/5] iommufd: fix cleanup when adding memfd folio pins fails
-Date: Fri,  6 Nov 2026 23:39:14 +0800
-Message-ID: <20261106153914.91168-1-lance.yang@linux.dev>
-X-Mailer: git-send-email 2.49.0
-In-Reply-To: <20261105-refcount_overflow_stable-v1-4-70b9c655da3e@kernel.org>
-References: <20261105-refcount_overflow_stable-v1-4-70b9c655da3e@kernel.org>
+	by mail.8bytes.org (Postfix) with ESMTPSA id A59682436CE;
+	Fri,  6 Nov 2026 16:45:34 +0100 (CET)
+Date: Fri, 6 Nov 2026 16:45:33 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v7.4-rc1
+Message-ID: <au32DJVMbP6j5_gq@8bytes.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -109,36 +48,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+Hi Linus,
 
-On Thu, Nov 05, 2026 at 02:10:13PM +0100, David Hildenbrand (Arm) wrote:
->folio_add_pins() can fail after memfd_pin_folios() succeeded pinning a
->folio. Upcoming folio refcount limit checks will make this easier to
->trigger.
->
->Let's fix three problems in the error handling:
->
->1. pfn_reader_release_pins() uses the allocated array size instead of the
->   number of folios returned by memfd_pin_folios(). With large folios,
->   cleanup can unpin uninitialized entries. Remember the number of returned
->   folios and use that during cleanup.
->
->2. pin_memfd_pages() returns on failure without releasing the pins acquired
->   by the current call. Release the per-page pins for folios already
->   expanded into the page array, and the single pins for the remaining
->   folios.
->
->3. pfn_reader_next() returns on failure before updating batch_end_index,
->   even if the batch already contains successfully expanded folios. Update
->   it before propagating the error so cleanup releases those pins as well.
->
->Fixes: 92687c793644 ("iommufd: pfn_reader for file mappings")
->Cc: stable@vger.kernel.org
->Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
->---
+The following changes since commit 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4:
 
-Nothing jumped out at me, so:
+  Linux 7.4-rc1 (2026-11-01 13:26:31 -0800)
 
-Reviewed-by: Lance Yang <lance.yang@linux.dev>
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.4-rc1
+
+for you to fetch changes up to 2cf4be57b301ed2d7af82e70cff5dfd96894d8de:
+
+  iommu/amd: Fix NULL pointer dereference for GPUs without upstream bridge (2026-11-06 13:22:44 +0100)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v7.4-rc1
+
+Including:
+
+  - AMD IOMMU:
+    - Move PerfOpt management into the IOMMU domain attachment paths, enabling
+      it automatically for supported integrated GPUs in identity mode and
+      clearing it before switching to translated or blocked domains.
+
+    - Fix a boot panic in the GPU identity-mapping quirk when a GPU has no
+      upstream PCI bridge.
+
+    - Clear the IOMMU SNP enable flag when RMP table initialization fails,
+      preventing subsequent initialization from assuming SNP setup succeeded.
+
+    - Check IVRS subtable types before parsing memory definitions, avoiding
+      bogus PCI segments caused by misinterpreting IVHD entries under QEMU.
+
+    - Remove an obsolete warning on device release that incorrectly fires for
+      devices required to remain attached to an identity domain.
+
+----------------------------------------------------------------
+Akshay Jindal (1):
+      iommu/amd: Skip non-IVMD entries when parsing IVRS memory definitions
+
+Dheeraj Kumar Srivastava (1):
+      iommu/amd: Clear amd_iommu_snp_en if snp_rmptable_init() fails
+
+Jean-Christophe Guillain (1):
+      iommu/amd: Fix NULL pointer dereference for GPUs without upstream bridge
+
+Kevin Mitchell (1):
+      iommu/amd: remove obsolete domain pointer warning on release
+
+Mario Limonciello (AMD) (1):
+      iommu/amd: Enable PerfOpt automatically for integrated GPUs
+
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h        |   1 -
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c |  50 ------
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c    |  12 --
+ drivers/iommu/amd/amd_iommu.h              |   3 +-
+ drivers/iommu/amd/amd_iommu_types.h        |   6 +-
+ drivers/iommu/amd/init.c                   | 106 ++++++-----
+ drivers/iommu/amd/iommu.c                  | 273 +++++------------------------
+ include/linux/amd-iommu.h                  |  11 --
+ 8 files changed, 115 insertions(+), 347 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
