@@ -1,135 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793990629;
-	b=sOwZuI0L//R6bij0gnkbDxhOInfPoeCQC/G+RhhLTm1l3lOVmXIuGUIr7/K0oSqWbX9+
-	 dW3z7udffwkY1LSNVA4zilLa07Bsgoc0zyJtMiy0TKjLngTDBX6+xotvAIOLnmN11RPhK
-	 TqGg/XmlX6pmJXbtZRuilhIW0w86XLCXyGkz9iyFu53UBi+2yerpKEv1eSJLsBVSaJVZF
-	 Qum2RZWyi1QbicViGL6W2VsSNzVR9ZheExl/5z+kPeWaHaiKvv3ZtOAvNOR4GWi8Ql+iZ
-	 K+yfgrOr3p6ZFOhAqMIDHzgx0s6k3lCg3/5K/lW0QFBpwsu3HtuoAwCj0gPQfJeQo3A==
+	t=1793990690;
+	b=UBTYY8oxPCX1jtJgHlMykORN9oy02hrQymQFDs1++/fOrake89HRJtAzGBa+XQ7gmMIm
+	 9HjG3a6ADJuLP/r3aKK6Dgp87ShVFWhSPe9UavORhnJK6kXNjvRantNmz9Fv3q0mcw8IY
+	 Z1AahCAdhA8q3sxS/FEHDFH5YYvsPHFKEk2Vd7qPvLXMheUx7ehVpSd9U82b9E7HCahVR
+	 ZeNCdPzrJM2aUC4pLZYh/OEeVTusLmMQrg4PSOtF/YcSWI0B2WjQN/xehd59AkXLYF0VY
+	 QDH1utJQXPSKz2hylY41Tf5qzEVchJNv2zk1aa/DWtm3xO+o5y0BsL56PGdK0pOQzjg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793990629;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=b7Y85ZMNTmnO5vyHoGmhNUdpyQ1xa3t2s3wZRjsJimY=;
-	b=Ig8KancJ3uGx4Pn63fTYvKThTLMh5g1Es1xlQ69GFp/GS5Pe0TFy2vBP5tWQ2/SxpDio
-	 S43fUnBEPRDLSjed8jw/nZpNKgwZf6eJO54tSaIFs1OeUTlGlWiBNv+riPB2yec+kHMBl
-	 SI40sDu3bxk4xgzJJUxa+9McP0Y/dbpwLdK+4Gz5QVwgN1W9y03ofFdT8HtURdtDcLnxd
-	 6KR9KgkFMG8DWS8AaruLOIBKUAPAzGEGzkz2DOlx69Sm6rh/+HZZhuWBKHDjEWTMOk4gx
-	 22MjvSA201t4WAkHkBU+95h8oaKG4GI3mnr1f/MoszQXoGYxkTFt/88q1eNYZ6b5tmQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793990690;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=3oYbhAK+eKSOg53p6mVFeSQFwkjFWWYL7ona4iL/pZU=;
+	b=X1FgzFy38zq3X8rDdbjsJfF8837DEOEjnNSvg1KmuHOBKASQp61AZ2XpLiG/PcbFGSVm
+	 S5+PsutGeH86LeKa8jPo+7E8PXVvYhPMmibKiPUiDKX34ifbEuNIWdfuHnFLDTVlv6Rpb
+	 445WfcitVUqU63dTEQy5wx9V5dxX4BZ21cu+GXIMuhYbqPC1dayCNO+KKNDi2wPll7YXN
+	 feDIqZRu6W69+9D8rFn7WmP5bjrFoZQBO5yI8Lwi/cgc/ygg0QB+puMGAvPdnIW2w3iQK
+	 Ji8bRAPEdIfyho3Hs8jQ8VMctzqBc07WLM333k54iAzpc275NeMzk3mvss4HA+Fq7pw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=STDm0Ns6;
-	arc=none smtp.remote-ip=209.85.160.173
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="QcEYA/Ym";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB88E606D827
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 18:43:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB88E606D827
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4FAB606D80B;
+	Fri,  6 Nov 2026 18:44:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=STDm0Ns6
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-53665358476so9171881cf.2
-        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 10:43:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1793990628; x=1794595428; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=b7Y85ZMNTmnO5vyHoGmhNUdpyQ1xa3t2s3wZRjsJimY=;
-        b=STDm0Ns6/45sn2GRqprHpdF/TMkQ19axHR3n5cyc181ziPFbHYTRRicsRris+v5cZR
-         rUmYTy0rLtZNDUseeeDlvHQpKzXW3Y3AEWt+Z+bytjfs3p9qkggzEAWc+TzdsR7nURl2
-         R9ctDLjI8qsRR2Qe6yLo/cMXvjfapPD6InEEebX6QJu8UHz0jHJ/wQLIihRgpkeVcMvv
-         LuYUeGZPFkScEPmnPoRyZ2ToUo0i9fo1Irda1Qkj4nLCljVgpNRiOWMhPqi77dsSTtej
-         V1sIBLyiax5uQYbfmQ6/pmMCsKi1UVKqptiwW1xEWkaaX8cFzTDzeqLVeyHP+4JVEFPa
-         gKFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793990628; x=1794595428;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=b7Y85ZMNTmnO5vyHoGmhNUdpyQ1xa3t2s3wZRjsJimY=;
-        b=mgIn16cCLBchaIs/dk8WTSgUviyL0zw4HbbOGxAWZ9k5bjziqS5pLjTbVMpkRo2cJz
-         BtYkve4gWePsHPZAjwOcCx+IRMJ2vT3Yvuq1AG7SLAwvIdlIlkErITQLOVH2QrNN8RgA
-         Tlc4+DqdScFpmOsSNiRPT5JxTeHBRV5Y5e212OXHCKQn6da0VW2w5nwOabmxdOQARu8T
-         z/ir+sfY4SfvCgzbKInz4x6t1/Lc9JcQH9cVCFgJMX7e2HJTcJGD69doA/WkLeONN9y8
-         gBOqMxzcNxCxepDMCwJ5nFP8XQmjyZI+JpNndw8jaWLVaO45PfrQ76VR8j9J6MBCUf5M
-         Mkdw==
-X-Forwarded-Encrypted: i=1; AKwUvBzs0Vi370NsqyV0qxb/CV9BlxWCQRbN1JJvh2Q6uzsQ9BEfl2QiNAGdLUGwB4AbbIjIoZlCzw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+dDU9BgspoosyOpop4ZnZ0D88mimqkK1RqPeybmYpX9CTmCVos
-	YlOnRzFDcMuP1PV90voXeSpYm/YF5W929C+RGeqF81qo0ofbAJmEtdVw10XEhuvSGTA=
-X-Gm-Gg: AYBFou0BXMhP5Asf6VGfvR2i33Iofe0Q6zRE7NhfZfXGgsKmUjYHSjLYO+S9/4mUvm5
-	3CUrbuRcEwCjiOsdiL67/YIg2bXx9Gqhxq5WAz0WyxfaAqPE1FWh2ZmvF3TuWkR73l1TVrXnd4A
-	YPBs1MnRJDfvXiEm6smFpQNOQAmQ6sUnuKaKxeHABNnUCGWvPcNMl95ZpMIv5A1c30VJ0Luuhc1
-	tkWC4ScukHADiegLLBSjm485iWXPNvVVDp+f7QKaD79So7YHAmTGraGp7MFbl+Ny9Rs0LypqpWw
-	QjyOXEbJ8ajEHqV2ZY0SgHuf1MYpWkFAbbewQ/eUR9RmgUvRm9vVxVx65GAVaAHrZBOeJ3TXBne
-	yVf19pJ/RXjSyuZ0PlDzG0J23z+rHRxe8YIWD7GoKMG9q7N2GXxLid02QGfnQ8qV/F3hTxfKoXN
-	1aHU4oFsvTZXEL65s4ZKeZYbm7zCXGzZ+Wp6Dx22BCeuf6efP5ya1mG6J4gQadLswoLoNjuZdVs
-	xLbW1bu4aXnM99SIoZF1wrPUAnV2Y6vuNsH0sRxcV5diSSZSLlCDGjZX20I5t8wId7wFCi4ea3M
-	Ay2GMKb/vxvUanq0D24lbclufuIc5HpqMp4SWytMGNNXcH8BGttkj+UWW0BhlElsP+DypMs0Vef
-	69k1C82x95Q==
-X-Received: by 2002:a05:622a:47cd:b0:536:764e:1527 with SMTP id d75a77b69052e-54e14a6c486mr53004081cf.44.1793990627606;
-        Fri, 06 Nov 2026 10:43:47 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-54e25785f14sm26823821cf.5.2026.11.06.10.43.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2026 10:43:47 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xPOug-00000007JdL-0xGY;
-	Fri, 06 Nov 2026 14:43:46 -0400
-Date: Fri, 6 Nov 2026 14:43:46 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Naman Gulati <namangulati@google.com>
-Cc: Christoph Hellwig <hch@lst.de>, Luigi Rizzo <lrizzo@google.com>,
-	"David Hildenbrand (Arm)" <david@kernel.org>,
-	Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Vlastimil Babka <vbabka@kernel.org>,
-	"David S . Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Jesper Dangaard Brouer <hawk@kernel.org>,
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-	Willem de Bruijn <willemb@google.com>,
-	Kuniyuki Iwashima <kuniyu@google.com>,
-	Joshua Washington <joshwash@google.com>,
-	Harshitha Ramamurthy <hramamurthy@google.com>,
-	Saeed Mahameed <saeedm@nvidia.com>,
-	Tariq Toukan <tariqt@nvidia.com>,
-	Tony Nguyen <anthony.l.nguyen@intel.com>,
-	Przemek Kitszel <przemyslaw.kitszel@intel.com>,
-	Alexander Lobakin <aleksander.lobakin@intel.com>,
-	Michael Chan <michael.chan@broadcom.com>,
-	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev,
-	netdev@vger.kernel.org, linux-mm@kvack.org,
-	driver-core@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
-Message-ID: <20261106184346.GJ663069@ziepe.ca>
-References: <20261023140107.GC3977851@ziepe.ca>
- <CAMOZA0J+MOLv+s4PAvsAK1jbasnbQRyHffZw1VEKutH9Vr6ODw@mail.gmail.com>
- <20261023145023.GH3977851@ziepe.ca>
- <20261103080933.GA4213@lst.de>
- <20261103151021.GK3889730@ziepe.ca>
- <CAMP57yWvHO0pWCR3-9q1gtwVe8WV4Y6i69trmw+BJRVYf3JB1g@mail.gmail.com>
- <20261106173054.GH663069@ziepe.ca>
- <CAMP57yU-VhZWXijvwAXcN9=zZ+eWXZ6J1bkHuCJw3ocRaFaV=Q@mail.gmail.com>
- <20261106180714.GI663069@ziepe.ca>
- <CAMP57yW6Y4g-xM9YTB+MpgxPN7RFeEWhAPWvqrfOoMDEuL8HZA@mail.gmail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=QcEYA/Ym
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C88FC1F008A1;
+	Fri,  6 Nov 2026 18:44:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793990689;
+	bh=3oYbhAK+eKSOg53p6mVFeSQFwkjFWWYL7ona4iL/pZU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References;
+	b=QcEYA/YmtkioQRzRtTW9sUXPMKXKItlksLy5ZBR55DlM/RubXafpobrDrppXvcamw
+	 MOtqdTrcd9SihJx3YWusD3M4MOYXxwKOdsdO9xgqO/3AREnEiLfBwF5GbHHw4inu+d
+	 UWdPUEzLwZW2++yR3lfHWgIlrO5Jr5/ozt5jI42VNDJTu4TT8AWD4emCfCXFa2alic
+	 vTUv19Ay+3oLblHWmbcZx1Xxxn/L+G8FCnG3nQ4UMo/JEYmnh+Gvb5om9LLM+Y1W6X
+	 Y5dJQt/Ne1Y4fYLbYhgcL9OTVx+tXtcHq9HJVBKCOkUHqzyyKozhyioOnhNOOsCXnx
+	 dWtKcJ1/6W4Yw==
+From: Jakub Kicinski <kuba@kernel.org>
+To: robin.murphy@arm.com,
+	m.szyprowski@samsung.com
+Cc: netdev@vger.kernel.org,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	Jakub Kicinski <kuba@kernel.org>,
+	=?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>
+Subject: [PATCH 03/11] iommu/dma: pass the NUMA node to iommu_dma_alloc()
+Date: Fri,  6 Nov 2026 10:44:25 -0800
+Message-ID: <20261106184433.761422-4-kuba@kernel.org>
+X-Mailer: git-send-email 2.56.0
+In-Reply-To: <20261106184433.761422-1-kuba@kernel.org>
+References: <20261106184433.761422-1-kuba@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -139,81 +64,163 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAMP57yW6Y4g-xM9YTB+MpgxPN7RFeEWhAPWvqrfOoMDEuL8HZA@mail.gmail.com>
 
-On Fri, Nov 06, 2026 at 10:17:38AM -0800, Naman Gulati wrote:
-> On Fri, Nov 6, 2026 at 10:07 AM Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> >
-> > On Fri, Nov 06, 2026 at 10:00:35AM -0800, Naman Gulati wrote:
-> > > On Fri, Nov 6, 2026 at 9:31 AM Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > > >
-> > > > On Fri, Nov 06, 2026 at 09:21:08AM -0800, Naman Gulati wrote:
-> > > > > I drafted an implementation [1] for premapped TX and RX buffers on top
-> > > > > of the existing networking page_pool. It is implemented entirely in
-> > > > > the networking layer and extends page_pool as the default RX
-> > > > > allocator, to the TX path. There are no hooks in the IOMMU, DMA or
-> > > > > page allocator code. I wanted to understand if this implementation
-> > > > > correctly captured the feedback on this thread. Key components of this
-> > > > > design:
-> > > > >
-> > > > > - Chunks: as in Luigi's series, memory comes in 2 MiB chunks, but each
-> > > > > chunk is mapped once per opted-in device through the DMA API and
-> > > > > records its IOVA for each device, rather than using a shared IOVA
-> > > > > window.
-> > > > >
-> > > > > - TX: page_pool accepts a memory provider for pools that are not bound
-> > > > > to an RX queue. Per-CPU page_pools take 32 KiB pages from the chunks
-> > > > > of their NUMA node; TCP copies sendmsg() data into them through the
-> > > > > task page_frag and allocates its skb heads from them.
-> > > > >
-> > > > > - RX: an instance of the same memory provider, sharing the chunk code,
-> > > > > backs RX queue page_pools. RX chunks of order-0 pages belong to one
-> > > > > device and NUMA node, and are shared by that device's queues on the
-> > > > > node.
-> > > > >
-> > > > > [1] https://github.com/torvalds/linux/compare/master...NamanGulati:linux:netdev_dma_pool
-> > > >
-> > > > IMHO the netstack should never read from shared/decrypted memory. If
-> > > > you put it in a SKB you have to be sure the only touch after that
-> > > > point will be a DMA read from an untrusted device on the TX side
-> > > > (sending it to a trusted device would be a fail) and the final copy to
-> > > > userspace on the RX side.
-> > >
-> > > That's likely a fair callout. TBH I'm not very familiar with CoCo and
-> > > will spend some time understanding the constraints. I kept CoCo out of
-> > > my implementation as I approached this solution from the overcommitted
-> > > VM problem where we are trying to overcommit memory in VMs and use
-> > > these pre-mapped pages to avoid using bounce buffers.
-> >
-> > Why does overcomitted VM use bounce buffers? Do you mean this is
-> > about getting better memory clustering in page pool since the VM
-> > paging granule is 2M?
-> 
-> Not exactly, we are trying to use VFIO passthrough NICs in
-> overcommitted VMs. Since the guest memory is overcommitted we can't
-> dma-map the entire guest address space (as non-overcommitted VMs do).
+iommu_dma_alloc() allocates the pages on the node of the device.
+Pass in the node requested via dma_alloc_attrs_node() instead.
 
-?? I understood you could and this was implemented under the
-virtio-iommu by pinning the memory under active DMA?
+Memory from the atomic pools is not node-aware. Like in dma-direct
+the per-numa CMA area is still picked based on the node of the device.
+iommu_dma_alloc_noncontiguous() keeps using the device's node.
 
-Where in upstream does the DMA API force bounce buffering for this
-case?
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Björn Töpel <bjorn@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+v1:
+ - pass the node from dma_alloc_attrs_node() rather than dev_to_node(),
+   the API patch now comes first
+rfc: https://lore.kernel.org/20261027022528.633359-4-kuba@kernel.org
+---
+ include/linux/iommu-dma.h |  2 +-
+ drivers/iommu/dma-iommu.c | 28 ++++++++++++++++------------
+ kernel/dma/mapping.c      |  3 ++-
+ 3 files changed, 19 insertions(+), 14 deletions(-)
 
-> So overcommitted VMs can use bounce buffers to have a set of
-> pre-mapped buffers to bounce traffic in and out. We're trying to use
-> this solution to map pages dynamically with virtio-iommu and recycle
-> them via page-pool to avoid traps on each TX/RX and avoid the copy
-> cost of bounce buffers.
-> 
-> This problem extends to generally reducing IOMMU overhead in
-> networking - taking the dma map/unmap cost out of the hot-path and
-> avoiding IOTLB thrashing.
+diff --git a/include/linux/iommu-dma.h b/include/linux/iommu-dma.h
+index fae5d50e4f27..29a690b1a593 100644
+--- a/include/linux/iommu-dma.h
++++ b/include/linux/iommu-dma.h
+@@ -31,7 +31,7 @@ int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+ void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		enum dma_data_direction dir, unsigned long attrs);
+ void *iommu_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+-		gfp_t gfp, unsigned long attrs);
++		gfp_t gfp, unsigned long attrs, int node);
+ int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
+ 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+ 		unsigned long attrs);
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 78742aeba932..3e3a1a987a23 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -883,10 +883,10 @@ static void __iommu_dma_free_pages(struct page **pages, int count)
+ }
+ 
+ static struct page **__iommu_dma_alloc_pages(struct device *dev,
+-		unsigned int count, unsigned long order_mask, gfp_t gfp)
++		unsigned int count, unsigned long order_mask, gfp_t gfp, int nid)
+ {
+ 	struct page **pages;
+-	unsigned int i = 0, nid = dev_to_node(dev);
++	unsigned int i = 0;
+ 
+ 	order_mask &= GENMASK(MAX_PAGE_ORDER, 0);
+ 	if (!order_mask)
+@@ -939,7 +939,8 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
+  * but an IOMMU which supports smaller pages might not map the whole thing.
+  */
+ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+-		size_t size, struct sg_table *sgt, gfp_t gfp, unsigned long attrs)
++		size_t size, struct sg_table *sgt, gfp_t gfp, unsigned long attrs,
++		int node)
+ {
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+@@ -967,7 +968,7 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+ 
+ 	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+ 	pages = __iommu_dma_alloc_pages(dev, count, alloc_sizes >> PAGE_SHIFT,
+-					gfp);
++					gfp, node);
+ 	if (!pages)
+ 		return NULL;
+ 
+@@ -1013,14 +1014,15 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+ }
+ 
+ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+-		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
++		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs, int node)
+ {
+ 	struct page **pages;
+ 	struct sg_table sgt;
+ 	void *vaddr;
+ 	pgprot_t prot = dma_pgprot(dev, PAGE_KERNEL, attrs);
+ 
+-	pages = __iommu_dma_alloc_noncontiguous(dev, size, &sgt, gfp, attrs);
++	pages = __iommu_dma_alloc_noncontiguous(dev, size, &sgt, gfp, attrs,
++						node);
+ 	if (!pages)
+ 		return NULL;
+ 	*dma_handle = sgt.sgl->dma_address;
+@@ -1061,7 +1063,8 @@ struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev, size_t size,
+ 	if (!sh)
+ 		return NULL;
+ 
+-	sh->pages = __iommu_dma_alloc_noncontiguous(dev, size, &sh->sgt, gfp, attrs);
++	sh->pages = __iommu_dma_alloc_noncontiguous(dev, size, &sh->sgt, gfp,
++						    attrs, dev_to_node(dev));
+ 	if (!sh->pages) {
+ 		kfree(sh);
+ 		return NULL;
+@@ -1638,11 +1641,10 @@ void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ }
+ 
+ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+-		struct page **pagep, gfp_t gfp, unsigned long attrs)
++		struct page **pagep, gfp_t gfp, unsigned long attrs, int node)
+ {
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	size_t alloc_size = PAGE_ALIGN(size);
+-	int node = dev_to_node(dev);
+ 	struct page *page = NULL;
+ 	void *cpu_addr;
+ 
+@@ -1677,7 +1679,7 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+ }
+ 
+ void *iommu_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+-		gfp_t gfp, unsigned long attrs)
++		gfp_t gfp, unsigned long attrs, int node)
+ {
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+@@ -1693,7 +1695,8 @@ void *iommu_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+ 
+ 	if (gfpflags_allow_blocking(gfp) &&
+ 	    !(attrs & DMA_ATTR_FORCE_CONTIGUOUS)) {
+-		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs);
++		return iommu_dma_alloc_remap(dev, size, handle, gfp, attrs,
++					     node);
+ 	}
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+@@ -1703,7 +1706,8 @@ void *iommu_dma_alloc(struct device *dev, size_t size, dma_addr_t *handle,
+ 		if (!page)
+ 			return NULL;
+ 	} else {
+-		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs);
++		cpu_addr = iommu_dma_alloc_pages(dev, size, &page, gfp, attrs,
++						 node);
+ 		if (!cpu_addr)
+ 			return NULL;
+ 	}
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 6e2847f55622..f98d4dec8649 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -683,7 +683,8 @@ void *dma_alloc_attrs_node(struct device *dev, size_t size,
+ 		cpu_addr = dma_direct_alloc_node(dev, size, dma_handle, flag,
+ 						 attrs, node);
+ 	} else if (use_dma_iommu(dev)) {
+-		cpu_addr = iommu_dma_alloc(dev, size, dma_handle, flag, attrs);
++		cpu_addr = iommu_dma_alloc(dev, size, dma_handle, flag, attrs,
++					   node);
+ 	} else if (ops->alloc) {
+ 		cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
+ 	} else {
+-- 
+2.56.0
 
-Sure, that makes sense, but just having a pool of entirely normal
-pre-dma-mapped memory is quite a different problem from what launched
-this thread...
-
-Jason
