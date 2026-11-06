@@ -1,85 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793975626;
-	b=Z7c2hVuIBjcSvK6tHze21UzbNXrNQwRYF9S8sd5qgmNl4zvF5ZyD7sgsyuBSCdnmjVY0
-	 Hp/bUXCansnt/zILvVc4ibJGot6vh6Ymrv5iY6YNYDaQD4XKG5KrcWalb19nCU3adJ682
-	 yjN40tFwO39qfUrJ/17wF5o8oSIlqdXeUpJjS2bkhKOAvhZvb1qLJF7vWBLPDWl5061R7
-	 56/3ZJRWzI3K7607pFqhMF9E1Rfq8hW89dlPoFWcD6f7ufHBDEEseE1DLENtPyQKWzQKZ
-	 ZZSVcoZK7VQKMIv/uT8wLITK5y6+ExFKWX/Dz2Akp+CijXtk78HYYXRaYcVhaoeMlrg==
+	t=1793976128;
+	b=o8Ws7yQJ7H4TaoEXR3Ak6DaSCROxx9ejPBItqUMj1mHca4TPFQYsZJE7ci5JvaPbmIMS
+	 vYg1BpW3EcUEgtdxygnkHzJp0SlFHD9XOLTE3Qv1WZ6T2USBsQfN7o9ftN51mzIXWv6VL
+	 3kzHvSN0lc281+SgctIvzEKGgADxPLRAQrQX8jdWbHl9gAe0GnfabXkmnbmQS0BXzBKZE
+	 rZkGjVYb/9K4SV7AJmnmlwwZ31zT0c8yFYM9HcK2tD/CqXsMyhEpegvq6zi4uJF2jaOFl
+	 NwTt9+anQyjOdP6oJ9SAdlSmgvPTYI6HVNqMHlXKSDKIN7db7A+QrpMOty9Iaexqg8A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793975626;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=wtqvUty3awL+WV2C4Bd+4jjQ8JiJNaHCJXSR0TJ5v3A=;
-	b=yQzm4CfK2F9ZYjA2mIbjoeprcosHEdNNYxr3L1jgrtO4GxgMaTdKcDgd0UTpHBltDfJa
-	 ztMhbK3nfnpX+vEilGUwKtzNysu0wPRgSa7R3ovGzSuvI4q085TzzJsYn04ZGMjOrkrzi
-	 2B771f91iFKJwlsDgj73cRdrR/U2oswgItNA35M+zz4FwbG/Tq3Sxup4bhnYVzKPWba98
-	 oL9SHgc72QDyZL+41/14kb8wJEyGeYJ861q0z2aSBx4lA9bsj/qqjbK7ewW0rOgmU7Ucy
-	 ahW+TYvzrjcpLWGapc/60DhflNyRrkyFs6k7kFbujgN43nKwnZt1fzyoQjFBqrrwkTg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793976128;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=dPrT1d3tfAdRZHoFdKvhwwCCJALbTuZcl0ma0HWZQHQ=;
+	b=VyGodivQrvBPd9TSRKbU6matx8c1uoehl52VWRv0PIEZstRWUoAYRK4+zLKzmyYL8dJm
+	 29ARuQQZ64QRf053wfdR3E+FZm+Qs/9+yjhzsK5K77pTlfR4p9v1FHcbqq51+t/I29rcc
+	 8B27Gkrd2p0oReCmqMhZZO9slfsSW1NWQAaItanOv95pZc5QtTcDFohpIWH3iSAfZSMdF
+	 rzLbyyQLEM453yIlw9Jj7/fLzqVO4yy/PdoQCF+yWeuDwhO9Qi836ytCBqflZ3b3QFifL
+	 ozceQGrvumiMwJnaOPdj54OVMAZflXZzXw9PY7DODu5l7I9jC9NXoM+b/ScQQNjVV3Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b2r2H5Bd;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CED22606A32C;
-	Fri,  6 Nov 2026 14:33:45 +0000 (UTC)
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b="B/mbpzSL";
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 838EC606A32E;
+	Fri,  6 Nov 2026 14:42:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 838EC606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b2r2H5Bd
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86EA81F0089F;
-	Fri,  6 Nov 2026 14:33:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793975625;
-	bh=wtqvUty3awL+WV2C4Bd+4jjQ8JiJNaHCJXSR0TJ5v3A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=b2r2H5BdxpXdgNiFxLfKLsliHD1aW/wDAEDaKEhpVM3EC5rk9Xr6npFA/IH2FuBji
-	 UDxYAgdQaJNICIZINw9Ilbfw8bLsyrsQzWp+NoPqhA/+jsoa6GKznm54YiNoZU+9oJ
-	 sKCs6bWl1EjHh98hGORYkKB0GcOkK/HjEQjgTReSqakMKK6efSYleyQ6zh8ZhPS7y0
-	 0wS9qzyBqM/XWz66nB/U7xvUJNcHVDCJop7XlyB7M2TSiH7wu9UstnvOKKmLIrUiaj
-	 f3Nh+j2TKg+aNrfLE9k32yn/pJAm68XoJQeSANboxqzmkjEzD0Fm3hpnEuFuKwhEfE
-	 9n14k2PzJGEaQ==
-Date: Fri, 6 Nov 2026 16:33:40 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH 02/17] Input: serio - attach manual drivers through the
- driver core
-Message-ID: <20261106143340.GL8298@unreal>
-References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
- <20261105-device-trust-core-v1-2-1e536825b4eb@nvidia.com>
- <auy2plYVi723Qt42@google.com>
- <20261105191940.GI8298@unreal>
- <auzno3uoL5Pfojfl@google.com>
+	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=B/mbpzSL
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BFBD31682;
+	Fri,  6 Nov 2026 06:42:03 -0800 (PST)
+Received: from [10.2.197.99] (ewhatever.cambridge.arm.com [10.2.197.99])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C297A3F673;
+	Fri,  6 Nov 2026 06:41:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1793976126; bh=RROBsGVNy+Oakstf6DXz+xH01uQZXz9GOkcgQ0meiw4=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=B/mbpzSLUIxkLsvdYEgUGs2NsLPfEoaHIS2u4uoKA+TM6l8BAPmmaFFiWCiMC/+zG
+	 RnZu7A5UIYQ7u/AWqfgGaXvhX9c5DxYbnRdfhdakUjLrptQLm8mu5OPAnNzPX6lE/G
+	 B3q1sAgPLmHroCXLRJ29Lu6hp0qwTMoNkNoh4n1Q=
+Message-ID: <2e448ac1-7b4f-4d45-90db-dfe9dc5ad329@arm.com>
+Date: Fri, 6 Nov 2026 14:41:57 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -89,96 +53,78 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <auzno3uoL5Pfojfl@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 01/14] mm: Add an allocator for CoCo shared memory
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+ linux-coco@lists.linux.dev
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>,
+ Pratyush Yadav <pratyush@kernel.org>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+ Marc Zyngier <maz@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Steven Price <steven.price@arm.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>, Thomas Gleixner <tglx@kernel.org>,
+ Will Deacon <will@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
+ Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
+ "T.J. Mercier" <tjmercier@google.com>,
+ Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Christophe Leroy <chleroy@kernel.org>, Ritesh Harjani
+ <ritesh.list@gmail.com>, Shrikanth Hegde <sshegde@linux.ibm.com>,
+ Alexander Gordeev <agordeev@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+ Christian Borntraeger <borntraeger@linux.ibm.com>,
+ Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
+ x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+ Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
+ <rick.p.edgecombe@intel.com>, "K . Y . Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, Vitaly Kuznetsov <vkuznets@redhat.com>,
+ Andy Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+ linaro-mm-sig@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+ linux-media@vger.kernel.org, linux-mm@kvack.org, kvmarm@lists.linux.dev,
+ patches@lists.linux.dev
+References: <20261104164555.3555725-1-aneesh.kumar@kernel.org>
+ <20261104164555.3555725-2-aneesh.kumar@kernel.org>
+Content-Language: en-US
+From: Suzuki K Poulose <suzuki.poulose@arm.com>
+In-Reply-To: <20261104164555.3555725-2-aneesh.kumar@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Nov 05, 2026 at 12:34:53PM -0800, Dmitry Torokhov wrote:
-> On Thu, Nov 05, 2026 at 09:19:40PM +0200, Leon Romanovsky wrote:
-> > On Thu, Nov 05, 2026 at 09:05:29AM -0800, Dmitry Torokhov wrote:
-> > > On Thu, Nov 05, 2026 at 01:42:15PM +0200, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > 
-> > > > Manual serio binding connects a driver before driver core can admit the
-> > > > device. A rejected binding therefore arrives after functional setup.
-> > > > 
-> > > > Keep the port ID check and use device_driver_attach() for the existing bus
-> > > > probe path. Driver core then serializes admission and handles probe failure
-> > > > before publishing the binding.
-> > > > 
-> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > ---
-> > > >  drivers/input/serio/serio.c | 24 +++---------------------
-> > > >  1 file changed, 3 insertions(+), 21 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/input/serio/serio.c b/drivers/input/serio/serio.c
-> > > > index 54dd26249b027..604440244c1ca 100644
-> > > > --- a/drivers/input/serio/serio.c
-> > > > +++ b/drivers/input/serio/serio.c
-> > > > @@ -81,28 +81,10 @@ static int serio_match_port(const struct serio_device_id *ids, struct serio *ser
-> > > >  
-> > > >  static int serio_bind_driver(struct serio *serio, struct serio_driver *drv)
-> > > >  {
-> > > > -	int error;
-> > > > -
-> > > > -	if (serio_match_port(drv->id_table, serio)) {
-> > > > -
-> > > > -		serio->dev.driver = &drv->driver;
-> > > > -		if (serio_connect_driver(serio, drv)) {
-> > > > -			serio->dev.driver = NULL;
-> > > > -			return -ENODEV;
-> > > > -		}
-> > > > +	if (!serio_match_port(drv->id_table, serio))
-> > > > +		return 0;
-> > > >  
-> > > > -		error = device_bind_driver(&serio->dev);
-> > > > -		if (error) {
-> > > > -			dev_warn(&serio->dev,
-> > > > -				 "device_bind_driver() failed for %s (%s) and %s, error: %d\n",
-> > > > -				 serio->phys, serio->name,
-> > > > -				 drv->description, error);
-> > > > -			serio_disconnect_driver(serio);
-> > > > -			serio->dev.driver = NULL;
-> > > > -			return error;
-> > > > -		}
-> > > > -	}
-> > > > -	return 0;
-> > > > +	return device_driver_attach(&drv->driver, &serio->dev);
-> > > 
-> > > I am not sure how safe it is, serio (and gameport) have pretty elaborate
-> > > structure and locking rules because they can recurse into themselves (to
-> > > support case of Synaptics touch-pads with pass-through PS/2 ports).
-> > > 
-> > > But this call is for user-initiated probing anyways, I am not sure if it
-> > > even needs "trust" handling.
-> > 
-> > This patch does not change the locking; the lock was already held on paths such
-> > as the rescan path. This change makes that explicit.
+On 04/11/2026 16:45, Aneesh Kumar K.V (Arm) wrote:
+> Confidential-computing guests may require memory shared with the host to
+> be aligned and transitioned in units larger than PAGE_SIZE. Several DMA
+> users need struct page-backed allocations satisfying these requirements.
+> Provide a common allocator instead of requiring each user to open-code
+> this sequence.
 > 
-> Does this enforce synchronous probing?
-
-No, it ensures that a device is bound to only one driver at a time,
-without races.
-
+> Add alloc_cc_shared_pages() and its node-aware variant. The allocator
+> rounds the requested size to the architecture's shared granule,
+> allocates suitably aligned contiguous pages and transitions the
+> complete range to shared state. It also preserves the caller's GFP
+> policy.
 > 
-> Anyway, I would like to get rid of this special probing in serio core.
-> Given that the code path is only triggered by explicit user request I do
-> not believe we need to worry about supporting trust notion here, so
-> please drop it from the series.
+> A private-to-shared transition may alter memory contents. Mask
+> __GFP_ZERO from the underlying allocation and when requested, clear the
+> complete transitioned range after cc_make_shared() succeeds.
 
-Technically, this is exactly the flow we should be concerned about. Users
-attempting to load the driver generally don't know whether their device is
-trusted; attestation software is responsible for determining that. I modified
-serio to ensure that driver attachment happens under the driver core lock.
+This is not true for pKVM though. It is the other way around. i.e,
+pages must be cleared before transition (e.g., from private to shared)
+to make sure the contents don't leak into the host.
 
-One idea I had over the weekend was to introduce a special API for driver
-attachment that says, "I don't care." It would allow attachment only in
-"full" mode, as it does now, and fail in any other trust mode.
+Do we need to handle such cases with a pre_conversion and 
+post_conversion hook ?
 
-Thanks.
-> 
-> Thanks.
-> 
-> -- 
-> Dmitry
-> 
+Cheers
+Suzuki
+
