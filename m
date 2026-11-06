@@ -1,88 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.42
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793958143;
-	b=qnhK7OU64HPp5DEB+XmeoNNP41TOvrVFPn1QwXUiLkhPNCCxCZLxa3+L0JdqGn5dYwwx
-	 4Ry8GlpiNKYKsTldE5qMXnwFEaXcx44r8iVlBf5Ens+FfYtKPZ1n9N1uND1We9xiWEZy7
-	 PZSylNleneec+BaxPI3so1fTOxy49jgAiJ81Ix1BQzcd6GtmMf4A4TCd3IPd0UJzFq408
-	 QAxAP+HUJwYf0lU5IfupII4O1NBuhpfoAyDvzE4qe1Pm1fng3IZQbg1D5tRNmDvZmwmn3
-	 E2ZIhleGpkkbjMIHNQ1T41mm9e/OHTMQz0JdGnsRlQ9zV07zVxmFu2bifCPs3M/1WWQ==
+	t=1793958640;
+	b=zaU27+1GDpdm7xkdzrjYmS54ye5ZRy7jW1e7CQZSTgClF/M3Gh13WAGNmir+/X4tLHHP
+	 dm0HahcicQ1NjRpMY6tVQrhxgyMEQqfaA2Wmup3TCocWzy1VI3DFgvsQr0nmeAXZzGVm7
+	 NZaa3xcRYKf1ZSt0rq/D2mTthYiJRvj85i6dPJERMPq1UhKwm5hOlCKbMrHMRnnvdcq9s
+	 C61vlJ4qdMqSroBsUnf+Eu/DDUEpb3cP9wMQ9EzuQOWUAifBwmwm0esuMQ9zR8kNPjuXI
+	 8Tc05HHvUXe/o7og268SekER7sZRpQhf8qfaITNGPfvSL2aBo2q4rhc3QmrO7WLwYiQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793958143;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793958640;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
 	 Content-Language:From:In-Reply-To:Content-Type:
 	 Content-Transfer-Encoding;
-	bh=wxjoU6eh1AnEB74q9TNTzzgoHGIbkez0gtAfCeShC9g=;
-	b=eHWRLargQ8kOhzfwdBWLEz48/F2fkICBxGxfmlppCkLN3Pj8d1GWUqjlhHBwq7JW94qH
-	 D8PP1/Kp1ixmMeFaCxRxKg/Xhb39MvOJnUhhs6WRfEN4phrO9UvmAoqWWzIItzUKvGcab
-	 iCuCjRwTyufoXrjAJ4ogvQIcNWe+3NBIjhNeaBXY3pV4/zYe38KWT1mAEIU6cEI8nrZdQ
-	 Dm61eJwi+QMv4e8YIh2yL8aqqQ4RFEqSk6hJjD4smE85hqmViQqQh5w1/4myl/Zfs6vEt
-	 3QFVpRj/JzOxv9D18wrD996QOsC6zYO9hQL7ZAt6ETPzx29Wvp5KmiwHGa7mw+/9fQA==
+	bh=RupwrtSRCRknDTCP4U8+mHVorluG3D1aDqrqCuXGL/o=;
+	b=G6WPzeNaADji6XMna0O6T7rTDQIeA06e39YUy9L5fBZ/2KScuMIzN2lfSqqxISTFNMm3
+	 J1pYZ0pWtNeiZFEIFa6i4JN2Gz7/Fm+RTM/WMNC7eloH7euXJQTlFFc0u1pSIkemxaFVw
+	 w39UgT+mr8FR9RtQvDP4iKwiBiAn9IQN8sdiACf/Ad3ZUBVAvZO6Vkfs/TbfIDb95J4Y/
+	 ZUKkXqdjHkP3FTuo3IhP56ykDvRmRkEtX2jOMAq2vA+jgjr9tigHRz8rDgw7UQ4T2KSw1
+	 P68AxLuaMZ53uluB2v+UzjjR/Hzl7e/STIlelhZoeCXdMGQnnH1WE8tBdWk+RHi67iA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="YLPs/XiL";
-	arc=none smtp.remote-ip=209.85.128.51
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UUKyuuQv;
+	arc=none smtp.remote-ip=209.85.221.42
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA8C6606A90C
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 09:42:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA8C6606A90C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAA46606EEBA
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 09:50:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EAA46606EEBA
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YLPs/XiL
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4b467581b98so3093185e9.0
-        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 01:42:22 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=UUKyuuQv
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-490585eddfcso290442f8f.0
+        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 01:50:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793958141; x=1794562941; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1793958638; x=1794563438; darn=lists.linux.dev;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=wxjoU6eh1AnEB74q9TNTzzgoHGIbkez0gtAfCeShC9g=;
-        b=YLPs/XiL1yrfJSKvgjFLqFpYVf+5gAOArCdmDxZArUbHzbBnM+IOxoX27NWOpFgUSc
-         uJB6Isa+mNvkOdvybXZoiZMFSJnG2IKitBp1pUlJSFSTnY06Nzs7QFn6/Au/hSYvBYjq
-         /Te6OaWDfi70zBPqcamiDGXwZp51hiXo4KSR1gByB+ezd1rnmfBdr4xuEV+q6BiG66I/
-         hZiHv/7a3TXSNU3wjUm1LtcYYEtgjEFblO297XYEWSy2xgXHZppO2fOLKXA3EHDa/dFT
-         Qj5EpV9z68taA/KSTT76Xn4fszchN5r2ZVzm1lTTiBWjtyYaj0dkpJndGlOstYiOlDhw
-         q3sQ==
+        bh=RupwrtSRCRknDTCP4U8+mHVorluG3D1aDqrqCuXGL/o=;
+        b=UUKyuuQvG/ORTmnYmorHohpcYhdE05C8Nl2V6I5KNltk3IT9pvOs4FyndLQMaocIfU
+         v8xdfqkjnvOMIF+Rdjy610ob8q5rpePjbUMxnxnbR7hdTqXple+lIzOpba78qJTDvdBE
+         Xbxdr7CqCYa+YzxZ5XSSrN+HtapnYmO0kA3yO6ljEIe/erfDr2/y1LoVJFObPjkj5dL8
+         J2YWTvzQXLmEez5dgcYTkKYLp+eysLNdMcO2cFAEYlqvsaNmi87p8wrIpBwOHBG9XvnY
+         UdDrg6nKfS9Pw5lxzJRcVvtWWhaF8O9MwxyjrtUdv+ItsIu/2iNT6IUG1dzl9Mao3Nul
+         j5jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793958141; x=1794562941;
+        d=1e100.net; s=20260707; t=1793958638; x=1794563438;
         h=content-transfer-encoding:content-type:in-reply-to:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=wxjoU6eh1AnEB74q9TNTzzgoHGIbkez0gtAfCeShC9g=;
-        b=qO3CJH6U2f7zrQ7cPcCF0wgIKCtsAz10yYmVwoF7sEhfPxUTjswciKbH72wTGvtqNq
-         fJRWoQZmlGcqk5lwQLDz8n/sZjphSmGse0m39DUtpvhq4kpQc+J4Xi2dq9q4RLJkclqQ
-         QQPuCYKZdarSssBfcM7Q6QVtW5LXSoLnGbWFegTBF1BFdsGtXydZGJcB+jPzMbXu7rVs
-         b6tcbfNtOKbRs4de6DHkFIFecnvRtVAHqOZX+wtkOXbL0RaVdwrDXN25nHiizQERqCmN
-         PyzaFL0+hZOapNQ5BOgcmGwpprFaUtnvx+9fKHh979H9IzOyFCAfqH+ZPAJKZk2ZoPOB
-         ik9g==
-X-Forwarded-Encrypted: i=1; AKwUvBy2VhA78AwrCiJ8nQT3BaL5fDDO3Csjzxc53AdJ9iJnddRKA6dufD2sT4OGM7qLMXYObfl0pw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8QmZ+14vX0U9zOibJYZVTySXFIsZVLbqFDF7Ylx5jPqKInUPgr
-	YycrBl7Hel6Ga7uqrpGItynXZIHqZ2ig4SXBS9uT4EtW8qUv6V6TNEey
-X-Gm-Gg: AYBFou050PFuRyBjEeOyrKxJgg15KceX/1AH3FCThEGLoS7QRC7pfzXBNX5AI8n4HF3
-	kQqi2aeZ6xJbD/CdYs+wQMNnlt5g1bM25JaA9H2EraWfRBltdL8r3SuvJt7rijKOhm63jtOA0OM
-	fpMaMlRhyEioLGBM8CHCwMONQrogeeZO/01GM4lJcX8Anmnpv0FskaGoX5HchVzXOXLLRVl5EXj
-	l88FHICbqPkEbbMxa//zp7B2Xu2wXReJy2LsPOrnQmjlo6/e8hQXK19tyk6IQPl62AfoHadoIWe
-	9gH+QSYS5oHhuR1XCzFRp+5zfHIN6ZkaWdbFWVsMsf/wwj6xgGPYfxbAQGn1d23JMKjHz9p79KT
-	UXQepZAf6Vy26Btv9m6YET/aVaoRRYifDCffasIneBJftAOEFfuG1cLXycepWt02G5kKh48kRDE
-	7SrebYdj19SNaWtPOQLZosg6jzfrLarYYNlnK0jF0F7lSd6jRddh0qNkjCAmKdnU5sddGDor1mr
-	psPZWh8U37mCCEP8k35zfigvz1NEESO2DM8l+WymK1/trMRkJUxCUs1HLWVqs8qK/UC/y3oQgSe
-	USY5ubbZzVrd7M2t0+gOJKA=
-X-Received: by 2002:a05:600c:c168:b0:4a0:1c0e:b057 with SMTP id 5b1f17b1804b1-4b6db2ba2demr25269125e9.4.1793958140866;
-        Fri, 06 Nov 2026 01:42:20 -0800 (PST)
+        bh=RupwrtSRCRknDTCP4U8+mHVorluG3D1aDqrqCuXGL/o=;
+        b=w+O+thBCzhXdAxpYQz9yr9m2Klx9YRIClZdRsksAployDe/8d6+LyW3z2n0AEvxqm9
+         sNWhDtaHMiFhVhqCq3e2lal6mHytErR389CGu6JComb8LOQHI99udVF10CWRQ3BRsgsd
+         rouDjf83xuxwkJfhhsYxWPJqhzZrxwmqN2dDnUY7DVCqPtPtKf5+YyP5EvP/jRsX43bg
+         tTPJHMFUqWlma6eyi2bbmkAgY8D1uUSOht7N0KJ3BVL/nccCKfIDIoLYyTCzJ9QpINvc
+         6+Bn/et1H6IPneVEqKJeQc34loW2jKL2vC6GlfuSV+b7JqgWPXk8PsfcJHfLEjGZtO5x
+         Mktg==
+X-Forwarded-Encrypted: i=1; AL+hErE4cRa8PdbSMImloi8gcGleh03jnYcJWfKSAwghFTGHVplYLFO9bRhGncKzqmYs7qh/bUgIEw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8pgSIQSBZi9/lHxyTpZ2WoJ9pXigazStufJXp/nCMSCkCrmewM
+	2MsPvyIqPPL5XzilgJjattUeCGa6h7f2FEGf0hijaWxLlq2DQHUdnn56
+X-Gm-Gg: AYBFou3EJNGH/oHIZr8XyGQ97orc90uF1k02f0U92+piGqz6sAkSCjac56iWiqZLh83
+	us9+SOJXQeh0CLz8kfi3KJZ1oDoqk5jaiCUJ0FB7VypoGfaSycgJFKAOtrSirhnTb/xWB1L10Ut
+	HUuNc9HbMMGShQNyz59L5KhN/whFS07qp2EawDTIVrJTLtxp6Oy05ZoOnkmjxlJNuP37/dneZi2
+	AoU2ofaw2us99H9HVO854JDSFo9XC8+2d6UAiD5oUeeugeP48nXwjsunpg15tlHTkmvzlDPz3ok
+	5hn2hX+DkCbUaP3fmkbhSQLGjAx5dX2mpGUDs5viG1YCLNr0KPjDqzwrszmrjNBCLmUuy6eZAUs
+	V7Snit16fAcgbARrsehm4/RCg9ZGsYS9bBvlE2trBoxj9Lk5DjT6jAacv3t2L+ySzqMaSd4YgMw
+	B+kdz+xXb1jqDx/i6UEQtmWE4roNhFi/BCv9eNVNedJNGX05bbL2SPsGXkzhU4JQU/XfWe0sIJT
+	THOGvnim7EEFjgs+Cs94KyPYq5VUV8eQbezrJmLN7tgoTXNlZs5tFHAG0lR5f6SclrIjRIGHNOz
+	dzKi5ne+bm0wagLNxkbemEI=
+X-Received: by 2002:a5d:5d82:0:b0:491:83e7:32bd with SMTP id ffacd0b85a97d-49277f88313mr3982559f8f.50.1793958637679;
+        Fri, 06 Nov 2026 01:50:37 -0800 (PST)
 Received: from [192.168.1.22] ([83.231.69.9])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4b741cdd8d7sm22361285e9.1.2026.11.06.01.42.18
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-492d3d60e78sm2755152f8f.1.2026.11.06.01.50.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Nov 2026 01:42:20 -0800 (PST)
-Message-ID: <528e3a0e-04fb-427f-88c7-63a7f4bbc505@gmail.com>
-Date: Fri, 6 Nov 2026 10:42:17 +0100
+        Fri, 06 Nov 2026 01:50:37 -0800 (PST)
+Message-ID: <6662ae76-c8dc-4bc5-9730-bf9f537ca9cb@gmail.com>
+Date: Fri, 6 Nov 2026 10:50:34 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,7 +93,8 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/5] mm: limit pagecache folio refcount when mapping pages
+Subject: Re: [PATCH 2/5] mm: limit pagecache folio refcount when splicing into
+ pipes
 To: "David Hildenbrand (Arm)" <david@kernel.org>,
  Andrew Morton <akpm@linux-foundation.org>, Lorenzo Stoakes <ljs@kernel.org>,
  "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>,
@@ -118,52 +119,36 @@ To: "David Hildenbrand (Arm)" <david@kernel.org>,
  Steve Sistare <steven.sistare@oracle.com>, John Hubbard <jhubbard@nvidia.com>
 Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
  linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
- iommu@lists.linux.dev, Chris Mason <mason@kernel.org>, stable@vger.kernel.org
+ iommu@lists.linux.dev, stable@vger.kernel.org
 References: <20261105-refcount_overflow_stable-v1-0-70b9c655da3e@kernel.org>
- <20261105-refcount_overflow_stable-v1-1-70b9c655da3e@kernel.org>
+ <20261105-refcount_overflow_stable-v1-2-70b9c655da3e@kernel.org>
 Content-Language: en-US
 From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-In-Reply-To: <20261105-refcount_overflow_stable-v1-1-70b9c655da3e@kernel.org>
+In-Reply-To: <20261105-refcount_overflow_stable-v1-2-70b9c655da3e@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 11/5/26 2:10 PM, David Hildenbrand (Arm) wrote:
-> With large file folios, overflowing the folio mapcount and refcount
-> became possible. For anon folios it is currently not really an issue:
-> each large anon folio can only be mapped once into a process.
+> Similar to mapping pagecache folios into page tables, let's reject splicing
+> folios into a pipe if the refcount is at it's limit, similar to how we
+> handle it during GUP.
 > 
-> That's not really big news, but it's about time that we do something
-> about it because some modern technology might find ways to abuse it :)
+> This will prevent more cases of possible folio refcount overflows with
+> large pagecache folios.
 > 
-> One of the enablers for that was commit ddc58f27f9ee ("mm: drop tail page
-> refcounting"), however, file thp support was added later.
+> Let's keep it simple and check in the two callers of
+> splice_folio_into_pipe().
 > 
-> File folios can be mapped multiple times into the same process, allowing
-> for processes to hold many references to the same folio.
+> Also check in try_get_page() to cover pipe-buffer duplication by tee()
+> and partial pipe-to-pipe splicing.
 > 
-> As a short-term solution, let's introduce two folio refcount limits:
-> one for ordinary consumers and one for admins. Leave some headroom
-> before the refcount goes negative, which we really don't want (having
-> the mapcount go negative is also not expected).
-> 
-> Start reporting SIGBUS if we run into limits. When restoring mappings
-> from migration entries, instead zap the pte/pmd entry. We allow for
-> slightly exceeding the limit to keep things simpler.
-> 
-> This is far from ideal, but better than all easy alternatives we can
-> backport comfortably. For now it fixes the big problem: letting
-> the refcount (+mapcount) go negative and cause trouble.
-> 
-> This is only a temporary fix, we'll follow up with something better.
-> 
-> While the refcount checks are not required for order 0 folios, let's
-> just add them for consistency: each folio_add_file_rmap*() and
-> folio_dup_file_rmap*() needs a prior check.
-in mm-new copy_huge_pmd() now does a folio_dup_file_rmap_pmd() at fork,
-since Konstantin's "mm/huge_memory: copy file THPs at fork like
-copy_present_ptes() does". doesn't that one need the check too?
+> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
+> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
+> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
 
-the rest LGTM:
+LGTM:
 
 Reviewed-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
 
