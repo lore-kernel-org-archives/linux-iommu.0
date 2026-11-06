@@ -1,49 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794008353;
-	b=NKoxRNz63b7osmZyiPBAapwMVKsNVqUyyd1/Ff1YRLGN6CNlJjTOldBpELf5LPWXLA0H
-	 5/VrTpdXUlK2p99i8mgi8LJiH34Y/kyz5VCJRqklUycnlyxe+tyK76VmfxjX+5CfxulF6
-	 mXrDv97YhH6ysToMH7z/g6P/b4TUm6eD4+ijfTPsu094msd806Dfh/2VJZW1pGrOXQZWq
-	 V6Nty/KaxM49sCRTL4iwyp2/NfNh1TyGwoAYpa2V1/qIaQR3nPxUZu53UfHupPssgeeI0
-	 nd2XaF8F0373AZwGz8mAee9EahaXp/NDkXTxD4BKaJYm7Lef60s36gGxxHCwDGlI/6A==
+	t=1794008489;
+	b=hGZ5hghf25pNWEaOCEwqN/5IoSd9UEMaXe7DDyxs1a8rb9lYDaYKNa2wF+dOzkqMglyw
+	 2/KHnPLv+U+lc9o61Py5ve5DzytbV3Vs5f6Hm7ZAOZ4RW+MggA8fl67vBzyqxsm8XkibS
+	 ri1I7LZO4YDaxcd4leFFRIdS8u0+xNSwWv56v755sgbPeE+vdLdFIxO+uz71H9IvlapSi
+	 AQdQbtK3JiXFIq3XVg3dahZB9MAJR+8y5EcZEIn696uaDQ2r8nE/1x75Dudn1RpwqX+Ye
+	 I9OOmkfVSZgoyTY6we2aoVylUz7eszkgaNBHpsuj/cgtfqY5dQHNu++KGZ7cr53I8uQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794008353;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:Content-Language:To:Cc:References:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
-	 X-Spam-Checker-Version;
-	bh=dSVjWjVS37eJkJx4AfljuSAWmmeX+B1EZDTjXdnakOc=;
-	b=QTzOmpptN6vWS/wt4iBrYVdDVY4NOZlm0XF3ELCdZoNK1wAAgPlkYEWzNFlH4XZMEc2k
-	 3Nn2z1zMH+4N8d9MRBeDBR9/+d3ihVX1NHfFPp8HyLm0fWg5DEpeRv8DsmHeib/cGdhDD
-	 5z2wihXXCe7GXpkkzaJq72lj9C3sFVlsQtLYiNzy7KFjjNaLn1QToFjpA08uN5cbxIgcN
-	 XXEmy6Aa6j5eyb1vkjVv3hHkQNIoi4cCJw0KfYp/wcBv7KhSwSJrxj+SGbDXViN5djS/V
-	 Qk6HqEUG7TvQUHxEVWs4N34mHioZQNLHN23nvnJnskHI8MsJ74P+fP31fxVh+pauUXQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794008489;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=mwXkWhaoGZuVnDbiT+8l9VytpOALtyn1gB7Fo/dFec0=;
+	b=RZBA3q98q72aQTqlYOisR68iuVnT/QAFC8yladZqSvajh+nJUzgLwALGZFUP4kPIh/zU
+	 tSLLDVN0p0UyrQ8/eKKYVc1LIc7IikKfDpjqKwZQ6xsK7gQLo+c2i248fW9zv57JLRLTs
+	 gqx8ELV6RVaDh9mMecP7GsDjZvMRnofGatd/f3TKTgUw++CtdRQCEsp8viiUZd1czCXa2
+	 /BlUjMwqCmi5fGFw8PZHK+f50GnMpLa1YdpoRk0xI5Tee4L6hnrNDvpKs9z+dhU/VEF6M
+	 Aso3JfkudAR+D3yjAtEkasw+C6tHPvOKR8GGtCVhODbpN+JcnsS8A8rrelFMQAuVe5Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.microsoft.com;
-	spf=pass smtp.mailfrom=linux.microsoft.com;
-	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=ND4TOGV+;
-	arc=none smtp.remote-ip=13.77.154.182
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B9D1606A32C
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 23:39:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8B9D1606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Mc5aGsxb;
+	arc=none smtp.remote-ip=210.118.77.11
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0974606A32C
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 23:41:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B0974606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=ND4TOGV+
-Received: from [192.168.0.88] (192-184-212-33.fiber.dynamic.sonic.net [192.184.212.33])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 5796E20B7167;
-	Fri,  6 Nov 2026 15:39:10 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 5796E20B7167
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1794008351;
-	bh=dSVjWjVS37eJkJx4AfljuSAWmmeX+B1EZDTjXdnakOc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ND4TOGV+aGqUZOIj4OZuLSw3/mcPp20ktiiySs5dmViHZrnrkFLlndkSgmvQZEnx5
-	 C2qv4cxIsY0feeBoqqIDewz9wKTObvwNYTaQLJRIVNIL0H9yDiVCeDUUDFdPR0C5Is
-	 vRGSTEFfhUwgvzlVybkZUvTL/GAyNtmS3T43/T8U=
-Message-ID: <9d010202-39e4-c424-3a40-0d37b62b17fd@linux.microsoft.com>
-Date: Fri, 6 Nov 2026 15:39:10 -0800
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Mc5aGsxb
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261106234124euoutp01a6bd9f3f794e0da8159f3ae00728e945~lmTZGqZiY2108521085euoutp01J
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 23:41:24 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261106234124euoutp01a6bd9f3f794e0da8159f3ae00728e945~lmTZGqZiY2108521085euoutp01J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1794008485;
+	bh=mwXkWhaoGZuVnDbiT+8l9VytpOALtyn1gB7Fo/dFec0=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=Mc5aGsxbjN4/dIrM5d3Ttt1+UC3Uus88SdJlSmE47yFKIkuHFk66/St34MjbCzYUE
+	 HxqvahV7An4Mng44BDvqN9PibfEw/7fqReGHVoWsU4NeTIhxRSUtSkROAp7HoCGPkD
+	 UspmIsCTtdEXEqIcao+5YTRDJFfvtFUueooOlAzI=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261106234124eucas1p1aef42c95b282e08adcf39c0c4a0379d2~lmTYlZWhL2055920559eucas1p1G;
+	Fri,  6 Nov 2026 23:41:24 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20261106234123eusmtip1dcd2fdecd45b2e4325f37eaa9435507c~lmTX99o4U2536025360eusmtip1R;
+	Fri,  6 Nov 2026 23:41:23 +0000 (GMT)
+Message-ID: <5b38b9ca-a3af-45db-82a4-4e2cc4600796@samsung.com>
+Date: Sat, 7 Nov 2026 00:41:23 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,303 +64,183 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.1
-Subject: Re: [PATCH V4 5/5] x86/hyperv: Implement root partition IOMMU kernel
- only driver
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH 01/11] dma-mapping: add dma_alloc_attrs_node() and
+ dma_alloc_coherent_node()
+To: Jakub Kicinski <kuba@kernel.org>, robin.murphy@arm.com
+Cc: netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+	will@kernel.org, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
 Content-Language: en-US
-To: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Cc: linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org, jgg@nvidia.com,
- jacob.pan@linux.microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, tglx@kernel.org, mingo@redhat.com, bp@alien8.de,
- dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, arnd@arndb.de
-References: <20261105020106.3496339-1-mrathor@linux.microsoft.com>
- <20261105020106.3496339-6-mrathor@linux.microsoft.com>
- <f2579646-7f77-4dd2-b7ce-ccf702828610@linux.microsoft.com>
-From: Mukesh R <mrathor@linux.microsoft.com>
-In-Reply-To: <f2579646-7f77-4dd2-b7ce-ccf702828610@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20261106184433.761422-2-kuba@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261106234124eucas1p1aef42c95b282e08adcf39c0c4a0379d2
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261106184452eucas1p2f15c3818e6319ab55abcde96840e112c
+X-EPHeader: CA
+X-CMS-RootMailID: 20261106184452eucas1p2f15c3818e6319ab55abcde96840e112c
+References: <20261106184433.761422-1-kuba@kernel.org>
+	<CGME20261106184452eucas1p2f15c3818e6319ab55abcde96840e112c@eucas1p2.samsung.com>
+	<20261106184433.761422-2-kuba@kernel.org>
 
-On 11/6/26 13:54, Easwar Hariharan wrote:
-> On 11/4/2026 18:01, Mukesh R wrote:
->> Add a new file to implement a kernel only virtual IOMMU that works
->> on Microsoft Hyper-V hypervisor (aka MSHV) in privileged VMs aka
->> root VMs. The hypervisor claims the IOMMU upon boot, and this driver
->> communicates with it for creating and deleting paging domains, attaching
->> of devices, mapping and unmapping of pages, etc. During boot, hypervisor
->> automatically creates identity and blocked domains, so there is no need
->> to do hypercalls to create them. This is a kernel only driver and only
->> supported on baremetal root (and not L1VH root) without any guest passthru
->> support. Support for guest device passthru will be added incrementally.
->>
->> Signed-off-by: Mukesh R <mrathor@linux.microsoft.com>
->> ---
->>   arch/x86/kernel/pci-dma.c            |   2 +
->>   drivers/iommu/hyperv/Kconfig         |  13 +
->>   drivers/iommu/hyperv/Makefile        |   1 +
->>   drivers/iommu/hyperv/hv-iommu-root.c | 613 +++++++++++++++++++++++++++
->>   include/asm-generic/mshyperv.h       |   3 +
->>   include/linux/hyperv.h               |   6 +
->>   6 files changed, 638 insertions(+)
->>   create mode 100644 drivers/iommu/hyperv/hv-iommu-root.c
->>
-> 
-> <snip>
-> 
->>   obj-$(CONFIG_HYPERV_PVIOMMU) += hv-iommu-guest.o
->> +obj-$(CONFIG_HYPERV_ROOT_IOMMU) += hv-iommu-root.o
->> diff --git a/drivers/iommu/hyperv/hv-iommu-root.c b/drivers/iommu/hyperv/hv-iommu-root.c
->> new file mode 100644
->> index 000000000000..e0e3e9d4385e
->> --- /dev/null
->> +++ b/drivers/iommu/hyperv/hv-iommu-root.c
->> @@ -0,0 +1,613 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Hyper-V root vIOMMU driver.
->> + * Copyright (C) 2026, Microsoft, Inc.
->> + */
->> +#include <linux/pci.h>
->> +#include <linux/dma-map-ops.h>
->> +#include <linux/interval_tree.h>
->> +#include <linux/hyperv.h>
->> +#include <asm/iommu.h>
->> +#include <asm/mshyperv.h>
->> +#include "../dma-iommu.h"
->> +
->> +static dma_addr_t hv_iommu_max_iova;
->> +static struct iommu_domain_ops hv_paging_domain_ops;
->> +
->> +/* IOMMU device that we export to the world. MSHV supports max of one */
->> +static struct iommu_device hv_virt_iommu;
->> +
->> +struct hv_iommu_domain {
->> +	struct iommu_domain iommu_dom;
->> +	u32 domid_num;			      /* as opposed to domain_id.type */
->> +	spinlock_t mappings_lock;	      /* protects mappings_tree */
->> +	struct rb_root_cached mappings_tree;  /* iova to pa lookup tree */
->> +};
->> +
->> +#define to_hv_domain(d) container_of(d, struct hv_iommu_domain, iommu_dom)
->> +
->> +struct hv_iommu_mapping {
->> +	phys_addr_t paddr;
->> +	struct interval_tree_node iova;
->> +	u32 flags;
->> +};
->> +
->> +/*
->> + * By default, during boot the hypervisor creates one Stage 2 (S2) default
->> + * domain. It has two types:
->> + *   S2 default: access to entire root partition memory. This for the host
->> + *		 maps to IOMMU_DOMAIN_IDENTITY in the iommu subsystem, and
->> + *		 is called HV_DEVICE_DOMAIN_ID_S2_DEFAULT in the hypervisor.
->> + *		 (Linux renamed to : HV_DEVICE_DOMAIN_ID_DEFAULT)
->> + *   S2 NULL: Blocks everything, ie, IOMMU_DOMAIN_BLOCKED in linux.
->> + */
->> +
->> +/*
->> + * Create dummy domains to correspond to hypervisor prebuilt default identity
->> + * and null domains (dummy because we do not make hypercalls to create them).
->> + */
->> +static struct hv_iommu_domain hv_def_identity_dom;
->> +static struct hv_iommu_domain hv_def_blocked_dom;
->> +
->> +/*
->> + * The hypervisor owns the IOMMU. As such it will choose the best page size
->> + * and whenever possible use larger page sizes automatically. The map gpa
->> + * hypercall to map the iova however currently uses only 4K pfns as input.
->> + * So we specify 4K as the IOMMU PAGE_SIZE.
->> + */
->> +#define HV_IOMMU_PGSIZES SZ_4K
->> +
->> +static DEFINE_IDA(hv_iommu_domids);   /* unique numeric ids for new domains */
->> +
->> +static bool hv_iommu_capable(struct device *dev, enum iommu_cap cap)
->> +{
->> +	switch (cap) {
->> +	case IOMMU_CAP_CACHE_COHERENCY:
->> +		return true;
->> +	default:
->> +		return false;
->> +	}
->> +}
-> 
-> Seems like this could match the guest driver and just be: return cap == IOMMU_CAP_CACHE_COHERENCY.
-> 
-> <snip>
-> 
->> +
->> +static struct iommu_domain_ops hv_paging_domain_ops = {
->> +	.attach_dev = hv_iommu_attach_dev,
->> +	.map_pages = hv_iommu_map_pages,
->> +	.unmap_pages = hv_iommu_unmap_pages,
->> +	.iova_to_phys = hv_iommu_iova_to_phys,
->> +	.free = hv_iommu_domain_free,
->> +};
->> +
->> +static struct iommu_ops hv_iommu_ops = {
->> +	.capable	    = hv_iommu_capable,
->> +	.domain_alloc_paging	= hv_iommu_domain_alloc_paging,
->> +	.probe_device	    = hv_iommu_probe_device,
->> +	.device_group	    = pci_device_group,
->> +	.get_resv_regions   = hv_iommu_get_resv_regions,
->> +	.owner		    = THIS_MODULE,
->> +	.identity_domain    = &hv_def_identity_dom.iommu_dom,
->> +	.blocked_domain     = &hv_def_blocked_dom.iommu_dom,
->> +	.release_domain     = &hv_def_blocked_dom.iommu_dom,
->> +};
->> +
->> +static const struct iommu_domain_ops hv_special_domain_ops = {
->> +	.attach_dev = hv_iommu_attach_dev,
->> +};
->> +
->> +static void __init hv_initialize_special_domains(void)
->> +{
->> +	hv_def_identity_dom.iommu_dom.type = IOMMU_DOMAIN_IDENTITY;
->> +	hv_def_identity_dom.iommu_dom.ops = &hv_special_domain_ops;
->> +	hv_def_identity_dom.iommu_dom.owner = &hv_iommu_ops;
->> +	hv_def_identity_dom.domid_num = HV_DEVICE_DOMAIN_ID_DEFAULT; /* 0 */
->> +
->> +	hv_def_blocked_dom.iommu_dom.type = IOMMU_DOMAIN_BLOCKED;
->> +	hv_def_blocked_dom.iommu_dom.ops = &hv_special_domain_ops;
->> +	hv_def_blocked_dom.iommu_dom.owner = &hv_iommu_ops;
->> +	hv_def_blocked_dom.domid_num = HV_DEVICE_DOMAIN_ID_NULL;    /* INTMAX */
->> +}
->> +
-> 
-> A net negative 9 lines to initialize these with .field notation, as suggested in v0: https://lore.kernel.org/all/4f7cadc5-817c-4163-bac8-1c02a7c6a862@linux.microsoft.com/
+On 06.11.2026 19:44, Jakub Kicinski wrote:
+> Coherent DMA memory is always allocated on the NUMA node of the device.
+> That's the right choice for memory mostly accessed by the device, but
+> some coherent allocations are accessed by the CPU on every operation.
+> For example a NIC's descriptor and completion rings are written and
+> read by the CPU servicing the queue, which may well be on a different
+> node than the device. Placing such rings on the device's node means
+> the CPU accesses remote memory in the fast path.
+>
+> Drivers work around this today by temporarily changing the node
+> of the device with set_dev_node() around dma_alloc_coherent()
+> (mlx4, mlx5, ixgbe, xgbe). This is racy against anything else
+> looking at the device's node at the same time.
+>
+> Add dma_alloc_attrs_node() which takes the node explicitly, and
+> a dma_alloc_coherent_node() wrapper. dma_alloc_attrs() now passes
+> dev_to_node().
+>
+> The node is only a preference, the same as for kmalloc_node().
+> Nothing takes it into account yet, following patches wire it up
+> in dma-direct and iommu-dma. Allocations from fixed pools and from
+> dma_map_ops->alloc implementations will keep ignoring it.
+>
+> Add an explicit new export instead of using static inline wrappers
+> because we want the new API to be GPL-only.
+>
+> Reviewed-by: Björn Töpel <bjorn@kernel.org>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-Huh! which are the 9 lines you are claiming to have removed? are you saying
-the definition part is not a "line"?
-
-> Wasn't super hard to do the 1 forward declaration needed...
-
-Not a question of hard or not. Having that upfront in the module provides
-good introduction to a reader, specially since hyperv is all new around
-here and internals are not readily available. Moreover, imo, generally
-just embedding definitions in code abrupts the flow often, and historically
-hasn't been a common practice.
-
-Thanks,
--Mukesh
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
 
-> diff --git a/drivers/iommu/hyperv/hv-iommu-root.c b/drivers/iommu/hyperv/hv-iommu-root.c
-> index e0e3e9d4385e2..4e6bf94413458 100644
-> --- a/drivers/iommu/hyperv/hv-iommu-root.c
-> +++ b/drivers/iommu/hyperv/hv-iommu-root.c
-> @@ -12,6 +12,7 @@
->   #include "../dma-iommu.h"
->   
->   static dma_addr_t hv_iommu_max_iova;
-> +static struct iommu_ops hv_iommu_ops;
->   static struct iommu_domain_ops hv_paging_domain_ops;
->   
->   /* IOMMU device that we export to the world. MSHV supports max of one */
-> @@ -32,23 +33,6 @@ struct hv_iommu_mapping {
->   	u32 flags;
->   };
->   
-> -/*
-> - * By default, during boot the hypervisor creates one Stage 2 (S2) default
-> - * domain. It has two types:
-> - *   S2 default: access to entire root partition memory. This for the host
-> - *		 maps to IOMMU_DOMAIN_IDENTITY in the iommu subsystem, and
-> - *		 is called HV_DEVICE_DOMAIN_ID_S2_DEFAULT in the hypervisor.
-> - *		 (Linux renamed to : HV_DEVICE_DOMAIN_ID_DEFAULT)
-> - *   S2 NULL: Blocks everything, ie, IOMMU_DOMAIN_BLOCKED in linux.
-> - */
-> -
-> -/*
-> - * Create dummy domains to correspond to hypervisor prebuilt default identity
-> - * and null domains (dummy because we do not make hypercalls to create them).
-> - */
-> -static struct hv_iommu_domain hv_def_identity_dom;
-> -static struct hv_iommu_domain hv_def_blocked_dom;
-> -
->   /*
->    * The hypervisor owns the IOMMU. As such it will choose the best page size
->    * and whenever possible use larger page sizes automatically. The map gpa
-> @@ -488,6 +472,35 @@ static void hv_iommu_get_resv_regions(struct device *dev,
->   	iommu_add_resv_x86_msi_region(head);
->   }
->   
-> +static const struct iommu_domain_ops hv_special_domain_ops = {
-> +	.attach_dev = hv_iommu_attach_dev,
-> +};
+> ---
+> v1:
+>  - move before the patches wiring up the node in dma-direct, iommu-dma
+>    and CMA (Robin)
+>  - dma-api.rst: drop the NUMA_NO_NODE suggestion (Björn)
+>  - docs: describe how the node is handled in the patches wiring it up,
+>    drop the mention of dma_free_coherent()
+>  - explain the separate GPL-only export in the commit message (Marek)
+> rfc: https://lore.kernel.org/20261027022528.633359-5-kuba@kernel.org
+> ---
+>  Documentation/core-api/dma-api.rst | 13 +++++++++++++
+>  include/linux/dma-mapping.h        | 14 ++++++++++++++
+>  kernel/dma/mapping.c               | 26 ++++++++++++++++++++++++--
+>  3 files changed, 51 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+> index 69d4ebe4f96d..5d079507ffa1 100644
+> --- a/Documentation/core-api/dma-api.rst
+> +++ b/Documentation/core-api/dma-api.rst
+> @@ -57,6 +57,19 @@ The flag parameter allows the caller to specify the ``GFP_`` flags (see
+>  kmalloc()) for the allocation (the implementation may ignore flags that affect
+>  the location of the returned memory, like GFP_DMA).
+>  
+> +::
 > +
-> +/*
-> + * By default, during boot the hypervisor creates one Stage 2 (S2) default
-> + * domain. It has two types:
-> + *   S2 default: access to entire root partition memory. This for the host
-> + *		 maps to IOMMU_DOMAIN_IDENTITY in the iommu subsystem, and
-> + *		 is called HV_DEVICE_DOMAIN_ID_S2_DEFAULT in the hypervisor.
-> + *		 (Linux renamed to : HV_DEVICE_DOMAIN_ID_DEFAULT)
-> + *   S2 NULL: Blocks everything, ie, IOMMU_DOMAIN_BLOCKED in linux.
-> + * Create dummy domains to correspond to hypervisor prebuilt default identity
-> + * and null domains (dummy because we do not make hypercalls to create them).
+> +	void *
+> +	dma_alloc_coherent_node(struct device *dev, size_t size,
+> +				dma_addr_t *dma_handle, gfp_t flag, int node)
+> +
+> +Same as dma_alloc_coherent(), but places the memory on the given NUMA node
+> +rather than on the node of the device. This is useful for memory accessed
+> +frequently by both the device and a CPU on a different node, for example
+> +descriptor rings serviced by that CPU.
+> +
+> +Like with kmalloc_node() the node is only a preference.
+> +
+>  ::
+>  
+>  	void
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index efde0e5a58dc..f8529f761823 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -188,6 +188,8 @@ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
+>  		enum dma_data_direction dir, unsigned long attrs);
+>  void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>  		gfp_t flag, unsigned long attrs);
+> +void *dma_alloc_attrs_node(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs, int node);
+>  void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>  		dma_addr_t dma_handle, unsigned long attrs);
+>  void *dmam_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> @@ -273,6 +275,11 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
+>  {
+>  	return NULL;
+>  }
+> +static inline void *dma_alloc_attrs_node(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs, int node)
+> +{
+> +	return NULL;
+> +}
+>  static inline void dma_free_attrs(struct device *dev, size_t size,
+>  		void *cpu_addr, dma_addr_t dma_handle, unsigned long attrs)
+>  {
+> @@ -626,6 +633,13 @@ static inline void *dma_alloc_coherent(struct device *dev, size_t size,
+>  			(gfp & __GFP_NOWARN) ? DMA_ATTR_NO_WARN : 0);
+>  }
+>  
+> +static inline void *dma_alloc_coherent_node(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t gfp, int node)
+> +{
+> +	return dma_alloc_attrs_node(dev, size, dma_handle, gfp,
+> +			(gfp & __GFP_NOWARN) ? DMA_ATTR_NO_WARN : 0, node);
+> +}
+> +
+>  static inline void dma_free_coherent(struct device *dev, size_t size,
+>  		void *cpu_addr, dma_addr_t dma_handle)
+>  {
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 82e701648d60..1b1cd3bc4a40 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -630,8 +630,22 @@ u64 dma_get_required_mask(struct device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(dma_get_required_mask);
+>  
+> -void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> -		gfp_t flag, unsigned long attrs)
+> +/**
+> + * dma_alloc_attrs_node - allocate coherent memory on a given NUMA node
+> + * @dev: device to allocate the memory for
+> + * @size: size of the allocation
+> + * @dma_handle: returns the DMA address of the allocation
+> + * @flag: GFP flags for the allocation
+> + * @attrs: DMA_ATTR_* flags for the allocation
+> + * @node: NUMA node to allocate the memory on, NUMA_NO_NODE for no preference
+> + *
+> + * Same as dma_alloc_attrs() but places the memory on @node rather than on the
+> + * node of @dev. Like with kmalloc_node() the node is only a preference.
+> + *
+> + * Return: the CPU address of the allocation, or NULL on failure.
 > + */
-> +static struct hv_iommu_domain hv_def_identity_dom = {
-> +	.iommu_dom.type = IOMMU_DOMAIN_IDENTITY,
-> +	.iommu_dom.ops = &hv_special_domain_ops,
-> +	.iommu_dom.owner = &hv_iommu_ops,
-> +	.domid_num = HV_DEVICE_DOMAIN_ID_DEFAULT, /* 0 */
-> +};
+> +void *dma_alloc_attrs_node(struct device *dev, size_t size,
+> +		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs, int node)
+>  {
+>  	const struct dma_map_ops *ops = get_dma_ops(dev);
+>  	void *cpu_addr;
+> @@ -681,6 +695,14 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>  	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
+>  	return cpu_addr;
+>  }
+> +EXPORT_SYMBOL_GPL(dma_alloc_attrs_node);
 > +
-> +static struct hv_iommu_domain hv_def_blocked_dom = {
-> +	.iommu_dom.type = IOMMU_DOMAIN_BLOCKED,
-> +	.iommu_dom.ops = &hv_special_domain_ops,
-> +	.iommu_dom.owner = &hv_iommu_ops,
-> +	.domid_num = HV_DEVICE_DOMAIN_ID_NULL,    /* INTMAX */
-> +};
-> +
->   static struct iommu_domain_ops hv_paging_domain_ops = {
->   	.attach_dev = hv_iommu_attach_dev,
->   	.map_pages = hv_iommu_map_pages,
-> @@ -508,23 +521,6 @@ static struct iommu_ops hv_iommu_ops = {
->   	.release_domain     = &hv_def_blocked_dom.iommu_dom,
->   };
->   
-> -static const struct iommu_domain_ops hv_special_domain_ops = {
-> -	.attach_dev = hv_iommu_attach_dev,
-> -};
-> -
-> -static void __init hv_initialize_special_domains(void)
-> -{
-> -	hv_def_identity_dom.iommu_dom.type = IOMMU_DOMAIN_IDENTITY;
-> -	hv_def_identity_dom.iommu_dom.ops = &hv_special_domain_ops;
-> -	hv_def_identity_dom.iommu_dom.owner = &hv_iommu_ops;
-> -	hv_def_identity_dom.domid_num = HV_DEVICE_DOMAIN_ID_DEFAULT; /* 0 */
-> -
-> -	hv_def_blocked_dom.iommu_dom.type = IOMMU_DOMAIN_BLOCKED;
-> -	hv_def_blocked_dom.iommu_dom.ops = &hv_special_domain_ops;
-> -	hv_def_blocked_dom.iommu_dom.owner = &hv_iommu_ops;
-> -	hv_def_blocked_dom.domid_num = HV_DEVICE_DOMAIN_ID_NULL;    /* INTMAX */
-> -}
-> -
->   /*
->    * In general, the hypervisor does not support the capabilities hypercall for
->    * root partitions, an exception was made for max_iova_width. For IOMMU cap,
-> @@ -571,11 +567,6 @@ static int __init hv_root_iommu_init(void)
->   
->   	hv_iommu_max_iova = DMA_BIT_MASK(caps.max_iova_width);
->   
-> -	/* This must come before iommu_device_register() because the latter
-> -	 * calls into the hooks.
-> -	 */
-> -	hv_initialize_special_domains();
-> -
->   	rc = iommu_device_sysfs_add(iommup, NULL, NULL, "%s", "hyperv-iommu");
->   	if (rc) {
->   		pr_err("Hyper-V: iommu_device_sysfs_add failed: %d\n", rc);
-> 
-> 
-> <snip>
-> 
-> Thanks,
-> Easwar (he/him)
+> +void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+> +		gfp_t flag, unsigned long attrs)
+> +{
+> +	return dma_alloc_attrs_node(dev, size, dma_handle, flag, attrs,
+> +				    dev_to_node(dev));
+> +}
+>  EXPORT_SYMBOL(dma_alloc_attrs);
+>  
+>  void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
