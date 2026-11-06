@@ -1,109 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.71
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793971434;
-	b=T0guvxfRZTb0d6itU3jXKaAyLgBS/lm7P14w0XcEE85iksx3RpoJlghQbuAV7pVBrD30
-	 6XSAWsgyHfqmgh3ihwypzpD9yak/mcJzP99l/81mvGkbrLYMFENAOPCuGAjvoFqXOGNa6
-	 +kDXGIcx5C09K+O1JCkjFhIBScqL9KvZ6l59dxXBkxATRG2YZxZv4+gFIytt1qYyQb1r2
-	 ea/mB3deWVOh7XIaJVjtuRe0FO1VRl5q2SQOF342PdO60bIDM8kEsbxGhSJ5B1gJJtEfi
-	 t9ntiv98v7npf7Gw59HkYKjCzGHHYkdoxAz5lVLHJpky6srsGnb+yXyVx0pRjpUf/zg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793971434;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=fOmaNonFZFAaWHDxBB2Vj3hDQfjhHvYYDThqbDxY020=;
-	b=pv9XH0eQu029vvCveH2yVc7p1WK1sHcXqrKt6GJDLaGlYEm6OH8LTNldWqUb7Q9uO0M5
-	 FK9HwNWxsMvGksUtJGVDP3Jh2lGQU/t4I8D38aJ0v+/wG3FVD+ArP/he6ld5f7Fxn6Vyd
-	 mgpQP2Ii40+hbHeq0wSmmIld1HehBRSfW1RPTgbnD/lSP7jkqv99cL0NMjXsLTLpNtz4V
-	 RjPDjmbDG/3cTJkKzWmVYfMbqgLEV7wvEkYABknAQjd0pwr0ogZe+nDgIC39/3z06bZvC
-	 KJSpzpqOyedRiqEpYImb2svv8pGC7rzbEL+yq/SAEWrBt/ODfUgCGhGJG8TeFf1n2pw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=AwPcqUUP;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.71
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011071.outbound.protection.outlook.com [40.93.194.71])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793975626;
+	b=Z7c2hVuIBjcSvK6tHze21UzbNXrNQwRYF9S8sd5qgmNl4zvF5ZyD7sgsyuBSCdnmjVY0
+	 Hp/bUXCansnt/zILvVc4ibJGot6vh6Ymrv5iY6YNYDaQD4XKG5KrcWalb19nCU3adJ682
+	 yjN40tFwO39qfUrJ/17wF5o8oSIlqdXeUpJjS2bkhKOAvhZvb1qLJF7vWBLPDWl5061R7
+	 56/3ZJRWzI3K7607pFqhMF9E1Rfq8hW89dlPoFWcD6f7ufHBDEEseE1DLENtPyQKWzQKZ
+	 ZZSVcoZK7VQKMIv/uT8wLITK5y6+ExFKWX/Dz2Akp+CijXtk78HYYXRaYcVhaoeMlrg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793975626;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=wtqvUty3awL+WV2C4Bd+4jjQ8JiJNaHCJXSR0TJ5v3A=;
+	b=yQzm4CfK2F9ZYjA2mIbjoeprcosHEdNNYxr3L1jgrtO4GxgMaTdKcDgd0UTpHBltDfJa
+	 ztMhbK3nfnpX+vEilGUwKtzNysu0wPRgSa7R3ovGzSuvI4q085TzzJsYn04ZGMjOrkrzi
+	 2B771f91iFKJwlsDgj73cRdrR/U2oswgItNA35M+zz4FwbG/Tq3Sxup4bhnYVzKPWba98
+	 oL9SHgc72QDyZL+41/14kb8wJEyGeYJ861q0z2aSBx4lA9bsj/qqjbK7ewW0rOgmU7Ucy
+	 ahW+TYvzrjcpLWGapc/60DhflNyRrkyFs6k7kFbujgN43nKwnZt1fzyoQjFBqrrwkTg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b2r2H5Bd;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27BEC606A335;
-	Fri,  6 Nov 2026 13:23:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 27BEC606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CED22606A32C;
+	Fri,  6 Nov 2026 14:33:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=AwPcqUUP
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=kWMIi/hU9ezwW87sGioNr6QM7bmy0JI6cQhqZ5D3QWQOzzbe0efQFVFShmyHl/We3yFy9MguV1AlDvTk5dksXW+ENh2j5eK4OiBgP3XuH2aBnfL/gTmdzsqqlEAOEcUTBjsKhoLLSrdq5tjJlnNDTcfQt5Ct10SLkpBsaOliy/C2mOdUKpNrMX20Y2hy9z+Z+zz9UACtIOWLB1t3AfOWTYj3LAEWFBoTImex7faRzH66ERdcHLBWjT/+KNAcnKXGifkfWSgMmjK8nqj9AggGqzslYCLOf89XNSrCJP4fB1W88sG2UR8kcBH3EEocrjM9z0I6iMbrUIcg2gx8knRFPg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fOmaNonFZFAaWHDxBB2Vj3hDQfjhHvYYDThqbDxY020=;
- b=DgAtjcJOECbF6jaGLwurHAJhZa+dmgLIo/x0jVms5XPxQEv6QbTnXjzE42jWPF/kRbqqTQnZ5XHK61YOZDVc+HmM43npsYhmRBjr8s3co2lsnjKjK+zf7lfgkNDpqLO1BtrAgLkVgDLluiuFjkX80y8laJQiPVKvHmWd4+c4rbu1jPye2T/i1GE3SX4a6wqU8A83A1NwrZc6b2tSbyu3MZb/DjEuDFYWBnmvsoAZQfTKaE74VDojAeUkhL+vf6LHNOaytxUL5DmmJ5jxzx0eCEjhAIFJ1xmb4rl5GLNwoL8BTXAapFbCeP7otbvDsSFylenTaUuRvNhVaJBjkUtgVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fOmaNonFZFAaWHDxBB2Vj3hDQfjhHvYYDThqbDxY020=;
- b=AwPcqUUPGt8QeerqNG+fQJcUxT7oEb5Wgaeut5c6GpvYBAbnPY/oLxP0NA9oAZk2A9gXEO4Y9tZmq+0F4OzsCaLpjKKeTMBGFVq3UTIMnQhA6b2t91wR3G/qJTDoqHxUi4/bazLykj0oz59BxxBHWnYUQYpp3z+x25VCBOKnk3U=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by SA1PR12MB7411.namprd12.prod.outlook.com (2603:10b6:806:2b1::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.10; Fri, 6 Nov
- 2026 13:23:49 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0592.009; Fri, 6 Nov 2026
- 13:23:48 +0000
-Message-ID: <1e18fcfd-785d-43cc-afd6-d181bf8305eb@amd.com>
-Date: Fri, 6 Nov 2026 14:23:37 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/7] dma-buf/udmabuf: account the page array metadata to
- memcg
-To: Tao Cui <cui.tao@linux.dev>, akpm@linux-foundation.org,
- dgilbert@interlog.com, mkp@kernel.org, loberman@redhat.com,
- jmeneghi@redhat.com, kraxel@redhat.com, vivek.kasireddy@intel.com,
- mst@redhat.com, jasowangio@gmail.com, eperezma@redhat.com,
- stefanha@redhat.com, sgarzare@redhat.com, rostedt@goodmis.org,
- vdonnefort@google.com, mhiramat@kernel.org, jgg@ziepe.ca,
- kevin.tian@intel.com, axboe@kernel.dk, "T.J. Mercier" <tjmercier@google.com>
-Cc: linux-mm@kvack.org, James.Bottomley@HansenPartnership.com,
- sumit.semwal@linaro.org, phasta@kernel.org, joro@8bytes.org,
- will@kernel.org, linux-scsi@vger.kernel.org,
- dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
- virtualization@lists.linux.dev, linux-trace-kernel@vger.kernel.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- linux-kernel@vger.kernel.org, bobbyeshleman@meta.com,
- mathieu.desnoyers@efficios.com, robin.murphy@arm.com, mason@kernel.org,
- aesteve@redhat.com, tjmercier@google.com, harry@kernel.org, vbabka@suse.cz,
- cuitao@kylinos.cn
-References: <20261106131829.3228926-1-cui.tao@linux.dev>
- <20261106131829.3228926-3-cui.tao@linux.dev>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20261106131829.3228926-3-cui.tao@linux.dev>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BLAP220CA0018.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::23) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=b2r2H5Bd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86EA81F0089F;
+	Fri,  6 Nov 2026 14:33:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793975625;
+	bh=wtqvUty3awL+WV2C4Bd+4jjQ8JiJNaHCJXSR0TJ5v3A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=b2r2H5BdxpXdgNiFxLfKLsliHD1aW/wDAEDaKEhpVM3EC5rk9Xr6npFA/IH2FuBji
+	 UDxYAgdQaJNICIZINw9Ilbfw8bLsyrsQzWp+NoPqhA/+jsoa6GKznm54YiNoZU+9oJ
+	 sKCs6bWl1EjHh98hGORYkKB0GcOkK/HjEQjgTReSqakMKK6efSYleyQ6zh8ZhPS7y0
+	 0wS9qzyBqM/XWz66nB/U7xvUJNcHVDCJop7XlyB7M2TSiH7wu9UstnvOKKmLIrUiaj
+	 f3Nh+j2TKg+aNrfLE9k32yn/pJAm68XoJQeSANboxqzmkjEzD0Fm3hpnEuFuKwhEfE
+	 9n14k2PzJGEaQ==
+Date: Fri, 6 Nov 2026 16:33:40 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH 02/17] Input: serio - attach manual drivers through the
+ driver core
+Message-ID: <20261106143340.GL8298@unreal>
+References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
+ <20261105-device-trust-core-v1-2-1e536825b4eb@nvidia.com>
+ <auy2plYVi723Qt42@google.com>
+ <20261105191940.GI8298@unreal>
+ <auzno3uoL5Pfojfl@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -113,128 +89,96 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|SA1PR12MB7411:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3fb6e644-f33c-4419-fa35-08df3c093106
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|7416014|23010399003|22082099003|56012099006|18002099003|261026140227099003|921020|261021123027099003|261028144727099003|261021121427099003|261022105027099003|261009223027099003|261022075727099003|261026121527099003|11063799006|4143699003|10067099003|261102123227099003;
-X-Microsoft-Antispam-Message-Info:
-	yVehWQxb23fNlY6cZG25ymaM88tPsb0efFJ9cDoqVjMa1yq6YQlC3DHWB5GcV1dfNKuJsEZOUZwoRMqfdNT0yjZc4WgoA8w6dJGqxcYtpSFEWZv/a6leh3fJiFrVULWVxELiV0pEOCEm/7pgyf6R7I8cg+2wIvBwd9kK0H0Un+nDMLLRT1fc1C443DobJYnqW9Syv9toX4Wr4R8hB/W21Yj/zUi+Enf2Ao0QNb7K2wpdd2osMTBPwzjZHe5vIGVWYoN81Il3178JEx7U0ZqTPE4dsYVr00VSwnUl3yx/Z6jqvSfQ1Ap62w9VdN7WI9cWHaqbJodLbRTpV1tD6+FQ78MR+jyLJolacV7ZVv2HWdRLDrPBmRTqO5Gg0a8cRc5o9fDwyLf3qD11kJbUdcEtFHbFnVQZ0iDIOPyoXTBfcETF/CB8eLJhWnMeqdvknJTTjXOEyv4jYvCgU0ols+Hxai1VYchrYrnIFv3qoj9MjjWwMnp4jjTL9bZvuMqDvokxmViuajtQ11eAu8TI96oBz2eH5YQ40Ag1rL9wzK7wt/bp4dQ/KoA3oD+NfKRakGLHS1Ir74MuHjjfofrm3oGOE3d5LQoUyWumTcdCpUMQ3lXxBErpfvntHHdkLQvU0QMvGGPFI/L+FvZETGK9fd1FXGi6N4qjtbukvWx3dHIus2GCCW8fXE1x90zU2IbZprDTxZ4yt2FdiofLeFmJjDtVfQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(23010399003)(22082099003)(56012099006)(18002099003)(261026140227099003)(921020)(261021123027099003)(261028144727099003)(261021121427099003)(261022105027099003)(261009223027099003)(261022075727099003)(261026121527099003)(11063799006)(4143699003)(10067099003)(261102123227099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YzhZa0U0STZpYXhyM29HWnQwYjAzdmpodG9OcXpYK1QzWnppVDAyMk1ENmkw?=
- =?utf-8?B?RjJ3L1dRVFcxTjRHekdONkdrY1AvdDVickFQU3Bac3BQV3NucmFLcklrZ0hj?=
- =?utf-8?B?NHF5VjhaRGJCalRGbWdQaExjZEUzSnozajJabUhBdmNIUTVRWVk3YmNoWXRz?=
- =?utf-8?B?TG91S1EyOTd3M0p2WCt1QlE0alhNei9TM2RuNjNRQUNBcVBwVUVZd2NoSFBs?=
- =?utf-8?B?SjNKV0NpSFU2QWNGamc2TUplRjh3T3UxOWIxbU4yZUxSK05iOFhtODl6bUtO?=
- =?utf-8?B?L2hBL3RZa1hCOHZvWlRUNnNvejBOOVpvc09oTUlhKzNJUGdhNWsxRnBkM1dI?=
- =?utf-8?B?V1lqRFFYa29MbVcwR1Z4ell6WU1LZzdmak1wcTJISmpFVmpSSUhyNlhMM1Fs?=
- =?utf-8?B?UDFBcFZBa1BXemE1elJWelVyNUJYc0FMVWtkRmh5cDByTEl1ZEUzUldiL0x2?=
- =?utf-8?B?am5hYmU2NmRRbzlJTTF6UTVReU1NZGZFd1pCL2hWOHdpaUs0bXV3RVl4QVNa?=
- =?utf-8?B?MUpDTDBqeUdTQldhOGFxbkRrWGVxTXVKSmlVSS9GRkJUcllqaDh2K3pDWkZZ?=
- =?utf-8?B?MTQwQTJIcVdha21sdkJUVnZpR0NLdWwxdDBHRkk0ZmpJN3g2c3laQlF2bmM0?=
- =?utf-8?B?S2dDWitxM2QydlV1WTBxYUx1TTVUOVFZcnUrYkluUjFYSEF2K2xXR05MUzhJ?=
- =?utf-8?B?emdPZ1l2dW05MTZkU21DR05DNko2c2taOVJ1OE1hSm4yTE00dUlsWGRtbTgx?=
- =?utf-8?B?MXAvTzVYeHFCeUM2eDFSTUF4SDhWWXdwT3FjUUZvbDRIZWtEUnozSkxha3Z5?=
- =?utf-8?B?SjZ0UGljc2NidjFLV1ZpVDU4b1ZkNUJpK0RubVE1Z3BqMks4V0VIZm1RZll4?=
- =?utf-8?B?MXRyQ0taWmIwZzdxK2ZPbVJPNnpDYktDL290RWkxaVBzcjVZU2FVRitvRmE4?=
- =?utf-8?B?cWRZYWtZdWhRa1BRdk5kVUlEUUk3Wmhla0FwMFBkMHNSdHdabjNNZHdtVzhY?=
- =?utf-8?B?OVhVQkZkdUFrRk9OZFBnTXN3eDNjUWdlZnpMRnFzR3RYVGN4OFhEMUtPcW9m?=
- =?utf-8?B?SUpNd1B5aWxIM1VOZzVkamNmbTlvdFlTQmhxZ3JFQWpuN21DOUhxOXZxZUpI?=
- =?utf-8?B?Qk5Ia0x2WFFIMHUyYVFLSDB3SjBaOExnbkZrenBkUDBDZk42ZHdLalk5dUZo?=
- =?utf-8?B?UHI5TnBwT1RMY1JCQUJjRU16bm4yTG12N0hpQmNZbGN2eTdSYlFKV2hGSE9F?=
- =?utf-8?B?OGsrc0lTK2pjSkZqeXF3U1NjYy9CWERUNlk4N0p5RnkraC9BN3hKdnAyTnVZ?=
- =?utf-8?B?T0FlVksyendkei9kYjFjdE9Nbkt6RjZnZ0l2bEZ6RVhsT05rMWRLbExPU3Ir?=
- =?utf-8?B?dGppZkkvaG1yUXVuRUFHU09YSEJreTFxc0tDM2ZHd1pPcWh0Q2x1Z0pwN01V?=
- =?utf-8?B?bll1VCtxSnQ1eVJSdmlOSXk3aTFPV0drTXpYY2pSYktZZEFjLzVpNm9XNTky?=
- =?utf-8?B?eXZQNmJwdURjS0tLR1ZvZTF5elFFS3V5K3doaE81dm5WTVhVMGVVUmxuUFhH?=
- =?utf-8?B?NlJTOWtTNW9CSXF1VHFTQ1hCYVRWRklmVGtLL2IzVzM2cTFqSTFUYWJpVTdp?=
- =?utf-8?B?a3RXUksrOE8vRktYbWVoTFVKZUZOd2hNeXdlZ3ZZdzlaMU5sVmlZa1FjTFBJ?=
- =?utf-8?B?bmF1UENMZTFmN3hkaEhHMmFRQ1phdldYampTT3N3S1NaVXp6RnM3RmN5S2xr?=
- =?utf-8?B?TXBjcEF5STB6clcwMFA0N3dnT1UyMjZJTmhySlR3WjNtdlNvVG04MFpVV3li?=
- =?utf-8?B?bmQwVWF5a3hSZzYwL0pyaFlBdnFxaDBPdi9DMFBwQkRKS3diRGsvMTRaWnhK?=
- =?utf-8?B?eUdYUzIvMHNINHc5eE0rM3NJQTAvZGJVUDBJR282WHlVYnljZ3czbE9PNGhR?=
- =?utf-8?B?Z1pDTFZzaUJyNWw5S0N3TGI2cnlhNFF4LzJzbXJDZzdWSWYrYS9Mb0p2K3pi?=
- =?utf-8?B?bWRuQ29VRHJoU3YxT0JseTRPU3lvbEFZYVVyR3cyTjBMNlN6bFBPM2VhK1lJ?=
- =?utf-8?B?M0NKY3c1MzZWMnNna3RrVTlYUVFFUjU3YXgzRkFpK0UvQ3BFL0FmbnE3YVJo?=
- =?utf-8?B?RVh4M21aUnNRN29lT1MxbTZqbDNpOWJTR1Vhelp5Q0V1S0E3SktyK0tCY2JX?=
- =?utf-8?B?V1NsVEQzSkx5dTB6VzBZbmJ6Z0lIZWREUG5OVUFYeVFuYkdWejVHa09TNTU1?=
- =?utf-8?B?VGRydUVHTEVpOFU1MVhQR2I3d2k0b0YxdkV3S2RyK0VUSGw2ZXpNeUY5QmFQ?=
- =?utf-8?Q?dorWEJ7Yg/YeCR+hXU?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fb6e644-f33c-4419-fa35-08df3c093106
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2026 13:23:48.7204
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HGqaZF9TFD5MGfLNY2M2aF8bGqm4/NCZncx/jRFR5z/Hbo8SG4BB1DfR00KRl979
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7411
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <auzno3uoL5Pfojfl@google.com>
 
-On 11/6/26 14:18, Tao Cui wrote:
-> From: Tao Cui <cuitao@kylinos.cn>
+On Thu, Nov 05, 2026 at 12:34:53PM -0800, Dmitry Torokhov wrote:
+> On Thu, Nov 05, 2026 at 09:19:40PM +0200, Leon Romanovsky wrote:
+> > On Thu, Nov 05, 2026 at 09:05:29AM -0800, Dmitry Torokhov wrote:
+> > > On Thu, Nov 05, 2026 at 01:42:15PM +0200, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > > 
+> > > > Manual serio binding connects a driver before driver core can admit the
+> > > > device. A rejected binding therefore arrives after functional setup.
+> > > > 
+> > > > Keep the port ID check and use device_driver_attach() for the existing bus
+> > > > probe path. Driver core then serializes admission and handles probe failure
+> > > > before publishing the binding.
+> > > > 
+> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > > ---
+> > > >  drivers/input/serio/serio.c | 24 +++---------------------
+> > > >  1 file changed, 3 insertions(+), 21 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/input/serio/serio.c b/drivers/input/serio/serio.c
+> > > > index 54dd26249b027..604440244c1ca 100644
+> > > > --- a/drivers/input/serio/serio.c
+> > > > +++ b/drivers/input/serio/serio.c
+> > > > @@ -81,28 +81,10 @@ static int serio_match_port(const struct serio_device_id *ids, struct serio *ser
+> > > >  
+> > > >  static int serio_bind_driver(struct serio *serio, struct serio_driver *drv)
+> > > >  {
+> > > > -	int error;
+> > > > -
+> > > > -	if (serio_match_port(drv->id_table, serio)) {
+> > > > -
+> > > > -		serio->dev.driver = &drv->driver;
+> > > > -		if (serio_connect_driver(serio, drv)) {
+> > > > -			serio->dev.driver = NULL;
+> > > > -			return -ENODEV;
+> > > > -		}
+> > > > +	if (!serio_match_port(drv->id_table, serio))
+> > > > +		return 0;
+> > > >  
+> > > > -		error = device_bind_driver(&serio->dev);
+> > > > -		if (error) {
+> > > > -			dev_warn(&serio->dev,
+> > > > -				 "device_bind_driver() failed for %s (%s) and %s, error: %d\n",
+> > > > -				 serio->phys, serio->name,
+> > > > -				 drv->description, error);
+> > > > -			serio_disconnect_driver(serio);
+> > > > -			serio->dev.driver = NULL;
+> > > > -			return error;
+> > > > -		}
+> > > > -	}
+> > > > -	return 0;
+> > > > +	return device_driver_attach(&drv->driver, &serio->dev);
+> > > 
+> > > I am not sure how safe it is, serio (and gameport) have pretty elaborate
+> > > structure and locking rules because they can recurse into themselves (to
+> > > support case of Synaptics touch-pads with pass-through PS/2 ports).
+> > > 
+> > > But this call is for user-initiated probing anyways, I am not sure if it
+> > > even needs "trust" handling.
+> > 
+> > This patch does not change the locking; the lock was already held on paths such
+> > as the rescan path. This change makes that explicit.
 > 
-> udmabuf pins the pages of a memfd and hands them out as a dma-buf.  The
-> data pages keep the accounting of the memfd they were instantiated in,
-> but the bookkeeping around them does not: the page pointer array and
-> the pinned_folios array, both sized by the buffer page count, plus the
-> transient folios array sized by the memfd folio count, are plain
-> GFP_KERNEL.  A 1GB buffer costs about 4MB of uncharged SUnreclaim
-> memory, and size_limit_mb defaults to INT_MAX.
-> 
-> Charge the three kvmalloc allocations so the creator pays for the
-> metadata it induces.  The system heap in the same subsystem already
-> accounts its buffer allocation; the data pages here stay with the
-> memfd.
+> Does this enforce synchronous probing?
 
-T.J. needs to take a look here, but I fear that this might break uAPI.
-
-A lot of the DMA-buf resources are intentionally not charged against memcg.
-
-Regards,
-Christian.
+No, it ensures that a device is bound to only one driver at a time,
+without races.
 
 > 
-> Signed-off-by: Tao Cui <cuitao@kylinos.cn>
-> ---
->  drivers/dma-buf/udmabuf.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
-> index df6dd0046242..40182c82df6b 100644
-> --- a/drivers/dma-buf/udmabuf.c
-> +++ b/drivers/dma-buf/udmabuf.c
-> @@ -190,11 +190,12 @@ static void unpin_all_folios(struct udmabuf *ubuf)
-> 
->  static __always_inline int init_udmabuf(struct udmabuf *ubuf, pgoff_t pgcnt)
->  {
-> -       ubuf->pages = kvmalloc_objs(*ubuf->pages, pgcnt);
-> +       ubuf->pages = kvmalloc_objs(*ubuf->pages, pgcnt, GFP_KERNEL_ACCOUNT);
->         if (!ubuf->pages)
->                 return -ENOMEM;
-> 
-> -       ubuf->pinned_folios = kvmalloc_objs(*ubuf->pinned_folios, pgcnt);
-> +       ubuf->pinned_folios = kvmalloc_objs(*ubuf->pinned_folios, pgcnt,
-> +                                           GFP_KERNEL_ACCOUNT);
->         if (!ubuf->pinned_folios)
->                 return -ENOMEM;
-> 
-> @@ -387,7 +388,7 @@ static long udmabuf_create(struct miscdevice *device,
->         if (ret)
->                 goto err;
-> 
-> -       folios = kvmalloc_objs(*folios, max_nr_folios);
-> +       folios = kvmalloc_objs(*folios, max_nr_folios, GFP_KERNEL_ACCOUNT);
->         if (!folios) {
->                 ret = -ENOMEM;
->                 goto err;
-> --
-> 2.43.0
-> 
+> Anyway, I would like to get rid of this special probing in serio core.
+> Given that the code path is only triggered by explicit user request I do
+> not believe we need to worry about supporting trust notion here, so
+> please drop it from the series.
 
+Technically, this is exactly the flow we should be concerned about. Users
+attempting to load the driver generally don't know whether their device is
+trusted; attestation software is responsible for determining that. I modified
+serio to ensure that driver attachment happens under the driver core lock.
+
+One idea I had over the weekend was to introduce a special API for driver
+attachment that says, "I don't care." It would allow attachment only in
+"full" mode, as it does now, and fail in any other trust mode.
+
+Thanks.
+> 
+> Thanks.
+> 
+> -- 
+> Dmitry
+> 
