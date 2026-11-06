@@ -1,49 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.199
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793979274;
-	b=sXQ0qxAPg+aXB40wMUK8lFr4grGwUUmjzXZ+wlKLPoSahkbTSM7xwxaLsVRh/U+F81Vy
-	 GOI4cDvqw8bRz4zqWl8NyHkpE+ufQEAtntmhh9FXEKiHWlC7OthueMWyVFo+tOele9Y3S
-	 ifYzMuvN2U4wqgyPZbrmXh6LFb0TwHAzkHoMktRq6KYGIT9LD9msHTDChoAEN4o441WRi
-	 sGyuCuhibkjPh6yKsUzPPGvwiIKoJ/Nq6NJM9vIspKSHMtiMVz8cwXY5N5o2nsL9W1FNf
-	 HdVmm7ygbYDyUZB3FPrcEWEJxoYq3lVkakyoXn3ph+fo61tZ/r07QHHuwEX44VXSM8Q==
+	t=1793979564;
+	b=cN49VofRhky1ekdI042iXCZI11weF2or2CwpPrBA1N06nbd1SSI3L8Lr6orPPnUg8WoA
+	 a0MihzZgSN5J0kMO4AmehKVX/bWy/BkvwJvd1Z3HM0keUgddmFwBed1DFbIQpDfkHarQu
+	 PDfLb5gkhXnAO6Qdhej8lA8No4URY7sCwlzSLAXLgbvRf1eVThbj5Hv/KaPGuBM5a3rYc
+	 zIhG2fTgYsej/xhdGwIhzX5vsS3IRj9ZZ6HGagCXg//1FmfF0lvvYGR1p7jLF2Plz/Hj1
+	 46DnGE45+Gkco3UYLVRAgHJQMu5OPLLyO0/jFvEAzj0mdkE73kFb9Z+eqGNHptlRe/g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793979274;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=Uj6b08bxBrGPMBQHtFI05sMh6Xoy8ejNAgMPUPWV1BQ=;
-	b=b+AMX1GtUVMEl+CkEwK7CSLIUbt6rstJG9wUkvCmwIp6KXPOQUTDcnB1DbLE7PE7gAbQ
-	 h/j//j43wLtxoDsZrKJLPXCd8Vdu5GfprKfp1Lf2T2nX+MVkAhY+VoY/eCYkfl/QzjJ+j
-	 /4dGxOTjf8ageztAwskyFebFzOIHUveELyO5g1eC7ofiX3h9RTXpl3ZG4weHnL5XPMlsd
-	 /XmKZ9kwChwtss8ASndwT5FYUc6OJNsqY6p/+8mFrb2Cx8cHDYNZZD2N8BtqnwHLQAQhu
-	 9fy752m84rWRZ26gcgrN2UA3TdSTeCgPuRoPpFciJC2HElrP+NyfaQ6MwPZSYCBGzBQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793979564;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
+	 X-Mailer:In-Reply-To:References:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=4tmGxuQStKCk7w+onoi1RLdqwI1kArXig6jzABebmog=;
+	b=gvyzyjVTDGtgsJgdFQa1PYb9f5uAi+ojJeyonUsufLR03QkJ0n0ff54ZrfFKSa41vweH
+	 bvU6X+PssrUGYlgOyxLMoIhRtuBd/ouCIUo+LRTQy/RYUudDvrLCjOmFJ4Jm7opFaxtKK
+	 wRbUCeDEcIpBOmqEHWA36zTD9ndxwBJhioDJuosgp+K1a6CkI08YpqffzpWpTMCPFzYiC
+	 8R/JeeoMBBB4x1n28bgF/vdAXr5d7bourTPglgwILWVbQ5UC4t/qjK9uf0GbeiOkiKWoq
+	 f6oYePBLR9ryB3nNYSeKHvj4v4b/CaZGhbwWtnZ70ylr/5i4K3RAEp4YUZu2gLm/haw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=HoIuxL1I;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2C312606A329;
-	Fri,  6 Nov 2026 15:34:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2C312606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=CmzgYoZC;
+	arc=none smtp.remote-ip=95.215.58.199
+Received: from mta1.migadu.com (out-199.mta1.migadu.com [95.215.58.199])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9305B606A329
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 15:39:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9305B606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=HoIuxL1I
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1F8F71650;
-	Fri,  6 Nov 2026 07:34:30 -0800 (PST)
-Received: from [10.2.197.99] (ewhatever.cambridge.arm.com [10.2.197.99])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2B6803F632;
-	Fri,  6 Nov 2026 07:34:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1793979273; bh=kbtuYZHukFIc3XIsRQp6dsFZOem1VpVxmEcgHFZmqd0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=HoIuxL1ItDLUGlcavjNXD/JxrmPk3WBhtY7TT2qM8F45c/7Q3yyjSI+pQ153K1fb0
-	 YXClJGmCHDlVOTNxhr9aTezROBBizZumSyroGckV652hcFVqpuVFnjin2TJWlbTvqZ
-	 Bx38XYVnikraEyti5l13jjcvEmncaKF99Gps4Xng=
-Message-ID: <397b7702-ae85-472b-909e-05b3c4135c61@arm.com>
-Date: Fri, 6 Nov 2026 15:34:23 +0000
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=CmzgYoZC
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=cxp+oaexrpUE0cyElicHmhKBrNrP/fzOSAf3exqA3F4=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1793979561; v=1; x=1794584361;
+ b=CmzgYoZCoSCoPOD8d4J2CNcL+azM+zYCz75PcmISXevWmg5vTMxyEjplZCkCK5TM1Om8yZ6V
+ Zbx3Wd/Y4LxkocPiaUzZIXerQYHYqPH79yMQI8F7Y4Qt8r5e7Ub4KBDOVvOGzoyHoXX09hBsmQG
+ 4dbcIPuXWKdimO8uWiqmyp2U=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id be0c1e5625ffc958;
+	Fri, 06 Nov 2026 15:39:21 +0000
+X-Mizu-Trace-ID: be0c1e5625ffc958
+X-Migadu-Flow: FLOW_OUT
+From: Lance Yang <lance.yang@linux.dev>
+To: david@kernel.org
+Cc: akpm@linux-foundation.org,
+	ljs@kernel.org,
+	liam@infradead.org,
+	vbabka@kernel.org,
+	rppt@kernel.org,
+	surenb@google.com,
+	mhocko@suse.com,
+	willy@infradead.org,
+	jack@suse.cz,
+	ziy@nvidia.com,
+	baolin.wang@linux.alibaba.com,
+	nico.pache@linux.dev,
+	ryan.roberts@arm.com,
+	dev.jain@arm.com,
+	baohua@kernel.org,
+	lance.yang@linux.dev,
+	usama.arif@linux.dev,
+	kas@kernel.org,
+	matthew.brost@intel.com,
+	joshua.hahnjy@gmail.com,
+	byungchul@sk.com,
+	gourry@gourry.net,
+	ying.huang@linux.alibaba.com,
+	apopple@nvidia.com,
+	peterx@redhat.com,
+	hannes@cmpxchg.org,
+	songliubraving@fb.com,
+	riel@surriel.com,
+	hughd@google.com,
+	will@kernel.org,
+	aneesh.kumar@kernel.org,
+	npiggin@gmail.com,
+	peterz@infradead.org,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	joro@8bytes.org,
+	robin.murphy@arm.com,
+	steven.sistare@oracle.com,
+	jhubbard@nvidia.com,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	linux-arch@vger.kernel.org,
+	iommu@lists.linux.dev,
+	stable@vger.kernel.org
+Subject: Re: [PATCH 4/5] iommufd: fix cleanup when adding memfd folio pins fails
+Date: Fri,  6 Nov 2026 23:39:14 +0800
+Message-ID: <20261106153914.91168-1-lance.yang@linux.dev>
+X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20261105-refcount_overflow_stable-v1-4-70b9c655da3e@kernel.org>
+References: <20261105-refcount_overflow_stable-v1-4-70b9c655da3e@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,89 +109,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 01/14] mm: Add an allocator for CoCo shared memory
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, linux-coco@lists.linux.dev
-Cc: Andrew Morton <akpm@linux-foundation.org>,
- Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- Pratyush Yadav <pratyush@kernel.org>,
- Catalin Marinas <catalin.marinas@arm.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
- Marc Zyngier <maz@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Steven Price <steven.price@arm.com>,
- Sumit Semwal <sumit.semwal@linaro.org>, Thomas Gleixner <tglx@kernel.org>,
- Will Deacon <will@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
- Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
- "T.J. Mercier" <tjmercier@google.com>,
- Madhavan Srinivasan <maddy@linux.ibm.com>,
- Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
- Christophe Leroy <chleroy@kernel.org>, Ritesh Harjani
- <ritesh.list@gmail.com>, Shrikanth Hegde <sshegde@linux.ibm.com>,
- Alexander Gordeev <agordeev@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
- Christian Borntraeger <borntraeger@linux.ibm.com>,
- Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>,
- x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
- Kiryl Shutsemau <kas@kernel.org>, Rick Edgecombe
- <rick.p.edgecombe@intel.com>, "K . Y . Srinivasan" <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>,
- Paolo Bonzini <pbonzini@redhat.com>, Vitaly Kuznetsov <vkuznets@redhat.com>,
- Andy Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
- linaro-mm-sig@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
- linux-media@vger.kernel.org, linux-mm@kvack.org, kvmarm@lists.linux.dev,
- patches@lists.linux.dev
-References: <20261104164555.3555725-1-aneesh.kumar@kernel.org>
- <20261104164555.3555725-2-aneesh.kumar@kernel.org>
- <2e448ac1-7b4f-4d45-90db-dfe9dc5ad329@arm.com> <yq5ald76ou4m.fsf@kernel.org>
-Content-Language: en-US
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <yq5ald76ou4m.fsf@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 06/11/2026 15:30, Aneesh Kumar K.V wrote:
-> Suzuki K Poulose <suzuki.poulose@arm.com> writes:
-> 
->> On 04/11/2026 16:45, Aneesh Kumar K.V (Arm) wrote:
->>> Confidential-computing guests may require memory shared with the host to
->>> be aligned and transitioned in units larger than PAGE_SIZE. Several DMA
->>> users need struct page-backed allocations satisfying these requirements.
->>> Provide a common allocator instead of requiring each user to open-code
->>> this sequence.
->>>
->>> Add alloc_cc_shared_pages() and its node-aware variant. The allocator
->>> rounds the requested size to the architecture's shared granule,
->>> allocates suitably aligned contiguous pages and transitions the
->>> complete range to shared state. It also preserves the caller's GFP
->>> policy.
->>>
->>> A private-to-shared transition may alter memory contents. Mask
->>> __GFP_ZERO from the underlying allocation and when requested, clear the
->>> complete transitioned range after cc_make_shared() succeeds.
->>
->> This is not true for pKVM though. It is the other way around. i.e,
->> pages must be cleared before transition (e.g., from private to shared)
->> to make sure the contents don't leak into the host.
->>
->> Do we need to handle such cases with a pre_conversion and
->> post_conversion hook ?
->>
-> 
-> Patch 2 does something similar.
 
-Ah, yes! Thanks
+On Thu, Nov 05, 2026 at 02:10:13PM +0100, David Hildenbrand (Arm) wrote:
+>folio_add_pins() can fail after memfd_pin_folios() succeeded pinning a
+>folio. Upcoming folio refcount limit checks will make this easier to
+>trigger.
+>
+>Let's fix three problems in the error handling:
+>
+>1. pfn_reader_release_pins() uses the allocated array size instead of the
+>   number of folios returned by memfd_pin_folios(). With large folios,
+>   cleanup can unpin uninitialized entries. Remember the number of returned
+>   folios and use that during cleanup.
+>
+>2. pin_memfd_pages() returns on failure without releasing the pins acquired
+>   by the current call. Release the per-page pins for folios already
+>   expanded into the page array, and the single pins for the remaining
+>   folios.
+>
+>3. pfn_reader_next() returns on failure before updating batch_end_index,
+>   even if the batch already contains successfully expanded folios. Update
+>   it before propagating the error so cleanup releases those pins as well.
+>
+>Fixes: 92687c793644 ("iommufd: pfn_reader for file mappings")
+>Cc: stable@vger.kernel.org
+>Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+>---
 
-Cheers
-Suzuki
+Nothing jumped out at me, so:
 
-> 
-> -aneesh
-
+Reviewed-by: Lance Yang <lance.yang@linux.dev>
