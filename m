@@ -1,44 +1,53 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793979977;
-	b=n3CF7YyP7/RviPuJUoFt1LQiP1B5A4jN7Jyw1SjHwS3KHFGaDmlL9lgkFrygTEfoa+Bi
-	 C0Q9edg9y9s0HcZW7+fxH7LRWgxq41FSRmi0klRkCbbu1qVixqElby0oRjq2So3iAOaht
-	 IYJfMQESHnqNQVQHR8fF+eMm+wvcg/ftYkgvwf6Hx4ptufJLLtnUuhIYkTehZh23cXfQx
-	 V/zk6kDa6PqhrqEN1yOjVWd+FMxic/qKrGtbwPGjgudsd8vTRlMvtMsbknVolcPOXh+94
-	 YB5nj/2Rc+IIwYgA44vwWvIWIlNxQveMJf9bD3deFlqK8u6fJDZvXBlQlJXSiUcvQVg==
+	t=1793981228;
+	b=xo+QiYltnQ2lwzvruBq7VX5McxP4sjl/kxz3utAg+nNZJs/DtlG363HPOQYFGohCOIF/
+	 rWf2A6zK4yO4+D8gg/j54o7YKaDb0Gk7y5fc8IposCClcyDktryKJRl0/bVzWVVhxqkeQ
+	 WSaIJwpin2zswraf0Qt/yBAfVvFSUsyNhfAht+8YFIcI6X4/yepNmJK42//A8Z4hhLCHu
+	 Oezf376pN6Q0Cgqdj1G50+Ww8+uywVEf5rQ2fhTfOx3dMLLmAone8drZ1u2kuHYNmkLQE
+	 S2hTMf2Rjcnsv/zvhrbK90yhfINIju4tYWXu6qEFDFSs7I/zZbUQQPljTuNnsVP6XIg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793979977;
-	h=DMARC-Filter:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=DMfYqX4g38gmV5SsvfE0mNfeNdT0ejHam1Ov/jg/J7Q=;
-	b=PL2PyyZR2uAtCGdkawLfgui5JKR5FbnuvApcHK3bjHG2amFX3UUvnkqspcvhx1+wZ9yu
-	 sAs7UPa5VKsKxQRFodaYqara/FoyHKV0besS4+YwgH0/uiXVLpsZvDWzgF5bcOjkfLDXT
-	 B4qA/WiM79Nts5KLf+jrVNB9mkhB2XE3/FmDBuQnzbGu7hWw8zsgXQkDPVYoMXXM309vF
-	 yiPT+LjtooGp67vBYo8ZAM/M5JOZc5YrWn1nt74pLVh6dXaT96fYCTe5k+xuArD+298qG
-	 f+vvHUSRJs3y2mhBnZYHfRQsVcNGQtW3p5KM2o3AaLYCc232TH1gGJhsoS1spAAB0vw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793981228;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=24tcA7CkBj6LFWiedM+EjtolEDXjlrMm3/iSbAJVeAU=;
+	b=ozWRiHawXjbVIPOlQh2OIHgjq2G3VCZFptRG3+ZMGbTPuvREWSsRZqIz6CKRoXPIyq8S
+	 Yunh/lV1ruEQNHvwvxM8qCFzh4csQAGH7baPoAywUhJnGMYyJBi6Qglq3Yc7sNs8Cg5yZ
+	 C1gbHmHlJC612qr3nxbHLkLkJqyN0y8fJqpolK7r8xA2mvD3I+zdFZPt9ws0pyPJkJapZ
+	 SsG0PQRPLejfcE2ibXC0d77sIHJkfb3BcCmm+1GvBAe5YM2ontm8RABEdcq8BrKNoKbJL
+	 Wy1GwyZwiPTg0LC7GzU7WJeIc7RPewrmJlqPDqNS7tMrLVgTDyLaM6vRCSCtU6jKIEA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=8bytes.org;
-	spf=pass smtp.mailfrom=8bytes.org;
-	arc=none smtp.remote-ip=85.214.250.239
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EFC1606A32C
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 15:46:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4EFC1606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Received: from 8bytes.org (p200300f6af404a00c8b813848b737b26.dip0.t-ipconnect.de [IPv6:2003:f6:af40:4a00:c8b8:1384:8b73:7b26])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="TR/x0BVs";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 0B953241A1E;
-	Fri,  6 Nov 2026 16:46:16 +0100 (CET)
-Date: Fri, 6 Nov 2026 16:46:14 +0100
-From: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev
-Subject: Re: [PATCH 0/5][PULL REQUEST] AMD-Vi updates for v7.4-rcX
-Message-ID: <au32KqLCsHqlXN1k@8bytes.org>
-References: <20261105163219.601561-1-vasant.hegde@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 209A7606A326;
+	Fri,  6 Nov 2026 16:07:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TR/x0BVs
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B9321F0089F;
+	Fri,  6 Nov 2026 16:07:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793981227;
+	bh=24tcA7CkBj6LFWiedM+EjtolEDXjlrMm3/iSbAJVeAU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=TR/x0BVsUbOGO2/IySWpntHAUb7M2R3jo2gI0q/2mExprKo6qljhE1F8WAv4R6kcJ
+	 x7dJ+SK+L6E1+37UBNA8kqXdoxsMR4cyqZ2WXgIzSlz9o9XBQQRTcPT7LZmmmE1m7f
+	 OFfmfqmXsKEMR0jL1nYfsBW5t2WSuskIIa1d8TUtZdcRtOfYB78k2k+9t/pmDCrmO2
+	 /rJOWlucwV1am6WOd06eu9v9vXvVsq/MPXSTHEEaj4tVLSmcMRGG+obfMg0oKWGph9
+	 ByKZ+tfx9nJFuTQo+Eb7pTNNdqKh+/dAazeFPJ0nEBamH7B1G9WAiqQ9ZkW1qJOcMP
+	 GauGt68yKqbZQ==
+Date: Fri, 6 Nov 2026 16:07:40 +0000
+From: Jean-Philippe Brucker <jpb@kernel.org>
+To: Cam Miller <cam@linux.ibm.com>
+Cc: virtualization@lists.linux.dev, iommu@lists.linux.dev,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>
+Subject: Re: iommu/virtio: design question: hot-removal allowed?
+Message-ID: <20261106160740.GA76938@myrica>
+References: <6e6eaf23-9194-488b-8961-63cc062024ca@linux.ibm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -50,23 +59,87 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261105163219.601561-1-vasant.hegde@amd.com>
+In-Reply-To: <6e6eaf23-9194-488b-8961-63cc062024ca@linux.ibm.com>
 
-On Thu, Nov 05, 2026 at 04:32:14PM +0000, Vasant Hegde wrote:
-> Akshay Jindal (1):
->   iommu/amd: Skip non-IVMD entries when parsing IVRS memory definitions
-> 
-> Dheeraj Kumar Srivastava (1):
->   iommu/amd: Clear amd_iommu_snp_en if snp_rmptable_init() fails
-> 
-> Jean-Christophe Guillain (1):
->   iommu/amd: Fix NULL pointer dereference for GPUs without upstream
->     bridge
-> 
-> Kevin Mitchell (1):
->   iommu/amd: remove obsolete domain pointer warning on release
-> 
-> Mario Limonciello (AMD) (1):
->   iommu/amd: Enable PerfOpt automatically for integrated GPUs
+Hi Cam,
 
-Applied and sent upstream, thanks Vasant.
+Thanks for investigating this
+
+On Thu, Nov 05, 2026 at 03:54:20PM -0500, Cam Miller wrote:
+> Hi,
+> 
+> 
+> Testing on x86, I noticed that userspace supplies a mechanism for hot-removing a virtio-iommu device.
+> 
+>   echo 1 > /sys/bus/pci/devices/<virtio_iommu_dev>/remove
+> 
+> Hot-removing virtio-iommu should NOT be supported, right? The intention is clear in the QEMU source,
+> which fences off hot(un)plugging virtio-iommu devices.
+
+We would also have to prevent:
+
+* unbinding the driver. For that we can use .suppress_bind_attrs
+
+* unbinding the transport driver: virtio-pci, virtio-mmio
+
+* possibly other weird cases like PCI bridges upstream of the IOMMU
+  getting removed
+
+Module removal is fine because the IOMMU core holds a module ref for
+each endpoint.
+
+> If I am correct, then shall we fence off hot-removal (perhaps by simply omitting this remove file
+> from sysfs)?
+
+That would be a PCI core change, I guess?
+
+I'd much prefer handling forced removal as gently as possible in the
+viommu driver, but as you've noticed, we're not there.
+
+> Else, keep reading...
+> 
+> ...I believe I have found two bugs in viommu_remove() path that I would like to bring attention to.
+> The first bug is that the echo above causes the following kernel panic.
+
+Yes please send a patch
+
+[...]
+> After applying the fix shown above, a second problem is exposed. Unregistering the IOMMU while
+> endpoints remain active is like pulling out the rug from underneath those endpoints. The following
+> warning catches this case.
+> 
+>   WARNING: drivers/iommu/iommu.c:743 at __iommu_group_free_device.constprop.0+0xb9/0xe0, CPU#1:
+> bash/1250
+>   --- snip ---
+>   Call Trace:
+>    <TASK>
+>    __iommu_group_remove_device+0x95/0xe0
+>    ? __pfx_remove_iommu_group+0x10/0x10
+>    remove_iommu_group+0x39/0x60
+>    bus_for_each_dev+0x85/0xd0
+>    iommu_device_unregister+0x3d/0xb0
+>    viommu_remove+0x1d/0x60
+>   --- snip ---
+
+Device links would likely prevent this sort of thing. I worked on it a
+while ago but at the time I was hoping the new fw_devlink would
+automatically create those links. Unfortunately there was (is?) at least
+a problem with having the IOMMU on the same bus as the endpoints. So we
+should add explicit device_link_add() in the driver, to force endpoint
+unbind before viommu unbind.
+
+> ...Point being that hot-removing virtio-iommu is currently broken.
+> 
+> In summary:
+> - Should hot-removal be supported/allowed?
+
+Reluctantly allowed, I think
+
+> - If no, then how shall we fence it off? Via sysfs?
+> - Else, there are some bugs that need to be fixed (and I would be happy to work on that if that is
+> not already evident).
+
+That would be really welcome!
+
+Thanks,
+Jean
