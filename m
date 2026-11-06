@@ -1,111 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793985350;
-	b=1VCWXBcF2NouUTTHOW7W3njELFFiFZIQVrlVoo2iPSP8+RfXrbLbqNEuozs7S5sF6gNa
-	 Klir/SCA89qXKTT8tRZzijmtuCAf8TlxnDXRGM8gncfFnuQxMvSCYtVkG5gL5SUKpu4gW
-	 wl0ZZubzPZ+jml780BNSmZe2giz5Wi6pnD8i+SuqsYX7dN7TJsy8aklGrhOWeTRTOutjk
-	 GnmZP2McuK7kGIksfcqC+xwUYkLI4Krw3kK78o4LK1L2XVi05ZBdrkv60KFU8xhemypto
-	 Cf3tvDSbA6vxQisi35BHHS3BGAm3mJPRoh4CgrJFVARXouJAeRY0wBIy6rwC9Mvw2VA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793985350;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
-	 X-Received:X-Received:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
-	 In-Reply-To:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-GUID:X-Authority-Analysis:X-Proofpoint-ORIG-GUID:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=47JQnoGH/w4xWuL9FcqDdeP8e8K7V4oop5mGTZtNivY=;
-	b=4YkBN8phagyq/3gdpV68bnKcDCzMXDKS97JY5ZupbpxgRBN+8vBpRoG9NkvtLRhldzV5
-	 jlL0d8ebqdzqap/P4PBRJbpI402ktRih5FdfrZs66onyWleS6Lsq0nM31qmCitFBzDxm1
-	 VUpb0ckrgMSMe6qYnP93i6u7/XtvYYG5VJE+oWahDEwE8U/GKhwb+YfYsrmUfedGM30FL
-	 IqZ0bsIAjoSE0uwOYcz7teTBWHroEh7BZk/DeRj1uZwiKK0EWZMI22Q9uaVRzzamXxeVV
-	 4x5c0pmC/9KU0Q8/p8qoDwHJxLKjONX0Vb8AUMk5y6Qo0MglONbTp41e8maEpxvZOkA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=lz5FhTah;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=JB0nNR+H;
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.44
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793985686;
+	b=wEZU8u/sLk+lDI8g/ykSHjPI5kYmZBno7IcdSrEolfkpLaYI5gNMRpYtmhZfxOhPQUG3
+	 vTbvH/hnmX9qOI6zMLUPRs5eWKySBlId4T+oXMb73qQYdCxW+ktrmR90RsjqDzo1u7jqV
+	 pFdFGmvK6WXzeJhFmWv2EyrM632BTyGD81s1I3spkXH7E09iyeJ04W34tp6RgjdHvZWPo
+	 aPh+RidWrxUtljhNqb7W02/ZHw4tJkNyFDGd0Ujxu/wueYTol+78rZM6b83ISUUuoPLv1
+	 kSRw7oRY01UoRmbwkUJYNnE8xuYXB2pWztSQlcrp6714E3PUnLwayiHKq7tANIeN2Dw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793985686;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=3RKt6UkQZGhVMeIsFX1m9xEh639vUr0Dxv9GzpFuH2Y=;
+	b=tdTiTNZb9OB+mX4J4HyaXAbs9mfnNLd4LSsWeU8oD3NkWKRwNp1T4h+CRB4LM8EBIzsq
+	 5yyzyDMYOb4uIUt6GS4RAfzghLMEJrPuZTsO0unny6usev+4MvtAk06A3q1cTKTCsYDT9
+	 2OWSwYgjGFYPExcD/b+SrsSFqkL2Xz4v9G2x+ejG+K2tXgDrbdEcWfziV1zimFhI9gE6i
+	 Cvk1vQhdJOAutwR+12rVJXQ6AULq3x5RPw2/BgbuBGq+UgAPBDNEu/UhRt58GCHl1/yqq
+	 N+od3+mJ3IkQOY7TYhDIyThdUpgpNZYj9HT5oRJGg1dXABMMDpFwZ+cnMknfvibtC5w==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b="jd/ABCi2";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.128.44
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB5C9606A32F
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 17:15:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB5C9606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0D32606D810
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 17:21:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E0D32606D810
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=lz5FhTah;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=JB0nNR+H
-Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6A6F0kZt710297
-	for <iommu@lists.linux.dev>; Fri, 6 Nov 2026 17:15:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	47JQnoGH/w4xWuL9FcqDdeP8e8K7V4oop5mGTZtNivY=; b=lz5FhTah4B9BCc/s
-	NQSQgeKsB7LOLEjFMeXdPGb4qtinRoVqnaqyN9T9p3Q7Hbf/IaresKX2B++yOuVc
-	DpgjXJsUJCZMoBDC5iO5z0HtQBYG9ejZkF8Y3jDMLlq+YZ0gAixhbRvH9mWX5C2t
-	72w2VYKvLs970D756X+8JzDCYl6SqPaEQRKH7yOL3XexGmHm+Dt9kFKH1dkdsbC3
-	yVeWJsPtON2+9uQJO4Yrt6nXpIxVF50qVyYulkfEQoqtfiMO31bwwDXmAShFCPH8
-	DvvYmylTIevfHotdELylpo3loI13hMsR4iRrnykzFVmotPcWwd4aoa0P+fQCyNdi
-	KOldkg==
-Received: from mail-dy1-f200.google.com (mail-dy1-f200.google.com [74.125.82.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hs3pauu77-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 17:15:48 +0000 (GMT)
-Received: by mail-dy1-f200.google.com with SMTP id 5a478bee46e88-36fe0b57d91so833196eec.0
-        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 09:15:48 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=jd/ABCi2
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a206f0b95bso14005e9.0
+        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 09:21:25 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1793985684; cv=none;
+        d=google.com; s=arc-20260327;
+        b=KCTxBU1PsRBZy0MPjhBeCrRqJzzVTY4GQZEWdZL4INgNJmOtXaAs/ZKpCJg1mRi4vK
+         ifDZp9lwyYa5ENPYyCFiHh2JcVsoEUyeUBKzeoyXEqu4LGWi29QVyhzY99xT2GBBhyfX
+         af7bmmOCKnBUjvmUhVA1Fv4dje6gwkY73OwFFwjHiI1WHlD+PM+efb7SNUuEadifb/JJ
+         Wgpw//EGDP/PrRNFtkW7tpUTx84OXwwe1nhgABui/RXy95qo1W86Wr6so1P4jkmJ5ZOP
+         4I0MxLuJxrxuDkBEYGmZ0Z91fTzO6HgoMAMfDYMwranljH8IQJ70VOYgPw2R+dM1RYWh
+         gyFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=3RKt6UkQZGhVMeIsFX1m9xEh639vUr0Dxv9GzpFuH2Y=;
+        fh=ShboYH4N7ds2BsNksDsI6epqMHsoqeu4o6PIBaKh04s=;
+        b=eHXREJXynojScGD7/s6LU1B7BV3x9r8WNMxpP7Ll9Mo9siAQWdJ2BOweO6/cyERW4z
+         5uJWJHTU22EtVrnvtPVFUDcGx4ipntRbSdg9LetV9xdNmv6cN8MaymwK7z8ZBz3g2zYZ
+         x1L7skohTq4Dy7QowIBGC6dJjwA+nrgXLwcSLyQpoM8+BsB1usZNzRDaxo3Yujof9y9K
+         THbhE8RuIGjrO1bBfhpWvByZjorMTK9wn5J6LOrh3PrO+GGhG/eqvadpuxna32UddZ/6
+         e7zqFmPiy3pQpagVQbRE58UXJS6K4fW2o6FfXNbboEAUUGQ1LDBkawjjUz6pjzvh9v4C
+         P5EQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1793985348; x=1794590148; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=47JQnoGH/w4xWuL9FcqDdeP8e8K7V4oop5mGTZtNivY=;
-        b=JB0nNR+Hc9CCF5fuX1Qq5giKE2pEqiO4rgtSNoPT2Y7VGvJA+3bvLR1PzQVQqy9PKY
-         JWyTflcNhDbVaYX5bSMizCsdqORsvhgYr1j8gbvOggclY9/keI9vKTm9TO4JSFOkjCt4
-         JxHvu+B6PSVhdLbxDF8NKoHW2uLkMAhAmW5yNimb8AL95mLCQ1LBWDsRhSK6gG0Lc/ZR
-         Eh3yyxu+zX3OLJvoQwrNiTaT5UMyZ5+vvnEq+WPQVorzyuvVx1vixHTX6cy6d1IoeKzZ
-         owR7ogp8tSShm+yefmuktyy0YgkALmZolOlRVZLZfKDW7bWYIxhXZcQ/yP3r8SnTqbiC
-         r0Zg==
+        d=google.com; s=20260707; t=1793985684; x=1794590484; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=3RKt6UkQZGhVMeIsFX1m9xEh639vUr0Dxv9GzpFuH2Y=;
+        b=jd/ABCi2UOl5Qg51+OhCFzxnOtKDueOhrUEbS5/S20Tzj8cG8PVM+LGlr9mkdMIJtp
+         W2avG3LheoWbCXrq+ZYnSWa5EAZaFdBKsr5wFr4/l3EQIUzAmpmnMJeA2xD0kfI2a+tz
+         UMkI1O1+VynqbYI4bM7JYloQv7SAd2RDuFTQSc9VX15t/y8VFq7XWIY7NAJx9ByPw/ph
+         0KfKsSirs/PBc57fpalmhWobqgXj2oDQij/s2L42SunhSdVf01csUS9sRtDc4fjIPT4D
+         /YPMQv1Z6GnLoUiy0zipNx0Jgn6gSyZvUvTZb5oyElSW5OW7fSeJYw0E3dZ7BJHaTx4f
+         pM9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793985348; x=1794590148;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :content-type:mime-version:subject:date:from:x-gm-gg
+        d=1e100.net; s=20260707; t=1793985684; x=1794590484;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=47JQnoGH/w4xWuL9FcqDdeP8e8K7V4oop5mGTZtNivY=;
-        b=LYLx5cBwISfjbd4sSMvLuupVRK5zLr8CUBtbEPq9Iv7p3u+pEZvEphxclGvnPyVLz9
-         6gCK1sdzRdHVFp+qrR0kPjXMJULnk+roLWBtoxqvdhrxr2UPpvOD20FNvyir9+wLEIF0
-         r58Q/7zIayNWc3tCgZ3DWqvDyGjAvXliPDtTB48pTWpcDuysIJPxl68sDyz8hfCKAtS/
-         6Zy2E63CtqfX10yoNGIwMVQ9iRL1TJFPHW6V6Ylsl35qINy8K7VE45Pgs51FBUC0zayh
-         u5eIFdH8hJ5HO/ApGITumRuUIb33wuK2mRElVeJMq+uN+a6A1flHH8ppd1lJ8nKTO3xT
-         MJNQ==
-X-Gm-Message-State: APuU4Z+BpHVggTzqVtk/4vJMndvbCvwI+WUakxCvRJqSc6zsINY5YSHA
-	YHynLQy8PuEyaE2c61S9pc24rHUIbb09pLXhaNxJkulcLD4iYJzC11v+Gn2XXJ3AB+G5radNMqq
-	sXOXubsc7tKB5tONlrSpT7XoaRcsZ+q/YNSkZLIBCKYOjlXvfuTMuik1B3g==
-X-Gm-Gg: AYBFou2VuonZ6SWQUBF/KV2zwJpapwZ4ukDYDu4fUb0XoB4xYbNWdya6+dUZsW/7G1S
-	OVeIeFIFJpOjjW85Ha+Lzlysa+iuKy+pNxb+PlYjT97kaJxlOOCMQyClOAEWxLHVRenzAPaItRL
-	H6UWoTXIY5Ra9TLkiWf15iJOcIrSXSB65PwVXtgl4No9Es70PbUpeflTOxE8Hj9HaD0mGHHZKjc
-	OUdDV4pSWU/xZ99kUzi2KmyJWLXpE/GOLj+FvcDtYU1IoiHTrWBOKnqjtjpaVoBHvwFuR3+8rJw
-	Aw7Ft1WUSc7PAfcv9KiHohMdm4Ew8uBrhf9had2XHP70xSOpeXLZtthy2esCP6dpsvJM70hI5Qh
-	RmIKQZjufdYmoiz3ufvxHp0P+MeM1A1N6QCYT+e7qlhYgDxLinyIJ4pxywIBpxdHuscOgmm/a+M
-	bm+YUKj92s
-X-Received: by 2002:a05:7300:8248:b0:36c:ec0:23ef with SMTP id 5a478bee46e88-36f76d11c44mr3974045eec.16.1793985347377;
-        Fri, 06 Nov 2026 09:15:47 -0800 (PST)
-X-Received: by 2002:a05:7300:8248:b0:36c:ec0:23ef with SMTP id 5a478bee46e88-36f76d11c44mr3974004eec.16.1793985346688;
-        Fri, 06 Nov 2026 09:15:46 -0800 (PST)
-Received: from hu-vgarodia-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-36fa9aea75fsm14693756eec.15.2026.11.06.09.15.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2026 09:15:46 -0800 (PST)
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Date: Fri, 06 Nov 2026 22:44:28 +0530
-Subject: [PATCH v7 5/5] iommu/of: Add support for "iommu-ranges" on a
- device node
+        bh=3RKt6UkQZGhVMeIsFX1m9xEh639vUr0Dxv9GzpFuH2Y=;
+        b=F7Aplj2Jwp2tbxFhp926bPghjHYOuAbwIc1oqcJ68EUdFOkJXUB/NdCulZB8KRHpDJ
+         Ok+vPQLl6w0wO93iCNEShcxKq3valLVehXQ2BiqHKBGgAezHMBASg9Vj6pQDunrDEO8R
+         4NVJE4R7uCWyEhbqO37JMfQelfEqs4FDLPpc2WrFhvqW7qRrbKX6s+v9AwLxiaINw/6e
+         sf7d1amuWNXhbgxfDIH85GG+t1L+Xdabd0iZsCGN9bcWQXOJRLJr0kGTp/YhM3QsUeVV
+         7dZ+V7qFV+VUjGhnnvbJ9fGjl88AeUlqECRybyGGjJR/mRNUg1bQPssVNVqE6gMPMaf5
+         VsVA==
+X-Forwarded-Encrypted: i=1; AKwUvBzvHAw0AqnPm3lLcy3PwkYBdycU5DRbw78UYRURs8iz8lbhHLGZNBoGysrpxePfJ3x2rCjG+Q==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/kxnZCRJVuo6/Cgf5AhClmEVFrAcbQvo94VbgtGpAgdcR7NDLT
+	zxeS/4JRrsC6aelFLP9b2BOfm35+mqGc00d/gqKCAZwpibh2mLhN0n2CGcjIwihsY4z5QcwZbsU
+	pVNyzSsPo7Zxj+3WrHgFtLfoJFkmfSmB4u2nIQiZA
+X-Gm-Gg: AYBFou3BzJY+5Tj5IojBLxy7XlSQhxo77bnlnLKkgWAodYxOxg6QdzumbT4au7tHsnH
+	3nZMAntkh3tSrxtljjFeA4V6QHrBUQCBDCDS9VDXLaJpK4r4haF42BLua/j6Oh6a77LvVN8PQ1N
+	Y0j812wabvXyyA7JObgK4aUtcIup648CxNFInZnLSpMlJhHw+BbPpJDwNDcD1YQg2zDQbo85/zx
+	hDRT+43IQ2yylANDnNC6jzmcKIT1ETRSqhKMUGm3klwaNIzDJNHrTM5+2Ab/cznvm6QxeocXNQF
+	7JkVNR841tNrOS0XJWh5tgl5I8p0+LY4Mh4T3Jo+HSdVtfxKp09Jmfv3Uhl/eGl4BvTQYsO0gVy
+	tY65nsC56wUvftW20hO3fP+AC84bjqyG2+6/WOUm521O1ME1FVja8o0CjgpE9kKjKEbjfTA==
+X-Received: by 2002:a7b:c8d7:0:b0:4a1:eb02:37c with SMTP id
+ 5b1f17b1804b1-4b76cdf14e3mr150235e9.6.1793985683858; Fri, 06 Nov 2026
+ 09:21:23 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -115,222 +104,90 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261106-add_iommu_ranges-v7-5-5c0f72083e52@oss.qualcomm.com>
-References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
-In-Reply-To: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>,
-        Vasant Hegde <vasant.hegde@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>,
-        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Srinath Mannam <srinath.mannam@broadcom.com>,
-        Oza Pawandeep <quic_poza@quicinc.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alex Williamson <alex@shazbot.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux.dev, devicetree@vger.kernel.org,
-        kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-media@vger.kernel.org,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1793985294; l=4721;
- i=vikash.garodia@oss.qualcomm.com; s=20241104; h=from:subject:message-id;
- bh=eRH33zHRlGkqD6JL6t9hWZjinm5AiyYB0srZIG0kiDM=;
- b=GGWfxUKY22AA92W9aIu377FRuudRQ0Bh3ofyR9ljR+TCb4fnvbIxUCC2bS4EZ+DmG7Ncs/AGM
- Wl5jawco4DNDe5QKZz1XypR9Ru5i5F/dgc3EaPFviVCPsXUNplf7UW2
-X-Developer-Key: i=vikash.garodia@oss.qualcomm.com; a=ed25519;
- pk=LY9Eqp4KiHWxzGNKGHbwRFEJOfRCSzG/rxQNmvZvaKE=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTA2MDA2OCBTYWx0ZWRfX9SDiGZBQk4PM
- r6dyJO7lMW9JRqiMMy6m9i4PARu2D+0Ld0E8bbjSxoG5egYDVMKzVR++UpGx7gvroIpd4SMwq/O
- AEcV+3NrlR3Vv5NN2A5B+096Q+Bx0u2OKFn38xFniUjJcU61tTBELglIa/k89irS1vQbnECk/xD
- Au/WvG0g8AE7opyNRQ8XqqsYy4RfBKfXgK0rWmb5os+FdMPjmIE3/DvFeviwqpXc5p7c6oK0QJN
- E2YBUevV+MB2NpuPvFWnE2h+z4p0z0Ra01zuoxfUkjGiEGI8ukRa16WHpqCl/CmHwV9K+bGxNHs
- tYywFAz4neONS4XvCxNX8l2MYnAaefmFGsfnT5oWIiwTx1sQxu8vkbocPU6AorOdKrMA7KE8I70
- BMKst7J5cKur8JIhSoNY5iyI1f18eMTYDb/2ZfUUpRsGk0dRZp8x48PeGEbZ2z9zJjPqqQpVezz
- DHld6HKLYhfT96bDOmA==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTA2MDA2OCBTYWx0ZWRfXxCvlexbtkzsF
- 1AGRBNyYoGgXIsNSG5qTMZIyDZAX/5gY+kayyiTNsCg9u8MoglSBUGQmSBnTh1Or1nKXFqTSc43
- 84sWVHe0NscsCqhn3RViVviHFNP0Va0=
-X-Proofpoint-GUID: ioHIzaDmqMJeIDyr9DPTlEbK9-9OomJL
-X-Authority-Analysis: v=2.4 cv=P4ivFSAu c=1 sm=1 tr=0 ts=6aee0b44 cx=c_pps
- a=PfFC4Oe2JQzmKTvty2cRDw==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=3WHJM1ZQz_JShphwDgj5:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=NeORdnCe0LA2B_GC58cA:9 a=QEXdDO2ut3YA:10
- a=6Ab_bkdmUrQuMsNx7PHu:22
-X-Proofpoint-ORIG-GUID: ioHIzaDmqMJeIDyr9DPTlEbK9-9OomJL
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-06_05,2026-11-06_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 clxscore=1015 spamscore=0 phishscore=0 suspectscore=0
- bulkscore=0 malwarescore=0 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
- definitions=main-2611060068
+References: <0cc1cac1-a500-489b-9c1b-b49598b5550b@kernel.org>
+ <CAMOZA0JaiKsRgDdjHkL_N+MshhcyLSv+cT9SzEbNsC_sumHvOw@mail.gmail.com>
+ <b31efcd5-149c-4edf-81a2-1744d363c390@kernel.org> <CAMOZA0+6kAbwgNwGTsCT5AqpwcZKz4pziEGC9UpHkNCVoqrF-Q@mail.gmail.com>
+ <20261022201229.GH3381610@ziepe.ca> <CAMOZA0KaanmevmvWS=M3gKfBeborzfCQTiF_xbSeYMWbozG7Mg@mail.gmail.com>
+ <20261023140107.GC3977851@ziepe.ca> <CAMOZA0J+MOLv+s4PAvsAK1jbasnbQRyHffZw1VEKutH9Vr6ODw@mail.gmail.com>
+ <20261023145023.GH3977851@ziepe.ca> <20261103080933.GA4213@lst.de> <20261103151021.GK3889730@ziepe.ca>
+In-Reply-To: <20261103151021.GK3889730@ziepe.ca>
+From: Naman Gulati <namangulati@google.com>
+Date: Fri, 6 Nov 2026 09:21:08 -0800
+X-Gm-Features: AclHuK9QrDyTYpPe0hyDJDnSB0d1jRnWKMXKMwxckIvbaQIWb85nKJEtPirUyxs
+Message-ID: <CAMP57yWvHO0pWCR3-9q1gtwVe8WV4Y6i69trmw+BJRVYf3JB1g@mail.gmail.com>
+Subject: Re: [RFC: DMA_PMD 00/22] DMA_PMD: PMD_SIZE-backed IO buffer pools
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Christoph Hellwig <hch@lst.de>, Luigi Rizzo <lrizzo@google.com>, 
+	"David Hildenbrand (Arm)" <david@kernel.org>, Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, "David S . Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+	Jesper Dangaard Brouer <hawk@kernel.org>, Ilias Apalodimas <ilias.apalodimas@linaro.org>, 
+	Willem de Bruijn <willemb@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Joshua Washington <joshwash@google.com>, Harshitha Ramamurthy <hramamurthy@google.com>, 
+	Saeed Mahameed <saeedm@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>, 
+	Tony Nguyen <anthony.l.nguyen@intel.com>, Przemek Kitszel <przemyslaw.kitszel@intel.com>, 
+	Alexander Lobakin <aleksander.lobakin@intel.com>, Michael Chan <michael.chan@broadcom.com>, 
+	Pavan Chebbi <pavan.chebbi@broadcom.com>, iommu@lists.linux.dev, netdev@vger.kernel.org, 
+	linux-mm@kvack.org, driver-core@lists.linux.dev, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Reserving an IOVA address using "iommu-addresses" requires it to be
-placed in the reserved-memory node. But when "iommu-addresses" is the
-only property being described and there is no backing "reg" (i.e. no
-actual reserved system memory), it does not really belong under
-/reserved-memory. A device IOVA range is specific to its own address
-space, and does not describe the system physical memory to make it
-qualify under reserved-memory. Given this, place "iommu-addresses"
-inside reserved-memory only when it is paired with a "reg", otherwise,
-define it within the device own node. It was discussed here:
-https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
+I drafted an implementation [1] for premapped TX and RX buffers on top
+of the existing networking page_pool. It is implemented entirely in
+the networking layer and extends page_pool as the default RX
+allocator, to the TX path. There are no hooks in the IOMMU, DMA or
+page allocator code. I wanted to understand if this implementation
+correctly captured the feedback on this thread. Key components of this
+design:
 
-Existing "iommu-addresses" property expects a phandle, which does
-not make sense when the property is defined within the device node.
-"iommu-ranges" was introduced to specify the device specific IOVA ranges
-when there is no backing "reg".
+- Chunks: as in Luigi's series, memory comes in 2 MiB chunks, but each
+chunk is mapped once per opted-in device through the DMA API and
+records its IOVA for each device, rather than using a shared IOVA
+window.
 
-Suggested-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
----
- drivers/iommu/of_iommu.c | 107 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 107 insertions(+)
+- TX: page_pool accepts a memory provider for pools that are not bound
+to an RX queue. Per-CPU page_pools take 32 KiB pages from the chunks
+of their NUMA node; TCP copies sendmsg() data into them through the
+task page_frag and allocates its skb heads from them.
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 00b02c19f27e195fc36c4bc1d91253255147c9ab..e133d3b346feecac7e2bfaec44e4882060ee89ec 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -183,6 +183,111 @@ iommu_resv_region_get_type(struct device *dev,
- 	return IOMMU_RESV_RESERVED;
- }
- 
-+/**
-+ * of_iommu_derive_resv_regions - derive reserved regions which
-+ *                                are outside of iommu-ranges
-+ * @dev: device for which to get reserved regions
-+ * @list: reserved region list
-+ *
-+ * A device can describe its own usable IOVA ranges directly on its node
-+ * via "iommu-ranges". Everything not under those ranges is derived
-+ * as a reserved region so the IOMMU allocator won't use it. Entries may
-+ * appear in any order in the property.
-+ */
-+static void of_iommu_derive_resv_regions(struct device *dev, struct list_head *list)
-+{
-+	struct of_iommu_range {
-+		struct list_head node;
-+		phys_addr_t start;
-+		phys_addr_t end;
-+	} *pos, *new, *next_range;
-+	int size, prot = IOMMU_READ | IOMMU_WRITE;
-+	struct iommu_resv_region *region;
-+	const __be32 *maps, *end;
-+	struct list_head *prev;
-+	phys_addr_t next = 0;
-+	LIST_HEAD(ranges);
-+
-+	maps = of_get_property(dev->of_node, "iommu-ranges", &size);
-+	if (!maps)
-+		return;
-+
-+	end = maps + size / sizeof(__be32);
-+
-+	while (maps < end) {
-+		phys_addr_t iova, iova_end;
-+		resource_size_t length;
-+
-+		maps = of_translate_dma_region(dev->of_node, maps, &iova, &length);
-+		if (!maps) {
-+			dev_err(dev, "%pOF: failed to parse iommu-ranges\n",
-+				dev->of_node);
-+			goto exit;
-+		}
-+
-+		if (!length)
-+			continue;
-+
-+		iova_end = iova + length - 1;
-+
-+		if (iova_end < iova) {
-+			dev_err(dev, "%pOF: iommu-ranges overflows address space\n",
-+				dev->of_node);
-+			goto exit;
-+		}
-+
-+		prev = &ranges;
-+		list_for_each_entry(pos, &ranges, node) {
-+			if (pos->start > iova)
-+				break;
-+			prev = &pos->node;
-+		}
-+
-+		new = kmalloc_obj(*new);
-+		if (!new)
-+			goto exit;
-+
-+		new->start = iova;
-+		new->end = iova_end;
-+		list_add(&new->node, prev);
-+	}
-+
-+	if (list_empty(&ranges))
-+		return;
-+
-+	if (of_dma_is_coherent(dev->of_node))
-+		prot |= IOMMU_CACHE;
-+
-+	list_for_each_entry_safe(pos, next_range, &ranges, node) {
-+		if (pos->start > next) {
-+			region = iommu_alloc_resv_region(next, pos->start - next, prot,
-+							 IOMMU_RESV_RESERVED, GFP_KERNEL);
-+			if (region)
-+				list_add_tail(&region->list, list);
-+		}
-+
-+		if (pos->end >= PHYS_ADDR_MAX - 1)
-+			goto exit;
-+
-+		if (pos->end >= next)
-+			next = pos->end + 1;
-+
-+		list_del(&pos->node);
-+		kfree(pos);
-+	}
-+
-+	region = iommu_alloc_resv_region(next, PHYS_ADDR_MAX - next,
-+					 prot, IOMMU_RESV_RESERVED, GFP_KERNEL);
-+	if (region)
-+		list_add_tail(&region->list, list);
-+
-+exit:
-+	list_for_each_entry_safe(pos, next_range, &ranges, node) {
-+		list_del(&pos->node);
-+		kfree(pos);
-+	}
-+}
-+
- /**
-  * of_iommu_get_resv_regions - reserved region driver helper for device tree
-  * @dev: device for which to get reserved regions
-@@ -262,5 +367,7 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
- 			}
- 		}
- 	}
-+
-+	of_iommu_derive_resv_regions(dev, list);
- }
- EXPORT_SYMBOL(of_iommu_get_resv_regions);
+- RX: an instance of the same memory provider, sharing the chunk code,
+backs RX queue page_pools. RX chunks of order-0 pages belong to one
+device and NUMA node, and are shared by that device's queues on the
+node.
 
--- 
-2.34.1
+[1] https://github.com/torvalds/linux/compare/master...NamanGulati:linux:ne=
+tdev_dma_pool
 
+
+
+On Tue, Nov 3, 2026 at 8:24=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrote=
+:
+>
+> On Tue, Nov 03, 2026 at 09:09:33AM +0100, Christoph Hellwig wrote:
+> > On Fri, Oct 23, 2026 at 11:50:23AM -0300, Jason Gunthorpe wrote:
+> > > > Disk I/O is still potentially affected by the same problems
+> > > > (cost if io mapping/unmapping, iotlb thrashing, bounce buffers
+> > > > in confidential computing...)
+> > >
+> > > The disk folks already have a proposal to address all of this using
+> > > io_uring and preallocated buffers. I really doubt yet another version
+> > > is going to be interesting there.
+> >
+> > Huh?  If you mean the dma-buf I/O it doesn't really have anything
+> > to do with disks, except that this is the first user.
+>
+> Yeah
+>
+> > The dma-buf iovec can work for every ->read_iter/->write_iter
+> > consumer, and should be adopted more broadly.  Including by
+> > networking instead of their own totally weird different world.
+>
+> I'm not holding my breath on that one..
+>
+> Jason
+>
