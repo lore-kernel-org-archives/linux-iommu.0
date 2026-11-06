@@ -1,100 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793968732;
-	b=iPIJgIkCRcX1WLdUpvf+A9lQ6CMJgyDn4+tgbFieHt9WrVLdv3Hc/B7WNzXrce4yoxUS
-	 +mzBcUGprT81QAJiRhjIYKOZ8yiBUWKR2HVvFvB9FpgTL7X5CveXvVfERyNbEIVlRqQrj
-	 WF6DJoQzSCOiZQc/MGBRQ7D9OuvODF9wQ0/rO7KRMUbWwp99gHw1sOImMpg0iyOm12LgI
-	 99UI/qOoiSzL7W7o2/sLnygkd/Fsgx+MzLPteBWWQINnfVKgUYj+L44mNtTpCLyBxlQjY
-	 u6/uginAc5PHMd5S4LJd33R5ZwvbFEBCh/O8VnsdrDN+4SfsKFwWDykR4dTx+nrMMTg==
+	t=1793971143;
+	b=U4xqQNb8sz/S9l3lhWLqbQJQiy58H3W3xbSqGTuwJYyGigNhf7PVKsn3j4D+yBkrAUem
+	 MVu5OMCrvwgR3mq7KcrPm+Y2VALRM2/WcEuVjUA4w0RY/Hy0GrWBVt975+CaJGTsVVMqe
+	 viToQUXwDKGsc3I6WAMe1ltQu9kF5ofGp/s8y0KcRTY+ICo6GushuGMcIgSbKfXuMP3PD
+	 Th7PxiOpx0HeXRMluIx4Cm/63y8EwxXq8C4TkMkYIPdP8rqAW8Bg8TlZwbK1f6Ew70LDw
+	 tEN2D/jSN5mL4p8jTkojLBWqY6YbbeqkDd63iRSoC3/lplIt+3nt/gWKBEYgStUKMyg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793968732;
-	h=Received:DKIM-Signature:Received:Received:X-ME-Sender:X-ME-Received:
-	 X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=2pfmacECcqVcYywkgZMGS6LkZuCwqHkVAmJzamD2whI=;
-	b=BwCO9/YzWs/oWLjfVuwwv3/TfRRkPZCoVuHdwILdsTJes41L1tKqQPndXjouMK8vnLjg
-	 eCP8zLCaQ+4ry9TrGAPODmf1wj1rNmCzt6Wh2jGSWmcIjglAQKREq1ab0Z2zk1he/Bp4E
-	 ua1DMFxbYEHKEHKCbk52VNpF5bO56TZSnycEqeEF2q5Bk5qYDkbtPTPtfOHw4+9JAQW9M
-	 Y47HIHaeGrISzrDegH7DcEfAJ4K3ZCJ3rWCdE7GLBqLSa0iwu0fRKYy5QHbzJOAGDMCwc
-	 ouyyminuQEcGPo1+yF+Tb/3FO7oJIvCkFkVIizErSP2jYzvcEP8H8P1F3gS9j9Y2hWQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793971143;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:From:To:Cc:Subject:Date:Message-ID:
+	 X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=q5je5xTRpjfx4LjGIZHPjYuGaotAGI4cWt3i0iD11+Y=;
+	b=pNRvk5F8RIc+Aniw32vmymMFxnXd3eU84JU3uGuqGjJpkDq8TQVTwId7pS/TMEZlLzgp
+	 YRq7m5O56IfFYNF8VwM/O6XcXKFg+3Tybly/KaopR6LVlQdOd9VGxx6khC2JgV8Mn4EJH
+	 rLuF/g0k+2SxUunU6UKJD8iiCa0xyi5+4UNwLm0IJyDMBSvhtUpAffe/uBF9hdPKck+9j
+	 o73AQakSJoYJ1NHfGYKSys+xeDVPJD4x1iJO3pEU+l0HdRWreU31fuCW6N6/saH4wTgLU
+	 a11qDzuTpMUEWgrgRwiEA1ww/7E/Z2KA1yhStl0A4RkyRo0dGx+fetJdaqhqby0fIYQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FStjyAY0;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=b3PIHqeQ;
+	arc=none smtp.remote-ip=95.215.58.50
+Received: from mta1.migadu.com (out-50.mta1.migadu.com [95.215.58.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBB57606A326
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 12:38:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0BFD606A32F
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 13:19:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B0BFD606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FStjyAY0
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F6A1F008A1;
-	Fri,  6 Nov 2026 12:38:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793968731;
-	bh=2pfmacECcqVcYywkgZMGS6LkZuCwqHkVAmJzamD2whI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=FStjyAY0FW6kbw3uXf62FFRYlWxG2nSgA93yBnFn9ugwM4dGwj+PVQ5pap3K6oUCi
-	 6dxcxRVZr9JyPyaOU6SYFRRi58za2FXqmecILZDvxCPf7QF6Mlhi6kF01dciRML/Z4
-	 eRn5sl5YOxCMJYaQvK+u+uPEdGNKFbQPlgkNW0i/k60D1vI70pS5ye7rqRu75Zndy3
-	 ZQ8pUPUv1CNkmt7bvel927xSaAxSegYQoftq/nm4tU+F5STRijVbDSs55DLUR47sJZ
-	 QiK2yN/hspvh0Iklt1e9SeTadZzrE5GuO3l2AnEfFwMYTy26psvQbGlQ/5oBg3tJnq
-	 Ml0ZmtOtJlCtA==
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfauth.ams.internal (Postfix) with ESMTP id 7526D198004A;
-	Fri,  6 Nov 2026 07:38:40 -0500 (EST)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-01.internal (MEProxy); Fri, 06 Nov 2026 07:38:47 -0500
-X-ME-Sender: <xms:T8rtasefdrDg50RCfXVYapWRPd7hJhOH7MR_vMfF_RkFPcpgn0iabg>
-    <xme:T8rtaq11Zf6R1Zc0aftUnIsFDaY0LWo5YyxJjLiJyorI0EjMIMb_FQ2H1PSDt_qJk
-    eenHVeoya81NzJfPZ9LLMg62Zf4K4Yl6CtsrypytKDJ7q2XXT-7fkAQ>
-X-ME-Received: <xmr:T8rtauiyuNtFX1s9r67EC8H9v-rJ9qUshbNAZWxxA-i546XDDMOnOCzcYEY>
-X-ME-Proxy-Cause: dmFkZTGzAjGnz4qczRWBwFDzqEedcIN2RDs77+IhaKJdOHI/wRF4GJ+/XYgTh6qUDCaXtK
-    q3BGgpdQwiz8g3jZv+XNiZ3PHhWZePA+KkMXnh5DVEYxm4xAwVX0MEjom76ZmfzWC+JTPH
-    KiS19Dcunkmjpxr4Uil2sC19R8pXj7ovLT0PA2yAVZWcLty5pA48PAv7fst0p77EiM3n+1
-    SmGSQ5XOtXFCV1+dbb7vBvMxrwGRHPa+XdLj9z9pUYo6DwpdcyJmkiF0P6rFAo/V/JZdTc
-    JB24ZdeHtaiEyrrTwoEjAufvE1haKfVDIo+IxU19WrQxgP8cc4psM9iHQFHP4vpOpa7VoH
-    wzQ1pi5Xm1k+/vd5fWuuLnXYA4NDa3sM6PbhRSGJ29vaEqlrEoBKvduJJT2QLau5zON77X
-    LVS4No3GqNmQ7P5K5ZGNyDCsQUAFFMjELc5QUn1AxYZC+wWsbenSBZU/lmEyveJGaJ2+jX
-    5fuGn8bxlHcwcJNuyglZcxdfbk0Sa0PEcwNUH2TBBBLTHU0CoNDi/SD5/1309grZ9OgwS7
-    L3pcQ1dDN1WJl/+zOkyXMbph0dlAPT58n+aswI4a5WzW2PE7JzKbmxjsgGo+8fBfzklnrj
-    EBr+0lhdOkv1TdfFi5YziSH1mehaQtbycU8WlCmDbaBUbLQfGwo3GJ9qXvIg
-X-ME-Proxy: <xmx:T8rtat7js2s-eKQZcHK3_aXiUqi4PQT3ApNyxSy7PplOfAyVt45tMw>
-    <xmx:T8rtagW_pOIDqaJwR8OxdqY5JxVHrJv54OXWTAdpWfg2Vex1AvmGtg>
-    <xmx:T8rtatlscF93bVi-jaQNcHjAI-NjY-w5CIlVvBjJDaO8_4AtvZP4lQ>
-    <xmx:T8rtahSHJTPBlU6GOzNLC9za7s75hOd8IlP5D3JPnl2Uwi1M9NeaSA>
-    <xmx:UMrtaiNVGrkcAtiFcecPVVpaYRDrYD4OeE5iPf8Os-chIedx19aW39g_>
-Feedback-ID: i10464835:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 6 Nov 2026 07:38:39 -0500 (EST)
-Date: Fri, 6 Nov 2026 12:38:38 +0000
-From: Kiryl Shutsemau <kas@kernel.org>
-To: "David Hildenbrand (Arm)" <david@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>, 
-	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>, Zi Yan <ziy@nvidia.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <nico.pache@linux.dev>, 
-	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
-	Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>, 
-	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
-	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
-	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
-	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
-	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, Hugh Dickins <hughd@google.com>, 
-	Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
-	Nick Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Steve Sistare <steven.sistare@oracle.com>, John Hubbard <jhubbard@nvidia.com>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org, 
-	iommu@lists.linux.dev, Chris Mason <mason@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH 1/5] mm: limit pagecache folio refcount when mapping pages
-Message-ID: <au3JT5QXbcOFXCp0@thinkstation>
-References: <20261105-refcount_overflow_stable-v1-0-70b9c655da3e@kernel.org>
- <20261105-refcount_overflow_stable-v1-1-70b9c655da3e@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=b3PIHqeQ
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=4zwexF7Wz01Eu+onBHbqwklyRz49GNwu5fYWiMpNDo0=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1793971140; v=1; x=1794575940;
+ b=b3PIHqeQrojtLU4Y4VNCZ8rRt61bMFIDsLuTUcbsprTA2BhGn7Ms48fbXm2i4k5LuneFaPZL
+ efns+y5W7XbtNLWmXja8lX760spiEjNqVLTfDK+0ec9BwB0YmskmQOe7C4oP0x7xojKGDPefOnz
+ x3cM79fsW0CNI8761sGgxJNA=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id 26aa00f910ee51dc;
+	Fri, 06 Nov 2026 13:19:00 +0000
+X-Mizu-Trace-ID: 26aa00f910ee51dc
+X-Migadu-Flow: FLOW_OUT
+From: Tao Cui <cui.tao@linux.dev>
+To: akpm@linux-foundation.org,
+	dgilbert@interlog.com,
+	mkp@kernel.org,
+	loberman@redhat.com,
+	jmeneghi@redhat.com,
+	kraxel@redhat.com,
+	vivek.kasireddy@intel.com,
+	mst@redhat.com,
+	jasowangio@gmail.com,
+	eperezma@redhat.com,
+	stefanha@redhat.com,
+	sgarzare@redhat.com,
+	rostedt@goodmis.org,
+	vdonnefort@google.com,
+	mhiramat@kernel.org,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	axboe@kernel.dk
+Cc: linux-mm@kvack.org,
+	James.Bottomley@HansenPartnership.com,
+	sumit.semwal@linaro.org,
+	christian.koenig@amd.com,
+	phasta@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	linux-scsi@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org,
+	kvm@vger.kernel.org,
+	virtualization@lists.linux.dev,
+	linux-trace-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	io-uring@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	bobbyeshleman@meta.com,
+	mathieu.desnoyers@efficios.com,
+	robin.murphy@arm.com,
+	mason@kernel.org,
+	aesteve@redhat.com,
+	tjmercier@google.com,
+	harry@kernel.org,
+	vbabka@suse.cz,
+	cui.tao@linux.dev,
+	cuitao@kylinos.cn
+Subject: [PATCH 0/7] memcg: account the remaining uncharged kernel allocations
+Date: Fri,  6 Nov 2026 21:18:22 +0800
+Message-ID: <20261106131829.3228926-1-cui.tao@linux.dev>
+X-Mailer: git-send-email 2.53.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,142 +105,86 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261105-refcount_overflow_stable-v1-1-70b9c655da3e@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 05, 2026 at 02:10:10PM +0100, David Hildenbrand (Arm) wrote:
-> With large file folios, overflowing the folio mapcount and refcount
-> became possible. For anon folios it is currently not really an issue:
-> each large anon folio can only be mapped once into a process.
-> 
-> That's not really big news, but it's about time that we do something
-> about it because some modern technology might find ways to abuse it :)
-> 
-> One of the enablers for that was commit ddc58f27f9ee ("mm: drop tail page
-> refcounting"), however, file thp support was added later.
-> 
-> File folios can be mapped multiple times into the same process, allowing
-> for processes to hold many references to the same folio.
-> 
-> As a short-term solution, let's introduce two folio refcount limits:
-> one for ordinary consumers and one for admins. Leave some headroom
-> before the refcount goes negative, which we really don't want (having
-> the mapcount go negative is also not expected).
-> 
-> Start reporting SIGBUS if we run into limits. When restoring mappings
-> from migration entries, instead zap the pte/pmd entry. We allow for
-> slightly exceeding the limit to keep things simpler.
-> 
-> This is far from ideal, but better than all easy alternatives we can
-> backport comfortably. For now it fixes the big problem: letting
-> the refcount (+mapcount) go negative and cause trouble.
-> 
-> This is only a temporary fix, we'll follow up with something better.
-> 
-> While the refcount checks are not required for order 0 folios, let's
-> just add them for consistency: each folio_add_file_rmap*() and
-> folio_dup_file_rmap*() needs a prior check.
-> 
-> Also, just document -EHWPOISON for copy_present_ptes() while at it.
-> 
-> Reported-by: Chris Mason <mason@kernel.org>
-> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
-> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
-> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
-> ---
->  include/linux/mm.h | 33 +++++++++++++++++++++++++++++++++
->  mm/filemap.c       |  6 ++++++
->  mm/huge_memory.c   | 24 ++++++++++++++++++++++--
->  mm/memory.c        | 23 ++++++++++++++++++++---
->  mm/migrate.c       | 11 +++++++++++
->  mm/userfaultfd.c   |  4 ++++
->  6 files changed, 96 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index a2dd76cc5bbfe..79ae8fc0d6bb4 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -8,6 +8,7 @@
->  #include <linux/gfp.h>
->  #include <linux/pgalloc_tag.h>
->  #include <linux/bug.h>
-> +#include <linux/capability.h>
->  #include <linux/list.h>
->  #include <linux/mmzone.h>
->  #include <linux/rbtree.h>
-> @@ -2228,6 +2229,38 @@ vm_fault_t finish_fault(struct vm_fault *vmf);
->  #define folio_ref_zero_or_close_to_overflow(folio) \
->  	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
->  
-> +/* Leave separate reserves for administrators and concurrent reference gains. */
-> +#define FOLIO_REF_COUNT_LIMIT		(INT_MAX - (1U << 26))
-> +#define FOLIO_REF_COUNT_ADMIN_LIMIT	(INT_MAX - (1U << 25))
-> +
-> +/**
-> + * folio_ref_count_over_limit - Check whether to refuse more folio references.
-> + * @folio: The folio.
-> + *
-> + * Relevant for large pagecache folios (!hugetlb). For these, we have to check
-> + * before adding page table mappings or other significant refcount users whether
-> + * we are close to our folio ref count limit, to avoid overflows.
-> + *
-> + * Checking this for other folios does no harm but is mostly unnecessary.
-> + *
-> + * This check is an approximation; we leave some headroom such that concurrent
-> + * increments, batches and temporary references are not a problem.
-> + *
-> + * Return: True if the caller should refuse additional references, false
-> + * otherwise.
-> + */
-> +static inline bool folio_ref_count_over_limit(const struct folio *folio)
-> +{
-> +	const unsigned int ref_count = folio_ref_count(folio);
-> +
-> +	if (likely(ref_count < FOLIO_REF_COUNT_LIMIT))
-> +		return false;
-> +	if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
-> +		return true;
-> +	/* Background threads must not consume admin reserves. */
-> +	return (current->flags & PF_KTHREAD) || !capable(CAP_SYS_RESOURCE);
-> +}
-> +
->  /**
->   * folio_get - Increment the reference count on a folio.
->   * @folio: The folio.
+From: Tao Cui <cuitao@kylinos.cn>
 
-Does the slow path need to be inline at all 15 call sites, GUP-fast
-among them?
+Kernel memory that scales with user controlled input is supposed to be
+charged to the memcg of the task that induces it, so that memory.max
+contains the damage and the accounting is honest.  Sweeping the
+interfaces that let unprivileged or delegated users drive kernel
+allocations turned up seven more places where the charge is missing.
+Every fix is one flag; the interesting part is who can pull the lever
+and how much a pull buys.
 
-Maybe only leave the likely() check in inline and move the rest into a
-function call?
+An open sg fd reserves up to max_sectors worth of buffer, SG_MAX_QUEUE
+(16) commands can be in flight per fd, and the fd count is bounded only
+by RLIMIT_NOFILE.  udmabuf metadata costs about 4MB of SUnreclaim per
+GB of buffer with size_limit_mb defaulting to INT_MAX.  vhost holds
+roughly 150KB of resident kernel memory per SET_OWNER, and
+/dev/vhost-net is handed to containers by device plugins.  A ftrace
+instance allocates two full sets of per-cpu ring buffers the moment it
+is created, about 1.375MB per cpu per set, gated by tracefs permissions
+alone.  iommufd's hw_queue contiguity check allocates an array sized by
+a u64 from userspace, frees it when the check fails, and can be
+repeated in a tight loop.  io_uring still leaves the ring context, the
+SQPOLL thread data, io-wq, the alloc cache arrays, the kbuf iovecs and
+the registered eventfds uncharged.  The rsrc and tctx surfaces are
+already charged by commit 075d5837bafc ("io_uring/rsrc: charge buffer
+arrays and nodes to memcg") and commit 0b34e7b20a48 ("io_uring: charge
+tctx nodes and personalities"); patches 6-7 pick up what those did not.
 
-Something like:
+Verified on next-20261104 under qemu, same config with and without the
+series, everything builtin: eight sg fds with 1MB reserved buffers
+charge 8MB with the series and nothing without; resizing the global
+trace buffer to 16MB per cpu charges 67MB against 0 before; four 512MB
+udmabuf buffers charge around 8MB of metadata; sixteen vhost SET_OWNER
+calls charge 4MB; 1000 io_uring rings charge 7.6MB on top of what the
+in-tree charging already accounts.  All slab allocations in the series
+are served by kmalloc caches, so they keep charging under the
+SLAB_MAY_ACCOUNT opt-in rule queued in slab/for-next; the tracing patch
+accounts page allocations, which are not affected by it.
 
-static inline bool folio_ref_count_over_limit(const struct folio *folio)
-{
-        const unsigned int ref_count = folio_ref_count(folio);
+Two in-flight series overlap but do not collide.  The dma-heap explicit
+memcg charging series moves dma-buf data page charging to an explicit
+path and removes __GFP_ACCOUNT from the system heap, while patch 2 here
+accounts udmabuf metadata only, which that series does not see; if it
+lands first, the system heap reference in patch 2 wants dropping.  The
+io_uring patches sit on top of the charging Mason and Jens already
+merged, and cite those commits as the in-tree predecessors.
 
-        if (likely(ref_count < FOLIO_REF_COUNT_LIMIT))
-                return false;
-        return __folio_ref_count_over_limit(ref_count);
-}
+I am sending these in one thread so the class is visible in one place.
+If any of you would rather take your piece through your own tree, an
+ack is all I need and I will split the series.
 
-bool __folio_ref_count_over_limit(unsigned int ref_count)
-{
-        if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
-                return true;
-        /* Background threads must not consume admin reserves */
-        if (current->flags & PF_KTHREAD)
-                return true;
-        return !capable(CAP_SYS_RESOURCE);
-}
+Tao Cui (7):
+  scsi: sg and st: account the command buffer memory to memcg
+  dma-buf/udmabuf: account the page array metadata to memcg
+  vhost: account the per-device kernel allocations to memcg
+  tracing: account ring buffer pages and trace_array metadata to memcg
+  iommufd: account the hw_queue page array to memcg
+  io_uring: account the ring context and SQPOLL thread data to memcg
+  io_uring: account the remaining per-object allocations to memcg
 
-Also, should this be capable_noaudit()? I am not sure a refused
-reference should leave an audit record. cap_vm_enough_memory() checks
-the admin reserve with CAP_OPT_NOAUDIT.
+ drivers/dma-buf/udmabuf.c      |  7 ++++---
+ drivers/iommu/iommufd/viommu.c |  3 ++-
+ drivers/scsi/sg.c              | 23 ++++++++++++++++++++---
+ drivers/scsi/st.c              |  7 ++++---
+ drivers/vhost/net.c            | 14 ++++++++------
+ drivers/vhost/vhost.c          | 16 ++++++++++------
+ drivers/vhost/vsock.c          |  5 +++--
+ io_uring/alloc_cache.c         |  3 ++-
+ io_uring/eventfd.c             |  2 +-
+ io_uring/io-wq.c               |  4 ++--
+ io_uring/io_uring.c            |  2 +-
+ io_uring/kbuf.c                |  2 +-
+ io_uring/rsrc.c                |  3 ++-
+ io_uring/sqpoll.c              |  2 +-
+ io_uring/tctx.c                |  4 ++--
+ kernel/trace/ring_buffer.c     |  8 +++++++-
+ kernel/trace/trace.c           |  6 +++---
+ 17 files changed, 73 insertions(+), 38 deletions(-)
 
 -- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+2.43.0
+
