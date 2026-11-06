@@ -1,97 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.176
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.174
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793987884;
-	b=DlOOODdLr8CwvvLl9cbjZZi9L5ufv29r0RcSq5a2KVKU880wsBNpZaQzjDvqRSaP2GBn
-	 w0VweFCbLxwwinz0dEAc8IN2g50Yo57W0LJaY1lGHRme3QbQMyGQsrv9HGamiPVAtKJur
-	 UDvFUqw77pCgu+7Or+O3Y4a9SKdTlrbqUV9vU+oJpELRQIPSuZbAI77UeuAmBghxofOdC
-	 70Y4W+j8mgWROyoFZmsE4e2Cj5MgU1YFq4SVyzVpdnZfgsMlYONrUEko1AqdwbR55k9WU
-	 PkaFYj2d6bhfdvKEi/SI3ZFhcSgj61/e+32f3YXdPgygsUtfAs1CfcOW5vdWceKOgCg==
+	t=1793987931;
+	b=QhJLQBBt/6YzQ4aIL0PpOuFSEYsyC2VymoL+2Jj9FRO9sZeP4OMW5wyXv7iwf9r8T5/s
+	 8O739HI+uP97DCLv6Zzi7OtCSsW2x4TI3xjMV1XhMvLCmzxxoLIWpjSXgOU2DRL2Bimdu
+	 Tqj5WuaIWqMS0R10uae8IFb1mMu+z2oKb35sKOvUNxceLe7mKklFve6kMYT887JX4xZcm
+	 gVGUic3J8w3hw/SFNKNYGznSdAbUIv9ckke8NIiV3K+WZgD7TKVVf1d6qeG6kL6aOq3gy
+	 yvn468MaXJhlo5IqY3QwfiawaXUXngv9W9tHAR0m7wX7L1TGAi5jcIsYoZs/qXF5Abg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793987884;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793987931;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=a15VN+jCu3B1XSBa24cW34JdNvW6biC29j8hroS+/qA=;
-	b=GLJFuZO3pvJ+Sqh3S7TBDG0EmpCwd1FCpndcgMmTPlg7zZT5nbO+jmGMzFP5Awkozhhm
-	 W0BUypFzzp7UyrR3FYNLsPj95vc01VW/Y0vTXkQni4xOir4CvnxcNtvTAhy9EuxuTJ7jd
-	 2VIgEGn+YjSWufw9FHxvjgj7RIcn8cF1YsLcbT70c49TGZyj/wnzB2WzbRXX0faab3+er
-	 Ddj+/z3lB1IFh2EbjXZLs1PMmJeiywKbIMYMy5ILDklCiqCliSzDf9v5X/XvR3ClDzgPx
-	 rvSu8HIdq7IYQ9oGCRXMQm+VfkRf+0VbeU0dV2slTqFIybpL/ig5shqWTmdqfO+aFWw==
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=KoOh0KgSmAnOjKaKpi/0YYF58G7PTa1KHqz+Z6PRDOg=;
+	b=RE3NKKm48gSmMsvPqCECYDfkzFM9pQeBKN9PqBoMT1qGq/T6qn5sSoEDp4viXDuOyK0a
+	 sR3QPc3Ilep7KAnJKSpr3DBJ65PCbAJe0zhUIXrNJBf4K3l4tBOVepYGqDQGnduq9f7bq
+	 1LcXhEUQSMPTrd4Lw0E7SpjkRtd+y3AwKdiavMRTS1ScxYtoVEv3N9+UxXhXTeapq+0fn
+	 UUcqTsyCsvaRxRvybC+e/+G0E9+A7Y7ipi4h0shdLtj+UzR+JGFE+maSqq2VgIUbkjElh
+	 mNSQCHFd//FDqVpplZ/aPixg7x6UilnLwRvALlmVPGi6/PDviBxJFpbLCyz8Me9ZEWg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=dama.to;
-	spf=none smtp.mailfrom=dama.to;
-	dkim=pass header.d=dama-to.20260707.gappssmtp.com header.i=@dama-to.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=IzJhUAAV;
-	arc=none smtp.remote-ip=209.85.215.176
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
+	dmarc=none header.from=toxicpanda.com;
+	spf=pass smtp.mailfrom=toxicpanda.com;
+	dkim=pass header.d=toxicpanda.com header.i=@toxicpanda.com header.a=rsa-sha256 header.s=google header.b=q8l5HWpV;
+	arc=none smtp.remote-ip=209.85.160.174
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB538606A33E
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 17:58:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CB538606A33E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dama.to
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=dama.to
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C07E7606A32E
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 17:58:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C07E7606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=toxicpanda.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=toxicpanda.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=dama-to.20260707.gappssmtp.com header.i=@dama-to.20260707.gappssmtp.com header.a=rsa-sha256 header.s=20260707 header.b=IzJhUAAV
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-cd8ba7c2694so357060a12.1
-        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 09:58:03 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=toxicpanda.com header.i=@toxicpanda.com header.a=rsa-sha256 header.s=google header.b=q8l5HWpV
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-533778ab0bdso10265351cf.3
+        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 09:58:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dama-to.20260707.gappssmtp.com; s=20260707; t=1793987883; x=1794592683; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=a15VN+jCu3B1XSBa24cW34JdNvW6biC29j8hroS+/qA=;
-        b=IzJhUAAVID+siJ9iu66GSGks5qxxJ+D3xs9jHlMh4eXPdG05psk4/0kQ0JmsRiSkJD
-         AVcTfBejIRVstcImLG9KSsldJrVSIE67Wtgko7tJqUhFE9sHifWPZetSDEjckGOtX8vz
-         0Wzks/cEuAzKHd1w2yS8lugC39YuqJ+rw0G+OEnvWVif5HDZC4Eq1P1IAVwXLouSeV2D
-         cgMQTa6ssoVHbyOEvZzsCftQSafepewfzTodS6vkPj9TwiVRi2iLrbkHqc9auI1fOI4G
-         SptSQXI/K2KoA+bXUN7wjYTxoI0xlUq91hYeLhoDHwSwkY3m2MX0aBhDsyEwWfPB9w+z
-         f7sg==
+        d=toxicpanda.com; s=google; t=1793987929; x=1794592729; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=KoOh0KgSmAnOjKaKpi/0YYF58G7PTa1KHqz+Z6PRDOg=;
+        b=q8l5HWpVR+6WoIzGWW/C1qIXbvkV5clCBWf+vfGcJl26xoV9k/8qdLG+2SnGeOrB49
+         GBhfW2SR+axf6btx+rT+FmyAe73em8Z5eHBANL63aJDqwgiLYOPZw3LjYOCBHzQR0DmS
+         KyQSXMT9Y9t78SilpvqXNVJ7uP/8VSkjiffo6519HCkkhZ/tVCnqS3A5vQjDkAqT7yC/
+         1mpqTlwN1g3wnEWZ2vywu+krBbZmbhbG4DOK8tMFutuP1WNLu7MW7OKhiSnNImbaAGcJ
+         Kt2BtbtPBkbCZ6ZA7WV4ayDRdNfGOpF+CziM7k4seRryilgaVMZlaoKOtYkk6Q/IgwR5
+         Yo9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793987883; x=1794592683;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=a15VN+jCu3B1XSBa24cW34JdNvW6biC29j8hroS+/qA=;
-        b=baepHDP1Gzg2xd9944uVAjJpYmQaN2cN5AtHEHdQt6x7/PVvypvyR46dG6mZ2KlAJQ
-         vAazp4rOVOad3nnDgUAb6gsmsl6+1pm6rdtPHlnf/WUsroSR7SAASANlv5LAlfQUnfhQ
-         S11qQbQJl1LScQ2Ci//qWU4dKajqdnUxIIyzRX1Bv719MM2MugmFPn7TkHdKjKUQ0F6W
-         hezJ0CekglyI+1JrMu9+isdCfRoThSkPVeZEBWdiWX7YLe4XCPiGFHIMjFKcfuzgJAk+
-         INmmuLz1gMu2HbjdT92nLRGSJpiA6r0tDT3imXCkGqw0xVOfm+Y8AhaRLw/XU0rJ+ghG
-         kwSw==
-X-Forwarded-Encrypted: i=1; AL+hErFcHKAx3Y5eMcbDTq/W2PqmAJAa9eqK1mYdoaPRfztdLGY3u2pUIl5EcVTYXwrNm1hJUlDcEw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/EPr0akg8l0N5lfFVOfIDEWOdK9zjMHVkhj5eMqoRnU6RrKh64
-	tQDFGUuoWK4nAmQp7q16KcUaZEA08EVWJHhh0IDipF6sKLPiWUgCyUubXnIvwxlZqRXSpwohpX2
-	4IUBh
-X-Gm-Gg: AYBFou3BTKBYTf0Z+eQtxfpp1ntBtRIw4GGssTPPFrCEuf1d4uV6sAlYEHLww62Xxdu
-	7hdmusxeiT48r4AbHBvAXSvoTPo9nsR3p+EBNirU0Kz0yn4TSnJ/pSPwBNt3dJd5YMyhkICC6nR
-	VEvbLwkamYaufdX3ZB2VI4BaH5UXB6b992iB2tq9yXZLfaHT6zrJrq1rzmlL33rPcDWXa507KOY
-	VZ3OT4RuyRanA7hmOiImOzkv8eRDxP3rSDCDlrEHpH5k55ZMGKidstLqntFHkb0Q/VKqo6xcYuh
-	Obv4KlUNXTV8IvfbEHf0FWIEhEELvGAg6gp1adnOBQUhd3Pgb0XGmm+4LB6OQEeEh2SPNyFMTyp
-	aoGX3Mm3IH3okbAlKjeKlaCCwPC3cFUFMKr0H/DNxPemPMnhSKFmdIe/aTjuUv6Tszt3IJGIJ2b
-	iShtM2cLhP5JYwTkRdwlm9L1YvQt3xz/SP5a0hm7kmSm86QjVNDkn9hUIeSsjMO3bAqJp4kc2He
-	IkgmEUQpb+519zADyo1AOi+sVydNsIJhN9u5DlWlC8fdCu7dXbho5QNpDoWzgN+9tu4swQW2BZR
-	aJDCq+2DQoiRzMSTekMQx+wLEe4eYHt1PHSr8rNoMxOLjeSRGM0kHhgOyJuysKLY
-X-Received: by 2002:a17:90b:5703:b0:3a0:abc3:afb5 with SMTP id 98e67ed59e1d1-3b0db6f46bemr3110575a91.34.1793987883162;
-        Fri, 06 Nov 2026 09:58:03 -0800 (PST)
-Received: from localhost ([2a03:2880:2ff:4a::])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-cdb70661c97sm891550a12.5.2026.11.06.09.58.01
+        d=1e100.net; s=20260707; t=1793987929; x=1794592729;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=KoOh0KgSmAnOjKaKpi/0YYF58G7PTa1KHqz+Z6PRDOg=;
+        b=tRBODSzeVONNC26gSrL98if6KfyDLDTrj6rwYs7Vp/IfdjIjIUC9oZPGTC1u046k+w
+         KFV9JIRg5sy4+wuwbQNnae/zJkUxj0Fy4WbUMBdEdiQUhj0n02NvBpR2HF0OBuWFfydd
+         SOMDE+JOAmoDVNtHOH/yJ6luVlxvo0Tncvo0k1D00LOrnG+Kv/UZHGmM9306tuhKc3oz
+         BG2lt5k2ZCgnlI4U9fWhK/MlSynl4U4oRqwANgydFVuNC06E2E4d3L8bda01fUAK7iFn
+         MPMyVIYpkdzhyBh+udf9LA1T1sSB8h4mKP5Iy2bb+Lw7IAS6NmJsH09Lu49UT41HCPCT
+         x2Kg==
+X-Forwarded-Encrypted: i=1; AKwUvBwRi7znRgR+ay05uAqpfwYn0AFxbczUTVuEcX6fn25GD33pPnj+ZFqvo+0nJ1ZaC6rN1Ehhwg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+OEHvnLL6kgw7dXM0aoEe2atqt/ZbuVIE22tjhnBS1ouiZ9nyJ
+	F71RBW/hHFg/h151EMkBx2aRnupwJaiUPo6W0o3BAMIuDNI5T66Q3To2fjIKqh9ywZk=
+X-Gm-Gg: AYBFou13l9CLHue8JLd1KQbg9RWe5bt4sZjN6ViWkQ3Ls6WkrsQsexYI0eukKynVpnW
+	w7gay9v75eJLf5wi7QSVQiEksN7M3JF02Ti8xNuWatZf8saOI9iZkvDdUIdO7XdHNHG7fwu2/jT
+	1w4vxU5Rj/ctsWoAkMc1PDahfd+Cby5sgqrN9pFFVnWSVKUQwHH1sndiIZRm/G95Ia9ODv8cdsW
+	GJtnD3hYk8C+Rhnw4mi4dTNn28SMi5F3W3nyEpz6I3kOq19l/wibLpX6s6MuIK7stqA0x5moSpa
+	ZhnGBOBnlbKY4Nh3Z4QEGKBl1lCjPGD5vjTTka2gfa4nbPEw1Fo7XZ5GInn2Jscx3x3KfrpfvSh
+	DFZL7rhVaknrqQCX9BgH1YGGF/P80HcjHPeIXoGJwf8CQQAJMThdhZenVzQJxWd25jg7TzwhX3Q
+	jDf4DvWtEOaANOxCFuPBQvq4YfCncv0HMNVkVA5+D1rRRvqTb2tcfeAqenKPxUVHynF2p3DpVE7
+	0u/B/CPlIl+0eFzgVYCx6/4QEBDKqbXYCKC9ktOV/1eO3OY8B6PheYptrj4cXO6vaHySASzpLSZ
+	iAD4HPzHlM0Jl6eSKjGLqxola5mYe31L0ngJW+r8j6zy
+X-Received: by 2002:ac8:5d08:0:b0:536:699d:9a22 with SMTP id d75a77b69052e-54e157646f3mr53331201cf.57.1793987929323;
+        Fri, 06 Nov 2026 09:58:49 -0800 (PST)
+Received: from toxicpanda.com ([153.61.196.254])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-54e27013e83sm25509581cf.24.2026.11.06.09.58.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Nov 2026 09:58:02 -0800 (PST)
-From: Joe Damato <joe@dama.to>
-To: Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Joe Damato <joe@dama.to>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iommu/dma: Skip iova_to_phys() on unmap when unneeded
-Date: Fri,  6 Nov 2026 09:57:43 -0800
-Message-ID: <20261106175745.3362057-3-joe@dama.to>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20261106175745.3362057-1-joe@dama.to>
-References: <20261106175745.3362057-1-joe@dama.to>
+        Fri, 06 Nov 2026 09:58:48 -0800 (PST)
+Date: Fri, 6 Nov 2026 17:58:36 +0000
+From: Josef Bacik <josef@toxicpanda.com>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	"Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>, Zi Yan <ziy@nvidia.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <nico.pache@linux.dev>, 
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
+	Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>, 
+	Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
+	Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>, 
+	Gregory Price <gourry@gourry.net>, Ying Huang <ying.huang@linux.alibaba.com>, 
+	Alistair Popple <apopple@nvidia.com>, Peter Xu <peterx@redhat.com>, 
+	Johannes Weiner <hannes@cmpxchg.org>, Song Liu <songliubraving@fb.com>, 
+	Rik van Riel <riel@surriel.com>, Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
+	John Hubbard <jhubbard@nvidia.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org, iommu@lists.linux.dev, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH 2/5] mm: limit pagecache folio refcount when splicing
+ into pipes
+Message-ID: <n3l2cnx6d25jovloqyoxiz566mh62janclmiewjvumtmqfezo7@zmsmco5vvssn>
+References: <20261105-refcount_overflow_stable-v1-0-70b9c655da3e@kernel.org>
+ <20261105-refcount_overflow_stable-v1-2-70b9c655da3e@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -101,39 +117,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261105-refcount_overflow_stable-v1-2-70b9c655da3e@kernel.org>
 
-iommu_dma_unmap_phys() looks up the physical address of every mapping
-with iommu_iova_to_phys() before unmapping it.
+On Thu, Nov 05, 2026 at 02:10:11PM +0100, David Hildenbrand (Arm) wrote:
+> Similar to mapping pagecache folios into page tables, let's reject splicing
+> folios into a pipe if the refcount is at it's limit, similar to how we
+> handle it during GUP.
+> 
+> This will prevent more cases of possible folio refcount overflows with
+> large pagecache folios.
+> 
+> Let's keep it simple and check in the two callers of
+> splice_folio_into_pipe().
+> 
+> Also check in try_get_page() to cover pipe-buffer duplication by tee()
+> and partial pipe-to-pipe splicing.
+> 
+> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
+> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
+> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+> ---
+>  include/linux/mm.h | 9 ++++++---
+>  mm/filemap.c       | 4 ++++
+>  mm/shmem.c         | 4 ++++
+>  3 files changed, 14 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index 79ae8fc0d6bb4..a82cfbce18215 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -2287,10 +2287,13 @@ static inline void get_page(struct page *page)
+>  
+>  static inline __must_check bool try_get_page(struct page *page)
+>  {
+> -	page = compound_head(page);
+> -	if (WARN_ON_ONCE(page_ref_count(page) <= 0))
+> +	struct folio *folio = page_folio(page);
+> +
+> +	if (WARN_ON_ONCE(folio_ref_count(folio) <= 0))
 
-This is unneeded for a coherent device that does not use a swiotlb.
-Skipping this saves a page table walk.
+Since you're here anyway can you change this to something other than
+WARN_ON_ONCE, since that results in an OOPS with panic_on_warn set?
+Thanks,
 
-iommu_dma_sync_single_for_cpu() already skips the walk for these
-devices, so do the same in iommu_dma_unmap_phys().
-
-Signed-off-by: Joe Damato <joe@dama.to>
----
- drivers/iommu/dma-iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index a25ee287a5ac..c4a5fac4f7cb 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1260,9 +1260,11 @@ dma_addr_t iommu_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- void iommu_dma_unmap_phys(struct device *dev, dma_addr_t dma_handle,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
-+	unsigned long skip_phys;
- 	phys_addr_t phys;
- 
--	if (attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT)) {
-+	skip_phys = attrs & (DMA_ATTR_MMIO | DMA_ATTR_REQUIRE_COHERENT);
-+	if (skip_phys || dev_is_coherent_no_swiotlb(dev, size, dir)) {
- 		__iommu_dma_unmap(dev, dma_handle, size);
- 		return;
- 	}
--- 
-2.53.0-Meta
-
+Josef
