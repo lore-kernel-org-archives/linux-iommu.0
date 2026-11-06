@@ -1,114 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.43.23
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793995025;
-	b=K1LC+QbHhcBVg3lAyxu9Y/vqDBYoyCjF/tPBcpBfega0muh5eMw4e7SDvEENh+fvjefP
-	 ft8OI4Ums12VnT3CS+yZhVLlbDqRQLgircPDIaUCqX/bB+dDZp7a0CgXn0vGFeqefQDsU
-	 gffd5IAnM1dG9qHmwBwqZCmc8+ix4ux0PX3ysTnh1iNL7YB++wkKnsL4xHRxZHOLXusbA
-	 UXOWkrDzTPupPTqwv+jgPQXNNXvSD/Tqv8gn4EmBfs/vGYAvjex+dX5WoKz5ja2B79Dff
-	 w81blm9VWAJhogTk+Uweu8NpjaGWmhCWnhvBsS3789KNHXx141wog17KDXyqf6c+xmg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793995025;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=U35EW0rSQqovkhDvCT99KqBJ/0CFSW02gIsNnYH55/I=;
-	b=P1HcC9VSlJsEmoyIDtXEmCyRiJ6NVB3Nsx/CpWbtqjX+zzQJQu8PruQuDUSbmmhA8HH5
-	 dnLllYSwplLsmjBAcaEuT3ijvC1UGc2e7BCDrnrU2M6V4ZC+aby5ogLf/70VivHpMCkQH
-	 lO7eXW3yt53P+QcXdSCc1oE3zk6l1l+LASlEpsNdSHuhPzUQp+j/6PyKXOubjOfrwbl0N
-	 5F6iYrif8tbk6E13rW5g20cPfFCZ3XrW1VHdegX2l/edWT4xJL579ygrdWiHNuvhwESqX
-	 M/PimRfwudTrbaARnei361HUIEN6pNDoGiSEATrXKXc7PMEnURBanv8epOJZjrkQ1AA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=R4jv5pRl;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.43.23
-Received: from SJ2PR03CU001.outbound.protection.outlook.com (mail-westusazon11012023.outbound.protection.outlook.com [52.101.43.23])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793995765;
+	b=L9lApsakdUsF3VHRzWMnKrAS3zq83RBSiPBC3XymH9NQf1eqwxBIGN7NM0JdlfOA2wRa
+	 hqV/Cjrl/Uh2lXNksT6BIc0Uh1PAW5sppKTNnjbHFnekrdkGjF9AlSX9eOgAdC/US+w+i
+	 wKmD6CBmR6SdQ+HLPKyJ86jPj5F6nWWvQxN5c5/mnUtpeIdO264RZJG0hOB4qTqmP6UZ1
+	 LmmQY4JCgM9WK3zP2n8WE2mZmrkTYkTA8aB+SfqIDoE7vQDvms2lXjH56zQhnWkuXsYry
+	 hf7VACSiABYX310vMDTs0hlzFxHx+n/tmT0Y5o0OKqBh5PaPjSX6+TxdfGNYTVELfEA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793995765;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=QYKpj50QcPFYT5hlR28ZO7Qz7JK2NgENQ8jSUlp2pWU=;
+	b=0/8whyqYFl82TwtRjbGLj8DbOlzcIB1a8NZyj1i+MOvNfa0RefDYQCjM/Cx3wlaY/qLf
+	 mgWc94m23nSP1quN2K9m3uQhg7o3ubFQkiz+wKkw7gg5FTfb/Rb52I6XGyTjTMkkGOvqH
+	 /dut6VjPu6NbV3+KXY71IQwe2m4zqH8RMOeu4OIPjoecoobILfNvfpXWcxsFEdD2ce3RI
+	 AkBp7AWrD9b0YkfxNDNQXYnQFTecKsOcR3HWpMns/oZ+56kWf86HxcJmnxhKi/qBArrw3
+	 hp5bMVjuuqxk57mhN/yTOCj6eloDnVaPBpSXcYKrbFsnO4o31RVD2p3pL8LXmMHbPfQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YrVHuq3J;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79765606A32C;
-	Fri,  6 Nov 2026 19:57:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 79765606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3496606A326;
+	Fri,  6 Nov 2026 20:09:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=R4jv5pRl
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ikXVkU4pelTiyCuvVzIon9Zc+dasTt/tzaOAaNTchA2P2gXCPTYPUbZC8pga/eHv+DJ5gHVt3dmzdqKAFGl8fqlGlTR6qJvYsmg07sBtAd6TGQCsQRE4ijKVeXEshiqytUbosghCE1hMe819HeEfCnlYU4BnR2Hzx3mc3eScWBpOPMZi74jDYDQJi3gXHaHBAJjF0kcmIZ1Y8QpUaDc9t8neR6JjMRfw/vuUOZGnwDn57SjfCQft/CoTeg6in4Vrey5yq02ONSp12MzKlHmu4/kp3Of6l+lUbpsX1DV1Z7t01Worhwba97hpGmECtD7BnCOLiBrF0s118jGbcc3MVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U35EW0rSQqovkhDvCT99KqBJ/0CFSW02gIsNnYH55/I=;
- b=C0WugisHQj/FsEnZX/1N3Om0ookOy+enKELzIcHeJ/99PlMyxVc09ewJ3C5F6+rx5V0nrQPXQ7i4XTclT0e4PdMoQqe+0ozoyZfHYsz+TUHQ+xQWSZSI6ylF4KeGvYm+AzGBZ6Tw/laHD86u8LATdJEcnYN9I0tSrW71nZYg5FTNpZqPSHnjLVkiyzimy7YYQR/XenogbKTlHrBqZYMJ0GsTFTDnSaYmx+uaXVZtdKGpe2i3n4iD4U/BS+2Qmh8P6HxWmH3D2ZIplud+ymjhqZX5ktqFrYIl9Og4mK+dpDSlPC+FV3ZnePLexbGguwZ6ilokq2IWtrIFvIgzl/Bo2A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U35EW0rSQqovkhDvCT99KqBJ/0CFSW02gIsNnYH55/I=;
- b=R4jv5pRl7/XB6Vpmi9P0w0YtQvjukTnpIk3bkJfEgSrhBayPzmSFZ9XD84HIeEic0KmSJ8ihAMkgQpBcjmJchnKztdYDwuAKnfDzftJSLRE9IzhsRyVO8XBaBdCPrhcbymqarjK/Ei3fjD5wh6eW9Sv0UJuRN7kJOrTwWJoOWEnm2UnSoGJHYcst7MvrTEAJQP+R44pn4Otk5EnIpwdqiVzLNJcCPEgIna7ZbnMLuz7hgT+Ct09pHHXvB29msX7a/zJZubPgLoezObnxYZ6gn0CDMsOKzKO1/orPc7YhabiKuRJLDxhTR7snwh/F3d/+2mmws4C5HlSsJozzxpCblA==
-Received: from MN0PR04CA0010.namprd04.prod.outlook.com (2603:10b6:208:52d::25)
- by LV3PR12MB9329.namprd12.prod.outlook.com (2603:10b6:408:21c::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.10; Fri, 6 Nov
- 2026 19:56:59 +0000
-Received: from BN7PEPF000000A4.namprd05.prod.outlook.com
- (2603:10b6:208:52d:cafe::2b) by MN0PR04CA0010.outlook.office365.com
- (2603:10b6:208:52d::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.11 via Frontend Transport; Fri, 6
- Nov 2026 19:56:59 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.118.232) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- BN7PEPF000000A4.mail.protection.outlook.com (10.167.245.228) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Fri, 6 Nov 2026 19:56:59 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Fri, 6 Nov
- 2026 11:56:40 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.56; Fri, 6 Nov 2026 11:56:40 -0800
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
- Transport; Fri, 6 Nov 2026 11:56:36 -0800
-Date: Fri, 6 Nov 2026 11:56:34 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Mostafa Saleh <smostafa@google.com>
-CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<kvmarm@lists.linux.dev>, <iommu@lists.linux.dev>, <catalin.marinas@arm.com>,
-	<will@kernel.org>, <maz@kernel.org>, <oliver.upton@linux.dev>,
-	<joey.gouly@arm.com>, <suzuki.poulose@arm.com>, <yuzenghui@huawei.com>,
-	<joro@8bytes.org>, <jgg@ziepe.ca>, <mark.rutland@arm.com>,
-	<qperret@google.com>, <tabba@google.com>, <vdonnefort@google.com>
-Subject: Re: [PATCH v9 13/25] iommu/arm-smmu-v3-kvm: Add MMIO emulation
-Message-ID: <au4w8nvPQ3xv7igC@nvidia.com>
-References: <20261015200903.2735565-1-smostafa@google.com>
- <20261015200903.2735565-14-smostafa@google.com>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YrVHuq3J
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EA0E1F0089F;
+	Fri,  6 Nov 2026 20:09:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793995764;
+	bh=QYKpj50QcPFYT5hlR28ZO7Qz7JK2NgENQ8jSUlp2pWU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=YrVHuq3JuRIEd7tjBfUeT/Qk0DuNfXl4YVMThJcT80ptmZzANGzEFsALP5sxZlfys
+	 ZABuxRNId9i2ezwIzNGhupGpPTeG/+Ua0IrtHAZyldbRgEphdzF0p3FPQ7z2zoF1kn
+	 nnpyFnX40vBIUYmViW8+50dWaKQ2zK/tAClXS4kmgJtUsTS0KOxjpN86eOoHQVGSep
+	 mHAXwv6xOdHMx1KYuOPXddB6d1cGWA8dfX7t2r/bAOguAP/l+m6+jUWmmCYirJz51i
+	 p+FWCDRFD6IkmQ3s3PTHPzmFC44LSnKdiFht+QMqWssMW7YWrzR8NFKdbo6HzPrjQq
+	 e3DYi6gFzU+wg==
+Message-ID: <23f947e2-ff06-426d-adb7-396871304736@kernel.org>
+Date: Fri, 6 Nov 2026 21:09:10 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -118,62 +51,135 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20261015200903.2735565-14-smostafa@google.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN7PEPF000000A4:EE_|LV3PR12MB9329:EE_
-X-MS-Office365-Filtering-Correlation-Id: 88b9b6ab-1ac1-4e33-2489-08df3c401e57
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|376014|7416014|82310400026|36860700016|11063799006|4143699003|56012099006|261021135927099003|10067099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	NGd7ColiLtfxhddNNHNF/GgIuJNvkw/2e/y+JAO6xK/eODaLa0qfahYBNxhIkn9teuq804SnnjP0QC24kPjbznTAnDdgc4VrceNn5VFTF/a6WAZy4Ilq7aCiN60cIAP54wkHI92elF0J/3nRDsHv1fdeSYK4/fFEpakfpPaU1e2nOOdY7BBd4qUVMSO++IAbnW8SXprXlwwsfxLZO36e6MCzEW0aa8ymLDohR8o1N4h4VcJr/xRDTQOQnlMRNE2MbVVTCQ5UFc3H1ZPXZGfHs/CEfBzRE1xPABVG6Ke0Fw+ozkPzuGtImK6eZCW32F7HfjbhIPnUWyDgt9NUMgT9/tRckygznuOnGiKVECVQkYawNvZaNTWaX7VGgEFVRzNA/XdCcm/9e7PfWRKsjfPwLHtpWRYCuAQ9NUrEPQ6KSEoxr+IaYDOE0vPNxvgEcmUSSPfs8F1KKJpMsL51NYTRjWYyrVVdnWD4kgEDtgvPrRDIUS5w7qgugVmSJkEtcnVir53fixZFWKKXIu6ziDRhlFhcZPwihqif1m5QszV5V45UmjhaQNJHA4VsoRWebi2xVkExWEW06AIb/ffDXynWWzOr83+Z4dNu7+VL3Q+Wk5nsNk1NEKtKfQ9RxUKPp1T/epDwUeAvzCZdkMXopbXZZo1RYhrPaEDLpxchjK80TLd0C0vGI0Rk7khrLfzhmod+XkKdVqIzOxm9RpsNeGWTbg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(7416014)(82310400026)(36860700016)(11063799006)(4143699003)(56012099006)(261021135927099003)(10067099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	KNa9lc+h20sWwkDhVsfyLKMPR+JMOzkw8tmiaFELwOEls32zM1uVneXgn9DNctdkHYp9f+xzY/JqO4tua2CiuNZzbHSFUzkqMt3HthGrOz1uSI0rD0qalTyX3/LxBv77Jm5ZqdC7q9cIWTfJCFHkfqRlCbpSTeZrUjliL5t3RNB9vStnz7WGWKd5LuKgs/bBhs5dUWzJ0nUmdU907cBSHKy/4wGTQZ4NWicSUL1s02D5gUs2JlSTMjMjWmm/Ut28KvZKkjDvAXJIfOZAMVqhulHFaf1RaVDBQpdda3bj3ZkeRx+bF0pjapgTSY19jXQwp/Z9bSXeQqynGeUFBpvMns8l9mFFdq9kbWnGHFwZVCqYDc40IjekQpFoPGBVxQjYIW3KI14FRcCuFGi6+5P/vBNxTqIT9tGt7QtEZXrZwimyhJYE5Hiq2FJeluAAVIKn
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Nov 2026 19:56:59.2655
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88b9b6ab-1ac1-4e33-2489-08df3c401e57
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN7PEPF000000A4.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9329
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/5] mm: limit pagecache folio refcount when splicing into
+ pipes
+To: Josef Bacik <josef@toxicpanda.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+ Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
+ Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+ "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+ Zi Yan <ziy@nvidia.com>, Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>,
+ Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
+ Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>,
+ Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>,
+ Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>,
+ Gregory Price <gourry@gourry.net>, Ying Huang
+ <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>,
+ Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>,
+ "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin
+ <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Steve Sistare <steven.sistare@oracle.com>, John Hubbard
+ <jhubbard@nvidia.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org,
+ iommu@lists.linux.dev, stable@vger.kernel.org
+References: <20261105-refcount_overflow_stable-v1-0-70b9c655da3e@kernel.org>
+ <20261105-refcount_overflow_stable-v1-2-70b9c655da3e@kernel.org>
+ <n3l2cnx6d25jovloqyoxiz566mh62janclmiewjvumtmqfezo7@zmsmco5vvssn>
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <n3l2cnx6d25jovloqyoxiz566mh62janclmiewjvumtmqfezo7@zmsmco5vvssn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Oct 15, 2026 at 08:08:44PM +0000, Mostafa Saleh wrote:
-> +static bool smmu_dabt_handler(struct user_pt_regs *regs, u64 esr, u64 addr)
-> +{
-> +	struct hyp_arm_smmu_v3_device *smmu;
-> +	bool ret;
-> +
-> +	for_each_smmu(smmu) {
-> +		if (addr < smmu->mmio_addr || addr >= smmu->mmio_addr + smmu->mmio_size)
-> +			continue;
-> +		hyp_spin_lock(&smmu->lock);
-> +		ret = smmu_dabt_device(smmu, regs, esr, addr - smmu->mmio_addr);
+On 11/6/26 18:58, Josef Bacik wrote:
+> On Thu, Nov 05, 2026 at 02:10:11PM +0100, David Hildenbrand (Arm) wrote:
+>> Similar to mapping pagecache folios into page tables, let's reject splicing
+>> folios into a pipe if the refcount is at it's limit, similar to how we
+>> handle it during GUP.
+>>
+>> This will prevent more cases of possible folio refcount overflows with
+>> large pagecache folios.
+>>
+>> Let's keep it simple and check in the two callers of
+>> splice_folio_into_pipe().
+>>
+>> Also check in try_get_page() to cover pipe-buffer duplication by tee()
+>> and partial pipe-to-pipe splicing.
+>>
+>> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
+>> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
+>> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+>> ---
+>>  include/linux/mm.h | 9 ++++++---
+>>  mm/filemap.c       | 4 ++++
+>>  mm/shmem.c         | 4 ++++
+>>  3 files changed, 14 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/include/linux/mm.h b/include/linux/mm.h
+>> index 79ae8fc0d6bb4..a82cfbce18215 100644
+>> --- a/include/linux/mm.h
+>> +++ b/include/linux/mm.h
+>> @@ -2287,10 +2287,13 @@ static inline void get_page(struct page *page)
+>>  
+>>  static inline __must_check bool try_get_page(struct page *page)
+>>  {
+>> -	page = compound_head(page);
+>> -	if (WARN_ON_ONCE(page_ref_count(page) <= 0))
+>> +	struct folio *folio = page_folio(page);
+>> +
+>> +	if (WARN_ON_ONCE(folio_ref_count(folio) <= 0))
+> 
+> Since you're here anyway can you change this to something other than
+> WARN_ON_ONCE, since that results in an OOPS with panic_on_warn set?
+> Thanks,
 
-Going through the followup patches, I found this smmu_dabt_device
-gets really too big. Perhaps it can be bisect to read and write at
-least? Something like:
+If it actually turns negative (or 0) with out changes, we had an overflow and
+for sure want to know about it :)
 
-static bool smmu_mmio_handler(smmu, regs, esr, off)
-{
-        /* decode ESR: len, rd, xzr; width check */
-        if (is_write)
-                return smmu_mmio_write_handler(smmu, off, len, val);
-        val = smmu_mmio_read_handler(smmu, off, len);
-        if (!is_xzr)
-                regs->regs[rd] = val;
-        return true;
-}
+-- 
+Cheers,
 
-Nicolin
+David
