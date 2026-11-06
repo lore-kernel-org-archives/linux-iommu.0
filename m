@@ -1,69 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=54.204.34.129
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793968198;
-	b=Z4ipU3zN/wFkVMhySTjXLvHEkpj7edZe6jG/pJA9i55a8fn/VWREhR7Nx3WfZi5Mmr2+
-	 XGKfDwKzXEb/JL1YBH5HVysHYkVcSWibH8I8RwxmBCI2ZRcA6gMXxwlphEDX2aJ4HWPDQ
-	 9D5FweN+nH2Ff76yNuiR6K/2Oftl7ty5B9zdNW7F0/UePGh97hPTxGDAjhUGmy6WjAppU
-	 AgsU5fB0+BJe1xOaBoQfF3Onc2w1NXxpuygxnmRqdNvyiZDr7pAAaAHino6LFGmQh/9GW
-	 74yyus4PeFVMuJ7Dkht5EBjeLkUW9DU1fAhavDoV3+SlJkIErxSo2+rM0X6jqUD1HRQ==
+	t=1793968732;
+	b=iPIJgIkCRcX1WLdUpvf+A9lQ6CMJgyDn4+tgbFieHt9WrVLdv3Hc/B7WNzXrce4yoxUS
+	 +mzBcUGprT81QAJiRhjIYKOZ8yiBUWKR2HVvFvB9FpgTL7X5CveXvVfERyNbEIVlRqQrj
+	 WF6DJoQzSCOiZQc/MGBRQ7D9OuvODF9wQ0/rO7KRMUbWwp99gHw1sOImMpg0iyOm12LgI
+	 99UI/qOoiSzL7W7o2/sLnygkd/Fsgx+MzLPteBWWQINnfVKgUYj+L44mNtTpCLyBxlQjY
+	 u6/uginAc5PHMd5S4LJd33R5ZwvbFEBCh/O8VnsdrDN+4SfsKFwWDykR4dTx+nrMMTg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793968198;
-	h=DMARC-Filter:DKIM-Signature:X-QQ-mid:X-QQ-Originating-IP:Received:
-	 X-QQ-SSF:X-QQ-GoodBg:X-BIZMAIL-ID:EX-QQ-RecipientCnt:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-QQ-SENDSIZE:Feedback-ID:X-QQ-XMAILINFO:
-	 X-QQ-XMRINFO:X-QQ-RECHKSPAM;
-	bh=iE/wSMEyH+VJ7N44evRSI6GiZHRtas+tUg6V/FJukv8=;
-	b=Rznno6OI0rmNzjCTak2yOAVA535kkLFKI3WSxIngA8EXVoIMdIUZe5zfVfhLngj8IERM
-	 J44G2fPBBR8Ke25EiLfh2cIcB6YRXVVJa6nPYVAafsD5fAvt6/TKomjihXOuGgsbrem25
-	 jyM6ibTyINTsOQiT6ipD3cN4VWbQp5l0OG6zO6rbzEPB8rNUZNJBjDAuFwvCoyrGd/Cdc
-	 ogu37yGyZDs8kqx9mgMGoXIG3RyF0BEO9GdQRaEGW0wLKkgAjYb9PisMVoTW65ksftGfN
-	 es0XpVP+P8M1QuP1ku7SdqaS4qOxc8G72j52/5B+pHJ85qJDolk+XTh/8u6RmAdiyqA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793968732;
+	h=Received:DKIM-Signature:Received:Received:X-ME-Sender:X-ME-Received:
+	 X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=2pfmacECcqVcYywkgZMGS6LkZuCwqHkVAmJzamD2whI=;
+	b=BwCO9/YzWs/oWLjfVuwwv3/TfRRkPZCoVuHdwILdsTJes41L1tKqQPndXjouMK8vnLjg
+	 eCP8zLCaQ+4ry9TrGAPODmf1wj1rNmCzt6Wh2jGSWmcIjglAQKREq1ab0Z2zk1he/Bp4E
+	 ua1DMFxbYEHKEHKCbk52VNpF5bO56TZSnycEqeEF2q5Bk5qYDkbtPTPtfOHw4+9JAQW9M
+	 Y47HIHaeGrISzrDegH7DcEfAJ4K3ZCJ3rWCdE7GLBqLSa0iwu0fRKYy5QHbzJOAGDMCwc
+	 ouyyminuQEcGPo1+yF+Tb/3FO7oJIvCkFkVIizErSP2jYzvcEP8H8P1F3gS9j9Y2hWQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=smail.nju.edu.cn;
-	spf=pass smtp.mailfrom=smail.nju.edu.cn;
-	dkim=pass header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.a=rsa-sha256 header.s=iohv2404 header.b=YrQeH6rD;
-	arc=none smtp.remote-ip=54.204.34.129
-Received: from smtpbguseast1.qq.com (smtpbguseast1.qq.com [54.204.34.129])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FStjyAY0;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C288606A326
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 12:29:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0C288606A326
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smail.nju.edu.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smail.nju.edu.cn
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBB57606A326
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 12:38:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=smail.nju.edu.cn header.i=@smail.nju.edu.cn header.a=rsa-sha256 header.s=iohv2404 header.b=YrQeH6rD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smail.nju.edu.cn;
-	s=iohv2404; t=1793968154;
-	bh=iE/wSMEyH+VJ7N44evRSI6GiZHRtas+tUg6V/FJukv8=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=YrQeH6rDtICoC49R+Ny98LjrT3tTdxdw204wGECqB+TifQ16mTCkWqy6DvnjYltHG
-	 MwDaBiUCcWhhlMzzSJjVVL/do5fRSrqdbo4xXi8h3DP6sLQ8a698jVxxBBC4awC1eo
-	 DZqX9z52PVWxqOG0lGy+FAGmQhE7EZbJEbQKDKlc=
-X-QQ-mid: esmtpsz16t1793968149tfd83a869
-X-QQ-Originating-IP: rn61B8C1YNl8SyjETSttrJvGd3PBtU2QMgdZTeBhfdI=
-Received: from hepeiyang-vm.wu.lxd ( [114.212.83.113])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Fri, 06 Nov 2026 20:29:07 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 11494895802683602056
-EX-QQ-RecipientCnt: 9
-From: Peiyang He <peiyang_he@smail.nju.edu.cn>
-To: jgg@ziepe.ca,
-	kevin.tian@intel.com
-Cc: nicolinc@nvidia.com,
-	praan@google.com,
-	stable@vger.kernel.org,
-	joro@8bytes.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Peiyang He <peiyang_he@smail.nju.edu.cn>
-Subject: [PATCH] iommufd/selftest: Fix wrong slot cleared on mock HW queue destroy
-Date: Fri,  6 Nov 2026 20:28:32 +0800
-Message-ID: <09A8E000F2353E67+20261106122832.88995-1-peiyang_he@smail.nju.edu.cn>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FStjyAY0
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10F6A1F008A1;
+	Fri,  6 Nov 2026 12:38:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1793968731;
+	bh=2pfmacECcqVcYywkgZMGS6LkZuCwqHkVAmJzamD2whI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=FStjyAY0FW6kbw3uXf62FFRYlWxG2nSgA93yBnFn9ugwM4dGwj+PVQ5pap3K6oUCi
+	 6dxcxRVZr9JyPyaOU6SYFRRi58za2FXqmecILZDvxCPf7QF6Mlhi6kF01dciRML/Z4
+	 eRn5sl5YOxCMJYaQvK+u+uPEdGNKFbQPlgkNW0i/k60D1vI70pS5ye7rqRu75Zndy3
+	 ZQ8pUPUv1CNkmt7bvel927xSaAxSegYQoftq/nm4tU+F5STRijVbDSs55DLUR47sJZ
+	 QiK2yN/hspvh0Iklt1e9SeTadZzrE5GuO3l2AnEfFwMYTy26psvQbGlQ/5oBg3tJnq
+	 Ml0ZmtOtJlCtA==
+Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
+	by mailfauth.ams.internal (Postfix) with ESMTP id 7526D198004A;
+	Fri,  6 Nov 2026 07:38:40 -0500 (EST)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-01.internal (MEProxy); Fri, 06 Nov 2026 07:38:47 -0500
+X-ME-Sender: <xms:T8rtasefdrDg50RCfXVYapWRPd7hJhOH7MR_vMfF_RkFPcpgn0iabg>
+    <xme:T8rtaq11Zf6R1Zc0aftUnIsFDaY0LWo5YyxJjLiJyorI0EjMIMb_FQ2H1PSDt_qJk
+    eenHVeoya81NzJfPZ9LLMg62Zf4K4Yl6CtsrypytKDJ7q2XXT-7fkAQ>
+X-ME-Received: <xmr:T8rtauiyuNtFX1s9r67EC8H9v-rJ9qUshbNAZWxxA-i546XDDMOnOCzcYEY>
+X-ME-Proxy-Cause: dmFkZTGzAjGnz4qczRWBwFDzqEedcIN2RDs77+IhaKJdOHI/wRF4GJ+/XYgTh6qUDCaXtK
+    q3BGgpdQwiz8g3jZv+XNiZ3PHhWZePA+KkMXnh5DVEYxm4xAwVX0MEjom76ZmfzWC+JTPH
+    KiS19Dcunkmjpxr4Uil2sC19R8pXj7ovLT0PA2yAVZWcLty5pA48PAv7fst0p77EiM3n+1
+    SmGSQ5XOtXFCV1+dbb7vBvMxrwGRHPa+XdLj9z9pUYo6DwpdcyJmkiF0P6rFAo/V/JZdTc
+    JB24ZdeHtaiEyrrTwoEjAufvE1haKfVDIo+IxU19WrQxgP8cc4psM9iHQFHP4vpOpa7VoH
+    wzQ1pi5Xm1k+/vd5fWuuLnXYA4NDa3sM6PbhRSGJ29vaEqlrEoBKvduJJT2QLau5zON77X
+    LVS4No3GqNmQ7P5K5ZGNyDCsQUAFFMjELc5QUn1AxYZC+wWsbenSBZU/lmEyveJGaJ2+jX
+    5fuGn8bxlHcwcJNuyglZcxdfbk0Sa0PEcwNUH2TBBBLTHU0CoNDi/SD5/1309grZ9OgwS7
+    L3pcQ1dDN1WJl/+zOkyXMbph0dlAPT58n+aswI4a5WzW2PE7JzKbmxjsgGo+8fBfzklnrj
+    EBr+0lhdOkv1TdfFi5YziSH1mehaQtbycU8WlCmDbaBUbLQfGwo3GJ9qXvIg
+X-ME-Proxy: <xmx:T8rtat7js2s-eKQZcHK3_aXiUqi4PQT3ApNyxSy7PplOfAyVt45tMw>
+    <xmx:T8rtagW_pOIDqaJwR8OxdqY5JxVHrJv54OXWTAdpWfg2Vex1AvmGtg>
+    <xmx:T8rtatlscF93bVi-jaQNcHjAI-NjY-w5CIlVvBjJDaO8_4AtvZP4lQ>
+    <xmx:T8rtahSHJTPBlU6GOzNLC9za7s75hOd8IlP5D3JPnl2Uwi1M9NeaSA>
+    <xmx:UMrtaiNVGrkcAtiFcecPVVpaYRDrYD4OeE5iPf8Os-chIedx19aW39g_>
+Feedback-ID: i10464835:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 6 Nov 2026 07:38:39 -0500 (EST)
+Date: Fri, 6 Nov 2026 12:38:38 +0000
+From: Kiryl Shutsemau <kas@kernel.org>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>, 
+	Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
+	"Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>, Zi Yan <ziy@nvidia.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <nico.pache@linux.dev>, 
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
+	Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>, 
+	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
+	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
+	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
+	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, Hugh Dickins <hughd@google.com>, 
+	Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
+	Nick Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Steve Sistare <steven.sistare@oracle.com>, John Hubbard <jhubbard@nvidia.com>, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-arch@vger.kernel.org, 
+	iommu@lists.linux.dev, Chris Mason <mason@kernel.org>, stable@vger.kernel.org
+Subject: Re: [PATCH 1/5] mm: limit pagecache folio refcount when mapping pages
+Message-ID: <au3JT5QXbcOFXCp0@thinkstation>
+References: <20261105-refcount_overflow_stable-v1-0-70b9c655da3e@kernel.org>
+ <20261105-refcount_overflow_stable-v1-1-70b9c655da3e@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,57 +104,142 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: esmtpsz:smail.nju.edu.cn:qybglogicsvrsz:qybglogicsvrsz4b-0
-X-QQ-XMAILINFO: MEB/GPYjqGH/DEXGQiY0HgoHjqcB92IdenzqECRmDRpqSHbbIr4fC/WK
-	TYsDZtT8HDjfPT21suB0OH3husV4lhpV6daxRuLCWbl7vpjenhjUpEAdfltpttmghflTsKa
-	ZQTDLhYQlO4jFOljzf/aRjZwhpzfDUP/auciCSKERCVEYYJ7IHoQQJkU/PAAmwfwxPk4x+F
-	ASblXgtatHI0UR6LN7ocj96yGxZ1QQavygZjUEtd04pHMCD8iJcEfNb7yKzQ/5W8WCMYxcL
-	IMxfCnJ/qRZw1CrdBTe+YWBfixl5krfDOm3BS7Hiuy45xWPouyX9Vf/Y1z0iYqCga7FOvqN
-	jimCsv+fbZSp+eGfyrIsTHJGQctOed8Fd97GjEI5MtQ1SHG65rFpEufj9XRdczdc5kBCFnz
-	VwMlXpfWCjHhkchC2xfvIGQ0B6/0PLBbmsGoTkD9X0e4kJOTaZzKx5KVrBK4CDWbBA6C855
-	Wzc6eHEewSBsfUw9e8oWYfL7SWJrHbo2uszXwE0mA2rP49rrrUEVSt/TuKNNflWkbgMKCEf
-	OhEuCMh1TAgAbTHKIstaHOl3r0UDSxaUJe1WqAhl7i+A7Kd3c+tbf2IcdRG+7DKSri2ukaJ
-	t9epoU+GC87u25AIiQm4WMooqSn7DkX7ylkiuWCwv47RijtePJFlZJmL0m4XRSYUTB5l0WX
-	kkLcGMqlZ2wJB+d+EOJAwsCfEtbZbz5DjFb/UYL0aiQ4ABeIYcRr3/3LmriJ9G4R/517QZP
-	G8nui/j7Dsd65V0Xjk9h5Ubm+DXdJ3iscd0F0xHURujdxReyjOqNfTVsg6hMfCysZbGwpQr
-	TwzPgIy818n3+IW4o9TYvpM5Gg8Q4rROEdRYHVTvbcCQrcjE7Oc7Ep+wcefZRxVzHzfiT4/
-	hfNDZV1xV0DTrKJYXmmwdSmMhLm6Eox+iDp/DzxT699zpSvOgQMkrKWTWqnlP+VN0ETzWT0
-	qq1tbM+xHhx9/5/3bybqIYL8fxTitFxEEEmoIS76rdtIx3Y/wvkELJRexmMp5M2ggBauDNV
-	w83FLHzjrVOb9fgAqRUiUrda2vsq/tRzPzMvux2Ovb76fe+YX7
-X-QQ-XMRINFO: Mp0Kj//9VHAxzExpfF+O8yhSrljjwrznVg==
-X-QQ-RECHKSPAM: 0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261105-refcount_overflow_stable-v1-1-70b9c655da3e@kernel.org>
 
-mock_hw_queue_init_phys() publishes a new queue in
-mock_viommu->hw_queue[index] but never stores the index in
-mock_hw_queue->index, while mock_hw_queue_destroy() uses that field to
-clear the slot. Since the object is zero-allocated, destroying any queue
-always clears hw_queue[0] instead of the queue's own slot.
+On Thu, Nov 05, 2026 at 02:10:10PM +0100, David Hildenbrand (Arm) wrote:
+> With large file folios, overflowing the folio mapcount and refcount
+> became possible. For anon folios it is currently not really an issue:
+> each large anon folio can only be mapped once into a process.
+> 
+> That's not really big news, but it's about time that we do something
+> about it because some modern technology might find ways to abuse it :)
+> 
+> One of the enablers for that was commit ddc58f27f9ee ("mm: drop tail page
+> refcounting"), however, file thp support was added later.
+> 
+> File folios can be mapped multiple times into the same process, allowing
+> for processes to hold many references to the same folio.
+> 
+> As a short-term solution, let's introduce two folio refcount limits:
+> one for ordinary consumers and one for admins. Leave some headroom
+> before the refcount goes negative, which we really don't want (having
+> the mapcount go negative is also not expected).
+> 
+> Start reporting SIGBUS if we run into limits. When restoring mappings
+> from migration entries, instead zap the pte/pmd entry. We allow for
+> slightly exceeding the limit to keep things simpler.
+> 
+> This is far from ideal, but better than all easy alternatives we can
+> backport comfortably. For now it fixes the big problem: letting
+> the refcount (+mapcount) go negative and cause trouble.
+> 
+> This is only a temporary fix, we'll follow up with something better.
+> 
+> While the refcount checks are not required for order 0 folios, let's
+> just add them for consistency: each folio_add_file_rmap*() and
+> folio_dup_file_rmap*() needs a prior check.
+> 
+> Also, just document -EHWPOISON for copy_present_ptes() while at it.
+> 
+> Reported-by: Chris Mason <mason@kernel.org>
+> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
+> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
+> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+> ---
+>  include/linux/mm.h | 33 +++++++++++++++++++++++++++++++++
+>  mm/filemap.c       |  6 ++++++
+>  mm/huge_memory.c   | 24 ++++++++++++++++++++++--
+>  mm/memory.c        | 23 ++++++++++++++++++++---
+>  mm/migrate.c       | 11 +++++++++++
+>  mm/userfaultfd.c   |  4 ++++
+>  6 files changed, 96 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index a2dd76cc5bbfe..79ae8fc0d6bb4 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -8,6 +8,7 @@
+>  #include <linux/gfp.h>
+>  #include <linux/pgalloc_tag.h>
+>  #include <linux/bug.h>
+> +#include <linux/capability.h>
+>  #include <linux/list.h>
+>  #include <linux/mmzone.h>
+>  #include <linux/rbtree.h>
+> @@ -2228,6 +2229,38 @@ vm_fault_t finish_fault(struct vm_fault *vmf);
+>  #define folio_ref_zero_or_close_to_overflow(folio) \
+>  	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
+>  
+> +/* Leave separate reserves for administrators and concurrent reference gains. */
+> +#define FOLIO_REF_COUNT_LIMIT		(INT_MAX - (1U << 26))
+> +#define FOLIO_REF_COUNT_ADMIN_LIMIT	(INT_MAX - (1U << 25))
+> +
+> +/**
+> + * folio_ref_count_over_limit - Check whether to refuse more folio references.
+> + * @folio: The folio.
+> + *
+> + * Relevant for large pagecache folios (!hugetlb). For these, we have to check
+> + * before adding page table mappings or other significant refcount users whether
+> + * we are close to our folio ref count limit, to avoid overflows.
+> + *
+> + * Checking this for other folios does no harm but is mostly unnecessary.
+> + *
+> + * This check is an approximation; we leave some headroom such that concurrent
+> + * increments, batches and temporary references are not a problem.
+> + *
+> + * Return: True if the caller should refuse additional references, false
+> + * otherwise.
+> + */
+> +static inline bool folio_ref_count_over_limit(const struct folio *folio)
+> +{
+> +	const unsigned int ref_count = folio_ref_count(folio);
+> +
+> +	if (likely(ref_count < FOLIO_REF_COUNT_LIMIT))
+> +		return false;
+> +	if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
+> +		return true;
+> +	/* Background threads must not consume admin reserves. */
+> +	return (current->flags & PF_KTHREAD) || !capable(CAP_SYS_RESOURCE);
+> +}
+> +
+>  /**
+>   * folio_get - Increment the reference count on a folio.
+>   * @folio: The folio.
 
-Record the index before publishing the queue so that destroy clears the
-correct slot.
+Does the slow path need to be inline at all 15 call sites, GUP-fast
+among them?
 
-Fixes: 20896914da8a ("iommufd/selftest: Add coverage for IOMMUFD_CMD_HW_QUEUE_ALLOC")
-Signed-off-by: Peiyang He <peiyang_he@smail.nju.edu.cn>
-Cc: stable@vger.kernel.org
----
-This bug cannot be detected by any sanitizers or kernel warnings.
-We observed this kind of weird situation and thus found this bug:
-after allocating queues 0 and 1 and destroying queue 1,
-later IOMMU_HW_QUEUE_ALLOC for index 1 still fails with -EEXIST.
+Maybe only leave the likely() check in inline and move the rest into a
+function call?
 
- drivers/iommu/iommufd/selftest.c | 1 +
- 1 file changed, 1 insertion(+)
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 25387969a..54d86bce7 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -759,6 +759,7 @@ static int mock_hw_queue_init_phys(struct iommufd_hw_queue *hw_queue, u32 index,
- 
- 	mock_hw_queue->prev = prev;
- 	mock_hw_queue->mock_viommu = mock_viommu;
-+	mock_hw_queue->index = index;
- 	mock_viommu->hw_queue[index] = mock_hw_queue;
- 
- 	hw_queue->destroy = &mock_hw_queue_destroy;
+Something like:
+
+static inline bool folio_ref_count_over_limit(const struct folio *folio)
+{
+        const unsigned int ref_count = folio_ref_count(folio);
+
+        if (likely(ref_count < FOLIO_REF_COUNT_LIMIT))
+                return false;
+        return __folio_ref_count_over_limit(ref_count);
+}
+
+bool __folio_ref_count_over_limit(unsigned int ref_count)
+{
+        if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
+                return true;
+        /* Background threads must not consume admin reserves */
+        if (current->flags & PF_KTHREAD)
+                return true;
+        return !capable(CAP_SYS_RESOURCE);
+}
+
+Also, should this be capable_noaudit()? I am not sure a refused
+reference should leave an audit record. cap_vm_enough_memory() checks
+the admin reserve with CAP_OPT_NOAUDIT.
+
+-- 
+  Kiryl Shutsemau / Kirill A. Shutemov
