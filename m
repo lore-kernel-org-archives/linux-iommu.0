@@ -1,99 +1,87 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.171
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793939447;
-	b=kt6eyTYovAys1o9lGuKd1srT11jkSkyuY2dseanIEz5ihBgB97uifdE5bOWMwW8Ejwz9
-	 +s4xGIOlFUrxrJUCDVOwxAcOvlkwilqSWKwqiWiuj/DKxXVp329t5w0Ye20iQvC9mQQV7
-	 Z6Q5VQJM17h8uk3mvnWw8CrnckHh5OcuseV7nM+rVUIZmdi33CMK1vt4Rj67qHjBCSkjw
-	 eTNB6wG0a81SU3Vi0wTEaNMauWN6XirEGcNectf3r40TVNJ7zjnYwxxgNeZyxMAob1OpQ
-	 2FdXbUnCNgJy7w1kGXlCGFY3vWsHJbTUeW/Nc3fpmBL+44PIXYKUULFDs5NkPNKwvkw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793939447;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=bZ4yl/FmN9vHR0lstk/51fTiXqlhJ6EnDHaciWBTDCU=;
-	b=x/41x/cr+OXZZoiRDYGo9VlXvQpRv2FBafObltCL3ldO060F2cXWznf0PbmhLou+cqf/
-	 hgCMu2iGznqVHgTmajSD9BojVOr9WGyid+QNCazgjRKB6FTWKN4r6DvuFp+uibL6eUWui
-	 jbZLd82BsHYaYwF0IhJPTd8kcW1wfOcZyqqKpMQc6D/EhQwijrw0B9xp9nF6ucw6FvlxL
-	 34CxC8LJF6emR96LiQbvLT53WaeLoPmBhAsymCOWNt0/1/lrsjwViHnd1TzxFbSSwysfj
-	 2NaFCcZ9lTzBXjhNl9H90VjXtmeM1JoSBI4IOsDigBjnqCzwXBjhQHditvO+GJxGO1g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="YXcqM/54";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.171
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com [209.85.208.171])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=121.254.168.205
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793943743;
+	b=JND2CaVzy4MWNEHNXca82DSMFguksUmkup7pREJMvD7AZ/7z/tKVB9qqRqvlGwwdP1NP
+	 WN4+/Brm4wj1cE74jQ37840X5InH/VRVl+DMGI8lC4XxWEvQrQgAnygjKWkwJO9v5WxMz
+	 oJhFXY5z4+B8QEHcB3NpKl9e8qyYoe4w722fcmM2IFCmLmwd2+p7ytEZnGJO21t7fMftG
+	 mZ0N+tWyhd3BbsooT1CBcK3XuF4WYEA+s0sRF45/FOTCwaQKFC5nzyLg3qswmzWLt/231
+	 T2ZKc1XGg6H1Ci148Y4VO7I2SzTJKzCHzEx1JKG0FUNmWmnzMFWVuLKiyBFZHivr+hg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793943743;
+	h=DMARC-Filter:Received:Received:Received:X-Authinfo:
+	 X-Hiworks-Remote-IP:X-Hiworks-User:X-MailFrom-INFO:Received:From:To:
+	 Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=7dLO/fRvE4k7/pK3hVg6YTkI/u7wKTkCu9vr+nYP9Aw=;
+	b=vsE0zMYX2R6HPGBNv4LB+Rt/1sbWpNFRcoekYZ6bkHWYTZChxDiv2/gdH2H2ezwEbLIu
+	 9yhzTbFO+WL8QICzfZuORTfSnMRc3eg18KFjM6QMdYN2IyCrHILKY6UPzPMAbNSrwAayg
+	 Ye2jOEeBEp1sBh2NrmEYU0UVLTTVDpR90BEyVrk90yRpcOQff02RkL7sFF2eVQVYC4P9U
+	 Hgffsfc0F+qAldx/02R+NLQWrgfKtG+owUeCCtfjGb3J/iVzweu1KA9ttMEYVejBI/KKJ
+	 W3nJgPeEUN4h1j0Svw1CAWYR7s2HLYDUqvVBU1ry8DUWF4C3AgB5DOhLS2rjGZiQQCw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=nirvanahyj.com;
+	spf=pass smtp.mailfrom=nirvanahyj.com;
+	arc=none smtp.remote-ip=121.254.168.205
+Received: from smtp3.hiworks.co.kr (smtp3.hiworks.co.kr [121.254.168.205])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4104606A33E
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 04:30:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C4104606A33E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=YXcqM/54
-Received: by mail-lj1-f171.google.com with SMTP id 38308e7fff4ca-3ace2e3a2acso1390251fa.1
-        for <iommu@lists.linux.dev>; Thu, 05 Nov 2026 20:30:41 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1793939439; cv=none;
-        d=google.com; s=arc-20260327;
-        b=I7qxoGF4ydvkEtCdluBHOdBubQp3wF+jALLcgznlbibF3jdZ/pyLIxoYw2KAAwAIz5
-         gNcMRZDyav5c834ZUQAqp6AOMjuteC2glzEgOQ+XxuCeI+dwlH68/XGopGma9mmtojwe
-         YdqLJp6LjurT5FwL+35TwIKGufS0qpPvd+U9n+hqYKkME9jJGltWo3zs3KXQ1hdXbOKM
-         Z6wKoGSBha5/SPu12CgDNNFlWt0jXWXcGnu/QX4BuJOXHe4etRqIvY6LkPic14x4FLZM
-         rknYYL5o80aDa96Ctyr3ukIKWmrey2QzCMcxovIaccjMuGFTMdNToZko2PYFlfLYX7Ml
-         kw2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=bZ4yl/FmN9vHR0lstk/51fTiXqlhJ6EnDHaciWBTDCU=;
-        fh=6omyseleiYWaYZVpbEo91V0kzxmWLbrtjk5u87I2vQs=;
-        b=jQfMK/4OpaRpCRFP6uL0XRb/jmNPL9otPd1wji2ab3j/fqviIx7992zWeVtjdl8xS2
-         Tju1UBNWQHqiouW3mvGjCMJpiNrN4VdWDRAOfk9EbHtlN+R5gA+R8R9PyfvTHoiaK/IV
-         +77BUjQJDv5hQ+PHB2ZanCZWAGokIuH5+lA+NneR1oETgSpXau7icOn4qVtVgV+SFSvQ
-         VVa4kviBsYAog4/i/pgPqttevUbhPRKJ/q61QR9MjJpXV5d6EUA38Ymu/OxmvhkX84H9
-         Ohsg6WcizpuOeenD9/l5aER9yAYDmYqI+j8UXOQ7iZ7EnmiP47e63ggor096slyAoaPW
-         aHJA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1793939439; x=1794544239; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=bZ4yl/FmN9vHR0lstk/51fTiXqlhJ6EnDHaciWBTDCU=;
-        b=YXcqM/54dQzpthUqrx0bLm1hAh3cz6aVgiItfkhTmitMqrDXzmSZrqYFAEwCJ/OgBV
-         czjaQk++vOgwWEKa0JsvTqa12JhtChz3V7TfMFB1D3YtEUPv0tPAtPDWo0YuCQ2Y2hva
-         9zEy1L/EbxHlW2y1nK6foRDRDzj/IryLPe3cBIzEPKAQXsKT2zT8P6aTZ2glMS+9TWTe
-         1Vb4lURQK4C+wDtt6/AP83QPqIvvpkYamfEn4v5hYRyL28s8CSdQ4uGilbcoY3NMTLmT
-         4vDntCrmWL71Vf7mmvH9ST0voSCnK+3Bd4A6SwFVYBMkVwKUA3NM97UZIsEwblsIYyvX
-         tImQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1793939439; x=1794544239;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=bZ4yl/FmN9vHR0lstk/51fTiXqlhJ6EnDHaciWBTDCU=;
-        b=Hr82Jiub2bSk7mSrAupcDCJJ09yxlUPDsZNwSSV15CIhvEvIAVe9LKC+SEN/go8jte
-         OQbo2MzqaI6Yc5G/7VnVsSOdtlnAy+e5mfM6Oj2EEJM87uf9hKEWNKzzUxhGOYxfr58a
-         fs/TAVlCbSe3Vus8eZjSX/cT8reYCQRo0RJjiNFLxrb+rDB1rNMYwNvy8fZ+zliglTZ4
-         hLSKIehdlYtvErw+ptM8Ez0/lPH0fO/HRN3LZMNjQszXoFQxa+ojkmUo9jDrN6X2LO5F
-         Nv3MYLtarojOHV/azRbQ9zeT17MbDX+kO0dftzjmRSgRxDZPPf1WvXpAE71d7KENeQH2
-         M1vg==
-X-Forwarded-Encrypted: i=1; AKwUvBxj4HeSDZURxPA9mF5xBxfQ1dIK3RgXaHWIIweWHmp+ogU/ega+FHVZWX+uicEERTXqI9ApTw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8wUO30Sd1hK/tKtvIZZxCOOjmpjVeQ7q1Ffd4Z6pvgdsjq1Jar
-	iy6SVQTNIyaRWqtj7FjR1axcgRFer2yvDQUr0vXeKwOmOwe2BqB1QQQHKH+N3ZtPoNoncoUlZrv
-	huFLow9Va5/XHX2Q7517CbXFmYaWaXRA=
-X-Gm-Gg: AYBFou3HRuKh2+gur0dNKnnj8xAQ1ZwNnWq/ZBL33dCVHsmgabmFyUYOFkiv9XSjk5d
-	o/1yX12lcHWL48kOGjA195uZPCAvVTT0RDrG/9HPwmNFq/fNTOrtXUXvlJOtfxfKWSsrYPvOR85
-	hTJn6tGMpOJuRLj0fdRwneaDLABiCQ/eBqfevxtoh2MSfcro7rzhV3myB2rHpU9rNU9qOLzTmLl
-	hEgRRA4F38jwEVY2ktN2CAEVbhn7rmHs+hG88bPHdHooroSnfObCYNreBR0lmY71Tza76zVbZvY
-	LCZc0dChS/KIahVr4Wc7vQ2Spzt7NQ7G7rbAmOSnsrRdasX3IQ3pe10x66GYiWs5O3wTbAwZEDK
-	bSYdfevN9sl1EZtQAl8tNFG8NDMgjQu7LHKRx
-X-Received: by 2002:a05:651c:1466:b0:3aa:fd7d:6164 with SMTP id
- 38308e7fff4ca-3acf3d327c7mr2354821fa.25.1793939438713; Thu, 05 Nov 2026
- 20:30:38 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C8F606A32D
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 05:42:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E1C8F606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nirvanahyj.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nirvanahyj.com
+Received: from hi-smtp-node2 (unknown [172.18.0.2])
+	by smtp3.hiworks.co.kr (Postfix) with ESMTPS id 4jLSjw6vBgzYmkDs
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 14:42:12 +0900 (KST)
+Received: from hi-smtp-node2 (unknown [192.168.71.87])
+	by hi-smtp-node2 (Postfix) with ESMTP id 4jLSjw6TtbzQLN79
+	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 14:42:12 +0900 (KST)
+Received: from hi-total-node5 (amphora-3294b420-308a-4b9e-8a1d-bf25580dae1f.openstack.gabia.io)
+ 	by hi-smtp-node2 with ESMTP id 7wrhactg2ztea5vp;
+ 	Fri, 06 Nov 2026 14:42:12 +0900 (KST)
+X-Authinfo: HIWORKS SMTP authenticated <nirvanah@nirvanahyj.com|114.203.237.180|nirvanah@nirvanahyj.com|261106144212_6581351674>
+X-Hiworks-Remote-IP: 114.203.237.180
+X-Hiworks-User: (SASL_USER) nirvanah@nirvanahyj.com
+X-MailFrom-INFO: <country_code:KR|rbl_level:0>
+Received: from localhost.localdomain (unknown [114.203.237.180])
+	(Authenticated sender: nirvanah@nirvanahyj.com)
+	by hi-total-node5 (Postfix) with ESMTPSA id 4jLSjt5KQTzSqYc4;
+	Fri,  6 Nov 2026 14:42:10 +0900 (KST)
+From: Young-Jun Hong <nirvanah@nirvanahyj.com>
+To: 
+Cc: =?UTF-8?q?Adri=C3=A1n=20Larumbe?= <adrian.larumbe@collabora.com>,
+	Alexey Sheplyakov <asheplyakov@basealt.ru>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Boris Brezillon <boris.brezillon@collabora.com>,
+	Brian Masney <bmasney+clk@redhat.com>,
+	Chanwoo Choi <cw00.choi@samsung.com>,
+	David Airlie <airlied@gmail.com>,
+	dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev,
+	Jerome Brunet <jbrunet+clk@baylibre.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-clk@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-samsung-soc@vger.kernel.org,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Peter Griffin <peter.griffin@linaro.org>,
+	Rob Herring <robh@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Sylwester Nawrocki <s.nawrocki@samsung.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	"Vadim V. Vlasov" <vadim.vlasov@elpitech.ru>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH 0/4] Exynos 5422: Mali-T628 GPU compute fixes
+Date: Fri,  6 Nov 2026 14:41:47 +0900
+Message-ID: <20261106054210.2893230-1-nirvanah@nirvanahyj.com>
+X-Mailer: git-send-email 2.47.3
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,52 +91,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261105192738.70664-2-oss.patchbox@gmail.com> <20261105141427.00005946@linux.microsoft.com>
-In-Reply-To: <20261105141427.00005946@linux.microsoft.com>
-From: Yuho Choi <oss.patchbox@gmail.com>
-Date: Thu, 5 Nov 2026 23:30:27 -0500
-X-Gm-Features: AclHuK_mkkVdBlDxyx_u6RLLv2wIIoQ5_PS9z8DWzBm3NCMPC1YbiMhFv5f354E
-Message-ID: <CAGG=RgBRojswF0P_YNFaZET7b8W0MnDAEN=cH9J4xLn0vUkxzQ@mail.gmail.com>
-Subject: Re: [PATCH v1] iommu/hyperv: Don't free a paging domain the
- hypervisor did not delete
-To: Jacob Pan <jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Wei Liu <wei.liu@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
-	Dexuan Cui <decui@microsoft.com>, Yu Zhang <zhangyu1@linux.microsoft.com>, 
-	Michael Kelley <mhklinux@outlook.com>, iommu@lists.linux.dev, linux-hyperv@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 05, 2026 at 02:27:08PM -0500, Yuho Choi wrote:
-> > hv_iommu_paging_domain_free() frees all page-table pages with
-> > pt_iommu_deinit() and only then asks the hypervisor to delete the
-> > device domain that points at them. If HVCALL_DELETE_DEVICE_DOMAIN
-> > fails, hv_delete_device_domain() only logs the error, returns the
-> > domain ID to the IDA, and the domain is freed anyway.
->
-> Isn't there a WARN_ON on this path? I recall asking for one ..
+These patches make the Mali-T628 MP6 GPU of the Exynos 5422 (Samsung
+ARTIK 10, also Odroid-XU3/XU4) usable for OpenCL compute with panfrost
+and Mesa Rusticl. They touch three subsystems and can be taken
+independently:
 
-There isn't one yet. hv_delete_device_domain() only prints the error
-with hv_status_err(). The driver does WARN when a flush fails or when
-attaching to the blocking domain fails, but not when a delete fails.
+  1/4 iommu: the GPU is not cache coherent on this SoC; its LPAE page
+      tables must use inner shareable, or the first large GPU buffer
+      after boot hangs the SoC.
+  2/4 clk: VPLL rates for GPU operating points above 600 MHz. The
+      ARTIK 10 device tree is not in mainline, and the mainline 5422
+      boards stop at 600 MHz; they can use these rates once higher
+      OPPs are added.
+  3/4 drm/panfrost: the job affinity names only the shader cores that
+      are powered.
+  4/4 drm/panfrost (RFC): power both core groups and let a job opt in
+      to all of them; the L2 caches of the two groups are not coherent,
+      so the default stays on the first group.
 
-I'll add a WARN for the delete failure in v2.
+1-3 were tested on the board (Linux 6.12.55 based) and cross-compiled
+on 7.4-rc1. 4 is compile-tested on 7.4-rc1; the same logic, ported to the
+board's 6.12-based panfrost module, was tested with the matching Mesa
+change: jobs without the flag stay on the first group, jobs that opt in
+use all six cores, and global atomics stay correct.
+Background, test programs and results:
+https://github.com/nirvanahyj-com/mali-t628-opencl/tree/v1
 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+The analysis, the code and the changelogs were produced with Claude Code
+(Anthropic), a coding assistant.
 
-Thanks for the review!
+Young-Jun Hong (4):
+  iommu/io-pgtable-arm: use inner shareable for Mali LPAE on a
+    non-coherent GPU
+  clk: samsung: exynos5420: add VPLL rates for 650, 700 and 750 MHz
+  drm/panfrost: only put powered shader cores in the job affinity
+  drm/panfrost: let jobs opt in to all core groups
 
-> Looks good but I think it is incomplete.
->
-> if both hv_configure_device_domain and hv_delete_device_domain both
-> fails in hv_create_configure_device_domain, then unwind code will do
-> pt_iommu_deinit thus have the same UAF problem.
+ drivers/clk/samsung/clk-exynos5420.c    |  3 +++
+ drivers/gpu/drm/panfrost/panfrost_drv.c |  7 ++++++-
+ drivers/gpu/drm/panfrost/panfrost_gpu.c | 25 +++++++++++++++----------
+ drivers/gpu/drm/panfrost/panfrost_gpu.h |  2 ++
+ drivers/gpu/drm/panfrost/panfrost_job.c | 10 ++++++----
+ drivers/iommu/io-pgtable-arm.c          |  7 +++++++
+ include/uapi/drm/panfrost_drm.h         | 10 ++++++++++
+ 7 files changed, 49 insertions(+), 15 deletions(-)
 
-You're right, thanks for catching this. If the delete also fails
-there, hv_iommu_domain_alloc_paging() still frees the page tables.
+-- 
+2.47.3
 
-In v2, I'll make hv_iommu_domain_alloc_paging() call
-hv_create_device_domain() and hv_configure_device_domain() itself, so
-it can leak the page tables and the domain when the delete fails, the
-same way hv_iommu_paging_domain_free() does.
