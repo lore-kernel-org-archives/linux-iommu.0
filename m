@@ -1,64 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793999747;
-	b=jx+wqmWwXljQSH88lWuTqshkmJUV8GJBmQa044meIGaruHTszNvLPWGOX/+BNP83QIwK
-	 bZ4i/R8Udm2JPDOzv9lWOLN6356pVn6B+ziMw0rZkD0dbZfeEV+ALuOMVadMNAahTP6gH
-	 ByydBOI4T0ihvNgwqrmnzaxKFj8HOOiM+hqAPr/hbIlruivV27cyvKmUpdmJBpSgax+Cy
-	 EhYqd5MzmRjbH825CauLRSG3gHCAN4BMxAAFMEpCPYLlH7eTy33q8aTRoHw/ASJrcZOzZ
-	 /0NKVjCCmAjk8SE59og2k5llGMWrdIQ4Ls8C5h5IWNoq69ukOgaM/TPuntLAMCAixFw==
+	t=1793999901;
+	b=1ZoTV+4w2yTLdU1NFVEWdnSKlE8AysflBN+iRT4HqB949f+UebqrdyTtE1/abHNaenN9
+	 pzx0wNMSin6N3mrYoL0IrDcJDbWTa/aHxcFj7r5VVSBNxFt0k4fay3Zdw+rNIg3FaKsEH
+	 vkUFH6wV9Z9ZGs1O7ijltiIqHk3rgDdKrpRGALNU6Y6aonY2AvbK2T/9C9wy9ByumaJ6O
+	 f8KHZ60jeHD0cJC/d76hXDqLzod3K/gZGWmHgrxIk0CHz8dTilrxYhpxJXczO7NzpMYfz
+	 9w623dpv+ZrjM3TaalLQJPIShKiFIs6+eosikAuL6MaXliCTYmWcrtzk4ffcOjr3ElA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793999747;
-	h=Received:DKIM-Signature:Received:Subject:From:In-Reply-To:References:
-	 X-PR-Tracked-List-Id:X-PR-Tracked-Message-Id:X-PR-Tracked-Remote:
-	 X-PR-Tracked-Commit-Id:X-PR-Merge-Tree:X-PR-Merge-Refname:
-	 X-PR-Merge-Commit-Id:Message-Id:Date:To:Cc;
-	bh=nWT6ZUO9wUtfHcoWhUDO6qGQis13sphlLAQpDV25df8=;
-	b=QFxvy0S5w87jFGFYf4Jpw5uMUBWNe+m6iWyVwxlWyBif98csYlYvgfdMR8L9nlFgyUK9
-	 r5Cnfs2QnekV9fJn5eKgwiHTEI5BpbrngBaUtK639CwWUP1iW12LBkULSHobgb6mBI5XF
-	 2YxYLQwZKSGWPR4V0TDbtsvrDZI15mq1spVzXQKfob0s4biZuihUpS7Nxa4nvZ6+ekDUo
-	 0qKvTFGwLKTi9Jdm+6F4O9rCBZ8IIakBZHgAkbAjQMceFV/72AAcJQ0GwvJMHPsIAGTu8
-	 B3B4el46XDxMA1vfg/YOoAIeXoknnAWuC79fq0wjJ+qJXBj96fX3MCv5jnbOS1RF7Ag==
+	a=rsa-sha256; c=relaxed/relaxed; t=1793999901;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=toc3VIJtaDo7Q+DZvm/d/cwob9aXNkkAYYokvXPgfuM=;
+	b=IuGkfq5hsc8lQ3wvY4stcVZ2HvV9rkzgWcgsyhVfq45LH1VXcPD/CR4s26ZA59QXdkAm
+	 hE7mXm7Zm06QKpkxEfapIHXd6NpAA6Hib60AJ5+/xd+zzi1prjesRZU664hHjLFg3CjPg
+	 0gfbeFDL8OXlEOWqQ7AC6s2jpzrVnDd/aemSI/BizylsRN8685wICr4n63P5JpBmkIxge
+	 T2eWV4TnNITSIRVUZbR0BodoGl+FYrrow5qcnalAqmrKnnIkmrSVSawLZXX3tjNzPuqxN
+	 zXEOFp0MBi+q4kHPo9Xk1d3Fbga8e67x0po0Myx/XXFoqjl/gMNhl+zZ4aeWuWUzh/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Lu0gEKg4;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fqf27qKh;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C831A606A326;
-	Fri,  6 Nov 2026 21:15:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2BCC606A326;
+	Fri,  6 Nov 2026 21:18:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Lu0gEKg4
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3EB31F008A2;
-	Fri,  6 Nov 2026 21:15:46 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=fqf27qKh
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C7A1F008A1;
+	Fri,  6 Nov 2026 21:18:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1793999746;
-	bh=nWT6ZUO9wUtfHcoWhUDO6qGQis13sphlLAQpDV25df8=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc;
-	b=Lu0gEKg4aoN+Nn0zAZ46bgAUyqpA88NBTQyUIXlAyGtCgnoxLSbN5KoW99keq8ILe
-	 e+hBb3O61nKMjhk2jblMxhNZr+TB2bAVd3ypO2LRkPrDmMtV8Og/mDvsJdZQQ4jYeM
-	 leDuszaMlHNT3Irb2SLl3x3gPtZ+J72Xw46B0qMJRXp8tgPNU/GVTZiuTWHFBbWffP
-	 skiFmcCqyT5tO1zbph7iDC9P6cYsZBT0EySor33mQhXQttIu9p0YWsEGrWA+EtRFyw
-	 i1AhFSYnzR6feK+GrduDCxqRbsZYUBXpwFKf68Hh6WQEcNwrIKK4nNrbsNlsGG0YjN
-	 qFttjyCeiQ+pQ==
-Received: from [10.30.226.235] (localhost [IPv6:::1])
-	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 9B2693A549A9;
-	Fri,  6 Nov 2026 21:15:46 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v7.4-rc1
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <au32DJVMbP6j5_gq@8bytes.org>
-References: <au32DJVMbP6j5_gq@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <au32DJVMbP6j5_gq@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.4-rc1
-X-PR-Tracked-Commit-Id: 2cf4be57b301ed2d7af82e70cff5dfd96894d8de
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a7963b12ca3e764e6ad3b15d1373430eb02492ee
-Message-Id: <179399974515.876369.111564075775474678.pr-tracker-bot@kernel.org>
-Date: Fri, 06 Nov 2026 21:15:45 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	s=k20260515; t=1793999900;
+	bh=toc3VIJtaDo7Q+DZvm/d/cwob9aXNkkAYYokvXPgfuM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=fqf27qKh9kuiS1bdOgj+2GkXkpPZ3SdkT/+wvuXoy0ekj3K2nuRQNKTnq3cHKMnDW
+	 PFUebkFSpuv7V6Avcgv+EkFyYWy6BC6NhI0B0WY0zUul+y3RMJTws+UYWImFqY2kc/
+	 Dn6d3zXbpQVYhqOFyQfTntRPMuKHK4/GCUzaRC0sBYBTeR0MGGWt5NWT+eEFF0/r6f
+	 ledAefKk6vaLSKFLAn49wGOassovjoDJJkeipIV9ZQdyXqUNjFuDy5zIghWhDOvO+D
+	 ehF4UFWwC0JH/oNahgy/mfZDION/xUKWTw8xCLoVCHgClbY8/rlvo0CpFKuXNvHKVn
+	 TBbGjGrAQirjw==
+Date: Fri, 6 Nov 2026 15:18:15 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, Saravana Kannan <saravanak@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] of: reserved_mem: Drop node_fixup, CMA can handle it
+ internally again
+Message-ID: <179399989427.1724666.16449745308990999422.robh@kernel.org>
+References: <CGME20261105215426eucas1p1fb2de3113bd185a84e1d0925e14fc4fc@eucas1p1.samsung.com>
+ <20261105215413.1439745-1-m.szyprowski@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -67,16 +58,32 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261105215413.1439745-1-m.szyprowski@samsung.com>
 
-The pull request you sent on Fri, 6 Nov 2026 16:45:33 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v7.4-rc1
+On Thu, 05 Nov 2026 22:54:11 +0100, Marek Szyprowski wrote:
+> The separate fixup step was needed because node initialization used to
+> run too late, after paging_init(). Since commit aa05faf81583 ("of:
+> reserved_mem: allocate and map the reserved_mem array early") node_init
+> runs early enough again, so dma_contiguous_early_fixup() can be called
+> directly from rmem_cma_setup() once the CMA region has been successfully
+> initialized, as it was before commit 2c223f7239f37 ("of: reserved_mem:
+> Restructure call site for dma_contiguous_early_fixup()").
+> 
+> Drop the now unused node_fixup callback and its helper. This also fixes
+> the premature call to fixup when region fails to initialize.
+> 
+> Closes: https://sashiko.dev/#/bug/linux-61818eaa-5dc1-4457-bd21-3a9be2ed4d6d
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> ---
+>  drivers/of/of_reserved_mem.c    | 34 ---------------------------------
+>  include/linux/of_reserved_mem.h |  2 --
+>  kernel/dma/contiguous.c         | 17 +++--------------
+>  3 files changed, 3 insertions(+), 50 deletions(-)
+> 
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a7963b12ca3e764e6ad3b15d1373430eb02492ee
+Applied, thanks!
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
