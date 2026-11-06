@@ -1,68 +1,192 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=139.150.92.27
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1793943745;
-	b=hxoENgPw8aipGUGLWvLqSl2sN+meve3MWWKRXGAOQ189XBB18fsCVjivKCa1TeQxasZj
-	 UAgs0066hbmREiqRVy/S/0Ls7OMxhXu6tR7FHv6HjP6iYC9X25sVkJfVjZxXICInBwQia
-	 G1ullVNuHUNnpkHi9ueq7wduSdQ6Q380IjWp1nk0WudGTvPJ5GnGPolhheaY6pOKF4xgy
-	 3VBQUKxIhYR9nzyMLi3nm4zMSTmJ5IFoqM9TbX2JprKyNz/b1QuQf/zR75e5IYpXckmiG
-	 BVwA8TvUKqnoOafn385P9pU1bN8lkyYdLIQQKz7reLfcqw6PQVkYAXtucPOm4r7MBCQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793943745;
-	h=DMARC-Filter:Received:Received:Received:X-Authinfo:
-	 X-Hiworks-Remote-IP:X-Hiworks-User:X-MailFrom-INFO:Received:From:To:
-	 Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=sCjK+eSjFwVT1Le/uIyIA/BxA96L8az923s+JnTYtYk=;
-	b=1pCB7+8CJ+FkRYIVu2KyOB9xwXmbVVI4LdmuU73b5XU4dR8dewfj+oa2ZU/8VXJdjkFf
-	 8Uy9nRqHUfsliXM9SiPsz1OhFB/0l7gqC9zCmN7bzth2kIncKxvwiK2xdSFJC9ZJZIV0u
-	 JHU4xpNcoFvNfpM6Ev4826tHLDGmOTmFFigTHZN6gaXAAGPrgcdqhJ8/1yCaz/mkDTY2D
-	 Hj41MciHMFz488beB41GJAWb79WLzTcNWOL/FoEoFSN/SodS3t6roYSWfqXcyhzAKzjf3
-	 VFsD6z5ceLJajXrBx9E+8vHkLXy0RPLZzkcrJDI1SRYVVPa85psFwcH3KKxv2kBizpQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=nirvanahyj.com;
-	spf=pass smtp.mailfrom=nirvanahyj.com;
-	arc=none smtp.remote-ip=139.150.92.27
-Received: from smtp92-27.hiworks.co.kr (smtp92-27.hiworks.co.kr [139.150.92.27])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=192.198.163.16
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1793948710;
+	b=wEByoizBBZUfa1Rd5MkI39bTxRCODd8cVQ3wzcpYo1d5KJoq8w18ADEUd4vNMQHZZsMN
+	 HgmYvDWaLMdJi63BT3vCDVP1bo0pn7owicrT3ALQJ2Ln5hhxBFsnwiJIaq6qpq2j/eg/I
+	 AtR59vGDctzy6e7cJWfJfRCS6ndB57wO6vVNhqP2CbAxlITghAnpqTYLZlMVw28UDFu+h
+	 LZ8H5KUFGS1bQs/IRgBG7Bve9jwxt7OURPEPJeot8lrCRVp62XAD7xWQJrqa4/cIuuqe6
+	 r6jWbXpkdlrLoO6A/fxR63iuYpg5SX8xsgj+ok1TPoCto8iam3aWxr3nzlHJTEqOXOA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793948710;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Received:
+	 Received:Received:Received:From:To:CC:Subject:Thread-Topic:
+	 Thread-Index:Date:Message-ID:References:In-Reply-To:Accept-Language:
+	 Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
+	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:
+	 X-Exchange-RoutingPolicyChecked:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+	bh=9LB1IZDbqOR8K+DtX2GZ5X4sg/qJ7NHiqj/TxK2kaiY=;
+	b=BRal0sUqAu9SOdyXnwnTglhhcFlKX+8KI8IR5PfkQ4MH2g16J7B8Kf/Whq4U+Im4AINI
+	 rwfHC1TV1lR9qcO1FrF5BXGt9YkwTVsmQ3VZn+oyAsMzLbMfg3CsYcKmN/cyocdBYhvV1
+	 UgzsFjH+t4CSaFMgnB3sprHZsGx3wC6OknSYA3XmgvGaOhS6UMTZIFvftvdwJQLwrtOLO
+	 d4lvEViKkOoDWSDE5kyKGZgwNZv+Ddx+LQ+jcgtFv7vDAd/8TehCJoE2KFQNoz+0vIy9l
+	 6E1OcCw+HYnurW9v85vKT/BSeRx3vxRzS+m52fvdaoTYaPfveWg3b23Jn/8QCQyfa/g==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FF+iuXNp;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=192.198.163.16
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C016D606D807
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 05:42:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C016D606D807
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nirvanahyj.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nirvanahyj.com
-Received: from hi-smtp-node1 (unknown [172.19.0.2])
-	by smtp92-27.hiworks.co.kr (Postfix) with ESMTPS id 4jLSjz2p4bzkX4tw
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 14:42:15 +0900 (KST)
-Received: from hi-smtp-node1 (unknown [192.168.71.54])
-	by hi-smtp-node1 (Postfix) with ESMTP id 4jLSjz0CDxzQLZQT
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 14:42:15 +0900 (KST)
-Received: from hi-total-node5 (amphora-3294b420-308a-4b9e-8a1d-bf25580dae1f.openstack.gabia.io)
- 	by hi-smtp-node1 with ESMTP id ozztoffo3bw3i2wb;
- 	Fri, 06 Nov 2026 14:42:15 +0900 (KST)
-X-Authinfo: HIWORKS SMTP authenticated <nirvanah@nirvanahyj.com|114.203.237.180|nirvanah@nirvanahyj.com|261106144214_8061351674>
-X-Hiworks-Remote-IP: 114.203.237.180
-X-Hiworks-User: (SASL_USER) nirvanah@nirvanahyj.com
-X-MailFrom-INFO: <country_code:KR|rbl_level:0>
-Received: from localhost.localdomain (unknown [114.203.237.180])
-	(Authenticated sender: nirvanah@nirvanahyj.com)
-	by hi-total-node5 (Postfix) with ESMTPSA id 4jLSjx6ghZzSqYcR;
-	Fri,  6 Nov 2026 14:42:13 +0900 (KST)
-From: Young-Jun Hong <nirvanah@nirvanahyj.com>
-To: 
-Cc: stable@vger.kernel.org,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] iommu/io-pgtable-arm: use inner shareable for Mali LPAE on a non-coherent GPU
-Date: Fri,  6 Nov 2026 14:41:48 +0900
-Message-ID: <20261106054210.2893230-2-nirvanah@nirvanahyj.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20261106054210.2893230-1-nirvanah@nirvanahyj.com>
-References: <20261106054210.2893230-1-nirvanah@nirvanahyj.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39332606A328;
+	Fri,  6 Nov 2026 07:05:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 39332606A328
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FF+iuXNp
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1793948709; x=1825484709;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=9LB1IZDbqOR8K+DtX2GZ5X4sg/qJ7NHiqj/TxK2kaiY=;
+  b=FF+iuXNpXJQa7jZDheR/DoTD6zGWnE540q049vSjUbVCB0v4E/ie+W3F
+   pXi9gUjQOFONk0DcNb4U/nfxY6JFN9Wqisz41FjB8XikWu9D1RYEjvPf9
+   hyno7x9OMduYdschBYR4LqFqeO3LoNYVooUm226wSy7HRWCWRgtM+Q8KF
+   +0KBaBv0nCCfLGLpwSEeWE5dD8MpOZtvG1njQHu1iX/h5eQflVDJicgmy
+   crFuAZCjYEa33RsWlCwtgJRVGtDwKvM26nsL5m+hmvFcOvnK0mdtdGn3A
+   S8lvXJpicatVDStXJjDCjY4isKZ0UI9a7UxdukpZD9AcDICRJmzSgBDh9
+   Q==;
+X-CSE-ConnectionGUID: zyPGhVhBRRG70ubiJF4fJA==
+X-CSE-MsgGUID: NVrNk45eSkSFM//tXThmeQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11957"; a="2780162"
+X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
+   d="scan'208";a="2780162"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 23:04:29 -0800
+X-CSE-ConnectionGUID: L++C+rslQ/WQFxYI6Rp8IQ==
+X-CSE-MsgGUID: 22/lGefCQC6VOxL7KyJFTw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,197,1787036400"; 
+   d="scan'208";a="7551352"
+Received: from fmsmsx903.amr.corp.intel.com ([10.18.126.92])
+  by fmviesa006.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Nov 2026 23:04:29 -0800
+Received: from FMSMSX902.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Thu, 5 Nov 2026 23:04:29 -0800
+Received: from fmsedg901.ED.cps.intel.com (10.1.192.143) by
+ FMSMSX902.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56 via Frontend Transport; Thu, 5 Nov 2026 23:04:29 -0800
+Received: from MW6PR02CU001.outbound.protection.outlook.com (52.101.48.69) by
+ edgegateway.intel.com (192.55.55.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Thu, 5 Nov 2026 23:04:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=zTaImur7op15LkgycOYkswBiWRqY1Fv68f85I2UV7QuHcE2ritvICecVqj/q15WZG94qT4g4SzozFQQsFdJqzvlaADvVqi36TkI7bVeIbbL21rI39I3+1kogpIUaDMp9U4XiIzvLb7tUNykyyGQip7ekofY6Gy5VB4cw/gwJUuZfXIPAmvqx4IdeIAzdRU6BnCtcXKmXX0tfBTSri/diIOGNEAWGEK85LpIPxHJo1MRB9rCumWSZOeRB5uUlQBM1IShC0yDrg+VnnilOFWLemVf+2uIbirU2QYaymyOKhthdPKvCzLy0yqA7V6E8YG30rv2gceMrpNP0E7ctQOe/Fg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9LB1IZDbqOR8K+DtX2GZ5X4sg/qJ7NHiqj/TxK2kaiY=;
+ b=WeQadPrimVJBPSINOfoodX6iEDQnVMlwDzHBhX3KfwngLPsUWa4E/pNrigKhwEjEsbemuRhp0wEflUEBq/PWMlqEgTqfO0RlGWCpDPIhp5DgnbEcRIIu+7WTBHY5jAw1awFX/TiFrXlY17ZtmJp9tNW7cUwbvzq7Fyq3M1P0Nqz0qRnbNzCgAOrfTDnNFSXaIzHPdtpZ+gM9Rf/QPBA6bEZx3NBRBAgO9qsvfM5bORfDOnIV7+vv9FXWkyxPSxKSgo1i4XHl+hS8YSqO0cAtRQfc1Blkw1hKh4g08Qh8cz+e88/BMGHktL3Dx6fmgCRToUQuUleaXQ+rx/Tmt3Hbrg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com (2603:10b6:303:9e::22)
+ by DS0PR11MB7334.namprd11.prod.outlook.com (2603:10b6:8:11d::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.569.12; Fri, 6 Nov
+ 2026 07:04:26 +0000
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225]) by CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225%6]) with mapi id 15.21.0592.009; Fri, 6 Nov 2026
+ 07:04:25 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+CC: Alex Williamson <alex@shazbot.org>, Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, Catalin Marinas
+	<catalin.marinas@arm.com>, Jacob Pan <jacob.pan@linux.microsoft.com>, "Jason
+ Gunthorpe" <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, Jonathan Cameron
+	<jic23@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>, Krishna Reddy
+	<vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>, Nicolin Chen
+	<nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>, Samuel Ortiz
+	<sameo@rivosinc.com>, Shameer Kolothum
+	<shameerali.kolothum.thodi@huawei.com>, Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Suzuki K Poulose
+	<suzuki.poulose@arm.com>, Thierry Reding <thierry.reding@kernel.org>, "Vasant
+ Hegde" <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>, Xu Yilun
+	<yilun.xu@linux.intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-coco@lists.linux.dev"
+	<linux-coco@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-pci@vger.kernel.org"
+	<linux-pci@vger.kernel.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH v8 02/15] virt: coco: tsm: Remove the device from lookup
+ before PCI teardown
+Thread-Topic: [PATCH v8 02/15] virt: coco: tsm: Remove the device from lookup
+ before PCI teardown
+Thread-Index: AQHdbHf99QBixGxn/kqVKnemFrPHc7cgoQSg
+Date: Fri, 6 Nov 2026 07:04:25 +0000
+Message-ID: <CO1PR11MB48355969750E4D2995609A588C762@CO1PR11MB4835.namprd11.prod.outlook.com>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-3-aneesh.kumar@kernel.org>
+In-Reply-To: <20261104161632.3547423-3-aneesh.kumar@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB4835:EE_|DS0PR11MB7334:EE_
+x-ms-office365-filtering-correlation-id: 19d3fda9-4912-4b4e-47eb-08df3bd4312c
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|23010399003|7416014|366016|1800799024|38070700021|261026140227099003|261026121527099003|56012099006|261021121427099003|11063799006|4143699003|261028144727099003|261022105027099003|10067099003|22082099003|261102123227099003|18002099003;
+x-microsoft-antispam-message-info: 56A9bXxpKqvA7ZbnkA4hrUST5RP4ap5seQkRIo1knvoja9KIcLOLcXIxo1opIjJhjUzU1qQwVi/eG2hoWa731gF/z2viSs6fX0ONBxXgSNcJOGj0cTyna9l9l4tEuTj+6DBaH4r0Kyczb0qcZ8xRx3/wRTKf09qdsBHmgUG7pZkTV0JAVC6n0f5BLoZ94408v23AuOD9B6cZusL2Fvw3b/RFDH7lIEbQJar4xkwvoSKsJde4hzlYsQefbT+RI/e9EgeuK+aDKAK24HZ/8j3G119gRQlQvIEW5VS0gIXgPP6whxBvX5T16l/j0G9JA/AiZFyDGCDGebq3gY/TlWCQ9V4fwVPsDlthAV5OsJAQKgWox1P1vqgz/aFkAZZBn4PXRDkdG2Wjf0PaAx9q77ykZV1BIfR8MnRZPr7/ULh9DuFhW82dRSTuvmsAApEYhPp7rRZ3txwxPZta7YHuSdCKQAs+Mv+xFV9g+/rluREPr0sHcMhfCfnUNgLKezj8INGu9joJqabK3gknhXZGGNODzQLCmIWbZ6SxdBgtQs/EOPPgQq9jmwO5taGZkzmhCEu9NBZHKBj+o4Hh0dN8aiBHTnjoJWEZKFOZfRD8fzg/I8ngnwY0UPYHwUetomQA0P+pMjPBCPr/NYncloLFqAa0/gjhZyY1XpM48FrNjjsYb8EY2u4EJktZ5T0gSFKDCOOX+gJibbshfkNKuEe/SINj1389z+HWtYuDgSwbEEPGf9E=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4835.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(7416014)(366016)(1800799024)(38070700021)(261026140227099003)(261026121527099003)(56012099006)(261021121427099003)(11063799006)(4143699003)(261028144727099003)(261022105027099003)(10067099003)(22082099003)(261102123227099003)(18002099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Zrq9ciMBZMEtM0XlMuyvjuK8mQAl5z9WfzOEo+M4rg/YhEFTFvd9GFfIj8YF?=
+ =?us-ascii?Q?2c/l+6MxSQ7avJPyuxpvg2xIYd1kpIlOKutRlSaZM/2T52yqBxLMGVEdSjob?=
+ =?us-ascii?Q?fTLizLuIM15O0tx16jCEU4h4B8eG+ZH+VQ8NIGqnJZZrtAjWbQvAH3UlSRK6?=
+ =?us-ascii?Q?5TjOvs1bO1zW/FoO2HtGlcLGVT6UML5PyLu8wci9PFGsUCCDaID7GKtAD34w?=
+ =?us-ascii?Q?oTN8qdPn61HuOZv3xXpYbiVIhZbYJcVGHd1I+3RJ7A7Wn71HHC+erDQVAbuA?=
+ =?us-ascii?Q?tIjWzS5t5M81AsET+xPQqmokERy+mTVZrXNfKrojYy+kPurOFLFz/uWgaSLT?=
+ =?us-ascii?Q?Wn521taLzSALxuECwJFq+zRKL5V01ehz35frg9IVO4goyCgyRpZw96IHVVT0?=
+ =?us-ascii?Q?O8InxqxMgeofa8fxVpYH/fhhiDA6jGOa9pLYInn5qygdTdV/aVfzCAwyxMQm?=
+ =?us-ascii?Q?3vPRRoZ/2OnNY0wzS8abrZMcpWN0kyymWdO9MtliKXHcylNI0fKLEBvcZqpf?=
+ =?us-ascii?Q?KEzY0TAC+IjJEt6naiplyCpqeijGAHgCpvm8VfZkOZE2QfCtDm4QYwLG1COH?=
+ =?us-ascii?Q?ST1sDbgyfzE9XkGrBvZZEfJYDwUMS55Qiz5K64R1tT6x47N/kxhUwncf/9os?=
+ =?us-ascii?Q?kagOT91dyK9W9+BNnadEUzmOdSKbSCZcgviJQLd1B2un2q5botRRYyIADjHD?=
+ =?us-ascii?Q?Ty6ebaKUEjh+EXgu1upgXmiFPu2c4gzABzA1hmp80K19olh8Lh6PO4MZe9MF?=
+ =?us-ascii?Q?k2vNIm0g9lrIfHVIYpcJS+3xS0JFS0JujnVWCZXaAVCIrgDuJY/pX4nyo8Vf?=
+ =?us-ascii?Q?t/nCTDcOhfLlq1sx95UxmS8NiunRreRDQ1ALxA0Cur3B9+qj1M3OHzNh+mK6?=
+ =?us-ascii?Q?5BcWO1ShfX09j/nbIFrJivaBjlXA29u/J38nDXgPoEoIQ+IqFYhAp/1eDYEu?=
+ =?us-ascii?Q?2J68owHgOllgZNXYsfXl6W6hd0pUorRdBO8XUqojuxKg7xezvPH5UTTjlSpx?=
+ =?us-ascii?Q?hr3U6OsbPLSTM7e6WimyLMBMf2T2QpkIB6C0XpAIVTewctLPLaAGlZ/FCw3b?=
+ =?us-ascii?Q?20OFZSKfF4vefbTkdC2pxg8qKV0d2YhS7qK0tsoeykcUHcwskE9sCV4gXEbX?=
+ =?us-ascii?Q?H5TUrQGJiLjxj0WZ5IkImnfdEdWUBErnBk5ucbZIEzaR9Tc0NAE7LDz6TCHH?=
+ =?us-ascii?Q?/BCr13NqzJ0eWwbGL+Rj1XvEx/UnI9V34uOllc7yLLVJGDlocMIfRyKwbQUu?=
+ =?us-ascii?Q?5Y2KXSXRV024zgSh4kDhX3LX44R/0CM+wsMxNrJBZujSJhEPd8MfzwXTwCZW?=
+ =?us-ascii?Q?hGcbVWlUeRwmdsB6+2qSlzl9F1kHeQFkOGK1jTFRmysfcyaBFqWn700a4Z5u?=
+ =?us-ascii?Q?ppKWmtftx1mtrf8hO3wph1jLhxQz3gQmb5ryWhYUp98/jMhLFMiv2b5QcilT?=
+ =?us-ascii?Q?O1gbpZfUIavIhSUaF2vLSRpslBh2CS7Wos1j86kKWUSA1Vv8WQeiQICEbb/1?=
+ =?us-ascii?Q?JvZDYvRxSrz11hevVD8SSMoWxyPfHI8MqmdE3VYUWufvze+cP91XmiPUy/+h?=
+ =?us-ascii?Q?lX/Rf8s/XSuElNiz5qx5+HLlet104D5mqHaFHv06hJ4BKxMZduBQe+zQnte4?=
+ =?us-ascii?Q?thtAOd4VIrkN5nrwE1k/S9RM/VCWlXDAqU7UejH8hUhAXu4Qumr5lgYpan20?=
+ =?us-ascii?Q?4hs9ldMIVHPcsLTCoroJGkrE4g2iwoUhhDJXL6z/4jJWpNp8Rsxbn4o+/QZk?=
+ =?us-ascii?Q?kh7Jmtp5hA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,55 +196,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Exchange-RoutingPolicyChecked: iv7vrocInDMqb3AR6VN6A9sj0mQJyXyCOITCCmyyy4njvpCfJzIEK03AKIzsGumn9sdkI+WXw03PeU/5eCJak++i7m2yFHJTUAfR5y21ygbXTVMT1NYaJMhmouBTuzkFhNNIo9rorN83fplTp/nhhM9TnIzxas1IKmjYaX2I3G+ninTn2PnPAePUmDqSdXSWgLiqzprSvbjYAb+LGVy3IdbpN+oiH4EOc2I8Ttx0R14RwE6Rt0XjPUlhaSmyxP1Qi0pC+11O9WXga/Url4w+iQMoKiTloPBiTYQwo9Ofwt+vbHycZhke11rwrOOD/9hNMCfMN3Ff4MjjHu7qOzg3yA==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4835.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19d3fda9-4912-4b4e-47eb-08df3bd4312c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Nov 2026 07:04:25.3399
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: hQoSNJpEgO6zrIA955I9//ce96vMR7Zv7mh3QKYm44fNYag6Ufx6/bQRJkt0Y8JDMN17EbgDjA/9uGmbeawnsg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7334
+X-OriginatorOrg: intel.com
 
-io-pgtable marks every ARM_MALI_LPAE PTE outer shareable (SH = 2). Outer
-shareability is only meaningful when the GPU sits behind a coherent
-interconnect, i.e. when the page-table walk is coherent (cfg.coherent_walk,
-which panfrost sets from the dma-coherent DT property). The vendor kbase
-driver on a non-coherent Exynos 5422 (COHERENCY_NONE) never uses outer
-shareable: its PTEs are non-shareable or inner shareable.
+> From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> Sent: Thursday, November 5, 2026 12:16 AM
+>=20
+> PCI connect looks up a TSM by ID under pci_tsm_rwsem. Previously,
+> tsm_unregister() released that lock after tearing down PCI state while
+> the TSM was still in the class lookup. A racing connect could then
+> attach a new PCI context that the teardown would never see.
+>=20
+> Remove the device from the class lookup first, then take the PCI write
+> lock to drain in-flight operations and destroy their contexts. Drop the
+> device reference only after PCI teardown completes.
+>=20
+> Fixes: 3225f52cde56 ("PCI/TSM: Establish Secure Sessions and Link Encrypt=
+ion")
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 
-On Exynos 5422 (Mali-T628 MP6, ARMv7 LPAE, not IO-coherent) the outer
-shareable attribute hangs the whole SoC when a large GPU buffer is first
-used under GPU bandwidth load and memory pressure: 0 of 22 runs survived
-with SH = 2, 3 of 3 with inner shareable. Non-shareable also avoids the
-hang but breaks global atomics between the two core groups, so use inner
-shareable for a non-coherent Mali; coherent configurations are unchanged.
-Sustained GPU copy bandwidth also rises from 6.3 to 7.7 GB/s.
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 
-Tested on Samsung ARTIK 10 (Exynos 5422) with panfrost and Mesa Rusticl:
-hang reproducer clean, OpenCL accuracy suite 96/96, no GPU faults over
-several days of use.
-
-The analysis, the code and this changelog were produced with Claude
-Code (Anthropic), a coding assistant.
-
-Fixes: 7618e4790982 ("iommu/io-pgtable-arm: Improve attribute handling")
-Cc: stable@vger.kernel.org
-Signed-off-by: Young-Jun Hong <nirvanah@nirvanahyj.com>
----
- drivers/iommu/io-pgtable-arm.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 476c0e25631a..0e7b2edd9ca1 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -565,6 +565,13 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 	 */
- 	if (prot & IOMMU_CACHE && data->iop.fmt != ARM_MALI_LPAE)
- 		pte |= ARM_LPAE_PTE_SH_IS;
-+	else if (data->iop.fmt == ARM_MALI_LPAE && !data->iop.cfg.coherent_walk)
-+		/*
-+		 * A non-coherent Mali must not mark its accesses outer
-+		 * shareable; inner shareable keeps atomics consistent across
-+		 * its core groups.
-+		 */
-+		pte |= ARM_LPAE_PTE_SH_IS;
- 	else
- 		pte |= ARM_LPAE_PTE_SH_OS;
- 
--- 
-2.47.3
-
+btw this can be sent separately.
