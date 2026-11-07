@@ -1,60 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.178
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794008489;
-	b=hGZ5hghf25pNWEaOCEwqN/5IoSd9UEMaXe7DDyxs1a8rb9lYDaYKNa2wF+dOzkqMglyw
-	 2/KHnPLv+U+lc9o61Py5ve5DzytbV3Vs5f6Hm7ZAOZ4RW+MggA8fl67vBzyqxsm8XkibS
-	 ri1I7LZO4YDaxcd4leFFRIdS8u0+xNSwWv56v755sgbPeE+vdLdFIxO+uz71H9IvlapSi
-	 AQdQbtK3JiXFIq3XVg3dahZB9MAJR+8y5EcZEIn696uaDQ2r8nE/1x75Dudn1RpwqX+Ye
-	 I9OOmkfVSZgoyTY6we2aoVylUz7eszkgaNBHpsuj/cgtfqY5dQHNu++KGZ7cr53I8uQ==
+	t=1794033258;
+	b=VaGaT4CVxuFS7qGPNsnVesQG5YQ/wcO9+nAgoENxChVX43clseerUc3Sp/li8XrpOzZJ
+	 J+qryEfS7JxKiQd8jXZcH0JYVN0pH+Y9nROOkzSZ1eYHVBSac/jmy13MouEZPX52GBapk
+	 +OVn6F4ps7ZJb9XDWIhbaiZoubZRl5HIzTP5UPjHtaq4XTtxzn9TwNzm6Cp9RYg0KqxSU
+	 R6qMhvIT3Ja4uDxGKweSB94/w/YYiFY+TE7Fr2XIhtrm9rSq/FbxM6faUuI9NoX5TRoKw
+	 NDZGTBVSjMyLESyBtb+tvyFlOoiUQzYIVWcHgv6UKTKpf67lfH8BPI5xRTfNGUbxWGw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794008489;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=mwXkWhaoGZuVnDbiT+8l9VytpOALtyn1gB7Fo/dFec0=;
-	b=RZBA3q98q72aQTqlYOisR68iuVnT/QAFC8yladZqSvajh+nJUzgLwALGZFUP4kPIh/zU
-	 tSLLDVN0p0UyrQ8/eKKYVc1LIc7IikKfDpjqKwZQ6xsK7gQLo+c2i248fW9zv57JLRLTs
-	 gqx8ELV6RVaDh9mMecP7GsDjZvMRnofGatd/f3TKTgUw++CtdRQCEsp8viiUZd1czCXa2
-	 /BlUjMwqCmi5fGFw8PZHK+f50GnMpLa1YdpoRk0xI5Tee4L6hnrNDvpKs9z+dhU/VEF6M
-	 Aso3JfkudAR+D3yjAtEkasw+C6tHPvOKR8GGtCVhODbpN+JcnsS8A8rrelFMQAuVe5Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794033258;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:In-Reply-To;
+	bh=rCSoVSPy0ubo1scrbTANm6C4v1LOJKhrmcmQgcyDlL0=;
+	b=T4dm8Jmyqakz90q5jxkHFcGNTM9bZ/oJw7qvWLtjK7ylO3v4F1QUFVj9rTdqadzH5VpU
+	 GX9FZvRXsIdWFMIRKOS8S17+qNEubKwF0Y40WjIVJMzNigz9vsyiBQP4L9Aj4ZyLkhbkA
+	 rcZ4fw6aff63BZUaLFQRxi/12eO2vU90pIVVmYrcs471+fB9WREVK7Gc8PTVq780aiSzm
+	 2B7GGo2ZEDHWfExY1qV2Q5wPCBkkKkxXfLZldPJdBsSB21cxMCN5nRjtpptDP+7Hli80o
+	 oMvOtRAuKV4AHyE3BP4aHf2CNSrhcLqZ8f6SbQthXnOunRtsD4m/HN8f9bbgf92WAYw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Mc5aGsxb;
-	arc=none smtp.remote-ip=210.118.77.11
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Z76a1PNW;
+	arc=none smtp.remote-ip=209.85.210.178
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0974606A32C
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 23:41:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B0974606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CCDB606A32C
+	for <iommu@lists.linux.dev>; Sat,  7 Nov 2026 06:34:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4CCDB606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Mc5aGsxb
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261106234124euoutp01a6bd9f3f794e0da8159f3ae00728e945~lmTZGqZiY2108521085euoutp01J
-	for <iommu@lists.linux.dev>; Fri,  6 Nov 2026 23:41:24 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261106234124euoutp01a6bd9f3f794e0da8159f3ae00728e945~lmTZGqZiY2108521085euoutp01J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794008485;
-	bh=mwXkWhaoGZuVnDbiT+8l9VytpOALtyn1gB7Fo/dFec0=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=Mc5aGsxbjN4/dIrM5d3Ttt1+UC3Uus88SdJlSmE47yFKIkuHFk66/St34MjbCzYUE
-	 HxqvahV7An4Mng44BDvqN9PibfEw/7fqReGHVoWsU4NeTIhxRSUtSkROAp7HoCGPkD
-	 UspmIsCTtdEXEqIcao+5YTRDJFfvtFUueooOlAzI=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261106234124eucas1p1aef42c95b282e08adcf39c0c4a0379d2~lmTYlZWhL2055920559eucas1p1G;
-	Fri,  6 Nov 2026 23:41:24 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261106234123eusmtip1dcd2fdecd45b2e4325f37eaa9435507c~lmTX99o4U2536025360eusmtip1R;
-	Fri,  6 Nov 2026 23:41:23 +0000 (GMT)
-Message-ID: <5b38b9ca-a3af-45db-82a4-4e2cc4600796@samsung.com>
-Date: Sat, 7 Nov 2026 00:41:23 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Z76a1PNW
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-8b3577deeb0so514728b3a.3
+        for <iommu@lists.linux.dev>; Fri, 06 Nov 2026 22:34:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794033257; x=1794638057; darn=lists.linux.dev;
+        h=in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=rCSoVSPy0ubo1scrbTANm6C4v1LOJKhrmcmQgcyDlL0=;
+        b=Z76a1PNWKXshPiMPhuGMlZPjZXYAmE83i2WG19mo14leZOOAkxXkWSAmTtyiwooiB2
+         q8t1wScpujpdL54lr6mEsxpASkfGvWjxySLPc8/pJfwmygalgbWlvVNoI9Ml87p8mS0u
+         k2FWNoAjtmkcEUXlaZGdsZkF9AI0ZHUkdw8gsP5DDVDMWffDT5FSQEPVmCtfjDSTGEK6
+         u2M/Gnx+UTRmZJPpdDur69x4mowyaYL8opZBNhr5QAsI/nVGlsjs3PhoqDzjsWwqygXE
+         y3FjX0P7RAckNtbAUvkXCPAFlQbLNxpqCDgqHZHNtf8TZxVkYAGdyfj4HUl4XdMNg0Cf
+         2J4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794033257; x=1794638057;
+        h=in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=rCSoVSPy0ubo1scrbTANm6C4v1LOJKhrmcmQgcyDlL0=;
+        b=CV4brms0udCzCqg70evJxUUXeK6j5k1qi2VRLSQvHWmhKILEoi01fmqSExXxo2ebpa
+         XXKZKtUnVI24m6AAzOllJ9EVNzSH5B0tpg58Nc/9aTg8twAxvGQB7NfciO+TyhBDa1eL
+         MIdSCH6+8RnaWJLY4c1I90qspup0fKXBoQ1WKnD8j6cpEoFGKuyqBtPaXhbpLxARWU+B
+         KC66Neg24tyX4qdNoI187L+zOD9TkdpZ9BPJdAtbHSd64X707SYl5bJ/q+0gMy7qe81D
+         xHSWJ5ykWb4eMNqZ/iGymRzpHqSYOmefhPlU2uGvT7gtx33V/6H7HFBXch1B0qIGPRdl
+         iMmw==
+X-Gm-Message-State: APuU4Z++HI/KlWY0F+ClDohN8R1ZnjCTIQrbvCVOgQIRwLyYUjT+auan
+	C1WTanUftR6MuXdaRlcDQtbFE8Q9uO8DAE7zVVZRYSqkHbJ4TkuY20xt4RnXuiNk
+X-Gm-Gg: AYBFou2PvApLZXHxQKU3Ge8+KIa7x4zOcM0qtxLIz/Iw2xgGYbl2GeXWWpOhJ7k9tpy
+	ueVcpRjl9XyDmJn3dXNPTJ/wOlPxKhV8grHJMM8c8kHPJK5JHHbqM5rf5U7caryW1l7Eznj4vjk
+	UIA+zXVq1rONv4qOT0uxhHhA2qt7NGRwWqEcyiiymL0ddRrWBFqKg3ZfaYcBJ8+UwUU76yGH/3g
+	dd+Pz4z8WEUe6L08YhKKQlVRo4Dq7F1Jvd9AEJxBW7OVzcSFGd2WloJo+K4lLs1ik57fcUNFSl7
+	xkPwDybubztfJQ8MjuTGPFYPfYPJ2VSRTwjMVYcKdkxA6cjvro1Rydl7XuLsmY1JwAdxqD7IC5m
+	9C1k0GzUkL6OQTsSuIlQGFgG08N3SGe91990US8q4Wyldq7s7sz49OV4xnL7yLttmx22SC5ab3W
+	KY4TCGs8+Qe4zCCDwP8pSdzSe7b+xnTT42wHF3pDrRbet+yWWHfYivuJYQun39jBePMb+vuPrvu
+	Jt1ngZuWMD2KfoN+GInxLnMy/le/dNoIX95hKOs+1H5d5LLaCURbpbMaFHsmxsP6YyvIuP7iyW1
+	9AQOKH4NoMGgNjXVmMioEmU2z6V7DBMeHrFLgA==
+X-Received: by 2002:a05:6a00:188b:b0:881:8b53:f64 with SMTP id d2e1a72fcca58-8b37cdf8de2mr4176428b3a.59.1794033257505;
+        Fri, 06 Nov 2026 22:34:17 -0800 (PST)
+Received: from [127.0.0.1] ([152.136.45.109])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8b359dc7805sm1149089b3a.40.2026.11.06.22.34.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Nov 2026 22:34:16 -0800 (PST)
+From: Qing Zhang <diasyzhangqing@gmail.com>
+To: iommu@lists.linux.dev
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Krystian Kaniewski <krystianmkaniewski@gmail.com>,
+ Tal Zussman <tz2294@columbia.edu>, linux-kernel@vger.kernel.org,
+ syzbot+fe84fc6a684e0beb86e2@syzkaller.appspotmail.com,
+ syzkaller-bugs@googlegroups.com
+Subject: [PATCH] iommu: Fix dev_iommu leak on mock fwspec initialization
+ failure
+Date: Fri, 7 Nov 2026 22:00:00 +0800
+Message-ID: <20261107140000.1-1-diasyzhangqing@gmail.com>
+In-Reply-To: <6ae402bb.0c1d3ab6.e3d48.006d.GAE@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -63,184 +97,48 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH 01/11] dma-mapping: add dma_alloc_attrs_node() and
- dma_alloc_coherent_node()
-To: Jakub Kicinski <kuba@kernel.org>, robin.murphy@arm.com
-Cc: netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
-	will@kernel.org, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261106184433.761422-2-kuba@kernel.org>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261106234124eucas1p1aef42c95b282e08adcf39c0c4a0379d2
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261106184452eucas1p2f15c3818e6319ab55abcde96840e112c
-X-EPHeader: CA
-X-CMS-RootMailID: 20261106184452eucas1p2f15c3818e6319ab55abcde96840e112c
-References: <20261106184433.761422-1-kuba@kernel.org>
-	<CGME20261106184452eucas1p2f15c3818e6319ab55abcde96840e112c@eucas1p2.samsung.com>
-	<20261106184433.761422-2-kuba@kernel.org>
 
-On 06.11.2026 19:44, Jakub Kicinski wrote:
-> Coherent DMA memory is always allocated on the NUMA node of the device.
-> That's the right choice for memory mostly accessed by the device, but
-> some coherent allocations are accessed by the CPU on every operation.
-> For example a NIC's descriptor and completion rings are written and
-> read by the CPU servicing the queue, which may well be on a different
-> node than the device. Placing such rings on the device's node means
-> the CPU accesses remote memory in the fast path.
->
-> Drivers work around this today by temporarily changing the node
-> of the device with set_dev_node() around dma_alloc_coherent()
-> (mlx4, mlx5, ixgbe, xgbe). This is racy against anything else
-> looking at the device's node at the same time.
->
-> Add dma_alloc_attrs_node() which takes the node explicitly, and
-> a dma_alloc_coherent_node() wrapper. dma_alloc_attrs() now passes
-> dev_to_node().
->
-> The node is only a preference, the same as for kmalloc_node().
-> Nothing takes it into account yet, following patches wire it up
-> in dma-direct and iommu-dma. Allocations from fixed pools and from
-> dma_map_ops->alloc implementations will keep ignoring it.
->
-> Add an explicit new export instead of using static inline wrappers
-> because we want the new API to be GPL-only.
->
-> Reviewed-by: Björn Töpel <bjorn@kernel.org>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+If iommu_fwspec_init() fails to allocate the fwspec after allocating
+dev->iommu, iommu_mock_device_add() returns without freeing dev->iommu.
+The mock device was never registered, so the normal IOMMU cleanup path
+does not run, and releasing the mock device leaves dev_iommu leaked.
 
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Clean up in iommu_mock_device_add() while holding iommu_probe_device_lock.
+Only free dev->iommu if this call allocated it, preserving any pre-existing
+object. Check for NULL since initialization can fail before allocation.
 
+Fixes: 2a918911ed3d ("iommufd: Register iommufd mock devices with fwspec")
+Reported-by: syzbot+fe84fc6a684e0beb86e2@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=fe84fc6a684e0beb86e2
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Qing Zhang <diasyzhang@tencent.com>
+---
+This was previously sent on Nov 3 through syzbot's forwarding to this
+thread, after the direct submission to the list bounced. Resending.
 
-> ---
-> v1:
->  - move before the patches wiring up the node in dma-direct, iommu-dma
->    and CMA (Robin)
->  - dma-api.rst: drop the NUMA_NO_NODE suggestion (Björn)
->  - docs: describe how the node is handled in the patches wiring it up,
->    drop the mention of dma_free_coherent()
->  - explain the separate GPL-only export in the commit message (Marek)
-> rfc: https://lore.kernel.org/20261027022528.633359-5-kuba@kernel.org
-> ---
->  Documentation/core-api/dma-api.rst | 13 +++++++++++++
->  include/linux/dma-mapping.h        | 14 ++++++++++++++
->  kernel/dma/mapping.c               | 26 ++++++++++++++++++++++++--
->  3 files changed, 51 insertions(+), 2 deletions(-)
->
-> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
-> index 69d4ebe4f96d..5d079507ffa1 100644
-> --- a/Documentation/core-api/dma-api.rst
-> +++ b/Documentation/core-api/dma-api.rst
-> @@ -57,6 +57,19 @@ The flag parameter allows the caller to specify the ``GFP_`` flags (see
->  kmalloc()) for the allocation (the implementation may ignore flags that affect
->  the location of the returned memory, like GFP_DMA).
->  
-> +::
-> +
-> +	void *
-> +	dma_alloc_coherent_node(struct device *dev, size_t size,
-> +				dma_addr_t *dma_handle, gfp_t flag, int node)
-> +
-> +Same as dma_alloc_coherent(), but places the memory on the given NUMA node
-> +rather than on the node of the device. This is useful for memory accessed
-> +frequently by both the device and a CPU on a different node, for example
-> +descriptor rings serviced by that CPU.
-> +
-> +Like with kmalloc_node() the node is only a preference.
-> +
->  ::
->  
->  	void
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index efde0e5a58dc..f8529f761823 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -188,6 +188,8 @@ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
->  		enum dma_data_direction dir, unsigned long attrs);
->  void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->  		gfp_t flag, unsigned long attrs);
-> +void *dma_alloc_attrs_node(struct device *dev, size_t size,
-> +		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs, int node);
->  void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
->  		dma_addr_t dma_handle, unsigned long attrs);
->  void *dmam_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> @@ -273,6 +275,11 @@ static inline void *dma_alloc_attrs(struct device *dev, size_t size,
->  {
->  	return NULL;
->  }
-> +static inline void *dma_alloc_attrs_node(struct device *dev, size_t size,
-> +		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs, int node)
-> +{
-> +	return NULL;
-> +}
->  static inline void dma_free_attrs(struct device *dev, size_t size,
->  		void *cpu_addr, dma_addr_t dma_handle, unsigned long attrs)
->  {
-> @@ -626,6 +633,13 @@ static inline void *dma_alloc_coherent(struct device *dev, size_t size,
->  			(gfp & __GFP_NOWARN) ? DMA_ATTR_NO_WARN : 0);
->  }
->  
-> +static inline void *dma_alloc_coherent_node(struct device *dev, size_t size,
-> +		dma_addr_t *dma_handle, gfp_t gfp, int node)
-> +{
-> +	return dma_alloc_attrs_node(dev, size, dma_handle, gfp,
-> +			(gfp & __GFP_NOWARN) ? DMA_ATTR_NO_WARN : 0, node);
-> +}
-> +
->  static inline void dma_free_coherent(struct device *dev, size_t size,
->  		void *cpu_addr, dma_addr_t dma_handle)
->  {
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 82e701648d60..1b1cd3bc4a40 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -630,8 +630,22 @@ u64 dma_get_required_mask(struct device *dev)
->  }
->  EXPORT_SYMBOL_GPL(dma_get_required_mask);
->  
-> -void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> -		gfp_t flag, unsigned long attrs)
-> +/**
-> + * dma_alloc_attrs_node - allocate coherent memory on a given NUMA node
-> + * @dev: device to allocate the memory for
-> + * @size: size of the allocation
-> + * @dma_handle: returns the DMA address of the allocation
-> + * @flag: GFP flags for the allocation
-> + * @attrs: DMA_ATTR_* flags for the allocation
-> + * @node: NUMA node to allocate the memory on, NUMA_NO_NODE for no preference
-> + *
-> + * Same as dma_alloc_attrs() but places the memory on @node rather than on the
-> + * node of @dev. Like with kmalloc_node() the node is only a preference.
-> + *
-> + * Return: the CPU address of the allocation, or NULL on failure.
-> + */
-> +void *dma_alloc_attrs_node(struct device *dev, size_t size,
-> +		dma_addr_t *dma_handle, gfp_t flag, unsigned long attrs, int node)
->  {
->  	const struct dma_map_ops *ops = get_dma_ops(dev);
->  	void *cpu_addr;
-> @@ -681,6 +695,14 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->  	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
->  	return cpu_addr;
->  }
-> +EXPORT_SYMBOL_GPL(dma_alloc_attrs_node);
-> +
-> +void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
-> +		gfp_t flag, unsigned long attrs)
-> +{
-> +	return dma_alloc_attrs_node(dev, size, dma_handle, flag, attrs,
-> +				    dev_to_node(dev));
-> +}
->  EXPORT_SYMBOL(dma_alloc_attrs);
->  
->  void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+ drivers/iommu/iommu.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b486b8bbd1fc..207241a553b9 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -379,10 +379,14 @@ EXPORT_SYMBOL_GPL(iommu_device_register_bus);
+
+ int iommu_mock_device_add(struct device *dev, struct iommu_device *iommu)
+ {
++	bool dev_iommu_present;
+ 	int rc;
+
+ 	mutex_lock(&iommu_probe_device_lock);
++	dev_iommu_present = dev->iommu;
+ 	rc = iommu_fwspec_init(dev, iommu->fwnode);
++	if (rc && !dev_iommu_present && dev->iommu)
++		dev_iommu_free(dev);
+ 	mutex_unlock(&iommu_probe_device_lock);
+
+ 	if (rc)
+--
+2.43.7
