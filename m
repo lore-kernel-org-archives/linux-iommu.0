@@ -1,78 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794081655;
-	b=ABqVQiI/upHleFuc9w0RNCFOf9wEmd3xyDaqwtY4rMlZY8BBrJq5tvqupmDm1uI7Cj1D
-	 N20OjjZMHTGw77hnQGo7kJ1GmdUavuiaSMvc8UqyQ3Rwzy+vEC3jJCPJgsFA1Oz/QG1ka
-	 bWw55A1bNZp5e+GM+GXTzjB1HHgMNFyQjatPlBq0W49P4Ob07bEQxKCf9J1Ltxll7gDpO
-	 w9dmM8hSzSEVtL/NWm8NQJbbrF8kospNJuNH8u4owD4PfjjahRwrD15gy84egKHu0OoxR
-	 qn3c4WbbgSNelTDtBZtIYesZ3JmPto5Zz0a7HtEKK3E7gDtQgQr7ON7TSTgFf/s/VZA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794081655;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=A9PiKhrsfGsTyeU01SUsRcBpanBcSXe1TCOBbWxDRmw=;
-	b=ns7raHYQczb2c/KViSwr4Eyfe39EQxv2xMrZkVRZl8btUgSEdsA6ySg0Ftv0w8yM6bVD
-	 iAJyL0rzQTOPl9zbjK8EWWubLtO55tqFQliENRpujPudAEjs3dxKBOP+eRx7dty+iviFK
-	 XSa6kR/Ky5MOVIZv/fdz9v7YLkqi5zPDRklDe/pD8QJoyHmAXw274Rrjm/5QK8q+dwdMM
-	 laZYd4CIEQGd9ObBUZZV1+aNTXuHYaXqPifbenka087pjADKElrDBxieS1mafjWm9ItiY
-	 VJg5jWNs8bogdZOmtujFB3ShNxi1hgqyopY6+jUZDNMaPckZr209UEg7KYQmu1m+zOg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aPoWJ1p3;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794090255;
+	b=DVP2WIOzh51LeVAFnNxPEOo9SVfm1f+mcTlZPWC43wBEwq9exXp4hH0HKyZCQOxPsBU+
+	 /KUjKqEmNjMaZvU0Eu6mvLaM1sbbp46SRZucqPwtHaXzkc2Sdvyo5VqmCffxbxPJybYqP
+	 a7cZzcA6Ec8cLPpev1uTjMUU4HBFyBgOCvtkZBtj91jCtd9kJhuzFg4yZ2Y2umzHaeuGN
+	 qjoD2Pd3r9CVfCdDMPTFs0uiBK6SXoOnRGn1doP+HXU2wVvhSYTxpxdcPtL3BC15JROvu
+	 8EJT7NgXz3jW7uI653kbFFmMDd7KJjGdValslb9cnoPOJerxbNne5o3ry7XWf5oXCgg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794090255;
+	h=Received:DKIM-Signature:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key;
+	bh=eg5b15u+rTVmwb11gnjCWgwIU3XL9azsyPKK5bBy5wk=;
+	b=f7GHR9iD/0fz4wfzRI74oZpg8Us3JqVCrJOw2hxICvHnA3wXOWiJk+L29vJwSIRIhdLV
+	 BE31Wrd4xVnU59dKnm5mElE0bW7I3FYb3YJo7Ncpy8q2U5JgPE1I7T8QK0zlZzM1HvGVz
+	 nRrc1FKQ1ngSrZGschjzLrPk6hhdbkGGNMNj+h9rj2X8hvyMOsP1uhmXMMW95vMkDSxQp
+	 gXOXaaHNKRZYzhXiWOoD7KIAKIY1PYLvBOLyYwAlipAFHHB02hYMReRF1vFqXguVU036w
+	 oJES+qD/tv6LUBZadL1G8VsdibealT0q9nBpiRkzIoGd/sd/MaUeXyJAWCLQa/9vddw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GWg5Gcle;
+	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC050606A336;
-	Sat,  7 Nov 2026 20:00:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18626606A32C;
+	Sat,  7 Nov 2026 22:24:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aPoWJ1p3
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794081654;
-	b=I/cmiLf2CJ82CIkKNrvyNzTLJJ0I5vlh3VEuH96UKVlUKONyU90zmDEs7Qg7Lq6+jpMn
-	 C1Oi2MohCtg4R9vvdoZWf4prDVSkESOYbgWYJ0RaYPa7Gyn++g0KRNcfSm+6ayLTJJogn
-	 G9JiT2R5YJh2wHXbXj0hIHEOFD4AXx69gJd6URj1cNUpEPTaqhMLOPo7Od5oJQDJLWrVP
-	 puVgwSk1q8ztsu2BX3Rc9Y+CLVQAzbxJaJVFBJWmjkDlwVAS4P2l4FopRGevImLr8wfRQ
-	 zRyrTlgDukYM7Df3wL6R8sKlFW5bgriBSRlBgMN6BrTZWurllddDVHYI6LXpXolSJag==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794081654;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=A9PiKhrsfGsTyeU01SUsRcBpanBcSXe1TCOBbWxDRmw=;
-	b=PrfSOhBozZ5wIDq9Dm4oRS+5xwT+T4AJHB8KX7VUgLcuvdOVUyqtqRXhSSZaLpzQtoSo
-	 bIGUGvo25VUSj7A7i2vvQiMSdLnOdL+D5B3js5JX2MEPoYXS3la1W046GL/elXVgVRyV7
-	 oLrGapSkob67x/xbQgF2mpEdeR4OPB0MmXFkIc3+zHsHGVr4gYsN3m1X+MowjfhYdY7NJ
-	 KCOy3mfvMAO57A+L9oFe/XvItQVtUPJd87/qCQszzQgOcLg0w7Pq+z7cI+PbEYhf9egg7
-	 vxgz/+145FDe1lMSx3Tgk0lYgJC90DYMIq0sl683M4+lq6rQVjEkVnN27IthanXZ0gw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id D68601F008A2;
-	Sat,  7 Nov 2026 20:00:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GWg5Gcle
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C641F0089F;
+	Sat,  7 Nov 2026 22:24:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794081654;
-	bh=A9PiKhrsfGsTyeU01SUsRcBpanBcSXe1TCOBbWxDRmw=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=aPoWJ1p3AFwlxXpT2At1fuXsCnFsOpFlWDkh3BpIMDi/KGALhD7T82Pyg6UJ1WuQo
-	 ovAFzu2/JIQZQY/rxScJoEe2/xOFhdYKc4rcuHXG+CcioQBrYJra8Bpvsojwd5QnyE
-	 jqrSoh/pt3h2pUgb/QB/zjjV2WlX3THXaOV6+qvF4nasAm3kYzLBTV0zk/Gls0a2b8
-	 nbn6uLnMog0Rh4KUpQ7oFgfGiX88tY4QSiFK9gGpwqolETHm4t0NRMBTYvtFdpgBq8
-	 T6GVs82vghqIqv0mMosnc7x/Im/PvielJdz6jXQTNEh4CTBgu5SxTWPYub5Gczc2Ic
-	 HxF2GgQ+sZRoA==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 6970D47CD4;
-	Sat,  7 Nov 2026 20:00:53 +0000 (UTC)
-From: Nizat Mikayilli via B4 Relay <devnull+nacht.dxdmail.cc@kernel.org>
-Date: Sat, 07 Nov 2026 21:00:50 +0100
-Subject: [PATCH] iommu/arm-smmu-qcom: Add SM8550 MDSS compatible
+	s=k20260515; t=1794090254;
+	bh=eg5b15u+rTVmwb11gnjCWgwIU3XL9azsyPKK5bBy5wk=;
+	h=From:Subject:Date:To:Cc;
+	b=GWg5GclejkN5ISovErIV30qR90Bi6M6LkEDCS66iT3mU4aWIxfBW6GdXWslhQ7KgU
+	 bK2z7C57+zrCBW1sTMdPz5zM7FsbRSYjesUJapWWIfNDcDrmzfUmIvmtu49TM1mwxv
+	 ja1zpWR8RkkSLTFEnixGVPpPY0u8Xgu8/gYQTOLGb0/w3HPLSLRNl56SVK2CUNW5pY
+	 JlunxVAYzoMCU+KA+V4Dtqk7hhaPNpIozWOFRDahW+dJZjvK1w1mq3LuA5OlkeEcCB
+	 G1EoKFs0B4WAyNe/gXvpNnVuxDikDZCpzZS8c+I6ZujIA9lxQT8fFBeby/7BqHJ+jn
+	 hfh70rDjAL5WA==
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Subject: [PATCH v2 0/5] mm: limit pagecache folio refcount
+Date: Sat, 07 Nov 2026 23:23:36 +0100
+Message-Id: <20261107-refcount_overflow_stable-v2-0-c38f6809b106@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,63 +54,212 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261107-b4-smmu-sm8550-v1-1-777d0a41170b@dxdmail.cc>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzNDQwNz3SQT3eLc3FIgYWFqaqBraWFqZJhiYpmanGKiBNRUUJSallkBNjA
- 6trYWACyoUvRgAAAA
-X-Change-ID: 20261107-b4-smmu-sm8550-98521d49ecd4
-To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Nizat Mikayilli <nacht@dxdmail.cc>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794081653; l=1170;
- i=nacht@dxdmail.cc; s=20261004; h=from:subject:message-id;
- bh=I+cZ1+xcU8CJV0qjts4gYWFK7UhBiDpGLpae4t5CYy0=;
- b=NkMED2aV/LYn6RCVXeu3yCrogjKaMuCYqOcoLgxBi5pmCjZKeQcmzjGxY5BtpSm6lapuAMURR
- NGRdTTK028QAJ5nW1ofTlnfor8Sr2Tw8Z9Ne1DmhB0Kp0Bl0ZxYUqr0
-X-Developer-Key: i=nacht@dxdmail.cc; a=ed25519;
- pk=Kay3P3pOJq5klUD+0/I8QX8JGOh0CeQXEwRVv7CMm4k=
-X-Endpoint-Received: by B4 Relay for nacht@dxdmail.cc/20261004 with
- auth_id=1111
-X-Original-From: Nizat Mikayilli <nacht@dxdmail.cc>
-Reply-To: nacht@dxdmail.cc
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42NQQ6CMBBFr0JmbU1bKEZX3sMQAmWAKmnNtFQN4
+ e4WvIDLl7z//gIeyaCHS7YAYTTeOJtAHjLQY2MHZKZLDJLLUgiuGGGv3WxD7SJSP7lX7UPTTsh
+ UIZHLQuS8R0jzZzLNe0/fqh/7ub2jDltvM0bjg6PP/h3F5v1xEwXj7MTbsy6V6pocrw8ki9PR0
+ QDVuq5fdtdUVdMAAAA=
+X-Change-ID: 20261105-refcount_overflow_stable-542e024130fe
+To: Lorenzo Stoakes <ljs@kernel.org>, 
+ "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+ Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+ Michal Hocko <mhocko@suse.com>, 
+ "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>, 
+ Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>, 
+ Baolin Wang <baolin.wang@linux.alibaba.com>, 
+ Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, 
+ Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
+ Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>, 
+ Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
+ Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>, 
+ Gregory Price <gourry@gourry.net>, 
+ Ying Huang <ying.huang@linux.alibaba.com>, 
+ Alistair Popple <apopple@nvidia.com>, Peter Xu <peterx@redhat.com>, 
+ Johannes Weiner <hannes@cmpxchg.org>, Song Liu <songliubraving@fb.com>, 
+ Rik van Riel <riel@surriel.com>, Miklos Szeredi <miklos@szeredi.hu>, 
+ Alexander Viro <viro@zeniv.linux.org.uk>, 
+ Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, 
+ Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
+ Nick Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
+ Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
+ Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Steve Sistare <steven.sistare@oracle.com>, 
+ John Hubbard <jhubbard@nvidia.com>, 
+ "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
+ Josef Bacik <josef@toxicpanda.com>
+Cc: "David Hildenbrand (Arm)" <david@kernel.org>, linux-mm@kvack.org, 
+ linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+ fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
+ iommu@lists.linux.dev, Chris Mason <mason@kernel.org>, 
+ stable@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6873; i=david@kernel.org;
+ h=from:subject:message-id; bh=9KzEE59aveBB6sn+9WVX/Ykd3tcmn6ZAgwUHPEnyXys=;
+ b=owGbwMvMwCF2/OVpCdfQ3ZWMp9WSGLLeL/k3/57Hr8ubliccFjHQiduuuuG/ekXyhtzI5NMb9
+ Zdem5tq31HKwiDGwSArpsgSFHzf4OXLdbXVbnzMMHNYmUCGMHBxCsBE9hcw/C/1mMcyeUuf7K+r
+ rEYBB6allwjdUjOSUxbg4TJ88WqS3HtGhvl/6sWuuraz8F5ZxhSsye66MPqM5p6Gvzs/mLi+dWt
+ gZwMA
+X-Developer-Key: i=david@kernel.org; a=openpgp;
+ fpr=1BD9CAAD735C4C3A460DFCCA4DDE10F700FF835A
 
-From: Nizat Mikayilli <nacht@dxdmail.cc>
+Users can create a lot of folio references to pagecache folios, making
+it possible to overflow the refcount of large folios.
 
-Add the SM8550 MDSS compatible to the clients list, as it also needs an
-identity domain at boot. Otherwise the scanout of the bootloader's
-splash screen causes unhandled context faults and the screen goes
-black.
+While we knew that one could in theory overflow a folio's refcount, we
+mostly assumed that bad things would happen and it wouldn't go
+unnoticed.
 
-Signed-off-by: Nizat Mikayilli <nacht@dxdmail.cc>
+Not so sure if that is really always the case, and leaving that problem
+unsolved is irresponsible, so let's limit pagecache folio refcounts.
+
+This is really only relevant for large folios / thps in the page cache.
+With anon folios (including THPs), we should not be
+able to trigger folio refcount overflows (until we get PUD-sized ones ;) ).
+
+It was likely a problem for anon folios as well before we had a
+dedicated pincount.
+
+Let's limit the refcount before it turns negative, giving admin processes
+some extra reserves (to recover a problematic system). We still leave some
+headroom to allow for some slight limit overshooting, to make the
+implementation easier.
+
+Then, we also check when splicing pagecache folios to a pipe, and
+improve our existing checks in gup. We also have to take care of
+mmu_gather, to not hold too many references when zapping (whereby new
+page faults could remap pages concurrently).
+
+This is only a temporary solution for upstream+stable, until we have
+something better.
+
+These fixes will be a bit challenging to backport to stable, but it will
+be much easier compared to the RFC series I have here were we do things
+properly by (what we discussed a couple of times earlier):
+
+ - Letting the mapcount of large folios be a long
+ - Holding a single refcount if the folio is mapped, across all mappings
+ - Reverting the limits introduced in this series
+
+I'll polish that up and send it once we merged something that can be
+backported to stable.
+
+Tested on x86-64 by lowering the folio refcount limits such that limits
+can easily be exceeded, to then test fault (SIGBUS), fork(), splice and GUP
+behavior briefly when we run into refcount limits on a shmem THP.
+
+Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
 ---
-Found while bringing up the display on the Samsung Galaxy Tab S9 Wi-Fi.
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
+Changes in v2:
+- "mm: limit pagecache folio refcount when mapping pages"
+ - Try not to fail fork() by skipping the PTE/PUD instead. We still have
+   to fail in two scenarios.
+ - Split helper into fast and slow path. Slow path in mm/util.c,
+   exported for Fuse usage in patch #2.
+ - Check has_capability_noaudit(current, CAP_SYS_RESOURCE) instead of
+   capable(CAP_SYS_RESOURCE)
+ - Extended patch description and improved function documentation.
+ - Dropped RBs due to changes.
+- "mm: limit pagecache folio refcount when splicing into pipes"
+ - Return -EOVERFLOW from filemap_splice_read() and
+   shmem_file_splice_read(), and handle it in do_splice_read() by falling
+   back to a copy.
+ - Check in fuse_copy_folio() as well
+ - Updated patch description and updated+improved comments/doc
+ - Dropped RB due to changes
+- "mm/mmu_gather: flush pending references early before the folio limit"
+ - Adjust some comments
+ - Update Fixes:
+ - Extend patch description
+- "mm/gup: limit pagecache folio refcount when grabbing references"
+ - Keep all WARN_ON_ONCE() checks for negative/null refcounts
+ - Skip has_capability_noaudit(current, CAP_SYS_RESOURCE) with disabled
+   interrupts, skipping it for GUP-fast.
+ - Properly forward try_grab_folio() errors
+ - Adjust some comments
+- Link to v1: https://patch.msgid.link/20261105-refcount_overflow_stable-v1-0-70b9c655da3e@kernel.org
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 795e8ec7e8fa..483e9e4147b3 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -426,6 +426,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,sm8150-mdss" },
- 	{ .compatible = "qcom,sm8250-mdss" },
- 	{ .compatible = "qcom,sm8450-mdss" },
-+	{ .compatible = "qcom,sm8550-mdss" },
- 	{ .compatible = "qcom,x1e80100-mdss" },
- 	{ }
- };
+To: David Hildenbrand <david@kernel.org>
+To: Lorenzo Stoakes <ljs@kernel.org>
+To: "Liam R. Howlett" <liam@infradead.org>
+To: Vlastimil Babka <vbabka@kernel.org>
+To: Mike Rapoport <rppt@kernel.org>
+To: Suren Baghdasaryan <surenb@google.com>
+To: Michal Hocko <mhocko@suse.com>
+To: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To: Jan Kara <jack@suse.cz>
+To: Andrew Morton <akpm@linux-foundation.org>
+To: Zi Yan <ziy@nvidia.com>
+To: Baolin Wang <baolin.wang@linux.alibaba.com>
+To: Nico Pache <nico.pache@linux.dev>
+To: Ryan Roberts <ryan.roberts@arm.com>
+To: Dev Jain <dev.jain@arm.com>
+To: Barry Song <baohua@kernel.org>
+To: Lance Yang <lance.yang@linux.dev>
+To: Usama Arif <usama.arif@linux.dev>
+To: Kiryl Shutsemau <kas@kernel.org>
+To: Matthew Brost <matthew.brost@intel.com>
+To: Joshua Hahn <joshua.hahnjy@gmail.com>
+To: Byungchul Park <byungchul@sk.com>
+To: Gregory Price <gourry@gourry.net>
+To: Ying Huang <ying.huang@linux.alibaba.com>
+To: Alistair Popple <apopple@nvidia.com>
+To: Peter Xu <peterx@redhat.com>
+To: Johannes Weiner <hannes@cmpxchg.org>
+To: Song Liu <songliubraving@fb.com>
+To: Rik van Riel <riel@surriel.com>
+To: Miklos Szeredi <miklos@szeredi.hu>
+To: Alexander Viro <viro@zeniv.linux.org.uk>
+To: Christian Brauner <brauner@kernel.org>
+To: Hugh Dickins <hughd@google.com>
+To: Will Deacon <will@kernel.org>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+To: Nick Piggin <npiggin@gmail.com>
+To: Peter Zijlstra <peterz@infradead.org>
+To: Arnd Bergmann <arnd@arndb.de>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+To: Kevin Tian <kevin.tian@intel.com>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+To: Steve Sistare <steven.sistare@oracle.com>
+To: John Hubbard <jhubbard@nvidia.com>
+To: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+To: Josef Bacik <josef@toxicpanda.com>
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-fsdevel@vger.kernel.org
+Cc: fuse-devel@lists.linux.dev
+Cc: linux-arch@vger.kernel.org
+Cc: iommu@lists.linux.dev
 
 ---
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-change-id: 20261107-b4-smmu-sm8550-98521d49ecd4
+David Hildenbrand (Arm) (5):
+      mm: limit pagecache folio refcount when mapping pages
+      mm: limit pagecache folio refcount when splicing into pipes
+      mm/mmu_gather: flush pending references early before the folio limit
+      iommufd: fix cleanup when adding memfd folio pins fails
+      mm/gup: limit pagecache folio refcount when grabbing references
+
+ drivers/iommu/iommufd/pages.c | 15 +++++++++----
+ fs/fuse/dev.c                 |  5 +++--
+ fs/splice.c                   |  8 ++++++-
+ include/asm-generic/tlb.h     |  4 ++--
+ include/linux/mm.h            | 51 +++++++++++++++++++++++++++++++++++--------
+ mm/filemap.c                  | 17 ++++++++++++---
+ mm/gup.c                      | 24 ++++++++++++--------
+ mm/huge_memory.c              | 29 ++++++++++++++++++++++--
+ mm/memory.c                   | 39 ++++++++++++++++++++++++++++-----
+ mm/migrate.c                  | 11 ++++++++++
+ mm/mmu_gather.c               | 10 +++++----
+ mm/shmem.c                    |  4 ++++
+ mm/userfaultfd.c              |  4 ++++
+ mm/util.c                     | 15 +++++++++++++
+ 14 files changed, 194 insertions(+), 42 deletions(-)
+---
+base-commit: df3c65887715e66e2cba69116924020c37996cd8
+change-id: 20261105-refcount_overflow_stable-542e024130fe
 
 Best regards,
--- 
-Nizat Mikayilli <nacht@dxdmail.cc>
-
+--  
+David Hildenbrand (Arm) <david@kernel.org>
 
