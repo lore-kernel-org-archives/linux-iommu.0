@@ -1,47 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794136154;
-	b=l1skM2H6YGtYQuaaILNdCsvpZ6qCIT8aKpK3+CXVBWuBnLcIv2+iJT+9PY3I5bFaszms
-	 5hGhhWM/RPJK2MnLHR2zKz+pDs8tc6Zv3EaIVNC31Tp6fKMVL6Ff/Qa4a6SIIsEJGytca
-	 bQKMwSaP5UMpfY4sRcdDJ5rZptHykZ4F4l7QRar9ACco4fYYjeibyYAcC28lU3r1LG0AF
-	 BBfuM/tQYS8mko/u38oEStvC/IShILZMOL0Noit3CK5guQz7oSd4WGvciy2wzXsQAjCQf
-	 mMtX73ZOVOLk8s2w/KIOnDxF3LF+yITMLJkrSor86KuuTZ7GaC17xsZURANqrsx0WBg==
+	t=1794157159;
+	b=TlS6NN0aS75csxHi6/KrKGEc8GwafP4knbb0V0rtLrJDw9FopSC001hPliyoGLOo0EI5
+	 +nmUm6vRBV2+BlcbT0bPyus31huzrN6Lovy8nhR7HkrEclz+TNrrfgb8/cyfRey9cyg4B
+	 kOQ9OV5G4tbXaZDk07+4vg0ZHTudyCnn2ydkNSknxn7hUJ0PQGc8m46xS6uhNhi0s6Ex7
+	 JOthHVkECJ05SUqQBbajyjnbBz9Xa7KY2dZUnNzRoouL7u+UySVyd9m37zU7fOjvjs5p7
+	 S6nuxIazPH+vPqJpWASz+Ec1LZQsDzcr8mXKdrx3V8qr+rQiw4qgY9+vl/uTBbrXECg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794136154;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=rRMDSUzD/4dqXKQ7EKZyKnxoCi/M0piqkjg2dM9fwCI=;
-	b=1ZRCRebOhBeS7O8eGQabP124RSjWW59es5u+++aT5TCVmq69xg1SbVKqyDGN7QtVSF1t
-	 5sHQ8lkim3CEQfkw3JHrlaBxVdP/6L0M0M+VLDx7x72/DWrE9g34buOXaXkksBg2JqU4j
-	 nxAGA7kAFiyGB4QVsoQSp/2+6kZ36uI6ertqwTFbYqmWTVrqZboP3VrBbsZut/rHNmuWD
-	 DMv+bmNZkEsRXoJny/S4Qz6V5mbrM8sjx37bnusqfqUmBvOy+aCyHiQierIQ1yMVaUkHP
-	 7dkhlQ4LcGjczgLce5Ynd5bHZhsQQwpnBln+5KZyr7wDFH5WNtjJK3DvdhT6/O/N77g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794157159;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=lmwJQdwiPgvUanu0gwsKytij+Ict3+h8IPwu4vyFkUU=;
+	b=irwdIvPlg1PgHbQ6WTMg3t50RjF0XDIhIzPtWig6pwCrb1fSx1mbLZKr+JsXBcgLYABe
+	 VtpJeygKZVJD+nQPbfI6WM+z34P8y/sYtcdLIpeasjNr/cJzMYNdL9fbjjVXCtX9ekp6H
+	 yrvvmtWedBsoPS1hs6i1KVJp0ySMNn3d05s2J4dnTzNQTYaST5ZuWjZKgkOx9GxlCAT8d
+	 +r8hwkLQpC5JSK29ppRVggkeHFuouuFb5IHhX3IkGFdrqjoXv8nhRqFl/r9Bi0lEeMSUa
+	 +4enFYx8BKwSsCgPC6hlwNZKUsU2+IZYjTpoPBrwmWMlQ3uIInpIPAImIULFbpTCeJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N0YYA4cp;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=fail header.from=rowland.harvard.edu;
+	spf=fail smtp.mailfrom=g.harvard.edu;
+	arc=none smtp.remote-ip=209.85.219.47
+Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67CF4606A31C;
-	Sun,  8 Nov 2026 11:09:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=N0YYA4cp
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBFD11F008A1;
-	Sun,  8 Nov 2026 11:09:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794136153;
-	bh=rRMDSUzD/4dqXKQ7EKZyKnxoCi/M0piqkjg2dM9fwCI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=N0YYA4cpwk2rSpGMMYuOqSqMumav/sn0wLJeni7+D5sRDUh6oQesbQll0590AxfPg
-	 YHZL34AcSy3m/oA/+Mg50SxmE2ticTBJ0JeVPjSjHFm7kxxRs5L8DQMA7BTnLRn9Qu
-	 2ZAZr5kKEMP1mX37TLY8VAg7PQwGUVqeJOcMERAGlH5l3zZZEjSFO6rqxrHnW3bvxF
-	 j8U2+HgWFrfZqDiA8t9jLRXdMwzd73OoApHczJMktKFXOELRAAGT46mdFrtZFBMPZ4
-	 MVG5MgmA0/z1plVr0CdzxGC6RsARpcD0nOIKT0WnIOzRGRQJttYGclefHMO9alDFAo
-	 8foRVxDwmD7Ew==
-Date: Sun, 8 Nov 2026 13:09:09 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Alan Stern <stern@rowland.harvard.edu>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED0DE606A31C
+	for <iommu@lists.linux.dev>; Sun,  8 Nov 2026 16:59:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ED0DE606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=rowland.harvard.edu
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=g.harvard.edu
+Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-91ec14f4369so2096306d6.0
+        for <iommu@lists.linux.dev>; Sun, 08 Nov 2026 08:59:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rowland.harvard.edu; s=google; t=1794157158; x=1794761958; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=lmwJQdwiPgvUanu0gwsKytij+Ict3+h8IPwu4vyFkUU=;
+        b=TQOS5doud00tkS6qBnEOKRQCvE1/93V/TCUt0drTiMBaxn8/7sVyyDzftJhcPX4GGb
+         br3GEWLP+mtdYGvT8xobLggmVEYkMUaZCUV/hBTrPk5kAuGm4XCmLf4LDdF5cHcbsBvW
+         9V7hPCimT/HdE6lYrOT53MTo26XkLZutl5m0srsCzfMRs+xDzW0kfbsb5qkef5s48iaC
+         kuPyLliQ7dXySkF1ctBFxJLqKBASrsTPLm+AXhcGPTow3yHqFMSFu2Z2ar75C7Uj9ylZ
+         vPvScF0hIRhBVrWyKEYWZYr495q9NyFacEiRrwc28CIgagESWy8Mj3JMaBNUIK1U0Ssk
+         LjRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794157158; x=1794761958;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=lmwJQdwiPgvUanu0gwsKytij+Ict3+h8IPwu4vyFkUU=;
+        b=TUCqx2uT3fDihOriZJRnRhv0YaQl9FxCGclDkcL4CxxYZ86aalTagfvlbn5RFSZ8jJ
+         /atHewZHfbO1InsudiTtJN/JwVgkHlJdABMwHnJ7XRhV3C/Az2T9wCC9sD5HGNpxQlSc
+         lnYXTZCJdzSBsdRyOAGNcqTEkljc3eoq/zaPpIE+8OEvXBuZTFqFCPT0WAnZWU9MaRZJ
+         BK70yhF0l80DcVZOcnIzkrLmeBy/eLUGCTrh8dKaN8Ol0+9eRGgGDAJEEE1GqWiujz2S
+         X/4Ng+rmlWTVjfWKUWDxjxsdJRavaYlS57CaghJWObglJ4tD+X6kFJucnfJDgiQ6SqaM
+         tprQ==
+X-Forwarded-Encrypted: i=1; AL+hErFcjyz4rok2dhwFt846sEXz8a1MGif7l+w7QLq74AsdR/YQXBgeHw4xy3EF/MYBgJYTChfumg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+Ft40kte0jBJ8ghf35oI/Eoh2wldabOUC56gpKK8yJG+t714/U
+	lSJt9CwAfg5LxFQqZ9wh4S2cvL9MsjOvI3gdPcTNNI3YmJRJntfJ2PudxjqtT3d3XQ==
+X-Gm-Gg: AYBFou2MHULmfgqSctaUGiu6F+o0VKC6n7Qn/rstA5WZQJP/IWwB4yHKajM9jA9c26h
+	ImJ9Sc8yV0Eh243ku0GQOS/RgWSZbIb6V/+tI/wB5GmBrVMANdV4e3WWpd2pv4/LhM4t54H/pmX
+	AYB95GRzHVptuqLwQMUkyTVG1QEEp6wSg6TZq/GBprjOuOL7tMlVFyDIn7p1QEZ0Revj8uHJ4vr
+	H1hQR+6EcyBSFFvEn5eCXqabmtvVbToN7Ggg0QCR0xmguUA4eFkz/NbbWrRgTzeo3BUETZ524x8
+	KGCjTiIfTy5NkgYZsQSMshpadHvqs1zF+D+BiMdibPaxCVNmzrlcdmNZJrX3OATSDbWsGZMYtMC
+	qdLIp8y7QytVp2uzyHMx2u0U+hLXFGt2ywK01eAdrZMUy1v2jn5QnkM/2K5SXBGZpiTKDCwjmWw
+	2kUxvi72hGHlayJShYToZ4F026eqz5kNNMibsdrN8OiWE0qb8ZdRm0zzPlzJuwqaH3tu2eGjebP
+	nONpvfj36QNmWA21AyBJ96O58u3KbbgPoZ7nfweX1fzMUvNYFczyfPAkrJE8KHYhbOOEpYDKVzU
+	DzLw9JMdyp6fpfmha5RofchwkCuV
+X-Received: by 2002:ad4:5d62:0:b0:91e:9d64:3294 with SMTP id 6a1803df08f44-91ed240d34dmr24616736d6.30.1794157157397;
+        Sun, 08 Nov 2026 08:59:17 -0800 (PST)
+Received: from rowland.harvard.edu ([2601:19b:d01:d210::66b0])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91ecedbefb2sm22431036d6.17.2026.11.08.08.59.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Nov 2026 08:59:16 -0800 (PST)
+Date: Sun, 8 Nov 2026 11:59:11 -0500
+From: Alan Stern <stern@rowland.harvard.edu>
+To: Leon Romanovsky <leon@kernel.org>
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
 	Danilo Krummrich <dakr@kernel.org>,
@@ -76,12 +113,13 @@ Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
 Subject: Re: [PATCH 05/17] USB: Lock registered interfaces during manual
  driver binding
-Message-ID: <20261108110909.GA8635@unreal>
+Message-ID: <647f3199-909d-425f-b485-b598a18844d1@rowland.harvard.edu>
 References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
  <20261105-device-trust-core-v1-5-1e536825b4eb@nvidia.com>
  <bb83fe3c-cebb-4bc8-bfc9-24df1cf72b0b@rowland.harvard.edu>
  <20261105184442.GF8298@unreal>
  <bf756e50-c77e-40f2-916d-e88887426806@rowland.harvard.edu>
+ <20261108110909.GA8635@unreal>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,44 +131,46 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bf756e50-c77e-40f2-916d-e88887426806@rowland.harvard.edu>
+In-Reply-To: <20261108110909.GA8635@unreal>
 
-On Thu, Nov 05, 2026 at 03:04:18PM -0500, Alan Stern wrote:
-> On Thu, Nov 05, 2026 at 08:44:42PM +0200, Leon Romanovsky wrote:
-> > On Thu, Nov 05, 2026 at 12:24:33PM -0500, Alan Stern wrote:
-> > > On Thu, Nov 05, 2026 at 01:42:18PM +0200, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > > 
-> > > > Interface claims hold the USB device lock, but device_bind_driver()
-> > > > requires the target interface lock. Without it, trust-policy writes can
-> > > > race admission.
-> > > 
-> > > This says nothing about usb_driver_release_refused_claim() and the code 
-> > > related to it.  It is an incomplete description of the patch.
-> > > 
-> > > Note that nothing prevents drivers from using an interface they claim 
-> > > before that interface is registered.  For your scheme to work properly, 
-> > > you should make sure the claim is authorized when 
-> > > usb_driver_claim_interface() is called, not when the interface is 
-> > > registered.
+On Sun, Nov 08, 2026 at 01:09:09PM +0200, Leon Romanovsky wrote:
+> On Thu, Nov 05, 2026 at 03:04:18PM -0500, Alan Stern wrote:
+> > >  it ensures that the lock is
+> > > acquired when the driver is bound.
 > > 
-> > This patch is unrelated to authorization;
+> > That may have been your intention when the patch was created, but if you 
+> > read the patch you'll see that it includes a whole bunch of material 
+> > not related to locking during binding.  Namely, this part:
 > 
-> I meant "authorization" in its generic sense.  When you don't trust 
-> something, you don't authorize it to do anything.  Pretend I had written 
-> "the interface being claimed is trusted" in place of "the claim is 
-> authorized" above.
+> Once I added `device_lock()` to `bind`, I had to add it to `unbind` as well.
 
-I will combine existing USB authorization scheme with device trust in v2.
+Obviously I'm not making my points clear.  Let me try again.
 
-> 
-> >  it ensures that the lock is
-> > acquired when the driver is bound.
-> 
-> That may have been your intention when the patch was created, but if you 
-> read the patch you'll see that it includes a whole bunch of material 
-> not related to locking during binding.  Namely, this part:
+The entire patch description, as you wrote it, is this:
 
-Once I added `device_lock()` to `bind`, I had to add it to `unbind` as well.
+> Interface claims hold the USB device lock, but device_bind_driver()
+> requires the target interface lock. Without it, trust-policy writes  can
+> race admission.
 
-Thanks
+This says nothing about holding the interface lock during unbinding.  In 
+other words, it isn't a complete description of the patch.  It implies 
+that the patch changes nothing outside the device_bind_driver() 
+function, which isn't true.
+
+Furthermore, the patch does not change any of the code in 
+usb_driver_release_interface(), which is where unbinding takes place, 
+because that routine already takes the interface lock.  So to say that 
+you had to add device_lock() to `unbind` is not accurate.
+
+Instead the patch adds a new usb_driver_release_refused_claim() routine, 
+plus code in usb_set_configuration() to call the new routine.  The patch 
+description says nothing about either of these things.  Not to mention 
+the fact that your other changes make it now possible for the driver 
+core to delete an interface claim when the interface is registered, 
+something which was not possible before.  This is another inadequacy in 
+the patch description.
+
+I'm not saying that any of the code is wrong.  But the description does 
+a very bad job of explaining the new code.
+
+Alan Stern
