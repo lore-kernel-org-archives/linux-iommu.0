@@ -1,99 +1,147 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.182
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794103555;
-	b=fL3sqffxyb5oyNVGdnk/5M7stG1pB4YfVKFPzetu5RUwzDaBNM1o0HdbgoMIscZseInj
-	 4DSqXIoavM/7n5coqcGAxKrHHMHZSqa1iax4CeKnu8KaAKwvy3Obq8Z5x0/cSFiiOGQnv
-	 DXUhSMrPoP9luwYL7rtM9gnyxTXI/Nt4xWyMygznLp0iljSHIG628+fzha+MXRM4gjT8y
-	 W/7tR+dCfD6/DgnRsrIPgvkkj9Ll38HhqQArdnm2K1r8Eeg3UHyy+MEeloxSN12wYABZh
-	 yWR7S0StmVRLMo6LKGmUOhB2n3fQ9lj/As+G5PRxHw43/rmqfOjTviGXC+wVWlguS4A==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794103555;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=tZ3cb3vI/JlKWC9M4GlF0iTBKf/jfDE7Mio5RIYSa5U=;
-	b=CrkUdw8AaSRb07MSejS3sOSAvAQMqk9PK10J2Bb+frHPnZcZzt4Wnb6P1vbz/yFAdkWM
-	 ZIBjdj2QX/d+ZvkusB+qUZARccih82eqA/poEoQ3isKP/InDek1yBQ/HtQuFlbm0C4HVw
-	 mO99OT9i+150RX/ISZYcDAVmhrY91EXp9zXXtvxuG9Zij3PWpKmfByG57PK4JDsTOc08P
-	 90jUpWfcxSkKoge3bgzCrdBwfs7ws+vHXDOpgBopETDp80YTs7kQEWC6fQ3orlr3H9hCM
-	 MDrWookmMAWzYCIU2sPaSFSKNIpOt+pWsIxmZK6guFpBTK3r252kDe8cIcJnGPlLrFQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=R7iOdzj0;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.160.182
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.154
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794121177;
+	b=UznCsFf/6pCiJMfzjAVsHeskP99MFpvkIrubPMdvm6EUu9cgUQ271NAh7PnbBUi9TiWX
+	 0ff7WV1NQYphrdunrgzG2g2YpN7Gy3eZiDPGqAJAqAVU9MqkN0TydsCyT5zGc6wgrJfQj
+	 K2AV6PgUK62CMXAw3edBH+4D1np5nBcJc+NAUtC6QB9x+yP/0UnQNIpT6z/iDemFozgZ1
+	 3v+TGJqrt/yCKneW4ReZSalnchMPBEZugMgo7dpkX1PDjah1rafUD6c5G1gp678gEHo5K
+	 K3bilQ51Qr+nfhF1UcZ90Z01vyqvvFptWUFd9yQYQrn6FVMBJhX4wbSfL9GeSqKrWHQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794121177;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
+	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=5c5YwQfw6glIQ3sp4LG2WJX6kW+CuAO4TASY3DLJo6c=;
+	b=kl4hVJKr3L7AQe+IA46GmF1M5FdElXCUVQAQO/0AI5Hy5gw+J+s2x4L3nzEqEXq1XlPA
+	 /nhhASuwMVqF4PBxxu/IbNjqQVQp4A/J1cceY2IBQUjUTZq/x/dCs1LP3OjqkDE8yEJfW
+	 yWdq6YhsqcKhSHSzgj8B+NJxQvsVlGsACzkIdGF/iCkyPliDLLCLx3i9WBaAH13bmi4i0
+	 jyKCiBnCHT1kcivQUqCoitKIbCLkJH40pxzyvKBHGDO19QTgzTwYA723ls1S39SRGJ3XC
+	 Hmg1s0lK2oAcU7h1XzXndY1a1pY7zCTAY+fajU3G3BKc0jKOBKFxhL3e4NjyPkovTBQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gahingwoo.com;
+	spf=pass smtp.mailfrom=gahingwoo.com;
+	dkim=pass header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=R2pCNZfs;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=BaiwJNkM;
+	arc=none smtp.remote-ip=202.12.124.154
+Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07225606A31C
-	for <iommu@lists.linux.dev>; Sun,  8 Nov 2026 02:05:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 07225606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FFD2606A333
+	for <iommu@lists.linux.dev>; Sun,  8 Nov 2026 06:59:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9FFD2606A333
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=R7iOdzj0
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-54492d8a988so4031cf.0
-        for <iommu@lists.linux.dev>; Sat, 07 Nov 2026 18:05:54 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794103554; cv=none;
-        d=google.com; s=arc-20260327;
-        b=lsD1Du+fIV7vsf+7glvIrm6eX0x0ZWpaWv1m7jbBlkESGCJebJrq/lGptpTMTWK9u6
-         uoFszD8i9QZxYUdthnJK06SXI5UThC5Sm+G9tGSgGVJ+c/3GDQ1KwoV8gHN1z/l0DKw6
-         dLnsF3OwLZKCKgRmLUEJiEkit6m0x69BxDYTKQEhIH+DU1GDSV/2Kf4B6WTIGKBWTjI9
-         ytKXb1fF2olt0YnA4c8iVl5dQ/eOzBYlDD5OUySVPqrmgKz369n1KxtFxIaWUKXv495B
-         S6rDpzAAcvHkqpRERBJz4BwGxscFTeIty2OrNEnOlpgDNUDwDYg7C5X+DPDCVumtTChC
-         nOyQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=tZ3cb3vI/JlKWC9M4GlF0iTBKf/jfDE7Mio5RIYSa5U=;
-        fh=tE67N7RfFyukiUoLNb6goSpOWcOsVAOgwwwl/IFlBL4=;
-        b=sTXLwQVeEJaB7IjvJ24a1Fr82E7POJbOG//hKvWCqhFrYv2i3+oP47PvwBWR2lAbwq
-         HLlA+oBBgdrvY7I/a/+ijRiRbqrPD9lSoJlCaLCqMEiZi9mlMiVZ9wXOaxT1z1dOYzXH
-         ofdaKXoVtFnXT50okBryTXiDHoo9H7Jq46BvwzbdK26wlGpbP7zmrTAgVW2i8EAmDDPN
-         B2cltz35IwVlyqDGQBp03uXsahzwYaCxhTK40ilJgDkmYkz36l+W71qWJEEF9mc2LfZx
-         y7v14BPzmznTGsnb5+CiHfcq9IL71pwU3xQ3FdniXyrSZ1zIKFPa0A0TSaNAVLatO0bp
-         vW8g==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794103554; x=1794708354; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=tZ3cb3vI/JlKWC9M4GlF0iTBKf/jfDE7Mio5RIYSa5U=;
-        b=R7iOdzj0cZ8JGaGPT81MCzLjpFQgDVtzGScHOBKJc597lx5D7C3jCR+dE8lPlgjl09
-         aFsQ4PS4TYOYJzq3BBEQtaLV/HpuG/IDJAOGipUq8QbS+lSGcL4jNVldB0RSD18wSgPe
-         1GW1upy/Vyrr/2oTy7ssDLemmayXPrXVzHXHzfPSwjUISZ6dgDYWM3FkZy7sWLCqY6/4
-         Do8ChL/FYuWA1X9kg87W0J3nchyzMDoPH9EDa/xDLfNrZg4pnajfsGDhfIRwgyrxtnQs
-         VzaBdEP7fNbis5CLVcqE6qlcvQTTVB39mUzqCutimop/IbiXtf0Rlr+zmDPSeFqgncfj
-         JcFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794103554; x=1794708354;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=tZ3cb3vI/JlKWC9M4GlF0iTBKf/jfDE7Mio5RIYSa5U=;
-        b=QbSHDYecXIuC7fdnwRE9Ibmy83hQawz8fWU+OyS4qyEcBoJ0XzSeCIc1FkiythDyWh
-         P9pHId8bGXZnFmHflvH1YJVt82k0NczBNK7jNyOXkhn0ACEeRJNV2o1H6xgysJfsZhKm
-         Xvsdz4iMURRDO1kQ2S3RdvIB47Cp9Arq/CzF9riKIvjo+5wnrFv3RbHp2t1c4LUPDeto
-         zgK8i5yvFEXnRWmp5KsJvE1lOLkCD8wptoLg0hPsCnavD5BnGpCsi98yXvVvUAv6zc53
-         8AnxmcdF1Nx1dfzu9rpR+WfkuCwE8GIvejiR1myn5tiHEv7gXsEOTNkxxya3or2v6H5s
-         /Gyg==
-X-Gm-Message-State: APuU4Z/oP2I4J8QY6le3W0uRD08q1nEvzUc8xSm8odw+/kjDtrjzf2L5
-	vDyfAL58NqK7ujWpIZkjfNcIctjVyu9ygOJuoZ8zm/zf9qaFI3CkF32fNxfqeS7ASF8F2ELMTcU
-	guasuImLp5gXW66JKBYKFdlK1eCtEelstJMb7nSvF
-X-Gm-Gg: AYBFou2I8O8tEgQ4Iop1Sm+I+a0xPmV6TN17m3Q+b5kwIU/CaupKV4BUZYCki4r5iJq
-	mtLKzdHkf/AGu6oGAZy1y3b9YpMm/L+E87rH8dNq9uE7j5VLUJKF/IC+1yg3gRbfVwiwvt82IWz
-	uOm+VhHTnj9KspcUDM80Sb9+fPNmSgkgvThNvsofPkWHSOTBwuWmfMRG+3QslIye4XDpR4z0J7I
-	sqy3DjuWvAunlVcFyK+Z7n+9oYLamVBo4tBcxRNQ7LhlP9ZqfeOxm345x4SqjbL8UbnZKRFWFPX
-	/n2AIFkWpOj2PXndcwzIn6iHm3gGVGAQOaE3+hqVpGy7fzwafOWanVafsI27MWjKT6a2ByN3fl6
-	eb9izTxQhozUUrOhbXjX/jHVOOFqA2k4Dyw==
-X-Received: by 2002:a05:622a:8842:b0:536:353e:8d2a with SMTP id
- d75a77b69052e-54f9de1134amr17137481cf.1.1794103553216; Sat, 07 Nov 2026
- 18:05:53 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=R2pCNZfs;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=BaiwJNkM
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id BE9C67A00F7
+	for <iommu@lists.linux.dev>; Sun,  8 Nov 2026 01:59:35 -0500 (EST)
+Received: from phl-frontend-03 ([10.202.2.162])
+  by phl-compute-05.internal (MEProxy); Sun, 08 Nov 2026 01:59:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to; s=fm1; t=1794121171; x=1794207571; bh=5c5YwQfw6g
+	lIQ3sp4LG2WJX6kW+CuAO4TASY3DLJo6c=; b=R2pCNZfsdGPizmH5CFvrMPVhSi
+	OAJH4u+rQ0yqv9p2Wtb10U/13JqZ5eHfEorwGfC2TP5FmVf0nPdnHtcyNun3ysvt
+	ufyX+AM3FCXyAr2ketrgBeEX0Qzx+sNt/hCclyEjNZCgyLiQNznmBBI+3YbRDbno
+	JyPb36dliryUdP4JKJJwLytADlpuTypj+LaXNGKNHcZ9MJ/mzQ4jC4tbd5nW/TNc
+	vR8SIhr4MSa7F/AecrkXBnk2ZvzcWefNG2F1QlvRpz5hQR8rxjFpX1WiN5vkLDT9
+	hagwji5hLb7FRepYcdp7Rg1r40EiH7Q5hE6tCsgm75hQLBXcuL4NRjgWJcPw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:message-id:mime-version:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+	1794121171; x=1794207571; bh=5c5YwQfw6glIQ3sp4LG2WJX6kW+CuAO4TAS
+	Y3DLJo6c=; b=BaiwJNkMLqwzOWQcRZZ7F8J83bvyMzXYj1itNLJhGP6dGbo9VDY
+	fLZeL+XvErD1jsMz97S3E8Vsc3MkzgA32Oh2FRvcTgA7rUrs62zkEK6EhrltO8pU
+	VH4zdoatvU9MntcNB7v9MODrE7shoTSWG9K95BuAmica6z5kyXvGAZlzG2WECaRp
+	vipYBrPTj4UE9uZgEhEjPkmbCS9LUxX8jiYyUFLT6cNv1Fj7mAOBwLHJzxtGOrn9
+	jz8mgrf0BT+jU1SIpi6VYqO6GJU3162g0Bgh68h0WA91YhcS1/X+kW25pdtbx/+h
+	mDOmyQY2G8whs6UBQJ6mStRI8jMlqEtR7jg==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=sign d=gahingwoo.com a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1794121171; d=gahingwoo.com;
+	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
+	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
+	s=fm1:rsa-sha256:TVVPYZ/CjxyXc2LlI+kNJ2l1D2Z1BpQxTS5ZwJtVTdJ/FHK
+	j67enW2xpsHy/XULYft22Ix9j4YWO681gsj0xua9WRIwPMZLfeo4gTFX+cM+S3je
+	MNAB75b32QxVgfxvMPMc+wHH9lqDAntkz/Wwo0pWz0mUt6W3stRp8WHx9lOhWq/l
+	m+CDJz3+YCQ2JDn09jirGSVrI3sf5k/e8AI7PZrt3BD0szJQjdHcGwTrsCstk5p5
+	ZgDXqhIwczJvfzXGMS42yZEI7nc3R0S140RgDTBFXAFwuPKHId8dxCV25Pr323wd
+	wxwmhJ9yTqcft1TtJHK27Um9OnKbSJuVa/tSI8w==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=mi-m=1; hc=9;
+	hn=cc,content-transfer-encoding,date,feedback-id,from,
+	message-id,mime-version,subject,to;
+Message-Instance: m=1; h=sha256:0Hb6NGQTbSiP6J9K8ROHO2Z8lf23EXIb76JFPze2l+8=:lIARtbVoyFTth3P9LXxTFUZ0gGbe4ogIP4TasWzB74c=;
+X-ME-Sender: <xms:0R3wakADAhVpUtvk0PojSS1Fnbs5bIIv-h-f4KepwONWz0JXkGPTWw>
+    <xme:0R3wai9jViP-GoO5mFkUCsW0FRJIBf99zjIrOlzqV2HSoIm4pFW9XwZdTzEbocA0-
+    Vr1kHxA5kvswsCv-jvvAYC95UbWGG6lbKNwp7caIK6QcN_S277Mu43g>
+X-ME-Received: <xmr:0R3wau2_FuWMJ9JmGKBnZLwinNaEct-wyhcsqRHrHQ6jIUjj6HULVeQyJFZ2BKy4e8uQffK9>
+X-ME-Proxy-Cause: dmFkZTFWwKTEx2JlF6gbxz/CcZ5fOIEPMTwVUWzP082guo7LQMgK7h789MowHkag1AGdJv
+    Qi5S3iCW7IkIlV0pVZbVxPkmE51+n7fGqs28fdNBe7OImR6ZReSfOcge1vefQ2dYIPjd/3
+    8oouzHrOzwizmnPo1Jrj2K0Cz6p+y7cnDV1Q7f64sIfTb/RehvLUFbgwKi6YssWkzdFwq6
+    PiOomVYP7898vo56/KT6uE/vFspwIACRCqrPnfnGSDvko45DWPmIgV1QsN1iiB6XoRbR5/
+    hqF7mdebvlnyTwN4YuJ6h5Db0Q4msVL+t3WXN9SrQ1fzPlgWJWmpS+HhRxJYCi1m+5oETc
+    Hf/c0rOLaIGYwsXYUJk9RDSvEHRxWZa5odvrMxGFaVYAzpZ+RJ6pmy7HNp+L6KNMbjZvcs
+    5w4IeTnfFHNhPQQDXU6R0fvBgaB8bdUCo2xV+DP47ptSNs2iew7ns9kHjQaMGBcENSDf6/
+    1n/tGYGTDpygfLAksUvvLewffFcyx3AiAuqTTRNQpBYBRjpD3ImuWZZwEIJ7NaPqz2Ep0i
+    18NtNYfg3+xwDtsI5f84X0HU/kW5w1owhcdQZh5+RAm/sDzXXggz/GJ3dNjWp/b9ew7SN/
+    tfKtl6cZGQqJIXK0jvbXvDXh6ES2z+DXksOqFyi8EDmUX3DsGB8IwnAhIF2g
+X-ME-Proxy: <xmx:0R3wahTC7yxmYtakbLUznZAn9t9if0Fy93KVG1ar7_RatWT5ahJz_g>
+    <xmx:0R3wapj_xiA45HSZ_mXP_UzBWDt_4dsh_9Qnbbrj15vMN_mZ60ub7g>
+    <xmx:0R3warZa_YTgKxAvMtBxd5tRo-OKbLO7byRud17rUUgFTasbB4wgfg>
+    <xmx:0R3walEYCYjyyHdOG4qxGLNKQPqPju1LTZLedIb1PASn4FGkBN_9wQ>
+    <xmx:0x3wak7QszLLyOVvxgx-4hIUGD2clfHh3Rw9oszNcOA9TTF1ZsIPB8xj>
+Feedback-ID: i7a5e4b5f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 8 Nov 2026 01:59:19 -0500 (EST)
+From: Jiaxing Hu <gahing@gahingwoo.com>
+To: tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	ulfh@kernel.org,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com,
+	abel.vesa@oss.qualcomm.com,
+	sebastian.reichel@collabora.com,
+	sidong.yang@furiosa.ai,
+	u.kleine-koenig@baylibre.com,
+	chaoyi.chen@rock-chips.com,
+	shawn.lin@rock-chips.com,
+	finley.xiao@rock-chips.com,
+	diederik@cknow-tech.com,
+	alchark@flipper.net,
+	leonard@lausen.nl,
+	jeff.hugo@oss.qualcomm.com,
+	rfoss@kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Jiaxing Hu <gahing@gahingwoo.com>
+Subject: [PATCH v16 00/16] accel/rocket: RK3576 NPU (RKNN) enablement
+Date: Sun,  8 Nov 2026 19:59:01 +1300
+Message-ID: <20261108065917.135194-1-gahing@gahingwoo.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,127 +151,112 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261004195027.227748-1-danielmentz@google.com>
- <92758f79-d5b7-4c15-a55d-6bea5f84a028@arm.com> <CAE2F3rAJdC9pAqMKcXhxpw1keGzH_kQUNBoPHXjTP8+7TOhfwQ@mail.gmail.com>
- <ae8db5bf-9f9e-4f0d-afa1-91718323568e@arm.com>
-In-Reply-To: <ae8db5bf-9f9e-4f0d-afa1-91718323568e@arm.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Sat, 7 Nov 2026 18:05:42 -0800
-X-Gm-Features: AclHuK9EOG_P4byoqFnHT9I6oYEPYHsXYF7yVIBFj_Z2u0jA_efLpQYmTCcKiXc
-Message-ID: <CAE2F3rCocgqvmfhALrdo2VfLuyt0=oQD0zFUKLb5E+0deWgEqA@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Align memory attributes for
- SMMU-originated accesses
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, will@kernel.org, joro@8bytes.org, 
-	nicolinc@nvidia.com, smostafa@google.com, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
-	dawei.li@linux.dev, jgg@ziepe.ca, praan@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Wed, Oct 7, 2026 at 9:40=E2=80=AFAM Robin Murphy <robin.murphy@arm.com> =
-wrote:
->
-> On 05/10/2026 10:26 pm, Daniel Mentz wrote:
-> > On Mon, Oct 5, 2026 at 9:42=E2=80=AFAM Robin Murphy <robin.murphy@arm.c=
-om> wrote:
-> >> This still isn't answering the question of "why?" though. Yes the
-> >> architecture says some things, but if we were strict about avoiding
-> >> mismatched attributes then Linux couldn't ever support non-coherent DM=
-A
-> >> at all! Similarly while the architecture does permit SMMU
-> >> implementations to be picky about their output attributes, does any su=
-ch
-> >> implementation actually exist at all, let alone in a system capable of
-> >> running mainline Linux?
-> >
-> > Fair point that existing implementations have been forgiving in
-> > practice. My thinking here is simply that a small, self-contained
-> > cleanup that brings the driver into line with the architecture spec is
-> > worthwhile on its own merits, even without a known implementation where
-> > this currently causes problems.
-> >
-> > This is really in the same spirit as your commit 7618e4790982
-> > ("iommu/io-pgtable-arm: Improve attribute handling"), which aligned the
-> > attribute handling with the architecture specification on the basis
-> > that:
-> >
-> >    "Although the SMMU architectures seem to give some slightly stronger
-> >     guarantees of Non-Cacheable output types becoming implicitly Outer
-> >     Shareable in most cases, we may as well be explicit and not take an=
-y
-> >     chances."
->
-> That was more about being self-consistent and technically compliant with
-> VMSAv7, which again is not relevant to SMMUv3. In fact if we _only_ had
-> to support SMMUv3 and not arbitrary other io-pgtable users then we could
-> point to 13.1.7 "Ensuring consistent output attributes" to prove that
-> that change would not have been necessary.
+This series adds RK3576 NPU (RKNN) support to the mainline DRM rocket
+driver.
 
-If self-consistency is valuable, that is really one of the main
-benefits this patch offers. Right now, when ARM_SMMU_FEAT_COHERENCY is
-not set, the driver tells io-pgtable-arm to configure translation
-table walks as
-iNC-oNC-OSH (via coherent_walk =3D false), while configuring STE
-fetches, CD fetches, and queue accesses on the very same SMMU as
-iWB-oWB-ISH. Aligning SMMU_CR1 and STE.{S1CIR, S1COR, S1CSH} with the
-page table walk attributes makes all SMMU-originated accesses
-self-consistent.
+Based on: next-20261105
 
->
-> > As I noted in my reply on the v1 thread [1], under ARM IHI 0070
-> > (sections 3.15, 6.3.11, and 13.1.2), a non-coherent SMMUv3
-> > implementation (SMMU_IDR0.COHACC =3D=3D 0) in which every SMMU-originat=
-ed
-> > access configured with Normal Write-Back, Inner Shareable attributes
-> > fails and records an External Abort (F_STE_FETCH, F_CD_FETCH,
-> > CERROR_ABT, etc.) is completely architecturally compliant, yet wouldn't
-> > work with the current arm-smmu-v3 driver.
->
-> Sure, and another system could only support iNC-oWB, wherein this change
-> still wouldn't work. If you want to argue against making assumptions
-> about the implementation/interconnect, you can't simply make a slightly
-> different assumption about the implementation/interconnect ;)
+Changes in v16:
 
-I don't think this is trading one assumption for another assumption of
-the same quality=E2=80=94it is removing an assumption and strictly increasi=
-ng
-the set of supported implementations.
+- Tomeu: rewrote the descriptions and code comments of the accel/rocket
+  patches; I write them in Chinese first and translate them into English
+  with an LLM. Added a GET_PARAM ioctl that gives userspace the NPU
+  hardware version (13/16). Please check whether the proposed enum values
+  are fine (RK3588 = 1, RK3576 = 2).
+- Heiko: shortened the commit messages of 1/16 and 3/16 and kept the
+  original comment in 3/16; moved to one power domain per core, and cut
+  the IOMMU clocks from five to four. The measurements are in 8/16 and
+  15/16.
+- Chaoyi: removed the unneeded comment in 11/16.
+- Sashiko: 4/16 now drops the runtime PM reference after
+  rocket_core_reset(), with an A/B test showing that the old order hangs
+  the board.
 
-Because io-pgtable-arm already uses iNC-oNC-OSH for non-coherent Stage
-1 and Stage 2 translation table walks, the driver already requires a
-non-coherent SMMU to support iNC-oNC-OSH. Before this patch, however,
-the driver additionally assumed that a non-coherent SMMU also accepts
-iWB-oWB-ISH for table and queue accesses and silently degrades it to
-iNC-oNC-OSH. By using iNC-oNC-OSH consistently across all
-SMMU-originated accesses when non-coherent, we drop that extra
-assumption rather than introducing a new one.
+Testing, on a ROCK 4D and an ArmSoM CM5-IO, both running Armbian edge 7.3
+with the v16 changes:
 
->
-> In fact for maximum fun, you could even have an interconnect that only
-> supports the iWB-oWB-ISH type, but the SMMU is still non-coherent since
-> it's in a _different_ inner shareability domain from the CPUs...
+- Tested with charsiu (https://github.com/gahingwoo/charsiu), an open
+  source LLM inference runtime. It drives the NPU directly through the
+  rocket UAPI (/dev/accel), without Mesa or the vendor runtime.
+- Llama-3.2-1B (Q4_0), with both NPU cores running together, gives
+  correct results.
+- Perplexity on the same model and the same text is 41.1009, identical to
+  the previous version.
+- On the ROCK 4D, tested IOMMU clock combinations; four clocks are needed.
+- On the ROCK 4D, repeated resets with a 2 ms job timeout, to compare the
+  two orders of dropping the runtime PM reference.
 
-I'm certainly not claiming that this patch adds support for every
-conceivable interconnect design (and such a system wouldn't work with
-io-pgtable-arm's non-coherent page table walks today anyway).
+Armbian has merged support based on v14, in armbian/build#11162
+and armbian/build#11163.
 
->
-> Yes, 13.1.2 "Attribute support" says that the system may not support all
-> memory types, and unsupported ones may abort, but then equally it says
-> "[...] the SMMU is not required to generate attributes that it does not
-> use. With the exception of R/W, INST, and PRIV all configuration fields
-> that affect unused attributes are IGNORED." And this is why the
-> mismatched attributes argument doesn't stand up on its own - without
-> knowing the system-specific details of exactly what is being ignored
-> from what we think we've programmed, how can we say what the actual
-> attributes used to access memory really are, and thus what is or isn't
-> mismatched?
+Known issue: after repeated resets with a 2 ms job timeout, the IOMMU
+does not recover ("MMU_DTE_ADDR is not functioning"). I have not looked
+into it further.
 
-It seems to me that our goal for a generic driver shouldn't just be to
-support a set of known implementations that happen to ignore these
-fields. Instead, the driver should follow the architecture
-specification as closely as possible.
+Tool use:
 
-Thanks,
-Daniel
+An LLM helped me read code and technical material and write part of the
+implementation. Some of the code in the series was first drafted by an
+LLM, and the commit messages and cover letters of earlier versions were
+mostly written by an LLM.
+
+I reviewed the generated code and tested the changes on real hardware.
+I also used an LLM to write test scripts and to compare register write
+traces.
+
+For v16 I rewrote the cover letter, commit messages and code comments
+myself in Chinese first and translated them into English with an LLM.
+
+Tag changes:
+
+- Picked up Heiko's Reviewed-by tags from v15.
+- 4/16 changed after Heiko's Reviewed-by. Heiko, please confirm whether
+  it still applies.
+- Igor's Tested-by on 4/16 was given on the earlier code, so I've dropped
+  it until it is retested.
+- 8/16 has Conor's Acked-by. The clock count changed from five to four;
+  Conor, please confirm whether it still applies.
+
+Igor Paunovic (1):
+  accel/rocket: request the core clocks by name
+
+Jiaxing Hu (15):
+  accel/rocket: take the completion register writes under job_lock
+  accel/rocket: wait for a running IRQ handler before resetting a core
+  accel/rocket: let the core suspend after a reset
+  accel/rocket: factor the completion tail out of the IRQ handler
+  dt-bindings: npu: rockchip: add rockchip,rk3576-rknn-core
+  dt-bindings: power: rockchip: allow resets in a power domain node
+  dt-bindings: iommu: rockchip: describe the RK3576 NPU MMU
+  pmdomain: rockchip: add optional per-domain power-on settle delay
+  pmdomain: rockchip: cycle an optional power-domain reset on power-on
+  accel/rocket: select the per-core clock and reset counts from match
+    data
+  accel/rocket: add RK3576 NPU (RKNN) support
+  accel/rocket: add a GET_PARAM ioctl for the hardware version
+  arm64: dts: rockchip: add NPU core domain clocks and resets to rk3576
+  arm64: dts: rockchip: add NPU (RKNN) nodes to rk3576
+  arm64: dts: rockchip: enable the NPU on rk3576-rock-4d
+
+ .../bindings/iommu/rockchip,iommu.yaml        | 26 ++++++
+ .../npu/rockchip,rk3588-rknn-core.yaml        | 40 ++++++++-
+ .../power/rockchip,power-controller.yaml      |  8 ++
+ .../boot/dts/rockchip/rk3576-rock-4d.dts      | 22 +++++
+ arch/arm64/boot/dts/rockchip/rk3576.dtsi      | 82 ++++++++++++++++-
+ drivers/accel/rocket/rocket_core.c            | 14 ++-
+ drivers/accel/rocket/rocket_core.h            | 10 ++-
+ drivers/accel/rocket/rocket_device.c          |  3 +-
+ drivers/accel/rocket/rocket_drv.c             | 61 +++++++++++--
+ drivers/accel/rocket/rocket_drv.h             |  2 +
+ drivers/accel/rocket/rocket_job.c             | 84 ++++++++++++-----
+ drivers/pmdomain/rockchip/pm-domains.c        | 89 ++++++++++++++-----
+ include/uapi/drm/rocket_accel.h               | 40 +++++++++
+ 13 files changed, 419 insertions(+), 62 deletions(-)
+
+
+base-commit: ddfe51b0a0f5dc9e415cc2c8ad8db17532dd426b
+-- 
+2.43.0
+
