@@ -1,88 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794218843;
-	b=aRaGd5F2KtS9oC5S4IdDO9amT/HuEGAddl+hS9d32hPIlv27BtGvcBpabXwoT1oYnsdU
-	 ShQs3oZ7nQixrolNxzwTzjkMM7G7l7LC+hZ1Zt1f9oxUwpdUihSP/JwykkueRVlS2MB6T
-	 2VSkBrFaoQm6lCkD5JqsyJ4//vgRQ/4mrpDGOhV1n/cHXaJJXvmMhj1W+mo2SbhRi2N+Z
-	 3lBMjjuDncMf5UgjBVSYHWMp+vBd5CYWU4HLeyQCnuCZDM+HhN7VyaLwv4ztqbPKUOI1Z
-	 ozN0syDksCWFgEu5nxKNYJTXcGTfE/Y/u90i96pRCN05qpD0InNfFWzgB/tGm/AHbEw==
+	t=1794218858;
+	b=BY8TPUULHhq47PugdvBcANXZFD2C66ya+MVwe3eLc1nff+gDxf94ZDVQV73jzDgWNS4g
+	 sKTKlvoSdXk4ylXyq327VHhlqs8yR7uYGsyas46OH5Lcn797zb+axNMPtUgkRf9UvAZBU
+	 ao6dPHQjoT7S1ovZYEghuOkX9RBnCkWqU/J+ALwdcHDp/SmwL0JhcLce182czw+Usbabl
+	 Q6ZUW91JRfVIiFSDYIrAXypXKGLWV8S6AjlVg4tocaKvXRiHKNBcAPT6NLlsvj9GUzh3Q
+	 fuN3FwwLsFt7VRmrybwEDs8hU05VVScQVbwbvmBoiZ3ap/mPloLrwhMWs2B9wSuR5gg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794218843;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=BCv0Nnsjb1CATtKd+NoK/9Eh7t2jtA8IE/DMvxos3og=;
-	b=mjx6XHngkNYwtsZv0qGgOqNgka1y3arxdM+dT93lMrronU3s8hrgAlyQNJjYquxpxQUc
-	 j3o1pArgzaYGmvXy/13AgLJ5hPpGFeGUXt7HRHrYi2AA2B/64UIPjnKmCAUN69Au1tHxO
-	 YsMr+TwmJ3LsKzSGRsZTG06/j4Dx+cvcSi7/IQ+rPqYdio21m9aZ3MC9pS2xTpv11ezwj
-	 TgNYkhW/GDBs0E9yIGjuDljj+WbyNEtm0U2xTzC+55JnYF52Jyh3JPYRB39GmGnLohM93
-	 5x4qEasVdcoIwi8nwkjK0wOp0wR1w887T1i5uHcZo0YYLhPSaVzZdA5nL8wya99HWqA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794218858;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=Bz0xvoYzYwh65/jPnpZ9VDL5Ou4lONvp9lP3X3Nkvgs=;
+	b=qYsQiC3jP0trKsyJDw6PVzKoAV3RxSA7onawj907aEibyBGxU32r4tmFTLUN4voxEtk9
+	 QmxdMwto/tVBnRmy5s3uojrELGyLjsY29Ok3IaFfFgGP/u6rCRuzfI+sT0UC5OlLJQ3qq
+	 ngiC3L65LXDVv6+MPrxXXSJaPzyUIyD0h+N//kVNbWcW1zLayoiaBzuZRtYeAXrH8mmyO
+	 rGvw+XCQofd6IcCuDWiTIJ/3TirW+3M6GGSqISFlQHV/K0E3nu0wCZXQKKLJT0tKi9P0w
+	 jN7AVjUsI8qdTW2QHWxLNo0XnZMDTCW74rb+361h0tHQEY0tDx2c2fXTi12kCZwMkAA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iceZCnk6;
-	arc=none smtp.remote-ip=209.85.128.49
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=afUEFwZ3;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C371D606D803
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 10:07:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C371D606D803
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA874606D809;
+	Mon,  9 Nov 2026 10:07:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iceZCnk6
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4a2069b9710so5546125e9.2
-        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 02:07:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794218841; x=1794823641; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=BCv0Nnsjb1CATtKd+NoK/9Eh7t2jtA8IE/DMvxos3og=;
-        b=iceZCnk66lK9ylJVC2qDP7oIUCtw8xlAL4Pmzi5siPuSOUPu9+YMNz5v7CgITB3PAx
-         n46Rro8na4wNFvzXoJTOV59doedhDkHS6jTy2YavNRL68rwl9wDbtJ2jnvLoI4LrTBJr
-         2lH5NyYxs5fzGT00RFFcHsQytpXH3AhiEHL5Qlmdmq/DB2CQKkNf04ENhZBaQkRmOieA
-         1KPfqbXQgFoIazbwvbgkfcbPhwnf57HmxQlF78mmIu25592iSjumMPcQrclFt3ifA+6q
-         0rCI5sanSSnmCMf/PLhDNr8+3wlPhpZcSbGlw1qgG/SfjeOIonLKk5jBHQw5zVN4QBG2
-         6TnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794218841; x=1794823641;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=BCv0Nnsjb1CATtKd+NoK/9Eh7t2jtA8IE/DMvxos3og=;
-        b=aksQ4ORB6RiwJaWrTclPVDjAnsXmXGefm98Tay6XNN7AGIX410YpeBd42tVnpQcpLX
-         XY9fpLgA9+xicQJU64E9TzTKMr+waTFVz2Am1VSAUpokCIWUdnN6ck8n8Fjln+3wOcxn
-         1jkPUfNb55W6XKLGy2kD7hJIMDvZ7mVpPSWKcfzt3wGOk5QPwdF2lXiVyiMWK8VhOJNQ
-         OFjHoGP4ZFSrBGRxEgBK6QWtNTTiJm5HKGVJGwKZjjcV/Z/Xvv1B2E8o0TfzExO/4vDE
-         mlmx4P6qitML+dzKoF2mpb4p1k8QFz29LRC7TVhcewtKNJhjFB3iIYTTCqOl1Sy/nLuC
-         Z/0Q==
-X-Forwarded-Encrypted: i=1; AL+hErGIGbdGODsWTkp0GxvEJTdPT0Cq4J+G8IMJod2RYGLIOsowtT6c6xZZzjN0kDQMT/yeXCgWfQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+1NPsQPfFv4sYAIQMecD8wcgrcFuDD+T0e55MRtpHj83IjairA
-	SFxj++fowSFemY5eDiZa5n/JPdXMTyP/sqSsSPl6kL0Dy5dvOM/YNw4o
-X-Gm-Gg: AYBFou0Tc61Wl9zUis332t0raodN4vSDZYjelsTxdI3uJriE+nljJvgvlX+XtYjYkSo
-	h5+RF/v1qUqWDU/qzZqSt+C/3rk297qb41Audn6pSWnVG+bRwkyB6f9/K6PtYm5w2P4SaQqsSVX
-	v+MyKN4GKoprTYKiyiN5CFtSKNE3D/QAGzk9spq7KYQTcmKECqcFuhmdEA3Nny1ty5ciA91Chg0
-	+jgMRtpnEQC1SoBlI9jweY+LHdId/7dXslnblRQQ2k2Oy9taXtHPIOSco6ffW0ocA6mVVzPRdqf
-	TrDmyEWQvMFdRV7Vq8VxTnWGCsomkTNd3NDybZTfwYA9oUrljvC8veYF4NQDoVRN/OuEYkieq6B
-	vjeiTdNlV44ySbsyiy4i77SPtyAPd/xzwZTwUdwInDH2chMc7WfstMq/PFBwihIuzdmnKxeYHVm
-	85wcYmjMNJmh7AWg8P7K9ZdmMDuT3oK4YCF5KrfIFbLQMF8tH3+hRo52WeLrM6t8FK2OC8NMkBH
-	OLltVoJ++7YV7xLluEIYaVZHJYXV9wQS+zJju2lTLvyaSujmjZgtD7uz9sxaKsSp/y30Wgg18l5
-	+ElZcgLJBqHCU5vZAOBZYxo=
-X-Received: by 2002:a05:600c:46cb:b0:4a1:6992:f861 with SMTP id 5b1f17b1804b1-4b94d762ec2mr69628225e9.1.1794218840912;
-        Mon, 09 Nov 2026 02:07:20 -0800 (PST)
-Received: from [192.168.1.22] ([83.231.69.9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4959783f1d6sm8829668f8f.46.2026.11.09.02.07.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Nov 2026 02:07:20 -0800 (PST)
-Message-ID: <bb6fa14e-0a98-4b31-899d-0b1c883d0608@gmail.com>
-Date: Mon, 9 Nov 2026 11:07:17 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=afUEFwZ3
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 369121F008A1;
+	Mon,  9 Nov 2026 10:07:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794218857;
+	bh=Bz0xvoYzYwh65/jPnpZ9VDL5Ou4lONvp9lP3X3Nkvgs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=afUEFwZ3A+zm2lwlCnUzjkL95kbVoJfAR2yvV9Fn2PZvdR/l6AfU6PNJYmnm50Rdl
+	 9fungTpc0+mhQ6bOjVsHeurtsZQROOSCvnaZbdpO66gIlDf90UA5faJBKu7YaZiYza
+	 gMEYRN9389/tFmdz3+HvDJ84kU99IHKAHCaYm6UtjNypCnHoHYlFNCIdG+7VtWAs5G
+	 fRUziMTM2kT4LXkhh3QiuaWdL4jHGz7NhFhqNtipyi6E9sfcCvBwpu81u4k8BQ6Kyu
+	 YrOFrYPqUgrUSKfaCadmzDrgd/w9WJDK1x0l7XgyA0r8CnlzoEHeF/md8CQSCFLDAJ
+	 lv0m06dTE3M9g==
+Message-ID: <4eaff54b-39ae-45c5-a982-44325eacee63@kernel.org>
+Date: Mon, 9 Nov 2026 11:07:20 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -93,146 +52,101 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/5] mm: limit pagecache folio refcount when splicing
- into pipes
-To: "David Hildenbrand (Arm)" <david@kernel.org>,
- Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
- Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
- "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>,
- Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>,
- Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
- Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>,
- Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>,
- Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>,
- Gregory Price <gourry@gourry.net>, Ying Huang
- <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>,
- Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro
- <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>,
- Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>,
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin
- <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>,
- Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Steve Sistare <steven.sistare@oracle.com>, John Hubbard
- <jhubbard@nvidia.com>, Josef Bacik <josef@toxicpanda.com>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev,
- linux-arch@vger.kernel.org, iommu@lists.linux.dev, stable@vger.kernel.org
-References: <20261107-refcount_overflow_stable-v2-0-c38f6809b106@kernel.org>
- <20261107-refcount_overflow_stable-v2-2-c38f6809b106@kernel.org>
- <a9fb2d3c-d518-49d3-9479-a25fa2cfc5b3@gmail.com>
- <8d23b1eb-72aa-479d-9486-dbfd86d8414c@kernel.org>
- <43fc45ff-8636-4961-a80a-29844c15d7a1@kernel.org>
+Subject: Re: [PATCH 16/17] arm64: dts: qcom: Add initial Halliday dtsi
+To: Stanislav Aleksandrov <lightofmysoul@gmail.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Abel Vesa <abelvesa@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Robert Marko <robimarko@gmail.com>,
+ Guru Das Srinagesh <linux@gurudas.dev>, Thomas Gleixner <tglx@kernel.org>,
+ Radu Rendec <radu@rendec.net>, Lee Jones <lee@kernel.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Wesley Cheng <wesley.cheng@oss.qualcomm.com>, Vinod Koul <vkoul@kernel.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ Alim Akhtar <alim.akhtar@samsung.com>, Bart Van Assche <bvanassche@acm.org>,
+ Bean Huo <beanhuo@micron.com>, Stanley Jhu <stanleyjhu@google.com>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ "David S. Miller" <davem@davemloft.net>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>, Amit Kucheria <amitk@kernel.org>,
+ Thara Gopinath <thara.gopinath@gmail.com>,
+ Daniel Lezcano <daniel.lezcano@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Georgi Djakov <djakov@kernel.org>,
+ Sibi Sankar <sibi.sankar@oss.qualcomm.com>, linux-arm-msm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ mfd@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-usb@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-scsi@vger.kernel.org,
+ linux-crypto@vger.kernel.org, linux-pm@vger.kernel.org
+References: <20261109-halliday-dts-v1-0-289114ab8197@gmail.com>
+ <20261109-halliday-dts-v1-16-289114ab8197@gmail.com>
+ <9dbfc665-089c-45f7-bca2-74caee322885@kernel.org>
+ <20261109085019.1751534-1-lightofmysoul@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-In-Reply-To: <43fc45ff-8636-4961-a80a-29844c15d7a1@kernel.org>
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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
+In-Reply-To: <20261109085019.1751534-1-lightofmysoul@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 11/9/26 10:49 AM, David Hildenbrand (Arm) wrote:
-> On 11/9/26 10:30, David Hildenbrand (Arm) wrote:
->> On 11/9/26 09:57, Jose A. Perez de Azpillaga wrote:
->>> On 11/7/26 11:23 PM, David Hildenbrand (Arm) wrote:
->>>> Similar to mapping pagecache folios into page tables, let's reject
->>>> additional references when splicing folios into a pipe if the refcount
->>>> is at its limit, similar to how we handle it during GUP.
->>>>
->>>> This will prevent more cases of possible folio refcount overflows with
->>>> large pagecache folios.
->>>>
->>>> Let's keep it simple and check in the two callers of
->>>> splice_folio_into_pipe(). Return -EOVERFLOW if the limit prevents any
->>>> progress, so do_splice_read() can fall back to copy_splice_read() when
->>>> read_iter is available. This keeps sendfile() and other splice users
->>>> working when ordinary reads would still succeed.
->>>>
->>>> Also fall back to copying in FUSE when taking another reference through
->>>> fuse_ref_folio() would exceed the limit.
->>>>
->>>> Also check in try_get_page() to cover pipe-buffer duplication by tee()
->>>> and partial pipe-to-pipe splicing.
->>>>
->>>> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
->>>> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
->>>> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
->>>> Cc: stable@vger.kernel.org
->>>> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
->>>> ---
->>>>  fs/fuse/dev.c      |  5 +++--
->>>>  fs/splice.c        |  8 +++++++-
->>>>  include/linux/mm.h |  9 ++++++---
->>>>  mm/filemap.c       | 11 ++++++++---
->>>>  mm/shmem.c         |  4 ++++
->>>>  5 files changed, 28 insertions(+), 9 deletions(-)
->>>>
->>>> diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
->>>> index 3641abb90d6bb..4f6b7b42bfd3e 100644
->>>> --- a/fs/fuse/dev.c
->>>> +++ b/fs/fuse/dev.c
->>>> @@ -1265,9 +1265,10 @@ int fuse_copy_folio(struct fuse_copy_state *cs, struct folio **foliop,
->>>>  		if (cs->write && cs->pipebufs && folio) {
->>>>  			/*
->>>>  			 * Can't control lifetime of pipe buffers, so always
->>>> -			 * copy user pages.
->>>> +			 * copy user pages. Also copy folios at their refcount limit.
->>>>  			 */
->>>> -			if (cs->req->args->user_pages) {
->>>> +			if (cs->req->args->user_pages ||
->>>> +			    unlikely(folio_ref_count_over_limit(folio))) {
->>>>  				err = fuse_copy_fill(cs);
->>>>  				if (err)
->>>>  					return err;
->>>> diff --git a/fs/splice.c b/fs/splice.c
->>>> index e6d43329ed3f0..df73a4e65118b 100644
->>>> --- a/fs/splice.c
->>>> +++ b/fs/splice.c
->>>> @@ -956,6 +956,7 @@ static ssize_t do_splice_read(struct file *in, loff_t *ppos,
->>>>  			      unsigned int flags)
->>>>  {
->>>>  	unsigned int p_space;
->>>> +	ssize_t ret;
->>>>  
->>>>  	if (unlikely(!(in->f_mode & FMODE_READ)))
->>>>  		return -EBADF;
->>>> @@ -977,7 +978,12 @@ static ssize_t do_splice_read(struct file *in, loff_t *ppos,
->>>>  	 */
->>>>  	if ((in->f_flags & O_DIRECT) || IS_DAX(in->f_mapping->host))
->>>>  		return copy_splice_read(in, ppos, pipe, len, flags);
->>>> -	return in->f_op->splice_read(in, ppos, pipe, len, flags);
->>>> +	ret = in->f_op->splice_read(in, ppos, pipe, len, flags);
->>>> +
->>>> +	/* Fallback to copying when hitting folio refcount limits. */
->>>> +	if (unlikely(ret == -EOVERFLOW) && in->f_op->read_iter)
->>>> +		ret = copy_splice_read(in, ppos, pipe, len, flags);
->>>
->>> here it can't tell where the -EOVERFLOW came from, if another file
->>> returns -EOVERFLOW (i.e. tty_fops uses copy_splice_read, and
->>> n_hdlc_tty_read() returns -EOVERFLOW after dropping the frame), it now
->>> gets a second read.
+On 09/11/2026 09:50, Stanislav Aleksandrov wrote:
+> On 09/11/2026 09:29, Krzysztof Kozlowski wrote:
+>> Odd license, suggests you copied it.
 >>
->>
->> That's what claude told me during review, and when asked whether that actually
->> happened in practice it said no ;)
->>
->> So is that actually a problem?
+>> You should retain original copyrights as well.
 > 
-> Double checked, claude managed to confuse itself.
-> 
-> n_hdlc_tty_read() can indeed return -EOVERFLOW.
-> 
-> I should just have let splice keep failing, dealing with copy fallback starts to
-> get annoying.
-> 
-> I guess switching to -ETOOMANYREFS should work (and might be a better fitting error)
+> The license is BSD-3-Clause because I used sm8550.dtsi as the template
+> for the node layout. The values come from Qualcomm's downstream
+> anorak.dtsi, which has no license or copyright header. v2 will add the
+> Linaro copyright from sm8550.dtsi. I'll fix the other comments in v2
+> too.
 
-I agree with that :)
+Sounds good.
 
--- 
-cheers,
-jose a. p-a
+Best regards,
+Krzysztof
