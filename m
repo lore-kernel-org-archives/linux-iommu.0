@@ -1,66 +1,136 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.48
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794239074;
-	b=KcLGdYfj++D7cVgovbM85l51nY3kOJvZx44lLgn//tKFysM6+PvXXTvRWYv9Y4Ac2iNQ
-	 CTwZDQllaepmFeyyTF2BNMsNV2daxAxuRFwxbkhjHFJbwpPR/81UN7w8C1ujcTpzo7q2L
-	 lSvHymsQqFT8r7KxixxyaJ/kuu6vQtNWCgu/4efloDItUuYzbGEJEPdz+eOunv+HhYege
-	 msSzea8tizfs6j3Rdtg18jOexvNPyQcLG5CWO2Wu70RbdjFddr2TeGAmnJ7OC+RpkzJfI
-	 0i+zWn4+fJqdFfTA6rE3y8A0rn9Iu14Q61Vsx+Om6PjBHtQ39e/ZC7Gtb+bec2SedUQ==
+	t=1794243864;
+	b=QWM71+UVtjvm8GR2fzYu+Zc37aC2dGo76Dt4+ctewhQBJ0njGzVUOdcPAVlCFaowwSx3
+	 Ita7WHhjXrWW4ubXPjFiFFid9rBkbSyKyIpUgfstWMyTLtuyH0Sfn+wqLTKOfzB4FgEhh
+	 eKhb6RGy2G5GKFKt6Al5hW3VO6Se+OBJ+2SCWm49BmpMRC/JRqAXPBDSGc8qJtnaroxmI
+	 zsfX+rPWXwf85yghT1sbT1G6/keh7Wu0TqV05lIYkBI8ymXfhoJzja273xUKXi9qrFWxr
+	 J8s/2KqAvzyMgA2fTBSjMpyd5Bl56WwTBMa5n0C8//Qq0UhZqiv0VCaYf2cUAN/BaaQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794239074;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
-	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=KeAlv0EKtTaDGrW0uWisjEOMXQElHFsb7+RWr717ehA=;
-	b=YmfwYEvWO/YxG8UugvR+iC3NvilkkWCf6B/GN9dnhBuOF4baJdtN+oEEsPeyyFNXM0Mf
-	 OZ0cNu4BN7PTf0B5lxp2mBl/J06MGzkZy5n3VkItuOHBi67ea+9vvckoxOtjRGHoQrrkD
-	 w7o2yiDpkGyqJtk/cjk6aL5ibtcKHHibzDJrYWMdNqITxprlccoXQVdyCatl4+v/lkMS9
-	 KrVguEG4VYJGFpxhlDdAYi0tKc8achKOLwIzlUrlpWhF0FoBam8E+wcW4L+8vBRyJLBh5
-	 RJuWnWfT581Ad+gF2CrmLCVkxLZx5P7MRGgWf3IExngp/0ivz7TkjNakN4Y1mfhGRWQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794243864;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=VmhgsZdfI41q6bSk6Ws0aoyQukpnInOpVRPvZF0DgoY=;
+	b=rLM9MI6vpr9Xsi2BPjHrgbXsvbND/YpP4YvMzIDjxEBtrtOs+4vQG92lJvaBpQBNZv2q
+	 hV71HetCyEVkCziBSHJqOF8Z2B1JZoEPXhc0AVPIa0lStUyDnh8JajMiM0tAqRFAGbCSM
+	 DbdQ/hBMmTrLIQPSr4AXOy5ZHhRv6oBjScAUep1bY2eYgegN+VY3U3NnAi65MIOheoE7E
+	 InGXgLwyFK6b9+5juD1C7xKA2l2/V+2myEr68EIP/uf7LX7QdoDyuywfB8/5UyDirk3qZ
+	 ToQg7Ehq/hGpqsf0z/rfXu4oMPQQoP2QaXGc7F5iGTVrl/spgmRk63jkcm79EYjmauQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=cfWwherg;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zXpWUKRa;
+	arc=none smtp.remote-ip=209.85.208.48
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F8E9606A31C
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 15:44:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9F8E9606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F2EC606A333
+	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 17:04:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4F2EC606A333
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=cfWwherg
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261109154426euoutp02d66d44b2ed53b47d12ab9a09543fa707~mauy_-1B02581825818euoutp02Y
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 15:44:26 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261109154426euoutp02d66d44b2ed53b47d12ab9a09543fa707~mauy_-1B02581825818euoutp02Y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794239066;
-	bh=KeAlv0EKtTaDGrW0uWisjEOMXQElHFsb7+RWr717ehA=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=cfWwherg5xV/imeqUEdIped3MaPG1NuUPvyBgrjFQB1oTqeOWq7cwJdirDBQIAJ9r
-	 9B80VmYk9yQhj9eClieup3vi6TAxX4rUU1eruemkXI3rOzl9qPkEq4L6qnAmC5Tq+T
-	 Q0OleEfl3fFvaIpTqHegraH4WmJks+hSX8fVao7c=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261109154426eucas1p28dad751a60e6a8cd490b178bbf0400fb~mauymrWwt2987329873eucas1p2O;
-	Mon,  9 Nov 2026 15:44:26 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261109154425eusmtip193b43893c43c7e8e86cb65ae041eec36~mauyQBYnB0739507395eusmtip1G;
-	Mon,  9 Nov 2026 15:44:25 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, David Rientjes <rientjes@google.com>, Jason
-	Gunthorpe <jgg@ziepe.ca>, "Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: [PATCH] dma-pool: decrypt pages before creating the shared remap
-Date: Mon,  9 Nov 2026 16:44:01 +0100
-Message-ID: <20261109154403.384434-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=zXpWUKRa
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6ae305e3bd9so1831276a12.0
+        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 09:04:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794243863; x=1794848663; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=VmhgsZdfI41q6bSk6Ws0aoyQukpnInOpVRPvZF0DgoY=;
+        b=zXpWUKRaZ5RHwLVn/nBZlOQhH3l9x1eOSHy+rovAsokMcDCMohfzdsfC9XICTYei7v
+         bvIgniVENgFdfd5S1jRdhIhZWkf1V3KiMeP7u/3BizQLOOQ4ZOwx1lJxZCntjrW9BoBv
+         ALBh2EJZEiXo1w1Q7FMlTL26QX+7+lG1RLB621MYIObzgNM8lqRl+YwT6RpfPUpXTAkL
+         I74OlcVMS6uEFsJV19O3vXvhIC7WORZvpMzDCGFCygBq+13s+BuecxPhPd6bQLpRfqxI
+         JJPCwwSBEZ1w3PT9DnR2GmFCrWDoxdMvmnXhU4equ4hyG1hwrs6geu/wFbIRh7G50PZu
+         7YzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794243863; x=1794848663;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=VmhgsZdfI41q6bSk6Ws0aoyQukpnInOpVRPvZF0DgoY=;
+        b=r647/Swysz0N2iFTR6VD7qnMs7rKgpg6FCxU7Ds7kzuBhfMvifttC2K2fIbgzAdfpn
+         t+9/pdt7lRZ6lPq+MU47piYIpK3+IefNcynYs99yZfoMZKaljoCHa9oC3yfGLPojrCXT
+         SHrNLJo4TJxKvzGNBojnY23AnEC6NVhEB3EQBR3QnzEpNnA20ymln0Vj3w6O88XJSfVz
+         q0J29NqwFvlt+Zl1AjgxModcU65+V9mTmFfyZEWK5vzGJIm6xSs8Fblg88L0l0/4/Hlc
+         p8VgSF5dtLrhGO3byB+oS+VNWNsux52/Cula6zP9+wn+NCYMnzPdGeqr0VHN+ABSsnfv
+         L54A==
+X-Forwarded-Encrypted: i=1; AL+hErG+nkJRPC739RbBYFSn7tWcbo0hBbh/Sr5rx0XDuqY1MQRQd2kJGcc764iOe/Lk8V68hfgCMA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+Uwlg3tgSoxmKeCGIHRz4hAMqbQrc+ZVeSR0BXRo+lc+XEZ6wx
+	9ApeA3vS0Rj91p3PIkJwp0GDihAecuBenWxpilSQBWmdZUIRA5U6O2Cz
+X-Gm-Gg: AYBFou1/NJljYBND1j88mezMM1ogLWsfeyOQS/ylBJBcHvyvQ877wYp4hTG+IF9ztcD
+	HMi85JPJaLjA5xZhZ8HeL8XMyd8I6dktvdwTG7m2aI0G/xpbwla5B7faezOXJW4AjwzQGKCCkJy
+	lL/Lfu2etnUspNdqWbVXI6FCzj2qDaC1OPqrESleQqqEDMUdbB6rAMHnnZKWOCCgkRsXA2XMazI
+	m0AvNA6o9dCBaB8cui/ug1ZP/ixubvT1J8r4GySRvMFzMBiavxTOlIdQnUGg3i0M+3lZ6G8dXQ6
+	sTklB09D8nXI67dditdEQO+GKUJaBXYyPYA3L6itHsudu5bvhnO8BLl9sb2bUsaYGOxTwfDWA33
+	s1YqQdwCj1+p0QcLWZO3dO1h5efUG0UwCrTfxu7Nn5soY+7G9lXMj/2Dz2HBK0dKlFy9OW4Clbj
+	90VkNSQMCnPsy4et1fL9UhgORuAjF/XYt84JFeN8fKhsChC/ly3/dnqenizApWtf0FhS8iTcJmr
+	bz67IGsDycqEB8flBgfAmDD9KkHRzyld0tt35JXP96vuCaeyI/o6N3be5ZRa+FGi4lcr9ZGfXGh
+	tZM1/dvmoX2R4MYO9vK5Q+CRqjc=
+X-Received: by 2002:a05:6402:2356:b0:6b5:7792:d82c with SMTP id 4fb4d7f45d1cf-6b756ad7482mr185305a12.16.1794243862514;
+        Mon, 09 Nov 2026 09:04:22 -0800 (PST)
+Received: from flare5 ([212.58.121.92])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b721ebe31csm1878937a12.16.2026.11.09.09.04.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2026 09:04:21 -0800 (PST)
+From: Stanislav Aleksandrov <lightofmysoul@gmail.com>
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Abel Vesa <abelvesa@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Robert Marko <robimarko@gmail.com>,
+	Guru Das Srinagesh <linux@gurudas.dev>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Radu Rendec <radu@rendec.net>,
+	Lee Jones <lee@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Wesley Cheng <wesley.cheng@oss.qualcomm.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Bean Huo <beanhuo@micron.com>,
+	Stanley Jhu <stanleyjhu@google.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Georgi Djakov <djakov@kernel.org>,
+	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	mfd@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-usb@vger.kernel.org,
+	linux-phy@lists.infradead.org,
+	linux-scsi@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	linux-pm@vger.kernel.org
+Subject: Re: [PATCH 17/17] arm64: dts: qcom: Add Samsung Galaxy XR
+Date: Mon,  9 Nov 2026 17:04:07 +0000
+Message-ID: <20261109170407.2073295-1-lightofmysoul@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <3ddaacfd-59c0-4d87-9b8c-2caa85143393@oss.qualcomm.com>
+References: <20261109-halliday-dts-v1-0-289114ab8197@gmail.com> <20261109-halliday-dts-v1-17-289114ab8197@gmail.com> <3ddaacfd-59c0-4d87-9b8c-2caa85143393@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -71,115 +141,18 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261109154426eucas1p28dad751a60e6a8cd490b178bbf0400fb
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261109154426eucas1p28dad751a60e6a8cd490b178bbf0400fb
-X-EPHeader: CA
-X-CMS-RootMailID: 20261109154426eucas1p28dad751a60e6a8cd490b178bbf0400fb
-References: <CGME20261109154426eucas1p28dad751a60e6a8cd490b178bbf0400fb@eucas1p2.samsung.com>
 
-atomic_pool_expand() creates the pgprot_decrypted() remap of the pool
-pages before calling set_memory_decrypted() on them. The error path
-when gen_pool_add_virt() fails does the reverse: it re-encrypts the
-pages and only then tears down the decrypted remap. In both cases there
-is a window where a decrypted (shared) kernel mapping points at a page
-that is still private, i.e. encrypted, to the guest.
+On 09/11/2026 16:12, Konrad Dybcio wrote:
+> On 11/9/26 1:33 AM, Stanislav Aleksandrov wrote:
+>> +&usb_1 {
+>> +	dr_mode = "peripheral";
+>> +	maximum-speed = "high-speed";
+>> +	qcom,select-utmi-as-pipe-clk;
+>
+> Is there no superspeed / dp altmode in hardware?
 
-dma_direct_alloc() gets this right: it converts the pages first, then
-creates the remap, and on error removes the remap before re-encrypting.
-Do the same in atomic_pool_expand(). The pages are now converted before
-arch_dma_prep_coherent() and the remap, and the error path unwinds in
-reverse order.
+The headset supports USB SuperSpeed and DisplayPort via its USB Type-C
+port, I just haven't brought them up yet. It seems we need a new driver
+for the Type-C controller.
 
-If set_memory_decrypted() fails, the page state is unknown, so the
-pages are still leaked rather than freed. No remap exists at that point
-any more, so nothing else needs to be undone.
-
-Closes: https://sashiko.dev/#/bug/linux-9212d9b5-4a56-43e2-bc00-6e69b724078b
-Fixes: 76a19940bd62 ("dma-direct: atomic allocations must come from atomic coherent pools")
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-The patch was prepared with LLM assistance.
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
----
- kernel/dma/pool.c | 39 ++++++++++++++++++---------------------
- 1 file changed, 18 insertions(+), 21 deletions(-)
-
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 381b3cb28368..3c67728a2471 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -106,6 +106,17 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
- 	if (!page)
- 		goto out;
- 
-+	/*
-+	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
-+	 * shrink so no re-encryption occurs in dma_direct_free().
-+	 */
-+	if (dma_pool->cc_shared) {
-+		ret = set_memory_decrypted((unsigned long)page_to_virt(page),
-+					   1 << order);
-+		if (ret)
-+			goto out;
-+	}
-+
- 	arch_dma_prep_coherent(page, pool_size);
- 
- #ifdef CONFIG_DMA_DIRECT_REMAP
-@@ -117,41 +128,27 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
- 	addr = dma_common_contiguous_remap(page, pool_size, prot,
- 			__builtin_return_address(0));
- 	if (!addr)
--		goto free_page;
-+		goto encrypt_pages;
- #else
- 	addr = page_to_virt(page);
- #endif
--	/*
--	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
--	 * shrink so no re-encryption occurs in dma_direct_free().
--	 */
--	if (dma_pool->cc_shared) {
--		ret = set_memory_decrypted((unsigned long)page_to_virt(page),
--					   1 << order);
--		if (ret) {
--			leak_pages = true;
--			goto remove_mapping;
--		}
--	}
--
- 	ret = gen_pool_add_virt(dma_pool->pool, (unsigned long)addr,
- 				page_to_phys(page), pool_size, NUMA_NO_NODE);
- 	if (ret)
--		goto encrypt_mapping;
-+		goto remove_mapping;
- 
- 	dma_atomic_pool_size_add(gfp, pool_size);
- 	return 0;
- 
--encrypt_mapping:
--	if (dma_pool->cc_shared &&
--	    set_memory_encrypted((unsigned long)page_to_virt(page), 1 << order))
--		leak_pages = true;
--
- remove_mapping:
- #ifdef CONFIG_DMA_DIRECT_REMAP
- 	dma_common_free_remap(addr, pool_size);
--free_page:
-+encrypt_pages:
- #endif
-+	if (dma_pool->cc_shared &&
-+	    set_memory_encrypted((unsigned long)page_to_virt(page), 1 << order))
-+		leak_pages = true;
-+
- 	if (!leak_pages &&
- 	    !dma_release_from_contiguous(NULL, page, 1 << order))
- 		__free_pages(page, order);
--- 
-2.43.0
-
+Stanislav
