@@ -1,67 +1,136 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794243975;
-	b=J7KeOPXPzvBczx8g4AZK4fL77qT5U/CiupANN12Ow883L6pIApzsdEqdABLugL/wHem3
-	 xs8zn+puhH3SfN5WiyOT711tmIk/U7Qrv1ZcTHR4r1w89j84BfpbMZgy1PBJK0Fkh/AtZ
-	 WoxCpTJNCIAYc2egN2NPnCYVa33Uo51Ck0zNqmeKSNmqTCpCaKcQWWdvb2KSoO5jLmM5+
-	 DCUaxDr7uXQ7DWT+Q39bgjagOtQSZd4c2EVg3OYST5Z4FQErsWsW2KHMuC7hFJDLrYpnX
-	 tktTOyo5tZfQsxU6B7cxzZZ0vxZkodeWWE/ttHOtlTveiMN5EkuPtBkbEKl85FdqUgw==
+	t=1794245938;
+	b=AnBd9952GbF8aa/TvBZGcoaIwPQNh0zhzkETpJdTx2Duf9iGrWNlobdsdjcxbrswfwYv
+	 zoy1TnYZZ2taxgCXAwK8UJnk9mI936jNbbHUKxfl/4pIRKZg7brkTpMTx5IB4mI2wQGr/
+	 0yHjiVp2gYMEOm1/U/u2RC+c6oXDQbtWoqeMei6xM9LXIJlOztHAviFSzcAEuTqNyDUpb
+	 o3rr47+9EGKMP6IuwlvQI38lmzlnDbr2WXaP3/MFwmjB9zsD2Djnn2crYY/ZADzvQl7Bt
+	 K8M9255cyIBU2JFBefAmKnw782txNHZRnpn28HqfOyrs6ioXpLYnnCbG/t/cTRtU8cQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794243975;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
-	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=JyZxIiMEa7i80YYGIuCJFuRQJlQaChaSZ2pdSb11H68=;
-	b=ZkCPO4/ExwAGtZLsEgP8leIuVn2YKNpX22xiO+q3/RwLzqoVIjyHosIr2UnWSAOw/qqg
-	 GjaPPboOxBFjfcbdyUrj49eH9CDTEUcmKF+/XYcwgeWP03UxZMy9FvxD5lrAo8b46QGAX
-	 OnQB1RCmfhnIY7JoYCZQqrdH7FjQJk3dslfXt16kwqj/KmH4qoDyHItFzw7DPlzVmci8d
-	 NXNH5dDy7O/370wJ23PvB50/ntbW/J+evbxFXShPnwHDauA/qpmvMFDOfqThQYfGhdUQZ
-	 P6gC9Gz5k4aQStpXruc7pFtmb+H4AhpOt3SAGhgPwIhtgWwhBte82/ipJRgfOKKxhsQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794245938;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=VSgAu1YCz0/TBDQtz025D2yh3sRQq8BFfiF0sq3qrAw=;
+	b=xfAUNGmGQCFRjI7Uuu0cfWteN2SUpFMmoTXsnO9trK905o8Iv/bqi1OEgaAkHiDOHBCC
+	 I9+63MZIMrgUXv3qdl/em4ieEXCs2XeFBBMVee6MVd15iolnBvyGwke9SUChp4GoDUtlD
+	 X4GJTLzZAKm8xjjMX4t6yZz7PHcJcizYt1ud0aiInNj0lTaeTXtJDl6dRJeuG9/sw9fov
+	 TnV27Syi0fRgQ2ZUoTW4s11U9tUuIvZxrzzPPqCZf68Kz1jtuG9rLeG/KI68l/baZ7ssj
+	 e7Dsj0CqRk2/UPuE3WE4hLQWWKPVwZq10/y2+Cu256mUAU1UeAb78OxqwFXphQ124qg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=l9Pee3bL;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=G8TniTJS;
+	arc=none smtp.remote-ip=209.85.128.44
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1C63606A31C
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 17:06:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D1C63606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2689B606A31C
+	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 17:38:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2689B606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=l9Pee3bL
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261109170612euoutp02daa0afdf028dc95b29e279fd9acd540b~mb2LjHDBs1865618656euoutp027
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 17:06:12 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261109170612euoutp02daa0afdf028dc95b29e279fd9acd540b~mb2LjHDBs1865618656euoutp027
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794243972;
-	bh=JyZxIiMEa7i80YYGIuCJFuRQJlQaChaSZ2pdSb11H68=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=l9Pee3bLAmMtVbBKzoTWDug+SZ3vCGWajGoM+eA8RStshJVtlkO+RK3ORGIkOBak6
-	 g8RP3M8IjvQ1XDMdvR3KL7u/opiuIPTf9Citr/B9oaCVtxd2cJFkWR+zEID4/CPgNF
-	 N3KS4oi10CAK+HOfKvAulhH6t4Vm+x+WRPtu9lDg=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261109170611eucas1p2366f6f6462a0178990e401e35849edd5~mb2LWDbTo2668126681eucas1p2B;
-	Mon,  9 Nov 2026 17:06:11 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261109170611eusmtip21f2fc201cd44cc2a74f1ee08beb62c88~mb2LB0aAx2679626796eusmtip22;
-	Mon,  9 Nov 2026 17:06:11 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Petr Tesarik <petr.tesarik.ext@huawei.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v2] dma: swiotlb: Properly tear down the default pool on
- exit
-Date: Mon,  9 Nov 2026 18:06:02 +0100
-Message-ID: <20261109170603.385791-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=G8TniTJS
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a2153c8525so9269805e9.3
+        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 09:38:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794245936; x=1794850736; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=VSgAu1YCz0/TBDQtz025D2yh3sRQq8BFfiF0sq3qrAw=;
+        b=G8TniTJSDzLdXNXKCFglJKd93ls7/mt4l7pIe7aU++0BjFRLy+XtiWWP4QslsWWgcS
+         ccYcpIF+HrxyTaIvtoy4lhvPWgNgdW0f6JmaVmEmOfhvgMNBeJ5+R6Lpv7xfpXju+qO7
+         xH63NB7V9V0hWQYPwR4DPT4X4VSx/E7GoETJkpg4BRMXa4VF+vh5NCmzdgTLujHXUsH1
+         eexg5UReMMs0qBWPBSa6goxJ++NsYTS9fYUFdM5PI/TuNRRFrXmJGWDAWH0/E0Gq8iVG
+         j6gSu1J9pNwKgvjKZ0A1nly6FF2XxBAOo//5M+cKUZ5CTrAHsDhCNcOxK3ZOdv/yp8Zy
+         Z2hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794245936; x=1794850736;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=VSgAu1YCz0/TBDQtz025D2yh3sRQq8BFfiF0sq3qrAw=;
+        b=tuwqRVAlcyYKdePNAsHqxkNtFTmV8yeEFryYw5O2Kn6HpyFxTc8t1vdKhA3tekfa3Y
+         9IDzrcWiwBpTro/KYUkq8P+qrc0D+UByqBmNxk2bWueumPQCqrzAZlhOFMhhK7yoMqE3
+         y2hyqWDD19OxqFhutbpO/49y45lV0LCNzbh5yuJwUAZP7QNiw33Od9ZNStOciONvYXno
+         g07+/Q1EVBujLqY7SxP0hqousN1QtqaJcpjU3j466bmppjWmBKsxwYkpTPzQ2J73G1nQ
+         D/VQCbkfcJDxNqzI9NXXYuF9OTB/oX1r2fgUlQmu2n4M6pTmygPuke9LELJdN0SSfT+A
+         P8xw==
+X-Forwarded-Encrypted: i=1; AL+hErGqvzjwbdSqzbA1Dif9kSqTd7CaCVSHdJj7puVMgdZ+1ET6sk9sFtElY/qBuoc3EGY/eLYhGg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9wDDYA8dcLzKValt71yuK3oYWvJf/UJPQEFfh3t/bTJ4ev7BTK
+	wt5uIOSqZzsQb4fp8Yf6TGJlgYlT7e/IKWgf7PlIfkpqqHlEGRPS22eE
+X-Gm-Gg: AYBFou2C/JegnA+IH+mtuEFNIbmEpie2FUk4GgdUryWNVVD2L0ScXfwMVEVK+21bZYU
+	5GWUFGWSD4ZYEr7KkUHKK8kxFVMBuAw9FhOagTAn16cyAdpwU3qCokb3i6m/+zhBz2mOzEq+OPw
+	xTdolWol/u2b2zHowyJBpHZNV6pVjBRDR4J9MWNihkxwEXj0LXrQeVM8aX87oYiLATX90OrsBLw
+	SDcHXH7rhHLH6cH+GFIBiER/eo4yRA13/rNSctzW4K0o7Bdj38QYyGnfqWMQs5i/LxdwBoWZ+ZQ
+	aVso1rwgX44g99NPtXYWZTORKPWpFKOvK2YuioojDHIS/ilwdIR8fQ93IjwR3nIvPA5cxQwCzzN
+	Dc7XBYhn6Zaie5H5YXtJDGYq5md8r9Ql1sDbHNU+wuFjYvN/gUE29xt9syTFGt5r9/+FQwiVwoE
+	r/yr0QTqwTiqx8zAjxi+hQJRDjt89QxTOEOGYx6IPUmHAU5lPInBFslBkYuFClNQVGuPca2EeAX
+	FGgzejDEFzZJAa8Q/MqihtASM9RAzZrbavDyyEGInN8q25un1YKkqJ1BBZaVhO/rawczo1LdiVt
+	NKf+/crrMicV9ChWJfmXOjoA6+k=
+X-Received: by 2002:a05:600c:608a:b0:4a0:1b14:e283 with SMTP id 5b1f17b1804b1-4b94d76329cmr92154365e9.1.1794245936334;
+        Mon, 09 Nov 2026 09:38:56 -0800 (PST)
+Received: from flare5 ([212.58.121.92])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4ba0157b707sm2522005e9.0.2026.11.09.09.38.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2026 09:38:54 -0800 (PST)
+From: Stanislav Aleksandrov <lightofmysoul@gmail.com>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Abel Vesa <abelvesa@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Robert Marko <robimarko@gmail.com>,
+	Guru Das Srinagesh <linux@gurudas.dev>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Radu Rendec <radu@rendec.net>,
+	Lee Jones <lee@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Wesley Cheng <wesley.cheng@oss.qualcomm.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Bean Huo <beanhuo@micron.com>,
+	Stanley Jhu <stanleyjhu@google.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Georgi Djakov <djakov@kernel.org>,
+	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	mfd@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-usb@vger.kernel.org,
+	linux-phy@lists.infradead.org,
+	linux-scsi@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	linux-pm@vger.kernel.org
+Subject: Re: [PATCH 01/17] dt-bindings: arm: qcom-soc: Add Halliday
+Date: Mon,  9 Nov 2026 17:38:37 +0000
+Message-ID: <20261109173837.2084788-1-lightofmysoul@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <78a88d4d-11af-40c1-b063-b6a4d4298ecd@kernel.org>
+References: <20261109-halliday-dts-v1-0-289114ab8197@gmail.com> <20261109-halliday-dts-v1-1-289114ab8197@gmail.com> <78a88d4d-11af-40c1-b063-b6a4d4298ecd@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,87 +141,13 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261109170611eucas1p2366f6f6462a0178990e401e35849edd5
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261109170611eucas1p2366f6f6462a0178990e401e35849edd5
-X-EPHeader: CA
-X-CMS-RootMailID: 20261109170611eucas1p2366f6f6462a0178990e401e35849edd5
-References: <CGME20261109170611eucas1p2366f6f6462a0178990e401e35849edd5@eucas1p2.samsung.com>
 
-With CONFIG_SWIOTLB_DYNAMIC enabled, the default memory pool is added to
-the io_tlb_default_mem.pools RCU list during initialization. When an IOMMU
-takes over DMA translation, swiotlb_exit() tears the default pool down and
-clears it with memset(), but leaves its node on the pools list. The list
-then contains a zeroed entry with a NULL next pointer, and any later walk
-of the list, for example mem_used() when reading the io_tlb_used debugfs
-file, dereferences an invalid pointer and crashes.
+On 09/11/2026 09:25, Krzysztof Kozlowski wrote:
+> This should be squashed with patch #15. Also, there is no benefit in
+> organizing patches within patchset where patches to the SAME subsystem
+> are split all over. #1 and #2 targets SoC, then there is a break and
+> again we are at SoC at #15.
 
-swiotlb_exit() also leaves the io_tlb_default_mem fields that describe
-the pool. io_tlb_default_mem.nslabs and can_grow stay set, so
-is_swiotlb_allocated() and is_swiotlb_active() keep returning true, and
-swiotlb_find_slots() can schedule dynamic pool allocation after teardown.
-Without CONFIG_SWIOTLB_DYNAMIC, a later mapping can reach the zeroed
-defpool and hit BUG_ON(area_index >= pool->nareas). Before the pool data
-was split out of struct io_tlb_mem, swiotlb_exit() cleared the whole
-structure, including nslabs.
+Thanks, I'll squash it into #15 and keep the SoC patches together in v2.
 
-Clear can_grow and cancel any pending dyn_alloc work, then remove the
-default pool from the list and subtract its slots from nslabs, and wait
-for an RCU grace period before clearing it, so that no reader can still
-see it. Without CONFIG_SWIOTLB_DYNAMIC, reset nslabs directly.
-
-As a result, with CONFIG_SWIOTLB_DYNAMIC swiotlb no longer silently keeps
-working through dynamic or transient pools after an IOMMU has turned it
-off, so for example dma-iommu bouncing for untrusted devices reports that
-bounce buffers are inactive, as it did before the dynamic pools support.
-
-Fixes: 158dbe9c9a3d ("swiotlb: separate memory pool data from other allocator data")
-Fixes: 62708b2ba405 ("swiotlb: add a flag whether SWIOTLB is allowed to grow")
-Fixes: 1aaa736815eb ("swiotlb: allocate a new memory pool when existing pools are full")
-Closes: https://sashiko.dev/#/bug/linux-f75998aa-65ea-4596-9bb4-fa83773012a3
-Cc: stable@vger.kernel.org
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-The patch was prepared with LLM assistance.
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
----
-Changelog:
-
-v2:
-- addressed more sashiko.dev pointed issues: clear io_tlb_default_mem.nslabs
-  and io_tlb_default_mem.can_grow, as well as cancel io_tlb_default_mem.dyn_alloc
-
-v1: https://lore.kernel.org/all/20261026095423.966856-4-m.szyprowski@samsung.com/
----
- kernel/dma/swiotlb.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 9b0bc272dd82..786954bc5e6a 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -665,6 +665,17 @@ void __init swiotlb_exit(void)
- 		return;
- 
- 	pr_info("tearing down default memory pool\n");
-+#ifdef CONFIG_SWIOTLB_DYNAMIC
-+	io_tlb_default_mem.can_grow = false;
-+	cancel_work_sync(&io_tlb_default_mem.dyn_alloc);
-+	spin_lock(&io_tlb_default_mem.lock);
-+	list_del_rcu(&mem->node);
-+	io_tlb_default_mem.nslabs -= mem->nslabs;
-+	spin_unlock(&io_tlb_default_mem.lock);
-+	synchronize_rcu();
-+#else
-+	io_tlb_default_mem.nslabs = 0;
-+#endif
- 	tbl_vaddr = (unsigned long)phys_to_virt(mem->start);
- 	tbl_size = PAGE_ALIGN(mem->end - mem->start);
- 	slots_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), mem->nslabs));
--- 
-2.43.0
-
+Stanislav
