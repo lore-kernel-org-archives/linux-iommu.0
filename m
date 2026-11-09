@@ -1,79 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794230457;
-	b=kHgjxWsIZ/kNsIGytQw3Ie9PzPZdFVoEoyhS5Tj6up8lhrixRPm0Lxm3PXTnV4vz58j0
-	 L3hmWeZXVzcUCWVVKNlf+7TMW7QtpVCcIRzFU+rosU/f1W4Kv/7lVvrOfh43Z3mmS4kdO
-	 xr+ZICcAFopeHHG4HVIe01zpCzq12DT+y7qXtZjuTHdPnnPbzlNtH6CdTR7T8iVsiiXYy
-	 fVJ4YDirsqcue3am6eDZtDMDS2kyAgA2MG3fSJP/KxoASx/KOJoLTWqbjwmoH4H/6y0pD
-	 b/7fvLqldMunX8TDpaTaAcIfOZx/Q1WANfC98nTjhIf0/9GBcIeAVkozsksf8D1/gXQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794230457;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=8kk0BDRZXw+7xDFuJqSRq4HWjhAAgBkMx2607nI6V0M=;
-	b=PG778YW0VGzQSiuUUWz/H5UClsE4FjxMRZ6OmCOT3ng22kKKOUzIuEWu2SouQFPLfYcn
-	 /Xjf+XAIOyUUtA8umDYVGQmbcLUHaHhAnRwwE1Ph7SqHCd3+ceaIuiIg59Lsf0k0o587q
-	 gB68dUmGF5wB3vyj8jud2M9tkvLp4thLws3jDKGUd7TuFeGDMVwK/Cov3Ch4gGcLCqD0M
-	 1lUDA1xfc2eiO8g2a69r1GL9Tl45kTTdbPEANuH1Xw1JToGyDmJp5F5ENY26RfZKg8fiF
-	 z2guzbO+uHx4UhRc6T9XnYj54LHl5vSnvbfYXjmMVwQ39+TyrNJRd8DA1PzgYYKPfhQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EttyTTco;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667BD606A31C;
-	Mon,  9 Nov 2026 13:20:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=EttyTTco
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794230456;
-	b=ujDyzZNuJqxHcS5OZ0TODgapNL8q/6PwsX79nR0UAuO4wC2RFQTcpbpPEUUNUneY2Mu8
-	 CYBakwQUKWO+LNNlQvpj1x8S0LQfSP0yEJ2hZGEb0CbWalU7YPMMoPgbojVunf5WbLrn6
-	 GlHs8qFu9mB2orA9zs4fGFYRr2jVCEMcaoPkELneXru2k8Y+xluLpeyEqqLAy53SGgVJk
-	 GqJK9U45zeQYjvKyQUd096ej33EcwGSwJyevR5Q4yRB+Thsn3DgMu38VgJ5fPKHSxWPbI
-	 3cWWNvJUzaCMD3tfwj+rlMU9/L0LmSbtzUo+GHXRANxIgLIHDpGt+d6kHaDkjI6MgoQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794230456;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=8kk0BDRZXw+7xDFuJqSRq4HWjhAAgBkMx2607nI6V0M=;
-	b=bSk9NuARkxLvoSB62ZkRubPrXQ1df5G+a6G/YjMyXKr49xTpMVkB1zuPY0IPgUGuYvSm
-	 gtkuBvzwuswFM1jPG20L0qC9rvjWvO49wF9AMT3UVSI1EVNSWrHnXH1YnAGRQgReN8PaH
-	 RXTBBuoP4+PweUdkQnEJLpeq5r96PHrXvWxXP7u4ZJkYQcD65nCgO9eqqNdoAo6WprxNf
-	 P1wpC5UgVZ9RIoyb7FChpnU1pz2Kz0OOlD8xck8t4A6uR+v3ahThndsmBzrYbRRECwyJG
-	 7CwfCzBnHxc1GQBdGoVhoj99aCs2HXzjYaHI3WOgmqQJTsikVGgbd+6AfFpRrtR+8kw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.129.124
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794231876;
+	b=gp5iry5PEUYBoTgb9DMdm2/MwSaDTsk5Jdamoyg/O6v/l9Brvzu45r14V4SNZsGiE1Ex
+	 MiDkk26ppGegCYRukrjSBv707yBxXKL+O4HJ5oo/271hmC/QGCUzzMdal9sDZAROryLgG
+	 FYe7RU3oBvULcJH+beIbDxc1cTe3edoF/+S4uiOm7z4/y4zCB8FUq2FF/eADq9oDluAcv
+	 gjDrTDM4M433xitnm9RIBltBl/CPBEWovz3vy/Ahs94OYqpnXJPP32oD08dHFsUWEcJTE
+	 tu0ksEgcZJ1C3nO4xplSl7SP95BBOsKAEdvuLL/ZXqRPSq8g30dAUHZqdIHwyvwrl6A==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794231876;
+	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
+	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:MIME-Version:References:In-Reply-To:From:Date:
+	 X-Gm-Features:Message-ID:Subject:To:Cc:X-Mimecast-Spam-Score:
+	 X-Mimecast-MFC-PROC-ID:X-Mimecast-Originator:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=bghOY7pp4PqTwolmTpdD1zvT8+4Tek4EN2nSOV+gjQQ=;
+	b=LodM6GtsTaFXQXFVDg592heRnRrchwFbLbqVoP70CYRLex8jmZfDlPK4tOGWCF4G8yJJ
+	 eJ+Ge249vIRTuD9dKVlYNDV+PqSFBaDmV289+9ydzZNr6sAlm6Gw7QI0kiL1Xm+8gvvQA
+	 KDKdyfJ2aBq0K18E7WlfeTIWqGP+cXC6p0hpfZ5JSg5lxJCyqJ4OtHEhkw3sBeudv/N46
+	 xIUhPAnesFPrXk5+txrVfVt+FC4IBAgiz1reI7+GLfFqD4ORrE07dBsNMmhnZT0dFSx/3
+	 3xunegtXXK93GcEpKjRAIRRqRt9NBog2NGGkwQGbB++Rkx9N7QxLJN3EXpZVCVeqfQg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=redhat.com;
+	spf=pass smtp.mailfrom=redhat.com;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=SZPy24aW;
+	arc=none smtp.remote-ip=170.10.129.124
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 3B8831F0089F;
-	Mon,  9 Nov 2026 13:20:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794230456;
-	bh=8kk0BDRZXw+7xDFuJqSRq4HWjhAAgBkMx2607nI6V0M=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=EttyTTcodJ8EkEvBkBr2Z05BoVQAYLNmwMEcpCRUAwLszZHcUJPlIuDJlcmy7ts4i
-	 5UDBYi5o0LTExQbsQ4WKBT/+F/yifPlY4jxfFN8C7/07k1GjLm3YiLXSkBtf70vmEu
-	 yuw1Ghty+cAgN2QgfdX0tRhYVpJ6d3YqpuxMOoLgaL6to9ilPPDw6W4eUrQamm19g8
-	 fiq+2U7qMpD+GBbeLliaB4mO2CK3XbhOXc0f7HKsF61zgv+Gqzsg8NVc93yH8vsCNo
-	 9WHJY9nheQYL7tfONxxBrl7Pp8kVKUL2hJ3UxxoSu+icmlAJ5JbLNEhguiH5/Hm6+7
-	 fYUSXrwfFNl0w==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id C14C2484AE;
-	Mon,  9 Nov 2026 13:20:55 +0000 (UTC)
-From: Ahmed Abdelfattah via B4 Relay <devnull+me.ahmedabdelfattah.dev@kernel.org>
-Date: Mon, 09 Nov 2026 15:20:52 +0200
-Subject: [PATCH] iommu/vt-d: Set up scalable mode context entries for DMA
- aliases
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1965606D831
+	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 13:44:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E1965606D831
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=SZPy24aW
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1794231875;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=bghOY7pp4PqTwolmTpdD1zvT8+4Tek4EN2nSOV+gjQQ=;
+	b=SZPy24aWpqc1WlWDYt+38IRFmZ8EuSUYMVEBBz9eluIIE6RM9eMQyntpE7nG5/jxi6MVEI
+	3mPKpGxRMf6RLOo0Wm7XqSQ0+Xvp5lPWjvVSGL8cw5TEajzn1AyWI6nsRQ8S8efftPgakC
+	R9vy8to6Svdl3YAp+2mKdzSJwTG22Y8=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-357-qjycJdz8Po6CLiobIk_Uig-1; Mon, 09 Nov 2026 08:44:31 -0500
+X-MC-Unique: qjycJdz8Po6CLiobIk_Uig-1
+X-Mimecast-MFC-AGG-ID: qjycJdz8Po6CLiobIk_Uig_1794231871
+Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-8468290b866so1228108a34.1
+        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 05:44:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794231871; x=1794836671;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=bghOY7pp4PqTwolmTpdD1zvT8+4Tek4EN2nSOV+gjQQ=;
+        b=cQsAqfo+OTbRZCYyksJNigMIod14XyffNsdjWG43t2W8dlcZWAEkl8D+TvR5+2v9Ve
+         AD1EB7e3BQqTPAAQ7X3lSL7hdKuVUbS/lyrM0WyBFT/ywBTKR36XG/QF2lLgohZPUIPD
+         ssng75Ex11+HYhJKB9lDPTUwhZLGx6aZfdjNDzR60gwZ0Dx2ImIdB9DsCGY2kf8u02Ys
+         oJ7Oj+rfWpfTsFgOvzHM+LvzJvPk5dKGuxAYr5h1GizqoAn5A85qrEWncNFrY0HXYcaC
+         4MRwADBqEQsZSiaJp+GBafua9Z721v/HgF2HXRx6Gc7OeODIJuwiltKr1QqlWtH0o0+n
+         7OTw==
+X-Forwarded-Encrypted: i=1; AL+hErHTqA36YvL3mvGct+WEUZiHX/KOZDX2+Zdf+D3hU1pv73XG2cstWIjL4PRWrMTJq7509wbF3A==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/MHVvZZo42vCo+jsjgQ5/IJZhScRX77qnkv9ol2txO0/vdfNLc
+	hZxXZ6TfDS897dlTf+SKEHUKID9PUSCJnVQoO4r7D9WDiAJ2u5UPX7MBIPI+uN8H8QE4WnpI+DX
+	Qea2W+ptP3ZLQciTKqFp/FRwf5rmGLAsttdV46wCV4DZa1DgHX+2dKJRHEKhzL6HHYpDJtTiqCW
+	kARzcGWDMCgI+2IkcV/ySXUodI005q3pU=
+X-Gm-Gg: AYBFou0XSVW8SpaDZD9p9+78ChNosN1hStZMg5Zq5DMFnB6F51Rgndkl2vvLPr3joj+
+	qzClzJVD9CdVfo2MpwAsO6NdfKllvBowkYr1zZ5p0JoT0QUCPJaLChJuh565jKpgn9/ji/ICk5m
+	8crO7L+4UTV+ZJPz5qlEnd1IE/DHHpI7fhAEdCm8A+C7nFVzx/GSn2sovH
+X-Received: by 2002:a05:6808:4fe9:b0:4d7:17d5:6c9b with SMTP id 5614622812f47-56814022659mr2709784b6e.9.1794231870745;
+        Mon, 09 Nov 2026 05:44:30 -0800 (PST)
+X-Received: by 2002:a05:6808:4fe9:b0:4d7:17d5:6c9b with SMTP id
+ 5614622812f47-56814022659mr2709756b6e.9.1794231870169; Mon, 09 Nov 2026
+ 05:44:30 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,114 +90,134 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261109-iommu-vtd-sm-bridge-alias-v1-1-76704f658dc3@ahmedabdelfattah.dev>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQqDMBCF4avIrB0wKhW9SnExSabtFKMloyKId
- zfV5Qfv/TsoR2GFLtsh8ioq05hg8gzch8Y3o/hkKIvyYUzRokwhLLjOHjWgjeLThAYhxZapcc4
- 3NVUW0v8X+SXb1X72t3WxX3bzPwjHcQL9pKzpfQAAAA==
-X-Change-ID: 20261109-iommu-vtd-sm-bridge-alias-9ea7ccd74a3b
-To: David Woodhouse <dwmw2@infradead.org>, 
- Lu Baolu <baolu.lu@linux.intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- stable@vger.kernel.org, Ahmed Abdelfattah <me@ahmedabdelfattah.dev>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794230455; l=3605;
- i=me@ahmedabdelfattah.dev; s=20261106; h=from:subject:message-id;
- bh=dhz3rHJR7YOUo+roQBNF725wE94t53ubNOSPW8yLvDQ=;
- b=CCaCnLcMIkkJ833TNpgDHDuF6lqomjTQZdvFCQ9qy0RVezMbNjY5HwSKOoRlmEcmNnZBj92e/
- ozmQTn2f9TEDttmf2taiXGkoCtIP5IPgF1ywzfnbC822Hg12pULtuVB
-X-Developer-Key: i=me@ahmedabdelfattah.dev; a=ed25519;
- pk=DHEHKU4PddrkJ/iYMZpwyyXsFyIQ6ySjTttKLrt9YqI=
-X-Endpoint-Received: by B4 Relay for me@ahmedabdelfattah.dev/20261106 with
- auth_id=1438
-X-Original-From: Ahmed Abdelfattah <me@ahmedabdelfattah.dev>
-Reply-To: me@ahmedabdelfattah.dev
-Content-Transfer-Encoding: 7bit
+References: <20261106131829.3228926-1-cui.tao@linux.dev> <20261106131829.3228926-3-cui.tao@linux.dev>
+ <1e18fcfd-785d-43cc-afd6-d181bf8305eb@amd.com> <CABdmKX0nCB2hT+iMh=BB-nC=fUBPof8YvjvO-gtEw+zcHZgvZA@mail.gmail.com>
+ <b0f530ef-bbfd-4112-aa51-82fdad6c4ba2@amd.com>
+In-Reply-To: <b0f530ef-bbfd-4112-aa51-82fdad6c4ba2@amd.com>
+From: Albert Esteve <aesteve@redhat.com>
+Date: Mon, 9 Nov 2026 14:44:17 +0100
+X-Gm-Features: AclHuK-kxgj3T37bjFOZ7HtSClpdxsaDMPyjW53dccz7zE1_ZSRFcURRmSZwzSI
+Message-ID: <CADSE00L3AfcnfcboK1TdPQiW7ZW1KpxG70b1oyWFqpLciOG6ng@mail.gmail.com>
+Subject: Re: [PATCH 2/7] dma-buf/udmabuf: account the page array metadata to memcg
+To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Cc: "T.J. Mercier" <tjmercier@google.com>, Tao Cui <cui.tao@linux.dev>, akpm@linux-foundation.org, 
+	dgilbert@interlog.com, mkp@kernel.org, loberman@redhat.com, 
+	jmeneghi@redhat.com, kraxel@redhat.com, vivek.kasireddy@intel.com, 
+	mst@redhat.com, jasowangio@gmail.com, eperezma@redhat.com, 
+	stefanha@redhat.com, sgarzare@redhat.com, rostedt@goodmis.org, 
+	vdonnefort@google.com, mhiramat@kernel.org, jgg@ziepe.ca, 
+	kevin.tian@intel.com, axboe@kernel.dk, linux-mm@kvack.org, 
+	James.Bottomley@hansenpartnership.com, sumit.semwal@linaro.org, 
+	phasta@kernel.org, joro@8bytes.org, will@kernel.org, 
+	linux-scsi@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, 
+	kvm@vger.kernel.org, virtualization@lists.linux.dev, 
+	linux-trace-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	io-uring@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	bobbyeshleman@meta.com, mathieu.desnoyers@efficios.com, robin.murphy@arm.com, 
+	mason@kernel.org, harry@kernel.org, vbabka@suse.cz, cuitao@kylinos.cn
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: Cid0eLyz8zBISeln18MUpqZ9rSEa5E5I0GNUoRCAvAg_1794231871
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Ahmed Abdelfattah <me@ahmedabdelfattah.dev>
+On Mon, Nov 9, 2026 at 11:56=E2=80=AFAM Christian K=C3=B6nig
+<christian.koenig@amd.com> wrote:
+>
+> On 11/6/26 18:25, T.J. Mercier wrote:
+> > On Fri, Nov 6, 2026 at 5:23=E2=80=AFAM Christian K=C3=B6nig <christian.=
+koenig@amd.com> wrote:
+> >>
+> >> On 11/6/26 14:18, Tao Cui wrote:
+> >>> From: Tao Cui <cuitao@kylinos.cn>
+> >>>
+> >>> udmabuf pins the pages of a memfd and hands them out as a dma-buf.  T=
+he
+> >>> data pages keep the accounting of the memfd they were instantiated in=
+,
+> >>> but the bookkeeping around them does not: the page pointer array and
+> >>> the pinned_folios array, both sized by the buffer page count, plus th=
+e
+> >>> transient folios array sized by the memfd folio count, are plain
+> >>> GFP_KERNEL.  A 1GB buffer costs about 4MB of uncharged SUnreclaim
+> >>> memory, and size_limit_mb defaults to INT_MAX.
+> >>>
+> >>> Charge the three kvmalloc allocations so the creator pays for the
+> >>> metadata it induces.  The system heap in the same subsystem already
+> >>> accounts its buffer allocation;
+> >
+> > Only if the mem_accounting param is set to true. We (Android)
+> > currently depend on it being disabled because system heap buffers
+> > don't have a single owner for their entire lifetime (ownership often
+> > changes immediately after they are allocated), and the kernel doesn't
+> > have the ability to switch who is charged for the buffer memory quite
+> > yet. Albert is working hard on it at the moment.
+>
+> Good point, making sure that Albert is on CC as well.
+>
+> So basically we not only need to charge the backing store of a DMA-buf to=
+ somebody else, but also the housekeeping overhead.
 
-In scalable mode, devices behind a PCIe-to-PCI bridge can't do DMA at
-all. Their requests carry the bridge's alias requester ID, and the
-context entry for that ID is never written, so every request faults:
+For system heaps the housekeeping size is fixed at creation so it
+kindof fits the reservation model nicely. We'd only need it to account
+for the overhead (as part of the MEMCG_DMABUF stat probably).
 
-  DMAR: [DMA Read NO_PASID] Request device [0000:02:00.0] fault addr 0xfffff000 [fault reason 0x02] Present bit in context entry is clear
+>
+> Mhm, this here also complicates the charge transfer Albert is working on.
 
-pci_pasid_table_setup() and pci_pasid_table_teardown() only act when
-they are called for the device itself. pci_for_each_dma_alias() reports
-an alias that comes from an upstream bridge with the bridge as @pdev,
-so these aliases are skipped. An identity domain doesn't help either,
-as the device still needs the context entry.
+The transfer would just move the charge as a single unit. But yeah,
+the complexity will come from lazy exporters or any other exporter
+where the bookkeeping grows or changes.
 
-Legacy mode is fine, because domain_context_mapping_cb() and
-domain_context_clear_one_cb() have no such check, and the same check
-was already removed from the pass-through path in commit 64f792981e35
-("iommu/vt-d: Remove device comparison in context_setup_pass_through_cb").
+>
+> @Albert not something we need to take care about now, but please keep tha=
+t in mind while working on that stuff.
 
-Drop it from both callbacks, so the alias context entry points to the
-device's PASID table and is cleared again when the device is released.
+Noted. The issue already exists so my series does not make it worse. I
+will note this for a follow up series.
 
-Fixes: 301f1a80487f ("iommu/vt-d: Setup scalable mode context entry in probe path")
-Fixes: 81e921fd3216 ("iommu/vt-d: Fix NULL domain on device release")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ahmed Abdelfattah <me@ahmedabdelfattah.dev>
----
-This showed up with a USB controller behind QEMU's pcie-pci-bridge in a
-q35 guest using intel-iommu with scalable-mode=on: the USB tablet behind
-it never enumerates.
+Thanks for tagging me!
 
-Tested on v7.4-rc2 in that guest (x86_64_defconfig + kvm_guest.config,
-INTEL_IOMMU with scalable mode on by default), with an EHCI controller
-and an e1000 behind the bridge, in scalable mode with second-stage
-tables, with first-stage tables (fsts=on) and with iommu=pt. Without
-the patch both devices fault on 02:00.0, the tablet never shows up and
-the e1000 hits Tx unit hangs. With it the tablet enumerates, the e1000
-passes traffic and no DMAR faults are logged. Removing the EHCI
-controller through sysfs and rescanning brings it back without faults,
-which exercises the teardown side. Legacy mode behaves the same with
-and without the patch.
+BR,
+Albert
 
-Devices that share an alias always end up in the same IOMMU group, so
-whichever device's PASID table the alias entry points to, it translates
-with the group's domain. As in legacy mode, releasing one of them also
-clears the alias entry the other one uses, so its DMA is blocked until it
-is probed again (see the comment above domain_context_clear()).
----
- drivers/iommu/intel/pasid.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index e4f24d3f19a6..e72b6e972cfb 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -760,8 +760,7 @@ static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias, void *data)
- {
- 	struct device *dev = data;
- 
--	if (dev == &pdev->dev)
--		device_pasid_table_teardown(dev, PCI_BUS_NUM(alias), alias & 0xff);
-+	device_pasid_table_teardown(dev, PCI_BUS_NUM(alias), alias & 0xff);
- 
- 	return 0;
- }
-@@ -897,9 +896,6 @@ static int pci_pasid_table_setup(struct pci_dev *pdev, u16 alias, void *data)
- {
- 	struct device *dev = data;
- 
--	if (dev != &pdev->dev)
--		return 0;
--
- 	return device_pasid_table_setup(dev, PCI_BUS_NUM(alias), alias & 0xff);
- }
- 
-
----
-base-commit: 7475ea8b58616b33c04afb976cf0fbaad9dd63fb
-change-id: 20261109-iommu-vtd-sm-bridge-alias-9ea7ccd74a3b
-
-Best regards,
---  
-Ahmed Abdelfattah <me@ahmedabdelfattah.dev>
-
+>
+> Regards,
+> Christian.
+>
+> >
+> > Could you update the message to note the mem_accounting param pls?
+> >
+> >>> the data pages here stay with the
+> >>> memfd.
+> >
+> > memfd / udmabuf is a little special because it uses shmem for the
+> > backing store, which is already tracked by memcg under all conditions
+> > (except hugetlb). We don't currently use udmabuf, so the lack of memcg
+> > charge transfer for udmabuf is not an issue. But once we get charge
+> > transfer working for the system heap it'd be good to follow up with
+> > udmabuf.
+> >
+> >> T.J. needs to take a look here, but I fear that this might break uAPI.
+> >
+> > Thanks for looping me in Christian. The buffer allocations cost
+> > gigabytes, but these metadata arrays are only 4MB per 1GB of buffer,
+> > so I don't expect charging them to break anyone. Leaving them
+> > uncharged is an accounting gap though, since someone could spam many
+> > udmabufs from the same memfd and only pay for the memfd pages once. So
+> > this change is ok with me.
+> >
+> >> A lot of the DMA-buf resources are intentionally not charged against m=
+emcg.
+> >>
+> >> Regards,
+> >> Christian.
+> >>
+> >>>
+> >>> Signed-off-by: Tao Cui <cuitao@kylinos.cn>
+> >
+> > With the commit message updated to mention the mem_accounting param:
+> > Reviewed-by: T.J. Mercier <tjmercier@google.com>
+>
 
