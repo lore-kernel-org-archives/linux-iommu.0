@@ -1,68 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794207571;
-	b=GoIX+cJQoEqG+wnI/USqXcoy/gKxkXJvpiAd8/5NVw6emLIEjiBmaHysHZshA1R+dl78
-	 fJrwJUXyw1jFjfCGJAXiJcT37czgWZNH236r/vgLlj2tY4Mhnx5D1Su0ZxWPUVRpzLs2N
-	 x9credU5ClZxhGk9ghSRI0RCcqNYh767wBCIBPWeCbBo8vZAki1tBJ+1gQ2rJkQK2FiIB
-	 a+1wRs+uXq8La4fb5XNe1PWNGxKa0oi0VCZC0W6ilByS8JSc0OdBL6vDCCkHHaLVBgE34
-	 ANP/XdHcMJQESVkEYZgk3U5TmLX5GilEaGbC2XdQJL93L3vA5kXArPA9/jekJzguBaw==
+	t=1794209642;
+	b=0VTEjbG0GvErYj+d1hmSiYOmZ184gXCWdcIrheTp7A5Vx3LOlv8dMhDENa9U8Cn+kMMb
+	 eIqTgPOCvLgZG4hejlJY7/SJZhC7qSKvsvHLQ3AC9YX7dTdBJSdp9oi7RMYqQ1MZLlWZ/
+	 W8+pzzoUbWQjBMDtOb/oA7M0/ElSxg+vttBdXyaLSyo2C25aV1PeocN82KdMy6WEn929y
+	 LdxuqIzifxV8hlsSyn+F42QQdOLrJs/BV7ZS6uCPq63vmMaM5YaGL7WBhYYtq2gxcTeaO
+	 UBr7zYrKFCli3a1d0EWbN0hbhCcXiQu/N5jdzWMbLeBOJIgWjna3G7+L8ivjPgDtGOw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794207571;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=urs8pBjtJuU8NtJw6ymzH858YDjP6YJOu0XZ72EhaTE=;
-	b=UUeqI6p0806LIHq5UllYM+59phJR8UrBgfJ2hcsy0hKlDztnx4KlNHj3eVpaYJ9nuPQ2
-	 fcwdLIf0kHC5Db3hrSm9xU5uS8G7pyJQ1Lc8ptiOue/Men6ppcDuRJ5+yxPQs74nFB1Ud
-	 rAXWbysfaGrLxDETCWDx7wAjHJ/b5uduCMq+dBCWyJn9P4RRJhgruRgY0aiqYLNoB5blK
-	 +jUzSuUCl16J8FmYOJYDi2qykNyXcEREzifeoavkt65zMP4H8V2+X51bZ4wbLMfoLHk2N
-	 M02HXec3piE/HBThiVpKIX2vRyoIBqo+Yh+Ww9P+PTU6iq3PAyxL+k7x6ugdOAJPdXA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794209642;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Type:X-Change-ID:X-Mailer:
+	 Content-Transfer-Encoding;
+	bh=BOudLxnS5pVPT2tPMn88TB0pOWjmfO5Gatem6QmrQcA=;
+	b=ufzSu7dIOYzt2fI4maPaYxuvpsMcTADk6Ja5irIMGVlwxE8AENRl87nQdF9OfDF1CVhT
+	 UuhuHEcbh5JJaXxFGNTUhXDhoFLhg4uJJm9UfFLMW3U00MqhCeg6Y60XSn19RWtv0JedK
+	 KvX2A4Y+hJImjaYmwSmlSPZrZN2K/QkDKdN4lK1S3xQ3U99rU7dcqCEnaW6ewnC41KR7o
+	 avLWjYecy/S+f3B7IWxZMOtG4DN4g5IygAmbXcWehPzlPZ8Hh+X9Z7V2QUfU5X8HGZBSv
+	 DBqqxUE0pf8gy+SdOch8mACbDj8y5XpyXd88mC4ukPwgpN4FdM59NqkWQdZRgpo0qKg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZHmI9Hrb;
-	arc=none smtp.remote-ip=192.198.163.13
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jhnY8YMd;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71D6F606A323
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 06:59:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 71D6F606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E567A606A31C;
+	Mon,  9 Nov 2026 07:34:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=ZHmI9Hrb
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794207571; x=1825743571;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VSPqosOaU5/GTvlzY92xAvPvszuHjX9euWkyiVHgofg=;
-  b=ZHmI9Hrb45QpJPL2HlFjz/vRcxkm07D3BDmdnr1t1kX5NsrWQZUu4FIZ
-   KpqCCFGdqVNXUzolcO7KrTpGS5e1FCcjPZRPv6RkRGU6Vezj3Tzs1nnnQ
-   boZYFFd2jb4mmLdbVzpqq/7i4qCfUKVbt+e7kWqSM/WPRQTFGWPz0keS4
-   eL3QlKr/E6gmFucwNcl1tzXXbDqm8eVp5O/8n0GD6zRu/2onBC5LXSZo8
-   UDe59IGL6Hscw9YLT8IMcGbgb8tMXBD1fnK7eBsh6myjjbYpKb5DTVPqF
-   y9Ltm79zqJE+2ex4vJ5X+JDn6pXr5wK/fMOaiqFgX1sO83DhJfs0ALzJM
-   w==;
-X-CSE-ConnectionGUID: 3vxlNXZKTzagcfC/OZBObg==
-X-CSE-MsgGUID: Wa7kB7XMSlGmyujYfPJLaQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11960"; a="2915921"
-X-IronPort-AV: E=Sophos;i="6.27,203,1787036400"; 
-   d="scan'208";a="2915921"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 22:59:30 -0800
-X-CSE-ConnectionGUID: hXKE4DkaRtmhIPkYe7OPrw==
-X-CSE-MsgGUID: sKUkGYZTQK2SWkCUH56Fpw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,203,1787036400"; 
-   d="scan'208";a="7830465"
-Received: from unknown (HELO [10.238.0.90]) ([10.238.0.90])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Nov 2026 22:59:28 -0800
-Message-ID: <e60624a1-c6e7-4e40-967b-5f5cfbde96ff@linux.intel.com>
-Date: Mon, 9 Nov 2026 14:59:25 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jhnY8YMd
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CCF61F0089F;
+	Mon,  9 Nov 2026 07:34:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794209641;
+	bh=BOudLxnS5pVPT2tPMn88TB0pOWjmfO5Gatem6QmrQcA=;
+	h=From:To:Cc:Subject:Date;
+	b=jhnY8YMdt8nGcYBaSKvJbCx3LFW8GkUkfxG2KVQyfFPxlK/zuviCXPcVmAKOjjqep
+	 OJwKBI+522F08dkhOUewjW7oWj3wn3XyzARmmIbVOrDxcxSRGcS40fmfCdvk4AMyhp
+	 MOjTYj5wCRejfz+oJhv1T4pVMKG3/VZeEHqKSqdLPc4a5x8apUuXMnQ1aIaY9WUDP+
+	 qG+bmJlMqJWo98xyXORHh1De0UINQ9Ms5bi+a/yYR9oTHj1OSMGHFyMwzSujrBUncm
+	 Ztid65rG+5tchiq/F8VP8JJGHkylUG+CZBGVjKcamjj2pAddBJRgS+/eioJ1UGNvSY
+	 J5UdD+59m5jow==
+From: Leon Romanovsky <leon@kernel.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
+Cc: linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org,
+	netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org,
+	linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: [PATCH v2 00/19] driver core: Authorize device trust before driver binding
+Date: Mon,  9 Nov 2026 09:33:30 +0200
+Message-ID: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
+X-Mailer: git-send-email 2.56.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,58 +95,104 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, robin.murphy@arm.com, jgg@ziepe.ca,
- iommu@lists.linux.dev
-Subject: Re: [PATCH 1/2] iommupt: fix full IOTLB flush from a zero length
- unmap
-To: YeeLi <seven.yi.lee@gmail.com>, joro@8bytes.org, will@kernel.org
-References: <20261105121227.622631-1-seven.yi.lee@gmail.com>
- <20261105121227.622631-2-seven.yi.lee@gmail.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261105121227.622631-2-seven.yi.lee@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+X-Change-ID: 20260915-device-trust-core-12934e618489
+X-Mailer: b4 0.15-dev-18f8f
+Content-Transfer-Encoding: 8bit
 
-On 11/5/2026 8:12 PM, YeeLi wrote:
-> From: yeeli<seven.yi.lee@gmail.com>
-> 
-> unmap_range() hands gather_range_pending() the number of bytes it
-> actually unmapped, not the requested length. That count is 0 whenever
-> the range holds no mappings, so an unmap that removes nothing reaches
-> the gather code with len == 0.
-> 
-> The gather helpers assume a real range: both
-> iommu_iotlb_gather_add_range() and iommu_iotlb_gather_is_disjoint()
-> compute end = iova + len - 1. For len == 0 this wraps to iova - 1.
-> 
-> The problem can be reproduced by attaching an empty paging domain to an
-> Intel VT-d device and unmapping IOVA 0:
-> 
-> 	domain = iommu_paging_domain_alloc(dev);
-> 	iommu_attach_device(domain, dev);
-> 	iommu_unmap(domain, 0, PAGE_SIZE);	/* nothing is mapped */
-> 
-> The unmap returns 0, but the gather becomes [0, ULONG_MAX] and the
-> iotlb_sync() that follows asks the driver to invalidate everything.
-> Captured with the cache_tag_flush_range and qi_submit tracepoints
-> enabled:
-> 
->    cache_tag_flush_range: dmar0 dmar0[0] type iotlb did 12 [0x0-0xffffffffffffffff] addr 0x0 mask 0x34
->    qi_submit: p_iotlb_inv dmar0: 0xc0026 0x0 0x0 0x0
-> 
-> With a non-zero IOVA the wrapped end widens whatever range has already
-> been gathered instead.
-> 
-> Skip the gather bookkeeping when nothing was unmapped. An untouched
-> gather keeps start == ULONG_MAX and end == 0, which iommu_iotlb_sync()
-> already ignores.
-> 
-> Fixes: 7c53f4238aa8 ("iommupt: Add unmap_pages op")
-> Signed-off-by: yeeli<seven.yi.lee@gmail.com>
-> ---
->   drivers/iommu/generic_pt/iommu_pt.h | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
+Device trust policies need to precede driver setup, including manual
+attachment, so userspace can authorize devices before they operate.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Introduce disabled, adversary and full policies with boot-time selection,
+sysfs authorization and lifetime commitment. Apply them to PCI and USB.
+Keep serio and generic PHY attachment under their existing subsystem
+locks through an API restricted to device_trust.default=full. Freeze
+runtime policy changes in that mode and require per-device boot entries
+to exclude driver rules from manual attachment.
+
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+Changes in v2:
+- Replace the serio and PHY attachment conversions with
+  device_driver_attach_full(), restricted to device_trust.default=full.
+- Add USB authorization on top of device trust: export
+  device_trust_set_policy() and convert the USB authorized attributes.
+- Documentation and commit messages fixes
+- Small USB patches rewrote and split
+- Link to v1: https://patch.msgid.link/20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com
+
+---
+Leon Romanovsky (19):
+      Input: gameport - attach manual drivers through the driver core
+      wifi: mac80211_hwsim: lock device for manual driver binding
+      USB: Lock registered interfaces during manual driver binding
+      USB: Release interface claims refused during registration
+      PNP: Attach card devices through the driver core
+      cdx: Propagate DMA configuration errors
+      driver core: Report deferred probes through sysfs drivers_probe
+      driver core: Add a compatibility API for manual driver attachment
+      Input: serio - use the compatibility driver attachment API
+      net: phy: Use the compatibility driver attachment API
+      driver core: Introduce a generic device trust level
+      driver core: Expose device trust authorization interfaces
+      driver core: Accept device trust policy on the kernel command line
+      driver core: Accept device trust policy by driver name
+      driver core: Expose committed device trust level
+      driver core: Cover trust authorization and binding with KUnit
+      driver core: Document trust admission and initrd authorization
+      PCI: Replace untrusted state with device trust
+      USB: Authorize devices and interfaces through device trust
+
+ Documentation/ABI/testing/sysfs-bus-drivers-probe  |   13 +
+ Documentation/ABI/testing/sysfs-bus-usb            |   11 +
+ Documentation/ABI/testing/sysfs-devices-trust      |   33 +
+ Documentation/admin-guide/kernel-parameters.txt    |   29 +
+ .../driver-api/driver-model/device-trust.rst       |  289 ++++
+ Documentation/driver-api/driver-model/index.rst    |    1 +
+ Documentation/usb/authorization.rst                |   20 +
+ MAINTAINERS                                        |    2 +
+ drivers/base/Makefile                              |    2 +-
+ drivers/base/base.h                                |   31 +
+ drivers/base/bus.c                                 |    9 +-
+ drivers/base/core.c                                |   18 +-
+ drivers/base/dd.c                                  |  108 +-
+ drivers/base/test/Makefile                         |    1 +
+ drivers/base/test/device-trust-test.c              | 1720 ++++++++++++++++++++
+ drivers/base/trust.c                               |  406 +++++
+ drivers/bluetooth/btusb_main.c                     |   42 +-
+ drivers/cdx/cdx.c                                  |    2 +-
+ drivers/input/gameport/gameport.c                  |   21 +-
+ drivers/input/serio/serio.c                        |   24 +-
+ drivers/iommu/amd/iommu.c                          |    3 +-
+ drivers/iommu/dma-iommu.c                          |   14 +-
+ drivers/iommu/intel/iommu.c                        |   17 +-
+ drivers/iommu/iommu.c                              |   17 +-
+ drivers/net/phy/phy_device.c                       |   29 +-
+ drivers/net/wireless/virtual/mac80211_hwsim_main.c |    2 +
+ drivers/pci/ats.c                                  |    4 +-
+ drivers/pci/pci.c                                  |    5 +-
+ drivers/pci/probe.c                                |   23 +-
+ drivers/pci/quirks.c                               |    7 +-
+ drivers/pnp/card.c                                 |   12 +-
+ drivers/usb/core/driver.c                          |   29 +-
+ drivers/usb/core/generic.c                         |    2 +-
+ drivers/usb/core/hub.c                             |   17 +-
+ drivers/usb/core/message.c                         |   34 +-
+ drivers/usb/core/sysfs.c                           |    9 +-
+ drivers/usb/core/trace.h                           |    2 +-
+ drivers/usb/core/usb.c                             |    5 +-
+ drivers/usb/core/usb.h                             |    4 +-
+ include/linux/device.h                             |   20 +
+ include/linux/device/bus.h                         |   10 +
+ include/linux/device/trust.h                       |   47 +
+ include/linux/pci.h                                |   30 +-
+ include/linux/usb.h                                |   29 +-
+ 44 files changed, 2988 insertions(+), 165 deletions(-)
+---
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+change-id: 20260915-device-trust-core-12934e618489
+
+Best regards,
+--  
+Leon Romanovsky <leonro@nvidia.com>
+
