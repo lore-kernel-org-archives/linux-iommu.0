@@ -1,86 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=156.67.10.101
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794231876;
-	b=gp5iry5PEUYBoTgb9DMdm2/MwSaDTsk5Jdamoyg/O6v/l9Brvzu45r14V4SNZsGiE1Ex
-	 MiDkk26ppGegCYRukrjSBv707yBxXKL+O4HJ5oo/271hmC/QGCUzzMdal9sDZAROryLgG
-	 FYe7RU3oBvULcJH+beIbDxc1cTe3edoF/+S4uiOm7z4/y4zCB8FUq2FF/eADq9oDluAcv
-	 gjDrTDM4M433xitnm9RIBltBl/CPBEWovz3vy/Ahs94OYqpnXJPP32oD08dHFsUWEcJTE
-	 tu0ksEgcZJ1C3nO4xplSl7SP95BBOsKAEdvuLL/ZXqRPSq8g30dAUHZqdIHwyvwrl6A==
+	t=1794231961;
+	b=Rf0GXU50lNAA0degP4eXZZsWpHm0onGA6NkqP5Xd5QXqPz1rmINOkwlasDN6LS1tLOZJ
+	 tjHw/FyI9xniWc07SfqObbTXhtFt6bOAHA/AYoaMGi6NL5NqnkMuPiG2smVkHPVZG9BiJ
+	 vBnpvNyqVsvSRsP7nAU07punrcDN4ayZkldHfubig5yf/Nn2oTty3tSiI4g+lTbWI7X5m
+	 +neR36wv3pcIa7B+tDN0bQmBxKBupa3FmV5H8Y/BpEHw5k0LGcYkwWg9nFPtvqpPcZxF7
+	 ypSiCioFZ/E7k2/3Eys34nLM3WQ19CEeMVTqrwp/vGV0c9yCJjq8oaJk3UGDGV09GgQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794231876;
-	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
-	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 X-Received:MIME-Version:References:In-Reply-To:From:Date:
-	 X-Gm-Features:Message-ID:Subject:To:Cc:X-Mimecast-Spam-Score:
-	 X-Mimecast-MFC-PROC-ID:X-Mimecast-Originator:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=bghOY7pp4PqTwolmTpdD1zvT8+4Tek4EN2nSOV+gjQQ=;
-	b=LodM6GtsTaFXQXFVDg592heRnRrchwFbLbqVoP70CYRLex8jmZfDlPK4tOGWCF4G8yJJ
-	 eJ+Ge249vIRTuD9dKVlYNDV+PqSFBaDmV289+9ydzZNr6sAlm6Gw7QI0kiL1Xm+8gvvQA
-	 KDKdyfJ2aBq0K18E7WlfeTIWqGP+cXC6p0hpfZ5JSg5lxJCyqJ4OtHEhkw3sBeudv/N46
-	 xIUhPAnesFPrXk5+txrVfVt+FC4IBAgiz1reI7+GLfFqD4ORrE07dBsNMmhnZT0dFSx/3
-	 3xunegtXXK93GcEpKjRAIRRqRt9NBog2NGGkwQGbB++Rkx9N7QxLJN3EXpZVCVeqfQg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794231961;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To;
+	bh=2IttIcKgL0vKNhvKWk69gg2kUvNLqT6VNsboFSUg3kk=;
+	b=aB8NikLz073EmY2uD/si/fa6LHzymTtJoh4Ifu9joLLjm/YLmJDTZp1JAtXCklxC/3OS
+	 q/0XQol0ZQ6WJuQ28rb0Ts13HOzQ/l4qBzuWjm1Q/miP8jFl5+H9YSPtu1o+qSjxCjTl2
+	 E4RHLlN+1jJ3hKbbl0T4jDpbO8fzM9ibJUrEFVBM74ClFRQY4Qg0qvgnI3XZlK8yCLjXB
+	 uopHh45tX00nJgyK9L9uwpqwBanZRZIcwBnE7H8qNx15HClWh4/LFPGXM9siQND/DHH0E
+	 /BpNRDeMpxtZb8ZMwpjhnItsjFLXqvF368e3Rxu9bV1x3EuUId2ggdJRuhcDufA8YMA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=redhat.com;
-	spf=pass smtp.mailfrom=redhat.com;
-	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=SZPy24aW;
-	arc=none smtp.remote-ip=170.10.129.124
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	dmarc=pass header.from=lunn.ch;
+	spf=pass smtp.mailfrom=lunn.ch;
+	dkim=pass header.d=lunn.ch header.i=@lunn.ch header.a=rsa-sha256 header.s=20171124 header.b=vvkpw5nC;
+	arc=none smtp.remote-ip=156.67.10.101
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1965606D831
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 13:44:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E1965606D831
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C18D7606D806;
+	Mon,  9 Nov 2026 13:46:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C18D7606D806
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=SZPy24aW
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1794231875;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=bghOY7pp4PqTwolmTpdD1zvT8+4Tek4EN2nSOV+gjQQ=;
-	b=SZPy24aWpqc1WlWDYt+38IRFmZ8EuSUYMVEBBz9eluIIE6RM9eMQyntpE7nG5/jxi6MVEI
-	3mPKpGxRMf6RLOo0Wm7XqSQ0+Xvp5lPWjvVSGL8cw5TEajzn1AyWI6nsRQ8S8efftPgakC
-	R9vy8to6Svdl3YAp+2mKdzSJwTG22Y8=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-357-qjycJdz8Po6CLiobIk_Uig-1; Mon, 09 Nov 2026 08:44:31 -0500
-X-MC-Unique: qjycJdz8Po6CLiobIk_Uig-1
-X-Mimecast-MFC-AGG-ID: qjycJdz8Po6CLiobIk_Uig_1794231871
-Received: by mail-ot1-f71.google.com with SMTP id 46e09a7af769-8468290b866so1228108a34.1
-        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 05:44:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794231871; x=1794836671;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=bghOY7pp4PqTwolmTpdD1zvT8+4Tek4EN2nSOV+gjQQ=;
-        b=cQsAqfo+OTbRZCYyksJNigMIod14XyffNsdjWG43t2W8dlcZWAEkl8D+TvR5+2v9Ve
-         AD1EB7e3BQqTPAAQ7X3lSL7hdKuVUbS/lyrM0WyBFT/ywBTKR36XG/QF2lLgohZPUIPD
-         ssng75Ex11+HYhJKB9lDPTUwhZLGx6aZfdjNDzR60gwZ0Dx2ImIdB9DsCGY2kf8u02Ys
-         oJ7Oj+rfWpfTsFgOvzHM+LvzJvPk5dKGuxAYr5h1GizqoAn5A85qrEWncNFrY0HXYcaC
-         4MRwADBqEQsZSiaJp+GBafua9Z721v/HgF2HXRx6Gc7OeODIJuwiltKr1QqlWtH0o0+n
-         7OTw==
-X-Forwarded-Encrypted: i=1; AL+hErHTqA36YvL3mvGct+WEUZiHX/KOZDX2+Zdf+D3hU1pv73XG2cstWIjL4PRWrMTJq7509wbF3A==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/MHVvZZo42vCo+jsjgQ5/IJZhScRX77qnkv9ol2txO0/vdfNLc
-	hZxXZ6TfDS897dlTf+SKEHUKID9PUSCJnVQoO4r7D9WDiAJ2u5UPX7MBIPI+uN8H8QE4WnpI+DX
-	Qea2W+ptP3ZLQciTKqFp/FRwf5rmGLAsttdV46wCV4DZa1DgHX+2dKJRHEKhzL6HHYpDJtTiqCW
-	kARzcGWDMCgI+2IkcV/ySXUodI005q3pU=
-X-Gm-Gg: AYBFou0XSVW8SpaDZD9p9+78ChNosN1hStZMg5Zq5DMFnB6F51Rgndkl2vvLPr3joj+
-	qzClzJVD9CdVfo2MpwAsO6NdfKllvBowkYr1zZ5p0JoT0QUCPJaLChJuh565jKpgn9/ji/ICk5m
-	8crO7L+4UTV+ZJPz5qlEnd1IE/DHHpI7fhAEdCm8A+C7nFVzx/GSn2sovH
-X-Received: by 2002:a05:6808:4fe9:b0:4d7:17d5:6c9b with SMTP id 5614622812f47-56814022659mr2709784b6e.9.1794231870745;
-        Mon, 09 Nov 2026 05:44:30 -0800 (PST)
-X-Received: by 2002:a05:6808:4fe9:b0:4d7:17d5:6c9b with SMTP id
- 5614622812f47-56814022659mr2709756b6e.9.1794231870169; Mon, 09 Nov 2026
- 05:44:30 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.a=rsa-sha256 header.s=20171124 header.b=vvkpw5nC
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=2IttIcKgL0vKNhvKWk69gg2kUvNLqT6VNsboFSUg3kk=; b=vvkpw5nCLudUCzq8Vifb2DqkGx
+	kGLbNSsg5SNGbUF/8eDZn3RbuZVaYN8yuFMCNN2LAuq766lfIQCtDmX4spECzkj0HnP+c+OqQ9JDg
+	3SbUlhnWq+AuSrWJRvoa+pF8GnEv8+SzHYUyhyd9DTaD3r5wNDWeQrzF8ZFAL3DUt7bs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1xQPgl-00FGEi-MR; Mon, 09 Nov 2026 14:45:35 +0100
+Date: Mon, 9 Nov 2026 14:45:35 +0100
+From: Andrew Lunn <andrew@lunn.ch>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH v2 10/19] net: phy: Use the compatibility driver
+ attachment API
+Message-ID: <ab062469-ece0-495e-8486-78404c580cdb@lunn.ch>
+References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
+ <20261109-device-trust-core-v2-10-3b12d9a9f861@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -90,134 +92,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261106131829.3228926-1-cui.tao@linux.dev> <20261106131829.3228926-3-cui.tao@linux.dev>
- <1e18fcfd-785d-43cc-afd6-d181bf8305eb@amd.com> <CABdmKX0nCB2hT+iMh=BB-nC=fUBPof8YvjvO-gtEw+zcHZgvZA@mail.gmail.com>
- <b0f530ef-bbfd-4112-aa51-82fdad6c4ba2@amd.com>
-In-Reply-To: <b0f530ef-bbfd-4112-aa51-82fdad6c4ba2@amd.com>
-From: Albert Esteve <aesteve@redhat.com>
-Date: Mon, 9 Nov 2026 14:44:17 +0100
-X-Gm-Features: AclHuK-kxgj3T37bjFOZ7HtSClpdxsaDMPyjW53dccz7zE1_ZSRFcURRmSZwzSI
-Message-ID: <CADSE00L3AfcnfcboK1TdPQiW7ZW1KpxG70b1oyWFqpLciOG6ng@mail.gmail.com>
-Subject: Re: [PATCH 2/7] dma-buf/udmabuf: account the page array metadata to memcg
-To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc: "T.J. Mercier" <tjmercier@google.com>, Tao Cui <cui.tao@linux.dev>, akpm@linux-foundation.org, 
-	dgilbert@interlog.com, mkp@kernel.org, loberman@redhat.com, 
-	jmeneghi@redhat.com, kraxel@redhat.com, vivek.kasireddy@intel.com, 
-	mst@redhat.com, jasowangio@gmail.com, eperezma@redhat.com, 
-	stefanha@redhat.com, sgarzare@redhat.com, rostedt@goodmis.org, 
-	vdonnefort@google.com, mhiramat@kernel.org, jgg@ziepe.ca, 
-	kevin.tian@intel.com, axboe@kernel.dk, linux-mm@kvack.org, 
-	James.Bottomley@hansenpartnership.com, sumit.semwal@linaro.org, 
-	phasta@kernel.org, joro@8bytes.org, will@kernel.org, 
-	linux-scsi@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, 
-	kvm@vger.kernel.org, virtualization@lists.linux.dev, 
-	linux-trace-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	io-uring@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	bobbyeshleman@meta.com, mathieu.desnoyers@efficios.com, robin.murphy@arm.com, 
-	mason@kernel.org, harry@kernel.org, vbabka@suse.cz, cuitao@kylinos.cn
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: Cid0eLyz8zBISeln18MUpqZ9rSEa5E5I0GNUoRCAvAg_1794231871
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261109-device-trust-core-v2-10-3b12d9a9f861@nvidia.com>
 
-On Mon, Nov 9, 2026 at 11:56=E2=80=AFAM Christian K=C3=B6nig
-<christian.koenig@amd.com> wrote:
->
-> On 11/6/26 18:25, T.J. Mercier wrote:
-> > On Fri, Nov 6, 2026 at 5:23=E2=80=AFAM Christian K=C3=B6nig <christian.=
-koenig@amd.com> wrote:
-> >>
-> >> On 11/6/26 14:18, Tao Cui wrote:
-> >>> From: Tao Cui <cuitao@kylinos.cn>
-> >>>
-> >>> udmabuf pins the pages of a memfd and hands them out as a dma-buf.  T=
-he
-> >>> data pages keep the accounting of the memfd they were instantiated in=
-,
-> >>> but the bookkeeping around them does not: the page pointer array and
-> >>> the pinned_folios array, both sized by the buffer page count, plus th=
-e
-> >>> transient folios array sized by the memfd folio count, are plain
-> >>> GFP_KERNEL.  A 1GB buffer costs about 4MB of uncharged SUnreclaim
-> >>> memory, and size_limit_mb defaults to INT_MAX.
-> >>>
-> >>> Charge the three kvmalloc allocations so the creator pays for the
-> >>> metadata it induces.  The system heap in the same subsystem already
-> >>> accounts its buffer allocation;
-> >
-> > Only if the mem_accounting param is set to true. We (Android)
-> > currently depend on it being disabled because system heap buffers
-> > don't have a single owner for their entire lifetime (ownership often
-> > changes immediately after they are allocated), and the kernel doesn't
-> > have the ability to switch who is charged for the buffer memory quite
-> > yet. Albert is working hard on it at the moment.
->
-> Good point, making sure that Albert is on CC as well.
->
-> So basically we not only need to charge the backing store of a DMA-buf to=
- somebody else, but also the housekeeping overhead.
+> @@ -1956,11 +1958,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  	}
+>  	phydev->drv_owner = drv_owner;
+>  
+> -	if (phydev->is_genphy_driven) {
+> -		err = d->driver->probe(d);
+> -		if (err >= 0)
+> -			err = device_bind_driver(d);
+> -
+> +	if (bind_genphy) {
+> +		err = device_driver_attach_full(drv, d);
+> +		if (err == -EBUSY)
+> +			irq = phydev->irq;
 
-For system heaps the housekeeping size is fixed at creation so it
-kindof fits the reservation model nicely. We'd only need it to account
-for the overhead (as part of the MEMCG_DMABUF stat probably).
+Just looking at this, it is not clear where the EBUSY can from? And
+why set irq to phydev->irq?
 
->
-> Mhm, this here also complicates the charge transfer Albert is working on.
-
-The transfer would just move the charge as a single unit. But yeah,
-the complexity will come from lazy exporters or any other exporter
-where the bookkeeping grows or changes.
-
->
-> @Albert not something we need to take care about now, but please keep tha=
-t in mind while working on that stuff.
-
-Noted. The issue already exists so my series does not make it worse. I
-will note this for a follow up series.
-
-Thanks for tagging me!
-
-BR,
-Albert
-
->
-> Regards,
-> Christian.
->
-> >
-> > Could you update the message to note the mem_accounting param pls?
-> >
-> >>> the data pages here stay with the
-> >>> memfd.
-> >
-> > memfd / udmabuf is a little special because it uses shmem for the
-> > backing store, which is already tracked by memcg under all conditions
-> > (except hugetlb). We don't currently use udmabuf, so the lack of memcg
-> > charge transfer for udmabuf is not an issue. But once we get charge
-> > transfer working for the system heap it'd be good to follow up with
-> > udmabuf.
-> >
-> >> T.J. needs to take a look here, but I fear that this might break uAPI.
-> >
-> > Thanks for looping me in Christian. The buffer allocations cost
-> > gigabytes, but these metadata arrays are only 4MB per 1GB of buffer,
-> > so I don't expect charging them to break anyone. Leaving them
-> > uncharged is an accounting gap though, since someone could spam many
-> > udmabufs from the same memfd and only pay for the memfd pages once. So
-> > this change is ok with me.
-> >
-> >> A lot of the DMA-buf resources are intentionally not charged against m=
-emcg.
-> >>
-> >> Regards,
-> >> Christian.
-> >>
-> >>>
-> >>> Signed-off-by: Tao Cui <cuitao@kylinos.cn>
-> >
-> > With the commit message updated to mention the mem_accounting param:
-> > Reviewed-by: T.J. Mercier <tjmercier@google.com>
->
-
+    Andrew
