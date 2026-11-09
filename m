@@ -1,82 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=37.230.196.243
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794215330;
-	b=KE8cpKtrW/6dJpiEb7ArBh8vhKqh0g6kBiyj1d2UWiQJds781glGUu1iLLT6+X8uE7nM
-	 y7GmeqDfcKBRrLhUZ91vKi7Ep07dvBjo0VaOsgxsmjv4GKh2HJtkLvcMj6zisL7valuoe
-	 yGXq6I1Du2pO/LBKsdf0yXOVvO2aD8CfG+AHzr5cZp/1leatJUx2bzLNR7vMtknQJL4ji
-	 ZGttgPT71CsxvtL9rJuZ/xkOMPeza6pEdi/70fWc5/8UW8asJMLGm/tl/BdwhpAsHzZf4
-	 pLk65J45ognBmztRzjj7bKXoF9N2dJwFqc6ab14dPsnVc9IfjHfqG545Z/4eDmW8IDA==
+	t=1794216189;
+	b=gwne/rXXPA7GS5EQd4T9sm1FKdCSVT+kUJp+lW27nIFJt+aTT7nYLzX0IL4h2834ERLP
+	 LkLxjzLr9z4l+KFX0pnBcainOs4FfNvPlOcNLdqFz28KVvXgQSn//hZRFIiOsylsEBQ4A
+	 f6bHuy8TpvaXW6F5N826efAWs38IWB7xvtV9SfVXvzhyEyyLQihUO3l+Quz7vmBvvr3Qh
+	 ayoMvV7iaw1AWm+zt4nxCmB2xHwZP9riiQktcIngaROR3ga4mVmrCbAAwmgGPf3z3GcMH
+	 Kxo3vmHLdOr/ZyhqYH6qCEJb1739opxgkj8YpptcKGxNQzg05STpvXKtLXLD6GNdj2A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794215330;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-KSMG-AntiPhishing:X-KSMG-AntiSpam-Auth:
-	 X-KSMG-AntiSpam-Envelope-From:X-KSMG-AntiSpam-Info:
-	 X-KSMG-AntiSpam-Interceptor-Info:X-KSMG-AntiSpam-Lua-Profiles:
-	 X-KSMG-AntiSpam-Method:X-KSMG-AntiSpam-Rate:X-KSMG-AntiSpam-Status:
-	 X-KSMG-AntiSpam-Version:X-KSMG-AntiVirus:X-KSMG-AntiVirus-Status:
-	 X-KSMG-LinksScanning:X-KSMG-Message-Action:X-KSMG-Rule-ID;
-	bh=bAjv5jztQ8jh+iGi9AbS/QPrQZz+pxTt/UWPKu5c9Ow=;
-	b=RH+q2/XmCoNr5LPrVW0v2vYecl1M4+dKDVbCyFwcJlE3FdUBvbeHI3zJb70EENywECD5
-	 MljoB3GvdNrPyyZI8/ag2VVlZwq1CEEkaPFk/bvf/Drs26KX9fJm/z67nOOf47Lt6FtLT
-	 9JiQgugoQdlAd4xFRbk60bM0aNzAVvvAHbvWAD8NTcv7N/HsS2gpADLknjSHqL/SWA9Ni
-	 4RN+D+GsgehPq8/ApQQe344QXm7Bk7wg5K1YZSgtskOnt+j0ZNNqFTKe6QMJtd01aXLj/
-	 Z5HptE2wXaKvciNsdY9YVVuqQ8hy0uhuUltE0yltVzcoAVEn0G6rMYZXr7WEIGeQl6w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794216189;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=3a6/w1xWJzr0AfOc6H7D9LndxRKnZcP9ByrmJVJZKlg=;
+	b=4b4GDCF1BWf7T+XQ2osb3z4KXHZNEOmqh3P4f24YGzd0AXuECnlZQBS+y311ic2WUSqr
+	 1u/E/4/0TTMgjORVRUD7+L7X1docHDUp1cQu42SjFoFXpHTKmWmM2WcLQgJg9UyDRCOvS
+	 /qQ1AZDEtb3FVW3F1WHa7f3ulxKwMPS0CeChsbqqNVLfNOniVaZCKmgT+j0cN/L2oADrO
+	 hOJ0DGvpP9crDLiCklYgbL0IT2UYtBxdNNIEfTbrrQc18QkKXm27/NQY/cAYZXwdT5jYK
+	 1yl+XGBBlvDNEU3Y3xDBY5QBWYiwBCPN0iNZSnyxY6fYGqBDB9U7UQDGdWuLgE0MLsQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=astralinux.ru;
-	spf=pass smtp.mailfrom=astralinux.ru;
-	dkim=pass header.d=astralinux.ru header.i=@astralinux.ru header.a=rsa-sha256 header.s=mail header.b=iYKek6U6;
-	arc=none smtp.remote-ip=37.230.196.243
-Received: from mail-gw01.astralinux.ru (mail-gw01.astralinux.ru [37.230.196.243])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jPerqchO;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67001606A31C
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 09:08:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67001606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=astralinux.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=astralinux.ru
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65012606EEA1;
+	Mon,  9 Nov 2026 09:23:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=astralinux.ru header.i=@astralinux.ru header.a=rsa-sha256 header.s=mail header.b=iYKek6U6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=astralinux.ru;
-	s=mail; t=1794215319;
-	bh=jAokk+Zfx8ZmaPMvbaEBUYWJIuTkacUKL7Qyb4uWvvg=;
-	h=From:To:Cc:Subject:Date:From;
-	b=iYKek6U6XtbshWVb1vaedkcO22OtsM6XrxXfH+4O0gilHQ/tAYdzq+V03yMsWqgt3
-	 gHCdSrixbsZhTiMPmxubhrqp6lK6KfZkMlVno8r2kS/4YLJQsDhhtbltK8HjGZu+uI
-	 7A8jnu01s9H5dBQBeea3pIzId8B5GKjHgKN1NBv4A9sKEmqEU39WsKTDDQq5y/c2Wl
-	 QueqBwOf54LVaY+FGZ34Tm2xurut8bM/YiA110fImNaYkYErHlYbI33S2F/TsLeHfL
-	 j8+tthGIqeM6SvjXkO2CHmg/9E0DWh5mO2csXKgnKG3+cgG70ie1zQrHGqHbuf3rCJ
-	 olerSOja1V6Lw==
-Received: from gca-sc-a-srv-ksmg01.astralinux.ru (localhost [127.0.0.1])
-	by mail-gw01.astralinux.ru (Postfix) with ESMTP id 5DC0124FCA;
-	Mon,  9 Nov 2026 12:08:39 +0300 (MSK)
-Received: from new-mail.astralinux.ru (unknown [10.205.207.5])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail-gw01.astralinux.ru (Postfix) with ESMTPS;
-	Mon,  9 Nov 2026 12:08:20 +0300 (MSK)
-Received: from DESKTOP-D46TNHI (unknown [10.198.52.177])
-	by new-mail.astralinux.ru (Postfix) with ESMTPA id 4jNP8N1BSfz2lh4;
-	Mon, 09 Nov 2026 12:08:20 +0300 (MSK)
-From: Mikhail Dmitrichenko <mdmitrichenko@astralinux.ru>
-To: stable@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mikhail Dmitrichenko <mdmitrichenko@astralinux.ru>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joerg Roedel <joro@8bytes.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jPerqchO
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C70D1F0089F;
+	Mon,  9 Nov 2026 09:23:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794216189;
+	bh=3a6/w1xWJzr0AfOc6H7D9LndxRKnZcP9ByrmJVJZKlg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=jPerqchOgRaBjw8X4fE92dxajm9AqaZxq/CWymw4Q92RQ0WDcbFVO1k/1PNDbaxcI
+	 hGT2oMS+lRCX8Zhan8FgyX3B2GyGobWKynYHS/ynXoApxjg+DTgow/J3R6Jf6EN4uN
+	 /dWDbNcHJUTRN2JieRsY+YReAOL/18x838383G1sdN/cfFv4qcUu/eSWCjlVfJ3VeD
+	 n2DWeW81faiyxdDwq/o7AhuCqzQFbH4a1/fxSxT9FBJLVQBqSK9BYPkasSXMg9hQ1g
+	 AHBaXva0eMOPfkUu4wYtOVUyc1s/KgOuS0Kr0ybeBztodfszj/JpEpJ+oegaxOvTRW
+	 PyG1J9kzrpLCA==
+Date: Mon, 9 Nov 2026 11:23:04 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Alan Stern <stern@rowland.harvard.edu>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Andrew Lunn <andrew@lunn.ch>,
+	Heiner Kallweit <hkallweit1@gmail.com>,
+	Russell King <linux@armlinux.org.uk>,
+	"David S. Miller" <davem@davemloft.net>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
 	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	lvc-project@linuxtesting.org,
-	Joerg Roedel <joerg.roedel@amd.com>
-Subject: [PATCH 5.10/5.15] iommu/amd: Fix clone_alias() to use the original device's devid
-Date: Mon,  9 Nov 2026 12:07:31 +0300
-Message-ID: <20261109090732.1565-1-mdmitrichenko@astralinux.ru>
-X-Mailer: git-send-email 2.54.0.windows.1
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+	linux-input@vger.kernel.org, netdev@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH 05/17] USB: Lock registered interfaces during manual
+ driver binding
+Message-ID: <20261109092304.GC8635@unreal>
+References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
+ <20261105-device-trust-core-v1-5-1e536825b4eb@nvidia.com>
+ <bb83fe3c-cebb-4bc8-bfc9-24df1cf72b0b@rowland.harvard.edu>
+ <20261105184442.GF8298@unreal>
+ <bf756e50-c77e-40f2-916d-e88887426806@rowland.harvard.edu>
+ <20261108110909.GA8635@unreal>
+ <647f3199-909d-425f-b485-b598a18844d1@rowland.harvard.edu>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -86,80 +93,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-KSMG-AntiPhishing: NotDetected
-X-KSMG-AntiSpam-Auth: dkim=none
-X-KSMG-AntiSpam-Envelope-From: mdmitrichenko@astralinux.ru
-X-KSMG-AntiSpam-Info: LuaCore: 133 0.3.133 d508d579b02cdb6df47808421a9b9e12fc9fb75b, {date_rfc_vio_soft_silent}, {Tracking_from_domain_doesnt_match_to}, astralinux.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;new-mail.astralinux.ru:7.1.1, FromAlignment: s
-X-KSMG-AntiSpam-Interceptor-Info: scan successful
-X-KSMG-AntiSpam-Lua-Profiles: 207338 [Nov 09 2026]
-X-KSMG-AntiSpam-Method: none
-X-KSMG-AntiSpam-Rate: 0
-X-KSMG-AntiSpam-Status: not_detected
-X-KSMG-AntiSpam-Version: 6.1.1.27
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 2.1.0.7854, bases: 2026/11/09 08:07:00 #28826469
-X-KSMG-AntiVirus-Status: NotDetected, skipped
-X-KSMG-LinksScanning: NotDetected
-X-KSMG-Message-Action: skipped
-X-KSMG-Rule-ID: 1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <647f3199-909d-425f-b485-b598a18844d1@rowland.harvard.edu>
 
-From: Vasant Hegde <vasant.hegde@amd.com>
+On Sun, Nov 08, 2026 at 11:59:11AM -0500, Alan Stern wrote:
+> On Sun, Nov 08, 2026 at 01:09:09PM +0200, Leon Romanovsky wrote:
+> > On Thu, Nov 05, 2026 at 03:04:18PM -0500, Alan Stern wrote:
+> > > >  it ensures that the lock is
+> > > > acquired when the driver is bound.
+> > > 
+> > > That may have been your intention when the patch was created, but if you 
+> > > read the patch you'll see that it includes a whole bunch of material 
+> > > not related to locking during binding.  Namely, this part:
+> > 
+> > Once I added `device_lock()` to `bind`, I had to add it to `unbind` as well.
+> 
+> Obviously I'm not making my points clear.  Let me try again.
+> 
+> The entire patch description, as you wrote it, is this:
+> 
+> > Interface claims hold the USB device lock, but device_bind_driver()
+> > requires the target interface lock. Without it, trust-policy writes  can
+> > race admission.
+> 
+> This says nothing about holding the interface lock during unbinding.  In 
+> other words, it isn't a complete description of the patch.  It implies 
+> that the patch changes nothing outside the device_bind_driver() 
+> function, which isn't true.
+> 
+> Furthermore, the patch does not change any of the code in 
+> usb_driver_release_interface(), which is where unbinding takes place, 
+> because that routine already takes the interface lock.  So to say that 
+> you had to add device_lock() to `unbind` is not accurate.
+> 
+> Instead the patch adds a new usb_driver_release_refused_claim() routine, 
+> plus code in usb_set_configuration() to call the new routine.  The patch 
+> description says nothing about either of these things.  Not to mention 
+> the fact that your other changes make it now possible for the driver 
+> core to delete an interface claim when the interface is registered, 
+> something which was not possible before.  This is another inadequacy in 
+> the patch description.
+> 
+> I'm not saying that any of the code is wrong.  But the description does 
+> a very bad job of explaining the new code.
 
-commit faad224fe0f0857a04ff2eb3c90f0de57f47d0f3 upstream.
+I hope v2 explains this better. I also split the USB patch further.
 
-Currently clone_alias() assumes first argument (pdev) is always the
-original device pointer. This function is called by
-pci_for_each_dma_alias() which based on topology decides to send
-original or alias device details in first argument.
+Thanks
 
-This meant that the source devid used to look up and copy the DTE
-may be incorrect, leading to wrong or stale DTE entries being
-propagated to alias device.
-
-Fix this by passing the original pdev as the opaque data argument to
-both the direct clone_alias() call and pci_for_each_dma_alias(). Inside
-clone_alias(), retrieve the original device from data and compute devid
-from it.
-
-Fixes: 3332364e4ebc ("iommu/amd: Support multiple PCI DMA aliases in device table")
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Signed-off-by: Joerg Roedel <joerg.roedel@amd.com>
-[mdmitrichenko: Replace iommu->pci_seg->alias_table with the global
- amd_iommu_alias_table used by 5.10/5.15.]
-Signed-off-by: Mikhail Dmitrichenko <mdmitrichenko@astralinux.ru>
----
-Backport fix for CVE-2026-53053.
-
- drivers/iommu/amd/iommu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 334303b1d27bb..d8af774124a98 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -216,8 +216,9 @@ static struct iommu_dev_data *search_dev_data(u16 devid)
- 	return NULL;
- }
- 
--static int clone_alias(struct pci_dev *pdev, u16 alias, void *data)
-+static int clone_alias(struct pci_dev *pdev_origin, u16 alias, void *data)
- {
-+	struct pci_dev *pdev = data;
- 	u16 devid = pci_dev_id(pdev);
- 
- 	if (devid == alias)
-@@ -242,9 +243,9 @@ static void clone_aliases(struct pci_dev *pdev)
- 	 * part of the PCI DMA aliases if it's bus differs
- 	 * from the original device.
- 	 */
--	clone_alias(pdev, amd_iommu_alias_table[pci_dev_id(pdev)], NULL);
-+	clone_alias(pdev, amd_iommu_alias_table[pci_dev_id(pdev)], pdev);
- 
--	pci_for_each_dma_alias(pdev, clone_alias, NULL);
-+	pci_for_each_dma_alias(pdev, clone_alias, pdev);
- }
- 
- static struct pci_dev *setup_aliases(struct device *dev)
--- 
-2.43.0
-
+> 
+> Alan Stern
+> 
