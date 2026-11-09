@@ -1,75 +1,127 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.72
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794248761;
-	b=hGanOQqTpHfnN5HZjvJoFBVNdBnEK5TV8ylqwSqpdS9A87bCOpJmtAnXcNRxwZS3HBSq
-	 xpmalbOj/VA4RIloBef9CSSkxgcFLv9AUt7Xr219QwWBgGTlzKj4YKMNjXWl5+gf3hadc
-	 Fxofz6l5OB9X4jGfjfD+oPbZqMj3bkiOZ1zMyMxMbAzNlzf0qyCFzDVwdayjb2rebpf8J
-	 caPOKj69z2nHPqEh0LTFwKXfcAJ6/Na/l5Dt8byN9PnVHY60LNdGyhsH1AXlV7/qsrduL
-	 xcj8G8I3bXRRKUoiuy/n160GZCJpyNCDDTtgrzbyR3tCkZaU4wEhmUVJo7eQ85NMnZQ==
+	t=1794250144;
+	b=y0AHxe1CYqLS/23yD2yurY8B9EI8DTDj0PirhQEsZ9Uvgp4+7trrS2F+iRzlbdNS2l9K
+	 5mGyKlDQAYHN2Kfpx6tWuzr2F5B2DNvTRu2pn1yMJRJ9n5sNGELvE5Ip0YB2O/9cFHu6L
+	 3X2v7ESS/bzatG/dE27GU/pAVgL2CZWBXFEZM3kV1Jk3+aV/n2Nh5xVTpIDRmRoREPlEg
+	 ykNRNiFqo2TK74Mi9HcvwF29wUpApxsJCXO5MZrcCH5BlZBog/1+Rgmv8i+bpGy16gpMj
+	 n+GIYO4Ovy59kzhwnolojBbo9M+u0nQy56wk3jx6fOPw6SceeFpQLgVxcmkCYB3I4tg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794248761;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794250144;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:X-Mailer:Message-ID:Subject:From:To:Cc:
-	 Content-Type;
-	bh=X6oblkqCvojP6e7fV/VhIpBJOcN4NASJcWrnm45v9hk=;
-	b=TeTTaoWX128QNCuzrg95wN0KkHMpmYPQS/gae7kaDd7IVccHed+z9buty9tjTY91q3jY
-	 fUx41ytaX/hSR+6LUbWnYBSO2R05YWsJmh7atzoi661oYhxQwHdrlFBSulLNfO8wus8rr
-	 wM5QDXhZfxaFnswLeOE2UumrWDU49wd8EHzlXwWl7GJMf1PZ7+ph588dzQUXKWGZDF9TC
-	 DOSRjC4+QPuYJ0mcXnmkmoPQEaiQZBwkn369T2o72X30WPTHyLRTNWJw9F9BxneGXkMxv
-	 hxS2PbaoUYsh+q9SUOqUw7Nt1152xjWbRnUojpof86XI0VPupGsSbYGKBvSDW1AImtg==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=O+PQWQ9PbJFOCn9EB5efiBTAKX4GJUUBrxAtO9OF3Dc=;
+	b=xP+2ksW16mXBlyvYBMfToVPrhWpgf9kBznUImZEJbfkDhN6rjqIcboB2i2Flgs6URQ/T
+	 Z6amm7oBprhScpO24ar6wBBCK+hZUmJCN0BqwHeUQdO+CvtOLCRfpoCpdt7+bed0eZnz4
+	 nK1/BdIOQnFge9pa0WN11wqLVDXqDQrm/dotxjyc38fWfISJF+SbVC9As2cxYqySYZojH
+	 p4h6b/PJhlvEqz9h+sJk+3cTQGJ/rjv18iD/R1b0PWs9u34v6uRxZT6jkYDdFpYCwrmUd
+	 pHfVQWZSMfKN1zYVF9N1Ar/11Vu90geEtnKx9IAcPzuZZmPzd7tadpWxVFgdTgaP9Lg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=IayRXlQe;
-	arc=none smtp.remote-ip=209.85.218.72
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=OSTrvkxy;
+	arc=none smtp.remote-ip=209.85.160.170
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89A506070093
-	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 18:26:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 89A506070093
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--lrizzo.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1434C606A326
+	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 18:49:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1434C606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=IayRXlQe
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c41b03cd1dcso113634666b.3
-        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 10:26:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=OSTrvkxy
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-536c8f958d7so9490521cf.1
+        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 10:49:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794248760; x=1794853560; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=X6oblkqCvojP6e7fV/VhIpBJOcN4NASJcWrnm45v9hk=;
-        b=IayRXlQepf8MXDNWeNC3ifbOFYKgTMh4X8OVj7oXOVN84HA3NgYpjQZrRs94xsHcbv
-         voFZJoCxXnhwixdLZ4MlwItTez6kXk6C2t/rfKuWODo4VSHOci8DU44BQuJjdg6QaevX
-         pBigsb4l+727JsazHpo82LHNyoOBxT4bJujve6aFkeQhbf7MbesIc3C82HDpufDLze30
-         BddwRbnbxvidYkwUbNI0WTxXe2nVL7oVSGENtcYU0gBF/rQ1GLpmIb6D0JlXTmkbCDS1
-         gIjBL5TUCLx4HmPoQBmkqCyYLbQvd+d5yJVBosxdZ9hlrLm9MHMo18QcfOQq9md/NkQc
-         8Y7Q==
+        d=ziepe.ca; s=google; t=1794250143; x=1794854943; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=O+PQWQ9PbJFOCn9EB5efiBTAKX4GJUUBrxAtO9OF3Dc=;
+        b=OSTrvkxyStCzAPKHkk0BZhcp8cPjvkzNM33CaX9Tf5sRm7KiDf6/de7adnd3irxDNN
+         GKx1dEJI5f3BOszlnz9VRCADc25zjksNVVjFVvc8geoBYncULhNb5loZAoc3ZvWHlk89
+         hxv9g9N/TwO1WmBFkpnODafKy4YizPO6ErItRK4FE6fWe/fnLLf4BLehSsWyYiQxHRjX
+         h0q2duE+0ii2SHECaouZ84c23nW/5jB3Z7xkaaeRsiNtjXhSHSdoptfKZKxjtrXV4Vh7
+         acIriQP0IQBtgnBIsfkrTOIlY5RxDpHOYa1BbY3+GjPjiQFJREQ5bowVIkCUm6jHkhoX
+         Nsxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794248760; x=1794853560;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=X6oblkqCvojP6e7fV/VhIpBJOcN4NASJcWrnm45v9hk=;
-        b=m7HPM8LExP6UZDfYToD6wQ4RLxio7XCVaFxtrcEhZao/FlLidJeuiSTpRxMs9MC4/S
-         MNpv2uZa3gXrw4FKlJ8A2Vb8vts/DymAttTwE58xSjgIEHmDhukbaQWFreZrjUqms+y/
-         NQpp55BwyCUqyfnJ+lhLfZnJEkCYZHc0QdDSJVl71kFoCaTs81LVeBzRmvzaZdbpKi8T
-         oFb1PpGlq/FvEMVSsL4W3L8nq/oPV7W5jUc8ENNduqD17p130zSVGCqDYZAZitHBidWj
-         EXnlO8N6PPJzyNGCPNzdqCiyXCzKnTNlMd988XdvkkIeCX1XZ3uCNAJBRj6QGLB7m37b
-         E+sg==
-X-Forwarded-Encrypted: i=1; AL+hErHM+/H0aRDIYx8nr8+2rjgkKcRuvkK9X06h0pf7e6cecAN7r+F8utbS7yb3KIWYmAAm4UGBmg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8gjiS7ptQmhhSDH0IsK2U+3xrTUZLwpC6csObcIlfUk2vZBBUF
-	X5bqKXgrlVn/kvaPkJoGaHVb4nHsSCvpBWUe+SUE4z/QEZ8R5V36SlOlRYEBoMB/dYtVWbSdFUa
-	17fGmew==
-X-Received: from ejblh15.prod.google.com ([2002:a17:906:f8cf:b0:c34:bb1f:3bc4])
- (user=lrizzo job=prod-delivery.src-stubby-dispatcher) by 2002:a17:907:944f:b0:c3f:98d4:dfd0
- with SMTP id a640c23a62f3a-c50495f01c0mr14975066b.45.1794248759870; Mon, 09
- Nov 2026 10:25:59 -0800 (PST)
-Date: Mon,  9 Nov 2026 18:25:30 +0000
-In-Reply-To: <20261003212241.3432303-1-lrizzo@google.com>
+        d=1e100.net; s=20260707; t=1794250143; x=1794854943;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=O+PQWQ9PbJFOCn9EB5efiBTAKX4GJUUBrxAtO9OF3Dc=;
+        b=aUGV1IM+UhXOKRd/fFPfDUlwofpTifkNGIh2QQ4UqoTBTNCRf/6lyUZctZlna5KShc
+         wBsZmhAZYy+z6m2uFyNvs+yHZHx+IMn0e1B/LH6ug2KRn8+xqyLjbJ2ifS4BDMQTcwDG
+         In/cmrBTsxGlcpFWbvCT2A4+lr86mlbvvRq2oT10NYlbB3nsM+8RxFgTBawwkwAdLGxx
+         AEBrBujUZlcyurMbNuaCcpXlNxBj4JES2C8rzaH6zmG+LxP99DgArCaEp4C8OiLC488o
+         Xop0K66HVQ20nG+j/s14rw72XpSL3e+mKDvrtysVcXLS2per38B0zmEId/XBglKjFNR6
+         cYGQ==
+X-Forwarded-Encrypted: i=1; AL+hErE7Rt83ZfOmu/veluPJOyqcKl6HPfSXqTlG/tpRdsXnjMjXtukwOUDSGuXY+GDGitI/Bnj5Fw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8rHCDzwAPJA7dzQGb2kYgpXfYmOkCjOEO0nluLk1bJan9/i8q3
+	TPhqzWfQHkcBugXcoJUowQGP0n3hs5u7Dl2EePiWWorVzeu4SxENGTl6OuLuFK7wj90=
+X-Gm-Gg: AYBFou26ZG9wieaZNpe0I5GhLct0X5h8KgsCXHHVIvw+hPnsHBYDAAHXLFPvsOSLh/t
+	ddoAi8prTMNuW3wePgvbQ7Ogn9KmEnhQZ9KEfprKbXYgVk32sYTGTCIklVNYmLBz61JOKln8y9x
+	xhxnRjKa+IJAANYRgZ5CqidqrLr0e1J41E6tweC6wlWbfQwq/XVtuYMstQFANStvyqhxXRiAltL
+	6q2qmrdvi/D0eOiXTPX+3wcKB/WeMHWDGpjjP6ZRGEIsm22G2XCLyGtzPk9zL6ZTRRVIzmxmM9v
+	7rKR6bfPeLGDAuD62gpKqaEqkfeMo1hfpHW6Rl494E8oJRRkLftd4NB4jKaNBMdSzpXdVdzXunZ
+	YUFTeSUEpqj1ivPkVuWLIlNw7Y1tZh6DPyMrVBdNtBxdpUndwjl8WaKLJYCK6cciHP+fakuf7iT
+	5GKQ6rbot49aj9scCuZadDaTOwiQUKbOsv0qUn8L8KMi2546RtPYyJIJ/059/aKHJc+mS9c0+JO
+	35VZn0Quo1hE7yyq98IuZlrrPlh5LImb1mNHz9PQIQnaMyqBa6G5/A8YS78YrWZaM33Auy89irU
+	A+pnSsXlXcRRYKgJ0WYLdBH/bw0lftlZBjzxFn5QpeYtNeCUNoAQ1otL2bMMpnsp1jpTKc7FvSk
+	khvLfSpU20smi4PYenPsk9gouscoH6VU=
+X-Received: by 2002:a05:622a:40e:b0:536:3600:f0af with SMTP id d75a77b69052e-555253df92fmr3996711cf.7.1794250142846;
+        Mon, 09 Nov 2026 10:49:02 -0800 (PST)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5550af60493sm3967801cf.4.2026.11.09.10.49.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2026 10:49:02 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xQUQP-00000002A6b-35np;
+	Mon, 09 Nov 2026 14:49:01 -0400
+Date: Mon, 9 Nov 2026 14:49:01 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Jacob Pan <jacob.pan@linux.microsoft.com>,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH v8 12/15] iommufd/viommu: Allow PCI TSM backends to
+ provide vIOMMU operations
+Message-ID: <20261109184901.GQ663069@ziepe.ca>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-13-aneesh.kumar@kernel.org>
+ <20261104152351.00002565@linux.microsoft.com>
+ <20261105004934.GE3889730@ziepe.ca>
+ <20261105091622.00004a9c@linux.microsoft.com>
+ <CO1PR11MB48352506BB91C461F25147098C762@CO1PR11MB4835.namprd11.prod.outlook.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -78,131 +130,61 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261003212241.3432303-1-lrizzo@google.com>
-X-Mailer: git-send-email 2.56.0.542.g3ef89b7020-goog
-Message-ID: <20261109182533.3594984-23-lrizzo@google.com>
-Subject: [RFC PATCH v2 22/25] net/gve: Use PISA memory for RX buffers
-From: Luigi Rizzo <lrizzo@google.com>
-To: Luigi Rizzo <rizzo.unipi@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Vlastimil Babka <vbabka@kernel.org>, David Hildenbrand <david@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
-	"David S . Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>, 
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J . Wysocki" <rafael@kernel.org>, 
-	Danilo Krummrich <dakr@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>, 
-	Lorenzo Stoakes <ljs@kernel.org>, Jesper Dangaard Brouer <hawk@kernel.org>, 
-	Ilias Apalodimas <ilias.apalodimas@linaro.org>, Willem de Bruijn <willemb@google.com>, 
-	Kuniyuki Iwashima <kuniyu@google.com>, Joshua Washington <joshwash@google.com>, 
-	Harshitha Ramamurthy <hramamurthy@google.com>, Alexander Lobakin <aleksander.lobakin@intel.com>, 
-	iommu@lists.linux.dev, netdev@vger.kernel.org, linux-mm@kvack.org, 
-	linux-block@vger.kernel.org, driver-core@lists.linux.dev, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Luigi Rizzo <lrizzo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB48352506BB91C461F25147098C762@CO1PR11MB4835.namprd11.prod.outlook.com>
 
-When dev->pisa_rx_bufs is enabled, allocate GQI-RDA RX packet buffers
-with pisa_rx_gfp(dev) so they come from the per-node PISA
-allocator, and evict plain pages when a free PISA RX block is available;
-DQO-RDA uses page_pool, which checks dev->pisa_rx_bufs directly.
+On Fri, Nov 06, 2026 at 08:03:48AM +0000, Tian, Kevin wrote:
+> > From: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > Sent: Friday, November 6, 2026 1:16 AM
+> > 
+> > Hi Jason,
+> > 
+> > On Wed, 4 Nov 2026 20:49:34 -0400
+> > Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > 
+> > > On Wed, Nov 04, 2026 at 03:23:51PM -0800, Jacob Pan wrote:
+> > >
+> > > > I am thinking MSHV/pKVM can register an assignment-only tsm_dev to
+> > > > leverage this? Could PCI/TSM support this role without
+> > > > device-security?
+> > >
+> > > It is certainly not what TSM was originally imagined for, but with our
+> > > new arrangement, yah maybe so?
+> > I will rebase on this set and send out patches for a detailed review.
+> > 
+> > > TSM basically just becomes this weird overlay driver on the PCI device
+> > > that does stuff. Some of the stuff it might do:
+> > >  - Register an attestation subsystem device to do SPDM
+> > >  - Register to allow iommufd to create a viommu
+> > >  - Some status sysfs ?
+> > >  - ??
+> > >
+> > So we may expand pci tsm to have more than one role? currently it has
+> > one.
+> > int pci_tsm_register(struct tsm_dev *tsm_dev) {
+> > ...
+> > 	roles = is_link_tsm(tsm_dev) + is_devsec_tsm(tsm_dev) +
+> > 		is_assignment_tsm(tsm_dev);
+> > 	if (roles != 1)
+> > 		return -EINVAL;
+> 
+> Not sure what'd be a proper name for this, but it sounds to me that
+> it tries to over-abstract something into tsm. The reused logic related
+> to assignment or viommu is relatively small, so the other option below
+> sounds better if it can work.
+> 
+> Or it may be the original provider framework that Aneesh proposed,
+> so tsm/MSHV/pKVM can each register its own backend...
 
-Signed-off-by: Luigi Rizzo <lrizzo@google.com>
----
- drivers/net/ethernet/google/gve/gve_rx.c | 32 ++++++++++++++++--------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+That is definately undesirable for TSM
 
-diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
-index 89f287b678bf0..85c243bbdeb33 100644
---- a/drivers/net/ethernet/google/gve/gve_rx.c
-+++ b/drivers/net/ethernet/google/gve/gve_rx.c
-@@ -4,6 +4,7 @@
-  * Copyright (C) 2015-2021 Google, Inc.
-  */
- 
-+#include <linux/pisa.h>
- #include "gve.h"
- #include "gve_adminq.h"
- #include "gve_utils.h"
-@@ -170,6 +171,8 @@ static int gve_rx_alloc_buffer(struct gve_priv *priv, struct device *dev,
- 	dma_addr_t dma;
- 	int err;
- 
-+	if (rx->data.raw_addressing)
-+		gfp |= pisa_rx_gfp(dev);
- 	err = gve_alloc_page(priv, dev, &page, &dma, DMA_FROM_DEVICE, gfp);
- 	if (err) {
- 		u64_stats_update_begin(&rx->statss);
-@@ -499,13 +502,19 @@ static void gve_rx_flip_buff(struct gve_rx_slot_page_info *page_info, __be64 *sl
- 	*(slot_addr) ^= offset;
- }
- 
--static int gve_rx_can_recycle_buffer(struct gve_rx_slot_page_info *page_info)
-+static int gve_rx_can_recycle_buffer(struct gve_rx_ring *rx,
-+				     struct gve_rx_slot_page_info *page_info)
- {
- 	int pagecount = page_count(page_info->page);
- 
- 	/* This page is not being used by any SKBs - reuse */
--	if (pagecount == page_info->pagecnt_bias)
-+	if (pagecount == page_info->pagecnt_bias) {
-+		if (rx && rx->data.raw_addressing &&
-+		    !is_pisa_page(page_info->page) &&
-+		    pisa_has_free_blocks_rx(&rx->gve->pdev->dev, 0, rx->gve->numa_node))
-+			return 0;
- 		return 1;
-+	}
- 	/* This page is still being used by an SKB - we can't reuse */
- 	else if (pagecount > page_info->pagecnt_bias)
- 		return 0;
-@@ -549,7 +558,7 @@ static struct sk_buff *gve_rx_copy_to_pool(struct gve_rx_ring *rx,
- 
- 	copy_page_info = &rx->qpl_copy_pool[pool_idx];
- 	if (!copy_page_info->can_flip) {
--		int recycle = gve_rx_can_recycle_buffer(copy_page_info);
-+		int recycle = gve_rx_can_recycle_buffer(NULL, copy_page_info);
- 
- 		if (unlikely(recycle < 0)) {
- 			gve_schedule_reset(rx->gve);
-@@ -669,7 +678,7 @@ static struct sk_buff *gve_rx_skb(struct gve_priv *priv, struct gve_rx_ring *rx,
- 			u64_stats_update_end(&rx->statss);
- 		}
- 	} else {
--		int recycle = gve_rx_can_recycle_buffer(page_info);
-+		int recycle = gve_rx_can_recycle_buffer(rx, page_info);
- 
- 		if (unlikely(recycle < 0)) {
- 			gve_schedule_reset(priv);
-@@ -975,7 +984,7 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
- 			 * owns half the page it is impossible to tell which half. Either
- 			 * the whole page is free or it needs to be replaced.
- 			 */
--			int recycle = gve_rx_can_recycle_buffer(page_info);
-+			int recycle = gve_rx_can_recycle_buffer(rx, page_info);
- 
- 			if (recycle < 0) {
- 				if (!rx->data.raw_addressing)
-@@ -987,12 +996,15 @@ static bool gve_rx_refill_buffers(struct gve_priv *priv, struct gve_rx_ring *rx)
- 				union gve_rx_data_slot *data_slot =
- 						&rx->data.data_ring[idx];
- 				struct device *dev = &priv->pdev->dev;
--				gve_rx_free_buffer(dev, page_info, data_slot);
--				page_info->page = NULL;
--				if (gve_rx_alloc_buffer(priv, dev, page_info,
--							data_slot, rx)) {
-+				struct gve_rx_slot_page_info new_info;
-+				union gve_rx_data_slot new_slot;
-+
-+				if (gve_rx_alloc_buffer(priv, dev, &new_info,
-+							&new_slot, rx))
- 					break;
--				}
-+				gve_rx_free_buffer(dev, page_info, data_slot);
-+				*page_info = new_info;
-+				*data_slot = new_slot;
- 			}
- 		}
- 		fill_cnt++;
--- 
-2.56.0.542.g3ef89b7020-goog
+I think the very best answer for this is to get the viommu from the
+"kvm" fd, I just don't quite know how you implement it..
 
+Maybe just register something like a notifier chain where the struct
+file * and the viommu type value goes in and a viommu object comes
+back out?
+
+Jason
