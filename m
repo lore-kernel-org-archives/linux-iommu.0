@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794209652;
-	b=ueRJ3rd8jdospcvnu3pvWUcmbE7L6IMIyOvYsSQnFyjXy7uMcvtyvDBIb+luJDPpgEkI
-	 VLy/vaqKDNtoxIglpj9oh8z4Xvnc3C4/JKAkA/MP97CqMUvJcaebqI1Eit8tEXajM/w99
-	 reFO1/Rly7H+MqGV8ZGjiTJWIjBKTjJUP27q+7FFUjJfW+t5V1XfkstwWEQxjlJJymoHJ
-	 URCSSB48SncW90hXM1ViCdorzH2nPJV9l9Gi2b4ehHsIGpGS+BJFazKnKieoT0HDZn2DI
-	 kcRMtx4GfpwXjuY848+m+wyoOzT6oyH5NB7bOLJCKLptGKzGZSlY6LV7igTG+xHZCrw==
+	t=1794209648;
+	b=FDq0JNYrpocfic1MC/ftVPrFbpnxc4sXPZZVdKqu1GaME/N3KryexzXZw84jnZY8PKlc
+	 k/ZYsqfIZt/O2cCX9eXTp+Z5TtduIyViQkPySI6qErPgbVPVu+BOli4RCYqidQ46uGsxp
+	 ctJlxPxyayL4Y6fwOgdRSYBSuVzsR1Y6GQCQfDckun4K0411mWm3sekxK4KvnT9qhQqqu
+	 j5UQQkCgm+ZsaNtzWV0qmWErNHNJw8chNwZPArfPrJFHHFR4ZxS/unIlAAQiTlO9+6THq
+	 XJb4CyQOrUvGX+juACsagWfurvioZ7hmEiY8hfxfvxL39WdKNsOBwutLkJNFch1yoZg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794209652;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794209648;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
 	 Content-Transfer-Encoding;
-	bh=5KpZyXTyDaeCpFL09xfcSddfcVQz8Z2BLa6aTzaRrnw=;
-	b=kIrpUDg7h4QzTP+CD/Lnd48zHcPGiFoqWCqL5t+ztsfJ6Y1KCPhZBgZWcE5QNouGiTVx
-	 YmKkGkqxtkLpog7RUX3zYCyEDD6nCmBiuBcaGaKmzFiqIi8ZyNeFG90EiGsY4D5q5q+Yw
-	 5jt12kvfHl8KRJNRGWdE1cxiF9QaGWZB9egZG5jXSUSMSK8dxx7a3Zzf8ps/KpYZW1pGj
-	 mlv4YeD3A1tKClMeNv+n9zg5T6J5DxdPAnLmElEZyYo+qvTxfr4d3WeYlV1t34Gu7SjxJ
-	 nSLUzxSU00zRpbt1jafZMkwZ+KXyBo9+rfjB+geKyE9bzBmy3B8/gPOAjFT4nz9yVWQ==
+	bh=cqZgEa3fWaSRKdNA/kRQddW5Yao1N6EqxQ4vC2mu8po=;
+	b=ua2oawBeX1PguVFrrUFbXwCTiN2S9B91/FE3ZFxGKF2BQvUuyA/jysdhLFX9CgvB42Gf
+	 yJDN/KA2GvTiV1gTfFQ7nWuVmExTg0+whhNrgFBSK4u5DXJTSHhy9Cu5JKu2IPkoBCeFT
+	 Bs19KcB8AbJTlWSM1x9TRxU4kmnEiqAH5VQj363r1cENsh7Gf37RuIvrmT/kWWC8OWY4H
+	 pLqKpPZeDPMK8CsT3E3DzOMoxEelcyMcqwxCPmS6tc6WZe7736fcN5ec5t2PDRDqzsML3
+	 3KDcH1Yw2KUhyx00YL2DSItQR7TrELQwuBdUI84bG/RqINhH6VnBRCosGTfVpA6y2OA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lwKBHRrg;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bLu0vKUr;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DDA1606D827;
-	Mon,  9 Nov 2026 07:34:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9737F606A333;
+	Mon,  9 Nov 2026 07:34:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lwKBHRrg
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 410D21F0089F;
-	Mon,  9 Nov 2026 07:34:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bLu0vKUr
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFA61F0089F;
+	Mon,  9 Nov 2026 07:34:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794209652;
-	bh=5KpZyXTyDaeCpFL09xfcSddfcVQz8Z2BLa6aTzaRrnw=;
+	s=k20260515; t=1794209648;
+	bh=cqZgEa3fWaSRKdNA/kRQddW5Yao1N6EqxQ4vC2mu8po=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=lwKBHRrgtLlHdfSIgSshSm3e0EGD/FzxILn/oHZ/MBhIlxI92zK1vyP/KinI0O+dq
-	 N1lkFUZ1d1LxsJFXpKksY6sxA+asTaTHkZoul7zy9272bic517JX89oNFsIZ1y5Xpo
-	 lpJVehQ2mPpV8DtjN9VWns0x+h74ukvpSJnGqPF3qV7WMyHiEty6/9IUL4NqOH9sbO
-	 N4Xg0BfHVzBLU8JKOsEAtqqFC/KoByvzJTCTdkwPkrln1oXePe+/4LOBk5b6PTvakB
-	 qGWrjTRcTvelnyEbe0ToJwLbaTKoeQR0FT/RT6LxYj1L0gDGKgW+DHEKRPmlndd15f
-	 1L7qwcpsIsz/A==
+	b=bLu0vKUrD3cDT/qaervg2di3zkERF6/cciAIK43BD4nhYvNKlNRXF4/vR9Y3epDi4
+	 v4assoGxsYd0G5fydaLEx8x8iK5roW4wU1FQy4KKQWvkc3AeIb7ajmex84xb5flKI3
+	 rCNcF/qttoswbs6SoPV23aFq6/JYZLO80XEkTGDBprWn7EvCx9ufP0XGt8Xa2Nga6f
+	 rirYuOB3FFNySftsLHqVme+mdjZc87nyj1Uv3bNDIJX13HEInMsNljVbQVYADHfl9f
+	 IS1F3HjqKPZO9HyyH0gRW2zcUD+SJtiJrBe7QA8xxR4DfB/PcFTonxQJ88Mg3LTCBh
+	 rWEn9O4bWGNVw==
 From: Leon Romanovsky <leon@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
@@ -82,9 +82,9 @@ Cc: linux-kernel@vger.kernel.org,
 	linux-pci@vger.kernel.org,
 	iommu@lists.linux.dev,
 	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v2 04/19] USB: Release interface claims refused during registration
-Date: Mon,  9 Nov 2026 09:33:34 +0200
-Message-ID: <20261109-device-trust-core-v2-4-3b12d9a9f861@nvidia.com>
+Subject: [PATCH v2 01/19] Input: gameport - attach manual drivers through the driver core
+Date: Mon,  9 Nov 2026 09:33:31 +0200
+Message-ID: <20261109-device-trust-core-v2-1-3b12d9a9f861@nvidia.com>
 X-Mailer: git-send-email 2.56.0
 In-Reply-To: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
 References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
@@ -103,91 +103,50 @@ Content-Transfer-Encoding: 8bit
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-An interface can be claimed by a sibling's probe before registration.
-If its later binding fails, driver core clears the driver pointer while
-USB retains the bound state and claimant data. Device registration still
-succeeds, leaving the claimant unaware that its binding was refused.
+Manual gameport binding calls connect before publishing the binding, so
+driver-core admission cannot reject a device before functional setup.
 
-Remember the claimant across device_add() and invoke USB unbinding when
-driver core drops the claim. Hold the claimant's module while running its
-disconnect callback, and clear the retained interface state.
+Use device_driver_attach() to run the existing bus probe and removal
+callbacks under the device lock. This gives manual attachment the same
+admission, setup and failure cleanup as automatic probing.
 
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/usb/core/driver.c  | 18 ++++++++++++++++++
- drivers/usb/core/message.c |  8 ++++++++
- drivers/usb/core/usb.h     |  2 ++
- 3 files changed, 28 insertions(+)
+ drivers/input/gameport/gameport.c | 21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
 
-diff --git a/drivers/usb/core/driver.c b/drivers/usb/core/driver.c
-index ad5d9d5fc7598..ee36eae34bdcc 100644
---- a/drivers/usb/core/driver.c
-+++ b/drivers/usb/core/driver.c
-@@ -652,6 +652,24 @@ void usb_driver_release_interface(struct usb_driver *driver,
- }
- EXPORT_SYMBOL_GPL(usb_driver_release_interface);
+diff --git a/drivers/input/gameport/gameport.c b/drivers/input/gameport/gameport.c
+index 9707b155bc947..c9efec2dc55da 100644
+--- a/drivers/input/gameport/gameport.c
++++ b/drivers/input/gameport/gameport.c
+@@ -214,26 +214,7 @@ static void gameport_run_poll_handler(struct timer_list *t)
  
-+/*
-+ * The driver core refused to bind an interface that a sibling claimed before
-+ * it was registered, and dropped the claim. Let the claimant release the
-+ * interface instead of operating it with a bound interface but no driver.
-+ */
-+void usb_driver_release_refused_claim(struct usb_interface *iface,
-+				      struct device_driver *claimant)
-+{
-+	struct device *dev = &iface->dev;
-+
-+	device_lock(dev);
-+	dev->driver = claimant;
-+	usb_unbind_interface(dev);
-+	dev_set_drvdata(dev, NULL);
-+	dev->driver = NULL;
-+	device_unlock(dev);
-+}
-+
- /* returns 0 if no match, 1 if match */
- int usb_match_device(struct usb_device *dev, const struct usb_device_id *id)
+ static int gameport_bind_driver(struct gameport *gameport, struct gameport_driver *drv)
  {
-diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-index a738d03c23eac..d35a7710c8ef4 100644
---- a/drivers/usb/core/message.c
-+++ b/drivers/usb/core/message.c
-@@ -2264,6 +2264,7 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
- 	 */
- 	for (i = 0; i < nintf; ++i) {
- 		struct usb_interface *intf = cp->interface[i];
-+		struct device_driver *claimant;
+-	int error;
+-
+-	gameport->dev.driver = &drv->driver;
+-	if (drv->connect(gameport, drv)) {
+-		gameport->dev.driver = NULL;
+-		return -ENODEV;
+-	}
+-
+-	error = device_bind_driver(&gameport->dev);
+-	if (error) {
+-		dev_warn(&gameport->dev,
+-			 "device_bind_driver() failed for %s (%s) and %s, error: %d\n",
+-			gameport->phys, gameport->name,
+-			drv->description, error);
+-		drv->disconnect(gameport);
+-		gameport->dev.driver = NULL;
+-		return error;
+-	}
+-
+-	return 0;
++	return device_driver_attach(&drv->driver, &gameport->dev);
+ }
  
- 		if (intf->dev.of_node &&
- 		    !of_device_is_available(intf->dev.of_node)) {
-@@ -2277,7 +2278,14 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
- 			dev_name(&intf->dev), configuration,
- 			intf->cur_altsetting->desc.bInterfaceNumber);
- 		device_enable_async_suspend(&intf->dev);
-+		claimant = intf->dev.driver;
-+		if (claimant && !try_module_get(claimant->owner))
-+			claimant = NULL;
- 		ret = device_add(&intf->dev);
-+		if (!ret && claimant && !intf->dev.driver)
-+			usb_driver_release_refused_claim(intf, claimant);
-+		if (claimant)
-+			module_put(claimant->owner);
- 		if (ret != 0) {
- 			dev_err(&dev->dev, "device_add(%s) --> %d\n",
- 				dev_name(&intf->dev), ret);
-diff --git a/drivers/usb/core/usb.h b/drivers/usb/core/usb.h
-index a9b37aeb515be..293340a48b6c5 100644
---- a/drivers/usb/core/usb.h
-+++ b/drivers/usb/core/usb.h
-@@ -49,6 +49,8 @@ extern int usb_set_isoch_delay(struct usb_device *dev);
- extern int usb_get_bos_descriptor(struct usb_device *dev);
- extern void usb_release_bos_descriptor(struct usb_device *dev);
- extern int usb_set_configuration(struct usb_device *dev, int configuration);
-+void usb_driver_release_refused_claim(struct usb_interface *iface,
-+				      struct device_driver *claimant);
- extern int usb_choose_configuration(struct usb_device *udev);
- extern int usb_generic_driver_probe(struct usb_device *udev);
- extern void usb_generic_driver_disconnect(struct usb_device *udev);
+ static void gameport_find_driver(struct gameport *gameport)
 
 -- 
 2.56.0
