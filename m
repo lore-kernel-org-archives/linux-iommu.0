@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.43
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.56
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794221782;
-	b=FKuINitNN7BoTAnOSALI3IG/Bp1R06Bwxvikor/z/6GAVOLLT0MbxZvXNAqhydu0Cj4W
-	 vrV0f565yQZJce7IJL7VSfp7ziBmmYJqKH18wORFEj0T26zLGL5auad84rGT0tB3tvq6n
-	 mOQvsuHQ+owC6DtEX2aiwqNu0VSdTWFmqfqQQ3L7qo2NCHlcOvhxdNKNAnrO+WJEBrQ2Y
-	 2zrmKZNn0PSnBuiNs7ssR03kxtc6NoMAcf/EsN//6fZkYl6x4Wg7WeU24GF/F44ZJLfNQ
-	 7z8jM2X3TaArZXuDU3K84l/3vBS6UBqkdkFukFYOjjk97SdmlCksz0LanGu81FEZ4Nw==
+	t=1794222009;
+	b=IJTnXe2BEUES/6aoRZ1165c0I5Hl3XBqkcaJp5L15R/9GaIV+A8MqHqyK/9hHAmc18mi
+	 50DjDFHbzJcDWMAIV9N0/cwixh5jb+6fuFTL9LOYAUW27WEkq3N3yCGbcDiQ1wDfQ6n1c
+	 +IH3KVN7xNDI9SHiKw9VoYFuyT6nlErChThMtwAulAlY59lflhWQF9dMGke7kYbwUCs5D
+	 PUmBYJCtynhqVxfJxWLil3YuTKBYvt824W9aDv5tfM/xDL+HTsVcZZCyWizh2OXp/nHX7
+	 rExJCT0/fuP3XzTGi2Y+BSF3vN7jSzilQEggnWDMLa+ZXJK5tg62uleBtQkZPnehjzQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794221782;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794222009;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
 	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
@@ -24,88 +24,91 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=1G+4UQ7mHJ0FfY4QH361X/eCZ1GoBx6Ud/WEDTINhuA=;
-	b=T3BEmZNe4zmqH5Q1+I8uwrar4c36BlseyjjFkHvU8KVX5YoVVj7012yB8DmDxauAbGI0
-	 jiC3ZaeZOKpNE2Vz3bpcW+Im5WTaUMLNxFRWNbPyvlQ5ZXVUcAEMP5WxwTWorptEeTHLb
-	 arsLRGhsU/GdcffCEPvUuEyikIvtmZQ6Bi/YTYIepKXPr0fqw1qGGrIkRmD7OvMcT7UFo
-	 KBY9J4K+AahAYeFxaE2bNeXCvWXAzK3XYg0EbzK6elb06CoiMlV2ftmv8Q33MLubyJBqY
-	 3vuufbOO1yHztTdV9imTfv0NFpBF5kUa/ZGJzwSJTcV46Uf7Vl44HmtzgEnoZnuIt+Q==
+	bh=jjpFTnz0Yc1Y7M/dvGri5n0tXtSUOW6fg0KalqDzOkk=;
+	b=sFBk10M5BkVNLGuMpWXhrBiota7I8j43UmnzHbIK+z9vAuLpvm4dbeKb9YJVweRb6uk4
+	 OQ+AlP+K95N2Hbly0QZxVzv0ztzFqvlPaKDtdn4DPKGjlOyyb7uQQIxyAG5d4dJiM1Pop
+	 Iv7WIhsE5otsS/VSRbWTG1TVlR+kEwTwVyMy50UBJ8GIuV6v40eDzBZtUjitjsunRZZLZ
+	 BJTsEm2kuL6cclcYXwbLE0GtyoTAyZjO27vXAD3UHK+HI3xYdGERS0HmwTSiCKLKlGC3D
+	 JZyiumaHntXWPraxWDAeLq04S0JUOiihVOpHlM4V1Rs/eRpHF3bFdkN2AYiHo0igfAQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="zHnJfZ/5";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.43
-Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013043.outbound.protection.outlook.com [40.93.196.43])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=ANP3+TJD;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.56
+Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011056.outbound.protection.outlook.com [52.101.62.56])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77840606D817;
-	Mon,  9 Nov 2026 10:56:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 77840606D817
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08E40606A322
+	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 11:00:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 08E40606A322
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=zHnJfZ/5
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=ANP3+TJD
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JNMhfjUgNLQAav9n5sMDVkPcAa8E3Dt9EkU6fjpcKxYCZ0FBAnkDum+qCwDlBedzvQEbgpuVd+l17oXVD9vTnnvPwSsoqILcWj9qpGeL0CIj6egyry3OokiZ5kgeFpzLVT1PEtptZxspBncmhHbIzyYCXoEKsrMgRmQLE6QZb7cPzeQTXKrSxsMOKqx+rboiT36dB6VQy1z2VqDlj/CE/3uJ1Zae5oUAG9ewJryyRtEfr2SINtMvLd7IZbX1dnkWano2f0wdrkHqf1CEzNLpqfJTu/RC95Pq5lprXHzmz31xFJf/ml4HkTRj6NgUSLUAhtzLbbmu+dXqPx8Uw0+HTg==
+ b=jB2QqypgFyay5R2PUD893g2YTKTAm7c0K8OL4LIpufgkRSFLR3GvCpARuLXPQIh36HnWOZfDQA4AsLxo4KFIzRNGJyEAlz7iMbOBx7Q4jZM86JyiLLQ1Vha+fxEwYF88VOACDX47yx6py2uPRZrYY9i7VKF51NwtFQFi79GrCkkgHy4mrZQhW+/wkeQZioDgra/Rqpq8ArJc9miH7sLPDlFxnj6HbJ2ZB848prP6DiWmf4BnVwBDs6P5ZOrsQ2IbaLzmrfWEzW4Uz1u8AXtsERwynIPinOS9Ao3JJW+FkuyDxxqf22f+gw1t5DvcJqoEgFcIp6GixgKuXZDDJAgmRQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1G+4UQ7mHJ0FfY4QH361X/eCZ1GoBx6Ud/WEDTINhuA=;
- b=HXeZuWKmTjltPbLNtmREqIla7BZuNTjHnJdZ5vJe7AoPwKQS/34nOf0HBRbasEkE8xjBxm88gqfMTQOmQMhkVeWnZI6Y1g76mSSnHjSjb9pfpaa83H8Jp6Az+yHQMX5uK8KZFoh34rZj3fSJqducDfu1kRxgycR8ga6CSa7sZlNySTsdGP10TJI4T0OeHNyUvBBUmvXc0pLnScr+0RTpYX9WNeiEQbAfGFTwWfT1H29EFSU8sTmup0NgPOEmgqXuqp7aTc2hlYIHK+3FZdbYK7zmR+jlTtHHEzEkcU5PzTzXdCqG+JtOoyP1FibE8BrGLeBmxqO0M5DVKEmpbtC6jg==
+ bh=jjpFTnz0Yc1Y7M/dvGri5n0tXtSUOW6fg0KalqDzOkk=;
+ b=erOc4FBGOcWKWClP4MKts9uhBLa20zBgxqQ1XXMZ+zjIdgD6gjEeVW/NqA3yZMt0zsrJ+OXeKJkuGJ5j3N2tG1VjxN94h3BFT6i0jkTB5Rv3deVpppjL1M3VGB4+iZLoE0j+cKFTnGts/gMl53OZrsTfxJIX2zO/zbGu3E+WVsXrWNf3NO+fVArAbBwjM+aYk0hRHT3c1U3BEJX5PZ0eZ9M86XtwOwWMeGI85X9+k9Rz5MAFas62ec1jiRykDtJ5M71xIPJjd1a9uMj8BjnpLLzNORFSOLmoF72acZ22oFWmOAR+XXEUyQafIKlaMOJmlT28cR6SSq/tXIoiYq5vOw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1G+4UQ7mHJ0FfY4QH361X/eCZ1GoBx6Ud/WEDTINhuA=;
- b=zHnJfZ/56wlbK1rQwka4gYtup2ittnN9vy4rwhEhf3ibcStZHkNss0jRp0mdKhMSJJPAML3W4waxFabcBOHBfwt4K51nj4+cM5aMQAczi9jv4Mjfj+qLrWNxphyJDj0247IKIzv46qQBMT9O8K71T3MOOCVjcrFMIm0aDXTqRBw=
+ bh=jjpFTnz0Yc1Y7M/dvGri5n0tXtSUOW6fg0KalqDzOkk=;
+ b=ANP3+TJDD1IcoTuWLSt8OyLrmuSXPB/xEKVow9ZMcO5IRhRLJX/KXExoBH3AXJWv//Mk+GCjTxqVs2vUqjjfF1LlGEBPg5JafPXSaM0HUOnwH92KcjJ0/RNrMR56qnpFsWalOpCRdt/m5k6G1oxRI60VxGHqwkBoYk+rT5q1JhA=
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by BL4PR12MB9535.namprd12.prod.outlook.com (2603:10b6:208:591::21) with
+ by PH8PR12MB7280.namprd12.prod.outlook.com (2603:10b6:510:220::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.12; Mon, 9 Nov
- 2026 10:56:16 +0000
+ 2026 10:59:46 +0000
 Received: from PH7PR12MB5685.namprd12.prod.outlook.com
  ([fe80::ce69:cfae:774d:a65c]) by PH7PR12MB5685.namprd12.prod.outlook.com
  ([fe80::ce69:cfae:774d:a65c%3]) with mapi id 15.21.0592.012; Mon, 9 Nov 2026
- 10:56:16 +0000
-Message-ID: <b0f530ef-bbfd-4112-aa51-82fdad6c4ba2@amd.com>
-Date: Mon, 9 Nov 2026 11:56:07 +0100
+ 10:59:46 +0000
+Message-ID: <de268b0f-19fd-4e05-a8d2-e0f436aaedfc@amd.com>
+Date: Mon, 9 Nov 2026 11:59:37 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/7] dma-buf/udmabuf: account the page array metadata to
- memcg
-To: "T.J. Mercier" <tjmercier@google.com>
-Cc: Tao Cui <cui.tao@linux.dev>, akpm@linux-foundation.org,
- dgilbert@interlog.com, mkp@kernel.org, loberman@redhat.com,
- jmeneghi@redhat.com, kraxel@redhat.com, vivek.kasireddy@intel.com,
- mst@redhat.com, jasowangio@gmail.com, eperezma@redhat.com,
- stefanha@redhat.com, sgarzare@redhat.com, rostedt@goodmis.org,
- vdonnefort@google.com, mhiramat@kernel.org, jgg@ziepe.ca,
- kevin.tian@intel.com, axboe@kernel.dk, linux-mm@kvack.org,
- James.Bottomley@hansenpartnership.com, sumit.semwal@linaro.org,
- phasta@kernel.org, joro@8bytes.org, will@kernel.org,
- linux-scsi@vger.kernel.org, dri-devel@lists.freedesktop.org,
+Subject: Re: [PATCH v2 06/23] dma-buf: Let the exporter select mapping type at
+ pin/map
+To: Alistair Popple <apopple@nvidia.com>,
+ Karl Mehltretter <kmehltretter@gmail.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>,
+ =?UTF-8?Q?Thomas_Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+ Simona Vetter <simona.vetter@ffwll.ch>,
+ Matthew Brost <matthew.brost@intel.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>,
+ Dongwon Kim <dongwon.kim@intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Xu Yilun <yilun.xu@linux.intel.com>, Baolu Lu <baolu.lu@linux.intel.com>,
+ Felix Kuehling <felix.kuehling@amd.com>,
+ Alex Deucher <alexander.deucher@amd.com>, dri-devel@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
  linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
- kvm@vger.kernel.org, virtualization@lists.linux.dev,
- linux-trace-kernel@vger.kernel.org, iommu@lists.linux.dev,
- io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
- bobbyeshleman@meta.com, mathieu.desnoyers@efficios.com,
- robin.murphy@arm.com, mason@kernel.org, aesteve@redhat.com,
- harry@kernel.org, vbabka@suse.cz, Albert Esteve <aesteve@redhat.com>,
- cuitao@kylinos.cn
-References: <20261106131829.3228926-1-cui.tao@linux.dev>
- <20261106131829.3228926-3-cui.tao@linux.dev>
- <1e18fcfd-785d-43cc-afd6-d181bf8305eb@amd.com>
- <CABdmKX0nCB2hT+iMh=BB-nC=fUBPof8YvjvO-gtEw+zcHZgvZA@mail.gmail.com>
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+ Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+ Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+ linux-nvme@lists.infradead.org, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
+ Mina Almasry <almasrymina@google.com>, netdev@vger.kernel.org,
+ Alexey Kardashevskiy <aik@amd.com>, zhipingz@meta.com, treding@nvidia.com,
+ jhubbard@nvidia.com, Jason Gunthorpe <jgg@ziepe.ca>,
+ Leon Romanovsky <leon@kernel.org>
+References: <20261105-dma_mapping_type_v4-v2-0-78b8dc9ae80a@nvidia.com>
+ <20261105-dma_mapping_type_v4-v2-6-78b8dc9ae80a@nvidia.com>
+ <au7mBMbRC8q6NILj@gmail.com> <avE0QsqV5RZoaWc3@nvdebian.thelocal>
 Content-Language: en-US
 From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <CABdmKX0nCB2hT+iMh=BB-nC=fUBPof8YvjvO-gtEw+zcHZgvZA@mail.gmail.com>
+In-Reply-To: <avE0QsqV5RZoaWc3@nvdebian.thelocal>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0388.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f7::17) To PH7PR12MB5685.namprd12.prod.outlook.com
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0385.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f7::10) To PH7PR12MB5685.namprd12.prod.outlook.com
  (2603:10b6:510:13c::22)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -117,135 +120,160 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|BL4PR12MB9535:EE_
-X-MS-Office365-Filtering-Correlation-Id: d00351dd-fee0-4d66-2bf7-08df3e50140f
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|PH8PR12MB7280:EE_
+X-MS-Office365-Filtering-Correlation-Id: 40f2945f-107e-413c-4277-08df3e5090c6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|7416014|376014|23010399003|11063799006|4143699003|56012099006|261021121427099003|261022075727099003|261022105027099003|261026140227099003|261028144727099003|261026121527099003|261102123227099003|10067099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|366016|1800799024|23010399003|376014|7416014|22082099003|18002099003|10067099003|4143699003|11063799006|56012099006|261028144727099003|261026121527099003|261102123227099003|261022075727099003|261022105027099003|261021121427099003|261026140227099003|261009223027099003;
 X-Microsoft-Antispam-Message-Info:
-	k5v1S8AS4zWotcYJ/nhJUFg4E2b0rgmX98soCxjpcnO7LVlofM86eDQLP4BV5HvWVBiWWTYib6vjQ8X1m+5DqUqrWfIdK8R960upM5qh+mD7PMQCCSFABKj994zG11gP39ixXp1jegnhpUSXVtEf9r15avOTOAOwmJB0LXsWiQ8K7aGq1dNP4wd7o290cn6Xv3hrIIV+HkppZp3bpoAiNdF7RSStQxaY5KBpZOykFWHxisNUVjbpcXv/8KmTUrHWosSUSITyeBZW8N2l8+X7JakM30JdO/9VSg8BwHvwlm4Ff7rYaAD7ZNs2kN7yQNEcfJazxive+CJQ6Ur1P4m7RyTMuv3BHDjJBFqU7ZLjNDZlrKsUF3hx/1wQGMgDzQWuJsiVxp3+4SQ8kIOn7xurDrrYH6r1TMTepxbnIlXbWXypmKq8Jv7B0in4KPX+HAAj2SPvKYI5eRHb+zy9ArWd8Ki5ia5CowjVpk9B9IIJUjG20ENbJMattfthUl0gI+bZTNHxJ3sx+909NtG/IeG/snBShfeO9r5j/VmTAWiuRIXgZOH1QX6pb+hg1EW2SbNK8IKgNu1Tbup7ij4BqQUNcgwcUIARYEL7/6xS+NDT4a6u30xaYTghU4gKB10B997wqEK7k1nFelJIanAqJXjPvLwjoKSt+kHJD1ONYIPr78I=
+	qoGw77O/HTNC6edPpNcBFGuUlJfUlac8Uvd7a2ZcsU9ltxGDz0HbszH4wnF1Kt8X6lDL46aXHnXwiXzOdcfVX8bRjDY923pRa1nbf5Ijs63hCIcWedsr4rIvTYPa7f5VxlSbZs7MnBF6axQRFvcTliGfJvcBBqHYmwK9ImmQuI6lQZmaS9hoaKSaq8IPvjQxMuLZm7wczWJWi4kg4WgNdqj+5TB5HfIbf4PkrkCZ56g9C4K3lnRRHZXnghybOwRwzTGsZMDt+vaPMTwvuBlRtAogCsC9TTSpxNkXtshD3K/G90uQaZEXTJQ0BSm2lqNmHlWieAoxiPS8dG9f1gPSn81AUeR9jTAekgr4mXz6hxvMpYQcUmaI1b5gQH6ttUqRkhLkH0g8Ijmh5O2UUkcuHTmYPCp5gW4BuOQecZa8S9cS9Cy+PArc646bJJwyOAnNU5k9SCOTPEeiEn3FUdJnxGgr3BYl0Miq9dxvWDVAc/UbELKcKrlf3Ce/g19fmPWQGIHqLEkixo+C+RNiRVNsbxKlCbLX9fCwJeeuJ+n1RGDlXIfJN+zSmTIDsKodNd6B3/dp0fq9AxQ79CogIwVFrVj9chc24G3HwYJsechBQMU+XwTDMrQ+hEUrTKaRy+o7lFcJgFhr0coRhuQL7HL5IwmGw58svFB9A96+iULZRmI=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(23010399003)(11063799006)(4143699003)(56012099006)(261021121427099003)(261022075727099003)(261022105027099003)(261026140227099003)(261028144727099003)(261026121527099003)(261102123227099003)(10067099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(23010399003)(376014)(7416014)(22082099003)(18002099003)(10067099003)(4143699003)(11063799006)(56012099006)(261028144727099003)(261026121527099003)(261102123227099003)(261022075727099003)(261022105027099003)(261021121427099003)(261026140227099003)(261009223027099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RVUyZnJKLzRudFo4UVlUZUt6cmxnT3M0Y1pSazN0ZDkwTXBzK1cwV0N6VmpO?=
- =?utf-8?B?a2tNNzYxbmZXVWlGV2Y0UlpqaUkzT0ppOHpBWVg3c01vT2J4Wmd4ZWJHWTRP?=
- =?utf-8?B?Q2xVQmR2NnZFN2xnVjY3bzhJMjI0a2NRaFpUOWRjRGxJdVo0SWxYby80b0c5?=
- =?utf-8?B?TUlOcDBMeVJJWjR1WDhQbDNPOCt4SjBSOUtVWkNwV0Z4RDB1OGw1N3R6SU5m?=
- =?utf-8?B?ei9pUmV2SzUwY2JEdUFMWXZHU0VRM1AvSjVITUUwaFAxdDZIVGpXWU5KeXZs?=
- =?utf-8?B?ZnVKbDJQTU5OUjNEd3lIUFlzWmlIc3lPdnJpaHhNK2RlZVFRSjMzdGo3Vyt2?=
- =?utf-8?B?RHRyMnMzUVVvK2NUZjg1b3o5VGdKdkwvaWNkNWlBUXBFeVJURitrdDFzQW95?=
- =?utf-8?B?djgwaTNIaVFkeVpuVG5OVWZVMytJY0xaRFloQmxLaDZmbmhHQzlWaTd0cVc1?=
- =?utf-8?B?VlUwMjFVRGRyMkRBa1Fmd3UrcW9PdWVMMGo2SFM1blVGU2UycUNoZDBNeDFI?=
- =?utf-8?B?RytqTGxmMmZqcXdTdUcvRjZ1bEkxMWpTb08wVUc2bllUVER3d1ZUUVdDT2lu?=
- =?utf-8?B?VjRpRmNBWFB0ZGJFd1VJVWFna0xhM0ZiVUJUaTRkcjBySFpadm82N20wcXAw?=
- =?utf-8?B?Q0JuUUpkeE8rSkkvZVA5R2c1cGhDdllaUU9ybUV6MFI3RUNmdC9wMFNWaXRv?=
- =?utf-8?B?dGNNTTE5VVhOSjBrY2NJOGxmb1FJY2tnMnBPRkd6MS9YZEtWdXdIU3liV1RI?=
- =?utf-8?B?ZWpLeUxSc1A1Z3cvYjA1NThMSnNNSGNpQmlNZjZoNld2aXJkUkxzSGZmWFEy?=
- =?utf-8?B?Mk4wNnZ2eDZKRTlRODdNcG52b1FzQncwZ090OUNKTkJyRTh5ZmJ0NkdnVVFG?=
- =?utf-8?B?T1VQT3BHYW9Rdm5oeUNpNWxycjA1Q0VoVzV0cUp0MWJVYlRHbHV0KzJBRnMx?=
- =?utf-8?B?TW45NEFKT2lFNUhHUElCWWdhaXQ5VzBmcDhUVXB4Zy9RenhXNFg4MVpRV0hz?=
- =?utf-8?B?eG9uVGhEcEJUTDFQSzc2RE9rY2JTVnQwTGV3bGs2dnk4ZFdXRHVBRk55QjBI?=
- =?utf-8?B?U2JuUHpWS0xLSS81SnRDTy9mU2tTamF0RTNDNEZuLzl3NGk2aW85OHVXWFor?=
- =?utf-8?B?aEFZSk1IUWNVNmduY24zNEZMWHpNdGNYLzh4Ynd6clhnVk95NlVoSk9mZlFS?=
- =?utf-8?B?NElTTWdoTEwyT0VlV2g5UFlHZGhQVkRlbjZsaFZ1bW9pUDhNZFNRbGMweVJZ?=
- =?utf-8?B?aEJzOWNadDVOditZcWIySURYaEE4R1JzTHBLdUJsdUNlMFp2eHBmckdrOTcz?=
- =?utf-8?B?Slh6WCtOUHFsaVE4cmNLM2t4U3o3ZFhDZ3JFVnJmNFZZcTV0QVc3TEc3MS9y?=
- =?utf-8?B?K1duNmdPaEc5MEhPRTlUN0t6WEpYTHY5QktBOHRZYUlmR1lMZVR1MjRVSzAz?=
- =?utf-8?B?ZFp0M3FMMGxhM05TQ2RoamlUR0VRL1ZZOEl2aE5FZm0vRlA1YSt2VmhmaXRw?=
- =?utf-8?B?Uis4eE9XQy9yM0VBcmdZcDV6K2xaYTQvNHZZWktBNXdvNkdxaFhqNzhHTXJR?=
- =?utf-8?B?NFoxelJObE5ZSDYyQUtZTXVyQXBHL3lybHowc3o2RHhlaVNQbUNoUytIcVJx?=
- =?utf-8?B?a1FJTHFucXF5UkNOVktSdTRpNU1ZL1V4TXBadmhMaG5yYUpxSWp0Z0JXUEli?=
- =?utf-8?B?NXJoOEVZanJ1bkFRWUpHZFpZRmJCZ3JGKzczSXBsNkp3TWJEdVA3cDh4bGRo?=
- =?utf-8?B?aVExVmVNQVdWMEdCZ29HYWdnbjVnc2c3K2QzZjE4bmtXSDFmTEtnRDM0VDJN?=
- =?utf-8?B?MXQrcDNmcmh0dTZHTzZ3MFZsdExvTXVUbURLVE5kelBqK3lYRnViWHBkSnBL?=
- =?utf-8?B?eFhKbEp6VStadXVWeUJva1lJUldZTW1iMndIejRXL3VTMUNGb2tKbmk3eXJ1?=
- =?utf-8?B?bWUraDdTZUE4dmV3elpsRjZzN3N0UCt6Z0hmd3ZNZmRkbGxScXlzdFUvanFK?=
- =?utf-8?B?a0JKSENtWmRwQXZhWUhObURhNG1BKzdxL0U0Nlo5T3lGcVZxVUtzR2lmcWJj?=
- =?utf-8?B?LytveVlzSWJOMVVaM1N2UzhIb0pFUnU3azVkenhpNVRKU0pNcjFrc3BiT3FH?=
- =?utf-8?B?bkhYdmk2U2RHM1RqUWc4djVjRGRjektKL2hLMGV6VXYzY3krRjhSaWprSDN6?=
- =?utf-8?B?VjhwQ1NrVkJPYXl3OFBkMFIrYzRxL1Jjc2k2YTRQZVM4bjVaTHJ2cW5yc281?=
- =?utf-8?B?RG9lWUV1U3lJQnB3QjJ6eU5TTnJ5UERscUdqc2NtSTF5cFR4Nzh3YjQ2M3RJ?=
- =?utf-8?Q?BmNGAbaK237SDbqCFw?=
+	=?utf-8?B?aHBqK3VLVm00M3BZWGhmS1JmVTVkcVplYkxNSVNRT2ZzaHNiV2doUFRqbXVO?=
+ =?utf-8?B?bnY1SzhPOWR2NUgzRWNwenIrNk45L1hwc0hGN2V1c0g5cEFtTmJFVmVJMzBv?=
+ =?utf-8?B?d0ErSmhiYmxMSDJiU1o4WUVmcktlUnljYUpHRWNTMjFIekJHU3RZTDI4UTVK?=
+ =?utf-8?B?d240RE1yK2NOOEZ1dE1PWDFGTnBlangzMmtGb1dpejY5MXdlQXF0UXBaeWY4?=
+ =?utf-8?B?aVJvVmlpaVVINy95c0N1Y1ZVVkpydmViKzh4N3psWElvWkhBdDNNV1RJVGh3?=
+ =?utf-8?B?MG5lRWtFNGpJOC9TVnMxV1lEWkVFclh4UkJJbDhKa1dwTDBRaVl1VG5nUS9F?=
+ =?utf-8?B?Z2JrU3J0emZmdmRJQUVLSEMzU0FkRlBoMEk2UlRzb1Yzc3QzNklYUDVFK1lm?=
+ =?utf-8?B?VmlzSlZRamZaMGxyZmpJL1FiWFg0SU5GUWVQdmdId1NlQmNuT21mV0ZSOHZt?=
+ =?utf-8?B?Z3UyRmErSmxPUHlKcUtVMEplMVh3OXg5K1BHQlV3WWdJVDZFbzlMUU5GSGxw?=
+ =?utf-8?B?WjdmNzhMRnVlRFZPMmVxWmxWR1ZnOEs2bXVHMlRJM0xPNTBYRUlWL3JOc29W?=
+ =?utf-8?B?THI0eC9UZkovb2hxR3lHaXF3RXFsd3J2SStNMXNtWFpUYi9LZlJ4M25lOUly?=
+ =?utf-8?B?bVA5VHI2Mkt4VExQNEs0NTArS2l4ZDZzT1VtRDMrMS83amg4QjZ6UGxaN21N?=
+ =?utf-8?B?MmhDYmlEb2txdG82c2REWEppRUx5VlljbC9kRm9FM2hScko4RUtoV08wcUZQ?=
+ =?utf-8?B?RlI1ekRpOE5UamcydTFmSGFIU3JzS3NXRTEvekcvUDhYaGFyVUNsdTNxbGpU?=
+ =?utf-8?B?NkZzUVhobkdwNk1MOWIzbXRWczA4YlpMVHFRVmNYSHk1TjRGUk1vUFRzYjdQ?=
+ =?utf-8?B?cVpFaWEzcVJtWXg0OVFVRFlHdmkybXA2WWMxdTl5Q2NiOG1LYUFNME16S1pS?=
+ =?utf-8?B?a0NubUd2ZXk5Z1Z1RXdhRytXQWxoRWhHRjByT2ZjT1pYcGU3bEI2TmpxMnRo?=
+ =?utf-8?B?YW9SNkFRdVhkUWM3b202Ymg2M0diU0hNQllkZm5mVUl4aDlCaU42UTJmTjMv?=
+ =?utf-8?B?QUJva1dzSENTaG1lMCtvbDFiaENJdDFDMUlld0dQaUxFdWt0N1ZFbi9Uc1dE?=
+ =?utf-8?B?bUhFSFhCVzgvOWQwWmNqNkJXYk9uYlI1UWU2c3FpdVNGRGxUK212dzllMHNm?=
+ =?utf-8?B?bERCVytCRyt0aHJBT3BIVU0yL2JSZXMyZW1jMVBnZExXdnVDTmVZM29mVERC?=
+ =?utf-8?B?eUpSaG9TamovcldFbll2R2xHMGt4bXA0MHp1M1FCaUVmSGg0TGZ3VWNsVkR2?=
+ =?utf-8?B?djB3MUFwUStHWkczR3ZWb0NhWkxLRDR1OXlxanRFUHIwWVNvMTZ5U1g4NXBO?=
+ =?utf-8?B?VTVvdnlxbFI2ZVRJQXVyeHFUTGlMNWhYazEyL2hiblRiNTcwNEljUiswWjhz?=
+ =?utf-8?B?Tm1MOW5UYVJQTTFhSENsV3lhdzVxaWRyWGV4UUEwYVlRZ2FJL1BlR0NjTGsr?=
+ =?utf-8?B?TFZzSVhvS3l3MFRobGVUbEg4c0JXNmVqd2pIU0ZqRC9ldG1JQ2h4dTdxNFVq?=
+ =?utf-8?B?dmMxb0xzUE5lcUpsR2FKd3BoUVNyT2duaFV1TXJsMTRaSTVIVnZEVWE5eVJG?=
+ =?utf-8?B?aUVKVGxaMys4Mzl2TXA1K1FmaFFmejlVck4zbVpSWWNFZXNsWjUzZGVnWHo3?=
+ =?utf-8?B?Q2RsYisrVnVXeml6YWd0SmxGcjZjSFBQVktERXlFODdaTFFGcFlvbW1Jejhz?=
+ =?utf-8?B?eHlzVG1TL0s2dzJuSHVSNGRqL2ZmWlNEa0JBSFpYL2dCczJ1K2ZyYWEvWmVq?=
+ =?utf-8?B?UkRFRmNJcS9YSFV0eVVHWktzUlk3aG5ORkF5bi9HdU15eDdyZWI5TkVUZzlu?=
+ =?utf-8?B?UGRkZk5waFZyQ1FIRlZ2Vm1ZaXZJdGl0L2VnWHJCUlNwS0Y1RVRpSVBqa1Ra?=
+ =?utf-8?B?elljbGlXdU9xS0hURVVJMmlocWgwV3hLZERlVTZjaEdaOVZaTkE0K0RoQzVS?=
+ =?utf-8?B?RStkajFzNVFSZEtaODE4RHRBbit1UjJ4Ry9QTTVWZk1jR1EyZXNRMVdXOGdm?=
+ =?utf-8?B?U2RidDNpait0dElxbUhCTUpsekF1K0xkbjdYQlcyekxWSW96bVRrRURCdVAv?=
+ =?utf-8?B?d3pIVzN0RGVxeCtNaVBGYiswZ1RKcnNHMXYvUnIxSklpd3luV1FyWkF3U0pX?=
+ =?utf-8?B?OWt3bldvUE16V0RZUFQwRkZQaGpjTDlnSW1qMnJ3bjBmTmlyeEJHbktnaEIz?=
+ =?utf-8?B?Wkx1cis5TDJxUGZGZGR5OGdrT2U2eHg4Skxhc3hrM3dRYmFISm0yR1F6Nm9J?=
+ =?utf-8?Q?pFzr47XDeC9R0SfxXC?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d00351dd-fee0-4d66-2bf7-08df3e50140f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40f2945f-107e-413c-4277-08df3e5090c6
 X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2026 10:56:16.6770
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2026 10:59:45.9781
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4vDIN17QFG/90J4re2i0bT4E7MPnbihJnG+VSBsBN8eORLYlUUoSjrmJOTMD5Nb8
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL4PR12MB9535
+X-MS-Exchange-CrossTenant-UserPrincipalName: U+gRbDQJn+Xt835MzctSJv0SzxEEGYhUWpC5Onx6E28apa85SRLM+JE161Yn6PY+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7280
 
-On 11/6/26 18:25, T.J. Mercier wrote:
-> On Fri, Nov 6, 2026 at 5:23 AM Christian König <christian.koenig@amd.com> wrote:
+On 11/9/26 03:58, Alistair Popple wrote:
+> On 2026-11-07 at 19:57 +1100, Karl Mehltretter <kmehltretter@gmail.com> wrote...
+>> On Thu, Nov 05, 2026 at 05:40:41PM +0100, Alistair Popple wrote:
+>>> + * A pin or map that fails after dma_buf_mapping_select() may reopen the
+>>> + * choice only if it was the one that made it. A selection that predates the
+>>> + * call belongs to a live pin or mapping and must survive, otherwise the next
+>>> + * pin or map would reselect under it without an invalidate.
+>>> + */
+>>> +void dma_buf_mapping_unselect(struct dma_buf_attachment *attach,
+>>> +			      bool was_selected)
+>>> +{
+>>> +	dma_resv_assert_held(attach->dmabuf->resv);
+>>> +
+>>> +	if (was_selected)
+>>> +		return;
+>>> +
+>>> +	attach->selected = false;
+>>> +	attach->selected_idx = 0;
+>>> +}
+>>> +
 >>
->> On 11/6/26 14:18, Tao Cui wrote:
->>> From: Tao Cui <cuitao@kylinos.cn>
->>>
->>> udmabuf pins the pages of a memfd and hands them out as a dma-buf.  The
->>> data pages keep the accounting of the memfd they were instantiated in,
->>> but the bookkeeping around them does not: the page pointer array and
->>> the pinned_folios array, both sized by the buffer page count, plus the
->>> transient folios array sized by the memfd folio count, are plain
->>> GFP_KERNEL.  A 1GB buffer costs about 4MB of uncharged SUnreclaim
->>> memory, and size_limit_mb defaults to INT_MAX.
->>>
->>> Charge the three kvmalloc allocations so the creator pays for the
->>> metadata it induces.  The system heap in the same subsystem already
->>> accounts its buffer allocation;
+>> After dma_buf_invalidate_mappings(), attach->selected is false while
+>> attach->selected_idx still holds that mapping's entry for a pending
+>> unmap. 
+>>
+>> If a pin/map fails before that unmap runs, was_selected is false and
+>> dma_buf_mapping_unselect() resets attach->selected_idx to 0.
+>>
+>> A subsequent dma_buf_unmap_sgt() then uses matches[0].
 > 
-> Only if the mem_accounting param is set to true. We (Android)
-> currently depend on it being disabled because system heap buffers
-> don't have a single owner for their entire lifetime (ownership often
-> changes immediately after they are allocated), and the kernel doesn't
-> have the ability to switch who is charged for the buffer memory quite
-> yet. Albert is working hard on it at the moment.
+> Actually there's a bigger issue here. The contract at the moment states that
+> mapping type may change after invalidation. However that doesn't account for the
+> fact mappings can outlive the invalidation.
+> 
+> This could be dealt with by switching everything over to the generic
+> dma_buf_mapping_map/unmap() path, but that requires an allocation per mapping
+> just to track the mapping type.
 
-Good point, making sure that Albert is on CC as well.
+You need an allocation per mapping anyway to identify the mapping anyway.
 
-So basically we not only need to charge the backing store of a DMA-buf to somebody else, but also the housekeeping overhead.
-
-Mhm, this here also complicates the charge transfer Albert is working on.
-
-@Albert not something we need to take care about now, but please keep that in mind while working on that stuff.
+We currently abuse the sg_table for that, but essentially the idea of having a structure/object to represent the mapping needs to stay around as far as I can see.
 
 Regards,
 Christian.
 
 > 
-> Could you update the message to note the mem_accounting param pls?
+> The alternate is we update the contract to say mapping type cannot change until
+> after all importers have unmapped. Enforcing this would require tracking the
+> number of live mappings/pins per-attachment, but I think this is the better
+> solution so will add that for the next version.
 > 
->>> the data pages here stay with the
->>> memfd.
-> 
-> memfd / udmabuf is a little special because it uses shmem for the
-> backing store, which is already tracked by memcg under all conditions
-> (except hugetlb). We don't currently use udmabuf, so the lack of memcg
-> charge transfer for udmabuf is not an issue. But once we get charge
-> transfer working for the system heap it'd be good to follow up with
-> udmabuf.
-> 
->> T.J. needs to take a look here, but I fear that this might break uAPI.
-> 
-> Thanks for looping me in Christian. The buffer allocations cost
-> gigabytes, but these metadata arrays are only 4MB per 1GB of buffer,
-> so I don't expect charging them to break anyone. Leaving them
-> uncharged is an accounting gap though, since someone could spam many
-> udmabufs from the same memfd and only pay for the memfd pages once. So
-> this change is ok with me.
-> 
->> A lot of the DMA-buf resources are intentionally not charged against memcg.
+>>>  int dma_buf_pin(struct dma_buf_attachment *attach)
+>>>  {
+>>>  	struct dma_buf *dmabuf = attach->dmabuf;
+>>> +	bool selected = attach->selected;
+>>>  	int ret = 0;
+>>>  
+>>>  	WARN_ON(!attach->importer_ops);
+>>>  
+>>>  	dma_resv_assert_held(dmabuf->resv);
+>>>  
+>>> -	if (dmabuf->ops->pin)
+>>> +	ret = dma_buf_mapping_select(attach);
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	if (dmabuf->ops->pin) {
+>>>  		ret = dmabuf->ops->pin(attach);
+>>> +		if (ret)
+>>> +			dma_buf_mapping_unselect(attach, selected);
+>>> +	}
 >>
->> Regards,
->> Christian.
+>> dma_buf_mapping_select() sets attach->selected = true before ops->pin()
+>> and the map callbacks run.
 >>
->>>
->>> Signed-off-by: Tao Cui <cuitao@kylinos.cn>
+>> In patches 14/15, xe/amdgpu migrate a VRAM buffer to system memory
+>> during pin and map when the attachment does not accept P2P.
+>>
+>> That migration calls dma_buf_invalidate_mappings() and clears
+>> attach->selected on every attachment, also the one being pinned/mapped. 
+>>
+>> When the callback succeeds, the attachment stays pinned or mapped with
+>> attach->selected == false.
+>>
+>> A later map/pin on the same attachment can then reselect without an
+>> invalidation.
 > 
-> With the commit message updated to mention the mem_accounting param:
-> Reviewed-by: T.J. Mercier <tjmercier@google.com>
+> Argh. Thanks. Will fix.
+> 
+>  - Alistair
+> 
+>> Thanks,
+>> Karl
 
