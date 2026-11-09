@@ -1,71 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794205534;
-	b=0G+WAGFjMAIWfKBjf1p3/hBI/KbtKRJJiViOwF+m6AiDkB5vlz7zViWLWU5wy8NC5m1I
-	 XDIak0CjiWNySjHbkGcl2tEm630XHFrEv1tdCAbeL5xKzoVu5Ls5h16C1cyJCvoRnJbRz
-	 Ewdn2a0ljlHRpk4QRwWTWuNSOu5e8xXd6XJ5rUtQ3hBBUkc+Y6CxyCuNjfcEuwKnesfbk
-	 qbDUZoEr75m5zLK7rWBnOblhjEBvbxBi00FyaK72G3M4xe1AOJiXXVjxG7z2LcmhPAJx2
-	 dR7ADu+5zVn4L840D3M5W69HjwJIG6nwNeys6rd+I4v3e6QB1ORcFBGVbB/MGGOPWDA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794205534;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=SS8g3kngP0h1kM7qHXzzyWAS56jyqJKHO8SoAqpqAok=;
-	b=zFXhg0P7NC6ZgwKB3cOWAwmD9aPs1cnSMvS2KS0yEHjk6w6aO47Gdmx+/DenedY5Cbdu
-	 qBIWYvLACzNV2Q+I5mkPSCNIrHqIrD45YTE5yiUH7MRlRxnl2q8b63CIFaEbV/SZo6rrO
-	 vlk7kMb3q5cDgVTuWYEDrXaIlL/siMx5jJIYwfzQ21U5oN5qGrDHNoZE8H1QM0lzt4z5g
-	 Pf+sLraTGcpBgxAYuSRwrk8u3ODzYlzeH51F1wHJ1CKql2/0pB3LSMGnyRIWQPHnK4fgc
-	 Q0P3Ga+cI3V1TaHzOd19OaokVtW1lF1AsDOocV5Dt4LZK7ysq8L8L+pn9kmgJvN48RQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NezfhAJh;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.41
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794206039;
+	b=MaUPAIi1yXKSMV6Z/RsF/27jm3Vx6CYFQbibbOw5RAaoVKMhwl49yP+NPDmW/9JAbgOr
+	 5ECafQcZIEdIUL+22o1YwgTr08F0tcyvm94u8+KjdHEq/vw2Rz7KbEc1xB3QF2XT43UD0
+	 BHy5aD5UcFpHiG+X826TGbiYnvM6L4X0xgG67sQjzl/mzbjq5LxWMweJwudhejAdC0elG
+	 wWIBNi/aaixp83izirsXKm64n1xOYwGD2jKvQukNyEM6TflIgPRP7tXbIw+VXPLA+C8Pt
+	 kJj7RYYPXMQ2963QcGQ2qAUnCJT0ppObEq52kgCRcAxjUo/W6fXy2uPX5Pi3MHt8snw==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794206039;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:CC:Subject:Content-Language:
+	 To:References:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 X-Originating-IP:X-ClientProxiedBy:X-EOPAttributedMessage:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=TGKKN+hTUqo0yRzfVcAoq3xc/2NXn5d292XI5ounf8U=;
+	b=O8JXpYA6aH7G6PqFXtg1/gyKe14NqB2ZHIHI720MDCZ4Hbl2jmpAiNNOzHdJirB2FK6I
+	 63A2koKudTHekAXI/CKg/BwX7G/Nc0YL6sL+QnGhvNGaqjaXHqoaq8XbuA1nUEaGdtgLe
+	 H9XJq0f+a0raLflk4Lmbj7x3E4SlJguHbmDFbBOZIWxIIciOrTjeJFDzJRqA8hVOQTsUE
+	 G9buIaR3DhA0zqM355SI1Uz9j+6CsjjG44KgHG5sIsj3H3XCFfsSXEgKEVtFaoJjzy0cm
+	 qaG9wazHszDNVAXR3h3a4aIht6oPNs5NpktAG3NgJCchEB2eksQOSAZ9Huet9SuvxlQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=q3uO3mV0;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.196.41
+Received: from SA9PR02CU001.outbound.protection.outlook.com (mail-southcentralusazon11013041.outbound.protection.outlook.com [40.93.196.41])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38931606A321;
-	Mon,  9 Nov 2026 06:25:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 837F6606A31C
+	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 06:33:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 837F6606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NezfhAJh
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E2CB1F0089F;
-	Mon,  9 Nov 2026 06:25:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794205533;
-	bh=SS8g3kngP0h1kM7qHXzzyWAS56jyqJKHO8SoAqpqAok=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=NezfhAJhcuPPoZ5uDTjRITe2eGcHJUAF5PkX47h8ZfDi9I8nlGl23SpePXGMr4eDw
-	 v/X+YIDRs7qPt1WDa8fYRIzhloB9Mri6WJ7Tz1Kj40V3APso4rkyTkSiozfm0a7zop
-	 /6BsP7wvJvwN/afUvHrgLWz6PpX3AOr4qSwzusu2pxN0TlQYoRsfKSLJlkrD1vprS4
-	 kmDNfgFP1e/eoIqCuH+f0oLKvedP9Y6lx3Fd2SRQW7x9p95G4QYqlRhlN5Ba0WukxO
-	 bV4Dj3zd/TCFJiucR2yNV5VKSH5wtgM68SzqeJBOo+ewtOENF+3vlSzl7ivKgF/6LL
-	 ZdFY4/eYqlfig==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Fred Griffoul <griffoul@gmail.com>, linux-coco@lists.linux.dev
-Cc: Ackerley Tng <ackerleytng@google.com>,
-	Alex Williamson <alex@shazbot.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	David Hildenbrand <david@kernel.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Steven Price <steven.price@arm.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [RFC PATCH v4 06/25] KVM: guest_memfd: Support device-backed
- PFN providers
-In-Reply-To: <20261104183754.10457-1-griffoul@gmail.com>
-References: <20261104150322.3516320-1-aneesh.kumar@kernel.org>
- <20261104150322.3516320-7-aneesh.kumar@kernel.org>
- <20261104183754.10457-1-griffoul@gmail.com>
-Date: Mon, 09 Nov 2026 11:55:23 +0530
-Message-ID: <yq5apkwettbg.fsf@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=q3uO3mV0
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=X+UE+z0Tuc7U/xV8OiMrIPk3jp+nZPqWesPah8CONtouiIFLHCGo2HKfWJtbkzTW8xlG+IXcXlw8JzhqeFseHsv2DjKq6QvFDwEkBbmXuDaw7d9YAlUD/jXSy3F04X1a5hXUzMz5+jVlzZcZySbh1GLsexDU7CQeAT5jJZDH6eR57ApCaz63dynsdgY0HTijBgCQqdUDFRY50U275b/f0ZeLIhqVfXlDO/8rL0BqYX5YWNIq0r0agONUcOZbOWVUNMNdUjf2uItGqLpdPA2LJ+GhKNFlyYhJRut/jdL+SG31fw7S+4L6wA0APgNFsf+rtuMxzvNFW5ivGGKWr8cPDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TGKKN+hTUqo0yRzfVcAoq3xc/2NXn5d292XI5ounf8U=;
+ b=cn4omE4EhjdzfrDjHukth4MZt4RTl/R5UwmAErQBBwEzSe6MgxZll9e3PMxbBOPuvJCmrBZD/mS60kwlqLKVVNA7rykSCujd7ClyqLUU5BODzQtRQirZIO8RAKA8uMH6Ko0tr22pups2aYBHRYyD9TWXz6AVeovJAoqPYkURRMByePads+fATd5pXxZFA9zT+G88GJyxkbhhbOul1XnBm7A8VBTBcHnTpwQ9xlZqY1w2VKxdQn1INqrSS7muqnVMacTYcFuIag6pgawLdTR7LvM0al/SusAmG792bRCHfLLA76xcZkC0XMBPSZA46E2hXNQ1xWzm+ahgOQPtUntb5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TGKKN+hTUqo0yRzfVcAoq3xc/2NXn5d292XI5ounf8U=;
+ b=q3uO3mV0HQ4JEDnBzX5aX+YznGACUbpgnDH6ERM8w5RAfqshqLEdeAygxAjese3HxFtTZbbnwo8dzFdIreZzNh1UxOmGaXFz8zCZBlwwycW1EOBefExKCaTi32N4sIWrPRpDCvzW5HbS/37Vv+w5obpXc5chOwO6k0FJDN/kqgs=
+Received: from MN2PR01CA0063.prod.exchangelabs.com (2603:10b6:208:23f::32) by
+ CY8PR12MB7491.namprd12.prod.outlook.com (2603:10b6:930:92::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.592.13; Mon, 9 Nov 2026 06:33:53 +0000
+Received: from BN2PEPF000055DF.namprd21.prod.outlook.com
+ (2603:10b6:208:23f:cafe::af) by MN2PR01CA0063.outlook.office365.com
+ (2603:10b6:208:23f::32) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.12 via Frontend Transport; Mon, 9
+ Nov 2026 06:33:53 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BN2PEPF000055DF.mail.protection.outlook.com (10.167.245.9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.639.0 via Frontend Transport; Mon, 9 Nov 2026 06:33:53 +0000
+Received: from [192.168.0.108] (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Mon, 9 Nov
+ 2026 00:33:48 -0600
+Message-ID: <046279e0-2022-4b43-8cd4-b32cf4a8c584@amd.com>
+Date: Mon, 9 Nov 2026 12:03:45 +0530
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,162 +97,250 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
-
-Fred Griffoul <griffoul@gmail.com> writes:
-
-> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
->
->> Device resources such as PCI BARs supply PFNs directly and cannot use
->> the folio allocation path. Store the mapping owner and device ID in the
->> core context during attach(), and use them when preparing device
->> memslots. Keep device memory separate from ordinary PFN-backed RAM.
->
-> The device rules you wrote down in api.rst and locking.rst helped a
-> lot. If I read v4 right, the device backing differs from the RAM PFN
-> backing in these places:
->
->   1. PFN mode calls RAM arch hooks: kvm_arch_gmem_make_shared() at
->      conversion, kvm_arch_gmem_make_private() at fault, and
->      kvm_arch_gmem_reclaim() on revoke and release. The device path
->      has to skip them.
->
-
-I would say that the VFIO provider expects the conversion to complete at
-conversion time, rather than being triggered by a fault. This is also
-required because, when an MMIO validation request completes, the guest
-expects the range to be mapped. The current flow is that the MMIO
-validation request exits to the VMM, which uses set_memory_attributes()
-to convert the range to private.
-
->   2. lookup_pfn_range() only feeds those hooks, so the device path
->      does not need it.
->   3. The host mmap and stage-2 need a device memory type.
->
-
-
-Do you mean this code? vm_page_prot is used for the host mapping created
-by mmap() on the guest_memfd, and its setup follows
-vfio_pci_core_mmap(). I think the only device-specific difference here
-should be pgprot_noncached(). Shouldn't the rest of the protection
-remain unchanged even for device PFNs?
-
-
-+	if (gmem_provider_is_device(gi)) {
-+		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+		vma->vm_page_prot = pgprot_decrypted(vma->vm_page_prot);
-+		vm_flags_set(vma, VM_IO | VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP);
-+		vma->vm_ops = &kvm_gmem_device_vm_ops;
-+		return 0;
-+	}
-+
-
-
-For stage-2, the architecture-specific fault handler should handle this.
-
-
->   4. In PFN mode, a conversion to private only updates the attributes,
->      and the guest fault maps the page later. CCA has to map device
->      memory at conversion, because the guest validates the mapping
->      before it touches it.
->
-
-correct 
-
->   5. The device provider needs lock()/unlock(), the private range
->      summary and prepare_memory_region().'
->
-
-The TSM checks that there are no private pages before issuing the unlock
-request.
-
->   6. The provider gets the VM and the vDEVICE binding at attach.
->
-> Would these changes to PFN mode be enough to drop the device table?
->
->   1. The arch hooks take the frame attributes. For RAM the arch does
->      the RMP work. For MMIO it skips it, or does the RMM work instead.
->
-
-IIUC, this is what the patch already does. Or are you suggesting
-something else?
-
-static int kvm_gmem_convert_attributes(struct inode *inode, pgoff_t start,
-		pgoff_t end, u64 attrs)
-{
-	const struct kvm_gmem_backing_ops *ops = GMEM_I(inode)->backing_ops;
-
-	if (ops->convert_attributes)
-		return ops->convert_attributes(inode, start, end, attrs);
-
-	return 0;
-}
+User-Agent: Mozilla Thunderbird
+CC: <sarunkod@amd.com>, Baoquan He <bhe@redhat.com>, Jerry Snitselaar
+	<jsnitsel@redhat.com>, Adam Pelka <adampelka26@gmail.com>
+Subject: Re: [PATCH v3 2/3] iommu/amd: Do not convert IVMD exclusion range to
+ unity range
+Content-Language: en-US
+To: "Jindal, Akshay" <Akshay.Jindal@amd.com>, "Joerg Roedel (AMD)"
+	<joro@8bytes.org>, Adrian Huang <ahuang12@lenovo.com>, Joerg Roedel
+	<jroedel@suse.de>, Robin Murphy <robin.murphy@arm.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, "Will
+ Deacon" <will@kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+References: <20261106041650.24076-1-sarunkod@amd.com>
+ <20261106041650.24076-3-sarunkod@amd.com>
+ <74c0a0d2-e728-4b6c-ad7a-0ea76f4ddd9e@amd.com>
+From: Sairaj Kodilkar <sarunkod@amd.com>
+In-Reply-To: <74c0a0d2-e728-4b6c-ad7a-0ea76f4ddd9e@amd.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000055DF:EE_|CY8PR12MB7491:EE_
+X-MS-Office365-Filtering-Correlation-Id: 97132d67-7938-4b46-738a-08df3e2b6c44
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|7416014|1800799024|82310400026|36860700016|921020|11063799006|4143699003|56012099006|261021123027099003|261021121427099003|261022113327099003|261022105027099003|261022075727099003|261009223027099003|261026140227099003|261026121527099003|261028144727099003|261102123227099003|10067099003|18002099003|22082099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	ZPtRD2EdQnKi8sPpJ9kUrIxivEq+gl1YTgBIKpHQ8fINFr5Xn7RilnQoj63RSq1qM38iJr+FFWESH0lGuh82jXuCL8T+Pw24HcRjdq/EZYxPMIJVSn7VPWJV73Nt8hJfqZ/dpv0GP1g998w8D6vl+MYhGG5//cKvDRkh6jHBoLFkMRG3Ovpt+m9dcrUQRXdiDuj4v6A6E7o96Ezj/3jIL/MPW2Zn7fOUxB8xz4kehIpRpKjmcFWmiqb4LzFUHjYwZ81UKBN4ueP3AJh+bXaVWF0Cz55nlk/fAQc00qslcEomSP9pGoCxCIw+shkKWSYcAyHHO1WcB8jnwui8Ko1hthKt2dAwNVNUTGn8lRwrmJxxJc/SkadJPBD4EwlVfjnsSY89///eH6XAoIJrviRlltzm9SBb1bxumvcmveliYUbBWPTxJZ6bRc5W3HrHaQrs5TTKoNZAm5HMd7wvYr8FMk97mnbx1TnyvoPtNd0xQryq5PTnN6QK5O8C+NLQggOUws9x2hhH6n5xXVTAWRJB75G06veyktUU51qYEKJjgrD5QkOPS3GG1ZjDSw0SbpH/Nw8Cd356DTXfpH6mXKNMoOpqWWTEvvjylQeVXKi1a5fy6f9bFzOW0uOx1Wfleh+tiFxEgu225PLFmxTNarqMwJjD2HA63qIaVZ3dhRO57kMJe9W/2Uaa+wuJRhN4EyLgXKVRvVTIekJFJdimaMigPk5ieNfHuIqdNM4lcdQsbIuvbmUQjz2d9YpBzXMHORL8
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(376014)(7416014)(1800799024)(82310400026)(36860700016)(921020)(11063799006)(4143699003)(56012099006)(261021123027099003)(261021121427099003)(261022113327099003)(261022105027099003)(261022075727099003)(261009223027099003)(261026140227099003)(261026121527099003)(261028144727099003)(261102123227099003)(10067099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	Sb0A7iihz0a8lKDsABsLcwhbFWNVlx6xY1iW4AKV27W915OA+V7dYDcpHFB+O6A2+qqp7aN+ZDlzfAKdu2wzxoDLZp0jvmRr7XMQj72W3yvEfLihzEfrQ+UF/2QryEvQ8snm/NgAQx5AaGW3JKnbcTb8uqosz92Z3sCPv1Jx2xiHhbcJ+lOs4GQHBSGbOv5XKWjfJ3hIKUeZUAlOS0V5Quru2Z2qVdXNUXhfn7SYucMjykpT7uzgNFllOU/CgbMxHulme33hQKWgdmswBujHtS6G0fPq0mKYGWItnkjXBsvSaOWtsN2ITHmG7T+qLVpG/qJXsFvE+9opFDuJFhkoLv5RXYeFUuM6EayWDtOHTZ4ZNEFAPKGKKN3JGGlm9DfHTRuqvvCfGzAfVOzmuYG7Nnrlt1bz6GRMAh8weoM75cwt55T+rjoQxBtwyJt7Z6FZ
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Nov 2026 06:33:53.0442
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97132d67-7938-4b46-738a-08df3e2b6c44
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF000055DF.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7491
 
 
 
->   2. lookup_pfn_range() stays required. For vfio-pci it is the BAR
->      start plus the offset.
->
+On 11/6/2026 3:32 PM, Jindal, Akshay wrote:
+> 
+> 
+> On 06-11-2026 09:46, Sairaj Kodilkar wrote:
+>> Caution: This message originated from an External Source. Use proper caution when opening attachments, clicking links, or responding.
+>>
+>>
+>> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>>
+>> Original problem was there could be multiple IVMD exclusion entries
+>> conflicting over a single exclusion range supported in older Linux
+>> kernel. The fix was first introduced in commit 387caf0b759a ("iommu/amd:
+>> Treat per-device exclusion ranges as r/w unity-mapped regions") and in
+>> commit 0bbe4ced53e3 ("iommu/amd: Fix the overwritten field in IVMD header")
+>> , where IVMD exclusions are converted to separate unity_map_entry objects
+>> in pci_seg->unity_map so amd_iommu_get_resv_regions() treated every such
+>> entry as IOMMU_RESV_DIRECT with R/W.
+>>
+>> The driver no longer programs the exclusion base/limit registers and
+>> relies on the kernel to keep the IOVA ranges named by exclusion IVMDs
+>> unmapped. Stop forcing exclusion entries to RW-unity. Store the raw
+>> IVMD flags in struct unity_map_entry instead of a pre-shifted
+>> protection value, and derive the reserved region from those flags.
+>> Exclusion entries are now reported as IOMMU_RESV_RESERVED with no
+>> read/write permission.
+>>
+>> Reject unity entries that grant neither IR nor IW with a FW_BUG
+>> message, and warn about invalid flag combinations and unknown flag bits
+>>
+>> Fixes: 0bbe4ced53e3 ("iommu/amd: Fix the overwritten field in IVMD header")
+>> Cc: Baoquan He <bhe@redhat.com>
+>> Cc: Adrian Huang <ahuang12@lenovo.com>
+>> Cc: Jerry Snitselaar <jsnitsel@redhat.com>
+>> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
+>> Reviewed-by: Adrian Huang <ahuang12@lenovo.com>
+>> Tested-by: Adam Pelka <adampelka26@gmail.com>
+>> ---
+>>  drivers/iommu/amd/amd_iommu_types.h | 12 +++++++-----
+>>  drivers/iommu/amd/init.c            | 26 +++++++++-----------------
+>>  drivers/iommu/amd/iommu.c           | 21 +++++++++++++++++++--
+>>  3 files changed, 35 insertions(+), 24 deletions(-)
+>>
+>> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+>> index 678ceddd711c..bcb88b476167 100644
+>> --- a/drivers/iommu/amd/amd_iommu_types.h
+>> +++ b/drivers/iommu/amd/amd_iommu_types.h
+>> @@ -368,9 +368,11 @@
+>>  /* DTE[128:179] | DTE[184:191] */
+>>  #define DTE_DATA2_INTR_MASK    ~GENMASK_ULL(55, 52)
+>>
+>> -#define IOMMU_PROT_MASK 0x03
+>> -#define IOMMU_PROT_IR 0x01
+>> -#define IOMMU_PROT_IW 0x02
+>> +#define IVMD_FLAG_UNITY                BIT(0> +#define IVMD_FLAG_IR           BIT(1)
+>> +#define IVMD_FLAG_IW           BIT(2)
+>> +#define IVMD_FLAG_EXCL         BIT(3)
+>> +#define IVMD_FLAG_MASK         GENMASK_U32(3, 0)
+>>
+>>  /* IOMMU capabilities */
+>>  #define IOMMU_CAP_IOTLB   24
+>> @@ -880,8 +882,8 @@ struct unity_map_entry {
+>>         /* end address to unity map (including) */
+>>         u64 address_end;
+>>
+>> -       /* required protection */
+>> -       int prot;
+>> +       /* IVMD flags for the entry */
+>> +       u8 flags;
+>>  };
+>>
+>>  /*
+>> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+>> index 13c96feed64f..1f0ca675df1c 100644
+>> --- a/drivers/iommu/amd/init.c
+>> +++ b/drivers/iommu/amd/init.c
+>> @@ -70,11 +70,6 @@
+>>  #define IVHD_FLAG_RESPASSPW_EN_MASK     0x04
+>>  #define IVHD_FLAG_ISOC_EN_MASK          0x08
+>>
+>> -#define IVMD_FLAG_EXCL_RANGE            0x08
+>> -#define IVMD_FLAG_IW                    0x04
+>> -#define IVMD_FLAG_IR                    0x02
+>> -#define IVMD_FLAG_UNITY_MAP             0x01
+>> -
+>>  #define ACPI_DEVFLAG_INITPASS           0x01
+>>  #define ACPI_DEVFLAG_EXTINT             0x02
+>>  #define ACPI_DEVFLAG_NMI                0x04
+>> @@ -2636,6 +2631,13 @@ static int __init init_unity_map_range(struct ivmd_header *m,
+>>         struct amd_iommu_pci_seg *pci_seg;
+>>         char *s;
+>>
+>> +       if ((m->flags & IVMD_FLAG_UNITY) &&
+>> +           !(m->flags & (IVMD_FLAG_IR | IVMD_FLAG_IW | IVMD_FLAG_EXCL))) {
+>> +               pr_err(FW_BUG "IVMD type %#x devid %#x range %#llx+%#llx: Unity set without IR/IW, ignoring\n",
+>> +                      m->type, m->devid, m->range_start, m->range_length);
+>> +               return -EINVAL;
+>> +       }
+>> +
+>>         pci_seg = get_pci_segment(m->pci_seg, ivrs_base);
+>>         if (pci_seg == NULL)
+>>                 return -ENOMEM;
+>> @@ -2665,17 +2667,7 @@ static int __init init_unity_map_range(struct ivmd_header *m,
+>>         }
+>>         e->address_start = PAGE_ALIGN(m->range_start);
+>>         e->address_end = e->address_start + PAGE_ALIGN(m->range_length);
+>> -       e->prot = m->flags >> 1;
+>> -
+>> -       /*
+>> -        * Treat per-device exclusion ranges as r/w unity-mapped regions
+>> -        * since some buggy BIOSes might lead to the overwritten exclusion
+>> -        * range (exclusion_start and exclusion_length members). This
+>> -        * happens when there are multiple exclusion ranges (IVMD entries)
+>> -        * defined in ACPI table.
+>> -        */
+>> -       if (m->flags & IVMD_FLAG_EXCL_RANGE)
+>> -               e->prot = (IVMD_FLAG_IW | IVMD_FLAG_IR) >> 1;
+>> +       e->flags = m->flags;
+>>
+>>         DUMP_printk("%s devid_start: %04x:%02x:%02x.%x devid_end: "
+>>                     "%04x:%02x:%02x.%x range_start: %016llx range_end: %016llx"
+>> @@ -2702,7 +2694,7 @@ static int __init init_memory_definitions(struct acpi_table_header *table)
+>>
+>>         while (p < end) {
+>>                 m = (struct ivmd_header *)p;
+>> -               if (m->flags & (IVMD_FLAG_UNITY_MAP | IVMD_FLAG_EXCL_RANGE))
+>> +               if (m->flags & (IVMD_FLAG_UNITY | IVMD_FLAG_EXCL))
+> the original names were more descriptive, suggest keeping
+> IVMD_FLAG_UNITY_MAP/IVMD_FLAG_EXCL_RANGE rather than shortening them.
+> if you insist on rename, may be send in seperate patch?
+> 
+>>                         init_unity_map_range(m, table);
+>>
+>>                 p += m->length;
+>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>> index 56262f6b1f70..699b5f530f11 100644
+>> --- a/drivers/iommu/amd/iommu.c
+>> +++ b/drivers/iommu/amd/iommu.c
+>> @@ -3120,12 +3120,29 @@ static void amd_iommu_get_resv_regions(struct device *dev,
+>>                 if (devid < entry->devid_start || devid > entry->devid_end)
+>>                         continue;
+>>
+>> +               /*
+>> +                * IVMD_FLAG_UNITY, IVMD_FLAG_IR, IVMD_FLAG_IW are ignored if
+>> +                * IVMD_FLAG_EXCL is set.
+>> +                */
+>> +               if ((entry->flags & IVMD_FLAG_EXCL) &&
+>> +                   (entry->flags & (IVMD_FLAG_UNITY | IVMD_FLAG_IR | IVMD_FLAG_IW)))
+> Here EXCL & UNITY are flagged as invalid combination
+> Above UNITY & !EXCL are also flagged as invalid.
+> Suggesting revisiting these conditions.
+>> +                       pr_err(FW_BUG "%s: Invalid IVMD flags combination: %#02x for sbdf=%#x. Ignore IW/IR/Unity flags\n",
+>> +                              __func__, entry->flags, sbdf);
+>> +
+>> +               if (entry->flags & ~IVMD_FLAG_MASK)
+>> +                       pr_err("%s: Unknown flags: %#02x for sbdf=%#x\n",
+>> +                              __func__, entry->flags & ~IVMD_FLAG_MASK, sbdf);
+>> +
+>>                 type   = IOMMU_RESV_DIRECT;
+>>                 length = entry->address_end - entry->address_start;
+>> -               if (entry->prot & IOMMU_PROT_IR)
+>> +               if (entry->flags & IVMD_FLAG_IR)
+>>                         prot |= IOMMU_READ;
+>> -               if (entry->prot & IOMMU_PROT_IW)
+>> +               if (entry->flags & IVMD_FLAG_IW)
+>>                         prot |= IOMMU_WRITE;
+>> +               if (entry->flags & IVMD_FLAG_EXCL) {
+>> +                       type = IOMMU_RESV_RESERVED;
+>> +                       prot = 0;
+>> +               }
+> Since in case of invalid flag combinations, we are going ahead with region allocation,
+> will it be beneficial to add a pr_debug emitting relevant details passed on to the
+> iommu_alloc_resv_region()?
 
-I have to admit that I did not understand the need for lookup_pfn_range.
-It was called from the reclaim path, but we did not have reclaim
-support.
+Sorry I made a mistake here,
 
->   3. get_pfn() and lookup_pfn_range() report a memory type (MMIO) in
->      their attributes, next to read only. The core mmap and the KVM
->      fault path use it.
->
+Here's summary of what I wanted to do,
+1. Reject UNITY mapping if IR and IW flags are not present
+2. Reject exclusion mapping if either UNITY / IR / IW flags are present
 
-Yes, this should work.
+Thanks for pointing it out. I'll update it in the next version and move
+all the firmware related checks inside init_unity_map_range(). I'll also
+reject this condition as it does not make sense to add the region with
+invalid flag combination (a region cannot be both UNITY and EXCL).
 
->   4. A conversion calls an arch hook in both directions, and the hook
->      can fail. CCA maps the private device range there.
->
+Thanks
+Sairaj
 
-As kvm_gmem_convert_attributes() already does in the current patch?
-
->   5. lock()/unlock(), the private range summary and
->      prepare_memory_region() become optional ops for any PFN provider.
->      A provider that moves RAM between guests needs them too: it has
->      to order its moves with conversions and leave private pages
->      alone.
->
-
-Isn't that what the patch already does?
-
-static void gmem_provider_lock(struct gmem_inode *gi)
-{
-	if (gi->provider_ops && gi->provider_ops->lock)
-		gi->provider_ops->lock(gi->provider);
-}
-
-static void gmem_provider_unlock(struct gmem_inode *gi)
-{
-	if (gi->provider_ops && gi->provider_ops->unlock)
-		gi->provider_ops->unlock(gi->provider);
-}
-
-if (gi->provider_ops->prepare_memory_region) {
-	u32 flags = slot->flags & (KVM_MEM_LOG_DIRTY_PAGES | KVM_MEM_READONLY);
-
-	ret = gi->provider_ops->prepare_memory_region(gi->provider, offset,
-						      size, flags);
-	if (ret) {
-		fput(file);
-		return ret;
-	}
-}
+>>
+>>                 region = iommu_alloc_resv_region(entry->address_start,
+>>                                                  length, prot, type,
+>> --
+>> 2.34.1
+>>
+>>
 
 
-
->
-> I'm less sure about 6. Could KVM ask the provider for the vDEVICE when
-> the memslot is created, passing the VM? The provider would then not
-> need to keep a VM pointer.
->
-
-OK, so you don't want struct gmem_inode to contain struct
-guest_memfd_device, or is the concern limited to struct kvm? I'll check
-whether we can move it out.
-
--aneesh
