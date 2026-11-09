@@ -1,49 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.170
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794232393;
-	b=Ic1UfM79Y/0X2fHpsiTT8dUM7J7HGK8R8NJxqrvzO0MTZl4kEZ3MCaxlRKLR7l8M9JHJ
-	 ZNMWTRgXtYYJ2PwGMBpI/2kEj+7B/vOjy70agKob3FUBvUnFDt8iLU1yWNOcIlNCS6KSP
-	 WwVvQfL7QWTAeLhPmZRz5es5enIbYGjnNkjLiqF4eJXOxJRa3vUx/mPz53EpzhXa8eC1H
-	 WmZFvD4cuktdck8LwW0HFXElJo8tTj6cTiu2QHZssBGCpeC5SBqTLFwpdqLWKPFgl8lQh
-	 SivgQqRa96cSMGeUrTHttq6+Xus6VKf/ot54vHoihACNvON5kKPSOkFTcOaGRepvgXA==
+	t=1794235972;
+	b=GRQQKPaOsLrXZ1lq+cRhWD2tfuHMWnYEyX0Q4z/o9+BIYitPNdcOGqt+UDG1xLqsRkVG
+	 gXN9Y6F4U344yz5stZ5I3E1otwnix/Fhlk4i/q9sLT1jiS+/c7FoVuUfoptjZX8RS92XV
+	 TMUewfPZ92tuRkCkPUcO/xRkVZ7steWfHjghLFv6yLL5/HSijD0WUoqDKlZIhmsbKRSf4
+	 Jnt+VPkzqI68EBlJsc2F9kTQ4Tb/l0bm3k7+XXAA5HfiJckwaIycF6q1afKIrBSHIl1ZS
+	 MvqpA+YFuDZzsDqwk+gDbHqfOF5gSZooxTEDsvzgIkcU/v+apCYqX2oMSeODsaVGqyA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794232393;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=FmzE/0AuzROOVSIWwCygvTpvGfdQlGJ3e5R6heSWG28=;
-	b=HXc8iEeF07HI+q+Ulrx41VdLvP8GM+US88f7Gg7KbUJTrH1w2iCF3VoYOMcsOjo85n0V
-	 kKYqtsrFAuiHxAssZ4bVaP0ZfOZJ9lzwZtNl8qFyBM+WeUJOfsUiLUtueFIi55ua62CWd
-	 f0vbrVd8gvaMz87dO1kRfjumpMqrqTzuOdngJO+39KR2UtgSSknkhe+l3sPB85fZsc5d2
-	 JzQCVKtcLd4AB8PSDe6nxA5Z7WNtwXll1Ogq3cqrDIl7A5yyLJ0TNTWEotOBGbkLyo1es
-	 mt8ZmBUh/9rSLt2/LIfoejwgqyNrJkXoVLgQEqQszpc7WD39ehZi5PryXIz2+oi+/SQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794235972;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=RMkO9oL77p5sRlwGpFl2L+7RNFhj/mskLD55QzNXito=;
+	b=ozfK5OdKwxsEBdWQXF3lPtapeT9mBvzE0ZpB4QdXVqnxE0aKOZ55KOg7+W2jsiWxYYKJ
+	 xObA7aXuS8bjU6z0Re4KoKpwQlrKIN5ALiaKt0DPHH5AyJdese+WSZf/M8ZieHlFzXOSV
+	 v9mE53X8QELvkkoaYzn4xGmUehuH6QdMHQ+1QBO1yYp1ew7qetxcTER3ta4DkMO4RLs09
+	 JvbmCsfwvI1K8YqKh0GZcP8KZp1lyN0y3MobgkXG1Wf9PVU3UnMMTtbS/4Iu2Hc6UFxnx
+	 GvWehMiQqJl6XcNJsJgTWnAbrWfMKX98QCl7cw9TeffVf4TgqQXKUZHQRNaci9Fq8eQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=PbSiKt+6;
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C962A606A321;
-	Mon,  9 Nov 2026 13:53:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C962A606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b="lKASd4/M";
+	arc=none smtp.remote-ip=209.85.160.170
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 668D3606A31C
+	for <iommu@lists.linux.dev>; Mon,  9 Nov 2026 14:52:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 668D3606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=PbSiKt+6
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6138A1516;
-	Mon,  9 Nov 2026 05:53:08 -0800 (PST)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 325953F632;
-	Mon,  9 Nov 2026 05:53:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1794232391; bh=wlZiYNVovym20CI+TkD2zA5b5H/GLLhwfGNQAFy1oHQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=PbSiKt+6/8n08qcvegxvEqZ785gaJmYXPkCXkChu7e4iPaKOKPr/1jPeRUiVcqb1H
-	 0qgDWwsPD1EkmkbX1+fO1PRojMVMKmDJxVXyFTHx4NLSzrteJQaRhzRzAMr1SrHAal
-	 oJp5YHh3ZyU6EAv/FfCOS4WZ6M+H14+z84WD/B+o=
-Message-ID: <d0999161-3b27-4c3b-9d66-1d117c4836fd@arm.com>
-Date: Mon, 9 Nov 2026 13:53:02 +0000
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=lKASd4/M
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-537548b811aso7494261cf.3
+        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 06:52:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1794235971; x=1794840771; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=RMkO9oL77p5sRlwGpFl2L+7RNFhj/mskLD55QzNXito=;
+        b=lKASd4/Mu6TIkdW0s5s/F5Hnx9oNWyDXLwH+nlrysTji+M9+ScQgLNnSBSplMQJqTY
+         wGy4nIRmH815nGB4Sub4u+/IO8Rd2GRDRuYSj7nogSYIk08b2V673YCLDHhcP0fUttR4
+         +o2K4HCj702R7j2nHJ2mC2s+NiIM+fFBrwRDsl1Ai+j0DUt0OibaK01Fk2sBimLgVHon
+         aEHEGlgTWH61foyeet0MuV/MVej4d4bvk+JTn0Y3yNgLw+T98jWcliPDXOKkdpTEJNQG
+         YvxFxFS7vmOiRVfTHsxdu0T2XnVHk3/fRFR7i6OWp+t3UKFJRccSaQ/KRIf4XSiRralZ
+         q0cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794235971; x=1794840771;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=RMkO9oL77p5sRlwGpFl2L+7RNFhj/mskLD55QzNXito=;
+        b=retr8sMb5/DayIjpDMRZ1U8v7wF/etL8+9PSe8yLOiVFRBvkKPgnEyVrzlq558hsTf
+         9b2mo4YdafV41NThJ/Hd6rhV4BgQtXiqBFQJU1zjzqqGLWBE/V6AEzXO1PHHxp62sn0w
+         TYz5CU/JLiaKTD75dDg+6xbXk5pPDHaHvIUILrXkSTfahBslm+OnBvkzMM5U9Smm8T+5
+         UmXjVgTZV5fXMAbM27DQBxROETif1VveApssxV/2eV0PTyG7lVm3v5JlRzxG8JzkHALs
+         ObhamcFoHMtkFSSt2+2YQ5LQ603O5UcTgDXTXWX99Uz3ON8ZxIJLAZwp/U5LoIG85mp3
+         Q5Pw==
+X-Forwarded-Encrypted: i=1; AL+hErEPLFG4aZ7mMUy+pzYeymHOnzsBob+o0QixTthVo4wKKnuI7FxSboSduwCg9q4K0OX0ziM0JA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8eqgEL5r0rONnVskB9Kt3E5gZg3S0D4STLABoMw+90eT7sRb29
+	+by3F3ViqW9ed0D/o67MI2pwbMQzdvYCZdg62tmwcVLKPHLdQfDRnAtLzUed9sHnJ50=
+X-Gm-Gg: AYBFou0/ZaOrLX8CgZ+lYyIcbv4yRSY5jahk0qsgGcxmmkgkKwSUiWeJGQBrC8S6KLE
+	LR/zDoLkTLbYPUJbbnzNRIeo+2gGYYazS3YzwgRcvy6HKVUUna+Z4M5oZ77Slp6JyKfSJY9v2UU
+	aBnC88mZTUL+i+5+v0NJ1s469SNDynoyuLxmOh5JhFQf6NIUGbcdVsA+ZMmRRsq39/ZrP3o3DQM
+	8AArhgZOhJ2XgKyxCOlffgImSXwCo3LlgCCFA3LqdemGbN70bhSNczFqRdSVNGgSPuItIDjWgI2
+	oMF73K8B9xbnaXmnYOR9ostDO5pNG7OteznfEqh9EOD+V2h2S5j/txuJ9dbdCvh63glTiQE++hO
+	WuXIHyUEzXf0tei2u8kuV5dgqOt57IirK3/EkMl/14MxBeRHbBok7lFcTfONkTd4tHk04k0hFKV
+	aVTANyV1EyYPs9YYF9UA1cYo5FQ4SPMgjVLeHXg78ICp996DC2qDACuMk5NbMHxT9TI1SipcoaD
+	FGLTEblaWS0Qv/JC0UKAFgeKdt/LkQ2O6BMXbrHIUJJWHK5WavwaMw2ahAyXq8f/nLAUSCAOxBq
+	sMRpUX0F564btAujTqR03owi2wqOFgaKHANjGY4AveOQUcvh+fY8pfbRYY9tecNX1b6vSqDmWDg
+	NofWUXCAxXdwAVWyQOWMmtNrXPAmYx64=
+X-Received: by 2002:a05:622a:1aa0:b0:537:6f12:69 with SMTP id d75a77b69052e-552a6240a81mr63071801cf.45.1794235971214;
+        Mon, 09 Nov 2026 06:52:51 -0800 (PST)
+Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91ece95b508sm43946716d6.0.2026.11.09.06.52.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Nov 2026 06:52:50 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xQQjq-00000001RUr-0lev;
+	Mon, 09 Nov 2026 10:52:50 -0400
+Date: Mon, 9 Nov 2026 10:52:50 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Pranjal Shrivastava <praan@google.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Daniel Mentz <danielmentz@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Logan Odell <loganodell@google.com>, iommu@lists.linux.dev,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 0/5] iommupt: Introduce IO page table shrinker
+Message-ID: <20261109145250.GO663069@ziepe.ca>
+References: <20261001230219.818128-1-praan@google.com>
+ <20261002150844.GC3481470@ziepe.ca>
+ <asMuigioXmHZmjO2@google.com>
+ <avG97sxE2NFZFtvE@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,122 +109,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 18/19] PCI: Replace untrusted state with device trust
-To: Leon Romanovsky <leon@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
- Heiner Kallweit <hkallweit1@gmail.com>, Russell King
- <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Johannes Berg <johannes@sipsolutions.net>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
- <rdunlap@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
- Marcel Holtmann <marcel@holtmann.org>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
-Cc: linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
- linux-input@vger.kernel.org, netdev@vger.kernel.org,
- linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
- <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <avG97sxE2NFZFtvE@google.com>
 
-On 09/11/2026 7:33 am, Leon Romanovsky wrote:
-[...]
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index b486b8bbd1fcd..8be2a246d4903 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1879,7 +1879,7 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
->   static int iommu_get_default_domain_type(struct iommu_group *group,
->   					 int target_type)
->   {
-> -	struct device *untrusted = NULL;
-> +	struct device *restricted = NULL;
->   	struct group_device *gdev;
->   	int driver_type = 0;
->   
-> @@ -1901,14 +1901,15 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
->   		driver_type = iommu_get_def_domain_type(group, gdev->dev,
->   							driver_type);
->   
-> -		if (dev_is_pci(gdev->dev) && to_pci_dev(gdev->dev)->untrusted) {
-> +		if (dev_is_pci(gdev->dev) &&
-> +		    pci_dev_default_is_restricted(to_pci_dev(gdev->dev))) {
+On Mon, Nov 09, 2026 at 12:34:54PM +0000, Mostafa Saleh wrote:
 
-I think this should be the generic device_is_adversarial(gdev->dev) now 
-- in fact probably all the dev_is_pci()/to_pci_dev() stanzas aren't 
-conceptually PCI-specific, just an artefact of the current "untrusted" 
-flag being so.
+> I believe there is a value in supporting other users beyond IOMMUFD/VFIO
+> (eg. DMA domains) or even outside of iommupt, I haven't investigated this,
+> but it's worth looking into either integrating the "iommupt clean(gap)"
+> idea in the IOVA allocator or more generally rely on refcounting +
+> shrinker (or other method).
 
->   			/*
-> -			 * No ARM32 using systems will set untrusted, it cannot
-> -			 * work.
-> +			 * No ARM32 using systems select a restricted trust
-> +			 * policy; it cannot work.
->   			 */
->   			if (WARN_ON(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
->   				return -1;
-> -			untrusted = gdev->dev;
-> +			restricted = gdev->dev;
->   		}
->   	}
->   
-[...]
-> @@ -616,6 +608,28 @@ static inline struct pci_dev *to_pci_dev(const struct device *dev)
->   {
->   	return container_of(dev, struct pci_dev, dev);
->   }
-> +
-> +static inline bool
-> +pci_dev_default_is_restricted(const struct pci_dev *pdev)
-> +{
-> +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-> +
-> +	return policy == DEVICE_TRUST_POLICY_DISABLED ||
-> +	       policy == DEVICE_TRUST_POLICY_ADVERSARY;
-> +}
+The main point is to avoid the refcounting because that is going to be a
+perf negative for everyone..
 
-Unless I've wildly misunderstood, I'm not sure this is right - if the 
-user has set DEVICE_TRUST_POLICY_DISABLED to explicitly override the 
-bus-default behaviour, but that leads to the IOMMU layer special-casing 
-all PCI devices as adversarial and thus force-*enabling* all their 
-trust-model restrictions, isn't that pretty much the complete opposite 
-of what was asked for?
+I think most people should be able to do a clean call, and if it is
+routed as a generic domain function that would be fine too
 
-Thanks,
-Robin.
-
-> +
-> +static inline bool pci_dev_ats_permitted(const struct pci_dev *pdev)
-> +{
-> +	enum device_trust_level level = device_get_trust_level(&pdev->dev);
-> +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-> +
-> +	if (level == DEVICE_TRUST_DISABLED)
-> +		return policy != DEVICE_TRUST_POLICY_ADVERSARY &&
-> +		       policy != DEVICE_TRUST_POLICY_DISABLED;
-> +
-> +	return level == DEVICE_TRUST_FULL;
-> +}
-> +
->   #define for_each_pci_dev(d) while ((d = pci_get_device(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
->   #define for_each_pci_dev_reverse(d) \
->   	while ((d = pci_get_device_reverse(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
-> 
-
+Jason
