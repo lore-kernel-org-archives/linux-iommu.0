@@ -1,49 +1,116 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794343160;
-	b=U0hgfeWYNMPYT0qqmQtHyYZB9KO4F8/ZHsGsk8jRox4ZZjTcGZRksak+fcoDLkdfBgb3
-	 Drj5AFVdJCDxjgHxJwoV/YCBxeLpscB14hqE75N9Nz6leqHjOx8tPN04kcc+dwxXDikVv
-	 ZRstP2fB3Kj2tuxRMmMzqzLiRT8qxhjOkfJg8p5S5ODbENX54ItXUd+FX9lZWakHaYY5V
-	 4CgcaDYdCs4uTWagoyZzsy8D1oUr6zEkqde2Ob+3rEg8bJkF/X6kBxaVeKYlCnkOc9AC6
-	 oh1xkIfOpVC0JfxUfk6kLRkpAF60R7x9he2sTKRH4n2NHstrOVBfbBbCUrsadD1qlKQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794343160;
-	h=Received:DKIM-Signature:From:Date:Subject:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
-	 X-Mailer:X-Developer-Signature:X-Developer-Key;
-	bh=E4m8FHiFLO/x9oCUsb/0QhI25EqM9VOH8L9QKYaqiGI=;
-	b=kYIbHUwe+QdmuqCeEH068UZj+SrQd2Zz2uZforAbc7Gm33xo7oZB23utehtmr68gBsum
-	 lFWlQ/EXzyloVmXtX6RrBjTIvvIC0fu19g553YM8DDPUDadITcQgKCrjET1abn3Rx6N0+
-	 thbjh6jb9a/l6rOsLWXj6KDNOXqZDAEo2FXEtU2hFaBw+9F7UnfPtrA17g+yb5M0pLUA+
-	 0neLeXMisBCeEdapyGsXxn3kXcD3PxUOPHZ3YvTN/7NHCKdF+G2kzpXQ+gXeoDv8jfJUy
-	 UxeBgFEf7qW8lwmVfWpOG7HyXaC4mWKJS6KwYPHFybr/m2qLFFUbwO4VjmM0BPnMFWQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XueGupk+;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.30
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794343854;
+	b=1HNgbpW8O3IDuOaCB+o4ZWgki9EsbIhZWbKVJqOjxcTn3hdjiVNEdympT5jzVKMza9KG
+	 rcwKaYURFyfuoYZR0T8+C4s1a6CFIDE1C1hkky3+n0yBja/YYeLoNqn0jTKe0OFkBbey/
+	 BoZCM8iMu9lM3W2IEJMDjojxR8pOW0HUqF4Mg/yIoAhK7hqPgEqHG9TGAcys1QY7pq5RT
+	 8Ub4vKRlbSgwNR6qvO/vvpudScK1FnM1G0jqSAubaix5WkdNWRZRr1Vb6PwuKe+IL+7T6
+	 f0idcoQIM5aWPgF4BwU6TXmCrX/nhyn1hu7xGQdfkDS/Vij7zpQaanC1/gMgs2IITpQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794343854;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding:Content-Type:
+	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=FRTFWeewDBgH1eurIj8ck+ao1ks94VquPEB7S3gWvR8=;
+	b=KDJnmmfQuf3eIwcnthQEx9SIDhLCXEvsBiWPPTTzn7vZgzfU+Dii+hPZAXE2Ehdmr9vh
+	 vkwQa+fU3To6ksdkVcUWiy7VMy6LklnLsFMgnloh47uiu4JbpwQriKZ2UFfPmg/yHVQ6N
+	 urjJF0sTyZc5f6VaICrRD+HXkHCg+mHI5KTwhjPtEFEZBi+aeb0f+/XdfZPxA1AuK82bA
+	 QgX7oQcJUZv5JGBvNBRRsnpYhigFF1UPdAsR/tlXtMuxNDcUHTF/DLeX4PZ9TNucQYNRF
+	 MBznqLFxE4vGfogUJ+TsG+nZCHs/ZzSZOJOpbZV3SvvWiObGOOreX8Lu690JaGASi8A==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=szVa7WTi;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.30
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010030.outbound.protection.outlook.com [52.101.56.30])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 772C2606A334;
-	Tue, 10 Nov 2026 20:39:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FA32606A325;
+	Tue, 10 Nov 2026 20:50:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7FA32606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XueGupk+
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5717A1F008A3;
-	Tue, 10 Nov 2026 20:39:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794343160;
-	bh=E4m8FHiFLO/x9oCUsb/0QhI25EqM9VOH8L9QKYaqiGI=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc;
-	b=XueGupk+w46vm31HshZ994aUeALrLRk8y8MBQ8Q9oq+/3qNVtObmjbbCMHw8J3+NE
-	 IvI7thyLKfeStaGvlSjWctdHhb4fdnxEQFPWM+b1LjsKP/9jgcEmVRJTvLLcEd0D7E
-	 XjrgMAN5nTFuaubozZWvYrPfomZG7p6gMlcYc3HjkmYCJdL6A9Ig6vhirsbJ0VWgVn
-	 bIoega0W4nIGhuK0FO4auZzSFv67DeTB3fxajcVatfrzqn+qSPNdJdElB/SYW+vHfq
-	 tBia6nwWwoY4N+86U3Qa4WTPqCXyC9f13xibpGmZRpWE0wBL3gt6w4nVVv5ZZCujvl
-	 kgdbgY75ITQPg==
-From: "David Hildenbrand (Arm)" <david@kernel.org>
-Date: Tue, 10 Nov 2026 21:35:49 +0100
-Subject: [PATCH v3 9/9] RFC: net: limit folio refcount when splicing from
- sockets
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=szVa7WTi
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=oMEeMUK9c/+N1kuEUOj9S64tat4IowXV0HfFK5EN4BG4ZU8Lu5G98rAji90fq8ulsDdi97GVDyL+DCBNDhYkyZ1IUuWvsV+N6q0a45QLNUfy4i0Ap5F4FFBzGSg21FBbOC585o6aV6jxdVCHKHH5+mN5QZ1oT+cH/i0sHJfGoQks7SEX2hcAARvFPhuGz61RxisfDMirkwjvVCPRtzTeRz3R1wT6z+lXbqAUI2nK3WFmPXnIZlhXdaeJpUJU0Lg5uXtrRvpLvB98F7y7Ni3UT+vTytl9jkZM2P+DNNxoI40vW077eAbuVWdqHcxOdUPlEHRg0R+bzzkMVkqShEGzJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FRTFWeewDBgH1eurIj8ck+ao1ks94VquPEB7S3gWvR8=;
+ b=l0J+6oiQvuXRRHxl7lk1GTvZSiCppi5A48LRilGVLBX5rnzxx4/V99QN/POx6H647W1lvxlWJA4yFSSYZ4POVYb+zXDFCtekH2NAznQRFe7UqZU/plMRMUihbL4UPOX5Yjy4ref5ebqrXgLSk8mwIBWDPx07BEDRY7eH/O2btcacQEYCsB25KcEMkEFTkXjU/j4T6ow1+TkToZ6ZChxRkpOSy6dO4+0wXDU4xQ/f9dmpo7kzcTgONMcX+RKM5qLf3VUs6Z+4s+Zl3B6B0HpSXRBH8Rs3fwAKi6HqOvBO2pUahaevzwpCjvarZSvawpGKprU9m/avXup6+5Npb3FNIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FRTFWeewDBgH1eurIj8ck+ao1ks94VquPEB7S3gWvR8=;
+ b=szVa7WTigvpQAreY10gzxc7e4L6CF2vL8LxaMa7zl+ucr815R8whTzNSh6Fls+45Y5kXiBATk+0pz4BHfTPxutNm67Q5ztLMnX6OfSl/VVVoBPpJC4hX8DRhtD/GTYdXIxbMRhYydnbX4ZcO1dnbjphw11KRwOXJTVFvDa3ksDE1FPfo4Q8MS+TzYSXaVWq//JE8Sb1uFDB+XvGG+RFBNOKKykq6A/aO4xNhQd48gal841XtUbCGP6cCW8b6Fmecv3QPHhrnyrkdrGmMkV4Bcx/Ui/qxSoJUPFWTy792dvV01l9wqoq2Kj8FwDu/KVsh3HD3LtBZg03R7BowPr1Ggw==
+Received: from PH8PR07CA0021.namprd07.prod.outlook.com (2603:10b6:510:2cd::10)
+ by CH8PR12MB9837.namprd12.prod.outlook.com (2603:10b6:610:2b4::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Tue, 10 Nov
+ 2026 20:50:46 +0000
+Received: from PH4PEPF0000B60A.namprd21.prod.outlook.com
+ (2603:10b6:510:2cd:cafe::99) by PH8PR07CA0021.outlook.office365.com
+ (2603:10b6:510:2cd::10) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.8 via Frontend Transport; Tue, 10
+ Nov 2026 20:50:45 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ PH4PEPF0000B60A.mail.protection.outlook.com (10.167.243.84) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.592.0 via Frontend Transport; Tue, 10 Nov 2026 20:50:45 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Tue, 10 Nov
+ 2026 12:50:27 -0800
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Tue, 10 Nov
+ 2026 12:50:26 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server id 15.2.2562.56 via Frontend
+ Transport; Tue, 10 Nov 2026 12:50:25 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Catalin Marinas
+	<catalin.marinas@arm.com>, <rafael@kernel.org>, Danilo Krummrich
+	<dakr@kernel.org>, Johan Hovold <johan@kernel.org>, Marek Szyprowski
+	<m.szyprowski@samsung.com>
+CC: Mark Rutland <mark.rutland@arm.com>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, Pranjal Shrivastava <praan@google.com>,
+	"Mostafa Saleh" <smostafa@google.com>, <linux-kernel@vger.kernel.org>,
+	<iommu@lists.linux.dev>, <driver-core@lists.linux.dev>, Sonang Patel
+	<sonangp@nvidia.com>, Ankit Agrawal <ankita@nvidia.com>,
+	<shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v3 0/7] iommu/arm-smmu-v3: Support guest-level Realm VSMMU (Part-1)
+Date: Tue, 10 Nov 2026 12:50:05 -0800
+Message-ID: <cover.1794343501.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,259 +120,151 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20261110-refcount_overflow_stable-v3-9-318625d63a98@kernel.org>
-References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
-In-Reply-To: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
-To: Lorenzo Stoakes <ljs@kernel.org>, 
- "Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
- Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
- Michal Hocko <mhocko@suse.com>, 
- "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>, 
- Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>, 
- Baolin Wang <baolin.wang@linux.alibaba.com>, 
- Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, 
- Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
- Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>, 
- Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
- Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>, 
- Gregory Price <gourry@gourry.net>, 
- Ying Huang <ying.huang@linux.alibaba.com>, 
- Alistair Popple <apopple@nvidia.com>, Peter Xu <peterx@redhat.com>, 
- Johannes Weiner <hannes@cmpxchg.org>, Song Liu <songliubraving@fb.com>, 
- Rik van Riel <riel@surriel.com>, Miklos Szeredi <miklos@szeredi.hu>, 
- Alexander Viro <viro@zeniv.linux.org.uk>, 
- Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, 
- Will Deacon <will@kernel.org>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, 
- Nick Piggin <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>, 
- Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
- Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
- Robin Murphy <robin.murphy@arm.com>, 
- Steve Sistare <steven.sistare@oracle.com>, 
- John Hubbard <jhubbard@nvidia.com>, 
- "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
- Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
- Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
- Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
- Linus Torvalds <torvalds@linux-foundation.org>
-Cc: "David Hildenbrand (Arm)" <david@kernel.org>, linux-mm@kvack.org, 
- linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
- fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
- iommu@lists.linux.dev, netdev@vger.kernel.org, stable@vger.kernel.org
-X-Mailer: b4 0.16.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=7544; i=david@kernel.org;
- h=from:subject:message-id; bh=7U/DzXjI5miBDV0MKGmDg4W99Jxg9rPtkaZjscX+PzU=;
- b=kA0DAAgWwCT9yb1uzcsByyZiAGrzgFiiqTYoJ7KhL9HQt6QX1ehBy8uc7NZ/aOoBOxJXqkITc
- oh1BAAWCAAdFiEE1q5sZVOshUF2WjFGwCT9yb1uzcsFAmrzgFgACgkQwCT9yb1uzcuBYQEApbjm
- 98Lr+UljqcvxLAuMTM//qYqizwl8F+GZG8XeTMcBALNkfASxO4rGDKK5xo0XZjKq/lh46csayNB
- 1VebjCgYN
-X-Developer-Key: i=david@kernel.org; a=openpgp;
- fpr=1BD9CAAD735C4C3A460DFCCA4DDE10F700FF835A
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH4PEPF0000B60A:EE_|CH8PR12MB9837:EE_
+X-MS-Office365-Filtering-Correlation-Id: b29b4554-1676-4256-5681-08df3f6c4ad9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|23010399003|1800799024|36860700016|82310400026|260925021311599003|260925022911599003|260925021911599003|11063799006|5023799004|261021135927099003|56012099006|261022105027099003|261022075727099003|261021121427099003|261021123027099003|261026140227099003|261026121527099003|261009223027099003|261028144727099003|261102123227099003|10067099003|20052099010|18002099003|6133799003|3023799007;
+X-Microsoft-Antispam-Message-Info:
+	1LcXFv0Zbfl3LP2qGKxjTObm3UuhwSn/lEeJ5W71Li438xnCmvb/nue19whS/j8sZnb0yfLdOXW21RXHRu1moxdk61cnMMTAhc8EuVT03UEEi+rX2P8ThtfYaC2tnx8Q4PJb7SS6G8zvyDJEfE8BwPwe4BdVz+lk7j1qUrbxSB1m2Gch9ETcZqcv3oYsr9UglthJL7CnBsZzEu5/vcoqLYalBkuHWRUphW/bpt2nJjMvxYASwho4ghk+HX3JThyGvpCYyY3USMi25DQIkbgRI7vrJpcvPvmBEPc9AtrAIlRXDA/XJkW5RqJ+iDTjNJ4hfrKNULDA5u4PlC1gu2wLzlQNM7il45oPHlwx0R+7zZu13ipDI6UMtvcvUtrJ9jOIAJ3bsARyTTKyS4yiqVSl9r8wqzm/zCAdWN9rItauDUUt2fnHmb4l0kA5xt/rO+f8kFN0cBhmxDUk8+4flOos0utO51m9ouVyB1vTjlD1h+XEg3HPqi7ondevWOZy13Hi/YIueHISt8uRqgK3bvegskLX+R0QNiKdjZ9mk+sb2MXF8OSMmIuo0YLZHNQXA2U9aVSe0P0XobGlZZjYHvoU460P4HkGtbxU0gg412PaYR3BLxMek9BMbwqaeMq6SH/LOiX1FwBOvF5vj8pADedn56fMmYy334s3433hIxlHu9eNTCn/1Ayh2GmyoA7tGTwQLrFvBVr2QyOtGEwr17jnQw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(23010399003)(1800799024)(36860700016)(82310400026)(260925021311599003)(260925022911599003)(260925021911599003)(11063799006)(5023799004)(261021135927099003)(56012099006)(261022105027099003)(261022075727099003)(261021121427099003)(261021123027099003)(261026140227099003)(261026121527099003)(261009223027099003)(261028144727099003)(261102123227099003)(10067099003)(20052099010)(18002099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	KLcO59aIWJKjxhPAa2efyRjYuywI1e8GeXTCUFXE6uH++MMA5pWTpyrVilMXisz1mOHfRR18aZ/BbPmUB/Kgjuctqci1qX1uBPPClY1nOsq8+jtXYXlQ9IT4YbpId1+c9OhDa2Xu6vuYO4cqpliuwYB/7gs6XqHT0kktW5+U1AZmvBEFZ78gGYzCeyx2HrU2vbcYd/vP2rzpP5AKlB7rNEUWYPeJcbrb9YZ1EFBG8XYjpoW84IIIXuR/m1RUSgm1v1HHqgBnlRIJBps0kb7lA0f+rSetx8i4DP8koUh4ww7e+za96AzJBfpKMH4X9oRIE7sMy82RHXbMh7AIGXx1JzqnuMgBjWlRSoAxxW09Zfn42gXeA+SmnS2Oign81jr7qjD1y3JmHOjGtzQYBHEfvuEFnBnCNVflXCAZURbZ2JzcVM3biAdH5ggW4hVDl3rn
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 20:50:45.3822
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b29b4554-1676-4256-5681-08df3f6c4ad9
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	PH4PEPF0000B60A.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH8PR12MB9837
 
-Various networking features support splicing data from sockets into
-pipes (TCP, AF_UNIX, KCM, kTLS), whereby spd_fill_page() takes an
-additional page reference for each fragment, while the skb keeps its own
-reference until it was fully consumed. This allows for exceeding folio
-refcount limits.
+This series prepares Realm guest IOMMU and DMA subsystems for devices that
+are present but not yet inside the Realm trust boundary.
 
-This is not specific to large pagecache folios, but with them it is a
-lot easier to reach the refcount limit, as page table mappings can cheaply
-create many references.
+Inside a confidential guest, we expect that all the iommus are going to be
+T=1 aware; there seems to be no interest in supporting IOMMUs that handle
+T=0 only. This means they only work on devices that have been put into the
+run state and issue T=1 transactions.
 
-Let's use try_get_page() in spd_fill_page() and stop splicing with
--EFAULT if that fails. To propagate the error, let spd_fill_page(),
-__splice_segment() and __skb_splice_bits() return an int instead of a
-bool. If we could not splice anything, return the error from
-skb_splice_bits(): returning 0 would make the callers (TCP, AF_UNIX, KCM,
-kTLS) report EOF, although data is still queued. The callers already
-handle errors.
+Today an iommu driver assumes it translates for every device behind it: it
+probes the device, takes a translating default domain, and puts the DMA API
+on its page tables. That assumption is wrong for T=0 devices, whose DMA the
+hypervisor translates instead, so the mappings made by the guest are never
+consulted and the device silently stops working.
 
-Use -EFAULT, consistent with splice_folio_into_pipe().
+To solve this problem, make TDISP T=0 the default for devices associated
+with a confidential IOMMU. The tdisp_t1 flag records the future T=1 state.
 
-Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
-Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
-Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
-Cc: stable@vger.kernel.org
-Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
----
- net/core/skbuff.c | 90 +++++++++++++++++++++++++++++++------------------------
- 1 file changed, 51 insertions(+), 39 deletions(-)
+While T=0, the device remains outside the Realm trust boundary. Its DMA is
+translated by the host or hypervisor:
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 5e3f910eeea0b..a5965f8fa1b00 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3150,11 +3150,13 @@ static bool spd_can_coalesce(const struct splice_pipe_desc *spd,
- }
- 
- /*
-- * Fill page/offset/length into spd, if it can hold more pages.
-+ * Fill page/offset/length into spd, if it can hold more pages and we can
-+ * take a page reference. Returns non-zero to stop, or a negative error
-+ * if we cannot take a page reference.
-  */
--static bool spd_fill_page(struct splice_pipe_desc *spd, struct page *page,
--			  unsigned int *len, unsigned int offset, bool linear,
--			  struct sock *sk)
-+static int spd_fill_page(struct splice_pipe_desc *spd, struct page *page,
-+			 unsigned int *len, unsigned int offset, bool linear,
-+			 struct sock *sk)
- {
- 	if (unlikely(spd->nr_pages == MAX_SKB_FRAGS))
- 		return true;
-@@ -3168,7 +3170,8 @@ static bool spd_fill_page(struct splice_pipe_desc *spd, struct page *page,
- 		spd->partial[spd->nr_pages - 1].len += *len;
- 		return false;
- 	}
--	get_page(page);
-+	if (!try_get_page(page))
-+		return -EFAULT;
- 	spd->pages[spd->nr_pages] = page;
- 	spd->partial[spd->nr_pages].len = *len;
- 	spd->partial[spd->nr_pages].offset = offset;
-@@ -3177,12 +3180,14 @@ static bool spd_fill_page(struct splice_pipe_desc *spd, struct page *page,
- 	return false;
- }
- 
--static bool __splice_segment(struct page *page, unsigned int poff,
--			     unsigned int plen, unsigned int *off,
--			     unsigned int *len,
--			     struct splice_pipe_desc *spd, bool linear,
--			     struct sock *sk)
-+static int __splice_segment(struct page *page, unsigned int poff,
-+			    unsigned int plen, unsigned int *off,
-+			    unsigned int *len,
-+			    struct splice_pipe_desc *spd, bool linear,
-+			    struct sock *sk)
- {
-+	int ret;
-+
- 	if (!*len)
- 		return true;
- 
-@@ -3200,8 +3205,9 @@ static bool __splice_segment(struct page *page, unsigned int poff,
- 	do {
- 		unsigned int flen = min(*len, plen);
- 
--		if (spd_fill_page(spd, page, &flen, poff, linear, sk))
--			return true;
-+		ret = spd_fill_page(spd, page, &flen, poff, linear, sk);
-+		if (ret)
-+			return ret;
- 		poff += flen;
- 		plen -= flen;
- 		*len -= flen;
-@@ -3213,28 +3219,30 @@ static bool __splice_segment(struct page *page, unsigned int poff,
- }
- 
- /*
-- * Map linear and fragment data from the skb to spd. It reports true if the
-- * pipe is full or if we already spliced the requested length.
-+ * Map linear and fragment data from the skb to spd. It returns non-zero to
-+ * stop: true if the pipe is full or if we already spliced the requested
-+ * length, or a negative error if we cannot take a page reference.
-  */
--static bool __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
--			      unsigned int *offset, unsigned int *len,
--			      struct splice_pipe_desc *spd, struct sock *sk)
-+static int __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
-+			     unsigned int *offset, unsigned int *len,
-+			     struct splice_pipe_desc *spd, struct sock *sk)
- {
- 	struct sk_buff *iter;
--	int seg;
-+	int seg, ret;
- 
- 	/* map the linear part :
- 	 * If skb->head_frag is set, this 'linear' part is backed by a
- 	 * fragment, and if the head is not shared with any clones then
- 	 * we can avoid a copy since we own the head portion of this page.
- 	 */
--	if (__splice_segment(virt_to_page(skb->data),
--			     (unsigned long) skb->data & (PAGE_SIZE - 1),
--			     skb_headlen(skb),
--			     offset, len, spd,
--			     skb_head_is_locked(skb),
--			     sk))
--		return true;
-+	ret = __splice_segment(virt_to_page(skb->data),
-+			       (unsigned long)skb->data & (PAGE_SIZE - 1),
-+			       skb_headlen(skb),
-+			       offset, len, spd,
-+			       skb_head_is_locked(skb),
-+			       sk);
-+	if (ret)
-+		return ret;
- 
- 	/*
- 	 * then map the fragments
-@@ -3248,10 +3256,11 @@ static bool __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
- 		if (WARN_ON_ONCE(!skb_frag_page(f)))
- 			return false;
- 
--		if (__splice_segment(skb_frag_page(f),
--				     skb_frag_off(f), skb_frag_size(f),
--				     offset, len, spd, false, sk))
--			return true;
-+		ret = __splice_segment(skb_frag_page(f),
-+				       skb_frag_off(f), skb_frag_size(f),
-+				       offset, len, spd, false, sk);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	skb_walk_frags(skb, iter) {
-@@ -3260,11 +3269,12 @@ static bool __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
- 			continue;
- 		}
- 		/* __skb_splice_bits() only fails if the output has no room
--		 * left, so no point in going over the frag_list for the error
--		 * case.
-+		 * left or on error, so no point in going over the frag_list
-+		 * for the error case.
- 		 */
--		if (__skb_splice_bits(iter, pipe, offset, len, spd, sk))
--			return true;
-+		ret = __skb_splice_bits(iter, pipe, offset, len, spd, sk);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	return false;
-@@ -3272,7 +3282,9 @@ static bool __skb_splice_bits(struct sk_buff *skb, struct pipe_inode_info *pipe,
- 
- /*
-  * Map data from the skb to a pipe. Should handle both the linear part,
-- * the fragments, and the frag list.
-+ * the fragments, and the frag list. Returns the number of bytes spliced,
-+ * or an error if we could not splice anything because we could not take
-+ * a page reference.
-  */
- int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
- 		    struct pipe_inode_info *pipe, unsigned int tlen,
-@@ -3287,14 +3299,14 @@ int skb_splice_bits(struct sk_buff *skb, struct sock *sk, unsigned int offset,
- 		.ops = &nosteal_pipe_buf_ops,
- 		.spd_release = sock_spd_release,
- 	};
--	int ret = 0;
-+	int ret;
- 
--	__skb_splice_bits(skb, pipe, &offset, &tlen, &spd, sk);
-+	ret = __skb_splice_bits(skb, pipe, &offset, &tlen, &spd, sk);
- 
- 	if (spd.nr_pages)
--		ret = splice_to_pipe(pipe, &spd);
--
--	return ret;
-+		return splice_to_pipe(pipe, &spd);
-+	/* Returning 0 would make callers report EOF. */
-+	return ret < 0 ? ret : 0;
- }
- EXPORT_SYMBOL_GPL(skb_splice_bits);
- 
+    [device: T=0] ===> [hypervisor] ===> [memory]
+        |
+        +-- (guest association) --> [confidential IOMMU: blocking DMA]
 
+         Legend: ===> DMA path; --> guest topology and control
+
+After reaching T=1, the device is inside the Realm trust boundary. Its DMA
+may use the guest VSMMU after RMM binds the device to its virtual stream:
+
+    [device] ===> [VSMMU: S1] ===> [RMM/PSMMU: S2 + DPT] ===> [memory]
+
+As part 1 of Realm VSMMU support, implement enough core infrastructure to
+manage a confidential vIOMMU:
+ - Detect and mark it as confidential in the core iommu structures
+ - Support devices in T=0 mode by keeping the DMA API in direct mode. The
+   iommu is up and running, but parks such a device in its blocking domain
+   and translates for nothing, as the core takes over what the device still
+   needs, which today is ATS
+ - Keep it parked: refuse a translating domain by every route in, whether
+   through the default domain, sysfs, group attach or replace, or PASID
+
+Part 1 only adds the helpers required for T=0 setup and teardown. It does
+not add iommu_tdisp_enter_t1() until part 2 has a transition to perform.
+
+Then implement SMMUv3 support:
+ - Let a CPU-integrated IOMMU declare that its DMA can reach private
+   memory, so coherent allocations and streaming mappings avoid the SWIOTLB
+   shared pool
+ - Identify a T=1 VSMMU using trusted RSI because firmware does not
+   distinguish it from a normal T=0 SMMU
+ - Validate the firmware MMIO range against RSI before activating the VSMMU
+   and allocating its queues and tables from private memory
+
+The series is on github:
+https://github.com/nicolinc/iommufd/commits/smmuv3_realm_guest_p1-v3
+
+Changelog
+v3:
+ * Add Acked-by from Marek
+ * Disable and enable ATS for T=0 devices across a PCI reset
+ * Rename dma_require_decrypted() to dma_require_unencrypted()
+ * Explain the minimum STU used to enable ATS while TDISP is T=0
+v2:
+ https://lore.kernel.org/all/cover.1793676742.git.nicolinc@nvidia.com/
+ * Rebase on v7.4-rc1
+ * Drop Assisted-by tags
+ * Drop Aneesh's firmware patch that was merged
+ * Skip Tegra CMDQV implementation in the realm world
+ * Use arm_smccc_1_2_smc() to zero inputs as RMM spec demands
+ * Add missing iommu_using_t0_stream() check in iommu_dma_prepare_msi()
+v1:
+ https://lore.kernel.org/all/cover.1789010941.git.nicolinc@nvidia.com/
+
+Future work
+===========
+
+Part 2 will add the T=1 transition after validation through:
+
+  - TSM, whose guest-side interface remains under discussion
+  - RMM, using the Arm-specific RSI VDEV command
+
+For a multi-device IOMMU group, the first device accepted into T=1 claims
+the group. Part 2 will reject T=1 for every other member.
+
+The current RSI binding validation returns one VSID, so part 2 must reject
+a firmware specification containing multiple SIDs upon the T=1 transition.
+
+Nicolin Chen (7):
+  firmware: arm_rmm: Add VSMMU commands and fields
+  dma-mapping: Let a device declare that it reaches private memory
+  dma-mapping: Keep DMA memory private for capable devices
+  iommu: Let a driver mark an IOMMU as confidential
+  iommu: Introduce TDISP T=0 state for confidential IOMMUs
+  iommu: Park TDISP T=0 devices in the blocking domain
+  iommu/arm-smmu-v3: Probe a guest-level Realm VSMMU via RSI commands
+
+ drivers/iommu/Makefile                      |   3 +
+ drivers/iommu/iommu-priv.h                  |  19 ++++
+ include/linux/arm-rsi-cmds.h                |  29 ++++++
+ include/linux/arm-smccc-rsi.h               |  20 ++++
+ include/linux/device.h                      |   4 +
+ include/linux/dma-direct.h                  |   7 +-
+ include/linux/dma-mapping.h                 |   4 +
+ include/linux/iommu.h                       |  14 +++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  64 +++++++++++-
+ drivers/iommu/iommu-cc.c                    |  63 ++++++++++++
+ drivers/iommu/iommu.c                       | 104 +++++++++++++++++++-
+ kernel/dma/direct.c                         |  21 ++--
+ kernel/dma/mapping.c                        |  23 ++++-
+ kernel/dma/swiotlb.c                        |   2 +-
+ 14 files changed, 357 insertions(+), 20 deletions(-)
+ create mode 100644 drivers/iommu/iommu-cc.c
+
+
+base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
 -- 
-2.56.0
+2.43.0
 
