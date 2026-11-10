@@ -1,115 +1,115 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.149
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794346659;
-	b=EQp0Gn0svILPvMAnb4w0ypIXSeqxGlXmip6FdvzmWgB2AqlZiWZfZkvNeE2I7AmV28wu
-	 aPNdMbeW8ggXqW+sTWdz0RxPQs+9G8aAP1OUAi58oP0nzRb9DQyI5zvH4U5EjpsFQ1TT6
-	 50Zzf4ZmVPmEpqsYeNYEapBXdl4Sdr+FJPOJ08pHX7UNI+50tGZ5IY13eIw4wpeMw4Rmp
-	 0Q3CPky9K+8as8ogRaulPEMx4ktDfh3d3MXARHe0/LRz0/PbZNh9sTB8OT/HjsEL4LiPM
-	 lvGoqL8I5K0SbK0y3j09Xd/hdCEeVuB3BaQtCWNoMwU5iT+3G1jWk8PlZ6Z50BVxbSw==
+	t=1794346662;
+	b=Tj+I1V2peXmOpI4rZW2LZgtPzO/+2VH2pcdL9qtpo75YV4zvAE0F+GdvwZJy40k8OBa5
+	 L9NqSzbVmdJL+neFTsJFQGWjiXxfTOO2V3vDdgpEVCn/VXeQA51UPaPYqIgGy0GnhBnC9
+	 qW9TRkZzWQNVqgF1QJbzPHqfsQT8GQX8jotpoBOmgM8/yPl0fPWO4oBrbMWJVMq2RUnrx
+	 lEnsY+NhiQOu6HuAZesvFhtFpV9eLjExaC+PrE/BRhqtarIAO1zT4NIRu6y3005s2+cfW
+	 smCIMafFsOnDz176PxTrnZ3XX8JB62Haej+q8k17ySsgZ+2rv+z9Hs1k3kYp9GyFRtw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794346659;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794346662;
 	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
 	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
 	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
 	 Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
 	 X-Mailer;
-	bh=HmnyzYI4NC7FFEJlhvkQV3ziJo06MpzXwTxFzxPsWpg=;
-	b=JbTgPAXuCNDpxWD8byiTnQvJwJbzEuB6f/j2AXZRl7VKrH2uOSGrdhPebb8mfSrBBU0L
-	 dIk9QZZYU7qqj7dzrUt/eOqi1yTsKfrtaU2ndgjxoXJJrs6i5J7/qvsTPJiSHwb2yR6vj
-	 vSTYHPCjTZRBpnxqVMCZ3f3MdyEa8IG+FSwpYXcLaWE+oeE5uDYMTgs2012rsQy/x1b+x
-	 K6gZ3RrGDdk6zBqVQFEpzJYeBre9my9h3isr03xe9w0gz3Rau7cnxpcVhqIv6RLH9ZU7G
-	 NcHsTRMRqokrhlluJHiS9wuwTQsm6ELsqnbC7dNzXtd/CgrtRYlBs0Zs9TEky/rWaww==
+	bh=pQPeTacN/BYl2gLmAN7uuVOyVLhnQcGIVBITEszOTd8=;
+	b=aA2iCHuu+mhkqrSYmCb4Gz58ivr0sQwfJelVhn6aLXBY+zUh9RBJD10oFoHAYqqC9A7/
+	 1I2gj4Bo6yGS5Y04YMiHDpzh+SaS834ryKrILQiVcd//omtPEO5Mj4PP8xcg5t5scKnxT
+	 v3RTAEO+i7r1khyDmcpsXEK13Y+7IbkLHfqmmkpVU5UHiaq5KAa9zzae9aAQ9Rs40FUuM
+	 iT1TtU2ITw4jbHT8mW3WHbhxwErhK5jZjQxfR6kt+J4CT6bBJiAjNh1rEOK/0JFiGdJuT
+	 1z71dq1lCQ/lh7mYWUALGFS/OqGFA+bScU5Xj0MXrBGn5QWDMStZzM+gI/kqYSB6suQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=fastmail.com;
 	spf=pass smtp.mailfrom=fastmail.com;
-	dkim=pass header.d=fastmail.com header.i=@fastmail.com header.a=rsa-sha256 header.s=fm3 header.b=VZVHJDV6;
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b="xqNs3/9z";
+	dkim=pass header.d=fastmail.com header.i=@fastmail.com header.a=rsa-sha256 header.s=fm3 header.b=gfwTy7+c;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=z8DX97bd;
 	arc=none smtp.remote-ip=202.12.124.149
 Received: from fout-b6-smtp.messagingengine.com (fout-b6-smtp.messagingengine.com [202.12.124.149])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2538B606A337
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 21:37:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2538B606A337
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3897A606A331
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 21:37:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3897A606A331
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fastmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fastmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=fastmail.com header.i=@fastmail.com header.a=rsa-sha256 header.s=fm3 header.b=VZVHJDV6;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=xqNs3/9z
-Received: from phl-compute-10.internal (phl-compute-10.internal [10.202.2.50])
-	by mailfout.stl.internal (Postfix) with ESMTP id A32791D00281
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 16:37:38 -0500 (EST)
+	dkim=pass (2048-bit key, unprotected) header.d=fastmail.com header.i=@fastmail.com header.a=rsa-sha256 header.s=fm3 header.b=gfwTy7+c;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=z8DX97bd
+Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
+	by mailfout.stl.internal (Postfix) with ESMTP id B87581D0027C
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 16:37:41 -0500 (EST)
 Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-10.internal (MEProxy); Tue, 10 Nov 2026 16:37:38 -0500
+  by phl-compute-02.internal (MEProxy); Tue, 10 Nov 2026 16:37:41 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fastmail.com; h=
 	cc:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm3; t=1794346656;
-	 x=1794433056; bh=HmnyzYI4NC7FFEJlhvkQV3ziJo06MpzXwTxFzxPsWpg=; b=
-	VZVHJDV6sFaogEbrQ0R48VF4Lfjf5IZV3Juxu0ngsCzQF7PF1lVHcHN1UFaJy+RJ
-	U0G/rhSRAsFkZS674956DHrVML5Eczv9uPDkVmLX5qWsEyi8GROFquuOeV26yMY0
-	bsel24WouQaX+v7BSzN9CBIXm1frXB5fXm/+tS1FB9OP/m3DP3n9t98NzFzxe52S
-	R2/+nlCAyCBRkYBMyDKL5QxKuPHC1cXD/xUULryyPOXv2AjdAC5An5IoVQBOh8aZ
-	YplHjTlZdGne2k66cCCrAhbTIxypOVDhfTUg/QLcUS6rJoVwvWacHOIDr40T7o1X
-	NV6MI0KISBU/U//40KNlcA==
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1794346659;
+	 x=1794433059; bh=pQPeTacN/BYl2gLmAN7uuVOyVLhnQcGIVBITEszOTd8=; b=
+	gfwTy7+cif1e1LVct/UzO93FySeF/L6rOHFYPigDO4WR6oti4A6SsYIb4FoBfHko
+	smrXwqe/XfsQvuRAQQZwvfRoX7/wfrwRuQWoGJQcZsbzoCc0JGB67TgSZT6DCs3X
+	BTEgfOmFp0uj/oDfn50THCpFKFnygLcMXQQhQ4m4gxX2ROeQoNmpkfv087Kc7RlD
+	+J+8Okz0YQ+4j7ZsDuxqv9xhn+RPidHFiegAOyv540OEMC4/mQZgfug+ef6RAK3J
+	+MMzaEuDB7Ndx4Vm/wdwJ0RWtC9fbXRUtemNsRe03eRRwjh/XoMlFAi3AAvGvxvv
+	2Wt1fCX6hQfEswmFUw/8hA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1794346656; x=
-	1794433056; bh=HmnyzYI4NC7FFEJlhvkQV3ziJo06MpzXwTxFzxPsWpg=; b=x
-	qNs3/9zSYlaONKaZq3VPU9UBqKoMiGAQAXQmI1apCu/2OiaY3E4ZBhuDDD8/4VKU
-	9BzzSDoixrFKmQRkCGte0AcsKE4zbnR+lJuCGwRmbhSLXlYMI8RQrWWpQGr5R+9F
-	2dpQDy0iL1YrJm0+xQw/cGnM6rCxfB4azfFZq5AfZYuyzKRLkghItFywHlKN7l1W
-	LEG4Jng+LQb9hQRuN7ffEpSRuogkJTeScxTkBHcxGDfFpSUdrM5uylJui5OScESu
-	ntmbm6RU1p6QGXibwycMFz0PvgnOnFncZpU2whPBRAPOdU6aVmKPUMBiGoJmHmCk
-	1H/fnk7gLP7dbpPtVDv4g==
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1794346659; x=
+	1794433059; bh=pQPeTacN/BYl2gLmAN7uuVOyVLhnQcGIVBITEszOTd8=; b=z
+	8DX97bdVTiHKspQTFx5mViskJPWEI3RT+8mVC/gZLIyRhqUqi2X9MZlNdo/OzYT9
+	GbtRnGjP6gLAO6kObwoEzGOOrPfkZ2Ukod73dwDBIQKF9Ffb0ruv4yACYlYuZkGp
+	yxzlG1BopWQvQJrJLum5vYTfx/RxHh22sOlzneU0ABs5tFv3H4t6zXHjIr9w91gx
+	Ctrburv16t05CrUV3P3xuryJagtayithjlYz0gb4nHNHNzPLRtrVpxHcBIBBBsJI
+	lswFRoE/a5mp8zYibJYpMkR4iofYz25oKdLh0KjslLFb8OOUOWMByBUJYg2ndjcw
+	QVPD9CDFYiPbuksDN6yow==
 X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
 	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
 	action=sign d=fastmail.com a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1794346656; d=fastmail.com;
+DKIM2-Signature: i=1; m=1; t=1794346659; d=fastmail.com;
 	mf=PGp1YW5sdUBmYXN0bWFpbC5jb20+;
 	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
-	s=fm3:rsa-sha256:LGV0PDU+nufF63PcVoNfOLciYwcR3ox3zPDOV+MOqKIcjnc
-	sUTyOHiwSvOC+uk2hsd0Pt6HqdG3M+v0slJPQ24oBa788NNitI70PUfYyUkcgjRM
-	xcwC5TuA4gUJzlCPrVrSF5jbtdrxmSso6i2OJUru3i1kkXCxcr9g2aUAdirxVjG1
-	U55YAm2dybes7xjOXgaFYJ5cYa7UK+YRsX/aK2fQRb73y+ooF9wIkFC4++eHmqXy
-	7SxMj9mKUjsqQaBdIwVFQsE33mg602mkzLPmFCWiPX0idS1OCc3ie9mL/BqW71T8
-	4Jj29nC4SNj9jpJY9SgeVGh2QwCevg7U6mefJwQ==;
+	s=fm3:rsa-sha256:aZWYT6pHqeLuYHA6tPvPSW0UgyqrWGF3S4xJ+unyTCZ7+21
+	e1La+Cx2LClwHhBqx2W7irdzLx18t23ymc6K1TcsTc7jt7IZnCgl+kS/+vnS4uBE
+	MDyxcYAxX6jE1aLjIy4M6w+gSa3WTxDOJVdB+AMJkINbbm/11j5aZywH8pycyYcD
+	IimkNTTrnlAATK1xMQFCvuA4ri/Q7iOHpJaQKbl5v4Ipk447+OEyOQbMJ6l+moZK
+	XtMwgS23v/9UyzfUUvGWGQ04p4MSUPhk0m2zY32WplqxwpU+A9oVJygI+H7XqOOs
+	Yt5+pa3k73OLHzJXvfL3omi+1mBnHsB9+KAuARQ==;
 X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
 	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
 	action=mi-m=1; hc=12;
 	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
 	from,in-reply-to,message-id,mime-version,references,subject,to;
-Message-Instance: m=1; h=sha256:gW1DG81GwxOQdnOH24p38FLucUvQt83aQUTbPfczDuk=:f/GcBJZKLTIZ8eHBpQDVVCkyZSX10Wt04zDVixkF2Gc=;
-X-ME-Sender: <xms:oI7zat70OulmdVU62ktlHyNt5GAMp9na03JkPFXOij1wAQKm364nsA>
-    <xme:oI7zaumphyQuHsNRQl2vHzxG_lHzGXn6N6vcQ1AqeDKO7Rv4vYjWhV82mN66AQi-V
-    EVnPqK-ZhgDTbkp6HgmEQSalY2LZvgP4tREo7hqe9TbUIG9W1tUB6z3>
-X-ME-Received: <xmr:oI7zatH7reireYxj0kfoObXjzOGL3sS0AUa9gHXBm-HY054hJDijOT5JLcvIjr86Jure62LSFLjqa0NgAw8>
+Message-Instance: m=1; h=sha256:eh/dKN/2QxMOjoEXNb5UK5C+r/WzrS1VQOk6m+ogYmA=:rIbkHgOQYUfQ1osRjj/4kXU7nTmkv5misKZNmcmqScE=;
+X-ME-Sender: <xms:o47zasAb6tti-vRIvRSQAI-J1iM1mXY0YGQhZn9gz5zFRioZGVhzGg>
+    <xme:o47zaiNEYqoBuBFRqJ0dzfYmm0VYNKN0RS-Z8Wa0OLRGRRreBzibecbbk0iFvOG0M
+    HIJjll9RmYuxH0wsrIAPKnIMMUOLIvmMpudTvk4ZO_fNOfdHLdfILRG>
+X-ME-Received: <xmr:o47zaoPCycbrKAKzHxOZW3oGQSESUZ-ZSdHBaA0sM1pV-M6YO9w2IvpN4SC0g3ySniYtvPdESWBOkakoJA>
 X-ME-Proxy-Cause: dmFkZTGNVXlGWE+7P2XXaL26F5AMGtpK2TycDVlf+xOjA+PYERZl6/BW+lbT0+wzTsbcnL
     kBAhJvg1txFwRjOcd7bw7X+tErVQLKyqfU9/T4BbMHT193EbxKvHyY8bAQ6ww6NmZWX2Gj
     S4oVvhJFMJ2BxkJuVf9ujSPSfv16nLGp7k9bwFNTR8UP/etY4ewbE2QpklWLWUkhZbd3tk
     i2NFMM50EyvyBj3i7bkefkHzaAGSTWPc9b/2WlAEfIPv9QAFyLDidETcJqU8/KdZSLuzWm
-    YnikjaxRN8sYTqzmqmhrte8FXDDjJZwMnUc/kh6WLuGF7iefMNEW49vFlHrDG5ZIu0qxeh
-    4kwaVDCtUT1CaM3RYhJmWG/D1XjLCRHErbsgfIdM39qycKFGQ2tTwPGC3ck7HTTMLF7k2V
-    EV78uyTh1Ruu3uXN2sOf4yDSz3Y6/UyEMkdWt57IySF7aHGG7ssdvme2hlJjYtzgWoyNIf
-    oahXqBzQNpUhN9aps/IGi+mlUvjkDz8XPyM53CxgiVJHZyWkporo+cZaph/QD8EieDNLN2
-    BNp7OYWGZBLlnU/4Iq0oM2U8lyoh/5f3ueJvi/HyE8b0ZuUOCP+z6GcU69gPvV1/t20nl+
-    hsPDQqN1Q49QpVe0kfdIxvQfZiooWqzReQ5tj1W2Xg4KDp/RhhoqGakArtSw
-X-ME-Proxy: <xmx:oI7zanhFfvVE47gYQpin6yRvxCv8GOLdBbpPSSh-VsVKHesW9tab7g>
-    <xmx:oI7zaijsNzOEAPT8OmP27I6BWr4ekVaXj5vHqp6HIMGvfe4WP3T3NA>
-    <xmx:oI7zaim8-Q8B51V5ZonLAI2lBzpy8qsI56Y_-Lq4lCOP7Q3uwbDvQg>
-    <xmx:oI7zauaGqRIyxXAPh84XhqrM7MBnZ3j5_lBF34tNolP6lKoI3vAiEg>
-    <xmx:oI7zatTYQpmnW_O3FVAZwfwJH9iGtWym4YML80W7DP1HApoiV0GffpFl>
+    YnikjaxRN8sYTqzmqmhrte8FXDDjJZwMnUc/kh6WLuGF7iefMNEW49vFlHrDG5ZIu0qxnb
+    vWHBHYmbVanc4mvFNBURK2LzrAF3B/Yo6DDs89K6yoDVQCqt4kOgmvGZEFc98pdMoX3UA+
+    ERVPXJV297cKHqg82Cmm4yWgRmP4ieHipAGa9mDa5wRUZP53ieM8gzbFuAxkR9awZXOr8t
+    kDNYvRgoAyPxlvwXs4pWirk7COdYvJ9s3rOrX1A/oF1hZTc2Y2fuSHjTuAw/3DEp6uUPxb
+    oA+82RihXNdAJtbxu/D1GwO8wsJ8VAKx9n2GBPr39VhzGtE382DS5nDm+JCa9hFGjJksMi
+    j1xABSJ7nsX21FNkUt6zJm+UumP7zctU530ecXwopTpDeaycXzd8/MZ688NQ
+X-ME-Proxy: <xmx:o47zakLL7QO78ILQizAgIMVkJ1B5GwKOlT3aVhNudLICMPiZpD4vGg>
+    <xmx:o47zaipfHw0lAq1mkKFM2WA2Kenhed-d6EhYInxm5KpefJT5UFepWQ>
+    <xmx:o47zagOAsYpXDOWckS1XKAsyMwJESmc5QxFgBxusffb6m6ZRXkfNOw>
+    <xmx:o47zarjG1QVeI8lDdNtLJdSik9ZTJemwFccGbEIM0ruYwmP7V22Gow>
+    <xmx:o47zal9_Ky0U15rZE_SEAgDZtkK19wkrP2KYdvqoLZECpYRqgYUsa_Jk>
 Feedback-ID: i80b64ba7:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 10 Nov 2026 16:37:36 -0500 (EST)
+ 10 Nov 2026 16:37:39 -0500 (EST)
 From: Juanlu Herrero <juanlu@fastmail.com>
-Date: Tue, 10 Nov 2026 13:36:48 -0800
-Subject: [PATCH 2/3] dma-debug: skip irrelevant buckets for partial syncs
+Date: Tue, 10 Nov 2026 13:36:49 -0800
+Subject: [PATCH 3/3] dma-debug: add bucket bound lifetime coverage
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -121,7 +121,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261110-zcrx-dma-debug-registration-v1-2-48743ea61631@fastmail.com>
+Message-Id: <20261110-zcrx-dma-debug-registration-v1-3-48743ea61631@fastmail.com>
 References: <20261110-zcrx-dma-debug-registration-v1-0-48743ea61631@fastmail.com>
 In-Reply-To: <20261110-zcrx-dma-debug-registration-v1-0-48743ea61631@fastmail.com>
 To: Andrew Lunn <andrew+netdev@lunn.ch>, 
@@ -134,124 +134,113 @@ Cc: netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
  Juanlu Herrero <juanlu@fastmail.com>
 X-Mailer: b4 0.13.0
 
-Partial syncs may start after a mapping's first hash bucket. Finding the
-mapping then requires locking earlier buckets.
-
-Keep a conservative size bound per bucket and skip those that cannot
-span the sync range. Raise the bound on insertion and reset it when the
-bucket empties. Stale larger bounds only add searches, so removal needs
-no list rescan to update the bound.
-
-This relies on ordered map publication before sync and unmapping after
-sync. The bucket lock carries earlier bound updates through later
-insertions even when the bound is unchanged.
+Add a KUnit test on a local bucket for conservative bounds, equal-sized
+mapping removal, empty-bucket reset and reuse. Exercise the existing
+insertion and removal helpers without DMA hardware.
 
 Signed-off-by: Juanlu Herrero <juanlu@fastmail.com>
 ---
- kernel/dma/debug.c | 49 +++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 39 insertions(+), 10 deletions(-)
+ kernel/dma/Kconfig             | 10 ++++++++
+ kernel/dma/debug.c             |  4 +++
+ kernel/dma/tests/debug_kunit.c | 57 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 71 insertions(+)
 
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 3830a63ae032d..3f295a1503597 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -291,6 +291,16 @@ config DMA_API_DEBUG
+ 
+ 	  If unsure, say N.
+ 
++config DMA_API_DEBUG_KUNIT_TEST
++	bool "Tests for DMA debug bucket bounds" if !KUNIT_ALL_TESTS
++	depends on KUNIT=y && DMA_API_DEBUG
++	default KUNIT_ALL_TESTS
++	help
++	  Enable KUnit (kernel unit test) coverage for DMA debug bucket bounds.
++	  Check that insertion and removal keep the bound conservative and
++	  reset it when a bucket becomes empty. Exercise reuse and equal-sized
++	  mappings on a local bucket. No physical DMA device is required.
++
+ config DMA_MAP_BENCHMARK
+ 	bool "Enable benchmarking of streaming DMA mapping"
+ 	depends on DEBUG_FS
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 4cb5f86a7228a..8dad45d0a4360 100644
+index 8dad45d0a4360..1d0990e447516 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -90,6 +90,8 @@ typedef bool (*match_fn)(struct dma_debug_entry *, struct dma_debug_entry *);
- struct hash_bucket {
- 	struct list_head list;
- 	spinlock_t lock;
-+	/* Upper bound on live mapping sizes; reset when the bucket empties. */
-+	unsigned long max_entry_size;
- };
- 
- /* Hash list to save the allocated dma addresses */
-@@ -354,27 +356,49 @@ static struct dma_debug_entry *bucket_find_contain(struct hash_bucket **bucket,
- 						   struct dma_debug_entry *ref,
- 						   unsigned long *flags)
- {
--
- 	struct dma_debug_entry *entry, index = *ref;
-+	u64 min_offset = (index.dev_addr & ((1ULL << HASH_FN_SHIFT) - 1)) + 1;
- 	int limit = min(HASH_SIZE, (index.dev_addr >> HASH_FN_SHIFT) + 1);
- 
--	for (int i = 0; i < limit; i++) {
-+	entry = __hash_bucket_find(*bucket, ref, containing_match);
-+	if (entry)
-+		return entry;
-+	put_hash_bucket(*bucket, *flags);
-+
-+	for (int i = 1; i < limit; i++) {
-+		unsigned long max_entry_size;
-+
-+		index.dev_addr -= (1 << HASH_FN_SHIFT);
-+		*bucket = &dma_entry_hash[hash_fn(&index)];
-+		/*
-+		 * Writers serialize updates with the bucket lock. For any entry
-+		 * that can validly match this sync, publishing the mapping is
-+		 * ordered before the sync, including a cross-CPU handoff, and
-+		 * unmapping is ordered after it. The bound only grows while the
-+		 * bucket is nonempty, so it cannot become smaller than a live
-+		 * entry. Removing an unrelated mapping may leave a larger bound,
-+		 * which only causes an unnecessary search.
-+		 */
-+		max_entry_size = READ_ONCE((*bucket)->max_entry_size);
-+		/* The mapping must span the distance back to this bucket. */
-+		if (max_entry_size < ref->size ||
-+		    max_entry_size - ref->size < min_offset)
-+			goto next;
-+
-+		*bucket = get_hash_bucket(&index, flags);
- 		entry = __hash_bucket_find(*bucket, ref, containing_match);
- 
- 		if (entry)
- 			return entry;
- 
--		/*
--		 * Nothing found, go back a hash bucket
--		 */
- 		put_hash_bucket(*bucket, *flags);
--		index.dev_addr -= (1 << HASH_FN_SHIFT);
--		*bucket = get_hash_bucket(&index, flags);
-+next:
-+		min_offset += 1ULL << HASH_FN_SHIFT;
- 	}
- 
-+	*bucket = get_hash_bucket(ref, flags);
- 	return NULL;
+@@ -1700,3 +1700,7 @@ static int __init dma_debug_driver_setup(char *str)
+ 	return 1;
  }
--
- /*
-  * Add an entry to a hash bucket
-  */
-@@ -382,14 +406,19 @@ static void hash_bucket_add(struct hash_bucket *bucket,
- 			    struct dma_debug_entry *entry)
- {
- 	list_add_tail(&entry->list, &bucket->list);
-+	if (entry->size > bucket->max_entry_size)
-+		WRITE_ONCE(bucket->max_entry_size, entry->size);
- }
- 
- /*
-  * Remove entry from a hash bucket list
-  */
--static void hash_bucket_del(struct dma_debug_entry *entry)
-+static void hash_bucket_del(struct hash_bucket *bucket,
-+			    struct dma_debug_entry *entry)
- {
- 	list_del(&entry->list);
-+	if (list_empty(&bucket->list))
-+		WRITE_ONCE(bucket->max_entry_size, 0);
- }
- 
- /*
-@@ -1100,7 +1129,7 @@ static void check_unmap(struct dma_debug_entry *ref)
- 	}
- #undef DMA_ATTR_UNMAP_VALID
- 
--	hash_bucket_del(entry);
-+	hash_bucket_del(bucket, entry);
- 	put_hash_bucket(bucket, flags);
- 
- 	/*
+ __setup("dma_debug_driver=", dma_debug_driver_setup);
++
++#if IS_ENABLED(CONFIG_DMA_API_DEBUG_KUNIT_TEST)
++#include "tests/debug_kunit.c"
++#endif
+diff --git a/kernel/dma/tests/debug_kunit.c b/kernel/dma/tests/debug_kunit.c
+new file mode 100644
+index 0000000000000..96cff02a6918d
+--- /dev/null
++++ b/kernel/dma/tests/debug_kunit.c
+@@ -0,0 +1,57 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <kunit/test.h>
++#include <linux/sizes.h>
++#include <linux/slab.h>
++#include <linux/spinlock.h>
++
++static void dma_debug_bound_lifetime_test(struct kunit *test)
++{
++	struct dma_debug_entry *entries;
++	struct hash_bucket bucket = {};
++	unsigned long bounds[7];
++
++	entries = kunit_kcalloc(test, 3, sizeof(*entries), GFP_KERNEL);
++	KUNIT_ASSERT_NOT_NULL(test, entries);
++	entries[0].size = SZ_4K;
++	entries[1].size = SZ_64K;
++	entries[2].size = SZ_64K;
++	INIT_LIST_HEAD(&bucket.list);
++	spin_lock_init(&bucket.lock);
++	spin_lock(&bucket.lock);
++	hash_bucket_add(&bucket, &entries[0]);
++	bounds[0] = bucket.max_entry_size;
++	hash_bucket_add(&bucket, &entries[1]);
++	hash_bucket_add(&bucket, &entries[2]);
++	bounds[1] = bucket.max_entry_size;
++	hash_bucket_del(&bucket, &entries[1]);
++	bounds[2] = bucket.max_entry_size;
++	hash_bucket_del(&bucket, &entries[2]);
++	bounds[3] = bucket.max_entry_size;
++	hash_bucket_del(&bucket, &entries[0]);
++	bounds[4] = bucket.max_entry_size;
++	hash_bucket_add(&bucket, &entries[0]);
++	bounds[5] = bucket.max_entry_size;
++	hash_bucket_del(&bucket, &entries[0]);
++	bounds[6] = bucket.max_entry_size;
++	spin_unlock(&bucket.lock);
++
++	KUNIT_EXPECT_GE(test, bounds[0], (unsigned long)SZ_4K);
++	KUNIT_EXPECT_GE(test, bounds[1], (unsigned long)SZ_64K);
++	KUNIT_EXPECT_GE(test, bounds[2], (unsigned long)SZ_64K);
++	KUNIT_EXPECT_GE(test, bounds[3], (unsigned long)SZ_4K);
++	KUNIT_EXPECT_EQ(test, bounds[4], 0UL);
++	KUNIT_EXPECT_GE(test, bounds[5], (unsigned long)SZ_4K);
++	KUNIT_EXPECT_EQ(test, bounds[6], 0UL);
++}
++
++static struct kunit_case dma_debug_bound_cases[] = {
++	KUNIT_CASE(dma_debug_bound_lifetime_test),
++	{}
++};
++
++static struct kunit_suite dma_debug_bound_suite = {
++	.name = "dma-debug-bound",
++	.test_cases = dma_debug_bound_cases,
++};
++
++kunit_test_suite(dma_debug_bound_suite);
 
 -- 
 2.53.0-Meta
