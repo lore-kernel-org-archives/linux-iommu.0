@@ -1,123 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.168.131
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794308097;
-	b=N244VfoUTz8n130QbkF2MVHpcn2s/RIH00jxLQxCebS/QDvxZplzqAkIWIr7iAvnGS0q
-	 0uf6JAKCoG0JGVl1zYJXp1D2PNTGnAXfOH2hEAe5E1uCwW3fs51jK645iM7R9hGlpvDSb
-	 OOaUoTkTd66y0JNW/ffRZ2jFYhjG3MwQBmXW9MXQf4iT9wScMlJTrWwkRQ231kugdkvk6
-	 vqnC+8LubdIGH4SVx8MGz94M6AVUEdpLy0qZ5OKBzPS05qHR21reN3yKOi/+8ELRKY7nx
-	 YjZk+9MGIuf1CE8NnSIgWIt3Ejhnz77OqbsZGEnX2We0gd/4x/t6UhKdeSAOSIfa/8Q==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794308097;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:MIME-Version:
-	 References:In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:
-	 Cc:Content-Type:Content-Transfer-Encoding:X-Proofpoint-GUID:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Info:X-Authority-Analysis:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=/GvGp0ikRhYCrmCcfVEdjux6pBM8MsB+KXbne/7lAoM=;
-	b=JTWZK//HXBRgJL0gfu2hvI0JWW1RuHzRrCbufCPGrrnexYRWn4/9XwL7s33WpV7byGIR
-	 bu1rfeV3hPD2aUngLfyVYkg9Wj9ppyPo1u/yJpkpOvguEseTxAG7nTxAM5YWhRRAguBcR
-	 jxVN+ljnWK/kGzjNCt2Spr8iRcYbxSL7BpHDmsI+LLvsqdSAZR5eQZrYeiPX1SBxjyv/5
-	 nlcjJs9gKHDJ1rLqg6/HC63UnygyAeJvMcex6qzLpLuCSWbdteVnXvvocWFGdsYmkL9wN
-	 3UN5wZKEMzmd1zbqBMsc/c13X5awDIojfea4+t1xk5fzygmgMUiEfjPIU1vjGodOZYg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=mUkDTENG;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=IaHwYDG7;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.35
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794311521;
+	b=R7Cv6R1f0VmVMjS4EFzMXLaNJAICXHSw/sJy89zeWu2fDrd8H9IGf+JBwzv42cRLBn1S
+	 jtU5d8Z3JBOoJwWFaN4EFYBz4mmtloZH/cWV8OU8pWNVENK5qgzzLssigkmfEwQOb/L1d
+	 ad3ZTbXAOYp7yLv269EcuVyZTYc447hjtBIGdqa2eu8eo5D7cGC12Xa1OUEbXj1glpF1V
+	 EiB/4nD1gZnKd67x/nathl9kR+1ACyWVfq+/89veDU+qWlHsg0fW7yPEAuEjhrx6e23TL
+	 aveo9X/frIk7pkAJ2ijZlg035GduMwZX/r3QEJ/jkFkOL65yj8yVTneZdjx24hUxGyw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794311521;
+	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
+	 X-Zmail-LocalSMTP:X-Zmail-RealSender:From:To:Cc:Subject:Date:
+	 Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
+	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
+	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
+	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
+	bh=4q4KITe/x0LR89wVeImCxXpGZNZhR+1TKC6XBD/Ac4g=;
+	b=ONuNGKNOvIDssLo3anzyrJ/xNFxCJW+bd0CqgGoRPRESJc8aL/xIGEqp/7Uo8WJfjWp6
+	 Mcyd+kobLgC09+ZjbQgwBodukEMqTFddVYrxKXQ25VpyDtsCMTtFk4m8fEc2VPlHh1Aiu
+	 IUdE5F/QJ9Pu6CSPtaeFSceAaXkOl1ZEzRwdiW4RjKC0e0Zjjib/HVgpO6WgQBeg2VQ/9
+	 +mi84w/GWdQvv134iY6Dy4DfG3+c4Lxk8D/k58zaRJFBxOI7HqSp2RQlC7ToGJe3IMPCy
+	 3DRVYvXTM0dLUUmhSuV9mu/GFEq9KOAHMste9noQJp1fZfKhb8d6KA13McIXVBOjz9A==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=sanechips.com.cn;
+	spf=pass smtp.mailfrom=sanechips.com.cn;
+	arc=none smtp.remote-ip=160.30.148.35
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FDF7606A31C
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 10:54:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4FDF7606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=mUkDTENG;
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=IaHwYDG7
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AA8ZBvq3849764
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 10:54:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	/GvGp0ikRhYCrmCcfVEdjux6pBM8MsB+KXbne/7lAoM=; b=mUkDTENGYogoUsvm
-	c5dhKSLCd9QM91OJxfv7P/41BMyzplzxuqEIQ4Jwfu5jYTWHF7U1Al+4NPkDOMmz
-	iga3w6m/DQz9x05Hu9jEWUPSVj0DQ+pww6XjtaK4BOzQJUUQzeMDbkvSWP1xCfQb
-	0cmmsd+uwojsqcaxuywdQYFC3RKSaQSJySWIjUGOp0+hQz/+wGFAqiNu1IAv2scU
-	DT56nbSTh7LM7nsybPDfJ7QOz1+gsMP0gKCTjtD8FAsMH8DKtMf/47ypSaKhclJ6
-	Ld69AdFzgun8lHVDOU8Z/NTQ4NFao5unLvq/FfX3ryDlH1sx3lKBGP4vLqhuDSO1
-	JmnEcA==
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4huyvwgfyk-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 10:54:56 +0000 (GMT)
-Received: by mail-pj1-f70.google.com with SMTP id 98e67ed59e1d1-3b0e00d7cc2so1782159a91.1
-        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 02:54:56 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794308096; cv=none;
-        d=google.com; s=arc-20260327;
-        b=ASyaLWNBMdAeVAWAyGbSon/gdzQsZnQCOsjxLanZN+4w0ft12RPOt0LdO6VXx0NINh
-         97qikSsn84tdT/nJU/rCvvbexQW1RDJM7IlquR+wy5sxo56yd70a4vjgv6h1HRZ+fuzN
-         gHnBHIbr93GnIC3Gy2LHdGX0iRMfD2NbJX1n8RJCY6kRG0UpJHBLQuJfmIkve8uHBhus
-         dX9xzJuqepL61fRpsLBubFRyS2RbwNEoSi3r9I7J2sqSlA4yoWwXe+ckOOiIqHgRGBQq
-         0zuhsObeduZBjxQt1jWx7seZUxaX7wx9SAackKUerUCJ98CEO5GmJhaSDvBEdZIsGne3
-         eHeA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=/GvGp0ikRhYCrmCcfVEdjux6pBM8MsB+KXbne/7lAoM=;
-        fh=OJc7KdQDK4xbbDg2Adzmg1XkCho4CR74PptimAB4AOE=;
-        b=MDUTKlD5JOPB8JEh+cTX1ntoabtSviOdlqvv+X/sz4DdG1XDAvjhC2jN521RHJIADc
-         dCapbn9ZiSJoI9c3zWFWaDM+N9lOx/v8vsgldAYeTSxPD15oukFc7wGPvzldoPjUcTj5
-         m7TR8Ovh5FhadVKxU0bWCagFuIOS3pmEPs4W0DqwqRF+VUSNQFQJX3Y+x6QvnTm3TQhd
-         kEjZ49P8WXpYnqLhbFsPIP69GWxBEPl3zNFec0ul5Q6njdv7A4RRgB3yGOseegT4+LiJ
-         HeTXJhAx3J+6KqbM/yOZT9SxUNMnL3xY1j4k/OB43/avdpl79iS9186W4g4sNgxG0j4O
-         WlfA==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1794308096; x=1794912896; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=/GvGp0ikRhYCrmCcfVEdjux6pBM8MsB+KXbne/7lAoM=;
-        b=IaHwYDG7Q3f4LH5ftWgBHRO432MqZUiq7xXRsDsPSRomjh+lgmXzS/SCFuVexatLO1
-         VfStD4vlV3Wp7FfjwGj+OAgecs3O6ExBVmL5D62WujaZLmrJR59L8ycwalxdik37e9VE
-         YO17OwLW/y71W6PCvTNf5L9d648yubIGaqKtySwO7IT5hTcPwMDZu8jlxilU8F7Ap5F4
-         GXE7LR6z4wN3VYm77fYC1dJCc05P0887snknN+nMoUqVI6KQq6BfqFsi5B9tIUIeEV/x
-         GH5SE+LBGAh5RvWO4gabMukH6Sy85N4T+tvT0BaZGs10QJgVDMAjsiwTEapE9/Di6Q2c
-         ICGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794308096; x=1794912896;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=/GvGp0ikRhYCrmCcfVEdjux6pBM8MsB+KXbne/7lAoM=;
-        b=spAuPVTRgt5bOpQpKUPSRiXu5tmf4DLGBvK3HiOFOQBghyap8z7eL9Vh0VH+3ifhk8
-         0N0F/mITuX7QBvAiFWffDe0kLonhJ7A/TRAw5tlWr40TzIQzOlFO9EEjFVjIAgkf/11u
-         7A+ooK78SsIxM5Q5wSzX1+/hMqoiRGh5R0zszZNMW17z7efrRdUS1JTyB6azFSFBtKDN
-         UZpsGvXvZXjdD/wHZvXA3hYrxQvCKPgTMEWjHt9hGwrJUuSrEAIuB8pH/dcmqPiYpCRJ
-         pSdkN4HJb3JYVPdofp7KuVYUxDjgGDZuW5j74Bxhp0PC/EDwFyindhx44GsORvvG3NQR
-         W8mw==
-X-Forwarded-Encrypted: i=1; AL+hErEHvA2vXHF4Aa077xQtCtHbTa83wyPPxciLLCxXqdjL52XIAYjOZBvAJvnSjv61Av431uMdFg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+nqQFVsWknHSCFxKLd3X/tCeFIevc0JYdfn3DOBEoEUHw7s7XG
-	6q+ILDWFYNXOf5xF1CJX0osRDtvhDgrHQVTQCLp8oGV1q8Fza+6YWtODw5vZOoAnk1OrNQUJfqz
-	MPUzQ7stATyY66LtyzO4tYeYKOC3szqRXIVYXEG6XeSRl959NugA5/r2sIFluUKypJuA5kt/f/m
-	N2wQsAcHeTTuLI9UlmMafFi5JePeLGBCpd
-X-Gm-Gg: AYBFou3bwJc2Wboua6P9gkfkyJxvDc6+g+Uq6BSk1tj1w8B21loSjq8h7o5KXZLj0Nx
-	+HwZ78S3mAVth51nkfAoJTpu/wcRbOZFj6chBv/nuePLm2A623aFbqdKQ6pqso07496iHmY0cWN
-	7BpHE3jAaeqpFo1lFhGHoNRhpZkrOZ/Z2f5k+/Ql5EDkMiuCxpjWCzbF/srw==
-X-Received: by 2002:a17:90a:e7d0:b0:3a8:5fd6:cb6 with SMTP id 98e67ed59e1d1-3b166a5fb0bmr2419102a91.0.1794308095847;
-        Tue, 10 Nov 2026 02:54:55 -0800 (PST)
-X-Received: by 2002:a17:90a:e7d0:b0:3a8:5fd6:cb6 with SMTP id
- 98e67ed59e1d1-3b166a5fb0bmr2419092a91.0.1794308095395; Tue, 10 Nov 2026
- 02:54:55 -0800 (PST)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 212AA606A330
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 11:51:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 212AA606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
+Received: from mse-fl2.zte.com.cn (unknown [10.5.228.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jP4kc0NQRz8XrrX;
+	Tue, 10 Nov 2026 19:51:52 +0800 (CST)
+Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
+	by mse-fl2.zte.com.cn with SMTP id 6AABpdZk005559;
+	Tue, 10 Nov 2026 19:51:39 +0800 (+08)
+	(envelope-from gong.shuai@sanechips.com.cn)
+Received: from ubuntu-35-gs (unknown [10.230.214.35])
+	by smtp (Zmail) with SMTP;
+	Tue, 10 Nov 2026 19:51:42 +0800
+X-Zmail-TransId: 3e816af3054502b-e4c51
+X-Zmail-LocalSMTP: 1
+X-Zmail-RealSender: gong.shuai@sanechips.com.cn
+From: Gong Shuai <gong.shuai@sanechips.com.cn>
+To: tanchi25@mails.ucas.ac.cn
+Cc: alex@ghiti.fr, andrew.jones@oss.qualcomm.com, anup@brainfault.org,
+        aou@eecs.berkeley.edu, atish.patra@linux.dev,
+        fangyu.yu@linux.alibaba.com, gong.shuai@sanechips.com.cn,
+        gsh517025@gmail.com, iommu@lists.linux.dev, jgg@ziepe.ca,
+        joro@8bytes.org, kevin.tian@intel.com, kvm-riscv@lists.infradead.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, palmer@dabbelt.com,
+        pbonzini@redhat.com, pjw@kernel.org, robin.murphy@arm.com,
+        seanjc@google.com, tomasz.jeznach@linux.dev, will@kernel.org,
+        wu.fei9@sanechips.com.cn, zhao.qingye@sanechips.com.cn
+Subject: Re: [RFC PATCH v2 9/9] iommu/riscv: Add riscv_iommu_attach_dev_nested
+Date: Tue, 10 Nov 2026 19:51:37 +0800
+Message-ID: <20261110115137.184160-1-gong.shuai@sanechips.com.cn>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261105144944.10193-1-tanchi25@mails.ucas.ac.cn>
+References: <20261105144944.10193-1-tanchi25@mails.ucas.ac.cn>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -127,75 +76,116 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261101082307.151957-1-gahing@gahingwoo.com> <6777074.j6PcuT4dK6@diego>
-In-Reply-To: <6777074.j6PcuT4dK6@diego>
-From: Ulf Hansson <ulf.hansson@oss.qualcomm.com>
-Date: Tue, 10 Nov 2026 11:54:43 +0100
-X-Gm-Features: AclHuK_tfQs_KED6YGEFdDQzYeq154VOUvxzh1aCGwTqlSdSoloobK9cAe7e-pc
-Message-ID: <CAPx+jO_gRtipR7iuh0D7G2Wi25GZoqFD1JHVbJNmhd1UyC3Bmg@mail.gmail.com>
-Subject: Re: [PATCH v15 00/15] accel/rocket: RK3576 NPU (RKNN) enablement
-To: =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        Jiaxing Hu <gahing@gahingwoo.com>
-Cc: tomeu@tomeuvizoso.net, robh@kernel.org, krzk+dt@kernel.org,
-        conor+dt@kernel.org, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, ulfh@kernel.org, p.zabel@pengutronix.de,
-        ogabbay@kernel.org, zhangqing@rock-chips.com, royalnet026@gmail.com,
-        abel.vesa@oss.qualcomm.com, sebastian.reichel@collabora.com,
-        sidong.yang@furiosa.ai, u.kleine-koenig@baylibre.com,
-        chaoyi.chen@rock-chips.com, diederik@cknow-tech.com,
-        alchark@flipper.net, leonard@lausen.nl, jeff.hugo@oss.qualcomm.com,
-        rfoss@kernel.org, dri-devel@lists.freedesktop.org,
-        linux-rockchip@lists.infradead.org, iommu@lists.linux.dev,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-GUID: 9ybf61xJD_i08TUHKtQGDJ89M0y6EgCm
-X-Proofpoint-ORIG-GUID: 9ybf61xJD_i08TUHKtQGDJ89M0y6EgCm
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEwMDA0MyBTYWx0ZWRfX5AnqdYTVhzex
- q8dacKk8Y9ux1F6p2fxoXwMzlFNX8kYgRT5v1zM3DZ6zYsBGHBuf88xeUh5kLvFQCb8LfgfQRfS
- XCNI4356LVbu7JNWksO5gaIRlTqAg5M=
-X-Authority-Analysis: v=2.4 cv=NNpAaE6g c=1 sm=1 tr=0 ts=6af2f800 cx=c_pps
- a=0uOsjrqzRL749jD1oC5vDA==:117 a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10
- a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
- a=eoimf2acIAo5FJnRuUoq:22 a=HKy5YsogUvdA2KhsgGYA:9 a=QEXdDO2ut3YA:10
- a=mQ_c8vxmzFEMiUWkPHU9:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEwMDA0MyBTYWx0ZWRfX4ajdTvc//PE3
- lGv7ZIfpZylaxHBqecDYavENsK3qv49nXl0prwr2yii8FRgMhGlZ59DCl46sVFAeOpjkwI2jlNE
- xKVamL2a0j8fYkoBwXIoTW5arG2A3aT5V6pwKX162p4pHvlQhPAwC+HVYp66IbB28lSQNPhUQqz
- 6g3SxkJXLxGsuuJJym2fqmwsYASXaW55Gdv2PFoISy+aJL0IhPei/c18/H87B4wI/Ko22R/HmkF
- OIsGUH0Qlsx4rfVBQoTOg5RbBwDE6m6NxfjDhQfccE+G1KNNRINhGVG4yGzWGrcMo18bl0W7cwy
- zTZSdgpRkQi4C+Ddi3yj7zNdhbjn9Hh7wGhV1OdPTvi0woXDXIawAPuhioEzKNEig5NPv0rqoIf
- ltRV+C88J81G+A82/ggBJcBnYY83qGIiaqn8jcAH72fhFPonuabmFyxbVkYQfRUUeBvv4RKqUkW
- mUDcAo6z7kJ5MY79mRg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-10_03,2026-11-06_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 lowpriorityscore=0 adultscore=0 phishscore=0 priorityscore=1501
- bulkscore=0 clxscore=1011 impostorscore=0 malwarescore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611100043
+X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
+Content-Transfer-Encoding: 8bit
+X-MAIL:mse-fl2.zte.com.cn 6AABpdZk005559
+X-TLS: YES
+X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
+X-SOURCE-IP: 10.5.228.133 unknown Tue, 10 Nov 2026 19:51:52 +0800
+X-CLEAN: YES
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 6AF30558.000/4jP4kc0NQRz8XrrX
 
-On Tue, Nov 3, 2026 at 11:39=E2=80=AFPM Heiko St=C3=BCbner <heiko@sntech.de=
-> wrote:
->
-> Hi Ulf,
->
-> Am Sonntag, 1. November 2026, 09:22:52 Mitteleurop=C3=A4ische Normalzeit =
-schrieb Jiaxing Hu:
-> > Ulf offered to take 7, 9 and 10.
->
-> I've now looked at the patches in question and they do look good to go.
-> So it would be nice, if you could pick those up, when you have a minute :=
--)
->
-> Thanks a lot
-> Heiko
->
->
+Hi Tan Chi,
 
-Patch 7, 9 and 10 applied for next, thanks!
+Thanks for your review and for pointing these out.
 
-Kind regards
-Uffe
+> Hi Shuai and Fei,
+> 
+> I noticed a potential issue with fixing the physical DC's PSCID to 0.
+> 
+> In QEMU, different VFIO devices can have separate stage-1 HWPTs while
+> sharing the same vIOMMU and stage-2 parent. This means two devices may
+> have different first-stage page table roots but the same host GSCID
+> and PSCID=0.
+> 
+> According to the RISC-V IOMMU specification, DC.ta.PSCID identifies
+> the first-stage address space when PDTV=0 and the first stage is not
+> Bare. Could this cause the physical IOMMU to reuse cached translations
+> across different stage-1 address spaces? Even broader invalidations
+> would not prevent such cache aliasing.
+
+You are right. We kept PSCID at zero as a simplification for the RFC,
+but this was based on a misunderstanding of the PSCID semantics. When
+PDTV=0 and stage 1 is not Bare, DC.ta.PSCID identifies the S1
+address space. Sharing it across different page tables can cause cached
+translations to alias.
+
+> 
+> There also seems to be a related issue in patch 6.
+> riscv_viommu_cache_invalidate() unconditionally forces PSCV=1 and
+> PSCID=0. However, an IOTINVAL.VMA with PSCV=0 also invalidates global
+> mappings, while PSCV=1 excludes them. This appears to narrow the
+> guest's requested invalidation scope and could leave stale global
+> translations cached.
+
+Agreed.
+
+> 
+> One possible approach might be to use the PSCID from the guest-provided
+> DC.ta when allocating the nested domain, and preserve the guest's PSCID
+> and PSCV settings during invalidation while substituting the host GSCID.
+> I'm not sure whether additional considerations are needed for PSCID
+> reuse or domain lifetime, though.
+
+Thanks for the suggestion. While analyzing this issue, we found that
+using the guest PSCID is the right direction, but preserving it alone
+is not sufficient when multiple vIOMMUs share the same host GSCID.
+Different vIOMMUs may have independent guest PSCID namespaces, so two
+vIOMMUs sharing an S2 parent may use the same guest PSCID for different
+S1 address spaces.
+
+My understanding is that the ultimate goal is to ensure that the
+(GSCID, PSCID) pair programmed into the physical DC uniquely identifies
+the correct nested address space, and therefore the cached translations
+belonging to it.
+
+So far, we have identified three possible approaches:
+
+  1. Share the S2 parent's GSCID and use the guest PSCID directly.
+
+     This requires PSCID uniqueness across all vIOMMUs sharing that S2
+     parent, so that different S1 address spaces cannot be assigned the
+     same (GSCID, PSCID) pair. This uniqueness can be provided by the
+     guest itself or through VMM/guest coordination.
+
+     The current ARM mainline model similarly uses the guest ASID directly
+     while inheriting the VMID from the S2 parent. For Linux guests, the
+     SMMUv3 driver's global ASID allocator can provide ASID uniqueness
+     across vSMMUs. The Linux RISC-V driver also uses a global PSCID
+     allocator. The main question is whether we want to rely on this
+     guest implementation property.
+
+  2. Use the guest PSCID directly, but allocate a separate host GSCID for
+     each vIOMMU.
+
+     This allows independent vIOMMUs to reuse the same guest PSCID without
+     aliasing, even when they share an S2 parent.
+
+     The proposed ARM series follows this model by moving VMID allocation
+     from the S2 domain to the vSMMU [1].
+
+  3. Share the GSCID and maintain a per-vIOMMU mapping from each guest
+     PSCID to a host-allocated PSCID.
+
+     AMD mainline uses an analogous model for DomID. It maintains a
+     per-vIOMMU gDomID-to-hDomID mapping and programs the mapped hDomID
+     into the physical DTE.
+
+Option 2 seems better because it gives each vIOMMU its own GSCID, which
+isolates the PSCID namespace of each vIOMMU without requiring a mapping
+table or relying on a guest implementation property such as a global
+PSCID allocator. Its main costs are additional GSCID consumption and the
+need to invalidate each vIOMMU's GSCID whenever the shared S2 parent
+changes. I would appreciate your thoughts on which approach we should
+take.
+
+[1] https://lore.kernel.org/lkml/05dd00dcb2f0d077f59bcbccac1820534ad7b5cf.1773949042.git.nicolinc@nvidia.com/
+
+Thanks,
+Shuai
+
+> 
+> Thanks,
+> Tan Chi
+> 
