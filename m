@@ -1,76 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.199
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.70
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794283731;
-	b=JBoLNtmSyYow4a0N6ZMo9rB9Edo3Az4miC8WZmfuvqi+JQ4uttxNb2M84MtokxUlGGHj
-	 bO6oOxungcX+VIDUJMz4mGvdQGk5CgKO1jU5dv39i2U4OP0vqO8tQAEKofRYXQON8pdTj
-	 6Te7js5aXUEeHwhc7qHUSj8/CZibA8941eIlyZR12PA2fo7qVbHSbRx4E+C+tpVjdj8yC
-	 e8fMYBb1wkDIzpzTpHstGlOoVXetvTPwQpVjkfOiq+w6ElzJ/rh/ZC1IJTz1gIn3+0Dka
-	 +ORkl/euB3zV7FEiBEbsO8C1Y7WKVv/PbgLkvLMZBf690WTnBBBYW7Y5NVC4Bnn/OaQ==
+	t=1794286928;
+	b=ti/R0SsUkYwY8HCm67IhwGFY+jyHKJ7DMmxn7IpuKVktM0rNFuJrkMs1ptt8KqD9Wwz+
+	 w76/azuTEL79UeZH4wiox/t14PnHv0iikZXM28NiYZYz9GDBcPIlsKHSVkjm7QNeIhdtp
+	 Ta+3Z+uTuFaBcpZRF1HI7qlc0ceKh//4RvjiRgBzyRgSfxncLAv+DMWSSEgsZ9U3NAyy8
+	 8lBXyvVVtzKHzhbJco5bKQQIOkoqlNpZlnJnOHnUceb7XgtkVLuxWJezZQSAEgZ2Qj36W
+	 lHgDGAOUBee7YFI6GkjKgYl1sAfcfVoiGFXZ0iwEP6q+j50K6K2Wf2LOi5CWYUZeGYQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794283731;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794286928;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:X-Mailer:Message-ID:Subject:From:To:Cc:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=0rub+xln4n/D2nMP5gbX7vqe3u4SS7wL4MYPrcjQOIM=;
-	b=0xgpGXPOQT5VgnLGoqiORtIPhIhvD/2IIv1I+Sf84w2033HlV7fz4qgyJRFd67lp+4rF
-	 YU1S3Njn20tvyrD9B9/7scXSUNbmORZxDgfpm73iugjtE4LIFOO9um79WXhv9D2stu04t
-	 Bx20glykzx9gJK5mtXgp7yGBDesTJiRFyjfUTykcUAWcMEDZnI6r/D6Ye+JhHxKCpIi7v
-	 A9/B4S5OxSkq+8h0Bbxhyz/Og/zKP7PoqcrNKXfzG7KB57tXWGNGD1BlhR6owwnrCzx3B
-	 Vid3TMz4hzUD1Jg3FwCJpZHxCsK1TmjBiUxUjpfQtOlZZ4TZqKCM1su7FiK1xaMa0bw==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
+	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=c0rc/quhwxN60DpjROoJEjycH9qA4Mz3L7opctQFNIY=;
+	b=JwivFgCdiSrAOh6Cx0AXoUNuanTtZUzTdfG4/utT5MofdMpfkr9qvgXoAP6d5iT9FaIG
+	 PL/BIT/D2H2Hm/7gPm6oT7aNcMIF+Ref1VIpNogYfSxxR5pbqgGKVsf6Ovj1igXrkQudS
+	 hCUTWOguudxMeYllsaHFQqW7zJUH/IIW2qFUobWCgmPXSXtUNnGwbJ6wRgBAjDf3KHyFQ
+	 SE2DbQE3OJb2XuKi2lkXJJ1thks4/3/wvISoqv4kFEcSsCZdSNgVcTzCWcArYGLsKXFgB
+	 LY9lQ4kHrBfvNeFZ3t+tHrPjIW/kkWlc1MPMmLPDLK1tlAM/X3RbAwzWKgGS5nDqaJg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=a8ardXlr;
-	arc=none smtp.remote-ip=209.85.214.199
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=i1JhkL6N;
+	arc=none smtp.remote-ip=209.85.218.70
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9DD660A5BD5
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 04:08:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C9DD660A5BD5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E4C4606A321
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 05:02:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E4C4606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--skhawaja.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=a8ardXlr
-Received: by mail-pl1-f199.google.com with SMTP id d9443c01a7336-2ed00709df0so15707445ad.0
-        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 20:08:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=i1JhkL6N
+Received: by mail-ej1-f70.google.com with SMTP id a640c23a62f3a-c42888c50c4so143122966b.0
+        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 21:02:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794283730; x=1794888530; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=0rub+xln4n/D2nMP5gbX7vqe3u4SS7wL4MYPrcjQOIM=;
-        b=a8ardXlrd/7qo+eLmWQdsBeOKQh7HuU3pyNf4TD8X0nP9N8zThNmPtBRz2NLsMF7Bw
-         GKd6yUSF+M15WKAvJi1r2o0uAPtRxMWrOEOYLKYzo7m4PckMRi92Mn88/k65g0/Gd5FZ
-         +nfTSQQ6XtlJ05/B0pSQhfigwwgBvPbyIaedNLPFigUCVU4czWq/kFK/KUnhPkW3XmbZ
-         XHegeHDkHpA0ZTl+3ALw6VqjTTOg3PBl2ym7iyrvfv0ZeuMk1U5w7H2JrSIiajom4zav
-         AJ+ctWk9NXR1+80rrIhVDEedel8uhAR3J0shISQsDCT9LcZkqXdHUwrVa8yyVLipcUvz
-         fjsw==
+        d=google.com; s=20260707; t=1794286926; x=1794891726; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=c0rc/quhwxN60DpjROoJEjycH9qA4Mz3L7opctQFNIY=;
+        b=i1JhkL6N0sGZy1OzqrAJ6/d9TFZC4fZKPh3qx7neDlMDSQep0sLYUR0u/nMYXPHnVf
+         r9h6dKGkd/2VkflKrsfV23IyEUqsbhNAK0hZhUz6e97phb9dK1t4+orrpqx0f2Sy/EVK
+         p9r9BR+IaiYN/SPi9XPXfemCt3ADQBuST0VeR1YKHYTot4ri82ht3tl4uUj6gdaPJr3W
+         79AvgCcxuxrKqNjgnUhL/yxFnzYnZG2MEIfKHZbVU9r3XXu0MjyyRlI/WdHEhLyF854Q
+         JBQ12XNxSuAqpxxIY19ukAIe5ifXshlr2THtNQQS0ktLD/2LTAnSUFVgo2th1EaIPm/C
+         we9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794283730; x=1794888530;
-        h=content-transfer-encoding:content-type:cc:to:from:subject
-         :message-id:references:mime-version:in-reply-to:date
+        d=1e100.net; s=20260707; t=1794286926; x=1794891726;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=0rub+xln4n/D2nMP5gbX7vqe3u4SS7wL4MYPrcjQOIM=;
-        b=gU8xVHgGix887nNEawKiXi1+AXppBxb8n5//HQmp6Plh51tjKOSrt+QunjaxKE3OVF
-         rLkzRiPwLQ2GPZq5/zz8FnuKCxCJ67/ick8YQt+BRrqxZhrcjc1ZkerFX5k/7KWtGSc5
-         VgP1Bj5AcpMqa5vjcAukcz9r9ehrARSp6LTZaoaEaw3nodepjbTvK8UkND/7B3t4VBVG
-         pQaeFPZCHIy2+kpB8GQGJCNsBz+zV9zlbHc0H/gl111XV3TjDsS0zVcMWPl5z5Pkipmx
-         OSVujCdrSgBD4EpGw9YioIKvMK+XUTLUHmolQONSNtdnkDwxS8QmZaH0RhDUH2Owyg6l
-         q3Jw==
-X-Forwarded-Encrypted: i=1; AL+hErGpPbOgUvLMO6/yAEjjcww3GK6B5i+4mYKMuLg3wTQMCxmLFyrNNRCd+FklV/74tTfMY37cWA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8i6sTC3YB5ffSt3qQlE/b1ptMkc9CaJE/vWqbLFyPXWfoBWSIR
-	aFFKieuytkz2ZYKn5TJU+o/Ub63HaFvvtqE1gEmtVDor46f2mnAA1ISsfn3NDN2u5vXUbgv9jOz
-	4ja7E9dVCt3hYbg==
-X-Received: from plim16.prod.google.com ([2002:a17:903:3b50:b0:2e3:bd2:38ec])
- (user=skhawaja job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:903:11d0:b0:2e9:a090:dd69 with SMTP id d9443c01a7336-2edb923d06dmr12701625ad.39.1794283729862;
- Mon, 09 Nov 2026 20:08:49 -0800 (PST)
-Date: Tue, 10 Nov 2026 04:08:23 +0000
-In-Reply-To: <20261110040828.1774343-1-skhawaja@google.com>
+        bh=c0rc/quhwxN60DpjROoJEjycH9qA4Mz3L7opctQFNIY=;
+        b=K8lK67NxcB5Mi82u08wINL8Xf0kj9w5BYlzMTWk0+cxFxbiCdBBD3AIfJ4p/kNycgc
+         GNvqe97XSl8p+9FvdCFVO3Leqt9SA9ynsoheZXkaGc3UNeJywjjWZImOqMyagHzRA1VT
+         BYyJtM5wC6IKHPa+pHlfLVFufQB3brmL85mrx3rhwOWqfXJjUE9OHMwJeCypK6HOJqeN
+         cg855kPtPWp8C7qHuzTI99nzrBAI66cpyv4MkcgCmK+JQi5IfuwPXtEyG0TPSPhietBq
+         m4nhdPMyVtCpoL90f7SJaOehvq1+am0KR5hlS5S79jvgaoBFH49dKXfT82O+ed9M00f3
+         8W9g==
+X-Forwarded-Encrypted: i=1; AL+hErHCGv8pb8ICfoquyh/SeUgI7GN0HRgGtfhlKKJndc2nDZ4AOxApW18Idu6VlDVJtIkZAkwLag==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9yu3dZjO8sJq+6RL70tn0Tx8TdL7hRjvF13lKx9n9oWIIfcOEo
+	XzEQ9E9aTTFWi3DJ/ZhDo5rCWT1ikgaDnhYpbkeZiOfqBvWxW/AGo4EQLh+jABYJSPam5SBlaj6
+	0LzK/8iUarHEzBtaLtA==
+X-Received: from ejai3.prod.google.com ([2002:a17:906:1143:b0:c3f:6b4b:bcf8])
+ (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:906:f58d:b0:c41:7e99:c6c2 with SMTP id a640c23a62f3a-c5049656cbamr129203766b.44.1794286925434;
+ Mon, 09 Nov 2026 21:02:05 -0800 (PST)
+Date: Tue, 10 Nov 2026 05:01:43 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -80,447 +76,207 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 Mime-Version: 1.0
-References: <20261110040828.1774343-1-skhawaja@google.com>
 X-Mailer: git-send-email 2.56.0.506.g506a7eabc5-goog
-Message-ID: <20261110040828.1774343-18-skhawaja@google.com>
-Subject: [PATCH v7 17/18] vfio/pci: Preserve the iommufd state of the vfio cdev
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	David Woodhouse <dwmw2@infradead.org>
-Cc: Samiullah Khawaja <skhawaja@google.com>, Pranjal Shrivastava <praan@google.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, 
-	Pratyush Yadav <pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	David Matlack <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
-	Vipin Sharma <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
+Message-ID: <20261110050202.529473-1-tarunsahu@google.com>
+Subject: [PATCH v4 00/19] kho, liveupdate: Add feature header for fine-grained
+ ABI compatibility
+From: Tarun Sahu <tarunsahu@google.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>, Mike Rapoport <rppt@kernel.org>, robin.murphy@arm.com, 
+	maz@kernel.org, will@kernel.org, David Matlack <dmatlack@google.com>, 
+	Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com, loganodell@google.com, 
+	arnd@arndb.de, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
+	Bjorn Helgaas <bhelgaas@google.com>, oupton@kernel.org, alex@shazbot.org, 
+	gle.com@google.com, pbonzini@redhat.com, 
+	Andrew Morton <akpm@linux-foundation.org>, kevin.tian@intel.com, joro@8bytes.org
+Cc: kvmarm@lists.linux.dev, linux-pci@vger.kernel.org, 
+	Pratyush Yadav <pratyush@kernel.org>, kexec@lists.infradead.org, kvm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	skhawaja@google.com, sagis@google.com, linux-arch@vger.kernel.org, 
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	Tarun Sahu <tarunsahu@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-If the vfio cdev is attached to an iommufd, preserve the state of the
-attached iommufd also. Basically preserve the iommu specific state of
-the device and also the attach iommu HW unit.
+This v4 of feature flags support for LUO and KHO is no longer an RFC.
+This has gone through multiple design changes over the past few months,
+and I thank everyone for providing their suggestions and reviewing it
+promptly. Below I talk briefly about the evolution of this series to set
+context and try to make it easy for everyone to review.
 
-Once the device and its iommufd attachment is preserved, it cannot be
-detached or attached to another IOAS until it is unpreserved.
+Initially, Logan proposed the feature flags in RFC v1 [1], which tried
+to solve the problem of dependency on the compatible string. Feature
+flags introduced finer-grained compatibility. This series had three
+fields: active, supported, and required. The number of flags was limited
+and didn't have flexibility, which reduced the complexity of the patch,
+but put a limitation on the extensibility of the features.
 
-VFIO PCI live update currently supports only devices in noiommu mode.
-Lift that restriction for IOMMU-backed devices that are preserved with
-their iommufd state.
+After LPC and a few design discussions, I proposed RFC v2 [2], which
+changed the flags to optional and required and converted the encoding to
+2 bits per feature instead of having two separate variables. But This still
+has the number of flags limited and fixed the feature header size to
+128 bytes. Though each serialized structure is being allocated in
+multiples of PAGE_SIZE (folio order = 0, 1, 2...), where 128 bytes is
+not a problem, it still carries two fundamental issues: limited feature
+flags, and a fixed 128-byte memory overhead for each preserved file. In
+the future, as there are plans for moving to KHO slab, the allocation
+for serialized structures can be significantly reduced and this 128-byte
+size will be a problem again.
 
-Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/vfio/device_cdev.c             |  10 ++
- drivers/vfio/pci/Kconfig               |  13 ++-
- drivers/vfio/pci/vfio_pci_liveupdate.c | 129 +++++++++++++++++++------
- drivers/vfio/pci/vfio_pci_priv.h       |  12 ++-
- include/linux/kho/abi/vfio_pci.h       |  15 ++-
- 5 files changed, 141 insertions(+), 38 deletions(-)
+Based on the RFC v2 discussion, this v4 (v3 [3] was intentionally ignored)
+moves to extensible feature flags with a variable-length flags[] array,
+avoiding the fixed 128-byte overhead and feature-count limit.
 
-diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
-index a53922adc388..edcec2824e18 100644
---- a/drivers/vfio/device_cdev.c
-+++ b/drivers/vfio/device_cdev.c
-@@ -316,6 +316,11 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *d=
-f,
- 	}
-=20
- 	mutex_lock(&device->dev_set->lock);
-+	if (iommufd_device_is_preserved(device->iommufd_device)) {
-+		ret =3D -EBUSY;
-+		goto out_unlock;
-+	}
-+
- 	if (attach.flags & VFIO_DEVICE_ATTACH_PASID)
- 		ret =3D device->ops->pasid_attach_ioas(device,
- 						     attach.pasid,
-@@ -374,6 +379,11 @@ int vfio_df_ioctl_detach_pt(struct vfio_device_file *d=
-f,
- 	}
-=20
- 	mutex_lock(&device->dev_set->lock);
-+	if (iommufd_device_is_preserved(device->iommufd_device)) {
-+		mutex_unlock(&device->dev_set->lock);
-+		return -EBUSY;
-+	}
-+
- 	if (detach.flags & VFIO_DEVICE_DETACH_PASID)
- 		device->ops->pasid_detach_ioas(device, detach.pasid);
- 	else
-diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-index 71289d8908f6..a9884d3ec864 100644
---- a/drivers/vfio/pci/Kconfig
-+++ b/drivers/vfio/pci/Kconfig
-@@ -44,12 +44,15 @@ config VFIO_PCI_IGD
- 	  To enable Intel IGD assignment through vfio-pci, say Y.
-=20
- config VFIO_PCI_LIVEUPDATE
--	bool "VFIO PCI support for Live Update in no-iommu mode"
--	depends on PCI_LIVEUPDATE && VFIO_NOIOMMU && VFIO_DEVICE_CDEV
-+	bool "VFIO PCI support for Live Update"
-+	depends on PCI_LIVEUPDATE && VFIO_DEVICE_CDEV
-+	depends on VFIO_NOIOMMU || IOMMU_LIVEUPDATE
- 	help
--	  Support for preserving devices bound to vfio-pci in no-iommu mode
--	  across a Live Update. It enables a device to continue working (DMA)
--	  while host kernel is going through a kexec live update.
-+	  Support for preserving devices bound to vfio-pci across a Live
-+	  Update. It enables a device to continue working (DMA) while host
-+	  kernel is going through a kexec live update. Devices in no-iommu
-+	  mode need VFIO_NOIOMMU, and IOMMU-backed devices need
-+	  IOMMU_LIVEUPDATE to preserve their IOMMU state.
-=20
- 	  If you don't know what to do here, say N.
-=20
-diff --git a/drivers/vfio/pci/vfio_pci_liveupdate.c b/drivers/vfio/pci/vfio=
-_pci_liveupdate.c
-index 00c008117259..86f532e4c9f1 100644
---- a/drivers/vfio/pci/vfio_pci_liveupdate.c
-+++ b/drivers/vfio/pci/vfio_pci_liveupdate.c
-@@ -9,15 +9,16 @@
- /**
-  * DOC: VFIO PCI Preservation via LUO
-  *
-- * VFIO PCI devices in noiommu mode can be preserved over a kexec using th=
-e Live
-+ * VFIO PCI devices can be preserved over a kexec using the Live
-  * Update Orchestrator (LUO) file preservation while keeping the device ru=
-nning
-  * and performing DMA across the kexec transition. This allows userspace (=
-such
-  * as a VMM or userspace driver) to transfer an in-use device to the next =
-kernel
-  * without resetting it.
-  *
-  * .. note::
-- *    This support is enabled by ``CONFIG_VFIO_PCI_LIVEUPDATE`` and is lim=
-ited
-- *    to devices in noiommu mode (see Restrictions below).
-+ *    This support is enabled by ``CONFIG_VFIO_PCI_LIVEUPDATE``. Devices i=
-n
-+ *    noiommu mode are supported. IOMMU-backed devices are supported when
-+ *    ``CONFIG_IOMMU_LIVEUPDATE`` is enabled (see Restrictions below).
-  *
-  * Usage Example
-  * =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-@@ -54,15 +55,22 @@
-  *
-  * The kernel imposes the following restrictions when preserving VFIO devi=
-ces:
-  *
-- *  * The device must be bound to the ``vfio-pci`` driver (not a variant d=
-river)
-- *    and registered in **noiommu** mode (``vfio.enable_unsafe_noiommu_mod=
-e=3D1``
-- *    with no IOMMU group attached to the device). Attempting to preserve =
-an
-- *    IOMMU-backed device fails with ``-EOPNOTSUPP``.
-+ *  * The device must be bound to the ``vfio-pci`` driver (not a variant d=
-river).
-+ *
-+ *  * A device in **noiommu** mode (``vfio.enable_unsafe_noiommu_mode=3D1`=
-` with
-+ *    no IOMMU group attached to the device) is preserved on its own.
-+ *
-+ *  * An IOMMU-backed device is preserved together with its iommufd state.=
- The
-+ *    device must be attached to a HWPT marked for preservation with
-+ *    ``IOMMU_HWPT_LIVEUPDATE_MARK_PRESERVE``, and the iommufd must be pre=
-served
-+ *    in the same session before the device. Otherwise preserving the devi=
-ce
-+ *    fails. After kexec, the device can only be retrieved if the iommufd =
-it
-+ *    was preserved with can be retrieved.
-  *
-  *  * The device file descriptor must be obtained by opening the VFIO char=
-acter
-- *    device (``/dev/vfio/devices/noiommu-vfioX``) and not via
-- *    ``VFIO_GROUP_GET_DEVICE_FD``, and ``VFIO_DEVICE_BIND_IOMMUFD`` must =
-have
-- *    completed on that file descriptor before it is preserved.
-+ *    device (``/dev/vfio/devices/vfioX`` or ``/dev/vfio/devices/noiommu-v=
-fioX``)
-+ *    and not via ``VFIO_GROUP_GET_DEVICE_FD``, and ``VFIO_DEVICE_BIND_IOM=
-MUFD``
-+ *    must have completed on that file descriptor before it is preserved.
-  *
-  *  * ``CONFIG_VFIO_PCI_ZDEV_KVM`` must not be enabled. This may be relaxe=
-d in
-  *    the future.
-@@ -189,6 +197,7 @@
- #include <linux/cleanup.h>
- #include <linux/errno.h>
- #include <linux/file.h>
-+#include <linux/iommufd.h>
- #include <linux/kexec_handover.h>
- #include <linux/kho/abi/vfio_pci.h>
- #include <linux/liveupdate.h>
-@@ -202,6 +211,8 @@
-=20
- #include "vfio_pci_priv.h"
-=20
-+MODULE_IMPORT_NS("IOMMUFD");
-+
- static bool vfio_pci_liveupdate_can_preserve(struct liveupdate_file_handle=
-r *handler,
- 					     struct file *file)
- {
-@@ -245,12 +256,11 @@ static int vfio_pci_liveupdate_preserve(struct liveup=
-date_file_op_args *args)
- 	struct vfio_pci_core_device *vdev;
- 	size_t saved_size =3D 0, total_size;
- 	struct pci_dev *pdev;
-+	u64 iommufd_token =3D 0;
-+	u32 flags =3D 0;
- 	u16 cfg_size;
- 	int err;
-=20
--	if (!vfio_device_is_noiommu(device))
--		return -EOPNOTSUPP;
--
- 	vdev =3D container_of(device, struct vfio_pci_core_device, vdev);
- 	pdev =3D vdev->pdev;
- 	cfg_size =3D pdev->cfg_size;
-@@ -263,56 +273,89 @@ static int vfio_pci_liveupdate_preserve(struct liveup=
-date_file_op_args *args)
- 	if (!vfio_file_is_bound_cdev(args->file))
- 		return -EINVAL;
-=20
-+	/*
-+	 * Devices that are not in noiommu mode are preserved together with
-+	 * their iommufd state, so that their DMA keeps being translated across
-+	 * kexec.
-+	 */
-+	if (!vfio_device_is_noiommu(device)) {
-+		err =3D iommufd_device_preserve(args->session,
-+					      device->iommufd_device,
-+					      &iommufd_token);
-+		if (err)
-+			return err;
-+
-+		flags |=3D VFIO_PCI_SER_IOMMUFD;
-+	}
-+
- 	if (vdev->pci_saved_state) {
- 		saved_size =3D pci_liveupdate_saved_state_ser_size(vdev->pci_saved_state=
-);
--		if (!saved_size)
--			return -EINVAL;
-+		if (!saved_size) {
-+			err =3D -EINVAL;
-+			goto err_iommufd_unpreserve;
-+		}
- 	}
-=20
- 	total_size =3D size_add(sizeof(*ser),
- 			      size_add(size_mul(2, cfg_size), saved_size));
--	if (total_size > U32_MAX)
--		return -EOVERFLOW;
-+	if (total_size > U32_MAX) {
-+		err =3D -EOVERFLOW;
-+		goto err_iommufd_unpreserve;
-+	}
-=20
- 	ser =3D kho_alloc_preserve(total_size);
--	if (IS_ERR(ser))
--		return PTR_ERR(ser);
-+	if (IS_ERR(ser)) {
-+		err =3D PTR_ERR(ser);
-+		goto err_iommufd_unpreserve;
-+	}
-=20
- 	if (saved_size) {
- 		void *dst =3D ser->data + 2 * (size_t)cfg_size;
-=20
- 		err =3D pci_liveupdate_serialize_saved_state(vdev->pci_saved_state,
- 							   dst, saved_size);
--		if (err) {
--			kho_unpreserve_free(ser);
--			return err;
--		}
-+		if (err)
-+			goto err_free;
- 	}
-=20
- 	err =3D pci_liveupdate_preserve(pdev);
--	if (err) {
--		kho_unpreserve_free(ser);
--		return err;
--	}
-+	if (err)
-+		goto err_free;
-=20
- 	ser->domain =3D pci_domain_nr(pdev->bus);
- 	ser->bdf =3D pci_dev_id(pdev);
- 	ser->cfg_size =3D cfg_size;
- 	ser->size =3D total_size;
--	ser->flags =3D vdev->reset_works ? VFIO_PCI_SER_RESET_WORKS : 0;
-+	ser->flags =3D flags;
-+	if (vdev->reset_works)
-+		ser->flags |=3D VFIO_PCI_SER_RESET_WORKS;
- 	ser->saved_state_size =3D saved_size;
- 	ser->reserved =3D 0;
-+	ser->iommufd_token =3D iommufd_token;
-=20
- 	args->serialized_data =3D virt_to_phys(ser);
- 	return 0;
-+
-+err_free:
-+	kho_unpreserve_free(ser);
-+err_iommufd_unpreserve:
-+	if (flags & VFIO_PCI_SER_IOMMUFD)
-+		iommufd_device_unpreserve(args->session, device->iommufd_device);
-+	return err;
- }
-=20
- static void vfio_pci_liveupdate_unpreserve(struct liveupdate_file_op_args =
-*args)
- {
-+	struct vfio_pci_core_device_ser *ser =3D phys_to_virt(args->serialized_da=
-ta);
- 	struct vfio_device *device =3D vfio_device_from_file(args->file);
-+	bool iommufd =3D ser->flags & VFIO_PCI_SER_IOMMUFD;
-+
-+	guard(mutex)(&device->dev_set->lock);
-=20
- 	pci_liveupdate_unpreserve(to_pci_dev(device->dev));
--	kho_unpreserve_free(phys_to_virt(args->serialized_data));
-+	kho_unpreserve_free(ser);
-+	if (iommufd)
-+		iommufd_device_unpreserve(args->session, device->iommufd_device);
- }
-=20
- static int vfio_pci_liveupdate_freeze(struct liveupdate_file_op_args *args=
-)
-@@ -486,6 +529,28 @@ vfio_pci_liveupdate_attach_incoming(struct vfio_pci_co=
-re_device *vdev,
- 	return 0;
- }
-=20
-+/*
-+ * A device preserved with its iommufd state can only be retrieved togethe=
-r
-+ * with that iommufd, so fetch it using the saved token and fail if it can=
-'t be
-+ * retrieved.
-+ */
-+static int vfio_pci_liveupdate_retrieve_iommufd(struct liveupdate_session =
-*s,
-+						const struct vfio_pci_core_device_ser *ser)
-+{
-+	struct file *file;
-+	int ret;
-+
-+	if (!IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE))
-+		return -EOPNOTSUPP;
-+
-+	ret =3D liveupdate_get_file_incoming(s, ser->iommufd_token, &file);
-+	if (ret)
-+		return ret;
-+
-+	fput(file);
-+	return 0;
-+}
-+
- static int vfio_pci_liveupdate_retrieve(struct liveupdate_file_op_args *ar=
-gs)
- {
- 	struct pci_saved_state *saved_state =3D NULL;
-@@ -513,7 +578,11 @@ static int vfio_pci_liveupdate_retrieve(struct liveupd=
-ate_file_op_args *args)
- 	vdev =3D container_of(device, struct vfio_pci_core_device, vdev);
- 	pdev =3D vdev->pdev;
-=20
--	if (!vfio_device_is_noiommu(device)) {
-+	if (ser->flags & VFIO_PCI_SER_IOMMUFD) {
-+		ret =3D vfio_pci_liveupdate_retrieve_iommufd(args->session, ser);
-+		if (ret)
-+			goto out_put_dev;
-+	} else if (!vfio_device_is_noiommu(device)) {
- 		ret =3D -EOPNOTSUPP;
- 		goto out_put_dev;
- 	}
-diff --git a/drivers/vfio/pci/vfio_pci_priv.h b/drivers/vfio/pci/vfio_pci_p=
-riv.h
-index 2549a5321fce..a5f6c0d3085f 100644
---- a/drivers/vfio/pci/vfio_pci_priv.h
-+++ b/drivers/vfio/pci/vfio_pci_priv.h
-@@ -194,10 +194,18 @@ vfio_pci_liveupdate_check_noiommu(struct vfio_pci_cor=
-e_device *vdev)
- {
- 	guard(mutex)(&vdev->vdev.dev_set->lock);
-=20
-+	/*
-+	 * A device preserved with its iommufd state keeps doing DMA through
-+	 * the restored IOMMU domain. The IOMMU core claims DMA ownership of its
-+	 * group when it restores the domain at boot, and nothing else can own
-+	 * the group before the device is opened, so an owned group means the
-+	 * device was restored and can keep running.
-+	 */
- 	if (vdev->liveupdate_kept_running &&
--	    !vfio_device_is_noiommu(&vdev->vdev)) {
-+	    !vfio_device_is_noiommu(&vdev->vdev) &&
-+	    !iommu_group_dma_owner_claimed(vdev->vdev.dev->iommu_group)) {
- 		pci_warn(vdev->pdev,
--			 "Stopping device kept running across Live Update: not in noiommu mode\=
-n");
-+			 "Stopping device kept running across Live Update: not in noiommu mode =
-and IOMMU state not restored\n");
- 		pci_clear_master(vdev->pdev);
- 		vdev->liveupdate_stopped_early =3D true;
- 	}
-diff --git a/include/linux/kho/abi/vfio_pci.h b/include/linux/kho/abi/vfio_=
-pci.h
-index 3ace2c9d8a4f..33b410d9a026 100644
---- a/include/linux/kho/abi/vfio_pci.h
-+++ b/include/linux/kho/abi/vfio_pci.h
-@@ -38,7 +38,17 @@
-  */
- #define VFIO_PCI_SER_RESET_WORKS	BIT(0)
-=20
--#define VFIO_PCI_SER_KNOWN_FLAGS	VFIO_PCI_SER_RESET_WORKS
-+/**
-+ * define VFIO_PCI_SER_IOMMUFD - Device was preserved with its iommufd sta=
-te.
-+ *
-+ * Set in &vfio_pci_core_device_ser.flags when the device was not in noiom=
-mu
-+ * mode and its iommufd state was preserved. The LUO token of the preserve=
-d
-+ * iommufd is stored in &vfio_pci_core_device_ser.iommufd_token.
-+ */
-+#define VFIO_PCI_SER_IOMMUFD		BIT(1)
-+
-+#define VFIO_PCI_SER_KNOWN_FLAGS	(VFIO_PCI_SER_RESET_WORKS | \
-+					 VFIO_PCI_SER_IOMMUFD)
-=20
- /**
-  * struct vfio_pci_core_device_ser - Serialized state of a single VFIO PCI
-@@ -54,6 +64,8 @@
-  * @saved_state_size: Size in bytes of the serialized &struct pci_saved_st=
-ate_ser
-  *                    blob stored in @data after ``config_map``, or 0 if n=
-one.
-  * @reserved: Reserved for future use; must be 0.
-+ * @iommufd_token: LUO token of the preserved iommufd, valid only when
-+ *                 ``VFIO_PCI_SER_IOMMUFD`` is set in @flags.
-  * @data: Variable-length payload containing, in order:
-  *        1. ``u8 vconfig[@cfg_size]`` =E2=80=94 VFIO virtualized config s=
-pace snapshot
-  *           captured during ``freeze()``.
-@@ -70,6 +82,7 @@ struct vfio_pci_core_device_ser {
- 	u32 flags;
- 	u32 saved_state_size;
- 	u32 reserved;
-+	u64 iommufd_token;
- 	u8 data[];
- } __packed;
-=20
---=20
+Along with this, as discussed on RFC v2, v4 uses separate bit ranges for
+required and optional flags (1 bit per feature). It builds on the
+consideration that a feature in its lifetime will either be required or
+optional; it can't be toggled into the other. In the future, if such a
+need arises, a new feature flag can be introduced to replicate the
+feature as optional or required, opposite to its ancestor flag.
+
+This new layout and encoding in memory is as follows:
+
+struct kho_ser_hdr {
+	u32 size;
+	u16 nr_required;
+	u16 nr_optional;
+	u64 flags[];
+}
+
+where,
+	flags[i] = (BIT_MAP(optional_features) << nr_required) |
+		   BIT_MAP(required_features)
+
+This series introduces the feature header in the KHO subsystem, and it
+is used by serialized structures across KHO and LUO. A few of the
+serialized structures embed other serialized structures directly. To
+keep the relative offsets of fields to be same across kernels, we cannot
+have an embedded serialized structure's size changed; otherwise, direct
+casting will not be possible. To solve this, this series converts those
+embedded structures to KHOSER_PTR, which points to the memory just after
+the parent serialized structure, and allocation and preservation happen
+for the total memory (parent_ser_size + embedded_ser_size).
+
+<Iamparent>_ser {
+	u64 a;
+	u64 b;
+	struct <Iamembedded>_ser e_ser;
+	u64 d;
+}
+	CONVERTS TO ===>
+
+<Iamparent>_ser {
+	u64 a;
+	u64 b;
+	DECLARE_KHOSER_PTR(e_ser, <Iamembedded>_ser);
+	u64 d;
+}
+
+There are only two such instances: kho_vmalloc and luo_file_set_ser.
+
+This series introduces kho_ser_hdr for the following structures:
+
+  - struct kho_kexec_metadata
+  - struct kho_vmalloc
+  - struct kho_block_header_ser
+  - struct luo_ser
+  - struct luo_session_ser
+  - struct luo_file_set_ser
+  - struct luo_file_ser
+  - struct luo_flb_header_ser
+  - struct luo_flb_ser
+  - struct pci_ser
+  - struct pci_dev_ser
+  - struct memfd_luo_ser
+  - struct memfd_luo_folio_ser
+
+If you notice, this also includes the PCI ser structures. PCI LUO
+support is merged in liveupdate/next, and this series is developed on
+top of it.
+
+Each serialized structure is preceded in memory by struct kho_ser_hdr
+and registered via DECLARE_KHO_SER(name, payload_size, nr_required,
+nr_optional). Both struct kho_kexec_metadata and struct pci_dev_ser are
+explicitly marked with __aligned(8) because their largest member is a
+32-bit integer, and 8-byte alignment is required by DECLARE_KHO_SER() so
+trailing feature payloads remain 8-byte aligned across 32-bit and 64-bit
+kernels.
+
+Also, Introduce DECLARE_KHO_SER_HDR(ser_name, fhdr) which is just the
+wrapper for struct kho_ser_hdr fhdr, This makes it clear
+To which ser_name, this fhdr belongs to.
+
+
+Series structure:
+  - Patch 1 removes __packed from KHO, LUO, and memfd ABI structures and
+    asserts their natural size and 8-byte alignment under CONFIG_64BIT.
+  - Patch 2 records entry_size in struct kho_block_header_ser so the
+    incoming kernel derives the entry stride from the block header.
+  - Patch 3 converts callers that embedded struct kho_vmalloc by value
+    (memfd_luo and test_kho) to reference it via DECLARE_KHOSER_PTR so
+    struct kho_vmalloc can grow independently.
+  - Patch 4 converts struct luo_session_ser to reference
+    struct luo_file_set_ser via DECLARE_KHOSER_PTR instead of embedding
+    it by value so both structures can grow independently.
+  - Patch 5 introduces struct kho_ser_hdr, DECLARE_KHO_SER(),
+    DECLARE_KHO_SER_HDR(), and the serialization/validation helpers in
+    include/linux/kho/abi/feature.h.
+  - Patches 6-18 add the feature header to each of the 13 KHO, LUO, PCI,
+    and memfd serialized structures in independent patches.
+  - Patch 19 adds a KUnit test suite (kho_feature) covering the feature
+    header helpers.
+
+[1] https://lore.kernel.org/all/20260903023452.721732-1-loganodell@google.com/
+[2] https://lore.kernel.org/all/20261021152527.375070-1-tarunsahu@google.com/
+[3] https://lore.kernel.org/all/20261026174217.603114-1-tarunsahu@google.com/
+
+Tarun Sahu (19):
+  liveupdate, kho: Remove __packed from KHO, LUO and memfd ABI
+    structures
+  kho: block: Record the entry size in the block header
+  kho, memfd_luo: Reference struct kho_vmalloc via serialized pointer
+  liveupdate: Reference struct luo_file_set_ser via serialized pointer
+  kho: Add feature header for fine-grained ABI compatibility
+  kho: kexec_metadata: Add the feature header
+  kho: vmalloc: Add the feature header
+  kho: block: Add the feature header to blocks
+  liveupdate: Add feature header to struct luo_ser
+  liveupdate: Add feature header to struct luo_session_ser
+  liveupdate: Add feature header to struct luo_file_set_ser
+  liveupdate: Add feature header to struct luo_file_ser
+  liveupdate: Add feature header to struct luo_flb_header_ser
+  liveupdate: Add feature header to struct luo_flb_ser
+  PCI: liveupdate: Add feature header to struct pci_ser
+  PCI: liveupdate: Add feature header to struct pci_dev_ser
+  mm: memfd_luo: Add feature header to struct memfd_luo_ser
+  mm: memfd_luo: Add feature header to struct memfd_luo_folio_ser
+  kho: Add KUnit test for the feature header helpers
+
+ MAINTAINERS                            |   1 +
+ drivers/pci/liveupdate.c               |  99 +++----
+ include/linux/kexec_handover.h         |  15 +-
+ include/linux/kho/abi/block.h          |  21 +-
+ include/linux/kho/abi/feature.h        | 372 +++++++++++++++++++++++++
+ include/linux/kho/abi/kexec_handover.h |  11 +-
+ include/linux/kho/abi/kexec_metadata.h |  17 +-
+ include/linux/kho/abi/luo.h            | 102 ++++---
+ include/linux/kho/abi/memfd.h          |  27 +-
+ include/linux/kho/abi/pci.h            |  66 ++---
+ include/linux/kho_block.h              |   8 +-
+ kernel/liveupdate/kexec_handover.c     |  98 ++++---
+ kernel/liveupdate/kho_block.c          | 172 +++++++++---
+ kernel/liveupdate/luo_core.c           |  43 +--
+ kernel/liveupdate/luo_file.c           |  58 ++--
+ kernel/liveupdate/luo_flb.c            |  69 +++--
+ kernel/liveupdate/luo_internal.h       |   9 +-
+ kernel/liveupdate/luo_session.c        |  55 +++-
+ lib/Kconfig.debug                      |  13 +
+ lib/test_kho.c                         |  38 ++-
+ lib/tests/Makefile                     |   1 +
+ lib/tests/kho_feature_kunit.c          | 184 ++++++++++++
+ mm/memfd_luo.c                         | 183 ++++++++----
+ 23 files changed, 1271 insertions(+), 391 deletions(-)
+ create mode 100644 include/linux/kho/abi/feature.h
+ create mode 100644 lib/tests/kho_feature_kunit.c
+
+-- 
 2.56.0.506.g506a7eabc5-goog
 
