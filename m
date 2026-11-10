@@ -1,101 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.44
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794314556;
-	b=KXUzwVfnKuXBkea1Ekzkj2TeiJoepA8uu3gfGiV7N3/DXx2Eq5WGCDWj3xaGhC+SN0Yk
-	 mWSq4KJANMcpAPtiuabM4Ap9ieOXj6U3PmbFY7rhrb09ZkYRf4Zh3HMmO47LhtRojFq2T
-	 +dtI8RW3TJPBGxReaUlmcih1d7w+vou9OvvX11pd9pgj2eFiH+TWzMjh2rH69cXvQQk/k
-	 rLUYNERnHjv++XLooasMZ92YRRUa7U0vogYTxOXnSHFaQ3TBMy5meV6RQUM/+KJXvbqYY
-	 ezXwJ5KXxYf8J9zZWorvKslUUcYSyjTSzyOsdlmk2qRZkmiTCUteHFfaJUPtSaZ1+5Q==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794314556;
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.170
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794314920;
+	b=N+RyFHeXgJ5kxfKA/rNHfhX4Bc3voLFjrrCLRf06eeTQb+kNLJEA+45J6/cgU1OIOWyF
+	 WLNQxcWhiW7W9DoxqdFF6K+aJNQ0AaWmevzlseVRSerm0sTmRCz+wz5owEVfZUQAiHEao
+	 4XlH4UvpYza2aIgYONaIBndHr+XZ7y2rLHEp1Y13s9w3qeXGgRpW6OM9JCN6lJT8f6Ryd
+	 hPZV8NE4y3w2VWKtDctZ1xXZKIpjT93LAT7IN/Y+trwI1ITh2c/poa098DX6jD/vmJFWI
+	 jvDGLMsj4fVa/k6wFcKipvze0hzmueHTtPyJHayM9Fh8rGs+yXht2Unb4b+R3Keie+Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794314920;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=10UT92sr+vRIVo9wGLbCQyuS9MFs0Bc9LyaIXMh/H9I=;
-	b=Jn96d8ihIo8iGbzqkx1V6fVqdo6szbO5LQ6Bx6v9ktdjuRlXnY8Yzn/tDRShbm1OndBm
-	 3D45B8zbiVEdgJcFYoQNwe9rYrPVgU9++y1HgHKUksgMftPAdGoaSyln1HjGvPwt4z6pb
-	 1IrAb5fhl5GkToMRLK/oU9tcguE96FBZ+60/GSBgobmhgza0DgHr5HTNpwnwPFjuoQWp5
-	 LdKBQykdGti6dpjC2pewnKHE3y4ekbREM8Kdwn3uNaWWClDKgnZz56hEvIlLerqG1Osfv
-	 AwcIymW1dKaH7LnODZKSr9jrsbr6xOletzaAI5KNCzmh5dy9EgN+hAnOwyqIvw0rjrQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=scd6oIhE;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.44
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
+	 Subject:From:To:Cc:X-Mailer:References:In-Reply-To;
+	bh=ZGhJU+UzWHjWLO2uCHz/PaJEOnJdiVDGFcBGvFMPQDM=;
+	b=f2Hvb978vbRyx5RQ0y2P/0xlfhKVuQmtnI03XttraOdfuCE1YAHxTOlT+pm3PCZyuVJP
+	 FJ5/M1DLKJxHmgaBguAMX/qwL4+roGeRC0xu2dgoyhdfWPx52QBMZurGOAV2OkeWY/fBf
+	 7K1wAMrr8gCcgi6IBSsN/tUAeUVvqWQV6zHkpbkRyxDhsfDSgJexVy7lRSbSPCLUZtEbJ
+	 5zDbpL7xvqKVnuhgz/+lygzU0noSVi+QIe1xGgzRttgqxqIeIOcnMEKck5ZVl54kUVyEy
+	 1iPi07+Co37A9w6DWEgF5/OrolSFKhTvcc68Ne5iUkZ/H++lc5hGrEuinFci4hDKx9g==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=soleen.com;
+	spf=pass smtp.mailfrom=soleen.com;
+	dkim=pass header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=clbGGEAN;
+	arc=none smtp.remote-ip=209.85.221.170
+Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56401606A321
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 12:42:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 56401606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687C5606A33B
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 12:48:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 687C5606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=scd6oIhE
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-91ef011e338so9614556d6.1
-        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 04:42:36 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794314555; cv=none;
-        d=google.com; s=arc-20260327;
-        b=raa2RpxEKQW2VL8XGU8JgpxGcucmDPYXl4VeF3Bo4fB5nmz8TDPRQ905UZvgFCgJKW
-         0MqPVpXmk49u84snrQz2DyICrHK+v4JfrV//QA7EHQ2qrTkOHgh6wDFj2/YtbHUmHAVJ
-         WmHg2es9A24zAV/Wl2NfqEPUyFAFHI6IMshp0Wle8jLeuSqCl6FETK6aFkFhE/6lcMYU
-         QS2gZQx+9CGO84dD7gttfbPsIrFIbnR97rVu9cap3osf7u97Pz38ZNx2ThsYxfPhl2Cc
-         VKmTscJtqbsSOj1EgXmYMU6tDSwf4WZ7BRACD+f4iPxdjGm+/mjYIrCyXtuOFMc+ez8o
-         XMzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=10UT92sr+vRIVo9wGLbCQyuS9MFs0Bc9LyaIXMh/H9I=;
-        fh=S1kAMmqiy6Lq7SjoAcy1tqQSahwwwHWLKEwsKVTwu+I=;
-        b=LdKrtsJHX/uGkjTfe7PoUU95uAxQ1ZpUYhriSAqa++XitCMB9hf8GFF+1yVW6CKtlZ
-         +5SbbdVRiQSiVeG7cHwGgBpEefpJn6oCWAm5oyUQ40mOj3G/DNOvI6K+irsFsg+QSowm
-         IierXiCTEpTKrS3y9bUHIwYSPPif51N0ftIcDDie3jbtR5l3LHjb+wbjGHD4V5VC3XVs
-         ZlWOK4PAKtR+CUGKTfYDyLk1KWvOFEoHyyOw2Ho7/CFQR89nUnzAW9wpN/nHp10o1hVY
-         gcAQe9z4E70fGo3X9WapaUnsj8qN+QE8waLZXEne8RFGQERfQOk3vDrYKyUSKTmXVBRM
-         5HDQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=clbGGEAN
+Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-5eaaa9b1591so1304079e0c.3
+        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 04:48:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794314555; x=1794919355; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=10UT92sr+vRIVo9wGLbCQyuS9MFs0Bc9LyaIXMh/H9I=;
-        b=scd6oIhE/6tSXCAeyGzxLBFuDC23JzowlxvoYM6Mg7s4qpQOh9+7bKhpLsWuHMho0H
-         C+ePsG39A2j4xPqHCLBYbxg2UFhJPVdX4OvILPdkyPH3DovcL2IXUNsvDZhjMsgPbkYG
-         odJm/NiSqGH+UJZxcjaXjJV9PJs/kYb0VC/ZK94Sm9PdXLTaku+JMWWs3yct4rsxYAj9
-         HuIBqbh0KKj2fMzPK+tJntDlG9oCC40K+mdAPsLXDOc7VB4/vy9p0H9YFMz1o14lWsxH
-         9SSBeD9mBf9GjC1wbBdc/5aNE1XvnCxX9cavSNoLbSsYPMLGZ+hWqrzKxQOLWCeDDSVh
-         5MBw==
+        d=soleen.com; s=google; t=1794314918; x=1794919718; darn=lists.linux.dev;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=ZGhJU+UzWHjWLO2uCHz/PaJEOnJdiVDGFcBGvFMPQDM=;
+        b=clbGGEANfZAEWJXD1/XDNlzWqbb4YGqFw7DHTl1slJ/9ueE7tnmhYfciKjMvuCAbAm
+         ubLJ2R0HGk4vHtEfyZJlbOiapWAUeTenHGWTHXV31rXlQCFAz1SxIdyQ6JL7vnS84gp2
+         AY1tuitH4Srgp3frc9nKNSwSRkZeBObroFsbJXrfr8MgbMEL7E7DoXduu3Hw0JjTeP+V
+         3lvf4fOMLVaA68oxzv7zDwHm9YEkpmFTt2FcNEeG9L2mg0q5w6tRBv9n0O0/ukrMcEAK
+         HNauf1lTDjtwQYt2YRETDJsHlkHV7kxhTb1imqCNM8eA4avwYCa9ub/rAC+pDvf1iO+S
+         l0kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794314555; x=1794919355;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
+        d=1e100.net; s=20260707; t=1794314918; x=1794919718;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=10UT92sr+vRIVo9wGLbCQyuS9MFs0Bc9LyaIXMh/H9I=;
-        b=Q8b+fy500dBDgXup2Gybz5+vjrWlpghOf4uqJvaZGv/jTsYMkB7xaHiBSjzwSim0cU
-         JjB2CJ3zOnMw5oAS0rWvyR9nURJERcUlVd1Qlltsql0bGY5L5Cxmloa7lUiqdYFzo10z
-         RdgdfZgYUKIXu3CZJMIwi5nvJOISPDw0xubBEnYhCJuH84xxmgmVKuWIPchxGMmU7H3e
-         h4TRqI0SVCNqQNhDop3KQjv2TEwqqk8ZFbsz++xZI6//Uqn30TWdzO3Afen02i3YOZFV
-         6rTMbZFdEXkl/xeZVJh9W9O4GvgTr9MgmKpSkf37nKcLMg1zL7ZKmfGvjsh00ESdwtsm
-         O20w==
-X-Forwarded-Encrypted: i=1; AL+hErEYVPLMejZodkfsl0bOuTBjn/Xybhrk4YWt3dCXNW6D+iezZI7Q3CjAJ2iNkJiSLDChZQ2WlQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9JBhv4dLZTtvXOlTE3bJ5JqUHndoHdil/m6J/756Prc+9673+z
-	DA8Yat7YjA+nlc/y9BlpyIWlSKZnzridH8b8+ZMWGJCZYTfrKdRPZ7aRKLPc18PaddU1o5dYO+n
-	wtK6p087MyNSLN9KOT7B0Z61GleanjYo=
-X-Gm-Gg: AYBFou08X8ZuaK0EEFpTOwWPCNbnNvLVCghmZlChTV8vpkjIjzOrtx23S623LlzvOzb
-	O/HGkRpnHiI92hfjEEwLzYihbWQpwQLtkW8OYBZ6JPFmy2RbfkwyU2YmU9xGLv9Vmk9ZH9ugcmL
-	2huXahnJbywaiFSaAZBWXw7c52qfSMDPLMYEgKH+L8HSCfXoKipZT0OH5iwIEE50msHQuC9O16c
-	b48ybLalLj2Qw1sxTJIttzcsBhDzW0W1jw/gEMuB1BB/yFJ1iCrI7YsYL7b/w6Stty9Xw+pdzQG
-	b4FMypIQB2ONCHfzDVekTUOZPn/wXeNsTLVYhSnuwzBVN5++9CAt+pds5Y1LgXyjBsamYb/J4j7
-	ybkF1La+54zKxJ1ry03O6/ygPs0J8IwyDGXkeqNXncHIuHs/oMyAfBMz9G+f2jq4J03PmlrdvLm
-	1vqnXaNQGuBUWFcyplPvkJ
-X-Received: by 2002:a05:620a:461f:b0:93e:c12c:f137 with SMTP id
- af79cd13be357-9479f368c54mr360445785a.82.1794314555301; Tue, 10 Nov 2026
- 04:42:35 -0800 (PST)
+        bh=ZGhJU+UzWHjWLO2uCHz/PaJEOnJdiVDGFcBGvFMPQDM=;
+        b=ybmdl/W7a6A+sB3bjBDtKXpiQ1bdgTSabS3XtVwkHB78DF7RWT4GN6yj4MM3R9Tim6
+         uGXyukEZpej4l2lR4M8PzGj51KyRYNObWSYDnOpKZC/dcukdaCmgvQ/+TVlzsB0AGxbr
+         V48yo8Ji6Gm7a/wMGBPDMkG7NK+ef/7Ls+zQf/QwarZxGhwSArjiG4ISPhp5b3/3VeVV
+         4wHOQ0JbUGE7+VghT25mVN/VJtJW/6iCixk07KZCfgU4Pqos8fjLHWi4ZqrXTAMHSE5k
+         sZpe2754sf6JmJRN1550Cc9bgWU+UCqWO/oxfbSmO1JsoW6d/Lu200o/XRky7Is1hSbV
+         +Sjw==
+X-Forwarded-Encrypted: i=1; AL+hErE0FylkJiQIKQqDQlchzLSCm7+dGwkYJzYPGq5iBgpEFCR9sUJLLAFs3i6sSXFGKZSpqy8BOA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9XnZYlMOJNZHUICcEdyA8UKAumHyfTwZAu7f1d7mZ9XelSimDT
+	UxTJUMu3a+56nRcDW0xrX3rppuUXxnurNMzi/lQERjFWVQ3FQUZmpanmPp+sbPOOr+0=
+X-Gm-Gg: AYBFou0tTfh00NwBumq/7QKNVcckfCgs9VSySSJzD3FAKJ/cib+RWBUHhSjvGWvyFeF
+	uxOLAU4g9oCh6w7A+/CVU6RwTicYVgUcriArKblqfiqF6T6iRtCToRHRjK8c8cHVuiQUEvWUQSO
+	bAPxbvTitbmHiULmP/VWLAVTUNfD9ogOLJaSlHbxFdkFuY1DNB0SWa/V38sPDVjxv8XcUi806a+
+	1vQpTktsI1p6wwE1U14VZSEbYhdvaEOcaAQMtDfDzmS7HOw8xrLmeRVEqzRS+h4BzJejF51rjwl
+	UhEz7jZwHroNKuLGoa8Ijer1YtesKiE/KHlUZA+/I2hh73avXCoPE1fzHFzZAJSQ68YodgmdVTL
+	YGVUKIiOLhit6C9frYqYAlw0M+a4mAEhc/XXDGfbI8M7T2yaolIgBzAyMJekOofbzv5K8k1q8L6
+	V84pM58V9k7Yo3grCMXAv+9LLeG38PyUhCa6T2sDGw4duD6qFyjmI7pY0/Tb7CUeUaL++8nHkIn
+	4BYb8oAxyc3meGM0RWO1z3YF4rDq51kWmgAp3MEiQIzkKDXhe2tLNzPaOp0MpD6Mp3mC7KwY3f1
+	FxBsgOH+twrEWWwwOClyGmjWVOzARPlM9X1cPp67bmWyph2ondHtMqnw+YeNtt5dvlgFAJmHgIZ
+	BmTPH9W6VoPAMC+ka8xa/uW449rPhjE0Arp23cBIlCF+Z4EeJP4tm
+X-Received: by 2002:a05:6122:32ce:b0:5ea:b972:1403 with SMTP id 71dfb90a1353d-5ee0cf152b1mr755444e0c.3.1794314918133;
+        Tue, 10 Nov 2026 04:48:38 -0800 (PST)
+Received: from localhost (64.167.245.35.bc.googleusercontent.com. [35.245.167.64])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ee0c5fd00esm1555554e0c.16.2026.11.10.04.48.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Nov 2026 04:48:37 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,56 +88,225 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-References: <CGME20261110094848eucas1p2577d7a3c60643a040e599dfa1bf97f08@eucas1p2.samsung.com>
- <20261110094830.2081847-1-m.szyprowski@samsung.com> <20261110094830.2081847-3-m.szyprowski@samsung.com>
-In-Reply-To: <20261110094830.2081847-3-m.szyprowski@samsung.com>
-From: Max Filippov <jcmvbkbc@gmail.com>
-Date: Tue, 10 Nov 2026 04:42:23 -0800
-X-Gm-Features: AclHuK-FeNynpA1_RJvncVNma0nOMx7dW4op-Ljg-ln5a78S2ORxIIsRcrITnr8
-Message-ID: <CAMo8BfKENmH3rZU5jyCdVOBzRAQ+KBJmVyjEWG97XYxBNaZ=qQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/7] xtensa: handle highmem pages in arch_dma_prep_coherent()
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@infradead.org>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>, 
-	Shrikanth Hegde <sshegde@linux.ibm.com>, Chris Zankel <chris@zankel.net>
-Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 10 Nov 2026 07:48:36 -0500
+Message-Id: <DMRJJX2ZSYQT.2U1TTBGE7R4RA@soleen.com>
+Subject: Re: [PATCH v4 00/19] kho, liveupdate: Add feature header for
+ fine-grained ABI compatibility
+From: "Pasha Tatashin" <pasha.tatashin@soleen.com>
+To: "Tarun Sahu" <tarunsahu@google.com>, "Pasha Tatashin"
+ <pasha.tatashin@soleen.com>, "Mike Rapoport" <rppt@kernel.org>,
+ <robin.murphy@arm.com>, <maz@kernel.org>, <will@kernel.org>, "David
+ Matlack" <dmatlack@google.com>, "Alexander Graf" <graf@amazon.com>,
+ <seanjc@google.com>, <jgg@nvidia.com>, <loganodell@google.com>,
+ <arnd@arndb.de>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, "Bjorn
+ Helgaas" <bhelgaas@google.com>, <oupton@kernel.org>, <alex@shazbot.org>,
+ <gle.com@google.com>, <pbonzini@redhat.com>, "Andrew Morton"
+ <akpm@linux-foundation.org>, <kevin.tian@intel.com>, <joro@8bytes.org>
+Cc: <kvmarm@lists.linux.dev>, <linux-pci@vger.kernel.org>, "Pratyush Yadav"
+ <pratyush@kernel.org>, <kexec@lists.infradead.org>, <kvm@vger.kernel.org>,
+ <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+ <skhawaja@google.com>, <sagis@google.com>, <linux-arch@vger.kernel.org>,
+ <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+X-Mailer: aerc 0.22.0-39-g5d7784875be2
+References: <20261110050202.529473-1-tarunsahu@google.com>
+In-Reply-To: <20261110050202.529473-1-tarunsahu@google.com>
 
-On Tue, Nov 10, 2026 at 1:48=E2=80=AFAM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
+On Tue Nov 10, 2026 at 12:01 AM EST, Tarun Sahu wrote:
+> This v4 of feature flags support for LUO and KHO is no longer an RFC.
+> This has gone through multiple design changes over the past few months,
+> and I thank everyone for providing their suggestions and reviewing it
+> promptly. Below I talk briefly about the evolution of this series to set
+> context and try to make it easy for everyone to review.
 >
-> arch_dma_prep_coherent() performs the cache maintenance on the address
-> returned by page_address(). xtensa with CONFIG_HIGHMEM uses
-> HASHED_PAGE_VIRTUAL, so page_address() returns NULL for a highmem page
-> that is not kmapped, and the cache operation then works on the virtual
-> range starting at 0 instead of the buffer, leaving any dirty cache lines
-> of the buffer in place.
+> Initially, Logan proposed the feature flags in RFC v1 [1], which tried
+> to solve the problem of dependency on the compatible string. Feature
+> flags introduced finer-grained compatibility. This series had three
+> fields: active, supported, and required. The number of flags was limited
+> and didn't have flexibility, which reduced the complexity of the patch,
+> but put a limitation on the extensibility of the features.
 >
-> Highmem pages do reach this function: dma_alloc_contiguous() can return
-> a highmem CMA page, which dma_direct_alloc() handles by forcing the remap
-> path and calling arch_dma_prep_coherent() on that page before creating
-> the uncached mapping.
+> After LPC and a few design discussions, I proposed RFC v2 [2], which
+> changed the flags to optional and required and converted the encoding to
+> 2 bits per feature instead of having two separate variables. But This sti=
+ll
+> has the number of flags limited and fixed the feature header size to
+> 128 bytes. Though each serialized structure is being allocated in
+> multiples of PAGE_SIZE (folio order =3D 0, 1, 2...), where 128 bytes is
+> not a problem, it still carries two fundamental issues: limited feature
+> flags, and a fixed 128-byte memory overhead for each preserved file. In
+> the future, as there are plans for moving to KHO slab, the allocation
+> for serialized structures can be significantly reduced and this 128-byte
+> size will be a problem again.
 >
-> Fix this by reusing do_cache_op(), which the arch_sync_dma_for_*() hooks
-> already use and which maps highmem pages one page at a time with
-> kmap_atomic(). For lowmem pages it does a single cache operation over
-> the whole range, so the behaviour is unchanged there. A small wrapper
-> is needed because __flush_invalidate_dcache_range() is a macro on cores
-> with a write-through data cache.
+> Based on the RFC v2 discussion, this v4 (v3 [3] was intentionally ignored=
+)
+> moves to extensible feature flags with a variable-length flags[] array,
+> avoiding the fixed 128-byte overhead and feature-count limit.
 >
-> Fixes: 0f665b9e2a6d ("xtensa: use the generic uncached segment support")
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  arch/xtensa/kernel/pci-dma.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
+> Along with this, as discussed on RFC v2, v4 uses separate bit ranges for
+> required and optional flags (1 bit per feature). It builds on the
+> consideration that a feature in its lifetime will either be required or
+> optional; it can't be toggled into the other. In the future, if such a
+> need arises, a new feature flag can be introduced to replicate the
+> feature as optional or required, opposite to its ancestor flag.
+>
+> This new layout and encoding in memory is as follows:
+>
+> struct kho_ser_hdr {
+> 	u32 size;
+> 	u16 nr_required;
+> 	u16 nr_optional;
+> 	u64 flags[];
+> }
+>
+> where,
+> 	flags[i] =3D (BIT_MAP(optional_features) << nr_required) |
+> 		   BIT_MAP(required_features)
+>
+> This series introduces the feature header in the KHO subsystem, and it
+> is used by serialized structures across KHO and LUO. A few of the
+> serialized structures embed other serialized structures directly. To
+> keep the relative offsets of fields to be same across kernels, we cannot
+> have an embedded serialized structure's size changed; otherwise, direct
+> casting will not be possible. To solve this, this series converts those
+> embedded structures to KHOSER_PTR, which points to the memory just after
+> the parent serialized structure, and allocation and preservation happen
+> for the total memory (parent_ser_size + embedded_ser_size).
+>
+> <Iamparent>_ser {
+> 	u64 a;
+> 	u64 b;
+> 	struct <Iamembedded>_ser e_ser;
+> 	u64 d;
+> }
+> 	CONVERTS TO =3D=3D=3D>
+>
+> <Iamparent>_ser {
+> 	u64 a;
+> 	u64 b;
+> 	DECLARE_KHOSER_PTR(e_ser, <Iamembedded>_ser);
+> 	u64 d;
+> }
+>
+> There are only two such instances: kho_vmalloc and luo_file_set_ser.
+>
+> This series introduces kho_ser_hdr for the following structures:
+>
+>   - struct kho_kexec_metadata
+>   - struct kho_vmalloc
+>   - struct kho_block_header_ser
+>   - struct luo_ser
+>   - struct luo_session_ser
+>   - struct luo_file_set_ser
+>   - struct luo_file_ser
+>   - struct luo_flb_header_ser
+>   - struct luo_flb_ser
+>   - struct pci_ser
+>   - struct pci_dev_ser
+>   - struct memfd_luo_ser
+>   - struct memfd_luo_folio_ser
+>
+> If you notice, this also includes the PCI ser structures. PCI LUO
+> support is merged in liveupdate/next, and this series is developed on
+> top of it.
+>
+> Each serialized structure is preceded in memory by struct kho_ser_hdr
+> and registered via DECLARE_KHO_SER(name, payload_size, nr_required,
+> nr_optional). Both struct kho_kexec_metadata and struct pci_dev_ser are
+> explicitly marked with __aligned(8) because their largest member is a
+> 32-bit integer, and 8-byte alignment is required by DECLARE_KHO_SER() so
 
-Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
+I do not believe we need __aligned(8), because the struct immediately=20
+follows the newly introduced kho_ser_hdr, which is 8-byte aligned.=20
+However, we should verify that the combined size (header + payload)=20
+is 8-byte aligned.
+
+> trailing feature payloads remain 8-byte aligned across 32-bit and 64-bit
+> kernels.
+>
+> Also, Introduce DECLARE_KHO_SER_HDR(ser_name, fhdr) which is just the
+> wrapper for struct kho_ser_hdr fhdr, This makes it clear
+> To which ser_name, this fhdr belongs to.
+>
+>
+> Series structure:
+>   - Patch 1 removes __packed from KHO, LUO, and memfd ABI structures and
+>     asserts their natural size and 8-byte alignment under CONFIG_64BIT.
+>   - Patch 2 records entry_size in struct kho_block_header_ser so the
+>     incoming kernel derives the entry stride from the block header.
+>   - Patch 3 converts callers that embedded struct kho_vmalloc by value
+>     (memfd_luo and test_kho) to reference it via DECLARE_KHOSER_PTR so
+>     struct kho_vmalloc can grow independently.
+>   - Patch 4 converts struct luo_session_ser to reference
+>     struct luo_file_set_ser via DECLARE_KHOSER_PTR instead of embedding
+>     it by value so both structures can grow independently.
+>   - Patch 5 introduces struct kho_ser_hdr, DECLARE_KHO_SER(),
+>     DECLARE_KHO_SER_HDR(), and the serialization/validation helpers in
+>     include/linux/kho/abi/feature.h.
+>   - Patches 6-18 add the feature header to each of the 13 KHO, LUO, PCI,
+>     and memfd serialized structures in independent patches.
+>   - Patch 19 adds a KUnit test suite (kho_feature) covering the feature
+>     header helpers.
+>
+> [1] https://lore.kernel.org/all/20260903023452.721732-1-loganodell@google=
+.com/
+> [2] https://lore.kernel.org/all/20261021152527.375070-1-tarunsahu@google.=
+com/
+> [3] https://lore.kernel.org/all/20261026174217.603114-1-tarunsahu@google.=
+com/
+>
+> Tarun Sahu (19):
+>   liveupdate, kho: Remove __packed from KHO, LUO and memfd ABI
+>     structures
+>   kho: block: Record the entry size in the block header
+>   kho, memfd_luo: Reference struct kho_vmalloc via serialized pointer
+>   liveupdate: Reference struct luo_file_set_ser via serialized pointer
+>   kho: Add feature header for fine-grained ABI compatibility
+>   kho: kexec_metadata: Add the feature header
+>   kho: vmalloc: Add the feature header
+>   kho: block: Add the feature header to blocks
+>   liveupdate: Add feature header to struct luo_ser
+>   liveupdate: Add feature header to struct luo_session_ser
+>   liveupdate: Add feature header to struct luo_file_set_ser
+>   liveupdate: Add feature header to struct luo_file_ser
+>   liveupdate: Add feature header to struct luo_flb_header_ser
+>   liveupdate: Add feature header to struct luo_flb_ser
+>   PCI: liveupdate: Add feature header to struct pci_ser
+>   PCI: liveupdate: Add feature header to struct pci_dev_ser
+>   mm: memfd_luo: Add feature header to struct memfd_luo_ser
+>   mm: memfd_luo: Add feature header to struct memfd_luo_folio_ser
+>   kho: Add KUnit test for the feature header helpers
+>
+>  MAINTAINERS                            |   1 +
+>  drivers/pci/liveupdate.c               |  99 +++----
+>  include/linux/kexec_handover.h         |  15 +-
+>  include/linux/kho/abi/block.h          |  21 +-
+>  include/linux/kho/abi/feature.h        | 372 +++++++++++++++++++++++++
+>  include/linux/kho/abi/kexec_handover.h |  11 +-
+>  include/linux/kho/abi/kexec_metadata.h |  17 +-
+>  include/linux/kho/abi/luo.h            | 102 ++++---
+>  include/linux/kho/abi/memfd.h          |  27 +-
+>  include/linux/kho/abi/pci.h            |  66 ++---
+>  include/linux/kho_block.h              |   8 +-
+>  kernel/liveupdate/kexec_handover.c     |  98 ++++---
+>  kernel/liveupdate/kho_block.c          | 172 +++++++++---
+>  kernel/liveupdate/luo_core.c           |  43 +--
+>  kernel/liveupdate/luo_file.c           |  58 ++--
+>  kernel/liveupdate/luo_flb.c            |  69 +++--
+>  kernel/liveupdate/luo_internal.h       |   9 +-
+>  kernel/liveupdate/luo_session.c        |  55 +++-
+>  lib/Kconfig.debug                      |  13 +
+>  lib/test_kho.c                         |  38 ++-
+>  lib/tests/Makefile                     |   1 +
+>  lib/tests/kho_feature_kunit.c          | 184 ++++++++++++
+>  mm/memfd_luo.c                         | 183 ++++++++----
+>  23 files changed, 1271 insertions(+), 391 deletions(-)
+>  create mode 100644 include/linux/kho/abi/feature.h
+>  create mode 100644 lib/tests/kho_feature_kunit.c
 
 --=20
-Thanks.
--- Max
+Pasha
+
