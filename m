@@ -1,68 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794322530;
-	b=df/fuMe9QIOUmj8aKW0kKb+Us0E6zDC3I1LA7AZ7tJcjGj/jIXijT80fNppsCtR2iBdL
-	 V2O6KW3xb10Z6mRuFcEiFSKVGPqvye+lbKx0Ar8VbTKcLXBfWAfo38iMJ1IkB8TjBIG2H
-	 SsNnVAvQQtsj2rrYJSEy3+NfAeIeQEHS6PBKLmUJcXDjP6AlP7WM6AfOUjJ2P4Yfg11Uc
-	 pOIv0DY3omZIcn931mDFJ2Uug1f3j3+KoWYc3LtoI9cHViq52g2kFGOiouf3RROAgQyip
-	 9BF/NSRlR/26hmCBeUUANOt8Zn3+KdjCrOXy75zxBYgQAZACB2yTfgcDYgplXvrfMsw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794322530;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Zoho-Virus-Status:X-Zoho-AV-Stamp:
-	 X-ZohoMailClient;
-	bh=9iTzNvY7Uy2wxh4/yC+c64lgqi3vm9WV/SAUoSR7IP4=;
-	b=pQ9gjQ6REp/LCIJNFGZGPIlTJCEVHls1fe5MZR2tO8cNv2wXlUwURgAgEt3wAalPl4Uw
-	 MA3Q7SVoCziHBRtz/2qe5+1pGJ34qxuTMlqhQLa2BkrBvDctFUNtjrITKt+v6KswzUorc
-	 NhWdk5xKkmTRTL7MTMoLrzOFFN2sPVDnH1qnQ1hG7sAfdNpDIg9F9XD+PCYc6Rv3vkowO
-	 ibGkymYU3VdTFYgcf8US+O2AS8KOBsKQDsB305efGK4iVjbuSdzL5xv0T8OBG+AmR5HCF
-	 X5W+idpWbvVe6kO7RcQjcXMkJMgKNWkOt/kA+SDfUpt0WDOpYfM7mJqWatYjHX88T+g==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=AZfAP+WA;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
-Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.41
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794322709;
+	b=QmctaxnOM2h7acGcFSjsS92YTk+VjT6RYFwod3L2pd44pYaAfN+SN0qX+1NxQjZPADDP
+	 kncWP4A33i3zwxV4JOvtoqyQzLXLJ86YZu22NYFaPM6xJgGkCHVNwiPo3cxK/4XcKawtO
+	 h1EZb5DavV0U1gk051sEtrbNST1ZLZGx8iIE7x6V4dhTNTD7DsKuw2UWst3dxzV+ib8ie
+	 E+ACHsnREts6ql+LHEt0VewpMZbTbbhyf3WBxfQIkEaIEpbILGXuGy0hUjypyJzr+23LS
+	 +leTsyS2Mg3/8PEMvjv5GOd7vdzKLeDU/8gqsl+OvrgPqIN5Qpj/RhArRGYp5pX1Nzw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794322709;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=ilFrMbP1l4Dqble5vGUZCzOuHvz/JIBo8vMR2z18T1Y=;
+	b=tPbwmoARqmU8/pKTNWVBgGfw8Fd+8/qIlbCWwtC2JONc9nj5/9d1qnZO7rgU+qzR3r79
+	 cH5JkFZnPZxDJaAC07aBRGLzvA+sTV7wx/TrI3nbQAMyJHda5DS6gK2e4tZBzxdr5OeL2
+	 g7lKbgQbHnAo91LSBRFYOLvzHV1YWp6arpZmlgBfQW2bl3W02lv7fwMbuI2xUjuP+0EbI
+	 UiNxa2mgSonnPOqmoom2qT8d9/SOT8zoOFqFZdYbTTgu0MV6RNaNzp6zYOMSd+Ji7nSFS
+	 fcDBR3D6OijjKcvY3KC1gUQ4+gpmE+CfOxHElQjpC6plLId+hH1tcO/gKJjvWmDKptA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=VGB6Rlw8;
+	arc=none smtp.remote-ip=209.85.128.41
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 256AA606A31C
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 14:55:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 256AA606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0012606A335
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 14:58:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C0012606A335
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=AZfAP+WA
-ARC-Seal: i=1; a=rsa-sha256; t=1794322518; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=P+nid//XTmhX1bkpQjiWlLCC/jZue1QxH2DjzJoB9BLs/o0whE7Jwrhud1S/B9SJagyjI1S6YMVi2DKk7KZm3oWlf7ye8Try18aW7YwogrMmJdSAVO94TGxariIpjZfyeCxV2QoZJO2RYyY7aDRWwUzy65cVBe1sCmmqgycoGsg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1794322518; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=9iTzNvY7Uy2wxh4/yC+c64lgqi3vm9WV/SAUoSR7IP4=; 
-	b=E/o2LlsUDPGK18ieTU/Qs4wYz/6yyR9UY+1C01o6W7mXZtF2lyRSKMPDayCFpFfxYZZ3czi3E+TCg1ayGBT+saMjMfX6rn5QMElQzWJeXTCtpzlW9TUEpTaA3dugxgA/Zfm/ByBkv5KqflvHDxY8KRaPn3kcQQoE4xzI9+I2Av4=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
-	dmarc=pass header.from=<sebastian.reichel@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=AZfAP+WAKnLO/LgAor/UnG4BaxlcChZXI4bVO+Xq7/TrvsfcnB55tJWiQML2aL9/QJzKCkKr9QlEiwK/tHL3bBf+9FfcydxJPIWwSuuEWtxs0w8T+FptYdziyfM6YluZfr0ScPqN5Yy2+nMoRJLTEQVrOoFkoZpPFOAL3aNnZJQ=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=9iTzNvY7Uy2wxh4/yC+c64lgqi3vm9WV/SAUoSR7IP4=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 179432251690026.33458305795125;
-	Tue, 10 Nov 2026 06:55:16 -0800 (PST)
-Received: by venus (Postfix, from userid 1000)
-	id 7AF03180354; Tue, 10 Nov 2026 15:55:09 +0100 (CET)
-Date: Tue, 10 Nov 2026 15:55:09 +0100
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: aiyengar1990@gmail.com
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Heiko Stuebner <heiko@sntech.de>, Niklas Cassel <cassel@kernel.org>, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
-Subject: Re: [PATCH 2/5] dt-bindings: iommu: arm,smmu-v3: allow clocks
-Message-ID: <avMv7fQuNJZpE_zr@venus>
-References: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
- <20261110-smmu-v3-pcie-pd-v1-2-628819ca44b9@gmail.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=VGB6Rlw8
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4b6266b5bc4so39575e9.1
+        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 06:58:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1794322707; x=1794927507; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=ilFrMbP1l4Dqble5vGUZCzOuHvz/JIBo8vMR2z18T1Y=;
+        b=VGB6Rlw8pfpbnN/au7jWJrwyX8CtMnLDdwjrkvp7aDpZhlWpiy6kdEELHHl/5N+dtW
+         nqAZOGOnGq8TiUZAf9m7/N7JSD4vOa9zXdft6gIDaDA06+xYsFSFnulSrjkm8VZ88kuH
+         hfg/E8jXBXBFu+n4eyd/u1b1lPISawzBRzH/tg/zUWGQ6dfW39WE3Gw7LbufU61/+06b
+         qollfvFvBRQ8Ymc/FM48Voamayd1Ns9Pc6t4vHtFGnCkRsoYOrSwoCvUOpiTZS+2gNly
+         a+YmDxgXisN8oVUNyykY8UqPgEmJF1yX/2s39qFOy8mZRfwJ4th6gpFn5mFDkgYqTrJk
+         rqkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794322707; x=1794927507;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ilFrMbP1l4Dqble5vGUZCzOuHvz/JIBo8vMR2z18T1Y=;
+        b=DffsMbsD9LeVKmvaFlsdl2nCgPiKPToFz/zGYmTXpQX+v0ZQ80RBuFE/H27y5X2A4u
+         D0euuyYP+IgYrOvMHAL9PpRk0Po0iLUYPGeyoKNOueiX/HRw1Gq3CMaakZr9ELgbkapW
+         C/GJ/c3CJj/pPqG68CvWOpUzD1EGUK070+xwHcvoe2r42MKz0G37oFlGvDM2l1jqP4fw
+         674I+Y0r6qMxt2UlOYyAoZQbnYTh7v8Qmzp0uHCMDYQznN0MEU1RbOZRQUX7SpEbN0Rh
+         0S8ptP55Cqf85DEDYBVRj+0ywgMvyCuVcwqEDleb3OvZda0CgKrOl8gK5/oaOQhvgrE8
+         YT9g==
+X-Forwarded-Encrypted: i=1; AL+hErFVHBHHj7F1Hq4oiwhViY2ljAse5i3jdLBds8pAKwMLvTodLAmLpH5mtKLTcatmeHlH2PvXVw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/gVPElBzBb8JC+H8gSofdCCtuU5/E25TYcEi9I7qxu3XxqyYz6
+	527ZYXC3IyKh6ihcT0DE+JmVKIhG/jS5vU7uUfdAuyBapt/bYfUy+E8zjFLqsFhXOA==
+X-Gm-Gg: AYBFou1C6MV0zUIpHiygTSZ3QLGZQQSzesgM8o4lwg4aga+KqnnTth93cwIsnmwJv0S
+	iCrG155GSACIzHpuLVM1kWINKBe03UYSjxmnqwiG4RIj2I2TlpyjHbjthW/mpApF4SIIH5Q3m9z
+	FOoZYC5v/q3IXtV/mRQTii7h78AHc2FAECWy9MZ2qkH3RfcTzFSThHPptWXKFYpnqlElWEqMIUB
+	5LxMKM0j8f7XaKb98gTKgffaP1J9giR2JreviYw0BpgCAhgLFgGTX3FCsIMdfNQKAC3JyxcxxO9
+	Myo+h6TMh2Sv+S4z+QF45FUi1W4WVC1Gw3wkGzliOjVZoiwAqlwTLn62izs04XVh5iMtOklfL1y
+	18Y0QCUAKhOqCwmu3OtifZJfT8hYY6I32dG5+Nk2MJ23EbNuO8rWPGdGZ/iTa2uitxCchoucegb
+	xF4M/TQt9bAswWI+tvQfF5PfSxt/xs4nt0sB98XHGvhluX1CvSaArnEpBuhrrrdfrL2e5ldDpTz
+	NJP+vkNqGsuaP50WRtO+2yebDWExIfixBp6uFj+ZuEOOHIoHUjQb7jhp0yxPyFwFFVddS0rzHgF
+	za8RksXtG2hIQOnFYhDKpJGqcKo+vlqA7p8uus2ENafmvT5Hm7gKw4lb43rMfbWZPUSt0AE=
+X-Received: by 2002:a05:600c:4301:b0:4b6:24ca:8848 with SMTP id 5b1f17b1804b1-4ba02bdf97bmr587755e9.11.1794322705998;
+        Tue, 10 Nov 2026 06:58:25 -0800 (PST)
+Received: from google.com (250.192.189.35.bc.googleusercontent.com. [35.189.192.250])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4ba0223c41csm70632855e9.14.2026.11.10.06.58.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Nov 2026 06:58:25 -0800 (PST)
+Date: Tue, 10 Nov 2026 14:58:21 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: xuheng@cs.columbia.edu
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Invalidate a new level-1 stream table
+ descriptor
+Message-ID: <avMxDbv6JE0dg93E@google.com>
+References: <20261109-smmu-l1std-cfgi-v1-1-65e5203a6516@cs.columbia.edu>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,93 +99,136 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="apkvvzaxcdcph66e"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110-smmu-v3-pcie-pd-v1-2-628819ca44b9@gmail.com>
-X-Zoho-Virus-Status: 1
-X-Zoho-AV-Stamp: zmail-av-0.2.13.1.5.4/294.310.16
-X-ZohoMailClient: External
+In-Reply-To: <20261109-smmu-l1std-cfgi-v1-1-65e5203a6516@cs.columbia.edu>
 
+On Mon, Nov 09, 2026 at 09:36:54PM +0000, Xuheng Li via B4 Relay wrote:
+> From: Xuheng Li <xuheng@cs.columbia.edu>
+> 
+> arm_smmu_init_l2_strtab() allocates a level-2 stream table when the first
+> master in its range is added, and makes the level-1 descriptor valid. It
+> issues no invalidation, and the attach that follows sends only the leaf
+> form of CMD_CFGI_STE.
+> 
+> IHI 0070 5.1.1 requires the non-leaf form of CMD_CFGI_STE when an L1STD
+> changes, including when an inactive descriptor with Span == 0 becomes
+> active. An SMMU that cached the inactive descriptor can keep terminating
+> the master's transactions as if its StreamID were invalid.
+> 
 
---apkvvzaxcdcph66e
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 2/5] dt-bindings: iommu: arm,smmu-v3: allow clocks
-MIME-Version: 1.0
+Looking at the spec it says:
+	An STE or L1STD that is successfully fetched might be cached by the
+	SMMU in any state, therefore any modification, commissioning or
+	decommissioning of an STE must be followed by a CMD_CFGI_STE command.
 
-Hi,
+Which checks out. However, I am curious why this was not seen for
+over 10 years with the current behaviour as I doubt any existing
+implementation will do negative caching. Is that something that was
+observed or found by inspection?
 
-On Tue, Nov 10, 2026 at 07:11:49AM +0000, Arun Iyengar via B4 Relay wrote:
-> From: Arun Iyengar <aiyengar1990@gmail.com>
->=20
-> Some SoCs feed the SMMUv3 from a clock that the OS controls. On the
-> Rockchip RK3588 the MMU-600 for PCIe runs from ACLK_MMU_PCIE, whose only
-> other consumers are the PCIe controllers. When no PCIe controller is
-> enabled, the clock framework gates it as unused, and the SMMU can no
-> longer be accessed.
->=20
-> Allow up to four clocks, so that such a clock can be described and held
-> by the SMMU driver.
->=20
-> Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
+Interestingly, that is not the case for L1CD:
+	/* An invalid L1CD can be cached */
+	arm_smmu_sync_cd(master, ssid, false);
+
+> Issue a non-leaf CMD_CFGI_STE after writing the descriptor. The RMR path
+> runs before the stream table is programmed into the SMMU, and
+> arm_smmu_device_reset() then issues CMD_CFGI_ALL, so it needs none.
+> 
+> Fixes: 48ec83bcbcf5 ("iommu/arm-smmu: Add initial driver support for ARM SMMUv3 devices")
+
+With the few nits below:
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
+
+Thanks,
+Mostafa
+
+> Signed-off-by: Xuheng Li <xuheng@cs.columbia.edu>
 > ---
-
-This does not explain why a maximum of four clocks is allowed.
-
-Greetings,
-
--- Sebastian
-
->  Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/D=
-ocumentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> index c8f22dfdb1db..f8a74730667c 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> @@ -63,6 +63,13 @@ properties:
-> =20
->    msi-parent: true
-> =20
-> +  clocks:
-> +    minItems: 1
-> +    maxItems: 4
-> +    description:
-> +      Clocks needed to access the SMMU registers and to keep its transla=
-tion
-> +      units running, if they are not managed by firmware.
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 21 ++++++++++++++++-----
+>  1 file changed, 16 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 6d4520c47..f61cc6d86 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2030,7 +2030,8 @@ static void arm_smmu_init_initial_stes(struct arm_smmu_ste *strtab,
+>  	}
+>  }
+>  
+> -static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+> +static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid,
+> +				   bool live)
+>  {
+>  	dma_addr_t l2ptr_dma;
+>  	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+> @@ -2053,6 +2054,14 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+>  				   ARRAY_SIZE((*l2table)->stes));
+>  	arm_smmu_write_strtab_l1_desc(&cfg->l2.l1tab[arm_smmu_strtab_l1_idx(sid)],
+>  				      l2ptr_dma);
 > +
->    power-domains:
->      maxItems: 1
-> =20
->=20
-> --=20
-> 2.55.0
->=20
->=20
->=20
+> +	/*
+> +	 * The SMMU may have cached the old, invalid L1 descriptor. Making it
+> +	 * valid needs the non-leaf form of CMD_CFGI_STE (IHI 0070 5.1.1).
+> +	 */
 
---apkvvzaxcdcph66e
-Content-Type: application/pgp-signature; name="signature.asc"
+A similar comment to the CD case is enough.
 
------BEGIN PGP SIGNATURE-----
+> +	if (live)
+> +		arm_smmu_cmdq_issue_cmd_with_sync(smmu,
+> +						  arm_smmu_make_cmd_cfgi_ste(sid, false));
+>  	return 0;
+>  }
+>  
+> @@ -4261,7 +4270,8 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+>  	return sid < smmu->strtab_cfg.linear.num_ents;
+>  }
+>  
+> -static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid)
+> +static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid,
+> +				    bool live)
+>  {
+>  	/* Check the SIDs are in range of the SMMU and our stream table */
+>  	if (!arm_smmu_sid_in_range(smmu, sid))
+> @@ -4269,7 +4279,7 @@ static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid)
+>  
+>  	/* Ensure l2 strtab is initialised */
+>  	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
+> -		return arm_smmu_init_l2_strtab(smmu, sid);
+> +		return arm_smmu_init_l2_strtab(smmu, sid, live);
+>  
+>  	return 0;
+>  }
+> @@ -4333,7 +4343,7 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+>  		struct rb_node *existing;
+>  		u32 sid = new_stream->id;
+>  
+> -		ret = arm_smmu_init_sid_strtab(smmu, sid);
+> +		ret = arm_smmu_init_sid_strtab(smmu, sid, true);
+>  		if (ret)
+>  			break;
+>  
+> @@ -5713,7 +5723,8 @@ static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
+>  
+>  		rmr = container_of(e, struct iommu_iort_rmr_data, rr);
+>  		for (i = 0; i < rmr->num_sids; i++) {
+> -			ret = arm_smmu_init_sid_strtab(smmu, rmr->sids[i]);
+> +			/* The stream table is not programmed into the SMMU yet */
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmrzMEwACgkQ2O7X88g7
-+ppLEw/+MNtpw8yw9i0ZkKzRkK8q/EzZMGPQ599QxbdAR88xtnYi6Htl4uE73QyK
-WkyMrX/NIplWZu5I44J68aJC+H+jWvOxTEO6apPIQFOuK0dznO/Y6m0GRtFz7p4s
-4od00k+xpLP/76wW0Ib4d9sSXxyeMv9lXq+1Auv3YkA5a7p+hcpzRDejRrg0udag
-xPUiy4++1yAAkaYlBZyR71EqgXkRRTM9a2sDqwlQfK3nsnrWuoPxl4S6Bk67cfOT
-U7JRIGKBiKTmMjOU5D0ESw5czT+O9R/bVHdeUnDtSrLyAMxfvjBQv9YLarCHkYmh
-5keolQEbb8OzeyEKaj/gFhi9C6eqh5d5D538Zs1Q6pCrSs5BnzN+3BP3CFrhk39G
-xjbb2XCo3L+zz0zaiE43XkqsLIz2XujWpWt3HrKSiAQuga0vDZ701isJ/wwYbFbX
-WlG+e7XtUKDgbux0s07qRP0dW+/i5jdIx+qW6o/KtGAx4QRgoogiEhxQC7GE8ut8
-DTKO3GyJg3oGVbdR2IsEDnhkWpgIJlSRh/GbK5SmMUtzQS+veirXv5rd7QvmXXle
-yi3i50b1eY17V2SDt1GuITSD7bfqfd5oZOYnWazdDEdiX0nTlBfDxFH82eu/TlzG
-p08cMLFJp/9F2TjNoK0NyMzF6Wx22nxxoj54u0RLkMgJlXa6j8E=
-=kunh
------END PGP SIGNATURE-----
+I don't think this comment is adding anything, there is another one a
+couple of line below.
 
---apkvvzaxcdcph66e--
+> +			ret = arm_smmu_init_sid_strtab(smmu, rmr->sids[i], false);
+>  			if (ret) {
+>  				dev_err(smmu->dev, "RMR SID(0x%x) bypass failed\n",
+>  					rmr->sids[i]);
+> 
+> ---
+> base-commit: 05441d697f7f9a927264f4058cbbc6a03dfcac9d
+> change-id: 20261109-smmu-l1std-cfgi-c194b2aafea4
+> 
+> Best regards,
+> -- 
+> Xuheng Li <xuheng@cs.columbia.edu>
+> 
+> 
