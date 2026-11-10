@@ -1,85 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.178
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794323545;
-	b=tTgyGxjeHmlMSfQCsEfIsZ+uktUdeE1u3gVP2kpoSvvnv0b0uVyo9n6tL7dSjdZ7AGIA
-	 BllXiU5TBDBawtxM7VBAdG8Zm3x/1o7oJ5D0wTsoAXD2fw/gcA9+VR3fKojP9F40cQjC/
-	 rWhxky6Lsr1bfzueP6qh/g5Kw0gnW20AKPUKscREdPpVddK64LTZFJhrshEIUMoOYfTJ6
-	 DCGU4yWqfED9vVrqgGbm8lAk2jvqv7jGSrkBfaozrKUAJFlTrSTJ3XYQmkZ7nf3gjcYBo
-	 8OxDTwXBCDrBzf8t7G8c5CLiDXf7c7IjVOOXVwZW5P6KuB2wwqWQrJgxlLW5MhZEdxw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794323545;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
-	 Cc:Subject:From:To:X-Mailer:References:In-Reply-To;
-	bh=KpEwWty65XIKqwE7JeJ6p16oyvStp8N2eZzOQMIZadI=;
-	b=2uY4cuOuwC49gljTOpKST1RyVjGrn4ldNikscAIJ/Lhbq060SAv3EJxmgDSI5WOlbFif
-	 zIilwwOzh2xrwtGXmgB2MBmy7luxYoiJAsWb/fB3eS0dhF1pJ+5CTl9jjxF0AYfiAEgqf
-	 v9XNj0Zhm44S567gY7UasAWzbBnwmCBMv7dKetnScF8BnpD62jLCFMZ98pqf5Cat8DNZJ
-	 5zqPvXtxFqpw4SX5Rb/9ujpcE4+DCpD0MUl4iaPgXJwcdn7OsKwjzEYZrF7G8kNpm9zUL
-	 YfRNJNeB3wefVTQliVG+R9gh00Gg0edzgsfLHLGOudaW/5k6KHdn13lKzC7U9JUP9hQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=soleen.com;
-	spf=pass smtp.mailfrom=soleen.com;
-	dkim=pass header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=fErt2oxi;
-	arc=none smtp.remote-ip=209.85.221.178
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com [209.85.221.178])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794323661;
+	b=zRM+C0VH+3iUFmuk694VlrjiV7zJe74OiVZLG0ng8B2Cc0vzOoOjBE4nuOOWP+2Pbp5c
+	 93OnjyAAb7zyFwKSX7YKZ5IZ1XUtqO5PxOVF5zTysqjTj5ko1ryyBedPfXmT5PyLxOidQ
+	 xSyLw3XV5PApcxkZ87RdcwFFz4lqSfyTWPxxEpnysRN+TdZz53YoDmm5eac9ZvkL2xTsx
+	 vU6JkSVl3hKTij2n4MtUBSi8z/sY1rWqLqeD5PKdV5/c8EtRksvdGP4OTH7AVLfWcp6iT
+	 kMuCLfXkQyas+wX3ws/FwhBZhEPgqQnc6LopA/DKPQJAsgCZGNugxzld0uxwz+sfziQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794323661;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:X-Zoho-Virus-Status:X-Zoho-AV-Stamp:
+	 X-ZohoMailClient;
+	bh=Ca7+Dqd4E/749T+VRqLM/gfMqPGBPdrU7OyQ5kokKWw=;
+	b=mSP3QQrwwANAJyDKMeumnovhuX+dqwYB5WkSz/myuYzzf9htb5d0lNlWikyo+x0TMyWx
+	 Sct3G/Pc2Vm0H9juqVH8oDY1BifV4qDy8ttelXG1xRXHQL1+3Q0cK1WzBLCXOif0iqzYX
+	 O6i9uNslcGzv7L3eKs7x386BmH7Ielx1CVQ1zEjdr+sZ83MXsX3U0wpur7usgdda8Hlcn
+	 sRoBtzQMFQlbCQssxs7rK+5jkM65AFYIDKijV7iHlp6gFuTq6Q31kjzEmXCtjC5ymTTQp
+	 3P7n8lvzA6u2M2A1f6aqxYV7/lU7Qa9usGe/3BzmOcGKAraYMaSI+/wJKAhL+6snmhg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=collabora.com;
+	spf=pass smtp.mailfrom=collabora.com;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=TIHnyEb2;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
+Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DF4560A2606
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 15:12:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7DF4560A2606
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4431C60A260C
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 15:14:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4431C60A260C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=fErt2oxi
-Received: by mail-vk1-f178.google.com with SMTP id 71dfb90a1353d-5eabf243d05so658407e0c.2
-        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 07:12:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1794323544; x=1794928344; darn=lists.linux.dev;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=KpEwWty65XIKqwE7JeJ6p16oyvStp8N2eZzOQMIZadI=;
-        b=fErt2oxix7FuW8mrPMI+TDmW/sfPxkkilbiGuCcI8IlTozvOOvoRjCOXP7IlWeS3ma
-         xGKoQ2ztNQ0+YQI24R4VJJXZTewVjwwbJu8E1Qk3EpW5fA4fyPVKXro9zG9I/ymFC4c3
-         Cz6SnI50jpmwBH0SfxvuAKpTsSdMD4hkV8ZewWVE2f389sx6gK5xnZPfMCFafk5VEnFz
-         +xukaEN+ycBXZRBW71cPIOrtXJQBQjJGykRsOZd5NUOYQxRJBxDu/ZHdzJtCVmeZc7Jo
-         lj8W9rl+i+MalLueuhhYZCgKsewajLwicgz55ksyTHWgaFvSxx5O8TLvKnw6F39wMSsk
-         DGnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794323544; x=1794928344;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-type:content-transfer-encoding:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=KpEwWty65XIKqwE7JeJ6p16oyvStp8N2eZzOQMIZadI=;
-        b=dbiOXnH5nzlav/Ivke+QmGjTbsMmthuO6OhC4ncAUfH58F64su1Et6RglwJ10Bvajk
-         TkcEzM8A7+XAuu8BmuSC3Gn2hogHDw3Q5NoJ2vwR8POVFYMsLIUSR4GhU5GcCIzqV5I/
-         B8HG52UifEC1hF5pALFbGwMBPKzAUqPlXx6UjnzI3mTK2Dgd4QRZXhjYHK9QX8UubsLu
-         maABfuLqnbU/J8Z1YRAqKl/EZN2WuBZS19TZJfNvXjPHxxv4EkecxsKD0yvZeVaPXoLY
-         bs6ydsseml4oc8cI9LLiJLECWNmYQvmDZ29/0haUV98S06Es6srR7g8y94gNA2Ul08ey
-         uwlA==
-X-Forwarded-Encrypted: i=1; AL+hErGpHXQFRPdGo2Ep1wCgPl62YKXJhQkjoh2dX2flyPguUC8Yh34oLxKG9/E+uadLViUw5kgGSA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8vjUIITklwTnhKXo9E1fg4lbJCQNDKIMOpSBs0U4bhch/nkGsG
-	kpfa9lr2Tq0XbBrXW1aueE8TNXbKlSsiiK3jeCRRkYmX1WP2wjlApXwxkycxB/RTYOE=
-X-Gm-Gg: AYBFou03NTnVUobqYINTA4FZK6ZkWsuwWFyUyPBbetR78huvzfLrRneYASmONOXoaR0
-	FiC6xxNxk5BbTVDQ6Cr6oa0lw4UlCoUdrzGOAVCesZHzJPWkGjWn1Pp+dNQMB/tJ2iCbfwUez4t
-	gO0lQOz4RvxkOS6a9erdmO7pqoBviE4izKDVA5rmSxc7UqUlLPugP2WHVWl7Y506vf+8Dc5/guH
-	87GLCkvJ6MPi/P8kROctM2RwioHfPkAhaPwyTnn+K4P2iI+XQQ+phlIzqPuznzI8g55V431vTB3
-	9QrcMiUS/Nyx8qUJVDyWZ9BXKmOGw7PsEkCBVNtTA8rgNDp7yJoEivuFs9LUjC812udNgPaVrNk
-	A2RF+KvVGrB6k4p0NRgpoY7KSGowHh53Rqa0svjyh3tAz7x/VJe1ievKF6VsRySr4UM4m0WAet6
-	sCw+pj5EFlhZMscSsFmeyDi4Pd8qHVd6V9DW0bSDvDV+atRoMnoBOQBmd9p2H3sn9M7wyatVTI+
-	sOPbbQor9qr/2OKLC01OX95FaMOBpXpBGgAvseg2DE45FMbjMyaAKEkIuI/+eH3otgWOSKDxoih
-	euKz3n0GVd1DYnIDwiYtJGAzUvawrasCq87YCCkFNnRsMmyrDYXSpQWkHr3PwBz9ach+6zyBtot
-	65RTXQ94OVejmkcr1+a6tkEEEPL/E
-X-Received: by 2002:a05:6122:5313:b0:5ea:a0f0:192f with SMTP id 71dfb90a1353d-5ee0d0cd07bmr947867e0c.10.1794323544266;
-        Tue, 10 Nov 2026 07:12:24 -0800 (PST)
-Received: from localhost (16.49.199.35.bc.googleusercontent.com. [35.199.49.16])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5ee0c45a110sm2039560e0c.2.2026.11.10.07.12.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2026 07:12:23 -0800 (PST)
+	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=TIHnyEb2
+ARC-Seal: i=1; a=rsa-sha256; t=1794323645; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=lJe5WwfPQsboU9jabFq1Vhi5ZfpWQL282ERr2ptHz//+dM4i6Bc2YFDCXyugFvqgHH3nFHnCmDWnITQ/qh+WtyNmQmuilitgdMuQDOM4CzV++xQuYXlY29dqnp0s9ltOt68wysZMvrO9B8zQuWFalhOg6OoBwyJMo5oc2qYXm+M=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1794323645; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=Ca7+Dqd4E/749T+VRqLM/gfMqPGBPdrU7OyQ5kokKWw=; 
+	b=iCeL2J52dTRD0dWv0gR8dcKEIusicoe+++W979gN3D6e0FZCXbfpwNQVDMjprd/vyEUR72npI3rZ532I/kpwbW5uM8XmIuvk9D2pblS6pVoHS4nUD3Lm8lN1hYqZMcsZImciiJ5vveDIqsgeDAu7ZQr43ITNoBWlkkRN/Ncsi1s=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
+	dmarc=pass header.from=<sebastian.reichel@collabora.com>
+DKIM-Signature: a=rsa-sha256; b=TIHnyEb23ivDdlDaTZ23hgRBxU6pCSlmo4+pnq+FIf3oLa5YXU+wP+8Ie7Zo+WbWMwIW7RKOejdeUD8YdqSOTFhxEgzsP7NCKIEotA3WzUUkaNdPKf6Qcu/qwaX4cnnnKvKe9+JoxoQpuy+tEDxNibVJi3lPSv60bTpZca+Mftw=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=Ca7+Dqd4E/749T+VRqLM/gfMqPGBPdrU7OyQ5kokKWw=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zohomail.com with SMTPS id 1794323644960444.4158919867489;
+	Tue, 10 Nov 2026 07:14:04 -0800 (PST)
+Received: by venus (Postfix, from userid 1000)
+	id 3EDC5180354; Tue, 10 Nov 2026 16:13:49 +0100 (CET)
+Date: Tue, 10 Nov 2026 16:13:48 +0100
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: aiyengar1990@gmail.com
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Heiko Stuebner <heiko@sntech.de>, Niklas Cassel <cassel@kernel.org>, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH 0/5] iommu/arm-smmu-v3: power domain and clock of the
+ RK3588 PCIe SMMU
+Message-ID: <avMzjsG_Zl8Gh0wJ@venus>
+References: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -88,81 +71,103 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="24vzfqtpamx44f6c"
+Content-Disposition: inline
+In-Reply-To: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
+X-Zoho-Virus-Status: 1
+X-Zoho-AV-Stamp: zmail-av-0.7.7.1.5.4/291.452.71
+X-ZohoMailClient: External
+
+
+--24vzfqtpamx44f6c
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 10 Nov 2026 10:12:22 -0500
-Message-Id: <DMRMLZSZ0LAZ.D4P70QWX0IHB@soleen.com>
-Cc: <kvmarm@lists.linux.dev>, <linux-pci@vger.kernel.org>, "Pratyush Yadav"
- <pratyush@kernel.org>, <kexec@lists.infradead.org>, <kvm@vger.kernel.org>,
- <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
- <skhawaja@google.com>, <sagis@google.com>, <linux-arch@vger.kernel.org>,
- <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 05/19] kho: Add feature header for fine-grained ABI
- compatibility
-From: "Pasha Tatashin" <pasha.tatashin@soleen.com>
-To: "Tarun Sahu" <tarunsahu@google.com>, "Pasha Tatashin"
- <pasha.tatashin@soleen.com>, "Mike Rapoport" <rppt@kernel.org>,
- <robin.murphy@arm.com>, <maz@kernel.org>, <will@kernel.org>, "David
- Matlack" <dmatlack@google.com>, "Alexander Graf" <graf@amazon.com>,
- <seanjc@google.com>, <jgg@nvidia.com>, <loganodell@google.com>,
- <arnd@arndb.de>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, "Bjorn
- Helgaas" <bhelgaas@google.com>, <oupton@kernel.org>, <alex@shazbot.org>,
- <gle.com@google.com>, <pbonzini@redhat.com>, "Andrew Morton"
- <akpm@linux-foundation.org>, <kevin.tian@intel.com>, <joro@8bytes.org>
-X-Mailer: aerc 0.22.0-39-g5d7784875be2
-References: <20261110050202.529473-1-tarunsahu@google.com>
- <20261110050202.529473-6-tarunsahu@google.com>
-In-Reply-To: <20261110050202.529473-6-tarunsahu@google.com>
+Subject: Re: [PATCH 0/5] iommu/arm-smmu-v3: power domain and clock of the
+ RK3588 PCIe SMMU
+MIME-Version: 1.0
 
-On Tue Nov 10, 2026 at 12:01 AM EST, Tarun Sahu wrote:
+Hi,
 
-> +/**
-> + * DECLARE_KHO_SER - Register a serialized payload structure with KHO.
-> + * @name:         Structure tag name (e.g. luo_ser).
-> + * @payload_size: Compile-time expected size of struct @name in bytes.
-> + * @nr_required:  Total number of defined required features.
-> + * @nr_optional:  Total number of defined optional features.
-> + *
-> + * Size and 8-byte alignment are asserted under CONFIG_64BIT: KHO and LU=
-O are
-> + * 64-bit only, while !CONFIG_KEXEC_HANDOVER stubs pull ABI headers into
-> + * 32-bit builds where u64 has 4-byte or 2-byte alignment.
-> + */
-> +#define DECLARE_KHO_SER(name, payload_size, nr_required, nr_optional)	\
-> +	static_assert(!IS_ENABLED(CONFIG_64BIT) ||			\
-> +		      sizeof(struct name) =3D=3D (payload_size),		\
-> +		      "struct " #name " size mismatch");		\
-> +	static_assert(!IS_ENABLED(CONFIG_64BIT) ||			\
-> +		      __alignof__(struct name) =3D=3D 8,			\
-> +		      "struct " #name " must be 8-byte aligned");	\
-> +	extern struct kho_ser_hdr __kho_ser_hdr_##name;			\
+On Tue, Nov 10, 2026 at 07:11:47AM +0000, Arun Iyengar via B4 Relay wrote:
+> The MMU-600 in front of the PCIe controllers of the Rockchip RK3588
+> (mmu600_pcie) is enabled for every RK3588 board, but its node describes
+> neither the power domain it lives in (RK3588_PD_PCIE) nor its clock
+> (ACLK_MMU_PCIE). Both are held by any enabled PCIe controller, which is
+> why nobody noticed: on a board that enables no PCIe controller in that
+> domain (an Orange Pi 5 with its M.2 slot in SATA mode, or any RK3588
+> board without PCIe), genpd powers the domain off and the clock framework
+> gates the clock as unused after boot, while arm-smmu-v3 stays bound.
+> At reboot, arm_smmu_device_shutdown() then writes CR0 and polls CR0ACK on
+> the dead block, the interconnect stalls, "reboot: Restarting system" is
+> never reached and the board only comes back ~90 s later when the
+> watchdog fires.
+>=20
+> Patches 1 and 2 allow power-domains and clocks in the arm,smmu-v3
+> binding (arm,smmu.yaml already allows both for the earlier SMMUs).
+> Patch 3 makes the driver get and enable the clocks of its firmware node
+> before the first register access, for as long as it is bound; nodes
+> without clocks (and ACPI/IORT systems) are unaffected. Patches 4 and 5
+> describe the power domain and the clock in rk3588-base.dtsi. Both DT
+> patches are needed: with the power domain alone the clock is still
+> gated and the shutdown still hangs.
+>=20
+> Related: Pranjal Shrivastava's "iommu/arm-smmu-v3: Add runtime PM
+> support" v11 (2026-09-29, 20260929034510.2023173-1-praan@google.com,
+> not merged) adds pm_domain-based runtime PM and resumes the SMMU around
+> shutdown, but has no clock handling. This series is compatible with it:
+> once it lands, the clocks from patch 3 should move into its runtime
+> suspend/resume callbacks.
+>=20
+> Tested on an Orange Pi 5 (RK3588S) with the M.2 slot in SATA mode and
+> the root filesystem on the SATA SSD, where every reboot used to hang:
+> three consecutive reboots printed "reboot: Restarting system" and the
+> boot loader started 0.6 s later (previously ~89 s, from the watchdog);
+> clk_summary shows aclk_mmu_pcie enabled with iommu@fc900000 as consumer
+> and pm_genpd_summary shows PD_PCIE on; the SMMU probes as before and
+> SATA keeps running at 6.0 Gbps without errors. With patch 4 alone
+> (power domain, clock still gated) the reboot still hung at
+> "arm-smmu-v3 fc900000.iommu: shutdown" on the serial console. Boards
+> with PCIe enabled are already in the state these patches describe.
+>=20
+> This series was developed with Claude (Anthropic) as a coding assistant:
+> it wrote the code and the commit messages, and I reviewed and tested
+> every change as described above.
+>=20
+> Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
+> ---
 
-Remove this extern.
+While at it, maybe also add the reset line (SRST_A_MMU_PCIE on
+RK3588) to make the hardware description complete? See also the
+MMU-600 TRM, that there is one clock and one reset line:
 
-> +	enum {								\
-> +		__KHO_SER_SIZE_##name =3D (payload_size),			\
-> +		__KHO_SER_NR_REQUIRED_##name =3D (nr_required),		\
-> +		__KHO_SER_NR_OPTIONAL_##name =3D (nr_optional),		\
-> +	}
-> +
-> +/**
-> + * DECLARE_KHO_SER_HDR - Declare a feature header variable, field, or pa=
-rameter.
-> + * @name: Structure tag name registered with DECLARE_KHO_SER().
-> + * @decl: Declarator (e.g. *fhdr, **out_fhdr, or * inside DECLARE_KHOSER=
-_PTR).
-> + *
-> + * Declares @decl with type struct kho_ser_hdr while checking at compile=
- time
-> + * that @name was registered with DECLARE_KHO_SER(), documenting which
-> + * serialized payload structure a feature header pointer belongs to.
-> + */
-> +#define DECLARE_KHO_SER_HDR(name, decl)	typeof(__kho_ser_hdr_##name) dec=
-l
+Link: https://support.arm.com/documentation/100310/0202/Signal-descriptions=
+/Clock-and-reset-signals?lang=3Den
 
-Remove DECLARE_KHO_SER_HDR, use kho_ser_hdr directly.
+Greetings,
 
---=20
-Pasha
+-- Sebastian
 
+--24vzfqtpamx44f6c
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmrzNKwACgkQ2O7X88g7
++prULQ//VEgh6N9Y3WLpzFsig1dhiT2LoeoOtAVe85S1Tbd7/c3fTMzrhVzWhVFq
+W3WBHB+HGc66sORyvrmexq2QVFCcwp10rhrgc78z+K2d84NJilMXrnB2YcjCRWtC
+8m5sCiP0PA64jV41kv/NQ7++CBG2MVSkXZdqJvua7BCSW6jBtxEx0H6hAYsomNkK
+tJb7BKs2XbWg7Evz/zQmSNSAZLCSu938nBIrX+eh1Z3vFrvWx6Z1TK5vn5IDD6LT
+p6Oy1i8suyCXOus6c/LLUy/saeg3QoksFYWMV7TcCZk0mplPGDdyzjjH4W/yihqi
+CvgBkzOxY6AZfTkzhJZ94LzuuhdbKZQemaHaE9sBZQ6Zs6+RCjlWBLnKsOy7Ut55
+ZbncW/uK5OFJTfGgsrG5cNwTN+GJGKXlVdqmgjh6mo7ItQrbK91XoZH3oAC02ZDy
++F75j6CS57Cb/QtObqTakXOiyBlwB393eeVhVmBnHb5xmt7vmmR9h4w4I/sxwokO
+5Vbg7RFZuS38HrbtRXOMkCZAOvDvBJ4zQ8dWGI6rMdrfMffpfLGd7sjIho/vZJo7
+wta4vE2aYvEguH9aoEGrztvW0UgjqMOGfI+txG3u7Mxv6O8ZujV8tR6QOLx8pCAd
+sDav3IQ9EtmrV4NTZnIcVtkZ4Go3kbrhPlVfDSXQtZqBI8rGQAY=
+=DQeM
+-----END PGP SIGNATURE-----
+
+--24vzfqtpamx44f6c--
