@@ -1,75 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.69
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794286945;
-	b=zkVhtzPsX1iquA8sJwpTfauXnUDhcl/OCOnUxN34EihSE96bAXCaW5/TsPibWc4gepJy
-	 SRQN+/CPIS/BQZoRkPlE26zH+aBZvSAr5K7yozP3DPcjrbTTTVCIgxemSgS9HmVwun4bS
-	 XjA9Ws1JZ8Mr7D6AFSMTfkdiVu0DMVc3uySydWzL1IT4IqWrReFkOWhWoLxPibE7ErXOt
-	 qQo+igM/rwXX2q2losnV7A1hu1+taJH6oavduOKD+9mdsGw3lGboFtB4qY+YAFJ1kNrpZ
-	 ngP5pkWu/3HpS9aMnV1wyM4ZlMkVsr3pkbB+FQ8CCg4poAl7Uj4111ehEwLW7wWMF7A==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794286945;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:X-Mailer:Message-ID:Subject:From:To:Cc:
-	 Content-Type;
-	bh=Mz4A0EINz7FXiOtg+LRLaTUicVm3TZtwZy9VYgokgFo=;
-	b=FWQex02e0JniDZyF2dCxHtIwFanAdaKQ7fhtqMJJMas/nmYVXI3iHtXDrOBcbWnMQPCs
-	 DZY2p4TdikhcQVNZqHywUqEBlYPRnTy7T0Gkf9DgPet1WSha/W26bLkx1p2GXRvZPf67O
-	 mQmVLReecaQvUWqYXle+11bvuGm5bnUit7d7MJm2AEc3jFZ0Y//nYsNfqaURfIl5BrR0B
-	 o5G07Xz/Y1m5x2MPd+JopZjJ1PZp68+Ly5oJ4c9DaPwQgQ5pWMRFIN7EqnNgLGEbPZ40r
-	 f+OMOb08TUuHVnyYVC5tfq5AgnU6wyrdVQVBmKdyL9ulo+gcUrz3rfYKSLGTRRYL/uw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=SUssqRtz;
-	arc=none smtp.remote-ip=209.85.208.69
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794290719;
+	b=5IIyDzSIspFS9+1m6zPOnvsSwyB4sOBVufNus4LrdZkQcX8CPRvAO60TvgTlVjXHfPKX
+	 a8pWK6WbGd/9269w78dlPO6htC7ZfwuG9I3Ddj2B+OAsSXSY+2EDPQ0h4evE8vumviSRH
+	 0ce740PeFxY5VfN2p0ZzqDiR/b1d4p73R/chgh/KAA8kro3EkY8ovuzKCz97upipkSrNN
+	 kfUTtnorooej0FZkN+ObtlTHAUs1Dt8BEc2wGE3pKj3oo49dRM7TLiPgcsgZXPzSDTSPN
+	 ExbGP4c0pTpWKJYITg/tDG8NdCJyzpfrLUDuONh4kI2QMyvrgG6ptdiJ7egxZLGsnCg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794290719;
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=pp5MsRRltuiHJXQeY+Ua4pR86P0Yv7OH4I2Bnu8FfDM=;
+	b=xodi9UU060HSb8LgG02YhDUj5jEROrL0f5G6xISUsKZrlOW1CAKcIA3tEVM5iHaphOlj
+	 4tj1bJIlCLFD2cTuAEmGgVcBHe1dSxAr19rpY+Qxpb1/f5lqM2HV8AKckEdu3sTIVFUED
+	 d85MNweSiLu4iqXtL9Rb0Ytb3MiX5mjG1o24D6bYDHnh04PmW/r/OA9sP7tNP9A44myRz
+	 32FvSdFu2WWHlxoIFtzuw346wAR69gq8ImnuorkKLrXW+BPbgpcCugSUHELkCQKLRzLgP
+	 682uTchXw8jg2hmTyG32zC5yPPCmjC+deZ00pWbRkaUDhzw5qqEjy5IHIpA7oLt2xFw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=duAOvrgs;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB46B606A31C;
+	Tue, 10 Nov 2026 06:05:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=duAOvrgs
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794290718;
+	b=PDYS413xF1kCBf+dBRjvDJJyXZ2X83jGIGCcNpiJo8twsZV/ddbwTzRuD8/NkvzovKh9
+	 OWsr99oIoS34cvMn3ZDbcEtF/OxIbyfJ4pzwGUvZp3simvN1wa0swk+EZptwpR7p+MRpl
+	 pH9T/SyTnVFvjXnRKZ25Kvzs8fDURo/kkzGdxVaBHe8DcRN5w9Lgv6kIToYUupyVZIssn
+	 OE2DUpZmjy4NPjGjdujvv4+LW7ZHZKYxAQTH05ATxeXCyeHgk7jHQ8MeoTTodQ9RZ/3Gy
+	 ijftP4pKFUcWZc0D5ZiXI2ajoiNjg9z/bdkiaYubYr7KyjwDp0qEjJ5PBsFjqRYmbBQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794290718;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=pp5MsRRltuiHJXQeY+Ua4pR86P0Yv7OH4I2Bnu8FfDM=;
+	b=FFhr2cqWqGI6moeweRigvS0YierLK1LEq60kDxmxgRVdu6rPYDtD8UTyoBuJhWbF57L0
+	 Z7I44zf1DAfKUSZup7Rbcs1nUDgobZsXneJRYJfQKfI2wb6USeGsDpJ20x/DEmGe9Crtk
+	 fo4qCQNMTktWLo1jSR5GTAH9KLYbL8dWtmGEiDxlSs8oanSJQLT/A7MqNF24a/0TUooKz
+	 BLfEe+qz8CVRI4XO3KByJyPQ+IoLAhGordCthWpqmmPTqHn3g0CmSEK2SQLGX7OqnI8cS
+	 vmx7YruIhszALq5ip+PVtQJkihRFDuDqS3pFKZqKCUHEpWHhrV7PBmfDMHOqPbI573A==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCE87606D6AD
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 05:02:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DCE87606D6AD
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=SUssqRtz
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-6b42827bb4bso1152548a12.1
-        for <iommu@lists.linux.dev>; Mon, 09 Nov 2026 21:02:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794286943; x=1794891743; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Mz4A0EINz7FXiOtg+LRLaTUicVm3TZtwZy9VYgokgFo=;
-        b=SUssqRtzsLLal8qsXM4D0yz2fC/DRSWB5A4fkK1a3WL0E8T/bezz69ivCHNCwB2fzZ
-         GYTrEf6tFzqzIXWZNXVgo/EaGZDQ4m+qPRczHwRnaoa3YA+lsyYC4uw3dJ3s0yywHVng
-         rZRbqoe35ab3LTv11IgcUtyR/fIEOzD2tEUzFyGdTXyH7rURK8xaemiQoevE2aped/rC
-         6SXordgp3968TGlgW0fT9M9VdZt4sTwLQqKtzCzkv1MBGPXLRlfGuDYJcyfEXl+1sFtZ
-         ffcGBre5Xh7g+iYKYsToGuGfGfFYwMPjjgzqnS9bTgR/z+QwBKenDh4eYrLFeFU00nRE
-         WcyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794286943; x=1794891743;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Mz4A0EINz7FXiOtg+LRLaTUicVm3TZtwZy9VYgokgFo=;
-        b=cUzI9V+II+CpuFeyYmkd6xuVaFbuoWFUKN90mzP2xlmPgqw21SBjarQB1B25kYfNph
-         iRlH30E2i+tbIaNaF7IMq3G7Denw94MBM8ggnePhX599IbboTnAaZGjspQIyqLV7uDqj
-         XlivdOWJQxkgYSjYTiDZ9dsktWNcst+6px6O63bk2wgVWVWQf02LQvLAje67hMjXeYi0
-         1eSXzChJalr8GYBIaaIZrEjpZ1H85cvoSqCgSXTJAoxJv0xjjPNnOabFhMl5uQ6NnAET
-         ULjWHvJBTFZT0Irnfe1xJ5NJz6cVthnNuzAofpxqM3WvizN5z6BCBgTpiEA+dQJTgpSq
-         8S1A==
-X-Forwarded-Encrypted: i=1; AL+hErE171xNVwbHiwU4UKv1xhfubVfViGL+md0EmyfSVu5IfpnouhT2wuwc6LDXvLAAU6bASIKWEg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+hUKwuICWth25/ujSAToYmXwI0YApN2+qppt7njecwoANw6htw
-	QdBaoF3ZYc3VyOaiVUzDQlzCppKD1ynWr5w4dtgqsBZfqX+NMfmsNTfanfDO2KRgBrJIgmv39eK
-	nESc+lsZo80B5Tbr2Ug==
-X-Received: from edt12.prod.google.com ([2002:a05:6402:454c:b0:6a8:1d4c:399])
- (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6402:1ecf:b0:6b5:6522:de39 with SMTP id 4fb4d7f45d1cf-6b756ae247dmr1199083a12.22.1794286943216;
- Mon, 09 Nov 2026 21:02:23 -0800 (PST)
-Date: Tue, 10 Nov 2026 05:01:59 +0000
-In-Reply-To: <20261110050202.529473-1-tarunsahu@google.com>
+	by smtp.kernel.org (Postfix) with ESMTPS id E01DE1F0089F;
+	Tue, 10 Nov 2026 06:05:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794290718;
+	bh=pp5MsRRltuiHJXQeY+Ua4pR86P0Yv7OH4I2Bnu8FfDM=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=duAOvrgs0bjFuyz8vmehk3SuH+fOCbTDVNN8Tz67LSwbycY8TK0R51RzQk/pLhaFR
+	 Dfldv/+KMXxBcOUtToS5Wbo1odPN5hI2vv68W71rPSS47q43BV3tX+LIj6yTlTA6ce
+	 jwatAaGuduHd+muAT4Ba/V1cTveWe0tLSXy6aKYGOnGtRRGFP+R8PEbxz9GgIoavFC
+	 E0VXEWGZzdPZuH7mpUldgpxWDSwaYmu8ve7PxWHx/UiN7VUXDObNMiYuj+eWQq2yDg
+	 /gJlWOZNC3nUJX981zFWKvH80CsVUtPsQmcEk4mhUrmFkQ/A4rlagbBFWl3xxVinlM
+	 XWFDH3wDnfj/A==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 5E50C488D7;
+	Tue, 10 Nov 2026 06:05:17 +0000 (UTC)
+From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
+Subject: [PATCH 0/2] iommu/sun50i: Don't report TLB prefetch walks as page
+ faults
+Date: Tue, 10 Nov 2026 06:05:16 +0000
+Message-Id: <20261110-sun50i-iommu-prefetch-v1-0-43428e792ef6@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -78,160 +83,69 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261110050202.529473-1-tarunsahu@google.com>
-X-Mailer: git-send-email 2.56.0.506.g506a7eabc5-goog
-Message-ID: <20261110050202.529473-17-tarunsahu@google.com>
-Subject: [PATCH v4 16/19] PCI: liveupdate: Add feature header to struct pci_dev_ser
-From: Tarun Sahu <tarunsahu@google.com>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>, Mike Rapoport <rppt@kernel.org>, robin.murphy@arm.com, 
-	maz@kernel.org, will@kernel.org, David Matlack <dmatlack@google.com>, 
-	Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com, loganodell@google.com, 
-	arnd@arndb.de, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
-	Bjorn Helgaas <bhelgaas@google.com>, oupton@kernel.org, alex@shazbot.org, 
-	gle.com@google.com, pbonzini@redhat.com, 
-	Andrew Morton <akpm@linux-foundation.org>, kevin.tian@intel.com, joro@8bytes.org
-Cc: kvmarm@lists.linux.dev, linux-pci@vger.kernel.org, 
-	Pratyush Yadav <pratyush@kernel.org>, kexec@lists.infradead.org, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	skhawaja@google.com, sagis@google.com, linux-arch@vger.kernel.org, 
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
-	Tarun Sahu <tarunsahu@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXMQQqDMBCF4avIrB1IhIj2KsWFTid1BKNkjAji3
+ Rvt8uPx/hOUo7DCqzgh8i4qS8iwZQE09uHLKJ9sqExVW2sNagrOCMoyzwnXyJ43GrFxRC2T986
+ 1kL/3IMfTfXd/axompu2OwXX9AGmBtZx5AAAA
+X-Change-ID: 20261110-sun50i-iommu-prefetch-85cc9ecff559
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Chen-Yu Tsai <wens@kernel.org>, 
+ Jernej Skrabec <jernej.skrabec@gmail.com>, 
+ Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794290717; l=1731;
+ i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
+ bh=1HWI9g6TGPVRDjXZAWrid5CsNT0iypzvfoEB9OnZ4/c=;
+ b=Me2JoZVpnSuI1KduurX44yUYuz80n91+47NwqBz+j+T3bVEoG7PhKHnEjJfE8zjJcNgdtG7T2
+ 8Wl1d/2jJAJBB7ZByCyazwlMv3D1Qz9I5yxRgcMdAEAXNW5IDAMiBqp
+X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
+ pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
+X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
+ auth_id=1480
+X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
+Reply-To: aiyengar1990@gmail.com
 
-Precede each serialized PCI device entry in the PCI Live Update KHO block
-set with struct kho_ser_hdr via DECLARE_KHO_SER so future per-device PCI
-Live Update features can append fields to struct pci_dev_ser without
-breaking compatibility between adjacent kernels.
+On an H616 with a display scanning out, the IOMMU reports page faults
+with master -1 at the IOVA right after the end of the framebuffer: once
+at the first fbcon frame, and then once per frame for a while after
+each TLB flush, e.g. while a video decoder frees its buffers. They are
+failed walks of the TLB prefetcher, which the hardware flags with bit 31
+of the page table interrupt registers and no master bit. Patch 1 stops
+reporting them. Patch 2 makes the remaining fault messages say which
+walk failed and what the interrupt register held.
 
-Mark struct pci_dev_ser as 8-byte aligned since its largest member is u32,
-initialize the device block sets with kho_ser_size(pci_dev_ser),
-initialize each entry feature header in pci_flb_alloc_dev_ser(), and
-validate incoming device feature headers in pci_flb_retrieve() before
-accessing the struct pci_dev_ser payload.
+Tested on an Orange Pi Zero2 (H616) with HDMI forced on at 1024x768 and
+three 4K H.264 decodes through cedrus, on 7.3 kernels with and without
+the patches:
+- without: 214 "Page fault ... (master -1, dir rd)" lines;
+- with: none, no "Page fault" line at all, and no decode errors or
+  timeouts.
+Since the patched kernel prints every fault that is not a masterless
+prefetch walk, this also shows that the hardware sets bit 31 for these
+walks.
 
-Signed-off-by: Tarun Sahu <tarunsahu@google.com>
+These patches were developed with Claude (Anthropic) as a coding
+assistant. It investigated the problem and wrote the code and the commit
+messages; I reviewed them, and they were tested on an Orange Pi Zero2
+(H616) as described above.
+
 ---
- drivers/pci/liveupdate.c    | 27 +++++++++++++++++++--------
- include/linux/kho/abi/pci.h |  9 ++++++---
- 2 files changed, 25 insertions(+), 11 deletions(-)
+Arun Iyengar (2):
+      iommu/sun50i: Don't report TLB prefetches of unmapped pages as faults
+      iommu/sun50i: Print the page table level and status of a fault
 
-diff --git a/drivers/pci/liveupdate.c b/drivers/pci/liveupdate.c
-index 0bda94f4a7e4..f4c84bcc0629 100644
---- a/drivers/pci/liveupdate.c
-+++ b/drivers/pci/liveupdate.c
-@@ -288,7 +288,7 @@ static int pci_flb_preserve(struct liveupdate_flb_op_args *args)
- 	ser->devices = 0;
- 
- 	outgoing->fhdr = fhdr;
--	kho_block_set_init(&outgoing->block_set, sizeof(struct pci_dev_ser));
-+	kho_block_set_init(&outgoing->block_set, kho_ser_size(pci_dev_ser));
- 
- 	args->obj = no_free_ptr(outgoing);
- 	args->data = virt_to_phys(fhdr);
-@@ -318,6 +318,7 @@ static int pci_flb_retrieve(struct liveupdate_flb_op_args *args)
- {
- 	DECLARE_KHO_SER_HDR(pci_ser, *fhdr) = phys_to_virt(args->data);
- 	struct pci_flb_incoming *incoming;
-+	DECLARE_KHO_SER_HDR(pci_dev_ser, *dev_fhdr);
- 	struct pci_dev_ser *dev_ser;
- 	struct kho_block_set_it it;
- 	struct pci_ser *ser;
-@@ -338,15 +339,20 @@ static int pci_flb_retrieve(struct liveupdate_flb_op_args *args)
- 	incoming->fhdr = fhdr;
- 	xa_init(&incoming->xa);
- 
--	kho_block_set_init(&incoming->block_set, sizeof(struct pci_dev_ser));
-+	kho_block_set_init(&incoming->block_set, kho_ser_size(pci_dev_ser));
- 	ret = kho_block_set_restore(&incoming->block_set, ser->devices);
- 	if (ret)
- 		panic("Failed to restore devices KHO block set (%d)\n", ret);
- 
- 	kho_block_set_it_init(&it, &incoming->block_set);
--	while ((dev_ser = kho_block_set_it_read_entry(&it))) {
-+	while ((dev_fhdr = kho_block_set_it_read_entry(&it))) {
- 		unsigned long key;
- 
-+		ret = kho_ser_validate(dev_fhdr, pci_dev_ser);
-+		if (ret)
-+			panic("Failed to validate incoming PCI device feature header (%d)\n", ret);
-+
-+		dev_ser = kho_ser_payload(dev_fhdr, pci_dev_ser);
- 		if (!dev_ser->refcount)
- 			continue;
- 
-@@ -456,6 +462,7 @@ static struct pci_flb_outgoing *pci_liveupdate_flb_get_outgoing(void)
- 
- static struct pci_dev_ser *pci_flb_alloc_dev_ser(struct pci_flb_outgoing *outgoing)
- {
-+	DECLARE_KHO_SER_HDR(pci_dev_ser, *fhdr);
- 	struct pci_dev_ser *dev_ser;
- 	struct kho_block_set_it it;
- 	u64 count = 0;
-@@ -464,9 +471,12 @@ static struct pci_dev_ser *pci_flb_alloc_dev_ser(struct pci_flb_outgoing *outgoi
- 	kho_block_set_it_init(&it, &outgoing->block_set);
- 
- 	/* Try to find an existing, previously unpreserved, entry. */
--	while ((dev_ser = kho_block_set_it_read_entry(&it))) {
--		if (!dev_ser->refcount)
-+	while ((fhdr = kho_block_set_it_read_entry(&it))) {
-+		dev_ser = kho_ser_payload(fhdr, pci_dev_ser);
-+		if (!dev_ser->refcount) {
-+			kho_ser_init(fhdr, pci_dev_ser);
- 			return dev_ser;
-+		}
- 
- 		count++;
- 	}
-@@ -480,11 +490,12 @@ static struct pci_dev_ser *pci_flb_alloc_dev_ser(struct pci_flb_outgoing *outgoi
- 		kho_block_set_it_init(&it, &outgoing->block_set);
- 
- 	/* This should always succeed since kho_block_set_grow() succeeded. */
--	dev_ser = kho_block_set_it_reserve_entry(&it);
--	if (WARN_ON_ONCE(!dev_ser))
-+	fhdr = kho_block_set_it_reserve_entry(&it);
-+	if (WARN_ON_ONCE(!fhdr))
- 		return ERR_PTR(-ENOSPC);
- 
--	return dev_ser;
-+	kho_ser_init(fhdr, pci_dev_ser);
-+	return kho_ser_payload(fhdr, pci_dev_ser);
- }
- 
- static int pci_liveupdate_unpreserve_device(struct pci_flb_outgoing *outgoing,
-diff --git a/include/linux/kho/abi/pci.h b/include/linux/kho/abi/pci.h
-index f53f6350e53d..77ddf5938822 100644
---- a/include/linux/kho/abi/pci.h
-+++ b/include/linux/kho/abi/pci.h
-@@ -19,7 +19,8 @@
-  * File-Lifecycle Bound (FLB) data, identified by the compatible string
-  * ``"pci-v2"`` and laid out as described by the structs below.
-  *
-- * struct pci_ser is preceded by &struct kho_ser_hdr, which records the
-+ * Both &struct pci_ser and each &struct pci_dev_ser entry are preceded by
-+ * &struct kho_ser_hdr, which records the
-  * total size of the serialization and feature flags. See
-  * include/linux/kho/abi/feature.h for the feature header layout, feature
-  * rules, and validation.
-@@ -42,14 +43,16 @@
-  *            reference count is equal to the number of preserved devices at or
-  *            below it in the PCI hierarchy when the struct pci_dev_ser is in
-  *            use, and 0 otherwise.
-+ *
-+ * Preceded by &struct kho_ser_hdr.
-  */
- struct pci_dev_ser {
- 	u32 domain;
- 	u16 bdf;
- 	u16 refcount;
--};
-+} __aligned(8);
- 
--static_assert(sizeof(struct pci_dev_ser) == 8);
-+DECLARE_KHO_SER(pci_dev_ser, 8, 0, 0);
- 
- /**
-  * struct pci_ser - PCI Subsystem Live Update State
--- 
-2.56.0.506.g506a7eabc5-goog
+ drivers/iommu/sun50i-iommu.c | 50 ++++++++++++++++++++++++++++++++++----------
+ 1 file changed, 39 insertions(+), 11 deletions(-)
+---
+base-commit: 2cf4be57b301ed2d7af82e70cff5dfd96894d8de
+change-id: 20261110-sun50i-iommu-prefetch-85cc9ecff559
+
+Best regards,
+--  
+Arun Iyengar <aiyengar1990@gmail.com>
+
 
