@@ -1,108 +1,79 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.74
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794323744;
-	b=n5GZ31fAei7vM7gmzN35yGDoLViqNzxbAOWN8JwH9RpibiLZhrm1FFL1JzZszqtHAuRz
-	 9SukL/Q8v4AhyU8x8hM3juYl3djC/VsvXcxXqmH1d9S398SlD3393VIj9o8pxJB5Z491b
-	 QtcTur0laxy0yUML+tiudyglKsQLJ9wcn3cpHxL4BiotWFjBYkS9jQ1ks2r2quPx78FIK
-	 pSEa5q9rHkdxa38WJq47ZyzHSTrG5UV6t70VsmdtwlQFUtvmNrl17DjJeuq+F2e9cnWkV
-	 uaTujVeq8bQtsy+q9t4QH6T4KpgjqTpbjSxpNWKMawW+FcBiaiwmXn/i7aSB8v8T9VA==
+	t=1794323781;
+	b=GXmXxLFXuDylTY+L7bvcvlwjP822cqHTSWSfHx5yWMoWQRTJmL+EzKp9YDWQjcY8clbE
+	 Yfxjgke+eIMAdT5yim5pcFba3K1f6kFKhEYpsRQP5ntZ8+D15VWuopf1WqJttIGdCvt4/
+	 cuJAFu2/adBGoFfvI7sIQ7XJQh63zYPjfmOHOraXUBVPlDeIx3Roq+Uikw3z0osfMrilB
+	 hbK7A6CeIGw+s4Pf6rW684sag0+7Kk3aeKusNIGG3mp5jhyBR79qBO6oSF1OVh2aknj+e
+	 vSnAAHgdG7xmCVju8t+puUizxuajgXD+0AWiRacamyp3tLAhqm6GcgcLAHLoxOyEoaA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794323744;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 X-Google-DKIM-Signature:X-Forwarded-Encrypted:X-Gm-Message-State:
-	 X-Gm-Gg:X-Received:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-GUID:X-Authority-Analysis:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=9fJQ8pE56HbkX1ZUYrhxVkU34TSFLmlaQeYQsbPiSE8=;
-	b=rSzIj0hQ/CTcubhzkyIEC/2I0IPBMER6d3DrI2tK7V+VjNCXVlpKQm5bfW8cU0rDo9sa
-	 qWUFZ4GmVlw4aZOaPaKNiYQoTecdOJ1g4aYb/LpI1LYLHJMlw/d8abCY914pmNO0KU+p8
-	 mb664er1zo8edlWRKRtgnIFWpZTh4/d6LVzhgyzQU1jj5NUBBX1tgl3vT1sYSh4Gf1Xim
-	 WGkufCcjcBvIvZW5u7Xeaw+r3gnBWZEAUi32kfkth/T5Kd6bk1VYMgjqv/9cvyHQKsQop
-	 7lPNsmDO6RHh/dj/uFXEGkkyPvxUmkR0Qm4cJzrWZ2+opDP9nzENKQbWXJ+AL2kiaFw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794323781;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=xvBl9sRZyc0ZM+YkhN+XeMSl4+2u4RMdz2hWt5xJPNQ=;
+	b=fkGaMoNELPmF4JTaqn2TneZM9yKjo2RBksDEBmNf6RFswcqxBMZafzJFlszb+5bpHkCM
+	 zLQkCJLM1kXYQ2jIoPMGpTYUWrQ7LnFUmuh/CUOHKZOvGx8TR9XCG/zgGXd837MI2xaKU
+	 pRitcyX1rpdxceIXhtfUWThob6ulZL7zf5Q7G3wevV4L4bXt3kzMOArTgk8hNiiKk2UAB
+	 LhGaRRuXHuXkRn/1LbRDaoy1btzTopdbMRUaUD6PwaA3llrhxuX/LMfvJM4Q9ydWvUNQl
+	 v3SANbuksREpum0kXiqj1zQOTt7CtOGYFSMOlWNBe1NQy/Zilm5gQvh94Wsk54caDqw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cs.columbia.edu;
-	spf=pass smtp.mailfrom=columbia.edu;
-	dkim=pass header.d=columbia.edu header.i=@columbia.edu header.a=rsa-sha256 header.s=pps01 header.b=Ag+rVwYC;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=148.163.135.74
-Received: from mx0a-00364e01.pphosted.com (mx0a-00364e01.pphosted.com [148.163.135.74])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oOgycG4R;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1FF2606A320;
+	Tue, 10 Nov 2026 15:16:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=oOgycG4R
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794323780;
+	b=XF1ENQUfJCg9NC2cDxoF4aMLH5P022rkvmeWLP1NphptgzEVWWHzNM3ryxFls81xHrpF
+	 elkI0E1WCvcuJvYHTmTZcAdII4wUZmYobOqB34vgMGHUxJyaQtPZTWQcDnaEal/B8r3pJ
+	 B4rp+PqjAWFHtG9XDKKwaxvUvC79jXw541o65iTGu9+8VhLmDjyqaNXJy9nZHr1MAG8Nl
+	 zqjZiH7xgIV4iE7hI6hZE5e9vrOcf4KIWzTTDsi9p8SUi7jvg0JrXKSTlQDAzF1u7Yfsc
+	 Cn0mQMPB95odw9UcshlwEwufeeMjku0KH1xpwS0apwEaR1evy1VApUWzK7IWQTGkBnA==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794323780;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=xvBl9sRZyc0ZM+YkhN+XeMSl4+2u4RMdz2hWt5xJPNQ=;
+	b=CGrH91PIoi5AAZxSsTSldnvwxIFaTtlHS+kNlHlERLWXHxLBfCnCYiJiR6ZL6mX4krDN
+	 mWzga+VM/EZyRHgUnfOqAL1XkTeqP4T/WjT+M42j6KlYVfhZwENM8Rly7UDx4Ba8Rkd8Y
+	 Qsnc1ZEFFauESnDkNGDUEw2t/lZWSriOq0WR7FPPim42xfXLwjZlI+bj8EEo0052u0xBP
+	 MYdPqMOIaLSLHohTz5Vya9IMeLjk6CaUUZ0zav2rskJsR5ZHY9QVgG1HmOE/+meJwJggJ
+	 nTLP7AYPgdOG3TTmwYU7rb2SlmFb2P+gP5QsF1NtASYYB6Pj9wcdKo02xW9w/b1clvw==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A48A3606A320
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 15:15:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A48A3606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cs.columbia.edu
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=columbia.edu
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=columbia.edu header.i=@columbia.edu header.a=rsa-sha256 header.s=pps01 header.b=Ag+rVwYC
-Received: from pps.filterd (m0167072.ppops.net [127.0.0.1])
-	by mx0a-00364e01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AAEpchX4047867
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 10:15:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=columbia.edu; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=pps01; bh=9fJQ8pE56HbkX1ZUYrhxVkU34TSF
-	LmlaQeYQsbPiSE8=; b=Ag+rVwYCVCl+dxG/6YaoTME2XZXFS8Ml4qOb5f5aN/hY
-	w199uroagCaME1+uFLtNnFAevh6nIaE7N6SdxyuIqPEzsihdyilq3gNfj2tLvc7Y
-	CwYj6nK1ulB7O+qsUFlu9eTGa9OE4EZDnpGW9oR9oYd2+Q9yQYSZ5XcW4W857xKA
-	of3asewuVr5iy+bt2jXG31R5/GDJr+Vz1z1+UgMLv/Hc7J8rfM+SQQ9IUcqk7BWj
-	vJML5QoEszM31qN/FHzndOZWlx779vHX8lUU2K/Thr3qouWvsQZDW/VwOSz3Po6q
-	WqcqXl2ynbAcO3IooCiB8n/wp5vBX0I8u7TArYoJRQ==
-Received: from mail-yx1-f71.google.com (mail-yx1-f71.google.com [74.125.224.71])
-	by mx0a-00364e01.pphosted.com (PPS) with ESMTPS id 4hv4xkrhn5-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 10:15:42 -0500 (EST)
-Received: by mail-yx1-f71.google.com with SMTP id 956f58d0204a3-67c0ff91f4cso2988055d50.3
-        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 07:15:42 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794323742; cv=none;
-        d=google.com; s=arc-20260327;
-        b=D06IlRixezfChNdR/e4CXXYbmY/P1FIGOk6FZLzlqIBWP1K+WETq4qSv9Xe76Jni1M
-         YyvnYQ630V9d+RvwZrTDOP8Gp34NCpl/sSJujy/DoV3uSA2OAQBwQeM31iZfncTOL+gA
-         tABVR6qx9W2XEVGswNPbehqnRYGG/Lm9iI/7ydAcIs8JprutccNryNeX/5dG+aStqhWh
-         lSDV6SnPJ0xoskENn/GmSew5HdRdm+2CjUnljyVayXjMNT0H9SEhprZQous7ao0cQUrh
-         l6eDMKKXszd9ECCqxFOPIFqm0b9e++Qv953j6aRkvkn8EqA23xWcrdfSoZCNorF12pYf
-         UReA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version;
-        bh=9fJQ8pE56HbkX1ZUYrhxVkU34TSFLmlaQeYQsbPiSE8=;
-        fh=J/6Yy/ulfbTzCkFKzvG3LjQkVad/hwPM1I5lTKwgk9E=;
-        b=sai5ks9GZIZKPktm+mDhl5suOPNsEKSeG7NDB7uSDjYG2Sc3M+UtG1S41YTf5WRo44
-         H8UVxr04ZHvz+1rYfHq3CkxlWeE+CXWh9G5NhWofHghMboXmA1OP+N75VQGOyOdVrdxU
-         BKASLKyaCDcARIO981ekhUpKeTdB+lMtYKuAu2BJqiQ7adWg6oWW+etz/kx+c2UL6n9f
-         Yi6hvGZQvoRbMf5OyuwUSM+f9kWFKBVlo1R/huPLkf61qaWpazKeU2j4rxWUf+j/qKY6
-         Dn9eVNyD3njjAQgVKgRqcosRIFNGJW6vRULwLQbz3VDho/0DrQ1BfPiYE+jYGxgaksx1
-         3weg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794323742; x=1794928542;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=9fJQ8pE56HbkX1ZUYrhxVkU34TSFLmlaQeYQsbPiSE8=;
-        b=ahUr8cUCsTMyYlmT1wAPT19plt0uWAk3wrfhoP0Cbvx1ptFETlBvBglxFviEmdE7yq
-         rAmvwUtrFwIfmcaW+hrOy9Iymc/0cxbmtTSIBsIB1ABk2zheuIp5xMFheMaX9G1w9tme
-         EnCZTIYFOI2ZS8e90v9AhKGlBLRnmn5w+CSrF+rG4tm680eOB1tj2UlxDR9bEnpbdKu/
-         w0ckgUIyJQL8ldWP6tjr3EF0ASOsiaUDDbomtDeY1jPQfX+Q5AOAQILyQ9zq2+ngBQO1
-         mGsPUKKHP7u1rarWjf40Mg7YY07hjNoKEieaEF0CcThjGkionIzoBjgMjdNlgWTs2Osd
-         NjGg==
-X-Forwarded-Encrypted: i=1; AL+hErGrZVGz0TGbJCL+Zj+r1aq0lqq6kDj6VDha0nAAN6WxJpU+MiDQ9LFS6344bp4f3eLmkij+ug==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+7gwslyrKV2lxSu1SCBR4n8z0IblUm7Wj7F0K+Pal0rPczKI2x
-	dm1L2CmsDjlZXj6yZPeDUw0uuz4QtCnHa2XHUOdvnOGesDXuGzmfezu1gZTlrDeIfLenEBTWs+/
-	Y+kOEEhocJ0uap3ghatypt8GATeUcr9bXP1mKUEFAqDf+XApai3frEMDSbRpuR8TsIhW8cW+NZs
-	Yi88Hg9M7k8jiSrf22EoI/DvE8EbYpKZ/PYbtpNQ==
-X-Gm-Gg: AYBFou1Mwj7Fm4d6l6L7pjY0o9g/ev3klgcSF0WyxZoy+1SKplPiYeBBggcITOrJ0hO
-	y/N2Vsp3pzIbFF2w7sfl2b8T8uXXbvV9Kiomt9ZGDhS7QgPYnJW9OJA8OiKwcppfBvPlFv99ZKr
-	TaMYDDtHZK8xGngwA0kiVuUKg/rLM/CzPQapCl1p0Y/Je+/4mcK/OskqkMCsAhqPmg5l4FxrWWX
-	Ywu2gbRJxgrTx2UiyyYWPFnYRVyj74gJaxKCnfhHYm6G1yyCgInuoARN99ukPAfZkDipB6MeTJQ
-	cSXBwIYjIrC/+DFfBiblgu0xyDoaVrTHHw==
-X-Received: by 2002:a05:690e:4846:b0:67c:1aa:2030 with SMTP id 956f58d0204a3-67c567efb25mr1187117d50.67.1794323741908;
-        Tue, 10 Nov 2026 07:15:41 -0800 (PST)
-X-Received: by 2002:a05:690e:4846:b0:67c:1aa:2030 with SMTP id
- 956f58d0204a3-67c567efb25mr1187109d50.67.1794323741481; Tue, 10 Nov 2026
- 07:15:41 -0800 (PST)
+	by smtp.kernel.org (Postfix) with ESMTPS id B310E1F0089F;
+	Tue, 10 Nov 2026 15:16:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794323780;
+	bh=xvBl9sRZyc0ZM+YkhN+XeMSl4+2u4RMdz2hWt5xJPNQ=;
+	h=From:Date:Subject:To:Cc:Reply-To;
+	b=oOgycG4RvEfKBPAYn8+vHOaH0fjPS+egnHrhAvcEpP6yN9meo+EkAhonYBWDhuhpp
+	 pVOG1JHSmUi31hxXvx0yfy4YnKr2sHh64s7+nPvFu/wXRAfwmWy/1AoN3IB4wRUyWV
+	 g3osCANbDxMCpS64JslYpgG9y5Nhx15GtVTb3+u0qvAV0CNbeeOTpa42yOt/u6XYd0
+	 oyEg39gS9L9zNntPAGopZbozX2YY9NlwCwWlhYlZgb8br/g7vkZTC16Tc+cnXHBl2+
+	 NhRMBu+eFdN7wMCyBp+J0Sv7vhj7Zp7fGKQrxvnZkyLi1aSRJM3DVl/M/BLD7DRgfe
+	 rCToqcNNVs/SQ==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 13C7348BAB;
+	Tue, 10 Nov 2026 15:16:19 +0000 (UTC)
+From: Xuheng Li via B4 Relay <devnull+xuheng.cs.columbia.edu@kernel.org>
+Date: Tue, 10 Nov 2026 15:16:19 +0000
+Subject: [PATCH v2] iommu/arm-smmu-v3: Invalidate a new level-1 stream
+ table descriptor
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -112,55 +83,131 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261109-smmu-l1std-cfgi-v1-1-65e5203a6516@cs.columbia.edu> <avMxDbv6JE0dg93E@google.com>
-In-Reply-To: <avMxDbv6JE0dg93E@google.com>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261110-smmu-l1std-cfgi-v2-1-dabcae9a593c@cs.columbia.edu>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/3WNSwqDQBAFryK9Tos90QGzyj3ExTi22uAnTKski
+ HfPxH2WVfDqHaAchBUeyQGBd1FZ5gjmloAf3NwzShsZTGYsUVaiTtOGI+naou96QU9l3hjnOnY
+ 5xNUrcCfvq1jVkQfRdQmf62Cnn/3f2gkJbcGFye7OFmSfXlO/jNvUiEu53aA+z/ML38AmzrQAA
+ AA=
+X-Change-ID: 20261109-smmu-l1std-cfgi-c194b2aafea4
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>
+Cc: Mostafa Saleh <smostafa@google.com>, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>, 
+ Xuheng Li <xuheng@cs.columbia.edu>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794323778; l=3915;
+ i=xuheng@cs.columbia.edu; s=20261028; h=from:subject:message-id;
+ bh=vrw2x4/NF30qA+HPgtOkavd6zjgXcD+1Xy7g1vNZRQw=;
+ b=BhRfG6l6tXiOPUeBYvIBMfVP3wkb5KWA40Amo32/l2sUqL0Q8C3urNZOfxbCrgjmXtle8/qfq
+ D2GfVoSPczaCXuMaMxYnYtFLdx4zTB4ldgFN1G7rgpAiCiuipLJoghk
+X-Developer-Key: i=xuheng@cs.columbia.edu; a=ed25519;
+ pk=L1HVV+goqxYmEMO/OXakL6uf9isSpgk2QrLlFqyZ2Qs=
+X-Endpoint-Received: by B4 Relay for xuheng@cs.columbia.edu/20261028 with
+ auth_id=1349
+X-Original-From: Xuheng Li <xuheng@cs.columbia.edu>
+Reply-To: xuheng@cs.columbia.edu
+Content-Transfer-Encoding: 7bit
+
 From: Xuheng Li <xuheng@cs.columbia.edu>
-Date: Tue, 10 Nov 2026 15:15:30 +0000
-X-Gm-Features: AclHuK8DUCRIoYG_4OUqBuLRYwkfdAVKQUExB3-Zc9tH9YZI_6jnEOtLYF7fci4
-Message-ID: <CAPOPQMAThQLj8Q8bMx7oyCTHehV2KTugeLNpdUrHQ2roPw1TZA@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Invalidate a new level-1 stream table descriptor
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"
-X-Proofpoint-ORIG-GUID: f0STuFBKDsum_kCNOfzpDSyywS0MhyVp
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEwMDA2MCBTYWx0ZWRfXzXY5sEOtLmc5
- 5sCJ8FAn8vmH8RjKeY9mBQE14PcNyA8p2Jn4l2x7nCxJhNHJ+ob/i5+jlpvFiQt3ZNUTd74yvjx
- /l2xOkNPT4ysDbZjI9Qf/e+CvM+sCAKV0RTZ3YAUFxQA0HIS9lio0/dK5Au588CZW37+ewwPVr3
- d1tUOeOTE63raijD8YakVy1ewjxRLjXE2QsK+UMSoTHgLRY/oSkOJod8i5N/m1MaHpXj+8RJXwO
- ObmHvxUtCqmmwMOwRDOREx416nKfKqqDPAsSKgrSmD4rwBYSNuvB4EsUuX+UULf8CNrm23Aui5I
- 3d/oNXSmPwwLJMuUOoNfVR1SAvlcVQ9/hSM5C/kV8aX7xUTN4d7Rcn22Wp7EOkdotxl3DhFN1HT
- 49/VrAR6gbbie1EqVQNOgvU21GZcP4DHSOidM7DaAzpx2FxzxeRtCUyr4nWLpZOHEU4lLHb4fqm
- KAlkD6v1YCutdhJdfgg==
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEwMDA2MCBTYWx0ZWRfX51vmG3F1l0IR
- ySjX+9xiaYaM0CDvAW1Z0sVoKgxeCJfXYCigS2zoH+LSFirZVduJtsKvCC0PE0tILG/uxv+dXsu
- nuIqdUqg81midqwAjjENxDwg+rQ1AzI2A9zfHicfDIwhkpN7vbFz
-X-Proofpoint-GUID: f0STuFBKDsum_kCNOfzpDSyywS0MhyVp
-X-Authority-Analysis: v=2.4 cv=Uf7E26SN c=1 sm=1 tr=0 ts=6af3351e cx=c_pps
- a=ngMg22mHWrP7m7pwYf9JkA==:117 a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=Da8U98TiO7q1upZEImrf:22 a=SsB-OO3BMngHh3ZO9fOt:22
- a=FlFfRw3deazO6x7WvR0A:9 a=QEXdDO2ut3YA:10 a=yHXA93iunegOHmWoMUFd:22
-X-Proofpoint-Virus-Version: vendor=nai engine=6900 definitions=11962
- signatures=596817
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=10 priorityscore=1501 clxscore=1011 impostorscore=10
- malwarescore=0 adultscore=0 spamscore=0 bulkscore=10 phishscore=0
- suspectscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2611040001
- definitions=main-2611100060
 
-On Tue, Nov 10, 2026 at 02:58:21PM +0000, Mostafa Saleh wrote:
-> Which checks out. However, I am curious why this was not seen for
-> over 10 years with the current behaviour as I doubt any existing
-> implementation will do negative caching. Is that something that was
-> observed or found by inspection?
+arm_smmu_init_l2_strtab() allocates a level-2 stream table when the first
+master in its range is added, and makes the level-1 descriptor valid. It
+issues no invalidation, and the attach that follows sends only the leaf
+form of CMD_CFGI_STE.
 
-Thanks, Mostafa. Found by inspection against the spec, not observed on
-hardware; we don't know whether any current implementation caches an
-invalid L1STD. Either way, the driver should follow 5.1.1 as the L1CD
-path already does. v2 will take both comment nits and your R-b.
+IHI 0070 5.1.1 requires the non-leaf form of CMD_CFGI_STE when an L1STD
+changes, including when an inactive descriptor with Span == 0 becomes
+active. An SMMU that cached the inactive descriptor can keep terminating
+the master's transactions as if its StreamID were invalid.
 
-Thanks,
-Xuheng
+Issue a non-leaf CMD_CFGI_STE after writing the descriptor. The RMR path
+runs before the stream table is programmed into the SMMU, and
+arm_smmu_device_reset() then issues CMD_CFGI_ALL, so it needs none.
+
+Fixes: 48ec83bcbcf5 ("iommu/arm-smmu: Add initial driver support for ARM SMMUv3 devices")
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
+Signed-off-by: Xuheng Li <xuheng@cs.columbia.edu>
+---
+Changes in v2:
+- Shorten the new comment and drop the one at the RMR call site (Mostafa)
+- Add Mostafa's Reviewed-by
+- Link to v1: https://lore.kernel.org/r/20261109-smmu-l1std-cfgi-v1-1-65e5203a6516@cs.columbia.edu
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 6d4520c47..e5c09aaff 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2030,7 +2030,8 @@ static void arm_smmu_init_initial_stes(struct arm_smmu_ste *strtab,
+ 	}
+ }
+ 
+-static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
++static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid,
++				   bool live)
+ {
+ 	dma_addr_t l2ptr_dma;
+ 	struct arm_smmu_strtab_cfg *cfg = &smmu->strtab_cfg;
+@@ -2053,6 +2054,11 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 				   ARRAY_SIZE((*l2table)->stes));
+ 	arm_smmu_write_strtab_l1_desc(&cfg->l2.l1tab[arm_smmu_strtab_l1_idx(sid)],
+ 				      l2ptr_dma);
++
++	/* An invalid L1STD can be cached */
++	if (live)
++		arm_smmu_cmdq_issue_cmd_with_sync(smmu,
++						  arm_smmu_make_cmd_cfgi_ste(sid, false));
+ 	return 0;
+ }
+ 
+@@ -4261,7 +4267,8 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+ 	return sid < smmu->strtab_cfg.linear.num_ents;
+ }
+ 
+-static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid)
++static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid,
++				    bool live)
+ {
+ 	/* Check the SIDs are in range of the SMMU and our stream table */
+ 	if (!arm_smmu_sid_in_range(smmu, sid))
+@@ -4269,7 +4276,7 @@ static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 
+ 	/* Ensure l2 strtab is initialised */
+ 	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
+-		return arm_smmu_init_l2_strtab(smmu, sid);
++		return arm_smmu_init_l2_strtab(smmu, sid, live);
+ 
+ 	return 0;
+ }
+@@ -4333,7 +4340,7 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 		struct rb_node *existing;
+ 		u32 sid = new_stream->id;
+ 
+-		ret = arm_smmu_init_sid_strtab(smmu, sid);
++		ret = arm_smmu_init_sid_strtab(smmu, sid, true);
+ 		if (ret)
+ 			break;
+ 
+@@ -5713,7 +5720,7 @@ static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
+ 
+ 		rmr = container_of(e, struct iommu_iort_rmr_data, rr);
+ 		for (i = 0; i < rmr->num_sids; i++) {
+-			ret = arm_smmu_init_sid_strtab(smmu, rmr->sids[i]);
++			ret = arm_smmu_init_sid_strtab(smmu, rmr->sids[i], false);
+ 			if (ret) {
+ 				dev_err(smmu->dev, "RMR SID(0x%x) bypass failed\n",
+ 					rmr->sids[i]);
+
+---
+base-commit: 05441d697f7f9a927264f4058cbbc6a03dfcac9d
+change-id: 20261109-smmu-l1std-cfgi-c194b2aafea4
+
+Best regards,
+-- 
+Xuheng Li <xuheng@cs.columbia.edu>
+
+
