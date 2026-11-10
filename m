@@ -1,66 +1,73 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794300576;
-	b=AjoAqKtWc1+/UnTzAliUpyM+X8M1T9XFesSbOfa68VUwR2tsw2ER/et6Qe5oQUMFUjfR
-	 spOlyZx+4SRhVCU3HvUMbgjDiAV+mKSMHKqgth0AHfX7nlOf7dtrg/ulsSQE8jIBqL/in
-	 Paazy5RjfTadcRxxaMM8OpdIoVVZwcAbwLFj+Rt8iaPCq7VBOrfj2oWhe2KBeOR2BeyR9
-	 r/u20Unx6AFRXWJccTJ8WgCKcfbMrYeQnMIoZRalJpw1nR+pNd74q4YAeR/de9DUMTNVJ
-	 mFamdYtpoNWtxSh4/E0qgUI4Peh5e2JF8WymVh1my4Wz9wcmGn3i1TXbBY8rdpGhMSw==
+	t=1794304131;
+	b=rQ2cNYWBpstZAiQbYNVWyO2Q3mAeabrPuIzFnwsAHGdLfYp7e+niwF30P6vjRGCT1TK4
+	 OZFLeqihfhrrEUk2w0bqxWcB7DdkiWSzIaug7s18Sqz6WI55a/XMxJpPycb18/XUSpYZp
+	 7KqFPJVnx6/PqNX7VHjCKlUd9rILzdCN8vSUztoxJZClSDQNlrmaYwisp6PIrUenMqwSQ
+	 ZV9B6v5JU7bpVZwxw9Uc8GrRIR4ZNvOAkRplTMQ60zRpHEqD7hoSmKfpTTFbUVrBl1P9+
+	 WDlH/qUyAS3eT4g1eojFEcAKMgWaYwqv/LX3FrKdOuwIfSLNFuYKX2uVltw9Zn+ABrA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794300576;
-	h=DMARC-Filter:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
-	 Content-Type;
-	bh=aHn8KcgHhLcXL95P9INTAmVAeZpvAJPCq7Suu5pEHwk=;
-	b=cDFwRT3MIDxvq0mrBB3Kq/6VfFnFDDXiB1/UqEgkB/q2pcYm2RHYyzZ+nM3KYmby8vF6
-	 GmwYjnNUPyhZP1UvtZKvBnc/camkOzHqKvYTRT1tgROUWSTrgosuodjYM0yD75NrdcNYs
-	 o3OMDdsRD5TkbwdYmWoWki+C3Bt6Friz8HiwA/djvAlcI7CfGag+rTGDlKcuTgTeG28W9
-	 idpkGZsKnQ89QNI4EBnU6fXezVzH1pP0e0WTqqRvsbiZNOEWFE8JXKKelofU4VKfyjG1A
-	 uk4ztcDBmDg2UzlaGqdeunmmB1ErRtRoUdCxQhxqzDzAtBYoKdjxAOo0DpqSIO6Shfw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794304131;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
+	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
+	bh=3WfehI9fQijRo2A/YkZKLEEsknJgbPS4DyEKhXbP7KQ=;
+	b=rFKrby10gU+ZzD8w4QYcfO2hhfUNtV5hJWBdSG1gQbZF8wrNTHOJSj1LDgdDeewSP0Or
+	 jQY5atPJZpRwOuzhKin6YCjNwVLZaigDVaLuKhSybXAWhV8CK0BQbcGxelGa73aQfshBE
+	 0LFy5781BjQuoS7InwncF+doZxtr0cXaWdkPeFzsv2p6kMawrobUMMoF18grNObsdlxPS
+	 eX0bq1ua3FlWhpyqsvkPeP2Q5kxPuqMkgYtb3GibrJEOZL2NwkQNmop4097zhTUWvZCl/
+	 2UhPQ6fUCOF5ZC168fA+sdrvAx/3cc31vFOV7i+4lCptOkQJCTtk2e7F+UVAWIv0eCA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=sntech.de;
-	spf=pass smtp.mailfrom=sntech.de;
-	dkim=pass header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=KZ7GbPpj;
-	arc=none smtp.remote-ip=185.11.138.130
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=t5H7erzo;
+	arc=none smtp.remote-ip=210.118.77.11
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBC80606A31C;
-	Tue, 10 Nov 2026 08:49:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BBC80606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=sntech.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64E08606A321
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 09:48:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 64E08606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=sntech.de header.i=@sntech.de header.a=rsa-sha256 header.s=gloria202408 header.b=KZ7GbPpj
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=sntech.de;
-	s=gloria202408; h=Content-Type:Content-Transfer-Encoding:MIME-Version:
-	References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Reply-To;
-	bh=aHn8KcgHhLcXL95P9INTAmVAeZpvAJPCq7Suu5pEHwk=; b=KZ7GbPpjr8rhjj9TeCSN3isJMo
-	4d122GgaAflfPr6ZO4ozp74l8SzqGjVsu5H6TFM2vMhzmL0KHht4wMTwld3FIKNZ8RCqHqHs4jcgV
-	v83dvQpMXC0J35H4CocMuWLe3GQWQip4RgxB9bd28fy1oU+bREnQbTP6s89Rxpecyd3teH+M5USVw
-	ZhnyQ/EhBeB8TNton7OX7iwnUvu+OQeTaHKe12xysLOnzjUoTwOovZI5eCPjfEW3Tjn10GDXQjiUk
-	sMmsr7Jx78SnG58k0FIX2G0gYSMFPfijeXJxkR4cFyERpEqF35KcnYXRp1JFGQaq61Ii8HYqvm/vU
-	7OtWoU3A==;
-From: Heiko =?UTF-8?B?U3TDvGJuZXI=?= <heiko@sntech.de>
-To: aiyengar1990@gmail.com, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Niklas Cassel <cassel@kernel.org>,
- Shawn Lin <shawn.lin@rock-chips.com>
-Cc: shawn.lin@rock-chips.com, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
- Simon Xue <xxm@rock-chips.com>, "finley.xiao" <finley.xiao@rock-chips.com>
-Subject:
- Re: [PATCH 0/5] iommu/arm-smmu-v3: power domain and clock of the RK3588 PCIe
- SMMU
-Date: Tue, 10 Nov 2026 09:49:29 +0100
-Message-ID: <10924894.NyiUUSuA9g@diego>
-In-Reply-To: <7e053777-31ee-4127-af53-0820e852d375@rock-chips.com>
-References:
- <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
- <7e053777-31ee-4127-af53-0820e852d375@rock-chips.com>
+	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=t5H7erzo
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261110094847euoutp01d9638d1f915948f8e66ef8dde6fae07c~mphjn62q-1176611766euoutp01F
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 09:48:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261110094847euoutp01d9638d1f915948f8e66ef8dde6fae07c~mphjn62q-1176611766euoutp01F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1794304127;
+	bh=3WfehI9fQijRo2A/YkZKLEEsknJgbPS4DyEKhXbP7KQ=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=t5H7erzotTjNcdaOkmaz3M4aA0Bqymkk4HSUDa58RSqUxDGN6OQYsxVyl1jgVDKGD
+	 bLjcVFp9RRWjiC9Fcd+zIkUM6TTLjMXbv3wVY4MDaONJLRjuve1I7MrmM00BC+kuY9
+	 Ah8MaNnhV/y3AztJNjfW33hOf5Z0Whnj6YtDNxQA=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51~mphjEO8nd1080110801eucas1p1W;
+	Tue, 10 Nov 2026 09:48:46 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20261110094846eusmtip14801004a391e04a621db015af3a4d45a~mphiUYlbM3235732357eusmtip1b;
+	Tue, 10 Nov 2026 09:48:46 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+	<robin.murphy@arm.com>, Christoph Hellwig <hch@infradead.org>, Thomas
+	Bogendoerfer <tsbogend@alpha.franken.de>, Madhavan Srinivasan
+	<maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas
+	Piggin <npiggin@gmail.com>, "Christophe Leroy (CS GROUP)"
+	<chleroy@kernel.org>, "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>, Chris Zankel <chris@zankel.net>,
+	Max Filippov <jcmvbkbc@gmail.com>
+Subject: [PATCH v2 0/7] dma-mapping: DMA_ATTR_NO_KERNEL_MAPPING related
+ fixes
+Date: Tue, 10 Nov 2026 10:48:20 +0100
+Message-ID: <20261110094830.2081847-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -70,41 +77,80 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51
+X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51
+X-EPHeader: CA
+X-CMS-RootMailID: 20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51
+References: <CGME20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51@eucas1p1.samsung.com>
 
-Am Dienstag, 10. November 2026, 09:40:44 Mitteleurop=C3=A4ische Normalzeit =
-schrieb Shawn Lin:
-> Cc: Simon and Finley
->=20
-> =E5=9C=A8 2026/11/10 =E6=98=9F=E6=9C=9F=E4=BA=8C 15:11, Arun Iyengar via =
-B4 Relay =E5=86=99=E9=81=93:
-> > The MMU-600 in front of the PCIe controllers of the Rockchip RK3588
-> > (mmu600_pcie) is enabled for every RK3588 board, but its node describes
-> > neither the power domain it lives in (RK3588_PD_PCIE) nor its clock
-> > (ACLK_MMU_PCIE). Both are held by any enabled PCIe controller, which is
-> > why nobody noticed: on a board that enables no PCIe controller in that
-> > domain (an Orange Pi 5 with its M.2 slot in SATA mode, or any RK3588
-> > board without PCIe), genpd powers the domain off and the clock framework
-> > gates the clock as unused after boot, while arm-smmu-v3 stays bound.
-> > At reboot, arm_smmu_device_shutdown() then writes CR0 and polls CR0ACK =
-on
-> > the dead block, the interconnect stalls, "reboot: Restarting system" is
-> > never reached and the board only comes back ~90 s later when the
-> > watchdog fires.
+Hi All,
 
-We have a work-around for that in some boards, manually disabling the
-smmu until now. As the SMMU is part of the SoC and always present
-the general DT practice is to have it always enabled, as it does not
-depend on the actual board design.
+arch_dma_prep_coherent() is called by the generic DMA code on pages
+which may be located in highmem: dma_direct_alloc() forces the remap
+path for a highmem page returned from CMA and calls this hook on it
+before creating the uncached mapping. However, the hook has never been
+documented and some implementations assume that the page has a kernel
+linear mapping. This issue affects MIPS, xtensa and PowerPC. It gets
+fixed by patches #2-#4.
 
-Hence we end up in the situation described above.
+xtensa also only invalidates the cache, which discards the zeroes
+written by the dma_direct_alloc(). Patch #1 switches it to a
+writeback+invalidate.
 
-So this series fixes the actual underlying problem, making these
-workarounds unnecessary in the future :-)
+Patch #5 documents that arch_dma_prep_coherent() must write back dirty
+lines and must accept highmem pages. With that in place, patch #6 drops
+the PageHighMem() check in dma_direct_alloc_no_mapping(), which so far
+skipped cache maintenance for highmem CMA pages allocated with
+DMA_ATTR_NO_KERNEL_MAPPING.
+
+Patch #7 makes dma_direct_alloc_no_mapping() always return zeroed
+memory, like all other dma_alloc_* paths. Passing __GFP_ZERO is not
+enough there, because CMA ignores.
+
+The analysis and the patchset was prepared with the help of an LLM. The
+code compiles fine, but it has not been runtime tested on any of the
+affected architectures yet. Testing on real hardware would be
+appreciated. I've reviewed the resulting changes.
+
+I plan to merge this via my dma-mapping tree, so I would like to get
+acks from xtensa, MIPS and PowerPC arch maintainers.
+
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
 
-So definitly thanks a lot
-Heiko
+Changelog:
+v2:
+- fixed minor issues in comments and patch descriptions pointed by sashiko
+- dropped RFC annotation
 
+v1: https://lore.kernel.org/all/20261106225628.215319-1-m.szyprowski@samsung.com/
+
+
+Patch summary:
+
+Marek Szyprowski (7):
+  xtensa: write back dirty lines in arch_dma_prep_coherent()
+  xtensa: handle highmem pages in arch_dma_prep_coherent()
+  MIPS: mm: handle highmem pages in arch_dma_prep_coherent()
+  powerpc/mm: handle highmem pages in arch_dma_prep_coherent()
+  dma-mapping: document that arch_dma_prep_coherent() must handle
+    highmem
+  dma-direct: do not skip cache maintenance for highmem pages in
+    no-mapping allocations
+  dma-direct: zero memory allocated with DMA_ATTR_NO_KERNEL_MAPPING
+
+ arch/mips/mm/dma-noncoherent.c    | 10 +++++-----
+ arch/powerpc/mm/dma-noncoherent.c |  4 +---
+ arch/xtensa/kernel/pci-dma.c      | 12 +++++++++++-
+ include/linux/dma-map-ops.h       | 11 +++++++++++
+ kernel/dma/direct.c               |  9 +++++++--
+ 5 files changed, 35 insertions(+), 11 deletions(-)
+
+-- 
+2.43.0
 
