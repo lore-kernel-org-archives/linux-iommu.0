@@ -1,102 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794323934;
-	b=IJmC7ZWYmklB8HEWGcJoZEl2dFlJTfkAJMx5Oq5njJb4Kz5G9QDbH9NQucZSw1sQFRfe
-	 bZwQcQ3c3gGhkZuOxZ/1awLF0axmSswdiLUyTRgCOz9TH91AMpm3NMHUbq8QVhczXQqfE
-	 oCsaP1oCgAYbQaimFq06ut477LbnTi/0C5J/rmvVc9ziXM7A6yJplzhLCNF3peWgf7Ppg
-	 r5AwHr8vVOtk7wz6Tq19Ya+UvjcGW1Sh3z5fUXYeDa+ZVfOeztzwjK0fzjw0Kxl/pYqXw
-	 igxNlntpoD6pn6+2j5JVNdHVvJC9qiEIHvwGEAe9yvSorkGQpgt/I2BPvxjK2ml7Psg==
+	t=1794326690;
+	b=qXXVr5ounRsyfSJH1q2l8/TYpg3eHDtkZqFiXT7BYrVF4uFX0c2XO3u2iED+7nYAQDv5
+	 bbXkZzY/YT73ZUqHQA3nr2acIuO51QJpVgtxvjHsAkkHM7vrov9U1ddrOvbxyqwuvktc4
+	 1gMyc+mr5+erhfOImlK0QOkV9X1PaO0JG6yC6vNNGu7Eqk4qkzhU0FDKYQMzq3D50sZQT
+	 xq3V775GMrYoHM75pjDNxTNNFK5iic7ioeeNNQcoEQJpUpE2UTtjphAGU0foSLBhnfnob
+	 ky1Ho3nHQKVEoHPJy/AlCN0iljF1e8cX+j9nVkDfqioXbuWHKZKMwdcfG0Vjpu14lyw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794323934;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794326690;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=O2sQ0ppPahwiNKXBETtZDPbw3npwpVnR3zhVdoKxb8A=;
-	b=ZbNO13WUdJwtjWPaP6uD1Qsr0JEV3KXB1zi5enUwKDU0itGJ6ZvbCYtS/X+bXn/KREcd
-	 1qwog5KC1qZ5fufw7OH5WaI9mOZLCtNnUtimZdNr5Pl/1onT4kjS7nyY91xdEEKCdsZWo
-	 ELC7rGBtp+B5vDwICRrp0n3SEAzQp75qVd1oSy8NSIyrffFiYY9VmIuBD55XuofLWXUMC
-	 lXdWEccSTsKJmH9Sl0dj47uA3CuHxmVFVHomXhYZsNKpVWoSn/bwwFAsL9tY/GrH1YCCK
-	 9C6xTIf+rBA57Yu4JR202cHvBTTzlsDcmtM0BBhxxBfIYa5HY2iGtmgGIfggu1E2nnQ==
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type;
+	bh=2ZJ90WMhfR0YfvdBTSjmWuZ2Dnb3Sle3TRFQ/lQ57LQ=;
+	b=dW94Er1/jTTGUSVOhCafO3BdJfvrhVHXn7sqPUc+sp8srWFrPcRZPlbAmRGYWAWXDoSx
+	 MAUJIGGhrzwJAVV+DcOdr+g+p6ma3BBg8tmvLjb4iY7u4ZvsOK+Y7qSSVFLAqq1G0p84c
+	 3KzreHl6yTWiDU+1flL15FQ3ozpeDrWZwTsWrFcDajqMMiTQ0LUXiXVHMoLcCL4LIq5nr
+	 c48xgxKBHz0u+dDDmx2wmrBvELeMDPdrFf0Sqgngl75OLP/5r2iyPUd2ORSKqjz0WLeaR
+	 YkY5STSR4ysspvnTn4ncYNCMS7ExW2MiHiyInLzRMiZUlMZ2gL+q6Q/1pZ1OvPTSMJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=g4RrRYQr;
-	arc=none smtp.remote-ip=209.85.222.180
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=cED0imNk;
+	arc=none smtp.remote-ip=209.85.218.54
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEE37606A321
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 15:18:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BEE37606A321
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DB8F606A331
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 16:04:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7DB8F606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=g4RrRYQr
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-93e64d52949so188186785a.1
-        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 07:18:53 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=cED0imNk
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c445c95d553so299695366b.1
+        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 08:04:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1794323933; x=1794928733; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20260707; t=1794326688; x=1794931488; darn=lists.linux.dev;
+        h=content-type:content-transfer-encoding:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=O2sQ0ppPahwiNKXBETtZDPbw3npwpVnR3zhVdoKxb8A=;
-        b=g4RrRYQrtsYt+p2PosYQ9C+3i6RGKZMiYDO+NmpsSGl98s/Qspt3vRPbpEt4U73FK5
-         o5tQtwJOb1yDRNIpgFQWsv42vcMOUCPsJOK3iDy757uzBx9RULNm/8CKdvxZYFwTu7vu
-         RoPQL7eSAImgufGeqCxEa66W3r/NIa26NOymK9J4iiACSbmueBYrzIS6Um9RH2Oopm+s
-         ZY/Rqt0YGr60TMYfbmJI2orQocLFlxNW9zFXyBnS6bic/t0eqWIcSgxny/8XbDuforfQ
-         a1FrGsnqme6aJMstNMZLczCb3AVmoptRBEbtZeGIlms54J7hJyZeH/tHXVI/a7GP+ySj
-         CULw==
+        bh=2ZJ90WMhfR0YfvdBTSjmWuZ2Dnb3Sle3TRFQ/lQ57LQ=;
+        b=cED0imNk7iE8EQmAP3mUsBkRyjcfTZSlKOyanOo1CDPNzZE0QO+rLErrVLHO2l0XxA
+         wR4pxyro5rWm4R0PSiFGcCbyUl3vvBGasIWaISolQP10s9kW3ToZuc7CjXqhIg8jII+W
+         TNpIDTZrdXal7DBKMTYbZVGQQ2IR01AyD+oc/3ogpjJ5qFiaAiNeE9t6YzY5qSzHeN0g
+         oSIFyo5UzpzQ52j/omFPL2ik7EPmhl+eSDwM9DP8gFqz6kKT7QlpQd3KwnAFCzrAHDJT
+         23WQXA3BqkI7DfR6DmGOo5QrypOSh+qoCul2Ha1i/6oqqiY5tiO4aDrI44LJ5XZdqDeL
+         ZXPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794323933; x=1794928733;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1794326688; x=1794931488;
+        h=content-type:content-transfer-encoding:mime-version:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=O2sQ0ppPahwiNKXBETtZDPbw3npwpVnR3zhVdoKxb8A=;
-        b=QgDELMxylGtphWRmKG8qf+Dj4pCHCMu698OgFnPQl1D7FPoaDQsepyOnxJPAewdTm+
-         GG9sFR7ZXFBsmhlvAivwkHigOQmGKmS63LTcuqNTJ1OoPbLB+f6guM3MPOnvfxktBrO5
-         jHQsjnGmOhjJ1eA+e5Tj/xsh+4wBaYvhaIJNO+sgvqNpVSreUqk72t9ubNJqIvq5yy/b
-         nZJwjXVosZkiNPnlPV+bg5sJw4/U+0QkZ+ZG1xsYgmvw1OrdcI7Ago7umcc2JsCFWQUv
-         tKt/M7FBQ4jXw49KO/LgiT20oRlr/Oy2+2ovvf6YU1cf1xkGUIPYjmjvsyQBor4m/eBj
-         R0gQ==
-X-Forwarded-Encrypted: i=1; AL+hErGb15XQYSjGB4y4zmVTg4sWJznsflCPigjWAE7IsqJr6RsaMTXVwZKWHMCBIToFiVB8KhcRGA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8YEgaa+rhbZO6OP6DRQeQq2qUHoJ+CNPasEiLqheGgYoDPt/Wf
-	9LTBxOjsxpkt9kwc0oWd3tmPxkMMc0KE1LqmUv5ii5uL2IxZwkezjg+JE+tnUfJB4wA=
-X-Gm-Gg: AYBFou0QDOwO3Wc+P3vNmqE1jNbTl8two5O/fxalUHWewubWA48KBqZ9dsAEtHhQ1Ug
-	Ar6sIgBcP4Q0iSdppP8k8QpJKj92K3IMAZrXryirCsaXo8/GYWwC61G5OqgSvmuI/2eX+WTJRTD
-	yoDx10WFTpO7F1gwOU4wjOY45L0zpvV3qPWCOPLoJZ9wjw9J3nkKOXSECUwUJr1zgMiaS3Oowps
-	uOv8T9pNc/bcyVVvCl2TsjMjndIOzLIuo6s0nFEheET9Beeuv/qOG9Eg68C9fR+vDl7jKj9UlxD
-	irISz/5RGWfpxvWJR3hLd9t87YPTYESjw9CQ7/Twp5kdrCUS5yK73UcJmI1oxA5NG/Xn9VNNHEO
-	AnwJYL9c//vwvP5OYgk+jsLaePEQ94vmaTb+5gg0o9C0az11yrCLw9ylN1vkGcGq83FCGaSq+9H
-	KjVP4h9qoXbFj8ST6pc5/JUZQHDEtAM5cpw6gv4estZvQzn17FqfvgMjUT1O2gHynPAq9RYRhHT
-	uxtJRic50elhxzC7vMSHdgIbSiu7UiRGq2RehIJ6ZZgc6aJff21MOSbG7lvYBkpZjqX6fICZsYS
-	4gj+91PeTMbOecL43oNOKmNge6RA+Rrb9EGQAanHfcr3GLvAbRKtBS4GNuGTaanIWZu/xgFn2uC
-	AB2nAS/VRe5A=
-X-Received: by 2002:a05:620a:461f:b0:946:6:1298 with SMTP id af79cd13be357-9479f323170mr465893185a.52.1794323932611;
-        Tue, 10 Nov 2026 07:18:52 -0800 (PST)
-Received: from ziepe.ca (hlfxns010zw-159-2-239-150.pppoe-dynamic.high-speed.ns.bellaliant.net. [159.2.239.150])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91ef04f89c1sm22998676d6.23.2026.11.10.07.18.50
+        bh=2ZJ90WMhfR0YfvdBTSjmWuZ2Dnb3Sle3TRFQ/lQ57LQ=;
+        b=q1gIBP+2jO/sfe/YJQM8ZlkSeLsAwoHn411Z+0L6EwdxohXLbpYBWP8Jhu4IaNUT6j
+         hci/YpRGO5MdtNvf+jhpVODCINNYfzpECFOPVk1zuhihkshZLtoE3odJwRz3hlNfN9+k
+         +AN5EXw9MOFQ8GcCM79ZQlGvgYAs5zgI/dg11JgCIf3wyt8PbvblqoXBn8yZrobjmG9b
+         neg342TMNuqjQ502x2csoCGh2pQHy2Z7Bnw+iU9mA5ian2CvOiNl8L+QMwGzvMQeHezG
+         99r8VShuoFS4XLL0O9ZQDzx/aXDb9z8JbyJWT9FU4XiQxvc0FQ59pJEomTLGhZYdTbeW
+         86KQ==
+X-Gm-Message-State: APuU4Z/Bubej9de3kncajiucLawOLoWLP+2/ZkQY7bV+BBvOSKl/XvpE
+	FnmnV3ShY8nAgGgn09ZKO+jpv0fdJPkqKndOnhbJ2RQCyu6pEB09F17j
+X-Gm-Gg: AYBFou0+T/L6z9Gac2nL9K0JRT1eF1+g7PU+D1cG9bncn5evKb2oIJ8NgHJ18Y24ASZ
+	cInUJwX8k7CFWaBoTIW5Bv/OWrq5ic/ZmudiqqTP+WMkagWT80s3lv4ML5vNdifUsZXYW5OUycV
+	y+qyZAHMSiphTsa1Z4UzccJFE6Gt3J5xJVpM7ACH96sTpMWY3nZwtN1sS5omfxUKrEym7Lk3vpr
+	YtEofZxqFgdY01zm4FSG3odmW0i4Q5mIV77RrkH3gNL+3b7iOKTkVxqsv48WnbFkc2O8yMqXWO/
+	6bRrEFpx8YOpIltXP/wNF9ZXD/ObKeN1VFW/SidvBfh77GDqtBYP7zRuImBtPEWO3bH7wW3rTxw
+	aRjPLuvi3zpMOJgL4VHF2+nlNphUyMpEWB3Fw9fCa5IlaZBdUmuqmCOKCJ3sZREvhD9x3jAfRJR
+	iwp5S3/M3reAnb8gr4nR4s6btnxbkbN58JvDunYtBtenAqXMB05/In2O/yke81/lLxAoJobRkrO
+	9XXgC/tqOwXLSG/fLQ3YP7XDnCYWqMAFg4H37xQBafGL302JQ5+mQFDtpbp08CrRRkisi/BBX99
+	Q9zlqHQdskeKT4/I6KLQKSYYOl+zZ4yN55DG77EeKoye86E/C4ZxiNT8sqcig+JA43PPtrr4HT6
+	z1BYJYFa28yyN2Vtx9bHBgGZNT7eJK4/AOH6V5lx7ihQTOBlRJSd/zwgjgNpuupbXc41yddg1P3
+	i2fEicgiDsO3Hw8iNOqjDxy7kJnHyrIx/VUeQeUstBv5A+NglTt5wzcNvuMwiO5sxy2SCmx9Qqc
+	rP3vS1GJXGjp4XursIMlesj54df5szAbMILJ/PYAzQnAAMPu7SQiNE+etTAoN0=
+X-Received: by 2002:a17:907:6d01:b0:c49:8f1e:af0a with SMTP id a640c23a62f3a-c50491bd4d4mr262123366b.7.1794326687814;
+        Tue, 10 Nov 2026 08:04:47 -0800 (PST)
+Received: from jernej-laptop.localnet (86-58-12-36.dynamic.telemach.net. [86.58.12.36])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c504a643f12sm127127266b.62.2026.11.10.08.04.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2026 07:18:50 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xQncX-000000063UD-2Q7t;
-	Tue, 10 Nov 2026 11:18:49 -0400
-Date: Tue, 10 Nov 2026 11:18:49 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: xuheng@cs.columbia.edu, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Invalidate a new level-1 stream table
- descriptor
-Message-ID: <20261110151849.GZ663069@ziepe.ca>
-References: <20261109-smmu-l1std-cfgi-v1-1-65e5203a6516@cs.columbia.edu>
- <avMxDbv6JE0dg93E@google.com>
+        Tue, 10 Nov 2026 08:04:47 -0800 (PST)
+From: Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Chen-Yu Tsai <wens@kernel.org>,
+ Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>,
+ aiyengar1990@gmail.com
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+ linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject:
+ Re: [PATCH 0/2] iommu/sun50i: Don't report TLB prefetch walks as page faults
+Date: Tue, 10 Nov 2026 17:04:46 +0100
+Message-ID: <XuGVSzNrS7KQLWfGI0rB-w@gmail.com>
+In-Reply-To: <20261110-sun50i-iommu-prefetch-v1-0-43428e792ef6@gmail.com>
+References: <20261110-sun50i-iommu-prefetch-v1-0-43428e792ef6@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -106,59 +103,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <avMxDbv6JE0dg93E@google.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
 
-On Tue, Nov 10, 2026 at 02:58:21PM +0000, Mostafa Saleh wrote:
-> On Mon, Nov 09, 2026 at 09:36:54PM +0000, Xuheng Li via B4 Relay wrote:
-> > From: Xuheng Li <xuheng@cs.columbia.edu>
-> > 
-> > arm_smmu_init_l2_strtab() allocates a level-2 stream table when the first
-> > master in its range is added, and makes the level-1 descriptor valid. It
-> > issues no invalidation, and the attach that follows sends only the leaf
-> > form of CMD_CFGI_STE.
-> > 
-> > IHI 0070 5.1.1 requires the non-leaf form of CMD_CFGI_STE when an L1STD
-> > changes, including when an inactive descriptor with Span == 0 becomes
-> > active. An SMMU that cached the inactive descriptor can keep terminating
-> > the master's transactions as if its StreamID were invalid.
-> > 
-> 
-> Looking at the spec it says:
-> 	An STE or L1STD that is successfully fetched might be cached by the
-> 	SMMU in any state, therefore any modification, commissioning or
-> 	decommissioning of an STE must be followed by a CMD_CFGI_STE command.
+Dne torek, 10. november 2026 ob 07:05:16 Srednjeevropski standardni =C4=8Da=
+s je Arun Iyengar via B4 Relay napisal(a):
+> On an H616 with a display scanning out, the IOMMU reports page faults
+> with master -1 at the IOVA right after the end of the framebuffer: once
+> at the first fbcon frame, and then once per frame for a while after
+> each TLB flush, e.g. while a video decoder frees its buffers. They are
+> failed walks of the TLB prefetcher, which the hardware flags with bit 31
+> of the page table interrupt registers and no master bit. Patch 1 stops
+> reporting them. Patch 2 makes the remaining fault messages say which
+> walk failed and what the interrupt register held.
+>=20
+> Tested on an Orange Pi Zero2 (H616) with HDMI forced on at 1024x768 and
+> three 4K H.264 decodes through cedrus, on 7.3 kernels with and without
+> the patches:
+> - without: 214 "Page fault ... (master -1, dir rd)" lines;
+> - with: none, no "Page fault" line at all, and no decode errors or
+>   timeouts.
+> Since the patched kernel prints every fault that is not a masterless
+> prefetch walk, this also shows that the hardware sets bit 31 for these
+> walks.
 
-I think the patch is pointing at this:
+=46irst off, display engine isn't in merged yet. Second, I don't observe any
+such issues with my wip H616 code.
 
-* Changing an inactive L1STD with Span == 0 to a non-zero active Span
-  (introducing a new section of level-2 Stream table) requires an
-  invalidation of the L1STD only. As no STEs were reachable for
-  StreamIDs within the span, none require invalidation.
+I think it's best to wait until driver is merged and can be retested and
+merged then, if needed.
 
-Which is really explicit what to do..
+Best regards,
+Jernej
 
-> Which checks out. However, I am curious why this was not seen for
-> over 10 years with the current behaviour as I doubt any existing
-> implementation will do negative caching. Is that something that was
-> observed or found by inspection?
+>=20
+> These patches were developed with Claude (Anthropic) as a coding
+> assistant. It investigated the problem and wrote the code and the commit
+> messages; I reviewed them, and they were tested on an Orange Pi Zero2
+> (H616) as described above.
+>=20
+> ---
+> Arun Iyengar (2):
+>       iommu/sun50i: Don't report TLB prefetches of unmapped pages as faul=
+ts
+>       iommu/sun50i: Print the page table level and status of a fault
+>=20
+>  drivers/iommu/sun50i-iommu.c | 50 ++++++++++++++++++++++++++++++++++----=
+=2D-----
+>  1 file changed, 39 insertions(+), 11 deletions(-)
+> ---
+> base-commit: 2cf4be57b301ed2d7af82e70cff5dfd96894d8de
+> change-id: 20261110-sun50i-iommu-prefetch-85cc9ecff559
+>=20
+> Best regards,
+> -- =20
+> Arun Iyengar <aiyengar1990@gmail.com>
+>=20
+>=20
+>=20
 
-Honestly I don't think there is much value in negatively caching table
-structure. Negatively caching the resulting leaf is good enough.
 
-> > @@ -2053,6 +2054,14 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
-> >  				   ARRAY_SIZE((*l2table)->stes));
-> >  	arm_smmu_write_strtab_l1_desc(&cfg->l2.l1tab[arm_smmu_strtab_l1_idx(sid)],
-> >  				      l2ptr_dma);
-> > +
-> > +	/*
-> > +	 * The SMMU may have cached the old, invalid L1 descriptor. Making it
-> > +	 * valid needs the non-leaf form of CMD_CFGI_STE (IHI 0070 5.1.1).
-> > +	 */
 
-All the versions are 0070, you should specify rev H.a if citing the spec
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
