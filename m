@@ -1,78 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1794294710;
-	b=xL92ZrwMQ/PSr7ub/+hvHLYKl3g0eYoQTw6egUxtwfoM4SKptPuLnKy5wBdl0hS5SAPh
-	 8uHyFLDZjAUQDGy0OaT/lmRCrifHUJ/xulVmm+9z3sr2TljgO7wH8BkHfD/LNWKjLemlb
-	 wi4grL3HhDAAFRPxxOs/ylm8dvI+dRZ3vFMXpcbB8JUErWEyTZR3enTE3Nc6ihEgC9r7N
-	 IqJYD0FodNgPPQsXwXrs/bFkPTaHhGrIagq/ySfPhGBt/o2YPBVFkQkeZAMNIAIfNgFBY
-	 FWsEnNpe7Roltf8JNaJ6Hu+VVmynYjrFJ9Sqz0RG83h2pqAwI2N/OA2t2rc6SIRW2lQ==
+	b=rJ7KePk8TAqJ8mAVuV+lR716b0hcCm4+XLHr3plk4MwhZyECrDe1d4YCztZnFvnMxxuh
+	 cWec71LwDt0VEvjh+Q7pgZBo7s5vmodeB2R+2AtPTTIKP/Uzm2FsJQXQt9AQDW0ZC133B
+	 07G07mGpE5FiS6abgmdMtP9C0+na+b7aLjX3+7FMgf+WtO8Z2kKll/xXwXjsXi4TE7CIA
+	 iCWhWGjk+EKXoTXk9hz8kQWwxpT2I9NqmpUi2eMJf7wV88JCFRW6frKkVQy2RUN9Yv0te
+	 2Ia8BX9hpKvq++Q/YqX3Sp6lSPutJ8tU8H6cAi7yHK8Y3CT+B3A7Ms3Srmeyx2bhAQQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1794294710;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=vk6XQFsmHi5+fYj5Z5LO4ofgSzJKdKgu6NS/sbE7SU4=;
-	b=Wzqao0Kjku9z7ab3BhiEzOrJuo+jeIj9mYz9CmWfvykJsZz46IdokzC3MAvxhmDkpXHI
-	 dg74NZ7YIwh1SzE5D2cw8yP9IhmYUF3vBLvItOirNUOJjFB8gD6c9XPhJusSyhAatitFy
-	 WSJPNfIsrIymtRNtfrTv1dfdPJv+8iGLSiv8m8sTCbIP+7z2pONhNteHE9PFMGgDueYXx
-	 ZrYZf1//o7Omb7LKCSZ+O7L3h8NjyQ6ouKSkTgaGxCPeUBTNt3ATVkZxNXNmEIN1r63fH
-	 1HGOJ5yz0Vp7FmJOKa63FLhJTAv/lUSz+7g/2TVeuWOTVxnpMiMrUJkEy7Vwqt1d5Ew==
+	bh=x3ztbNUFuuQCzB/tqQ7N8CqDzjsIOlgjuxNyu7v0y2Q=;
+	b=X6XMV9teVoAoy/L/0gnpGJx5M+4YfVLHVBiVQVVX0HKOHG64FG8XaLTQUHWvIvwbHGsQ
+	 8ma5ltf4RCJh7eaSQpGzcEIIZSIG06Y83O8kSc4+2/wrY2F7dSbeEguRpWrBL0xiGxpCG
+	 PHUUvStgaWRR5skYuj5aZqK+CkP+qOpsJNOB7iEjlHN1LA/qszOzCAPly4WccKurtJGiA
+	 RNItff68kUosBuv8RbvpbUe11rb4QdtxTX56eZZB2FvUrgAuJB+MpObrYKQwxZMlffFn3
+	 mkfLUqEJKVO8Zekyoub0kKp5IJgcQjAwZdIhYzZ39x5CWHVdRp0TK7FmZgguCQP/r5w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZiZH7EZC;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=THUXTWWt;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47BE860A261B;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78387606A32E;
 	Tue, 10 Nov 2026 07:11:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ZiZH7EZC
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=THUXTWWt
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
 	t=1794294710;
-	b=27Icb4Dj0siM0BU2jQ7vyFEutfDe/kRKOnxH1Zp9251m5YyucXY5MklNz54szuVxQ6+a
-	 srgw1veH/Gulp3ptk8joqsT818kjW8lCqKlOHiylEceLFadtkw4q0Ua83o8vb0wvk1xwy
-	 c9pmeO+/7tJc4BR5/o73Ocqj83Uf4FnOQmEl7b+kTVcGLUyLk54jF1bwo9t6JOgCA6gmA
-	 DpLw8qEJJs5vmyz+77r1LcZoeqDDtjb2xArT4IjETfQ9oT5SSfpmwH33wva2WoLRl1zXz
-	 /yr+osjwQvtQdD8FM5m/ePQ8aUkdKyu08FYIiThMAjRimOBGlQwwQmC7ewn4b+SqYuQ==
+	b=oqtyaTwiyo0Be38kd0G3ra0wjJ1UCXD96DI8lzXifu7mlmWnNmni9CblbtGahCQBi3Lr
+	 UK9Z47yYccEYVc12rtm+YAuV0h3h+GaQF6zgvUu/VxQBbNZAR5feyBg1HOnlia3/mNEVQ
+	 y9IXo6dPW1SKPkK+W7SRQwXwEHNab5V+E3z4wsD3R2Ld2jJYTw+64WzfTvhTgQNl+S5Ux
+	 Zom4LBkTKbpYGjZwsECH3sCaGe/3luDK7r1ZVLb77VLY2wcFmPxYmbwGj4n07hsTdAFcw
+	 xuhYMw//qTWtoI1R9zYQzfn0LH896cnwXByAlmsUpXLniycDTbwpgW/8urImlDqDUOw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
 	c=relaxed/relaxed; t=1794294710;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=vk6XQFsmHi5+fYj5Z5LO4ofgSzJKdKgu6NS/sbE7SU4=;
-	b=t46bD62wX7vguKSOCJA4tAaEyEt7/lQG7BnpVHDzLkAkKAF8SRJAXKkthiTxQG5R6bdr
-	 DxPFTt6Z0kgvfrctHvSQoC60hJDCQ3lil59llyz445gP50rg5/boHWiYB/kTLiP1BVBzt
-	 lGv6h1bvyO8QpgI+Br05or56AYAdWSk4aYledfV4wRssRg7vQWHr9KzS+ZnHTtmAQpPJk
-	 NjuaS4+rglTY7LAurSi1H6hjEKi0EtKLTMYTTp0nZ7luvyOUVJZowCASqdq9SUzs58x1m
-	 6UG1DStq0DF4R4UqkRzXD1dEbH9+GKgnGj/R8IrymB550+0tgcxn2lgok/Sa8u91WsA==
+	bh=x3ztbNUFuuQCzB/tqQ7N8CqDzjsIOlgjuxNyu7v0y2Q=;
+	b=KgvkPUa/TQ0rlwpSWgx359MwFTy1zPwCOhCUO1nJbyu42Ju4MBlatx4ffmIpuqiuMr/2
+	 kKa9+PdkAKtiBKooTIoERAD8Dmj9JLn/hNkVNfflCy6N0Mtre6y2o03VOQBTDdCRL5jNJ
+	 NxPAv7bY6bgHzXTtI1UebniEqTlEStcwJgYR0dQ1B7Z0VDLB5siyHc+gtrrvZ+Rj7+C3L
+	 PY/c8xfTOQXh6h+/be6AbU+XqVC0/GTNDgckPLIbGHSKXGWvhB+UzSq5Ur9r9NB9rsBaO
+	 Uwb3pwavtdP2nFD46LZXiSiwdjWmoC17uNeTKYlj4pSGYUH14EyMtZRGj7yK2IBcV9A==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 2E4CB1F008A5;
+	by smtp.kernel.org (Postfix) with ESMTPS id 3DA041F008AB;
 	Tue, 10 Nov 2026 07:11:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1794294710;
-	bh=vk6XQFsmHi5+fYj5Z5LO4ofgSzJKdKgu6NS/sbE7SU4=;
+	bh=x3ztbNUFuuQCzB/tqQ7N8CqDzjsIOlgjuxNyu7v0y2Q=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=ZiZH7EZCNfqurcBkR36FmPkPQwjes/U7r9QgqB3HO6On8983eXxzZNLi2EWNMB8QZ
-	 u5fL/Dol/1wuuL6+dZKMXPClzSolht7yhYEi++Bo4/u1R2WcErNOD95OQ5XrMNqjVc
-	 ZjO2JO8khpzFJr8ynUw26ax68KIaa0t9pnvoWKyYwqKhaJ7Afa1QEtrOujLxyHS7Zr
-	 x5PT7B6octMLyYEZxd3CJ1tH1vd/SCaEAyu3DNXIXeFhXg6i4Ehcpqb2mQBaPzwdk0
-	 4N6cScCzzSGnfsJpUxP176MwOnQU5pU2amVFcQ3xY4kFEtoenk8hP5eaJTUkvKVxXP
-	 F8TbztpEBZocw==
+	b=THUXTWWt28JCcNgo+Vi8lSOVeSVQu4HvpXjETa+h/wVaR2p5aqFrmPpEqp+pZTVBr
+	 hwzvuAPIiDQ5HhSR50oStvfVSpYTJOSkKJw1kVviBU88Yb3BWD9hfumtwXghco7kvz
+	 sWtQSMXw3pNDQtXgYcYXoo22ANrDhb0bPOxdkd7buQHzZvTuwthWu5ex5UujMPHJNC
+	 w7w5c59BmVyVWIoQbFjMjOKixkYnpn5p8NtQMhIDPKnTJurV54enAy6GYMLkwPAaJT
+	 9RFl3C6GOimcTEZCxlfBi6bLCV6xGwkrKorzsC6wFcLDVKRFw3IkB1X/lZBgpj1CbX
+	 wPsXWX4u6f62A==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id B44AB48947;
+	by lkml.kernel.org (Postfix) with ESMTP id C59E548943;
 	Tue, 10 Nov 2026 07:11:48 +0000 (UTC)
 From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
-Date: Tue, 10 Nov 2026 07:11:48 +0000
-Subject: [PATCH 1/5] dt-bindings: iommu: arm,smmu-v3: allow a power domain
+Date: Tue, 10 Nov 2026 07:11:49 +0000
+Subject: [PATCH 2/5] dt-bindings: iommu: arm,smmu-v3: allow clocks
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,7 +83,7 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261110-smmu-v3-pcie-pd-v1-1-628819ca44b9@gmail.com>
+Message-Id: <20261110-smmu-v3-pcie-pd-v1-2-628819ca44b9@gmail.com>
 References: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
 In-Reply-To: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -95,11 +95,11 @@ Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-rockchip@lists.infradead.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794294708; l=1167;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794294708; l=1190;
  i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
- bh=TdWoGoQsKnyrm8b9EIEgWSxDN/b5wPqWn8RNCU7PWLE=;
- b=x3WlakvjrJB7bBweyNuurbxFx6ml1Crbe9R1B+W78YkdTZqbMT4BjFaIlFUU2Yq28U85BBqQ7
- QAh2R2KDz6TCenOiDzdDdC3EJcC6NonWmsjPmdZ8tgjZohMcMJXI9Pl
+ bh=e3I86t0a2cKOracDfZB99pIl0HZ6AOgZkYX+gUkTyuk=;
+ b=tBT8b/4LYX8rdPkNdY6YZ3Uugf78rotGYU+jpwCP66IokWm6Ao3oFELzJCwqsK6jWIT6zWrVg
+ dmmp2igf4A2AJylfNxi90PXlJSKrdARCH+fF/ti/lPJg2lEF2QR0zEj
 X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
  pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
 X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
@@ -110,35 +110,38 @@ Content-Transfer-Encoding: 7bit
 
 From: Arun Iyengar <aiyengar1990@gmail.com>
 
-An SMMUv3 instance can sit in a switchable power domain of the SoC, for
-example the MMU-600 in front of the PCIe controllers on the Rockchip
-RK3588, which is part of the PCIe power domain. If the domain is not
-described, nothing keeps it powered while the SMMU is bound, and any
-register access after it has been turned off as unused stalls the
-interconnect.
+Some SoCs feed the SMMUv3 from a clock that the OS controls. On the
+Rockchip RK3588 the MMU-600 for PCIe runs from ACLK_MMU_PCIE, whose only
+other consumers are the PCIe controllers. When no PCIe controller is
+enabled, the clock framework gates it as unused, and the SMMU can no
+longer be accessed.
 
-Allow a single power-domains entry, as arm,smmu.yaml already does for
-the earlier SMMU architectures.
+Allow up to four clocks, so that such a clock can be described and held
+by the SMMU driver.
 
 Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-index 3c044e4f03d4..c8f22dfdb1db 100644
+index c8f22dfdb1db..f8a74730667c 100644
 --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
 +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-@@ -63,6 +63,9 @@ properties:
+@@ -63,6 +63,13 @@ properties:
  
    msi-parent: true
  
-+  power-domains:
-+    maxItems: 1
++  clocks:
++    minItems: 1
++    maxItems: 4
++    description:
++      Clocks needed to access the SMMU registers and to keep its translation
++      units running, if they are not managed by firmware.
 +
-   nvidia,cmdqv:
-     description: |
-       A phandle to its pairing CMDQV extension for an implementation on NVIDIA
+   power-domains:
+     maxItems: 1
+ 
 
 -- 
 2.55.0
