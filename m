@@ -1,88 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.157
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794346502;
-	b=Igs1ODndukGx7mQ3rN7JLbtV3WW1Zj7ncOOOGH3f9zeCXP6fhdoJp0gJU9uF26uTzbke
-	 eoxZBVHL9ehBJPQ7746EGUqsFTCMfkp/i7KRZ0xQWjHhbVL9masOu1SzqgTm4DZ1VmDqn
-	 BODighlBOiiBdiARqSWS9sqpy2eLc9CDJ+mKuq17oVDPhU9V0AaUD3oqfPIEvmCBQ9F50
-	 LR4AhfZRxBTvbhLPMEozXCqbxLwXA81XoJzp/K8l6FYsedIi8Kd6EVvfCRJeaINE2ddcS
-	 LEVLHo1/RUmxrqOSJyfaZXpZffkIe+LJI25qZ/aXxHl7sE+Hf3jRyDkV9LWUenHQyNQ==
+	t=1794346656;
+	b=vmXH2D69xyxagQxy+rZMI7SdWQv+8iJhfF8t/jfPLJdvkXMReI4EzQMAYm5fbqGnvRKc
+	 85utUYCT9B20CzITg9b/tE75X1FQznimAYoMh6R/+973IdlUBlc1SRpwGdvvd/bIJ55gC
+	 I8fNNGYQnwf9Ry5HIZOj/MO4CglkCzKFOiqk9zF1SqQxGFZvSsdrkEa0aw2XDHWLWK3CF
+	 nd0RlP77yfb19LPlt2K3WszDSLXUmMbvbgdbvaY7+jRLqJYlsM5yN4hFYGpR7gzBc92yL
+	 nwhdURZoJu2gQqLNE//dq3bLj7liU9/IIuKYoT7UeloUUX1uDKIYtCFHc7C0Vpwqecg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794346502;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:References:
-	 Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=mOqbf5f8IOrYsXobBY3T9L29gUMiYe3oysuU/ey3bJU=;
-	b=4GjpzDD89JCdHctzwjI2KUV79JSgha/Z+QoGLUwZH1Y1vjUAZn7lHkLaqoHCybJmcchV
-	 kRAEs8P2B84Q8NTlOxFOMw/G+r1oYZ7eKVpsBL6sCItrW0osfx6MB/C6vtNYsLUxZgXFk
-	 QPmGoIauU3fafK44eqBI/8KKbw38DPR7G3dGPEno31sFxY6LXEYJkAmLkM/wVE7Z27HhT
-	 dzkNeD352pOch/P0GBm+BOgz+KBWGEWCgEk9Zv/Qm98rk+1j3Rm410CwGTibKAsMIYAbH
-	 lAXy/osaM8yU/eT+KRyAV1yk6r5ZunSFNyHNizixcDULTMW8st7YIPsB6BrGoBjTLRw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794346656;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
+	 Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:Message-Id:References:In-Reply-To:To:Cc:
+	 X-Mailer;
+	bh=DAgmNXTfpbXfKa6S7OGUo9aQXVJ3R8eY0yHFnv+eejs=;
+	b=qy0J97XgO6Dc/V2kz9wvw4mjXiExtIINbnFDxoZkt8/vaM+JVvsT6y3H0LoGyQGv/v1g
+	 MHJiL7t3diHaPXezsDV47RrIGaC7pFk87esB9fh0dH19wJM8RNbNXkrMoStqIHv7DSXU5
+	 xKYxBJ/woIbDyFMiRg1CJv8IVcEvW6+2Z8i209jNT9IfP7VifK6EuOI47P0Upr44bPe2M
+	 yN19zz+s4dzz+DHVoZvQlYWUPcOirduHxSk4NZXMhI0dwfDM4yq9qpf1QarDQXexhTE8z
+	 +xHyekHzW9k6OmCOGogzTiR9jazQSNImFQp7WUnCMhDXWzewCCvoO6wlneehIpySVGA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=wL8OKSjq;
-	arc=none smtp.remote-ip=209.85.221.49
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=fastmail.com;
+	spf=pass smtp.mailfrom=fastmail.com;
+	dkim=pass header.d=fastmail.com header.i=@fastmail.com header.a=rsa-sha256 header.s=fm3 header.b=Np4tTxxF;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=rDDd1bWY;
+	arc=none smtp.remote-ip=202.12.124.157
+Received: from fhigh-b6-smtp.messagingengine.com (fhigh-b6-smtp.messagingengine.com [202.12.124.157])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15088606A32D
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 21:35:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 15088606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 331AF606A335
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 21:37:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 331AF606A335
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fastmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fastmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=wL8OKSjq
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-48e1d0e5dafso1705386f8f.1
-        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 13:35:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794346500; x=1794951300; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=mOqbf5f8IOrYsXobBY3T9L29gUMiYe3oysuU/ey3bJU=;
-        b=wL8OKSjqrT7e66TFZx381N2jUAvwAL6jqttipbAyiXSnC9cKfH/Byv+0htH5pVdOgi
-         PW4wdtIv1YOhBPOPZua63fPAgGHSlMnWqQdXZsp2UbS8zJDX0ZI4q1+5Ki7qcl+G2d5O
-         2NBnTGHTMAXh7HIshYHDQ8mURJeSFfHLTF7aUnYEHYJ6h1kF7vx0mh46DDCtR03wFJa9
-         KeEM+hafG5dwwxHrsCRRQusSbu/pwzSOhIi7EsgF22wVU/U1UUNWEZ4Wct3Jk7SrGzfe
-         uqiedFIHIkPHUxhGwuMq1R6R9sQiwKnGjco0O+BX15JnnOsi2wfSlujT6n0JvA7IFW44
-         8Faw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794346500; x=1794951300;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=mOqbf5f8IOrYsXobBY3T9L29gUMiYe3oysuU/ey3bJU=;
-        b=iwcDsD20AEZBzBJ2XfMbZyNAytOUXUrfSpEz+BLhh+5ggzBvZskR2M+gmVJe8Dj75A
-         lm6fmLCmTUubvm1seiPTrhpOucmgHxOaj5W6QVQRbcD9PyZbl2w4tCTERpwIPclRjgaW
-         2sJoqeaBdHXRX6Jwnqu/XXvA5XiIQgNZTqRqVpWROFI60L5LNoSe5LSSCVxPrEdy+5vw
-         OqM3BOoOaGGi5J90b0zfioelhZPrthUgqpbydcaAHIbjA682MXlI46EKyRKdsAQr3HJ0
-         SAryDtpiG5EbujQDOl9p1tE+qaHuBPiJYWgNgZ297PoL9nqRk25vm4q5ewj8Gbque4gI
-         6e3Q==
-X-Forwarded-Encrypted: i=1; AL+hErEq3HlIGxSCjbpuiXGnv/OgrnDhNHpFd9ZwuascwsnyDO5q8FrqhUMvTTTB6o6LRb5Nnut+eg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8QJTmGV2GlETbnRvV0Y03RxHH+sTew2fbwRrw81E4iG6bSiCro
-	ejMbzWj+V88LyRpJ5nuEnPwsw+NTevtIJooSX4ZbNI8ap21jD4bKTcvL
-X-Gm-Gg: AYBFou0oLGo9xWANBn1R+EjLL1We32v/zYga4RlB0jr6JpyjTpihcZ3uJmSFwk1/u2w
-	YBkGZtn8i84D7UzttCy/T9dCSBWrtvbyCqw914uL/nTDQ2C/C5GmuxuvWiF526y4kgVUGDRQUHU
-	3lc4IO0M8Jdx+ayWBg8BVSk0y6bBIqqU34MStPifAUQtB9VaVUif++rD6WVutVKiOBGILwXfz80
-	ital/VcSe5/Xt94fsbQSjX61emaX4sEd4RgtIQ9J+hiTznex+985kh70SV9d12ZFSU8Dxbwgk/y
-	3cTraKfPqsSrltFrqNuTn90veGqUZDGFnDbjAnu3TbQhoQj9OyY8pjLmMvP43z/RJ1csCQw7mmT
-	2Jaj3AfJkyHLqPdTCYpkINZICs4nhCibMx4zSEvSIt6rNhmVG60W2UEMNxJFFbHE+pAtWHDS3Y7
-	cnRCllgQ7gp6gaJBKFxS/Fjw3/jhHVfX77QhpI4T7BTWrwKAdPgIDc+EVA/ygjlrOcZfrotLtfl
-	wzRs718sP3FKUMqcptymBNgTP8TXEWmKfM9I0V4pNsS3CwRWHiht6m5MW7Xc2oQEoJHaq3QdUMz
-	IUjgCPpEZIpAemdQWtSc5KVt
-X-Received: by 2002:a05:600c:364b:b0:4a1:d766:758 with SMTP id 5b1f17b1804b1-4ba08e1f572mr8423245e9.16.1794346500171;
-        Tue, 10 Nov 2026 13:35:00 -0800 (PST)
-Received: from [192.168.1.22] ([83.231.69.9])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-498369a3fd2sm7670526f8f.52.2026.11.10.13.34.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Nov 2026 13:34:59 -0800 (PST)
-Message-ID: <cbcd04e6-b0c6-4a8b-9f89-4f57a4c50864@gmail.com>
-Date: Tue, 10 Nov 2026 22:34:55 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=fastmail.com header.i=@fastmail.com header.a=rsa-sha256 header.s=fm3 header.b=Np4tTxxF;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=rDDd1bWY
+Received: from phl-compute-08.internal (phl-compute-08.internal [10.202.2.48])
+	by mailfhigh.stl.internal (Postfix) with ESMTP id 9D9DD7A0043
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 16:37:35 -0500 (EST)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-08.internal (MEProxy); Tue, 10 Nov 2026 16:37:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fastmail.com; h=
+	cc:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm3; t=1794346653;
+	 x=1794433053; bh=DAgmNXTfpbXfKa6S7OGUo9aQXVJ3R8eY0yHFnv+eejs=; b=
+	Np4tTxxFWuLcr8wZ1/V97Lkgp78gyQdflixwCbplordLy4g3Sl6iPZd082zgpm/r
+	adxj5dqEINktssCt6Pl6qzSx7EcZ1qfnl85TJxnmG6hEYPOYFKUlgZQEi5QidLhW
+	vuv1jJUWYDCltB0xWp/Vi22B0coyQqVcCi4kgYpMFNSa/vVTQ4+WpEN8npVHOAVi
+	816QAkuzmL4sW+5K+hg/0RbLXV4XtxdF5M4xLx4WHkHoxi/1Oh2YAMpZeH+bHIA6
+	o0GPnYAYNpDOo+0vD8jJ/Mx+qIqG0kUALo6zaAcQHGqdLT0XEPxEPY3Pd2hMeVy+
+	3wXruhPDLl/MxvRjSOjF7g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1794346653; x=
+	1794433053; bh=DAgmNXTfpbXfKa6S7OGUo9aQXVJ3R8eY0yHFnv+eejs=; b=r
+	DDd1bWYx/N97P7j+l04Ce04kDKN6ZcL31dCqj10/XKe5FLE89jCFBc2v28VoLJBM
+	3j8L27n3iyB2Zn/Fh1n1FxQf4ajkbfxsXtFVn1E/6orgSuXSO2FI5oHPUrazoitW
+	Fs+d/+Ah8NY6oXcXO7BtAi6Z14/ziG/G4Aq7HV4TKNfkt4eqi/M/7DaqEELflp9I
+	he4e7MRRCy1yIBnSdXbs/F6I6jckaWBsnJznbvIAczx3XUp78yuLKC4JcnKS6BUm
+	7a3CTDoWlDyJsA0d0xLwJly2cYdj75X+bhjY2Tys8vQF841rtymjIvR5atsVbhLx
+	CtjXsIl9QWCpn8/l+pt/w==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=sign d=fastmail.com a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1794346653; d=fastmail.com;
+	mf=PGp1YW5sdUBmYXN0bWFpbC5jb20+;
+	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
+	s=fm3:rsa-sha256:Kigrfhre79zoXteHBoL0/T7ncjLq2dbCYqN6tyNQM3NGHub
+	kIBPrw8p2if6YGlH3cCT1EwR3LBB/MHBN4xQjFSRWzqmZKGlm5V6bMk9Y0/gGz9c
+	wVO66q8wSNqXC3M5qKA6GHJzoSBW50rFD5wAegaE1h69wRsHkZFHx7jcaM1vrmZg
+	7kmfOSNiu0MLeTdzITDMDd+uCeHoaWucklU7PC7JhQFqM6tH6gI5Viu+ERU/IRbj
+	MDRQfka6Sp99/q2lNZAht0bzmbTOrxJDb71rOqFcJ3i33jPijS7MhGHjtIxaT7Rd
+	kcq0P19Q7K6ccj4qXKFgCNLmVx1FfofW57z0UGw==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=mi-m=1; hc=12;
+	hn=cc,content-transfer-encoding,content-type,date,feedback-id,
+	from,in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:2CX10H8JoVidrLLvG9F8IcYxZO266HV4IEBXliJjxng=:lBVRBzi1HrV2oRlZgNvmYQY5wOEp9ku1L1JFVVgktXQ=;
+X-ME-Sender: <xms:nY7zalDO73lc4WFykTNBY7_rQXilAPPtYCi3hDK4wcMytbvGTSY_gg>
+    <xme:nY7zanOr_I0PaaUlY1uJjif5C1i0dAt-5ZvfEPN8VrfNrKfHwRpJ8woz-2E-Eggwl
+    CBW7V_2kJH7gPawngJfqInsDhuoPIsHt9JVmzNG5sltNnM-i0L5Jb-r>
+X-ME-Received: <xmr:nY7zapOfGQYRSjl5D4YETggFGIzYKbvtBW83iye4Kazc5-GrAE2elRIFgssUK7njY3Ow64wKJhGzpxmstw>
+X-ME-Proxy-Cause: dmFkZTGNVXlGWE+7P2XXaL26F5AMGtpK2TycDVlf+xOjA+PYERZl6/BW+lbT0+wzTsbcnL
+    kBAhJvg1txFwRjOcd7bw7X+tErVQLKyqfU9/T4BbMHT193EbxKvHyY8bAQ6ww6NmZWX2Gj
+    S4oVvhJFMJ2BxkJuVf9ujSPSfv16nLGp7k9bwFNTR8UP/etY4ewbE2QpklWLWUkhZbd3tk
+    i2NFMM50EyvyBj3i7bkefkHzaAGSTWPc9b/2WlAEfIPv9QAFyLDidETcJqU8/KdZSLuzWm
+    YnikjaxRN8sYTqzmqmhrte8FXDDjJZwMnUc/kh6WLuGF7iefMNEW49vFlHrDG5ZIu0qxd+
+    D9vO3Bw4CT2UljGjG7FJWzQUcbDN5uNRik9Y7KEgJlbaRMK0H6OqShwO0uPXZhzQRqOBcx
+    HDS2ncD//RrwFwcGdxuA0OehwpJqUbR47QXYANZZLI52ra+xJkcEnd8QubtW6wn+aXThZA
+    GJVmjVI65mNH4XtuDybr6dte3omr/+b0SHLg06a+0Q8fUOpDuFGJs3Spr3d9MYUyWk9LRc
+    Ro1YkdIMoQ/wz55+nLCkHhP4QLdDCjA9LPffTuiez0R9PxXSvL0DCGZNKQM0kqYx7nl6CA
+    RT3C36a865oywJ0cc12qZtpAI8jRTB2BMB3yVkyuIg9utQYWA3EJ/ha6b4jw
+X-ME-Proxy: <xmx:nY7zahJLS2TIUV3aJPAejjG1y6YVpO7ZAIuRdXyxsjnuWPdVl-dgeg>
+    <xmx:nY7zarqqg0kNosLfmf7aZPAJ6M9EmpRLDRIMaSfFnA8mr0lM6ysNCQ>
+    <xmx:nY7zalMMCebesuQS66oBZZAf2A8_7lB9wlGbZY9bRqyrSELZBD2F-g>
+    <xmx:nY7zashk7EvZ9_U85VbuiIwum2xxFoxGwqApoHmdtBef4RRrqJ1_sg>
+    <xmx:nY7zai-hwiVsOiUZWeUh7KLEJnb9iXPW7FSUW4yz9foBE8KkkS_SEE2P>
+Feedback-ID: i80b64ba7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 10 Nov 2026 16:37:32 -0500 (EST)
+From: Juanlu Herrero <juanlu@fastmail.com>
+Date: Tue, 10 Nov 2026 13:36:47 -0800
+Subject: [PATCH 1/3] selftests: net: make iou-zcrx area size configurable
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -92,93 +119,125 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/9] mm: limit pagecache folio refcount when splicing
- into pipes
-To: "David Hildenbrand (Arm)" <david@kernel.org>,
- Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
- Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
- "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>,
- Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>,
- Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
- Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>,
- Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>,
- Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>,
- Gregory Price <gourry@gourry.net>, Ying Huang
- <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>,
- Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro
- <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>,
- Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>,
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin
- <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>,
- Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Steve Sistare <steven.sistare@oracle.com>, John Hubbard
- <jhubbard@nvidia.com>, Josef Bacik <josef@toxicpanda.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@kernel.org>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Simon Horman <horms@kernel.org>, Neal Cardwell <ncardwell@google.com>,
- Kuniyuki Iwashima <kuniyu@google.com>,
- Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev,
- linux-arch@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org,
- stable@vger.kernel.org
-References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-2-318625d63a98@kernel.org>
-Content-Language: en-US
-From: "Jose A. Perez de Azpillaga" <azpijr@gmail.com>
-In-Reply-To: <20261110-refcount_overflow_stable-v3-2-318625d63a98@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20261110-zcrx-dma-debug-registration-v1-1-48743ea61631@fastmail.com>
+References: <20261110-zcrx-dma-debug-registration-v1-0-48743ea61631@fastmail.com>
+In-Reply-To: <20261110-zcrx-dma-debug-registration-v1-0-48743ea61631@fastmail.com>
+To: Andrew Lunn <andrew+netdev@lunn.ch>, 
+ "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, 
+ Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Eric Dumazet <edumazet@kernel.org>
+Cc: netdev@vger.kernel.org, linux-kselftest@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+ Juanlu Herrero <juanlu@fastmail.com>
+X-Mailer: b4 0.13.0
 
-On 11/10/26 9:35 PM, David Hildenbrand (Arm) wrote:
-> Similar to mapping pagecache folios into page tables, let's reject
-> additional references when splicing folios into a pipe if the refcount
-> is at its limit, similar to how we handle it during GUP.
-> 
-> This will prevent more cases of possible folio refcount overflows with
-> large pagecache folios.
-> 
-> Introduce folio_get_checked() for checked reference acquisition when
-> the caller already holds a reference. It warns and fails on a non-positive
-> refcount and rejects additional references at the limit.
-> 
-> Use folio_get_checked() in splice_folio_into_pipe() and
-> fuse_ref_folio(), returning -EFAULT on failure, like we already do for
-> pipe-buffer duplication. Similarly, make try_get_page() use it instead.
-> 
-> Likely try_get_page() should be renamed (or removed) later, as it doesn't
-> match the folio_try_get() semantics and is confusing.
-> 
-> If we hit the limit after splicing some data, return the number of bytes
-> already spliced. Teach the callers to handle errors, and stop
-> filemap_splice_read() if we only spliced part of a folio, so we don't
-> skip ahead to the next folio.
-> 
-> The check in try_get_page() also covers pipe-buffer duplication by tee()
-> and partial pipe-to-pipe splicing.
-> 
-> Note that we deliberately will not fall back to the slow path of copying
-> the folio, particularly as the folio might have an invalid refcount. If
-> it is ever really required, we can revisit.
-> 
-> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
-> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
-> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+Add an -a option for selecting the area size in pages while keeping
+8192 pages as the default. Combined with -d option, it allows
+registration testing without running traffic.
 
-LGTM :)
+Signed-off-by: Juanlu Herrero <juanlu@fastmail.com>
+---
+ tools/testing/selftests/drivers/net/hw/iou-zcrx.c | 33 ++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 6 deletions(-)
 
-Reviewed-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+diff --git a/tools/testing/selftests/drivers/net/hw/iou-zcrx.c b/tools/testing/selftests/drivers/net/hw/iou-zcrx.c
+index 91b025a8771e1..652b076d10fd5 100644
+--- a/tools/testing/selftests/drivers/net/hw/iou-zcrx.c
++++ b/tools/testing/selftests/drivers/net/hw/iou-zcrx.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <assert.h>
++#include <ctype.h>
+ #include <errno.h>
+ #include <error.h>
+ #include <fcntl.h>
+@@ -59,7 +60,7 @@ struct t_io_uring_zcrx_ifq_reg {
+ };
+ 
+ static long page_size;
+-#define AREA_SIZE (8192 * page_size)
++#define AREA_SIZE (cfg_area_pages * page_size)
+ #define SEND_SIZE (512 * 4096)
+ #define min(a, b) \
+ 	({ \
+@@ -88,6 +89,7 @@ static int cfg_send_size = SEND_SIZE;
+ static struct sockaddr_in6 cfg_addr;
+ static unsigned int cfg_rx_buf_len;
+ static bool cfg_dry_run;
++static size_t cfg_area_pages = 8192;
+ static int cfg_num_threads = 1;
+ 
+ static char *payload;
+@@ -328,6 +330,7 @@ static void *server_worker(void *arg)
+ 	struct thread_ctx *ctx = arg;
+ 	uint64_t tstop;
+ 	int nr_conns;
++	int ret;
+ 	int i;
+ 
+ 	params.flags |= IORING_SETUP_COOP_TASKRUN;
+@@ -336,9 +339,12 @@ static void *server_worker(void *arg)
+ 	params.flags |= IORING_SETUP_SUBMIT_ALL;
+ 	params.flags |= IORING_SETUP_CQE32;
+ 	params.flags |= IORING_SETUP_CQSIZE;
++	params.flags |= IORING_SETUP_CLAMP;
+ 	params.cq_entries = AREA_SIZE / page_size;
+ 
+-	io_uring_queue_init_params(512, &ctx->ring, &params);
++	ret = io_uring_queue_init_params(512, &ctx->ring, &params);
++	if (ret)
++		error(1, -ret, "io_uring_queue_init_params()");
+ 	setup_zcrx(ctx);
+ 
+ 	if (cfg_dry_run)
+@@ -574,9 +580,10 @@ static void run_client(void)
+ 
+ static void usage(const char *filepath)
+ {
+-	error(1, 0, "Usage: %s (-4|-6) (-s|-c) -h<server_ip> -p<port> "
+-		    "-l<payload_size> -i<ifname> -q<rxq_id> -t<num_threads>",
+-		    filepath);
++	error(1, 0, "Usage: %s %s %s %s", filepath,
++	      "(-s|-c) -h<server_ip> -p<port>",
++	      "-l<payload_size> -i<ifname> -q<rxq_id>",
++	      "-t<num_threads> [-a<pages>] [-d]");
+ }
+ 
+ static void parse_opts(int argc, char **argv)
+@@ -594,7 +601,7 @@ static void parse_opts(int argc, char **argv)
+ 		usage(argv[0]);
+ 	cfg_payload_len = max_payload_len;
+ 
+-	while ((c = getopt(argc, argv, "sch:p:l:i:q:o:z:x:dt:")) != -1) {
++	while ((c = getopt(argc, argv, "sch:p:l:i:q:o:z:x:a:dt:")) != -1) {
+ 		switch (c) {
+ 		case 's':
+ 			if (cfg_client)
+@@ -632,6 +639,20 @@ static void parse_opts(int argc, char **argv)
+ 		case 'x':
+ 			cfg_rx_buf_len = page_size * strtoul(optarg, NULL, 0);
+ 			break;
++		case 'a': {
++			char *end;
++			unsigned long long area_pages;
++
++			errno = 0;
++			area_pages = strtoull(optarg, &end, 0);
++			if (!isdigit((unsigned char)optarg[0]) || errno ||
++			    end == optarg || *end || !area_pages ||
++			    area_pages > UINT_MAX ||
++			    area_pages > SIZE_MAX / page_size)
++				error(1, 0, "invalid area page count: %s", optarg);
++			cfg_area_pages = area_pages;
++			break;
++		}
+ 		case 'd':
+ 			cfg_dry_run = true;
+ 			break;
 
 -- 
-cheers,
-jose a. p-a
+2.53.0-Meta
+
