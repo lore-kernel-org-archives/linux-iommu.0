@@ -1,86 +1,86 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.217.50
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794321256;
-	b=ZMjl/w75Maj0Aap6alSRIKyLTCQiyIBx2zj9OCN+5HuZUtrINEAl7s7Ro6FmdXqXC5hu
-	 xHTQcQJIw7SZYh1vHQSEOsT8LC0rMWzT5r+XMHijAHKMbEYQqS3XM9t24DxfHi13AWlnc
-	 3sYCnvyNxUaiB92vZMwF+wJ5cX0QgEkEXOJBszHcMVvNO8LyzV+lzYHUIAUslDNKHyBCy
-	 NEw1Oxt558httenbSqPwdTPCrNrMRreSdvcAVPWjxvMbu9lYZa42hnB/HFtIy2Ntxy7do
-	 HVnElDdHUMPFIDsZ2psyKlWKSiGkLHl2y8pijazp8CKSHBdVFd1SQj1rSl8uY7tEnRw==
+	t=1794322062;
+	b=nIMGJupMbjd6qLQjQN159O/vXbsyd+Z3E+j6YXymC5U+5Xnt5Btetk6MLigCLgnHT5XQ
+	 dyBxGjnwUxjmqb0Y6aL4tM4n2SQ3DwbCMb7bLLCdNdsOd6KggSJTfpJkK2C9JUR+AOTk7
+	 MM30VhljqT2qqftFOliNYMBoYL8vPJbU6uMKCHivPh5HpGyG3sW6+eMRavylY0e3o/Q50
+	 43stjCak/100A/ynUZHIo9QknkShbjntFs+NczIl7FaxIN/izebNgBJqYF/5dVMMe7CPP
+	 jwU5IWCweB0VUhQoMpxuwqetM4XHRr1J4qsssM4GoRefJUBF/GEFYNR2bNQArjbnxRw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794321256;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=ccSP2Ociu4QAcyUTCUNH6oNmUf4FH1to2v9ab2rDQQk=;
-	b=lD4/FLWtYDu3jTJ9rsF2RIP3p/xn49U+fzajYTKp0ZiMwLpyUtc3qYGFmUCTCgtNwj41
-	 4hLB8nbFtc6llrqyfc0ISmqSyUcQRy9cRJxIw6wdecWGq4sgfcDPjea44MVcNSpemrr5l
-	 sXsAVLYnyWj3TtFp3qmZiMhhuHttjIOSl3d6Yvk9rJ+63YFdbMTdeJNy73CkfgPFN5Bjn
-	 cIiOQqb7bKaHIkSLt/lcG0PWcWsDJGreaXOOCjtx5FWsGvpXN3oBJf0Qqw4pkn68bCs/s
-	 6QYoPOlQAvKdnMqET7eHfJciQ4FB91pTNFhp+XsMODtS4wanudQ+Gfa9IekPIi8vlkA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794322062;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:Subject:From:To:
+	 Cc:In-Reply-To:References:Date:Message-Id:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key;
+	bh=ZFEAJe5RSOFhQbOQqwNvxFPxejburOXhpBzwnwwZqdo=;
+	b=W7wTc+KC+8Vy8QvpaczAWxzh3hTykyhas5VtW9BMTJiLsOrg2p3wijnY0CS5+4aRYjzr
+	 PAN5Tfh5/4lh3UcoIGG/HLyXcjxPbEIBefricZJUbS2fwWv43oEkFW00qlrcb7YkXN0BM
+	 eWv/ElwH9mC/SeeZAQ+Y06ECLtTw4nOatqQwCps5Hsq1kocPssS5m19Qq9ILTQPV+vmNc
+	 SQEYyN6Ln7WGTbNKtkQDMPJN8NLmuvbyBEd0iW29u3QloQZFORk77NRXsrP/NmvWaR4we
+	 fUlPxLq88fJ0P4RmAhCZWc6xlrt/Buq4qQ4Hl2zEIFS8m89foFWz3QjF//s18/7Pkig==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UA7IKNme;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=soleen.com;
+	spf=pass smtp.mailfrom=soleen.com;
+	dkim=pass header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=UnlnATDt;
+	arc=none smtp.remote-ip=209.85.217.50
+Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB066606A31C;
-	Tue, 10 Nov 2026 14:34:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3635560A2614
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 14:47:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3635560A2614
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=UA7IKNme
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C0A21F0089F;
-	Tue, 10 Nov 2026 14:34:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794321255;
-	bh=ccSP2Ociu4QAcyUTCUNH6oNmUf4FH1to2v9ab2rDQQk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=UA7IKNmeMdq4AGiOXXbP0S8RenlNotzKAYBkZujRRKHdkUZctCRJUbthJxMArG4Sg
-	 oEu1oqN+FMyj+A+ekpz9IHqwCL71CsYThUpyfai9h2VtevcrPfmkfOW1ByDNWm6OK8
-	 rSMVWXZzAf/mOJwI7XlQm5H3xlzJXjsZ0MjtV9xCJv7LkMIlorUjyFvOciU/oMlkov
-	 9Pt8XUJkzK4xF+xk0AGn0ZU/crr1gEpC+cww9R/p9E9cD+OqWDA6omLSy1D5ro3Mcl
-	 tQ0XdOWnneFP6dNOiKUhrk2ERgQx0ch3ayJbnrH17BH9SbVey/MdZQ46sLiwJTT5cm
-	 mgnqGmunGm83w==
-Date: Tue, 10 Nov 2026 16:34:11 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v2 18/19] PCI: Replace untrusted state with device trust
-Message-ID: <20261110143411.GK8635@unreal>
-References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
- <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
- <d0999161-3b27-4c3b-9d66-1d117c4836fd@arm.com>
- <20261110122237.GG8635@unreal>
- <20261110142534.GY663069@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.a=rsa-sha256 header.s=google header.b=UnlnATDt
+Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-7d2e14babc8so1203534137.2
+        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 06:47:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google; t=1794322061; x=1794926861; darn=lists.linux.dev;
+        h=message-id:date:references:in-reply-to:cc:to:from:subject
+         :content-transfer-encoding:content-type:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=ZFEAJe5RSOFhQbOQqwNvxFPxejburOXhpBzwnwwZqdo=;
+        b=UnlnATDtPHdvCzldCvkxBcmvYqTOx3hAuIRFM2ms5GWBfUet33ZsXhBSZc2k447X30
+         4AsESnj2o5ATywOetxo93wRnlkpDu2jQqEZ+0hxk6pXRpvZvISgJVLEYYEI/vtm87sw0
+         11h5x05XUPRWClZUUmyqQJURmmD97CLpx/MchfnY0WUU9kXwCW0ZpHeayTQTgnHR8xKb
+         SdUEMjSM9dXe/KQpDBDq+PS8C1FLZjIuF0QDK52VTMPvgmXAYqnoWXGQOyMUfnNsPBAx
+         GS9xVA7l92Fwz1/W4rKw0481CZ09B7XJYpnpC3vG/lbGLFicwET2wuO/wSxGhr9Ac01M
+         KWsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794322061; x=1794926861;
+        h=message-id:date:references:in-reply-to:cc:to:from:subject
+         :content-transfer-encoding:content-type:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=ZFEAJe5RSOFhQbOQqwNvxFPxejburOXhpBzwnwwZqdo=;
+        b=U7h/hnqDQldtvzwU3ao5oUf27pkjo8Y3YNRlWdsO+FIBM//VLJaWoVGVAXPB+wGSC0
+         k+UVHN3SJ+J47OjPNZP8cmagZTK16xhBSZ82FmmGq1UZiIBMzxXAJYaHXYgb8zeRXmXr
+         kDZyk8Ew9jdf86N+tHTEQAcrdsZfc6LkoUUPnVVfvmw8kfHeJ5/GLniEeOgSgZQ9UecA
+         CVMpRhFO6w5DWIYD815dv+BZ4NfRPiuoqf8XIusAzSkcSxTWnn6FKs6MPpz/ZI4WlIqY
+         5AtGMmPYamIO3yJF9ymtWwztZR7BY+P4csZa8LMGJiSdjHVvPfFRBOIJN85BeQlfbGtM
+         AzPw==
+X-Forwarded-Encrypted: i=1; AL+hErH3U2vRB9utZgxMRKDj6eqmNhPKEQIL5/jB8mWFOjP/tD0o2BCr1khEvDI6+xxE4WNN32dfjg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9gewh6HhVejHI59Q+q0+P3DmHm+JHjzySCB6xNiOAB/ufLcu7Z
+	DxSUmfWN1tvIC7V8jEzLasmf1am6nBVGPPN3WE/+6HwX/EM1ZGfKFr6eEccviIL9tpE=
+X-Gm-Gg: AYBFou0aeEdhhEZT/Rs8l5TjgoVE9Iky4jmCqyyQPPDmYVyTdZyj4fbzaJLYUJ828/B
+	sarViqm9F0V3fhltrGrUjWDz24qelryMh+Y7V7GMDz4pd77BLpGC0yqQg14fwkxR58OVqNB/8Ov
+	CBi6QH2hItWULnIBybqp7guhFMJdMjoZKknmuddXGauQDWn2koNgjzO9W8a9eLkZTP/UHs7nlOH
+	cZzqRP/HfqUN5bLToWxHGoT7vDgXBR/+Fi+4E1xkc/6x3oWR9Vyys8y6thGW/XN846RfFUFBIx/
+	UpAlRiHKqGc3D5nAqliAYVU4bvbKGTQS9xM29lyRX11AfNSRtu94y3Tuegx9va8TjjpH2ajKSQW
+	KZJf4VIVUMWqlFH4KttOHyPiA/QM4fs+kgPB+XQo988u2Pk8mcOaYBJbEjxah8LTPD8aCfYMkBC
+	xxY46OPmi89jdDGalfU5Lu1r/mfw6f0q7yedzKVgP8PJEwVX2LTyplaa7dLROAZPpyLrx7V7Sna
+	ndmqxYYCFrR6HYalLywSfKeDj+0EQkJGSY4vglKxW78hIMYqwIr33lZ+miLmbY0Y3mb2igO//Xs
+	dJu33nioN2a9IZuYgKtG2VFDoQnoHAjC3VwDgL8R6Br6Rq1638t/yP6F6BV72anN/TpXZsWBlGd
+	egyHWUHSUS+hHfTE22HpvweeBt/QBLuz05X4Z1I1PLm0d9pQ=
+X-Received: by 2002:a67:e706:0:b0:7cc:26a8:e716 with SMTP id ada2fe7eead31-7d301c2b6b9mr1064638137.18.1794322061210;
+        Tue, 10 Nov 2026 06:47:41 -0800 (PST)
+Received: from soleen.c.googlers.com (64.167.245.35.bc.googleusercontent.com. [35.245.167.64])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-99c2003b37csm1895903241.6.2026.11.10.06.47.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Nov 2026 06:47:40 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -90,110 +90,66 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261110142534.GY663069@ziepe.ca>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v4 04/19] liveupdate: Reference struct luo_file_set_ser
+ via serialized pointer
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+To: Tarun Sahu <tarunsahu@google.com>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, 
+ Mike Rapoport <rppt@kernel.org>, robin.murphy@arm.com, maz@kernel.org, 
+ will@kernel.org, David Matlack <dmatlack@google.com>, 
+ Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com, 
+ loganodell@google.com, arnd@arndb.de, dwmw2@infradead.org, 
+ baolu.lu@linux.intel.com, Bjorn Helgaas <bhelgaas@google.com>, 
+ oupton@kernel.org, alex@shazbot.org, gle.com@google.com, 
+ pbonzini@redhat.com, Andrew Morton <akpm@linux-foundation.org>, 
+ kevin.tian@intel.com, joro@8bytes.org, kvmarm@lists.linux.dev, 
+ linux-pci@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
+ kexec@lists.infradead.org, kvm@vger.kernel.org, iommu@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, skhawaja@google.com, sagis@google.com, 
+ linux-arch@vger.kernel.org, linux-mm@kvack.org, 
+ linux-kernel@vger.kernel.org
+In-Reply-To: <20261110050202.529473-5-tarunsahu@google.com>
+References: <20261110050202.529473-1-tarunsahu@google.com>
+ <20261110050202.529473-5-tarunsahu@google.com>
+Date: Tue, 10 Nov 2026 09:47:35 -0500
+Message-Id: <179432205559.2329176.7688399969919556416.b4-review@b4>
+X-Mailer: b4 0.16.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=791;
+ i=pasha.tatashin@soleen.com; h=from:subject:message-id;
+ bh=qYrWWLSjrMyi3btEEyRhgD14ybrNmyQeqN8ETOUOvP4=;
+ b=owEBbQKS/ZANAwAKAbt3KEzbc3reAcsmYgBq8y6LmPCnN2SrnZCSda58BBnTZsMnjk7g+kA/g
+ 6Wo/AVJiseJAjMEAAEKAB0WIQRBMaqT7LRvGvB/NmK7dyhM23N63gUCavMuiwAKCRC7dyhM23N6
+ 3qrED/9liUyRUpQr+Sv1ioZ2pUvLcetyB+2JoLxaB/0UYYNHqDXpwWtEHhSP3eAYwEET2WAzSzb
+ cINjQ0UdR20OJBBxpWT+3R6jrxl6smFx5lA1+CtzCdBONdl5NiW3+NITRy2Ip//vGFZKdNjWFk/
+ 5Y0ii3L7iz6hVXT9R9y6mqGOo2TBCSa84xWnOGrVJ8ijAnCqgOeAMhmqVN+rkl/dWCvzMcCFZZP
+ AYRuSxmCQaOa9GxsOttPL5pX10r/UbwioXQZu/aJ6RcG+ql2liIZFv1+3mcSyInleN3SlnUZOVi
+ inOQM3Yp2D1a6ekPH7F6Uzb45X4qnnJ8DSfO2LkVSWgmzzpsKuXUePJ8Pe0a7FfO9mUYj5Fp9wg
+ IxfJUyigWzzPN0aOcgePZcZBT4fLUlw+zQV3UGnfTiTzevMagmFWU2+B/s0Zt7u6TidXvFQsMFI
+ 6ZlD5aySuQGLYM3+UdGdp96SY6FEGgvqmSCG63zPbq7Y2WqSBl153diBep17zLt4CJ8n3Fd+YrU
+ E2rPF9GR7k6MT1Qc2tSSvCCk+cTjcDt4Fm3op7Z6LrxP3BQDFa0Fh2afBgG5mCHbK8fSxd2uggj
+ NuHbXeBNgQpe1vKYQQd97AUSoFlymseer2cfqgpdkxtIZwGdPAYPchrVuPHKx6mZDNkSz6VZZ49
+ k5DwAzPXt9kz4Og==
+X-Developer-Key: i=pasha.tatashin@soleen.com; a=openpgp;
+ fpr=CAAAB722DD22A081F0D49F35633A6A993D43B569
 
-On Tue, Nov 10, 2026 at 10:25:34AM -0400, Jason Gunthorpe wrote:
-> On Tue, Nov 10, 2026 at 02:22:37PM +0200, Leon Romanovsky wrote:
-> > On Mon, Nov 09, 2026 at 01:53:02PM +0000, Robin Murphy wrote:
-> > > On 09/11/2026 7:33 am, Leon Romanovsky wrote:
-> > > [...]
-> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > > index b486b8bbd1fcd..8be2a246d4903 100644
-> > > > --- a/drivers/iommu/iommu.c
-> > > > +++ b/drivers/iommu/iommu.c
-> > > > @@ -1879,7 +1879,7 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
-> > > >   static int iommu_get_default_domain_type(struct iommu_group *group,
-> > > >   					 int target_type)
-> > > >   {
-> > > > -	struct device *untrusted = NULL;
-> > > > +	struct device *restricted = NULL;
-> > > >   	struct group_device *gdev;
-> > > >   	int driver_type = 0;
-> > > > @@ -1901,14 +1901,15 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
-> > > >   		driver_type = iommu_get_def_domain_type(group, gdev->dev,
-> > > >   							driver_type);
-> > > > -		if (dev_is_pci(gdev->dev) && to_pci_dev(gdev->dev)->untrusted) {
-> > > > +		if (dev_is_pci(gdev->dev) &&
-> > > > +		    pci_dev_default_is_restricted(to_pci_dev(gdev->dev))) {
-> > > 
-> > > I think this should be the generic device_is_adversarial(gdev->dev) now - in
-> > > fact probably all the dev_is_pci()/to_pci_dev() stanzas aren't conceptually
-> > > PCI-specific, just an artefact of the current "untrusted" flag being so.
-> > 
-> > I wanted to do the same, but iommu_get_default_domain_type() may be called
-> > before the PCI device's trust level has been set. At that point, we are
-> > still in "disabled" mode, whereas device_is_adversarial() checks for
-> > "adversarial" mode.
-> > 
-> > The below is from AI, I asked to present me the path for that:
-> > --------------------------------------------------------------------------------
-> > For a newly discovered PCI device with an available IOMMU and a new IOMMU group:
-> > pci_scan_single_device()
-> >   pci_device_add()
-> >     device_add()
-> >       bus_notify(dev, BUS_NOTIFY_ADD_DEVICE)
-> >         blocking_notifier_call_chain()
-> >           notifier_call_chain()
-> >             iommu_bus_notifier()
-> >               iommu_probe_device(dev)
-> >                 __iommu_probe_device(dev, NULL)
-> >                   iommu_setup_default_domain(group, 0)
-> >                     iommu_get_default_domain_type(group, 0)
-> > 
-> > For a device whose initial policy is adversary, its state during that call is:
-> > dev->trust_policy          = DEVICE_TRUST_POLICY_ADVERSARY
-> > dev->trust_level           = DEVICE_TRUST_DISABLED
-> > dev->trust_committed_level = DEVICE_TRUST_DISABLED
-> > dev->driver               = NULL
-> > 
-> > device_is_adversarial(dev) = false
-> > 
-> > The active level changes later, during binding:
-> > really_probe()
-> >   device_trust_prepare()
-> >     __device_trust_prepare()
-> >       WRITE_ONCE(dev->trust_level, DEVICE_TRUST_ADVERSARY)
-> >   dev->bus->dma_configure()
-> >   call_driver_probe()
+On Tue, 10 Nov 2026 05:01:47 +0000, Tarun Sahu <tarunsahu@google.com> wrote:
+> struct luo_session_ser currently embeds struct luo_file_set_ser directly
+> by value. Embedding struct luo_file_set_ser couples the session layout's
+> size and field offsets to struct luo_file_set_ser, preventing either
+> structure from appending fields independently across kexec.
 > 
-> The ordering here is wrong, this is a consequence of splitting this
-> into different series. I don't think we need to fix it in this series,
-> but as a followup. For now I would aim to make 'no functional change'
-> and still follow the ACPI selection during default domain creation.
+> Convert struct luo_session_ser to hold a DECLARE_KHOSER_PTR pointer to
+> struct luo_file_set_ser instead of embedding it by value. Reserve space
+> for both structures in each session block-set entry, placing struct
+> luo_file_set_ser immediately after struct luo_session_ser, and bump
+> LUO_ABI_COMPATIBLE from luo-v5 to luo-v6.
 > 
-> The long term goal is to detect that the trust level is disabled
-> during iommu_probe_device() (ie we are running in a secure booting
-> mode), attach the device to BLOCKED (which should be a NOP) and defer
-> allocating the default domain.
-> 
-> This would preserve the DRTM iommu & ATS blocked behavior through
-> until driver binding, giving userspace a chance to do an attestation,
-> turn on link ide and so on before exposing the system to DMA from the
-> device.
-> 
-> Once userspace sets the trust level and binds a driver then we can
-> allocate a default domain using the user set trust level and avoid the
-> above problem.
-> 
-> For the CC VM use case today there won't be a vIOMMU, and there is an
-> indepenent control for DMA ENABLE in the TSM driver so this doesn't
-> matter right now for CC.
-> 
-> Probably put this detail in the commit message
+> [...]
 
-To battle ATS and IOMMU comments from sashiko, I wanted to add the
-following lines into cover letter:
+Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
 
-  This series introduces device trust policy, authorization, and lifetime
-  commitment. Authorization does not reconfigure ATS capabilities or replace
-  IOMMU domains selected during discovery. Further ATS and IOMMU integration
-  will follow in a separate series.
+-- 
+Pasha
 
-This appears to be a less detailed version of your explanation.
-
-Thanks
-
-> 
-> Jason
