@@ -1,79 +1,77 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794290719;
-	b=Rirx4LG27/Lj8y7PWUdxQ/OLc2A/9aZusuHOtyB9sl9Lv8dUAzlHmt5Hn32+B8nYMIw0
-	 iwmnV1ralFhzlS3QfXlbj7EofrmqlY4qr++p1ff47ZdlMyjy/tYkBAavRgjgVlmb2WOh+
-	 g4FkaRzLs6/axQzoeq/o/IPqhKMxiLzDRinhG68RKaZinX6490cG/gTbaLBsjzGHivfBE
-	 BBjBjCg63/tns6VoK0y1/s9bUGDxZpErs7oL5E8lmVgt+Y29wICxzFbQfwb+8uyPgwCym
-	 hW9QqiSQipiN2ab15SKGVU6PFz3j7h2cstQLNZGSOwnQnpuoSb7lONi3394WALQDXyg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794290719;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=isj8QmDoAv2l5fg1HSQfo6B6XERKWEnEINwxmN+yGVQ=;
-	b=RMAFoTjY950NLgrH7cu1Emqw14YAHTpFsFOR1dNHJnq8hXbIy54LQZWQ0WDcXc1EuxyF
-	 A2+CRVliI5m0vJ8hwJrH7dPfT3jMedk5xaBG1e55RJyXzatG5LyAVCRu7Y2CDfw+uT7Hn
-	 fdUY7uqSqQ3UsC+63wmahJw612t0KnTsRswagnCM+RLHY8wESXDDxv/v/wgkoorpGef/K
-	 IyRuiN7MpQyKACRjm8ygpCENwkF4wUta1MMBaT2unGk55xpiIjT9Z6cHjpYtWZTIZIvDB
-	 zGcME1nxHCrntm3BXgKOYejUJOpYYQd1phzpnCv/OQjj2agPS78B0ssBS2Vmbeiub6Q==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XQbbbDeG;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB52E606A325;
-	Tue, 10 Nov 2026 06:05:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794292942;
+	b=iwmBHkbNrcR7uE0qYfskmv0o2aW4PGBrtsyBHEIDAfQfyjrc2DRf0ZPRvACCJOqJlgi5
+	 63J++/5DCwwB8b/YJjgvtqRnXh7BFje0SBpqF2sY1mUl+JTQEnX85POBHjPq7jqUdlnOf
+	 N0dETIsRl4NXqVOKRyc75s6RAx3YVfiSsnM4HxqYkaoFRhlq9yjY2rvRhatkixJ2L0601
+	 HBFPPBW4UHbsLhjgX4OFjfKGAFNpRDWWGnZP48MPLCSNI20kvbzdyK6xiOrECn5m9FEGo
+	 l0J4UIEbj8jq88tFAhxnG7HSglFZbMCDw1mbzhc61/iXYDG7ubdzDquQaGkxMy3rpIg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794292942;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Date:From:To:Cc:
+	 Subject:Message-ID:In-Reply-To:References:Organization:X-Mailer:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
+	 X-Spam-Checker-Version;
+	bh=F57TO+AstGhE+8yyPnbLyDBC58ekYQDOf3bFWDVXPWA=;
+	b=zYEDmpXuFNY2pu7bqmEkxaDOejokTjEkJ3B6NI78ssPe/3JRbbEqVsoEnxZ6lawcRDgh
+	 Id0z8k7GS5HY6y7k4Z9V1Eou+rdOZBDehA1JnImPBNy7IG4nOdD1yE/Rs+s2f7HtId6Uf
+	 yP29vNeBRmwp+JR8T0vh42EFRxgMGtwQsoRinXKIMwd4frq8fgrp7T8frm/pCODmYZ0S+
+	 ehYqmlYDBg/wQsmREqKGWxVXU+8DUvcAmQJ1gl/ovAc0A+ALI//67ZgJzrsVLclb7SjO3
+	 ZqBBljHFnnc/L+ZXo17KZwPiNBFGzjdNOQHxnzhn7dgBm+EdegyzJuslLUBYd9m5yWQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.microsoft.com;
+	spf=pass smtp.mailfrom=linux.microsoft.com;
+	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=C8Wsglcb;
+	arc=none smtp.remote-ip=13.77.154.182
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C53B606A33B
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 06:42:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9C53B606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=XQbbbDeG
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794290718;
-	b=FpJsAeTy7CbyxhwjhEXAGXDL3NuNl8Xfk5v+RDmFob9wV3mIrrPlQ4R8pSOEWZ+YeuTP
-	 aqtHqObpYPNmWdLDySlen0qHmjwGNURK0WP1CK16Zyqn96oUP8B6fVYKbpLf/MzipFQ2k
-	 Xj94ptofHUMxzzQNTuKyYfHIx4OE0YeY6zuyVjNEq+rEuWd6YQSSSMA2FEv4EPmGMW00U
-	 aipHfFXOUdHYw0sUvMAW1689/yoJuV8xK0w3ZePG1SfOcaWb1rKzi7CEFVDYJhrVxUXif
-	 mpHOqR/bpCeJF4Iv/KDWa+MDifaBPy05eGm7Ae2hu7jxSOXhq5P2C/YcpnRq7S7nTgw==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794290718;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=isj8QmDoAv2l5fg1HSQfo6B6XERKWEnEINwxmN+yGVQ=;
-	b=uuMGALfJxD8G9dsjPPGHhOCtfSfaZNr9JgB2m1vcxdgU/umikHSWGXvXDqEV3BXS7fmI
-	 mdrmbYTxgI22zJK4ehrOaubOeqLnc4Jvt/MnPPXFtuKIxHUuYEqCxk/WUuCXEJNISvJyF
-	 Zy1fKl+94sTViqcXg1PHODK0Dh8ZsWDG+CLVqhehKf9OVdJwZNHsTJweDYZhVLZ2+dTEF
-	 efKu5qlOaalUebmwCRpr3fqGof95fpRKQTMIhF0mx2FB3nA4S1uvxRhNC7xSQveUMWIFg
-	 dIY1/Fodc/HOBTftXUB6BQjjiTEdaX9zSS1kodjOJrEox4xgBuhT6M3MjuFBpzUFDaA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id ED1F31F008A1;
-	Tue, 10 Nov 2026 06:05:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794290718;
-	bh=isj8QmDoAv2l5fg1HSQfo6B6XERKWEnEINwxmN+yGVQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=XQbbbDeGJPEkijR+PANK2i0N+5nZw9uZO7emzRSVW86HN4it8UxEvwKwDp9i7izg4
-	 GnV4efxY6Hx9ia9HU9St4ueVIy6cos/wJkSN2Gyjdye/07jYsSP2M6kPACANtIYq99
-	 sN6NFeqgflbWTrsOlwMdGFZfl0wljwcPtES1dfHDIhpEwxvSrt3gZAlQwpP1Fgrfcl
-	 fXiWlzobOnMJlV/Z5Mu6KbsP/Bie3s51KDHq7OrUdilwka1Cd8z7hfSYXljOlUIby/
-	 +eMykFG9YyUl4u09Qs0hTqgJqso2gU8+63bJMg7jBm9iShVVL8IXRudZ9P/CujuKDR
-	 kupzcOUfBM9EQ==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 71183488DF;
-	Tue, 10 Nov 2026 06:05:17 +0000 (UTC)
-From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
-Date: Tue, 10 Nov 2026 06:05:17 +0000
-Subject: [PATCH 1/2] iommu/sun50i: Don't report TLB prefetches of unmapped
- pages as faults
+	dkim=pass (1024-bit key, unprotected) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=C8Wsglcb
+Received: from localhost (unknown [52.172.102.219])
+	by linux.microsoft.com (Postfix) with ESMTPSA id A15B020B7168;
+	Mon,  9 Nov 2026 22:42:04 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A15B020B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1794292938;
+	bh=F57TO+AstGhE+8yyPnbLyDBC58ekYQDOf3bFWDVXPWA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=C8WsglcbnXPSgdhdM6HbMd8j5x0Csmou0rx5S907S2s5ioXYln/Cq66k66bHBNY3C
+	 jI2K1ederaGkjCcb4AhdBs5h4J7v0cnBz3ztf1iD6Lq4Fuso+RlcEJMJuCfijiOpZO
+	 YBB0kwiPUdhf2w9vJaNEKhXruliV//UyMD0BaOqU=
+Date: Mon, 9 Nov 2026 22:42:00 -0800
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev, Nicolin Chen
+ <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Wei Liu
+ <wei.liu@kernel.org>, "K . Y . Srinivasan" <kys@microsoft.com>, Haiyang
+ Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, Long Li
+ <longli@microsoft.com>, linux-hyperv@vger.kernel.org, Joerg Roedel
+ <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Arnd Bergmann <arnd@arndb.de>,
+ linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org, "Aneesh Kumar K .
+ V" <aneesh.kumar@kernel.org>, Mukesh Rathor <mukeshrathor@microsoft.com>,
+ John Starks <John.Starks@microsoft.com>, Souradeep Chakrabarti
+ <schakrabarti@microsoft.com>, Yu Zhang <zhangyu1@linux.microsoft.com>,
+ Easwar Hariharan <eahariha@linux.microsoft.com>, Alex Williamson
+ <alex@shazbot.org>, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH RFC 1/9] iommu: Introduce external attach domain type
+Message-ID: <20261109224200.000033c6@linux.microsoft.com>
+In-Reply-To: <20261110005259.GU663069@ziepe.ca>
+References: <20260925190742.1575380-1-jacob.pan@linux.microsoft.com>
+	<20260925190742.1575380-2-jacob.pan@linux.microsoft.com>
+	<atiakDqtuED2cTM5@google.com>
+	<20261026161003.00003b71@linux.microsoft.com>
+	<ausIn5Txiy1uRjkY@google.com>
+	<20261104170816.GS3889730@ziepe.ca>
+	<20261106130352.0000638d@linux.microsoft.com>
+	<20261110005259.GU663069@ziepe.ca>
+Organization: LSG
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-w64-mingw32)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,109 +81,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261110-sun50i-iommu-prefetch-v1-1-43428e792ef6@gmail.com>
-References: <20261110-sun50i-iommu-prefetch-v1-0-43428e792ef6@gmail.com>
-In-Reply-To: <20261110-sun50i-iommu-prefetch-v1-0-43428e792ef6@gmail.com>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Chen-Yu Tsai <wens@kernel.org>, 
- Jernej Skrabec <jernej.skrabec@gmail.com>, 
- Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794290717; l=3445;
- i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
- bh=yLoe2znns7P0Nlmxz+qhOed7bJSPIV/igjF81whNh8k=;
- b=7OZXIY/FUo+0ssrRcC5PVK4pgBVfPVCGENntFR4oujOO4H4aYnqjXuNlSiLoiimQAbHlN1eXl
- lGGYmF9UU/zDufC7H+GTKls3rXhjGA1bAxCCLdmCvb20Mn2ibWiwLtH
-X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
- pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
-X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
- auth_id=1480
-X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
-Reply-To: aiyengar1990@gmail.com
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-From: Arun Iyengar <aiyengar1990@gmail.com>
+Hi Jason,
 
-With a display scanning out, the driver reports
+On Mon, 9 Nov 2026 20:52:59 -0400
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
 
-  sun50i-iommu 30f0000.iommu: Page fault for 0x00000000fff00000 (master -1, dir rd)
+> On Fri, Nov 06, 2026 at 01:03:52PM -0800, Jacob Pan wrote:
+> > I am not stating that it will break UAPI because of blocking domain
+> > is used. What I am trying to say is that with the blocking domain ->
+> > external transition, we do not need a new UAPI for external attach
+> > for non-CC. It will just reuse the existing UAPI.
+> > VMM:
+> > 	do_ioctl(vfio_cdev_fd, VFIO_DEVICE_ATTACH_IOMMUFD_PT,
+> > &attach, "VFIO_DEVICE_ATTACH_IOMMUFD_PT");
+> > hv-iommu-root: external_domain.attach_dev() will do the hypercall.  
+> 
+> You've basically described a wonky NESTING domain.
+> 
+> I think you should just use nested domains for this. Even though there
+> is no S2 make it possible to create a nested domain through the
+> viommu..
+I didn't use nested domain since the current parent hwpt is a paging
+domain which cannot be used to express the external attach semantics.
 
-on an H616 once when fbcon takes over the framebuffer (the first
-scanout frame), and again, vsync-spaced, after TLB flushes while a video
-decoder frees its buffers (every unmap flushes the whole TLB and PTW
-cache in this driver). No device accesses that address: with the IOVA
-allocator handing out addresses from the top down and size-aligned, the
-3 MiB fbcon framebuffer of a 1024x768 mode is the first allocation and
-lands at 0xffc00000-0xffefffff, and the top 1 MiB of the IOVA space
-above it is never mapped. 0xfff00000 is the page after the end of the
-framebuffer.
+Are you saying that we create a parent-less VIOMMU (in Aneesh's patchset
+and my RFC), and modify the iommufd core code to allow nested domains
+to be formed with an externally managed parent? or we expose a
+opague parent S2 that is not paging domain?
 
-The walk that fails is the TLB prefetcher's, for the page after the one
-the master is reading. The H616 user manual (3.12.6.50, 3.12.6.51) gives
-the L1/L2 page table interrupt registers a bit 31 next to the per-master
-bits for walks that no master started, and Allwinner's sunxi-iommu
-driver treats a page table interrupt with bit 31 set as a prefetch of an
-unmapped page ("It's OK to prefetch an invalid pagetable") and does not
-report it. This driver masks the register to the master bits, gets no
-bit, and reports ilog2(0) = -1 as the master.
+> If hyperv ever learns to support VIOMMU you will need this anyhow to
+> pass vSTE/vDTE/etc to hyperv.
+> 
+VIOMMU support is established between guest and hyperv directly, where
+vSTEs are passed via SMMU emulation (by Hypev). There is no host iommufd
+involvement, I think that is different from qemu.
 
-Return early for a page table interrupt with the prefetch bit set and no
-master bit: no master read anything and nothing is stalled, so there is
-nothing to report, reset or zap. Print such walks with dev_dbg so they
-can still be counted.
+> For now the nesting domain creation can just accept an empty struct or
+> something which means identity?
+Yeah, identity or passthrough should work.
 
-Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
-Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
----
- drivers/iommu/sun50i-iommu.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+But if we go with the nested domain route and let hyperv iommu driver
+handle the nested domain attach, it still would not work for pKVM.
+pKVM's root SMMU is emulated, so it cannot do the external attach
+hypercall in the unmodified SMMU driver.
 
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index be3f1ce696ba..1b7a7f0d9b62 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -73,6 +73,15 @@
- #define IOMMU_INT_ERR_DATA_REG(i)	(0x150 + (i) * 4)
- #define IOMMU_L1PG_INT_REG		0x0180
- #define IOMMU_L2PG_INT_REG		0x0184
-+/*
-+ * Besides one bit per master, the L1/L2 page table interrupt registers
-+ * have a bit for a page table walk that no master started: the TLB
-+ * prefetcher's walk for the page after the one being accessed (H616 user
-+ * manual 3.12.6.50 and 3.12.6.51, bit 31, "debug mode"; the vendor's
-+ * sunxi-iommu treats a page table fault with this bit as a prefetch of an
-+ * unmapped page and does not report it).
-+ */
-+#define IOMMU_PG_INT_PREFETCH			BIT(31)
- 
- #define IOMMU_INT_INVALID_L2PG			BIT(17)
- #define IOMMU_INT_INVALID_L1PG			BIT(16)
-@@ -891,6 +900,20 @@ static phys_addr_t sun50i_iommu_handle_pt_irq(struct sun50i_iommu *iommu,
- 
- 	iova = iommu_read(iommu, addr_reg);
- 	blame = iommu_read(iommu, blame_reg);
-+
-+	/*
-+	 * A walk the TLB prefetcher started for the page after the one a
-+	 * master is reading fails whenever that next page is not mapped,
-+	 * e.g. for the display engine scanning out a framebuffer that ends
-+	 * at an unmapped IOVA. No master accessed the page and nothing is
-+	 * stalled or cached, so there is nothing to report, reset or zap.
-+	 */
-+	if ((blame & IOMMU_PG_INT_PREFETCH) && !(blame & IOMMU_INT_MASTER_MASK)) {
-+		dev_dbg_ratelimited(iommu->dev, "page table prefetch of unmapped %pad\n",
-+				    &iova);
-+		return iova;
-+	}
-+
- 	master = ilog2(blame & IOMMU_INT_MASTER_MASK);
- 
- 	/*
-
--- 
-2.55.0
+So I am willing to entertain Mostafa's approach to park the device in
+blocking domain, then use hypervisor provided viommu/vdevice ops to
+invoke device external attach hypercall. Basically, move the
+attach_device to external S2 operation out of iommu driver to the
+hypervisor code. It does not need domain ID or anything IOMMU specific.
 
 
+Thanks,
+
+Jacob
