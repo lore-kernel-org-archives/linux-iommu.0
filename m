@@ -1,57 +1,57 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1794304131;
-	b=rQ2cNYWBpstZAiQbYNVWyO2Q3mAeabrPuIzFnwsAHGdLfYp7e+niwF30P6vjRGCT1TK4
-	 OZFLeqihfhrrEUk2w0bqxWcB7DdkiWSzIaug7s18Sqz6WI55a/XMxJpPycb18/XUSpYZp
-	 7KqFPJVnx6/PqNX7VHjCKlUd9rILzdCN8vSUztoxJZClSDQNlrmaYwisp6PIrUenMqwSQ
-	 ZV9B6v5JU7bpVZwxw9Uc8GrRIR4ZNvOAkRplTMQ60zRpHEqD7hoSmKfpTTFbUVrBl1P9+
-	 WDlH/qUyAS3eT4g1eojFEcAKMgWaYwqv/LX3FrKdOuwIfSLNFuYKX2uVltw9Zn+ABrA==
+	b=YYRCi350c9NrKvFVnvt1Wx7gFfPgO85gsVi1+mV6gf+74vIYWn87lMoh8LsZKmj6dh4u
+	 QYSsvFClPoeEtPetiiZVf/oVOV/UKPtz72Pa2apHr8reElmP9aQhsfAgpgxFQLIOL+cxp
+	 /6HO+9JMr/BSQ5vlk+OWzif29mhMeAcb5O3IBQ1RfXNBQ8AVFOw4K9IvQB2o4E37TDJv5
+	 nJj4NhyycnvjQdkSQGGE12YSWrhPt5C86/UzRn9FkqB346+F2z0BCYZQ2wkGgRGgfGeT8
+	 xLiyZpWTO+nJEZ4Zlij6voVEs3Xd5cam9QXD1Ud71UGCwdrNiOP8KRD+udcoJF6TWAQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1794304131;
 	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:MIME-Version:
 	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
 	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=3WfehI9fQijRo2A/YkZKLEEsknJgbPS4DyEKhXbP7KQ=;
-	b=rFKrby10gU+ZzD8w4QYcfO2hhfUNtV5hJWBdSG1gQbZF8wrNTHOJSj1LDgdDeewSP0Or
-	 jQY5atPJZpRwOuzhKin6YCjNwVLZaigDVaLuKhSybXAWhV8CK0BQbcGxelGa73aQfshBE
-	 0LFy5781BjQuoS7InwncF+doZxtr0cXaWdkPeFzsv2p6kMawrobUMMoF18grNObsdlxPS
-	 eX0bq1ua3FlWhpyqsvkPeP2Q5kxPuqMkgYtb3GibrJEOZL2NwkQNmop4097zhTUWvZCl/
-	 2UhPQ6fUCOF5ZC168fA+sdrvAx/3cc31vFOV7i+4lCptOkQJCTtk2e7F+UVAWIv0eCA==
+	bh=rEjQMrO5ewCoTXLRmyADdnQOxAz7KvPx22hj0G2OEWE=;
+	b=VEt53tFnsl5kutfTo92PcBYrT52LpHTeXms6RWJtl7x31MSQK0d670AaUePbzLg2ECqV
+	 GYl0pA0DTT8tQohPTpQPupkvRAxZRfGwCMyvn8CA73Q5wsaqjbwVZYtFpkSZwLkTQQ6ku
+	 TZjgQv8RC89L1qk9NFti5zT2OmZih1lY7Qiqw9AYutxlDLuz+D70xR7QyNqlhU6h3bvUi
+	 RecD/lXmxyt18j8sOJ6Bvjm5Fzbwg2mvnz8z7+KGuE2GD7arElWSlDBbsugfWCyv50iV1
+	 xu1NELI1VSCeMIzu/8I8qJ9Di4ZkZ8bJc9lbt8n0R54gBIJwWbd5N4PLTM7RWv/CDTQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=samsung.com;
 	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=t5H7erzo;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=MDucNNo7;
 	arc=none smtp.remote-ip=210.118.77.11
 Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64E08606A321
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 09:48:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 64E08606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8757F606B165
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 09:48:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8757F606B165
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=t5H7erzo
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=MDucNNo7
 Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261110094847euoutp01d9638d1f915948f8e66ef8dde6fae07c~mphjn62q-1176611766euoutp01F
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 09:48:47 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261110094847euoutp01d9638d1f915948f8e66ef8dde6fae07c~mphjn62q-1176611766euoutp01F
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261110094849euoutp01c9c8e138cfa63cbc2695408cd3cd9cae~mphlJh7qV1103211032euoutp01R
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 09:48:49 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261110094849euoutp01c9c8e138cfa63cbc2695408cd3cd9cae~mphlJh7qV1103211032euoutp01R
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794304127;
-	bh=3WfehI9fQijRo2A/YkZKLEEsknJgbPS4DyEKhXbP7KQ=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=t5H7erzotTjNcdaOkmaz3M4aA0Bqymkk4HSUDa58RSqUxDGN6OQYsxVyl1jgVDKGD
-	 bLjcVFp9RRWjiC9Fcd+zIkUM6TTLjMXbv3wVY4MDaONJLRjuve1I7MrmM00BC+kuY9
-	 Ah8MaNnhV/y3AztJNjfW33hOf5Z0Whnj6YtDNxQA=
+	s=mail20170921; t=1794304129;
+	bh=rEjQMrO5ewCoTXLRmyADdnQOxAz7KvPx22hj0G2OEWE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=MDucNNo71VMaNT7O/enXd9HnluaC/80BTpCOhfJ8K+Uagdw52U4RKdtIGbL4/liDG
+	 ptFVqFkZL0i1mzLXp8DlUFon5C1GkYlliT+bYX8+yZlUY/Scn0nEcUJ3vPCd1yTBQs
+	 p5Cp2NrvUEIKB4dXPwjULV+QtgwBpcqtZTFu6/oY=
 Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51~mphjEO8nd1080110801eucas1p1W;
-	Tue, 10 Nov 2026 09:48:46 +0000 (GMT)
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20261110094848eucas1p2577d7a3c60643a040e599dfa1bf97f08~mphksavJM2794027940eucas1p2h;
+	Tue, 10 Nov 2026 09:48:48 +0000 (GMT)
 Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
 	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261110094846eusmtip14801004a391e04a621db015af3a4d45a~mphiUYlbM3235732357eusmtip1b;
-	Tue, 10 Nov 2026 09:48:46 +0000 (GMT)
+	20261110094847eusmtip1a4cc499316373287c2b9575c277efdb8~mphj9NX-N0299202992eusmtip1c;
+	Tue, 10 Nov 2026 09:48:47 +0000 (GMT)
 From: Marek Szyprowski <m.szyprowski@samsung.com>
 To: linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
 	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
@@ -63,11 +63,12 @@ Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
 	<chleroy@kernel.org>, "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
 	Shrikanth Hegde <sshegde@linux.ibm.com>, Chris Zankel <chris@zankel.net>,
 	Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH v2 0/7] dma-mapping: DMA_ATTR_NO_KERNEL_MAPPING related
- fixes
-Date: Tue, 10 Nov 2026 10:48:20 +0100
-Message-ID: <20261110094830.2081847-1-m.szyprowski@samsung.com>
+Subject: [PATCH v2 2/7] xtensa: handle highmem pages in
+ arch_dma_prep_coherent()
+Date: Tue, 10 Nov 2026 10:48:22 +0100
+Message-ID: <20261110094830.2081847-3-m.szyprowski@samsung.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20261110094830.2081847-1-m.szyprowski@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -78,79 +79,65 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51
+X-CMS-MailID: 20261110094848eucas1p2577d7a3c60643a040e599dfa1bf97f08
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51
+X-RootMTR: 20261110094848eucas1p2577d7a3c60643a040e599dfa1bf97f08
 X-EPHeader: CA
-X-CMS-RootMailID: 20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51
-References: <CGME20261110094846eucas1p140d5ebfe71b47d4e4b5e2162ba051c51@eucas1p1.samsung.com>
+X-CMS-RootMailID: 20261110094848eucas1p2577d7a3c60643a040e599dfa1bf97f08
+References: <20261110094830.2081847-1-m.szyprowski@samsung.com>
+	<CGME20261110094848eucas1p2577d7a3c60643a040e599dfa1bf97f08@eucas1p2.samsung.com>
 
-Hi All,
+arch_dma_prep_coherent() performs the cache maintenance on the address
+returned by page_address(). xtensa with CONFIG_HIGHMEM uses
+HASHED_PAGE_VIRTUAL, so page_address() returns NULL for a highmem page
+that is not kmapped, and the cache operation then works on the virtual
+range starting at 0 instead of the buffer, leaving any dirty cache lines
+of the buffer in place.
 
-arch_dma_prep_coherent() is called by the generic DMA code on pages
-which may be located in highmem: dma_direct_alloc() forces the remap
-path for a highmem page returned from CMA and calls this hook on it
-before creating the uncached mapping. However, the hook has never been
-documented and some implementations assume that the page has a kernel
-linear mapping. This issue affects MIPS, xtensa and PowerPC. It gets
-fixed by patches #2-#4.
+Highmem pages do reach this function: dma_alloc_contiguous() can return
+a highmem CMA page, which dma_direct_alloc() handles by forcing the remap
+path and calling arch_dma_prep_coherent() on that page before creating
+the uncached mapping.
 
-xtensa also only invalidates the cache, which discards the zeroes
-written by the dma_direct_alloc(). Patch #1 switches it to a
-writeback+invalidate.
+Fix this by reusing do_cache_op(), which the arch_sync_dma_for_*() hooks
+already use and which maps highmem pages one page at a time with
+kmap_atomic(). For lowmem pages it does a single cache operation over
+the whole range, so the behaviour is unchanged there. A small wrapper
+is needed because __flush_invalidate_dcache_range() is a macro on cores
+with a write-through data cache.
 
-Patch #5 documents that arch_dma_prep_coherent() must write back dirty
-lines and must accept highmem pages. With that in place, patch #6 drops
-the PageHighMem() check in dma_direct_alloc_no_mapping(), which so far
-skipped cache maintenance for highmem CMA pages allocated with
-DMA_ATTR_NO_KERNEL_MAPPING.
+Fixes: 0f665b9e2a6d ("xtensa: use the generic uncached segment support")
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ arch/xtensa/kernel/pci-dma.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Patch #7 makes dma_direct_alloc_no_mapping() always return zeroed
-memory, like all other dma_alloc_* paths. Passing __GFP_ZERO is not
-enough there, because CMA ignores.
-
-The analysis and the patchset was prepared with the help of an LLM. The
-code compiles fine, but it has not been runtime tested on any of the
-affected architectures yet. Testing on real hardware would be
-appreciated. I've reviewed the resulting changes.
-
-I plan to merge this via my dma-mapping tree, so I would like to get
-acks from xtensa, MIPS and PowerPC arch maintainers.
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
-
-Changelog:
-v2:
-- fixed minor issues in comments and patch descriptions pointed by sashiko
-- dropped RFC annotation
-
-v1: https://lore.kernel.org/all/20261106225628.215319-1-m.szyprowski@samsung.com/
-
-
-Patch summary:
-
-Marek Szyprowski (7):
-  xtensa: write back dirty lines in arch_dma_prep_coherent()
-  xtensa: handle highmem pages in arch_dma_prep_coherent()
-  MIPS: mm: handle highmem pages in arch_dma_prep_coherent()
-  powerpc/mm: handle highmem pages in arch_dma_prep_coherent()
-  dma-mapping: document that arch_dma_prep_coherent() must handle
-    highmem
-  dma-direct: do not skip cache maintenance for highmem pages in
-    no-mapping allocations
-  dma-direct: zero memory allocated with DMA_ATTR_NO_KERNEL_MAPPING
-
- arch/mips/mm/dma-noncoherent.c    | 10 +++++-----
- arch/powerpc/mm/dma-noncoherent.c |  4 +---
- arch/xtensa/kernel/pci-dma.c      | 12 +++++++++++-
- include/linux/dma-map-ops.h       | 11 +++++++++++
- kernel/dma/direct.c               |  9 +++++++--
- 5 files changed, 35 insertions(+), 11 deletions(-)
-
+diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
+index e1c00ec37eed..41467a1ba068 100644
+--- a/arch/xtensa/kernel/pci-dma.c
++++ b/arch/xtensa/kernel/pci-dma.c
+@@ -80,9 +80,19 @@ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+ 	}
+ }
+ 
++/*
++ * __flush_invalidate_dcache_range() may be a macro on cores with a
++ * write-through data cache, so it cannot be passed to do_cache_op().
++ */
++static void flush_invalidate_dcache_range(unsigned long start,
++					  unsigned long size)
++{
++	__flush_invalidate_dcache_range(start, size);
++}
++
+ void arch_dma_prep_coherent(struct page *page, size_t size)
+ {
+-	__flush_invalidate_dcache_range((unsigned long)page_address(page), size);
++	do_cache_op(page_to_phys(page), size, flush_invalidate_dcache_range);
+ }
+ 
+ /*
 -- 
 2.43.0
 
