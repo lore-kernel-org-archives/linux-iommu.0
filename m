@@ -1,75 +1,72 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794331713;
-	b=5OfNKnYje78sySFUvjPwEm3/RRfqDI51G8CaKjeClkf1z4gxFQwugfpNyFLWdmcMEw24
-	 NJO4NraYUpNDvk9+YLwOSLDb8qw2DXizv21X6N/SonWWy4UwJ2Lk40s2BBsN45KZvAomt
-	 niZrAJx4O8Y11AGv7H2s07qmYe6vx3s1OFUQj+4LL6fBd3dLDzk2sw7FdOjzsvQBEoxQe
-	 rGSFDRNwvvay7eH6SK02LYRdqBbHPLF6Oso1pOu5cyrD4I8uWVPLzEe6/9NEAE9KfhRK/
-	 dYV2B7k8D32c2syTNWB2GZpMc5V6Rai2mRDXb+dBzy6h8agNsvnFR1TyfgM+Bk0uQiA==
+	t=1794333383;
+	b=ZHMZTlEMvQSfyLn6Kyicb3L/Cmcno1iCHT/3OGiOYWQmdDKPgp9/RneMeT3hWlkWa/74
+	 l9yV/w1+EJTPExtwOj5npLdq1XyuY1ZZB/L+GXKsT5yDYCRpJ8Pzg/rNBbTgS5OAyUI6R
+	 VijFIUxIniPVlzRscfdBdyTsz1jY9hRIKQMiXbszbfwaXvutjEAO6E6aUTq/TUkgyDrWR
+	 32wEx59GNjzKT4ZZuSSBy1HaJflmqPju5Jlw23VhqIDl5o2CeHN3XMvgJOzOlwP1+WLFt
+	 wlJkJSK19aFKTRPUXl8LQwUO1VxP6lTVKxStge8/tB1EDHjQtCJWB74kgCZEhltlNQw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794331713;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=BQiR9KXvsTVPL/1Zqbc4KD75wts+2IaCB1iOX6lOykw=;
-	b=Ut7rdsUk+ZV3epjyBE6gG7K6cX32Oip5b0qPHtoJIpAXi9GyhdaWiB9JPEP9913NuYxo
-	 kcEJDXHI0IjnE63uoZIzyOSNO886EQMsovj4iIXHd3trvf1twUe8yOvq7dvLRhG44qzFV
-	 6ZwrGF4jn9vaCy5HurLJwnGcuTH7l7sgoEbWrGHHrSjBRQHuGCh1WNoak5mn432yOk9RK
-	 tc1z7OYelIeaC+hKnxNv0SNtNMK6YVKQ3Z8oMvWS3qOvoQHN15IrNkSJQKMipgskdeoDo
-	 /Z+++576JfnZj61AoXfysGRPxjUNBw5d+nG3FfzlZQ6izE2723Vvsohkk+9zXxWLP/w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794333383;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=MAQdXJ3jkoXr+7gO8H3oCVVTJDGIVHZdTHCjd7fxod0=;
+	b=Sta3ymrawii9GHaYWmywjTiLCGpVgNRvFexDx4vilqzyUqRhsx2VfxiJSDd9j3kr8Vkj
+	 Znn3w5XZzOedpJa+cWJTXHQVaKPcF1eIAHG4hN7ISot3V5GRIcXiU2oqthssTgTRpA7+9
+	 mSqY3fHLfY/klk0KXiTKsqzgA2M0inf9dyqHtEwcIyvEpvD8FUf5cCzmDyt+RQCa8vrDh
+	 D0mKlJk+0cA5XpKSao1BDgFBGio6mr5UrraXbXsBAYdLG87MwRYkS3s2ljYAJHEkKAs6P
+	 9wwAMIHyK1IXBGrLZbcZmTcDFvI1pn/K83byKgq/kvIen19+ITTN+o49Esl1UE5Ub+w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BJKdN5rp;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FJoVqVg5;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12D66606A31C;
-	Tue, 10 Nov 2026 17:28:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F7B1606A225;
+	Tue, 10 Nov 2026 17:56:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=BJKdN5rp
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72C5F1F0089F;
-	Tue, 10 Nov 2026 17:28:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=FJoVqVg5
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 313E51F008A1;
+	Tue, 10 Nov 2026 17:56:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794331712;
-	bh=BQiR9KXvsTVPL/1Zqbc4KD75wts+2IaCB1iOX6lOykw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=BJKdN5rpa55lEEPJYQrOjgPM1OQE6kUdh/XIzMMV6OhbiI6mq9mEq/1Kf+5QuxV/i
-	 k2M3yJsNqHypSOOAeTBQRdv2th46Z522hRZbedoRZSMAra8qrKN/wwziBh1BMwHeLp
-	 sDTAg2d+4nBAfWfduZoXZI1vXfUy3B9pf7XZOGjRp+uM722wWUVbWg16NeIq/q2VnT
-	 l7mdCuaT9Rm6Wu3EqyRn54UqEGqifwecwFVUUkyzIij1Kb0ioLaLnZXRe62PWibiIe
-	 hwpmsRjs2F65DTLK4RnShz/NbI6pqXHiD/ZfwT7UxrE3jHVO4uoHx3XKWlqrPsDj1X
-	 nRSsJRNqWqeYQ==
-Date: Tue, 10 Nov 2026 11:28:29 -0600
-From: "Rob Herring (Arm)" <robh@kernel.org>
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-Cc: stable@vger.kernel.org, Lu Baolu <baolu.lu@linux.intel.com>,
-	Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
-	virtualization@lists.linux.dev, devicetree@vger.kernel.org,
-	kvm@vger.kernel.org, linux-media@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-	Sashiko <sashiko-bot@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Eric Auger <eric.auger@redhat.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Oza Pawandeep <quic_poza@quicinc.com>,
-	linux-arm-msm@vger.kernel.org,
-	Jean-Philippe Brucker <jpb@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Srinath Mannam <srinath.mannam@broadcom.com>,
-	linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>,
-	Saravana Kannan <saravanak@kernel.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Vishnu Reddy <busanna.reddy@oss.qualcomm.com>,
+	s=k20260515; t=1794333383;
+	bh=MAQdXJ3jkoXr+7gO8H3oCVVTJDGIVHZdTHCjd7fxod0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=FJoVqVg5QhoC9pxAWZKCF5rDJDlbwfkktHzFlvfseZn8HX8ZZFSIFwG6sCEMu9m9e
+	 5luoSzkUnm5rhCNaXiK8qVx+yXuJ98B/ufegASe7JC/hdxyUXsRjIF0luRSAn4AkmL
+	 tOAb8ReZ2e/F/ydpeQX7jLkmVWtzx6G5Ww8ZW0uY166ErHZv6Boc4KjmDKJ37l9Pph
+	 V6KOrEppor4uU8qiX9PSCc25vXfMiioxfvmdR5NnN1STRwMBthgWjZM9UTizTNlPEA
+	 p0V0KDa72WxTObkhuU++yktMXo8FQE3lIvvUZLYm/nd9QYBCBVYFFJ4bVMKLxYqEU7
+	 p73PZwM3A/5KA==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Ackerley Tng <ackerleytng@google.com>,
+	Fred Griffoul <griffoul@gmail.com>, linux-coco@lists.linux.dev
+Cc: Alex Williamson <alex@shazbot.org>,
 	David Woodhouse <dwmw2@infradead.org>,
-	Alex Williamson <alex@shazbot.org>
-Subject: Re: [PATCH v7 2/5] iommu: Use resource_size_t for reserved region
- length
-Message-ID: <179433170801.751718.12828883568888640225.robh@kernel.org>
-References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
- <20261106-add_iommu_ranges-v7-2-5c0f72083e52@oss.qualcomm.com>
+	David Hildenbrand <david@kernel.org>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Steven Price <steven.price@arm.com>, iommu@lists.linux.dev,
+	kvm@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [RFC PATCH v4 06/25] KVM: guest_memfd: Support device-backed
+ PFN providers
+In-Reply-To: <CAEvNRgFE5=u8Q+fCUxLT7M_gAjkgNddSVrM3axuTUxBScffcbQ@mail.gmail.com>
+References: <20261104150322.3516320-1-aneesh.kumar@kernel.org>
+ <20261104150322.3516320-7-aneesh.kumar@kernel.org>
+ <20261104183754.10457-1-griffoul@gmail.com> <yq5apkwettbg.fsf@kernel.org>
+ <CAEvNRgFE5=u8Q+fCUxLT7M_gAjkgNddSVrM3axuTUxBScffcbQ@mail.gmail.com>
+Date: Tue, 10 Nov 2026 23:26:13 +0530
+Message-ID: <yq5acxsctvsy.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -79,37 +76,142 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261106-add_iommu_ranges-v7-2-5c0f72083e52@oss.qualcomm.com>
+Content-Type: text/plain
+
+Ackerley Tng <ackerleytng@google.com> writes:
+
+> Aneesh Kumar K.V <aneesh.kumar@kernel.org> writes:
+>
+>> Fred Griffoul <griffoul@gmail.com> writes:
+>>
+>>> "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
+>>>
+>>>> Device resources such as PCI BARs supply PFNs directly and cannot use
+>>>> the folio allocation path. Store the mapping owner and device ID in the
+>>>> core context during attach(), and use them when preparing device
+>>>> memslots. Keep device memory separate from ordinary PFN-backed RAM.
+>>>
+>>> The device rules you wrote down in api.rst and locking.rst helped a
+>>> lot. If I read v4 right, the device backing differs from the RAM PFN
+>>> backing in these places:
+>>>
+>>>   1. PFN mode calls RAM arch hooks: kvm_arch_gmem_make_shared() at
+>>>      conversion, kvm_arch_gmem_make_private() at fault, and
+>>>      kvm_arch_gmem_reclaim() on revoke and release. The device path
+>>>      has to skip them.
+>>>
+>>
+>> I would say that the VFIO provider expects the conversion to complete at
+>> conversion time, rather than being triggered by a fault.
+>
+> guest_memfd currently does .gmem_make_shared() eagerly and
+> .gmem_make_private() lazily (at fault time).
+>
+> Technically conversion time spans everything from guest exit to request
+> a conversion, including the guest_memfd conversion ioctl, then till the
+> vCPU run completion hook.
+>
+> Can we move the mapping out of the conversion ioctl and into some
+> dedicated CCA-specific mapping ioctl, kind of like KVM_ARM_RMI_POPULATE
+> but doesn't actually perform writes, just does mapping?
+>
+> The mapping ioctl should check the necessary prereqs, same for the
+> vcpu_run completion hook.
+>
+> Here are some advantages I can think of:
+>
+> 1. Decouples mapping of VFIO addresses from guest_memfd and provide more
+>    understandable errors for userspace, since the mapping step has a
+>    clear and separate error (conversion is complicated enough with many
+>    failure points)
+>
+> 2. Better aligned conversions in general where marking private at the
+>    platform level is lazily performed. In this case, doing it outside of
+>    the conversions ioctl is not much lazier, but slightly :)
+>
+>    Not quite mapping, but Suzuki did bring up that for regular memory
+>    (not VFIO), ARM CCA requires vCPU context for SMC_RMI_RTT_SET_RIPAS
+>    in .gmem_make_private(), hence that's done in the vcpu_run completion
+>    hook, so that's kind of lazier, relative to doing
+>    SMC_RMI_RTT_SET_RIPAS in the conversion ioctl.
+>
 
 
-On Fri, 06 Nov 2026 22:44:25 +0530, Vikash Garodia wrote:
-> On 32-bit systems with LPAE, physical addresses are 64-bit. A reserved
-> region can be larger than 4GiB, but its length is stored as size_t,
-> which is only 32-bit there. The length gets truncated.
-> Use resource_size_t for the length so it matches the width of
-> phys_addr_t and holds the full size of the region.
-> 
-> Fixes: 2b20cbba3390 ("iommu: iommu_alloc_resv_region")
-> Reported-by: Sashiko <sashiko-bot@kernel.org>
-> Closes: https://lore.kernel.org/all/d223ee9f-b262-408a-a201-8b16d310bbe0@oss.qualcomm.com
-> Cc: stable@vger.kernel.org
-> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-> ---
->  drivers/iommu/amd/iommu.c       | 2 +-
->  drivers/iommu/intel/iommu.c     | 2 +-
->  drivers/iommu/iommu.c           | 2 +-
->  drivers/iommu/of_iommu.c        | 4 ++--
->  drivers/iommu/virtio-iommu.c    | 2 +-
->  drivers/of/address.c            | 2 +-
->  drivers/vfio/vfio_iommu_type1.c | 2 +-
->  include/linux/iommu.h           | 4 ++--
->  include/linux/of_address.h      | 2 +-
->  9 files changed, 11 insertions(+), 11 deletions(-)
-> 
+Is there a reason why setting private attributes must not create new KVM
+mappings? Is it because a guest_memfd can be bound to multiple VMs, and a
+set_memory_attributes() operation should not affect the stage-2 mappings of
+other VMs?
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+But yes, we can move the mapping to a separate operation. I am trying to
+make device memory behave more like normal guest memory in this respect.
+With VFIO passthrough, normal guest memory requires a private mapping
+before the guest accesses it because a device can start DMA to the region
+without any prior guest access. I currently use KVM's prefault path for
+this and can extend it to handle device MMIO regions.
 
+For an MMIO validation request, VMM would set the guest_memfd range's
+memory attributes to private, prefault the protected IPA range and then
+approve the request. Prefaulting would perform DEV_MAP.
+
+This means that we need to track private device mappings as part of the
+Realm. MMIO validation requires the device PFNs to be mapped already;
+that work cannot be deferred until a subsequent guest fault. Before
+issuing DEV_VALIDATE, the MMIO validation completion path would need to
+check both the Realm's private mapping state and the guest_memfd memory
+attributes.
+
+
+>
+>
+>> This is also
+>> required because, when an MMIO validation request completes, the guest
+>> expects the range to be mapped. The current flow is that the MMIO
+>> validation request exits to the VMM, which uses set_memory_attributes()
+>> to convert the range to private.
+>>
+>>>   2. lookup_pfn_range() only feeds those hooks, so the device path
+>>>      does not need it.
+>>>   3. The host mmap and stage-2 need a device memory type.
+>>>
+>>
+>>
+>> Do you mean this code? vm_page_prot is used for the host mapping created
+>> by mmap() on the guest_memfd, and its setup follows
+>> vfio_pci_core_mmap(). I think the only device-specific difference here
+>> should be pgprot_noncached(). Shouldn't the rest of the protection
+>> remain unchanged even for device PFNs?
+>>
+>>
+>> +	if (gmem_provider_is_device(gi)) {
+>> +		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+>> +		vma->vm_page_prot = pgprot_decrypted(vma->vm_page_prot);
+>> +		vm_flags_set(vma, VM_IO | VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP);
+>> +		vma->vm_ops = &kvm_gmem_device_vm_ops;
+>> +		return 0;
+>> +	}
+>> +
+>>
+>
+> What do you think of just forwarding .mmap to VFIO to figure out? This
+> makes VFIO less special of a provider, since I imagine different
+> providers may want to have different page protections or VMA flags.
+>
+> guest_memfd just enforces VM_PFNMAP for PFN-mode providers.
+>
+
+I have reworked the patch set to drop backing_ops and consolidate
+everything under provider ops. The generic guest_memfd path now contains
+only provider callbacks; the folio, shmem, RAM PFN, and device PFN
+differences are handled by those callbacks.
+
+We might still want the generic code to apply:
+
+	pgprot_noncached(vma->vm_page_prot)
+
+These prot bits are exposed to VMM mappings, and if the attribute is not
+reflected in vma->vm_page_prot, mprotect() may set the PTE protection bits
+incorrectly.
+
+I will send a v5 of the reworked patch series soon.
+
+-aneesh
