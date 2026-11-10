@@ -1,79 +1,79 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794294710;
-	b=q548/W/WKuQOFFQvjWS26KvrAQY2EV4wn/5MrndOasXinM4FUS8AWMnKtnw8qcQjqutG
-	 wsrtTfSPFDCnOXae2jizE9VqiRmP5hjuVTXn0Akz7um4TjfC6VUo/Yu8LHsu5logWRbaJ
-	 uPqttt5hlt7RHdXczdCTdP7Nj3BJqiehxZkAFdxODeIqtdVyhdlRpWxRjAS9F1YlfUwj9
-	 GnLYdN26ocIsbd8lPO52kLN+YJt3i3kdaJYyYGJZPnNlXGcqXI8XabmONSzTkKjyUtoON
-	 1Z8KluB3Ze3d8J9mKBEVAc9xRJBmJi94N4Ezs6HW7REOS873JU+SipTe06CeiYHiagg==
+	t=1794294711;
+	b=4z+0FhyydEPeRNgOIv8LVsxKWlDoAjhQpZMKFJEEX8qYjnDPX5uiogmwbylyLiaHRRRq
+	 VksR02EY6gbzgV5nP6RS7gmcsfUX4aB7ZIVLhUMFzhiFEIsb0SxK3xflo/bDcQ9urzxyN
+	 OQjqtLACA5MpmCBIIziy5LbXTvhnuwX+15nN7oobGe2UOiKvLmAzAj/MVe4ebCglDFizy
+	 8j0U0nnphUvt8runYOKhRDCTAifrQsZ4FJ6PzfouzWDpNyNYELatJJCVUkXwSzqR6PxpG
+	 3rPNummNMP0iqllA8M+GIlXVoCaRvZsXCgBJv85trml6Qbge6jBxGs+DwNcQfVmzw9w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794294710;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794294711;
 	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=GkBybTkwE49kIc06+RCvE13RGhar/sx9sHchhnfXl5Y=;
-	b=JWYtMgquPjCSYRSQ0pedkaCZJYcTStmHRJLabxUB5HYryqCHWFDXdSVsEwuACvDdD7xJ
-	 KwsBxBaOxTIdoyJ8ulhD5ghfOHBSdsK5LnHKlaKwmK9h9+wU99W62zPB0qwSVvRiJr7mS
-	 e4S6+4H18/7Y++z8TF84JnuGQfv68z6wBMIotIhhnh2TF2Mv8/RkXvq8+qdIZfxFkBkT6
-	 hMaovgOT511LSW2M0CbKXBYfoY5h3xJ4ihiybOJlSkKa0bpuTfNsOxiv/Y+d8wu8mmHA+
-	 ozAPV3i0eQcXnaYv+EOsWOZqW3+GwRvMABsIc3nT7Vkcsd8aGnopqfFexKE5IiIUfbg==
+	bh=BlGCS7+vHVkCstdONHb4lplbAMJsQFpBwNtspRDMc5s=;
+	b=m14ovg2i7EdhdZtIF880OzdLl4oypbm0PSfxLxmCxZNlIQJJaQYjME8pbfFDA2Arvzw0
+	 cLiQEbBaoSIG/Ls0vX7qPM1BO8N9qZZabaj62TTso3j/zEEMckSxMUqnIqYpWti1vNKu4
+	 /hEAiuxJ5f0rTKmd1jQM7B4+2L7l3HFcYjRyK+N0pmt6yRyGypjvlUHfEXsfmdXyeISQZ
+	 Jlj6xcikz6icVOb5ISXk7+246JbWLVa6n5R+6BdnKKbqU4IkLAQ9ZaxEGq1nzzhEgM5HI
+	 RFUw65iv1N7Xd+li4pU8uPQD86AXeDsDyz+avjvg95zsLyUpS5CVCsvhRI2NOMCyEtg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="F/jRM855";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=esPVOOLa;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DD9C60A2622;
-	Tue, 10 Nov 2026 07:11:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2255060A2601;
+	Tue, 10 Nov 2026 07:11:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=F/jRM855
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=esPVOOLa
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794294710;
-	b=Dg2CRgTjbinFmI1uK9T4OwgDt8yn5aZDNJZHjbOf/j7MvkmUVPJ/k2GbfbSa7dEsSqsH
-	 JUdZDb58JqxrstemicQ4gM0CGCG3cOqrnUISIzUUMhYGRN7Sv2a8UT/grcdWprK1V2zfs
-	 +UtYxLiZFaMw7a7mpXKL/A5ppfGI2J6xILAaXhQdopAoiTwMCDt9heGfVRvSkSJUX30uk
-	 458J++jnXGjZ80B5X+SobeT18TIeqyU1jpy92I4igR2sXJNjrb3wBmvEokO9Et+NwH/p8
-	 iMPRYMyXWSfDCfkBwaTH7U3I8s8sq0ONt3AqRCpa7uC5ecZRuPOfl6ksh2Sjz5tEaUg==
+	t=1794294711;
+	b=0M94otHKyl4mudNDAt3db1l+rwNo0ipUqBKBDs4SFK5tlzVAOWslHGgVANsCR80mJ0DD
+	 AHKOLJ4maP2KdG68M5StKKFoFyio9fPnwIcywgtWmzLEodYPFVipEu7D7dzG+P0/f+U3E
+	 /rCP0dqX9kncj8Tl3hxWE5Y6ewkNrL0DMd/mzC31H4Dk7C/9rDmyCovdP5B47iu6uGbvf
+	 hEDLEfc2MwVFTPc3tv4seMyZ8apn43EGjVN3JPQvP9OMelamdjMxsalzLru/TTmK2wFOA
+	 /YeXcqio7OT/X1vo7iHY9K8sIpM4ayHwoXCY0FCpl0q13XkoxfXB8SgWH/3VtSAnuYw==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794294710;
+	c=relaxed/relaxed; t=1794294711;
 	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
 	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=GkBybTkwE49kIc06+RCvE13RGhar/sx9sHchhnfXl5Y=;
-	b=kmNB7ylJoLS43Wk54DYB4IwPY7R4b9pIC+2T2tWlnuhJALyX5dPj0ipw1R/3+wRjeddC
-	 KI7iHnM44rXAPh+JrGcENfdVCZqaMazxthJYk+M+2dEOCXduJOFlhZmt1IWNeOZezKBoB
-	 SJQkr4KSYc39VXGh3GGRqsaTZl9mQEl+uDwXI/MBpZcRHLu8hZqf5iuau2K76EowWD/gk
-	 J+Muz4ULzulqmCnZ/5laANgU0vvixlHB7IfHT2cecX7wyjxIC9RBZg7ObCllAH9bTP4jd
-	 scDIQBkDD0n6WJjhrtN3djGKv5eNw1ocJD0U2GDIOnlBE2QAIXuiwA3cl8zviQsLN7w==
+	bh=BlGCS7+vHVkCstdONHb4lplbAMJsQFpBwNtspRDMc5s=;
+	b=2OxjPiFkQSX5kWQ03hKUjiAcFtD7MKDSKUA4Ud/KelQlUz8uoZ7CpvaNbqOyPf6OdAIr
+	 IGU9yx9b0WXlLKH79TJR/I7B88HIXf5cGQdDwUVfl9QRK60Oc8WYJzshsN6SzQrr1VBhe
+	 viS9SLaARjx7YBMpx0V9VkKUkE7ymMQVEayzfoi4K31/4zSyKzDvD+1L9B03VZHbcPubK
+	 620q+f66sQJ7lwQXYN7QSo0aAWak4EnqM2TRrJVuZYPVvfjMHHCiCMsAV76wdwzQhzxnI
+	 UEoh8s12ht0JwWxvENUfC9Z6vk67ZpA8JmmIiuHjNBelPQ7haWUYSfsytsYva7JNBLg==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 60ED61F008BD;
-	Tue, 10 Nov 2026 07:11:49 +0000 (UTC)
+	by smtp.kernel.org (Postfix) with ESMTPS id 5AF0E1F008BE;
+	Tue, 10 Nov 2026 07:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1794294710;
-	bh=GkBybTkwE49kIc06+RCvE13RGhar/sx9sHchhnfXl5Y=;
+	bh=BlGCS7+vHVkCstdONHb4lplbAMJsQFpBwNtspRDMc5s=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=F/jRM855uprZIIFgV7t9VH7WNEZSaAI6GD7zm/dgo9q1WSi4zX3kr+x8EgT6KFvGg
-	 mlvZrSohMJtkXDs/WYhEWUYgwEtTM1/xIr1aocoF7EtbDpZD6sSZHsh+Dz5DeCGibh
-	 o3uJEzqdnzQCbkm0nwGauvVwNnuPQxuTNPPSwbGG4u5NGxPINZmdO6KKN38eefHLOu
-	 KUZu3n7VZuIqGrLeDM38PWh57bVPOFldrDdpOtMJvW5AblkHj0m1TbKDIKVphsuBDG
-	 o+sJACVdxd7cs2Or+2IOfi/Y9FWqchEfwkKyA5VYNgZDMR1AD+4eUB89CvvaUEg9gu
-	 Vm+PrLUACSHHg==
+	b=esPVOOLaMVT39KsaHoKCU3BrHLcXfeldeZ9alhMawxuZDFCOYNlelVdqwksjFQfsz
+	 5kQ+KLrqd5zL+Nst4pLfLM7u+QcigCSvO3q5tTXxxExs0RSQqmYigKoQcoh070SKGG
+	 Cac6KzhUSt2yDvygQKP+OKUsYhHignxby4ImqMDYIbO++obf88ZuaMMkU8uhkAHmXB
+	 KdB2hMpGXMHH5tWtXrBkGYuyUhkUUwYcdtOgpfbI59vHzgl2ATdLvaxQ6NsvBCKf2+
+	 8muu29sXN8ZOlPOOwwQMeSOOG99gwntQ7t5IGtYclamwVvEUMGGJFZN0VKitRjHV6Q
+	 J2NfqAZqNh27Q==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id E84DD4894F;
-	Tue, 10 Nov 2026 07:11:48 +0000 (UTC)
+	by lkml.kernel.org (Postfix) with ESMTP id 0609E48953;
+	Tue, 10 Nov 2026 07:11:49 +0000 (UTC)
 From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
-Date: Tue, 10 Nov 2026 07:11:51 +0000
-Subject: [PATCH 4/5] arm64: dts: rockchip: add the PCIe power domain to the
- RK3588 PCIe SMMU
+Date: Tue, 10 Nov 2026 07:11:52 +0000
+Subject: [PATCH 5/5] arm64: dts: rockchip: add the clock of the RK3588 PCIe
+ SMMU
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,7 +84,7 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261110-smmu-v3-pcie-pd-v1-4-628819ca44b9@gmail.com>
+Message-Id: <20261110-smmu-v3-pcie-pd-v1-5-628819ca44b9@gmail.com>
 References: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
 In-Reply-To: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -96,11 +96,11 @@ Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
  linux-rockchip@lists.infradead.org
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794294708; l=1589;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794294708; l=1149;
  i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
- bh=XjCTjW7WX2P6Yil1lroIFdMhtw3N6JLNEl/nbTe3Rtc=;
- b=KT3JAHOImp1NNVgBlK1O+84HkPyq2khzDT/ZgpgGMhXk6Q8ZUnIvjXRkQhFMFSDOZHumy00Z7
- ROfIwWwGlmIC+fICCGyWRiAcj/Z0XCId4AlPvl96YptG5dDrNNRRMd9
+ bh=bLcKcj+LRANwxoiMM46Cd89sIDqhd3QCt7Lj2mURtSQ=;
+ b=z/amT++A9MqE0D1vOB9Z/nfaV7eqMvL0FbII2ljxfJoqQxQ3SwBJ94YvBvnKfIr81kZIptXkc
+ /SnPZWdCfrxDT1hrAOLYlG9Pag59fuWPCU3SGV3HxnyEFzaypVbR4VF
 X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
  pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
 X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
@@ -111,21 +111,12 @@ Content-Transfer-Encoding: 7bit
 
 From: Arun Iyengar <aiyengar1990@gmail.com>
 
-The MMU-600 for the PCIe controllers (mmu600_pcie) is enabled for every
-RK3588 board, but its node does not describe that it lives in
-RK3588_PD_PCIE. It only works today because TF-A leaves the domain on at
-boot and, on most boards, an enabled PCIe controller holds it on later.
+The PCIe MMU-600 runs from ACLK_MMU_PCIE, which is also the parent of
+the PCIe controllers' master clocks. When no PCIe controller is enabled,
+nothing holds it and it gets gated as unused after boot, while
+arm-smmu-v3 is still bound to the SMMU.
 
-On a board that disables all PCIe controllers using that domain (the
-Orange Pi 5 with its M.2 slot in SATA mode is one), genpd powers
-PD_PCIE off as unused after boot while arm-smmu-v3 is still bound. Then
-at reboot arm_smmu_device_shutdown() writes CR0 and polls CR0ACK on the
-unpowered block, which stalls the bus: the kernel never reaches
-"reboot: Restarting system" and the board only comes back once the
-watchdog fires.
-
-Describe the power domain, so genpd keeps it on for as long as the SMMU
-is bound.
+Describe the clock, so that the SMMU driver keeps it running.
 
 Fixes: da92d3dfc871 ("arm64: dts: rockchip: enable the mmu600_pcie IOMMU on the rk3588 SoC")
 Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
@@ -134,17 +125,17 @@ Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-index aa69fd3793fd..bcd342c025c9 100644
+index bcd342c025c9..8eed22ca69ab 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
 +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-@@ -560,6 +560,7 @@ mmu600_pcie: iommu@fc900000 {
+@@ -559,6 +559,7 @@ mmu600_pcie: iommu@fc900000 {
+ 			     <GIC_SPI 374 IRQ_TYPE_EDGE_RISING 0>,
  			     <GIC_SPI 367 IRQ_TYPE_EDGE_RISING 0>;
  		interrupt-names = "eventq", "gerror", "priq", "cmdq-sync";
++		clocks = <&cru ACLK_MMU_PCIE>;
  		#iommu-cells = <1>;
-+		power-domains = <&power RK3588_PD_PCIE>;
+ 		power-domains = <&power RK3588_PD_PCIE>;
  	};
- 
- 	mmu600_php: iommu@fcb00000 {
 
 -- 
 2.55.0
