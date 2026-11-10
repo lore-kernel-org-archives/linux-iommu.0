@@ -1,99 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.177
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794326690;
-	b=qXXVr5ounRsyfSJH1q2l8/TYpg3eHDtkZqFiXT7BYrVF4uFX0c2XO3u2iED+7nYAQDv5
-	 bbXkZzY/YT73ZUqHQA3nr2acIuO51QJpVgtxvjHsAkkHM7vrov9U1ddrOvbxyqwuvktc4
-	 1gMyc+mr5+erhfOImlK0QOkV9X1PaO0JG6yC6vNNGu7Eqk4qkzhU0FDKYQMzq3D50sZQT
-	 xq3V775GMrYoHM75pjDNxTNNFK5iic7ioeeNNQcoEQJpUpE2UTtjphAGU0foSLBhnfnob
-	 ky1Ho3nHQKVEoHPJy/AlCN0iljF1e8cX+j9nVkDfqioXbuWHKZKMwdcfG0Vjpu14lyw==
+	t=1794327836;
+	b=uZLib02T2XaXOnVbYqXuG44RdFcUbk7QIKSKKXD1mh6+e4kHiyI2pqSRI0sFtOhU6/Rx
+	 kzdnqB6R1mu0iy3bWTNj88/pX2cF1Nf4WchMLOaK8aMdW61pf30dJbVjY+1OsBcskNrK6
+	 IpeLNGeeMFcFJW2P0J/Eu3yGK8OidWPpj6eqb/byFV89l+7N6UNKph9SqWSBhtyFolUzL
+	 bOdYXRh7hCUJjBlJdu6ODuVc4Qy8C8QcutUSs2VW+SzBkNGDxU5LncN2V1SajHp0itxme
+	 pLc08V8nGrkVjblWSgwG5WncO1Fd6AyVE5WeASL8qZU8cpo3S/0l6k0JkHvYkv0IpWQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794326690;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794327836;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type;
-	bh=2ZJ90WMhfR0YfvdBTSjmWuZ2Dnb3Sle3TRFQ/lQ57LQ=;
-	b=dW94Er1/jTTGUSVOhCafO3BdJfvrhVHXn7sqPUc+sp8srWFrPcRZPlbAmRGYWAWXDoSx
-	 MAUJIGGhrzwJAVV+DcOdr+g+p6ma3BBg8tmvLjb4iY7u4ZvsOK+Y7qSSVFLAqq1G0p84c
-	 3KzreHl6yTWiDU+1flL15FQ3ozpeDrWZwTsWrFcDajqMMiTQ0LUXiXVHMoLcCL4LIq5nr
-	 c48xgxKBHz0u+dDDmx2wmrBvELeMDPdrFf0Sqgngl75OLP/5r2iyPUd2ORSKqjz0WLeaR
-	 YkY5STSR4ysspvnTn4ncYNCMS7ExW2MiHiyInLzRMiZUlMZ2gL+q6Q/1pZ1OvPTSMJw==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Mime-Version:Content-Transfer-Encoding:Content-Type:Date:Message-Id:
+	 Cc:Subject:From:To:X-Mailer:References:In-Reply-To;
+	bh=Mw9iOCkEBWkvxdLSgoJVCB6jT3T4ThA8jIPRTFH0lnY=;
+	b=M8d7t45HMg+ByItHtXlBuyLjJIGDMEpdPa9lRkLTIYIEPYNOz30qVa8GemW790kyeqNG
+	 41VcVcjktcYpp6oNXRZQWkHBN15K10VYdHzlTw4Q4rZrc0LTJUz2oYXfuWSb0MH2wFTNs
+	 ByPixd5UMdFVYusI/+Qu8knSIl+hhOblA0SVU3UFOeVBmnomITWlN+kmbi4oLVPXDdXK8
+	 0j4Q1nyjaNILQ0nGmBXjBysI6gNmiengV26KRWcT0bcHnikLYLGFy39GA/oX7vUKBLC3t
+	 9YX/umTaF/CyZl9psRPABk+3WyOz9MeC1UH3pJevhoznAu2GbxHuNNuDjFTyvMFHC0A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=cED0imNk;
-	arc=none smtp.remote-ip=209.85.218.54
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=T5mPOv87;
+	arc=none smtp.remote-ip=209.85.214.177
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DB8F606A331
-	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 16:04:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7DB8F606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BDF4606A32A
+	for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 16:23:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3BDF4606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=cED0imNk
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c445c95d553so299695366b.1
-        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 08:04:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=T5mPOv87
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2e987a2ba0cso13295025ad.3
+        for <iommu@lists.linux.dev>; Tue, 10 Nov 2026 08:23:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794326688; x=1794931488; darn=lists.linux.dev;
-        h=content-type:content-transfer-encoding:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=2ZJ90WMhfR0YfvdBTSjmWuZ2Dnb3Sle3TRFQ/lQ57LQ=;
-        b=cED0imNk7iE8EQmAP3mUsBkRyjcfTZSlKOyanOo1CDPNzZE0QO+rLErrVLHO2l0XxA
-         wR4pxyro5rWm4R0PSiFGcCbyUl3vvBGasIWaISolQP10s9kW3ToZuc7CjXqhIg8jII+W
-         TNpIDTZrdXal7DBKMTYbZVGQQ2IR01AyD+oc/3ogpjJ5qFiaAiNeE9t6YzY5qSzHeN0g
-         oSIFyo5UzpzQ52j/omFPL2ik7EPmhl+eSDwM9DP8gFqz6kKT7QlpQd3KwnAFCzrAHDJT
-         23WQXA3BqkI7DfR6DmGOo5QrypOSh+qoCul2Ha1i/6oqqiY5tiO4aDrI44LJ5XZdqDeL
-         ZXPQ==
+        d=google.com; s=20260707; t=1794327835; x=1794932635; darn=lists.linux.dev;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=Mw9iOCkEBWkvxdLSgoJVCB6jT3T4ThA8jIPRTFH0lnY=;
+        b=T5mPOv87I6h0RugoK3vSt7F7RIcB/cfjC4uloafIe5R7qyvGlDMd/wsHLvKcplxKKp
+         H0lsh4s6g+k8dzCSQQIV/LYlvPAi7jAa1sckAm9bLXrNMyFgnGoak8+rAziWHeuk+6ys
+         QIkj0YDEqUfpP5orTpJYpaulGt9FsllTS7UmJv36RH45udKsprIgbDLgC2rU8tt+lSNA
+         jmhLXRJhfUS5+askxjsOLD5vQZm0NqyqsEp9WpXeLKeNp+Lox+72KAMjDetWJUqVtZ47
+         8oW7W5i3kOVGphbRULrUW7kwl3iPHFLXlemWY28HlRu0KmftK+rf23pc8dzOoirgmcu5
+         xQPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794326688; x=1794931488;
-        h=content-type:content-transfer-encoding:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
+        d=1e100.net; s=20260707; t=1794327835; x=1794932635;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-type:content-transfer-encoding:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=2ZJ90WMhfR0YfvdBTSjmWuZ2Dnb3Sle3TRFQ/lQ57LQ=;
-        b=q1gIBP+2jO/sfe/YJQM8ZlkSeLsAwoHn411Z+0L6EwdxohXLbpYBWP8Jhu4IaNUT6j
-         hci/YpRGO5MdtNvf+jhpVODCINNYfzpECFOPVk1zuhihkshZLtoE3odJwRz3hlNfN9+k
-         +AN5EXw9MOFQ8GcCM79ZQlGvgYAs5zgI/dg11JgCIf3wyt8PbvblqoXBn8yZrobjmG9b
-         neg342TMNuqjQ502x2csoCGh2pQHy2Z7Bnw+iU9mA5ian2CvOiNl8L+QMwGzvMQeHezG
-         99r8VShuoFS4XLL0O9ZQDzx/aXDb9z8JbyJWT9FU4XiQxvc0FQ59pJEomTLGhZYdTbeW
-         86KQ==
-X-Gm-Message-State: APuU4Z/Bubej9de3kncajiucLawOLoWLP+2/ZkQY7bV+BBvOSKl/XvpE
-	FnmnV3ShY8nAgGgn09ZKO+jpv0fdJPkqKndOnhbJ2RQCyu6pEB09F17j
-X-Gm-Gg: AYBFou0+T/L6z9Gac2nL9K0JRT1eF1+g7PU+D1cG9bncn5evKb2oIJ8NgHJ18Y24ASZ
-	cInUJwX8k7CFWaBoTIW5Bv/OWrq5ic/ZmudiqqTP+WMkagWT80s3lv4ML5vNdifUsZXYW5OUycV
-	y+qyZAHMSiphTsa1Z4UzccJFE6Gt3J5xJVpM7ACH96sTpMWY3nZwtN1sS5omfxUKrEym7Lk3vpr
-	YtEofZxqFgdY01zm4FSG3odmW0i4Q5mIV77RrkH3gNL+3b7iOKTkVxqsv48WnbFkc2O8yMqXWO/
-	6bRrEFpx8YOpIltXP/wNF9ZXD/ObKeN1VFW/SidvBfh77GDqtBYP7zRuImBtPEWO3bH7wW3rTxw
-	aRjPLuvi3zpMOJgL4VHF2+nlNphUyMpEWB3Fw9fCa5IlaZBdUmuqmCOKCJ3sZREvhD9x3jAfRJR
-	iwp5S3/M3reAnb8gr4nR4s6btnxbkbN58JvDunYtBtenAqXMB05/In2O/yke81/lLxAoJobRkrO
-	9XXgC/tqOwXLSG/fLQ3YP7XDnCYWqMAFg4H37xQBafGL302JQ5+mQFDtpbp08CrRRkisi/BBX99
-	Q9zlqHQdskeKT4/I6KLQKSYYOl+zZ4yN55DG77EeKoye86E/C4ZxiNT8sqcig+JA43PPtrr4HT6
-	z1BYJYFa28yyN2Vtx9bHBgGZNT7eJK4/AOH6V5lx7ihQTOBlRJSd/zwgjgNpuupbXc41yddg1P3
-	i2fEicgiDsO3Hw8iNOqjDxy7kJnHyrIx/VUeQeUstBv5A+NglTt5wzcNvuMwiO5sxy2SCmx9Qqc
-	rP3vS1GJXGjp4XursIMlesj54df5szAbMILJ/PYAzQnAAMPu7SQiNE+etTAoN0=
-X-Received: by 2002:a17:907:6d01:b0:c49:8f1e:af0a with SMTP id a640c23a62f3a-c50491bd4d4mr262123366b.7.1794326687814;
-        Tue, 10 Nov 2026 08:04:47 -0800 (PST)
-Received: from jernej-laptop.localnet (86-58-12-36.dynamic.telemach.net. [86.58.12.36])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c504a643f12sm127127266b.62.2026.11.10.08.04.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Nov 2026 08:04:47 -0800 (PST)
-From: Jernej =?UTF-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
-To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Chen-Yu Tsai <wens@kernel.org>,
- Samuel Holland <samuel@sholland.org>, Maxime Ripard <mripard@kernel.org>,
- aiyengar1990@gmail.com
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject:
- Re: [PATCH 0/2] iommu/sun50i: Don't report TLB prefetch walks as page faults
-Date: Tue, 10 Nov 2026 17:04:46 +0100
-Message-ID: <XuGVSzNrS7KQLWfGI0rB-w@gmail.com>
-In-Reply-To: <20261110-sun50i-iommu-prefetch-v1-0-43428e792ef6@gmail.com>
-References: <20261110-sun50i-iommu-prefetch-v1-0-43428e792ef6@gmail.com>
+        bh=Mw9iOCkEBWkvxdLSgoJVCB6jT3T4ThA8jIPRTFH0lnY=;
+        b=duU4MAPQNuw4dUuhK+exmtpU5YdMg0yggrCY6Qj/kveikktz7ALuyP9Fs1iWmPV4a5
+         3IvR2gA7Ed1wLG8nG3Qwmx8vHOnKhxjsMYiUWeW2gWxvuO/fTFnaVI2jL1yTUkDUhlmO
+         my7zOegURk1VhYhRN+xESXYoP9bwbG9vTpWl093VavpaKSAZPcn0ddsjxy+9kCnvGGf2
+         MsBZRPcexXrbXFa3SSrz49QZkunbf+gQovqcty6cJ8VU6Kkwgi0D8hq9Ibq7iSD0r2MJ
+         nkKcPcVToWhGaiAmq5x7x+SqVFYyypL+Nlo5vdNsLetRr35d6eQSLQGulBFg4T1U2Jun
+         4Gzg==
+X-Forwarded-Encrypted: i=1; AL+hErHqaeKLOcvSDkC0Y9MSQGyWpfsr/RrY5YqknSDtKajJytqivv8vivo6rdp4xINBdIn2guzEOg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+pFdsiUMZzQBPhuHUCLWOb3AoYAvnPU6oO4zCBB6clrCXBZJcV
+	nC9LdgT6xLvvnKpBoVc8EnIZW5sMfi2voBdVsJHW3LTTKtlRlOaz5gwKcYjZUBOUcg==
+X-Gm-Gg: AYBFou3Oq7ZNCw6E6IuYLki/GO36Av6AqWZTTv3hj7w4/EefiUnttrIuYZgbKYkCgK3
+	Urbume5ukUAPDk5d8R41wjJrwnciPc2Ptcj7ZwShm5bze9QDM6mIkNTS7SRsG82xJCOE1eBSNvf
+	84Ue0GYbkIaWOKl/k3K47TU8m+MtrdKRF6CWqeutiqJbu1LJfTolzH6zerEVhRQt8/CS9t43zLP
+	JsfsqVuTriu+gom9hMh2DZHiHgDQGNART1GrFswSevGxMmUBh/ySU9ef47rt8FKed2gNRrVO/h2
+	mbv79JUrNiRNgKDjrSFrUknpJ/wk7v80YmxWtwKJxrOE17wNAbdQuV/QTK9p9HFI7RqfWrPi+wc
+	RZK7fQDD+5erKtwRSRxHz41/ajfA+M35rLgUedxL6scbqG2VTSRb6v7UcZKD4YR93Ueu3AnLGdL
+	tV1nd2CJB1zxUaFf/7PmcnFx2FJe251yc5KNTOsBrG0Mivb/DE4LgmxSReA/V5i7R/29kzNhmSy
+	3Ik9glS7O+/gUU+seQiYvViMpQVYXg5y7IAneXuo+WI7fV3ucBguRsuFPoFpTPd7rnUBUXk4r+J
+	MXh1/MyaQII2tHid7fWezDAV7a2AoeZs4ueuzPfOb1ZmNuo/TPbGu+5LfAnB8NG/
+X-Received: by 2002:a17:902:d4cc:b0:2e8:18ca:5f46 with SMTP id d9443c01a7336-2edb9146ba8mr28990585ad.14.1794327834955;
+        Tue, 10 Nov 2026 08:23:54 -0800 (PST)
+Received: from localhost (33.79.127.34.bc.googleusercontent.com. [34.127.79.33])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2edb6d7d964sm11306915ad.32.2026.11.10.08.23.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Nov 2026 08:23:54 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -102,66 +87,91 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 10 Nov 2026 16:23:53 +0000
+Message-Id: <DMRO4QXXB8H4.127C1CPT3RZ18@google.com>
+Cc: <kvmarm@lists.linux.dev>, <linux-pci@vger.kernel.org>, "Pratyush Yadav"
+ <pratyush@kernel.org>, <kexec@lists.infradead.org>, <kvm@vger.kernel.org>,
+ <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+ <skhawaja@google.com>, <sagis@google.com>, <linux-arch@vger.kernel.org>,
+ <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 16/19] PCI: liveupdate: Add feature header to struct
+ pci_dev_ser
+From: "David Matlack" <dmatlack@google.com>
+To: "Tarun Sahu" <tarunsahu@google.com>, "Pasha Tatashin"
+ <pasha.tatashin@soleen.com>, "Mike Rapoport" <rppt@kernel.org>,
+ <robin.murphy@arm.com>, <maz@kernel.org>, <will@kernel.org>, "David
+ Matlack" <dmatlack@google.com>, "Alexander Graf" <graf@amazon.com>,
+ <seanjc@google.com>, <jgg@nvidia.com>, <loganodell@google.com>,
+ <arnd@arndb.de>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, "Bjorn
+ Helgaas" <bhelgaas@google.com>, <oupton@kernel.org>, <alex@shazbot.org>,
+ <gle.com@google.com>, <pbonzini@redhat.com>, "Andrew Morton"
+ <akpm@linux-foundation.org>, <kevin.tian@intel.com>, <joro@8bytes.org>
+X-Mailer: aerc 0.21.0
+References: <20261110050202.529473-1-tarunsahu@google.com>
+ <20261110050202.529473-17-tarunsahu@google.com>
+In-Reply-To: <20261110050202.529473-17-tarunsahu@google.com>
 
-Dne torek, 10. november 2026 ob 07:05:16 Srednjeevropski standardni =C4=8Da=
-s je Arun Iyengar via B4 Relay napisal(a):
-> On an H616 with a display scanning out, the IOMMU reports page faults
-> with master -1 at the IOVA right after the end of the framebuffer: once
-> at the first fbcon frame, and then once per frame for a while after
-> each TLB flush, e.g. while a video decoder frees its buffers. They are
-> failed walks of the TLB prefetcher, which the hardware flags with bit 31
-> of the page table interrupt registers and no master bit. Patch 1 stops
-> reporting them. Patch 2 makes the remaining fault messages say which
-> walk failed and what the interrupt register held.
->=20
-> Tested on an Orange Pi Zero2 (H616) with HDMI forced on at 1024x768 and
-> three 4K H.264 decodes through cedrus, on 7.3 kernels with and without
-> the patches:
-> - without: 214 "Page fault ... (master -1, dir rd)" lines;
-> - with: none, no "Page fault" line at all, and no decode errors or
->   timeouts.
-> Since the patched kernel prints every fault that is not a masterless
-> prefetch walk, this also shows that the hardware sets bit 31 for these
-> walks.
+On Tue Nov 10, 2026 at 5:01 AM UTC, Tarun Sahu wrote:
+> Precede each serialized PCI device entry in the PCI Live Update KHO block
+> set with struct kho_ser_hdr via DECLARE_KHO_SER so future per-device PCI
+> Live Update features can append fields to struct pci_dev_ser without
+> breaking compatibility between adjacent kernels.
 
-=46irst off, display engine isn't in merged yet. Second, I don't observe any
-such issues with my wip H616 code.
+Elements of a collection should not have their own feature headers. This
+applies to patches 10, 12, 14, 16 and 18. I raised this during the v2
+discussion [1][2], but I don't think it was addressed.
 
-I think it's best to wait until driver is merged and can be retested and
-merged then, if needed.
+All entries in a KHO block set are written by the same kernel using the
+same struct, and the block set has a single entry_size, so every entry
+header is necessarily identical. They don't convey anything that the
+header of the struct that owns the collection can't. In this case,
+struct pci_ser's header can define features that describe fields in
+struct pci_dev_ser, and the PCI core checks them once before iterating.
+If a feature only applies to some devices, the field's value in each
+entry says whether that device uses it.
 
-Best regards,
-Jernej
+Per-entry headers also cost a lot for small entries. struct pci_dev_ser
+goes from 8 to 16 bytes, and to 24 bytes once the first feature is
+added. Patch 18 does the same for every preserved memfd folio, which for
+a large guest backed by 4K pages adds gigabytes of preserved metadata.
 
->=20
-> These patches were developed with Claude (Anthropic) as a coding
-> assistant. It investigated the problem and wrote the code and the commit
-> messages; I reviewed them, and they were tested on an Orange Pi Zero2
-> (H616) as described above.
->=20
-> ---
-> Arun Iyengar (2):
->       iommu/sun50i: Don't report TLB prefetches of unmapped pages as faul=
-ts
->       iommu/sun50i: Print the page table level and status of a fault
->=20
->  drivers/iommu/sun50i-iommu.c | 50 ++++++++++++++++++++++++++++++++++----=
-=2D-----
->  1 file changed, 39 insertions(+), 11 deletions(-)
-> ---
-> base-commit: 2cf4be57b301ed2d7af82e70cff5dfd96894d8de
-> change-id: 20261110-sun50i-iommu-prefetch-85cc9ecff559
->=20
-> Best regards,
-> -- =20
-> Arun Iyengar <aiyengar1990@gmail.com>
->=20
->=20
->=20
+They also add new ways to read out of bounds. kho_ser_payload() trusts
+nr_required/nr_optional in each entry, and nothing checks that the entry
+header plus payload fit within entry_size. In patches 14 and 18 the walk
+uses each entry's fhdr->size to find the next entry, so one bad header
+throws off every entry after it.
 
+Instead I would keep struct pci_dev_ser as a plain struct, take the
+entry size from the KHO block header (patch 2), and in pci_flb_retrieve()
+check once that the entry size covers the base fields, plus the fields
+of any features set in struct pci_ser's header, e.g.:
 
+	entry_size =3D kho_block_set_entry_size(&incoming->block_set);
+	if (entry_size < offsetofend(struct pci_dev_ser, refcount))
+		panic(...);
 
+That also restores the minimum entry size check that the v10 PCI series
+had with PCI_DEV_SER_MIN_SIZE, which this version drops.
+
+[...]
+
+> -	kho_block_set_init(&incoming->block_set, sizeof(struct pci_dev_ser));
+> +	kho_block_set_init(&incoming->block_set, kho_ser_size(pci_dev_ser));
+
+This size is never used. kho_block_set_restore() overwrites it with the
+entry size recorded by the previous kernel. Passing this kernel's size
+here is misleading: pci_flb_retrieve() (and the LUO session/file restore
+paths) read as if they iterate incoming entries with the outgoing entry
+size, which would be a bug.
+
+Incoming block sets should not take an entry size at all.
+kho_block_set_restore() should initialize the block set itself from the
+incoming block headers, and the incoming paths should drop the
+kho_block_set_init() call.
+
+[1] https://lore.kernel.org/kexec/atl6K2Juy6Bh29lh@google.com/
+[2] https://lore.kernel.org/kexec/at-8vkVpN2SF3XgB@google.com/
 
