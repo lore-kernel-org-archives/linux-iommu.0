@@ -1,75 +1,116 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.69
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=139.138.36.223
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794395322;
-	b=2QoALHN5oQMPuOLqBCN9CrFhpqgLtfv4sJfwLm0Jklwb1uN6Tw/UzgsESXAM3VmiaOUp
-	 +6PDva4hV9qe1hYOt5b4Y6nXdZcCtB+fKIcicX7v+A0E9IHM+zXDgSCzxWfl936IamON3
-	 Aw/AUE7bhlCBCEJKxNBfIL2umAM8Krjpjj9AMB25JBTijJGukykGdLiMwVUpBIW+Ewdcr
-	 ubO5VLM2EMFSHa0y9sMPWBGQKqLKMefXKmQ79SmE35oCGcbBCxHtK4vSxX4281GxXtdzv
-	 MiCmNs783qx9YAc5NTmP8O389znCLn69DYBsZXuKUFZbbynl2X2qiI9kSlbLmcLajGQ==
+	t=1794398011;
+	b=xX1nz36o0ioG9cC7vP7OtbKuRm0ui5eh98ZyewRNZnqZrOxMs+ArdBrw2xGMJkPvMMuS
+	 tGd4+h4Po40sy2owNe1bajh+vRnaXbuXzz/jUCsyfI2oO1RAsPe4E+4+B7PO9Kdq8VpFd
+	 PtQProSebmZoTnEZE34Gl4aLRGbC9J2sVnq0yYl9Cpo6OgRGZzqh4+Obfx27eYtVKhyrB
+	 o3w5hb6EKvMwBOGZVTIoKSJomKcD/UGZZfq1OygpoT4h9RXTOgf75+CSAF9qb8XMR9/5d
+	 PevyUtXgiZ6LZKnxzKCpPm2CDzNJqTB65+JpLDUrBQFrP1Xv4HSWaKFdsznN1iiMdKQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794395322;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:X-Mailer:Message-ID:Subject:From:To:Cc:
-	 Content-Type;
-	bh=1XlqkjYgUHqMtiyvO2/LqlbV238Aov7kyKv1cwFa5P4=;
-	b=5HYEtSjYyT495dwaJx77xD6fpTzHitbDi6i5b1s/u/TYt+Z7WZpTJArRmtqRx19TfSoi
-	 sJBJVnb2dfdKp7PYd32nBujff2ODq1yM3lDQsN3+CAiwLiGn0kl2MIeBPMTc0YXRRuvx/
-	 GsCuIJ3cu7ldRuOIQ7W70yhCpmyzJtj7CH8eXsKFsP6/ycLhLE1GzQWDzPYVcHHlECByB
-	 ymaOwi649w3pTIP6j++0xCvzwUcZtQDFji59fy/DEdxV34RhYqh7CKFe26gzQ0SwWg43u
-	 vqhjCNJEKI+hTl9Q740jljhiUdyWK+fe5exwyL4yjXH1sBDTK4TAeVb5RgNzFGVtiSA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794398011;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:Received:Received:Received:Date:
+	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To;
+	bh=LHx3sOu0nRc26uMaGdX5eIGUhuQ24/CQDwrvILlx8g0=;
+	b=w01VUEKqY819aTnBKrK5V0AybCeyQyeiXm+2nXctCcPFID378BgYo6oXBmBZYqCfx/+w
+	 IZIqIqve88mcxP0HT9kiUXO1e5RMDDuJ+oBoIWskYjA2L9JNUzdt0WHztFV/Ci1MBx7t4
+	 2osRB5TGxN9rwEGkYQVbvRN+p/scw/OIWfjDwfEu237j2i489960F5GrObDLb92iIelQJ
+	 sDuhQdArzjXYN6optOgoW6evhSYKOY4ELlZPY4oJmEs/gG6Eegij9Xkk557hPoMoqtvTU
+	 5GVMR7zn6EyJQtBWbsqwoGdBPRfJot2J6zdU/ruPh1TujGwE3LiHdHnK7sV8S1VX6ew==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--vdonnefort.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=QRCpNZW5;
-	arc=none smtp.remote-ip=209.85.221.69
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com [209.85.221.69])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=fujitsu.com;
+	spf=pass smtp.mailfrom=fujitsu.com;
+	dkim=pass header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=hnJNAMc2;
+	arc=none smtp.remote-ip=139.138.36.223
+Received: from esa9.hc1455-7.c3s2.iphmx.com (esa9.hc1455-7.c3s2.iphmx.com [139.138.36.223])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 553EF60A6F53
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 11:08:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 553EF60A6F53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--vdonnefort.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9528A606A333;
+	Wed, 11 Nov 2026 11:53:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9528A606A333
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=QRCpNZW5
-Received: by mail-wr1-f69.google.com with SMTP id ffacd0b85a97d-4923b9fdd43so2535275f8f.3
-        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 03:08:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794395321; x=1795000121; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=1XlqkjYgUHqMtiyvO2/LqlbV238Aov7kyKv1cwFa5P4=;
-        b=QRCpNZW5WHoGxRcQY2U3uOJxpo9igMYkyeuObz+3tt5Enegdq3rE12usfYEdXvwY4P
-         vrw5igly9A0KR5o+hpfs7tN6OFiUdrwa6Qy7Ma4F62fl3KrOVfPQxA3250nctHBU17uY
-         vsZEiHtF0oEmT0/pPNKGbMdcTQtgwaxM6JDdI6l/ZcftjHR1XjWSu6ZpP2nO6QghzSjT
-         pnoiGjanli+L6hr1azSIT6vsQAhSOePyNsWEkYovw3hSsDYr77dsgem7Tc1++DcC8lG/
-         3CpgGtmNNCKs5MFBzQhusE7pPdFuGJq3PTPv5pdsKGa5XePEWaex90FmGHM9DZW+ceep
-         8URw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794395321; x=1795000121;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=1XlqkjYgUHqMtiyvO2/LqlbV238Aov7kyKv1cwFa5P4=;
-        b=yMYpcUSLwstsyAbTCAPVglz/fnLzR4v2WUIXxAeF0BWFxdv/1UNfvNF596GiwJqKkE
-         fB1SPQV58+VcdH8b7bHX+kOJmW2DFF8iVdpYzwuPSenQEKPBs+h/zaJ/Q6hCq+wAT/YD
-         lujnAWHiT/Q0So2PHHrNErusHQC6pqpRmBpBvEQjaZzcgZh4Ow65vUwTjLpr1xj0tx4w
-         3BlkaXxTzGuPcFxqP7FPL9lTJ/c6dmE3lsKMuB6r74zHV8RJoZPi4iVYZXax7JI0L6gA
-         4i1GuSb1EGThXXF7eRAxJ0hiPNM9CXs6lrmReN7WrDj1evWTe74G+mMnWYTCu8p6mvlh
-         VXHQ==
-X-Forwarded-Encrypted: i=1; AL+hErEG5/Cut/hVSMC0txXcbnlm9PA88LG1nklZvvE6T+G9RweSJB2733BTC1m+bryBRBCMK9VHsg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8SCcmoq7BSGZNePxLIVb8QHPZICy+8D9UmuWYXA1rr8PB+VfgV
-	sSoURMdZhzApkduQM0L3sm9daH3mPbnUsaqhncq5WP8C+uY/m2QTZ8QIjHvEzarpAmdtxBJitCt
-	4g8E9a+cwokN1Y1SlgWr1rQ==
-X-Received: from wrqn16.prod.google.com ([2002:a5d:4210:0:b0:48e:3826:ef3f])
- (user=vdonnefort job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:481d:b0:493:803e:800f with SMTP id ffacd0b85a97d-499c6e96f58mr3024659f8f.29.1794395320547;
- Wed, 11 Nov 2026 03:08:40 -0800 (PST)
-Date: Wed, 11 Nov 2026 11:07:38 +0000
-In-Reply-To: <20261111110738.872947-1-vdonnefort@google.com>
+	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=hnJNAMc2
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
+  t=1794398018; x=1825934018;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HCCipxtjnPjwYW8DIXAeMVHDqScHm74Hg2zPPlBSipM=;
+  b=hnJNAMc2naJcpaT3CdnHUXMKZ+ww81bmwJAIWYkBK58kvOKTqeA8W+KQ
+   Rp4PxPFZK/C0Fd7Uh6rbka5/DStILFAFgNlh5dW0yBhz4E3KOxuHRbYtI
+   YjZAU8439T50ZceEXb0Esft3S19Do88PdM/jd25k3orHG9TnLA8BME3Hg
+   e3Xip51jijOE6QHdT/rlC0f+7aGZ3Hxe1eyHCAUNYJAlL15jyCSgOruew
+   z9eApGBfiZIKgPbnusw4qXc6r8Oi8bxEhJtF35kgGSOqRydks4x+buY2q
+   krGWMep4/8gN8NeeLDsvvJTdknyYImdwAbw4mHT91SQa7ZPlwhtfOONoK
+   A==;
+X-CSE-ConnectionGUID: D+8FdQFCRieWhewwBx3sWA==
+X-CSE-MsgGUID: ZJzzCanBTmiAzDJZgVMp9g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="248961070"
+X-IronPort-AV: E=Sophos;i="6.27,207,1786978800"; 
+   d="scan'208";a="248961070"
+Received: from gmgwuk01.global.fujitsu.com ([172.187.114.235])
+  by esa9.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 20:53:30 +0900
+Received: from az2uksmgm1.o.css.fujitsu.com (unknown [10.151.22.198])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by gmgwuk01.global.fujitsu.com (Postfix) with ESMTPS id A83798214C0;
+	Wed, 11 Nov 2026 11:53:22 +0000 (UTC)
+Received: from az2nlsmom3.fujitsu.com (unknown [10.150.26.199])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by az2uksmgm1.o.css.fujitsu.com (Postfix) with ESMTPS id 50C048D6DA5;
+	Wed, 11 Nov 2026 11:53:22 +0000 (UTC)
+Received: from FCCLS0092175.localdomain (unknown [10.9.86.149])
+	by az2nlsmom3.fujitsu.com (Postfix) with SMTP id 52B3F101BB7F;
+	Wed, 11 Nov 2026 11:53:02 +0000 (UTC)
+Date: Wed, 11 Nov 2026 20:53:00 +0900
+From: Kohei Enju <enju.kohei@fujitsu.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+	Randy Dunlap <rdunlap@infradead.org>, Mark Rutland <mark.rutland@arm.com>, 
+	Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>, 
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>, Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Mostafa Saleh <smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>, 
+	Alexey Kardashevskiy <aik@amd.com>, Dan Williams <dan.j.williams@intel.com>, 
+	Xu Yilun <yilun.xu@linux.intel.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>, 
+	Shrikanth Hegde <sshegde@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, 
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, 
+	Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Sven Schnelle <svens@linux.ibm.com>, Stefano Stabellini <sstabellini@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, Huacai Chen <chenhuacai@kernel.org>, 
+	WANG Xuerui <kernel@xen0n.name>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	Jiaxun Yang <jiaxun.yang@flygoat.com>, Paul Walmsley <pjw@kernel.org>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Alexandre Ghiti <alex@ghiti.fr>, Andy Lutomirski <luto@kernel.org>, 
+	Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner <tglx@kernel.org>, 
+	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, 
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
+	x86@kernel.org
+Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
+ sizing
+Message-ID: <avRKiCBs81XSYMqW@FCCLS0092175.localdomain>
+References: <20260924060756.1325156-7-aneesh.kumar@kernel.org>
+ <asVs3doaJ4WrT3M2@willie-the-truck>
+ <asYZFXGyafRjjBS0@arm.com>
+ <asYiOgskwi8JYLe_@willie-the-truck>
+ <yq5awlrt3dwo.fsf@kernel.org>
+ <yq5av77c92oo.fsf@kernel.org>
+ <aseRzPshcoys7AJS@arm.com>
+ <yq5ao6d48dqr.fsf@kernel.org>
+ <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
+ <yq5a8q3d9oe6.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -78,132 +119,189 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261111110738.872947-1-vdonnefort@google.com>
-X-Mailer: git-send-email 2.56.0.542.g3ef89b7020-goog
-Message-ID: <20261111110738.872947-9-vdonnefort@google.com>
-Subject: [PATCH v3 8/8] optee: Add support for lendable-dma-pool
-From: Vincent Donnefort <vdonnefort@google.com>
-To: catalin.marinas@arm.com, will@kernel.org, rppt@kernel.org, 
-	akpm@linux-foundation.org, m.szyprowski@samsung.com, jenswi@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
-Cc: mark.rutland@arm.com, robin.murphy@arm.com, hch@lst.de, 
-	ryan.roberts@arm.com, sumit.garg@kernel.org, sudeep.holla@kernel.org, 
-	ardb@kernel.org, thierry.reding@kernel.org, david@kernel.org, 
-	danielmentz@google.com, linux-arm-kernel@lists.infradead.org, 
-	linux-mm@kvack.org, iommu@lists.linux.dev, op-tee@lists.trustedfirmware.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	Vincent Donnefort <vdonnefort@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <yq5a8q3d9oe6.fsf@kernel.org>
 
-When memory is lent to secure world, fatal CPU speculative reads can
-still occur while it retains a cacheable mapping. Use the
-lendable-dma-pool API to unmap pages before lending and restore them
-upon reclaim.
+Hi Aneesh,
 
-Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
----
- drivers/tee/optee/protmem.c | 48 ++++++++++++++++++++++++++++++-------
- 1 file changed, 39 insertions(+), 9 deletions(-)
+On 11/01 09:47, Aneesh Kumar K.V wrote:
+[...]
+> >
+> > Hi Aneesh,
+> >
+> > I can reproduce the CCA regression discussed in this thread:
+> >   https://lore.kernel.org/all/yq5azeyxyfol.fsf@kernel.org/#t
+> >
+> > The guest runs out of SWIOTLB slots, causing disk I/O to fail and
+> > preventing the guest from booting.
+> >
+> > I would like to test the fix on real CCA hardware. Could you please Cc
+> > me when you respin the series? I follow LKML, but I may still miss the
+> > posting by chance.
+> >
+> 
+> The conclusion was to either use CONFIG_SWIOTLB_DYNAMIC or swiotlb kernel command line
+> option
 
-diff --git a/drivers/tee/optee/protmem.c b/drivers/tee/optee/protmem.c
-index be3abf6e8aa6..10e8f1540e5e 100644
---- a/drivers/tee/optee/protmem.c
-+++ b/drivers/tee/optee/protmem.c
-@@ -4,6 +4,7 @@
-  */
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
-+#include <linux/dma-mapping.h>
- #include <linux/errno.h>
- #include <linux/genalloc.h>
- #include <linux/slab.h>
-@@ -21,6 +22,7 @@ struct optee_protmem_dyn_pool {
- 	u_int mem_attr_count;
- 	refcount_t refcount;
- 	u32 use_case;
-+	bool unmapped;
- 	struct tee_shm *protmem;
- 	/* Protects when initializing and tearing down this struct */
- 	struct mutex mutex;
-@@ -32,6 +34,35 @@ to_protmem_dyn_pool(struct tee_protmem_pool *pool)
- 	return container_of(pool, struct optee_protmem_dyn_pool, pool);
- }
- 
-+static int zap_direct_map_dyn_protmem(struct optee_protmem_dyn_pool *rp)
-+{
-+	int ret;
-+
-+	ret = dma_zap_direct_map(&rp->optee->teedev->dev,
-+				 phys_to_page(rp->protmem->paddr),
-+				 rp->protmem->size);
-+	if (ret && ret != -ENODEV)
-+		return ret;
-+
-+	rp->unmapped = !ret;
-+
-+	return 0;
-+}
-+
-+static void restore_direct_map_dyn_protmem(struct optee_protmem_dyn_pool *rp)
-+{
-+	if (WARN_ON(!rp->protmem))
-+		return;
-+
-+	if (!rp->unmapped)
-+		return;
-+
-+	dma_restore_direct_map(&rp->optee->teedev->dev,
-+			       phys_to_page(rp->protmem->paddr),
-+			       rp->protmem->size);
-+	rp->unmapped = false;
-+}
-+
- static int init_dyn_protmem(struct optee_protmem_dyn_pool *rp)
+Thanks for the clarification.
+
+After reading this whole thread, I agree that dynamic sizing would be
+appropriate.
+
+However, currently some distributions do not enable
+CONFIG_SWIOTLB_DYNAMIC. Users of such distributions would therefore need
+to rebuild their kernels with the option enabled. This is not a
+practical solution for many users, particularly cloud users who use
+kernels provided by their distributions or cloud providers.
+
+Specifying swiotlb= on the kernel command line is also not particularly
+user-friendly. It requires users or cloud providers to choose a fixed
+value in advance, without automatically taking into account properties
+of the VM, such as its memory size or whether it is a confidential
+guest.
+
+I do not think the existing heuristic used for x86 CoCo guests is
+necessarily optimal, but a fixed swiotlb= value chosen by each user may
+be even less appropriate.
+
+Overall, I would prefer the dynamic sizing approach. However, I believe
+the initial pool size still matters.
+
+Also, as Catalin pointed out earlier in the following message:
+
+    https://lore.kernel.org/all/ann6noRzoPLL9kDY@arm.com/
+
+the arm64 adjustment also reduces the target size used for dynamic
+pool allocation, since both the initial pool and dynamic allocation
+currently use default_nslabs.
+
+I am testing the patch below to decouple the initial pool size from the
+dynamic allocation target. It adds swiotlb_adjust_initial_size() for
+callers that only want to reduce the initial allocation, while keeping
+the existing swiotlb_adjust_size() semantics for callers that want to
+adjust both sizes.
+
+Thanks,
+Kohei
+
+--->8---
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 4e7682dfe366..80a2c171895f 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -349,7 +349,7 @@ void __init arch_mm_preinit(void)
+                unsigned long size =
+                        DIV_ROUND_UP(memblock_phys_mem_size(), 1024);
+
+-               swiotlb_adjust_size(min(swiotlb_default_pool_size(), size));
++               swiotlb_adjust_initial_size(min(swiotlb_default_pool_size(), size));
+        }
+
+        swiotlb_init(true, flags);
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index 070ee69eabb3..7dd9fcec90a5 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -189,7 +189,7 @@ void __init arch_mm_preinit(void)
+                 */
+                unsigned long size =
+                        DIV_ROUND_UP(memblock_phys_mem_size(), 1024);
+-               swiotlb_adjust_size(min(swiotlb_default_pool_size(), size));
++               swiotlb_adjust_initial_size(min(swiotlb_default_pool_size(), size));
+                swiotlb = true;
+                swiotlb_flags |= SWIOTLB_ANY;
+        }
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 5f24edf47b68..c1984ee12355 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -190,6 +190,7 @@ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_allocated(void);
+ bool is_swiotlb_active(struct device *dev);
+ void __init swiotlb_adjust_size(unsigned long size);
++void __init swiotlb_adjust_initial_size(unsigned long size);
+ phys_addr_t default_swiotlb_base(void);
+ phys_addr_t default_swiotlb_limit(void);
+ #else
+@@ -232,6 +233,10 @@ static inline void swiotlb_adjust_size(unsigned long size)
  {
- 	int rc;
-@@ -42,19 +73,15 @@ static int init_dyn_protmem(struct optee_protmem_dyn_pool *rp)
- 		goto err_null_protmem;
- 	}
- 
--	/*
--	 * TODO unmap the memory range since the physical memory will
--	 * become inaccesible after the lend_protmem() call.
--	 *
--	 * If the platform supports a hypervisor at EL2, it will unmap the
--	 * intermediate physical memory for us and stop cache pre-fetch of
--	 * the memory.
--	 */
-+	rc = zap_direct_map_dyn_protmem(rp);
-+	if (rc)
-+		goto err_put_shm;
+ }
+
++static inline void swiotlb_adjust_initial_size(unsigned long size)
++{
++}
 +
- 	rc = rp->optee->ops->lend_protmem(rp->optee, rp->protmem,
- 					  rp->mem_attrs,
- 					  rp->mem_attr_count, rp->use_case);
- 	if (rc)
--		goto err_put_shm;
-+		goto err_restore_direct_map;
- 	rp->protmem->flags |= TEE_SHM_DYNAMIC;
- 
- 	rp->gen_pool = gen_pool_create(PAGE_SHIFT, -1);
-@@ -76,6 +103,8 @@ static int init_dyn_protmem(struct optee_protmem_dyn_pool *rp)
- 	rp->gen_pool = NULL;
- err_reclaim:
- 	rp->optee->ops->reclaim_protmem(rp->optee, rp->protmem);
-+err_restore_direct_map:
-+	restore_direct_map_dyn_protmem(rp);
- err_put_shm:
- 	tee_shm_put(rp->protmem);
- err_null_protmem:
-@@ -112,6 +141,7 @@ static void release_dyn_protmem(struct optee_protmem_dyn_pool *rp)
- 	rp->gen_pool = NULL;
- 
- 	rp->optee->ops->reclaim_protmem(rp->optee, rp->protmem);
-+	restore_direct_map_dyn_protmem(rp);
- 	rp->protmem->flags &= ~TEE_SHM_DYNAMIC;
- 
- 	WARN(refcount_read(&rp->protmem->refcount) != 1, "Unexpected refcount");
--- 
-2.56.0.542.g3ef89b7020-goog
+ static inline phys_addr_t default_swiotlb_base(void)
+ {
+        return 0;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 2c57b49ac7c0..211fefb32fb5 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -99,6 +99,7 @@ static struct io_tlb_mem io_tlb_default_mem;
+ #endif /* CONFIG_SWIOTLB_DYNAMIC */
+
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
++static unsigned long dynamic_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
+ static unsigned long default_nareas;
+ static bool swiotlb_cmdline_size_set __initdata;
+
+@@ -152,6 +153,8 @@ static void swiotlb_adjust_nareas(unsigned int nareas)
+                nareas = roundup_pow_of_two(nareas);
+
+        default_nareas = nareas;
++       dynamic_nslabs =
++               swiotlb_calc_nslabs(dynamic_nslabs << IO_TLB_SHIFT, nareas);
+
+        pr_info("area num %d.\n", nareas);
+        nslabs = swiotlb_calc_nslabs(default_nslabs << IO_TLB_SHIFT, nareas);
+@@ -254,6 +257,7 @@ setup_io_tlb_npages(char *str)
+                /* avoid tail segment of size < IO_TLB_SEGSIZE */
+                default_nslabs =
+                        ALIGN(simple_strtoul(str, &str, 0), IO_TLB_SEGSIZE);
++               dynamic_nslabs = default_nslabs;
+                swiotlb_cmdline_size_set = true;
+        }
+        if (*str == ',')
+@@ -290,7 +294,7 @@ unsigned long swiotlb_default_pool_size(void)
+        return default_nslabs << IO_TLB_SHIFT;
+ }
+
+-void __init swiotlb_adjust_size(unsigned long size)
++void __init swiotlb_adjust_initial_size(unsigned long size)
+ {
+        /*
+         * If swiotlb parameter has not been specified, give a chance to
+@@ -305,6 +309,12 @@ void __init swiotlb_adjust_size(unsigned long size)
+        pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
+ }
+
++void __init swiotlb_adjust_size(unsigned long size)
++{
++       swiotlb_adjust_initial_size(size);
++       dynamic_nslabs = default_nslabs;
++}
++
+ void swiotlb_print_info(void)
+ {
+        struct io_tlb_pool *mem = &io_tlb_default_mem.defpool;
+@@ -507,6 +517,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+                pr_info("SWIOTLB bounce buffer size adjusted %lu -> %lu slabs",
+                        default_nslabs, nslabs);
+                default_nslabs = nslabs;
++               dynamic_nslabs = default_nslabs;
+        }
+
+        alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
+@@ -889,7 +900,7 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
+                container_of(work, struct io_tlb_mem, dyn_alloc);
+        struct io_tlb_pool *pool;
+
+-       pool = swiotlb_alloc_pool(NULL, mem, IO_TLB_MIN_SLABS, default_nslabs,
++       pool = swiotlb_alloc_pool(NULL, mem, IO_TLB_MIN_SLABS, dynamic_nslabs,
+                                  default_nareas, mem->phys_limit, GFP_KERNEL);
+        if (!pool) {
+                pr_warn_ratelimited("Failed to allocate new pool");
 
