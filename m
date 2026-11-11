@@ -1,74 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.167.199
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.69
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794425063;
-	b=YFlS4vTr3+8VpR7c1ZhAnd+1vMf+HXSvsqMr0HPaWOHsJxkmtT1/HVA3ALlPDZqA1/Ph
-	 Ff5fMbVSrW/oJBm98Z3uKx/ohVCFdLrkZU8HvgEamb2ntk70Ti6oX6a+J35l2ZvoTqr5P
-	 wqfg7Ex5ZASsngv6qjkOcYFkqUXk6Tv9mTjjCZ1OMR5AwppUQ6sCYgOfb8Lx4e1f7PjFt
-	 3bGBtH1nssWIZqkiZjAaQds5e7oCkp3YGy1FxAbp0Sv+JgKP7AnSNNSt9zYQQ7U7o5moW
-	 wJY1QBjq3P5RrWOwZV7bHMeEkpWtdUxwMcFcu/ssxnIUu2ZSct8TC+YV7usoMNCxW3Q==
+	t=1794425064;
+	b=YZ6qgsc1BaDrOMOGhzaiu/DP+v+a/DNr6Trs70gSgs2T7+Np23NZ6cqRY2JHalhtEDy3
+	 qTndlaWWDWe9dbKH6S9O/+vleO9WmNL7W32SeGlQ+Qb1hwH6h0Pe+i+QurN4Ax5ltU6cn
+	 jSzNR5Ihu52IrZUxpUZYEcozmper+s2qAD3xBSWP730adFQ5b+xNifo46Fkgb+m7ANxUU
+	 Cy6VffvCjZ3AMase1XTk77oNO052H/6g/WiUgElQKfmHCeYDvV/781M3fXuvWzaqmdA3b
+	 WDD/UciePCHGr/IF55mb66ieZIrjwOd7r9OWqvTpQDNKAttVfNJ87yXe3hUJNH7yPMQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794425063;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794425064;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
 	 Mime-Version:References:X-Mailer:Message-ID:Subject:From:To:Cc:
 	 Content-Type;
-	bh=GZrkVSPnOLbwhYzrPljddPiSGOm8sAR0nI/sR9X9KfM=;
-	b=H4Ht4hrC0XiuK3VOnO1MSolwV7JrFbJq4fAQlXO+k6VM4NRSbvGl2ZtNEzVDk8cnJZyq
-	 CzVTkj67GTHLqtCetWFr4U7FQij4MswX9CwhLM1XZ+uXkPw2Ud1ADBKjOmMaKQQqJdnZ4
-	 NXfs9NKSyahuNmMWloHRi0Di19w5uoYyqbViq1LfyO67vfBROSKJD2x+fG83whLWlFkk2
-	 p1t9nOVoD9ERr8VXM51CIBeicqM4fEjKMz2dem3aEnRuUd8NwF60DC4fdogRNVtz9MW/T
-	 qVKErYMyEP01HMy64mf5U4SN448ahbat6gQ8ze8BdB07ha371EHaRa3wdtOyNxvoWYA==
+	bh=S4+DQ/5hS2/5UfXO0mi1ZgFeMRsr05x8y1FYZlBsi/k=;
+	b=Kq0cDpM1EZdY74qPfDA25vQc299VLmLCJUlgoCHvNXcOf2i3o8lTPmUW72hVp2VN4MiR
+	 oqSXl2WgI/c36iAD/vwmreoXICMfnk/6OCsV6fr1K2zBHioS/X6fWozeOKlYOnns5ZOJ0
+	 xH4Ds4ZVMJ9Yz3Lc/Aa4W6pbl3HIhrxVn8RdvXIl6HObxoh9/qGBeWbKCjIpquJcYA5Ps
+	 sxQykyJF9Jps1Qp1lecJPrm/N2822c6sLjuW3YqC7q35zy/PFADLTb8erYcl9Ygtt/60k
+	 pyY0A8yNA3TmdMNKT0YUZ+MnJ4ao/shERnAPWGFVdQDAFuMWq6PxWFc0zXPzjdqmncA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=c5kGszhB;
-	arc=none smtp.remote-ip=209.85.167.199
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=FB42xkwO;
+	arc=none smtp.remote-ip=209.85.210.69
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com [209.85.210.69])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42FF2606B5DD
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 19:24:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 42FF2606B5DD
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95F92606B5FE
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 19:24:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 95F92606B5FE
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--dmatlack.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=c5kGszhB
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-540537f959fso3941350b6e.0
-        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 11:24:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=FB42xkwO
+Received: by mail-ot1-f69.google.com with SMTP id 46e09a7af769-8520e83f715so3842602a34.2
+        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 11:24:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794425062; x=1795029862; darn=lists.linux.dev;
+        d=google.com; s=20260707; t=1794425063; x=1795029863; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=GZrkVSPnOLbwhYzrPljddPiSGOm8sAR0nI/sR9X9KfM=;
-        b=c5kGszhBCO+ksD/yiMBBus/t35R7yztpMq31d7jxK0Ht7OsgVkDbuBteywyiObTjwO
-         qspj2qM4HJSkv6nLBsSj2UdHL36n8ootxZnkTPgzaCI6yAX8+NQrtAuAO9JBWxG3dJVV
-         CFh/9FtXPaAyxbCo5LdBQ/chpgVcz0Lt1OzFq0mfDSD1J9KjscpoB5hYT+2xTDMyXqt0
-         qvp73nYJLHcE1VPt84LfRd5XHh8BMuGfM+Qhcx+ptAj0y7hJiPvVmHSq63EAZwTOTU1W
-         O8lbzgvZQH7uIAkC79FZ6gYslFXjwsWJ4F7n0+MzrnvNKxhHkB51L/DbRCRAEZoSJRAQ
-         RWTw==
+        bh=S4+DQ/5hS2/5UfXO0mi1ZgFeMRsr05x8y1FYZlBsi/k=;
+        b=FB42xkwOHgqTHSJrq4Gf2xVLBCdnmRoqnHKdxzDu4qwzVvyFOPcDCjKiquR44c9QXb
+         GTfabm6El8Oi60ijPKP5i3Pd+o/63ypvQh2E9gqQcngzoEsR2pFWNW8NzuNcg/gRSpsD
+         TWfwvoDWTaB2gMwXxvkIOxfEeGpiGLuY2SnjStr/4jpKhfpwOy4jhxKqK/wFwoA/y9uZ
+         Xy7bjfxxdtb4pHSuDvQ3cCZyBnaw5HCxzpXuG5CPG7OR6hdbNMhqla35jzBOEELJQiMD
+         CiMfLSx+hFAoNdOYthGUwSH5Hj6MnUBqU2Tq5GOwA0DPXgF3IVWOjFgVndjhFmwSlmJq
+         Z7UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794425062; x=1795029862;
+        d=1e100.net; s=20260707; t=1794425063; x=1795029863;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=GZrkVSPnOLbwhYzrPljddPiSGOm8sAR0nI/sR9X9KfM=;
-        b=atbHXcHV/WHRlOROPHsUBEoR1ajoA8DOJjAeBLW8quHU2Q86gZe9Nn/2D91mJcskiI
-         N/BlY4KsdLEp9Nfd6ddeI8wrmQvnfnj/iwVkgh7mimPAZLl3UpeoPVt7p6ZZJQyneap+
-         ZZC6i2jJW+cQQef84W6WZV5fZOx1jHcFPtcIkEEzC3A/w7CZjTmcPhZMxWV+sCc0Hs1V
-         FoUVnG9JWRZDFU/DDQ1C8v++Fs34glF/jjsxt7r8wjZsAfXIdQBDtg3wS7mzdx0pdc2w
-         1eDLFghW7Hn8Be8GroHy+lZH2osgJjyAyvZmAQa0xgwae0WT2jm4L5N4ZexY4sfG7J7A
-         X2PA==
-X-Forwarded-Encrypted: i=1; AL+hErGt7Ewpr6tpWlxUAIZ3NL0/b48MGhkHZddklO34kmO/hPb4FUGrZMnt48DkTZbTYpaEvdeAFQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9nrimlOP2awolYvxm6ae16w7ZEAqacILTRNL43nVOsCb1UcmSU
-	DoQy/fRbNfwSxy8ZGTY0IMExNun/huYqkSFruQIdOUn7NKzhU7E9Z6LcfGKldvwd1/s7L6GITcl
-	YD6NaPA98qE0PJQ==
-X-Received: from ilbec1.prod.google.com ([2002:a05:6e02:4701:b0:527:120b:a51d])
+        bh=S4+DQ/5hS2/5UfXO0mi1ZgFeMRsr05x8y1FYZlBsi/k=;
+        b=U5duVUzuFYO391LeFXBn5ddzK6MxKug1lcaJIiJvlpaaFUzaOWbucl1yEt29a4q9hE
+         4trdS7yomkxOQM9QGQElxYlKyJO0b8MGSVmweeS4bykqJfWtpZ/LJyTdRrqBtWkrPPvp
+         dUYwqHTMKTEBWAT+Rn2fDsJX/ShNyFmmLhTqDgB5GuQMknuW511mqkwiUVDjjV+mObls
+         u4UQfCAjsiamliM3up62eK1qBO2/g1VhSwSjzM5VKPbxB49INaSgh2gRXOjK65AbbYo1
+         FJgJT5nye/EZHtM55jXLotk6f0oUHQJeHxTEdIkfnQDljlBBwrV/0HXspTkP9yEnOApY
+         UhLw==
+X-Forwarded-Encrypted: i=1; AL+hErEZ4tM1z4dKwiyUMJrywMADmK7fTNa9Xe5fXFmgYVI8lUCHeZIlterRFAV++jrqz7Aqx2GJSw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9tSgXnKYKvyW8CXxkX+YdLOiYBy3B7mkQH/h8MIUsyNnc60l3y
+	G0WVYcn6+JKdZQBYKRPdKP5AZKtOuLV9P7OG8hnf6KFo8QEQgbdaZlc0t7CXpL315na3Liha9nP
+	VcdkRcRcnh9Jm5w==
+X-Received: from jabll4.prod.google.com ([2002:a05:6638:9804:b0:61f:e4cd:8716])
  (user=dmatlack job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6808:191f:b0:53f:3c0e:c74b with SMTP id 5614622812f47-56b93447ed4mr3152606b6e.9.1794425061950;
- Wed, 11 Nov 2026 11:24:21 -0800 (PST)
-Date: Wed, 11 Nov 2026 19:24:09 +0000
+ 2002:a05:6808:318a:b0:4af:5d69:1cb4 with SMTP id 5614622812f47-56b96ad0615mr3028788b6e.15.1794425063307;
+ Wed, 11 Nov 2026 11:24:23 -0800 (PST)
+Date: Wed, 11 Nov 2026 19:24:10 +0000
 In-Reply-To: <20261111192411.4133780-1-dmatlack@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,8 +81,8 @@ Precedence: list
 Mime-Version: 1.0
 References: <20261111192411.4133780-1-dmatlack@google.com>
 X-Mailer: git-send-email 2.56.0.567.gdb80ae8cd5-goog
-Message-ID: <20261111192411.4133780-6-dmatlack@google.com>
-Subject: [RFC PATCH 5/7] vfio: selftests: Add iommu_map_file() helper
+Message-ID: <20261111192411.4133780-7-dmatlack@google.com>
+Subject: [RFC PATCH 6/7] vfio: selftests: Add vfio_pci_find_p2p_pair() helper
 From: David Matlack <dmatlack@google.com>
 To: dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, 
 	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org, 
@@ -98,84 +98,104 @@ Cc: Alex Mastro <amastro@fb.com>, Alex Williamson <alex@shazbot.org>,
 	Sumit Semwal <sumit.semwal@linaro.org>, Vipin Sharma <vipinsh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Add iommu_map_file() and __iommu_map_file() to map a file descriptor
-(such as a memfd or VFIO PCI dma-buf) into an iommufd IOAS via
-IOMMU_IOAS_MAP_FILE. Also skip regions without a host virtual address in
-__iommu_hva2iova(), since file-backed DMA mappings do not require one.
+Add vfio_pci_find_p2p_pair() to locate an initiator device with memcpy
+driver support and a distinct target device with a memory BAR of at
+least min_bar_size bytes from an array of VFIO PCI devices.
+
+Factor out vfio_pci_has_p2p_path() as the central place to validate PCI
+topology and P2P DMA reachability between the two devices in the future.
 
 Signed-off-by: David Matlack <dmatlack@google.com>
 ---
- .../vfio/lib/include/libvfio/iommu.h          |  9 ++++++
- tools/testing/selftests/vfio/lib/iommu.c      | 29 +++++++++++++++++++
- 2 files changed, 38 insertions(+)
+ .../lib/include/libvfio/vfio_pci_device.h     |  8 ++++
+ .../selftests/vfio/lib/vfio_pci_device.c      | 48 +++++++++++++++++++
+ 2 files changed, 56 insertions(+)
 
-diff --git a/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h b/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h
-index e9a3386a4719..2b39c49e66da 100644
---- a/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h
-+++ b/tools/testing/selftests/vfio/lib/include/libvfio/iommu.h
-@@ -42,6 +42,15 @@ static inline void iommu_map(struct iommu *iommu, struct dma_region *region)
- 	VFIO_ASSERT_EQ(__iommu_map(iommu, region), 0);
+diff --git a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
+index fd130f680a2d..9bda93712859 100644
+--- a/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
++++ b/tools/testing/selftests/vfio/lib/include/libvfio/vfio_pci_device.h
+@@ -42,6 +42,12 @@ struct vfio_pci_device {
+ 	struct vfio_pci_driver driver;
+ };
+ 
++struct vfio_pci_p2p_pair {
++	struct vfio_pci_device *initiator;
++	struct vfio_pci_device *target;
++	struct vfio_pci_mem_bar mem_bar;
++};
++
+ #define dev_info(_dev, _fmt, ...) printf("%s: " _fmt, (_dev)->bdf, ##__VA_ARGS__)
+ #define dev_err(_dev, _fmt, ...) fprintf(stderr, "%s: " _fmt, (_dev)->bdf, ##__VA_ARGS__)
+ 
+@@ -171,6 +177,8 @@ static inline bool vfio_pci_device_match(struct vfio_pci_device *device,
+ 
+ bool vfio_pci_find_mem_bar(struct vfio_pci_device *device, u64 min_size,
+ 			   struct vfio_pci_mem_bar *mem_bar);
++bool vfio_pci_find_p2p_pair(struct vfio_pci_device **devices, int nr_devices,
++			    u64 min_bar_size, struct vfio_pci_p2p_pair *pair);
+ 
+ int __vfio_pci_dmabuf_create(struct vfio_pci_device *device, u32 region_index,
+ 			     u64 offset, u64 length, u32 open_flags);
+diff --git a/tools/testing/selftests/vfio/lib/vfio_pci_device.c b/tools/testing/selftests/vfio/lib/vfio_pci_device.c
+index eca6eb13d7f0..16fc98ed170b 100644
+--- a/tools/testing/selftests/vfio/lib/vfio_pci_device.c
++++ b/tools/testing/selftests/vfio/lib/vfio_pci_device.c
+@@ -378,6 +378,54 @@ bool vfio_pci_find_mem_bar(struct vfio_pci_device *device, u64 min_size,
+ 	return false;
  }
  
-+int __iommu_map_file(struct iommu *iommu, int fd, u64 file_offset,
-+		     struct dma_region *region);
-+
-+static inline void iommu_map_file(struct iommu *iommu, int fd, u64 file_offset,
-+				  struct dma_region *region)
++static bool vfio_pci_has_p2p_path(struct vfio_pci_device *initiator,
++				  struct vfio_pci_device *target)
 +{
-+	VFIO_ASSERT_EQ(__iommu_map_file(iommu, fd, file_offset, region), 0);
++	/*
++	 * TODO: Check PCI topology / ACS / host bridge support to verify that
++	 * P2P DMA transactions from @initiator can reach @target.
++	 */
++	return initiator != target;
 +}
 +
- int __iommu_unmap(struct iommu *iommu, struct dma_region *region, u64 *unmapped);
- 
- static inline void iommu_unmap(struct iommu *iommu, struct dma_region *region)
-diff --git a/tools/testing/selftests/vfio/lib/iommu.c b/tools/testing/selftests/vfio/lib/iommu.c
-index b6f3c5c84e01..ba602685f892 100644
---- a/tools/testing/selftests/vfio/lib/iommu.c
-+++ b/tools/testing/selftests/vfio/lib/iommu.c
-@@ -71,6 +71,9 @@ int __iommu_hva2iova(struct iommu *iommu, void *vaddr, iova_t *iova)
- 	struct dma_region *region;
- 
- 	list_for_each_entry(region, &iommu->dma_regions, link) {
-+		if (!region->vaddr)
++bool vfio_pci_find_p2p_pair(struct vfio_pci_device **devices, int nr_devices,
++			    u64 min_bar_size, struct vfio_pci_p2p_pair *pair)
++{
++	struct vfio_pci_mem_bar mem_bar;
++	int i, j;
++
++	for (i = 0; i < nr_devices; i++) {
++		struct vfio_pci_device *initiator = devices[i];
++		const struct vfio_pci_driver_ops *ops = initiator->driver.ops;
++
++		if (!ops || !ops->memcpy_start || !ops->memcpy_wait)
 +			continue;
 +
- 		if (vaddr < region->vaddr)
- 			continue;
- 
-@@ -149,6 +152,32 @@ int __iommu_map(struct iommu *iommu, struct dma_region *region)
- 	return 0;
- }
- 
-+int __iommu_map_file(struct iommu *iommu, int fd, u64 file_offset,
-+		     struct dma_region *region)
-+{
-+	struct iommu_ioas_map_file args = {
-+		.size = sizeof(args),
-+		.flags = IOMMU_IOAS_MAP_READABLE |
-+			 IOMMU_IOAS_MAP_WRITEABLE |
-+			 IOMMU_IOAS_MAP_FIXED_IOVA,
-+		.ioas_id = iommu->ioas_id,
-+		.fd = fd,
-+		.start = file_offset,
-+		.length = region->size,
-+		.iova = region->iova,
-+	};
++		for (j = 0; j < nr_devices; j++) {
++			struct vfio_pci_device *target = devices[j];
 +
-+	if (!iommu->iommufd)
-+		return -EOPNOTSUPP;
++			if (i == j)
++				continue;
 +
-+	if (ioctl(iommu->iommufd, IOMMU_IOAS_MAP_FILE, &args))
-+		return -errno;
++			if (!vfio_pci_has_p2p_path(initiator, target))
++				continue;
 +
-+	list_add(&region->link, &iommu->dma_regions);
++			if (!vfio_pci_find_mem_bar(target, min_bar_size,
++						   &mem_bar))
++				continue;
 +
-+	return 0;
++			*pair = (struct vfio_pci_p2p_pair){
++				.initiator = initiator,
++				.target = target,
++				.mem_bar = mem_bar,
++			};
++			return true;
++		}
++	}
++
++	return false;
 +}
 +
- static int __vfio_iommu_unmap(int fd, u64 iova, u64 size, u32 flags, u64 *unmapped)
+ void vfio_pci_config_access(struct vfio_pci_device *device, bool write,
+ 			    size_t config, size_t size, void *data)
  {
- 	struct vfio_iommu_type1_dma_unmap args = {
 -- 
 2.56.0.567.gdb80ae8cd5-goog
 
