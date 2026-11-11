@@ -1,83 +1,109 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794414289;
-	b=LguS4L/C5WSxHQjcBqGo47W5NSmzeRI1P3BCgi3C2eeZ6iMmMeFo28eXou67k3GzSq9j
-	 tmWFyvZDqg6scEI5wOVI6cahnP7NNxy8xz7AFg2C1FElLOnE+0xW7wBV2fbLW4BT4jpOz
-	 QvEzbYIhdcddXctMi8zo6e8y81dWYb5/HorlZP90ilV3OapfgN6tPfy8g6ALATtkCurPF
-	 amnz/YBg/BgCxyjeRKBdlVuV1zg1/YV8f5tLNJUbNcFXyutt0A2WZjgkM0RbE/fjXuO18
-	 nEDNBOQhzTk3pOPjljQuTbnMNcRaHUrAriNkw1SqRBKvlk2kndz4xxGbaSDkC5VZwoA==
+	t=1794415664;
+	b=yQkNMVQGDHEHp3vs4v45KO8YKX7ZENMkWKYcvQbCT3bv77SZ5+t/QUcxJhUfEwFbUfwY
+	 iMYX5BXgOzqRwIbpJKYvrYkNffyheHfKA393BjCFuaFA8gwpvmruJ3yazFGFAua/lmVT2
+	 XcDTHOmldHOtJhlIAR4POFR2RQ8G1rFaCZOjWlLLpW+CH3ugU/ZwRW7UNQatr0DeTY7C6
+	 uZQtjXfKkHQRYavdrWIC3Y5xBc8FXUfKyrpYYZJsrni1W4B0zeOSE9kJDbrDoVYdxYPb+
+	 k+FF1N70wZjATLCmBBRN6g3jD2UDFIEOtq1d92jHMuzvncS8bx7f3knuYWUXMPQ/TSA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794414289;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=OjsO/ys/ad/piKfPb2QV+3VHWakKPWNbmqHXdLgFmLM=;
-	b=TAlS4BP/FKQP+gSjTm29iRsk7DiwNwl5D1+h9STkgob+ee9toFgU5LIB1knHw4PsPrMl
-	 FiLeRcYVu++M+ymVz7dDdgET99m7+L1jhnc7WhSezh/Z5CUXVgWE5NRMF0QyMrlKT3hIG
-	 biOdlgP2uKu7b2WyoYbUlnKh+RRzk4OT1rUT+xTMwyqRJMkpS53vaf7RnKO7A1O/iqpwd
-	 dxq7KA4AN6ETKch/7NYaTBcvYcHTxtgzm/WLB+mWrXMGb8paX0U839xi63uaou/NjC1z9
-	 c8Na9m93aFLKogZmlmTT03Nv8tvIyPblZPMLvTcYDWh3nsgXPs4oFzgcry77/mq7CbA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794415664;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=JEN1we3zUbJ34wQgamBpttlVbDethKWGuPURScqYgfU=;
+	b=fHnw0RZh2gF3L54si/Kd2Q1Ei/QHRt4LTvwiHGh+fNdlf6eQ/K/JLJd7rhK1R63nMnwd
+	 aIvfcwJ44kONFlXLxmsI/GjCUPwNyTofLGggn1UDeGOrZ8GVA1eXIolagFm44Ox8vM0Sf
+	 ahF99oLLMwAuRbuZ3l6KfCgE2UOtEOn/c9p5EJIB+r0rHk1u1RswEfRfqKkfj+kIEopio
+	 3VUxlBqGbo64XHh/CEOA/e3utXpn39iCw6G/Ewc2HjK6VjzMB6FP63oXRh5hsHwahYN4o
+	 2EKI3+Q3UVHiUQOe8BeGY9bxGaz25b5IRImCUpFzHXGKrhA2rQcYdeHTrqfa8D4//VQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D9R3bt8I;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=pxV0d1bK;
+	arc=none smtp.remote-ip=209.85.221.53
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B006606A324;
-	Wed, 11 Nov 2026 16:24:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B996606A337
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 16:47:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7B996606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D9R3bt8I
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3EF51F00A05;
-	Wed, 11 Nov 2026 16:24:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794414289;
-	bh=OjsO/ys/ad/piKfPb2QV+3VHWakKPWNbmqHXdLgFmLM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=D9R3bt8IMlmKCvjpNgRgysgj8jSfI13uGBJNO/Gz7VeltIMkdQtWk7rTUbnL+hSKP
-	 yw446sJdMUoV63jGJWmoLXrdm1ER/+eKiRPANmy8/oVLQQIHoxwQk4097d3gNv9RJN
-	 kPGqM0dBGFUDQwamvB9bgVigbzfmgo2HAwhl9bStSXnCsJPMOT+eRSw3AJbBNyDXRc
-	 8huwLIoPnXNi9b/6DowoNI3g+6A06OaWwxGcf8k5/7RxZl9Us0FcZzRZntTE+c9g0z
-	 h2AVNfplmuc6dmcm7rJeSw5ylRkvChp9Qq2tOVm3kX5/SsTu3LunBg9pwpNtEIVykp
-	 A7793R8G+sFfg==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Cc: Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
-Subject: RE: [PATCH v8 10/15] PCI/TSM: Add vIOMMU-bound device contexts
-In-Reply-To: <SA2PR11MB4844957D715CDA1CC614E8C38C762@SA2PR11MB4844.namprd11.prod.outlook.com>
-References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
- <20261104161632.3547423-11-aneesh.kumar@kernel.org>
- <SA2PR11MB4844957D715CDA1CC614E8C38C762@SA2PR11MB4844.namprd11.prod.outlook.com>
-Date: Wed, 11 Nov 2026 21:54:32 +0530
-Message-ID: <yq5a4idntjy7.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=pxV0d1bK
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-48e1d0e5dafso7920f8f.1
+        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 08:47:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1794415663; x=1795020463; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=JEN1we3zUbJ34wQgamBpttlVbDethKWGuPURScqYgfU=;
+        b=pxV0d1bKyYUe1+xmb+QH9TTW/DktKeNIDnHt+AkmmCoTokOXse5avDBLuBhKr1+lFM
+         1dt2Bt1+bx68ANjER7DiZeo1NoSfxWV/ii5NVjHJ1HBD8aWAmo/828eWqRgxhvD/H9RG
+         jUmhJfrvQNuDeR7v8bPCsSDP3GcENj0i2XD/vKba56ZxIVXLPXDhZTQhn3Sf4XQUs9WU
+         XvJs1Bv4iROFpViYH3GT7nq0BvQm9ihxCmioGVJwbtrVYGeP/H2bFnwGtjijnaCE2+g/
+         G522IBicYbSodCoZjLkGhtrTcPAJvhv2DeYXL9HpvTRXi/eJzX71VBHffCXvJlJWJ0rJ
+         1EcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794415663; x=1795020463;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=JEN1we3zUbJ34wQgamBpttlVbDethKWGuPURScqYgfU=;
+        b=1qMqSuSm6Sc7oX9lFQ8jU4eUmX7kEwqkmFB8mQ7IjWU3DF+lu34xstVBUOya9D0wuU
+         VtlrAHNHmK62qas5T+FpOJhc0fpXvxTIcpoQpI2KjdjVRW93xf7ZHtTt3ZaBH57lGJAT
+         czVFLng56I/O+zaTxQmbtv7jStkn9jKgPmZypGHabKTrgGfju3eDb5/dja6aiDrvo9a6
+         vgk6k88vQCBYfXJGb/SVp3R4Kqt02WDv+Yf2mLNgXtOJQXlbsrcoeeDquQlpIaL1L6Bi
+         64wV2zzdRDdRMhJETZ0I3xnjwpl5djzTQRCF3K3CLIWrRq++nXZ5O7hLR6ftxPWukwFq
+         xqQg==
+X-Forwarded-Encrypted: i=1; AL+hErE91sv8F4C2VbPPl2iFRqIcZDnq007elOLVNI1BX7YdQ3W7DPZnSu28k9R7HU73Qm0JQI+EVQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z90fVUhsAmIkJ0wNn+KG2lZQFYBYnh+xlCZGHYiHS1cCc6R4RCG
+	vx/U2c7P2YS6paE5vRjbbGa9yKgJw/7x0+todBOOcteCjLQCtKccKfmiuTYDzPygLA==
+X-Gm-Gg: AYBFou0o7bzWhmK+7iQAZY7F8O65KeuM8DmBXLv9cKn+8oF0uDktinVPe77weNQq0Aw
+	Gs30RjGTUyDAwD4izpbdUD+XZKiM+sbaOKCMOq3WjE6SFduPgq6TIzRvb6etSj8uCwyJFGflfip
+	KBlVNuoaqXE+ZRTkXZlf2p6bVKk95Jmk58N52TXrQagNVcszHz5yglsEEQmSFCseyhpuHAc79dj
+	GyEQ8SUce+SFyZaz1diInxdtc6jaXsSYynSqeCmuEUpXNPDx8hUSKASw/s3xPOaI+cl/dE4V+yA
+	kSGe8N8RXAOtQ2zTRyVxjvb3vg21iHgiObEGxXDCiQftiZWs48d8r3Gnyzyc/f1df0C0hM3xDMJ
+	48kjqZ2l5UUHoKAKEV83XuQEVdKEUvkA5W3WaRXWjaECrYqHBfiFWe6C5ROCzVLhbnmQQJUNbyx
+	A93UL0i+6/cY8BHQsSUZmhyMOO/T3gsh1axzzwMqdU9Xar//YZjrVC21jIJ4lnU6VfKsGAODkn8
+	607FPy8hxyvgmGKyjLGrUkLd+a4/3SNjW4iYF3+mH/WbT6eiLAHteWH2CQNUiMOJkG8YyywyqSM
+	Dd56x06CjFrFPscVq84dvGHkTIuHpoKWt44BAj4BCuw+XO3I6dMQCe5TwetHVzpEzw==
+X-Received: by 2002:a05:600c:3f07:b0:4a2:18c4:61a5 with SMTP id 5b1f17b1804b1-4bb4e27994emr1100895e9.6.1794415662004;
+        Wed, 11 Nov 2026 08:47:42 -0800 (PST)
+Received: from google.com (0.182.34.34.bc.googleusercontent.com. [34.34.182.0])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-498365cd06fsm11724877f8f.40.2026.11.11.08.47.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Nov 2026 08:47:41 -0800 (PST)
+Date: Wed, 11 Nov 2026 16:47:38 +0000
+From: Vincent Donnefort <vdonnefort@google.com>
+To: Tao Cui <cui.tao@linux.dev>
+Cc: akpm@linux-foundation.org, dgilbert@interlog.com, mkp@kernel.org,
+	loberman@redhat.com, jmeneghi@redhat.com, kraxel@redhat.com,
+	vivek.kasireddy@intel.com, mst@redhat.com, jasowangio@gmail.com,
+	eperezma@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+	rostedt@goodmis.org, mhiramat@kernel.org, jgg@ziepe.ca,
+	kevin.tian@intel.com, axboe@kernel.dk, linux-mm@kvack.org,
+	James.Bottomley@hansenpartnership.com, sumit.semwal@linaro.org,
+	christian.koenig@amd.com, phasta@kernel.org, joro@8bytes.org,
+	will@kernel.org, linux-scsi@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
+	virtualization@lists.linux.dev, linux-trace-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, io-uring@vger.kernel.org,
+	linux-kernel@vger.kernel.org, bobbyeshleman@meta.com,
+	mathieu.desnoyers@efficios.com, robin.murphy@arm.com,
+	mason@kernel.org, aesteve@redhat.com, tjmercier@google.com,
+	harry@kernel.org, vbabka@suse.cz, cuitao@kylinos.cn
+Subject: Re: [PATCH 4/7] tracing: account ring buffer pages and trace_array
+ metadata to memcg
+Message-ID: <avScKhR22kFOQ1z4@google.com>
+References: <20261106131829.3228926-1-cui.tao@linux.dev>
+ <20261106131829.3228926-5-cui.tao@linux.dev>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -87,80 +113,93 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261106131829.3228926-5-cui.tao@linux.dev>
 
-"Tian, Kevin" <kevin.tian@intel.com> writes:
+On Fri, Nov 06, 2026 at 09:18:26PM +0800, Tao Cui wrote:
+> From: Tao Cui <cuitao@kylinos.cn>
+> 
+> Creating an instance immediately allocates two full sets of per-cpu
+> ring buffers, array buffer plus snapshot, about 1.375MB per cpu per set
+> on the default config, plus the trace_array and its name.  None of it
+> is charged: neither trace.c nor ring_buffer.c passes __GFP_ACCOUNT,
+> while user_events in the same directory accounts everything it
+> allocates.
+> 
+> Instance creation is currently gated by tracefs file permissions
+> alone, so a
+> rootful container with the host tracefs bound in can create instances
+> until the host runs out of memory.  Charge the ring buffer pages and
+> the trace_array metadata to the creating cgroup.
+> 
+> Signed-off-by: Tao Cui <cuitao@kylinos.cn>
+> ---
+>  kernel/trace/ring_buffer.c | 8 +++++++-
+>  kernel/trace/trace.c       | 6 +++---
+>  2 files changed, 10 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/trace/ring_buffer.c b/kernel/trace/ring_buffer.c
+> index 1fd28a72e6ee..676c059c112c 100644
+> --- a/kernel/trace/ring_buffer.c
+> +++ b/kernel/trace/ring_buffer.c
+> @@ -441,7 +441,13 @@ static struct buffer_data_page *alloc_cpu_data(int cpu, int order)
+>  	 * gracefully without invoking oom-killer and the system is not
+>  	 * destabilized.
+>  	 */
+> -	mflags = GFP_KERNEL | __GFP_RETRY_MAYFAIL | __GFP_COMP | __GFP_ZERO;
+> +	/*
+> +	 * The subbuffers are charged to the memcg of whoever caused the
+> +	 * allocation: the creator of a trace instance, or root at boot for
+> +	 * the global trace.
+> +	 */
+> +	mflags = GFP_KERNEL | __GFP_RETRY_MAYFAIL | __GFP_COMP | __GFP_ZERO |
+> +		  __GFP_ACCOUNT;
+>  
+>  	page = alloc_pages_node(cpu_to_node(cpu), mflags, order);
+>  	if (!page)
 
->> From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
->> Sent: Thursday, November 5, 2026 12:16 AM
->> 
->> An IOMMUFD vDEVICE represents a physical device within a virtual IOMMU
->> (vIOMMU) for a guest. It must use the same TEE Security Manager as its
->> vIOMMU. Pinning the vIOMMU backend keeps its tsm_dev registered, but
->> does not preserve the connection between the physical function 0 (PF0)
->> PCI device and that TSM.
->> 
->> Add a per-vDEVICE PCI TSM context. Verify that the PCI device and the
->> vIOMMU use the same tsm_dev, and account active contexts on PF0. Reject
->> disconnect with -EBUSY until all dependent vDEVICEs release their
->> contexts.
->
-> We really don't need so many vIOMMU/vDEVICE notations here,
-> especially in following code/comments. It's just about a tsm context
-> which holds the pf0 from disconnected. Then let's describe/code it
-> from that angle.
->
->> +struct pci_tsm_context *pci_tsm_context_get(struct pci_dev *pdev,
->> +					    struct tsm_dev *viommu_tsm_dev)
->
-> could clarify that each get returns a new context even on a same device.
->
-> s/viommu_tsm_dev/tsm_dev/. It's just a parameter to be matched against.
->
->>  {
->> -	struct pci_tsm_pf0 *tsm_pf0;
->> -	struct pci_tdi *tdi;
->> -
->> -	if (!kvm)
->> -		return -EINVAL;
->> +	struct pci_tsm_context *context;
->> +	struct pci_tsm_pf0 *pf0;
->> 
->>  	guard(rwsem_read)(&pci_tsm_rwsem);
->> +	if (!pdev->tsm || !is_link_tsm(pdev->tsm->tsm_dev))
->> +		return ERR_PTR(-EOPNOTSUPP);
->> +	/*
->> +	 * The vdevice can use a different PCI function from VIOMMU_ALLOC.
->> The
->> +	 * module pin keeps the vIOMMU's TSM registered, but does not
->> freeze this
->> +	 * function's link. Match its current TSM before pinning the link below.
->> +	 */
->
-> this is the example needing a rewrite...
->
+Hum, by default tracefs is root only. 
 
-I'll simplify this and document the vIOMMU tsm_dev reference in the CCA
-code.
+And even if made accessible to other users: 
 
-	/* The device must be connected to the TSM requested by the caller. */
-	if (pdev->tsm->tsm_dev != tsm_dev)
-		return ERR_PTR(-EXDEV);
+  1. The life span of a trace instance is not tied to the caller.
+  2. The ring buffer is shared by multiple users.
 
->
->> +	if (pdev->tsm->tsm_dev != viommu_tsm_dev)
->> +		return ERR_PTR(-EXDEV);
->> 
->> -	if (!pdev->tsm)
->> -		return -EINVAL;
->> +	pf0 = to_pci_tsm_pf0(pdev->tsm);
->> +	if (!pf0)
->> +		return ERR_PTR(-ENXIO);
->
-> No need to check the return error as other places do?
+Overall I am not convinced charging the creator makes much sense.
 
-I didn't quite follow this feedback. Are you asking why we check for
-!pf0 here but not in other paths? If so, I think we can drop this check
-as well, since a valid pdev->tsm should imply a valid pf0.
+Eventually a few allocations for iterators could be GFP_ACCOUNT.
 
--aneesh
+-- 
+Vincent
+
+> diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+> index e8c4efa8107b..04b60b9cc4f5 100644
+> --- a/kernel/trace/trace.c
+> +++ b/kernel/trace/trace.c
+> @@ -8693,11 +8693,11 @@ trace_array_create_systems(const char *name, const char *systems,
+>  	int ret;
+>  
+>  	ret = -ENOMEM;
+> -	tr = kzalloc_obj(*tr);
+> +	tr = kzalloc_obj(*tr, GFP_KERNEL_ACCOUNT);
+>  	if (!tr)
+>  		return ERR_PTR(ret);
+>  
+> -	tr->name = kstrdup(name, GFP_KERNEL);
+> +	tr->name = kstrdup(name, GFP_KERNEL_ACCOUNT);
+>  	if (!tr->name)
+>  		goto out_free_tr;
+>  
+> @@ -8708,7 +8708,7 @@ trace_array_create_systems(const char *name, const char *systems,
+>  		goto out_free_tr;
+>  
+>  	if (systems) {
+> -		tr->system_names = kstrdup_const(systems, GFP_KERNEL);
+> +		tr->system_names = kstrdup_const(systems, GFP_KERNEL_ACCOUNT);
+>  		if (!tr->system_names)
+>  			goto out_free_tr;
+>  	}
+> -- 
+> 2.43.0
+> 
