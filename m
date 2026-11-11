@@ -1,84 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794423575;
-	b=CUZzaETzSbrGBhw+QG923jJo1e8rwJH8t1x+LqDw5yeR3ugiQUknfOPO3LfFWIZAJkpf
-	 Ji0aAri7GztVKlUuiC6aUrtfFHtfWUYfZ7/flYluh+TCA6qn7ywyaZDidq2QF/DUB8jMX
-	 euDqzH8MaJfTolTjQSBOg8hYuGwPIAMS8bjAYlmbzYyzwjNBg01/qARZid7l1PVK0Sion
-	 l/PmZRyT55PxP+c1sbyzQ3VSAFO4lNIB4WZjtOEzFhGO0WeJsUaq6RnzukPt8lbbQXN63
-	 m7OWBJ7AYMHWEBYxNqxjSVd57uj2r6ZRpbD1n5XG0w4fq+0sZSjtyfrHBxQsVj+tx8w==
+	t=1794423576;
+	b=Efb0ZEkGWsWSTNkyfyaOMYplZ35c9MSOUhk+t7a+/I/par6V0Lv2EY4nRqFRp5sDPyAz
+	 gZixzbOnGF9jqf46uXbnX2iSFTdae45IVpDjWyITAg6b11S7+nrtSwRKnhRSj6Ga4sma5
+	 WikCohiGattOoUJSLvp/hk63GmYqlrhaCb4bRkk/LnOVqw+zz7kVvkvGEU1Q7jvXILrVY
+	 F8MNFXE2bwREK9tNNyVfrbFZLZ105wlWQVXnjzDhkZc1OMdrYGA1Z2xJMMHkUslnjaHb5
+	 rXZU6kIqg7svhSoa/WOQAJfUuz1dcyoUZSEqbN0LUwKeixV+hSxQ3MZIeeTClxxvJOw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794423575;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794423576;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding;
-	bh=bNaWmjzZL0cMs+uJYhUIAi6U7mf0NFDrLgrotrfyBqc=;
-	b=SP1tVWLaaVI7d6S5zxaU+Qmr7EXqBAK3qEHjlOi2SNUZtQDrEEDvXEjCX12ha4kO8BPb
-	 lKT/FbWrBD8tYcdgKWvMUhM54kY5okXd6jVBVFL+98kSKEnyFwIzyfOypyhyTygrjL4fz
-	 g8Px0egcD7PAVYeVauJcNRNKOMP89hb4EM/oaxH61Fozd3XqmLgxncZcALpyCM6jqjpLR
-	 kndXWj0GttY+/mWr5yDl8W9tbLqH+hyB0sHiAHdn1655Nsb26LzsRoKTI7ZARrkzkgRBA
-	 ukEed+BycP5NGov87KttQUlVcnm0ljsOc4Xo1LtSAslh2sMq50c8JNbKI8cZG4Xk/Zg==
+	bh=0+phg1j19BXrf86wyrJWSlSmJGcdhYdq8codoDOSGqo=;
+	b=AViD0vWpkbxL/GaqZ7tQNoiiT8qDUNk/N0//Avmfuwnyo0BLEjid0zGo72obAelM9IVA
+	 gJQZQeiwjbilL9p7+AMc92Jr7qQ8xx5euEnI629GJLf/MuZXYmM5rtwOVGYza7LuKZs5r
+	 Es9mTrbfPRY3vmRxa6WPQeg8Ou9viVjcp7upxkKhSGH3Cm88TrqsL1hHqVdhdvI+iQsVX
+	 w3TuQ3yclmWPPAIbFW38TwVXk97JnLfwpwnUQBmbhrENue6PHBApcwlNlI7pSIBR0++f5
+	 PSAhBG3IQkFOpW8K76oJogV55geIivID3JpAnjMovCSblFWvLWMFDzaYRW5ilY1Pvmw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=et63g1tc;
-	arc=none smtp.remote-ip=209.85.128.43
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="0Ma/p2AS";
+	arc=none smtp.remote-ip=209.85.128.54
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A1AD606A336
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 18:59:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8A1AD606A336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76141606A886
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 18:59:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 76141606A886
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=et63g1tc
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4a59100fa83so30719635e9.0
-        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 10:59:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0Ma/p2AS
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4a20a37703bso25328615e9.1
+        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 10:59:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794423574; x=1795028374; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1794423575; x=1795028375; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=bNaWmjzZL0cMs+uJYhUIAi6U7mf0NFDrLgrotrfyBqc=;
-        b=et63g1tcGTBPDxhqXlT1zGoLvJ1UwvztC2hpMmGxIz60pf5k1vVp7OWY4UCR0+kO1+
-         ufin6jv4U5GSuDfw0eh0LCqM/7ym2sXP1Jw4NfAxHElfz6kW1J04Fi1en51T2ZRqXD+m
-         kO+JHinZZ0j8MxYXkWjFEScuvOTD4U0eyIVolvaXiqPCkkHFMd0+ewuEdrRJbOCdHOES
-         e6d3iEjwpWzd0i+DIV178a2HZs3MnCoWt0ToRvryAIam15PksWTbuFHQ9PfL35M57wE0
-         j7ddBs0KIvlxuwdQPKsb8tTvAePme8ui/+lZm5k8awXTrAwvIbrD4D0F3ODg8PgYjM9q
-         gV6w==
+        bh=0+phg1j19BXrf86wyrJWSlSmJGcdhYdq8codoDOSGqo=;
+        b=0Ma/p2ASJKaeQtAK73mN9sTnMeq4gSzkJ3HC5DHMgQX8fRdKRPrByBJrvBVscKjNv2
+         9mFtOdK5YgH2Wosz88SECsrnh1Dug9fwxpiysGetwupJev5rwn+W7JYkD5AgSbn9CLDO
+         tS3DIMM3CPhbDC/H+L4VVOlxtNE429+Bb/ICTXvhpRcx7dVIbevwofJnyIpGyCtvFRad
+         Y/xcbk5QMiJL2rdbNDg0klnVGi+tnm7tLFx0I5m1x0AvAhVFLcpzxzXhYYyWwjoNagNc
+         y5/qLtMd5bgr1NfA6fXj6shBDXvXsdU7FTBxTcoClXaX75GJh8l+4qsGhgEr6jXmAcfw
+         h2Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794423574; x=1795028374;
+        d=1e100.net; s=20260707; t=1794423575; x=1795028375;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=bNaWmjzZL0cMs+uJYhUIAi6U7mf0NFDrLgrotrfyBqc=;
-        b=uIWikDAOb1pC0w5/ySKK1qFS4n3BLznko+h+qLcYgm/XbBaiuUbTPILwfF8a11lH2Q
-         e7KqwvVaLXsIWQagXdfGSvjQOnknG590j0Jv4dxj5dyl8Pii8Rq+/1Vsz868knRKOYxf
-         WUCDNhsh6hjaZDq+ke5Cj8Q2o3WgG9To4A1MjIt6yqHWTjqg9opPG5sbLpiC1KjN85YN
-         pVIW2Qs8VGT3m3eD8msAOujL2uyOrdBJcQ19M+4LsasmVmwqZfisy24n8379pMpKFNxM
-         q3gidhqpFrzT2LlY7xZuFHtuQAGKVg9o1munTriAh+LTqxNeZ5EeBN4xPSxofoYEYWev
-         fZNQ==
-X-Forwarded-Encrypted: i=1; AL+hErGrcHx1F2gfXFQZ8ZUbAk/jw1xp262kvRc/4oa0tPSbxT3unjpwy+BiYz7gd6SyzoNBgCU6eA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/UCbygCk5iQsQmLcg++siYKqGRK1s2gtw0S6Xk/E/h8rFsCckU
-	Q71YZ8qe9g8Md4l6l9+7xSUeK36+iJMPLF++gKlMN07QpCA8/JfOHwC1
-X-Gm-Gg: AYBFou0pG/52jO7wzum1LAM6wJ7LGwcgT910KT8SUHGtb5abqliLo6ZKiI9aj1kzUuy
-	rsG+I0/PB6KHeTAMdSChQxaicylk1zGZIc0zK3uU+szgZkQV5AXTOvG+Lpx2oj9KVPChfWBtSw0
-	Uky+DkhvCIKVYLZ0nb9rAyoM3KdblEHHlNVNVxX3bqgVLzDIv0lhe/cx9efHN78S1FOaF2hnPCh
-	OpStEfslCyer/p2Z0nSNitbpfyMqY7c6/lWJDCb7tgVpOib0braVmMbbEGT09V85P+HATlmHK5t
-	QAS5oA7MaXWoAx0T4u0g0eDYF/NXM4kVNHMmByTmiodIjrcKrCwhkwyl2AswsBWVEtkAHNzMgmH
-	MzKwyIaI+xQ1+3Uuj1XucvVwI2YFfNnbDh4fIKrbjZrAqpDlULOv3rAhnJ9f+6wCx80u1KJyI4F
-	uLrg1i66SzmmWsQjLg/XBJyjOBlDtPvHH6gqsw5C1Ew8G4shiravFS8MOaO+cM1gdShytWviRGk
-	qXgajf4R1kNP+KdW/DTvgc7PLBw/D0JTqEG4GiW5OjoIhKpWKcokbX5g4WT+YfYc3hYeE4SaGb6
-	rzCeM+S3tGjsUMg6+vGcE1HFTvZ0CLemIwaczPgSFdU04OVpoQlIdLMGFykJgi5yJ8baynEnPhd
-	0gyVsa1DSR+5PZfV/xx6HOTV8g6lj9g/J/Tz9a/p+bvAWjVwNZTcHif8oRZlTXvg4KA==
-X-Received: by 2002:a05:600c:81c5:b0:4a4:3a2d:15da with SMTP id 5b1f17b1804b1-4ba093753a6mr56638565e9.15.1794423573896;
-        Wed, 11 Nov 2026 10:59:33 -0800 (PST)
+        bh=0+phg1j19BXrf86wyrJWSlSmJGcdhYdq8codoDOSGqo=;
+        b=vUpefPNjLM3w4tkM1QxaGhDFdAq1cKWk1D2tpiIbwGQ7BnuB9ACd+aG+MrS3tXq36u
+         m7ixpPVlZGWLk7gmRmdhyjbUshAnKHG5dQcABJm+iKsderuqwz+5Ni7R7dNWMfKUee5G
+         BSVzS2CdYueEFUAd/8xwsqnSKSDICT/Kan0E+M1lYKW0BIWx/xCyMq743aTqAQPO/oBm
+         MU88NYYY4oxHhocf598P5Z13kbLta56Wh0lh916f3aOlzXfE6jKM5IPeMxmQttzwqjY7
+         uI5HA9Ctu1MImXFjOskbefnHHGBXfd8frvbQQYfLrCyJjZLWESivJl7c9AQuM8t/mK2m
+         oGMA==
+X-Forwarded-Encrypted: i=1; AL+hErG1+1xbKXYRqOI9bcrf9ZdCIiQ0DVQNZSfCRGYR8/w6fFb8TLuEmkXxpXgJznTWgdSFmKThCg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+mjaMRUFjftlcfi8D+s0KVlPcnPEZzS07s/Ek4N9f3sj7qUPxq
+	UqH2oz/eo10qA0RnX6GoP/jagTEZnSZ+AMyKN+N99kg1Q3qOBu4gRnuP
+X-Gm-Gg: AYBFou2m38mP/cIsoW13wfhp7f3b8It6p+MhVJeBjCFQyoDAs54nTF2WU7I439xlLTs
+	wx2/Dcd5f2HdToCaR6I9U6HJPoPLXGxgWcFwBORXtwl6SGDCqE1MLsq+EWgH9OSjjIBMFIhn8A4
+	Vkf6VG6FXPr32UBrYu/D37AeIdYump/daxk78vd6aRr9/X0JztD63DATOhgANMujoQ0/TTrP+bG
+	J+nEt4oYIab7i4I+9E88QQm6pBnuvcDelA4fmhAwggjvIpvj6OnFfo/mldLQSp9gwgwzb+UjCYK
+	CLFlUeE9E0by+YlsVd713tIN5HRPhKA+qu0HdSaqO3sSURQs/0NOeE/0j0rRwVtTjrfsCATDSWP
+	QFkRCiy02iropHEk+K85S+tqlNFNRly7cxlblR9ruXnTwuNryqOgKayQNtw7MIDUMt8lB7mmIls
+	17QeVwghSXDhPxlafvPWM5L8H7q0tceLBHHGIYpifThL2pOlSaQAyG2/AyB87LDn6+ZSa7LMfrH
+	GIUuwxutFNn1nSj4bHOnz6pqa4c5d26VHIKX/CwJXDMcFAcP/twkBPAB+V1m/xWEyw36SWuI6E0
+	UgR+tms/rcBhFLEJ5ovua88uj92jvLdxBxIV062vL+JAWB2+gOKIiRFULf+1FMcPubbxoIRrlfP
+	Mwm/7+3Dk3wIUkDnLGK3ceJ1mLbEWQYFCQaQ9oF4hADMeqQf7M/Rm+++hQqvuOIxIqg==
+X-Received: by 2002:a05:600c:1986:b0:4a1:80d8:aed5 with SMTP id 5b1f17b1804b1-4ba0935d295mr60270305e9.6.1794423574703;
+        Wed, 11 Nov 2026 10:59:34 -0800 (PST)
 Received: from dev-dsk-fgriffo-1c-93421965.eu-west-1.amazon.com (54-240-197-234.amazon.com. [54.240.197.234])
         by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e265a0csm9161435e9.9.2026.11.11.10.59.33
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 Nov 2026 10:59:33 -0800 (PST)
+        Wed, 11 Nov 2026 10:59:34 -0800 (PST)
 From: Fred Griffoul <griffoul@gmail.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -92,9 +92,9 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	linux-kernel@vger.kernel.org,
 	linux-kselftest@vger.kernel.org,
 	nh-open-source@amazon.com
-Subject: [PATCH 2/3] iommufd: Use iommu_unmap_sparse() to unpin domain pages
-Date: Wed, 11 Nov 2026 18:59:30 +0000
-Message-ID: <20261111185931.94882-3-griffoul@gmail.com>
+Subject: [PATCH 3/3] iommufd/selftest: Unmap areas that start inside a CPU page
+Date: Wed, 11 Nov 2026 18:59:31 +0000
+Message-ID: <20261111185931.94882-4-griffoul@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20261111185931.94882-1-griffoul@gmail.com>
 References: <20261111185931.94882-1-griffoul@gmail.com>
@@ -111,162 +111,62 @@ Content-Transfer-Encoding: 8bit
 
 From: Fred Griffoul <fgriffo@amazon.co.uk>
 
-iommufd keeps no copy of the PFNs it pinned for an area, so
-iopt_area_unpin_domain() reads each one back from the domain with
-iommu_iova_to_phys(), one CPU page at a time, and then unmaps the range
-in a second walk. With 4 KiB pages, a 1 GiB IOPTE costs 262144 lookups
-before the unmap starts.
+On iommupt domains, iopt_area_unpin_domain() unmaps and collects PFNs
+in one walk, which needs IOPTEs that line up with CPU pages. The mock
+domain maps 2 KiB per IOPTE, so IOMMU_IOAS_MAP_FIXED_IOVA can place a
+user address with a 2 KiB offset at a CPU page aligned IOVA. Such an
+area must take the per-page read-back instead, or one of its pages
+stays pinned.
 
-Call iommu_unmap_sparse() instead, and add the PFNs of each IOPTE it
-removes to the pfn_batch, so one walk both unmaps the range and
-collects the PFNs. The last IOPTE removed can hold pages beyond the
-ones this pass unpins. The loop already handles that case: it keeps
-those pages in the batch and carries them over to the next pass.
-
-Domains that do not use iommupt keep the per-page read-back, and so do
-areas whose IOVA or memory starts or ends inside a CPU page. Such areas
-exist only when the smallest page size of every domain in the IOAS is
-smaller than PAGE_SIZE.
+Map a buffer at each MOCK_PAGE_SIZE offset in its first CPU page,
+unmap it, and check that no page is left pinned.
 
 Signed-off-by: Fred Griffoul <fgriffo@amazon.co.uk>
 ---
- drivers/iommu/iommufd/pages.c | 98 +++++++++++++++++++++++++++++++++--
- 1 file changed, 93 insertions(+), 5 deletions(-)
+ tools/testing/selftests/iommu/iommufd.c | 30 +++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
-index 2f6153108add7..c2a04a8845cc8 100644
---- a/drivers/iommu/iommufd/pages.c
-+++ b/drivers/iommu/iommufd/pages.c
-@@ -468,6 +468,79 @@ static void batch_from_domain_continue(struct pfn_batch *batch,
- 	batch->array_size = array_size;
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index ca2b35e9d443a..14c8a12a3bc17 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -1890,6 +1890,36 @@ TEST_F(iommufd_mock_domain, all_aligns)
+ 		close(mfd);
  }
  
-+struct batch_unmap {
-+	struct pfn_batch *batch;
-+	unsigned long first_iova;
-+	unsigned long last_iova;
-+};
-+
-+static bool batch_record_unmapped(void *priv, unsigned long iova,
-+				  phys_addr_t paddr, size_t size)
-+{
-+	struct batch_unmap *unmap = priv;
-+	unsigned long first, end;
-+
-+	/* Stop after the entry that holds the last page to unpin */
-+	if (iova > unmap->last_iova)
-+		return false;
-+
-+	/*
-+	 * Count each CPU page once, from the entry that holds its first byte.
-+	 * Pages before first_iova belong to an access and stay pinned.
-+	 */
-+	first = max(ALIGN(iova, PAGE_SIZE), unmap->first_iova);
-+	end = ALIGN(iova + size, PAGE_SIZE);
-+	if (first >= end)
-+		return true;
-+	return batch_add_pfn_num(unmap->batch, PHYS_PFN(paddr + (first - iova)),
-+				 (end - first) >> PAGE_SHIFT, BATCH_CPU_MEMORY);
-+}
-+
-+/* True if the area starts and ends on CPU pages, in both IOVA and memory */
-+static bool iopt_area_pages_aligned(struct iopt_area *area)
-+{
-+	return !area->page_offset &&
-+	       PAGE_ALIGNED(iopt_area_iova(area) |
-+			    (iopt_area_last_iova(area) + 1));
-+}
-+
 +/*
-+ * Unmap from unmapped_index and collect the PFNs from start_index on into the
-+ * batch in one walk. The walk ends after the entry that holds last_index, which
-+ * can reach past last_index, or before an entry the batch has no room for.
-+ * Returns the number of indexes unmapped, 0 if the caller has to read the PFNs
-+ * back with batch_from_domain() instead.
++ * Map memory that starts inside a CPU page at a CPU page aligned IOVA, which
++ * the mock domain's MOCK_PAGE_SIZE IOPTEs allow, then unmap it and check that
++ * every page is unpinned.
 + */
-+static unsigned long batch_unmap_from_domain(struct pfn_batch *batch,
-+					     struct iommu_domain *domain,
-+					     struct iopt_area *area,
-+					     unsigned long unmapped_index,
-+					     unsigned long start_index,
-+					     unsigned long last_index,
-+					     unsigned long real_last_index)
++TEST_F(iommufd_mock_domain, fixed_iova_offsets)
 +{
-+	unsigned long start = max(start_index, unmapped_index);
-+	struct batch_unmap unmap = {
-+		.batch = batch,
-+		.first_iova = iopt_area_index_to_iova(area, start),
-+		.last_iova = iopt_area_index_to_iova_last(area, last_index),
-+	};
-+	unsigned long iova = iopt_area_index_to_iova(area, unmapped_index);
-+	unsigned long last =
-+		iopt_area_index_to_iova_last(area, real_last_index);
-+	size_t unmapped;
++	size_t buf_size = self->mmap_buf_size;
++	size_t length = buf_size - PAGE_SIZE;
++	unsigned int start;
++	uint8_t *buf;
 +
-+	if (!iopt_area_pages_aligned(area))
-+		return 0;
++	if (variant->file)
++		SKIP(return, "Skipping file variant, the test maps anonymous memory");
 +
-+	/* The range runs to the area end, batch_record_unmapped() stops it */
-+	unmapped = iommu_unmap_sparse(domain, iova, last - iova + 1,
-+				      batch_record_unmapped, &unmap);
-+	if (IS_ENABLED(CONFIG_IOMMUFD_TEST))
-+		WARN_ON(unmapped % PAGE_SIZE);
-+	return unmapped >> PAGE_SHIFT;
++	buf = mmap(0, buf_size, PROT_READ | PROT_WRITE, self->mmap_flags, -1,
++		   0);
++	ASSERT_NE(MAP_FAILED, buf);
++	check_refs(buf, buf_size, 0);
++
++	for (start = 0; start < PAGE_SIZE; start += MOCK_PAGE_SIZE) {
++		test_ioctl_ioas_map_fixed(buf + start, length,
++					  MOCK_APERTURE_START);
++		check_mock_iova(buf + start, MOCK_APERTURE_START, length);
++		test_ioctl_ioas_unmap(MOCK_APERTURE_START, length);
++		check_refs(buf, buf_size, 0);
++	}
++	ASSERT_EQ(0, munmap(buf, buf_size));
 +}
 +
- /*
-  * This is part of the VFIO compatibility support for VFIO_TYPE1_IOMMU. That
-  * mode permits splitting a mapped area up, and then one of the splits is
-@@ -1689,19 +1762,33 @@ iopt_area_unpin_domain(struct pfn_batch *batch, struct iopt_area *area,
+ TEST_F(iommufd_mock_domain, all_aligns_copy)
  {
- 	while (start_index <= last_index) {
- 		unsigned long batch_last_index;
-+		bool read_ahead = true;
- 
- 		if (*unmapped_end_index <= last_index) {
- 			unsigned long start =
- 				max(start_index, *unmapped_end_index);
-+			unsigned long unmapped, batch_end;
- 
- 			if (IS_ENABLED(CONFIG_IOMMUFD_TEST) &&
- 			    batch->total_pfns)
- 				WARN_ON(*unmapped_end_index -
- 						batch->total_pfns !=
- 					start_index);
--			batch_from_domain(batch, domain, area, start,
--					  last_index);
--			batch_last_index = start_index + batch->total_pfns - 1;
-+			unmapped = batch_unmap_from_domain(batch, domain, area,
-+							   *unmapped_end_index,
-+							   start_index,
-+							   last_index,
-+							   real_last_index);
-+			if (unmapped) {
-+				/* The walk ended on an entry boundary */
-+				*unmapped_end_index += unmapped;
-+				read_ahead = false;
-+			} else {
-+				batch_from_domain(batch, domain, area, start,
-+						  last_index);
-+			}
-+			batch_end = start_index + batch->total_pfns - 1;
-+			batch_last_index = min(batch_end, last_index);
- 		} else {
- 			batch_last_index = last_index;
- 		}
-@@ -1716,9 +1803,10 @@ iopt_area_unpin_domain(struct pfn_batch *batch, struct iopt_area *area,
- 		 * middle of the domains we need to keep reading pfns until we
- 		 * find a cut point to do the unmap. The pfns we read are
- 		 * carried over and either skipped or integrated into the next
--		 * batch.
-+		 * batch. batch_unmap_from_domain() already ends on an entry
-+		 * boundary and needs no read-ahead.
- 		 */
--		if (batch_last_index == last_index &&
-+		if (read_ahead && batch_last_index == last_index &&
- 		    last_index != real_last_index)
- 			batch_from_domain_continue(batch, domain, area,
- 						   last_index + 1,
+ 	size_t test_step = variant->hugepages ? self->mmap_buf_size / 16 :
 -- 
 2.47.3
 
