@@ -1,47 +1,83 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794413996;
-	b=A9eXsQw9jlt+g6/2zKg2dOFekQAV2++eFJSz2yuXe0mxR36n3Ju2T8Pgimiz93c6aiL1
-	 dwlEAqi/96RSlwyY1mMgJqEvwSTmZIBNXZXTfABkINZsin+jGsF/hbNkZz+4+vI2a8jBd
-	 06QhYgq6iN6H/007pzEIYPvmhDFJ/NrlbM01RMxcC+wDaZJs1XtpDWurJA8r5b8BRaoaq
-	 JaqWlh42+blNLrWuJclq0vNsK/uaM/UXfWaoGh23nQ8tZimIZzASGBNR6nO4rgzOZDfRU
-	 mZC0d6NomN9QZ4cSrALvYmwXRjarhEYi/H9vvRcxGVfDzOXuWZ05elZax5T9nGS/adQ==
+	t=1794414289;
+	b=LguS4L/C5WSxHQjcBqGo47W5NSmzeRI1P3BCgi3C2eeZ6iMmMeFo28eXou67k3GzSq9j
+	 tmWFyvZDqg6scEI5wOVI6cahnP7NNxy8xz7AFg2C1FElLOnE+0xW7wBV2fbLW4BT4jpOz
+	 QvEzbYIhdcddXctMi8zo6e8y81dWYb5/HorlZP90ilV3OapfgN6tPfy8g6ALATtkCurPF
+	 amnz/YBg/BgCxyjeRKBdlVuV1zg1/YV8f5tLNJUbNcFXyutt0A2WZjgkM0RbE/fjXuO18
+	 nEDNBOQhzTk3pOPjljQuTbnMNcRaHUrAriNkw1SqRBKvlk2kndz4xxGbaSDkC5VZwoA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794413996;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=44DfV0bL6HPYkPp0Ecl6fd5OA178t8+1rLF7XPfImuM=;
-	b=iqHFfnppYEr8UmR86oWuyGpxRmMkg7hWyhlLE3nj/559CC72cheXk2UFEh3q+/kYCBqn
-	 noQtyAXvfvOIWO1QTpXsFIAg49dq02PMm3ixiA7JmJDxn5+T7Foz1L1pD8OdQKcwDovdL
-	 o3/Id4Cdgb9f40CFLid+6Xlkz7weQb3Tv03GnCoNoi5j7RxYkNIcTS4QApCKEO4WNSBi2
-	 yRC6tqIB1zutpz6quhQbUA0VXFfMWRb8uqsy5UoBHWZpaoRKbrR9QhiL1HmCNIKSORo5x
-	 EhliGhNepCntpvFZIFVsc+Iai9Y+bLXAT/VIIlRAWog/zVIF+3lKV1VDAgs0bfRumOQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794414289;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=OjsO/ys/ad/piKfPb2QV+3VHWakKPWNbmqHXdLgFmLM=;
+	b=TAlS4BP/FKQP+gSjTm29iRsk7DiwNwl5D1+h9STkgob+ee9toFgU5LIB1knHw4PsPrMl
+	 FiLeRcYVu++M+ymVz7dDdgET99m7+L1jhnc7WhSezh/Z5CUXVgWE5NRMF0QyMrlKT3hIG
+	 biOdlgP2uKu7b2WyoYbUlnKh+RRzk4OT1rUT+xTMwyqRJMkpS53vaf7RnKO7A1O/iqpwd
+	 dxq7KA4AN6ETKch/7NYaTBcvYcHTxtgzm/WLB+mWrXMGb8paX0U839xi63uaou/NjC1z9
+	 c8Na9m93aFLKogZmlmTT03Nv8tvIyPblZPMLvTcYDWh3nsgXPs4oFzgcry77/mq7CbA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mfdm5A7h;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D9R3bt8I;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5C9760A2631;
-	Wed, 11 Nov 2026 16:19:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B006606A324;
+	Wed, 11 Nov 2026 16:24:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=mfdm5A7h
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44471F00A06;
-	Wed, 11 Nov 2026 16:19:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=D9R3bt8I
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3EF51F00A05;
+	Wed, 11 Nov 2026 16:24:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794413996;
-	bh=44DfV0bL6HPYkPp0Ecl6fd5OA178t8+1rLF7XPfImuM=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=mfdm5A7hJTz/OLhPk7a/A6xxBAGkInGaTECbYA1+4nh07RbKH900tnmi/4RGbIRze
-	 iOqonH/hUJCLKzPRxGnckwjZQi9VpFEIn1+jSeUhDjcV8MClHAlsn0kY9E+KAfGAzb
-	 N3mPrnbA3YMG97uzBLieJxwqLGOXD0lOgtbsWBBs+5yuwJiG9Abvc3XKEx22ZFiz7r
-	 AIbq7i8/af2+L+3TxRiRhKDDhRhWqmNkTegI13JN4WyQfR3yifYZVfMF3nq1pSkK9J
-	 WioB1LY0L1Yeih4BdPe5FErB6zDv5M58dlQZqOxH9otBIt0RHP6ZJcxgPxwuztRr35
-	 eYQ/g+U6y+pEA==
-Message-ID: <c724e3c3-7acc-4c3e-8410-426c7ca6cf19@kernel.org>
-Date: Wed, 11 Nov 2026 17:19:50 +0100
+	s=k20260515; t=1794414289;
+	bh=OjsO/ys/ad/piKfPb2QV+3VHWakKPWNbmqHXdLgFmLM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=D9R3bt8IMlmKCvjpNgRgysgj8jSfI13uGBJNO/Gz7VeltIMkdQtWk7rTUbnL+hSKP
+	 yw446sJdMUoV63jGJWmoLXrdm1ER/+eKiRPANmy8/oVLQQIHoxwQk4097d3gNv9RJN
+	 kPGqM0dBGFUDQwamvB9bgVigbzfmgo2HAwhl9bStSXnCsJPMOT+eRSw3AJbBNyDXRc
+	 8huwLIoPnXNi9b/6DowoNI3g+6A06OaWwxGcf8k5/7RxZl9Us0FcZzRZntTE+c9g0z
+	 h2AVNfplmuc6dmcm7rJeSw5ylRkvChp9Qq2tOVm3kX5/SsTu3LunBg9pwpNtEIVykp
+	 A7793R8G+sFfg==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Cc: Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH v8 10/15] PCI/TSM: Add vIOMMU-bound device contexts
+In-Reply-To: <SA2PR11MB4844957D715CDA1CC614E8C38C762@SA2PR11MB4844.namprd11.prod.outlook.com>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-11-aneesh.kumar@kernel.org>
+ <SA2PR11MB4844957D715CDA1CC614E8C38C762@SA2PR11MB4844.namprd11.prod.outlook.com>
+Date: Wed, 11 Nov 2026 21:54:32 +0530
+Message-ID: <yq5a4idntjy7.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -51,75 +87,80 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 03/15] dt-bindings: nvme: apple: Add apple,t8142-nvme-ans2
- compatible
-To: Yureka <yureka@cyberchaos.dev>, Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Janne Grunau <j@jannau.net>, Neal Gompa <neal@gompa.dev>,
- Jassi Brar <jassisinghbrar@gmail.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev
-References: <20261106-apple-dts-m4-m5-nvme-v1-0-22f4827b4ece@cyberchaos.dev>
- <20261106-apple-dts-m4-m5-nvme-v1-3-22f4827b4ece@cyberchaos.dev>
- <20261111-comical-quaint-turaco-e8c1c2@quoll>
- <fb7b4ede-a325-4c5e-a37d-fe3cc7a92f87@cyberchaos.dev>
-Content-Language: en-US
-From: Sven Peter <sven@kernel.org>
-In-Reply-To: <fb7b4ede-a325-4c5e-a37d-fe3cc7a92f87@cyberchaos.dev>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
+"Tian, Kevin" <kevin.tian@intel.com> writes:
 
+>> From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> Sent: Thursday, November 5, 2026 12:16 AM
+>> 
+>> An IOMMUFD vDEVICE represents a physical device within a virtual IOMMU
+>> (vIOMMU) for a guest. It must use the same TEE Security Manager as its
+>> vIOMMU. Pinning the vIOMMU backend keeps its tsm_dev registered, but
+>> does not preserve the connection between the physical function 0 (PF0)
+>> PCI device and that TSM.
+>> 
+>> Add a per-vDEVICE PCI TSM context. Verify that the PCI device and the
+>> vIOMMU use the same tsm_dev, and account active contexts on PF0. Reject
+>> disconnect with -EBUSY until all dependent vDEVICEs release their
+>> contexts.
+>
+> We really don't need so many vIOMMU/vDEVICE notations here,
+> especially in following code/comments. It's just about a tsm context
+> which holds the pf0 from disconnected. Then let's describe/code it
+> from that angle.
+>
+>> +struct pci_tsm_context *pci_tsm_context_get(struct pci_dev *pdev,
+>> +					    struct tsm_dev *viommu_tsm_dev)
+>
+> could clarify that each get returns a new context even on a same device.
+>
+> s/viommu_tsm_dev/tsm_dev/. It's just a parameter to be matched against.
+>
+>>  {
+>> -	struct pci_tsm_pf0 *tsm_pf0;
+>> -	struct pci_tdi *tdi;
+>> -
+>> -	if (!kvm)
+>> -		return -EINVAL;
+>> +	struct pci_tsm_context *context;
+>> +	struct pci_tsm_pf0 *pf0;
+>> 
+>>  	guard(rwsem_read)(&pci_tsm_rwsem);
+>> +	if (!pdev->tsm || !is_link_tsm(pdev->tsm->tsm_dev))
+>> +		return ERR_PTR(-EOPNOTSUPP);
+>> +	/*
+>> +	 * The vdevice can use a different PCI function from VIOMMU_ALLOC.
+>> The
+>> +	 * module pin keeps the vIOMMU's TSM registered, but does not
+>> freeze this
+>> +	 * function's link. Match its current TSM before pinning the link below.
+>> +	 */
+>
+> this is the example needing a rewrite...
+>
 
-On 11/11/26 15:32, Yureka wrote:
-> On 11/11/26 13:46, Krzysztof Kozlowski wrote:
->> On Fri, Nov 06, 2026 at 10:04:12PM +0100, Yureka Lilian wrote:
->>> "apple,t8142-nvme-ans2" on the Apple M5 SoC is compatible with
->>> "apple,t8132-nvme-ans2" so add its per-SoC compatible.
->>>
->>> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
->>> ---
->>>   Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml | 1 +
->>>   1 file changed, 1 insertion(+)
->>>
->> Squash all nvmem patches. Don't add compatibles one by one.
->>
->> Best regards,
->> Krzysztof
->
->
-> Hello Krzysztof,
->
->
-> (replying to all three of your emails here)
->
-> thanks for your feedback! I did run `b4 prep --check` and `make 
-> dtbs_check` before sending and it passed without warnings on all 15 
-> patches of this series. I will now also run `checkpatch.pl --strict` 
-> as you suggested.
->
-> For v2, I will make one commit per type of dt-binding, so 
-> "dt-bindings: nvme: apple: Add t6040,t8140,t8142", and then "mailbox: 
-> apple,mailbox: Add t8132,t6040,t8140,t8142", etc., ok or do you have 
-> another suggested grouping?
->
-> > Please stop inflating this. You are only making it difficult to 
-> review your work.
->
-> It would be appreciated if you can tell me clearly what is expected, 
-> as this statement is not actually telling me what is inflated / wrong.
-I think you already understood it: Just one commit for SART, one for 
-NVMe, and one for the mailbox bindings that each add all new compatibles 
-at once because the hardware (likely) didn't change and there's no need 
-to explain what's different from the previous generation.
+I'll simplify this and document the vIOMMU tsm_dev reference in the CCA
+code.
 
+	/* The device must be connected to the TSM requested by the caller. */
+	if (pdev->tsm->tsm_dev != tsm_dev)
+		return ERR_PTR(-EXDEV);
 
-Thanks,
+>
+>> +	if (pdev->tsm->tsm_dev != viommu_tsm_dev)
+>> +		return ERR_PTR(-EXDEV);
+>> 
+>> -	if (!pdev->tsm)
+>> -		return -EINVAL;
+>> +	pf0 = to_pci_tsm_pf0(pdev->tsm);
+>> +	if (!pf0)
+>> +		return ERR_PTR(-ENXIO);
+>
+> No need to check the return error as other places do?
 
-Sven
+I didn't quite follow this feedback. Are you asking why we check for
+!pf0 here but not in other paths? If so, I think we can drop this check
+as well, since a valid pdev->tsm should imply a valid pf0.
 
-
+-aneesh
