@@ -1,74 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.69
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.71
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794395320;
-	b=XadeSnw8zunsUgX1ILrtU5VKLaB35edxm0XlwX2nGzlIMq/DOy21YfTF4IHkQ8bvnp37
-	 hgoU8OD1Oi0qan+FWSK7OOva0KkT4as4wX8cUm5+uDrNxYr2NNSCliWsbilBwLLH7/vRN
-	 pXyNYcaWX1n6a0SYCNz72/nMSkTPLt9U+/1IeO9wg8T79Amo30qaFBjNvwoAzqN0NYq+M
-	 gjrAWTJLLBzHl/xVHd0EtK/ovx5rRXBKHNpYkaq878PehhcejB82YsHP4aTucjidbXxQ/
-	 4bNlVvc6YnfE7CXm/Hm+/NCI1eT6LJXAgyb8krbY+7KVWsMBQzKHzLASnttiI+ipswQ==
+	t=1794395321;
+	b=f3GdcmrqOFPAd2p12VAS3Dkf/uQDXThXIniWfLAKdcJsQX3stOcZdqf39BeZ69k4a3lf
+	 LpeqlRhAv5dE/sKcYMzv2kSGlwXaGg0CtoFNea1BDP9Pd8nkUPTISdStwojlbOLq5CYeG
+	 6e92sbViDa331UvxEKEKG6/JfN2HTc/ZORul4zxM+KSlDAqMW62Tb06K9omGZKvqh0WKQ
+	 uNNZ4D3gARLx9VU8+dGB+L48y23E52S6yVhBUxUDNbn8UkIZTCSrRYk+cuU9pZPU4FhAz
+	 tu4yEuEYMENA7DMsUEGzmuQrLryhDAPUNUVXFsEjf6tYQdftiTXjq7m4QqeSBCIE9Xg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794395320;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794395321;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
 	 Mime-Version:References:X-Mailer:Message-ID:Subject:From:To:Cc:
 	 Content-Type;
-	bh=laMYshk/IpUNzmzRXv9ltVTwYgsKb/6KaHojH4Vu9w4=;
-	b=OdPmngddfc1pk95I+9j+vOcaKidZ4zg4EtnVbDb7hwGA6eKc7fU4jv6/15cpKpeC2MEO
-	 QsZM5wAjvFE25XW4UyvMM680TcTU6hckJ34NYCPJmDA5cBp4VHRz8HMD48/xnJ0wkgdf2
-	 cJ9ZvXz01cOUu7WfF4iQqbxCxKd38fIHp/Pq3C0lRzXuGPy72A+2C/oT46g4dWuGWBp4O
-	 5JpAxzyn1g+4pdO95URSeMKCp0G/kG8t9iaSgDmbi/B6a5YwTj3hQXQ7hhBxP+AFXgZWH
-	 S4FOfjKfUWlIoCVaN2t4PtX0vngRs4RL7qBCMx4ReEwWNesyFGqtNPWOMozQjg/dlWQ==
+	bh=k28NXrt+XbqyfRaacENrrFfeZjq4XEJuuf/YvC8HY10=;
+	b=1LvoqyOSaSgcXI87rl56LiU3ECBbBtWTdVE2LSO798FtPoA9Ju7bj5CzytEzv92wibn2
+	 6EgeV3yFdOYjI0MS4YT31YUEYfN/IvS2405Pc65k6xL2azgMGEhk/UKBHbtLNKgYNiXeA
+	 1FWODLv1HlwEHSZudZ+JJgDebV0BgEry5PIWQiNn/0mXT8HPEhuRRWSiiq2nwugHjCqnT
+	 cAwEztWVV2NUJXpvSF2C158CjWw0PcaHz89CL0fP2KbuiureVZCAYE6gbRKwUsVm/+Ceu
+	 En6R7EXdmGb3Gn+h1JtVfyR2fjxh1OD6YVHl1RnsayxQ5mvpuucdJBIipo1XhlpbGeA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=flex--vdonnefort.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=ZNy0CfRd;
-	arc=none smtp.remote-ip=209.85.128.69
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com [209.85.128.69])
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=QP2qFY5I;
+	arc=none smtp.remote-ip=209.85.218.71
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8286B60A5BEB
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 11:08:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8286B60A5BEB
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFB060A6F45
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 11:08:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AFB060A6F45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--vdonnefort.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=ZNy0CfRd
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-4ba078abd78so6913585e9.1
-        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 03:08:40 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=QP2qFY5I
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-c4d4d132bbeso351135366b.0
+        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 03:08:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794395319; x=1795000119; darn=lists.linux.dev;
+        d=google.com; s=20260707; t=1794395320; x=1795000120; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=laMYshk/IpUNzmzRXv9ltVTwYgsKb/6KaHojH4Vu9w4=;
-        b=ZNy0CfRdHj2je0sC61qQR9/qvp9CJvxwUAI+dSbfICIKtd66uqd1vsDokbRn0GbLzF
-         +w0KvwNIgHw+/I2pIKyDAZXAAiKfMKsvGS9M1svqF4IzQiLkgi/IQz5FU+LRSYVp/0UL
-         efuRd4UlcI22dj302V53quRGujGF9qfP+Esg9SPsy1+Y/ackhgfNEQ8TZ/0Vxe43+9/z
-         uURv5MAaT0epJNdVi/QkZjfHxdDfBCRbpDLVGOD1eflV+tc8CHrm/IMY0fWLwfyHKCOE
-         sWZgu854091R3pFQc15rioDRH7h4rKhwUv0daiv3S6VEz2piNQqqwszxK2tW5RGur9VS
-         o6OQ==
+        bh=k28NXrt+XbqyfRaacENrrFfeZjq4XEJuuf/YvC8HY10=;
+        b=QP2qFY5ImQNvahvYhN/U9kRUVqYMWXWhsCmJ2OYKoulzVMgBTezxZgBwyaSeApTYnQ
+         VH5Pkmjy0tO5pPDFGkIhqd0Tbr+wIuPsSvQZynhoY2n/jYzt+SKSsLUHskHr+iJo8m9j
+         1kDWWiKRN4osNhW59bc3LEtfNFecr4sOkwRZ+FljElVm3jnd6mJh6mN/zVtx/zzhZySc
+         1riuUnLQZ+6sQ7vaSo6MmuDvXr3rNpVECNabLISTytVFfyBvrL4olYCwcr0zJJIZm0oF
+         itPCgR6tEP+iF8Awdq7gnHoRKuMfbjpjT4vV7818ySS20RFTYP0MGI/bjjeG6vEnEmHX
+         AiJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794395319; x=1795000119;
+        d=1e100.net; s=20260707; t=1794395320; x=1795000120;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=laMYshk/IpUNzmzRXv9ltVTwYgsKb/6KaHojH4Vu9w4=;
-        b=k0oncqPNip2vUecNPpkl5NUQ8KKHoyDhHbHLrhNzfLFbtwCmvk2Gpeyh93gVLykx3p
-         QTXq7NRI/SZYJelUA3tmfdJR7OZgy+OlH1AibNnDFjC+Jw7yZE9xfQVffuLNMBQOjGqK
-         PZHGsrGPXkRSXy7TaEhWDs/HzJag6OzTJUn/PlFzYWtjGNA107JltJoj+LwrzG5kz/SL
-         8AzLxRslhDfn1x6A6090ApDXgAkXzttnYkB5Vxox6zs7/tSaI6H0P++UwE6iIO+wA6Uo
-         ZxT1tHbDTjY671/Mnj8XEBVdGlpd7qGbPS/ZajwHVBnuwPC3I9cPyX4H54c2QtX+dM73
-         clxQ==
-X-Forwarded-Encrypted: i=1; AL+hErHGNWNwX2ime3uxuxtrsbaU3mVFtMUhMXCkII8YH6fVQ76qDb0UhvmDxWOpqNZCgjUHiD2LUw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/ZBh/29Hx+mpmewZ3pQ77sBMG9y+iS1iY0HLE7nkOSFwTCLazK
-	gwm+qro5E1fi8w5iPIGAgA6m2ApUGBaQVHKgH8qc15YB3ySon/G04PrlJOuQasvPDV/bxOYmjhM
-	z8hvbHocXZZMbFtO7+jQWXA==
-X-Received: from wmbgx4.prod.google.com ([2002:a05:600c:8584:b0:4a1:cf4b:72c2])
+        bh=k28NXrt+XbqyfRaacENrrFfeZjq4XEJuuf/YvC8HY10=;
+        b=QmkDqyuvdj11BynZxwtgNOmgOB9J06Gfe84pbZ9LhmqeP7p1gz4tDnymbMZX2PTkTh
+         2W+U4VZBTquWx4OsDI4G0iAR+dOiuqJM4WXdf4AON1o5akNwgJMXgX+89gOe4YvC+gRE
+         BZk/8rup3V4KhcQ9FHWTtNwkvYGWRvg61jmMIHPvY4mdTBxTtlY32ImBUc9rx8Z7t50N
+         xfEPZ76czRyF7pLWLL/VZqlGpwi4g71agjXi11p7dtDcsx+P3dzgit7kBLz95G2T5azG
+         ZrC0zvpecSFaFcrcZ9bzTy7ly8F2FLs48od8tIIcf7UvVJDaNPIWilIfglAgl4mZOwWP
+         5N3A==
+X-Forwarded-Encrypted: i=1; AL+hErHXM7XB/sIWplWqFdzrtBMXa0pXJt8o4kp0TnNbUlE154b0Wo+OxCsgh75p7cG9s0oUvnmtFQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/QIP47kbXNLGntjEXNJ2JyI49aUCqAKW+D9gnActELscjloyfV
+	awDuywPw+MO/Tq0EsNPaqM26IsyJmlwM/U70dc+qiNIElSWHMpFzlMlB5ejEYzKskNdiAyLtmwm
+	gv/bql0dwdaEhzpxslEkJjA==
+X-Received: from ejxe15.prod.google.com ([2002:a17:906:81cf:b0:c3f:75a:4837])
  (user=vdonnefort job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:1912:b0:4b2:612d:908c with SMTP id 5b1f17b1804b1-4ba093d13f1mr36933745e9.34.1794395318533;
- Wed, 11 Nov 2026 03:08:38 -0800 (PST)
-Date: Wed, 11 Nov 2026 11:07:36 +0000
+ 2002:a17:907:2d2c:b0:c50:6222:7b1c with SMTP id a640c23a62f3a-c5066cc68c2mr168857666b.23.1794395319574;
+ Wed, 11 Nov 2026 03:08:39 -0800 (PST)
+Date: Wed, 11 Nov 2026 11:07:37 +0000
 In-Reply-To: <20261111110738.872947-1-vdonnefort@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,8 +81,8 @@ Precedence: list
 Mime-Version: 1.0
 References: <20261111110738.872947-1-vdonnefort@google.com>
 X-Mailer: git-send-email 2.56.0.542.g3ef89b7020-goog
-Message-ID: <20261111110738.872947-7-vdonnefort@google.com>
-Subject: [PATCH v3 6/8] arm64: Introduce direct_map_is_ptemap()
+Message-ID: <20261111110738.872947-8-vdonnefort@google.com>
+Subject: [PATCH v3 7/8] arm64: Add support for lendable-dma-pool
 From: Vincent Donnefort <vdonnefort@google.com>
 To: catalin.marinas@arm.com, will@kernel.org, rppt@kernel.org, 
 	akpm@linux-foundation.org, m.szyprowski@samsung.com, jenswi@kernel.org, 
@@ -96,115 +96,241 @@ Cc: mark.rutland@arm.com, robin.murphy@arm.com, hch@lst.de,
 	Vincent Donnefort <vdonnefort@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Regions marked with MEMBLOCK_PTEMAP are mapped at page granularity so
-their direct mapping can be modified without splitting blocks at
-runtime. Introduce direct_map_is_ptemap(), which walks the kernel page
-tables during init to verify that every page in a range is backed by a
-present non-contiguous PTE.
+Even when the linear map uses block mappings, regions marked with
+MEMBLOCK_PTEMAP are mapped at page granularity and can be modified at
+runtime. Implement the architecture hooks for the lendable-dma-pool to
+force the last-level mappings, validate ranges and update the direct
+mapping.
 
 Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
 ---
- arch/arm64/include/asm/set_memory.h |  4 ++
- arch/arm64/mm/pageattr.c            | 65 +++++++++++++++++++++++++++++
- 2 files changed, 69 insertions(+)
+ arch/arm64/Kconfig                  |  1 +
+ arch/arm64/include/asm/set_memory.h |  2 +
+ arch/arm64/mm/dma-mapping.c         | 71 +++++++++++++++++++++++++++++
+ arch/arm64/mm/pageattr.c            | 56 ++++++++++++++++++-----
+ 4 files changed, 118 insertions(+), 12 deletions(-)
 
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 1075bc661833..34fe7a7eea82 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -117,6 +117,7 @@ config ARM64
+ 	select DYNAMIC_FTRACE if FUNCTION_TRACER
+ 	select DMA_BOUNCE_UNALIGNED_KMALLOC
+ 	select DMA_DIRECT_REMAP
++	select DMA_LENDABLE if DMA_CMA
+ 	select EDAC_SUPPORT
+ 	select FRAME_POINTER
+ 	select FUNCTION_ALIGNMENT_4B
 diff --git a/arch/arm64/include/asm/set_memory.h b/arch/arm64/include/asm/set_memory.h
-index 0091ba12200e..b6ec938703d6 100644
+index b6ec938703d6..ec8bbb59e51f 100644
 --- a/arch/arm64/include/asm/set_memory.h
 +++ b/arch/arm64/include/asm/set_memory.h
-@@ -3,12 +3,16 @@
- #ifndef _ASM_ARM64_SET_MEMORY_H
- #define _ASM_ARM64_SET_MEMORY_H
- 
-+#include <linux/init.h>
-+
- #include <asm/mem_encrypt.h>
- #include <asm-generic/set_memory.h>
- 
- bool can_set_direct_map(void);
- #define can_set_direct_map can_set_direct_map
- 
-+bool __init direct_map_is_ptemap(struct page *page, unsigned int numpages);
-+
- int set_memory_valid(unsigned long addr, int numpages, int enable);
+@@ -17,6 +17,8 @@ int set_memory_valid(unsigned long addr, int numpages, int enable);
  
  int set_direct_map_invalid_noflush(struct page *page, unsigned int numpages);
-diff --git a/arch/arm64/mm/pageattr.c b/arch/arm64/mm/pageattr.c
-index de7bf95003ea..c7662fd2fcb2 100644
---- a/arch/arm64/mm/pageattr.c
-+++ b/arch/arm64/mm/pageattr.c
-@@ -102,6 +102,71 @@ bool can_set_direct_map(void)
- 		arm64_kfence_can_set_direct_map() || is_realm_world();
+ int set_direct_map_default_noflush(struct page *page, unsigned int numpages);
++int __set_direct_map_invalid_noflush(struct page *page, unsigned int numpages);
++int __set_direct_map_default_noflush(struct page *page, unsigned int numpages);
+ bool kernel_page_present(struct page *page);
+ 
+ int set_memory_encrypted(unsigned long addr, int numpages);
+diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-mapping.c
+index 7f6f2f40dba2..c324e9826ce2 100644
+--- a/arch/arm64/mm/dma-mapping.c
++++ b/arch/arm64/mm/dma-mapping.c
+@@ -7,9 +7,13 @@
+ #include <linux/gfp.h>
+ #include <linux/cache.h>
+ #include <linux/dma-map-ops.h>
++#include <linux/kernel.h>
++#include <linux/memblock.h>
+ #include <xen/xen.h>
+ 
+ #include <asm/cacheflush.h>
++#include <asm/set_memory.h>
++#include <asm/tlbflush.h>
+ #include <asm/xen/xen-ops.h>
+ 
+ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+@@ -38,6 +42,73 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
+ 	dcache_clean_poc(start, start + size);
  }
  
-+static int __init direct_map_is_ptemap_pud_entry(pud_t *pud, unsigned long addr,
-+						 unsigned long next,
-+						 struct mm_walk *walk)
++#ifdef CONFIG_DMA_LENDABLE
++int __init arch_dma_mark_lendable(phys_addr_t base, phys_addr_t size)
 +{
-+	if (pud_leaf(pudp_get(pud)))
++	if (!PAGE_ALIGNED(base | size))
 +		return -EINVAL;
 +
-+	return 0;
++	return memblock_mark_ptemap(base, size);
 +}
 +
-+static int __init direct_map_is_ptemap_pmd_entry(pmd_t *pmd, unsigned long addr,
-+						 unsigned long next,
-+						 struct mm_walk *walk)
++bool __init arch_dma_is_lendable(struct page *page, unsigned int nr_pages)
 +{
-+	if (pmd_leaf(pmdp_get(pmd)))
-+		return -EINVAL;
-+
-+	return 0;
++	return direct_map_is_ptemap(page, nr_pages);
 +}
 +
-+static int __init direct_map_is_ptemap_pte_entry(pte_t *pte, unsigned long addr,
-+						 unsigned long next,
-+						 struct mm_walk *walk)
++int arch_dma_zap_direct_map(struct page *page, unsigned int nr_pages,
++			    bool from_lendable)
 +{
-+	pte_t val = __ptep_get(pte);
-+
-+	if (!pte_present(val) || pte_cont(val))
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static int __init direct_map_is_ptemap_pte_hole(unsigned long addr,
-+						unsigned long next, int depth,
-+						struct mm_walk *walk)
-+{
-+	return -EINVAL;
-+}
-+
-+static const struct mm_walk_ops direct_map_is_ptemap_ops __initconst = {
-+	.pud_entry	= direct_map_is_ptemap_pud_entry,
-+	.pmd_entry	= direct_map_is_ptemap_pmd_entry,
-+	.pte_entry	= direct_map_is_ptemap_pte_entry,
-+	.pte_hole	= direct_map_is_ptemap_pte_hole,
-+};
-+
-+bool __init direct_map_is_ptemap(struct page *page, unsigned int numpages)
-+{
-+	unsigned long addr, end;
-+
-+	if (!pfn_valid(page_to_pfn(page)) || !numpages)
-+		return false;
-+
-+	addr = (unsigned long)page_address(page);
-+	end = addr + PAGE_SIZE * numpages;
++	unsigned long start = (unsigned long)page_address(page);
++	unsigned long end = start + ((unsigned long)nr_pages << PAGE_SHIFT);
++	int ret;
 +
 +	/*
-+	 * Called during boot before runtime linear-map splitting, so it is
-+	 * safe to walk the page-table lockless.
++	 * arch_dma_prep_coherent() only cleans as normal DMA buffers retain a
++	 * cacheable linear-map alias. Since that alias is being removed here,
++	 * also invalidate to make sure they can't be evicted later on while the
++	 * memory is secured.
 +	 */
-+	return !walk_kernel_page_table_range_lockless(addr, end,
-+						      &direct_map_is_ptemap_ops,
-+						      NULL, NULL);
++	dcache_clean_inval_poc(start, end);
++
++	if (from_lendable) {
++		ret = __set_direct_map_invalid_noflush(page, nr_pages);
++	} else {
++		might_sleep();
++		ret = set_direct_map_invalid_noflush(page, nr_pages);
++	}
++
++	if (ret)
++		return ret;
++
++	flush_tlb_kernel_range(start, end);
++
++	return 0;
 +}
 +
- static int update_range_prot(unsigned long start, unsigned long size,
- 			     pgprot_t set_mask, pgprot_t clear_mask)
++int arch_dma_restore_direct_map(struct page *page, unsigned int nr_pages,
++				bool from_lendable)
++{
++	unsigned long start = (unsigned long)page_address(page);
++	unsigned long end = start + ((unsigned long)nr_pages << PAGE_SHIFT);
++	int ret;
++
++	if (from_lendable) {
++		ret = __set_direct_map_default_noflush(page, nr_pages);
++	} else {
++		might_sleep();
++		ret = set_direct_map_default_noflush(page, nr_pages);
++	}
++
++	if (ret)
++		return ret;
++
++	dcache_inval_poc(start, end);
++
++	return 0;
++}
++#endif /* CONFIG_DMA_LENDABLE */
++
+ void arch_setup_dma_ops(struct device *dev, bool coherent)
  {
+ 	int cls = cache_line_size_of_cpu();
+diff --git a/arch/arm64/mm/pageattr.c b/arch/arm64/mm/pageattr.c
+index c7662fd2fcb2..467a420af0f5 100644
+--- a/arch/arm64/mm/pageattr.c
++++ b/arch/arm64/mm/pageattr.c
+@@ -167,8 +167,8 @@ bool __init direct_map_is_ptemap(struct page *page, unsigned int numpages)
+ 						      NULL, NULL);
+ }
+ 
+-static int update_range_prot(unsigned long start, unsigned long size,
+-			     pgprot_t set_mask, pgprot_t clear_mask)
++static int __update_range_prot(unsigned long start, unsigned long size,
++			       pgprot_t set_mask, pgprot_t clear_mask)
+ {
+ 	struct page_change_data data;
+ 	int ret;
+@@ -176,10 +176,6 @@ static int update_range_prot(unsigned long start, unsigned long size,
+ 	data.set_mask = set_mask;
+ 	data.clear_mask = clear_mask;
+ 
+-	ret = split_kernel_leaf_mapping(start, start + size);
+-	if (WARN_ON_ONCE(ret))
+-		return ret;
+-
+ 	lazy_mmu_mode_enable();
+ 
+ 	/*
+@@ -194,6 +190,18 @@ static int update_range_prot(unsigned long start, unsigned long size,
+ 	return ret;
+ }
+ 
++static int update_range_prot(unsigned long start, unsigned long size,
++			     pgprot_t set_mask, pgprot_t clear_mask)
++{
++	int ret;
++
++	ret = split_kernel_leaf_mapping(start, start + size);
++	if (WARN_ON_ONCE(ret))
++		return ret;
++
++	return __update_range_prot(start, size, set_mask, clear_mask);
++}
++
+ static int __change_memory_common(unsigned long start, unsigned long size,
+ 				  pgprot_t set_mask, pgprot_t clear_mask)
+ {
+@@ -316,28 +324,52 @@ int set_memory_valid(unsigned long addr, int numpages, int enable)
+ 					__pgprot(PTE_PRESENT_VALID_KERNEL));
+ }
+ 
+-int set_direct_map_invalid_noflush(struct page *page, unsigned int numpages)
++int __set_direct_map_invalid_noflush(struct page *page, unsigned int numpages)
+ {
+ 	pgprot_t clear_mask = __pgprot(PTE_PRESENT_VALID_KERNEL);
+ 	pgprot_t set_mask = __pgprot(PTE_PRESENT_INVALID);
+ 
++	return __update_range_prot((unsigned long)page_address(page),
++				   PAGE_SIZE * numpages, set_mask, clear_mask);
++}
++
++int set_direct_map_invalid_noflush(struct page *page, unsigned int numpages)
++{
++	unsigned long start = (unsigned long)page_address(page);
++	int ret;
++
+ 	if (!can_set_direct_map())
+ 		return 0;
+ 
+-	return update_range_prot((unsigned long)page_address(page),
+-				 PAGE_SIZE * numpages, set_mask, clear_mask);
++	ret = split_kernel_leaf_mapping(start, start + PAGE_SIZE * numpages);
++	if (WARN_ON_ONCE(ret))
++		return ret;
++
++	return __set_direct_map_invalid_noflush(page, numpages);
+ }
+ 
+-int set_direct_map_default_noflush(struct page *page, unsigned int numpages)
++int __set_direct_map_default_noflush(struct page *page, unsigned int numpages)
+ {
+ 	pgprot_t set_mask = __pgprot(PTE_PRESENT_VALID_KERNEL | PTE_WRITE);
+ 	pgprot_t clear_mask = __pgprot(PTE_PRESENT_INVALID | PTE_RDONLY);
+ 
++	return __update_range_prot((unsigned long)page_address(page),
++				   PAGE_SIZE * numpages, set_mask, clear_mask);
++}
++
++int set_direct_map_default_noflush(struct page *page, unsigned int numpages)
++{
++	unsigned long start = (unsigned long)page_address(page);
++	int ret;
++
+ 	if (!can_set_direct_map())
+ 		return 0;
+ 
+-	return update_range_prot((unsigned long)page_address(page),
+-				 PAGE_SIZE * numpages, set_mask, clear_mask);
++	ret = split_kernel_leaf_mapping(start, start + PAGE_SIZE * numpages);
++	if (WARN_ON_ONCE(ret))
++		return ret;
++
++	return __set_direct_map_default_noflush(page, numpages);
+ }
+ 
+ int __set_memory_enc_dec(unsigned long addr, int numpages, bool encrypt)
 -- 
 2.56.0.542.g3ef89b7020-goog
 
