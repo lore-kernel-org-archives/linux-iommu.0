@@ -1,70 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=44.245.243.92
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.155.198.111
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794437041;
-	b=VGYokJZjO7giPqYg5LRFsTCkQeHxShxWiRePbZdw5kvN3PVxGPfbIz+xzvIGzU1ruEMA
-	 XQeJNz05xn0gAMA7qUyjGxye5r5WppK/p4M3OaWoYh/d+uBA889zkFfaNTx5b/7mZwjDf
-	 km6I1DRYJXR4VSi4dwU2aqcG+g9qD2I6IUykrXZDjYR0M04bhRLKAhhVhMRYaHMfEEdtw
-	 XxW4rtv5TU/vRfKoX06odT/B5k+Re9713L/Ymrh3yw5aCgcLdXgp4X1Cio6phW0v/bD6b
-	 fyEsxRQhlfUjEIZdtvruVHFj7gLbPQM/k33OT9KMpO0qmEcJyxoaD1mB/xjeYO/JLpg==
+	t=1794437046;
+	b=oyp2nx6mnogZ9qw8dFMr9ljb6mJEIlKHVMMQ1TRH97wpWYsILQrFza+a2rDl1t3uMqNJ
+	 DV4VbLzvcBgJuH88AIiP96jGgvj19e1iu5I2a8tFUAvOV2k411ClbP4CFajlaqagcRqjG
+	 knX4Za5TJTs6s8DZ7aD6mLj6Pz4bXbDe2MI2b8vKyuPU29MtJA+pzkhnd1kE66Wt0q+25
+	 XEzADNtnmtjslYWijR4k1zhTL6KnOO5/qYs/PMQUgN1wk+pSxZxXq3meicUkG/17QlkjE
+	 bEm9j5T8Vs10WsU5spxvSnjkMKY+3GhRhIoATxrGOm/+Z1eZEKyUf+k6djqhdGTfDTg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794437041;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794437046;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
 	 X-ClientProxiedBy;
-	bh=/cubfczVbnds8zP6oBlBcF/d/gJnxIwiCtc/tjxJ3hg=;
-	b=mjSfKITmffEo4mtkNWu8qkyyqUFbwvkziz5U+zg8SZWmxjxkgteO2bZXhOwFcxDXrbW7
-	 piX2IHWCgwg/o2NwMtOTOYUE9N1L7C2EDKLnnPiL1rkhCvZVYEQRRG7zIh8qgV2gDY5nf
-	 4/3swUtLagZ/cYFJ1m5F08ZMHM9no1qoq+QB8b3MF95FKwsJtLxIeIPqduzhjhW28ea8O
-	 NRTvblK33l+Yx3zsvy0KcJtg6YQbmHErH3SqxA3Mvc1ebGRc5juySmuh+QOqN5j5lFEji
-	 tH6WfixVvx++PnA2XoSjECOy+p0aDnH/7mV2YN6pcapz4NTMMe2Mksmxp8tyIqNEYfg==
+	bh=n8Lc096Oet60aLIy9WQq9zqJJ5FyBT2YGQ3yPJEK0l0=;
+	b=R9wt3ZXleRJ9F0Czxvxfh/6dJIOr0LXRboV0fNpgX+xhJhOIWEdZ08gHF4AFW0bwf6PG
+	 A3zyck3lv7o2aI6JguxZlJY6xrUcFZFVZUakxwBlHshRrZw0C64U9WsR6oUzDuhC503QG
+	 b1RFWUJDNLFHR6bxIBRyPeUiiGASV7P+RZcqvf3qgc8SYUY59rCZiW+yHZvo2/7CYgaoP
+	 kgdkFrkI8sv7r2QpGSqVDPA4r2v6LkmKrMEF/fKi89hkqT78ZQ4lTrefAFK9PbUe54kx8
+	 qyP4UaC6crs0x+589xngjw9nPumvJoY4t1L8sg/4tFu2NBcAFDJ2ukYUrk7+lL4soGg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amazon.com;
 	spf=pass smtp.mailfrom=amazon.de;
-	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=SEN7fy4P;
-	arc=none smtp.remote-ip=44.245.243.92
-Received: from pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com [44.245.243.92])
+	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=FqjYNpOT;
+	arc=none smtp.remote-ip=35.155.198.111
+Received: from pdx-out-009.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-009.esa.us-west-2.outbound.mail-perimeter.amazon.com [35.155.198.111])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB1ED606A88E
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 22:44:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB1ED606A88E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0649606E2AA
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 22:44:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F0649606E2AA
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=SEN7fy4P
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=FqjYNpOT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
-  t=1794437040; x=1825973040;
+  t=1794437045; x=1825973045;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/cubfczVbnds8zP6oBlBcF/d/gJnxIwiCtc/tjxJ3hg=;
-  b=SEN7fy4PxilCkY4ssqTeFhZupHE38N6uKUuX87CLPSOatoB+uOo68OVO
-   U4FLvAwS2BqFDY+NcE8UGzwlrqGZLpBHj1/wCuFs0N6pdHAOXES+c7iSP
-   Glna8goNnp7M5MjaVzw4sj4HrimUh20i5roOuUR/hXlsfBx0r4blK5LZn
-   gFWt/iv+Kd+j/GXD3aJUu/ASJly4ukval6yKmG9fUmjVcrGxvmG3sJtby
-   J/MIvU9K+u3W8mXym2H8ErPXqWegbQ5qzH+A4NyeaEhiNgCvS1jUVO1jr
-   t/5fAXzASFnYh+FHXfkmTlbD9trIq4n4N0ZK3sWI3SrUeRwYdyRLNHP3G
-   w==;
-X-CSE-ConnectionGUID: Gf4HsB+bSWOzc6SvbrsRUg==
-X-CSE-MsgGUID: jkQaPXZKQimMvYS+zj3VKg==
+  bh=n8Lc096Oet60aLIy9WQq9zqJJ5FyBT2YGQ3yPJEK0l0=;
+  b=FqjYNpOTd7CFPCQaBtNf114crFd0a+5ghR2QgL8SC7gtp07cT4ReAXqu
+   8IsqF651vclQew0ltmDc/C+pXu99B/7m9JJ4iAypif50ljJnLIQibu2Ra
+   49BazQRjS/npCNsR/E92NaxK2azE5fGTre8aDNScMYxYVBnxCJ8cjPgTN
+   oVvgxRJrlK3JhXgBElC8ou47eY6+taUYLbIB69rSsHJihHehuFtybR4ew
+   u5PKKg7uJhucvLSCNg8MNU1rrIeaOd7yEiChYriSg9D4hyI1mznMpmFaM
+   ANUM+X+043TMW3kiW3YGoU3O3CLXII/kjLQHIGXiFQbCm6UYAsBpBHoOd
+   g==;
+X-CSE-ConnectionGUID: rACnm+byQrOkc60LRF9f1A==
+X-CSE-MsgGUID: pcu9icCDSn+CECtcsEsy0A==
 X-IronPort-AV: E=Sophos;i="6.27,208,1787011200"; 
-   d="scan'208";a="33273359"
-Received: from ip-10-5-6-203.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.6.203])
-  by internal-pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 22:44:00 +0000
-Received: from EX19MTAUWC001.ant.amazon.com [205.251.233.53:26886]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.55.227:2525] with esmtp (Farcaster)
- id d4e831c7-c721-48fe-8fab-b625d5675814; Wed, 11 Nov 2026 22:44:00 +0000 (UTC)
-X-Farcaster-Flow-ID: d4e831c7-c721-48fe-8fab-b625d5675814
+   d="scan'208";a="33662130"
+Received: from ip-10-5-0-115.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.0.115])
+  by internal-pdx-out-009.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 22:44:03 +0000
+Received: from EX19MTAUWB002.ant.amazon.com [205.251.233.48:30654]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.5.141:2525] with esmtp (Farcaster)
+ id 57fa7319-0315-4534-8905-169f80a09adf; Wed, 11 Nov 2026 22:44:02 +0000 (UTC)
+X-Farcaster-Flow-ID: 57fa7319-0315-4534-8905-169f80a09adf
 Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 22:43:59 +0000
+ Wed, 11 Nov 2026 22:44:02 +0000
 Received: from ip-10-253-83-51.amazon.com (172.19.99.218) by
  EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 22:43:57 +0000
+ Wed, 11 Nov 2026 22:43:59 +0000
 From: Alexander Graf <graf@amazon.com>
 To: <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
 	<gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>
@@ -76,9 +76,9 @@ CC: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>, "Shuah
 	<david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
 	<nh-open-source@amazon.com>, <linux-mm@kvack.org>, Jonathan Corbet
 	<corbet@lwn.net>
-Subject: [PATCH 10/40] nitro_enclaves: Add NE_CREATE_VM2 with a launch flag word
-Date: Wed, 11 Nov 2026 22:41:55 +0000
-Message-ID: <1ef9f5e8a25e0ed11754e1def76ebd183a819c06.1794393490.git.graf@amazon.com>
+Subject: [PATCH 11/40] nitro_enclaves: Add NE_ENCLAVE_PCIE_MODE launch flag
+Date: Wed, 11 Nov 2026 22:41:56 +0000
+Message-ID: <a183902fff38e2e2aab7be409569cdfa3aee4a4a.1794393490.git.graf@amazon.com>
 X-Mailer: git-send-email 2.47.1
 In-Reply-To: <cover.1794300002.git.graf@amazon.com>
 References: <cover.1794300002.git.graf@amazon.com>
@@ -96,171 +96,145 @@ Content-Type: text/plain
 X-ClientProxiedBy: EX19D031UWA003.ant.amazon.com (10.13.139.47) To
  EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-In preparation to support Nitro Sandboxes, whose properties the
-hypervisor needs before it allocates a slot, add NE_CREATE_VM2. It takes
-a word of launch flags for the slot. The slot id comes back in the
-same struct ne_create_vm_args.
+Nitro Sandboxes give their guest virtio devices that the parent
+provides, on a PCIe bus. The hypervisor sets up that bus when it
+allocates the slot, so user space asks for it with a launch flag.
 
-No flag is defined in this patch, so any set bit fails with
--NE_ERR_INVALID_FLAG_VALUE.
+Define NE_ENCLAVE_PCIE_MODE, the first launch flag, and forward it in
+SLOT_ALLOC. struct slot_alloc_req gains a flag word, and at offset 0,
+over the unused field, a payload_version byte that tells the device to
+read it. We send version 1 when a flag is set, and the all-zero request
+of today otherwise.
+
+A device that takes launch flags publishes a vendor-specific PCI
+capability. A device that predates them ignores the flag word and
+allocates a plain slot, so refuse a launch flag with -EOPNOTSUPP on a
+device without the capability.
 
 Signed-off-by: Alexander Graf <graf@amazon.com>
 ---
- drivers/virt/nitro_enclaves/ne_misc_dev.c | 53 +++++++++++++++++++++--
- include/uapi/linux/nitro_enclaves.h       | 48 ++++++++++++++++++++
- 2 files changed, 97 insertions(+), 4 deletions(-)
+ drivers/virt/nitro_enclaves/ne_misc_dev.c | 19 ++++++++++++++++++-
+ drivers/virt/nitro_enclaves/ne_pci_dev.h  | 23 +++++++++++++++++++++--
+ include/uapi/linux/nitro_enclaves.h       | 14 ++++++++++++++
+ 3 files changed, 53 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.c b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-index 38345ad7c7985..68c497df4f14b 100644
+index 68c497df4f14b..0bf62f703806e 100644
 --- a/drivers/virt/nitro_enclaves/ne_misc_dev.c
 +++ b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-@@ -2452,6 +2452,8 @@ static const struct file_operations ne_enclave_fops = {
-  *			  enclave file descriptor to be further used for enclave
-  *			  resources handling e.g. memory regions and CPUs.
-  * @ne_pci_dev :	Private data associated with the PCI device.
-+ * @flags:		Launch-time flag word from NE_CREATE_VM2, or zero when
-+ *			the caller used the flag-less NE_CREATE_VM.
-  * @slot_uid:		User pointer to store the generated unique slot id
-  *			associated with an enclave to.
-  *
-@@ -2461,7 +2463,8 @@ static const struct file_operations ne_enclave_fops = {
-  * * Enclave fd on success.
-  * * Negative return value on failure.
-  */
--static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 __user *slot_uid)
-+static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 flags,
-+			      u64 __user *slot_uid)
- {
- 	struct ne_pci_dev_cmd_reply cmd_reply = {};
- 	int enclave_fd = -1;
-@@ -2472,6 +2475,13 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 __user *slot_ui
+@@ -2475,13 +2475,30 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 flags,
  	int rc = -EINVAL;
  	struct slot_alloc_req slot_alloc_req = {};
  
-+	if (flags) {
+-	if (flags) {
++	if (flags & ~(u64)NE_ENCLAVE_PCIE_MODE) {
+ 		dev_err_ratelimited(ne_misc_dev.this_device,
+ 				    "Unknown launch flag bit set 0x%llx\n", flags);
+ 
+ 		return -NE_ERR_INVALID_FLAG_VALUE;
+ 	}
+ 
++	/*
++	 * A device that takes launch flags publishes a vendor-specific
++	 * capability. One without it takes no launch flags and would allocate a
++	 * slot without the properties they ask for.
++	 */
++	if (flags && !pci_find_capability(ne_pci_dev->pdev, PCI_CAP_ID_VNDR)) {
 +		dev_err_ratelimited(ne_misc_dev.this_device,
-+				    "Unknown launch flag bit set 0x%llx\n", flags);
++				    "Device takes no launch flags\n");
 +
-+		return -NE_ERR_INVALID_FLAG_VALUE;
++		return -EOPNOTSUPP;
++	}
++
++	if (flags) {
++		slot_alloc_req.payload_version = 1;
++		slot_alloc_req.flags = flags;
 +	}
 +
  	mutex_lock(&ne_cpu_pool.mutex);
  
  	for (i = 0; i < ne_cpu_pool.nr_parent_vm_cores; i++)
-@@ -2626,7 +2636,44 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 		if (ne_pci_dev) {
- 			rc = mutex_lock_killable(&ne_pci_dev->enclaves_list_mutex);
- 			if (!rc) {
--				rc = ne_create_vm_ioctl(ne_pci_dev, slot_uid);
-+				rc = ne_create_vm_ioctl(ne_pci_dev, 0, slot_uid);
-+				mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
-+			}
-+		}
-+
-+		up_read(&ne_devs.lock);
-+
-+		return rc;
-+	}
-+	}
-+
-+	/* Extensible Argument ioctls */
-+	switch (NE_EA_IOCTL(cmd)) {
-+	case NE_EA_IOCTL(NE_CREATE_VM2): {
-+		struct ne_create_vm_args args;
-+		struct ne_create_vm_args __user *uargs = (void __user *)arg;
-+		unsigned int usize = _IOC_SIZE(cmd);
-+		struct ne_pci_dev *ne_pci_dev;
-+		int rc;
-+
-+		if (usize < offsetofend(struct ne_create_vm_args, slot_uid))
-+			return -EINVAL;
-+
-+		rc = copy_struct_from_user(&args, sizeof(args), uargs, usize);
-+		if (rc)
-+			return rc;
-+
-+		rc = down_read_killable(&ne_devs.lock);
-+		if (rc)
-+			return rc;
-+
-+		rc = -ENODEV;
-+		ne_pci_dev = ne_devs.ne_pci_dev;
-+		if (ne_pci_dev) {
-+			rc = mutex_lock_killable(&ne_pci_dev->enclaves_list_mutex);
-+			if (!rc) {
-+				rc = ne_create_vm_ioctl(ne_pci_dev, args.flags,
-+							&uargs->slot_uid);
- 				mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
- 			}
- 		}
-@@ -2639,8 +2686,6 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
- 	default:
- 		return -ENOTTY;
- 	}
--
--	return 0;
- }
+diff --git a/drivers/virt/nitro_enclaves/ne_pci_dev.h b/drivers/virt/nitro_enclaves/ne_pci_dev.h
+index 19e129d14a3a0..b0957e2606ec3 100644
+--- a/drivers/virt/nitro_enclaves/ne_pci_dev.h
++++ b/drivers/virt/nitro_enclaves/ne_pci_dev.h
+@@ -7,10 +7,12 @@
+ #define _NE_PCI_DEV_H_
  
- /*
+ #include <linux/atomic.h>
++#include <linux/build_bug.h>
+ #include <linux/list.h>
+ #include <linux/mutex.h>
+ #include <linux/pci.h>
+ #include <linux/pci_ids.h>
++#include <linux/stddef.h>
+ #include <linux/wait.h>
+ 
+ /**
+@@ -174,12 +176,29 @@ struct enclave_stop_req {
+ 
+ /**
+  * struct slot_alloc_req - SLOT_ALLOC request.
+- * @unused:	In order to avoid weird sizeof edge cases.
++ * @payload_version:	Wire version at offset 0. Zero is the value a driver
++ *			without launch flags leaves here, and tells the device
++ *			to disregard @reserved and @flags. 1 means @flags is
++ *			valid.
++ * @reserved:		Alignment padding between @payload_version and
++ *			@flags. Zero.
++ * @flags:		Launch flag word from NE_CREATE_VM2, valid when
++ *			@payload_version >= 1.
+  */
+ struct slot_alloc_req {
+-	u8	unused;
++	u8	payload_version;
++	u8	reserved[3];
++	u32	flags;
+ };
+ 
++/*
++ * The device picks these fields out of the payload by offset, so a change
++ * to the layout here changes the SLOT_ALLOC wire format.
++ */
++static_assert(sizeof(struct slot_alloc_req) == 8);
++static_assert(offsetof(struct slot_alloc_req, reserved) == 1);
++static_assert(offsetof(struct slot_alloc_req, flags) == 4);
++
+ /**
+  * struct slot_free_req - SLOT_FREE request.
+  * @slot_uid:	Slot unique id mapped to the slot to free.
 diff --git a/include/uapi/linux/nitro_enclaves.h b/include/uapi/linux/nitro_enclaves.h
-index 16515fe27b692..8e43be9a0a1fa 100644
+index 8e43be9a0a1fa..8ccf16e9cf5fb 100644
 --- a/include/uapi/linux/nitro_enclaves.h
 +++ b/include/uapi/linux/nitro_enclaves.h
-@@ -46,6 +46,54 @@
+@@ -46,6 +46,18 @@
   */
  #define NE_CREATE_VM			_IOR(0xAE, 0x20, __u64)
  
 +/**
-+ * struct ne_create_vm_args - NE_CREATE_VM2 argument (in / out).
-+ * @flags:	Launch-time flag word (in). Flags select properties of the
-+ *		enclave slot that the hypervisor has to know at allocation
-+ *		time. NE_ENCLAVE_DEBUG_MODE stays a start-time property and
-+ *		is rejected here.
-+ * @slot_uid:	Generated unique slot id associated with an enclave (out).
++ * DOC: NE_CREATE_VM2 launch flags
 + */
-+struct ne_create_vm_args {
-+	__u64	flags;
-+	__u64	slot_uid;
-+};
 +
 +/**
-+ * NE_CREATE_VM2 - As NE_CREATE_VM, additionally taking a launch-time flag
-+ *		   word. The flags carry properties of the slot that have to
-+ *		   be decided when the slot is allocated rather than when the
-+ *		   enclave starts.
-+ *
-+ *		   NE_CREATE_VM continues to work; calling it is equivalent
-+ *		   to calling NE_CREATE_VM2 with a zero flag word.
-+ *
-+ *		   The argument is read with copy_struct_from_user(), so a
-+ *		   caller built against a header that predates a field this
-+ *		   kernel knows leaves that field zero, and a caller that
-+ *		   sets a field this kernel does not know is refused.
-+ *
-+ * Context: Process context.
-+ * Return:
-+ * * Enclave file descriptor		- As for NE_CREATE_VM.
-+ * *  -1				- There was a failure in the ioctl logic.
-+ * On failure, errno is set to:
-+ * * ENODEV				- The NE PCI device is not available.
-+ * * EFAULT				- Argument read or write failure.
-+ * * NE_ERR_INVALID_FLAG_VALUE		- Unknown flag bit set, or
-+ *					  NE_ENCLAVE_DEBUG_MODE set.
-+ * * EINVAL				- The argument stops before @slot_uid.
-+ * * E2BIG				- The argument carries a field this kernel
-+ *					  does not know, set to a non-zero value.
-+ * * ENOMEM				- Memory allocation failure for internal
-+ *					  bookkeeping variables.
-+ * * NE_ERR_NO_CPUS_AVAIL_IN_POOL	- No NE CPU pool set / no CPUs available
-+ *					  in the pool.
-+ * * Error codes from get_unused_fd_flags() and anon_inode_getfile().
-+ * * Error codes from the NE PCI device request.
++ * NE_ENCLAVE_PCIE_MODE - Allocate a slot with a PCIe bus. The
++ *			  hypervisor selects PCIe backing for the slot at
++ *			  SLOT_ALLOC time, so a caller that wants it asks
++ *			  for it here and not at enclave start.
 + */
-+#define NE_CREATE_VM2			_IOWR(0xAE, 0x30, struct ne_create_vm_args)
++#define NE_ENCLAVE_PCIE_MODE		(1u << 6)
 +
  /**
-  * NE_ADD_VCPU - The command is used to set a vCPU for an enclave. The vCPU can
-  *		 be auto-chosen from the NE CPU pool or it can be set by the
+  * struct ne_create_vm_args - NE_CREATE_VM2 argument (in / out).
+  * @flags:	Launch-time flag word (in). Flags select properties of the
+@@ -82,6 +94,8 @@ struct ne_create_vm_args {
+  * * EFAULT				- Argument read or write failure.
+  * * NE_ERR_INVALID_FLAG_VALUE		- Unknown flag bit set, or
+  *					  NE_ENCLAVE_DEBUG_MODE set.
++ * * EOPNOTSUPP			- A launch flag is set and the NE PCI
++ *					  device takes no launch flags.
+  * * EINVAL				- The argument stops before @slot_uid.
+  * * E2BIG				- The argument carries a field this kernel
+  *					  does not know, set to a non-zero value.
 -- 
 2.47.1
 
