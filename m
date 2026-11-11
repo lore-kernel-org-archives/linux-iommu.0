@@ -1,83 +1,50 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.39.247.168
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794406428;
-	b=fRiSaX6yCgDFwvzUIl8UHi5R3EraeZxc2WqjzyLH4hZEonCByM1PeaLweXr/GtZ8dUN4
-	 hKrkW8OtpTDzkovTa1Xwbt1vbo9zfVyIEam/Xwt0jXrn+mAPjfsO1M2a02Ek1e44tYPIA
-	 XGSoBeCpIiF3Mz7jAhSZipAkUH/m8OWyapqeOLc6gfhFKKgQEvEAeXgUW9An/hjjfNzGW
-	 LimedRy7TaZJ+DPXEkuMHvfL6+8Z36SCTlY4KbkC43nucS9RpdSqx921iHQJwF6NQWslX
-	 nG5S9BY0BSAMOnq3rD/eoTpxa3SZvNl/hQylODaHm6VynXOWto4pCcW65lArk3qh9TA==
+	t=1794407585;
+	b=Cu/LbCDfKcVQzZ4w8tNQl1JijBtZL84AX2mElzBVWVvH5l2PPipaWn+0a1gr0kcVNt1/
+	 rZcckBWgfMvA5wVGpW5yz0CLBGusoCD+dOmqPFOx/5DTdcsBKS+zu1d3nAjbZa5skT4GP
+	 9OvZBLuofXLftBYkXmRESFzXpehcFilDc5io/hQcmpObTDQCB6t/iBkEYYBjiMVlx3OOS
+	 +RAXsgKwReGvnm3HZpRZLHn8ZRQ0SwdQw49suwukjmx/qiLRsh7WTggYg8TK5Hgtp70/b
+	 LJjX6y5S8eyr/fGT+rsO66KM+w6uEGOPDcYi4mtBdCispRDr/Tvm1WVlfM8HC0MSJBw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794406428;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=Hpk1hIi7XOiwEjgpy1/0/z4p3t9ooWMOkXOse5X+snU=;
-	b=h8Vvi0IYLGxGigefzGeev6QHIZvDPMP9t2naxfnMlWkZ044lFM3xYCBz81q4DBVEy6tR
-	 sV/mXHAt5dv6rhAbB5rwIMeCXEnex+DiQCTDV2cYRmsQToDhF+lPwkldJWVnMrGzA2Wgb
-	 3+pDLjKiCqaxzucINvMDKWGMZoloiVvADSMc7791x2XKMnxTd5Gq9IqZkr8MkPsLCn+9L
-	 WnYKaO9woXmy0H5D8MoZ/PTbMG9hI68Deji0HkWKZzQcDyIxEkw3C8pi/VmcssyTyuuXU
-	 A/VCct30Y/InEPL/OmcAYXPnNv3UEMW7eDMHanX0FrbIzAxeHo0gb0xm116sEWoNNnQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794407585;
+	h=DMARC-Filter:Message-ID:DKIM-Signature:Date:MIME-Version:Subject:To:
+	 Cc:References:Content-Language:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding;
+	bh=Q7nTbtg3NOHUNDWE397ThEwNuYuuiTDqnX6yT9Vqs8E=;
+	b=rMMFty+vmhxUzNiYFAQaq9l1a1/z/XRcODLI17ROmlEyY75A1Yq7TfU9a9whM/0rPVKq
+	 soPd5lS7Ny2/Uemf1cwyZtINWpHkk29W8E6HCsWDoi0nQ9awtnOce7zCkEMWX4Qyif/Dz
+	 tCbhU/xm3x/MomfWgHi/OvoVSThJRpWgPbZUY6ksclU9edbdL8DiL1W6tPymhRlCRH/FU
+	 0J8HQ12C4/NbUQ4R8rGs9LLfIPI+j+YBcwyaGH7ZboLyr7rQu/SJbvjdVocOq/9zYcx7v
+	 5yt13CKURnCfwpgf/D1JQtBww3hWmY47lvQ73gbwAkUjfnlkxnZZJzTZ7Z90sX2sYlw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ccH0Vsla;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=cyberchaos.dev;
+	spf=pass smtp.mailfrom=cyberchaos.dev;
+	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=fQ7Jo0y6;
+	arc=none smtp.remote-ip=195.39.247.168
+Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABEEA606A894;
-	Wed, 11 Nov 2026 14:13:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C10E260A260F;
+	Wed, 11 Nov 2026 14:33:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C10E260A260F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ccH0Vsla
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F9901F00A06;
-	Wed, 11 Nov 2026 14:13:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794406428;
-	bh=Hpk1hIi7XOiwEjgpy1/0/z4p3t9ooWMOkXOse5X+snU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=ccH0Vslai/XhiQzYLaY6LVV1GiPvL6PFsDomzdlhfDfdNwCtXYgpnqABTAcrKhrBt
-	 7ASdw3d34VJscDVuOV87qBfD8IYhWyBBH+EXJB/TZVl2pclmrqZ2ioEXukibOdR1Oi
-	 4eyB0BlNMC/LJesN/cGT5JGitNrbks/7p/SdrRxSzeoR0fIwnsrfLKCWTYaKFeLQXV
-	 HwuTf1P3rykgTyIee6xQM6PluUfUFx1zWEt3uX8gjwH4rSmrOb/Q6PvHVIEKlqFLDu
-	 b3sKzFRZAeBRaCmlPMqxZ09tffwA8PFWlndXfYAMEpC4AVYo7kr81WBAaU420luCvd
-	 uQanlR/g2zJEg==
-Date: Wed, 11 Nov 2026 08:13:46 -0600
-From: Rob Herring <robh@kernel.org>
-To: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-Cc: iommu@lists.linux.dev, Abhinav Kumar <abhinav.kumar@linux.dev>,
-	Simona Vetter <simona@ffwll.ch>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Airlie <airlied@gmail.com>, linux-arm-msm@vger.kernel.org,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	devicetree@vger.kernel.org,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	linaro-mm-sig@lists.linaro.org, virtualization@lists.linux.dev,
-	Jason Wang <jasowangio@gmail.com>, linux-kernel@vger.kernel.org,
-	Maxime Ripard <mripard@kernel.org>,
-	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, linux-media@vger.kernel.org,
-	Mahadevan P <mahap@oss.qualcomm.com>,
-	freedreno@lists.freedesktop.org,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Jessica Zhang <jesszhan0024@gmail.com>,
-	Flemin Jose <flemin.jose@oss.qualcomm.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	dri-devel@lists.freedesktop.org, Abel Vesa <abelvesa@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Will Deacon <will@kernel.org>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Philipp Stanner <phasta@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Konrad Dybcio <konradybcio@kernel.org>
-Subject: Re: [PATCH v2 01/23] dt-bindings: display: msm: Add Qualcomm DCP
-Message-ID: <20261111141346.GC1476246-robh@kernel.org>
-References: <20261026-jshekhar-dcp-hlos-v2-0-7cf014efdee1@oss.qualcomm.com>
- <20261026-jshekhar-dcp-hlos-v2-1-7cf014efdee1@oss.qualcomm.com>
- <179304379330.2965544.11793708430519844335.robh@kernel.org>
- <2fb9fd90-fac5-4a9e-ac7e-5dde689d8b80@oss.qualcomm.com>
+	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=fQ7Jo0y6
+Message-ID: <fb7b4ede-a325-4c5e-a37d-fe3cc7a92f87@cyberchaos.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
+	s=mail; t=1794407575;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Q7nTbtg3NOHUNDWE397ThEwNuYuuiTDqnX6yT9Vqs8E=;
+	b=fQ7Jo0y6y1TRDYwtYJgO1STJDXTDFtL/3trxMkZ0Ta6gVXwNHfIfQ/Ezhct73kXpoVFQWr
+	4m7n74TvisUz6uatQ6SYNsbV4EeQw0ifL4ObQhnQ/uKYDaJehRR+ahM1hiEeja9VNgFDeS
+	MpCJ+MZO13xY97WzfIP+bYOcF/+1tLQ=
+Date: Wed, 11 Nov 2026 15:32:51 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -87,94 +54,63 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2fb9fd90-fac5-4a9e-ac7e-5dde689d8b80@oss.qualcomm.com>
+Subject: Re: [PATCH 03/15] dt-bindings: nvme: apple: Add apple,t8142-nvme-ans2
+ compatible
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+ Yureka Lilian <yureka@cyberchaos.dev>
+Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
+ Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, iommu@lists.linux.dev
+References: <20261106-apple-dts-m4-m5-nvme-v1-0-22f4827b4ece@cyberchaos.dev>
+ <20261106-apple-dts-m4-m5-nvme-v1-3-22f4827b4ece@cyberchaos.dev>
+ <20261111-comical-quaint-turaco-e8c1c2@quoll>
+Content-Language: en-US
+From: Yureka <yureka@cyberchaos.dev>
+In-Reply-To: <20261111-comical-quaint-turaco-e8c1c2@quoll>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Nov 11, 2026 at 12:40:05PM +0530, Jayant Shekhar wrote:
-> 
-> On 27-10-2026 01:14, Rob Herring (Arm) wrote:
-> > On Mon, 26 Oct 2026 11:51:11 +0530, Jayant Shekhar wrote:
-> > > DCP platforms place the display pipeline under firmware control, so Linux
-> > > cannot discover display resources through direct register access. The DRM
-> > > driver therefore needs device-tree descriptions of the Qualcomm transport
-> > > wrapper, display topology, IOMMU contexts, and panel connections.
-> > > 
-> > > Add bindings for the Qualcomm DCP transport wrapper and VirtIO display
-> > > subsystem. Document the IPCC power-notify resources, transport and
-> > > framebuffer IOMMU contexts, firmware-visible IOVA range, INTF graph, and
-> > > DSI panel connections. The wrapper creates a standard VirtIO-MMIO child
-> > > after the IPCC power-notify sequence has completed.
-> > > 
-> > > Assisted-by: LLM
-> > > Signed-off-by: Jayant Shekhar <jayant.shekhar@oss.qualcomm.com>
-> > > ---
-> > >   .../bindings/display/msm/qcom,dcp-dsi.yaml         |  79 ++++++++++++
-> > >   .../devicetree/bindings/display/msm/qcom,dcp.yaml  | 123 +++++++++++++++++++
-> > >   .../bindings/virtio/qcom,dcp-virtio.yaml           | 132 +++++++++++++++++++++
-> > >   3 files changed, 334 insertions(+)
-> > > 
-> > My bot found errors running 'make dt_binding_check' on your patch:
-> > 
-> > yamllint warnings/errors:
-> > 
-> > dtschema/dtc warnings/errors:
-> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/virtio/qcom,dcp-virtio.yaml: iommu-ranges: multiple incompatible types: uint32-array
-> > /usr/local/lib/python3.13/dist-packages/dtschema/schemas/iommu/iommu.yaml: iommu-ranges: multiple incompatible types: uint32-matrix
-> > Could not decode node virtio@9be8000 property iommu-ranges with value b'\x00\x00\x00\x00\x84\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00\x00'
-> > 
-> > Traceback (most recent call last):
-> >    File "/usr/local/bin/dt-validate", line 8, in <module>
-> >      sys.exit(main())
-> >               ~~~~^^
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb_validate.py", line 443, in main
-> >      dtb_diagnostics = sg.check_dtb(filename)
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb_validate.py", line 331, in check_dtb
-> >      dt = self.validator.decode_dtb(f.read(), decode_errors)
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/validator.py", line 631, in decode_dtb
-> >      return [dtschema.dtb.fdt_unflatten(self, dtb)]
-> >              ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb.py", line 591, in fdt_unflatten
-> >      dt = fdt_scan_node(validator, fdt, '/', offset)
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb.py", line 320, in fdt_scan_node
-> >      node = fdt_scan_node(validator, fdt, nodename, offset)
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb.py", line 320, in fdt_scan_node
-> >      node = fdt_scan_node(validator, fdt, nodename, offset)
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb.py", line 312, in fdt_scan_node
-> >      node_dict = node_props(validator, fdt, nodename, offset)
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb.py", line 258, in node_props
-> >      props_dict[p.name] = prop_value(validator, nodename, p)
-> >                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
-> >    File "/usr/local/lib/python3.13/dist-packages/dtschema/dtb.py", line 185, in prop_value
-> >      if len(p) / type_format[fmt].size >= min_dim:
-> >                  ~~~~~~~~~~~^^^^^
-> > KeyError: 'uint32-array'
-> > 
-> > doc reference errors (make refcheckdocs):
-> > 
-> > See https://patchwork.kernel.org/project/devicetree/patch/20261026-jshekhar-dcp-hlos-v2-1-7cf014efdee1@oss.qualcomm.com
-> > 
-> > The base for the series is generally the latest rc1. A different dependency
-> > should be noted in *this* patch.
-> > 
-> > If you already ran 'make dt_binding_check' and didn't see the above
-> > error(s), then make sure 'yamllint' is installed and dt-schema is up to
-> > date:
-> > 
-> > pip3 install dtschema --upgrade
-> > 
-> > Please check and re-submit after running the above command yourself. Note
-> > that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-> > your schema. However, it must be unset to test all examples with your schema.
-> 
-> 
-> There is a dependent patch which adds iommu-ranges, I had tried with that
-> locally and it passes.
+On 11/11/26 13:46, Krzysztof Kozlowski wrote:
+> On Fri, Nov 06, 2026 at 10:04:12PM +0100, Yureka Lilian wrote:
+>> "apple,t8142-nvme-ans2" on the Apple M5 SoC is compatible with
+>> "apple,t8132-nvme-ans2" so add its per-SoC compatible.
+>>
+>> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
+>> ---
+>>   Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+> Squash all nvmem patches. Don't add compatibles one by one.
+>
+> Best regards,
+> Krzysztof
 
-Where in the patch does it say that? The maintainer applying this series 
-needs to know about the dependency, hence the report.
 
-b4 provides for ways to define the base and any dependencies. Use that 
-and then you won't get this report.
+Hello Krzysztof,
 
-Rob
+
+(replying to all three of your emails here)
+
+thanks for your feedback! I did run `b4 prep --check` and `make 
+dtbs_check` before sending and it passed without warnings on all 15 
+patches of this series. I will now also run `checkpatch.pl --strict` as 
+you suggested.
+
+For v2, I will make one commit per type of dt-binding, so "dt-bindings: 
+nvme: apple: Add t6040,t8140,t8142", and then "mailbox: apple,mailbox: 
+Add t8132,t6040,t8140,t8142", etc., ok or do you have another suggested 
+grouping?
+
+ > Please stop inflating this. You are only making it difficult to 
+review your work.
+
+It would be appreciated if you can tell me clearly what is expected, as 
+this statement is not actually telling me what is inflated / wrong.
+
+Thank you!
+
