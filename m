@@ -1,70 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.13.214.179
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.83.148.184
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794438367;
-	b=LAoZsQOvMyRCJuTPGvebW7uPT0MkewZBOH7nE2ShK37UXn6161rPq48m9CphJe56P3Sr
-	 AuY9Q94ybMirpjDbIV12zCO+jMfyoVXyqP9f3ErBsw+5MXuHLoMl6ua0gg+/RhoGCmgcF
-	 6O4fcu7q5xBIg+tdvm8Ac3QatECZZCNOStnrTvt6z6T4u4F/I67tgc6v7Ixae6ArYCc7a
-	 cCtbRt9/DC7t7iMg+vu9E9TGBM0kPxJhO4hKFYcF6mNiTHVzhnq8MXVn8JCShUbWh3nkH
-	 +DcbQ26w8eBn/Df+1vZ1S2cpGuihKsJeDiPKx7UMRtVscCvlAYsA/yBsoQY7dwMj1SQ==
+	t=1794438400;
+	b=ug04NMazJkbWueZ9F0/KJ/GsGtCKpZHWVhJ73Pk5dHABocqaUkmDbBg1u6Me+UkynVuF
+	 h3WuU2O/e3fxo9RSom9dIRI3DQKX2eW1a8DfQtyJpzqTiAB7Hjb9UVN193x7icPgkF2pL
+	 FMf7Tw5sDarGId+k9FJbZdQpaaJeHzf0V/tidbg1h/v/5sFTOqfo22GUdWba9slhWwFRj
+	 fgxHXPn/mb/9zhXlsIAiQE6ctA3bx+QTk6fzJc9nmztuYP1D2jZEIoV8SlMArzSWqs0le
+	 Ucbcss5k9DuGb9tQQLhoeVemU8QWi2C1lWs59VRy5lPfPkid4e9eytGU9O5PDmKV/Yg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794438367;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794438400;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
 	 X-ClientProxiedBy;
-	bh=fCaLFa9CYkOFRFmXmg91FFIbm1J83UWVSYubqF58HyQ=;
-	b=mwVJXVB305i3kJez6mGoplG6Ka0jLsh6yu2dGoCh1iclAteajNpSI8Lf0oGiGZfmvYpD
-	 2+Dpc9bB808pVqwuQnlAznTxgdFItpq98+XFf+6BIDYV6thaZba91xlfiCybG2/V1FR++
-	 vSJURLezFmVq+8H3/rFmgdgNrjcrkXUYR89I6X/ekwyohL/U6aqh1zdCTJbU9PdS5NkOJ
-	 Y9OMK8nk9gFiDzBuXT/YKwVJMUATx4zfs3+ZCi5ZHaKCtuuHkdfrB898PtQctRycfqA6C
-	 Bk25TBCcLzBX2p5IE7pjTBqiUifghD3sMkoM6cdd2v+w+Caf8MkN1En+aHUF8rnOGLw==
+	bh=lMLQtoMK+FF9PMlISJsUmmPmSZAB3/0ZdR3/LW/bJ9I=;
+	b=sxPfI5g0+Xn7z+TfI4mnEECyVyi/zMzxmC0XHh88Ge3I1g3tVWb34TiHL2wbmwY/V9zu
+	 HSi4ge3XOk99CCYlWZcheMyookOp3zoVuGrZM74gHgOfhg47qmFIAEQehbCVfnsactYqx
+	 8bWvB6UZwmbyo0H2+MbG9PbiKt7SchNAJvjwckNGHojf0Uz1W0p8n9bcLRGmoDamfWsp4
+	 3BzihMW33c5/RF8O15sHragO3TRTUiqHwNAP00Pz1yb1lW4v9ypvvXHW/cSfiAmZdLZlq
+	 U6xVniv64oWTYpBJmYddXJEWVBlJNUyScjPC12DarKN9v6b8d0Ncq3Jm9jsw5DoiV6Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amazon.com;
 	spf=pass smtp.mailfrom=amazon.de;
-	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=WpFDdgqR;
-	arc=none smtp.remote-ip=52.13.214.179
-Received: from pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.13.214.179])
+	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=Jz0TnK1C;
+	arc=none smtp.remote-ip=35.83.148.184
+Received: from pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com [35.83.148.184])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2F06606A324
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 23:06:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E2F06606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34FF0606A321
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 23:06:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 34FF0606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=WpFDdgqR
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=Jz0TnK1C
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
-  t=1794438366; x=1825974366;
+  t=1794438399; x=1825974399;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=fCaLFa9CYkOFRFmXmg91FFIbm1J83UWVSYubqF58HyQ=;
-  b=WpFDdgqRFFewnALReKa4fB1cfmd9RWgZELb0w+44fSa0EM/I56ShwNec
-   h8ueFFzEJrHAyyJGmnSMTn7TadYBrbGE5c/5qLTMfanvrVlHd420Cvzg3
-   1Uc9f65Jpe/YxT5Yl00WroH8Nu4nJj8sXWydA4apZiniuVVwS9fSMOzpf
-   yue8IHkv9IuvdAzAGBwfc/Us1AY21YkqedSwAlOAumsimhgpo0pz1lQYC
-   fJ4vefntJelPHBfxIxgCCjxwRw4qOfoQzaSDC8hQjSx3hioGzX0Ug8Kdw
-   MARFV/I/DQ/e0hpw88Yp+sZO9J9E9RTm4z1uro5OguwBogSh98ciNcULz
+  bh=lMLQtoMK+FF9PMlISJsUmmPmSZAB3/0ZdR3/LW/bJ9I=;
+  b=Jz0TnK1C0Q51eo60UsqVjcfXAPApyYvtZrrl8utk3mEax3Y1+zgyQZDM
+   j7upeLysdKIIIR1NgsINyQeQ0zB9ecDp68R6kUk0zWzb3VHduIdAgUJvw
+   dX62rCS7vExjBkcaOPFkZm5TZK+GcYSl7bBjKcCs/ktIfcDMblH4MSr6i
+   rOpfJknF7yOEIwfEuSUaJpB4hW6S61tYr8rNeJpAldIOBpjzVjXnqJnfQ
+   iBQy+UDp73N9mwcS84eP5/Q22qTUiQBJEWG9sKEM0vhyUSxxmqXb/i6iS
+   7liqWtY01APEH4yKh8q9hHc5lnGi4YgO+22symhb77oU8A33OhFYAu9A3
    A==;
-X-CSE-ConnectionGUID: 0TBGixifTAqA5XIk+1vZEA==
-X-CSE-MsgGUID: b7/OhfvVRVuQVjUt6CjSDA==
+X-CSE-ConnectionGUID: a0qphS5PSkW3vKQQb7o4Tw==
+X-CSE-MsgGUID: puhEAopkQb68Udz8yNQ+5w==
 X-IronPort-AV: E=Sophos;i="6.27,208,1787011200"; 
-   d="scan'208";a="33739341"
-Received: from ip-10-5-12-219.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.12.219])
-  by internal-pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 23:06:04 +0000
-Received: from EX19MTAUWA001.ant.amazon.com [205.251.233.236:29252]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.10.61:2525] with esmtp (Farcaster)
- id 6abf2343-3b58-41f0-98ab-3c293919f51b; Wed, 11 Nov 2026 23:06:04 +0000 (UTC)
-X-Farcaster-Flow-ID: 6abf2343-3b58-41f0-98ab-3c293919f51b
+   d="scan'208";a="33551130"
+Received: from ip-10-5-6-203.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.6.203])
+  by internal-pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 23:06:38 +0000
+Received: from EX19MTAUWC001.ant.amazon.com [205.251.233.53:16609]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.34.255:2525] with esmtp (Farcaster)
+ id 11ec9860-3c62-40c8-a31e-cc39e6372e83; Wed, 11 Nov 2026 23:06:38 +0000 (UTC)
+X-Farcaster-Flow-ID: 11ec9860-3c62-40c8-a31e-cc39e6372e83
 Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWA001.ant.amazon.com (10.250.64.217) with Microsoft SMTP Server
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 23:06:03 +0000
+ Wed, 11 Nov 2026 23:06:38 +0000
 Received: from ip-10-253-83-51.amazon.com (172.19.99.218) by
  EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 23:06:01 +0000
+ Wed, 11 Nov 2026 23:06:35 +0000
 From: Alexander Graf <graf@amazon.com>
 To: <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
 	<gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>
@@ -76,9 +76,9 @@ CC: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>, "Shuah
 	<david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
 	<nh-open-source@amazon.com>, <linux-mm@kvack.org>, Jonathan Corbet
 	<corbet@lwn.net>
-Subject: [PATCH 26/40] nitro_enclaves: Donate a bitmap page per multiplexed vector
-Date: Wed, 11 Nov 2026 22:59:30 +0000
-Message-ID: <7777b78690114ea0563ea42daaf930f15de8def8.1794393490.git.graf@amazon.com>
+Subject: [PATCH 27/40] nitro_enclaves: Dispatch multiplexed interrupts to per-queue bindings
+Date: Wed, 11 Nov 2026 22:59:31 +0000
+Message-ID: <7cb23d5eb46abf8a1caa61b8887132837fe256c4.1794393490.git.graf@amazon.com>
 X-Mailer: git-send-email 2.47.1
 In-Reply-To: <cover.1794300002.git.graf@amazon.com>
 References: <cover.1794300002.git.graf@amazon.com>
@@ -93,273 +93,362 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: EX19D031UWA004.ant.amazon.com (10.13.139.19) To
+X-ClientProxiedBy: EX19D031UWC004.ant.amazon.com (10.13.139.246) To
  EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-In preparation to support the interrupt multiplexer, give the device the
-bitmaps it records events in. At probe, donate one zeroed page per
-pooled vector by writing its address to the matching NE_MUX_DONATE_BASE
-slot, and read the outcome from NE_MUX_DONATE_ERR. A page holds
-NE_MUX_MAX_BITS queue bits. The device sets the bit of a queue and then
-raises the vector even when other bits are set already, which the
-dispatch code relies on.
-
-On teardown, write NE_MUX_SHUTDOWN before the pages go back to the
-allocator.
+Nitro Sandboxes provide a way for user space to receive
+per-device-virtqueue events. These are multiplexed through a
+nitro_enclaves device built-in interrupt multiplexer. Implement logic to
+support this multiplexer and distribute the respective interrupt events.
 
 Signed-off-by: Alexander Graf <graf@amazon.com>
 ---
- drivers/virt/nitro_enclaves/ne_pci_dev.c | 87 +++++++++++++++++++++++-
- drivers/virt/nitro_enclaves/ne_pci_dev.h | 50 ++++++++++++++
- 2 files changed, 136 insertions(+), 1 deletion(-)
+ drivers/virt/nitro_enclaves/ne_pci_dev.c | 179 ++++++++++++++++++++++-
+ drivers/virt/nitro_enclaves/ne_pci_dev.h |  47 ++++++
+ 2 files changed, 225 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/virt/nitro_enclaves/ne_pci_dev.c b/drivers/virt/nitro_enclaves/ne_pci_dev.c
-index 05dd3040afbc3..0fafd42162f3a 100644
+index 0fafd42162f3a..de96d68906bbf 100644
 --- a/drivers/virt/nitro_enclaves/ne_pci_dev.c
 +++ b/drivers/virt/nitro_enclaves/ne_pci_dev.c
-@@ -11,6 +11,7 @@
+@@ -7,6 +7,7 @@
+  * DOC: Nitro Enclaves (NE) PCI device driver.
+  */
+ 
++#include <linux/bitops.h>
+ #include <linux/cma.h>
  #include <linux/delay.h>
  #include <linux/device.h>
- #include <linux/err.h>
-+#include <linux/io-64-nonatomic-lo-hi.h>
- #include <linux/iopoll.h>
- #include <linux/jiffies.h>
- #include <linux/kstrtox.h>
-@@ -550,6 +551,32 @@ static void ne_teardown_msix(struct pci_dev *pdev)
+@@ -27,6 +28,7 @@
+ #include <linux/sysfs.h>
+ #include <linux/types.h>
+ #include <linux/wait.h>
++#include <linux/xarray.h>
+ 
+ #include "ne_misc_dev.h"
+ #include "ne_pci_dev.h"
+@@ -551,6 +553,129 @@ static void ne_teardown_msix(struct pci_dev *pdev)
  	pci_free_irq_vectors(pdev);
  }
  
 +/**
-+ * ne_mux_teardown() - Take the interrupt multiplexer bitmaps back from the
-+ *		       device.
-+ * @pdev:	PCI device to take the multiplexer bitmaps back from.
++ * ne_mux_binding_rcu_free() - RCU callback freeing one enclave queue binding.
++ * @head:	RCU head of the binding to free.
 + *
-+ * Context: Process context.
++ * Context: Softirq or process context.
 + */
-+static void ne_mux_teardown(struct pci_dev *pdev)
++static void ne_mux_binding_rcu_free(struct rcu_head *head)
 +{
-+	struct ne_pci_dev *ne_pci_dev = pci_get_drvdata(pdev);
++	struct ne_mux_binding *binding = container_of(head,
++						      struct ne_mux_binding,
++						      rcu);
++
++	eventfd_ctx_put(binding->ctx);
++
++	kfree(binding);
++}
++
++void ne_mux_binding_free_rcu(struct ne_mux_binding *binding)
++{
++	call_rcu(&binding->rcu, ne_mux_binding_rcu_free);
++}
++
++/**
++ * ne_mux_scan() - Deliver the bits set in the bitmap of a pooled vector that it
++ *		   has a binding for.
++ * @mux_vec:	Multiplexer state of the pooled vector.
++ *
++ * A bit leaves the bitmap by the same atomic read-modify-write that decides to
++ * deliver it, so a bit this vector has no binding for stays set. It is left set
++ * on purpose: a queue can be kicked before user space has bound an eventfd to
++ * it, and a bit taken out of the bitmap on the strength of a binding that is not
++ * there yet is a kick nobody can ever be told about. The bit waits instead, and
++ * the bind of that queue takes it and delivers it.
++ *
++ * So a set bit is consumed at most once, and exactly once if a scan finds a
++ * binding for it or a bind for its index runs. A bit whose index is never bound
++ * is consumed never, and stays set until the page is reclaimed when the device
++ * unbinds. A bit whose bind is still coming looks the same to the driver, so it
++ * holds both.
++ *
++ * The bound only ever rises, so a scan reads every word a binding has reached
++ * into and not only the words the bindings of the moment need.
++ *
++ * Context: Interrupt context. Called with the RCU read-side held.
++ * Return:
++ * * true if the scan found no bit it could deliver, false if it found at least
++ *   one.
++ */
++static bool ne_mux_scan(struct ne_mux_vec *mux_vec)
++{
++	struct ne_pci_dev *ne_pci_dev = mux_vec->ne_pci_dev;
++	u32 bits_per_word = BITS_PER_TYPE(*mux_vec->bitmap);
++	u32 nr_words = READ_ONCE(mux_vec->max_bit) / bits_per_word + 1;
++	bool empty = true;
 +	u32 i = 0;
 +
-+	if (!ne_pci_dev->mux)
-+		return;
++	for (i = 0; i < nr_words; i++) {
++		u64 word = READ_ONCE(mux_vec->bitmap[i]);
 +
-+	iowrite32(NE_MUX_SHUTDOWN_ON, ne_pci_dev->iomem_base + NE_MUX_SHUTDOWN);
++		while (word) {
++			u32 bit = i * bits_per_word + __ffs64(word);
++			unsigned long notify_index = bit * ne_pci_dev->mux_nr_vecs +
++						     mux_vec->vec_rel;
++			struct ne_mux_binding *binding = NULL;
 +
-+	for (i = 0; i < ne_pci_dev->mux_nr_vecs; i++)
-+		free_page((unsigned long)ne_pci_dev->mux[i].bitmap);
++			word &= word - 1;
 +
-+	kfree(ne_pci_dev->mux);
++			binding = xa_load(&ne_pci_dev->notify_xa, notify_index);
++			if (!binding)
++				continue;
 +
-+	ne_pci_dev->mux = NULL;
-+	ne_pci_dev->mux_nr_vecs = 0;
++			empty = false;
++
++			if (test_and_clear_bit(bit, (unsigned long *)mux_vec->bitmap))
++				eventfd_signal(binding->ctx);
++		}
++	}
++
++	return empty;
++}
++
++/**
++ * ne_mux_handler() - Interrupt handler for one pooled MSI-X vector.
++ * @irq:	Interrupt line the pooled vector is on.
++ * @data:	Multiplexer state of the pooled vector.
++ *
++ * Context: Interrupt context.
++ * Return:
++ * * IRQ_HANDLED on interrupt handled.
++ */
++static irqreturn_t ne_mux_handler(int irq, void *data)
++{
++	struct ne_mux_vec *mux_vec = data;
++	u32 pass = 0;
++
++	/*
++	 * xa_load() drops its own RCU read-side before it returns, so take one
++	 * here to keep a binding alive for as long as it is dereferenced.
++	 */
++	rcu_read_lock();
++
++	/*
++	 * The device sets a bit and then raises the interrupt, and one interrupt
++	 * can stand for several bits, so a scan can miss a bit set while it runs
++	 * or one past the bound it read. The device raises for every bit it sets
++	 * whatever the bitmap holds, so such a bit has an interrupt of its own
++	 * still to come and reaches its eventfd on that one. Scanning again,
++	 * reading the bound again, delivers it on this interrupt instead, so stop
++	 * on the first scan that delivers nothing. Stopping on an empty bitmap
++	 * instead would wait for a read a bit no bind is coming for never gives.
++	 * NE_MUX_MAX_PASSES caps the scans either way, so a device that goes on
++	 * setting bits cannot hold the handler.
++	 */
++	do {
++		if (ne_mux_scan(mux_vec))
++			break;
++	} while (++pass < NE_MUX_MAX_PASSES);
++
++	rcu_read_unlock();
++
++	return IRQ_HANDLED;
 +}
 +
  /**
-  * ne_mux_setup() - Read the interrupt multiplexer geometry from the device.
-  * @pdev:	PCI device to read the multiplexer geometry of.
-@@ -561,6 +588,7 @@ static void ne_teardown_msix(struct pci_dev *pdev)
-  * Context: Process context.
-  * Return:
-  * * 0 on success.
-+ * * Negative return value on failure.
-  */
- static int ne_mux_setup(struct pci_dev *pdev)
+  * ne_mux_teardown() - Take the interrupt multiplexer bitmaps back from the
+  *		       device.
+@@ -561,6 +686,8 @@ static void ne_teardown_msix(struct pci_dev *pdev)
+ static void ne_mux_teardown(struct pci_dev *pdev)
  {
-@@ -568,6 +596,8 @@ static int ne_mux_setup(struct pci_dev *pdev)
- 	int msix_nr_vecs = 0;
- 	u32 nr_vecs = 0;
- 	u32 vec_base = 0;
-+	int rc = -EINVAL;
-+	u32 i = 0;
+ 	struct ne_pci_dev *ne_pci_dev = pci_get_drvdata(pdev);
++	struct ne_mux_binding *binding = NULL;
++	unsigned long notify_index = 0;
+ 	u32 i = 0;
  
- 	if (!ne_pci_dev->has_vendor_cap)
- 		return 0;
-@@ -593,10 +623,54 @@ static int ne_mux_setup(struct pci_dev *pdev)
- 		return 0;
- 	}
+ 	if (!ne_pci_dev->mux)
+@@ -568,13 +695,40 @@ static void ne_mux_teardown(struct pci_dev *pdev)
  
-+	ne_pci_dev->mux = kcalloc(nr_vecs, sizeof(*ne_pci_dev->mux),
-+				  GFP_KERNEL);
-+	if (!ne_pci_dev->mux)
-+		return -ENOMEM;
-+
- 	ne_pci_dev->mux_nr_vecs = nr_vecs;
- 	ne_pci_dev->mux_vec_base = vec_base;
+ 	iowrite32(NE_MUX_SHUTDOWN_ON, ne_pci_dev->iomem_base + NE_MUX_SHUTDOWN);
  
-+	for (i = 0; i < nr_vecs; i++) {
-+		u16 donate_err = 0;
+-	for (i = 0; i < ne_pci_dev->mux_nr_vecs; i++)
++	for (i = 0; i < ne_pci_dev->mux_nr_vecs; i++) {
++		if (!ne_pci_dev->mux[i].bitmap)
++			continue;
 +
-+		ne_pci_dev->mux[i].bitmap = (u64 *)get_zeroed_page(GFP_KERNEL);
-+		if (!ne_pci_dev->mux[i].bitmap) {
-+			rc = -ENOMEM;
++		if (ne_pci_dev->mux[i].irq_requested)
++			free_irq(pci_irq_vector(pdev,
++						ne_pci_dev->mux_vec_base + i),
++				 &ne_pci_dev->mux[i]);
 +
-+			goto teardown_mux;
-+		}
+ 		free_page((unsigned long)ne_pci_dev->mux[i].bitmap);
++	}
+ 
+ 	kfree(ne_pci_dev->mux);
+ 
+ 	ne_pci_dev->mux = NULL;
+ 	ne_pci_dev->mux_nr_vecs = 0;
 +
-+		/*
-+		 * On a kernel without a 64-bit MMIO accessor this write is two
-+		 * 32-bit writes, low half first, so the device sees a complete
-+		 * address only once the high half has arrived. The device is
-+		 * expected to take the donation from the high half and not from
-+		 * the low one, which is also what lets the outcome be read back
-+		 * right after.
-+		 */
-+		writeq(virt_to_phys(ne_pci_dev->mux[i].bitmap),
-+		       ne_pci_dev->iomem_base + NE_MUX_DONATE_BASE +
-+		       i * sizeof(u64));
++	xa_for_each(&ne_pci_dev->notify_xa, notify_index, binding) {
++		xa_erase(&ne_pci_dev->notify_xa, notify_index);
 +
-+		donate_err = ioread16(ne_pci_dev->iomem_base +
-+				      NE_MUX_DONATE_ERR);
-+		if (donate_err) {
-+			dev_err(&pdev->dev, "Error in bitmap donate for vector %u [err=%u]\n",
-+				i, donate_err);
++		eventfd_ctx_put(binding->ctx);
 +
-+			rc = -EIO;
-+
-+			goto teardown_mux;
-+		}
++		kfree(binding);
 +	}
 +
- 	return 0;
++	/*
++	 * Freeing the handlers above quiesced the readers that hold no lock,
++	 * and the loop above freed every binding that outlived them. Wait for
++	 * the callbacks a replaced binding already queued, so that none of
++	 * them runs once the module text is gone.
++	 */
++	rcu_barrier();
 +
-+teardown_mux:
-+	ne_mux_teardown(pdev);
-+
-+	return rc;
++	xa_destroy(&ne_pci_dev->notify_xa);
  }
  
  /**
-@@ -1648,7 +1722,12 @@ static int ne_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto teardown_msix;
+@@ -631,8 +785,11 @@ static int ne_mux_setup(struct pci_dev *pdev)
+ 	ne_pci_dev->mux_nr_vecs = nr_vecs;
+ 	ne_pci_dev->mux_vec_base = vec_base;
+ 
++	xa_init(&ne_pci_dev->notify_xa);
++
+ 	for (i = 0; i < nr_vecs; i++) {
+ 		u16 donate_err = 0;
++		int irq = 0;
+ 
+ 		ne_pci_dev->mux[i].bitmap = (u64 *)get_zeroed_page(GFP_KERNEL);
+ 		if (!ne_pci_dev->mux[i].bitmap) {
+@@ -663,6 +820,26 @@ static int ne_mux_setup(struct pci_dev *pdev)
+ 
+ 			goto teardown_mux;
+ 		}
++
++		ne_pci_dev->mux[i].ne_pci_dev = ne_pci_dev;
++		ne_pci_dev->mux[i].vec_rel = i;
++
++		irq = pci_irq_vector(pdev, vec_base + i);
++		if (irq < 0) {
++			rc = irq;
++
++			goto teardown_mux;
++		}
++
++		rc = request_irq(irq, ne_mux_handler, 0, "enclave_mux",
++				 &ne_pci_dev->mux[i]);
++		if (rc < 0) {
++			dev_err(&pdev->dev, "Error in request irq mux [rc=%d]\n", rc);
++
++			goto teardown_mux;
++		}
++
++		ne_pci_dev->mux[i].irq_requested = true;
  	}
  
--	ne_mux_setup(pdev);
-+	rc = ne_mux_setup(pdev);
-+	if (rc < 0) {
-+		dev_err(&pdev->dev, "Error in mux setup [rc=%d]\n", rc);
-+
-+		goto pci_dev_disable;
-+	}
- 
- 	down_write(&ne_devs.lock);
- 
-@@ -1717,6 +1796,8 @@ static int ne_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	ne_devs.ne_pci_dev = NULL;
- unlock_ne_devs:
- 	up_write(&ne_devs.lock);
-+pci_dev_disable:
-+	ne_mux_teardown(pdev);
- 	ne_pci_dev_disable(pdev);
- teardown_msix:
- 	ne_teardown_msix(pdev);
-@@ -1755,6 +1836,8 @@ static void ne_pci_remove(struct pci_dev *pdev)
- 
- 	ne_devs.ne_pci_dev = NULL;
- 
-+	ne_mux_teardown(pdev);
-+
- 	ne_pci_dev_disable(pdev);
- 
- 	ne_teardown_msix(pdev);
-@@ -1797,6 +1880,8 @@ static void ne_pci_shutdown(struct pci_dev *pdev)
- 
- 	ne_devs.ne_pci_dev = NULL;
- 
-+	ne_mux_teardown(pdev);
-+
- 	ne_pci_dev_disable(pdev);
- 
- 	ne_teardown_msix(pdev);
+ 	return 0;
 diff --git a/drivers/virt/nitro_enclaves/ne_pci_dev.h b/drivers/virt/nitro_enclaves/ne_pci_dev.h
-index aee22b4ed8b6e..2cef40c627f9f 100644
+index 2cef40c627f9f..0dbce83cb06bd 100644
 --- a/drivers/virt/nitro_enclaves/ne_pci_dev.h
 +++ b/drivers/virt/nitro_enclaves/ne_pci_dev.h
-@@ -94,6 +94,30 @@
-  */
- #define NE_MUX_NUM_VECTORS	(0x01f0)
+@@ -9,12 +9,15 @@
+ #include <linux/atomic.h>
+ #include <linux/bits.h>
+ #include <linux/build_bug.h>
++#include <linux/eventfd.h>
+ #include <linux/list.h>
+ #include <linux/mutex.h>
+ #include <linux/pci.h>
+ #include <linux/pci_ids.h>
++#include <linux/rcupdate.h>
+ #include <linux/stddef.h>
+ #include <linux/wait.h>
++#include <linux/xarray.h>
  
-+/**
-+ * NE_MUX_DONATE_ERR - (2 bytes) Register holding the outcome of the last
-+ *		       interrupt multiplexer bitmap donation (Read-Only).
-+ */
-+#define NE_MUX_DONATE_ERR	(0x01f4)
-+
-+/**
-+ * NE_MUX_SHUTDOWN - (4 bytes) Register to tell the device to stop using every
-+ *		     donated interrupt multiplexer bitmap (Write-Only).
-+ */
-+#define NE_MUX_SHUTDOWN		(0x01f8)
-+#define NE_MUX_SHUTDOWN_ON	(0x01)
-+
-+/**
-+ * NE_MUX_DONATE_BASE - (8 bytes per pooled vector) Array of registers to hand
-+ *			the device the bitmap of one pooled vector (Read/Write).
-+ *
-+ * The device sets the bit of an enclave queue in the bitmap of the vector that
-+ * queue shares, and then raises that vector's interrupt. It raises for every
-+ * bit it sets, whatever the bitmap holds at the time, so bits a driver leaves
-+ * in a bitmap never keep a later kick from arriving.
-+ */
-+#define NE_MUX_DONATE_BASE	(0x0800)
-+
  /**
-  * DOC: Device MMIO buffer sizes
-  */
-@@ -163,6 +187,20 @@
-  */
- #define NE_MUX_MAX_VECTORS	(256)
+  * DOC: Nitro Enclaves (NE) PCI device
+@@ -201,6 +204,12 @@
+ static_assert(NE_MUX_MAX_BITS / BITS_PER_TYPE(u64) * sizeof(u64) <= PAGE_SIZE,
+ 	      "the bitmap of a pooled vector has to fit its donated page");
  
 +/**
-+ * NE_MUX_MAX_BITS - Largest number of enclave queues one pooled vector
-+ *		     multiplexes, which is how many bits the page donated as its
-+ *		     bitmap holds.
++ * NE_MUX_MAX_PASSES - Largest number of times the handler of a pooled vector
++ *		       scans its bitmap in one interrupt.
 + */
-+#define NE_MUX_MAX_BITS		(PAGE_SIZE * BITS_PER_BYTE)
-+
-+/*
-+ * A bitmap is read in u64 words, so the words that span NE_MUX_MAX_BITS bits
-+ * have to stay inside the one page donated for it.
-+ */
-+static_assert(NE_MUX_MAX_BITS / BITS_PER_TYPE(u64) * sizeof(u64) <= PAGE_SIZE,
-+	      "the bitmap of a pooled vector has to fit its donated page");
++#define NE_MUX_MAX_PASSES	(4)
 +
  /**
   * enum ne_pci_dev_cmd_type - Device command types.
   * @INVALID_CMD:		Invalid command.
-@@ -605,6 +643,16 @@ struct ne_slot_pool_run {
- 	unsigned long		nr_pages;
- };
- 
-+/**
-+ * struct ne_mux_vec - Interrupt multiplexer state of one pooled MSI-X vector.
-+ * @bitmap:			Page-sized bitmap in which the device sets a bit
-+ *				for every enclave queue that signalled through
-+ *				this vector.
-+ */
-+struct ne_mux_vec {
-+	u64			*bitmap;
+@@ -648,9 +657,35 @@ struct ne_slot_pool_run {
+  * @bitmap:			Page-sized bitmap in which the device sets a bit
+  *				for every enclave queue that signalled through
+  *				this vector.
++ * @max_bit:			Highest bitmap bit an enclave queue has been
++ *				bound to, bounding the scan of @bitmap. It only
++ *				rises, so a scan reads the words of bindings that
++ *				are gone as well.
++ * @ne_pci_dev:			NE PCI device this vector belongs to.
++ * @vec_rel:			Index of this vector within the pool.
++ * @irq_requested:		Whether the interrupt handler of this vector is
++ *				installed, which is not implied by @bitmap: a
++ *				vector whose bitmap the device already owns may
++ *				have no handler yet.
+  */
+ struct ne_mux_vec {
+ 	u64			*bitmap;
++	u32			max_bit;
++	struct ne_pci_dev	*ne_pci_dev;
++	u32			vec_rel;
++	bool			irq_requested;
 +};
 +
++/**
++ * struct ne_mux_binding - Eventfd bound to one enclave queue.
++ * @ctx:			Eventfd signalled when the queue is kicked.
++ * @rcu:			Head used to free the binding after a grace
++ *				period, so that an interrupt handler which
++ *				already loaded it can still dereference it.
++ */
++struct ne_mux_binding {
++	struct eventfd_ctx	*ctx;
++	struct rcu_head		rcu;
+ };
+ 
  /**
-  * struct ne_pci_dev - Nitro Enclaves (NE) PCI device.
-  * @cmd_reply_avail:		Variable set if a reply has been sent by the
-@@ -624,6 +672,7 @@ struct ne_slot_pool_run {
+@@ -672,6 +707,8 @@ struct ne_mux_vec {
   *				capability, and with it the multiplexer and slot
   *				pool registers.
   * @iomem_base :		MMIO region of the PCI device.
-+ * @mux:			Per-pooled-vector interrupt multiplexer state.
++ * @notify_xa:			Enclave queue bindings, keyed by the notify index of
++ *				the queue.
+  * @mux:			Per-pooled-vector interrupt multiplexer state.
   * @mux_nr_vecs:		Number of MSI-X vectors in the interrupt
   *				multiplexer pool.
-  * @mux_vec_base:		First MSI-X vector of the interrupt multiplexer
-@@ -657,6 +706,7 @@ struct ne_pci_dev {
+@@ -706,6 +743,7 @@ struct ne_pci_dev {
  	struct workqueue_struct	*event_wq;
  	bool			has_vendor_cap;
  	void __iomem		*iomem_base;
-+	struct ne_mux_vec	*mux;
++	struct xarray		notify_xa;
+ 	struct ne_mux_vec	*mux;
  	u32			mux_nr_vecs;
  	u32			mux_vec_base;
- 	struct work_struct	notify_work;
+@@ -750,6 +788,15 @@ int ne_do_request(struct pci_dev *pdev, enum ne_pci_dev_cmd_type cmd_type,
+ 		  struct ne_pci_dev_cmd_reply *cmd_reply,
+ 		  size_t cmd_reply_size);
+ 
++/**
++ * ne_mux_binding_free_rcu() - Free an enclave queue binding after a grace
++ *			       period.
++ * @binding:	Binding that has been removed from the queue bindings xarray.
++ *
++ * Context: Process context.
++ */
++void ne_mux_binding_free_rcu(struct ne_mux_binding *binding);
++
+ /* Nitro Enclaves (NE) PCI device driver */
+ extern struct pci_driver ne_pci_driver;
+ 
 -- 
 2.47.1
 
