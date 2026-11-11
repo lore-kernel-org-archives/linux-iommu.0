@@ -1,116 +1,85 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=139.138.36.223
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.47
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794398011;
-	b=xX1nz36o0ioG9cC7vP7OtbKuRm0ui5eh98ZyewRNZnqZrOxMs+ArdBrw2xGMJkPvMMuS
-	 tGd4+h4Po40sy2owNe1bajh+vRnaXbuXzz/jUCsyfI2oO1RAsPe4E+4+B7PO9Kdq8VpFd
-	 PtQProSebmZoTnEZE34Gl4aLRGbC9J2sVnq0yYl9Cpo6OgRGZzqh4+Obfx27eYtVKhyrB
-	 o3w5hb6EKvMwBOGZVTIoKSJomKcD/UGZZfq1OygpoT4h9RXTOgf75+CSAF9qb8XMR9/5d
-	 PevyUtXgiZ6LZKnxzKCpPm2CDzNJqTB65+JpLDUrBQFrP1Xv4HSWaKFdsznN1iiMdKQ==
+	t=1794398570;
+	b=Pj78QksF8Od09zvNHo0AzKQpuVSR1oeq8Y1p4+bXirjHCXeKoUPTHzyEWDcNx8bY18VN
+	 3VF2pIW7K8Yqsro2ojZESnLn5Wvg3vldO+LG/b0C2HssytWrFUkCp5j1SbaGZJatEShdU
+	 DMpbPOoAJqTaXovEDSYgan5GquEKytMJOyChk3mqvYbW6aIzFXtcL0lms2QMtA+1iQBKU
+	 XqdfKzqXz+D4Gjm6Ulo5fuiCXbNszWqbuOVdr9LXN1uD3aotY1VTc9a8B6buNaIxDGgB5
+	 IcDMlcjQvXKNb2gR1zWt8yJuNUjLDi+iGIOW81U3n/f8nC0/IbwnWHqqb4znmnmigPQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794398011;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:Received:Received:Received:Date:
-	 From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To;
-	bh=LHx3sOu0nRc26uMaGdX5eIGUhuQ24/CQDwrvILlx8g0=;
-	b=w01VUEKqY819aTnBKrK5V0AybCeyQyeiXm+2nXctCcPFID378BgYo6oXBmBZYqCfx/+w
-	 IZIqIqve88mcxP0HT9kiUXO1e5RMDDuJ+oBoIWskYjA2L9JNUzdt0WHztFV/Ci1MBx7t4
-	 2osRB5TGxN9rwEGkYQVbvRN+p/scw/OIWfjDwfEu237j2i489960F5GrObDLb92iIelQJ
-	 sDuhQdArzjXYN6optOgoW6evhSYKOY4ELlZPY4oJmEs/gG6Eegij9Xkk557hPoMoqtvTU
-	 5GVMR7zn6EyJQtBWbsqwoGdBPRfJot2J6zdU/ruPh1TujGwE3LiHdHnK7sV8S1VX6ew==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794398570;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=Mf3ojcAaOl5Wd2bB/OvSpA9q4iDAVUFZx+UCDfwTy74=;
+	b=VV9jVx/uabsn6Wc0TTAp0lC1cxo743fLV4UpkWGzKDq6uoYYdCDDgwPbI9NhW8bDH31W
+	 pf5Udwh49dIsNDzl5RXzAuKeIhmtj5PdrYHN+IM30vT7Jm1jnlRWpYeipiot9YLCZVSvq
+	 OAfbMlakCK5TkBCm/np2tAuYyBa7tvdZHfV/suS9Aqrr/ODOr9wn/3qTo6busZO4HMZ2I
+	 97e7R1LkP7D/YVvsAND28isWZOYP/JtboJNa7lK2PI3cUqgWA1D3mwxR1wdoL3HFNBA/q
+	 lhvZLAFvYTtAxLaauvYrd68qMtSFbvUpTnNrqa1L5pH6/9uvW04GcRrniL4VoA2KeOg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=fujitsu.com;
-	spf=pass smtp.mailfrom=fujitsu.com;
-	dkim=pass header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=hnJNAMc2;
-	arc=none smtp.remote-ip=139.138.36.223
-Received: from esa9.hc1455-7.c3s2.iphmx.com (esa9.hc1455-7.c3s2.iphmx.com [139.138.36.223])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=linaro.org;
+	spf=pass smtp.mailfrom=linaro.org;
+	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=sQJ9qyCW;
+	arc=none smtp.remote-ip=209.85.221.47
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9528A606A333;
-	Wed, 11 Nov 2026 11:53:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9528A606A333
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fujitsu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fujitsu.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC48A606A32A
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 12:02:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DC48A606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fujitsu.com header.i=@fujitsu.com header.a=rsa-sha256 header.s=fj2 header.b=hnJNAMc2
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=fujitsu.com; i=@fujitsu.com; q=dns/txt; s=fj2;
-  t=1794398018; x=1825934018;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HCCipxtjnPjwYW8DIXAeMVHDqScHm74Hg2zPPlBSipM=;
-  b=hnJNAMc2naJcpaT3CdnHUXMKZ+ww81bmwJAIWYkBK58kvOKTqeA8W+KQ
-   Rp4PxPFZK/C0Fd7Uh6rbka5/DStILFAFgNlh5dW0yBhz4E3KOxuHRbYtI
-   YjZAU8439T50ZceEXb0Esft3S19Do88PdM/jd25k3orHG9TnLA8BME3Hg
-   e3Xip51jijOE6QHdT/rlC0f+7aGZ3Hxe1eyHCAUNYJAlL15jyCSgOruew
-   z9eApGBfiZIKgPbnusw4qXc6r8Oi8bxEhJtF35kgGSOqRydks4x+buY2q
-   krGWMep4/8gN8NeeLDsvvJTdknyYImdwAbw4mHT91SQa7ZPlwhtfOONoK
-   A==;
-X-CSE-ConnectionGUID: D+8FdQFCRieWhewwBx3sWA==
-X-CSE-MsgGUID: ZJzzCanBTmiAzDJZgVMp9g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11962"; a="248961070"
-X-IronPort-AV: E=Sophos;i="6.27,207,1786978800"; 
-   d="scan'208";a="248961070"
-Received: from gmgwuk01.global.fujitsu.com ([172.187.114.235])
-  by esa9.hc1455-7.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 20:53:30 +0900
-Received: from az2uksmgm1.o.css.fujitsu.com (unknown [10.151.22.198])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by gmgwuk01.global.fujitsu.com (Postfix) with ESMTPS id A83798214C0;
-	Wed, 11 Nov 2026 11:53:22 +0000 (UTC)
-Received: from az2nlsmom3.fujitsu.com (unknown [10.150.26.199])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by az2uksmgm1.o.css.fujitsu.com (Postfix) with ESMTPS id 50C048D6DA5;
-	Wed, 11 Nov 2026 11:53:22 +0000 (UTC)
-Received: from FCCLS0092175.localdomain (unknown [10.9.86.149])
-	by az2nlsmom3.fujitsu.com (Postfix) with SMTP id 52B3F101BB7F;
-	Wed, 11 Nov 2026 11:53:02 +0000 (UTC)
-Date: Wed, 11 Nov 2026 20:53:00 +0900
-From: Kohei Enju <enju.kohei@fujitsu.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Robin Murphy <robin.murphy@arm.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
-	Randy Dunlap <rdunlap@infradead.org>, Mark Rutland <mark.rutland@arm.com>, 
-	Marc Zyngier <maz@kernel.org>, Steven Price <steven.price@arm.com>, 
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>, Jiri Pirko <jiri@resnulli.us>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Mostafa Saleh <smostafa@google.com>, Petr Tesarik <ptesarik@suse.com>, 
-	Alexey Kardashevskiy <aik@amd.com>, Dan Williams <dan.j.williams@intel.com>, 
-	Xu Yilun <yilun.xu@linux.intel.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>, "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>, 
-	Shrikanth Hegde <sshegde@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, 
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, 
-	Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Stefano Stabellini <sstabellini@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, Huacai Chen <chenhuacai@kernel.org>, 
-	WANG Xuerui <kernel@xen0n.name>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
-	Jiaxun Yang <jiaxun.yang@flygoat.com>, Paul Walmsley <pjw@kernel.org>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Alexandre Ghiti <alex@ghiti.fr>, Andy Lutomirski <luto@kernel.org>, 
-	Peter Zijlstra <peterz@infradead.org>, Thomas Gleixner <tglx@kernel.org>, 
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>, 
-	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev, linux-mips@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org, 
-	x86@kernel.org
-Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
- sizing
-Message-ID: <avRKiCBs81XSYMqW@FCCLS0092175.localdomain>
-References: <20260924060756.1325156-7-aneesh.kumar@kernel.org>
- <asVs3doaJ4WrT3M2@willie-the-truck>
- <asYZFXGyafRjjBS0@arm.com>
- <asYiOgskwi8JYLe_@willie-the-truck>
- <yq5awlrt3dwo.fsf@kernel.org>
- <yq5av77c92oo.fsf@kernel.org>
- <aseRzPshcoys7AJS@arm.com>
- <yq5ao6d48dqr.fsf@kernel.org>
- <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
- <yq5a8q3d9oe6.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=sQJ9qyCW
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-491aaed7565so1862431f8f.2
+        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 04:02:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1794398568; x=1795003368; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Mf3ojcAaOl5Wd2bB/OvSpA9q4iDAVUFZx+UCDfwTy74=;
+        b=sQJ9qyCWCjiDPKGsUjshl6uKUDnBFfmrw1fZ0bAebnifEUU3RGh7N90jS0xvmqtT98
+         6+BvaV06eigvIds8ZC8isnDR+LU+3HvbN8qAA7BfO+pTRmcgNfPlEFs6XH/V+dMFSlsF
+         VVZj+G5cKg8dN96e5WhvlRX+HWRVMPR13mM7z2Oney5BCA0ohnQyiC9oEW9XsDHNtyIQ
+         bmdW0/m9MlAJPmDEMox1Eir4fOCX/pXhvE4qrMIbAWzcT7TeLCR7R/+qtDtN6VfKJjRp
+         ZgUYOt7/syRMN7w1f77BDXh6vco4zb6vMWpPmcDVfY7Rewav4J2rKepksLfzKwySbvRV
+         +Bog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794398568; x=1795003368;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Mf3ojcAaOl5Wd2bB/OvSpA9q4iDAVUFZx+UCDfwTy74=;
+        b=HNgMWLy8u6bhCdhj69Ye2+boHuKWeNfjxe6Zb6Lpj7BW1Tdg60RANPSx75fIPQgJOf
+         mJTALTcI6aOrJj4xU34Ub+4X0rWNfl9mnJX0kwTg/2RHJqGvlVND87wc/z6UUD9XL4pE
+         Ez53DYDhhS1isybpfEbC1/1rptEd+ZqAMnfDJyhL09zV4ew6L1Am/ZOCoN+uv1gqOEE4
+         7eNKWD/SVQyRatqieIyYOBxNkzsfg3+pTJpZNsVAv+rpoz2iyzHYVuEihdSEjkVjtOQ1
+         Mpc3BlHsb4p8yAiVibipGU0oqalK/IEVeL32sJjm3WizjXFknvKvRUaJ9Q3R2qhwwuZK
+         ZSBg==
+X-Gm-Message-State: APuU4Z9qMsy7IixhDjWF02Z1CM+Z9BRSi3odcuX4WDEFV8X5OU+5tf7k
+	NgWoeZZRMA3bmpUnXE72gmaZoAYF3fAsNgB1vFdUniKfef1ZvH6ysazTyldwIFO7kkw=
+X-Gm-Gg: AYBFou2j9fBDLQYmTEkVcdYyJOGKPxH55ps5IMjDMHKlp8ntFkjh8BHdArSTACI+Hom
+	gBVRL6UeFUVScsAmWWL9sWmdjpww0pPUHwWU+g7fQLlrYWkoBgBzIJ5UcY4NzAlxBfIBs11l16c
+	rx1oZQDuKbY+FAoPFh2vowQeL32IJE91XqvHTCx5m9rkBK9T5YtoY9SA1baMuC7rHbGQ5mSTR5C
+	ZI5Q2NgezWzFuVM+NgcREVRBtFWok7YohORswHEQ4jm5bwuUKy0ioMCn5zT4TwDhNzu54gU4SJX
+	QpCIPmu571Tjxskw46iiAFIB8A8Y12fv3/Y84h1uR7GS31CnjePawDyMid97AYdJIA6YWT2nzSv
+	+zeysQTTvF8diu29bGpgTID2jr6GOFCOidqk2v4KksyH2DJ53enKblt7+VOxv6k2t7j0r/45+r0
+	nRt8sfrUpSxvOxEAzZnHTiOUQPFHvP7tJGtavgAeqORoigBzZQgO3vWbaa39/foQCXfljkr+F2r
+	KxRcltrlLECVkmu8yZsRPYZ2ibMRwD+Zi1xy7WfBlErwC4vrBE4rlyW7MkNzR7GQjDrdVkW4h6F
+	XkslWMMxunz+nyI0+svuwmzi/BE8ZYZu+yRBHqcW
+X-Received: by 2002:a05:6000:420d:b0:48b:1a0:5630 with SMTP id ffacd0b85a97d-499c86a10f6mr3780756f8f.41.1794398567805;
+        Wed, 11 Nov 2026 04:02:47 -0800 (PST)
+Received: from [192.168.0.167] ([109.76.11.16])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-49835c377fdsm8869991f8f.21.2026.11.11.04.02.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Nov 2026 04:02:47 -0800 (PST)
+Message-ID: <3713bf13-cec6-4b02-a29b-8f76070f03b3@linaro.org>
+Date: Wed, 11 Nov 2026 12:02:45 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,188 +89,47 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <yq5a8q3d9oe6.fsf@kernel.org>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 4/5] iommu/of: Require reg for iommu-addresses
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
+ Saravana Kannan <saravanak@kernel.org>,
+ Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+ Eric Auger <eric.auger@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+ Srinath Mannam <srinath.mannam@broadcom.com>,
+ Oza Pawandeep <quic_poza@quicinc.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex@shazbot.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux.dev, devicetree@vger.kernel.org,
+ kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-media@vger.kernel.org, Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
+ <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Content-Language: en-GB
+In-Reply-To: <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Aneesh,
+On 06/11/2026 17:14, Vikash Garodia wrote:
+> @@ -257,6 +252,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>   				}
+>   				type = iommu_resv_region_get_type(dev, &phys, iova, length);
+>   
+> +				if (type != IOMMU_RESV_DIRECT)
+> +					continue;
+> +
 
-On 11/01 09:47, Aneesh Kumar K.V wrote:
-[...]
-> >
-> > Hi Aneesh,
-> >
-> > I can reproduce the CCA regression discussed in this thread:
-> >   https://lore.kernel.org/all/yq5azeyxyfol.fsf@kernel.org/#t
-> >
-> > The guest runs out of SWIOTLB slots, causing disk I/O to fail and
-> > preventing the guest from booting.
-> >
-> > I would like to test the fix on real CCA hardware. Could you please Cc
-> > me when you respin the series? I follow LKML, but I may still miss the
-> > posting by chance.
-> >
-> 
-> The conclusion was to either use CONFIG_SWIOTLB_DYNAMIC or swiotlb kernel command line
-> option
+This change is not about requiring a reg though, which is why it should 
+be a standalone patch with its own justifications.
 
-Thanks for the clarification.
+Basically the patch should state why a mismatch is dropped instead of 
+being reserved.
 
-After reading this whole thread, I agree that dynamic sizing would be
-appropriate.
-
-However, currently some distributions do not enable
-CONFIG_SWIOTLB_DYNAMIC. Users of such distributions would therefore need
-to rebuild their kernels with the option enabled. This is not a
-practical solution for many users, particularly cloud users who use
-kernels provided by their distributions or cloud providers.
-
-Specifying swiotlb= on the kernel command line is also not particularly
-user-friendly. It requires users or cloud providers to choose a fixed
-value in advance, without automatically taking into account properties
-of the VM, such as its memory size or whether it is a confidential
-guest.
-
-I do not think the existing heuristic used for x86 CoCo guests is
-necessarily optimal, but a fixed swiotlb= value chosen by each user may
-be even less appropriate.
-
-Overall, I would prefer the dynamic sizing approach. However, I believe
-the initial pool size still matters.
-
-Also, as Catalin pointed out earlier in the following message:
-
-    https://lore.kernel.org/all/ann6noRzoPLL9kDY@arm.com/
-
-the arm64 adjustment also reduces the target size used for dynamic
-pool allocation, since both the initial pool and dynamic allocation
-currently use default_nslabs.
-
-I am testing the patch below to decouple the initial pool size from the
-dynamic allocation target. It adds swiotlb_adjust_initial_size() for
-callers that only want to reduce the initial allocation, while keeping
-the existing swiotlb_adjust_size() semantics for callers that want to
-adjust both sizes.
-
-Thanks,
-Kohei
-
---->8---
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 4e7682dfe366..80a2c171895f 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -349,7 +349,7 @@ void __init arch_mm_preinit(void)
-                unsigned long size =
-                        DIV_ROUND_UP(memblock_phys_mem_size(), 1024);
-
--               swiotlb_adjust_size(min(swiotlb_default_pool_size(), size));
-+               swiotlb_adjust_initial_size(min(swiotlb_default_pool_size(), size));
-        }
-
-        swiotlb_init(true, flags);
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index 070ee69eabb3..7dd9fcec90a5 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -189,7 +189,7 @@ void __init arch_mm_preinit(void)
-                 */
-                unsigned long size =
-                        DIV_ROUND_UP(memblock_phys_mem_size(), 1024);
--               swiotlb_adjust_size(min(swiotlb_default_pool_size(), size));
-+               swiotlb_adjust_initial_size(min(swiotlb_default_pool_size(), size));
-                swiotlb = true;
-                swiotlb_flags |= SWIOTLB_ANY;
-        }
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 5f24edf47b68..c1984ee12355 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -190,6 +190,7 @@ size_t swiotlb_max_mapping_size(struct device *dev);
- bool is_swiotlb_allocated(void);
- bool is_swiotlb_active(struct device *dev);
- void __init swiotlb_adjust_size(unsigned long size);
-+void __init swiotlb_adjust_initial_size(unsigned long size);
- phys_addr_t default_swiotlb_base(void);
- phys_addr_t default_swiotlb_limit(void);
- #else
-@@ -232,6 +233,10 @@ static inline void swiotlb_adjust_size(unsigned long size)
- {
- }
-
-+static inline void swiotlb_adjust_initial_size(unsigned long size)
-+{
-+}
-+
- static inline phys_addr_t default_swiotlb_base(void)
- {
-        return 0;
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 2c57b49ac7c0..211fefb32fb5 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -99,6 +99,7 @@ static struct io_tlb_mem io_tlb_default_mem;
- #endif /* CONFIG_SWIOTLB_DYNAMIC */
-
- static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
-+static unsigned long dynamic_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
- static unsigned long default_nareas;
- static bool swiotlb_cmdline_size_set __initdata;
-
-@@ -152,6 +153,8 @@ static void swiotlb_adjust_nareas(unsigned int nareas)
-                nareas = roundup_pow_of_two(nareas);
-
-        default_nareas = nareas;
-+       dynamic_nslabs =
-+               swiotlb_calc_nslabs(dynamic_nslabs << IO_TLB_SHIFT, nareas);
-
-        pr_info("area num %d.\n", nareas);
-        nslabs = swiotlb_calc_nslabs(default_nslabs << IO_TLB_SHIFT, nareas);
-@@ -254,6 +257,7 @@ setup_io_tlb_npages(char *str)
-                /* avoid tail segment of size < IO_TLB_SEGSIZE */
-                default_nslabs =
-                        ALIGN(simple_strtoul(str, &str, 0), IO_TLB_SEGSIZE);
-+               dynamic_nslabs = default_nslabs;
-                swiotlb_cmdline_size_set = true;
-        }
-        if (*str == ',')
-@@ -290,7 +294,7 @@ unsigned long swiotlb_default_pool_size(void)
-        return default_nslabs << IO_TLB_SHIFT;
- }
-
--void __init swiotlb_adjust_size(unsigned long size)
-+void __init swiotlb_adjust_initial_size(unsigned long size)
- {
-        /*
-         * If swiotlb parameter has not been specified, give a chance to
-@@ -305,6 +309,12 @@ void __init swiotlb_adjust_size(unsigned long size)
-        pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
- }
-
-+void __init swiotlb_adjust_size(unsigned long size)
-+{
-+       swiotlb_adjust_initial_size(size);
-+       dynamic_nslabs = default_nslabs;
-+}
-+
- void swiotlb_print_info(void)
- {
-        struct io_tlb_pool *mem = &io_tlb_default_mem.defpool;
-@@ -507,6 +517,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
-                pr_info("SWIOTLB bounce buffer size adjusted %lu -> %lu slabs",
-                        default_nslabs, nslabs);
-                default_nslabs = nslabs;
-+               dynamic_nslabs = default_nslabs;
-        }
-
-        alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
-@@ -889,7 +900,7 @@ static void swiotlb_dyn_alloc(struct work_struct *work)
-                container_of(work, struct io_tlb_mem, dyn_alloc);
-        struct io_tlb_pool *pool;
-
--       pool = swiotlb_alloc_pool(NULL, mem, IO_TLB_MIN_SLABS, default_nslabs,
-+       pool = swiotlb_alloc_pool(NULL, mem, IO_TLB_MIN_SLABS, dynamic_nslabs,
-                                  default_nareas, mem->phys_limit, GFP_KERNEL);
-        if (!pool) {
-                pr_warn_ratelimited("Failed to allocate new pool");
-
+---
+bod
