@@ -1,70 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=35.83.148.184
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=44.245.243.92
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794437040;
-	b=yXDJIx1cBjHrXn3KZKQsESb2YlGzlnNLLhXIA1sZusx2cX7+GUangeiPn2u+88J0qhoh
-	 oYV5hrMPCneuzCJv3DY1ZmSK5h9N2abk1M2l+CwVhKRvHfGpikyseoBB1/2sqdZK023G3
-	 4ZoU/mdtoC8wJTnkIRmjali0DGTFSC2d0ZsrzY4C3Wu/HYmdpdILwUyQlvw0frq9Hn66v
-	 FbVNqf7uojZ4S9fL70Uxib3hX/OT70coURrJm4jOIb4zNWjkig/nZTLiCaJyS72HMrFE+
-	 svuIPCmExRRyDSeCg+rhDm5QRECujeWvrz/PXfjK7UwnpH3Tsyfu8H8Jy0+HNHUT6tg==
+	t=1794437041;
+	b=VGYokJZjO7giPqYg5LRFsTCkQeHxShxWiRePbZdw5kvN3PVxGPfbIz+xzvIGzU1ruEMA
+	 XQeJNz05xn0gAMA7qUyjGxye5r5WppK/p4M3OaWoYh/d+uBA889zkFfaNTx5b/7mZwjDf
+	 km6I1DRYJXR4VSi4dwU2aqcG+g9qD2I6IUykrXZDjYR0M04bhRLKAhhVhMRYaHMfEEdtw
+	 XxW4rtv5TU/vRfKoX06odT/B5k+Re9713L/Ymrh3yw5aCgcLdXgp4X1Cio6phW0v/bD6b
+	 fyEsxRQhlfUjEIZdtvruVHFj7gLbPQM/k33OT9KMpO0qmEcJyxoaD1mB/xjeYO/JLpg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794437040;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794437041;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
 	 X-ClientProxiedBy;
-	bh=wJjMYgz1PxuwUEJMcsvLW+MBhNnHPcTwlN3u7yQ5KPM=;
-	b=Z/aw+AJUHp7u7M3WdlA6HRs7Fbil6WntZLkeRH+qwSSaaAGLE2MZ5/PCrpbGGNVdYnNG
-	 aZU2HYDOUHw4rouyxkEqNVBIfmgAZU8G20O8uPdAy2r0GS1+6b/yNDDb6TXjsKZUdcElQ
-	 xgYYQXnApWwesoWxQytb+l+6VyK7V7Q2YYW1htozcuXsS3IOds8TkGWQ/HQ6lYwrNVkxk
-	 kKjHEj+ku7qgRLGOVJLpB3QZUe/R6egpqOCKuHkbJQNGGzSHZbkqw+2MA5xkoH/+k6rvX
-	 v8ME/pOslx4vUVtET9AcjUSWBM23IzSiGrUju2pV+2mPPFBmttriyEpvP6zzF0TogbQ==
+	bh=/cubfczVbnds8zP6oBlBcF/d/gJnxIwiCtc/tjxJ3hg=;
+	b=mjSfKITmffEo4mtkNWu8qkyyqUFbwvkziz5U+zg8SZWmxjxkgteO2bZXhOwFcxDXrbW7
+	 piX2IHWCgwg/o2NwMtOTOYUE9N1L7C2EDKLnnPiL1rkhCvZVYEQRRG7zIh8qgV2gDY5nf
+	 4/3swUtLagZ/cYFJ1m5F08ZMHM9no1qoq+QB8b3MF95FKwsJtLxIeIPqduzhjhW28ea8O
+	 NRTvblK33l+Yx3zsvy0KcJtg6YQbmHErH3SqxA3Mvc1ebGRc5juySmuh+QOqN5j5lFEji
+	 tH6WfixVvx++PnA2XoSjECOy+p0aDnH/7mV2YN6pcapz4NTMMe2Mksmxp8tyIqNEYfg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amazon.com;
 	spf=pass smtp.mailfrom=amazon.de;
-	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=EA8Iuxyb;
-	arc=none smtp.remote-ip=35.83.148.184
-Received: from pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com [35.83.148.184])
+	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=SEN7fy4P;
+	arc=none smtp.remote-ip=44.245.243.92
+Received: from pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com [44.245.243.92])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87F3F606A33F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB1ED606A88E
 	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 22:44:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 87F3F606A33F
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DB1ED606A88E
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=EA8Iuxyb
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=SEN7fy4P
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
   t=1794437040; x=1825973040;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=wJjMYgz1PxuwUEJMcsvLW+MBhNnHPcTwlN3u7yQ5KPM=;
-  b=EA8IuxybiE+gReqGh7IToBFy6po5AAaN+BQ8F2nTyjV2pDswX4nfd3c9
-   bqbO6s2LhamC9kQDd3tA8YEIPB40qyvPrucIO1LXdH2T/KnpmqLuprgoF
-   jwDQpWR+J2OOTxlVz6lf26o/qRqcRdnTQWp97G+KKj0QWOZ5ehwAaglXh
-   XHlf5riUqUjsDsqhW5g4xFx0rASkQlm3ZSc/PeQLQDFtLPUuCcwIVa3Lr
-   WKYCgfXRZ273MglzF51/Az9Qe5QwV3NREAu1B9NxauIrxMpXQHpycREXq
-   PznP+mCMCTHpA3wEBwuMMvUnNxv8oOtEq9luXbs3SXa2vPVWX4imL1j6/
+  bh=/cubfczVbnds8zP6oBlBcF/d/gJnxIwiCtc/tjxJ3hg=;
+  b=SEN7fy4PxilCkY4ssqTeFhZupHE38N6uKUuX87CLPSOatoB+uOo68OVO
+   U4FLvAwS2BqFDY+NcE8UGzwlrqGZLpBHj1/wCuFs0N6pdHAOXES+c7iSP
+   Glna8goNnp7M5MjaVzw4sj4HrimUh20i5roOuUR/hXlsfBx0r4blK5LZn
+   gFWt/iv+Kd+j/GXD3aJUu/ASJly4ukval6yKmG9fUmjVcrGxvmG3sJtby
+   J/MIvU9K+u3W8mXym2H8ErPXqWegbQ5qzH+A4NyeaEhiNgCvS1jUVO1jr
+   t/5fAXzASFnYh+FHXfkmTlbD9trIq4n4N0ZK3sWI3SrUeRwYdyRLNHP3G
    w==;
-X-CSE-ConnectionGUID: Cs8OzKSgQCaEFf6lQyWf2Q==
-X-CSE-MsgGUID: e9wvUfnWQSiUc9y4a+yklQ==
+X-CSE-ConnectionGUID: Gf4HsB+bSWOzc6SvbrsRUg==
+X-CSE-MsgGUID: jkQaPXZKQimMvYS+zj3VKg==
 X-IronPort-AV: E=Sophos;i="6.27,208,1787011200"; 
-   d="scan'208";a="33549811"
-Received: from ip-10-5-0-115.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.0.115])
-  by internal-pdx-out-014.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 22:43:58 +0000
-Received: from EX19MTAUWA001.ant.amazon.com [205.251.233.182:23954]
+   d="scan'208";a="33273359"
+Received: from ip-10-5-6-203.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.6.203])
+  by internal-pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 22:44:00 +0000
+Received: from EX19MTAUWC001.ant.amazon.com [205.251.233.53:26886]
  by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.55.227:2525] with esmtp (Farcaster)
- id d283ee22-8d0d-49a9-81b8-62fd5a464c05; Wed, 11 Nov 2026 22:43:57 +0000 (UTC)
-X-Farcaster-Flow-ID: d283ee22-8d0d-49a9-81b8-62fd5a464c05
+ id d4e831c7-c721-48fe-8fab-b625d5675814; Wed, 11 Nov 2026 22:44:00 +0000 (UTC)
+X-Farcaster-Flow-ID: d4e831c7-c721-48fe-8fab-b625d5675814
 Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWA001.ant.amazon.com (10.250.64.217) with Microsoft SMTP Server
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 22:43:57 +0000
+ Wed, 11 Nov 2026 22:43:59 +0000
 Received: from ip-10-253-83-51.amazon.com (172.19.99.218) by
  EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 22:43:55 +0000
+ Wed, 11 Nov 2026 22:43:57 +0000
 From: Alexander Graf <graf@amazon.com>
 To: <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
 	<gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>
@@ -76,9 +76,9 @@ CC: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>, "Shuah
 	<david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
 	<nh-open-source@amazon.com>, <linux-mm@kvack.org>, Jonathan Corbet
 	<corbet@lwn.net>
-Subject: [PATCH 09/40] nitro_enclaves: Document the memory pool
-Date: Wed, 11 Nov 2026 22:41:54 +0000
-Message-ID: <1119ca93f65bd771345d9153c8b8c133e951506a.1794393490.git.graf@amazon.com>
+Subject: [PATCH 10/40] nitro_enclaves: Add NE_CREATE_VM2 with a launch flag word
+Date: Wed, 11 Nov 2026 22:41:55 +0000
+Message-ID: <1ef9f5e8a25e0ed11754e1def76ebd183a819c06.1794393490.git.graf@amazon.com>
 X-Mailer: git-send-email 2.47.1
 In-Reply-To: <cover.1794300002.git.graf@amazon.com>
 References: <cover.1794300002.git.graf@amazon.com>
@@ -96,116 +96,171 @@ Content-Type: text/plain
 X-ClientProxiedBy: EX19D031UWA003.ant.amazon.com (10.13.139.47) To
  EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-An admin reserving memory for enclaves needs to pick the CMA area and
-the kernel parameters that fill it. Document the pool: allocating with
-NE_ALLOC_MEMORY, writing the image through the returned descriptor and
-adding it with NE_ADD_MEMORY_REGION, the config options a reservation
-needs to be reachable, and the difference between private and shared
-allocations and how long an allocation lives.
+In preparation to support Nitro Sandboxes, whose properties the
+hypervisor needs before it allocates a slot, add NE_CREATE_VM2. It takes
+a word of launch flags for the slot. The slot id comes back in the
+same struct ne_create_vm_args.
+
+No flag is defined in this patch, so any set bit fails with
+-NE_ERR_INVALID_FLAG_VALUE.
 
 Signed-off-by: Alexander Graf <graf@amazon.com>
 ---
- Documentation/virt/ne_overview.rst | 83 ++++++++++++++++++++++++++++--
- 1 file changed, 80 insertions(+), 3 deletions(-)
+ drivers/virt/nitro_enclaves/ne_misc_dev.c | 53 +++++++++++++++++++++--
+ include/uapi/linux/nitro_enclaves.h       | 48 ++++++++++++++++++++
+ 2 files changed, 97 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/virt/ne_overview.rst b/Documentation/virt/ne_overview.rst
-index 223ee7fdec51b..4c4b7febaff0a 100644
---- a/Documentation/virt/ne_overview.rst
-+++ b/Documentation/virt/ne_overview.rst
-@@ -113,9 +113,10 @@ each node in turn, and sets numa_node to NE_NUMA_ANY when it does not
- care. Both start from a free thread of a core the enclave already holds,
- and only take a new core once there is none.
+diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.c b/drivers/virt/nitro_enclaves/ne_misc_dev.c
+index 38345ad7c7985..68c497df4f14b 100644
+--- a/drivers/virt/nitro_enclaves/ne_misc_dev.c
++++ b/drivers/virt/nitro_enclaves/ne_misc_dev.c
+@@ -2452,6 +2452,8 @@ static const struct file_operations ne_enclave_fops = {
+  *			  enclave file descriptor to be further used for enclave
+  *			  resources handling e.g. memory regions and CPUs.
+  * @ne_pci_dev :	Private data associated with the PCI device.
++ * @flags:		Launch-time flag word from NE_CREATE_VM2, or zero when
++ *			the caller used the flag-less NE_CREATE_VM.
+  * @slot_uid:		User pointer to store the generated unique slot id
+  *			associated with an enclave to.
+  *
+@@ -2461,7 +2463,8 @@ static const struct file_operations ne_enclave_fops = {
+  * * Enclave fd on success.
+  * * Negative return value on failure.
+  */
+-static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 __user *slot_uid)
++static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 flags,
++			      u64 __user *slot_uid)
+ {
+ 	struct ne_pci_dev_cmd_reply cmd_reply = {};
+ 	int enclave_fd = -1;
+@@ -2472,6 +2475,13 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 __user *slot_ui
+ 	int rc = -EINVAL;
+ 	struct slot_alloc_req slot_alloc_req = {};
  
--The node says where cores come from. An enclave built out of a pool that
--spans nodes has no node of its own, so the rule that its memory be on
--that node does not apply to it and its memory can come from any node.
-+The node says where cores come from. NE_ALLOC_MEMORY takes its own node;
-+see `Memory pool`_. An enclave built out of a pool that spans
-+nodes has no node of its own, so the rule that its memory be on that node
-+does not apply to it and its memory can come from any node.
++	if (flags) {
++		dev_err_ratelimited(ne_misc_dev.this_device,
++				    "Unknown launch flag bit set 0x%llx\n", flags);
++
++		return -NE_ERR_INVALID_FLAG_VALUE;
++	}
++
+ 	mutex_lock(&ne_cpu_pool.mutex);
  
- The pool occupancy is readable under
- /sys/devices/virtual/misc/nitro_enclaves/cpu_pool/, and per node under
-@@ -124,3 +125,79 @@ online when the device was probed. A node the pool holds nothing on
- reads empty rather than being absent. The driver offlines pool threads,
- so ``nodeN/cpulist`` under /sys/devices/system/node stops listing them
- and answers nothing about the pool.
+ 	for (i = 0; i < ne_cpu_pool.nr_parent_vm_cores; i++)
+@@ -2626,7 +2636,44 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		if (ne_pci_dev) {
+ 			rc = mutex_lock_killable(&ne_pci_dev->enclaves_list_mutex);
+ 			if (!rc) {
+-				rc = ne_create_vm_ioctl(ne_pci_dev, slot_uid);
++				rc = ne_create_vm_ioctl(ne_pci_dev, 0, slot_uid);
++				mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
++			}
++		}
 +
-+Memory pool
-+-----------
++		up_read(&ne_devs.lock);
 +
-+Enclave memory must be physically contiguous, in chunks of at least 2 MiB,
-+and, for an enclave whose cores all sit on one node, on that node. It has
-+traditionally come from hugetlbfs [2], which provides the hugepage sizes the
-+architecture has -- 2 MiB and 1 GiB on x86, and 32 MiB, 512 MiB or 16 GiB on
-+arm64 depending on the page size -- and needs the hugepage count managed out
-+of band.
++		return rc;
++	}
++	}
 +
-+The driver can hand that memory out itself, backed per NUMA node by the
-+kernel's Contiguous Memory Allocator (CMA). Reserve an area on every node
-+you intend to run enclaves on, with the numa_cma= or cma_pernuma= kernel
-+parameters documented alongside the rest of them [4]. On a host with one
-+online node, cma= reserves the one area there is to reserve and the driver
-+uses it.
++	/* Extensible Argument ioctls */
++	switch (NE_EA_IOCTL(cmd)) {
++	case NE_EA_IOCTL(NE_CREATE_VM2): {
++		struct ne_create_vm_args args;
++		struct ne_create_vm_args __user *uargs = (void __user *)arg;
++		unsigned int usize = _IOC_SIZE(cmd);
++		struct ne_pci_dev *ne_pci_dev;
++		int rc;
 +
-+Reaching a reserved area takes CONFIG_DMA_CMA, which NITRO_ENCLAVES selects,
-+so the driver always has it. numa_cma= and cma_pernuma= need
-+CONFIG_DMA_NUMA_CMA on top of that, which a host with more than one online
-+node enables to name the node a reservation lands on. cma= needs neither, so
-+on a host with one online node the driver's own select is the whole
-+requirement.
++		if (usize < offsetofend(struct ne_create_vm_args, slot_uid))
++			return -EINVAL;
 +
-+NE_ALLOC_MEMORY on the enclave file descriptor allocates 2 MiB aligned,
-+physically contiguous memory from one host NUMA node's CMA area. A request
-+that area cannot serve fails with -ENOMEM, so the reservation bounds what the
-+enclaves on a node can take between them.
-+It returns a file descriptor for the allocation. For an enclave whose cores
-+all sit on one node the ioctl refuses any other node, so name the same node
-+here and in NE_ADD_ANY_VCPU. An enclave built out of a pool that spans nodes
-+has no node of its own and takes memory from any of them.
++		rc = copy_struct_from_user(&args, sizeof(args), uargs, usize);
++		if (rc)
++			return rc;
 +
-+An allocation is NE_MEMORY_PRIVATE unless the flags say NE_MEMORY_SHARED.
-+A private one cannot be mapped, and mmap() on it returns ENODEV. Writing to
-+the descriptor places bytes in either kind, which is how an enclave image
-+gets into one. There is no read operation on the descriptor.
++		rc = down_read_killable(&ne_devs.lock);
++		if (rc)
++			return rc;
 +
-+A shared allocation can also be mapped, at any 2 MiB aligned offset for a
-+multiple of 2 MiB, with MAP_SHARED. A caller maps one to keep an address for
-+memory it goes on using after handing it over, including after the allocation
-+has been donated, which is where writing to the descriptor stops working. Such
-+a mapping is readable too, and is the only way to read allocated memory back.
++		rc = -ENODEV;
++		ne_pci_dev = ne_devs.ne_pci_dev;
++		if (ne_pci_dev) {
++			rc = mutex_lock_killable(&ne_pci_dev->enclaves_list_mutex);
++			if (!rc) {
++				rc = ne_create_vm_ioctl(ne_pci_dev, args.flags,
++							&uargs->slot_uid);
+ 				mutex_unlock(&ne_pci_dev->enclaves_list_mutex);
+ 			}
+ 		}
+@@ -2639,8 +2686,6 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 	default:
+ 		return -ENOTTY;
+ 	}
+-
+-	return 0;
+ }
+ 
+ /*
+diff --git a/include/uapi/linux/nitro_enclaves.h b/include/uapi/linux/nitro_enclaves.h
+index 16515fe27b692..8e43be9a0a1fa 100644
+--- a/include/uapi/linux/nitro_enclaves.h
++++ b/include/uapi/linux/nitro_enclaves.h
+@@ -46,6 +46,54 @@
+  */
+ #define NE_CREATE_VM			_IOR(0xAE, 0x20, __u64)
+ 
++/**
++ * struct ne_create_vm_args - NE_CREATE_VM2 argument (in / out).
++ * @flags:	Launch-time flag word (in). Flags select properties of the
++ *		enclave slot that the hypervisor has to know at allocation
++ *		time. NE_ENCLAVE_DEBUG_MODE stays a start-time property and
++ *		is rejected here.
++ * @slot_uid:	Generated unique slot id associated with an enclave (out).
++ */
++struct ne_create_vm_args {
++	__u64	flags;
++	__u64	slot_uid;
++};
 +
-+The mapping is VM_PFNMAP, so it holds no struct page references and any DMA pin
-+over it returns EFAULT, long-term or not; io_uring buffer registration and RDMA
-+memory registration are two that a caller might expect to work and that do not.
-+Reaching enclave memory from a device in the primary VM is not something this
-+interface offers.
++/**
++ * NE_CREATE_VM2 - As NE_CREATE_VM, additionally taking a launch-time flag
++ *		   word. The flags carry properties of the slot that have to
++ *		   be decided when the slot is allocated rather than when the
++ *		   enclave starts.
++ *
++ *		   NE_CREATE_VM continues to work; calling it is equivalent
++ *		   to calling NE_CREATE_VM2 with a zero flag word.
++ *
++ *		   The argument is read with copy_struct_from_user(), so a
++ *		   caller built against a header that predates a field this
++ *		   kernel knows leaves that field zero, and a caller that
++ *		   sets a field this kernel does not know is refused.
++ *
++ * Context: Process context.
++ * Return:
++ * * Enclave file descriptor		- As for NE_CREATE_VM.
++ * *  -1				- There was a failure in the ioctl logic.
++ * On failure, errno is set to:
++ * * ENODEV				- The NE PCI device is not available.
++ * * EFAULT				- Argument read or write failure.
++ * * NE_ERR_INVALID_FLAG_VALUE		- Unknown flag bit set, or
++ *					  NE_ENCLAVE_DEBUG_MODE set.
++ * * EINVAL				- The argument stops before @slot_uid.
++ * * E2BIG				- The argument carries a field this kernel
++ *					  does not know, set to a non-zero value.
++ * * ENOMEM				- Memory allocation failure for internal
++ *					  bookkeeping variables.
++ * * NE_ERR_NO_CPUS_AVAIL_IN_POOL	- No NE CPU pool set / no CPUs available
++ *					  in the pool.
++ * * Error codes from get_unused_fd_flags() and anon_inode_getfile().
++ * * Error codes from the NE PCI device request.
++ */
++#define NE_CREATE_VM2			_IOWR(0xAE, 0x30, struct ne_create_vm_args)
 +
-+The allocation is accounted against RLIMIT_MEMLOCK. NE_ADD_MEMORY_REGION
-+takes the descriptor and gives the enclave the whole allocation, as one
-+memory region per contiguous run it is made of, or fewer where runs turn out
-+to be physically adjacent. It also ends writing: the memory is the enclave's
-+from that point, so an image goes in first. It takes private allocations
-+only, since memory the parent can still reach is not memory the enclave has
-+to itself.
-+
-+An enclave's memory is laid out in the order its allocations are given to it,
-+and the offset NE_GET_IMAGE_LOAD_INFO returns is an offset into that layout.
-+A caller building an enclave out of several allocations therefore picks the
-+order first, writes at the offsets that order implies, and gives them away in
-+it.
-+
-+A mapping is populated as it is touched, so it costs page tables for the part
-+a caller reaches and not for all of it. It keeps the memory reachable from the
-+parent for as long as it lives, so an allocation that is only being handed to
-+an enclave stays private.
-+
-+NE_SET_USER_MEMORY_REGION is unchanged and still takes the address of a
-+hugetlbfs region.
-+
-+The allocation lives until the last of its descriptor, its mappings and the
-+regions given from it is gone, so neither closing the descriptor nor
-+unmapping takes memory away from a running enclave.
+ /**
+  * NE_ADD_VCPU - The command is used to set a vCPU for an enclave. The vCPU can
+  *		 be auto-chosen from the NE CPU pool or it can be set by the
 -- 
 2.47.1
 
