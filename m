@@ -1,70 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.13.214.179
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.12.53.23
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794438639;
-	b=vBRzONzEKDUsSS5J6HO5MyaKC2srg+g9ZsqhpwuyXvBCSATO+DGow9h4oa79Ch/S4Pgl
-	 8LSdzVZ6IsGIkLArLfWRL9V4skr/v78yRjVGtplq9xdGBUru0cT8txS4MWxq8cKL5UNWu
-	 Kx6sffjy8bDIbyjiuYNtnPeUYv/j2C7kTlg5SUPdDJfg+zasVTVkcYLi9dIxCB1TSupFe
-	 HKl9epBCiAtSd9ibdXwO1BBLqsIA6ltrChTV2YXQhSV80zBBEgbJc2vjpTLT6pJtnDrLQ
-	 kvYdNXK6QD5PYnlpSyXV8pP7H7iV8vIMq9NGxpOXnMVK4p/CwH2cxSUJYbJtpFx8s1Q==
+	t=1794438672;
+	b=Rr2u7ywVm6SJ55ZzbCnvKkPtfBAO76Mpc6btLjLrpLjx0TxGw6NVZCC5eEha0sYNaV0T
+	 VSSJLhaYIOMbUmJBHKqlfhs45TXj3WZzwJ4q5dfqDDmDDeg7g34yAM3zOUlFhyC9meuRl
+	 f5ZZwI1V50BcXfY/GtRvIiiRsp/iRehsNkhb5Spvk99gSedLzj+OVJt6BV+MxGyT9eiFF
+	 vuEIntO4UDK060AfNnm+juan8ZLyzjyM+LEvVBCajAaMhVd3jdAiZTSG3+bs54ed1RQOH
+	 4DTs1NHkcv2sGs7dO17djx0GQJm0+beXr/LubA85jYN9p/mWwiaLDWL8WFV7MjYk1Mg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794438639;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794438672;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
 	 X-ClientProxiedBy;
-	bh=NCnIXJwEIeew7GeEdm/L9dlF07S94PYfaBGXUGwdBts=;
-	b=CHLi/sT7F5NRn5TEf/Rvs5Er/xZR7s0uCoXzQBqhLxoump9kIyU9tYz8l7IKbnODiTBy
-	 rHyB4y5PC2K1Nt+NAG2nnzriTiH5gtMGFTydggqKWHykIRAunAlL/ul7iYCjLYX1U8jIG
-	 fbg11Cfj6YBmV7whGG+D+gDbDg1n7lmAt6aA4u9sH+eu4QvDv9srDHBrRhZnuiBBlrwR0
-	 I1bbMBwL1e5oZT765tET+jAHko9KJ8uxaGwS4pdl+bO+ZVHUfZCh+jdygSbGgWlLDCbM/
-	 b5UHdq6bsU0FL9BW9sGo1a9mv6XkaEonjgkX3wVaqIRrT9VE5Fdmhq7gd/uvdzjyk2Q==
+	bh=fWy7BP4ZrwP8pEFVqTn9HpToBI15x6F3H7BoABp2EPI=;
+	b=3PJ0q8RTM8NCMbYNXhLhKjpQBYgFfwbVivcS1LPUMk3hWmZ2VUudQimdumifNss6sVtF
+	 ndZ9qQw2TxPGOdMe7p/MvzGT+0zynOO455N0kF1ZhgTcIaFLzWBDpd+8/O8Bb+2jfvpGz
+	 8OH/nfKubFt9K9LFWw+p0hYVbtoX4ABhRjLEHLJGFxTNzhahLoBDk2ZzYmaPtoXMMYMbu
+	 ZeoSEY7Y9GJ4riStSqMfMX3sI3/ai7JGHY2x/jIFW8sCG5JloKfM7nQOJlV+HvIgENqkF
+	 yTM+IVhu0ZYru3G26LurGvf4FcS9tcx9z9yMO32qzzEmw681Ly4ubPCNnQ1aZkz1+yQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amazon.com;
 	spf=pass smtp.mailfrom=amazon.de;
-	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=AGym41kZ;
-	arc=none smtp.remote-ip=52.13.214.179
-Received: from pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.13.214.179])
+	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=amZUwBkL;
+	arc=none smtp.remote-ip=52.12.53.23
+Received: from pdx-out-010.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-010.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.12.53.23])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EA8B606A327
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 23:10:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1EA8B606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35C00606A333
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 23:11:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 35C00606A333
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=AGym41kZ
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=amZUwBkL
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
-  t=1794438638; x=1825974638;
+  t=1794438672; x=1825974672;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=NCnIXJwEIeew7GeEdm/L9dlF07S94PYfaBGXUGwdBts=;
-  b=AGym41kZiZl6o1Kf3Ulykl5JTIsXVTPUyrawmkMQjcZKG3e+9MmnAR8C
-   9iUVXsK4hFIYcrZJZ2ylYzr1jwXADqPfUC/6/8+kVgV+PwdjuPNp3TJ9t
-   N1w5dC6GJq1p2UrU0hVS3ictGGMNXIiHHspKZMhRAL2ra7sxGRQ/t3hXk
-   jeowZgvu6DWGLbWJVgky83EL18DBncQ6LM7QWkds+w15sOLVnRqU3h+gF
-   +I4CtEYeCZzZdFbFZgNUTxdtQ9C80Sz8kV84m0YE6Av2WdKinQpb6WBbc
-   xw9sCu6s1TNDUGklwGn74kj65RbwxUvv7JLc+/+HGX8T2hye+ZFxcttUi
-   A==;
-X-CSE-ConnectionGUID: /fgMkoezTtGxeD4JZ0Tswg==
-X-CSE-MsgGUID: Hu4Um1q4ReSCGa71KDbHFw==
+  bh=fWy7BP4ZrwP8pEFVqTn9HpToBI15x6F3H7BoABp2EPI=;
+  b=amZUwBkLEzAVouAECGaoURa+KEnVn2Tyrk2TdmrPvI6oUfLsYsukMqAG
+   2x2pY62bht0BTHcBrFQ4I2e5Y7Cy1kVhqIts17TcEkie4PeZSZopOvRU9
+   UDtLYLjBraiuW6+grTgEcjHkO8UGKyIhVdF08r04QTEzCn7fu4PNP9X5d
+   BSWmjl9kZZefSwm6N0lZr6502WXu3I1cB2yc5IUWxWh8O97rjzSYYKdCN
+   4TWn96nUBg9X76+blJwYNVw2DwnbGpOJGlWRqpxI+OlmEwHVD8PfSc8il
+   xiLP9e2B7KqS/RCHqI4Xm55P43oXwZ1vuiIvRxwyC5ZqYfZsONBLiT8cX
+   Q==;
+X-CSE-ConnectionGUID: RQ9PyuNdQue3OfBlvbzVWQ==
+X-CSE-MsgGUID: pzf0JfnxTuOsJb/W1g02Bg==
 X-IronPort-AV: E=Sophos;i="6.27,208,1787011200"; 
-   d="scan'208";a="33739627"
-Received: from ip-10-5-9-48.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.9.48])
-  by internal-pdx-out-005.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 23:10:37 +0000
-Received: from EX19MTAUWB002.ant.amazon.com [205.251.233.48:28980]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.31.142:2525] with esmtp (Farcaster)
- id 0791c7fc-c29d-4b30-b989-231e12d448a5; Wed, 11 Nov 2026 23:10:37 +0000 (UTC)
-X-Farcaster-Flow-ID: 0791c7fc-c29d-4b30-b989-231e12d448a5
+   d="scan'208";a="33630361"
+Received: from ip-10-5-0-115.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.0.115])
+  by internal-pdx-out-010.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 23:11:11 +0000
+Received: from EX19MTAUWB001.ant.amazon.com [205.251.233.104:23343]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.12.127:2525] with esmtp (Farcaster)
+ id 7d76ce78-6b44-4386-afba-122728c2c947; Wed, 11 Nov 2026 23:11:11 +0000 (UTC)
+X-Farcaster-Flow-ID: 7d76ce78-6b44-4386-afba-122728c2c947
 Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWB002.ant.amazon.com (10.250.64.231) with Microsoft SMTP Server
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 23:10:37 +0000
+ Wed, 11 Nov 2026 23:11:11 +0000
 Received: from ip-10-253-83-51.amazon.com (172.19.99.218) by
  EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 23:10:34 +0000
+ Wed, 11 Nov 2026 23:11:08 +0000
 From: Alexander Graf <graf@amazon.com>
 To: <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
 	<gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>
@@ -76,9 +76,9 @@ CC: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>, "Shuah
 	<david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
 	<nh-open-source@amazon.com>, <linux-mm@kvack.org>, Jonathan Corbet
 	<corbet@lwn.net>
-Subject: [PATCH 34/40] nitro_enclaves: Pass on the Nitro Sandbox launch flags
-Date: Wed, 11 Nov 2026 22:59:38 +0000
-Message-ID: <70da7aa106af963deb9eb197fcd1c63453e63087.1794393491.git.graf@amazon.com>
+Subject: [PATCH 35/40] nitro_enclaves: Add NE_ENCLAVE_DIRECT_MODE
+Date: Wed, 11 Nov 2026 22:59:39 +0000
+Message-ID: <af6ee68b7edf080cfac1552f3a31a8ffdf42cbf6.1794393491.git.graf@amazon.com>
 X-Mailer: git-send-email 2.47.1
 In-Reply-To: <cover.1794300002.git.graf@amazon.com>
 References: <cover.1794300002.git.graf@amazon.com>
@@ -93,109 +93,148 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: EX19D031UWC001.ant.amazon.com (10.13.139.241) To
+X-ClientProxiedBy: EX19D031UWA003.ant.amazon.com (10.13.139.47) To
  EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-Nitro Sandboxes support multiple flags to enable or disable particular
-bits of functionality. These bits are typically in sync with the EIF file
-and need to get set already on slot creation, not only when we start the
-sandbox.
+Nitro Sandboxes introduce a mode called direct mode, in which the parent
+keeps access to most of the memory it donates to the sandbox. This mode
+disables any attestation, but enables guest kernels that are not aware
+of the Device Memory Buffer (DMB) to work. A DMB-aware guest kernel
+places its virtqueues and buffers in memory the device provides, so the
+parent needs access to that memory only.
 
-Add definitions for the first batch of launch flags and make sure user
-space can only set known flags:
-
-NE_ENCLAVE_PCIE_VSOCK_MODE - Parent may add one single vsock device
-NE_ENCLAVE_PCIE_VIRTIO_MODE - Parent may add (almost) any virtio device
-NE_ENCLAVE_PCIE_NUMA_MODE - Slot may span multiple NUMA nodes
+Add NE_ENCLAVE_DIRECT_MODE, which asks the hypervisor for a direct-mode
+slot. Remember the flags a slot was allocated with in
+ne_enclave->launch_flags. Allow NE_ADD_MEMORY_REGION to use an
+NE_MEMORY_SHARED allocation for a slot that carries this flag.
 
 Signed-off-by: Alexander Graf <graf@amazon.com>
 ---
- drivers/virt/nitro_enclaves/ne_misc_dev.c |  2 +-
- drivers/virt/nitro_enclaves/ne_misc_dev.h |  8 +++++
- include/uapi/linux/nitro_enclaves.h       | 38 +++++++++++++++++++++++
- 3 files changed, 47 insertions(+), 1 deletion(-)
+ Documentation/virt/ne_overview.rst        |  4 +++-
+ drivers/virt/nitro_enclaves/ne_misc_dev.c |  9 +++++++--
+ drivers/virt/nitro_enclaves/ne_misc_dev.h |  7 ++++++-
+ include/uapi/linux/nitro_enclaves.h       | 19 +++++++++++++++++--
+ 4 files changed, 33 insertions(+), 6 deletions(-)
 
+diff --git a/Documentation/virt/ne_overview.rst b/Documentation/virt/ne_overview.rst
+index 012fcb394a2ef..5984fd32ec07a 100644
+--- a/Documentation/virt/ne_overview.rst
++++ b/Documentation/virt/ne_overview.rst
+@@ -183,7 +183,9 @@ memory region per contiguous run it is made of, or fewer where runs turn out
+ to be physically adjacent. It also ends writing: the memory is the enclave's
+ from that point, so an image goes in first. It takes private allocations
+ only, since memory the parent can still reach is not memory the enclave has
+-to itself.
++to itself. A slot allocated with NE_ENCLAVE_DIRECT_MODE asks for an enclave
++whose memory the parent keeps access to, and takes a shared allocation as a
++memory region.
+ 
+ An enclave's memory is laid out in the order its allocations are given to it,
+ and the offset NE_GET_IMAGE_LOAD_INFO returns is an offset into that layout.
 diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.c b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-index f3ad8ddc31e5b..961b821d6038b 100644
+index 961b821d6038b..cccfceeb575cc 100644
 --- a/drivers/virt/nitro_enclaves/ne_misc_dev.c
 +++ b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-@@ -3402,7 +3402,7 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 flags,
- 	int rc = -EINVAL;
- 	struct slot_alloc_req slot_alloc_req = {};
+@@ -3447,6 +3447,8 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 flags,
+ 	if (!ne_enclave)
+ 		return -ENOMEM;
  
--	if (flags & ~(u64)NE_ENCLAVE_PCIE_MODE) {
-+	if (flags & ~(u64)NE_ENCLAVE_FLAG_VALID_MASK) {
++	ne_enclave->launch_flags = flags;
++
+ 	mutex_lock(&ne_cpu_pool.mutex);
+ 
+ 	ne_enclave->nr_parent_vm_cores = ne_cpu_pool.nr_parent_vm_cores;
+@@ -4603,9 +4605,12 @@ static int ne_add_memory_region_ioctl(struct ne_enclave *ne_enclave,
+ 	/*
+ 	 * The parent may map a shared allocation and keeps any mapping it has
+ 	 * for as long as the allocation lives. Memory a region is made of is
+-	 * the enclave's alone.
++	 * the enclave's alone, unless the slot was allocated for an enclave
++	 * whose memory the parent keeps access to, which is what
++	 * NE_ENCLAVE_DIRECT_MODE asks for.
+ 	 */
+-	if (mem->shared) {
++	if (mem->shared &&
++	    !(ne_enclave->launch_flags & NE_ENCLAVE_DIRECT_MODE)) {
  		dev_err_ratelimited(ne_misc_dev.this_device,
- 				    "Unknown launch flag bit set 0x%llx\n", flags);
+ 				    "The memory region allocation is shared\n");
  
 diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.h b/drivers/virt/nitro_enclaves/ne_misc_dev.h
-index f9ef79fafa2be..b0d0438157260 100644
+index b0d0438157260..1fd93bddf7766 100644
 --- a/drivers/virt/nitro_enclaves/ne_misc_dev.h
 +++ b/drivers/virt/nitro_enclaves/ne_misc_dev.h
-@@ -19,6 +19,14 @@
- 
- #include "ne_pci_dev.h"
- 
-+/*
-+ * NE_ENCLAVE_FLAG_VALID_MASK - Every launch flag this kernel passes on.
-+ */
-+#define NE_ENCLAVE_FLAG_VALID_MASK	(NE_ENCLAVE_PCIE_MODE | \
-+					 NE_ENCLAVE_PCIE_VSOCK_MODE | \
-+					 NE_ENCLAVE_PCIE_VIRTIO_MODE | \
-+					 NE_ENCLAVE_PCIE_NUMA_MODE)
-+
- struct cma;
- 
- /**
+@@ -22,7 +22,8 @@
+ /*
+  * NE_ENCLAVE_FLAG_VALID_MASK - Every launch flag this kernel passes on.
+  */
+-#define NE_ENCLAVE_FLAG_VALID_MASK	(NE_ENCLAVE_PCIE_MODE | \
++#define NE_ENCLAVE_FLAG_VALID_MASK	(NE_ENCLAVE_DIRECT_MODE | \
++					 NE_ENCLAVE_PCIE_MODE | \
+ 					 NE_ENCLAVE_PCIE_VSOCK_MODE | \
+ 					 NE_ENCLAVE_PCIE_VIRTIO_MODE | \
+ 					 NE_ENCLAVE_PCIE_NUMA_MODE)
+@@ -203,6 +204,9 @@ struct ne_doorbell_binding {
+  *				so that the device keeps the page after user space
+  *				has closed the descriptor. NULL until
+  *				%NE_SET_INFO_PAGE is called.
++ * @launch_flags:		The launch flag word the slot was allocated with,
++ *				as %NE_CREATE_VM2 received it. Read to answer a
++ *				later call the way the slot was asked for.
+  * @notify_bindings:		List of the notifications this enclave has bound
+  *				an eventfd to.
+  * @devices:			List of struct ne_device_wiring, one for each device
+@@ -243,6 +247,7 @@ struct ne_enclave {
+ 	bool			has_event;
+ 	u64			id;
+ 	struct file		*info_file;
++	u64			launch_flags;
+ 	struct list_head	notify_bindings;
+ 	struct list_head	devices;
+ 	u64			max_mem_regions;
 diff --git a/include/uapi/linux/nitro_enclaves.h b/include/uapi/linux/nitro_enclaves.h
-index 01bec4d072d6a..67be5c383c54b 100644
+index 67be5c383c54b..b346e0582c5fa 100644
 --- a/include/uapi/linux/nitro_enclaves.h
 +++ b/include/uapi/linux/nitro_enclaves.h
-@@ -58,6 +58,44 @@
+@@ -58,6 +58,17 @@
   */
  #define NE_ENCLAVE_PCIE_MODE		(1u << 6)
  
 +/**
-+ * NE_ENCLAVE_PCIE_VSOCK_MODE - Allocate a slot whose PCIe bus holds one
-+ *				virtio-vsock device, attached before the enclave
-+ *				starts. Requires NE_ENCLAVE_PCIE_MODE and
-+ *				excludes NE_ENCLAVE_PCIE_VIRTIO_MODE.
++ * NE_ENCLAVE_DIRECT_MODE - Allocate a slot whose memory the parent keeps
++ *			    access to. The enclave produces no attestation,
++ *			    since nothing separates its memory from the VM that
++ *			    launched it. An %NE_MEMORY_SHARED allocation can be
++ *			    given to such a slot as a memory region, which a
++ *			    slot without this flag refuses. Requires
++ *			    NE_ENCLAVE_PCIE_MODE.
 + */
-+#define NE_ENCLAVE_PCIE_VSOCK_MODE	(1u << 7)
-+
-+/**
-+ * NE_ENCLAVE_PCIE_VIRTIO_MODE - Allocate a slot whose PCIe bus takes any
-+ *				 virtio device type %NE_ADD_DEVICE offers it.
-+ *				 Requires NE_ENCLAVE_PCIE_MODE and excludes
-+ *				 NE_ENCLAVE_PCIE_VSOCK_MODE.
-+ */
-+#define NE_ENCLAVE_PCIE_VIRTIO_MODE	(1u << 9)
-+
-+/**
-+ * NE_ENCLAVE_PCIE_NUMA_MODE - Allocate a slot whose memory and vCPUs may come
-+ *			       from more than one host NUMA node. Without it the
-+ *			       hypervisor refuses a slot that would straddle a
-+ *			       node boundary. Requires NE_ENCLAVE_PCIE_MODE.
-+ */
-+#define NE_ENCLAVE_PCIE_NUMA_MODE	(1u << 13)
-+
-+/**
-+ * NE_ENCLAVE_FLAG_UNMATCHED_MASK - The launch flags the hypervisor does not
-+ *				    enumerate. It answers for them when a slot is
-+ *				    allocated with them and not before.
-+ */
-+#define NE_ENCLAVE_FLAG_UNMATCHED_MASK	(0x003fu)
-+
-+/**
-+ * NE_ENCLAVE_FLAG_MATCHED_MASK - The launch flags the hypervisor enumerates.
-+ *				  It answers for them before a slot is
-+ *				  allocated with them.
-+ */
-+#define NE_ENCLAVE_FLAG_MATCHED_MASK	(0xffc0u)
++#define NE_ENCLAVE_DIRECT_MODE		(1u << 1)
 +
  /**
-  * struct ne_create_vm_args - NE_CREATE_VM2 argument (in / out).
-  * @flags:	Launch-time flag word (in). Flags select properties of the
+  * NE_ENCLAVE_PCIE_VSOCK_MODE - Allocate a slot whose PCIe bus holds one
+  *				virtio-vsock device, attached before the enclave
+@@ -440,7 +451,9 @@ struct ne_add_memory_region_args {
+  *			  enclave image goes in before this call. The allocation
+  *			  has to be %NE_MEMORY_PRIVATE, since memory the parent
+  *			  can still reach is not memory the enclave has to
+- *			  itself.
++ *			  itself, unless the slot was allocated with
++ *			  %NE_ENCLAVE_DIRECT_MODE, which asks for an enclave
++ *			  whose memory the parent keeps access to.
+  *			  An enclave's memory is laid out in the order its
+  *			  allocations are given to it, and the offset from
+  *			  %NE_GET_IMAGE_LOAD_INFO is an offset into that layout,
+@@ -461,7 +474,9 @@ struct ne_add_memory_region_args {
+  * * EINVAL				- The argument is shorter than @flags, or @fd
+  *					  is not a descriptor from %NE_ALLOC_MEMORY, or
+  *					  the allocation was made for another enclave,
+- *					  or the allocation is %NE_MEMORY_SHARED.
++ *					  or the allocation is %NE_MEMORY_SHARED
++ *					  and the slot was not allocated with
++ *					  %NE_ENCLAVE_DIRECT_MODE.
+  * * EIO				- Current task mm is not the same as the one
+  *					  that created the enclave.
+  * * E2BIG				- The argument is longer than this kernel knows
 -- 
 2.47.1
 
