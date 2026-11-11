@@ -1,13 +1,13 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.30
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.33
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794404595;
-	b=V6svEbgUws3TZUF8WlJrS7koijZQ6rEQBnCsV0n1Fr3p6niHuacvFyMP3pmzHZ3bspKy
-	 Njx1hVzAsC37+BPasZ2kW4fhCijvikFgOW/jFWjbiyJ0fny7FBA21yrvDPReOP69wdGZN
-	 WeavrXUfH609dbq5KbUtrQxpJVt5N64WEVXrcav1jsxOoOHl1EKhGyXpgXLt8yxYa+Tzj
-	 hlvns0KYmBg7njNVZCRjdGurR1xa9Sqn0UrCxkefBRyHM5XpR/mM1sAONi12LWy9lSPHk
-	 Ixl3r8LoThhVc85vld+Y8blNC4erEl5xTTFFDx0btjcbd7sO+0fiTfPV9JBA39gkD3w==
+	t=1794404602;
+	b=m3zdyGZaoOWHeii9AZVCRO7SGghJyrL41ydaIE2WUgkpJBS1hPJtfmTOy0soD17Bc+dk
+	 kCzLANQI0SPp4YaVXdjvVEbzyF0jWQvWMyHPHB/RbyNv4Jc3x+Uf1dK6q8mplRUTp3i/5
+	 ZG0dpvNk4/Us5+8cJ8671FMtPdMcPpNkBrluIJ5kM6pErS/GNrIkd6U1Un9XYdM9rbyAp
+	 njScQlisciexNTUIZ6pdKiUTWgMNme9cTntHCT9/d62hilsObf3D1I4Z7Y15orRXnSApS
+	 9nNMJzFYrsmIT6ACCQ66U6UGe99XLP5VUL8Z1I+sV67tQ0D3XqFzQ7dE3/dWZEiEdsA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794404595;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794404602;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:From:Date:Subject:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc:X-Mailer:X-ClientProxiedBy:MIME-Version:
@@ -24,61 +24,61 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=0uRGnGYWtVsLx30X/f5FNKOnsr1AG3Qpo7q24CGjgzs=;
-	b=l6giX70LTl7YRkid9/akiVGwWv7daxm3oSeT7AWDTm780FYdAiVcwSs4JaavjagAINiw
-	 YZCP4YDluKqddzKOXK6LLk49BjHtaIMLeF8NDP7KFcP7hCeZzdLk4VdRdcZsaYzLuXD9b
-	 7LkuY25acwqTmPxNL9t9qEqGTMl1sMwLTrlm+59WEE9z2iTe4I2JKq71V2oadGRtN5Rtl
-	 vWpuMFJcQoGdfKzXypGgN88Ciu8NkIOznogYNvae2zkRlsxWVrKHbcIsl2JyV3UZomaAG
-	 vkuSAI6XCzYe9wBhkrU+MG3Dm32sLsYgBvrkA7RwJi+S9sqTVqAJHZRmkqvpCRCF8Mg==
+	bh=mKYYQ27MTtrrNZha95pQu8ZURoZIIyu3o1V9iakQjNg=;
+	b=ElpE7eQ2pHpYvU+c5lIRTTW+FDX803CyQxjS7Xgt8OV76sDuwTfPuN41YVdX2IdNveZN
+	 3RGOgngg3UnY37fov3ty8TECekp73Q+UAdlduU1+7Hglhw++Da+9RvIrPyQEYlb6irXy8
+	 AKu1VmPWCB/3VTWpd5iacCEtUWJrsk+zs+Tl6KJ5arhQHtuXNTqGYbkKHwOYIY2OAXDXm
+	 1v/0tWlZGHT1GHHLJW+cTDLmN2kd6EjL20ezBnKA3n8MWiuU31rAdnOEQE2rYZ1E0qqwe
+	 TlOD+vxi2aMmhDsAWniQ5aEkLgH2Dawar6CpCc3oAwIfr690ANv98TY1xA2nkSxgyCA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=oss.nxp.com;
 	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=YaRNaPiR;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.30
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013030.outbound.protection.outlook.com [40.107.162.30])
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=KpflFkc8;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.33
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013033.outbound.protection.outlook.com [40.107.159.33])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59387606A339;
-	Wed, 11 Nov 2026 13:43:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59387606A339
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A88CE606A8AC;
+	Wed, 11 Nov 2026 13:43:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A88CE606A8AC
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=YaRNaPiR
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=KpflFkc8
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=S50GVTevGZ2Ecbf4rw1i8lTtqM47/UsP40aIwafLxdH7Qm2dHgU34SQZz6SOlejt40xP1fOab5aAW5W3WIxkueoecgvRM4SbsM4xewvX5PscjdzWcAGtvBqEbNB4QeFpULizvTp68qgf5dUniXKWYD62DagCjssZQICEUpw17Wc7re8aJa+U5B8xfSRQGAldhnHrThEa4ODeqISdhA7r0yOrWuhZFeerxv003rkrRilvnsIAcYw+3sUwu5+Gv1MgVE/bDIgAjj+qZHImyx6B5InNCu0nYEda5JPFBnzeprxxLVMr38iJmS7W7ooxH5WOE3L03/s2JYSp4pjRPyTwoQ==
+ b=plFtO6ko/xAGwIjgqRKbcpaoa2m2HH0SYKYegtFM6sdr5ZIYzYg6J/MAOoKE+0pExGc4mwSXwActWhTOw5qyAwPIemvuT2lzx2iV028qdP4mLsX7WthDMa47FyvlpnLNrNhtmqispYFm9ij0+tdbOji1+7btismbccKPV8fLdiN8FZZVx7DxfQC5pe/KsLxODhpOVLroZ/KEbCTiwtl4X99ITtHQGmhtSAizYXfuvn5/YhGOSMsKKqwixrFRA7LgwGBHiKUDAQt6UujrRyNkDu98IQN9enAb3zVHJxRTTqowXIuCBX5nT5+j96u0MY/vjPoEsqF89UJBd480bM06Aw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0uRGnGYWtVsLx30X/f5FNKOnsr1AG3Qpo7q24CGjgzs=;
- b=BBMdaiKemYSTsebNjHUGQg8yQ1OAig+8hyG0Ht06qmQ1qo8KP/lrsjh5DaKKfHtoK+BZdQePPyjMBrqO2Wc+rfb+Qonsn+3fvsnWjbTvsQXrPYXZbEovQip2bC/2R+Gt/g1zBbUuCoiw3TkVyaC52pQEp9PGURF2UzAxgqZNGJqspBH64UXmIEtF3ys9goczG2AaOW5nI7HsXWkWfdNwrqX3OFUOc47QB80PBCOCjOUmY4ZO32+iSnUJ1VU2K/r1Ki4TM5RTDDowAWYx1JzP9xTlZ+M7a4COeeUhx0d1dd77lKw4RTyNAfi9F7bCijqv8LyxCb1cVHWe9N5jg5S9Ow==
+ bh=mKYYQ27MTtrrNZha95pQu8ZURoZIIyu3o1V9iakQjNg=;
+ b=H1BAMxjxbJKJScmxKwJGxFcdxFe/gnFLXIcpU7F+1Odh6sRhfSxukakAoIlEPebDY2Vhw46joASOhcFfjqgMNuvhx1QSnToRmZNf9LyWEiYAWfFC2NlyFmwj4QEcSCArmwNfVYBrm8WC1Z19Pn3BoysFjfbLeNCP5j1HN7MdyLrcOJjhl+SZ+Moz1AFkNXIsMOo26PmBWI7QnUrewyBCUPSfLij9u0xKpJtvbnJNqgwaMCVNP+18RAq44ByTo4aW3Zc+Yfw+jNzyJgLj7CcC+yYvZO9Kg3FtPLZps89M5EdPkzehCNtDoNaunoq9Y6OdfbuAI6tUtS5RRYZ0v6sR4A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
  s=selector1-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0uRGnGYWtVsLx30X/f5FNKOnsr1AG3Qpo7q24CGjgzs=;
- b=YaRNaPiRW62oW9AHoDl2mbW+hi0bLMIr8WWRN6XgkEd1U74CUa3CmNHD3H/PdBDy7qzdqdoczJ4a6o/MpcB0dqCEGEGnB/J/mYKGwPIXQ9YMjnOAdcni8FWm7lo7EyAcwB8DxtbaejEA7z8yjCGFAq2np5Y/m5FQUjk2YE2XrClqlnhoITWX60GtVppvf5BfPzi7T4DM/yT3KEv5mEE47XdAGxpzOEXYIC54rCkiIYMMLBS/ibH0x5Mfq+epAiMB/7OeZ/7ZplmXeEYGNAAQl8tMFeM4XJs+eQG2zDRa/YUj0NMoOUr2WeFWn919p3XhxaorBqwQk+j9wLDlexGtQw==
+ bh=mKYYQ27MTtrrNZha95pQu8ZURoZIIyu3o1V9iakQjNg=;
+ b=KpflFkc8wGQ6rOudhY0VvFGQ2sscBEpnNADD9S1AnkVwguW959bt6KK9hH3TybwA7JpjxRl0yYlkMWrBpEQ+m7w6B6Gu7mve1Xdr8019q7mmUr+BqDw1UFJu4WXrlK3uRuOfsDuFvPgnuDbhlrH+Fe7Vn7WPH+GPK9zlhLImxvC4vYKDl2MkmIFXjL445df0o6bVSh4q+MUvA1PX+gEFK5A9G+bDFdn8Bmesvygqjaqnyab5NeG3GK2oh1tq6qR+Ohy9WDLXNVyrlNaUQgY7/Uwd+/+k87OblqyKMsU5NZVa3kG1GnPROrXCdUI5+ZMdWaOuMHjzftyfAprOcPyKJw==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=oss.nxp.com;
 Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
- by CPHPR04MB721690.eurprd04.prod.outlook.com (2603:10a6:380:104::11) with
+ by MA9PR04MB741259.eurprd04.prod.outlook.com (2603:10a6:250:10a::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.9; Wed, 11 Nov
- 2026 13:43:11 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Wed, 11 Nov
+ 2026 13:43:18 +0000
 Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
  ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
  ([fe80::ac38:1699:6f18:c5d9%5]) with mapi id 15.21.0615.007; Wed, 11 Nov 2026
- 13:43:11 +0000
+ 13:43:18 +0000
 From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Date: Wed, 11 Nov 2026 21:47:34 +0800
-Subject: [PATCH v5 6/7] dmaengine: fsl-edma: support per-channel DT child
- nodes
+Date: Wed, 11 Nov 2026 21:47:35 +0800
+Subject: [PATCH v5 7/7] arm64: dts: imx95: convert eDMA to per-channel
+ child nodes
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261111-edma-iommu-v3-v5-6-2537cebe6ca2@nxp.com>
+Message-Id: <20261111-edma-iommu-v3-v5-7-2537cebe6ca2@nxp.com>
 References: <20261111-edma-iommu-v3-v5-0-2537cebe6ca2@nxp.com>
 In-Reply-To: <20261111-edma-iommu-v3-v5-0-2537cebe6ca2@nxp.com>
 To: Frank Li <Frank.Li@nxp.com>, Vinod Koul <vkoul@kernel.org>, 
@@ -97,8 +97,8 @@ Cc: Frank Li <Frank.Li@kernel.org>,
  devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  Peng Fan <peng.fan@nxp.com>
 X-Mailer: b4 0.16-dev-7bc12
-X-ClientProxiedBy: SI2PR01CA0015.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::15) To AM8PR04MB7874.eurprd04.prod.outlook.com
+X-ClientProxiedBy: SI2PR01CA0031.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:192::11) To AM8PR04MB7874.eurprd04.prod.outlook.com
  (2603:10a6:20b:24d::9)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -110,493 +110,891 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|CPHPR04MB721690:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4e141e43-323f-42bc-43a7-08df3ff9ba4e
+X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|MA9PR04MB741259:EE_
+X-MS-Office365-Filtering-Correlation-Id: e245eee6-02f3-4a9d-2a64-08df3ff9be0d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|23010399003|19092799006|921020|10067099003|11063799006|261009223027099003|261022105027099003|261022075727099003|261021123027099003|261021121427099003|261102123227099003|56012099006|261026140227099003|261026121527099003|261028144727099003|22082099003|18002099003|6133799003;
+	BCL:0;ARA:13230040|19092799006|23010399003|7416014|376014|1800799024|366016|22082099003|18002099003|921020|11063799006|56012099006|261026140227099003|261028144727099003|261009223027099003|261102123227099003|261022105027099003|261021121427099003|261021123027099003|10067099003;
 X-Microsoft-Antispam-Message-Info:
-	T9nxlE4uJcN8lmROgWQxoG1NS7KiHHTSD22FAcZCzkmbkDuEjf6KtQtaOnpYmc8QYgDF5/83HXLkjG7a34BjTnLMeFSTdmxwsDeAbShNmXoQxHRDu0KFRuACVQ619z2UIYz9dj/yfkYho3lrJcEOf9O1oVx3eTPGKR1zrsKzssZtLpGq8ZmRol2AoVvb+61qfY2aJT3Eqqq/ThXpSSInzYghTHgtQonzEpDNwhH6kQ7jERFNKCfS3pnsKrycqFWrOvjyL+PnF1+0Rfsj/JIU/yrPZgmzo8/iD7+6Bhmj5cExUnFdiHkt6Gip8CiA7U5NRPt0wwesfZRnczlnHl0Wklbs5AniybKCn2qLJ2/cDChpK6zBuPkFgyiaa0lFestaNLjAmXiWgmhCi3vbEpwAcNd50oTRSJscBCCtCm4rTYOoonhk0ZaySFw1Bn0l6KSQmLbxidCBunQUq3DFmIeCrJZx0d36C64C27ejhCWPDkAQMU6My+XAsYyCZ4pw34tm/rjW4RCBZGluhrg0nY7KxmImTwfN8VSb05LlYoLMAXY9huZyBIa0h/S73l7hV70eC5hYvfQcm8GvtDcLqkj8JYneU10SUjzB1auJQATa6AuKnDt3SwJzIZu6NiAaIM/CrgcC7G1TaO06/R/euqM4Hm4nbsecpncZN0wG3TqEQ5Abw5kHihlkFIHP+pQ/SUO2KiXFBe5s4FIYqLfMJS4RKw==
+	pQBBGGQSltH220mRMbPraX7SJNMZDhyPdongauGmm4JIjWIla4ZQfi2cELFQBCH7D2UwrAq8Vrqd/ijjZttsfSckBlMKWhCeYPgfQr6qLcyQhfNzyoDJXQN26tthZoA9Qs8snpDwvt/ovjyLnnVggjtmQBQwm6jwiNkSMBtHeKrX15X82n1Kcs5CS/PIDQOIdTw1wU/TwqkthoCPiR04RF7rjoVQGqlyLh9r/FLixiO1/f/g7+u3AofUOFXJHU/jVMjNJZoFC5u90vrLVjWytOBsheU1/E6bAO8tiqQkgHL9PJ2ErgghCtWpTQUmjYIfYxqgDduWNHNEWAtshckIgZWlbzaoTS9fWNTt/XEPJBwewoSLzSxTsgATCsoYNLDSwm3ibYoeCSe2vzHI8OVlrmBp2gaRduuA+/pAIDa/upaOS1E0htD+Rl+YFXgaNRWsi8RpF6i9z+PSZQHKifkARSGr+x+l4v+sMDVG/ch4x5ARWRSkKfqBPHY5a5KvX4zfDjndRldpwtHdu4MOzP1pyYFe4bvoGGfTiXz+ElYg6jqQTUZB5rJEblBDNQqg2E5qvgLtgoAVwR/oza9siYKfPMGdT4ky4tM8IGF5G5yP6n/lM58Kd+i24gZcjvDJkHj7TLZy8REBUao3HwiQzg6xEinN9glm2gekM2eIsQHzWh4hUiUVd3ToWNKRMiOPlnhQ82C0oRUSi1gVDEwrGAUahg==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(23010399003)(19092799006)(921020)(10067099003)(11063799006)(261009223027099003)(261022105027099003)(261022075727099003)(261021123027099003)(261021121427099003)(261102123227099003)(56012099006)(261026140227099003)(261026121527099003)(261028144727099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(23010399003)(7416014)(376014)(1800799024)(366016)(22082099003)(18002099003)(921020)(11063799006)(56012099006)(261026140227099003)(261028144727099003)(261009223027099003)(261102123227099003)(261022105027099003)(261021121427099003)(261021123027099003)(10067099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dmgxNU5jS0RyeHRjOXlzWExHQVFqOWFTRWdNNCtRbTdLLy9PdXpYOStQVkNE?=
- =?utf-8?B?YVBDc2dORTk5SjVxcnhXYmM1WE1lcENzSUR4TWZTSEloWDlZMEY0ZWFnNmM2?=
- =?utf-8?B?MW1JUzVSUTFJUWZ5M2ZRWkYvRWw0bEczSWlkUUY5dlhLMVUxRnJCQmhRSlpV?=
- =?utf-8?B?ZGVncllhbCtZdGd2RFMrOE5MT1B6Rm5vKzEvZ1hQSC9leWVJdFdOdHJLU1FS?=
- =?utf-8?B?RjlqWFhPRVJkc0tlNWNvU3A2MitNMWNHc3l6cjZ3azBOak45TE1DSGUvS0hE?=
- =?utf-8?B?Q1pVQ21JeTNKN0NVamtZbS9ScmtaUm5QR0JraUl3QmoyeEFxczJlK3NDSk5K?=
- =?utf-8?B?cC96OHUrTEl0UUg3VXI0eCt0SHBDV21BMGgycjJ5Q0xGbDNCYzlDd1VKRm1G?=
- =?utf-8?B?SU83ZEdkTlYwWmJad0lhVHdTUHBUTW95NTBFaWhsbUxNSEtWRjlMQmppb1Fy?=
- =?utf-8?B?UnBsV29BMmxudWhmOTJTeVRkVEIxZkp5eGFrS09IcVRUL1h3UDd0d2xTN1Yz?=
- =?utf-8?B?SDhLMVhWa0hsdmIwV1V0MVR4Zy9XRklOZkdsSEQxSXdWNWpjckJEdis0dG1P?=
- =?utf-8?B?d29PVXZNdE40bkx5M3ViNUJmeEhNMWU2dUw1dlNiR1p3V2R4V214aEd3dXY1?=
- =?utf-8?B?WlJpY2Zha2c2ejVsUm1HbXhFY0NBeHlBazFaVHBGTkM1OGw5RmttR2txNEpU?=
- =?utf-8?B?RnlyVjlyaVNHTjRydUlCeEJYSUlQZ3Q1T2srR3FXMGxCdEFGYUxWcFdXMmZW?=
- =?utf-8?B?cGZXbVNVTXFub1pMaElWSG9lNS9NdldzTlZ5cDlQa2pyWHFBZUtoaDc5QUlX?=
- =?utf-8?B?aExaRE51YTA0YXBIUXYwaFV2aFB3ckRaeERVQjg2cEs4WUt6ZFRMRjVDZ1R4?=
- =?utf-8?B?UjZyVmtRRnhwcktqZXlMcitxdDlXRnJSUFQwckRnUzI2MXFBVmZlNU5LK3VV?=
- =?utf-8?B?SGZobDdJU3RpUDBDbG1vVGZRcjJJaGxXMk9KdURCSi96U2dXdExtU0xqczNw?=
- =?utf-8?B?ODNiM0RMOUVvbEZIdDVxbDNiV21SVitpdjlCa2lBeTFxb0pzTGJhWTUxR3g3?=
- =?utf-8?B?aE00bGlnZEZDMWltY2NmQ1U5M013TGVHd2xSTmZzOGdoTFdSdi9Pdk0rVlVE?=
- =?utf-8?B?WDVOeDRyQUVCSkhNd0lxc2tVb3YzcGxGUGNtR1JtVFFUZHZvejNtc0V0L29K?=
- =?utf-8?B?OTBFSGhHc0RqdTF3a21udkMrUGduNmVscTdDVU1ObUNCcElCUzNDWkpzWU9U?=
- =?utf-8?B?cmc3N3h0a1JQRGVxeGplaklkK0dGcGdYQjk0ZmZPYkNpRVFmOUpvMHRJeXRS?=
- =?utf-8?B?SzNLbkJWZW5KM0RtdTlhOERzcSs5SEVLL1o0N3V6YURuMkRCdFdZOU5GUmhz?=
- =?utf-8?B?TXYydllVNzBGejNIT3lxWXFqZEN1dFNnMU1kOUp3WkZOeHdqdmNGQTg5VHc1?=
- =?utf-8?B?RzllRVBEeW9sWjhuNWkzRWlCaVFhNWVQdFphSG0wWXdXd1N1dVhTbEJBd1h0?=
- =?utf-8?B?VldPTW1teVBkaUtpRUlzdmpNZmttRXlLUW9ybGlEZGZKZGZTbzhrUXhCT3BY?=
- =?utf-8?B?L21TU3d0QWhpMGRBeFFnZmxMZ2t4eWp2bXpnVXpYN0VMWUM2amp3ZEg1ay9k?=
- =?utf-8?B?UTBEZ0lXRFJ3MHp2YVFGd08xZTR6Tit6M2FBRnJNblZDcDByZC9SbnNDQ2pV?=
- =?utf-8?B?Q1hxM243Mzl6bHNlbWsrZ1RVbVgrL3FlRlZ1cnovcXhWVGpvSWgwZDgyLzhs?=
- =?utf-8?B?RlByOGJ0Vm5EdVp5QzdkWFVTNTl5eS9Lc2U3UkdnOHAzbU1JcGtRZDdMa0JK?=
- =?utf-8?B?TUtsZnRkamJoOEpmRWVvMTJUckNDVnZzWk93aDV3aFVTNFBDYVBVZGd2NERV?=
- =?utf-8?B?RFJpVDR2cVphZzN4V2tPWGhqU2tCdGE3dEVFaWVaVUhTYXVESnJDTWUyODRD?=
- =?utf-8?B?aHlwTGRHNUg2SHRrWm9iY0NEVTZXYjgvbXIwZnRYUEtCanRRYlZHa1M2QTFz?=
- =?utf-8?B?d2VJZmYwU2VFLzFlcURwbUtuS04vSTArdkUxSisyZG1HL1lCcTJKR2pSUzdQ?=
- =?utf-8?B?M2U2N3NSV21vcVE2cHhCVjBpRmtLbDR2U1VnREY5dGVJRU5NQzFsdlJ2WGlZ?=
- =?utf-8?B?bU1IRmh5NGVJUnF5WFd5cXdkakZheDhTK0MvamVoWkpJaSsyQW1INHc4QUV3?=
- =?utf-8?B?cnMvbUxhZ2Qydlg4WUZtT3psMkZwalNWTmU1NFIrTHZNUm1Ed1V5QnRJOVp3?=
- =?utf-8?B?OHJKdkhoaGlSWUNOU3JhTW1ncEgvcG43YU54WHUvUlg3SEUrOTZvRjFLKzRT?=
- =?utf-8?B?Qm1IcW9QNDhGU1dHVE9renI1M0ZrbDFnekt0eldqcXI0RXJURnh3ZElrd1ZE?=
- =?utf-8?Q?MKE4vdwQZhpNjXbJYu2qsrv6CmBfGet/+vykl?=
+	=?utf-8?B?cE8zcXNrR3RGSExyTXNkbERlMHhybElMZ0MzSDFhRVZQMFNFOUNGbE5QWUdo?=
+ =?utf-8?B?NWJiL0kxWHlyREQ2VFZHWEhDN205VVZ0cUp3K3N2QS8xUmxWazZiam5oWWw5?=
+ =?utf-8?B?a3doT0lRMU55bHJ1YXJzZUlaK3M1b1AvMFhOQ2Vqa0dFYS9uQmpXQ1RxUCtr?=
+ =?utf-8?B?NDNyNk1Rc0diRHA1dEtWZTBRaWo5SUYxVGg1YjdSUEs2TGg2VW9yaHFvdjJq?=
+ =?utf-8?B?QUYzQ2grUXp2QkpPTGxYc0hmNHVLMlZDdWxDVys0bTR3SkNNRUtuQVBNWTNt?=
+ =?utf-8?B?MEdISDIwMTArRjM3ZUM1TEdaZFB6OWVRMmVQZDdaN2twZFFiZTVWSzBDZ0FQ?=
+ =?utf-8?B?dlljUUVJMVl5S09oeXhtTDVwWnFwWDNmUEZBN2Q5U2ZWZG5jNm15d0tYaVkz?=
+ =?utf-8?B?TFJnakNnN1V5VmNxRkVtMEgySDB5SWtTQ0JUUUlCU2kxbWZ4Vk8yWDYwZUF5?=
+ =?utf-8?B?N292cE1KU2xhbUNTWGxDM25wYnhjL0lrWWhEcXJyWXVjMG1yUFdGN2t6UXpk?=
+ =?utf-8?B?cm15TGl3RVU0S3RBNTVIdC8vMGI5NXc4VEVaeWtMTVNMbXlzUnFjdE0wZHpG?=
+ =?utf-8?B?MzBTcmRkdFhLVzV4cmZJKzRxWHdTV0hQb0tXNWxZeWlldGg1NXJFQ0k5SzZv?=
+ =?utf-8?B?b05QN1Rka09zamNsZWVHRENURVd1cWJraHUyTW9Ga0JwdE40Q05JSmY0bTVL?=
+ =?utf-8?B?Ym1tTGdiNS9mS1lEcUVVejlzT3c3WUZXYzR0RWtwOU5QN001ajMzdXc5R3E2?=
+ =?utf-8?B?MnVnRHFKNVUzWnFsT0pyclZKcDYvVklaKzcyWDhGSHExMnNRZm00NWZaSzRn?=
+ =?utf-8?B?aG5xa0xTSXduVXNHWGFYRFFvQnF6UXR6TVBXVTRjcWptb0lFUjJVekhnS25m?=
+ =?utf-8?B?djcrbGI0ZllJQXZOUUVaZkRwd1FpYUYvZlVOVnRMSUJ6Z3BjbXMyM2xva1lG?=
+ =?utf-8?B?di9EUGFvL3pCam5lcDBZYncvSUNva1ZtVkRaMXJGR2VNck5tSTdvM0xOZmFD?=
+ =?utf-8?B?bEZFejNiWWlHV0xWTVNjeDUxUzJWWkdvUk0zaW1vcWJoY2FDWVV2Rkx3OU9G?=
+ =?utf-8?B?QVNxRDRaa1RQNUlkSHNudTkvWmVpS2l3VmpkS04yNVhGNGJYRk91V2VNaC90?=
+ =?utf-8?B?WEdIVHZlWVZ1d1JHMmUxK05HVFIxaUhoYXMrUm5ucXZNb2dGbzdEVE44V2cr?=
+ =?utf-8?B?UWlrdWZBUklMb2ltdHVvVHFNVmhFNlRDRmpRSWpQQUt2ZHUveERORDNEbmh2?=
+ =?utf-8?B?MWdIeVpudnQvWW81QXF5ZjdJcEd3aTNUejRCQk1MZ0NSRUwwalpMTnlqTzZB?=
+ =?utf-8?B?ZXRoQzQ0OFpsaks3eTZkbWVXZCt2bUY5bERKSkZFc0xUUjNEek8vajdDM1ha?=
+ =?utf-8?B?OVgxc29NdWxrb2ZaMGxqaWozRjZ3aEJ4YlE1UHAxYTFWODFEc041Ykx0dExP?=
+ =?utf-8?B?Q25KdDFQa1FiUm8rV1dTdkRiK2xjd2xPNWJhNVp0WGRWbG1Jb28rQ0xYODY0?=
+ =?utf-8?B?eWVkSVVJYy93aXNCOFJtaE1sL2syOGlXVG9lcXlZdWJ1RURIcnZTemdUb0wy?=
+ =?utf-8?B?K2VxdVlCaHBTNWtHa2VhVDd5ekR2OU5FdEpCWS93ZS9UR2laWUtqeTl6dXZ0?=
+ =?utf-8?B?QU93QWRoN29wOWxpcTlXL0I4OWRQcDJ2RjVhbkxrMlJ5SExYbnRXRUlPNktP?=
+ =?utf-8?B?NGllcGFmeHNNbXU5MUVQNDdmQStnREJFS0tBRlZVRjh0VXRBRlE1djVoV05o?=
+ =?utf-8?B?bWVRY3JWUW16L0RCWldpL29WbmNKQUM1RjBSWWhnYWNvZHU3ekY2NjZvYUZ4?=
+ =?utf-8?B?SFI4bnkrd1pWVXV0cUFQQXM2WCtQaFpuTnA1VEgyMFFmbWUvbUJlR1hIZ240?=
+ =?utf-8?B?ZDZrbTN4cHBQT0xmNEtvRFk1K3FhZThUQjNSTE1yK05lSjhuQzI2MmVQU2g2?=
+ =?utf-8?B?RHFLUkxMUDZHUng3WC80akpBcDFrcVlVNE9oNE9KWFdRSlJTdW5iYzNlaTly?=
+ =?utf-8?B?MFVYQmlhaTZibC9Tai9idzNyejNJSlhuTlpyckV5ZVkxVTJEb0F6NnozR2Fr?=
+ =?utf-8?B?cXhOS1FjMkxjNjVtaEhEejk3N3kramhma0FweG9hTDd5azRROUtlcjBYNmJF?=
+ =?utf-8?B?a05OY2JFRVVPS1ovSDE5NWtjUStPNG1rdUtuYlJlMEJXamt0Mko5OWVrZkJX?=
+ =?utf-8?B?YnROTmRpN0Q4czVHMDBBL0VuZUtlQ2Y4bnhNWnJkbWcrbW1TKzhSbzcvaTNZ?=
+ =?utf-8?B?SFp2QzJjNUZxOFZSUWRFbm9sUjVaT0VFU0N1VTloUHR2Y1ZKcnZwdVNxWERy?=
+ =?utf-8?B?NCtKVlc3V1o5RlExZ0x3bzdvY0lxT1ViYk5HWHV0cmhsRUxiSzZQNXhLa2tD?=
+ =?utf-8?Q?18F8ujh9KYzHOIKgYomo/q6Ivl2IBRvACzGGt?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e141e43-323f-42bc-43a7-08df3ff9ba4e
+X-MS-Exchange-CrossTenant-Network-Message-Id: e245eee6-02f3-4a9d-2a64-08df3ff9be0d
 X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2026 13:43:11.6674
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2026 13:43:18.0653
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d8CkngmreVOIrUCiKSiEcwfCeqvDp5F3h7sj7zlKF6NQoXoOIYcKzo3YLRbdj/kYAoPFTXGB2j4U7IpvKcumtSdOutwFghSZzDinMzfow5DFmIZQM0C7Y9gU3SRo/0Am
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CPHPR04MB721690
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5rPhQNVT/RyiiG+BXcYQCEnGEckj2h1FuRYMxO65/HOrRdSY6tWuJqay1p/V+ZZQYYhZHxR0cDVp2Nj0f0JipWyIGUJ5P0C/9Z9g/aOqtssFl/KFeWoFWElcu6LEdjU6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MA9PR04MB741259
 
 From: Peng Fan <peng.fan@nxp.com>
 
-Add support for parsing per-channel child nodes from devicetree.
-Each child node can carry its own interrupts and iommus properties.
-Child power-domains are not handled here; power domains remain attached
-at the parent level.
+Convert edma2 and edma3 from flat interrupt arrays at the parent node
+to per-channel child nodes (dma-channel@<addr>). Each child carries
+its own reg (real per-channel MMIO region) and interrupts property.
 
-The implementation is split into three functions:
+edma2 (64 channels at 0x42000000):
+  - Channel N at 0x42010000 + N * 0x8000 (size 0x8000)
+  - Paired interrupts: SPI 128-159, two channels per SPI
 
-- fsl_edma_child_to_chan_id(): derives the channel index from the
-  child MMIO address relative to the parent base.  Validate that the
-  child resource is contained in the controller resource and aligned to
-  the channel register spacing, and use div_u64_rem() to compute
-  the quotient and alignment remainder together.
+edma3 (64 channels at 0x42210000):
+  - Channel N at 0x42220000 + N * 0x8000 (size 0x8000)
+  - Paired interrupts: SPI 256-287, two channels per SPI
 
-- fsl_edma_configure_chan_from_dt(): called before setup_irq() to
-  populate per-channel txirq from child interrupt properties.
-  fsl_edma3_irq_init() is updated to skip platform_get_irq() for
-  channels that already have an IRQ assigned from their child node.
-
-- fsl_edma_configure_chan_iommu(): called after
-  dmaenginem_async_device_register() to configure per-channel IOMMU
-  by calling of_dma_configure() on each dma_chan_dev and setting
-  chan_dma_dev so dmaengine_get_dma_device() returns the per-channel
-  device.  Propagate the controller dma_parms to the per-channel device
-  so the DMA segment size limit is preserved.
-
-Child nodes beyond the configured dma-channels are ignored, which allows
-boards to reduce dma-channels without disabling every unused child node.
-If child nodes are present, every unmasked channel must have a child node
-with a valid interrupt; otherwise probe fails with an error asking for
-dma-channel-mask.  In child-node mode fsl_edma3_irq_init() does not fall
-back to the parent's flat interrupt array.
-
-The shared error IRQ remains a parent-node interrupt.  A child-node-only
-DTS without that entry simply has no shared error IRQ.
-
-Use BIT_ULL() for the 64-bit chan_masked bitmap, and use dev_err_probe()
-so -EPROBE_DEFER is not logged as an error.  Reject a channel whose iommus
-property did not result in an IOMMU mapping.
-
-Existing DTS without child nodes continues to work unchanged.
+edma1 (imx93-edma3, 31 channels with 1:1 non-paired interrupts) is
+left unchanged as it uses a different interrupt scheme.
 
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 ---
- drivers/dma/fsl-edma-common.c |  10 +-
- drivers/dma/fsl-edma-common.h |   1 +
- drivers/dma/fsl-edma-main.c   | 229 +++++++++++++++++++++++++++++++++++++++---
- 3 files changed, 222 insertions(+), 18 deletions(-)
+ arch/arm64/boot/dts/freescale/imx95.dtsi | 774 ++++++++++++++++++++++++++-----
+ 1 file changed, 646 insertions(+), 128 deletions(-)
 
-diff --git a/drivers/dma/fsl-edma-common.c b/drivers/dma/fsl-edma-common.c
-index 513b0f4e5be2..62cd60179bc6 100644
---- a/drivers/dma/fsl-edma-common.c
-+++ b/drivers/dma/fsl-edma-common.c
-@@ -310,10 +310,10 @@ int fsl_edma_resume(struct dma_chan *chan)
+diff --git a/arch/arm64/boot/dts/freescale/imx95.dtsi b/arch/arm64/boot/dts/freescale/imx95.dtsi
+index d20c2498b9aa..64570703ce6c 100644
+--- a/arch/arm64/boot/dts/freescale/imx95.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx95.dtsi
+@@ -635,148 +635,666 @@ edma2: dma-controller@42000000 {
+ 				compatible = "fsl,imx95-edma5";
+ 				reg = <0x42000000 0x210000>;
+ 				#dma-cells = <3>;
++				#address-cells = <1>;
++				#size-cells = <1>;
++				ranges;
+ 				dma-channels = <64>;
+ 				/* channels 0 and 1 reserved for V2X fast hash */
+ 				dma-channel-mask = <0x3>;
+-				interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 130 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 130 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 132 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 132 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&scmi_clk IMX95_CLK_BUSWAKEUP>;
+ 				clock-names = "dma";
++
++				dma-channel@42010000 {
++					reg = <0x42010000 0x8000>;
++					interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42018000 {
++					reg = <0x42018000 0x8000>;
++					interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42020000 {
++					reg = <0x42020000 0x8000>;
++					interrupts = <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42028000 {
++					reg = <0x42028000 0x8000>;
++					interrupts = <GIC_SPI 129 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42030000 {
++					reg = <0x42030000 0x8000>;
++					interrupts = <GIC_SPI 130 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42038000 {
++					reg = <0x42038000 0x8000>;
++					interrupts = <GIC_SPI 130 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42040000 {
++					reg = <0x42040000 0x8000>;
++					interrupts = <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42048000 {
++					reg = <0x42048000 0x8000>;
++					interrupts = <GIC_SPI 131 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42050000 {
++					reg = <0x42050000 0x8000>;
++					interrupts = <GIC_SPI 132 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42058000 {
++					reg = <0x42058000 0x8000>;
++					interrupts = <GIC_SPI 132 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42060000 {
++					reg = <0x42060000 0x8000>;
++					interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42068000 {
++					reg = <0x42068000 0x8000>;
++					interrupts = <GIC_SPI 133 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42070000 {
++					reg = <0x42070000 0x8000>;
++					interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42078000 {
++					reg = <0x42078000 0x8000>;
++					interrupts = <GIC_SPI 134 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42080000 {
++					reg = <0x42080000 0x8000>;
++					interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42088000 {
++					reg = <0x42088000 0x8000>;
++					interrupts = <GIC_SPI 135 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42090000 {
++					reg = <0x42090000 0x8000>;
++					interrupts = <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42098000 {
++					reg = <0x42098000 0x8000>;
++					interrupts = <GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420a0000 {
++					reg = <0x420a0000 0x8000>;
++					interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420a8000 {
++					reg = <0x420a8000 0x8000>;
++					interrupts = <GIC_SPI 137 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420b0000 {
++					reg = <0x420b0000 0x8000>;
++					interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420b8000 {
++					reg = <0x420b8000 0x8000>;
++					interrupts = <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420c0000 {
++					reg = <0x420c0000 0x8000>;
++					interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420c8000 {
++					reg = <0x420c8000 0x8000>;
++					interrupts = <GIC_SPI 139 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420d0000 {
++					reg = <0x420d0000 0x8000>;
++					interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420d8000 {
++					reg = <0x420d8000 0x8000>;
++					interrupts = <GIC_SPI 140 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420e0000 {
++					reg = <0x420e0000 0x8000>;
++					interrupts = <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420e8000 {
++					reg = <0x420e8000 0x8000>;
++					interrupts = <GIC_SPI 141 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420f0000 {
++					reg = <0x420f0000 0x8000>;
++					interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@420f8000 {
++					reg = <0x420f8000 0x8000>;
++					interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42100000 {
++					reg = <0x42100000 0x8000>;
++					interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42108000 {
++					reg = <0x42108000 0x8000>;
++					interrupts = <GIC_SPI 143 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42110000 {
++					reg = <0x42110000 0x8000>;
++					interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42118000 {
++					reg = <0x42118000 0x8000>;
++					interrupts = <GIC_SPI 144 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42120000 {
++					reg = <0x42120000 0x8000>;
++					interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42128000 {
++					reg = <0x42128000 0x8000>;
++					interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42130000 {
++					reg = <0x42130000 0x8000>;
++					interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42138000 {
++					reg = <0x42138000 0x8000>;
++					interrupts = <GIC_SPI 146 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42140000 {
++					reg = <0x42140000 0x8000>;
++					interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42148000 {
++					reg = <0x42148000 0x8000>;
++					interrupts = <GIC_SPI 147 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42150000 {
++					reg = <0x42150000 0x8000>;
++					interrupts = <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42158000 {
++					reg = <0x42158000 0x8000>;
++					interrupts = <GIC_SPI 148 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42160000 {
++					reg = <0x42160000 0x8000>;
++					interrupts = <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42168000 {
++					reg = <0x42168000 0x8000>;
++					interrupts = <GIC_SPI 149 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42170000 {
++					reg = <0x42170000 0x8000>;
++					interrupts = <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42178000 {
++					reg = <0x42178000 0x8000>;
++					interrupts = <GIC_SPI 150 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42180000 {
++					reg = <0x42180000 0x8000>;
++					interrupts = <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42188000 {
++					reg = <0x42188000 0x8000>;
++					interrupts = <GIC_SPI 151 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42190000 {
++					reg = <0x42190000 0x8000>;
++					interrupts = <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42198000 {
++					reg = <0x42198000 0x8000>;
++					interrupts = <GIC_SPI 152 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421a0000 {
++					reg = <0x421a0000 0x8000>;
++					interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421a8000 {
++					reg = <0x421a8000 0x8000>;
++					interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421b0000 {
++					reg = <0x421b0000 0x8000>;
++					interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421b8000 {
++					reg = <0x421b8000 0x8000>;
++					interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421c0000 {
++					reg = <0x421c0000 0x8000>;
++					interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421c8000 {
++					reg = <0x421c8000 0x8000>;
++					interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421d0000 {
++					reg = <0x421d0000 0x8000>;
++					interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421d8000 {
++					reg = <0x421d8000 0x8000>;
++					interrupts = <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421e0000 {
++					reg = <0x421e0000 0x8000>;
++					interrupts = <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421e8000 {
++					reg = <0x421e8000 0x8000>;
++					interrupts = <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421f0000 {
++					reg = <0x421f0000 0x8000>;
++					interrupts = <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@421f8000 {
++					reg = <0x421f8000 0x8000>;
++					interrupts = <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42200000 {
++					reg = <0x42200000 0x8000>;
++					interrupts = <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42208000 {
++					reg = <0x42208000 0x8000>;
++					interrupts = <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>;
++				};
+ 			};
  
- static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
- {
-+	struct device *dev = dmaengine_get_dma_device(&fsl_chan->vchan.chan);
+ 			edma3: dma-controller@42210000 {
+ 				compatible = "fsl,imx95-edma5";
+ 				reg = <0x42210000 0x210000>;
+ 				#dma-cells = <3>;
++				#address-cells = <1>;
++				#size-cells = <1>;
++				ranges;
+ 				dma-channels = <64>;
+-				interrupts = <GIC_SPI 256 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 256 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 257 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 257 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 261 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 261 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 262 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 262 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 263 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 263 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 264 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 264 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 266 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 266 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 267 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 267 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 271 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 271 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 272 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 272 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 273 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 273 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 276 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 276 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 278 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 278 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 280 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 280 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 281 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 281 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 282 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 282 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 283 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 283 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 284 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 284 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 285 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 285 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 286 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 286 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 287 IRQ_TYPE_LEVEL_HIGH>,
+-					     <GIC_SPI 287 IRQ_TYPE_LEVEL_HIGH>;
+ 				clocks = <&scmi_clk IMX95_CLK_BUSWAKEUP>;
+ 				clock-names = "dma";
 +
- 	if (fsl_chan->dma_dir != DMA_NONE)
--		dma_unmap_resource(fsl_chan->vchan.chan.device->dev,
--				   fsl_chan->dma_dev_addr,
--				   fsl_chan->dma_dev_size,
-+		dma_unmap_resource(dev, fsl_chan->dma_dev_addr, fsl_chan->dma_dev_size,
- 				   fsl_chan->dma_dir, 0);
- 	fsl_chan->dma_dir = DMA_NONE;
- }
-@@ -321,7 +321,7 @@ static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
- static bool fsl_edma_prep_slave_dma(struct fsl_edma_chan *fsl_chan,
- 				    enum dma_transfer_direction dir)
- {
--	struct device *dev = fsl_chan->vchan.chan.device->dev;
-+	struct device *dev = dmaengine_get_dma_device(&fsl_chan->vchan.chan);
- 	enum dma_data_direction dma_dir;
- 	phys_addr_t addr = 0;
- 	u32 size = 0;
-@@ -1090,7 +1090,7 @@ int fsl_edma_alloc_chan_resources(struct dma_chan *chan)
- 	if (fsl_edma_drvflags(fsl_chan) & FSL_EDMA_DRV_HAS_CHCLK)
- 		clk_prepare_enable(fsl_chan->clk);
++				dma-channel@42220000 {
++					reg = <0x42220000 0x8000>;
++					interrupts = <GIC_SPI 256 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42228000 {
++					reg = <0x42228000 0x8000>;
++					interrupts = <GIC_SPI 256 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42230000 {
++					reg = <0x42230000 0x8000>;
++					interrupts = <GIC_SPI 257 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42238000 {
++					reg = <0x42238000 0x8000>;
++					interrupts = <GIC_SPI 257 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42240000 {
++					reg = <0x42240000 0x8000>;
++					interrupts = <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42248000 {
++					reg = <0x42248000 0x8000>;
++					interrupts = <GIC_SPI 258 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42250000 {
++					reg = <0x42250000 0x8000>;
++					interrupts = <GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42258000 {
++					reg = <0x42258000 0x8000>;
++					interrupts = <GIC_SPI 259 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42260000 {
++					reg = <0x42260000 0x8000>;
++					interrupts = <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42268000 {
++					reg = <0x42268000 0x8000>;
++					interrupts = <GIC_SPI 260 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42270000 {
++					reg = <0x42270000 0x8000>;
++					interrupts = <GIC_SPI 261 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42278000 {
++					reg = <0x42278000 0x8000>;
++					interrupts = <GIC_SPI 261 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42280000 {
++					reg = <0x42280000 0x8000>;
++					interrupts = <GIC_SPI 262 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42288000 {
++					reg = <0x42288000 0x8000>;
++					interrupts = <GIC_SPI 262 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42290000 {
++					reg = <0x42290000 0x8000>;
++					interrupts = <GIC_SPI 263 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42298000 {
++					reg = <0x42298000 0x8000>;
++					interrupts = <GIC_SPI 263 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422a0000 {
++					reg = <0x422a0000 0x8000>;
++					interrupts = <GIC_SPI 264 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422a8000 {
++					reg = <0x422a8000 0x8000>;
++					interrupts = <GIC_SPI 264 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422b0000 {
++					reg = <0x422b0000 0x8000>;
++					interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422b8000 {
++					reg = <0x422b8000 0x8000>;
++					interrupts = <GIC_SPI 265 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422c0000 {
++					reg = <0x422c0000 0x8000>;
++					interrupts = <GIC_SPI 266 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422c8000 {
++					reg = <0x422c8000 0x8000>;
++					interrupts = <GIC_SPI 266 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422d0000 {
++					reg = <0x422d0000 0x8000>;
++					interrupts = <GIC_SPI 267 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422d8000 {
++					reg = <0x422d8000 0x8000>;
++					interrupts = <GIC_SPI 267 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422e0000 {
++					reg = <0x422e0000 0x8000>;
++					interrupts = <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422e8000 {
++					reg = <0x422e8000 0x8000>;
++					interrupts = <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422f0000 {
++					reg = <0x422f0000 0x8000>;
++					interrupts = <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@422f8000 {
++					reg = <0x422f8000 0x8000>;
++					interrupts = <GIC_SPI 269 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42300000 {
++					reg = <0x42300000 0x8000>;
++					interrupts = <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42308000 {
++					reg = <0x42308000 0x8000>;
++					interrupts = <GIC_SPI 270 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42310000 {
++					reg = <0x42310000 0x8000>;
++					interrupts = <GIC_SPI 271 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42318000 {
++					reg = <0x42318000 0x8000>;
++					interrupts = <GIC_SPI 271 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42320000 {
++					reg = <0x42320000 0x8000>;
++					interrupts = <GIC_SPI 272 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42328000 {
++					reg = <0x42328000 0x8000>;
++					interrupts = <GIC_SPI 272 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42330000 {
++					reg = <0x42330000 0x8000>;
++					interrupts = <GIC_SPI 273 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42338000 {
++					reg = <0x42338000 0x8000>;
++					interrupts = <GIC_SPI 273 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42340000 {
++					reg = <0x42340000 0x8000>;
++					interrupts = <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42348000 {
++					reg = <0x42348000 0x8000>;
++					interrupts = <GIC_SPI 274 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42350000 {
++					reg = <0x42350000 0x8000>;
++					interrupts = <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42358000 {
++					reg = <0x42358000 0x8000>;
++					interrupts = <GIC_SPI 275 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42360000 {
++					reg = <0x42360000 0x8000>;
++					interrupts = <GIC_SPI 276 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42368000 {
++					reg = <0x42368000 0x8000>;
++					interrupts = <GIC_SPI 276 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42370000 {
++					reg = <0x42370000 0x8000>;
++					interrupts = <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42378000 {
++					reg = <0x42378000 0x8000>;
++					interrupts = <GIC_SPI 277 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42380000 {
++					reg = <0x42380000 0x8000>;
++					interrupts = <GIC_SPI 278 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42388000 {
++					reg = <0x42388000 0x8000>;
++					interrupts = <GIC_SPI 278 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42390000 {
++					reg = <0x42390000 0x8000>;
++					interrupts = <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42398000 {
++					reg = <0x42398000 0x8000>;
++					interrupts = <GIC_SPI 279 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423a0000 {
++					reg = <0x423a0000 0x8000>;
++					interrupts = <GIC_SPI 280 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423a8000 {
++					reg = <0x423a8000 0x8000>;
++					interrupts = <GIC_SPI 280 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423b0000 {
++					reg = <0x423b0000 0x8000>;
++					interrupts = <GIC_SPI 281 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423b8000 {
++					reg = <0x423b8000 0x8000>;
++					interrupts = <GIC_SPI 281 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423c0000 {
++					reg = <0x423c0000 0x8000>;
++					interrupts = <GIC_SPI 282 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423c8000 {
++					reg = <0x423c8000 0x8000>;
++					interrupts = <GIC_SPI 282 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423d0000 {
++					reg = <0x423d0000 0x8000>;
++					interrupts = <GIC_SPI 283 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423d8000 {
++					reg = <0x423d8000 0x8000>;
++					interrupts = <GIC_SPI 283 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423e0000 {
++					reg = <0x423e0000 0x8000>;
++					interrupts = <GIC_SPI 284 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423e8000 {
++					reg = <0x423e8000 0x8000>;
++					interrupts = <GIC_SPI 284 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423f0000 {
++					reg = <0x423f0000 0x8000>;
++					interrupts = <GIC_SPI 285 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@423f8000 {
++					reg = <0x423f8000 0x8000>;
++					interrupts = <GIC_SPI 285 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42400000 {
++					reg = <0x42400000 0x8000>;
++					interrupts = <GIC_SPI 286 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42408000 {
++					reg = <0x42408000 0x8000>;
++					interrupts = <GIC_SPI 286 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42410000 {
++					reg = <0x42410000 0x8000>;
++					interrupts = <GIC_SPI 287 IRQ_TYPE_LEVEL_HIGH>;
++				};
++
++				dma-channel@42418000 {
++					reg = <0x42418000 0x8000>;
++					interrupts = <GIC_SPI 287 IRQ_TYPE_LEVEL_HIGH>;
++				};
+ 			};
  
--	fsl_chan->tcd_pool = dma_pool_create("tcd_pool", chan->device->dev,
-+	fsl_chan->tcd_pool = dma_pool_create("tcd_pool", dmaengine_get_dma_device(chan),
- 				fsl_edma_drvflags(fsl_chan) & FSL_EDMA_DRV_TCD64 ?
- 				sizeof(struct fsl_edma_hw_tcd64) : sizeof(struct fsl_edma_hw_tcd),
- 				32, 0);
-diff --git a/drivers/dma/fsl-edma-common.h b/drivers/dma/fsl-edma-common.h
-index cbb077e98f55..8843dd5661fb 100644
---- a/drivers/dma/fsl-edma-common.h
-+++ b/drivers/dma/fsl-edma-common.h
-@@ -271,6 +271,7 @@ struct fsl_edma_engine {
- 	int			txirq_16_31;
- 	int			errirq;
- 	bool			big_endian;
-+	bool			per_chan_irqs;
- 	struct edma_regs	regs;
- 	u64			chan_masked;
- 	struct fsl_edma_chan	chans[] __counted_by(n_chans);
-diff --git a/drivers/dma/fsl-edma-main.c b/drivers/dma/fsl-edma-main.c
-index 7f82dcb7831d..e9a7592ef076 100644
---- a/drivers/dma/fsl-edma-main.c
-+++ b/drivers/dma/fsl-edma-main.c
-@@ -12,11 +12,15 @@
- 
- #include <dt-bindings/dma/fsl-edma.h>
- #include <linux/bitfield.h>
-+#include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/interrupt.h>
- #include <linux/clk.h>
- #include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_device.h>
- #include <linux/of_dma.h>
-+#include <linux/of_irq.h>
- #include <linux/dma-mapping.h>
- #include <linux/pm_runtime.h>
- #include <linux/pm_domain.h>
-@@ -123,7 +127,7 @@ static irqreturn_t fsl_edma3_err_handler_shared(int irq, void *dev_id)
- 	unsigned int ch;
- 
- 	for (ch = 0; ch < fsl_edma->n_chans; ch++) {
--		if (fsl_edma->chan_masked & BIT(ch))
-+		if (fsl_edma->chan_masked & BIT_ULL(ch))
- 			continue;
- 
- 		fsl_edma3_err_check(&fsl_edma->chans[ch]);
-@@ -397,15 +401,24 @@ static int fsl_edma3_irq_init(struct platform_device *pdev, struct fsl_edma_engi
- 
- 		struct fsl_edma_chan *fsl_chan = &fsl_edma->chans[i];
- 
--		if (fsl_edma->chan_masked & BIT(i))
-+		if (fsl_edma->chan_masked & BIT_ULL(i))
- 			continue;
- 
--		/* request channel irq */
--		fsl_chan->txirq = platform_get_irq(pdev, i);
--		if (fsl_chan->txirq < 0)
--			return  -EINVAL;
-+		if (fsl_chan->txirq <= 0) {
-+			/*
-+			 * In child-node mode, missing child nodes are rejected
-+			 * by fsl_edma_configure_chan_from_dt(); do not fall
-+			 * back to the parent's flat interrupt array.
-+			 */
-+			if (fsl_edma->per_chan_irqs)
-+				continue;
- 
--		fsl_chan->irq_handler = fsl_edma3_tx_handler;
-+			fsl_chan->txirq = platform_get_irq(pdev, i);
-+			if (fsl_chan->txirq < 0)
-+				return fsl_chan->txirq;
-+
-+			fsl_chan->irq_handler = fsl_edma3_tx_handler;
-+		}
- 
- 		if (!(fsl_edma->drvdata->flags & FSL_EDMA_DRV_ERRIRQ_SHARE)) {
- 			fsl_chan->errirq = fsl_chan->txirq;
-@@ -415,7 +428,11 @@ static int fsl_edma3_irq_init(struct platform_device *pdev, struct fsl_edma_engi
- 
- 	/* All channel err use one irq number */
- 	if (fsl_edma->drvdata->flags & FSL_EDMA_DRV_ERRIRQ_SHARE) {
--		/* last one is error irq */
-+		/*
-+		 * The shared error IRQ remains a parent-node interrupt at
-+		 * index n_chans.  A child-node-only DTS without that entry
-+		 * simply has no shared error IRQ.
-+		 */
- 		fsl_edma->errirq = platform_get_irq_optional(pdev, fsl_edma->n_chans);
- 		if (fsl_edma->errirq < 0)
- 			return 0; /* dts miss err irq, treat as no err irq case */
-@@ -641,7 +658,7 @@ static void fsl_edma3_detach_pd(struct fsl_edma_engine *fsl_edma)
- 	int i;
- 
- 	for (i = 0; i < fsl_edma->n_chans; i++) {
--		if (fsl_edma->chan_masked & BIT(i))
-+		if (fsl_edma->chan_masked & BIT_ULL(i))
- 			continue;
- 		fsl_chan = &fsl_edma->chans[i];
- 		if (fsl_chan->pd_dev_link)
-@@ -669,7 +686,7 @@ static int fsl_edma3_attach_pd(struct platform_device *pdev, struct fsl_edma_eng
- 	dev = &pdev->dev;
- 
- 	for (i = 0; i < fsl_edma->n_chans; i++) {
--		if (fsl_edma->chan_masked & BIT(i))
-+		if (fsl_edma->chan_masked & BIT_ULL(i))
- 			continue;
- 
- 		fsl_chan = &fsl_edma->chans[i];
-@@ -703,6 +720,184 @@ static int fsl_edma3_attach_pd(struct platform_device *pdev, struct fsl_edma_eng
- 	return -EINVAL;
- }
- 
-+static int fsl_edma_child_to_chan_id(struct fsl_edma_engine *fsl_edma,
-+				     struct device_node *child,
-+				     struct resource *parent_res)
-+{
-+	const struct fsl_edma_drvdata *drvdata = fsl_edma->drvdata;
-+	struct resource child_res;
-+	u64 offset, ch_id;
-+	u32 rem;
-+	int ret;
-+
-+	ret = of_address_to_resource(child, 0, &child_res);
-+	if (ret)
-+		return ret;
-+
-+	if (!resource_contains(parent_res, &child_res))
-+		return -EINVAL;
-+
-+	if (child_res.start < parent_res->start + drvdata->chreg_off)
-+		return -EINVAL;
-+
-+	offset = child_res.start - parent_res->start - drvdata->chreg_off;
-+	ch_id = div_u64_rem(offset, drvdata->chreg_space_sz, &rem);
-+	if (rem)
-+		return -EINVAL;
-+	if (ch_id > INT_MAX)
-+		return -EINVAL;
-+
-+	return ch_id;
-+}
-+
-+static int fsl_edma_configure_chan_from_dt(struct platform_device *pdev,
-+					   struct fsl_edma_engine *fsl_edma)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct resource parent_res;
-+	struct device_node *child;
-+	u64 child_mask = 0;
-+	bool has_children = false;
-+	int i, ret;
-+
-+	ret = of_address_to_resource(np, 0, &parent_res);
-+	if (ret)
-+		return ret;
-+
-+	for_each_available_child_of_node(np, child) {
-+		struct fsl_edma_chan *fsl_chan;
-+		int ch_id, irq;
-+
-+		has_children = true;
-+
-+		ch_id = fsl_edma_child_to_chan_id(fsl_edma, child,
-+						  &parent_res);
-+		if (ch_id < 0) {
-+			dev_err(&pdev->dev, "invalid channel in %pOFn\n", child);
-+			of_node_put(child);
-+			return -EINVAL;
-+		}
-+
-+		if (ch_id >= fsl_edma->n_chans)
-+			continue;
-+
-+		if (fsl_edma->chan_masked & BIT_ULL(ch_id))
-+			continue;
-+
-+		child_mask |= BIT_ULL(ch_id);
-+
-+		fsl_chan = &fsl_edma->chans[ch_id];
-+
-+		irq = of_irq_get(child, 0);
-+		if (irq == -EPROBE_DEFER) {
-+			of_node_put(child);
-+			return -EPROBE_DEFER;
-+		}
-+		if (irq <= 0) {
-+			dev_err(&pdev->dev,
-+				"channel %d child node has no valid interrupt; add interrupts or disable it with dma-channel-mask\n",
-+				ch_id);
-+			of_node_put(child);
-+			return irq < 0 ? irq : -EINVAL;
-+		}
-+
-+		fsl_chan->txirq = irq;
-+		fsl_chan->irq_handler = fsl_edma3_tx_handler;
-+	}
-+
-+	if (!has_children)
-+		return 0;
-+
-+	fsl_edma->per_chan_irqs = true;
-+
-+	for (i = 0; i < fsl_edma->n_chans; i++) {
-+		if (fsl_edma->chan_masked & BIT_ULL(i))
-+			continue;
-+		if (child_mask & BIT_ULL(i))
-+			continue;
-+
-+		dev_err(&pdev->dev,
-+			"channel %d has no dma-channel child node; add one or disable it with dma-channel-mask\n",
-+			i);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static int fsl_edma_configure_chan_iommu(struct platform_device *pdev,
-+					struct fsl_edma_engine *fsl_edma)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct resource parent_res;
-+	struct device_node *child;
-+	struct dma_chan *chan;
-+	int ret;
-+
-+	ret = of_address_to_resource(np, 0, &parent_res);
-+	if (ret)
-+		return ret;
-+
-+	for_each_available_child_of_node(np, child) {
-+		struct fsl_edma_chan *fsl_chan;
-+		int ch_id;
-+
-+		if (!of_property_present(child, "iommus"))
-+			continue;
-+
-+		ch_id = fsl_edma_child_to_chan_id(fsl_edma, child,
-+						  &parent_res);
-+		if (ch_id < 0)
-+			continue;
-+
-+		if (ch_id >= fsl_edma->n_chans)
-+			continue;
-+
-+		if (fsl_edma->chan_masked & BIT_ULL(ch_id))
-+			continue;
-+
-+		fsl_chan = &fsl_edma->chans[ch_id];
-+
-+		list_for_each_entry(chan, &fsl_edma->dma_dev.channels,
-+				    device_node) {
-+			struct device *chdev;
-+
-+			if (to_fsl_edma_chan(chan) != fsl_chan)
-+				continue;
-+
-+			chdev = dmaengine_chan_dev(chan);
-+			chdev->dma_parms = pdev->dev.dma_parms;
-+			if (fsl_edma->drvdata->flags & FSL_EDMA_DRV_TCD64)
-+				dma_coerce_mask_and_coherent(chdev,
-+					DMA_BIT_MASK(64));
-+			else
-+				dma_coerce_mask_and_coherent(chdev,
-+					DMA_BIT_MASK(32));
-+			ret = of_dma_configure(chdev, child, true);
-+			if (ret) {
-+				dev_err_probe(&pdev->dev, ret,
-+					      "IOMMU config failed for channel %d\n",
-+					      ch_id);
-+				of_node_put(child);
-+				return ret;
-+			}
-+
-+			if (!device_iommu_mapped(chdev)) {
-+				dev_err_probe(&pdev->dev, -ENODEV,
-+					      "channel %d is not behind an IOMMU\n",
-+					      ch_id);
-+				of_node_put(child);
-+				return -ENODEV;
-+			}
-+
-+			chan->chan_dev->chan_dma_dev = true;
-+			break;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static int fsl_edma_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
-@@ -797,7 +992,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
- 		struct fsl_edma_chan *fsl_chan = &fsl_edma->chans[i];
- 		int len;
- 
--		if (fsl_edma->chan_masked & BIT(i))
-+		if (fsl_edma->chan_masked & BIT_ULL(i))
- 			continue;
- 
- 		snprintf(fsl_chan->chan_name, sizeof(fsl_chan->chan_name), "%s-CH%02d",
-@@ -835,6 +1030,10 @@ static int fsl_edma_probe(struct platform_device *pdev)
- 			clk_disable_unprepare(fsl_chan->clk);
- 	}
- 
-+	ret = fsl_edma_configure_chan_from_dt(pdev, fsl_edma);
-+	if (ret)
-+		return ret;
-+
- 	ret = fsl_edma->drvdata->setup_irq(pdev, fsl_edma);
- 	if (ret)
- 		return ret;
-@@ -897,6 +1096,10 @@ static int fsl_edma_probe(struct platform_device *pdev)
- 		return dev_err_probe(&pdev->dev, ret,
- 				     "Can't register Freescale eDMA engine.\n");
- 
-+	ret = fsl_edma_configure_chan_iommu(pdev, fsl_edma);
-+	if (ret)
-+		return ret;
-+
- 	ret = devm_of_dma_controller_register(&pdev->dev, np,
- 			drvdata->dmamuxs ? fsl_edma_xlate : fsl_edma3_xlate,
- 			fsl_edma);
-@@ -927,7 +1130,7 @@ static int fsl_edma_suspend_late(struct device *dev)
- 
- 	for (i = 0; i < fsl_edma->n_chans; i++) {
- 		fsl_chan = &fsl_edma->chans[i];
--		if (fsl_edma->chan_masked & BIT(i))
-+		if (fsl_edma->chan_masked & BIT_ULL(i))
- 			continue;
- 		spin_lock_irqsave(&fsl_chan->vchan.lock, flags);
- 		/* Make sure chan is idle or will force disable. */
-@@ -953,7 +1156,7 @@ static int fsl_edma_resume_early(struct device *dev)
- 
- 	for (i = 0; i < fsl_edma->n_chans; i++) {
- 		fsl_chan = &fsl_edma->chans[i];
--		if (fsl_edma->chan_masked & BIT(i))
-+		if (fsl_edma->chan_masked & BIT_ULL(i))
- 			continue;
- 		fsl_chan->pm_state = RUNNING;
- 		edma_write_tcdreg(fsl_chan, 0, csr);
+ 			mu7: mailbox@42430000 {
 
 -- 
 2.34.1
