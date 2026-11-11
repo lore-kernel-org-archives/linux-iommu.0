@@ -1,85 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794398570;
-	b=Pj78QksF8Od09zvNHo0AzKQpuVSR1oeq8Y1p4+bXirjHCXeKoUPTHzyEWDcNx8bY18VN
-	 3VF2pIW7K8Yqsro2ojZESnLn5Wvg3vldO+LG/b0C2HssytWrFUkCp5j1SbaGZJatEShdU
-	 DMpbPOoAJqTaXovEDSYgan5GquEKytMJOyChk3mqvYbW6aIzFXtcL0lms2QMtA+1iQBKU
-	 XqdfKzqXz+D4Gjm6Ulo5fuiCXbNszWqbuOVdr9LXN1uD3aotY1VTc9a8B6buNaIxDGgB5
-	 IcDMlcjQvXKNb2gR1zWt8yJuNUjLDi+iGIOW81U3n/f8nC0/IbwnWHqqb4znmnmigPQ==
+	t=1794399366;
+	b=1sHZ4bKzrYGRfcjMn4mCoMouIhn9t/XLa8MAk20T8Q8WDGQmTBTZ/DQXhqXcLSf6oJv+
+	 ExBspPsE8Ulg7mD3NJe42uRlR/0vM6aiKc3OmwhGpFOcRsUlMYBS9fA5jMbWQXCAwm5I1
+	 Aav5Dlu/OoJGgjoFdu+siwyrUUnXw6mzIZPj/VmqTaxIhhfCO+VB5f9t1HA1k60F+RPsf
+	 fOKYQ3wE8I/L1OWivo1wBCxdtTkhh0X/gDIwMXI/xcZ9lhwqIwJrIiMenMzB8lHrvm/9j
+	 sZMKm6WLfDRIbebp50HHj9mKPY2s7z9M66hTWtqvqM6lBdpqeIKQjKwh5I4TnvXWqoA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794398570;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=Mf3ojcAaOl5Wd2bB/OvSpA9q4iDAVUFZx+UCDfwTy74=;
-	b=VV9jVx/uabsn6Wc0TTAp0lC1cxo743fLV4UpkWGzKDq6uoYYdCDDgwPbI9NhW8bDH31W
-	 pf5Udwh49dIsNDzl5RXzAuKeIhmtj5PdrYHN+IM30vT7Jm1jnlRWpYeipiot9YLCZVSvq
-	 OAfbMlakCK5TkBCm/np2tAuYyBa7tvdZHfV/suS9Aqrr/ODOr9wn/3qTo6busZO4HMZ2I
-	 97e7R1LkP7D/YVvsAND28isWZOYP/JtboJNa7lK2PI3cUqgWA1D3mwxR1wdoL3HFNBA/q
-	 lhvZLAFvYTtAxLaauvYrd68qMtSFbvUpTnNrqa1L5pH6/9uvW04GcRrniL4VoA2KeOg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794399366;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=qc1N5Uc+wy8ltC14m/VdOEe2OVJ/DsFDi7Wdu8p3PFI=;
+	b=vbAelOssuEfijUQEXq93I2eCDzdK9pJvpPHIYohIQu23n4GWRg0vBoVhvPHh7D3tYy5C
+	 tXDlDhLo+4LtwHK9KMuIzcch6tlEugsJek82I8SIr54FbBgTRmTzmDe5yAsZrIGIlFQjq
+	 O97oskrsBznyQ+ZoWKBg/eziDqv7Lc8pa+I926DuJkQkptO20yKQ6UB53EDJLoYp8eila
+	 QbpGtEuxlsyzeXgWAk8aOKNecE7RwRWWDYDdYPj7CjnVX+wAC2VBfuL9YG3NGW4CUXsAz
+	 l4UHEvRzOZD27vSi9TS4rhpq7rXqrhDZGCB6EbZbQJhR9EGTdHBRe1Q1onRTyeAY6NQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linaro.org;
-	spf=pass smtp.mailfrom=linaro.org;
-	dkim=pass header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=sQJ9qyCW;
-	arc=none smtp.remote-ip=209.85.221.47
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=onlB7k+k;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC48A606A32A
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 12:02:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DC48A606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A74E9606A334;
+	Wed, 11 Nov 2026 12:16:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.a=rsa-sha256 header.s=google header.b=sQJ9qyCW
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-491aaed7565so1862431f8f.2
-        for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 04:02:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1794398568; x=1795003368; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Mf3ojcAaOl5Wd2bB/OvSpA9q4iDAVUFZx+UCDfwTy74=;
-        b=sQJ9qyCWCjiDPKGsUjshl6uKUDnBFfmrw1fZ0bAebnifEUU3RGh7N90jS0xvmqtT98
-         6+BvaV06eigvIds8ZC8isnDR+LU+3HvbN8qAA7BfO+pTRmcgNfPlEFs6XH/V+dMFSlsF
-         VVZj+G5cKg8dN96e5WhvlRX+HWRVMPR13mM7z2Oney5BCA0ohnQyiC9oEW9XsDHNtyIQ
-         bmdW0/m9MlAJPmDEMox1Eir4fOCX/pXhvE4qrMIbAWzcT7TeLCR7R/+qtDtN6VfKJjRp
-         ZgUYOt7/syRMN7w1f77BDXh6vco4zb6vMWpPmcDVfY7Rewav4J2rKepksLfzKwySbvRV
-         +Bog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794398568; x=1795003368;
-        h=content-transfer-encoding:content-type:in-reply-to:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Mf3ojcAaOl5Wd2bB/OvSpA9q4iDAVUFZx+UCDfwTy74=;
-        b=HNgMWLy8u6bhCdhj69Ye2+boHuKWeNfjxe6Zb6Lpj7BW1Tdg60RANPSx75fIPQgJOf
-         mJTALTcI6aOrJj4xU34Ub+4X0rWNfl9mnJX0kwTg/2RHJqGvlVND87wc/z6UUD9XL4pE
-         Ez53DYDhhS1isybpfEbC1/1rptEd+ZqAMnfDJyhL09zV4ew6L1Am/ZOCoN+uv1gqOEE4
-         7eNKWD/SVQyRatqieIyYOBxNkzsfg3+pTJpZNsVAv+rpoz2iyzHYVuEihdSEjkVjtOQ1
-         Mpc3BlHsb4p8yAiVibipGU0oqalK/IEVeL32sJjm3WizjXFknvKvRUaJ9Q3R2qhwwuZK
-         ZSBg==
-X-Gm-Message-State: APuU4Z9qMsy7IixhDjWF02Z1CM+Z9BRSi3odcuX4WDEFV8X5OU+5tf7k
-	NgWoeZZRMA3bmpUnXE72gmaZoAYF3fAsNgB1vFdUniKfef1ZvH6ysazTyldwIFO7kkw=
-X-Gm-Gg: AYBFou2j9fBDLQYmTEkVcdYyJOGKPxH55ps5IMjDMHKlp8ntFkjh8BHdArSTACI+Hom
-	gBVRL6UeFUVScsAmWWL9sWmdjpww0pPUHwWU+g7fQLlrYWkoBgBzIJ5UcY4NzAlxBfIBs11l16c
-	rx1oZQDuKbY+FAoPFh2vowQeL32IJE91XqvHTCx5m9rkBK9T5YtoY9SA1baMuC7rHbGQ5mSTR5C
-	ZI5Q2NgezWzFuVM+NgcREVRBtFWok7YohORswHEQ4jm5bwuUKy0ioMCn5zT4TwDhNzu54gU4SJX
-	QpCIPmu571Tjxskw46iiAFIB8A8Y12fv3/Y84h1uR7GS31CnjePawDyMid97AYdJIA6YWT2nzSv
-	+zeysQTTvF8diu29bGpgTID2jr6GOFCOidqk2v4KksyH2DJ53enKblt7+VOxv6k2t7j0r/45+r0
-	nRt8sfrUpSxvOxEAzZnHTiOUQPFHvP7tJGtavgAeqORoigBzZQgO3vWbaa39/foQCXfljkr+F2r
-	KxRcltrlLECVkmu8yZsRPYZ2ibMRwD+Zi1xy7WfBlErwC4vrBE4rlyW7MkNzR7GQjDrdVkW4h6F
-	XkslWMMxunz+nyI0+svuwmzi/BE8ZYZu+yRBHqcW
-X-Received: by 2002:a05:6000:420d:b0:48b:1a0:5630 with SMTP id ffacd0b85a97d-499c86a10f6mr3780756f8f.41.1794398567805;
-        Wed, 11 Nov 2026 04:02:47 -0800 (PST)
-Received: from [192.168.0.167] ([109.76.11.16])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-49835c377fdsm8869991f8f.21.2026.11.11.04.02.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Nov 2026 04:02:47 -0800 (PST)
-Message-ID: <3713bf13-cec6-4b02-a29b-8f76070f03b3@linaro.org>
-Date: Wed, 11 Nov 2026 12:02:45 +0000
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=onlB7k+k
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2C291F00A05;
+	Wed, 11 Nov 2026 12:16:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794399366;
+	bh=qc1N5Uc+wy8ltC14m/VdOEe2OVJ/DsFDi7Wdu8p3PFI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=onlB7k+kkABml/t8+gkpZvXlK49IkjHX0Ie3jRPouDS1A37DXNb3sWucYH9w1UmkJ
+	 XbuCu4sR7afiwRAvdfhrIkNZqmMAbjVZsOd2YwvLkM0Oja5F5phRdXIVlHZ8Q6u4al
+	 wo6iIi7sN/Qln9v5Pm/OlG6P7GoTC+kacdGWaaJjGJePEmUwIu/Du8hFGyKVovLqU7
+	 kHBCtP4zKeQ3IzCrEMOwBcWq9gSg7u38qZkj7SbT1NsgYAMgJ8fnM3buiBS51WY+wP
+	 T9rECHE6S532kCq9g6YcpisTsaqIxxuzx88iv4PcnNkIycJDOHa3Ik1ey4T3i2e1J7
+	 /+IZl1Op9qp8A==
+Date: Wed, 11 Nov 2026 14:16:02 +0200
+From: Leon Romanovsky <leon@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Logan Gunthorpe <logang@deltatee.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Thomas =?iso-8859-1?Q?Hellstr=F6m?= <thomas.hellstrom@linux.intel.com>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org, iommu@lists.linux.dev,
+	Tushar Dave <tdave@nvidia.com>, linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+	linux-rdma@vger.kernel.org, kvm@vger.kernel.org,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Jens Axboe <axboe@kernel.dk>, Alex Williamson <alex@shazbot.org>,
+	Ankit Agrawal <ankita@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>
+Subject: Re: [PATCH v13 00/19] PCI/P2PDMA: Route peer-to-peer DMA by TLP class
+Message-ID: <20261111121602.GQ8635@unreal>
+References: <20261105-fix-p2p-acs-v4-0-v13-0-3dd065907c3b@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -89,47 +71,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/5] iommu/of: Require reg for iommu-addresses
-To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
- Saravana Kannan <saravanak@kernel.org>,
- Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
- Eric Auger <eric.auger@redhat.com>, Joerg Roedel <jroedel@suse.de>,
- Srinath Mannam <srinath.mannam@broadcom.com>,
- Oza Pawandeep <quic_poza@quicinc.com>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex@shazbot.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- virtualization@lists.linux.dev, devicetree@vger.kernel.org,
- kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-media@vger.kernel.org, Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
- <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Content-Language: en-GB
-In-Reply-To: <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261105-fix-p2p-acs-v4-0-v13-0-3dd065907c3b@nvidia.com>
 
-On 06/11/2026 17:14, Vikash Garodia wrote:
-> @@ -257,6 +252,9 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
->   				}
->   				type = iommu_resv_region_get_type(dev, &phys, iova, length);
->   
-> +				if (type != IOMMU_RESV_DIRECT)
-> +					continue;
-> +
+On Thu, Nov 05, 2026 at 12:04:31PM +0200, Leon Romanovsky wrote:
+> Punch line for Linus from Jason:
+> "Enhance detecting if the PCI fabric can support a peer to peer path
+> by evaluating the full bi-directional fabric path over each of the
+> three traffic type ACS controls. Expand the number of fabric
+> configurations where the P2P algorithm makes the correct determination
+> of support to include non-uniform ACS and situations where translated
+> takes different routes from untranslated."
 
-This change is not about requiring a reg though, which is why it should 
-be a standalone patch with its own justifications.
+Bjorn,
 
-Basically the patch should state why a mismatch is dropped instead of 
-being reserved.
+Just a friendly reminder.
 
----
-bod
+Thanks,
