@@ -1,58 +1,44 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=113.46.200.223
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.126.93.183
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794382228;
-	b=gFiEcKNRl2CONMB4WKdJwziU0wDY9UYxGKLwfZ8qdxtRvsyuMa7nT5D7kUKnD5lpxD41
-	 V4mzGdn74wC3OR31SEOhhfRyr0qAzU7+kidYZUP4cVtI00sQZ5EpKhg7DYyLsuOs/ITi8
-	 iMvx8+RBwF4L5qtpAMXYqnqJCGDce2jfAIlaJuSF7MbTWujQ9uE0/fbeyty6Fpm7gd1W2
-	 NkDtzIYcmn7Bp4+QxMNpmYMjR3lI9g6yS8NakUvOPfWTwkt/ZrIepldApR0gkW4Orb9/F
-	 1nBVOuYgraVlNsiLmL/yI9BHvkc5VEwHZtFU6fLdJrkV8smftTBAh4TDhJbQx81x3qw==
+	t=1794383190;
+	b=nC0nne1BgPwfDkNsyfz3qWKfVTdth8TsjLbUOagBsCa7TYL4dWPxH+4vr9/z6uMyHD/f
+	 6Db8276b+J7dQxKFb2psfhwV767e+gCXRj7mWaOgrWeo+aQEy2M8O2U5jDnW6Oc4Cpxzt
+	 rTaPoHleFVKpqifARGwURcX0wTNmWYR6aAkC//c6iTgOlBlZCnYcbuP0gRT0EYvytoxRl
+	 xEbx6CNguTs+I5N76nya1QJwIfGcO/tE0nyewEgE9nmcWvEOx81a71MAUWtpfiJ9EJeB6
+	 RVSShKgMFERLvE/ZHZur2+c3XP54B+4FuPE/4zuXDAPe2zIhNOQFKeUjnWDO6iOXTfg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794382228;
-	h=DMARC-Filter:dkim-signature:Received:Received:Received:Message-ID:
-	 Date:MIME-Version:User-Agent:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Originating-IP:
-	 X-ClientProxiedBy;
-	bh=XIw94U2KpC0TpbywRhzU4XUiB4byHp1rQrMAeiqZ4T4=;
-	b=oS3aH8XSL85kM5FL+K6KJ1KryTrS6Hy3DHUiTHnZnVKI4x7rM//Fn3GmECiO7rDxJUYv
-	 /gVJHl9PrFd0iStDa+N2C2eD8lU+RD/UVOWDiwmsQx9nzU8p11kjGeGNgBuURD4ATVuaj
-	 yQfhinybZTj8VIU4i7JDtyiJi/mINy8OTtkSFkF0rP7vapTm8hIN+5dRb1Or6h8WVFDEf
-	 9hMXOHpfXgbh0ci4tbom9JQw2B7YjqbReVXUvaYs8ystUP6fNIWNm51gIgdb0BysOvR58
-	 YepoXF2jQ1W5BBXxovCX5o5ljYTnmJ/gGAw9MJSCHtNyc1oqxNLOFPJ3YtWKOwZb9jg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794383190;
+	h=DMARC-Filter:Received:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-HM-Tid:X-HM-MType:X-HM-Spam-Status:
+	 DKIM-Signature;
+	bh=c1VSYUCW8DjIZRH9cT9PKM8BeqoT2mVv/wXrHisLhI0=;
+	b=enH+vpHwI3CfvIDT5ln7+Zm14mV/aGNZPbI4MtnGgVs0o545IcnAioYsrs4b9Ky7+g0b
+	 o81r5ne510XU1kGArP7/AaaX5sNkfNGD1xy+V3N1gBzgHU67D08yE+dvuxBufXUcPfEYv
+	 S7EWwwe9Vkv987VYSFQ1qXF+q6m8mk6ZdKBQerw3PQR4Zk2F2vpP+6TV9PIuBkHLJZzx9
+	 xIfAt6GIb7iUtXzHWwuW6VHk/uEf02tky0/H0PruqbhxrLiM5KuqV4rAiYUJRc1e84nmv
+	 bREvf8U4JbWcJYhyuSC3dzY9OhhrbL2gjjiCTEpjnjwP8Em/yjRLyRWcTWKgAPROC4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=huawei.com;
-	spf=pass smtp.mailfrom=huawei.com;
-	dkim=pass header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=HzYYQkt6;
-	arc=none smtp.remote-ip=113.46.200.223
-Received: from canpmsgout08.his.huawei.com (canpmsgout08.his.huawei.com [113.46.200.223])
+	dmarc=pass header.from=rock-chips.com;
+	spf=pass smtp.mailfrom=rock-chips.com;
+	dkim=pass header.d=rock-chips.com header.i=@rock-chips.com header.a=rsa-sha256 header.s=default header.b="DsS/fXyT";
+	arc=none smtp.remote-ip=103.126.93.183
+Received: from mail-m93183.xmail.ntesmail.com (mail-m93183.xmail.ntesmail.com [103.126.93.183])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24B91606A31C
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 07:30:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 24B91606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7A98606A321
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 07:46:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7A98606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=huawei.com header.i=@huawei.com header.a=rsa-sha256 header.s=dkim header.b=HzYYQkt6
-dkim-signature: v=1; a=rsa-sha256; d=huawei.com; s=dkim;
-	c=relaxed/relaxed; q=dns/txt;
-	h=From;
-	bh=XIw94U2KpC0TpbywRhzU4XUiB4byHp1rQrMAeiqZ4T4=;
-	b=HzYYQkt6xB0mztJloCq/b5l605vCtbZGh7ZYB8kI6I7qFVwKvdW/Oezn7UnFsZNRnEi+rjXkX
-	Wz0il8DYuvgvfjW8puiyGlpcAVGWcYunB1GFRgPsSDuXC4quHzVBlaFTOa3YXsmN8UtAqcRQBAj
-	3WY+gESriD0idCWJbevWZKE=
-Received: from mail.maildlp.com (unknown [172.19.163.200])
-	by canpmsgout08.his.huawei.com (SkyGuard) with ESMTPS id 4jPZt56PB2zmVD2;
-	Wed, 11 Nov 2026 15:30:05 +0800 (CST)
-Received: from kwepemk300018.china.huawei.com (unknown [7.202.194.246])
-	by mail.maildlp.com (Postfix) with ESMTPS id E895140563;
-	Wed, 11 Nov 2026 15:30:20 +0800 (CST)
-Received: from [10.34.206.67] (10.34.206.67) by kwepemk300018.china.huawei.com
- (7.202.194.246) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.45; Wed, 11 Nov
- 2026 15:30:20 +0800
-Message-ID: <44ac3423-0a51-4562-816a-fea881511afa@huawei.com>
-Date: Wed, 11 Nov 2026 15:30:19 +0800
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.a=rsa-sha256 header.s=default header.b=DsS/fXyT
+Received: from [172.16.12.11] (gyproxy-mailtls0-entmail-virt215.gy.ntes [61.154.14.86])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 544786367;
+	Wed, 11 Nov 2026 15:46:07 +0800 (GMT+08:00)
+Message-ID: <4043eb42-ce62-41ff-9a7d-d840bb90364d@rock-chips.com>
+Date: Wed, 11 Nov 2026 15:46:07 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -63,130 +49,196 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/2] lockdown: Prevent booting with lockdown enabled but
- IOMMU disabled
-To: "Mario Limonciello (AMD)" <superm1@kernel.org>, "Joerg Roedel (AMD)"
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Nicolas Bouchinet
-	<nicolas.bouchinet@oss.cyber.gouv.fr>, Paul Moore <paul@paul-moore.com>,
-	James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-security-module@vger.kernel.org>
-References: <20261102-lockdown-iommu-v1-0-00f3c2be4c9f@kernel.org>
-From: Xiu Jianfeng <xiujianfeng@huawei.com>
-In-Reply-To: <20261102-lockdown-iommu-v1-0-00f3c2be4c9f@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Subject: Re: [PATCH v16 09/16] pmdomain: rockchip: add optional per-domain
+ power-on settle delay
+To: Jiaxing Hu <gahing@gahingwoo.com>, tomeu@tomeuvizoso.net,
+ heiko@sntech.de, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, ulfh@kernel.org,
+ p.zabel@pengutronix.de, ogabbay@kernel.org, zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com, abel.vesa@oss.qualcomm.com,
+ sebastian.reichel@collabora.com, sidong.yang@furiosa.ai,
+ u.kleine-koenig@baylibre.com, chaoyi.chen@rock-chips.com,
+ shawn.lin@rock-chips.com, diederik@cknow-tech.com, alchark@flipper.net,
+ leonard@lausen.nl, jeff.hugo@oss.qualcomm.com, rfoss@kernel.org,
+ dri-devel@lists.freedesktop.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux.dev, linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20261108065917.135194-1-gahing@gahingwoo.com>
+ <20261108065917.135194-10-gahing@gahingwoo.com>
+From: Finley Xiao <finley.xiao@rock-chips.com>
+In-Reply-To: <20261108065917.135194-10-gahing@gahingwoo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems500002.china.huawei.com (7.221.188.17) To
- kwepemk300018.china.huawei.com (7.202.194.246)
+X-HM-Tid: 0aa1c9923f9203a8kunm2dd9fb713a378a
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFITzdXWRgWCB1ZQUpXWS1ZQUlXWQ8JGhUIEh9ZQVkaSU1IVh9CHRpNQh1NH0pLHVYVFA
+	kWGhdVEwETFhoSFyQUDg9ZV1kYEgtZQVlNSlVKTk9VSk9VQ01ZV1kWGg8SFR0UWUFZT0tIVUpLSE
+	pKQk1VSktLVUpCWQY+
+DKIM-Signature: a=rsa-sha256;
+	b=DsS/fXyTLnDgYvp4+HkqNssTj/QM61Fo3GnodXNmaCRPr2KWX7UWDRpIfJDDkszxhbuKwJP9MLaKB2+aG2VRLw1doWXQEajCGSYqF1Zu2Ok6Z8JZ2525aVYsklSN7UjrZex71vfnr33sqgYx00j4eu0zWgq2vrGIHnuomDKY/V4=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
+	bh=c1VSYUCW8DjIZRH9cT9PKM8BeqoT2mVv/wXrHisLhI0=;
+	h=date:mime-version:subject:message-id:from;
 
-On 11/2/2026 10:00 PM, Mario Limonciello (AMD) wrote:
-> Lockdown is a kernel LSM that restricts access to sensitive kernel
-> resources (e.g. /dev/mem, kernel modules, perf, tracing, kprobes,
-> BPF access to kernel memory). However, without IOMMU, any PCI/PCIe
-> device can perform DMA to arbitrary physical memory, effectively
-> bypassing all lockdown protections.
-> 
-> A malicious or compromised device can:
->    - Read kernel memory directly (encryption keys, credentials, secrets)
->    - Write to kernel memory directly (code patches, rootkits, backdoors)
->    - Circumvent all lockdown LSM checks (which run inside the kernel)
-> 
 
-Hi Mario,
-
-Thanks for your contribution.
-
-Let me first make my position clear: I'm not questioning the motivation
-behind this series -- "without an IOMMU, PCI/PCIe devices can DMA to
-arbitrary physical memory" is a real and legitimate concern. What I'd
-like to raise for discussion is: whether this class of problem should be
-addressed by lockdown in the first place. I'm honestly doubtful, so I'd
-very much welcome other people's views.
-
-My doubt comes from a mismatch between the threat this series is trying
-to fix and the threat model lockdown was built around. Lockdown is, by
-design, a way to protect the boundary between UID 0 and the kernel: it
-came from the UEFI Secure Boot work, and it only limits the ways
-software can reach the kernel -- /dev/mem, module loading, kexec, device
-access via iopl/MSR/ACPI, and so on. The attacker it thinks about is a
-privileged user (root) on the system. The problem in this series,
-however, is about a malicious or bad hardware device, whose attack path
-lives at the bus/hardware layer rather than in the software access paths
-lockdown protects. To me, that looks like a different threat class with
-a different owner.
-
-It also does not look like a new question. The DMA-from-untrusted-device
-problem was discussed in detail on linux-kernel back in May–June 2020,
-in the "RFC Restrict the untrusted devices, to bind to only a set of
-'whitelisted' drivers" thread:
-	https://lore.kernel.org/all/CACK8Z6E8pjVeC934oFgr=VB3pULx_GyT2NkzAogdRQJ9TKSX9A@mail.gmail.com/
-
-The conclusion of that discussion, as I read it, is that device-level
-DMA threats are handled by the PCI/IOMMU line of defense -- the
-untrusted-device marking in the PCI core, IOMMU/ACS settings, and
-driver/device review -- not by lockdown. Interestingly, that thread also
-  shows that "with an IOMMU or without an IOMMU" is not a clean split in
-either direction: ATS and driver bugs can defeat DMA isolation even with
-an IOMMU in place, while ACS Translation Blocking can still help on
-systems without one. So if my reading is correct, "is there an IOMMU?"
-is not a good test here. It does not really stop the DMA attack this
-series worries about, and it goes beyond lockdown's original job.
-
-Also worth noting: systems without an IOMMU are not rare. Many embedded
-boards and virtual machines have no IOMMU at all. Lockdown, meanwhile,
-is often enabled automatically in Secure Boot deployments, On such
-systems, a panic-on-no-IOMMU check would turn a normal setup into a boot
-failure.
-
-Given what lockdown is for and the earlier discussion, the problem of a
-device doing DMA without an IOMMU is probably not a problem for the
-lockdown LSM to address, and that it belongs with the PCI/IOMMU
-subsystems and platform policy instead.
-
-I would welcome other views on this.
-
-> This series adds a two-phase check to prevent booting with lockdown
-> enabled and IOMMU disabled:
-> 
-> 1. Early check (in lockdown_lsm_init()): On x86, check the no_iommu
->     flag, which is set early by the "iommu=off" kernel cmdline option.
->     If lockdown is active and no_iommu is set, panic with a clear error.
-> 
-> 2. Late check (late_initcall): On all architectures, check
->     iommu_is_available() which returns true if any IOMMU driver
->     registered successfully. This catches cases where:
->     - IOMMU hardware is absent on the platform
->     - IOMMU was disabled by driver initialization failure
->     - IOMMU was not detected (broken firmware, missing ACPI tables)
-> 
-> This follows the precedent set by s390 UV code which panics when
-> security cannot be guaranteed ("System security cannot be guaranteed
-> unless the system panics now").
-> 
-> This also adds a generic iommu_is_available() API in the IOMMU
-> subsystem, which is used by the lockdown check. Any IOMMU driver
-> that successfully registers will automatically call
-> iommu_set_available() from iommu_device_register().
-> 
-> Signed-off-by: Mario Limonciello (AMD) <superm1@kernel.org>
-> 
+在 2026/11/8 14:59, Jiaxing Hu 写道:
+> The RK3576 NPU power domains need some time to settle after the idle
+> request is released.
+>
+> Without that wait, the QoS registers are written while the domain is not
+> fully up, and the first cold power-on raises an SError.
+>
+> Add an optional delay_us field and wait that long after releasing the
+> idle request and before restoring QoS.
+>
+> Rename the DOMAIN_M_O_R_G macro to DOMAIN_M_O_R_G_W.
+>
+> The NPU power domain is switched off when the driver probes, so the first
+> power-on goes through this wait even when the bootloader left the NPU on.
+>
+> With delay_us set to 0, an SError still happens even with the regulator
+> kept always on; with 15 us, 536 cold power-ons in a row are all clean.
+>
+> Signed-off-by: Jiaxing Hu <gahing@gahingwoo.com>
+> Reviewed-by: Abel Vesa <abel.vesa@oss.qualcomm.com>
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 > ---
-> Mario Limonciello (AMD) (2):
->        iommu: Add iommu_is_available() API
->        security: lockdown: Prevent boot with lockdown but no IOMMU
-> 
->   drivers/iommu/iommu.c        | 48 ++++++++++++++++++++++++++++++++
->   include/linux/iommu.h        | 14 ++++++++++
->   security/lockdown/lockdown.c | 65 ++++++++++++++++++++++++++++++++++++++++++++
->   3 files changed, 127 insertions(+)
-> ---
-> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-> change-id: 20261014-lockdown-iommu-08c763d9f91dd
-> 
-> Best regards,
-> --
-> Mario Limonciello <superm1@kernel.org>
-> 
-> 
+>   drivers/pmdomain/rockchip/pm-domains.c | 56 ++++++++++++++++----------
+>   1 file changed, 34 insertions(+), 22 deletions(-)
+>
+> diff --git a/drivers/pmdomain/rockchip/pm-domains.c b/drivers/pmdomain/rockchip/pm-domains.c
+> index db3879846db6..e3cc60fa2277 100644
+> --- a/drivers/pmdomain/rockchip/pm-domains.c
+> +++ b/drivers/pmdomain/rockchip/pm-domains.c
+> @@ -18,6 +18,7 @@
+>   #include <linux/of_address.h>
+>   #include <linux/of_clk.h>
+>   #include <linux/clk.h>
+> +#include <linux/delay.h>
+>   #include <linux/regmap.h>
+>   #include <linux/regulator/consumer.h>
+>   #include <linux/mfd/syscon.h>
+> @@ -59,6 +60,7 @@ struct rockchip_domain_info {
+>   	u32 pwr_offset;
+>   	u32 mem_offset;
+>   	u32 req_offset;
+> +	u32 delay_us;
+>   };
+>   
+>   struct rockchip_pmu_info {
+> @@ -185,7 +187,7 @@ struct rockchip_pmu {
+>   	.need_regulator = regulator,			\
+>   }
+>   
+> -#define DOMAIN_M_O_R_G(_name, p_offset, pwr, status, m_offset, m_status, r_status, r_offset, req, idle, ack, g_mask, wakeup)	\
+> +#define DOMAIN_M_O_R_G_W(_name, p_offset, pwr, status, m_offset, m_status, r_status, r_offset, req, idle, ack, g_mask, delay, wakeup, regulator)	\
+>   {							\
+>   	.name = _name,					\
+>   	.pwr_offset = p_offset,				\
+> @@ -200,8 +202,10 @@ struct rockchip_pmu {
+>   	.req_mask = (req),				\
+>   	.idle_mask = (idle),				\
+>   	.clk_ungate_mask = (g_mask),			\
+> +	.delay_us = (delay),				\
+>   	.ack_mask = (ack),				\
+>   	.active_wakeup = wakeup,			\
+> +	.need_regulator = regulator,			\
+>   }
+>   
+>   #define DOMAIN_M_R(_name, pwr, status, req, idle, ack, wakeup, regulator)	\
+> @@ -258,8 +262,11 @@ struct rockchip_pmu {
+>   #define DOMAIN_RK3568(name, pwr, req, wakeup, regulator)		\
+>   	DOMAIN_M_R(name, pwr, pwr, req, req, req, wakeup, regulator)
+>   
+> -#define DOMAIN_RK3576(name, p_offset, pwr, status, r_status, r_offset, req, idle, g_mask, wakeup)	\
+> -	DOMAIN_M_O_R_G(name, p_offset, pwr, status, 0, r_status, r_status, r_offset, req, idle, idle, g_mask, wakeup)
+> +#define DOMAIN_RK3576(name, p_offset, pwr, status, r_status, r_offset, req, idle, g_mask, delay, wakeup)	\
+> +	DOMAIN_M_O_R_G_W(name, p_offset, pwr, status, 0, r_status, r_status, r_offset, req, idle, idle, g_mask, delay, wakeup, false)
+> +
+> +#define DOMAIN_RK3576_R(name, p_offset, pwr, status, r_status, r_offset, req, idle, g_mask, delay, wakeup)	\
+> +	DOMAIN_M_O_R_G_W(name, p_offset, pwr, status, 0, r_status, r_status, r_offset, req, idle, idle, g_mask, delay, wakeup, true)
+>   
+>   /*
+>    * Dynamic Memory Controller may need to coordinate with us -- see
+> @@ -681,6 +688,10 @@ static int rockchip_pd_power(struct rockchip_pm_domain *pd, bool power_on)
+>   		if (ret < 0)
+>   			goto out;
+>   
+> +		/* Some domains need to settle before the QoS registers answer. */
+> +		if (pd->info->delay_us)
+> +			udelay(pd->info->delay_us);
+> +
+>   		rockchip_pmu_restore_qos(pd);
+>   	}
+>   
+> @@ -1314,25 +1325,26 @@ static const struct rockchip_domain_info rk3568_pm_domains[] = {
+>   };
+>   
+>   static const struct rockchip_domain_info rk3576_pm_domains[] = {
+> -	[RK3576_PD_NPU]		= DOMAIN_RK3576("npu",    0x0, BIT(0),  BIT(0), 0,       0x0, 0,       0,       0,       false),
+> -	[RK3576_PD_NVM]		= DOMAIN_RK3576("nvm",    0x0, BIT(6),  0,      BIT(6),  0x4, BIT(2),  BIT(18), BIT(2),  false),
+> -	[RK3576_PD_SDGMAC]	= DOMAIN_RK3576("sdgmac", 0x0, BIT(7),  0,      BIT(7),  0x4, BIT(1),  BIT(17), 0x6,     false),
+> -	[RK3576_PD_AUDIO]	= DOMAIN_RK3576("audio",  0x0, BIT(8),  0,      BIT(8),  0x4, BIT(0),  BIT(16), BIT(0),  false),
+> -	[RK3576_PD_PHP]		= DOMAIN_RK3576("php",    0x0, BIT(9),  0,      BIT(9),  0x0, BIT(15), BIT(15), BIT(15), false),
+> -	[RK3576_PD_SUBPHP]	= DOMAIN_RK3576("subphp", 0x0, BIT(10), 0,      BIT(10), 0x0, 0,       0,       0,       false),
+> -	[RK3576_PD_VOP]		= DOMAIN_RK3576("vop",    0x0, BIT(11), 0,      BIT(11), 0x0, 0x6000,  0x6000,  0x6000,  false),
+> -	[RK3576_PD_VO1]		= DOMAIN_RK3576("vo1",    0x0, BIT(14), 0,      BIT(14), 0x0, BIT(12), BIT(12), 0x7000,  false),
+> -	[RK3576_PD_VO0]		= DOMAIN_RK3576("vo0",    0x0, BIT(15), 0,      BIT(15), 0x0, BIT(11), BIT(11), 0x6800,  false),
+> -	[RK3576_PD_USB]		= DOMAIN_RK3576("usb",    0x4, BIT(0),  0,      BIT(16), 0x0, BIT(10), BIT(10), 0x6400,  true),
+> -	[RK3576_PD_VI]		= DOMAIN_RK3576("vi",     0x4, BIT(1),  0,      BIT(17), 0x0, BIT(9),  BIT(9),  BIT(9),  false),
+> -	[RK3576_PD_VEPU0]	= DOMAIN_RK3576("vepu0",  0x4, BIT(2),  0,      BIT(18), 0x0, BIT(7),  BIT(7),  0x280,   false),
+> -	[RK3576_PD_VEPU1]	= DOMAIN_RK3576("vepu1",  0x4, BIT(3),  0,      BIT(19), 0x0, BIT(8),  BIT(8),  BIT(8),  false),
+> -	[RK3576_PD_VDEC]	= DOMAIN_RK3576("vdec",   0x4, BIT(4),  0,      BIT(20), 0x0, BIT(6),  BIT(6),  BIT(6),  false),
+> -	[RK3576_PD_VPU]		= DOMAIN_RK3576("vpu",    0x4, BIT(5),  0,      BIT(21), 0x0, BIT(5),  BIT(5),  BIT(5),  false),
+> -	[RK3576_PD_NPUTOP]	= DOMAIN_RK3576("nputop", 0x4, BIT(6),  0,      BIT(22), 0x0, 0x18,    0x18,    0x18,    false),
+> -	[RK3576_PD_NPU0]	= DOMAIN_RK3576("npu0",   0x4, BIT(7),  0,      BIT(23), 0x0, BIT(1),  BIT(1),  0x1a,    false),
+> -	[RK3576_PD_NPU1]	= DOMAIN_RK3576("npu1",   0x4, BIT(8),  0,      BIT(24), 0x0, BIT(2),  BIT(2),  0x1c,    false),
+> -	[RK3576_PD_GPU]		= DOMAIN_RK3576("gpu",    0x4, BIT(9),  0,      BIT(25), 0x0, BIT(0),  BIT(0),  BIT(0),  false),
+> +	/*                                            name    p_offset pwr      status  r_status r_offset req      idle     g_mask   delay wakeup */
+> +	[RK3576_PD_NPU]		= DOMAIN_RK3576_R("npu",  0x0, BIT(0),  BIT(0), 0,       0x0, 0,       0,       0,       0,    false),
+> +	[RK3576_PD_NVM]		= DOMAIN_RK3576("nvm",    0x0, BIT(6),  0,      BIT(6),  0x4, BIT(2),  BIT(18), BIT(2),  0,    false),
+> +	[RK3576_PD_SDGMAC]	= DOMAIN_RK3576("sdgmac", 0x0, BIT(7),  0,      BIT(7),  0x4, BIT(1),  BIT(17), 0x6,     0,    false),
+> +	[RK3576_PD_AUDIO]	= DOMAIN_RK3576("audio",  0x0, BIT(8),  0,      BIT(8),  0x4, BIT(0),  BIT(16), BIT(0),  0,    false),
+> +	[RK3576_PD_PHP]		= DOMAIN_RK3576("php",    0x0, BIT(9),  0,      BIT(9),  0x0, BIT(15), BIT(15), BIT(15), 0,    false),
+> +	[RK3576_PD_SUBPHP]	= DOMAIN_RK3576("subphp", 0x0, BIT(10), 0,      BIT(10), 0x0, 0,       0,       0,       0,    false),
+> +	[RK3576_PD_VOP]		= DOMAIN_RK3576("vop",    0x0, BIT(11), 0,      BIT(11), 0x0, 0x6000,  0x6000,  0x6000,  0,    false),
+> +	[RK3576_PD_VO1]		= DOMAIN_RK3576("vo1",    0x0, BIT(14), 0,      BIT(14), 0x0, BIT(12), BIT(12), 0x7000,  0,    false),
+> +	[RK3576_PD_VO0]		= DOMAIN_RK3576("vo0",    0x0, BIT(15), 0,      BIT(15), 0x0, BIT(11), BIT(11), 0x6800,  0,    false),
+> +	[RK3576_PD_USB]		= DOMAIN_RK3576("usb",    0x4, BIT(0),  0,      BIT(16), 0x0, BIT(10), BIT(10), 0x6400,  0,    true),
+> +	[RK3576_PD_VI]		= DOMAIN_RK3576("vi",     0x4, BIT(1),  0,      BIT(17), 0x0, BIT(9),  BIT(9),  BIT(9),  0,    false),
+> +	[RK3576_PD_VEPU0]	= DOMAIN_RK3576("vepu0",  0x4, BIT(2),  0,      BIT(18), 0x0, BIT(7),  BIT(7),  0x280,   0,    false),
+> +	[RK3576_PD_VEPU1]	= DOMAIN_RK3576("vepu1",  0x4, BIT(3),  0,      BIT(19), 0x0, BIT(8),  BIT(8),  BIT(8),  0,    false),
+> +	[RK3576_PD_VDEC]	= DOMAIN_RK3576("vdec",   0x4, BIT(4),  0,      BIT(20), 0x0, BIT(6),  BIT(6),  BIT(6),  0,    false),
+> +	[RK3576_PD_VPU]		= DOMAIN_RK3576("vpu",    0x4, BIT(5),  0,      BIT(21), 0x0, BIT(5),  BIT(5),  BIT(5),  0,    false),
+> +	[RK3576_PD_NPUTOP]	= DOMAIN_RK3576("nputop", 0x4, BIT(6),  0,      BIT(22), 0x0, 0x18,    0x18,    0x18,    15,   false),
+> +	[RK3576_PD_NPU0]	= DOMAIN_RK3576("npu0",   0x4, BIT(7),  0,      BIT(23), 0x0, BIT(1),  BIT(1),  0x1a,    15,   false),
+> +	[RK3576_PD_NPU1]	= DOMAIN_RK3576("npu1",   0x4, BIT(8),  0,      BIT(24), 0x0, BIT(2),  BIT(2),  0x1c,    15,   false),
+> +	[RK3576_PD_GPU]		= DOMAIN_RK3576("gpu",    0x4, BIT(9),  0,      BIT(25), 0x0, BIT(0),  BIT(0),  BIT(0),  0,    false),
+>   };
+
+1. The settle requirement is on the top-level NPUTOP domain only.
+    PD_NPU0 and PD_NPU1 do not need the delay: when a device is attached
+    to npu0/npu1, genpd powers the parent (nputop) first, and by the time
+    the child domain switches on, the settle time has long elapsed. Cold
+    power-on of npu0/npu1 without any delay has been clean in our
+    validation. You can just drop delay_us from both entries; keeping it
+    on nputop is enough.
+
+2. The same failure mode exists on the display pipeline. PD_VOP needs a
+    15 us settle as well.Please add delay_us = 15 to RK3576_PD_VOP.
+
+>   
+>   static const struct rockchip_domain_info rk3588_pm_domains[] = {
+
+-- 
+Best regards,
+
+底层平台中心 肖锋（Finley Xiao）
+************************************************************************************
+瑞芯微电子股份有限公司
+Rockchip Electronics Co., Ltd.
+福建省福州市铜盘路软件大道89号软件园A区21号楼 350003
+No.21 Building, A District, Fuzhou Software Park, Fuzhou, Fujian 350003, P.R. China
+Tel: 0591-83991906-8602 Mobile: 18506057603
+************************************************************************************
 
