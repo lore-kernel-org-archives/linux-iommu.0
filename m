@@ -1,70 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=44.245.243.92
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=52.35.192.45
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794437016;
-	b=jriCb3eLduDmqg9nme45WJxqXRbl30PLZWxTqoeVGqwikg5KqIo/NN8mm6BnGjMMRNRZ
-	 uB0TIihUXxQYqtvLvFVVFkNq76wKHK9aGpCf/ZhFm8l+9w88kbmgs41fzaHb7oHJA4n7b
-	 H6pg+WriEk1E5sMIKJ0Wjt1Ipzt849w5Tyo+X3DF3Br7i3P9Y+FZ3fktUTed6vQfljh2U
-	 kXPrwQnx9SheRnf9ONRPtIHv13gNXWwdkbkxArsIG2jN5RW54hNnWX+wP8vE4alUe/t4Q
-	 usWobg3oQopNC4pod0dufxT4ogSeZLG1HJ/kaJK03X4lzWvx/SBvvfvbVvJNAOT1O1g==
+	t=1794437017;
+	b=dvYzK2Qf2k6fvIM8RHSVM1UaWQjFDFtdbaD7qkp2AbFMAHWeXxZDC4DczS4H/myhrRCp
+	 bmU7BR+Ey86ABZ5NV/W+EFFa9woA0t7vjdNAxTh3W3MZJd4b2XIMa47SyjAIhHSzwBjzV
+	 N04fzjyczIox0xavsG5jzrnZDjc8hgIkDZMsrp2F94hjCcH0npKNxyttyBJrVSVvriwC9
+	 efPyAIlMiUkB2PSIbojITF/3vMSieNr8HZXbfGybuGp97+TeC5MMSlg5ODaOMMBGTnYyL
+	 oZQ4xVtqcq36SHReaZxFBzRELUFOyz4LNdbOL5YJOXuLHKeCjp7yKjTK7cf2gLPgyTg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794437016;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794437017;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:Received:Received:X-Farcaster-Flow-ID:Received:Received:
 	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
 	 X-ClientProxiedBy;
-	bh=I5jblTJKi+wXzEn0XfFHHKjPffBWizNSce06ASHpEv0=;
-	b=21hfc50GfusjIp3qxf+ifxJR4hUoB0kkVqmQDpPo35fPas8E0nFQN97UKdnyMRb59/QW
-	 ITVMfRck1+2VC6VosO1rNeY7wHQ1q+JBvF7ijjJgr/FxzpJdBB6KyyelN3rip53tDA5Mq
-	 ij1CalK2u70lzEe0wUqUTFTlmV25Vo4XxlvyKlUiZ2LGS61s3cooulI3lQivNnnk0lHhi
-	 +RTbb00dBM02T5e6FNIMAmr37qJIE5AocjgLkx7VVhFsocg7gKlfB5L8p7I1az19YbQRi
-	 GphvnNsCJr4zT2kN1Ft3ieiGW9EZxBVQ0efuI50MWkzUOBbuqCXq/9xOLG62xWhCWbA==
+	bh=g0y7qBOyIzOkXG7aIGXVPV38d7P5GLpJdpDg66u1RGU=;
+	b=rprgB09NZc+AsNQhcxuzmf2dTmVWYXNfzfZEliwYJ1vuS/5Z3My3NpEkQomatrqGbY2O
+	 i3a7m1zziK063QP6l69/QGi7IBk5EdjlcVX8XH3uxgVgi1ukoqp3YXzKGSyMBBlEwUgWE
+	 wMzlPJ8rg/8WWRa9Kx0XGG8FdSUbjNUytxjDfkK9xM1tFHul88gwUYw/3rWRAW8AgzHbd
+	 9DfILQmq0k1sensV3VcBdavTGc8iOafGgpZJvhKmNcmhwINnkaLBCpnD93E/0kBL6g2or
+	 ar+lo+bNOnpYPBT2458dZnd8aLS/ngU463ur0vfxkiQTeMeqwAyGXrKZfir1R+wNmqA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amazon.com;
 	spf=pass smtp.mailfrom=amazon.de;
-	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=jM7PUoZ9;
-	arc=none smtp.remote-ip=44.245.243.92
-Received: from pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com [44.245.243.92])
+	dkim=pass header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=dASNG3L7;
+	arc=none smtp.remote-ip=52.35.192.45
+Received: from pdx-out-011.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-011.esa.us-west-2.outbound.mail-perimeter.amazon.com [52.35.192.45])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83BB6606B003
-	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 22:43:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 83BB6606B003
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3DF7606B003
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 22:43:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F3DF7606B003
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=jM7PUoZ9
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.a=rsa-sha256 header.s=amazoncorp2 header.b=dASNG3L7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
-  t=1794437015; x=1825973015;
+  t=1794437016; x=1825973016;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=I5jblTJKi+wXzEn0XfFHHKjPffBWizNSce06ASHpEv0=;
-  b=jM7PUoZ9LDReBoflh9/T/0OOyWDNcNXOVkQVt8yg8F+HfAD7ljOg9L7c
-   5eulU54Mzwyp0cgttjbtauNfPUD36nY+YnkKnSerlmmdM9PAgkTomsGng
-   gX8axQhccngq7t8XrXL8F8pRQObfsYzIB9Da5vwLdP2lE+ITk6em6ae+o
-   xSpG99kKnnuseKtOH/Z79FfdhBUMhQO4XANILLHqIrOqMMttXZRRgz6rg
-   yHndDuRCO2CQiJkySKwuggfanMUYrBCRnOJ+hLbKNNER+wZ1Vief8ZoI1
-   kfohuaCmORDKDmKoxRxGOjloFVl34gsRFEDwtJlbM5ZbHgMqUlT9RsP3H
-   Q==;
-X-CSE-ConnectionGUID: 10AdERIbSoqUwGgXELCDVA==
-X-CSE-MsgGUID: mW09cnduT+qQHFr1LPPPTQ==
+  bh=g0y7qBOyIzOkXG7aIGXVPV38d7P5GLpJdpDg66u1RGU=;
+  b=dASNG3L7GppnhL2/ArQopwsqF4Tfw4DVe/rXB3LEWwmRE+no4tfNvxJD
+   +9aMEP7FhDqwjtTg+FAaCL1ymFAOPmMKUrIekBI4zDGPx2LKM+f2mw+QT
+   r8dX04VsHaM9vtBACeFOauR48PJk5KmHXpQBXxaFJKluVoitFi+mPVmWp
+   t6yGZIRkSkf8W73MTZNXxTIS0AQw4FII/0F3doktJiFtwPfnxs3fT6jQ/
+   h7suszs3zFVmenYxb7Ggo3gg+P2yWfrp6uy6poAlpDJUHgFyauBJIItu2
+   XlcwDgMA+AZDaYywNDJcZNMEXhyjH+NrIuWisi/F61oTVFXyX3nq8tOvI
+   w==;
+X-CSE-ConnectionGUID: +EoT31uvSvy7esM3Xb6w+g==
+X-CSE-MsgGUID: /yI5qGejSdqaEST2erIg3A==
 X-IronPort-AV: E=Sophos;i="6.27,208,1787011200"; 
-   d="scan'208";a="33273315"
+   d="scan'208";a="33532185"
 Received: from ip-10-5-6-203.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.6.203])
-  by internal-pdx-out-001.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 22:43:31 +0000
-Received: from EX19MTAUWB001.ant.amazon.com [205.251.233.104:29377]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.46.128:2525] with esmtp (Farcaster)
- id 465b19fa-9b9f-4e29-a180-e30b55d7fca4; Wed, 11 Nov 2026 22:43:31 +0000 (UTC)
-X-Farcaster-Flow-ID: 465b19fa-9b9f-4e29-a180-e30b55d7fca4
+  by internal-pdx-out-011.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 22:43:34 +0000
+Received: from EX19MTAUWC002.ant.amazon.com [205.251.233.111:26726]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.12.127:2525] with esmtp (Farcaster)
+ id 7d040489-dc19-4c72-8a20-0f1ba5fd1d3b; Wed, 11 Nov 2026 22:43:33 +0000 (UTC)
+X-Farcaster-Flow-ID: 7d040489-dc19-4c72-8a20-0f1ba5fd1d3b
 Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
- EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
+ EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 22:43:30 +0000
+ Wed, 11 Nov 2026 22:43:33 +0000
 Received: from ip-10-253-83-51.amazon.com (172.19.99.218) by
  EX19D001UWA001.ant.amazon.com (10.13.138.214) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.56;
- Wed, 11 Nov 2026 22:43:28 +0000
+ Wed, 11 Nov 2026 22:43:30 +0000
 From: Alexander Graf <graf@amazon.com>
 To: <linux-kernel@vger.kernel.org>, Greg Kroah-Hartman
 	<gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>
@@ -76,9 +76,9 @@ CC: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>, "Shuah
 	<david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
 	<nh-open-source@amazon.com>, <linux-mm@kvack.org>, Jonathan Corbet
 	<corbet@lwn.net>
-Subject: [PATCH 07/40] nitro_enclaves: Add NE_MEMORY_SHARED
-Date: Wed, 11 Nov 2026 22:41:52 +0000
-Message-ID: <a1aa64fd1053995db2b20419ca6bee73c3a99f03.1794393490.git.graf@amazon.com>
+Subject: [PATCH 08/40] nitro_enclaves: Add NE_ADD_MEMORY_REGION
+Date: Wed, 11 Nov 2026 22:41:53 +0000
+Message-ID: <b64e2f7d73bbbbd3573c3d3b111a39fa0537f307.1794393490.git.graf@amazon.com>
 X-Mailer: git-send-email 2.47.1
 In-Reply-To: <cover.1794300002.git.graf@amazon.com>
 References: <cover.1794300002.git.graf@amazon.com>
@@ -96,320 +96,584 @@ Content-Type: text/plain
 X-ClientProxiedBy: EX19D031UWC004.ant.amazon.com (10.13.139.246) To
  EX19D001UWA001.ant.amazon.com (10.13.138.214)
 
-In preparation to support Nitro Sandboxes, whose parent keeps using some
-of the memory it hands over, add NE_MEMORY_SHARED, a flag for
-NE_ALLOC_MEMORY that makes an allocation mappable. The parent needs that
-to read state the device writes for it, and for virtqueues and buffers
-that both the parent and the sandbox access.
+The new allocation scheme also requires a new memory add ioctl. Introduce
+NE_ADD_MEMORY_REGION which uses the fd that NE_ALLOC_MEMORY returns to
+back a slot's memory.
+
+Once memory is donated using this mechanism, disable the ability for user
+space to write() into it. It is fully considered donated at this point.
+
+For now, consider slot memory donation as mandatorily donated. You can
+not use a SHARED mapping to back it until we introduce DIRECT mode later.
 
 Signed-off-by: Alexander Graf <graf@amazon.com>
 ---
- drivers/virt/nitro_enclaves/ne_misc_dev.c | 160 +++++++++++++++++++++-
- drivers/virt/nitro_enclaves/ne_misc_dev.h |   6 +-
- include/uapi/linux/nitro_enclaves.h       |  36 ++++-
- 3 files changed, 190 insertions(+), 12 deletions(-)
+ drivers/virt/nitro_enclaves/ne_misc_dev.c | 262 ++++++++++++++++++++++
+ drivers/virt/nitro_enclaves/ne_misc_dev.h |  32 ++-
+ include/uapi/linux/nitro_enclaves.h       | 104 +++++++--
+ 3 files changed, 379 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.c b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-index 56ca1a9d99d41..55dbeb5b14d29 100644
+index 55dbeb5b14d29..38345ad7c7985 100644
 --- a/drivers/virt/nitro_enclaves/ne_misc_dev.c
 +++ b/drivers/virt/nitro_enclaves/ne_misc_dev.c
-@@ -2597,17 +2597,21 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-  * serving such a request out of movable memory would take that memory from
-  * the rest of the host and leave the reservation bounding nothing.
-  *
-- * A request larger than one contiguous run is satisfied by several runs, which
-- * the driver keeps on a list of its own so that an enclave can be given every
-- * one of them.
-+ * A request larger than one contiguous run is satisfied by several runs, and
-+ * mmap() maps them back to back into one VM_PFNMAP VMA, so user space sees a
-+ * single region. The driver keeps the runs on a list of its own, so that an
-+ * enclave can be given them without anyone reading them back out of the page
-+ * tables.
-  *
-- * An allocation is never mapped, and the enclave image reaches it through
-- * write().
-+ * An allocation is either private or shared. A private one is never mapped, and
-+ * the enclave image reaches it through write() instead. A shared one can also be
-+ * mapped, at an offset and a length its own size bounds.
-  *
-  * The runs belong to the file the allocation is handed out on. Zeroing a fresh
-  * run and a write into an allocation go through ne_walk_run(), so that neither
-- * can run for as long as the allocation is large; the release path walks the
-- * runs with a preemption point of its own.
-+ * can run for as long as the allocation is large. A fault resolves the run its
-+ * offset falls in with a binary search instead of walking, and the release path
-+ * walks the runs with a preemption point of its own.
+@@ -119,6 +119,8 @@ static long ne_ioctl(struct file *file, unsigned int cmd, unsigned long arg);
   */
+ static atomic64_t ne_enclave_seq = ATOMIC64_INIT(0);
  
- /**
-@@ -2788,6 +2792,82 @@ static int ne_walk_allocs(struct ne_contig_mem *mem, u64 off, u64 len,
- 	return 0;
++static int ne_add_memory_region_ioctl(struct ne_enclave *ne_enclave,
++				      struct ne_add_memory_region_args *args);
+ static int ne_alloc_memory_ioctl(struct ne_enclave *ne_enclave,
+ 				 struct ne_alloc_memory_args *args);
+ static const struct file_operations ne_fops = {
+@@ -2069,6 +2071,39 @@ static long ne_enclave_do_ioctl(struct file *file, unsigned int cmd, unsigned lo
+ 		return 0;
+ 	}
+ 
++	case NE_EA_IOCTL(NE_ADD_MEMORY_REGION): {
++		struct ne_add_memory_region_args __user *uargs = (void __user *)arg;
++		unsigned int usize = _IOC_SIZE(cmd);
++		struct ne_add_memory_region_args args;
++		int rc;
++
++		if (usize < offsetofend(struct ne_add_memory_region_args, flags))
++			return -EINVAL;
++
++		rc = copy_struct_from_user(&args, sizeof(args), uargs, usize);
++		if (rc)
++			return rc;
++
++		rc = mutex_lock_killable(&ne_enclave->enclave_info_mutex);
++		if (rc)
++			return rc;
++
++		if (ne_enclave->state != NE_STATE_INIT) {
++			dev_err_ratelimited(ne_misc_dev.this_device,
++					    "Enclave is not in init state\n");
++
++			mutex_unlock(&ne_enclave->enclave_info_mutex);
++
++			return -NE_ERR_NOT_IN_INIT_STATE;
++		}
++
++		rc = ne_add_memory_region_ioctl(ne_enclave, &args);
++
++		mutex_unlock(&ne_enclave->enclave_info_mutex);
++
++		return rc;
++	}
++
+ 	case NE_EA_IOCTL(NE_ALLOC_MEMORY): {
+ 		struct ne_alloc_memory_args __user *uargs = (void __user *)arg;
+ 		unsigned int usize = _IOC_SIZE(cmd);
+@@ -2139,6 +2174,33 @@ static long ne_enclave_ioctl(struct file *file, unsigned int cmd, unsigned long
+ 	return rc;
  }
  
 +/**
-+ * ne_contig_fault_order() - Install one page table entry for a fault.
-+ * @vmf:	The fault.
-+ * @order:	Order of the entry to install, zero for a PTE.
++ * ne_enclave_remove_all_contig_regions() - Drop the enclave's references to the
++ *					    allocations it was given.
++ * @ne_enclave :	Private data associated with the current enclave.
 + *
-+ * A mapping is populated as it is touched, so a caller that maps a whole
-+ * allocation and builds an enclave image at the front of it pays page tables
-+ * for the part it touched.
++ * The last reference on an allocation's file frees its runs and gives back its
++ * %RLIMIT_MEMLOCK charge, so an allocation whose descriptor and mappings are
++ * already gone is freed here.
 + *
-+ * An entry of @order needs that much of one run behind it, at a matching
-+ * physical alignment. A run is a power-of-two multiple of 2 MiB aligned to at
-+ * least 2 MiB, so a PMD sized entry fits inside one whenever the address it
-+ * lands at is aligned too, and anything that does not fit falls back to the
-+ * next order down.
-+ *
-+ * Return: a VM_FAULT_* value.
++ * Context: Process context. This function is called on an enclave that is on
++ *	    no list and has no file left.
 + */
-+static vm_fault_t ne_contig_fault_order(struct vm_fault *vmf, unsigned int order)
++static void ne_enclave_remove_all_contig_regions(struct ne_enclave *ne_enclave)
 +{
-+	struct vm_area_struct *vma = vmf->vma;
-+	struct ne_contig_mem *mem = vma->vm_file->private_data;
-+	unsigned long len = PAGE_SIZE << order;
-+	unsigned long addr = ALIGN_DOWN(vmf->address, len);
-+	struct ne_contig_alloc *alloc;
-+	unsigned long pfn;
-+	u64 off;
++	struct ne_contig_region *ne_contig_region = NULL;
++	struct ne_contig_region *tmp = NULL;
 +
-+	if (addr < vma->vm_start || addr + len > vma->vm_end)
-+		return VM_FAULT_FALLBACK;
++	list_for_each_entry_safe(ne_contig_region, tmp,
++				 &ne_enclave->contig_regions_list, list) {
++		list_del(&ne_contig_region->list);
 +
-+	off = ((u64)vma->vm_pgoff << PAGE_SHIFT) + (addr - vma->vm_start);
++		fput(ne_contig_region->file);
 +
-+	alloc = ne_find_alloc(mem, off);
-+	if (!alloc)
-+		return VM_FAULT_SIGBUS;
-+
-+	if (off + len > alloc->off + ((u64)alloc->nr_pages << PAGE_SHIFT))
-+		return VM_FAULT_FALLBACK;
-+
-+	pfn = page_to_pfn(alloc->page) + ((off - alloc->off) >> PAGE_SHIFT);
-+	if (!IS_ALIGNED(pfn, len >> PAGE_SHIFT))
-+		return VM_FAULT_FALLBACK;
-+
-+	if (!order)
-+		return vmf_insert_pfn(vma, addr, pfn);
-+
-+	if (IS_ENABLED(CONFIG_ARCH_SUPPORTS_PMD_PFNMAP) && order == PMD_ORDER)
-+		return vmf_insert_pfn_pmd(vmf, pfn,
-+					  vmf->flags & FAULT_FLAG_WRITE);
-+
-+	if (IS_ENABLED(CONFIG_ARCH_SUPPORTS_PUD_PFNMAP) && order == PUD_ORDER)
-+		return vmf_insert_pfn_pud(vmf, pfn,
-+					  vmf->flags & FAULT_FLAG_WRITE);
-+
-+	return VM_FAULT_FALLBACK;
++		kfree(ne_contig_region);
++	}
 +}
 +
-+static vm_fault_t ne_contig_vma_fault(struct vm_fault *vmf)
-+{
-+	return ne_contig_fault_order(vmf, 0);
-+}
-+
-+#ifdef CONFIG_ARCH_SUPPORTS_HUGE_PFNMAP
-+static vm_fault_t ne_contig_huge_fault(struct vm_fault *vmf, unsigned int order)
-+{
-+	return ne_contig_fault_order(vmf, order);
-+}
-+#endif
-+
-+static const struct vm_operations_struct ne_contig_vm_ops = {
-+	.fault		= ne_contig_vma_fault,
-+#ifdef CONFIG_ARCH_SUPPORTS_HUGE_PFNMAP
-+	.huge_fault	= ne_contig_huge_fault,
-+#endif
-+};
-+
- static struct cma *ne_numa_cma_area(int nid)
+ /**
+  * ne_enclave_remove_all_mem_region_entries() - Remove all memory region entries
+  *						from the enclave data structure.
+@@ -2278,6 +2340,7 @@ static int ne_enclave_free_slot(struct ne_pci_dev *ne_pci_dev,
+  */
+ static void ne_enclave_free(struct ne_enclave *ne_enclave)
  {
- 	struct cma *cma = dma_get_numa_cma_area(nid);
-@@ -2915,6 +2995,69 @@ struct page *ne_alloc_contig(unsigned long nr_pages, int nid,
- 	return page;
- }
++	ne_enclave_remove_all_contig_regions(ne_enclave);
+ 	ne_enclave_remove_all_mem_region_entries(ne_enclave);
+ 	ne_enclave_remove_all_vcpu_id_entries(ne_enclave);
  
-+/**
-+ * ne_contig_supports_mmap() - Whether an allocation may be mapped at all.
-+ * @file:	The allocation's file.
+@@ -2494,6 +2557,7 @@ static int ne_create_vm_ioctl(struct ne_pci_dev *ne_pci_dev, u64 __user *slot_ui
+ 	ne_enclave->has_event = false;
+ 	mutex_init(&ne_enclave->enclave_info_mutex);
+ 	ne_enclave->max_mem_regions = cmd_reply.mem_regions;
++	INIT_LIST_HEAD(&ne_enclave->contig_regions_list);
+ 	INIT_LIST_HEAD(&ne_enclave->mem_regions_list);
+ 	ne_enclave->mm = current->mm;
+ 	ne_enclave->slot_uid = cmd_reply.slot_uid;
+@@ -3116,6 +3180,12 @@ static int ne_write_span(void *arg, struct page *page, u64 off, u64 len)
+  * refusal is -EFBIG, the same as generic_write_check_limits() gives for a write
+  * beyond s_maxbytes. There is no RLIMIT_FSIZE in it, so no SIGXFSZ either.
+  *
++ * Donating an allocation closes this path, and @lock is what makes the two
++ * orderly. It is taken here and in ne_add_memory_region_ioctl() and nowhere
++ * else; setting a mapping up and faulting one in both read only fields that
++ * never change, so nothing takes it under mmap_write_lock or in a fault, and
++ * copying from user space under it cannot invert against the fault path.
 + *
-+ * A private allocation is the one an enclave gets to itself, and it is never
-+ * mapped. The attribute is fixed when the allocation is made and the file is
-+ * not published until it is set, so this reads it without a lock.
-+ *
-+ * Return: true when the caller may map the allocation.
-+ */
-+static bool ne_contig_supports_mmap(struct file *file)
-+{
-+	struct ne_contig_mem *mem = file->private_data;
+  * Return: the number of bytes written, or a negative return value on failure.
+  */
+ static ssize_t ne_contig_write_iter(struct kiocb *iocb, struct iov_iter *from)
+@@ -3132,6 +3202,11 @@ static ssize_t ne_contig_write_iter(struct kiocb *iocb, struct iov_iter *from)
+ 	if (pos >= mem->size || count > mem->size - pos)
+ 		return -EFBIG;
+ 
++	guard(mutex)(&mem->lock);
 +
-+	return mem->shared;
-+}
++	if (mem->donated)
++		return -EPERM;
 +
-+/**
-+ * ne_contig_mmap_prepare() - Set a mapping of part or all of an allocation up.
-+ * @desc:	The mapping to set up.
-+ *
-+ * The offset and the length both have to be multiples of 2 MiB, which is the
-+ * unit the allocation itself is made in, and the mapping has to stay inside
-+ * the allocation. A caller may map part of an allocation, and may map one
-+ * allocation more than once; the runs are not mutated after the file is
-+ * published and the file holds them for as long as any mapping exists.
-+ *
-+ * ne_contig_fault_order() populates the mapping as it is touched. The mapping
-+ * asks for VM_HUGEPAGE because a fault on a VM_PFNMAP mapping without it only
-+ * reaches ->huge_fault where the transparent_hugepage policy is "always".
-+ *
-+ * Return: 0 on success, negative return value on failure.
-+ */
-+static int ne_contig_mmap_prepare(struct vm_area_desc *desc)
-+{
-+	struct ne_contig_mem *mem = desc->file->private_data;
-+	unsigned long size = vma_desc_size(desc);
-+	u64 offset = (u64)desc->pgoff << PAGE_SHIFT;
+ 	rc = ne_walk_allocs(mem, pos, count, NE_WRITE_SPAN_PAGES, ne_write_span,
+ 			    &ctx);
+ 
+@@ -3165,6 +3240,8 @@ static int ne_contig_release(struct inode *inode, struct file *file)
+ 
+ 	mmdrop(mem->mm);
+ 
++	mutex_destroy(&mem->lock);
 +
-+	if (!ne_contig_supports_mmap(desc->file))
-+		return -ENODEV;
-+
-+	/*
-+	 * MAP_PRIVATE of an allocation has no meaning: the memory exists to be
-+	 * given to an enclave, and a copy that only this process can see never
-+	 * reaches one.
-+	 */
-+	if (!vma_desc_test(desc, VMA_SHARED_BIT))
-+		return -EINVAL;
-+
-+	if ((size | offset) & (NE_MIN_MEM_REGION_SIZE - 1))
-+		return -EINVAL;
-+
-+	if (offset > mem->size || size > mem->size - offset)
-+		return -EINVAL;
-+
-+	desc->vm_ops = &ne_contig_vm_ops;
-+	vma_desc_set_flags(desc, VMA_IO_BIT, VMA_PFNMAP_BIT, VMA_DONTEXPAND_BIT,
-+			   VMA_DONTDUMP_BIT, VMA_DONTCOPY_BIT, VMA_HUGEPAGE_BIT);
-+
-+	return 0;
-+}
-+
- /**
-  * struct ne_write_ctx - Where the write walk has got to.
-  * @iter:	Where the bytes come from.
-@@ -3030,6 +3173,8 @@ static int ne_contig_release(struct inode *inode, struct file *file)
- static const struct file_operations ne_contig_fops = {
- 	.owner			= THIS_MODULE,
- 	.llseek			= generic_file_llseek,
-+	.mmap_prepare		= ne_contig_mmap_prepare,
-+	.get_unmapped_area	= thp_get_unmapped_area,
- 	.write_iter		= ne_contig_write_iter,
- 	.release		= ne_contig_release,
- };
-@@ -3176,6 +3321,7 @@ static int ne_alloc_memory_ioctl(struct ne_enclave *ne_enclave,
+ 	kfree(mem);
+ 
+ 	return 0;
+@@ -3317,6 +3394,7 @@ static int ne_alloc_memory_ioctl(struct ne_enclave *ne_enclave,
+ 		return -ENOMEM;
+ 	}
+ 
++	mutex_init(&mem->lock);
+ 	mmgrab(current->mm);
  	mem->mm = current->mm;
  	mem->nr_pinned = nr_pages;
- 	mem->size = args->size;
-+	mem->shared = args->flags == NE_MEMORY_SHARED;
- 	mem->enclave_id = ne_enclave->id;
+@@ -3385,11 +3463,195 @@ static int ne_alloc_memory_ioctl(struct ne_enclave *ne_enclave,
+ 	ne_contig_free_allocs(mem);
+ 	atomic64_sub(nr_pages, &mem->mm->pinned_vm);
+ 	mmdrop(mem->mm);
++	mutex_destroy(&mem->lock);
+ 	kfree(mem);
  
- 	/*
+ 	return rc;
+ }
+ 
++/**
++ * ne_add_memory_region_ioctl() - Give the slot associated with the current
++ *				  enclave a whole allocation.
++ * @ne_enclave:	Private data associated with the current enclave.
++ * @args:	Descriptor for the allocation, and flags.
++ *
++ * Every run the allocation is made of becomes a memory region, except that runs
++ * which turn out to be physically adjacent are merged into one, so a request
++ * that took several runs takes up several of the enclave's regions or fewer.
++ * The runs are 2 MiB aligned and a multiple of 2 MiB long as they come out of
++ * NE_ALLOC_MEMORY, which is what the hypervisor asks of a region, and no
++ * virtual address is involved on this path at all.
++ *
++ * The reference on the file is what keeps the runs and their %RLIMIT_MEMLOCK
++ * charge alive for as long as the enclave has them, whatever user space does
++ * with the descriptor and its mappings afterwards.
++ *
++ * Context: Process context. This function is called with the ne_enclave mutex held.
++ * Return:
++ * * 0 on success.
++ * * Negative return value on failure.
++ */
++static int ne_add_memory_region_ioctl(struct ne_enclave *ne_enclave,
++				      struct ne_add_memory_region_args *args)
++{
++	struct ne_phys_contig_mem_regions phys_contig_mem_regions = {};
++	struct pci_dev *pdev = ne_devs.ne_pci_dev->pdev;
++	struct ne_contig_region *ne_contig_region = NULL;
++	struct ne_contig_region *held = NULL;
++	struct ne_contig_mem *mem = NULL;
++	unsigned long i = 0;
++	int rc = -EINVAL;
++
++	if (ne_enclave->mm != current->mm)
++		return -EIO;
++
++	if (args->flags) {
++		dev_err_ratelimited(ne_misc_dev.this_device,
++				    "Incorrect flag for memory region\n");
++
++		return -NE_ERR_INVALID_FLAG_VALUE;
++	}
++
++	CLASS(fd, f)(args->fd);
++
++	if (fd_empty(f))
++		return -EBADF;
++
++	if (fd_file(f)->f_op != &ne_contig_fops) {
++		dev_err_ratelimited(ne_misc_dev.this_device,
++				    "Not an enclave memory allocation\n");
++
++		return -EINVAL;
++	}
++
++	/*
++	 * Every file with these operations came from ne_contig_create_file(),
++	 * which hands the allocation to anon_inode_create_getfile() before there
++	 * is a descriptor to pass in here, so it is there to be read.
++	 */
++	mem = fd_file(f)->private_data;
++
++	if (mem->enclave_id != ne_enclave->id) {
++		dev_err_ratelimited(ne_misc_dev.this_device,
++				    "Allocation was made for another enclave\n");
++
++		return -EINVAL;
++	}
++
++	/*
++	 * The parent may map a shared allocation and keeps any mapping it has
++	 * for as long as the allocation lives. Memory a region is made of is
++	 * the enclave's alone.
++	 */
++	if (mem->shared) {
++		dev_err_ratelimited(ne_misc_dev.this_device,
++				    "The memory region allocation is shared\n");
++
++		return -EINVAL;
++	}
++
++	list_for_each_entry(held, &ne_enclave->contig_regions_list, list) {
++		if (held->file == fd_file(f)) {
++			dev_err_ratelimited(ne_misc_dev.this_device,
++					    "The memory region is already used\n");
++
++			return -NE_ERR_MEM_REGION_ALREADY_USED;
++		}
++	}
++
++	ne_contig_region = kzalloc_obj(*ne_contig_region);
++	if (!ne_contig_region)
++		return -ENOMEM;
++
++	/*
++	 * One entry per run is the worst case, since merging only ever reduces
++	 * the count. That is 4 MiB of entries for a 512 GiB allocation the
++	 * allocator had to satisfy in 2 MiB runs, so this uses kvmalloc like
++	 * the run array.
++	 */
++	phys_contig_mem_regions.regions = kvzalloc_objs(*phys_contig_mem_regions.regions,
++							mem->nr_allocs);
++	if (!phys_contig_mem_regions.regions) {
++		rc = -ENOMEM;
++
++		goto free_contig_region;
++	}
++
++	for (i = 0; i < mem->nr_allocs; i++) {
++		struct ne_contig_alloc *alloc = &mem->allocs[i];
++
++		rc = ne_merge_phys_contig_memory_regions(&phys_contig_mem_regions,
++							 page_to_phys(alloc->page),
++							 (u64)alloc->nr_pages << PAGE_SHIFT);
++		if (rc < 0)
++			goto free_regions;
++	}
++
++	if ((ne_enclave->nr_mem_regions + phys_contig_mem_regions.num) >
++	    ne_enclave->max_mem_regions) {
++		dev_err_ratelimited(ne_misc_dev.this_device,
++				    "Reached max memory regions %lld\n",
++				    ne_enclave->max_mem_regions);
++
++		rc = -NE_ERR_MEM_MAX_REGIONS;
++
++		goto free_regions;
++	}
++
++	/*
++	 * From here the allocation is the enclave's. Closing the write path under
++	 * the same lock a write holds means a write either finished before this
++	 * point or is refused after it, so a donation cannot land in the middle of
++	 * one. Whether the whole image got there is the caller's to check: a write
++	 * cut short by an unreadable buffer reports how far it got.
++	 */
++	scoped_guard(mutex, &mem->lock)
++		mem->donated = true;
++
++	ne_contig_region->file = get_file(fd_file(f));
++
++	list_add(&ne_contig_region->list, &ne_enclave->contig_regions_list);
++
++	for (i = 0; i < phys_contig_mem_regions.num; i++) {
++		struct ne_pci_dev_cmd_reply cmd_reply = {};
++		struct slot_add_mem_req slot_add_mem_req = {};
++
++		slot_add_mem_req.slot_uid = ne_enclave->slot_uid;
++		slot_add_mem_req.paddr = phys_contig_mem_regions.regions[i].start;
++		slot_add_mem_req.size = range_len(&phys_contig_mem_regions.regions[i]);
++
++		rc = ne_do_request(pdev, SLOT_ADD_MEM,
++				   &slot_add_mem_req, sizeof(slot_add_mem_req),
++				   &cmd_reply, sizeof(cmd_reply));
++		if (rc < 0) {
++			dev_err_ratelimited(ne_misc_dev.this_device,
++					    "Error in slot add mem [rc=%d]\n", rc);
++
++			kvfree(phys_contig_mem_regions.regions);
++
++			/*
++			 * Exit here without dropping the reference on the file
++			 * as memory regions may already been added.
++			 */
++			return rc;
++		}
++
++		ne_enclave->mem_size += slot_add_mem_req.size;
++		ne_enclave->nr_mem_regions++;
++	}
++
++	kvfree(phys_contig_mem_regions.regions);
++
++	return 0;
++
++free_regions:
++	kvfree(phys_contig_mem_regions.regions);
++free_contig_region:
++	kfree(ne_contig_region);
++
++	return rc;
++}
++
+ #if defined(CONFIG_NITRO_ENCLAVES_MISC_DEV_TEST)
+ #include "ne_misc_dev_test.c"
+ #endif
 diff --git a/drivers/virt/nitro_enclaves/ne_misc_dev.h b/drivers/virt/nitro_enclaves/ne_misc_dev.h
-index 1a76c12815298..fcdf457af5800 100644
+index fcdf457af5800..2502cca3f3f64 100644
 --- a/drivers/virt/nitro_enclaves/ne_misc_dev.h
 +++ b/drivers/virt/nitro_enclaves/ne_misc_dev.h
-@@ -38,6 +38,7 @@ struct ne_contig_alloc {
-  * @allocs:	Contiguous runs backing the allocation, ordered by offset.
-  * @nr_allocs:	Number of runs in @allocs.
-  * @size:	Size of the allocation in bytes, mirrored in i_size.
-+ * @shared:	Whether the allocation may be mapped by the caller.
+@@ -42,14 +42,23 @@ struct ne_contig_alloc {
   * @enclave_id:	Id of the enclave the allocation was made for.
   * @mm:		The mm charged for the pinned pages, held via mmgrab().
   * @nr_pinned:	Pages charged to @mm->pinned_vm.
-@@ -47,13 +48,14 @@ struct ne_contig_alloc {
++ * @lock:	Serialises a write against the donation that ends writing.
++ * @donated:	Whether the allocation has been given to its enclave.
+  *
+- * The runs hang off the file, and a mapping's page table entries cannot outlive
+- * them because a VMA holds vm_file for as long as it exists.
++ * The runs hang off the file, so that closing the last descriptor does not free
++ * memory an enclave is still using: a donated region holds the file with
++ * get_file(). That is also what keeps a mapping's page table entries from
++ * outliving the runs, since a VMA holds vm_file for as long as it exists.
   *
   * The array is built before the file is published and not mutated afterwards, so
   * any holder of a reference can read it without a lock of its own, which is what
-- * lets a page fault resolve an offset to a run. @size is set in the same place
-- * and is read the same way.
-+ * lets a page fault resolve an offset to a run. @shared and @size are set in the
-+ * same place and are read the same way.
+  * lets a page fault resolve an offset to a run. @shared and @size are set in the
+- * same place and are read the same way.
++ * same place and are read the same way. @donated is the one field that changes
++ * after publication, and @lock covers it.
++ *
++ * @enclave_id is compared, never dereferenced, and the counter it comes from is
++ * 64 bits wide, so an allocation cannot be donated to a later enclave that
++ * happens to have been placed at the address of the one it was made for.
   */
  struct ne_contig_mem {
  	struct ne_contig_alloc	*allocs;
- 	unsigned int		nr_allocs;
- 	u64			size;
-+	bool			shared;
+@@ -59,6 +68,20 @@ struct ne_contig_mem {
  	u64			enclave_id;
  	struct mm_struct	*mm;
  	unsigned long		nr_pinned;
++	/* Serialises a write against the donation that ends writing. */
++	struct mutex		lock;
++	bool			donated;
++};
++
++/**
++ * struct ne_contig_region - Enclave memory given from one allocation.
++ * @list:	Entry in the enclave's list of allocations given to it.
++ * @file:	File holding the runs, held with get_file() so that they outlive the
++ *		descriptor the allocation was handed out on and its mappings.
++ */
++struct ne_contig_region {
++	struct list_head	list;
++	struct file		*file;
+ };
+ 
+ /**
+@@ -82,6 +105,8 @@ struct ne_mem_region {
+  * @enclave_info_mutex :	Mutex for accessing this internal state.
+  * @detached:			The NE PCI device the enclave was created on is
+  *				gone. Written with ne_devs.lock held for writing.
++ * @contig_regions_list:	List of %NE_ALLOC_MEMORY allocations given to the
++ *				enclave with %NE_ADD_MEMORY_REGION.
+  * @enclave_list_entry :	Entry in the list of created enclaves.
+  * @eventq:			Wait queue used for out-of-band event notifications
+  *				triggered from the PCI device event handler to
+@@ -116,6 +141,7 @@ struct ne_mem_region {
+ struct ne_enclave {
+ 	struct mutex		enclave_info_mutex;
+ 	bool			detached;
++	struct list_head	contig_regions_list;
+ 	struct list_head	enclave_list_entry;
+ 	wait_queue_head_t	eventq;
+ 	bool			has_event;
 diff --git a/include/uapi/linux/nitro_enclaves.h b/include/uapi/linux/nitro_enclaves.h
-index a2919565bc883..f1315c9c876de 100644
+index f1315c9c876de..16515fe27b692 100644
 --- a/include/uapi/linux/nitro_enclaves.h
 +++ b/include/uapi/linux/nitro_enclaves.h
-@@ -215,7 +215,7 @@ struct ne_add_any_vcpu_args {
-  * @size:	Number of bytes to allocate, a multiple of 2 MiB.
-  * @nid:	Host NUMA node to allocate from. One node, named; unlike
-  *		%NE_ADD_ANY_VCPU it does not take %NE_NUMA_ANY.
-- * @flags:	%NE_MEMORY_PRIVATE.
-+ * @flags:	%NE_MEMORY_PRIVATE or %NE_MEMORY_SHARED.
-  */
- struct ne_alloc_memory_args {
- 	__u64	size;
-@@ -237,7 +237,16 @@ struct ne_alloc_memory_args {
-  *		     goes into one through write() or pwrite() and not through
-  *		     a copy into a mapping, and every write is a call the
-  *		     kernel handles and can act on or refuse.
-- *		     The allocation lives until the descriptor is gone.
-+ *		     A %NE_MEMORY_SHARED allocation can also be mapped, at
-+ *		     offset 0 or at any other multiple of 2 MiB, for a multiple
-+ *		     of 2 MiB, with %MAP_SHARED. A caller maps one to keep an
-+ *		     address for memory it goes on using after it has handed the
-+ *		     allocation over. Such a mapping is readable too, which is
-+ *		     the only way to read allocated memory back. The mapping is
-+ *		     not inherited across fork(); a child that needs one maps
-+ *		     the descriptor itself.
-+ *		     The allocation lives until the last of the descriptor and
-+ *		     its mappings is gone.
+@@ -225,11 +225,13 @@ struct ne_alloc_memory_args {
+ 
+ /**
+  * NE_ALLOC_MEMORY - The command is used to allocate physically contiguous
+- *		     memory to give to an enclave, drawn from one host NUMA
+- *		     node. The argument is input only; on success the return
+- *		     value is a file descriptor for the allocation.
++ *		     memory to give to an enclave with %NE_ADD_MEMORY_REGION,
++ *		     drawn from one host NUMA node. The argument is input only;
++ *		     on success the return value is a file descriptor for the
++ *		     allocation.
+  *		     Writing to the descriptor places bytes in the allocation,
+- *		     which is how an enclave image gets there.
++ *		     which is how an enclave image gets there, and stops
++ *		     working once the allocation has been donated.
+  *		     O_APPEND has no effect. There is no read operation, so
+  *		     read() and pread() both fail with EINVAL and a caller that
+  *		     wants to check what it wrote keeps its own copy.
+@@ -241,12 +243,19 @@ struct ne_alloc_memory_args {
+  *		     offset 0 or at any other multiple of 2 MiB, for a multiple
+  *		     of 2 MiB, with %MAP_SHARED. A caller maps one to keep an
+  *		     address for memory it goes on using after it has handed the
+- *		     allocation over. Such a mapping is readable too, which is
+- *		     the only way to read allocated memory back. The mapping is
+- *		     not inherited across fork(); a child that needs one maps
+- *		     the descriptor itself.
+- *		     The allocation lives until the last of the descriptor and
+- *		     its mappings is gone.
++ *		     allocation over, including once the allocation has been
++ *		     donated and writing to the descriptor has stopped working.
++ *		     Such a mapping is readable too, which is the only way to
++ *		     read allocated memory back. The mapping is not inherited
++ *		     across fork(); a child that needs one maps the descriptor
++ *		     itself.
++ *		     Donating does not take a mapping away, so a parent that
++ *		     mapped a shared allocation can still write to it through
++ *		     that mapping afterwards.
++ *		     The allocation lives until the last of the descriptor, its
++ *		     mappings and the enclave regions donated from it is gone,
++ *		     so a caller can close the descriptor as soon as it has
++ *		     donated.
   *		     The ioctl can be invoked on the enclave fd, before an
   *		     enclave is started.
   *
-@@ -276,6 +285,17 @@ struct ne_alloc_memory_args {
-  *				  write, so a caller that has to know how far it
-  *				  got looks at the return value. A fatal signal
-  *				  part way through is reported the same way.
-+ *
-+ * An mmap() of the descriptor sets errno to:
-+ * * ENODEV			- The allocation is %NE_MEMORY_PRIVATE.
-+ * * EINVAL			- The mapping is %MAP_PRIVATE, or its offset or
-+ *				  length is not a multiple of 2 MiB, or it does
-+ *				  not fit inside the allocation.
-+ * A mapping is populated as it is touched, so the page tables for a page are
-+ * allocated at first touch and not by mmap(). A touch by the process itself
-+ * that fails to get them is retried until it succeeds or the process is
-+ * killed. A touch the kernel makes for the process, as read() into the
-+ * mapping does, reports EFAULT or a short transfer instead.
+@@ -279,6 +288,8 @@ struct ne_alloc_memory_args {
+  * * Error codes from get_unused_fd_flags() and anon_inode_create_getfile().
+  *
+  * Writing to the descriptor sets errno to:
++ * * EPERM			- The allocation has been donated with
++ *				  %NE_ADD_MEMORY_REGION.
+  * * EFBIG			- The write does not fit inside the allocation.
+  * * EFAULT			- Part of the buffer is not readable. Any bytes
+  *				  copied before that are reported as a short
+@@ -299,6 +310,66 @@ struct ne_alloc_memory_args {
   */
  #define NE_ALLOC_MEMORY			_IOW(0xAE, 0x2E, struct ne_alloc_memory_args)
  
-@@ -472,8 +492,18 @@ struct ne_user_memory_region {
-  *		       way to put an enclave image in one.
-  */
- #define NE_MEMORY_PRIVATE		(0x00)
 +/**
-+ * NE_MEMORY_SHARED - An allocation the parent may also map. A mapping is what a
-+ *		      caller wants for memory it goes on reading or writing
-+ *		      after it has handed the allocation over. It costs page
-+ *		      tables for the part of it a caller touches, and it leaves
-+ *		      the memory reachable from the parent for as long as it
-+ *		      lives, so an allocation that is only being handed over
-+ *		      does not ask for one.
++ * struct ne_add_memory_region_args - Allocation to give to an enclave (in).
++ * @fd:		Descriptor from %NE_ALLOC_MEMORY.
++ * @flags:	Must be zero.
 + */
-+#define NE_MEMORY_SHARED		(0x01)
- 
--#define NE_ALLOC_MEMORY_MAX_FLAG_VAL	(0x01)
-+#define NE_ALLOC_MEMORY_MAX_FLAG_VAL	(0x02)
- 
++struct ne_add_memory_region_args {
++	__s32	fd;
++	__u32	flags;
++};
++
++/**
++ * NE_ADD_MEMORY_REGION - The command is used to give an enclave the whole of an
++ *			  %NE_ALLOC_MEMORY allocation, as one memory region per
++ *			  contiguous run it is made of, or fewer where runs turn
++ *			  out to be physically adjacent. The argument is input
++ *			  only. The allocation has to have been made for this
++ *			  enclave, and can be given away once.
++ *			  Writing to the descriptor stops working here, so an
++ *			  enclave image goes in before this call. The allocation
++ *			  has to be %NE_MEMORY_PRIVATE, since memory the parent
++ *			  can still reach is not memory the enclave has to
++ *			  itself.
++ *			  An enclave's memory is laid out in the order its
++ *			  allocations are given to it, and the offset from
++ *			  %NE_GET_IMAGE_LOAD_INFO is an offset into that layout,
++ *			  so a caller building an enclave out of several
++ *			  allocations picks the order first, writes at the
++ *			  offsets that order implies, and gives them away in it.
++ *			  The ioctl can be invoked on the enclave fd, before an
++ *			  enclave is started.
++ *
++ * Context: Process context.
++ * Return:
++ * * 0					- Logic successfully completed.
++ * * -1					- There was a failure in the ioctl logic.
++ * On failure, errno is set to:
++ * * ENODEV				- The NE PCI device is not available.
++ * * EFAULT				- Argument read failure.
++ * * EBADF				- @fd is not an open file descriptor.
++ * * EINVAL				- The argument is shorter than @flags, or @fd
++ *					  is not a descriptor from %NE_ALLOC_MEMORY, or
++ *					  the allocation was made for another enclave,
++ *					  or the allocation is %NE_MEMORY_SHARED.
++ * * EIO				- Current task mm is not the same as the one
++ *					  that created the enclave.
++ * * E2BIG				- The argument is longer than this kernel knows
++ *					  about and the excess is not all zero.
++ * * ENOMEM				- Memory allocation failure for internal
++ *					  bookkeeping variables.
++ * * NE_ERR_NOT_IN_INIT_STATE		- The enclave is not in init state (init =
++ *					  before being started).
++ * * NE_ERR_INVALID_FLAG_VALUE		- The value of the provided flag is invalid.
++ * * NE_ERR_MEM_REGION_ALREADY_USED	- The allocation was already given to the
++ *					  enclave.
++ * * NE_ERR_MEM_MAX_REGIONS		- The number of memory regions set for the
++ *					  enclave reached maximum.
++ * * Error codes from the NE PCI device request.
++ */
++#define NE_ADD_MEMORY_REGION		_IOW(0xAE, 0x2F, struct ne_add_memory_region_args)
++
  /**
-  * DOC: Enclave start info flags
+  * NE_START_ENCLAVE - The command is used to trigger enclave start after the
+  *		      enclave resources, such as memory and CPU, have been set.
+@@ -362,7 +433,8 @@ struct ne_alloc_memory_args {
+  */
+ #define NE_ERR_UNALIGNED_MEM_REGION_ADDR	(261)
+ /**
+- * NE_ERR_MEM_REGION_ALREADY_USED - The user space memory region is already used.
++ * NE_ERR_MEM_REGION_ALREADY_USED - The user space memory region, or the
++ *				      %NE_ALLOC_MEMORY allocation, is already used.
+  */
+ #define NE_ERR_MEM_REGION_ALREADY_USED		(262)
+ /**
+@@ -495,11 +567,11 @@ struct ne_user_memory_region {
+ /**
+  * NE_MEMORY_SHARED - An allocation the parent may also map. A mapping is what a
+  *		      caller wants for memory it goes on reading or writing
+- *		      after it has handed the allocation over. It costs page
+- *		      tables for the part of it a caller touches, and it leaves
+- *		      the memory reachable from the parent for as long as it
+- *		      lives, so an allocation that is only being handed over
+- *		      does not ask for one.
++ *		      after it has handed the allocation over, including after
++ *		      it has been donated. It costs page tables for the part of
++ *		      it a caller touches, and it leaves the memory reachable
++ *		      from the parent for as long as it lives, so an allocation
++ *		      that is only being handed over does not ask for one.
+  */
+ #define NE_MEMORY_SHARED		(0x01)
+ 
 -- 
 2.47.1
 
