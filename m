@@ -1,50 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.39.247.168
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=159.226.251.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794407585;
-	b=Cu/LbCDfKcVQzZ4w8tNQl1JijBtZL84AX2mElzBVWVvH5l2PPipaWn+0a1gr0kcVNt1/
-	 rZcckBWgfMvA5wVGpW5yz0CLBGusoCD+dOmqPFOx/5DTdcsBKS+zu1d3nAjbZa5skT4GP
-	 9OvZBLuofXLftBYkXmRESFzXpehcFilDc5io/hQcmpObTDQCB6t/iBkEYYBjiMVlx3OOS
-	 +RAXsgKwReGvnm3HZpRZLHn8ZRQ0SwdQw49suwukjmx/qiLRsh7WTggYg8TK5Hgtp70/b
-	 LJjX6y5S8eyr/fGT+rsO66KM+w6uEGOPDcYi4mtBdCispRDr/Tvm1WVlfM8HC0MSJBw==
+	t=1794409434;
+	b=BWWQPXl8SYcTVY35QAo2R7E7b/BsjI/FGK+5bmeWRLuFvrV99tFJ3A/TFuGgBdYQX77J
+	 mcMcA43kmLHWFkq2ZGne/dxSGFR3rc/ChQ3fCbSlGeArPeNuac/GLJb8ACNYJM7rt5jVs
+	 Oh+g17fXXKWPS1p0PDBXivcwnVwnuzjEjtrhJeDelmbi+qAasZgJSbAaRtElxH4J4hUMB
+	 vQcQSq3E8BjoaV+a5dTYoCpxrl0VL/CyXy8SRj4Y62JcsH9pdcmzSQeFFRDaYVjYOSPvA
+	 fGvJfZiIkVPeokmByEgJm2yTH8V7otznqlqLSKxRGDXQdXqfxgtPLlGDeuL1pJIttPA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794407585;
-	h=DMARC-Filter:Message-ID:DKIM-Signature:Date:MIME-Version:Subject:To:
-	 Cc:References:Content-Language:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=Q7nTbtg3NOHUNDWE397ThEwNuYuuiTDqnX6yT9Vqs8E=;
-	b=rMMFty+vmhxUzNiYFAQaq9l1a1/z/XRcODLI17ROmlEyY75A1Yq7TfU9a9whM/0rPVKq
-	 soPd5lS7Ny2/Uemf1cwyZtINWpHkk29W8E6HCsWDoi0nQ9awtnOce7zCkEMWX4Qyif/Dz
-	 tCbhU/xm3x/MomfWgHi/OvoVSThJRpWgPbZUY6ksclU9edbdL8DiL1W6tPymhRlCRH/FU
-	 0J8HQ12C4/NbUQ4R8rGs9LLfIPI+j+YBcwyaGH7ZboLyr7rQu/SJbvjdVocOq/9zYcx7v
-	 5yt13CKURnCfwpgf/D1JQtBww3hWmY47lvQ73gbwAkUjfnlkxnZZJzTZ7Z90sX2sYlw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794409434;
+	h=DMARC-Filter:Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:
+	 X-CM-TRANSID:X-Coremail-Antispam:X-Originating-IP:X-CM-SenderInfo;
+	bh=RQw5QMudu7nxqgW+ejX3A9gWo/spZoR/ZUehK/P/8NA=;
+	b=k99m8moa6kwoLWEjs6aSfpCZkJ2wN0CmI37LebFzyDn/Sthc/8pNO+7xd7ZWLFre4QVq
+	 1xj/aDi87eSlAt6iJBTqfrTIyRuBA+7hMSgHtSNqJhBn8T4UeIuUY1BMRIMeV0z6cGsj4
+	 nGxCrB95ZOLAsN4pCHjM7kAoNnTyBNltEJECLz4fSysZXhRcasHySJ03gNI4fqMIGtPot
+	 FOyMSNZDvJN0LYB2xx4aaXBpuk4BFb29nipc3eoOoQTX/pEbOFubbsRrVXUl23JueuR+0
+	 3DH2MfnheDBMjWsNrAknWDKfAp3689TW3VAVs4ARFTHHB4c+uAvDLoxaEdFdqkj6uhg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cyberchaos.dev;
-	spf=pass smtp.mailfrom=cyberchaos.dev;
-	dkim=pass header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=fQ7Jo0y6;
-	arc=none smtp.remote-ip=195.39.247.168
-Received: from mail.cyberchaos.dev (mail.cyberchaos.dev [195.39.247.168])
+	dmarc=none header.from=mails.ucas.ac.cn;
+	spf=pass smtp.mailfrom=mails.ucas.ac.cn;
+	arc=none smtp.remote-ip=159.226.251.21
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C10E260A260F;
-	Wed, 11 Nov 2026 14:33:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C10E260A260F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=cyberchaos.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cyberchaos.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cyberchaos.dev header.i=@cyberchaos.dev header.a=rsa-sha256 header.s=mail header.b=fQ7Jo0y6
-Message-ID: <fb7b4ede-a325-4c5e-a37d-fe3cc7a92f87@cyberchaos.dev>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cyberchaos.dev;
-	s=mail; t=1794407575;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q7nTbtg3NOHUNDWE397ThEwNuYuuiTDqnX6yT9Vqs8E=;
-	b=fQ7Jo0y6y1TRDYwtYJgO1STJDXTDFtL/3trxMkZ0Ta6gVXwNHfIfQ/Ezhct73kXpoVFQWr
-	4m7n74TvisUz6uatQ6SYNsbV4EeQw0ifL4ObQhnQ/uKYDaJehRR+ahM1hiEeja9VNgFDeS
-	MpCJ+MZO13xY97WzfIP+bYOcF/+1tLQ=
-Date: Wed, 11 Nov 2026 15:32:51 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEC32606A882
+	for <iommu@lists.linux.dev>; Wed, 11 Nov 2026 15:03:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DEC32606A882
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=mails.ucas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mails.ucas.ac.cn
+Received: from k3-03 (unknown [159.226.43.8])
+	by APP-01 (Coremail) with SMTP id qwCowADn1f+Zg_RqA8XNAA--.3086S2;
+	Wed, 11 Nov 2026 23:03:13 +0800 (CST)
+From: Tan Chi <tanchi25@mails.ucas.ac.cn>
+To: fangyu.yu@linux.alibaba.com
+Cc: tomasz.jeznach@linux.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	pjw@kernel.org,
+	palmer@dabbelt.com,
+	aou@eecs.berkeley.edu,
+	alex@ghiti.fr,
+	baolu.lu@linux.intel.com,
+	jroedel@suse.de,
+	zong.li@sifive.com,
+	andrew.jones@linux.dev,
+	anup@brainfault.org,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	atish.patra@linux.dev,
+	skhawaja@google.com,
+	vasant.hegde@amd.com,
+	joerg.roedel@amd.com,
+	gong.shuai@sanechips.com.cn,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	kvm-riscv@lists.infradead.org
+Subject: Re: [PATCH v7 00/10] iommu/riscv: Add hardware dirty tracking for second-stage domains
+Date: Wed, 11 Nov 2026 23:02:49 +0800
+Message-ID: <20261111150249.13262-1-tanchi25@mails.ucas.ac.cn>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20261103120236.53474-1-fangyu.yu@linux.alibaba.com>
+References: <20261103120236.53474-1-fangyu.yu@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -54,63 +76,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Subject: Re: [PATCH 03/15] dt-bindings: nvme: apple: Add apple,t8142-nvme-ans2
- compatible
-To: Krzysztof Kozlowski <krzk@kernel.org>,
- Yureka Lilian <yureka@cyberchaos.dev>
-Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
- Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev
-References: <20261106-apple-dts-m4-m5-nvme-v1-0-22f4827b4ece@cyberchaos.dev>
- <20261106-apple-dts-m4-m5-nvme-v1-3-22f4827b4ece@cyberchaos.dev>
- <20261111-comical-quaint-turaco-e8c1c2@quoll>
-Content-Language: en-US
-From: Yureka <yureka@cyberchaos.dev>
-In-Reply-To: <20261111-comical-quaint-turaco-e8c1c2@quoll>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qwCowADn1f+Zg_RqA8XNAA--.3086S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUOU7k0a2IF6F4UM7kC6x804xWl14x267AK
+	xVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AKwVWUJVWUGw
+	A2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26ryj
+	6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j6F4UM28EF7xvwVC2z280aVAFwI0_Gc
+	CE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2vYz4IE04k24VAvwVAKI4IrM2AI
+	xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
+	vE14v26r1j6r18McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
+	r2IYc2Ij64vIr41lFIxGxcIEc7CjxVA2Y2ka0xkIwI1lc2xSY4AK67AK6ryrMxAIw28Icx
+	kI7VAKI48JMxAqzxv26xkF7I0En4kS14v26r4a6rW5MxC20s026xCaFVCjc4AY6r1j6r4U
+	MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
+	AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0
+	cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z2
+	80aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI
+	43ZEXa7IU0zwZ3UUUUU==
+X-CM-SenderInfo: pwdquxrlsvqzpdlo2hpxfd2hldfou0/
 
-On 11/11/26 13:46, Krzysztof Kozlowski wrote:
-> On Fri, Nov 06, 2026 at 10:04:12PM +0100, Yureka Lilian wrote:
->> "apple,t8142-nvme-ans2" on the Apple M5 SoC is compatible with
->> "apple,t8132-nvme-ans2" so add its per-SoC compatible.
->>
->> Signed-off-by: Yureka Lilian <yureka@cyberchaos.dev>
->> ---
->>   Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml | 1 +
->>   1 file changed, 1 insertion(+)
->>
-> Squash all nvmem patches. Don't add compatibles one by one.
->
-> Best regards,
-> Krzysztof
+Hi Fangyu,
 
+The following QEMU patch series adds support for automatic PTE A/D updates through AMO_HWAD:
 
-Hello Krzysztof,
+https://lore.kernel.org/qemu-devel/20261108143934.129923-1-tanchi25@mails.ucas.ac.cn/
 
+It may be useful for the end-to-end dirty tracking tests mentioned in your follow-up work,
+particularly for testing G-stage dirty-bit updates triggered by DMA writes.
 
-(replying to all three of your emails here)
+If you notice any issues with the implementation, feedback would be very welcome.
 
-thanks for your feedback! I did run `b4 prep --check` and `make 
-dtbs_check` before sending and it passed without warnings on all 15 
-patches of this series. I will now also run `checkpatch.pl --strict` as 
-you suggested.
-
-For v2, I will make one commit per type of dt-binding, so "dt-bindings: 
-nvme: apple: Add t6040,t8140,t8142", and then "mailbox: apple,mailbox: 
-Add t8132,t6040,t8140,t8142", etc., ok or do you have another suggested 
-grouping?
-
- > Please stop inflating this. You are only making it difficult to 
-review your work.
-
-It would be appreciated if you can tell me clearly what is expected, as 
-this statement is not actually telling me what is inflated / wrong.
-
-Thank you!
+Thanks,
+Tan Chi
 
