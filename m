@@ -1,87 +1,189 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794458659;
-	b=yC4e5Mxmw1mSeBMuC9en+Q0rTdgeD7gLFrmHEJiW0PU84AyXzG+rTYXy+vt421Wm5PqI
-	 Wr1nJ1+1jfc6ZYWgaPbPtb+02kezNN8uEcylwk6YuOxwZufxyVNyLBs2CmRDeQExkWBmU
-	 cc5O0GqzZrg/zR8RyA21kH3f2lXVuNBlDzIxtShmJQKe60WFFApFixiD76p24mB1W6XHl
-	 7Aifo1Dq+AOQLZ+l+96NH2xY6a3ZxV6Tm1eAqfo0bl+W1FM4sQBQhlDjuQFmil2/3drol
-	 pxJPKWWIBqDfD41E4gqog3osxnP58kmAJ0euRrOoBt7LY1QKq7JH5Qj6aOSqc2yMoNA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794458659;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=198.175.65.10
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794463094;
+	b=q1ge5exOuwNkrtdQidPOquchi5AjBClS5EW8VLxEU8k73T96aMLkCAqX8D+uJpNDVgMP
+	 6CiFQZLT3l/N18PS0cgCyPF2fkHOlROMmRiXxiAakxnQLKh+26iDdCjkuwn3zWb2v0iGB
+	 wkoDSWMAP4sYYxk6gZzmXEXfiB5kD+j3pf63nqO1ww2WGQcIOZjSeXZi0DKXioxXYlGMw
+	 kQ/Q368O+mCG5YRXqMoTooYsBGv7zJ0zSJIMnmCP2tBsoyVZ1ozG1Na8Bth61K/LTsIS2
+	 1+Cv/qXk2BCxOGFj424I6gJdaB77UsO4d3xpo6k3bOySEuB+3AQ9Kn+QCFwI05gtM6A==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794463094;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=lFaTxub9P4DHIt/6xTUd6qW2koN6adpXh68Zn76OYVg=;
-	b=vskl6ezkSypL62DTUfDC7qyQ7ohUOCH/RHuydbzl1DQz8L2oCrsOB8aRAIGm/wZWtar2
-	 /StUBJXhg1Z0aVE/QUcqg5avzK8NJUIyEJGMOt+W2a1ZyWmUb+c/uQ3D7MbusodKRAsFR
-	 Nto5QltWv9R7xluVAkRWZXrd8llNUGPUsocP0YSSwvvyy7XP2cfgBm5DaeQAZjRDrHM95
-	 AKdFko2cSxHNFfk2+YW/4h9hpzaPWWyaMEFEHDeXIvEqlTV8BSTOOZeNC7MGm8hS3pmfF
-	 gwfkaZ5PkCk/TJI/EqPpc6Dxxo2tkMYnxBxrzHydjdIF3lK39sa+0qYSjy8ksKdUdaA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FWBtSyy0;
-	arc=none smtp.remote-ip=198.175.65.21
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Received:Received:
+	 Received:Received:Received:From:To:CC:Subject:Thread-Topic:
+	 Thread-Index:Date:Message-ID:References:In-Reply-To:Accept-Language:
+	 Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-ms-publictraffictype:x-ms-traffictypediagnostic:
+	 x-ms-office365-filtering-correlation-id:x-ms-exchange-senderadcheck:
+	 x-ms-exchange-antispam-relay:x-microsoft-antispam:
+	 x-microsoft-antispam-message-info:x-forefront-antispam-report:
+	 x-ms-exchange-antispam-messagedata-chunkcount:
+	 x-ms-exchange-antispam-messagedata-0:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:
+	 X-Exchange-RoutingPolicyChecked:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-AuthSource:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-originalarrivaltime:
+	 X-MS-Exchange-CrossTenant-fromentityheader:
+	 X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	 X-MS-Exchange-CrossTenant-userprincipalname:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+	bh=k8hnm/k/1RQU+EEybCN3aADnPnnc+mvcACPlNV09LFw=;
+	b=ncOJhJ47R0xD/15EdSyaIrafuXdZO9rna6jey9smh0zrqg9r5rFGcUQSB25sQ5KvTorq
+	 cUGXIKL6x6yFXvDoT1Ip0x27fgjF35HhkFE7ucHl+DRKEx3Eq6y7kdB3ufDOPvTTfgKvE
+	 McPfr6/frDrCkmBSUHYZ37QaJmjb1TmHHz+3RQZndDpNt4hmJo0uczugrpArP8nCka5la
+	 LoxokQvTS3U6QpHESpoKzncr+biLAecFlof2vP47yREFM3GP7YWqMRDYCkZtbp2ebqWj7
+	 LJbMC1RCGzJfpEzMc4EbC3xIPPaDGHIvU8b8juyuwHF8lwK46U++rM4IlPe17yeJHpw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=intel.com;
+	spf=pass smtp.mailfrom=intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XM1G+4ah;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=198.175.65.10
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA6E460A383F;
-	Thu, 12 Nov 2026 04:44:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EA6E460A383F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F42606A338
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 05:58:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 22F42606A338
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=FWBtSyy0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=XM1G+4ah
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794458659; x=1825994659;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=z2f49//eMco8dMFMx/hYGlnlOiz1YijRIkY0Z0Ao4+g=;
-  b=FWBtSyy0QGlZlWTB9nlPynNvrBT028Fp4qUt3BxZjm9a2csBoPA0erJG
-   IooVNMubeheAG5O7TCsDMqiVLPZw5q/nUR2SGgGWXiB/ny7EZuhgDjD7s
-   BsEQIeg+STnBudZB3eWeWQOXojewi6HryRq77V1Alouux6870+oz0/4YB
-   Zl3/zUN+gOAE8jzwuqt1wT6xu/kibSl/UpSGP1RJ21yLnab/IzrwsxCQq
-   FUySM46KlaQKoywOprZY+e2H8f7yrfPJ5CPkI30iK4gjiImJBg2IUl9Mv
-   rDGoGQ8gdo4mJ/Uht1MR7Lwe0+JLPW7IRwWt5+AYtBz9FaMdEK7W33CiK
-   g==;
-X-CSE-ConnectionGUID: 3OfSfeB7RvuBAzTxCCmO1g==
-X-CSE-MsgGUID: prYr4k7FSIm2OZBUNoALZQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11963"; a="3318386"
+  t=1794463094; x=1825999094;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=k8hnm/k/1RQU+EEybCN3aADnPnnc+mvcACPlNV09LFw=;
+  b=XM1G+4ahVMDmcVNU4giktMAJCgwnEipamKgMNHr/h8obWlfZLVfcL/Ac
+   B51YJRuQ8qrbIb5gx+6FnewTEWC6Hgk376P6nqQPIe9kmxGc7lUgwGwkA
+   yEcvNi6e/amShwg9TMRlYCFsZD6k0E9m8aBTrOCEHQiEyaA2jkOlmHjzP
+   MEQ7CnPUOnE7SmkqIaiiKgcSrPTYvwtuijh0M9S6QIe9nsEoyJ1lgqZAl
+   y8Hv9eK+193RE3D/1HsTTSpuCcEZYkWND9L7xeKacg64DVDoEt49uN8py
+   T27HMQFN6XiuoQ5p07jgZZd/J4NrloiYote1juK6PUwFJQvQjnLyYnTjN
+   A==;
+X-CSE-ConnectionGUID: JNyT7xyWRUmqtQCuz3inNQ==
+X-CSE-MsgGUID: MHueJWDGS/iZ8VbNwHAHmw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11963"; a="3147082"
 X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
-   d="scan'208";a="3318386"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 20:44:19 -0800
-X-CSE-ConnectionGUID: DWN9GQY1TteX4YrqTVwkcQ==
-X-CSE-MsgGUID: cN2RYtNRRzSfokzxwzQKhA==
+   d="scan'208";a="3147082"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 21:58:13 -0800
+X-CSE-ConnectionGUID: Q5aU2I8eSNGBH0pZJu/dHw==
+X-CSE-MsgGUID: m9NASm07RjaT5dcXGrp8EA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
-   d="scan'208";a="8728686"
-Received: from allen-box.sh.intel.com ([10.239.48.101])
-  by fmviesa002.fm.intel.com with ESMTP; 11 Nov 2026 20:44:15 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: iommu@lists.linux.dev,
-	x86@kernel.org,
-	linux-coco@lists.linux.dev,
-	kvm@vger.kernel.org
-Cc: Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Kiryl Shutsemau <kas@kernel.org>,
-	Rick Edgecombe <rick.p.edgecombe@intel.com>,
-	yilun.xu@linux.intel.com,
-	xiaoyao.li@intel.com,
-	Chao Gao <chao.gao@intel.com>,
-	Binbin Wu <binbin.wu@linux.intel.com>,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 9/9] coco/tdx-host: Enable trusted DMA on IOMMUs on device connect
-Date: Thu, 12 Nov 2026 12:30:54 +0800
-Message-ID: <20261112043054.2664857-10-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
-References: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="8911197"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 21:58:13 -0800
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 11 Nov 2026 21:58:11 -0800
+Received: from ORSEDG903.ED.cps.intel.com (10.7.248.13) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56 via Frontend Transport; Wed, 11 Nov 2026 21:58:11 -0800
+Received: from SA9PR02CU001.outbound.protection.outlook.com (40.93.196.33) by
+ edgegateway.intel.com (134.134.137.113) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.56; Wed, 11 Nov 2026 21:58:11 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=FDhPRsglvmo+g/6ro91Mf3+juSSGSq5vuHR4wIAXKEXIKAwN/53xavIdil/EgF2tPnOPkIh01S6UiItVFSmvqQrZFNH0ttEvdJm+d3pAhTxdfCI0KlWzl6WnO4GrYtxOiWLt7ngAeFxUr8QF9PS8oO3bmFvjANFB469cGnB+hfQOSvROhNtKOm14rEZ9J4fCqPuiqV5WCnQOBNTuRf6brLbBWztO4HcWTz9lKE0pkThUXPn08FB0yZHWNd5mr4+nX8Y0AI0XxQ0gS5K3DSuNV8yC/crWANVmdXSJ1g+ONFLSLxLweq+Dl4bgfry3qVW0je/Y8zCQRdAbg5Zt4rswPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k8hnm/k/1RQU+EEybCN3aADnPnnc+mvcACPlNV09LFw=;
+ b=a+GBDcmAM/lJQIVWEqJAIlC5Ceu+utdIMsZl5KomswQfMOr7tPeVnMx7/RqdmiLFo1zKJxJG0WwGWhyzENBqzK5XOUngOiSoEAee81XTVwXrNgzyVCE+CuzFGdwedczPKQOcUQej1//HfpYqSANU/dxiS2SAp8e6ryU7h8t4W/Lf83uN9nB3kfGY7Pnf5i3hcPuDG0rzOKsof4ifdB4OjjeAiFHbwplymGIz7xBASD2/UR0ZOi/8mD9aR8leSWxc78lS12RfvOa/hi3pyNmgYKOZukxmws+lJDM55hhcPPffuFhbPQ2Fwh6n81gUgJAM6QIAQHl3vvY8EEwUGzbcTA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com (2603:10b6:303:9e::22)
+ by SA1PR11MB9616.namprd11.prod.outlook.com (2603:10b6:806:4c4::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Thu, 12 Nov
+ 2026 05:58:09 +0000
+Received: from CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225]) by CO1PR11MB4835.namprd11.prod.outlook.com
+ ([fe80::d051:d948:c209:9225%6]) with mapi id 15.21.0615.008; Thu, 12 Nov 2026
+ 05:58:09 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>, "Gomes, Vinicius"
+	<vinicius.gomes@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe
+	<jgg@ziepe.ca>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH 1/2] iommu/vt-d: Set FPD when tearing down a PASID entry
+ with fault_ignore
+Thread-Topic: [PATCH 1/2] iommu/vt-d: Set FPD when tearing down a PASID entry
+ with fault_ignore
+Thread-Index: AQHdbBy1WviHWnKL8k6VlSTBa55W37cgCjAAgAVXJQCABJvEgA==
+Date: Thu, 12 Nov 2026 05:58:09 +0000
+Message-ID: <CO1PR11MB48355713BC88BEA8794279E18C702@CO1PR11MB4835.namprd11.prod.outlook.com>
+References: <20261104051059.1345010-1-baolu.lu@linux.intel.com>
+ <20261104051059.1345010-2-baolu.lu@linux.intel.com>
+ <87o6c3uedj.fsf@intel.com>
+ <7f86b03e-1c99-44ed-8d07-3502a21821fc@linux.intel.com>
+In-Reply-To: <7f86b03e-1c99-44ed-8d07-3502a21821fc@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: CO1PR11MB4835:EE_|SA1PR11MB9616:EE_
+x-ms-office365-filtering-correlation-id: f30f725f-f706-4da8-b9ad-08df4081edc4
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|38070700021|4143699003|11063799006|56012099006|18002099003|22082099003|10067099003|261009223027099003|261028144727099003|261026140227099003|261026121527099003|261022105027099003|261021135927099003;
+x-microsoft-antispam-message-info: MaAyPesyhUW6sxuuOBFiUOyxti+KmNfociYg7H7IO4sz3NAic/h6KfyiyQELpdXrjnLysGH4cdfctKQfHPSzgr7MxFKe3IjuRYBvKP/QPaJ2q1Dgli/Z96npEWAxCsJ77dP6mDKGacacJoXXev/vQ4BYZkwVFbOcjwpT2P8bo/Aetkx/045kOVM2T0NoQsedNh4cjHnA/nctioSyUX4upFr/GgFhVBlEY3LQJbeFzkWSUCHTB/X+d+cZRRGAMtU+T7hA3gyjE9XxTqkzJqUcm6/gFLEHS/wzPwbHxfCw4KsrLvpX2Gy1l/f6PxQgRyY26q5IhXsCxHZPCsv9HbFDY7Adi5VmVLbhERrsKbfQLh8as9pT5+V0HTkpRv8Pbd/b0MVfeXxeZuzR/EwKHXjobiCBOs02KTFHnbM1EteNODN+DsJCrL6ckXHohInwkqL/Y1rDK0FWAgSuZZqzqnxNW+dyTkPvISuiPAs8OtWWqGPD6+IGIA4EPwOn/7KgbmE3gtdMr6CGrqutzzb+8pbhqSZzmKeVEbadUCYC9g+vUPuys0QiXWoVuveW5DQE/LKIo1E+jm2tcQ0xGMBxscwq3WG3YxJQEFOFt/rKgu5rrKfQ3lZPMD0n0SWZ51zmxDZfuok69Yk3VCrb0YroebwyQMJl7C6omv7utJTAJSBQCe6fT2j7cP/wDwfMCJ3gXC6wG3xKbXe5cjibRPjAefRgl4sVBk1YmAL1DFOCHSXEsQ4=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4835.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(38070700021)(4143699003)(11063799006)(56012099006)(18002099003)(22082099003)(10067099003)(261009223027099003)(261028144727099003)(261026140227099003)(261026121527099003)(261022105027099003)(261021135927099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UkFFR2h5ME9WZ0Vxb0taSzR0cDBrU1VBQUpZaXM0YU1nV2hnaTRLbDErSGp2?=
+ =?utf-8?B?REF6UVRKSS9CQitZWW9kQW1KMnNGZjlJOUg0U1FsQkN3ZWQyZWlvOFNXbFhq?=
+ =?utf-8?B?TzBVRWZUMVd0VGVRK1RMZ0NERm9OR0hzbzhWcVBBdmdkRlVyRVJQU3l0Z3hk?=
+ =?utf-8?B?dTBYdlN2bCtMM1c2eVJ1Q2NmTEJkdzFWbGJEb3FPTk1qZ1h5UTVqdTRIbGhK?=
+ =?utf-8?B?ZGRkVitOLzl0dTNTMEI1Z2t5MnlLWGVTSjd6d2Flenl0MjVtUTN4dThucTVq?=
+ =?utf-8?B?WWxOcnRzS2xhUDdpOW1TZnRmNGR2WWRkVjZjQzRDNDYxTVNhSFFuZ2MzUGQr?=
+ =?utf-8?B?Zjk5eFdkd0RRVllCU1RyYkdUVWgzM2QwVzEra2hqWXV4ZnhrZ3JWNzRLdXQ1?=
+ =?utf-8?B?ZkN2U081NWM1enIwOEdSaFR3Z3NUUEtJSkQ2Zk53TmR4c1lKY3dENFJxZTQy?=
+ =?utf-8?B?eWZ0b25jY0NVVUViMlJNN0FSdVk2dm1xN1k1dXh5S1NKbDV1d1ozT0RIQUY2?=
+ =?utf-8?B?RjNaN29iSmh1M2hrNExYQVZrUzNDcFJidWM5Vlc1ZEd4OHBRNTJ1RmVDRlAr?=
+ =?utf-8?B?TXpBa2xqY0JhSVM1bFBIc2U1dSsrNlgxTHpGMHdyeXVJNWpZQkYwNmdWQWl5?=
+ =?utf-8?B?ZEwxT01OamZEZDFuVnVpNmtjZFl4M1lQQk55TlFkSDU0bWNZaWl0VjAycmJk?=
+ =?utf-8?B?bjhCREJxNk5FbnNleGFpcWIxR3FQNE16VUE0d2hFTDg3bFlxeVR0clRyR0hy?=
+ =?utf-8?B?K3AzaWtuV1d3eExUMzgyTlZ4RHY0dUJnZ0VZT2RBc0I3Umc2QzVoOXpKTHdR?=
+ =?utf-8?B?Zmh4aXdqMVE4dklYVWlKVEF6REgxdUk2NDZmc1MyME11Vml1R09xUEh0WndO?=
+ =?utf-8?B?U0RtN00vWTRIOVAxQVRNem5VTGE3N0k3eVg1Z3ZMMEFpUXlUalpxZ0lHM0Y1?=
+ =?utf-8?B?VG9KckQ1cWxXQ1dwMTBhSmdlZ0xlRVcxTzlpL0dXMjBqQXViNWF2bDNDTWsv?=
+ =?utf-8?B?OVo4U2pFM285QWV1RlZYY0swdDc1eFdlbStnaTdUdklVMlJGSWdvVnAzWnlh?=
+ =?utf-8?B?SkJVZDBnYTYzdHZtbUVycDNMNlY1Q3BEeHdsbXFiRDlWa0NyV1d5Y3RsWUtP?=
+ =?utf-8?B?WTN1UjN5T0htYUU2eHB6YXh4UHdmRXZodHowcjFxOFpmWmFjMnF2THpPMnNX?=
+ =?utf-8?B?M1F5RTRIUTZVYzYzS3NUbGp2NGJ0UWJRU2gycjBCaDdsSlNFaG9MdWFGTWo5?=
+ =?utf-8?B?Y2pzRjNyK0pWak04YlVNR0Z2MkMwZThEbDYrYUFFYzFWL1RXTFZ6ZzhHeFNC?=
+ =?utf-8?B?MjhLRmxDRVhaWDJHai83alFiV0k3MTI3Zi81dnI0aFpQV2pIL2dwVTZuSFgr?=
+ =?utf-8?B?a3lRV1BKZ1ZYTUhtOHh4QU1HZXBoQjlydUNwYTFnWkJMRlZTOTN2a21yZ2oz?=
+ =?utf-8?B?VHA2N01sL1FHK0N6V0FjQTVzN3Q4SXVIY2tmRGtSTzhxVVI5bTJTeXJpT0dN?=
+ =?utf-8?B?a3N1Y0YrQnBncjl2OXFZQk1WcHJ4b0o4Q2ppWnQ4NXo1TjhCQUY1MmlGZ3V6?=
+ =?utf-8?B?T2tLcVZ2K0JRQ0psLytuckNHUm1mQU5OS3J1b3BwMlhUenJBQ1pIUERwSENs?=
+ =?utf-8?B?T2VPaWJ0MmJhTElHT3ZjWVhhc2RwT2RWY2xja0prTEc1cThhb1VqNjFXVXVu?=
+ =?utf-8?B?RDR6bHNKc1VWcDhKcWFBWGMvSCs0R0FGTit3bXRFMFdobkUycFpVV1RYUmM1?=
+ =?utf-8?B?T1VMSVJjTmk2R3B5THFhNjR6N09CemlMa0NRZ2ZpVVlyQ2xnQXE1UkxzeGdO?=
+ =?utf-8?B?cUdXYkFYd3dwRXdQZkMweGRyU0NmZkh6a3dIUk15b25aZFBzTUNRQjdpdWp3?=
+ =?utf-8?B?WkY1RU5GdXZQVGUwdzA4VlJ5bi9kU080a2hUSVRkdGljQjQ3eFIxRnUyeDl6?=
+ =?utf-8?B?b0NXOEsvMkpkeW5pWStpRDVQZjAwSVkvRml2YWZGVUJDMi9kVHJac2diUllr?=
+ =?utf-8?B?R05xNlI2aXZZZ3p6NzRybTkxeVBnUzJFZi9rbTYwbUtGOWVJWjZoc3BlMjVD?=
+ =?utf-8?B?RWpvN2ptZ28zbHhGVVhtWEUrbGxoNTZSUTZqc1hWRzc1VVVaNHU1RmgwUVRo?=
+ =?utf-8?B?V1kzQVpmWE9leUN2S29URjdwRmFXTVR0RGpEaWdnbi9jNVhnYThnMU9TWUx5?=
+ =?utf-8?B?bkVMYlNHd0wvdzZxYUNTc21keGZucUFPemJTMnQ5NHZBSndlR0FDeUsySFBS?=
+ =?utf-8?B?Q3VLSHp5MVhOWVdKaUx1Z0hnTk9iZndrVTdYMlg3N3A3Q2ZvY2hUR0lWNXBu?=
+ =?utf-8?B?bVIxL25ob3haWWROZmd0bWpLM0JVK0RMWnVxUkpFMm5vR2l4TU5OZz09?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -91,550 +193,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Exchange-RoutingPolicyChecked: wsxIfmupvzPnZgBeSFQJQCuvh/ilLJr03CbTILoVPlWd1pa3fG0NEm1rzEiaSLDb5LU+oFbqW2/vI7+0CjvfK9R7KVPrUGMNaepJFpthmjoEZ+VvvHWVguBHGmWt3sCm3gAnNSCdaXQWNC3VSOloNPcV9HvP2hzwJcwl3VphCi7hR+DjpniRg9ngdTMOyLL+cwx5Si2GSDyjqJUXwhuxwJwXSBm48gyr+ABhPhCm2SDTNE97CLh75haL4pvqi/6br+21Z/77JTrskk7VOXJthd2BSfm0LjLoAXghF9DXfRI0xa2mdMgASHnY62jrr6Vf/2VDkCRsEHeNE6cbCp6JGA==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4835.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f30f725f-f706-4da8-b9ad-08df4081edc4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Nov 2026 05:58:09.3810
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GlTTD6k8zS0pp+6tcUX7G4DPjxBg7PH6rMpdsdc6Av6iEmrDbZTPc85UCOTTqdmauHmLYRbJvErVd7GB7g5N1w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR11MB9616
+X-OriginatorOrg: intel.com
 
-Assigning a device to a TD for private memory access requires that DMA
-from that device be translated by structures the TDX module controls.
-An Intel IOMMU that implements the trusted DMA extension provides a
-parallel set of translation and invalidation resources for this purpose.
-They become usable once TDH.IOMMU.SETUP puts the IOMMU into Secure TDX
-Mode and the TDX module initializes them. The host keeps the regular
-translation path.
-
-Issue TDH.IOMMU.SETUP on demand, when the first device behind an IOMMU
-is connected through the TSM, rather than for every capable IOMMU at
-probe time. Secure TDX Mode costs host resources: the TDX module's
-metadata pages and half of the IOMMU's domain ID space. That cost should
-only be paid for IOMMUs that actually serve such devices.
-
-tdx_iommu_get() and tdx_iommu_put() keep a per-IOMMU refcount. The first
-get() issues TDH.IOMMU.SETUP and the last put() issues TDH.IOMMU.CLEAR.
-A single mutex covers both the refcount and the SEAMCALL that follows,
-so a device cannot join an IOMMU that is being cleared or whose setup
-has not finished. The refcount lives here rather than in the VT-d
-driver because tdx-host already owns the per-IOMMU state that must
-outlive TDH.IOMMU.SETUP: the IOMMU_MT pages and the TDX IOMMU ID.
-
-The IOMMU_MT parameter page lists two contiguous buffers for the
-trusted invalidation queue, followed by the metadata pages. The TDX
-module reports how many metadata pages it needs in its global metadata.
-
-With Dynamic PAMT, every 4K page given to the TDX module needs PAMT
-backing first. Take it for each page of the invalidation queue buffers
-and the metadata pages before TDH.IOMMU.SETUP, and drop it if setup
-fails or once TDH.IOMMU.CLEAR succeeds. The parameter page itself only
-carries the page list into the SEAMCALL and needs no backing.
-
-If TDH.IOMMU.CLEAR fails, the TDX module may still reference the
-IOMMU_MT pages, so they are leaked together with their PAMT backing,
-and the IOMMU is marked unusable. Later get() calls for that IOMMU fail
-with -EBUSY rather than reuse an IOMMU in an unknown state. tdx-host
-pins itself while such an IOMMU exists, so unloading can't lose track
-of it. If the failure happens during unload itself, only the tracking
-entry is freed; the VT-d driver still has the IOMMU acquired and keeps
-rejecting it.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/virt/coco/tdx-host/Kconfig   |   5 +
- drivers/virt/coco/tdx-host/Makefile  |   1 +
- drivers/virt/coco/tdx-host/private.h |  21 ++
- drivers/virt/coco/tdx-host/main.c    |  11 +
- drivers/virt/coco/tdx-host/viommu.c  | 401 +++++++++++++++++++++++++++
- 5 files changed, 439 insertions(+)
- create mode 100644 drivers/virt/coco/tdx-host/private.h
- create mode 100644 drivers/virt/coco/tdx-host/viommu.c
-
-diff --git a/drivers/virt/coco/tdx-host/Kconfig b/drivers/virt/coco/tdx-host/Kconfig
-index f8c8cc29d46c..1395929f05bb 100644
---- a/drivers/virt/coco/tdx-host/Kconfig
-+++ b/drivers/virt/coco/tdx-host/Kconfig
-@@ -6,3 +6,8 @@ config TDX_HOST_SERVICES
- 	select FW_UPLOAD
- 	select PCI_TSM
- 	default m
-+
-+config TDX_CONNECT
-+	def_bool y
-+	depends on TDX_HOST_SERVICES
-+	depends on INTEL_IOMMU
-diff --git a/drivers/virt/coco/tdx-host/Makefile b/drivers/virt/coco/tdx-host/Makefile
-index a90ffba13a49..bfef8567f16a 100644
---- a/drivers/virt/coco/tdx-host/Makefile
-+++ b/drivers/virt/coco/tdx-host/Makefile
-@@ -1,3 +1,4 @@
- obj-$(CONFIG_TDX_HOST_SERVICES) += tdx-host.o
- 
- tdx-host-y := main.o
-+tdx-host-$(CONFIG_TDX_CONNECT) += viommu.o
-diff --git a/drivers/virt/coco/tdx-host/private.h b/drivers/virt/coco/tdx-host/private.h
-new file mode 100644
-index 000000000000..53a250ddd695
---- /dev/null
-+++ b/drivers/virt/coco/tdx-host/private.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2026 Intel Corporation */
-+#ifndef __TDX_HOST_PRIVATE_H
-+#define __TDX_HOST_PRIVATE_H
-+
-+#include <linux/dmar.h>
-+
-+struct pci_dev;
-+
-+#ifdef CONFIG_TDX_CONNECT
-+int tdx_iommu_get(struct pci_dev *pdev);
-+void tdx_iommu_put(struct pci_dev *pdev);
-+#else
-+static inline int tdx_iommu_get(struct pci_dev *pdev)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline void tdx_iommu_put(struct pci_dev *pdev) { }
-+#endif /* CONFIG_TDX_CONNECT */
-+#endif /* __TDX_HOST_PRIVATE_H */
-diff --git a/drivers/virt/coco/tdx-host/main.c b/drivers/virt/coco/tdx-host/main.c
-index 0908aaaa28ac..a815dbe5127a 100644
---- a/drivers/virt/coco/tdx-host/main.c
-+++ b/drivers/virt/coco/tdx-host/main.c
-@@ -18,6 +18,8 @@
- #include <asm/tdx.h>
- #include <asm/tdx_global_metadata.h>
- 
-+#include "private.h"
-+
- static const struct x86_cpu_id tdx_host_ids[] = {
- 	X86_MATCH_FEATURE(X86_FEATURE_TDX_HOST_PLATFORM, NULL),
- 	{}
-@@ -35,11 +37,20 @@ static struct tdx_tsm_link *to_tdx_tsm_link(struct pci_tsm *tsm)
- 
- static int tdx_tsm_link_connect(struct pci_dev *pdev)
- {
-+	int ret;
-+
-+	ret = tdx_iommu_get(pdev);
-+	if (ret)
-+		return ret;
-+
-+	/* TDISP connect is not implemented yet. */
-+	tdx_iommu_put(pdev);
- 	return -ENXIO;
- }
- 
- static void tdx_tsm_link_disconnect(struct pci_dev *pdev)
- {
-+	tdx_iommu_put(pdev);
- }
- 
- static struct pci_tsm *tdx_tsm_link_pf0_probe(struct tsm_dev *tsm_dev,
-diff --git a/drivers/virt/coco/tdx-host/viommu.c b/drivers/virt/coco/tdx-host/viommu.c
-new file mode 100644
-index 000000000000..c0e263926272
---- /dev/null
-+++ b/drivers/virt/coco/tdx-host/viommu.c
-@@ -0,0 +1,401 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * TDX IOMMU Extensions support
-+ *
-+ * Copyright (C) 2026 Intel Corporation
-+ */
-+#define pr_fmt(fmt) "tdx-host: " fmt
-+
-+#include <linux/dmar.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/pci.h>
-+#include <asm/vmx.h>
-+#include <asm/tdx.h>
-+
-+#include "private.h"
-+
-+/* These describe the trusted invalidation queue buffers. */
-+#define IQ_BUFFER_PAGES		2
-+#define IQ_BUFFER_SIZE		SZ_8K
-+
-+/*
-+ * Represents a list of pages for TDX module defined IOMMU_MT object.
-+ * Typically it uses a "root page" as the medium to exchange a list of
-+ * data pages between host and TDX module.
-+ */
-+struct tdx_iommu_pages {
-+	struct tdx_iommu_mt_param *root;
-+	void **pages;
-+	unsigned int nr_entries;
-+};
-+
-+/**
-+ * struct tdx_iommu - Host state of an IOMMU in Secure TDX Mode
-+ * @node: Link in tdx_iommu_list
-+ * @params: IOMMU information from the VT-d driver
-+ * @tdx_iommu_id: Identifier returned by TDH.IOMMU.SETUP
-+ * @mt_pages: Pages handed to the TDX module by TDH.IOMMU.SETUP
-+ * @users: Number of devices using trusted DMA through this IOMMU
-+ * @stuck: TDH.IOMMU.CLEAR failed. The TDX module may still own
-+ *	   @mt_pages, so they are leaked and the IOMMU is not reused.
-+ */
-+struct tdx_iommu {
-+	struct list_head node;
-+	struct dmar_tdxc_params params;
-+	u64 tdx_iommu_id;
-+	struct tdx_iommu_pages *mt_pages;
-+	unsigned int users;
-+	bool stuck;
-+};
-+
-+/*
-+ * Serializes the refcounts together with TDH.IOMMU.SETUP and
-+ * TDH.IOMMU.CLEAR, so a device can't join an IOMMU that is being
-+ * cleared, or one whose setup hasn't finished.
-+ */
-+static DEFINE_MUTEX(tdx_iommu_lock);
-+static LIST_HEAD(tdx_iommu_list);
-+
-+static void *tdx_iommu_alloc_pages(int node, size_t size)
-+{
-+	struct folio *folio;
-+
-+	if (node == NUMA_NO_NODE)
-+		node = numa_mem_id();
-+
-+	folio = __folio_alloc_node(GFP_KERNEL | __GFP_ZERO, get_order(size), node);
-+	if (!folio)
-+		return NULL;
-+
-+	return folio_address(folio);
-+}
-+
-+static void tdx_iommu_free_pages(void *virt)
-+{
-+	if (!virt)
-+		return;
-+
-+	folio_put(virt_to_folio(virt));
-+}
-+
-+/* Number of 4K pages backing IOMMU_MT entry @i. */
-+static unsigned int mt_entry_nr_pages(unsigned int i)
-+{
-+	return i < TDX_IOMMU_MT_IQ_NR ? IQ_BUFFER_SIZE >> PAGE_SHIFT : 1;
-+}
-+
-+/*
-+ * Drop the PAMT backing of the first @nr 4K pages handed to the TDX
-+ * module, in the order mt_pamt_get() took it. Pass UINT_MAX for all.
-+ */
-+static void mt_pamt_put(struct tdx_iommu_pages *mt, unsigned int nr)
-+{
-+	unsigned int i, j;
-+
-+	for (i = 0; i < mt->nr_entries && nr; i++) {
-+		unsigned long pfn = PHYS_PFN(__pa(mt->pages[i]));
-+
-+		for (j = 0; j < mt_entry_nr_pages(i) && nr; j++, nr--)
-+			tdx_pamt_put(pfn + j);
-+	}
-+}
-+
-+/*
-+ * With Dynamic PAMT, every 4K page handed to the TDX module needs PAMT
-+ * backing first. This covers the IQ buffers and the metadata pages, not
-+ * the root page, which only carries the list of pages into the
-+ * SEAMCALL. tdx_pamt_get() is a no-op without Dynamic PAMT.
-+ */
-+static int mt_pamt_get(struct tdx_iommu_pages *mt)
-+{
-+	unsigned int i, j, nr = 0;
-+	int ret;
-+
-+	for (i = 0; i < mt->nr_entries; i++) {
-+		unsigned long pfn = PHYS_PFN(__pa(mt->pages[i]));
-+
-+		for (j = 0; j < mt_entry_nr_pages(i); j++) {
-+			ret = tdx_pamt_get(pfn + j, NULL);
-+			if (ret) {
-+				mt_pamt_put(mt, nr);
-+				return ret;
-+			}
-+			nr++;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void free_mt_pages(struct tdx_iommu_pages *array)
-+{
-+	unsigned int i;
-+
-+	if (IS_ERR_OR_NULL(array))
-+		return;
-+
-+	mt_pamt_put(array, UINT_MAX);
-+
-+	for (i = 0; i < array->nr_entries; i++)
-+		tdx_iommu_free_pages(array->pages[i]);
-+
-+	tdx_iommu_free_pages(array->root);
-+	kfree(array->pages);
-+	kfree(array);
-+}
-+
-+DEFINE_FREE(free_mt_pages, struct tdx_iommu_pages *, free_mt_pages(_T))
-+
-+static void **alloc_mt_pages(unsigned int nr_entries, int node)
-+{
-+	unsigned int i;
-+	void **pages;
-+	void *vaddr;
-+
-+	pages = kzalloc_objs(*pages, nr_entries);
-+	if (!pages)
-+		return NULL;
-+
-+	/* Allocate two contiguous buffers for the invalidation queue. */
-+	pages[0] = tdx_iommu_alloc_pages(node, IQ_BUFFER_SIZE);
-+	if (!pages[0])
-+		goto free_pages;
-+
-+	pages[1] = tdx_iommu_alloc_pages(node, IQ_BUFFER_SIZE);
-+	if (!pages[1])
-+		goto free_pages;
-+
-+	/* Allocate the required number of pages for the IOMMU metadata. */
-+	for (i = TDX_IOMMU_MT_IQ_NR; i < nr_entries; i++) {
-+		vaddr = tdx_iommu_alloc_pages(node, SZ_4K);
-+		if (!vaddr)
-+			goto free_pages;
-+		pages[i] = vaddr;
-+	}
-+
-+	return pages;
-+
-+free_pages:
-+	for (i = 0; i < nr_entries; i++)
-+		tdx_iommu_free_pages(pages[i]);
-+	kfree(pages);
-+
-+	return NULL;
-+}
-+
-+static void populate_mt_pages(struct tdx_iommu_pages *array)
-+{
-+	struct tdx_iommu_mt_param *param = array->root;
-+	void **pages = array->pages;
-+	unsigned int i;
-+
-+	for (i = 0; i < TDX_IOMMU_MT_IQ_NR; i++)
-+		param->iq[i] = __pa(pages[i]) | IQ_BUFFER_PAGES;
-+
-+	for (; i < array->nr_entries; i++)
-+		param->mt[i - TDX_IOMMU_MT_IQ_NR] = __pa(pages[i]);
-+}
-+
-+/* Allocate the IOMMU_MT pages with PAMT backing. Free with free_mt_pages(). */
-+static struct tdx_iommu_pages *alloc_iommu_mt(int node, unsigned int nr_mt_pages)
-+{
-+	unsigned int nr_entries = nr_mt_pages + TDX_IOMMU_MT_IQ_NR;
-+	struct tdx_iommu_pages *array;
-+	unsigned int i;
-+	int ret = -ENOMEM;
-+
-+	if (!nr_mt_pages || nr_mt_pages > TDX_IOMMU_MT_MAX_PAGES)
-+		return ERR_PTR(-EINVAL);
-+
-+	array = kzalloc_obj(*array);
-+	if (!array)
-+		return ERR_PTR(-ENOMEM);
-+
-+	array->root = tdx_iommu_alloc_pages(node, sizeof(*array->root));
-+	if (!array->root)
-+		goto free_array;
-+
-+	array->nr_entries = nr_entries;
-+	array->pages = alloc_mt_pages(nr_entries, node);
-+	if (!array->pages)
-+		goto free_root;
-+
-+	populate_mt_pages(array);
-+
-+	ret = mt_pamt_get(array);
-+	if (ret)
-+		goto free_pages;
-+
-+	return array;
-+
-+free_pages:
-+	for (i = 0; i < nr_entries; i++)
-+		tdx_iommu_free_pages(array->pages[i]);
-+	kfree(array->pages);
-+free_root:
-+	tdx_iommu_free_pages(array->root);
-+free_array:
-+	kfree(array);
-+	return ERR_PTR(ret);
-+}
-+
-+static struct tdx_iommu *tdx_iommu_find(u64 reg_base_addr)
-+{
-+	struct tdx_iommu *tiommu;
-+
-+	lockdep_assert_held(&tdx_iommu_lock);
-+
-+	list_for_each_entry(tiommu, &tdx_iommu_list, node)
-+		if (tiommu->params.reg_base_addr == reg_base_addr)
-+			return tiommu;
-+
-+	return NULL;
-+}
-+
-+/* Allocate the IOMMU_MT pages and issue TDH.IOMMU.SETUP. */
-+static int tdx_iommu_setup(struct pci_dev *pdev, struct tdx_iommu *tiommu)
-+{
-+	const struct tdx_sys_info *sysinfo = tdx_get_sysinfo();
-+	struct dmar_tdxc_params *params = &tiommu->params;
-+	u64 r, tdx_iommu_id;
-+	int ret;
-+
-+	if (!sysinfo)
-+		return -ENXIO;
-+
-+	struct tdx_iommu_pages *mt __free(free_mt_pages) =
-+			alloc_iommu_mt(params->node,
-+				       sysinfo->tdx_connect.iommu_mt_page_count);
-+	if (IS_ERR(mt))
-+		return PTR_ERR(mt);
-+
-+	ret = dmar_tdxc_acquire(pdev, params);
-+	if (ret)
-+		return ret;
-+
-+	r = tdh_iommu_setup(params->reg_base_addr, mt->root, &tdx_iommu_id);
-+	if (r) {
-+		dmar_tdxc_release(pdev, params);
-+		pr_err("TDH.IOMMU.SETUP failed, regbase 0x%llx status 0x%llx\n",
-+		       params->reg_base_addr, r);
-+		return -EIO;
-+	}
-+
-+	tiommu->tdx_iommu_id = tdx_iommu_id;
-+	tiommu->mt_pages = no_free_ptr(mt);
-+
-+	pr_info("Trusted DMA initialized, regbase 0x%llx\n", params->reg_base_addr);
-+
-+	return 0;
-+}
-+
-+/* Issue TDH.IOMMU.CLEAR and release what TDH.IOMMU.SETUP took. */
-+static int tdx_iommu_clear(struct pci_dev *pdev, struct tdx_iommu *tiommu)
-+{
-+	u64 r;
-+
-+	r = tdh_iommu_clear(tiommu->tdx_iommu_id);
-+	if (r) {
-+		pr_err("TDH.IOMMU.CLEAR failed, regbase 0x%llx tdx_iommu_id 0x%llx status 0x%llx\n",
-+		       tiommu->params.reg_base_addr, tiommu->tdx_iommu_id, r);
-+		/* The pages and their PAMT backing stay with the TDX module. */
-+		return -EIO;
-+	}
-+
-+	dmar_tdxc_release(pdev, &tiommu->params);
-+	free_mt_pages(tiommu->mt_pages);
-+	tiommu->mt_pages = NULL;
-+
-+	return 0;
-+}
-+
-+/*
-+ * tdx_iommu_get() - Enable trusted DMA on the IOMMU translating a device
-+ * @pdev: PCI device that will use trusted DMA
-+ *
-+ * The first device behind an IOMMU transitions that IOMMU into Secure
-+ * TDX Mode. Later devices only take a reference. Every successful call
-+ * must be balanced by tdx_iommu_put().
-+ *
-+ * Return: 0 on success and error number on failure.
-+ */
-+int tdx_iommu_get(struct pci_dev *pdev)
-+{
-+	struct dmar_tdxc_params params;
-+	struct tdx_iommu *tiommu;
-+	int ret;
-+
-+	ret = dmar_tdxc_get_params(pdev, &params);
-+	if (ret)
-+		return ret;
-+
-+	guard(mutex)(&tdx_iommu_lock);
-+
-+	tiommu = tdx_iommu_find(params.reg_base_addr);
-+	if (tiommu) {
-+		if (tiommu->stuck)
-+			return -EBUSY;
-+		if (WARN_ON(tiommu->users == UINT_MAX))
-+			return -EOVERFLOW;
-+		tiommu->users++;
-+		return 0;
-+	}
-+
-+	tiommu = kzalloc_obj(*tiommu);
-+	if (!tiommu)
-+		return -ENOMEM;
-+
-+	tiommu->params = params;
-+	ret = tdx_iommu_setup(pdev, tiommu);
-+	if (ret) {
-+		kfree(tiommu);
-+		return ret;
-+	}
-+
-+	tiommu->users = 1;
-+	list_add(&tiommu->node, &tdx_iommu_list);
-+
-+	return 0;
-+}
-+
-+/*
-+ * tdx_iommu_put() - Drop a reference taken by tdx_iommu_get()
-+ * @pdev: Same device passed to tdx_iommu_get()
-+ *
-+ * The last device behind an IOMMU takes that IOMMU out of Secure TDX
-+ * Mode. If TDH.IOMMU.CLEAR fails, the TDX module may still own the
-+ * IOMMU_MT pages, so they are leaked. The IOMMU then stays in Secure TDX
-+ * Mode, later tdx_iommu_get() calls for it fail, and the module can no
-+ * longer be unloaded.
-+ */
-+void tdx_iommu_put(struct pci_dev *pdev)
-+{
-+	struct dmar_tdxc_params params;
-+	struct tdx_iommu *tiommu;
-+
-+	if (WARN_ON(dmar_tdxc_get_params(pdev, &params)))
-+		return;
-+
-+	guard(mutex)(&tdx_iommu_lock);
-+
-+	tiommu = tdx_iommu_find(params.reg_base_addr);
-+	if (WARN_ON(!tiommu || tiommu->stuck || !tiommu->users))
-+		return;
-+
-+	if (--tiommu->users)
-+		return;
-+
-+	if (tdx_iommu_clear(pdev, tiommu)) {
-+		/* VT-d still sees it acquired; don't let unload forget it. */
-+		if (try_module_get(THIS_MODULE)) {
-+			tiommu->stuck = true;
-+			return;
-+		}
-+		/* Unloading: free the entry; IOMMU_MT pages stay leaked. */
-+	}
-+
-+	list_del(&tiommu->node);
-+	kfree(tiommu);
-+}
--- 
-2.43.0
-
+PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBNb25k
+YXksIE5vdmVtYmVyIDksIDIwMjYgMzozNSBQTQ0KPiANCj4gT24gMTEvNi8yMDI2IDY6MDEgQU0s
+IFZpbmljaXVzIENvc3RhIEdvbWVzIHdyb3RlOg0KPiA+IEx1IEJhb2x1PGJhb2x1Lmx1QGxpbnV4
+LmludGVsLmNvbT4gd3JpdGVzOg0KPiA+DQo+ID4+ICAgc3RhdGljIHZvaWQNCj4gPj4gICBwYXNp
+ZF9jYWNoZV9pbnZhbGlkYXRpb25fd2l0aF9wYXNpZChzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11
+LA0KPiA+PiAgIAkJCQkgICAgdTE2IGRpZCwgdTMyIHBhc2lkKQ0KPiA+PiBAQCAtMjUzLDcgKzIz
+OCw2IEBAIHZvaWQgaW50ZWxfcGFzaWRfdGVhcl9kb3duX2VudHJ5KHN0cnVjdA0KPiBpbnRlbF9p
+b21tdSAqaW9tbXUsIHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gPj4NCj4gPj4gICAJaWYgKCFwYXNp
+ZF9wdGVfaXNfcHJlc2VudChwdGUpKSB7DQo+ID4+ICAgCQlpZiAoIXBhc2lkX3B0ZV9pc19mYXVs
+dF9kaXNhYmxlZChwdGUpKSB7DQo+ID4+IC0JCQlXQVJOX09OKFJFQURfT05DRShwdGUtPnZhbFsw
+XSkgIT0gMCk7DQo+ID4+ICAgCQkJc3Bpbl91bmxvY2soJmlvbW11LT5sb2NrKTsNCj4gPj4gICAJ
+CQlyZXR1cm47DQo+ID4+ICAgCQl9DQo+ID4+IEBAIC0yNjYsNiArMjUwLDggQEAgdm9pZCBpbnRl
+bF9wYXNpZF90ZWFyX2Rvd25fZW50cnkoc3RydWN0DQo+IGludGVsX2lvbW11ICppb21tdSwgc3Ry
+dWN0IGRldmljZSAqZGV2LA0KPiA+PiAgIAkJICovDQo+ID4+ICAgCQlwYXNpZF9jbGVhcl9lbnRy
+eShwdGUpOw0KPiA+PiAgIAkJc3Bpbl91bmxvY2soJmlvbW11LT5sb2NrKTsNCj4gPj4gKwkJaWYg
+KCFlY2FwX2NvaGVyZW50KGlvbW11LT5lY2FwKSkNCj4gPj4gKwkJCWNsZmx1c2hfY2FjaGVfcmFu
+Z2UocHRlLCBzaXplb2YoKnB0ZSkpOw0KPiA+PiAgIAkJaW50ZWxfaW9tbXVfZHJhaW5fcGFzaWRf
+cHJxKGRldiwgcGFzaWQpOw0KPiA+Pg0KPiA+IEkgdGhpbmsgaXQncyB3b3J0aCBkb2N1bWVudGlu
+ZyBpbiB0aGUgY29tbWl0IG1lc3NhZ2Ugd2h5IGJvdGggb2YgdGhlc2UNCj4gPiBhcmUgbmVlZGVk
+LCByZW1vdmluZyB0aGUgd2FybmluZyBhbmQgYWRkaW5nIHRoZSBmbHVzaC4NCj4gDQo+IFllcy4g
+SSB3aWxsIGFkZCB0aGUgZm9sbG93aW5nIHRvIHRoZSBjb21taXQgbWVzc2FnZToNCj4gDQo+ICAg
+QWxzbyBkcm9wIHRoZSBXQVJOX09OKCkgZm9yIGEgbm9uLXByZXNlbnQgZW50cnkgd2l0aG91dCBG
+UEQuIFNpbmNlDQo+ICAgY29tbWl0IDc1ZWQwMDA1NWMwNSBhIGNvbmN1cnJlbnQgdGVhcmRvd24g
+Y2FuIHNlZSBzdWNoIGFuIGVudHJ5IGJlZm9yZQ0KPiAgIGl0IGlzIHplcm9lZC4gRmx1c2ggdGhl
+IGNhY2hlIGFmdGVyIGNsZWFyaW5nIGFuIEZQRC1vbmx5IGVudHJ5LCBhcw0KPiAgIG90aGVyIFBB
+U0lEIGVudHJ5IHVwZGF0ZXMgZG8gb24gbm9uLWNvaGVyZW50IGhhcmR3YXJlLg0KPiANCg0KaG1t
+IGlzIGl0IGEgc2VwYXJhdGUgZml4Pw0K
