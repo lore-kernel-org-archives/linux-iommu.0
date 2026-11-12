@@ -1,72 +1,84 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794455473;
-	b=mdgcDIHFf7mG5doIIvSP9XJmHBMn33+xea3kOJ6iriHhqV2M6tZFXt26gZVwtXHVTIuH
-	 8I0U7gtPl91ZWBr6BSEXmfYGD1ky+VZuDuzifDKFm9SvLwUpyBtomjVqExsfpYJLJiGoK
-	 l4fj0giznatYH8iDfgQbN0y0ACGALMMbnhXCsrBhIFYJ7lJs+X7nMMGXMKecl8wR8/GSt
-	 p9yw5hhhL4/rKHmfDbkxtmw430IvJEF0FZR6E14j/tIlXDQC4J0yC72zLlaoljlO61kzw
-	 vysLS7BSy15PD4HqY91fNlzw5dktmSpemCHiX3a7FDCpaicac2s5BoNrMPZm4jvLd/g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794455473;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Zoho-Virus-Status:X-Zoho-AV-Stamp:
-	 X-ZohoMailClient;
-	bh=od2MTFJr2n07GulawypdnHc+XDeU/CQF54c7+qeGSkg=;
-	b=3/GVjMJ6HD76xv6cKqtsS/M7mKVYEuhKM0C7WEzlrUcAWoLnVTj43ID+dB3Po4OCD6tW
-	 9AhE4MulSl1nNTIioZXJTKUvajIw03WVYPWA4zHu/ufVrmLzyVYqRwHpuGJxddc8gfWWu
-	 PXj27gBGupvW0jdZqWjWXLjpdJ9+dq3YigLABOlfXfiu5j2AIMlocAOfhNmFulHXW5Gc1
-	 KoUJk8MojMjersjIqsj8g2AVjfcEPYtp9FUGohwiVZT2dQo7lddo6+9h3BGtuF9Q9Uok4
-	 pR2mJ1bSKcjWQG4DSsseDh4B7pfMxA4ahbLSQkOtiV0K8KQoDjknll0Ef+5FylJjJjA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=Pyois4i7;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
-Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794458629;
+	b=35MiW/eno+b80c3Y3I23fVQgKK02l7VhFsn2z7RX/qqz9EnMhUExLqvI1DuILxnZBHFD
+	 U0VYQFxa0c2pc/5xizR6uXiMvFcMYRuIlrQfRKt0vkRCnK5OOmBQf62c9Jb8xxw9pJCUM
+	 iMIlGU358LuFf+SGk1wICKGtN7hoXWm91sCzL50oGljuF49e4GA/S0QYhMwiFfOo3gTcb
+	 kkmuHR7G1HOcpBmtQ2Efdw+m9WHstDH5vYL/+LbH6pwm0vAbiYQQr/U1ofkE6B8YtWj+c
+	 kG+SqomzUO1S1M6Vq5GjYsFTx4+60Pz32trZy/WCeqwxcy4swdXhmsbVc7kWzDh+Xrg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794458629;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:MIME-Version:Content-Transfer-Encoding;
+	bh=vzANmFX5Gn3prIT7c5E8QRJsQJ4q1JmFSUb4E1XNV58=;
+	b=RRnX7EhWYwvw3Ke4pL4eh63EjYjb50cMKE3j7H4kAwNV01Ep84dtto+/f39Sv22Tqacu
+	 nnEsdFsYr5FHncCKv8eIvqDDlVC6dgfSBv0aITChIeDyWUAnNgqw6Yzv7L39duOW4iUvA
+	 aKs6IR6j1fQuoLWdJdfovTJEiJaQ0brmbWlsYZfNX94uxtrCuxr99X2jcMfm9Dr0X2SBH
+	 OXu/i7AiQrd0gldV1Qn9FTRQEULalp8gtDikrbzOZOCAAopu5D688JF6KDMEDKIa7LR4O
+	 5L5MjDw6Cvv/4klAketLNdL1Jw+VtwEIRSa53cmaWy16JGT79S9Fgo3a0AKT1feBvEQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=TsJPAQO3;
+	arc=none smtp.remote-ip=198.175.65.21
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B21C6606A31C
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 03:51:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B21C6606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABD00606A321;
+	Thu, 12 Nov 2026 04:43:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ABD00606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=Pyois4i7
-ARC-Seal: i=1; a=rsa-sha256; t=1794455460; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=miLEUgmPqEBpcIUKRBbHJcTMV73hdJYQRlNyUHE0BMSpiI6fmHAvyb8adXuq5UAVbQ5AowDfkohUjSyVu+k9TIoCaCCOZe1uLoN5joY5e+7CbIxAzfia9iiro8XAF6cqusXOVcSrvTqq1m2g8N17KFFLZT5Wz6HoyGFUnqhIrU0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1794455460; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=od2MTFJr2n07GulawypdnHc+XDeU/CQF54c7+qeGSkg=; 
-	b=YcBfySgNNac/Gr2W4Mj6FBzx3G6IXTcAbeQ0ey3pTxW0C+MjtgJlD504YjKtwwJ3WnKu8aUXWIvxgqSth5Ey4Ez9fr1BITAPSqG2aPvNL3PdwrvsBBZKQxsbnSFNLzSlNjXpBZWHm7torfuRhaGA7MuoDfFKTbqkGblF/uGopVo=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
-	dmarc=pass header.from=<sebastian.reichel@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=Pyois4i7O2HfzlPfTxnQqjrvraZ4PYa2L7WfF+E+HQyBKTQl1iq2FfSYXWJNNSv/XN0XEVfp0220gEvkOq8QdQrVA+7X7K6mJMUNvwZCRfqOCFy0/RRFwnoEXHvyO080ZDeXpVD175i3pUubojIrbLnxpghFq8X4nPmn7OFsZDE=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=od2MTFJr2n07GulawypdnHc+XDeU/CQF54c7+qeGSkg=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 1794455458780967.2624418168582;
-	Wed, 11 Nov 2026 19:50:58 -0800 (PST)
-Received: by venus (Postfix, from userid 1000)
-	id 9CDA2180BC0; Thu, 12 Nov 2026 04:50:53 +0100 (CET)
-Date: Thu, 12 Nov 2026 04:50:53 +0100
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Heiko =?utf-8?Q?St=C3=BCbner?= <heiko@sntech.de>
-Cc: aiyengar1990@gmail.com, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Niklas Cassel <cassel@kernel.org>, 
-	Shawn Lin <shawn.lin@rock-chips.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org, 
-	Simon Xue <xxm@rock-chips.com>, "finley.xiao" <finley.xiao@rock-chips.com>
-Subject: Re: [PATCH 0/5] iommu/arm-smmu-v3: power domain and clock of the
- RK3588 PCIe SMMU
-Message-ID: <avU2I_QzCiBPVTDC@venus>
-References: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
- <10924894.NyiUUSuA9g@diego>
- <ea8fa04c-4a8c-4c55-b4fa-f37d74267e93@rock-chips.com>
- <9_7qTfdNSViwtNUGq9D13w@sntech.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=TsJPAQO3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1794458629; x=1825994629;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=msfF03kMDRcUmcGxlw8xw3056jHMTBZ/No+mFNozNlo=;
+  b=TsJPAQO3lg8PP9cvJXZM3ySk/ZAZAC5sRNj8tv00JQEIKzzJGp28jbSQ
+   U2lDkAtzKJLTfKWpY9lDoJJaR/5JnVAI2Lt0kDcWM/6hzh9u2cfvKnZaa
+   jzou0axPuTQLPQ58H3jAxcCbpOOGxKE4W5ZntEwEt5EttmvvkgQqN5rd+
+   ZEzB45CEQLExMyuHKr+BTp46Qv8RiWhsNDd+TxasZbGjkDUBILS7HEJXO
+   ZhrZ4akuKCuGNyvRfe2i9lXeOZZChdV52ncktVOvQvk+eyPnkcbJ6lrSD
+   pb8DhcxTTKMAYjreSHSEvWQuDxvaoxZSgaczLzWQh6Hj/YCbBdTZOJq9R
+   Q==;
+X-CSE-ConnectionGUID: f0Hjk9q2Q0GUGP6y4G7ZOg==
+X-CSE-MsgGUID: iaiXwxmSTs6CSwlnoTlz3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11963"; a="3318312"
+X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
+   d="scan'208";a="3318312"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 20:43:48 -0800
+X-CSE-ConnectionGUID: nwVxLacIQce52E4+haDMTA==
+X-CSE-MsgGUID: h4lu0Zi/QXacD7GPbLPkpg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
+   d="scan'208";a="8728610"
+Received: from allen-box.sh.intel.com ([10.239.48.101])
+  by fmviesa002.fm.intel.com with ESMTP; 11 Nov 2026 20:43:44 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev,
+	x86@kernel.org,
+	linux-coco@lists.linux.dev,
+	kvm@vger.kernel.org
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	yilun.xu@linux.intel.com,
+	xiaoyao.li@intel.com,
+	Chao Gao <chao.gao@intel.com>,
+	Binbin Wu <binbin.wu@linux.intel.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 0/9] coco/tdx-host: Introduce trusted DMA initialization support
+Date: Thu, 12 Nov 2026 12:30:45 +0800
+Message-ID: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -76,124 +88,203 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="x7tmavbsaviu3rdb"
-Content-Disposition: inline
-In-Reply-To: <9_7qTfdNSViwtNUGq9D13w@sntech.de>
-X-Zoho-Virus-Status: 1
-X-Zoho-AV-Stamp: zmail-av-0.2.13.1.5.4/294.450.56
-X-ZohoMailClient: External
-
-
---x7tmavbsaviu3rdb
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 0/5] iommu/arm-smmu-v3: power domain and clock of the
- RK3588 PCIe SMMU
-MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
 Hi,
 
-On Wed, Nov 11, 2026 at 10:53:28AM +0100, Heiko St=C3=BCbner wrote:
-> Am Mittwoch, 11. November 2026, 09:02:30 Mitteleurop=C3=A4ische Normalzei=
-t schrieb Shawn Lin:
-> > Hi Heiko
-> >=20
-> > =E5=9C=A8 2026/11/10 =E6=98=9F=E6=9C=9F=E4=BA=8C 16:49, Heiko St=C3=BCb=
-ner =E5=86=99=E9=81=93:
-> > > Am Dienstag, 10. November 2026, 09:40:44 Mitteleurop=C3=A4ische Norma=
-lzeit schrieb Shawn Lin:
-> > >> Cc: Simon and Finley
-> > >>
-> > >> =E5=9C=A8 2026/11/10 =E6=98=9F=E6=9C=9F=E4=BA=8C 15:11, Arun Iyengar=
- via B4 Relay =E5=86=99=E9=81=93:
-> > >>> The MMU-600 in front of the PCIe controllers of the Rockchip RK3588
-> > >>> (mmu600_pcie) is enabled for every RK3588 board, but its node descr=
-ibes
-> > >>> neither the power domain it lives in (RK3588_PD_PCIE) nor its clock
-> > >>> (ACLK_MMU_PCIE). Both are held by any enabled PCIe controller, whic=
-h is
-> > >>> why nobody noticed: on a board that enables no PCIe controller in t=
-hat
-> > >>> domain (an Orange Pi 5 with its M.2 slot in SATA mode, or any RK3588
-> > >>> board without PCIe), genpd powers the domain off and the clock fram=
-ework
-> > >>> gates the clock as unused after boot, while arm-smmu-v3 stays bound.
-> > >>> At reboot, arm_smmu_device_shutdown() then writes CR0 and polls CR0=
-ACK on
-> > >>> the dead block, the interconnect stalls, "reboot: Restarting system=
-" is
-> > >>> never reached and the board only comes back ~90 s later when the
-> > >>> watchdog fires.
-> > >=20
-> > > We have a work-around for that in some boards, manually disabling the
-> > > smmu until now. As the SMMU is part of the SoC and always present
-> > > the general DT practice is to have it always enabled, as it does not
-> > > depend on the actual board design.
-> > >=20
-> > > Hence we end up in the situation described above.
-> > >=20
-> >=20
-> > I notice that mmu600_php is disabled in rk3588-base.dtsi. If describing
-> > the SMMU that way is incorrect, should we enable mmu600_php as well? I'm
-> > asking because I see a different picture in the RK3588 TRM: both
-> > mmu600_php and mmu600_pcie reside under PD_PHP, not PD_PCIE. Therefore,
-> > even without any PCIe controller enabled, PD_PHP should remain powered
-> > on (it is never added in rk3588-base.dtsi, so it should be outside the
-> > kernel=E2=80=99s scope). How does the original problem occur in that ca=
-se?
->=20
-> The original problem is the smmu probing (probably during boot when
-> everything is still powered), not doing anything with it and on shutdown
-> the smmu driver wanting to access the smmu registers and thus ending
-> in a hang.
->=20
-> So the problem is not necessarily the power-domain, but can also be
-> the clocks getting turned off during clk_disable_unused.
->=20
->=20
-> As for not disabling it, the case is also the some for things like the
-> video-encoders - they are also present all the time, so we don't have
-> devicetree wiggling for them.
->=20
-> The fully correct thing would be, power-domain + clock handling
-> and adding runtime-pm to the smmu for when it is not in use.
-> So this would then not require any special thinking
->=20
-> And yes, I think the other smmu should also use the same handling.
->=20
-> @Arun care to also add a runtime-pm patch? :-)
+This series adds trusted DMA initialization support to the tdx-host and
+intel-iommu drivers, as groundwork for TEE I/O trusted DMA support.
 
-Adding runtime PM support is already WIP:
+As in v2, the host/TDX-module interactions live in the tdx-host (TSM)
+driver, and the VT-d driver only provides the iommu-side pieces. v3
+moves trusted DMA setup from driver probe to the TSM connect path. It is
+posted to collect review feedback from TDX, TSM and IOMMU stakeholders;
+it is not yet intended for merging.
 
-https://lore.kernel.org/all/20260929034510.2023173-1-praan@google.com/
+This is part of the effort to implement the TDX PCIe Link Encryption
+feature, which includes the following components:
 
-(this is also needed to avoid potential crashes with system
-suspend/resume on RK3588, since we enable PCIe IOMMU by default)
+[ ] TDX module extensions initialization, posted in [3]
+[X] Introduce trusted DMA initialization support
+[ ] SEAMCALL helpers for TDX PCIe Link Encryption
+[ ] PCIe Link Encryption Establishment via TDX platform services
 
-Greetings,
+The series is based on the latest tip/x86/tdx branch, with these
+dependent series applied:
 
--- Sebastian
+ - TDX module extensions initialization
 
---x7tmavbsaviu3rdb
-Content-Type: application/pgp-signature; name="signature.asc"
+The full stack is available at:
 
------BEGIN PGP SIGNATURE-----
+  https://github.com/LuBaolu/intel-iommu/commits/iommu/tdxc/enablement-v3
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmr1N5oACgkQ2O7X88g7
-+poq8Q/+P0pOInRktOpa7ipZqr7ZZw0Ry5Z09iTXZlgJa5ImtfUKuwho88ecAs+Y
-AijE7yqpKPfi/a0xBUyWWdrGYWhEBZo97uvlxNlLT1I5TnPXz/8xY6fP8iW09TpN
-TssTFHUZH1jwpkMZx56idljsFwIwDkhbxjApqnW0CjQi9He8qx88w6AXzHC603VH
-zSxHgSpyTCkNigp7txnzxrt9x1/5PZool+9mt/ougKDtOZHaQP4r8PRqvJPcMBWr
-Qmn5WjkMUSaiOGv+E7WKuBO3gz5RoymMqwGdQFG6s+TnyRxvmy7ZiJZBOZcGiR8a
-NdN9Ow2Q3Mh+XrSJZj5De+LWjBRbSB5urw149w07xE/1HxOFlbpR/V8nNDlBIgXT
-JoUcNTKo/NMlkj8KauGJXcQUNsaNFCIQGSngnn+FyKG5rRyiGXPuaP9cDplZcVv3
-WYYMtYOxLnT3ouNJ+wq6kF8N2sVzx+ezZw1ipCXVXVu2Gl49GlAIGknuBwZLVwd7
-ZoM+PwQEy/AyNQY8Maefctg5zh49lZhzA7fMV5Lcg1ErLnhuBG6qBsY8N/snDPwi
-EFANmXjlRCRQ8Yot+LigovbQuOZBLfUGF5Ql0u+/t8L4eyO1I53JvsRfG0k+NoZ1
-aYj+apKKbcr0SFiobCOTeHLNM9DhA132MPfpMR3sVmc7aDqDq/s=
-=RkWx
------END PGP SIGNATURE-----
+Background:
 
---x7tmavbsaviu3rdb--
+Intel VT-d hardware gains a second set of DMA translation structures,
+managed by the TDX module and used only for devices assigned to
+confidential guests. Per the TDX Connect architecture specification [2],
+VT-d is enhanced with:
+
+  1) Trusted DMA translation root table
+     - A second root-table address register, restricted to SEAM SAI.
+     - Programmed by the TDX module with the root of TDX-managed DMA
+       translation tables for TD-assigned devices.
+
+  2) Trusted invalidation queue
+     - A second invalidation-queue address register plus dedicated
+       head/tail registers, also restricted to SEAM SAI.
+
+  3) IOTLB / DID isolation
+     - While an IOMMU is in Secure TDX Mode, the TDX module owns the
+       half of the domain ID space with the MSB set; the VMM must
+       confine itself to the lower half.
+
+This posting covers IOMMU initialization only. The current Link TSM
+connect callback obtains and immediately drops a trusted-DMA reference,
+so it exercises TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR, then returns -ENXIO;
+it does not establish a TSM connection. Once TDISP connect is
+implemented, the intended lifetime is for the first connected device
+behind a trusted DMA-capable IOMMU to trigger TDH.IOMMU.SETUP and the
+last disconnect to trigger TDH.IOMMU.CLEAR. The untrusted DMA path is
+unchanged, except that while an IOMMU is in Secure TDX Mode the host is
+confined to the lower half of its domain ID space and must not touch its
+global command (GCMD) or enhanced command (ECMD) interfaces. The TDX
+guest and device flows come in a later series.
+
+Breakdown:
+
+- Patch 1: Adds the TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR SEAMCALL
+  wrappers, exported only to the tdx-host module, together with a
+  structure that mirrors the IOMMU_MT parameter page layout.
+
+- Patch 2: Reads the IOMMU_MT_PAGES_COUNT global metadata field when
+  TDX_FEATURES0 advertises TDX Connect. It tells the host how many
+  metadata pages the TDX module needs per IOMMU.
+
+- Patch 3: Exports the Dynamic PAMT helpers to tdx-host, which needs
+  PAMT backing for the pages it hands to the TDX module.
+
+- Patch 4: Adds a per-device interface to the VT-d driver:
+  dmar_tdxc_get_params(), dmar_tdxc_acquire() and dmar_tdxc_release().
+  acquire() checks the preconditions TDH.IOMMU.SETUP requires and
+  confines the host to the lower half of the DID space; release()
+  undoes it. Trusted DMA-capable units are excluded from DMAR hotplug.
+
+- Patch 5: Blocks GCMD and ECMD on an IOMMU while it is acquired.
+  IOMMUs that need write buffer flushing are refused, and the remaining
+  GCMD writers are guarded. intel_iommu_shutdown() is exempt because
+  TDH.SYS.DISABLE has already run by then.
+
+- Patch 6: Refuses system suspend while any IOMMU is acquired by the TDX
+  module, avoiding suspend/resume callbacks that would change its state.
+
+- Patch 7: Adds the tdx-host Link TSM skeleton that the TSM connect and
+  disconnect callbacks hang off. It is carried here as a dependency.
+
+- Patch 8: Renames tdx-host.c to main.c in preparation for adding more
+  source files. No functional change.
+
+- Patch 9: Adds per-IOMMU reference-counted trusted DMA setup and teardown
+  and invokes it from the TSM connect callback. The setup path allocates
+  the trusted invalidation-queue buffers and metadata pages on the
+  IOMMU's NUMA node, takes Dynamic PAMT backing for them, and builds the
+  IOMMU_MT parameter page. If TDH.IOMMU.CLEAR fails, the pages are
+  intentionally leaked and the IOMMU is not reused.
+
+Change log:
+
+v3:
+- Replaced the callback-based "initialize all IOMMUs at probe time" API
+  with a per-device interface. Trusted DMA is now set up on TSM device
+  connect and torn down on disconnect, refcounted per IOMMU.
+- Blocked both the GCMD and ECMD interfaces while an IOMMU is in Secure
+  TDX Mode, and refused IOMMUs that need write buffer flushing.
+- Add a patch to refuse system suspend while an IOMMU has been acquired
+  by the TDX module to avoid global state change in
+  iommu_suspend/resume().
+- Added Dynamic PAMT backing for the IOMMU_MT pages.
+- Replaced the untyped parameter page with a dedicated structure that
+  mirrors the IOMMU_MT parameter layout in the ABI spec.
+- Split the tdx-host.c to main.c rename into its own patch, and renamed
+  the new file from iommu.c to viommu.c.
+- Reworked commit messages per review feedback.
+
+v2:
+- Moved the TDX module interactions (page allocation, IOMMU_MT
+  construction, SEAMCALLs) from the VT-d driver to the tdx-host driver.
+  The VT-d driver now only does the DRHD walk, precondition checks and
+  DID reservation, and exposes them via a callback-based API.
+- Renamed tdx-host.c to main.c and added iommu.c.
+- https://lore.kernel.org/r/20261015010705.1973284-1-baolu.lu@linux.intel.com
+
+v1:
+- https://lore.kernel.org/r/20260915074235.1219183-1-baolu.lu@linux.intel.com
+
+ABI History:
+
+TDH.IOMMU.CLEAR previously required the host to provide, as input, the
+parameter page used for TDH.IOMMU.SETUP. The ABI has changed to take
+only the TDX IOMMU ID. This change is not yet reflected in the public
+ABI specification [1], so the two may differ.
+
+The TDX Connect ABI specification should include a dedicated section
+listing all IOMMU registers whose use must be coordinated between legacy,
+host-managed operation and trusted, TDX-module-managed operation. This
+would let host IOMMU drivers avoid accesses that interfere with the TDX
+module while an IOMMU is in Secure TDX Mode. GCMD and ECMD are confirmed
+to be in scope; additional registers may be identified as the
+specification is clarified.
+
+Reference:
+
+Implementation details follow the interfaces and behavior defined in the
+Intel TDX Connect ABI Specification [1] and the Intel TDX Connect
+Architecture Specification [2].
+
+A full preview of these dependencies and follow-up changes is available
+at [4].
+
+Link: https://cdrdv2.intel.com/v1/dl/getContent/858625 # [1]
+Link: https://www.intel.com/content/www/us/en/content-details/862706/intel-tdx-connect-architecture-specification.html # [2]
+Link: https://lore.kernel.org/r/20261013-tdx-module-ext-v4-0-de5ffac65470@linux.intel.com # [3]
+Link: https://github.com/intel-staging/tdx/tree/tdisp_phase1 # [4]
+
+Please review. Any feedback is highly appreciated.
+
+Thanks,
+Baolu
+
+Lu Baolu (9):
+  x86/virt/tdx: Add SEAMCALL wrappers for IOMMU setup/clear
+  x86/virt/tdx: Read global metadata for trusted IOMMU
+  x86/virt/tdx: Export Dynamic PAMT helpers to tdx-host
+  iommu/vt-d: Add interface for tdx-host when enabling trusted DMA
+  iommu/vt-d: Block GCMD and ECMD while acquired by the TDX module
+  iommu/vt-d: Refuse system suspend while acquired by the TDX module
+  coco/tdx-host: Add skeleton to support PCI link encryption
+  coco/tdx-host: Rename tdx-host.c to main.c
+  coco/tdx-host: Enable trusted DMA on IOMMUs on device connect
+
+ drivers/virt/coco/tdx-host/Kconfig            |   7 +
+ drivers/virt/coco/tdx-host/Makefile           |   3 +
+ arch/x86/include/asm/tdx.h                    |  23 +
+ arch/x86/include/asm/tdx_global_metadata.h    |   5 +
+ arch/x86/virt/vmx/tdx/tdx.h                   |   2 +
+ drivers/iommu/intel/iommu.h                   |  10 +
+ drivers/virt/coco/tdx-host/private.h          |  21 +
+ include/linux/dmar.h                          |  25 ++
+ arch/x86/virt/vmx/tdx/tdx.c                   |  57 ++-
+ arch/x86/virt/vmx/tdx/tdx_global_metadata.c   |  20 +
+ drivers/iommu/intel/dmar.c                    | 278 +++++++++++-
+ drivers/iommu/intel/iommu.c                   |  34 +-
+ drivers/iommu/intel/irq_remapping.c           |  10 +
+ .../virt/coco/tdx-host/{tdx-host.c => main.c} | 129 +++++-
+ drivers/virt/coco/tdx-host/viommu.c           | 401 ++++++++++++++++++
+ 15 files changed, 1016 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/virt/coco/tdx-host/private.h
+ rename drivers/virt/coco/tdx-host/{tdx-host.c => main.c} (66%)
+ create mode 100644 drivers/virt/coco/tdx-host/viommu.c
+
+-- 
+2.43.0
+
