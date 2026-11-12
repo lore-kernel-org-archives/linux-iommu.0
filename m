@@ -1,133 +1,108 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794499555;
-	b=gLDaPFSdZPMQmWyq6DVaGnbq8izWyT/RztqAMWpekhMoIZETEkQBTyymtNFoFs18zbwm
-	 uWD8vthDxrvcYyUtyLWPSYVaX7Y+X0nAJu+FngIUGPAhA7V1sZtUh/3YG2r5LU6twnsfK
-	 7JdayVp9DFPo2RIxf9leKpHPqnZjO8VwVXMqrBs2SzXiiS1dNA7nCeS/G2GPNZOfaCWof
-	 h+fgHB7OOCotgV+zgHxh+5VzwA11xbSVdKkZwVl3g/Txwpznr+WSigPMBUitXDTF/IxOm
-	 FJ+nrB0sR4PXVvR6rgeDQoNr2ZqFtTM9YbI11uD6Mg4MMp4jJk50kvJFA8ERpoz/oYw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794499555;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
-	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-Spamd-Result:X-Rspamd-Server:X-Rspamd-Action:X-Spam-Flag:
-	 X-Spam-Score:X-Spam-Level:X-Rspamd-Queue-Id;
-	bh=YufnmZVNechLqcaL+12tnkQkHsQyEMDzCGtNkLwTnI0=;
-	b=Ny75uxHatEefvQhBVlhXV8UmySO0sl0LQAgH4fKJ3nsg/K0IZFeUotkiAvMpYMyVayN5
-	 3jrjdum/YkW5xPZ/LizYHUcc6Hz1n8FtG3KCbo+GFZtQdONdDaQ/Gnyra/Ow+a4o6R+fw
-	 jW9Cv/jwUSX3jsljo9NxovP/WE/DMUJoMmhK7wK5XHJ7dnZ3GRCioSB3ycVOb37+8qDTZ
-	 8/RLYKwlUbIiRPxt134x6otH8qK026pLjwbG6Far+b9WxEmZoF5YS6FSLtX0ZBmHCfkmU
-	 lo1F3QdguI8aMAcwPLxuoeGZYR9y6fzC7eCWoTsU/h+T8ggMcYJsKZpGzcnEv8wm6kw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=suse.de;
-	spf=pass smtp.mailfrom=suse.de;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=1XqhTbRt;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=W8xNeInm;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b="qJ/9tp20";
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=HJbtW+mO;
-	arc=none smtp.remote-ip=195.135.223.130
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.44
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794499563;
+	b=hgu/PZzuKEdEaWlvEWa1ki1t5lLF3OSE7pOwRggFjO5udU6RsHm/A84EYDEYVB7Ulb/R
+	 bYuF+XHSdzT8mrZVTueHvInlwWQaag3vbr62HjLISZX0lcojpoHMC0poUuhx0Lxsf5K9k
+	 D75IFprWOG4KTGjUgwjn6Qp8n2lWVJAcB5HwLBLYnjGXN1lmBUIfDtakzlbrS2BH3SLPA
+	 UgpaxOopjhcErZAgXGXm28tWet+K4NglWwaNM7V92rFYu/44eh8QGE90UAp93xIlAs5c+
+	 J7gdDR+aSKgY66PE2sQr5ekIOU1lJ+Pswxjvs/GAzBZIuquk3B4x4pqXHn/85fBy+hQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794499563;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:Content-Type:Content-Disposition:
+	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=/jNLFJr6NX3nDZAMNKTQOMDY+y/6iaJlnbuKVlA1g/8=;
+	b=lmtoNpNNFjJZSYJLiuCwqs6NMfgEocfjjFQk91EMjfMxmmUlzMKFF0PRxN3gNn4B4TW2
+	 RX4Q5rMwmSyeGBlggGF//aG8zKyECniGGNYWLKNNChhKVZXruKSUj6A4jXDqHlH3gZ1MR
+	 o2k8pM22EjB1vHloLQmekJVCt9c+/0iBbqQFCr+ZOkCr4NNtVE4mQf5RSDQrecDKF5JUS
+	 gA0BrGSJAr8NuAqemLMdnaqZnmVoJLiAZ74YHe0qLPKDqzYEV/VgiBa7KUNZElVqREMAP
+	 gJEW4wUazSUTpUCwAGrFHYiZMgHyjFvyhk8L4kqzwA2Oney25e4wXkseaIdzpUT9pzg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.nxp.com;
+	spf=pass smtp.mailfrom=oss.nxp.com;
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=IN9Evj3z;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.44
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013044.outbound.protection.outlook.com [40.107.159.44])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2A9A606A33D;
-	Thu, 12 Nov 2026 16:05:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B2A9A606A33D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F33606A883;
+	Thu, 12 Nov 2026 16:06:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 82F33606A883
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=1XqhTbRt;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=W8xNeInm;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=qJ/9tp20;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=HJbtW+mO
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 93E3521CEE;
-	Thu, 12 Nov 2026 16:05:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794499552; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YufnmZVNechLqcaL+12tnkQkHsQyEMDzCGtNkLwTnI0=;
-	b=1XqhTbRtR2Ti2wMF/rvG2bh0JIBFEix+aS565q+brCOymeXkbIxqBQq2r6wsuvjiaO4+2w
-	7vfPm9DxdSKjxbS+lm1t4CLNcFuy/aDguieyK4iugLfLvVw7S9L1Jct/nMqrJprcCEIpD/
-	nkrRSyW3+pMrvBILTWn/2P65EZiNyIA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794499552;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YufnmZVNechLqcaL+12tnkQkHsQyEMDzCGtNkLwTnI0=;
-	b=W8xNeInmb51XAqwMI01ZB6ZyLVoJIpxMF250ZX/5Jv8Zkh6KoO3jw58ZSy97gjEKKrw5ff
-	TY0JojlmtcRCm4Aw==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b="qJ/9tp20";
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=HJbtW+mO
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794499551; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YufnmZVNechLqcaL+12tnkQkHsQyEMDzCGtNkLwTnI0=;
-	b=qJ/9tp20/z5EPRCwjV3Ju3oZQSF63/UXEfbK0qWbglccebVbRVJ17Cow0WhCqK2fPx4oDA
-	1WXHs3iY8Axd+KkJKQ2VhoFG7bhXpndOn67Jt9IA4ZnjiV/fNLyjHE0RFjIFUqn7pPmRTu
-	uOkBoRbKv1DY3FYxsRkePWbviVKDar4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794499551;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=YufnmZVNechLqcaL+12tnkQkHsQyEMDzCGtNkLwTnI0=;
-	b=HJbtW+mODGRUVoEOZT6vq0WsF+o5SBwK9SwP09053w/gNrYQYHXjf1sVhXTvZ+CP7MMNSX
-	9U0u9mDp3bfE52Cg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 5E26C13432;
-	Thu, 12 Nov 2026 16:05:46 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id bcdNCNrj9WqGKQAAD6G6ig
-	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 16:05:46 +0000
-Date: Thu, 12 Nov 2026 16:05:40 +0000
-From: Pedro Falcato <pfalcato@suse.de>
-To: David Hildenbrand <david@kernel.org>
-Cc: Lorenzo Stoakes <ljs@kernel.org>, 
-	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
-	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	Michal Hocko <mhocko@suse.com>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, 
-	Jan Kara <jack@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, 
-	Zi Yan <ziy@nvidia.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
-	Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
-	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
-	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, 
-	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
-	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
-	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
-	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
-	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, 
-	Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
-	John Hubbard <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
-	Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
-	Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
-	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
-	iommu@lists.linux.dev, netdev@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3 6/9] RFC: net: limit folio refcount when copying skb
- frag references
-Message-ID: <avXi-z1MEb9S93Ii@pedro-suse.tail5790ac.ts.net>
-References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-6-318625d63a98@kernel.org>
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=IN9Evj3z
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ONNAQRECuVbXZ+u703UkPY207EPO+FNqmsZdtHUQe6414ef53BSskZ0ryoOn8C7i6EvYmU3BqILV96/vwTmmHdUz3Erd8vAaqj0inqmGShPom6ZIePUX8EWNd3rXicgRgtb56ZAP3eYZX0vPq89D4oqZQt9edld6JcLbTchUVyNT1nmIGrf9RLJ2phv3AMQVovy9jvIBcdbn55NrMBq4I8P64Iu4qmqqDf1ns5JPI2q5v53wsZFCziyjBG9QiuF7WEn7AuZWIBOwZky26f2yokpEeYE7M6/Eo4rj/WWWxawnGJcPFIY+Q0j1VVmszoneXwCmSBOcn/6rOTStbGj9dQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/jNLFJr6NX3nDZAMNKTQOMDY+y/6iaJlnbuKVlA1g/8=;
+ b=gVgOIOalkvOuqI3WQtFB10sLeF9RNZVPos5yQJJVEKRqvyKjSj6fRkbzwoOXluioo7QX1yqtFsbliBKfkbFnv57hOL5VTQ5xINhtYtpHleopiftUZ0KRykcNumlbvqjhe6+707bwWoHDfDsAZWITvmjmZBxbY9Bb5PO5kbhlbMup0StNwX8M1eQ9hpsywkhL/gn87dSUHDJCpa8kt4ynjHKRtNkEsD4b81qoXe6xSzP8OKCtUkZ9WZc8wwT/b+hVe/Q9OV74hn6+Bh4KOlJ5lIyTmQ2veC4HU5X/2mbpqkGxJfaAsH0/3gkXy/ZwCyM6UlAGOVs+XjQyE81yguW+rQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/jNLFJr6NX3nDZAMNKTQOMDY+y/6iaJlnbuKVlA1g/8=;
+ b=IN9Evj3zIH8GG0AMgaEmS87rATE3GxEtJCLbn+ETTqy/wttmGmGG6JmoYsbsTIHUv3S4K/UKb4nYDxYX4y+WPoYEwFXbZ5O7Vv4JN8z9Ul85R6MypjTNSdJnlE+xJUhTRojmJds3slR7VVz8UyT+07+7D4B2kNgHpgDXap46z1e6AbfS+Ff+Qj1cBFYIOnHLLHz2Ex01cIeyrntRR6r4zhASCOkbj/e8INT2qcHBPphouX4SYZX5BFSpDzyUST2FXZRPmVEyGKimviPzBaV5nLo1RGwO/wM44+aQj4X3tdOtwfbc0s26T4SXkHp0vNliPvso2qF9CRGKL4uZvKusFQ==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
+ by DBAPR04MB7336.eurprd04.prod.outlook.com (2603:10a6:10:1a9::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.13; Thu, 12 Nov
+ 2026 16:05:55 +0000
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b%4]) with mapi id 15.21.0615.009; Thu, 12 Nov 2026
+ 16:05:55 +0000
+Date: Thu, 12 Nov 2026 10:05:41 -0600
+From: Frank Li <Frank.li@oss.nxp.com>
+To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Cc: Frank Li <Frank.Li@nxp.com>, Vinod Koul <vkoul@kernel.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
+	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
+	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH v6 6/9] dmaengine: fsl-edma: use BIT_ULL for 64-bit
+ channel mask
+Message-ID: <avXj1dfeFOWCo5nZ@SMW015318>
+References: <20261112-edma-iommu-v3-v6-0-b038edb8ce6f@nxp.com>
+ <20261112-edma-iommu-v3-v6-6-b038edb8ce6f@nxp.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261112-edma-iommu-v3-v6-6-b038edb8ce6f@nxp.com>
+X-ClientProxiedBy: DM6PR05CA0051.namprd05.prod.outlook.com
+ (2603:10b6:5:335::20) To MI3PR04MB12438.eurprd04.prod.outlook.com
+ (2603:10a6:290:76::14)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -137,74 +112,144 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261110-refcount_overflow_stable-v3-6-318625d63a98@kernel.org>
-X-Spamd-Result: default: False [-12.01 / 50.00];
-	SUSE_INTERNAL_BYPASS(-9.00)[];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
-	RCVD_TLS_ALL(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DKIM_TRACE(0.00)[suse.de:+];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	R_RATELIMIT(0.00)[to_ip_from(RL3qe7do4s7ra64g8gjdgiaorz)];
-	RCPT_COUNT_GT_50(0.00)[62];
-	TAGGED_RCPT(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	MISSING_XM_UA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.de:email,suse.de:dkim]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Spam-Flag: NO
-X-Spam-Score: -12.01
-X-Spam-Level: 
-X-Rspamd-Queue-Id: 93E3521CEE
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|DBAPR04MB7336:EE_
+X-MS-Office365-Filtering-Correlation-Id: edbb2fc9-c449-4cc1-fb8f-08df40d6d550
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|19092799006|366016|23010399003|376014|7416014|1800799024|22082099003|18002099003|10067099003|4143699003|261009223027099003|261028144727099003|11063799006|261022105027099003|56012099006|261021121427099003|261021123027099003|261026140227099003|261102123227099003;
+X-Microsoft-Antispam-Message-Info:
+	tOBvdHuskvXk7eYogfE+sQZ5GwowL0dFM7T6HF8OIu56mwPsWar1l/ov+srcrUGlkyVC+Ds1s6aixBq0t7B6VgJ7/mpEu6TvtoLGY5uWOekhvVDTmKeJpM5mj543QaApL0o/RgecNdjZWTrXyRDG+epRdtlegxML5XE5UprUMb1mWRJlCg4IvSJtW6/YmuykhLPdys6KYQmX+6zsJevTwj1PHVLLsf02dQ98To2/VzYl4jILMKcgx/AF37VNqhHGhGjgupcnzi18MAhywBxWRIN+gSwWdt7nowHU9Bd8hAhMAVI5mIgMQPeRW9DrTLK7MlvbT56+oEQL3K0/lXyYmmvFJh4Lmmr2H7iD4NV0rjtL3H6qygb1SVpNQILSzc7MqnVQpZIQqsi5Eqorw1kbEpIEQmoOubK72B5xySR4AVRdlMhVlFrUF6RDp5szYNFcijioYIk3e42Tmt/i1XBydWncsRx0lcgaT1UbIG/xTAl+wKZNpeLK9DJd8TDc953/UxuDAEG1CfSD8FFO/rSkLoalP2c2EhF80//X1FSZAI2AWaUjLDEwIDwdN5lvDkxpUrpBjcM/VoAkbS4WlubzEFbAJ4u/uCG9ZwbjRg0Dfc+vbthzMhKPFtU+hoozY2HXqZr1oViIw/aG3UKJ2xze+GDsBz3NZlmd2lBmyu3ak7U=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(366016)(23010399003)(376014)(7416014)(1800799024)(22082099003)(18002099003)(10067099003)(4143699003)(261009223027099003)(261028144727099003)(11063799006)(261022105027099003)(56012099006)(261021121427099003)(261021123027099003)(261026140227099003)(261102123227099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?RX5lg9Ta6oXqKFb+Q83UKf7V0gzXlWXCi6tLmmDUSx5GXfh15zuYkJl1iTXU?=
+ =?us-ascii?Q?1l3TkA5B5HlR9xK/j/l9gHgpYuxbhIHu6pVZXkQiqaR6B2dcBQJdvqgRuPgZ?=
+ =?us-ascii?Q?0WdQc6HUNzfhMu//czIX6RrN9bj0CU3F1kisOXe3eRsxXzVGQHmn5O8BS+NG?=
+ =?us-ascii?Q?MKTOvs+X0mVxmydbVSJjAeqeMxluPr9CFXnnariUc8k1LOEBb8118zJjwUMG?=
+ =?us-ascii?Q?fMEuuDU79VqJ2VVUhUPabOwBNHnQoyeDg3sa8Kh4kE6+TTjLd5QfOurOpGmF?=
+ =?us-ascii?Q?qGlWef0BfrRrdA69YJKMlu3Mnob9cLp9gOM9rlFV13nV7VHFhINIwyPsxSdm?=
+ =?us-ascii?Q?7tkoSYMOcSADFcAvgQ9I6ReCTNJEr/XW1zCDMVaWoH5dsBp6n/n0KbzcMUB7?=
+ =?us-ascii?Q?zcBw+oW7jVc6tkSZsLedWWmCtin5M/J6Ec5YAo/Nh5+MOaqv2ov53UnYY7Tw?=
+ =?us-ascii?Q?T8Rv5d0KRvd94Iwy/gDCz0oDb2SL6rs08ud1PWPSxEmDWlDugtUr7//kRi4i?=
+ =?us-ascii?Q?W2/FEUt6M3saUR8Hv+0OqY5uIcHfR+OWxDJLO6tBq4QG7QjUMEBGHz1FT99g?=
+ =?us-ascii?Q?Qeu3fbIQ2WNMjKq1zgqoWQkAfaM50a1Hnx0cNmRnXT1YCN6D6FgaMRIEASGM?=
+ =?us-ascii?Q?w9E29v6y1ieKtUnE8LOTHX02evug9s/UCbh7OLKj/zE8Ksan1zrJ1keWuHNb?=
+ =?us-ascii?Q?XRLUtKJiSLo+iMXuY3tqsTRUaN+u7jK8jEklhAYPVUM1pyhO6qICl9D1i67m?=
+ =?us-ascii?Q?J4jZ7UptrC8TpKBX29G5b5sGL7nigTicD6rDXxH+Rx59wPc3luD0grJOaBlN?=
+ =?us-ascii?Q?S578HheqaJutdIyPWj0Aqpb7P9mw+fMH17dCPA8Pv/qt+K52Flq3sGlSm3tt?=
+ =?us-ascii?Q?AXWAGnHkeIQMt6mg2Q6slDVzJOsAvFCNY2bT9EmEI4xs1I7jOAg/KDiKvLNe?=
+ =?us-ascii?Q?23VKdSe/RIp2ayMy+33TaDDrpwCW88Vnp0f1TZf6+UXGmjmxKbpLniMQfHML?=
+ =?us-ascii?Q?EO7xhEk1IxPzrowPQfcOP6xrv4444qhb2g/GOgakD75IhUZJtSJ+6Cn5IYy9?=
+ =?us-ascii?Q?WfPKu8SM6XKCESjZHPGcVgEv31P+qkn9aO4u2xTOrPZt5hvXd7EtiX2Y8pix?=
+ =?us-ascii?Q?d27ngR2N54qpfTU/TvfyBcJGfQoN3eNXAjKpAhWN0YLSpS3K5o8FengY0NuS?=
+ =?us-ascii?Q?MuMA6kvkrX07jn+ZFMm3rskmLUdtcIovfpD0cBa7xCrw9hULmKyc6kIzACVj?=
+ =?us-ascii?Q?OvzOowT8k0tFguMJMcv2JHiNrbC6sFmcJX+Guqd7rsUB4pc61HoLHqUuoKKf?=
+ =?us-ascii?Q?6rpqoW5hdHIKtMQ+CK6QUtI9OlVK/LSbX9lYMXxQTR/RqapPdPadfvRKv5tW?=
+ =?us-ascii?Q?jfDKnq7RFsIThB0XC2q5A/ahEdXsx+E7RnPwcKi68mJn6VAG2eY3LT24VtH8?=
+ =?us-ascii?Q?jE/A3V+6odR2hEdzJ7uJ7i1uma2xuXb82mJJ9bGGHUzhWtSC+6xDCo0dUDEb?=
+ =?us-ascii?Q?l9Esf7AX/Ahbbxv1ttsycZTJ7tto8fzRChd4kfbwBE0PFJVwbLr+VMYBZG3W?=
+ =?us-ascii?Q?UMVY2K76eNyxi/I/gHoyxO+tgiUqfeIJaT1qVnHQ6gaUT/Hv4iqJTX0dEukZ?=
+ =?us-ascii?Q?9ukFhCrryCbUkugXbSzHOqhEIfyw4dNDeBBp+hQcCZI3k6HjkUWvxOYlFIEG?=
+ =?us-ascii?Q?4rG1JQtv6i/JOyp0tHMXNxszZI7azl5QHX/QHBULQR4oykrSvKJVyGTGTtpR?=
+ =?us-ascii?Q?UISaDAVhW3PA2rR77GUnyPMPKvKYu+7souMS1vxSVjGclkM6cLhg?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: edbb2fc9-c449-4cc1-fb8f-08df40d6d550
+X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2026 16:05:55.8011
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: THqQMhdATibVHcD8HLThRLFAt5A3fYdP91lnxsPANqBOz4KmGEjLpQn/hvtqb0gMKlc/NmSd4FaB/pA6EHUdOAkOHxduSUt95Kma8GsdlIiQUp2SRY2135uA5uDb+LP+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7336
 
-On Tue, Nov 10, 2026 at 09:35:46PM +0100, David Hildenbrand (Arm) wrote:
-> Various networking features copy frag references of an skb, for example
-> when unsharing a cloned skb (AF_PACKET trimming a clone), when copying an
-> skb (nft dup) or when building NFQUEUE messages. This is an effective
-> way for multiplying folio references held by an skb, allowing for
-> exceeding folio refcount limits.
-> 
-> This is not specific to large pagecache folios, but with them it is a
-> lot easier to reach the refcount limit, as page table mappings can cheaply
-> create many references.
-> 
-> Let's introduce skb_frag_try_ref() and skb_frags_try_ref(), which use
-> try_get_page(), and use them in pskb_expand_head(), __pskb_copy_fclone(),
-> skb_zerocopy() and pskb_carve_inside_*(). All of these can already fail,
-> and their callers handle that.
-> 
-> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
-> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
-> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+On Thu, Nov 12, 2026 at 03:53:09PM +0800, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+>
+> chan_masked is a u64 bitmap, but several checks use BIT(), which uses
+> unsigned long and overflows on 32-bit architectures for channels >= 32.
+> Use BIT_ULL() so the upper channels are tested correctly.
+>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
 
-Acked-by: Pedro Falcato <pfalcato@suse.de>
+Reviewed-by: Frank Li <Frank.Li@nxp.com>
 
-For what it's worth, I tried thinking up a way to avoid all of this stuff.
-I know there are severe recursion limits that (should) avoid a large copy
-chain, but the issue is that, say you have a copy chain limit of 8, you can
-still create 2^31/8 skbs (each with their own reference), then clone each 8
-times such that you get an overflow. Annoying.
-
--- 
-Pedro
+>  drivers/dma/fsl-edma-main.c | 14 +++++++-------
+>  1 file changed, 7 insertions(+), 7 deletions(-)
+>
+> diff --git a/drivers/dma/fsl-edma-main.c b/drivers/dma/fsl-edma-main.c
+> index 7f82dcb7831d..818b9b986f13 100644
+> --- a/drivers/dma/fsl-edma-main.c
+> +++ b/drivers/dma/fsl-edma-main.c
+> @@ -123,7 +123,7 @@ static irqreturn_t fsl_edma3_err_handler_shared(int irq, void *dev_id)
+>  	unsigned int ch;
+>
+>  	for (ch = 0; ch < fsl_edma->n_chans; ch++) {
+> -		if (fsl_edma->chan_masked & BIT(ch))
+> +		if (fsl_edma->chan_masked & BIT_ULL(ch))
+>  			continue;
+>
+>  		fsl_edma3_err_check(&fsl_edma->chans[ch]);
+> @@ -397,7 +397,7 @@ static int fsl_edma3_irq_init(struct platform_device *pdev, struct fsl_edma_engi
+>
+>  		struct fsl_edma_chan *fsl_chan = &fsl_edma->chans[i];
+>
+> -		if (fsl_edma->chan_masked & BIT(i))
+> +		if (fsl_edma->chan_masked & BIT_ULL(i))
+>  			continue;
+>
+>  		/* request channel irq */
+> @@ -641,7 +641,7 @@ static void fsl_edma3_detach_pd(struct fsl_edma_engine *fsl_edma)
+>  	int i;
+>
+>  	for (i = 0; i < fsl_edma->n_chans; i++) {
+> -		if (fsl_edma->chan_masked & BIT(i))
+> +		if (fsl_edma->chan_masked & BIT_ULL(i))
+>  			continue;
+>  		fsl_chan = &fsl_edma->chans[i];
+>  		if (fsl_chan->pd_dev_link)
+> @@ -669,7 +669,7 @@ static int fsl_edma3_attach_pd(struct platform_device *pdev, struct fsl_edma_eng
+>  	dev = &pdev->dev;
+>
+>  	for (i = 0; i < fsl_edma->n_chans; i++) {
+> -		if (fsl_edma->chan_masked & BIT(i))
+> +		if (fsl_edma->chan_masked & BIT_ULL(i))
+>  			continue;
+>
+>  		fsl_chan = &fsl_edma->chans[i];
+> @@ -797,7 +797,7 @@ static int fsl_edma_probe(struct platform_device *pdev)
+>  		struct fsl_edma_chan *fsl_chan = &fsl_edma->chans[i];
+>  		int len;
+>
+> -		if (fsl_edma->chan_masked & BIT(i))
+> +		if (fsl_edma->chan_masked & BIT_ULL(i))
+>  			continue;
+>
+>  		snprintf(fsl_chan->chan_name, sizeof(fsl_chan->chan_name), "%s-CH%02d",
+> @@ -927,7 +927,7 @@ static int fsl_edma_suspend_late(struct device *dev)
+>
+>  	for (i = 0; i < fsl_edma->n_chans; i++) {
+>  		fsl_chan = &fsl_edma->chans[i];
+> -		if (fsl_edma->chan_masked & BIT(i))
+> +		if (fsl_edma->chan_masked & BIT_ULL(i))
+>  			continue;
+>  		spin_lock_irqsave(&fsl_chan->vchan.lock, flags);
+>  		/* Make sure chan is idle or will force disable. */
+> @@ -953,7 +953,7 @@ static int fsl_edma_resume_early(struct device *dev)
+>
+>  	for (i = 0; i < fsl_edma->n_chans; i++) {
+>  		fsl_chan = &fsl_edma->chans[i];
+> -		if (fsl_edma->chan_masked & BIT(i))
+> +		if (fsl_edma->chan_masked & BIT_ULL(i))
+>  			continue;
+>  		fsl_chan->pm_state = RUNNING;
+>  		edma_write_tcdreg(fsl_chan, 0, csr);
+>
+> --
+> 2.34.1
+>
