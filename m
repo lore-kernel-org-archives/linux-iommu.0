@@ -1,44 +1,44 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794452160;
-	b=4JYeZDNHBoqLyoT+NyaN++/wfjHh/mwBUV8pwFociu6ce6KuFZiecHknikGRlsqyTDDz
-	 WHdMMRyAiU7hMOkGFWedajY7ejjewtX7EcidvEfiyvAIqAzmtELqabkK6p2E5qlGh6BIe
-	 CaGiL/ZjEwz2RQ8AGQmIK0uF+/fX6jTuIOmWd6/Zbob0iHWjxItvr2N/Li8h9W3JoB6br
-	 y8sMt+ykIcwwjn+kjWMfvGsmHRhtUM3glusJMpCyaSU1tr8xYqKeQW840KhZ15GnYmcKs
-	 jw3HcCAVepQlHikvs5VQhHU0Rxqspeh+7jjsAxddtEGH/fSX+8fj0Jhh0U4B4rttVMw==
+	t=1794452215;
+	b=jXqwJ/5ZvQS2oazyiRo3EF5uZrt+a0W5SLTLlUjQoQuwa3jYwYqQvy7rYynkYyJBHsyr
+	 Yt4JeifTYMybRJbRTPe9rdyR6VA1P35iU47sp4qhkqWFGp5mu6wOIogwdSXKXy7ioEHLX
+	 gldB32JKaOmljtw1yqg27jC6WR4aJlDUppmumf4dRCQ+cg6OaGz4/Ty7co2NaLY263ALs
+	 opjOgCo40hXuG2Gg4TEWYNTKLfa50/WQ/NNwAHjW3zaaK5GEyklXGI5R7FkRr6K38I9TL
+	 LQo4gII4KPfwPpgkOjUFkPtaUNg1io8JNgX7bY6Dvr31zNklNZRS36UJas8k2M+xI7w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794452160;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794452215;
 	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
 	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=CqfImJvbBCfbJiBn9MZOtV5tMRMtqhnvXEPFcs5Onlg=;
-	b=f7j4twJAQ/dcz8PQWSzi+jzHZEj6esUpqAvw7q/gAL91JxuVcAdjCaOSSVwT1+LTHP3K
-	 tUiPTM+1Xwi2N9R7HmG8fR755FTn1IO3aj8o9Y5kWEPE9DwaRXNau+5HFle9+YIpjQmar
-	 umROrtRr4FbElcTLtS1wPC7uOZh6ZLlp376XJbwVluxCfch+BjqSal6wn4bJC5up0yAxr
-	 u2wJOCdovOP9DDfg9XoxVYR8uFGqc/O6WXIXXpEIdttkcdPABcAL4j/XISR2VLOXhFepW
-	 VDv3klIz+Kl0zEgzpGEgNUGwSxOV7BS7xFzk7S9kKUHQzxVOEb5xevWj7UD9EAc05YQ==
+	bh=vOF+RGK9UnUHcVcejSq7M96a8eoJuO60vsZupJJEXRU=;
+	b=aXRqH/QnPdL4vBLefivxQaql8Ar8wlQMbXBW45cfhwCYhN8MegCQX2npU4OVjJFk6UcT
+	 0XUghKTzNhPUYQDlnYiEhXumWxMd0KIVjaE+add+TpHMbCQb0dJ4wLJ3dkmMMYzt2Q6h4
+	 V55WfvT4k47/tsIXeoQcJwsK/FAMhaoANN+i1AQAJhucGBqM94GwIkW10Q0OCB5Gh9HDc
+	 aTwlfi1tDGP6dOj0xcHoROLLadhFDym1eXtcwJd6ZTyv2sxQDr7L7aR/rBgEGvl8PH/pf
+	 ucOp8tG3XKy/18/0SbA85lBMadzdBIK5wl7FB1/E2urAR7aI/gmw8iriMMddgcsHf4Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jThQQBPr;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lPtuLY91;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A225606A323;
-	Thu, 12 Nov 2026 02:56:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BC2D606A31C;
+	Thu, 12 Nov 2026 02:56:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=jThQQBPr
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A344C1F00A05;
-	Thu, 12 Nov 2026 02:55:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lPtuLY91
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C18831F00A05;
+	Thu, 12 Nov 2026 02:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794452160;
-	bh=CqfImJvbBCfbJiBn9MZOtV5tMRMtqhnvXEPFcs5Onlg=;
+	s=k20260515; t=1794452215;
+	bh=vOF+RGK9UnUHcVcejSq7M96a8eoJuO60vsZupJJEXRU=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=jThQQBPrty1bexjnGQ1dBJ11758QFqPlYSyEvRWv45gtbQRD9FSkqx14/B9NcTIP3
-	 T2o/x2+sTCiGmdWWuZEVt0ijuoQH/zSOicfdU43vUm1IgR5EzytZxg9U6lN8zCtSJK
-	 Kn/LApuAmBzMkl2xHNzg2t5ESCLWMNO+jP2z5lZbMWPs7X3/yqudRoRwiV7wVEOd0c
-	 w0G0g4yJR5xz1uT705gMLy9pJ+P0FqpTHz3mbeVsvYQNyA+L5AnAlWIJlHA1rZl5p2
-	 LybqTR1Wl9UcVhFje1VncTk4c20u2xqos6cpGnBhxEaU373Y8C3ReIdG4lzwT5IHmG
-	 D6Vp0ucLB7a5g==
+	b=lPtuLY91/lHi/9p1s/6yaltKtqqBQf/oS0B5bAxdsul7kIVXUg8c3c4R/zldKHFSZ
+	 4X2gE0O66/XKBN0ohfV1lVVCPnWrFxe3vBNAcjRK/+ylOv3hj/gapimFUQfHa+gju9
+	 sbSptR0QLQ3CmHIDGXT5yb5ULXEPO6mI4OeJYy+wYDvQqTGhe3eU6fAKFhc4IudBuS
+	 6kAqY3weeLJzoulZ4m4aNYVw/INEROGBX/5LRS2KIhW4rYIHxMbfUrsCmshrSExfq8
+	 4qxLTnYORQ9MzOYZK3phsoISxMHjgAO42TxTq1TXMoc083omMBUuRQTGqnGXaM6cPI
+	 gXYAVJYt7RYCw==
 X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
 From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
@@ -47,12 +47,13 @@ Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
 	David Rientjes <rientjes@google.com>,
 	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] dma-pool: decrypt pages before creating the shared remap
-In-Reply-To: <20261109154403.384434-1-m.szyprowski@samsung.com>
-References: <CGME20261109154426eucas1p28dad751a60e6a8cd490b178bbf0400fb@eucas1p2.samsung.com>
- <20261109154403.384434-1-m.szyprowski@samsung.com>
-Date: Thu, 12 Nov 2026 08:25:53 +0530
-Message-ID: <yq5aeccqrc5i.fsf@kernel.org>
+Subject: Re: [PATCH v2] dma-pool: decrypt pages before creating the shared
+ remap
+In-Reply-To: <20261109230830.1707975-1-m.szyprowski@samsung.com>
+References: <CGME20261109230841eucas1p1ee97e7adcdac763c19145f604e4f11a7@eucas1p1.samsung.com>
+ <20261109230830.1707975-1-m.szyprowski@samsung.com>
+Date: Thu, 12 Nov 2026 08:26:49 +0530
+Message-ID: <yq5abj7urc3y.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -79,9 +80,11 @@ Marek Szyprowski <m.szyprowski@samsung.com> writes:
 > arch_dma_prep_coherent() and the remap, and the error path unwinds in
 > reverse order.
 >
-> If set_memory_decrypted() fails, the page state is unknown, so the
-> pages are still leaked rather than freed. No remap exists at that point
-> any more, so nothing else needs to be undone.
+> If set_memory_decrypted() fails, the encryption state of the pages is
+> unknown (the conversion may have partially succeeded), so they must not
+> be returned to the page allocator or CMA and are intentionally leaked,
+> as before. No remap exists at that point any more, so nothing else needs
+> to be undone. Add a comment explaining this.
 >
 
 Reviewed-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
@@ -96,14 +99,22 @@ Reviewed-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 > Marek Szyprowski, PhD
 > Samsung R&D Institute Poland
 > ---
->  kernel/dma/pool.c | 39 ++++++++++++++++++---------------------
->  1 file changed, 18 insertions(+), 21 deletions(-)
+> Changelog:
+>
+> v2:
+> - addressed more sashiko.dev pointed issues:
+>   https://sashiko.dev/#/patchset/20261109154403.384434-1-m.szyprowski%40samsung.com
+>
+> v1: https://lore.kernel.org/all/20261109154403.384434-1-m.szyprowski@samsung.com/
+> ---
+>  kernel/dma/pool.c | 48 +++++++++++++++++++++++++----------------------
+>  1 file changed, 26 insertions(+), 22 deletions(-)
 >
 > diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index 381b3cb28368..3c67728a2471 100644
+> index 381b3cb28368..5e8cf12e8222 100644
 > --- a/kernel/dma/pool.c
 > +++ b/kernel/dma/pool.c
-> @@ -106,6 +106,17 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
+> @@ -106,6 +106,22 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
 >  	if (!page)
 >  		goto out;
 >  
@@ -114,6 +125,11 @@ Reviewed-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 > +	if (dma_pool->cc_shared) {
 > +		ret = set_memory_decrypted((unsigned long)page_to_virt(page),
 > +					   1 << order);
+> +		/*
+> +		 * On failure the encryption state of the pages is unknown,
+> +		 * so they must not be returned to the page allocator or CMA.
+> +		 * Leak them intentionally.
+> +		 */
 > +		if (ret)
 > +			goto out;
 > +	}
@@ -121,12 +137,16 @@ Reviewed-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 >  	arch_dma_prep_coherent(page, pool_size);
 >  
 >  #ifdef CONFIG_DMA_DIRECT_REMAP
-> @@ -117,41 +128,27 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
+> @@ -116,42 +132,30 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
+>  
 >  	addr = dma_common_contiguous_remap(page, pool_size, prot,
 >  			__builtin_return_address(0));
->  	if (!addr)
+> -	if (!addr)
 > -		goto free_page;
+> +	if (!addr) {
+> +		ret = -ENOMEM;
 > +		goto encrypt_pages;
+> +	}
 >  #else
 >  	addr = page_to_virt(page);
 >  #endif
