@@ -1,94 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794477221;
-	b=xvTAkHd2gPfxIr5OtsvmTPOf301fRFYCbyQerIoF/6cHyxXsILpendSCcFKTDGKOdt0z
-	 JgeE2CMwPjJZq7lEjrHEQRhwNQvZpZ9d2wyd1jinNHGZu6vz0up06uU6s3/YGzLYlxc9r
-	 fydpG+Fq3vmXLwLKSr0VoWOjKjjGx1rbTcCt1qDLotIS4YWeCrVXS6CBfEXrrOJBN4ggz
-	 Lak/n7kGIpNpMy3RW8H7/tQJ4+KUZOxRHkr7L0Y+HPuzgg+tbNNSK5RnVg6ljknqGwB/l
-	 1QTvamnXrA5EBAU1HDrZs7CKWz6SLdPI742omp0vZCEJyNyt0tuCeGAe2ELwdxC1eHw==
+	t=1794478458;
+	b=nIRuzlpw4BrRY1S6c29Eis3S85DGz5rizDImSL9zIOd6XC5J0UVAXi+gGt5FMgBIzohJ
+	 sv7MDentg+1DK3ObCLZjuB4tIQbmwxZt6hRlSZ9SFoSz6FfXuI08U0XxW+5tcF0DF9ien
+	 t0XJ6cU+oq2brjLF0q/L59pTvx5QdN0tXwp91DCnUhRbHSD/br0sJ41pfrba4/2jWl2D0
+	 fh/fuSqB42+e+YdBKJuhuAwafWiHgo17OIj0P9OAY4Qsi5G6hpmE22MiXJy5Zc2+nJ1Pl
+	 hVYGzGvnDHNNQc0fJ1MzBph4BuxoWi/Joxw4SnzuWpxuZQJt2K07p8bozNxV7Hoeysg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794477221;
-	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
-	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 X-Received:Received:Message-ID:Date:MIME-Version:User-Agent:Subject:
-	 To:Cc:References:From:In-Reply-To:X-Mimecast-Spam-Score:
-	 X-Mimecast-MFC-PROC-ID:X-Mimecast-Originator:Content-Language:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=k03Ntp2ry5pgO/TcJOAttfz0cIyCVzxqYcnTvskPTaI=;
-	b=sUne8Of4NdWnvZiPRX0lQxBaL17fL5PrGQsuGkI8NNMEhpxNSKCUXZmCNcs41jw4U3p3
-	 HuY70hr5bXLwRoQigPqLs/iBRvKfGdXEXN21yzvLTRZwbgKMl+9QShx4Tm3vu4of6HkEX
-	 0XeS5h6YDkYSU+TaY1BKJbUMmA8jaISxLS73gcvL988r4T5cxPk3aOPUH7Iz4gW+wwWFB
-	 8W1IYUYwH9OBGHXAMrmb0GN0F410dG/o86xcsSWnYfgJom8hcXYdC1FrXRoNIBgqwJ0nI
-	 vHEwjN2j5s1EpBnFa3a9AD2d5ImH1oDkGkvn6ajFPBSIGS5MHOtB4occM9rhNd8Agqw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794478458;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=Y6qGWFGnpPL1ZkxmjT2jfKkaXhHx34ppHOpZ4kDJJ7I=;
+	b=IKgTXIVCSeBxqpi3sM+YwnN4XPuYdR/DLugkpU9gooytPHk9Lx9T739pH6dCin8vnAtw
+	 2zNq9+iLXnq8yTWqMqLYq7kojUEhAPmDkE2Txbh5PmoIJyJOB4JMW5csPWD2/FwWYwt47
+	 oLxzT7mx9oKWRNXtrFnle7+eHYrHH5X8oVBmiss7kOS7Ka5b/CeNq/ZfmqDzVbDIvLMVG
+	 ruwKZC+zHnXuqWm/oG1HlQSARd+dck96sK/uMqJ/HaoQBgS7IFRdaAYPzRjUQ9vPgUimE
+	 IyPSlore5k5FbjquXoN3VC5SLJp5UhTyKqxsc74PkOB6XYn3lnfH4R2BcA4fTwFbwsw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=redhat.com;
-	spf=pass smtp.mailfrom=redhat.com;
-	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=e8TEnGOQ;
-	arc=none smtp.remote-ip=170.10.133.124
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MBTA1Nam;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85FA8606A31C
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 09:53:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 85FA8606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32BE4606A323;
+	Thu, 12 Nov 2026 10:14:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=e8TEnGOQ
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1794477219;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=k03Ntp2ry5pgO/TcJOAttfz0cIyCVzxqYcnTvskPTaI=;
-	b=e8TEnGOQEmhVgJAIPOFGTYYc+FG8FmaGO2H4AiiY+FlbuYlL0L0R+XJYSh9ajncJnnyVk9
-	+s1S+MApXZq3B00nEUGgJnnpb2t42WXtoU3Qb9jNmzXPVFqe3fzGsLwx6w9jzvczpJTL2+
-	CtbgA4OPv80XkRFX1hrFRUuQZBPikm0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-614-06q-xlPuPemXShKJcVP6pQ-1; Thu, 12 Nov 2026 04:53:37 -0500
-X-MC-Unique: 06q-xlPuPemXShKJcVP6pQ-1
-X-Mimecast-MFC-AGG-ID: 06q-xlPuPemXShKJcVP6pQ_1794477216
-Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-4b64722b5e6so44985765e9.2
-        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 01:53:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794477216; x=1795082016;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=k03Ntp2ry5pgO/TcJOAttfz0cIyCVzxqYcnTvskPTaI=;
-        b=awkDANDL7YXY54cXsJzDlsd3M1DMKN0hvzIonBD9sD/ay6j0+SAyvKO/63N9rnns9J
-         WpbZaSbV9qvb7HBJ0IRrLexz7Y2DHGOcJ1DF5mvxc2wuVoDpaCVJxTZarP4xPMV7iFCE
-         ZrxWrg3DRnM54Y8OAOyuPAI/tBmi6kpisWISyI6Euo6aBmFo9taZQt2Lf4++CdzxUHGc
-         HnpzhZ1YplEQejE9fsRebwbIVzOxJ0+JjC3Mp49FGcbsJ1Bqk9U7AKhK5OO4/DzUMb7S
-         CzfDaNKasLJJjkElPsYRtldtXXHvmexkYAh7AC8ZvdR7wO8abpiJV5jOZw9HdyROiTxM
-         D+Jg==
-X-Forwarded-Encrypted: i=1; AL+hErHMUhwA5ahWPov701y8k4ZLC6cdVLuC6zb7upDl99z4fRAMZWLB7Wp0iH6PyEcmA6iFxJuVlg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9dkAzkDwDD5gcb/MunBSilaYMRlfPVK8sKwxy45yUE218Yftiw
-	K40u6kTB665PKga/KSjKlDh94Zirg1kJ6yXJ9fjn9nuCQbgYEtKlXsoxY8xTFz3qpt+phNWEqMF
-	tRgnJ6GY5xK2WlNyFXYTcGV1xbrxHJQrYD4NduEQI2Sq1IEMfhvyGo+xq
-X-Gm-Gg: AYBFou0Y+2RgDYeZTdCwHOVLpeigcSE5UKD+iwIqMuK707KhD6/Q6YpYJCuhiiMZXUx
-	qmdgV34AbzuOOacA3Nm7PjX3tATqzhbxMLZqBqDOn/KsCGoG/zYDZQWfG/tE7xHJz7R0fW3l1TX
-	H3O0uRfp+l0WFlNpOumsleQXmR/Q0iMcrWrELfBjtp5VIMvh7QCq2RyJBopqpbOtPJm908qVN8z
-	Ay1ukP9mZ++46fhJXbkoPfYlwakJqueDc6S4gYgJfkN2JkDIbANlFXOKMdpyHWOQ9hhwK1aLLy/
-	P7OzAX8oHnBVhskLQo4K/OSmWYXrsskBQbgwEFZdViErUhFV4BoZuiRIzXbnzlbMyVwBuvRNpny
-	4kCTDq1MZt7fdyoi+LXRZu1p2rlbpyRrIBrjYDo6TtTIzuJdqZUHre8bBCQyTbx8S2Q2/ip4EWG
-	igeW2L7mCJjKfm2VHYOxuI+5Kf/wgVNMe0RabJm8Zj2lUt
-X-Received: by 2002:a05:600c:e554:b0:4bb:534b:ada4 with SMTP id 5b1f17b1804b1-4bb534badf0mr2171825e9.33.1794477216201;
-        Thu, 12 Nov 2026 01:53:36 -0800 (PST)
-X-Received: by 2002:a05:600c:e554:b0:4bb:534b:ada4 with SMTP id 5b1f17b1804b1-4bb534badf0mr2171565e9.33.1794477215780;
-        Thu, 12 Nov 2026 01:53:35 -0800 (PST)
-Received: from [192.168.88.30] (ip231-128-192-82.pool-bba.aruba.it. [82.192.128.231])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e29d24dsm58717545e9.11.2026.11.12.01.53.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Nov 2026 01:53:35 -0800 (PST)
-Message-ID: <c83426a5-d21c-4f0d-b13e-099b6f96df6f@redhat.com>
-Date: Thu, 12 Nov 2026 10:53:34 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=MBTA1Nam
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EF6C1F00A05;
+	Thu, 12 Nov 2026 10:14:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794478458;
+	bh=Y6qGWFGnpPL1ZkxmjT2jfKkaXhHx34ppHOpZ4kDJJ7I=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=MBTA1NamdzwTkZFr1duA2LSuyBzBxb6sNOwn0iO8KEGEo5pBXxgtCA30N+7GE/2Pw
+	 GLLvMwMZMI+da7JzcTnuS0bMCdJanR2u9J/lPT9ckfrvKZNg8LhcDu8V7C+TbIeSjw
+	 8yAMG4KCQ37LswDNHi5a/WIuQLaVB3XmEBALQQYzAaV+Q8iEdtJJ3Dxcj6qOxTLYnK
+	 jVkJEIC1HFd3EBLbKlThHyGFKsjs0LGuM/niOEOMAHspsHAU9Gpim1bszdlXVU+ehU
+	 fummkjIScD+yhHq9nloKuZ6lIpGJGM30bseMr702s+Ru+2cT98q/Bl763g0e0qb8DX
+	 66KW6Lsjq8WcA==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Kohei Enju <enju.kohei@fujitsu.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Steven Price <steven.price@arm.com>,
+	Suzuki K Poulose <Suzuki.Poulose@arm.com>,
+	Jiri Pirko <jiri@resnulli.us>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Petr Tesarik <ptesarik@suse.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	"Christophe Leroy (CS GROUP)" <chleroy@kernel.org>,
+	"Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Jiaxun Yang <jiaxun.yang@flygoat.com>,
+	Paul Walmsley <pjw@kernel.org>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	linux-arm-kernel@lists.infradead.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+	x86@kernel.org
+Subject: Re: [PATCH v6 6/8] dma: swiotlb: Centralize memory-encryption pool
+ sizing
+In-Reply-To: <avRKiCBs81XSYMqW@FCCLS0092175.localdomain>
+References: <20260924060756.1325156-7-aneesh.kumar@kernel.org>
+ <asVs3doaJ4WrT3M2@willie-the-truck> <asYZFXGyafRjjBS0@arm.com>
+ <asYiOgskwi8JYLe_@willie-the-truck> <yq5awlrt3dwo.fsf@kernel.org>
+ <yq5av77c92oo.fsf@kernel.org> <aseRzPshcoys7AJS@arm.com>
+ <yq5ao6d48dqr.fsf@kernel.org> <auR0fT1yrKQ9wbm8@FCCLS0092175.localdomain>
+ <yq5a8q3d9oe6.fsf@kernel.org> <avRKiCBs81XSYMqW@FCCLS0092175.localdomain>
+Date: Thu, 12 Nov 2026 15:43:59 +0530
+Message-ID: <yq5a33t6qrvc.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -98,47 +114,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 04/11] dma-contiguous: pass the NUMA node to
- dma_alloc_contiguous()
-To: Jakub Kicinski <kuba@kernel.org>, robin.murphy@arm.com,
- m.szyprowski@samsung.com
-Cc: netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- will@kernel.org, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-References: <20261106184433.761422-1-kuba@kernel.org>
- <20261106184433.761422-5-kuba@kernel.org>
-From: Paolo Abeni <pabeni@redhat.com>
-In-Reply-To: <20261106184433.761422-5-kuba@kernel.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: AxkYoAE3IMjd2MrFh5liCZ0mEIlgfgAvdQSd_lUx4FM_1794477216
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 11/6/26 19:44, Jakub Kicinski wrote:
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -642,6 +642,13 @@ EXPORT_SYMBOL_GPL(dma_get_required_mask);
->    * Same as dma_alloc_attrs() but places the memory on @node rather than on the
->    * node of @dev. Like with kmalloc_node() the node is only a preference,
->    * the page allocator may fall back to other nodes if @node is out of memory.
-> + * The contiguous memory allocator (CMA) does not: only the CMA area of @node
-> + * and the global CMA area are tried. The allocation may fail even though the
-> + * CMA area of another node, e.g. that of @dev, still has free space.
-> + *
-> + * Allocations served from per-device or global coherent pools, per-device CMA
-> + * areas, restricted or atomic pools, arch_dma_alloc() or dma_map_ops
-> + * implementations do not take @node into account.
-I'm possibly over-thinking here, but AFAICS there are a bunch of dma_map_ops that
-are using dev_to_node():
+Kohei Enju <enju.kohei@fujitsu.com> writes:
 
-dma_iommu_alloc_coherent() in arch/powerpc/kernel/dma-iommu.c
-vio_dma_iommu_alloc_coherent() in arch/powerpc/platforms/pseries/vio.c
-gart_alloc_coherent() in arch/x86/kernel/amd_gart_64.c
+> Hi Aneesh,
+>
+> On 11/01 09:47, Aneesh Kumar K.V wrote:
+> [...]
+>> >
+>> > Hi Aneesh,
+>> >
 
-With this series they will stop using the driver provided numa node.
-Probably not a blocker but possibly worth to call out?
+ [ ... 35 lines skipped ... ] 
 
-/P
+> Overall, I would prefer the dynamic sizing approach. However, I believe
+> the initial pool size still matters.
+>
+> Also, as Catalin pointed out earlier in the following message:
+>
+>     https://lore.kernel.org/all/ann6noRzoPLL9kDY@arm.com/
+>
+> the arm64 adjustment also reduces the target size used for dynamic
+> pool allocation, since both the initial pool and dynamic allocation
+> currently use default_nslabs.
+>
+> I am testing the patch below to decouple the initial pool size from the
+> dynamic allocation target. It adds swiotlb_adjust_initial_size() for
+> callers that only want to reduce the initial allocation, while keeping
+> the existing swiotlb_adjust_size() semantics for callers that want to
+> adjust both sizes.
+>
 
+Should we instead update the logic so that reducing the swiotlb size
+leaves the dynamic allocation size unchanged, while increasing it also
+bumps the dynamic allocation size?
+
+-aneesh
