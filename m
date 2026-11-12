@@ -1,110 +1,134 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794492265;
-	b=UthPNyNyMX+N7GjhekZxrbCdCS7bEDcNtj7laGCr0aH+sXRcBMZd4FEsLrsubWviBgMs
-	 tI1EfviGaMFvQkk7y9rLyn9IGYxm4RLYlwL6e7oqZQuBScrIw4c5Z1vzTMXuoeEWdf8FE
-	 sFFS8aRkq6URL7V8I6lQs6TlDxO6vEf/NZAKSz93lmUm05GkFxvh8gYmqNiRUbYUHGPNM
-	 X3INTeGg690HBdGmb0zJ6vhBoweO2ZGkL7hfJ1JLaWL4ByOXeO+5rWcvaMaCB6Uthnjuu
-	 mk3Cy0s4dPzirxnKGwaVCpd6RtM/4tOa/xZM7u/eNOehGmyrDZP9kSOTPGuTeNxMBHA==
+	t=1794492369;
+	b=rT9oqFo9745IrowXgbY4f7NqPFDUlsosXxlq0EpiIPlNqTFjBwQQxqfHA1veKF+M9g/o
+	 xivNQyp+S4PTR54Fw/ARBVlKk9tKq5UxmBFA/BMYj5fNV4WC5GIR9PcsZK66gDHbgtiHM
+	 fO52p+FKiLl2VATz/IAILg/Ok26wWGSuOZD+d2XQKE1VrQ/ZIShKLlVwGkKEbWBeA5sKx
+	 Ro0iIc4fy1LP+fV5JaULPsKa5HPN4dGu0EGa3RevdGvVfvtJytinh4YGhCJrXmiiTVtWn
+	 2gSCxe9Y7oKYbXPAj3NWUAwNHN193d5v9VjwHdRgaxHR+oepao8PG9FZbZ834Tv7POQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794492265;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
-	 X-Received:X-Received:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-GUID:
-	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
-	 X-Proofpoint-ORIG-GUID:X-Authority-Analysis:
-	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
-	bh=B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=;
-	b=plBT0ZOCzKdZUcVMTHVQXkymIY+On6lIlJNsq9PVXVDfBKs2p9nSAf/+Ty9Lcok9DNox
-	 /03ZBQeNuQeX3RXIpJof0nYOiiMrKsFwMEycEB9ZLr1qgGBOB6pJ+Knps73sQtV774ZIE
-	 onmz4YiJJ9al2uHThFWdXRw5xMNLI2ux9sBFnGmK+zgdeGGLshWoXLgNCKptg+2viz8O5
-	 g03OUAUX63htaVQyHQC9B9wSzhboiphx6+Skkg23F5viXhROIKs9GkFwl3Kcik0XJ8I6I
-	 Uxda0NNySMNhUe7no5P2tzkT2Yzgo9kkLfHEzeW5KIqj139Ip1trmvzl+BqOrMUerxg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794492369;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
+	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Spam-Flag:X-Spam-Level:X-Spamd-Result:X-Spam-Score;
+	bh=d26nC76YLz1Hx0CSfgosaWHEU4xoea2lRNFaxDZwsTA=;
+	b=q9uJDqe8ZkysfhA92PCBvXvo5F4hdL0V2KgPYib36TBgZfL4sjku0VHmBExHSp3KMsiL
+	 Q1Dqk5r5E/T8Bwg54qDDScJouT78GwXwOwkHpJALmJgrNcdXQozP4XYw/2Yptx/57Jh8Y
+	 vp2d7EkuT8sCl46m//G/dtee90wczEEfgW++0cU6gGUUqtYdzJdcrRNzJZ14j4SXVMaGA
+	 LDUSVgmiE+pGXGKjcXP7hDzZdSPOJ1M2CXB7vWM6nCiqgsWndEYhwCAt6JYj9VTt6NJkn
+	 NzfATAOiUKIKDnSXBd3ibfq2LQUYGPvJkmR8ilFBs3d4WLk1td/cVAi4GHrxs58srcQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b="Pt8mT/O3";
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Qlc4RYEy;
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	dmarc=pass header.from=suse.de;
+	spf=pass smtp.mailfrom=suse.de;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=MePUV0PJ;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tYPab8lG;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=MePUV0PJ;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tYPab8lG;
+	arc=none smtp.remote-ip=195.135.223.130
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F3DF606AE82
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 14:04:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0F3DF606AE82
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70DDD606C4BF;
+	Thu, 12 Nov 2026 14:06:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 70DDD606C4BF
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Pt8mT/O3;
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Qlc4RYEy
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AC9Dv9k480051
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 14:04:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=; b=Pt8mT/O3E+MdfLZ5
-	irvIgS8uLB5HnZNSkjqw9uCkzssqONuDPOuy5kilOtAmiJYPSUIGSxF9D13buTDW
-	+aiq1LxgbwgdvUSAxVbw1ePXNqBwO48/h8xDkJyoNw2v5Sye+5IkGZ5mYZBhXSek
-	9IbJYB9tIVir/trXeHtT9QBeG7HdB6KhiLrlaeALCLDPAhar3kGWHDWv5bKoDo3y
-	b1Dsb+rh2gEqjZQn5RcwKEHhw1XJjnEJ/9RV0rfBb56LC0GBgri8dlL94paAxjrr
-	w1g25DSeUfIxH8cy9wY4Y9eKbEvUgEKPcm3YmIbx4AGfryQISQPQZM7vH49th1Rc
-	Ed87YA==
-Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hwan4ry8v-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 14:04:22 +0000 (GMT)
-Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-341eff9e381so8127545eec.1
-        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 06:04:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1794492262; x=1795097062; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=;
-        b=Qlc4RYEyJNPlJ9iyY4c++kypodxPUd4Tu2CSdiFUZfP6xYagXAvOKvSK7mOjFpnItX
-         MfzxA6IQNUI6cBb0MQCZiT+JfppyUlrkW+6ZyyZpgnMiWpVj+xF8/1wWVIumF5zgQkXd
-         rJFpJszFwsTKnW8ZFf8Jm7zAy34SG+Zms8RZwKIFuPEmFp+owEph6tK0anVoL7nLaehV
-         U/q+OtG1UiK2LLAoc88vv+DrFf5UHSbKsV7C94TeQWyaJ2YffR2oTZQ97r15unFclp6t
-         VzuXuNico2A7iwU3ZRKjQIr5ik8sSPAHQW3tvLhum8WZ8aTYlkrWqX+kG7V+Z9gSsHcr
-         py1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794492262; x=1795097062;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=;
-        b=FOfxEy46jGHo0+uAwWTXN+mP2YFwE2diIpgRnFKkOv9xD905uCzlDVm5+3+9yUyfNc
-         WnZKWZo/UFRrOYSFv18bCu4cqFK655+cDRwk7H1SqHXey4spysM1Q7fIROva9q4SVcg/
-         BjDJY4OzJ+y8W1KEifhjdpaMlnEhnxKD1VLNiNI0gwzSO9iuDEgEq1vuLw/mSB/ZkJjj
-         lAIUPYzMalw0yKNYbEY7OOFqbxCCoMILiRzaGe9D+Cx19nJWaOIwTaIQ/TOgnbf3u+a3
-         7N6OinNS30KH0oZ1Y8v1UBv2vWJLW2gv4/rHqEM3gRZAva4MIvWBYVRjKK8hL80qkUoM
-         8v7w==
-X-Gm-Message-State: APuU4Z8mROh541JIRPK4Qnov2AivQvuDBh1sT7z5QoJ0gxUY+IGmH7nk
-	CFtsC+vwfEzRStmWb5McJSq5OBOyPg1X+dMqmyCW6JH7wgPexQ7H68tquBA82ezKIpFtUqY0A6J
-	CteL+R7SntC7vEhtqgpITzHtf5tHe8kjFtYXDX4QmmFdPfM4HJ9GA31hUrg==
-X-Gm-Gg: AYBFou0+NZ4qF4q5B9lf21+SxMyPsrcYIUoZ+sb0WJyfkSV/rq8EyI/m2EfAPgIFTZV
-	Y/I1U+2H3wRxcwDcX+9kLwSIUUkm17vduZIJTnpks0TfkYZuegDAE+FUmFlHcSbu2dmbxYMO8Ep
-	iVMi4A+FKwhs1vXCm9HPCYgMZWTlL0uT2S9nZWA8t1vSCaDsTJRQq01SYauBTpTMzFUxB0XI8fI
-	qe047OLSmFXOQ35dQX+Vh7dL/RaFigLQXoaUahcvEyHdgx+GJqk9iSzXz63M+9QjN/G1qyGdCi1
-	5ah9cWXbiQMkXggL6Mdmc7hD8Obggl4eSG1IhtPZGsjbxvObWTdVMtF6IuVZPkYWOgGPIPV0paz
-	62b/Yww7eFXF2S3lnkFk3StGaGKY4ysYtosLIM6sb1MBqIsfCFuw58HQJKxA56vMoVnDjjpMilV
-	V2USYH
-X-Received: by 2002:a05:7022:28c:b0:1b3:bae1:f5f3 with SMTP id a92af1059eb24-1b3c023c99dmr4854451c88.6.1794492261720;
-        Thu, 12 Nov 2026 06:04:21 -0800 (PST)
-X-Received: by 2002:a05:7022:28c:b0:1b3:bae1:f5f3 with SMTP id a92af1059eb24-1b3c023c99dmr4854412c88.6.1794492260879;
-        Thu, 12 Nov 2026 06:04:20 -0800 (PST)
-Received: from [10.206.104.93] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5029ecb1bsm14027c88.1.2026.11.12.06.04.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Nov 2026 06:04:20 -0800 (PST)
-Message-ID: <97c4eabf-16b0-4e3f-8aab-1c56912c27d4@oss.qualcomm.com>
-Date: Thu, 12 Nov 2026 19:34:11 +0530
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=MePUV0PJ;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tYPab8lG;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=MePUV0PJ;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tYPab8lG
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 4F54321E32;
+	Thu, 12 Nov 2026 14:06:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794492366; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=d26nC76YLz1Hx0CSfgosaWHEU4xoea2lRNFaxDZwsTA=;
+	b=MePUV0PJPVg6e87V3rI/oBHU/WVNpeN9fAmgxCGLxENx35oKrb0iEmR3T18rtLtVz1Vf+O
+	1G6UmmBLJXvaA1WYhfqBFsQOBOJ7IA2iBvpEpvVmXn/Cmsa4Thr80o0Lq+TtDYhKs5Kyab
+	qpmF+O8fmKXKFCYmnkRlnrBsSmTsSBg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794492366;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=d26nC76YLz1Hx0CSfgosaWHEU4xoea2lRNFaxDZwsTA=;
+	b=tYPab8lGc7bR6d9kEE9FN38yDhbA+TLnfbS8qBFT3Rs/vxGIU/l099dpGQkmH3U6mcvPbG
+	SX8CzvRsGMGv8qBw==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794492366; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=d26nC76YLz1Hx0CSfgosaWHEU4xoea2lRNFaxDZwsTA=;
+	b=MePUV0PJPVg6e87V3rI/oBHU/WVNpeN9fAmgxCGLxENx35oKrb0iEmR3T18rtLtVz1Vf+O
+	1G6UmmBLJXvaA1WYhfqBFsQOBOJ7IA2iBvpEpvVmXn/Cmsa4Thr80o0Lq+TtDYhKs5Kyab
+	qpmF+O8fmKXKFCYmnkRlnrBsSmTsSBg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794492366;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=d26nC76YLz1Hx0CSfgosaWHEU4xoea2lRNFaxDZwsTA=;
+	b=tYPab8lGc7bR6d9kEE9FN38yDhbA+TLnfbS8qBFT3Rs/vxGIU/l099dpGQkmH3U6mcvPbG
+	SX8CzvRsGMGv8qBw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8DBA813432;
+	Thu, 12 Nov 2026 14:06:02 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id RScNEcrH9WqvKgAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 14:06:02 +0000
+Date: Thu, 12 Nov 2026 14:06:00 +0000
+From: Pedro Falcato <pfalcato@suse.de>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, 
+	Jan Kara <jack@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, 
+	Zi Yan <ziy@nvidia.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
+	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
+	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, 
+	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
+	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
+	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
+	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, 
+	Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
+	John Hubbard <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
+	Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
+	iommu@lists.linux.dev, netdev@vger.kernel.org, Chris Mason <mason@kernel.org>, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH v3 1/9] mm: limit pagecache folio refcount when mapping
+ pages
+Message-ID: <avXGtysfRk3uQpNu@pedro-suse.tail5790ac.ts.net>
+References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
+ <20261110-refcount_overflow_stable-v3-1-318625d63a98@kernel.org>
+ <avW0HGjF6wuqn12T@pedro-suse.tail5790ac.ts.net>
+ <86206f64-fefa-4a13-95bc-eddf756eecc8@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -114,93 +138,154 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/5] iommu/of: Require reg for iommu-addresses
-To: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>,
-        Vasant Hegde <vasant.hegde@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>,
-        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
-        Eric Auger <eric.auger@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Srinath Mannam <srinath.mannam@broadcom.com>,
-        Oza Pawandeep <quic_poza@quicinc.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alex Williamson <alex@shazbot.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux.dev, devicetree@vger.kernel.org,
-        kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-media@vger.kernel.org,
-        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
- <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
- <3713bf13-cec6-4b02-a29b-8f76070f03b3@linaro.org>
-Content-Language: en-US
-From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
-In-Reply-To: <3713bf13-cec6-4b02-a29b-8f76070f03b3@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: F3Hn31ziKMzC6n0VPkIwae8roqXJFcC_
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEyMDA1NSBTYWx0ZWRfXwwf6eo8eEcyj
- WDohrio4h6Zf20qsunjRvytaMVa8J0UEGN4GpBoPzeFfC6EZh0KYHyGsB3ILhstxz+15jAwv4uT
- nBzNzLZp7907Ssyk5Nliv9SKDrC6AYY=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEyMDA1NSBTYWx0ZWRfX4rPSk1L6OWRT
- nL4exUuum3sGjpXXxmoiHt1zvvx08J1ArQpjUXZ5N0YpCzI88ard9e9uzgbrdEdoGGXeOxuPw2T
- SawYBgScrjAQGjPWzz1XTnB5d3t1u0Q17ZuNp/tVDeFhGzstCP6auM1CzJvRyqJbUo5mOQF8hXw
- KmewBv3Goa994EJ9EySJSwoWzovEJfwHfpwV262TlThF4KxWvm1Fw361fjfd7d3HcMA/T3mcwVt
- 9Oz9W4S87s0Qf7HVL14WCOaOlcv17IuTs9DOpkgxurflTdzJRNMT0Tl1q5XiwJUfBAxsXM2pqNf
- cALLK/kEAt7uqidDPtfg4yyNX5Sfr/LQxHUCYmT6ulGFyVjg0dmMvDNhgkSD8XUsfVt3Not/bpD
- Rz4H0RsQ3ABS/hsrK2RmmAdi7S1CQQV6SeLMDz5j6Xhd4d3uB1eTiWkhUWO16JvJQkFKG0fBeNe
- +1a+5m9YJpQDJOtA82A==
-X-Proofpoint-ORIG-GUID: F3Hn31ziKMzC6n0VPkIwae8roqXJFcC_
-X-Authority-Analysis: v=2.4 cv=Gd+CDgXL c=1 sm=1 tr=0 ts=6af5c766 cx=c_pps
- a=cFYjgdjTJScbgFmBucgdfQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
- a=VwQbUJbxAAAA:8 a=DrYjplHx1sOd6opfFz8A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=scEy_gLbYbu1JhEsrz4S:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-12_01,2026-11-11_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 lowpriorityscore=0 priorityscore=1501 spamscore=0 clxscore=1015
- malwarescore=0 phishscore=0 suspectscore=0 impostorscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611120055
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <86206f64-fefa-4a13-95bc-eddf756eecc8@kernel.org>
+X-Spam-Flag: NO
+X-Spam-Level: 
+X-Spamd-Result: default: False [-11.80 / 50.00];
+	SUSE_INTERNAL_BYPASS(-9.00)[];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	ARC_NA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
+	R_RATELIMIT(0.00)[to_ip_from(RLru1qh6mb4sjaccpm4fphkxao)];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCVD_TLS_ALL(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[63];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:email]
+X-Spam-Score: -11.80
 
-
-On 11/11/2026 5:32 PM, Bryan O'Donoghue wrote:
-> On 06/11/2026 17:14, Vikash Garodia wrote:
->> @@ -257,6 +252,9 @@ void of_iommu_get_resv_regions(struct device *dev, 
->> struct list_head *list)
->>                   }
->>                   type = iommu_resv_region_get_type(dev, &phys, iova, 
->> length);
->> +                if (type != IOMMU_RESV_DIRECT)
->> +                    continue;
->> +
+On Thu, Nov 12, 2026 at 02:16:33PM +0100, David Hildenbrand (Arm) wrote:
+> > Mostly LGTM, with some comments:
+> > 
+> > Reviewed-by: Pedro Falcato <pfalcato@suse.de>
 > 
-> This change is not about requiring a reg though, which is why it should 
-> be a standalone patch with its own justifications.
+> Thanks for the review, Pedro!
 > 
-
-This is about reg, which determines the direct mapping, hence the code 
-is very much applicable to this patch. Please refer this code [1]
-
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/iommu/of_iommu.c#n223
-
-Regards,
-Vikash
-
-> Basically the patch should state why a mismatch is dropped instead of 
-> being reserved.
+> > 
+> >> ---
+> >>  include/linux/mm.h | 35 +++++++++++++++++++++++++++++++----
+> >>  mm/filemap.c       |  6 ++++++
+> >>  mm/huge_memory.c   | 29 +++++++++++++++++++++++++++--
+> >>  mm/memory.c        | 33 +++++++++++++++++++++++++++++----
+> >>  mm/migrate.c       | 11 +++++++++++
+> >>  mm/userfaultfd.c   |  4 ++++
+> >>  mm/util.c          | 18 ++++++++++++++++++
+> >>  7 files changed, 126 insertions(+), 10 deletions(-)
+> >>
+> >> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> >> index 4608540e40d46..439cfe446cea4 100644
+> >> --- a/mm/huge_memory.c
+> >> +++ b/mm/huge_memory.c
+> >> @@ -1626,6 +1626,7 @@ static vm_fault_t insert_pmd(struct vm_area_struct *vma, unsigned long addr,
+> >>  {
+> >>  	struct mm_struct *mm = vma->vm_mm;
+> >>  	pgtable_t pgtable = NULL;
+> >> +	vm_fault_t ret = VM_FAULT_NOPAGE;
+> >>  	spinlock_t *ptl;
+> >>  	pmd_t entry;
+> >>  
+> >> @@ -1662,6 +1663,10 @@ static vm_fault_t insert_pmd(struct vm_area_struct *vma, unsigned long addr,
+> >>  		if (is_huge_zero_folio(fop.folio)) {
+> >>  			entry = pmd_mkspecial(entry);
+> >>  		} else {
+> >> +			if (unlikely(folio_ref_count_over_limit(fop.folio))) {
+> >> +				ret = VM_FAULT_SIGBUS;
+> >> +				goto out_unlock;
+> >> +			}
+> >>  			folio_get(fop.folio);
+> > 
+> > I see you use this pattern often. Would it make sense to have a
+> > bool folio_get_unless_overflow()?
 > 
-> ---
-> bod
+> I commented somewhere (in v2 I think) that I played with using
+> folio_get_checked() from #2, but didn't quite like it so I discarded it as
+> 
+> (a) it cannot be used everywhere here, as I'd need more functions to add
+> multiple references. next_uptodate_folio() also could use it as I would need yet
+> another temporary helper for a try_get().
+> 
+> (b) these changes here are going to get reverted fairly soon once I change the
+> way how mappings are refcounted (which is, unfortunately, not suitable for
+> stable, otherwise I wouldn't be throwing in this temporary change in the first
+> place)
+> 
+> So everything that is expected to stay in later patches uses the proper helper.
 
+Alright.
+
+> 
+> [...]
+> 
+> >>  
+> >> +		if (unlikely(folio_ref_count_over_limit(folio))) {
+> >> +			/* Skip this PUD; it can be faulted in later. */
+> >> +			ret = (dst_vma->vm_flags & VM_MIXEDMAP) ? -ENOMEM : 0;
+> > 
+> > A comment as to what's going on here with VM_MIXEDMAP would be useful. I guess
+> > the idea is that faulting on a mixedmap later will not necessarily hand you the
+> > exact same page fault result?
+> 
+> I can throw in a comment, yes.
+> 
+> [...]
+> 
+> >> +bool __folio_ref_count_over_limit(unsigned int ref_count)
+> >> +{
+> >> +	if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
+> >> +		return true;
+> >> +	/* Background threads must not consume admin reserves. */
+> >> +	if (current->flags & PF_KTHREAD)
+> >> +		return true;
+> >> +	/* Neither must interrupt contexts on behalf of the interrupted task. */
+> >> +	if (!in_task())
+> >> +		return true;
+> >> +	/* Capability checks are not safe with IRQs disabled. */
+> >> +	if (irqs_disabled())
+> >> +		return true;
+> >> +	/* Use the task's credentials, which filesystem overrides cannot change. */
+> >> +	return !has_capability_noaudit(current, CAP_SYS_RESOURCE);
+> >> +}
+> > 
+> > In case this function ever returns over limit, we probably want to log this
+> > in the kernel log. If this function gets the folio you could even print
+> > the problematic file offset/inode/filesystem/etc. Ratelimited of course.
+> 
+> You mean, if this function returns "true", right? Is printing always fine?
+> (e.g., irqs disabled?)
+
+Yes. As far as I know, it's always fine, even under NMI. But definitely fine
+with IRQs disabled.
+
+> 
+> > 
+> >> +EXPORT_SYMBOL_GPL(__folio_ref_count_over_limit);
+> > 
+> > I'm fairly sure this will break the build for a number of non-GPL drivers
+> > when calling folio_get() with CONFIG_DEBUG_VM=y.
+> 
+> You mean, breaking OOT drivers, right? I can switch to EXPORT_SYMBOL if that's a
+> concern.
+
+I had the impression we had some stuff in-tree that isn't marked as GPL. But a quick
+grep shows that everything is either GPL or dual-licensed.
+
+In any case, yes, this will quite possibly break debug builds for people OOT.
+I think folio_get() might be a bit too ubiquitous to do this to.
+
+-- 
+Pedro
