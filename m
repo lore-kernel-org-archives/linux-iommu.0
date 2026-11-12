@@ -1,118 +1,71 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.6
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794501115;
-	b=qw1A9x/KTgv9hloavVDiO8/y3D9NFilWGgbrG1lj/KJN787v1Ramqyz1mzooQygRWahs
-	 bKFg4kc4dDffivYjRvv2mEuwu2aHOsxk1Ca0WW5m/p8Q788pbM68ZDvJeFgfxoEF32axk
-	 SLTzHCt1sAxOvF/5gzGE+oCsOA73I/lfgHLckElTPLmH7vxn2LUxXyViUIz8fxDsN4Hpy
-	 4R2zX8rYQc3+COfeXyGv1Af8DbubJKyvNtw2P36KDlDZ/0XVudWEgpiEHbkeS81tBx95i
-	 uVwu27MS/J/M3aN/Pz8LswMTTOmqDo29UJKc/t65EyyapBO72qHvSxt+Q2bFFsZJqZg==
+	t=1794501212;
+	b=omRDD9awWhLkcj0FoJgXh+H2akhBVpFCtUYzs5PW/wNnFDPdP9mJRZcQQ5drYBnG3OTL
+	 gjiRBOGNG4RZrrvHrrGASnP5qcfKra0/lTHoKIvp50TbBie4CnPrc/FYWwOmFWog/eUAF
+	 MlBPjAhLcnS8NDyDYyq+HhKJRSqGEJOL8rzQuRhRfy3GgsmQfcMWR4oaHVo0h8aKD71PR
+	 QxY7o2E8HB3blX8xtjqDQdGbJLNUORMuWPbI7jzp3tkzvfyXUJTyyhJ9Ql+EbG6Ux5HQd
+	 rcv6DTfJd9wBv/H7vHdrKlnsB1cjZHgdgYV22u8O+woDpLVRYh/2diRqKgZK7FwGGLg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794501115;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=MdDMpn1E237DWMEcWSJ+1x4vI1+JS6BzFl+hQXT8pFc=;
-	b=tMF2/kdfefv16M4pqZF/n/2YRtRL8WMpDP/1lx8O3/xsnNIC/Tw0qDs6lghRUFGDH/w/
-	 Jqj3yflgBsz6PmqrV8H5LImJWRGdKnY55c4essyZ7Fd/uRuvSmwVevdAArDndg8xsZZNZ
-	 VFNAr24nPFYKzWzeziK9RHurLjs0WMh9na3DLtHc5pXJgQ/rirM9GIodIXdh1vFyQS/ca
-	 Zo4ciP2C+/oxWo/3u5upHZg58Wb3PZFoqPkEs4l55zHES0E3/LDhnre4e+gnRoHQLJCFV
-	 dC+LqKKWpSrDC7Ei7NXkUxwz0RxF4/8CDNv7UGDHERihk7GySN4W4JU+OrZ8Droz2Jw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794501212;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:X-Zoho-Virus-Status:X-Zoho-AV-Stamp:
+	 X-ZohoMailClient;
+	bh=Q/dnwQIhA8Sqe3WS4uwxB+IGEIoincQaBjNIe4lg0SQ=;
+	b=J9DhSWwc6gTk5l2bAKFQZuMdkXQ9I5ePB9u8ZR8VjAwb9xOtTgSJnHOPQs+0jU/MScug
+	 rY/wN1ck9djXrwpE6KXdrb+cDKrmIvaEzJwkvTxk5kQlF6DkihjMc5eCLgIdxb+C4aFXy
+	 l8JcD1PnHWpgDUW+cxhObUpcB6j0n7dDCqBWPNK1XKILjVUGjGBFwaf5HoPzXc7NdrmX5
+	 nV4SJYwk69T02I1A+sEyoxvM5NhTAiHg3zfFvH01B+ba8RJm5kOwPr1UUIOgQr474P1cP
+	 9LU0wyWlqIL2mOmJ8i2plDzwNyuWK78QMgaJiKtULKeY6v/Vkqb8zV7CkZ8hlnnZK7w==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=lohlGJF0;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.52.6
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011006.outbound.protection.outlook.com [52.101.52.6])
+	dmarc=pass header.from=collabora.com;
+	spf=pass smtp.mailfrom=collabora.com;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=ip9ePaPo;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
+Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA4F5606A327
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 16:31:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DA4F5606A327
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E53F9606A893
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 16:33:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E53F9606A893
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=lohlGJF0
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bD5mXiKtK+RDImc5uiuPzv4JupOq9QIAJ2/++jUvTXTTKUHjNkN7A/OfspaP5xWnu3eFi8yUn5MSTgM0PTxf0kLxLDTQP8k0VHLFu2d/hrS0khhkO/0oEFGzLslRNbtGySlrXGqdPgu56n/cMR4NF1HNu399c7R5jBlZbeOYhaZYfamcKYXQ9LBkLNuuZRiaZaWyTWtBaCzd9/MhUmgvU450jX48YlfUX3e3Us2SgPSk8qyt3dRb49ELMLyTlQRG5fKEwLpF8W/XQpED5y0+1Ab5Guilba8PqTg07Zn7z1XBlTQWfvgvOkcGD2UA3zXWhL5FVJDi0UakSObGzM0OPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MdDMpn1E237DWMEcWSJ+1x4vI1+JS6BzFl+hQXT8pFc=;
- b=YM4eX6t+OQGd0wT+Ue1LMCvsD/tq6b3WYdhTTfRaSFykjxgSYgg8+/ZWiAxQoz77SWvERY60LZfmaRrP9Jzl3ZIislPLlUWUFmWCzJ18N4emSWSaGWkWlce+HZONb/mKRXJAVYMvx7OwnPsppdS5qZLR/GOpr81VvzSDBXq+JNuIC6uAiyvoS58b/QSNQpTGRUPWm24EJIYuf2Odd/uVPeqvv9jF+iNjXPLXSzA2wCdnocf7gnXDT9UzDmgUjNOgzzljbnKJy/SQ9WXFiUOIm0MrAdnyDloa09BwuOtjpnm3olptv9x1uY3IE3PSCj6FxNg2M3BgR/p8AMW2oytHIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MdDMpn1E237DWMEcWSJ+1x4vI1+JS6BzFl+hQXT8pFc=;
- b=lohlGJF0GtlI+2QR3tEh57/riOgWpTtMWYUYKyy1ItotCTGGCNwdv6X4O+5ZdOgoT07KaqJIwZjPIin/tBeAtmQBWdIjwO9EgPwS+INlfUXJe5UUxTaK6rAxj9omAnkopccRLOQ7CoLBfj9TYU7xC6B6TfWGekE/oJWEPF74atY=
-Received: from SJ0PR03CA0271.namprd03.prod.outlook.com (2603:10b6:a03:39e::6)
- by MN0PR12MB5930.namprd12.prod.outlook.com (2603:10b6:208:37d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Thu, 12 Nov
- 2026 16:31:46 +0000
-Received: from PH4PEPF0000B60E.namprd21.prod.outlook.com
- (2603:10b6:a03:39e:cafe::81) by SJ0PR03CA0271.outlook.office365.com
- (2603:10b6:a03:39e::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.8 via Frontend Transport; Thu, 12
- Nov 2026 16:31:46 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- PH4PEPF0000B60E.mail.protection.outlook.com (10.167.243.89) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.639.0 via Frontend Transport; Thu, 12 Nov 2026 16:31:45 +0000
-Received: from satlexmb10.amd.com (10.181.42.219) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Thu, 12 Nov
- 2026 10:31:45 -0600
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb10.amd.com
- (10.181.42.219) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Thu, 12 Nov
- 2026 10:31:38 -0600
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53 via Frontend
- Transport; Thu, 12 Nov 2026 10:31:30 -0600
-Date: Thu, 12 Nov 2026 16:31:27 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Lu Baolu
-	<baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse
-	<dwmw2@infradead.org>, Pranjal Shrivastava <praan@google.com>, Robin Murphy
-	<robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Alex Williamson
-	<alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <kvm@vger.kernel.org>, Pratyush Yadav
-	<pratyush@kernel.org>, Pasha Tatashin <pasha.tatashin@soleen.com>, "David
- Matlack" <dmatlack@google.com>, Andrew Morton <akpm@linux-foundation.org>,
-	Vipin Sharma <vipinsh@google.com>, Nicolin Chen <nicolinc@nvidia.com>, "John
- Starks" <dev@jstarks.net>
-Subject: Re: [PATCH v7 02/18] iommu/pages: Add APIs to
- preserve/unpreserve/restore iommu pages
-Message-ID: <wirs4vcszlt6wkw2wfauhjnxve4n5ivnnpkg35fqid34htepet@fn4opgt3lt2x>
-References: <20261110040828.1774343-1-skhawaja@google.com>
- <20261110040828.1774343-3-skhawaja@google.com>
+	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=ip9ePaPo
+ARC-Seal: i=1; a=rsa-sha256; t=1794501203; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=TyXFnpzt6dEn7SYZRYX9LBDwUMJG88UPvXAhu+jvP4b5K+gCdAr/syvn4RXC3C4jlxNzgPt48zf10avCykyl61Pxfg9VxRNQ9qW0Bhp8PlX7zaa3tPAEHg45ps2HKNFcHyqN8NcXOyuK76PvUxqT5CQ2QLRKVmxGIixgGRD3ALI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1794501203; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=Q/dnwQIhA8Sqe3WS4uwxB+IGEIoincQaBjNIe4lg0SQ=; 
+	b=FYeV0xsv23iGhQRJsEl6egozOrqON5Hs+1DEvzxrPFhE0giGXnyydeA+H4uvU0eP27XOGT9QjhmbodMjSZaGgahitwsGi/J7iN3CF6PvfQdf//EqijbNMCElZGOCzIe59VipzJNXeQfzDEdreDvSs/qwDNH7dmIkDvOX4k0qH0Q=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
+	dmarc=pass header.from=<sebastian.reichel@collabora.com>
+DKIM-Signature: a=rsa-sha256; b=ip9ePaPoVY3ZGfrjNpmVgomklprEC4o4roC1mcA+NBvqB1udzuz/z6o0nXkhFtHplLQBHB033UxNnzoW5Log1fF8+y8V/j1wVXq+/AIVeAFvYdFLTXmmmob7d6MYWDTgPMujwzN+ur/vT6ibOLa11Ofo9jehlWe9PDTFjwdTyxQ=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=Q/dnwQIhA8Sqe3WS4uwxB+IGEIoincQaBjNIe4lg0SQ=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zohomail.com with SMTPS id 1794501201770774.608247615585;
+	Thu, 12 Nov 2026 08:33:21 -0800 (PST)
+Received: by venus (Postfix, from userid 1000)
+	id EA777180570; Thu, 12 Nov 2026 17:33:16 +0100 (CET)
+Date: Thu, 12 Nov 2026 17:33:16 +0100
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: aiyengar1990@gmail.com
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Heiko Stuebner <heiko@sntech.de>, Niklas Cassel <cassel@kernel.org>, 
+	Pranjal Shrivastava <praan@google.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org, 
+	Shawn Lin <shawn.lin@rock-chips.com>, Simon Xue <xxm@rock-chips.com>, 
+	Finley Xiao <finley.xiao@rock-chips.com>
+Subject: Re: [PATCH v2 4/4] arm64: dts: rockchip: Add the reset of the RK3588
+ PCIe SMMU
+Message-ID: <avXqMZkpY7d0sbfR@venus>
+References: <20261112-smmu-v3-pcie-pd-v2-0-3a77bbb6b2c4@gmail.com>
+ <20261112-smmu-v3-pcie-pd-v2-4-3a77bbb6b2c4@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -122,241 +75,79 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="plo7cdziw5qygczc"
 Content-Disposition: inline
-In-Reply-To: <20261110040828.1774343-3-skhawaja@google.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH4PEPF0000B60E:EE_|MN0PR12MB5930:EE_
-X-MS-Office365-Filtering-Correlation-Id: b1e51c2a-fd48-4c3c-376e-08df40da7150
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|82310400026|23010399003|36860700016|4143699003|261026140227099003|261022113327099003|11063799006|10067099003|56012099006|261026130827099003|261022105027099003|261022115727099003|261021121427099003|261026121527099003|261021130227099003|261028144727099003|261022075727099003|261021123027099003|261102130727099003|261021135927099003|261102123227099003|261009223027099003|18002099003|22082099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	gcv8q9LASyoR5PTbwBTxNOvb4rZ3kqFw02Fm0J0H57WeB2+DEDd7PEmGIpBF2pb5xhSCtMs7MmCaIxqmIx7ZD33okUEvXGBfrDhP1KYqukh7CjNW3XNjlEbVQbdUFKP7AyMoAL24wVupD6D9uxnV49kNWTjVl7yeM6hJ0EI+ZHsREHDxQudL91iSEoBP0UjoUeBe/F7rvGaW+pTQ6SNdhV3wA7q4+jsrvs2ToylzESyoXEWGSWrSIGE4SsOG6ohsi0DzJQM+Os6fXJ3CpV/+yFkL3hF1U0F3s0L1FmdIeyRA8TujVuw3RxsyzhanaSHaO4za7c8vou37r6E4X77/tmvGF08oS1J2ysv5C0ICavDEOuk4skLppOruht7U1uW0VBeZfOCzaBdK1uIhs9KegEoNsT/Uo+q34z4j7JdccFvFwca66gnDuPP3y6/UC/HxmU5NSN7bDh4tbRP5W0GxEErsR1ifFPdf9R5kHoXQ/DG1vLgOwhQSW1EfhO5OUvKOKQt1IA0VNzg4DHrhnOJYkFnmarx7udN0iZPdrGJD89aezpxcU5796sDi8mqHbVmoJjiTESymm1qvwSZtnic+XoVHMkfFN1O2MQwYvvAwWmuoi/FDAUV+2nFynTwQ32hUKsL6HmzJJyRRa5iIEmSikmFPUGQUx3CBDEvxrVKNjFE8/TRBIWcEpzXV9w83wqDMRqsD2JZcaAtuhZf7THdXJw==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(82310400026)(23010399003)(36860700016)(4143699003)(261026140227099003)(261022113327099003)(11063799006)(10067099003)(56012099006)(261026130827099003)(261022105027099003)(261022115727099003)(261021121427099003)(261026121527099003)(261021130227099003)(261028144727099003)(261022075727099003)(261021123027099003)(261102130727099003)(261021135927099003)(261102123227099003)(261009223027099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	kOoCFkF49m1skZCxHv5Pvl5fQfalUkBQ7P4+ACALb97CV/1XWms1yGMa+S7C+RiheRv7yD2Dt1//anSF0sP157J+lviqgUOeUq4Cx//zasOHRUe/Py2TpefNDbgnkw8J0/kycG+NsPhfI+fC5N9c3UPAkSxYTBofTv05gC92W9+FBPmNj3flwxw/nCBbv14CaRb4Hh8Nj0IWNeRuJ24YqpKUhqRjrnBxK6N09fHjbNjfv01MKCzvq+dNOdx02iMsx1nH2h08Il0vYEbmA3x6sD+au6nHlmM8LY1aIYpgHfvVpt0cmfyF/LHBbv3KKdhLj0+G1ZvkGLDHVS4eJV/M4goggdrthJvB8desqcdrN9RlUkN4ciPCUiYfEp0jOIbtGe2l4Tgr2FwnykLZT3XpQ5T2iShe1Dhb7/UD1Sxs2AwGO+I1iPv58g01iJD6GiYX
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2026 16:31:45.6794
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b1e51c2a-fd48-4c3c-376e-08df40da7150
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	PH4PEPF0000B60E.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5930
+In-Reply-To: <20261112-smmu-v3-pcie-pd-v2-4-3a77bbb6b2c4@gmail.com>
+X-Zoho-Virus-Status: 1
+X-Zoho-AV-Stamp: zmail-av-0.2.13.1.5.4/294.497.36
+X-ZohoMailClient: External
 
-On Tue, Nov 10, 2026 at 04:08:08AM +0000, Samiullah Khawaja wrote:
-> IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
-> the proper preservation and restoration of ioptdesc add helper
-> functions.
-> 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
 
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+--plo7cdziw5qygczc
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v2 4/4] arm64: dts: rockchip: Add the reset of the RK3588
+ PCIe SMMU
+MIME-Version: 1.0
 
-> Reviewed-by: Pranjal Shrivastava <praan@google.com>
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Hi,
+
+On Thu, Nov 12, 2026 at 08:20:25AM +0000, Arun Iyengar via B4 Relay wrote:
+> From: Arun Iyengar <aiyengar1990@gmail.com>
+>=20
+> The MMU-600 for the PCIe controllers (mmu600_pcie) has a reset line in
+> the CRU, SRST_A_MMU_PCIE, which its node does not describe. Add it, so
+> that the node describes both the clock and the reset of the MMU-600.
+>=20
+> Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
 > ---
->  drivers/iommu/iommu-pages.c | 109 ++++++++++++++++++++++++++++++++++--
->  drivers/iommu/iommu-pages.h |  30 ++++++++++
->  2 files changed, 135 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu-pages.c b/drivers/iommu/iommu-pages.c
-> index 3bab175d8557..0aa18c771baa 100644
-> --- a/drivers/iommu/iommu-pages.c
-> +++ b/drivers/iommu/iommu-pages.c
-> @@ -6,6 +6,7 @@
->  #include "iommu-pages.h"
->  #include <linux/dma-mapping.h>
->  #include <linux/gfp.h>
-> +#include <linux/kexec_handover.h>
->  #include <linux/mm.h>
->  
->  #define IOPTDESC_MATCH(pg_elm, elm)                    \
-> @@ -28,6 +29,13 @@ static inline size_t ioptdesc_mem_size(struct ioptdesc *desc)
->  	return 1UL << (folio_order(ioptdesc_folio(desc)) + PAGE_SHIFT);
->  }
->  
-> +static inline void iommu_folio_update_stats(struct folio *folio,
-> +					    unsigned long nr_pages)
-> +{
-> +	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, nr_pages);
-> +	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, nr_pages);
-> +}
-> +
->  /**
->   * iommu_alloc_pages_node_sz - Allocate a zeroed page of a given size from
->   *                             specific NUMA node
-> @@ -80,8 +88,7 @@ void *iommu_alloc_pages_node_sz(int nid, gfp_t gfp, size_t size)
->  	 * rather large, i.e. multiple gigabytes in size.
->  	 */
->  	pgcnt = 1UL << order;
-> -	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, pgcnt);
-> -	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, pgcnt);
-> +	iommu_folio_update_stats(folio, pgcnt);
->  
->  	return folio_address(folio);
->  }
-> @@ -95,8 +102,7 @@ static void __iommu_free_desc(struct ioptdesc *iopt)
->  	if (IOMMU_PAGES_USE_DMA_API)
->  		WARN_ON_ONCE(iopt->incoherent);
->  
-> -	mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, -pgcnt);
-> -	lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, -pgcnt);
-> +	iommu_folio_update_stats(folio, -pgcnt);
->  	folio_put(folio);
->  }
->  
-> @@ -131,6 +137,101 @@ void iommu_put_pages_list(struct iommu_pages_list *list)
->  }
->  EXPORT_SYMBOL_GPL(iommu_put_pages_list);
->  
-> +#if IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
-> +/**
-> + * iommu_unpreserve_pages - Unpreserve pages that were preserved in KHO
-> + * @virt: Virtual address of page to be unpreserved
-> + */
-> +void iommu_unpreserve_pages(void *virt)
-> +{
-> +	kho_unpreserve_folio(ioptdesc_folio(virt_to_ioptdesc(virt)));
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unpreserve_pages);
-> +
-> +/**
-> + * iommu_preserve_pages - Preserve pages using KHO
-> + * @virt: Virtual address of page to preserve
-> + *
-> + * Returns 0 on success, negative error on failure
-> + */
-> +int iommu_preserve_pages(void *virt)
-> +{
-> +	return kho_preserve_folio(ioptdesc_folio(virt_to_ioptdesc(virt)));
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_preserve_pages);
-> +
-> +/**
-> + * iommu_unpreserve_pages_list - Unpreserve a list of KHO preserved pages
-> + * @list: List of pages to unpreserve
-> + */
-> +void iommu_unpreserve_pages_list(struct iommu_pages_list *list)
-> +{
-> +	struct ioptdesc *iopt;
-> +
-> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm)
-> +		kho_unpreserve_folio(ioptdesc_folio(iopt));
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_unpreserve_pages_list);
-> +
-> +/**
-> + * iommu_restore_pages - Restore pages that were preserved in KHO
-> + * @phys: Physical address of page to restore
-> + */
-> +void iommu_restore_pages(u64 phys)
-> +{
-> +	struct ioptdesc *iopt;
-> +	struct folio *folio;
-> +	unsigned long pgcnt;
-> +	unsigned int order;
-> +
-> +	folio = kho_restore_folio(phys);
-> +	if (!folio)
-> +		panic("Failed to restore preserved IOMMU page %llx\n", phys);
-> +
-> +	iopt = folio_ioptdesc(folio);
-> +
-> +	/*
-> +	 * For the restored pages incoherent is set to false as these are not
-> +	 * mapped using the DMA_API. The remapping of these pages using DMA_API
-> +	 * is not needed as these are not going to be written to by the new
-> +	 * kernel.
-> +	 */
-> +	iopt->incoherent = false;
-> +
-> +	order = folio_order(folio);
-> +	pgcnt = 1UL << order;
-> +	iommu_folio_update_stats(folio, pgcnt);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_restore_pages);
-> +
-> +/**
-> + * iommu_preserve_pages_list - Preserve list of pages using KHO
-> + * @list: List of pages to preserve
-> + *
-> + * Returns 0 on success, negative error on failure
-> + */
-> +int iommu_preserve_pages_list(struct iommu_pages_list *list)
-> +{
-> +	struct ioptdesc *iopt;
-> +	int ret;
-> +
-> +	list_for_each_entry(iopt, &list->pages, iopt_freelist_elm) {
-> +		ret = kho_preserve_folio(ioptdesc_folio(iopt));
-> +		if (ret)
-> +			goto err;
-> +	}
-> +
-> +	return 0;
-> +
-> +err:
-> +	list_for_each_entry_continue_reverse(iopt, &list->pages, iopt_freelist_elm)
-> +		kho_unpreserve_folio(ioptdesc_folio(iopt));
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_preserve_pages_list);
-> +#endif
-> +
->  /**
->   * iommu_pages_start_incoherent - Setup the page for cache incoherent operation
->   * @virt: The page to setup
-> diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
-> index e9e605b5fa3a..3c409ec3d170 100644
-> --- a/drivers/iommu/iommu-pages.h
-> +++ b/drivers/iommu/iommu-pages.h
-> @@ -53,6 +53,36 @@ void *iommu_alloc_pages_node_sz(int nid, gfp_t gfp, size_t size);
->  void iommu_free_pages(void *virt);
->  void iommu_put_pages_list(struct iommu_pages_list *list);
->  
-> +#if IS_ENABLED(CONFIG_IOMMU_LIVEUPDATE)
-> +int iommu_preserve_pages(void *virt);
-> +void iommu_unpreserve_pages(void *virt);
-> +int iommu_preserve_pages_list(struct iommu_pages_list *list);
-> +void iommu_unpreserve_pages_list(struct iommu_pages_list *list);
-> +void iommu_restore_pages(u64 phys);
-> +#else
-> +static inline int iommu_preserve_pages(void *virt)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline void iommu_unpreserve_pages(void *virt)
-> +{
-> +}
-> +
-> +static inline int iommu_preserve_pages_list(struct iommu_pages_list *list)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
-> +
-> +static inline void iommu_unpreserve_pages_list(struct iommu_pages_list *list)
-> +{
-> +}
-> +
-> +static inline void iommu_restore_pages(u64 phys)
-> +{
-> +}
-> +#endif
-> +
->  /**
->   * iommu_pages_list_add - add the page to a iommu_pages_list
->   * @list: List to add the page to
-> -- 
-> 2.56.0.506.g506a7eabc5-goog
-> 
+
+squash this into the previous commit.
+
+-- Sebastian
+
+>  arch/arm64/boot/dts/rockchip/rk3588-base.dtsi | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi b/arch/arm64/b=
+oot/dts/rockchip/rk3588-base.dtsi
+> index dfed34a8aa57..45c1bb335447 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+> @@ -560,6 +560,7 @@ mmu600_pcie: iommu@fc900000 {
+>  			     <GIC_SPI 367 IRQ_TYPE_EDGE_RISING 0>;
+>  		interrupt-names =3D "eventq", "gerror", "priq", "cmdq-sync";
+>  		clocks =3D <&cru ACLK_MMU_PCIE>;
+> +		resets =3D <&cru SRST_A_MMU_PCIE>;
+>  		#iommu-cells =3D <1>;
+>  	};
+> =20
+>=20
+> --=20
+> 2.55.0
+>=20
+>=20
+
+--plo7cdziw5qygczc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmr16kgACgkQ2O7X88g7
++ppxMRAAj3Ltv4ErhZU0f3wZhYPQJhx+mkY3nlU/L6SyJGdIyiP+f5sNRq1yS3PC
+uFjSX4M0IV7s6bymiCkx5mimtXcqWnpJZREgT5rE/pn6qA2oEbSvaV71cPBghWMp
+cMCpa6RU7UME/Aj2laC7m+FhA9n6HUGYRchQQbSmd0y+bh6QJq2eGNstI0+1Jl8a
+xgKEyVomPUWe6U+/gvO+f5huDrx8A6AXYmvP/u+1W2pIYcl7khGjb3RimLjhN//o
+IlsoSB3yFBwQsKDJnQBlaCukfQfCaMRFjH6zvIsFMiic2wdLKWTdnDlsFwXXI3HP
+Ckxh7FkdAZmT0FhKm+AkHBschqSqzZTfrHfhy9SrOZgXWOTz1jQE9nIurWtjnyco
+0BtZjwgYCXWMIEOfV+YSrga4BvooysTtTm9/5FBy/YxY1LWjVMYf/73np8yJ4LYC
+yiaPA2M3PfhrK3Pqwany/VxcqF0mgh9wMynwWMmJQXesRv+ECPHtLz+dZ6Ib2pcs
+s+rN0hjEsm8tRsTN38r1n0MTlfMAsSBi2Ms3vTmj2v/jPsAwhb2mpPgJwEP8+k8j
+cN3vrq1sFgYJMee561K3JiUcpm0aCN55NAuTaQ9fOpV8ow4xNn4vrgh+EvjU+LTQ
+YY8DlesoqyZuG6FPd2GvJ5jpRLK2IJtMp+Ao116jHyFzg/oN3UI=
+=VZSZ
+-----END PGP SIGNATURE-----
+
+--plo7cdziw5qygczc--
