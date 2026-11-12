@@ -1,47 +1,84 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794480192;
-	b=KqQ4ztSRCTBXd1aVULePEUP7Puiqz7o/PMqii3PSh9o2RcR1aFZt9V3PKW0VQNBjRHBs
-	 BTBWEqPGT+skW4O2KiumubLjNjLUPForeLgV8d0mI5o/MZL9nJ2rdtCqnUS0mZoXEP2vf
-	 WAxUl2JKcsoSxLu1mQsL2zqv32mt80kpwfH64fSFG8Is1tar/VlEJVie5vPY2DO/Nb/Sd
-	 5at/WKQScrHHCu4/9u4xmOOlE1AOhe8GEX6WDx2CwQXMI8b3f+DFIOqzKnGunUfx7lxKA
-	 KDRR924V91YNhgEZn7xLgJD6SIjsXUF7nGzlg3Khpo+LMOE1gvFYm3jDyjIzNK8AbMg==
+	t=1794480685;
+	b=AxM6dlI4UHqkZl1xnwBODr+y2hl7JTOlXBtnPeKRoIzCIGBSTlF8qHs308tH0YHYdg2V
+	 7OAt5mwqfq+NbWKDNeDmqrIi7uGrhNGenDP8wltoVdyIa3xKjI5wnJZKpAo8DIM9CwLtX
+	 QHZpUrKdHlkfzsXE8cpV/+7qNHtlzmUkzDqfynp643RK8W6ngJOR2nMHeA8NYTpQK+sBF
+	 OxHECcoSZZqg9IUeaKXQQLrxz73iRlXX1hZdKYbo9/9Tbsx09DZ8Yj7HTLyBixSorqOji
+	 xAqzBBKiNi+Sa6GUuzuAu8ab2FzQH2SJVhMiFSKqXMsRSh/8BA0zSWKJK/JHi0n18Hw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794480192;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=dNp3udoHGBTm0oHVGK0tf8e5QbmrNR/x3XeLPS1gMFU=;
-	b=oE08mumgM8+2Hi7Tm4rfe9zJ6LXbi+43dah3b+NOInV/XUOCHW9FlJo1HiAKwjmJS0sv
-	 +7z016n/rmekHAm8v6TtVYUoZCsv4GB6D9uo8xSqGnx/tP/rqJYlBH1cN27RQBbAhIjc0
-	 aRUeBxXEl/fS/9urTeUmTllO+6p+7af5UWqugoq9gw2yIntXE48wgoFdHQ2IkbLjspxM1
-	 0qwVZPq2kFQr0cmzq+zUXFgYc3EpqWKw48CeGii/koIpjX4Gccfa/7/G7JxTDp5Mgrboj
-	 r+O3UkYMn1PGVaHP9lWIWRQ8SiPBM0men+F4I0rFU8Tbz813y2gXAlYQBxRQBswt2ow==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794480685;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=pywy5r6pDPMlHENdQdhMX3LebB9YShrau+u2EOFSYes=;
+	b=BcTKobvhrdyIa5YN6+vvxTD6rrJSCEmRlNXehz6g0HioVP5WysVCiD+zad4gc1hSK3nD
+	 cPMRlow9AjarAC4XICdyGsSEku8N7g2ii1WRiqz7pEnroB8XKJFxMaGJfG/Giy7sID1ax
+	 RmP46waifKs+HJXXtT/ZmSOcW54t+zhfFo714Blcw9ICq0ndgjFqfz7mPH0QSNoWDqVHj
+	 TDoi9QniFGun1CGBEViEXOtH7CawrznaaxFaxqFxoNGU8OWOiEImi238BNGoSwBgIsBk+
+	 ws9OlEf9MvbEKq6Za9XsTqAjwnlA3iODUbiJhVPGtVA46n2GaIasrDWEjMhUFhaxaOw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I0TPDV43;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NyTu+pBP;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6722F606A885;
-	Thu, 12 Nov 2026 10:43:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 029AE606A321;
+	Thu, 12 Nov 2026 10:51:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=I0TPDV43
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677411F00A05;
-	Thu, 12 Nov 2026 10:42:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=NyTu+pBP
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEE0E1F00A05;
+	Thu, 12 Nov 2026 10:51:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794480192;
-	bh=dNp3udoHGBTm0oHVGK0tf8e5QbmrNR/x3XeLPS1gMFU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=I0TPDV43709xds1YjFciabcX8qY1kutyiqT4lX2KKlYro1DwODMPjRG7nVRyeYq66
-	 vbZLurqiksVuDaoY1LkD/b5xi6IUC05VrWqzoS8cg3dmM9nvkWpd4OgnlddW53//yA
-	 122d/AkBmYZZwYRJlhvhMXsS8VBFwcTE316zNFd+ifJo08ZSFBQlXmz7faIhXQ/gQ+
-	 D5NSx6U8O4FZXgtjJm9Q3eL7+2hksA9jy6WSRf07SPq4o97j9rpTcs6rKAst/0vPMl
-	 zHVfGezyt9McTCfCB2BTmdo44x/6PrUKOMOUdEqC7pTDwmEKnIu/+nlrdqSywBLRqG
-	 moyZYmFfXgPEw==
-Message-ID: <f5a411f7-ea17-451d-9c43-26a68464c6d2@kernel.org>
-Date: Thu, 12 Nov 2026 11:42:55 +0100
+	s=k20260515; t=1794480684;
+	bh=pywy5r6pDPMlHENdQdhMX3LebB9YShrau+u2EOFSYes=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=NyTu+pBPJgo0IB/eZQsoHzsyRKO3iN+jIxpyl8bWDIcxaDufID0hYesdnuAEu5S09
+	 Sckhb1ihC0JjNfCe/VZ/0dE6EfvHMq1aeQjOGwGk+OV91Ff47v1Lqs6UvhF605Eta3
+	 wqD82AU6Z6Q5HyU9Ltah30EsTw+B1M4g4W5yhvs3eqwGRFkKZ3lxXdMmEjSEumyXip
+	 znxH4zR4+tL3nPFrvhzEV7ItlMOu0ZXK4cjY8u2jI7AC6j4dY1Vgqz6/YgsxSq5QDO
+	 kxcuLzRHt03BGPhofFDyKegLBVhQ/EevoaFq2FN8rm1xr5+eOOTgX+dssNLgKSFySa
+	 LHRs3t7Xtw3bA==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Cc: Alex Williamson <alex@shazbot.org>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>
+Subject: RE: [PATCH v8 12/15] iommufd/viommu: Allow PCI TSM backends to
+ provide vIOMMU operations
+In-Reply-To: <CO1PR11MB483536F447DF311831A64D4D8C762@CO1PR11MB4835.namprd11.prod.outlook.com>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-13-aneesh.kumar@kernel.org>
+ <CO1PR11MB483536F447DF311831A64D4D8C762@CO1PR11MB4835.namprd11.prod.outlook.com>
+Date: Thu, 12 Nov 2026 16:21:12 +0530
+Message-ID: <yq5av762pbkv.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -51,110 +88,94 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/9] mm: limit pagecache folio refcount when mapping
- pages
-To: Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
- Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
- "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>,
- Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>,
- Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
- Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>,
- Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>,
- Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>,
- Gregory Price <gourry@gourry.net>, Ying Huang
- <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>,
- Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro
- <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>,
- Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>,
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin
- <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>,
- Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Steve Sistare <steven.sistare@oracle.com>, John Hubbard
- <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
- Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>,
- Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev,
- linux-arch@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org,
- Chris Mason <mason@kernel.org>, stable@vger.kernel.org
-References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-1-318625d63a98@kernel.org>
-From: "David Hildenbrand (Arm)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
- qIws/H2t
-In-Reply-To: <20261110-refcount_overflow_stable-v3-1-318625d63a98@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
->  
-> diff --git a/mm/filemap.c b/mm/filemap.c
-> index 9871b4f32a916..0f6d57432a7e5 100644
-> --- a/mm/filemap.c
-> +++ b/mm/filemap.c
-> @@ -3968,6 +3968,11 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
->  		unsigned long end;
->  		vm_fault_t map_ret;
->  
-> +		if (unlikely(folio_ref_count_over_limit(folio))) {
-> +			folio_ref_dec(folio);
+"Tian, Kevin" <kevin.tian@intel.com> writes:
 
-Going over this once more, I'll just use folio_put() here for consistency.
+>> From: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> Sent: Thursday, November 5, 2026 12:16 AM
+>> 
+>> In confidential-computing configurations, a vIOMMU may be implemented by
+>> a TEE Security Manager rather than by the physical IOMMU driver. Such an
+>
+> TSM is the firmware. Here it is the TSM driver.
+>
 
--- 
-Cheers,
+Will use TSM driver instead of TSM 
 
-David
+>
+>> implementation also needs the TSM identity when creating and validating
+>> vdevices.
+>> 
+>> Allow VIOMMU_ALLOC to first query the TSM associated with the target PCI
+>> device for vIOMMU operations. Fall back to the physical IOMMU driver
+>> when the TSM does not provide operations for the requested vIOMMU type.
+>> 
+>> Resolve the PCI TSM association under pci_tsm_rwsem, pin the module
+>> providing the operations, and take a TSM device reference. Store the TSM
+>> device in the vIOMMU and release both references on allocation failure,
+>
+> what does "both references" mean?
+>
+
+device reference and module reference. How about i update this to
+
+Resolve the PCI TSM association under pci_tsm_rwsem, take a TSM device
+reference, and pin the module providing the operations. Store the TSM
+device in the vIOMMU. Release the device reference and module pin on
+allocation failure, fallback to the physical IOMMU driver, or vIOMMU
+destruction. Drop the device reference before releasing the module pin,
+since the final put may call into the backend module.
+
+
+
+>
+>> fallback to the physical IOMMU driver, or vIOMMU destruction. Keep the
+>> module pinned until after dropping the device reference, since the final
+>> put may release the TSM device.
+>> 
+>> The device reference preserves the TSM allocation. Backends providing
+>> vIOMMU operations must not unregister their TSM while the module is pinned,
+>> since the reference does not prevent backend resource teardown.
+>> 
+>> This enables the Realm vIOMMU implementation to provide its operations
+>> through the PCI TSM backend and retain the TSM identity needed by its
+>> vdevices.
+>
+> It's not specific to Realm vIOMMU, and Realm is never explained in
+> prior patches.
+>
+
+I will drop this para.
+
+>
+>> @@ -49,15 +52,33 @@ int iommufd_viommu_alloc_ioctl(struct
+>> iommufd_ucmd *ucmd)
+>>  		rc = -EOPNOTSUPP;
+>>  		goto out_put_idev;
+>>  	}
+>> -	if (!iommu_dev->ops->get_viommu_ops) {
+>> -		rc = -EOPNOTSUPP;
+>> +	tsm_dev = tsm_get_device(idev->dev);
+>> +	if (IS_ERR(tsm_dev)) {
+>> +		rc = PTR_ERR(tsm_dev);
+>> +		tsm_dev = NULL;
+>>  		goto out_put_idev;
+>>  	}
+>
+> Is it legal to have a device connected in tsm (i.e. with a valid
+> pdev->tsm) but one wants to assign it to a non-confidential
+> guest using a non-cc vIOMMU type?
+>
+> If yes we want to fallback to the physical IOMMU driver even
+> when tsm_get_device() returns an error.
+
+
+tsm_get_device() does not use the vIOMMU type, so an error return
+(rather than NULL) indicates an actual error. In the case you describe,
+tsm_get_device() should return NULL or a valid TSM device. For a valid
+TSM device, tsm_viommu_get_ops() will return NULL because the TSM driver
+does not support the non-confidential vIOMMU type, allowing fallback to
+the physical IOMMU driver.
+
+-aneesh
