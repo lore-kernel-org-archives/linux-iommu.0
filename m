@@ -1,98 +1,96 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794499767;
-	b=F7rpunJ1MZqiP/Dyv+QQTscWr6fpkI7/Hkl2wJNGOQatY3c/R1t+RUlS/raJMBFcWKbt
-	 3Ehul0hbphpHd3HehZIz3Nv6Bq9jWEBL1u+xQScAQO/s9G4n2CbqafGtppdBX0MxUGAOK
-	 uCKzckyebyLqLk3dbOXveGyB5aeJcNFHEbSEZihYIPsdedbNaWwiNk2zlcYx5TxE/OYOn
-	 uZSxappwWn9XWDdh+795HupaFjMDc8GooKl/c/EGaxklf+Cd/OVUgZSqtKyPLUEK2XeLQ
-	 rfQt7vYwXROE0C9PSZB2j2iZgARsOgBbwntV1W68UbG1G/ZS4W5Aq4Wqu8cL224EB5A==
+	t=1794499856;
+	b=lKIo5uvF2S23+naOrwtW6F/cNfQyT2O+AusVQF2j9FGqs5Ioc9fTE1N2eL5KDcIvVwn4
+	 F536oDzafrco2BXeDUeITMskkzqbLpeeZWEEvKG7+3FGTzQaoHtUsNWrcVx3JXgMhYUib
+	 5UISVOvtiguZclIqyMifUIq9sKUhNiFCY1J7QeLOiRTQAKlynOWKyPC6oGZqNMJKb+Aic
+	 ofTbLBJi6oHZawX7QvAXb2SmDqrUEwBhzqz9Kjm19V+Tnvl8hsr12B4f6oS8ib25Dy9Px
+	 ZbYS6G0hkHQIntDmyvfnfx3Wb5SkWgcMs05LtOaaGl+3ONdllq2bjIGZ27RNYyP+Ebg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794499767;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794499856;
 	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
 	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-Rspamd-Queue-Id:X-Spam-Level:X-Rspamd-Server:X-Rspamd-Action:
-	 X-Spam-Flag:X-Spamd-Result:X-Spam-Score;
-	bh=2Pc/BE/Q52yGpOarG+khdx5fMHXqENwQm7w1VOmz/Yw=;
-	b=VMe6yzj+LN/LwqszhOQmLBIKLXoxDzL2+N2mNjuXW3YNCbPR+yjdC11Ub5l+4mnZWnCe
-	 3lf/DsYptyds7tTx/0DsuCICkbcqShVTVVJke8DsYt0fDFJPSqCrdTr1PSFDh/ASDt4rC
-	 e8EumiUz5LGy+Ym1R2DzAutHnZV3YwzS/Esthui3NQzQ7dw0YTHdUZDK1X6xOTJyZIvty
-	 lz4F4ahCAPBoCO0qBvlIxifL85DdWYKoqcX3Zhf3ELU8E4DAR3IKQREmTMTxgKC6o6Rfz
-	 xVqhQgvQidH8+jjZDS10h7wlyp7vGOaMc2cVMxYTPWWoDVJxONu1H2PyhT774Ls0NMQ==
+	 X-Spam-Flag:X-Spam-Level:X-Spamd-Result:X-Spam-Score;
+	bh=TY1S6pONlaEy8PXrW1EyxT+5Cb+KB7r0xzu7FeRkMVI=;
+	b=4RwZkwNWVF8DgZCrMs4/az4LtWoS609gE3+y4mwxvdyOdefcLC+dlAr6MFKwaAc8gkmu
+	 DqER7FDVrE/bw0oykUm/1rk8I8vAuGJP9axEOCFKX/w+iinntYKi22NBEyuOWWz6jVrV9
+	 dY9dX8cjyWXMR+vJbl33pEHFcYS2Zhuuv8+ZVirTMGHisTrKO/YI2G/TwNWIPhFU6/Y7c
+	 5IMoBh15PxVAhgqGWlwEY2O8E8CMp76AYgkk6Qk2GN0SNr7xHhEqZVwcOetSc0RaMbu9w
+	 egfL7UjOmmQT6PmRNiVVZJb0579MqscZdKuqvfmW9Tq1DvEUECMIhMQA8pydDXdvhPw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=suse.de;
 	spf=pass smtp.mailfrom=suse.de;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=f3hBN4yS;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="Q/0K4tT3";
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=f3hBN4yS;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="Q/0K4tT3";
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=VmTXplA6;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=nCSh6HC5;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=VmTXplA6;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=nCSh6HC5;
 	arc=none smtp.remote-ip=195.135.223.130
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 702C2606A327;
-	Thu, 12 Nov 2026 16:09:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 702C2606A327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEA22606A32A;
+	Thu, 12 Nov 2026 16:10:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AEA22606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=f3hBN4yS;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=Q/0K4tT3;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=f3hBN4yS;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=Q/0K4tT3
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=VmTXplA6;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=nCSh6HC5;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=VmTXplA6;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=nCSh6HC5
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id A7CF921F92;
-	Thu, 12 Nov 2026 16:09:24 +0000 (UTC)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id E67B121FD9;
+	Thu, 12 Nov 2026 16:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794499764; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1794499853; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2Pc/BE/Q52yGpOarG+khdx5fMHXqENwQm7w1VOmz/Yw=;
-	b=f3hBN4ySnI5cE3+JOrCGjRA72FoPDSvg7l/cfGo4h8Pb6UVyomrX8BVx9nHgU+xs9gEwss
-	ujUehcaCloAwFhIinMiH8O4Qln8CGDqwb/Y0DpQDDjCVj0+rTZ4hSs+mELBV30sLzFHbC5
-	QjO749plQy0hMCimjtG0AkfgbBoQBjc=
+	bh=TY1S6pONlaEy8PXrW1EyxT+5Cb+KB7r0xzu7FeRkMVI=;
+	b=VmTXplA6oiq409l1Q8u7Qgt4p69886cSyQzzPQ+YtJM0kaW9AbMPBie11VAtJTRFumr7xa
+	ccBHcDBXf4Dw5mf+p9Ns8XyI80zNFbN8mHlEjK8X+7BOleqSXDENKhhsj++cONKNtCKOO/
+	UKE8Mt4aLjyZ/8g4gE/ytLGkegf6710=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794499764;
+	s=susede2_ed25519; t=1794499853;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2Pc/BE/Q52yGpOarG+khdx5fMHXqENwQm7w1VOmz/Yw=;
-	b=Q/0K4tT3wWzPs6dyZFiJZ+LbOgcn3qLlYvBojekxSRY39yB2hPRNbNMlskKRDxKXiFjQi3
-	sat9nb4bIhSpXWBQ==
+	bh=TY1S6pONlaEy8PXrW1EyxT+5Cb+KB7r0xzu7FeRkMVI=;
+	b=nCSh6HC5G9PTcri4c07C8tEqlSP++XFq6z49AbkySWcUnri5AmuUdcJpMRiT8NlWzG3i7l
+	skLZ8ZekpBADvLBw==
 Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=f3hBN4yS;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="Q/0K4tT3"
+	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794499764; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1794499853; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2Pc/BE/Q52yGpOarG+khdx5fMHXqENwQm7w1VOmz/Yw=;
-	b=f3hBN4ySnI5cE3+JOrCGjRA72FoPDSvg7l/cfGo4h8Pb6UVyomrX8BVx9nHgU+xs9gEwss
-	ujUehcaCloAwFhIinMiH8O4Qln8CGDqwb/Y0DpQDDjCVj0+rTZ4hSs+mELBV30sLzFHbC5
-	QjO749plQy0hMCimjtG0AkfgbBoQBjc=
+	bh=TY1S6pONlaEy8PXrW1EyxT+5Cb+KB7r0xzu7FeRkMVI=;
+	b=VmTXplA6oiq409l1Q8u7Qgt4p69886cSyQzzPQ+YtJM0kaW9AbMPBie11VAtJTRFumr7xa
+	ccBHcDBXf4Dw5mf+p9Ns8XyI80zNFbN8mHlEjK8X+7BOleqSXDENKhhsj++cONKNtCKOO/
+	UKE8Mt4aLjyZ/8g4gE/ytLGkegf6710=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794499764;
+	s=susede2_ed25519; t=1794499853;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2Pc/BE/Q52yGpOarG+khdx5fMHXqENwQm7w1VOmz/Yw=;
-	b=Q/0K4tT3wWzPs6dyZFiJZ+LbOgcn3qLlYvBojekxSRY39yB2hPRNbNMlskKRDxKXiFjQi3
-	sat9nb4bIhSpXWBQ==
+	bh=TY1S6pONlaEy8PXrW1EyxT+5Cb+KB7r0xzu7FeRkMVI=;
+	b=nCSh6HC5G9PTcri4c07C8tEqlSP++XFq6z49AbkySWcUnri5AmuUdcJpMRiT8NlWzG3i7l
+	skLZ8ZekpBADvLBw==
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B421013432;
-	Thu, 12 Nov 2026 16:09:19 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 36FD913432;
+	Thu, 12 Nov 2026 16:10:48 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id qCrxE6/k9WqvLAAAD6G6ig
-	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 16:09:19 +0000
-Date: Thu, 12 Nov 2026 16:09:17 +0000
+	id 4wFHAQjl9WrTLgAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 16:10:48 +0000
+Date: Thu, 12 Nov 2026 16:10:46 +0000
 From: Pedro Falcato <pfalcato@suse.de>
 To: "David Hildenbrand (Arm)" <david@kernel.org>
 Cc: Lorenzo Stoakes <ljs@kernel.org>, 
@@ -123,11 +121,11 @@ Cc: Lorenzo Stoakes <ljs@kernel.org>,
 	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
 	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
 	iommu@lists.linux.dev, netdev@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3 8/9] RFC: net: limit folio refcount when splicing
- pages into skbs
-Message-ID: <avXknD2x_JsXoMw4@pedro-suse.tail5790ac.ts.net>
+Subject: Re: [PATCH v3 9/9] RFC: net: limit folio refcount when splicing from
+ sockets
+Message-ID: <avXk3dPpE8dNEOi2@pedro-suse.tail5790ac.ts.net>
 References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-8-318625d63a98@kernel.org>
+ <20261110-refcount_overflow_stable-v3-9-318625d63a98@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -139,57 +137,55 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110-refcount_overflow_stable-v3-8-318625d63a98@kernel.org>
-X-Rspamd-Queue-Id: A7CF921F92
-X-Spam-Level: 
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Action: no action
+In-Reply-To: <20261110-refcount_overflow_stable-v3-9-318625d63a98@kernel.org>
 X-Spam-Flag: NO
-X-Spamd-Result: default: False [-12.01 / 50.00];
+X-Spam-Level: 
+X-Spamd-Result: default: False [-11.80 / 50.00];
 	SUSE_INTERNAL_BYPASS(-9.00)[];
 	BAYES_HAM(-3.00)[100.00%];
 	SUSPICIOUS_RECIPS(1.50)[];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
 	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
-	RCVD_TLS_ALL(0.00)[];
-	MIME_TRACE(0.00)[0:+];
 	ARC_NA(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DKIM_TRACE(0.00)[suse.de:+];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	FROM_EQ_ENVFROM(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	R_RATELIMIT(0.00)[to_ip_from(RL3qe7do4s7ra64g8gjdgiaorz)];
+	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
+	R_RATELIMIT(0.00)[to_ip_from(RLru1qh6mb4sjaccpm4fphkxao)];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCVD_TLS_ALL(0.00)[];
 	RCPT_COUNT_GT_50(0.00)[62];
-	TAGGED_RCPT(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	MISSING_XM_UA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.de:dkim,suse.de:email]
-X-Spam-Score: -12.01
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo]
+X-Spam-Score: -11.80
 
-On Tue, Nov 10, 2026 at 09:35:48PM +0100, David Hildenbrand (Arm) wrote:
-> Various networking features use MSG_SPLICE_PAGES to add pages to skbs,
-> whereby skb_append_pagefrags() takes a page reference for each fragment it
-> adds. Pages spliced from pipes were already checked when entering the
-> pipe, but in-kernel users like sunrpc pass pagecache pages directly. This
-> allows for exceeding folio refcount limits.
+On Tue, Nov 10, 2026 at 09:35:49PM +0100, David Hildenbrand (Arm) wrote:
+> Various networking features support splicing data from sockets into
+> pipes (TCP, AF_UNIX, KCM, kTLS), whereby spd_fill_page() takes an
+> additional page reference for each fragment, while the skb keeps its own
+> reference until it was fully consumed. This allows for exceeding folio
+> refcount limits.
 > 
 > This is not specific to large pagecache folios, but with them it is a
 > lot easier to reach the refcount limit, as page table mappings can cheaply
 > create many references.
 > 
-> Let's use try_get_page() in skb_append_pagefrags() and fail with -EFAULT.
-> Don't use -EMSGSIZE, as TCP would just retry with a new skb. The only
-> caller, skb_splice_from_iter(), handles that.
+> Let's use try_get_page() in spd_fill_page() and stop splicing with
+> -EFAULT if that fails. To propagate the error, let spd_fill_page(),
+> __splice_segment() and __skb_splice_bits() return an int instead of a
+> bool. If we could not splice anything, return the error from
+> skb_splice_bits(): returning 0 would make the callers (TCP, AF_UNIX, KCM,
+> kTLS) report EOF, although data is still queued. The callers already
+> handle errors.
+> 
+> Use -EFAULT, consistent with splice_folio_into_pipe().
 > 
 > Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
 > Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
