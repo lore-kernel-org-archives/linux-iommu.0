@@ -1,66 +1,66 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.21
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794458644;
-	b=mJPcZG57EOkIxMfU+SuUDiupW2zojpPF92tdkuBFuOmPyNfasBN7u8Q5Kpwjdmf9tigz
-	 vy4I7vbsC8i1EQsqJ3Yp2Rlv5owLkl7pXBLRG0q1Z2LZDGffDcfTuCNxMEIaAypvBaI8Y
-	 pt6e4AJmfH5qhhdS2YpTDWu/sR6fIfcFaIAdclDln1mN0qL1CqR65UHreD//EAvqE9K68
-	 XCt7LeyW/un8CK79bkBeavgjc42rh0qLK0PPqCgvtCGAsfBv4cVcl0q7+v4FnJ/VSKqEN
-	 4HYCe+5aiJe+kKB35U1p1NFIdRDQ/6iXboSUqayvT1CAF3I+Bspeik5lypiGdoUMLxQ==
+	t=1794458645;
+	b=lC1wV+5Uo7fXSzbH/5sAzNJeNdZ4/XUFkEm/G3KmBuLvVaBTf9UbHeDtjhlZwFfhCobg
+	 4gDY1pHL+9ZrYEofV4Wbur94ec3voA3otoMwPGAwLWAk6y0PF7QJbfYDZQ9Vt6ijzJkuz
+	 POqIRlX79oAQBpBW7w5rZ+c7JOkHbvSHkrXejHTG7UVGGfC+LrBD5SW66GX6CzW9QpC4i
+	 mZ32d1gTE9ZrAKp1boi1986Tes21ew4DaQIVPWCKjHpAQsH2lnvkORAnk4pfB8Es9ZQng
+	 p6WHeQdhGmb3Wl+T46VGusi+AlwxoRlqa8aW4xBe7T2NyCQ9UpeBL3qMEE+EMi35L3w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794458644;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794458645;
 	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
 	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
 	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=gdFaP5z/d8g2/zQpFGODMkM849k6CYUFHHgzID0OGSI=;
-	b=QeDKKNriIWaSpJ2DnblRgoxmPG09ixbmW9uVHa5TwBwLVx/bSUgeclyPdKrNVXKBac0+
-	 jM8lhtZA2820ZuLjkPEQCfOM5D4+qSdXwDUf/trHfaQ3tnPTe3YyIhMl5z5trAWLIhZVp
-	 XGhukBl3Wq21uWCUXngHpMlOsjuHCMgFO2joS8YwQ81tKuuF0rTZfC9CIlypP7Vjrdu1C
-	 Ju3zIhud+e39t/E+VMW49MWp3es3G7SHjspAYEupnxM9AZGsU1V4+CcsP0D+ZCSh5IbcV
-	 VbqvhrliOEuYO3zB0RMTPoXkRvJ/wMMF54/Jpv01YUA3RkLgZqetB0qSad6nGlee9Kg==
+	bh=IKoThOXC199p56cI2GFtJ5hpbJEBRdRaGERY4se4zH4=;
+	b=gAJaUgELPFV4USv+JAlrkk26G8U4Ww6qwhAjOKkyIaxjGKNwLBysZLwA65sNd2ebUdtG
+	 G6OTAiv8vnZ4xP9z84kDkEW1uw934O26WmmFaMaI68m3grelCuAWaWAN6yXQa+2aZUOn9
+	 Rk/IUFnUCgyLUNhGnJnflqCfu92tPT8Egrjzs5b4/G+892WE+n83evxsL9kkZ2rrWNpqX
+	 GDZ1FMbjZuVF6vwJ67Wmnaw5dZHHxSZhxvL2XYjauOFRV9Suj5BTZNzVeEKTuTpI34VCL
+	 6dboeIDBTLnTZM8GMGv2eqDH4/RBffhxFoxAozgMKoVx6EkmDxQzVc+yQN40vNmoTGw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.intel.com;
 	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IiBrVJwz;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SISHqkCn;
 	arc=none smtp.remote-ip=198.175.65.21
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 841C8606A889;
-	Thu, 12 Nov 2026 04:44:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 841C8606A889
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72E9160A2622;
+	Thu, 12 Nov 2026 04:44:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72E9160A2622
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=IiBrVJwz
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=SISHqkCn
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794458643; x=1825994643;
+  t=1794458645; x=1825994645;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=CK5jXPK8E8Bbfj51zOmj5JuHHKDcflexBQMad5gytYM=;
-  b=IiBrVJwzl6bX3gkPMnR4XHqQYT/mGjIA+OxGYNiWRfgfqMuo7PbWRCdJ
-   gdHIkGlRTpKPI3qqMGgy92uxhXBLZEWNU0aP8lcQuoA2WA0VnT9jv4vMd
-   hp3hqj8wEaairoivvgG7bJX2RDD2DgUvSViYQuYEum1+0TfpZvgMqmz8n
-   l/FtfV42iLJApCrHd75+1q8UQyqIxUEYR+ex69FGzbA278pm9qylXknVs
-   XhvL0MZK9RAIWCZnYrUFjkwnLMDQAU0wYajniZ4Dw/V7cFB/S7B4PefiZ
-   DlFqZogUxinnYrIElZXS8JmmyG8K3hi0TbMHcCmwZ1aPsM0xbTXWo9kHS
-   A==;
-X-CSE-ConnectionGUID: 75J7Yjo8QVOz4fpg1xixJQ==
-X-CSE-MsgGUID: Kz3kUs5FQrmb/MkcHiQLdA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11963"; a="3318346"
+  bh=R/nIFccc/jPVlVSy2bUdHcq1c2bU4EXd+SwUeXwW4CI=;
+  b=SISHqkCnzYO3i7GD9RMX2smHJlRI5k/Z7B9NLUCkyJyGc0UcOKlIzRx3
+   76jx6sO+yygJt9OF9bDXa3v3AhFOwQCUXgzGatsaeunOOLTzSN1/7L7aN
+   8Q/umRWZ2ke/2vO8cVtRR/W1BZgXfQcYTKbRWy0vRn5hrElceSQo8VRO+
+   T/elw4TvZbNua3k7n1rxxNl3NGyccw8Sk3/UICNf6VazZD2mytcdjnORo
+   9/9E2nkeUEliCvgAH1/obP5b/IODhZekLr/Ynrj8lBomlW/xdaL7JqLo8
+   1JAxRkzGqv6jlOWGw0UuOVXuL/blI8KS4z2z1Ps7HdHxMBxFi5Z06FHto
+   w==;
+X-CSE-ConnectionGUID: NSK8hevGSZm3WTc1eTGfrA==
+X-CSE-MsgGUID: VFXejrCKQg6+Z1EMbxecNQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11963"; a="3318353"
 X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
-   d="scan'208";a="3318346"
+   d="scan'208";a="3318353"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 20:44:02 -0800
-X-CSE-ConnectionGUID: gxBLdV0hTLuK563WClHgPw==
-X-CSE-MsgGUID: jGzRQuc2RT+cmUxIyfEo+A==
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Nov 2026 20:44:05 -0800
+X-CSE-ConnectionGUID: pk3omHTxRdm4u5TMFFkQew==
+X-CSE-MsgGUID: WIommXKGRF2ebZxb2CgkWw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.27,209,1787036400"; 
-   d="scan'208";a="8728634"
+   d="scan'208";a="8728646"
 Received: from allen-box.sh.intel.com ([10.239.48.101])
-  by fmviesa002.fm.intel.com with ESMTP; 11 Nov 2026 20:43:58 -0800
+  by fmviesa002.fm.intel.com with ESMTP; 11 Nov 2026 20:44:02 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: iommu@lists.linux.dev,
 	x86@kernel.org,
@@ -76,9 +76,9 @@ Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	Binbin Wu <binbin.wu@linux.intel.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 4/9] iommu/vt-d: Add interface for tdx-host when enabling trusted DMA
-Date: Thu, 12 Nov 2026 12:30:49 +0800
-Message-ID: <20261112043054.2664857-5-baolu.lu@linux.intel.com>
+Subject: [PATCH v3 5/9] iommu/vt-d: Block GCMD and ECMD while acquired by the TDX module
+Date: Thu, 12 Nov 2026 12:30:50 +0800
+Message-ID: <20261112043054.2664857-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
 References: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
@@ -93,334 +93,330 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-An Intel IOMMU that supports trusted DMA (ECAP.TDXCS) provides a second
-set of DMA translation resources, managed by the TDX module and used
-only for devices assigned to TDs. Before they can be used, the tdx-host
-driver issues TDH.IOMMU.SETUP to put the IOMMU into Secure TDX Mode, and
-issues TDH.IOMMU.CLEAR to take it out again.
+Once tdx-host acquires an IOMMU for TDH.IOMMU.SETUP, the TDX module
+owns its Secure TDX Mode state. The VT-d driver must not change the
+global state of the IOMMU behind the TDX module's back, nor issue
+enhanced commands, until the IOMMU is released after TDH.IOMMU.CLEAR.
 
-The VT-d driver owns the hardware state these SEAMCALLs depend on, so
-it checks that state and keeps its own use of the IOMMU out of the TDX
-module's way. This is cooperation, not enforcement: the TDX module
-protects trusted DMA regardless, and a misbehaving host can only cause
-failures.
+Use the tdxc_acquired flag of struct intel_iommu, which is protected
+by register_lock, to block both. dmar_tdxc_acquire() now fails with
+-EBUSY if an enhanced command is still in progress when it sets the
+flag. All GCMD writers hold register_lock and wait for completion before
+dropping it, so setting the flag under the same lock guarantees no GCMD
+operation is in flight once acquire() returns. While the flag is set,
+ecmd_submit_sync() fails with -EBUSY rather than waiting, as it may be
+called from atomic context.
 
-Add a per-device interface so that an IOMMU is put into Secure TDX Mode
-only when a device behind it needs trusted DMA. tdx-host tracks how many
-devices use each IOMMU and calls into the VT-d driver only for the first
-and the last of them:
+Write buffer flushing is the only GCMD write reachable on the runtime
+map path. Rather than adding a check there, refuse to acquire IOMMUs
+that require it (rwbf_quirk or CAP.RWBF). Move rwbf_quirk and
+rwbf_required() to iommu.h so dmar.c can use them.
 
-- dmar_tdxc_get_params() looks up the DMAR unit translating the device
-  and returns its register base address, which is how the TDX module
-  identifies an IOMMU, and its NUMA node, so that tdx-host can allocate
-  the TDX module's metadata pages local to that IOMMU.
+The remaining GCMD writers (root table, translation enable/disable,
+queued invalidation and interrupt remapping) are only used at init,
+hotplug and suspend/resume. Acquired units are never hot-removed,
+hibernation is unavailable with TDX, and the following patch refuses
+system suspend while an IOMMU is acquired. Guard them with
+WARN_ON_ONCE() ahead of their companion register writes (RTADDR,
+IQT/IQA, IRTA).
 
-- dmar_tdxc_acquire() is called right before TDH.IOMMU.SETUP. It checks
-  the preconditions TDH.IOMMU.SETUP requires (DMA translation, queued
-  invalidation and scalable mode enabled) and confines the host to the
-  lower half of the domain ID space, since the TDX module owns the half
-  with the MSB set.
-
-- dmar_tdxc_release() undoes acquire(). tdx-host calls it if
-  TDH.IOMMU.SETUP fails, or after TDH.IOMMU.CLEAR succeeds for the last
-  user. If TDH.IOMMU.CLEAR fails, tdx-host doesn't call it, so the upper
-  half of the domain ID space stays reserved for the TDX module.
-
-DMAR units advertising ECAP.TDXCS are excluded from DMAR hotplug. No
-platform currently supports both trusted DMA and DMAR hotplug, so that
-flow can't be validated on hardware. Hot-removing such a unit is also
-unsafe, because tdx-host may hold a reference to it and the TDX module
-may own its trusted DMA resources. This also keeps the unit handle
-returned by dmar_tdxc_get_params() valid for the lifetime of the system.
-
-The symbols are exported only to the tdx-host module.
+intel_iommu_shutdown() is the exception. It is only called from
+native_machine_shutdown() via machine_shutdown(). On restart, halt,
+power-off and kexec, syscore_shutdown() runs first and tdx_shutdown()
+issues TDH.SYS.DISABLE, which takes every IOMMU out of Secure TDX Mode.
+The crash kexec path doesn't call it. Clear tdxc_acquired there so
+translation is still turned off.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.h |   3 +
- include/linux/dmar.h        |  23 +++++
- drivers/iommu/intel/dmar.c  | 185 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 211 insertions(+)
+ drivers/iommu/intel/iommu.h         |  8 ++++-
+ drivers/iommu/intel/dmar.c          | 50 ++++++++++++++++++++++++-----
+ drivers/iommu/intel/iommu.c         | 33 +++++++++++++++++--
+ drivers/iommu/intel/irq_remapping.c | 10 ++++++
+ 4 files changed, 89 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 5b3d234ae265..18fef91753a0 100644
+index 18fef91753a0..26135248675d 100644
 --- a/drivers/iommu/intel/iommu.h
 +++ b/drivers/iommu/intel/iommu.h
-@@ -187,6 +187,7 @@
-  */
- 
- #define ecap_pms(e)		(((e) >> 51) & 0x1)
-+#define ecap_tdxcs(e)		(((e) >> 50) & 0x1)
- #define ecap_rps(e)		(((e) >> 49) & 0x1)
- #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
- #define ecap_flts(e)		(((e) >> 47) & 0x1)
-@@ -689,6 +690,8 @@ struct intel_iommu {
+@@ -690,7 +690,10 @@ struct intel_iommu {
  	u64		ecmdcap[DMA_MAX_NUM_ECMDCAP];
  	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF */
  	raw_spinlock_t	register_lock; /* protect register handling */
-+	/* Acquired for the TDX module. Protected by register_lock. */
-+	bool		tdxc_acquired;
+-	/* Acquired for the TDX module. Protected by register_lock. */
++	/*
++	 * GCMD and ECMD writes are rejected while the TDX module owns this
++	 * IOMMU. Protected by register_lock.
++	 */
+ 	bool		tdxc_acquired;
  	int		seq_id;	/* sequence id of the iommu */
  	int		agaw; /* agaw of this iommu */
- 	int		msagaw; /* max sagaw of this iommu */
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 63e35df2cef4..a39ca13f13dc 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -47,9 +47,32 @@ struct dmar_drhd_unit {
- 	u8	ignored:1; 		/* ignore drhd		*/
- 	u8	include_all:1;
- 	u8	gfx_dedicated:1;	/* graphic dedicated	*/
-+	struct mutex tdxc_lock;		/* serializes acquire/release */
- 	struct intel_iommu *iommu;
- };
- 
-+/*
-+ * struct dmar_tdxc_params - IOMMU information for driving TDH.IOMMU.*
-+ * @reg_base_addr: Register base address of the IOMMU. The TDX module
-+ *		   identifies an IOMMU by it.
-+ * @node: NUMA node of the IOMMU, for allocating the TDX module's
-+ *	  metadata pages local to it.
-+ * @drhd: VT-d internal handle; the caller must not dereference it. It
-+ *	  stays valid for the lifetime of the system because TDX
-+ *	  Connect-capable units are never hot-removed.
-+ */
-+struct dmar_tdxc_params {
-+	u64 reg_base_addr;
-+	int node;
-+	struct dmar_drhd_unit *drhd;
-+};
-+
-+int dmar_tdxc_get_params(struct pci_dev *pdev, struct dmar_tdxc_params *params);
-+int dmar_tdxc_acquire(struct pci_dev *pdev,
-+		      const struct dmar_tdxc_params *params);
-+void dmar_tdxc_release(struct pci_dev *pdev,
-+		       const struct dmar_tdxc_params *params);
-+
- struct dmar_pci_path {
- 	u8 bus;
- 	u8 device;
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 6377ba97a9ea..60d4c8ab1b4c 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -431,6 +431,7 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
- 	/* The size of the register set is 2 ^ N 4 KB pages. */
- 	dmaru->reg_size = 1UL << (drhd->size + 12);
- 	dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
-+	mutex_init(&dmaru->tdxc_lock);
- 	dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
- 					      ((void *)drhd) + drhd->header.length,
- 					      &dmaru->devices_cnt);
-@@ -2367,6 +2368,25 @@ static int dmar_hp_release_drhd(struct acpi_dmar_header *header, void *arg)
- 	return 0;
+@@ -1354,6 +1357,9 @@ static inline bool intel_domain_is_ss_paging(struct dmar_domain *domain)
  }
  
-+static int dmar_hp_check_tdxc(struct acpi_dmar_header *header, void *arg)
-+{
-+	struct dmar_drhd_unit *dmaru;
+ extern int intel_iommu_sm;
++extern int rwbf_quirk;
 +
-+	dmaru = dmar_find_dmaru((struct acpi_dmar_hardware_unit *)header);
-+	if (!dmaru || !dmaru->iommu || !ecap_tdxcs(dmaru->iommu->ecap))
-+		return 0;
++#define rwbf_required(iommu)	(rwbf_quirk || cap_rwbf((iommu)->cap))
+ int iommu_calculate_agaw(struct intel_iommu *iommu);
+ int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+ int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob);
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 60d4c8ab1b4c..91826705a06b 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1731,6 +1731,9 @@ void dmar_disable_qi(struct intel_iommu *iommu)
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+ 
++	if (WARN_ON_ONCE(iommu->tdxc_acquired))
++		goto end;
 +
-+	/*
-+	 * No platform currently supports both trusted DMA and DMAR hotplug,
-+	 * so it cannot be validated on real hardware. Removal is also unsafe:
-+	 * tdx-host may hold a pointer to this unit and the TDX module may own
-+	 * its trusted DMA resources.
-+	 */
-+	pr_info("%s: hotplug of an IOMMU with trusted DMA support is not supported\n",
-+		dmaru->iommu->name);
-+	return -EOPNOTSUPP;
+ 	sts =  readl(iommu->reg + DMAR_GSTS_REG);
+ 	if (!(sts & DMA_GSTS_QIES))
+ 		goto end;
+@@ -1762,9 +1765,6 @@ static void __dmar_enable_qi(struct intel_iommu *iommu)
+ 	struct q_inval *qi = iommu->qi;
+ 	u64 val = virt_to_phys(qi->desc);
+ 
+-	qi->free_head = qi->free_tail = 0;
+-	qi->free_cnt = QI_LENGTH;
+-
+ 	/*
+ 	 * Set DW=1 and QS=1 in IQA_REG when Scalable Mode capability
+ 	 * is present.
+@@ -1774,6 +1774,12 @@ static void __dmar_enable_qi(struct intel_iommu *iommu)
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+ 
++	if (WARN_ON_ONCE(iommu->tdxc_acquired))
++		goto out;
++
++	qi->free_head = qi->free_tail = 0;
++	qi->free_cnt = QI_LENGTH;
++
+ 	/* write zero to the tail reg */
+ 	writel(0, iommu->reg + DMAR_IQT_REG);
+ 
+@@ -1785,6 +1791,7 @@ static void __dmar_enable_qi(struct intel_iommu *iommu)
+ 	/* Make sure hardware complete it */
+ 	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG, readl, (sts & DMA_GSTS_QIES), sts);
+ 
++out:
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+ }
+ 
+@@ -2584,10 +2591,29 @@ static void dmar_tdxc_unreserve_did(struct intel_iommu *iommu)
+ 	iommu->max_domain_id = cap_ndoms(iommu->cap);
+ }
+ 
+-static void dmar_tdxc_set_acquired(struct intel_iommu *iommu, bool acquired)
++static int dmar_tdxc_block_regs(struct intel_iommu *iommu)
+ {
+-	guard(raw_spinlock_irqsave)(&iommu->register_lock);
+-	iommu->tdxc_acquired = acquired;
++	unsigned long flags;
++	int ret = 0;
++
++	raw_spin_lock_irqsave(&iommu->register_lock, flags);
++	if (cap_ecmds(iommu->cap) &&
++	    (readq(iommu->reg + DMAR_ECRSP_REG) & DMA_ECMD_ECRSP_IP))
++		ret = -EBUSY;
++	else
++		iommu->tdxc_acquired = true;
++	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
++
++	return ret;
 +}
 +
- static int dmar_hotplug_insert(acpi_handle handle)
- {
- 	int ret;
-@@ -2396,6 +2416,11 @@ static int dmar_hotplug_insert(acpi_handle handle)
- 	if (ret)
- 		goto release_atsr;
- 
-+	ret = dmar_walk_dsm_resource(handle, DMAR_DSM_FUNC_DRHD,
-+				     &dmar_hp_check_tdxc, NULL);
-+	if (ret)
-+		goto release_atsr;
++static void dmar_tdxc_unblock_regs(struct intel_iommu *iommu)
++{
++	unsigned long flags;
 +
- 	ret = dmar_walk_dsm_resource(handle, DMAR_DSM_FUNC_DRHD,
- 				     &dmar_hp_add_drhd, NULL);
- 	if (!ret)
-@@ -2422,6 +2447,11 @@ static int dmar_hotplug_remove(acpi_handle handle)
++	raw_spin_lock_irqsave(&iommu->register_lock, flags);
++	iommu->tdxc_acquired = false;
++	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+ }
+ 
+ static struct dmar_drhd_unit *dmar_tdxc_find_drhd(struct pci_dev *pdev)
+@@ -2669,11 +2695,19 @@ int dmar_tdxc_acquire(struct pci_dev *pdev,
+ 	if (!(iommu->gcmd & DMA_GCMD_TE) || !iommu->qi || !sm_supported(iommu))
+ 		return -EINVAL;
+ 
++	/* Write buffer flushing needs GCMD, which is blocked once acquired. */
++	if (rwbf_required(iommu))
++		return -EOPNOTSUPP;
++
+ 	ret = dmar_tdxc_reserve_did(iommu);
  	if (ret)
  		return ret;
  
-+	ret = dmar_walk_dsm_resource(handle, DMAR_DSM_FUNC_DRHD,
-+				     &dmar_hp_check_tdxc, NULL);
-+	if (ret)
+-	dmar_tdxc_set_acquired(iommu, true);
++	ret = dmar_tdxc_block_regs(iommu);
++	if (ret) {
++		dmar_tdxc_unreserve_did(iommu);
 +		return ret;
-+
- 	ret = dmar_walk_dsm_resource(handle, DMAR_DSM_FUNC_DRHD,
- 				     &dmar_hp_remove_drhd, NULL);
- 	if (ret == 0) {
-@@ -2518,3 +2548,158 @@ bool dmar_platform_optin(void)
- 	return ret;
++	}
+ 
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(dmar_platform_optin);
-+
-+static void dmar_tdxc_fill_params(struct dmar_drhd_unit *drhd,
-+				  struct dmar_tdxc_params *params)
-+{
-+	params->reg_base_addr = drhd->reg_base_addr;
-+	params->node = drhd->iommu->node;
-+	/*
-+	 * params->drhd stays valid because trusted DMA-capable units are
-+	 * never hot-removed.
-+	 */
-+	params->drhd = drhd;
-+}
-+
-+/*
-+ * When the IOMMU runs in Secure TDX Mode, the TDX module owns the
-+ * MSB-tagged half of the domain ID space. Confine the host to the
-+ * lower half, failing if any upper-half DID is already in use.
-+ */
-+static int dmar_tdxc_reserve_did(struct intel_iommu *iommu)
-+{
-+	unsigned long ndoms = cap_ndoms(iommu->cap);
-+
-+	guard(mutex)(&iommu->did_lock);
-+	if (ida_find_first_range(&iommu->domain_ida, ndoms >> 1, ndoms - 1) >= 0)
-+		return -EBUSY;
-+
-+	iommu->max_domain_id = ndoms >> 1;
-+	return 0;
-+}
-+
-+static void dmar_tdxc_unreserve_did(struct intel_iommu *iommu)
-+{
-+	guard(mutex)(&iommu->did_lock);
-+	iommu->max_domain_id = cap_ndoms(iommu->cap);
-+}
-+
-+static void dmar_tdxc_set_acquired(struct intel_iommu *iommu, bool acquired)
-+{
-+	guard(raw_spinlock_irqsave)(&iommu->register_lock);
-+	iommu->tdxc_acquired = acquired;
-+}
-+
-+static struct dmar_drhd_unit *dmar_tdxc_find_drhd(struct pci_dev *pdev)
-+{
-+	struct dmar_drhd_unit *drhd;
-+
-+	if (!intel_iommu_enabled)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	guard(rwsem_read)(&dmar_global_lock);
-+
-+	drhd = dmar_find_matched_drhd_unit(pdev);
-+	if (!drhd || drhd->ignored || !drhd->iommu)
-+		return ERR_PTR(-ENODEV);
-+
-+	if (!ecap_tdxcs(drhd->iommu->ecap))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	return drhd;
-+}
-+
-+/*
-+ * dmar_tdxc_get_params() - Get the IOMMU information for a device
-+ * @dev: PCI device that will use trusted DMA
-+ * @params: Filled in on success
-+ *
-+ * Look up the IOMMU that translates @dev and return what tdx-host needs
-+ * to issue TDH.IOMMU.SETUP and TDH.IOMMU.CLEAR on it. This only reads
-+ * information and doesn't change any state. Devices behind the same
-+ * IOMMU get the same @params->reg_base_addr.
-+ *
-+ * Return 0 on success and error code on failure.
-+ */
-+int dmar_tdxc_get_params(struct pci_dev *pdev, struct dmar_tdxc_params *params)
-+{
-+	struct dmar_drhd_unit *drhd = dmar_tdxc_find_drhd(pdev);
-+
-+	if (IS_ERR(drhd))
-+		return PTR_ERR(drhd);
-+
-+	dmar_tdxc_fill_params(drhd, params);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_get_params, "tdx-host");
-+
-+/*
-+ * dmar_tdxc_acquire() - Acquire an IOMMU for TDH.IOMMU.SETUP
-+ * @dev: PCI device that will use trusted DMA
-+ * @params: Returned by dmar_tdxc_get_params() for @dev
-+ *
-+ * Call this right before issuing TDH.IOMMU.SETUP for the first user of
-+ * the IOMMU. On success, the caller must issue TDH.IOMMU.SETUP and call
-+ * dmar_tdxc_release() if it fails. The caller owns the per-IOMMU refcount
-+ * and must serialize all calls for the same IOMMU.
-+ *
-+ * Return: 0 on success and error code on failure.
-+ */
-+int dmar_tdxc_acquire(struct pci_dev *pdev,
-+		      const struct dmar_tdxc_params *params)
-+{
-+	struct dmar_drhd_unit *drhd = params->drhd;
-+	struct intel_iommu *iommu = drhd->iommu;
-+	int ret;
-+
-+	if (WARN_ON(dmar_tdxc_find_drhd(pdev) != drhd))
-+		return -EINVAL;
-+
-+	guard(mutex)(&drhd->tdxc_lock);
-+	/* Still set if TDH.IOMMU.CLEAR failed and tdx-host was reloaded. */
-+	if (iommu->tdxc_acquired)
-+		return -EBUSY;
-+
-+	/*
-+	 * TDH.IOMMU.SETUP requires DMA translation, queued invalidation and
-+	 * scalable mode to be enabled. Catch these here so the error is
-+	 * -EINVAL rather than an opaque TDX_IOMMU_INVALID_STATE.
-+	 */
-+	if (!(iommu->gcmd & DMA_GCMD_TE) || !iommu->qi || !sm_supported(iommu))
-+		return -EINVAL;
-+
-+	ret = dmar_tdxc_reserve_did(iommu);
-+	if (ret)
-+		return ret;
-+
-+	dmar_tdxc_set_acquired(iommu, true);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_acquire, "tdx-host");
-+
-+/*
-+ * dmar_tdxc_release() - Take an IOMMU out of Secure TDX Mode
-+ * @dev: PCI device whose IOMMU was acquired via dmar_tdxc_acquire()
-+ * @params: Returned by dmar_tdxc_get_params() for @dev
-+ *
-+ * Call this if TDH.IOMMU.SETUP fails, or for the last user of the IOMMU
-+ * after TDH.IOMMU.CLEAR has succeeded.
-+ */
-+void dmar_tdxc_release(struct pci_dev *pdev,
-+		       const struct dmar_tdxc_params *params)
-+{
-+	struct dmar_drhd_unit *drhd = params->drhd;
-+
-+	if (WARN_ON(dmar_tdxc_find_drhd(pdev) != drhd))
+@@ -2699,7 +2733,7 @@ void dmar_tdxc_release(struct pci_dev *pdev,
+ 	if (WARN_ON(!drhd->iommu->tdxc_acquired))
+ 		return;
+ 
+-	dmar_tdxc_set_acquired(drhd->iommu, false);
++	dmar_tdxc_unblock_regs(drhd->iommu);
+ 	dmar_tdxc_unreserve_did(drhd->iommu);
+ }
+ EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_release, "tdx-host");
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 5a2e705a2f2e..69e8c2c8680a 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -46,9 +46,7 @@
+ static void __init check_tylersburg_isoch(void);
+ static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
+ 					  bool enable);
+-static int rwbf_quirk;
+-
+-#define rwbf_required(iommu)	(rwbf_quirk || cap_rwbf((iommu)->cap))
++int rwbf_quirk;
+ 
+ /*
+  * Skip forcing iommu on and avoid tboot-related kernel panics during
+@@ -699,6 +697,10 @@ static void iommu_set_root_entry(struct intel_iommu *iommu)
+ 		addr |= DMA_RTADDR_SMT;
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
++	if (WARN_ON_ONCE(iommu->tdxc_acquired)) {
++		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
 +		return;
++	}
+ 	writeq(addr, iommu->reg + DMAR_RTADDR_REG);
+ 
+ 	writel(iommu->gcmd | DMA_GCMD_SRTP, iommu->reg + DMAR_GCMD_REG);
+@@ -731,12 +733,15 @@ void iommu_flush_write_buffer(struct intel_iommu *iommu)
+ 		return;
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
++	if (WARN_ON_ONCE(iommu->tdxc_acquired))
++		goto out;
+ 	writel(iommu->gcmd | DMA_GCMD_WBF, iommu->reg + DMAR_GCMD_REG);
+ 
+ 	/* Make sure hardware complete it */
+ 	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
+ 		      readl, (!(val & DMA_GSTS_WBFS)), val);
+ 
++out:
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+ 
+@@ -956,6 +961,8 @@ static void iommu_enable_translation(struct intel_iommu *iommu)
+ 	unsigned long flags;
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
++	if (WARN_ON_ONCE(iommu->tdxc_acquired))
++		goto out;
+ 	iommu->gcmd |= DMA_GCMD_TE;
+ 	writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
+ 
+@@ -963,6 +970,7 @@ static void iommu_enable_translation(struct intel_iommu *iommu)
+ 	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
+ 		      readl, (sts & DMA_GSTS_TES), sts);
+ 
++out:
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+ }
+ 
+@@ -976,6 +984,8 @@ static void iommu_disable_translation(struct intel_iommu *iommu)
+ 		return;
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
++	if (WARN_ON_ONCE(iommu->tdxc_acquired))
++		goto out;
+ 	iommu->gcmd &= ~DMA_GCMD_TE;
+ 	writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
+ 
+@@ -983,6 +993,7 @@ static void iommu_disable_translation(struct intel_iommu *iommu)
+ 	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG,
+ 		      readl, (!(sts & DMA_GSTS_TES)), sts);
+ 
++out:
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+ 
+@@ -2513,6 +2524,12 @@ void intel_iommu_shutdown(void)
+ 		/* Disable PMRs explicitly here. */
+ 		iommu_disable_protect_mem_regions(iommu);
+ 
++		/*
++		 * Only reached via machine_shutdown(), after syscore_shutdown()
++		 * ran TDH.SYS.DISABLE and took the IOMMU out of Secure TDX Mode.
++		 */
++		iommu->tdxc_acquired = false;
 +
-+	guard(mutex)(&drhd->tdxc_lock);
-+	if (WARN_ON(!drhd->iommu->tdxc_acquired))
+ 		/* Make sure the IOMMUs are switched off */
+ 		iommu_disable_translation(iommu);
+ 	}
+@@ -4336,6 +4353,16 @@ int ecmd_submit_sync(struct intel_iommu *iommu, u8 ecmd, u64 oa, u64 ob)
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+ 
++	/*
++	 * The TDX module owns this IOMMU. This may be called from atomic
++	 * context (e.g. perf pmu::start/stop), so don't sleep; just reject
++	 * the request.
++	 */
++	if (iommu->tdxc_acquired) {
++		ret = -EBUSY;
++		goto err;
++	}
++
+ 	res = readq(iommu->reg + DMAR_ECRSP_REG);
+ 	if (res & DMA_ECMD_ECRSP_IP) {
+ 		ret = -EBUSY;
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 25c26f706984..6e1fe0fcafd9 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -464,6 +464,10 @@ static void iommu_set_irq_remapping(struct intel_iommu *iommu, int mode)
+ 	addr = virt_to_phys((void *)iommu->ir_table->base);
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
++	if (WARN_ON_ONCE(iommu->tdxc_acquired)) {
++		raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
 +		return;
++	}
+ 
+ 	writeq((addr) | IR_X2APIC_MODE(mode) | INTR_REMAP_TABLE_REG_SIZE,
+ 	       iommu->reg + DMAR_IRTA_REG);
+@@ -489,6 +493,8 @@ static void iommu_enable_irq_remapping(struct intel_iommu *iommu)
+ 	u32 sts;
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
++	if (WARN_ON_ONCE(iommu->tdxc_acquired))
++		goto out;
+ 
+ 	/* Enable interrupt-remapping */
+ 	iommu->gcmd |= DMA_GCMD_IRE;
+@@ -514,6 +520,7 @@ static void iommu_enable_irq_remapping(struct intel_iommu *iommu)
+ 			"Compatibility-format IRQs enabled despite intr remapping;\n"
+ 			"you are vulnerable to IRQ injection.\n");
+ 
++out:
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+ }
+ 
+@@ -658,6 +665,9 @@ static void iommu_disable_irq_remapping(struct intel_iommu *iommu)
+ 
+ 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+ 
++	if (WARN_ON_ONCE(iommu->tdxc_acquired))
++		goto end;
 +
-+	dmar_tdxc_set_acquired(drhd->iommu, false);
-+	dmar_tdxc_unreserve_did(drhd->iommu);
-+}
-+EXPORT_SYMBOL_FOR_MODULES(dmar_tdxc_release, "tdx-host");
+ 	sts = readl(iommu->reg + DMAR_GSTS_REG);
+ 	if (!(sts & DMA_GSTS_IRES))
+ 		goto end;
 -- 
 2.43.0
 
