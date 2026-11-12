@@ -1,55 +1,55 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794502881;
-	b=NuJQaoOhNt4Nzd+KbX/3m9DWzqc4VVz7RdGQ4/CxORkgZFqJooFIV8xRj7k/ORVKJKiH
-	 r8hoj5AbEJTCS2/cpoVvWgXEh7LDpDPS2Gw7bgstLXVZnqEGIcBE1ArTJroAevFwSE1q1
-	 FOuJ8zhYUVbACZSNkrJkPr6zMKTDfdFXhH+t0qDx87INb74HeHTD80tnECknq5wTrTTwN
-	 YwwVkfko2508tPszKgYDTYOkRPbRhXXjK/pfgHg25wW+HRkKW6gL8LOWYcgRqmOosdGC9
-	 S3BMFXzk9dyb5TfO5BT1z0sixSKT/jtOwfi4Q8hpJu8D74L4NXf+tOkhzYnC50ByqEA==
+	t=1794502884;
+	b=ErtOER7HJv+ifHQ1vdnHAF/hxvXHlpoxYfeiPi1otVbp6RyHm6E53zamawrhYCmTuWY/
+	 NmaUV4PuYUyOzwtxN5hGXI9WtF+xFGRLIOxNzSbM++t1+3/qGx9PoG4VYoFn91FEdMovi
+	 JFpPggDoP9VhrWnkoN74iSJBG0BKVuPAUrazZfPY41X5UyWzDo+dIgi+iB7zRmNC/qrMz
+	 N6w7m408XJcAia+eMYm7GvQJ48L/XVkIPF1pPaOZBA7A1fljOVzLvTFYV+5OM7ADGJZmO
+	 4HKbDeBRG5BPvdhn0JXAnPbJihus9jCRNwI0dVduORBjRlkFHEFBLRQbdEMnzHc5VdQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794502881;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794502884;
 	h=DMARC-Filter:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc:X-Mailer:X-ZohoMailClient;
-	bh=J6mvnG12EDoqYLvLk+gFoWDFbHuiJZvTIZxOR9XoL3A=;
-	b=uHAQ3KOTeXJ1mIfI6u0Rz7nLWPxfY6U1fB0+AHtGlE4+ZyS4DCxzxyJbXnlXHD4Bdlvt
-	 3akzHLDpM/Xvt9mC8pabnIDuEPUwxBuWFOzXJByKMcvv/OyYiMFH0ozis3VJpJEYG+8/H
-	 Jx04SfPrMoIpZhQudzuuFL9dlOumgLiOV38T/z7BdLav0nWn9VO2fsC2Pv9iycRMouILf
-	 s9MTNG1wQdYpRdENrR+4Qo3gKsaK8qeWAzRKF2yZKX/AM4zf08OA2rbP8woEyPZpocmHK
-	 VbpQ8l3z8pJ4SrqStFdOXsvJEWFDfrS7WxWivphOILVSekwWv/bp1iUY+lzWYWEq+Xg==
+	bh=Zs9D6QmbwJaatPy/C5twhxIDkazaNFo1QaQc5EOx0PM=;
+	b=uWn8DwURdcsEhMjm43CBExWjgX35BovAPeiehWHAId0Sac7A8d467b3rzTUkAgZRnJe/
+	 rqnUf8e8SEv/Z5f31i+jgSD1NVlvWV5nW3oCRsDqzpzeL06RJPjC6Us3ohV/8VhfNJrVy
+	 Bn5hFOuQycD8UnvAziGWS0nmBorW0fQfs/onbsx+YLfXbPo8wnw++g7dwR2JDbr6NclUI
+	 08jocZ3XmfRVJ+qNClIMNgyM0US6+zWbptazzdu2ATvGfvlbgHjZNKPgalEDe6TA8hKN3
+	 GTT28Onw5L3ik5XbKcTnxw5TNN9WNzd6fNyqi6B4guaQkC+reARBVrgBjFmYc8SKrcQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=collabora.com;
 	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=P4BYQcGa;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=LD6GXrkp;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
 Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5272606A897;
-	Thu, 12 Nov 2026 17:01:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E5272606A897
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A426606A321;
+	Thu, 12 Nov 2026 17:01:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2A426606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=P4BYQcGa
-ARC-Seal: i=1; a=rsa-sha256; t=1794502866; cv=none; 
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=LD6GXrkp
+ARC-Seal: i=1; a=rsa-sha256; t=1794502878; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=UgXls1NeRScvLQI6WBkSTSpzq06K5qfDKOYfWu1tlsJUZIbLmCcpu3o6KznqRBHH/iJ1Vv5fQw+b/7VrFiVm5oUpPGRHqKuzV9P8XpPNQ8VuobxNEimr5I7SWMADu80AX+MDaR2ODIauuDXIt9IdZ1+OCA1olTenZK7P22XKq5c=
+	b=CWV/TTD7KIIUEEom1x8q9SXObO2Is2V5aGulYqs6tv87tTSxL0vPP7hJEZPYyMJ6/jE/Y57WEHZZxxexJoOdmGIXMKIqW6HcSyyyw+w7lS+AVQINY+1OxLc6aKs3ZwL976xx6hyDoTZ9tu8I26YxhJzn4WyB9YcVJd73NQPix7Y=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1794502866; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=J6mvnG12EDoqYLvLk+gFoWDFbHuiJZvTIZxOR9XoL3A=; 
-	b=DOUzd4zJbfpBNJDeIWK4037NxOz9zm1Pkef9RIny678+qSaMNT26OG1KBACQZhfdKpdGtl3F+pgCQKE3qbTiTCAyVAqvII/K/Ory3aAy/hRTwAtB5/fStwaPm34icI/8UKCyalLsYmZFNHsCtfbDz4Sl9r9S0JPzrEP0zUs9gvk=
+	t=1794502878; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=Zs9D6QmbwJaatPy/C5twhxIDkazaNFo1QaQc5EOx0PM=; 
+	b=F8ibaA5ow7/oV5aHtDdVAZwdRbIwNqLeVvob0AzLDQ/nPx95EjtOEwrZf8QT0lXiFsLuEI4Ll1HiXFDpPILSSAJgtt0SZEYdGs3THGXVhp28LWEvFWCgrNohziBMfAMMzAljgg65QFMRR9bxU4e3q/0kf/79hsO2oNgIIPPRZsc=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=collabora.com;
 	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
 	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=P4BYQcGaqhNwr3zKZy77NxGcivjZ3NHrn1aH2BZr6Q2qY5reVANH5Sx+PFDot59vyN9vx0j9SalQm1z0Q9mKRHM9Mhd++6n/fIYYkcw151wXpiQC6TvNO9sHSFb12zz4rLLGidz0hBYUdF7QfPPWpm/GAcfJ0mgGhJQCTd3kfkc=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=J6mvnG12EDoqYLvLk+gFoWDFbHuiJZvTIZxOR9XoL3A=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 1794502862904739.3424819615961;
-	Thu, 12 Nov 2026 09:01:02 -0800 (PST)
+DKIM-Signature: a=rsa-sha256; b=LD6GXrkpxY87Fv4Ht5tqOC3Ur/YyG9as+JuPoszx3/vhwIBROnoTbEaCR+21L85e/HGw9vgF8Zn819KPvjNr4MJUbWsA3vzs/5hsvmLs6IoRCyPoy4oB9V3/CPoeKWtqCXOJXf6ONuNOGrZflsVxwZGsDMLKgQkpoUzjbGFDZhE=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=Zs9D6QmbwJaatPy/C5twhxIDkazaNFo1QaQc5EOx0PM=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zohomail.com with SMTPS id 1794502875889151.91160893113;
+	Thu, 12 Nov 2026 09:01:15 -0800 (PST)
 From: Daniel Almeida <daniel.almeida@collabora.com>
-Date: Thu, 12 Nov 2026 14:00:11 -0300
-Subject: [PATCH 4/6] rust: iommu: add Domain::attach()
+Date: Thu, 12 Nov 2026 14:00:13 -0300
+Subject: [PATCH 6/6] rust: iommu: add Domain::with_fault_handler()
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -61,7 +61,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261112-b4-iommu-domain-v1-4-c29e86788dda@collabora.com>
+Message-Id: <20261112-b4-iommu-domain-v1-6-c29e86788dda@collabora.com>
 References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
 In-Reply-To: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
 To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -83,108 +83,163 @@ Cc: iommu@lists.linux.dev, rust-for-linux@vger.kernel.org,
 X-Mailer: b4 0.15.2
 X-ZohoMailClient: External
 
-The upcoming rkvenc driver will use IOMMU domains to isolate different
-sessions.
+A driver is not told when its device faults in the IOMMU unless its
+domain has a fault handler. The upcoming rkvenc driver needs to know,
+so that it can stop the encoder and fail the job of the client whose
+domain faulted.
 
-Add Domain::attach(), which attaches the domain to a device and returns
-an Attachment that detaches it on drop. Devices that share their IOMMU
-group with other devices are not supported.
+Add Domain::with_fault_handler(), which allocates a domain and installs
+a FaultHandler on it with iommu_set_fault_handler(). The handler is
+borrowed for the lifetime of the domain. One handler can serve several
+domains, which it tells apart by the DomainId it receives.
 
-attach() is unsafe. The caller must be the device's driver, and the
-device must stop using the domain before the Attachment is dropped.
-The Attachment must not be leaked, since the domain could then be
-freed while it is still attached.
+The handler may run in atomic context.
 
 Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
 ---
- rust/kernel/iommu/domain.rs | 57 +++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 55 insertions(+), 2 deletions(-)
+ rust/kernel/iommu/domain.rs | 112 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 112 insertions(+)
 
 diff --git a/rust/kernel/iommu/domain.rs b/rust/kernel/iommu/domain.rs
-index 2e66becde156..2a5b66f2a5d9 100644
+index ac9947d5063b..351a8e77fa71 100644
 --- a/rust/kernel/iommu/domain.rs
 +++ b/rust/kernel/iommu/domain.rs
-@@ -19,7 +19,10 @@
-         Bound,
-         Device, //
+@@ -21,6 +21,7 @@
      },
--    error::from_err_ptr,
-+    error::{
-+        from_err_ptr,
-+        to_result, //
-+    },
-     prelude::*, //
- };
+     error::{
+         from_err_ptr,
++        from_result,
+         to_result, //
+     },
+     prelude::*,
+@@ -126,6 +127,8 @@ unsafe impl<'a> Send for Domain<'a> {}
+ //   be called concurrently for the same domain.
+ // - Mapping and unmapping ranges. `iommu_map_sg()` and `iommu_unmap()` may be called concurrently
+ //   for the same domain, except in the cases that the safety requirements of `map()` exclude.
++// - Getting the identifier of the domain. `id()` takes the address held in `ptr` and does not
++//   dereference it.
+ unsafe impl<'a> Sync for Domain<'a> {}
  
-@@ -44,6 +47,11 @@ pub struct Domain<'a> {
- // SAFETY: A `struct iommu_domain` is not tied to the thread that allocated it.
- unsafe impl<'a> Send for Domain<'a> {}
- 
-+// SAFETY: `&Domain` allows the following from several threads at once:
-+// - Attaching and detaching the domain. `iommu_attach_device()` and `iommu_detach_device()` may
-+//   be called concurrently for the same domain.
-+unsafe impl<'a> Sync for Domain<'a> {}
-+
  impl<'a> Domain<'a> {
-     /// Allocates a paging domain for `dev`.
-     ///
-@@ -70,11 +78,56 @@ pub unsafe fn new(dev: &'a Device<Bound>) -> Result<Self> {
-             _dev: PhantomData,
+@@ -155,6 +158,39 @@ pub unsafe fn new(dev: &'a Device<Bound>) -> Result<Self> {
          })
      }
-+
-+    /// Attaches the domain to `dev`.
+ 
++    /// Allocates a paging domain for `dev` that reports its faults to `handler`.
 +    ///
-+    /// This may sleep.
++    /// A handler can serve several domains, which [`Domain::id`] tells apart.
 +    ///
 +    /// # Safety
 +    ///
-+    /// - The caller must be the driver bound to `dev`.
-+    /// - The caller must ensure that `dev` stops using the domain before the returned
-+    ///   [`Attachment`] is dropped.
-+    /// - The caller must not `mem::forget()` the returned [`Attachment`] or otherwise prevent its
-+    ///   [`Drop`] implementation from running.
-+    pub unsafe fn attach<'d>(&'d self, dev: &'d Device<Bound>) -> Result<Attachment<'d>> {
-+        // SAFETY: By the type invariant, `self.ptr` is a valid domain, and `dev` is a valid
-+        // device. The caller is the driver bound to `dev`.
-+        to_result(unsafe { bindings::iommu_attach_device(self.ptr.as_ptr(), dev.as_raw()) })?;
++    /// This function has the same safety requirements as [`Domain::new`].
++    pub unsafe fn with_fault_handler<H: FaultHandler>(
++        dev: &'a Device<Bound>,
++        handler: &'a H,
++    ) -> Result<Self> {
++        // SAFETY: The caller meets the safety requirements of `Domain::new()`.
++        let domain = unsafe { Self::new(dev)? };
 +
-+        // INVARIANT: The domain is attached to `dev`.
-+        Ok(Attachment { domain: self, dev })
++        // SAFETY: By the type invariant, `domain.ptr` is a valid domain, which nothing else uses
++        // yet. `handler` outlives `'a`, and thus the domain.
++        unsafe {
++            bindings::iommu_set_fault_handler(
++                domain.ptr.as_ptr(),
++                Some(fault_callback::<H>),
++                core::ptr::from_ref(handler).cast_mut().cast(),
++            )
++        };
++
++        Ok(domain)
 +    }
- }
- 
- impl<'a> Drop for Domain<'a> {
-     fn drop(&mut self) {
--        // SAFETY: By the type invariant, `self.ptr` is a domain owned by `self`.
-+        // SAFETY: By the type invariant, `self.ptr` is a domain owned by `self`. Every
-+        // `Attachment` borrows `self`, and the caller of `attach()` promised not to leak it, so
-+        // the domain is attached to no device.
-         unsafe { bindings::iommu_domain_free(self.ptr.as_ptr()) };
++
++    /// Returns the identifier that [`FaultHandler::fault`] receives for faults on this domain.
++    #[inline]
++    pub fn id(&self) -> DomainId {
++        DomainId(self.ptr.as_ptr().addr())
++    }
++
+     /// Attaches the domain to `dev`.
+     ///
+     /// This may sleep.
+@@ -311,3 +347,79 @@ fn drop(&mut self) {
+         unsafe { bindings::iommu_unmap(self.domain.ptr.as_ptr(), self.iova, self.size) };
      }
  }
 +
-+/// A [`Domain`] attached to a device.
++/// Identifies a [`Domain`] in fault reports.
 +///
-+/// An attachment cannot outlive the domain or the binding of the device it is attached to.
-+/// Dropping it detaches the domain from the device, which may sleep.
++/// Two identifiers are equal if they identify the same domain. An identifier can be reused once
++/// its domain is freed.
++#[derive(Clone, Copy, PartialEq, Eq)]
++pub struct DomainId(usize);
++
++/// A handler for the IOMMU faults of a [`Domain`], see [`Domain::with_fault_handler`].
 +///
-+/// # Invariants
++/// Only IOMMU drivers that report faults with `report_iommu_fault()` call it.
 +///
-+/// `domain` is attached to `dev`.
-+#[must_use = "the domain is detached when the attachment is dropped"]
-+pub struct Attachment<'d> {
-+    domain: &'d Domain<'d>,
-+    dev: &'d Device<Bound>,
++/// # Examples
++///
++/// ```
++/// use kernel::{
++///     device::{
++///         Bound,
++///         Device, //
++///     },
++///     iommu::domain::{
++///         Domain,
++///         DomainId,
++///         FaultHandler, //
++///     },
++///     prelude::*,
++///     sync::atomic::{
++///         Atomic,
++///         Relaxed, //
++///     }, //
++/// };
++///
++/// struct Faults {
++///     count: Atomic<u32>,
++/// }
++///
++/// impl FaultHandler for Faults {
++///     fn fault(&self, _domain: DomainId, _iova: usize, _write: bool) -> Result {
++///         self.count.add(1, Relaxed);
++///         Ok(())
++///     }
++/// }
++///
++/// fn test<'a>(dev: &'a Device<Bound>, faults: &'a Faults) -> Result<Domain<'a>> {
++///     // SAFETY: The IOMMU driver that `dev` is behind meets the requirements of `Domain::new()`.
++///     unsafe { Domain::with_fault_handler(dev, faults) }
++/// }
++/// ```
++pub trait FaultHandler: Sync {
++    /// Handles a faulting access to `iova` through the domain identified by `domain`. `write` is
++    /// true if the IOMMU driver reported a write access.
++    ///
++    /// This may be executed in atomic context and must not sleep. Implementations return `Ok(())`
++    /// if the fault was handled. The result is passed to the IOMMU driver.
++    fn fault(&self, domain: DomainId, iova: usize, write: bool) -> Result;
 +}
 +
-+impl<'d> Drop for Attachment<'d> {
-+    fn drop(&mut self) {
-+        // SAFETY: By the type invariant, `self.domain` is attached to `self.dev`. The caller of
-+        // `Domain::attach()` is the driver bound to `self.dev`, and promised that the device
-+        // stopped using the domain.
-+        unsafe { bindings::iommu_detach_device(self.domain.ptr.as_ptr(), self.dev.as_raw()) };
-+    }
++/// # Safety
++///
++/// `token` must be the `&H` that [`Domain::with_fault_handler`] registered for `domain`.
++unsafe extern "C" fn fault_callback<H: FaultHandler>(
++    domain: *mut bindings::iommu_domain,
++    _dev: *mut bindings::device,
++    iova: c_ulong,
++    flags: c_int,
++    token: *mut c_void,
++) -> c_int {
++    // SAFETY: By the safety requirements, `token` is a `&H` that outlives `domain`.
++    let handler = unsafe { &*token.cast_const().cast::<H>() };
++    let write = flags & cv!(bindings::IOMMU_FAULT_WRITE => c_int) != 0;
++
++    from_result(|| {
++        handler.fault(DomainId(domain.addr()), iova, write)?;
++        Ok(0)
++    })
 +}
 
 -- 
