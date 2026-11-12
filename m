@@ -1,54 +1,82 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.110
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794448146;
-	b=21/IrL9r2dyloiZ1hsy0v4hunAWzVXT7EwoMAbXYEHncpaxm3qFUGfVkOBHKdsiXGSeD
-	 +fCq+XO003hsKHZ6U+HAecI2xgSLj325ioyiuEKVIHAX+NFn56jo+ipnhMj4zNwNulKdb
-	 2fgIlrzronZJOOm/XgX1D0p1oyoWBiijZADczn9KRG7iuwyLSTMdIVn1BCJXlBXwTaYWK
-	 UM+5PBTQVfquDAkcchP9NVpP6wqb2bg/2q60wW6WyM/xNBx9pCX/1a45KJy8u2n4l/T3U
-	 8KoY2F/ffDjMb1vEJAm6S2W26xXPJMb80weuYctL+xSZlZdMOWAyzU7slxhKaRo/5GA==
+	t=1794449703;
+	b=kUhF63IFwIJW87K6F+kvsB9GX+TtFp086JOaXsgIE7OETzE9bPFXXH1pdPqrXVIznTX3
+	 Fihc5AoBpySDpIFExqWNij+IGx8VSxQloQnZPvy1uVB+i1m/KDaN8CWuPiBJ2h7+/yEPL
+	 PSHQdR8YOTYieiJ62WNFpqUrtjeyXStANxfd3/uRKom3DP6057d3wPDV92gIM0Fsw/BuJ
+	 9VIeCQR1QRtB7dUMcMug0KCiLVLWQirBgg7ftE+QdV4FZNwEb1HTpKGceKObIw8sWMSWJ
+	 PRIpy+FiKvVMgbl2hp+Bq5cuw3oIMrPEIknea1javOj0tyPf07ga4yitAbq3PVuEqnQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794448146;
-	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794449703;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=8vIz8xYau+WtFrk0xTr9b5QoDkJ8T5uH0TopCPW+Ht0=;
-	b=VAAccSG3qITPuS52fMaR/1XIs9B6B7lURoi/qsQqlXV/goMjv/IsjrbjItYhsOnNRie0
-	 b6kuakT87QMq96QFrGriKORYui0NNhrBgqffMorzgKQDlc8L7QJ0Zw5kKh0Ejw7GLsLN9
-	 8fr7x8be7kQupDVAFUoT3/8BHY/DqtO0ZJcqsLJxcvSEjF5g4EKF24L7KuA5Uy8x+TIh+
-	 Oje424A7U3UuwdqebSdYnF/qZreGm78ZwgaOVKKKBH2r5pRBelrdiXTFwNkSCYItRsJ//
-	 mo+1oEVNmOGmS+B6aLm8y/PMZMJWXyptR1Y35V4ZsTNlYZG4sieMRl05cHeKV3uTngA==
+	bh=1xCaH4HUY4jE9shdiHIoND7z6gJxF6tiu/0JOdXHPA4=;
+	b=AExbzneC+AbcGKm2UYbE9SobUQhLlSTt7WCa8Ek3EkuSLRg69hfC2lGJMMzsMCN3+CDS
+	 14XxlZWrD7ehDMN9SYzkJOWxjjdvbw/e2w5wZxyRyG9zjGeNiFNDm0j+WVsVVxjgbDX50
+	 L9nfTygJfj6QQ0fD1yal18QSEzdBfJhGK9fMkbd/dPfvzFy/JQV5tUgViy6v6OvxUlE8H
+	 +01h20UNIgGeq3HNh9GcKMfE7iPhMadm3HwYAFKvzS4CMRg8TtI/eonxoB93SOVtpE+Jl
+	 8bMQmO3BZqwsNjDw8nyHGFEh3yLMZnVvdTJTNzJALzHQtlkiQsvT8WBi14GV8ykop/g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=infradead.org;
-	spf=pass smtp.mailfrom=infradead.org;
-	dkim=pass header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=ZUR1Pivf;
-	arc=none smtp.remote-ip=198.137.202.133
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=HmTDAKB7;
+	arc=none smtp.remote-ip=115.124.30.110
+Received: from out30-110.freemail.mail.aliyun.com (out30-110.freemail.mail.aliyun.com [115.124.30.110])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023FB606A323;
-	Thu, 12 Nov 2026 01:49:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 023FB606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D789606A321
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 02:15:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8D789606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=ZUR1Pivf
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=8vIz8xYau+WtFrk0xTr9b5QoDkJ8T5uH0TopCPW+Ht0=; b=ZUR1Pivf7YfAPwvJVMDDsk3Jzp
-	0grOW/HpN24mmm5CWYJw548vD7py3YwdfURplC+tK3WNgHgaeIg97N5X5IGC60uprIDaFcaXyldV0
-	2DDUf82sallNIesdaI5ir+Q5DxcH4WUNSi3ZaXYfklmnu+JhczffaiyoWlhpis9DDh7ke2D0Wnm1/
-	E8ejpeBozWlDmjGCvrWyNho5YVnSCC5MJdfvxhCr1tpAItxFYwXbla0UNRiy8fC7NOVOGZgzTMGDD
-	cy9/lqEVBA9tJCrOPHsaM7rk7Dslgfi23hgjhP/gtg02gehiZhyG+jNlFvmxiYZaacJUI0k6lYz0T
-	MxJBZESQ==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.100.1 #2 (Red Hat Linux))
-	id 1xRJvz-00000008RjV-3qVJ;
-	Thu, 12 Nov 2026 01:49:03 +0000
-Message-ID: <e6f8e81b-3c49-4112-b119-778fb8b89f38@infradead.org>
-Date: Wed, 11 Nov 2026 17:49:02 -0800
+	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=HmTDAKB7
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1794449693; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
+	bh=1xCaH4HUY4jE9shdiHIoND7z6gJxF6tiu/0JOdXHPA4=;
+	b=HmTDAKB7AVJdzLzZqx5FUfbAhyHX3gEGhOK81gH1j/ruh091urRedD8/dickzMvQ1dDZsOutEtY9kLDmp1rRY20IfkAosLwRlPZinrqa2gqa4qv7LxR6Y7vsmRS4Hu2U0wlUxSu1LH/V5vlBKMgtAgxIXNMC+7DCxht4dm12IKA=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R821e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033045098064;MF=fangyu.yu@linux.alibaba.com;NM=1;PH=DS;RN=28;SR=0;TI=SMTPD_---0XEaSUOK_1794449689;
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0XEaSUOK_1794449689 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 12 Nov 2026 10:14:51 +0800
+From: fangyu.yu@linux.alibaba.com
+To: tanchi25@mails.ucas.ac.cn
+Cc: alex@ghiti.fr,
+	andrew.jones@linux.dev,
+	anup@brainfault.org,
+	aou@eecs.berkeley.edu,
+	atish.patra@linux.dev,
+	baolu.lu@linux.intel.com,
+	fangyu.yu@linux.alibaba.com,
+	gong.shuai@sanechips.com.cn,
+	guoren@kernel.org,
+	iommu@lists.linux.dev,
+	jgg@nvidia.com,
+	jgg@ziepe.ca,
+	joerg.roedel@amd.com,
+	joro@8bytes.org,
+	jroedel@suse.de,
+	kevin.tian@intel.com,
+	kvm-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	palmer@dabbelt.com,
+	pjw@kernel.org,
+	robin.murphy@arm.com,
+	skhawaja@google.com,
+	tomasz.jeznach@linux.dev,
+	vasant.hegde@amd.com,
+	will@kernel.org,
+	zong.li@sifive.com
+Subject: Re: [PATCH v7 00/10] iommu/riscv: Add hardware dirty tracking for second-stage domains
+Date: Thu, 12 Nov 2026 10:14:48 +0800
+Message-Id: <20261112021448.48441-1-fangyu.yu@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.3 (Apple Git-146)
+In-Reply-To: <20261111150249.13262-1-tanchi25@mails.ucas.ac.cn>
+References: <20261111150249.13262-1-tanchi25@mails.ucas.ac.cn>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -58,116 +86,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/40] nitro_enclaves: Add support for Nitro Sandboxes
-To: Alexander Graf <graf@amazon.com>, linux-kernel@vger.kernel.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Arnd Bergmann <arnd@arndb.de>
-Cc: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>,
- Shuah Khan <skhan@linuxfoundation.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-doc@vger.kernel.org,
- iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
- David Hildenbrand <david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
- nh-open-source@amazon.com, linux-mm@kvack.org,
- Jonathan Corbet <corbet@lwn.net>
-References: <cover.1794300002.git.graf@amazon.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <cover.1794300002.git.graf@amazon.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+>Hi Fangyu,
+>
+>The following QEMU patch series adds support for automatic PTE A/D updates through AMO_HWAD:
+>
+>https://lore.kernel.org/qemu-devel/20261108143934.129923-1-tanchi25@mails.ucas.ac.cn/
+>
+>It may be useful for the end-to-end dirty tracking tests mentioned in your follow-up work,
+>particularly for testing G-stage dirty-bit updates triggered by DMA writes.
+>
+>If you notice any issues with the implementation, feedback would be very welcome.
+>
 
+Hi Tan Chi,
 
-On 11/11/26 2:41 PM, Alexander Graf wrote:
-> 
-> Alexander Graf (40):
->   nitro_enclaves: Allow the CPU pool to span NUMA nodes
->   nitro_enclaves: Add NE_ADD_ANY_VCPU
->   nitro_enclaves: Expose CPU pool state under sysfs
->   nitro_enclaves: Document multi-NUMA CPU pools
->   dma-contiguous: add dma_get_numa_cma_area() accessor
->   nitro_enclaves: Allocate physically contiguous enclave memory
->   nitro_enclaves: Add NE_MEMORY_SHARED
->   nitro_enclaves: Add NE_ADD_MEMORY_REGION
->   nitro_enclaves: Document the memory pool
->   nitro_enclaves: Add NE_CREATE_VM2 with a launch flag word
->   nitro_enclaves: Add NE_ENCLAVE_PCIE_MODE launch flag
->   nitro_enclaves: Name the device's error codes in the UAPI header
->   nitro_enclaves: Log a reached device limit at info level
->   nitro_enclaves: Add NE_SET_INFO_PAGE
->   nitro_enclaves: Document the info page in the memory pool
->   nitro_enclaves: Turn the command reply into a per-command union
->   nitro_enclaves: Add the slot pool donation commands
->   nitro_enclaves: Donate memory for the slot pool
->   nitro_enclaves: Add the slot pool growth commands
->   nitro_enclaves: Add a helper to grow the slot pool
->   nitro_enclaves: Document the slot pool
->   nitro_enclaves: Expose slot pool state under sysfs
->   nitro_enclaves: Add the device add command
->   nitro_enclaves: Add NE_ADD_DEVICE
->   nitro_enclaves: Read the interrupt multiplexer geometry at probe
->   nitro_enclaves: Donate a bitmap page per multiplexed vector
->   nitro_enclaves: Dispatch multiplexed interrupts to per-queue bindings
->   nitro_enclaves: Add NE_SET_NOTIFY_EVENTFD
->   nitro_enclaves: Report the device's info notification
->   nitro_enclaves: Count multiplexed interrupts under debugfs
->   nitro_enclaves: Map the doorbell window at probe
->   nitro_enclaves: Add NE_SET_VRING_CALL
->   nitro_enclaves: Assert the layout of the ioctl argument structs
->   nitro_enclaves: Pass on the Nitro Sandbox launch flags
->   nitro_enclaves: Add NE_ENCLAVE_DIRECT_MODE
->   nitro_enclaves: Add NE_ENCLAVE_PCIE_HOTPLUG_MODE
->   nitro_enclaves: Add NE_ENCLAVE_CPU_OVERCOMMIT_MODE
->   nitro_enclaves: Add NE_GET_CAPS
->   nitro_enclaves: Add NE_UPDATE_DEVICE_CONFIG
->   nitro_enclaves: Document the driver side of Nitro Sandboxes
-> 
->  .../sysfs-devices-virtual-misc-nitro_enclaves |  232 +
->  Documentation/virt/ne_overview.rst            |  256 +-
->  MAINTAINERS                                   |    1 +
->  drivers/virt/nitro_enclaves/Kconfig           |   19 +
->  drivers/virt/nitro_enclaves/ne_misc_dev.c     | 4832 +++++++++++++++--
->  drivers/virt/nitro_enclaves/ne_misc_dev.h     |  206 +-
->  drivers/virt/nitro_enclaves/ne_pci_dev.c      | 1568 +++++-
->  drivers/virt/nitro_enclaves/ne_pci_dev.h      |  599 +-
->  include/linux/dma-map-ops.h                   |    7 +
->  include/uapi/linux/nitro_enclaves.h           | 1182 +++-
->  kernel/dma/contiguous.c                       |   36 +
->  samples/nitro_enclaves/ne_ioctl_sample.c      |   10 +-
->  12 files changed, 8282 insertions(+), 666 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-devices-virtual-misc-nitro_enclaves
-> 
-> 
-> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
+Thanks for your work on adding HWAD support in QEMU. In the next
+version, I’ll include your patch in my test setup and run the
+related tests there.
 
-That's 7.4-rc1, but I can't get this series to apply cleanly to
-7.4-rc1 or linux-next...
+Thanks,
+Fangyu
 
-IMO it would be better if the series applied to something
-newer than 7.4-rc1.
-
-> prerequisite-patch-id: 542b3d78fda912095b75a49becd1b93109befdbc
-> prerequisite-patch-id: 318368e966c1925652b7976948f435d42b87c72f
-> prerequisite-patch-id: eb35b5d713e7f50f6d1d02310c9afe10b1628fc6
-> prerequisite-patch-id: 223bf6e60620ca8fe72f3ff6f3bd3f5839cdd6d5
-> prerequisite-patch-id: e5305ce0515a02f7f88e72adf02c6a2bee2fd2e0
-> prerequisite-patch-id: 759b5920f842d70e675770608d9088639c10559e
-> prerequisite-patch-id: e1837df37663da3d3ce53afa4594828b2d602152
-> prerequisite-patch-id: f0d4302bd36f94de95951a0db1ae9eb9747076aa
-> prerequisite-patch-id: 41159b92e250fef705be52f714b6e2761a2cd1f7
-> prerequisite-patch-id: a0c3a56907acac2297c800209faa2849a8df0e48
-> prerequisite-patch-id: a80a95bd682b540be5760e8fdf7044379fe32d61
-> prerequisite-patch-id: 9c01e0fecd6810f3448582715c87cd3dd7a6cdf1
-> prerequisite-patch-id: b94dfc8bb1039740d88a30535445bb7b3dd1fe74
-> prerequisite-patch-id: bd76f15728dc0ee2ca3417cd95a6b23a7d63e91f
-> prerequisite-patch-id: 0c60f1574b590f68885a25760017e9ff87752f66
-> prerequisite-patch-id: 63dff43da52934a6e6f5e65c3e235a7114b6b4dc
-> prerequisite-patch-id: af52cf938525874cadd6d879aa76495e563876d2
-> prerequisite-patch-id: f53ee22764b5f13708cacd3e48a59a82d71a270c
-> prerequisite-patch-id: 258b8c18168db49aacbda5156e33978b539666ab
-
--- 
-~Randy
-
+>Thanks,
+>Tan Chi
