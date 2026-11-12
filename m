@@ -1,152 +1,67 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.142
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794468121;
-	b=xNNDnnkl4yp7J3jUA98eYSL8idqtBVCsOrIfLK9eFWuHHWAUndLJCh6BLNzoDFR8oT8y
-	 mXftao9lcuzVGD0Op56uvlJIV7pdmnppNz5QqxeOVF3vSzDzJDrhG8/qwqVW37c32AY6B
-	 cA8dBlKmbwaozZhFzXg/C6YfWhyVJGGJkW5BV0cHLQkWuok6Y1bD36EiWVEvc+AA23/gB
-	 TyfHg1+IEQ9uzaISSyh/x9aY17jNVVQuy1YkUbqBHTuPPHLhCQjHWX0hDlk1AXcCpztnk
-	 purUxgu/ms0/Yt6plOUBSI2K5qEHareENg0kxYtMZXG1sxZ9HzFaOTtgjZ61ksbJaig==
+	t=1794469290;
+	b=zP5Ih7oIgZGughVsF2ZQ+aDRmmvYNMJ27PY9itoxmPxTg2KaRZMvjrWZdFyQwkyklNgh
+	 gLyr81sZl0eYWtdNwKR+hb8w0jcOaX5HFwky9qgRC61umA9apYm8Mgr5Z/Bm0nPJyYBBu
+	 86QEXDp/5aI9PHhEDSzh6KowYgKL3+htTd3NY49j20A5tNaEQHBzvVt3bkEWsH9mOMEtT
+	 nFk7rWye1igxd9b4B9UOblepx7dYvpPLNCCJEyI3pDkDZqDVOgclIO/mta6wfm3oHC4zP
+	 i2QDWKwvbceY9ClYVD6oVRo1XRbcAq534CbYd5UTq07PCmAqitZiHY0rBoRzZbdRwkQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794468121;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
-	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
-	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
-	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-	 References:MIME-Version:Content-Transfer-Encoding;
-	bh=bJ8bCP6CSgwTUoA5Jdtpfv6fl23Ll6VoeGU8ytMkhDI=;
-	b=jQosf1laPLrDJqcbsNQwKvQH8KAjLMzcnnjFChuCO02VcPcBsnHRL8BA8tHTaOlzuaeJ
-	 rqpNurPFBG6H34yu6EOYxUqE07xXDl2dlUSEyMUaTgGcMhWV+/0JOi9BXxkZmdvODtSc8
-	 QDnkugFsJAClgYTTDv1Dac7MaeF6EcqKrUGdBOJ1z0mdvEveNlkkslZDTFyyYiKpDf0Pm
-	 LzeixDa8icymgsm2H3R1EXh1vlVf66M1sdIbYomzmRIHT9c36xVxK1/m/DAb185ogiFyK
-	 qdBuUrJt6TA37DIAe9EI8EFnGrTO6zUZX0wZHpzmzkUocHNWU1WtpLc41jHE3my38Mw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794469290;
+	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=0+XHl92WKvwhHUuO8b4CuK4owZNsBpenMK3Vh0VW7Do=;
+	b=zoqpp5lWG/E7Bdy7IciF4bv61SrvJBN16Kh0rSCxBhsFYZLDLUr2o5U3S0X52QJXYIUT
+	 v1PU30Xla3x2SEaG0/R3g7Wuno/mp+ls86ivkcIITLHoEGX61Z22QAxlSR3PA6MM4lFZ9
+	 1wxQcXTs+y7vVx4KIIEge/+5b1KhRmnOByJs/JFiEzBajhPj1WkXY5X5wHngF+R66opiO
+	 HmInDxNh0MEBL+2eI9PKKp0AVPcaHwcP14wKQ+OP3jVtV4EYXVo0lkVThnlIzXLjqap/K
+	 3qt9DY6BnoduFF7kwjs/ZpGdHU7eHcEKG/y5LQHb8vHhMdbBXl9mu/BfEJrviR7UG/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gahingwoo.com;
-	spf=pass smtp.mailfrom=gahingwoo.com;
-	dkim=pass header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=tF0F9SoA;
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=yaqfQY0d;
-	arc=none smtp.remote-ip=103.168.172.142
-Received: from flow-a7-smtp.messagingengine.com (flow-a7-smtp.messagingengine.com [103.168.172.142])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="h4/E8SXE";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 971A6606A889
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 07:22:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 971A6606A889
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B2E2606A885;
+	Thu, 12 Nov 2026 07:41:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=tF0F9SoA;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=yaqfQY0d
-Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
-	by mailflow.phl.internal (Postfix) with ESMTP id C5829138020F
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 02:21:59 -0500 (EST)
-Received: from phl-frontend-04 ([10.202.2.163])
-  by phl-compute-02.internal (MEProxy); Thu, 12 Nov 2026 02:21:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
-	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
-	:from:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm1; t=1794468118; x=
-	1794475318; bh=bJ8bCP6CSgwTUoA5Jdtpfv6fl23Ll6VoeGU8ytMkhDI=; b=t
-	F0F9SoAH6M1Jmttn0BNFQF6wa/hS9p9c1PyA9ks+/9eTHeBsYHoJArnY8GZoYJmS
-	/yt/X0KuLwZW8kWuoXS6twE2a0qfyrxXNRGmIdaphZ865Zdsc3syrj9kZLzWgw+F
-	lZYQmdNPlh51PXnqyQ29bWm15B32QT+R9hCWFrQ8s52vIZy1+/2O8UlwghbBnMuQ
-	c0j24paUuPZJCgxLdNHSSjkc9ntZKe+5wWCRCawK8SFfWsNA7bUdBrv/vBY1fzZU
-	eFvxT0bURa0p33j4GkcyGWk3I13JEU+BdF979A0/7Myq9FNoo5FmVJwiTvwfoxXt
-	6BTBXgtiZc43W3myuxPig==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:date:date:feedback-id:feedback-id:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
-	:x-me-sender:x-sasl-enc; s=fm3; t=1794468118; x=1794475318; bh=b
-	J8bCP6CSgwTUoA5Jdtpfv6fl23Ll6VoeGU8ytMkhDI=; b=yaqfQY0dFDD/zQDXH
-	fa9Wmy5pWzxphmoTfhGWdAY4CWIfBliCgnSSkkMtnn17G1aMwI7E3rnyo+ZZb6wP
-	vyw7/y2HogD81EWymm8WAQdzTldcb3b5TpyzbZE8Ln6bTCIJv0WnbrdYlC+I1y0Z
-	I8j5UJpRHuAXd2CMjSO8YcVFK7ZkqHvCD70gkc4gaeYN83G1Z17FL5HpNJb5rCi5
-	MGeMbL9yS7uwuf0Qt7zwwOvFS2491yr+B04lHPS0lzPH1uiV6YXoBQlFMTTGpKlW
-	uSh5RKQ7I1IBQE7DwU9RfdkUlXpRapzbIra1il9YhOSeHT60OJQ81iAike43l4cD
-	qU0Dg==
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=sign d=gahingwoo.com a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1794468118; d=gahingwoo.com;
-	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
-	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
-	s=fm1:rsa-sha256:Jsg59hp2IgIt7m+1ZtSQYjhZ3OwFLOZEcKP6xH442O9TlPQ
-	W3DxC3xKh+NAjB6bTom+JmIj3HzbPov9B4g58C/FVDObWMz1iACebvtBxR24jPJd
-	R3329MJJJx+kmdld+5BV7DaSgYibm5MGBbpY+8x+toRThLYKnJcEbREpQmuAqkRc
-	uDeZwH+SZejBOC+mS1Ow6k6EKhzKFDiJKPveHcZG1n0qSSAK4u0AYFSvR46Ht4Iw
-	QeHoy92lEaFroTkuh7C4dISpsAnlBrljQeQvy0rFDCyYmHd4HPTVaZrGAIN40LCD
-	SJ9tCHli6KTzyr5oT8auOGdlqZEnsSwog5+8V/w==;
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=mi-m=1; hc=11;
-	hn=cc,content-transfer-encoding,date,feedback-id,from,
-	in-reply-to,message-id,mime-version,references,subject,to;
-Message-Instance: m=1; h=sha256:xuxAie5g+6iRjBprhGgdJCyhDhMjW7s+lKKHIWO1yd0=:bJ8bCP6CSgwTUoA5Jdtpfv6fl23Ll6VoeGU8ytMkhDI=;
-X-ME-Sender: <xms:Fmn1ahqt2i__S3t7VvjOrolKTcZTzWIO9Ft1sy_kHoBpWb2kGnoXAg>
-    <xme:Fmn1aqd1uZtVZuZdtUBboJ48SIjUmggzXUZI6xF6StzTUeq8g1Nwwe7kMcI9kVrGZ
-    HlkzW7JBsOWynfbajCgqn5rtvqi7k6xBD8ALBgXrwARL1uzcYWXt2c>
-X-ME-Received: <xmr:Fmn1anK4LBOxBOc2_iI6ucfoGI7MgN9u_9HzmtYFDfbAMTt22u_pQWU8maFuOP_OWsPnFrf2>
-X-ME-Proxy-Cause: dmFkZTFmFrZJuGg63UB/F32b8s4zaNC9XRPHixjcDy/1vRk99j3V/8zr+THDSX7svlTEmy
-    4dG1lJL3583nXtEoyQR6vHI3FPNAjfS21CqW0k2k5cqZ6TEkfUZ7yQZP7OGrUeVIb7c94X
-    pjCA4kDO/W68xNy+tBda21RUbJBqnVTo13bxuqEK4DXiqGGhK5YkgbNkV1B+oHr7BuxNzL
-    6gcR6FSGRDK+sNbEjPHIzQmGts9QCYc0FS6HRQLTfllqbaGvOHcy25AxQ3fsV8kYeJqbUj
-    7tVHvFDs9cT8uJ4rYzEmLPEKorO5JjMbXdlfCstWJmUKho5t5lQxrSvoMeGxIT83vk+OFg
-    oymre8z6E++IHi7zKFs6Qov/bFKiB7eSCarIj1JByykDyGDcJIcME12Yuyid7W/v7bSAbB
-    LOH4BVqyVHo5cT9cFwsbTTdnL+Uj8eB1IAcwu2L7lR9qYchicjJzG1wi0jgWnMp3BYOoF8
-    s76ocnS16UhP8orLeETzE+jzEtLU/P2SI35DjW5ksOmenlWKIlOxz6qp6KjvKtE8qRhQPR
-    /lLUKdbgnrfV2gpx54przCT/IlygE7BcK4fCrGNxtoihP6PuhL6FExioYnjC1pbTtD73rk
-    oIBpknCPShTMyBscXFsE6BhYclqKbyrJJ1bMPbn+4dl/f/vS+dWgzzOiT8bg
-X-ME-Proxy: <xmx:Fmn1avu_2lSgVeR5VpguZSSSn2NdBdOLsGy0vv1OTRYkrMkpby07cA>
-    <xmx:Fmn1alLDs25vhaf8vjWaDnxwwNcVPWkVeLmV1zG1s7SQDYYY7NmBoQ>
-    <xmx:Fmn1ajA-jDLtM-goDOvOk1Rthu9AWRrftj3QaUPu21odKhGmARgi1w>
-    <xmx:Fmn1aiXXlYQ8-1M-Ks5bixOrYM0T_iA4GAG52_di3rgQGXa6kJVIZA>
-    <xmx:Fmn1anUq41PMEbG7seJ1o17fqqnKl6ZIxTtEfJDLEGco-ZB8ZGTAzHtr>
-Feedback-ID: i7a5e4b5f:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 12 Nov 2026 02:21:48 -0500 (EST)
-From: Jiaxing Hu <gahing@gahingwoo.com>
-To: ulf.hansson@oss.qualcomm.com,
-	heiko@sntech.de
-Cc: finley.xiao@rock-chips.com,
-	shawn.lin@rock-chips.com,
-	tomeu@tomeuvizoso.net,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	ulfh@kernel.org,
-	p.zabel@pengutronix.de,
-	ogabbay@kernel.org,
-	zhangqing@rock-chips.com,
-	royalnet026@gmail.com,
-	abel.vesa@oss.qualcomm.com,
-	sebastian.reichel@collabora.com,
-	sidong.yang@furiosa.ai,
-	u.kleine-koenig@baylibre.com,
-	chaoyi.chen@rock-chips.com,
-	diederik@cknow-tech.com,
-	alchark@flipper.net,
-	leonard@lausen.nl,
-	jeff.hugo@oss.qualcomm.com,
-	rfoss@kernel.org,
-	dri-devel@lists.freedesktop.org,
-	linux-rockchip@lists.infradead.org,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=h4/E8SXE
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDCD11F00A05;
+	Thu, 12 Nov 2026 07:41:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794469289;
+	bh=0+XHl92WKvwhHUuO8b4CuK4owZNsBpenMK3Vh0VW7Do=;
+	h=From:To:Cc:Subject:Date;
+	b=h4/E8SXE8eCIDKvYNmA6SIzFXxnJ6W3GIVA4lG+SeL6yWuG5/QiaJ/bTXAjyQD6Xd
+	 rZN+CDbreZ5kcJymwg3IK2IG5cACmGvYa+xPe9v/lnThk7GUbY9QOyeaH06V2MmZZY
+	 IT5Dx5WrwwVK9i41gYZRgeLNqiovLMFUpPGW5XqQX5PlTBnyfENmuMSQ4JsDan8VHN
+	 16/T1SBbjoXnu68T4mh2ZcFcHFHci/iZK+c2DVMefjgrlEqikeaPlrp5czQ7yH1rhD
+	 DPgM22LdulSdjsu30twsFuSgGoWNZVBvgT9FvlJ6tRAM0uNGPM4csyB/g4TEDBpUU0
+	 q55wI/ApbwkkQ==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: linux-coco@lists.linux.dev
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Ackerley Tng <ackerleytng@google.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	David Hildenbrand <david@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Sean Christopherson <seanjc@google.com>,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Xu Yilun <yilun.xu@linux.intel.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Fred Griffoul <griffoul@gmail.com>,
 	iommu@lists.linux.dev,
-	linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Jiaxing Hu <gahing@gahingwoo.com>
-Subject: Re: [PATCH v15 00/15] accel/rocket: RK3576 NPU (RKNN) enablement
-Date: Thu, 12 Nov 2026 20:21:46 +1300
-Message-ID: <20261112072146.41218-1-gahing@gahingwoo.com>
+	kvm@vger.kernel.org,
+	patches@lists.linux.dev
+Subject: [RFC PATCH v5 00/16] KVM: guest_memfd: Add a common framework for device memory providers
+Date: Thu, 12 Nov 2026 13:11:04 +0530
+Message-ID: <20261112074120.1570072-1-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <CAPx+jO_gRtipR7iuh0D7G2Wi25GZoqFD1JHVbJNmhd1UyC3Bmg@mail.gmail.com>
-References: <20261101082307.151957-1-gahing@gahingwoo.com> <6777074.j6PcuT4dK6@diego> <CAPx+jO_gRtipR7iuh0D7G2Wi25GZoqFD1JHVbJNmhd1UyC3Bmg@mail.gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -158,19 +73,143 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Thanks Ulf!
+Confidential device assignment needs guest_memfd to manage device MMIO as
+well as RAM. Device resources such as PCI BARs supply PFNs directly, and
+their protected mappings need architecture-specific map and unmap
+operations.
 
-On second thought, I think it would be best to drop patch 7 (the
-binding) and patch 10 (the reset) from next. Once patch 10 is gone,
-patch 7 is no longer needed either.
+This series adds the common guest_memfd support needed by device memory
+providers. It builds on the resource-provider API [1] and the existing support
+for folios and RAM PFNs.
 
-Finley Xiao from Rockchip pointed out on v16 that the reset is not
-needed, and testing on the current code confirms it:
-https://lore.kernel.org/all/ca90a994-70cc-410a-902d-5c4c0aacc9b7@rock-chips.com/
+The VFIO provider, IOMMUFD integration and Arm CCA implementation are
+available together at:
 
-Patch 9 can stay. I will send a separate small patch to fix the delay
-table.
+  https://git.gitlab.arm.com/linux-arm/linux-cca.git cca/topics/cca-da-gmem-backend-v5
 
-Thanks!
+This series depends on the resource-provider groundwork from:
+[1] https://lore.kernel.org/all/20261022-gmem-alternative-providers-v2-0-5dd1dc6c660a@google.com
 
-Jiaxing
+Notes:
+* Codex assisted with implementation, review and series organization.
+
+Changes from v4:
+https://lore.kernel.org/all/20261104150322.3516320-1-aneesh.kumar@kernel.org
+* Leave VFIO changes out of this series to agree on guest_memfd changes
+  that work with all providers.
+* Replace the separate folio, RAM PFN and device operation tables with
+  provider callbacks. Add callbacks for attribute validation, allocation,
+  release, host mmap and host faults, with core helpers for providers that
+  omit them.
+* Use get_pfn() for both folios and PFNs through guest_memfd_handle. The
+  handle carries the PFN, its attributes, contiguous range order and an
+  optional folio reference. The core manages folio locking and references.
+* Add nonallocating folio lookup through lookup_pfn_range() and require
+  PFN providers to supply it alongside get_pfn(). Report PFN attributes
+  separately from KVM shared/private memory attributes, including an MMIO
+  flag.
+* Remove convert_attributes() and prepare_pfn(). Make existing pages
+  shared through provider range lookup, independently of VM bindings,
+  before publishing shared attributes. Leave private conversion to guest
+  faults or prefaults
+* Pass KVM explicitly to attach() for use during attachment only.
+* Use the provider mmap and fault callbacks for shared device mappings.
+  Set noncached, decrypted protections in the VMA
+
+Changes from v3:
+https://lore.kernel.org/all/20261101071928.2462549-1-aneesh.kumar@kernel.org
+* Include the VFIO PCI provider and IOMMUFD vDEVICE integration alongside
+  the common guest_memfd framework; v3 posted only the common framework.
+* Replace make_private()/make_shared() with an optional convert_attributes()
+  callback, and prepare_private_pfn() with prepare_pfn(). Pass attributes to
+  both to handle shared and private memory at attribute-update or PFN-lookup
+  time.
+* Pass the device context directly to provider attach(), removing
+  kvm_gmem_get_device() and avoiding a VFIO dependency on KVM symbols.
+* Store has_private_ranges in guest_memfd_device so providers can read
+  the core-maintained summary directly instead of calling has_private().
+* Serialize VFIO file operations with provider setup and release using
+  gmem_lock. Reject existing BAR mappings, dma-buf exports and ioeventfd
+  handlers, and block direct VFIO BAR access while guest_memfd uses the
+  device. Shared userspace mappings go through guest_memfd.
+* Require D0 and hold a runtime-PM reference while guest_memfd uses the
+  device. Block VFIO reset, power-state changes and userspace changes to
+  Memory Enable or Bus Master Enable during that time.
+
+Changes from v2:
+https://lore.kernel.org/all/20261017073149.1303738-1-aneesh.kumar@kernel.org
+* Rebase on the v2 alternative-provider series and separate the common
+  guest_memfd framework from the VFIO, IOMMUFD and Arm CCA integration.
+* Separate folio, RAM PFN and device MMIO handling, with common locking,
+  invalidation and attribute updates.
+* Replace prepare_conversion()/finish_conversion() with non-failing
+  lock()/unlock() callbacks.
+* Convert device memory through ordinary file-offset attribute updates.
+  Derive GPA from memslot bindings and PA from provider PFNs, removing the
+  device request object.
+* Allow shared and private device PFN lookup in the common layer. Include
+  both mapping types in generic invalidation and leave architecture
+  mapping policy to the backend.
+* Support device range revocation through the common revoke path without
+  reclaiming MMIO PFNs or changing attributes.
+* Add shared device mmap through the existing get_pfn() fault path. Keep
+  VMA protections and flags in the core
+* Require only get_pfn() for device providers; lookup_pfn_range() remains
+  required for RAM PFN providers.
+
+Changes from v1:
+https://lore.kernel.org/all/20261010072504.536230-1-aneesh.kumar@kernel.org
+* Require GUEST_MEMFD_FLAG_MMAP to allow VFIO BAR mmap while a provider is
+  attached; disable it by default.
+* Use the common guest_memfd_provider_operations for folio and PFN
+  providers. Select operations through the resource mapping superblock
+  and forward VFIO operations to the device driver.
+
+Cc: Ackerley Tng <ackerleytng@google.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: David Hildenbrand <david@kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Sean Christopherson <seanjc@google.com>
+Cc: Alexey Kardashevskiy <aik@amd.com>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Fred Griffoul <griffoul@gmail.com>
+Cc: iommu@lists.linux.dev
+Cc: kvm@vger.kernel.org
+Cc: patches@lists.linux.dev
+
+
+Aneesh Kumar K.V (Arm) (16):
+  KVM: guest_memfd: Add a handle for provider PFNs
+  KVM: guest_memfd: Get PFNs through common provider operations
+  KVM: guest_memfd: Let providers coordinate mapping changes
+  KVM: guest_memfd: Add provider PFN range lookup
+  KVM: guest_memfd: Let providers validate attribute changes
+  KVM: guest_memfd: Share memory through provider range lookup
+  KVM: guest_memfd: Release and revoke memory through provider
+    operations
+  KVM: guest_memfd: Use provider operations for fallocate allocation
+  KVM: guest_memfd: Use provider operations for host mappings and faults
+  KVM: guest_memfd: Let providers prepare memory regions
+  KVM: guest_memfd: Pass KVM explicitly to provider attach
+  KVM: guest_memfd: Support devices through common provider operations
+  KVM: guest_memfd: Notify providers after private attribute updates
+  KVM: guest_memfd: Enable shared host mappings for device providers
+  KVM: guest_memfd: Notify providers during file release
+  KVM: guest_memfd: Invalidate mappings before memslot unbind
+
+ Documentation/virt/kvm/api.rst    |   6 +-
+ include/linux/guest_memfd.h       | 152 ++++-
+ include/linux/kvm_host.h          |   5 +
+ mm/shmem.c                        |   3 +-
+ samples/kvm/mem_provider_sample.c |  22 +-
+ virt/kvm/guest_memfd.c            | 996 +++++++++++++++++++++---------
+ 6 files changed, 868 insertions(+), 316 deletions(-)
+
+-- 
+2.43.0
+
