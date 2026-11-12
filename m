@@ -1,108 +1,133 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.34
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794499608;
-	b=enatZS/etWXzWi3/Y9bDWApvYqROS1DOBlED2fPT8eHWKpe5xloBnhzjvFQWIaNfLcxu
-	 ehCZU0ABrb28dXVK2LyNezy6mmJfSnApFyijbO9XL6ezWJ9s1UeUrGOXMkBqCQiuaN8ux
-	 MofkdfCWRhRuEh2q7kYBRJA6XQv5qs+wOXbmjzDH2tJiyzq2xh++0Qd3mvVcs/I+DJWhS
-	 YiZvcZKROUZXRQ6HsxqLyPvQhBOM7Dg87rao4OGZwQlZvbU2p65XUtkQblKpYaY7t25G5
-	 IChuQbOaU2KFbl+G29tEwyDA7WdBtvjL5v8ReP5A6NKtYVRH5XkjZdffglgbG84KqrQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794499608;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=X/fOu0EIwP74iv4Y49vsqZtVCb4D018mu7v86BwRqIw=;
-	b=KMNi2hhTYHg6Wozv00UzYFyCpH0zUfkVRC02cx3rFqziAWNgwkA6/aV8gr3vO56daltA
-	 YUT/zCHGq0BSegvbfKBDet4BbfaQomgoPhnmt7ILF5AF/oHKdvYMDk5nuUmTVCcDHnOxX
-	 fFUIH8qBuThUHvMtHilNE1lgn3XBCcWboJSfgbvuGRjrAeN/YQR31KLBARDAdSvfUT11d
-	 UgXmdw6pqopvkynvqOeJWAv/zHjXmBa3IYk6yFJD2yl/gs5QiXxEoodSLjdfQ2zjuliHN
-	 Z1rr8yeNUQDUSyuz2wddMvojEXnMpOWOa3uz3JQv+x+bMYk2XBHXid+tH6w6WNJUEVQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.nxp.com;
-	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=GE3p84jo;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.34
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011034.outbound.protection.outlook.com [52.101.65.34])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794499716;
+	b=mPVkA46SP4gc3DTpBncN3b+08yCyXp/8irut7qES0oyRVHpXKgYqG1gyrCpMq4huQAUE
+	 rDovzSwxvmirdC2I31aC6NBHu9SboRuxYwNYQpTmFWfuscxY/1/vgJVgm/POWEI/G1ZgT
+	 Fo1nZDDvsvijPMt1H+M/0zo87D2Vwe8HRdzb5soK9IINEFqXnQetKuukpeONGweg0dWkY
+	 UkT7nGMtH2h//hT69wzyKUXqXkzaCjZWl+kAPjt8t7W/RZUNHSU84rqNvxehMdvivbJVb
+	 vNkVC+Hq13/My3S5R+BoBLlSgBSEMN0Y9PIdb/aFLiY6YCWjn0hFemU//42Ldk46mfg==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794499716;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
+	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Spamd-Result:X-Rspamd-Server:X-Rspamd-Action:X-Spam-Flag:
+	 X-Spam-Score:X-Spam-Level:X-Rspamd-Queue-Id;
+	bh=+T3ab9ZuDlb9AtgbzYcZLqb0pcIRcAvo/vUSdxHxz0c=;
+	b=3DB/hJRebqYNb5Y+sQ7+iQiv2t+r8e9K8SD3GOBrldYw4molVniUbon8RCV3vLLPmMOU
+	 TTNJHwTe7BGQr38UYM8V39MD+81G0gpIHcpemIx7Mqf9wc5uXCtBWV+MqrgYtj7LJLfDs
+	 6qWGqNM9YlZRXStkMxQGb9sw+5gT6xGmt8aPAqMS5DoyjscByEk3kv8K8GZhCjfXCYC60
+	 7H1C+e1gyG0VJgCGIuBfTRqtop99b3YfbjUYU1uVOTL0uY1CvcrvBkYV+GTQ7cLfH/j80
+	 TKvLq05WHjyhkbnMSiKHuY+aKLHNw/DLYvHJxc59BbaJZqeWxyvozoDaxokAp2dSpHA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=suse.de;
+	spf=pass smtp.mailfrom=suse.de;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b="KRUt/2rK";
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FSWB8QHv;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b="KRUt/2rK";
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FSWB8QHv;
+	arc=none smtp.remote-ip=195.135.223.130
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FF88606A331;
-	Thu, 12 Nov 2026 16:06:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2FF88606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2442B606A32A;
+	Thu, 12 Nov 2026 16:08:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2442B606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=GE3p84jo
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=djRQIKj0EMpXlVq/BZt3nW1bzolxPpa0rFgDdYhFL9t9n9bfLIEU9nrQRMbRGbl/dwODIjGK9pwM7NOrgSiNKXw09kRpxEIaVsczWVMhFDxL8bBtvHfbjpaEhu6mm+mvq1TYcVzgRTSvLmICxg8Zkliw2YyoV1cOfLVu5HlAYkEOrnhpm7vZVujSIU6AYacYWAD6EfrnY4o5DwL94B19REUL3fxL4ARHSAIQAm3k2S/oENVjlpf8Mn2wcVNUrqu00simF+x8aEkDKsrQHuXGhF9oSyRzUMVlWjj0INIS8CAQR9Nn4k5oTJ1R4KnvRqHS+siHLyTTb2sOet8LF2BCrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X/fOu0EIwP74iv4Y49vsqZtVCb4D018mu7v86BwRqIw=;
- b=u3SFcXAYmDczSposBvNzTat4tHhghasJ3FJRkqQI3eoufOrllKr+MwG7urzYU6zcpsO592SOUrCj64TDmMU83mPm5g5VKvaOfWVCWP/WivhNYe8U0XV0dlT0UisIMwaJhBhwsIJXGZaJ4cyo5ROx32liQ0HzOIDk4uCsB/oxBPdAoEbKvG9ZZ1Y+85JJluYkhE/pvuWlq+4fQxWkIdYpmguVlxhl2IVeWBKvfyCzg2bypPJclWOIwXpTMHqI21IS7Lmapx3lALmqO75b+aHsWRuTvCt47ng9oPFu2q02dIBZE8tyv9xPVHZ/dFz3Wb+pfCcK/w3Ejrb1DiT3MbmN9g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X/fOu0EIwP74iv4Y49vsqZtVCb4D018mu7v86BwRqIw=;
- b=GE3p84joTBS/xJR5JN0mcKmchKt8lsy305o1aTegN+irSOGA77ZnFlBKq4sq84gpTVxgbhqP9o/xLzqUvmSYOfAqabzjKmKBd0+PcKbL4iBdO08Dikq4kcKSBsV4/tPjysrKLqqINSN5h8FZRvD1LvQJYBH+TEEErb34kijHv7e8nxnYcZHAT4pms529oApsyg4cN+nJR8GjZJwuOt0vZkr08xN7tBsWckMDFYSzyYcXVutjMhvg9MC1+3kHuMOuPmCFX+EuIlyHL8Opa28fGzyY1zLbl+E3ZtTvlgEBB56rkWitAijOfQx5V7hWvH25zmz6iJJ6Lv1mC8g9t4fTIQ==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
- by PAXPR04MB8911.eurprd04.prod.outlook.com (2603:10a6:102:20e::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.9; Thu, 12 Nov
- 2026 16:06:43 +0000
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b%4]) with mapi id 15.21.0615.009; Thu, 12 Nov 2026
- 16:06:43 +0000
-Date: Thu, 12 Nov 2026 10:06:31 -0600
-From: Frank Li <Frank.li@oss.nxp.com>
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc: Frank Li <Frank.Li@nxp.com>, Vinod Koul <vkoul@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Jon Hunter <jonathanh@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
-	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
-	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH v6 7/9] dmaengine: fsl-edma: use
- dmaengine_get_dma_device()
-Message-ID: <avXkB8apdBFfWt9e@SMW015318>
-References: <20261112-edma-iommu-v3-v6-0-b038edb8ce6f@nxp.com>
- <20261112-edma-iommu-v3-v6-7-b038edb8ce6f@nxp.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261112-edma-iommu-v3-v6-7-b038edb8ce6f@nxp.com>
-X-ClientProxiedBy: CYXP220CA0009.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:930:ee::17) To MI3PR04MB12438.eurprd04.prod.outlook.com
- (2603:10a6:290:76::14)
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=KRUt/2rK;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FSWB8QHv;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=KRUt/2rK;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=FSWB8QHv
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 0C62F21CEE;
+	Thu, 12 Nov 2026 16:08:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794499713; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+T3ab9ZuDlb9AtgbzYcZLqb0pcIRcAvo/vUSdxHxz0c=;
+	b=KRUt/2rKwrPs3sMDIuJyMXommGdOYM0nzrPzs7Z3iopgik2l2//gV9DFuYm5GgLMQ4POe9
+	o2USyaY1VE9XW9/M5/A8VPOZA1t441CQHiZDgfKZ4TI9ZxQ8r27SR+L0NwmP16mYRWnMX+
+	Vvx0bkEnvdk6oRY91rFnc+cJWho8BZY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794499713;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+T3ab9ZuDlb9AtgbzYcZLqb0pcIRcAvo/vUSdxHxz0c=;
+	b=FSWB8QHvnGUEaCFhAnHsU04CKsBJVvy83XOZE+W934YlVKuXD+597aE4ihv+8p2f7APua7
+	+ceuqTju3GmkufDg==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b="KRUt/2rK";
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=FSWB8QHv
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794499713; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+T3ab9ZuDlb9AtgbzYcZLqb0pcIRcAvo/vUSdxHxz0c=;
+	b=KRUt/2rKwrPs3sMDIuJyMXommGdOYM0nzrPzs7Z3iopgik2l2//gV9DFuYm5GgLMQ4POe9
+	o2USyaY1VE9XW9/M5/A8VPOZA1t441CQHiZDgfKZ4TI9ZxQ8r27SR+L0NwmP16mYRWnMX+
+	Vvx0bkEnvdk6oRY91rFnc+cJWho8BZY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794499713;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+T3ab9ZuDlb9AtgbzYcZLqb0pcIRcAvo/vUSdxHxz0c=;
+	b=FSWB8QHvnGUEaCFhAnHsU04CKsBJVvy83XOZE+W934YlVKuXD+597aE4ihv+8p2f7APua7
+	+ceuqTju3GmkufDg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3101C13432;
+	Thu, 12 Nov 2026 16:08:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id xpkCK3rk9WrfKwAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 16:08:26 +0000
+Date: Thu, 12 Nov 2026 16:08:25 +0000
+From: Pedro Falcato <pfalcato@suse.de>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, 
+	Jan Kara <jack@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, 
+	Zi Yan <ziy@nvidia.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
+	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
+	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, 
+	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
+	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
+	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
+	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, 
+	Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
+	John Hubbard <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
+	Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
+	iommu@lists.linux.dev, netdev@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v3 7/9] RFC: net: limit folio refcount when rearranging
+ skb frags
+Message-ID: <avXkTuDG89QZgvOr@pedro-suse.tail5790ac.ts.net>
+References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
+ <20261110-refcount_overflow_stable-v3-7-318625d63a98@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -112,114 +137,74 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|PAXPR04MB8911:EE_
-X-MS-Office365-Filtering-Correlation-Id: 90302ebf-4d16-4a3b-6bff-08df40d6f1af
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|23010399003|376014|1800799024|366016|19092799006|10067099003|11063799006|56012099006|261102123227099003|261009223027099003|261021121427099003|261021123027099003|4143699003|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	UZJJc002611HpBFYe+ZZahmsDu+TC5NLvPGKiGNivjr6t++WQKCvu1m5dyMfY52IQZOHRkheL3ddExQ41QNLIIrXGNyrby461Fhy6vwnkva9e0h7Pi7CMsPC6hxsRSyJNJhLJod69QSuzXY7SOqhN+Hy0QPY4VGKkvCbn/+oMol21/ogbBYOWLRLbLPEEeW0ikJXIgwcBsT0A2WYqIunBDOVkr95YtGK+HwN4IGzMJhW+xbV1C7HBLBzqch7yPtEIBGWsZt7ubvKxme+sdDq6r7qi7NUN/zxPTjdDuVH97hQVN+T8+joPDAEbZJOU5/vhPr04CJBWWg6jQR4aPCg3AHI8WvYQ7Kem+hSjpMv1t+mfuo/AOF6lp/QIHV9M5HWGQxtcToW36O6DgSV3wTEU566NFkL4Zsz7M+zDLCfZC+LjiJwMBXG6dCftF4sLTP4iQxKvP0LBsqJVmnUEJGI3WukNvyJTWj2jmmRJoANUae30ZH28X33r36OdqqDuw2ovRyMU2h1R6hE5QrlMM3szRcYAx2uO0aqXoCeyKHB3LfEyK9YhG2HHwU2o76sRTcWuS/LgUcEXADx5yoVmSiSBq+oNHrmtw3lia02TmtqR6mn6h2EkAiuDq0CvHQNJKYY59UXtaNZbI3KWRsCujyLIzeRJQs1sFDt7UuDrKEdixQ=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(23010399003)(376014)(1800799024)(366016)(19092799006)(10067099003)(11063799006)(56012099006)(261102123227099003)(261009223027099003)(261021121427099003)(261021123027099003)(4143699003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?e0Lwlqfc7TiD0Nn5jeunDVwu0C1XM4U3XGIM2f4hdSX49I91hJdGYRbg6k/Q?=
- =?us-ascii?Q?9fNgVukcus8lLXRvNti2/w7QzySpCS/cFvZfhuCM8/OrtAn5PyItfi3ijsFs?=
- =?us-ascii?Q?fjqMOSli012PptoOhRmT1E1jQO0Jy+ZlWtC3wejSkXA+vSjslRe43UpmrUQF?=
- =?us-ascii?Q?eDggVflgH5hE62rpRRlPPc9YYq5HQ4q8bCtd9arJPfvpy1l3zToaR/GyTy3h?=
- =?us-ascii?Q?KJMP9vHqufpeT207a2vmGZhUExr6svi3REZqY4bz4oRpnqxqkL4sB50dB1oC?=
- =?us-ascii?Q?RseVKe5j+O8oeu/0uGbzqOxgX7EKExSN6z+EzqAe5qYUEqOriGYiL+ukKx9b?=
- =?us-ascii?Q?LaJg4dRqsdsCUuBghUAlUp4r75Y3HOSMoN84k8ccEoxqD588BV0LLn1G4CA6?=
- =?us-ascii?Q?jtIuo0gJnGPg0l4BN31Mxdr9vMnYImmqyt1WdOEXREC34n0GiBQdCh47BYB+?=
- =?us-ascii?Q?lHG4JO2LpoQI4sNtwnN0D0Hli0q60FNmhwNgnaXiefn6xQNqqcf2Zpifa/6b?=
- =?us-ascii?Q?rL9VLQmV4RVyHe1NOrVAvSRUhVRpRnBHIq1d5EhL2IuwoX96Kcz1E/0F0QBB?=
- =?us-ascii?Q?ZX0nt6Ags93+hDLEs/gUMXAziVL4X+COVZTaPDOfwZoRAEhM/YLLoL8YttgG?=
- =?us-ascii?Q?rLeHrmcQYNg/N41ELUA8zcBc7fq3QyHdq97zkf4a437ShzAlxcV/T7h1Cqli?=
- =?us-ascii?Q?i9fcfu87Ow5iVGhliCSRSIE9Y8T/nfJ4stbf30Vh7FozvL0j5JdrAQsVUwp0?=
- =?us-ascii?Q?um88q3l0PDCcFcemvxaoLGk014B+akMY1cqILLXCF78YEn3FqzbSXFHHYwe8?=
- =?us-ascii?Q?4APHLMcQHC9nudpk0nJ5sthARkJacE0oejI9jGgL1wMInuBq6wVtGIJdUKie?=
- =?us-ascii?Q?zf0Hr5Jp873uQAGLYbXYiNYy/xvJADXrxMPtBdUaMAT91MnFxe3fin+EwbOy?=
- =?us-ascii?Q?N2xAz8HAxDBk9YWEjolnKH/n/LeF8uRbnQjhYYoBYUCAgRjYB38zB03DoFNk?=
- =?us-ascii?Q?NBo2Xi5Yx08wEYNkKqQ4W5UKcS8bnJ7dnsJMZWe42O/agFcqBU6xFb/q4Q/3?=
- =?us-ascii?Q?BWExPbuGOXYCcCb6z55hx7cpYFX3PEcxLB8WaUGPmJ9maFgNpYA+Gbr/Y1Mv?=
- =?us-ascii?Q?BRhLxhuiv5B0SmC2dUAzu3wZSvNYC8z66I4GqQBToJsWaeNSaL0RdglgVA7h?=
- =?us-ascii?Q?/1hM0SerfK9vC0Xz07oda2GAf2WRJwHk1ktPTtWJXvkzvQhtf6lkEmD287Z1?=
- =?us-ascii?Q?S94uctJSPxwJi0b73qwdk7kR8GEhdATXKjh5Dl4Mf1CZXCdzs2W4faZbnp5Y?=
- =?us-ascii?Q?TEu1AZ4ty5wH50AqWEy1cV/vaaoQaaV28djPkl44VSVSVXOg3k2SWQ2LAxvs?=
- =?us-ascii?Q?DHs3DJPLpXovzNZaSkkNiMte+rbTc+YYk4hSqOIHNf0AJ8VBjM2QzHgvOs/C?=
- =?us-ascii?Q?qb+VDpIMy8/uDpp6lrpq+l6fVxNKZ8xuxeCn8Bb5LLu/xOn6MJl+5WGIrxFG?=
- =?us-ascii?Q?vfvvugRm2pzcVpJQ7mM+cOC0a5iAnitFTXlt8lW5/870Q/WX2IkNWrCqiAMe?=
- =?us-ascii?Q?iawjmUdK+b7gbFJ+k+xhp4EXKixDJT6631RsrtiS+8F12YAI/TNDh+Wy2Kxg?=
- =?us-ascii?Q?tbw2elMM1hZi9swnUIV1uCSd7RmK5GIxPsXEUVdK/eRMY0UcuwlwT9rv1IdY?=
- =?us-ascii?Q?16BUFeJcQvdrSWCS/LJ/Cph+ecr1n2QmST63ehJQKGJpzaBMkk1KrLn61v6z?=
- =?us-ascii?Q?+3wJy9rdOjsvKCgRElgC/nwOSVN2L4+XRSmxZZv4+Uxvoedc0OsN?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90302ebf-4d16-4a3b-6bff-08df40d6f1af
-X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2026 16:06:43.3955
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vdql28pmFR6A5zxhYyLA/FQrIAvIgaH21UzgkIWaexstBcA2XDvW1aXHFlP6jVSwR8GcgIOV14fU3ogO0OnHd6ReBp/+z1n1k0VV/VQoTlnvgDcKE0e2sBWEIC5BG+2w
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8911
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261110-refcount_overflow_stable-v3-7-318625d63a98@kernel.org>
+X-Spamd-Result: default: False [-12.01 / 50.00];
+	SUSE_INTERNAL_BYPASS(-9.00)[];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
+	RCVD_TLS_ALL(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	DKIM_TRACE(0.00)[suse.de:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	R_RATELIMIT(0.00)[to_ip_from(RL3qe7do4s7ra64g8gjdgiaorz)];
+	RCPT_COUNT_GT_50(0.00)[62];
+	TAGGED_RCPT(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,suse.de:dkim,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Flag: NO
+X-Spam-Score: -12.01
+X-Spam-Level: 
+X-Rspamd-Queue-Id: 0C62F21CEE
 
-On Thu, Nov 12, 2026 at 03:53:10PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
->
-> Use dmaengine_get_dma_device() instead of chan->device->dev when creating
-> the TCD pool and when mapping the slave resource. This lets the driver use
-> the per-channel device once per-channel IOMMU support enables it, without
-> changing behaviour for existing users.
->
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> ---
+On Tue, Nov 10, 2026 at 09:35:47PM +0100, David Hildenbrand (Arm) wrote:
+> Various networking features take additional references to frag pages
+> that are still referenced elsewhere when rearranging skb frags, for
+> example software GSO segmentation, TCP receive coalescing of clones, SACK
+> shifting and MTU probing. This is an effective way for multiplying folio
+> references held by an skb, allowing for exceeding folio refcount limits.
+> 
+> This is not specific to large pagecache folios, but with them it is a
+> lot easier to reach the refcount limit, as page table mappings can cheaply
+> create many references.
+> 
+> Let's use skb_frag_try_ref() and skb_frags_try_ref() in skb_segment(),
+> skb_try_coalesce(), skb_shift() and tcp_clone_payload(). All of these can
+> already fail, and their callers handle that.
+> 
+> skb_split() can still add one reference when splitting a frag. But each
+> split also allocates a new skb that is charged to the socket, reaching
+> the refcount limit that way would require a lot of socket memory, and the
+> references go away once the data was acked, so it's not that relevant in
+> practice. Making skb_split() fail is more involved, so let's leave it alone
+> for now.
+> 
+> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
+> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
+> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
 
-Reviewed-by: Frank Li <Frank.Li@nxp.com>
+Acked-by: Pedro Falcato <pfalcato@suse.de> 
 
->  drivers/dma/fsl-edma-common.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/dma/fsl-edma-common.c b/drivers/dma/fsl-edma-common.c
-> index 513b0f4e5be2..62cd60179bc6 100644
-> --- a/drivers/dma/fsl-edma-common.c
-> +++ b/drivers/dma/fsl-edma-common.c
-> @@ -310,10 +310,10 @@ int fsl_edma_resume(struct dma_chan *chan)
->
->  static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
->  {
-> +	struct device *dev = dmaengine_get_dma_device(&fsl_chan->vchan.chan);
-> +
->  	if (fsl_chan->dma_dir != DMA_NONE)
-> -		dma_unmap_resource(fsl_chan->vchan.chan.device->dev,
-> -				   fsl_chan->dma_dev_addr,
-> -				   fsl_chan->dma_dev_size,
-> +		dma_unmap_resource(dev, fsl_chan->dma_dev_addr, fsl_chan->dma_dev_size,
->  				   fsl_chan->dma_dir, 0);
->  	fsl_chan->dma_dir = DMA_NONE;
->  }
-> @@ -321,7 +321,7 @@ static void fsl_edma_unprep_slave_dma(struct fsl_edma_chan *fsl_chan)
->  static bool fsl_edma_prep_slave_dma(struct fsl_edma_chan *fsl_chan,
->  				    enum dma_transfer_direction dir)
->  {
-> -	struct device *dev = fsl_chan->vchan.chan.device->dev;
-> +	struct device *dev = dmaengine_get_dma_device(&fsl_chan->vchan.chan);
->  	enum dma_data_direction dma_dir;
->  	phys_addr_t addr = 0;
->  	u32 size = 0;
-> @@ -1090,7 +1090,7 @@ int fsl_edma_alloc_chan_resources(struct dma_chan *chan)
->  	if (fsl_edma_drvflags(fsl_chan) & FSL_EDMA_DRV_HAS_CHCLK)
->  		clk_prepare_enable(fsl_chan->clk);
->
-> -	fsl_chan->tcd_pool = dma_pool_create("tcd_pool", chan->device->dev,
-> +	fsl_chan->tcd_pool = dma_pool_create("tcd_pool", dmaengine_get_dma_device(chan),
->  				fsl_edma_drvflags(fsl_chan) & FSL_EDMA_DRV_TCD64 ?
->  				sizeof(struct fsl_edma_hw_tcd64) : sizeof(struct fsl_edma_hw_tcd),
->  				32, 0);
->
-> --
-> 2.34.1
->
+-- 
+Pedro
