@@ -1,55 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794502870;
-	b=JtI3/zGroNJCBYjLldiB18D9RDPJrHtgxB9pCfC5p6v+WoOxC6vm2Uc25/vcasOtCNV0
-	 Kzpi4ksGwI+kijgPbGw+zfIKcZxerR6iwkZigCLgRTXLrlAweECq6VdPwLOr47/ROJ0BW
-	 TxQDH3BfnLfFyHNd6E46VU4zOP3qu9qZ0yAHGnNbnSmrnMA3/uV8dmb9RzK0GfCTaiO+P
-	 cCX55GGiqEBc8scSIADZF8IrABxb7+d+GLOZ0Z1UYpvZiQpIpnwfy+4jG+ZicMqjwJtxm
-	 QFVuGGPJgtewplzUWcdpjCvXXQ78o1MW8MtDW5S/F24lv9ghnyGUq5RXlI/ZvPu4Ajw==
+	t=1794502879;
+	b=Cj+2a2LCa2i0SBqaI58RagffJMs0jG/FZSN2AGqAk5StriMuXraQ1nqX9D0YL31/Pz/d
+	 HHSB/FKuwy0ifTSNzoF8lwxi5l/GdZim4olN2H9Om1U9/is0301rz2VV3112m4IuKfFmw
+	 u+Qu3cgg1S9Ob8VrnbXq2CQLtJoP7S1fVQD8bLoghBQNoPX70TG2dcddt+xsisxKZBMSA
+	 UvTo5Y0ciRY3rg1zlyfOBghpidEbBN5p9vpXwCHoHkf9jEfFoCuhPg82hRUFhxWPvxLQ3
+	 tL7w3RlQJLi+DToNZS4Ki0Ayldkxow2LZWman4SIYYnj2c7P9H2wgdNecLgD1pt58+w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794502870;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794502879;
 	h=DMARC-Filter:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc:X-Mailer:X-ZohoMailClient;
-	bh=l54l8F6ChrZEQ9IliQVSHCHPtGgTJboynSGjuo7L+UU=;
-	b=d0ovM1BYSTgUBN62krD5fWqv8n79gfVwMSf+pZMJSyqT+yP9dai3PsHlVYsyojBsX0MI
-	 ikEo2AhOm9g0OM4To2DitsVUoT+R/BRbG6MuMig3Jv3+7AdYPrP32e+Zlay/6TOV65eew
-	 Rwlm052J9DMzAoSQ1ji8JhZWvyb0B6LQRb4A2zrFJ2nDdltEAC93OUAwLHKp0Yod4Q3Ie
-	 VJvmuFAF2OkBPm4WNB0IdJhvHTIHhRc2biXurxa3c36L5Cb+oMuIrD+UmqQjfZyHiJdOn
-	 Qh/+Gvcvdjl6Hcsk8RBYs96umiclUEja+ju38Cc/Z2JFUZr0eGKfPdgEdqjv2FZzUyw==
+	bh=t4e3NzVEzyqo2Z4CDS5YX3ORogwj7eesZ5oXHBnybGA=;
+	b=qSEudMUGmhrEAL8E95u/7P6f8Xa/R6AI8Puk+KkUgFDV6tNiGCgI2sMDNRFMdwct/pbA
+	 mp70HswMIbCGXCKwTxABuHMQnseT9A4OgXO/kLLw7FbKY0IOuTUq2BbMCFMbTA1GF7yFP
+	 Y8suMW/aYL5EyTNlm0OzgjS0HYcn7JKDtnycwntlIiNJ9vLh46J5AfL607iKCzXzRi659
+	 o/aopSSW/Jlrf/ILjwKSJ5hbip8UaMisf0yhfDI6phfQwiqWr0DnVkowKTAt/ahM2g5wt
+	 HgUPE07cBGjAvP9xi/46KYu0TG7EXadJoMsI1IL0T5EmQ+IGKuD4H6Qa+EiMChKkp5Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=collabora.com;
 	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=VDGNgA6h;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
-Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=QfKeomhp;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
+Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52EC0606A323;
-	Thu, 12 Nov 2026 17:01:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 52EC0606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A723606A893;
+	Thu, 12 Nov 2026 17:01:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5A723606A893
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=VDGNgA6h
-ARC-Seal: i=1; a=rsa-sha256; t=1794502857; cv=none; 
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=QfKeomhp
+ARC-Seal: i=1; a=rsa-sha256; t=1794502872; cv=none; 
 	d=zohomail.com; s=zohoarc; 
-	b=OnIEemt8oiYirBng1HPlLjMyXhijLi5XTgRnS5idUJzxTxLl5E7VhbgsqvIZIHhtRYmvdXhZ16Fysw5ONkXAFAUSS74OHEKr+zN0J4fUlGNDe9BhtreLuoJ3VpoO/qGB6wxH8l1+pqi4tuV2E8EWvepF3UbM2A5VLYBNK/vBkv0=
+	b=lLGZTMsrj7K0hwbrNbtiPQXthFOOZvF4p7uHFpdBEMM2QUHulJolK0U3xg1NYo7zGWVOTOhvLpkYSTfx7sUg38tHULzGYyTQSyhGi+JYRk3Fhq0m35JBOT9S0/KOsfAi4BlM+nk7lyWXpvDHJIJ9BUAz9qdgWAOtp6HsAzlcojg=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1794502857; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=l54l8F6ChrZEQ9IliQVSHCHPtGgTJboynSGjuo7L+UU=; 
-	b=GFZ5ulRmeqU22btGr6p08NudjTdU6PInAUTZyFkYDHP3UwspOGwRk3oEFG3JhIHnxlwamUCl+xJfQjD3ZXSwd4NKastkoY52guoPhNsigfC7O8OSAxYwAuP5KXGYy5J/d6a8HU9ImHq4CoWE1QmhEuNXyKl5lGOPQlShRaQ5qqQ=
+	t=1794502872; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=t4e3NzVEzyqo2Z4CDS5YX3ORogwj7eesZ5oXHBnybGA=; 
+	b=Q0zITqSxltMa2zoJpGtV1Bs3cSQcxtj33CHgAW01OXWgiiCk4WbRlHJSB/So4enF1aSwVp3P0U8ZPauyNRVbfEfJYwk0/RHYWEyJaQCsJUXv+I1ASHI4Jg7EALElO1wHXJdLnk6nAkc7HBNWM52xTeWPCOTYETWVX4PL0CmYmUc=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
 	dkim=pass  header.i=collabora.com;
 	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
 	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=VDGNgA6hcn1gOqvb6zWQhqRWhWRC9+2SjFIJ+jq76NEOL9wa3qN3EeB3anjG99xvetPxok0Kmxd5OKHsHyO4r5RLt+Vu6+Zg5DQXVs3mInQ/VQRWJ119hMx9eOWqUjXX+RscJZQ/j1KpOq0e3DNz+RK0fcIfCWRwqCSoWXb0AiY=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=l54l8F6ChrZEQ9IliQVSHCHPtGgTJboynSGjuo7L+UU=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 1794502856084102.6314223997532;
-	Thu, 12 Nov 2026 09:00:56 -0800 (PST)
+DKIM-Signature: a=rsa-sha256; b=QfKeomhp+PBt5ksr2kgM+3pyAsWAsnLpff4JDKThIqjKDTAAcTbW9WdxYc88u0zcghkRa/QNkoSZFx76FSDqHBpWJoILNZro6WS+gT6snuJJFqbDOqJApGZyBKzBWDOy44SE2Cot2wBMjuOWRw12z5i8JdrBpm38ZAeqeckGL0g=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=t4e3NzVEzyqo2Z4CDS5YX3ORogwj7eesZ5oXHBnybGA=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zohomail.com with SMTPS id 179450286951028.577966242972934;
+	Thu, 12 Nov 2026 09:01:09 -0800 (PST)
 From: Daniel Almeida <daniel.almeida@collabora.com>
-Date: Thu, 12 Nov 2026 14:00:10 -0300
-Subject: [PATCH 3/6] rust: iommu: add the paging domain abstraction
+Date: Thu, 12 Nov 2026 14:00:12 -0300
+Subject: [PATCH 5/6] rust: iommu: add Domain::map()
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -61,7 +61,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261112-b4-iommu-domain-v1-3-c29e86788dda@collabora.com>
+Message-Id: <20261112-b4-iommu-domain-v1-5-c29e86788dda@collabora.com>
 References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
 In-Reply-To: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
 To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
@@ -83,131 +83,244 @@ Cc: iommu@lists.linux.dev, rust-for-linux@vger.kernel.org,
 X-Mailer: b4 0.15.2
 X-ZohoMailClient: External
 
-Add Domain, a paging domain that is allocated for a bound device and
-freed on drop. It cannot outlive the device's binding. It will be used
-by the upcoming rkvenc driver to give each session its own IOMMU domain.
+The upcoming rkvenc driver will map the buffers of a session into that
+session's IOMMU domain.
 
-This is needed as rkvenc's submission model will let userspace set most
-of the encoder's registers directly, so the kernel cannot check every
-memory access that a job makes the encoder do.
+Add Domain::map(), which maps pages into the domain at an IOVA chosen
+by the caller, and returns a Mapping that unmaps them on drop.
 
-With a single domain, one session could make the encoder read or write
-the memory of another session. With a domain per session, the encoder
-can only reach the memory of the session whose job it is running, and
-any other access faults.
+The pages come from a MapSource, a new trait for anything that can
+provide an SGTable and keep its pages allocated. The Mapping owns its
+source, so the pages cannot be freed while they are mapped. MapSource
+is initially implemented for a boxed SGTable that owns its pages.
 
-Domain::new() is unsafe. The caller must ensure that the IOMMU driver
-behind its device sets a domain up fully when it is allocated and
-allows concurrent use of it.
-
-Attaching, mapping and fault handling are added in the following
-patches. Attaching and mapping rely on that requirement.
+map() is unsafe. As with IoPageTable::map_pages(), mapped ranges must
+not overlap, and nothing else may access a range while it is being
+mapped.
 
 Signed-off-by: Daniel Almeida <daniel.almeida@collabora.com>
 ---
- rust/kernel/iommu/domain.rs | 80 +++++++++++++++++++++++++++++++++++++++++++++
- rust/kernel/iommu/mod.rs    |  2 ++
- 2 files changed, 82 insertions(+)
+ rust/kernel/iommu/domain.rs | 182 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 181 insertions(+), 1 deletion(-)
 
 diff --git a/rust/kernel/iommu/domain.rs b/rust/kernel/iommu/domain.rs
-new file mode 100644
-index 000000000000..2e66becde156
---- /dev/null
+index 2a5b66f2a5d9..ac9947d5063b 100644
+--- a/rust/kernel/iommu/domain.rs
 +++ b/rust/kernel/iommu/domain.rs
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+//! IOMMU paging domains.
-+//!
-+//! An IOMMU domain is an address space: the devices attached to it share one translation from
-+//! I/O virtual addresses (IOVAs) to physical addresses. In a paging domain, that translation
-+//! consists of ranges that are mapped with `iommu_map()` and unmapped with `iommu_unmap()`.
-+//!
-+//! C header: [`include/linux/iommu.h`](srctree/include/linux/iommu.h)
-+
-+use core::{
-+    marker::PhantomData,
-+    ptr::NonNull, //
-+};
-+
-+use crate::{
-+    bindings,
-+    device::{
-+        Bound,
-+        Device, //
-+    },
-+    error::from_err_ptr,
-+    prelude::*, //
-+};
-+
-+/// An IOMMU paging domain.
+@@ -23,7 +23,11 @@
+         from_err_ptr,
+         to_result, //
+     },
+-    prelude::*, //
++    prelude::*,
++    scatterlist::{
++        Owned,
++        SGTable, //
++    }, //
+ };
+ 
+ /// An IOMMU paging domain.
+@@ -39,6 +43,76 @@
+ ///
+ /// `ptr` points to a paging domain allocated by `iommu_paging_domain_alloc_flags()` and owned by
+ /// this object.
 +///
-+/// An IOMMU domain is an address space: the devices attached to it share one translation from
-+/// I/O virtual addresses (IOVAs) to physical addresses. In a paging domain, that translation
-+/// consists of ranges that are mapped with `iommu_map()` and unmapped with `iommu_unmap()`.
++/// # Examples
 +///
-+/// The domain is allocated for a bound device and cannot outlive that device's binding. It is
-+/// freed when dropped, which may sleep.
++/// Two clients share one device. Each has its own domain, and the device is switched from one
++/// to the other between jobs.
 +///
-+/// # Invariants
++/// ```
++/// use kernel::{
++///     device::{
++///         Bound,
++///         Device, //
++///     },
++///     dma,
++///     iommu::{
++///         domain::{
++///             Domain,
++///             MapSource, //
++///         },
++///         prot, //
++///     },
++///     page,
++///     prelude::*,
++///     scatterlist::SGTable, //
++/// };
 +///
-+/// `ptr` points to a paging domain allocated by `iommu_paging_domain_alloc_flags()` and owned by
-+/// this object.
-+pub struct Domain<'a> {
-+    ptr: NonNull<bindings::iommu_domain>,
-+    _dev: PhantomData<&'a Device<Bound>>,
-+}
++/// fn new_buffer(dev: &Device<Bound>) -> Result<impl MapSource + 'static> {
++///     let pages = VVec::<u8>::with_capacity(4 * page::PAGE_SIZE, GFP_KERNEL)?;
++///
++///     KBox::pin_init(
++///         SGTable::new(dev, pages, dma::DataDirection::Bidirectional, GFP_KERNEL),
++///         GFP_KERNEL,
++///     )
++/// }
++///
++/// fn test(dev: &Device<Bound>) -> Result {
++///     // SAFETY: The IOMMU driver that `dev` is behind meets the requirements of `Domain::new()`.
++///     let domain_a = unsafe { Domain::new(dev)? };
++///     // SAFETY: The IOMMU driver that `dev` is behind meets the requirements of `Domain::new()`.
++///     let domain_b = unsafe { Domain::new(dev)? };
++///
++///     // Both clients map their buffer at the same IOVA.
++///     let iova = 0xdead_0000;
++///
++///     // SAFETY: We are the driver bound to `dev`. The attachment is dropped below, after `dev`
++///     // has stopped.
++///     let attachment = unsafe { domain_a.attach(dev)? };
++///
++///     let buffer = new_buffer(dev)?;
++///     // SAFETY: `domain_a` has no other mapping, and nothing else uses it.
++///     let _mapping_a = unsafe { domain_a.map(iova, buffer, prot::READ | prot::WRITE)? };
++///
++///     // Run a job of the first client, then stop the device.
++///
++///     // `attach()` allows one domain on a device at a time, so `domain_a` is detached first.
++///     drop(attachment);
++///
++///     // SAFETY: We are the driver bound to `dev`. The attachment is dropped when this function
++///     // returns, after `dev` has stopped.
++///     let _attachment = unsafe { domain_b.attach(dev)? };
++///
++///     let buffer = new_buffer(dev)?;
++///     // SAFETY: `domain_b` has no other mapping, and nothing else uses it.
++///     let _mapping_b = unsafe { domain_b.map(iova, buffer, prot::READ | prot::WRITE)? };
++///
++///     // Run a job of the second client, then stop the device. With `domain_b` attached, `iova`
++///     // leads to the second buffer.
++///
++///     Ok(())
++/// }
++/// ```
+ pub struct Domain<'a> {
+     ptr: NonNull<bindings::iommu_domain>,
+     _dev: PhantomData<&'a Device<Bound>>,
+@@ -50,6 +124,8 @@ unsafe impl<'a> Send for Domain<'a> {}
+ // SAFETY: `&Domain` allows the following from several threads at once:
+ // - Attaching and detaching the domain. `iommu_attach_device()` and `iommu_detach_device()` may
+ //   be called concurrently for the same domain.
++// - Mapping and unmapping ranges. `iommu_map_sg()` and `iommu_unmap()` may be called concurrently
++//   for the same domain, except in the cases that the safety requirements of `map()` exclude.
+ unsafe impl<'a> Sync for Domain<'a> {}
+ 
+ impl<'a> Domain<'a> {
+@@ -98,6 +174,60 @@ pub unsafe fn attach<'d>(&'d self, dev: &'d Device<Bound>) -> Result<Attachment<
+         // INVARIANT: The domain is attached to `dev`.
+         Ok(Attachment { domain: self, dev })
+     }
 +
-+// SAFETY: A `struct iommu_domain` is not tied to the thread that allocated it.
-+unsafe impl<'a> Send for Domain<'a> {}
-+
-+impl<'a> Domain<'a> {
-+    /// Allocates a paging domain for `dev`.
++    /// Maps the pages of `source` at `iova` with the protection flags `prot` (see [`prot`]).
++    ///
++    /// The returned [`Mapping`] owns `source` and unmaps the range when it is dropped. A leaked
++    /// [`Mapping`] leaves its range mapped. Its source is leaked with it and must keep the pages
++    /// allocated, so `S` cannot borrow them and has to be `'static`.
++    ///
++    /// This performs no cache coherency operations on the pages. It may sleep.
++    ///
++    /// [`prot`]: super::prot
 +    ///
 +    /// # Safety
 +    ///
-+    /// The IOMMU driver that `dev` is behind must:
-+    ///
-+    /// - Set a domain up fully when the domain is allocated, and keep it and its mappings until
-+    ///   the domain is freed, whether or not a device is attached.
-+    /// - Allow one domain to be attached, detached, mapped and unmapped from several threads at
-+    ///   once.
-+    pub unsafe fn new(dev: &'a Device<Bound>) -> Result<Self> {
-+        // SAFETY: `dev` is a valid device, bound for `'a`.
-+        let ptr =
-+            from_err_ptr(unsafe { bindings::iommu_paging_domain_alloc_flags(dev.as_raw(), 0) })?;
++    /// - The range must not overlap any other mapping in the domain.
++    /// - No other operation on the domain may access the range while this function runs.
++    pub unsafe fn map<'d, S: MapSource + 'static>(
++        &'d self,
++        iova: usize,
++        source: S,
++        prot: u32,
++    ) -> Result<Mapping<'d, S>> {
++        let sgt = source.sg_table().as_raw();
 +
-+        // SAFETY: `iommu_paging_domain_alloc_flags()` never returns NULL.
-+        let ptr = unsafe { NonNull::new_unchecked(ptr) };
++        // SAFETY: `sgt` points to the table of `source`, which is valid.
++        let (sgl, nents) = unsafe { ((*sgt).sgl, (*sgt).orig_nents) };
 +
-+        // INVARIANT: `ptr` was allocated by `iommu_paging_domain_alloc_flags()` and is owned by
-+        // the returned object.
-+        Ok(Self {
-+            ptr,
-+            _dev: PhantomData,
++        // SAFETY:
++        // - By the type invariant, `self.ptr` is a valid domain.
++        // - `sgl` has `nents` entries. By the safety requirements of `MapSource`, they describe
++        //   pages that stay allocated for as long as the returned `Mapping` owns `source`.
++        // - The caller meets the safety requirements of this function.
++        let ret = unsafe {
++            bindings::iommu_map_sg(
++                self.ptr.as_ptr(),
++                iova,
++                sgl,
++                nents,
++                prot as i32,
++                GFP_KERNEL.as_raw(),
++            )
++        };
++        if ret < 0 {
++            return Err(Error::from_errno(ret as i32));
++        }
++
++        // INVARIANT: `iommu_map_sg()` mapped `[iova, iova + ret)`, and only the returned object
++        // unmaps it.
++        Ok(Mapping {
++            domain: self,
++            iova,
++            size: ret as usize,
++            _source: source,
 +        })
 +    }
+ }
+ 
+ impl<'a> Drop for Domain<'a> {
+@@ -131,3 +261,53 @@ fn drop(&mut self) {
+         unsafe { bindings::iommu_detach_device(self.domain.ptr.as_ptr(), self.dev.as_raw()) };
+     }
+ }
++
++/// A source of pages that can be mapped into a [`Domain`].
++///
++/// # Safety
++///
++/// Every entry of the table that [`MapSource::sg_table`] returns must describe pages. The table
++/// must not change and its pages must stay allocated for as long as `self` exists.
++pub unsafe trait MapSource {
++    /// Returns the table describing the pages to map.
++    fn sg_table(&self) -> &SGTable;
 +}
 +
-+impl<'a> Drop for Domain<'a> {
-+    fn drop(&mut self) {
-+        // SAFETY: By the type invariant, `self.ptr` is a domain owned by `self`.
-+        unsafe { bindings::iommu_domain_free(self.ptr.as_ptr()) };
++// SAFETY: An `SGTable<Owned<P>>` is built from pages, and keeps them and its table until it is
++// dropped.
++unsafe impl<P> MapSource for Pin<KBox<SGTable<Owned<P>>>> {
++    fn sg_table(&self) -> &SGTable {
++        self
 +    }
 +}
-diff --git a/rust/kernel/iommu/mod.rs b/rust/kernel/iommu/mod.rs
-index afc9cfffb656..b6e96b8d7af8 100644
---- a/rust/kernel/iommu/mod.rs
-+++ b/rust/kernel/iommu/mod.rs
-@@ -2,6 +2,8 @@
- 
- //! Rust support related to IOMMU.
- 
-+#[cfg(CONFIG_IOMMU_API)]
-+pub mod domain;
- pub mod pgtable;
- 
- /// Protection flags used with IOMMU mappings.
++
++/// Pages mapped into a [`Domain`].
++///
++/// Dropping a mapping unmaps its range, then drops its source.
++///
++/// # Invariants
++///
++/// `[iova, iova + size)` is mapped in `domain`, and only this object unmaps it.
++#[must_use = "the range is unmapped when the mapping is dropped"]
++pub struct Mapping<'d, S> {
++    domain: &'d Domain<'d>,
++    iova: usize,
++    size: usize,
++    _source: S,
++}
++
++impl<'d, S> Mapping<'d, S> {
++    /// Returns the first IOVA of the mapping.
++    #[inline]
++    pub fn iova(&self) -> usize {
++        self.iova
++    }
++}
++
++impl<'d, S> Drop for Mapping<'d, S> {
++    fn drop(&mut self) {
++        // SAFETY: By the type invariant, `[self.iova, self.iova + self.size)` is mapped in
++        // `self.domain`, and nothing else unmaps it.
++        unsafe { bindings::iommu_unmap(self.domain.ptr.as_ptr(), self.iova, self.size) };
++    }
++}
 
 -- 
 2.56.0
