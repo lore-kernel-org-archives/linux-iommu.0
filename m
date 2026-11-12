@@ -1,80 +1,151 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=103.168.172.142
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794464044;
-	b=DN9s5zEG3ociodwHDtEWtNd+Dx6LjxLJA+emZDCTjHCvuqvqpRVZAanYWkeVhUoreWJc
-	 affM2RQ9ViGX6UXwnNmus06cDScXgD/fqntYiSECuj/4tOUPy/G7sms1Kme07DZPHwg8E
-	 3x/fE8MyURUFWtiOiAOWbMa57JTkshEjFf9tLqhi1jay+ghxZXnZX+zwku8QtjmkXWhfP
-	 7c5VvvuicU80yEQwFWsbkyW1GJVvNisqPlyhELIkumEHmTmjOdB41a99XoSe4rye8xJVK
-	 GA4lfBjyZHogZ4JK+ak/zuqeyZMgGDXmFkxxN4Hm0JGUY1IWQqi3ppTzT3rHdSvu0vA==
+	t=1794468107;
+	b=04flETiL6HFjQgJX5VNAq0cEJtp1s7SkJhKgkDEITfNAoUVeJyfKhHE4GESZUeunj+/Y
+	 IUihhGyWQqgVejEfpFNlxewtYuWUD+rlBiPODMalwtlRGZR4Vtu3NIo7RYgWtqrZt3JHY
+	 xKSBdnNYWwnVSWiNq91uanjg3ScmSJr4Mfsnub08x5OuvhrQZAPC62uvX2jMIh6xCCQvI
+	 OTfAZYTNmBZtq2R5H8Emf9xVTgSwPhgC/y9l3pSeGXKTQ5PRZZ59ZeBMsNd5+A9cLwhEO
+	 jCg7Jr7kVlL3AC9Beo3PMMpYdmJt2C/uVDcYZIp2E20+3m1RDSxH3cF7Du25IDqu3nw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794464044;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:X-Proofpoint-Reinject:
-	 X-QCInternal:X-QCInternal:X-Proofpoint-ORIG-GUID:X-Proofpoint-GUID:
-	 X-Authority-Analysis:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=/osIbHmFt4J7QJbFux8V6dVqtquVgZjnHNZgBl0VYa8=;
-	b=hKP772bsZgFC+kiGM4m+hN+I46XTqhtnU0Cfi4SHqdgzDttxBmN6kE7l+HthuQY+aloS
-	 EwkYg3Lyjd1mCcIxNjt3idbYV6RPG4cRJmjQOECTAjd+eXDRF5Zfl1eVHjY/qTJsCIvCZ
-	 f+uDrnDGiWxzjoxO0krtL5/dwHiW1JUTj2/aA/aByyk5ySs1xQgksN1E+CZYJ+PF2cOtw
-	 glowbI083Aruj9RxROV1W/pf3Ad0Vcv1aGIX4AVBcIoP0tBk9SCVmRXW80AFuOD9+gOYc
-	 uINrIse9TmxcTXoYJbIulK0B0LNnjkuyrfz6JMaFEwwetGIOisgb+BB7WImoZi5tmjA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794468107;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
+	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
+	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
+	 Received:From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding;
+	bh=/aOs23e7QQCLKmjceydNMayYEdRUeyCwIuXTSXDmxCY=;
+	b=pdFUKbM6qOxgKkJ2tGy1YxlK3RDLXKND0SkFFGaYi/H7Jz4HpuJhdCli3Cratnm0T9sj
+	 CaolMKWx3RZCs1fnGbGt498z1pHAi1SCgSglHFCDgWUoH6AqkIAsLiUqlqjoz5wB/Xn0C
+	 8vXM6rvKO2Az4DcvKaRKrTCyjx5NXX5BymsTIqqzhK62ukRsMtrSZVEy3tom7ljKDYR1q
+	 dMVAXX/n+AhuAEOaFvO9E5Fr0qESg6wbIbgbqCVPFT0yhGLmX7DpNGIh/zKZZ1+dlGuLQ
+	 fKZF7A1yME1Q/b2GQpAJTOxxl7LJWS6OSFMqeOcnXUWV2AVJoWlgV96emfkOwJ5Oz8w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=DDNgAmZO;
-	arc=none smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	dmarc=pass header.from=gahingwoo.com;
+	spf=pass smtp.mailfrom=gahingwoo.com;
+	dkim=pass header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=UMhJojbY;
+	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=Hf+OCWh5;
+	arc=none smtp.remote-ip=103.168.172.142
+Received: from flow-a7-smtp.messagingengine.com (flow-a7-smtp.messagingengine.com [103.168.172.142])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43A28606A31C;
-	Thu, 12 Nov 2026 06:14:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43A28606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE7D1606A32E
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 07:21:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AE7D1606A32E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gahingwoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gahingwoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=DDNgAmZO
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AC4m0ws3893195;
-	Thu, 12 Nov 2026 06:13:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=/osIbHmFt4J7QJbFux8V6dVq
-	tquVgZjnHNZgBl0VYa8=; b=DDNgAmZOpqUl43zoX6MNTLLFqeYiyo5XBuvIRvP4
-	wg/ZlQ6pICc+5TomMXJ04YQT2BTmrAIVUPKGTlMf2BuAxtMg8rv7swEpT7ZSqG07
-	+C5Far7hNnBPumcPQAKLUsoqsm4/6+AVcI36vuGvgzNOdpHK1MUkjFnNZ9227A2U
-	bBqmlaUQQJN6RYMJRJ5xv0AJ380QKB9GbqcijfrNnXjqhK3sxDNUlJ9n0Xr3Oi/2
-	NAm3zwNYiLLkl5dEiYz/GWOc8czLkY5sSFauqtiL7rh3vkxKxgosPI9oRNU0yDI7
-	PgIZiqLXpmcPq1F30rhMHf1ybpYxnxL6fPXmhjrwWkFJgw==
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hw6re08dp-1
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Thu, 12 Nov 2026 06:13:52 +0000 (GMT)
-Received: from pps.filterd (apblrppmta01.qualcomm.com [127.0.0.1])
-	by APBLRPPMTA01.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 6AC6DnNZ1791902;
-	Thu, 12 Nov 2026 06:13:49 GMT
-Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-bibekkum-hyd.qualcomm.com [10.147.243.199])
-	by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 6AC6Dnvf1791896
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Thu, 12 Nov 2026 06:13:49 +0000 (GMT)
-Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4253010)
-	id E10B75FA; Thu, 12 Nov 2026 11:43:47 +0530 (+0530)
-Date: Thu, 12 Nov 2026 11:43:47 +0530
-From: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: arm-smmu-qcom: Skip fault-info reads when
- suspended
-Message-ID: <20261112061347.oxh6qg6i53v3ixuj@hu-bibekkum-hyd.qualcomm.com>
-References: <20260912-priv_call_runtime_handlers-v1-1-fc0c3a17523f@oss.qualcomm.com>
- <fe22fb3d-77dd-4b34-9dd8-aafe11f36988@arm.com>
- <20260915125758.ekt323jhwsiis6bp@hu-bibekkum-hyd.qualcomm.com>
+	dkim=pass (2048-bit key, unprotected) header.d=gahingwoo.com header.i=@gahingwoo.com header.a=rsa-sha256 header.s=fm1 header.b=UMhJojbY;
+	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=Hf+OCWh5
+Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
+	by mailflow.phl.internal (Postfix) with ESMTP id C31A6138161A
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 02:21:45 -0500 (EST)
+Received: from phl-frontend-04 ([10.202.2.163])
+  by phl-compute-03.internal (MEProxy); Thu, 12 Nov 2026 02:21:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gahingwoo.com;
+	 h=cc:cc:content-transfer-encoding:content-type:date:date:from
+	:from:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm1; t=1794468105; x=
+	1794475305; bh=/aOs23e7QQCLKmjceydNMayYEdRUeyCwIuXTSXDmxCY=; b=U
+	MhJojbY4cAiIKzf+X751/oHdycGroZlxrqjuBwWWuucaAC/EQDZnIhVH8T671Ca7
+	IC2JJEqrlnpJzo7KbyoAUIjyKiVLFZMV3jbBFLka0c+LMnxeyWhUa0lPSbJCxUtH
+	jl5SmfiHbYFSAIn/L3GKDczHniTna4DW0X7tDE8JiwDwHiubTK7bzWnnb4G5e1YT
+	qjwnMsRKRF56pFUObPhkhkgAXeHA8uvc/St41eVeP4i5GxiAoSP9rLpo75JbmcIT
+	lIh8gl+AH0uRkmIa9LAhWmADSK/e1lAYgYvok1XOHA4BvE0BGXWO1qRpU6IQw23W
+	tF/x9il53FfEXX6QGam5Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:date:date:feedback-id:feedback-id:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to:x-me-proxy:x-me-sender
+	:x-me-sender:x-sasl-enc; s=fm3; t=1794468105; x=1794475305; bh=/
+	aOs23e7QQCLKmjceydNMayYEdRUeyCwIuXTSXDmxCY=; b=Hf+OCWh5om9p2L2Oj
+	3/wcvkJ6VC2/SbUcju5EPySYY3dwu/iDDsIiuY6yDgwJbWzLWRhIq9Hi33oKvDOu
+	PJFesYOxyCPFBeZh5ezTyltt0Oa47EZdQz+7X7rMRH9pc8xfI8k89dCmgPMB5Frv
+	Vawsfax/rR4p4s7v61SAk0Ht1JUOHiCskU0nBAUeUJNcR0MpMkd7E+adG2TI4z5Z
+	iPaE+LXhTuLdca2ttyw0y5aKIiAtTpEZP+qYIUWx6T/Q+RX5Z+KHfesUCokXr136
+	CPFgp3/CTcFn1ydMXyoJczVl2snJBf28nB4Sfcad9mF1HG5y3eXWRIfAfVe0wShe
+	29Z9g==
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=sign d=gahingwoo.com a=rsa-sha256;
+DKIM2-Signature: i=1; m=1; t=1794468105; d=gahingwoo.com;
+	mf=PGdhaGluZ0BnYWhpbmd3b28uY29tPg==;
+	rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
+	s=fm1:rsa-sha256:b3DlJNZmcvoNuWOaztsSj/1bzgbMCp6mXgAbbWAja1U3GCv
+	TI6UxFuO1hKsQZGWiWmzXegedjjB6Byf/K/0H6BAZE/In6zSeXt+HFA3NKLfSVbu
+	n7I4ylVUj5rT2GnNCHNUHuj8WEzDyLTppPVhIHHQfh2Qfu7Y+/2a1lFCOt6E1kL4
+	YaxGiN3a5D9xgMAhrlph21ea252vs94WI8VC+sqUym1fYqzu7L2FIh0zCldpYD1D
+	U7Mr5PYoE9EcGACvSZu6n9EnkKSu8j9aK+xMz/wavaXXp+PvdsYn9MxpnTrYorHu
+	rsCT4TMHl0gJfP0xzqO6O5B7uPjnHyuJsZaRocA==;
+X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
+	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
+	action=mi-m=1; hc=11;
+	hn=cc,content-transfer-encoding,date,feedback-id,from,
+	in-reply-to,message-id,mime-version,references,subject,to;
+Message-Instance: m=1; h=sha256:dIE2y9Uu6HnLr9tOub8WZVw3c3AePlzWlyUat1T5uX4=:/aOs23e7QQCLKmjceydNMayYEdRUeyCwIuXTSXDmxCY=;
+X-ME-Sender: <xms:B2n1ahqZ1H311A66OHoN-mktRlG8B_0ankZd-7BcrwLvuI9H1FjVeA>
+    <xme:B2n1agENmigRG7FZw2_E-VsZsyFZgR8xHMGpc3zWxdX_1H_8ETEqRIajkVHyRgWne
+    lFw-ZSNhDScLRyCLaeTNXahXFBJg1FLZn-go_ZeO2yEWyZBDwlN5i9X>
+X-ME-Received: <xmr:B2n1ale6EJcl-5YzOkbhnVkzqYGOsIZohDQqq84-J5uKya9NFQZJCqfv-9iA7TtzJ6HK0Yv->
+X-ME-Proxy-Cause: dmFkZTEFPa/ikIisriaO4o77tKRhcPablI28CtNe/elCLig9diYpUh8uAKQt8w1/Ua9XDn
+    MYP+BtAoededCx7UOhVeX909ExHT+W5b3Dfx6UlWzsatLZAj4ODaBI5BauuLSt33E7jS3u
+    JMUUY3pdsA1kClQuMcyKreUq0Dk83Tw3OeICiqV7+TESuUUnv0R8weCLazSv3CyKesrjwp
+    GMxT3yOUNsU9sLlfEz9yCaWNy5EVYBWBMw30/wnxX3B+qzxl4lHHnVoY7Xykr6G+lPFlm7
+    p9HBW8/FxPy6yaC10ITkFRzmyBnSP2OUSEPzn54ZKoFxC2k6fZ9zIjFyHBebuTfOx/LOt1
+    sgMJx99jwBu/plx3bqeiSLJMZKrxOnQqiA9o1l57xk0gLXGFKIqH+8wnOKeUn0jDQmdtWq
+    GchdKvA8gSUDLrwbH/vxkmDYrNqHvQ1H1UfcBssXFZ+HN7Ga7LYBvHeOA6ewc+/7YZkd8H
+    VfGjBR+DJiHH7vR2+N1Ai3Ri+XJMRZE85ExfBtsdtaoEVjtEJUIozJP5UADWTtPoyh/SuT
+    1lDa1oMUcRhvGliCGCSdcV6Z/wIo83ipSCDuEAkXnBPw8RyYSvAKUw7Euyaa60BwYiN3yJ
+    LaQn8iSRb3kVHI2FSyBqfhS4ijk3rZCahdP+rsYdKRjFmFPPCqC3ROXt7aUg
+X-ME-Proxy: <xmx:B2n1ajadElEp1GCnr-LhNuuoqDh9czUabfNfsbWgbIJIcGeCo_dUgg>
+    <xmx:B2n1ahLZ1lNigw46BpK67DqCiDF9-CtK1NlIVYPwGyEyTcsnd_fOXg>
+    <xmx:B2n1aqiPmMh-V84cYLpaR0qcVaSakEUIP7qYRRSkXKhcTnrpTc8EuQ>
+    <xmx:B2n1alsPyG0WXCQvTneUN-6VXNuZRHm7mFGpdTBvWqzVgzcR2wfzPQ>
+    <xmx:CWn1aruzqIbiDPpgycEpUBK81Is8VqdsiKro5McapK0aXtXZdIwraUIC>
+Feedback-ID: i7a5e4b5f:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 12 Nov 2026 02:21:35 -0500 (EST)
+From: Jiaxing Hu <gahing@gahingwoo.com>
+To: finley.xiao@rock-chips.com,
+	tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	ulfh@kernel.org,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com
+Cc: royalnet026@gmail.com,
+	abel.vesa@oss.qualcomm.com,
+	sebastian.reichel@collabora.com,
+	sidong.yang@furiosa.ai,
+	u.kleine-koenig@baylibre.com,
+	chaoyi.chen@rock-chips.com,
+	diederik@cknow-tech.com,
+	alchark@flipper.net,
+	leonard@lausen.nl,
+	jeff.hugo@oss.qualcomm.com,
+	rfoss@kernel.org,
+	shawn.lin@rock-chips.com,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Jiaxing Hu <gahing@gahingwoo.com>
+Subject: Re: [PATCH v16 10/16] pmdomain: rockchip: cycle an optional power-domain reset on power-on
+Date: Thu, 12 Nov 2026 20:21:31 +1300
+Message-ID: <20261112072131.41144-1-gahing@gahingwoo.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <ca90a994-70cc-410a-902d-5c4c0aacc9b7@rock-chips.com>
+References: <20261108065917.135194-1-gahing@gahingwoo.com> <20261108065917.135194-11-gahing@gahingwoo.com> <ca90a994-70cc-410a-902d-5c4c0aacc9b7@rock-chips.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -84,172 +155,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20260915125758.ekt323jhwsiis6bp@hu-bibekkum-hyd.qualcomm.com>
-X-Proofpoint-Reinject: loops=2 maxloops=12
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-ORIG-GUID: 5NLhUop60S9Wfdljujw7SLVCY7yQ6pEr
-X-Proofpoint-GUID: 5NLhUop60S9Wfdljujw7SLVCY7yQ6pEr
-X-Authority-Analysis: v=2.4 cv=NJhAaE6g c=1 sm=1 tr=0 ts=6af55921 cx=c_pps
- a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
- a=kj9zAlcOel0A:10 a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=_K5XuSEh1TEqbUxoQ0s3:22 a=VwQbUJbxAAAA:8
- a=EUspDBNiAAAA:8 a=NEAV23lmAAAA:8 a=w0EGknLvMgiScxiyWWQA:9 a=CjuIK1q_8ugA:10
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEyMDAyNCBTYWx0ZWRfX0R3T51rCWELb
- p0Kt9an0W42Xbs2FWx/zvKA6Mf6DOEJ/4dNXNUcm/zC5til49DCPKbv238r1i6X+4rq6OBZq2d9
- exB2GKKss3h7XmrTLOlIB9YHi8MG6Jc=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEyMDAyNCBTYWx0ZWRfX+sygBQtJCrN5
- e26yJtUcz9gBpeb57qAum/J15+kI0mM/jq7Nv16cNrC+iD/UYL3LSfXDLjnaaEr5VEDU8EFtM4i
- E525jeXXb0hDtVGEB6gyA+6M7qgYuPYuA9LC52OK2X0rokAYSWlDa8IPRDd7T5gRRHlEVpJK9We
- 9MhDAqpqG8d2+vwcbisnCI794yS+ynJVgjj6h6sfigJkrfuw2kWa5wsKxUodTELxrr2wmiYx4yg
- jH9gclZPRhR7aBnlxMWdgdSnwsFjSXu9oqxJ8W1oi8zABSdGkk/29gNcUWQymIo5SFRsAQLH4vB
- tcc0tyzPchijI5C0jWUuOHvmHK+SII0hcAp074wg0infxOfH0Nfh4VW9Vo09YOsUz+oIR+FlubY
- 69ZdaoV6dbs8rPFwu2fRH0IXByjdHqYF8Xfo1zc9nfRrOkeEnXZ9z2VwZJhs63SHprr80h63xU4
- /Y/uTK4O/rGD9uSY87w==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-12_01,2026-11-11_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 impostorscore=0 phishscore=0 spamscore=0 clxscore=1011
- malwarescore=0 adultscore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611120024
+Content-Transfer-Encoding: 8bit
 
-On Sep 15, Bibek Kumar Patro wrote:
->On Sep 14, Robin Murphy wrote:
->>On 11/09/2026 11:25 pm, Bibek Kumar Patro wrote:
->>>qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
->>>holding a runtime PM reference. A fault is raised while the SMMU is
->>>active, but the GPU may drop its power vote before the threaded fault
->>>handler reaches the callback, allowing the SMMU to runtime suspend.
->>>
->>>Accessing the SMMU registers after suspend has started is unsafe and
->>>may cause subsequent register accesses during runtime resume to fail
->>>with a NoC error and an asynchronous SError.
->>
->>But hang on, if I'm following the code correctly, the callchain would be:
->>
->>arm_smmu_context_fault
->> report_iommu_fault
->>   msm_gpu_fault_handler
->>    qcom_adreno_smmu_get_fault_info
->>
->>and from here we still need to return to arm_smmu_context_fault() to 
->>clear the FSR, so surely that still has the same problem in itself?
->>
->
->Ah, yes this path also should have the same problem for GPU smmu.
->But I am carrying [1] in my workspace [2] for testing currently.
->So haven't encountered the same yet. We might need to address [1]
->also as part of this thread. wdyt?
->
->[1]: https://lore.kernel.org/all/20260313-smmu-rpm-v2-1-8c2236b402b0@oss.qualcomm.com/
->[2]: https://github.com/qualcomm-linux/kernel/blame/aff7542c319ede2037eeee316f20c2429062c08a/drivers/iommu/arm/arm-smmu/arm-smmu.c#L500
->
+Hi Finley,
 
-Hi Robin,
+Thanks for the feedback. I agree with all three points.
 
-Do you have any concerns or suggestions on this patch?
-lmk incase needed, I can resend the rebased version for both
-current and [1] patch.
-[1]: https://lore.kernel.org/all/20260313-smmu-rpm-v2-1-8c2236b402b0@oss.qualcomm.com/
+Some background on where the reset came from: we added it in June while
+debugging the IOMMU, but found the same day that it did not actually help.
+The real problem turned out to be that the IOMMU was missing the CBUF
+clocks, which is what later went into mainline as 841363ebb508.
 
-Thanks & regards,
-Bibek
+We had in fact already removed the reset in a debug patch at the time, but
+when the series was put together later that step was missed and did not
+go out with it.
 
->Thanks & regards,
->Bibek
->
->>Thanks,
->>Robin.
->>
->>>Use pm_runtime_get_if_active() to keep the SMMU active while collecting
->>>the fault information, and skip the register reads if suspend has
->>>already started.
->>>
->>>Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->>>---
->>>qcom_adreno_smmu_get_fault_info() accesses SMMU registers without
->>>holding a runtime PM reference. A fault is raised while the SMMU is
->>>active, but the GPU may drop its power vote before the threaded fault
->>>handler reaches the callback, allowing the SMMU to runtime suspend.
->>>
->>>The failure sequence:
->>>
->>>  GPU context fault
->>>          |
->>>          v
->>>  qcom_adreno_smmu_get_fault_info()
->>>          |
->>>          | GPU drops its power vote
->>>          | SMMU starts runtime suspend
->>>          v
->>>  SMMU register access without an active RPM reference
->>>          |
->>>          v
->>>  later Adreno PRR private-interface operation
->>>          |
->>>          v
->>>  pm_runtime_resume_and_get()
->>>          |
->>>          v
->>>  arm_smmu_runtime_resume()
->>>          |
->>>          v
->>>  arm_smmu_device_reset()
->>>          |
->>>          v
->>>  SMMU register access
->>>          |
->>>          v
->>>  NoC error / asynchronous SError
->>>
->>>Use pm_runtime_get_if_active() to keep the SMMU active while collecting
->>>the fault information. If suspend has already started, skip the register
->>>reads instead of accessing the SMMU while it is being powered down.
->>>---
->>> drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 14 ++++++++++++++
->>> 1 file changed, 14 insertions(+)
->>>
->>>diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>index 795e8ec7e8fa..b1787a4ba0d3 100644
->>>--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->>>@@ -129,6 +129,18 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
->>> 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
->>> 	struct arm_smmu_device *smmu = smmu_domain->smmu;
->>>+	/*
->>>+	 * A fault can only fire while the SMMU is active (GPU is issuing
->>>+	 * transactions). Use get_if_active so that if by a rare race the
->>>+	 * device has already suspended, we skip the register reads rather
->>>+	 * than triggering a cold resume which would call device_reset and
->>>+	 * destroy the fault state we are trying to capture.
->>>+	 */
->>>+	if (pm_runtime_get_if_active(smmu->dev) <= 0) {
->>>+		dev_warn(smmu->dev, "get_fault_info: device not active, skipping\n");
->>>+		return;
->>>+	}
->>>+
->>> 	info->fsr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSR);
->>> 	info->fsynr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR0);
->>> 	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
->>>@@ -136,6 +148,8 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
->>> 	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
->>> 	info->ttbr0 = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
->>> 	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
->>>+
->>>+	pm_runtime_put_autosuspend(smmu->dev);
->>> }
->>> static void qcom_adreno_smmu_set_stall(const void *cookie, bool enabled)
->>>
->>>---
->>>base-commit: f61bb3920fa8cb44b84d32e0fa9fbaab4eb00c80
->>>change-id: 20260912-priv_call_runtime_handlers-7f3547544040
->>>
->>>Best regards,
->>>--
->>>Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->>>
->>
+I went back over the commit message, and both claims in it, that the first
+access hangs and that the vendor kernel also cycles this reset, are not
+accurate. There was no actual test showing a hang on the first access, and
+I have checked that the vendor kernel has no such reset at all.
+
+I also retested on the current code: without the reset, with the power
+domain clocks back to two, and with no delay on NPU0/NPU1, both a warm
+reboot and a cold power-on are fine, 30 runs each.
+
+The VOP delay makes no visible difference on this board, so I will add it
+as you suggest.
+
+Thanks again, these were worth sorting out properly.
+
+Jiaxing
