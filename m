@@ -1,95 +1,134 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.3
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794486828;
-	b=lWIj+ret6cmWehsZiUUBM3qYm04ThxPYkFRUd4OY/b+6COp+kiPJPNPyEYEtlwnNhGTn
-	 NbpYl9dD7uiViLmK+ZV7Hwb5+s6j34y6h737qwftYC3Z1X1mbTgHlvIDMNbWGjKgGJ2GG
-	 pBcVvI+Vp21SRA6vp7IgU+4soOeRKKBMHzgwIryLfEFLLKcbsNbWVN8J6vKHOHYZhEwpH
-	 o7lwxovvw1T3c+F7f0XwWJC4X1IyZ7LBIeucV6mc6MUb0y7iCW5+izmerUYqWSg91hlAu
-	 296zFcpXnrxtp+k5Nrjr/SiBGSj1nVSFGQnwsIoNWlguykVkOGX5nu8Da8Y3+AauBuw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794486828;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=gm6G8qOMBCn9DGPHqPWa03ctOgvvct9LkuAM3z+ok0g=;
-	b=DmfvCjl+EhMID+AKAxBQ5x2bJYMu6Z/vI2kce1VdINkVp2h7TN60yO+RdirtSqqDUmDC
-	 kMgKJM87yRHULMuA5/fDmveoLo/KaUmgvelQCErt7ZVbyfg7HsAKDxqqEqmAUIMJGX/2U
-	 UbWX9wCe4tZ2QmDrD9yJgDc+KxCqdUDlJqO0dFz6HwKfeMl0lVtch0bL4E86QXassFsSg
-	 1ZxpfHc2WGEuzoYoud7MUCT86phpiPYsoOP8SB7K0P1XxZ4tgcYIACyojcS17RSczu0qC
-	 B/M6uIlQa6YdRelDTk3wPcSC3UGCD5547wRGz+QKMBVzbcyiw22bbUzMZauEY75VBAQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=CeHvbDCE;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.48.3
-Received: from MW6PR02CU001.outbound.protection.outlook.com (mail-westus2azon11012003.outbound.protection.outlook.com [52.101.48.3])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794488166;
+	b=k9P5otYs8FLG3U8cvEx52n3jWa+sbsF5SH7ZquBFnCNr9DTZfTMe1Cr4X2i/e40fqVEu
+	 K1XznHqE2wvnpAPNlZyXcrvb+irCtsWrY+3Fy8aBQiIHzorsZbTGovQPKoTgW+d39bUz8
+	 KPaMLJC3olPGKZT6BIGGDW5kZ9kI89KDvqIWuJ8uhl+HhNqQ+1yCC4XyTrkilXDZLCHXS
+	 HYf9s4AofvBO/6sZf4B9OBwZ6ykv80hF6k+7FpQbh2q4cKm3BGlQUgvu8NKoAWe3a+Elt
+	 Xoa8c3vzX5uzeagt5+XvPdtAR/o4e0AXfdFx8zH+pGiSKwrSKxd4GU+sizIxBW4qFaQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794488166;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
+	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Rspamd-Queue-Id:X-Spam-Level:X-Rspamd-Server:X-Rspamd-Action:
+	 X-Spam-Flag:X-Spamd-Result:X-Spam-Score;
+	bh=3n5/J6tgPD1XWb4Tmws4RfbYXoguOaRXVVFkrEMc68s=;
+	b=h5EgG5ISlr7s19mc2cN9rS8iS4hzqdQ1z3Pv4DZsz7Yu4wd1f/6UDafyiKIsoBgKgLfA
+	 mOVkjM9zLlG53DWPn1kPA9I+dNoSPdxj4m1TmswpUkUImQi0DSjdhTGFvljJ2slDLTdoB
+	 HZf/7Y30GSRwNptXJOYiSjdpTTETFEJuNQHlIxntCQxyY4ZdhHfAdpvOZ9RFBc3O9eAod
+	 2uZW0jtbbS7yD6Jw9lPSgVsKJXhkg05BfqMxt517a40SKT5y/VRAqwLAeJnGSzKBxzLHz
+	 1m25/xCVahH5II9tGwD7/WBvfAAtb7G6gKhowc1NwgPaadtUgzRmcYqsygABqRxSdsw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=suse.de;
+	spf=pass smtp.mailfrom=suse.de;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gQmcfq7i;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="/oJcuEkS";
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gQmcfq7i;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="/oJcuEkS";
+	arc=none smtp.remote-ip=195.135.223.130
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67665606A31C
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 12:33:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67665606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AB04606A31C;
+	Thu, 12 Nov 2026 12:56:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6AB04606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=CeHvbDCE
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=zHISGRCplz9TNQUUT5z0ZnaZ3iEz/cpZpgsPdNUkOmEVpwdohsLwgwnLLMe17l9O/XTBDLqKMQev9H4618at2GjPwfsCcBQYsSN5DVuNnkLpW+Lxs9ALDncYRvsQdyfWARXKP3fWafszbesfSxno8ipcJRJcr+4vnRTEUmZdXYYOZ+oQIO86E9JkNSM9cynL6iRHqV0F1x1joNs0pl5oooDKV8L+f7w6cL30Nid7l4QLIMUqKtceGT/rYDDQaMJqfxbDpqq3e5kYOko5u6ozaxuLNjUI/Vm76GShlb+Q6brM9HFlnCmFV88bt2jrhFbB1Bh8K4rJgm1TagR5X7xzjw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gm6G8qOMBCn9DGPHqPWa03ctOgvvct9LkuAM3z+ok0g=;
- b=Jtq/44blSWn66Fu8K1GY+m85r7tspzk6P1k/XFbibwWQsdmUGJiovIeQbp/v+oleKHk+ho4Ap7wBXLS3Grg4FuWlG6EICIWiSXdgT/4jx1hdT2oIHYtWEfbHxskryF6MYn5iMbMbLjH4toLvm7eE8huiaL9rBa68gGo0trnrgLc0A8D6t3WGXrdOjhFvud9/fYEejU1G9K90aDA1Yq2LzdoBKPjQzHyN74PYJn6o0XF8CNS29AJbEgn0JXSBweSlxBrAP7hlhjhNSRLBUCzvuTd/j/1zEfMTSjVIYnR1IkOOuUMJie79oI1TKAPI1voxK3qnWyI8dwMOH6OIUfC/mg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gm6G8qOMBCn9DGPHqPWa03ctOgvvct9LkuAM3z+ok0g=;
- b=CeHvbDCEd9Evig/88FzbPJctwYDxkE+aCEivCc6i9JQP3wd4iDbC8leNDKdwll9ReSObrqfi1LdomDiwNBHVEwHrO1xiBtvuLBOba4DNLsn7Bti2DL/qwFjpIv3xMbtTNFBA5PHWudZkDOhn9czKpf7CmpqYa+lpv1JSV/XHXdyaos38O83oKweEeK3r2bZJZy2DS2NHQeNPEtf3kyEesMcTf94WMDDZkVKuKjk7w8c9xfPgRQF9ED6aiK9SmwOhSPYWB+g54vXKSS98D+rGx80B+3ou3xCj77GFU9piJQDqq5GidxQmLWH+JS/0yMYj6PNPrwTd6VhDt9+QIbhIPw==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from IA4PR12MB932075.namprd12.prod.outlook.com
- (2603:10b6:207:12d::15) by BY1PR12MB8445.namprd12.prod.outlook.com
- (2603:10b6:a03:523::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.9; Thu, 12 Nov
- 2026 12:32:25 +0000
-Received: from IA4PR12MB932075.namprd12.prod.outlook.com
- ([fe80::5a6f:1f74:6ccb:cf2f]) by IA4PR12MB932075.namprd12.prod.outlook.com
- ([fe80::5a6f:1f74:6ccb:cf2f%5]) with mapi id 15.21.0615.009; Thu, 12 Nov 2026
- 12:32:24 +0000
-Message-ID: <88bb6c10-1bba-4951-a09e-50ea4642de7d@nvidia.com>
-Date: Thu, 12 Nov 2026 14:32:20 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/11] eth: mlx4: use dma_alloc_coherent_node()
-To: Jakub Kicinski <kuba@kernel.org>, robin.murphy@arm.com,
- m.szyprowski@samsung.com
-Cc: netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
- will@kernel.org, =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>
-References: <20261106184433.761422-1-kuba@kernel.org>
- <20261106184433.761422-12-kuba@kernel.org>
-Content-Language: en-US
-From: Tariq Toukan <tariqt@nvidia.com>
-In-Reply-To: <20261106184433.761422-12-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: TL2P290CA0012.ISRP290.PROD.OUTLOOK.COM
- (2603:1096:950:2::16) To IA4PR12MB932075.namprd12.prod.outlook.com
- (2603:10b6:207:12d::15)
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gQmcfq7i;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=/oJcuEkS;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gQmcfq7i;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=/oJcuEkS
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 50EA521D92;
+	Thu, 12 Nov 2026 12:56:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794488163; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3n5/J6tgPD1XWb4Tmws4RfbYXoguOaRXVVFkrEMc68s=;
+	b=gQmcfq7im2QWNWRBnuekveq94mEqspY1fJQBVjwCi5XjA/1EBRLnMKXSNTJC0M+Fa31Iiu
+	BOYo7gBeBqQwmA0YBpRcgGhI2lY4Xtv7XrtuZXytIcVZfMbU9uIKUfnIStmCKpZpjMhsOi
+	LS5KKK0oQ6WgyvUOU67vQ+sI/EqZRrE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794488163;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3n5/J6tgPD1XWb4Tmws4RfbYXoguOaRXVVFkrEMc68s=;
+	b=/oJcuEkSIU/2wwr9Bfk9gr2Ktf3IqO9l2JXtsaqeU1sbkLNCar6iB2EeLyBnOrBy6G4ghS
+	r6BAm/4Hn5IQ+DAw==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=gQmcfq7i;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="/oJcuEkS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794488163; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3n5/J6tgPD1XWb4Tmws4RfbYXoguOaRXVVFkrEMc68s=;
+	b=gQmcfq7im2QWNWRBnuekveq94mEqspY1fJQBVjwCi5XjA/1EBRLnMKXSNTJC0M+Fa31Iiu
+	BOYo7gBeBqQwmA0YBpRcgGhI2lY4Xtv7XrtuZXytIcVZfMbU9uIKUfnIStmCKpZpjMhsOi
+	LS5KKK0oQ6WgyvUOU67vQ+sI/EqZRrE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794488163;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=3n5/J6tgPD1XWb4Tmws4RfbYXoguOaRXVVFkrEMc68s=;
+	b=/oJcuEkSIU/2wwr9Bfk9gr2Ktf3IqO9l2JXtsaqeU1sbkLNCar6iB2EeLyBnOrBy6G4ghS
+	r6BAm/4Hn5IQ+DAw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 310A413432;
+	Thu, 12 Nov 2026 12:55:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id ro7mNV639WoZYAAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 12:55:59 +0000
+Date: Thu, 12 Nov 2026 12:55:57 +0000
+From: Pedro Falcato <pfalcato@suse.de>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, 
+	Jan Kara <jack@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, 
+	Zi Yan <ziy@nvidia.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
+	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
+	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, 
+	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
+	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
+	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
+	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, 
+	Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
+	John Hubbard <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
+	Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
+	iommu@lists.linux.dev, netdev@vger.kernel.org, Chris Mason <mason@kernel.org>, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH v3 1/9] mm: limit pagecache folio refcount when mapping
+ pages
+Message-ID: <avW0HGjF6wuqn12T@pedro-suse.tail5790ac.ts.net>
+References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
+ <20261110-refcount_overflow_stable-v3-1-318625d63a98@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -99,92 +138,476 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA4PR12MB932075:EE_|BY1PR12MB8445:EE_
-X-MS-Office365-Filtering-Correlation-Id: b0c421d0-1863-4ac2-a352-08df40b90169
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|23010399003|1800799024|22082099003|18002099003|56012099006|4143699003|10067099003|11063799006|261026121527099003|261026140227099003|261028144727099003|261021121427099003|261022105027099003|261102123227099003;
-X-Microsoft-Antispam-Message-Info:
-	41EgRO/vdqcUrnJEI+JjlkJPvEdR9WoU66im1IQeboqJr9PcQUOKd4OXX6Ge3u4ealu9fKRmZ44HQCNmimjebCA4rKWfKh+Td4RNkHuP7qxEs+qtKFg6v7G9o+MADODtkiLRyuZWn90LxA1JwJfa3OMsrk0jpH6D3abGb+yw4RoBue8IRPVHx4vjEB8keVNaPQBgzHWEAR/TggG68nQ7wSkExqYE0H2nEtXsPDhWc+GGpLzhKMWy85s1LA5KDLkOQt7xmXD6JXRiPPnKAHcpQyN2s86pf8iRN/pxglDnQ2MZ8yig/ROTqPybZ7x34WeYXhOf+FrK0zGsOaGVhM7AyfjTbPUPvkFIbstOO3ssLWH9sQfEFhYOuYs7WtpWLjWvMqFpvX431o8QWatlG1amrshbK84qOhtQnp8kcH839PQAwzs7ejTBzYugA5iE5b6b2oN2sgx02aJ4PXzXflMmX9wjT+mkcjRt3jMxfZgd6z9TXpcic8doXUtTSY+e+Gn9r0h3Sw6fy0IKIRzKInZGRGTEGHyld8esI7cY6p0TLDSsbML93u3Y0Ly8pvJwzQPzWfvszk4EVxZU5XjUxDqd7+tcQLbaK34VBza4fBsem9Ze7yZ/8NnbK2Y51CRQPitTRdL5tW/g8Ex20vkmEVeLWm+SShR4WsW4clTQy6NNIIA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA4PR12MB932075.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(23010399003)(1800799024)(22082099003)(18002099003)(56012099006)(4143699003)(10067099003)(11063799006)(261026121527099003)(261026140227099003)(261028144727099003)(261021121427099003)(261022105027099003)(261102123227099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?M1FSdVZ3NFpPYWFXRzJ1UnR3VmVQM3kzR1NXbmdtQ2FpRytmelF0N0dPRURS?=
- =?utf-8?B?bk1nZ2dENVArS3dzWlFDajNOV2hqQjZ1R0hHR2g3Q1ppTHlCMUxHczZtK25v?=
- =?utf-8?B?NzFrZ3dVc29JTE5ZbmxRVFhhc2IwUWZMWjlpa2JvT2cvWkcvWnhyeUo2eVdi?=
- =?utf-8?B?YnZ5d1lzQ0M3RzVDVFdsV2RGVDc0d1l4Mzg3Y0lRQnA4eFJXbHFBZ3B6Y05m?=
- =?utf-8?B?SWdTU2dsa2YwZFNWRWQrWWRmdXpHQnRsUldQMW16NUNPRnJoUTh0OGVXa2h4?=
- =?utf-8?B?RHhLc1hlYWZYZnZ1YTV2RFU0VzNZWjNoUGJ1UzMxTzZ2bXBLL3BGNWNQbExH?=
- =?utf-8?B?Y0pDQXZpM3h6MVM2dGZxdlhSd2cyNytnYnNxeHlQeUI3WFF5ek4vemhTb1Nx?=
- =?utf-8?B?Z3dkaUlEQ1Z3TTlZbHRBY2xVUlJHTmoxWm5NU1pBOVlJNFBrNVE1allzcm1h?=
- =?utf-8?B?cktudHZ3Qi9KQjBXd3ZMSGp0UlRQTzdOc3pNVE12NmJiMndGVmJ4cVg3SnBz?=
- =?utf-8?B?Nk0vNzFpVGVtRVhTMzU5SzJJQnZpMGk3NWIvcnk3UjdXdmJYcSszd1gzSjM4?=
- =?utf-8?B?Ryt6d3o2RFdrNWRVbm8zU2VhbWF6QnVoZ3JvMGp2d0U1QnhEaXBUait4S2d6?=
- =?utf-8?B?MjBCMTdrWDM4YzBjTTU4eU1YNmxONXhoQzRwbE9BczFJTkxEY0lhT1Y1bmFB?=
- =?utf-8?B?OFYvSWlTVDVzTzdiQ0VZbkhRcEZsUko3dklPKzljQVBqdTNmeDBIQytYbFlQ?=
- =?utf-8?B?QUJ5ckJ4a0VzZE96cUlsMUloeXFtWFpNcDdOOTVJSXZlQUJSSDNNU3MzeVdn?=
- =?utf-8?B?QXdkNWZXam9sM050MWdaYkl3MDdBbFhEdmx3SkNLSVUzU1hQSGdQeXBJRzlT?=
- =?utf-8?B?ZzFtcGFaUDlTdnhDWUNYdDg0RzM0MjlrTWtTNGhXcVlYZi9TNzFIMFo2dHNu?=
- =?utf-8?B?Nk1VUWtyUkRkYmdHSzVDb3Q2WDhDbTN1ZkJDTUZYQmIrR2Y0aFlZdmRpQjda?=
- =?utf-8?B?cU9BcmM4SldRL3J2eURSVEN0aVQyS21HNnpUU29rUXlDdXREOW8zellWaGtj?=
- =?utf-8?B?cFBBbE9mQ3pzZUdjUmk4SFUvd2g0Ym5ReW9OakdMVVVCb0d2NVY1R2MzYUhY?=
- =?utf-8?B?TVRHaHFUOExZVXNJQ2MxRFhucCt0T2o5a1pYdzhUZEZCQjF1MjBxSWdWR1dY?=
- =?utf-8?B?TUJ3bkNwUXZqaFZvd044SlVZVDFWcGV5SGtPQ1FUZDVzVTBjd1Q2N1N4VHVj?=
- =?utf-8?B?cmxkL2dDREI2dGJNYmhNMzgvMzBDRkFxYitCWStPemZBMjlVMmFRckJFdkVH?=
- =?utf-8?B?elprNTdYVUdLZytINEJEaVR5M21XZlE3b1k1OWMzUE5pSi9XSUFOWjFpTDZX?=
- =?utf-8?B?a1JxeVdhTFFsL01zNTMyVjdFOG5uN1R4TmttTzBqcUtYRjhFb1VMN3dTa0VH?=
- =?utf-8?B?VEhQOS9BdWgvSllTcVF5dFF3M2JyTlZvUzQ3blQ4MjhMQXhrSm95OE16Qndk?=
- =?utf-8?B?VGJUZTZwM2ZOSFB1bFI3VXRyUVJxdEZKa1ZybFdQMHZKNlpTWFBBKzRRZk9j?=
- =?utf-8?B?Q08xd1JRUVQybEMzbTJJZzhVV3cyMGEwMVdzc0xMbzZ0VnB5eEtmYUMzWWQ0?=
- =?utf-8?B?cVdZNkdDRThZQVh3T1ZpZ0diYTBDbXVEcnFJOWVXTGxRSUdld3RNbzI2S1Ar?=
- =?utf-8?B?UE5sak4xOGwvRndoUnJmRFRaNnhoRVJpUG9iS0VqOVQxTHpIME1uL3diOGpx?=
- =?utf-8?B?dXIyNHZVdFBQcmZUb003MERCNWxSdTZxSlpMNWVWVDc3NnRKYm9oUXYrODlF?=
- =?utf-8?B?U2RRZ2VGUm1EcGpCWDMzYTZmQXVMMUhiVFVIdXBlSmxwZTN1U0lyWjRVRlho?=
- =?utf-8?B?a2tjVGxYeUQ4ZlRWZ2hvWDhEb1F4SU44UWJUYmY2UVd1cTJkWnplQkQ5REFs?=
- =?utf-8?B?dDNNQ1N2Ymh6bUR3K2Y2eUN6dVd5MkE2V1d0VWswT05LcmJPZWQyU2J2RjZW?=
- =?utf-8?B?aEtLWmRyVm8xYit6dXM2SjR5UExFQXlCdkFlMGpuYlFvaGhSUzlWNFJ3YkpD?=
- =?utf-8?B?KzIvUnlsQTBYaXR6alF5endvZXo4d0lDVHJ2dXBVWEtRRVB0UUxVZmRpaUhN?=
- =?utf-8?B?SzQrUzFhL1FDQVZlNmloaHR5K2pYMWIrMWJocnJkV291aXYvNGoyMEUzVHBp?=
- =?utf-8?B?MFhiR0RyVHFnWkk3SUZ0bnQ0RStFN1JOMDgyZys4OW9GTStMb1gzc2ROZkhr?=
- =?utf-8?B?OXY1Ykd5YjNzbXlLV1NvT01wVEVSdmJhUEhoUERUSUlNSU4rOGtINCtOdkpQ?=
- =?utf-8?B?clJOSU05aEJPVWF6SGxJbVFMTkY1Y3A3aFJGbkZGMVlxaGZiSmFMZz09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0c421d0-1863-4ac2-a352-08df40b90169
-X-MS-Exchange-CrossTenant-AuthSource: IA4PR12MB932075.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2026 12:32:24.8426
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fepAX+WXDjCGbUB7GkHuZr9ywrST6aJBsMlD2D3QA7eclf+/fddFOc/XXelH22xsfQwHs4uicJZFh0jYcyA7Cw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR12MB8445
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261110-refcount_overflow_stable-v3-1-318625d63a98@kernel.org>
+X-Rspamd-Queue-Id: 50EA521D92
+X-Spam-Level: 
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-12.01 / 50.00];
+	SUSE_INTERNAL_BYPASS(-9.00)[];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
+	RCVD_TLS_ALL(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	DKIM_TRACE(0.00)[suse.de:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	R_RATELIMIT(0.00)[to_ip_from(RL3qe7do4s7ra64g8gjdgiaorz)];
+	RCPT_COUNT_GT_50(0.00)[63];
+	TAGGED_RCPT(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[nvidia.com:email,suse.de:dkim,suse.de:email]
+X-Spam-Score: -12.01
 
+On Tue, Nov 10, 2026 at 09:35:41PM +0100, David Hildenbrand (Arm) wrote:
+> With large file folios, overflowing the folio mapcount and refcount
+> became possible more easily. For anon folios it is currently not really
+> an issue: each large anon folio can only be mapped once into a process; on
+> 4k kernels it would be more processes than usually allowed on a system,
+> and on 16k or 64k kernels the processes alone would consume hundreds of
+> GiB. Something to be sorted out at some point, but it's not as urgent.
+> 
+> Being able to overflow the refcount is not really big news, but it's about
+> time that we do something about it because some modern technology might
+> find ways to abuse it :)
+> 
+> One of the enablers for that was commit ddc58f27f9ee ("mm: drop tail page
+> refcounting"), however, file thp support was added later.
+> 
+> File folios can be mapped multiple times into the same process, allowing
+> for processes to hold many references to the same folio.
+> 
+> As a short-term solution, let's introduce two folio refcount limits:
+> one for ordinary consumers and one for admins. Leave some headroom
+> before the refcount goes negative, which we really don't want (having
+> the mapcount go negative is also not expected).
+> 
+> Start reporting SIGBUS if we run into limits. When restoring mappings
+> from migration entries, instead zap the pte/pmd entry. We allow for
+> slightly exceeding the limit to keep things simpler.
+> 
+> During fork(), prefer not copying page table entries over failing fork.
+> Export __folio_ref_count_over_limit() right away as that will be needed
+> from fuse code next. Use has_capability_noaudit(current, CAP_SYS_RESOURCE),
+> so filesystem credential overrides do not affect access to the admin
+> reserve, and to not generate auditing messages simply because we access
+> optional reserves.
+> 
+> Don't grant access to the admin reserve from kernel threads, from
+> interrupt context, where "current" is just the interrupted task, or with
+> IRQs disabled, as even unaudited capability checks can take locks.
+> 
+> This is far from ideal, but better than all easy alternatives we can
+> backport comfortably. For now it fixes the big problem: letting
+> the refcount (+mapcount) go negative and cause trouble.
+> 
+> This is only a temporary fix. Keep the mapping checks explicit and
+> separate from reference acquisition: most are expected to disappear when
+> we rework the underlying refcounting.
+> 
+> Check order 0 folios as well for consistency: each
+> folio_add_file_rmap*() and folio_dup_file_rmap*() needs a prior check.
+> 
+> Adjust the check folio_get() to just check for invalid refcounts and
+> drop folio_ref_zero_or_close_to_overflow(): we really don't want
+> negative refcounts or negative mapcounts. Convert to VM_WARN_ON_FOLIO as
+> we touch it.
+> 
+> Also, just document -EHWPOISON for copy_present_ptes() while at it.
+> 
+> Note: When zapping file migration entries, uffd-wp is preserved using PTE
+> markers, but uffd-rwp protection is lost because there is no corresponding
+> marker. try_to_unmap() already has the same problem when unmapping file
+> folios, so we'll happily ignore it.
+> 
+> Note2: For now we don't let migration or PTE table collapse exceed any
+> limits. Admins can always refault, and if we are already operating in
+> admin reserves, something is already off.
+> 
+> Reported-by: Chris Mason <mason@kernel.org>
+> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
+> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
+> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> Acked-by: Zi Yan <ziy@nvidia.com>
+> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
 
+Mostly LGTM, with some comments:
 
-On 06/11/2026 20:44, Jakub Kicinski wrote:
-> mlx4_en temporarily changes the node of the device around
-> mlx4_alloc_hwq_res() to place the queue buffers on the queue's node.
-> This is racy against other users of the device's node, e.g. mlx4_ib
-> allocating its own buffers at the same time.
-> 
-> Add a node argument to mlx4_alloc_hwq_res() and use
-> dma_alloc_coherent_node() for the queue buffer. mlx4_buf_alloc()
-> and the en_netdev page keep using the device's node.
-> 
-> The comment about the MTT allocation was stale, the MTT ICM is not
-> coherent and uses mlx4_dev->numa_node, which set_dev_node() did not
-> affect.
-> 
-> The doorbell record pages, which mlx4_db_alloc() allocates on demand
-> and shares between all queues, now always come from the device's node.
-> So far they ended up on the node of whichever queue happened to need
-> a new page.
-> 
-> Reviewed-by: Björn Töpel <bjorn@kernel.org>
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Pedro Falcato <pfalcato@suse.de>
 
+> ---
+>  include/linux/mm.h | 35 +++++++++++++++++++++++++++++++----
+>  mm/filemap.c       |  6 ++++++
+>  mm/huge_memory.c   | 29 +++++++++++++++++++++++++++--
+>  mm/memory.c        | 33 +++++++++++++++++++++++++++++----
+>  mm/migrate.c       | 11 +++++++++++
+>  mm/userfaultfd.c   |  4 ++++
+>  mm/util.c          | 18 ++++++++++++++++++
+>  7 files changed, 126 insertions(+), 10 deletions(-)
+> 
+> diff --git a/include/linux/mm.h b/include/linux/mm.h
+> index e6da76fbe8e83..6c7c29a086bd1 100644
+> --- a/include/linux/mm.h
+> +++ b/include/linux/mm.h
+> @@ -2229,9 +2229,36 @@ vm_fault_t finish_fault(struct vm_fault *vmf);
+>   *   back into memory.
+>   */
+>  
+> -/* 127: arbitrary random number, small enough to assemble well */
+> -#define folio_ref_zero_or_close_to_overflow(folio) \
+> -	((unsigned int) folio_ref_count(folio) + 127u <= 127u)
+> +/* Leave separate reserves for administrators and concurrent reference gains. */
+> +#define FOLIO_REF_COUNT_LIMIT		(INT_MAX - (1U << 26))
+> +#define FOLIO_REF_COUNT_ADMIN_LIMIT	(INT_MAX - (1U << 25))
+> +
+> +bool __folio_ref_count_over_limit(unsigned int ref_count);
+> +
+> +/**
+> + * folio_ref_count_over_limit - Check whether to refuse more folio references.
+> + * @folio: The folio.
+> + *
+> + * Check before adding page table mappings or other significant refcount users
+> + * to pagecache folios (!hugetlb), either before acquiring references or
+> + * afterwards with rollback if the operation is refused.
+> + *
+> + * Checking other folios does no harm.
+> + *
+> + * This check is an approximation; we leave some headroom such that concurrent
+> + * increments, batches, temporary references, or other bounded refcount
+> + * consumers are not a problem.
+> + *
+> + * Return: True if the caller should refuse the operation, false otherwise.
+> + */
+> +static inline bool folio_ref_count_over_limit(const struct folio *folio)
+> +{
+> +	const unsigned int ref_count = folio_ref_count(folio);
+> +
+> +	if (likely(ref_count < FOLIO_REF_COUNT_LIMIT))
+> +		return false;
+> +	return __folio_ref_count_over_limit(ref_count);
+> +}
+>  
+>  /**
+>   * folio_get - Increment the reference count on a folio.
+> @@ -2243,7 +2270,7 @@ vm_fault_t finish_fault(struct vm_fault *vmf);
+>   */
+>  static inline void folio_get(struct folio *folio)
+>  {
+> -	VM_BUG_ON_FOLIO(folio_ref_zero_or_close_to_overflow(folio), folio);
+> +	VM_WARN_ON_FOLIO(folio_ref_count(folio) <= 0, folio);
+>  	folio_ref_inc(folio);
+>  }
+>  
+> diff --git a/mm/filemap.c b/mm/filemap.c
+> index 9871b4f32a916..0f6d57432a7e5 100644
+> --- a/mm/filemap.c
+> +++ b/mm/filemap.c
+> @@ -3968,6 +3968,11 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
+>  		unsigned long end;
+>  		vm_fault_t map_ret;
+>  
+> +		if (unlikely(folio_ref_count_over_limit(folio))) {
+> +			folio_ref_dec(folio);
+> +			goto next;
+> +		}
+> +
+
+It's a bit odd that you take a ref, only to check later if we're over the
+limit, and ditch the folio. Could you move this to next_uptodate_folio()?
+
+>  		addr += (xas.xa_index - last_pgoff) << PAGE_SHIFT;
+>  		vmf->pte += xas.xa_index - last_pgoff;
+>  		last_pgoff = xas.xa_index;
+> @@ -4009,6 +4014,7 @@ vm_fault_t filemap_map_pages(struct vm_fault *vmf,
+>  					   mmap_miss - 1);
+>  		}
+>  
+> +next:
+>  		folio_unlock(folio);
+>  	} while ((folio = next_uptodate_folio(&xas, mapping, end_pgoff)) != NULL);
+>  	add_mm_counter(vma->vm_mm, folio_type, rss);
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index 4608540e40d46..439cfe446cea4 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -1626,6 +1626,7 @@ static vm_fault_t insert_pmd(struct vm_area_struct *vma, unsigned long addr,
+>  {
+>  	struct mm_struct *mm = vma->vm_mm;
+>  	pgtable_t pgtable = NULL;
+> +	vm_fault_t ret = VM_FAULT_NOPAGE;
+>  	spinlock_t *ptl;
+>  	pmd_t entry;
+>  
+> @@ -1662,6 +1663,10 @@ static vm_fault_t insert_pmd(struct vm_area_struct *vma, unsigned long addr,
+>  		if (is_huge_zero_folio(fop.folio)) {
+>  			entry = pmd_mkspecial(entry);
+>  		} else {
+> +			if (unlikely(folio_ref_count_over_limit(fop.folio))) {
+> +				ret = VM_FAULT_SIGBUS;
+> +				goto out_unlock;
+> +			}
+>  			folio_get(fop.folio);
+
+I see you use this pattern often. Would it make sense to have a
+bool folio_get_unless_overflow()?
+
+>  			folio_add_file_rmap_pmd(fop.folio, &fop.folio->page, vma);
+>  			add_mm_counter(mm, mm_counter_file(fop.folio), HPAGE_PMD_NR);
+> @@ -1688,7 +1693,7 @@ static vm_fault_t insert_pmd(struct vm_area_struct *vma, unsigned long addr,
+>  	spin_unlock(ptl);
+>  	if (pgtable)
+>  		pte_free(mm, pgtable);
+> -	return VM_FAULT_NOPAGE;
+> +	return ret;
+>  }
+>  
+>  /**
+> @@ -1758,6 +1763,7 @@ static vm_fault_t insert_pud(struct vm_area_struct *vma, unsigned long addr,
+>  		pud_t *pud, struct folio_or_pfn fop, pgprot_t prot, bool write)
+>  {
+>  	struct mm_struct *mm = vma->vm_mm;
+> +	vm_fault_t ret = VM_FAULT_NOPAGE;
+>  	spinlock_t *ptl;
+>  	pud_t entry;
+>  
+> @@ -1783,6 +1789,10 @@ static vm_fault_t insert_pud(struct vm_area_struct *vma, unsigned long addr,
+>  	if (fop.is_folio) {
+>  		entry = folio_mk_pud(fop.folio, vma->vm_page_prot);
+>  
+> +		if (unlikely(folio_ref_count_over_limit(fop.folio))) {
+> +			ret = VM_FAULT_SIGBUS;
+> +			goto out_unlock;
+> +		}
+>  		folio_get(fop.folio);
+>  		folio_add_file_rmap_pud(fop.folio, &fop.folio->page, vma);
+>  		add_mm_counter(mm, mm_counter_file(fop.folio), HPAGE_PUD_NR);
+> @@ -1798,7 +1808,7 @@ static vm_fault_t insert_pud(struct vm_area_struct *vma, unsigned long addr,
+>  	update_mmu_cache_pud(vma, addr, pud);
+>  out_unlock:
+>  	spin_unlock(ptl);
+> -	return VM_FAULT_NOPAGE;
+> +	return ret;
+>  }
+>  
+>  /**
+> @@ -2093,6 +2103,11 @@ int copy_huge_pud(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma
+>  	if (page) {
+>  		struct folio *folio = page_folio(page);
+>  
+> +		if (unlikely(folio_ref_count_over_limit(folio))) {
+> +			/* Skip this PUD; it can be faulted in later. */
+> +			ret = (dst_vma->vm_flags & VM_MIXEDMAP) ? -ENOMEM : 0;
+
+A comment as to what's going on here with VM_MIXEDMAP would be useful. I guess
+the idea is that faulting on a mixedmap later will not necessarily hand you the
+exact same page fault result?
+
+> +			goto out_unlock;
+> +		}
+>  		folio_get(folio);
+>  		/*
+>  		 * TODO: once we support anonymous pages, use
+> @@ -5223,6 +5238,16 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct folio *folio
+>  	if (!(pvmw->pmd && !pvmw->pte))
+>  		return;
+>  
+> +	if (!folio_test_anon(folio) && unlikely(folio_ref_count_over_limit(folio))) {
+> +		/* Leave the file mapping absent so it can be faulted in. */
+> +		pmd_clear(pvmw->pmd);
+> +		if (arch_needs_pgtable_deposit())
+> +			zap_deposited_table(mm, pvmw->pmd);
+> +		update_hiwater_rss(mm);
+> +		add_mm_counter(mm, mm_counter_file(folio), -HPAGE_PMD_NR);
+> +		return;
+> +	}
+> +
+>  	entry = softleaf_from_pmd(*pvmw->pmd);
+>  	folio_get(folio);
+>  	pmde = folio_mk_pmd(folio, READ_ONCE(vma->vm_page_prot));
+> diff --git a/mm/memory.c b/mm/memory.c
+> index c9d64170e47ab..977e037388963 100644
+> --- a/mm/memory.c
+> +++ b/mm/memory.c
+> @@ -1168,7 +1168,10 @@ static __always_inline void __copy_present_ptes(struct vm_area_struct *dst_vma,
+>   * consecutive pages of the same folio by copying them as well.
+>   *
+>   * Returns -EAGAIN if one preallocated page is required to copy the next PTE.
+> - * Otherwise, returns the number of copied PTEs (at least 1).
+> + * Returns -ENOMEM if the file folio refcount is too high and the PTE must
+> + * be copied.
+> + * Returns -EHWPOISON if copying a page fails.
+> + * Otherwise, returns the number of processed PTEs (at least 1).
+>   */
+>  static inline int
+>  copy_present_ptes(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
+> @@ -1186,6 +1189,16 @@ copy_present_ptes(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma
+>  
+>  	folio = page_folio(page);
+>  
+> +	if (!folio_test_anon(folio) && unlikely(folio_ref_count_over_limit(folio))) {
+> +		if (dst_vma->vm_flags & VM_MIXEDMAP)
+> +			return -ENOMEM;
+> +		if (userfaultfd_pte_rwp(dst_vma, pte))
+> +			return -ENOMEM;
+> +		/* Preserve uffd-wp protection when faulting the page back in. */
+> +		cond_install_uffd_wp_ptes(dst_vma, addr, dst_pte, pte, 1);
+> +		return 1;
+> +	}
+> +
+>  	/*
+>  	 * If we likely have to copy, just don't bother with batching. Make
+>  	 * sure that the common "small folio" case is as fast as possible
+> @@ -1367,9 +1380,9 @@ copy_pte_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
+>  		/*
+>  		 * If we need a pre-allocated page for this pte, drop the
+>  		 * locks, allocate, and try again.
+> -		 * If copy failed due to hwpoison in source page, break out.
+> +		 * Other errors abort the copy after releasing the page table locks.
+>  		 */
+> -		if (unlikely(ret == -EAGAIN || ret == -EHWPOISON))
+> +		if (unlikely(ret < 0))
+>  			break;
+>  		if (unlikely(prealloc)) {
+>  			/*
+> @@ -1399,7 +1412,7 @@ copy_pte_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma,
+>  			goto out;
+>  		}
+>  		entry.val = 0;
+> -	} else if (ret == -EBUSY || unlikely(ret == -EHWPOISON)) {
+> +	} else if (ret == -EBUSY || ret == -ENOMEM || unlikely(ret == -EHWPOISON)) {
+>  		goto out;
+>  	} else if (ret ==  -EAGAIN) {
+>  		prealloc = folio_prealloc(src_mm, src_vma, addr, false);
+> @@ -2474,6 +2487,8 @@ static int insert_page_into_pte_locked(struct vm_area_struct *vma, pte_t *pte,
+>  	if (unlikely(is_zero_folio(folio))) {
+>  		pteval = pte_mkspecial(pteval);
+>  	} else {
+> +		if (unlikely(folio_ref_count_over_limit(folio)))
+> +			return -EOVERFLOW;
+>  		folio_get(folio);
+>  		pteval = mk_pte(page, prot);
+>  		if (mkwrite) {
+> @@ -5754,6 +5769,9 @@ vm_fault_t do_set_pmd(struct vm_fault *vmf, struct folio *folio, struct page *pa
+>  	if (unlikely(folio_test_has_hwpoisoned(folio)))
+>  		return ret;
+>  
+> +	if (unlikely(folio_ref_count_over_limit(folio)))
+> +		return VM_FAULT_SIGBUS;
+> +
+>  	/*
+>  	 * Archs like ppc64 need additional space to store information
+>  	 * related to pte entry. Use the preallocated table for that.
+> @@ -5816,6 +5834,9 @@ vm_fault_t do_set_pmd(struct vm_fault *vmf, struct folio *folio, struct page *pa
+>   * @page: The first page to create a PTE for.
+>   * @nr: The number of PTEs to create.
+>   * @addr: The first address to create a PTE for.
+> + *
+> + * For file mappings, the caller must check folio_ref_count_over_limit()
+> + * before installing PTEs.
+>   */
+>  void set_pte_range(struct vm_fault *vmf, struct folio *folio,
+>  		struct page *page, unsigned int nr, unsigned long addr)
+> @@ -5982,6 +6003,10 @@ vm_fault_t finish_fault(struct vm_fault *vmf)
+>  		goto fallback;
+>  	}
+>  
+> +	if (!is_cow && unlikely(folio_ref_count_over_limit(folio))) {
+> +		ret = VM_FAULT_SIGBUS;
+> +		goto unlock;
+> +	}
+>  	folio_ref_add(folio, nr_pages - 1);
+>  	set_pte_range(vmf, folio, page, nr_pages, addr);
+>  	type = is_cow ? MM_ANONPAGES : mm_counter_file(folio);
+> diff --git a/mm/migrate.c b/mm/migrate.c
+> index a5ac7192f0578..e241a594c3eed 100644
+> --- a/mm/migrate.c
+> +++ b/mm/migrate.c
+> @@ -385,6 +385,17 @@ static bool remove_migration_pte(struct folio *folio,
+>  		    try_to_map_unused_to_zeropage(&pvmw, folio, old_pte, idx))
+>  			continue;
+>  
+> +		if (!folio_test_anon(folio) && !folio_test_hugetlb(folio) &&
+> +		    unlikely(folio_ref_count_over_limit(folio))) {
+> +			/* File contents remain available for a later fault. */
+> +			pte_clear(vma->vm_mm, pvmw.address, pvmw.pte);
+> +			cond_install_uffd_wp_ptes(vma, pvmw.address,
+> +						  pvmw.pte, old_pte, 1);
+> +			update_hiwater_rss(vma->vm_mm);
+> +			dec_mm_counter(vma->vm_mm, mm_counter_file(folio));
+> +			continue;
+> +		}
+> +
+>  		folio_get(folio);
+>  		new = folio_page(folio, idx);
+>  		pte = mk_pte(new, READ_ONCE(vma->vm_page_prot));
+> diff --git a/mm/userfaultfd.c b/mm/userfaultfd.c
+> index 169f681f9849b..89853c157fa91 100644
+> --- a/mm/userfaultfd.c
+> +++ b/mm/userfaultfd.c
+> @@ -373,6 +373,10 @@ static int mfill_atomic_install_pte(pmd_t *dst_pmd,
+>  		goto out_unlock;
+>  
+>  	if (page_in_cache) {
+> +		if (unlikely(folio_ref_count_over_limit(folio))) {
+> +			ret = -ENOMEM;
+> +			goto out_unlock;
+> +		}
+>  		folio_add_file_rmap_pte(folio, page, dst_vma);
+>  	} else {
+>  		folio_add_new_anon_rmap(folio, dst_vma, dst_addr, RMAP_EXCLUSIVE);
+> diff --git a/mm/util.c b/mm/util.c
+> index 80f6c714844f2..a5140b3b70f33 100644
+> --- a/mm/util.c
+> +++ b/mm/util.c
+> @@ -791,6 +791,24 @@ int folio_mc_copy(struct folio *dst, struct folio *src)
+>  }
+>  EXPORT_SYMBOL(folio_mc_copy);
+>  
+> +bool __folio_ref_count_over_limit(unsigned int ref_count)
+> +{
+> +	if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
+> +		return true;
+> +	/* Background threads must not consume admin reserves. */
+> +	if (current->flags & PF_KTHREAD)
+> +		return true;
+> +	/* Neither must interrupt contexts on behalf of the interrupted task. */
+> +	if (!in_task())
+> +		return true;
+> +	/* Capability checks are not safe with IRQs disabled. */
+> +	if (irqs_disabled())
+> +		return true;
+> +	/* Use the task's credentials, which filesystem overrides cannot change. */
+> +	return !has_capability_noaudit(current, CAP_SYS_RESOURCE);
+> +}
+
+In case this function ever returns over limit, we probably want to log this
+in the kernel log. If this function gets the folio you could even print
+the problematic file offset/inode/filesystem/etc. Ratelimited of course.
+
+> +EXPORT_SYMBOL_GPL(__folio_ref_count_over_limit);
+
+I'm fairly sure this will break the build for a number of non-GPL drivers
+when calling folio_get() with CONFIG_DEBUG_VM=y.
+
+-- 
+Pedro
