@@ -1,117 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794481679;
-	b=UtDodaHgLcv+MDLC1qtVz3+1jNSkoB0MB7vj1ITPHqW8aNk7AR55va4Do2ROByPQ9zxC
-	 pPF+zqFNeED/nLGj86M7RSt4BwTIaLP64Njmk7XWmMt0JXxuFcqfSx2Ysy9VDT2QERmaZ
-	 8LOlseRUCYYu/Vkw+tNNgnKR7btpI6DEk214YfBBfK/p1tms+jIt/LylXbKsrUDfhZdyt
-	 ypV+k/QRjj+7jsklZp+pfLb7gmt5bf0DraZoG9YPbIW/dC/f+1ecPUyOhqYZ6klcz4NcJ
-	 QLl6gFyJbzDjZTQXYo/+ZYMjqtGKmgU2kAXo/LpNYZcsLTzUrXHuyO+UW+nRV+YdT3w==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794481679;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-Proofpoint-GUID:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-Spam-Details-Enc:X-Proofpoint-ORIG-GUID:
-	 X-Authority-Analysis:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=U/iOpJ55d/ZZTEeI13++J8llf2RohCP7ym6AgO7t1xM=;
-	b=jUxDxJpbkUMICDxVdbU9fmMvJ2ABY5T80lgcETOXwlyP8k5mSQtjAzq2VTRtzPR06RVF
-	 FuTTAgikLs9LuMIrDBxHQ+J2boDSHiypfBIKta8sqKJehoi+SOCDCLjg3BjgHELQcYuWI
-	 uSlEkyXW3pkLs1g8uZfd8gaTJzIAxAKwD+7SAysum8kTAMFBeCUInOmJXqmcuQpUafvnj
-	 cuS31L7ln71db48Pk5AvThLGaIfDQIIH1P8so3Sirjd+ZAEYWDfelImX2g8y0nTgf6NhH
-	 vUf8hQjg1Dq1UVKafwOyV++cbpFhGA7nJkbHM8kc4t6Av9zAMsQJodFZiZ9TdLO0pQg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=AHZsH5t+;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=NsIyMHA7;
-	arc=none smtp.remote-ip=205.220.180.131
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.208.17
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794482087;
+	b=cxw9yHNzh53GkBkiBp4AKgaQ+C3hd4sxTpVbeNCOihqGyUYsua3IZV87mtJAh1HqL9Cv
+	 zqZc6pm6tkCDD62KqCtgWCe1rhg+PQs7Ovo5zRaIB9AII6o5TgjqnRG49Ln1mobSnIDBv
+	 MN049hpbO0kX2NTlpK8dQHNNGxwiRXi4NRRoY6XIiOcU3X4oyI/tT71sFzaaF4zQsD0wx
+	 KVU2P+s2kUww19QCAngR724HXjoo/g8mSHUk6i4fk2Q6GDtiG70foJEpy9b5wWXGZLdEv
+	 Do3vX4QKaLQ4u1hOwZ5G2p1mv5zvQUj5yXq6pxYQckuvpSSqf4zMEtz3TqiAY/3D5kA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794482087;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:From:Content-Language:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=fIN5eRiK/uQwMsbCgu3VuKnu+Rj+wC0ixDxfqMueLaI=;
+	b=3X1/MXjjJd4k49ZK0/qIQ7Onkxg75plER1hRcchzzrMwfw5U/PqauvxYwnyqPgipmSsm
+	 ava6gvcyJ6+/inqOvFjRhsZHrjsKhngHAru53DB9P+LFkwiledZRShnMgAkqbkP+ISIwN
+	 89ATfGoqDnYfM56Tzh+ixSpkynqIrWjX8JZ6RVcmIRyNGUfpP00GgQPrUYuSBzW2W5M0y
+	 XCSupCGguyQnrUT+DnlHj1a4MDaH09FkbbO46+FkrpZXA7kGx/0CWyYypQ6IyMz8rg34b
+	 mAzVuOc486g0bTt3y+HjiiRsJY34nSCxuGEFU8h7yd5yVxg6rTfQjsvw39EYzQFpPbQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=xw7ekuAU;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.208.17
+Received: from PH0PR06CU001.outbound.protection.outlook.com (mail-westus3azon11011017.outbound.protection.outlook.com [40.107.208.17])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1765D606A323
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 11:07:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1765D606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34590606A33E;
+	Thu, 12 Nov 2026 11:14:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 34590606A33E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=AHZsH5t+;
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=NsIyMHA7
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AC9DxLN480117
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 11:07:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=U/iOpJ55d/ZZTEeI13++J8llf2RohCP7ym6
-	AgO7t1xM=; b=AHZsH5t+C87h0eFYcKgEMidTQYJ1rggVGS6JuvHqJOK69xJ/8s7
-	UIuyj65P0U/RJSQNxazde8FB27TLm+zjM65pP2C26qiZKOycvPqEiXbN/FILzMNo
-	YfIo4Zh0MqZBi3RZ4XJmyVa552SF/FkhAw4IwJYTgSIoW/TwpriCH/6MXmobWKF8
-	ZKfwDdb7ch7wzpQcqYlIAJDFs5v38E1KuL9EmgHrPc7PMGpEKd97DAF/SwnNDjzI
-	XjF+1OM5vXq8Hgb79+75+DtCBBamezsRoOQasp5zUh1gLqf8vzKuaGMsVqRPB5Ud
-	Qg25ERRuQjnxClx1mJK5+obUe+TLp1Dv7/A==
-Received: from mail-dl1-f71.google.com (mail-dl1-f71.google.com [74.125.82.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hwan4rcgh-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 11:07:57 +0000 (GMT)
-Received: by mail-dl1-f71.google.com with SMTP id a92af1059eb24-1aa0fb7f157so6403588c88.0
-        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 03:07:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1794481677; x=1795086477; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=U/iOpJ55d/ZZTEeI13++J8llf2RohCP7ym6AgO7t1xM=;
-        b=NsIyMHA7BLtq+78opDXUiBlrdSPfAjct1QyPOrOeQ+OUgIfMfZWSVCzeKkAQr4vpi2
-         YUuNfwY2Z1fxWeLlYhfxkagZQfqKRHr2wKIWX1xyy1u4shCCxUk26WH3EQKtgU6DwEcC
-         RG013ETWTloWZ7Nr+78QB4eHo+Vd2kTjoiC4NY8CT0iQGzePPiWkg1zYJzCT/LoNbv+R
-         Lddhb68KulXWeymUzJ4FK0uPqf1pV88mVKaZ4vG0FDxZjuhpGdgVwwIFf8goi+wNVAUu
-         GmhDhzuIOOewBSsi6EumkBkzpr9BKSJ/uIoC1u0yIDu+z1oj/J3vMbwY9+/vqH4/565Q
-         +MEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794481677; x=1795086477;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=U/iOpJ55d/ZZTEeI13++J8llf2RohCP7ym6AgO7t1xM=;
-        b=N/pPj2MvfhhfPEVhusB23dGc/dSLt38phVv2fcuJVEjdbEqxXgfM/17R+N/YXaIvgq
-         +K7EZgjrYDlZ7uc+VN9nYGo1vUw+ssrOhGuTg1xqW4T8TmHWrytBQkKiZFPl2Q9OnjYY
-         ojXFYGYuqsxfRz3TtNUmhVXyIgFnnfqFVhIYs3I5oy3C/5j3+1l8rz0sjVhzuCMoSsC/
-         +ShKZapxIb2pOrWLHj+DdY6iyH+iN5PrS9MpUSI56U2qVn+eaoslQKkiNfgsc6WCrZjq
-         146mKh8EmC5IrQmzhWf1HFwjb9pWhShwN7ioUOtXCplndqYcxbf6dkTpn3LEESCTiv3G
-         KZzA==
-X-Forwarded-Encrypted: i=1; AL+hErF/SwjD65hYXMZMm4eP+RMEtncJ1Be291HiteW3W7Z5/wl4TfaqF/WjzB+ySvVpip/r09tGcQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+jRdDbYeer8ElzRACS3ZIJ3zz6Y6XkUopgpRQ0BJP5fJ09OJrT
-	cOqb0q5puAIMQ71bvZyjyhPEaLo9qQMK86BlDRPl/wMTUq9oRz+0earxMbuV+IZSbdxtR4EumEW
-	KKxHEHQmKxHn4M9tQyxn1y2mCvVZwyS5G/AnjcMCCpLDT0yjylKyJjzv8aw==
-X-Gm-Gg: AYBFou1WPfJsz7jnmnZ4TVPtMeI6hFHHNgfUIeosj1Pvb46GyCthWvsLPRNcEZMgxYi
-	umMpOxJ59B3le9vlQyCoDLYw4QZ2IRVgliRmuRDUBXbiJcNcJHzYq+adu7L4xjbwHABrBP725hN
-	N8StGCyYL6a2AYUeSh75nAsJwYtmrznQFo3mcz/oYzaLYxaYPHoCJM0L0rMGiFHQkOqpLnImAyK
-	NagCiDhOz59Zv5CNojjwegLBEL654oGSglJkiv/ahfJsuQXFMQu/U5bttqASg0c/yftnObZXGNb
-	RXCwdxbSlj0vfSmbDnZ76QFph/TFmSBhsGp+GFDvy5wu+ife9lqH/oBZqP9lYVaJ2Xxc73ycjMu
-	ovV64tv8nOubl7cW+WGmZUSpzC24i+E4eM59A4RUca1WRbz+LIaLHsu6SpKFQRp7qQc2TeGcvSV
-	HpSBClINFie9YRUqnzRwFT9g==
-X-Received: by 2002:a05:7023:d0d:b0:1a0:f970:4f5d with SMTP id a92af1059eb24-1b3c0310062mr5180298c88.17.1794481671461;
-        Thu, 12 Nov 2026 03:07:51 -0800 (PST)
-X-Received: by 2002:a05:7023:d0d:b0:1a0:f970:4f5d with SMTP id a92af1059eb24-1b3c0310062mr5180271c88.17.1794481670799;
-        Thu, 12 Nov 2026 03:07:50 -0800 (PST)
-Received: from hu-petche-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b3b5b2eeffsm24549909c88.9.2026.11.12.03.07.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2026 03:07:50 -0800 (PST)
-From: Peter Chen <peter.chen@oss.qualcomm.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@nvidia.com>,
-        Kevin Tian <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        Fenglin Wu <fenglin.wu@oss.qualcomm.com>, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Peter Chen <peter.chen@oss.qualcomm.com>,
-        stable@vger.kernel.org
-Subject: [PATCH v2] iommu: Hold group references across bus_iommu_probe()
-Date: Thu, 12 Nov 2026 03:07:47 -0800
-Message-ID: <20261112110747.1903321-1-peter.chen@oss.qualcomm.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=xw7ekuAU
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=U7hBqeM5M2aTNoF1b1EmQOGBR1Wpm29RXLiDeerDHXJeLL9AWBM8RjijyCP4LZ3JPsgAJST3Te5d8khcsHY7R2B7vDnxTlATAlBHGC2tMg81Olv+y+6V8f3FPZZXkcO7zFAwDZfF7RexKtFvlb4F3u0DMSY0R1ism7Xj+lKX2S2kjTJE5GaOZfQnzjIPBxa9B9meEzJ+iuFfnjzJzfwClEjGuFNE9jUtmBYgbh3cEWC2nEUZPbVsSv5cr+D+ZEBnuzslOTRyU42jqefvl1Ime4b3zrBnGw+DSnZ32p20g3PIUVweW8zwjNbpKUWXHkc/2U3zQOvmhZsVgXVVrTwhXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fIN5eRiK/uQwMsbCgu3VuKnu+Rj+wC0ixDxfqMueLaI=;
+ b=wK95E+utOKqCoypCBFFTESLG4y0PyzBYXfSiT32mU6kX6zYVE5asok70SVaMVl0QfTdAdFhoVkQPFve6IZFIq1tz1x8HW2zFZrJmyJNFJNaUdsiN2m8NNN+0stuaFqVEAEVD0geyOcfXMJmBQxts+utGt8JeJeTd36guFjXg7Fs0HPIngxjodhSjcMV89SosALTO0Q3ikdqrXHW/TCOqctCq1cpOZX8PisVBabo7P3lZCYkobxdLZNlnJcZUZLayzPNzE+4KGYAzPZzlrCRSIaA4J0ayjhogA9j5t1kioRR9ULDCOMGaeOVQFhxaEJuiF4FZn9pqotP0Z9XgPuhj1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fIN5eRiK/uQwMsbCgu3VuKnu+Rj+wC0ixDxfqMueLaI=;
+ b=xw7ekuAUeW34VH67m3gt5k6wz42XBeERV8arFwPNl21fqpO8FgUjcdQBFLHAExr4EMQ1WczLNgkxe1YwJTj4ywsMzaO0ya7duj2OTmPPeh0wkHS1Yyz+ZGsRIeZL5TxrLaZ3+pd9CNTvXiyYb023e2OT9i9F34VtoBBBRG/BF2I=
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from SA1PR12MB999228.namprd12.prod.outlook.com
+ (2603:10b6:806:4db::10) by IA0PR12MB7601.namprd12.prod.outlook.com
+ (2603:10b6:208:43b::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Thu, 12 Nov
+ 2026 11:14:41 +0000
+Received: from SA1PR12MB999228.namprd12.prod.outlook.com
+ ([fe80::4dba:119e:8e7c:37b3]) by SA1PR12MB999228.namprd12.prod.outlook.com
+ ([fe80::4dba:119e:8e7c:37b3%6]) with mapi id 15.21.0615.007; Thu, 12 Nov 2026
+ 11:14:41 +0000
+Message-ID: <9eb572d7-fa3a-4734-9773-44a3fb465b6a@amd.com>
+Date: Thu, 12 Nov 2026 22:14:31 +1100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 02/15] virt: coco: tsm: Remove the device from lookup
+ before PCI teardown
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>, iommu@lists.linux.dev
+Cc: Alex Williamson <alex@shazbot.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Jacob Pan <jacob.pan@linux.microsoft.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joerg Roedel <joro@8bytes.org>, Jonathan Cameron <jic23@kernel.org>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+ Krishna Reddy <vdumpa@nvidia.com>, Lukas Wunner <lukas@wunner.de>,
+ Nicolin Chen <nicolinc@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
+ Samuel Ortiz <sameo@rivosinc.com>,
+ Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ Steven Price <steven.price@arm.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Thierry Reding <thierry.reding@kernel.org>,
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+ Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-tegra@vger.kernel.org
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-3-aneesh.kumar@kernel.org>
+From: Alexey Kardashevskiy <aik@amd.com>
+Content-Language: en-US
+In-Reply-To: <20261104161632.3547423-3-aneesh.kumar@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SY5P300CA0057.AUSP300.PROD.OUTLOOK.COM
+ (2603:10c6:10:1fe::7) To SA1PR12MB999228.namprd12.prod.outlook.com
+ (2603:10b6:806:4db::10)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -121,198 +114,158 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: ZrGDGjaVHw4C9GnGfxBjVyDVB0HsBKEA
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEyMDA0NCBTYWx0ZWRfX03K0MFgR16OR
- zh/AkItdMnFxCUap4GcSiLKimP/L97v4NtjPnuiFDv/NvCKLI7O1b/bD8Rdrd3QATHznChzKFDY
- blN9J70wm1+lNv9HSKX13G/B0bptaKI=
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEyMDA0NCBTYWx0ZWRfX2s0VKOKhqudm
- GqiExtchNjVx7iomv5EveAKRsog7FApUShlJUa3TA1zpyjAqQthzW1/SFDUjNT/V1AgHWJnTKcd
- iTJT1HDpUVA3WCs8qdeGl+L/mlUpimdjp7pX0FgKYXbUJK5ULQtufK0D+CQXN0+gx8Y9TEPVdKk
- 1O7cYl0GS7QDBdqQ44I+o3ljGe1ZhEawknov3vL26mrLUOJGDgBrVJ/rPFYOl0EhxujUgh/PVUJ
- OB05aOHp7ZCVBWN2O6boHn4mv81ZYqxGQNMetNvJ8ZJdWm2hVv4biKbzOhFSjiOQkDzeMd86nxS
- vLfxXpE0Hjfsn5nwqPT3eWHLcvkIM2hzCVxqk+mhrQTzmBO/LYYEXwCnXRpHdai+IZMiTAbzkC3
- fmXSL54ySQtjOTujqK9S0spvp5kKYcLAnb8+4vpGLM30OaWAMmFbMl9ugX0aYaU611wHY6zvY2e
- RUL6/7nWtIJ2I2idoUA==
-X-Proofpoint-ORIG-GUID: ZrGDGjaVHw4C9GnGfxBjVyDVB0HsBKEA
-X-Authority-Analysis: v=2.4 cv=Gd+CDgXL c=1 sm=1 tr=0 ts=6af59e0d cx=c_pps
- a=JYo30EpNSr/tUYqK9jHPoA==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22 a=VwQbUJbxAAAA:8
- a=EUspDBNiAAAA:8 a=5nmvm-2Xiqt-MVby-jsA:9 a=Fk4IpSoW4aLDllm1B1p-:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-12_01,2026-11-11_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 lowpriorityscore=0 priorityscore=1501 spamscore=0 clxscore=1015
- malwarescore=0 phishscore=0 suspectscore=0 impostorscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611120044
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA1PR12MB999228:EE_|IA0PR12MB7601:EE_
+X-MS-Office365-Filtering-Correlation-Id: e147d1bb-4c4a-4c76-ea3b-08df40ae25a0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|7416014|376014|366016|1800799024|10067099003|4143699003|11063799006|56012099006|261022105027099003|261028144727099003|261026121527099003|261026140227099003|261021123027099003|261021121427099003|261102130727099003|261102123227099003|261009223027099003|22082099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	mNXGq2KMZc7as7THM31BnJhXTFmMqfYBkIu5CW+6XrWsgLuq8SGG41bp41nxHRamZoHHQCEkkksU0AWEIjxWld/SeDZEqHFMxTIdUqVrHLolTmGJEJSiHdnN+sTsguUiF4afPxKLqvQoLAquJ6lqMHI8A4XR2/EtEfuZjMZn3Oes9GUJZGj8dkmVHj1NRcU9UsV4/tpyqjCRgJIISnr4zVy4Tkrw5kuV67f2zlKVKPwZgMTqVG+Tu/iLAPY7noEONkfjNtc34OxuMUP7q2IxqKISIquAP3SzPQjmq+R9RruZgTqiqZE2p02kfSxq2ytmzwzhwAfe2jMTEjC1jnwijnjD6+4rWr0BLy9tyzlezz8gvYqEpAXZ3nqb8Bhone5o+fDateqUTtTupRQiQCr+/V/cSsy66QZRm1S6fOP4cI/3I+pGYlKFJ4NqTDxYbeus2h4Y5ASqE7ujlY+7/Gyt64jBSBgWVHnwjPS2gvFj0mbJvWwNOAZHdiTeXfMQiiLM93TUPD7slMoEVLN/vIFHLmUR67UB+pw9WAAEHrQ4M34ShE3EjOjJIsQEygvncHvU8AJu1fWXatdmhyufYKcdWSZXKjF8jEMrBz7VOTEpH/M40AuWXmcMCo/3+bgBbcSMaJS8vyZSo/LOyIGu8u6762mj7cKudmHgrGIwKil7Izo=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR12MB999228.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(366016)(1800799024)(10067099003)(4143699003)(11063799006)(56012099006)(261022105027099003)(261028144727099003)(261026121527099003)(261026140227099003)(261021123027099003)(261021121427099003)(261102130727099003)(261102123227099003)(261009223027099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cFhrVUU1TE5YL0NtRWpnSXNKSkd6c3ZHR1VaUjR0ZGw0MzdNMkkySzY4d0Z5?=
+ =?utf-8?B?Vy9NZkR0N2hDQldlM09DdVgrRUg0THZJYXcyUVhLL2dpSko1bHJLSkMzd3Q3?=
+ =?utf-8?B?WDdPU21CODBKN3ZMdXB1S1BHQjBBZ3ljZGRTaXRmNGJkaHl2OW9wV3haS21D?=
+ =?utf-8?B?Zm1VbTk4M1QrQWt2NlJLdmdGbU1wWnJMaUwyVEE5NUJuai9Dc1l5VVpvQWk0?=
+ =?utf-8?B?RTRpRlZDUTkxcWt2cFdsV1Izelg1VnEwL3FKS3MvdlVMdXFRQi9lN0tvYWdD?=
+ =?utf-8?B?Q3doZ3NIalg5WlBycm9aL0VnejZvdFZPMFdTc3dHWTNMWXlVT2dFczVlQlRh?=
+ =?utf-8?B?d0F4a1JaZ3VYZzF0ejhoblF6S3RhYVpadnpiY05vRE5HcDJZaGxidXM3amcw?=
+ =?utf-8?B?dHY2NDNza1dWRTBuTWEzaUxSdm9ETXViSU1YbWFjVjBtRjBtTkd5Nnc1OVJn?=
+ =?utf-8?B?clpURHZyNUJaMkNlRzNkSWYwY01iNXZWaE1HdmJ3Y1F2L1BJT0xNMGU0ckU2?=
+ =?utf-8?B?cDZoS1RuNC82MityTmpHcFRUWVpxN2xKRkVLM3VlRHYvYmpkWW1KYWtRMkhL?=
+ =?utf-8?B?ZkF0V01LTjRTL2pyOFhwK21kQXVUVFZ2UVZONHppUStwYm5Ic092Vk5sZHA5?=
+ =?utf-8?B?S2F3UTAxcS9sTWVJbEZPcEk1azAyakhuT3JpcGdkWUg1T0RFYnAreksxZHpw?=
+ =?utf-8?B?cVRHNS9FTVRkVzV1d0pCZHVidzlZMlZTT3RVa0ZjblB3UHAvQXBuQi8yRitN?=
+ =?utf-8?B?SnVNVWcxTnlueVdzN3VjbU1HYlN6VHBkdEZXWW1zUyt6KzZCeXp6SFBNeWVz?=
+ =?utf-8?B?T0FHMkJnRW1EVnlxSGtNdGtEeSt3cEUwV0d3UFdFcDZEU1k3QWowT1pLVE5S?=
+ =?utf-8?B?SG9odzc2ejNrTWxkOVZJcGFFUitWTitZUHhSUExlT2J3Z09zVGVlcTR6Rnp4?=
+ =?utf-8?B?NFVKYUMzclZhNWxtRGNudlFiNUdDUWkwdDczcjlsZU1sUlRYMWY3TjZMd1V5?=
+ =?utf-8?B?R1dlTFE3VlB4N1FSdDVkeWNHbkJVaGxzUHZJNXA1RFRFOHMyOXhCclA2SHhI?=
+ =?utf-8?B?cmdLUDlTU1h2c2RIR1R4eklNWDhmM3l5TndVYWw4RjFhSDJ4UjVuT3U1T0VP?=
+ =?utf-8?B?bDBjei9HbGxla1BSeHZKNWNLNTZBWE1McXpOUC9PQWpuTmhXd3FxbStuMVNy?=
+ =?utf-8?B?OXVzUC82dVFwOU9ERUJOcnVVZ0pLdDQrdlVseEZmaThPZExNcnM2OWV1QUZT?=
+ =?utf-8?B?YW1LOWlWMHY4aEF2bE1rb3JZeVlzdzduaGt6alVZQi9NbjgwVmRkRzZ1ZGdk?=
+ =?utf-8?B?UzdvZzhxQmNISUlqTzNvVU9DVFVZOXlBbEZRMHZmSlp6cWhaMTkvZzhtZDV1?=
+ =?utf-8?B?dkhhUURZQTF5VkRlOHR0SERxYVhEQnJRVkNVQUQ4L2lrcEZyeUZYcWJYdnZh?=
+ =?utf-8?B?ZWJWMkJ5K3llSzZ5Y1hkVzNXdk1nQURheUdmc256MUYwb3R0WWd1aTVIbFVU?=
+ =?utf-8?B?cldJZWlONGFEWStpMXZweXF5S3NzQmc4VWlhR2JuLzRFcmRWd1RxNWxqSGpZ?=
+ =?utf-8?B?cURYMzJWcDlTdnRNclpCRVhQbWNnUVpqdHQ2ZzJ1YXFwOUp6cC84YmoxNm5C?=
+ =?utf-8?B?ZTg5STdQWkloNmZKMWt2QzJjR3F5bHNVcW92MGtER1M3bUUwWks3djk2S2da?=
+ =?utf-8?B?QUFuTFpnUU5hajhWUzR3TlJoNitTbUthbnRkNURIUElSdVF6K1FMK2Rod3Vl?=
+ =?utf-8?B?cWhHRWtHRDNLWi9qak02RnJTYmk0bkkrSXNXMlZlKzFYRjBIQTRYUzVPaXJI?=
+ =?utf-8?B?d2QzODY3dUFGODFaU21NaEpwcmk2ZEp2ZjNnTVRMTGZBcXR0MW1CUjZvOTFi?=
+ =?utf-8?B?MysxdFNBdWNwd0o1ZFZkdllQbWRCTlBnOC9qbEpGMWdKZVhDdmk2enlkYTFP?=
+ =?utf-8?B?MjNDZVdBUWYxMEg4Sy9PZnMveWtvQ1RDa2RVUlE3WG9Rd0lFbzVuMUIrUjBE?=
+ =?utf-8?B?SGVhUnF2WEk5a2R1MHNqZThFaHdKKzZmQS9nWUtKeWZMUG53UGExNnJ2U3Yy?=
+ =?utf-8?B?dmhITnZrWXlQbEJFZDROS2gzeW5WUDBFcytDb0lLQ0ZnZlllVGd5NndIMFNW?=
+ =?utf-8?B?RGZFZWlMU3lYeGdaa0hMSWZQMk9SUEp0V3l2clBaYXlnMldDUzllUWl2eTJ4?=
+ =?utf-8?B?SDZYcS84MVdqNTZocG1ibnRLbXYycXJSTXRPRFdIVUdnQ3c0dnhjRzJFUVdK?=
+ =?utf-8?B?RGp5R3M2eXRCRTJlM1o2WWhkWkNUMWdHcGtmQndwekUyUlNTUlRDdTZycVVy?=
+ =?utf-8?Q?svsp56JUtRJyDM2rDd?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e147d1bb-4c4a-4c76-ea3b-08df40ae25a0
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR12MB999228.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2026 11:14:41.0774
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1OE2d+KuUC+k+8peSIaknhR0dPi0NiDA8P/m3T07YF1289tJQKey3gaZPTogDJpUsIuXEd9kDGuxg+p7qG/blg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7601
 
-bus_iommu_probe() collects the groups that are linked through
-group->entry, but the list does not hold a reference on them. Only the
-member devices do. A device of such a group may be released while the
-bus walk is still in progress, for example by a BUS_NOTIFY_REMOVED_DEVICE
-for a platform device that is depopulated concurrently. If the last
-iommu_group_put() then frees the group while it is still linked on the
-list, the second loop of bus_iommu_probe() walks and unlinks freed
-memory.
+On 5/11/26 03:16, Aneesh Kumar K.V (Arm) wrote:
+> PCI connect looks up a TSM by ID under pci_tsm_rwsem. Previously,
+> tsm_unregister() released that lock after tearing down PCI state while
+> the TSM was still in the class lookup. 
 
-This is the "iommu_bus_notifier() being triggered during
-bus_iommu_probe()" case that commit da33e87bd2bf ("iommu: Handle yet
-another race around registration") left open. The sequence is:
+tsm_unregister() is not touching that lock, what do I miss?
 
-  CPU0 (driver's of_platform_populate / of_platform_depopulate() path)
-  CPU1 (arm_smmu_device_probe() -> iommu_device_register())
+> A racing connect could then
+> attach a new PCI context that the teardown would never see.
+> 
+> Remove the device from the class lookup first, then take the PCI write
+> lock to drain in-flight operations and destroy their contexts. Drop the
+> device reference only after PCI teardown completes.
+> 
+> Fixes: 3225f52cde56 ("PCI/TSM: Establish Secure Sessions and Link Encryption")
+> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+> ---
+>   drivers/virt/coco/tsm-core.c | 22 ++++++++++++++--------
+>   1 file changed, 14 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/virt/coco/tsm-core.c b/drivers/virt/coco/tsm-core.c
+> index e784993353d8..f79135986102 100644
+> --- a/drivers/virt/coco/tsm-core.c
+> +++ b/drivers/virt/coco/tsm-core.c
+> @@ -56,26 +56,25 @@ static struct tsm_dev *alloc_tsm_dev(struct device *parent)
+>   	return no_free_ptr(tsm_dev);
+>   }
+>   
+> -static struct tsm_dev *tsm_register_pci_or_reset(struct tsm_dev *tsm_dev,
+> -						 struct pci_tsm_ops *pci_ops)
+> +static int tsm_register_pci(struct tsm_dev *tsm_dev, struct pci_tsm_ops *pci_ops)
 
-  CPU0                                CPU1
-  of_platform_device_create(T)
-                                      bus_iommu_probe()
-                                        __iommu_probe_device(T)
-                                          allocates group X,
-                                          queues X on group_list
-  platform_device_unregister(T)
-    iommu_bus_notifier()
-      __iommu_group_remove_device(T)
-        iommu_group_put(X) -> kfree(X)
-                                        list_del_init(&X->entry)
-                                          <- use-after-free
+Why changing a pointer to an int here as later tsm_register() converts it back to a pointer?
 
-The kernel dump is like below:
-  list_del corruption. next->prev should be ffffff8064a984e8,
-                       but was 0000000000000000. (next=ffffff8064a9a6e8)
-  kernel BUG at lib/list_debug.c:67!
-  Call trace:
-   __list_del_entry_valid_or_report+0x148/0x14c (P)
-   iommu_device_register+0x1d8/0x268
-   arm_smmu_device_probe+0x588/0x624 [arm_smmu]
-   platform_probe+0x74/0xb8
-   ...
-   deferred_probe_work_func+0xa4/0xf4
+And I never understood what is _reset for here (so +1 for that) but now we have tsm_register_pci() and pci_tsm_register() which is weird. May be just open code it? Thanks,
 
-where next points at ->entry (offset 232) of a freed kmalloc-512 object,
-the released iommu_group of the depopulated device. That was seen
-on an Android 6.18-based kernel, but the code involved is unchanged in
-mainline.
 
-Take a group reference when a group is added to the list, and drop it
-once bus_iommu_probe() is done with the group. With the group kept
-alive, a group that has lost all of its devices in the meantime can
-simply be skipped: there is nothing left to attach a default domain to.
+>   {
+>   	int rc;
+>   
+>   	if (!pci_ops)
+> -		return tsm_dev;
+> +		return 0;
+>   
+>   	tsm_dev->pci_ops = pci_ops;
+>   	rc = pci_tsm_register(tsm_dev);
+>   	if (rc) {
+> +		tsm_dev->pci_ops = NULL;
+>   		dev_err(tsm_dev->dev.parent,
+>   			"PCI/TSM registration failure: %d\n", rc);
+> -		device_unregister(&tsm_dev->dev);
+> -		return ERR_PTR(rc);
+> +		return rc;
+>   	}
+>   
+>   	/* Notify TSM userspace that PCI/TSM operations are now possible */
+>   	kobject_uevent(&tsm_dev->dev.kobj, KOBJ_CHANGE);
+> -	return tsm_dev;
+> +	return 0;
+>   }
+>   
+>   struct tsm_dev *tsm_register(struct device *parent, struct pci_tsm_ops *pci_ops)
+> @@ -96,15 +95,22 @@ struct tsm_dev *tsm_register(struct device *parent, struct pci_tsm_ops *pci_ops)
+>   	if (rc)
+>   		return ERR_PTR(rc);
+>   
+> -	return tsm_register_pci_or_reset(no_free_ptr(tsm_dev), pci_ops);
+> +	rc = tsm_register_pci(tsm_dev, pci_ops);
+> +	if (rc) {
+> +		device_del(dev);
+> +		return ERR_PTR(rc);
+> +	}
+> +	return no_free_ptr(tsm_dev);
+>   }
+>   EXPORT_SYMBOL_GPL(tsm_register);
+>   
+>   void tsm_unregister(struct tsm_dev *tsm_dev)
+>   {
+> +	/* Remove the class lookup first. */
+> +	device_del(&tsm_dev->dev);
+>   	if (tsm_dev->pci_ops)
+>   		pci_tsm_unregister(tsm_dev);
+> -	device_unregister(&tsm_dev->dev);
+> +	put_device(&tsm_dev->dev);
+>   }
+>   EXPORT_SYMBOL_GPL(tsm_unregister);
+>   
 
-Also drain the list on the error paths. Returning early used to leave
-the remaining groups linked to the dead on-stack list head, so
-list_empty(&group->entry) stays false for them and a later
-bus_iommu_probe() would never queue them for default domain setup again.
-
-Fixes: 41df6dcc0a3f ("iommu: Keep a list of allocated groups in __iommu_probe_device()")
-Cc: stable@vger.kernel.org
-Signed-off-by: Peter Chen <peter.chen@oss.qualcomm.com>
----
-Changes in v2:
-- Replace the step list with a race diagram in the commit message.
-- Add Cc: stable.
-- Rebase on v7.4-rc1, no code change.
-- Delete the LLM Assisted-by tag.
-- v1: https://lore.kernel.org/all/20260929070737.3798358-1-peter.chen@oss.qualcomm.com/
-
- drivers/iommu/iommu.c | 41 +++++++++++++++++++++++++++++++++++++----
- 1 file changed, 37 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index b486b8bbd1fc..6965b89e76bb 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -682,10 +682,14 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 		/*
- 		 * With a group_list argument we defer the default_domain setup
- 		 * to the caller by providing a de-duplicated list of groups
--		 * that need further setup.
-+		 * that need further setup. The list holds a reference on each
-+		 * group, as its devices may be released before the caller
-+		 * gets to it.
- 		 */
--		if (list_empty(&group->entry))
-+		if (list_empty(&group->entry)) {
-+			iommu_group_ref_get(group);
- 			list_add_tail(&group->entry, group_list);
-+		}
- 	}
- 
- 	if (group->default_domain)
-@@ -1951,6 +1955,18 @@ static void iommu_group_do_probe_finalize(struct device *dev)
- 		ops->probe_finalize(dev);
- }
- 
-+static void iommu_group_list_put(struct list_head *group_list)
-+{
-+	struct iommu_group *group, *next;
-+
-+	list_for_each_entry_safe(group, next, group_list, entry) {
-+		mutex_lock(&group->mutex);
-+		list_del_init(&group->entry);
-+		mutex_unlock(&group->mutex);
-+		iommu_group_put(group);
-+	}
-+}
-+
- static int bus_iommu_probe(const struct bus_type *bus)
- {
- 	struct iommu_group *group, *next;
-@@ -1959,7 +1975,7 @@ static int bus_iommu_probe(const struct bus_type *bus)
- 
- 	ret = bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);
- 	if (ret)
--		return ret;
-+		goto err_put_groups;
- 
- 	list_for_each_entry_safe(group, next, &group_list, entry) {
- 		struct group_device *gdev;
-@@ -1969,6 +1985,16 @@ static int bus_iommu_probe(const struct bus_type *bus)
- 		/* Remove item from the list */
- 		list_del_init(&group->entry);
- 
-+		/*
-+		 * The bus notifier may have released every device of the group
-+		 * since it was added to the list; there is nothing to set up.
-+		 */
-+		if (list_empty(&group->devices)) {
-+			mutex_unlock(&group->mutex);
-+			iommu_group_put(group);
-+			continue;
-+		}
-+
- 		/*
- 		 * We go to the trouble of deferred default domain creation so
- 		 * that the cross-group default domain type and the setup of the
-@@ -1977,7 +2003,8 @@ static int bus_iommu_probe(const struct bus_type *bus)
- 		ret = iommu_setup_default_domain(group, 0);
- 		if (ret) {
- 			mutex_unlock(&group->mutex);
--			return ret;
-+			iommu_group_put(group);
-+			goto err_put_groups;
- 		}
- 		for_each_group_device(group, gdev)
- 			iommu_setup_dma_ops(gdev->dev, group->default_domain);
-@@ -1991,9 +2018,15 @@ static int bus_iommu_probe(const struct bus_type *bus)
- 		 */
- 		for_each_group_device(group, gdev)
- 			iommu_group_do_probe_finalize(gdev->dev);
-+
-+		iommu_group_put(group);
- 	}
- 
- 	return 0;
-+
-+err_put_groups:
-+	iommu_group_list_put(&group_list);
-+	return ret;
- }
- 
- /**
-
-base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
 -- 
-2.43.0
+Alexey
 
