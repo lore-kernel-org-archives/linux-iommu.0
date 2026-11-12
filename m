@@ -1,135 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.180.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794492068;
-	b=vacoc/zOsTkRa958DH84bQbO7FJmdkgxJoFZadQlwC3nJRS51feo6JWhZeSI2fnQbMHj
-	 dwJqVAAXdA2qRjDN1Wu6CnWwMWiQJcC6e2nCYUQvkCqTzvD6k8KOmwTZ0o3oAQWyIxDb5
-	 tlfai8D1fNkEt/STFywuZ6ZDTTme7nHCtx7iV9E/zFZp+7ZIhYEmfvF1O9OeSverX1w02
-	 LkreJW0j5ppSFpdQEb5RUZ8cpexLPYJPGQHX0jAsw6mDl5H1cWsRoz/gBNAOLmEPHp18V
-	 lXmfKMGh5RJvbAhopyueijS8eDKcxGoPYZfNEtYsKagrARn00KBuKW1/w7zrVPbqHYQ==
+	t=1794492265;
+	b=UthPNyNyMX+N7GjhekZxrbCdCS7bEDcNtj7laGCr0aH+sXRcBMZd4FEsLrsubWviBgMs
+	 tI1EfviGaMFvQkk7y9rLyn9IGYxm4RLYlwL6e7oqZQuBScrIw4c5Z1vzTMXuoeEWdf8FE
+	 sFFS8aRkq6URL7V8I6lQs6TlDxO6vEf/NZAKSz93lmUm05GkFxvh8gYmqNiRUbYUHGPNM
+	 X3INTeGg690HBdGmb0zJ6vhBoweO2ZGkL7hfJ1JLaWL4ByOXeO+5rWcvaMaCB6Uthnjuu
+	 mk3Cy0s4dPzirxnKGwaVCpd6RtM/4tOa/xZM7u/eNOehGmyrDZP9kSOTPGuTeNxMBHA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794492068;
-	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
-	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-Rspamd-Queue-Id:X-Spam-Level:X-Rspamd-Server:X-Rspamd-Action:
-	 X-Spam-Flag:X-Spamd-Result:X-Spam-Score;
-	bh=WTNMIFQg7vEsr/bVsx6max9Hp2mlrFDIwp0Z0arBhBY=;
-	b=VZLEurbWLMHLPeb786bE3Z+2cGNuBCTEAXaU7mDEsrAvL6XztQr2+wKQmr/o0t0X5VQf
-	 v1e3FdUlhVapifc7EHUx3siMwiSgvN5UcBzE5lj21kUirBdN/uUg9D2j45iMudLlbgvQ1
-	 KrnIZzr0rJpFRLtruLDqUcHR/XPlXxTd/n8ri2iHlbvf5BMLoxtbeuersMTYRcA5vBWNh
-	 taOKZMyhUrltMsYbmcZMu1S0uCTb/PwzBM5vdFHqKM7dD/xwDqRPXIMMWsUEeoOJDj8SZ
-	 Ds2pwBTWv3E5kprtO9I8xk2ZqAAu/vf6RrxTTi5QsLfgcBQ7dUqB8Ds6snFbe+gvLXg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794492265;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
+	 X-Received:X-Received:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-GUID:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-ORIG-GUID:X-Authority-Analysis:
+	 X-Proofpoint-Virus-Version:X-Proofpoint-Spam-Details;
+	bh=B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=;
+	b=plBT0ZOCzKdZUcVMTHVQXkymIY+On6lIlJNsq9PVXVDfBKs2p9nSAf/+Ty9Lcok9DNox
+	 /03ZBQeNuQeX3RXIpJof0nYOiiMrKsFwMEycEB9ZLr1qgGBOB6pJ+Knps73sQtV774ZIE
+	 onmz4YiJJ9al2uHThFWdXRw5xMNLI2ux9sBFnGmK+zgdeGGLshWoXLgNCKptg+2viz8O5
+	 g03OUAUX63htaVQyHQC9B9wSzhboiphx6+Skkg23F5viXhROIKs9GkFwl3Kcik0XJ8I6I
+	 Uxda0NNySMNhUe7no5P2tzkT2Yzgo9kkLfHEzeW5KIqj139Ip1trmvzl+BqOrMUerxg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=suse.de;
-	spf=pass smtp.mailfrom=suse.de;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gJlFM33D;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="LisWq/Fp";
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gJlFM33D;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="LisWq/Fp";
-	arc=none smtp.remote-ip=195.135.223.130
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b="Pt8mT/O3";
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Qlc4RYEy;
+	arc=none smtp.remote-ip=205.220.180.131
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8762F606C72B;
-	Thu, 12 Nov 2026 14:01:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8762F606C72B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F3DF606AE82
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 14:04:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0F3DF606AE82
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gJlFM33D;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=LisWq/Fp;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=gJlFM33D;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=LisWq/Fp
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 0DD6A21E32;
-	Thu, 12 Nov 2026 14:01:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794492065; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WTNMIFQg7vEsr/bVsx6max9Hp2mlrFDIwp0Z0arBhBY=;
-	b=gJlFM33DOlLsXo/fMz8rj/qpJNd1/LAfw06dbMqIfLoc4IuQh9/RzMXaHgeNvRN5r4o0B4
-	DgqDCnXzADpLagRmMbfxO/HW+Bg9xItuDkWUO82GFfItmNejFrXZhBUW2oHpytiyUlvPP+
-	TNvMTYoYQXGAiLUv3uBgb7s2eQv/WNU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794492065;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WTNMIFQg7vEsr/bVsx6max9Hp2mlrFDIwp0Z0arBhBY=;
-	b=LisWq/Fpj8SqT6u2xIBros+39GjGe1Tr75xCt4eKCv/fmjYu3CJDOJW1YNVOTyGrVDIuJq
-	vZrJ+kiUtvHXFUCg==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=gJlFM33D;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="LisWq/Fp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794492065; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WTNMIFQg7vEsr/bVsx6max9Hp2mlrFDIwp0Z0arBhBY=;
-	b=gJlFM33DOlLsXo/fMz8rj/qpJNd1/LAfw06dbMqIfLoc4IuQh9/RzMXaHgeNvRN5r4o0B4
-	DgqDCnXzADpLagRmMbfxO/HW+Bg9xItuDkWUO82GFfItmNejFrXZhBUW2oHpytiyUlvPP+
-	TNvMTYoYQXGAiLUv3uBgb7s2eQv/WNU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794492065;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=WTNMIFQg7vEsr/bVsx6max9Hp2mlrFDIwp0Z0arBhBY=;
-	b=LisWq/Fpj8SqT6u2xIBros+39GjGe1Tr75xCt4eKCv/fmjYu3CJDOJW1YNVOTyGrVDIuJq
-	vZrJ+kiUtvHXFUCg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 5F9A4134A0;
-	Thu, 12 Nov 2026 14:01:01 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id M0T5C53G9WrPJQAAD6G6ig
-	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 14:01:01 +0000
-Date: Thu, 12 Nov 2026 14:00:59 +0000
-From: Pedro Falcato <pfalcato@suse.de>
-To: "David Hildenbrand (Arm)" <david@kernel.org>
-Cc: Lorenzo Stoakes <ljs@kernel.org>, 
-	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
-	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
-	Michal Hocko <mhocko@suse.com>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, 
-	Jan Kara <jack@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, 
-	Zi Yan <ziy@nvidia.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
-	Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
-	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
-	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, 
-	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
-	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
-	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
-	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
-	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, 
-	Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro <viro@zeniv.linux.org.uk>, 
-	Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
-	John Hubbard <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
-	Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
-	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
-	Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
-	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
-	iommu@lists.linux.dev, netdev@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3 2/9] mm: limit pagecache folio refcount when splicing
- into pipes
-Message-ID: <avXFlI_5fhUvFyct@pedro-suse.tail5790ac.ts.net>
-References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-2-318625d63a98@kernel.org>
- <avW3v-oLxcHXXNQD@pedro-suse.tail5790ac.ts.net>
- <4ae22b7a-c160-4003-a029-8a20381d196f@kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=Pt8mT/O3;
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Qlc4RYEy
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AC9Dv9k480051
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 14:04:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=; b=Pt8mT/O3E+MdfLZ5
+	irvIgS8uLB5HnZNSkjqw9uCkzssqONuDPOuy5kilOtAmiJYPSUIGSxF9D13buTDW
+	+aiq1LxgbwgdvUSAxVbw1ePXNqBwO48/h8xDkJyoNw2v5Sye+5IkGZ5mYZBhXSek
+	9IbJYB9tIVir/trXeHtT9QBeG7HdB6KhiLrlaeALCLDPAhar3kGWHDWv5bKoDo3y
+	b1Dsb+rh2gEqjZQn5RcwKEHhw1XJjnEJ/9RV0rfBb56LC0GBgri8dlL94paAxjrr
+	w1g25DSeUfIxH8cy9wY4Y9eKbEvUgEKPcm3YmIbx4AGfryQISQPQZM7vH49th1Rc
+	Ed87YA==
+Received: from mail-dy1-f199.google.com (mail-dy1-f199.google.com [74.125.82.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hwan4ry8v-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 14:04:22 +0000 (GMT)
+Received: by mail-dy1-f199.google.com with SMTP id 5a478bee46e88-341eff9e381so8127545eec.1
+        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 06:04:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1794492262; x=1795097062; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=;
+        b=Qlc4RYEyJNPlJ9iyY4c++kypodxPUd4Tu2CSdiFUZfP6xYagXAvOKvSK7mOjFpnItX
+         MfzxA6IQNUI6cBb0MQCZiT+JfppyUlrkW+6ZyyZpgnMiWpVj+xF8/1wWVIumF5zgQkXd
+         rJFpJszFwsTKnW8ZFf8Jm7zAy34SG+Zms8RZwKIFuPEmFp+owEph6tK0anVoL7nLaehV
+         U/q+OtG1UiK2LLAoc88vv+DrFf5UHSbKsV7C94TeQWyaJ2YffR2oTZQ97r15unFclp6t
+         VzuXuNico2A7iwU3ZRKjQIr5ik8sSPAHQW3tvLhum8WZ8aTYlkrWqX+kG7V+Z9gSsHcr
+         py1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794492262; x=1795097062;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=B+CH3/jx2KSH+RRiLFJDBQonfvkStMqSF3XdFCzZT8w=;
+        b=FOfxEy46jGHo0+uAwWTXN+mP2YFwE2diIpgRnFKkOv9xD905uCzlDVm5+3+9yUyfNc
+         WnZKWZo/UFRrOYSFv18bCu4cqFK655+cDRwk7H1SqHXey4spysM1Q7fIROva9q4SVcg/
+         BjDJY4OzJ+y8W1KEifhjdpaMlnEhnxKD1VLNiNI0gwzSO9iuDEgEq1vuLw/mSB/ZkJjj
+         lAIUPYzMalw0yKNYbEY7OOFqbxCCoMILiRzaGe9D+Cx19nJWaOIwTaIQ/TOgnbf3u+a3
+         7N6OinNS30KH0oZ1Y8v1UBv2vWJLW2gv4/rHqEM3gRZAva4MIvWBYVRjKK8hL80qkUoM
+         8v7w==
+X-Gm-Message-State: APuU4Z8mROh541JIRPK4Qnov2AivQvuDBh1sT7z5QoJ0gxUY+IGmH7nk
+	CFtsC+vwfEzRStmWb5McJSq5OBOyPg1X+dMqmyCW6JH7wgPexQ7H68tquBA82ezKIpFtUqY0A6J
+	CteL+R7SntC7vEhtqgpITzHtf5tHe8kjFtYXDX4QmmFdPfM4HJ9GA31hUrg==
+X-Gm-Gg: AYBFou0+NZ4qF4q5B9lf21+SxMyPsrcYIUoZ+sb0WJyfkSV/rq8EyI/m2EfAPgIFTZV
+	Y/I1U+2H3wRxcwDcX+9kLwSIUUkm17vduZIJTnpks0TfkYZuegDAE+FUmFlHcSbu2dmbxYMO8Ep
+	iVMi4A+FKwhs1vXCm9HPCYgMZWTlL0uT2S9nZWA8t1vSCaDsTJRQq01SYauBTpTMzFUxB0XI8fI
+	qe047OLSmFXOQ35dQX+Vh7dL/RaFigLQXoaUahcvEyHdgx+GJqk9iSzXz63M+9QjN/G1qyGdCi1
+	5ah9cWXbiQMkXggL6Mdmc7hD8Obggl4eSG1IhtPZGsjbxvObWTdVMtF6IuVZPkYWOgGPIPV0paz
+	62b/Yww7eFXF2S3lnkFk3StGaGKY4ysYtosLIM6sb1MBqIsfCFuw58HQJKxA56vMoVnDjjpMilV
+	V2USYH
+X-Received: by 2002:a05:7022:28c:b0:1b3:bae1:f5f3 with SMTP id a92af1059eb24-1b3c023c99dmr4854451c88.6.1794492261720;
+        Thu, 12 Nov 2026 06:04:21 -0800 (PST)
+X-Received: by 2002:a05:7022:28c:b0:1b3:bae1:f5f3 with SMTP id a92af1059eb24-1b3c023c99dmr4854412c88.6.1794492260879;
+        Thu, 12 Nov 2026 06:04:20 -0800 (PST)
+Received: from [10.206.104.93] ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5029ecb1bsm14027c88.1.2026.11.12.06.04.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Nov 2026 06:04:20 -0800 (PST)
+Message-ID: <97c4eabf-16b0-4e3f-8aab-1c56912c27d4@oss.qualcomm.com>
+Date: Thu, 12 Nov 2026 19:34:11 +0530
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -139,203 +114,93 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4ae22b7a-c160-4003-a029-8a20381d196f@kernel.org>
-X-Rspamd-Queue-Id: 0DD6A21E32
-X-Spam-Level: 
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-12.01 / 50.00];
-	SUSE_INTERNAL_BYPASS(-9.00)[];
-	BAYES_HAM(-3.00)[100.00%];
-	SUSPICIOUS_RECIPS(1.50)[];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	URIBL_BLOCKED(0.00)[suse.de:dkim,suse.de:email,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	MIME_TRACE(0.00)[0:+];
-	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
-	ARC_NA(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCVD_TLS_ALL(0.00)[];
-	R_RATELIMIT(0.00)[to_ip_from(RL3qe7do4s7ra64g8gjdgiaorz)];
-	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_SOME(0.00)[];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+];
-	RCPT_COUNT_GT_50(0.00)[62];
-	TAGGED_RCPT(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	MISSING_XM_UA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.de:dkim,suse.de:email]
-X-Spam-Score: -12.01
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 4/5] iommu/of: Require reg for iommu-addresses
+To: Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>,
+        Vasant Hegde <vasant.hegde@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>,
+        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+        Eric Auger <eric.auger@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Srinath Mannam <srinath.mannam@broadcom.com>,
+        Oza Pawandeep <quic_poza@quicinc.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alex Williamson <alex@shazbot.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux.dev, devicetree@vger.kernel.org,
+        kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-media@vger.kernel.org,
+        Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
+ <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
+ <3713bf13-cec6-4b02-a29b-8f76070f03b3@linaro.org>
+Content-Language: en-US
+From: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+In-Reply-To: <3713bf13-cec6-4b02-a29b-8f76070f03b3@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: F3Hn31ziKMzC6n0VPkIwae8roqXJFcC_
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEyMDA1NSBTYWx0ZWRfXwwf6eo8eEcyj
+ WDohrio4h6Zf20qsunjRvytaMVa8J0UEGN4GpBoPzeFfC6EZh0KYHyGsB3ILhstxz+15jAwv4uT
+ nBzNzLZp7907Ssyk5Nliv9SKDrC6AYY=
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEyMDA1NSBTYWx0ZWRfX4rPSk1L6OWRT
+ nL4exUuum3sGjpXXxmoiHt1zvvx08J1ArQpjUXZ5N0YpCzI88ard9e9uzgbrdEdoGGXeOxuPw2T
+ SawYBgScrjAQGjPWzz1XTnB5d3t1u0Q17ZuNp/tVDeFhGzstCP6auM1CzJvRyqJbUo5mOQF8hXw
+ KmewBv3Goa994EJ9EySJSwoWzovEJfwHfpwV262TlThF4KxWvm1Fw361fjfd7d3HcMA/T3mcwVt
+ 9Oz9W4S87s0Qf7HVL14WCOaOlcv17IuTs9DOpkgxurflTdzJRNMT0Tl1q5XiwJUfBAxsXM2pqNf
+ cALLK/kEAt7uqidDPtfg4yyNX5Sfr/LQxHUCYmT6ulGFyVjg0dmMvDNhgkSD8XUsfVt3Not/bpD
+ Rz4H0RsQ3ABS/hsrK2RmmAdi7S1CQQV6SeLMDz5j6Xhd4d3uB1eTiWkhUWO16JvJQkFKG0fBeNe
+ +1a+5m9YJpQDJOtA82A==
+X-Proofpoint-ORIG-GUID: F3Hn31ziKMzC6n0VPkIwae8roqXJFcC_
+X-Authority-Analysis: v=2.4 cv=Gd+CDgXL c=1 sm=1 tr=0 ts=6af5c766 cx=c_pps
+ a=cFYjgdjTJScbgFmBucgdfQ==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=ZpdpYltYx_vBUK5n70dp:22
+ a=VwQbUJbxAAAA:8 a=DrYjplHx1sOd6opfFz8A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=scEy_gLbYbu1JhEsrz4S:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-12_01,2026-11-11_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 lowpriorityscore=0 priorityscore=1501 spamscore=0 clxscore=1015
+ malwarescore=0 phishscore=0 suspectscore=0 impostorscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611120055
 
-On Thu, Nov 12, 2026 at 02:24:09PM +0100, David Hildenbrand (Arm) wrote:
-> On 11/12/26 14:09, Pedro Falcato wrote:
-> > On Tue, Nov 10, 2026 at 09:35:42PM +0100, David Hildenbrand (Arm) wrote:
-> >> Similar to mapping pagecache folios into page tables, let's reject
-> >> additional references when splicing folios into a pipe if the refcount
-> >> is at its limit, similar to how we handle it during GUP.
-> >>
-> >> This will prevent more cases of possible folio refcount overflows with
-> >> large pagecache folios.
-> >>
-> >> Introduce folio_get_checked() for checked reference acquisition when
-> >> the caller already holds a reference. It warns and fails on a non-positive
-> >> refcount and rejects additional references at the limit.
-> >>
-> >> Use folio_get_checked() in splice_folio_into_pipe() and
-> >> fuse_ref_folio(), returning -EFAULT on failure, like we already do for
-> >> pipe-buffer duplication. Similarly, make try_get_page() use it instead.
-> >>
-> >> Likely try_get_page() should be renamed (or removed) later, as it doesn't
-> >> match the folio_try_get() semantics and is confusing.
-> >>
-> >> If we hit the limit after splicing some data, return the number of bytes
-> >> already spliced. Teach the callers to handle errors, and stop
-> >> filemap_splice_read() if we only spliced part of a folio, so we don't
-> >> skip ahead to the next folio.
-> >>
-> >> The check in try_get_page() also covers pipe-buffer duplication by tee()
-> >> and partial pipe-to-pipe splicing.
-> >>
-> >> Note that we deliberately will not fall back to the slow path of copying
-> >> the folio, particularly as the folio might have an invalid refcount. If
-> >> it is ever really required, we can revisit.
-> >>
-> >> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
-> >> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
-> >> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
-> >> Cc: stable@vger.kernel.org
-> >> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
-> >> ---
+
+On 11/11/2026 5:32 PM, Bryan O'Donoghue wrote:
+> On 06/11/2026 17:14, Vikash Garodia wrote:
+>> @@ -257,6 +252,9 @@ void of_iommu_get_resv_regions(struct device *dev, 
+>> struct list_head *list)
+>>                   }
+>>                   type = iommu_resv_region_get_type(dev, &phys, iova, 
+>> length);
+>> +                if (type != IOMMU_RESV_DIRECT)
+>> +                    continue;
+>> +
 > 
-> [...]
-> >> index 0f6d57432a7e5..e6e73e37f3ea4 100644
-> >> --- a/mm/filemap.c
-> >> +++ b/mm/filemap.c
-> >> @@ -3047,10 +3047,11 @@ generic_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
-> >>  EXPORT_SYMBOL(generic_file_read_iter);
-> >>  
-> >>  /*
-> >> - * Splice subpages from a folio into a pipe.
-> >> + * Splice subpages from a folio into a pipe. Return the number of bytes spliced,
-> >> + * or -EFAULT if we cannot splice from the folio.
-> > 
-> > -EFAULT is a weird error code to return from splice, et al.
+> This change is not about requiring a reg though, which is why it should 
+> be a standalone patch with its own justifications.
 > 
-> We might be able to use ETOOMANYREFS (have to check if that could confuse
-> callers), but IMHO EFAULT is good enough.
+
+This is about reg, which determines the direct mapping, hence the code 
+is very much applicable to this patch. Please refer this code [1]
+
+[1] 
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/iommu/of_iommu.c#n223
+
+Regards,
+Vikash
+
+> Basically the patch should state why a mismatch is dropped instead of 
+> being reserved.
 > 
-> What would be your suggestion?
+> ---
+> bod
 
-ETOOMANYREFS I think is good, also EBUSY, EMLINK (though this would be weird)
-or even a generic -EIO.
-
-> 
-> > 
-> >>   */
-> >> -size_t splice_folio_into_pipe(struct pipe_inode_info *pipe,
-> >> -			      struct folio *folio, loff_t fpos, size_t size)
-> >> +ssize_t splice_folio_into_pipe(struct pipe_inode_info *pipe,
-> >> +			       struct folio *folio, loff_t fpos, size_t size)
-> >>  {
-> >>  	struct page *page;
-> >>  	size_t spliced = 0, offset = offset_in_folio(folio, fpos);
-> >> @@ -3063,13 +3064,15 @@ size_t splice_folio_into_pipe(struct pipe_inode_info *pipe,
-> >>  		struct pipe_buffer *buf = pipe_head_buf(pipe);
-> >>  		size_t part = min_t(size_t, PAGE_SIZE - offset, size - spliced);
-> >>  
-> >> +		if (!folio_get_checked(folio))
-> >> +			return spliced ? spliced : -EFAULT;
-> > 			return spliced ?: -EFAULT;
-> > 
-> > I don't know if there's much kernel code out there doing this, but I like
-> > the trick :)
-> 
-> There are a couple of thousands, but yes, one doesn't encounter it that often.
-> 
-> > 
-> >> +
-> >>  		*buf = (struct pipe_buffer) {
-> >>  			.ops	= &page_cache_pipe_buf_ops,
-> >>  			.page	= page,
-> >>  			.offset	= offset,
-> >>  			.len	= part,
-> >>  		};
-> >> -		folio_get(folio);
-> >>  		pipe->head++;
-> >>  		page++;
-> >>  		spliced += part;
-> >> @@ -3094,9 +3097,10 @@ size_t splice_folio_into_pipe(struct pipe_inode_info *pipe,
-> >>   * Return: On success, the number of bytes read will be returned and *@ppos
-> >>   * will be updated if appropriate; 0 will be returned if there is no more data
-> >>   * to be read; -EAGAIN will be returned if the pipe had no space, and some
-> >> - * other negative error code will be returned on error.  A short read may occur
-> >> - * if the pipe has insufficient space, we reach the end of the data or we hit a
-> >> - * hole.
-> >> + * other negative error code will be returned on error; -EFAULT will be returned
-> >> + * if acquiring a folio reference fails and no data has been spliced.
-> >> + * A short read may occur if the pipe has insufficient space, we reach the
-> >> + * end of the data, hit a hole or hit a folio refcount limit.
-> >>   */
-> >>  ssize_t filemap_splice_read(struct file *in, loff_t *ppos,
-> >>  			    struct pipe_inode_info *pipe,
-> >> @@ -3154,7 +3158,7 @@ ssize_t filemap_splice_read(struct file *in, loff_t *ppos,
-> >>  
-> >>  		for (i = 0; i < folio_batch_count(&fbatch); i++) {
-> >>  			struct folio *folio = fbatch.folios[i];
-> >> -			size_t n;
-> >> +			ssize_t n;
-> >>  
-> >>  			if (folio_pos(folio) >= end_offset)
-> >>  				goto out;
-> >> @@ -3170,13 +3174,15 @@ ssize_t filemap_splice_read(struct file *in, loff_t *ppos,
-> >>  
-> >>  			n = min_t(loff_t, len, isize - *ppos);
-> >>  			n = splice_folio_into_pipe(pipe, folio, *ppos, n);
-> >> -			if (!n)
-> >> +			if (n <= 0) {
-> >> +				error = n;
-> >>  				goto out;
-> >> +			}
-> >>  			len -= n;
-> >>  			total_spliced += n;
-> >>  			*ppos += n;
-> >>  			in->f_ra.prev_pos = *ppos;
-> >> -			if (pipe_is_full(pipe))
-> >> +			if (pipe_is_full(pipe) || *ppos < folio_next_pos(folio))
-> > 
-> > I'm confused. Why does this need to be done here?
-> >  
-> 
-> I have above:
-> 
-> "stop filemap_splice_read() if we only spliced part of a folio, so we don't
-> skip ahead to the next folio"
-
-Yes, but is this a separate fix? A folio could be partially spliced previously
-as well, no?
-
-> 
-> Thanks a lot for the review!
-
-You're welcome! :)
-
-FWIW, you can add my
-
-Reviewed-by: Pedro Falcato <pfalcato@suse.de>
-
-to whatever comes out of these nits :)
-
--- 
-Pedro
