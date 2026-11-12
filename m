@@ -1,59 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.151
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794452215;
-	b=jXqwJ/5ZvQS2oazyiRo3EF5uZrt+a0W5SLTLlUjQoQuwa3jYwYqQvy7rYynkYyJBHsyr
-	 Yt4JeifTYMybRJbRTPe9rdyR6VA1P35iU47sp4qhkqWFGp5mu6wOIogwdSXKXy7ioEHLX
-	 gldB32JKaOmljtw1yqg27jC6WR4aJlDUppmumf4dRCQ+cg6OaGz4/Ty7co2NaLY263ALs
-	 opjOgCo40hXuG2Gg4TEWYNTKLfa50/WQ/NNwAHjW3zaaK5GEyklXGI5R7FkRr6K38I9TL
-	 LQo4gII4KPfwPpgkOjUFkPtaUNg1io8JNgX7bY6Dvr31zNklNZRS36UJas8k2M+xI7w==
+	t=1794452471;
+	b=5aIBbZKiiDZ4KBN8ZZdpy5eEc5dRdgbqkaXZVDFU2PS1k01wO7bkE/CSCZ1MyMVMR4ZS
+	 LfEtpTsj4CgzBGq+B7szOUlBaUY0QB4l82Kct8oTp6Z4iYbTBAUBWAqHTjR+MAAO5We5H
+	 IjInRxBrkwV3y+WfSerApn3W6opUMprXt/mXnVGwLREM9Oqf9BvPkkplQBWL7RrzqYGel
+	 G7SetX+SbqRzYWrlzKCCqWOV8rGl37gtrfN0AFOdg5ePoXhmyiyNJ4NYBYd7jYJ8NpKON
+	 Law6Zspq5vMKTtq96Dp0thMf0kxmD80gLyf4iitmeY4yDK9YytQte2B74N0sJjSOWMQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794452215;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=vOF+RGK9UnUHcVcejSq7M96a8eoJuO60vsZupJJEXRU=;
-	b=aXRqH/QnPdL4vBLefivxQaql8Ar8wlQMbXBW45cfhwCYhN8MegCQX2npU4OVjJFk6UcT
-	 0XUghKTzNhPUYQDlnYiEhXumWxMd0KIVjaE+add+TpHMbCQb0dJ4wLJ3dkmMMYzt2Q6h4
-	 V55WfvT4k47/tsIXeoQcJwsK/FAMhaoANN+i1AQAJhucGBqM94GwIkW10Q0OCB5Gh9HDc
-	 aTwlfi1tDGP6dOj0xcHoROLLadhFDym1eXtcwJd6ZTyv2sxQDr7L7aR/rBgEGvl8PH/pf
-	 ucOp8tG3XKy/18/0SbA85lBMadzdBIK5wl7FB1/E2urAR7aI/gmw8iriMMddgcsHf4Q==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794452471;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=7ytdFkLkeLcyVoJxpOipmWCYZtcUKYbCmGV4i9PFBK0=;
+	b=4rlhlV1WPNeHQR6nsc6uO/VJOmtO1yFRP2f+8vI8KsLUntxSXTTwDvYf9H0R5/I57ZVt
+	 UAqMKMn0itvxtuwzhJMk/TCq6zkrEtAdctkA401fi6V21TNRKTH+MIpM50qPTVCDNH4S8
+	 jKhIeqUqvlY63lIznh86IQKlWQqss4qh7x/2Doa46sY6I4h32zy26evk7/Sb9c9sU0QVK
+	 22VUact8TTkZtMJxvNMJ+ppZR5x8ye9kSSh9JoxQTIKdZi9VkZFQkbQgTzvjzura+yf0L
+	 0UdXTHnwYGFK8PXooSU2tZGsQfEuvNujf+tH2Gom9vzkPPWzzq8GG+EViEA37/xftsQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lPtuLY91;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BC2D606A31C;
-	Thu, 12 Nov 2026 02:56:55 +0000 (UTC)
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=nlrltakY;
+	arc=none smtp.remote-ip=111.22.67.151
+Received: from cmccmta8.chinamobile.com (cmccmta8.chinamobile.com [111.22.67.151])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BDEBD606A336
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 03:01:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BDEBD606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=lPtuLY91
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C18831F00A05;
-	Thu, 12 Nov 2026 02:56:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794452215;
-	bh=vOF+RGK9UnUHcVcejSq7M96a8eoJuO60vsZupJJEXRU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=lPtuLY91/lHi/9p1s/6yaltKtqqBQf/oS0B5bAxdsul7kIVXUg8c3c4R/zldKHFSZ
-	 4X2gE0O66/XKBN0ohfV1lVVCPnWrFxe3vBNAcjRK/+ylOv3hj/gapimFUQfHa+gju9
-	 sbSptR0QLQ3CmHIDGXT5yb5ULXEPO6mI4OeJYy+wYDvQqTGhe3eU6fAKFhc4IudBuS
-	 6kAqY3weeLJzoulZ4m4aNYVw/INEROGBX/5LRS2KIhW4rYIHxMbfUrsCmshrSExfq8
-	 4qxLTnYORQ9MzOYZK3phsoISxMHjgAO42TxTq1TXMoc083omMBUuRQTGqnGXaM6cPI
-	 gXYAVJYt7RYCw==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Rientjes <rientjes@google.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2] dma-pool: decrypt pages before creating the shared
- remap
-In-Reply-To: <20261109230830.1707975-1-m.szyprowski@samsung.com>
-References: <CGME20261109230841eucas1p1ee97e7adcdac763c19145f604e4f11a7@eucas1p1.samsung.com>
- <20261109230830.1707975-1-m.szyprowski@samsung.com>
-Date: Thu, 12 Nov 2026 08:26:49 +0530
-Message-ID: <yq5abj7urc3y.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=nlrltakY
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=nlrltakYwm2yZQ7p3iItJW6CyUFEt4Y5HOP3LOwpE5O+DsrhPacu1phD64u1UlU9G8vlAmqmZMNYi
+	 PGLJQLj6sCLxmxktFMmczaNgaBHGSLQ2EHBJ2RlXrjPTAc0M7lrbOv1NeHBYfpzjDlYfJT4I6uNY6w
+	 YUoPzYxFJm/1DLUs=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app02-12002 (RichMail) with SMTP id 2ee26af52bf3f6b-18ed4;
+	Thu, 12 Nov 2026 11:01:07 +0800 (CST)
+X-RM-TRANSID:2ee26af52bf3f6b-18ed4
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from [25.255.2.225] (unknown[10.55.1.70])
+	by rmsmtp-syy-appsvr03-12003 (RichMail) with SMTP id 2ee36af52bf2d93-ef12e;
+	Thu, 12 Nov 2026 11:01:07 +0800 (CST)
+X-RM-TRANSID:2ee36af52bf2d93-ef12e
+From: Jiahao Xu <xujiahao@cmss.chinamobile.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Christian Brauner <brauner@kernel.org>, syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com,
+	Jiahao Xu <xujiahao@cmss.chinamobile.com>
+Subject: [PATCH] iommufd: reject mapping an iommufd file into an IOAS
+Date: Thu, 12 Nov 2026 10:59:45 +0800
+Message-ID: <20261112105945.285526-1-xujiahao@cmss.chinamobile.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -63,132 +69,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-Marek Szyprowski <m.szyprowski@samsung.com> writes:
+iopt_map_file_pages() takes the fd passed to IOMMU_IOAS_MAP_FILE and, for
+every file that is not a dma-buf, stores a reference to it in the pages
+of the new mapping:
 
-> atomic_pool_expand() creates the pgprot_decrypted() remap of the pool
-> pages before calling set_memory_decrypted() on them. The error path
-> when gen_pool_add_virt() fails does the reverse: it re-encrypts the
-> pages and only then tears down the decrypted remap. In both cases there
-> is a window where a decrypted (shared) kernel mapping points at a page
-> that is still private, i.e. encrypted, to the guest.
->
-> dma_direct_alloc() gets this right: it converts the pages first, then
-> creates the remap, and on error removes the remap before re-encrypting.
-> Do the same in atomic_pool_expand(). The pages are now converted before
-> arch_dma_prep_coherent() and the remap, and the error path unwinds in
-> reverse order.
->
-> If set_memory_decrypted() fails, the encryption state of the pages is
-> unknown (the conversion may have partially succeeded), so they must not
-> be returned to the page allocator or CMA and are intentionally leaked,
-> as before. No remap exists at that point any more, so nothing else needs
-> to be undone. Add a comment explaining this.
->
+	iopt_map_file_pages()
+	  iopt_alloc_file_pages()
+	    pages->file = get_file(file)
 
-Reviewed-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+iopt_release_pages() drops that reference only when the iopt_pages is
+destroyed, which for a file mapping happens while the iommufd file is
+being torn down.
 
-> Closes: https://sashiko.dev/#/bug/linux-9212d9b5-4a56-43e2-bc00-6e69b724078b
-> Fixes: 76a19940bd62 ("dma-direct: atomic allocations must come from atomic coherent pools")
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
-> The patch was prepared with LLM assistance.
->
-> Best regards
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
-> ---
-> Changelog:
->
-> v2:
-> - addressed more sashiko.dev pointed issues:
->   https://sashiko.dev/#/patchset/20261109154403.384434-1-m.szyprowski%40samsung.com
->
-> v1: https://lore.kernel.org/all/20261109154403.384434-1-m.szyprowski@samsung.com/
-> ---
->  kernel/dma/pool.c | 48 +++++++++++++++++++++++++----------------------
->  1 file changed, 26 insertions(+), 22 deletions(-)
->
-> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-> index 381b3cb28368..5e8cf12e8222 100644
-> --- a/kernel/dma/pool.c
-> +++ b/kernel/dma/pool.c
-> @@ -106,6 +106,22 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
->  	if (!page)
->  		goto out;
->  
-> +	/*
-> +	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
-> +	 * shrink so no re-encryption occurs in dma_direct_free().
-> +	 */
-> +	if (dma_pool->cc_shared) {
-> +		ret = set_memory_decrypted((unsigned long)page_to_virt(page),
-> +					   1 << order);
-> +		/*
-> +		 * On failure the encryption state of the pages is unknown,
-> +		 * so they must not be returned to the page allocator or CMA.
-> +		 * Leak them intentionally.
-> +		 */
-> +		if (ret)
-> +			goto out;
-> +	}
-> +
->  	arch_dma_prep_coherent(page, pool_size);
->  
->  #ifdef CONFIG_DMA_DIRECT_REMAP
-> @@ -116,42 +132,30 @@ static int atomic_pool_expand(struct dma_gen_pool *dma_pool, size_t pool_size,
->  
->  	addr = dma_common_contiguous_remap(page, pool_size, prot,
->  			__builtin_return_address(0));
-> -	if (!addr)
-> -		goto free_page;
-> +	if (!addr) {
-> +		ret = -ENOMEM;
-> +		goto encrypt_pages;
-> +	}
->  #else
->  	addr = page_to_virt(page);
->  #endif
-> -	/*
-> -	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
-> -	 * shrink so no re-encryption occurs in dma_direct_free().
-> -	 */
-> -	if (dma_pool->cc_shared) {
-> -		ret = set_memory_decrypted((unsigned long)page_to_virt(page),
-> -					   1 << order);
-> -		if (ret) {
-> -			leak_pages = true;
-> -			goto remove_mapping;
-> -		}
-> -	}
-> -
->  	ret = gen_pool_add_virt(dma_pool->pool, (unsigned long)addr,
->  				page_to_phys(page), pool_size, NUMA_NO_NODE);
->  	if (ret)
-> -		goto encrypt_mapping;
-> +		goto remove_mapping;
->  
->  	dma_atomic_pool_size_add(gfp, pool_size);
->  	return 0;
->  
-> -encrypt_mapping:
-> -	if (dma_pool->cc_shared &&
-> -	    set_memory_encrypted((unsigned long)page_to_virt(page), 1 << order))
-> -		leak_pages = true;
-> -
->  remove_mapping:
->  #ifdef CONFIG_DMA_DIRECT_REMAP
->  	dma_common_free_remap(addr, pool_size);
-> -free_page:
-> +encrypt_pages:
->  #endif
-> +	if (dma_pool->cc_shared &&
-> +	    set_memory_encrypted((unsigned long)page_to_virt(page), 1 << order))
-> +		leak_pages = true;
-> +
->  	if (!leak_pages &&
->  	    !dma_release_from_contiguous(NULL, page, 1 << order))
->  		__free_pages(page, order);
-> -- 
-> 2.43.0
+Nothing validates what kind of file the fd refers to, so userspace can
+pass the iommufd file itself, or two iommufd files whose IOASs map each
+other.  The reference graph then contains a cycle:
+
+	struct file (/dev/iommu) -> iommufd_ctx -> iommufd_ioas
+	  -> io_pagetable -> iopt_area -> iopt_pages -> get_file(file)
+
+Closing the fd drops no reference at all: the file's refcount cannot
+reach zero while the iommufd_ctx it owns still holds a reference to it,
+so iommufd_fops_release() never runs and the iopt_pages, the IOAS, the
+iommufd_ctx and the struct file are all leaked.  kmemleak reports the
+leak at the file allocation site ("memory leak in path_openat"), while
+the holder stack of the same report shows the reference being taken
+through iommufd_ioas_map_file() -> iopt_map_file_pages() ->
+iopt_alloc_file_pages().
+
+Reject an iommufd file before the reference is established, as Christian
+Brauner suggested when the report was discussed ("this should either
+reject based on file->f_op == &iommufd_fops").  iommufd_ctx_from_file()
+already performs exactly that comparison against the static iommufd_fops
+and is part of the public iommufd interface, so the check needs neither a
+new symbol nor a new export and the fix fits in one file.  The extra
+context reference it returns is dropped again immediately.
+
+The check must not be placed after iopt_alloc_file_pages(): on an IOAS
+with no attached domain the mapping can succeed without pinning
+anything, so the reference is handed over to the iopt_area and the cycle
+already exists, with no sensible place left to unwind it.
+
+Limitations: this only rejects iommufd files.  A vfio device fd that is
+bound to the same iommufd also holds an iommufd_ctx reference
+(iommufd_ctx_from_fd()) and mapping such an fd can still build a cycle,
+as Brauner pointed out.  This is also not the general validation of
+which files may be mapped (memfd/shmem/hugepage) that Jason Gunthorpe
+asked for in order to keep the memfd_pin_folios() decision on the mm
+side.  Both remain to be addressed separately.
+
+Fixes: f4986a72d6e4 ("iommufd: Add IOMMU_IOAS_MAP_FILE")
+Reported-by: syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com
+Closes: https://syzkaller.appspot.com/bug?extid=7666ed2c3d42196bf7e3
+Link: https://lore.kernel.org/all/20260904-clown-zersplittern-sequenz-987f972a607b@brauner/
+Signed-off-by: Jiahao Xu <xujiahao@cmss.chinamobile.com>
+---
+ drivers/iommu/iommufd/io_pagetable.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
+
+diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
+index 5ac736cf5..fca14b012 100644
+--- a/drivers/iommu/iommufd/io_pagetable.c
++++ b/drivers/iommu/iommufd/io_pagetable.c
+@@ -510,11 +510,26 @@ int iopt_map_file_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
+ 		}
+ 	} else {
+ 		struct file *file;
++		struct iommufd_ctx *file_ictx;
+ 
+ 		file = fget(fd);
+ 		if (!file)
+ 			return -EBADF;
+ 
++		/*
++		 * Mapping an iommufd file would create a reference cycle:
++		 * file -> iommufd_ctx -> ioas -> iopt -> iopt_pages -> file.
++		 * The get_file() below can then never be released, since the
++		 * context that owns the file can never be destroyed.  Reject it
++		 * before the reference is transferred to the pages.
++		 */
++		file_ictx = iommufd_ctx_from_file(file);
++		if (!IS_ERR(file_ictx)) {
++			iommufd_ctx_put(file_ictx);
++			fput(file);
++			return -EINVAL;
++		}
++
+ 		pages = iopt_alloc_file_pages(file, start_byte, start, length,
+ 					      iommu_prot & IOMMU_WRITE);
+ 		fput(file);
+-- 
+2.43.0
+
+
