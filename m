@@ -1,109 +1,54 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.42
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794444749;
-	b=tvXHGKbZEUttfGtddAV/BziitPifKlys5VM6WsAXaX8kOMh8fHSSifOaZHi4gAWB4wpb
-	 H9fUBo1sI/ILD1GGD+R8SwDZ8UQYLXrATlL5MDLPW1Y7masB+XVlax/hSGgdhWw6c2bfq
-	 THpFmXrp1mliKM/0fjTSJk/ZAZCDUuZWaVv7ftTM9SqaX+3UFQaQhn9P9cuS2DrYrRaJL
-	 EsngdPBlRQq+LLyVQ8AE6nsq4EBvDgvEbKiPbMU0NoHhPV9ykHy4mrISZyzzgdkwS1NIz
-	 ECxipB+/DZ1ywhCyTelIUwuxK0kgM5imaXbPOdszauX0SSi9plfS340yBQGJthqCx9Q==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794444749;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=c+2q7v4zk7sUEO3AP+fJXIMJIKsmq59pOCIkKtKvzIU=;
-	b=p59Ymw88dbArr7QW5f2FBW5YSSddhkstVIjt3OCMqWkQ2yr4bcL7f12AWhh+IDcDaudZ
-	 V1AmYLzk1tdAS8NCSibHYf8jmbj0gfEAuGkR+2Rx1V38N8difpSQ13KAd963keGyHl2b0
-	 iKP8cnsGbTox+vD3AUe0foQ7qpAUoP2ZBmWUAjV2S78s57ROD6ICqmzhVU7SANEtQPDIC
-	 HniqndvSld4fKB3UGVo2E4e79pi4+asLC2PfXzF9nv+5gT7Yd4DCMOCeLy9XzuA5J6NHQ
-	 fKOezX4g7KnB38hKYmkYzuu9vDtteFnhwFQQ7oQ/8qIdiNcCSf+wYHTHmOtS5l6bW1w==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.nxp.com;
-	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=LIPnamAG;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.72.42
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013042.outbound.protection.outlook.com [52.101.72.42])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.137.202.133
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794448146;
+	b=21/IrL9r2dyloiZ1hsy0v4hunAWzVXT7EwoMAbXYEHncpaxm3qFUGfVkOBHKdsiXGSeD
+	 +fCq+XO003hsKHZ6U+HAecI2xgSLj325ioyiuEKVIHAX+NFn56jo+ipnhMj4zNwNulKdb
+	 2fgIlrzronZJOOm/XgX1D0p1oyoWBiijZADczn9KRG7iuwyLSTMdIVn1BCJXlBXwTaYWK
+	 UM+5PBTQVfquDAkcchP9NVpP6wqb2bg/2q60wW6WyM/xNBx9pCX/1a45KJy8u2n4l/T3U
+	 8KoY2F/ffDjMb1vEJAm6S2W26xXPJMb80weuYctL+xSZlZdMOWAyzU7slxhKaRo/5GA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794448146;
+	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=8vIz8xYau+WtFrk0xTr9b5QoDkJ8T5uH0TopCPW+Ht0=;
+	b=VAAccSG3qITPuS52fMaR/1XIs9B6B7lURoi/qsQqlXV/goMjv/IsjrbjItYhsOnNRie0
+	 b6kuakT87QMq96QFrGriKORYui0NNhrBgqffMorzgKQDlc8L7QJ0Zw5kKh0Ejw7GLsLN9
+	 8fr7x8be7kQupDVAFUoT3/8BHY/DqtO0ZJcqsLJxcvSEjF5g4EKF24L7KuA5Uy8x+TIh+
+	 Oje424A7U3UuwdqebSdYnF/qZreGm78ZwgaOVKKKBH2r5pRBelrdiXTFwNkSCYItRsJ//
+	 mo+1oEVNmOGmS+B6aLm8y/PMZMJWXyptR1Y35V4ZsTNlYZG4sieMRl05cHeKV3uTngA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=infradead.org;
+	spf=pass smtp.mailfrom=infradead.org;
+	dkim=pass header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=ZUR1Pivf;
+	arc=none smtp.remote-ip=198.137.202.133
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7FC3606A330;
-	Thu, 12 Nov 2026 00:52:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E7FC3606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 023FB606A323;
+	Thu, 12 Nov 2026 01:49:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 023FB606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=LIPnamAG
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BgE6kSC/K7GMWKF4igQ31+Y1ACCt7vgXERMfw3tJuItPDUKf2m7jsHmjFiGX4s1hJ7KaKWMCS9q+FX+LCUVAdksm1xqHKtcgcDBFrrk1pAGQU7Fe1sRDQc+bXT1vN0R4d5Ukp58Ft7llWu7ksv056wm3kchg530/jz5Xzz1VPnPuqVeOqusA3HeG8dMuw0NCBu9n5+S1DB49sq29W4ns3dlGan3ndoTjtXsppFEw+X0I16fTbmeg5kHcVh9LF5KvdwEELQud51w5RMOV0oPXWLFhkt8hfLGm1ucdjWu8LWInMzg3iEPUr/RoHK3jnlTve1eQBshtSh8iEjd0ZmaNlg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=c+2q7v4zk7sUEO3AP+fJXIMJIKsmq59pOCIkKtKvzIU=;
- b=UNK06VUqif+aAJjCifoZi0hMr+8wm04v0RLNde0ctXp2a2MyfZOWKDbEW1Kp1hfyOP/DWvDTapMROV8ylJANa38r0SCAL+QVXaPlFzNSc8iyYsOnhRvw9GC+ECPnWBi3hIkVuTYMFs6Dc5MJhw437W4Y6gd2naLb7eRzhK0rne5JEyUMMbE61Q+kmUuKeX/AGeqFVBzC/qRA4DEGWqqZmRu6OvrljxWLzNwTE0aBTVHQAnTlpVJses2/+kDSJU2aiDJmbVOoSCDwcXcAmvcHqOh7qYTN/BjM2qsJN8cJKJFme9T3r0PNQ19m1MorqI8gbA32TlLF3QhugwmJ4ha52w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=c+2q7v4zk7sUEO3AP+fJXIMJIKsmq59pOCIkKtKvzIU=;
- b=LIPnamAGBpxU9n/8QYpzh0rkD4ZAQZStK/3eWM0MlDG7mFFk9mdFeu8EPX3QMve6TZ8BGEuLNSttb2IcAish4RHdE51887qxUoLVnb4UKL7e4HfHdGRZeeJsCUqcy2u4eBDT+90QLnvK5Pe4p07R1e4K0JfVd70qn/9Z86gPgHgj16tS7RxTE2PAL6DGvvsnnPXKVCwvIlGnTHDdYNqOh1cI7hfW0LkuOqLPGzr9B7dK7DHYZX7IbaihyksjVr3E3G1Xga+tLcr1vmHjNKx4YsEFCVxscaOMvf2OMunoYWzBH+BYAgcxHnOPQVFOOKHvg4iz199zTfCuO+r6v9omeg==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
- by WA4PR04MB775339.eurprd04.prod.outlook.com (2603:10a6:1d0:2d::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Thu, 12 Nov
- 2026 00:52:25 +0000
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9%5]) with mapi id 15.21.0615.008; Thu, 12 Nov 2026
- 00:52:24 +0000
-Date: Thu, 12 Nov 2026 08:57:20 +0800
-From: Peng Fan <peng.fan@oss.nxp.com>
-To: Frank Li <Frank.li@oss.nxp.com>
-Cc: Frank Li <Frank.Li@nxp.com>, Vinod Koul <vkoul@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Jon Hunter <jonathanh@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
-	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
-	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH v5 7/7] arm64: dts: imx95: convert eDMA to per-channel
- child nodes
-Message-ID: <avUO8DSIP03qpTkS@shlinux89>
-References: <20261111-edma-iommu-v3-v5-0-2537cebe6ca2@nxp.com>
- <20261111-edma-iommu-v3-v5-7-2537cebe6ca2@nxp.com>
- <avStAcZcvCRfDinx@SMW015318>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <avStAcZcvCRfDinx@SMW015318>
-X-ClientProxiedBy: SG2PR04CA0216.apcprd04.prod.outlook.com
- (2603:1096:4:187::18) To AM8PR04MB7874.eurprd04.prod.outlook.com
- (2603:10a6:20b:24d::9)
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=bombadil.20210309 header.b=ZUR1Pivf
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=8vIz8xYau+WtFrk0xTr9b5QoDkJ8T5uH0TopCPW+Ht0=; b=ZUR1Pivf7YfAPwvJVMDDsk3Jzp
+	0grOW/HpN24mmm5CWYJw548vD7py3YwdfURplC+tK3WNgHgaeIg97N5X5IGC60uprIDaFcaXyldV0
+	2DDUf82sallNIesdaI5ir+Q5DxcH4WUNSi3ZaXYfklmnu+JhczffaiyoWlhpis9DDh7ke2D0Wnm1/
+	E8ejpeBozWlDmjGCvrWyNho5YVnSCC5MJdfvxhCr1tpAItxFYwXbla0UNRiy8fC7NOVOGZgzTMGDD
+	cy9/lqEVBA9tJCrOPHsaM7rk7Dslgfi23hgjhP/gtg02gehiZhyG+jNlFvmxiYZaacJUI0k6lYz0T
+	MxJBZESQ==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.100.1 #2 (Red Hat Linux))
+	id 1xRJvz-00000008RjV-3qVJ;
+	Thu, 12 Nov 2026 01:49:03 +0000
+Message-ID: <e6f8e81b-3c49-4112-b119-778fb8b89f38@infradead.org>
+Date: Wed, 11 Nov 2026 17:49:02 -0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -113,116 +58,116 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|WA4PR04MB775339:EE_
-X-MS-Office365-Filtering-Correlation-Id: f3ba3f1a-8d6f-466b-d610-08df40573772
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|1800799024|23010399003|376014|366016|7416014|18002099003|22082099003|11063799006|4143699003|261102123227099003|261021123027099003|261026140227099003|261028144727099003|261021121427099003|56012099006|261022105027099003|261009223027099003|10067099003;
-X-Microsoft-Antispam-Message-Info:
-	up6I7xbTWMQb3eFgws04VpMxi1GEExFoBsciFNfvfuwFWYspCfXB5rKtyYp363qEi0NoR8fy7h1tkhTsw49HQK1ULSp7TjPt5Im0CukP2OYWON6iUupUQ4Rr8hSJ0z/JgzUsCa3MThuD3bK7VGsNiqRmbq4s4WiRlygKgXjpgLobdmelP7seDPuwy6coBU1QmwIkFl2t/6Dg4H5GHOuOGs4IddHsyOjyPFV9XzqLyIcI8tAXgxeC6+v+73tV5OVQ77xLGrNiN5Mu5yPooS0NEtUcCkJeZftov9Ah1+ZGxhMgP9Lc3N0J9wHkaze9gqSDNwhcSwFpQX2BbRUcK2ixREr1ZMOFtj/iryhk9uIq1AgInzHCTAF288+kiyWkXrMFOXOpP5UgKXl1AeT9Z/YbqYblVjWL6x3XJKR3HwEwV/BjEa6MZ9eWb+UiNLMJdB2fzJviKWRlgyWTquyRBN6k4iC5Vr32BCUo5umXfp0CckRC3LubHuqaeB/tXlAX9bWKd91B/YLkcX4W8ALkqUX7bAIDIQAxzd/II+5UL/U9bZhzCvUikvgaEeRqrxJx6ZHiKAnj+JiJvC0eVQDIZTfc4GmGg9kL5YocgwRDZoF8m+8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(1800799024)(23010399003)(376014)(366016)(7416014)(18002099003)(22082099003)(11063799006)(4143699003)(261102123227099003)(261021123027099003)(261026140227099003)(261028144727099003)(261021121427099003)(56012099006)(261022105027099003)(261009223027099003)(10067099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?6eBHEWqh+Nc6uoMftBr+F6aIl3SnjLe5M8LcqAtoBna66btN8lcpZWjPVNzP?=
- =?us-ascii?Q?8Uu6gJJpdAEfgaqm7eWTBiPFEOtgITRYOLrI2DA39WCuiIM7c7auMp/q6XA5?=
- =?us-ascii?Q?UYVDqqSVI9ZvsL6dZPWQiaLPq6x1tbrYQVhCjAZ8IqFTx6Fx43ikyI6lIi6C?=
- =?us-ascii?Q?fQcNK1ztgNw3234FuqTsFYvU9PAvOcVlCwZPLLVQ1JVMFRy/ZreGkamYdxNO?=
- =?us-ascii?Q?xcY2iUisZdA3flLCPDFshG528Nn4kVPf/vNHGKrHAXktn1ZBdMTJBBUT1gsv?=
- =?us-ascii?Q?cUvT4WxrWr4wqpKhwQrqHqVkWcyXX0DMX6HBwUWqf5jhfJaAn4Vw1GikLhpP?=
- =?us-ascii?Q?feaxW5/q/zCazitr0CS9pKRzDP88XUIyNUDKNhLwpBGAX258Uo1iQM/6X0J7?=
- =?us-ascii?Q?WF2gQzFryQ3oKoM0j8J5pAHy3iZ2J3jLBaUBI+8rCtI8kdo1KwWsHNPQZue/?=
- =?us-ascii?Q?nQpqaTcJRwRWiibRuHxj8blsfJJjhaBFUFT8KBsLlNdjfSsJ7l/GGpq6DaKg?=
- =?us-ascii?Q?1UVRVywvmIIOo0p23Xav2/Pqi9zQMphdhAREdQJtfmlcUttfSLXxDCXjTjCO?=
- =?us-ascii?Q?2S/eTZzxN8ZJXhFaqqFqpGQj5MipwnGW234P3L12sonJ3RUZtfOzCDSFaY8J?=
- =?us-ascii?Q?MVf05SmjxhyLyIjHyeR20YEJGh+bQA8v89syKjHaAdipHzmQ54nRsJyvpfJg?=
- =?us-ascii?Q?MG5O6VfdCLxrogrvcyo2kTCxlSbD0Xej59KPx1s4JQhKQ23Nx2JnAt8jNbVD?=
- =?us-ascii?Q?nv7tGw4p3LMgNwHJA6i3/+F59fQkopxm+GILKIotfk/YjVt8jDnCaZ+Tmrg/?=
- =?us-ascii?Q?i3ESzYk1Zhp9z4C1bZAMYSNYqQyEMLnbIE/esgzw7hgtHBFYsFFgiYdubov0?=
- =?us-ascii?Q?y95J1+tnCOYYLU13creeulGVm8KwU8Raz2lCnvWV/XfYzTsXPJeYw0BaK6GO?=
- =?us-ascii?Q?yNzqV/Zv2nEpi4sKTfjp8LgmH/+Z57W9VwyWC32RiGX1+rpumg2Gm0EoNoxJ?=
- =?us-ascii?Q?R4MgFvtONUmeQrppmIGajH8OgpAkxQUTJdTJv7TSpNkmqQ9xVxyfV8ymrCEn?=
- =?us-ascii?Q?HNkhC+H9iofEej+WErdFeXZzK750HvWS5vMw6hcyevDnkEHQyHSZJV/Tzcdv?=
- =?us-ascii?Q?M914ynwQBH4iQP+6wrx/8KcCMddCA+d2zTOBdIYc7eHjh7C8bp+NIYBNbRp7?=
- =?us-ascii?Q?3peFLJVqRUjyPqH2cvzzz6mHemM8xxgQiEtgx9ZOYIU8Xud7oMV4HtgFY03n?=
- =?us-ascii?Q?QNnKC07QCU9l/WSJNIkh3JEVMCuXH/haX6aBdyNHjYefJpcnj00CnP27oFXx?=
- =?us-ascii?Q?/n4uGBAwNxRTtNKwHu3YbgGoluS/mNwuU2DTGO4d3GGKlbOOdgKGJ54HBcIt?=
- =?us-ascii?Q?SCVgXeRA6eKAo8Blz+hH5eio0Nv7g2TK5VQSCYsojNUNiCulpVEma5OX+dMx?=
- =?us-ascii?Q?SdCYWwRk48YIgNu78yoI9oTFHMZuk3fslloeVV7q9tjMUwaohMZGExYfyTcm?=
- =?us-ascii?Q?i5O2MbvXR/j7DSdhCqYofxvpJkEAkZmV0a0GsJvi9ECkfxRBGBCk/TmekgSe?=
- =?us-ascii?Q?xCz9zgbAtKdxE/kYcSkxHWJdLovHaGZUu8QvboC6BV+l4rWPs0haw3HW88Te?=
- =?us-ascii?Q?z/OemyJG0TKSb1is68g6hBxtcJi6QK5c9ZPeIyHnSBEvPtjV0dZGL8T0kyjC?=
- =?us-ascii?Q?0tDO258oNPXM35JiphGe4H01m/VG4JGYbCdFD2xLQp/ieekTYl+tv/fIoXsR?=
- =?us-ascii?Q?1iG6jwa3NhsuqtgUddECubyvqBUm/rhrRhIK5lcyS+TGCgQ33Dva?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f3ba3f1a-8d6f-466b-d610-08df40573772
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2026 00:52:24.8066
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3lLwbt0nwBDPluuvC8sPeH1wFqNBZTUx4JttmvujYgjr4aXHlPhG2F83Kb4P7zsZgyHBXxR1ZYxN2Zn4+LPsQx8aTHgyiC2b5uhybExCnRy2EP7m8A7rvWWxIBxsymZM
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: WA4PR04MB775339
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/40] nitro_enclaves: Add support for Nitro Sandboxes
+To: Alexander Graf <graf@amazon.com>, linux-kernel@vger.kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Arnd Bergmann <arnd@arndb.de>
+Cc: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>,
+ Shuah Khan <skhan@linuxfoundation.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-doc@vger.kernel.org,
+ iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>,
+ David Hildenbrand <david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+ nh-open-source@amazon.com, linux-mm@kvack.org,
+ Jonathan Corbet <corbet@lwn.net>
+References: <cover.1794300002.git.graf@amazon.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <cover.1794300002.git.graf@amazon.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Nov 11, 2026 at 11:59:29AM -0600, Frank Li wrote:
->On Wed, Nov 11, 2026 at 09:47:35PM +0800, Peng Fan (OSS) wrote:
->> From: Peng Fan <peng.fan@nxp.com>
->>
->> Convert edma2 and edma3 from flat interrupt arrays at the parent node
->> to per-channel child nodes (dma-channel@<addr>). Each child carries
->> its own reg (real per-channel MMIO region) and interrupts property.
->>
->> edma2 (64 channels at 0x42000000):
->>   - Channel N at 0x42010000 + N * 0x8000 (size 0x8000)
->>   - Paired interrupts: SPI 128-159, two channels per SPI
->>
->> edma3 (64 channels at 0x42210000):
->>   - Channel N at 0x42220000 + N * 0x8000 (size 0x8000)
->>   - Paired interrupts: SPI 256-287, two channels per SPI
->>
->> edma1 (imx93-edma3, 31 channels with 1:1 non-paired interrupts) is
->> left unchanged as it uses a different interrupt scheme.
->>
->> Signed-off-by: Peng Fan <peng.fan@nxp.com>
->> ---
->>  arch/arm64/boot/dts/freescale/imx95.dtsi | 774 ++++++++++++++++++++++++++-----
->>  1 file changed, 646 insertions(+), 128 deletions(-)
->>
->...
->> -					     <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>,
->> -					     <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH>,
->> -					     <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
->> -					     <GIC_SPI 157 IRQ_TYPE_LEVEL_HIGH>,
->> -					     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
->> -					     <GIC_SPI 158 IRQ_TYPE_LEVEL_HIGH>,
->> -					     <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>,
->> -					     <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>;
->>  				clocks = <&scmi_clk IMX95_CLK_BUSWAKEUP>;
->>  				clock-names = "dma";
->> +
->> +				dma-channel@42010000 {
->> +					reg = <0x42010000 0x8000>;
->> +					interrupts = <GIC_SPI 128 IRQ_TYPE_LEVEL_HIGH>;
->> +				};
->
->where iommu informaiton?
 
-The shared stream id patchset [1] is still under reviewing, so not add iommus
-property.
 
-But the two patchsets are orthogonal. This patchset just needs [1] to test
-shared stream IDs, otherwise stream IDs will be exhausted.
+On 11/11/26 2:41 PM, Alexander Graf wrote:
+> 
+> Alexander Graf (40):
+>   nitro_enclaves: Allow the CPU pool to span NUMA nodes
+>   nitro_enclaves: Add NE_ADD_ANY_VCPU
+>   nitro_enclaves: Expose CPU pool state under sysfs
+>   nitro_enclaves: Document multi-NUMA CPU pools
+>   dma-contiguous: add dma_get_numa_cma_area() accessor
+>   nitro_enclaves: Allocate physically contiguous enclave memory
+>   nitro_enclaves: Add NE_MEMORY_SHARED
+>   nitro_enclaves: Add NE_ADD_MEMORY_REGION
+>   nitro_enclaves: Document the memory pool
+>   nitro_enclaves: Add NE_CREATE_VM2 with a launch flag word
+>   nitro_enclaves: Add NE_ENCLAVE_PCIE_MODE launch flag
+>   nitro_enclaves: Name the device's error codes in the UAPI header
+>   nitro_enclaves: Log a reached device limit at info level
+>   nitro_enclaves: Add NE_SET_INFO_PAGE
+>   nitro_enclaves: Document the info page in the memory pool
+>   nitro_enclaves: Turn the command reply into a per-command union
+>   nitro_enclaves: Add the slot pool donation commands
+>   nitro_enclaves: Donate memory for the slot pool
+>   nitro_enclaves: Add the slot pool growth commands
+>   nitro_enclaves: Add a helper to grow the slot pool
+>   nitro_enclaves: Document the slot pool
+>   nitro_enclaves: Expose slot pool state under sysfs
+>   nitro_enclaves: Add the device add command
+>   nitro_enclaves: Add NE_ADD_DEVICE
+>   nitro_enclaves: Read the interrupt multiplexer geometry at probe
+>   nitro_enclaves: Donate a bitmap page per multiplexed vector
+>   nitro_enclaves: Dispatch multiplexed interrupts to per-queue bindings
+>   nitro_enclaves: Add NE_SET_NOTIFY_EVENTFD
+>   nitro_enclaves: Report the device's info notification
+>   nitro_enclaves: Count multiplexed interrupts under debugfs
+>   nitro_enclaves: Map the doorbell window at probe
+>   nitro_enclaves: Add NE_SET_VRING_CALL
+>   nitro_enclaves: Assert the layout of the ioctl argument structs
+>   nitro_enclaves: Pass on the Nitro Sandbox launch flags
+>   nitro_enclaves: Add NE_ENCLAVE_DIRECT_MODE
+>   nitro_enclaves: Add NE_ENCLAVE_PCIE_HOTPLUG_MODE
+>   nitro_enclaves: Add NE_ENCLAVE_CPU_OVERCOMMIT_MODE
+>   nitro_enclaves: Add NE_GET_CAPS
+>   nitro_enclaves: Add NE_UPDATE_DEVICE_CONFIG
+>   nitro_enclaves: Document the driver side of Nitro Sandboxes
+> 
+>  .../sysfs-devices-virtual-misc-nitro_enclaves |  232 +
+>  Documentation/virt/ne_overview.rst            |  256 +-
+>  MAINTAINERS                                   |    1 +
+>  drivers/virt/nitro_enclaves/Kconfig           |   19 +
+>  drivers/virt/nitro_enclaves/ne_misc_dev.c     | 4832 +++++++++++++++--
+>  drivers/virt/nitro_enclaves/ne_misc_dev.h     |  206 +-
+>  drivers/virt/nitro_enclaves/ne_pci_dev.c      | 1568 +++++-
+>  drivers/virt/nitro_enclaves/ne_pci_dev.h      |  599 +-
+>  include/linux/dma-map-ops.h                   |    7 +
+>  include/uapi/linux/nitro_enclaves.h           | 1182 +++-
+>  kernel/dma/contiguous.c                       |   36 +
+>  samples/nitro_enclaves/ne_ioctl_sample.c      |   10 +-
+>  12 files changed, 8282 insertions(+), 666 deletions(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-devices-virtual-misc-nitro_enclaves
+> 
+> 
+> base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
 
-[1]https://lore.kernel.org/all/20261030-smmu-shared-sid-ver7-2026-10-26-v7-0-961726ebd6ab@Example.Com/
+That's 7.4-rc1, but I can't get this series to apply cleanly to
+7.4-rc1 or linux-next...
 
-Thanks
-Peng
+IMO it would be better if the series applied to something
+newer than 7.4-rc1.
 
->
->Frank
->
->
+> prerequisite-patch-id: 542b3d78fda912095b75a49becd1b93109befdbc
+> prerequisite-patch-id: 318368e966c1925652b7976948f435d42b87c72f
+> prerequisite-patch-id: eb35b5d713e7f50f6d1d02310c9afe10b1628fc6
+> prerequisite-patch-id: 223bf6e60620ca8fe72f3ff6f3bd3f5839cdd6d5
+> prerequisite-patch-id: e5305ce0515a02f7f88e72adf02c6a2bee2fd2e0
+> prerequisite-patch-id: 759b5920f842d70e675770608d9088639c10559e
+> prerequisite-patch-id: e1837df37663da3d3ce53afa4594828b2d602152
+> prerequisite-patch-id: f0d4302bd36f94de95951a0db1ae9eb9747076aa
+> prerequisite-patch-id: 41159b92e250fef705be52f714b6e2761a2cd1f7
+> prerequisite-patch-id: a0c3a56907acac2297c800209faa2849a8df0e48
+> prerequisite-patch-id: a80a95bd682b540be5760e8fdf7044379fe32d61
+> prerequisite-patch-id: 9c01e0fecd6810f3448582715c87cd3dd7a6cdf1
+> prerequisite-patch-id: b94dfc8bb1039740d88a30535445bb7b3dd1fe74
+> prerequisite-patch-id: bd76f15728dc0ee2ca3417cd95a6b23a7d63e91f
+> prerequisite-patch-id: 0c60f1574b590f68885a25760017e9ff87752f66
+> prerequisite-patch-id: 63dff43da52934a6e6f5e65c3e235a7114b6b4dc
+> prerequisite-patch-id: af52cf938525874cadd6d879aa76495e563876d2
+> prerequisite-patch-id: f53ee22764b5f13708cacd3e48a59a82d71a270c
+> prerequisite-patch-id: 258b8c18168db49aacbda5156e33978b539666ab
+
+-- 
+~Randy
+
