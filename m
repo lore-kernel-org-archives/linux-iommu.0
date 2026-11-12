@@ -1,47 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.210.199
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794494350;
-	b=syuK/tQ7+IlFIBnLz62ktARKGAJ1Sl39AJxIFVFoh3j2ieW7MCKslLD+WisITRZP/C+x
-	 Gty6aB+6qZDuEfjGdWp678YzKREZtIE04YzdRjOe+QNgixUqTgZPb6Dje78fc9VZjF5BF
-	 g1BkjTekDuOPK3SE4VxEvv1W+JTpwWxLZDxiFlETWeAHebY+9b4X2BHLEimpTsa7F0IZ1
-	 iu/n/cxgIRkZad0IPywu5P6LeRDtYHETaN/gbVcanERojdgZFbLHOL8UH9vvEFT40xtT/
-	 rZir2aaxmKHFJOatCHO3JbRYWvqGhZcmfbVl3l+6YWIjbKWTHRRIeeCpfOqBIc9jc5w==
+	t=1794496259;
+	b=XwxfhjgJwK0AWStARb25NTAT2fi0ql9FQquoY7cszHbhflP3lVe0l+SLTvBFDqFL1cyj
+	 wHfjcmq/lG0gnMQ/BynPXwXlcPVQhkDWIigQ/hQmKk7zSSLmDoNxsIILChOMSRuG871Le
+	 u6CRh/rwSm6HoGMlM5sx8zjaMZq01980eK+3AiedMR88CflA/zHztde/fmt3pcMKA5eKx
+	 fhCYN+XSoQcAoeaLoJs8g6MP14rJumkeQcVsBtzdReRTzhiNG/7nWv5X/QNu24PyybLEV
+	 3X/8J+NvpG+wGaKkISg4kI7FpB/8Eouim1UXz9WjJ0hdxI3LuK4CpmYS4CNngziqWGQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794494350;
-	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=JPCGNF/jEMU9xJrqkGIaHxvjMBqA0bWCrPxQL0nBrZo=;
-	b=TCerqJjsusRR8ZdB6binPJzKLS0OOi5839sbGJ9UQIl72/dhcgeIlvkFX9nEAKKJWqyA
-	 OAYHJlS/L9x+arT4ld6xAh7sWyuVkM5xWQUDm/c4nexQFLbJWNub/2BTA9Si8RLGL+Sly
-	 qhnFfHzDWYEVs3gp6x/FSTEqJMtvj+Izl1PkSnSibTBCjDY1x6P7CSQjGAZCEw8pJy9gi
-	 zMvSmdmI4Ps6gyhqRAbIWDjorO68AMuKR3tYday4jSRt2rk26HE6JnqtulUXIEYYdBwtX
-	 LK6uOT2cGJLTmVdwFtGw5hciA/GpmfDnaWfZCpcRuXxIyXpsrWNe1uRlSzmgP1YfDtA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794496259;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:Mime-Version:
+	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
+	bh=6EicqY9ZopPI8vrn/BeUNEOWrezJd76xi93YUaHI18g=;
+	b=c8Qhettn6vPyoNcq1MDXrq48OtUF/cvBVnQpcXBbuwzbX2f9CyA9oDWAqT13XaclATTq
+	 GkjWr4OkNHcbZLIP7IBIotCRrrqTxzIA94XxGrPfkYJQREnZSYbk6jukMs4dYg5Rnbj0G
+	 +68ccCtZTGbLcivpq2rSOsZRT93/Tt1iwcWbv4CWrm3Qdl6ZSipkrytYU2Hsod+HR/NOe
+	 6ShHbD00UfiV8NOAD0KslzB5xz9pQUUH22S22QQD/RuSkqsIe6EUFoXtvworPwnRXqzBy
+	 i2wgHCtSf81/RO2YrMK/i6u6m4opPDuW8oo2arDQtVKQJxqm0EvqpcK/WiFbDqKppkg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="f8mnD/IJ";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=flex--praan.bounces.google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=CSBZA07C;
+	arc=none smtp.remote-ip=209.85.210.199
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDBE5606A321;
-	Thu, 12 Nov 2026 14:39:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CADB606A321
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 15:10:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3CADB606A321
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=f8mnD/IJ
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38F651F00A0A;
-	Thu, 12 Nov 2026 14:38:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794494349;
-	bh=JPCGNF/jEMU9xJrqkGIaHxvjMBqA0bWCrPxQL0nBrZo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=f8mnD/IJDys4pA4TeVplHqPuVUfXqGCBlqTLjIenB7gApydQVzgQ7FKsApOjymKoG
-	 uoxlhVqbleJeLcQbHt5sG3/YCao8omJde+LI+Zry9Zf+D7eJQ43/cy9LfzDcI/BP6n
-	 59jf7Yk0E6oQ4ndx2WarOOMIOHOscf4lgBvg30XKqlVusvQHhnKQ56hfSOLHFXtqsO
-	 EvolT6DBDg4yO5pVhjYeYQQWWjGT7i8guvwpRcR7e7ysv6z3Wdrle0pzptbwklFN6w
-	 +hGHxd06iIp13iFBvUdxsoi8NV3KZFViRrZXNgUMAuxDnN60aj3/GIZ6wIZUduAG+I
-	 LxvkBDtRNAxDw==
-Message-ID: <1aa2d6a0-0104-4f94-821f-3a8a74636028@kernel.org>
-Date: Thu, 12 Nov 2026 15:38:45 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=CSBZA07C
+Received: by mail-pf1-f199.google.com with SMTP id d2e1a72fcca58-8b930598cf0so5493756b3a.1
+        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 07:10:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1794496258; x=1795101058; darn=lists.linux.dev;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=6EicqY9ZopPI8vrn/BeUNEOWrezJd76xi93YUaHI18g=;
+        b=CSBZA07Cm6zWDLsblGDhndfJmEi5HhAkHbU3Of0U1cIiY4/T4aYFQR+dosAcJGHO2l
+         Dj3NpfZuzMUeOI7SDc20Wv92uhehL9NyXQG5/O44q8cJVwWqu7Kvc2q7gEP4g5F7jKgc
+         wTzaL9H02/V09BJYVjZtZzV7geU0dx4iMi8t0K1Jp/A/WZ+qipFX+n/6s0uemETr3zTy
+         5/jJ8MLVbbeMr6Gq9Vze9wtKDvfgPJzfZgqW3sZl1WmnuLa5ip9y3zjP+bxarOcd2Arj
+         MQy73TAIA7cQv3xqz35aote3WWWIh+aWGyMWQGW6bB1JNTUkfC8cfH/agarIbj8DU5Ku
+         s3AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794496258; x=1795101058;
+        h=content-type:cc:to:from:subject:message-id:mime-version:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=6EicqY9ZopPI8vrn/BeUNEOWrezJd76xi93YUaHI18g=;
+        b=flqMAe45mhTQJ+L76SMJ57r1+aIIOEEqVIRJ13jh198MEWrlKUvzFe4Q1mKumyK6Up
+         ityj/Gk3Y74Z/sWHYd7Cx+9SHgZa2hRFoZ13Fjvm8YOuLimaIOQKT8AjTb6DLjfAfToo
+         XuFEM0PHudhju5mTCHfFDYC/90CCJITOee8qMOaBteB2kHpnZbcrPxN3qZt0VabdJhXE
+         lmRwZZh+uULQCE9DcX2RKaTQ3QIknzIT9+XhgfSi6kEmXdAb8UNjJKz2hUktmHFhl9nk
+         2ajjgcoN0nFFAyxgx42I92Oa3g9OzlJPOvUogN+haZ1V5orzlQJQ+U+qx1Akl6tnzOSA
+         40zQ==
+X-Forwarded-Encrypted: i=1; AL+hErHaFNTKD1iK9guj0+QjWojaa4ZYLtUWImybKtliCwrhGqBT6xrLTI6wU+nbR6NWjt+n/BRA1w==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9jOw8IfipW0OVOM2+CcJHnBrbo0oC2iIHaRWAVv0uSihOZhq2V
+	QL7Asv7oFKlUwz9DVpAO/lqUJT7JIJJA8+hCOoJAYkCQRNupLTyRB33jpd05L544s86aHBNDG42
+	YNw==
+X-Received: from pfdj22.prod.google.com ([2002:a05:6a00:9516:b0:8b5:ec46:d313])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6300:388:b0:3c3:a3f4:5485
+ with SMTP id adf61e73a8af0-3f2fa391439mr5495349637.6.1794496258237; Thu, 12
+ Nov 2026 07:10:58 -0800 (PST)
+Date: Thu, 12 Nov 2026 15:10:39 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -50,132 +75,96 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/9] mm: limit pagecache folio refcount when mapping
- pages
-To: Pedro Falcato <pfalcato@suse.de>
-Cc: Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
- Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
- Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
- "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>,
- Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>,
- Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
- Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>,
- Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>,
- Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>,
- Gregory Price <gourry@gourry.net>, Ying Huang
- <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>,
- Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro
- <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>,
- Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>,
- "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin
- <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>,
- Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Steve Sistare <steven.sistare@oracle.com>, John Hubbard
- <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
- Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
- Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org,
- iommu@lists.linux.dev, netdev@vger.kernel.org, Chris Mason
- <mason@kernel.org>, stable@vger.kernel.org
-References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-1-318625d63a98@kernel.org>
- <avW0HGjF6wuqn12T@pedro-suse.tail5790ac.ts.net>
- <86206f64-fefa-4a13-95bc-eddf756eecc8@kernel.org>
- <avXGtysfRk3uQpNu@pedro-suse.tail5790ac.ts.net>
- <2f9b90fd-fe50-4afa-ab59-0c4a00e5e276@kernel.org>
- <avXMKH__gwi6BwVy@pedro-suse.tail5790ac.ts.net>
-From: "David Hildenbrand (Arm)" <david@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=david@kernel.org; keydata=
- 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
- qIws/H2t
-In-Reply-To: <avXMKH__gwi6BwVy@pedro-suse.tail5790ac.ts.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.56.0.567.gdb80ae8cd5-goog
+Message-ID: <20261112151039.2083705-1-praan@google.com>
+Subject: [PATCH v2] iommu: Honor iommufd uapi for zero entry_num args
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Peter Shier <pshier@google.com>, 
+	iommu@lists.linux.dev, Pranjal Shrivastava <praan@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On 11/12/26 15:26, Pedro Falcato wrote:
-> On Thu, Nov 12, 2026 at 03:16:00PM +0100, David Hildenbrand (Arm) wrote:
->> On 11/12/26 15:06, Pedro Falcato wrote:
->>>
->>> Alright.
->>>
->>>
->>> Yes. As far as I know, it's always fine, even under NMI. But definitely fine
->>> with IRQs disabled.
->>>
->>>
->>> I had the impression we had some stuff in-tree that isn't marked as GPL. But a quick
->>> grep shows that everything is either GPL or dual-licensed.
->>>
->>> In any case, yes, this will quite possibly break debug builds for people OOT.
->>> I think folio_get() might be a bit too ubiquitous to do this to.
->>
->> Thinking again, folio_get() should not be affected, it rightfully only checks
->> for a refcount underflow (when we exceed the limit + headroom). So only
->> try_get_page() is affected, which OOT very likely doesn't use.
-> 
-> Aha, yes, you're right. I mixed up your folio_get() change. Would it make sense
-> to VM_WARN_ON() on this as well, or does the <= 0 check cover us already?
+The IOMMU_HWPT_INVALIDATE ioctl uAPI explicitly allows an empty
+invalidation request array by setting entry_num == 0. The uAPI
+documentation in include/uapi/linux/iommufd.h mentions:
 
-<=0 is sufficient for folio_get(). There are valid cases where we can exceed the
-limit into the rather large headroom (e.g., reaching the limit through page
-table mappings, then performing harmless read/write that take bounded references
-for a short time).
+  " An empty invalidation request array by setting @entry_num==0
+    is allowed, and @entry_len and @data_uptr would be ignored in
+    this case."
 
+While the core iommufd_hwpt_invalidate() handler honors this by
+skipping its bounds checks, the generic array copy helper
+iommu_copy_struct_from_full_user_array() still rejects it by
+returning -EINVAL, forcing arm_vsmmu_cache_invalidate() to
+special-case it.
+
+Return 0 instead of -EINVAL when entry_num is 0 and drop the now
+redundant checks in arm_vsmmu_cache_invalidate().
+
+Signed-off-by: Pranjal Shrivastava <praan@google.com>
+---
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c   | 15 +++++----------
+ include/linux/iommu.h                             |  5 +++--
+ 2 files changed, 8 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+index ab1078a97d80..74210867f204 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+@@ -491,15 +491,6 @@ int arm_vsmmu_cache_invalidate(struct iommufd_viommu *viommu,
+ 
+ 	static_assert(sizeof(*cmds) == 2 * sizeof(u64));
+ 
+-	if (array->type != IOMMU_VIOMMU_INVALIDATE_DATA_ARM_SMMUV3) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
+-
+-	/* A zero-length array only probes the type, validated above */
+-	if (!array->entry_num)
+-		return 0;
+-
+ 	/*
+ 	 * The core re-invokes this op for the remaining requests, so copy one
+ 	 * cmdq batch worth of commands into a fixed on-stack buffer rather than
+@@ -509,7 +500,11 @@ int arm_vsmmu_cache_invalidate(struct iommufd_viommu *viommu,
+ 	ret = iommu_copy_struct_from_full_user_array(
+ 		cmds, sizeof(*cmds), &batch,
+ 		IOMMU_VIOMMU_INVALIDATE_DATA_ARM_SMMUV3);
+-	if (ret)
++	/*
++	 * A zero-length array only probes the data type, which the copy has
++	 * validated; skip issuing a bare CMD_SYNC for it.
++	 */
++	if (ret || !batch.entry_num)
+ 		goto out;
+ 
+ 	/*
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 05f7cee1375e..5b5e82b21d0b 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -556,7 +556,8 @@ static inline int __iommu_copy_struct_from_user_array(
+  * @data_type: The data type of the @kdst. Must match with @user_array->type
+  *
+  * Copy the entire user array. kdst must have room for kdst_entry_size *
+- * user_array->entry_num bytes. Return 0 for success, otherwise -error.
++ * user_array->entry_num bytes. An empty array copies nothing, though its
++ * @data_type is still validated. Return 0 for success, otherwise -error.
+  */
+ static inline int
+ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+@@ -569,7 +570,7 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+ 	if (user_array->type != data_type)
+ 		return -EINVAL;
+ 	if (!user_array->entry_num)
+-		return -EINVAL;
++		return 0;
+ 	if (likely(user_array->entry_len == kdst_entry_size)) {
+ 		if (copy_from_user(kdst, user_array->uptr,
+ 				   user_array->entry_num *
 -- 
-Cheers,
+2.56.0.567.gdb80ae8cd5-goog
 
-David
