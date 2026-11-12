@@ -1,94 +1,138 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794493321;
-	b=qUtvxaPpbWuHPez6oG7HgpYVSN/C+TcOqvG6Ov2sov2OEFK20RmV+eb2ffYRVbmLEIoY
-	 fVKL0gksMV+vpeFexTkaIQUT1Iy/G9x7YihKg8e364/8xzBgvmLro8p3+v1hQ33gHkzzq
-	 KXEgsZr00+DIR8NlC7CNeIgWqYvTfMcsqg34HUv8pmdZFGZIPH2/lYdfySR3SHbH7Xhdp
-	 RfWH/nBqCPzTh8lTCW+0QYhJrUb0oNcg3DDsOiwZSidWKt8UgwIEgdafhFAHeA6MOWkvN
-	 QIBDaNu5ZmgCzTS2bPQ0SYajn9+IFZE58IdfUjIu9VLrIP8hS17kCzW8sZ+h6ylhYRw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794493321;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:In-Reply-To:
-	 References:Subject:Message-Id:Date:Content-Type:
-	 Content-Transfer-Encoding:X-Mailer:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=qMXLak3/e8ONgPzK6NDuk2NwGSz9RpB7BhNGZqEv0NE=;
-	b=0qYBAtGWO/n/1pPT32CAJa2DIjRgDVN7+vQNiDz0TYYWp9QVZ86t8ZuJmmbMaoHBScfl
-	 AuKeOoWV0dzfJ8fbv23QxqQWntLL8TElITyrlBP84HC0rpAHKHKalpJ90xfxsRkE9XQEr
-	 4PvstW03F04UUWpZ3DKyFSWV3HaPMLrQepNI46WZh8fogO2x2KuAfvNw56P4N0J9m8VaC
-	 kTfUTlkQIWxWlnAaDCyg/Gi6OUKvpBtaN9sd9OIp9XrNJ5DBMfciGaa82NslhlbNhcuGj
-	 hR9zZz1WcP+MtRkW7TRr5SJt+7cg1j1OCFyWUlElut/AbWzagXmBX9enjjBg/5htkLQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=ApmIf5pn;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.18
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010018.outbound.protection.outlook.com [52.101.201.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.130
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794493591;
+	b=Wxh+ynd/7LNmnyTXBc4JbAahKMI1FXUxVwi/fExG1oLlnqTg9/49DZb2RHZCL6iUIStE
+	 ABLymmPaqc+P6Qyi6ORLxnevmUQtjkCPeHo1YAmgg3JEPN6GGjmuDwjSdROec9j7+DzxJ
+	 8dm6F64jDevjsTfy232lDW4siKVfkRJ/YrZX5eMi6Zs11VoKjH2ISADg3hl3qMIjoKRl6
+	 6or7UJeMDFqihy+ZhFRpCW29RWw9dYiTWOWU2ZFNBe2kT2PdIMBRWGwD4/C+YsqXXKfY0
+	 q/gEIPem6FQSTaoB0X8W2RUhtbD3ul9W8NJizqdzB/1xOL8w9XX7Oey9zFFOpLK14zw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794493591;
+	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
+	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-Rspamd-Queue-Id:X-Spam-Level:X-Rspamd-Server:X-Rspamd-Action:
+	 X-Spam-Flag:X-Spamd-Result:X-Spam-Score;
+	bh=jHr4RUKl7RY4PSbdL2GT5NxxihQwmpjqwvgP01/M+Ac=;
+	b=PraiLGsJLvOP6VCcKYgI603wqzqNXeOHMocT5BqUX5ih/HypJtthwUchnf08m/Ei8I+X
+	 fxZ6pO4w+I41QZUflVkl3wjVkQN2abw5VdaFVtN1QRELYvsqQUQnbATGlVANQvloYaTE5
+	 g34jxo2TlkdauZePJ6ljqbLgB3JOSVRY5+jWFtf9Z2tCXKAPkeTZWAglZ7Fs9ZY8mldXc
+	 /0oEzOMOW3CQwz3D/csXKVM/9qWHJSbb2pbIOvyr+JtrSRhk1DjlkJJSoXmiBhXMRc29B
+	 JASsLAioztjXUh9fcY7n2IyAZV3glx+Tg+K/Ntxz42ukP9jJCp7rTJsu1D3CzNDQmYw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=suse.de;
+	spf=pass smtp.mailfrom=suse.de;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=kYW8zoDp;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tjn0V528;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=kYW8zoDp;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tjn0V528;
+	arc=none smtp.remote-ip=195.135.223.130
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E077606D54A
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 14:22:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0E077606D54A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 046E6606B2CA;
+	Thu, 12 Nov 2026 14:26:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 046E6606B2CA
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=ApmIf5pn
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XRtgnRT3pLLxA+sH+yqwuIvAUr56fsjoPmcjcJfTFEp4CMrAP+tS4kDltK6N9NTzJ4lr7eVlL5HfxEHQrKD2TFwjqDzS1cf9bNzpYKbZ9JDhQdHd91/B4ZlVek0n+0Nr3ggKqJXDP8G2IKKAoOFcwLhzBtteGYgQhU9z7xMdrtqtYBeZwketvaTMm61a54/wFrJU0vhe3W9xSUbbbQmlsadU60+kkQYHMVMZfY2NBnPcWgDywJew4ktfPF5kvjpTIPVMvZsUsMyC+3xe8illKjjvwIbkZpQOkj4oZuy+3U0+AayKV0m8JMj3r5jJdIoXxqrDv/hLM39TR8sgOYCGyQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qMXLak3/e8ONgPzK6NDuk2NwGSz9RpB7BhNGZqEv0NE=;
- b=PGlkI6bepEJHRJGqjnM4coJxF1GjYyssSiMzOhhKLwdoBhbMxZ5JxlniwEyLOrql6OGrxo3uhlaE9wr2cFfbKFucXrUY+UPwcuxjFug7chuupeZEsWsxpJLLuHiXzcwvkd6NbI0zhj50KLfvxCPXE5Ux6RRvuSzbo2olWsF8Axx5A48VkTYg03h26fR0A+obDyPdsFSCMK8ayZ/QL3vlZdCjHZFqdZr9uQTxsBuRAdgqlyNnvPnQIEfZ/cHiY9Dt/4I52PNzQigNlM6dAK09nc6KQ5w4spmRTiERBTj53bG2i6wh7WDT27glBh5EOGXsIF/fH2Cpzls3hnt4KN8/hA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qMXLak3/e8ONgPzK6NDuk2NwGSz9RpB7BhNGZqEv0NE=;
- b=ApmIf5pnQfvUxlWNGUyd4RR0vGD0cCwAeEmxtf0/2RV8zTN7TUsMk4kI3fRfHAN/7OYnb3j/opf2puyg7T8esit9ciV0Fek4bDazWbraGocdOEGpAFYrQeLvcpiPjlVwHDU6lQU3gglwfJr9l1bF5VT3OuAcSNRZuKC432QTaROVPJpoVoKVXm4yq2v+xa8vXoeXlvhXFzsgM0CB7SIKYjW4cIkgR+hhfJXjLFmu3gEU+hXDvdlYWKGzOMjRODLqcbnH3/5zrYs+CT5wBnvo9tQdUl1Lp2A1aCCJbXetoQaB7R/QpdtqIRQvDhtcbbjALNEXhXFIyGRzthO+T7AlLQ==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12) by PH9PR12MB731475.namprd12.prod.outlook.com
- (2603:10b6:510:414::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Thu, 12 Nov
- 2026 14:21:57 +0000
-Received: from CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
- ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0615.009; Thu, 12 Nov 2026
- 14:21:57 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: jgg@ziepe.ca, kevin.tian@intel.com, 
- Peiyang He <peiyang_he@smail.nju.edu.cn>
-Cc: nicolinc@nvidia.com, praan@google.com, stable@vger.kernel.org, 
- joro@8bytes.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-In-Reply-To: <09A8E000F2353E67+20261106122832.88995-1-peiyang_he@smail.nju.edu.cn>
-References: <09A8E000F2353E67+20261106122832.88995-1-peiyang_he@smail.nju.edu.cn>
-Subject: Re: [PATCH] iommufd/selftest: Fix wrong slot cleared on mock HW
- queue destroy
-Message-Id: <179435827945.1896047.12678566630085540625.b4-ty@b4>
-Date: Tue, 10 Nov 2026 20:51:19 -0400
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.17-dev
-X-ClientProxiedBy: YT4P288CA0080.CANP288.PROD.OUTLOOK.COM
- (2603:10b6:b01:d0::15) To CHBPR12MB731189.namprd12.prod.outlook.com
- (2603:10b6:610:33d::12)
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=kYW8zoDp;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tjn0V528;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=kYW8zoDp;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=tjn0V528
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 2DCCE21C53;
+	Thu, 12 Nov 2026 14:26:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794493589; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jHr4RUKl7RY4PSbdL2GT5NxxihQwmpjqwvgP01/M+Ac=;
+	b=kYW8zoDpxMShaXbNnc9eapJegGiIybzvqwjxCqnm+R2TdEAh36ASZwVv4xO/eJIdXj+9cM
+	9D4IrfT0kvDW90Cves9fCI1ZQjOgverbkC1h8JjL9l8PFxNUq73b7D91YAkzOkysn1ZGw2
+	CWXeWI690YBd0qRlSnh9jtU+06mmwdI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794493589;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jHr4RUKl7RY4PSbdL2GT5NxxihQwmpjqwvgP01/M+Ac=;
+	b=tjn0V528px+d3pLuk5LH3w+4rInyUgou34GTzbKL3K6IA6KH4ammsRhKZEOQcJQ/txfapm
+	aavvgsfYqamIknCA==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=kYW8zoDp;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=tjn0V528
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1794493589; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jHr4RUKl7RY4PSbdL2GT5NxxihQwmpjqwvgP01/M+Ac=;
+	b=kYW8zoDpxMShaXbNnc9eapJegGiIybzvqwjxCqnm+R2TdEAh36ASZwVv4xO/eJIdXj+9cM
+	9D4IrfT0kvDW90Cves9fCI1ZQjOgverbkC1h8JjL9l8PFxNUq73b7D91YAkzOkysn1ZGw2
+	CWXeWI690YBd0qRlSnh9jtU+06mmwdI=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1794493589;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jHr4RUKl7RY4PSbdL2GT5NxxihQwmpjqwvgP01/M+Ac=;
+	b=tjn0V528px+d3pLuk5LH3w+4rInyUgou34GTzbKL3K6IA6KH4ammsRhKZEOQcJQ/txfapm
+	aavvgsfYqamIknCA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6A81013432;
+	Thu, 12 Nov 2026 14:26:25 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id OIFuDpHM9WrmPwAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 14:26:25 +0000
+Date: Thu, 12 Nov 2026 14:26:23 +0000
+From: Pedro Falcato <pfalcato@suse.de>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>, 
+	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, "Matthew Wilcox (Oracle)" <willy@infradead.org>, 
+	Jan Kara <jack@suse.cz>, Andrew Morton <akpm@linux-foundation.org>, 
+	Zi Yan <ziy@nvidia.com>, Baolin Wang <baolin.wang@linux.alibaba.com>, 
+	Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, 
+	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>, 
+	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>, 
+	Matthew Brost <matthew.brost@intel.com>, Joshua Hahn <joshua.hahnjy@gmail.com>, 
+	Byungchul Park <byungchul@sk.com>, Gregory Price <gourry@gourry.net>, 
+	Ying Huang <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>, 
+	Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>, 
+	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>, 
+	Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
+	Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
+	John Hubbard <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
+	Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
+	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, 
+	Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, 
+	Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
+	iommu@lists.linux.dev, netdev@vger.kernel.org, Chris Mason <mason@kernel.org>, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH v3 1/9] mm: limit pagecache folio refcount when mapping
+ pages
+Message-ID: <avXMKH__gwi6BwVy@pedro-suse.tail5790ac.ts.net>
+References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
+ <20261110-refcount_overflow_stable-v3-1-318625d63a98@kernel.org>
+ <avW0HGjF6wuqn12T@pedro-suse.tail5790ac.ts.net>
+ <86206f64-fefa-4a13-95bc-eddf756eecc8@kernel.org>
+ <avXGtysfRk3uQpNu@pedro-suse.tail5790ac.ts.net>
+ <2f9b90fd-fe50-4afa-ab59-0c4a00e5e276@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -98,80 +142,124 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|PH9PR12MB731475:EE_
-X-MS-Office365-Filtering-Correlation-Id: b600d9cd-c60b-4e02-37ef-08df40c84f10
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|23010399003|1800799024|366016|10067099003|11063799006|56012099006|261009223027099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	jTlmTd+4g4O4Z7NZJzy+V6Y4icM4sG2jWQwWzQtNhm5JF0qBr8O3lu5EmsIxvl4hVcR58iB+9VAaUOBxtFYRUhh2NymAsxkP5/qsJ2Iz7dUIcYx+DsM4zXZAKjOE7JQ4P5s5thMY/75fFGB84YRaCa8+EhZSqralDDXbznvnhseLDtMoA0Bcs4vvgiZejigE240PU5KkJxI48JAauE/gXJ4yYA2mEAQWFIxgy3i0NoRspacnii4UJ+4kDC9WO4tJ/sH2b8AXj67mn1BgmRfBImOcE4DCewfl83WkW0XQepjnXOe8o44W5fUTAMw9Va8zXtKDQZeiIqMJttZ53DfH98GJEDAJNg/Er60GG1oxv1K0XoPWd89txOsCXQJvVfhn1VpxkfTilY03hQ4x6QpsqifHHndxmEfnbtqf7W3A/aLsAIPuQQznIF5empehJSAfmwYuIOd1tvSZmNiCueklwgQjZubB2mxDZ5Siai6orKApnWbRCpy5+XtZC8E7t/qhjazmRe7DU0DyIjA9dEVAFj4C4mchqzgy3E/6ncbIy1zRxPKPELN3gWx1u57uWIp2YLidVs7lRR9dunb+3c94i9sjAPAXFwlGtygW+j8ZdnYwoR0FGl9LyGKh4LBP13YZ12g+yzqNSpIz8GGj2Twt3i0yoEilZl4zfl/MSt1nNHA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(1800799024)(366016)(10067099003)(11063799006)(56012099006)(261009223027099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?a3RhSkRGOVcxbkJWVG43Z002aDdWZVErYjhBNXdkbTVhRVNoUUZJK2NZTWVT?=
- =?utf-8?B?TGRsRzNuVWV4UnVBNVNtVW5ZSlZNaENPQ01kRFA4aVloaVNGQVBacEdYK0t5?=
- =?utf-8?B?MkdmcW9ZcGlQRjRkL0pIS2lMWXRtKzJuRS9xVVFKYlNrNy94U1JzdmxaUU0w?=
- =?utf-8?B?czZMU3NKdExEQVJWY3hXWkJOV2UzZVJ6c2lFbGJqVUdleC9OTXVXbngrWkVK?=
- =?utf-8?B?SVJYRVVDOXU0NXN4SFZiTThBbTRXMzdqMXVMa0V0TkVOZFJ4b2k2WnBCcWx3?=
- =?utf-8?B?Tlc0enNTS0IvWGhGYnhLZGpjTXpUQkhYTDRiNlpscVh3QUZNMzBKNlIrbExS?=
- =?utf-8?B?amVqbUlieSs2NWRDWnphSGVmamRSazQxazlYa1MzQWJoSEZkNlFmd3dGaUx4?=
- =?utf-8?B?Y3c4c0tRd0JTQzlrV1ZnTGdSellWN1c2dkQ2SGJqY0RyNVpBQ2k0TUpWYVpV?=
- =?utf-8?B?OFozeHNJVUpiZjFGTWYrdU0yaVM2aHVWcEFRd2N3T01mL21ydDR2YTV5eGtW?=
- =?utf-8?B?cHl5OTkxOHJWSHBEMFQ2SGRLMXZSV21zREpmWUJ6VitwVTNtaVc3N0NlRTRh?=
- =?utf-8?B?Uyt3NzdvODRrWmVJdXQ5YzFCOHZSeFNZQWN0RU8yNENyWnpIQjZMRXZoTTJO?=
- =?utf-8?B?TncxL2l1QWJwc0hZVGc5Vkh3ZEVlWjNkbHZ1emEvczZmSlZ2MFUrRTVzWHJF?=
- =?utf-8?B?bFZNQlI1U0pCU0p0S2R0UTdDbnQ0U05YUk93L2tGUG1TYW1aZ3dDVjJ5V2ZX?=
- =?utf-8?B?ay80b284Ulc1Yms3VndPQVZQeG5Wc2dyV001SXNaWEk2N3FPdFVvOURKbUd1?=
- =?utf-8?B?LytNWXFEdmVuZVBSYnQ5WHlKaDJVOGNSd1FDN2Uxb0l2NkFDancxU2UrYktK?=
- =?utf-8?B?NllDRStJU1FhT3RDMUJqdDBNUTB5bENBVktLUmVkN3Byb3JocnowLzljNDBW?=
- =?utf-8?B?YmlHc1hRRW82TlZnaStZR09ubU9BTGJabDJLRWZRNmNpY01xUFRMNVREVk8x?=
- =?utf-8?B?RHhwWjB0MlRaai9lMC9hMktkSGdVaWI5UENtTFVtZlZ3NGt2clFUa0VBN2cx?=
- =?utf-8?B?QWYrY1dWQ3IvenRaQU56ckQrNXdOeC9kZ0VteG1PN2s2UU5wWmlYZXdUVWhB?=
- =?utf-8?B?QUNjczF0K2ZuNDJObkI4dDFrQXpFczd3T0xHVGg4T1UwWjRiV3pQTldWd1gy?=
- =?utf-8?B?cHc1eU1zOXl0ai9td2ljRjg5QTd0NVNRam1zN1hFTTI4QUthVDgzK1N3cWFx?=
- =?utf-8?B?bWk0S04xTllaaEgyUkJoNFRZK2IxS094aTZyc2JoZkgzVnBQZ1FzOWJJNFRI?=
- =?utf-8?B?U3ZkODF1UVY2bWtHRWY1R0xvTmdNaU5lSEdCUUYvam9maWpVY2ZpZ1BHVVl5?=
- =?utf-8?B?SStwRmV1MFExY1RaUldnSm5DaExDNm1qNlpTNUtBVGg0bGxkTGIrTUJYenc4?=
- =?utf-8?B?RmdXbVRBY1lvMjV1SDliempHU3RpOWt1d2ZpdFFmZHd6aTEvZkZHaXhpOXE3?=
- =?utf-8?B?SmxOR2xnUngzcjk1K1AxdmtwcHFnZU92aXlwWU1XcVBBeUdnTWNzeE5OUU9R?=
- =?utf-8?B?ZkFEMmg3OUg0V01aY1FMZ1NYTE9zV1hEaURzZG5Db0kvVzI2WUlSWFFIWDBY?=
- =?utf-8?B?SVVUOEJYWW1QT09RbjNZSnJ1YnJBY1VKTFpMc3RXOWhDNlRCN3Izd3pCR0Rv?=
- =?utf-8?B?MGV1NHBwQlNHaXMvRlBINDJISXJRaXM2V3liZTl5ZHF4SCtZSkdSOVl3ZWxa?=
- =?utf-8?B?dXZqNFM5RzRYYU5TdnRTQlNONDg5b1VLby8xVzVEckJUemN4QUVXTkJUVmhR?=
- =?utf-8?B?L3FrUlVjVXJKTm9UL2dlbzk1VWgvWGJKUVd2cVovbkZHTGxMSmxESEFENC9S?=
- =?utf-8?B?VldPTE9TWHVoNEVKU0paODVTQnMvOFRSU2pCU2tuSGFVdk14YjhRMDYzazZv?=
- =?utf-8?B?a2xHWGd6czlremU4ZDFYVERUQTVuRXh0K1crMmEyUFBLdjdUNXRhNURmVXk2?=
- =?utf-8?B?cU0rYnpEbjErd3ZtRHZHbExxcWIxT1VyRElERk5TZzBhL2FneGttdG0rSVJ4?=
- =?utf-8?B?L1ZVTFdYbGFrVjA5bjVLS1ZmMXdIZkVGSE5wOXZlWndjZ1Nsd2I2WlQrZThK?=
- =?utf-8?B?bVkrakZaQWlDZ1FVQWdXYnVJVGVSRVd0bDdLR01vNWcxclU5ZXFlNHJ5STdJ?=
- =?utf-8?B?MXQ5VDFzMnRzU00vTW5sMjlDeS9uTzE1dFQyc0hCUmttOWlHcHphc3Y0amUw?=
- =?utf-8?B?QXBJbjE4eW1qczZ5NGl5allXYVU2V1oxZGNKV0l0NmRzZkhFajVYYUtueWM3?=
- =?utf-8?Q?aS3vbm5yG2ac1kZRyR?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b600d9cd-c60b-4e02-37ef-08df40c84f10
-X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Nov 2026 14:21:57.4973
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iAunu7Eyxv4A9Tr0FwoRzEYhqkFy8ndvolZ/lNL0MheLWZ0x2DR6I1n+/JODX/Uh
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH9PR12MB731475
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2f9b90fd-fe50-4afa-ab59-0c4a00e5e276@kernel.org>
+X-Rspamd-Queue-Id: 2DCCE21C53
+X-Spam-Level: 
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Rspamd-Action: no action
+X-Spam-Flag: NO
+X-Spamd-Result: default: False [-12.01 / 50.00];
+	SUSE_INTERNAL_BYPASS(-9.00)[];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
+	RCVD_TLS_ALL(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	DKIM_TRACE(0.00)[suse.de:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	TO_DN_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	R_RATELIMIT(0.00)[to_ip_from(RL3qe7do4s7ra64g8gjdgiaorz)];
+	RCPT_COUNT_GT_50(0.00)[63];
+	TAGGED_RCPT(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MISSING_XM_UA(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:dkim,suse.de:email,imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo]
+X-Spam-Score: -12.01
 
+On Thu, Nov 12, 2026 at 03:16:00PM +0100, David Hildenbrand (Arm) wrote:
+> On 11/12/26 15:06, Pedro Falcato wrote:
+> > On Thu, Nov 12, 2026 at 02:16:33PM +0100, David Hildenbrand (Arm) wrote:
+> >>> Mostly LGTM, with some comments:
+> >>>
+> >>> Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+> >>
+> >> Thanks for the review, Pedro!
+> >>
+> >>>
+> >>>
+> >>> I see you use this pattern often. Would it make sense to have a
+> >>> bool folio_get_unless_overflow()?
+> >>
+> >> I commented somewhere (in v2 I think) that I played with using
+> >> folio_get_checked() from #2, but didn't quite like it so I discarded it as
+> >>
+> >> (a) it cannot be used everywhere here, as I'd need more functions to add
+> >> multiple references. next_uptodate_folio() also could use it as I would need yet
+> >> another temporary helper for a try_get().
+> >>
+> >> (b) these changes here are going to get reverted fairly soon once I change the
+> >> way how mappings are refcounted (which is, unfortunately, not suitable for
+> >> stable, otherwise I wouldn't be throwing in this temporary change in the first
+> >> place)
+> >>
+> >> So everything that is expected to stay in later patches uses the proper helper.
+> > 
+> > Alright.
+> > 
+> >>
+> >> [...]
+> >>
+> >>>
+> >>> A comment as to what's going on here with VM_MIXEDMAP would be useful. I guess
+> >>> the idea is that faulting on a mixedmap later will not necessarily hand you the
+> >>> exact same page fault result?
+> >>
+> >> I can throw in a comment, yes.
+> >>
+> >> [...]
+> >>
+> >>>
+> >>> In case this function ever returns over limit, we probably want to log this
+> >>> in the kernel log. If this function gets the folio you could even print
+> >>> the problematic file offset/inode/filesystem/etc. Ratelimited of course.
+> >>
+> >> You mean, if this function returns "true", right? Is printing always fine?
+> >> (e.g., irqs disabled?)
+> > 
+> > Yes. As far as I know, it's always fine, even under NMI. But definitely fine
+> > with IRQs disabled.
+> > 
+> >>
+> >>>
+> >>>
+> >>> I'm fairly sure this will break the build for a number of non-GPL drivers
+> >>> when calling folio_get() with CONFIG_DEBUG_VM=y.
+> >>
+> >> You mean, breaking OOT drivers, right? I can switch to EXPORT_SYMBOL if that's a
+> >> concern.
+> > 
+> > I had the impression we had some stuff in-tree that isn't marked as GPL. But a quick
+> > grep shows that everything is either GPL or dual-licensed.
+> > 
+> > In any case, yes, this will quite possibly break debug builds for people OOT.
+> > I think folio_get() might be a bit too ubiquitous to do this to.
+> 
+> Thinking again, folio_get() should not be affected, it rightfully only checks
+> for a refcount underflow (when we exceed the limit + headroom). So only
+> try_get_page() is affected, which OOT very likely doesn't use.
 
-On Fri, 06 Nov 2026 20:28:32 +0800, Peiyang He wrote:
-> iommufd/selftest: Fix wrong slot cleared on mock HW queue destroy
+Aha, yes, you're right. I mixed up your folio_get() change. Would it make sense
+to VM_WARN_ON() on this as well, or does the <= 0 check cover us already?
+> 
+> -- 
+> Cheers,
+> 
+> David
 
-Applied, thanks!
-
-[1/1] iommufd/selftest: Fix wrong slot cleared on mock HW queue destroy
-      https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/commit/?id=231e471ac4d0579bba3a800fc46519f8a04894d9
-
-Best regards,
 -- 
-Jason
-
+Pedro
