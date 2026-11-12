@@ -1,98 +1,96 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=195.135.223.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794489050;
-	b=EOtbyFSoGtwyC3Xlj/X48835mc0OJefo5p3YCJuPxwfxJFV5Rfa1461D4FLXtnxJT1wI
-	 sqycsTSGUTvoovY2b0AoFLeLKVRl+Fbv0WhCzzQKrLEpVReMUUt9pTu5j5/kXlg1mSrDz
-	 WBiorTS3iEydffWYFCMHOirNYHpTp9jIPllc1l47F5bpE+tkq3P8Wc8bgYt24PuDAuW6l
-	 fT+C4ZqznkOmVqazMC58zq1Y7E0s820vU4lFqdC4ygC0gUNxLDpuTXeCFHY6JWwjDnlf0
-	 XiMB3/cHlA+iy5XtWwTZ0C33m1F7WzdCNTP6OBkt4QdhGNvY6jkXjX3I019tfZQoigw==
+	t=1794489180;
+	b=cPZAHXP5fjZTFh6AOYHqR/4E7GN9aLuvW7jRNuxoYUtorZp3xDmmY54SjVNkTcUpl73X
+	 mZxg1Ui2632ZPJt9junAFpLz2JD/T/kNa0Y50Oaa4Bbpgr0DHF6iXCDHbyALTAQzqO4NM
+	 0OT13vth37xQSKO1GJjBvapxsLw8dO2VtAs0XHwFVY5L/sLIjPQXKD1BW9mEZPkpEnCBs
+	 TWOpWVr/vtbyqXf6EiRdhuvU6haGKoa2li0QqeD7/VxLej8sPGxPVceiH7OrvCWpzO7Wa
+	 N+L+gI4VvSx31AeehET2lW4i38LOSOrsIq7ZZcjPgCCp6nDYW6h1fhp6HH3ZV0GfeMw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794489050;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794489180;
 	h=DMARC-Filter:Received:DKIM-Signature:DKIM-Signature:DKIM-Signature:
 	 DKIM-Signature:Received:Received:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-Spamd-Result:X-Rspamd-Server:X-Rspamd-Action:X-Spam-Flag:
-	 X-Spam-Score:X-Spam-Level:X-Rspamd-Queue-Id;
-	bh=+8mRoBCnrHPzd0XMYMn4r/3hQsLQpAk4ZKwYYX5EH9U=;
-	b=FFcQpZROd4SgGcedjNMBIElny0ieILtsjujEgfj7/b5294Jdyw3GoRicobrCFcixRt9C
-	 HA9pfyMQ0IiXx00f044rGNw+87NFDlVklCfJaAYiq+VMppWKAnn1taBT9/emymHBxkuG8
-	 otr4k3Ek9855V+oFEAgnDrZ4LgMlTSMZOzLYYMpvmLojjKryVR1Zn9nlkQ+j7X5Q7MhZ2
-	 vOQG/2jDKARlLRFoeZodPrOgb+k0dkFmSeLU8SKkt4g7iwaVrp5dPlZvqfpkbzSppHWkW
-	 Ly5DmH7MMxiMHWlNB+GGTaiUuPsAlGPMlzBGP8Iic4kLXp4F92jxIw2NzkPUrqkLEFg==
+	 X-Spamd-Result:X-Spam-Score:X-Spam-Level:X-Spam-Flag;
+	bh=OHN1jM98e/rDidDGGpuhhKAQmbd/D3xE71tgIR8sZI0=;
+	b=RZhc5iT9NW0Cs8/yMW0GZSVvGCX6dmAIA9Nc0AiSz1GlLv4yRDBkq0i3o1CjCJcTQDBk
+	 i3/PHN/GLQ119Vl5WxSMmZOR0wc2SGE0mL2n9eGWHzArQZC8sbsdA27SawU6nBonvBUu8
+	 +s03AFRNbVewC9fJ+Qq5iu4R8Vg8RTnPwY/fp3VhlPhHtUHp/4vRFl9+ZmPnohIA2qK5d
+	 qXRMGKStoayY552Sh8lJfcpdTaPvJc5XUGstIu9cgZNFqD4UUZn+kDDyDS2ljuTmaYG8e
+	 jr9dKaEUtDsDlG6qi9+FlqYlds//NpPKZAnawZkIvMeTQuOIrV3yzjAMqaycEZwoW8A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=suse.de;
 	spf=pass smtp.mailfrom=suse.de;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=khBws98a;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=mHH8HdDL;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=yudfpQVa;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="7Cp2h/U/";
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=rSVlAVBA;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b="K/0F5ksR";
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=eCAG9TQz;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=+Ip1OpXF;
 	arc=none smtp.remote-ip=195.135.223.131
 Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB50B606A89F;
-	Thu, 12 Nov 2026 13:10:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EB50B606A89F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5AC3606A321;
+	Thu, 12 Nov 2026 13:12:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5AC3606A321
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=khBws98a;
-	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=mHH8HdDL;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=yudfpQVa;
-	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=7Cp2h/U/
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=rSVlAVBA;
+	dkim=pass header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=K/0F5ksR;
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.a=rsa-sha256 header.s=susede2_rsa header.b=eCAG9TQz;
+	dkim=neutral header.d=suse.de header.i=@suse.de header.a=ed25519-sha256 header.s=susede2_ed25519 header.b=+Ip1OpXF
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 09F411F444;
-	Thu, 12 Nov 2026 13:10:47 +0000 (UTC)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id E1EF31F444;
+	Thu, 12 Nov 2026 13:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794489048; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1794489178; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=+8mRoBCnrHPzd0XMYMn4r/3hQsLQpAk4ZKwYYX5EH9U=;
-	b=khBws98aZjch3SldFhWFgxIKHIoBpABBaU0SJRAUEqItnJsjesSSAI4wfIj2NbaxCEp1N7
-	QKlSlgtZ5CR6TKfRKHtSh8AXrxsoc7/Yotf3B1Dj/rckCBE3u/mxRsAvVgo/OjkR+xfDA6
-	AeXPIke5G4rWKyYc/F04/97pTtOxsIU=
+	bh=OHN1jM98e/rDidDGGpuhhKAQmbd/D3xE71tgIR8sZI0=;
+	b=rSVlAVBAuFTbEKmNvga87CMsJiAzR6P2jK3iBgYEhwBBW7M/FRgIUozQfpxdflyln1UAQp
+	nh/gLnT58Yone9jFxprqcuST6euBhfXwojj4XxZKxY2ib/aoz/ZcNwGsAiJl0dYmgVkpuJ
+	gBoMyEljV8teWIdoq//KYCj7hBdu09E=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794489048;
+	s=susede2_ed25519; t=1794489178;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=+8mRoBCnrHPzd0XMYMn4r/3hQsLQpAk4ZKwYYX5EH9U=;
-	b=mHH8HdDLqRNSqcMwIMyKygIYFS0GA5cFHrjAdNKHhRQDxU1Z7p2zWp30YXa+jvpkyL6jsp
-	V/G2TP1NxsfjFiCQ==
+	bh=OHN1jM98e/rDidDGGpuhhKAQmbd/D3xE71tgIR8sZI0=;
+	b=K/0F5ksRV1fcZHji05HSZ765KfchtCSSErL2Vc/yTWA97NFYFFH1L56VKvf8XZ8/7prJlo
+	l2ViLDN25EO0J/Cw==
 Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=yudfpQVa;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b="7Cp2h/U/"
+	none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1794489047; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	t=1794489177; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=+8mRoBCnrHPzd0XMYMn4r/3hQsLQpAk4ZKwYYX5EH9U=;
-	b=yudfpQVaf+kxwOs+11zVQzCk5i4AUkcNOg3fl6b2qVYqM5R8F9AA+lK+1JJ1Zf/bybP7Uo
-	29HyzcXedyLuhvYaIPNISzZMCr3g1bcEaGOKl1fRNcJSohuXxd1Jeue/sFqdWqMmSRFFf6
-	3qdsSr2voULTS+/ciJuUBItmT5YQe/I=
+	bh=OHN1jM98e/rDidDGGpuhhKAQmbd/D3xE71tgIR8sZI0=;
+	b=eCAG9TQzbbdiUHGqQ1rrVJEmK+TN0G3+jagjuKjYTTIdr/zfnlkgnGKDrHhDB+qsmiM45I
+	Qmg5DK+Lv5CsnkHrL42cmj3p+tWJHH5eQhYAjpj+mzYDP0xxT18QNS23th4uQzxyrgBu+3
+	iwu/iIfrKhdftLrAvrnzr7MufKezlbs=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1794489047;
+	s=susede2_ed25519; t=1794489177;
 	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
 	 mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=+8mRoBCnrHPzd0XMYMn4r/3hQsLQpAk4ZKwYYX5EH9U=;
-	b=7Cp2h/U/VD0DipB87nndzauJZ/s+pnOBVrvC5P2Ve2lAhEszUWWwSC6LDlKKDMkRkDI9ld
-	DiXEgaNGlc1cSaCw==
+	bh=OHN1jM98e/rDidDGGpuhhKAQmbd/D3xE71tgIR8sZI0=;
+	b=+Ip1OpXFy6x05CiEfWql/dw5z+HEyAEHtC4MFasKsOyOvnZvX7onaetbPN6Pdx2GKW08xv
+	vkL63C9JoRlmD7Dg==
 Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 4E87D134A0;
-	Thu, 12 Nov 2026 13:10:43 +0000 (UTC)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 4EF8A134A0;
+	Thu, 12 Nov 2026 13:12:54 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
 	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Gr4vB9O69WpOcAAAD6G6ig
-	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 13:10:43 +0000
-Date: Thu, 12 Nov 2026 13:10:41 +0000
+	id 3PJECFa79WqQcgAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Thu, 12 Nov 2026 13:12:54 +0000
+Date: Thu, 12 Nov 2026 13:12:52 +0000
 From: Pedro Falcato <pfalcato@suse.de>
 To: "David Hildenbrand (Arm)" <david@kernel.org>
 Cc: Lorenzo Stoakes <ljs@kernel.org>, 
@@ -122,13 +120,12 @@ Cc: Lorenzo Stoakes <ljs@kernel.org>,
 	Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>, 
 	Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
 	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
-	iommu@lists.linux.dev, netdev@vger.kernel.org, Chris Mason <mason@kernel.org>, 
-	stable@vger.kernel.org
-Subject: Re: [PATCH v3 3/9] mm/mmu_gather: flush pending references early
- before the folio limit
-Message-ID: <avW6vTgrnBRn0Xnc@pedro-suse.tail5790ac.ts.net>
+	iommu@lists.linux.dev, netdev@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v3 5/9] mm/gup: limit pagecache folio refcount when
+ grabbing references
+Message-ID: <avW7MFzYJJZ0B85d@pedro-suse.tail5790ac.ts.net>
 References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-3-318625d63a98@kernel.org>
+ <20261110-refcount_overflow_stable-v3-5-318625d63a98@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -140,68 +137,55 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110-refcount_overflow_stable-v3-3-318625d63a98@kernel.org>
-X-Spamd-Result: default: False [-12.01 / 50.00];
+In-Reply-To: <20261110-refcount_overflow_stable-v3-5-318625d63a98@kernel.org>
+X-Spamd-Result: default: False [-11.80 / 50.00];
 	SUSE_INTERNAL_BYPASS(-9.00)[];
 	BAYES_HAM(-3.00)[100.00%];
 	SUSPICIOUS_RECIPS(1.50)[];
 	NEURAL_HAM_LONG(-1.00)[-1.000];
 	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
-	RCVD_TLS_ALL(0.00)[];
-	MIME_TRACE(0.00)[0:+];
 	ARC_NA(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	DKIM_TRACE(0.00)[suse.de:+];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
 	TO_DN_SOME(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	TAGGED_RCPT(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
 	FROM_EQ_ENVFROM(0.00)[];
 	FROM_HAS_DN(0.00)[];
-	R_RATELIMIT(0.00)[to_ip_from(RL3qe7do4s7ra64g8gjdgiaorz)];
-	RCPT_COUNT_GT_50(0.00)[63];
-	TAGGED_RCPT(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	MISSING_XM_UA(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:rdns,imap1.dmz-prg2.suse.org:helo,suse.de:email,suse.de:dkim,linux.dev:email]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Rspamd-Action: no action
-X-Spam-Flag: NO
-X-Spam-Score: -12.01
+	FREEMAIL_CC(0.00)[kernel.org,infradead.org,google.com,suse.com,suse.cz,linux-foundation.org,nvidia.com,linux.alibaba.com,linux.dev,arm.com,intel.com,gmail.com,sk.com,gourry.net,redhat.com,cmpxchg.org,fb.com,surriel.com,szeredi.hu,zeniv.linux.org.uk,arndb.de,ziepe.ca,8bytes.org,oracle.com,toxicpanda.com,davemloft.net,kvack.org,vger.kernel.org,lists.linux.dev];
+	R_RATELIMIT(0.00)[to_ip_from(RLru1qh6mb4sjaccpm4fphkxao)];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCVD_TLS_ALL(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[62];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,suse.de:email]
+X-Spam-Score: -11.80
 X-Spam-Level: 
-X-Rspamd-Queue-Id: 09F411F444
+X-Spam-Flag: NO
 
-On Tue, Nov 10, 2026 at 09:35:43PM +0100, David Hildenbrand (Arm) wrote:
-> When a task zaps mappings (e.g., MADV_DONTNEED), it can drop the PT lock
-> and defer dropping the folio references. In the meantime, page faults
-> can refault pagecache folios, creating more references for the same
-> folios. These deferred references can build up over multiple VMAs.
+On Tue, Nov 10, 2026 at 09:35:45PM +0100, David Hildenbrand (Arm) wrote:
+> Let's add a folio_ref_count_over_limit() check in fast and slow GUP
+> before acquiring additional references or pins.
 > 
-> Let's just request a flush after enqueueing a pagecache folio whose
-> refcount reached a certain threshold. Start flushing well before new
-> references are refused, regardless of the caller's privileges.
+> Keep it simple and use the check for all folio types.
 > 
-> When returning "true" from __tlb_remove_folio_pages_size(), PTE zapping
-> will flush the TLB before dropping the PT lock, but drop the references
-> afterwards. Refaults can still race with that, but flushing early reduces
-> the risk of letting others hit the limit.
+> Also propagate try_grab_folio() errors when grabbing additional
+> references in __get_user_pages() and in memfd_pin_folios(), so hitting
+> the limit returns -ENOMEM instead of -EFAULT and -EINVAL, respectively.
 > 
-> This is a temporary measure until we have something better.
+> Keep the existing invalid-refcount warnings.
 > 
-> Reported-by: Chris Mason <mason@kernel.org>
 > Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
 > Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
 > Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
 > Cc: stable@vger.kernel.org
 > Reviewed-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
-> Reviewed-by: Lance Yang <lance.yang@linux.dev>
 > Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+
+Same points about funny weird inefficiency applies, in any case:
 
 Reviewed-by: Pedro Falcato <pfalcato@suse.de> 
 
