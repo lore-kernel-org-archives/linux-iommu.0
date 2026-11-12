@@ -1,90 +1,99 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.45
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794504537;
-	b=cltiMqCLzUzX8Veaa46YY+t5UTViEvIj+vr6nsbM7ZuW4gksa4KTW38/8b7LsihRCact
-	 MmzE7Eu9qN/Xv5+cydlOxBtOFLKxzVtYwBlI5UU81vPZtOjYtAeAFEmGLJmAz8D1qXZc1
-	 xlvs1/224c+RV5kmHyVmPnYLkFxnteb/MC/b5BEu+MxxgRb/zk4ogQqVnt0hwuzSAfnTn
-	 u8QJtx7avYugtnYKt+1jyCwbu9Ct10uOViAcMxbkb5AOWZAJ6McCughNGGnIoLelgwPZz
-	 BYi6LH2BbqOl20Hca5cJsrp4qogeaR73hNn7l7c++omYzSYVX4J6oTChCacUFAczY2Q==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794504537;
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.182
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794504756;
+	b=duEWw4tGNB90fvXUNfJ1IbNKr6RlgC9bZo4YggY+5d0zfMxyncHZUNdVicEYjMrG3TzZ
+	 bN2jA7sKUrI0FFcITUfFQKVh3uPVsvbCwi3Q/XxIIIPyrsBipqa2fg7pojXs02OEdP3yW
+	 54xYkAYYlWyDjSAZz3MJwz4pn9+Do2ttf8VzDCwVJa5mlh2BXnyQJLScDFIMnAn6NUi7p
+	 hmeg0UG2SM55gixuMWZ9DicXEOv4sI+5DELJhRy616dudhBB6W07kclFOtNQ2J5k7RWDO
+	 t0yiwnDGsFavDza6mkt1qE38WGnnLJDm5JWnSmMHNx/zNqvJcUH9l8M/2gWFWWrIi4w==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794504756;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:X-Forwarded-Encrypted:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
 	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=AVq19U8dsLUULl5Arm+uFElP0L4F8s4K16OEcmVJkjM=;
-	b=n1fP6SB/sP3IhRBHopYxcFRCV75autzkvAUlvLnfAyX5rfnSzmWhgRDocUlkisKi2jZx
-	 D7kyMosYvK0ppwznMgrcgxOplAHq/KctqCV363XnS9nHj4hIpGyzqmMfCOXbtQ7y4kYcr
-	 ChM08tcPcHzYGkhhIFO17vmFl+Ts09VlRxsaDKyaSMWyn2IWshZgDZiZPrhgUHJ4erqPM
-	 u0bpq+tgD2Z2H7e2YQzaM8FFqQZyfZLovLVZ3P8zGuzDozlKXdarKn6uEq++QtK08q0lK
-	 Idi1csbCHZA3bHRj2Xm3ircTjiwwm3YR+f+Tl/a+nprNd6t+bGVHu+zgzQwupTq5lew==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=linux-foundation.org;
-	spf=pass smtp.mailfrom=linuxfoundation.org;
-	dkim=pass header.d=linux-foundation.org header.i=@linux-foundation.org header.a=rsa-sha256 header.s=google header.b=KZ+xhsZ1;
-	arc=none smtp.remote-ip=209.85.208.45
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
+	bh=uvlpRV6PcTM08/lEakwe3Mf9uWtn57n5IAUH/fdgelQ=;
+	b=b4ySBjdZL9GWMtE/WTKyBjOlfjjMbjwn754yYXD4NwBRaqKaVJaYd93fVjjOIWYPjZfS
+	 HN6SYExq6SpdTrJNyHpgXmQlPPQZkL2f/XCdAiY0pxSZyTps9QjTRvNgWyEvBnOChPWVG
+	 hsqbC2mUmDb4hEZluwIpJuCcVcSTi2jxMMZfKSdn5zSqHLjuWOXD/C743NS+pNPwXMYEY
+	 0eQ4iqnhymw/MeTadZxau7CBlmhH6ePAkxXMk8TwqfJPT6XUoC1Xr+YvVUdDiueGYdnsJ
+	 F81m0zFE9+DbZE/kbZamHI/aju45+92Ibj3CMwVXBOayHorz9UbaOkWQzl+bJRRxjKQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Iiv9HM0j;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.182
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E8F9606A32A
-	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 17:28:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E8F9606A32A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93868606A33B
+	for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 17:32:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 93868606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux-foundation.org header.i=@linux-foundation.org header.a=rsa-sha256 header.s=google header.b=KZ+xhsZ1
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6b56bbf8330so55015a12.3
-        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 09:28:55 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Iiv9HM0j
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-3ab1e5a01a1so1745451fa.2
+        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 09:32:36 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794504755; cv=none;
+        d=google.com; s=arc-20260327;
+        b=BOieNPBzy7yl3sVLvI2dHQWkAXSdN71avOpR7C3T02wliTBjQg9rfOx8adB74iKeiS
+         vE0hbBwF64J2I0hWHFmG39lxaSGOx0FMwwG7YPbWMKHTCIVQJXuJ96BQ1NsZCQ4+7iE2
+         8tmlg+mIH4DPnG1D+5EnRuVbePocWGxD275B6zONERkrABvMPAuhFjrA4ki1U8x9RGyt
+         Z623B/4435C+WkYh7QvBSGsCWZXbb93+mu3nWFntvfmkCXSA2JJfbBppOQWwMy3prAvV
+         vnBF2HLtHK17dBe9oR2hvZAWYPVLnXow4AbwUhKGp1MuSqYvYFO5iI/3LtLNSyXZ7mKp
+         2h3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=uvlpRV6PcTM08/lEakwe3Mf9uWtn57n5IAUH/fdgelQ=;
+        fh=TfCXli6OCBktpBGOOy1pPOF0PJuAHfpmOPF3SubxCsw=;
+        b=l9f13BqzIPmHcsjAjoFWwkOU9Y4iZshn1nmyNsNaiJZ2aRJ+HQT3H7sfo9jc4FCatG
+         c54ZE9cj2nP9069kCdvea2VuULP9YMJvPf2WGrdgCFQt7e1Ia2RoB1nUBxJZy2ZFoQ2x
+         v76E+Xb7kYPZY7brb9HyI/KanHhU/c3zKz1FlnWWRAGbXBQ6efhzDCFZFcpg7cwN3/Wy
+         mBLOrIykrc6e9lAS1lAtB0n2HEgFjjsMo1llAkIW4wPBQg+hjgk3x0g4vD3IjikZgPtg
+         V57OeyZCBm/6CGmLLmaFcu2VTkugH31WDrDfVJIXwC5C+APPRltd24DmkLoxBx4k/Sx2
+         puLQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google; t=1794504534; x=1795109334; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1794504755; x=1795109555; darn=lists.linux.dev;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=AVq19U8dsLUULl5Arm+uFElP0L4F8s4K16OEcmVJkjM=;
-        b=KZ+xhsZ1vr86w8qtaQJC+DvIHnreoD7ec/L8LNBr6crbodrUBwnxjAwiq3osOW2Rfe
-         7gE1XusPEpUmmA24CSo9+Y7SLwfxsOskcMvO+zqYBMP90IdEX6zt1rwo5m/wcY74rrm6
-         eyVfsMFUCkD5oBQdcwPHIIwpWXFY9wZthMloI=
+        bh=uvlpRV6PcTM08/lEakwe3Mf9uWtn57n5IAUH/fdgelQ=;
+        b=Iiv9HM0jESYULxQyWtEAG2Cg0eZaTSPIi4WAOxkXuohNDvuKoMoGKcuc4qgU2SIKaD
+         2uVRgwBKu86qayJChe9yCgJzkJfWjNLfb5GAugMYHk8JJRemUcq3kVLZxCgDJw1gRgXz
+         4Cn0tUUzQ/Q3LEKJyKC3jtx7284x3fHSqoL10sBGlyvd5PyKIoIdCMWGGDXMlDy4Q46T
+         bspTnmqnF1qBeScLZTJzHkc4uCyEnC6q5IE6KW7z4NMadYtIX06/4PWEOfxF5S4EfKxH
+         YP6j9JAj9ffF/oq2Tl+6qVpC5K4jqMXEKbkEY32AGBNKRm6PCDwNVjYxtcTWmoo7EkNt
+         MLAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794504534; x=1795109334;
+        d=1e100.net; s=20260707; t=1794504755; x=1795109555;
         h=content-type:cc:to:subject:message-id:date:from:in-reply-to
          :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to:content-type;
-        bh=AVq19U8dsLUULl5Arm+uFElP0L4F8s4K16OEcmVJkjM=;
-        b=lArPpL/2YZ6a+reJLdi1D9f+O7T+5I0TgpJ55gPdrwXrhUb6Yu1oS8Q4XVnvd9770U
-         aqhUdHBkx5Rjmm6TsnxWIFrx/PYl6J1revikm2N9+MXv8sppEtnK+YCw8+9WCIbpcUUH
-         DCHvpivur18NWZ3365cY7IpNRoo5z+9wl8VFWYZGHAnC45ydfPYhkWkLckd4G3MScPEh
-         hy2Ue/UoBkV4ig46ZmuoDBIkRujYJXaytSRUDuLkRL5UWCiZVln3ABLM0FoH8vYy+mO7
-         ea47nUcZI/tseZWehRs2jqTPhDYLNCOmA5Ov707afvambZlKsBfuOIg/5e75EuVFEsbQ
-         hxKQ==
-X-Forwarded-Encrypted: i=1; AL+hErFWmFe3n4BZJDHIJLGnmgXGHhS7U5ke9UUf9wUG92QSvH/X4osfNg1gN55F1x0sel/91iKALQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/pt7WTIVfFzymhmCYiQiJEaFAyKjTybFzjMafvdV1JdBYBcwYC
-	BcOyUpDFyvGzAlZr7xrBRTmhoVllytxICfYiPFTAIlVQTBvCZc2xfF9m5i4JPrzYPjhTI81a0Dy
-	b7440dTWLLw==
-X-Gm-Gg: AYBFou32BgtoDx9AZsZNMf09m1Zg3qXVr0Dj0FlKuPxld9rRy60u+1OviJKFbX1U7cl
-	dpvEEB0vu7itSTIX1pEIkxSBRWUwjqmMxx3zPkMFPOQhtT2VnWhCNWqthpN+FWJvVLPv8JCtJUc
-	EvCpP7pP0VQot82vbHQB8eLnk7nAOBdppYO/wm3Ga783CrG9W0E3E6eey7UN1bPVoRlG2gkff82
-	Ouh80/m9kHkAY7ZpUKMCMSKg7ey/+sYghcqnkKDO719WAbukWVmvVDLZtLGWX3kS7ixd7Zi5WxU
-	C+t4XDcFA38abhUzWBviQWKPtSvldDf69toZsEn5LX5b7ytTA0fbW1QLJuF3wBZ07snQJrdiesM
-	ckY0lS75D2c/YeYJ0MSB3iBX+3GQl38RYNF7OIgto/qwFzwHs3b6686g2/0tmbDlxI3Jb216TrA
-	siSQfzF5RTVvsYMsyn96WvoDHxRQ7LAVgepFmhwAjkK5Lqls2+9VpBBRUbq3DyoAb22Tyvu438j
-	MJ6ENK1h9c4rFTut8ZvIR9KKCSvmVX+3ll1Nof1zjfNcCcvPwtxb3bC0IZJDUdtuuckqivB3wIi
-	qvBvgNB3bH9vtK4AvIVglcY+3kAYbqtx9XoNpGGncuv3zXkvqM4bj8kTx4MJvAFEawqRDZe6Fss
-	KZr8=
-X-Received: by 2002:a17:907:da17:b0:c3f:153a:8649 with SMTP id a640c23a62f3a-c506694dfebmr642569366b.7.1794504534593;
-        Thu, 12 Nov 2026 09:28:54 -0800 (PST)
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com. [209.85.218.42])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c5095b6f6eesm915466b.63.2026.11.12.09.28.54
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Nov 2026 09:28:54 -0800 (PST)
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-c4395d31228so625360466b.1
-        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 09:28:54 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErF9RqkDdwzKj1mMkmxspXRGSPKwc/vsyePsIbPajVD9DX+j/Md6lm5JL/itGh+Uzr9sq9T58w==@lists.linux.dev
-X-Received: by 2002:a17:907:3ea7:b0:c4c:e344:ece7 with SMTP id
- a640c23a62f3a-c5066afe5dbmr615605366b.10.1794504534261; Thu, 12 Nov 2026
- 09:28:54 -0800 (PST)
+        bh=uvlpRV6PcTM08/lEakwe3Mf9uWtn57n5IAUH/fdgelQ=;
+        b=2IC3zNXx+UgfVp4FjpDv/UwxUzXvB/G13gIMmI2pPKmVm18e1P45GCONFFIOQmynd8
+         mN1dOQvZ1UWm5Nbzi4k5CziK5dH2jZd29JFtQ8IEsvVusYygZfkShomFbh5VNi6vprlu
+         0cr+ngdzAxb4fltsemXNbKz2C3OjThVkH1Q8MmaJjxpr79QHsB9KLz5IaEUfi1ENSVwL
+         WIB3P53/JY1hWj7fw9i91x/j5z8DwIoJge/PbM+/dvX8P+sCI4cueCiywfwerrkXgzVK
+         QOO22/ht2tCbEzTYfOdImCI44CUk4/pEabERZmdTucWRt45s1JUDCUHr/IQkJlLz6VGh
+         3o4Q==
+X-Forwarded-Encrypted: i=1; AL+hErFLyAHn2eCSl793cSsR9+RwHHLWssGXC/ZaMTdGiszOX6t61ZUOkroqEQs6kDPpX57DikcfNw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/IMbd7Sv2wXrkC6/moeCshSw5Hiv7ASKuT4DLDsCgg/hDDNbhO
+	PAiTWeq0BdUSQmpO8oEgRm5YEfIrrt4qAbkK2eQmJvq+GFaFIAlpNeBNr5aFtfKEwY7dGkOAJ4z
+	wxm74XlQPLULnMOfIxNCJa2hYHZi/rMw=
+X-Gm-Gg: AYBFou3HsyyioDvo37wspR1SgY91QGSZC3fr79MAM+y++cDdKamamE3HKeq5PMKiwnk
+	FUAWvthdNJ3qO1uOgtsg6x/aDn76ElOwV+5Ba9xZqK3s1HnKtaqxU3hs7avbZ9Y0l8j+2Kc/z+r
+	Q0iOI4oX+ebDPznWuEEfrDqgpWKyHlpPBVFWJywbk57VsOP7lEGFAXSiSTNpONxabJqOeCZpVFp
+	H9Y5RlbSqXeTNnrGj+6aZkQcpWnFZ97X4Uw1Np3Pjg1Fkb17ZDMai2hr7xDSXP1QfuyhK4Entku
+	ND1gpNc0iM8tBlKSbM7H/3xEWsvOGB4NUQRFIQ7UIN0h9S2HJdi1Kq0NaXutyoX4cCTRoJfZO4N
+	fVTR74lnVyPyNQA+46wdIS3UzH6v0gS+fztHHXyyKWImfh9HbQ5KTK8yrHP1WX3ULtDVHi+I=
+X-Received: by 2002:a05:6512:1288:b0:5c1:5703:46ed with SMTP id
+ 2adb3069b0e04-5c170a00a41mr22428e87.6.1794504754625; Thu, 12 Nov 2026
+ 09:32:34 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -94,71 +103,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261110-refcount_overflow_stable-v3-0-318625d63a98@kernel.org>
- <20261110-refcount_overflow_stable-v3-2-318625d63a98@kernel.org>
- <avW3v-oLxcHXXNQD@pedro-suse.tail5790ac.ts.net> <4ae22b7a-c160-4003-a029-8a20381d196f@kernel.org>
- <avXFlI_5fhUvFyct@pedro-suse.tail5790ac.ts.net> <42373222-8e37-4658-bebd-dd27230a1dfa@kernel.org>
-In-Reply-To: <42373222-8e37-4658-bebd-dd27230a1dfa@kernel.org>
-From: Linus Torvalds <torvalds@linux-foundation.org>
-Date: Thu, 12 Nov 2026 09:28:37 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wh995y1B461rPAcgLagg26vsyXPoe=7JKgHowB+uHJJXA@mail.gmail.com>
-X-Gm-Features: AclHuK90rViBZMbITCUjh4KTAKhE7_4EYJcdTbdgYzXWPc1JsLWFSAsYMdn-r7I
-Message-ID: <CAHk-=wh995y1B461rPAcgLagg26vsyXPoe=7JKgHowB+uHJJXA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/9] mm: limit pagecache folio refcount when splicing
- into pipes
-To: "David Hildenbrand (Arm)" <david@kernel.org>
-Cc: Pedro Falcato <pfalcato@suse.de>, Lorenzo Stoakes <ljs@kernel.org>, 
-	"Liam R. Howlett" <liam@infradead.org>, Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, 
-	"Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>, 
-	Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Nico Pache <nico.pache@linux.dev>, 
-	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>, 
-	Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>, 
-	Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>, 
-	Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>, 
-	Gregory Price <gourry@gourry.net>, Ying Huang <ying.huang@linux.alibaba.com>, 
-	Alistair Popple <apopple@nvidia.com>, Peter Xu <peterx@redhat.com>, 
-	Johannes Weiner <hannes@cmpxchg.org>, Song Liu <songliubraving@fb.com>, 
-	Rik van Riel <riel@surriel.com>, Miklos Szeredi <miklos@szeredi.hu>, 
-	Alexander Viro <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>, 
-	Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>, 
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin <npiggin@gmail.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Steve Sistare <steven.sistare@oracle.com>, 
-	John Hubbard <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>, 
-	Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>, 
-	Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Simon Horman <horms@kernel.org>, Neal Cardwell <ncardwell@google.com>, 
-	Kuniyuki Iwashima <kuniyu@google.com>, linux-mm@kvack.org, linux-kernel@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev, 
-	linux-arch@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org, 
-	stable@vger.kernel.org
+References: <20261112-iommu-probe-race-v1-1-8c0b986b7e6e@gmail.com>
+In-Reply-To: <20261112-iommu-probe-race-v1-1-8c0b986b7e6e@gmail.com>
+From: Arun Iyengar <aiyengar1990@gmail.com>
+Date: Thu, 12 Nov 2026 09:32:23 -0800
+X-Gm-Features: AclHuK9Z7jBSZWw9Fn8TnUnk2iUH3q-Sin-aeWc7hO6RSzhS2Undt4qpZ9_1474
+Message-ID: <CAEy9hNXRwH9qD-=Gj3NiY=ZVrVq02hAj0dPU+o8YfEmCcbSdNg@mail.gmail.com>
+Subject: Re: [PATCH] iommu: Don't let a driver bind while bus_iommu_probe()
+ still probes its device
+To: aiyengar1990@gmail.com
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	"Rob Herring (Arm)" <robh@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Tudor Ambarus <tudor.ambarus@linaro.org>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-On Thu, 12 Nov 2026 at 06:31, David Hildenbrand (Arm) <david@kernel.org> wrote:
->
-> On 11/12/26 15:00, Pedro Falcato wrote:
-> >
-> > ETOOMANYREFS I think is good, also EBUSY, EMLINK (though this would be weird)
-> > or even a generic -EIO.
->
-> So I used EFAULT because that's also what we currently return when
-> generic_pipe_buf_get() fails through pipe_buf_get() in splice_pipe_to_pipe() and
-> link_pipe().
+Please don't apply v1, and it should not go to stable. On re-reading
+I found three problems:
 
-Yes. It's not a very intuitive error code, I admit, but:
+1. "A fwspec without a group means a probe is in progress" does not
+   hold on ACPI. On the driver bind path acpi_iommu_configure_id()
+   creates a fwspec, and nothing there probes the device or frees the
+   fwspec. So a device whose IOMMU probe failed earlier would get
+   -EPROBE_DEFER from iommu_device_use_default_domain() on every bind
+   attempt, where today it binds without the IOMMU. OF does not have
+   this, because of_iommu_configure() either probes or frees.
 
- (a) it *is* the error code we already use
+2. Drivers with driver_managed_dma never call
+   iommu_device_use_default_domain(), so the window stays open for
+   them (e.g. pcieport with a modular IOMMU driver), and the changed
+   WARN condition can then hide it.
 
- (b) it is a fairly unique error code that isn't normal (ie EINVAL etc
-that can happen for multiple reasons)
+3. Replaying dma_configure for a device whose driver is inside probe()
+   is wider than I described. It applies to every such device on the
+   bus that has no group yet, including a client that went ahead
+   without its IOMMU after the deferred probe timeout; that client
+   would get its group and default domain while its driver is probing,
+   without a warning.
 
- (c) this is  something that nobody should EVER EVER test for anyway
+The race itself is as in the commit message: the client's dma_configure
+sees the dev->iommu or fwspec of a concurrent bus_iommu_probe() replay
+while iommu_probe_device_lock is dropped.
 
-IOW, the actual error code doesn't matter. Nobody sane will ever care.
-Some of them may be entirely unreachable due to resource allocation
-issues. And we already use EFAULT for random historical reasons.
+For v2 I intend to mark the in-progress probe explicitly in dev->iommu,
+have of_iommu_configure() and acpi_iommu_configure_id() defer any caller
+other than the replay while the mark is set, and leave the replay
+condition and iommu_device_use_default_domain() alone. The other
+ordering in the commit message (the client sets dev->driver before the
+replay check) would then still warn, although nothing is wrong there
+besides the warning; I would look at that separately. If you would
+rather see this solved another way, please say so.
 
-                Linus
+Tudor: you are on Cc because this is the same "!dev->iommu" gate on the
+readiness check as in your thread
+<20260323-iommu-ready-check-v1-1-5f6fef8f9f59@linaro.org>, for a
+different case (one IOMMU, concurrent bind).
