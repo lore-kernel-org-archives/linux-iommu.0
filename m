@@ -1,55 +1,56 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.60
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794593950;
-	b=xvNcVpuTnf5Yoww/irmutPiE/juEXTEmaUxKXh7DCKAL7vFNTixMGRbIPl8QLRYbqvul
-	 F2ynlomYIydkZA07BMmxXmJSwuh9kFjcF9b7E8/Hy6SGk7ngvsS1pJxX0GCYqf5ijwTzu
-	 BybsGGM3B0sIeqLYT3vZHZCUKYGy52SnJmT4nWlMB12nBImcLOuNT2RBDefphA8j0CyK2
-	 lazRaexktWPV5GazqwWA/mdSKqmUEoeay1cpE/INdTZBhe/9Huw9rrgZzxwlVG+nIaQlK
-	 Xuzm5lV7lv7wmZBV0b9kDY4gTg7ZCDU38Myx71LGlLeXQJflh+UKlidiXtssTiYqqRQ==
+	t=1794595614;
+	b=dxtah9NkC6GtnwdqgIZh3LXXkRVasZFmBdVM3HvkCvWn9x5wgPomql14s6dlsy2eR2cS
+	 hKu3IYDs6h+I6b5PMDzBF107nXhkigVOigSjFfwGn0d+Z+hgVN/k0DQN7GSHzYmjzIUPl
+	 B/ydJuVMQiuTYHsvqo2t/XwLTsvpyMMVSLWA3H2hRQb2xIAWlKeHHXP9rrQs2GT4kg+Io
+	 9uUBXMrP99SbZkd/oUBM/9YdwvAUrbA5A0jPS8ybIpOKRpSVGhnuK8zzqMEvDGhL5/5PM
+	 /ssDvT+8/MvllElSYPATBSo2w6ak3jgKBNdnhnWd3IFKcx67ooDZu9UpzRG+dS5y3JQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794593950;
-	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
-	bh=/VIh85zZMfzSY6G83+v5V/TjnRLbNiLly0GYfH3nJNs=;
-	b=fHYwkudpLj7j9SFX7Mja3BqPahiuyd5K6ioDuW8XgzyxSDKej63Ve/kiz0Xaw2VNQTKj
-	 SGKz9KYq8K1tWhSUtr8+nEJ/h9gearYdtj50YBqTpZAOU1mI2bBtReDVO4kW1VJ2rVh6P
-	 5Ft6hFm6NvFdNGIuvzl7Z1kphqQ3PxfrgUZXDoLJdFrc6LFeRyW8djbmhr0BlPxD9YYII
-	 U7k7e2iYDTLd+o2LbAf9MccBkye23VQyiYdYeN1lBXUdqI7c5mhdtK+6iO/GMJz9dgiD0
-	 j9ElB0h/J3plu9QsNhzgG6f5RUkz+tv1wr0byMTqueZrsoWNeW7OuNT78yFpoY4WyrQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794595614;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=jnDAeo7CmnNaA/656fOLCkXGnntEEKJb98BwVbdJVSA=;
+	b=oQNwneP87TU7N2oLuOSgezPJ2fsCA784MpcZ0hxge6P/cyjUTEMSAod47hR6POGL+2GE
+	 t10lVXcYT5PL3BwykcxWXhUV0dOZykfSrpwrfLwD5bIC9eZTRGmiFVEFBeiEuyAnPQqJc
+	 u/eCm20uYcvOnvCXvB6/pre+bujzf8a0gMCAmnSchZjBzyQcauj0c5lGf9OnYihk3waKC
+	 cJjInA7zcQXLmpnzM+7j6yvuMt4Bf4TL3+18eCs8BoNCGtEGdJd7KyZrhE9owNRQUFDlk
+	 hBiIHoCR6FJm0gem89Q8+msmagI7iijnFS2vdj2rUEn4uwnnlAqrzMqXmTjUunUbFDg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TzC7cE78;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=packett.cool;
+	spf=pass smtp.mailfrom=packett.cool;
+	dkim=pass header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=wKqlIfso;
+	arc=none smtp.remote-ip=95.215.58.60
+Received: from mta1.migadu.com (out-60.mta1.migadu.com [95.215.58.60])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D958606A893
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 18:19:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7B58606A32D
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 18:46:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7B58606A32D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=packett.cool
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=packett.cool
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TzC7cE78
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D14A1F000D1
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 18:19:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794593950;
-	bh=/VIh85zZMfzSY6G83+v5V/TjnRLbNiLly0GYfH3nJNs=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc;
-	b=TzC7cE78kKFl2rFE1ESKez8K3/v6Pqk/6PLrXGyiq2H8nW8RaKll1mNR/hvrBhoAX
-	 9WUKboDxL2p3Jax+koelb066IybY3DAyK95vGOnYrQLEWCd8zr9JB2nkLXwMD48oro
-	 eBlcvuFHizULDj5hONrf7IDExHONWpvIf77MgXaUD3OXBqfZQ67bfgb2xPq1SoAoJK
-	 T3NkAz2AcSCaHe3eo20kPD9U/cE84jkgmN3fcFTb3UIgs2jbLigXSsu2MG4WlwRKQd
-	 lN4tR2+CCuZNMvYNucVewMR1jQy7sxt8uriatRDaKQNHlu1Xb8w/7Uzi3R4wDwiNfg
-	 QeLT7VoO7hmng==
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5bfbc67991cso1213175e87.0
-        for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 10:19:10 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErEwktorU2SRTgxfnvc59NfZdVUgeK2oovIscVg7xRlm7adn7iO+72Vg0UMTxDpZEIl6VK7aAw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/LAFY2cm61yQSKalRvcvuIWVt+xrhmkVI1b+yAJJoBIODgN0Tt
-	jzWXOQG2R0AyndxwuIxwuZXJr1k/vS2UpCAbHQirg0FslW1o3xg/4bx8SGuckn1I8TosGvfdacY
-	Drc/fUx/Sw8zApj+CAyZtO6gc8NDF6ek=
-X-Received: by 2002:a05:6512:1310:b0:5bf:cf80:dfd8 with SMTP id
- 2adb3069b0e04-5c170a0bb47mr1769832e87.23.1794593948320; Fri, 13 Nov 2026
- 10:19:08 -0800 (PST)
+	dkim=pass (2048-bit key, unprotected) header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=wKqlIfso
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=YRNPDyKnF5AAnH1Nkcj0IpcYyCLG3qMSgftkaQIlJjM=;
+ c=simple/simple; d=packett.cool;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1794595610; v=1; x=1795200410;
+ b=wKqlIfsoAs0iiPyqGpYb1eUg2O8du+8UjqsDMtpATzTB6foPKYrKEZW3X/GCT6x0Htk3RdMS
+ rYqKk+9j35v5d7UF3Lgka/03jO7vWIae3pT1pqTd3i4mQfDNs8KV5Ho9Rdi1FIH34bCAKLKvKOz
+ Xpm868QO4MtJl7TzQeub6Z4v2Sin4Ltb5EMgyE6mw2mhX8JMm5q7T7KHupDQ5lM0SIvgtD1QKEB
+ yDfLlLnJSWRsFseTjO/pr746/CI5K1dLg8uSdw1YRFRXnF8Iuxl+fqd+QTIRhwy73cr0NDLmqtG
+ kF8OuSRi46q4kYjbqTbjjdB5YLwzVG2yLa+YGTyNhu13g==
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id e856afca2a42441d;
+	Fri, 13 Nov 2026 18:46:50 +0000
+X-Mizu-Trace-ID: e856afca2a42441d
+X-Migadu-Flow: FLOW_OUT
+Message-ID: <4ce436ed-63b7-4764-afc5-dc5ffa4f0ba1@packett.cool>
+Date: Fri, 13 Nov 2026 15:46:40 -0300
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -59,98 +60,146 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
-In-Reply-To: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
-From: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>
-Date: Fri, 13 Nov 2026 19:18:55 +0100
-X-Gmail-Original-Message-ID: <CAJZ5v0jyuMjh4En_r2TYui+sNbGveJ0Rz1Da39LEK9e-HxHgGA@mail.gmail.com>
-X-Gm-Features: AclHuK9_YtJ6aWlSAf9yM8R-lWnFcHYi_anHWoQsLhZYkqzdVHJqxA51shEqA-Y
-Message-ID: <CAJZ5v0jyuMjh4En_r2TYui+sNbGveJ0Rz1Da39LEK9e-HxHgGA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] PM: runtime: change stub pm_runtime_get_if_active()
- return 1 when !CONFIG_PM
-To: Frank.Li@oss.nxp.com
-Cc: Frank Li <Frank.Li@nxp.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>, 
-	Karol Wachowski <karol.wachowski@linux.intel.com>, Oded Gabbay <ogabbay@kernel.org>, 
-	Jani Nikula <jani.nikula@linux.intel.com>, 
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, 
-	Tvrtko Ursulin <tursulin@ursulin.net>, Matthew Brost <matthew.brost@intel.com>, 
-	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>, David Airlie <airlied@gmail.com>, 
-	Simona Vetter <simona@ffwll.ch>, Alex Elder <elder@kernel.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	Rob Clark <robin.clark@oss.qualcomm.com>, Sakari Ailus <sakari.ailus@linux.intel.com>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Guenter Roeck <linux@roeck-us.net>, 
-	Guan-Yu Lin <guanyulin@google.com>, Mathias Nyman <mathias.nyman@linux.intel.com>, 
-	linux-pm@vger.kernel.org, linux-usb@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
-	intel-xe@lists.freedesktop.org, linux-hwmon@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org, 
-	linux-staging@lists.linux.dev, netdev@vger.kernel.org, imx@lists.linux.dev, 
-	Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/6] arm64: dts: qcom: kodiak: Add GEM_NOC interconnect
+ for adreno SMMU
+To: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
+ Bjorn Andersson <andersson@kernel.org>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
+ Rob Clark <robin.clark@oss.qualcomm.com>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org
+References: <20260706-smmu_interconnect_addition-v3-0-afdca0125a65@oss.qualcomm.com>
+ <20260706-smmu_interconnect_addition-v3-3-afdca0125a65@oss.qualcomm.com>
+ <h6opbtr2ced3sannj3ym573qc2sjk7ek3clpto5j5mtqfrfk6w@34sk2zraoqtj>
+ <807f145d-88d3-460a-9862-b63fe2a52cf7@oss.qualcomm.com>
+ <a4f5sod3aflubxkk4mm4k5ozddydqcnqeac4s6vnozkd2nvxbi@hmh6zclsw5z3>
+ <4e5a3d82-b946-4490-885a-ea7061939c32@oss.qualcomm.com>
+ <ak5qkRKk2eHHLYmo@baldur>
+ <2c21041d-f84c-4fa7-a977-555f9203d8b5@oss.qualcomm.com>
+Content-Language: en-US
+From: Val Packett <val@packett.cool>
+In-Reply-To: <2c21041d-f84c-4fa7-a977-555f9203d8b5@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, Oct 29, 2026 at 5:31=E2=80=AFPM <Frank.Li@oss.nxp.com> wrote:
->
-> From: Frank Li <Frank.Li@nxp.com>
->
-> When CONFIG_PM is not enabled, all devices runtime PM state should be
-> treated as active.
->
-> __pm_runtime_resume() returns 1 (called by pm_runtime_get()).
-> pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get()=
-.
-> stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
-> should return the same value as the stub pm_runtime_get(), which is 1.
->
-> Analysis of all callers and their behavior with old (-EINVAL) vs new (1):
->
-> Pattern A: if (!pm_runtime_get_if_active(dev)) -- no impact
->   Both -EINVAL and 1 are non-zero, so !ret is false in both cases.
->   Callers: drivers/accel/ethosu/ethosu_perfmon.c,
->            drivers/gpu/drm/msm/adreno/a6xx_gmu.c,
->            drivers/gpu/drm/msm/msm_perfcntr.c,
->            drivers/gpu/drm/v3d/v3d_mmu.c,
->            drivers/gpu/drm/v3d/v3d_perfmon.c (x4),
->            drivers/media/i2c/gc08a3.c gc05a2.c og0ve1b.c ov6211.c,
->            drivers/media/i2c/ccs/ccs-core.c s5kjn1.c lm3560.c (x2),
->            drivers/media/i2c/s5k3m5.c thp7312.c imx283.c ov64a40.c,
->            drivers/media/pci/intel/ipu6/ipu6-buttress.c,
->            sound/hda/core/device.c
->
-> Pattern B: if (!ret) after get -- no impact
->   Both -EINVAL and 1 are non-zero, !ret is false in both cases.
->   drivers/gpu/drm/amd/pm/amdgpu_pm.c (comment says "allow access"
->     in kernels without CONFIG_PM), drivers/pci/pci.c
->
-> Pattern C: ret > 0 / ret <=3D 0 / ret !=3D 1 checks -- FIXED
->   drivers/usb/core/offload.c: checks (!=3D 1), old -EINVAL caused
->     -EBUSY even with !CONFIG_PM. Fixed: now returns 1, proceeds.
->   drivers/accel/ivpu/ivpu_job.c: drm_WARN_ON(<=3D 0), old -EINVAL
->     spuriously triggered WARN. Fixed: 1 > 0, no warn.
->   drivers/gpu/drm/i915/intel_runtime_pm.c: checks (<=3D 0), old
->     -EINVAL triggered error path. Fixed: 1 > 0, correct path.
->   drivers/accel/ivpu/ivpu_sysfs.c: (> 0), old skipped freq read.
->     Fixed: proceeds correctly without CONFIG_PM.
->   drivers/gpu/drm/xe/xe_pm.c: wraps (> 0), all xe callers
->     (xe_bo.c, xe_shrinker.c, xe_vsec.c, xe_ggtt.c, xe_guc_ct.c,
->     xe_pxp.c) now correctly treat !CONFIG_PM as active.
->   drivers/net/ipa/ipa_smp2p.c: power_on =3D (> 0), now correctly true.
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: (> 0), now correctly
->     executes stall register update.
->   drivers/staging/media/ipu7/ipu7-buttress.c: active (<=3D 0) early
->     return now skipped, correctly proceeds.
->
-> Pattern D: explicit -EINVAL check
->   drivers/hwmon/prom21-xhci.c: checks (> 0) then (=3D=3D -EINVAL).
->     Old: took -EINVAL fallback. New: takes (> 0) fast path.
->     Both succeed when CONFIG_PM is disabled; functionally equivalent.
->   drivers/hwmon/eic7700-pvt.c: call is guarded by IS_ENABLED(CONFIG_PM),
->     stub is never reached. No impact.
->
-> Signed-off-by: Frank Li <Frank.Li@nxp.com>
+Hi,
 
-People sent feedback, so I'm wondering if there's going to be a v2 or
-does someone else need to take care of this going forward?
+On 7/17/26 8:40 AM, Bibek Kumar Patro wrote:
+>
+>
+> On 7/8/2026 8:56 PM, Bjorn Andersson wrote:
+>> On Wed, Jul 08, 2026 at 03:31:07PM +0530, Bibek Kumar Patro wrote:
+>>>
+>>>
+>>> On 7/7/2026 10:14 PM, Dmitry Baryshkov wrote:
+>>>> On Tue, Jul 07, 2026 at 06:37:24PM +0530, Bibek Kumar Patro wrote:
+>>>>>
+>>>>>
+>>>>> On 7/6/2026 11:12 PM, Dmitry Baryshkov wrote:
+>>>>>> On Mon, Jul 06, 2026 at 10:26:36PM +0530, Bibek Kumar Patro wrote:
+>>>>>>> On Kodiak platforms, the Adreno SMMU requires a bandwidth vote on
+>>>>>>> the GEM_NOC path (MASTER_GPU_TCU -> SLAVE_EBI1) before its 
+>>>>>>> registers
+>>>>>>> are accessible. Without this vote, the SMMU may become unreachable,
+>>>>>>> leading to intermittent probe failures and runtime issues.
+>>>>>>>
+>>>>>>> Add the required interconnect to ensure reliable register access.
+>>>>>>>
+>>>>>>> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
+>>>>>>> ---
+>>>>>>>     arch/arm64/boot/dts/qcom/kodiak.dtsi | 2 ++
+>>>>>>>     1 file changed, 2 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/arch/arm64/boot/dts/qcom/kodiak.dtsi 
+>>>>>>> b/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>>>>>> index 90e50c245c0c..721526f023dd 100644
+>>>>>>> --- a/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>>>>>> +++ b/arch/arm64/boot/dts/qcom/kodiak.dtsi
+>>>>>>> @@ -3389,6 +3389,8 @@ adreno_smmu: iommu@3da0000 {
+>>>>>>>                 power-domains = <&gpucc GPU_CC_CX_GDSC>;
+>>>>>>>                 dma-coherent;
+>>>>>>> +            interconnects = <&gem_noc MASTER_GPU_TCU 
+>>>>>>> QCOM_ICC_TAG_ALWAYS
+>>>>>>> +                     &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>;
+>>>>>>
+>>>>>> Why is it ALWAYS? Would it be better to declare it as ACTIVE_ONLY 
+>>>>>> and
+>>>>>
+>>>>> Added QCOM_ICC_TAG_ALWAYS, to hold the vote in SLEEP bucket as well
+>>>>> preventing gem_noc going to sleep when icc_set_bw is being called.
+>>>>
+>>>> _why_?
+>>>>
+>>>
+>>> Now when i think of where we implemented the hooks, ALWAYS is not 
+>>> needed. We
+>>> should keep it ACTIVE_ONLY since we are already voting it
+>>> back in resume pah. I'll fix it in next revision.
+>>>
+>>
+>> The path is between the SMMU and DDR, so clearly it has to do with the
+>> TCU's ability to fetch things from DDR.
+>>
+>
+> Yes as you rightly mentioned, this series is helping to resolve the 
+> race in TCU DDR clink
+>
+>> ACTIVE_ONLY states that the vote should only be applied when the
+>> application subsystem (CPUSS) is not in low-power mode (CPU is active).
+>>
+>> So, are you saying that in all cases that cpuidle might select such
+>> low-power state the GPU TCU is "stopped", and does not need to perform
+>> any memory transactions?
+>>
+>
+> I rechecked the architectural block diagram, GPU TCU is
+> independent of the CPUSS, unlike system TCU.
+>
+> This means CPUSS can be powered down while the GPU TCU remains voted 
+> up. While this series was intended to avoid a DDR voting race between the
+> GPU TCU and its clients, using ACTIVE_ONLY could have possibly
+> introduced a race between CPUSS and the GPU TCU itself.
+>
+> Thanks for catching this in my reply Bjorn.
+>
+> ACTIVE_ONLY would have been suitable for system TCU (apps_smmu)
+> for which the interconnect field is anyways not needed, but
+> unsuitable for GPU TCU.
+>
+>>
+>> To me these two are orthogonal and TAG_ALWAYS is logically correct, but
+>> perhaps there's some practical dependency that I'm missing?
+>>
+>
+> We can ignore my acknowledgment [1] on previous response, Dmitry.
+> ALWAYS TAG is correct here instead of ACTIVE_ONLY in the interconnect 
+> field for adreno SMMU. 
+
+
+This series seems to help with a really annoying bug on Kodiak phones 
+like sm7325-motorola-dubai where often boot would hang when initializing 
+the display panel (so it took a few reboots to successfully boot the 
+device).
+
+And indeed it only helps with the ALWAYS tag..
+
+I've had this patch applied for a while (without even realizing that it 
+fixed that!! thought the issue was gone because of something else) and 
+today I went around kodiak.dtsi trying to remove unnecessary ALWAYS 
+votes… first boot after changing this tag to ACTIVE_ONLY and boom, hang.
+
+
+Tested-by: Val Packett <val@packett.cool> # sm7325-motorola-dubai
+
+(for patch 2 i.e. the driver code as well)
+
+
+Thanks,
+~val
+
