@@ -1,80 +1,78 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
 	t=1794608495;
-	b=HgJRzIQBhd5S6ULYN/ccO4a/LKOCG7/1QwKLDYTkLRvj7bJbt3viDs23ZKktVyRUqpIR
-	 t2Hmdbv5+ADO0zNvrGzQW1FeboCzhkIbKJNKFg3lRI5tRxZIQTYjJO0CDWaaCzCiUHIFu
-	 OeO/QU7S2O84Rh6EMOVjzCkyQ0J36haQAEWD6JpD3U1xTIjgg4vUAmgMoruaZ1KYR24OE
-	 zgQd3ZfrueIPzXw/PTFYOxk7HNaCWl+bXLIyxA2VXbBViDAqnSS1sjukwtEkc6+j5y7x9
-	 uqgneHKU/4QHrr7xA8sYmXFClMV+YgoUbKs44biz21XyjN0jM7mpUv5RocMLNneP6Sg==
+	b=jml7VadvdiHgYcnvYSrThUj84CSZBG2fBVOBPMAoGvx6u7mgb8qP/KvtI2xvzTS2MX4z
+	 n8lCBjgg2rKJLtbAhj1mq0cfLrX1bEwhQXecUcPOji9pH9LPaaIKlTm/VpMKQYAzfEAoU
+	 f+vW9wZ9eSkpu0rLGgOL8jfi7d33UoCfQFdIQ/7l8TEbL1i+vsBTG9E9ZF6Em4tKJSPBh
+	 Q7UiT++TBdVMLZiDzsn0R3qrLYd8tZzXIZ41oNG3QnHdo/+lKD/4Pf941b5GoaMuinENp
+	 GAnqg1IJQlOskthJUXba+N/X1jHLUr/4gJtW9KPffO6yCcAWll/D07kGi1nhHLZF1QQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1794608495;
-	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
-	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
-	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
-	 X-Endpoint-Received:X-Original-From:Reply-To;
-	bh=hKpqk6HLacU1LAteKJMU4Ufg/Oj/R3Wdsba8hrvmBjY=;
-	b=KocUS6jqg2MIyjvIOmxKLkXagdUlY0oSYh463SISN5+G7ROAArmuzlswvnfRkvAnuWH+
-	 pmoMoDrqXyUVTrXXaoxPVJ4XlkKvtyP1ulQq3kA4ew7sf/9Q8zBu213/VHL51ABojKnzF
-	 bCKx96NMI8YI0R8pshfO7el2DW4haDU7gguis2m9P3iZcqV1j9RYYPIRZlJH959GFbutw
-	 /HAj9xeFP7m/DxkjrC1lPn8TLp6KuzOTnXccA6Y7ZM+hRobfju+sOvauXNWtddrl6f8fz
-	 6iXbS3uiiBrDh32d1MWYU/f72T+C8xcokJ01CZnfPxip4dxzvgIjtpZgIJCGoc2NGpA==
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=IEt7K7OZUigDJ4cScMj/AG+HPUlSf+M3oa9libfaHQM=;
+	b=UEIGUpzFjtkfDJsAgQfnpk5ZfIWRXVcjhgmDYxUEneWp3LoVFY2E2BuglTug1la6Q8n4
+	 LR8q5FHcD1Kqbwgy5iDygdCPO9AqWXwLGCgyAZN0QJf9jGnX5+27FHaI/5wJvDgJOaDTx
+	 lJ3J4cGFUF7/KkGNOfAi3BE7a9S7l7gsfZoCe9h5GhJnMnuF4KSuo1sL0/YcnHkuWyPDQ
+	 oionsgj2UibvslAdkDL7Wxqu6hRDH2AkX86L8q0lYb2sJK4dg6b+GVpfiENjpFxGa7XG0
+	 iNhbmyzZiZA/orM+WbAEmOspw3HI3Qwm/3VaGGGO95vQmK0yTkZCmi4d9pvvcaMCqeA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KEXo0D4L;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WOT77Bsl;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF498606A89A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C933C606A89B;
 	Fri, 13 Nov 2026 22:21:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KEXo0D4L
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=WOT77Bsl
 Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
 ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
 	t=1794608495;
-	b=vZeZfmrQWEgCVfEuEPhX9fgsAZU36ok18CsLVGNTP0EkAZ8GHoZoWxgUgixklSavg/SM
-	 PWGkM/vFG5JssW5sJKuJwYZAPjJmbx8vqjAcsZOBD3SdUgxVySs/CzEQI3J0SP2nArEdb
-	 RjD7/yQwDNk9ejpFN4hvub81U9J3XsjdhrlktPXZIbFC6sDg0wKb0g/DZ1FpFGWWY9idT
-	 dIGnhpTCsy9q4l/8ge1k2aemGkcIzXZC0I+/pjrfHKh3pFyINvIEJjcBHwVfo3USwxzl0
-	 No4MXvt26Ki2yRyj/wDGng+aimg7Alcu9UgRFQsOrtHNJujU9BvDIP0cCeQjM3ZJttQ==
+	b=rXGWSlZq2VfFbVm8pTujuffh3O4BMbhZODfvra7ChSdyx6pK1cmSPE0Kf9M29jXdmZaR
+	 BKAoLb2hIYaMpcWpIoojkq1l5tUeJUDc/AM52LIXg2mj59CSEhBWFt+IcZbpERtpn/ewa
+	 2Qdp/Oe0Q9XWPpKK72Lt4tE1TV37YWzMAfW+gwCFPgmD2iS3gX6vuBqpdWXVgD817ozoD
+	 A1A5S5h+fQMphihYNWYwS+yv1vFeF180gaO30R/tLG9BU9YcQOoy6izwdQLpgb09sBuY/
+	 Vp5x3tH6UK2yc1wpkUIHn36dR/yogQoXNJONQZoKNtuzawngKV+VfCe86NVhqmU0C5A==
 ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
 	c=relaxed/relaxed; t=1794608495;
-	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
-	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
-	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To;
-	bh=hKpqk6HLacU1LAteKJMU4Ufg/Oj/R3Wdsba8hrvmBjY=;
-	b=Il3SsAopXrNC7NwDNxeXeQfpujg3cuyjOwp2aCoTCA9byOfTeDWRdLz0UZXJPYZch31u
-	 0wj1vQwo5j+LzuU0pHCONQPJyM0uYIEMrbmvO/bBH/4Lm3OLTKbn5WgUMid9DrLpt93qi
-	 EgZ3rFnVNIKd3stbMxwrvEkT3IbV4SXBYi34GK6eYPuPy8sqmO9sut5mU1tgiEt82KFSP
-	 ad/v5kgLjfa/LX6ZGCTh0Vha0ybAEALkg6ZLJ6U3KFjm4Gr+5IyPeLQdCaaf84k25Irl7
-	 UrARNYp2Q23YzS+Yrj1AcTiQITYsKgapLkka1CbEvOjnOdvNRP7xvc6sGcR3qjhYEeA==
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=IEt7K7OZUigDJ4cScMj/AG+HPUlSf+M3oa9libfaHQM=;
+	b=TyvspHZ75jjlheK99pkYJq/JgQleNgH1QeADli6iHJotHBgqeLjwe7XZG2yBYwkWRWBO
+	 FUv1B9DElHcPO9ipO3fVWNCxaOYdeg044cCdtH6RZGMWhB+g2caob9WOS9r0F7DP2l9zK
+	 +DV3X6qkyyT6GhN3PAmQ6MaSS3BDXQqZ0uZJynoe397y1d42N54qMjkr4jkHUuh5W2xeM
+	 e0yLmrBwo9BO27qBNmtFgqdJSKoH/ralZ37I/dLHZTxcsrToAQS/ou72UW1HI6oX/7Gzp
+	 56KX0592JORYozRs1Z9CBTzIc8K4dkSyGZXsrZe44Y1dxk/o+W1IB6qkmbAmsIaNJIw==
 ARC-Authentication-Results: i=1; smtp.kernel.org; 
 	arc=none smtp.remote-ip=100.80.115.77
 Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id E73731F000C6;
+	by smtp.kernel.org (Postfix) with ESMTPS id E73CC1F000C7;
 	Fri, 13 Nov 2026 22:21:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
 	s=k20260515; t=1794608495;
-	bh=hKpqk6HLacU1LAteKJMU4Ufg/Oj/R3Wdsba8hrvmBjY=;
-	h=From:Subject:Date:To:Cc:Reply-To;
-	b=KEXo0D4LZ7R5Fzg2pik/tMcjkomMmNGWMqj/8sfh2rsHACM5aSq3FdqxYCM5rsUMO
-	 UDpTZWhkWgQ8NIg8HPKIAnCJxTUDCtKv6TvIuzXPy5o6oMT4zUuv61w87ncTlyXFcp
-	 v50tP0eGjtW1B5q1hJqboLZJgkLn7xblh7MscohYbMzFQjMyxIaY0mrXaZZXi0xfR3
-	 wkIcJOm1atokrkdfUeN5Vsay3sNlQ81GNEpkYKcSaLOLUvfRopO4R/en4frwJVqa/G
-	 rFj+lECffHGGIjmq0eJ1HOH5iT6C4he97o6ZzkcCPm/4TQwb8pdb3QYba7QiRUY8hl
-	 Vz0HQ2xc524Zw==
+	bh=IEt7K7OZUigDJ4cScMj/AG+HPUlSf+M3oa9libfaHQM=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=WOT77Bsl666RFuXG+4hYmDc8VJ6PfJMOwJ2XoAyGqlkIx9WErHf6qAcNCj7j4Lniz
+	 WolAaXuud1eap2PZWyWpBRLys3SFUVqVdr7Tap3QlkrJcH2rVxYYnDDD1ZdjtU3wR2
+	 5Q5Ge0EyA5cNkAef+N8MzAKlPZzrw9exywsBTBs5NKGyJ9BuCQQ5H4qqQOVTaxhLhJ
+	 1Omz5TxWGm4v5uP6LXzmfmm7j2x/Qo+x2dNtOQHyS8P2xhBAyvAkwOoxP0fmyyNbLs
+	 U4huh7lJLuoCFt8XGB7ldC/1RRmMZo1JI6kWqshyJO+tBuDuJqjoIr6UeXoUsgR61X
+	 KxSIOX/pGThoQ==
 Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 293E249B48;
+	by lkml.kernel.org (Postfix) with ESMTP id 6AD3649B50;
 	Fri, 13 Nov 2026 22:21:33 +0000 (UTC)
 From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
-Subject: [PATCH RFC 0/3] media: verisilicon: Multi-core support for the
- RK3588 VEPU121 JPEG encoders
-Date: Fri, 13 Nov 2026 22:21:31 +0000
-Message-Id: <20261113-hantro-multicore-v1-0-43811eea14c4@gmail.com>
+Date: Fri, 13 Nov 2026 22:21:34 +0000
+Subject: [PATCH RFC 3/3] media: verisilicon: Add multi-core support
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -85,13 +83,9 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/z2NS04DMRBErzLyGkv+tT+zReIAbFEWdrtNjJhM8
- HgQUpS744SIZZXqvbqwjVqljc3ThTX6rltdTyPIp4nhMZ7eidc8MlNCWSml4KPsbeXL/tkrro1
- 4ygokau8SBTawc6NSf+7KN/b68swOf+W2pw/CfpM9Zo2+9nHYH9tz7Hgcd/NkYw4AogQbibI3K
- jjtvBBkYkFLGhIp1JTvnn/KKAUqRVA5oAWKQspig5M6ADkREE0qxXpzo1LciOO6LLXPU8wWTIj
- GOuOzEF5643UCDQSYVXTCWA8YPDtcr79WMxcjMQEAAA==
-X-Change-ID: 20261110-hantro-multicore-bd251c387be9
+Message-Id: <20261113-hantro-multicore-v1-3-43811eea14c4@gmail.com>
+References: <20261113-hantro-multicore-v1-0-43811eea14c4@gmail.com>
+In-Reply-To: <20261113-hantro-multicore-v1-0-43811eea14c4@gmail.com>
 To: Nicolas Dufresne <nicolas.dufresne@collabora.com>, 
  Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
  Philipp Zabel <p.zabel@pengutronix.de>, 
@@ -105,116 +99,477 @@ Cc: linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
  Sergei Khomenkov <shomenkow@gmail.com>, 
  Arun Iyengar <aiyengar1990@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794608492; l=5572;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794608492; l=15974;
  i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
- bh=Cv/EUDQj2tIl7BGTLv3WK2CnVloA8B8AeCHDaWxtbMc=;
- b=Cjv498CCL6jnQ0cAYOFvAR8oJ892okual6pS2C9nmBZcHZpoy38t0gdyspPIbK+WmdaTIIc/i
- UYTyd0qdXcZDDSwodE1G06NIKxixEK0kCu0vG0WZTDkjMEhOzAQHshQ
+ bh=Q/UEE2ycJUnZe1hCZNw0kdBuU1kZC6/RMMWMLXvOzAs=;
+ b=74se23IVlT+PUg8qRyDTr/zENmsr/V372WL14XtsNca9QvhoA17W8Nznu0QIs5QrCWjNJsAkx
+ w4PYcXIe0WiB93IQFeas4BxmXIbsiIRy9vF7Yv6S6VLvR+a3XPMV0Bc
 X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
  pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
 X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
  auth_id=1480
 X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
 Reply-To: aiyengar1990@gmail.com
+Content-Transfer-Encoding: 8bit
+
+From: Arun Iyengar <aiyengar1990@gmail.com>
 
 The RK3588 has four identical VEPU121 JPEG encoder cores, each with its
-own IOMMU and power domain. The driver currently probes the first one
-and ignores the others, so parallel encodes are serialised on a single
-core.
+own IOMMU and power domain. So far only the first one is used, and the
+other instances are ignored, so parallel encodes are serialised on a
+single core.
 
-This series drives all four cores as a single video device. Patch 1
-splits probe into the per-instance hardware setup and the registration
-of the devices exposed to userspace, with no functional change. Patch 2
-makes the driver pick the core a job runs on, and look up the running
-job from the core instead of v4l2_m2m_get_curr_priv(), still with a
-single core. Patch 3 binds the other cores to the first one with the
-component framework, attaches them to the IOMMU domain of the main core
-so that they share its mappings, and lets the mem2mem framework run one
-job per core.
+Drive all the cores of variants flagged with multi_core as a single
+device, using the component framework: the first available core is the
+main core and component master. It registers the video device once all
+the other cores are bound to it, and schedules jobs on all of them,
+using v4l2_m2m_set_max_parallel_jobs() to let the mem2mem framework run
+one job per core in parallel. A context still runs a single job at a
+time, so this increases the throughput of parallel streams, not of a
+single one.
 
-It is an RFC because it depends on Sven Püschel's "media: v4l2-mem2mem:
-drop curr_ctx member from v4l2_m2m_dev struct" and "media: v4l2-mem2mem:
-support running multiple jobs in parallel", patches 6 and 7 of his RGA
-multi-core v2 [1], which are not merged yet. The series is based on the
-media tree's next branch with those two patches applied
-(base-commit and prerequisite-patch-ids below). The core selection
-follows the same model as Detlev's rkvdec multi-core series [2], so
-comments on sharing more of it are welcome.
+Buffers are allocated and mapped through the main core before a job is
+scheduled on a core, so the secondary cores are attached to the IOMMU
+domain of the main core when they are bound, as Sven Püschel's RGA
+multi-core series does. They are detached again when unbound, so that
+they can be bound again, e.g. on module reload. A core whose IOMMU setup
+doesn't allow sharing the mappings is left unused.
 
-A single stream still runs one job at a time, so this raises the
-throughput of parallel streams, not of a single one. Variants without
-the new multi_core flag keep using only the first core.
-
-Two postings touch the probe/remove code that patch 1 splits, and I
-will rebase on them if they land first: Benjamin's "media: verisilicon:
-remove unused variant and code clean up" v6 [3] (textual conflicts) and
-Sergei Khomenkov's "media: verisilicon: suspend the device before
-unregistering it on remove" [4]. Patch 1 keeps the current teardown
-order in hantro_hw_cleanup(), so it carries the runtime-suspend-after-
-unregister problem [4] fixes. My recovery series "media: verisilicon:
-Recover the Rockchip VPUs from faults and timeouts" v3 [5] touches the
-same probe, remove and device_run() code (textual conflicts), and I will
-rebase on it if it lands first. Once both are in, its IOMMU restore has
-to detach a secondary core from the main core's domain first, which I
-will add in whichever goes second.
-
-Known limits: the video device and the m2m device are allocated inside
-the component bind, so unbinding one secondary core frees them while
-the main core stays bound. If one available secondary
-core fails to probe, no video device appears at all, where the first
-core alone would work today; the RGA and rkvdec multi-core series use
-the same model. Comments on both are welcome.
-
-Tested on an Orange Pi 5 (RK3588S) with 1080p NV12 JPEG encodes through
-GStreamer v4l2jpegenc, 600 frames per stream: 1, 2, 4 and 8 parallel
-streams reach 62, 120, 216 and 223 fps against 62-68 fps with a single
-core, with the interrupts spread over the four cores, and the encoded
-output is identical to the single-core driver for NV12, I420 and YUY2
-at 1080p and NV12 at 4K, also when 4 or 8 encodes run in parallel. The
-VDPU121 VP8 and VPU981 AV1 decoders of the same SoC are unaffected. With
-patch 4 of [5] the module can be unloaded and reloaded with all cores
-rebinding; without it the reload hits the SError that patch fixes, which
-is not new but easier to hit with the longer teardown.
-A later run together with my three rkvdec RFC series: JPEG encoding at 63.1
-frames/s with one stream and 215.0 with four, all four VEPU121 cores
-taking interrupts; the four parallel encodes give the same bitstream as
-one. Fluster on the same kernel: Hantro H.264 JVT-AVC_V1 129/135 and
-JVT-FR-EXT 44/69, VP8 61/61, AV1 203/242.
-These hardware tests ran on v7.3-based kernels, where the clocks are
-still enabled in device_run(); this rebase onto the media tree, which
-moved the clock handling into runtime PM in the meantime, is
-compile-tested only.
-
-Developed with Claude (Anthropic), which wrote the code and the commit
-messages. I reviewed every change.
-
-[1] https://lore.kernel.org/linux-media/20260916-spu-rga3multicore-v2-0-23aa2cb74e61@pengutronix.de/
-[2] https://lore.kernel.org/linux-media/20260810-rkvdec-multicore-v2-0-986f89d22cdc@collabora.com/
-[3] https://lore.kernel.org/linux-media/20260930151241.58233-1-benjamin.gaignard@collabora.com/
-[4] https://lore.kernel.org/linux-media/20261106-hantro-remove-v1-1-d0a4678886d7@gmail.com/
-[5] https://lore.kernel.org/linux-media/20261113-hantro-robust-v3-0-82383c722ad2@gmail.com/
+Variants without the multi_core flag keep using only the first core.
+Enable multi-core support for the RK3588 VEPU121.
 
 Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
 ---
-Arun Iyengar (3):
-      media: verisilicon: Split probe into hardware init and device registration
-      media: verisilicon: Pick the hardware core for each job
-      media: verisilicon: Add multi-core support
-
- drivers/media/platform/verisilicon/hantro.h        |  41 ++
- drivers/media/platform/verisilicon/hantro_drv.c    | 451 +++++++++++++++++----
+ drivers/media/platform/verisilicon/hantro.h        |  23 +++
+ drivers/media/platform/verisilicon/hantro_drv.c    | 230 ++++++++++++++++++---
  drivers/media/platform/verisilicon/hantro_hw.h     |   1 +
- .../verisilicon/rockchip_vpu2_hw_jpeg_enc.c        |   4 +-
- .../media/platform/verisilicon/rockchip_vpu_hw.c   |  20 +-
- 5 files changed, 424 insertions(+), 93 deletions(-)
----
-base-commit: ad6549a46748d00818483b535e5cd2a704685c98
-change-id: 20261110-hantro-multicore-bd251c387be9
-prerequisite-patch-id: 6ad9550f96aeed8429737800e4afc6e35be2c3ed
-prerequisite-patch-id: 42252ba52d9c65ea011f6971395e709cc4bff684
+ .../media/platform/verisilicon/rockchip_vpu_hw.c   |  18 ++
+ 4 files changed, 242 insertions(+), 30 deletions(-)
 
-Best regards,
---  
-Arun Iyengar <aiyengar1990@gmail.com>
+diff --git a/drivers/media/platform/verisilicon/hantro.h b/drivers/media/platform/verisilicon/hantro.h
+index eceaa74a634b..2a3a0fc3e355 100644
+--- a/drivers/media/platform/verisilicon/hantro.h
++++ b/drivers/media/platform/verisilicon/hantro.h
+@@ -77,6 +77,8 @@ struct hantro_irq {
+  * @double_buffer:		core needs double buffering
+  * @legacy_regs:		core uses legacy register set
+  * @late_postproc:		postproc must be set up at the end of the job
++ * @multi_core:			identical instances of this variant can be driven as
++ *				a single device, running jobs in parallel
+  * @shared_devices:		an array of device ids that cannot run concurrently
+  */
+ struct hantro_variant {
+@@ -102,6 +104,7 @@ struct hantro_variant {
+ 	unsigned int double_buffer : 1;
+ 	unsigned int legacy_regs : 1;
+ 	unsigned int late_postproc : 1;
++	unsigned int multi_core : 1;
+ 	const struct of_device_id *shared_devices;
+ };
+ 
+@@ -172,6 +175,21 @@ hantro_vdev_to_func(struct video_device *vdev)
+ 	return container_of(vdev, struct hantro_func, vdev);
+ }
+ 
++/**
++ * enum hantro_core_role - role of a VPU instance
++ * @HANTRO_CORE_SINGLE:		Standalone instance.
++ * @HANTRO_CORE_MAIN:		Main core of a multi-core device. It exposes the
++ *				device to userspace and binds the secondary
++ *				cores.
++ * @HANTRO_CORE_SECONDARY:	Secondary core of a multi-core device, running
++ *				jobs scheduled by the main core.
++ */
++enum hantro_core_role {
++	HANTRO_CORE_SINGLE,
++	HANTRO_CORE_MAIN,
++	HANTRO_CORE_SECONDARY,
++};
++
+ /**
+  * struct hantro_dev - driver data
+  * @v4l2_dev:		V4L2 device to register video devices for.
+@@ -201,6 +219,9 @@ hantro_vdev_to_func(struct video_device *vdev)
+  * @num_cores:		Number of entries in @cores.
+  * @cores_lock:		Spinlock protecting @cores, @num_cores and @curr_ctx
+  *			of each core.
++ * @role:		Role of this instance in a multi-core device.
++ * @attached_domain:	IOMMU domain of the main core that this secondary
++ *			core is attached to, if any.
+  */
+ struct hantro_dev {
+ 	struct v4l2_device v4l2_dev;
+@@ -226,6 +247,8 @@ struct hantro_dev {
+ 	struct hantro_dev **cores;
+ 	unsigned int num_cores;
+ 	spinlock_t cores_lock; /* protects the core list and curr_ctx */
++	enum hantro_core_role role;
++	struct iommu_domain *attached_domain;
+ };
+ 
+ /**
+diff --git a/drivers/media/platform/verisilicon/hantro_drv.c b/drivers/media/platform/verisilicon/hantro_drv.c
+index ab76251627fb..b248fc31be6c 100644
+--- a/drivers/media/platform/verisilicon/hantro_drv.c
++++ b/drivers/media/platform/verisilicon/hantro_drv.c
+@@ -11,6 +11,8 @@
+  */
+ 
+ #include <linux/clk.h>
++#include <linux/component.h>
++#include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
+ #include <linux/of_platform.h>
+@@ -762,7 +764,7 @@ static const struct of_device_id of_hantro_match[] = {
+ 	{ .compatible = "rockchip,rk3399-vpu", .data = &rk3399_vpu_variant, },
+ 	{ .compatible = "rockchip,rk3568-vepu", .data = &rk3568_vepu_variant, },
+ 	{ .compatible = "rockchip,rk3568-vpu", .data = &rk3568_vpu_variant, },
+-	{ .compatible = "rockchip,rk3588-vepu121", .data = &rk3568_vepu_variant, },
++	{ .compatible = "rockchip,rk3588-vepu121", .data = &rk3588_vepu121_variant, },
+ 	{ .compatible = "rockchip,rk3588-av1-vpu", .data = &rk3588_vpu981_variant, },
+ #endif
+ #ifdef CONFIG_VIDEO_HANTRO_IMX8M
+@@ -1042,46 +1044,70 @@ static const struct media_device_ops hantro_m2m_media_ops = {
+ };
+ 
+ /*
+- * Some SoCs, like RK3588 have multiple identical Hantro cores, but the
+- * kernel is currently missing support for multi-core handling. Exposing
+- * separate devices for each core to userspace is bad, since that does
+- * not allow scheduling tasks properly (and creates ABI). With this workaround
+- * the driver will only probe for the first core and early exit for the other
+- * cores. Once the driver gains multi-core support, the same technique
+- * for detecting the main core can be used to cluster all cores together.
++ * Some SoCs, like RK3588, have multiple identical Hantro cores. Exposing
++ * separate devices for each core to userspace is bad, since that does not
++ * allow scheduling tasks properly (and creates ABI). The first compatible
++ * and available node is considered the main core. For variants with
++ * multi-core support, the main core binds the other cores as components and
++ * schedules jobs on all of them. For the other variants, only the main core
++ * is used.
++ *
++ * Returns the role of the instance, and for a main core the match of the
++ * secondary cores in @match and the total number of cores in @num_cores.
+  */
+-static int hantro_disable_multicore(struct hantro_dev *vpu)
++static int hantro_get_core_role(struct hantro_dev *vpu,
++				struct component_match **match,
++				unsigned int *num_cores)
+ {
+-	struct device_node *node = NULL;
++	struct device_node *np = vpu->dev->of_node;
++	struct device_node *node;
++	bool found_main = false;
++	bool is_main_core = false;
+ 	const char *compatible;
+-	bool is_main_core;
+ 	int ret;
+ 
++	*num_cores = 1;
++
+ 	/* Intentionally ignores the fallback strings */
+-	ret = of_property_read_string(vpu->dev->of_node, "compatible", &compatible);
++	ret = of_property_read_string(np, "compatible", &compatible);
+ 	if (ret)
+ 		return ret;
+ 
+-	/* The first compatible and available node found is considered the main core */
+-	do {
+-		node = of_find_compatible_node(node, NULL, compatible);
+-		if (of_device_is_available(node))
+-			break;
+-	} while (node);
++	for_each_compatible_node(node, NULL, compatible) {
++		if (!of_device_is_available(node))
++			continue;
+ 
+-	if (!node)
+-		return -EINVAL;
++		if (!found_main) {
++			found_main = true;
++			is_main_core = (node == np);
++			if (is_main_core && vpu->variant->multi_core)
++				continue;
++		} else {
++			of_node_get(node);
++			component_match_add_release(vpu->dev, match,
++						    component_release_of,
++						    component_compare_of, node);
++			(*num_cores)++;
++			continue;
++		}
+ 
+-	is_main_core = (vpu->dev->of_node == node);
++		of_node_put(node);
++		break;
++	}
+ 
+-	of_node_put(node);
++	if (!found_main)
++		return -EINVAL;
+ 
+ 	if (!is_main_core) {
+-		dev_info(vpu->dev, "missing multi-core support, ignoring this instance\n");
+-		return -ENODEV;
++		if (!vpu->variant->multi_core) {
++			dev_info(vpu->dev, "missing multi-core support, ignoring this instance\n");
++			return -ENODEV;
++		}
++
++		return HANTRO_CORE_SECONDARY;
+ 	}
+ 
+-	return 0;
++	return *match ? HANTRO_CORE_MAIN : HANTRO_CORE_SINGLE;
+ }
+ 
+ static struct v4l2_m2m_dev *hantro_get_v4l2_m2m_dev(struct hantro_dev *vpu)
+@@ -1276,6 +1302,11 @@ static int hantro_register_devices(struct hantro_dev *vpu)
+ 		return PTR_ERR(vpu->m2m_dev);
+ 	}
+ 
++	if (vpu->num_cores > 1) {
++		v4l2_m2m_set_max_parallel_jobs(vpu->m2m_dev, vpu->num_cores);
++		v4l2_info(&vpu->v4l2_dev, "using %u cores\n", vpu->num_cores);
++	}
++
+ 	vpu->mdev.dev = vpu->dev;
+ 	strscpy(vpu->mdev.model, DRIVER_NAME, sizeof(vpu->mdev.model));
+ 	media_device_init(&vpu->mdev);
+@@ -1321,9 +1352,117 @@ static void hantro_unregister_devices(struct hantro_dev *vpu)
+ 	v4l2_m2m_put(vpu->m2m_dev);
+ }
+ 
++static int hantro_core_bind(struct device *dev, struct device *master,
++			    void *data)
++{
++	struct hantro_dev *core = dev_get_drvdata(dev);
++	struct iommu_domain *domain, *core_domain;
++	struct hantro_dev *vpu = data;
++	int ret;
++
++	/*
++	 * Buffers are allocated and mapped through the main core, before the
++	 * job is scheduled on a core. Put this core into the IOMMU domain of
++	 * the main core, so that it uses the same mappings. A core that can't
++	 * share the mappings is left unused rather than failing the whole
++	 * device.
++	 */
++	domain = iommu_get_domain_for_dev(vpu->dev);
++	core_domain = iommu_get_domain_for_dev(dev);
++	if (domain || core_domain) {
++		if (!domain || !core_domain) {
++			dev_warn(dev, "IOMMU differs from the main core, not using this core\n");
++			return 0;
++		}
++
++		ret = iommu_attach_device(domain, dev);
++		if (ret) {
++			dev_warn(dev, "Failed to attach to the IOMMU domain of the main core (%d), not using this core\n",
++				 ret);
++			return 0;
++		}
++		core->attached_domain = domain;
++	}
++
++	scoped_guard(spinlock_irqsave, &vpu->cores_lock)
++		vpu->cores[vpu->num_cores++] = core;
++
++	return 0;
++}
++
++static void hantro_core_unbind(struct device *dev, struct device *master,
++			       void *data)
++{
++	struct hantro_dev *core = dev_get_drvdata(dev);
++	struct hantro_dev *vpu = data;
++	unsigned int i;
++
++	scoped_guard(spinlock_irqsave, &vpu->cores_lock) {
++		for (i = 1; i < vpu->num_cores; i++) {
++			if (vpu->cores[i] != core)
++				continue;
++
++			memmove(&vpu->cores[i], &vpu->cores[i + 1],
++				(vpu->num_cores - i - 1) * sizeof(*vpu->cores));
++			vpu->num_cores--;
++			break;
++		}
++	}
++
++	cancel_delayed_work_sync(&core->watchdog_work);
++
++	/* Return the core to its own DMA domain, so that it can bind again. */
++	if (core->attached_domain) {
++		iommu_detach_device(core->attached_domain, dev);
++		core->attached_domain = NULL;
++	}
++}
++
++static const struct component_ops hantro_core_ops = {
++	.bind = hantro_core_bind,
++	.unbind = hantro_core_unbind,
++};
++
++static int hantro_master_bind(struct device *dev)
++{
++	struct hantro_dev *vpu = dev_get_drvdata(dev);
++	int ret;
++
++	ret = component_bind_all(dev, vpu);
++	if (ret)
++		return ret;
++
++	ret = hantro_register_devices(vpu);
++	if (ret) {
++		component_unbind_all(dev, vpu);
++		return ret;
++	}
++
++	return 0;
++}
++
++static void hantro_master_unbind(struct device *dev)
++{
++	struct hantro_dev *vpu = dev_get_drvdata(dev);
++
++	/* Wait for running jobs and don't start new ones on unbound cores. */
++	v4l2_m2m_suspend(vpu->m2m_dev);
++	cancel_delayed_work_sync(&vpu->watchdog_work);
++
++	hantro_unregister_devices(vpu);
++	component_unbind_all(dev, vpu);
++}
++
++static const struct component_master_ops hantro_master_ops = {
++	.bind = hantro_master_bind,
++	.unbind = hantro_master_unbind,
++};
++
+ static int hantro_probe(struct platform_device *pdev)
+ {
++	struct component_match *cmatch = NULL;
+ 	const struct of_device_id *match;
++	unsigned int num_cores;
+ 	struct hantro_dev *vpu;
+ 	int ret;
+ 
+@@ -1340,9 +1479,10 @@ static int hantro_probe(struct platform_device *pdev)
+ 	match = of_match_node(of_hantro_match, pdev->dev.of_node);
+ 	vpu->variant = match->data;
+ 
+-	ret = hantro_disable_multicore(vpu);
+-	if (ret)
++	ret = hantro_get_core_role(vpu, &cmatch, &num_cores);
++	if (ret < 0)
+ 		return ret;
++	vpu->role = ret;
+ 
+ 	/*
+ 	 * Support for nxp,imx8mq-vpu is kept for backwards compatibility
+@@ -1353,7 +1493,23 @@ static int hantro_probe(struct platform_device *pdev)
+ 		dev_warn(&pdev->dev, "%s compatible is deprecated\n",
+ 			 match->compatible);
+ 
+-	vpu->cores = devm_kcalloc(&pdev->dev, 1, sizeof(*vpu->cores),
++	if (vpu->role == HANTRO_CORE_SECONDARY) {
++		platform_set_drvdata(pdev, vpu);
++
++		ret = hantro_hw_init(vpu);
++		if (ret)
++			return ret;
++
++		ret = component_add(&pdev->dev, &hantro_core_ops);
++		if (ret) {
++			dev_err(&pdev->dev, "Failed to register core component\n");
++			goto err_hw_cleanup;
++		}
++
++		return 0;
++	}
++
++	vpu->cores = devm_kcalloc(&pdev->dev, num_cores, sizeof(*vpu->cores),
+ 				  GFP_KERNEL);
+ 	if (!vpu->cores)
+ 		return -ENOMEM;
+@@ -1370,7 +1526,12 @@ static int hantro_probe(struct platform_device *pdev)
+ 	}
+ 	platform_set_drvdata(pdev, vpu);
+ 
+-	ret = hantro_register_devices(vpu);
++	if (vpu->role == HANTRO_CORE_MAIN)
++		ret = component_master_add_with_match(&pdev->dev,
++						      &hantro_master_ops,
++						      cmatch);
++	else
++		ret = hantro_register_devices(vpu);
+ 	if (ret)
+ 		goto err_v4l2_unreg;
+ 
+@@ -1387,9 +1548,18 @@ static void hantro_remove(struct platform_device *pdev)
+ {
+ 	struct hantro_dev *vpu = platform_get_drvdata(pdev);
+ 
++	if (vpu->role == HANTRO_CORE_SECONDARY) {
++		component_del(&pdev->dev, &hantro_core_ops);
++		hantro_hw_cleanup(vpu);
++		return;
++	}
++
+ 	v4l2_info(&vpu->v4l2_dev, "Removing %s\n", pdev->name);
+ 
+-	hantro_unregister_devices(vpu);
++	if (vpu->role == HANTRO_CORE_MAIN)
++		component_master_del(&pdev->dev, &hantro_master_ops);
++	else
++		hantro_unregister_devices(vpu);
+ 	v4l2_device_unregister(&vpu->v4l2_dev);
+ 	hantro_hw_cleanup(vpu);
+ }
+diff --git a/drivers/media/platform/verisilicon/hantro_hw.h b/drivers/media/platform/verisilicon/hantro_hw.h
+index 13e573f1f19d..9470f75fb926 100644
+--- a/drivers/media/platform/verisilicon/hantro_hw.h
++++ b/drivers/media/platform/verisilicon/hantro_hw.h
+@@ -414,6 +414,7 @@ extern const struct hantro_variant rk3328_vpu_variant;
+ extern const struct hantro_variant rk3399_vpu_variant;
+ extern const struct hantro_variant rk3568_vepu_variant;
+ extern const struct hantro_variant rk3568_vpu_variant;
++extern const struct hantro_variant rk3588_vepu121_variant;
+ extern const struct hantro_variant rk3588_vpu981_variant;
+ extern const struct hantro_variant sama5d4_vdec_variant;
+ extern const struct hantro_variant sunxi_vpu_variant;
+diff --git a/drivers/media/platform/verisilicon/rockchip_vpu_hw.c b/drivers/media/platform/verisilicon/rockchip_vpu_hw.c
+index f1f7f95b2652..1a272a10c51b 100644
+--- a/drivers/media/platform/verisilicon/rockchip_vpu_hw.c
++++ b/drivers/media/platform/verisilicon/rockchip_vpu_hw.c
+@@ -771,6 +771,24 @@ const struct hantro_variant rk3568_vepu_variant = {
+ 	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names)
+ };
+ 
++/*
++ * The RK3588 has four identical VEPU121 cores, each with its own IOMMU,
++ * which are driven as a single multi-core device.
++ */
++const struct hantro_variant rk3588_vepu121_variant = {
++	.enc_offset = 0x0,
++	.enc_fmts = rockchip_vpu_enc_fmts,
++	.num_enc_fmts = ARRAY_SIZE(rockchip_vpu_enc_fmts),
++	.codec = HANTRO_JPEG_ENCODER,
++	.codec_ops = rk3568_vepu_codec_ops,
++	.irqs = rk3568_vepu_irqs,
++	.num_irqs = ARRAY_SIZE(rk3568_vepu_irqs),
++	.init = rockchip_vpu_hw_init,
++	.clk_names = rockchip_vpu_clk_names,
++	.num_clocks = ARRAY_SIZE(rockchip_vpu_clk_names),
++	.multi_core = 1,
++};
++
+ const struct hantro_variant rk3568_vpu_variant = {
+ 	.dec_offset = 0x400,
+ 	.dec_fmts = rockchip_vdpu2_dec_fmts,
+
+-- 
+2.55.0
 
 
