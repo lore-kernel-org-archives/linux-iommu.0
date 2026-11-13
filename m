@@ -1,16 +1,16 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.49
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.69
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794576221;
-	b=N6ULJ1sdyacVPbDuKkcIOicSJru4h4Bq/GDx5nsuTm8t+IpotpUAiWmfAcpo5tl9Tzu0
-	 011aNhgZ4srALG664qT+vRZHjlSpT2M4PKtn4qwl+UmSpIXJ8Ixn1HdcCG3HxqvMHS3F0
-	 H3vWe4b2f309kzD6i8AFMO5bPjco03euECARc+T53kRVhBjvxdKa8tXGIMHQwxB5+afyS
-	 Q9+mhcVyuLvwP9Mv/1hJAtk5XAkM+e3DEYVlkOTEdkIZ8jZASBOVgzS4jUMlcV9YRFkfW
-	 zOmgpZ3Xu2Y5xPxj/kVMde6kfiNx8GLOny2FKvxCBXlvxuWpgLyqSUlXZqVbxcsMFLw==
+	t=1794576255;
+	b=TFszSOpDW6DRNMOEVul9Ib1+DeBE7MFz6p61s3210MzH7PpSah5u0weD3lU/WWHmWoUY
+	 VUX1OCcBVwX7rJELpy2FTuj4exS1H2YCWxxMEFqnxKv0q2rifR735uVudrgjBcVJcJNPj
+	 bDxhHX81cjpvz6gfMy8Q5MSAc2CVQuObXy16XH3JDZzgwY8vMHHCU3ZTrQOymomxizUPS
+	 uZ55mvaKfupcqhop3hHTyFRuVwUdYA83Du9tLfzKuiSsHlFeEzrDHaW0vwun5Imcbv5f8
+	 OOL9wVxNIeDjYdXPgSNY8d6rofzbE0akoiXQTHNsLdOwH9Lykvz28X8zV3d6yxNbDEg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794576221;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:Date:Subject:
-	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
-	 In-Reply-To:To:Cc:X-Mailer:X-ClientProxiedBy:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794576255;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
 	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
 	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
 	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
@@ -24,76 +24,78 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=aIvGLlx0zAMKQChbVMHjd0yo4VMoJDHJ55zue9NT2MA=;
-	b=1b/vENFS4EQUKYQoqsj+x+ejvLPd/wiOMtKM1MBgXAVRkHiqGAwiR+LjYlzTQtk27GH5
-	 QysWoT/1MPYIJJ6RK36Kht3WhONOyoEHLQvstzMYQdpel38JYPQ/5RdFmrU06RyCg2F+0
-	 Z68vXGpTcbq2NWhNZNn3L4hjA6Wk1Ce22sNG7v4PBFS/A/gCgKEINo/NUIEcbnuFDuUPY
-	 AkRKkZwq3XiW4rCL8dU9MFPKwfPdirAuvHAHE8lWyGMjXEfPnETtQIxjl52IVV7udBhIS
-	 x9roSbAJ0osn2F/6sozdyp2se3gaF/UNswN7t10MKo+198RJ4gVFADypPm6MtQjF3MQ==
+	bh=OEbssf/iPew9KcBZFoXr9uJ3U1Ef0Mi0uoKhVrqhNLI=;
+	b=bD0ufHiZfIDwI3zNDDqj1tH+AHCp+8wHisLLWYRjX0eYeScgtlq+bZDe4WW0IKAafCQ/
+	 +YndZaXy3t+FsVrRNNov7lEmv80/BqWWslMgxd0c1qcgY9KZ9K/hGcEddJsZIRH0/PO8W
+	 1yCBOYMxhEAq4NV3XpZ3KirEJXvvgfBHmr9soyJlwU4nKyr6giC2BphDed9QM/DBy6YAh
+	 84TOXOEdC7FZYqSBUNycgHiP3G4hpEnVVUrKornIbFVtoMXVOi4qi9MVsc35YjQO9OvvP
+	 a00gLj2O/Ncs1puwxg1EwbPrG4sLSjrbhZ8Csfa0NGS6Il7tAGeAas5sdnqG+rKy7vw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.nxp.com;
-	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=Gla9LwBy;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.49
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010049.outbound.protection.outlook.com [52.101.84.49])
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="I8M+/Lsl";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.69
+Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012069.outbound.protection.outlook.com [52.101.53.69])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CFC7606A8A8
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 13:23:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8CFC7606A8A8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06AFC606AB9A
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 13:24:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 06AFC606AB9A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=Gla9LwBy
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=I8M+/Lsl
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=F+Nx2fWLFGuwkET02PgHqY3qUXyckBmsf64jWy0HMdARxwk9LYez7af7CyMPqeusyo0PIeAHiuTcd/5SbyPL0jRZqodic71JuvKZRB9epCov7+Y4LHJjOGXnfIm91wtLJOzXqmV12O6MWmqH4OIKlHvPdDXelxO0whgUGBkjF4YotaYwJgr3rm6WT4DHmX1sB9a9EvPmV68ZZdLyex5R9yfXW9Q35WFzZ5saJBKSJOoV0b5I8n5Ffba2eJ/EvcjF4+eO+vgrC1ORQxgKNbHys/+Nt9n1ovHBUJUkKjR28JZGjArJQy6KzorWVLSlCGiahQqoAk4qc04eSeS+NPwYFw==
+ b=sJ711i+U0RKDupFxB7IR7x36zOWg2qWCWXIhgxcOwH4Hy5XqBcbCE/izAkOl9GIrCW9+AOoxXdhip26slzgYTDWoFiKx4K8g3ornXdNm9L04Uj478EULCgiJUU178pvucz1zRbWSdfIc8+0BQn2yyOvRgqe7RLzZ6NFUVoqiSC6osveea+Y6yZ4PfJ20hknQrvsXCNPase2/aPCr2b3FvD+W3IqIL/5ihooIhP4Rn215Es4kK8aHBLDE1/HvyAstd1M6VfVRb6oc+0EvPcqCC+NNGv+diLqSABfc5dIljMEyXm7rTqe3MaQBKVYfFzqmROrgvV2PVF3b4q6Sd82fMw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aIvGLlx0zAMKQChbVMHjd0yo4VMoJDHJ55zue9NT2MA=;
- b=isNOk+9Df3z1u1UJNcnAM4Ma0qPPlyv4YioPiWmQB/Tb+kk0UFgAmmBRmhauHxBUOiled3O74sDj0P83NJFi7Fir72lggVq8DfJrQIKT2UcZYptc7ZiiH/glnUBa5XDNCxZiCeRE5Ae0gDCjii3Kur0iZiPCn3K7ntr703Swvo67ZPB3MDoJH2O390GIuIs2Jdv+6CzQflInlW8FvQWlHXN7dn7YLAFbXQV30q54qWiApW+YZOVcGpxbD/PMwEJEMEcrJtmB23Bra6BcLPozus4+Q44xZnVCSjCe6twyR9egcG+yXJ64OIBNfi9Irc/hQzHBpG5PcoFVoQm8ux0v1w==
+ bh=OEbssf/iPew9KcBZFoXr9uJ3U1Ef0Mi0uoKhVrqhNLI=;
+ b=C49UK4UrQPcTdh+DK8fK9spFRkIh3OTDwyZkhUzu81yMb5vAZ59470/BVOuUnVAvyuNJFHOLx7JBWMvi8yXqC6f67vr06+AVvLMoR0VZq/GbwAzIOaJ3Ku3jrQqIdX06g61/wWyg5NAMGu40kvW0/a6O/pEABjbYSvBbebwLB79DoBIMXiVhUT21H1MoZ4z0d+gPiQgCnt9YVf1BVTVYK6G5CmxvvVEC2yxiwqq79Nyz3Bb77osYGjstwdRoz6NBwTxhMGBXk3IByfrNc19PTmb1Lm+FWP36iizGZHF+uXJXqaIDonxU32zMtjimcLMLd9w5Egl1bSPmjj2BT29ppQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aIvGLlx0zAMKQChbVMHjd0yo4VMoJDHJ55zue9NT2MA=;
- b=Gla9LwBy/1aO09nJqVkDJ8Fku8Lwwuou4A75TSKYRJqGwrtJsQM/pNYfCJmgPQmKlMSnHMAhYXPv18K7SNU9bwp70WHiH/sqaZP5Zq9I7SPHRwfRNfUGX3VbsD/Bz/9Xy7pIRjpyJyWaDB48CRiqL0ufoeHF+bu7TaMWXU7J0ooz3yxfN7ErXTKGQhzu1TSH1PLJGapP4vu4hJ901MlveF9of3LWGCROzGTVUW4houWNeEEnlxhimYm3kymQWN0CREa676l+YM/hIN1WN450iS6Dkj2quuANVnR9NCfuzMbV9fGsDT7y0izIjhjgPwaXZoDN6LwX402aqtpg0QCUNQ==
+ bh=OEbssf/iPew9KcBZFoXr9uJ3U1Ef0Mi0uoKhVrqhNLI=;
+ b=I8M+/LslWgbIN5XeTXs7nAKZsmNJv4b3mYd09U2VpFJwx59GubvXXxi8aRHTe+GqVNMgUPwZHnnVhxACaqpgqHqbiRFNVdG41Hnho35qiOj+X4DEpPXTNX+/qV/oFd/DytaMsSCuRlbXg2ayTsIXSoLi1FvhuWmJU6kpnHmPeeQ=
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com (2603:10a6:20b:24d::9)
- by BR2PR04MB007356.eurprd04.prod.outlook.com (2603:10a6:2c8:6::19) with
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CY1PR12MB9697.namprd12.prod.outlook.com (2603:10b6:930:107::6)
+ by PH7PR12MB7796.namprd12.prod.outlook.com (2603:10b6:510:275::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Fri, 13 Nov
- 2026 13:23:38 +0000
-Received: from AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9]) by AM8PR04MB7874.eurprd04.prod.outlook.com
- ([fe80::ac38:1699:6f18:c5d9%5]) with mapi id 15.21.0615.008; Fri, 13 Nov 2026
- 13:23:38 +0000
-From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Date: Fri, 13 Nov 2026 21:27:21 +0800
-Subject: [PATCH RFC v8 9/9] iommu/arm-smmu-v3: Quiesce PASID before mm
- release unlinks
-Content-Type: text/plain; charset="utf-8"
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.13; Fri, 13 Nov
+ 2026 13:24:05 +0000
+Received: from CY1PR12MB9697.namprd12.prod.outlook.com
+ ([fe80::3a41:55a0:8203:596d]) by CY1PR12MB9697.namprd12.prod.outlook.com
+ ([fe80::3a41:55a0:8203:596d%4]) with mapi id 15.21.0592.012; Fri, 13 Nov 2026
+ 13:24:05 +0000
+Message-ID: <5acdf1f0-7b77-48f7-ac22-2095830936d8@amd.com>
+Date: Fri, 13 Nov 2026 18:52:09 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/4] mm/cma: reject CMA areas that overlap the kernel
+ image
+To: Mike Rapoport <rppt@kernel.org>,
+ Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+Cc: robh@kernel.org, saravanak@kernel.org, akpm@linux-foundation.org,
+ david@kernel.org, ljs@kernel.org, liam@infradead.org, vbabka@kernel.org,
+ surenb@google.com, mhocko@suse.com, m.szyprowski@samsung.com,
+ robin.murphy@arm.com, baoquan.he@linux.dev, pasha.tatashin@soleen.com,
+ pratyush@kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
+ kexec@lists.infradead.org, anirudha.sarangi@amd.com
+References: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
+ <20261103162429.2053989-4-radhey.shyam.pandey@amd.com>
+ <avBXZ8iW2XPyVbmF@kernel.org>
+Content-Language: en-US
+From: "Pandey, Radhey Shyam" <radheys@amd.com>
+In-Reply-To: <avBXZ8iW2XPyVbmF@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261113-b4-smmu-shared-sid-ver8-v8-9-587307a77f3a@nxp.com>
-References: <20261113-b4-smmu-shared-sid-ver8-v8-0-587307a77f3a@nxp.com>
-In-Reply-To: <20261113-b4-smmu-shared-sid-ver8-v8-0-587307a77f3a@nxp.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- "Joerg Roedel (AMD)" <joro@8bytes.org>, 
- Jean-Philippe Brucker <jpb@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
- Jason Gunthorpe <jgg@ziepe.ca>, Thierry Reding <thierry.reding@kernel.org>, 
- Krishna Reddy <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>, 
- Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org, 
- Peng Fan <peng.fan@nxp.com>
-X-Mailer: b4 0.16-dev-7bc12
-X-ClientProxiedBy: SI3PR01CA0007.apcprd01.prod.exchangelabs.com
- (2603:1096:4:296::8) To AM8PR04MB7874.eurprd04.prod.outlook.com
- (2603:10a6:20b:24d::9)
+X-ClientProxiedBy: PN5P287CA0025.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:c01:263::7) To CY1PR12MB9697.namprd12.prod.outlook.com
+ (2603:10b6:930:107::6)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,279 +106,157 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM8PR04MB7874:EE_|BR2PR04MB007356:EE_
-X-MS-Office365-Filtering-Correlation-Id: dfe34842-ae7e-4423-7426-08df4189538b
+X-MS-TrafficTypeDiagnostic: CY1PR12MB9697:EE_|PH7PR12MB7796:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f3a29d1-f88e-43f6-8f2d-08df418963a8
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|19092799006|366016|7416014|376014|23010399003|1800799024|18002099003|22082099003|921020|11063799006|261102123227099003|261026140227099003|261028144727099003|261026121527099003|261022105027099003|261021121427099003|56012099006|261021123027099003|261009223027099003|10067099003;
+	BCL:0;ARA:13230040|7416014|23010399003|376014|366016|1800799024|4143699003|261102123227099003|56012099006|11063799006|261021121427099003|261009223027099003|261022075727099003|261022115727099003|261026121527099003|22082099003|18002099003|6133799003|10067099003;
 X-Microsoft-Antispam-Message-Info:
-	FdSCmZ6u9VdydX2pF9L7m+ucX+qzTKzuThuSV6QfphbUnG4zJ2LZWmQRoxMEjaaB3HnZWXU8+spqcaukrgpG4MiKrhQ7uaQiuveXEwIWIdqjrjhxbWufpum6d2dLJHzWCKaAkkwWIN8HEiIwP5d2AQso4insl7sTcuARqoo6AFXxD2c9wmyyt8CA9qfeBFu9LQFJjSIg2YIE4h2ANyXw98W+/KGN5IOoRjAcGUmjPKGt+tFASea55SB0HVr2BZC4+RLF3WWOSAT6JKgcN5PrS7KnAdVM0fPCqqZXeDwl+dA53YG6D6s3hpnqV29U1HBcFtxTR/nnmqpuYolhbgMw0vfE8Un7tG6e4J/eF+0h7LEuqD9PV7/xyVqUhmltrdmFNFESdi6ghQ7y1ETohbMpcYUCZx1E7+icnbOAlov4C/NNpsVdPi7U96H2c1vkqnjCmduSfqk01fc814Qvdzz+RdVBEYKMzltRrKur+zmmKuntgR541wsFqDeVBkVx1HKQWhoGknDFQ3Hm2/KJv8f4/6lpNI3p/HxuUfdns1rlAL+hGSzQRL4YUOkOnsxnfFVxI1/SMhk8Cg26jK6nlboZqrS/ujjTqVTFlkqtHfhLQ2ntv1UF3b3Yq+guStuBfl08FwGr5sKpdAzMRG1pZa0SqPGiPfB/F24NJ4xv79jNlNcOwuetTj6oo24x7DiE0VGRvpQ7wTXay6jfK3y61GRU3w==
+	FdwqzHqJMRArJxppoAaaSlO2j6swueGrQbB3FhEcLIWSMvwGYtTq8zOl8EsMkKBEEWqUZvj7UBLupgH0GyBnJit+3Htw7Sh6S3mu9MF2+PTYttn5u4suaL7QR8KjuvhVOrExI7nzTKIxxrziFNO08XZPIb+yreYE08buS0l+BgEb3KZu6Wv4jqyp2+YpBAUXiWdSekyyIRpIRlSXsSMEw86R/JD8l8nr4Qg/OVoNcm4BkBswBVkfFlWOR+mpHHwCby7xVMbRzByeeEasjA06naEc2kiIqdcOPw18THyPDemLPO40KFGoFPJCZtf9L6+63jD+WCJqVaU7dxI9KP01tSS2gli+pLuK7DPBw0D9H7NEzmWr/wWtjyy8sDyQTHIHMk43l2pb2GtyQDn7f/5VuPxeTq1JCrodLewnJ9lkNw7NAecSWpdqlvXx7jcTuEFp/DInZWuWlhrKSEFUtR3I9cdMqkhYKeMLvqPBHnE5/Fb9rSiv+zZqJug3wx9fKva679rH9mvECkDfc+5s0Z9Mr+r44toZbALx0uky6XhL0fVfbLA+GfMR+hOHUuBLmS7td50gdpemYqnsrpMuDogS1u3hzImwqRER91LKoyWToqBjt3aSk3rQoq5hTKsI2I3g
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7874.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(366016)(7416014)(376014)(23010399003)(1800799024)(18002099003)(22082099003)(921020)(11063799006)(261102123227099003)(261026140227099003)(261028144727099003)(261026121527099003)(261022105027099003)(261021121427099003)(56012099006)(261021123027099003)(261009223027099003)(10067099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9697.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(23010399003)(376014)(366016)(1800799024)(4143699003)(261102123227099003)(56012099006)(11063799006)(261021121427099003)(261009223027099003)(261022075727099003)(261022115727099003)(261026121527099003)(22082099003)(18002099003)(6133799003)(10067099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?T2pkQWkrUHI5T0p1OHlvVVdBSXFlZmV4RUFqcE9WR0EvNmluS3IvSU4wZFJN?=
- =?utf-8?B?ZERQTlVkMjhEU3granhxYjYycEJUS2Zvck5oaS9ySE9FeVRHODR0SjRxVCtG?=
- =?utf-8?B?Smk3VGVUT2VPcm1qYlBqR3FBaHR2Q0NvSjhIdlJHQVdMTDhMSlhBZE1PaWJM?=
- =?utf-8?B?VFVoZU5yd0U5eGV1MFFkWEZhWDNSNytWNVA2UU5NaXR1SVZBRlVMUXc2OTk2?=
- =?utf-8?B?YnJmdnRjRHREbWRFbkpDR3o0dXZQUURpdEF0VTRpREgvdVZpbzhWTzZ1UGla?=
- =?utf-8?B?bFVNbkYxUytaZWpxQ0ZGRStDbHFpNE81VkZ6elRwMjRXR0FSZlNmS1pLMjRB?=
- =?utf-8?B?bEhub3RQeUtHOE16bEE0c0paV283QTZoWlltbEJQY3ZHRGFYRHhuQnNoN3lj?=
- =?utf-8?B?eGFpcVIrZHVsWmxDMFg0NitES3VKd2U4STRoUzZHOUUvNGpJTmxnTUUrd2Nu?=
- =?utf-8?B?Rms4c0RTY0hSU24yOWZBUVVWR0JkY0hwRnV1QWZLV3l0QzB3WEE3K2VPU1kz?=
- =?utf-8?B?Qm9CdlBPQjd2N3d2eitDMFJrMkFLcHR6VkE0ckV5YlJrK0JRam5SaGh5K054?=
- =?utf-8?B?ckdYaHZGYVBOQlMxMkt2UG5vdk5kd0cxTG5VRzY1UFAzSkovL2VxNUdYeWJu?=
- =?utf-8?B?bnloRDd4U05pd1RrZzlqN0gwRVh1czROTGo0aU9kcWkxaVpBMEtHWFZVSVVl?=
- =?utf-8?B?MXRtNDZMY0NnWWFoZ1J1YWZHT2JxT2Njb3dGVnVTbWpXT0NUblAwYTNGUS8y?=
- =?utf-8?B?VCs0Q3NmOEFhRkVwcDRlM2V2K09mQkh2Mng3Yk01Ujk1K3poWFh6c1NIOEhN?=
- =?utf-8?B?R1JDZ0d3czRpN1owZFhoSGNXcVRnc0dQbE9lRGxEU09CMnEvSTErN0JGUFc2?=
- =?utf-8?B?OVdVMkt0UWVsSDZjbHc2S3VtVUszODZ6NHZBWnpiTGdNbWdJcVQvQUpGdk1n?=
- =?utf-8?B?MUNHd05sVUhYS25tVldMcHl1WmJwTFlwV0k5WFRJc29BRU5LTXorOU9BSFFQ?=
- =?utf-8?B?Z09zSVFudTMrd3dSRVJGdVNvbFUzK3owSTlnZTQwVzYxdkNLZDkwbHR6ODhR?=
- =?utf-8?B?VzBuQjVvRGxCNmFHcWRITjNVR0FJSmg4NkkybXNjU1phUU94RHhJeU1ydk10?=
- =?utf-8?B?Z3o3TyswQjZpb0JEcWx0UjNGdlNPUDkyWVNSUHQrVlhyaFVLK3VlckRKSzEx?=
- =?utf-8?B?OVNRV3NmTFdpTDhnRkZHOEtFaGp2VW1pSHgyVkd6Ly9LVGV4d1p5U2wrbU9m?=
- =?utf-8?B?QlJ0a2FSdlIyaG41ckFwRDhUZ3BxWE9JUWYzWUEwRDJ0SjlTcHFjOEsraldI?=
- =?utf-8?B?N2xDcW0wSFJKRXdSTjZXbmxOOTA2U2UrVUdlbjJocTFZMmp1ck9sdml1aTJF?=
- =?utf-8?B?UEZKVTFESXFEbGFZdXZuY3BaUGEyTlJ6aTh0WFRFOHNJNElYTE8xOWQ4K1VO?=
- =?utf-8?B?MThQek04NzVmZ0p2VzRCMXJ3U2hZMmd6dzljK2lLUElPYStSM09IcDN3K3N0?=
- =?utf-8?B?NlU3UnplcHNUSGlHL3FPTmRMVFNyUVJ1UVBlZjcxYWFLdHNmT0lRL1lQWUdQ?=
- =?utf-8?B?djBnQjlWYmh4ZTZ5SU9PKzU3Z2ZZU1Ezb2pKejd0bDE5di9kQ2o1RGxjWUdp?=
- =?utf-8?B?VnBNbElRNFF0ZUV4aGc5MDYvN1VDbkpaNmpzRTdYWGxzRkIrRm9hdVlwM1Nz?=
- =?utf-8?B?dG1OU0NOTWRHbkNnaXRvZ3Y3dVpWME9vMWdKdkpwcnhNWWJrNWk1UzVBRHp6?=
- =?utf-8?B?K0FxZ0RicHc4bmpBWXlLNGo0OUhoMVVDd1ZRVjBjQWRhMEo4UDZicTlxb1dt?=
- =?utf-8?B?eVVnOFVUbzFlQi83eHlsNzlXTFpxa25YWkw3UUdSU0x5eVk2VFV5S1hKcXlv?=
- =?utf-8?B?Sm5TRzZLR1dWVnFxNHZIUnVqVFk4ZmZRQjIybHpDKzRKVDlMWjdlOUVFanpW?=
- =?utf-8?B?eTR4ZFRyY29ZdmVuQUg3STc4VGdDQllyK0lRZ0prWEprd1RwNUh6NDhKenVv?=
- =?utf-8?B?VWphT1ZldFU3eVFiaVZGQ3Z3bEhWR1dCY05sdElabmJZRUoyVzZ0TGxYakll?=
- =?utf-8?B?YlBYdHpqdkpMc25SYWIvVGNIT2IzVC8xL3ExSU1yQmZjNWdGUVdGbjlIbEsr?=
- =?utf-8?B?bmttelRja2NZS1FaY2tLc2VieWxsRkMvSnZJK2psaDlIUmFyOWRPbmNBZFdK?=
- =?utf-8?B?WkZicTFzN3RENnNhQmxZMVVzeUlYUms2bi9CdzhRRDltRm9PMy9xdzJhYXdL?=
- =?utf-8?B?T3hUeUJMaXJ0ZkpSUmEyUk15NXBMc29DcFlMRXIvZHk3b2ExVWpXVzJ3bmd4?=
- =?utf-8?B?WDB4aE1MMkVpd1dOeUxoY0Fmb3lVNjBKUWN4dkt1dEsxU3p6QXZoN282ODNJ?=
- =?utf-8?Q?7B0WhPBPga9lbQidksgJDkhJOdZOUwNUX0fo7?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dfe34842-ae7e-4423-7426-08df4189538b
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7874.eurprd04.prod.outlook.com
+	=?utf-8?B?bWxwWXV6QmhnRVNhekpXcHJpTXk2QWJvV0RhSFpjakhuRnhtakxZb1l6a1FS?=
+ =?utf-8?B?RGRSVW44Ykg4L3BUaHlwMVJ4VTBIaUt3U1BzZjhUbUNtUnc5NklYZXN0VWll?=
+ =?utf-8?B?VTBQUUdOZmVoWDN3VmJwcGdFNnlnSGZIbWZHN2RiclliK01kNzFGRUJiOXdm?=
+ =?utf-8?B?eE1GcjRTTDg5ak5pczc5R2VOWVIxUVp4cjk4OS9HVDFxNTZjazBFRUxDa3RZ?=
+ =?utf-8?B?akVuRTl3MVVOV053MUFNV0R4K0txcjFwU3p2Qjdrbnk1dCtadm8vaVVZREV6?=
+ =?utf-8?B?dzdZa0RZN2x1WCtzMDVjRjFuNlVRcHZCWkpBTXY3WUxndjlvYjk0bHJMRU5H?=
+ =?utf-8?B?NWpCM3VVenhuTU84YXRkdnM2MW14S0dzcDI3eTlNVkdKVHBBeWt6RXhBT2Yv?=
+ =?utf-8?B?UzNmQm1BQlQwUEhueHdlWTF4SGVEUkpjSTJSR3FReFIxdEx3Nks5ZkphY0lY?=
+ =?utf-8?B?NmhKTVVmMWhXOTRDMTgwdnZoQ3JFRU5wODBlOHFGaTZubWRQV3pUMVB4T2t3?=
+ =?utf-8?B?a29DOHFGaE53QkZCUUlCRXNPTjI5VzFCaWtVUU55UFhRTytlbHo4MXJZMGs4?=
+ =?utf-8?B?YXhCOUhXZHpER1Y0Wk1FSDJWcTE4L0tOTjJMd1dmR1pHMThDOFNMem05UHBK?=
+ =?utf-8?B?ZkJkRjlsT0s3aFBudUlOeDY0aXFHREZCSUtNY0t1Ym1renF4NVl3UjNPUE83?=
+ =?utf-8?B?R3ozRnJneHlyTW80Zno1a0ZFQ0xIVlJJaTdGN3czRlpWeU8vVXh4RWVaQ3Vi?=
+ =?utf-8?B?S0NTdlFUdzlQekQyRFpYSjBxSXovdDRGSWRkcXZsUDlibzNaTlcyNEU3LzNl?=
+ =?utf-8?B?RjFWYjErb09kZkxsc2VlMG9vZFp5eXBWSkFib0FueEw4QjIrM2RLR2dacWl0?=
+ =?utf-8?B?VGplWjQrdDVvNlBMUUszeTN2ZnFQb3RjZmUvTlprYmpmV1l1VnlQNUJNbUFM?=
+ =?utf-8?B?cnFzUE9RNmU5Y29yMm1USWFJMXVpZ1NHdWtVS3FzSEVtRVlWSnh0enpwWld3?=
+ =?utf-8?B?Q2pVYjZzTFdLbUxRTTFWNFVjRjhzZGh2b05PbG1vbS9Yd1FiSkxIeHBocXZ4?=
+ =?utf-8?B?K1MyZlJrUE1vWE80a21PVkR0WlN3MGlNaWhzelhJWlBDQUdRQmJjdm9yanFI?=
+ =?utf-8?B?dStsbDZNVnVZUVB2VVBJMnR4RFY2cm1vbVdLTjJCU3dXUEhtdTFpMUlkSU5j?=
+ =?utf-8?B?S2VVcWdrRVBNWVB1dXdFVWRuUTNneU80dC9ZUEtONkJlSHkvM0wzdzFhaVlC?=
+ =?utf-8?B?dlAwR2hLNFhmQVdtazFSYzlsNzVkM2hrQzRYOXVkZnhySmZHbVhpb2JrVmJK?=
+ =?utf-8?B?TGpYRGtEaENKVGZWdG1XeFA1VmRVN3UwS1FxYmNIL3A1R1dWYWlKWlJYblN3?=
+ =?utf-8?B?a1VJU2NYL0JYYzZYV1Nxelh4SkxnTmlBa3NKMXFjbWFGQ2kvaXo0djRjTFBG?=
+ =?utf-8?B?NGJqU01YMGVuV0N5ZHlrSFpJd0J2cjJ1SFltRGlnd1ZlNVN0L0UzWlRiM1Zn?=
+ =?utf-8?B?Wi9GVkdZWlZNRkdqMXdUUE5JekhjTjd3NFNsSFc1aDVWMVV4WG9Rb1ZuRURC?=
+ =?utf-8?B?OVlSRTkwWWJmVndZWnc3YVM2ZW15U09EaEFYdGgzNG1tUjg2Ynk4VzhxZDhs?=
+ =?utf-8?B?QnZmVXdHR2JydjVNTmpMU0orUlhmTDN3OEJ1WXVTTjJBRldJcUZTYThzR0RP?=
+ =?utf-8?B?YTdyamVvTWQwaCtUaDB6NmVUeURDM0JwZWFYeElVWWNnamoxemJyc0YyZXBM?=
+ =?utf-8?B?VEU4aVB3RTRYV1ZXR1QrRTl1QmY2bk9hSm16bTFtSkdmQjlTb3JDVFUxQkFv?=
+ =?utf-8?B?enE3MitPSUJVRDRPamo4ZWJMN0xRY29BZlNBVlZSQU5EQjBSNytuTWNlRDQ5?=
+ =?utf-8?B?ajZwZHBqbzF0Q1h5R3pOTkg5NUQ4bkRXRXRqSStsdDZqQUJpdWRES0M5WmN5?=
+ =?utf-8?B?emIwYWhMdlJ1dWhtSGJFYmdWUXpLNDJEcVV5Yy85aDdrOFM2Ukc1K3VqS0t0?=
+ =?utf-8?B?WHVPVERFMzVmSU40amRsTTVrUDUyM2wzK0t2VEpiY05MWlNraTNYQjdES0FY?=
+ =?utf-8?B?Z0dGUEtoVno0RTM1elYrZS8wOHNLaEU5a3RJQW1ENWdIY0N0WWRwTUVPUnVw?=
+ =?utf-8?B?ZGNqc3N3UnhVekNjbVdUMWh4b21xUStXVFZleEk3QUUrYW1MRDlwSmI0U0wy?=
+ =?utf-8?B?dzg4U0plbU4xZXMrTTVFL1REUGRldWpqMGlkYmtxdTBFU0sxQnpVbFFoNnF2?=
+ =?utf-8?B?bVVGSzNoTGJBUEpxUzBBc21XZkpWN1N3cHpSNmV1SFRtM3Z1V0VFaDdRUlk5?=
+ =?utf-8?Q?u8rWBC3Pd0l8txJDJJ?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f3a29d1-f88e-43f6-8f2d-08df418963a8
+X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9697.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 13:23:37.9906
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 13:24:04.9889
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6YuWFpNwOQ0s7HKZU7SwUh+wrTXpvxPisyKKZ0SP87Ik00jPPheQNsBbuCBCNMuaoci9AhKip36hJzRKcXxBxFN4xFHdJjPiVP9SEIry2CzCJ0A6dt+Gqr3UPmYVbGQ1
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BR2PR04MB007356
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ux+EzuLBNrQKak57PHZRxL8ax4FclglJKa0jbs3t7k+TVoQ00mA0bA7C5WCbiF5h
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7796
 
-From: Peng Fan <peng.fan@nxp.com>
+On 11/8/2026 4:35 PM, Mike Rapoport wrote:
+> Hi,
+> 
+> On Tue, Nov 03, 2026 at 09:54:28PM +0530, Radhey Shyam Pandey wrote:
+>> cma_init_reserved_mem() takes a base chosen by its caller and only requires
+>> that the range already be reserved, so an overlap with the kernel image is
+>> indistinguishable from the normal case. cma_activate_area() then clears
+>> PageReserved on those pages and frees them into MIGRATE_CMA, overriding the
+>> memblock_reserve() of [_text, _end), so live kernel text reaches userspace.
+>> kexec reached this until the fix this series builds on; a device tree
+>> placing a shared-dma-pool over where the bootloader loaded the kernel still
+>> can. Reject the overlap rather than let such a caller corrupt the kernel.
+>>
+>> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
+>> ---
+>> Changes since RFC:
+>> - Drop Pratyush reviewed-by tag as there were few changes.
+>> - Trim the commit description.
+>> - Drop the redundant comment as suggested by Mike.
+>> - cma_overlaps_kernel_image() is kept as helpers in asm-generic/sections.h
+>>    are virtual-address helpers.
+>> ---
+>>   mm/cma.c | 21 +++++++++++++++++++++
+>>   1 file changed, 21 insertions(+)
+>>
+>> diff --git a/mm/cma.c b/mm/cma.c
+>> index 9c53b2b70dc8..3231a53161cd 100644
+>> --- a/mm/cma.c
+>> +++ b/mm/cma.c
+>> @@ -31,6 +31,8 @@
+>>   #include <linux/kmemleak.h>
+>>   #include <trace/events/cma.h>
+>>   
+>> +#include <asm/sections.h>
+> 
+> You probably don't need this.
 
-arm_smmu_blocking_set_dev_pasid() unlinked the PASID master_domain
-before clearing the CD and invalidating the ATC. arm_smmu_mm_release()
-only takes devices_lock, so it could miss the removed entry, return after
-arm_smmu_domain_inv(), and let exit_mmap() free page tables while the
-PASID CD was still valid and could be re-fetched.
+Thanks , will drop it.
 
-Clear the CD and invalidate ATS before unlinking the master_domain, so
-mm_release either sees the entry and writes a faulting CD itself, or
-sees it removed only after the CD was invalidated.
+> 
+>> +
+>>   #include "internal.h"
+>>   #include "cma.h"
+>>   #include "mm_init.h"
+>> @@ -68,6 +70,16 @@ bool cma_has_dynamic_base(const struct cma *cma)
+>>   	return test_bit(CMA_DYNAMIC_BASE, &cma->flags);
+>>   }
+>>   
+>> +static bool cma_overlaps_kernel_image(phys_addr_t base, phys_addr_t size)
+>> +{
+>> +	phys_addr_t end;
+>> +
+>> +	if (check_add_overflow(base, size, &end))
+>> +		return true;
+>> +
+>> +	return base < __pa_symbol(_end) && __pa_symbol(_text) < end;
+>> +}
+>> +
+>>   static unsigned long cma_bitmap_aligned_mask(const struct cma *cma,
+>>   					     unsigned int align_order)
+>>   {
+>> @@ -295,6 +307,15 @@ int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
+>>   	if (!size || !memblock_is_region_reserved(base, size))
+>>   		return -EINVAL;
+>>   
+>> +	if (cma_overlaps_kernel_image(base, size)) {
+>> +		phys_addr_t text = __pa_symbol(_text);
+>> +		phys_addr_t end = __pa_symbol(_end);
+>> +
+>> +		pr_err("area %s (%pa, size %pa) overlaps kernel image [%pa-%pa]\n",
+>> +		       name ?: "(unnamed)", &base, &size, &text, &end);
+> 
+> We don't want to expose addresses of the kernel image.
+> I'd drop text, end, and probably even base from the printout.
 
-mm_release must not change used_ssids while quiescing, otherwise a write
-racing with clear_cd() can resurrect the PASID count. Add a no-account
-CD write for mm_release, and re-clear the CD without accounting after
-unlinking to drop a faulting CD written in the race window.
+Thanks. I will fix it in next version.
+pr_err("area %s overlaps the kernel image\n", name ?: "(unnamed)");
 
-For the last-PASID downgrade, do not propagate attach_dev() failures:
-the IOMMU core requires set_dev_pasid() not to fail in this path. The
-private CD table is kept allocated for reuse.
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |  4 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 95 ++++++++++++++++---------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     |  7 +-
- 3 files changed, 67 insertions(+), 39 deletions(-)
+I also want to discuss on this patch sashiko review.
+https://lore.kernel.org/all/sashiko-outbox-197614@kernel.org/
+Sashiko says:
+Because _text is below KERNEL_START on 32-bit ARM, won't calling
+cma_init_reserved_mem() -> cma_overlaps_kernel_image() with
+base < __pa_symbol(_end) trigger VIRTUAL_BUG_ON() during early boot?
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index f65c60652c0d..23dbe6ff479d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -178,8 +178,8 @@ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- 			continue;
- 		arm_smmu_make_sva_cd(&target, master, NULL,
- 				     smmu_domain->cd.asid);
--		arm_smmu_write_cd_entry(master, master_domain->ssid, cdptr,
--					&target);
-+		arm_smmu_write_cd_entry_no_account(master, master_domain->ssid,
-+						   cdptr, &target);
- 	}
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 5a6bed0ca7f1..f22a3b6455a5 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1675,6 +1675,26 @@ void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
- 	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
- }
- 
-+/*
-+ * Quiesce the CD without changing the PASID accounting. mmu_notifier release
-+ * writes a valid, faulting CD while the detach path owns the used_ssids
-+ * transition, so it must not resurrect the PASID count.
-+ */
-+void arm_smmu_write_cd_entry_no_account(struct arm_smmu_master *master, int ssid,
-+					struct arm_smmu_cd *cdptr,
-+					const struct arm_smmu_cd *target)
-+{
-+	struct arm_smmu_cd_writer cd_writer = {
-+		.writer = {
-+			.ops = &arm_smmu_cd_writer_ops,
-+			.master = master,
-+		},
-+		.ssid = ssid,
-+	};
-+
-+	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
-+}
-+
- void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
- 			 struct arm_smmu_master *master,
- 			 struct arm_smmu_domain *smmu_domain)
-@@ -1734,6 +1754,23 @@ void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid)
- 	arm_smmu_write_cd_entry(master, ssid, cdptr, &target);
- }
- 
-+static void arm_smmu_clear_cd_no_account(struct arm_smmu_master *master,
-+					 ioasid_t ssid)
-+{
-+	struct arm_smmu_cd target = {};
-+	struct arm_smmu_cd *cdptr;
-+
-+	if (!arm_smmu_cdtab_allocated(&master->cd_table))
-+		return;
-+	cdptr = arm_smmu_master_get_cd_ptr(master, ssid);
-+	if (!cdptr) {
-+		/* Only ats_always_on allows a NULL CD on default substream */
-+		WARN_ON(!master->ats_always_on || ssid);
-+		return;
-+	}
-+	arm_smmu_write_cd_entry_no_account(master, ssid, cdptr, &target);
-+}
-+
- static int arm_smmu_alloc_cd_tables(struct arm_smmu_device *smmu,
- 				    struct arm_smmu_ctx_desc_cfg *cd_table,
- 				    u8 ssid_bits, bool ats_always_on)
-@@ -4176,61 +4213,49 @@ static int arm_smmu_blocking_set_dev_pasid(struct iommu_domain *new_domain,
- 		.old_domain = old_domain,
- 		.ssid = pasid,
- 	};
--	int ret = 0;
- 
- 	mutex_lock(&arm_smmu_asid_lock);
- 	arm_smmu_attach_prepare_invs(&state, NULL);
- 	/*
--	 * Unlink the PASID from the domain before invalidating its CD.
--	 * arm_smmu_mm_release() walks this list with only devices_lock held
--	 * and writes a valid, faulting CD; unlinking first prevents it from
--	 * resurrecting used_ssids after the last PASID is detached.
-+	 * Invalidate the CD before unlinking the PASID from the domain.
-+	 * arm_smmu_mm_release() walks this list with only devices_lock held:
-+	 * if it sees the master_domain it writes a valid, faulting CD; if it
-+	 * does not, the CD has already been invalidated here. Either way the
-+	 * page tables can be freed after mm_release() returns.
- 	 */
--	state.old_master_domain = arm_smmu_remove_master_domain(
--		master, &smmu_domain->domain, pasid);
- 	arm_smmu_clear_cd(master, pasid);
- 	if (master->ats_enabled)
- 		arm_smmu_atc_inv_master(master, pasid);
-+	state.old_master_domain = arm_smmu_remove_master_domain(
-+		master, &smmu_domain->domain, pasid);
-+	/*
-+	 * mm_release() may have written a faulting CD in the window above.
-+	 * Drop it without touching used_ssids so the CD is invalid again and
-+	 * a later PASID attach accounts for the install correctly.
-+	 */
-+	arm_smmu_clear_cd_no_account(master, pasid);
- 	arm_smmu_install_old_domain_invs(&state);
- 	mutex_unlock(&arm_smmu_asid_lock);
- 	arm_smmu_attach_release(&state);
- 
- 	/*
- 	 * When the last user of the CD table goes away, switch the STE back to
--	 * the RID domain's CD table (S1) or to the native bypass/abort STE
--	 * (identity/blocked). Do not call attach_dev() for an S1 paging domain:
--	 * this is a teardown path where allocation failures cannot be
--	 * propagated. The private CD table is kept allocated for reuse and
--	 * freed when the device goes away.
-+	 * the RID domain's shared CD table (S1) or to the native bypass/abort
-+	 * STE (identity/blocked), by re-attaching its sid_domain. Do not
-+	 * propagate attach_dev() failures from this teardown path. The private
-+	 * CD table is kept allocated for reuse and freed when the device goes
-+	 * away.
- 	 */
- 	if (!arm_smmu_ssids_in_use(&master->cd_table)) {
- 		struct iommu_domain *sid_domain =
- 			iommu_driver_get_domain_for_dev(master->dev);
-+		bool ats_always_on = master->ats_always_on &&
-+				     sid_domain->type != IOMMU_DOMAIN_BLOCKED;
- 
--		if (!master->ats_always_on ||
--		    sid_domain->type == IOMMU_DOMAIN_BLOCKED) {
--			if ((sid_domain->type & __IOMMU_DOMAIN_PAGING) &&
--			    to_smmu_domain(sid_domain)->stage ==
--				    ARM_SMMU_DOMAIN_S1) {
--				struct arm_smmu_ste ste;
--				struct arm_smmu_domain *sid_smmu_domain =
--					to_smmu_domain(sid_domain);
--
--				mutex_lock(&arm_smmu_asid_lock);
--				arm_smmu_make_cdtable_ste(
--					&ste, master, &sid_smmu_domain->cd_table,
--					master->ats_enabled,
--					STRTAB_STE_1_S1DSS_SSID0);
--				arm_smmu_install_ste_for_dev(master, &ste);
--				mutex_unlock(&arm_smmu_asid_lock);
--			} else if (sid_domain->type == IOMMU_DOMAIN_IDENTITY ||
--				   sid_domain->type == IOMMU_DOMAIN_BLOCKED) {
--				ret = sid_domain->ops->attach_dev(sid_domain, dev,
--								  sid_domain);
--			}
--		}
-+		if (!ats_always_on)
-+			sid_domain->ops->attach_dev(sid_domain, dev, sid_domain);
- 	}
--	return ret;
-+	return 0;
- }
- 
- static int arm_smmu_attach_dev_ste(struct iommu_domain *domain,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index cd659590dfe5..79623d8283f5 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -1096,8 +1096,8 @@ struct arm_smmu_domain {
- 
- 	/*
- 	 * CD table shared by all non-PASID devices attached to this S1
--	 * domain. A master uses a private table only when it needs
--	 * substreams (PASID) or ATS-always-on/S1DSS.
-+	 * domain. A master uses a private table when it needs substreams
-+	 * (PASID), ATS-always-on/S1DSS, or the stall model.
- 	 */
- 	struct arm_smmu_ctx_desc_cfg	cd_table;
- 
-@@ -1212,6 +1212,9 @@ void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
- void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
- 			     struct arm_smmu_cd *cdptr,
- 			     const struct arm_smmu_cd *target);
-+void arm_smmu_write_cd_entry_no_account(struct arm_smmu_master *master, int ssid,
-+					struct arm_smmu_cd *cdptr,
-+					const struct arm_smmu_cd *target);
- 
- int arm_smmu_set_pasid(struct arm_smmu_master *master,
- 		       struct arm_smmu_domain *smmu_domain, ioasid_t pasid,
+any suggestion on how to address it? one option is to switch
+to __pa_symbol(_stext).
 
--- 
-2.34.1
-
+Thanks,
+Radhey
