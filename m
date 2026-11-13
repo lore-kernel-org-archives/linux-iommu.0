@@ -1,47 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.100
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.97
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794563443;
-	b=JNppl/nE/C/YBS0RwNPdHjLbKzO6sJS/5VBpdOWvXf2HicY8m44C8NRiSkro42QMLGh4
-	 Mf0UQ+EULTlvdPbs81sPsCFU+DTNut9siOG5qvu3V0gjbjrsydqphZbgz2Ka0okpzXu+U
-	 BO67vKAHQypZt9mz2NHEoSWDRGF6zvSPsMNuxDgL4cbz60lYGYqDWMBR0mAKMxQ+1CHax
-	 AbtAhVNznPFOmShpMclZL/ggDRBvhy9mATx6uYa0Vbbjp/VPra5YaGtxddcVpl5baaoLx
-	 722wo+cMNI0SnLYN04a2kirFZJzYEdACHgG0qeHxbZNL0TjeGg8HhXh07n7XWqmM4nw==
+	t=1794563444;
+	b=AyDZMjxm4sx6IKJ+5sQtxkxq6M2sigKpOcONbOJ5YsLPIFDm0vXbaO8Wut8kDo6wFDBr
+	 ewjY4hMtFQRb1b0VMIU7lqaeXJaKteg0rHgWIt+V5EtQ/Pwc5JmFzJlDx0erw6bHQGw06
+	 AgnxaY6wF24/mqE/cyms3PqQ36ZCkv6gE8/VVbAQQGtyOz0Rd+br8+eReTwVKDrxxP5br
+	 1/+yLbi1+0PEt0L1PVpUlSSPbIVpu8ADoGPkDI3t8EIlU+hhK7vuXG+oc/ySTLiQnJb31
+	 VjjJpEy6d5g7f65/bQG+yMucLCTZM/Re/I86N1zRRRZ1LermwBcH3szK8FlMh2zyTDQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794563443;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794563444;
 	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=qjJLQNicWLL6vQv4ufCop78f1wmYUYGwLXgPCg0B6qI=;
-	b=kQrxvUJHvFRCX/JLutVOtXRZDLctl2zritZnLVIo2LCfgsSuCgKwwQKk3drjSv2ALWnQ
-	 y1b7uFo4PIEIydmAwY3mtu+1vd5yUmwcCWN8HzTSSzwyqgal/WylXd7vO1KnAOl0LE8eG
-	 vaBu8AGS22mcZ+ccl/+iKu2HBCqC9wXnK7Mdx0lTnfc+n198o6InSyK784+J+9LtbzZ3j
-	 5798SnoZYFH7jbBnhmkFCeDjt/nwQ6g1nRtkN5I/asvWX5XO5LGb9RsKjIGyCz/T9gjK4
-	 T77K3YyUeAfPlEdMQFo41EXTNjzKGVaTxZr4HEPij6p6Lu0NYzrUbkQO+Vw+y55L9qA==
+	bh=/uuguW+JBNigKMxSte3np2mR1jp2+LdB7eMlJ3/WLCo=;
+	b=YFxrAxfdNR/kPDQPZ+EZNeJbtQrY0pmcERcTpd1Cs61C6WrbnGHHDDeNPT+jPT0tsufo
+	 c4O8dH3iiBM1qPTRENa2zFE6Ya96QcAL6bckCNrlpDA0v04I1LsnaJ5VS5/XAn68sZmAy
+	 PVg9BceaFL3bgb2RsMWSRPS9ffHprz2/rLDnoufJuVUiQ4PXCZl4bTNICXS4Oh9bTl7kF
+	 mUiqyXgDi8M4rEnE1diHFc1GdsTbOUHqs6VUppakyh9eJLkF0c5kEb8eDj5Lv9Kz+lciu
+	 5zWeXfaHVGDw1Z4ZyB1I2EBfvU7ugeUGvrZVdLyNSGIG0EstJ4hyOmDKIQfwFwsodug==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=linux.alibaba.com;
 	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=l8wMKfHF;
-	arc=none smtp.remote-ip=115.124.30.100
-Received: from out30-100.freemail.mail.aliyun.com (out30-100.freemail.mail.aliyun.com [115.124.30.100])
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=id54eamQ;
+	arc=none smtp.remote-ip=115.124.30.97
+Received: from out30-97.freemail.mail.aliyun.com (out30-97.freemail.mail.aliyun.com [115.124.30.97])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED007606A32E
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 09:50:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ED007606A32E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36BA9606A893
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 09:50:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 36BA9606A893
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=l8wMKfHF
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=id54eamQ
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
 	t=1794563434; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=qjJLQNicWLL6vQv4ufCop78f1wmYUYGwLXgPCg0B6qI=;
-	b=l8wMKfHF458HfRoNluvh9FIUF6GyLIRMZLgmR6e7eu1k6xxnu9Lojz+bGcNo0uy0Dtfd7BTeZ1z3vEhQnpSa3BKgoHtSs5Azjp6r3y/lM/B4OGt13RmGvhSbpJxNTmeBACTQc4eRVdTsECghUVSER5Hf/xjMfhxIHmH7i+GGgLU=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0XEefznJ_1794563417;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XEefznJ_1794563417 cluster:ay36)
+	bh=/uuguW+JBNigKMxSte3np2mR1jp2+LdB7eMlJ3/WLCo=;
+	b=id54eamQ8SLmPt8eP2QBxbnCzT6siz96BzS9UnKVCT3yDQ17edTKxYdpMxobOmVu+4JiwLZoWn8TMyi6R5HMZ4WDboF0VoRB6VyP/E3EKPLR9EBkPGr+LakuTk8OizGOe+H1Duh6Cld4ghsxv5oUl/A0T2h4mJzH6oWIliIFloc=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033037009110;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0XEefzuD_1794563433;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XEefzuD_1794563433 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Fri, 13 Nov 2026 17:50:33 +0800
+          Fri, 13 Nov 2026 17:50:34 +0800
 From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
 To: joro@8bytes.org,
 	vasant.hegde@amd.com,
@@ -50,10 +50,12 @@ To: joro@8bytes.org,
 	robin.murphy@arm.com
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] iommu/amd: Optimize IRT cache invalidation for nested VM workloads
-Date: Fri, 13 Nov 2026 17:50:15 +0800
-Message-ID: <20261113095017.1835921-1-guanghuifeng@linux.alibaba.com>
+Subject: [PATCH 1/2] iommu/amd: Skip device lookup when IRT caching is disabled
+Date: Fri, 13 Nov 2026 17:50:16 +0800
+Message-ID: <20261113095017.1835921-2-guanghuifeng@linux.alibaba.com>
 X-Mailer: git-send-email 2.43.7
+In-Reply-To: <20261113095017.1835921-1-guanghuifeng@linux.alibaba.com>
+References: <20261113095017.1835921-1-guanghuifeng@linux.alibaba.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -65,36 +67,47 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series optimizes the AMD IOMMU interrupt remapping table (IRT)
-cache invalidation path for nested virtualization workloads.
+The DMA alias invalidation path looks up the device before checking
+irtcachedis_enabled. The lookup walks the PCI segment's device list,
+but its result is unused when IRT caching is disabled.
 
-When IOMMU AVIC is enabled, every nested VM entry/exit that switches
-interrupt routes between guest and remapping modes calls into
-iommu_flush_irt_and_complete().  A reported workload with 4334 device
-entries shows median lookup latencies of 22-33 us per invocation due
-to a linear search_dev_data() walk, even when IRT caching is disabled
-and the lookup result is unused.
+Nested VM entry and exit can switch multiple interrupt routes between
+guest and remapping modes, repeating this lookup for each IRTE update.
+A reported nested virtualization workload scans 4334 device entries per
+lookup, with median lookup latencies of 22-33 us despite IRT caching
+being disabled.
 
-Patch 1 moves the device lookup after the irtcachedis_enabled early
-return, eliminating the unnecessary walk when IRT caching is off.
+Move the lookup after the early return. This removes the unnecessary
+list walk without changing alias invalidation or completion handling
+when IRT caching is enabled.
 
-Patch 2 caches the device data pointer (resolved at IRQ allocation
-time) in struct amd_ir_data and threads it through all IRTE update
-paths: guest-mode toggle, affinity change, IRQ enable/disable, and
-IRTE free.  The amd_irte_ops interface is extended to carry the
-pointer, eliminating all search_dev_data() calls at runtime.
+Fixes: 5aac28784dca ("iommu/amd: Invalidate IRT cache for DMA aliases")
+Reported-by: Yifei Ge <geyifei@linux.alibaba.com>
+Co-developed-by: hr567 <hr567@linux.alibaba.com>
+Signed-off-by: hr567 <hr567@linux.alibaba.com>
+Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+---
+ drivers/iommu/amd/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Both patches preserve DMA-alias invalidation, command ordering,
-locking, and completion-wait semantics when IRT caching is enabled.
-
-Guanghui Feng (2):
-  iommu/amd: Skip device lookup when IRT caching is disabled
-  iommu/amd: Reuse device data for IRTE cache invalidation
-
- drivers/iommu/amd/amd_iommu_types.h | 10 ++--
- drivers/iommu/amd/iommu.c           | 73 ++++++++++++++++-------------
- 2 files changed, 48 insertions(+), 35 deletions(-)
-
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 0413dfc5cae5..8f5a38ae2e29 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3298,11 +3298,12 @@ static void iommu_flush_irt_and_complete(struct amd_iommu *iommu, u16 devid)
+ 	unsigned long flags;
+ 	struct iommu_cmd cmd;
+ 	struct pci_dev *pdev = NULL;
+-	struct iommu_dev_data *dev_data = search_dev_data(iommu, devid);
++	struct iommu_dev_data *dev_data;
+ 
+ 	if (iommu->irtcachedis_enabled)
+ 		return;
+ 
++	dev_data = search_dev_data(iommu, devid);
+ 	if (dev_data && dev_data->dev && dev_is_pci(dev_data->dev))
+ 		pdev = to_pci_dev(dev_data->dev);
+ 
 -- 
 2.43.7
 
