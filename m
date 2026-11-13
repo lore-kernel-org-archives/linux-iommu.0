@@ -1,79 +1,120 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.193.16
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794608496;
-	b=odJ1gJzKmxfpnCKYIO5PY33AZZG5rdJ++HLM8DuUuCIRod66NV3PTlC9LHF5+cwP/I9M
-	 E/D8B3r2VmPtNqd6xIUvl5l6b9VPrk0StMdg7lEuoR88T4G0PLe9YKUf446blherWcM4B
-	 7aYSS1O9SK/IUKYzh2TQUlo5WeczDQ2J8hheIb6WnOuoZLQihgsQLXtNkxdlxAB454uop
-	 biMRL5tkQE7artYMj+1fEpGK5wRZIdTkObBwpw4TbMrszBnN66Lw4L77ApQu81jrnyqY4
-	 Be3x7oKcP8GiBXSEBOAGZ7Hdf1lHpa44yGaTNbXhNjnf2HuXZ6ZGYsOq34Gw2GoaedQ==
+	t=1794608881;
+	b=c53kbeVljb6OSMWeXRHErr+PMulMghasdO5HhpeKzxQ9GHgX2F6QvvOpxZFgYxl7ZlSA
+	 zc3mgnpZ9rDVNjAGlgVXOSugoGwVbrEks1dWG1246EEQwseglbmxwiOdpgk0yadg4Nh9y
+	 9cjLY/Frs1P1VWjGDXvidcqRDplq0zAhCDI0FLiMwLpcOpKO3Ssmmsh/T9vtRnLiJB7i1
+	 /n5+Oi3DrqdUbL06jpQ1hrgQi20Mj0PY5E8MvX/Cwq7OmVxgzavOdmkwIJ71tuQ93Aa8G
+	 d6FAjs91UdiVeCgs7+38Oshy4pV2Jgj3LBKDEXMRllL/t1L3HjfT/FaiZUIIOIdmEhA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794608496;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=NM+WHKCC3xvJM0QYhS9cDObbL+6VtF3LXo9nejQ5V1k=;
-	b=QkEhn5POaNli/XMRMsYUyrt5708lk+AeSuMOOp8arcfk0FHv/hKPpf5WGDnVtQIeC2wx
-	 ucuRFCvy656EZMUoNrjXqbXb9zSV5dMYRhXgdjfkdl4FmvL4NR2nmU9l+YiW6DfCx1XVm
-	 b/8qDC+u5tubx0hbvktHKmVcpxI0lhTW3lmjiF6Y3YCIjbQHYeGWPftsveaq0QYDET04o
-	 mXcgaHNrmyX1N7GCRgAt53jug7G/iUJMbeaHV4G4/tnpqFQSJ316C+1b+h2tnPey89Wge
-	 Cxsz1CS9cDP6wLXi0EIZwh+29syXninrt7FWfWUjKUAP/Q/vcnmePv9vpJ4bHdXMycw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794608881;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+	bh=rwIedolhmVBWAJLaTlhsxuSZ2r+MC+t25ryrT44emfc=;
+	b=HpEexJR//5TOhpUNPcYppeLp9UlZ2b+tSkpCXv3DZJwWSOPmfRwKU0AByBPLDxswvAEJ
+	 bNh1MZ6Y8806asb0cqvygCJnw2rb3X8YKL/5YsQ+P2O8lOgzf7W+I4Q+1xgGTF16FJYgO
+	 pyj/ALFFxacg4szqlsBP/dfSRxPmu0xvw36PABSN+2qbemQzYK7lFEFajeTu9ywTRvvaP
+	 yOxQRfa25ROWy2LToGMpVw3vZYGgpVdJA4zzVpl2ZREzkluViT0/Bqbh+Hr4WGNthifyv
+	 cMfRQyTaKTA1s8FdOQrOnMOZPYm6009ZxJoILF8Veay086giP8nKavGg238hYMmnBOw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="A4rV2/pT";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=BFIkAYjp;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.193.16
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010016.outbound.protection.outlook.com [52.101.193.16])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F8CD606A8AB;
-	Fri, 13 Nov 2026 22:21:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B98F606A8AB;
+	Fri, 13 Nov 2026 22:28:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2B98F606A8AB
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=A4rV2/pT
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794608496;
-	b=ewN0ntKT5lh0ACT6bDPfXguDsi65MwLDsFP/6fWkF/DIHwIOnix4b+PrjPJTnRIFf9dq
-	 wmUCtzsOUmmetGVg6zf/dQtnf7jrM7lI7lQy/bwyZZRxLWJfhjecH2w8UJBUu171m9frl
-	 GLk2wHFMFMZSAJWMyr9KRJ6SWQxuTUsrnlAAKNO8IT9jS+y4mNTg5NwAlx1IFTrgP3ytj
-	 AD4Anwl8XYvnqvKy6r2FDUTH9d95qr1v2xF+AL/EPMeDUhKR/8EkmjBZynHb+FFJNSyka
-	 6o8B7hPFbekdRLcbjih4AdrtcyAdYxpaOwzkvkaz4iOp4SZf8X90ZaIYL0RTsKj/siQ==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794608496;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=NM+WHKCC3xvJM0QYhS9cDObbL+6VtF3LXo9nejQ5V1k=;
-	b=PeA9HeKT3rt76RzRT28OneCUeNM0o0NryeOphAhSk6gf6JdF9nI2X1e9/CZRZ+zMBAQ6
-	 5mnR9K1X1x1T3UfM+Cy90ebh6wOBzFA9MotUgR52+2Iv5/77kZjOMDVXXc9ppF1exEJfk
-	 pNpdEcp78jYKjwhEsnC9eeDQG1YFqHahI80cX36F4JEPDuyflMHxqtoaEfs9BfZFVl0Li
-	 GmA+hV4PZs7To5U3Unk5/HwczFXVbdYoVzXc/9G600Etct470BwirYDPvbIK7BcHL4t76
-	 HDr8kXnNFATS506XTzfxvKWNnClIqomEj3tYXCm5upV/v8FaDxNWQ+UCZF38RrZ4Omw==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id E719B1F000C4;
-	Fri, 13 Nov 2026 22:21:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794608496;
-	bh=NM+WHKCC3xvJM0QYhS9cDObbL+6VtF3LXo9nejQ5V1k=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=A4rV2/pTR/o5tj8tgDPX2mFhjhe2p0JhsYavPoqUhvTCuQG0DYl9DBZ/kaKFdhXM8
-	 vsLJKgPWZerJVniKaynFPfRQlwZr2uoefBiBTRAfK8igRKUdtofDLo6wWA7FDAcBv9
-	 EM1fhX/B2gHPv0l6DvzPOojxuUcojMZgqhbH56SbOcidcCN1zUrqJxpHgnM7gxZvS0
-	 Y3bYH0PLtq9xvrhLpMtIU7sdtYrIgmn1pCVGC5kx1aSRgBYyhhJYuhCWgFvUGNOFvH
-	 lFWbZ4eJZ3jTM7UgfBHuujzLv8EYtA7pKErHbOjAowiRTp+PASs3OZGtyVQWP/Zplp
-	 K3K3lR9k2ZBow==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 56DBD49B4C;
-	Fri, 13 Nov 2026 22:21:33 +0000 (UTC)
-From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
-Date: Fri, 13 Nov 2026 22:21:33 +0000
-Subject: [PATCH RFC 2/3] media: verisilicon: Pick the hardware core for
- each job
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=BFIkAYjp
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=D78Lc5uXR+xUIFWslIjQaHHamRTANt6Z0wUqul+7sgvt3hd9MkotApGuvsiTh4B4OeJTT6r+D2M1e4Osbsky8b6L2i5/debNrws56x50vlbO1DU00npCCj95W/gt2pIXunD+oGOLCUuUurxQOetvDS5siqJLVKE+/gF+lTzcxh1mmT52FgtZg+KmCR1PZvWQd1bc1J4k7choeKf29H3v4MpO+UnRR87l0wlYCJOqxijIj1iAoQxbxGr/KxGuTYLOZ3wWbWEKfhBJOLksbq+INv+8W4CUeUFoBi+VoJ5XuvDnZL8VZH3RbgTQekLD6h9FdSKnRJX8VbihTn0Yg8Pl7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rwIedolhmVBWAJLaTlhsxuSZ2r+MC+t25ryrT44emfc=;
+ b=guoyGolE6M/Sm1lPpzvGk2iCQK1R/WXcnTSK/H8T6neVAL9QQfYjyPxtp3IZMSUn9JJM3wi0rJwr7XcofZG+hya010Zt0E4TwqU3U/t7zalCbGAIQoxmP143an0XMSuj0CaL8dRBPyE2EdSInlUdPF7gAWZkcIk6BE2wNVmhLpYM6pKhhXvbE8uoUw69P/S8NlzzmUlBGYIkzGfiOD7SOfVMSlruClnwgEyMFDSVs8cKn0TE3hHzB9QsrfXqplLjFcVlK6727tuEU/s2qNM9tbp6dRczDgEfFQn/wdM1O4CYG15rtEY3vXG8JAbi5P/QdBNA2eXe6bI8I6StBaUpLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rwIedolhmVBWAJLaTlhsxuSZ2r+MC+t25ryrT44emfc=;
+ b=BFIkAYjpghwxy8E9MBv3+MVIPuovj7LYmsqnMkC2bg0jvD0sY2JflaZxunATvAH5AdYbCkeF2D1k4NJ4xQRTL00BqCTqYdob6nSj4L+8z6Bv7z6tnhAX8RTIS+r/jKLVyRJ/RaySQvTDH8sUwy+4z83/MKmqtqGjxnQa6/a4fQabKNdk7mxZ30UpnQWnNUOLpi39C3PYzBLgRcTxswtpQrKmb2Wu4nTUsKwBE5VtKunxa7bNxahGEfXH0dgk8MgwmxlcgYgRWZxV6OsajSy/I1cP/oqdnwWm/+YAYdlR+t5fE8rSQmZF9L0A+pj/iVzOTQD7wcJVcnt0LUM1Z4PRFw==
+Received: from SJ0PR13CA0045.namprd13.prod.outlook.com (2603:10b6:a03:2c2::20)
+ by LV2PR12MB5872.namprd12.prod.outlook.com (2603:10b6:408:173::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Fri, 13 Nov
+ 2026 22:26:55 +0000
+Received: from BY1PEPF0001AE19.namprd04.prod.outlook.com
+ (2603:10b6:a03:2c2:cafe::9c) by SJ0PR13CA0045.outlook.office365.com
+ (2603:10b6:a03:2c2::20) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.8 via Frontend Transport; Fri, 13
+ Nov 2026 22:26:54 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ BY1PEPF0001AE19.mail.protection.outlook.com (10.167.242.101) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.615.4 via Frontend Transport; Fri, 13 Nov 2026 22:26:54 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Fri, 13 Nov
+ 2026 09:44:56 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Fri, 13 Nov
+ 2026 09:29:14 -0800
+Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
+ Transport; Fri, 13 Nov 2026 09:29:12 -0800
+Date: Fri, 13 Nov 2026 09:29:10 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Mostafa Saleh <smostafa@google.com>
+CC: <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<kvmarm@lists.linux.dev>, <iommu@lists.linux.dev>, <catalin.marinas@arm.com>,
+	<will@kernel.org>, <maz@kernel.org>, <oliver.upton@linux.dev>,
+	<joey.gouly@arm.com>, <suzuki.poulose@arm.com>, <yuzenghui@huawei.com>,
+	<joro@8bytes.org>, <jgg@ziepe.ca>, <mark.rutland@arm.com>,
+	<qperret@google.com>, <tabba@google.com>, <vdonnefort@google.com>
+Subject: Re: [PATCH v9 11/25] iommu/arm-smmu-v3-kvm: Add the kernel driver
+Message-ID: <avdI5olRpBdKeE9C@nvidia.com>
+References: <20261015200903.2735565-1-smostafa@google.com>
+ <20261015200903.2735565-12-smostafa@google.com>
+ <auzvygiGRTWgJXzF@nvidia.com>
+ <avGk0ilyJh3obmKx@google.com>
+ <avJidXM9yQOX4VBJ@nvidia.com>
+ <avL016l_xASN5paR@google.com>
+ <avNhekBYqiiZ9IM2@nvidia.com>
+ <avW_9A48mtnK383x@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,297 +124,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261113-hantro-multicore-v1-2-43811eea14c4@gmail.com>
-References: <20261113-hantro-multicore-v1-0-43811eea14c4@gmail.com>
-In-Reply-To: <20261113-hantro-multicore-v1-0-43811eea14c4@gmail.com>
-To: Nicolas Dufresne <nicolas.dufresne@collabora.com>, 
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- Philipp Zabel <p.zabel@pengutronix.de>, 
- Mauro Carvalho Chehab <mchehab@kernel.org>, 
- Heiko Stuebner <heiko@sntech.de>
-Cc: linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, 
- =?utf-8?q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>, 
- Detlev Casanova <detlev.casanova@collabora.com>, 
- Sergei Khomenkov <shomenkow@gmail.com>, 
- Arun Iyengar <aiyengar1990@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794608492; l=9150;
- i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
- bh=9jWn2Gigd2wOwask/FFepVbUYfj7D/TpLOUOJvXCMTw=;
- b=r5PrlOXvvc8lwpCY2Qqeq30CFBTVyIZ+JOpHn8bsD5t0SNYqAEvdz505CHX/2u8wcphsXES8m
- A1IfiGTY7wZBowJpTao3uOYhSzPU1ByHClzcbvqqrgGrsaPsFW8/iHq
-X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
- pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
-X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
- auth_id=1480
-X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
-Reply-To: aiyengar1990@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <avW_9A48mtnK383x@google.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BY1PEPF0001AE19:EE_|LV2PR12MB5872:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0998d419-047f-43ab-d986-08df41d53890
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+ BCL:0;ARA:13230040|36860700016|23010399003|7416014|1800799024|82310400026|376014|4143699003|11063799006|56012099006|18002099003|22082099003|261009223027099003|261028144727099003|261022075727099003|261026121527099003|261026140227099003|261021135927099003|261022105027099003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+ kRS3y3YnBAK0bGxdf3RkQQldEc6lzbrzJtBep0ik2nzf2TQvH5cxMi+RvzgUtEg49lqs6DtGtPmPZqXHqCgCP4FMtk5k7GhFymQQVdF1Z7E4dCLQbSWkt6vAhUw+S4ZswxoDfTVpqZpl4jLbCSqyg8fEOlvA29J+1Og70C6ofDImx46FFnkAvSrZUAwEiF84lQZEKg5A/viSBe4nJOozzMqM7PSBCz7ot/0lQGfBIzxb12dEAhhahwLM6UBwj5GzRpFl7GKjORHOB+xibwpPnWJeGkTslv0/ACBuHlD02qXKuL8U3nFXGr02eZ2Ywir1rCZj/bHAnpn8Rvm0FU5RIx3nFmDBXAPVaP4d44bL6uRX09Nh5LDO9rZL9g0EZqJ0ET2cXgSh3UobJhh8oRCN/0s1ENi6uWww2DPuRHZQBJlOdtSvyQcs0wRIgPJvmc7rMtcgz8lkwqqVAu0WsRyNIqS11Ua2i6e8lbO7gRC4ne+XCvlC++0nzIO6ser6ie0gKEkQGJlIh5YDSq8GNDIj2Fp8s0kc984Pzo6Ja5mPcYzv9F6jc7hrYm90rYj8pDOlspLT2AOTB7pX+h3UvuXLd5fEH+uaGO4yWCFvXim65sIvIPfvkcQGszFo8WO6CbiSWHc/WtFlq4YROUpihxD+kKNPc9sA+ey1T2V2/bAvfLx5/IBolnqH3ETeJGy58Lnzk+f0fn5wlNnosv59qnHPaw==
+X-Forefront-Antispam-Report:
+ CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(23010399003)(7416014)(1800799024)(82310400026)(376014)(4143699003)(11063799006)(56012099006)(18002099003)(22082099003)(261009223027099003)(261028144727099003)(261022075727099003)(261026121527099003)(261026140227099003)(261021135927099003)(261022105027099003)(10067099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+ s0i2F2RLk6FN4xSn7aeNLrnkDE6XpwSfKyjAVIEfoVPq3nS+1awJkL/QpHmdkckwNE7FPZszH4G9gwkcXlHJYxSfEi3EO+7ejXxcKwkdE26MKb2GU5ZMDZmMGboKssyx5cVrD8PuySfqfgXfr9hoLbtxbqalDzda2nu2tCiHXVKMmQmAmWRKc2VAKd/HvaqwnX60FOxuKvDaZ8Xqh3me/FfZBIpJuxFP/KrEg4hJgBW7KpZSNyH8WRoKpyCb8ddleOl5GHkiy/uJJQXMTAk4v42hY/jCxxCvm5Ue0coQeV7/jXVjA+z7oYUB5H2pvFN6emhvYJO2UQQthfy3k/gwMDBL/ziDcfJK2f72M8UlHTuQ4u883/Ik/4gIBbOsIadSl0OPDwnyUlKfsWEHe+zcBBo6DwzkxXhqJev1yh5n3gHjy8AMI8gQHLgsrGfLrlWt
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 22:26:54.2359
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0998d419-047f-43ab-d986-08df41d53890
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+ BY1PEPF0001AE19.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5872
+X-OriginatorOrg: Nvidia.com
 
-From: Arun Iyengar <aiyengar1990@gmail.com>
+On Thu, Nov 12, 2026 at 01:32:36PM +0000, Mostafa Saleh wrote:
+> On Tue, Nov 10, 2026 at 10:24:58AM -0800, Nicolin Chen wrote:
+> > On Tue, Nov 10, 2026 at 10:41:27AM +0000, Mostafa Saleh wrote:
+> > > In Android, in that case, pKVM clears the FW (called pvmfw) that loads
+> > > the protected VM and authenticate it so any protected VM knows the
+> > > system is not trusted. This part is not upstream yet. [1]
+> > 
+> > You might want to double check a dual-SMMU case, where one gets
+> > accepted by pkvm driver and the other fails and so bound to the
+> > main driver.
+> > 
+> > It seems the pkvm driver would still pkvm_iommu_register_driver
+> > and carry on with an untrusted SMMU. Would it also clear the FW
+> > and mark the system as not trusted?
+> > 
+> 
+> That shouldn't be possible, if one SMMU fail the whole thing will
+> and the driver should clean up after as the probe is done through:
+> 	ret = platform_driver_probe(&smmuv3_nesting_driver, smmuv3_nesting_probe);
 
-The driver assumes that the hardware instance running a job is the one
-that owns the mem2mem device, and finds the context of the running job
-with v4l2_m2m_get_curr_priv(). Neither holds once jobs can run on
-several identical cores in parallel.
+Hmm, if I read __platform_driver_probe correctly:
+ * __driver_attach() doesn't propagate ret from driver_probe_device()
+   via bus_for_each_dev to the caller
+ * bus_for_each_dev(..., is_bound_to_driver) at the end also returns
+   true, as one SMMU is bound to the driver while the other failed
+?
 
-Give each hantro_dev a list of cores its jobs can run on, and pick an
-idle one in device_run(). The chosen core is stored in the context for
-the duration of the job, and the context in the core, so that the
-interrupt handler and the watchdog of a core find the job they belong
-to. The JPEG encoder of the VEPU2 now accesses the registers of the core
-running the job.
-
-For now the core list only contains the device itself, so no functional
-change intended.
-
-Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
----
- drivers/media/platform/verisilicon/hantro.h        | 18 ++++++
- drivers/media/platform/verisilicon/hantro_drv.c    | 73 +++++++++++++++++++---
- .../verisilicon/rockchip_vpu2_hw_jpeg_enc.c        |  4 +-
- .../media/platform/verisilicon/rockchip_vpu_hw.c   |  2 +-
- 4 files changed, 86 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/media/platform/verisilicon/hantro.h b/drivers/media/platform/verisilicon/hantro.h
-index 0353de154a1e..eceaa74a634b 100644
---- a/drivers/media/platform/verisilicon/hantro.h
-+++ b/drivers/media/platform/verisilicon/hantro.h
-@@ -193,6 +193,14 @@ hantro_vdev_to_func(struct video_device *vdev)
-  *			shared with interrupt handlers.
-  * @variant:		Hardware variant-specific parameters.
-  * @watchdog_work:	Delayed work for hardware timeout handling.
-+ * @curr_ctx:		Context whose job is running on this instance, or NULL
-+ *			if the instance is idle. Protected by @cores_lock of
-+ *			the device the job was scheduled on.
-+ * @cores:		Hardware instances the jobs of this device can be
-+ *			scheduled on. The first entry is the device itself.
-+ * @num_cores:		Number of entries in @cores.
-+ * @cores_lock:		Spinlock protecting @cores, @num_cores and @curr_ctx
-+ *			of each core.
-  */
- struct hantro_dev {
- 	struct v4l2_device v4l2_dev;
-@@ -213,12 +221,21 @@ struct hantro_dev {
- 	spinlock_t irqlock;
- 	const struct hantro_variant *variant;
- 	struct delayed_work watchdog_work;
-+
-+	struct hantro_ctx *curr_ctx;
-+	struct hantro_dev **cores;
-+	unsigned int num_cores;
-+	spinlock_t cores_lock; /* protects the core list and curr_ctx */
- };
- 
- /**
-  * struct hantro_ctx - Context (instance) private data.
-  *
-  * @dev:		VPU driver data to which the context belongs.
-+ * @core:		VPU instance running the current job of this context,
-+ *			only valid while a job is running. Codec operations
-+ *			must access the hardware through it. It is the same
-+ *			as @dev unless the variant has multiple cores.
-  * @fh:			V4L2 file handler.
-  * @is_encoder:		Decoder or encoder context?
-  *
-@@ -248,6 +265,7 @@ struct hantro_dev {
-  */
- struct hantro_ctx {
- 	struct hantro_dev *dev;
-+	struct hantro_dev *core;
- 	struct v4l2_fh fh;
- 	bool is_encoder;
- 
-diff --git a/drivers/media/platform/verisilicon/hantro_drv.c b/drivers/media/platform/verisilicon/hantro_drv.c
-index d02988fc19ae..ab76251627fb 100644
---- a/drivers/media/platform/verisilicon/hantro_drv.c
-+++ b/drivers/media/platform/verisilicon/hantro_drv.c
-@@ -59,11 +59,51 @@ static const struct v4l2_event hantro_eos_event = {
- 	.type = V4L2_EVENT_EOS
- };
- 
-+/*
-+ * Pick an idle core for the job of @ctx. The mem2mem framework never runs
-+ * more jobs in parallel than there are cores, so this only fails if the
-+ * core accounting is broken.
-+ */
-+static struct hantro_dev *hantro_acquire_core(struct hantro_ctx *ctx)
-+{
-+	struct hantro_dev *vpu = ctx->dev;
-+	unsigned int i;
-+
-+	guard(spinlock_irqsave)(&vpu->cores_lock);
-+
-+	for (i = 0; i < vpu->num_cores; i++) {
-+		struct hantro_dev *core = vpu->cores[i];
-+
-+		if (!core->curr_ctx) {
-+			core->curr_ctx = ctx;
-+			ctx->core = core;
-+			return core;
-+		}
-+	}
-+
-+	return NULL;
-+}
-+
-+static void hantro_release_core(struct hantro_ctx *ctx)
-+{
-+	struct hantro_dev *vpu = ctx->dev;
-+
-+	guard(spinlock_irqsave)(&vpu->cores_lock);
-+
-+	if (ctx->core) {
-+		ctx->core->curr_ctx = NULL;
-+		ctx->core = NULL;
-+	}
-+}
-+
- static void hantro_job_finish_no_pm(struct hantro_ctx *ctx,
- 				    enum vb2_buffer_state result)
- {
- 	struct vb2_v4l2_buffer *src, *dst;
- 
-+	/* Make the core available to the next job before scheduling it. */
-+	hantro_release_core(ctx);
-+
- 	src = v4l2_m2m_next_src_buf(ctx->fh.m2m_ctx);
- 	dst = v4l2_m2m_next_dst_buf(ctx->fh.m2m_ctx);
- 
-@@ -88,17 +128,20 @@ static void hantro_job_finish_no_pm(struct hantro_ctx *ctx,
- static void hantro_job_finish(struct hantro_ctx *ctx,
- 			      enum vb2_buffer_state result)
- {
--	struct hantro_dev *vpu = ctx->dev;
-+	struct hantro_dev *core = ctx->core;
- 
--	pm_runtime_put_autosuspend(vpu->dev);
-+	pm_runtime_put_autosuspend(core->dev);
- 	hantro_job_finish_no_pm(ctx, result);
- }
- 
-+/*
-+ * Called from the interrupt handler of the VPU instance @vpu, which is the
-+ * core the job was running on.
-+ */
- void hantro_irq_done(struct hantro_dev *vpu,
- 		     enum vb2_buffer_state result)
- {
--	struct hantro_ctx *ctx =
--		v4l2_m2m_get_curr_priv(vpu->m2m_dev);
-+	struct hantro_ctx *ctx;
- 
- 	/*
- 	 * If cancel_delayed_work returns false
-@@ -106,6 +149,7 @@ void hantro_irq_done(struct hantro_dev *vpu,
- 	 * and will take care of finishing the job.
- 	 */
- 	if (cancel_delayed_work(&vpu->watchdog_work)) {
-+		ctx = vpu->curr_ctx;
- 		if (result == VB2_BUF_STATE_DONE && ctx->codec_ops->done)
- 			ctx->codec_ops->done(ctx);
- 		hantro_job_finish(ctx, result);
-@@ -119,7 +163,7 @@ void hantro_watchdog(struct work_struct *work)
- 
- 	vpu = container_of(to_delayed_work(work),
- 			   struct hantro_dev, watchdog_work);
--	ctx = v4l2_m2m_get_curr_priv(vpu->m2m_dev);
-+	ctx = vpu->curr_ctx;
- 	if (ctx) {
- 		vpu_err("frame processing timed out!\n");
- 		if (ctx->codec_ops->reset)
-@@ -160,21 +204,27 @@ void hantro_end_prepare_run(struct hantro_ctx *ctx)
- 				   &ctx->ctrl_handler);
- 
- 	/* Kick the watchdog. */
--	schedule_delayed_work(&ctx->dev->watchdog_work,
-+	schedule_delayed_work(&ctx->core->watchdog_work,
- 			      msecs_to_jiffies(2000));
- }
- 
- static void device_run(void *priv)
- {
- 	struct hantro_ctx *ctx = priv;
--	struct hantro_dev *vpu = ctx->dev;
- 	struct vb2_v4l2_buffer *src, *dst;
-+	struct hantro_dev *core;
- 	int ret;
- 
- 	src = hantro_get_src_buf(ctx);
- 	dst = hantro_get_dst_buf(ctx);
- 
--	ret = pm_runtime_resume_and_get(vpu->dev);
-+	core = hantro_acquire_core(ctx);
-+	if (WARN_ON_ONCE(!core)) {
-+		hantro_job_finish_no_pm(ctx, VB2_BUF_STATE_ERROR);
-+		return;
-+	}
-+
-+	ret = pm_runtime_resume_and_get(core->dev);
- 	if (ret < 0) {
- 		hantro_job_finish_no_pm(ctx, VB2_BUF_STATE_ERROR);
- 		return;
-@@ -1285,6 +1335,7 @@ static int hantro_probe(struct platform_device *pdev)
- 	vpu->pdev = pdev;
- 	mutex_init(&vpu->vpu_mutex);
- 	spin_lock_init(&vpu->irqlock);
-+	spin_lock_init(&vpu->cores_lock);
- 
- 	match = of_match_node(of_hantro_match, pdev->dev.of_node);
- 	vpu->variant = match->data;
-@@ -1302,6 +1353,12 @@ static int hantro_probe(struct platform_device *pdev)
- 		dev_warn(&pdev->dev, "%s compatible is deprecated\n",
- 			 match->compatible);
- 
-+	vpu->cores = devm_kcalloc(&pdev->dev, 1, sizeof(*vpu->cores),
-+				  GFP_KERNEL);
-+	if (!vpu->cores)
-+		return -ENOMEM;
-+	vpu->cores[vpu->num_cores++] = vpu;
-+
- 	ret = hantro_hw_init(vpu);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/media/platform/verisilicon/rockchip_vpu2_hw_jpeg_enc.c b/drivers/media/platform/verisilicon/rockchip_vpu2_hw_jpeg_enc.c
-index 61621b1be8a2..f7550470b43d 100644
---- a/drivers/media/platform/verisilicon/rockchip_vpu2_hw_jpeg_enc.c
-+++ b/drivers/media/platform/verisilicon/rockchip_vpu2_hw_jpeg_enc.c
-@@ -131,7 +131,7 @@ rockchip_vpu2_jpeg_enc_set_qtable(struct hantro_dev *vpu,
- 
- int rockchip_vpu2_jpeg_enc_run(struct hantro_ctx *ctx)
- {
--	struct hantro_dev *vpu = ctx->dev;
-+	struct hantro_dev *vpu = ctx->core;
- 	struct vb2_v4l2_buffer *src_buf, *dst_buf;
- 	struct hantro_jpeg_ctx jpeg_ctx;
- 	u32 reg;
-@@ -188,7 +188,7 @@ int rockchip_vpu2_jpeg_enc_run(struct hantro_ctx *ctx)
- 
- void rockchip_vpu2_jpeg_enc_done(struct hantro_ctx *ctx)
- {
--	struct hantro_dev *vpu = ctx->dev;
-+	struct hantro_dev *vpu = ctx->core;
- 	u32 bytesused = vepu_read(vpu, VEPU_REG_STR_BUF_LIMIT) / 8;
- 	struct vb2_v4l2_buffer *dst_buf = hantro_get_dst_buf(ctx);
- 
-diff --git a/drivers/media/platform/verisilicon/rockchip_vpu_hw.c b/drivers/media/platform/verisilicon/rockchip_vpu_hw.c
-index 02673be9878e..f1f7f95b2652 100644
---- a/drivers/media/platform/verisilicon/rockchip_vpu_hw.c
-+++ b/drivers/media/platform/verisilicon/rockchip_vpu_hw.c
-@@ -488,7 +488,7 @@ static void rockchip_vpu2_dec_reset(struct hantro_ctx *ctx)
- 
- static void rockchip_vpu2_enc_reset(struct hantro_ctx *ctx)
- {
--	struct hantro_dev *vpu = ctx->dev;
-+	struct hantro_dev *vpu = ctx->core;
- 
- 	vepu_write(vpu, VEPU_REG_INTERRUPT_DIS_BIT, VEPU_REG_INTERRUPT);
- 	vepu_write(vpu, 0, VEPU_REG_ENCODE_START);
-
--- 
-2.55.0
-
-
+Nicolin
