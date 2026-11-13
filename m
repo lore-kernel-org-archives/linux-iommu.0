@@ -1,103 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794533495;
-	b=5F+0Cl5okAxR6xxmr60mfl+43I2Q6k7cK6A167B6P7VQZUVPQ7zWzS4e8pRm14PKf3Ph
-	 3G0zxAzOewqvzxxE1WOZi33UNxwAysUp+DO9VQ0WuXdzsWlaTNR2w4jhsaJDTvDSZveRf
-	 XLh2ZbXXEh/GHWEvAhe3T8s66klR66Z5lkxZ4y0mJ++pjBLiHnCmqfWsl9ZVFxvSXM6NK
-	 IhtZ+J1yTfxVlUvLtH2d8z6ZjAqCGbaWTaT1GbI2YgmgGJM/Fd+8moPFnBpJzkv39Inl4
-	 8OT11MxU4CRwA3Zkrgd5vjNv4rWHxIGDlUcXzbMTe8YSRarD/2M1/lBIGbbz42EwNBQ==
+	t=1794548999;
+	b=eic1KbWdu2yU+IufpTmLfzXpKSkMs/C+unULU3utQuRnHjGcgJxA3eK5rLnpfFP4QA0y
+	 c5F5yLVttM7MDr8plxxzK+d06B2ZDgm6yOPRrAzTE5LG571vQZzlBlNV2efFU3FW7RjkV
+	 vYNDqglvD/2kIm6jW4IFv0DkEPrAx2EDN5RA0tzUCYnkPulgtnc3dcphccmDT6yMn+7jx
+	 KFZ8N76fCa+1R0fsoD8DA2hCDzGdWbb/p7c3V1RMHhXHPLgY0Xmgu5oJNBeqW+hbvGGOX
+	 qfXtMZ/lT+NCsNQsgy6SSU6bAZV1oOAZ8A3EC3qQzfYXK7cg8k3adW51DYpOd89fo9w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794533495;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=rycHbTOJK2it38YspaXZxnOqkvIv8pjnp4MzdUIJoBg=;
-	b=hxYDQewSnV+BTZ6II9kD0LbzGPFRNlvJcjt+wUO25fHnSViIb/UzT6yGu3O+8XtNem4x
-	 CnLK4Ps0JVxcMgLc2nStLDLs5Rf/Qp6Hp43t3OsQl4AjTK6MEnG0Uqpvh8dILo5fqnKlC
-	 KKNcYChnfkDZVG5bG4kzc+vhl6i93nYIcZCov7qYKyfytH8CpE35mEmBV8lAoyefEyGGY
-	 qJvBZYBfFfS11659lrNn8JtW/XbuO2pOrE2crorD1pOWUvFBc2lFfn4Oqq+J7d9etWiHR
-	 Xu4E/O4YwBCVm/8gxNUmLDfvg0cSEWrrMKsWgqhHYN/HSNwIrwX15wttP433hVHNjSQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794548999;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=1QCHCXTpwhaXOHfzz5l15bpjdkFUiznzxAOCYs8/1D0=;
+	b=tPwp9jUs9ypXgFTNorDrTFFVWxnlPxGW2loTel60SRHCfHNGCWAoqNbh/MW1a7FezTmJ
+	 cekm66ohFho2r2s15PxHDBJF+WZAtr9IjzJuwxzzB9E6rkqVT1n97tYpV2gIZ1UnbcC2r
+	 Sy8WYCoEbJ/ZnXcXAAi5D7l3/GSQS5wDUupzbyGQXYf5t/Ag3lnVjo7RYB8CPcIlXuSLT
+	 qqqbFfQWZ+IDfcSUN0yyDosISuoa+DjFe+jzCizCJi/m4FLM/NhKUNLeV8gJkWrfxkomm
+	 ZJecprt5F+jvxIv2M1uUCFx7xfDf/bXXw3E8fPERMwpwnwONvvN2nJ411OLjD7ukEpQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=OMQLCs3X;
-	arc=none smtp.remote-ip=209.85.214.171
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n+IV7MCg;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C663606A335
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 01:31:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6C663606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17BFD606A31C;
+	Fri, 13 Nov 2026 05:49:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=OMQLCs3X
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2ed3f563739so29475ad.0
-        for <iommu@lists.linux.dev>; Thu, 12 Nov 2026 17:31:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794533493; x=1795138293; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=rycHbTOJK2it38YspaXZxnOqkvIv8pjnp4MzdUIJoBg=;
-        b=OMQLCs3X00XZ9pOrj1nop3MTMZsmJ0dzfb4ruM17D9uA0nL7iI7R5nVNVqfzjvP8nM
-         ySlWeTGkpR4DzsqjTyLgEXIPikTNVAS7vc1rquVuDUOpnqQXRDXfj2l224HAq4uk6S0A
-         hWoXqM/08AUADvuPRnfxRZ58pmwTEuSb8BqgFM/saagyioN1yfDOIKdSo8Axt8q1xuoL
-         SGBm4zz0T5Me1HHHEGorB1Zt0jZN+eVRNWj4Lz43Xc7AWuJePItqb/mJDblJzelNPROb
-         nMvcYwbNaiu5U4HwXt+CP5ei5M0FC8hp2MSS56qrGzngfHfgGvu6ewvDAN08M6+JXpdL
-         ujiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794533493; x=1795138293;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=rycHbTOJK2it38YspaXZxnOqkvIv8pjnp4MzdUIJoBg=;
-        b=Q+R3D4qHn4Z35ld800wymPAfHHrXb7YvEO21zkYnZ8m2rA+Rcv1Qb+a/FarQYU4xQ3
-         sZyN5W9Jz3OfhQcy3fftWukTdTYyVRQPGARwtakB11f0pEE6jflOlzXryQ2L4vIaebJT
-         fDcdwvz6BRis/L6nPqydSkC8Isfzy09h/pNW8it6WDv2x0QPcIkFNzG0qFc6C49fdThs
-         w9hEAlBMNxFYtALEE+IFmjfyqRCeLV6kxELEMpvQn/OxaTBh+FoJep/ASZAWBjBjc7Ik
-         q8hx1Ej7S6NacQZPqoH99j9YALXpsri0bGwr4FgDQtvxbOi8wLsI4Jw0fu2VVcjE59++
-         PYeg==
-X-Forwarded-Encrypted: i=1; AL+hErGayGG+W+SiKkJE4hbrflkI/PYSu1fvSep9yVvKOKmhAKPmtj7SmF3MTZl5qD52V6fbALgy6w==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/Snmz8BGXBdY0JoGNxMqb8tikJ4YYppmgkR9gK7Crbey3NIJJM
-	a4Q3ipBgPX1M2E7KZYUhs+dzydxXdbF/ZQn0hJYJsmKdij47Iii9viH6uUVaeG3hIg==
-X-Gm-Gg: AYBFou1JyQY7bPN6THGY0d4IF1b95dS7nbd73Wli1yJJRA5i85l+RuuyLXzkgeoBhMP
-	k/+7RWTDuIKi6wKci2KBRKayIMIVpXhTuTmF2riTO3zlNnud4fBytN9FC+/xqQgWlLcZxmm4NBP
-	A6iF9yxMt33nB1nZNh2zL1RVKL57REENjQz2nEAQ1gXr/Ieon5nqrAmau1dRySkbANAW59QcY0t
-	S02SulH/6ji80spB/IEcdJDu8D9JGWzHKkAvMHWTwClEvEH0e2rPwbmeuYzV6tW/XZHvP7B2Gwf
-	sYiDTfGN3KY7xkGPkQcOGooKUdyhBk3l7wn0/v/RaxZB0we8itdrThUB3QdZc2cHneE8prFTSuw
-	CPCCGrOP9TBnQJR7B3gRS5+IwssO6O9yZS++rYklN0knOI9GQqwesbkKdfbjkFwafB84CqeESWD
-	e1306f4xZvoIX48LDYHPYR2NirHrcRm8Pbdt9dNhkJRHXbwENR5MbkLaTN21PrwOCbf5vVd/WWh
-	0avToWEdkK8Wg18L7MOmuTVINTVJO9nVHzpTWMTylDE+jUHZj8xFTlzb5L0tzQZrz0L9JA7w6rg
-	414nn3I6DGUfNom9r+6+K2D/YAlMPGQ0RAhzblXCqqYj5Hy7AKey6i3ZKorodcIIyr8U2RFVj2m
-	N7Edjm0yxLKlpU8o/PzRpRA==
-X-Received: by 2002:a17:902:f607:b0:2e9:7ba2:a8bb with SMTP id d9443c01a7336-2ee0f274d9fmr3031435ad.3.1794533492904;
-        Thu, 12 Nov 2026 17:31:32 -0800 (PST)
-Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8bed2b190cfsm291532b3a.51.2026.11.12.17.31.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Nov 2026 17:31:31 -0800 (PST)
-Date: Fri, 13 Nov 2026 01:31:29 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Ankit Soni <Ankit.Soni@amd.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	David Woodhouse <dwmw2@infradead.org>, Pranjal Shrivastava <praan@google.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Vipin Sharma <vipinsh@google.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v7 02/18] iommu/pages: Add APIs to
- preserve/unpreserve/restore iommu pages
-Message-ID: <avZoWubpbulF3UUa@google.com>
-References: <20261110040828.1774343-1-skhawaja@google.com>
- <20261110040828.1774343-3-skhawaja@google.com>
- <wirs4vcszlt6wkw2wfauhjnxve4n5ivnnpkg35fqid34htepet@fn4opgt3lt2x>
+	dkim=pass (2048-bit key, unprotected) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=n+IV7MCg
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C2A01F000C6;
+	Fri, 13 Nov 2026 05:49:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794548998;
+	bh=1QCHCXTpwhaXOHfzz5l15bpjdkFUiznzxAOCYs8/1D0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=n+IV7MCgQdlJEEHAi6QKi/kWy8yzp/3uca4izpMGuczcmGYuWXP3sYO6HEulgaSBr
+	 jiPtYks0VWhhv6b2H6VteZ5IaAhh5Zd1R7Q4rLovkGkISG7tPg3bxeb2G1DXjlB6qP
+	 VDyDvwuF4X1U7cRFjeD2owWdYNi28hs7F7wxcGqpCUmQtrw4osKtcRuZM/NooYos0O
+	 sJd4CYmm5Y50NXab3eCYjqRnjvTWUiEw4GDByC7PDQE+k0Q4B6nt+VDWI6ysFMK5zr
+	 /KLvD3AiUaFTwd3rQgKN4RRszouPPgU26Q/Db8U6YHBXoV5XrhRsmcRCyb/Io6mwFw
+	 l2Ohtqal/D2+Q==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Alexey Kardashevskiy <aik@amd.com>, iommu@lists.linux.dev
+Cc: Alex Williamson <alex@shazbot.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Lukas Wunner <lukas@wunner.de>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Samuel Ortiz <sameo@rivosinc.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Steven Price <steven.price@arm.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Will Deacon <will@kernel.org>,
+	Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-coco@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v8 02/15] virt: coco: tsm: Remove the device from lookup
+ before PCI teardown
+In-Reply-To: <9eb572d7-fa3a-4734-9773-44a3fb465b6a@amd.com>
+References: <20261104161632.3547423-1-aneesh.kumar@kernel.org>
+ <20261104161632.3547423-3-aneesh.kumar@kernel.org>
+ <9eb572d7-fa3a-4734-9773-44a3fb465b6a@amd.com>
+Date: Fri, 13 Nov 2026 11:19:45 +0530
+Message-ID: <yq5ajymhmgau.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -107,20 +84,64 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <wirs4vcszlt6wkw2wfauhjnxve4n5ivnnpkg35fqid34htepet@fn4opgt3lt2x>
+Content-Type: text/plain
 
-On Thu, Nov 12, 2026 at 04:31:27PM +0000, Ankit Soni wrote:
->On Tue, Nov 10, 2026 at 04:08:08AM +0000, Samiullah Khawaja wrote:
->> IOMMU pages are allocated/freed using APIs using struct ioptdesc. For
->> the proper preservation and restoration of ioptdesc add helper
->> functions.
->>
->> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
+Alexey Kardashevskiy <aik@amd.com> writes:
+
+> On 5/11/26 03:16, Aneesh Kumar K.V (Arm) wrote:
+>> PCI connect looks up a TSM by ID under pci_tsm_rwsem. Previously,
+>> tsm_unregister() released that lock after tearing down PCI state while
+>> the TSM was still in the class lookup. 
 >
->Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+> tsm_unregister() is not touching that lock, what do I miss?
 >
 
-Thanks,
-Sami
+pci_tsm_unregister(). It uses guard(rwsem_write)(&pci_tsm_rwsem), so the
+lock is released when pci_tsm_unregister() returns. We previously called
+device_unregister() only after that.
+
+>
+>> A racing connect could then
+>> attach a new PCI context that the teardown would never see.
+>> 
+>> Remove the device from the class lookup first, then take the PCI write
+>> lock to drain in-flight operations and destroy their contexts. Drop the
+>> device reference only after PCI teardown completes.
+>> 
+>> Fixes: 3225f52cde56 ("PCI/TSM: Establish Secure Sessions and Link Encryption")
+>> Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+>> ---
+>>   drivers/virt/coco/tsm-core.c | 22 ++++++++++++++--------
+>>   1 file changed, 14 insertions(+), 8 deletions(-)
+>> 
+>> diff --git a/drivers/virt/coco/tsm-core.c b/drivers/virt/coco/tsm-core.c
+>> index e784993353d8..f79135986102 100644
+>> --- a/drivers/virt/coco/tsm-core.c
+>> +++ b/drivers/virt/coco/tsm-core.c
+>> @@ -56,26 +56,25 @@ static struct tsm_dev *alloc_tsm_dev(struct device *parent)
+>>   	return no_free_ptr(tsm_dev);
+>>   }
+>>   
+>> -static struct tsm_dev *tsm_register_pci_or_reset(struct tsm_dev *tsm_dev,
+>> -						 struct pci_tsm_ops *pci_ops)
+>> +static int tsm_register_pci(struct tsm_dev *tsm_dev, struct pci_tsm_ops *pci_ops)
+>
+> Why changing a pointer to an int here as later tsm_register() converts
+> it back to a pointer?
+>
+
+At the end of the series we have
+static int tsm_register_pci(struct tsm_dev *tsm_dev, struct pci_tsm_ops *pci_ops)
+
+
+>
+> And I never understood what is _reset for here (so +1 for that) but
+> now we have tsm_register_pci() and pci_tsm_register() which is weird.
+> May be just open code it? Thanks,
+>
+
+How about rename that to 
+__tsm_register(struct tsm_dev *tsm_dev, struct pci_tsm_ops *pci_ops)
+
+
+-aneesh
