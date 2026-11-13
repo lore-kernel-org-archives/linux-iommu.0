@@ -1,96 +1,123 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794590949;
-	b=SZHWPs+Ypg5ySp5xKY5h2kNmYO1doE/1zyZ/CpupZWEBXNIM+pgusTs3dT3emgJ4yY8S
-	 0PCZau76DSZJd4+yP53VVukfLHP41noOlLdlufzGaaixpj4y3NYXQRZFYaknlH1jnw74K
-	 OjngLym5rr45zPkd/YPhpkjxc/AuYPNfORqpLK+Y9XlnGWZ+Jhxm/GCY0jfhWpoFCBNoa
-	 zpgdfttWtYmX8LXRIKv0GtYcgLr9Er+73L9gC2ZHVrbywxLfy71OrrJ7Lyn6Xnp1Iz/Kk
-	 ZIqYqIIycL4Vk/qz+lmtlFUP6SR+a8rgLoHEc0ERw/rj5AppKWB1MqNoJPFrgwkYYmw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794590949;
-	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Subject:From:To:Cc:
-	 Date:In-Reply-To:References:Autocrypt:Organization:Content-Type:
-	 User-Agent:MIME-Version;
-	bh=vBhwvnJwnGkD1bnGzWjsQ07Q3jEMP9wwPRehR7yowkU=;
-	b=0v+3EC8CuNW+OGUVBjsXw4us325uvZbjkLo9SOiPbgkr/2bLKUxgIpygnFAchXXO8ZcS
-	 5/Pjpym34nGKJrE10xyydUAVN1C+YCcp0FS5mEfmHdn2TIxEDFeZorY+Kqzxq9wzv5ymO
-	 aCd0FUFVIIntQwZg086/Yxui06Kqk/Aaue9LfhLx2yHvYvpl3xwDIPDMH1M+brmuxmEfs
-	 YWgPk/vqBktovcUYr6KlZ2TYjBO/rPWYJxH7seWkngnyWxs20oDyT9OIeQZjj9spRxXvl
-	 B4bEf2bVLKhYUsD3jYSHqYu6AZo8rM014/jek5/g8JlG1+sx5yl+2H1knx8vzSD8dNA==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b="AejoD/JD";
-	arc=none smtp.remote-ip=148.251.105.195
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.180.131
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794592036;
+	b=WKiXBnwaktER/XUQVLU/GRhmhGR5h6PNebBJHdL0U0wPknLcI+PoH6kK7PKU/QB1c1UB
+	 ZnStJ2njv01e87Ca/ZhTRcasfZ/b6EDTVp6J2ME7OPqR6HpRBsMSpHiekJmE1GS2RxkgM
+	 n0dcOOwMIklDjRPUQC6vUBY6if8aQdWwYLRI/BmeIuoI8ELQHoQ7H+GR/YWpq9KERvP0F
+	 tlhulXPcmliLfXobuTZOOF1/9c3HMtCYa6lTL0c5lKR10OTWW5FZ/aKYWf9d3qHPXEdCu
+	 kI0IUn5VkRLLpFq0qMthfzwWmRHF4x32jHn6DF7g1BlTBcfuLYwBW+daog8LJYZgLvA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794592036;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Gm-Gg:X-Received:X-Received:MIME-Version:
+	 References:In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:
+	 Cc:Content-Type:Content-Transfer-Encoding:X-Authority-Analysis:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-Spam-Info:X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=XUtAykq3hDRsL0/US7WOum9GrsDms9AB2V3NWupV8pE=;
+	b=1l9q8kSyYOeWLsb57M8xcrSPNON1KBXrt8lo1UDvdErfZVSxov1o2eSQlgkFz+yYeFD5
+	 hzcXXy794GGbbgtIonUGkD0yGHYt8mfWuVF+Y0SOhTEt5ERhIxzm8L/nnVZGzijEtTml4
+	 eDwx8gKBnUkbB+L2K2TXAYekyEt6hv7MZfz+vFIjzSLdE7gXj1VMml3Z5OupbZdTYaRyB
+	 COAffJBM9PEi+MZHDCwAXkuLfA6jXNSZsYs5lTfhjFGuk5wlbX1RpFRvTq2M6hR38EMSe
+	 LAyZGoUvtOoP4nHUXbDndOz9f1lj5+eICix8mexrIt2l2/yV7+8SW++LFVrjsbxjxTw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=XLgYD711;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=GjZ6FN88;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=205.220.180.131
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CB11606B460
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 17:29:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1CB11606B460
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78B14606A898
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 17:47:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 78B14606A898
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=AejoD/JD
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1794590946;
-	bh=vBhwvnJwnGkD1bnGzWjsQ07Q3jEMP9wwPRehR7yowkU=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=AejoD/JDjkToIWQiFRpmdMjB5o5Ebnp4DTGINsotDpycE2//JGqe68DRdgkmUOFvT
-	 HaEx1jaGfhcD4LWL7zJDHE40LqDKXD5nusxhqINjW9b1KWPzLf/U+m7yC38cnIcNjp
-	 L+IDGtMOKf0Yb1mY3g8SCzdbTliiRMz/B4binh4sWmYBp2oHFiNcXkmqq/dcPgPjtz
-	 3+S91Mq8JKXEqYTCiaOnULObQ/dLWTHZdrHKI64Qv4zhar8O9FyNczcE4k82NlKtop
-	 yLC5Fggr21g1QSNN/46q7Au6xg+DZevA5WYuBhcpSUd54h9hy2Z5zMVuSnA3nvKig/
-	 ker449JmvX29g==
-Received: from [100.64.0.214] (unknown [100.64.0.214])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: nicolas)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 75E9717E0818;
-	Fri, 13 Nov 2026 18:29:03 +0100 (CET)
-Message-ID: <7691572c6787c3808296094fb97212979c3fb3b9.camel@collabora.com>
-Subject: Re: [PATCH v3 02/12] media: verisilicon: Check the match data in
- hantro_probe()
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To: aiyengar1990@gmail.com, Benjamin Gaignard
- <benjamin.gaignard@collabora.com>,  Philipp Zabel <p.zabel@pengutronix.de>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring	 <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
- <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, Nicolas Frattaroli
-	 <frattaroli.nicolas@gmail.com>, Andrzej Pietrasiewicz
- <andrzej.p@collabora.com>,  Ezequiel Garcia
- <ezequiel@vanguardiasur.com.ar>, Hans Verkuil <hverkuil@kernel.org>, Jernej
- Skrabec	 <jernej.skrabec@gmail.com>, "Joerg Roedel (AMD)"
- <joro@8bytes.org>, Will Deacon	 <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>
-Cc: linux-media@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Sergei
- Khomenkov <shomenkow@gmail.com>, Tharit Tangkijwanichakul
- <tharitt97@gmail.com>, Sascha Hauer	 <s.hauer@pengutronix.de>
-Date: Fri, 13 Nov 2026 12:29:01 -0500
-In-Reply-To: <20261113-hantro-robust-v3-2-82383c722ad2@gmail.com>
-References: <20261113-hantro-robust-v3-0-82383c722ad2@gmail.com>
-	 <20261113-hantro-robust-v3-2-82383c722ad2@gmail.com>
-Autocrypt: addr=nicolas.dufresne@collabora.com; prefer-encrypt=mutual;
- keydata=mDMEaCN2ixYJKwYBBAHaRw8BAQdAM0EHepTful3JOIzcPv6ekHOenE1u0vDG1gdHFrChD
- /e0J05pY29sYXMgRHVmcmVzbmUgPG5pY29sYXNAbmR1ZnJlc25lLmNhPoicBBMWCgBEAhsDBQsJCA
- cCAiICBhUKCQgLAgQWAgMBAh4HAheABQkJZfd1FiEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrjo
- CGQEACgkQ2UGUUSlgcvQlQwD/RjpU1SZYcKG6pnfnQ8ivgtTkGDRUJ8gP3fK7+XUjRNIA/iXfhXMN
- abIWxO2oCXKf3TdD7aQ4070KO6zSxIcxgNQFtDFOaWNvbGFzIER1ZnJlc25lIDxuaWNvbGFzLmR1Z
- nJlc25lQGNvbGxhYm9yYS5jb20+iJkEExYKAEECGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4
- AWIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCaCyyxgUJCWX3dQAKCRDZQZRRKWBy9ARJAP96pFmLffZ
- smBUpkyVBfFAf+zq6BJt769R0al3kHvUKdgD9G7KAHuioxD2v6SX7idpIazjzx8b8rfzwTWyOQWHC
- AAS0LU5pY29sYXMgRHVmcmVzbmUgPG5pY29sYXMuZHVmcmVzbmVAZ21haWwuY29tPoiZBBMWCgBBF
- iEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrGYCGwMFCQll93UFCwkIBwICIgIGFQoJCAsCBBYCAw
- ECHgcCF4AACgkQ2UGUUSlgcvRObgD/YnQjfi4+L8f4fI7p1pPMTwRTcaRdy6aqkKEmKsCArzQBAK8
- bRLv9QjuqsE6oQZra/RB4widZPvphs78H0P6NmpIJ
-Organization: Collabora Canada
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-Pk9ID3Lh5PcmffxfFbdz"
-User-Agent: Evolution 3.62.1 (3.62.1-1.fc45) 
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=XLgYD711;
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=GjZ6FN88
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6ADFR4Lr551701
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 17:47:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	XUtAykq3hDRsL0/US7WOum9GrsDms9AB2V3NWupV8pE=; b=XLgYD711Nb6RdnRZ
+	pQM/51Q183vY/GeyYUbr8tGR4RkZZkYV2YZLlpgqyAn6ep8vMEH3k7k5XmsTr6Zm
+	dg4JtobSMy2N/EQQcfrNKmRJT5MRHku+6LyZ696Kz4uqWEnfZDpGBQIiY5yMuVtq
+	/vvumqxB+tt/zkmIDA6XX7vwN/iLx/oPCpTqQsI6KcS5POxjqi3RVrrQzff1UhCu
+	qb8l4Ow38i8jqlUuWr8EBtw+dWgLGU2bfB1M33C6drxYHw5GpzI/bDQRlKe0GEuI
+	4xveG2iHz8mEJb50e8UCyeyD2PMSmP8dSapmmAeePBNVReEyHsGi+9Eo+37VDu6M
+	5P6New==
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com [209.85.215.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4hwkgwc3wg-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 17:47:15 +0000 (GMT)
+Received: by mail-pg1-f198.google.com with SMTP id 41be03b00d2f7-cdb8c46e240so742710a12.1
+        for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 09:47:15 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794592034; cv=none;
+        d=google.com; s=arc-20260327;
+        b=SakP6OIctbDdqOrr6LP5974z9anMsBdyc525vCg78Okp5y8z4oduPlevWQZWAdfi0l
+         j9srqIGFWIXp9yOlhHhL6dx3wkIwIFUu4E0qyPZX5xtKKyKEY5UpBuXmrslAAoBWQnyH
+         1Z3BNM29sGtDth1LaGdXp2Re2IB21aOf3M0u+cIt+66jvD0IY9cua+TX5c+yvR0lkK/h
+         kUk4o92xW3ecm8J/5sZJNWV4Koz1qUgxcisCB9hMq3pUIDWnYBHn+DXZZfF9w2eHfCSe
+         NhYsrhpLmF0ftBBQQSJu0LGCx6pzTloVPgeUFpc1VzhNfw0pF7qfG+j+X/h8h6dfrG0F
+         mLsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=XUtAykq3hDRsL0/US7WOum9GrsDms9AB2V3NWupV8pE=;
+        fh=YeO4ESaiySQj37PkjA15PyWQs8L/pdSL2bxmR9zAKRI=;
+        b=Wfn+0wTBGxSxZwhz0eQM5yYJ6kTefKf0IIJsOGvKA/meFhscZOViHla72NPCuKYWnH
+         hOBpU8zS1kqFgi1YXEBWelaJB24Js/MnKHxGVqUBl0a7sjAV3gXn8VbL1hcR3sbhFENg
+         ygSH6WEr5dQI57hQ2E7qn1dxCYFhiTf1SBdEnOKTz3PuKDJjgUI2CDr+UgUGmnks9dlM
+         ueg8qnwc6tTavIRXg3Z7/i3TXjC2wS9CPChVkRuuepsclX51tijHf03leu5bPtXFlOtr
+         7TPqfkPCYAWZRadVMFt487WX3Gfhas3Ip/iOAZA53u6SPiZlWXk5QJvVb7v5wU8Vq5Gy
+         oEFA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1794592034; x=1795196834; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=XUtAykq3hDRsL0/US7WOum9GrsDms9AB2V3NWupV8pE=;
+        b=GjZ6FN88+sddKWUvkPWOwEykpa6sfcA5Y2pJfaIF68CdSME/SuwVwW3K/T3rJu6geq
+         nQdKIN9fylyWg6fh8jxg9MPOVN9AeM2S9yRzXBUcKuocGscYjQZsCGP/RPjdS2DT4IJM
+         HG9aWuykDeG0FeT0xK2ToQ76uHaC9/03GxGZZnjUdizJVhPnJ3kPRdmlJaB6161wasQF
+         o1G00rZFztr55G3E+hiCXjjOX0GfBD0lZB9Fp31/HHMWYcdciDMbwEZGSzk/67s8GDp6
+         R+76t9cmgaeYkzFeYJqy/p/aUN/wtDcLGF6CcVbV5PYfckV35K/mprya+riIvxBqJJRw
+         Y4Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794592034; x=1795196834;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=XUtAykq3hDRsL0/US7WOum9GrsDms9AB2V3NWupV8pE=;
+        b=qY5AeqXqPLAi/IHXn60BFeaL1fBNBMi56MAKQNhE/UgtAAS3AtpiXCDmYdEZwzQ6/M
+         QHPEIETgWPbLNj34l6r+kqcukI6COGyljZHDEgdlEkW8/uiW1J9PXM+qXrPrCIJjeU7x
+         aYPF0nvJ66sGZOOWTmN3DPyQF2a45ssn7rXM1exfV8K5tP2DB8cv5w3fe8Ty2IrZcsYD
+         A86RraA7UeuqKPDgOfn0Fy6ZzmEr1fqoAsp0629yNckWg8lVC9UpIJxcBr5iTsfuhIz1
+         K7YhBi8Wx1xKgWxc5JOAzPNfCUg2B4wnc94ZEd5IpzXt4jo9CpjNPgARvRETuss1Y/Ru
+         MN6A==
+X-Forwarded-Encrypted: i=1; AL+hErGSJBnRyY1SEe4KLU5AJn4OY6UhuTNe60bvROHU+ZgqpKNug8TqAwjJgIKCXur3eXrlbmuLlw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/3UWiFmYGe+bDxYyexEClfg6s3JfDI4Jip+ehNWukVOCgP5sBJ
+	h6eQS6gpu+OB5l/+gffrPIkHjOrzaFl4GzjF2Chr6MM6TwwEvrN4lRHibMPZL+TWUCczKB1utqR
+	iAy++R1cpae2mj7V2oVPRcZ/pazK9E768eOhDfYbl052Dz+8xvVtRN+uXcpezGWyi3UjuIjbNpQ
+	purFGsLOewivo9LuZi36LMTz40Vav4j3ke
+X-Gm-Gg: AYBFou3x1oSph5fyh27QxPxdveX1KUpcFZp6EMPjeqr0aTk5eu8yMNVj1MmiFC/Syuh
+	SIPd2FU0UA98TOmTgwvfFVU+DNz639SQJb536gTDIFw0pray1cD/xLZold2e5C+0Kx2+rSdTNbD
+	ui2Wm5w0VFNeqSm9Zz6opXvCcH9NHwXBsxEiHEfn4TSuNnHqH/kxX8e6SFDw==
+X-Received: by 2002:a17:902:f603:b0:2ed:4456:fb2a with SMTP id d9443c01a7336-2ee0dedd363mr31379425ad.36.1794592034404;
+        Fri, 13 Nov 2026 09:47:14 -0800 (PST)
+X-Received: by 2002:a17:902:f603:b0:2ed:4456:fb2a with SMTP id
+ d9443c01a7336-2ee0dedd363mr31378845ad.36.1794592033770; Fri, 13 Nov 2026
+ 09:47:13 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -100,35 +127,84 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-
---=-Pk9ID3Lh5PcmffxfFbdz
+References: <20261101082307.151957-1-gahing@gahingwoo.com> <6777074.j6PcuT4dK6@diego>
+ <CAPx+jO_gRtipR7iuh0D7G2Wi25GZoqFD1JHVbJNmhd1UyC3Bmg@mail.gmail.com> <20261112072146.41218-1-gahing@gahingwoo.com>
+In-Reply-To: <20261112072146.41218-1-gahing@gahingwoo.com>
+From: Ulf Hansson <ulf.hansson@oss.qualcomm.com>
+Date: Fri, 13 Nov 2026 18:47:02 +0100
+X-Gm-Features: AclHuK_xZYTfne11hVPWnloCpcRGvh8w3tWYpN49I_tY52oUY-lip7RnFHUhpQI
+Message-ID: <CAPx+jO-KKvgRS0br-3QGh6Jt4efWJ+A6YoRZKFV_bcfB+8sm6w@mail.gmail.com>
+Subject: Re: [PATCH v15 00/15] accel/rocket: RK3576 NPU (RKNN) enablement
+To: Jiaxing Hu <gahing@gahingwoo.com>
+Cc: heiko@sntech.de, finley.xiao@rock-chips.com, shawn.lin@rock-chips.com,
+        tomeu@tomeuvizoso.net, robh@kernel.org, krzk+dt@kernel.org,
+        conor+dt@kernel.org, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, ulfh@kernel.org, p.zabel@pengutronix.de,
+        ogabbay@kernel.org, zhangqing@rock-chips.com, royalnet026@gmail.com,
+        abel.vesa@oss.qualcomm.com, sebastian.reichel@collabora.com,
+        sidong.yang@furiosa.ai, u.kleine-koenig@baylibre.com,
+        chaoyi.chen@rock-chips.com, diederik@cknow-tech.com,
+        alchark@flipper.net, leonard@lausen.nl, jeff.hugo@oss.qualcomm.com,
+        rfoss@kernel.org, dri-devel@lists.freedesktop.org,
+        linux-rockchip@lists.infradead.org, iommu@lists.linux.dev,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+X-Authority-Analysis: v=2.4 cv=DNgacCNb c=1 sm=1 tr=0 ts=6af74d23 cx=c_pps
+ a=Qgeoaf8Lrialg5Z894R3/Q==:117 a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10
+ a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=yx91gb_oNiZeI1HMLzn7:22 a=VwQbUJbxAAAA:8 a=s8YR1HE3AAAA:8 a=9GNsruGHAAAA:8
+ a=KA_qeCUQCZmkxMg8J8kA:9 a=QEXdDO2ut3YA:10 a=x9snwWr2DeNwDh03kgHS:22
+ a=jGH_LyMDp9YhSvY-UuyI:22 a=gf-oSkQAjqHFJRp-GQfY:22
+X-Proofpoint-ORIG-GUID: 5j_Au0xrwKwS6OQA22An7LfmWaDPu_Ci
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTEzMDA3MCBTYWx0ZWRfX1JDKdjpwXMuN
+ WCMt15n7ToIC509cpLFrI6OjKU03oiof4wkbf2dJ0TLM2PGzPrTjRrLt9D9Gfi+GhKsGIvS/nPZ
+ voiCG4/v6OBSqgpzyC/pwQfzjuKQI57Qj8rjtXHXMS7t0+9TrboHvWEgCxCcnz3BGohh+iqQ3RN
+ IHLrRQkeJvyaPyZ+K6tsXqGw00vdctibfCYQ4OTu5K0roB3I6iQz/Xz+jetQEmJsP9/yvaf11NO
+ 4jmdph+weMwTD1LmVF5UrFbJlIGAyNK48WOJoTlHTEfnkFwDGEnyYFaXGsiRSOh48E+XFwxvbyH
+ YUPxmkDBiK4rqDmiSS9rOo+sjNG9e4tSVdiag55/qKPotKkHivqpy7X1Y0B3GJhyraozRh5rfkm
+ OCGd+Yx5KL9ZTuAMD6cn5xen3G35/wd9gRUMh3+c0pm7PUaziaSxjqaY9JdHzlWQpCubqZ9i/nb
+ w4hMMR8V3BmtR2yKYIw==
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTEzMDA3MCBTYWx0ZWRfX/nzV7NxbTyWc
+ LQLP5d6FnpMdMZBkSgKyiIJ3joKkVZg/y0RCUeCSDblTbSYcufLabwcyhj41RemDLom1KO9lhsO
+ aqdqdahx88Qckv2BI5bGa0o0XsREUHw=
+X-Proofpoint-GUID: 5j_Au0xrwKwS6OQA22An7LfmWaDPu_Ci
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-13_05,2026-11-11_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0 phishscore=0
+ impostorscore=0 priorityscore=1501 clxscore=1015 adultscore=0 bulkscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611130070
 
-Le vendredi 13 novembre 2026 =C3=A0 16:40 +0000, Arun Iyengar via B4 Relay =
-a =C3=A9crit=C2=A0:
-> From: Arun Iyengar <aiyengar1990@gmail.com>
->=20
-> A device bound through driver_override may have no OF match, and
-> hantro_probe() then dereferences a NULL match. Use
-> device_get_match_data() and fail with -ENODEV without match data.
->=20
-> Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-> Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
+On Thu, Nov 12, 2026 at 8:22=E2=80=AFAM Jiaxing Hu <gahing@gahingwoo.com> w=
+rote:
+>
+> Thanks Ulf!
+>
+> On second thought, I think it would be best to drop patch 7 (the
+> binding) and patch 10 (the reset) from next. Once patch 10 is gone,
+> patch 7 is no longer needed either.
+>
+> Finley Xiao from Rockchip pointed out on v16 that the reset is not
+> needed, and testing on the current code confirms it:
+> https://lore.kernel.org/all/ca90a994-70cc-410a-902d-5c4c0aacc9b7@rock-chi=
+ps.com/
+>
+> Patch 9 can stay. I will send a separate small patch to fix the delay
+> table.
+>
+> Thanks!
+>
+> Jiaxing
 
-Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+I have dropped them all, let's start over! I needed to apply a fix for
+the rockchip power domain driver anyway, which caused conflict with
+these patches.
 
---=-Pk9ID3Lh5PcmffxfFbdz
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+Please rebase on my next branch and submit a new version.
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCavdI3QAKCRDZQZRRKWBy
-9L/GAQDFEJMjaukjIL6hsPbVKhY3JdjK2trma5iMW2z5o4dWmQEA0jyOVzJ7q5zj
-M7YvozDsuHiLH1Y/S548p4WbG4GM4QQ=
-=YkKR
------END PGP SIGNATURE-----
-
---=-Pk9ID3Lh5PcmffxfFbdz--
+Kind regards
+Uffe
