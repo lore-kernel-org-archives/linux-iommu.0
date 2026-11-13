@@ -1,95 +1,55 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.42
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794593046;
-	b=usb5EWelA1DS38H+L/tBJb9pEBOxP4W8CWB/BT9yuESzfAUr1NRsDqlibMVlksIrRreZ
-	 v4qtM5gvPbgqJo9axrlJej+WeMswP/BIMzTaqYYHMMrDkcJzxt6UrXhPVoSFBdNeLgK3V
-	 IbToRc9bTe69gQjZa2E8ENsgBn6RH0XsKvAthpKKA/EXFN7w5Nw4pLVk62GFjI1hLDCgA
-	 HQmplyJ5rz/5B0UihWigejYByFP0Tn+2TjdNikmMCO60Mz0SyvkZjlzm3VrNJN2JTMMNw
-	 nk6XUZtcH9acRlztNH/Viwax/ryyX6YM1E9pqPZtu9Y9JGkTvVmzpamLJ80NTgAcITQ==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794593046;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:From:Date:
-	 X-Gm-Features:Message-ID:Subject:To:Cc:Content-Type;
-	bh=AvuG6GtWMhvBrr/UfnDRgGS1baAdJ+zbVL6VkOkdJWI=;
-	b=QD1q2k10gLp2dtf9nKe82bi5Sq9uk3u7jLlj/ozgMfuRUuiFY+0f5Hck7FueDgX0FdM5
-	 GL0lQlm6sotsykIAluce1ou/H12GCiSnuRCn0yYAonxuvEVgyXZ1hbEgvHxP95Q3nqWuo
-	 P+izw6JdEwZIhGyUdGJqalLfVzQkkEvun4YtvLkw8NScOSsIo3PpZKQGKGL7ZniDOeIww
-	 hhXKu57z/+7Ohz+n7gxdQZcYSyjWmDy8Rjhb/FKi4aZR3U2pepgPkhTJDkOiTIvDRez1/
-	 vIVdKWnoHjhu+PRkQwRb/FDrWCaSWZyIiIsaf5fIKs84ZzXqMrhzB4ZY8wfobfK8iwQ==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iu0w5xvd;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.42
-Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794593950;
+	b=xvNcVpuTnf5Yoww/irmutPiE/juEXTEmaUxKXh7DCKAL7vFNTixMGRbIPl8QLRYbqvul
+	 F2ynlomYIydkZA07BMmxXmJSwuh9kFjcF9b7E8/Hy6SGk7ngvsS1pJxX0GCYqf5ijwTzu
+	 BybsGGM3B0sIeqLYT3vZHZCUKYGy52SnJmT4nWlMB12nBImcLOuNT2RBDefphA8j0CyK2
+	 lazRaexktWPV5GazqwWA/mdSKqmUEoeay1cpE/INdTZBhe/9Huw9rrgZzxwlVG+nIaQlK
+	 Xuzm5lV7lv7wmZBV0b9kDY4gTg7ZCDU38Myx71LGlLeXQJflh+UKlidiXtssTiYqqRQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794593950;
+	h=Received:DKIM-Signature:Received:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=/VIh85zZMfzSY6G83+v5V/TjnRLbNiLly0GYfH3nJNs=;
+	b=fHYwkudpLj7j9SFX7Mja3BqPahiuyd5K6ioDuW8XgzyxSDKej63Ve/kiz0Xaw2VNQTKj
+	 SGKz9KYq8K1tWhSUtr8+nEJ/h9gearYdtj50YBqTpZAOU1mI2bBtReDVO4kW1VJ2rVh6P
+	 5Ft6hFm6NvFdNGIuvzl7Z1kphqQ3PxfrgUZXDoLJdFrc6LFeRyW8djbmhr0BlPxD9YYII
+	 U7k7e2iYDTLd+o2LbAf9MccBkye23VQyiYdYeN1lBXUdqI7c5mhdtK+6iO/GMJz9dgiD0
+	 j9ElB0h/J3plu9QsNhzgG6f5RUkz+tv1wr0byMTqueZrsoWNeW7OuNT78yFpoY4WyrQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TzC7cE78;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27F28606A891
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 18:04:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 27F28606A891
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D958606A893
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 18:19:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=iu0w5xvd
-Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-5c00b0866b0so128945e87.0
-        for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 10:04:05 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794593044; cv=none;
-        d=google.com; s=arc-20260327;
-        b=jBq96MobMiwY8xZP+obyN9NizeYS6CsUGh4rcGhJDqAil+U5R4TLkIp8+53ZjFy28K
-         mj3NuAq4YUZ5nSKLvtIesGemuhpgcQ2q3NQZrTLX5T4uFm3Fcl9E2tab+CLwYfJUUPvV
-         vWOwqubRjXk7oKi9V3SfLobJVMdZCfYI3E0YSPVBs7Xq1zlqNN97aDAV5jI9mgdcFCpH
-         BoZ0qfy1g5KUC5d9nPAxsmRrsZZMV+6+sbPuVknxvPoyOVaz+Z+msPi5l7jmfV7desaN
-         OSAxpV9y+pvLSE3TWl785ZySgr2SdbcZUq0jIWeeCF3EIzPn5drjicsTSwEIwzrcGM2e
-         PSlQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=AvuG6GtWMhvBrr/UfnDRgGS1baAdJ+zbVL6VkOkdJWI=;
-        fh=aTksfhXudPaU578VWs1aV68OC+rpWVk6prVOTaWf8j8=;
-        b=kUSXlSBmPRCgb+OF12FtExTyKL/mjGQseCW63egISUcWMn8flHPjO0PAKMQywxDy3n
-         YZlTAW50wvtJ+V54iyv5jWJB5rQoEHNV8NeJkp9DHSsUP2ojBpUWTtmwFrEOW2aRpZQu
-         mrCHTi2SignaYyA+tRIw5JPSoBSBP8NUJN3+wv+HiY6EFjU2I3EEnwpad6XedtqXvGLv
-         BspYOYsJ4DeiE55f/G17zdUOEJ+OC94yxw85bZEDGpM4kATjTF/UAJjcebqCgBKLlGHB
-         UuB0Tcie2gIC+RzfiN6ho3yQUADln27ari688UerqrKJsqRsLePRXyEgzCOYvzvB749J
-         /Y0A==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794593044; x=1795197844; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=AvuG6GtWMhvBrr/UfnDRgGS1baAdJ+zbVL6VkOkdJWI=;
-        b=iu0w5xvd6UNaogw3Dswvv9kqKi5By+0/CsBnnsknmOG8rH+N1njvG+TXWivi4gfDWr
-         028Y8bCEntHR2XQoZMujsW5cYuyT8WMeZbOjo/9Qxcdo4o77gSO28mmFX1qXkrBXerzm
-         fTo2wzbY64kb6SkEFLEicv6nEsgXURqWo1ItlAKWpgDHT3MxFT+fxR35LmbBbO0e9HEx
-         Vmt63Q7yBhjkhOk+L9uHYRy9t9AJXTi0+uFkGBYe2DR17H4NNdIPQCvg1X5eKbuqkAX2
-         WoB2NsD4IfaaM29AGhYaoh3GaEakF93CwE1JVcTSKig5IuKjnPHQ8rJ0cU98SaU8ZCVB
-         Wz9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794593044; x=1795197844;
-        h=content-type:cc:to:subject:message-id:date:from:mime-version
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=AvuG6GtWMhvBrr/UfnDRgGS1baAdJ+zbVL6VkOkdJWI=;
-        b=jfTGDfNcglCqi2ysDKKC2wxqxv4r6Y8IJBtobMQMpQ/q8giDM7DI1PrdMLY3FkqNnh
-         r1txOO0hp+P3KhJyuWqjPv90+vxc8jQpaUCO36+tul7Uq3f6mHSiySJa+wpaC8eQyu4/
-         CUDHjw5i1Fuzc5iDeOQ4UtedEue425u3PSzZyYQetZ38q/ZmEG3R9GTSLl1VMA7nS09j
-         hlF88BN5982C8GLDWxs3+HKy1sFBkG+bkYsjaN5I5r8IumE/QlhyiRJTdCBYZcCs8o24
-         VZRI4Hqg8QnHErsHQYS5eAVCZ2CQ6gy8qHLgWPe4bPy4LObWahFWWXikPYHJco995jyW
-         yseQ==
-X-Gm-Message-State: APuU4Z/vKAYeTVgXsPZtSAFhHKDwabfAIvWDNJS4KFx9WGeLXRK+fI8l
-	hlKyHv868AHyhyLFYRK27T2ZG3XOWdUlTNpmigOqIYJEdIxN/YSzIVX04iwzebJ8AP1rqJmIlIz
-	TrID26iZHmdlgvYUqw5odCN0ExWesG/g=
-X-Gm-Gg: AYBFou05uPr/q/8CE4/2Ho8gwT4+L20JlwTA+d5kieXY7KEvu2pWnS5HDf81tFypljK
-	sr24MXFba9y/ko3F4h6gbOcnli2pAB1NwLCcEFcPTRLAfKPz1081N4k86qKjmVQC060/61K/de/
-	yxmj20j5S7Uco9zcx6gtrITsXj+uaHmyr4FqhKis8HqJj2t5Zp5OF2XFby4z0O2PWRboy5CEdCO
-	Oi0Hjhf5YPyPIm8/4BEMOJibPSoJCtsg4uthC+u+ZNm/mvZZVFrfvbdaFa9H+RFunfaiUrYJ+Lc
-	89/3GUUyChp5P4hoZqcL3h2v1Uo2xfWz89VQEKN2BrzcRdvZpxoG1pQxy+s+ZuGxRqybx4eHgKn
-	rc+IYqzJUDoZ2GINAjJBzu/U8O6e1TKZhofK1+EJVuCO6tBbAD0CNxYzTTLdx
-X-Received: by 2002:a05:6512:1326:b0:5bf:d00a:b6c0 with SMTP id
- 2adb3069b0e04-5c17076e20cmr1662922e87.3.1794593043926; Fri, 13 Nov 2026
- 10:04:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TzC7cE78
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D14A1F000D1
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 18:19:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794593950;
+	bh=/VIh85zZMfzSY6G83+v5V/TjnRLbNiLly0GYfH3nJNs=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc;
+	b=TzC7cE78kKFl2rFE1ESKez8K3/v6Pqk/6PLrXGyiq2H8nW8RaKll1mNR/hvrBhoAX
+	 9WUKboDxL2p3Jax+koelb066IybY3DAyK95vGOnYrQLEWCd8zr9JB2nkLXwMD48oro
+	 eBlcvuFHizULDj5hONrf7IDExHONWpvIf77MgXaUD3OXBqfZQ67bfgb2xPq1SoAoJK
+	 T3NkAz2AcSCaHe3eo20kPD9U/cE84jkgmN3fcFTb3UIgs2jbLigXSsu2MG4WlwRKQd
+	 lN4tR2+CCuZNMvYNucVewMR1jQy7sxt8uriatRDaKQNHlu1Xb8w/7Uzi3R4wDwiNfg
+	 QeLT7VoO7hmng==
+Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-5bfbc67991cso1213175e87.0
+        for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 10:19:10 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AL+hErEwktorU2SRTgxfnvc59NfZdVUgeK2oovIscVg7xRlm7adn7iO+72Vg0UMTxDpZEIl6VK7aAw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/LAFY2cm61yQSKalRvcvuIWVt+xrhmkVI1b+yAJJoBIODgN0Tt
+	jzWXOQG2R0AyndxwuIxwuZXJr1k/vS2UpCAbHQirg0FslW1o3xg/4bx8SGuckn1I8TosGvfdacY
+	Drc/fUx/Sw8zApj+CAyZtO6gc8NDF6ek=
+X-Received: by 2002:a05:6512:1310:b0:5bf:cf80:dfd8 with SMTP id
+ 2adb3069b0e04-5c170a0bb47mr1769832e87.23.1794593948320; Fri, 13 Nov 2026
+ 10:19:08 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -99,108 +59,98 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-From: Nathan Blomquist <nblomquist@gmail.com>
-Date: Fri, 13 Nov 2026 13:03:53 -0500
-X-Gm-Features: AclHuK_exSUOWus1xIZ4L7KKPBQE0Tcdq0rZid8M3XVe6gy4ouyQmR7N23pJ8g0
-Message-ID: <CACOV87VBwH+R3eSBEOuz8hk7OaT63+A9m6ipPSW5wt1VhHMFPg@mail.gmail.com>
-Subject: [REGRESSION] AMD IOMMU v2 failures on Cezanne; page-table flushing helps
-To: joro@8bytes.org, vasant.hegde@amd.com
-Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com
+References: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
+In-Reply-To: <20261029163044.3062958-1-Frank.Li@oss.nxp.com>
+From: "Rafael J. Wysocki (Intel)" <rafael@kernel.org>
+Date: Fri, 13 Nov 2026 19:18:55 +0100
+X-Gmail-Original-Message-ID: <CAJZ5v0jyuMjh4En_r2TYui+sNbGveJ0Rz1Da39LEK9e-HxHgGA@mail.gmail.com>
+X-Gm-Features: AclHuK9_YtJ6aWlSAf9yM8R-lWnFcHYi_anHWoQsLhZYkqzdVHJqxA51shEqA-Y
+Message-ID: <CAJZ5v0jyuMjh4En_r2TYui+sNbGveJ0Rz1Da39LEK9e-HxHgGA@mail.gmail.com>
+Subject: Re: [PATCH 1/1] PM: runtime: change stub pm_runtime_get_if_active()
+ return 1 when !CONFIG_PM
+To: Frank.Li@oss.nxp.com
+Cc: Frank Li <Frank.Li@nxp.com>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>, 
+	Karol Wachowski <karol.wachowski@linux.intel.com>, Oded Gabbay <ogabbay@kernel.org>, 
+	Jani Nikula <jani.nikula@linux.intel.com>, 
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>, Rodrigo Vivi <rodrigo.vivi@intel.com>, 
+	Tvrtko Ursulin <tursulin@ursulin.net>, Matthew Brost <matthew.brost@intel.com>, 
+	Thomas Hellstrom <thomas.hellstrom@linux.intel.com>, David Airlie <airlied@gmail.com>, 
+	Simona Vetter <simona@ffwll.ch>, Alex Elder <elder@kernel.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+	Rob Clark <robin.clark@oss.qualcomm.com>, Sakari Ailus <sakari.ailus@linux.intel.com>, 
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Guan-Yu Lin <guanyulin@google.com>, Mathias Nyman <mathias.nyman@linux.intel.com>, 
+	linux-pm@vger.kernel.org, linux-usb@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+	intel-xe@lists.freedesktop.org, linux-hwmon@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	linux-arm-msm@vger.kernel.org, linux-media@vger.kernel.org, 
+	linux-staging@lists.linux.dev, netdev@vger.kernel.org, imx@lists.linux.dev, 
+	Rob Herring <robh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+On Thu, Oct 29, 2026 at 5:31=E2=80=AFPM <Frank.Li@oss.nxp.com> wrote:
+>
+> From: Frank Li <Frank.Li@nxp.com>
+>
+> When CONFIG_PM is not enabled, all devices runtime PM state should be
+> treated as active.
+>
+> __pm_runtime_resume() returns 1 (called by pm_runtime_get()).
+> pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get()=
+.
+> stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
+> should return the same value as the stub pm_runtime_get(), which is 1.
+>
+> Analysis of all callers and their behavior with old (-EINVAL) vs new (1):
+>
+> Pattern A: if (!pm_runtime_get_if_active(dev)) -- no impact
+>   Both -EINVAL and 1 are non-zero, so !ret is false in both cases.
+>   Callers: drivers/accel/ethosu/ethosu_perfmon.c,
+>            drivers/gpu/drm/msm/adreno/a6xx_gmu.c,
+>            drivers/gpu/drm/msm/msm_perfcntr.c,
+>            drivers/gpu/drm/v3d/v3d_mmu.c,
+>            drivers/gpu/drm/v3d/v3d_perfmon.c (x4),
+>            drivers/media/i2c/gc08a3.c gc05a2.c og0ve1b.c ov6211.c,
+>            drivers/media/i2c/ccs/ccs-core.c s5kjn1.c lm3560.c (x2),
+>            drivers/media/i2c/s5k3m5.c thp7312.c imx283.c ov64a40.c,
+>            drivers/media/pci/intel/ipu6/ipu6-buttress.c,
+>            sound/hda/core/device.c
+>
+> Pattern B: if (!ret) after get -- no impact
+>   Both -EINVAL and 1 are non-zero, !ret is false in both cases.
+>   drivers/gpu/drm/amd/pm/amdgpu_pm.c (comment says "allow access"
+>     in kernels without CONFIG_PM), drivers/pci/pci.c
+>
+> Pattern C: ret > 0 / ret <=3D 0 / ret !=3D 1 checks -- FIXED
+>   drivers/usb/core/offload.c: checks (!=3D 1), old -EINVAL caused
+>     -EBUSY even with !CONFIG_PM. Fixed: now returns 1, proceeds.
+>   drivers/accel/ivpu/ivpu_job.c: drm_WARN_ON(<=3D 0), old -EINVAL
+>     spuriously triggered WARN. Fixed: 1 > 0, no warn.
+>   drivers/gpu/drm/i915/intel_runtime_pm.c: checks (<=3D 0), old
+>     -EINVAL triggered error path. Fixed: 1 > 0, correct path.
+>   drivers/accel/ivpu/ivpu_sysfs.c: (> 0), old skipped freq read.
+>     Fixed: proceeds correctly without CONFIG_PM.
+>   drivers/gpu/drm/xe/xe_pm.c: wraps (> 0), all xe callers
+>     (xe_bo.c, xe_shrinker.c, xe_vsec.c, xe_ggtt.c, xe_guc_ct.c,
+>     xe_pxp.c) now correctly treat !CONFIG_PM as active.
+>   drivers/net/ipa/ipa_smp2p.c: power_on =3D (> 0), now correctly true.
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: (> 0), now correctly
+>     executes stall register update.
+>   drivers/staging/media/ipu7/ipu7-buttress.c: active (<=3D 0) early
+>     return now skipped, correctly proceeds.
+>
+> Pattern D: explicit -EINVAL check
+>   drivers/hwmon/prom21-xhci.c: checks (> 0) then (=3D=3D -EINVAL).
+>     Old: took -EINVAL fallback. New: takes (> 0) fast path.
+>     Both succeed when CONFIG_PM is disabled; functionally equivalent.
+>   drivers/hwmon/eic7700-pvt.c: call is guarded by IS_ENABLED(CONFIG_PM),
+>     stub is never reached. No impact.
+>
+> Signed-off-by: Frank Li <Frank.Li@nxp.com>
 
-Resending in plain text because my earlier email included HTML.
-Apologies if you receive this twice.
-
-Could you take a look at this AMD IOMMU regression? Since 7.4-rc1, my Ryzen
-5 5600G systems fail to initialize Navi GPUs under v2 translation. Identity
-mapping works.
-
-The bisect points to bf5bdfd1f8d4 ("iommu/amd: Force identity mode for
-selected GPUs only").
-
-I've attached a small experimental patch and logs to this comment on the
-AMDGPU bug tracker:
-https://gitlab.freedesktop.org/drm/amd/-/work_items/6081#note_3782405
-
-I found that my dGPU stopped working when trying 7.4-rc1 for a different
-issue.
-
-The patch enables the existing guest-page-table cache-flush handling
-through PT_FEAT_DMA_INCOHERENT. Pristine 7.4-rc2 plus those three lines
-initializes both an RX 6600 and RX 5500 XT, with no IOMMU faults or PSP
-errors. DTEs confirm both still use translated v2 DMA-FQ domains.
-
-I also tested whether the flush's barriers alone were enough. Using one
-unchanged kernel/initramfs, both GPUs gave these results:
-
-- Cache flushing: pass
-- No flushing or barriers: fail
-- Two MFENCEs without flushing: fail
-- No flushing or barriers again: fail
-- Cache flushing again: pass
-
-The feature's other effects were retained in every mode. Failures had IOMMU
-page faults followed by PSP KDB-load failure and probe -22. GCR3-only
-flushing also failed in an earlier test.
-
-So two MFENCEs alone didn't help, but I haven't ruled out the extra delay
-from flushing. This is a diagnostic patch, not a proposed final fix;
-performance is untested.
-
-Is there a known Cezanne coherency erratum or something in the v2
-table-update path we should check? Full logs, DTEs and diagnostic patches
-are available.
-
-AI assistance was used for the diagnostic code, testing and write-up.
-
-Thanks,
-Nathan
-
-Subject: [RFC PATCH] iommu/amd: Enable cache flushing for v2 page tables
-
-On a Ryzen 5 5600G (Cezanne) test system, an RX 6600 and RX 5500 XT
-fail AMDGPU initialization with translated v2 DMA-FQ domains on v7.4-rc2.
-IOMMU page faults precede PSP firmware loading failures and probe -22.
-
-Enable the existing generic page-table incoherent-memory handling for
-AMD v2 domains and provide its required IOMMU device pointer. On x86,
-the existing flush implementation calls clflush_cache_range().
-
-This is an experimental extraction for review, not a proposed final
-platform policy. It enables this handling for all AMD v2 paging domains,
-not just the affected platform. Cache visibility versus flush-induced
-ordering/timing remains unresolved, and performance is unmeasured.
-The feature also disables a single-page fast path and sets an ignored
-AVL bit in non-leaf entries.
-
-AI assistance (OpenCode) was used for the diagnostic implementation,
-test automation, evidence analysis, and this extracted patch and text.
-
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/6081
----
-Base: pristine v7.4-rc2, before applying the c1diag diagnostic patch.
-This three-line extraction was separately built and boot-tested once,
-without diagnostic logging, mode selection or GCR3 modifications.
-No GPU workload, performance, cold-boot or other-platform validation yet.
-
- drivers/iommu/amd/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2810,6 +2810,9 @@ static struct iommu_domain
-*amd_iommu_domain_alloc_paging_v2(struct device *dev,
-        domain->iommu.nid = dev_to_node(dev);
-
-        cfg.common.features = BIT(PT_FEAT_X86_64_AMD_ENCRYPT_TABLES);
-+       domain->iommu.iommu_device =
-+               &get_amd_iommu_from_dev(dev)->dev->dev;
-+       cfg.common.features |= BIT(PT_FEAT_DMA_INCOHERENT);
-        if (amd_iommu_np_cache)
-                cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE_NO_GAPS);
-        else
-
-base-commit: 7475ea8b58616b33c04afb976cf0fbaad9dd63fb
+People sent feedback, so I'm wondering if there's going to be a v2 or
+does someone else need to take care of this going forward?
