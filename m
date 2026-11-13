@@ -1,100 +1,78 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.48
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794559492;
-	b=KVN4S8XQlLMfxiDeZztT2l6ymDuQD9cmbogtNnrU6tJOl+liUav3jzlLm84teIO/uham
-	 7CW3XsM9LinGO0UOqbc+XHV445+kzy8ovNjK2OtK96puWloUEXc/zOi2YuK4lZe0W4pY/
-	 7dqGwBeWBVjrDd1UV2cd/ll7vq9o7R28PUPTvHknSk/vnR66y8ro5d3gEXr/hi5b/ZqSX
-	 TP0Fy+k5dhz8NGjvoTMGyE8p0/faxH7vuNGjVnHm27wEGaurBlFTiaETKjZalzd+Vh9Ll
-	 5xGxEX2uOvAYSuIs5/8NYZus/BHxqbPvW4ZfgL3f9RMXDpSqK+UuLe6TdAu3tCnIZlg==
+	t=1794559506;
+	b=pyuPhHFntgkoT3CQFg5NcB6aDmPyM5e09A7HiYP3CKswn9D5zB9nJRsttUZTJiqnUxSe
+	 DX9sNMOW1hj8x5H8jgko1hZfZdDbvSjY/Shs1I1gBAY5eP6MN/AXhUcn+qgVK2V2P8wuD
+	 ImMVAUhyse4oW/5be2mjazCzyf37dis5lNUKEA9BMsFn9pYYRbv0Jh1ivbykVXfSVPi0H
+	 zr6kiXi5gvITFjRw9QqzVgJgG5KUIQ/0aKBWIMja8HUy8Bfju96lQlw4/0lGQB2f5nDAJ
+	 yqjcOuQ6cB1wLeVh6XG0+LhCA60YHxhu9RabD2I8JsLJH7wpgIa4EvFm7ojIFmHWs3w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794559492;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
-	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
-	 Message-ID:Subject:To:Cc:Content-Type;
-	bh=x+fjXvjMRilqC/1PD9XiiBtX4xwfGR8XcMAZq+mM81o=;
-	b=4124ZDSJM6RwTfM2g7pX2pScebxkmYyweDq2FHfvHHRsMXbe7XwXm8FKevGjJQqWoZds
-	 nhGwvmP+ntl7ajSxXD1K5SfqCRrFVmckhHzU3cnvxd/f8elKmGD3OLdN8v+W4HLbmJQFg
-	 JhQ2vNOxzFtrlKI5wpF4TSD8YHXX9uepKjfrFPFuQNBiaYDyYxjhbjIiNFiiE9eMf//JQ
-	 EAte4OhEBTJkZBEg+oYJlbYwML2jzmW5YN1wprtk51afpcd4ZG38nwRH42WPxPrsJ+HWL
-	 sSIzQCcixsIg1SYqn5chX1coOWNY4yFHZ1txc/KfKEywH/RtVjPUP87hvFxz4GxPMQg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794559506;
+	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
+	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=Us1gVL4HePkaxbUhVypXyAHCO7V+bnBHInwTgzPnw0o=;
+	b=x0XphnAbbyQ1dlzDGFaTqhifldx0lErF7ZdDyjhhATiEtzOxiqrtHeB9kXlep/np8Dky
+	 F2g4gpp2tCp0f03426glYKjTkRQo+osBI8hbLHcGWolnig0kwOZh2qcsn5oIyxRomME4n
+	 HLN4owe7ksPlXk8+TUcNOG0ytTorSe9IrETtPexMju6Zvs1FPaQ6S9XPpVf0ovzT7o88h
+	 tQcfg4ib25MAS6ta9H2paDCVKk29yLe2rL2zlFQ7T2DrIYSKKjGrBh4x1yM1BVZiDNkGy
+	 27x1ptB/LADkQlacSJzJTpSSjzX/DKlCIgl0GgdyomuOxekERBhib3QVe+vkowi+Mug==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=uvJ1xHk9;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.167.48
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OfkgP1FN;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C56A3606A8B3;
+	Fri, 13 Nov 2026 08:45:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=OfkgP1FN
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794559506;
+	b=EFM4klSjwUhk/cFW8f5sjUHxri3eEj/foSS2SpLdOLUVlBNMnsytZYo3+c+7HVRZ8wEP
+	 qDmFjVFpTHs2yewdhqO7pUI9UszoQI137Xdxry+FGhvx6lULOhYN+01iRULpxdnY7ggBe
+	 bOLNo/qBuZkiaqN/c1/PuXiHDCs4NMovgfMIqFEnyrEVsNKBuBMe7Nc+W01d47hUUERmU
+	 O3M/8KwaIV9FSIVXERYs6yCz7/OzBbe8GKPF0asZ1s6PxdB9WXgWH8LcaWHASWdpajweB
+	 jCOS8IXwWMso2aEihtZird8LtXMC9rRgJOHn8dtowsAIf+r7+s0Znj3Rlo6vrYZhItg==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794559506;
+	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
+	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
+	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To:Content-Transfer-Encoding;
+	bh=Us1gVL4HePkaxbUhVypXyAHCO7V+bnBHInwTgzPnw0o=;
+	b=3e2tZLGbppNmbWG5AobDzHt+SshaIjGcLyChYMwyYYrxVN9nq5FufNXt8lyV0z19UwVm
+	 69kGna9SHzLgKtPcsFSLP8Vm+47Us4gXNfVwwLqpGoWSQM2NLyYUjMo6tWfcA/GgToDVH
+	 329WwLWvPZCgg+vvgeMNwI2pWe4VqB7+5lX6/dAdnmOVa38/dF8WGehbI2f1JRu0D2N33
+	 YdCKTgDxSHbCGBWTucxxilQht5cOsjFaixo+CZWDYf6m4usBGhpP31FspVFlJGoE9LM5B
+	 9/epvyrvBBzq2XDAJSWY3JB0+ynDtnSxIx0MlftVDASN7jkNJNe1aM4uB1NCdGb7mCA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 374A460A3806
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 08:44:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 374A460A3806
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=uvJ1xHk9
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-5c14b6ac47eso61887e87.0
-        for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 00:44:51 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794559490; cv=none;
-        d=google.com; s=arc-20260327;
-        b=USwUZ0wtlpRlzM1u1ZCuqqHOnuqqOGiGZAerd1BLtdR9v6wW+sVtDxBlQ0Fgvc5NuO
-         fWk1fMLr2a/yMfl/LWW+JvjVIv3lHTtWbbWUwemA+yxQdddvi7O8sbJCO9L9ELlSqHQF
-         uJ+KKHl8bfoef2uznpepCNUpElob5N4in6ZFMrxYyDPWD2l1I/zgY9vcAXjqYA01EfiC
-         hOHubhTUIxAa5Tjrzj6+WxWzoPo1yEM9vZLW4c0R7FnSVzwqMyLHTe9dbTDRbRoEp0sd
-         oNtllnQMJkULT0AyhAD0G1Hc2qDLQ2OVnkxUj2ODnlCN+TXxSr8h6sC9AP9bbF44T5oZ
-         kzcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=x+fjXvjMRilqC/1PD9XiiBtX4xwfGR8XcMAZq+mM81o=;
-        fh=kJXUZ5l1qCDp3UYt3zUzxeHOsqCKvNL4QDDJbJXVW30=;
-        b=MrCGowQsFhaw6K0zf4NxyQy95ndBj1P6mrnpoL53e8/hfbJKKZpeiEZP52Y11B0qsK
-         s5yhIjwddHWrN3/VSJpwmwHoeXOXm8X62/cR4IyK/79ZIoqMRnsRuOP6nGQsjzexXBf4
-         SOQVkgE29KZTOxyRv293mOm9TYOr8hsPsf3Af1k12z/rPh1Rx6W1mgPnDvg/HkRTi2FN
-         jBcgFqFZcZHRVElGKzPXfZyczJpVPvhsx56XXk73B/lCSC5AEGkcPN2A5J58rLYx3+KV
-         CVl81Qmoh0uBaXsKQb7iFz3jRI7y9FnP86O645GWEti4B0mqUWxx+lu5b8/GsOrop9+P
-         pupg==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794559490; x=1795164290; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=x+fjXvjMRilqC/1PD9XiiBtX4xwfGR8XcMAZq+mM81o=;
-        b=uvJ1xHk9IS0/FgteH7YNpQ/s8m3rgstIx8ZW64yY+Plt8uNAQBb2GfRzvuil535vcz
-         Q8Pp5dZYLRLXQQlj1rRTubII6Jp/qV8eq1wqI/jIHx7MVxd5T0HgPvdupdmQHnRG53Ya
-         OHKCiapotyuOUL5W1hRmkaPY/RX9ofWoTHNRDBdvipGAqjW9bScFeV2Op4qquB7QmGw6
-         9PZ+r+bxeEINsyL0TQCENvlLnBwF4B6+lwG1WEyxx8LYHNhdLZ1nxyzxZOhlZUUycJxM
-         RJCRFCLPcgiL+Vwu2SsOFjUEHSkzK8fs8CN9MAZ2s+JsIE2yC/A/HrsgH+bkQQYHNrpq
-         Ci6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794559490; x=1795164290;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=x+fjXvjMRilqC/1PD9XiiBtX4xwfGR8XcMAZq+mM81o=;
-        b=q7WOgO+J617R/EViFmeu6RhckbMYeiWQ5NOExP4fbXkwcEf9Nm6gMWC8w33ajr8yhn
-         abYZVxoaF+PA0CenAfp++rFOjBem9J/LboenpWPxhMmpRTxABRuPRK9XbeDxxqFeFdec
-         rtDFOS4TCPKLaCLzrQj46sNYonV4twi7se5cgwMmSO9H3oxnQE7lL8AOcmQySYG8CjQP
-         9w3ztZF4yT3PVZaoB4xF6JNhAgPCfS8QHfiyqlk75TZFnzd/PpCRLy4R6TEBfnH+OpRd
-         ppir8X2MWq8yhbPqRaxQRdO0iexeSIg7hoMLI9700WpPO5J+FY3rf9FOOO+cCf1TxquR
-         SxWw==
-X-Forwarded-Encrypted: i=1; AL+hErGuzOM9+W8tn2bZ4NVy1l2pPRaSFPzCkI4024sOo/7+VJQ9/ETYQux/7bcmzruPO5Sc79KP5Q==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9A5bbGVFDWt6G3eYYY9oBCAdG8bZf2DiTNe48uJNqixQTjFzPM
-	Br5shxysRbzSpY01FhzGQCJhoaID3CtJVu4ztnT93rxwa6IIzpnZYaIaUlzZb7pR3ChtTcP7NUw
-	ThgF0eFs8c2wYneGAEytKZc8kQK840HU=
-X-Gm-Gg: AYBFou0l6/p2NfE30L0Bn0V0J8uhLDletynHWx1oBa78bujMNKF1od3ugRXU5ZBamxt
-	o9inlgl/IOfGrJu0zbJp+BO/CO5odPxjeG9+guLjRd97NhdL4w2Gz8cPFruoTioDclKyN6QsZzs
-	cZ6vzxY8sBOCmPcN+afcJ/7q22WbNB+RzufTaCDxVIe6H6b2qYk1/rXBLUa1W37Fuzh30SsJZsk
-	wL+MgwnB3xFT4W5OcIw98PqjIhJIpTOeDL24m8AF1XERLDomiy21c9Hw5AxrDPB7zJCeD/k4xxn
-	c0jlE17SRRCxgp4HcZKoPME6B01anFGa7bCO7W+FMQWchLbKTvlo2TTds9fppgWxTGEr3JX4CLB
-	vlSr5oSBZwbdzVscRTaC+32VR8Z5YSesSmG7cMfpdnNqxVxrbT20CP9OwlXoVuQz7Piyx0Ch3PY
-	4MQhoEiXDNGc8pkmbn
-X-Received: by 2002:a05:6512:3e0d:b0:5bf:a66f:e5e with SMTP id
- 2adb3069b0e04-5c17058b108mr873253e87.0.1794559490194; Fri, 13 Nov 2026
- 00:44:50 -0800 (PST)
+	by smtp.kernel.org (Postfix) with ESMTPS id 1D5251F000CB;
+	Fri, 13 Nov 2026 08:45:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794559506;
+	bh=Us1gVL4HePkaxbUhVypXyAHCO7V+bnBHInwTgzPnw0o=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
+	b=OfkgP1FNooClVGWHFEjFO7pDjXRBgzj5AroB4DIFskipX/g9iNXUv8KSBXJyYAOlW
+	 C/Veru8CC1yH8JgxsnAviFc8P+QMU5QDTP3Wu51lkK5Ggq6G9Nza5JBd8vCRK/bXKE
+	 rSXKAx02DGe82VIMd+mUIwGevuiYKbT6PxkwjaF/jxiej05v4cZ/cBcA1giy/YAvDK
+	 OEilpprcoD8QF0l14dWc6Mb0dgsz6TREZUR2sC93kkBDDTN4ElUNPhv9aKyPuWf7ps
+	 gbOLLOaiGE2NOMNvAxVmYbTEWDa/ihZAZ9wTF3EttHbGuB1JgoRuyuU2Ujq5noFCoi
+	 MSLdw9wI5hHZA==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 9B187476CD;
+	Fri, 13 Nov 2026 08:45:05 +0000 (UTC)
+From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
+Date: Fri, 13 Nov 2026 08:45:06 +0000
+Subject: [PATCH v3 2/3] iommu/arm-smmu-v3: Enable an optional clock
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,36 +82,89 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261110-smmu-v3-pcie-pd-v1-0-628819ca44b9@gmail.com>
- <10924894.NyiUUSuA9g@diego> <ea8fa04c-4a8c-4c55-b4fa-f37d74267e93@rock-chips.com>
- <9_7qTfdNSViwtNUGq9D13w@sntech.de> <avU2I_QzCiBPVTDC@venus>
-In-Reply-To: <avU2I_QzCiBPVTDC@venus>
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <20261113-smmu-v3-pcie-pd-v3-2-39eb4f919529@gmail.com>
+References: <20261113-smmu-v3-pcie-pd-v3-0-39eb4f919529@gmail.com>
+In-Reply-To: <20261113-smmu-v3-pcie-pd-v3-0-39eb4f919529@gmail.com>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>, 
+ Niklas Cassel <cassel@kernel.org>
+Cc: Pranjal Shrivastava <praan@google.com>, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-rockchip@lists.infradead.org, 
+ Sebastian Reichel <sebastian.reichel@collabora.com>, 
+ Shawn Lin <shawn.lin@rock-chips.com>, Simon Xue <xxm@rock-chips.com>, 
+ Finley Xiao <finley.xiao@rock-chips.com>, 
+ Arun Iyengar <aiyengar1990@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794559505; l=1706;
+ i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
+ bh=7zvWTrIyWfGyWvQ0NqQRx0ysMD5mOH6jVqLwWsAbCjA=;
+ b=iB/b/B6lXe5GW9lrzof7V2M+wHDzQOeYjXWkLR31k1MNGJ+wI4j8G9ACorIgUxMAbVXg92/yq
+ xjHrCRw97DzAYCXduuqoYeCsXbRcpK4Uqh8NOT9cweRDp2q3FtH0ujJ
+X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
+ pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
+X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
+ auth_id=1480
+X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
+Reply-To: aiyengar1990@gmail.com
+Content-Transfer-Encoding: 7bit
+
 From: Arun Iyengar <aiyengar1990@gmail.com>
-Date: Fri, 13 Nov 2026 00:44:38 -0800
-X-Gm-Features: AclHuK8fX0XCl2Od3Qw3inFMre3WawrBORUXKfjsC28PcE94ozVVaEPRCoHPifo
-Message-ID: <CAEy9hNX8fmEZsy-RfTDQz8Th-H8Z+o5tQN4WseiK_+RpZkbTNg@mail.gmail.com>
-Subject: Re: [PATCH 0/5] iommu/arm-smmu-v3: power domain and clock of the
- RK3588 PCIe SMMU
-To: Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc: =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Niklas Cassel <cassel@kernel.org>, Shawn Lin <shawn.lin@rock-chips.com>, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-rockchip@lists.infradead.org, Simon Xue <xxm@rock-chips.com>, 
-	"finley.xiao" <finley.xiao@rock-chips.com>
-Content-Type: text/plain; charset="UTF-8"
 
-> And yes, I think the other smmu should also use the same handling.
+On the RK3588 the PCIe SMMU's clock is gated as unused when no PCIe
+controller holds it, and the next register access (the CR0 write at
+shutdown) hangs. Enable the clock from the firmware node, if there is
+one, while the driver is bound.
 
-I'll send a series that enables mmu600_php with its clock; it is tested
-on an Orange Pi 5.
+Do it first in probe, as the firmware probe may take a Tegra CMDQV
+reference that only arm_smmu_impl_probe() releases.
 
-> @Arun care to also add a runtime-pm patch? :-)
+Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-As Sebastian wrote, Pranjal's v11 adds it. I've tested its system sleep
-ops on mmu600_php (not runtime PM) and sent a Tested-by there.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 6d4520c47308..d3f42316b0d6 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -12,6 +12,7 @@
+ #include <linux/acpi.h>
+ #include <linux/acpi_iort.h>
+ #include <linux/bitops.h>
++#include <linux/clk.h>
+ #include <linux/crash_dump.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+@@ -5786,12 +5787,22 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	resource_size_t ioaddr;
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
++	struct clk *clk;
+ 
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+ 	if (!smmu)
+ 		return -ENOMEM;
+ 	smmu->dev = dev;
+ 
++	/*
++	 * Before the firmware probe: it may take a reference on the Tegra
++	 * CMDQV device that only arm_smmu_impl_probe() releases.
++	 */
++	clk = devm_clk_get_optional_enabled(dev, NULL);
++	if (IS_ERR(clk))
++		return dev_err_probe(dev, PTR_ERR(clk),
++				     "failed to enable clock\n");
++
+ 	if (dev->of_node) {
+ 		ret = arm_smmu_device_dt_probe(pdev, smmu);
+ 	} else {
 
-Arun
+-- 
+2.55.0
+
+
