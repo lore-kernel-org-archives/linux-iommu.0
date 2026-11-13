@@ -1,47 +1,47 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794575500;
-	b=vU1SvFRo5Epe70xdtZshrzYHTLrmVUBIsdH+Jgjh/bHV7RYOTLE6q/OLVwLnHa+KDqPX
-	 3XMQ+u6eTY/rAJUUXlbGuR6qeMZRlcvgbVfmuVYCkpJZJPWK7Es9OaxGvZqNOKhyS2shR
-	 9H8BLSUdPYhRE0x5UWTIb5HoaiY7OHVjpVof4/lukB2me5A+GwmKkNg3+q2YKAMrBHK2k
-	 bT+NoyFHZSwwxpIPc7XYYz7/yCXLrWH1y5hLuMYk4L/J7axJeUewYwL1TaUNpT6b8w1kM
-	 JQRKpDQRTxUp7TGSgoVpMktDDg4oKoPc7xqr3o9H/1t54p6QAWoBxL1KP9mxBZGIH5g==
+	t=1794576022;
+	b=utJ0IZbaD3/yijNCJTaMXgmMIAjKJLcFeUjwrlkfJxRyKuB7NCZ6DHEMpTx988Md81O3
+	 c2lRYj7b9N0WjTXQhU2yG4d4gp2S62rD/bioKEDVMioP4HRjhiN8T74dWbyFwJvgot4t5
+	 6Fc7PVAE+tCr/BawDUWSS6h5Lewx0RrKyBA6jAnnhdAL3QVT8hXgs0ui7YQctxcD/Zef3
+	 fIaw5JpKU4jHKnlGoTu+9TDzG35f8oh+gmO9F0hiNMjjy0pQdeG84WMbRuL9uhJW1xZNd
+	 /Qp/Z3Ufs8Qs1An0Cvt6wFDY7EyQ6TWPRqWKJ+MEI4MKxx4dO2l4uoqKzUK5/eTUJxg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794575500;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794576022;
 	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
 	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding;
-	bh=UJJGqVjSBQwrXCt5oO1oVp31bm2wr0tRxTzs6y+s5eY=;
-	b=iQ2fofjGwAm8s/O7r7hvbnpEQzOn3cbPDIL4NjBfuMsK7OC8RxDTTaZd4RA43N5/id9r
-	 B3a2psO9X6O0V0rUPSJPYBjp3OCdVLFY8Nz6nI3LILfB6ZvhAP+qPDAsU8ij+lYcKiLXS
-	 fWHRbbkQP8gUAVFzLgbq+nUMdXrtt2wGEW3T9wi9XDEkUhnM6Pz94stmK+Vmz8kBrLwvA
-	 jnsfraS7vxdXQHI6/qyAJJ1q/GjVdtJ9Nh3H/8iD7QmaBxeSyMpDQuwj/Zsr2m7AKsp8A
-	 3rK9J5sPNdqp7ELiP7lytDtR/xv2qJmSH98V3ceJGCwUCedhqOXRFT9ihagu0mFS7FQ==
+	bh=FqUL6WwFMsKVYZsc6fUiuxiEIZc0EI2CRK5bQ4oB51A=;
+	b=WGPbYLH9wkyuR0XEgEcfHv9srWqV3TfNQH0cHKK6gvqXx/CSP5OKwG9DcysWZYEjGgCr
+	 UWzF2Hh3hWFWKmw/TlD0ZDNlYbCfqXaTOESC9NKgccM1Qf1urusDojtnSZxwtaIHnI1Hl
+	 yTrHCFNYbqPCbxIC2qpXLUFpjafBuzSQXVNfvGpybhSj8AcN3iHGTJPHCYbIya8oEGXER
+	 +wdKGGbUHqwukikwNo+EX/mUsu8WzbgoyBiVeC9gMPvoGGHaywE8B79LY8eZ1d6M3Y7Gq
+	 7FILiOsB3ipJxMuNuyefUe8yHH3HU11fHHAN+fLhG3AWV/o8lhIf8IhLYVr0PV7rmhg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HhntSPDz;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m4KpwJ3H;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68156606A339;
-	Fri, 13 Nov 2026 13:11:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68FDE606AB8F;
+	Fri, 13 Nov 2026 13:20:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=HhntSPDz
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 151971F000C4;
-	Fri, 13 Nov 2026 13:11:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=m4KpwJ3H
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7642D1F000C4;
+	Fri, 13 Nov 2026 13:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794575500;
-	bh=UJJGqVjSBQwrXCt5oO1oVp31bm2wr0tRxTzs6y+s5eY=;
+	s=k20260515; t=1794576022;
+	bh=FqUL6WwFMsKVYZsc6fUiuxiEIZc0EI2CRK5bQ4oB51A=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To;
-	b=HhntSPDz4hBtYpgjSDSSVhehC3ugFdt3d8uKPZhC9zPonuqtlUMxXtQgAXMu51sk+
-	 c6XaBX4mO0q+UZo6swHPzJFo/cu1cNYby+GumuSJb/pVqWa6M9JH4jlEBT/Exzl7GL
-	 ilydPvL3dZGNK7a2kUtrXtR0vCyfsSfrp37MQPRL04JKFaIyA2wxO0cy5ZJPxSTlr0
-	 v8iYKnqyavXMWdSClMn6YoV3XhTdrYpDGEwipYibWKjBD7yNxpuoauoWKAYDDvAG18
-	 HB+RxkZpbQXP1mMGqKExpbXk0lrd8Hkf6F0/bRiOljbAPatD7c8Cs1nGKblzyWcaU1
-	 yoMV4p8by0Ezg==
-Message-ID: <3e4b6491-2b58-4b9c-90ad-0912f47cb217@kernel.org>
-Date: Fri, 13 Nov 2026 14:11:30 +0100
+	b=m4KpwJ3HMu8IEJe37/dqMEBiuIKYQNEiPAErcix/L4S8IBwrVFztu8MraiCZnHIcK
+	 Ug3UaLyoARX6eM1nZr1xhJEL5edMzdsK2EnQ/NhSZ/PF1gFC4zoLEwhJvVI4vn3X0D
+	 HJCFAuvMtMlvMSjmPGQpnXvVbHqLmbKyEwVVJdsUOC57t5uSyP+Pfs82Gjzdr970ua
+	 8oYAJOcSDhh/ZtsQtuy+wpyhhYlJwXKlmucwViObPVOSVLDoMwsowijArswpG+pWz0
+	 DaYnjqrlOGe32d6tS//cF7fsf9/LRTtbKb5v24VpVvsnqSArrMIY4+yf9m39KMTiNa
+	 NY+6B/naH/Biw==
+Message-ID: <78f8179c-89c8-4f26-8fe1-580ec4e73684@kernel.org>
+Date: Fri, 13 Nov 2026 14:20:10 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -52,7 +52,8 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/5] iommu/of: Require reg for iommu-addresses
+Subject: Re: [PATCH v7 5/5] iommu/of: Add support for "iommu-ranges" on a
+ device node
 To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
  "Joerg Roedel (AMD)" <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
  Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
@@ -70,9 +71,11 @@ To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  virtualization@lists.linux.dev, devicetree@vger.kernel.org,
  kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-media@vger.kernel.org, Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+ linux-media@vger.kernel.org,
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+ Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
 References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
- <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
+ <20261106-add_iommu_ranges-v7-5-5c0f72083e52@oss.qualcomm.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -118,90 +121,39 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
  n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
  qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
-In-Reply-To: <20261106-add_iommu_ranges-v7-4-5c0f72083e52@oss.qualcomm.com>
+In-Reply-To: <20261106-add_iommu_ranges-v7-5-5c0f72083e52@oss.qualcomm.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 06/11/2026 18:14, Vikash Garodia wrote:
-> The "iommu-addresses" property describes an identity 1:1 mapping between
-> an IOVA range and the physical memory specified by "reg" in the same
-> reserved-memory node. Without "reg", there is no physical memory to map.
-
-This looks like ABI break.
-
+> Reserving an IOVA address using "iommu-addresses" requires it to be
+> placed in the reserved-memory node. But when "iommu-addresses" is the
+> only property being described and there is no backing "reg" (i.e. no
+> actual reserved system memory), it does not really belong under
+> /reserved-memory. A device IOVA range is specific to its own address
+> space, and does not describe the system physical memory to make it
+> qualify under reserved-memory. Given this, place "iommu-addresses"
+> inside reserved-memory only when it is paired with a "reg", otherwise,
+> define it within the device own node. It was discussed here:
+> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
 > 
-> The DT schema now requires "reg" whenever "iommu-addresses" is present.
-> Align the kernel implementation with this requirement.
-> https://github.com/devicetree-org/dt-schema/pull/207
-> 
-> An identity mapping requires matching IOVA and "reg" ranges. Reject
-> mismatched ranges and report an error.
+> Existing "iommu-addresses" property expects a phandle, which does
+> not make sense when the property is defined within the device node.
+> "iommu-ranges" was introduced to specify the device specific IOVA ranges
+> when there is no backing "reg".
 > 
 > Suggested-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 > Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
 > Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
 > Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
 > ---
->  drivers/iommu/of_iommu.c | 32 +++++++++++++++-----------------
->  1 file changed, 15 insertions(+), 17 deletions(-)
+>  drivers/iommu/of_iommu.c | 107 +++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 107 insertions(+)
 > 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 6675fc900e6c2d55b34c61dc9effaeb48e24f18f..00b02c19f27e195fc36c4bc1d91253255147c9ab 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -174,19 +174,12 @@ iommu_resv_region_get_type(struct device *dev,
->  {
->  	phys_addr_t end = start + length - 1;
->  
-> -	/*
-> -	 * IOMMU regions without an associated physical region cannot be
-> -	 * mapped and are simply reservations.
-> -	 */
-> -	if (phys->start >= phys->end)
-> -		return IOMMU_RESV_RESERVED;
-> -
->  	/* may be IOMMU_RESV_DIRECT_RELAXABLE for certain cases */
->  	if (start == phys->start && end == phys->end)
->  		return IOMMU_RESV_DIRECT;
->  
-> -	dev_warn(dev, "treating non-direct mapping [%pr] -> [%pap-%pap] as reservation\n", phys,
-> -		 &start, &end);
-> +	dev_err(dev, "non-direct mapping [%pr] -> [%pap-%pap] is not supported\n", phys,
-> +		&start, &end);
->  	return IOMMU_RESV_RESERVED;
->  }
->  
-> @@ -211,12 +204,14 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
->  		struct resource phys;
->  		int size;
->  
-> -		memset(&phys, 0, sizeof(phys));
-> +		maps = of_get_property(it.node, "iommu-addresses", &size);
-> +		if (!maps)
-> +			continue;
->  
->  		/*
-> -		 * The "reg" property is optional and can be omitted by reserved-memory regions
-> -		 * that represent reservations in the IOVA space, which are regions that should
-> -		 * not be mapped.
-> +		 * "iommu-addresses" must be used in combination with a "reg" that provides
-> +		 * the physical address and size of this memory region, for an identity 1:1
-> +		 * IOVA mapping to that physical memory.
->  		 */
->  		if (of_property_present(it.node, "reg")) {
->  			err = of_address_to_resource(it.node, 0, &phys);
-> @@ -225,11 +220,11 @@ void of_iommu_get_resv_regions(struct device *dev, struct list_head *list)
->  					it.node, err);
->  				continue;
->  			}
-> -		}
-> -
-> -		maps = of_get_property(it.node, "iommu-addresses", &size);
-> -		if (!maps)
 
-I miss the point why you are moving this part. Irrespective to actual
-ABI break, why do you nee to check for iommu-addresses before?
 
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
 Best regards,
 Krzysztof
