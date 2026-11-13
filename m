@@ -1,116 +1,80 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.12
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794604182;
-	b=AfSfM3qIdIGKC2+7NWTEuhrRlc3o/KkE6cl7k58FQDrvNHcIZ8+4KZJk6EZQdhO9ySMv
-	 zipyOqcfeUEvgmw2AN0Px0eitGpz2o3ly5Tq9iqdTbiEeblMBUnsQrInPm1CZTO/AnPip
-	 HU1Kx2YsmQNS622wJLxdo0fuaSxSgRC46550lI5JtcuEAT2U91LbrlgFX/NF+jLwsbeKR
-	 VCK1pMY3vWmuSOY3BqBWUoHRiQLe1THsKnO/eny26z4N5i0PrQBhocbyWHVyW6G8OU/cg
-	 3qBNWRmWKGbxRJkpsb4Sl++oOscgd3Qa2guPgNIB4u0wfaiQFYYq+2ZAKH7hYOlHLkA==
+	t=1794608495;
+	b=HgJRzIQBhd5S6ULYN/ccO4a/LKOCG7/1QwKLDYTkLRvj7bJbt3viDs23ZKktVyRUqpIR
+	 t2Hmdbv5+ADO0zNvrGzQW1FeboCzhkIbKJNKFg3lRI5tRxZIQTYjJO0CDWaaCzCiUHIFu
+	 OeO/QU7S2O84Rh6EMOVjzCkyQ0J36haQAEWD6JpD3U1xTIjgg4vUAmgMoruaZ1KYR24OE
+	 zgQd3ZfrueIPzXw/PTFYOxk7HNaCWl+bXLIyxA2VXbBViDAqnSS1sjukwtEkc6+j5y7x9
+	 uqgneHKU/4QHrr7xA8sYmXFClMV+YgoUbKs44biz21XyjN0jM7mpUv5RocMLNneP6Sg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794604182;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
-	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
-	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=Daoo5ND8JTOmUiByfVyI0Dc9ic8ar1R3lPyO6185fRE=;
-	b=f8jAHWfujP1TwUrX0IdyGtOQ7YFeyZgDrDW/+VKpnDiasUJRm8EIZBvgN4n167ui8LWs
-	 rtHPD0ygC/OUvN6yh3eUrgy6ha0hQEQ+ApD92d2s2x4OLTDlnhWrM2b789hvh11aLeNPM
-	 TtUm7L/O8hPsOYver4fwm0dglg1c6QYfbHV0dmX7c7QB4QjgnrKluE2vwzAykB5WlJGTQ
-	 9ljxszi/tEi+sFNgaWWtTfBXOcdWVv5u6O+PL9pu+663ujbHMtu0UhtPy3PqE4cq2oqll
-	 KdIU2br/A3c5J2BXtunKqmT5mY8FcmbsNXIk9T3ukqRGX5N4GeYo7WLuPNVoETLL6wg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794608495;
+	h=Received:DKIM-Signature:Received:From:Subject:Date:Message-Id:
+	 MIME-Version:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:
+	 X-Endpoint-Received:X-Original-From:Reply-To;
+	bh=hKpqk6HLacU1LAteKJMU4Ufg/Oj/R3Wdsba8hrvmBjY=;
+	b=KocUS6jqg2MIyjvIOmxKLkXagdUlY0oSYh463SISN5+G7ROAArmuzlswvnfRkvAnuWH+
+	 pmoMoDrqXyUVTrXXaoxPVJ4XlkKvtyP1ulQq3kA4ew7sf/9Q8zBu213/VHL51ABojKnzF
+	 bCKx96NMI8YI0R8pshfO7el2DW4haDU7gguis2m9P3iZcqV1j9RYYPIRZlJH959GFbutw
+	 /HAj9xeFP7m/DxkjrC1lPn8TLp6KuzOTnXccA6Y7ZM+hRobfju+sOvauXNWtddrl6f8fz
+	 6iXbS3uiiBrDh32d1MWYU/f72T+C8xcokJ01CZnfPxip4dxzvgIjtpZgIJCGoc2NGpA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=nvidia.com;
-	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=c5JguQCn;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.12
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012012.outbound.protection.outlook.com [52.101.53.12])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KEXo0D4L;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A967F60A382D
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 21:09:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A967F60A382D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF498606A89A;
+	Fri, 13 Nov 2026 22:21:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=c5JguQCn
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sRyRX+zYYp2esnd3Ud6Fxh8HkFIZ1wyLaav0Fig20R02bs1Du/gLbOmF43f/iQXh3a+KwdrCVG2q1jmeSUYYTCEeHMqFMlaiw6BqoSeVpEYmAmQVbqAyRwkAZ9roUiBGnZn5SjwJlHsTnrha4nFeKtLeRSSIf6jy1hyXPzL9FMjRplQLJ57V5wzKJ/B50yHJ76ERBNB0c7chJpjRkF6TNmlnx3ayxYfkhbD0p75LSqYApfW4MPrq9jfoNp19MBpB5jwL0zSJ0aE+/55SbE9TTc8aIMGSDjTtJRORGfl0kES6hzunHc3MTY/T0ZWzIy+3GGc9UcPYQXwJmyT6Kg0pPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Daoo5ND8JTOmUiByfVyI0Dc9ic8ar1R3lPyO6185fRE=;
- b=kC8xO94yikUTjIQ12IBc3wYUwM/b2UaTwZ2zgwA4kKs21Vv84annHCKIIE7tskDfYlWzcP3JtWQh366YHSuxgzu5QLf1/nUey6txiJeNMxB/FKJW/vu2jH/eJ7BX5FVBrfYztjcNMkYIX/jOI22oPHUvIFvSk4SQjMJQp6eEBtgWU+xqCTtRw5AoszPmx7cgT+lk7rEOskQqGQj8KtWbjUHZk2Qo3Z69cDjtbhP2f8DBYkg5dZQEwOMqt87733RavStAGoHbSu7oVlWQ6X5qpzNft7VOSnofyotMTc8jOHI/+0bCpc1cRFu+B1k89oZ+mouLUvErOSqTFPAVIbRPUA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=oss.nxp.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Daoo5ND8JTOmUiByfVyI0Dc9ic8ar1R3lPyO6185fRE=;
- b=c5JguQCnqmKBZFCoR/aVMfJiW3maqSF17chYDhViWAyU/mfO3Ek5oMAIaY8FzI+0MHn4tXOYA2SbVtk8J84MQvSmZc3GZL8PIVib5VMNSr2CdCKaIVKF7nNrk4idTDFTWNo/6ZBcmGZSf52liYDNZF/GCQZv+f4kYN/f/2ot1vBj65YPgniHXnva14OMIDDPUdipbSkQWNRB5S/p5HAVy4cnbGu12UwfsDxWNotpOikazr4hhvXBKeJYNuTZFVwQ50Ee4/lzgvAtdurXLmLDKhn3otNewApPcnXNxm1R0Mr1HC8Vh2I/xacmVaS0Khb5TmIepJWn4Vgr+mm7pAMfnA==
-Received: from SJ0PR13CA0066.namprd13.prod.outlook.com (2603:10b6:a03:2c4::11)
- by DM4PR12MB6280.namprd12.prod.outlook.com (2603:10b6:8:a2::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Fri, 13 Nov
- 2026 21:09:29 +0000
-Received: from MW2PEPF00014677.namprd04.prod.outlook.com
- (2603:10b6:a03:2c4:cafe::8a) by SJ0PR13CA0066.outlook.office365.com
- (2603:10b6:a03:2c4::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.8 via Frontend Transport; Fri, 13
- Nov 2026 21:09:25 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 216.228.117.161) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- MW2PEPF00014677.mail.protection.outlook.com (10.167.249.184) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Fri, 13 Nov 2026 21:09:24 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Fri, 13 Nov
- 2026 11:09:33 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Fri, 13 Nov
- 2026 11:09:32 -0800
-Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
- Transport; Fri, 13 Nov 2026 11:09:31 -0800
-Date: Fri, 13 Nov 2026 11:09:29 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
- Roedel (AMD)" <joro@8bytes.org>, Jean-Philippe Brucker <jpb@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Thierry Reding <thierry.reding@kernel.org>,
-	Krishna Reddy <vdumpa@nvidia.com>, Jonathan Hunter <jonathanh@nvidia.com>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>, Peng Fan
-	<peng.fan@nxp.com>
-Subject: Re: [PATCH RFC v8 7/9] iommu/arm-smmu-v3: Wire up shared-SID STE
- ordering and feature gating
-Message-ID: <avdgacwSFkfopVFA@nvidia.com>
-References: <20261113-b4-smmu-shared-sid-ver8-v8-0-587307a77f3a@nxp.com>
- <20261113-b4-smmu-shared-sid-ver8-v8-7-587307a77f3a@nxp.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KEXo0D4L
+Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
+ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
+	t=1794608495;
+	b=vZeZfmrQWEgCVfEuEPhX9fgsAZU36ok18CsLVGNTP0EkAZ8GHoZoWxgUgixklSavg/SM
+	 PWGkM/vFG5JssW5sJKuJwYZAPjJmbx8vqjAcsZOBD3SdUgxVySs/CzEQI3J0SP2nArEdb
+	 RjD7/yQwDNk9ejpFN4hvub81U9J3XsjdhrlktPXZIbFC6sDg0wKb0g/DZ1FpFGWWY9idT
+	 dIGnhpTCsy9q4l/8ge1k2aemGkcIzXZC0I+/pjrfHKh3pFyINvIEJjcBHwVfo3USwxzl0
+	 No4MXvt26Ki2yRyj/wDGng+aimg7Alcu9UgRFQsOrtHNJujU9BvDIP0cCeQjM3ZJttQ==
+ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
+	c=relaxed/relaxed; t=1794608495;
+	h=DKIM-Signature:Received:From:Subject:Date:Message-Id:MIME-Version:
+	 Content-Type:Content-Transfer-Encoding:X-B4-Tracking:X-Change-ID:To:
+	 Cc:X-Mailer:X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
+	 X-Original-From:Reply-To;
+	bh=hKpqk6HLacU1LAteKJMU4Ufg/Oj/R3Wdsba8hrvmBjY=;
+	b=Il3SsAopXrNC7NwDNxeXeQfpujg3cuyjOwp2aCoTCA9byOfTeDWRdLz0UZXJPYZch31u
+	 0wj1vQwo5j+LzuU0pHCONQPJyM0uYIEMrbmvO/bBH/4Lm3OLTKbn5WgUMid9DrLpt93qi
+	 EgZ3rFnVNIKd3stbMxwrvEkT3IbV4SXBYi34GK6eYPuPy8sqmO9sut5mU1tgiEt82KFSP
+	 ad/v5kgLjfa/LX6ZGCTh0Vha0ybAEALkg6ZLJ6U3KFjm4Gr+5IyPeLQdCaaf84k25Irl7
+	 UrARNYp2Q23YzS+Yrj1AcTiQITYsKgapLkka1CbEvOjnOdvNRP7xvc6sGcR3qjhYEeA==
+ARC-Authentication-Results: i=1; smtp.kernel.org; 
+	arc=none smtp.remote-ip=100.80.115.77
+Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.kernel.org (Postfix) with ESMTPS id E73731F000C6;
+	Fri, 13 Nov 2026 22:21:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794608495;
+	bh=hKpqk6HLacU1LAteKJMU4Ufg/Oj/R3Wdsba8hrvmBjY=;
+	h=From:Subject:Date:To:Cc:Reply-To;
+	b=KEXo0D4LZ7R5Fzg2pik/tMcjkomMmNGWMqj/8sfh2rsHACM5aSq3FdqxYCM5rsUMO
+	 UDpTZWhkWgQ8NIg8HPKIAnCJxTUDCtKv6TvIuzXPy5o6oMT4zUuv61w87ncTlyXFcp
+	 v50tP0eGjtW1B5q1hJqboLZJgkLn7xblh7MscohYbMzFQjMyxIaY0mrXaZZXi0xfR3
+	 wkIcJOm1atokrkdfUeN5Vsay3sNlQ81GNEpkYKcSaLOLUvfRopO4R/en4frwJVqa/G
+	 rFj+lECffHGGIjmq0eJ1HOH5iT6C4he97o6ZzkcCPm/4TQwb8pdb3QYba7QiRUY8hl
+	 Vz0HQ2xc524Zw==
+Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
+	by lkml.kernel.org (Postfix) with ESMTP id 293E249B48;
+	Fri, 13 Nov 2026 22:21:33 +0000 (UTC)
+From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
+Subject: [PATCH RFC 0/3] media: verisilicon: Multi-core support for the
+ RK3588 VEPU121 JPEG encoders
+Date: Fri, 13 Nov 2026 22:21:31 +0000
+Message-Id: <20261113-hantro-multicore-v1-0-43811eea14c4@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,77 +84,137 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20261113-b4-smmu-shared-sid-ver8-v8-7-587307a77f3a@nxp.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW2PEPF00014677:EE_|DM4PR12MB6280:EE_
-X-MS-Office365-Filtering-Correlation-Id: 98b3e7ca-6bf1-4aef-5551-08df41ca656d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700016|1800799024|82310400026|7416014|376014|23010399003|18002099003|22082099003|261009223027099003|11063799006|5023799004|261102123227099003|4143699003|56012099006|10067099003|261028144727099003|261026140227099003|261022105027099003|261026121527099003|261022075727099003|261021121427099003|261021135927099003;
-X-Microsoft-Antispam-Message-Info:
-	U7Lr2f2B0HyMfL3vFauVM0COsvkBX1LXVpJcZvAK/wkOW2h9JCYWbbsZWinCVAFFiGCx2A4I1WXNKNVY6u+OREqD7JCOd0g1OX0vX5niTGn2GZZBi7rnZZDT5xjqX0GIWm55/HAJIHL4h9d3a64NY42uSVowHeBueRltNklbEz/fDW+HAmFdQ43r1TqA8tIccU001EHULNYi7sM4iJHQ6Xn9bU3jscDijNV/JT8xephg+/3RjFekBhpg46Z9dI6zPlnRFRA22HmghpfdqUvnXHXB2JgiGdQ5MvAt8HqoMVhvZ3axezClqKBiMcIZ4hoPGNfzEbSgWt5VwNWR0fR0HCnz9jd5HOs5lkIHq1LZoe7EWNzgb7801tNF+X2wtb5C0a4i+c7dFOHqPojg+RSmmPymVv+QsUn84f69vwP+FFa/9cSCXETzMqcVuSCPa15nQUQMmfHNYRF98429sUwDSAEzw/W7m6O3Wn3hfqpd61OdE9US/qfBwDhYwsfgdyVzejiw6G76gF04y9S7gHM5qJUbLFoFHGIvyOmq4w9AtMGGUxlp1TplI41+eXjnDwYsyhtkDka5gNlKHjlBGf2dWzKuJV5Mj2uUI1hyC9w80Z/tqDg53t4Vq19D6FlhunZEsDzKpnVhB/hnHvfvRggifOfwgEEO+Ki0wyfvRXjmbqE8o4njs84k28P45mTlzERsHEOYtxVho5MpMbJc0AYl1g==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700016)(1800799024)(82310400026)(7416014)(376014)(23010399003)(18002099003)(22082099003)(261009223027099003)(11063799006)(5023799004)(261102123227099003)(4143699003)(56012099006)(10067099003)(261028144727099003)(261026140227099003)(261022105027099003)(261026121527099003)(261022075727099003)(261021121427099003)(261021135927099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	fDtfDvuBF99MsVwzDXO/tvaRdrl6A5W15uHqxVTuoe4cNtzYUqqzY+UUB3M9RIk6mZu4pknUdSC7CkZlusVfKdIupRx3ekx01uB8UZP1lxXYPV0C4fwNoPnsAV2Wn0hP/Ph2ALOYGXB661AnvEhYXGRs2938+SidHE9GnTVX9n7AohkT4VLi/22jSj/UZtdV2T2oHEOtZKkgfaPNdwucRm5FfmxFShbESEz/D9SbeZu8ZzOKxgditydIDpnlcRSdqftjkdy8Kud3Ez9iPsvP+mXE+PFVy+WiPAB2/G4+kddB5e1Z8qQ8tcC7JjY/yYpw8uHm7z7M6/baIEmx1l0fe9NWKoAmYt5+68T3ww91yV4IyA69vP1Te8StYpa7cK3uYkTDqwOjWGyZwUsIbjHAcC3Bq4TUdRF/cDsdQvhC0LAk/7+OmKZICYUEu98VzLa5
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 21:09:24.9719
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98b3e7ca-6bf1-4aef-5551-08df41ca656d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MW2PEPF00014677.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6280
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/z2NS04DMRBErzLyGkv+tT+zReIAbFEWdrtNjJhM8
+ HgQUpS744SIZZXqvbqwjVqljc3ThTX6rltdTyPIp4nhMZ7eidc8MlNCWSml4KPsbeXL/tkrro1
+ 4ygokau8SBTawc6NSf+7KN/b68swOf+W2pw/CfpM9Zo2+9nHYH9tz7Hgcd/NkYw4AogQbibI3K
+ jjtvBBkYkFLGhIp1JTvnn/KKAUqRVA5oAWKQspig5M6ADkREE0qxXpzo1LciOO6LLXPU8wWTIj
+ GOuOzEF5643UCDQSYVXTCWA8YPDtcr79WMxcjMQEAAA==
+X-Change-ID: 20261110-hantro-multicore-bd251c387be9
+To: Nicolas Dufresne <nicolas.dufresne@collabora.com>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Philipp Zabel <p.zabel@pengutronix.de>, 
+ Mauro Carvalho Chehab <mchehab@kernel.org>, 
+ Heiko Stuebner <heiko@sntech.de>
+Cc: linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, 
+ =?utf-8?q?Sven_P=C3=BCschel?= <s.pueschel@pengutronix.de>, 
+ Detlev Casanova <detlev.casanova@collabora.com>, 
+ Sergei Khomenkov <shomenkow@gmail.com>, 
+ Arun Iyengar <aiyengar1990@gmail.com>
+X-Mailer: b4 0.15.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794608492; l=5572;
+ i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
+ bh=Cv/EUDQj2tIl7BGTLv3WK2CnVloA8B8AeCHDaWxtbMc=;
+ b=Cjv498CCL6jnQ0cAYOFvAR8oJ892okual6pS2C9nmBZcHZpoy38t0gdyspPIbK+WmdaTIIc/i
+ UYTyd0qdXcZDDSwodE1G06NIKxixEK0kCu0vG0WZTDkjMEhOzAQHshQ
+X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
+ pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
+X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
+ auth_id=1480
+X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
+Reply-To: aiyengar1990@gmail.com
 
-On Fri, Nov 13, 2026 at 09:27:19PM +0800, Peng Fan (OSS) wrote:
-> From: Peng Fan <peng.fan@nxp.com>
-> 
-> With the per-domain CD table, every non-PASID sharer of a SID builds the
-> same normal-domain STE: same S1ContextPtr, S1DSS and S1CDMAX. Disable
-> PASID and ATS for shared SIDs as well, so the remaining STE fields are
-> common too, and let any sharer program the STE. This also handles the
-> case where one device's driver attaches before the stream owner's driver:
-> the first attach now installs a valid STE instead of leaving the boot or
-> firmware STE in place.
-> 
-> A per-device release must not abort a shared STE while other sharers
-> remain, otherwise it would break their ongoing DMA. Use a dedicated
-> release domain instead of inferring release from the STE contents:
-> group-wide BLOCKED attaches still program the abort STE, while the
-> release domain skips writes until the last master no longer shares the
-> SID.
-> 
-> Disable SVA, PASID, vSMMU nesting, ATS and IOPF/stall for shared-SID
-> masters since all of them require an unambiguous SID-to-device mapping.
-> Reject sharing at insert_master() time if either master wants stalling,
-> if the incoming master requires ATS, if the existing master has PASID,
-> ATS or vSMMU state enabled, or if a PCI and a non-PCI master would share
-> the SID. Other ATS-capable shared devices have their ATS capability
-> prepared, but ATS is not enabled while the SID is shared.
-> 
-> Resolve stall_enabled before insert_master(), and use master->stall_enabled
-> directly for CD.S, STE.S1STALLD and STE.S2S. A shared master can never
-> have stalling enabled.
-> 
-> Add arm_smmu_master_shares_sid() as an inline helper in arm-smmu-v3.h so
-> that arm-smmu-v3-sva.c and arm-smmu-v3-iommufd.c can use it without
-> repeating the list_empty() pattern.
-> 
-> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+The RK3588 has four identical VEPU121 JPEG encoder cores, each with its
+own IOMMU and power domain. The driver currently probes the first one
+and ignores the others, so parallel encodes are serialised on a single
+core.
 
-I am asking a bigger question in PATCH-4 for Robin to confirm,
-yet Sashiko gave a few scary findings against patch 7-9.
+This series drives all four cores as a single video device. Patch 1
+splits probe into the per-instance hardware setup and the registration
+of the devices exposed to userspace, with no functional change. Patch 2
+makes the driver pick the core a job runs on, and look up the running
+job from the core instead of v4l2_m2m_get_curr_priv(), still with a
+single core. Patch 3 binds the other cores to the first one with the
+component framework, attaches them to the IOMMU domain of the main core
+so that they share its mappings, and lets the mem2mem framework run one
+job per core.
 
-Would you please run Sashiko locally and address them as much
-as possible, before sending a new version?
+It is an RFC because it depends on Sven Püschel's "media: v4l2-mem2mem:
+drop curr_ctx member from v4l2_m2m_dev struct" and "media: v4l2-mem2mem:
+support running multiple jobs in parallel", patches 6 and 7 of his RGA
+multi-core v2 [1], which are not merged yet. The series is based on the
+media tree's next branch with those two patches applied
+(base-commit and prerequisite-patch-ids below). The core selection
+follows the same model as Detlev's rkvdec multi-core series [2], so
+comments on sharing more of it are welcome.
 
-Nicolin
+A single stream still runs one job at a time, so this raises the
+throughput of parallel streams, not of a single one. Variants without
+the new multi_core flag keep using only the first core.
+
+Two postings touch the probe/remove code that patch 1 splits, and I
+will rebase on them if they land first: Benjamin's "media: verisilicon:
+remove unused variant and code clean up" v6 [3] (textual conflicts) and
+Sergei Khomenkov's "media: verisilicon: suspend the device before
+unregistering it on remove" [4]. Patch 1 keeps the current teardown
+order in hantro_hw_cleanup(), so it carries the runtime-suspend-after-
+unregister problem [4] fixes. My recovery series "media: verisilicon:
+Recover the Rockchip VPUs from faults and timeouts" v3 [5] touches the
+same probe, remove and device_run() code (textual conflicts), and I will
+rebase on it if it lands first. Once both are in, its IOMMU restore has
+to detach a secondary core from the main core's domain first, which I
+will add in whichever goes second.
+
+Known limits: the video device and the m2m device are allocated inside
+the component bind, so unbinding one secondary core frees them while
+the main core stays bound. If one available secondary
+core fails to probe, no video device appears at all, where the first
+core alone would work today; the RGA and rkvdec multi-core series use
+the same model. Comments on both are welcome.
+
+Tested on an Orange Pi 5 (RK3588S) with 1080p NV12 JPEG encodes through
+GStreamer v4l2jpegenc, 600 frames per stream: 1, 2, 4 and 8 parallel
+streams reach 62, 120, 216 and 223 fps against 62-68 fps with a single
+core, with the interrupts spread over the four cores, and the encoded
+output is identical to the single-core driver for NV12, I420 and YUY2
+at 1080p and NV12 at 4K, also when 4 or 8 encodes run in parallel. The
+VDPU121 VP8 and VPU981 AV1 decoders of the same SoC are unaffected. With
+patch 4 of [5] the module can be unloaded and reloaded with all cores
+rebinding; without it the reload hits the SError that patch fixes, which
+is not new but easier to hit with the longer teardown.
+A later run together with my three rkvdec RFC series: JPEG encoding at 63.1
+frames/s with one stream and 215.0 with four, all four VEPU121 cores
+taking interrupts; the four parallel encodes give the same bitstream as
+one. Fluster on the same kernel: Hantro H.264 JVT-AVC_V1 129/135 and
+JVT-FR-EXT 44/69, VP8 61/61, AV1 203/242.
+These hardware tests ran on v7.3-based kernels, where the clocks are
+still enabled in device_run(); this rebase onto the media tree, which
+moved the clock handling into runtime PM in the meantime, is
+compile-tested only.
+
+Developed with Claude (Anthropic), which wrote the code and the commit
+messages. I reviewed every change.
+
+[1] https://lore.kernel.org/linux-media/20260916-spu-rga3multicore-v2-0-23aa2cb74e61@pengutronix.de/
+[2] https://lore.kernel.org/linux-media/20260810-rkvdec-multicore-v2-0-986f89d22cdc@collabora.com/
+[3] https://lore.kernel.org/linux-media/20260930151241.58233-1-benjamin.gaignard@collabora.com/
+[4] https://lore.kernel.org/linux-media/20261106-hantro-remove-v1-1-d0a4678886d7@gmail.com/
+[5] https://lore.kernel.org/linux-media/20261113-hantro-robust-v3-0-82383c722ad2@gmail.com/
+
+Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
+---
+Arun Iyengar (3):
+      media: verisilicon: Split probe into hardware init and device registration
+      media: verisilicon: Pick the hardware core for each job
+      media: verisilicon: Add multi-core support
+
+ drivers/media/platform/verisilicon/hantro.h        |  41 ++
+ drivers/media/platform/verisilicon/hantro_drv.c    | 451 +++++++++++++++++----
+ drivers/media/platform/verisilicon/hantro_hw.h     |   1 +
+ .../verisilicon/rockchip_vpu2_hw_jpeg_enc.c        |   4 +-
+ .../media/platform/verisilicon/rockchip_vpu_hw.c   |  20 +-
+ 5 files changed, 424 insertions(+), 93 deletions(-)
+---
+base-commit: ad6549a46748d00818483b535e5cd2a704685c98
+change-id: 20261110-hantro-multicore-bd251c387be9
+prerequisite-patch-id: 6ad9550f96aeed8429737800e4afc6e35be2c3ed
+prerequisite-patch-id: 42252ba52d9c65ea011f6971395e709cc4bff684
+
+Best regards,
+--  
+Arun Iyengar <aiyengar1990@gmail.com>
+
+
