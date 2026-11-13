@@ -1,101 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.69
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.0
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794576255;
-	b=TFszSOpDW6DRNMOEVul9Ib1+DeBE7MFz6p61s3210MzH7PpSah5u0weD3lU/WWHmWoUY
-	 VUX1OCcBVwX7rJELpy2FTuj4exS1H2YCWxxMEFqnxKv0q2rifR735uVudrgjBcVJcJNPj
-	 bDxhHX81cjpvz6gfMy8Q5MSAc2CVQuObXy16XH3JDZzgwY8vMHHCU3ZTrQOymomxizUPS
-	 uZ55mvaKfupcqhop3hHTyFRuVwUdYA83Du9tLfzKuiSsHlFeEzrDHaW0vwun5Imcbv5f8
-	 OOL9wVxNIeDjYdXPgSNY8d6rofzbE0akoiXQTHNsLdOwH9Lykvz28X8zV3d6yxNbDEg==
+	t=1794582371;
+	b=Gm2Nxe334WFHMQyv9prqoxdVq+W8CzAolAOUMzV+1+ljI20mc/q0jdzOE49RWtf6GcY1
+	 EAKq1rqIoAnLjWbuaN96jkMJR6j+8rQlGKM1J6krNBpPmkc5iTGvr2ELLip/thztbfZgQ
+	 WYVk8fuW+jiIcKEkdwpplEcJbRwY+MxvgqMmJty4jnUEbNPNjhLnx2Oq0P76ETlCopY5x
+	 FmWtpqId53g1D3/BRcKCaekcEijUQP068SCR6VfOO23OKY1rP2grlEMMNceOUsz38I/x7
+	 9qfTidcJhc3NxSkT0DPtvWcRYFzCIqZPa5wG1KVmLjXb+eDSn0Rg2cG13v4JW5DqR5g==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794576255;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794582371;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 X-ClientProxiedBy:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
 	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
 	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=OEbssf/iPew9KcBZFoXr9uJ3U1Ef0Mi0uoKhVrqhNLI=;
-	b=bD0ufHiZfIDwI3zNDDqj1tH+AHCp+8wHisLLWYRjX0eYeScgtlq+bZDe4WW0IKAafCQ/
-	 +YndZaXy3t+FsVrRNNov7lEmv80/BqWWslMgxd0c1qcgY9KZ9K/hGcEddJsZIRH0/PO8W
-	 1yCBOYMxhEAq4NV3XpZ3KirEJXvvgfBHmr9soyJlwU4nKyr6giC2BphDed9QM/DBy6YAh
-	 84TOXOEdC7FZYqSBUNycgHiP3G4hpEnVVUrKornIbFVtoMXVOi4qi9MVsc35YjQO9OvvP
-	 a00gLj2O/Ncs1puwxg1EwbPrG4sLSjrbhZ8Csfa0NGS6Il7tAGeAas5sdnqG+rKy7vw==
+	bh=JOoo9w+biOZwsPCzKxRRmsFPgf4UiAdunvpl6A1YETU=;
+	b=uKgG23xS01XuSmjfU9qPrbqbKt9+yNwg71xCcQDjYGonQ3FqA1Y9IhVPkclvQN6Y62fc
+	 rzAb0uGo8+ZyNGICftZane9Mhwp3/ThMKwLr40jxkPbrVOJsbLlRg4XyAaImqHr/p43yI
+	 tPSk1Br5mBwMLhR5/SENzMsrjgd8PEcWOJGMqSWIVQugpS5gHb1qdfTwoZXFh/y0dD/Bx
+	 +a85Bd4C8c+8kbvezRaIZ2yNcJHbXXUnArz6TKOnEi5LTZI/+KiXgLXjgmzNHW1BrQ1gg
+	 Tl393Kh57mekUkHy2gjSAH1MjqeA47kNIg68lnLyln/Re1UVXXYYyk1ItVo1n6OUM/Q==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="I8M+/Lsl";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.53.69
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012069.outbound.protection.outlook.com [52.101.53.69])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=BXbyJ06P;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.0
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011000.outbound.protection.outlook.com [40.93.194.0])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06AFC606AB9A
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 13:24:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 06AFC606AB9A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BE82606A8AD
+	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 15:06:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8BE82606A8AD
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=I8M+/Lsl
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=BXbyJ06P
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sJ711i+U0RKDupFxB7IR7x36zOWg2qWCWXIhgxcOwH4Hy5XqBcbCE/izAkOl9GIrCW9+AOoxXdhip26slzgYTDWoFiKx4K8g3ornXdNm9L04Uj478EULCgiJUU178pvucz1zRbWSdfIc8+0BQn2yyOvRgqe7RLzZ6NFUVoqiSC6osveea+Y6yZ4PfJ20hknQrvsXCNPase2/aPCr2b3FvD+W3IqIL/5ihooIhP4Rn215Es4kK8aHBLDE1/HvyAstd1M6VfVRb6oc+0EvPcqCC+NNGv+diLqSABfc5dIljMEyXm7rTqe3MaQBKVYfFzqmROrgvV2PVF3b4q6Sd82fMw==
+ b=Kb6nIW1im/HDb8ttNQ81GIwSKAkogi29gCGOG6nKgZGQolcMeEm7hdeXIC6ehnZJWyNy6R62HPMfvDiJRzeGd3nPdkoxx54ESIJ2kNXNHgl78ubLWzUH/NkJAOn8/fq4NWHmjXGzHQHP4/E5iD817P0gbfPva+nimJezMdAQ+eMLSN5Ftee8CUmFye1UO4Fj9o0bvfAZYtmykrv3HYt5fc1hY4Q7fomAyLnSK5VG28HSuzlPOAggL8pRcBZOYEo0JsIi5nbMtV6xuMeRNkwd7k0O7kbLQGjBV1m9DqeAD7VpDPRiy0B5PjVaLSwLdOMmCSXyV/LUSCoN1fVMWRfvTg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OEbssf/iPew9KcBZFoXr9uJ3U1Ef0Mi0uoKhVrqhNLI=;
- b=C49UK4UrQPcTdh+DK8fK9spFRkIh3OTDwyZkhUzu81yMb5vAZ59470/BVOuUnVAvyuNJFHOLx7JBWMvi8yXqC6f67vr06+AVvLMoR0VZq/GbwAzIOaJ3Ku3jrQqIdX06g61/wWyg5NAMGu40kvW0/a6O/pEABjbYSvBbebwLB79DoBIMXiVhUT21H1MoZ4z0d+gPiQgCnt9YVf1BVTVYK6G5CmxvvVEC2yxiwqq79Nyz3Bb77osYGjstwdRoz6NBwTxhMGBXk3IByfrNc19PTmb1Lm+FWP36iizGZHF+uXJXqaIDonxU32zMtjimcLMLd9w5Egl1bSPmjj2BT29ppQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
+ bh=JOoo9w+biOZwsPCzKxRRmsFPgf4UiAdunvpl6A1YETU=;
+ b=N+2DTD8nYJEPYyQT2qtK9JLH+ecH8td0PicUkBEd8CtlKzs79hGGyJRp7VsAxBv1KdPsv7B4wIMFg7WzhwPG+lmcETttm2EE76l3pthcgXjCiQ3Tv03GC4lUp49kbCXaL9E7g8x94q0XTGWixmVErLyJ4SkNy1/bYC9zEAsORIiNNNiiGFC+miFPxgIp57HqdaOEXeQYjSzyCqYQ7DePRvuARaaQw+vOj7zMsdq3mBMZlRpKN0qXmS5anq63a6znXHWw4JV2uW58u4hgpeNOxT/To4wooMiABzuTc9v7Uax80COHOwmhTinQHpT0b6CC8enOOHc1BbSLWkUVYkVIBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OEbssf/iPew9KcBZFoXr9uJ3U1Ef0Mi0uoKhVrqhNLI=;
- b=I8M+/LslWgbIN5XeTXs7nAKZsmNJv4b3mYd09U2VpFJwx59GubvXXxi8aRHTe+GqVNMgUPwZHnnVhxACaqpgqHqbiRFNVdG41Hnho35qiOj+X4DEpPXTNX+/qV/oFd/DytaMsSCuRlbXg2ayTsIXSoLi1FvhuWmJU6kpnHmPeeQ=
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CY1PR12MB9697.namprd12.prod.outlook.com (2603:10b6:930:107::6)
- by PH7PR12MB7796.namprd12.prod.outlook.com (2603:10b6:510:275::19) with
+ bh=JOoo9w+biOZwsPCzKxRRmsFPgf4UiAdunvpl6A1YETU=;
+ b=BXbyJ06PxHWPED+urp1xdovgM73ah5j+Qhhoqw94/KI0drMk5OT2ZR5NXL+pkv6tufLzAJoNw3bn1p5ldSfiwCm/5IYGZPDipDpKEeh/PJxVjj9rc/d/ev7UwvPB5CeOkMy1kPBVVtiJUOlQq+uhG+R8nwAwsBkDF6ywVnYas5I=
+Received: from CH0PR03CA0010.namprd03.prod.outlook.com (2603:10b6:610:b0::15)
+ by PH7PR12MB9103.namprd12.prod.outlook.com (2603:10b6:510:2f5::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.13; Fri, 13 Nov
- 2026 13:24:05 +0000
-Received: from CY1PR12MB9697.namprd12.prod.outlook.com
- ([fe80::3a41:55a0:8203:596d]) by CY1PR12MB9697.namprd12.prod.outlook.com
- ([fe80::3a41:55a0:8203:596d%4]) with mapi id 15.21.0592.012; Fri, 13 Nov 2026
- 13:24:05 +0000
-Message-ID: <5acdf1f0-7b77-48f7-ac22-2095830936d8@amd.com>
-Date: Fri, 13 Nov 2026 18:52:09 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/4] mm/cma: reject CMA areas that overlap the kernel
- image
-To: Mike Rapoport <rppt@kernel.org>,
- Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Cc: robh@kernel.org, saravanak@kernel.org, akpm@linux-foundation.org,
- david@kernel.org, ljs@kernel.org, liam@infradead.org, vbabka@kernel.org,
- surenb@google.com, mhocko@suse.com, m.szyprowski@samsung.com,
- robin.murphy@arm.com, baoquan.he@linux.dev, pasha.tatashin@soleen.com,
- pratyush@kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux.dev,
- kexec@lists.infradead.org, anirudha.sarangi@amd.com
-References: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
- <20261103162429.2053989-4-radhey.shyam.pandey@amd.com>
- <avBXZ8iW2XPyVbmF@kernel.org>
-Content-Language: en-US
-From: "Pandey, Radhey Shyam" <radheys@amd.com>
-In-Reply-To: <avBXZ8iW2XPyVbmF@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN5P287CA0025.INDP287.PROD.OUTLOOK.COM
- (2603:1096:c01:263::7) To CY1PR12MB9697.namprd12.prod.outlook.com
- (2603:10b6:930:107::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.592.12; Fri, 13 Nov
+ 2026 15:05:45 +0000
+Received: from BL2PEPF000352CA.namprd02.prod.outlook.com
+ (2603:10b6:610:b0:cafe::90) by CH0PR03CA0010.outlook.office365.com
+ (2603:10b6:610:b0::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.11 via Frontend Transport; Fri,
+ 13 Nov 2026 15:05:40 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BL2PEPF000352CA.mail.protection.outlook.com (10.167.249.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.615.4 via Frontend Transport; Fri, 13 Nov 2026 15:05:38 +0000
+Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.53; Fri, 13 Nov
+ 2026 09:05:32 -0600
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+	<namhyung@kernel.org>, <mark.rutland@arm.com>,
+	<alexander.shishkin@linux.intel.com>, <jolsa@kernel.org>,
+	<irogers@google.com>, <adrian.hunter@intel.com>, <james.clark@linaro.org>
+CC: <x86@kernel.org>, <dave.hansen@linux.intel.com>, <tglx@kernel.org>,
+	<bp@alien8.de>, <hpa@zytor.com>, <iommu@lists.linux.dev>, <joro@8bytes.org>,
+	<suravee.suthikulpanit@amd.com>, <sandipan.das@amd.com>, <ctshao@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>
+Subject: [PATCH v2] x86/events/amd/iommu: Use a per-IOMMU cpumask
+Date: Fri, 13 Nov 2026 15:05:02 +0000
+Message-ID: <20261113150502.685887-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,158 +110,312 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY1PR12MB9697:EE_|PH7PR12MB7796:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7f3a29d1-f88e-43f6-8f2d-08df418963a8
+X-MS-TrafficTypeDiagnostic: BL2PEPF000352CA:EE_|PH7PR12MB9103:EE_
+X-MS-Office365-Filtering-Correlation-Id: 729d49e3-edcc-46ac-b8f6-08df41979419
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|23010399003|376014|366016|1800799024|4143699003|261102123227099003|56012099006|11063799006|261021121427099003|261009223027099003|261022075727099003|261022115727099003|261026121527099003|22082099003|18002099003|6133799003|10067099003;
+	BCL:0;ARA:13230040|7416014|23010399003|376014|82310400026|1800799024|36860700016|261021123027099003|921020|11063799006|261009223027099003|261022105027099003|261026140227099003|261009221227099003|261021121427099003|261028144727099003|261102123227099003|56012099006|18002099003|6133799003|10067099003|13003099007;
 X-Microsoft-Antispam-Message-Info:
-	FdwqzHqJMRArJxppoAaaSlO2j6swueGrQbB3FhEcLIWSMvwGYtTq8zOl8EsMkKBEEWqUZvj7UBLupgH0GyBnJit+3Htw7Sh6S3mu9MF2+PTYttn5u4suaL7QR8KjuvhVOrExI7nzTKIxxrziFNO08XZPIb+yreYE08buS0l+BgEb3KZu6Wv4jqyp2+YpBAUXiWdSekyyIRpIRlSXsSMEw86R/JD8l8nr4Qg/OVoNcm4BkBswBVkfFlWOR+mpHHwCby7xVMbRzByeeEasjA06naEc2kiIqdcOPw18THyPDemLPO40KFGoFPJCZtf9L6+63jD+WCJqVaU7dxI9KP01tSS2gli+pLuK7DPBw0D9H7NEzmWr/wWtjyy8sDyQTHIHMk43l2pb2GtyQDn7f/5VuPxeTq1JCrodLewnJ9lkNw7NAecSWpdqlvXx7jcTuEFp/DInZWuWlhrKSEFUtR3I9cdMqkhYKeMLvqPBHnE5/Fb9rSiv+zZqJug3wx9fKva679rH9mvECkDfc+5s0Z9Mr+r44toZbALx0uky6XhL0fVfbLA+GfMR+hOHUuBLmS7td50gdpemYqnsrpMuDogS1u3hzImwqRER91LKoyWToqBjt3aSk3rQoq5hTKsI2I3g
+	n9QS2Lv+yE2bZOpwT8r1OT0NdHW2zVn+B5d3aTWftDs861Wn4cbNBaRflZmAulwbALfPTZhwBzviuD7AZX9DJTMB0rZHE89kmK3zVKVMqpt8Ax5CMwHvv6KyRMN0aGXUUMeYiFBNyFa6XMYvBOPqQI6kyadKNfHjS5BN9oM/tPD0bCE68BTfuA2pCWBmqHitJF/2KfoHTcBvsAW8ORMFnbaC9b63hm7KnhHcUWNpsIFzT1riZIsRH46XgKiOkKPq9YLaeZkwPhhHfkx2+HoAsyEOOexEdRRIFnHikDgG0ZVTK7LFMnMf6IjBa2WbgBnOGyQX5BIIOKstPucZkNDVTTGc/AVamjkPsVUK6PL8NolBvYLqdpwwbZXId5jZdUF8+ziXtlZNnzDs+cu701HoxHjVwYKMDcece4S5RzAKw7wZhlx9xrnnIP3bfpUJNUG3p995Iy8TKfT+/ncMUNPfc5k3CBMsQ750G1KJkDykpkU1LvpB3X0LJI5WJoZEaMwSWBwY5yGppNIDMm5K6gavuiVn42+8d1oiu7OhVfHbtccI14o85N5gMhX9sCpF3zmZJi64uSHysJNhGWRMeqZDduWuvmoHFuelFsioXR95Cg8Nuq406YJ2WwKwDk9xayi/GOFeP6L+8f5jS4+UVIEwoTB3Ki8XeMrJaWtC5Qbn5X6R9ps3mR8uyOmE0LN49kpjrus4VqiEPnMdvbjMKCotNQ==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY1PR12MB9697.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(23010399003)(376014)(366016)(1800799024)(4143699003)(261102123227099003)(56012099006)(11063799006)(261021121427099003)(261009223027099003)(261022075727099003)(261022115727099003)(261026121527099003)(22082099003)(18002099003)(6133799003)(10067099003);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(7416014)(23010399003)(376014)(82310400026)(1800799024)(36860700016)(261021123027099003)(921020)(11063799006)(261009223027099003)(261022105027099003)(261026140227099003)(261009221227099003)(261021121427099003)(261028144727099003)(261102123227099003)(56012099006)(18002099003)(6133799003)(10067099003)(13003099007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bWxwWXV6QmhnRVNhekpXcHJpTXk2QWJvV0RhSFpjakhuRnhtakxZb1l6a1FS?=
- =?utf-8?B?RGRSVW44Ykg4L3BUaHlwMVJ4VTBIaUt3U1BzZjhUbUNtUnc5NklYZXN0VWll?=
- =?utf-8?B?VTBQUUdOZmVoWDN3VmJwcGdFNnlnSGZIbWZHN2RiclliK01kNzFGRUJiOXdm?=
- =?utf-8?B?eE1GcjRTTDg5ak5pczc5R2VOWVIxUVp4cjk4OS9HVDFxNTZjazBFRUxDa3RZ?=
- =?utf-8?B?akVuRTl3MVVOV053MUFNV0R4K0txcjFwU3p2Qjdrbnk1dCtadm8vaVVZREV6?=
- =?utf-8?B?dzdZa0RZN2x1WCtzMDVjRjFuNlVRcHZCWkpBTXY3WUxndjlvYjk0bHJMRU5H?=
- =?utf-8?B?NWpCM3VVenhuTU84YXRkdnM2MW14S0dzcDI3eTlNVkdKVHBBeWt6RXhBT2Yv?=
- =?utf-8?B?UzNmQm1BQlQwUEhueHdlWTF4SGVEUkpjSTJSR3FReFIxdEx3Nks5ZkphY0lY?=
- =?utf-8?B?NmhKTVVmMWhXOTRDMTgwdnZoQ3JFRU5wODBlOHFGaTZubWRQV3pUMVB4T2t3?=
- =?utf-8?B?a29DOHFGaE53QkZCUUlCRXNPTjI5VzFCaWtVUU55UFhRTytlbHo4MXJZMGs4?=
- =?utf-8?B?YXhCOUhXZHpER1Y0Wk1FSDJWcTE4L0tOTjJMd1dmR1pHMThDOFNMem05UHBK?=
- =?utf-8?B?ZkJkRjlsT0s3aFBudUlOeDY0aXFHREZCSUtNY0t1Ym1renF4NVl3UjNPUE83?=
- =?utf-8?B?R3ozRnJneHlyTW80Zno1a0ZFQ0xIVlJJaTdGN3czRlpWeU8vVXh4RWVaQ3Vi?=
- =?utf-8?B?S0NTdlFUdzlQekQyRFpYSjBxSXovdDRGSWRkcXZsUDlibzNaTlcyNEU3LzNl?=
- =?utf-8?B?RjFWYjErb09kZkxsc2VlMG9vZFp5eXBWSkFib0FueEw4QjIrM2RLR2dacWl0?=
- =?utf-8?B?VGplWjQrdDVvNlBMUUszeTN2ZnFQb3RjZmUvTlprYmpmV1l1VnlQNUJNbUFM?=
- =?utf-8?B?cnFzUE9RNmU5Y29yMm1USWFJMXVpZ1NHdWtVS3FzSEVtRVlWSnh0enpwWld3?=
- =?utf-8?B?Q2pVYjZzTFdLbUxRTTFWNFVjRjhzZGh2b05PbG1vbS9Yd1FiSkxIeHBocXZ4?=
- =?utf-8?B?K1MyZlJrUE1vWE80a21PVkR0WlN3MGlNaWhzelhJWlBDQUdRQmJjdm9yanFI?=
- =?utf-8?B?dStsbDZNVnVZUVB2VVBJMnR4RFY2cm1vbVdLTjJCU3dXUEhtdTFpMUlkSU5j?=
- =?utf-8?B?S2VVcWdrRVBNWVB1dXdFVWRuUTNneU80dC9ZUEtONkJlSHkvM0wzdzFhaVlC?=
- =?utf-8?B?dlAwR2hLNFhmQVdtazFSYzlsNzVkM2hrQzRYOXVkZnhySmZHbVhpb2JrVmJK?=
- =?utf-8?B?TGpYRGtEaENKVGZWdG1XeFA1VmRVN3UwS1FxYmNIL3A1R1dWYWlKWlJYblN3?=
- =?utf-8?B?a1VJU2NYL0JYYzZYV1Nxelh4SkxnTmlBa3NKMXFjbWFGQ2kvaXo0djRjTFBG?=
- =?utf-8?B?NGJqU01YMGVuV0N5ZHlrSFpJd0J2cjJ1SFltRGlnd1ZlNVN0L0UzWlRiM1Zn?=
- =?utf-8?B?Wi9GVkdZWlZNRkdqMXdUUE5JekhjTjd3NFNsSFc1aDVWMVV4WG9Rb1ZuRURC?=
- =?utf-8?B?OVlSRTkwWWJmVndZWnc3YVM2ZW15U09EaEFYdGgzNG1tUjg2Ynk4VzhxZDhs?=
- =?utf-8?B?QnZmVXdHR2JydjVNTmpMU0orUlhmTDN3OEJ1WXVTTjJBRldJcUZTYThzR0RP?=
- =?utf-8?B?YTdyamVvTWQwaCtUaDB6NmVUeURDM0JwZWFYeElVWWNnamoxemJyc0YyZXBM?=
- =?utf-8?B?VEU4aVB3RTRYV1ZXR1QrRTl1QmY2bk9hSm16bTFtSkdmQjlTb3JDVFUxQkFv?=
- =?utf-8?B?enE3MitPSUJVRDRPamo4ZWJMN0xRY29BZlNBVlZSQU5EQjBSNytuTWNlRDQ5?=
- =?utf-8?B?ajZwZHBqbzF0Q1h5R3pOTkg5NUQ4bkRXRXRqSStsdDZqQUJpdWRES0M5WmN5?=
- =?utf-8?B?emIwYWhMdlJ1dWhtSGJFYmdWUXpLNDJEcVV5Yy85aDdrOFM2Ukc1K3VqS0t0?=
- =?utf-8?B?WHVPVERFMzVmSU40amRsTTVrUDUyM2wzK0t2VEpiY05MWlNraTNYQjdES0FY?=
- =?utf-8?B?Z0dGUEtoVno0RTM1elYrZS8wOHNLaEU5a3RJQW1ENWdIY0N0WWRwTUVPUnVw?=
- =?utf-8?B?ZGNqc3N3UnhVekNjbVdUMWh4b21xUStXVFZleEk3QUUrYW1MRDlwSmI0U0wy?=
- =?utf-8?B?dzg4U0plbU4xZXMrTTVFL1REUGRldWpqMGlkYmtxdTBFU0sxQnpVbFFoNnF2?=
- =?utf-8?B?bVVGSzNoTGJBUEpxUzBBc21XZkpWN1N3cHpSNmV1SFRtM3Z1V0VFaDdRUlk5?=
- =?utf-8?Q?u8rWBC3Pd0l8txJDJJ?=
+	OxtH6a1SUpDbSogDyAMqUAkXtluGV8rAapsRoIraBnfyh3OdTg8KZceNbGzitzIHRqe6spm8bQALX7pgsTAxY5y670cgmfk10usaAzILaceAagxFj+pOa9/aKuRe6lV8xEjVkV3hxnhN5eFzjdJDujtGF7p0hOFPYQs+od8lrhAdN4iim9GdIVwe8Tl72jMVSg2FeJZXSeCQUOFJNyYFJyoHHuzAh3xvg59Bau/GIxstaZPesr7D996wJVDAeV3yqr6dY5IapneMGvh8icRvnCajMUdQPS0f9iSLPpHINskgdE1xsiCY6pfw+eDhDbSncqNPT8WPxLXCJLece1gmnbXKXRqaErsWKQVNC0Oo7wJJFRoNbEZZjNwwD6zS/5dTSHPQe2Zk+bdbRjK9yFmH/Uq1YogNSfalCrjhvEHOs0scfXvG6fNx+e65nphK9Z3S
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f3a29d1-f88e-43f6-8f2d-08df418963a8
-X-MS-Exchange-CrossTenant-AuthSource: CY1PR12MB9697.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 13:24:04.9889
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2026 15:05:38.9964
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Network-Message-Id: 729d49e3-edcc-46ac-b8f6-08df41979419
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ux+EzuLBNrQKak57PHZRxL8ax4FclglJKa0jbs3t7k+TVoQ00mA0bA7C5WCbiF5h
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7796
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL2PEPF000352CA.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB9103
 
-On 11/8/2026 4:35 PM, Mike Rapoport wrote:
-> Hi,
-> 
-> On Tue, Nov 03, 2026 at 09:54:28PM +0530, Radhey Shyam Pandey wrote:
->> cma_init_reserved_mem() takes a base chosen by its caller and only requires
->> that the range already be reserved, so an overlap with the kernel image is
->> indistinguishable from the normal case. cma_activate_area() then clears
->> PageReserved on those pages and frees them into MIGRATE_CMA, overriding the
->> memblock_reserve() of [_text, _end), so live kernel text reaches userspace.
->> kexec reached this until the fix this series builds on; a device tree
->> placing a shared-dma-pool over where the bootloader loaded the kernel still
->> can. Reject the overlap rather than let such a caller corrupt the kernel.
->>
->> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
->> ---
->> Changes since RFC:
->> - Drop Pratyush reviewed-by tag as there were few changes.
->> - Trim the commit description.
->> - Drop the redundant comment as suggested by Mike.
->> - cma_overlaps_kernel_image() is kept as helpers in asm-generic/sections.h
->>    are virtual-address helpers.
->> ---
->>   mm/cma.c | 21 +++++++++++++++++++++
->>   1 file changed, 21 insertions(+)
->>
->> diff --git a/mm/cma.c b/mm/cma.c
->> index 9c53b2b70dc8..3231a53161cd 100644
->> --- a/mm/cma.c
->> +++ b/mm/cma.c
->> @@ -31,6 +31,8 @@
->>   #include <linux/kmemleak.h>
->>   #include <trace/events/cma.h>
->>   
->> +#include <asm/sections.h>
-> 
-> You probably don't need this.
+IOMMU performance counters are accessed via MMIO. The AMD IOMMU PMUs
+share one global cpumask, fixed to CPU0, so every IOMMU's events are
+read through the same CPU. That prevents collecting per-NUMA-node
+numbers (for example perf stat --per-socket). The mask is also never
+updated, so counting stops if that CPU goes offline.
 
-Thanks , will drop it.
+Give each IOMMU PMU its own cpumask. The CPU is chosen from the online
+CPUs of the NUMA node of the IOMMU's PCI device, via
+amd_iommu_idx_to_dev(). If the node is unknown or has no online CPU,
+any online CPU is used. If no online CPU exists at all, that PMU is
+not registered.
 
-> 
->> +
->>   #include "internal.h"
->>   #include "cma.h"
->>   #include "mm_init.h"
->> @@ -68,6 +70,16 @@ bool cma_has_dynamic_base(const struct cma *cma)
->>   	return test_bit(CMA_DYNAMIC_BASE, &cma->flags);
->>   }
->>   
->> +static bool cma_overlaps_kernel_image(phys_addr_t base, phys_addr_t size)
->> +{
->> +	phys_addr_t end;
->> +
->> +	if (check_add_overflow(base, size, &end))
->> +		return true;
->> +
->> +	return base < __pa_symbol(_end) && __pa_symbol(_text) < end;
->> +}
->> +
->>   static unsigned long cma_bitmap_aligned_mask(const struct cma *cma,
->>   					     unsigned int align_order)
->>   {
->> @@ -295,6 +307,15 @@ int __init cma_init_reserved_mem(phys_addr_t base, phys_addr_t size,
->>   	if (!size || !memblock_is_region_reserved(base, size))
->>   		return -EINVAL;
->>   
->> +	if (cma_overlaps_kernel_image(base, size)) {
->> +		phys_addr_t text = __pa_symbol(_text);
->> +		phys_addr_t end = __pa_symbol(_end);
->> +
->> +		pr_err("area %s (%pa, size %pa) overlaps kernel image [%pa-%pa]\n",
->> +		       name ?: "(unnamed)", &base, &size, &text, &end);
-> 
-> We don't want to expose addresses of the kernel image.
-> I'd drop text, end, and probably even base from the printout.
+A CPU hotplug callback moves the reader when that CPU goes offline,
+preferring another online CPU on the same node. If the reader had to
+leave the node, it moves back when a CPU on that node comes online.
+Events are pinned to the current reader so they share one context and
+migrate together.
 
-Thanks. I will fix it in next version.
-pr_err("area %s overlaps the kernel image\n", name ?: "(unnamed)");
+Assisted-by: Cursor
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+---
+V1: https://lore.kernel.org/linux-iommu/20260517114026.6817-1-vasant.hegde@amd.com/
 
+Changes since v1:
+  - Rebased on top of v7.4-rc2
+  - Added hotplug support
 
-I also want to discuss on this patch sashiko review.
-https://lore.kernel.org/all/sashiko-outbox-197614@kernel.org/
-Sashiko says:
-Because _text is below KERNEL_START on 32-bit ARM, won't calling
-cma_init_reserved_mem() -> cma_overlaps_kernel_image() with
-base < __pa_symbol(_end) trigger VIRTUAL_BUG_ON() during early boot?
+-Vasant
 
-any suggestion on how to address it? one option is to switch
-to __pa_symbol(_stext).
+ arch/x86/events/amd/iommu.c | 130 ++++++++++++++++++++++++++++++++++--
+ drivers/iommu/amd/init.c    |   7 ++
+ include/linux/amd-iommu.h   |   1 +
+ include/linux/cpuhotplug.h  |   1 +
+ 4 files changed, 134 insertions(+), 5 deletions(-)
 
-Thanks,
-Radhey
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index f332c7089bd5..3b35702aa702 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -10,6 +10,7 @@
+ 
+ #define pr_fmt(fmt)	"perf/amd_iommu: " fmt
+ 
++#include <linux/device.h>
+ #include <linux/perf_event.h>
+ #include <linux/init.h>
+ #include <linux/cpumask.h>
+@@ -43,6 +44,8 @@ struct perf_amd_iommu {
+ 	u8 max_counters;
+ 	u64 cntr_assign_mask;
+ 	raw_spinlock_t lock;
++	int node;
++	cpumask_t cpumask;
+ };
+ 
+ static LIST_HEAD(perf_amd_iommu_list);
+@@ -131,13 +134,15 @@ static struct amd_iommu_event_desc amd_iommu_v2_event_descs[] = {
+ /*---------------------------------------------
+  * sysfs cpumask attributes
+  *---------------------------------------------*/
+-static cpumask_t iommu_cpumask;
+-
+ static ssize_t _iommu_cpumask_show(struct device *dev,
+ 				   struct device_attribute *attr,
+ 				   char *buf)
+ {
+-	return sysfs_emit(buf, "%*pbl\n", cpumask_pr_args(&iommu_cpumask));
++	struct pmu *pmu = dev_get_drvdata(dev);
++	struct perf_amd_iommu *perf_iommu =
++			container_of(pmu, struct perf_amd_iommu, pmu);
++
++	return sysfs_emit(buf, "%*pbl\n", cpumask_pr_args(&perf_iommu->cpumask));
+ }
+ static DEVICE_ATTR(cpumask, S_IRUGO, _iommu_cpumask_show, NULL);
+ 
+@@ -207,7 +212,11 @@ static int clear_avail_iommu_bnk_cntr(struct perf_amd_iommu *perf_iommu,
+ 
+ static int perf_iommu_event_init(struct perf_event *event)
+ {
++	struct perf_amd_iommu *perf_iommu =
++			container_of(event->pmu, struct perf_amd_iommu, pmu);
+ 	struct hw_perf_event *hwc = &event->hw;
++	unsigned long flags;
++	unsigned int cpu;
+ 
+ 	/* test the event attr type check for PMU enumeration */
+ 	if (event->attr.type != event->pmu->type)
+@@ -224,6 +233,18 @@ static int perf_iommu_event_init(struct perf_event *event)
+ 	if (event->cpu < 0)
+ 		return -EINVAL;
+ 
++	/*
++	 * Counters are read via MMIO from one CPU. Pin every event there so
++	 * they share a context and move together when that CPU goes offline.
++	 */
++	raw_spin_lock_irqsave(&perf_iommu->lock, flags);
++	cpu = cpumask_first(&perf_iommu->cpumask);
++	raw_spin_unlock_irqrestore(&perf_iommu->lock, flags);
++	if (cpu >= nr_cpu_ids)
++		return -ENODEV;
++
++	event->cpu = cpu;
++
+ 	/* update the hw_perf_event struct with the iommu config data */
+ 	hwc->conf  = event->attr.config;
+ 	hwc->conf1 = event->attr.config1;
+@@ -417,9 +438,93 @@ static const struct pmu iommu_pmu __initconst = {
+ 	.capabilities	= PERF_PMU_CAP_NO_EXCLUDE,
+ };
+ 
++/*
++ * Pick a CPU to read this IOMMU's counters. Prefer an online CPU on
++ * @node. @except is skipped so a CPU going offline is not chosen again;
++ * pass -1 when any online CPU is acceptable.
++ */
++static unsigned int iommu_pmu_pick_cpu(int node, int except)
++{
++	unsigned int cpu = nr_cpu_ids;
++
++	if (node != NUMA_NO_NODE)
++		cpu = cpumask_any_and_but(cpumask_of_node(node),
++					  cpu_online_mask, except);
++	if (cpu >= nr_cpu_ids)
++		cpu = cpumask_any_but(cpu_online_mask, except);
++
++	return cpu;
++}
++
++static int iommu_pmu_cpu_offline(unsigned int cpu)
++{
++	struct perf_amd_iommu *perf_iommu;
++	unsigned long flags;
++	unsigned int target;
++
++	list_for_each_entry(perf_iommu, &perf_amd_iommu_list, list) {
++		raw_spin_lock_irqsave(&perf_iommu->lock, flags);
++		if (!cpumask_test_and_clear_cpu(cpu, &perf_iommu->cpumask)) {
++			raw_spin_unlock_irqrestore(&perf_iommu->lock, flags);
++			continue;
++		}
++
++		target = iommu_pmu_pick_cpu(perf_iommu->node, cpu);
++		if (target < nr_cpu_ids)
++			cpumask_set_cpu(target, &perf_iommu->cpumask);
++		raw_spin_unlock_irqrestore(&perf_iommu->lock, flags);
++
++		if (target < nr_cpu_ids)
++			perf_pmu_migrate_context(&perf_iommu->pmu, cpu, target);
++	}
++
++	return 0;
++}
++
++static int iommu_pmu_cpu_online(unsigned int cpu)
++{
++	struct perf_amd_iommu *perf_iommu;
++	unsigned long flags;
++	unsigned int target;
++
++	list_for_each_entry(perf_iommu, &perf_amd_iommu_list, list) {
++		if (perf_iommu->node != NUMA_NO_NODE &&
++		    cpu_to_node(cpu) != perf_iommu->node)
++			continue;
++
++		raw_spin_lock_irqsave(&perf_iommu->lock, flags);
++		if (cpumask_empty(&perf_iommu->cpumask)) {
++			cpumask_set_cpu(cpu, &perf_iommu->cpumask);
++			raw_spin_unlock_irqrestore(&perf_iommu->lock, flags);
++			continue;
++		}
++
++		/*
++		 * A reader that fell off this node, because every local CPU
++		 * was offline, moves back when a local CPU returns.
++		 */
++		target = cpumask_first(&perf_iommu->cpumask);
++		if (perf_iommu->node == NUMA_NO_NODE ||
++		    cpu_to_node(target) == perf_iommu->node) {
++			raw_spin_unlock_irqrestore(&perf_iommu->lock, flags);
++			continue;
++		}
++
++		cpumask_clear(&perf_iommu->cpumask);
++		cpumask_set_cpu(cpu, &perf_iommu->cpumask);
++		raw_spin_unlock_irqrestore(&perf_iommu->lock, flags);
++
++		perf_pmu_migrate_context(&perf_iommu->pmu, target, cpu);
++	}
++
++	return 0;
++}
++
+ static __init int init_one_iommu(unsigned int idx)
+ {
+ 	struct perf_amd_iommu *perf_iommu;
++	struct device *dev;
++	unsigned int cpu;
+ 	int ret;
+ 
+ 	perf_iommu = kzalloc_obj(struct perf_amd_iommu);
+@@ -440,6 +545,17 @@ static __init int init_one_iommu(unsigned int idx)
+ 		return -EINVAL;
+ 	}
+ 
++	dev = amd_iommu_idx_to_dev(idx);
++	perf_iommu->node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
++	cpu = iommu_pmu_pick_cpu(perf_iommu->node, -1);
++	if (cpu >= nr_cpu_ids) {
++		pr_warn("Failed to find online CPU for IOMMU %d.\n", idx);
++		kfree(perf_iommu);
++		return -ENODEV;
++	}
++
++	cpumask_set_cpu(cpu, &perf_iommu->cpumask);
++
+ 	snprintf(perf_iommu->name, IOMMU_NAME_SIZE, "amd_iommu_%u", idx);
+ 
+ 	ret = perf_pmu_register(&perf_iommu->pmu, perf_iommu->name, -1);
+@@ -483,8 +599,12 @@ static __init int amd_iommu_pc_init(void)
+ 		return -ENODEV;
+ 	}
+ 
+-	/* Init cpumask attributes to only core 0 */
+-	cpumask_set_cpu(0, &iommu_cpumask);
++	ret = cpuhp_setup_state(CPUHP_AP_PERF_X86_AMD_IOMMU_ONLINE,
++				"perf/x86/amd/iommu:online",
++				iommu_pmu_cpu_online, iommu_pmu_cpu_offline);
++	if (ret)
++		pr_warn("Failed to install CPU hotplug callback (%d)\n", ret);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 3dd4ff145e55..f13aa858fd50 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -4077,6 +4077,13 @@ struct amd_iommu *get_amd_iommu(unsigned int idx)
+ 	return NULL;
+ }
+ 
++struct device *amd_iommu_idx_to_dev(unsigned int idx)
++{
++	struct amd_iommu *iommu = get_amd_iommu(idx);
++
++	return iommu ? &iommu->dev->dev : NULL;
++}
++
+ /****************************************************************************
+  *
+  * IOMMU EFR Performance Counter support functionality. This code allows
+diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
+index 5c9dcf720f84..e3bddbe1c21b 100644
+--- a/include/linux/amd-iommu.h
++++ b/include/linux/amd-iommu.h
+@@ -67,6 +67,7 @@ int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn,
+ int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn,
+ 		u64 *value);
+ struct amd_iommu *get_amd_iommu(unsigned int idx);
++struct device *amd_iommu_idx_to_dev(unsigned int idx);
+ 
+ #ifdef CONFIG_KVM_AMD_SEV
+ int amd_iommu_snp_disable(void);
+diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+index 1b6dba159bb2..468e61c98e80 100644
+--- a/include/linux/cpuhotplug.h
++++ b/include/linux/cpuhotplug.h
+@@ -205,6 +205,7 @@ enum cpuhp_state {
+ 	CPUHP_AP_PERF_X86_UNCORE_ONLINE,
+ 	CPUHP_AP_PERF_X86_AMD_UNCORE_ONLINE,
+ 	CPUHP_AP_PERF_X86_AMD_POWER_ONLINE,
++	CPUHP_AP_PERF_X86_AMD_IOMMU_ONLINE,
+ 	CPUHP_AP_PERF_S390_CF_ONLINE,
+ 	CPUHP_AP_PERF_S390_SF_ONLINE,
+ 	CPUHP_AP_PERF_ARM_CCI_ONLINE,
+-- 
+2.31.1
+
