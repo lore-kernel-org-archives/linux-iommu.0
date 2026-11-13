@@ -1,56 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=95.215.58.60
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=90.155.50.34
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794595614;
-	b=dxtah9NkC6GtnwdqgIZh3LXXkRVasZFmBdVM3HvkCvWn9x5wgPomql14s6dlsy2eR2cS
-	 hKu3IYDs6h+I6b5PMDzBF107nXhkigVOigSjFfwGn0d+Z+hgVN/k0DQN7GSHzYmjzIUPl
-	 B/ydJuVMQiuTYHsvqo2t/XwLTsvpyMMVSLWA3H2hRQb2xIAWlKeHHXP9rrQs2GT4kg+Io
-	 9uUBXMrP99SbZkd/oUBM/9YdwvAUrbA5A0jPS8ybIpOKRpSVGhnuK8zzqMEvDGhL5/5PM
-	 /ssDvT+8/MvllElSYPATBSo2w6ak3jgKBNdnhnWd3IFKcx67ooDZu9UpzRG+dS5y3JQ==
+	t=1794599124;
+	b=ebnAEsAZzK+sPOv2uDxc7MObjpYTldThPk7Bm7UHh+i6XZQECYasY9bTw+EE5AGAPBQ8
+	 hkUp/iTaLtQCkwd+QckdNJNkDJMiAkOBhpymX//Ykwa1bVd7nR0xCQfaD9I7GYhRjyeHc
+	 hz1x9fzIbOs0UKhHiKIYm3QUoMati013qW9BSwUIBmf2TPVjAhmdZd02mRAcNA8jEHFtZ
+	 HJuuzM7BEEVUiTEfUEWT80huWCw0n7rYp0/6GhtSJB/4X0q00l+S1sGn+XM3GeCoZViEH
+	 jq1lAGTeqEEy023TivSaTsVCSuWOeEStypcjPLWoBp949Ar5joF0ipxtUPft7fyO4/g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794595614;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Message-ID:Date:MIME-Version:User-Agent:
-	 Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding;
-	bh=jnDAeo7CmnNaA/656fOLCkXGnntEEKJb98BwVbdJVSA=;
-	b=oQNwneP87TU7N2oLuOSgezPJ2fsCA784MpcZ0hxge6P/cyjUTEMSAod47hR6POGL+2GE
-	 t10lVXcYT5PL3BwykcxWXhUV0dOZykfSrpwrfLwD5bIC9eZTRGmiFVEFBeiEuyAnPQqJc
-	 u/eCm20uYcvOnvCXvB6/pre+bujzf8a0gMCAmnSchZjBzyQcauj0c5lGf9OnYihk3waKC
-	 cJjInA7zcQXLmpnzM+7j6yvuMt4Bf4TL3+18eCs8BoNCGtEGdJd7KyZrhE9owNRQUFDlk
-	 hBiIHoCR6FJm0gem89Q8+msmagI7iijnFS2vdj2rUEn4uwnnlAqrzMqXmTjUunUbFDg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794599124;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To;
+	bh=gjLy+MNfOWSbu5NtI+C6mzKEH0S8YN5kvQWQs6kfrkc=;
+	b=Q1ikH+MyIv5OpbgTihzexTLtIop8JJEkJOF5LEk9mAuhKmnz7U+tf1/U+eTBrmBEMCXF
+	 5o294EckSPJ9NoeV1BO+MC4zUXrkDemxZqJUZljb2cErlOEVvaGxq8Qjcu9nzx284Xkgq
+	 6hspP1UkZQSz/CGLZaYYjdsCZQG4SiLsc7QsAxTUYiK/TbbpoieGIoLgL397x6borPRWI
+	 bFO51AF2ZmtwqqSYHGw6nRZsQR2RGf2bPQsC7ENk6VFtMynt/Ehkbupa9NW7zl908cSlz
+	 k51WuHqO1WNSvlPF0rCJpuOIeRljPYJBqByuoOOqKuR5XKHdDhiUC/8ehcbS/eKkXhA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=packett.cool;
-	spf=pass smtp.mailfrom=packett.cool;
-	dkim=pass header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=wKqlIfso;
-	arc=none smtp.remote-ip=95.215.58.60
-Received: from mta1.migadu.com (out-60.mta1.migadu.com [95.215.58.60])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=infradead.org;
+	spf=pass smtp.mailfrom=infradead.org;
+	dkim=pass header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=casper.20170209 header.b=YzISiqkl;
+	arc=none smtp.remote-ip=90.155.50.34
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7B58606A32D
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 18:46:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B7B58606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=packett.cool
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=packett.cool
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5CCC606A330;
+	Fri, 13 Nov 2026 19:45:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D5CCC606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=packett.cool header.i=@packett.cool header.a=rsa-sha256 header.s=key1 header.b=wKqlIfso
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=YRNPDyKnF5AAnH1Nkcj0IpcYyCLG3qMSgftkaQIlJjM=;
- c=simple/simple; d=packett.cool;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1794595610; v=1; x=1795200410;
- b=wKqlIfsoAs0iiPyqGpYb1eUg2O8du+8UjqsDMtpATzTB6foPKYrKEZW3X/GCT6x0Htk3RdMS
- rYqKk+9j35v5d7UF3Lgka/03jO7vWIae3pT1pqTd3i4mQfDNs8KV5Ho9Rdi1FIH34bCAKLKvKOz
- Xpm868QO4MtJl7TzQeub6Z4v2Sin4Ltb5EMgyE6mw2mhX8JMm5q7T7KHupDQ5lM0SIvgtD1QKEB
- yDfLlLnJSWRsFseTjO/pr746/CI5K1dLg8uSdw1YRFRXnF8Iuxl+fqd+QTIRhwy73cr0NDLmqtG
- kF8OuSRi46q4kYjbqTbjjdB5YLwzVG2yLa+YGTyNhu13g==
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id e856afca2a42441d;
-	Fri, 13 Nov 2026 18:46:50 +0000
-X-Mizu-Trace-ID: e856afca2a42441d
-X-Migadu-Flow: FLOW_OUT
-Message-ID: <4ce436ed-63b7-4764-afc5-dc5ffa4f0ba1@packett.cool>
-Date: Fri, 13 Nov 2026 15:46:40 -0300
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.a=rsa-sha256 header.s=casper.20170209 header.b=YzISiqkl
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=gjLy+MNfOWSbu5NtI+C6mzKEH0S8YN5kvQWQs6kfrkc=; b=YzISiqklc3XmZrEQ4ktPVVJEkp
+	Cs6TrBIfJSI5GVzQaJ/BxOH7V9mOe6ECuhT9tR991M71QRZmMQbRkr3h5jYRETRQ1/NqAtljElDZy
+	ZK3Yn97v5vfAfW8turrQxs3YL0t2dKfAcAxEDEFgaQqKOpnyfIK+wlJltQMRvfKjQct8kqa5cBPSu
+	3/qdKKUa6v4PQrDIpsV+MzoTrOqFsqMwJwWHol9uio29w4LKmd2+5PbypGIl0kWmmAJ8SlOjzRxrL
+	nO+exbnLtFOurhTYJxZVDL2lXdeoETe9g1o7Kvf6PjbPLnlZ8Mhcx7fBSgFEk5Yi5tP+rgZ+DQEj2
+	Z9VNHkUw==;
+Received: from willy by casper.infradead.org with local (Exim 4.100.1 #2 (Red Hat Linux))
+	id 1xRxCo-000000052Uc-0jPI;
+	Fri, 13 Nov 2026 19:45:02 +0000
+Date: Fri, 13 Nov 2026 19:45:01 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: "David Hildenbrand (Arm)" <david@kernel.org>
+Cc: Lorenzo Stoakes <ljs@kernel.org>,
+	"Liam R. Howlett" <liam@infradead.org>,
+	Vlastimil Babka <vbabka@kernel.org>,
+	Mike Rapoport <rppt@kernel.org>,
+	Suren Baghdasaryan <surenb@google.com>,
+	Michal Hocko <mhocko@suse.com>, Jan Kara <jack@suse.cz>,
+	Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Nico Pache <nico.pache@linux.dev>,
+	Ryan Roberts <ryan.roberts@arm.com>, Dev Jain <dev.jain@arm.com>,
+	Barry Song <baohua@kernel.org>, Lance Yang <lance.yang@linux.dev>,
+	Usama Arif <usama.arif@linux.dev>, Kiryl Shutsemau <kas@kernel.org>,
+	Matthew Brost <matthew.brost@intel.com>,
+	Joshua Hahn <joshua.hahnjy@gmail.com>,
+	Byungchul Park <byungchul@sk.com>,
+	Gregory Price <gourry@gourry.net>,
+	Ying Huang <ying.huang@linux.alibaba.com>,
+	Alistair Popple <apopple@nvidia.com>, Peter Xu <peterx@redhat.com>,
+	Johannes Weiner <hannes@cmpxchg.org>,
+	Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>,
+	Miklos Szeredi <miklos@szeredi.hu>,
+	Alexander Viro <viro@zeniv.linux.org.uk>,
+	Christian Brauner <brauner@kernel.org>,
+	Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>,
+	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+	Nick Piggin <npiggin@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steve Sistare <steven.sistare@oracle.com>,
+	John Hubbard <jhubbard@nvidia.com>,
+	"Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
+	Josef Bacik <josef@toxicpanda.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@kernel.org>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Simon Horman <horms@kernel.org>,
+	Neal Cardwell <ncardwell@google.com>,
+	Kuniyuki Iwashima <kuniyu@google.com>, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	fuse-devel@lists.linux.dev, linux-arch@vger.kernel.org,
+	iommu@lists.linux.dev, netdev@vger.kernel.org,
+	Chris Mason <mason@kernel.org>, stable@vger.kernel.org,
+	Pedro Falcato <pfalcato@suse.de>
+Subject: Re: [PATCH v4 1/9] mm: limit pagecache folio refcount when mapping
+ pages
+Message-ID: <avdovRTVITLwuit_@casper.infradead.org>
+References: <20261112-refcount_overflow_stable-v4-0-ad3deef0bd23@kernel.org>
+ <20261112-refcount_overflow_stable-v4-1-ad3deef0bd23@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -60,146 +109,96 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/6] arm64: dts: qcom: kodiak: Add GEM_NOC interconnect
- for adreno SMMU
-To: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
- Rob Clark <robin.clark@oss.qualcomm.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org
-References: <20260706-smmu_interconnect_addition-v3-0-afdca0125a65@oss.qualcomm.com>
- <20260706-smmu_interconnect_addition-v3-3-afdca0125a65@oss.qualcomm.com>
- <h6opbtr2ced3sannj3ym573qc2sjk7ek3clpto5j5mtqfrfk6w@34sk2zraoqtj>
- <807f145d-88d3-460a-9862-b63fe2a52cf7@oss.qualcomm.com>
- <a4f5sod3aflubxkk4mm4k5ozddydqcnqeac4s6vnozkd2nvxbi@hmh6zclsw5z3>
- <4e5a3d82-b946-4490-885a-ea7061939c32@oss.qualcomm.com>
- <ak5qkRKk2eHHLYmo@baldur>
- <2c21041d-f84c-4fa7-a977-555f9203d8b5@oss.qualcomm.com>
-Content-Language: en-US
-From: Val Packett <val@packett.cool>
-In-Reply-To: <2c21041d-f84c-4fa7-a977-555f9203d8b5@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261112-refcount_overflow_stable-v4-1-ad3deef0bd23@kernel.org>
 
-Hi,
+On Thu, Nov 12, 2026 at 11:53:20PM +0100, David Hildenbrand (Arm) wrote:
+> Being able to overflow the refcount is not really big news, but it's about
+> time that we do something about it because some modern technology might
+> find ways to abuse it :)
 
-On 7/17/26 8:40 AM, Bibek Kumar Patro wrote:
->
->
-> On 7/8/2026 8:56 PM, Bjorn Andersson wrote:
->> On Wed, Jul 08, 2026 at 03:31:07PM +0530, Bibek Kumar Patro wrote:
->>>
->>>
->>> On 7/7/2026 10:14 PM, Dmitry Baryshkov wrote:
->>>> On Tue, Jul 07, 2026 at 06:37:24PM +0530, Bibek Kumar Patro wrote:
->>>>>
->>>>>
->>>>> On 7/6/2026 11:12 PM, Dmitry Baryshkov wrote:
->>>>>> On Mon, Jul 06, 2026 at 10:26:36PM +0530, Bibek Kumar Patro wrote:
->>>>>>> On Kodiak platforms, the Adreno SMMU requires a bandwidth vote on
->>>>>>> the GEM_NOC path (MASTER_GPU_TCU -> SLAVE_EBI1) before its 
->>>>>>> registers
->>>>>>> are accessible. Without this vote, the SMMU may become unreachable,
->>>>>>> leading to intermittent probe failures and runtime issues.
->>>>>>>
->>>>>>> Add the required interconnect to ensure reliable register access.
->>>>>>>
->>>>>>> Signed-off-by: Bibek Kumar Patro <bibek.patro@oss.qualcomm.com>
->>>>>>> ---
->>>>>>>     arch/arm64/boot/dts/qcom/kodiak.dtsi | 2 ++
->>>>>>>     1 file changed, 2 insertions(+)
->>>>>>>
->>>>>>> diff --git a/arch/arm64/boot/dts/qcom/kodiak.dtsi 
->>>>>>> b/arch/arm64/boot/dts/qcom/kodiak.dtsi
->>>>>>> index 90e50c245c0c..721526f023dd 100644
->>>>>>> --- a/arch/arm64/boot/dts/qcom/kodiak.dtsi
->>>>>>> +++ b/arch/arm64/boot/dts/qcom/kodiak.dtsi
->>>>>>> @@ -3389,6 +3389,8 @@ adreno_smmu: iommu@3da0000 {
->>>>>>>                 power-domains = <&gpucc GPU_CC_CX_GDSC>;
->>>>>>>                 dma-coherent;
->>>>>>> +            interconnects = <&gem_noc MASTER_GPU_TCU 
->>>>>>> QCOM_ICC_TAG_ALWAYS
->>>>>>> +                     &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>;
->>>>>>
->>>>>> Why is it ALWAYS? Would it be better to declare it as ACTIVE_ONLY 
->>>>>> and
->>>>>
->>>>> Added QCOM_ICC_TAG_ALWAYS, to hold the vote in SLEEP bucket as well
->>>>> preventing gem_noc going to sleep when icc_set_bw is being called.
->>>>
->>>> _why_?
->>>>
->>>
->>> Now when i think of where we implemented the hooks, ALWAYS is not 
->>> needed. We
->>> should keep it ACTIVE_ONLY since we are already voting it
->>> back in resume pah. I'll fix it in next revision.
->>>
->>
->> The path is between the SMMU and DDR, so clearly it has to do with the
->> TCU's ability to fetch things from DDR.
->>
->
-> Yes as you rightly mentioned, this series is helping to resolve the 
-> race in TCU DDR clink
->
->> ACTIVE_ONLY states that the vote should only be applied when the
->> application subsystem (CPUSS) is not in low-power mode (CPU is active).
->>
->> So, are you saying that in all cases that cpuidle might select such
->> low-power state the GPU TCU is "stopped", and does not need to perform
->> any memory transactions?
->>
->
-> I rechecked the architectural block diagram, GPU TCU is
-> independent of the CPUSS, unlike system TCU.
->
-> This means CPUSS can be powered down while the GPU TCU remains voted 
-> up. While this series was intended to avoid a DDR voting race between the
-> GPU TCU and its clients, using ACTIVE_ONLY could have possibly
-> introduced a race between CPUSS and the GPU TCU itself.
->
-> Thanks for catching this in my reply Bjorn.
->
-> ACTIVE_ONLY would have been suitable for system TCU (apps_smmu)
-> for which the interconnect field is anyways not needed, but
-> unsuitable for GPU TCU.
->
->>
->> To me these two are orthogonal and TAG_ALWAYS is logically correct, but
->> perhaps there's some practical dependency that I'm missing?
->>
->
-> We can ignore my acknowledgment [1] on previous response, Dmitry.
-> ALWAYS TAG is correct here instead of ACTIVE_ONLY in the interconnect 
-> field for adreno SMMU. 
+Yes.  My primary worry is actually it finding a path where we forget to
+put the refcount on a folio and that gets exploited into a UAF.  I'm not
+sure the "reserve for root" aspect really helps recover from that, but
+I'm not too opposed to it.
 
+> As a short-term solution, let's introduce two folio refcount limits:
+> one for ordinary consumers and one for admins. Leave some headroom
+> before the refcount goes negative, which we really don't want (having
+> the mapcount go negative is also not expected).
 
-This series seems to help with a really annoying bug on Kodiak phones 
-like sm7325-motorola-dubai where often boot would hang when initializing 
-the display panel (so it took a few reboots to successfully boot the 
-device).
+I don't think a negative refcount or mapcount is really a problem.  What
+matters is that we don't get to zero from below (for the refcount)
+or that we don't get to 0xf000'0000 (for mapcount).
 
-And indeed it only helps with the ALWAYS tag..
+> +/* Leave separate reserves for administrators and concurrent reference gains. */
+> +#define FOLIO_REF_COUNT_LIMIT		(INT_MAX - (1U << 26))
+> +#define FOLIO_REF_COUNT_ADMIN_LIMIT	(INT_MAX - (1U << 25))
 
-I've had this patch applied for a while (without even realizing that it 
-fixed that!! thought the issue was gone because of something else) and 
-today I went around kodiak.dtsi trying to remove unnecessary ALWAYS 
-votes… first boot after changing this tag to ACTIVE_ONLY and boom, hang.
+I think these specific values will generate bad code.
 
+> +static inline bool folio_ref_count_over_limit(const struct folio *folio)
+> +{
+> +	const unsigned int ref_count = folio_ref_count(folio);
+> +
+> +	if (likely(ref_count < FOLIO_REF_COUNT_LIMIT))
+> +		return false;
 
-Tested-by: Val Packett <val@packett.cool> # sm7325-motorola-dubai
+I would replace this with a simple signed comparison against 0.
 
-(for patch 2 i.e. the driver code as well)
+>  static inline void folio_get(struct folio *folio)
+>  {
+> -	VM_BUG_ON_FOLIO(folio_ref_zero_or_close_to_overflow(folio), folio);
+> +	VM_WARN_ON_FOLIO(folio_ref_count(folio) <= 0, folio);
+>  	folio_ref_inc(folio);
+>  }
 
+And I would drop this hunk.
 
-Thanks,
-~val
+> diff --git a/mm/util.c b/mm/util.c
+> index 80f6c714844f2..c9c3dc4b490fa 100644
+> --- a/mm/util.c
+> +++ b/mm/util.c
+
+Now we have mm/folio.c, I think it should live in there.
+
+> @@ -791,6 +791,32 @@ int folio_mc_copy(struct folio *dst, struct folio *src)
+>  }
+>  EXPORT_SYMBOL(folio_mc_copy);
+>  
+> +bool folio_ref_count_over_limit_slowpath(const struct folio *folio,
+> +		unsigned int ref_count)
+> +{
+> +	if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
+> +		goto over_limit;
+
+Maybe let this go up to 0x8100'0000?
+
+> +	/* Background threads must not consume admin reserves. */
+> +	if (current->flags & PF_KTHREAD)
+> +		goto over_limit;
+> +	/* Neither must interrupt contexts on behalf of the interrupted task. */
+> +	if (!in_task())
+> +		goto over_limit;
+> +	/* Capability checks are not safe with IRQs disabled. */
+> +	if (irqs_disabled())
+> +		goto over_limit;
+> +	/* Use the task's credentials, which filesystem overrides cannot change. */
+> +	if (has_capability_noaudit(current, CAP_SYS_RESOURCE))
+> +		return false;
+> +
+> +over_limit:
+> +	pr_warn_ratelimited("folio:%p refcount:%d mapcount:%d mapping:%p reached refcount limit\n",
+> +			    folio, (int)ref_count, folio_mapcount(folio),
+> +			    folio_mapping(folio));
+
+If it's worth doing folio->mapping, maybe also print folio->index?
+In fact,
+
+        pr_warn("page: refcount:%d mapcount:%d mapping:%p index:%#lx pfn:%#lx\n",
+                        folio_ref_count(folio), mapcount, mapping,
+                        folio->index + idx, pfn);
+
+might be worth pulling out into a mini helper from __dump_folio()?
 
