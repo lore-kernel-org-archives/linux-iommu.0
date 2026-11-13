@@ -1,114 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=202.12.124.136
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794569451;
-	b=hsIP8ej6/i8lCTjcl2AP/VWl3NTziVOAHO7Az+AE818Yw9lwJyTv2RbL8n9LP/91njyQ
-	 Zipq4NMHBoCeeYSAYPMSmLvaJ8LEkDgNtJFmB0WmFHy16V7gYgfnPifACAzZOWTC3elYs
-	 fXjoDem1aknQ9P7eyYsSWTbnTxV2aaaCwQl7wYedJ/kQH/Tb4JW+EtImzYbr0mc62Mu7v
-	 /eYSmXrecpAqG+mxKcQ/gT0Y6+t4TqvJxBo0zzOpVsjdx3CTc1vEerMvKMb8LbatljRuQ
-	 95QZcwEE7gR4NpJpd4ADxnLa6SdwaFlCic3jqBNsiqBTN/izuxmaBa/a+v1oqVvevnQ==
+	t=1794571728;
+	b=TBegGUHmMBc2VlKj8L1A59+f+ESUKmzWxWpkrtdZlR48YAJ+Yafu3amylyQmYOwoaTII
+	 owKGTcHs5c0J/D0G8g3j6GFmjDKygdKvrcvmeWg6FRxuFWVCBRHb4CeLc+Kimkr1JE67f
+	 /FvzJcsA6ihOt1owJFhQutLQ0OMwh9tAwp23eY6dS1Qm5duos/9SG5yT5/tpFeWV7U2oq
+	 jiU6nuAc4yPvaLPU6l9z5vUnJxDI9TfMpOoy/Fk+NFC4XHK+DHwll207RsTudqUvq616A
+	 YY9Qrq/N+HFWYMhYgh/yuJkPHvDOst7n8Kxbs9V2uSxdZNmaxxivrQBLEW9cEoUn+cQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794569451;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:DKIM-Signature:
-	 X-DKIM2-Info:DKIM2-Signature:X-DKIM2-Info:Message-Instance:
-	 X-ME-Sender:X-ME-Received:X-ME-Proxy-Cause:X-ME-Proxy:Feedback-ID:
-	 Received:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 References:From:Content-Language:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding;
-	bh=PnqFm2jYeAVrycuwwVcWm5rqzekmC81/znw1H31yK8Y=;
-	b=shOSGOnEVZaDgoWw9Nyur6zw7CglKB5oecvDuQIxmUiz0w9GQvINt17cSJKJxUWhmLuu
-	 O03PaL4ukYhhHaSFfFnb/Ml1Pmr7Sp1AcgZTFrPEMkl/IxqCW38TQLzSPt6Ccdu76xliv
-	 jQUGWNwcANaSjo5Fn5RutSYsMtTe/3SNa+FSEwed8a7503YmS6E+byg//B/Kxtlj+2o3G
-	 YX+eJNcNTc5n5MBAwqvgzjJzytY8htEuch8nKdgSo7dtJJ7pp4cuwUHvnzjNDdwUcPE3f
-	 cnHCFlg82zzDYoE7b27MqF06rzqprTNI9ef0VJiVcq/3N39z1dBfPIcr9XxZZ42cm8w==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794571728;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=DCPKKvSKsZGN6ZGZTx2lYYqlAtYoJoEa/WryVTu5l4E=;
+	b=4E0wANdVI35to+DBEGgYC5tuvsdBhtLbMVZazldL6HshuvbjGeWV39eb2XKmTaUinJ5t
+	 Ya3XCN1odLVaBD5X3ZL+klgYFdrfivJRRdTgt8e6bmQY5Ob/z4htiKcLRWY6Fw+NChhV4
+	 bqUwiwKq1D8MMHBJABDIKyN3ow0OXpKJkRTArpl07PDKP8y4DteJ8Uto+91OV6AUrNEik
+	 lDZ+/N+69BnkTDpeOwtPhnktO5iu73UYL0aA/wVXZ2nolnftcupUi3WyLorqq3iGC4tXd
+	 w2tc2Vn7WlyGsZdXaCVqgsMz7lgT4lmJ7wr2TGr1khOfODbAni6xW+LUb0W0bj8QwTw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ozlabs.ru;
-	spf=pass smtp.mailfrom=ozlabs.ru;
-	dkim=pass header.d=ozlabs.ru header.i=@ozlabs.ru header.a=rsa-sha256 header.s=fm2 header.b=meyXLT19;
-	dkim=pass header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=z5KwZaQH;
-	arc=none smtp.remote-ip=202.12.124.136
-Received: from flow-b1-smtp.messagingengine.com (flow-b1-smtp.messagingengine.com [202.12.124.136])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=au15CuIx;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59A91606A88D
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 11:30:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 59A91606A88D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ozlabs.ru
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 741B3606B582;
+	Fri, 13 Nov 2026 12:08:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=ozlabs.ru header.i=@ozlabs.ru header.a=rsa-sha256 header.s=fm2 header.b=meyXLT19;
-	dkim=pass (2048-bit key, unprotected) header.d=messagingengine.com header.i=@messagingengine.com header.a=rsa-sha256 header.s=fm3 header.b=z5KwZaQH
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailflow.stl.internal (Postfix) with ESMTP id DD9A1130326E
-	for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 06:30:49 -0500 (EST)
-Received: from phl-frontend-03 ([10.202.2.162])
-  by phl-compute-04.internal (MEProxy); Fri, 13 Nov 2026 06:30:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ozlabs.ru; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1794569443;
-	 x=1794576643; bh=PnqFm2jYeAVrycuwwVcWm5rqzekmC81/znw1H31yK8Y=; b=
-	meyXLT19M5tP7DpYkCarFfEvAZ98dGNdhyj5+9QpEzKxvNaClUxy6dTnbD0Rpd/n
-	zWdv/EQHbNzX/lkVmrCGaUCDm2V0L0gg7WR9CMXWT7D2AtrkYFblMEydDYmEqHc5
-	T5/8mp8dv4ddaRmHBiM20By/5mThMboMBfRh+bl2seBgnftCq7zNz+WFc9qU3txx
-	y1zsoVUdjuvjSybxPHt6io16q/yhVkejW3o7KJexkFMPO5TmRy640ENV93bFDWvF
-	tmctKNQdFOPtT1yBDFpvNYcaEBnbBkSpqtbQl6BflVVdiVPuwRbu42yUoE605UjK
-	fp8mJRtNsA5XpYQWstw9Iw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1794569443; x=
-	1794576643; bh=PnqFm2jYeAVrycuwwVcWm5rqzekmC81/znw1H31yK8Y=; b=z
-	5KwZaQHi47wioxVdckkyfexJXNh1yWLwJd+lk0ReeNehcKro10LwL9bD7bs9WnIM
-	Z7Qbk65gvREhLj6tSfZnPDhsDd5sIdcyFc8iV/LJd9AujjpHob9yGLMjdmFusZtz
-	iuqunZzSnWkrrH4E0+JKZEuVHPcFRnsBerwvqxCcA3847KTmMB8MGogcQC8/F6VG
-	34TvkYXJNzfWW4IM6wDxxxqmcBZTs1zN08liBDYh0SyKU6yMl4v9ij91WMgWodoJ
-	87fXCfvyIe9ikwPHuYplmB6nfdWyhz7vWP3PgQMW9QGF9WEZyoWbAKNijHxnuiJb
-	QttyeCAKCpVJhWKkTn5LQ==
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=sign d=ozlabs.ru a=rsa-sha256;
-DKIM2-Signature: i=1; m=1; t=1794569443; d=ozlabs.ru;
-	mf=PGFpa0BvemxhYnMucnU+; rt=PGlvbW11QGxpc3RzLmxpbnV4LmRldj4=;
-	s=fm2:rsa-sha256:fONskIlJFMUcEh8IUfGr36OyDHzQHcB3w8mAfyXXcOVl1YP
-	1lV7XKFLMzurZSTC1ywNe0sw1w9NkYL5m/42BAGOn+b/1ngGRAuOEBcDVG/LRVtR
-	m7zWvDvSe5THp8WgvSrrHPjOL37J+2gNkiQgJvhW7V6lQwMXrWlb9zlvY3r4AmjU
-	sqztpXlSMUL+eYQPByr8CJ3TD9Qdphlvs/uIfjRzfoa1K35dF6qF+Ey7TKDcUKuz
-	IMt7HehQflF5Crl1vW4eA1gr/3QnIEytTRZp7L0EKj2HAx+EuBCTHI6m/4PF7kRp
-	wFRIPyleGOkLI4HaQqRH24INrveSa68qfAn6KBg==;
-X-DKIM2-Info: draft=ietf-dkim-dkim2-spec-09;
-	repo=github.com/dkim2wg/interop; date=2026-11-03; sw=lmtpprox;
-	action=mi-m=1; hc=14;
-	hn=cc,content-language,content-transfer-encoding,content-type,
-	date,feedback-id,from,in-reply-to,message-id,mime-version,
-	references,subject,to,user-agent;
-Message-Instance: m=1; h=sha256:iFx97hTcJ8Y1HUPfOfFECH232yfXw3++rBlsuYz0mF0=:tlT8VnyioQvKXETdlI95QOP3NKRxuzvpY7TOEGpmLWA=;
-X-ME-Sender: <xms:4vT2aukLJNhXIlf5PCN5DDG_DUPVgFMdT3W3STgPD6GZFqVfRZBunA>
-    <xme:4vT2ath-eWWok9eJRVsMbzX26Zs67vK0HG9xuIiXoCBdNCyp9uux2qSyB8cLCnQPa
-    AfjZbjzKaY_I9ndGZiEb_sQz63W9zRN7re10r9-47dGWxL2N0KOBmsYVw>
-X-ME-Received: <xmr:4vT2au0hf_49BkaVpZVERbm7WPN01EaKpUsTyIQ_u13aDA3gmVmP2541xH8vYpLuJCY>
-X-ME-Proxy-Cause: dmFkZTGaq2+9qYRP465S1d+h0vXe/GuuDBYKns8z2mjhl4Mh0Tz8Jm1Q5IM59n2D+nYg00
-    adwvLbeR/yRRkZP0bvBiD3E+0a7ovEe1XqkgRvybXznyODhw8beoxifL9k20sY2YwzmQoj
-    R6l5ikRhfWRx3WaGBbFDyppVKKBZw9G6WIBDHCtAMj/mkNi/iCMOhe/08YcdFgBcef6tj6
-    VyPIRk+TFJ26QQnBWIPmk6f6yldoBEuKiueQEwzUJ3kUyoOWpE4fIwDfLkEJPNsGEcG9Dw
-    qEzByjb+To7cJv6CAJ36oyif6gyFz8GxU55MM1bSRgezL7B1iLqWnUYZIEVeORWHwTMrEo
-    DQWU963CHbyGdksWrG9aZenHkDnTlUf2FX4V+ez7VangjG+/vZbYZjKk2CKp8Tjpyt8pno
-    Gjhv01vgSNvg/pblIP/pWZyjUB5WQwo0Sf9n2/iLH1XZLgSg+6DeZMTVo1H3MDMECQXmvB
-    tx1bJgI8JpCUVsYAwLxCDaAsC4hNzvwNedUqA+IzVOJ9uTOfhG4njJ2KYmNMS8q5I24owj
-    seD77vt2pgtfFxHHNzvGEjwbCxL0I0kNXFyNrXCuL3dQDQ1CJ/w1/oKl4lNWUt2nPZOYLR
-    N8iDMJOHzKj4RNhR3wnB9RHeT4TgPYv1JEIHhK7NpSBn3GDTDjJtBLmifAVw
-X-ME-Proxy: <xmx:4vT2ahTlwSkZzQRCNTy4e4IM1jjgnsiV6UQQe5LtT3yhoLT7lAnbUA>
-    <xmx:4vT2agbrba6_sGmOV8yoWpigfnLXrNHVxahQV1rGxnC3A4QpIpBM0w>
-    <xmx:4vT2au4qVBkej9Xwa24yw8dsyUBpBsGuInNz8qBD8STYHJGZ2R1oBA>
-    <xmx:4vT2ahv2H635BgSHqh-pUX_ge_nlp_d02QRTAzGWj151IJlG3YtULw>
-    <xmx:4_T2ajypviWSmq8MjGemjX20HXWfonfrDF0zuQLuAQ4YiMzffTrauvgd>
-Feedback-ID: i6e394913:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 13 Nov 2026 06:30:29 -0500 (EST)
-Message-ID: <de5772b3-c340-4822-a49a-1434ece1b144@ozlabs.ru>
-Date: Fri, 13 Nov 2026 22:30:23 +1100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=au15CuIx
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 947EF1F000C4;
+	Fri, 13 Nov 2026 12:08:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794571728;
+	bh=DCPKKvSKsZGN6ZGZTx2lYYqlAtYoJoEa/WryVTu5l4E=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=au15CuIxjBQb5zBlCDyGEp8bBtB0P5Q1riTnaoMRjIfwb8D+lUqZY7XXgl0RsxAzE
+	 kEueU9MSfS09y0CdiKoR78LXqvmC+g1NN+S7+0AXg5mE3c7yxaFGCFPasTn7U4P2Yq
+	 wCOmTQgCrhEq4vvUSftMSYa5B30cDjtQSZ4QKKgcyn3VBZTG1A+Enp95W85ZAMdrq6
+	 O7g68nfE/V7ai7AnS5L0FgWFeW+jFuPUAjGijxYYKQwiRFrELWdqd1vF1K1M2iFOMJ
+	 /QMc3+6yubESduWY8XFoIkDyAQVIKCBMJaq+EJ2OJhCHuSIlaa63VHGiH5duiMEZum
+	 aurui0ZOLZ9TA==
+Message-ID: <b2a76474-c3eb-4b56-b5f8-0fc4b123467e@kernel.org>
+Date: Fri, 13 Nov 2026 13:08:35 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -119,544 +52,110 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 11/19] driver core: Introduce a generic device trust
- level
-To: Leon Romanovsky <leon@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
- Heiner Kallweit <hkallweit1@gmail.com>, Russell King
- <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Johannes Berg <johannes@sipsolutions.net>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
- <rdunlap@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>,
+Subject: Re: [PATCH v7 1/5] iommu/dma: Keep reserved regions below the IOVA
+ rbtree anchor
+To: Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Vasant Hegde <vasant.hegde@amd.com>,
  Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Johan Hovold <johan@kernel.org>,
- Eric Dumazet <edumazet@kernel.org>, Marcel Holtmann <marcel@holtmann.org>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
-Cc: linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
- linux-input@vger.kernel.org, netdev@vger.kernel.org,
- linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@ziepe.ca>, Alexey Kardashevskiy <aik@amd.com>
-References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
- <20261109-device-trust-core-v2-11-3b12d9a9f861@nvidia.com>
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
+ Saravana Kannan <saravanak@kernel.org>,
+ Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+ Eric Auger <eric.auger@redhat.com>,
+ Bryan O'Donoghue <bryan.odonoghue@linaro.org>, Joerg Roedel
+ <jroedel@suse.de>, Srinath Mannam <srinath.mannam@broadcom.com>,
+ Oza Pawandeep <quic_poza@quicinc.com>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Alex Williamson <alex@shazbot.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux.dev, devicetree@vger.kernel.org,
+ kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-media@vger.kernel.org, Sashiko <sashiko-bot@kernel.org>,
+ stable@vger.kernel.org, Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
+ <20261106-add_iommu_ranges-v7-1-5c0f72083e52@oss.qualcomm.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
-In-Reply-To: <20261109-device-trust-core-v2-11-3b12d9a9f861@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Autocrypt: addr=krzk@kernel.org; keydata=
+ xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
+ cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
+ JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
+ gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
+ J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
+ NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
+ BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
+ vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
+ Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
+ TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
+ S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGPBBMBCgA5AhsDBgsJCAcDAgYVCAIJCgsE
+ FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJp2mE8AAoJEBuTQ307QWKbeaIP
+ /ihHTkTW4KsN/DQ945JJbyu5tI0J80Wue7QyyLPglyKfhgb5cLLNPpOC8cCIJsc7+W3i2P38
+ s2c1cOH6CYGE7E9ur3Vfme8NW2S2I/Z8VC7bZnzyS23wT17LrsdS/qCpx4o8U+pt/xdXDKph
+ EGRYrIEmMpUWvyYzyYKGIe25FtaayIIKpq8eZYyFcp2f/sG5IkOW5uZzHPMPdcm87jU7fyuQ
+ rAU2vx9r+ulUfQ/q9Z2roC/ode3l7t2pN7BCBCsUDp6JCrUyZrtT1e7EbA0ZRP3aOBNk2P2E
+ DQOgJGjGdO5Yx2Y9LFtltu6JbsBJHi1syGRX3AtQYOMc4Y1WGoeZJmMlvKj2ZqqXNkcWi2DS
+ IQEWB0uW6CqFsBBIMGDa+6OzdaVO/uAVXWDWml02Men3CILdI1MbVjoh8ECqYUY7OQ+JJvNN
+ vnliuq5WM3Ghd3jg/LZZrxXjdIginRHFQCjIJYLKpLZWm1/iDFedcfzqRNYmTtqscdCNHW41
+ oT3Z7BmO9xwdjuwBS6nmS6JJwkbf5Ot2QR4pB/DRU7ZwjT1qHe+9r9gF32wXVQatHNGK/VVu
+ sfwOnkdxCWkp/qb2gdQRmZh+SedStWshigH6sNfuHBloF/q+hjMRc8b2m326OZdrbSHwY1Sz
+ vti8Hn7n8NjdHO9LKB7BIdjkA9DA5WsqOuVCzsFNBFVDXDQBEADNkrQYSREUL4D3Gws46JEo
+ Z9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLueMNsWLJBv
+ BaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6eiOMheesVS
+ 5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wAGldWsRxb
+ f3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA6z6lBZn0
+ WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9YegxWKvX
+ XHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt91pFzBSO
+ IpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gUBLHFTg2h
+ YnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/JoFzZ4B0
+ p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu4vXVFBYI
+ GmpyNPYzRm0QPwARAQABwsF2BBgBCgAgAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtBYpsFAmna
+ YUkACgkQG5NDfTtBYptX+BAApg32CkxwNucNEi8WfWA8oKkW0y8YDuY6ORMo9FWNGiT/OTy0
+ vyJrLocrpn86zwfjVp+eCrssPYh8eqJfnWqmYv6ACQtHPYzPZQ3mSo8H97Z01oUxITzCxpXm
+ ZkLgPIqtDPcC2E3dPM/fVxcyowM8XsaMA9wcsaUYrta8toOq2b9tKcjleKMfMrm0gQ9u7wUc
+ QbLkwj6TCLOwucb07GXzLTNF9PZmaDUpKAZjMjmrW+le+SFvQbhamx0rxLWPR0NWntXpbCn+
+ +ACch03p/JyTBVktxFsFyCt7pTPE1kEaeuXBTe/a2D9iQvRxRW19LvuO2e59/u1wYUiH/orz
+ wbIC2S4dBsPAPihL3ztOU1yE86GPyQtSE0kU+/7snnLt4QGi6PChf3t5gnNjAzjUUovO8rgI
+ c+5yN5heq5loYHgK6OQ9OlHzsPHO9e9MOQcKlFycs1pyijFGzDwdNUm/SchK8iWT2QApTx4A
+ K9bCVaboTA2T77QYkRcRJYSsO1alGX0ome/hMLD1daXlkrNUp1HWa3K4iytLRXjCSIorWiGs
+ n+q3krnpXu3TFkA8qtOFZMdnIiFuiq1yLT8hptsV5xh1TA2nsVvSYiaCr3q4s4BKjS/KrLDb
+ qoxzw8ISjdUp4pA85vb6YLCmb39NgidD+7PmAr65lBNveIFynTgsja1rRQ4=
+In-Reply-To: <20261106-add_iommu_ranges-v7-1-5c0f72083e52@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 9/11/26 18:33, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On 06/11/2026 18:14, Vikash Garodia wrote:
+> The IOVA allocator tracks address ranges by page frame number (PFN).
+> The highest node in its rbtree is a fixed anchor at PFN ~0UL, which is
+> embedded in the DMA cookie. dma-iommu converts reserved regions to PFNs
+> with iova_pfn(), which returns unsigned long. On x86-32 with PAE,
+> addresses are 64-bit but unsigned long is 32-bit, so the upper bits of
+> the PFN are lost.
+> A reserved region that ends at the top of the address space then gets
+> the anchor's PFN. reserve_iova() merges it into the anchor and lowers
+> the anchor's pfn_lo. At teardown, free_iova_mem() no longer recognises
+> the anchor and frees it to iova_cache, which corrupts the slab. PCI host
+> bridge windows above 16TiB and the reservation after the last PCI DMA
+> window hit the same problem.
+> Compute the PFNs in u64. Skip ranges that start above the PFN space and
+> clamp the end one PFN below the anchor. The allocator never hands out
+> those IOVAs, so nothing is lost. On 64-bit, PFNs never reach ~0UL, so
+> nothing changes there.
 > 
-> Device setup needs a common operating policy before driver probing or DMA
-> configuration. Userspace must be able to hold devices disabled until it
-> authorizes them.
-> 
-> Add generic trust admission with an immutable global boot policy. Restrict
-> the compatibility attachment API to explicit global full policy and full
-> operation, checking admission before probe. Keep the operating level
-> stable until teardown and retain normal locked admission for other callers.
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-
-this got many CCs except the one where I was (eagerly) looking for it: linux-coco@lists.linux.dev :)
-
-
+> Fixes: fade1ec055dc ("iommu/dma: Avoid PCI host bridge windows")
+> Fixes: 7c1b058c8b5a ("iommu/dma: Handle IOMMU API reserved regions")
+> Fixes: aadad097cd46 ("iommu/dma: Reserve IOVA for PCIe inaccessible DMA address")
+> Reported-by: Sashiko <sashiko-bot@kernel.org>
+> Closes: https://lore.kernel.org/all/sashiko-outbox-195658@kernel.org/
+> Cc: stable@vger.kernel.org
+> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
 > ---
->   Documentation/admin-guide/kernel-parameters.txt |   8 ++
->   drivers/base/Makefile                           |   2 +-
->   drivers/base/base.h                             |  16 +++
->   drivers/base/core.c                             |   3 +
->   drivers/base/dd.c                               |  38 ++++++-
->   drivers/base/trust.c                            | 132 ++++++++++++++++++++++++
->   include/linux/device.h                          |   8 ++
->   include/linux/device/bus.h                      |  10 ++
->   include/linux/device/trust.h                    |  44 ++++++++
->   9 files changed, 258 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index 0b3c140babd94..81a936dca9476 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -1259,6 +1259,14 @@ Kernel parameters
->   	dell_smm_hwmon.fan_max=
->   			[HW] Maximum configurable fan speed.
->   
-> +	device_trust.default=
-> +			[KNL] Set the initial trust policy for all devices.
-> +			Format: { default | disabled | adversary | full }
-> +			If omitted or set to default, preserve bus policy.
-> +			Other values replace bus policy. The last valid value wins.
-> +			Full-only manual driver attachment requires full; other
-> +			global policies reject it before the probe callback.
-> +
->   	dfltcc=		[HW,S390]
->   			Format: { on | off | def_only | inf_only | always }
->   			on:       s390 zlib hardware support for compression on
-> diff --git a/drivers/base/Makefile b/drivers/base/Makefile
-> index 435710f643a5c..cb3bd5fa2287a 100644
-> --- a/drivers/base/Makefile
-> +++ b/drivers/base/Makefile
-> @@ -3,7 +3,7 @@
->   
->   obj-y			:= component.o core.o bus.o dd.o syscore.o \
->   			   driver.o class.o platform.o \
-> -			   cpu.o firmware.o init.o map.o devres.o \
-> +			   cpu.o firmware.o init.o map.o devres.o trust.o \
->   			   attribute_container.o transport_class.o \
->   			   topology.o container.o property.o cacheinfo.o \
->   			   swnode.o faux.o
-> diff --git a/drivers/base/base.h b/drivers/base/base.h
-> index 866b2beb6baa2..ba8b5b3c51a65 100644
-> --- a/drivers/base/base.h
-> +++ b/drivers/base/base.h
-> @@ -10,6 +10,7 @@
->    * shared outside of the drivers/base/ directory.
->    *
->    */
-> +#include <linux/device/trust.h>
->   #include <linux/notifier.h>
->   
->   /**
-> @@ -88,6 +89,13 @@ struct driver_private {
->   };
->   #define to_driver(obj) container_of(obj, struct driver_private, kobj)
->   
-> +enum device_trust_state {
-> +	DEVICE_TRUST_SELECTABLE,
-> +	DEVICE_TRUST_WAITING,
+>  drivers/iommu/dma-iommu.c | 32 ++++++++++++++++++++------------
+>  1 file changed, 20 insertions(+), 12 deletions(-)
 
-What is the exact difference between these? "Waiting" is waiting for what?
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-> +	DEVICE_TRUST_AUTHORIZED,
-> +	DEVICE_TRUST_COMMITTED,
-
-And exact difference between these two? Some documentation would be great.
-
-dev->trust_policy is how we want the device to operate.
-dev->p->trust_state is where the device is on its way to that final policy.
-
-right?
-
-
-> +};
-> +
->   /**
->    * struct device_private - structure to hold the private to the driver core
->    *			   portions of the device structure.
-> @@ -105,6 +113,7 @@ struct driver_private {
->    *			   dev_err_probe() for later retrieval via debugfs
->    * @device: pointer back to the struct device that this structure is
->    *	    associated with.
-> + * @trust_state: policy admission state
->    * @dead: This device is currently either in the process of or has been
->    *	  removed from the system. Any asynchronous events scheduled for this
->    *	  device should exit without taking any action.
-> @@ -121,6 +130,7 @@ struct device_private {
->   	const struct device_driver *async_driver;
->   	char *deferred_probe_reason;
->   	struct device *device;
-> +	enum device_trust_state trust_state;
->   	u8 dead:1;
->   };
->   #define to_device_private_parent(obj)	\
-> @@ -166,6 +176,12 @@ void bus_remove_driver(struct device_driver *drv);
->   void device_release_driver_internal(struct device *dev, const struct device_driver *drv,
->   				    struct device *parent);
->   
-> +/* Full-only manual attachment uses the caller's subsystem serialization. */
-> +void device_trust_init_state(struct device *dev);
-> +int device_trust_prepare(struct device *dev, const struct device_driver *drv);
-> +int device_trust_prepare_full(struct device *dev, const struct device_driver *drv);
-> +void device_trust_clear(struct device *dev);
-> +
->   void driver_detach(const struct device_driver *drv);
->   void driver_deferred_probe_del(struct device *dev);
->   void device_set_deferred_probe_reason(const struct device *dev, struct va_format *vaf);
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index cbe05197d4a0b..6b94a163cda8d 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -3681,6 +3681,9 @@ int device_add(struct device *dev)
->   	if (error)
->   		goto name_error;
->   
-> +	device_trust_init(dev);
-> +	device_trust_init_state(dev);
-> +
->   	pr_debug("device: '%s': %s\n", dev_name(dev), __func__);
->   
->   	parent = get_device(dev->parent);
-> diff --git a/drivers/base/dd.c b/drivers/base/dd.c
-> index 0f56c3d825731..449986f741009 100644
-> --- a/drivers/base/dd.c
-> +++ b/drivers/base/dd.c
-> @@ -558,12 +558,24 @@ static int __device_bind_driver(struct device *dev)
->    */
->   int device_bind_driver(struct device *dev)
->   {
-> -	return __device_bind_driver(dev);
-> +	int ret;
-> +
-> +	if (dev->bus && dev->bus->trust_resolve)
-> +		return -EOPNOTSUPP;
-> +
-> +	ret = device_trust_prepare(dev, dev->driver);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = __device_bind_driver(dev);
-> +	if (ret)
-> +		device_trust_clear(dev);
-> +	return ret;
->   }
->   EXPORT_SYMBOL_GPL(device_bind_driver);
->   
->   /**
-> - * device_driver_attach_full - attach a driver using subsystem serialization
-> + * device_driver_attach_full - attach a driver under the global full policy
->    * @drv: driver to attach
->    * @dev: device to attach it to
->    *
-> @@ -576,6 +588,12 @@ EXPORT_SYMBOL_GPL(device_bind_driver);
->    * It calls the bus or driver probe callback and publishes the binding without
->    * performing the normal driver-core DMA, pinctrl or power-domain setup.
->    *
-> + * Requires device_trust.default=full and a full operating level. Runtime
-> + * policy writes are disabled in this mode; boot policy exceptions still
-> + * apply. When driver boot rules exist, an explicit device boot rule must
-> + * exclude them for @dev. Buses with a trust resolver must use
-> + * device_driver_attach().
-> + *
->    * Return: 0 on success, or a negative error before binding.
->    */
->   int device_driver_attach_full(const struct device_driver *drv, struct device *dev)
-> @@ -587,6 +605,10 @@ int device_driver_attach_full(const struct device_driver *drv, struct device *de
->   	if (dev->driver)
->   		return -EBUSY;
->   
-> +	ret = device_trust_prepare_full(dev, drv);
-> +	if (ret)
-> +		return ret;
-> +
->   	device_set_driver(dev, drv);
->   	if (dev->bus->probe)
->   		ret = dev->bus->probe(dev);
-> @@ -610,6 +632,7 @@ int device_driver_attach_full(const struct device_driver *drv, struct device *de
->   	devres_release_all(dev);
->   	device_set_driver(dev, NULL);
->   	dev_set_drvdata(dev, NULL);
-> +	WRITE_ONCE(dev->trust_level, DEVICE_TRUST_DISABLED);
->   	if (ret == -EPROBE_DEFER)
->   		return -EAGAIN;
->   	return ret;
-> @@ -739,6 +762,14 @@ static int really_probe(struct device *dev, const struct device_driver *drv)
->   	}
->   
->   re_probe:
-> +	ret = device_trust_prepare(dev, drv);
-> +	if (ret) {
-> +		device_links_no_driver(dev);
-> +		/* Report it like a probe error so a scan tries the next driver. */
-> +		ret = -ret;
-> +		goto done;
-> +	}
-> +
->   	device_set_driver(dev, drv);
->   
->   	/* If using pinctrl, bind pins now before probing */
-> @@ -805,6 +836,7 @@ static int really_probe(struct device *dev, const struct device_driver *drv)
->   		if (dev->bus && dev->bus->dma_cleanup)
->   			dev->bus->dma_cleanup(dev);
->   		device_unbind_cleanup(dev);
-> +		device_trust_clear(dev);
->   
->   		goto re_probe;
->   	}
-> @@ -831,6 +863,7 @@ static int really_probe(struct device *dev, const struct device_driver *drv)
->   pinctrl_bind_failed:
->   	device_links_no_driver(dev);
->   	device_unbind_cleanup(dev);
-> +	device_trust_clear(dev);
->   done:
->   	return ret;
->   }
-> @@ -1420,6 +1453,7 @@ static void __device_release_driver(struct device *dev, struct device *parent)
->   			dev->bus->dma_cleanup(dev);
->   
->   		device_unbind_cleanup(dev);
-> +		device_trust_clear(dev);
->   		device_links_driver_cleanup(dev);
->   
->   		klist_remove(&dev->p->knode_driver);
-> diff --git a/drivers/base/trust.c b/drivers/base/trust.c
-> new file mode 100644
-> index 0000000000000..6a71abf10b3bb
-> --- /dev/null
-> +++ b/drivers/base/trust.c
-> @@ -0,0 +1,132 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <linux/device.h>
-> +#include <linux/errno.h>
-> +#include <linux/export.h>
-> +#include <linux/init.h>
-> +#include <linux/string.h>
-> +#include <kunit/visibility.h>
-> +
-> +#include "base.h"
-> +
-> +static enum device_trust_policy device_trust_default_policy __ro_after_init;
-> +
-> +void device_trust_init_state(struct device *dev)
-> +{
-> +	dev->p->trust_state = dev->trust_policy == DEVICE_TRUST_POLICY_DISABLED ?
-> +		DEVICE_TRUST_WAITING : DEVICE_TRUST_SELECTABLE;
-> +}
-> +
-> +static int __device_trust_prepare(struct device *dev,
-> +				  const struct device_driver *drv, bool full_only)
-> +{
-> +	enum device_trust_policy policy;
-> +	enum device_trust_level level;
-> +	int ret;
-> +
-> +	policy = dev->trust_policy;
-> +
-> +	if (policy == DEVICE_TRUST_POLICY_DISABLED)
-> +		return -EPERM;
-> +	if (dev->bus && dev->bus->trust_resolve) {
-> +		ret = dev->bus->trust_resolve(dev, drv, policy, &level);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		level = policy == DEVICE_TRUST_POLICY_ADVERSARY ?
-> +			DEVICE_TRUST_ADVERSARY : DEVICE_TRUST_FULL;
-> +	}
-> +	if (level == DEVICE_TRUST_DISABLED)
-> +		return -EPERM;
-
-This check can go right after trust_resolve() above. Thanks,
-
-
-> +	if (full_only && level != DEVICE_TRUST_FULL)
-> +		return -EPERM;
-> +	if (dev->p->trust_state == DEVICE_TRUST_COMMITTED &&
-> +	    dev->trust_committed_level != level)
-> +		return -EINVAL;
-> +
-> +	WRITE_ONCE(dev->trust_committed_level, level);
-> +	dev->p->trust_state = DEVICE_TRUST_COMMITTED;
-> +	WRITE_ONCE(dev->trust_level, level);
-> +	return 0;
-> +}
-> +
-> +int device_trust_prepare(struct device *dev, const struct device_driver *drv)
-> +{
-> +	device_lock_assert(dev);
-> +	return __device_trust_prepare(dev, drv, false);
-> +}
-> +
-> +int device_trust_prepare_full(struct device *dev, const struct device_driver *drv)
-> +{
-> +	if (device_trust_default_policy != DEVICE_TRUST_POLICY_FULL)
-> +		return -EPERM;
-> +
-> +	return __device_trust_prepare(dev, drv, true);
-> +}
-> +
-> +void device_trust_clear(struct device *dev)
-> +{
-> +	device_lock_assert(dev);
-> +	WRITE_ONCE(dev->trust_level, DEVICE_TRUST_DISABLED);
-> +}
-> +
-> +/**
-> + * device_get_trust_level - Return a device's active trust level
-> + * @dev: device to inspect
-> + *
-> + * The value is stable from the start of DMA configuration through the end of
-> + * DMA cleanup. An unbound device has %DEVICE_TRUST_DISABLED as its active
-> + * trust level.
-> + *
-> + * Return: The active trust level for the current bind transaction.
-> + */
-> +enum device_trust_level device_get_trust_level(const struct device *dev)
-> +{
-> +	return READ_ONCE(dev->trust_level);
-> +}
-> +EXPORT_SYMBOL_GPL(device_get_trust_level);
-> +
-> +/**
-> + * device_is_adversarial - Test whether a device is operated as an adversary
-> + * @dev: device to inspect
-> + *
-> + * Return: True when the active trust level is %DEVICE_TRUST_ADVERSARY.
-> + */
-> +bool device_is_adversarial(const struct device *dev)
-> +{
-> +	return device_get_trust_level(dev) == DEVICE_TRUST_ADVERSARY;
-> +}
-> +EXPORT_SYMBOL_GPL(device_is_adversarial);
-> +
-> +static const char * const device_trust_policy_names[] = {
-> +	[DEVICE_TRUST_POLICY_DEFAULT] = "default",
-> +	[DEVICE_TRUST_POLICY_DISABLED] = "disabled",
-> +	[DEVICE_TRUST_POLICY_ADVERSARY] = "adversary",
-> +	[DEVICE_TRUST_POLICY_FULL] = "full",
-> +};
-> +
-> +static int __init device_trust_default_setup(char *str)
-> +{
-> +	int policy = match_string(device_trust_policy_names,
-> +				  ARRAY_SIZE(device_trust_policy_names), str);
-> +
-> +	if (policy < 0) {
-> +		pr_warn("device_trust: ignoring invalid default policy '%s'\n", str);
-> +		return 1;
-> +	}
-> +
-> +	device_trust_default_policy = policy;
-> +	return 1;
-> +}
-> +__setup("device_trust.default=", device_trust_default_setup);
-> +
-> +/**
-> + * device_trust_init - Apply global boot policy before registration
-> + * @dev: unregistered device with its initial policy set
-> + */
-> +void device_trust_init(struct device *dev)
-> +{
-> +	if (device_trust_default_policy != DEVICE_TRUST_POLICY_DEFAULT)
-> +		dev->trust_policy = device_trust_default_policy;
-> +}
-> +EXPORT_SYMBOL_GPL(device_trust_init);
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 42e966ebaa2d3..57d2e1b0d98ad 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -30,6 +30,7 @@
->   #include <linux/device/class.h>
->   #include <linux/device/devres.h>
->   #include <linux/device/driver.h>
-> +#include <linux/device/trust.h>
->   #include <linux/cleanup.h>
->   #include <asm/device.h>
->   
-> @@ -695,6 +696,10 @@ enum struct_device_flags {
->    * @removable:  Whether the device can be removed from the system. This
->    *              should be set by the subsystem / bus driver that discovered
->    *              the device.
-> + * @trust_policy: Requested operating policy, resolved before driver probe.
-> + * @trust_level: Active trust level while a driver is bound, see
-> + *		device_get_trust_level().
-> + * @trust_committed_level: Operating level retained across bind transactions.
->    * @flags:	DEV_FLAG_XXX flags. Use atomic bitfield operations to modify.
->    *
->    * At the lowest level, every device in a Linux system is represented by an
-> @@ -798,6 +803,9 @@ struct device {
->   	struct device_physical_location *physical_location;
->   
->   	enum device_removable	removable;
-> +	enum device_trust_policy trust_policy;
-> +	enum device_trust_level trust_level;
-> +	enum device_trust_level trust_committed_level;
->   
->   	DECLARE_BITMAP(flags, DEV_FLAG_COUNT);
->   };
-> diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
-> index 9ef7538a9a7f2..ba2b5743a47cd 100644
-> --- a/include/linux/device/bus.h
-> +++ b/include/linux/device/bus.h
-> @@ -17,6 +17,7 @@
->   #include <linux/kobject.h>
->   #include <linux/klist.h>
->   #include <linux/pm.h>
-> +#include <linux/device/trust.h>
->   
->   struct device_driver;
->   struct fwnode_handle;
-> @@ -59,6 +60,11 @@ struct fwnode_handle;
->    * @resume:	Called to bring a device on this bus out of sleep mode.
->    * @num_vf:	Called to find out how many virtual functions a device on this
->    *		bus supports.
-> + * @trust_resolve: Resolve a requested trust policy to an active trust level
-> + *		immediately before driver probe. The device lock is held and
-> + *		@drv is the candidate driver, which dev->driver does not name
-> + *		yet. Return 0 on success or a negative errno. This callback
-> + *		must not enable the device.
->    * @dma_configure:	Called to setup DMA configuration on a device on
->    *			this bus.
->    * @dma_cleanup:	Called to cleanup DMA configuration on a device on
-> @@ -102,6 +108,10 @@ struct bus_type {
->   
->   	int (*num_vf)(struct device *dev);
->   
-> +	int (*trust_resolve)(struct device *dev,
-> +			     const struct device_driver *drv,
-> +			     enum device_trust_policy policy,
-> +			     enum device_trust_level *level);
->   	int (*dma_configure)(struct device *dev);
->   	void (*dma_cleanup)(struct device *dev);
->   
-> diff --git a/include/linux/device/trust.h b/include/linux/device/trust.h
-> new file mode 100644
-> index 0000000000000..b8f5514cacec3
-> --- /dev/null
-> +++ b/include/linux/device/trust.h
-> @@ -0,0 +1,44 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _DEVICE_TRUST_H_
-> +#define _DEVICE_TRUST_H_
-> +
-> +#include <linux/types.h>
-> +
-> +struct device;
-> +
-> +/**
-> + * enum device_trust_level - active trust level for a device
-> + * @DEVICE_TRUST_DISABLED: The device cannot be operated by a driver
-> + * @DEVICE_TRUST_ADVERSARY: Operate the device with adversarial restrictions
-> + * @DEVICE_TRUST_FULL: Operate the device with the usual kernel privileges
-> + *
-> + * Active trust levels are discrete states, not an ordered privilege scale.
-> + */
-> +enum device_trust_level {
-> +	DEVICE_TRUST_DISABLED,
-> +	DEVICE_TRUST_ADVERSARY,
-> +	DEVICE_TRUST_FULL,
-> +};
-> +
-> +/**
-> + * enum device_trust_policy - requested device trust policy
-> + * @DEVICE_TRUST_POLICY_DEFAULT: Let the bus select the active trust level
-> + * @DEVICE_TRUST_POLICY_DISABLED: Request that the device remain disabled
-> + * @DEVICE_TRUST_POLICY_ADVERSARY: Request adversarial operation
-> + * @DEVICE_TRUST_POLICY_FULL: Request normal operation
-> + *
-> + * A requested policy is resolved to an active trust level before a driver is
-> + * probed.
-> + */
-> +enum device_trust_policy {
-> +	DEVICE_TRUST_POLICY_DEFAULT,
-> +	DEVICE_TRUST_POLICY_DISABLED,
-> +	DEVICE_TRUST_POLICY_ADVERSARY,
-> +	DEVICE_TRUST_POLICY_FULL,
-> +};
-> +
-> +void device_trust_init(struct device *dev);
-> +enum device_trust_level device_get_trust_level(const struct device *dev);
-> +bool device_is_adversarial(const struct device *dev);
-> +
-> +#endif /* _DEVICE_TRUST_H_ */
-> 
-
+Best regards,
+Krzysztof
