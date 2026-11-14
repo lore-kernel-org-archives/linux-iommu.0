@@ -1,99 +1,47 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.177
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794669556;
-	b=Ne8bIUcfvK3lHOyBY5uwQtPvoNEanDIkzc2x35EdkPKqgUlyv6iaVUMNzZWcedMN2GmJ
-	 Henan3NQFDroiizKOKQdryKhtAmakyx59LhDf9g6hbz38/0IRg2Chp2Y5AuaVLBBDzXt8
-	 87yjHGwycrBZGOjWU3R4WdKbcuztvhhi4/qQVtWo51w93XukjdvqqOTk5Og4H+Kr7hFmd
-	 9/lxJN5bLehXZvedGmDwdzgl0mhXvTzhHERM8+jZ8aGhLAj854Qx/GgBiTvKBDpsD/0Ko
-	 BO5K3edqYKTdMx6qYvED6H+Ns1adM4p9AzCDdw1AR5wuLongvykj+6zk8D4n+3VyZ7g==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794669556;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:MIME-Version:References:
-	 In-Reply-To:From:Date:X-Gm-Features:Message-ID:Subject:To:Cc:
-	 Content-Type;
-	bh=yxQu9Chowg1nqfXHmxvx8wQurJOIxxYkquabh4inNm0=;
-	b=Iljzn8DMNO86g9BbjsVH08H092eeITIRJ3FrV+NRJw2F172qRAdlBDurhNwDmXrmBnwU
-	 QaZoQBA5CdmHixhVUriljHVrlI9ARicD9ACnrLF2kzvwocA1rOiSFrVJWZUjgiIb4Qa69
-	 9e6OD6HMmAHCBJWzkpIMVt92n4Dx3Y7VJUt1WNgAaHvg/2jScBYNJ/Wm0eqqz5dl7Jd9p
-	 0RO5DU1Kro0F3gIIqmoZLo0lJo48pfcU+WxBMnG7YYrlibeFrWyGK1iN0f3a39zpwIHmk
-	 KhOx3hkoyGL5hVSY9eQv51rel3d28utxbYdYINadfbNM7viF0KMVHRPCtTqbOpm/3ng==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=kisa3QXt;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.208.177
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794670213;
+	b=3Smug9MCyvrs9pdu7xMkdPAFDhuBZyYV8ZL+nACS491SaRTOzlhZ1IKxn/Mubygvaac2
+	 CbKrmTKG+OQz2l+p0B1mW7XUTiXiSXecPQiMISQQapMKDgemQk3CLq2HFqsCpZd98o2BI
+	 +s8NJxKTk33nn4IPAsivuveRclBGOAMeyLb/2mUesMaShNBM8Ugjd2S06IZ5B57xx5vaL
+	 Ql0EcPB1QT+FnINbZ7qE8BoquHpWnqQHj/uFcvXgvvqnTeleXEFI0c9jDjeBTu9kygwQZ
+	 /0PKSm9lBIazPzM6adPhXq+UolUQ9HOCedFMY5onyoAcSlUFRqViWPkGaMgI5o5NE3Q==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794670213;
+	h=Received:DKIM-Signature:Message-ID:Date:MIME-Version:User-Agent:
+	 Subject:To:Cc:References:From:Content-Language:Autocrypt:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding;
+	bh=/CaF/dW7GT+ZrmvxDzq7Ic0oGysgXTuvqm7cExj2OFs=;
+	b=bV5jwxJKPLe7JcxHz77h7xpWEsYKskgdqPAmCzrJi1qKVnVnsBpRBNp+16TUS6sYtd8c
+	 PBEcMCZBJwVQJgZiYnzLnZISyZQaSEqvyUsx75Txi3WeM8mNn7NpZmn00Eu2ot6S+oVCT
+	 Fv8Qpt+r0cnACLkk9EDgXcYiUYzZjjxPBKt2lNhhDvclsHN92BQWz9u+kQlaNPfHetp7y
+	 fcQksgqgMbREmrOLR40fgLdIRE55hqaRBrtVrqJqiubg8KaLMeh44pqOu1IVG+ZDCL4AE
+	 0zrReWSq0P1A/YJ9A/UTltHPfV8/BaMTfT9QZTTyLxF0uzAlKvJydJosIk+1vcR/pJg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i+aUZtMR;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C54606A32D
-	for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 15:19:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D5C54606A32D
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9779C606A327;
+	Sat, 14 Nov 2026 15:30:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=kisa3QXt
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-3adf04a55f5so2710201fa.0
-        for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 07:19:15 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1794669554; cv=none;
-        d=google.com; s=arc-20260327;
-        b=iTZ72zeL9vvM6cGw24VHEpFtsJzI+atyefjLLt9vVkONeR5RNHQegtllwtEz0mx4Os
-         qc1D1WFU3TLdaS37z93XAbtLBUAv7bbNeEMy15XW468xqMGld2D9ICaKCZrILWGBDR6j
-         14BbgpAx4O6n+T5ASBGcEw40g1887CEq0Ogv2bqRAcwecLaNf5fvYAWzK+x/h/me5oLj
-         yE73lnWWVakZ4c/Y4z3Zm4SFOHetSX4DaN0mjC3XAbx0uMrhN8pyjWEPhl4S/nzJSwFU
-         JIp0z8iJ02s/rp+KVm5g/YVpGWlm8271EQWPMt9F0qKhL3VDpRLjH4y4ZrLDx23kL9df
-         8jqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=yxQu9Chowg1nqfXHmxvx8wQurJOIxxYkquabh4inNm0=;
-        fh=aTksfhXudPaU578VWs1aV68OC+rpWVk6prVOTaWf8j8=;
-        b=FOv+VPba/fxdXEAJBY6ymjBL1Luv7XamzII9y+B9JL6GIWCwDL0y6P40Gf9WnnnsnS
-         kKQHLjB2MTCUXcSE0zlH7pC2oxF9okVsoaa0qMQhVgHw9GBFforwWXzrm8xjSyeZ3F8X
-         HdLCBHp4VkUpzdiHyN6KwvNQK/0Onf44s8uGSy+t18u1oaLOiUoHpU/bWbSZipg24Y9b
-         I3+iva6+TBIFbcolFJLVT/a4rHYtVqsKaRGs3qRhsEAl2yz+9fWTrSeXuRRB8WUlLUeT
-         BcWCQD362T+irDo3qTEzG1ldNeLsEEAzCKI3oG7e0kXXr2cM3K8eEaxdAiUG55Vcr3Uz
-         OjlQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794669554; x=1795274354; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=yxQu9Chowg1nqfXHmxvx8wQurJOIxxYkquabh4inNm0=;
-        b=kisa3QXtgt1grI7OGSiTdgdyP1GrVWsBfIQnoonxyZUIaRQr8YIF7XdctBdi0LB2mC
-         yJyi+gHOwwU/9XqB2YMBiXxNOhf8fyh5aMTkw8tbv5eojBV+5MZeTtEWTDhwj4E4AlS9
-         g46yx/91y8CxZK6pHgozKXzEbGoZwl8eDEtcGXvwofiZEyKYcauDMlJD9JlhiU42PlL1
-         gzstwcgaiY+gDVY9C2dXZPVR48yhK2Iyl76GOSS1OokaufGTowhP+31DOUSSwYlJoMJd
-         YI3Hsvd+0Kw23rhHaboYLva3CjEVhZeudhgjkPEo5lUE/JproTGVo3Nws0VGZ64DR6Qz
-         v9PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794669554; x=1795274354;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=yxQu9Chowg1nqfXHmxvx8wQurJOIxxYkquabh4inNm0=;
-        b=sEtSAjzUK4LeusJXi6fVYRZkoYKEcHgN8R/8I++cJ0+1iQOBrUxZCuxT4ZlSNcbNLU
-         wiPVWgn9HLGp8oSH+4wbRVytdHB0PfWw3p3Bfy/MBM/ISt0n8x8qW3reArWJL6b5O0hb
-         zk3vpOjHkIox3GGyQBL+coV1+f5OlAr6wngWZgxiomUIl8wmneiJBCcFpMuxTcg1gUgO
-         J0SByDWPWpbF+sqqGc4WF1zxz33g85HtS/yJv4IAj7DuPCku/Y53CYX0ubAUiz6xNwip
-         6VtR3TUMcwbaGUiwAqHnEwnuBk2W7L2FRIvQxcgstl+56Ji4HTtxrmlcs/iFZG3tgZWD
-         m9Rg==
-X-Gm-Message-State: APuU4Z9lDbXLTtNkpDJNYDQN33pwL0EY10301GeG0awd6GT04hpsfVff
-	Z6pM22BsyVMJ+2SXaJXOHk18N7J/zYuu6+RJUN5Y4KINnzTbtGJaIBfrhuV3Q6oEi9ZtRy/BNB7
-	XpdUbh8PJh8YRhSA/PuyuxXw3+8YO/0w=
-X-Gm-Gg: AYBFou1s74c1RHuwJqCG4txNQ0yVjmKAITFKTyQ9eAfth8aj0r/1zKbTXS2t0O7hyAp
-	fILdv7qb7mWi12N/82f2BJIF4MnUXiWVXC0L6C07I9WPZ8EIVjoPOIbeBb/7f2DKvl2Ry9Vg9Bl
-	59XcCJdJl6AdfA1jpoVFp1H4/tJ83WzI+2li+P0VWUEImmxJer9lbha8BBz+pI5C85qiRCCNVT+
-	q9rOSXB7DMEqkdGlRomVrzFxnn6eTg7J03OM8lNMu6F4L/vBqFAv87M3LH3lep65sM/fobFZ0pF
-	ukcVqWZT1jGiOUAxagYp+VlbgVV9EjzXiG0ClyaYQSdz9cEt/qbMSpdRQ32AjijbwJk+cG7CX3N
-	jt671oIChnSi3DgXZFLwTJZAtWzN+Km3tl6dRnOgYUg2C2OkGdUpXD4AeIBNhas7SO10VUSYgnA
-	70bqTBIWE1hF+1ZzdkNQ==
-X-Received: by 2002:a05:6512:3d20:b0:5c1:4a47:b86b with SMTP id
- 2adb3069b0e04-5c1709e0a05mr2413431e87.3.1794669553630; Sat, 14 Nov 2026
- 07:19:13 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=i+aUZtMR
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C3C61F000C4;
+	Sat, 14 Nov 2026 15:29:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794670213;
+	bh=/CaF/dW7GT+ZrmvxDzq7Ic0oGysgXTuvqm7cExj2OFs=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To;
+	b=i+aUZtMRmMOBNXRqSIDbEiKG4TPzDUf9FBBuOfX1hLk+/UMOfEspx76/idXZdkTRQ
+	 cEHGiWZAV8Fhautj1kgxTSscEygG9RYcPg4k4yHtuDiRp6JMWil1CGIqq0yKLnObVB
+	 tc0qomhVBwL+MCFLGYPWZWqjxEQqi/id7QDNMwE/DHzAfases6bt60v5kldjFoGxgd
+	 tMu6mjX4k/eXmE0mIDULY47ZSmE6SWtk6xMjdLxUP9uG3WJjBa/3oP70L5vu1sBxLE
+	 u3or5uDPmHABtKwFnb8LIKXvJ00fMDmvGBlnPGRJ7WKGoyur84qvsKn+3zuurFXR6n
+	 QuD3RXY0HMZEw==
+Message-ID: <2e6b3b24-a901-4147-a01b-a8da0e7c5ebb@kernel.org>
+Date: Sat, 14 Nov 2026 16:29:53 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -103,138 +51,280 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <CACOV87VBwH+R3eSBEOuz8hk7OaT63+A9m6ipPSW5wt1VhHMFPg@mail.gmail.com>
-In-Reply-To: <CACOV87VBwH+R3eSBEOuz8hk7OaT63+A9m6ipPSW5wt1VhHMFPg@mail.gmail.com>
-From: Nathan Blomquist <nblomquist@gmail.com>
-Date: Sat, 14 Nov 2026 10:19:02 -0500
-X-Gm-Features: AclHuK-21YGiR5kEl6mQS87zA-IC3roYvKMwEQ_WFRXbHch-OPrxp4OoRlpWyAA
-Message-ID: <CACOV87WpRNEo=7ckZBdcmGnZ17c3w5qPOe5jY9ZJUdr6y_DAVw@mail.gmail.com>
-Subject: Re: [REGRESSION] AMD IOMMU v2 failures on Cezanne; page-table
- flushing helps
-To: joro@8bytes.org, vasant.hegde@amd.com
-Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/9] mm: limit pagecache folio refcount when mapping
+ pages
+To: Lorenzo Stoakes <ljs@kernel.org>, "Liam R. Howlett" <liam@infradead.org>,
+ Vlastimil Babka <vbabka@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+ Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+ "Matthew Wilcox (Oracle)" <willy@infradead.org>, Jan Kara <jack@suse.cz>,
+ Andrew Morton <akpm@linux-foundation.org>, Zi Yan <ziy@nvidia.com>,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ Nico Pache <nico.pache@linux.dev>, Ryan Roberts <ryan.roberts@arm.com>,
+ Dev Jain <dev.jain@arm.com>, Barry Song <baohua@kernel.org>,
+ Lance Yang <lance.yang@linux.dev>, Usama Arif <usama.arif@linux.dev>,
+ Kiryl Shutsemau <kas@kernel.org>, Matthew Brost <matthew.brost@intel.com>,
+ Joshua Hahn <joshua.hahnjy@gmail.com>, Byungchul Park <byungchul@sk.com>,
+ Gregory Price <gourry@gourry.net>, Ying Huang
+ <ying.huang@linux.alibaba.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Xu <peterx@redhat.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Song Liu <songliubraving@fb.com>, Rik van Riel <riel@surriel.com>,
+ Miklos Szeredi <miklos@szeredi.hu>, Alexander Viro
+ <viro@zeniv.linux.org.uk>, Christian Brauner <brauner@kernel.org>,
+ Hugh Dickins <hughd@google.com>, Will Deacon <will@kernel.org>,
+ "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, Nick Piggin
+ <npiggin@gmail.com>, Peter Zijlstra <peterz@infradead.org>,
+ Arnd Bergmann <arnd@arndb.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Steve Sistare <steven.sistare@oracle.com>, John Hubbard
+ <jhubbard@nvidia.com>, "Jose A. Perez de Azpillaga" <azpijr@gmail.com>,
+ Josef Bacik <josef@toxicpanda.com>, "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>,
+ Neal Cardwell <ncardwell@google.com>, Kuniyuki Iwashima <kuniyu@google.com>
+Cc: linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, fuse-devel@lists.linux.dev,
+ linux-arch@vger.kernel.org, iommu@lists.linux.dev, netdev@vger.kernel.org,
+ Chris Mason <mason@kernel.org>, stable@vger.kernel.org,
+ Pedro Falcato <pfalcato@suse.de>
+References: <20261112-refcount_overflow_stable-v4-0-ad3deef0bd23@kernel.org>
+ <20261112-refcount_overflow_stable-v4-1-ad3deef0bd23@kernel.org>
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=david@kernel.org; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <20261112-refcount_overflow_stable-v4-1-ad3deef0bd23@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi,
-
-A further test result from the affected Ryzen 5 5600G (Cezanne) system:
-
-I booted with amd_iommu=pgtbl_v2 and the experimental v2 page-table
-cache-flushing patch described in my original report. The system boots
-successfully, drives/storage work, networking works, and usb devices work.
-
-Before the patch, booting with amd_iommu=pgtbl_v2 caused widespread
-failures; almost nothing worked.
-
-This suggests the problem may extend beyond Radeon initialization when
-v2 translation is selected more broadly on this system.
-
-The cache-flushing change is still experimental. This result does not
-resolve cache visibility versus ordering/timing effects or establish
-performance and long-term data integrity.
-
-AI assistance was used to draft this update.
-
-Thanks,
-Nathan
-
-
-
-On Fri, 13 Nov 2026 13:03:53 -0500, Nathan Blomquist
-<nblomquist@gmail.com> wrote:
-> Hi,
->
-> Resending in plain text because my earlier email included HTML.
-> Apologies if you receive this twice.
->
-> Could you take a look at this AMD IOMMU regression? Since 7.4-rc1, my Ryzen
-> 5 5600G systems fail to initialize Navi GPUs under v2 translation. Identity
-> mapping works.
->
-> The bisect points to bf5bdfd1f8d4 ("iommu/amd: Force identity mode for
-> selected GPUs only").
->
-> I've attached a small experimental patch and logs to this comment on the
-> AMDGPU bug tracker:
-> https://gitlab.freedesktop.org/drm/amd/-/work_items/6081#note_3782405
->
-> I found that my dGPU stopped working when trying 7.4-rc1 for a different
-> issue.
->
-> The patch enables the existing guest-page-table cache-flush handling
-> through PT_FEAT_DMA_INCOHERENT. Pristine 7.4-rc2 plus those three lines
-> initializes both an RX 6600 and RX 5500 XT, with no IOMMU faults or PSP
-> errors. DTEs confirm both still use translated v2 DMA-FQ domains.
->
-> I also tested whether the flush's barriers alone were enough. Using one
-> unchanged kernel/initramfs, both GPUs gave these results:
->
-> - Cache flushing: pass
-> - No flushing or barriers: fail
-> - Two MFENCEs without flushing: fail
-> - No flushing or barriers again: fail
-> - Cache flushing again: pass
->
-> The feature's other effects were retained in every mode. Failures had IOMMU
-> page faults followed by PSP KDB-load failure and probe -22. GCR3-only
-> flushing also failed in an earlier test.
->
-> So two MFENCEs alone didn't help, but I haven't ruled out the extra delay
-> from flushing. This is a diagnostic patch, not a proposed final fix;
-> performance is untested.
->
-> Is there a known Cezanne coherency erratum or something in the v2
-> table-update path we should check? Full logs, DTEs and diagnostic patches
-> are available.
->
-> AI assistance was used for the diagnostic code, testing and write-up.
->
-> Thanks,
-> Nathan
->
-> Subject: [RFC PATCH] iommu/amd: Enable cache flushing for v2 page tables
->
-> On a Ryzen 5 5600G (Cezanne) test system, an RX 6600 and RX 5500 XT
-> fail AMDGPU initialization with translated v2 DMA-FQ domains on v7.4-rc2.
-> IOMMU page faults precede PSP firmware loading failures and probe -22.
->
-> Enable the existing generic page-table incoherent-memory handling for
-> AMD v2 domains and provide its required IOMMU device pointer. On x86,
-> the existing flush implementation calls clflush_cache_range().
->
-> This is an experimental extraction for review, not a proposed final
-> platform policy. It enables this handling for all AMD v2 paging domains,
-> not just the affected platform. Cache visibility versus flush-induced
-> ordering/timing remains unresolved, and performance is unmeasured.
-> The feature also disables a single-page fast path and sets an ignored
-> AVL bit in non-leaf entries.
->
-> AI assistance (OpenCode) was used for the diagnostic implementation,
-> test automation, evidence analysis, and this extracted patch and text.
->
-> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/6081
+On 11/12/26 23:53, David Hildenbrand (Arm) wrote:
+> With large file folios, overflowing the folio mapcount and refcount
+> became possible more easily. For anon folios it is currently not really
+> an issue: each large anon folio can only be mapped once into a process; on
+> 4k kernels it would be more processes than usually allowed on a system,
+> and on 16k or 64k kernels the processes alone would consume hundreds of
+> GiB. Something to be sorted out at some point, but it's not as urgent.
+> 
+> Being able to overflow the refcount is not really big news, but it's about
+> time that we do something about it because some modern technology might
+> find ways to abuse it :)
+> 
+> One of the enablers for that was commit ddc58f27f9ee ("mm: drop tail page
+> refcounting"), however, file thp support was added later.
+> 
+> File folios can be mapped multiple times into the same process, allowing
+> for processes to hold many references to the same folio.
+> 
+> As a short-term solution, let's introduce two folio refcount limits:
+> one for ordinary consumers and one for admins. Leave some headroom
+> before the refcount goes negative, which we really don't want (having
+> the mapcount go negative is also not expected).
+> 
+> Start reporting SIGBUS and a ratelimited warning if we run into limits.
+> When restoring mappings from migration entries, instead zap the pte/pmd
+> entry. We allow for slightly exceeding the limit to keep things simpler.
+> 
+> During fork(), prefer not copying page table entries over failing fork.
+> For fault-around, check in next_uptodate_folio() before trying to lock
+> the folio.
+> 
+> Export folio_ref_count_over_limit_slowpath() using EXPORT_SYMBOL_GPL
+> right away so modules can use it through try_get_page(), where we will
+> use it next.
+> 
+> Use has_capability_noaudit(current, CAP_SYS_RESOURCE),
+> so filesystem credential overrides do not affect access to the admin
+> reserve, and to not generate auditing messages simply because we access
+> optional reserves.
+> 
+> Don't grant access to the admin reserve from kernel threads, from
+> interrupt context, where "current" is just the interrupted task, or with
+> IRQs disabled, as even unaudited capability checks can take locks.
+> 
+> This is far from ideal, but better than all easy alternatives we can
+> backport comfortably. For now it fixes the big problem: letting
+> the refcount (+mapcount) go negative and cause trouble.
+> 
+> This is only a temporary fix. Keep the mapping checks explicit and
+> separate from reference acquisition: most are expected to disappear when
+> we rework the underlying refcounting.
+> 
+> Check order 0 folios as well for consistency: each
+> folio_add_file_rmap*() and folio_dup_file_rmap*() needs a prior check.
+> 
+> Adjust the check in folio_get() to just check for invalid refcounts and
+> drop folio_ref_zero_or_close_to_overflow(): we really don't want
+> negative refcounts or negative mapcounts. Convert to VM_WARN_ON_FOLIO as
+> we touch it.
+> 
+> Also, just document -EHWPOISON for copy_present_ptes() while at it.
+> 
+> Note: When zapping file migration entries, uffd-wp is preserved using PTE
+> markers, but uffd-rwp protection is lost because there is no corresponding
+> marker. try_to_unmap() already has the same problem when unmapping file
+> folios, so we'll happily ignore it.
+> 
+> Reported-by: Chris Mason <mason@kernel.org>
+> Fixes: 800d8c63b2e9 ("shmem: add huge pages support")
+> Fixes: 99cb0dbd47a1 ("mm,thp: add read-only THP support for (non-shmem) FS")
+> Fixes: 793917d997df ("mm/readahead: Add large folio readahead")
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Jose A. Perez de Azpillaga <azpijr@gmail.com>
+> Acked-by: Zi Yan <ziy@nvidia.com>
+> Reviewed-by: Pedro Falcato <pfalcato@suse.de>
+> Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
 > ---
-> Base: pristine v7.4-rc2, before applying the c1diag diagnostic patch.
-> This three-line extraction was separately built and boot-tested once,
-> without diagnostic logging, mode selection or GCR3 modifications.
-> No GPU workload, performance, cold-boot or other-platform validation yet.
->
-> drivers/iommu/amd/iommu.c | 3 +++
-> 1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2810,6 +2810,9 @@ static struct iommu_domain
-> *amd_iommu_domain_alloc_paging_v2(struct device *dev,
-> domain->iommu.nid = dev_to_node(dev);
->
-> cfg.common.features = BIT(PT_FEAT_X86_64_AMD_ENCRYPT_TABLES);
-> + domain->iommu.iommu_device =
-> + &get_amd_iommu_from_dev(dev)->dev->dev;
-> + cfg.common.features |= BIT(PT_FEAT_DMA_INCOHERENT);
-> if (amd_iommu_np_cache)
-> cfg.common.features |= BIT(PT_FEAT_FLUSH_RANGE_NO_GAPS);
-> else
->
-> base-commit: 7475ea8b58616b33c04afb976cf0fbaad9dd63fb
+
+I'll squash the following into the applied patch.
+
+I will not print the PFN for now; it's something that can be
+forced by a user so exposing the PFN makes me a bit uneasy. If we
+are ever sure that exposing the PFN is ok we can easily add it.
+
+As I replied, for these stable fixes I will leave the refcount
+handling as it is right now. We don't expect negative refcounts 
+r mapcount (folio_mapped() is a prime example). I especially don't
+want that in stable kernels where we might have older code that
+dependes on that.
+
+That part will be reworked and optimized as I'll change the refcount
+handling for page table mappings; then we'll be able to drop the
+admin reserve and the limits, and just cap+warn once the refcount goes
+negative.
+
+From 423c4226789587ee4aa3e0e34760dab9a52e2947 Mon Sep 17 00:00:00 2001
+From: "David Hildenbrand (Arm)" <david@kernel.org>
+Date: Sat, 14 Nov 2026 16:27:17 +0100
+Subject: [PATCH] fixup
+
+Signed-off-by: David Hildenbrand (Arm) <david@kernel.org>
+---
+ mm/folio.c | 26 ++++++++++++++++++++++++++
+ mm/util.c  | 26 --------------------------
+ 2 files changed, 26 insertions(+), 26 deletions(-)
+
+diff --git a/mm/folio.c b/mm/folio.c
+index dc2c796a4ea74..1cafa45a6a834 100644
+--- a/mm/folio.c
++++ b/mm/folio.c
+@@ -151,6 +151,32 @@ void __folio_put(struct folio *folio)
+ }
+ EXPORT_SYMBOL(__folio_put);
+ 
++bool folio_ref_count_over_limit_slowpath(const struct folio *folio,
++		unsigned int ref_count)
++{
++	if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
++		goto over_limit;
++	/* Background threads must not consume admin reserves. */
++	if (current->flags & PF_KTHREAD)
++		goto over_limit;
++	/* Neither must interrupt contexts on behalf of the interrupted task. */
++	if (!in_task())
++		goto over_limit;
++	/* Capability checks are not safe with IRQs disabled. */
++	if (irqs_disabled())
++		goto over_limit;
++	/* Use the task's credentials, which filesystem overrides cannot change. */
++	if (has_capability_noaudit(current, CAP_SYS_RESOURCE))
++		return false;
++
++over_limit:
++	pr_warn_ratelimited("folio:%p refcount:%d mapcount:%d mapping:%p index:%#lx reached refcount limit\n",
++			    folio, (int)ref_count, folio_mapcount(folio),
++			    folio_mapping(folio), folio->index);
++	return true;
++}
++EXPORT_SYMBOL_GPL(folio_ref_count_over_limit_slowpath);
++
+ typedef void (*move_fn_t)(struct lruvec *lruvec, struct folio *folio);
+ 
+ /*
+diff --git a/mm/util.c b/mm/util.c
+index c9c3dc4b490fa..80f6c714844f2 100644
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -791,32 +791,6 @@ int folio_mc_copy(struct folio *dst, struct folio *src)
+ }
+ EXPORT_SYMBOL(folio_mc_copy);
+ 
+-bool folio_ref_count_over_limit_slowpath(const struct folio *folio,
+-		unsigned int ref_count)
+-{
+-	if (ref_count >= FOLIO_REF_COUNT_ADMIN_LIMIT)
+-		goto over_limit;
+-	/* Background threads must not consume admin reserves. */
+-	if (current->flags & PF_KTHREAD)
+-		goto over_limit;
+-	/* Neither must interrupt contexts on behalf of the interrupted task. */
+-	if (!in_task())
+-		goto over_limit;
+-	/* Capability checks are not safe with IRQs disabled. */
+-	if (irqs_disabled())
+-		goto over_limit;
+-	/* Use the task's credentials, which filesystem overrides cannot change. */
+-	if (has_capability_noaudit(current, CAP_SYS_RESOURCE))
+-		return false;
+-
+-over_limit:
+-	pr_warn_ratelimited("folio:%p refcount:%d mapcount:%d mapping:%p reached refcount limit\n",
+-			    folio, (int)ref_count, folio_mapcount(folio),
+-			    folio_mapping(folio));
+-	return true;
+-}
+-EXPORT_SYMBOL_GPL(folio_ref_count_over_limit_slowpath);
+-
+ int sysctl_overcommit_memory __read_mostly = OVERCOMMIT_GUESS;
+ static int sysctl_overcommit_ratio __read_mostly = 50;
+ static unsigned long sysctl_overcommit_kbytes __read_mostly;
+-- 
+2.56.0
+
+
+-- 
+Cheers,
+
+David
