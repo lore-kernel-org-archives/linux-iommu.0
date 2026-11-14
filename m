@@ -1,79 +1,100 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794615266;
-	b=ClyHvLvucqA9h3EK3LSTgOcxW9bwThTMNs/nOd6txHu7UoYrfOgFuD1k1jL7bmnn6Fqr
-	 H1vFu4yPs1x1d44nvMA/fEw5F06WLPa0UOMnRr0iXr0ZcYB+0lSlTFofGQGf2l7soDlbH
-	 P9x4FnE5MuaXpHtwwY0WfH2m5E1/fIKytRZ5EVn0EsUD7rqk5UD2Hp/oJR//H6HQq5u8i
-	 WCLnxP38NJlq2z3qh+M//Nahyz7oxjFYlAu6EVvaccT4q0S0SbSl+QCrJUA3Bd7ThH5Pr
-	 WHaMFzgE/sYyjoK6DwLh2bYsyVw6Zv5RAlizwuWlsn2SRHt56pyKzvR1J4KFfUAF45A==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794615266;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=j5CYEosqkv2ch/UK8kdKVAgVTUdT2Sy6iQ4zy78O0xA=;
-	b=yKWyBK4Jkre4kEvkSjsJquMOZMyM7E0O3XFYQZGMvrQDEdCYL840K2lpvxbgOIdvyEVy
-	 8xpXHK0/t/PUCa0Kun2VOdALJBtd8oeJSg6x2YHBz8EfPY4Le8tDek94TMvbCM5WOLWPP
-	 vbb25DUh7L0fPHFLjIRJclqe4mScJKzkODKb8aZBWTsFEEGf7Ribi6GKtXPlWBlxgYiMt
-	 4DoP1gvA6OmbB+MwC1QGwl6CZYrJqEYs6qxxXaV7KCRH1k7k3z0k0uDOWbzavzcP/amrJ
-	 ftBBCcL1e1SCa18Sv+3xswzZxpnNcT9uOCmNTHmmQDeH3O4FqvdhA47LHy3pwhNnkzA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="YPKgLLe/";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEBD4606A889;
-	Sat, 14 Nov 2026 00:14:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YPKgLLe/
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794615266;
-	b=amEPHFfKvYgfuleMziJcuwN9SdUrMJX4d6AKlKiD2bpTRyoqiSIF/DpzIDswNwuxTbRe
-	 IpgjsHPJ8MlJO94/xgS6mD6YOSGbY2h6rl2af9VpUyUxMwqI0XIOliwYJSwhf4HBc7G1B
-	 OjZOLbVpfMWJ5i0EclyKJ6XmuUWK1JC9iXEmWzuLPCcOlgCHdDrYgtxVKEpU3y96XflGF
-	 3jzk3fem8bgX0OWLXBqgOgws4cHgkZ2HZx1qxUyMP8wJEMyealFu7gGSuOiFQ4AyoD1SF
-	 nt40O5DYe4bSwc1AsTkPh3Jj8nDXXkg+L4taeQ6Iq1TifQJ3omJ70P0XkHHCoeVdjlg==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794615266;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=j5CYEosqkv2ch/UK8kdKVAgVTUdT2Sy6iQ4zy78O0xA=;
-	b=l4kQieR3JsUl+coDbMQ28/fzLXtBA5VJ8dlNy9FBgIBmRHu5q3+DlPnHhpDuVn68hD5f
-	 rd3y/hdwWNdOk0D0o6Ezz39j3jlH5nRuMNFU/agf4loRn2shuQcsrI2IHCk8DQC5f5Y1Q
-	 9rL7UjXBpvXje0uy+OS8mU45CSCn1RzceNRJQLeYXuVGlx4psfHXWoMuYtFzBIG6djgr6
-	 U/B/tfM41hzh1Vbabw6i0rgm4UjNRHRwucXl+DyfkWpW37Sm7ci2ia1JFy5HeVQj5JjEe
-	 Lx/rwsP80xk//IY6PkA1aLiiJEOv1rkA6UTmguadTapi+fQP/6YUazpUM0/tdS9WSqg==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.45
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794616864;
+	b=lvdlvwrQren2S+IZVW7d7mjayIZP6H+zoYfy/5htTzzfeUAc/JHCRjUbiy5J8m/tcYIy
+	 xnm3Mdz/Sf3o1/flNr2Ug9QI+mL190kjnGwHyuhEtBDCmn0iI4k7VDPItUdnl6EgIZbHJ
+	 tdH7qAXFZ0JxSUhs1rDRNxomM+YSUw3Rgk55alsah4TP3A9/DeF0tqcQ4+uwyoaFAXUh0
+	 tctxPJYKJ4HdwikCmjAuOjHxSWypE8JTxw3XlW+gYro5EUsJsFoRPsRYvnFD7EUPNpRmr
+	 +T2w6ua3lg6aMb9ray/vcmT5rnNF06MjWmVKG6DA7dciP2eOvW33+41eMEnuHMx13WQ==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794616864;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=cKgDGjy2B74ENJy1584O13LQffNqnk/1zJsbOl8Me14=;
+	b=lEk5wG6YU+7gd/E+kvHqD05pnElObB9uzRtSMzkM6fl3HNOuOrUbU4+uPn1+/EqlL4Ee
+	 IUMEeYFwxF9ydHspMw+lpOFzNBOM8u08EZwHNHkXMG5MapdXentO3uwrlstx7Xrn0nSeK
+	 YSzsT7dWWyOEm9pGVQ1jDk62Y+3uSgW2suI0yDO6LE3/r+zKWupRy0mKvrvRW1tb0gcFB
+	 oOVoHlNm0KMe+JhtfX5UrEh0t5AoSq/BCh/GSQcOUS+lnYO+imAo7HCzeVZu3xFeoEwza
+	 IvCREdAD9OjsjjOe91wGcQQ9lxkhuQdrtOpA5b9hmFNOmisUO772kBy4Dmm6i9OMHlw==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=CKMHRsuG;
+	arc=none smtp.remote-ip=209.85.219.45
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id EB6201F00926;
-	Sat, 14 Nov 2026 00:14:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794615266;
-	bh=j5CYEosqkv2ch/UK8kdKVAgVTUdT2Sy6iQ4zy78O0xA=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To;
-	b=YPKgLLe/27nuO/bCG8kZklt+l4KdcIksNF8a20946A7gbV/EtdEwQqxM2GyThfJPE
-	 UR3a7YJR3NrGx5c4+fncf6Hy/10mXriPIdOL0wAGMvrCte8iybs8xX4I9CCJ+EQUCl
-	 y0MADu4wtx9AhjDF9N36jtxZ2UmqoH320yfn6nqMWwV3vhG5AKOJe0ixjUuY9z77Ao
-	 u0ZQCSeacSQVHMAA1J5oJAWGb6ZntVY0C+jAaUUiswuSPanzeG93wv744iy88f427K
-	 bKvY1UqHmgni4Dm2R4P2C4WzZ6znGQa6P0Ve9jRk7//jmGk8GcUv3UrBJ/xgoAwrwZ
-	 J96zLWc1sJ44g==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 7DC0449BD6;
-	Sat, 14 Nov 2026 00:14:25 +0000 (UTC)
-From: Arun Iyengar via B4 Relay <devnull+aiyengar1990.gmail.com@kernel.org>
-Date: Sat, 14 Nov 2026 00:14:27 +0000
-Subject: [PATCH 3/3] iommu/vsi: Unprepare the clocks when getting the IRQ
- fails
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5B0D606A331
+	for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 00:41:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D5B0D606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key, unprotected) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=CKMHRsuG
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-91eb53957cbso41884126d6.3
+        for <iommu@lists.linux.dev>; Fri, 13 Nov 2026 16:41:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1794616862; x=1795221662; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=cKgDGjy2B74ENJy1584O13LQffNqnk/1zJsbOl8Me14=;
+        b=CKMHRsuGXfsfCc73bj470ZkkOAsj0bIjS8sqjSHATiXhjf3TLu7j6qjw8Surxm15Kd
+         BNJmK/O4atWsXMlLgE7Qy/H7GMjPNJh5g4uxCLTq0gu56Dar9Shev1KcoHlxw0kYgmca
+         ozmiLLNUaeikdIBPRv2yu+3MKmqoOHuip/8zPV21joVx9QriQWSgWBOC6uzCKq9bWHni
+         TGrD153T5485fFOGDD6WskTgg9A7HRZx7nMjlxnjI3e0QbquJhG7R1KF5rz86Mmd+7CN
+         pc4lgKK4DhCATt5jQw1XP+eNEjBCvwSXRPKWn0t1wZcq1YEY9SZ0glrGQPX/l2TnFlnt
+         iX4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794616862; x=1795221662;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=cKgDGjy2B74ENJy1584O13LQffNqnk/1zJsbOl8Me14=;
+        b=qKj9ERNqZBi90ssDpKnxywun/9Muq67WXOSqc58hlptWJ+Bw2d9VdEYH3Ssq2UsbTO
+         mwGNQOftjUlk9iGXIC7ns/MyXbL1zWsR/rhGJuJywfYmSB8D33aVDq8kKmqS3T7E+geo
+         mjGLd8taMxL/MLzqofNBAH7H+ntZbfqrdOKi1npVvh+2C4eKhNo9CchnFS5NsNT/cOfq
+         jFwL1vvgZeasRThbytEKe7tIWo408YufjR24fPC8+PR/Nluez+idb3Iuci/0iTfwhm/V
+         J0n3azHO0s8sGPbt8YAQV+qHZPh7Vb1fAcIX9XhzjElbFEemIevTUYy/x54wpi8eLuN4
+         w0Bw==
+X-Forwarded-Encrypted: i=1; AL+hErHkFLYNH7KVmDBRVv0kjkrIGUSeQBBkJJ/u4q49gFCJdSWVC1EdORDG8CsdsAirKidbeU421Q==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/t6p9elPG4LiBDOZaTyMi05pdNyI6E1J3lCfsRdFVT/g1wuJdd
+	y9LlqZw/YnrIWlO4J7MI0p5B5nNOP4XoOfOQ9ZBHmrhENIkQDOMU9of1zkoULz1dzyg=
+X-Gm-Gg: AYBFou1+aJXafLwfFle2gIp4342B0qdJ7kdSdfr5lqpntyJwupBd8csSRg4EVjtWduN
+	AJmTJbj2iHeD+/b2M/YzXdZ1pSsAC/ARITw/horONNyEmryB/2QGDKoqX8AWZL6vuHFmF+DoBmr
+	UYZCGAZmx1lMKAy04Zu7qOunfAgcMWwqlLO8uDatNEEW4ZxCMHUrXU71blqup2Kp1zxpZT/ONQk
+	WPfgApI14hpFIgpfd7MlFOexMylJ6I80TnmW7fAu52IcTYS3pOTFVI9L6qOJEeW6GlaaYRvJvt9
+	LrPfSfGap9olo1s00uUMTJvbuTuGW3VSidbKJS4U1I/ss/kI696auUZFSSXyi2MREzuudiaFLu3
+	c/0Jud9jsaotDkzS3RBQzFd2Dn+WOh+1IJrijnXC48bSFQWFc4uJybhww6IXhTn8MEI7FDvfEEm
+	y+PQFaOCW5j5eMYpdnKViSiMXOmZngi176vzeLITOe5mFzl4DvHsMhbk5PHDjj1hjqBtcFrGP+e
+	ij8lF2bhm9RWWtNuoxzJZ6SirdQTribLYJRgAAqLrWXEuA9Z12NMFZ5Amp1mimSxyKfrvBHKuy1
+	H4k9HQ==
+X-Received: by 2002:a05:622a:5a11:b0:535:a5f7:d586 with SMTP id d75a77b69052e-55ac9089b1amr63129821cf.64.1794616862516;
+        Fri, 13 Nov 2026 16:41:02 -0800 (PST)
+Received: from ziepe.ca ([142.166.156.71])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-55ad1005027sm29936441cf.21.2026.11.13.16.41.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Nov 2026 16:41:02 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xS1pF-00000002PUf-1JwB;
+	Fri, 13 Nov 2026 20:41:01 -0400
+Date: Fri, 13 Nov 2026 20:41:01 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Jiahao Xu <xujiahao@cmss.chinamobile.com>
+Cc: Kevin Tian <kevin.tian@intel.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Christian Brauner <brauner@kernel.org>,
+	syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com
+Subject: Re: [PATCH] iommufd: reject mapping an iommufd file into an IOAS
+Message-ID: <20261114004101.GE2532299@ziepe.ca>
+References: <20261112105945.285526-1-xujiahao@cmss.chinamobile.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,59 +104,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261114-iommu-vsi-fixes-v1-3-1fc7728dfd35@gmail.com>
-References: <20261114-iommu-vsi-fixes-v1-0-1fc7728dfd35@gmail.com>
-In-Reply-To: <20261114-iommu-vsi-fixes-v1-0-1fc7728dfd35@gmail.com>
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Arun Iyengar <aiyengar1990@gmail.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794615264; l=877;
- i=aiyengar1990@gmail.com; s=20261110; h=from:subject:message-id;
- bh=JBjjSQ7lBXTycTG2n7hcuVyoF1r2DyekbYpAYIdEgaQ=;
- b=3kpB/dvSubGhVQl4Bfk+/9p5oeKTAng3VYIHXpcHP7telMScnNimJtDwee2sxd01BWgdGZ624
- 8O+0aeHa86ICQFMB5b3v7pi0iFbK2N91Bsb3WV/XHIHfeXkAsZqaEPJ
-X-Developer-Key: i=aiyengar1990@gmail.com; a=ed25519;
- pk=zXpRgUTrhaFe6jLyPqbBy3ccfkj04w0g2690Wv3mg+0=
-X-Endpoint-Received: by B4 Relay for aiyengar1990@gmail.com/20261110 with
- auth_id=1480
-X-Original-From: Arun Iyengar <aiyengar1990@gmail.com>
-Reply-To: aiyengar1990@gmail.com
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261112105945.285526-1-xujiahao@cmss.chinamobile.com>
 
-From: Arun Iyengar <aiyengar1990@gmail.com>
+On Thu, Nov 12, 2026 at 10:59:45AM +0800, Jiahao Xu wrote:
+> iopt_map_file_pages() takes the fd passed to IOMMU_IOAS_MAP_FILE and, for
+> every file that is not a dma-buf, stores a reference to it in the pages
+> of the new mapping:
+> 
+> 	iopt_map_file_pages()
+> 	  iopt_alloc_file_pages()
+> 	    pages->file = get_file(file)
 
-vsi_iommu_probe() returns without clk_bulk_unprepare() when
-platform_get_irq() fails.
+I've know about this for a bit but haven't got to figuring out a
+solution.
 
-Fixes: 917ace84b770 ("iommu: Add verisilicon IOMMU driver")
-Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
----
- drivers/iommu/vsi-iommu.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+This patch is not quite good enough as any fd that can hold an
+iommufd, like vfio is also a problem.
 
-diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
-index 8a0f253f2017..579eb1ab5683 100644
---- a/drivers/iommu/vsi-iommu.c
-+++ b/drivers/iommu/vsi-iommu.c
-@@ -707,8 +707,10 @@ static int vsi_iommu_probe(struct platform_device *pdev)
- 		return err;
- 
- 	iommu->irq = platform_get_irq(pdev, 0);
--	if (iommu->irq < 0)
--		return iommu->irq;
-+	if (iommu->irq < 0) {
-+		err = iommu->irq;
-+		goto err_unprepare_clocks;
-+	}
- 
- 	err = devm_request_irq(iommu->dev, iommu->irq, vsi_iommu_irq,
- 			       IRQF_SHARED, dev_name(dev), iommu);
+Really it needs to be reversed so only a memfd or dmabuf is held, but
+I don't know how to do that..
 
--- 
-2.55.0
-
-
+Jason
