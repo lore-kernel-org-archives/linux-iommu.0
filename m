@@ -1,74 +1,120 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.71
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794648885;
-	b=MWhKgEgJkLxfkpdIALZazALYjz6X2WUMagw121qU1ewJtfuQ69rnWr5Lg/ttLorXtwc7
-	 KqXS04m2xkcupfh6s+e1xT7eTXgflfjcCxNIiGrG7qzAU0e17ipe9pWDxLY6M6k0RBjoS
-	 zkK3XVOcL55kPii4rHATrmJYye4NBcN0h8oTHRahavgqo767iZzcCBLSGC3cA/E2mDyOa
-	 krLS+dOEvvjQQOndwa6qJZDxvbR/AaUcv3+napG9TygXQphNp7CifsDWdkjXT7Y+P3MGf
-	 YK4GSLBli59Fh/XbFukW9ZpfobiGvIbnv7m62d2KBg+lG0jUdmWf2VYMV0QAFJ6FHwQ==
+	t=1794660888;
+	b=3aI245yibsuoI6I1IqnYzzWTwtY0Vi7VzhCjoH6VFZKKCMhe+XYgM/sIrFNv7ZLStIY4
+	 QLxVraN8ln3kEnSowTCsLoYK/W5S/hb8PGV/W5MKajXAmQkVU7DL79O5IQUCQEjvD4/ku
+	 qANDisYIouy+Wn/3OsEvvzIbe/vwV8m5V6GkInY5C1qSZ8JGI+4t6a/Vs2dUgi8EiM73i
+	 wt8hyCSkfKmn0h+moCoisIvnzVAJ2WMfWyBQhvPB8ZXDxECgSuCcEg6xV2RmVhGnZkp/K
+	 we/AZZaAs1UO2Ex4ZMbw9U7KWVg8i6rMjL6TC8NBoc0AfH3jeF0N6RU2kimLJbVIa7Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794648885;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794660888;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type;
-	bh=cYfB8ZYjzkbZTu8PkWr5VdyVYonCx+ZsO65KHqfQojE=;
-	b=HdIsu/mZ7AajqTNXWnAZhjATexF2gja+YwqtFnsxqYbPezBBEfNPm5z7hZF7c0hKm8DW
-	 7A1QcDv4Dl+Y+T52swlqg+/xeTZDcYl5SSfh5fs4zWzvKCLFYWW5PV4b/gfRDNwV4bcSr
-	 CVkh4i13eXfNsZ67SpauhPa+6AnUoqqwmcbnsAmTYWZWPbh1hzS3TKNpiUVkKoAHMElrE
-	 LKHhiy68+JiKB7BlntIeKjw9K3jzBUU9KCQ7GQMwK6lP3TYXaimFojaeLWuLlolomgqC+
-	 YHpsJfDb4oFnpZW+dTECUz3El7r+QxnbrTnbdxArFeBUnNd/n7K+UH8r5Xt9NCUKDjQ==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=kzZ572SYqNYS7AFbKEhSpyO0POmges/XmCJlcN/iV2Y=;
+	b=3Z8E6weNxYWvTM/xm3fxusKSJDNbXNo1Lced3QjXTAcrR5HqCT7wDgOtoApguV0P6O9Y
+	 byqOGFknL2tQkebBLap/0XrAViXr1vaFE4PeLRBZtlmLAR76YsaKpBoQyR6Hg30y/7ZYG
+	 R39GBx1fMHR+mxYRD/q/woA+ZwHbGKfaZTc2Qni/Fuzzfk5CqKLwuNqAKgI0Ythx4DSbA
+	 RdAYZ5NT8WvHN/Sf0x1UTMrSFVpZJ3v8AOCOEON7T0t7XzSWwHt+2uGomJFglSzRZrwqO
+	 cXIOLo0VlfV/K+dYsyeEJPm+lm0AFPHzY0BNC6VkFXW5laEZjR9PFXy0SXuY8Ui9f4w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=ZZ0Bdc7a;
-	arc=none smtp.remote-ip=209.85.218.71
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+	dmarc=pass header.from=furiosa.ai;
+	spf=none smtp.mailfrom=furiosa.ai;
+	dkim=pass header.d=furiosa.ai header.i=@furiosa.ai header.a=rsa-sha256 header.s=google header.b=cjChzqPE;
+	arc=none smtp.remote-ip=74.125.82.51
+Received: from mail-dl1-f51.google.com (mail-dl1-f51.google.com [74.125.82.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C3D8606A334
-	for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 09:34:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5C3D8606A334
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADC9D606A33B
+	for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 12:54:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ADC9D606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=furiosa.ai
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=furiosa.ai
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=ZZ0Bdc7a
-Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-c50a8e37286so120786966b.3
-        for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 01:34:45 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=furiosa.ai header.i=@furiosa.ai header.a=rsa-sha256 header.s=google header.b=cjChzqPE
+Received: by mail-dl1-f51.google.com with SMTP id a92af1059eb24-1a8cc11ac42so1756509c88.0
+        for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 04:54:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794648884; x=1795253684; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=cYfB8ZYjzkbZTu8PkWr5VdyVYonCx+ZsO65KHqfQojE=;
-        b=ZZ0Bdc7aNfX61/F0ANr5xkvk9K62pFsAenBTG8ZxCOmDIF6nKad0BHMIpSijUz9oLl
-         l/0D6Qw/tBkhh4ZlCaqOVrbG1X8YXvdBz6i8qICymbqYgJg/nyoD7ZkzBqQn+KrgB1yr
-         Ear77WzRrekOPxSlhJlnRz7LzWs6Hcupa4jP1GdBRsE1yf0ovgGCB4sl4ra7CDg4Nyu9
-         TD1J1Ugr7LowtxTYYjX4SDL1Yo37RBuSpZGWCFcAPxVvEQIAduZ/2ez2+Y0vXWkIHKhu
-         +ELr11L1AMQvsYyHswyqxrg3oP/eULC1TQVfGwV95VVEGc9k/sXDkaOcqdvHgYVBxG7k
-         ktUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794648884; x=1795253684;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+        d=furiosa.ai; s=google; t=1794660887; x=1795265687; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=cYfB8ZYjzkbZTu8PkWr5VdyVYonCx+ZsO65KHqfQojE=;
-        b=m9UbBIGrjYWCDkV3+urvKIU3AcezsnTnV2k0mGNJuEUqPKrXF3WfysnB4Gcvfgeztv
-         nylPS+/HkewgZ9OG5KRVqgjqJjg3NJA7Y6tGD+vEIc5NavoDQ3T/bIOKNorvN/rSOysg
-         +PFSN3jk6IWqE8i05/K5GBWdBNDcm5odcGYhzmY0yHcsaj4haIjq88NO8UrE3YBkO5VG
-         A1iOCq3IH4wNQFFS1PEsjdZTCUYwom0tX+OETBHzAgSnRCGMKsNWR2JItLjh0ZpDphST
-         iun63RbIVRDShFLoTq324Ot5wcV7tt1rFX7bZJPKONb6R2c6JfY/fONNQ1Wg8Kc6yVgZ
-         nkVA==
-X-Forwarded-Encrypted: i=1; AL+hErGyxBrPly6D1QItRiCoA3dSENNbzpBAqcc66EJjfUCoo7T/BCaYB00an+y2EqMTmrg0cpr44A==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/uFja+XHO07o/eMvMuhUKU0CGY/R6Ufxw57nwW8xEJoLkIlCKY
-	L0DfYpC6kzs2y7lK/qC2cdw56vor0rVCGzQ1xw5c0GPOQqRelsseMYWGeMKCfi0bDBUekvRcOTk
-	mZRTQHA6uP0TjOMnz0Q==
-X-Received: from ejbgl17.prod.google.com ([2002:a17:906:e0d1:b0:c50:537a:6835])
- (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:7b83:b0:c41:b4e4:7958 with SMTP id a640c23a62f3a-c5095dd7931mr418395066b.0.1794648883281;
- Sat, 14 Nov 2026 01:34:43 -0800 (PST)
-Date: Sat, 14 Nov 2026 09:34:41 +0000
-In-Reply-To: <DMRP21FATCC0.ARAURXWV85JP@google.com>
+        bh=kzZ572SYqNYS7AFbKEhSpyO0POmges/XmCJlcN/iV2Y=;
+        b=cjChzqPE4FP4aHx6uU/X7PlZuRIbuYzA/Z7GupMYkEQvxlVM7q0ToM8QWx2OJg2B9Q
+         pvEB1+LY9k6/4oVZWPUBdkOHR3NRDceY7ZBX2wQmHZ4eWZh8vOgsL4GNbCcikQ3OZ/x8
+         u0UnnLy3hZrFvyAWAT3W0eM66S9sKOSpnLPgc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794660887; x=1795265687;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=kzZ572SYqNYS7AFbKEhSpyO0POmges/XmCJlcN/iV2Y=;
+        b=rwBa7rNKiHyVsqOYq9q5C34eNUmJKmpbthESYToqxG/CxRd0mYnIP9pcxiE2Aph0uN
+         wKKSE1Xl9bANzNR3IAkwKIvMLqsl4c4IS1pew4Hu6inmdb8FdpMrIOoUxfPRDb+QUE3Y
+         ke6WeS2OreRh10KYulgQDK92ina5iSRsuFB6dRFJXQLkqDchzI8phwV2v5Huk6fUVsVb
+         MYgfh2Ga++XrpPt2lLwg2KHOklgEHNpaRtDOlsOmC05DC4CX404zlBmlQGjrZ3sO1nCh
+         XCAsFcM6MBBNZFsXp6f5OuSWLiqS+nLTlACjrmeDJ9G8yw9dDHVpDloAsHgslovbIEcm
+         1Umg==
+X-Forwarded-Encrypted: i=1; AL+hErFx9ZFw4uLnzJhuRW8TYHncDeoH+8+aaMLqz58m8wyktI9kJ8stq1MEAwgPJ7MmZxMPcOPe3Q==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/Jkgdmv/z1c8SQ/UvaVXB/n04z27lOOY1x9bFl46WMWmQlZQ19
+	LO5O1ENYyzVrw2W3QhB3VZOHdO3Zf6Biz03W3dTEJasHAudwpnPyn8XzN8F+y5mKZ/g=
+X-Gm-Gg: AYBFou1p/zWTUE4FVLXC6tpS8IKH2uZ3ZR6BFlCTtf3V9VJycuUwxKN5eUXPMcpJuAI
+	s6FNW6UoJksKpVjEsibcQKDfpelWXoFhsCAWPxaXE8JQdPEI2MFDoWYNQRXt4UhVOVmgGLTuRGK
+	YbqbztI7hWH5Y3FBtN11mnrOMyzRjaQt824TNGn+nWAfatV0NrdmKWvjTDffihQftv2zbqOPbAB
+	L+28PGUhvZHwfcgJx04HR1a4Tk+EyC/WY8B6820OtNT7teRhWThHjsP5TSgGkGvXUsgjbM2hmVH
+	Q4rdpAqApjS3VeWi42bgWkZC7nfr9aF7I1U9nfKN637nJIydl6+8s/Uh8Mm3kzw1pX+EQsfSe3l
+	M6xZGLo39BWLwoOxTmvJCoDhJep2VdKfV9RlbtGj5duMP8lVE7fNYXsCNdImde+Wrppaf+XKsqw
+	GA7j8MkhC/9TcoVkIiqeTDcSysgX4rbxobLmNY3xPspLDCM+SnTK9kfmp0UqN5Gtvpmpq7dp7tT
+	FxvvRiQonmfNu9b1xJCOIqWYiyJDtPGtad1hN1js7YeU7hsFHnsuFFE1WMCnToHIi0zBy8tpGPM
+	tkRtf/Anii6CGCpe3PKtzrmo2HUmNom3TyKt+fKXDWIvCiemx93Ej4TZUfBblKNgg8ISGm9Fsx1
+	qR2MYSxKRYdJT
+X-Received: by 2002:a05:701b:2706:b0:1b2:4c54:d976 with SMTP id a92af1059eb24-1b50311d3e0mr5111198c88.31.1794660886535;
+        Sat, 14 Nov 2026 04:54:46 -0800 (PST)
+Received: from rock-5b-plus ([61.83.209.48])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b50319e381sm15468097c88.12.2026.11.14.04.54.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Nov 2026 04:54:46 -0800 (PST)
+From: Sidong Yang <sidong.yang@furiosa.ai>
+To: Jiaxing Hu <gahing@gahingwoo.com>
+Cc: tomeu@tomeuvizoso.net,
+	heiko@sntech.de,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	p.zabel@pengutronix.de,
+	ogabbay@kernel.org,
+	zhangqing@rock-chips.com,
+	royalnet026@gmail.com,
+	ulf.hansson@oss.qualcomm.com,
+	abel.vesa@oss.qualcomm.com,
+	sebastian.reichel@collabora.com,
+	u.kleine-koenig@baylibre.com,
+	chaoyi.chen@rock-chips.com,
+	shawn.lin@rock-chips.com,
+	finley.xiao@rock-chips.com,
+	diederik@cknow-tech.com,
+	alchark@flipper.net,
+	leonard@lausen.nl,
+	vlwwwwww@gmail.com,
+	jeff.hugo@oss.qualcomm.com,
+	rfoss@kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linux-rockchip@lists.infradead.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v17 00/12] accel/rocket: RK3576 NPU (RKNN) enablement
+Date: Sat, 14 Nov 2026 21:54:35 +0900
+Message-ID: <20261114125437.9986-1-sidong.yang@furiosa.ai>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <cover.1794615324.git.gahing@gahingwoo.com>
+References: <cover.1794615324.git.gahing@gahingwoo.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,70 +123,21 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261110050202.529473-1-tarunsahu@google.com> <20261110050202.529473-9-tarunsahu@google.com>
- <DMRP21FATCC0.ARAURXWV85JP@google.com>
-Message-ID: <9huzse13pxhq.fsf@tarunix.c.googlers.com>
-Subject: Re: [PATCH v4 08/19] kho: block: Add the feature header to blocks
-From: tarunsahu@google.com
-To: David Matlack <dmatlack@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Mike Rapoport <rppt@kernel.org>, robin.murphy@arm.com, maz@kernel.org, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com, loganodell@google.com, 
-	arnd@arndb.de, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
-	Bjorn Helgaas <bhelgaas@google.com>, oupton@kernel.org, alex@shazbot.org, 
-	gle.com@google.com, pbonzini@redhat.com, 
-	Andrew Morton <akpm@linux-foundation.org>, kevin.tian@intel.com, joro@8bytes.org
-Cc: kvmarm@lists.linux.dev, linux-pci@vger.kernel.org, 
-	Pratyush Yadav <pratyush@kernel.org>, kexec@lists.infradead.org, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	skhawaja@google.com, sagis@google.com, linux-arch@vger.kernel.org, 
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-"David Matlack" <dmatlack@google.com> writes:
+On Sat, Nov 14, 2026 at 04:05:17PM +1300, Jiaxing Hu wrote:
+> This series adds RK3576 NPU (RKNN) support to the mainline DRM rocket
+> driver.
 
-> On Tue Nov 10, 2026 at 5:01 AM UTC, Tarun Sahu wrote:
->> Precede struct kho_block_header_ser with struct kho_ser_hdr using
->> DECLARE_KHO_SER. Each block in a block set starts with struct
->> kho_ser_hdr followed by struct kho_block_header_ser. Serialized entries
->> start immediately after the header payload at offset fhdr->size.
->
-> This adds a feature header to every block in the set, but the layout it
-> describes is a property of the whole set: all blocks are written by the
-> same kernel with the same header.
->
-> Blocks are only ever added and removed at the tail, so the head block
-> is stable for the lifetime of the set. I'd put a single set-wide
-> header in the first block only, e.g. a struct kho_block_set_ser with
-> its own feature header, and keep the per-block header to next and
-> count.
->
-> entry_size (added in patch 2) is another set-wide property that belongs
-> there. All blocks in a set have the same entry size, so recording it in
-> every block is redundant, and restore has to check that the copies
-> agree.
->
+I checked the accel/rocket patches for regressions on a ROCK 5B+
+(RK3588): MobileNet inference with up to 6 concurrent clients, runtime
+PM cycling, core unbind/rebind, GET_PARAM (returns 1) and recovery from
+93 forced job timeouts all pass, with no warnings.
 
-Yes, adding a ser_hdr to each block_header is unnecessary and also cause
-8 bytes to get added to every block. This can be solved like you said by
-adding it only to the first block. But this will make number of entries
-in block[0] to be less than blocks 1..N. I am not sure if that is
-acceptable but if it can be then we can avoid adding ser_hdr to each
-block. Same for entry_size which can be moved to the first block only
-like you suggested part of struct kho_block_set_ser.
+For patches 2-5 and 8-10:
 
-> [...]
->
->>  		entry_size = ser->entry_size;
->>  		bs->entry_size = entry_size;
->> -		capacity = (KHO_BLOCK_SIZE - sizeof(*ser)) / bs->entry_size;
->> +		capacity = (KHO_BLOCK_SIZE - fhdr->size) / bs->entry_size;
->>  		bs->count_per_block = capacity;
->
-> Nothing checks that the blocks agree. Each block's entries start at its
-> own fhdr->size, and count_per_block ends up being whatever the last
-> block implies. With a single set-wide header this can't happen.
+Tested-by: Sidong Yang <sidong.yang@furiosa.ai> # RK3588, ROCK 5B+
 
-yes.
-
-~Tarun
+Thanks,
+Sidong
