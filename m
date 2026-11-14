@@ -1,74 +1,136 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.72
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794677750;
-	b=4mSEZPkeeZIqYsjq37nVkwWSod7KSxiugeODHSeSa4gTvIaYrEIliWTOo7TY6qV5ZZ48
-	 JBA9b2xk8G69YT5+3xpjLWU86wWBerE5Lhua+op7Jc7mSfIwB995NYGkYU0NW0p1pZ3Pg
-	 wyE3/cA7iM/3GJhZ+3cAY2ndsSrt9cv5NpzyOp7xCCZa6F3Ln/Ji/GfxgjePp1gEoUg/O
-	 Y2MGo2yQL/mgQerpLDUISUGffYjXn98GO/YpmgNXTqqxehVNia5Wg4Rmpr30Z54t16elI
-	 Pf5mzuQMCMdsEwvXNC75cKzm/6WST88CDSUAQ7hLWbNzMkIiSX4q4WHdGU3TFamy5pA==
+	t=1794691849;
+	b=dlykd0UE7FIY6LawmsnJZC8NJ9auGORqt5BhaQMWeAc6uOh7CQ+Avcp4VCL9uG2jDpHk
+	 PLB+dAgf6N0ppl++Gv25bTG55ZQvPE83T2k6HYmUU1W7eaKup3gPZ2UYh20P+qXOiQvi/
+	 8QgtZrQUdbmuH4PDA7Jk9aT9pdae81Na38gu14wUWQur8fps72AFRu0sfVGM2Oyj1CdIN
+	 mUWiSsN4a+yo8prk0qx97PmxalgbPsyoZDFsZwRObkzWZX7vknDQPHyZ2LjBB/Ra0T8Ti
+	 WeZGH0kIDH/SrD/TWm4xOnMMX28CZaN9eTE/VX7L0Pbygni19o8luPZ8R9dIOK0KjxQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794677750;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794691849;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type;
-	bh=JNaJcXdU6JL88Hplnr1u9aTEynknq2tK7kpa3hgYbA8=;
-	b=gzv5Y1bPO8JwrhNxXq3ChpAnFJCU0yoGlTkEpZsQ+OEXceTuEi2Fc41IequCIEt0CUvP
-	 GyM17Y6gppuK0ucPaqY5s45IHZlXqG7QOCIcpG7jqCTx5hew83BcrRsR9m+xjejQiSpwg
-	 1cyNiafLivPGeT9MyxCOLg5ywvcBFLnLlPCq9HNCYiq0Y5ozDt9e46eXFbh9AieKgz683
-	 YaENDDjUddG4ZXBbio2CxbAx7oahb7rErqz/m3LdISiEITg0UNNVDNm1XQHMcqTLAA8Wa
-	 791KXb8MQ97rrMiKF/e8iEA7fI8f3zaFE+7oHpMCXliPZ6Bo1DuOPM5bP1uqzTtqikw==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=vju4Tmf9HxWLCGDozxlRYY/dKPR1MEju5ORsVHds9AY=;
+	b=0G0/eaVc7vNTaSlMTFYvMvuTHQdXo8kOh/YafHzAW2zMEOZAz+HxTpntvTx8kGq6aBl1
+	 y9ljBEyhElDLWpRAqv1l4I60+vv5bkMhhD4FTGdBf6gUhkmuYp6nJ7Vtn6huVoyn5aS9Y
+	 UQc0IJHnvuvh2ik3RsToduHWeHIKGu1k4/Ta9mhdHrL2dtwmFzkIjacZfxTewLUjsmRF6
+	 /ekTdenSmyU5prNUWPcSWIxbGLCpUGW/AdU5oCaH8Bk0X5fEKJIk75Wbqm1//vVA9QaMt
+	 Ay1ai7EpLIBO1blzJ5bRQOfnN0DwBoXrHokO6G1ZdTcf5Yh89SJNTc80Qjdc0IKhplQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=fFZZ39fn;
-	arc=none smtp.remote-ip=209.85.218.72
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Oe4whgMm;
+	arc=none smtp.remote-ip=209.85.128.51
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02937606A335
-	for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 17:35:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 02937606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD6E1606A327
+	for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 21:30:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AD6E1606A327
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=fFZZ39fn
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c50713860c0so198186766b.0
-        for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 09:35:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=Oe4whgMm
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4a9a8d6cea8so22067755e9.1
+        for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 13:30:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794677748; x=1795282548; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=JNaJcXdU6JL88Hplnr1u9aTEynknq2tK7kpa3hgYbA8=;
-        b=fFZZ39fn2MZTv+bfIh0wc5tSOYJYUm/RsTm+/1Nc+KtA3Fk2FMxHhNgLJr89aq//V+
-         BYR7fWq8NduYICbCxgl5H7sedT9H3mc7hamIq76spyf/9Pem0ZgmdccqJTMKUrGqBU5u
-         zCpGacw21rZybQx2BGvTMRPm3cx2BMcqwnp0glCNuDRyH/GQeBnR8ORGdfHANSW7kNtJ
-         GGvl/BvWOk3m+cJ6XI5O/rebLV2wTTD0VOmKocqecvXuocPafrtS99wx4mF778X9xm7Z
-         bESO5/aHI7XC8Dloy0O6kMfrHMMNWtPBLzVbBmX74XGEea3X6nOov0xq9F7gNrh1UKxf
-         ljcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794677748; x=1795282548;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20260707; t=1794691847; x=1795296647; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=JNaJcXdU6JL88Hplnr1u9aTEynknq2tK7kpa3hgYbA8=;
-        b=X848SBb6TENfP2HnpvP3N96q/iyojJNOZCPKesf0lui3SAe+42FmE7jH7h8aexOzJu
-         HX1otHzSToU+YGdbxXdRglMaiqybwwam6aCHyBtDKIpx9lhtXjNLOTkoBTL0chgXtiqk
-         sp2VjkgKn1IhIUAp3WtKB1Xlg/F3j2MmbhF5ot4UNMbBPpAdZXpQU9tjEWdSysve59hE
-         e28dBjS0JmgkVzquRjb5vJ91IbVBK5mB2RGeTWeOrnUinyrBd2Yg+F13AvR/HMGxVgfM
-         Jf62P95bHWE5O/L8zuKjkkpJ5KUC4dIAz0wdoLNK6SYDgj6yLWAC5dLYDQoEbgSZ72yK
-         RIYA==
-X-Forwarded-Encrypted: i=1; AL+hErFUhRn73baNTehpHxzM+9Wy3+PJemjIH91r+Q5s/z6LnDpS7n8zMemnZRjWlpgc5NFFwoc8Iw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+8QTJBFBcP4W8/tT6yZXgEHIR80xrGQAppW2D1GoHTLocN2oVK
-	gmFrgAVv/gJ/7AVQYFh+5EpZjpOxTPYWebHHE5UDXSxraf4XrxRtJRdpmQZTVXw+YjcXAFNqgmx
-	9r2NB+lWgW7BU6/mGmA==
-X-Received: from ejfz7.prod.google.com ([2002:a17:906:ac7:b0:c2e:3202:ef75])
- (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:868f:b0:c33:ae8b:817d with SMTP id a640c23a62f3a-c509654f9admr515384166b.46.1794677747981;
- Sat, 14 Nov 2026 09:35:47 -0800 (PST)
-Date: Sat, 14 Nov 2026 17:35:47 +0000
-In-Reply-To: <DMRO4QXXB8H4.127C1CPT3RZ18@google.com>
+        bh=vju4Tmf9HxWLCGDozxlRYY/dKPR1MEju5ORsVHds9AY=;
+        b=Oe4whgMmIY7AJRUl/ZLStdHdfHu1DWj1T8uzBmd5CjeOcdGHkga3g03aJIkfbFQwIw
+         j3b78I69Po3AdHpiDlhrTj4RfJJ9Tn+sn0jc404/3yUgZWa+XzwViJMT6apDaadBH5fC
+         fMCmJ6VR04Rji3X3qYT/UiIvVfDu5p2HMuHILU2wQ9RShXcOIyv+7EtirVRcgRy0Y/zJ
+         XxsXMZa9VvN2NH4i6Pf3zKqBCo3d0t67qlPWBE+RbzLophuBUeL412RwkM/IOs/QMUdJ
+         JATTvon2p6IXdslRWSOiR89aDvr7035up083oZuw0EBEpYZYb0f7RoMzjmiTGIoJa1f/
+         csWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794691847; x=1795296647;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=vju4Tmf9HxWLCGDozxlRYY/dKPR1MEju5ORsVHds9AY=;
+        b=SJSVwrxB/bTKzmwqKg49Z1MpkDyvjZogMz/8b2GxpkuqFG/HeRik07cRWqmYZPYHXl
+         0AQTqQiKK97k61iEmk9WvLyFckO5hfuVwuC4xysJeu4t32CwUeEGP8uj3ef+8zOfa/DG
+         LVH859JLUTecoRd7d0bsmNxGk2Ho+IfwmV+qZvJOUxK1b7jjsktwkLJESXGTjyjMpKH/
+         RJY1hJHhF2t9dYqinnVBtQcoE7sxvhoTIVHHX9Ghbndfi2rSoNmsGoj5gmhKB4GZuhdm
+         PUUBUy5LtvD3IJrgyWnvpc0AUeXN0jqcHGFFeIKA0xt5m3rULFyqh9Nr4+h45s1ymzpP
+         Qlgg==
+X-Forwarded-Encrypted: i=1; AL+hErGArCl+2ofcdH9uveeIOtotjCzgNt9uiCVMZ0CggfbIRBzm3FoXRgNWrhWRdoPwPzR/6Jjwwg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8S2lspT8y812TYvlmvSLmYsFeD1yKmXGNi33u6TFbpJuovxCG1
+	VHw1wrzVRHeNbpa1VrNKYjtytBFQ+ejDPUiAeub2A193SvrF9St81l1N
+X-Gm-Gg: AYBFou1IBdufX7PPVuwbFRNXg7ax/wHyYGIylYjXGrj/KDQDzQvszZB9AtbzPuXLngZ
+	YNTxNc366zrflcxHWsIC1s1w+/mkSXlbWRfu1rKqb4sKW/CBZs17x3KqVq3u4k2weGaRDQ3Buzk
+	jO8S7ohGpj+nNA/L5+agGqIsDg4Xx1dOZkesbkd4jjN3uY9o3YkhODHo3RN+o6jR/PJqEwzEGKo
+	M1YVX3GVr11IO732QPXxEAqMaPUAdR3Lpko+fdrbi1xNjxIm0QfntiW1eFMHYlrw2b4Z08qM5Yg
+	xlYyF9yhtEMf+lVAFm5MYE62b2ao3CzaCkFvsCgQov9lkWWmMW0vrPgix9xCdPUOSyOBYKzPfvi
+	KTkTZs04M8tSaSKq9CTwbpm3Od0QJXp80nYQvzbg3+WA3boUzrOcAoJ+L20EEd8nomaAM3jq35D
+	NbcgsGWyCTMwEeX52HSSeuuSBs0+ZUZ2g0B68tA/3jetUZWP49w9Pbuh+5TnHum8lpVm1ueVMIq
+	p7KGYoh4n1AwRg3imFjWcMkF2bQ9qOFzD9IXMr32+j3SbBy4OWD85maruGdmC3J9vTZTnUEGUc2
+	OQgxxMyr4evcd3epZG4rQ0XZJEk=
+X-Received: by 2002:a05:600c:2784:b0:4a1:d49e:9ce with SMTP id 5b1f17b1804b1-4bb4e2918b1mr187322445e9.2.1794691847097;
+        Sat, 14 Nov 2026 13:30:47 -0800 (PST)
+Received: from flare5 ([212.58.121.92])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-49c603f4e2esm12803478f8f.36.2026.11.14.13.30.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Nov 2026 13:30:46 -0800 (PST)
+From: Stanislav Aleksandrov <lightofmysoul@gmail.com>
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Abel Vesa <abelvesa@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Robert Marko <robimarko@gmail.com>,
+	Guru Das Srinagesh <linux@gurudas.dev>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Radu Rendec <radu@rendec.net>,
+	Lee Jones <lee@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Wesley Cheng <wesley.cheng@oss.qualcomm.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	Neil Armstrong <neil.armstrong@linaro.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Bean Huo <beanhuo@micron.com>,
+	Stanley Jhu <stanleyjhu@google.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Georgi Djakov <djakov@kernel.org>,
+	Sibi Sankar <sibi.sankar@oss.qualcomm.com>,
+	linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	mfd@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-usb@vger.kernel.org,
+	linux-phy@lists.infradead.org,
+	linux-scsi@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	linux-pm@vger.kernel.org
+Subject: Re: [PATCH 16/17] arm64: dts: qcom: Add initial Halliday dtsi
+Date: Sat, 14 Nov 2026 21:30:28 +0000
+Message-ID: <20261114213028.1933448-1-lightofmysoul@gmail.com>
+X-Mailer: git-send-email 2.55.0
+In-Reply-To: <0cac5090-a135-4a6c-8221-846b34ed5513@oss.qualcomm.com>
+References: <20261109-halliday-dts-v1-0-289114ab8197@gmail.com> <20261109-halliday-dts-v1-16-289114ab8197@gmail.com> <0cac5090-a135-4a6c-8221-846b34ed5513@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,135 +139,24 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261110050202.529473-1-tarunsahu@google.com> <20261110050202.529473-17-tarunsahu@google.com>
- <DMRO4QXXB8H4.127C1CPT3RZ18@google.com>
-Message-ID: <9huzmrrbpb7w.fsf@tarunix.c.googlers.com>
-Subject: Re: [PATCH v4 16/19] PCI: liveupdate: Add feature header to struct pci_dev_ser
-From: tarunsahu@google.com
-To: David Matlack <dmatlack@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Mike Rapoport <rppt@kernel.org>, robin.murphy@arm.com, maz@kernel.org, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com, loganodell@google.com, 
-	arnd@arndb.de, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
-	Bjorn Helgaas <bhelgaas@google.com>, oupton@kernel.org, alex@shazbot.org, 
-	gle.com@google.com, pbonzini@redhat.com, 
-	Andrew Morton <akpm@linux-foundation.org>, kevin.tian@intel.com, joro@8bytes.org
-Cc: kvmarm@lists.linux.dev, linux-pci@vger.kernel.org, 
-	Pratyush Yadav <pratyush@kernel.org>, kexec@lists.infradead.org, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	skhawaja@google.com, sagis@google.com, linux-arch@vger.kernel.org, 
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-"David Matlack" <dmatlack@google.com> writes:
+On 13/11/2026 13:10, Konrad Dybcio wrote:
+> Please add the other idle states (D4 and E3) from the downstream
+> devicetree and match the order of properties (psci-suspend param)
+> to glymur.dtsi
 
-> On Tue Nov 10, 2026 at 5:01 AM UTC, Tarun Sahu wrote:
->> Precede each serialized PCI device entry in the PCI Live Update KHO block
->> set with struct kho_ser_hdr via DECLARE_KHO_SER so future per-device PCI
->> Live Update features can append fields to struct pci_dev_ser without
->> breaking compatibility between adjacent kernels.
->
-> Elements of a collection should not have their own feature headers. This
-> applies to patches 10, 12, 14, 16 and 18. I raised this during the v2
-> discussion [1][2], but I don't think it was addressed.
->
+Thanks for the review. D4 and E3 are already there, as cluster_sleep_0
+(0x41000044) and cluster_sleep_1 (0x4100c344) in domain-idle-states,
+just above idle-states. In v2 I'll move that node below idle-states and
+order the properties like glymur.dtsi.
 
-As per [3], I tried to add feature header to all possible instances of
-ser structs. Maybe this is the right time to audit these structs and decide
-which one will never need feature header.
+> Please use '0x0' for zeroes in reg values
 
-[3]: https://lore.kernel.org/kexec/CA+CK2bB9xoAWP0kC+KtXeDTdwt0kWqb-PLHN=6DsA=mnRpMfxA@mail.gmail.com/
+> Let's break up such long lists into one-a-line
 
-> All entries in a KHO block set are written by the same kernel using the
-> same struct, and the block set has a single entry_size, so every entry
-> header is necessarily identical. They don't convey anything that the
-> header of the struct that owns the collection can't. In this case,
-> struct pci_ser's header can define features that describe fields in
-> struct pci_dev_ser, and the PCI core checks them once before iterating.
-> If a feature only applies to some devices, the field's value in each
-> entry says whether that device uses it.
->
+I'll fix both in v2.
 
-pci_dev_ser can be refrained from using kho_ser_hdr but not
-memfd_luo_folio_ser.
-
-The difference lies in their API usage. one use kho block and other one
-kho_vmalloc. With kho block, we carry entry_size, so the parent
-pci_ser's kho_ser_hdr can communicate about the new field/feature in the
-pci_dev_ser and entry_size will carry correct the size of pci_dev_ser
-for iterator on deserialization. But for memfd_luo_ser, kho_vmalloc does
-not carry such entry_size. So we can solve this by adding the
-folio_ser_size into memfd_luo_ser struct.
-
-Without entry_size, we can only add new changes to such structs by
-adding feature in parent struct with required = 1. That way rollback or
-upgrade will fail to the kernel which does not support this required
-feature. Incase, if we have entry_size (folio_ser_size in above
-example), it will help marking such feature to be optional also and
-deserialization can correctly parse with entry_size and can ignore those
-changes if the kernel wants to.
-
-
-> Per-entry headers also cost a lot for small entries. struct pci_dev_ser
-> goes from 8 to 16 bytes, and to 24 bytes once the first feature is
-> added. Patch 18 does the same for every preserved memfd folio, which for
-> a large guest backed by 4K pages adds gigabytes of preserved metadata.
->
-
-Yeah, we are carrying 8/16 byte of extra memory where every entry share
-the same header. Which is a waste.
-
-> They also add new ways to read out of bounds. kho_ser_payload() trusts
-> nr_required/nr_optional in each entry, and nothing checks that the entry
-> header plus payload fit within entry_size. In patches 14 and 18 the walk
-> uses each entry's fhdr->size to find the next entry, so one bad header
-> throws off every entry after it.
-
-Bad feature header is not the reasoning here we should back this
-requirement. A bad feature header already imply the deserialization is
-compromised and hence accessing anything further is undefined. This
-holds true for any struct with feature header.
-
->
-> Instead I would keep struct pci_dev_ser as a plain struct, take the
-> entry size from the KHO block header (patch 2), and in pci_flb_retrieve()
-> check once that the entry size covers the base fields, plus the fields
-> of any features set in struct pci_ser's header, e.g.:
->
-> 	entry_size = kho_block_set_entry_size(&incoming->block_set);
-> 	if (entry_size < offsetofend(struct pci_dev_ser, refcount))
-> 		panic(...);
->
-> That also restores the minimum entry size check that the v10 PCI series
-> had with PCI_DEV_SER_MIN_SIZE, which this version drops.
-
-offsetofend() is a good idea to replace PCI_DEV_SER_MIN_SIZE.
-
->
-> [...]
->
->> -	kho_block_set_init(&incoming->block_set, sizeof(struct pci_dev_ser));
->> +	kho_block_set_init(&incoming->block_set, kho_ser_size(pci_dev_ser));
->
-> This size is never used. kho_block_set_restore() overwrites it with the
-> entry size recorded by the previous kernel. Passing this kernel's size
-> here is misleading: pci_flb_retrieve() (and the LUO session/file restore
-> paths) read as if they iterate incoming entries with the outgoing entry
-> size, which would be a bug.
->
-> Incoming block sets should not take an entry size at all.
-> kho_block_set_restore() should initialize the block set itself from the
-> incoming block headers, and the incoming paths should drop the
-> kho_block_set_init() call.
-
-Yes, We can avoid this dual initialization. kho_block_set_restore can
-take care of it. Also once we will agree on having having
-kho_block_set_ser to have entry_size which will be part of only
-block[0], then we will not have to update the entry_size inside the loop
-again and again and count_per_block can also be calculated before the
-loop for block 0 and 1..N.
-
-~Tarun
->
-> [1] https://lore.kernel.org/kexec/atl6K2Juy6Bh29lh@google.com/
-> [2] https://lore.kernel.org/kexec/at-8vkVpN2SF3XgB@google.com/
+Best regards,
+Stanislav
