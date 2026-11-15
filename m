@@ -1,66 +1,60 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794765711;
-	b=yaYsJE+3gC8/1grEcOVNp3UIzD734tpSFQD1JLZV1amYKUlVZZeUVEGcH20XTik/n8/q
-	 kV/fv9ZQPzXtEARPvkA6Y2ss8W+8gVtZ/GREsG7fi/YooyBzGZdUuYAKM1VwrJcPhYvg/
-	 fWshIGs0AOUpbF8/EQUERNg6NvqICLytNCCX6W7KLxz7O+RIMxjy8TTkVnObeIBMCREkm
-	 Lzeunv3HykuwEhaeR26lv+6sTOK8MQVtYUUA45Z7x2cyw6zp+CbRgX1ETl5uq9Zubiw1V
-	 j4qxZELgJy+EiNIIb8gBMGVu5Ip3OuaFrsJagSe9T/pDuREuCtOLjWoT3hmA9gNS3oQ==
+	t=1794770076;
+	b=OjuWazEZ0MYOICGRfVlGGgVf9jIkwOiWH1kCD8XD07HMm1ul+7Ij8kyifc7AoWYOwewU
+	 lJBvHrIm+pFiJnXduZ91ffUdk3raz7Tj9bXiho7anqvoGc5PZkvQljmqBTLtNpwAp5v+L
+	 0LwaGozhQ7Kxjq1RC4YK7ljbWkqyTFIBu4EcHMbVpuwMwwitK1wjuhEXOt2L7PeizaqAb
+	 2nMnUc1rAa9Dx90BYfqp/GvNzQaTrtnJl42ulMpsgMEFAiqqCPi5Y08mW6kl16EB1+FOx
+	 sVP/uW/UlZuLOHNEREDIDP/SI9G+WZpBKwrFmCsqsQd+DmlD1grSAER1qI3SP68Muxg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794765711;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794770076;
 	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
 	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=E5e8BJEiuZ4whbgu1Hr+6JPc8nqHGgyY0u0a+RokHVQ=;
-	b=OGx1C2faWBV3SR8KCgQOGhCGknhl1iEvNz6lAcY67vK7QOjOvnvfRPdyzHDUPC1Xcz1I
-	 SYOQ+kiWRt9vQV+JuMkh+oLrbq0DvLPl4PF3iZPxJnoc0cxQwroRGWe17/kvSjcz1n71n
-	 ibJ2hp7HlXXhi9pAK41jVN6qZPmKOxtIhB47fTW7gV0P/3ANAYbdDIiWL+VFFmW1p9kTq
-	 xVT3fA2+5ZdZ61kNp3N5KFhetpjNhcwAJtCbqoRFSqk8eoGNdPa01qaXr5kq3jxeBHcJQ
-	 obG5ioKIoLfOsOqoWfM9B5IPetgsKcPsdw4PqJwRNyfQqc7fEqLEIPP3kvrJYch+AfQ==
+	bh=bTYAm4EWSRHx/ZHXwlhFob7m+xxSKwh0NNHvPVL+4a0=;
+	b=VZ2Vj3IVLqLZLsREd17qiC/2xY0QgLPMj6qLoZlolFoD1xMmKrVML+ESq1wWAmGBx1Tu
+	 mZL0xErfTe+5OHnVqxeBtT+wYpDc3agU+/kPXRXVfxbLEQtYqVShYTnCTOjQSNMicA2s5
+	 upNoI7xBxXSLpkcEX9Jaxm5lUFHtOVBY6AFeT0A6OrbNEcciPUTCDmabE48yQzXZi1vTv
+	 SU6r7xnB+BsZBDl0PR5Zg4poVaQZv5FzubZFaKjFVIwt3pgdITKWX9tgdbqh8Nxkjy1/K
+	 DIaXiWsBPtac7oMfvrtQe65TVQkgoObzUjQPi4Sraef/7R9Vp2UtD5Ws0zUCal5fp/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=o2aAKF9+;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Zlr8cphp;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B75E2606A31A;
-	Sun, 15 Nov 2026 18:01:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04CFB606A31F;
+	Sun, 15 Nov 2026 19:14:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=o2aAKF9+
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24FBC1F000C4;
-	Sun, 15 Nov 2026 18:01:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Zlr8cphp
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2830B1F000C4;
+	Sun, 15 Nov 2026 19:14:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794765711;
-	bh=E5e8BJEiuZ4whbgu1Hr+6JPc8nqHGgyY0u0a+RokHVQ=;
+	s=k20260515; t=1794770075;
+	bh=bTYAm4EWSRHx/ZHXwlhFob7m+xxSKwh0NNHvPVL+4a0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=o2aAKF9+YecDzzGk4bV1bgV0jRjVUpJLhAYO7F+KOkCHqua5bwkkqaIW2TcKzIbVH
-	 8RrypZah37W8SoLFH+cHTWDJSt7g97GkpFDUJwpOa8fXEP+C7Fk6eZGhN5bZ5QIWGv
-	 rNolRUfDXYPxamX3x3K99oNFg+prs8oECrVd82aJgQ4n1vZ2k1l/hIbRyzuBfF8uiT
-	 SP3N1MJ5SlYTbuy72JItmaVx0qM0W054SYKcPl3aN0rEaY1nttQPHOG1KwcWmsiT9y
-	 t6SsJiUY3zhw8E+wDnL4kBJBk7lTf7M92W7m9dew6fxdbCTR+FrT6wxWeM+LVgDM2r
-	 6NmZ515+KqNWw==
-Date: Sun, 15 Nov 2026 20:01:37 +0200
+	b=Zlr8cphpaQd3nqY4dD/M8LKmVfhEwBhg/RXnFS8Dbd42j21budIL80Fj83ujynYBi
+	 xrkpXbt/vgXXJ3zbCIgd0vytWH9UFZRo+kWYg6+zk3Dgh5sXkP6sxBNtPVRWMc7kgU
+	 7c0cXcpkCgnk34WxtxAQP15i7VF+f+o9Op3gqEYw8sVFIZUZZKKEE/DiCEBd5NJmBL
+	 eqWix0PI/yHN1v1kle17XH0UgF/k5g+OojdNRy9zlUqHohW/kmiciG1CH3WaxOOynl
+	 GtOjVUG+IaqnqKJMnuActvv+XKVHz8jIHWFruwvUHIhP9DWwGFEUc3P4bbqJVKIINp
+	 h+RZkJC+eVaDQ==
+Date: Sun, 15 Nov 2026 21:14:25 +0200
 From: Mike Rapoport <rppt@kernel.org>
-To: Tarun Sahu <tarunsahu@google.com>
-Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, robin.murphy@arm.com,
-	maz@kernel.org, will@kernel.org,
-	David Matlack <dmatlack@google.com>,
-	Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com,
-	loganodell@google.com, arnd@arndb.de, dwmw2@infradead.org,
-	baolu.lu@linux.intel.com, Bjorn Helgaas <bhelgaas@google.com>,
-	oupton@kernel.org, alex@shazbot.org, gle.com@google.com,
-	pbonzini@redhat.com, Andrew Morton <akpm@linux-foundation.org>,
-	kevin.tian@intel.com, joro@8bytes.org, kvmarm@lists.linux.dev,
-	linux-pci@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>,
-	kexec@lists.infradead.org, kvm@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	skhawaja@google.com, sagis@google.com, linux-arch@vger.kernel.org,
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 05/19] kho: Add feature header for fine-grained ABI
- compatibility
-Message-ID: <avnzgVJic77yKMoh@kernel.org>
-References: <20261110050202.529473-1-tarunsahu@google.com>
- <20261110050202.529473-6-tarunsahu@google.com>
+To: Vincent Donnefort <vdonnefort@google.com>
+Cc: catalin.marinas@arm.com, will@kernel.org, akpm@linux-foundation.org,
+	m.szyprowski@samsung.com, jenswi@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, mark.rutland@arm.com,
+	robin.murphy@arm.com, hch@lst.de, ryan.roberts@arm.com,
+	sumit.garg@kernel.org, sudeep.holla@kernel.org, ardb@kernel.org,
+	thierry.reding@kernel.org, david@kernel.org, danielmentz@google.com,
+	linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
+	iommu@lists.linux.dev, op-tee@lists.trustedfirmware.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/8] memblock: Introduce MEMBLOCK_PTEMAP
+Message-ID: <avoEkRRM3iH70_Am@kernel.org>
+References: <20261111110738.872947-1-vdonnefort@google.com>
+ <20261111110738.872947-2-vdonnefort@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,50 +66,26 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261110050202.529473-6-tarunsahu@google.com>
+In-Reply-To: <20261111110738.872947-2-vdonnefort@google.com>
 
-On Tue, Nov 10, 2026 at 05:01:48AM +0000, Tarun Sahu wrote:
->
-> Each subsystem registers its serialized structure with:
+On Wed, Nov 11, 2026 at 11:07:31AM +0000, Vincent Donnefort wrote:
+> Keeping PTE-level mappings is interesting for arm64 as it allows
+> mapping/unmapping pages from the kernel direct map without the risk of
+> splitting blocks which, under the break-before-make rule, may trigger
+> page-faults the kernel can't handle.
 > 
->         DECLARE_KHO_SER(name, payload_size, nr_required, nr_optional)
+> However, mapping the entire direct map at PTE-level is costly. So
+> instead, create a new memblock flag MEMBLOCK_PTEMAP to selectively apply
+> a PTE-level mapping.
 > 
-> This establishes compile-time assertions and provides type-checked
-> helpers: kho_ser_size() for total allocation size, kho_ser_init() to
-> initialize the header, kho_ser_payload() to access the typed payload at
-> its dynamic offset, and kho_ser_validate() to validate required features
-> during restoration. DECLARE_KHO_SER_HDR(name, *fhdr) declares a struct
-> kho_ser_hdr pointer while verifying at compile time that name was
-> registered with DECLARE_KHO_SER(), allowing callers to document which
-> structure a feature header pointer represents.
-> 
-> An example demonstrating how a hypothetical structure defines its
-> features:
-> 
->   enum foo_ser_required {
->           FOO_SER_REQ_BAR,
->           __FOO_SER_NR_REQUIRED,
->   };
-> 
->   enum foo_ser_optional {
->           FOO_SER_OPT_BAZ,
->           __FOO_SER_NR_OPTIONAL,
->   };
-> 
->   struct foo_ser {
->           __u64 base;     /* base fields, always present */
->           __u64 bar;      /* FOO_SER_REQ_BAR */
->           __u64 baz;      /* FOO_SER_OPT_BAZ */
->   };
-> 
->   DECLARE_KHO_SER(foo_ser, 24,
+> Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
 
-The example should have included 7 fields total to make it 42 ;-)
+Acked-by: Mike Rapoport (Microsoft) <rppt@kernel.org>
 
-Seriously, this magic number show must stop.
-
->                   __FOO_SER_NR_REQUIRED, __FOO_SER_NR_OPTIONAL);
-> 
+> ---
+>  include/linux/memblock.h |  9 +++++++++
+>  mm/memblock.c            | 39 +++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 46 insertions(+), 2 deletions(-)
 
 -- 
 Sincerely yours,
