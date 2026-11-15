@@ -1,79 +1,106 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.57.1
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794773984;
-	b=tEziIlv4wvI57rdpihimOjP2Yk8pQ6Smh58/d6Y6+KMcatPY3AFDUeswevVMnp2QUOIG
-	 30nIiz2v/XN2Z4PNOOwoZIHp1ZjP3f+GBXt9xskmOKBF6zZISW0RWovQpjBuvVJ9+i4EZ
-	 OtRrE6ZOUNc1lUlkAZAdRatILsRjoc54mBMnd/UfS3Eywm4ShCMSazd8pwdy84rvdWudm
-	 an2afhtmkYKNPu91SRacVjnajGYeKcEGlTM8G3F4Ba7HrfMISwF+C3+ZelRdqe19HffYD
-	 GzM336oh69TEepQRC4NDCCQTo9Wk+HAEx3d/G9wcRZBDL7Iy6UnCoZMupQkxi8fE7bA==
+	t=1794784912;
+	b=nvQJmzaOXOzZ8jeqmDj8qYTiwwWd/SsuRymp3LqSOkNQnt0Pw3mSWENyizqPmqD6U0aZ
+	 aPjcVBdT+ByH9Bv46ZewOnmg2FMDdkY0jlJJVBRpUxJSRJzeiT1aTjJImXo2cpN9+41OL
+	 dKG4Kv+KO4RxKiIuFaE5KLpqW+S/SqAlSkDJyB9c61d8cOCJVdTs0PwvbShnVCoppY0Wj
+	 55IiOon7RIvzV0YpBRMJAZLqXce6PF3i51Dn8AsgE2JhuehDP22yb5/GvKwDhEleEZhsI
+	 kgPth4JxYw/IN3YHrBMXmoMraoSiiySHKO1xmJ3J46kflib606SVVX1LD93YqJ6fyZA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794773984;
-	h=Received:DKIM-Signature:Received:From:Date:Subject:MIME-Version:
-	 Content-Type:Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=sE8fCk4typDnJvD+nhsRN4p0pLAgbnUmYhrIHo3jb4E=;
-	b=vlH65aOZRWhEOB/8oM7Y4P5X6Cz7EakAIkwoN4Nuid4ZNrRlmaCCa9HrJdrb0xplgzcf
-	 Evq4qt4MevdRBw1BoayXQFCQq8S5hiwskEpJTBRr8+K4u8Z2JbY05nX/Ha3TjN3cXYog+
-	 PtBq3BDaQu14l3HRyeJPEe9ja+NeRmgGb4ROudjfcnA6Kl/B8nLIXbgu+UlsXM2tXLhjY
-	 /gyD3YVi3+g4rDU9yX3W9/xNzzBjQAJaGpvSHUlbAylEXA/DRJij0gEAxEBozoGp0wLEZ
-	 lwMH0AaI6xI3EEI/tnWbH36wd85BJ8kiDnFCap0aHKdVUBrlehX1UYj+TGN9gv9mclQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794784912;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
+	 Subject:Message-ID:References:Content-Type:Content-Disposition:
+	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=CQDshkWrg2xvNz/o9nwO/xdioRBlLozjNnhWFG+VzNk=;
+	b=wB0xflhTRlE6CEh28GQYCrXpEV+DxzA4nJ/S5y55AScxyPCyBYtDdjh0fYcTtu2swpUw
+	 lnsvvfdvQF4x5Uj6nKKsz2vuPD7RVvvjZkNO1QDlosO4mq/a/CIyupZ9OJEGH/cRX3lEh
+	 Djjyc0o5ODGqwX0y4p1CGwCp7HeKusZiH1RsAiFln+D+C84YpeROZjc8t/MqCbgthEZr6
+	 BNR29WO0MjbG7ABOwl0rAUOioKVEBL3Xf266pEIbv1OLdQJCISm5hAd9QxOeQ7XqMTd5f
+	 fA1O221Z2gdqaxOmjZWmr/CRZnkTcvuUWgAjY/iWxJYl/RfwXBcQFIyTSpyEJU+J/tg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="K8Vg1AN/";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=iJZ083kd;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.57.1
+Received: from BN8PR05CU002.outbound.protection.outlook.com (mail-eastus2azon11011001.outbound.protection.outlook.com [52.101.57.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 560E4606A88F;
-	Sun, 15 Nov 2026 20:19:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4142F606A337
+	for <iommu@lists.linux.dev>; Sun, 15 Nov 2026 23:21:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4142F606A337
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=K8Vg1AN/
-Authentication-Results: smtp.kernel.org; arc=none smtp.remote-ip=100.80.115.77
-ARC-Seal: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256; cv=none;
-	t=1794773984;
-	b=xE7D35lV9kOVJTzLYy8gOoJtYj6XpZe+fzclgtSKi4N+W7s4N1cgPtRIBIdVrqvYFUUu
-	 mJoq4HcZjnrFVuEv/9bnDkMDsC/K3MidfzfZHTq/kv0XwTXw/pBqNpC6uheO87GCSSYOw
-	 gv/krGBvm/6t32gpl8UyQKQ0hJEFkHRYBbEpiCHoeOf8XJRXdAC7XhM8Fx/a9i5tFCQA9
-	 F20jaEJvNFiLfdCtSO9kxnSdKm89LuSJjp51skbXIzxJUb1BeMva66XaV+5jfAxDjzZhS
-	 Qqb1R+uvNWjXEZaY4IXTeji1p1Lxe4kx1PiH4NMZJSa6FuKILnEaTRYVAjkeVrXgFSA==
-ARC-Message-Signature: i=1; d=kernel.org; s=arc20260519; a=rsa-sha256;
-	c=relaxed/relaxed; t=1794773984;
-	h=DKIM-Signature:Received:From:Date:Subject:MIME-Version:Content-Type:
-	 Message-Id:X-B4-Tracking:X-Change-ID:To:Cc:X-Mailer:
-	 X-Developer-Signature:X-Developer-Key:X-Endpoint-Received:
-	 X-Original-From:Reply-To:Content-Transfer-Encoding;
-	bh=sE8fCk4typDnJvD+nhsRN4p0pLAgbnUmYhrIHo3jb4E=;
-	b=wtrEhu8RJGKys7Las56Q8dFqAqniHqU/mqYvXk7JvXa0gLPLn5vkWzcSqoJ74ste80r7
-	 AgpqaxYWkGxlaGfIkUoi0YfnMExkP7hoqaSwb09/nbGrSmI63f3c0DOx9by3OhSTkEfEj
-	 JHmg56BW2aGeEi8tTjjbPx4l/Zta14BCCxVg43RAnXcoyIOe2lThur+g3QIXsxMtnYIW+
-	 iCUwqBvI82V7g2PjxQNll6q8skJqgloKy9zIAFy6f7R86Mb7Sf92A1MGxPDEiUwfLLsmN
-	 TottgyK2Anu0aOHOdCLe4A6TSSHkpNDtbc2yHOPV289w2djw50ODAHDzeCYb2FImduA==
-ARC-Authentication-Results: i=1; smtp.kernel.org; 
-	arc=none smtp.remote-ip=100.80.115.77
-Received: from lkml.kernel.org (nexus.subspace.kernel.org [100.80.115.77])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.kernel.org (Postfix) with ESMTPS id 8730C1F000C4;
-	Sun, 15 Nov 2026 20:19:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794773983;
-	bh=sE8fCk4typDnJvD+nhsRN4p0pLAgbnUmYhrIHo3jb4E=;
-	h=From:Date:Subject:To:Cc:Reply-To;
-	b=K8Vg1AN/kx9sz5cvK5OFTnumV+vS2Gz37/rJLinZQfP8rbfaFB2LjOjl+WU7H/Gpp
-	 pdGd/oeE20Z+ieCkfFyx0/ddUiK5kGtZWmC0KybqntRwhC/w7T/Bvqf8JYQklyPh16
-	 uygJNivUf8z5gmAomS+vJTm4IhpVNesvM0wizPs96HhnEaKdVYU0kTGb/SO62hAwqU
-	 dtI/vfl8eRv6N9sIIJCRKOS2efqer1lvjeOjxP713ktGap6fEZrIknw6OOEjA6TeyB
-	 2/1tYTsa/5aoTISNk9z1zL3qT1gaeaTDuFiP3mnwu5lW8LoxfS828wvGBDH7ZPVJNH
-	 HOTIDVVOBox9g==
-Received: from nexus.subspace.kernel.org (localhost [IPv6:::1])
-	by lkml.kernel.org (Postfix) with ESMTP id 187ED4A170;
-	Sun, 15 Nov 2026 20:19:43 +0000 (UTC)
-From: Venkat Yadlapati via B4 Relay <devnull+venkat.yadlapati.yahoo.com@kernel.org>
-Date: Mon, 16 Nov 2026 01:49:43 +0530
-Subject: [PATCH] iommu/arm-smmu-qcom: Add Kaanapali MDSS to the client
- match table
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=iJZ083kd
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=duOmq+LlxK3TsfSnL6dSXdMU297qCynlYz/tJp8hyDUPZopXQ3s7jrpMehozjaiiYDxdsvhG6WAKXppxzowYZgZ8yHIGw/Biys8RDGFKwDIdvG7chsGdQXnxO/ct5RxQgwL0W96xJ/q34OVXkWfet4OJqvT9ESy5CWKqZ3N6PZqMsXRhHjpLh9GuHPU0JYJU3FeFkpKvTvGNC8IoV8VFKyMTvCrEzyX7YrnYzKMcoBSNQ/4xHVaj5ctu6H5SBgmrkleI8Dfp9AFwX50adVMIx8FtnsRj4arpzkrNcd8oQDTC+wnwFBxqsb/wSINRAddoxe7lo19QkOIEioLyu2Zb2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CQDshkWrg2xvNz/o9nwO/xdioRBlLozjNnhWFG+VzNk=;
+ b=Ngc5uROCvndur3MGkIFfo2Pas5gllgczZ342/tUqMORXI3vGAeHaInkIDl6o7C20LYFmAeYjDeCzcnOlTIYFAvTSXlBWjGk/vrC/zYPmZOBuE5tLStQ39YRiC0M1bM1e3m5ZlgHysEpJOWekLcP6eHaBlHVl/XDgU2hlwaOjTlqnsZS17uXqxYYahYpnT1w6KRmUb84WNVfUQq8F4jtLP5WAtvQFyPplN9HRhFKdbaYgoHqLVQAZMsbL+8u5Um0G5ct6jp87fU16E/hJBWZZIeIrw2T0ZeoyZuDQLyTVNWfwTX5awsp7KX/01h3UutA+uq5ycdWIUzBohWLlj4gd4g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CQDshkWrg2xvNz/o9nwO/xdioRBlLozjNnhWFG+VzNk=;
+ b=iJZ083kdPg3DmuOocSvrM7LKl0tX1zLjWkQ6IL4ztMliEcLTeZTsPpMfKBCNu7mi1wdajQ8F5Hspku/a4nZ5NpzwwzUvvwvzsQwZt0nf0l0E9uij6cKSZeIK5YKLCGOf4PuDo6vhSRFb7CQv/E1P36wQRk5r9cwoCWIfPw8fMI1UVF+Vomwo5l4cQokd9uK5FX+8dt/UFylYXHmxZWsM7fSBulZ03mC6V8b4YrBDed0XVU6aGdZoZhPavJyuutj7EmGv1072xJneLiUHTt+zJ8CYPfsiI/a37UZOdIv4Ze6QZLKA/vcq1Hn7WY+LIjIqaCfju7SdmsBaQcHhrtjy8w==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by IA1PR12MB8358.namprd12.prod.outlook.com
+ (2603:10b6:208:3fa::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Sun, 15 Nov
+ 2026 23:19:48 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0615.013; Sun, 15 Nov 2026
+ 23:19:48 +0000
+Date: Sun, 15 Nov 2026 19:19:46 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: David Matlack <dmatlack@google.com>
+Cc: Alex Mastro <amastro@fb.com>, dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev, kvm@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-pci@vger.kernel.org, Alex Williamson <alex@shazbot.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Josh Hilke <jrhilke@google.com>, Kevin Tian <kevin.tian@intel.com>,
+	Leon Romanovsky <leon@kernel.org>,
+	Logan Gunthorpe <logang@deltatee.com>, Matt Evans <mattev@meta.com>,
+	Matt Evans <matt@ozlabs.org>, Mina Almasry <almasrymina@google.com>,
+	Samiullah Khawaja <skhawaja@google.com>,
+	Shuah Khan <shuah@kernel.org>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vipin Sharma <vipinsh@google.com>
+Subject: Re: [RFC PATCH 0/7] vfio: selftests: Add peer-to-peer DMA selftest
+Message-ID: <20261115231946.GB1239159@nvidia.com>
+References: <20261111192411.4133780-1-dmatlack@google.com>
+ <avYjFfqr3T/U7lvn@devgpu015.cco6.facebook.com>
+ <DMTK99TDM9AM.SAM3Z4COP9WS@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DMTK99TDM9AM.SAM3Z4COP9WS@google.com>
+X-ClientProxiedBy: BLAPR03CA0018.namprd03.prod.outlook.com
+ (2603:10b6:208:32b::23) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,75 +110,81 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <20261116-molokai-smmu-v1-1-54b682313b66@yahoo.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzNDQ0Mz3dz8nPzsxEzd4tzcUl3T5ERDy9TElCSTtBQloJaCotS0zAqwcdG
- xEH5xaVJWanIJyAyl2loASejl2HAAAAA=
-X-Change-ID: 20261116-molokai-smmu-5ca19eadb4fd
-To: Rob Clark <robin.clark@oss.qualcomm.com>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
- Venkat Yadlapati <venkat.yadlapati@yahoo.com>
-X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794773982; l=1779;
- i=venkat.yadlapati@yahoo.com; s=20261023; h=from:subject:message-id;
- bh=tu+NFiw+fOcsWLYvR0WEdnLT33HysKPDUYnretNByDs=;
- b=usbyYu8k6ChN1bte4HvsGANsBt1ix37tDWesx4q+KT/zXgFn31cltG79xKwaZgpNHvZ8W++10
- DmrUBdISdqdDjCahETGzpqd0el2vERJN6CcIqrwg1/QQPkxdppHSk2G
-X-Developer-Key: i=venkat.yadlapati@yahoo.com; a=ed25519;
- pk=e8KStCtEMvUP1Se/riB/KVnDAQFEVR2Dw2PcuA8/eME=
-X-Endpoint-Received: by B4 Relay for venkat.yadlapati@yahoo.com/20261023
- with auth_id=1303
-X-Original-From: Venkat Yadlapati <venkat.yadlapati@yahoo.com>
-Reply-To: venkat.yadlapati@yahoo.com
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|IA1PR12MB8358:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4eddf9d5-5adb-4301-bf32-08df436ef103
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|7416014|376014|366016|1800799024|10067099003|4143699003|11063799006|56012099006|261026121527099003|261026140227099003|261028144727099003|261022105027099003|261021121427099003|261102123227099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	JhoFb36PtIVj6z9C5Z9MR2yO0VVQY4W8/nlnRoG3Hd6/YO4TthKII04UMCIhST/o6PhO6gh3qpj51r8hSFQNp/GcQNsCDSEzv1FoTenTq5GkYrK9m207tBqYZMqWouRzUiyQMzvW/FYtB+8fppaYsR0Lxde2bWHxy4m0v3wti0WTaqz0hXZAsJYmynQMGkEQwa5KH/w2c0p9EC2yQFjoviW8cJzyIq7KhAKfrFBJ/X7ANdeev7BKttLunVFkXEuLZNTtN1pCSmw72iKd2eIJ1FLLoVW26Tiwk9sQSwOnLiHYqP8DwIuPHPd9ZalineUvRZDVCNqxsMm9sY6gzHW+pS3Q1w2xAUO4IPTjHs0cWyaO9bMY0DVPoOTpM0/xInn/GlRgnHYHmlJ0PgR9a8NDBsiFZfbUhTVxZm73FtX09J+36HFccEmOYTdtED0oBThGncojGRponkI20gxkU6M/R8zKD6G1bXQsBxnaSxcNBVQB9o459uducknCD5pKt6Zb/nxmtpiUYk/nljWu+P4Pt4yHXj43zey4qZzFbYHp7TYFgs77RMH+KHO4aM/JVkLKqH19EcRQDOGKg/4BjrRiaNIFZvAog3cPtSVH5jc64z3WQjmmfoCPGdU7cOTltxJDpkn4/6ucPvUAlDIh9SMVxndq3b/y7lIYW/6DJuT7QJo=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(366016)(1800799024)(10067099003)(4143699003)(11063799006)(56012099006)(261026121527099003)(261026140227099003)(261028144727099003)(261022105027099003)(261021121427099003)(261102123227099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?jqEiX6U4/Xm4mu1KaGqLjqmancI01nlcuh7jGbAmM7zJzQpz56eFzE/CwL+/?=
+ =?us-ascii?Q?LXZvEl9xpN7wTRMAbxfzOwC5LoRT6lvLhujDCxev3CIOFFYnFMW5kahDgr7n?=
+ =?us-ascii?Q?gUpO6VrWnpyMzES2PjN3cqREqB9721J+g697M/bmU4cil0C5AQbBU4qvz4xh?=
+ =?us-ascii?Q?wRR2cAGNjzr1SXfFMh/ud3LPKasmIXzA2TzfZm8Z6CW7iKe871iCEM1aLxEL?=
+ =?us-ascii?Q?rmxIyTKRK4gvKa6XBhZigxjnP4GCrsiWv1FAKclQ8yr52FS5ByZvm7o2sxeh?=
+ =?us-ascii?Q?FJeOaEv57JhuR47oRa3iQpqJbt9TEPu2jD3jpwgEvtwfvL8QVUDmPbWRB7/Y?=
+ =?us-ascii?Q?LPTr+fr0X/pj9u7U7sca1uZHMqmS4W/8KUgaYhXsM56rhSTm5TtgnuH+zDH4?=
+ =?us-ascii?Q?XKyO9sbTqra+pC+re3zNPY/+nbu/iC9xwN2gc+xo2IcOS8s+u4XfuEB2UCww?=
+ =?us-ascii?Q?EMFUAOnTVynPTra2YizigW3t3SfWyi+idbDIZpP7bkyKsDQMJKqIC7OfABAy?=
+ =?us-ascii?Q?DaxkulFNa4bln11coaPHHjQmzCx/gA8z9eRxpJLqdath0YgQK9iZtcHWwVAv?=
+ =?us-ascii?Q?Ef1dfQRDGdwhsRVfIM4eoiNbT87B9Gsaq5j2kxxtw5OPa8eqenYM7HUqGBuh?=
+ =?us-ascii?Q?nZ3c/7kWMgZinKTBqwP4S2nAFhxOyPHpCtVcarmKyfzZb6rhkLjUVyJ2TPjM?=
+ =?us-ascii?Q?zoSw2Yk+Zi7PTXVlGhaCb8XsCPo6bPxQKJQjTrPxfJ5szSQq61Zug3PabaVc?=
+ =?us-ascii?Q?57MQ+EFcded415dFCGi8BD8F9RSljng2RO//3X7FhpTNevp5NGzS0lZj0v4+?=
+ =?us-ascii?Q?HksCl4McfHlCszIova1zrFP3wGzD03h/FChYRUhlWF+Nohj43hz/hhL29gSY?=
+ =?us-ascii?Q?dwV/Sd0tt7zU/IwOCOqhZYovwemyFxFr4kaqePHyXCt8pW0hLtcmL3LmyaxN?=
+ =?us-ascii?Q?muAWrCUEnQNCfVnvThx3ULfFpWU97z7G2VNYnDL1DKRTgZFtec8XMGootZaf?=
+ =?us-ascii?Q?/i/Re4muqiECYD3lBVKKrUnHzdXQblHNs43hB210+3TpLpp/jjxbZuXekB5Z?=
+ =?us-ascii?Q?x2pF3epAVZ2kwORSkg2l9mGg9FkP3JiiFQRMazZWU+Bpkt1NIoIL9HTna02l?=
+ =?us-ascii?Q?9rSnJBoJIV2Et0I4kuSGffDPXfAwNUt9Ie2vrPICW9Kt/6ea9XDV5prrLm/W?=
+ =?us-ascii?Q?OiW58OP+df8PmNZFV7XItDbeYs7AS/zZdOeCckRyzXjxyZRy516JvT9YZJqY?=
+ =?us-ascii?Q?WzysKlM0UJyp6RLNUFy6YRXBa6J4sz3V5bXBwRxvkXA34uRDDQ7JdMjKtPns?=
+ =?us-ascii?Q?N+cnQTY0zO+654ib8VFXvzOn7C9MbVXFcStjVA0Toqt1gV3FxQDcNdaQel2s?=
+ =?us-ascii?Q?PvibBwtkeCyJZmCN1qRB+PxK2Hq1meWpTQtrpFuFiITeXPlaZyWpGPq62m1y?=
+ =?us-ascii?Q?dXO3jmDpbrBjK1T7PXlbk3MAUmwZL88Vk+pzqcvJH+w7IGKnMRwZ8gbnyQyY?=
+ =?us-ascii?Q?IMnOqWleeompnUWMw+NAI7eRfbgrmL2vgGX9YQIDEOymfWqPd6ETyghYzN+O?=
+ =?us-ascii?Q?M5xGogtkhXBj0RAheE3C80btPJ3iGOkdlBxviIglOY27p1CmPMGAQUJ8eZer?=
+ =?us-ascii?Q?U3JvLVf1UwMsoTl7TMWo0DjBmB6CLLSNp8BhdJ0ti56XhlAeDTnCIDkYv3IA?=
+ =?us-ascii?Q?CaFhJrbwft8dSk8G/eJmx/uBJKDRJ4iG7qjP86nL1U8ZQRTH?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4eddf9d5-5adb-4301-bf32-08df436ef103
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2026 23:19:47.9915
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KsF86QSTiQr8xbwXdlEQZqAN7rPK08z2vrxIZK8Sl0lSReqlU1KMnqRx64EIksMu
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8358
 
-From: Venkat Yadlapati <venkat.yadlapati@yahoo.com>
+On Thu, Nov 12, 2026 at 01:47:03PM -0800, David Matlack wrote:
+> On Thu Nov 12, 2026 at 12:35 PM PST, Alex Mastro wrote:
+> > Hey David,
+> >
+> > On Wed, Nov 11, 2026 at 07:24:04PM +0000, David Matlack wrote:
+> >  
+> >>     Is requiring userspace to re-issue IOMMU_IOAS_MAP_FILE the expected
+> >>     uAPI behavior?
 
-The display subsystem on Kaanapali scans out the bootloader's splash
-screen through the application SMMU. Use an identity domain for it like
-on the other Qualcomm platforms, so the handover to the display driver
-does not cause faults.
+Yes. Even if we wanted to the locking is doesn't allow trying to do it
+automatically.
 
-An LLM was used to help write this commit message.
+> The way I designed the P2P selftest support requires 2 things:
+> 
+>  (A) initiator: A device that has a VFIO selftests driver.
+>  (B) target: A device that can provide a memory BAR (vfio_pci_find_mem_bar()).
+> 
+> So far I haven't found a single device that can do both. But you are
+> right that theoretically a single device could satisfy both
+> requirements.
 
-Signed-off-by: Venkat Yadlapati <venkat.yadlapati@yahoo.com>
----
-The display subsystem of Kaanapali, and of Molokai (SM8845) which reuses
-it, scans out the bootloader's splash screen through the application
-SMMU. Without the identity domain the handover to the display driver
-faults, like on the other Qualcomm platforms already in the table.
+mlx5 can do both
 
-Tested on the Motorola Signature (Molokai), where the display subsystem
-comes up through the application SMMU with it.
-
-I used an LLM (Claude) to help write this patch and its commit message.
-I reviewed it and tested the result on the device.
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 795e8ec7e8fa..0ee9a9cfdf8e 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -407,6 +407,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,adreno" },
- 	{ .compatible = "qcom,adreno-gmu" },
- 	{ .compatible = "qcom,glymur-mdss" },
-+	{ .compatible = "qcom,kaanapali-mdss" },
- 	{ .compatible = "qcom,mdp4" },
- 	{ .compatible = "qcom,mdss" },
- 	{ .compatible = "qcom,qcm2290-mdss" },
-
----
-base-commit: 2cf4be57b301ed2d7af82e70cff5dfd96894d8de
-change-id: 20261116-molokai-smmu-5ca19eadb4fd
-
-Best regards,
---  
-Venkat Yadlapati <venkat.yadlapati@yahoo.com>
-
-
+Jason
