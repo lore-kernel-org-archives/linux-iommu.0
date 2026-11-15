@@ -1,74 +1,92 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.72
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794724654;
-	b=wdVD5/Fuozt/jEjyDOraiw/KmJK5Ofyp3t/L7rGk2X+yyj0Ie8SZDw8Xz09fpfcOTmt0
-	 6EXnFBefSpwnqWqHqPKp53ga+uDHAvTOhg+tbR5GhtA41AmVL5j88xH4tz7/NU7ZTkEHI
-	 J7Q1gwB1ceGEC5B2dsdFSGk2XDWRsYKYSc7e5xVFv9lM1eRJKD5nxoH+pzSXYgJLC6ZnM
-	 nQdG3o6dPjUhKAbWHwcSRgJ7aDE6H4DK6tIdTrQTf+vLl42TVhpSbSz/yeDb0VFLWR46b
-	 yQcmxp1Cd33bVtzMNCfhK65LVVlV6wEPb4ZYX/e6+bX1bdEgF3fyIeBmfYr2B48Ro3Q==
+	t=1794731110;
+	b=rskUr1ZQ9imkZ7U/BqT3rcdw0eHxh4lQgqXLdf/iJLmWHq5Ei6LYjRTT+0dM9u1eXL1y
+	 dPsbDlt7q0FYIiQ4LaPzkGfatkhLheRIYJh/rv6xp3qONU1kEO85DW4Q9gTq4w6StWdSH
+	 0LjBLTAZZ8R/+3bo3nwpoFZi8B9kp2DCsspwu/8Bvy2YlyaZnqnXpxEFtfVFHpbqZMG/x
+	 SBypz89N4ztPGwjO4/vEZJw8kxBKwms77Wl6/1hh2jbaOPDEyZ0ziSnH2vHAiz9uO/RVi
+	 dJ8stXdSToCXZJAxqFpKor5K9vQw8y5nIy/l0ubVA03rGiJixWAfy1KXCc27DDNvA7A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794724654;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794731110;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
-	 Mime-Version:References:Message-ID:Subject:From:To:Cc:Content-Type;
-	bh=aE92BuA/q+u7mWs8kchTDkcjs1m/i8lsv1ezZ7OruqU=;
-	b=g2xvsGGaRf7z/r/0MesYjXyNRJ9bNynNxfSZgf2ej+RR6Cw3SJbYv82q9QU8rwzlBDh4
-	 /0WHjt/wpdItSXtdJd2+Os2x3Kk8+DR1jf0VxbiScsohZsAFLx4I+5f6lZxG3NfMspf6c
-	 61nVzSPitsShgaOHZcadfD3ot9Wd/ySNyuneSlt83LJkSluqidttTBBhXkUyktWs6kJcs
-	 oTHsioYyEqGA5rCn/kVJ+tAzLu+bFdaYdL9HiMU2wIFYFpBKZxo1zTfCawtDJoumfpeXt
-	 FittbhXLpsXU+TApXGToyD1nHNjNaJq6J7065i9oaFivtvmY4foI43dTT60I5bJJI/w==
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=wnoWZ39CWKlVGBavzBsrpwv3xdsKQNy7nRW5s5dEtYk=;
+	b=I4v9VqwsAUuj+z/eczT4DJ53p+NzWk2+zjYHqabnXEihGEVd1dm8KNp2Xqi+pr4MmZcl
+	 jOJolXFOHkHPQ4n+M1EC+/M6GMgs4tLfdpZ9fuMZjGGgAYv/bdtElscIiVbllKFRmj6OD
+	 S+dclHxnCmpWRU81uduVv5QCWhIjrQ9+cRWrGPOxdZZSu4Km1Wo6BaRhOwTQTTeDFrO5R
+	 l0frGPdSt+b920Qi+6cZS8k0c3msxNkEbz9pSqIIRpG+vI1c146OHSZY5qBeVC282BNyL
+	 K36OJ1ITN5q3QSkRM7VgO9Xm84D2bYiCRQBwQj2Edy5+qBtV5dyHmnujGL9MoOfZLig==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b="lfic/lB3";
-	arc=none smtp.remote-ip=209.85.218.72
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T1TsYx0F;
+	arc=none smtp.remote-ip=209.85.128.44
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BEA3606A32F
-	for <iommu@lists.linux.dev>; Sun, 15 Nov 2026 06:37:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1BEA3606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tarunsahu.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6ADC606A332
+	for <iommu@lists.linux.dev>; Sun, 15 Nov 2026 08:25:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E6ADC606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=lfic/lB3
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-c42888c50c4so127613966b.0
-        for <iommu@lists.linux.dev>; Sat, 14 Nov 2026 22:37:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=T1TsYx0F
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4a5177d78c7so27575435e9.2
+        for <iommu@lists.linux.dev>; Sun, 15 Nov 2026 00:25:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794724652; x=1795329452; darn=lists.linux.dev;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=aE92BuA/q+u7mWs8kchTDkcjs1m/i8lsv1ezZ7OruqU=;
-        b=lfic/lB32zga7USVCjmudfQwrO/kW9r41/zrmbRUMIvViMsr6q8bwchfXWZC4lDO0v
-         +TwVWPFxZ9HdVjkLdQQvQqlWSJhFYM8PuNC4M0tTimvqosuEzEi15vfx6HkY7VUHGyr0
-         Und6fsWrdW1W30H1uicsjXh2PBNw9xnPU7b0UbHv1miRizjX+BQ+IywKc3FVHnuo8NMK
-         oaJBqibJJy2PuJUElgTteoCwKgfiFie4E3Zy9twe9jjlBzrnsqrOjXnkCHlONZfamqFC
-         sjKUZq3DOQkFv/xnjMYIR0wP1At3FpT8LXSRK3vkAcFxFAj6VEhZG587SbKz2vcPL5qi
-         jzxw==
+        d=gmail.com; s=20260707; t=1794731108; x=1795335908; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=wnoWZ39CWKlVGBavzBsrpwv3xdsKQNy7nRW5s5dEtYk=;
+        b=T1TsYx0FHQ0s1luqR8vCgaQK8yniHdhtLRRN2ZEUV7eIQcxEq3qmkjhOgdVbcOKuzF
+         umqiY0wKq8Tj0+VeCqgpeHRMDzRfr5am6b/EqYbOMRpWCF+HDmBYMHSLNmPiHuReUVVd
+         eTb7zwQdh1NxqcvipcH3qxHQwPgb62XjNyX5ACQw9x2o/bhx633IG/SyA+dzsrZLeqsM
+         DtEykrRgoM37rOK0qxJ1XOmHKp7klLsPB79YbbEm2JUYPnTNj5VjUPbMc3t2ra225Dun
+         r8z2BZ8qU6d99d3UvmuygnXmsDE6V1AaxcFmy41NynI5qjAJGs5H9e5hqRnvFOMolImU
+         UPKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794724652; x=1795329452;
-        h=content-type:cc:to:from:subject:message-id:references:mime-version
-         :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20260707; t=1794731108; x=1795335908;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=aE92BuA/q+u7mWs8kchTDkcjs1m/i8lsv1ezZ7OruqU=;
-        b=muHhsDtKUNomPOaHO1jkdVbfJJllIdXpG8yidSnLMR5/Dl7CXibekSibBGXRGlK3cv
-         QDlc8PHEvYrwGLvfzQxdgR1lE3CTplQjzKUMdWqufZlo+ZSLiQzFPaVW8ZxPKWXdBLbT
-         MbTEfluIDoaWZxIcwGmKkdjetVywOxcQGeBoyIGnkNuiyIKKplmLZ535O7WRE2XSKy/n
-         /IZ44psTlTolIT0MK0jOaBpE4J7RGUkViCj7pGIjnYb6r3mHuNlpaH6fFBTQoWMFJnzd
-         GMzLOE61xZsgtgvqYHrGgPgqWyIHw1VShXpAZfek1bXLlZFjOX2rEHQ0jGQwHdw+5Mct
-         xmzw==
-X-Forwarded-Encrypted: i=1; AL+hErGq5v+fCuhWYqPO1TZz4vlKFiqVkZImKUJzO7PlCT2GXwVwcEB/qpM+QvnjTWJZ7V2EPrAqKw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9Eq/kNfWjrPhg3EBR/Sr08zpHIeTw5xzZ7zNvJCaL+3XcmzkG8
-	eFjj7zPF/wx6Qh1jRe/WNI6xqv/sdr/LBBDE+b6IhSOioJ4LoVxDqL3BUy7dXEwMFhaQLDMcjm7
-	d+C7lLrYGxJABPAR7TA==
-X-Received: from ejbge24.prod.google.com ([2002:a17:907:9098:b0:c46:7bd3:aa06])
- (user=tarunsahu job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:a714:b0:c42:5363:38dc with SMTP id a640c23a62f3a-c509637e20cmr533164966b.25.1794724652053;
- Sat, 14 Nov 2026 22:37:32 -0800 (PST)
-Date: Sun, 15 Nov 2026 06:37:31 +0000
-In-Reply-To: <DMROZB8DPEWD.W2BFC7JIBVZP@google.com>
+        bh=wnoWZ39CWKlVGBavzBsrpwv3xdsKQNy7nRW5s5dEtYk=;
+        b=ri8mdn++QD8OA442YY+NVLCLJOeQ6/BJtgOnDA3WtB9oK6dtiG+xYK3E9/gYU4Fp0r
+         22p6oyQkRfnefV47zUQLyLx1Yj7bYS1eOUU3HiGPF4kF1T1pSZJfhER6bT4Jq7eKsVjp
+         xHumGQFlyMPNPOJa4V7fQl008+xbmR74fTUQYqnQPHpfHFd/no52wDigOFe4Og9e9L8C
+         yW/2dO/7uQOaO7YGRu3hZwHMgpSW64OzYeqFazdRsfjmV3h5imdfyr5HOcfxpu50MNbi
+         H5n3AxTLE7DGwMU8WhjsAfIX7z9PJ9YorJsX/ljqqkRf5NYsJCccGjeqw+kz4I8pdhzg
+         8SOg==
+X-Forwarded-Encrypted: i=1; AL+hErEBcNFo/Yww0KHV8iMn/QsOyZY5EynH3jgdU+GN6XeNQMB+0YWfoiJiA3a1pwnnP7hp72HiJA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+Egmsnvr0350+pNimXJKnHPJEvgeJRcJ39TCnzCu+UMBcakrJY
+	y0ml33xtC95A61U+QQIGPYxbmbH/h6lcKf6hsc5aZTe2peHg9Pi5yk02
+X-Gm-Gg: AYBFou3AyS3BSLVPn3LmoPv4XWDBbJfKbb0GmCG2mkBcpQljZNdsIjQyatSAbHh+6yt
+	DQ+iGlmoboYl7xHtvGPnLxYOdSZVNbKeAGIv2CgSb/hlm7s6Vjhac4PZRjQM/ghOziD72i4JOuS
+	C/jzdV6JS7GGbNPLGSJXcvsKAtO9zX6es9yN5NWXfYyRNfUFGJR6dVsVfrCDAOA0YiWwXCzAZFm
+	FQyIjuGZ33IUPJEwSdK+DCAbK+OXckkt8HxTMIkWwNvhHbQCzVQVXbQd25sJix+lb2EoNC7wM+H
+	qUxYed5CvCP8KVafliWEPC4C9uAUV/uI1ETo/x51s2i9TIkCzwWYrXDFfUg3nK5Z21ms3u7tNP1
+	BCq77AfX2oXiVUaUho+DHPP9CnNu+i6e2VPby96OcdqW4YfxYwygQ6nsErXvYIZKY8HzGwuQXmJ
+	7EttLG9WI2l19js4NZAcww2NcfEAAglkDSGctYh7HFkwxnEzmmvBgqLFvP9FqZU4YH/XV4ZOR4y
+	xziQzAdmU7Bse0NrGfxErzwLvHnd6H/ozXwFeBkdy7sr8IguLtkuWIwbegeNsPHIEzfwZfLhm9v
+	wZe1QJKFYJ14vmel/xs6v4YBEtEQr94ILWdc0Q==
+X-Received: by 2002:a05:600c:3486:b0:4a2:c2b:a91b with SMTP id 5b1f17b1804b1-4bb55a6a828mr164742915e9.10.1794731107999;
+        Sun, 15 Nov 2026 00:25:07 -0800 (PST)
+Received: from LAPTOP-AVI.lan ([2a06:c701:474b:1700:dc0a:bc51:e26f:5cf8])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb4e28d0b2sm236796415e9.7.2026.11.15.00.25.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2026 00:25:07 -0800 (PST)
+From: Avi Weiss <thnkslprpt@gmail.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Anthony Iliopoulos <ailiop@suse.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] dma-debug: Avoid uninitialized hash traversal in mapping dumps
+Date: Sun, 15 Nov 2026 10:25:06 +0200
+Message-ID: <20261115082505.2012573-2-thnkslprpt@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -77,78 +95,57 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0
-References: <20261110050202.529473-1-tarunsahu@google.com> <20261110050202.529473-3-tarunsahu@google.com>
- <DMROZB8DPEWD.W2BFC7JIBVZP@google.com>
-Message-ID: <9huzjymepplg.fsf@tarunix.c.googlers.com>
-Subject: Re: [PATCH v4 02/19] kho: block: Record the entry size in the block header
-From: tarunsahu@google.com
-To: David Matlack <dmatlack@google.com>, Pasha Tatashin <pasha.tatashin@soleen.com>, 
-	Mike Rapoport <rppt@kernel.org>, robin.murphy@arm.com, maz@kernel.org, will@kernel.org, 
-	Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com, loganodell@google.com, 
-	arnd@arndb.de, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
-	Bjorn Helgaas <bhelgaas@google.com>, oupton@kernel.org, alex@shazbot.org, 
-	gle.com@google.com, pbonzini@redhat.com, 
-	Andrew Morton <akpm@linux-foundation.org>, kevin.tian@intel.com, joro@8bytes.org
-Cc: kvmarm@lists.linux.dev, linux-pci@vger.kernel.org, 
-	Pratyush Yadav <pratyush@kernel.org>, kexec@lists.infradead.org, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	skhawaja@google.com, sagis@google.com, linux-arch@vger.kernel.org, 
-	linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-"David Matlack" <dmatlack@google.com> writes:
+Booting with dma_debug=off causes dma_debug_init() to return before
+initializing the hash buckets. The debugfs dump file is registered
+independently, so reading it traverses an uninitialized list and
+triggers a NULL pointer dereference in dump_show(). The
+debug_dma_dump_mappings() helper has the same unchecked traversal.
 
-> On Tue Nov 10, 2026 at 5:01 AM UTC, Tarun Sahu wrote:
->> Add an entry_size field to struct kho_block_header_ser. On the outgoing
->> side, record bs->entry_size into every block header during allocation.
->> During restoration, derive the entry stride directly from the block
->> header instead of relying on caller-supplied dimensions. The
->> kho_block_set_init() interface remains unchanged. A zero entry size,
->
-> Since the entry size now comes from the block headers, incoming block
-> sets should not take an entry size at all. I pointed this out on the
-> PCI patch (16/19) as well. As is, every incoming path still calls
-> kho_block_set_init() with this kernel's (outgoing) entry size, which
-> kho_block_set_restore() then silently overwrites. That makes the
-> callers (e.g. pci_flb_retrieve() and the LUO session/file restore
-> paths) read as if they iterate incoming entries with the outgoing entry
-> size. kho_block_set_restore() should initialize the block set itself
-> from the incoming block headers, and the incoming paths should drop the
-> kho_block_set_init() call.
->
-I agree, responded to the PCI 16/19 patch.
+Skip both dump paths until dma_debug_initialized is set. Check the
+initialization state rather than global_disable so that mappings
+recorded before DMA debugging disables itself at runtime remain
+available.
 
-> Please also add an accessor for the entry size, e.g.
-> kho_block_set_entry_size(). Users of the block set need it to check that
-> incoming entries are large enough for the fields they read, and that
-> the fields of a feature are within the entry.
+With CONFIG_DMA_API_DEBUG=y and CONFIG_DEBUG_FS=y, reading the dump
+with dma_debug=off triggers an oops in the unpatched kernel. The
+patched kernel returns an empty dump, while dumping with DMA debugging
+enabled still returns mapping information.
 
-Sure, Will update it.
+Fixes: 173735c346c4 ("dma-debug: fix debugfs initialization order")
+Signed-off-by: Avi Weiss <thnkslprpt@gmail.com>
+---
+ kernel/dma/debug.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-> [...]
->
->> + * Each block header also records the size of its entries. A newer kernel may
->> + * append fields to an entry, so the kernel that writes a block and the kernel
->> + * that reads it can use different entry sizes. The reader steps through the
->> + * entries with the recorded size, so every entry is found, and it does not read
->> + * beyond the recorded size of an entry.
->
-> KHO blocks can't guarantee the last part. The iterator returns a void *
-> that the caller casts to its own struct, so it is up to the caller to
-> not read fields beyond the entry size. Please document that callers must
-> check the entry size before accessing fields that may not be present.
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 36c1f7cbb2ae..2f487246d8ce 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -543,6 +543,9 @@ void debug_dma_dump_mappings(struct device *dev)
+ 	int idx;
+ 	phys_addr_t cln;
+ 
++	if (!dma_debug_initialized)
++		return;
++
+ 	for (idx = 0; idx < HASH_SIZE; idx++) {
+ 		struct hash_bucket *bucket = &dma_entry_hash[idx];
+ 		struct dma_debug_entry *entry;
+@@ -576,6 +579,9 @@ static int dump_show(struct seq_file *seq, void *v)
+ 	int idx;
+ 	phys_addr_t cln;
+ 
++	if (!dma_debug_initialized)
++		return 0;
++
+ 	for (idx = 0; idx < HASH_SIZE; idx++) {
+ 		struct hash_bucket *bucket = &dma_entry_hash[idx];
+ 		struct dma_debug_entry *entry;
 
-Yes, I meant the same thing. by having a check on entry_size reader must
-prevent itself to read beyong the provded entry_size. I update the
-correct the documentation.
+base-commit: 97d73c8251226cf27cc6656b4c542869bb8c69fa
+-- 
+2.43.0
 
-Also, I realize tha, after checking the base fields using offsetofend,
-for any following new feature fields, a entry_size should also be
-compared against the readers offsetofend till this feature field for
-required fields. Incase reader does not have that field and
-kho_ser_validate passes, that means that field certainly is optional.
-
-I can add this also part of the documentation.
-
-~Tarun
