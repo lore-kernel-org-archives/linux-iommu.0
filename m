@@ -1,59 +1,66 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.133
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.135
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794800361;
-	b=GyDrxC8hHaw0p40t69p6ahL/ifpsnqVkQgZwV42uDFvJ4C6hMJPSQNZ1sCpAF9OkDmWX
-	 2l/0a0winUt4HRYJI/IqLBp6QcFQ9PXGBhwXpXpxluvDO2gtZNstHqHuFE1lTghQMS++V
-	 ERNHsbFxn6cFWswEIwwTKhUDqNkpUncPvsENuWPGnNh+wshFje5BIFxWqOI3XwBuF8uJG
-	 GTDIE+Lif5VG3WrXYKd2l+f2AcSChlXvQpTDGre3jdVSZiJ+bRd+h3wxb15t6dz4UJYIl
-	 MBP83ezHpJypqKVuCjywbaGMxKWmRhlZiHEXKhRino9r/HIzEMGNeOf3Add6DF3OVWQ==
+	t=1794800379;
+	b=HqVV+bFuXuRIs05L+s3yQBWOityl9vvOue9kE1MWs8OhHn6eREkTJhDwqxDfb1LoCyf6
+	 4jfWPcX67S1pEhXky/5iE2Y8+0DxE5Zd1LXdg0Jjj7c0aBeJGSapXNMI+WMPzhDwzWZ40
+	 f2Dbk5dZf9Dh23TtZ7Pj6YG2Pp9rR4ua+ZRvNZwArmZzhG5D8oLm+ahNpUHO4GX0FoUA/
+	 PNLlEQ1WPpiHXHvUKiuuRE2t9Sul9mcZ2lE1MASmABn2saUbo2CvgUUpiig+9hd3FyrjY
+	 xM55ZlqgUQv98zmdnYdLPLLvNZEhOzequfktPfhS/ZDc0wYoqGsvnU4hvvDdkeBX8TQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794800361;
-	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794800379;
+	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
+	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
+	 To:Cc:Subject:Date:Message-ID:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=W1vdO8a9mxhEayuDDyrm76yluN+B8zC339a6nO+fPrw=;
-	b=yvTBao/wC9E21Jcl7l4ZYMtI0Ts71jFqTIOjcp2Bi/IpSBhTk/yA2syK2t40hyCA+IGV
-	 UdmqbRAHvYGTLVEOBjd6omQAW4xfE9afrn/p5OtSCK7t92mbpVue3FtwhjB+AW5p97lJw
-	 LLvJgzsPmF9y0Qwxk4H5FX83q7udZAyWhDqOXo+wCKlQsFU256WMuKHhpajddTXK5ehC2
-	 XIBDemNq2BoZcOJTKUzhoett+/dK+l/LDmetKZI3N7MTUXf2Si5BJVFrQWjB2rITHmzmP
-	 eZyYKCewXST437Q0s3kndo77PB7ELJVNrWxoBIXAmwaQ0loNALHLgM3p4zXJ046/G6w==
+	bh=a9sgY1wDyH66YNK2sLW2XkmwV0xTgSVD7ewg5AAoqtk=;
+	b=fqrw0h6FE2WWQvY/VGGmgbutGffhQv2kMybfnEb8lrH0BdQZjc7iW7ML0OsBLUj1jJu9
+	 zaIqxrTwWRezkt1wLzaGpS9WPIVfAk8Y+xfOyuNQNJCzsvFjCgSpCPJBKBrMvdNAkgA0h
+	 ELTPpHUpk5L6DViYcyQMYyZuX+r9sZJZmAJkyvapgwJ+StjZfxizBpyII1gkN/0WiOHH7
+	 FK8huoedzUdAeCJ6D1THysSKCWtNkqgjryxSluvQp0jq5fkzN1qW82ToeAbpLs0NZkdlA
+	 n6Un9exAPElelo1/uRqubQrCwiGTpr2zgt4fACreIBcgVwrNiDVOi8LSwG0hcxdG1vw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.alibaba.com;
-	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oKTvF63q;
-	arc=none smtp.remote-ip=115.124.30.133
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA099606A31F
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 03:39:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EA099606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	dmarc=pass header.from=cmss.chinamobile.com;
+	spf=pass smtp.mailfrom=cmss.chinamobile.com;
+	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=meTtckta;
+	arc=none smtp.remote-ip=111.22.67.135
+Received: from cmccmta2.chinamobile.com (cmccmta2.chinamobile.com [111.22.67.135])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F163606A31C
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 03:39:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8F163606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oKTvF63q
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1794800352; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=W1vdO8a9mxhEayuDDyrm76yluN+B8zC339a6nO+fPrw=;
-	b=oKTvF63qcXcNcA97HrmQHZO1G87B1vrXhZH9FTaOS2uj1jfXOnjluFsMQX49BEbgJRTgfkt9LDH9E+fr/oa/mtcnX8yjbStoxT5A4hvm9U3o8H+ZyFKABf7YfBLQ8OwcKb7+tBLM7pKd42kne6f8oifAVZX0f34mdL0RndDjtQ4=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0XElQojT_1794800342;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XElQojT_1794800342 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 16 Nov 2026 11:39:11 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: joro@8bytes.org,
-	vasant.hegde@amd.com,
-	suravee.suthikulpanit@amd.com,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/amd: Do not clear unobserved log overflow status bits
-Date: Mon, 16 Nov 2026 11:39:02 +0800
-Message-ID: <20261116033902.3277875-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
+	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=meTtckta
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=cmss.chinamobile.com; s=default; l=0;
+	h=from:subject:message-id:to:cc:mime-version;
+	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
+	b=meTtckta5LEDNUUu7pe/VZYZUdmdBPNgl9BfBapZXzEET8xILaDqpLVCBhgHM4bo7FvY+rTP5RpSQ
+	 odo+IOhkVuQYlF6JRg8SBNV/nS1BjdrM6qWy/Fc6Dh460L51+MLj9kALRgreRBZa1AaRu+IKuhHZ61
+	 hWEujT4m5TuCjJl8=
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
+	by rmmx-syy-dmz-app07-12007 (RichMail) with SMTP id 2ee76afa7af770a-fc3e2;
+	Mon, 16 Nov 2026 11:39:35 +0800 (CST)
+X-RM-TRANSID:2ee76afa7af770a-fc3e2
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG:00000000
+Received:from [25.255.2.225] (unknown[10.55.1.70])
+	by rmsmtp-syy-appsvr01-12001 (RichMail) with SMTP id 2ee16afa7af5540-7b4d5;
+	Mon, 16 Nov 2026 11:39:35 +0800 (CST)
+X-RM-TRANSID:2ee16afa7af5540-7b4d5
+From: Jiahao Xu <xujiahao@cmss.chinamobile.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>, syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com,
+	Jiahao Xu <xujiahao@cmss.chinamobile.com>
+Subject: Re: [PATCH] iommufd: reject mapping an iommufd file into an IOAS
+Date: Mon, 16 Nov 2026 11:38:08 +0800
+Message-ID: <20261116113808.560717-1-xujiahao@cmss.chinamobile.com>
+In-Reply-To: <20261114004101.GE2532299@ziepe.ca>
+References: <20261112105945.285526-1-xujiahao@cmss.chinamobile.com> <20261114004101.GE2532299@ziepe.ca>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -65,60 +72,34 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-amd_iommu_handle_irq() clears the interrupt status with an unconditional
-writel(mask, MMIO_STATUS_OFFSET), where mask is int_mask | overflow_mask.
-The log overflow status bits (GALOverflow, EventOverflow, PprOverflow)
-are RW1C and, per the AMD IOMMU spec, transitioning them from 0 to 1 does
-not itself generate an interrupt; they can only be observed by an IRQ
-round triggered by the corresponding log-interrupt bit.
+Agreed -- the blocklist is the wrong direction.  A vfio device fd bound to
+this iommufd holds an iommufd_ctx reference of its own, so it reaches the
+same cycle, and any other fd type that can own an iommufd_ctx would too.
 
-If hardware sets an overflow bit after the status register is sampled at
-the top of the loop but before the unconditional writel(), that write
-clears the freshly-set bit while the stale sampled status does not
-contain it, so overflow_handler() is skipped for an overflow that really
-happened. For the GA log this is fatal: amd_iommu_restart_ga_log() is the
-only recovery path, and per spec section 2.7.4 logging stays halted until
-GALogEn is toggled. A bare W1C of GALOverflow is not part of the
-documented recovery, so the GA log stays halted, no further entries are
-written, GAInt never re-asserts and the GA log interrupt line goes
-permanently silent, losing all AVIC non-running vCPU wakeups on that
-IOMMU.
+The reversal looks doable with what mm already enforces.  memfd_pin_folios()
+accepts only these two kinds of file:
 
-Clear only the bits actually observed this round by writing status & mask
-instead of mask. An overflow bit set concurrently is then left asserted
-and is picked up by the existing ERBT1312 status read-back at the bottom
-of the loop, which re-enters the loop and runs overflow_handler().
+	if (!shmem_file(memfd) && !is_file_hugepages(memfd))
+		return -EINVAL;
 
-Fixes: 2379f3485239 ("iommu/amd: Refactor IOMMU interrupt handling logic for Event, PPR, and GA logs")
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
----
- drivers/iommu/amd/iommu.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+and both predicates are inline helpers, so iopt_map_file_pages() can apply
+the same test before the reference is taken:
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index d0d55c93a480..39254671b924 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1168,8 +1168,17 @@ static void amd_iommu_handle_irq(void *data, const char *evt_type,
- 	u32 mask = int_mask | overflow_mask;
- 
- 	while (status & mask) {
--		/* Enable interrupt sources again */
--		writel(mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
-+		/*
-+		 * Clear only the status bits observed in this round.  The log
-+		 * overflow bits (GALOverflow/EventOverflow/PprOverflow) are RW1C
-+		 * and do not raise an interrupt on their own; clearing them
-+		 * unconditionally here would drop an overflow that hardware set
-+		 * between the readl() above and this write, without ever running
-+		 * overflow_handler().  Leaving such a bit asserted lets the
-+		 * existing ERBT1312 read-back below re-observe it and re-enter
-+		 * the loop so overflow_handler() runs.
-+		 */
-+		writel(status & mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
- 
- 		if (int_handler) {
- 			pr_devel("Processing IOMMU (ivhd%d) %s Log\n",
--- 
-2.43.7
+	if (!shmem_file(file) && !is_file_hugepages(file)) {
+		fput(file);
+		return -EINVAL;
+	}
+
+with <linux/shmem_fs.h> and <linux/hugetlb.h> added to io_pagetable.c.
+With that in place iopt_pages can only ever hold exactly the two kinds of
+file memfd_pin_folios() is able to pin, every fd that owns an iommufd_ctx
+(iommufd itself, vfio, ...) is rejected before iopt_alloc_file_pages()
+runs get_file(), and the dma-buf case stays on its own branch untouched.
+
+That is one file and about six added lines, and it makes the
+iommufd_ctx_from_file() check in what I sent unnecessary.
+
+Shall I send v2 in that form, or would you rather see the validation
+somewhere else?
+
 
