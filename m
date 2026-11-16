@@ -1,71 +1,62 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=51.159.188.251
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.93
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794835742;
-	b=hoPZnjGzxKOpGnUF991zVI6kdzxdg4W0iwyqc41/SaOB3wNhJ1JkqjEoqi/oFV+WrGO8
-	 +fQftAA5JTv+vASN2lV/fsLRL4g8LYq8CBxSj8iMFjY1R9T4eYdHKKl4STp5Gz9oEPvnz
-	 w9dMysws3h//d/X8iVW89QoeMp+XUKx8AXUWUdjjXmaROaYakn92YoFsstLZYaS1saWz3
-	 xwoyjwc1KsqwzboRKWVPrQDlWZlcNGD2fQgj8xCWIVvEq9RDaZ7Fdk4c/TThd2rb4Z9y4
-	 23HQ/raGDr08wYf9jPtqTVHw9lfDvJl0rJBbDWbeL5iaRzNUu14jM04I35JEza6aYRQ==
+	t=1794836053;
+	b=H4Sfd2tt+oPacJmM3XmzelXWA/jbGNQ/SUe6BWQTk6FNs9xSSWnh1LNCwImcNdMLnAte
+	 FPOa5ZWFSsqJ/SAbC7GXTYTbcD6djESMAobwxRQyuZPCrtQ89/t7ef8wHVNEEOKhFUj/r
+	 GZJCk+QdU+UpACFr+uaIvW/c6nIRE0XsPe9SQPSCVWrDxgdEFOVpWp2V+hL94hsS02C6R
+	 LNpDhkQQk26IM9YVmBVPn4G1Zb5RKbowbidtl8SCsqcxGomSM+5IW5uegL5B5Vry3DbGg
+	 d/MB4mc25mdAuzjcuusEJd0sAcN7+db/2xUO/GFkl/FsyautGJsTkciupd6c9ahCsmA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794835742;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To:X-AntiAbuse:X-AntiAbuse:
-	 X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:X-Get-Message-Sender-Via:
-	 X-Authenticated-Sender:X-Source:X-Source-Args:X-Source-Dir;
-	bh=uz1Gm9A0XmdWVhMUHrTk33lNXNmGWV8HEH3nc+Vkj8Y=;
-	b=RHbXywQwWxoY4E3xr7YcLKJQUAjYfA0f5CUN9VuQuZ+H8n8c7erMi9XHlMUgx7Lt6jRp
-	 /R/gw3KF0he415ktmqXdKObmoob4jO62O6Zes9qYmcGi+mjpqFKY9Ure7SSO4hIRYCuNU
-	 CTbknkwnBhbADKhUeYXTsgW/lvCZxu9FSWTEOZb3ygke9XZtE2NukMAm1F0FYJ5HjM47u
-	 NyYjf+/py0fBOWySpMlvokcfWNJzoCUb7Q6Yyw97JY7kePnvrDsPdatAJiWffXFx8Q+aY
-	 XH4+CFyvhBUhZzjREdj+6uIJJmov5zDFKsx3TvG46bcp9tUQatHb+OJ31y4zJYHdweQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794836053;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:Received:X-Forwarded-Encrypted:
+	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
+	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
+	 Subject:To:Cc:Content-Type;
+	bh=kFki2hBsnHrC0juVnTO+KTiVDm5TzD8rtd8Do1S8nSI=;
+	b=Xx7YP3Hz7VsywIVqzpE0YfwlF0ZF7WcPz8qKf4MrSM5tWS+GnORvVHg11qwSJX71nKTD
+	 gfkmOaxM+fhN6qE7+Zx5w7cs3bFX2ltuMtZHMMxIFXFzX6UByIdDMouXvqL16/VE45G+9
+	 vjd5iIMeSnC9JKyilVuYJOFLMWaCyJ1j3+sl9aGMzYgN6Xe67d6v24q6dSGk/9P+HmOEK
+	 DOXGZTWjOdO80j23p5kEXQyswuI8np3yxhdqn1//NEsXph3QrJA2/j7zOJbl/7zN3bq6i
+	 rb1XJ++8RQ7UEH1zMIBO3fzq5dsMt9dj5KqLZmS450m0HxNqIg8BsNpGmf4Waxqea7A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.cyber.gouv.fr;
-	spf=pass smtp.mailfrom=oss.cyber.gouv.fr;
-	dkim=pass header.d=oss.cyber.gouv.fr header.i=@oss.cyber.gouv.fr header.a=rsa-sha256 header.s=default header.b="jcG/ZE9b";
-	arc=none smtp.remote-ip=51.159.188.251
-Received: from oss.cyber.gouv.fr (oss.cyber.gouv.fr [51.159.188.251])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=pdewimAB;
+	arc=none smtp.remote-ip=91.218.175.93
+Received: from mta0.migadu.com (out-93.mta0.migadu.com [91.218.175.93])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D242A606A329
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:29:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D242A606A329
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.cyber.gouv.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.cyber.gouv.fr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814AB606A31C
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:34:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 814AB606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=oss.cyber.gouv.fr header.i=@oss.cyber.gouv.fr header.a=rsa-sha256 header.s=default header.b=jcG/ZE9b
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=oss.cyber.gouv.fr; s=default; h=In-Reply-To:Content-Transfer-Encoding:
-	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-	Reply-To:Sender:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=uz1Gm9A0XmdWVhMUHrTk33lNXNmGWV8HEH3nc+Vkj8Y=; b=jcG/ZE9be7wxqnb+hjusfCFcQa
-	VkHKRP190nzrNWv1zQNgwt4ivNFACfEsPCQHH3GWpFCNFzSb7fEqxhIJi4JapiNoB0AQAq33Bk/c2
-	eKSJ0iN5+Ut4bZnvN4SVNdujch+9kU9MuhFRCqTzqWuaUwSEvzCAacdxn0UPypl4tW1Ikcdbryd1e
-	t+BT+kBu2OMImSN+sO1GshRrGekhBBsjKDEk4v8BpIOXWs3P1fU/6dXCwttJC2kyQ4eXY6j/Hsk9C
-	xYNARwYMiBNXjMzFSnVYa2xD9Ybyxiihw1lMSBa97c9ZhUJRC6k0N9uDn5lvOGDjxNTjMIRK6XuSQ
-	w+xkE45w==;
-Received: from laubervilliers-658-1-215-187.w90-63.abo.wanadoo.fr ([90.63.246.187]:46593 helo=archlinux)
-	by pf-012.whm.fr-par.scw.cloud with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <nicolas.bouchinet@oss.cyber.gouv.fr>)
-	id 1xSwlY-00000009cTC-2n36;
-	Mon, 16 Nov 2026 14:28:59 +0100
-Date: Mon, 16 Nov 2026 14:28:55 +0100
-From: Nicolas Bouchinet <nicolas.bouchinet@oss.cyber.gouv.fr>
-To: Mario Limonciello <superm1@kernel.org>
-Cc: Xiu Jianfeng <xiujianfeng@huawei.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Moore <paul@paul-moore.com>, 
-	James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: Re: [PATCH 0/2] lockdown: Prevent booting with lockdown enabled but
- IOMMU disabled
-Message-ID: <avr31i6M5PqKk_Vf@archlinux>
-References: <20261102-lockdown-iommu-v1-0-00f3c2be4c9f@kernel.org>
- <44ac3423-0a51-4562-816a-fea881511afa@huawei.com>
- <a444421f-178b-49be-98b7-d34dfb147604@kernel.org>
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=pdewimAB
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=kFki2hBsnHrC0juVnTO+KTiVDm5TzD8rtd8Do1S8nSI=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1794836049; v=1; x=1795440849;
+ b=pdewimABnWkMGUXhlckxwnNf9Ny54CCEZJSrvdWYdHfm3D6mcjBfbFiw2mE3bwtVRKUfFgKt
+ PuND1hROCkvQIvGHfKE90fuKoPqPOqGZRkaN+ZbZc40GiA6nccjMmEryP6pex3gm5ELC57/9Ech
+ Hwz+n4w4sRBantU3vFGpNmSU=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id a576b34fa0ff935d;
+	Mon, 16 Nov 2026 13:34:09 +0000
+X-Mizu-Trace-ID: a576b34fa0ff935d
+X-Migadu-Flow: FLOW_OUT
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5c14bc5a743so10050e87.0
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 05:34:09 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AL+hErGyf/PQYlixBlIoJotJbwaAwSWGS0oXYHNwqLiw/xnLxeZqSHfSAc9cF45cBWU2Dmek2xHy5A==@lists.linux.dev
+X-Gm-Message-State: APuU4Z93vPWvwLeMbwDYy/xkfCvvm/4mKeX5WOfeqGuv1OdsULxH5XV4
+	HphpzeiWAX1Xq1umQkfWTIZ+unCS82UWItoTchnv0OsKYJOGI6pG59VB0n4lbmg/UN+zreNa0h6
+	e2J+mULYb91nYrc5z+2rTQ8681LEr+Ot8GuM/KrnO
+X-Received: by 2002:a05:6512:3087:b0:5bf:b994:6598 with SMTP id
+ 2adb3069b0e04-5c17d98271emr226475e87.6.1794836047954; Mon, 16 Nov 2026
+ 05:34:07 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,224 +66,64 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a444421f-178b-49be-98b7-d34dfb147604@kernel.org>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - pf-012.whm.fr-par.scw.cloud
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - oss.cyber.gouv.fr
-X-Get-Message-Sender-Via: pf-012.whm.fr-par.scw.cloud: authenticated_id: nicolas.bouchinet@oss.cyber.gouv.fr
-X-Authenticated-Sender: pf-012.whm.fr-par.scw.cloud: nicolas.bouchinet@oss.cyber.gouv.fr
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+References: <20261116091137.94252-1-aneesh.kumar@kernel.org> <20261116091137.94252-3-aneesh.kumar@kernel.org>
+In-Reply-To: <20261116091137.94252-3-aneesh.kumar@kernel.org>
+From: Fuad Tabba <fuad.tabba@linux.dev>
+Date: Mon, 16 Nov 2026 13:33:31 +0000
+X-Gmail-Original-Message-ID: <CA+EHjTw7QzzkQYKV3jyvW5mqZQMenTfm=kus9i87tYqACDOv0Q@mail.gmail.com>
+X-Gm-Features: AclHuK93q6K13zN84KswjEKi9cVQgC-Cy80dn3a2peCMzM1qEee3TapGEGzaKvg
+Message-ID: <CA+EHjTw7QzzkQYKV3jyvW5mqZQMenTfm=kus9i87tYqACDOv0Q@mail.gmail.com>
+Subject: Re: [PATCH v10 02/13] mm: Zero memory during shared memory transitions
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Cc: linux-coco@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>, 
+	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>, 
+	Pasha Tatashin <pasha.tatashin@soleen.com>, Pratyush Yadav <pratyush@kernel.org>, 
+	Catalin Marinas <catalin.marinas@arm.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, Marc Zyngier <maz@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Steven Price <steven.price@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
+	Suzuki K Poulose <suzuki.poulose@arm.com>, Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>, 
+	"T.J. Mercier" <tjmercier@google.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	Christophe Leroy <chleroy@kernel.org>, Ritesh Harjani <ritesh.list@gmail.com>, 
+	Shrikanth Hegde <sshegde@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, 
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, 
+	Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>, 
+	Rick Edgecombe <rick.p.edgecombe@intel.com>, "K . Y . Srinivasan" <kys@microsoft.com>, 
+	Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
+	Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Vitaly Kuznetsov <vkuznets@redhat.com>, 
+	Andy Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>, dri-devel@lists.freedesktop.org, 
+	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, 
+	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev, 
+	Vincent Donnefort <vdonnefort@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Mario,
+Hi Aneesh,
 
-Thanks for your interrest in Lockdown.
+On Mon, 16 Nov 2026 at 09:12, Aneesh Kumar K.V (Arm)
+<aneesh.kumar@kernel.org> wrote:
+[...]
+> Keep allocations on platforms without memory encryption on the ordinary page
+> allocator path so the original GFP constraints, including __GFP_ZERO, remain
+> intact. Remove post-transition memset() calls that are now redundant and
+> explicitly clear allocations on paths where no transition occurs.
+>
+> This intentionally makes every private-to-shared transition destructive;
+> callers can no longer use set_memory_decrypted() to preserve existing contents.
 
-On Thu, Nov 12, 2026 at 01:27:50PM -0600, Mario Limonciello wrote:
-> On 11/11/26 01:30, Xiu Jianfeng wrote:
-> > On 11/2/2026 10:00 PM, Mario Limonciello (AMD) wrote:
-> > > Lockdown is a kernel LSM that restricts access to sensitive kernel
-> > > resources (e.g. /dev/mem, kernel modules, perf, tracing, kprobes,
-> > > BPF access to kernel memory). However, without IOMMU, any PCI/PCIe
-> > > device can perform DMA to arbitrary physical memory, effectively
-> > > bypassing all lockdown protections.
-> > > 
-> > > A malicious or compromised device can:
-> > >    - Read kernel memory directly (encryption keys, credentials, secrets)
-> > >    - Write to kernel memory directly (code patches, rootkits, backdoors)
-> > >    - Circumvent all lockdown LSM checks (which run inside the kernel)
-> > > 
-> > 
-> > Hi Mario,
-> > 
-> > Thanks for your contribution.
-> > 
-> > Let me first make my position clear: I'm not questioning the motivation
-> > behind this series -- "without an IOMMU, PCI/PCIe devices can DMA to
-> > arbitrary physical memory" is a real and legitimate concern. What I'd
-> > like to raise for discussion is: whether this class of problem should be
-> > addressed by lockdown in the first place. I'm honestly doubtful, so I'd
-> > very much welcome other people's views.
-> > 
-> > My doubt comes from a mismatch between the threat this series is trying
-> > to fix and the threat model lockdown was built around. Lockdown is, by
-> > design, a way to protect the boundary between UID 0 and the kernel: it
-> > came from the UEFI Secure Boot work, and it only limits the ways
-> > software can reach the kernel -- /dev/mem, module loading, kexec, device
-> > access via iopl/MSR/ACPI, and so on. The attacker it thinks about is a
-> > privileged user (root) on the system. The problem in this series,
-> > however, is about a malicious or bad hardware device, whose attack path
-> > lives at the bus/hardware layer rather than in the software access paths
-> > lockdown protects. To me, that looks like a different threat class with
-> 
-> I do agree with you; this is a different type of threat model that's being
-> addressed.
-> 
-> > a different owner.
-> 
-> The problem I see is that in today's day it's incredibly easy to hotplug an
-> external PCIe device and not "realize" that it's malicious.  For example if
-> I leave a dock on my desk and someone inserts malware into it
-> I might think it's perfectly fine.
-> 
-> The current mitigation that exists is that in the Linux ecosystem we don't
-> turn on PCIe tunneling "automatically" unless the IOMMU is active.
-> 
-> Nominally this happens by way of 'bolt' userspace writing a sysfs file after
-> it confirmed IOMMU was enabled both pre-boot and by the kernel.
-> 
-> But come back to me being a user.  If I have the IOMMU off already for
-> whatever reason I'm used to plugging in the dock and accepting the popup
-> asking me to authorize it.  Now a malicious device comes along, that's on me
-> to know about?
-> 
-> I feel it's not entirely out of the realm of possibility that such a
-> malicious device could subvert lockdown (let alone other bad things that can
-> happen).
-> 
-> Thus; lockdown is a very convenient tie in to claim security of the system
-> against both user and hardware attacks.
-> 
+pKVM shares memory in place, and a guest has to be able to share
+memory it has already set up, as Vincent pointed out [1]. That was one
+of the primary reasons for in-place conversion in guest_memfd.
 
-One other scenario I can imagine without a physical access (but to be
-honest I'm not completely sure about me), is for a root attacker to
-write malicious firmware blob in `/lib/firmware` and somehow force the
-kernel to load it thanks to a `request_firmware` call. It might lead to
-an dangerous DMA configuration and then to the attack scenario you
-described.
+Cheers,
+/fuad
 
-If this scenario works it would need to be handled by Lockdown.
-
-> > 
-> > It also does not look like a new question. The DMA-from-untrusted-device
-> > problem was discussed in detail on linux-kernel back in May–June 2020,
-> > in the "RFC Restrict the untrusted devices, to bind to only a set of
-> > 'whitelisted' drivers" thread:
-> >      https://lore.kernel.org/all/
-> > CACK8Z6E8pjVeC934oFgr=VB3pULx_GyT2NkzAogdRQJ9TKSX9A@mail.gmail.com/
-> > 
-> > The conclusion of that discussion, as I read it, is that device-level
-> > DMA threats are handled by the PCI/IOMMU line of defense -- the
-> > untrusted-device marking in the PCI core, IOMMU/ACS settings, and
-> > driver/device review -- not by lockdown. Interestingly, that thread also
-> >   shows that "with an IOMMU or without an IOMMU" is not a clean split in
-> > either direction: ATS and driver bugs can defeat DMA isolation even with
-> > an IOMMU in place, while ACS Translation Blocking can still help on
-> > systems without one. So if my reading is correct, "is there an IOMMU?"
-> > is not a good test here. It does not really stop the DMA attack this
-> > series worries about, and
-> 
-> Thanks for sharing.
-> 
-> > it goes beyond lockdown's original job.
-> 
-> Right.
-> 
-> > 
-> > Also worth noting: systems without an IOMMU are not rare. Many embedded
-> > boards and virtual machines have no IOMMU at all. Lockdown, meanwhile,
-> > is often enabled automatically in Secure Boot deployments, On such
-> > systems, a panic-on-no-IOMMU check would turn a normal setup into a boot
-> > failure.
-> > 
-I do agree with Xiu here, we must be very careful about it and figure
-out a solution which would not brick already deployed machines.
-
-> > Given what lockdown is for and the earlier discussion, the problem of a
-> > device doing DMA without an IOMMU is probably not a problem for the
-> > lockdown LSM to address, and that it belongs with the PCI/IOMMU
-> > subsystems and platform policy instead.
-> > 
-> > I would welcome other views on this.
-> 
-> How would you feel about at least blocking the user from turning off IOMMU
-> (if it's present on the system) via the kernel command line while lockdown
-> was enabled?
-> 
-> Thinking about the case where most distros enable lockdown by default, this
-> will strenghten it's use without much downside that I can see.
-> 
-> At least on a properly configured system that contains an IOMMU it would
-> prevent a user from subverting lockdown with a malicious device during the
-> boot sequence.
-
-I do agree with you, it could be a great addition. With Lockdown enabled
-as an early LSM (CONFIG_SECURITY_LOCKDOWN_LSM_EARLY), this might be
-feasible before boot parameter parsing. Lockdown already locks unsafe
-module parameters.
-
-If I remember correctly on distro's that have a Lockdown patch that
-enables it if secure boot is enabled, it should also be called before
-early param parsing.
-
-But taking this threat into account also brings other questions.
-i.e, a physical attacker with root access on a system where Lockdown is
-enabled and with a bootchain configured with shim+MOK is able to change
-kernel cmdline, generate a MOK and sign a compromised kernel
-binary. Thus defeating lockdown purpose.
-
-In order to take the physical attacker into account, a securely
-configured bootchain where the kernel image can't be tampered with and
-where an attacker is not able to inject it owns certificates/hash in
-db/MOK is mandatory so that Lockdown makes sense.
-
-Orthogonally, we definitively should work on adding an updated
-documentation with Lockdown threat model and more information about what Lockdown locks.
-
-> > 
-> > > This series adds a two-phase check to prevent booting with lockdown
-> > > enabled and IOMMU disabled:
-> > > 
-> > > 1. Early check (in lockdown_lsm_init()): On x86, check the no_iommu
-> > >     flag, which is set early by the "iommu=off" kernel cmdline option.
-> > >     If lockdown is active and no_iommu is set, panic with a clear error.
-> > > 
-> > > 2. Late check (late_initcall): On all architectures, check
-> > >     iommu_is_available() which returns true if any IOMMU driver
-> > >     registered successfully. This catches cases where:
-> > >     - IOMMU hardware is absent on the platform
-> > >     - IOMMU was disabled by driver initialization failure
-> > >     - IOMMU was not detected (broken firmware, missing ACPI tables)
-> > > 
-> > > This follows the precedent set by s390 UV code which panics when
-> > > security cannot be guaranteed ("System security cannot be guaranteed
-> > > unless the system panics now").
-> > > 
-> > > This also adds a generic iommu_is_available() API in the IOMMU
-> > > subsystem, which is used by the lockdown check. Any IOMMU driver
-> > > that successfully registers will automatically call
-> > > iommu_set_available() from iommu_device_register().
-> > > 
-> > > Signed-off-by: Mario Limonciello (AMD) <superm1@kernel.org>
-> > > 
-> > > ---
-> > > Mario Limonciello (AMD) (2):
-> > >        iommu: Add iommu_is_available() API
-> > >        security: lockdown: Prevent boot with lockdown but no IOMMU
-> > > 
-> > >   drivers/iommu/iommu.c        | 48 ++++++++++++++++++++++++++++++++
-> > >   include/linux/iommu.h        | 14 ++++++++++
-> > >   security/lockdown/lockdown.c | 65
-> > > ++++++++++++++++++++++++++++++++++ ++++++++++
-> > >   3 files changed, 127 insertions(+)
-> > > ---
-> > > base-commit: 6628e7d4c6b25c8d18f1345e3a20d21829aae7e4
-> > > change-id: 20261014-lockdown-iommu-08c763d9f91dd
-> > > 
-> > > Best regards,
-> > > -- 
-> > > Mario Limonciello <superm1@kernel.org>
-> > > 
-> > > 
-> > 
-> 
-
-Best regards,
-
-Nicolas Bouchinet
+[1] https://lore.kernel.org/all/avro44jUWOARFzul@google.com/
