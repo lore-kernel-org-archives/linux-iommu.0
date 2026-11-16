@@ -1,62 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.93
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794836053;
-	b=H4Sfd2tt+oPacJmM3XmzelXWA/jbGNQ/SUe6BWQTk6FNs9xSSWnh1LNCwImcNdMLnAte
-	 FPOa5ZWFSsqJ/SAbC7GXTYTbcD6djESMAobwxRQyuZPCrtQ89/t7ef8wHVNEEOKhFUj/r
-	 GZJCk+QdU+UpACFr+uaIvW/c6nIRE0XsPe9SQPSCVWrDxgdEFOVpWp2V+hL94hsS02C6R
-	 LNpDhkQQk26IM9YVmBVPn4G1Zb5RKbowbidtl8SCsqcxGomSM+5IW5uegL5B5Vry3DbGg
-	 d/MB4mc25mdAuzjcuusEJd0sAcN7+db/2xUO/GFkl/FsyautGJsTkciupd6c9ahCsmA==
+	t=1794836740;
+	b=0cX8cKmLL4fTEWl8auzwnE8GgUnIoigBSJw8lcR1DYAyC8Zq6nSxDJLYtgflFK47dcjZ
+	 lAfJIeut8oDlX03KukJXczP0Olgp+6NDIBEh5k2OlvYWzVTHeo8GkCn4LmyGP+Bqzwmwg
+	 s/dyrMGl4VePsmsiTK9N145jT5l/6UO+2lpc/JRsPPN5FogItDgMEhOG0aGnHzCx8qNdH
+	 OWNmgAK5LOImOq1BaCUJ2N/ANs509W3fQr1rHtp0jCXtiygL81Pq/rIaqldDN+631O4pA
+	 /5hB99DvUBvElsA3Q8TcJ5Br1+WXyYysnv65jAhYUsugKIeHVs3+EdOX7LRw6OmbYkg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794836053;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Received:X-Forwarded-Encrypted:
-	 X-Gm-Message-State:X-Received:MIME-Version:References:In-Reply-To:
-	 From:Date:X-Gmail-Original-Message-ID:X-Gm-Features:Message-ID:
-	 Subject:To:Cc:Content-Type;
-	bh=kFki2hBsnHrC0juVnTO+KTiVDm5TzD8rtd8Do1S8nSI=;
-	b=Xx7YP3Hz7VsywIVqzpE0YfwlF0ZF7WcPz8qKf4MrSM5tWS+GnORvVHg11qwSJX71nKTD
-	 gfkmOaxM+fhN6qE7+Zx5w7cs3bFX2ltuMtZHMMxIFXFzX6UByIdDMouXvqL16/VE45G+9
-	 vjd5iIMeSnC9JKyilVuYJOFLMWaCyJ1j3+sl9aGMzYgN6Xe67d6v24q6dSGk/9P+HmOEK
-	 DOXGZTWjOdO80j23p5kEXQyswuI8np3yxhdqn1//NEsXph3QrJA2/j7zOJbl/7zN3bq6i
-	 rb1XJ++8RQ7UEH1zMIBO3fzq5dsMt9dj5KqLZmS450m0HxNqIg8BsNpGmf4Waxqea7A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794836740;
+	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=eshOQbcKbrMl1i+qtIVojA3Znht4HEAuvnYf7G2Dhas=;
+	b=o0roGyZwNDj55Vcq4T8aDmV0MW2vV3qJuVyvXj15HCppU+4NSyUagN5jLwD7YT0pgQmY
+	 u/sgg2N8rd5cIS5nSeB7s+Dy5ytyFd6dmssuEkmnQXJVEV+ROLbNEK4wqAytzx/lsrUsB
+	 JkCJBorSZkkzAKqO+p5v7JlSPpSEg4by+tk2sEbe4TjpMf2i8yzFDgX+K2aiSAawGr556
+	 DuYg92UVtlaFgrWaYYojiojIUaPTzzJNVF9QmScUhJkhCWlPol+661ruXh7assA99rthC
+	 zc45D1z1RQs04adRYSUxOuqdqyzo3vK18WClBh9+Xm8eu+VeqzCWiO9C8qFbEGmtcJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=pdewimAB;
-	arc=none smtp.remote-ip=91.218.175.93
-Received: from mta0.migadu.com (out-93.mta0.migadu.com [91.218.175.93])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 814AB606A31C
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:34:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 814AB606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	dmarc=pass header.from=arm.com;
+	spf=pass smtp.mailfrom=arm.com;
+	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b="EY/qHBm4";
+	arc=none smtp.remote-ip=217.140.110.172
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A81A5606A332
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:45:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A81A5606A332
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=pdewimAB
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=kFki2hBsnHrC0juVnTO+KTiVDm5TzD8rtd8Do1S8nSI=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1794836049; v=1; x=1795440849;
- b=pdewimABnWkMGUXhlckxwnNf9Ny54CCEZJSrvdWYdHfm3D6mcjBfbFiw2mE3bwtVRKUfFgKt
- PuND1hROCkvQIvGHfKE90fuKoPqPOqGZRkaN+ZbZc40GiA6nccjMmEryP6pex3gm5ELC57/9Ech
- Hwz+n4w4sRBantU3vFGpNmSU=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id a576b34fa0ff935d;
-	Mon, 16 Nov 2026 13:34:09 +0000
-X-Mizu-Trace-ID: a576b34fa0ff935d
-X-Migadu-Flow: FLOW_OUT
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-5c14bc5a743so10050e87.0
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 05:34:09 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AL+hErGyf/PQYlixBlIoJotJbwaAwSWGS0oXYHNwqLiw/xnLxeZqSHfSAc9cF45cBWU2Dmek2xHy5A==@lists.linux.dev
-X-Gm-Message-State: APuU4Z93vPWvwLeMbwDYy/xkfCvvm/4mKeX5WOfeqGuv1OdsULxH5XV4
-	HphpzeiWAX1Xq1umQkfWTIZ+unCS82UWItoTchnv0OsKYJOGI6pG59VB0n4lbmg/UN+zreNa0h6
-	e2J+mULYb91nYrc5z+2rTQ8681LEr+Ot8GuM/KrnO
-X-Received: by 2002:a05:6512:3087:b0:5bf:b994:6598 with SMTP id
- 2adb3069b0e04-5c17d98271emr226475e87.6.1794836047954; Mon, 16 Nov 2026
- 05:34:07 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=EY/qHBm4
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 945F81713;
+	Mon, 16 Nov 2026 05:45:29 -0800 (PST)
+Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B8CB93F632;
+	Mon, 16 Nov 2026 05:45:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
+	t=1794836732; bh=kFZlstDwxM/ommFvM0+u8jqde33w4UioUYPnawX+A/U=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=EY/qHBm4tv3i3Oh8jE6/w3KaICV5E08ozfG3EJ8d4hqnwdPP9UsOqYnNZTUBMMilz
+	 Tl1oPA+6EwAyBOyCHwmHQ5/PGN+s+Jv6wMmNniVW7jlk0lxExhTrp/vAJ9VZaCMApN
+	 6xeDkOQP/dtDwDc+F6Fx4Utav5sUwb3H19EwLyHQ=
+Message-ID: <609175e0-4e1c-4130-a9f1-0cfc7815c134@arm.com>
+Date: Mon, 16 Nov 2026 13:45:25 +0000
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -66,64 +53,97 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-References: <20261116091137.94252-1-aneesh.kumar@kernel.org> <20261116091137.94252-3-aneesh.kumar@kernel.org>
-In-Reply-To: <20261116091137.94252-3-aneesh.kumar@kernel.org>
-From: Fuad Tabba <fuad.tabba@linux.dev>
-Date: Mon, 16 Nov 2026 13:33:31 +0000
-X-Gmail-Original-Message-ID: <CA+EHjTw7QzzkQYKV3jyvW5mqZQMenTfm=kus9i87tYqACDOv0Q@mail.gmail.com>
-X-Gm-Features: AclHuK93q6K13zN84KswjEKi9cVQgC-Cy80dn3a2peCMzM1qEee3TapGEGzaKvg
-Message-ID: <CA+EHjTw7QzzkQYKV3jyvW5mqZQMenTfm=kus9i87tYqACDOv0Q@mail.gmail.com>
-Subject: Re: [PATCH v10 02/13] mm: Zero memory during shared memory transitions
-To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
-Cc: linux-coco@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>, 
-	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, Pratyush Yadav <pratyush@kernel.org>, 
-	Catalin Marinas <catalin.marinas@arm.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>, Marc Zyngier <maz@kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Steven Price <steven.price@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	Suzuki K Poulose <suzuki.poulose@arm.com>, Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>, 
-	"T.J. Mercier" <tjmercier@google.com>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
-	Christophe Leroy <chleroy@kernel.org>, Ritesh Harjani <ritesh.list@gmail.com>, 
-	Shrikanth Hegde <sshegde@linux.ibm.com>, Alexander Gordeev <agordeev@linux.ibm.com>, 
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>, 
-	Vasily Gorbik <gor@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
-	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>, 
-	Rick Edgecombe <rick.p.edgecombe@intel.com>, "K . Y . Srinivasan" <kys@microsoft.com>, 
-	Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
-	Dexuan Cui <decui@microsoft.com>, Long Li <longli@microsoft.com>, 
-	Paolo Bonzini <pbonzini@redhat.com>, Vitaly Kuznetsov <vkuznets@redhat.com>, 
-	Andy Lutomirski <luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>, dri-devel@lists.freedesktop.org, 
-	iommu@lists.linux.dev, linaro-mm-sig@lists.linaro.org, 
-	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org, 
-	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev, 
-	Vincent Donnefort <vdonnefort@google.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-debug: Avoid uninitialized hash traversal in mapping
+ dumps
+To: Anthony Iliopoulos <ailiop@suse.com>, Avi Weiss <thnkslprpt@gmail.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20261115082505.2012573-2-thnkslprpt@gmail.com>
+ <E9412813-7A76-46D0-94E5-0537E9FF5DB8@suse.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <E9412813-7A76-46D0-94E5-0537E9FF5DB8@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Aneesh,
+On 16/11/2026 12:09 am, Anthony Iliopoulos wrote:
+> On Sun, Nov 15, 2026 at 10:25:06AM +0200, Avi Weiss wrote:
+>> Booting with dma_debug=off causes dma_debug_init() to return before
+>> initializing the hash buckets. The debugfs dump file is registered
+>> independently, so reading it traverses an uninitialized list and
+>> triggers a NULL pointer dereference in dump_show(). The
+>> debug_dma_dump_mappings() helper has the same unchecked traversal.
+> 
+> So the debug_dma_dump_mappings() issue seems preexisting (the risk was
+> there since its introduction in commit ac26c18bd35d, given that it
+> doesn't check if dma_debug has been initialized), and it is not related
+> to decoupling the debugfs init.
+> 
+>> Skip both dump paths until dma_debug_initialized is set. Check the
+>> initialization state rather than global_disable so that mappings
+>> recorded before DMA debugging disables itself at runtime remain
+>> available.
+> 
+> I suppose this makes sense for debug_dma_dump_mappings, but I am not
+> sure we need this for dump_show. See my next comment.
+> 
+>> With CONFIG_DMA_API_DEBUG=y and CONFIG_DEBUG_FS=y, reading the dump
+>> with dma_debug=off triggers an oops in the unpatched kernel. The
+>> patched kernel returns an empty dump, while dumping with DMA debugging
+>> enabled still returns mapping information.
+>>
+>> Fixes: 173735c346c4 ("dma-debug: fix debugfs initialization order")
+>> Signed-off-by: Avi Weiss <thnkslprpt@gmail.com>
+>> ---
+>>   kernel/dma/debug.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+>> index 36c1f7cbb2ae..2f487246d8ce 100644
+>> --- a/kernel/dma/debug.c
+>> +++ b/kernel/dma/debug.c
+>> @@ -543,6 +543,9 @@ void debug_dma_dump_mappings(struct device *dev)
+>>   	int idx;
+>>   	phys_addr_t cln;
+>>   
+>> +	if (!dma_debug_initialized)
+>> +		return;
+>> +
+>>   	for (idx = 0; idx < HASH_SIZE; idx++) {
+>>   		struct hash_bucket *bucket = &dma_entry_hash[idx];
+>>   		struct dma_debug_entry *entry;
+>> @@ -576,6 +579,9 @@ static int dump_show(struct seq_file *seq, void *v)
+>>   	int idx;
+>>   	phys_addr_t cln;
+>>   
+>> +	if (!dma_debug_initialized)
+>> +		return 0;
+>> +
+> 
+> I think it makes better sense to skip creating debugfs files altogether
+> when debugging is disabled, which was also the case before 15b28bbcd567.
 
-On Mon, 16 Nov 2026 at 09:12, Aneesh Kumar K.V (Arm)
-<aneesh.kumar@kernel.org> wrote:
-[...]
-> Keep allocations on platforms without memory encryption on the ordinary page
-> allocator path so the original GFP constraints, including __GFP_ZERO, remain
-> intact. Remove post-transition memset() calls that are now redundant and
-> explicitly clear allocations on paths where no transition occurs.
->
-> This intentionally makes every private-to-shared transition destructive;
-> callers can no longer use set_memory_decrypted() to preserve existing contents.
+TBH there's probably an argument for just getting rid of 
+debug_dma_dump_mappings() now too... Hands up anyone who's using a 
+20-year-old AMD GART as any kind of development machine at all, let 
+alone for DMA API debugging of new drivers?
 
-pKVM shares memory in place, and a guest has to be able to share
-memory it has already set up, as Vincent pointed out [1]. That was one
-of the primary reasons for in-place conversion in guest_memfd.
+Anyone?
 
 Cheers,
-/fuad
+Robin.
 
-[1] https://lore.kernel.org/all/avro44jUWOARFzul@google.com/
+> 
+>>   	for (idx = 0; idx < HASH_SIZE; idx++) {
+>>   		struct hash_bucket *bucket = &dma_entry_hash[idx];
+>>   		struct dma_debug_entry *entry;
+>>
+>> base-commit: 97d73c8251226cf27cc6656b4c542869bb8c69fa
+>> -- 
+>> 2.43.0
+>>
+> 
+> Regards,
+> Anthony
+
