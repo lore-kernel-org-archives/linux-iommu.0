@@ -1,68 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.133
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794799898;
-	b=Q9bAxNkcw7G/zy/RLE/AelgMO4HYPA5hFiLtuJS1LK0iGADA7C9Si67G3GF0CVai6Eew
-	 rn1Cq++CifwpOYMYAriX1OLf6SdhCLOj4VVA3xXO6znwdj6NYvhdQH1jJyCzuey3u+sdq
-	 jD/XoEYeFGONdzEP0eFxjWX90Y8irZlunvlYHdmE8yGjwXAiMTWT3UxWPodv6UAveq5p7
-	 /rNMUghlzljh08oqqDEQjwefaUVDzQOPO0isIbiAYQKwHXZUoWY9cuiLsbMarXtwAz2fL
-	 oF+h7K8o4YrZXQQkbREvia59efNx9RtoUpiNvnKZnXGJ7Af85t/cKpw+BUpWUX2hPjQ==
+	t=1794800361;
+	b=GyDrxC8hHaw0p40t69p6ahL/ifpsnqVkQgZwV42uDFvJ4C6hMJPSQNZ1sCpAF9OkDmWX
+	 2l/0a0winUt4HRYJI/IqLBp6QcFQ9PXGBhwXpXpxluvDO2gtZNstHqHuFE1lTghQMS++V
+	 ERNHsbFxn6cFWswEIwwTKhUDqNkpUncPvsENuWPGnNh+wshFje5BIFxWqOI3XwBuF8uJG
+	 GTDIE+Lif5VG3WrXYKd2l+f2AcSChlXvQpTDGre3jdVSZiJ+bRd+h3wxb15t6dz4UJYIl
+	 MBP83ezHpJypqKVuCjywbaGMxKWmRhlZiHEXKhRino9r/HIzEMGNeOf3Add6DF3OVWQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794799898;
-	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
-	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
-	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
-	 MIME-Version:User-Agent:Cc:Subject:To:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=pGgUABsNoxr3lMr42Lg/Dv10ONV9Iv1MysSuC98ImUg=;
-	b=0krjumtMe0eDEZnZPCaVqHSI7Rp4F1HXFZijuPMID4WCySi2CvFuyC2I3m+u7m4wLMiV
-	 CQ1jhK0AV46VwQsutDh6rx86avQFpd/aRo1GoxlzqhixmdfqbPfR8V9sDm6U45rYNq7H5
-	 7q+MzNthoV3K+9w2CMMLM/aDwdxCPivjto40eSOlKXe6cYTA7of1dzCcIlAx2mfUg36P5
-	 3c2dJhzUBBA8kZzrUKTfn3tZ/muYxVLJ3lB8Oho6sitn0wZdE79J770ZKuFhXcqURc9Rv
-	 CZ9ToveDd1s7Oj3n8mm1OCTfUUzFiOgOX03wvzoGd139stdH8OHzat1OI1OTbf7ScXw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794800361;
+	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
+	 Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=W1vdO8a9mxhEayuDDyrm76yluN+B8zC339a6nO+fPrw=;
+	b=yvTBao/wC9E21Jcl7l4ZYMtI0Ts71jFqTIOjcp2Bi/IpSBhTk/yA2syK2t40hyCA+IGV
+	 UdmqbRAHvYGTLVEOBjd6omQAW4xfE9afrn/p5OtSCK7t92mbpVue3FtwhjB+AW5p97lJw
+	 LLvJgzsPmF9y0Qwxk4H5FX83q7udZAyWhDqOXo+wCKlQsFU256WMuKHhpajddTXK5ehC2
+	 XIBDemNq2BoZcOJTKUzhoett+/dK+l/LDmetKZI3N7MTUXf2Si5BJVFrQWjB2rITHmzmP
+	 eZyYKCewXST437Q0s3kndo77PB7ELJVNrWxoBIXAmwaQ0loNALHLgM3p4zXJ046/G6w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.intel.com;
-	spf=pass smtp.mailfrom=linux.intel.com;
-	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WFbm1n7u;
-	arc=none smtp.remote-ip=198.175.65.18
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=linux.alibaba.com;
+	spf=pass smtp.mailfrom=linux.alibaba.com;
+	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oKTvF63q;
+	arc=none smtp.remote-ip=115.124.30.133
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A2D2606A31F
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 03:31:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5A2D2606A31F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA099606A31F
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 03:39:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EA099606A31F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=WFbm1n7u
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1794799898; x=1826335898;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=oes9flJ0JSpo5x3wjxFPFFH+FdhIg1fmD+pwTGOuot4=;
-  b=WFbm1n7upC67HiIEMz/ANC0IJsC/R73jqniRmajAN031SY7ExSjUiMX6
-   IzbcDu9Dj4WN7750PSQiIx9vfItJWtnZALurpMuMEcimOdzseffEO3sMp
-   Zqm2tEk4jF3VFeW75dySL2+0+vff26lbUSPVmvSApJrH74HtJsSSFI32i
-   ac8RjzXA5Knn9BpCxAzikkCgfILEFngW/EJdOjXoIm68Lzc/M13dxALTw
-   MQ2a54NpUTtreOdfW3owDWOAifjT7uIRPhCWINsijvZtTIbTvneuxYTvf
-   4L3TwcRohT29Ezh3H2LjVVNAasAW2IfyFot/96YBUbh0G3TS5DwSZKElL
-   w==;
-X-CSE-ConnectionGUID: qWc8rwqhRMGNk8l0IbWY7A==
-X-CSE-MsgGUID: hmaJmIorQ8eQj+wZg2CV7w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11967"; a="3541504"
-X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
-   d="scan'208";a="3541504"
-Received: from fmviesa011.fm.intel.com ([10.60.135.151])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 19:31:37 -0800
-X-CSE-ConnectionGUID: U3CPZAHtQJOFgrVN9p5TRw==
-X-CSE-MsgGUID: S4IDXWZYQEaFRwmBtWMK9A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.27,215,1787036400"; 
-   d="scan'208";a="11217156"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.249.52]) ([10.124.249.52])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2026 19:31:32 -0800
-Message-ID: <57c85edf-8400-4b45-9a64-5eddc0d29134@linux.intel.com>
-Date: Mon, 16 Nov 2026 11:31:29 +0800
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=oKTvF63q
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1794800352; h=From:To:Subject:Date:Message-ID:MIME-Version;
+	bh=W1vdO8a9mxhEayuDDyrm76yluN+B8zC339a6nO+fPrw=;
+	b=oKTvF63qcXcNcA97HrmQHZO1G87B1vrXhZH9FTaOS2uj1jfXOnjluFsMQX49BEbgJRTgfkt9LDH9E+fr/oa/mtcnX8yjbStoxT5A4hvm9U3o8H+ZyFKABf7YfBLQ8OwcKb7+tBLM7pKd42kne6f8oifAVZX0f34mdL0RndDjtQ4=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam033032089153;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0XElQojT_1794800342;
+Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XElQojT_1794800342 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Mon, 16 Nov 2026 11:39:11 +0800
+From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+To: joro@8bytes.org,
+	vasant.hegde@amd.com,
+	suravee.suthikulpanit@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/amd: Do not clear unobserved log overflow status bits
+Date: Mon, 16 Nov 2026 11:39:02 +0800
+Message-ID: <20261116033902.3277875-1-guanghuifeng@linux.alibaba.com>
+X-Mailer: git-send-email 2.43.7
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,120 +63,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>,
- Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
- Pratyush Yadav <pratyush@kernel.org>,
- Pasha Tatashin <pasha.tatashin@soleen.com>,
- David Matlack <dmatlack@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Pranjal Shrivastava <praan@google.com>, Vipin Sharma <vipinsh@google.com>,
- Ankit Soni <Ankit.Soni@amd.com>, Nicolin Chen <nicolinc@nvidia.com>,
- John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v7 10/18] iommu/vt-d: Restore IOMMU state and reclaimed
- domain ids
-To: Samiullah Khawaja <skhawaja@google.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
- David Woodhouse <dwmw2@infradead.org>
-References: <20261110040828.1774343-1-skhawaja@google.com>
- <20261110040828.1774343-11-skhawaja@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20261110040828.1774343-11-skhawaja@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 11/10/2026 12:08 PM, Samiullah Khawaja wrote:
-> During boot fetch the preserved state of IOMMU unit and if found then
-> restore the state.
-> 
-> - Reuse the root_table that was preserved in the previous kernel.
-> - Reclaim the domain ids of the preserved domains for each preserved
->    devices so these are not acquired by another domain.
-> 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> ---
->   drivers/iommu/intel/iommu.c      |  57 ++++++++++---
->   drivers/iommu/intel/iommu.h      |  14 ++++
->   drivers/iommu/intel/liveupdate.c | 139 +++++++++++++++++++++++++++++++
->   3 files changed, 197 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 6c86c155d12b..a83971368bef 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -987,6 +987,8 @@ static void iommu_disable_translation(struct intel_iommu *iommu)
->   
->   static void release_dmar_iommu(struct intel_iommu *iommu)
->   {
-> +	intel_iommu_handle_drhd_restore_failure(iommu);
-> +
->   	/*
->   	 * All iommu domains must have been detached from the devices,
->   	 * hence there should be no domain IDs in use.
-> @@ -1452,7 +1454,7 @@ static void intel_iommu_init_qi(struct intel_iommu *iommu)
->    * Returns 0 when the ID is reserved, was already reserved, or cannot be
->    * re-assigned, and a negative errno for a genuine allocation failure.
->    */
-> -static int reserve_domain_id(struct intel_iommu *iommu, int did)
-> +int reserve_domain_id(struct intel_iommu *iommu, int did)
->   {
->   	int ret;
->   
-> @@ -1743,12 +1745,16 @@ static int copy_translation_tables(struct intel_iommu *iommu)
->   
->   static int __init init_dmars(void)
->   {
-> +	struct iommu_hw_ser *iommu_ser;
->   	struct dmar_drhd_unit *drhd;
->   	struct intel_iommu *iommu;
->   	int ret;
->   
->   	for_each_iommu(iommu, drhd) {
-> +		iommu_ser = iommu_get_restored_state(iommu->reg_phys,
-> +						     IOMMU_SER_TYPE_INTEL);
->   		if (drhd->ignored) {
-> +			intel_iommu_handle_drhd_restore_failure(iommu);
->   			iommu_disable_translation(iommu);
->   			continue;
->   		}
-> @@ -1766,7 +1772,9 @@ static int __init init_dmars(void)
->   		}
->   
->   		intel_iommu_init_qi(iommu);
-> -		init_translation_status(iommu);
-> +
-> +		if (!iommu_ser)
-> +			init_translation_status(iommu);
->   
->   		if (translation_pre_enabled(iommu) && !is_kdump_kernel()) {
->   			iommu_disable_translation(iommu);
-> @@ -1775,14 +1783,18 @@ static int __init init_dmars(void)
->   				iommu->name);
->   		}
->   
-> -		/*
-> -		 * TBD:
-> -		 * we could share the same root & context tables
-> -		 * among all IOMMU's. Need to Split it later.
-> -		 */
-> -		ret = iommu_alloc_root_entry(iommu);
-> -		if (ret)
-> -			goto free_iommu;
-> +		if (iommu_ser) {
-> +			intel_iommu_liveupdate_restore_root_table(iommu, iommu_ser);
+amd_iommu_handle_irq() clears the interrupt status with an unconditional
+writel(mask, MMIO_STATUS_OFFSET), where mask is int_mask | overflow_mask.
+The log overflow status bits (GALOverflow, EventOverflow, PprOverflow)
+are RW1C and, per the AMD IOMMU spec, transitioning them from 0 to 1 does
+not itself generate an interrupt; they can only be observed by an IRQ
+round triggered by the corresponding log-interrupt bit.
 
-What happens if the incoming kernel is booted with intel_iommu=off?
+If hardware sets an overflow bit after the status register is sampled at
+the top of the loop but before the unconditional writel(), that write
+clears the freshly-set bit while the stale sampled status does not
+contain it, so overflow_handler() is skipped for an overflow that really
+happened. For the GA log this is fatal: amd_iommu_restart_ga_log() is the
+only recovery path, and per spec section 2.7.4 logging stays halted until
+GALogEn is toggled. A bare W1C of GALOverflow is not part of the
+documented recovery, so the GA log stays halted, no further entries are
+written, GAInt never re-asserts and the GA log interrupt line goes
+permanently silent, losing all AVIC non-running vCPU wakeups on that
+IOMMU.
 
-intel_iommu_init() calls intel_disable_iommus() before reaching this
-restore path. A preserved device may still be issuing DMA, which would
-then bypass translation.
+Clear only the bits actually observed this round by writing status & mask
+instead of mask. An overflow bit set concurrently is then left asserted
+and is picked up by the existing ERBT1312 status read-back at the bottom
+of the loop, which re-enters the loop and runs overflow_handler().
 
-Could we detect preserved IOMMUs and force VT-d on in that case? We
-should also ensure that the ACS configuration for preserved devices and
-their upstream bridges remains consistent with the previous kernel.
+Fixes: 2379f3485239 ("iommu/amd: Refactor IOMMU interrupt handling logic for Event, PPR, and GA logs")
+Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+---
+ drivers/iommu/amd/iommu.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-Thanks,
-baolu
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index d0d55c93a480..39254671b924 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1168,8 +1168,17 @@ static void amd_iommu_handle_irq(void *data, const char *evt_type,
+ 	u32 mask = int_mask | overflow_mask;
+ 
+ 	while (status & mask) {
+-		/* Enable interrupt sources again */
+-		writel(mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
++		/*
++		 * Clear only the status bits observed in this round.  The log
++		 * overflow bits (GALOverflow/EventOverflow/PprOverflow) are RW1C
++		 * and do not raise an interrupt on their own; clearing them
++		 * unconditionally here would drop an overflow that hardware set
++		 * between the readl() above and this write, without ever running
++		 * overflow_handler().  Leaving such a bit asserted lets the
++		 * existing ERBT1312 read-back below re-observe it and re-enter
++		 * the loop so overflow_handler() runs.
++		 */
++		writel(status & mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
+ 
+ 		if (int_handler) {
+ 			pr_devel("Processing IOMMU (ivhd%d) %s Log\n",
+-- 
+2.43.7
+
