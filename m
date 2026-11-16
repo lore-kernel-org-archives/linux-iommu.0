@@ -1,60 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=188.68.63.166
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794833336;
-	b=hyMP+P95Ag0CdJrj/EErz56Tc8UqYGxF80mn3eFThvWJ9qrVfFghNPoXS3H8tzJZs/X1
-	 MGWNXVg8eg+xURH43o6M5DwQNoZMAD4B7qjvpBfzCTiTPeNs5FDQxOl4KbxCWcA+RiU3X
-	 F/uY3lZsfm0LHLT+9oEZltBbOR8eTJ/fLzonN+G6jjhJQQSspf6d7T2oQAfBY1RZZQNJ1
-	 aFvhMrJJG6xmtiWjrTZmDAqlBZdf56GvyW154At/kqkZpiSLq2oKiQoVhgzoquCbueAk/
-	 W2kYfqisXM3+SObjXAbOApZYQUA2TVkeL46aBg9mww5kFvcf9JhhX268mHh6esd00/Q==
+	t=1794833808;
+	b=E3sHSsfyPdNOJG+bIkFW/jSQ8go8J3dnzz2vaKpUCM7m9ClcuUSCBFJllXfD2ldFj7A0
+	 +GzqTE0tUdz/nFh0YxrA9aBLd3c6mo/1v1uRZ6mPL8sEX31Y6fM7SkDksWFYF0nXw2gmE
+	 QBbycRk5xZkiGWtHgUN181m/ksNyYBdCbePV2RkBXXwk/JvB2rdEdzY8KgnXPPgX9gXNW
+	 PK+De6kcBznMrPaIANNLHTIYuATRm2MNOrFlZA704mVDTHqiF+/Dlm0qe5wciM6KT6XCU
+	 Oxgl6LOzwahlBOStydasL7K4NYdhY/mGLLJxrnk3fv69v6lZq/cgIR6XPSEsf6HnI0Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794833336;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=q+vj+2gwnCsvLuhkx5/eZ6hFIO5bSIxa0YO+wbxe2XI=;
-	b=Zo9hFoQYAB2W0js3IDigEPetIYHo0oqPdBq2qMn6stvMirE5odp9Htai8feegYMA2OeV
-	 beWpooMNsWPJw0YsPHyOGCyaat43WGBgRBJQ2qm37gtS1GLwTLve8Nl9WMR6nTqUqpevy
-	 sibW5nGZ1VcEapUtL5Dyxl8Gypkqi1yc3RQvQ5CrL4N+4wXKXDFSbmr43Soe8sCwJJCqH
-	 45LXX6K7vb9QZGQsCKvhg3ARYht951bOXjjwM5ejN7Qloij2YWmnV8mHg0eXR/Gj2wMeF
-	 ti+QOLKonKw0xQCjVllC/3hB5FQ9cUrz6drP9e618Ovkddcj5TjixdCR50IRpBrVYrQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794833808;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
+	 Received-SPF:Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 References:From:Content-Language:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:X-PPP-Message-ID:X-Rspamd-Server:
+	 X-Rspamd-Queue-Id:X-NC-CID;
+	bh=AySk9TZzV4MYiU/BGdCP3GZJ+DuHFYPn7n3AJWBQ9/U=;
+	b=WFXuDLDrx3LEuKDfwT3+35TgP01RkYp8cBY6RyY2A+mE83ZEXG3VRDK8XyGe/MHAaMrk
+	 u+FLa48bKLchY5hbFKcQ359/+c0zr91vbiXEBV9n92zzYqFD3nhptkthR4O10lgpz+OlR
+	 Qd4oivnWQ+ssXUyBRn5Vc41JL9uKZIJ/niK6m0Slv5XnyFQIYxBTVbBoiiinEBRmqzInm
+	 fcH9A3OA9NUIk1CoaoL9Gfqk8bb8rI5fnVh3nl9HeN448hAHC9qmo14gCJYFeKHm08La+
+	 GTXektQSWNwpAmvprF2N4eKrqPGuYGvpLzT1whJUJAfb3+4V/vYh0zSqwU92ha/7/zQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=vXUnHieI;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=leemhuis.info;
+	spf=pass smtp.mailfrom=leemhuis.info;
+	dkim=pass header.d=leemhuis.info header.i=@leemhuis.info header.a=rsa-sha256 header.s=key2 header.b=G98JHegM;
+	arc=none smtp.remote-ip=188.68.63.166
+Received: from relay.yourmailgateway.de (relay.yourmailgateway.de [188.68.63.166])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEA4A606A332
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 12:48:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DEA4A606A332
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 610FB606A31C;
+	Mon, 16 Nov 2026 12:56:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 610FB606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=leemhuis.info
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=leemhuis.info
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=vXUnHieI
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261116124853euoutp0247bd30011e6615c0b12ab274d95c0ad5~oh2gtv_GO2346623466euoutp02p
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 12:48:53 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261116124853euoutp0247bd30011e6615c0b12ab274d95c0ad5~oh2gtv_GO2346623466euoutp02p
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794833333;
-	bh=q+vj+2gwnCsvLuhkx5/eZ6hFIO5bSIxa0YO+wbxe2XI=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=vXUnHieIz2yw+ObZTGg5tyMTifGqwLhsQ1gYBSiha8L5jipBAijhFM7gQ3PAXm81c
-	 w0U1TKaoclXlzKfmNLWjueZ41UJuTJfo5KujIPpzcYH2sEvV2rB46NnMrEYD28ih8p
-	 y0KSQM2UEzOvKv20NF6qT2YhtGWVCAcx5sggoxY0=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261116124852eucas1p1b150cae3b2b4f5dac6550d7236791c35~oh2gXEqqS3152131521eucas1p1p;
-	Mon, 16 Nov 2026 12:48:52 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20261116124851eusmtip129b1231d1435be7a0a2c4fa4d4861c9f~oh2fZOj-F3032230322eusmtip1O;
-	Mon, 16 Nov 2026 12:48:51 +0000 (GMT)
-Message-ID: <2be89ecd-2809-4182-b2c4-df062fcf68b6@samsung.com>
-Date: Mon, 16 Nov 2026 13:48:51 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=leemhuis.info header.i=@leemhuis.info header.a=rsa-sha256 header.s=key2 header.b=G98JHegM
+Received: from mors-relay-8202.netcup.net (localhost [127.0.0.1])
+	by mors-relay-8202.netcup.net (Postfix) with ESMTPS id 4jSntZ2FrNz4Jvq;
+	Mon, 16 Nov 2026 13:56:38 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=leemhuis.info;
+	s=key2; t=1794833798;
+	bh=RUCNJeguN48m5eoyub5yMpKhrSolVckKqyUaULknHCQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=G98JHegMDZXR2RMTEZbqKHeJ012FIUi4YbLhYQWcB0Lo+54Q1IUYV4Oh3s6hr5qHz
+	 SeF8y+U6ro4OEy2o4sRl8zgU2QkjysAGAgk0pnhZ9D3PEeg/7TQsUj/H3fOycMAIKq
+	 gLANn9rqJ1IMfnHv+PJqwj8IvpM4JUcNLPCJGeLrLI/2Q2xN62XDpH7dZlYqhcYXLD
+	 d5i08xoefDZCQ9mX7yxMBRl/ft1N7BjmmURkZXBR7U25FkUsYoOZqbRzM0sUgewyzN
+	 vlpXb9jcphiARipmIHnewp9H3fz8toOwnwVxqi60B3MmF7cg8VNKxwr8pkZro76k1Y
+	 rL3VMRC9wLLCQ==
+Received: from policy02-mors.netcup.net (unknown [46.38.225.35])
+	by mors-relay-8202.netcup.net (Postfix) with ESMTPS id 4jSntZ1YhSz4Jvf;
+	Mon, 16 Nov 2026 13:56:38 +0100 (CET)
+Received: from mxe9fb.netcup.net (unknown [10.243.12.53])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by policy02-mors.netcup.net (Postfix) with ESMTPS id 4jSntZ3ZLDz8sb7;
+	Mon, 16 Nov 2026 13:56:38 +0100 (CET)
+Received: from [IPV6:2a02:8108:8984:1d00:a0cf:1912:4be:477f] (unknown [IPv6:2a02:8108:8984:1d00:a0cf:1912:4be:477f])
+	by mxe9fb.netcup.net (Postfix) with ESMTPSA id 7811C5F9EB;
+	Mon, 16 Nov 2026 13:56:33 +0100 (CET)
+Authentication-Results: mxe9fb;
+        spf=pass (sender IP is 2a02:8108:8984:1d00:a0cf:1912:4be:477f) smtp.mailfrom=regressions@leemhuis.info smtp.helo=[IPV6:2a02:8108:8984:1d00:a0cf:1912:4be:477f]
+Received-SPF: pass (mxe9fb: connection is authenticated)
+Message-ID: <4a47a57d-ee54-45c2-8948-fabbcbc6e322@leemhuis.info>
+Date: Mon, 16 Nov 2026 13:56:32 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,130 +74,97 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH 05/40] dma-contiguous: add dma_get_numa_cma_area()
- accessor
-To: Alexander Graf <graf@amazon.com>, linux-kernel@vger.kernel.org, Greg
-	Kroah-Hartman <gregkh@linuxfoundation.org>, Arnd Bergmann <arnd@arndb.de>
-Cc: The AWS Nitro Enclaves Team <aws-nitro-enclaves-devel@amazon.com>, Shuah
-	Khan <skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>, David
-	Hildenbrand <david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-	nh-open-source@amazon.com, linux-mm@kvack.org, Jonathan Corbet
-	<corbet@lwn.net>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <a1294df95fbe0a2ef5cc3585824d396854c7242c.1794393490.git.graf@amazon.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261116124852eucas1p1b150cae3b2b4f5dac6550d7236791c35
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261111224311eucas1p1eb735607894271094a8934b187647ad5
-X-EPHeader: CA
-X-CMS-RootMailID: 20261111224311eucas1p1eb735607894271094a8934b187647ad5
-References: <cover.1794300002.git.graf@amazon.com>
-	<CGME20261111224311eucas1p1eb735607894271094a8934b187647ad5@eucas1p1.samsung.com>
-	<a1294df95fbe0a2ef5cc3585824d396854c7242c.1794393490.git.graf@amazon.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [REGRESSION] brcmfmac BCM43602: DMAR read faults and firmware
+ timeouts on 7.3.3 with intel_iommu=on, works on 7.2.14 / with iommu=pt
+To: Argishti KHACHIK <argishti.khachik@itsolution.at>,
+ linux-wireless@vger.kernel.org, brcm80211@lists.linux.dev
+Cc: iommu@lists.linux.dev, regressions@lists.linux.dev
+References: <b010a7fa-73ea-43fa-a020-c2ea706295dd@itsolution.at>
+From: Thorsten Leemhuis <regressions@leemhuis.info>
+Content-Language: de-DE, en-US
+In-Reply-To: <b010a7fa-73ea-43fa-a020-c2ea706295dd@itsolution.at>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-PPP-Message-ID: <179483379382.1000705.2016802566482365866@mxe9fb.netcup.net>
+X-Rspamd-Server: rspamd-worker-8404
+X-Rspamd-Queue-Id: 7811C5F9EB
+X-NC-CID: wo7XxjZvvxvxxZLF30kXgaRnnU84ojJuzpJUm/nFgafWKYiNY1A=
 
-On 11.11.2026 23:41, Alexander Graf wrote:
-> With Nitro Sandboxes, we want to allocate per-NUMA memory from the DMA
-> contiguous allocator, but have no per-NUMA struct device to pass in.
-> dma_alloc_contiguous() takes the node from dev_to_node(dev), and the
-> per-node areas sit in dma_contiguous_numa_area[], which is static.
->
-> So instead, introduce dma_get_numa_cma_area(), which returns the generic
-> per-NUMA DMA CMA area that cma_alloc() would use. This way, the
-> nitro_enclaves driver can build its own generic CMA pool per-node
-> allocation logic on top of those pools.
->
-> Signed-off-by: Alexander Graf <graf@amazon.com>
+On 11/13/26 09:39, Argishti KHACHIK wrote:
+> 
+> since updating from 7.2.14 to 7.3.3 (Fedora 44 kernels), the
+> BCM43602 Wi-Fi in my Dell XPS 15 9550 is unusable when the Intel
+> IOMMU is in translation mode. Booting with iommu=pt fixes it.
+> 
+> Hardware: Dell XPS 15 9550, BIOS 1.14.0 02/13/2020
+> Device:   Broadcom BCM43602 [14e4:43ba], PCIe, brcmfmac (msgbuf)
+> Firmware: BCM43602/1 wl0: Nov 10 2015 06:38:10 version 7.35.177.61
+>           (r598657) FWID 01-ea662a8c (linux-firmware)
+> Cmdline:  ... intel_iommu=on
+> 
+> Results:
+> - 7.2.14-200.fc44.x86_64:            works
+> - 7.3.3-200.fc44.x86_64:             broken
+> - 7.3.3-200.fc44.x86_64 + iommu=pt:  works
+> 
+> Userspace and firmware are identical in all three cases.
+> 
+> The firmware loads fine, then a few seconds later the IOMMU
+> rejects DMA reads from the card:
+> 
+>   brcmfmac: brcmf_c_preinit_dcmds: Firmware: BCM43602/1 wl0: Nov 10 2015
+> 06:38:10 version 7.35.177.61 (r598657) FWID 01-ea662a8c
+>   brcmfmac 0000:02:00.0 wlp2s0: renamed from wlan0
+>   DMAR: DRHD: handling fault status reg 2
 
-Take a look at the following patch and the patchset it belongs to:
+Thx for the report. This is not at all my area of expertise, so be aware
+that the following might be misleading:
 
-https://lore.kernel.org/all/20261106184433.761422-5-kuba@kernel.org/
+From a quick search for your error msg I found this thread that sounds
+somewhat related:
+https://lore.kernel.org/all/2c840dcf-4292-4579-a62d-f9766b7cb780@linux.intel.com/
 
+A fix for that is currently heading towards 7.3.y:
+wifi: brcmfmac: map msgbuf RX packet IDs bidirectional
+https://lore.kernel.org/all/20261113153755.740970246@linuxfoundation.org/
 
-> ---
->  include/linux/dma-map-ops.h |  7 +++++++
->  kernel/dma/contiguous.c     | 36 ++++++++++++++++++++++++++++++++++++
->  2 files changed, 43 insertions(+)
->
-> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index afaf2c12189b8..5f7138ea6899a 100644
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -93,6 +93,7 @@ static inline void set_dma_ops(struct device *dev,
->  #ifdef CONFIG_DMA_CMA
->  struct cma *dev_get_cma_area(struct device *dev);
->  struct cma *dma_contiguous_get_area_by_idx(unsigned int idx);
-> +struct cma *dma_get_numa_cma_area(int nid);
->  
->  void dma_contiguous_reserve(phys_addr_t addr_limit);
->  int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t base,
-> @@ -115,6 +116,12 @@ static inline struct cma *dma_contiguous_get_area_by_idx(unsigned int idx)
->  {
->  	return NULL;
->  }
-> +
-> +static inline struct cma *dma_get_numa_cma_area(int nid)
-> +{
-> +	return NULL;
-> +}
-> +
->  static inline void dma_contiguous_reserve(phys_addr_t limit)
->  {
->  }
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 90937dc7c627d..363b84284d087 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -443,6 +443,42 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
->  	return cma_alloc_aligned(dma_contiguous_default_area, size, gfp);
->  }
->  
-> +/**
-> + * dma_get_numa_cma_area() - get the CMA area a NUMA node can allocate from
-> + * @nid: NUMA node id
-> + *
-> + * dma_alloc_contiguous() picks a per-node CMA area from dev_to_node(dev),
-> + * which a caller cannot override on a per-request basis. This accessor
-> + * returns the area a specific node can allocate from, so a caller can
-> + * cma_alloc() from the node it wants.
-> + *
-> + * A per-node area comes from numa_cma= or cma_pernuma=, or from
-> + * CONFIG_CMA_SIZE_PERNUMA, which reserves the default area's size on every
-> + * online node on top of the default area itself, all three of which are
-> + * CONFIG_DMA_NUMA_CMA. Where there is one online node this returns the default
-> + * area, so a host that reserved only cma= reaches its reservation through this
-> + * accessor as well, and that holds however CONFIG_DMA_NUMA_CMA is set.
-> + *
-> + * Return: the area @nid can allocate from, or NULL if @nid has none or is not
-> + * a valid node (including NUMA_NO_NODE).
-> + */
-> +struct cma *dma_get_numa_cma_area(int nid)
-> +{
-> +	if ((unsigned int)nid >= MAX_NUMNODES)
-> +		return NULL;
-> +
-> +#ifdef CONFIG_DMA_NUMA_CMA
-> +	if (dma_contiguous_numa_area[nid])
-> +		return dma_contiguous_numa_area[nid];
-> +#endif
-> +
-> +	if (nr_online_nodes == 1 && node_online(nid))
-> +		return dma_contiguous_default_area;
-> +
-> +	return NULL;
-> +}
-> +EXPORT_SYMBOL_GPL(dma_get_numa_cma_area);
-> +
->  /**
->   * dma_free_contiguous() - release allocated pages
->   * @dev:   Pointer to device for which the pages were allocated.
+Is that maybe solving your problem as well?
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Ciao, Thorsten
+
+>   DMAR: [DMA Read NO_PASID] Request device [0000:02:00.0] fault addr
+> 0xfff83000 [fault reason 0x06] PTE Read access is not set
+>   DMAR: [DMA Read NO_PASID] Request device [0000:02:00.0] fault addr
+> 0xfff80000 [fault reason 0x06] PTE Read access is not set
+>   DMAR: [DMA Read NO_PASID] Request device [0000:02:00.0] fault addr
+> 0xfff7e000 [fault reason 0x06] PTE Read access is not set
+> 
+> After that, every firmware command times out:
+> 
+>   ieee80211 phy0: brcmf_msgbuf_query_dcmd: Timeout on response for query
+> command
+>   ieee80211 phy0: brcmf_cfg80211_get_channel: chanspec failed (-5)
+>   ieee80211 phy0: brcmf_run_escan: error (-5)
+>   ieee80211 phy0: brcmf_set_wsec: failed to change PSK in firmware (len=0)
+> 
+> and after about two minutes the command ring is full:
+> 
+>   ieee80211 phy0: brcmf_msgbuf_tx_ioctl: Failed to reserve space in
+> commonring
+>   ieee80211 phy0: brcmf_run_escan: error (-12)
+> 
+> Unloading and reloading brcmfmac reproduces the same DMAR faults
+> right after the firmware loads again.
+> 
+> User-visible effect: networks show up briefly, connecting never
+> completes, then the scan list goes empty. Boot is noticeably slower.
+> 
+> I can provide the full kernel log, test patches or bisect between
+> v7.2 and v7.3 if that helps.
+> 
+> #regzbot introduced: v7.2..v7.3
+> 
+> Thanks,
+> Argishti
 
