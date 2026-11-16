@@ -1,16 +1,16 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.61
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.13
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794842573;
-	b=CNBC/FuUasqVuHBTL6Dwp76CEeJOEc1RxuG/LLP8nrxAm1ydqQDU2ZlZbncqG3mI+6ut
-	 6Cp45iyJqMBz2ijZIo9rcovNS5m2uAVDZaH9umNkL/76hWvpSX7r2QgoKKpw0PnYtGtA8
-	 NU2HmYMp00vGXbLOUPgxwGmGyCVqmj37D09VibJOeqNJXgzv3zvS9a9bz7eztD/T6vPHL
-	 b4ni4jBP3Um4qpKJq0KozydQOWfqPbp+E3ZXpNBoTqHtkVxaxXaaAy3nZLBRiVPKeconN
-	 OtYdXdDAbfb+dRfFJ5ZQKYzsaI4a+JAxbqrb+cpf56z7bIInczNIgoLFlRuItYCa8pA==
+	t=1794842727;
+	b=JER9k89xx6cdQBbe/xv5c6STJAomBkX/W4Ivm1x04xGYFh+SJhTeOK9hbVvMTTwGVdvk
+	 bMye187rFrO3TEPHvr2ljOuuT09wnj+iHKIa5athrmAciMv19SGXUnjuWmrsQwhFTEl3m
+	 nE2StMElOXf8UAU2U9xYVu+hYWPbXPgOc7cs4BRVdvDEs1wU8mBzZiGERreUy8Ebg+V+8
+	 WeWTs82ydqWsv5dR8mHGOTuJNYFlnzpHjf23frkgG5Ek+dJa1QYUKCtBfK0NKiwXnKrfJ
+	 B0vf2nyguyNcPWyBpM8Hhz7UdtW8aa/iBjpNhUEircet50puk2rD958IFNAKG/pXENA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794842573;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:Content-Type:Content-Disposition:
-	 In-Reply-To:X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794842727;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:Content-Transfer-Encoding:Content-Type:
+	 X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
 	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
@@ -24,77 +24,103 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=KZ9CU8eKAdktlIu25GiSXdTKIBoybZuUXEMFv52h61Y=;
-	b=Qlc+M8aimmIGcUww2T9oS37TIDSLxA5MQlSNAWpuAqZmE6PPjWktf+Pq9X7/3k+3DjzG
-	 afgyiCUKLv/BBo1J/SyIgAaiwAE81lcUt72faO9V+BYlxSglwvQRwnoF9qmxQoJa572GB
-	 G2WivAxSyCTEnWU3S+a+1yLJXjn4lB81POraSVY0LCXtr4gCBGnJj9+pfONuCXeOEWucg
-	 kily6PCFdM6eMQUYV15u7rsoSt/pqfvtnZHINpcIv/JWza91BuS47ffF03Fe4hG4elvac
-	 kHd9eQi/F7lQHDYcg73WIYnYNnDyugeiZ1uWv7uqQTrZHPH4rVlb5ERzN6BeCXEFmmA==
+	bh=kwU0aqAfTOVb09U8gKdoBVAG+8nbfQGFHmI2srC8srU=;
+	b=Z+Bmcv59f3dLaSLISGr8XTOR6dd4GVnQ/JYCsBfbzW6O4fBjcMU40ykK0DBBOm/yPPkx
+	 c8wPAbjBbHv/+y9VCNu34zDK5JAzGytwgdTuaPlWKWhxwqlWb0Gd3wiUGGx/PQ2m+sOBo
+	 +PEF2CTsUdWvhWN+iRIhWXldsG8Zx5RB2L67jiLSWpb1gxd8svdfnHw93kFGuPAwtzDmK
+	 pHVg8cLZwFXr0V/kU4YxARDIvij3CW6Gpxp5RzFFYg4NcMLenv5AwHjPCK89MJV0r5JE6
+	 ngqGo+vkMORCLOyORN5PPJDz4jtC14pchb1TakSUQBiFHxuooyuuSFdXDjPUyH5YAxQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=w0ujMQNb;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.61
-Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011061.outbound.protection.outlook.com [40.93.194.61])
+	dmarc=pass header.from=oss.nxp.com;
+	spf=pass smtp.mailfrom=oss.nxp.com;
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=kyQBwJEV;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.13
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010013.outbound.protection.outlook.com [52.101.84.13])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD538606A330
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 15:22:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BD538606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD820606A336;
+	Mon, 16 Nov 2026 15:25:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CD820606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=w0ujMQNb
+	dkim=pass (2048-bit key, unprotected) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=kyQBwJEV
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tuFLQnq2zKFxSzEbYiHQTN8A4jLFKhR6oODveNDLCxQiJcTxi2ZCeibdVNvLJ35jdXbZX7DLEmP29afCdKgh1wI/MF+76NbluFNtVSVqj0ZE+OQ4mcNY5VvDzycJOB6WPwQmda1Ab6hd/dmvwz+biU/a+h0vwC9jAWzmsYF04b2gPcNFgg3zJG4FFKCVBIGjA79PD3Gepvbbd0J3AajXnzyq5RGTHNIzGZbbaDWV6usyqUinAKmRwT4PHNwalTro1RGejbV5edALcdw9o4NavPsj+FogxGjm4tfuYr9ZRrjNVoiWTVhT6dkEHKzQXH3SHGTduJowy29PAhw7MXIZ+g==
+ b=T3R9oshvYFZPDrPduCwrtF2mf9HZ71pIkecFZDfWqXJY+S3lC4qFOyxD6WjCWegxCtlXLpH9wVDv7tefSMiseu1kYud9QotU2QtHnrLZJ/ygnPPs6A57t88kSprGwUkQ2dB8IpLoD1N38KqF/M4x+EmtAjd/iskvSVlwpM2RhFjt8062Q+9wlIYm0uMF4wY4gU3dWfTWdZ6L4ZYPvZ9CFjFnLlXCBMXj2cehKq/LQjMz6b+NIaED8a4DG6o9JfR8/y2zk5HcGQJTzJWZ45lvH5ztk1cHszk593OOe6jvtF/C/9oi0YhfugPTCLq6aM6kFMKfbLWSHQmXalfc8dMmLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KZ9CU8eKAdktlIu25GiSXdTKIBoybZuUXEMFv52h61Y=;
- b=hZkVOHgvi9/KxbUWKqyLGq40ezE98iRMLAQyWqevfGFfjO0xRBk5Rz/Hgcy/pd1gWaC4WWxfqWWhhfX2UkXiEUlmdKVQtI/HWMud/XG5GBrgImUz9kIpKEM3cTZbFM1SN7kJsnUWl9hVWBYYDcJJUGvO9zxr3vTw7zp2N9YMen4oAyVPr24XJ9Igoix6VnO45X3Mm9q2PaV0FkGMVJi4UJjpWr4sH0rmORsSmfGlrEEaXmV/WRUYL05rSH3EeO/rxXEHjFRWNLt0inRndw5DDN9bqZWmlCey0xIkhJEEL28IrEOfxL0+xLEC8JwC6Hq36cGaDOEQr444jqqWVga0iA==
+ bh=kwU0aqAfTOVb09U8gKdoBVAG+8nbfQGFHmI2srC8srU=;
+ b=H2m6YXooq56e7YRPyIwMiwvqAU7SZ06xm+J3jTqoG8NqVofgEV20PqcjOzjXQTPVOzz5AZqdVd01MflRa/rPsD1AO6vXKXOq996r5DWRCSgehu/58YnAca5WBMaCZSEvyMZVpNKn2rFV12fr53NWtsBadnn+CKso6zc6GO1F1pFzPeZ6PxWBWSM0oCKY2zP9Qez7u3mb9IX56M1WQWPffoewyfQhqDMAVurLi4pCM6lIduQcD/MV9WC3NSb0iNcnmmdLU85jUMNLWYDG8EgwNVRVJkAd9G7pZWhr5Ol+j+GEAOWxZ3tU/EHXNEhcMPX5mKv/qAV6LenvrTaCFo/DQQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KZ9CU8eKAdktlIu25GiSXdTKIBoybZuUXEMFv52h61Y=;
- b=w0ujMQNbitFxgtVlSxkFpJDGX8OvR2YvW6EbYSbmLBgYc4itWDm7wFtLszfoKoOXA2pK4BwXA0FhAZkj/yHyMXHyod9L4Nz+KH9u9P22TjRtAkR9A37X9Gx4n75kLj0MAWee36rAKZ94Ta3Sopv+eR5GXJBf/sm4SeKrFV5ib88=
+ bh=kwU0aqAfTOVb09U8gKdoBVAG+8nbfQGFHmI2srC8srU=;
+ b=kyQBwJEVUZgO0EPw99NbJvjoBp3KT2Gpg7NsZ1bkFUKBzj4z2KMEPb0u4jqu+U2Maa3Z2SUHD+IQqKYc8A6+GGlYnN0eQUbPp7wSXN7ztSRkY4NUKTSVxwoi76Vf42rgUC4l655pS0dhFkuYFxJ24oqSuD7tlDSCCRu4Y/IcCIVSoccNpN/T4Us/py3dZZoITMCfuyb4que8dS/gcTxdXd36C7bJb1lDnR8hEjiwYad2BaMlLMkdJ5P8wtCly8Dhfi7cZzcaLimNLryvEZdKP2RYrn7d0G2HhldiSQQQe7323CKD3xuNqpVbUuMNxtyFS9azSCk6CwEGhpPWZA3iUQ==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SN7PR12MB6837.namprd12.prod.outlook.com (2603:10b6:806:267::10)
- by AT6PR12MB932818.namprd12.prod.outlook.com (2603:10b6:170:116::11) with
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
+ by DU7PR04MB11161.eurprd04.prod.outlook.com (2603:10a6:10:5b3::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Mon, 16 Nov
- 2026 15:22:49 +0000
-Received: from SN7PR12MB6837.namprd12.prod.outlook.com
- ([fe80::42e1:d1c1:d50d:b2d0]) by SN7PR12MB6837.namprd12.prod.outlook.com
- ([fe80::42e1:d1c1:d50d:b2d0%6]) with mapi id 15.21.0615.009; Mon, 16 Nov 2026
- 15:22:49 +0000
-Date: Mon, 16 Nov 2026 15:22:33 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Samiullah Khawaja <skhawaja@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	David Woodhouse <dwmw2@infradead.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Kevin Tian <kevin.tian@intel.com>, Alex Williamson <alex@shazbot.org>, 
-	Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>, Nicolin Chen <nicolinc@nvidia.com>, 
-	John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v7 03/18] iommupt: Implement preserve/unpreserve/restore
- callbacks
-Message-ID: <ogvxrnowo4jb4bwvybw5o5cyoefuj2yim5oropt6nmri6tseiy@hrl7srunm24j>
-References: <20261110040828.1774343-1-skhawaja@google.com>
- <20261110040828.1774343-4-skhawaja@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261110040828.1774343-4-skhawaja@google.com>
-X-ClientProxiedBy: MA5PR01CA0144.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:a01:1b9::11) To SN7PR12MB6837.namprd12.prod.outlook.com
- (2603:10b6:806:267::10)
+ 2026 15:25:22 +0000
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b%4]) with mapi id 15.21.0615.013; Mon, 16 Nov 2026
+ 15:25:22 +0000
+From: Frank.Li@oss.nxp.com
+To:
+Cc: Frank Li <Frank.Li@nxp.com>,
+	Alex Elder <elder@riscstar.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>,
+	Karol Wachowski <karol.wachowski@linux.intel.com>,
+	Oded Gabbay <ogabbay@kernel.org>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Tvrtko Ursulin <tursulin@ursulin.net>,
+	Matthew Brost <matthew.brost@intel.com>,
+	"Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Alex Elder <elder@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel" <joro@8bytes.org>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Guan-Yu Lin <guanyulin@google.com>,
+	Mathias Nyman <mathias.nyman@linux.intel.com>,
+	linux-pm@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	intel-gfx@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	linux-hwmon@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	netdev@vger.kernel.org,
+	imx@lists.linux.dev
+Subject: [PATCH v2 1/2] PM: runtime: fix stub pm_runtime_get_if_active() for !CONFIG_PM
+Date: Mon, 16 Nov 2026 10:25:10 -0500
+Message-ID: <20261116152513.2676573-1-Frank.Li@oss.nxp.com>
+X-Mailer: git-send-email 2.43.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: PH7P223CA0017.NAMP223.PROD.OUTLOOK.COM
+ (2603:10b6:510:338::10) To MI3PR04MB12438.eurprd04.prod.outlook.com
+ (2603:10a6:290:76::14)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -105,359 +131,187 @@ List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN7PR12MB6837:EE_|AT6PR12MB932818:EE_
-X-MS-Office365-Filtering-Correlation-Id: 46dd0de8-985c-4e70-105c-08df43f578f8
+X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|DU7PR04MB11161:EE_
+X-MS-Office365-Filtering-Correlation-Id: 34e94d89-9953-4c08-4f4e-08df43f5d4bd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|366016|7416014|376014|22082099003|18002099003|6133799003|261009223027099003|3023799007|4143699003|11063799006|56012099006|261102123227099003|261028144727099003|261026121527099003|261026140227099003|261021121427099003|261022105027099003|261022075727099003|10067099003;
+	BCL:0;ARA:13230040|19092799006|7416014|366016|376014|23010399003|1800799024|18002099003|6133799003|11063799006|56012099006|10067099003|261022075727099003|261022105027099003|261028144727099003|261026121527099003|261021123027099003|261021121427099003|261026140227099003|261009223027099003|261009223327099003|261009221227099003|261009220027099003|261102123227099003|261009221727099003;
 X-Microsoft-Antispam-Message-Info:
-	CqiTin6KLUSAoC9SZZX1Qxip3YxadMF9YebA8j+xz8SEqQnHFg1D4Kykb9WkXG9I8sfuv61EEM+uoHhE8fteSOr7pn+g+5T47YsDN/PGPQLkgI+Dkc+N80EHoIP2sw/+X4vP2Ln3Ayh9VhvbkHVO5TzVwy3UcWY2cZrjLhtniUG4y+euQ8iSd0R7jGZa93/V/kg519r297ZWZErjiBp9BdMNoAl1ghM73fFg/syO4Et+OIAtOBxF+QgUZCpANUMQyj/45iqiSQ1aGpozRwmJ6Y4+4q/royOYsjJ3RjqkM4UO+zOa6I+tuiocpOJEodEQeBS5r52Oot5+xbQEvH38OPxkRtJ9/C4/wtCEcw+4bVtmcBGSn+MPkmW5BRDzgtFJzxiiDW6BQKIHulHQAiNJaTK+6KnFA4R7IvDCLmmf9/PfUOGQt1EDCi/CAJA7RFD39gWUtp2dVnvcNUnYc2V0FD6hOP7YT0Atfi5tx3aJOjQ3V5RnFWKhtIBIAde12vRdvwr98J0WScVjefSxa5DpV7O/h2oKbVXspCRkZkZp0AdCW0ZUXlGeIisejO6jy4BPuxrmriHXX3OgOndh5DKZOkrgrhTKnQ5JTjw8aV/eicrGgLRBXr8yYBUA+hK1zkgtTQsc7bDdoPlJgT0yeqoYX57cDYjGZPYWuovECsvnzvI=
+	kiz/bkm1v3jdulKiQWNUyJNwErxxuNx2eVWey0BIKtzfA2g5TuGrOJc0aNesYkW/z2K0P81/euDeDl0CMXEzYfENpZkSYfhL+WQoweGNvsm+NWsgwZqdfEQl6QkiNxd1u28yYb45sCCmjesSQHnqwfmHNKiuH0cd52Yq1zg6wh1OMXl6pGfWb7ykBsVHPWfLrOb6H2YHpFY8HSskTQyQgjhCzDNti+XV48LSSNljSBbxSTWVHH6HTeKYYSqF1a4eIsDsH2q5fmq8sO8xku8fKxyjV+GkxqdsfkzT8cNOOg5esY8r0xBZIWaNVdaY2oGlHUTZFxC9b7eVxP0gtUSsASmuTXa00M9zb4LnAthR8K6ZPKs8nZF3J1D6fmoDzJLS8rntVRVHUdwyoECqQlkxyXgmJ65oLhIhi6C3/WvauOXFVIHQLnDh4VMK5b2NslfvIE3eSqqVdZBRTwNau65ZHnTWpDLlT01FyjpmxH1lfmKd7iHr9oVnWJDye0tKZkT47pczFVyjuaIfDJepknCm/+50FOAf9Y22I7XAdNTAR8R2rPl4/LWn5lVNOi7SlcW3BNYEfnX/6tDkU7a2HcqAfMm1lzvenXyBqIePBHoSzg0MT1j2PR8GkgI17PichB6uEGHZmJo5n7jG+3BG/1qxe2+tCwV4aicvzkRoNC/OYcU=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR12MB6837.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(7416014)(376014)(22082099003)(18002099003)(6133799003)(261009223027099003)(3023799007)(4143699003)(11063799006)(56012099006)(261102123227099003)(261028144727099003)(261026121527099003)(261026140227099003)(261021121427099003)(261022105027099003)(261022075727099003)(10067099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(19092799006)(7416014)(366016)(376014)(23010399003)(1800799024)(18002099003)(6133799003)(11063799006)(56012099006)(10067099003)(261022075727099003)(261022105027099003)(261028144727099003)(261026121527099003)(261021123027099003)(261021121427099003)(261026140227099003)(261009223027099003)(261009223327099003)(261009221227099003)(261009220027099003)(261102123227099003)(261009221727099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?t0uBofqFkD76eTIM6NnBidWi+OtTgMW9O7bNjuOPaaXfPwVrlK0d28qroBzR?=
- =?us-ascii?Q?u4ibkrOOdM6XaAH4SjrYIMnZvWiCheBx/qlW41QCG5VFOdhnFwQqGsHu0gdv?=
- =?us-ascii?Q?apAvYGGMvPlwkrz5w4Yn+SWsorCPmfkfEO1bzHsMaWKOwozE9WeS2v/fk9as?=
- =?us-ascii?Q?MumOoED82KykYxmPFTwc3fouQsm0l8ExKk1z9v4wTJ+w+r+8sOLZrPLRbOuK?=
- =?us-ascii?Q?1eOONzrUyPKfNp1atUAHwqnssJ9wk92ZPHpUvLBJ8Gfas9Wyy2CnGGhdRNwp?=
- =?us-ascii?Q?EZ+4BZtUJlnFhGs8Ru7TrYQMjhiC6NRtNJOpz7XP+U+yHwHf3pVHfrYD4L1U?=
- =?us-ascii?Q?MqYekIcLoq+Uq/WiaTEO8+PhbIG5ttioQQBFdnJSBHs0rhzwdEYojb1K5RUJ?=
- =?us-ascii?Q?JqPgcMNbqZF8asmeFA6dpdHSf54HUyt7sMMhTfYCDfGVgKqn70AmPw99R6dW?=
- =?us-ascii?Q?LjILlJ/wyNpJO1QgeowMziMCzootBvM1oLcA6q6x1yI9Pqe1IX8l/4+ZPZTy?=
- =?us-ascii?Q?ki6HxVKHzeRBB7+Xn11zgetnSo2effPv1VGrhf/4/IY+DKxLaSAOdiZfXw4X?=
- =?us-ascii?Q?3n7sPBzmt8xZ9I00dkohMluRFopkTStnbfw+ef31DikuB5Yc+5OQJYFrr3hx?=
- =?us-ascii?Q?aiuWnyDnQspj0GyWw8eFGooEERU+X8W8qHd/u/wETvJmnPev7BARTB8aJz04?=
- =?us-ascii?Q?a8jYWynLgkRPu78bFJzBtXpfvtBeTEKheBfZQXlB8uJqAybvvl+SOEi1VYis?=
- =?us-ascii?Q?O+Wc0wvHeLqo/vMu/JKS5uQfbuMwFgzHROleRAQihiRTjnyHmf0yrUjFooc1?=
- =?us-ascii?Q?PpeOZ4ugzCQ+svihhyhynVpfpgL1DB7p1RAVOP7XBOUdmF5gRT1W+HUEYBQq?=
- =?us-ascii?Q?4syfF/v4aJXilT39O2jnVEwV/c4fjoYOmGiUtLVezmhibBSimfPMKECVX2Xp?=
- =?us-ascii?Q?P7YFS1cDl6mWGt6Am1E9gIMNasMu6Mn4xsc59O1TZX995Y0BeeYA8RUOqGSN?=
- =?us-ascii?Q?7qorMwnPON1Rbkxprlf9OrweyCriQ5cyiHoaJ7DWkFcPuOYQx8GH10mYfNo5?=
- =?us-ascii?Q?1sn42OJrqMBNKaGM65C+CThP/NzS7VRr19UQlEs4b10kGC0NlUHv5i0K3gKF?=
- =?us-ascii?Q?zidZWaL7J6Tx9gI17kCnNV/z1iiwTsHiDwBqAaYcLDdjECzvRk8GlPXIzf5h?=
- =?us-ascii?Q?myEIinU1gj2NvISsiAxHEtskBHdutsmR3SgaWrs6kFmt53r2n2KJ0uHNxx0/?=
- =?us-ascii?Q?qJZ9Pk+nfutPuaLyp7jbRMMUaUMsVxuacwc6MnpE8x4vST2sMBDDYu8kaVqa?=
- =?us-ascii?Q?qWKqCvPmHbHt4xM3AWfcL7D1QTn807JcAAsRkiU6I/4GcRZ+mqQ286g2voo8?=
- =?us-ascii?Q?Iy6rwcyEM87rJvOF3g9yMVc9Aexq4q++ooTc1lx64KYN24RTYfqwHbSiUWpq?=
- =?us-ascii?Q?ndD6t2ry4MCiy9YZKnYtjIZb8T1MeMnGrtmWzXh5xn/LLbfO9iWLrLQ1WOmt?=
- =?us-ascii?Q?5Zi5X3qzQ2xPVjuxMIstKceRqCnM9pkB/OlzSaEz4E+kn//MuVGAaReQBDqX?=
- =?us-ascii?Q?dPEEpkzuoeGeXUDyZ1+x0P/5XKLuiLXwztE2NeZV7LKTFwxSs3ETjFTjzxuc?=
- =?us-ascii?Q?ADoQ2oRxc7NUVpqVQD9mT/m9lxjOHQSi4gckTp/RLgTp/lOIgjvpXNc1Whf1?=
- =?us-ascii?Q?oaj/bXSBLWma3OGTkNj2NMmIbWoK3XNrMVlTfdGbwhs5dlrrntKdze/3YsG7?=
- =?us-ascii?Q?WgQnpMmWrA=3D=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 46dd0de8-985c-4e70-105c-08df43f578f8
-X-MS-Exchange-CrossTenant-AuthSource: SN7PR12MB6837.namprd12.prod.outlook.com
+	=?us-ascii?Q?jjsXZKNgmbHP6THel3p6tv7fU6QECNyoCn6OPDoZdn06gAkTkbZGFIF/nVB3?=
+ =?us-ascii?Q?MxueDqZePQ+GLQOIReLcN8T73fshjhDGuBoZh//36tajDhEgGCzzkEel7A+p?=
+ =?us-ascii?Q?Bt10SKtbUFwvI+twGCcyB/vDUKaLqoivQU7Xjj4oMA01Tr2gmKIFWOYQLJUF?=
+ =?us-ascii?Q?Go4LWEc14xikn4ucaCN+ovkarlZuEwiSVsvZqCfO5PxlMd5Y/QZjY44bRxrw?=
+ =?us-ascii?Q?JTqJyNU1Isd6UshhFLigtDtJUgpUinzmz096COr9wJKucWvRrDvLP/frNhZd?=
+ =?us-ascii?Q?Pms9PoHjeS9x/oK+vGjEvRpVZt0Z4iGpkHmdlAh0HlRJRNQrtcXmFBjbcdzP?=
+ =?us-ascii?Q?qvU0uWWRdANCfS22s8c07/ytR6iWHXkXGK4B/uSI4RhbjIcbclQWeSkROW7q?=
+ =?us-ascii?Q?N0dzlBha6Soq5tFpAHZX+CGntbSz9gf7N6MzUrP3csqzXn04J9a3GuiD5ihS?=
+ =?us-ascii?Q?78JKkP/DfsLB+l1Ai32FckrFfvVOB5VF3eqQbOfx5ZJZrehCv3fIUFYkLVUT?=
+ =?us-ascii?Q?Q1yGA76aFpUaIkopiu4Z3kdpWse7cXvU9gZ+C8oagcxp36pL9oUpQV/CStxq?=
+ =?us-ascii?Q?04UdlTES35iqy4pxoIAoIWkkehbt1w+QAAsor8rr8TfBqrg1i2qMwKc+LcYn?=
+ =?us-ascii?Q?1XepXumUPd++Kh9t9Mdwj9pJtRzvJHw/YiJoF5Sfs7XxW654laf24Uv3QtZ6?=
+ =?us-ascii?Q?mBw9bCmbOTTpgbE8N7qNl5xeWRiZ7tIod6Djn9kF+SF6lGjLIWrnPrPfJk5X?=
+ =?us-ascii?Q?jOGH8RciVDVFWfMBx/FnyO0L2G8xKWzbG1Jst6UMV3lU9TE6Qiawxj5KBGp8?=
+ =?us-ascii?Q?cpjd7A1ab1mgzSxQ6Jr6NYv5j9cgiQjG7KYTXCQPMMs4v4dKQhiWxtiMH/dD?=
+ =?us-ascii?Q?iy75LEVHkC5wliTwcRIST1M3Ossy8rjEArne0IQ9dh/iWEdXrOrvPXGb2BuX?=
+ =?us-ascii?Q?qOga0f2ZhbP5wvo8qkqdk/4h4cYEffCsOEtzAJ03dHWHIcD8k75nIVxblYNo?=
+ =?us-ascii?Q?m9LaxodBXkbXRCt/r3aLdBBk2I4O3mLaY6uBNuAzEfca8Zm0QVdcWw9yhFdO?=
+ =?us-ascii?Q?IW0axWzIygqgAWefwAnw8qz6wQ3BDO6ENLAds7CJcWNSixwTCfH8Ys+wcnBB?=
+ =?us-ascii?Q?KxSYK9p9xvurRheAbJeOIreqqIfdexb8rIi1/Lv1FACqgyHpdehMOvflQuWY?=
+ =?us-ascii?Q?UE4nuqeW1BLW8GK29WDOHq4qyqwDNdJmaVsnx7RDOEY2NwrTGgiqx5dM9e9q?=
+ =?us-ascii?Q?/kN1yKFE57lM5XjuGcFfg6zD9+lXBaAK3yHAuLrk1urE/Rw2/CZA66YUkCPD?=
+ =?us-ascii?Q?5YYv4/adfeHPW7Bo7yxdqkHClDLihrx6AkjmOwKrPcF4M/H3koj4pqGRaiBv?=
+ =?us-ascii?Q?Ny+K5E/WPR96NW7+eSZIoEJa2LJSyOzmhDrT1XUsmiz7P+LQiAsOlhzP86UF?=
+ =?us-ascii?Q?LkQv66VaMQmRVq0/zdLkCRxW+pCvqVvwykaAsvfvnP5tyN/hl29VEiwcCOTr?=
+ =?us-ascii?Q?u6DERBybMWVRecCjuxwdvc4HuIqACdeAoVvC+40kD0tBoqt6denC+o4TcRNf?=
+ =?us-ascii?Q?tlJMLbOuGmaCzWRl9fGWm4EFb4tKM/u/s1xKhlgX+LH5zKtMBJ/2YIwCOiyP?=
+ =?us-ascii?Q?HX8DdXBJ3MH8C6DhxnBs+lSCMte9aW+8X17cvoOWTKBHmbsGACx0vFBisfoW?=
+ =?us-ascii?Q?EbC+9ch/T5ijSfbZ/fgoYXgZJa4qQOJRQsqWND8V/IAQGelYFrsX5HouQJiz?=
+ =?us-ascii?Q?WHkpW34wLYAzDHAXk8kP3Mvn0CdgjxU=3D?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34e94d89-9953-4c08-4f4e-08df43f5d4bd
+X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2026 15:22:49.0537
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2026 15:25:22.6861
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DhI73sCTSnv6bT07eu4fGOmgZ+AC5iLXr92EYz7Z1HrTfs9v1obybZYaLM7eIRdeOJdXttMQwpI7WhOicFLjWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AT6PR12MB932818
+X-MS-Exchange-CrossTenant-UserPrincipalName: GHBCqLzXO7YQGxkxz3HqKE+328TOvnt2XmPv9gZq0bs/gPBtsNe5U0uXHwjE4X/CNcRBHZi78qqihf23AUTM0f4jkeE14AeF+W9uXFWtlZ0hDstg+Hb1+ENfOauEc3Cv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU7PR04MB11161
 
-On Tue, Nov 10, 2026 at 04:08:09AM +0000, Samiullah Khawaja wrote:
-> Add iommupt ops for preservation, unpreservation and restoration of iommu
-> page tables for liveupdate. Use the existing page walker to preserve the
-> ioptdesc of the top_table and the lower tables.
-> 
-> Preserve top_level, VASZ and FEAT Sign Extended to restore the domain in
-> the next kernel. On restore, the domain has only the preserved features
-> enabled and all the other features are zeroed. This is ok since the
-> restored domain is made immutable and can only be freed. A kunit test is
-> added to verify that the IOMMU domain free can be done with trimmed
-> features.
-> 
-> Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+From: Frank Li <Frank.Li@nxp.com>
 
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+When CONFIG_PM is not enabled, should be treated as if runtime PM were
+enabled for the device and the runtime status is active.
 
-> ---
->  drivers/iommu/generic_pt/iommu_pt.h       | 155 ++++++++++++++++++++++
->  drivers/iommu/generic_pt/kunit_iommu_pt.h |  30 +++++
->  include/linux/generic_pt/iommu.h          |  30 +++++
->  3 files changed, 215 insertions(+)
-> 
-> diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
-> index 837d835e4fad..b50dc94231f8 100644
-> --- a/drivers/iommu/generic_pt/iommu_pt.h
-> +++ b/drivers/iommu/generic_pt/iommu_pt.h
-> @@ -16,6 +16,7 @@
->  #include "../iommu-pages.h"
->  #include <linux/cleanup.h>
->  #include <linux/dma-mapping.h>
-> +#include <linux/iommu-liveupdate.h>
->  
->  enum {
->  	SW_BIT_CACHE_FLUSH_DONE = 0,
-> @@ -991,6 +992,155 @@ static int NS(map_range)(struct pt_iommu *iommu_table, dma_addr_t iova,
->  	return ret;
->  }
->  
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +static void NS(unpreserve)(struct pt_iommu *iommu_table, struct iommu_domain_ser *ser)
-> +{
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range range = pt_all_range(common);
-> +	struct pt_iommu_collect_args collect = {
-> +		.pending.free_list = IOMMU_PAGES_LIST_INIT(
-> +			collect.pending.free_list),
-> +	};
-> +
-> +	iommu_pages_list_add(&collect.pending.free_list, range.top_table);
-> +
-> +	/*
-> +	 * pt_walk_range() will never fail as check_mapped is not set in the
-> +	 * collect args.
-> +	 */
-> +	pt_walk_range(&range, __collect_tables, &collect);
-> +
-> +	iommu_unpreserve_pages_list(&collect.pending.free_list);
-> +}
-> +
-> +static int NS(preserve)(struct pt_iommu *iommu_table, struct iommu_domain_ser *ser)
-> +{
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range range = pt_all_range(common);
-> +	struct pt_iommu_collect_args collect = {
-> +		.pending.free_list = IOMMU_PAGES_LIST_INIT(
-> +			collect.pending.free_list),
-> +	};
-> +	int ret;
-> +
-> +	iommu_pages_list_add(&collect.pending.free_list, range.top_table);
-> +
-> +	/*
-> +	 * pt_walk_range() will never fail as check_mapped is not set in the
-> +	 * collect args.
-> +	 */
-> +	pt_walk_range(&range, __collect_tables, &collect);
-> +
-> +	ret = iommu_preserve_pages_list(&collect.pending.free_list);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ser->top_table_phys = virt_to_phys(range.top_table);
-> +	ser->top_level = range.top_level;
-> +
-> +	/*
-> +	 * VASZ and SIGN_EXTEND will be needed in next kernel for collector page
-> +	 * table walk to restore and free pages.
-> +	 *
-> +	 * Use the max_vasz_lg2 from range, as that is the current one if
-> +	 * DYNAMIC_TOP is supported.
-> +	 */
-> +	ser->max_vasz_lg2 = range.max_vasz_lg2;
-> +	ser->sign_extend = pt_feature(common, PT_FEAT_SIGN_EXTEND);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __restore_tables(struct pt_range *range, void *arg,
-> +			    unsigned int level, struct pt_table_p *table)
-> +{
-> +	struct pt_state pts = pt_init(range, level, table);
-> +	int ret;
-> +
-> +	if (!pt_can_have_table(&pts))
-> +		return 0;
-> +
-> +	for_each_pt_level_entry(&pts) {
-> +		if (pts.type == PT_ENTRY_TABLE) {
-> +			iommu_restore_pages(virt_to_phys(pts.table_lower));
-> +
-> +			/*
-> +			 * pt_descend can only fail if pts.table_lower is not
-> +			 * init. So the if statement below is dead code.
-> +			 */
-> +			ret = pt_descend(&pts, arg, __restore_tables);
-> +			if (ret)
-> +				return ret;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void NS(deinit)(struct pt_iommu *iommu_table);
-> +static const struct pt_iommu_ops NS(ops_immutable) = {
-> +	.deinit = NS(deinit),
-> +};
-> +
-> +static int NS(restore)(struct pt_iommu *iommu_table, struct iommu_domain_ser *ser)
-> +{
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range range;
-> +
-> +	if (ser->max_vasz_lg2 > common->max_vasz_lg2 ||
-> +	    ser->top_level > PT_MAX_TOP_LEVEL)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Override the max_vasz_lg2 here to the one calculated using top_range
-> +	 * in previous kernel. This makes sure that any later page walks use the
-> +	 * clamped max_vasz_lg2 instead of using the full hardware maximum
-> +	 * max_vasz_lg2.
-> +	 */
-> +	common->max_vasz_lg2 = ser->max_vasz_lg2;
-> +
-> +	/*
-> +	 * Restored page tables are strictly transient and only permitted to be
-> +	 * destroyed via deinit() op. Because we only preserve user-assigned
-> +	 * devices utilizing pass-through frameworks (VFIO / IOMMUFD), any
-> +	 * concurrent or subsequent map/unmap operations on a restored domain
-> +	 * are explicitly blocked at the subsystem boundary (e.g., via IOAS
-> +	 * immutability).
-> +	 */
-> +	iommu_table->ops = &NS(ops_immutable);
-> +
-> +	/*
-> +	 * It is safe to override this here since this domain is immutable and
-> +	 * can only be freed. This also means that for non-coherent pages DMA
-> +	 * mappings will not be created using the DMA API.
-> +	 *
-> +	 * Note that the FMT specific bits are not cleared as they might be
-> +	 * set/preserved/restored by the driver to handle special cases that are
-> +	 * required for page walks.
-> +	 */
-> +	common->features &= ~GENMASK(PT_FEAT_FMT_START - 1, 0);
-> +	if (ser->sign_extend)
-> +		common->features |= BIT(PT_FEAT_SIGN_EXTEND);
-> +
-> +	range = pt_all_range(common);
-> +	iommu_restore_pages(ser->top_table_phys);
-> +
-> +	/*
-> +	 * The old top_table can be freed here as it is not used for any IOMMU
-> +	 * mappings yet, because the restore happens during device probe.
-> +	 */
-> +	iommu_pages_free_incoherent(range.top_table,
-> +				    iommu_table->iommu_device);
-> +
-> +	/* Set the restored top table */
-> +	pt_top_set(common, phys_to_virt(ser->top_table_phys), ser->top_level);
-> +
-> +	/* Restore all pages*/
-> +	range = pt_all_range(common);
-> +	return pt_walk_range(&range, __restore_tables, NULL);
-> +}
-> +#endif
-> +
->  struct pt_unmap_args {
->  	struct iommupt_pending_gather pending;
->  	pt_vaddr_t unmapped;
-> @@ -1174,6 +1324,11 @@ static const struct pt_iommu_ops NS(ops) = {
->  #endif
->  	.get_info = NS(get_info),
->  	.deinit = NS(deinit),
-> +#ifdef CONFIG_IOMMU_LIVEUPDATE
-> +	.preserve = NS(preserve),
-> +	.unpreserve = NS(unpreserve),
-> +	.restore = NS(restore),
-> +#endif
->  };
->  
->  static int pt_init_common(struct pt_common *common)
-> diff --git a/drivers/iommu/generic_pt/kunit_iommu_pt.h b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-> index 9fc71db74234..7306de44eb00 100644
-> --- a/drivers/iommu/generic_pt/kunit_iommu_pt.h
-> +++ b/drivers/iommu/generic_pt/kunit_iommu_pt.h
-> @@ -427,6 +427,35 @@ static void test_mixed(struct kunit *test)
->  	check_iova(test, start, oa, len);
->  }
->  
-> +static void test_restore_free(struct kunit *test)
-> +{
-> +	struct kunit_iommu_priv *priv = test->priv;
-> +	struct pt_range top_range = pt_top_range(priv->common);
-> +	u64 start = 0x3fe400ULL << 12;
-> +	u64 end = 0x4c0600ULL << 12;
-> +	pt_vaddr_t len = end - start;
-> +
-> +	if (top_range.last_va <= start || sizeof(unsigned long) == 4)
-> +		kunit_skip(test, "range is too small");
-> +	if ((priv->safe_pgsize_bitmap & GENMASK(30, 21)) != (BIT(30) | BIT(21)))
-> +		kunit_skip(test, "incompatible psize");
-> +
-> +	/* Map a large mixed range to populate multiple levels of page tables */
-> +	do_map(test, start, start, len);
-> +
-> +	/*
-> +	 * Simulate a restored state by clearing all features except SIGN_EXTEND
-> +	 * and DMA_INCOHERENT. This verifies that the generic page table free
-> +	 * walker can correctly tear down a populated domain when other features
-> +	 * are zeroed. Also set max_vasz_lg2 as done by the actual restore()
-> +	 * function.
-> +	 */
-> +	priv->common->features &= (BIT(PT_FEAT_SIGN_EXTEND) | BIT(PT_FEAT_DMA_INCOHERENT));
-> +	priv->common->max_vasz_lg2 = top_range.max_vasz_lg2;
-> +
-> +	/* The domain will be freed when the test exits. */
-> +}
-> +
->  static struct kunit_case iommu_test_cases[] = {
->  	KUNIT_CASE_FMT(test_increase_level),
->  	KUNIT_CASE_FMT(test_map_simple),
-> @@ -435,6 +464,7 @@ static struct kunit_case iommu_test_cases[] = {
->  	KUNIT_CASE_FMT(test_random_map),
->  	KUNIT_CASE_FMT(test_pgsize_boundary),
->  	KUNIT_CASE_FMT(test_mixed),
-> +	KUNIT_CASE_FMT(test_restore_free),
->  	{},
->  };
->  
-> diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
-> index 13ebb72a67de..617fb9af6bef 100644
-> --- a/include/linux/generic_pt/iommu.h
-> +++ b/include/linux/generic_pt/iommu.h
-> @@ -13,6 +13,7 @@ struct iommu_iotlb_gather;
->  struct pt_iommu_ops;
->  struct pt_iommu_driver_ops;
->  struct iommu_dirty_bitmap;
-> +struct iommu_domain_ser;
->  
->  /**
->   * DOC: IOMMU Radix Page Table
-> @@ -166,6 +167,35 @@ struct pt_iommu_ops {
->  	 * table from all HW access and all caches.
->  	 */
->  	void (*deinit)(struct pt_iommu *iommu_table);
-> +
-> +	/**
-> +	 * @preserve: Preserve the iommu page table for liveupdate
-> +	 * @iommu_table: Table to preserve
-> +	 * @ser: Serialization struct to fill with preserved state
-> +	 *
-> +	 * Preserve iommu page table and the relevant state for liveupdate. The
-> +	 * caller must make sure that the page table is not updated during and
-> +	 * after preservation.
-> +	 */
-> +	int (*preserve)(struct pt_iommu *iommu_table, struct iommu_domain_ser *ser);
-> +
-> +	/**
-> +	 * @unpreserve: Unpreserve the iommu page table
-> +	 * @iommu_table: Table to unpreserve
-> +	 * @ser: Serialization struct that contains preserved state
-> +	 */
-> +	void (*unpreserve)(struct pt_iommu *iommu_table, struct iommu_domain_ser *ser);
-> +
-> +	/**
-> +	 * @restore: Restore the iommu page table after liveupdate
-> +	 * @iommu_table: Table to restore the state into
-> +	 * @ser: Serialization struct that contains preserved state
-> +	 *
-> +	 * The iommu_table is back filled with the restored state that was
-> +	 * preserved in the serialization struct.
-> +	 */
-> +	int (*restore)(struct pt_iommu *iommu_table, struct iommu_domain_ser *ser);
-> +
->  };
->  
->  /**
-> -- 
-> 2.56.0.506.g506a7eabc5-goog
-> 
+It's a subtle distinction but the previous behavior returned -EINVAL, which
+means "runtime PM is disabled for the device"
+
+__pm_runtime_resume() returns 1 (called by pm_runtime_get()).
+pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get().
+stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
+should return the same value as the stub pm_runtime_get(), which is 1.
+
+Analysis of all callers and their behavior with old (-EINVAL) vs new (1):
+
+Pattern A: if (!pm_runtime_get_if_active(dev)) -- no impact
+  Both -EINVAL and 1 are non-zero, so !ret is false in both cases.
+  Callers: drivers/accel/ethosu/ethosu_perfmon.c,
+           drivers/gpu/drm/msm/adreno/a6xx_gmu.c,
+           drivers/gpu/drm/msm/msm_perfcntr.c,
+           drivers/gpu/drm/v3d/v3d_mmu.c,
+           drivers/gpu/drm/v3d/v3d_perfmon.c (x4),
+           drivers/media/i2c/gc08a3.c gc05a2.c og0ve1b.c ov6211.c,
+           drivers/media/i2c/ccs/ccs-core.c s5kjn1.c lm3560.c (x2),
+           drivers/media/i2c/s5k3m5.c thp7312.c imx283.c ov64a40.c,
+           drivers/media/pci/intel/ipu6/ipu6-buttress.c,
+           sound/hda/core/device.c
+
+Pattern B: if (!ret) after get -- no impact
+  Both -EINVAL and 1 are non-zero, !ret is false in both cases.
+  drivers/gpu/drm/amd/pm/amdgpu_pm.c (comment says "allow access"
+    in kernels without CONFIG_PM), drivers/pci/pci.c
+
+Pattern C: ret > 0 / ret <= 0 / ret != 1 checks -- FIXED
+  drivers/usb/core/offload.c: checks (!= 1), old -EINVAL caused
+    -EBUSY even with !CONFIG_PM. Fixed: now returns 1, proceeds.
+  drivers/accel/ivpu/ivpu_job.c: drm_WARN_ON(<= 0), old -EINVAL
+    spuriously triggered WARN. Fixed: 1 > 0, no warn.
+  drivers/gpu/drm/i915/intel_runtime_pm.c: checks (<= 0), old
+    -EINVAL triggered error path. Fixed: 1 > 0, correct path.
+  drivers/accel/ivpu/ivpu_sysfs.c: (> 0), old skipped freq read.
+    Fixed: proceeds correctly without CONFIG_PM.
+  drivers/gpu/drm/xe/xe_pm.c: wraps (> 0), all xe callers
+    (xe_bo.c, xe_shrinker.c, xe_vsec.c, xe_ggtt.c, xe_guc_ct.c,
+    xe_pxp.c) now correctly treat !CONFIG_PM as active.
+  drivers/net/ipa/ipa_smp2p.c: power_on = (> 0), now correctly true.
+  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: (> 0), now correctly
+    executes stall register update.
+  drivers/staging/media/ipu7/ipu7-buttress.c: active (<= 0) early
+    return now skipped, correctly proceeds.
+
+Pattern D: explicit -EINVAL check
+  drivers/hwmon/prom21-xhci.c: checks (> 0) then (== -EINVAL).
+    Old: took -EINVAL fallback. New: takes (> 0) fast path.
+    Both succeed when CONFIG_PM is disabled; functionally equivalent.
+  drivers/hwmon/eic7700-pvt.c: call is guarded by IS_ENABLED(CONFIG_PM),
+    stub is never reached. No impact.
+
+Fixes: bd3d245b0fef5 ("usb: core: use dedicated spinlock for offload state")
+Fixes: 7806bad76ac39 ("accel/ivpu: Prevent runtime suspend during context abort work")
+Fixes: 9d58aa46291d4 ("drm/i915: Fix the GT fence revocation runtime PM logic")
+Fixes: 1524c28b99527 ("accel/ivpu: Show NPU frequency in sysfs")
+Fixes: 30c399529f4c6 ("drm/xe: Document Xe PM component")
+Fixes: 0d08026ac6099 ("net: ipa: kill ipa_clock_get_additional()")
+Fixes: 70892277ca2db ("iommu/arm-smmu-qcom: Make set_stall work when the device is on")
+Fixes: 9ad65684b9285 ("media: staging/ipu7: Ignore interrupts when device is suspended")
+Acked-by: Alex Elder <elder@riscstar.com>
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+---
+Change in v2
+- add fixes tag for patten C.
+- add Alex Elder ack tags
+- change subject to fix stub pm_runtime_get_if_active()
+
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>
+Cc: Karol Wachowski <karol.wachowski@linux.intel.com>
+Cc: Oded Gabbay <ogabbay@kernel.org>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: Tvrtko Ursulin <tursulin@ursulin.net>
+Cc: Matthew Brost <matthew.brost@intel.com>
+Cc: "Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>
+Cc: David Airlie <airlied@gmail.com>
+Cc: Simona Vetter <simona@ffwll.ch>
+Cc: Alex Elder <elder@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: "Joerg Roedel" <joro@8bytes.org>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>
+Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Guan-Yu Lin <guanyulin@google.com>
+Cc: Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc: linux-pm@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: intel-gfx@lists.freedesktop.org
+Cc: intel-xe@lists.freedesktop.org
+Cc: linux-hwmon@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-staging@lists.linux.dev
+Cc: netdev@vger.kernel.org
+Cc: imx@lists.linux.dev
+---
+ include/linux/pm_runtime.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index 64921b10ac74f..de9e7518ecef2 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -280,7 +280,7 @@ static inline int pm_runtime_get_if_in_use(struct device *dev)
+ }
+ static inline int pm_runtime_get_if_active(struct device *dev)
+ {
+-	return -EINVAL;
++	return 1;
+ }
+ static inline int __pm_runtime_set_status(struct device *dev,
+ 					    unsigned int status) { return 0; }
+--
+2.43.0
+
