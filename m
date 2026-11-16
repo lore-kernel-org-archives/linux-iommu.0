@@ -1,47 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.169
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794840066;
-	b=15YnUcdo6n7stjxezg4je0yIEtEcRp6PqHcFQI3mSPYWAPmF8ykCKn0YioDdux32SwBO
-	 rxXpSob16mz2SoVasThlGi6N1d6U2UkUQ4NvseAk82ygypWbptUo79904T8NmBMaTIf1i
-	 St3+tqcjoGemOn1V4wwrFrQpwFuAIu/gi16Xz6tHEEIR79dfLJFkQRP8v8OsbbmgHGEc8
-	 rkMvNYXa9nWAPzd9YD1exisb0eRVKwBY+rugwf861yUKy4+P5WN5tAzhnU4SjtzajD5f/
-	 YpVy4X6bu133y3Riepy6aEbCuCyRGAr6BPt+Y6OrC132dlMIAGky5XgMilAUb2NtjtQ==
+	t=1794840359;
+	b=CHkjjwkXX+6zrJlbyM2SOK+FkuzoOMMl9NUiDvK8GzAlj39xLU97vFo3YDt1a8cv1mjI
+	 4VoXHrnS3S3PaDys4dQJwlNMxw8lgLZoseJySMx/qgfMPr2Qlmxqh9sA4i7S/Gp3hQDka
+	 ypcJ87vGFciuLfj3Pj2DGxXC6rhhsuy1QGp9G4a+0xvpUFzPjHTw4xVQVKHmqy2UAsFQj
+	 fSsM3EkpyUjRsJpPatd7XV9V8ju3mDhvD4+6QiR9349NgzReMNqK+r4VP33ENpJAKYt0u
+	 yKtOtvG9iKFBIzbIjaOjz9mtUzyKPjDyslmWZV9bJzL7DL/Q6h4znB4n2GHABUpZ3Kg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794840066;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=rck2Y3eqNJgd+mBW5P64Rjy+9DMOjDHBgfT6pXds1IU=;
-	b=wZ3o6u96dM0yK6ap2YbvJaC+zUpnRE7gNJOJ1o8y3kRj9UpKLeiAro7i2QjW6g5PQkKo
-	 jx2uf9DVwZy2keQeHDZ+QaURBRSm82O4XDMxSRRCqDgPk0cBTv0YcD1lFfV75b21GRKxs
-	 W3LPLUwrBCoi+NIy6I/jnN0zSXzLNWHbyjWs+rM3rgxkjpe/0PYEoJpZRoCQwZ9sSOsCE
-	 6JON9QhJs4RKOQTO2w6dvHwup3R/bR0Ihu1cKE/Qjtw46nYcgjQCUu70E7+l4tqLVqBmI
-	 kJFI/TgNL+E2euGyYpvz2tGzblMK8N/orDq8PNUgspHucw+J3ndTe6a/t5vO1TvhR4A==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794840359;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=9cuLg5FPbuoxv94oaCvgpjnZpkxbSwN3Cw2dU0btsKg=;
+	b=inTCGLxUseyA9nHudndlQUp9FTyQJDiS+izCuUafIPsZjLDRqenxtcoICJykUbpGCk+f
+	 lXjr1kmud2vq6XWayqc8trPT1rNE/z92ToGJFTsEOt7d4R/CjvbHogmJrgpr+QkB1M62a
+	 FivyK1nX7vcdt9Plwh4+7DTPDoX3oJsz5QS8GcT6sJNIHscLs9i98AM82HCJaU7ltqGW6
+	 7KMHhTpgvVGSAnkUgmgm2ZUIH1lCP3ww18Y13LzQ3EmMIv65/WupLG55rFcYXuAzv6vPf
+	 c8Ai57igI1tqujdSvhvay98VIpofPHCUJTUpWNd/VBXybKecHSmx2s3MsGvgnQfXl7A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hOouaY1x;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=YJ1u7+3q;
+	arc=none smtp.remote-ip=209.85.222.169
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACA2B606A33E;
-	Mon, 16 Nov 2026 14:41:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9021A606A336
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 14:45:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9021A606A336
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hOouaY1x
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C6861F000C5;
-	Mon, 16 Nov 2026 14:41:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794840066;
-	bh=rck2Y3eqNJgd+mBW5P64Rjy+9DMOjDHBgfT6pXds1IU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=hOouaY1xsoh6wz7OkDEV9jecC1eeHdUzuBJ4iKZos36b0fe+StWs/XSmsTjHsGMfp
-	 e0tnBNKEzYBk5ocKoScl5rfojtpjaAq04YxAl9To16QUfCpYwnFZC1O4/NOMYIyx/J
-	 6krsbqGk+aiylgCRzdnezjfMkr6lvaqVy59IDh4S8336RQTcF1BHCaLRWdCsPSIOp+
-	 VVzuE3RLFUwu6bn36UH7ayClXyqoBHEqh0EEwT5lbksAWLyI95yck3v703WGi3w5hJ
-	 rBBp+t1wYkX1vn71MylXuHgsWdIYHoEXqOW4MLAWG3JYv7ky1boG/BvH4HGhBbkddM
-	 lkYNAFSJRMfOQ==
-Date: Mon, 16 Nov 2026 16:41:03 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=YJ1u7+3q
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-9496400270fso215429585a.1
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 06:45:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1794840358; x=1795445158; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=9cuLg5FPbuoxv94oaCvgpjnZpkxbSwN3Cw2dU0btsKg=;
+        b=YJ1u7+3q8ho8S8Cmf/2w5wU4CUF80KQfEx0dIwjylesVJSVp27D0TnXVhGDFGsq/W7
+         Yb8X2Sx75plWxB0mHvomzU/+SwheHamPTUSF84/eyfqxAOUo3KqKfLj8B1X+rg3Y/Cbl
+         iH5BJ9I9aimPuYADSaa9rXgic7xW4xi4ybOfyScVe2rMyrDy+439om+gewLAqXNGlGak
+         DFvqrV19hfYi3qwYmFJRlFwTwrxoUQgLLPiPhKihWQ7vE2eO+F347DEcxXDMHyISNihk
+         FcZWIs6r9YWAmKVOdSENQbUB1Vu1/Yg0vLkHCD72z3r+cCLouGtUv1fhIM7YUXYqxWdd
+         q2Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794840358; x=1795445158;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=9cuLg5FPbuoxv94oaCvgpjnZpkxbSwN3Cw2dU0btsKg=;
+        b=vPF5CIXYgdH164GW/v/3tdNR934ky/BRE37RFaSAXRLRrh/gmfvFBAuDy/Ykt8CcRt
+         ODvBTHT7780/s4A8o/AjW5ostnUAt/cvzmUVZeXrIVMPtXazfBdga7vq4dHkZWSVbHOe
+         GqSDsbGAJPAWkpey/oIGrKhWxpRnBo9BSvkgwhuc03rD1N1OdaPj6klBR9rAUlvkwquj
+         2YYeW9uGMcgbdBxEirFX8wIUF8QQzNoD18VxCzxGe9ofWXXZKmI5cNbEo6jO6tqsQwQk
+         z+nXLhzBpkaskRxjX72we72mvXBHgz7vSvNZ6+4Hx227oqTsRx4+jhGr4tox7lt9liSi
+         gc3w==
+X-Forwarded-Encrypted: i=1; AL+hErF1wI0Cy6ZL8ko+tCBJ1hdb6LPyej2TXjodEqHTeU+guh+oarye4Q3qvi/HNfueeCThjSMmPw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+1RlN7SudQ5nN8aj8xPeRwpwil0qJmlmoyo6ARvJI9gXXF8tMZ
+	nn8bRsrGJsPgVGeTxOu2+YP7aY86D9lDlqVVoAD3T9++/FaEWuyLF78t/ZJ/+/WzIiA=
+X-Gm-Gg: AYBFou2j7TtO6G7m5scdPJlCGOoCKzSYsTZisugOAvgv9ZGx0pifDVPo6C3PMw1IzRk
+	n0N1SX0pi+RBwwsUEn2X0zC0NyV5imXWUZ9RLwxJMsENTxOJ3zQH+UD2f8T/3zCxSfdVKNPIusU
+	l/05HJ6/2vrnDO65MxotdnAPxdkoT6TuMkQ4roEW13kbnOOZrJISgGcUVkpmgzkEbxnaX1STDET
+	hYCwGbMddT8kBr1Y2PGh2fB+I8XKC02z+oKauBfBb7vxpAc7fSjBR+M9VzOV2oD6pGiKv6xTYrb
+	lNmgHa8VKdhv6tLBvb82WM3gHnclMEouehHBujqyQziyrvj0tV9IkjqXB8AmTx7KE84BfoW7Dcj
+	Ne7xviuUOX9RBiVqXLsOgOrPUirRCYE/p0/LHrDcl/e1nXUbJyBaBLdnVEZdkgQJR9Jt0ph0VPW
+	7CkdzUE574/lmN3PK13N6NK0pwWWsJaMVoJAQ1ZJLyREMeYZx+KJy7dUc2i18/CKMx/b6EzQE4b
+	enZ3P8M4oyxUKiU6QqAEIyXa6AEDH3Sl7YujWd3XzwLqR5NiZ4h1jGjPMuVyBg2Fxl8XcvT8mvP
+	dky9Yg==
+X-Received: by 2002:a05:620a:a41a:20b0:949:5872:be1b with SMTP id af79cd13be357-9495872d3c0mr1015844485a.39.1794840357475;
+        Mon, 16 Nov 2026 06:45:57 -0800 (PST)
+Received: from ziepe.ca ([142.166.156.71])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9494c836079sm858473985a.18.2026.11.16.06.45.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2026 06:45:56 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xSxxz-00000009V73-1sJy;
+	Mon, 16 Nov 2026 10:45:55 -0400
+Date: Mon, 16 Nov 2026 10:45:55 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Leon Romanovsky <leon@kernel.org>
 Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
@@ -76,11 +120,12 @@ Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
 	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
 	iommu@lists.linux.dev
 Subject: Re: [PATCH 17/17] PCI: Replace untrusted state with device trust
-Message-ID: <20261116144103.GU11319@unreal>
+Message-ID: <20261116144555.GM2532299@ziepe.ca>
 References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
  <20261105-device-trust-core-v1-17-1e536825b4eb@nvidia.com>
  <yq5amrr8yldi.fsf@kernel.org>
  <20261116132046.GI2532299@ziepe.ca>
+ <20261116144103.GU11319@unreal>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -92,74 +137,16 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261116132046.GI2532299@ziepe.ca>
+In-Reply-To: <20261116144103.GU11319@unreal>
 
-On Mon, Nov 16, 2026 at 09:20:46AM -0400, Jason Gunthorpe wrote:
-> On Mon, Nov 16, 2026 at 06:38:25PM +0530, Aneesh Kumar K.V wrote:
-> > > +static inline bool
-> > > +pci_dev_default_is_restricted(const struct pci_dev *pdev)
-> > > +{
-> > > +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-> > > +
-> > > +	return policy == DEVICE_TRUST_POLICY_DISABLED ||
-> > > +	       policy == DEVICE_TRUST_POLICY_ADVERSARY;
-> > > +}
-> > > +
-> > 
-> > Could you clarify how this series will work alongside device acceptance
-> > and private-memory access?
-> > 
-> > In particular, what should callers of device_cc_accepted() use under
-> > this model?
+On Mon, Nov 16, 2026 at 04:41:03PM +0200, Leon Romanovsky wrote:
+> > I think it should only be for the duration of a bound driver?
 > 
-> Who is calling device_cc_accepted? I thought we were keeping that
-> internal to the DMA PI?
-> 
-> > My understanding is that trust describes the operating
-> > policy, not TDISP acceptance or DMA access to private memory.
-> 
-> Right.
-> 
-> > Therefore,
-> > neither FULL nor ADVERSARY alone indicates whether a device can access
-> > private memory?
-> 
-> Right.
-> 
-> Once you turn on TDISP you effectively activate DMA, just like turning
-> on the IOMMU.
-> 
-> Userspace then gets to choose how the rest of the system behavess. You
-> can still run a strict viommu with an adversarial driver even if you
-> enabled TDISP and can DMA to all memory.
-> 
-> I don't know if many people would choose that combination, but it is
-> there.
-> 
-> > You also mention that once a trust level other than DISABLED is set, it
-> > cannot be changed during the device's lifetime. If a device initially
-> > operates in ADVERSARY mode and later attestation justifies FULL
-> > operation, is that transition intentionally unsupported for the existing
-> > device object? As documented, unbind/rebind and reset preserve the
-> > committed level.
-> 
-> I think it should only be for the duration of a bound driver?
+> For now, I decided to disallow state changes because the IOMMU may outlive the
+> bound device. Unbinding does not fully reset the device, so we must quiesce it
+> to ensure complete security.
 
-For now, I decided to disallow state changes because the IOMMU may outlive the
-bound device. Unbinding does not fully reset the device, so we must quiesce it
-to ensure complete security.
+When we refine the lifecycle for the iommu this issue should go away
+too
 
-Thanks
-
-> 
-> > It would help to describe how the trust framework fits together with
-> > those separate mechanisms, including which pieces are left for follow-up
-> > series.
-> 
-> The main thing it brings is the pause to allow userspace to measure
-> the device and put it into RUN if it so chooses before any driver is
-> bound.
-> 
-> It doesn't change how any of the DMA or TDSIP flows work.
-> 
-> Jason
+Jason
