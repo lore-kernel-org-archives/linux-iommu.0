@@ -1,131 +1,97 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.174
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794859754;
-	b=pMQCCVA3EZW8ZGLzK21FMHk41hEpzxesFI6KjU/i5AzQ86qGfgICRJXQyIgSsuYafQzP
-	 lbU5q6yd76pdaRG3pU5lRBn+fviXcUEcAIzKwfA4SXH9azVbKoxx1q14H0vV7wQ/ALsVg
-	 mYpnSGk5i3lLKqKy4OTHxnsyiSpAn2Z31ykRE2grgipoMxOL6PDFklie4Renr9XsJjJj6
-	 MBxSWy8I+1CwtmqxdEh0AwUCE8+MIzUpPmdtH+dJjNOXpqKM0/mqA3dT4EaVC1OYz94yi
-	 5V73+KcfNfjGU0PVPX0ffwtxIEMLfundHViBG/jMvIkgtazR9TjqNUoE4oT90RDlbaA==
+	t=1794860480;
+	b=Lm/0njjEOED5QGwHLR2oKAhnI1mWcfMMV368y7N4WejrAH7rK6diIEYnAfaev0E/0bta
+	 pdJhnhfdFRkTVjdgeB/IhemXM7yHQc4yRHwTaEPTqnBo9sltVt3IYpET/xxZo33I/g/mp
+	 HRX6/yLRD2ITiPciBJKhQTooMaRuh18i316s8yiqMN4kaI1sCa4G5MhKSSfbJaSCVZoJm
+	 0hiecWvmoiRMtPLSLvobhqgtB0nug2tYpIqxfSnrBAmFf/XNo0uhFM+LXpl1foSWMRt3/
+	 Rpszst6bTklEpw5MPL6mRJID1DSTZqa3/1VCVdoij9T9e1x7o+GYUuB9Qmk4PiVDnjQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794859754;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794860480;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=rIDjnnpHadC4roO6Pjzwfgg43uG+Y6jCh2hpR36q9WA=;
-	b=3sX5ZP5JBhhdQ9VixZ68eFunOM9aBBvo3zNZLUWOfebI7B/mRdHRnoL76UgaFGJExqHC
-	 iNTNMQX46sA01fWaq6cU7/aNTuPjK9YlDsypnenEH0bS/h+IEKI9WPHb6oVc3r5z19qEo
-	 YcJkYyVoewZ6lqlgg+okLwVFRpzi7pBjjqmuODC0nWhYBdo5MGXMkFKG42fxhB2GyI5nd
-	 CZdqZ5oW4hw40KZqpaJOj1nInopxtyS5jnjV8gEp/vEdYuc+Hc+QaU9h20QnWkoaFGBWI
-	 U4NcZr36ZsFKAZvQEHxe+8D/1chauHksbNXsY5qaRE0rlC9jo3qIijO+ZaK8FupdbRw==
+	bh=WAVGrLOqbtuBnC4+1ihcRnARHmIEiLD/UVEgb+xsGxo=;
+	b=g6yHGeApA0ZLMmCI2Snmh66ssNBD+7cvQoTLTExQWEA2I019M9eztz6aSrPyiWNi9AZR
+	 MzT6RXCh7CWEAYnB8N3BU3+77IEpXX55nVPoOzrbuZMixbCYTla/7y+pdXrNfLo5IX4Gj
+	 HpZPpHcnGpC/sv9x6h+1lRiGGcAAB1Z+s2WcR6cSXz1EfhUDo4s81e4b2aDai3vo3pXlS
+	 s9U6aYZx+DI0YJeMHjrcTwKht7EGhGBM0QIWv+neG4XCvXxdIGmra1wa9ZOsJrIon9P8y
+	 1WitjqucrETNMyn2JHHuqhde9CrYY7oBx2SO7SUoOJ9smiFUiBVsNMEF0XunsPdeYiw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=kgB6aQig;
-	arc=none smtp.remote-ip=209.85.160.174
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=iGnLqu+i;
+	arc=none smtp.remote-ip=74.125.82.53
+Received: from mail-dl1-f53.google.com (mail-dl1-f53.google.com [74.125.82.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54DD4606A336
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 20:09:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 54DD4606A336
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8DF2606A32A
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 20:21:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E8DF2606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=kgB6aQig
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-536717a4d83so40754551cf.2
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 12:09:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=iGnLqu+i
+Received: by mail-dl1-f53.google.com with SMTP id a92af1059eb24-1b0739d31b9so1154c88.0
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 12:21:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1794859753; x=1795464553; darn=lists.linux.dev;
+        d=google.com; s=20260707; t=1794860479; x=1795465279; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=rIDjnnpHadC4roO6Pjzwfgg43uG+Y6jCh2hpR36q9WA=;
-        b=kgB6aQigMTtdRvvKH8bjYfrDN1EUjGPSV6bPlrkOct4wIco8x+8GEmVoolqNR6guFH
-         L4k3oy/ndEBZj6CDJO4hKt3dy01ethJAIXq0Z/WifA/2fqfoehVfsf2Eklo06aioSMvb
-         vYF0bEW+dj/jIYayrJ0wFl/oMVyihDP2ndc8ucqkIoGH8MAy5NxY52ayRYgXjaZ1YZ22
-         HIJX+vcFqlUNL1/NXja/xLNLazveprCJKFGQ0qOFJcINB1lTjjzJIBynP6mzzgV5uBvz
-         IhuTMM5Ep7tzEuym0acjMdkECJno0+CC19moxKJysDpVHheBU8UmlkbCcbiT29r0uBQB
-         yS3w==
+        bh=WAVGrLOqbtuBnC4+1ihcRnARHmIEiLD/UVEgb+xsGxo=;
+        b=iGnLqu+iQlTwSYhlzWIKuADY/0Q7v7sS7I2ghdd0fSoJZcl3OjYZE/BY9WXHFth3K0
+         gCkwFRphFbTGcjaJu6M6LFyfPMQBXDVduDjxAylVM0Y7OJvnOVEyyhfKxvB6n/Yyvs32
+         VmcZ2pSfInJ6CLYa+9/2LX69qWdRmWTmjHyWFPORV7LkUyzIGfiX8DSi5NKFyDMMJI7v
+         igZvfcF2ccjt9pcKGeFM8BOF+8x1Vdko4mp3vC9DG6GWmGSfG51EgQ+RGnZ/GwWx+6n4
+         BAdrrxzUBtZz1Vm7rICclwmYCxSXu3cSF9kV/29+OOQIWBXoVPf0JRoJbRoSW1wJ9vwA
+         X+qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794859753; x=1795464553;
+        d=1e100.net; s=20260707; t=1794860479; x=1795465279;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=rIDjnnpHadC4roO6Pjzwfgg43uG+Y6jCh2hpR36q9WA=;
-        b=b0oWE+vZ3OmypilcxcKUYAcLrgAPlimvjax33lWpQQAiYghyj2h21DWijUdYNEzium
-         LcGK+HhZkgj71XXXkmQkFPSidK+L9fNTzH9PQ2IM36xl5DmHvhpHO1C0tga1yw8WJhUl
-         /yvBpgkBLNkJFXtajzkEbZ9o11FkgAT6EOV6INw3T8bNN4a+b9uvFAqQqZb0z9qb4yyL
-         HSGXszTlS8UbHeiMkxg27bjOTQ4zEn8FJ56GHJfTGOa8p2fWqTe73LSBGkbbhWS1UBA+
-         VEjbG3h5LI+pHlIFMv5eALUP5CRO37EDV0FgUxhwgGscJSLF2yiae8igI+VMoRMST3K3
-         xKog==
-X-Forwarded-Encrypted: i=1; AL+hErGD4Nyl1N5O2pwEjfLFkx6uSj66Zn3Rp4HLVTFf1rJiCf6DoQoNZHtCs6cEPxLuj80U+GeUKA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z//Lm7+NffpaoWvNWBBiXwXzdHcp+uhQTDa0F/+SouA0ybWAB3a
-	j+MK+EcX/OsT4cUsPKLAOk99StISA6aip8V/OdS6stRwopqg5HaP+wWNB0SNsZbD+A0=
-X-Gm-Gg: AYBFou11YAJXDpBnsW4kl7euV75OCwNRn46d5F7DFeK7dSM8M7FsWqMSvazZf7ArDdT
-	lYIq3m7ItUYf9n2JIZN23bQrtbpEoMO3JnIb3xs6lytlYR+jV8yN39cHT0aT9KMpB0M2TojokrF
-	1Wyb4Fowu/Ew4MIJerKQekpDJr3PD49Us07DuPCmq2OYTbGstyX9weEYTR5/m43SXG1Oq0mUOK2
-	7h/Pb0PUAyAfpGoSDQzkbbQTINK5TEQXWIwwa/BqJv52+ReXtjKO8qqlQ4mQRjEIO3wa2hL4neU
-	btz72ew6n8tlUp624pmUaDbUFMbmiKgT71PRs75nbS/tGZ8/UTXfuB/FsTMq2MXEbAAenLN5NXA
-	ZU3IbWrgIcdLXYvqvf/9giTnB/vsPcatvEEzVFNrR/X4o1P8G6PPOeCh+JvS/xrZviobht6dHJZ
-	GTcFIRCjDnTHPqUYRIJJ6WeZC5srw/PONVPxdfZwjGPIWiiugG8ClZxFgMXBq++N1qvJOj9YroB
-	SLvuDgWxmfQxTRayEnGO/+yEcxnpBaTXM4GuYw0W2ERemx73UKu95JafF+o2xwcDNHAv0Lb2UMo
-	nqyzvQ==
-X-Received: by 2002:a05:622a:5144:b0:536:98da:f790 with SMTP id d75a77b69052e-55ac43909femr187873791cf.6.1794859753196;
-        Mon, 16 Nov 2026 12:09:13 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91f23d445d1sm92856046d6.8.2026.11.16.12.09.12
+        bh=WAVGrLOqbtuBnC4+1ihcRnARHmIEiLD/UVEgb+xsGxo=;
+        b=EnZ44RfYDAc5ADO+9OAKCqhZy4jGHNFMkMc66eFKoAM4xSFWZM0cfTx9cBWZMTnQ/a
+         hH78Xriroc4MrPa+lh6sVwxlFJl+Uhn/vd9qonVE9YV+ug34ZkohRKzZF2q2U+vEwxFR
+         AYWPpzhVPg+aDQ2JpPa9cLMAQrZSEGtM6PzjDW7pKXQKD2OZPRHuWJa36EJ9Vag9jSOR
+         GGZQNdfjNPkXKLZiwdlzXhceu69gGJkgY6WRmPBRVq70fxQmjD9fQAig4BQex3k4xzdJ
+         de+y7WUgtN4MAFPc2NtqRe73mODlH9B1alVPjgcQdxxWBk2j5lfnB9qFvarwWnBMmg91
+         Mx5Q==
+X-Forwarded-Encrypted: i=1; AL+hErHsFkEXdqYZwF+3hO4s2XMDZaz5QI0sKgDHCy6iijO3W5bPJF1sksnzU5IsZf9IMHtZGR54DA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/2480WYJjBLQi3tEFahYy2hdqMPq1TUG1iqCHXcJC1/7WbVoad
+	ll4NcrkQKILaDd2TApGuvmPSwYmJFDUxg+VfcldB8V7jrEGmRIT6kbPCYe5vV0sESQ==
+X-Gm-Gg: AYBFou2AIaEpX3VaW7rGwYMUFoJeNFT47+gLHZTIO1xp+qq6LggAtCXAMfzURMmEFGS
+	gdsgi3M4WtRZLAq2WFaaOTa/mKwH1ec7u3KJx4Ut0N2PBWYhTv+j3XUPzyZnfkzdl1evn3BS2B5
+	arZ/PoXTbLWPsFiVuAGi8OjZeagILNBizlRttJwTJkyp4ukwVPMy3dCwD9wrWEGtBGtBW1zEqZj
+	+YZZJAP9h96zxWNPW/6T7utQMUbW4z3hos0hJK1h7PRuORQBU97sVM4kcjx8B/5H75EmwsHbiT/
+	FiqAk0hk8AkBGSf/yvUCqTOGhk4E6VCc4lZ28kN1T6NWYQofJvhl82PEpmKQ5NmJYc505RC3T0C
+	7CoXS8e2NHGKzR8wx+/ngoZRIp5Gri+DhTHrHWrD/k9p3TRTdBPbd3Vhg44C6vwOL/cAgodOR8G
+	piyGf03Wr3TzTe8VYx/a+ZBh3IoTvDcHtqFS8QITftkMqhdeaetIjEvmNTtvgx5G2fBNFSebcXu
+	L+GTTczhyFsDn1SF281MgGMOLocSJ9V1KL+R/fP8EZxTEdQUcGnBWMTu805TSk38+hhAI9qRZyS
+	ip8B++8ZyPppOAXg8u0avcIwh8fsJtqURKxfIRi0aDypQfrFPa5GjgA9AtgrT7fcr0Q=
+X-Received: by 2002:a05:701a:ccdc:20b0:186:2ed4:45e1 with SMTP id a92af1059eb24-1b53b17f2afmr5158c88.7.1794860477872;
+        Mon, 16 Nov 2026 12:21:17 -0800 (PST)
+Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-3795378d7e5sm36665165eec.3.2026.11.16.12.21.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 12:09:12 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xT30p-0000000ANtb-30lh;
-	Mon, 16 Nov 2026 16:09:11 -0400
-Date: Mon, 16 Nov 2026 16:09:11 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Kameron Carr <kameroncarr@linux.microsoft.com>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+        Mon, 16 Nov 2026 12:21:16 -0800 (PST)
+Date: Mon, 16 Nov 2026 20:21:11 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Peter Shier <pshier@google.com>,
 	iommu@lists.linux.dev
-Subject: Re: [PATCH v2 18/19] PCI: Replace untrusted state with device trust
-Message-ID: <20261116200911.GA2473219@ziepe.ca>
-References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
- <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
- <193e4130-9c2f-4a0f-b218-f5fcf0b3d508@linux.microsoft.com>
- <20261116190417.GD2299285@ziepe.ca>
- <2965c691-82fc-49f3-abdb-383860f6e82f@linux.microsoft.com>
+Subject: Re: [PATCH v2] iommu: Honor iommufd uapi for zero entry_num args
+Message-ID: <avtltxy9sp6cYiEP@google.com>
+References: <20261112151039.2083705-1-praan@google.com>
+ <avdO5cBwc/2ysstZ@nvidia.com>
+ <avromFJ6opeGEcT_@google.com>
+ <20261116130832.GC1850935@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -137,33 +103,57 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2965c691-82fc-49f3-abdb-383860f6e82f@linux.microsoft.com>
+In-Reply-To: <20261116130832.GC1850935@nvidia.com>
 
-On Mon, Nov 16, 2026 at 11:24:17AM -0800, Kameron Carr wrote:
-> >> My scenario is pci-hyperv in a confidential VM with a paravisor. The
-> >> paravisor is inside the guest's trust boundary and owns TDISP. It locks,
-> >> attests and accepts the device, then answers a VMBus query describing
-> >> which BAR ranges are private and whether the device's DMA may target
-> >> private memory. Before a driver can bind pci-hyperv has to:
+On Mon, Nov 16, 2026 at 09:08:32AM -0400, Jason Gunthorpe wrote:
+> On Mon, Nov 16, 2026 at 11:27:20AM +0000, Pranjal Shrivastava wrote:
+> > On Fri, Nov 13, 2026 at 09:54:45AM -0800, Nicolin Chen wrote:
+> > > On Thu, Nov 12, 2026 at 03:10:39PM +0000, Pranjal Shrivastava wrote:
+> > > > @@ -556,7 +556,8 @@ static inline int __iommu_copy_struct_from_user_array(
+> > > >   * @data_type: The data type of the @kdst. Must match with @user_array->type
+> > > >   *
+> > > >   * Copy the entire user array. kdst must have room for kdst_entry_size *
+> > > > - * user_array->entry_num bytes. Return 0 for success, otherwise -error.
+> > > > + * user_array->entry_num bytes. An empty array copies nothing, though its
+> > > > + * @data_type is still validated. Return 0 for success, otherwise -error.
+> > > >   */
+> > > >  static inline int
+> > > >  iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+> > > > @@ -569,7 +570,7 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+> > > >  	if (user_array->type != data_type)
+> > > >  		return -EINVAL;
+> > > >  	if (!user_array->entry_num)
+> > > > -		return -EINVAL;
+> > > > +		return 0;
+> > > 
+> > > TBH, this doesn't seem very necessary..
+> > > 
+> > > Though I don't have a problem so long as Jason is okay with it..
+> > > 
 > > 
-> > Sounds like a user in such an environment just wouldn't use the trust
-> > level mechanism at all.
-> > 
-> > What use do you see for enabling trust level but having all the
-> > devices unattestable and accepted already?
+> > I know it looks unnecessary in-tree, but zero-length is the documented
+> > way to check if a @data_type is supported.
 > 
-> Previous iterations of device trust used the trust level to make
-> decisions around DMA bounce buffering, etc. Is that no longer the
-> case?
+> Is it? I though it was put in 0 length and look for EOPNOTSUPP,
+> success is not expected.
+> 
 
-It is not, this is now just about userspace attestation really.
+Reading the uAPI comment [1] gives me that understanding:
 
-> I am looking for good hook candidates. I was hoping that trust levels
-> would end up directing DMA behavior, etc. but maybe I am
-> misunderstanding the design direction for these trust levels.
+ /*
+  * An empty invalidation request array by setting @entry_num==0 is
+  * allowed, and @entry_len and @data_uptr would be ignored in this case.
+  * This can be used to check if the given @data_type is supported or
+  * not by kernel.
+  */
 
-I don't know, I broadly expect some flag in the struct device to
-indicate that it can access private memory, but how and when hyper-v
-could get involved to set that flag I don't know.
+Hence, for a supported data_type I expect success..
+Also, the selftests check exactly that [2]. An unsupported data_type gets
+-EINVAL from the drivers today, not -EOPNOTSUPP (happy to switch if you
+prefer).
 
-Jason
+Thanks,
+Praan
+
+[1] https://elixir.bootlin.com/linux/v7.4-rc1/source/include/uapi/linux/iommufd.h#L987
+[2] https://elixir.bootlin.com/linux/v7.4-rc1/source/tools/testing/selftests/iommu/iommufd.c#L532
