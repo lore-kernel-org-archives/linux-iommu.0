@@ -1,60 +1,102 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794825067;
-	b=I4inutCARNCWxtATRm9dvdsdQ65sYgo7OSDvyhapwwnpN4uCNPbPLmEc0RmdTPpKUrWD
-	 k0/BlAOpqEjoEKykgEH4LuAGdwkwlRxjymj4E3t0TVGZZV55/OkQVgdKzPwptPzfC0PGN
-	 G+vfxSW1UUywYhcATh1XKckugf5nGouS7CNIiVgn8lG0ou4V/lKmWVM8FJhY/e6es+JjE
-	 Diu5WnDfA7tyIToXcDtdsKsJV+mNtSp3yoRx4eahAf+qX7KR3shQ/3GzwORGNf8q9NMrx
-	 p+JRy9T+HbT3asqgBEnEqZmwm7x9Ty5E6Ai9dBW78TRCqxcVX1/Ndp4YhbSrB9JmLwA==
+	t=1794826308;
+	b=gWQfDnrK1/0L9BgVtRPMmlBmMHYejTPXXZjSZM/wW7yMwaoorlKHWNXxSwhqzN6B1wnp
+	 QKrB8nXeTBHDUKQdkQ1/SUwfYXS8IdXJl7ObhWmRlULir9oj3a3CfbM5iD7zJsLQYoLLA
+	 eLPjfRP76DvcCOa31N6BWNK7NnK6eUrD/kHo5bMARV9GH8nfefQe87ZdcFbCAZ184wpqU
+	 mP4lC6/S+S4fpd1NnDmTv0DYR4kp2HiGMEZSY85aoYFvc97NSu2LkKYPBKI0gCfLruZCq
+	 AoTFgnxw2wkOMNxtvtvgn7pQR0lPijTjdDWkO922xRKnLgJr7Z4dsiKdqm2w22T6xsQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794825067;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=uNOpllo5XvmHxbQubQwPdNd+q8BidbrN9AGJD2HAR/8=;
-	b=r7L2xqyLtCCkVw9u4q9x8dpabB21x0GYYb9MfeD2KteyggV5zDmF3MSS4PJfEpL3Bkzm
-	 rHzP7dYEJ7CyoHxtRSZYAORbfiuVTSh6o89e3oSzahpquC7yiUUE53Ian7/3+Jje0GAIe
-	 e+6jlZJ+SlkGEX6Zsjj9Ei0g5+AE3I2//DDTZH0W5/3b4KQjeJ6tHC3ek9daWKFPNHDJP
-	 y8T9Z7wqIgI1UOLizwMjU+8a2Rh0ax97OAtwujIgPg8r0c9J2RrK/zvRVO+zOLsDoaYKh
-	 L9NNpnD0MeYzzELLi4J6AnAqAuhhBctSvo1MnPImH6NbTKspJPKVLupjMoA/ZBPMirw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794826308;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=rny6q4V2AlEW+9be9hzTdzBqG+gm95vTnvqQb/sLFhY=;
+	b=5b5esu/0xqorC65i+yXG3cQxkhl5GUzHawAjm1LPdaiHvhOr1/n4J+maYcTTBat4hm4b
+	 pnoWr+MF9cyL2KcHyZKqZehPRJIhpOKpmtg82rqxDV38GwuyAdlH5OhOMh5N7uTfLZNbc
+	 /MApL1XFrM2M016XOTLkRxbWBb1pScOq72WSNUY143ooLxt/SCUwR31pwlZ/wq7Wf/bUz
+	 A47ERk4YVFT2pHcHixNUiId53VUU3meDXhTslRZ1ZSlymc4wo9GncT7D7OEV7BkQi8Kq9
+	 G1bPvSwv59o3biQkxo+bMoM2aVZ3J4JgIIWkUrBAwnVbGhf+GpBBs+mOVDEekrbouUA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Ip0nbOh6;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KKO0GtmL;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5296E606A323
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 10:31:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5296E606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30AFC606A323;
+	Mon, 16 Nov 2026 10:51:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=Ip0nbOh6
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261116103103euoutp024598022f897f797ce661057ca3db7475~of_Lhuo572901829018euoutp02X
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 10:31:03 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261116103103euoutp024598022f897f797ce661057ca3db7475~of_Lhuo572901829018euoutp02X
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794825063;
-	bh=uNOpllo5XvmHxbQubQwPdNd+q8BidbrN9AGJD2HAR/8=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=Ip0nbOh6qvOR4lJQZzIsdjanHDzjL4Vl6XcdmOUfKlLA1M+ySnzuuQYQQ72ZxUZ/v
-	 QW1Pyqfe+sRmogKKI6mDHERIHhAd+lHOoBSjcYTyg0eHs8duuzDebDuaYaNnt5rK5/
-	 1IzoeOC4PP8Jhaiw5nhLAHhfaqSMe9+WmFHNyJKk=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261116103103eucas1p1b1d1b73f614168f64fea898e558ec8d8~of_LXhMea0737407374eucas1p14;
-	Mon, 16 Nov 2026 10:31:03 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261116103103eusmtip21cb3987701e28a22d7af3b6f18dba8ec~of_Kr3hBm2720627206eusmtip2b;
-	Mon, 16 Nov 2026 10:31:02 +0000 (GMT)
-Message-ID: <94d4ca0a-40d0-49ac-97dd-0cf88238667b@samsung.com>
-Date: Mon, 16 Nov 2026 11:31:02 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=KKO0GtmL
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FA0D1F000C5;
+	Mon, 16 Nov 2026 10:51:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794826308;
+	bh=rny6q4V2AlEW+9be9hzTdzBqG+gm95vTnvqQb/sLFhY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=KKO0GtmLmo3FANikUbE0i8Y6q8f05SERDvSmxDTTrvZcguvwuOPJiERRLiY3km+p9
+	 zo6CwRf5CpRVfMsRxBO5VC7BJ8aswdfaLrTnWNGso8MYwfkMSlZlr/JCwl7Yb0DKYI
+	 eBWEl8S+pydXFjwbZYHaKbLWD1FXtNqR/hU+W0ogRIXX/8Ttqui5864q8rXI5QbV1c
+	 R6fnfNJlYbpdNAOv54aoayBIVtR/wby4m5kxP9JLbu1/7ECYHfn8X6ZW0o2rJV/Mfu
+	 EVIiWUPpZlAFacz9vc7Vc16Rny5Ozfd3TgFqBoUQmnJ8ExsrAtD4LpzCw5QASx/URm
+	 B8JnGpBuX+mvA==
+Date: Mon, 16 Nov 2026 11:51:32 +0100
+From: Lorenzo Pieralisi <lpieralisi@kernel.org>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>, linux-coco@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>, Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev
+Subject: Re: [PATCH v9 14/14] irqchip/gic-v3-its: Preallocate VPE L1 tables
+Message-ID: <avrgNBXDFMGL6dqO@red-moon>
+References: <20261104164555.3555725-1-aneesh.kumar@kernel.org>
+ <20261104164555.3555725-15-aneesh.kumar@kernel.org>
+ <86zevn1c9a.wl-maz@kernel.org>
+ <yq5ah5huoteu.fsf@kernel.org>
+ <87ld6x8zb7.wl-maz@kernel.org>
+ <yq5apkw5xpnz.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,54 +106,77 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2] dma-pool: decrypt pages before creating the shared
- remap
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>, David Rientjes
-	<rientjes@google.com>, Jason Gunthorpe <jgg@ziepe.ca>, "Aneesh Kumar K . V"
-	<aneesh.kumar@kernel.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261109230830.1707975-1-m.szyprowski@samsung.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261116103103eucas1p1b1d1b73f614168f64fea898e558ec8d8
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261109230841eucas1p1ee97e7adcdac763c19145f604e4f11a7
-X-EPHeader: CA
-X-CMS-RootMailID: 20261109230841eucas1p1ee97e7adcdac763c19145f604e4f11a7
-References: <CGME20261109230841eucas1p1ee97e7adcdac763c19145f604e4f11a7@eucas1p1.samsung.com>
-	<20261109230830.1707975-1-m.szyprowski@samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yq5apkw5xpnz.fsf@kernel.org>
 
-On 10.11.2026 00:08, Marek Szyprowski wrote:
-> atomic_pool_expand() creates the pgprot_decrypted() remap of the pool
-> pages before calling set_memory_decrypted() on them. The error path
-> when gen_pool_add_virt() fails does the reverse: it re-encrypts the
-> pages and only then tears down the decrypted remap. In both cases there
-> is a window where a decrypted (shared) kernel mapping points at a page
-> that is still private, i.e. encrypted, to the guest.
->
-> dma_direct_alloc() gets this right: it converts the pages first, then
-> creates the remap, and on error removes the remap before re-encrypting.
-> Do the same in atomic_pool_expand(). The pages are now converted before
-> arch_dma_prep_coherent() and the remap, and the error path unwinds in
-> reverse order.
->
-> If set_memory_decrypted() fails, the encryption state of the pages is
-> unknown (the conversion may have partially succeeded), so they must not
-> be returned to the page allocator or CMA and are intentionally leaked,
-> as before. No remap exists at that point any more, so nothing else needs
-> to be undone. Add a comment explaining this.
->
-> Closes: https://sashiko.dev/#/bug/linux-9212d9b5-4a56-43e2-bc00-6e69b724078b
-> Fixes: 76a19940bd62 ("dma-direct: atomic allocations must come from atomic coherent pools")
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+On Mon, Nov 16, 2026 at 11:51:04AM +0530, Aneesh Kumar K.V wrote:
+> Marc Zyngier <maz@kernel.org> writes:
+> 
+> > On Fri, 06 Nov 2026 15:45:29 +0000,
+> > Aneesh Kumar K.V <aneesh.kumar@kernel.org> wrote:
+> >> 
+> >> Marc Zyngier <maz@kernel.org> writes:
+> >> 
+> >> > On Wed, 04 Nov 2026 16:45:55 +0000,
+> >> > "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> wrote:
+> >> >> 
+> >> >> VPE L1 tables are allocated from the CPU-starting callback, where sleeping is
+> >> >> not allowed.  Remove the page allocation from this atomic path.
+> >> >> 
+> >> >> Use a blocking allocation for the boot CPU and record the resulting table
+> >> >> order.  Allocate a page of that order from the sleepable CPU hotplug prepare
+> >> >> stage for each secondary CPU.  Consume the preallocated page only when the CPU
+> >> >> cannot inherit an existing redistributor or ITS table.
+> >> >> 
+> >> >> Reclaim unused preallocations after the CPU reaches the online state, and from
+> >> >> the prepare-state teardown when CPU bring-up aborts.
+> >> >
+> >> > No. The way to do it is to move the ITS probing out of the
+> >> > non-sleepable CPU hotplug path.
+> >> >
+> >> > I proposed a potential hack at [1] (which I find far more palatable
+> >> > than this proposal), but the real fix is to probe the ITSs as
+> >> > devices.
+> >> >
+> >> 
+> >> Could you share a bit more detail on what you have in mind?
+> >> 
+> >> Are you suggesting that we create a platform device for each ITS and
+> >> initialize it through the driver's probe callback, while the rest of the
+> >> GIC initialization stays in the existing early boot path?
+> >> 
+> >> Would that mean the main GIC is operational during early boot, while
+> >> ITS-dependent features, such as MSI delivery and direct injection, become
+> >> available after the ITS devices probe?
+> >> 
+> >> Is that the split you have in mind?
+> >
+> > Yes. Then once this is done, all the tables become normal DMA
+> > allocations, for which there should already be adequate support.
+> >
+> 
+> Thanks for confirming. Can we handle the ITS platform-device conversion
+> and the switch to DMA allocations in a separate series?
+> 
+> The existing VPE L1 allocation path calls set_memory_decrypted() from
+> the non-sleepable CPU-starting callback, even though
+> set_memory_decrypted() can sleep. This issue predates the shared-granule
+> allocator changes.
 
-Applied to dma-mapping-fixes.
+If I may ask, why does the existing code ends up calling set_memory_decrypt(),
+or reworded, why does the VPE L1 allocation path goes through the ITS specific
+allocation function rather than using alloc_pages() (as it was before
+b08e2f42e86b5) ?
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Why did b08e2f42e86b5 patched allocate_vpe_l1_table() allocation and moved
+it to using its_alloc_pages() ?
 
+Thanks,
+Lorenzo
+
+> 
+> Since fixing this properly needs a broader ITS rework, can we handle
+> that separately and drop the preallocation patch from this series?
+> 
+> -aneesh
