@@ -1,89 +1,88 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794864465;
-	b=sT/57eTNMCSqyG6uGfAJrrt3/k7CeKr9DyqkCPQI4EdSOkIeSQ5fHR7eDuQJo0C5kw/R
-	 pzSVDEp7xdNXYgsGpkvzMum6PW/XobeJ130f1VAIcjtiuKKMOukch2GtCDEiS5bcWqOyf
-	 K3CllO7juKNylJPVmA9pJ8oDxn3NxWhjHokgaOy6qNdxeBdzq6O8GbcQHYj9tjmwnkRQU
-	 RxTVd7e3ZhM2ejXrdPCsP0LGRpkzvrCMRVOmfLKp4wxBGDz//1UtB4gdLIfZbYGWKACFZ
-	 A3Ry6cVAAV1daDaJ93tOPF4aZZrX3Z4TRby0IksJyXXSshfp0tjytVA+0vwCfs1JePQ==
+	t=1794864471;
+	b=snjX+Rvlj90eX2V5JJ+GlDUQqL9eFVO2Xp5e6qRihLWtZonrwz8yS++kyMCnlxpjSJ4K
+	 v52V+pVAFR2XBYmYNkY9MLT/QbE7iXRtce6DV1i8GxT9k90fcHhBtyKgMeS2lL9Cdvu6/
+	 S7QETHD3ElPVp+W96Sljga9XgyCgoJN3iNKt6nMOJ8aDywo0/B0HGAhG6cCCc9vlYG4T/
+	 8Mm7xFMwmE4/ADX93hhyPRjJfRzQyz5HDlG3msa2HssFsU54dkevofKII8i0a5J63hrR5
+	 vDrTtrYpP1vamnVEJDjCuWbgLYNUk1DU3yupVYKN+rOOC6cg8fogDU+sf2BeCl4PAsA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794864465;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794864471;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key;
-	bh=+ZKraDRr1i3pFiLzoYIEWaHhHBRYyhj/gKsvyx4GUpo=;
-	b=GYANA4wGKRZZvQcPXMlG6Xf2MzQ+4LfmQDHf1obuQGE8zTmM2/HfhHvnysf/0A6hOTFl
-	 aTLAi7/yH+CqpvqVtF/302oaGQRLd2a/WZKunBWpUjBZlbOgRvpK068PMrkD6ocPglaZO
-	 N7oBxuDyK3XUjngQT5x/rol95aqPrw5FB/OOMk7zPNjnlcIw6BBLKxWXFC5VSsUwl8pR9
-	 8TApm80iY6OkjsVqAvkP/z/BocKC2AN2jaSJ1HsG8VRMP7nb819EjglXx1SreH2AKoSUh
-	 ZTqLDebFbKQeiTPhPJWJIVWZ09db1yhsMCmftRARAGVmIEW1JqbckAHjwcM6lYSvugw==
+	bh=71llwBK2g5L/3aP4XIqqjFuJzuH96CM6TuERsII1mR0=;
+	b=xLhepZ13d9vCjrEaznuwo4BIIYNltpPE5Sk57qU2y2CrEB56XMbaoAMHb7YfxHbqpSIr
+	 Jl9b7+hW6Sxl3rBW9d74WhKhud8F9E5cHR5XqJfD0LA1rZdwAhhhO6SCxrTRhNHFYegOe
+	 DXT74h93Kx96+cvVh0XREdXK0/I3d4FIpLS2QGbsLrWaWvdnaK6se/zqQOgBLbCLrluaG
+	 /LB6qgW2QzUw1Y9xFPFUcrl/8g6wotak/oMN9CK3EAfbTxcp+JwLdDWmqVueDNRQVtuqZ
+	 FEM0Gx9k1Muyl8P2TrikBIk5U6aMs7pARFNax6e74aw8scHZ2cg5fyo2asSTwIZFGGQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LzfNjXbV;
-	arc=none smtp.remote-ip=209.85.221.46
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=XDRfpBnz;
+	arc=none smtp.remote-ip=209.85.221.44
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B124606A329
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 21:27:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3B124606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0E01606A323
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 21:27:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B0E01606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=LzfNjXbV
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-49412eb1474so2016070f8f.3
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:27:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=XDRfpBnz
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-48e47347279so1880658f8f.1
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:27:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794864463; x=1795469263; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1794864469; x=1795469269; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=+ZKraDRr1i3pFiLzoYIEWaHhHBRYyhj/gKsvyx4GUpo=;
-        b=LzfNjXbVJeiFNn/MvG1ijUm146bvj8LsEZN+fpkx2Mc7T5FND8BeT/HHc4/HiJNY8M
-         E2BgC5TUF14dR27zm/A8jgXDgSO6T4fuh9vugRyVAaY3+9zG4QTB5jHAqQ13qs0VDa4D
-         nfRQIG8Y9auGhp2hmPwyDVGDrymjpwjPR8dYNSANG0JK1qP4xc704TqhnYtMTno2sCa2
-         Yq/89mLdncG2hf88euKTbCt95LVMKR/1iuN0gwZurBwqMpH7p+01vBhXyGR+wgb3E3Hl
-         iGzyS4bx4GzcOONVsV0U2t5TPlUZh8xm4TMsd8XfkluEeqJ8qGtHDoAjYHW5sjvbs9VI
-         8iBg==
+        bh=71llwBK2g5L/3aP4XIqqjFuJzuH96CM6TuERsII1mR0=;
+        b=XDRfpBnzVKpOpfkz4tdK0HQahrVPJwff1eI8mO95WL9dDgSEngEdZ/4WqRTPR3kaQH
+         Xx2ppz3DW0ZeaS1x+5CZ+hwL315TgTHGLRBT06oPXuSvIAattJQ5SaL1C79k91a/BRPW
+         ETFr8OFvFOIymcFBgz41qzknnVEHCiyAQ+yCpef/GR2ztZq2dsPaOA4l0msCQ8DBUaM1
+         eTCn5ZzUeWMJydKHv2xqcZ2NvpW31X6zjW99XdlO0J1bIpnWpdyZ94WKPAkuOn6TpQZD
+         DxRrjNV2GhtDDgQsYLZG3k3kpZoLttQRx3+xOWhg31s8kA2nn4u3f+xTwlH9gPkLh9UQ
+         Vy3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794864463; x=1795469263;
+        d=1e100.net; s=20260707; t=1794864469; x=1795469269;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=+ZKraDRr1i3pFiLzoYIEWaHhHBRYyhj/gKsvyx4GUpo=;
-        b=k+AnzePOWxE85v2u1JEj3A8PtidzXCpWn1/MCmdR1MzJA73X0IHvlMbrVRaGXJLAhF
-         OOOEF0stJuAxgfov8cUYGxPOGGcQkViTWx0CUFifH+yBQYaLjhd+DrfnBip2sCeN4bPD
-         iumxrYkb2dllvw516dc1xOqRZm7tZheGBmq/LWMA9fX7c2WXGz6JgV7lBockzEfzfhVi
-         SP8B6FK/S1rLunce1ji03/dynkpEk6kVQ/yKBCh2AxNPa9iqs920onLgto2Ax5OgpE6m
-         Mv77oGn95RCM7iKD3ikTCr1EIisF4C2yQGeOx9S/umQCDS8fDj2gL6D/r2nM5jkH6rfV
-         b29w==
-X-Forwarded-Encrypted: i=1; AL+hErGgSw1y/43KmXZT+2Cp7velUqDRTpa1k+0+9IF+HXyvlQaIXxP0KrqgwsdCBwHi4EZBtQ8nHg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/4/ZabbiSWQACzI1EsB6z7+rJH3rrJRXwFd1ShxeZIAJDbgWQZ
-	54NK1KYluhExhU5HOr1tMQLza2EGWfeKvFsA7lGnAWe/35szkzt5mW8Q
-X-Gm-Gg: AZFdTZeujdgL5umbDBQ07SqQf/DJJBZM/8+Pv4sRXpHqfA0RKegiED7KFoAOQIV/Esa
-	a7oeWV7oLO4ykglA4EsfA8Ub2eTj7ynb+IHXabgbCRD9CDAv61QWiW4UxxcfWJYEj2gzEV/FfxI
-	QZrqqCDvakOifpEeBOx8splRWG5HMXIMELlPapFGM332042v6g5+SGILJXe9ITepRk/Yy1FSKb9
-	WRbUL38XiL6sihsuiqxX2W25SX6gV0E0zFtmqc9LgtdsMw47Ak7LgcjvPG19E7VUsCeg1WNlWOc
-	defVcmxYRj9fI7/A8Gskrf8sM/JdkmTEVju1DRiGW6SjbSSr8CQqkjaKah40xVC6R/go46zgnJa
-	vfiWhf3Xxikn5cLkPdRcqapRYSUhvehU1yGaV4uU4TZGm4EF666YVCKKPLG+Bl1oKK6fuJlZJLd
-	1+4IzSBedDBQE0lejLMl6THDDXTmiq1kCBhxXze+XndKijIo8zdQbGNOxIWxSsgNLYRHWPKRHat
-	fBZowoWa25NjYFyofqJCi71nyStjkVLzEVtOeAmFvCZF/G8yYu+M7vbypgzpQPHfQ+R/EoZD4aA
-	aBgCp0xab7alglczQWhiJRiF+N6O+Ik/qZdaI1fW
-X-Received: by 2002:a05:6000:438a:b0:491:36b3:22c with SMTP id ffacd0b85a97d-49c6e68dc41mr30686056f8f.1.1794864462819;
-        Mon, 16 Nov 2026 13:27:42 -0800 (PST)
+        bh=71llwBK2g5L/3aP4XIqqjFuJzuH96CM6TuERsII1mR0=;
+        b=bTtYLNkjMu/eApa+iaJHTDkLweuJ4AI/CApK1tjlky2QdbFDvecFEFfjvDX6MiW4Eh
+         e5x8qFQtAmy4VOeonB85R3Fsw+BobBbBTwWlDTat0mZ/M1km/crsKpQPwLxb/yRfYBi/
+         wOEpiPOsExbRrpmaGm4I+ftZPr+Hcfh2FxUqIA79vCv9qeRLwjDTIFIV+Slska/3KRI5
+         AC6rQ32V25h3OAM246Z0u923f8gfQo8dg4OpMzWSv6iSP9CxI7EbIQvXwkygPAYQmMUw
+         3yqloyJozH9cP9B9b+vtT2KtwqLGkJb6NBC8ioZiWCwUiGHUpgfHQO2NjPCNTzJuA16u
+         P3yw==
+X-Forwarded-Encrypted: i=1; AL+hErGwE5M1055FZfByMmO9F06DWxeNdQqmeSIXSCKECAd5HOssXlskcqWBznSp0qgF/I5mNAvneA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8vsEoB5Mr3agXeU1N7FKGDVbg56enxnHccbzh7OXm3QsS/GgCi
+	JxSe9pX25vPrUD8J3rJC5LJf0LNXgU1E0VzzW0j07re1Pv52u4JC5pkF
+X-Gm-Gg: AZFdTZdB2+xpwzEOWsnOwV7q7+R1xz0s12EJ0xRt8Of2c4mIZmwAFHYruppZqnJFNmK
+	0AtiY9whpf/HOP2Mk+qV0I/Q+9edE/Wx/bnGkkYue7k3sxrOxjrc/4xHe0vJsAqtul4wh1VpACh
+	6f1pePmXyzu0CdW0EQhxbmRscelF9hY/sQ1bf4N2V04y+9wKdn7NNweGe4u1fjKgmzinBVzpjjs
+	pY/QacvdTlbBDuCSkm7hpDftohU9ygm665JBDtKITOfzwDsZOONoST6fy0vbcpiLh/fUqz+Fqbp
+	k90j/EJtCiOImOLk5AGJjRb0rnl0MvaYXWhhwUyQWlftYZId79Aiyk5ASeICF3q1JJAgOTwDS2k
+	3Lj72L5nABOvL61cqUD6vaLNuqswhToKKtwFKm74jQsd6XqfC+U903P5VBnOwS0b7Td6wqLRDiH
+	fQloVJOF6WQYmlxuA7rLzIEDuOkNbXHS4aDM58C5wE2afzbSnT2QW0smwHTvwGJlOF4y1zfgY+/
+	XhCziccQwwzgfgJnTqyXAEURha7pF4NxJeVoL6rPN5bAUDi0KqKO4lEqYjWQ92dVB61IY6p8dIt
+	ER3MOMvt5n9/n2msQW3OK3pR3kGf38xdygbiKbKk
+X-Received: by 2002:a05:6000:402c:b0:491:4e13:fde3 with SMTP id ffacd0b85a97d-49c712ac654mr24445384f8f.13.1794864469242;
+        Mon, 16 Nov 2026 13:27:49 -0800 (PST)
 Received: from [192.168.10.105] ([212.58.121.92])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4a378138cfdsm1260150f8f.58.2026.11.16.13.27.36
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4a378138cfdsm1260150f8f.58.2026.11.16.13.27.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 13:27:41 -0800 (PST)
+        Mon, 16 Nov 2026 13:27:48 -0800 (PST)
 From: Stanislav Aleksandrov <lightofmysoul@gmail.com>
-Date: Mon, 16 Nov 2026 21:26:27 +0000
-Subject: [PATCH v2 11/16] dt-bindings: firmware: qcom,scm: Document
- Halliday SCM
+Date: Mon, 16 Nov 2026 21:26:28 +0000
+Subject: [PATCH v2 12/16] dt-bindings: arm: qcom: Add Samsung Galaxy XR
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -95,7 +94,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261116-halliday-dts-v2-11-2c92438c6c46@gmail.com>
+Message-Id: <20261116-halliday-dts-v2-12-2c92438c6c46@gmail.com>
 References: <20261116-halliday-dts-v2-0-2c92438c6c46@gmail.com>
 In-Reply-To: <20261116-halliday-dts-v2-0-2c92438c6c46@gmail.com>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -128,42 +127,63 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  linux-pm@vger.kernel.org, Stanislav Aleksandrov <lightofmysoul@gmail.com>, 
  Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794864382; l=1106;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794864382; l=2338;
  i=lightofmysoul@gmail.com; s=20261108; h=from:subject:message-id;
- bh=OQO+LwEeY64jVYcmV4r5bBUUpcSQt6/n4JPVT4Z/sxw=;
- b=lNijzEKQlyljkWzaxIS9zrys8uC5qiwJ2YpuyG3Kr+5tC+QMb+R4Db6kOwLBwj0GYnOv/QX+7
- 5U/HlbRtrBQBhLGehnhSLzxDVWEhcpke2OLw7yIeYTlC6a6mrQFU5kI
+ bh=8VdPKIubIS5rrskEMQXxsc4CH/xmK2NlYtvs6kfcSuc=;
+ b=t9apGIuBdbCgnaj0/1UJjnpEZvArnjOHWwiMxnYe/9rnq7pKBOWl7S4p0La1YJLjWlXweFSEs
+ dlcpSLrFw/hDB74P8wfi7SGdvZuxbRKq1frXt0fWIbXohJzyyH4p/WF
 X-Developer-Key: i=lightofmysoul@gmail.com; a=ed25519;
  pk=jeRUlfmkhE53CJPoeIIXgu7rTE0ybDRH0HQrEwbydzg=
 
-Document the SCM on the Qualcomm Halliday SoC.
+Document the Samsung Galaxy XR headset, which is based on the Qualcomm
+Halliday SoC (SXR2250P), and register the "halliday" codename in the
+SoC naming convention schema.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Stanislav Aleksandrov <lightofmysoul@gmail.com>
 ---
- Documentation/devicetree/bindings/firmware/qcom,scm.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/arm/qcom-soc.yaml | 4 ++--
+ Documentation/devicetree/bindings/arm/qcom.yaml     | 5 +++++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-index 40a267c54b00..fb3da66443ed 100644
---- a/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-+++ b/Documentation/devicetree/bindings/firmware/qcom,scm.yaml
-@@ -25,6 +25,7 @@ properties:
-           - qcom,scm-apq8084
-           - qcom,scm-eliza
-           - qcom,scm-glymur
-+          - qcom,scm-halliday
-           - qcom,scm-hawi
-           - qcom,scm-ipq4019
-           - qcom,scm-ipq5018
-@@ -225,6 +226,7 @@ allOf:
-             contains:
-               enum:
-                 - qcom,scm-eliza
-+                - qcom,scm-halliday
-                 - qcom,scm-hawi
-                 - qcom,scm-kaanapali
-                 - qcom,scm-maili
+diff --git a/Documentation/devicetree/bindings/arm/qcom-soc.yaml b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+index 179aadc86a9f..9d392329d437 100644
+--- a/Documentation/devicetree/bindings/arm/qcom-soc.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+@@ -30,7 +30,7 @@ select:
+       contains:
+         oneOf:
+           - pattern: "^qcom,.*(apq|ipq|mdm|msm|qcm|qcs|q[dr]u|sa|sar|sc|sd[amx]|sm|x1[ep])[0-9]+.*$"
+-          - pattern: "^qcom,.*(eliza|kaanapali|kuno|glymur|hawi|mahua|maili|milos|nord|shikra).*$"
++          - pattern: "^qcom,.*(eliza|kaanapali|kuno|glymur|halliday|hawi|mahua|maili|milos|nord|shikra).*$"
+   required:
+     - compatible
+ 
+@@ -42,7 +42,7 @@ properties:
+         - pattern: "^qcom,(apq|ipq|mdm|msm|qcm|qcs|q[dr]u|sa|sc|sd[amx]|sm|x1[ep])[0-9]+(pro)?-.*$"
+         - pattern: "^qcom,sar[0-9]+[a-z]?-.*$"
+         - pattern: "^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$"
+-        - pattern: "^qcom,(eliza|kaanapali|kuno|glymur|hawi|mahua|maili|milos|nord|shikra)-.+$"
++        - pattern: "^qcom,(eliza|kaanapali|kuno|glymur|halliday|hawi|mahua|maili|milos|nord|shikra)-.+$"
+ 
+         # Legacy namings - variations of existing patterns/compatibles are OK,
+         # but do not add completely new entries to these:
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 7ffa4f69987f..2a77382a9f25 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -106,6 +106,11 @@ properties:
+               - qcom,glymur-sip-crd
+           - const: qcom,glymur
+ 
++      - items:
++          - enum:
++              - samsung,xrvst2
++          - const: qcom,halliday
++
+       - items:
+           - enum:
+               - 8dev,jalapeno
 
 -- 
 2.55.0
