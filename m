@@ -1,105 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.16
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794828231;
-	b=sc9VpBAiu3rIzvC4e9hj+UrZeicF2pTcJGOe5nY3/7Kke4XWoFHBPoN6HZwH2sGA30g9
-	 X/ty5ZSmD/Kgn5GXiM9jmPMriGeZJsTPB09zI8kjrDsYYXOyvumq7N5cfksrqmpfJMAFf
-	 w/R2rXtVCimb5313/e1/bBHNU3qxGaW5/vZavTwkebp4enAPpYPp6sC3kS7VCFyIfB+Eb
-	 DgKK7s4/1vrFSbvNSdAn9g1K6xrY10Suo953e6rk2v6O8XHJtosz8nsVGIznG+Nyti6HG
-	 GSUg0FuE9SErvuclX/S/FPV1+nge/n12dcZRKVbCVIZRkK96ksXywBGj0S9qP41stcA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794828231;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:X-EOPAttributedMessage:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=OI/WrA4F7+It9HSnetMOFeSFw5BXsAiZxPgCSBXV4dA=;
-	b=RtLTW3LgRRmkyOJf2gSS7tTtCT5JsJB8uTBbu/jGdRk2ulXSzI5CIF8NxWljInnBwLg6
-	 6SBp9P6Dwb6QUEvLMWecVEcP9kenUhCcMY7hecGbRyG/Myt7MMavI9JJiI5PnwXCVk1rt
-	 +9hT8s33WY7XH1nx1/qdEhbR/elrI+heGif4x7bERuldXRkvr+q5tjkK7TnYgwZwVhT3P
-	 LRRNxdscfgrDjUCBzRlOp3vqUKYKVR1aBWnm1F0wsuclRP7O9h51d7/m7obZ7xy9iaVF+
-	 XSOAsi1xOJOLaQdPEek2Chc2VXngdL5EDSv8aGID0EOB74IZJcuKjGx0820RNfsv1aw==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=RhD1+RKc;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.201.16
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazon11013016.outbound.protection.outlook.com [40.93.201.16])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.50
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794828449;
+	b=JTnkW2ROrwoa7m13w9xEIoAjpGkvaVxcJREl0JM2UCU2Af7UbMEbl37jX1GqVmIfPatf
+	 PEMoSCLXAWWsb3LU60NyiK8qe6mSWgU9mzUkVbUCbUc+EclQ9faxR55Guf0hMO3TTShmP
+	 F5ELF4i6LWF+odJgTBlnDGgvBx2hLallStPECErjAe7gHHid7dShjr/VZNl6mBqSeP80p
+	 gcKCeaKHdZoIGFmegD48oB2npZe61Vi8d89H9Ka5tpBdaWD88gGFpkOVS7qC2SPN9oLYT
+	 3PiO01HSEmILWkWRr+7Wfsiv5ZUM/i5Fap21lHHN6aqkW0Tgd6oOMGwYh//rTY/HpoA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794828449;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=tBRyOmfVz8NGvUB6443p0uDWKpLMKwEn7oh7YasEKJg=;
+	b=NkwWdynkOCS4CD3e3PlawfLYWFnB7+KV83GVyMYVhNmcDy9kiUVeYsIzPOszpfupuuPL
+	 lggiRZ5hs5HXlG6tY0/Yr8Rcp0mAUf4teXiF5SQo+oVfHXgZCd7dYZqRLKto0VVDjeKnO
+	 fcoSL+qEYCypqMxTrDfKt4kT3Mzhw9YMM2d1jHIzA2uxlqu0n1vCWKeDC5psgQXLiDMJo
+	 x/S7zNhtVCsD/JRm3E0xip9VBOQVe1UKRCSfXQky1eAmCxVExULWFR/E2kx5dxFhtGCPX
+	 Jek1OqgjEX9/+iOfO96oBk8OeZbMvxHgLVAj6nSlVDG9V6Pq/zP2HnOsA+EFDcjktzQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=c3BB50fS;
+	arc=none smtp.remote-ip=74.125.82.50
+Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72978606AB7B
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 11:23:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 72978606AB7B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEF7D606A33B
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 11:27:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EEF7D606A33B
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=RhD1+RKc
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AAZuBPiqUJo8yh8dQE1KK5a+7AsX7dNnis1tfEcdnv8jHNYP7mZmqHTs1TCqnSsHFmzQSiEhtXfOgxKBMBpwDzJdmTnWoatd7Z32xXkDgGfYehpSUvopHJ4ENVA3rsKRvOJZr2f9X+h83Nn4Rnei4gmZU4XQa+cgpGmTLMhJyTDwaTPiujQY0n6hFgBqzfuISd0gCPzA/xKMLqaHKTMou2wtXG88PuVYh1qEVctVtH9bhInPja+2ePvWzRlH6RSShls84xYHbj8nfn2ADnOA1F+KAhtBzgs2ux54rrjYWTFkQH+AchijiC/MXjbd9hYns/wW8BZ6oOjgzN5eJ8/WDQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OI/WrA4F7+It9HSnetMOFeSFw5BXsAiZxPgCSBXV4dA=;
- b=CU9wcpbTGViksoWBJNNlmoqgcOjam7DGEKtcsho2I/snsVTj/XpWr8DSJMaULBGX366Ywtug2APzaAxoExIkoyjBMProDbTVl4IGItjRy3XWrbg8815qI1Z/Fczx3Ofsmvnq7jtLjx7/3c9zcJcywCDV/cyPbipCaSLwZt7st3oP3M6OVm6L9e4svtMop7jRz8aL8ezLojYQmiGsKgWd1oVdh3PE0DRfyjsUl2UpxZS5qxxlGKtJ66hqnjLu0Af23gN3ECnwwqPcvr3Bgzn7k//32O5vfB4Bt4ntNfCFE3f8EDp/8l9griWBsZ5KA2q5VEGMJSDxe8JsmIIFdyWoJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux.alibaba.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OI/WrA4F7+It9HSnetMOFeSFw5BXsAiZxPgCSBXV4dA=;
- b=RhD1+RKcoHwEjo847rUmGmXv4OQasbwObT9q/6N22vNIjxx77Jfr97N+dnO1/vWshPuG5m3y8RpEP2gv4aaoxWxN5QzpMaV9oCx04IyrrhIg3OZ+Mk6B7v70pBZFd+nc32MZBCjREWWAtqSogfxLoGniZdgc4NIc8wYlZBJ2BCs=
-Received: from CH0PR03CA0110.namprd03.prod.outlook.com (2603:10b6:610:cd::25)
- by SA5PPF8ECEC29A9.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8d5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.9; Mon, 16 Nov
- 2026 11:23:46 +0000
-Received: from CH2PEPF00000149.namprd02.prod.outlook.com
- (2603:10b6:610:cd:cafe::97) by CH0PR03CA0110.outlook.office365.com
- (2603:10b6:610:cd::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.14 via Frontend Transport; Mon,
- 16 Nov 2026 11:23:45 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- CH2PEPF00000149.mail.protection.outlook.com (10.167.244.106) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Mon, 16 Nov 2026 11:23:45 +0000
-Received: from satlexmb07.amd.com (10.181.42.216) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Mon, 16 Nov
- 2026 00:30:59 -0600
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57 via Frontend
- Transport; Mon, 16 Nov 2026 00:30:57 -0600
-Date: Mon, 16 Nov 2026 06:30:54 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-CC: <joro@8bytes.org>, <vasant.hegde@amd.com>,
-	<suravee.suthikulpanit@amd.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/amd: Do not clear unobserved log overflow status
- bits
-Message-ID: <4nnekry6a3q52hsibm7cqrwbtrkr5vp6yuhwucreaz3pckt2a7@rh36fx2u5i3o>
-References: <20261116033902.3277875-1-guanghuifeng@linux.alibaba.com>
+	dkim=pass (2048-bit key, unprotected) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=c3BB50fS
+Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-1ae7fc5681dso5584c88.1
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 03:27:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1794828448; x=1795433248; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=tBRyOmfVz8NGvUB6443p0uDWKpLMKwEn7oh7YasEKJg=;
+        b=c3BB50fSitxuKPyrV02hjBHaifPpc3xh+4XeSuk253qJ/fOaCuFJoO5fYpryNamg0l
+         yWX5yFXW/rc2cLOSa640E5PWmsPoxAX8Q75eHyTasaaER3Ax19tYM468PJCHsFDQbWfO
+         iQA393SCk/DaREgR7+HYN3/OQ3xPAMb844BdEqvMg5jE5IIxakRZZd+hkOo/hupO7vmt
+         PW+JIajGUJc9uom8KhX+Z/5cEJo6ZW4JoIc2ZD1t+iWh4QD3CPt5bAcDZukV1y8CiXhH
+         EigG+0RVW7G+veV5TjNhl+g4fxeMgtFxDZT7xXv/Jj+ktpNGmk/s0J/yQGwPFfYqBr+o
+         oMeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794828448; x=1795433248;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=tBRyOmfVz8NGvUB6443p0uDWKpLMKwEn7oh7YasEKJg=;
+        b=UmsagkklhyuAgs24y7kN1EzOFAo3CkfDrewyO/+H1anbhAhKlhxoLW69B3/+xxjDk8
+         s1YBRMcsXP3ChMC7mV+3/xkxNtZ3ZUdYfiFoY1K5XaBTRHJMvgo0ExI59/aoszPUeOlF
+         E9fiaTVgvmk4XGpCTCdGSXeXhKu4VAFhzn4mvBhp9XNYC8JagvzryTCqdaeWC6OAUyL7
+         d0Apm+HZmLrYdYkAt8sPBhjx7hW4BKRaE+pz+IQsmgFmfCxFxul+PnbSd3ZOKcAXfs1Y
+         BbfvfoFBf6HH/0Jom+NHWl+qqSowN0WqplLVF1NpIv+J8ZI1S2hkIl30+tCD/ZLssN86
+         TV/w==
+X-Forwarded-Encrypted: i=1; AL+hErFUTi9bWFhbiqPbjJ7Ph68q9+hzzRZMzhSuyWa3Fzx+1fHlis3jAIFVcm9IH0tIeBSM4ZZk0A==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9EMss2axM/OGjbvVU50qhQ4qtJKL2GWb6opwrNPxDHUKttAxqz
+	k1q8nTK9/GRigQt1qXYCzsKRCYTaRrEgaw/OcOc+yDGJCAn535si3rpjnrVIzFwxGA==
+X-Gm-Gg: AYBFou2ssbSdlaiG9EcTr7Ye4SRmPREL98NGqOYm9xlP06VcHA4Z6bN1UlB6+koory2
+	V+61sc6wGQNJWwh+xT+lkBj2FYP3EZu1iPjZF2IpZ8q4T0+rdAVri7H5KMi9oD7PKhJX7RDvnRn
+	QNw55eL75mESdhSCRkGA5emvVAfUURTFV2pQNUdGcWaJZS2RU3G/AymQ3tDUFcpdGJtC3F5rmWl
+	q4w6n59uy55LzzwfdZ7/JW/Py4Glag2JwKJU8fo37eXwU1PdJL71q4FZ3UAGD9Wszvw12SvFknj
+	2mEyWFWqRSbJkdSe0XCWSKoupwx+s9wAdE7J/aZ8HMQmNGorVq+RpRTcvhEM3D5KyLyegT9SgCT
+	wOENGophD8uXwhxuSwuscfTdJXEoys72jTp3WtYEDjfdrdQ7eftyHHmGNuFxXxlGMypB7WBIkUv
+	zLszumVruV14nWju+WrjaPetXPEhepRhvg/c4xB2/i1sF0mVFklRGfaP+S7Oy0H/RfsiZ2xfDs3
+	qiiUGf2z/qFir47YrwW/xOyVRDjOLuitqM5t+Mr0nlL8iVaBXRYIkJ16Q7c/EmHsr0E7eJuHj/B
+	6/SilDnhwPmD2BGORDWfMZjjt0T5w4mDUelRb/xepdLR8zHvTdPMUJ/PbwoFomyjAdc=
+X-Received: by 2002:a05:7022:219:b0:138:2d13:e32f with SMTP id a92af1059eb24-1b519894d4cmr561146c88.8.1794828446816;
+        Mon, 16 Nov 2026 03:27:26 -0800 (PST)
+Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-37956bb0c40sm35874984eec.28.2026.11.16.03.27.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Nov 2026 03:27:26 -0800 (PST)
+Date: Mon, 16 Nov 2026 11:27:20 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Peter Shier <pshier@google.com>,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v2] iommu: Honor iommufd uapi for zero entry_num args
+Message-ID: <avromFJ6opeGEcT_@google.com>
+References: <20261112151039.2083705-1-praan@google.com>
+ <avdO5cBwc/2ysstZ@nvidia.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -109,108 +99,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261116033902.3277875-1-guanghuifeng@linux.alibaba.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF00000149:EE_|SA5PPF8ECEC29A9:EE_
-X-MS-Office365-Filtering-Correlation-Id: 542442c0-7c2e-4a61-6e49-08df43d41407
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|1800799024|36860700016|82310400026|10067099003|56012099006|11063799006|261026140227099003|261021123027099003|261026121527099003|261028144727099003|261102123227099003|261021121427099003|261022105027099003|261009223027099003|18002099003|22082099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	5piqGFaa77JY1ww3GDICBzyaxa6r9G5XKkZNVMX8Z2pw2fQqNwz/kTelfSkLuYwH1+b53EpzaX6tP4jOjTtS+MvVllOnly9keqRvRA25R6qORG13E2wgSAN55sAf9CV3BnM2CQFgHxWeO2ZCLxcgtNb0EHUm0iXs237G0FGCTxD+Zt6l2Hl62K7jgL0a4dhj9RQ1Jud7kSfYNL3dAL8iIdkOzszjL6MeKmvZHnXgHd1Jyuf+bUn9lqHS/q2pveX9TQ1u158TO8hX8bz2OOX9Tpdk18wQegmOP9NVn4pglseAAwFMzYztHhDAUibMC64mCi+fVV17k/zlM2foYEeYiSTNaX9s6FBDpSG+OvVtMdFUxhTlYgYMV5p63plrB1ojpmVMK8HL7rBBwDj2OvRmUMgIRQg33UhcmgXa853zTURjFMkZ+Mbpxbr+QfNzXOirjZR92UuN1a/lE9Bfkd0rDWW/ssLvyNPs0WlnNVOtorUY6RyjszrVL1yyM5nKQnka3ldu7hq30HFeBvrF+qJeqPildq1+hfTiyHQC+XDq0brXqnR84H+nKnhfDqb6MKMigZKUT9o1BQAB46m+RyVqpsULj823n47EQ83Tz//nB/sFLEsqj6lDMqvzvAVY8eooULpOGGa3EWy6offae3vUAGUvsuwT6gYimhciWBMZzkOn/GW282pGWsg45OKBLEQitGTlx5l17ksUZPTDWsFLrA==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(36860700016)(82310400026)(10067099003)(56012099006)(11063799006)(261026140227099003)(261021123027099003)(261026121527099003)(261028144727099003)(261102123227099003)(261021121427099003)(261022105027099003)(261009223027099003)(18002099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	Jymzh5uDZCNsBV8f+d9avnf6xCeSm2ieQIB6pNlH5PaQgtRj5qnx3oCejorvj9FPldJVRIy6FyJ9DEw3yfkAT/9OqUB8aWw18npg5BHde2wg/s9qG/XBU83XJ6y9NLd+20OEaHImGfjEwITDm2Kz4ftUGqxW0ROKrM9oyvIvKCLbXzmfUMf6+aeaClA9Uf/w5icd8CH37LW9Dh0bEbfsDa0Nk8cgjMDtiYL3+fOA/uG4TU9VGugTxLdC+4FJjEKH3dJQ/P3vW4CRUbaW8+3h40xw42VAMqGmvGIYT717wMDVPkC2JbpykiYw9B59JjxQhGy8scF729irj45933TAi9qY4kD+hPW3qtNm3qbueOngRKD/q6vTxtlP2xVWTuPjmnWTQyHRT1RUwiXADvo17TfJ9BeRRCt4QsoXT7vSCHANdKdLJnAtV1pXd957BUEq
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2026 11:23:45.7741
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 542442c0-7c2e-4a61-6e49-08df43d41407
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF00000149.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPF8ECEC29A9
+In-Reply-To: <avdO5cBwc/2ysstZ@nvidia.com>
 
-On Mon, Nov 16, 2026 at 11:39:02AM +0800, Guanghui Feng wrote:
-> amd_iommu_handle_irq() clears the interrupt status with an unconditional
-> writel(mask, MMIO_STATUS_OFFSET), where mask is int_mask | overflow_mask.
-> The log overflow status bits (GALOverflow, EventOverflow, PprOverflow)
-> are RW1C and, per the AMD IOMMU spec, transitioning them from 0 to 1 does
-> not itself generate an interrupt; they can only be observed by an IRQ
-> round triggered by the corresponding log-interrupt bit.
+On Fri, Nov 13, 2026 at 09:54:45AM -0800, Nicolin Chen wrote:
+> On Thu, Nov 12, 2026 at 03:10:39PM +0000, Pranjal Shrivastava wrote:
+> > @@ -556,7 +556,8 @@ static inline int __iommu_copy_struct_from_user_array(
+> >   * @data_type: The data type of the @kdst. Must match with @user_array->type
+> >   *
+> >   * Copy the entire user array. kdst must have room for kdst_entry_size *
+> > - * user_array->entry_num bytes. Return 0 for success, otherwise -error.
+> > + * user_array->entry_num bytes. An empty array copies nothing, though its
+> > + * @data_type is still validated. Return 0 for success, otherwise -error.
+> >   */
+> >  static inline int
+> >  iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+> > @@ -569,7 +570,7 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+> >  	if (user_array->type != data_type)
+> >  		return -EINVAL;
+> >  	if (!user_array->entry_num)
+> > -		return -EINVAL;
+> > +		return 0;
 > 
-> If hardware sets an overflow bit after the status register is sampled at
-> the top of the loop but before the unconditional writel(), that write
-> clears the freshly-set bit while the stale sampled status does not
-> contain it, so overflow_handler() is skipped for an overflow that really
-> happened. For the GA log this is fatal: amd_iommu_restart_ga_log() is the
-> only recovery path, and per spec section 2.7.4 logging stays halted until
-> GALogEn is toggled. A bare W1C of GALOverflow is not part of the
-> documented recovery, so the GA log stays halted, no further entries are
-> written, GAInt never re-asserts and the GA log interrupt line goes
-> permanently silent, losing all AVIC non-running vCPU wakeups on that
-> IOMMU.
+> TBH, this doesn't seem very necessary..
 > 
-> Clear only the bits actually observed this round by writing status & mask
-> instead of mask. An overflow bit set concurrently is then left asserted
-> and is picked up by the existing ERBT1312 status read-back at the bottom
-> of the loop, which re-enters the loop and runs overflow_handler().
+> Though I don't have a problem so long as Jason is okay with it..
 > 
-> Fixes: 2379f3485239 ("iommu/amd: Refactor IOMMU interrupt handling logic for Event, PPR, and GA logs")
 
-This commit only moved the existing clear into amd_iommu_handle_irq(). The
-unconditional write already cleared overflow bits before that refactor.
-The first commit that put an overflow bit into that write is:
+I know it looks unnecessary in-tree, but zero-length is the documented
+way to check if a @data_type is supported. Intel and the selftest check
+entry_num before their single-entry copy, but arm, the only caller of
+the full-array helper, didn't and returned -EINVAL for that probe until
+your patch [1]. I've seen an issue downstream where a driver called the
+full-array helper on the array as-is, and the probe failed with -EINVAL.
 
-Fixes: 5ce97f4ec5e0 ("iommu/amd: Recover from event log overflow")
+> Yet, this alone would make things inconsistent:
+>  * The other caller in iommufd selftest isn't updated.
 
-The GA and PPR overflow bits were added later, by af47b0a24058
-("iommu/amd: Handle GALog overflows") and 274c2218b8b2 ("iommu/amd: Handle
-PPR log overflow").
+The selftest hasn't used the full-array helper since your patch [2]
+switched it to iommu_copy_struct_from_user_array(), arm is the only
+caller now (unless I'm missing something?)
 
-Otherwise, patch looks good to me.
+>  * __iommu_copy_struct_from_user_array still rejects !entry_num,
+>    and its callers (intel and selftest) aren't updated either.
 
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
+That one copies the entry at @index, and an empty array has no entry,
+so its callers have to check entry_num before indexing regardless. The
+full-array helper is more like a zero-length copy_from_user().
 
--Ankit
+> Also, please don't omit "linux-kernel@vger.kernel.org" when sending
+> a patch, as linux-iommu doesn't trigger Sashiko scan.
 
-> Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-> ---
->  drivers/iommu/amd/iommu.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index d0d55c93a480..39254671b924 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1168,8 +1168,17 @@ static void amd_iommu_handle_irq(void *data, const char *evt_type,
->  	u32 mask = int_mask | overflow_mask;
->  
->  	while (status & mask) {
-> -		/* Enable interrupt sources again */
-> -		writel(mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +		/*
-> +		 * Clear only the status bits observed in this round.  The log
-> +		 * overflow bits (GALOverflow/EventOverflow/PprOverflow) are RW1C
-> +		 * and do not raise an interrupt on their own; clearing them
-> +		 * unconditionally here would drop an overflow that hardware set
-> +		 * between the readl() above and this write, without ever running
-> +		 * overflow_handler().  Leaving such a bit asserted lets the
-> +		 * existing ERBT1312 read-back below re-observe it and re-enter
-> +		 * the loop so overflow_handler() runs.
-> +		 */
-> +		writel(status & mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
->  
->  		if (int_handler) {
->  			pr_devel("Processing IOMMU (ivhd%d) %s Log\n",
-> -- 
-> 2.43.7
-> 
+Ack, will keep LKML in Cc.
+
+Thanks,
+Praan
+
+[1] https://lore.kernel.org/all/5223275dbc8ef00af233f3fee01efa09e45f26b5.1788127877.git.nicolinc@nvidia.com/
+[2] https://lore.kernel.org/all/535f3b97e16c437f1df0c988a96229f623142ee9.1788127877.git.nicolinc@nvidia.com/
