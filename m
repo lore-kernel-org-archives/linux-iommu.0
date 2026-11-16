@@ -1,105 +1,101 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.2
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.52
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794828544;
-	b=ADKrgjaK1qvSwlyeFOYqF5X92R8eSIYVv03/pTiwqy1+kZUTDLXMUUWN2SzbknT3Uj+W
-	 5S0lEX7tWatGtRwHX+qBrUKKtTI2gi3Tl71ov9emdr+zdmYl1KZczop6rPU1PrUwamzPa
-	 dxE62zkIcVephJvJdV6zwDEkYgWIpkdCZjI9p98DzrA34wtu06sYvpdwkXliw7G0FABKE
-	 CAFDuhdxWr8SApdRww7lJluCerKTGVFuY7M/O6POz5k27IcOZbGchqKfYYN0OAdI653Ym
-	 kv7jE8hFouOwm9J1L4p39wEOf0Nohm2vyvr7rXYXhowbbkcmNzFEmgpu91pF0eN+Ymw==
+	t=1794828779;
+	b=RKwBtikzNoHJC46Yd2fNp5hlsj5V8SWE6pDIhhhU15+aRnZ4EDwrhLV32l0PK/e/M9Qj
+	 CTKXjWUwpdm8YU2z/WL5hJoAN2fKZbzn7txvS5m+F/hZZAb6DHio7Axj9pXnVlmaWnMWr
+	 B0GUWR38rcYQHUuBVM1+2UknM3tYiVhRwgOWP4qxVq4a4/CqKWzJmXRqGhykejh5bOJjg
+	 +ICqRMEzF5tp4zcxu7B/YRYde27hDa3lBm7i50YOrb5n1sqFGixt8onMeGm2ix8StRZO0
+	 GehAB5oDeElkcZjrDLDLm6bvIaQ185iZHFlhd+N/Xqz3a4xGbAdDuK5theQqsSwIvOA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794828544;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:
-	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 Received:Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To:X-EOPAttributedMessage:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-Id:
-	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=7KwIqvCUN+4njv23JfE7MRZR5BAkrj+O7Nkml8+2Y0Y=;
-	b=yUyf/lzT3jc+ipK4k4fzuW8BQVQiPdShy39prIZc90LcJfnQCeDxtTRSxxCmsWhwCKh+
-	 G7/5Z1HbozG8oTs1ynr5PLdOaXMHdBr5o5bNaGxSGBeQGpcYnirEqJzQGK50A795APq2t
-	 sOnIvkEkEJpBP7DHPurK1tSEHVgvSAGc8kLcqtWBRpu4XB50EBIL4VcKBIDgc2GtF7Wd+
-	 LbCcX386YxVHpgPQhphm/uH92Ss4Y7BQsKv2diMhoCs1NkLagaZMCkvhLbhDRS9W44rG7
-	 Ij+YCuJsHTwCmBePTK992nceZrUf4X5js15hsEKrYTS8fvivPBdQp81NK4txA1AIwmA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794828779;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 MIME-Version:References:In-Reply-To:From:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type:Content-Transfer-Encoding;
+	bh=WkFbdpqrAcDUqj+SkzGRxAQW493jh+pNn7c7c7yEn/k=;
+	b=2Yttak7Y0JQQ6vOP4hmhw6NdVA/5Q2Uwgw80qz18eGP6NOJ9waEjU4FC2dYpNOxjfm7q
+	 xHlqH9MCIJyiKBCuT5t5z2V1OARz427Q7okZ8oz1R9Qs4racPj1sMJYQoGNgZhYp0zS7J
+	 qz1P88MSwfO4blLjIli4WF4dYstY/b4jYjokKxaoIQwc4mCDQWjfPtESt3qqpWEBPIlgb
+	 1rT/bziwjvwMhBF88YK1SL2ul4+tLqjxCIH31JvTXX3dE/H6dSFljo5qnbSz5Jznqy4KP
+	 w3I5U49eJGNwllLwhWfeXehqOoKfZlxgr+UpHPcSYeIzgcHhjjoiUh/cSZ9C/BYgHSw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=amd.com;
-	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=dpOaM+2n;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.61.2
-Received: from DM1PR04CU001.outbound.protection.outlook.com (mail-centralusazon11010002.outbound.protection.outlook.com [52.101.61.2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=DhMdnTOf;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=74.125.224.52
+Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCCBF606A337
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 11:29:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DCCBF606A337
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CEA6606A31C
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 11:32:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0CEA6606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=dpOaM+2n
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hMEBIrVosd1pl6wR4+070sKKp73q9MhtBMbbGhMrwmumUsW8HKhu+exO6MNIlz8l5tigHNiRbUyvCN2l0/nhVjlxC+0WaCLp9u2qVFhqkXBOzVf+RzFKUfowhbfhphRH87lsq6BUjRiFstQt+cgdOlLQS8FLyqHAQ+jr9dXvPiSuiI1rzuIyhm2ywSfldy2lLjCa/pR9fbgme3T7ToHGEAbmVSAhvA8U4ME/jG8v8K0+Or8RQkGMah1GrytUDbrS9fPLbDUJDYtQRAJWoHBHL2sld86mZYTHIVoeX+wzMMKD6Z4AG+ILtzWyCiqaPlpXudZ8D5Emc8rJL3PplAovew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7KwIqvCUN+4njv23JfE7MRZR5BAkrj+O7Nkml8+2Y0Y=;
- b=dryhLlNnQKNFTPzyPf94CDLDHXX0X/J/9gQ3vo1Vba4HbQwIkemsfuj8WJADztdZVkPYpw5Pump1ESYMI1Lhhi2f13wjOcGPxHRw6lc8FcwebfanJ6OlcO/KJ/cpaG2/FGJCPphXDuJHnZqTANIVnwNMtubaWE36f/pnbRQbxkdDESoxOIllYyMtLTU3V4lt4zVe495T3aqlGtyeXHXZFZ4RdXXE4DVY6jAcwXQB1jT6FVg5QWXkjjigIzXbfr2Hza4MjfZsNfetsQuRTekrgGWtPHdX/Rn8uV4rQsBY3ccyE7J2xX+rJRK6pfzgEPTNIjs1uznEaAY8SazsNoB4KA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linux.alibaba.com smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7KwIqvCUN+4njv23JfE7MRZR5BAkrj+O7Nkml8+2Y0Y=;
- b=dpOaM+2nTxg+NRGQbMz3+PhVj+dy0t4pkCZRtl3ZP15ulOkkEYq43bBXsB/HVs79ZT22F05NAN/TSY9zKEsMtBuSwjU+kmoTTqYFNUtydswoRv1MNQfjaWvfQdYTGNZhBRV0vUga+nj2zm9CTcqUN2NVJYaq9NZFnyrD8FPUSA4=
-Received: from CH3P221CA0018.NAMP221.PROD.OUTLOOK.COM (2603:10b6:610:1e7::30)
- by SJ2PR12MB7895.namprd12.prod.outlook.com (2603:10b6:a03:4c6::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.13; Mon, 16 Nov
- 2026 11:26:31 +0000
-Received: from CH2PEPF00000146.namprd02.prod.outlook.com
- (2603:10b6:610:1e7:cafe::73) by CH3P221CA0018.outlook.office365.com
- (2603:10b6:610:1e7::30) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.10 via Frontend Transport; Mon,
- 16 Nov 2026 11:26:31 +0000
-X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
- is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb08.amd.com; pr=C
-Received: from satlexmb08.amd.com (165.204.84.17) by
- CH2PEPF00000146.mail.protection.outlook.com (10.167.244.103) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Mon, 16 Nov 2026 11:26:31 +0000
-Received: from satlexmb08.amd.com (10.181.42.217) by satlexmb08.amd.com
- (10.181.42.217) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Mon, 16 Nov
- 2026 02:40:33 -0600
-Received: from amd.com (10.180.168.240) by satlexmb08.amd.com (10.181.42.217)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57 via Frontend
- Transport; Mon, 16 Nov 2026 02:40:30 -0600
-Date: Mon, 16 Nov 2026 08:40:28 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-CC: <joro@8bytes.org>, <vasant.hegde@amd.com>,
-	<suravee.suthikulpanit@amd.com>, <will@kernel.org>, <robin.murphy@arm.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/amd: Do not clear unobserved log overflow status
- bits
-Message-ID: <2icavkel5nx5423kyzmxbov24j2pqt3cx4iis66kktvvgmmxzb@cmdompfw7hlf>
-References: <20261116033902.3277875-1-guanghuifeng@linux.alibaba.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=DhMdnTOf
+Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-67c0bd676eeso2449427d50.3
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 03:32:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1794828778; cv=none;
+        d=google.com; s=arc-20260327;
+        b=JZ95w+pCP8sc2wLTeFgTQeQWkKZcb4kcVQ+sPkazPLyDUATybBQz5WhsNF1CbeGazu
+         mRzkaSka8uwGqpQD0DIvfkM5yDdZV/iLuQGom7w23j8Lh2AsAYeXJq+tocoELMe1Fcm7
+         tMPbt/bHoP4ELdKhixQ2DYnx1+Z30nnnUALf0be3bD02QFpSsdevOMhYH8eKTrAaxXuO
+         z30cwE7QpY547ekkKqHVwsf9bxdclp5XvIVhII/Gon6I/oSJvHjp6gF52OH5zsj3nFcl
+         i0g5/S1cYpn3pZnHCLE7ntLq8IEmLi1OfAgP7Xr21OLPUWRZQjkrp8F0eTXJU+K+JQdr
+         rmyg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=WkFbdpqrAcDUqj+SkzGRxAQW493jh+pNn7c7c7yEn/k=;
+        fh=IvMr26hFzL03kCoAdY1qCT4dNfmhm1ZrhqfaIdVNr7o=;
+        b=Tq0CzQSEa+IJp6ulZ2GetGcCGqMKKdVZchQ5iYu2k9B41djA3xbAvQBnyIzWrTfop8
+         2vGMvXlvMysFoXFg8yCMWuwoVcDdq0OpV0jAXEsTwzPD3xhXHc8MR1xsfoiFCbvueNCj
+         PqFuPczvo3O8ZlKAGhGtuYjOcu/aI3RyMluUQvWWGmAq3+PSjPNI7ajCuBGrofW3hegn
+         5rXg2luVeRlfV1I1wf90r/ZYk5+vWX0uPpulaN7vQUVrT2kdhKu9ZRh1RktDsvJ6ljwR
+         qoYkY1ygN3FA7G6+G+y6TAgKNsOxWCFiclIjFadREoBD8aH0FaG5ykxrl6s1pYUvyAc1
+         ji8Q==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1794828778; x=1795433578; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=WkFbdpqrAcDUqj+SkzGRxAQW493jh+pNn7c7c7yEn/k=;
+        b=DhMdnTOfzovEtsSWOCe1AJf+Yo9ruNq6frHa2OW8d/FzFi3ZgHmUAiv6xsQrRpdiZ3
+         mNGhFogdzLPmnNZg5VhHcKNZTigRFVo6SYFaunFWV7PkcvoNt3pcC4mGnpHTZpumKzZV
+         2mUaEBB8hPl0/n2nwgMJrVEoirbG/P8C0oyXO6joXT32UaShShIU2av/q5vpgEXrIYDL
+         oev/qQm8YEDvMxNURUlkvJqQlFsHpcmXCYVMi9Pj/DMqzlL9+sWYn39qZsHevg1jR4lu
+         qZeH4d2qYwrcaiO/Ut2OgEcKhGEOwOq2dSbuXiGr2qno4I06d0itanGCVh2Z5PWZ/xP5
+         iHXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794828778; x=1795433578;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=WkFbdpqrAcDUqj+SkzGRxAQW493jh+pNn7c7c7yEn/k=;
+        b=eUgcuqHzk/7oeXZCwU3M5RnFR2wEJfPjGIJMJnTMaWTgPP9XZDECfIjnATmVY8RxSv
+         J3oQhQNbrG8ileOghUIOMj0TSVMk9RmVkloVlNmokUzIvvAcEiETjQC54Qjj6Iw2EX/V
+         MpU0BJxomvBe5CtAG7OC3epey4SCIGlZh1sSpw2r91TA85WtTFDzTIrDZPwNTh44kamT
+         oOLts4hVsTz8YK48mCS/ISh78XPcmQvQ5HOb2JFOsiIAca5pY9x0iRI3nq6o9TvmHab0
+         IrZpm3NbdWbeDCk+C7mPGbskOGjZDWoqjKyMcQC94tWkgN1A24wiXxy7aFubpzFJ2oVe
+         zMRw==
+X-Forwarded-Encrypted: i=1; AL+hErEbop2VtuJi/6wUCqHDEHirHz61VDOZE+dI2dI3RcglVnaVsfIV3+was0DcNTLP07qh7FZPwg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8KltcWczrXu9LVLf6GMGKNU9M2AuKEFQa59A51G6JL5Xl8mS2/
+	Vb/NJcHdl7tM5dkeUl4+hPyY31ouPH4PfeE1dJ9cgFgc9/12D++hGoILoRuJyOR/5dGqe89+8Va
+	Q1NJ6KaWGp8MbpKTYBmNKpQUPsPqbhmg=
+X-Gm-Gg: AZFdTZfmtj8uxR1ODM5f7JjR0ZMWIN01X5AWy856BRVhpKTRgTgCXxpLRUzt3kU3QxT
+	BhgpdDi2xcoscNJcrTJZlZCoPEseG9C7wKbCpsIJRfBrrP8a1gr24SZp1Ohg2wwRUOaAxpwPwgu
+	QQAfkev+4H0P30FXD55e20InaGACt2wJDIYH11I1C2KaXMcrpd4HsRVC+g/szyuqZvi5b2OreUj
+	KkY2VWMFeMuk4NlfcocGbi1mR3XkbN88BfI8Za9mn6OyfV4Qs7POEgmYic3rqael1jbQK/QkAck
+	ufoEjfvLX9DRHvflpL8DWwB7FarQAPktjwBKmrw7s803VB9uo//1rNpDwwpbS9KnAqJtCnjHRur
+	IGCIDK5nDg1iCuFok5DXX6wbuEKQjElzzcvhc9LsOB8OJpbXYhooohPfZ/FbcSmcAi2uC8BjBha
+	PefOXwxikqIrRHBcCXBOrbtCqjjQ==
+X-Received: by 2002:a05:690e:400b:b0:675:5e46:36cc with SMTP id
+ 956f58d0204a3-67d897d9483mr6388130d50.82.1794828777994; Mon, 16 Nov 2026
+ 03:32:57 -0800 (PST)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -109,109 +105,100 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20261116033902.3277875-1-guanghuifeng@linux.alibaba.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF00000146:EE_|SJ2PR12MB7895:EE_
-X-MS-Office365-Filtering-Correlation-Id: ec656ea0-5951-431a-5142-08df43d476ce
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|36860700016|1800799024|376014|23010399003|22082099003|18002099003|6133799003|261009223027099003|11063799006|56012099006|10067099003|261102123227099003|261028144727099003|261026140227099003|261026121527099003|261021121427099003|261021123027099003|261022105027099003;
-X-Microsoft-Antispam-Message-Info:
-	TfEmnKHQwdM9W+WwLXkHMzyBREY44/oXOCHcUVaW6ofoofbMb+zCRYf0efSkgfasodt/8Jf7VVkSi8Pl1nVHtAcLz/bPgAYyAqogcTop+WG9L6443AStDhNcbnknGba3q+16uODonNnjCqD0vEl7zOV1vGbna6Ajo9jfpWjMxTaQYIBKrI4/z2D1gKe8k3O9sQxk6sbVJqkEL14t+nJfx4vEGNIZj6NGfrMLmsqPIucHk3XiFAozxMJZH1lf1K+Ri4HIDQvv9O2hpxsEp5peu9BGssmlT2xTXkRd0v6XhGgmHC29iysNAKztpitxuNd32prG2Z3Aoo9w2QIjTQ88Du9XPu51m16WC1v4FzJOKbvS/h+erCgpCtmZvhhux3QGIp2XXDpNcW2RE2Nhj8E7yn+GKdqwH4ZvjjR533ggRfICT0sTNQSRe2xrwXI8xTh7SVRsnCHIcglNuWbISFT8WiY90FWBzWI9/iEzm602fZNWFTVfGGQ7PlnMgJCbOZmh6vRgtwOExGCaNQ8pKsVfEC9Tln4eMd3rct98dCDty7yo89W+IsiElFaad4ihjnZLKv7J6e1V4JM+LhAch7R+fZmp+gXvY6JSV4XZszwOfbaLjKI5zkFmzSw8sAZVpxBXdDnx4U+VUhPZ1Q1Nqu9yGuPiTUzMvgbEzqlxYPYNOW7aaoWKcGe/XiMZNBR9vfZEz708HVYvlUt1fTZzfdcfuQ==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb08.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700016)(1800799024)(376014)(23010399003)(22082099003)(18002099003)(6133799003)(261009223027099003)(11063799006)(56012099006)(10067099003)(261102123227099003)(261028144727099003)(261026140227099003)(261026121527099003)(261021121427099003)(261021123027099003)(261022105027099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	DdKu3innBdHNukhHCsuTN8L2L0ubrrjPu/ZPvyX6ANzm+GvaNLhvnwpVTvZLMRhkQCAO+7tO5DPPjldQ2sgCXl5QGAFFjHg6XAP959rW0bhbh4ydUDGqT733eeJPybWRUwDONdDRfBrcu4j322wJLBKSvmNe3Q/2uQBjDAZoEe07gebshd7V7upFBo6lwJz5oVXRzo9nb3aT6q2/xb/VWZB5NzAxJBeWVCnvm0SW9YqyC6cnN8zOT1sOC2Wmyu4RZIbH01grW6Z6T5JxdiXu2SvtoXpVzwT/ArOuYcYsqjg1nvPn01msqW6PfhGDmy0ieEg9/6aN4trGr7cYuPP78JH6R2z3/+cjC8rkDC037mZY7gTfj4JsGQXixypL9Bc2RelYLS52l5tn56DHoi4oJzwUq4uBC+Xr7ABekNXE3FdzTw4vlceOW+D+NryF51qb
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2026 11:26:31.4952
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec656ea0-5951-431a-5142-08df43d476ce
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb08.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF00000146.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7895
+References: <20261115120534.2331911-2-thnkslprpt@gmail.com> <avrL1hGke3Hux2IM@U-2FWC9VHC-2323.local>
+In-Reply-To: <avrL1hGke3Hux2IM@U-2FWC9VHC-2323.local>
+From: Avi <thnkslprpt@gmail.com>
+Date: Mon, 16 Nov 2026 06:32:21 -0500
+X-Gm-Features: AclHuK_VZyh65L9sMYzi5VAiUspj5fkWhpWYhKx4YL3ocShAjw9Rms0HZoeOtmM
+Message-ID: <CA+jvY9HtQZtCW7c10gS03DBLshujocvZRZKseAYyZSjFrBy7mQ@mail.gmail.com>
+Subject: Re: [PATCH] dma-contiguous: reserve NUMA CMA areas after default
+ reservation failure
+To: Feng Tang <feng.tang@linux.alibaba.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Nov 16, 2026 at 11:39:02AM +0800, Guanghui Feng wrote:
-> amd_iommu_handle_irq() clears the interrupt status with an unconditional
-> writel(mask, MMIO_STATUS_OFFSET), where mask is int_mask | overflow_mask.
-> The log overflow status bits (GALOverflow, EventOverflow, PprOverflow)
-> are RW1C and, per the AMD IOMMU spec, transitioning them from 0 to 1 does
-> not itself generate an interrupt; they can only be observed by an IRQ
-> round triggered by the corresponding log-interrupt bit.
-> 
-> If hardware sets an overflow bit after the status register is sampled at
-> the top of the loop but before the unconditional writel(), that write
-> clears the freshly-set bit while the stale sampled status does not
-> contain it, so overflow_handler() is skipped for an overflow that really
-> happened. For the GA log this is fatal: amd_iommu_restart_ga_log() is the
-> only recovery path, and per spec section 2.7.4 logging stays halted until
-> GALogEn is toggled. A bare W1C of GALOverflow is not part of the
-> documented recovery, so the GA log stays halted, no further entries are
-> written, GAInt never re-asserts and the GA log interrupt line goes
-> permanently silent, losing all AVIC non-running vCPU wakeups on that
-> IOMMU.
-> 
-> Clear only the bits actually observed this round by writing status & mask
-> instead of mask. An overflow bit set concurrently is then left asserted
-> and is picked up by the existing ERBT1312 status read-back at the bottom
-> of the loop, which re-enters the loop and runs overflow_handler().
-> 
-> Fixes: 2379f3485239 ("iommu/amd: Refactor IOMMU interrupt handling logic for Event, PPR, and GA logs")
+I think both quite clear, but I don't mind either way ;-)
 
-This commit only moved the existing clear into amd_iommu_handle_irq(). The
-unconditional write already cleared overflow bits before that refactor.
-The first commit that put an overflow bit into that write is:
-
-Fixes: 5ce97f4ec5e0 ("iommu/amd: Recover from event log overflow")
-
-The GA and PPR overflow bits were added later, by af47b0a24058
-("iommu/amd: Handle GALog overflows") and 274c2218b8b2 ("iommu/amd: Handle
-PPR log overflow").
-
-Otherwise, Looks good to me.
-
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
-
-Thanks,
-Ankit
-
-> Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-> ---
->  drivers/iommu/amd/iommu.c | 13 +++++++++++--
->  1 file changed, 11 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index d0d55c93a480..39254671b924 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1168,8 +1168,17 @@ static void amd_iommu_handle_irq(void *data, const char *evt_type,
->  	u32 mask = int_mask | overflow_mask;
->  
->  	while (status & mask) {
-> -		/* Enable interrupt sources again */
-> -		writel(mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
-> +		/*
-> +		 * Clear only the status bits observed in this round.  The log
-> +		 * overflow bits (GALOverflow/EventOverflow/PprOverflow) are RW1C
-> +		 * and do not raise an interrupt on their own; clearing them
-> +		 * unconditionally here would drop an overflow that hardware set
-> +		 * between the readl() above and this write, without ever running
-> +		 * overflow_handler().  Leaving such a bit asserted lets the
-> +		 * existing ERBT1312 read-back below re-observe it and re-enter
-> +		 * the loop so overflow_handler() runs.
-> +		 */
-> +		writel(status & mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
->  
->  		if (int_handler) {
->  			pr_devel("Processing IOMMU (ivhd%d) %s Log\n",
-> -- 
-> 2.43.7
-> 
+On Mon, Nov 16, 2026 at 4:24=E2=80=AFAM Feng Tang <feng.tang@linux.alibaba.=
+com> wrote:
+>
+> On Sun, Nov 15, 2026 at 02:05:35PM +0200, Avi Weiss wrote:
+> > dma_contiguous_reserve() returns when reserving the default CMA area
+> > fails, skipping independently configured NUMA CMA areas that might
+> > still be reservable.
+> >
+> > Register the default area only when its reservation succeeds, then
+> > continue with NUMA CMA reservation even if the default area fails.
+> >
+> > Fixes: 7e6ace2535d0 ("dma-contiguous: add kconfig option to setup numa =
+cma area if not configured explicitly")
+> > Signed-off-by: Avi Weiss <thnkslprpt@gmail.com>
+> > ---
+> >  kernel/dma/contiguous.c | 10 +++++-----
+> >  1 file changed, 5 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> > index 90937dc7c627..0b6500bb6cd9 100644
+> > --- a/kernel/dma/contiguous.c
+> > +++ b/kernel/dma/contiguous.c
+> > @@ -287,8 +287,6 @@ void __init dma_contiguous_reserve(phys_addr_t limi=
+t)
+> >                                                 selected_limit,
+> >                                                 &dma_contiguous_default=
+_area,
+> >                                                 fixed);
+> > -             if (ret)
+> > -                     return;
+> >
+> >               /*
+> >                * We need to insert the new area in our list to avoid
+> > @@ -305,9 +303,11 @@ void __init dma_contiguous_reserve(phys_addr_t lim=
+it)
+> >                * but we also need to insert it in our list to avoid
+> >                * having a default area but an empty list.
+> >                */
+> > -             ret =3D dma_contiguous_insert_area(dma_contiguous_default=
+_area);
+> > -             if (ret)
+> > -                     pr_warn("Couldn't queue default CMA region for he=
+ap creation.");
+> > +             if (!ret) {
+> > +                     ret =3D dma_contiguous_insert_area(dma_contiguous=
+_default_area);
+> > +                     if (ret)
+> > +                             pr_warn("Couldn't queue default CMA regio=
+n for heap creation.");
+> > +             }
+>
+> Thanks for the fix!
+>
+> Reviewed-by: Feng Tang <feng.tang@linux.alibaba.com>
+>
+> one nitpick is, is the below code more readable? (I'm OK with
+> your patch as is):
+>
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 90937dc7c627..3daa9ae3ab7d 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -288,7 +288,7 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+>                                                   &dma_contiguous_default=
+_area,
+>                                                   fixed);
+>                 if (ret)
+> -                       return;
+> +                       goto numa_resv;
+>
+>                 /*
+>                  * We need to insert the new area in our list to avoid
+> @@ -310,6 +310,7 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+>                         pr_warn("Couldn't queue default CMA region for he=
+ap creation.");
+>         }
+>
+> +numa_resv:
+>         dma_numa_cma_reserve();
+>  }
+>
