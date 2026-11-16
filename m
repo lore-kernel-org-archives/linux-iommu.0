@@ -1,90 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794844349;
-	b=rhcY1zE8CSWH1jaNMcNwEPN1I8vk2VrMHXHBYcJg5p/wzoAvfQwWjZSHmWTmj9NM3R9v
-	 tYkh39G5vLCTfs/q/s8RaZSkLAPdU74t1hbd5ZmKaogVq/gOGtYu1Ua2OyP+ZAwDbE8rN
-	 HBdorplwXh8crIRaEW51GtgZkg4csim81PIURQwF9OO4RbeT41o65OG3HVAJI9UWg6Dtv
-	 wiJIc24PqaFonJdq8U4+z5Fqze1O+bnk2qgs4yewrd5V1IGsvotPtyHxY6R9z9AGufk1p
-	 ua6/7pcEWt1TSCwkBHRTF2+FbIrCCo36U0oiFydq/SNw0IkcUJrUPF7jaQZO11VGfHQ==
+	t=1794844704;
+	b=PXk82xA2pn52OhYAVYd/Gg8eHS5R35Zc6k6yVl9b8ZOZAZV7m8I+HAMjx1QcJ/YK7XOS
+	 ainLsE0O3R9paVnX38TIpGFWrTsCMsvf5RSQI6kFJqGx6LPAYvtSwoa54wT9x/pkl4OD5
+	 QxNXGTwa0pnYLGyolwaacpm9SKdUFSbL79efTSA46GVRoH19zDZEsY7iZzVsQTwvNYwmY
+	 vlwtoxrLI1FhdYYQem1arJv7Znk9o6gVY2PWuyMP39yN+q4WCIK6VV0Q0PAlu3zaP6PLL
+	 KgHfSYcerZxL70on8v+8jll7OuCs4D+UlKhlo2vgWL1k0bObE0XXE6O7CqSWlqkE6+w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794844349;
-	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
-	 References:Date:Message-ID:MIME-Version:Content-Type;
-	bh=nMJerJcoZ1Adnfr1+PAoZtyg0oa83iJzpuYf4Q3jisk=;
-	b=fABsnlHXQk8e4METhwNMhBff3k4luca2UiAXEj+2UN/MqTrhaV+2W9WXEzSsS2GzZ4qW
-	 XXafhpTacetKjdGLuQQWGKhVZnr3t6/ivX9F6CR4pUKin94amNQsoLQWTt1b+lZ9UyGS+
-	 w83x1RrDwoVD1PLCifJFMq8XnIJhuKy7BJw0RTiTGsNwJVt8HNuO961PQNIUX6AGacrzR
-	 nRr55dfeSc2D0lt/vma0RREIIfqtVx30Mrj6V3R27FZqfc+N2ptiftYTI9FrF2KCYKq4T
-	 7N3Ohw93cdc/gwNgFDA0nQGo+YA/rggpI2O+TJG1IfMwbezWtvHqvP7spDHQxKESeJA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794844704;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Date:From:To:Cc:
+	 Subject:Message-ID:References:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:X-Spam-Status:X-Spam-Checker-Version;
+	bh=u4SFVD7jxf9RuHxTJCNcwPNhfgv8lj7Sm/PppY2wowY=;
+	b=L4AqvEDBUN4aTxJaqiXvHHoubrxI7fwmsZsaSFEWxcH2fCZSwURGzxi0EOJH7Ih7AMgO
+	 TQQB9E8bby9XbqVmwrG3dTItGeFC3E0WLlZYugsr/66qb13HoSjOvmUvuluUqpYrFmrEv
+	 5FBmTtemexwL2uE+XhfQaud4FQHtcj2hD0AFL73tHH//UDRd+4ylU1YYeUQJTB/61xD/a
+	 SDiYBubmuJEQ0rtAoH564k9WONFs3H8hyhP1w39vihIHS5utrXpcojcgwyo8kVkf2RCHB
+	 0eZr9U6t3jz+wmnlnPEaGb6KWCBJNdSA1Dk9Ya0M2FQyymrAltGlDAALEGqKxdtpWmw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Cqf/PBWs";
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C198606A31C;
-	Mon, 16 Nov 2026 15:52:28 +0000 (UTC)
+	dmarc=pass header.from=linux.microsoft.com;
+	spf=pass smtp.mailfrom=linux.microsoft.com;
+	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=loQEIcb2;
+	arc=none smtp.remote-ip=13.77.154.182
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B463606A322
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 15:58:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5B463606A322
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Cqf/PBWs
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CD2F1F000CA;
-	Mon, 16 Nov 2026 15:52:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794844348;
-	bh=nMJerJcoZ1Adnfr1+PAoZtyg0oa83iJzpuYf4Q3jisk=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date;
-	b=Cqf/PBWsD5IxBgQxvgBiY9kTywVx12SlTwTmXTT8ukWkQsTUR+izYk5U8YFXU36Ny
-	 VuKt687MkawSeh2PId4bqFbRWi9sMgwfnI/JSJjTIU/6KxVcy/AK8qf7rn+hv6trfk
-	 Ee1pyTLlidS19SxOPSpjOIH4gugO1s5gd0mmAVUM5KUUf9dnwJ+bAvl3mUcDP9cXGz
-	 X00xd/pchyAyodSkPV0qGH695K9NxXc1WkmuaQ+sFB/uhm3L44RMtQbd4LJlTnKyog
-	 9tmHrt1kljrQB9N0o1IIRZoyH9U1+vjGQIjU/c8DxKA/xTbNd2EoCf0s7ezT62PTkl
-	 Ppm6trUfqKBRQ==
-X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>,
-	Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>,
-	Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 17/17] PCI: Replace untrusted state with device trust
-In-Reply-To: <20261116132046.GI2532299@ziepe.ca>
-References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
- <20261105-device-trust-core-v1-17-1e536825b4eb@nvidia.com>
- <yq5amrr8yldi.fsf@kernel.org> <20261116132046.GI2532299@ziepe.ca>
-Date: Mon, 16 Nov 2026 21:22:11 +0530
-Message-ID: <yq5aa4n8ydsk.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=loQEIcb2
+Received: from localhost (unknown [167.220.233.38])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 301BC20B7168;
+	Mon, 16 Nov 2026 07:58:17 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 301BC20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1794844697;
+	bh=u4SFVD7jxf9RuHxTJCNcwPNhfgv8lj7Sm/PppY2wowY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=loQEIcb2c0PH3xTtaO4N/BcjSBsGzV+Qn6Ka1RCJcvrh7+BEXzpo2pMvSn3dmAkuy
+	 qgBv1BzG2UuVC5gmT0+vIeqk6ktzLeNYnq3t+I8LB3Rcka/nc1e4Z2F37YYy93qlC0
+	 JXQbiR6a3R++PzfiSIbtihHj/U9Il5T2Ujwm/zX8=
+Date: Mon, 16 Nov 2026 23:58:21 +0800
+From: Yu Zhang <zhangyu1@linux.microsoft.com>
+To: Yuho Choi <oss.patchbox@gmail.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Wei Liu <wei.liu@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Haiyang Zhang <haiyangz@microsoft.com>, Dexuan Cui <decui@microsoft.com>, 
+	Easwar Hariharan <easwar.hariharan@linux.microsoft.com>, Jacob Pan <jacob.pan@linux.microsoft.com>, 
+	Michael Kelley <mhklinux@outlook.com>, Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev, 
+	linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v2 1/2] iommu/hyperv: Don't free a paging domain the
+ hypervisor did not delete
+Message-ID: <wvvoqqavra5lvqi3hnvcgl4y3jzbk3b2f6h7vlkwpksjuqgoqm@rhzwlj2ieozi>
+References: <20261112195710.1417744-4-oss.patchbox@gmail.com>
+ <20261112195710.1417744-5-oss.patchbox@gmail.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -94,52 +64,90 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261112195710.1417744-5-oss.patchbox@gmail.com>
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+On Thu, Nov 12, 2026 at 02:56:59PM -0500, Yuho Choi wrote:
+> hv_iommu_paging_domain_free() frees all page-table pages with
+> pt_iommu_deinit() and only then asks the hypervisor to delete the
+> device domain that points at them. If HVCALL_DELETE_DEVICE_DOMAIN
+> fails, hv_delete_device_domain() only logs the error, returns the
+> domain ID to the IDA, and the domain is freed anyway.
+> 
+> The hypervisor then keeps a device domain whose page tables have been
+> freed and can be reused for anything. The ID is also handed out again
+> by the next paging domain allocation, while the hypervisor still has a
+> domain with that ID.
+> 
+> Delete the domain before freeing its page tables, and keep the ID, the
+> page tables and the domain if the hypervisor fails to delete it. WARN
+> when the delete fails, as the domain is then leaked.
+> 
+> Fixes: 2690d4156b51 ("iommu/hyperv: Add para-virtualized IOMMU support for Hyper-V guest")
+> Reviewed-by: Easwar Hariharan <easwar.hariharan@linux.microsoft.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Yuho Choi <oss.patchbox@gmail.com>
+> ---
+>  drivers/iommu/hyperv/hv-iommu-guest.c | 19 ++++++++++++++-----
+>  1 file changed, 14 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/hyperv/hv-iommu-guest.c b/drivers/iommu/hyperv/hv-iommu-guest.c
+> index 9f4fa4315091..aa1db9db1e97 100644
+> --- a/drivers/iommu/hyperv/hv-iommu-guest.c
+> +++ b/drivers/iommu/hyperv/hv-iommu-guest.c
+> @@ -107,7 +107,7 @@ static int hv_create_device_domain(struct hv_iommu_domain *hv_domain)
+>  	return hv_result_to_errno(status);
+>  }
+>  
+> -static void hv_delete_device_domain(struct hv_iommu_domain *hv_domain)
+> +static int hv_delete_device_domain(struct hv_iommu_domain *hv_domain)
+>  {
+>  	u64 status;
+>  	unsigned long flags;
+> @@ -122,11 +122,15 @@ static void hv_delete_device_domain(struct hv_iommu_domain *hv_domain)
+>  
+>  	local_irq_restore(flags);
+>  
+> -	if (!hv_result_success(status))
+> -		hv_status_err(status, "HVCALL_DELETE_DEVICE_DOMAIN failed\n");
+> +	/* If the domain still exists, its ID cannot be reused */
+> +	if (WARN(!hv_result_success(status),
+> +		 "HVCALL_DELETE_DEVICE_DOMAIN failed: %#llx (%s)\n",
+> +		 status, hv_result_to_string(status)))
+> +		return hv_result_to_errno(status);
+>  
+>  	ida_free(&hv_domain->hv_iommu->domain_ids,
+>  		 hv_domain->device_domain.domain_id.id);
+> +	return 0;
+>  }
+>  
+>  static int
+> @@ -466,11 +470,16 @@ static void hv_iommu_paging_domain_free(struct iommu_domain *domain)
+>  {
+>  	struct hv_iommu_domain *hv_domain = to_hv_iommu_domain(domain);
+>  
+> +	/*
+> +	 * If the hypervisor still has the domain, it may still use its page
+> +	 * tables, so leak them.
+> +	 */
+> +	if (hv_delete_device_domain(hv_domain))
+> +		return;
+> +
+>  	/* Free all remaining mappings */
+>  	pt_iommu_deinit(&hv_domain->pt_iommu);
+>  
+> -	hv_delete_device_domain(hv_domain);
+> -
+>  	kfree(hv_domain);
+>  }
+>  
+> -- 
+> 2.43.0
+> 
 
-> On Mon, Nov 16, 2026 at 06:38:25PM +0530, Aneesh Kumar K.V wrote:
->> > +static inline bool
->> > +pci_dev_default_is_restricted(const struct pci_dev *pdev)
->> > +{
->> > +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
->> > +
->> > +	return policy == DEVICE_TRUST_POLICY_DISABLED ||
->> > +	       policy == DEVICE_TRUST_POLICY_ADVERSARY;
->> > +}
->> > +
->> 
->> Could you clarify how this series will work alongside device acceptance
->> and private-memory access?
->> 
->> In particular, what should callers of device_cc_accepted() use under
->> this model?
->
-> Who is calling device_cc_accepted? I thought we were keeping that
-> internal to the DMA PI?
->
->> My understanding is that trust describes the operating
->> policy, not TDISP acceptance or DMA access to private memory.
->
-> Right.
->
->> Therefore,
->> neither FULL nor ADVERSARY alone indicates whether a device can access
->> private memory?
->
-> Right.
->
-> Once you turn on TDISP you effectively activate DMA, just like turning
-> on the IOMMU.
->
+Reviewed-by: Yu Zhang <zhangyu1@linux.microsoft.com>
 
+B.R.
+Yu
 
-We considered two options for doing this:
-
-1. Via the ->accept() callback in pci_tsm_ops.
-2. Via pci_dma_configure(), based on a combination of device trust and device acceptance.
-
-If I understand correctly, you are suggesting that we stick with the
-former?
-
--aneesh
