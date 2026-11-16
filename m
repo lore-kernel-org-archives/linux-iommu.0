@@ -1,68 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794822689;
-	b=GVaITsqW60lYpWRp83oXRaQ8D9NeYjxGX+L9de64isLAcXxcVLscErffC49q0uv4bVyV
-	 YtlnrXyJxI5VZJwbKYr/iXaOv0DxQAY3JpOedMgIHJnnEVg/OOg66t2KfXfdYICsSnKP+
-	 Xho5eZcl7OILIh3O4w+1BS0ODhvqpQ/EZ6v+B58+LkCPiXYS/Mi/r+ZAsPymvPZnk7vZj
-	 qLwFWyou8W6sMLbERGOMHLu6h2TnUDOZEjgR2wMJY4Sv7eOga5AWjQpOZwh/ppYXW0LTn
-	 CvYVDLBoarYORKbOzkOJbd8vj7VyoRVKCMY7oFNltS5/bHKKz3e7YqBOhX8U7pGoTQg==
+	t=1794823035;
+	b=e/qwc6MvHNo1fA5CtjfTfUW1MBPKPgn9w8KxdWrD8XMNQkBRcVs8DqRT31HFyl/rlsrY
+	 J6NP2ffpJVbOgUNENfn1QfWa1LLF0hWq7xIwbDcotYZjWT4wxu0utJ2OramT6pvVtttML
+	 zRkJ4VmxB7vMtDrpcTiWvTWCklpT8EnQHG6DbVSlWnvompDBV7/uO05TJ1MraNsYtGLXb
+	 euO73+es3zGB4mk5FlBhQTQMJUkBJV+BTZBtJLssGQ9Gz3Hu2s2LP+Ib0GGFVh0r0mfhA
+	 H8EwCrPMMlLfxymeaxAWnWSFrSllwsnEqX/ko6VUtPucNz+AkXnOOXG1ZQiTnAZdQbQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794822689;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794823035;
 	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:X-CMS-MailID:X-Msg-Generator:Content-Type:
-	 X-RootMTR:X-EPHeader:X-CMS-RootMailID:References;
-	bh=r1/VRU/vGDJ8CYD8ahbybXIE2uq73+EPqpl2ADlA0hc=;
-	b=YiWl/U9c8iqQxf0VgaLgu7EFmN2sPu8cG7pMf0pk3p21ccrBTWPBCrvyDECsIrYYcr7L
-	 qB/SNnyTZE+j2R0URKUww/AFhXYABuWp67xVm1/QWjVczxEgaNM/sQhZtfwIBRjF6vbBI
-	 OnG+/9iYwdhkHoviqBy6/tzuvayqt4/d19VX3485flE18564NTpogg2T7yl0I4splKObb
-	 ks2Oh4s1dvvmNCE8hLERgpr4mFUtdPR5J4qW5YOTtPvZACbuP7UpuIvk8w945Rob+mL0q
-	 ZlmwzZc2yw6yfu3rCMqzfPK7inmO9xHIQniCf9ZJXFt15szoM36UtF1OE62sEYakO0g==
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=gADPMhQ5JfaTMl41/g28OHbc9nkUDs7yH12IBxCuguI=;
+	b=2gMS7dz8YOX2DyKprlu97X0pusBnCrgDm21NAfXh3PqKMjoOJH0o1pxnaFQGhRkgLw92
+	 YtBh+kjeUr+K1sgKutI1gL8VWA8YjGuBauhTSWMfi906vXlXB+Vw2i89ylb6Al3/nJOL2
+	 iAIZ3Krs6fGKXbHQsfFStyBEddsI0E9Qb4nFnbBK9iSwgXqbwYNFc4V/EKgVLd3MmfQZj
+	 vAikSBh0+rEdGxC3LPmiWVCMoeDgOCITBpo8MHM9UAdEoDHTY5yEBgHeyEINvYZ1QgKYH
+	 4FAk+IdobcqNHB+iEz1+w2KGjzxelaNZTl18r2ElLX6qEH3Ti+GtogzfHeBL1qzFgeg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=samsung.com;
 	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=lGz3NLbp;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=EtaJyRwt;
+	arc=none smtp.remote-ip=210.118.77.11
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45740606A329
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 09:51:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 45740606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2CEF606A323
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 09:57:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C2CEF606A323
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=lGz3NLbp
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261116095125euoutp02dd7311925a25e954cb61e031b8f14484~ofbkaiqdm1545715457euoutp02L
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 09:51:25 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261116095125euoutp02dd7311925a25e954cb61e031b8f14484~ofbkaiqdm1545715457euoutp02L
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=EtaJyRwt
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261116095707euoutp0186920ea5e1961843fd7bcdfdf8dab686~ofgi70yZa0274802748euoutp01W
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 09:57:07 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261116095707euoutp0186920ea5e1961843fd7bcdfdf8dab686~ofgi70yZa0274802748euoutp01W
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794822685;
-	bh=r1/VRU/vGDJ8CYD8ahbybXIE2uq73+EPqpl2ADlA0hc=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=lGz3NLbpztdCAJkSUgTQ+HWAjNs74m5KEHFHA52dFZ+A2NAyzD4WKZHRWlH5S9x8g
-	 UMB3LYxKwjK0Z3epcN9YMFBileueZzplPOGMPJ5fMGJXZ4itUlY648pr4ID0ZCcOmg
-	 tmbDcmA3kpfO5rVNq3gNiMAhmI9rtLv0QwPH0Mr8=
+	s=mail20170921; t=1794823027;
+	bh=gADPMhQ5JfaTMl41/g28OHbc9nkUDs7yH12IBxCuguI=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=EtaJyRwt1cHVcpo3NLfoLE+sfMLPr/ZzLiCnae2eQ67sn0qdgO8JjXGLmH1rJiz++
+	 bBZzW6iCGlJivFePmHX1XbU2h7zQPfEUjg4ZtiXzNbJyE9aRCiPNrCBVHmjKwdHPyI
+	 V+Umilwr3I5YDd2KQcgZar7zUhGbODdF9sryxmTY=
 Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261116095125eucas1p23cc09ac574344adb6af7b98f2c17d1d8~ofbkLsCE30199601996eucas1p22;
-	Mon, 16 Nov 2026 09:51:25 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261116095707eucas1p1495e3747e3b0f65092c48f8cf2ca97f8~ofgixM5At0211102111eucas1p14;
+	Mon, 16 Nov 2026 09:57:07 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
 	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261116095124eusmtip2244698a9c9b6675e60c1a1d139dce1ef~ofbjvVDDL0539005390eusmtip21;
-	Mon, 16 Nov 2026 09:51:24 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Russell King
-	<linux@armlinux.org.uk>, Jason Gunthorpe <jgg@ziepe.ca>, Bjorn Helgaas
-	<bhelgaas@google.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, Robin
-	Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH] amba: Fix race condition during DMA configure at IOMMU
- probe time
-Date: Mon, 16 Nov 2026 10:51:09 +0100
-Message-ID: <20261116095110.1490284-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.43.0
+	20261116095706eusmtip2b44cf9248b53db37577d1944e33a6a02~ofgiRd4_z0273602736eusmtip2-;
+	Mon, 16 Nov 2026 09:57:06 +0000 (GMT)
+Message-ID: <17fd14e7-41e3-4658-a62c-1206fd2b5e0d@samsung.com>
+Date: Mon, 16 Nov 2026 10:57:06 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -72,84 +64,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20261116095125eucas1p23cc09ac574344adb6af7b98f2c17d1d8
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH 00/11] dma-mapping: add dma_alloc_attrs_node() and
+ dma_alloc_coherent_node()
+To: Jakub Kicinski <kuba@kernel.org>, robin.murphy@arm.com
+Cc: netdev@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
+	will@kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <20261112081616.13b81fab@kernel.org>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20261116095707eucas1p1495e3747e3b0f65092c48f8cf2ca97f8
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261116095125eucas1p23cc09ac574344adb6af7b98f2c17d1d8
+X-RootMTR: 20261112161622eucas1p131619576b0d4e6d201197007f3d7c951
 X-EPHeader: CA
-X-CMS-RootMailID: 20261116095125eucas1p23cc09ac574344adb6af7b98f2c17d1d8
-References: <CGME20261116095125eucas1p23cc09ac574344adb6af7b98f2c17d1d8@eucas1p2.samsung.com>
+X-CMS-RootMailID: 20261112161622eucas1p131619576b0d4e6d201197007f3d7c951
+References: <20261106184433.761422-1-kuba@kernel.org>
+	<CGME20261112161622eucas1p131619576b0d4e6d201197007f3d7c951@eucas1p1.samsung.com>
+	<20261112081616.13b81fab@kernel.org>
 
-amba_dma_configure() can be called from the IOMMU layer via
-iommu_init_device() with iommu_probe_device_lock dropped, while the
-driver core is concurrently binding a driver to the same device.
-In that case dev->driver may change between the moment @drv is
-computed at the function entry and the moment dev->driver is checked
-again before dereferencing @drv:
-
-  Unable to handle kernel NULL pointer dereference at virtual address 00000000000000b8
-  ...
-  pc : amba_dma_configure+0x3c/0x74
-  lr : amba_dma_configure+0x2c/0x74
-  ...
-  Call trace:
-   amba_dma_configure+0x3c/0x74 (P)
-   __iommu_probe_device+0x408/0x4bc
-   probe_iommu_group+0x3c/0x64
-   bus_for_each_dev+0x7c/0xe0
-   iommu_device_register+0xd4/0x248
-   arm_smmu_device_probe+0xc08/0xea8
-   platform_probe+0x5c/0x9c
-   ...
-
-This has been observed on the Thundercomm RUBIK Pi 3 board, where the
-deferred probe of the GPU SMMU raced with the probe of the CoreSight
-AMBA devices.
-
-Fix this the same way as it has been done for the platform bus in
-commit 95deee37a123 ("platform: Fix race condition during DMA configure
-at IOMMU probe time"): read dev->driver only once with READ_ONCE() and
-use that local copy both for the NULL check and for accessing the
-driver_managed_dma flag.
-
-Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-The issue was observed on the real Thundercomm RubikPi3 board, then
-analyzed with LLM assistance.
+On 12.11.2026 17:16, Jakub Kicinski wrote:
+> On Fri,  6 Nov 2026 10:44:22 -0800 Jakub Kicinski wrote:
+>> Stable tag on top of v7.4-rc1, so that we can also pull this into
+>> the networking tree:
+>>
+>>   git://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git tags/dma_alloc_coherent_node
+> Marek, Robin, would you be willing to pull?
+> Or should I respin the tag to include the latest Ack/Review tags from
+> the list?
+If possible, respin the tag with latest acks/reviews, then I will pull it to
+my dma-mapping-for-next branch.
 
 Best regards
+-- 
 Marek Szyprowski, PhD
 Samsung R&D Institute Poland
----
- drivers/amba/bus.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-index d721d64a9858..bf0bc4f70134 100644
---- a/drivers/amba/bus.c
-+++ b/drivers/amba/bus.c
-@@ -324,7 +324,7 @@ static void amba_shutdown(struct device *dev)
- 
- static int amba_dma_configure(struct device *dev)
- {
--	struct amba_driver *drv = to_amba_driver(dev->driver);
-+	struct device_driver *drv = READ_ONCE(dev->driver);
- 	enum dev_dma_attr attr;
- 	int ret = 0;
- 
-@@ -335,8 +335,8 @@ static int amba_dma_configure(struct device *dev)
- 		ret = acpi_dma_configure(dev, attr);
- 	}
- 
--	/* @drv may not be valid when we're called from the IOMMU layer */
--	if (!ret && dev->driver && !drv->driver_managed_dma) {
-+	/* @dev->driver may not be valid when we're called from the IOMMU layer */
-+	if (!ret && drv && !to_amba_driver(drv)->driver_managed_dma) {
- 		ret = iommu_device_use_default_domain(dev);
- 		if (ret)
- 			arch_teardown_dma_ops(dev);
--- 
-2.43.0
 
