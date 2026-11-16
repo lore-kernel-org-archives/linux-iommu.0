@@ -1,102 +1,112 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794836963;
-	b=aBLfeK6qPGaf9Zs7BWqIIWYPZ6nwyrDPyWf0jCEXHmT1HxeZwJ1YQrtoOa/r7209wGXz
-	 YIk7ScNxaVWcXi2yQB4ysR9iDUhI4L7TOa/x9RfSgj8CMPfDko0IZJg9v0W3UPkRQClhI
-	 HO98lhI0DLiag3FZf481BOvUjFpkfu1oDek1n8SVmYHqQdUVjABYUIhz+THas+5Olc+7e
-	 jJ4gr3O8XjyzX0EqsRRiI61ecRlNDoE30eOhpcpemc9MmZbK6Y5rinH7/79zgej+XpBAx
-	 Gc8C7IE6gC3wTHm+MxwqypoexVDbTEhhX2/e5LXBOiHgcmBslUIqY8powL0Z93iQPMA==
+	t=1794837544;
+	b=DYrV88Wcc1cRazCbxgi/2Ta+qC3e1bllu9g3fwfJ/W43Zvd1cQkWz96Rj9Ui37b/gfa5
+	 heOzuUUSwwRWrfC8vC2ZhOOm9hdg+ES1s4pA4IOe6REa7HdCaT0SKHZgv8h6+/R41KErk
+	 pVA4rj3a7FMHhme0DbXtMCKlwmXvoaBWxvOnXVYZZK37H0vpjLSvtXdQhoa55eNPJsWaE
+	 KQDQ6hLF8IwXSUzj6faQ4CRbiCUxHoKGPDDk/7dQvM+bnEE45+GIo0U978ZsXZQoXw3nx
+	 7y5MQVfHAkvLi+6liXaGP7c8nEDMAuGIqdWYepSqEFZJNlqi/jAL6VHnyPUpdK74E+A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794836963;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=HsBOAvHt4DPYJf9JK1qI+m0zGVz1UopZeMnslAsrQqc=;
-	b=Na/S09OpCHS0OdRniKsfmgW+4xtB0kb7kuJzipgLrKRO0KbtI2y8NEWTO+4LoZBtTiO0
-	 KclsLu4wFArBjT4vf5vwXbM5UIIof+oK5OdwwI8l1HUdV0fhU+QM9ZBVCb8NEm9gh4Odk
-	 zz7TuF2iBg/+0Z3fD6T24N8+iqyD8BcYpwWvGVRgSWjXoB1EwYuEKf3omwAW+AUlnT85W
-	 USaMjHQdgvL/rbhZIZhRDUnLggtMbddQnK5kUY7h3YJWU1RdMwoSkc2S4+DrwjqZ3dKkO
-	 evSr2JQuMI7iUc0n7If9QOcRQLwZhuqvcqsgiO53ILhgvAstR66OxJAkXySI266OsWw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794837544;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=lgfzmSZN2nQ6JXjZlO2C+3pfQzKvR/nXPua0MzMaI+M=;
+	b=EyhArcCoSyylTECJm+amX6HOL3eiTThG4WJKY2+MyV3c+YKgwLstyabWkp4vVmfc06B7
+	 aB0cZ2O+5Qtmn38hIRE4nndzPgPZ+vWGKw9F/vk+qukfj5jbQHFLLojruXoj7BcEHUVa1
+	 kHnUiS4WzxRUC863fhUN/Ii+tLzDlGouDRh+wAL/b+YtyATC7snp5Ri+QmnBmYkKG0bki
+	 h/DR8Ahc6KoPJxxyP2xpCuDA0GgXFkzc9ySu0gIYjfL79OHphO0gzqPun1yWreOWbBTGz
+	 a8MKPWI/OkDHgNQizyVLq7BlnM6XVqbl3R1b4wJ/bLQOHReRBg+UH/DKHOa+T+FOGKA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=hZylgQir;
-	arc=none smtp.remote-ip=209.85.222.180
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aWr6K2YH;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12D8C606A89C
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:49:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 12D8C606A89C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC1DB606A339;
+	Mon, 16 Nov 2026 13:59:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=hZylgQir
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-94937a33cfbso379506385a.0
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 05:49:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1794836962; x=1795441762; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=HsBOAvHt4DPYJf9JK1qI+m0zGVz1UopZeMnslAsrQqc=;
-        b=hZylgQir7nUTGMwWgJ9fWXyWTyEkkrjfmb0m9SCS3xsWAFaTJJftU2v712JJKiKv17
-         Rsb+TFvUU92/rUCYTAaTiVfwYpOwIdwqJA+cFdmLvfDLtA4MuIIkr1sgxJvt3DoYjyVw
-         83+UeG8fPcOguW5/BRYZy36y8DJMM/0bnHyWX41TQlCAT45Qj5D5NIz7WjkrP+eJaVQr
-         KBanjcio+NPswVEK1xx+5tj6uHdDDX5eZ4K119+TbhRQX3xSIMehhkKPKOjth2S6Xq7A
-         cL/r4fbDKB6pugr+Zu7Iirru2LH2HqvQa+EQXSTfHCPaXPO9hRHIgomOd2bHAdsM5bGF
-         oJ8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794836962; x=1795441762;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=HsBOAvHt4DPYJf9JK1qI+m0zGVz1UopZeMnslAsrQqc=;
-        b=JlCwgooqi9IMisN8Oideimxhhv5G1LcZNJoS//KGEog+deNxCsEtzDS5xIYhEefos1
-         YCgAgvaZVmr9kQkt7R7k/TLRXVHvJ+SqfHbCzWHwVdv579aRoAKkQLqZyDcb9W+GYsuS
-         nME5iw+ZdbwH8V0Tj52RX9qzTKK5/ezARb9dq/a3PKWkIlpsBxzDzdmyPssdvzVy+Hx8
-         7g+wGj8JH417g3ezTM3wcQmzWdxOueM251x7eC05yWZmXjku4vw3UBHkziWflxw6rubl
-         8pJmqtcuLNnAPtwsJ55+/ZQ2ADw5qBrYVegap2/2fTQBn04DiXuTaQ65jSuJ4uhv0a1k
-         G8zA==
-X-Forwarded-Encrypted: i=1; AL+hErFH/quSaOWG7liaSf853eSjowBW0Yvu+T3sebqytCxcRvxHBYuxrjcKRMcr7Sbo0AfpcqeZdw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+1/HxKb2h6Na9RLZ8ujraylybRqajAlK7MApkBFc7ps3fBphjC
-	EJq46Qp2vgJCGCXgnCwI49UKkbK+MvIWm88Z/tWYYxSg8dcUdin6tu3qIPMPY4Qrkx8=
-X-Gm-Gg: AYBFou3GAh57ABMjQlX+roegMXDLJmBFiKs7b4wAOlXZ3nmDvzq4fRXfXcUMz7iMQ77
-	W98+JlOooEUWsnityXlmzjsKS4gyZ+pT4+xLET8h5r7ykQZ5Kk9fRHaZXdicbh3C0USV9rOdiF7
-	GYHunOgS6OAT5wvGopAQs2Q5hQU8FsWiV5CfAg/1C1UoM57qY5hQLSzSkHvoYBABjxNpeGMYmmT
-	NsKDXrfCCYKVHDuLpPQAPT8tnEHqAcXSByQrtfvmJjVyRsi/t13ld9a+7oYI4lkDHrgvilL547i
-	4U+eMvSfmwsT2B1/RPIT9RZBwTatyig4qHg1g81Qk/v3JSEB9WPfmMlzR5FeSsYQ1PTEEEndlWQ
-	52Uocyy0RWwfSRlbuk/q7N1a94bRfzbAySRIsXECx0iUTnCrWONsGL5SNknCka1ZBt3zsc14mpF
-	6JHRBMnw6+Q2NlWdbjJZOkiXXxwyh4Gymagmob0P9VIpqp+QgXT3xqWl3Rz8xmfbmUl7jqNyDGi
-	Mn1H8j6PCTN/7nbX6SeuR48xp8VPbsOqdMj8H/lQOZIR9EF1lKPDQakAF9cpAe8Btt5Yr2byHc5
-	K5O/8g==
-X-Received: by 2002:a05:620a:4155:b0:947:7691:731c with SMTP id af79cd13be357-9494bccb8d1mr1678517685a.65.1794836961959;
-        Mon, 16 Nov 2026 05:49:21 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9496bfb7fa0sm512919585a.34.2026.11.16.05.49.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 05:49:21 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xSx5E-00000009OXj-2xNY;
-	Mon, 16 Nov 2026 09:49:20 -0400
-Date: Mon, 16 Nov 2026 09:49:20 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jiahao Xu <xujiahao@cmss.chinamobile.com>
-Cc: Kevin Tian <kevin.tian@intel.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Christian Brauner <brauner@kernel.org>,
-	syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com
-Subject: Re: [PATCH] iommufd: reject mapping an iommufd file into an IOAS
-Message-ID: <20261116134920.GK2532299@ziepe.ca>
-References: <20261112105945.285526-1-xujiahao@cmss.chinamobile.com>
- <20261114004101.GE2532299@ziepe.ca>
- <20261116113808.560717-1-xujiahao@cmss.chinamobile.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=aWr6K2YH
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15DFD1F000C9;
+	Mon, 16 Nov 2026 13:58:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794837543;
+	bh=lgfzmSZN2nQ6JXjZlO2C+3pfQzKvR/nXPua0MzMaI+M=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=aWr6K2YHdoXcwe5G15aCFhZ9sJlbcxn9bWbL4b781difDMlYQzJSng+FnIzKjYXQa
+	 kP8L94t8V3QaOcUvH9XQps+7mTljEEvhwDEaEIbQk2lBBXHEAmFq74yJz2F1y0izik
+	 u7hYsvyWRMV4KIAfnowrzgMKyriFTaH/dDaSLnzEhkJbQkgp0wnSWqvw+bp3KeFxIV
+	 je+SE20GH3FBOaebGv8YoBP7i7rGDsnBvJef2R5uPw9+ffHl9acZ1qRXRLVUeW23aX
+	 32ckSphdHr/1uOXnvGZxo3CxKWliFJWYH+GIZ+IN7iN5aUgy2a+eAqRSZm6JJpymr1
+	 5Op7/OQosYq4w==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Fuad Tabba <fuad.tabba@linux.dev>
+Cc: linux-coco@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>,
+	Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>,
+	Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	kvmarm@lists.linux.dev, patches@lists.linux.dev,
+	Vincent Donnefort <vdonnefort@google.com>
+Subject: Re: [PATCH v10 02/13] mm: Zero memory during shared memory transitions
+In-Reply-To: <CA+EHjTw7QzzkQYKV3jyvW5mqZQMenTfm=kus9i87tYqACDOv0Q@mail.gmail.com>
+References: <20261116091137.94252-1-aneesh.kumar@kernel.org>
+ <20261116091137.94252-3-aneesh.kumar@kernel.org>
+ <CA+EHjTw7QzzkQYKV3jyvW5mqZQMenTfm=kus9i87tYqACDOv0Q@mail.gmail.com>
+Date: Mon, 16 Nov 2026 19:28:42 +0530
+Message-ID: <yq5ah5hgyj1p.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -106,21 +116,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261116113808.560717-1-xujiahao@cmss.chinamobile.com>
+Content-Type: text/plain
 
-On Mon, Nov 16, 2026 at 11:38:08AM +0800, Jiahao Xu wrote:
-> Agreed -- the blocklist is the wrong direction.  A vfio device fd bound to
-> this iommufd holds an iommufd_ctx reference of its own, so it reaches the
-> same cycle, and any other fd type that can own an iommufd_ctx would too.
-> 
-> The reversal looks doable with what mm already enforces.  memfd_pin_folios()
-> accepts only these two kinds of file:
-> 
-> 	if (!shmem_file(memfd) && !is_file_hugepages(memfd))
-> 		return -EINVAL;
+Fuad Tabba <fuad.tabba@linux.dev> writes:
 
-And how do you let dmabuf go through?
+> Hi Aneesh,
+>
+> On Mon, 16 Nov 2026 at 09:12, Aneesh Kumar K.V (Arm)
+> <aneesh.kumar@kernel.org> wrote:
+> [...]
+>> Keep allocations on platforms without memory encryption on the ordinary page
+>> allocator path so the original GFP constraints, including __GFP_ZERO, remain
+>> intact. Remove post-transition memset() calls that are now redundant and
+>> explicitly clear allocations on paths where no transition occurs.
+>>
+>> This intentionally makes every private-to-shared transition destructive;
+>> callers can no longer use set_memory_decrypted() to preserve existing contents.
+>
+> pKVM shares memory in place, and a guest has to be able to share
+> memory it has already set up, as Vincent pointed out [1]. That was one
+> of the primary reasons for in-place conversion in guest_memfd.
+>
+> Cheers,
+> /fuad
+>
+> [1] https://lore.kernel.org/all/avro44jUWOARFzul@google.com/
 
-Jason
+
+Thanks for catching this. We discussed it before, but I reached the
+opposite conclusion:
+
+https://lore.kernel.org/all/yq5a5wzw2ree.fsf@kernel.org
+
+My mistake. How do you suggest we handle this? We want to avoid zeroing
+pages multiple times with different CoCo configurations. For example, to
+allocate a zeroed page, we currently do:
+
+alloc_pages(__GFP_ZERO)
+set_memory_decrypted()
+memset(0, PAGE_SIZE)
+
+Should we do something like 
+
+https://lore.kernel.org/all/yq5aa4p82sqt.fsf@kernel.org/
+
+-anees
