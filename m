@@ -1,66 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.135
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.41
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794800379;
-	b=HqVV+bFuXuRIs05L+s3yQBWOityl9vvOue9kE1MWs8OhHn6eREkTJhDwqxDfb1LoCyf6
-	 4jfWPcX67S1pEhXky/5iE2Y8+0DxE5Zd1LXdg0Jjj7c0aBeJGSapXNMI+WMPzhDwzWZ40
-	 f2Dbk5dZf9Dh23TtZ7Pj6YG2Pp9rR4ua+ZRvNZwArmZzhG5D8oLm+ahNpUHO4GX0FoUA/
-	 PNLlEQ1WPpiHXHvUKiuuRE2t9Sul9mcZ2lE1MASmABn2saUbo2CvgUUpiig+9hd3FyrjY
-	 xM55ZlqgUQv98zmdnYdLPLLvNZEhOzequfktPfhS/ZDc0wYoqGsvnU4hvvDdkeBX8TQ==
+	t=1794803663;
+	b=IWPL2x3mpe++Ru7bxUXWhV6NRdRhVbnqQzNAzLjy/xVbVWrfFUA6AhB2XrUNBCBNWL51
+	 03ned8VGH7oPcWQPsOdbfDv+bhbOAIoC2zrahdI5oqAMnHATda4xFHepwQiBlTd0Ek0ln
+	 AeLHvPhQF/1zAvGuFi9LuRZB3ysT9w7xBSoyM6SAojzSCpghvEZ3ygcvrHcjX1zOO6e2q
+	 KHnEjCjAb7/LIzpS3AHTbhUAc2PYn4jIcTXZ+THbElj7PbJFObilhiMtgp0WtB+8VqNGs
+	 BLUJIpbykAb0vl+Qo1ykn30sjDiGYZsBrSil05/uyX66+KL3VFDXTiwS2LIMPeHP7zA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794800379;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=a9sgY1wDyH66YNK2sLW2XkmwV0xTgSVD7ewg5AAoqtk=;
-	b=fqrw0h6FE2WWQvY/VGGmgbutGffhQv2kMybfnEb8lrH0BdQZjc7iW7ML0OsBLUj1jJu9
-	 zaIqxrTwWRezkt1wLzaGpS9WPIVfAk8Y+xfOyuNQNJCzsvFjCgSpCPJBKBrMvdNAkgA0h
-	 ELTPpHUpk5L6DViYcyQMYyZuX+r9sZJZmAJkyvapgwJ+StjZfxizBpyII1gkN/0WiOHH7
-	 FK8huoedzUdAeCJ6D1THysSKCWtNkqgjryxSluvQp0jq5fkzN1qW82ToeAbpLs0NZkdlA
-	 n6Un9exAPElelo1/uRqubQrCwiGTpr2zgt4fACreIBcgVwrNiDVOi8LSwG0hcxdG1vw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794803663;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Date:From:To:Cc:Subject:In-Reply-To:References:MIME-Version:
+	 Content-Type:Content-Disposition:Message-ID:User-Agent;
+	bh=0RTPkBSn8aHOwll0NIb+MH6Rxh2TXo2nlFC6RRntyeU=;
+	b=LmlzPqG2zvpnO/JIbnTljPMUDSVv/LfczYrx33VOxR1OfYe72ibk/2fgGgcO/nFSz3+3
+	 vKBPEXyGmJles1zTpbGAqQDBqvmI9p+LbInyc1z32hz2dVcY7v9PCZGyhMfzP7Cr3O3CT
+	 zZWVqLeTlSMQwgtszrjCHLJORiJ1KJ0gmuUUKiywLIhhWCShH0D8U6mHtcoRjJh369iqa
+	 QQFEfhx45pFVSywssQ3A4bYP5XPNezMhov7EFc2WdONqRqZ1Dpk6WGRiXf98KV29J9Xe4
+	 E2zeJL8TGAgDG3PPz1zzvGHbt3k6RMc7UPjcbCToMvFbD4F2C0RTPT90iw6X5h4Qerw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=meTtckta;
-	arc=none smtp.remote-ip=111.22.67.135
-Received: from cmccmta2.chinamobile.com (cmccmta2.chinamobile.com [111.22.67.135])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8F163606A31C
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 03:39:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8F163606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dmarc=pass header.from=chrisdown.name;
+	spf=pass smtp.mailfrom=chrisdown.name;
+	dkim=pass header.d=chrisdown.name header.i=@chrisdown.name header.a=rsa-sha256 header.s=google header.b="or/AlSf9";
+	arc=none smtp.remote-ip=74.125.82.41
+Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17EBA606A329
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 04:34:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 17EBA606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=chrisdown.name
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chrisdown.name
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=meTtckta
+	dkim=pass (1024-bit key) header.d=chrisdown.name header.i=@chrisdown.name header.a=rsa-sha256 header.s=google header.b=or/AlSf9
+Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-1b3b4bcbfc9so3268139c88.1
+        for <iommu@lists.linux.dev>; Sun, 15 Nov 2026 20:34:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=meTtckta5LEDNUUu7pe/VZYZUdmdBPNgl9BfBapZXzEET8xILaDqpLVCBhgHM4bo7FvY+rTP5RpSQ
-	 odo+IOhkVuQYlF6JRg8SBNV/nS1BjdrM6qWy/Fc6Dh460L51+MLj9kALRgreRBZa1AaRu+IKuhHZ61
-	 hWEujT4m5TuCjJl8=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app07-12007 (RichMail) with SMTP id 2ee76afa7af770a-fc3e2;
-	Mon, 16 Nov 2026 11:39:35 +0800 (CST)
-X-RM-TRANSID:2ee76afa7af770a-fc3e2
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from [25.255.2.225] (unknown[10.55.1.70])
-	by rmsmtp-syy-appsvr01-12001 (RichMail) with SMTP id 2ee16afa7af5540-7b4d5;
-	Mon, 16 Nov 2026 11:39:35 +0800 (CST)
-X-RM-TRANSID:2ee16afa7af5540-7b4d5
-From: Jiahao Xu <xujiahao@cmss.chinamobile.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Christian Brauner <brauner@kernel.org>, syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com,
-	Jiahao Xu <xujiahao@cmss.chinamobile.com>
-Subject: Re: [PATCH] iommufd: reject mapping an iommufd file into an IOAS
-Date: Mon, 16 Nov 2026 11:38:08 +0800
-Message-ID: <20261116113808.560717-1-xujiahao@cmss.chinamobile.com>
-In-Reply-To: <20261114004101.GE2532299@ziepe.ca>
-References: <20261112105945.285526-1-xujiahao@cmss.chinamobile.com> <20261114004101.GE2532299@ziepe.ca>
+        d=chrisdown.name; s=google; t=1794803662; x=1795408462; darn=lists.linux.dev;
+        h=user-agent:message-id:content-disposition:content-type:mime-version
+         :references:in-reply-to:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=0RTPkBSn8aHOwll0NIb+MH6Rxh2TXo2nlFC6RRntyeU=;
+        b=or/AlSf9ID4PF+8qGNAByt+9leWavjQqMUqA4Z9mYViTJaSQxSjQzezRt8M+zlIye5
+         IPTUjLqWNBpwmPCBomO39L5vvj9o4sKC4CKSexCkB8IiLxc6ouLv6Xf/rg/EPWX5j3Zk
+         HK06YBEOYxtjDirteBgNqXxCv4a/KxzBK8G/s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794803662; x=1795408462;
+        h=user-agent:message-id:content-disposition:content-type:mime-version
+         :references:in-reply-to:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=0RTPkBSn8aHOwll0NIb+MH6Rxh2TXo2nlFC6RRntyeU=;
+        b=LzOcTqXfrMkD1G4DMZiHMVQqz87pTbfSWl1sZgI678Ck0DvjUFUgCtGcGNgHNFy+3m
+         3C4NMk9BHq6ZJRxx9TKcCSE6CiVIoxttMOGs/RJ5XSfrEbjFPxhioAVpDxiDDgstkvJ6
+         whvWVCzv3T9nnQNf3RLRpjGS/Hes1BFXiC2U48gkidqJqLEOnbm0DWnk6ZmuMeTVE9p9
+         4cXHEEq88JP0wvxuj3iKScI5rj7pMMikWNV8F/fgmq6/P7tKmKXyUzRs7EZcA0MVOt/9
+         2gWlGcSyLH5q70B6KlqvE2fdybeHh+heMbl8tDnRe7MJ32kHa76sKOdZrrkc7uFqTqCF
+         zw0w==
+X-Forwarded-Encrypted: i=1; AL+hErGWwUQ0eCCIp5MMt7PIjGvvqvj3lC+mux6WkBnAMhaFTVTVk1yAS3+bN17cTw3hVkaGC04KIA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+RVPSkm2oSdw0xjG+H6eFO0A2afZ+7BYacuv4LJrBSmlTum++X
+	Z0kgMOp1eY2q06Zimr3ndhDh3EU7ViLKDn1ymKBuSRpI6roeL+MyJb4ceKlxra9Dw4s=
+X-Gm-Gg: AYBFou2rgyGefsr9on8Rhoe5NYXXmcf9NFm1yKX77QWyMUJA//vaJvv0t3mU41Vi9pT
+	Tb6zDa/N3cVH0Tz2QdGDz4vpDcOM76hituUcj/5fJopm+Tb94f72Lg3XQk1NdGnjT7H3esoXDjk
+	QIipoAkryWle2Lpz1KwA6e1FrMs71Tpc9CQFNmNMHfqS/X41O6CJEtH/PtjONFfCcgtWHRnLtky
+	IJeOrMFw2rBfvPw4PWBR86Ifg8E6X2BWKm/Lk230VVweJbEzEim15qjqT+I0hhBb6ykUgaZk8mn
+	qt6D4S13UCXum2BtsUP73qKcjkRxUiRjIdGPUoFdZan0sivmES2a+U75UflGYnTQTzZqfjxBGH9
+	lUffRViEIXdkzxl5296SOcuOeVSvuEaNaiHxp3BIaaMRUnyj2G3K3bS0ZyJRTM+ypqvFFZK9CZT
+	AXfTObbv4v77XVIO0y6xnuRamRAAQVY8JhV0boj+fXWvC0oSCbDLiWnJpGDc/c4y9696qvhT+3P
+	W0/5RdSb+puvLigglwljqPM5mbxaCUZfYzMkzPJH63/GVCTcMSoclZkHpLSiOAUA5SYjpeAW7mt
+	RNtKjlv5XZqk6FOZQNTOl1NynUCiyVMDLqfBmPZfmzF3wAxRvoDqXQw0fuPEbcfB4gh8L+wHlfT
+	ig43T3qc8xTJVlebNzI9b+7xwZRDS+vlNxSXsT8DPFx2cSo7vsZGARg8LgAwbfyxuzMlfMLQepy
+	5FM7d55t2V3/fuQymu3H+VzbO8okZBaiMzEG5nWjlbiYDUmDI+n1Q6YEsg3uxBxAUl
+X-Received: by 2002:a05:701b:4508:20b0:194:9e7a:3ba2 with SMTP id a92af1059eb24-1b50306c4d3mr9813315c88.2.1794803662025;
+        Sun, 15 Nov 2026 20:34:22 -0800 (PST)
+Received: from [172.18.0.2] ([172.56.232.151])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b5329ec87bsm2576204c88.0.2026.11.15.20.34.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Nov 2026 20:34:21 -0800 (PST)
+Date: Sun, 15 Nov 2026 20:34:13 -0800
+From: Chris Down <chris@chrisdown.name>
+To: Tarun Sahu <tarunsahu@google.com>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Mike Rapoport <rppt@kernel.org>, robin.murphy@arm.com, maz@kernel.org,
+	will@kernel.org, David Matlack <dmatlack@google.com>,
+	Alexander Graf <graf@amazon.com>, seanjc@google.com, jgg@nvidia.com,
+	loganodell@google.com, arnd@arndb.de, dwmw2@infradead.org,
+	baolu.lu@linux.intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+	oupton@kernel.org, alex@shazbot.org, gle.com@google.com, pbonzini@redhat.com,
+	Andrew Morton <akpm@linux-foundation.org>, kevin.tian@intel.com,
+	joro@8bytes.org, kvmarm@lists.linux.dev, linux-pci@vger.kernel.org,
+	Pratyush Yadav <pratyush@kernel.org>, kexec@lists.infradead.org,
+	kvm@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, skhawaja@google.com, sagis@google.com,
+	linux-arch@vger.kernel.org, linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 14/19] liveupdate: Add feature header to struct
+	luo_flb_ser
+In-Reply-To: <20261110050202.529473-15-tarunsahu@google.com>
+References: <20261110050202.529473-1-tarunsahu@google.com>
+	<20261110050202.529473-15-tarunsahu@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -70,36 +108,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Message-ID: <20261115203413.eaa54fcba43adc22@chrisdown.name>
+User-Agent: Mutt/2.4.3 (cc9e3943) (2026-10-09)
 
-Agreed -- the blocklist is the wrong direction.  A vfio device fd bound to
-this iommufd holds an iommufd_ctx reference of its own, so it reaches the
-same cycle, and any other fd type that can own an iommufd_ctx would too.
+Hi Tarun,
 
-The reversal looks doable with what mm already enforces.  memfd_pin_folios()
-accepts only these two kinds of file:
+Tarun Sahu writes:
+>+	for (u64 i = 0; i < fh->header_ser->count;
+>+	     i++, fhdr = (void *)fhdr + fhdr->size) {
+>+		struct luo_flb_ser *ser;
+>+
+>+		err = kho_ser_validate(fhdr, luo_flb_ser);
+>+		if (err)
+>+			return err;
 
-	if (!shmem_file(memfd) && !is_file_hugepages(memfd))
-		return -EINVAL;
+I think there's a problem with returning this error as it is. For an
+unknown required feature kho_ser_validate() returns -EOPNOTSUPP, but
+callers of liveupdate_flb_get_incoming() already take -EOPNOTSUPP to mean
+that live update is disabled. pci_liveupdate_flb_get_incoming() returns
+NULL for it, so instead of panicking, PCI carries on as if nothing was
+preserved, even though those devices may still be doing DMA.
 
-and both predicates are inline helpers, so iopt_map_file_pages() can apply
-the same test before the reference is taken:
+ From a quick test with an outgoing kernel hacked to set an unknown
+required bit on its luo_flb_ser entries, that is what happens after the
+kexec, in that the PCI FLB is never retrieved and boot carries on.
 
-	if (!shmem_file(file) && !is_file_hugepages(file)) {
-		fput(file);
-		return -EINVAL;
-	}
+Could you validate the entries once in luo_flb_setup_incoming() instead?
+They are all written with the same header by luo_flb_serialize(), so
+there's no need to check them on every lookup. Going by the code, a
+failure there would panic through luo_restore_fail(), like a bad
+luo_flb_header_ser already does. If the per-entry headers end up going
+away as David suggested, then this check goes away with them, of course.
 
-with <linux/shmem_fs.h> and <linux/hugetlb.h> added to io_pagetable.c.
-With that in place iopt_pages can only ever hold exactly the two kinds of
-file memfd_pin_folios() is able to pin, every fd that owns an iommufd_ctx
-(iommufd itself, vfio, ...) is rejected before iopt_alloc_file_pages()
-runs get_file(), and the dma-buf case stays on its own branch untouched.
+Thanks!
 
-That is one file and about six added lines, and it makes the
-iommufd_ctx_from_file() check in what I sent unnecessary.
-
-Shall I send v2 in that form, or would you rather see the validation
-somewhere else?
-
-
+Chris
