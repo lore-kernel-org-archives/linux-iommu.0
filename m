@@ -1,129 +1,145 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.51
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794835249;
-	b=dgAlzSXaTVZey+sbTZHLqiHhb4a+kVQoqigbHQDiKdjVkBw+wedhVL1fOD5NQUGWSFVU
-	 O7WTDDV04/9mv0fxUmq1SwdS4KRygCFWgWes9HQasxD+mXoyauy2eh7RUriw6B6JCFc11
-	 zDVP1RcjvOEe1sBfSJ3ztOt7B/j3YAF7HckQnOJ60zMByD+HBZJpcvkgwFDJjzFPCVSmW
-	 nf57HpecSaNF3FzLTmW99reHqK2q7baTx79iuLs6mSk2DRhIEosX9TLSOG6NkkCyiZ9vh
-	 gq3E+j4TRLIQeOhX9YahYTBMZk7fMP5EokXnwz/r2B1WkXCyC+vLrQV++/TFt88uGtA==
+	t=1794835376;
+	b=IPk6qYfqWzm1TlbRhxG17UPg6olPpcLBmY9AMBzGDEPDhkkudyVsCYD39KyEM8OAbzUW
+	 akdA0n2itjEGjJ4+XSVc6fynR/EVkykJtaB057K/oqKbQaXjYZ0Ab5BJAMyhUHuVKHQxc
+	 exUMIGQsxg6Jcv007AJzr6AcyW8C8pxudrDM/nUdm1cmtBgyxnpg7dVT4lUeHPkXqAYT6
+	 0RVUOUS53+Lf+2zIMx6piWwOxVNajqCZfiY6j7ovnPJMOJYlGZLF2FcYPeu3xYZ7MLp6E
+	 Wd1F/cnGBAvFwO+ZJs074QFy5UjO2OnpW9TRNJA8DqBesqZe27US54BlWT7et4F5s7w==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794835249;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794835376;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=pW6Ljdl+VPjn0HqbJ5aXeG19kylCTPtUMbKY6fBA+PE=;
-	b=X/Zygv+VRshhmTznS8UZYpW+/MAR7EcTklBsK27lBqYATKDwEmxu89UkDxuxbvCkmQND
-	 2JiOOmXgD29EItPCzN4Thdmcg1AnxrFRoNOaEa2629zgMTK43PHTHVLBQzBVn1Y8dWMA6
-	 +DNKUDYh/kJM49DH6RLYgQI65UklXmWfq5Fd9uobaT5uGSSmpIO+7pxywItrf9zp4hvX5
-	 zPz3M7SmdxAl8P9pox/mcaHQn1LemQ/ECQCXMUwYGndCQp/P0l1Mw2Nt+YF6x6LRf7/Kd
-	 PSew5uyjIQRkyEr0gyxZdBHzx1fbUCNY/JMTyF8+SxP2C7kxB1fJYHX4VlQYOLoq0pw==
+	bh=Ip0og70Tt8f+28eOZ5F6oTc6DjrtMrQ1wymW+Uokrdw=;
+	b=GxDk83iwifyud5wFZ7WN/s3GNl8B72IEepnezTdtQ4AlY8NVqq1jKvoStcF4wh1Gjrlg
+	 oRvF2osiHkfSYyh222e5/eIN04Ca1XWDuPYBi/Lk54J40GpnJJlCjsoJo5e7+lbSi1zq5
+	 YxkZqZeK2vCFBRDO+IWnVeb7+qytnhIZJVLikbdL0D/RnJ19g1MzLpvVIyq3MepxM0bGd
+	 f3QJvZbvxVpGzqTnoWEZL0gO9EXhtUsXdU9BKekvabSC+kK7LFvtuS3wi6hFoWrcioarF
+	 49jlui9iTNPiKtaAGKRWhvE9ZK95Jvam/fcd/UeeEI3PFGPHcEdzbVzfy+UxzJ6oBAA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=ziepe.ca;
 	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b="bopOo/Mz";
-	arc=none smtp.remote-ip=209.85.219.49
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b="CubF/Gca";
+	arc=none smtp.remote-ip=209.85.219.51
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D104606A335
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:20:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 4D104606A335
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90ABE606A32F
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:22:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90ABE606A32F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=bopOo/Mz
-Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-91f1e3dd08cso13821736d6.3
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 05:20:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=CubF/Gca
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-91ea2e29d90so52031896d6.1
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 05:22:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1794835248; x=1795440048; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1794835375; x=1795440175; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=pW6Ljdl+VPjn0HqbJ5aXeG19kylCTPtUMbKY6fBA+PE=;
-        b=bopOo/Mzq7ySDNj/Zr8bVV9LCsaeSWwuU+C3SuF/f1K+3JGvkFVtiV6QbyS2xso80Z
-         HihaREdtgjCOGPbAKwP12V7CeKqVTdlhIrm5d3YmhOVBcAQiUZ4FYtOoEn3QRn5D2f5u
-         D2q5LISfFxkGD80I5ph9O0BXEcG7LWBlLfq0nFPu9kaxyd3nK/D7GdLtHFNJetRmpnI7
-         Au+OxkSNljjCh7HsHBBXesOAmxNu4nG1OroBiTiLFFfnS0lRpcVVq9tYR/h8bPg/9+ot
-         0eu+6GqSeaugqdSj7udORaibsbajRco1m0rZLrdm3QV3ZVXn/+1Fq3nHRrTaT4ZiGp8P
-         RQ6w==
+        bh=Ip0og70Tt8f+28eOZ5F6oTc6DjrtMrQ1wymW+Uokrdw=;
+        b=CubF/GcaiGFCo3GZWG2pELmqF4rZ40ATX0kx85qe7Z8AAvQlvgHscvAGv6ruClcDvS
+         oeFYKBO9uR/eExr/GZz6leE7D36V+SFmt3HFGpNGIrKY/YHYJVm1fi8VoWVYykbIJTMq
+         zle9F8jweprPSbgzRjCw8luh0sWSgzLHNKO+QzIFtvkDzLPvzPQc7ZGWOZdG6mhpnMPP
+         Gw0JpzaMQLs4DL9i12WoXZgMbeKDGd82gEw3YDpuezYDws1mr9HVhQGlrn1w3BPIyqsF
+         J6EkL1pwH2dTo8otz19u6MQjuEPvZIC8iEiP6O5tvGkeLkFEYS9KJrn5M7yn5Fjdf+Sf
+         veVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794835248; x=1795440048;
+        d=1e100.net; s=20260707; t=1794835375; x=1795440175;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=pW6Ljdl+VPjn0HqbJ5aXeG19kylCTPtUMbKY6fBA+PE=;
-        b=KP2BAHjwSVobw5FaEgEDgceN4+PlamyzpTMtwHsc8bSgjs1eezAmoZd7TcMIXeuLVR
-         /9+UrWSzfOqNQUnleOY+kArtbUxqXz1L1WugXrF9IGFEwBeDrMmcE6npgwI2NtSlKqUi
-         xfKldwoWF1Ptftr+sb/qWSpZTdgrIXz0CoD8jV6rf8jLDDPGIhMqrpoHPRv9Wpt5XE87
-         ZjmPBsr6MOerDa8f1hlHVe0LbXaWm9h795UHTSsIRprfUoVRBffzVYC+kEEdNQghR5ue
-         vVR1q7HLgeUaLHbnb5iX1o4hIoDmGmTn813pvPxYGoiTBAwnWymO+2F1FOFlh4RuHmBg
-         2qmA==
-X-Forwarded-Encrypted: i=1; AL+hErEwTdB7/gEamjPR0HpJ/II1NYrcYl3fDAN3C1ZVVEOwBa0gX7C9QuUAyLPrhu6tu8m0cVvTyg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/fwheeTNLf1wOAA3TzbNgiD14ucM8jajr5E9Mj/kRalsgezoWp
-	WMdNqPhCTbeTjdVj8PvGHNU3yheNEBDJQd/QCVhqwtlutULuYx1cuXqxEPzrqrhTs+8=
-X-Gm-Gg: AZFdTZeT17yBhhWFRS876ncMMbBHl+nWXc8gFraR5BKbSP0X/bxBT1+8/XtafBb4zuO
-	tHJZGjQ7b1n0Ff3DuGp1PPVgFzNI6PRhK9oRw6GJl/neRj9KMWw4TuT4cfVFfOcpg1oHbDFItrd
-	DM80p5qAOwXoo3Mc4QgzYL6bpVHyVl63R4mtXTL1yz00A9l7xC0eEj5sVJ+AKKafEypvKBRCs6B
-	K2dh5/EeGA0RQ+ANNmTj2vrIal4nFRmfrGMZ+7eLfjUWwl9QNX37tS23WSdsjnrAjnjOql5CQmI
-	RkbVfyBq6h2AmoFMi2S9hqDr7w34vuljCweRcCu7rwxTlF2XetU+vZccGUpnsJKfQ0ffpiWkv/K
-	AekmVxnyIOAJoSmIl4Q8q1U4YIggOQXnY+n8eLmKO+4/Ht/d7XUt/ifOHwApj9ljWURsYzHCnDa
-	jNEw1oAh8OkjaNlsZumhRtEFm6EzT8FKKxPjwrP/gIe9kESt8+80pZw+AETj/V3czG/JrWeYNRY
-	D5Qy3yDT/INvWlEKvZ5rU1FrVgdzyJggdb/XM2Sl1/mxMFUvvY0hEba9jiX50wh5QX7Ix611+nq
-	H6qBgw==
-X-Received: by 2002:ad4:5744:0:b0:91f:3230:2a4 with SMTP id 6a1803df08f44-91f32300351mr126741416d6.53.1794835247815;
-        Mon, 16 Nov 2026 05:20:47 -0800 (PST)
+        bh=Ip0og70Tt8f+28eOZ5F6oTc6DjrtMrQ1wymW+Uokrdw=;
+        b=UIRgzmVPtuFypA4LpuhA94YJqvq8o7RSHupCX+iq/pFgxljrdw2DWFx/m5f1oRi3+U
+         bnR2EQUQBXU7e3jmckKRFx+ioBl7WNB2ICxiVkWOllAxLiuFzUrrGcTadtEsHesNztsy
+         DL/spIOlfDmj22oNf6Kh6Z3Q/4UrCw7kEu9SgO9dPEtLF8e8TlVOdDtWdy3orE8uBths
+         LHooS0ixlsb34ihUUtmqlV98SlatbpwKyESGrEdIWXtyA7weRNDwCxMeh16t9ih0eswV
+         hnqi8N0qBL4Bxa0teezDtT1xItfQf/aPzrlU+dwfm0lWEu47RKOj8xiq63UAqOIYOKFq
+         nfGw==
+X-Forwarded-Encrypted: i=1; AL+hErFWC13efBleLSOHSYIQ7/oDooevre1HNCo/xrfgrzw2hIT2H0/gV0VAi6BSQPs8pV8IehxuOA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8VpQ97ZtD3xcASVoLcf/Fa7b0kKjSDrzMOzj48KGNj4dh3xnoc
+	JOOo643+B/u7zKIAguH15fx8mkX2NtahF64icHrhqtZYgOEgyJzRwSoSh8Mu1XZO4XA=
+X-Gm-Gg: AYBFou3VBDu/B1LP8mav2IyiQudCwMI9fxPUadbIIDLvkwGkAoIGYr4Qrg96dOQerv0
+	d4xGfZm5hE+XXZJCqbVcgL+kApuDZl/jJJqHBL2yiRCul+zF7od9IbRWGAh2Fs55A8DT/PgfRGT
+	QCxz1h/hnK6tSHWKXocLn8IA+Aa7i110yC1xfm82cI0RRPQ+0ERW1ea+cRtmzuXMGrY25IxilY/
+	EEvfyvlrruSdqcVXt9284nG/CEWmWAs56J4ONMkcUR/ojXKZAqlVkdjzR+7dX6dYZgcuDIbFbKS
+	dwFailfJabmz1XKTT50X4fJXAaDJS29jnREQssuCRNXpBzJXtShS0UwJ5P5t7FCwA5nigrGasQk
+	sIjchb6xIkKOMXbVpLnFljtIaazWSI3j0rUYYfPwaHmD8FKP2La0N8gTLl60g9c4mqOo8tUhtJK
+	YQsYiKZl6MOrzbF6ct3mR6de87yA5D5yGpWzXiN4ycezOtYnySpvonf84qa6JFcVRmQsk/Q80WS
+	CLN+kkcvDwRXNtplpcjaIjzY2oSonys1hx5S/HqTiu4I5tJRTlQ59CgjOZONHYlLaQ1zRhY9NFC
+	We0KyQ==
+X-Received: by 2002:a05:622a:e190:20b0:55b:9d8d:f29e with SMTP id d75a77b69052e-55b9d8df528mr93734571cf.9.1794835373441;
+        Mon, 16 Nov 2026 05:22:53 -0800 (PST)
 Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-91f23d7ba48sm85758876d6.28.2026.11.16.05.20.47
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-55ad0f07afesm80824241cf.16.2026.11.16.05.22.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 05:20:47 -0800 (PST)
+        Mon, 16 Nov 2026 05:22:52 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1xSwda-00000009KhK-1awf;
-	Mon, 16 Nov 2026 09:20:46 -0400
-Date: Mon, 16 Nov 2026 09:20:46 -0400
+	id 1xSwfb-00000009Kvw-33KL;
+	Mon, 16 Nov 2026 09:22:51 -0400
+Date: Mon, 16 Nov 2026 09:22:51 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+To: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	linux-coco@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>, Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Joerg Roedel <joro@8bytes.org>, Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 17/17] PCI: Replace untrusted state with device trust
-Message-ID: <20261116132046.GI2532299@ziepe.ca>
-References: <20261105-device-trust-core-v1-0-1e536825b4eb@nvidia.com>
- <20261105-device-trust-core-v1-17-1e536825b4eb@nvidia.com>
- <yq5amrr8yldi.fsf@kernel.org>
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Thomas Gleixner <tglx@kernel.org>, Will Deacon <will@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>, Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>, Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>, Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org, kvmarm@lists.linux.dev, patches@lists.linux.dev,
+	Alexey Kardashevskiy <aik@amd.com>,
+	Michael Roth <michael.roth@amd.com>, pankaj.gupta@amd.com
+Subject: Re: [PATCH v10 00/13] coco: guest: Add a shared-granule allocator
+ for host-shared memory
+Message-ID: <20261116132251.GJ2532299@ziepe.ca>
+References: <20261116091137.94252-1-aneesh.kumar@kernel.org>
+ <0524abf4-2306-4046-aade-c23aa7d1e0e6@arm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -135,66 +151,42 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <yq5amrr8yldi.fsf@kernel.org>
+In-Reply-To: <0524abf4-2306-4046-aade-c23aa7d1e0e6@arm.com>
 
-On Mon, Nov 16, 2026 at 06:38:25PM +0530, Aneesh Kumar K.V wrote:
-> > +static inline bool
-> > +pci_dev_default_is_restricted(const struct pci_dev *pdev)
-> > +{
-> > +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-> > +
-> > +	return policy == DEVICE_TRUST_POLICY_DISABLED ||
-> > +	       policy == DEVICE_TRUST_POLICY_ADVERSARY;
-> > +}
-> > +
+On Mon, Nov 16, 2026 at 10:09:35AM +0000, Suzuki K Poulose wrote:
+> Cc Michael Roth, Alexey, Pankaj Gupta
 > 
-> Could you clarify how this series will work alongside device acceptance
-> and private-memory access?
+> On 16/11/2026 09:11, Aneesh Kumar K.V (Arm) wrote:
+> > 
+> > This series tightens the alignment requirements for buffers that are shared
+> > between confidential-computing guests and the host, and adds a common
+> > allocator for host-shared memory.
+> > 
+> > When a guest runs with private memory, buffers shared with the hypervisor
+> > are not only accessed by the guest. They are also accessed by the host
+> > kernel, and the host may manage the corresponding shared/private state at a
+> > granularity larger than the guest page size.
+> > 
+> > Architectures such as Arm can detect incorrect accesses to Realm physical
+> > address space PFNs through GPC faults. However, relying on that as the only
+> > line of defence is fragile and can still lead to kernel crashes. The risk
+> > is especially visible for shared buffers that are later mmapped into
+> > userspace, such as guest_memfd or dma-buf backed allocations. Once
+> > userspace can access the mapping, the kernel cannot guarantee that
+> > applications will only touch the intended 4K region rather than the whole
+> > host page mapped into their address space. Those userspace addresses may
+> > also be passed back into the kernel and accessed through the linear map,
+> > resulting in a GPC fault.
 > 
-> In particular, what should callers of device_cc_accepted() use under
-> this model?
+> IIUC, AMD SEV-SNP also has a similar requirement for other reasons, to
+> align the "shared" allocations within a guest (2MB ?, as mentioned by
+> David Kaplan at the LPC).
+> 
+> Michael, Alexey,
+> 
+> Please could you share your thoughts on this series ?
 
-Who is calling device_cc_accepted? I thought we were keeping that
-internal to the DMA PI?
-
-> My understanding is that trust describes the operating
-> policy, not TDISP acceptance or DMA access to private memory.
-
-Right.
-
-> Therefore,
-> neither FULL nor ADVERSARY alone indicates whether a device can access
-> private memory?
-
-Right.
-
-Once you turn on TDISP you effectively activate DMA, just like turning
-on the IOMMU.
-
-Userspace then gets to choose how the rest of the system behavess. You
-can still run a strict viommu with an adversarial driver even if you
-enabled TDISP and can DMA to all memory.
-
-I don't know if many people would choose that combination, but it is
-there.
-
-> You also mention that once a trust level other than DISABLED is set, it
-> cannot be changed during the device's lifetime. If a device initially
-> operates in ADVERSARY mode and later attestation justifies FULL
-> operation, is that transition intentionally unsupported for the existing
-> device object? As documented, unbind/rebind and reset preserve the
-> committed level.
-
-I think it should only be for the duration of a bound driver?
-
-> It would help to describe how the trust framework fits together with
-> those separate mechanisms, including which pieces are left for follow-up
-> series.
-
-The main thing it brings is the pause to allow userspace to measure
-the device and put it into RUN if it so chooses before any driver is
-bound.
-
-It doesn't change how any of the DMA or TDSIP flows work.
+Yes, I think we concluded at LPC that AMD should use this series with
+a 2MB setting rather than try to do their HW assisted smash/unsmash
 
 Jason
