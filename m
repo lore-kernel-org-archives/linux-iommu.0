@@ -1,89 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794864452;
-	b=iChXMagkWF80zZ2X66nDCtxdKMXgaLN1O1+Wh6e5DE/dHdWozklC4LpWjWy/o2NApweC
-	 27pveFVjFu7HqrXRCtycM+jlLd5rkF0TwJEhrPZ5tmPCKZyM7bLTKDDoaCJoGZ8w1YXMJ
-	 oAKQMCZthM7EXNZF+RGtWENOCBi7i8V1PtDz6ZGRF+g4Hx3a4Xxf9E2niC6See1cea9Dq
-	 bru8/4Kn1WEl9qV064v5HwGzsmSV23t0OlD8D/su7JJ8Hz04RHiW/BXL3tOwEirQ5hxKP
-	 +Wx9d6hg7E29xJrbJZXnRZaZOzIoqSJIvJh3Or3MkjmcF/mjMapp2CvvlP/lM/gX8GQ==
+	t=1794864457;
+	b=Z6N4EohoBsNZHcL9DAvDIxnUoCgUvJ7IbDcDCRd5Fjz8BQ5UkVvqz8tRgJnk8L8stGxc
+	 rWfyXJPXp0UuMqLdd2DekbB/BTqd7ADXA10C1A+CqXqeDwDh/E3aRrhElI+8X1AOayRLr
+	 z8cgqkJ1dduqoT+itr6vR6exF5YeCs28KF/06oDwCRYjyfhljpJiNy9SP/8crgMRQ2W6g
+	 HviYJ3cjpfVJSsYdLYeKTCbnLh8U5s7a2lGgq64i8vIZvdnmdOZWGrdNE5vw2GgIqHg9K
+	 w9h0w3QK8Pq+MM2PiLmOMuksnxehEyNwU/PXDTYwX0+zor2XZcDxccdCZrGyjROqM+Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794864452;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794864457;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
 	 From:Date:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:
 	 Message-Id:References:In-Reply-To:To:Cc:X-Mailer:
 	 X-Developer-Signature:X-Developer-Key;
-	bh=UNI0IawohcjDnjoicCHviRRe2GFEz6OyLASUQR+3Ovw=;
-	b=ReiAXaSeHSRBSvEz8+sydnIetA7u8CNwduUO6g4ewRlK7TGcXWwg1eSJJEbJS/JPZR6u
-	 b6Tmx91vwsKz5IK5bfjboRROFTHGAX42YbCPNOg+muTCbZcScVGxpcOOE5lIPOB0vrTwG
-	 MPFwLVfsjA/ipZEFUi69gP1qsPwUObGfVlO9N9sbLPep2cgqdAnb0kIHLblI1E7Mu3UIL
-	 8JlKK1UgilIgPE8AnweNOc8GyFDUPfwZ1X4EkHDAX2Ywm1Tn8oxIWuFQZ4r84GWLr9B6A
-	 Ah6bGd6J396rL0rI1TgW+kynKHrd3l7qvpd8FQw8uKCKH1T+VhDhIcRx6BcLtb6JICA==
+	bh=bHyunwqhqqpQQZSm8FsYLG0nPatLuBc3TvD/xVa6m3c=;
+	b=JLs3av+3nVOpBlqq4B/AFC3BVhudocr1gJH1vXX4qgYXFk4c6UZG1VmYBiH5dyLjAaqQ
+	 npt5HmQTi4kfdhOKxCC/HqDPAQjopR49qRbT2+PtNBryilKsHTrWpKTuaDGQu9NyW0U6L
+	 mevICLinUdCVqGoCdBfzVnBsJhLCHhv4A9q8R1TD4ya2XbE7+EwK17tT+RSKfZCQB9nvo
+	 +MVrDYRO8dN0DeVdn/cpn21aGIi8dzm2xjMAJamvgcQ+Xw7shJcA87L3tUWyLMTYSwzhO
+	 ELwLGN4qaACnfIrofQXuk2o4y1PiJVYmzWik1pqaVkBizsnodmBRulmzPEXW2PRRG9A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=gmail.com;
 	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0NTp5ucX;
-	arc=none smtp.remote-ip=209.85.221.50
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b="VE/noDdH";
+	arc=none smtp.remote-ip=209.85.221.54
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5DC2606A334
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 21:27:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C5DC2606A334
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62FA1606A32C
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 21:27:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 62FA1606A32C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=0NTp5ucX
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-48e20ed3b9dso4246218f8f.2
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:27:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=VE/noDdH
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-48dfc0421d9so3551452f8f.1
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 13:27:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1794864450; x=1795469250; darn=lists.linux.dev;
+        d=gmail.com; s=20260707; t=1794864456; x=1795469256; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=UNI0IawohcjDnjoicCHviRRe2GFEz6OyLASUQR+3Ovw=;
-        b=0NTp5ucXBhXc9yLfeVPCOzGMoNeE+rPYbrmrY0xSdqAWwbhmwHQg+lm0PGYC9qy70U
-         URFRF/KfVUA8RPa3i2M4w2GsZe0y19hiKmN7wy7jko3U5DkNRKPNE/uLv+ajQVcI76YU
-         2Hlw25aMN84wHTgCSV+GhTn1a5+Te5AqTk9lfz1oT+DZNY9/u2RGwkzmrh3Bg+0vO7xG
-         jfGRHJnp2ky6VxhWRb/k75tO5yFI5ORdRCstCrbhiWpjFeP/4hZfEOebaMg9+35zknNJ
-         yWCX8wDHdzo4KPP/pSt0ye6WfSBbQVu1DZVTnfDTW5q63ixmimteojqghWbU/xP/knyM
-         AwbQ==
+        bh=bHyunwqhqqpQQZSm8FsYLG0nPatLuBc3TvD/xVa6m3c=;
+        b=VE/noDdHSoAOUpnqfSriW5TiP4YKQSspTr8xZGiF6Alj7y8Fp0P6OC+FNcMVhUKCML
+         Qnlt1ExPLPLMhUvPF9t8tZiF+Uhju3HVC+GJo0N/oBOkeFGVAUtDjVC0/QIs9pLkZFlq
+         BVhOntfvt9gOW+X4ETfqA9d1Dpy+pZmbcKkcVrxYa9mSVjrtr2UmheujAhdVQLyTkjbD
+         u5TyM7Whv8yQ4vOnLdvHzJYP4OUdWhqY/bSEGVYHUVA990B3nj+/ozKiu3+dLOjGgshP
+         s0tKkI2hBy9QymbfuZtKoeOSAmOEhogRUQ9KqMIsjSBCfISd+Ka3q+shykMQmzuTOjMI
+         gq7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794864450; x=1795469250;
+        d=1e100.net; s=20260707; t=1794864456; x=1795469256;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :content-type:mime-version:subject:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=UNI0IawohcjDnjoicCHviRRe2GFEz6OyLASUQR+3Ovw=;
-        b=VVkUnUXp+SlMWkpzaqyphUgl6+pDrqmw7QUPFvk+0kXDOFvs+TMKfS1AEXTvRJibTl
-         dIEKdEHYLO/3RcMA96SMaSRplVaUUHUfSLhXvMbEpmEUkyNbQFLIxWZkS8kpwXAeUomC
-         7nTS5/mUfyV//50GGcz94esDuzZecuttMsH3SSP6BvJzZhNEum8OoZEl7NXslb4Lc0eX
-         HHYBWtj9xs4DIpV9t2P/HcqSdMebw1favsh9Ovzhy2JuIRxnEQ7woQX2Jp0vOj6VbOz2
-         /YjkHM4BXtlRpH0Mh3Yc46s4UoCU7ULcnl/NHLx93blLtMkuZmUaWDm0FThmSftFEFxf
-         tMow==
-X-Forwarded-Encrypted: i=1; AL+hErHHX+Qz2dhE9apqoz99+DPQgz2v+jUojqThE76gbVVCvZJ7z45hpPYRSfqEmTfuSgTnuJppYg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/54AKGeW/RJJODoOpgax8F+WR50AbLyMLEhFrfnhDv5lSnikUt
-	PleKnb8Xpxq0dlFcnBidcN4HuNDxpOxUoC19sI6pE+RqWHyzW2KdIrMi
-X-Gm-Gg: AZFdTZe5DXUVO+bqdRVDDNAFneWV1aBgMb0rsWLLvfkPOukYSI/wLmpioiDoWCalnMW
-	xrBTCXQT9WHMJ0Mzo2XuL0mUcqBKzi5NMFuc7qSAbj6XAo8hxmDLOE/eUVu1h4juDPWuUeHbY52
-	aD99hjZGrCiO6KgnwVx/s1rA+ldTd/qVJNR9MWJ5zH73mALLysnAEUK9knPhJfnlYkkZGqg0hDW
-	yD8ZzARrWZuQKOlwefv6q8d/aCcYP80J3TJim2YnbIrt9bn+u6xWHF6Vxf/Me4i68Y1jRpYCj9c
-	5OWlSX6eWF5chAQi0aLfcNf5XqJjPHCwZsUwMW3uD1fQGVucRZ/Heok8UFJrNStPiyLshX9m8if
-	8ey2W+/gZnzbiMIFcekESmk8pMLlmwyflUjlfQTzdsZjGlLVud75hwyZewPhdg1kaWv3UkUr0GV
-	vWzUKII3RYlZ2uXadeLoGEAsxMm5SNx93JbK3bVyuevLKhDyHADhKaciEI34PaQJAj8UwtmP3Dr
-	oHg2gN2tCxd1nBk2ArTLmykdB1181zT07Xw5MDF0pnfCazpAsKh/H0BQsM8IB3oMYKXUvMSywWa
-	yC+o99PIvOUziO1XGUWlrswHUhBbY2xe+2Xe9HSY
-X-Received: by 2002:a05:6000:1a8f:b0:4a3:8b21:51c1 with SMTP id ffacd0b85a97d-4a38b2152c6mr1214677f8f.53.1794864450317;
-        Mon, 16 Nov 2026 13:27:30 -0800 (PST)
+        bh=bHyunwqhqqpQQZSm8FsYLG0nPatLuBc3TvD/xVa6m3c=;
+        b=WJwpXSA13hAPhDoTLQtvIK7xfwqPVDCAiSE6/eeDhw4D67flD1rGfTfSDh5DODy9uc
+         pHGYWQFT6PQlstslEcgKFGglnQRGtx5zTan0/zDSu1bcyelqpFZgJcUfNm3aTBtdfT8k
+         T1q8MQlNL0lM5+5leTMtW7lpdnE8QvQ1rxS36wDN8hITx/mqkhRjAUOJ/KxR+pHj2y/a
+         5WqpjeUWJWP7OLpgsYVZihGCkcDVTddp17CCI3AaCJUMaN9m3y9Qky3pVCE3I49ya7de
+         E8sFT2LlBhu80NRD+kIkgN/LO6v1osQ9EoJ4OXdZsAY5dEcByU5orlcx0+BPia/t2TCj
+         T0ZA==
+X-Forwarded-Encrypted: i=1; AL+hErForp/T44o8GDcwmK9SuhbLK9a2lRxCmCRFuqJ43EyvKyIZXkeAQyFN091eoeney11PDf7rlg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9vJkC7ad4zWrS+CMMKpgZiuwhguKniIusHk1AYC7+RSPnrFosn
+	WSX/ARZpPROEJFSe1ve/KUg8jqAYA6pgbZ0Tjd8iveuHhCnSm0bwtqtU
+X-Gm-Gg: AZFdTZeHMCClzzzlwHRdeLOPYlJz6BCTiqsZlsw29ENs1ywUU+nD/VW51sxoueE101w
+	gTtH6XyXBKfQLtuOUqRfmg77rKeYNNSYl9kyjPiEyfiYSosadVN91Oll9/QPfDOtsYPPTiBmMAd
+	vnyoNIxLggI2Okzq9hoU/w9Yk4ggMUzmhHnUYTMSvGoKlDiHOVOe1PXyroYW/mSRihnyR01NKQB
+	HzlUk0D0fHiCzRalh+6UV1jCB9JYCbmui954R7EzBE8fy5z0C6g+B4n4OPYas97XcIxZ2mHP2DU
+	8Vg2rfbmt6RPvJksEEHwH4WfHqF13N4TQrkE8mAzy5wxZ+tsiUopQ/kmuVmRnHTxAh832TDFkKU
+	tT6jR5/gj1bf1nYuq4ijrXQBebVgk+ZXRnHMYE+1wPzjJX50dLYCDah18JCYpzTVmtQQAiFOckA
+	UV+tBbEoJrcN+yv1dQjG6+Nt0MqcyXo5xcZKNbDB8qgudKkZgdK8yFzNClp+BdtR/OiOxkeUxQ6
+	NUZZjvFmfNMi9w9Zwkcg4sJUZ3236wfJn9yp/IphJQnxReN0m4GL1+dj4ijAid4ShINrrNoYh7g
+	rJmZroXEsjJNqIqBjdOiCUp+5b9BVh4YG5nwgB8p
+X-Received: by 2002:a05:6000:25ee:b0:490:b23b:802d with SMTP id ffacd0b85a97d-49c71d475ddmr22315194f8f.37.1794864455894;
+        Mon, 16 Nov 2026 13:27:35 -0800 (PST)
 Received: from [192.168.10.105] ([212.58.121.92])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4a378138cfdsm1260150f8f.58.2026.11.16.13.27.25
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4a378138cfdsm1260150f8f.58.2026.11.16.13.27.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 13:27:29 -0800 (PST)
+        Mon, 16 Nov 2026 13:27:35 -0800 (PST)
 From: Stanislav Aleksandrov <lightofmysoul@gmail.com>
-Date: Mon, 16 Nov 2026 21:26:25 +0000
-Subject: [PATCH v2 09/16] dt-bindings: crypto: qcom,inline-crypto-engine:
- Add Halliday
+Date: Mon, 16 Nov 2026 21:26:26 +0000
+Subject: [PATCH v2 10/16] dt-bindings: thermal: qcom-tsens: Document the
+ Halliday Temperature Sensor
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -95,7 +95,7 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261116-halliday-dts-v2-9-2c92438c6c46@gmail.com>
+Message-Id: <20261116-halliday-dts-v2-10-2c92438c6c46@gmail.com>
 References: <20261116-halliday-dts-v2-0-2c92438c6c46@gmail.com>
 In-Reply-To: <20261116-halliday-dts-v2-0-2c92438c6c46@gmail.com>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -127,33 +127,33 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  linux-scsi@vger.kernel.org, linux-crypto@vger.kernel.org, 
  linux-pm@vger.kernel.org, Stanislav Aleksandrov <lightofmysoul@gmail.com>
 X-Mailer: b4 0.15.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1794864382; l=921;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1794864382; l=829;
  i=lightofmysoul@gmail.com; s=20261108; h=from:subject:message-id;
- bh=LNBr+b73CKCaJq+Lcoy2dBwwEKE3EuPIoRzvD97HKJ8=;
- b=Oo5JC5eiOukaaqszf2JD96qfK1gjo4Z88L7lhFkJnmKZtf8EiRQqPApokWBgoFrRDRq84oEys
- dN0aV0Wol0LDOOw0PtPKsKDeYZp8RCTw6bkJAf6hQZCCV8VanxNS3ZJ
+ bh=QaX1Uqhi9JFBTyniSmrOqgkrx65fb+cn/pSnBpltl3Q=;
+ b=9cBm/5Mi8IeF1ejOwJZWQD4SfyJ7BWDjVcE5y5kBsTodKh6u91I9h5To2Rc8ArYF4KPYJAO96
+ griT0U/fTv6BDQooM53jxYIwB3vuzMj024ajCLGGuHNM9Pf4WE6Noed
 X-Developer-Key: i=lightofmysoul@gmail.com; a=ed25519;
  pk=jeRUlfmkhE53CJPoeIIXgu7rTE0ybDRH0HQrEwbydzg=
 
-Document the Inline Crypto Engine on the Qualcomm Halliday SoC.
+Document the Temperature Sensor (TSENS) on the Qualcomm Halliday SoC.
 
 Signed-off-by: Stanislav Aleksandrov <lightofmysoul@gmail.com>
 ---
- Documentation/devicetree/bindings/crypto/qcom,inline-crypto-engine.yaml | 1 +
+ Documentation/devicetree/bindings/thermal/qcom-tsens.yaml | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/crypto/qcom,inline-crypto-engine.yaml b/Documentation/devicetree/bindings/crypto/qcom,inline-crypto-engine.yaml
-index 23bf98c2b9fa..1512fd1d7471 100644
---- a/Documentation/devicetree/bindings/crypto/qcom,inline-crypto-engine.yaml
-+++ b/Documentation/devicetree/bindings/crypto/qcom,inline-crypto-engine.yaml
-@@ -14,6 +14,7 @@ properties:
-     items:
-       - enum:
-           - qcom,eliza-inline-crypto-engine
-+          - qcom,halliday-inline-crypto-engine
-           - qcom,hawi-inline-crypto-engine
-           - qcom,kaanapali-inline-crypto-engine
-           - qcom,maili-inline-crypto-engine
+diff --git a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+index c78074fbcecf..3b440f395fe8 100644
+--- a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
++++ b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+@@ -57,6 +57,7 @@ properties:
+           - enum:
+               - qcom,eliza-tsens
+               - qcom,glymur-tsens
++              - qcom,halliday-tsens
+               - qcom,hawi-tsens
+               - qcom,kaanapali-tsens
+               - qcom,maili-tsens
 
 -- 
 2.55.0
