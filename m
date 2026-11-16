@@ -1,49 +1,116 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794854805;
-	b=hz4pOESS8reZBrM/lfW2KtAONQLAFy4QF0ao8R/JTChTcAwgPqxJrd/GBJUzyuTph9Gm
-	 WbYkQ/9j+vYmD3VjKXUmqejGtN64WoGvwsYskAXbG8IYc2gQSAOH5FQ04f7NoINHbL8W8
-	 y6MDhJPgDepll0ghzGkOh+nbW+q7xDLwM8BOQy7N3km9DLAk4YLuVK2GTcrtaoWRNDq9S
-	 0QMSi3k7D/lcAzPcug23yNu0dDlQYY8oBmcAYtfelBQJgxYGnwBTKBKEcg/aV3Wbd2Gh2
-	 Pt7lZvRLZm874dcv5lIoIJ+QmBUKU2LAtlpYddLAllLsDp5jiKeDEGNwnV96zKDcpmg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794854805;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
-	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
-	 X-Spam-Checker-Version;
-	bh=2YUoAQtat16PZh3hSCS4+DqmjjlkhuzhPF22RNobT8o=;
-	b=Zy/f/XKeI5mxEIgIYY/ag1iro1oTiGeSWulxyMxOog3DJ3ci2CqydoUVDi0brc4BwAGG
-	 uv0RGsSU0eZc54ORLwMbnG7EVB4+hjxUmu2IQrPywK70sP2qHa6LehgDNZdU06HJluM1J
-	 zbd+EoZ0vfFeb6Xv179K0wdAv+HwONLCfUMi+QSrhF/knS+sw/5VNvG5mBv9G1d5fjVNv
-	 mzrorvB+3H2pvHSb1S7iYzIghahuBLYIZVJcTWxmot9yFfhYMVjVj2VKyDE0V+sS4Kwh4
-	 9mCx0QlsylZqebdaFtguw/ziLvXYrB4es8Yxx63gcD0TJUCuKMddqKDvhWWTZucSFPg==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.microsoft.com;
-	spf=pass smtp.mailfrom=linux.microsoft.com;
-	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b="ar/HfkpK";
-	arc=none smtp.remote-ip=13.77.154.182
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 40AB4606A335;
-	Mon, 16 Nov 2026 18:46:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 40AB4606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.8
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794855552;
+	b=uYolsaXCDDZXd2bj2PpXiR1TcSFqSPoKLZhNVGY8Ckk5sE3toEZhCnfrhv8ol7/j8zuz
+	 ORTwbi5EyBryp1IMtRyurOILzMvfLGdI6pwh8sypYQBycBSdnj1XA1rYkUpPKtnRje0aa
+	 iDChDBANIuKBQYMVaFDqfNoFmXkqOqTaW8fBv8f+7Y5xiWmVqGwqHeRrhPnVCDeKZge6O
+	 9nbC5q+TMlWdDK77B/GzhHnR+qq4jg5ce5e/WiFN92jzOYd623S6DTIaVjysW5H3LLK5+
+	 w3MaADK+003V+vYBf5xpUF2c7BHbP7OtDeZKXAiItfJOtDgLQmbXUUZOhTS6as0953g==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794855552;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 Received:Received:Date:From:To:CC:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To:
+	 X-NV-OnPremToCloud:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=6uZxX2VodxEyJ/RYf+cCYB8tuwn8+ufFF9b0AItFCvk=;
+	b=LOihuND71uczgJTrerkAt/4CveKutpid2RNm6dmyoF1QLh1Rf60DgUC6DrOW0VJ1OBht
+	 aKYBcYXRDl3iSbBVZAX1Csc43BzoapkSK69fPs4BxQWJu0N43ksWm28Zt3dM3njhMhe6Y
+	 VufLvxoQ4Ke6XGkSxVomJVRGgFlY5vUpUL0+Ag4AA9NVJkAu1jl1hMrpb/YApX0Be3iab
+	 z81EreietOU9fjBxDhsYh9lpQw0DaCr3h9c/sonexgCbQiAye+5PiFwk335FUdSo2YV7x
+	 +T+aEYdzjSoV1MFSUAxHSVwPfF9zVcDDZanXGhm+yyh8qCm0bKnUdSzDQZeb7mndYwA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=JqI2bWaS;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.56.8
+Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010008.outbound.protection.outlook.com [52.101.56.8])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AF99606A323
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 18:59:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9AF99606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=ar/HfkpK
-Received: from [10.4.158.9] (unknown [4.194.122.136])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 7265820B7168;
-	Mon, 16 Nov 2026 10:46:22 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7265820B7168
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1794854797;
-	bh=2YUoAQtat16PZh3hSCS4+DqmjjlkhuzhPF22RNobT8o=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ar/HfkpK8k1ZfyLEAMEdfVEdj4XWJ+1H1H5p4+N5kRMVF/qjNy+qJg4OAdqfB9iv6
-	 /GyMsdSGwvn/F858ycbweBk71Yc8fOyK+s49/97ZsaR0580NPH4BYdq2zfYt3tar5I
-	 jrG1L0wqQBpLEjYOex+EamkH/5FPwfT+dGzxHjes=
-Message-ID: <193e4130-9c2f-4a0f-b218-f5fcf0b3d508@linux.microsoft.com>
-Date: Mon, 16 Nov 2026 10:46:25 -0800
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=JqI2bWaS
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=yAKGHwe/+7YQcSCZfkGUIB6ZV3z27mJ60ORdR7KKT6o94180r90YRVCnnBDqtIWuIW2Ta4WbHdj1v0I8Bpzu6pvNG0Ezpu0EliFpyQP3XPVS1m3DWGbdDls0aNv2mHzs4AulG/St17xi2CU4E4I5hh5I5XE1ddqpZXcU3IgJ7jjBuRZl02iouQ9dIPd6+34eu3mpgc4EnpYhxU7yA4nhOzSuVcQMi0RdQNg6WhQSrzjEC0ezrhNZHoRj9n6WbkN7K9TlrEqaNPvasBWEZ2pMmCbdSrmUS7riXm81QWf+9HvX54LbuWnZ/KenayPnDjy2us+YwAwfpnAa+Nw2J2ULSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6uZxX2VodxEyJ/RYf+cCYB8tuwn8+ufFF9b0AItFCvk=;
+ b=Ecig9C78x0pR1dV7TFR+sMo/O5cBK5ffReGC0GYVjrGMCuFUik6gBsrYKES0EaOYpTMhpbkFkNaabx9lmxQlLqUeymCu3+YEow/oxqzRbGlgKSH/IcLivBABbax/igUfIM3QWioCjeJLRvb+574lChQXgwNr0dse58t5La0y9GrKKzAEE3RfP7TdyhUbJRh/n6BzZbhYbZ4tHRXAE6BniXc+kAtH1fNFes/RdWZnMieTX3Zl3kBudj1yKeBuBBAeBtTzrvs8K6Hw+mNFRy+avunpfnufzah5t/Gr3MWsiiH7Lre4DBCjmitv4kD6BV6x/4JtzQrXNpc6y3CXNQEN4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6uZxX2VodxEyJ/RYf+cCYB8tuwn8+ufFF9b0AItFCvk=;
+ b=JqI2bWaSa0rXLgCN7j9A4tDBuz1QzibKbZeiJJCsATTxa3RBziETy3gD7doAuOdaAXrjLuLvGUIK2MuHArYNNhmH/EaibIOffuIUBxr7rssgydMg5klLeYbrmOrLjY37FaMvf/ZxBFP3OEWMv6Wd25s3XKutA9uShMRDEij6a64b3yjI6e7nQ4e/SfULkTvUKHa/Ns3Ex69CrM1wLRqgxpDf3tinLJY7h3IqGpCaY5Gkh5MJuQ5Lv/TSnrxNNavX530je+RO2z+lyzAx8aKRon6cn2MPJwN8rMH+BrpjAHNisqLzX9EK/x03YVddjRpQRXcChbmYfDuDktGveABmuw==
+Received: from CH5PR03CA0013.namprd03.prod.outlook.com (2603:10b6:610:1f1::11)
+ by LV2PR12MB5941.namprd12.prod.outlook.com (2603:10b6:408:172::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Mon, 16 Nov
+ 2026 18:57:53 +0000
+Received: from CH01EPF000BE94E.namprd02.prod.outlook.com
+ (2603:10b6:610:1f1:cafe::8f) by CH5PR03CA0013.outlook.office365.com
+ (2603:10b6:610:1f1::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.13 via Frontend Transport; Mon,
+ 16 Nov 2026 18:57:53 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 216.228.117.160) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ CH01EPF000BE94E.mail.protection.outlook.com (10.167.244.203) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.615.4 via Frontend Transport; Mon, 16 Nov 2026 18:57:52 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Mon, 16 Nov
+ 2026 10:57:23 -0800
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56; Mon, 16 Nov
+ 2026 10:57:23 -0800
+Received: from nvidia.com (10.127.8.14) by mail.nvidia.com (10.129.68.6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.56 via Frontend
+ Transport; Mon, 16 Nov 2026 10:57:21 -0800
+Date: Mon, 16 Nov 2026 10:57:19 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: John Garry <john.garry@arm.com>
+CC: <will@kernel.org>, <jgg@nvidia.com>, <robin.murphy@arm.com>,
+	<joro@8bytes.org>, <praan@google.com>, <kevin.tian@intel.com>,
+	<smostafa@google.com>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>, <jamien@nvidia.com>,
+	<kas@kernel.org>, Cristian Prundeanu <cpru@amazon.com>, Breno Leitao
+	<leitao@kernel.org>, <xueshuai@linux.alibaba.com>
+Subject: Re: [PATCH v12 04/12] iommu/arm-smmu-v3: Pack the MSI vectors of the
+ used sources
+Message-ID: <avtSD34Rj5+XAz3t@nvidia.com>
+References: <cover.1793593923.git.nicolinc@nvidia.com>
+ <0d28afd67694fc6882e0ff5f054027488b1cf816.1793593923.git.nicolinc@nvidia.com>
+ <db4f83f3-d35b-49b7-8570-04e158125b53@arm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,443 +120,125 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 18/19] PCI: Replace untrusted state with device trust
-To: Leon Romanovsky <leon@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
- Heiner Kallweit <hkallweit1@gmail.com>, Russell King
- <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
- Johannes Berg <johannes@sipsolutions.net>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
- <rdunlap@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Johan Hovold <johan@kernel.org>,
- Eric Dumazet <edumazet@kernel.org>, Marcel Holtmann <marcel@holtmann.org>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>
-Cc: linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
- linux-input@vger.kernel.org, netdev@vger.kernel.org,
- linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
- linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- Jason Gunthorpe <jgg@ziepe.ca>
-References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
- <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
-Content-Language: en-US
-From: Kameron Carr <kameroncarr@linux.microsoft.com>
-In-Reply-To: <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <db4f83f3-d35b-49b7-8570-04e158125b53@arm.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH01EPF000BE94E:EE_|LV2PR12MB5941:EE_
+X-MS-Office365-Filtering-Correlation-Id: aa0698a5-435b-4573-364a-08df4413847f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|7416014|376014|1800799024|82310400026|36860700016|10067099003|56012099006|4143699003|11063799006|261026121527099003|261026140227099003|261028144727099003|261021135927099003|261022105027099003|261021121427099003|261102123227099003|261009223027099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	yWC2qqoyJY0+obtykxnP7PKiadHxB+mXQGgINf2YpjVru1kSaxsl6X24pTD7fEmTjSAYWt6EoWHTikmPOp13NK9IB5v45LlEkAtmlG6mUt0zy4x9XdSECoEwYpLpVfpwxNlhUEHItlwegiP7YcCMS97RAPJt/p3XdPFBYGlfedZlPVloWaZv3lB1ljmklr9fSIcxfkiTfpBHYzozgvT34IZmnCfqKuDXLI8o0Hk4rnDmt1jbCoLLzIG4BElf6BuGBp2O5NOeqouw+kcKtCLHFTMYpoFGrRVuAcZGThfNcG0PVk0PlwSOPYpHvZD65KmnVVPCzlqsw2S2Ra35HfGykRucm3uhW0SvjB7xmrTYCtLsmycZvI/AGyfONsavwmx5nE4TfsYPLnfs7tTP2HdDptW7hQ5gSYubN1CVuUBlmBHJCpQ/nOEcRYswpKKlTUAqaQJTyADGqS7xRPZr01bVXroLvcZM4YwV5tMx5Xj2GGjJCKvrES3ItXwK69blL8DUHvbhASkxDASQMY8yazfcJP+yU9DcdLTBQcoW3Vs1f4rixjLQEnf3Dgqh3/h/365RX7lu/zDymHlB5F2gNa/Ipnui3ryg4ZwCke4C5Lcb1lJrHbVdfmax0nd/3b1z9KBo7qP43lvazb8Q3kXub/l72fvx/U8ra6zCemlco/EUHsT0mJrAlIKcASkWP1UAJdMFYcZpYVyQmWVqPH+l3y8tlw==
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(23010399003)(7416014)(376014)(1800799024)(82310400026)(36860700016)(10067099003)(56012099006)(4143699003)(11063799006)(261026121527099003)(261026140227099003)(261028144727099003)(261021135927099003)(261022105027099003)(261021121427099003)(261102123227099003)(261009223027099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	lhXuZX7EgZDOFjnYsF3ExpcxskkXck4T4R+LA/K2TBLYlsM7BC5MegcrVOhW6o+RCG469yCMwXu9V2EEAyEaLz/jAUnW4pMQvwoi9lUAmrWndsgFmD+/wl0hVYkq8oMKvuWZbCjM7yzqxKrgafbv+x/OonFSCMfDXx7q9gSm5PA2mqfWqXM8CkT3iCY40ZgFU0nfgxisf/he0tyEU08F3a61LzbSBnBX4f/lxCrXGQb2lyLU0pVJ08V0jGMXezNHOFOWHRtPfpNfLEQllkkt3hI/LZ+PxGkA7y/bZV+WveHwSPKyGH0NBknXm8jN5MWHia1F1S6fsqqNHCMZFovtmArLmLwhWG/kn7eQbcjy/aFO6yHOUmunR8zkUYYlbRrqpksLmwnJBzl5UDgq0sEEw3Gw2I2MwQHR/+M3i9Ot9weWUVxlGKNVes+jgnOKZX9X
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Nov 2026 18:57:52.6474
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa0698a5-435b-4573-364a-08df4413847f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH01EPF000BE94E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5941
 
-On 11/8/2026 11:33 PM, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Nov 16, 2026 at 10:29:46AM +0000, John Garry wrote:
+> On 11/2/26 05:19, Nicolin Chen wrote:
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> > index 8f2c0b1cc4a8d..bce592fff0b12 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> > @@ -936,6 +936,13 @@ struct arm_smmu_impl_ops {
+> >   			  const struct iommu_user_data *user_data);
+> >   };
+> > +enum arm_smmu_msi_index {
+> > +	EVTQ_MSI_INDEX,
+> > +	GERROR_MSI_INDEX,
+> > +	PRIQ_MSI_INDEX,
+> > +	ARM_SMMU_MAX_MSIS,
 > 
-> Convert the PCI specific untrusted to use the common device trust
-> level. Adversarial means the same thing untrusted does.
+> nit: I don't really think that the trailing ',' is required after
+> ARM_SMMU_MAX_MSIS, as I asusme that we will never see any entry added after
+> 'max'. I appreciate that this enum is just being relocated in this patch.
+
+OK.
+
+> > @@ -993,6 +1000,8 @@ struct arm_smmu_device {
+> >   	int				gerr_irq;
+> >   	int				combined_irq;
+> > +	/* MSI vector index to enum arm_smmu_msi_index */
+> > +	u8				msi_map[ARM_SMMU_MAX_MSIS];
 > 
-> PCI discovery keeps the logic that set untrusted: it looks for removable
-> PCI devices with arch_pci_dev_is_removable() and defaults them to an
-> adversarial policy. Treat a disabled policy the same way when choosing
-> the IOMMU domain. Do not record the ATS capability of such a device, as
-> pci_ats_supported() rejected untrusted ones. Let the Intel write-buffer
-> quirk apply, as it only adds flushing.
+> should this be an array of enum arm_smmu_msi_index, as in
+> arm_smmu_setup_msi_vector() we write a enum arm_smmu_msi_index? I am
+> assuming that is why enum arm_smmu_msi_index was relocated.
+
+u8 is optimal in cost of memory; ARM_SMMU_MAX_MSIS is needed here.
+
+> > @@ -4943,19 +4936,29 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+> >   	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
+> >   }
+> > +static void arm_smmu_setup_msi_vector(struct arm_smmu_device *smmu,
+> > +				      unsigned int *vec, unsigned int *nvec,
+> > +				      enum arm_smmu_msi_index index)
 > 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/iommu/amd/iommu.c   |  3 +--
->  drivers/iommu/dma-iommu.c   | 14 +++++---------
->  drivers/iommu/intel/iommu.c | 17 +++++------------
->  drivers/iommu/iommu.c       | 17 +++++++++--------
->  drivers/pci/ats.c           |  4 ++--
->  drivers/pci/pci.c           |  5 +++--
->  drivers/pci/probe.c         | 22 +++++++++++-----------
->  drivers/pci/quirks.c        |  7 ++++---
->  include/linux/device.h      |  5 +++++
->  include/linux/pci.h         | 30 ++++++++++++++++++++++--------
->  10 files changed, 67 insertions(+), 57 deletions(-)
+> mega nit: "index" as a name is quite vague as we are indexing vec[] and
+> smmu->msi_map[] in this function. Maybe "msi_index" would be better.
+
+OK.
+
+> > +	arm_smmu_setup_msi_vector(smmu, vec, &nvec, EVTQ_MSI_INDEX);
+> > +	arm_smmu_setup_msi_vector(smmu, vec, &nvec, GERROR_MSI_INDEX);
+> >   	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> > -		writeq_relaxed(0, smmu->base + ARM_SMMU_PRIQ_IRQ_CFG0);
+> > -	else
+> > -		nvec--;
+> > +		arm_smmu_setup_msi_vector(smmu, vec, &nvec, PRIQ_MSI_INDEX);
+> >   	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
 > 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 960e1dc05ec69..e358bbb1f2baa 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -3401,8 +3401,7 @@ static int amd_iommu_def_domain_type(struct device *dev)
->  	if (!dev_is_pci(dev))
->  		return 0;
->  
-> -	/* Always use DMA domain for untrusted device */
-> -	if (to_pci_dev(dev)->untrusted)
-> +	if (pci_dev_default_is_restricted(to_pci_dev(dev)))
->  		return IOMMU_DOMAIN_DMA;
->  
->  	/* Apply device specific quirks */
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 78742aeba932d..a48fb511bfe6f 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -589,16 +589,11 @@ static int iova_reserve_iommu_regions(struct device *dev,
->  	return ret;
->  }
->  
-> -static bool dev_is_untrusted(struct device *dev)
-> -{
-> -	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
-> -}
-> -
->  static bool dev_use_swiotlb(struct device *dev, size_t size,
->  			    enum dma_data_direction dir)
->  {
->  	return IS_ENABLED(CONFIG_SWIOTLB) &&
-> -		(dev_is_untrusted(dev) ||
-> +		(device_is_adversarial(dev) ||
->  		 dma_kmalloc_needs_bounce(dev, size, dir));
->  }
->  
-> @@ -611,7 +606,7 @@ static bool dev_use_sg_swiotlb(struct device *dev, struct scatterlist *sg,
->  	if (!IS_ENABLED(CONFIG_SWIOTLB))
->  		return false;
->  
-> -	if (dev_is_untrusted(dev))
-> +	if (device_is_adversarial(dev))
->  		return true;
->  
->  	/*
-> @@ -1189,7 +1184,8 @@ static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
->  	 * swiotlb_tbl_map_single() has initialized the bounce buffer proper to
->  	 * the contents of the original memory buffer.
->  	 */
-> -	if (phys != (phys_addr_t)DMA_MAPPING_ERROR && dev_is_untrusted(dev)) {
-> +	if (phys != (phys_addr_t)DMA_MAPPING_ERROR &&
-> +	    device_is_adversarial(dev)) {
->  		size_t start, virt = (size_t)phys_to_virt(phys);
->  
->  		/* Pre-padding */
-> @@ -1790,7 +1786,7 @@ size_t iommu_dma_max_opt_mapping_size(void)
->  
->  size_t iommu_dma_max_mapping_size(struct device *dev)
->  {
-> -	if (dev_is_untrusted(dev))
-> +	if (device_is_adversarial(dev))
->  		return swiotlb_max_mapping_size(dev);
->  
->  	return SIZE_MAX;
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 5a2e705a2f2e0..66942a91b992f 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -2624,8 +2624,8 @@ static void __init platform_optin_force_iommu(void)
->  		return;
->  
->  	/*
-> -	 * If Intel-IOMMU is disabled by default, we will apply identity
-> -	 * map for all devices except those marked as being untrusted.
-> +	 * If Intel-IOMMU is disabled by default, an external device could
-> +	 * otherwise receive an identity map despite its adversarial policy.
->  	 */
->  	if (dmar_policy_off()) {
->  		pr_info("Intel-IOMMU force enabled due to platform opt in\n");
-> @@ -3629,16 +3629,12 @@ static bool intel_iommu_is_attach_deferred(struct device *dev)
->  	return translation_pre_enabled(info->iommu) && !info->domain;
->  }
->  
-> -/*
-> - * Check that the device does not live on an external facing PCI port that is
-> - * marked as untrusted. Such devices should not be able to apply quirks and
-> - * thus not be able to bypass the IOMMU restrictions.
-> - */
-> +/* Bypass quirks must not prevent later adversarial operation. */
->  static bool risky_device(struct pci_dev *pdev)
->  {
-> -	if (pdev->untrusted) {
-> +	if (pci_dev_default_is_restricted(pdev)) {
->  		pci_info(pdev,
-> -			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
-> +			 "Skipping IOMMU quirk due to trust policy [%04X:%04X]\n",
->  			 pdev->vendor, pdev->device);
->  		pci_info(pdev, "Please check with your BIOS/Platform vendor about this\n");
->  		return true;
-> @@ -4124,9 +4120,6 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
->  
->  static void quirk_iommu_rwbf(struct pci_dev *dev)
->  {
-> -	if (risky_device(dev))
-> -		return;
-> -
->  	/*
->  	 * Mobile 4 Series Chipset neglects to set RWBF capability,
->  	 * but needs it. Same seems to hold for the desktop versions.
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index b486b8bbd1fcd..8be2a246d4903 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1879,7 +1879,7 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
->  static int iommu_get_default_domain_type(struct iommu_group *group,
->  					 int target_type)
->  {
-> -	struct device *untrusted = NULL;
-> +	struct device *restricted = NULL;
->  	struct group_device *gdev;
->  	int driver_type = 0;
->  
-> @@ -1901,14 +1901,15 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
->  		driver_type = iommu_get_def_domain_type(group, gdev->dev,
->  							driver_type);
->  
-> -		if (dev_is_pci(gdev->dev) && to_pci_dev(gdev->dev)->untrusted) {
-> +		if (dev_is_pci(gdev->dev) &&
-> +		    pci_dev_default_is_restricted(to_pci_dev(gdev->dev))) {
->  			/*
-> -			 * No ARM32 using systems will set untrusted, it cannot
-> -			 * work.
-> +			 * No ARM32 using systems select a restricted trust
-> +			 * policy; it cannot work.
->  			 */
->  			if (WARN_ON(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
->  				return -1;
-> -			untrusted = gdev->dev;
-> +			restricted = gdev->dev;
->  		}
->  	}
->  
-> @@ -1924,11 +1925,11 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
->  			driver_type = IOMMU_DOMAIN_IDENTITY;
->  	}
->  
-> -	if (untrusted) {
-> +	if (restricted) {
->  		if (driver_type && driver_type != IOMMU_DOMAIN_DMA) {
->  			dev_err_ratelimited(
-> -				untrusted,
-> -				"Device is not trusted, but driver is overriding group %u to %s, refusing to probe.\n",
-> +				restricted,
-> +				"Device trust policy restricts DMA, but driver is overriding group %u to %s, refusing to probe.\n",
->  				group->id, iommu_domain_type_str(driver_type));
->  			return -1;
->  		}
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index 9cb23780093dd..c8c96acc26343 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -21,7 +21,7 @@ void pci_ats_init(struct pci_dev *dev)
->  {
->  	int pos;
->  
-> -	if (pci_ats_disabled())
-> +	if (pci_ats_disabled() || pci_dev_default_is_restricted(dev))
->  		return;
->  
->  	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_ATS);
-> @@ -40,7 +40,7 @@ void pci_ats_init(struct pci_dev *dev)
->   */
->  bool pci_ats_supported(struct pci_dev *dev)
->  {
-> -	if (!dev->ats_cap || dev->untrusted)
-> +	if (!dev->ats_cap)
->  		return false;
->  
->  	if (dev->is_virtfn)
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 7c6f2aba81443..b08adba03f96b 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -1016,8 +1016,9 @@ static void pci_std_enable_acs(struct pci_dev *dev, struct pci_acs *caps)
->  	/* Upstream Forwarding */
->  	caps->ctrl |= (dev->acs_capabilities & PCI_ACS_UF);
->  
-> -	/* Enable Translation Blocking for external devices and noats */
-> -	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-> +	/* Enable Translation Blocking when ATS is unavailable or restricted. */
-> +	if (pci_ats_disabled() || dev->external_facing ||
-> +	    !pci_dev_ats_permitted(dev))
->  		caps->ctrl |= (dev->acs_capabilities & PCI_ACS_TB);
->  }
->  
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 5b6960bbb35bc..607569c31b5b9 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -1738,24 +1738,24 @@ static void set_pcie_cxl(struct pci_dev *dev)
->  
->  }
->  
-> -static void set_pcie_untrusted(struct pci_dev *dev)
-> +static void pci_set_default_trust_policy(struct pci_dev *dev)
->  {
-> -	struct pci_dev *parent = pci_upstream_bridge(dev);
-> +	struct pci_dev *parent = pci_physfn(dev);
-> +
-> +	if (parent == dev)
-> +		parent = pci_upstream_bridge(dev);
->  
->  	if (!parent)
->  		return;
+> In this case (or any other time in which we return early in this function),
+> it seems less than ideal - as a coding practice - that we have written
+> values in smmu->msi_map and they won't be used.
 
-Hi Leon,
+Doing so it a bit neater. But fine..
 
-The default policy here works for physical hierarchies, but there's no
-opportunity for a paravirtual host bridge to participate in the trust
-resolution when the host bridge driver itself knows the appropriate
-trust level for a device.
+I'll Move this behind the FEAT_MSI guard:
 
-Could we add an optional host bridge callback?
++	/* Map each vector back to its source for arm_smmu_write_msi_msg() */
++	for (i = 0; i < ARM_SMMU_MAX_MSIS; i++)
++		if (vec[i] < nvec)
++			smmu->msi_map[vec[i]] = i;
 
-    struct pci_host_bridge {
-        ...
-        int (*trust_resolve)(struct pci_host_bridge *bridge,
-                     struct pci_dev *dev,
-                     const struct device_driver *drv,
-                     enum device_trust_policy policy,
-                     enum device_trust_level *level);
-    };
-
-An implementation of trust_resolve() in pci_bus_type could default to
-calling the hook and fall back to the current default policy when the
-host bridge does not provide a callback.
-
-My scenario is pci-hyperv in a confidential VM with a paravisor. The
-paravisor is inside the guest's trust boundary and owns TDISP. It locks,
-attests and accepts the device, then answers a VMBus query describing
-which BAR ranges are private and whether the device's DMA may target
-private memory. Before a driver can bind pci-hyperv has to:
-
-  - query the paravisor,
-  - refuse to operate the device if the query failed or if the response
-    is invalid,
-  - decide whether the device may operate.
-
-The modular host bridge driver in this scenario needs a hook to be able
-to participate in trust resolution.
-
-I'm also looking for the right place to setup MMIO and configure DMA
-in my scenario. Let me know if you have guidance.
-
---
-Regards,
-Kameron
-
-
-> -	/*
-> -	 * If the upstream bridge is untrusted we treat this device as
-> -	 * untrusted as well.
-> -	 */
-> -	if (parent->untrusted) {
-> -		dev->untrusted = true;
-> +
-> +	if (device_policy_is_adversarial(&parent->dev)) {
-> +		dev->dev.trust_policy = DEVICE_TRUST_POLICY_ADVERSARY;
->  		return;
->  	}
->  
->  	if (arch_pci_dev_is_removable(dev)) {
-> -		pci_dbg(dev, "marking as untrusted\n");
-> -		dev->untrusted = true;
-> +		pci_dbg(dev, "setting adversarial trust policy\n");
-> +		dev->dev.trust_policy = DEVICE_TRUST_POLICY_ADVERSARY;
->  	}
->  }
->  
-> @@ -2082,7 +2082,7 @@ int pci_setup_device(struct pci_dev *dev)
->  
->  	set_pcie_cxl(dev);
->  
-> -	set_pcie_untrusted(dev);
-> +	pci_set_default_trust_policy(dev);
->  	device_trust_init(&dev->dev);
->  
->  	/* "Unknown power state" */
-> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-> index 7f1f47ea2ee41..9ed3e7660bab2 100644
-> --- a/drivers/pci/quirks.c
-> +++ b/drivers/pci/quirks.c
-> @@ -5525,8 +5525,8 @@ static void pci_quirk_enable_intel_rp_mpc_acs(struct pci_dev *dev)
->   * Currently this quirk does the equivalent of
->   * PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF
->   *
-> - * TODO: This quirk also needs to do equivalent of PCI_ACS_TB,
-> - * if dev->external_facing || dev->untrusted
-> + * TODO: This quirk also needs to do the equivalent of PCI_ACS_TB when the
-> + * device is external-facing or ATS is restricted by trust policy.
->   */
->  static int pci_quirk_enable_intel_pch_acs(struct pci_dev *dev)
->  {
-> @@ -5567,7 +5567,8 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
->  	ctrl |= (cap & PCI_ACS_CR);
->  	ctrl |= (cap & PCI_ACS_UF);
->  
-> -	if (pci_ats_disabled() || dev->external_facing || dev->untrusted)
-> +	if (pci_ats_disabled() || dev->external_facing ||
-> +	    !pci_dev_ats_permitted(dev))
->  		ctrl |= (cap & PCI_ACS_TB);
->  
->  	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index e3e7457cd50f4..770c3040fd2b9 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -933,6 +933,11 @@ static inline bool device_iommu_mapped(struct device *dev)
->  	return (dev->iommu_group != NULL);
->  }
->  
-> +static inline bool device_policy_is_adversarial(const struct device *dev)
-> +{
-> +	return READ_ONCE(dev->trust_policy) == DEVICE_TRUST_POLICY_ADVERSARY;
-> +}
-> +
->  static inline bool device_policy_is_disabled(const struct device *dev)
->  {
->  	return READ_ONCE(dev->trust_policy) == DEVICE_TRUST_POLICY_DISABLED;
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index aa3765a20a96c..087c63b177c85 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -490,14 +490,6 @@ struct pci_dev {
->  	unsigned int	shpc_managed:1;		/* SHPC owned by shpchp */
->  	unsigned int	is_thunderbolt:1;	/* Thunderbolt controller */
->  	unsigned int	is_cxl:1;               /* Compute Express Link (CXL) */
-> -	/*
-> -	 * Devices marked being untrusted are the ones that can potentially
-> -	 * execute DMA attacks and similar. They are typically connected
-> -	 * through external ports such as Thunderbolt but not limited to
-> -	 * that. When an IOMMU is enabled they should be getting full
-> -	 * mappings to make sure they cannot access arbitrary memory.
-> -	 */
-> -	unsigned int	untrusted:1;
->  	/*
->  	 * Info from the platform, e.g., ACPI or device tree, may mark a
->  	 * device as "external-facing".  An external-facing device is
-> @@ -616,6 +608,28 @@ static inline struct pci_dev *to_pci_dev(const struct device *dev)
->  {
->  	return container_of(dev, struct pci_dev, dev);
->  }
-> +
-> +static inline bool
-> +pci_dev_default_is_restricted(const struct pci_dev *pdev)
-> +{
-> +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-> +
-> +	return policy == DEVICE_TRUST_POLICY_DISABLED ||
-> +	       policy == DEVICE_TRUST_POLICY_ADVERSARY;
-> +}
-> +
-> +static inline bool pci_dev_ats_permitted(const struct pci_dev *pdev)
-> +{
-> +	enum device_trust_level level = device_get_trust_level(&pdev->dev);
-> +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-> +
-> +	if (level == DEVICE_TRUST_DISABLED)
-> +		return policy != DEVICE_TRUST_POLICY_ADVERSARY &&
-> +		       policy != DEVICE_TRUST_POLICY_DISABLED;
-> +
-> +	return level == DEVICE_TRUST_FULL;
-> +}
-> +
->  #define for_each_pci_dev(d) while ((d = pci_get_device(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
->  #define for_each_pci_dev_reverse(d) \
->  	while ((d = pci_get_device_reverse(PCI_ANY_ID, PCI_ANY_ID, d)) != NULL)
+> > @@ -4972,9 +4975,10 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+> >   		return;
+> >   	}
+> > -	smmu->evtq.q.irq = msi_get_virq(dev, EVTQ_MSI_INDEX);
+> > -	smmu->gerr_irq = msi_get_virq(dev, GERROR_MSI_INDEX);
+> > -	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
+> > +	/* msi_get_virq() returns 0 for an unused source that has no vector */
 > 
+> So are you saying that msi_get_virq(dev, ARM_SMMU_MAX_MSIS) returns 0?
+> 
+> If so, do we really require checks like the following:
+> 
+> if (smmu->features & ARM_SMMU_FEAT_PRI) {
+> 		irq = smmu->priq.q.irq;
+> 		if (irq) {
+> 
+> I am talking about the ARM_SMMU_FEAT_PRI flag check, as smmu->priq.q.irq ==
+> 0 and ARM_SMMU_FEAT_PRI unset seem equivalent.
+
+It's slightly different: In the MSI case, it's registered upon the
+FEAT by SW. So, it's ensured to get 0 without additional gate. The
+other one gets from FW, so gating is necessary.
+
+Nicolin
