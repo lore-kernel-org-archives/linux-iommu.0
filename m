@@ -1,86 +1,111 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794817326;
-	b=lTqp60Shn04Kduwj3SquHVWgIfWTIk39bmUC3Kinsoe8EfnzbvQ6MZwQEvAiHKRALx45
-	 iUZT8g96G8NYD0yzXom8WJW/DSLdJloQqKz1wmUlBVAs2t6F4PnJHZIoYe4Xy6DEOt1NV
-	 dsLaigMejsbZFD+qxocNlavx7NtKYcxyZE9tGEs4CRyQEb7Q0qOlqQ1yGTcvw8pRgNuBi
-	 wD5pITYgrFBgAhApKteszWj63gEbDgkYYtd8WDf+PeqBLO1UMP0pSQvjj1kBZtsiyyJnd
-	 X5SY+OKl0F7tJzoroOvFds5/KHvKjN6zX+is1lm4An5QtQYpNzmHw5BsvWaPNaSSm2g==
+	t=1794820319;
+	b=4sDlCK0KgI9Y6mrpn1997JZ8rB4Ru7GHo/5XNediXFaQf3Nr6rhQNsjqA8TLp+At4X+O
+	 cwuHMpei45sr+kiCvQENGziwiMmeiIlur84DoZ2IKkrnqSRZ59QKKtRw6PkvnariTopud
+	 l+BCr/hRGvvEfj3AyA3D63n/0/tbJF63oqJeaogniZnd3eUMhL9ImVXFZKBj2YIPMCZBO
+	 6AED6EqmvqvhnJvkSotqmD6N4Y7fSF7/rFCHx5EcYjdZ2jBYI0M/Rft7GZ8hNFplOWc44
+	 sHYooHmhEPiPnsu2GHG9DKbFK4vspiAAzIzaNyZ0E5nHXRPtIB+/ijMHw9kViui0QPw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794817326;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794820319;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
-	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=o3Cb6Xq0hJCoqEoWsMGeuO1zla0Znah9UtrDmm5BWW4=;
-	b=bNHq5QCTMj6xq+OSgSOxDoU/Hld4yS8vV3SNC42wOljTfwoNa6OzADCTNk49+xhR9u1o
-	 LFBmAR+Yhrd/i9UpeAetlFtFgQs8DJuJ7c+/c8oqSYXaaibJ14dj6mih6+MNkXtd8Tgqc
-	 ZpBGcaruAMFlZ0QNkNdlbyLDik4GpHcPwkbudaUdcArrM94qPMJgec5GOhCogEqFxnH5A
-	 dfvOUrhK5CV0p284tgycfxUStagfPmQZdLrfjVG048TAy6vw0zW07IIqHblM5qLX6WscM
-	 mbLzdaZ+Zl+aEryJyzJ6M0c8Fg4KCtP7wozy/479o1p1B9JoCb7Zqp6E4NXazb2rjlA==
+	 MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=w3ZTI2Hxpp8i0Nf4hdErNJ38SFIe71jHPYvPRCA1ED0=;
+	b=oNxhyQcGivrb/bW0V0opA+txQLOobmA4iB4ws0OAInDMCUKkVyvz/6nnk7xeKNAkS/2/
+	 OV7Ix0GyLckxMKmKn9x0aQpFcIhDZEAyukdtD4PICFjwGDRrMhScCnAnR62t+DG/N05/v
+	 nIl0mfSeyGYikwIe/EfEpRgG3BMhalLtV2g6ZnA5pvYHZz521YJPnB17UJiZ/4RoetwhX
+	 URseqZOzMOUdKyjiGBk7W1ng5hFFl4hB/ksBkRYwbrmSRsNzx3SzZJn2KSrds53lywONW
+	 mEDPwZ2ZeH4yTYxjn4vW/qS+8yvctecQulp95m5OGE3KXBvquSesEWf7Ym/amPUjo6g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="Y/S2Bzxf";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Uyb2DaQC;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A94A1606A335;
-	Mon, 16 Nov 2026 08:22:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FD75606A31C;
+	Mon, 16 Nov 2026 09:11:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y/S2Bzxf
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C6831F000CB;
-	Mon, 16 Nov 2026 08:21:56 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Uyb2DaQC
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 008BB1F000C4;
+	Mon, 16 Nov 2026 09:11:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794817326;
-	bh=o3Cb6Xq0hJCoqEoWsMGeuO1zla0Znah9UtrDmm5BWW4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=Y/S2BzxfzWceQ+bc4DIiQGF10OF/Kl8RiAbmIiPUtrDrbBepUM9xXfjkTgkBaqUq9
-	 gp7LmkMXT8XJop73/ZXWwUOpb9RILLq8ts7q8Yfdj5RK5VRTb6PqOxcnzdEPTy3t6S
-	 2jpE44dBrdmndCy7MetDYkin6VILJrApMJYzYaE3DKWDxxH1RI1fgDw9Y+RxTJrTnR
-	 aKrvJFSGobeVr7yqNYqwrHfzRYHTCEjaDrc4XiZD8/QjVBeq1WlzElzw2YVZe+Oc4b
-	 qAjDWZtPTaes7Sk2jM/va7JvY2oSXTlmvtKRQd8lJ1t1vgHIiVcNbGqht/AzESSoAK
-	 7PkEQVKcj4w1w==
+	s=k20260515; t=1794820318;
+	bh=w3ZTI2Hxpp8i0Nf4hdErNJ38SFIe71jHPYvPRCA1ED0=;
+	h=From:To:Cc:Subject:Date;
+	b=Uyb2DaQCAcHg85gbVmEVzpWpk6cmUuQqb7L3dErPgBimrtNH86oMfqwAwDJKZIuZS
+	 d/pzsSf0375D2Go2BKd6dIXZKeeYz/iB89b+kk1IfO1JTN/VTdLsq838cn/oIKUHhh
+	 8c/PUUfnDANeuad296V9eMDCARmnazBLzWmMvE5zaeNSMYDn5ZUttTQyYD7WHrE8QY
+	 1AwiiaItY6Z4MBj8zI13BoPXPTmA3KFrCE/vqBp7iR8vrO0UgKme2FAd9uXkuKUdY8
+	 iCf7ja74Uz8JlZ60MJ9Yp7ZGPZh+jV1gsLPGwZRuAVi+v3lBjuyEgqnf2fpPULqx/n
+	 RBo3ZCLh5dD9w==
 From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
 To: linux-coco@lists.linux.dev
 Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	Alex Williamson <alex@shazbot.org>,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>,
+	Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
 	Catalin Marinas <catalin.marinas@arm.com>,
-	Jacob Pan <jacob.pan@linux.microsoft.com>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
 	Jason Gunthorpe <jgg@ziepe.ca>,
 	Joerg Roedel <joro@8bytes.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Nicolin Chen <nicolinc@nvidia.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Ortiz <sameo@rivosinc.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
 	Steven Price <steven.price@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
 	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Vasant Hegde <vasant.hegde@amd.com>,
+	Thomas Gleixner <tglx@kernel.org>,
 	Will Deacon <will@kernel.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Ashish Kalra <ashish.kalra@amd.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>,
+	Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org,
 	iommu@lists.linux.dev,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	kvm@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org,
 	linux-arm-kernel@lists.infradead.org,
-	linux-pci@vger.kernel.org,
-	linux-tegra@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-mm@kvack.org,
+	kvmarm@lists.linux.dev,
 	patches@lists.linux.dev
-Subject: [PATCH v9 13/13] PCI/TSM: Wait for users during unregister
-Date: Mon, 16 Nov 2026 13:49:35 +0530
-Message-ID: <20261116081935.85372-14-aneesh.kumar@kernel.org>
+Subject: [PATCH v10 00/13] coco: guest: Add a shared-granule allocator for host-shared memory
+Date: Mon, 16 Nov 2026 14:41:23 +0530
+Message-ID: <20261116091137.94252-1-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261116081935.85372-1-aneesh.kumar@kernel.org>
-References: <20261116081935.85372-1-aneesh.kumar@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -90,587 +115,271 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Wait for TEE Security Manager (TSM) users before tearing down PCI
-connections, including IOMMUFD virtual IOMMUs (vIOMMUs) with no vDEVICE
-objects. A vDEVICE represents a physical device within a guest's virtual
-IOMMU.
 
-Add registration_lock to protect operations against unregister. New
-operations try the read lock. Long-lived users increment the user
-refcount under that lock. Unregister holds the write lock while dropping
-the registration reference, waiting for users and tearing down PCI
-connections.
+This series tightens the alignment requirements for buffers that are shared
+between confidential-computing guests and the host, and adds a common
+allocator for host-shared memory.
 
-PCI Device Security Manager (DSM) removal holds the registration read
-lock while waiting for its contexts and completing teardown. If
-unregister prevents taking the read lock, retain a device reference and
-wait for all TSM users instead.
+When a guest runs with private memory, buffers shared with the hypervisor
+are not only accessed by the guest. They are also accessed by the host
+kernel, and the host may manage the corresponding shared/private state at a
+granularity larger than the guest page size.
 
-Cc: Ashish Kalra <ashish.kalra@amd.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Alexey Kardashevskiy <aik@amd.com>
+Architectures such as Arm can detect incorrect accesses to Realm physical
+address space PFNs through GPC faults. However, relying on that as the only
+line of defence is fragile and can still lead to kernel crashes. The risk
+is especially visible for shared buffers that are later mmapped into
+userspace, such as guest_memfd or dma-buf backed allocations. Once
+userspace can access the mapping, the kernel cannot guarantee that
+applications will only touch the intended 4K region rather than the whole
+host page mapped into their address space. Those userspace addresses may
+also be passed back into the kernel and accessed through the linear map,
+resulting in a GPC fault.
+
+To avoid this, host-shared buffers must satisfy two constraints:
+
+  - the address must be aligned to the CoCo shared-granule size
+  - the size must be a multiple of that granule size
+
+The series adds a common CoCo shared-memory layer for enforcing these
+constraints. It provides shared-granule geometry and range-validation
+helpers, byte-oriented private/shared transition helpers, and
+alloc_cc_shared_pages(). The allocator rounds a request to the architecture
+shared granule, allocates suitably aligned contiguous pages, transitions
+the complete allocation to shared state, and returns the transitioned size
+alongside the page.
+
+The corresponding free helper restores the complete allocation to private
+state before returning it to the buddy allocator. If private state cannot
+be restored safely, the allocation is deliberately leaked rather than
+returning potentially shared memory for unrelated use.
+
+The series also makes zeroing part of private-to-shared transitions, with
+each architecture clearing memory at the appropriate point. Callers must
+therefore initialize shared buffers after the transition; existing contents
+are not preserved.
+
+The shared-granule size defaults to PAGE_SIZE and can be overridden by an
+architecture. The arm64 CCA changes to discover the host's IPA state change
+alignment are not included in this series.
+
+GIC ITS command queues and tables and the dma-buf system_cc_shared heap
+use the common allocator. DMA direct, atomic DMA pools and SWIOTLB retain
+their allocation paths and use the common layout or transition helpers.
+Restricted DMA pools are checked for shared-granule alignment.
+
+Hyper-V users of set_memory_encrypted() and set_memory_decrypted() are not
+changed to use cc_make_shared() by this series. Those paths are not
+currently used by the arm64 CCA code path, and therefore are not part of
+the arm64 CCA IPA state change alignment problem addressed here.
+
+Notes:
+* Codex assisted with implementation, review and series organization.
+
+Changes from v9:
+https://lore.kernel.org/all/20261104164555.3555725-1-aneesh.kumar@kernel.org
+* Leak allocations after failed sharing in the common allocator and SWIOTLB.
+* Move x86 zeroing from the AMD, TDX and Hyper-V vTOM callbacks to
+  set_memory_decrypted(), after a successful transition
+* Add set_memory_decrypted_nozero() for VGA mappings, which must change
+  memory attributes without clearing device memory.
+* Zero memory even when encryption is inactive in the generic, arm64 and
+  pSeries implementations of set_memory_decrypted().
+* Move pSeries zeroing after sharing. Document why pKVM and s390 must clear
+  private contents before sharing
+* Drop the GIC ITS VPE L1 preallocation patch from this series.
+  This issue predates the series and will be addressed separately.
+* Add mm/cc_shared.c and include/linux/cc_shared.h to the TSM MAINTAINERS
+  entry.
+
+Changes from v8:
+https://lore.kernel.org/all/20260924100529.1398790-1-aneesh.kumar@kernel.org
+* Rebase onto the 7.4-rc1
+* Move TDX and AMD (including SEV-SNP) zeroing to their finish callbacks
+  so private-to-shared transitions clear the final shared mapping.
+* Clear __GFP_MOVABLE for shared allocations, which cannot be migrated.
+* Resolve NUMA_NO_NODE in the common ITS allocation helper to preserve
+  placement for all ITS callers.
+* Stop SWIOTLB allocation retries when the reduced pool would fall below
+  the shared granule size, avoiding an allocation retry loop.
+
+Changes from v7:
+https://lore.kernel.org/all/20260921144847.501151-1-aneesh.kumar@kernel.org
+* Add the following new patches:
+  * "irqchip/gic-v3-its: Preallocate VPE L1 tables"
+  * "mm: Assert CoCo shared allocations may sleep"
+  * "mm: Zero memory during shared memory transitions"
+* Drop the arm64 RHI and shared granule size patches so that the series can
+  be rebased on top of upstream to enable Shashiko review.
+
+Changes from v6:
+https://lore.kernel.org/all/20260904103452.1197239-1-aneesh.kumar@kernel.org
+* Add a common allocator and geometry/transition helpers for CoCo host-shared
+  memory.
+* Convert GIC ITS, dma-direct, atomic DMA pools, and the dma-buf
+  system_cc_shared heap to the common allocator.
+* Limit dma-buf scatterlist entries to the requested buffer size so rounded
+  backing is not exposed to importers.
+
+Changes from v5:
+https://lore.kernel.org/all/20260706060432.1375570-1-aneesh.kumar@kernel.org
+* Rebased to latest kernel
+* Drop patch arm64: realm: Move Realm memory encryption ops to RSI code
+
+Changes from v4:
+https://lore.kernel.org/all/20260427063108.909019-1-aneesh.kumar@kernel.org
+* Rename the helpers to use CoCo terminology
+  (mem_cc_shared_granule_size() / mem_cc_align_to_shared_granule() instead of
+  mem_decrypt_granule_size() / mem_decrypt_align()).
+* Use __DMA_ATTR_ALLOC_CC_SHARED to pass CoCo shared allocation requirements
+  down to CMA-based allocation helpers.
+* Add validation for restricted DMA pools to reject pools that are not aligned
+  to the shared granule size.
+* Add dma-buf system heap handling for cc-shared buffers.
+* Split the previous combined DMA/SWIOTLB/ITS change into smaller subsystem
+  patches covering ITS, DMA direct, SWIOTLB, restricted DMA pools, dma-buf
+  system heap, and arm64 Realm support.
+* Rework arm64 Realm support by moving Realm memory encryption ops into RSI
+  code and exposing the CCA shared granule size through arm64_mem_crypt_ops.
+
+Changes from v3:
+https://lore.kernel.org/all/20260309102625.2315725-1-aneesh.kumar@kernel.org
+* Fix build error reported by kernel test robot <lkp@intel.com>
+
+Changes from v2:
+https://lore.kernel.org/all/20251221160920.297689-1-aneesh.kumar@kernel.org
+* Rebase to latest kernel
+* Consider swiotlb always decrypted and don't align when allocating from swiotlb.
+
+Changes from v1:
+* Rename the helper to mem_encrypt_align
+* Improve the commit message
+* Handle DMA allocations from contiguous memory
+* Handle DMA allocations from the pool
+* swiotlb is still considered unencrypted. Support for an encrypted swiotlb pool
+  is left as TODO and is independent of this series.
+
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Baoquan He <baoquan.he@linux.dev>
+Cc: Mike Rapoport <rppt@kernel.org>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: Pratyush Yadav <pratyush@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: "Christian König" <christian.koenig@amd.com>
 Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Lukas Wunner <lukas@wunner.de>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Xu Yilun <yilun.xu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: linux-pci@vger.kernel.org
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
----
- drivers/crypto/ccp/sev-dev-tsm.c |   4 +-
- drivers/pci/tsm/core.c           | 172 ++++++++++++++++++++++---------
- drivers/virt/coco/tsm-core.c     | 137 ++++++++++++++++++++++--
- include/linux/pci-tsm.h          |   7 +-
- include/linux/tsm.h              |  15 ++-
- 5 files changed, 273 insertions(+), 62 deletions(-)
+Cc: Joerg Roedel (AMD) <joro@8bytes.org>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Steven Price <steven.price@arm.com>
+Cc: Sumit Semwal <sumit.semwal@linaro.org>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Thomas Gleixner <tglx@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: Brian Starkey <Brian.Starkey@arm.com>
+Cc: John Stultz <jstultz@google.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Radu Rendec <radu@rendec.net>
+Cc: "T.J. Mercier" <tjmercier@google.com>
+Cc: Madhavan Srinivasan <maddy@linux.ibm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Nicholas Piggin <npiggin@gmail.com>
+Cc: Christophe Leroy (CS GROUP) <chleroy@kernel.org>
+Cc: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+Cc: Shrikanth Hegde <sshegde@linux.ibm.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc: Sven Schnelle <svens@linux.ibm.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: x86@kernel.org
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: Kiryl Shutsemau <kas@kernel.org>
+Cc: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Cc: K. Y. Srinivasan <kys@microsoft.com>
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: Wei Liu <wei.liu@kernel.org>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: Long Li <longli@microsoft.com>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: dri-devel@lists.freedesktop.org
+Cc: iommu@lists.linux.dev
+Cc: linaro-mm-sig@lists.linaro.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-mm@kvack.org
+Cc: kvmarm@lists.linux.dev
+Cc: patches@lists.linux.dev
 
-diff --git a/drivers/crypto/ccp/sev-dev-tsm.c b/drivers/crypto/ccp/sev-dev-tsm.c
-index 46f2539d2d5a..5c61ce74ee0f 100644
---- a/drivers/crypto/ccp/sev-dev-tsm.c
-+++ b/drivers/crypto/ccp/sev-dev-tsm.c
-@@ -392,8 +392,8 @@ void sev_tsm_init_locked(struct sev_device *sev, void *tio_status_page)
- 
- void sev_tsm_uninit(struct sev_device *sev)
- {
--	if (sev->tsmdev)
--		tsm_unregister(sev->tsmdev);
-+	if (sev->tsmdev && WARN_ON(tsm_unregister(sev->tsmdev)))
-+		return;
- 
- 	sev->tsmdev = NULL;
- }
-diff --git a/drivers/pci/tsm/core.c b/drivers/pci/tsm/core.c
-index a713025d1a5a..9d1b05c848b6 100644
---- a/drivers/pci/tsm/core.c
-+++ b/drivers/pci/tsm/core.c
-@@ -54,10 +54,7 @@ struct tsm_dev *pci_tsm_get_device(struct pci_dev *pdev)
- 	ops = tsm_dev->pci_ops;
- 	if (!ops->viommu_get_ops)
- 		return NULL;
--	if (!try_module_get(ops->owner))
--		return ERR_PTR(-ENODEV);
--	get_device(&tsm_dev->dev);
--	return tsm_dev;
-+	return tsm_get(tsm_dev);
- }
- EXPORT_SYMBOL_GPL(pci_tsm_get_device);
- 
-@@ -209,16 +206,16 @@ static int probe_fn(struct pci_dev *pdev, void *dsm)
- 	return 0;
- }
- 
--static int pci_tsm_connect(struct pci_dev *pdev, struct tsm_dev *tsm_dev)
-+static int __pci_tsm_connect(struct pci_dev *pdev, struct tsm_dev *tsm_dev)
- {
- 	int rc;
- 	struct pci_tsm_pf0 *tsm_pf0;
- 	const struct pci_tsm_ops *ops = tsm_dev->pci_ops;
--	struct pci_tsm *pci_tsm __free(tsm_remove) = ops->probe(tsm_dev, pdev);
- 
- 	/* connect() mutually exclusive with subfunction pci_tsm_init() */
- 	lockdep_assert_held_write(&pci_tsm_rwsem);
- 
-+	struct pci_tsm *pci_tsm __free(tsm_remove) = ops->probe(tsm_dev, pdev);
- 	if (!pci_tsm)
- 		return -ENXIO;
- 
-@@ -253,6 +250,18 @@ static int pci_tsm_connect(struct pci_dev *pdev, struct tsm_dev *tsm_dev)
- 	return 0;
- }
- 
-+static int pci_tsm_connect(struct pci_dev *pdev, struct tsm_dev *tsm_dev)
-+{
-+	int rc;
-+
-+	if (!tsm_trylock_registration(tsm_dev))
-+		return -ENODEV;
-+
-+	rc = __pci_tsm_connect(pdev, tsm_dev);
-+	tsm_unlock_registration(tsm_dev);
-+	return rc;
-+}
-+
- static ssize_t connect_show(struct device *dev, struct device_attribute *attr,
- 			    char *buf)
- {
-@@ -341,6 +350,8 @@ struct pci_tsm_context {
-  * from being disconnected until pci_tsm_context_put() releases the context.
-  * Each successful call allocates a separate context, even for the same device,
-  * and requires a matching pci_tsm_context_put().
-+ * The caller must retain its tsm_get_device() reference until the context
-+ * is released.
-  *
-  * Return: A new context, or an error pointer on failure.
-  */
-@@ -350,23 +361,35 @@ struct pci_tsm_context *pci_tsm_context_get(struct pci_dev *pdev,
- 	struct pci_tsm_context *context;
- 	struct pci_tsm_pf0 *pf0;
- 
--	guard(rwsem_read)(&pci_tsm_rwsem);
--	if (!pdev->tsm || !is_link_tsm(pdev->tsm->tsm_dev))
--		return ERR_PTR(-EOPNOTSUPP);
-+	down_read(&pci_tsm_rwsem);
-+	if (!pdev->tsm || !is_link_tsm(pdev->tsm->tsm_dev)) {
-+		context = ERR_PTR(-EOPNOTSUPP);
-+		goto out_unlock;
-+	}
- 
- 	/* The device must be connected to the TSM requested by the caller. */
--	if (pdev->tsm->tsm_dev != tsm_dev)
--		return ERR_PTR(-EXDEV);
-+	if (pdev->tsm->tsm_dev != tsm_dev) {
-+		context = ERR_PTR(-EXDEV);
-+		goto out_unlock;
-+	}
-+
-+	if (!tsm_trylock_registration(tsm_dev)) {
-+		context = ERR_PTR(-ENODEV);
-+		goto out_unlock;
-+	}
- 
- 	context = kzalloc_obj(*context);
--	if (!context)
--		return ERR_PTR(-ENOMEM);
-+	if (!context) {
-+		context = ERR_PTR(-ENOMEM);
-+		goto out_unlock_registration;
-+	}
- 
- 	pf0 = to_pci_tsm_pf0(pdev->tsm);
--	guard(mutex)(&pf0->lock);
-+	mutex_lock(&pf0->lock);
- 	if (pf0->removing) {
- 		kfree(context);
--		return ERR_PTR(-ENODEV);
-+		context = ERR_PTR(-ENODEV);
-+		goto out_unlock_mutex;
- 	}
- 
- 	if (!pf0->dsm_context_users)
-@@ -376,6 +399,12 @@ struct pci_tsm_context *pci_tsm_context_get(struct pci_dev *pdev,
- 	context->pf0 = pf0;
- 	context->pdev = pci_dev_get(pdev);
- 	context->dsm_dev = pci_dev_get(pf0->base_tsm.pdev);
-+out_unlock_mutex:
-+	mutex_unlock(&pf0->lock);
-+out_unlock_registration:
-+	tsm_unlock_registration(tsm_dev);
-+out_unlock:
-+	up_read(&pci_tsm_rwsem);
- 	return context;
- }
- EXPORT_SYMBOL_GPL(pci_tsm_context_get);
-@@ -779,52 +808,88 @@ static void __pci_tsm_destroy(struct pci_dev *pdev, struct tsm_dev *tsm_dev)
- 
- void pci_tsm_destroy(struct pci_dev *pdev)
- {
--	struct pci_tsm_pf0 *pf0 = NULL;
--	struct completion *drained;
--	bool interrupted = false;
--	long rc;
-+	struct tsm_dev *tsm_dev = NULL;
-+	bool registration_locked = false;
- 
- 	down_write(&pci_tsm_rwsem);
--	if (pdev->tsm &&
--	    is_link_tsm(pdev->tsm->tsm_dev) && is_pci_tsm_pf0(pdev)) {
--		pf0 = to_pci_tsm_pf0(pdev->tsm);
--		drained = &pf0->dsm_context_drain_complete;
-+	if (pdev->tsm && is_link_tsm(pdev->tsm->tsm_dev) &&
-+	    is_pci_tsm_pf0(pdev)) {
-+		struct pci_tsm_pf0 *pf0 = to_pci_tsm_pf0(pdev->tsm);
-+
- 		mutex_lock(&pf0->lock);
- 		pf0->removing = true;
--
- 		mutex_unlock(&pf0->lock);
--		/* An unused DSM may never have completed dsm_context_drain_complete. */
--		if (pf0->dsm_context_users)
--			rc = try_wait_for_completion(drained);
--		else
--			rc = 1;
--
--		/* Context release needs the read side of pci_tsm_rwsem. */
--		up_write(&pci_tsm_rwsem);
--		while (rc <= 0) {
--			if (interrupted) {
--				rc = wait_for_completion_timeout(drained, HZ * 10);
-+
-+		if (pf0->dsm_context_users) {
-+			struct completion *drain_complete;
-+			const char *users;
-+			bool interrupted = false;
-+			long rc;
-+
-+			tsm_dev = pdev->tsm->tsm_dev;
-+			/*
-+			 * Keep users_drain_complete alive if unregister completes while
-+			 * we wait without the registration lock.
-+			 */
-+			get_device(&tsm_dev->dev);
-+			registration_locked = tsm_trylock_registration(tsm_dev);
-+			if (registration_locked) {
-+				/* Keep PF0 alive while pci_tsm_rwsem is dropped. */
-+				drain_complete = &pf0->dsm_context_drain_complete;
-+				users = "IOMMUFD device assignment contexts";
- 			} else {
--				rc = wait_for_completion_interruptible_timeout(drained,
--									       HZ * 10);
--				if (rc < 0) {
--					interrupted = true;
--					pci_warn(pdev, "Task \"%s\" (%d) blocked until vdevices are released\n",
--						 current->comm, task_pid_nr(current));
-+				/*
-+				 * The DSM completion is embedded in PF0.
-+				 * If unregister runs while pci_tsm_rwsem
-+				 * is dropped, it may free PF0 after the
-+				 * last context signals the completion but
-+				 * before this waiter finishes accessing
-+				 * it.
-+				 *
-+				 * Without the registration lock, wait on
-+				 * the TSM's users_drain_complete completion
-+				 * instead. The device reference keeps that
-+				 * completion alive even if unregister
-+				 * finishes before this waiter resumes.
-+				 */
-+
-+				drain_complete = &tsm_dev->users_drain_complete;
-+				users = "virtual IOMMUs and other TSM users";
-+			}
-+			/* Context release needs the read side of pci_tsm_rwsem. */
-+			up_write(&pci_tsm_rwsem);
-+			rc = try_wait_for_completion(drain_complete);
-+			while (rc <= 0) {
-+				if (interrupted) {
-+					rc = wait_for_completion_timeout(drain_complete, HZ * 10);
-+				} else {
-+					rc = wait_for_completion_interruptible_timeout(
-+						drain_complete, HZ * 10);
-+					if (rc < 0) {
-+						interrupted = true;
-+						pci_warn(pdev, "Task \"%s\" (%d) removing Device Security Manager; waiting for %s\n",
-+							 current->comm, task_pid_nr(current),
-+							 users);
-+					}
- 				}
-+				if (!rc)
-+					pci_warn(pdev, "Device Security Manager removal blocked; waiting for %s\n",
-+						 users);
- 			}
--			if (!rc)
--				pci_warn(pdev, "TSM connection is in use, waiting for vdevices\n");
-+			down_write(&pci_tsm_rwsem);
- 		}
--		down_write(&pci_tsm_rwsem);
- 	}
- 	__pci_tsm_destroy(pdev, NULL);
- 	up_write(&pci_tsm_rwsem);
-+	if (registration_locked)
-+		tsm_unlock_registration(tsm_dev);
-+	if (tsm_dev)
-+		put_device(&tsm_dev->dev);
- }
- 
- void pci_tsm_init(struct pci_dev *pdev)
- {
--	guard(rwsem_read)(&pci_tsm_rwsem);
-+	down_read(&pci_tsm_rwsem);
- 
- 	/*
- 	 * Subfunctions are either probed synchronous with connect() or later
-@@ -832,27 +897,36 @@ void pci_tsm_init(struct pci_dev *pdev)
- 	 * connect() raced initial bus scanning.
- 	 */
- 	if (pdev->tsm)
--		return;
-+		goto out_unlock;
- 
- 	if (pci_tsm_link_count) {
- 		struct pci_dev *dsm = find_dsm_dev(pdev);
-+		struct tsm_dev *tsm_dev;
- 
- 		if (!dsm)
--			return;
-+			goto out_unlock;
- 
- 		/*
- 		 * The only path to init a Device Security Manager capable
- 		 * device is via connect().
- 		 */
- 		if (!dsm->tsm)
--			return;
-+			goto out_unlock;
-+
-+		tsm_dev = dsm->tsm->tsm_dev;
-+		if (!tsm_trylock_registration(tsm_dev))
-+			goto out_unlock;
- 
- 		if (is_link_tsm(dsm->tsm->tsm_dev) &&
- 		    to_pci_tsm_pf0(dsm->tsm)->removing)
--			return;
-+			goto out_unlock_registration;
- 
- 		probe_fn(pdev, dsm);
-+out_unlock_registration:
-+		tsm_unlock_registration(tsm_dev);
- 	}
-+out_unlock:
-+	up_read(&pci_tsm_rwsem);
- }
- 
- void pci_tsm_unregister(struct tsm_dev *tsm_dev)
-diff --git a/drivers/virt/coco/tsm-core.c b/drivers/virt/coco/tsm-core.c
-index 766f4ad67ed7..2a45d479379a 100644
---- a/drivers/virt/coco/tsm-core.c
-+++ b/drivers/virt/coco/tsm-core.c
-@@ -7,7 +7,10 @@
- #include <linux/device.h>
- #include <linux/module.h>
- #include <linux/cleanup.h>
-+#include <linux/jiffies.h>
- #include <linux/pci-tsm.h>
-+#include <linux/pid.h>
-+#include <linux/sched.h>
- 
- /* The caller must hold a tsm_get_device() reference for the entire use. */
- const struct iommufd_viommu_ops *tsm_viommu_get_ops(struct tsm_dev *tsm_dev,
-@@ -26,15 +29,85 @@ static const struct class tsm_class = {
- };
- static DEFINE_IDA(tsm_ida);
- 
-+/**
-+ * tsm_trylock_registration() - protect an operation against TSM unregister
-+ * @tsm_dev: TSM whose allocation is protected by the caller
-+ *
-+ * Never wait for the read lock: unregister holds the write lock while
-+ * draining users. * tsm_get() takes a user reference before releasing the
-+ * read lock.
-+ *
-+ * Return: true with the read lock held, or false if unregister prevents use.
-+ */
-+bool tsm_trylock_registration(struct tsm_dev *tsm_dev)
-+{
-+	if (!down_read_trylock(&tsm_dev->registration_lock))
-+		return false;
-+
-+	if (tsm_dev->unregistering) {
-+		up_read(&tsm_dev->registration_lock);
-+		return false;
-+	}
-+	return true;
-+}
-+
-+void tsm_unlock_registration(struct tsm_dev *tsm_dev)
-+{
-+	up_read(&tsm_dev->registration_lock);
-+}
-+
-+static void tsm_put_user(struct tsm_dev *tsm_dev)
-+{
-+	if (refcount_dec_and_test(&tsm_dev->users))
-+		complete_all(&tsm_dev->users_drain_complete);
-+}
-+
-+/**
-+ * tsm_get() - acquire a user reference to a TSM found by a bus lookup
-+ * @tsm_dev: TSM whose lifetime is protected by the caller
-+ *
-+ * The caller must protect @tsm_dev against removal until this returns.
-+ * A successful call takes a device reference, pins the backend module and
-+ * adds a user that tsm_unregister() will wait for. Release it with
-+ * tsm_put_device().
-+ *
-+ * Return: @tsm_dev on success, or ERR_PTR(-ENODEV) if the TSM is unregistering
-+ * or the backend module cannot be pinned.
-+ */
-+struct tsm_dev *tsm_get(struct tsm_dev *tsm_dev)
-+{
-+	if (!tsm_trylock_registration(tsm_dev))
-+		return ERR_PTR(-ENODEV);
-+
-+	/* Keep the backend code and operation tables loaded while in use. */
-+	if (!try_module_get(tsm_dev->pci_ops->owner)) {
-+		tsm_unlock_registration(tsm_dev);
-+		return ERR_PTR(-ENODEV);
-+	}
-+	/*
-+	 * Keep tsm_dev allocated through tsm_put_device(), including after
-+	 * dropping the user reference wakes tsm_unregister().
-+	 */
-+	get_device(&tsm_dev->dev);
-+	/*
-+	 * Make explicit unregister wait before tearing down backend
-+	 * resources.
-+	 */
-+	refcount_inc(&tsm_dev->users);
-+	tsm_unlock_registration(tsm_dev);
-+	return tsm_dev;
-+}
-+
- /**
-  * tsm_get_device() - Pin the TSM attached to a device
-  * @dev: device whose TSM is to be pinned
-  *
-  * A successful lookup takes a TSM device reference and pins the backend
-- * module. Release both with tsm_put_device(). Backends providing vIOMMU
-- * operations must not unregister their TSM independently of module unload.
-+ * module. It also adds a user that tsm_unregister() will wait for. Release
-+ * these references with tsm_put_device().
-  * Return: NULL if no vIOMMU-capable TSM is attached, an error if the module
-- * cannot be pinned, or the TSM device associated with the pinned backend.
-+ * cannot be pinned or the TSM is unregistering, or the TSM device associated
-+ * with the pinned backend.
-  */
- struct tsm_dev *tsm_get_device(struct device *dev)
- {
-@@ -48,6 +121,7 @@ void tsm_put_device(struct tsm_dev *tsm_dev)
- {
- 	struct module *owner = tsm_dev->pci_ops->owner;
- 
-+	tsm_put_user(tsm_dev);
- 	put_device(&tsm_dev->dev);
- 	module_put(owner);
- }
-@@ -85,6 +159,9 @@ static struct tsm_dev *alloc_tsm_dev(struct device *parent)
- 		return ERR_PTR(id);
- 
- 	tsm_dev->id = id;
-+	init_rwsem(&tsm_dev->registration_lock);
-+	refcount_set(&tsm_dev->users, 1);
-+	init_completion(&tsm_dev->users_drain_complete);
- 	dev = &tsm_dev->dev;
- 	dev->parent = parent;
- 	dev->class = &tsm_class;
-@@ -132,13 +209,61 @@ struct tsm_dev *tsm_register(struct device *parent, struct pci_tsm_ops *pci_ops)
- }
- EXPORT_SYMBOL_GPL(tsm_register);
- 
--void tsm_unregister(struct tsm_dev *tsm_dev)
-+static void tsm_wait_for_users(struct tsm_dev *tsm_dev)
-+{
-+	struct completion *drain_complete = &tsm_dev->users_drain_complete;
-+	bool interrupted = false;
-+	long rc = try_wait_for_completion(drain_complete);
-+
-+	while (rc <= 0) {
-+		if (interrupted) {
-+			rc = wait_for_completion_timeout(drain_complete, HZ * 10);
-+		} else {
-+			rc = wait_for_completion_interruptible_timeout(
-+				drain_complete, HZ * 10);
-+			if (rc < 0) {
-+				interrupted = true;
-+				dev_warn(&tsm_dev->dev,
-+					 "Task \"%s\" (%d) unregistering TSM; release virtual IOMMUs and other TSM users\n",
-+					 current->comm, task_pid_nr(current));
-+			}
-+		}
-+		if (!rc)
-+			dev_warn(&tsm_dev->dev, "TSM unregister blocked; release virtual IOMMUs and other TSM users\n");
-+	}
-+}
-+
-+/**
-+ * tsm_unregister() - unregister a TSM after draining its users
-+ * @tsm_dev: TSM to unregister
-+ *
-+ * Blocks new users and waits for references acquired by tsm_get_device(),
-+ * including vIOMMUs without vdevices, and pending DSM removals before tearing
-+ * down PCI connections. The wait cannot be aborted by a signal; userspace
-+ * must release the vIOMMUs and vdevices to let it finish.
-+ *
-+ * Return: 0 on success, or -ENODEV if unregistration has already started.
-+ */
-+int tsm_unregister(struct tsm_dev *tsm_dev)
- {
--	/* Remove the class lookup first. */
-+	down_write(&tsm_dev->registration_lock);
-+	if (tsm_dev->unregistering) {
-+		up_write(&tsm_dev->registration_lock);
-+		return -ENODEV;
-+	}
-+	tsm_dev->unregistering = true;
-+
- 	device_del(&tsm_dev->dev);
--	if (tsm_dev->pci_ops)
-+	/* No new user references can be acquired while the write lock is held. */
-+	tsm_put_user(tsm_dev);
-+	tsm_wait_for_users(tsm_dev);
-+
-+	if (IS_ENABLED(CONFIG_PCI_TSM) && tsm_dev->pci_ops)
- 		pci_tsm_unregister(tsm_dev);
-+
-+	up_write(&tsm_dev->registration_lock);
- 	put_device(&tsm_dev->dev);
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(tsm_unregister);
- 
-diff --git a/include/linux/pci-tsm.h b/include/linux/pci-tsm.h
-index 85dea90e0d77..12eb4e1abc50 100644
---- a/include/linux/pci-tsm.h
-+++ b/include/linux/pci-tsm.h
-@@ -24,10 +24,9 @@ struct tsm_dev;
-  *		  or NULL if unsupported
-  * @owner: Module providing the vIOMMU operations, if built as a module
-  *
-- * The vIOMMU owner holds a TSM device reference and pins the backend module
-- * before querying @viommu_get_ops, releasing both after vIOMMU destruction.
-- * A backend providing this callback must not unregister its TSM while the
-- * module is pinned.
-+ * The vIOMMU owner holds a TSM user reference, a device reference and a
-+ * backend module reference before querying @viommu_get_ops, releasing them
-+ * after vIOMMU destruction. TSM unregister waits for the user reference.
-  *
-  * This operations are mutually exclusive either a tsm_dev instance
-  * manages physical link properties or it manages function security
-diff --git a/include/linux/tsm.h b/include/linux/tsm.h
-index 3d5286aeaa42..0996b888df21 100644
---- a/include/linux/tsm.h
-+++ b/include/linux/tsm.h
-@@ -2,6 +2,9 @@
- #ifndef __TSM_H
- #define __TSM_H
- 
-+#include <linux/completion.h>
-+#include <linux/refcount.h>
-+#include <linux/rwsem.h>
- #include <linux/sizes.h>
- #include <linux/types.h>
- #include <linux/uuid.h>
-@@ -116,6 +119,13 @@ struct tsm_dev {
- 	struct device dev;
- 	int id;
- 	const struct pci_tsm_ops *pci_ops;
-+	/* Read side protects operations; write side protects unregister. */
-+	struct rw_semaphore registration_lock;
-+	/* Protected by registration_lock; prevents reuse after unregister. */
-+	bool unregistering;
-+	/* Incremented under registration_lock; unregister waits for zero. */
-+	refcount_t users;
-+	struct completion users_drain_complete;
- };
- 
- DEFINE_FREE(put_tsm_dev, struct tsm_dev *,
-@@ -124,10 +134,13 @@ DEFINE_FREE(put_tsm_dev, struct tsm_dev *,
- int tsm_report_register(const struct tsm_report_ops *ops, void *priv);
- int tsm_report_unregister(const struct tsm_report_ops *ops);
- struct tsm_dev *tsm_register(struct device *parent, struct pci_tsm_ops *ops);
--void tsm_unregister(struct tsm_dev *tsm_dev);
-+int tsm_unregister(struct tsm_dev *tsm_dev);
- struct tsm_dev *find_tsm_dev(int id);
- 
- #ifdef CONFIG_TSM
-+struct tsm_dev *tsm_get(struct tsm_dev *tsm_dev);
-+bool tsm_trylock_registration(struct tsm_dev *tsm_dev);
-+void tsm_unlock_registration(struct tsm_dev *tsm_dev);
- struct tsm_dev *tsm_get_device(struct device *dev);
- void tsm_put_device(struct tsm_dev *tsm_dev);
- const struct iommufd_viommu_ops *tsm_viommu_get_ops(struct tsm_dev *tsm_dev,
+Aneesh Kumar K.V (Arm) (13):
+  mm: Add an allocator for CoCo shared memory
+  mm: Zero memory during shared memory transitions
+  irqchip/gic-v3-its: Resolve the default NUMA node explicitly
+  irqchip/gic-v3-its: Allocate shared tables using CoCo shared memory
+    allocator
+  dma-contiguous: Derive shared alignment from DMA attributes
+  dma-pool: Allocate CoCo atomic pools using CoCo shared memory
+    allocator
+  dma-direct: Align CoCo shared DMA allocations to the shared granule
+    size
+  swiotlb: Align shared IO TLB pools to the shared granule size
+  swiotlb: Reject misaligned restricted DMA pools for CoCo guests
+  dma-buf: system_heap: Limit scatterlist entries to the buffer size
+  dma-buf: system_heap: Allocate shared buffers using CoCo shared memory
+    allocator
+  swiotlb: Make rounded shared pool capacity allocatable
+  mm: Assert CoCo shared allocations may sleep
+
+ MAINTAINERS                                   |   2 +
+ arch/arm/mm/dma-mapping.c                     |   5 +-
+ arch/arm64/mm/mem_encrypt.c                   |   8 +-
+ arch/powerpc/platforms/pseries/svm.c          |  13 +-
+ arch/s390/mm/init.c                           |   7 +
+ arch/x86/hyperv/hv_init.c                     |   6 +-
+ arch/x86/include/asm/set_memory.h             |   1 +
+ arch/x86/include/asm/vga.h                    |   4 +-
+ arch/x86/kernel/kvmclock.c                    |   6 +-
+ arch/x86/mm/mem_encrypt_amd.c                 |   1 +
+ arch/x86/mm/pat/set_memory.c                  |  19 +-
+ drivers/dma-buf/heaps/system_heap.c           | 128 +++++-----
+ drivers/firmware/arm_rmm/rsi.c                |   9 +
+ drivers/hv/connection.c                       |  41 ++-
+ drivers/hv/hv.c                               |  11 +-
+ drivers/hv/hv_common.c                        |   2 -
+ drivers/iommu/dma-iommu.c                     |   2 +-
+ drivers/irqchip/irq-gic-v3-its.c              |  42 ++--
+ drivers/virt/coco/pkvm-guest/arm-pkvm-guest.c |   4 +
+ include/linux/cc_shared.h                     |  39 +++
+ include/linux/dma-map-ops.h                   |   9 +-
+ include/linux/set_memory.h                    |   8 +-
+ kernel/dma/contiguous.c                       |  41 ++-
+ kernel/dma/direct.c                           |  73 ++++--
+ kernel/dma/ops_helpers.c                      |   2 +-
+ kernel/dma/pool.c                             |  27 +-
+ kernel/dma/swiotlb.c                          |  94 ++++---
+ kernel/kexec_file.c                           |   3 +-
+ mm/Makefile                                   |   1 +
+ mm/cc_shared.c                                | 238 ++++++++++++++++++
+ 30 files changed, 635 insertions(+), 211 deletions(-)
+ create mode 100644 include/linux/cc_shared.h
+ create mode 100644 mm/cc_shared.c
+
+
+base-commit: aebb7274476403040d582c61478df8f4a7bf9cd3
+prerequisite-patch-id: 121492d71cc22b2adbfdedd668868c5a449ad764
+prerequisite-patch-id: ed31fd728f0adba3d60dcd6f3bae8da1a2193bcc
 -- 
 2.43.0
 
