@@ -1,98 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=13.77.154.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794856913;
-	b=N5WCg+zfxSY7ntewZBbwcw68lA914FLya1irqQIEJqh1eqzpQ7ijT2oNWJkke7s3LIqk
-	 cR20JVOw7No7TKMjpnWJyxr96GQjCI1k5WXO5eWqoeTMgxrUElV1z94Wwbx4Z/v7vIYdx
-	 tJTtKxEei2EilQLd77sIZpURSgK6Dp2RhP09Ma3dx0ASx2SeG45ycUS3314ROyyxjZWAh
-	 GH1dzoGxNK7RHINcOCp6JYQE04CkBajcEOLLwsJ337dNAALjeMN+7vKvDZ68320M1HVeg
-	 EF+jYbANVmoQICiJLK/DDiO+dsuKq62dVyiSF1EUK/4nORB3tx/CHMyTxVPC+6Yam1A==
+	t=1794857080;
+	b=jpQlSgC+6sMLU5nz7FxPLlXV4BxhPU8B6BwzO34y4TDEP1yrgsKCV0KizGTwiIFAX9kr
+	 Avk+KEmKe7GJCmf1UT6IF6CpBMlt4H5oI9SlEvnIQXcS/pnvfj/0Qnu4tAvHXdLTQ7qAs
+	 E7sCn9DLurwRJmToozjqGSe1FoB6AC86FX+xT02aoCM+pyPVTNOiBNQMK/fPpFDV1v/3w
+	 atCS3HyYoaz3mmrHvv15REXkfhXMkZrqdz+8XIT153KlUFOWLdNr7gb3lQBE1HN3fY4Uk
+	 LtmgR4U0z8mkLKFphY7oq0QHtoMxe39OweIdwYc0bW+YLYMvZY6t1zYuJYslGHfxs9Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794856913;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=5h7q3+LXSxb7tMF5mvW6Ax5wQfXmLA8ND/986/f/Oi8=;
-	b=FO9WpmXi6S1BwIn/vYw4RDl3NKxC55OSxGkbXUfHkoXl2j5KcExc6GRF8aTORCVnk+BD
-	 BVmhRnxqCEgwZJWzeMJHPz6u26j1EWZ+IJLJGnnA4zWdS0IhqjqTZ8vAbLksB8Mx3zHEa
-	 n2iINuPyOGWiu6h8KTIHRtowsQ6jEnAydoMWf5soOGc/MUXgQbu8Sls0HpSYWMbw89GsS
-	 Vd+iL0oPoNAZOGAH5L/hfRmYa6L4CISzL3F/qbnWlSUKiRA+apJASJgYg8gazKxQUcjiU
-	 NhRMAYHp+5k9eO6a+v3lD9FHqLde3i80BF2ijSLw44hscIORiXEKQsrhuJimlZr3FNQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794857080;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:Content-Language:
+	 From:In-Reply-To:Content-Type:Content-Transfer-Encoding:X-Spam-Status:
+	 X-Spam-Checker-Version;
+	bh=/jMq9zexFNDpH3C/DDQ7uqTP8N2QQoRe+wPcLSvmhEo=;
+	b=VkfaOdRplPtWCHzm55MrM5DJ4w9lZ5UNsy4E0EJK2iIE9YUlapb6CMfTNaRnIMApnkFZ
+	 08nreRBJKBCAp6f2CDmmHLUqcxhDjci/4d9JvhCngJT9HAvAx4qKUCEBSSQjLTFqUuvKL
+	 ZtGsA9FOln6unhQ7ToYAIloMNB5xhLmBoJbKfs34r4yCxu3nd7g3k2GrBWBMNLx+okScY
+	 zXpy1mtI6eAOc31IBMnfPGrM+vBFVM7/YSxPsD8Mp/RqhlTyf/gRXk49acclFBIcFmPS4
+	 JFFpQNSOsy/c6rcz8KJBMCjvRQryJGejw3gqj25nv7H+adqH5rygZwjtdhCMu+rVTzw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=WOSGAH+h;
-	arc=none smtp.remote-ip=209.85.222.169
-Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DB24606A323
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 19:21:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9DB24606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	dmarc=pass header.from=linux.microsoft.com;
+	spf=pass smtp.mailfrom=linux.microsoft.com;
+	dkim=pass header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=Ns0YTHGC;
+	arc=none smtp.remote-ip=13.77.154.182
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F067A606A31C;
+	Mon, 16 Nov 2026 19:24:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F067A606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=WOSGAH+h
-Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-94961bfe1a0so175600785a.3
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 11:21:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1794856912; x=1795461712; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=5h7q3+LXSxb7tMF5mvW6Ax5wQfXmLA8ND/986/f/Oi8=;
-        b=WOSGAH+hKeyIRoe7f8kMl+ETiczzoFN9jR5RZM+WNZl3QL/0PqdIIqjeRiwdeSkNGZ
-         5OqZU1bA7Dnt7yHhdKDKNLI9NwrsQROnykVj71hyVGI0VD0cKxHOyP13wdvnmLlaG3Vw
-         5IUo13J9F9a2O+p+93xjiF7TRkLjdwOVpzxzybeJBKjkmqJX4aAahEPL3sKSsHiBY1ZG
-         pVCYRDEstWR/lh67LOxZkrah3U3DWOen8sETyv0jwM+eJvGsLkccXmzW5jq4wkIYpCbf
-         k2DfnR29hJZ0rXLYzxxRb2vQwcWudmXoke7ICBmwsXN1t5n8axIJktIm2mcKdrP+2O3p
-         bItA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794856912; x=1795461712;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=5h7q3+LXSxb7tMF5mvW6Ax5wQfXmLA8ND/986/f/Oi8=;
-        b=uty+LyFHFfvYTPy64DmxfcVpkez2xF2t5gdRZ5A6bFJw0sTWd2kGykm5oIj3kHLEnG
-         z+7ySxSDqJ+92zYbLVxIwPUpp8Dp6laZGqONHpyixiJpJQorI8JtRHJZULNxu0ElGuA9
-         j9JMF3tytljJINnBrDfUVX8o1v6nlHOJUJlY/jyzYNwwDYg6nYifndCNRuJmh2MnKUxO
-         coujWe2C38vbY/sZsdRUMjyFlPbQrTVLNIQf9EXItFlSqWk5PC26fijVzuH8zOUPCI4Y
-         fT2iOhQOsHR83BrJcsuVA144B8FHwkFPONpOhbzTmqJbMAFa8ibAhQEsxoZaDgifhjJA
-         x4Yg==
-X-Forwarded-Encrypted: i=1; AL+hErE+ESGH1ww4YEe6dG/1oxB8fm8whBv0tUVUInv/FBJOX3BQ1p1J24Xr6bjsn9IfHOfZ3A/qMg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/8icUboT8uWQTghW3ZMfaHhOf1DQZGvDi+YfZJl1KVhqBsOGR6
-	AGqRzmanAivQhU6cpMWEXfm/zP/Y5mQOaDe3hjURssJtmFYPi4LFJ/hy9Yi1uOVf9ys=
-X-Gm-Gg: AYBFou1JWPNNK5CA6X13H0tvdhrjU2iTdjlLYxFrhhDhh6XPW1GnRCagvKSItrLGPTx
-	3pfoLdxQXYtetaN4DrXJsD/6I9VJD5vbbbTqzRBVkSHX0Gu9YWb9ae08diKCoHx1I8bawb59zRn
-	hZtcpq6DjAC6xSohZB2zDuhWgcNAVMhSkWP2AXh2LG7Mx02XujOr0bjdjZN4p9fIekxA728w4qY
-	x8gJLqJv+6ssA21zf07kSGTiTdtQu4HLD2yBU3CroiQW6yzT6qgapn2XurWcSF1XcKiWz2txfKY
-	l8+iyyI2jZ9qtdNctppSoRo7+gQK2QxhUtfeI6DmYYZLixJ6KiNfWpYzBmfxPovNYX2ILFJZR5y
-	h2bk4w4wi+fn0AdsZTVCSNGLYFm/h3ikPZ5jEDcBQgBWRT+pptWX5ceq8fm5WySSb7q60v6ZABl
-	S+2IReDmvaHymgW/MwELZ7chMbCqq3RQs86RYrVp7nx17XPGKoDoQaz4wVL183P4H+Hvstt6Cec
-	AXJpVHjyJz52J80W693AiXdTXdDvXSj1wvQTC5JIV5UYZ2TW2Y6L5gdQM26OKIaG9B/2MaPtQBh
-	4j9N9A==
-X-Received: by 2002:a05:620a:688f:b0:93f:3482:e326 with SMTP id af79cd13be357-9494bbea448mr1869030085a.42.1794856911450;
-        Mon, 16 Nov 2026 11:21:51 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-949627520c1sm676973085a.10.2026.11.16.11.21.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 11:21:50 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xT2H0-0000000AIG8-0jqn;
-	Mon, 16 Nov 2026 15:21:50 -0400
-Date: Mon, 16 Nov 2026 15:21:50 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: fangyu.yu@linux.alibaba.com
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	joerg.roedel@amd.com, dan@reactivated.net, vasant.hegde@amd.com,
-	kevin.tian@intel.com, Ankit.Soni@amd.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, guoren@kernel.org
-Subject: Re: [PATCH v2] iommupt/kunit: Skip the page-table leak check on SMP
-Message-ID: <20261116192150.GA2452510@ziepe.ca>
-References: <20261031085536.18555-1-fangyu.yu@linux.alibaba.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.a=rsa-sha256 header.s=default header.b=Ns0YTHGC
+Received: from [10.4.158.9] (unknown [52.172.102.187])
+	by linux.microsoft.com (Postfix) with ESMTPSA id AA7BC20B7168;
+	Mon, 16 Nov 2026 11:24:15 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AA7BC20B7168
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1794857073;
+	bh=/jMq9zexFNDpH3C/DDQ7uqTP8N2QQoRe+wPcLSvmhEo=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Ns0YTHGCbVFg2Ub/fyOigOpJU4J0TcfQ1eFpxC7YU2ez5cfaxEAqlsCeoFHMafjQB
+	 Ez21+qjTVZjGl/1e16SSmBLT0c3QjSJd1Dr1ZlO6K32I+mEy5ExN1Oz2KUyhddLCiu
+	 C5msXOJN0zT1P0CREAiPCpuIL1JchPIGpXm94mdE=
+Message-ID: <2965c691-82fc-49f3-abdb-383860f6e82f@linux.microsoft.com>
+Date: Mon, 16 Nov 2026 11:24:17 -0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -102,37 +53,126 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261031085536.18555-1-fangyu.yu@linux.alibaba.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 18/19] PCI: Replace untrusted state with device trust
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Leon Romanovsky <leon@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+ Heiner Kallweit <hkallweit1@gmail.com>, Russell King
+ <linux@armlinux.org.uk>, "David S. Miller" <davem@davemloft.net>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Johannes Berg <johannes@sipsolutions.net>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Randy Dunlap
+ <rdunlap@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Johan Hovold <johan@kernel.org>,
+ Eric Dumazet <edumazet@kernel.org>, Marcel Holtmann <marcel@holtmann.org>,
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Nipun Gupta <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
+ Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
+ linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
+ linux-input@vger.kernel.org, netdev@vger.kernel.org,
+ linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-pci@vger.kernel.org, iommu@lists.linux.dev
+References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
+ <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
+ <193e4130-9c2f-4a0f-b218-f5fcf0b3d508@linux.microsoft.com>
+ <20261116190417.GD2299285@ziepe.ca>
+Content-Language: en-US
+From: Kameron Carr <kameroncarr@linux.microsoft.com>
+In-Reply-To: <20261116190417.GD2299285@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sat, Oct 31, 2026 at 04:55:36PM +0800, fangyu.yu@linux.alibaba.com wrote:
-> From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On 11/16/2026 11:04 AM, Jason Gunthorpe wrote:
+> On Mon, Nov 16, 2026 at 10:46:25AM -0800, Kameron Carr wrote:
+>>> @@ -1738,24 +1738,24 @@ static void set_pcie_cxl(struct pci_dev *dev)
+>>>  
+>>>  }
+>>>  
+>>> -static void set_pcie_untrusted(struct pci_dev *dev)
+>>> +static void pci_set_default_trust_policy(struct pci_dev *dev)
+>>>  {
+>>> -	struct pci_dev *parent = pci_upstream_bridge(dev);
+>>> +	struct pci_dev *parent = pci_physfn(dev);
+>>> +
+>>> +	if (parent == dev)
+>>> +		parent = pci_upstream_bridge(dev);
+>>>  
+>>>  	if (!parent)
+>>>  		return;
+>>
+>> Hi Leon,
+>>
+>> The default policy here works for physical hierarchies, but there's no
+>> opportunity for a paravirtual host bridge to participate in the trust
+>> resolution when the host bridge driver itself knows the appropriate
+>> trust level for a device.
 > 
-> NR_SECONDARY_PAGETABLE is batched per-CPU on SMP, so the global counter
-> can change as pending updates are folded, even when a test has freed all
-> its page tables. Comparing the global counter before and after a test
-> can therefore report a false leak. A failed teardown assertion also
-> aborts cleanup, causing subsequent tests to fail because the test driver
-> is still registered.
+> HW doesn't really "know" the trust level, it can suggest a default but
+> the kernel command line and userspace should always be able to
+> override it.
 > 
-> Only perform the leak-check assertion on non-SMP configurations, where
-> there are no per-CPU vmstat deltas. Keep the tests and resource cleanup
-> enabled on SMP without accessing MM's internal vmstat data structures.
+>> My scenario is pci-hyperv in a confidential VM with a paravisor. The
+>> paravisor is inside the guest's trust boundary and owns TDISP. It locks,
+>> attests and accepts the device, then answers a VMBus query describing
+>> which BAR ranges are private and whether the device's DMA may target
+>> private memory. Before a driver can bind pci-hyperv has to:
 > 
-> Fixes: bc5233c0904e ("iommupt: Add a kunit test for the IOMMU implementation")
-> Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
-> ---
-> Changes in v2:
->   - Replace the hand-written vmstat snapshot with a non-SMP-only
->     assertion, as suggested by Jason.
+> Sounds like a user in such an environment just wouldn't use the trust
+> level mechanism at all.
 > 
-> Link to v1:
->   https://lore.kernel.org/linux-iommu/20261015132024.43998-1-fangyu.yu@linux.alibaba.com/
-> ---
->  drivers/iommu/generic_pt/kunit_iommu_pt.h | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+> What use do you see for enabling trust level but having all the
+> devices unattestable and accepted already?
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Previous iterations of device trust used the trust level to make
+decisions around DMA bounce buffering, etc. Is that no longer the case?
 
-Jason
+You're right that my scenario doesn't really care about the device trust
+per se. I'm primarily interested in how device DMA bounce buffering will
+be turned off for TDISP devices and how MMIO setup will be managed.
+
+> 
+> Your bigger issue is the below:
+> 
+>>   - query the paravisor,
+>>   - refuse to operate the device if the query failed or if the response
+>>     is invalid,
+>>   - decide whether the device may operate.
+>>
+>> The modular host bridge driver in this scenario needs a hook to be able
+>> to participate in trust resolution.
+>>
+>> I'm also looking for the right place to setup MMIO and configure DMA
+>> in my scenario. Let me know if you have guidance.
+> 
+> Well, you are very far outside what Linux expects for a CC flow, and
+> these special requests conflict with the arch code flows we need to
+> have.
+> 
+> So, I don't know. Maybe somewhere in the arch code hyperv can hook and
+> say the device is special? You'll have to see when we get more of the
+> CC stuff layed out.
+
+I am looking for good hook candidates. I was hoping that trust levels
+would end up directing DMA behavior, etc. but maybe I am
+misunderstanding the design direction for these trust levels.
+
+-- 
+Regards,
+Kameron
+
+> Though, FWIW, I don't like it at all as a model. Denying the tenant
+> the ability to directly attest the HW is far away from what I'd
+> consider as necessary for CC.
+> 
+> Jason
+
+
+
