@@ -1,100 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.49
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.182
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794861103;
-	b=ptv/Tbb63tYmdu3qrnfNM2v41BXwr+X7Ndai87h2u6/4kDeWn4NeXNp+pIwJlwjLJR8h
-	 1Ni84HmjZ+XmBkQdzya0LYLMn1LmXNbmDrAIxIa0YyvEBuQ3bXqtV+fgpj037CkjRe64Y
-	 2sgrdemspBlV45ed52/FnAu+3Siy/535zwsZITR0b0Za03PUMKZsJOwZINMCMuBKFPX81
-	 9XtRFVqITrURClJEPO3jXPnKvZ245coQ2cmylZHvntSO7EBQgD24OgMNNagDS57uJJyU1
-	 GOWnDIoGAJTw7gi/N6uGeaG2cEkEvsPIGmzdOIllbQSF3jiVK0mimAmqNQf62FyX8KA==
+	t=1794861220;
+	b=4GCZnWc8TLwoM/qa9lDtIMV7RyDHq6yIlt7BNII29b2cVkNtM6MbM28V82U3TEzwNq0u
+	 8jWXSJn052QL7F7anznXKxmKDSAqKSRUOQutFj/4ndvDIXfVDXUFGpd4a7b8LJR3nEn/t
+	 +Cdckyz6XAJfcfK9AUvhjyDxsmq2L2MN6OGEQzWOPhCesBxgVO/fQgB3BWvZHVMuebgZX
+	 Jge8MxKoEc3oBd40/Yi2SgWjUwRc3GRcwoObkS70LZ2OZtP+Zq58VMHPguaHZ3wuIyp09
+	 nFyENcmivCVPmlupCtcLRsteRya73tb9w/IyaT+oVD42gFuwvvr7YKyMhfs9j/5F7VQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794861103;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794861220;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
 	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=eRRcFDo3SjeXTCoZblTh2PIPZiyfkDH6eOzhBNd40gs=;
-	b=FVgyqF20LB4IetoM7gygu8yv/iCxAU9ciSut8HS7RbtaCAJ9Rbds4ahVFjIyHl7+iwoq
-	 L3r0dBVmhRMnU4JjmtMcaomkdYWJUIzd1pQ3ECROCTPC8tlDXlQSA4eCJR07yPzie/gDq
-	 LACos2k5D2ScIFXvH0RnFZpVD6aJzrH+ND0owBjY6GeUYKXM5l7MKbOaGoiARPVtpJhZs
-	 sOf5ZDHq4AXGog4Q8ws12Lez5jMo2hc5FMyZRUXoWhPU6xJxfoONLM7hg6mZSCBDzmNal
-	 rjyGDikmIPwOPc1tYTzr0ZfkI/UTSGz1gssu+mC/x2vmHd94UhSCqL6ZtaOkeUrkyWQ==
+	bh=FRUBObM4vFL1TGf3o6s1ZDBsKZdTJ/3jimI0MzXw8Fk=;
+	b=xMluE9BXN/iKJdum17pGROaYfQ/KwHupb/C8+T5dKcaKEx5EdOKjQxPi3XDyNAIampWu
+	 2dARkCL8bDiTk1M4wwncovWqriXDD1RNMi4kPCg70ctYBpCz3uLZ3mKNN91fSIw/SkEwD
+	 +tBhrwq34ieudeNC9m7IxtnvTevZSsEMXUgLoO29k9j4HPQVaHP+zgNO1L25YOqPtACe1
+	 uORPYpRaDmANyARu31rK5sWkYupzvrNXd0+aaT8GLi5yPHSlPajvmeAA9q0w5ae5zhHMI
+	 soS3o/HsUixDOqNCgsJ3O3reZgpynEgzQNn1xrzV08Pj6MpVCq76RZss2ACIN0TH3SA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=Y9c3STff;
-	arc=none smtp.remote-ip=74.125.82.49
-Received: from mail-dl1-f49.google.com (mail-dl1-f49.google.com [74.125.82.49])
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=kAsnXZpE;
+	arc=none smtp.remote-ip=209.85.222.182
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 475F0606A32C
-	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 20:31:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 475F0606A32C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FF32606A883
+	for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 20:33:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2FF32606A883
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=Y9c3STff
-Received: by mail-dl1-f49.google.com with SMTP id a92af1059eb24-1ae7fc5681dso1412c88.1
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 12:31:43 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=kAsnXZpE
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-945e6d9ceeaso409931285a.0
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 12:33:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794861102; x=1795465902; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1794861219; x=1795466019; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=eRRcFDo3SjeXTCoZblTh2PIPZiyfkDH6eOzhBNd40gs=;
-        b=Y9c3STff5ta0iyUWq9yrgHdzonyixo6fNT6Y9W2TsvXF+cRAClWmPLALFhaz0dkwpL
-         WoE2WoDgUKSnpoJIqz1EtdYhaojtcLWh19ig/HA76yPT2QGGpHT6VaxFA/En+jwCs8lj
-         PJBN5ZUGTj/BoVK4PsNg3xRJWNHGlaLp6OaNV+WA5QRxqt+JNfFpALWXkFy0FTGGqU/J
-         loj6lNgzEW+cOLlT7Jqc+550MWHDEyNFJvnmp8QehDYyi8MrvwciHD8+c6e/9/HYxiWt
-         ZSLUUa/wnVDJmDnXofmaCeL7Siq4qDB6X7OxOyAqU40YZF+AGyZyadfV+jg9gR/T/Idr
-         qgmg==
+        bh=FRUBObM4vFL1TGf3o6s1ZDBsKZdTJ/3jimI0MzXw8Fk=;
+        b=kAsnXZpExiAIWPmGzPTxjXRnvY22yUNZo8IvGAnAt93p93VdfBNRgkk+rHXtfePTa5
+         SLgZSTCt0tEePcPa3jjt2Tv24amZ+2/BzEvnZyrxH/FQe5qg85bhEq+/dPpsObSIDYOg
+         CKTFxHBogL2IxEx0spgHXOcP4LmOlFvxgnsiWgerOcuGh9ZQmrXrUlF7cvdtVz3tdDym
+         S5t9/Qz7PzLUWg7jo1EG1t3k9QtQ+FcJM/0nU3OtsQBDVPuxzRsmHTFr36g+D4JY6t9Z
+         sRI5WVrC0hULHDYPvhtXn+JmpCXZw972mYlRrWG/COY7LWY8UCaMoyDwMFvHZm8l2vQ8
+         MFCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794861102; x=1795465902;
+        d=1e100.net; s=20260707; t=1794861219; x=1795466019;
         h=in-reply-to:content-disposition:content-type:mime-version
          :references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=eRRcFDo3SjeXTCoZblTh2PIPZiyfkDH6eOzhBNd40gs=;
-        b=dCOCS+Y0bHD/rdqtgjsdlYGpodMM1qCYn0MbECVrMHz4efbWanTxk36kF4E41ol+tn
-         bUevEVOaG/4b3Tue01UqOtvF14L2rS04bG/vcyomUmnN+AcYmZsg98+WZtcQYyU3ECrP
-         3zGk0l+clNMtmb7gEmxy4/o0Zs6x4EXbipqVdeRXUO22auQUwVcWiZ40JWFVrzc+ug9g
-         yCznWRql5C+KkllyFxtCehoF2AZtc/21J7mopcIruN1c7O+6JlUQNrIxuqi33Xzh/3+6
-         V2clrSkbpbqWmGf6etkTXtLPtRZwpPzd4M8rCP1MVc0vg64eiU5tS1c2nM9Th1FLkATQ
-         8Nuw==
-X-Forwarded-Encrypted: i=1; AL+hErFHg7mrLvN0Hmn8Eoo07t8VhNwV1MfYjXQNY6CkB2iaOtTaat+sKniNS8uLsz10nm4ai+AZmQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z8TICHli9Mj82dUhEK2TSpeB6RNLypsbbQaX/++LnNRuyoWcHhp
-	GS5EomiZxIXtpNU/srS+Dry6jPFT3Q2OhopizkVhN3GDE1ZWkkce0TfSYxE3Tt3ZJ5GfBZl2RLC
-	UR1vA9Q==
-X-Gm-Gg: AYBFou2+BqZMag3NjMHUcRoNyJ+YDFBu1T01sqCxWR7pjQl0g8iEzIHJNHZdOaZMFze
-	LM1LC3+Uh3SZaEvfRWQFI17BRvlD4HbN7XJkiV0z013NOR6Sd/faNEFIsH/fbkQOdkNOepelALz
-	gPFd2mHzc3ooacQgHa/Zy3PmNLEvKHoegcPoSjEg3hk7xCTJYAJ3SYG6M74ZvOotZidU/r4h2PO
-	3yJ9mgfi8g/g38VZjuRdUwmIW7y8646Fi4qOpmjFikF9U7IEF68U/5cuLTJazTkrWQEMFDjg/kl
-	8+g7bOSGUggth//DeguwqQ9UMIJZHq1TvYqikVsImkupwZkgS3U+J9YlNd04OAGRztC0LcN8HZw
-	Rznf1xt3v+D0wv409OylQ+rFWzpBa4XOurz+l31+iy/yxM8zfacYKyfz5DA+ZsWKjpQF4i8EzzS
-	Zvu6rMQdzE/n4BqPAxsaP6YoY8n9esqZVIXrnGxTVHi+r7XO/ZsZ67UZqXXBgKiy7HgKj9TCYcl
-	HTgnRU1EXJeFDT1TzKoP2KBG2zda3qjiqhIc1wmiriBeyW7GtYSf1L4oTQHo0NFbVebLmMA3MD8
-	HdpyrxMLROCTgofH31FYDbZni9nIYPD31J6EnNY9jHEw1vcFaAdSWabtMuJHb+ZiQJA=
-X-Received: by 2002:a05:7023:e41:20b0:162:1b69:fe06 with SMTP id a92af1059eb24-1b53b1c3099mr7831c88.14.1794861101375;
-        Mon, 16 Nov 2026 12:31:41 -0800 (PST)
-Received: from google.com (105.211.142.34.bc.googleusercontent.com. [34.142.211.105])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-37955e0d966sm37451776eec.15.2026.11.16.12.31.38
+        bh=FRUBObM4vFL1TGf3o6s1ZDBsKZdTJ/3jimI0MzXw8Fk=;
+        b=v0gJFleHrI8Upk1LA7CTKfTU3YOYVL5UuWMtCFbTStGcgsi5QLIIhLSvZ7lLeel1st
+         SKwHIWP1AftY6WKvyL58OjUbanGz5TVi4mEcvcOu9spooOwu6zRcl6abVlDyCo3XjNiY
+         rqVuxeqtoMUagAs99ZVx6R1urRJzj+Ruk44TV6jpYksoPWRv8uqVWlhXlsYqBkVSdksn
+         gDboH9TXMJZsX/GU27VZ0+SH2XMxQbMDI64FaBfySH3LSQSMPp6R2vDgUSw7FE9CcGNX
+         NcLeHRf4Hc2Ih84coDKd3r8LrrP8h4M6ZTVkgaz4qTS79CEetzIdwfbhfY68qEli9A3H
+         QJOA==
+X-Forwarded-Encrypted: i=1; AL+hErGXprVYYdslGsIwlbu28XMlP2iDMoaiNg5NEubPvNKvdFshWHMWPkgLdt0ElWAfLMhs5edn6Q==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8zJuclX7gzQle7CC7seweL+oGdYdFqCPezsdKF9aHuZydZwgDc
+	C3jMYkdXTNyImwsk9fmwCI243I6IhreZQbdQafyP17TO0B0y6jE8iK2QVz14kBFDb8U=
+X-Gm-Gg: AYBFou2l5sbYVp7cTdeiJaO02FxBpxAtHW6Zloq/f2xiYhLs170B/Aga1MSCF742eE3
+	x7H/3oSmUbRwZETP1sf5Z4v9JAOMFweIei+fESNpHlFEUo0FXhtwBuv3NfmhekKStTXGWI2w5xc
+	dKNwr0Ba+mvpFwuTRvnY6W6D23/SfCYgoTtMbtj7cAc6IisDV85itbY12MMV2Rgb+MF++nEaLoF
+	pgQv/bG1/hMOBCZP/gDdEABnKN9eY93GoY58dq0SGwjhxhKGST4DC6cK//ldVWmaQ882d0XOEyg
+	pCz1N6V46/NUXAOALfGEBUfzOTk2SIoeCD6Mn3r+sufom27O4UIxSyfY/RsItXyZeK5S0popNik
+	WQ8a7BtR+cPtMxK8HMtr+V9gY212J+s4190BYDq9xxe5hZvGRFHHq1iWYVj6MEj7ClGto7wr+kZ
+	xp5ePD6A6kwLkWE3YBMPk07G4av6ALRWzZH/+75aYPbqvRY50bDY7Mq9B53g35QQ2Y+1BWyTx1z
+	7ttZ6VX5XHCtVUfJy2wfgSecqhJn0Q6OeMT/olitG/KzvNuYpLxWnqbsQSgOt7XJOfQMPG+26/Q
+	QcAfsQ==
+X-Received: by 2002:a05:620a:46a6:b0:949:733e:ddd8 with SMTP id af79cd13be357-949733ee766mr1034555085a.54.1794861219140;
+        Mon, 16 Nov 2026 12:33:39 -0800 (PST)
+Received: from ziepe.ca ([142.166.156.71])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9494c804f9esm930800685a.11.2026.11.16.12.33.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 12:31:40 -0800 (PST)
-Date: Mon, 16 Nov 2026 20:31:35 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Peter Shier <pshier@google.com>,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v2] iommu: Honor iommufd uapi for zero entry_num args
-Message-ID: <avtoJ88ELacDrquz@google.com>
-References: <20261112151039.2083705-1-praan@google.com>
- <avdO5cBwc/2ysstZ@nvidia.com>
- <avromFJ6opeGEcT_@google.com>
- <20261116130832.GC1850935@nvidia.com>
- <avtltxy9sp6cYiEP@google.com>
- <20261116202354.GE2245175@nvidia.com>
+        Mon, 16 Nov 2026 12:33:38 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xT3OT-0000000ARJs-2rZa;
+	Mon, 16 Nov 2026 16:33:37 -0400
+Date: Mon, 16 Nov 2026 16:33:37 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Tao Cui <cui.tao@linux.dev>
+Cc: akpm@linux-foundation.org, dgilbert@interlog.com, mkp@kernel.org,
+	loberman@redhat.com, jmeneghi@redhat.com, kraxel@redhat.com,
+	vivek.kasireddy@intel.com, mst@redhat.com, jasowangio@gmail.com,
+	eperezma@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+	rostedt@goodmis.org, vdonnefort@google.com, mhiramat@kernel.org,
+	kevin.tian@intel.com, axboe@kernel.dk, linux-mm@kvack.org,
+	James.Bottomley@hansenpartnership.com, sumit.semwal@linaro.org,
+	christian.koenig@amd.com, phasta@kernel.org, joro@8bytes.org,
+	will@kernel.org, linux-scsi@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, kvm@vger.kernel.org,
+	virtualization@lists.linux.dev, linux-trace-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, io-uring@vger.kernel.org,
+	linux-kernel@vger.kernel.org, bobbyeshleman@meta.com,
+	mathieu.desnoyers@efficios.com, robin.murphy@arm.com,
+	mason@kernel.org, aesteve@redhat.com, tjmercier@google.com,
+	harry@kernel.org, vbabka@suse.cz, cuitao@kylinos.cn
+Subject: Re: [PATCH 5/7] iommufd: account the hw_queue page array to memcg
+Message-ID: <20261116203337.GA2481588@ziepe.ca>
+References: <20261106131829.3228926-1-cui.tao@linux.dev>
+ <20261106131829.3228926-6-cui.tao@linux.dev>
+ <20261116195213.GF2452510@ziepe.ca>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -106,72 +119,31 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261116202354.GE2245175@nvidia.com>
+In-Reply-To: <20261116195213.GF2452510@ziepe.ca>
 
-On Mon, Nov 16, 2026 at 04:23:54PM -0400, Jason Gunthorpe wrote:
-> On Mon, Nov 16, 2026 at 08:21:11PM +0000, Pranjal Shrivastava wrote:
-> > On Mon, Nov 16, 2026 at 09:08:32AM -0400, Jason Gunthorpe wrote:
-> > > On Mon, Nov 16, 2026 at 11:27:20AM +0000, Pranjal Shrivastava wrote:
-> > > > On Fri, Nov 13, 2026 at 09:54:45AM -0800, Nicolin Chen wrote:
-> > > > > On Thu, Nov 12, 2026 at 03:10:39PM +0000, Pranjal Shrivastava wrote:
-> > > > > > @@ -556,7 +556,8 @@ static inline int __iommu_copy_struct_from_user_array(
-> > > > > >   * @data_type: The data type of the @kdst. Must match with @user_array->type
-> > > > > >   *
-> > > > > >   * Copy the entire user array. kdst must have room for kdst_entry_size *
-> > > > > > - * user_array->entry_num bytes. Return 0 for success, otherwise -error.
-> > > > > > + * user_array->entry_num bytes. An empty array copies nothing, though its
-> > > > > > + * @data_type is still validated. Return 0 for success, otherwise -error.
-> > > > > >   */
-> > > > > >  static inline int
-> > > > > >  iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
-> > > > > > @@ -569,7 +570,7 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
-> > > > > >  	if (user_array->type != data_type)
-> > > > > >  		return -EINVAL;
-> > > > > >  	if (!user_array->entry_num)
-> > > > > > -		return -EINVAL;
-> > > > > > +		return 0;
-> > > > > 
-> > > > > TBH, this doesn't seem very necessary..
-> > > > > 
-> > > > > Though I don't have a problem so long as Jason is okay with it..
-> > > > > 
-> > > > 
-> > > > I know it looks unnecessary in-tree, but zero-length is the documented
-> > > > way to check if a @data_type is supported.
-> > > 
-> > > Is it? I though it was put in 0 length and look for EOPNOTSUPP,
-> > > success is not expected.
-> > > 
+On Mon, Nov 16, 2026 at 03:52:13PM -0400, Jason Gunthorpe wrote:
+> On Fri, Nov 06, 2026 at 09:18:27PM +0800, Tao Cui wrote:
+> > From: Tao Cui <cuitao@kylinos.cn>
 > > 
-> > Reading the uAPI comment [1] gives me that understanding:
+> > IOMMUFD_CMD_HW_QUEUE_ALLOC pins up to max_npages pages just to check
+> > that a user supplied queue region is physically contiguous, and the
+> > page array for that check is plain GFP_KERNEL.  The size comes from
+> > cmd->length, a u64 that is only overflow checked, and the array is
+> > freed again as soon as the contiguity check fails, so the allocation
+> > can be repeated concurrently: a 1GB region costs about 2MB of
+> > uncharged memory per attempt.
 > > 
-> >  /*
-> >   * An empty invalidation request array by setting @entry_num==0 is
-> >   * allowed, and @entry_len and @data_uptr would be ignored in this case.
-> >   * This can be used to check if the given @data_type is supported or
-> >   * not by kernel.
-> >   */
+> > Every other iommufd allocation that scales with user input is already
+> > charged, and the pinned pages charge the mapper at map time.  Charge
+> > this array like the rest.
 > > 
-> > Hence, for a supported data_type I expect success..
+> > Signed-off-by: Tao Cui <cuitao@kylinos.cn>
+> > ---
+> >  drivers/iommu/iommufd/viommu.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> No, you can't create most of these viommu types without giving actual
-> data.
-> 
-> The comment is unclear, it should be looking for -EOPNOTSUPP.
-> 
-> > Also, the selftests check exactly that [2]. An unsupported data_type gets
-> > -EINVAL from the drivers today, not -EOPNOTSUPP (happy to switch if you
-> > prefer).
-> 
-> EINVAL should only mean that the data inside the struct is
-> invalid, but everything else is understood. If the enum itself is not
-> known that has to be EOPNOTSUPP
-> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-I see! I'll respin the patch to return -EOPNOTSUPP for an unknown
-data_type (copy helpers, intel/selftest invalidation ops and the
-selftests) and fix the uAPI comment to say the probe should look for
--EOPNOTSUPP. Does that sound fine?
+I'll just apply it, thanks
 
-Thanks,
-Praan
+Jason
