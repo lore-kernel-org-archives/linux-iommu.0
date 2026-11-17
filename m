@@ -1,64 +1,136 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794936925;
-	b=tWWtIy+Jvpny+ScdQjcSW4ZwtplQhsZOAi0+AN9dYTGa0OYnJz9WxB6JX73cqv9Vskqt
-	 1cBHAMXo81Ouu4bX93LC+sNaRZoQK2n8ZjqPAT3Z5LGIsaO41fEE5O2YQ+zaUAxkHDalZ
-	 IozClgPoURCtT5/bWe1JkZ9lNYCbt9punHWnn5NyDD5UD+nN2eodzGb3vDywndmGik+N3
-	 7Uj0Xig74R6/zJQQ2hMQGoFmO1ZfPirk3T2Pg42U28if3MeK+wK1v5GGy7Q6OVTRYP9Ep
-	 mfvJCwD6d8y+RIjceCqIgteHsWRzfLeUfiN8fucMOXWLkEaAK4/6mFyOUEw5mvzRNGg==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794936925;
-	h=Received:DKIM-Signature:Subject:From:To:Cc:Date:Message-ID:
-	 In-Reply-To:References:X-sashiko-severity:Content-Type:
-	 Content-Transfer-Encoding:MIME-Version;
-	bh=yZ3I9vRuX9ylJnvAv8Fd/DK7PqgzivRoTz54b66hM4s=;
-	b=aWPUgx0Tjl7d917UhLN7uzDS1ewVdy88d9eUzPz5uEFyx+3KJCaD1KitPZUt7HRnQ9Z1
-	 f6NZetGGsLYQT86l6fV845oqMEifGZqdkfgh46kdYypkXSmnNBYmJHl2ZvyZLQIw41jLw
-	 tW6qJYZkYVUzJ91nRU9wPP6MjiJScCGj0j6OMKRvJygcMHhcbd5iDyK43BkfnHJXWVyE/
-	 3ZFDEqgSyOdC9QyM2r8s3JXsgv55/hKyzn8zAYfugDFOYHqE0fOTDOJg51oSKnaeb5eEU
-	 bO8UdlWI7kbPXXAJmsu/QRcF2C8qj3jDO5/sm7usDQS/tMgV5487S/hLFh8pedWUs1w==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ldprS0uN;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.15
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794937072;
+	b=L0r22yFPhaNNs3CypBQ2nLIUSVNqvfZZL3poF0J7rDFWtO1ZYj8b2mfCiE2eHO97Rzjh
+	 ZSQ6lCCtCht5eEKDlNRKSe4f0a03T+Nyn1qUhb3WQv6x/wPbceFVFtOOW02Cj5+MxxQk+
+	 LJ5v0UKmWodEMOaSv1bmzfHqowZSxMkeWzI/ZUxe+1vzqr8NCCCej0N7C1sbAygFsE6DY
+	 vRrz+9QWlicByYCvlK2T/DwxPTLnBjygDRkLPgoAqCREBaeIAX7zoNiZNVpCVF9LRLO2u
+	 6ZmFJiPZYB1Zqcr19Dk+hTTRQ6LM70uYn31WbyuqzsJ5wGJWxvZ3HSd85YXM1ED9t0g==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794937072;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:Content-Transfer-Encoding:Content-Type:
+	 X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=KZDINx5lhf7d31ocOX+VQCEAiwgDnXrcbLsOzE74GS4=;
+	b=tLliGxgFChEcPSFeKqyYqYl+v7AeC6k1X4MXU46zMUbG1Gs3Pqd5OteHfiJ38dBhuvQc
+	 L36AIZvH3dnhZELWtYN3eyMty0xBpkHFJkcLuZEkUzqUxIWwdMP7gsyO7JQsv3YJm/xVe
+	 3t5w7LGrIDG2VN/JNlVZVQLfLSfRkqZ/AJGPteiEbxzi7CckrmfmnRviU/RetAIeAcqGy
+	 6TPL2n7GQASL6TR2RPEno897qbKvd4mjTJVw8nFVUHMN6YggCVc9YrymLX8r8cXVNCBGe
+	 BWhBGXEA1U9DC+RYw3A6vsgEwXCVNshWxmLSWiFmKR6PTRfjPNRFHPWs3Sbc0gxp/Jg==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=oss.nxp.com;
+	spf=pass smtp.mailfrom=oss.nxp.com;
+	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=vpbSGS1r;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.15
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011015.outbound.protection.outlook.com [40.107.130.15])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14126606A8AB;
-	Tue, 17 Nov 2026 17:35:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E965606A32A;
+	Tue, 17 Nov 2026 17:37:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3E965606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=ldprS0uN
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 437971F00923;
-	Tue, 17 Nov 2026 17:35:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794936924;
-	bh=yZ3I9vRuX9ylJnvAv8Fd/DK7PqgzivRoTz54b66hM4s=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References;
-	b=ldprS0uNwFt+H1U3be8E2gOLAGnw8BZl5s5GVpiNWByV+Ly/0OSD22JIeeAxEMp/g
-	 vajUIU0EUhPQ6Grik6d7HoZo4QrEZCG/qbdNGA2DeRmLimaYUz3G22jERtSf0rlEsJ
-	 XdkI0kkGlwRriDnm0fVfu4H+JZKAVemm7juPMN6KScB8unOvuReiocyYvXxlLxcjrI
-	 jGnyjhxSnD1caR+wZ8oWP9VduidgsFBMr6HkihNTcuMyt0h8DBOB+F4f0IMukeKkOM
-	 aNCUusgK+8Is7lqQdWI9scgMjEIbl0y4zrdB5uLRljVPhKN+GZHQu7GSdlgYDZS3NS
-	 pDxvT9nAn7D5Q==
-Subject: Re: [PATCH 9/9] arm64: dts: rockchip: Enable the RK3588 PHP SMMU
-From: netdev-bot+sashiko@kernel.org
-To: aiyengar1990@gmail.com
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- andrew+netdev@lunn.ch, davem@davemloft.net, edumazet@kernel.org,
- kuba@kernel.org, pabeni@redhat.com, david.wu@rock-chips.com,
- dlemoal@kernel.org, cassel@kernel.org, fancer.lancer@gmail.com,
- netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org, praan@google.com,
- will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
- shawn.lin@rock-chips.com, sebastian.reichel@collabora.com
-Date: Tue, 17 Nov 2026 17:35:22 +0000
-Message-ID: <179493692280.3136.14096741635369747694@kernel.org>
-In-Reply-To: <20261113-mmu600-php-v1-9-231196049a3b@gmail.com>
-References: <20261113-mmu600-php-v1-9-231196049a3b@gmail.com>
-X-sashiko-severity: Critical
-Content-Type: text/plain; charset="utf-8"
+	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=vpbSGS1r
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=nEZEMH0ODW7JS8htOWXrfiAQvVeqbWwn2Y35s05Mc2UEdQ4VzImwVvXZUNq+JUHKadJyeMXULCykLTPCmejFYBWBSqMno2BB4jpoGauj8yWt3tBx6BxCVT1dFY5GQViNsdJ0FUE5us3fJK12/9KrUbuWAOwESPtJmXgeeOrTmYBD4jfwgz8v7oeyjCjIX3h1tmymp4ctx7WY88aaeQVSapsV+YC+38vINmO8rAEQ+2LUr8RQIGxBHXjdJFotWPru7yKfCYAB5DsDsuruub7Duf2hE3O7Bnrm1cmX2fT1fkouUtUNM7nuZCziFtQjVgyKp3AMsFcDF+uWyGY62bEuCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KZDINx5lhf7d31ocOX+VQCEAiwgDnXrcbLsOzE74GS4=;
+ b=k/s90KxTEHCb2GVQ0j2Ak7bqHWrktXxeQQWT6him8m8L2Q4cacGmf3r2dxel7sv/+gNHZGFVXX7LZiWeWEZEUSQJZE2tWSmfiiKLWtjofnWJKKwh+QgfJkDzRvuI9g7my4T4mRxZkKeaOvEwTeTxJECo/kve/GWy0aol4RQ4loCcsSSeQAI11mHPrKN86L7x64ihlsw3GM0gRS1DuY1wFKJAFl1ZOQSkZcZ2m0l3WACxeec44LADfAfHDDfnkK/M2wWUfca7YH4ARiqp9iq5X2RmM6lpPUrJVP5LfmG3ymAQpGtWCgyEb7J+8epcs2Xc1kNVljHMVwZsqsbae7o6MA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector1-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KZDINx5lhf7d31ocOX+VQCEAiwgDnXrcbLsOzE74GS4=;
+ b=vpbSGS1r3LrWC3eK3w6TKHMkj7YI0XXWQbnmD5K3E6yDuq3kUR9OVbO9zOA4y4WA1hzLZxGEXpHG1frnnfyvuOx0ANJjwMi6Rb8OhtTWzPVWhxpz8AEY7xr8+hTrJs7b06SSLIsrJpKZNhM0QYx3BNuARP6jdJVMMPHwx7ruhgmtXHBBO/1bCYSQruNIpXNaLhRO/7L1iMq9tu/jxcG3xLTj8fq7xL2phHnhpladaIQ7eGwU5O+DfkLzISF54VZimAgSB5KpVkQwQqOUXLp3WPlsouNtda8xsEcnkj9oTDTU9+yrHMa8h670bKCPhMy1cPORjEKnMqI6aYq2qSHcDQ==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
+ by GV2PR04MB12582.eurprd04.prod.outlook.com (2603:10a6:150:36f::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 17 Nov
+ 2026 17:37:46 +0000
+Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
+ ([fe80::c715:c32:8bb1:b70b%4]) with mapi id 15.21.0615.013; Tue, 17 Nov 2026
+ 17:37:46 +0000
+From: Frank.Li@oss.nxp.com
+To: "Rafael J. Wysocki" <rafael@kernel.org>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Jacek Lawrynowicz <jacek.lawrynowicz@linux.intel.com>,
+	Alex Elder <elder@kernel.org>,
+	Guan-Yu Lin <guanyulin@google.com>,
+	Mathias Nyman <mathias.nyman@linux.intel.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Andrzej Kacprowski <Andrzej.Kacprowski@intel.com>,
+	Maciej Falkowski <maciej.falkowski@linux.intel.com>,
+	=?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas.hellstrom@linux.intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Will Deacon <will@kernel.org>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Connor Abbott <cwabbott0@gmail.com>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Hans Verkuil <hverkuil+cisco@kernel.org>,
+	Bingbu Cao <bingbu.cao@intel.com>,
+	linux-pm@vger.kernel.org (open list:POWER MANAGEMENT CORE),
+	linux-kernel@vger.kernel.org (open list)
+Cc: imx@lists.linux.dev,
+	Frank Li <Frank.Li@nxp.com>,
+	Alex Elder <elder@riscstar.com>,
+	Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>,
+	Karol Wachowski <karol.wachowski@linux.intel.com>,
+	Oded Gabbay <ogabbay@kernel.org>,
+	Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Tvrtko Ursulin <tursulin@ursulin.net>,
+	Matthew Brost <matthew.brost@intel.com>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Joerg Roedel" <joro@8bytes.org>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	linux-pm@vger.kernel.org,
+	linux-usb@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	intel-gfx@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org,
+	linux-hwmon@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	netdev@vger.kernel.org
+Subject: [PATCH v3 1/2] PM: runtime: fix stub pm_runtime_get_if_active() for !CONFIG_PM
+Date: Tue, 17 Nov 2026 12:37:35 -0500
+Message-ID: <20261117173738.1073856-1-Frank.Li@oss.nxp.com>
+X-Mailer: git-send-email 2.43.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: PH8PR02CA0008.namprd02.prod.outlook.com
+ (2603:10b6:510:2d0::17) To MI3PR04MB12438.eurprd04.prod.outlook.com
+ (2603:10a6:290:76::14)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -68,153 +140,194 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|GV2PR04MB12582:EE_
+X-MS-Office365-Filtering-Correlation-Id: b33219af-6a41-4bc5-a1db-08df44d17e27
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|366016|19092799006|7416014|376014|1800799024|18002099003|6133799003|921020|11063799006|56012099006|261026140227099003|261028144727099003|261021123027099003|261021121427099003|10067099003|261009221227099003|261102123227099003|261009223027099003|261009221727099003|261022105027099003|261009223327099003|261009220027099003|261022075727099003;
+X-Microsoft-Antispam-Message-Info:
+	sXtO+HxvVxV42O279f88YaFtOC00rsexvU7RrlOygzOyAv2vKembZvaQz7pSAwPSyEgaSuLyYN/ndIL2WgC6K9nHKydKHmBJZSCmmWvkpOhtcJlJfnLVnYLfiRuuNphj0N8pFjfBU7sT2AQMqOkcgfaJxrVskzJf9oC3v7N2igD6Nb264Szt4kpMUw4r3mL0e1LlPdgQ4qAbmAUJab/7iRdnM8QfMRnD+PuQaoZkmGW7bvwBQlwu/XPVSxXiyMaO5eEUWv2uGp2B0d1WVy1EE1B6pzwEc1wxLAXVA1wQUDXZPPphgvTNF8Bz96O9T1TWzL2gguiaqGOq/8EehU7r4pqBoG3x0BEEGLAPG3jkLvTOtbrHFAOYpB4pSqAcJSqycREhnejO68pesOZjfZF0b5FIgUINvngcyCs+9pQqS7J5QVyS3UBqDqz8ASxuuXpy9neu2BBzr1xPPUKpfyS4vahkWtZq8J2nAiosgXbgrjN3XW0P3rpchBUpgMWgogE74X46EbhSVx/EUAgyWbWKnQeE/nn3k5JFZMC+au8fBsl2fV1ruFYRmGBudJSPb6o0sAdkY8GBWFv+BEWGi+tw0EaSP19Zw4VrSLm71N2RVNq6vTvF6wMyfKol5jlizVkZO6uBNQAhja8ShiJiRSQEOIQZ+VzpBcyjqyNhy8q6KulpM5kCErIdDUAiQ6TTB0fQq1kbPdCbfHpe2Ua6Ghd4CA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(19092799006)(7416014)(376014)(1800799024)(18002099003)(6133799003)(921020)(11063799006)(56012099006)(261026140227099003)(261028144727099003)(261021123027099003)(261021121427099003)(10067099003)(261009221227099003)(261102123227099003)(261009223027099003)(261009221727099003)(261022105027099003)(261009223327099003)(261009220027099003)(261022075727099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?WDTlm33+BJQF8p43MTj+HSWKgcn5Ht/MLtFaOkGIBR4hOjuMRc21/7nkHh66?=
+ =?us-ascii?Q?DyX0vVH446IPkg2uim0IBgdB67fnH8YS2g1JMsfpjX42O+bfCTH9Jl7LlL+r?=
+ =?us-ascii?Q?GyYYqlu2j0ycNLabWrA8tNY4VqaPf7fAbhOuUkj7LO+LwirDH0LRkQMh/S92?=
+ =?us-ascii?Q?Z7yFKXaB0zpmmW4ekpJY2V8fJdZK5N47zEYc1sXMCrZ5xuFWOO+eiDtAh7ZN?=
+ =?us-ascii?Q?iQQlFsI187UGC3a7CCzWGyFP8oi6j+GbaDhChjoIzxOlWXW3qIrevuSPZu9D?=
+ =?us-ascii?Q?U7+B3SILo/NfmZLF1y7aS+Xucc5AxwLKfSlpEFgN0XZArH9z8Z9M/8+YSV/7?=
+ =?us-ascii?Q?d08Af6lowSitlGDad0xf9ViFhnMMpf5hiOJUAKYJjG1LNQpQV/UqqxncWmJl?=
+ =?us-ascii?Q?QJil/ugVeMesv2sQmbedtutbbueAMZc8C9VeP9V5Wu2jBuMb28ACkYOURQTG?=
+ =?us-ascii?Q?cB4UvWFOkTupw5fZXfI1DTzoaYLRqjywcr9vyBENDKftlCP3nONtdQEnw/TU?=
+ =?us-ascii?Q?aH/XB2YPpYt8dYDZKITX7QS3Hc4DYvs1HBDowpBxlMqwUe+Qe2Pje3JY0jXs?=
+ =?us-ascii?Q?8HcM/hoxaovQc55wMMmQd4zdWJLU8nNIIKC5vKEtKfxqFM+HYmfc14dOP7hJ?=
+ =?us-ascii?Q?3d9M0PqfUNgFimnNa7R5gwspa+C1u9dziplilUZLg70zH79CYIvJSqccalT4?=
+ =?us-ascii?Q?VgLpfdjufvgozStzxgFjaRBznxIkxjf8H6YPSVaqyp+HN2Kbcf/3fTkEUWer?=
+ =?us-ascii?Q?pVk/4qmkfirsmu6DdaUQgnah63GoST643Wo+z1o682FM94vNVDJK3xohWk3f?=
+ =?us-ascii?Q?CmoKwCgu+0AlPEpX0Eva26qWbzTfwg3qBwGk0EQwRTZNnPM0zLsBt97YGzpN?=
+ =?us-ascii?Q?VYVPMz3GaDMAzsWMSbaZukcD4OEvYUKK87CkbFbg66wpIlnjcp/WAy5pZT6l?=
+ =?us-ascii?Q?b6WdCC3Vk+MuF+w08d6Pq/h22BeN8hI40yJEzwSj8Wh+/ybqWSjvUax/xe0z?=
+ =?us-ascii?Q?vJt16SrY2nS3XwzMfK04AapeUuyS7qAsD0YP11IZf0dIzekCcbimeizT3bJQ?=
+ =?us-ascii?Q?KOlDoLWh0QRSM/wY0cC7NuH3H6ALXosJj56FMSFLFoCEHtozExIadoqepaeZ?=
+ =?us-ascii?Q?QfC5iKdHAwlPrQ+7WHRLT/vAJOsytvGlnrlilNiJCn5aWqv0A9pNZBmzTD0m?=
+ =?us-ascii?Q?M8BCXvDf0QDGNIw+7csvD9n9Or7GdAPHT/pa54klMWh2mWCXmghs/la27eXO?=
+ =?us-ascii?Q?E3cEvP+BfWGIFMC4L6GyKTSGDSfrbzIm5yO/vyR3cNlXrFh1esVcnX/y8BWx?=
+ =?us-ascii?Q?1lqB6cQlWEQmEjMrGUv/UCkp3Tbj6o8dvAym6wSCTU7yuFC/vIlY6ctSm67C?=
+ =?us-ascii?Q?63iMcwUDwGK+iobxNb7sHFdgZwZvpRgRfhhvCH/LIyCXpHaXsM/04fUseZ9C?=
+ =?us-ascii?Q?vGFPR5pOoo2xawok4CdL89Ng1UmiMzqIrrwpFF7/nERWQ/k6yHGuTS/WNDA/?=
+ =?us-ascii?Q?5WHExSiI7SxOrFvwNlkTc46FVnai5drIbrYkVj5rqdIalL904tmsGuda1wXZ?=
+ =?us-ascii?Q?45B2qr6XNAkHsCofwUW6JwI7LSoPtUAGjBVu3SikzC+yZgKBGdXKwWh/8fte?=
+ =?us-ascii?Q?igput+Wohy7do6k/UnppcgCo8Bs/3edpMFKfzw8o+q3iYkocOl6SvqAXAj/y?=
+ =?us-ascii?Q?kpacsMUhY5cRMtCN7KjpgRMN4UTNYp6HNODfG7NgOiFiL++SYy9V4hBL/Joy?=
+ =?us-ascii?Q?8FFRncMSL2zNEr166xPAQcIe9gjJ/eg5DBLTnz7xkVw0QwTfbHO/?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b33219af-6a41-4bc5-a1db-08df44d17e27
+X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 17:37:46.7668
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VWfUD6wlehPxnzu4NU3G0iBrBiEqYn3cBibMVadJE6Er5rSdhcaj6M6SwU23gNd2DFl9TxjFKQ0H739L6f38EH4BRzmTW1DDynqmhsMqvSrGrGvqKGs7I07lW0Xr9KoB
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR04MB12582
 
-Thank you for your contribution! Sashiko AI review found 3 potential
-issue(s) to consider.
+From: Frank Li <Frank.Li@nxp.com>
 
-Critical: 1 · High: 1 · Medium: 0 · Low: 1
+When CONFIG_PM is not enabled, should be treated as if runtime PM were
+enabled for the device and the runtime status is active.
 
-If you believe none of the issues are legitimate, please reply to each
-issue of Medium severity or higher and explain why the AI is wrong.
-If any of them are legitimate and you plan to respin, please let patchwork
-know by including "pw-bot: cr" as a separate line at the end of your reply
-(one such reply per series is enough).
+It's a subtle distinction but the previous behavior returned -EINVAL, which
+means "runtime PM is disabled for the device"
 
-- [Critical] This patch enables mmu600_php on every RK3588 board, but the
-  kernel cannot restore the SMMU after deep suspend.
-- [High] This patch's commit message says "the SMMU has its clock", and
-  the earlier series commit "arm64: dts: rockchip: Add the clock and…
-- [Low] The mmu600_php node that this patch enables has `clocks = <&cru
-  ACLK_MMU_PHP>;` and `resets = <&cru SRST_A_MMU_PHP>;`…
+__pm_runtime_resume() returns 1 (called by pm_runtime_get()).
+pm_runtime_get_if_active() is the try-and-get version of pm_runtime_get().
+stub pm_runtime_active() also returns true. So pm_runtime_get_if_active()
+should return the same value as the stub pm_runtime_get(), which is 1.
 
---
+Analysis of all callers and their behavior with old (-EINVAL) vs new (1):
 
-arm64: dts: rockchip: Enable the RK3588 PHP SMMU
+Pattern A: if (!pm_runtime_get_if_active(dev)) -- no impact
+  Both -EINVAL and 1 are non-zero, so !ret is false in both cases.
+  Callers: drivers/accel/ethosu/ethosu_perfmon.c,
+           drivers/gpu/drm/msm/adreno/a6xx_gmu.c,
+           drivers/gpu/drm/msm/msm_perfcntr.c,
+           drivers/gpu/drm/v3d/v3d_mmu.c,
+           drivers/gpu/drm/v3d/v3d_perfmon.c (x4),
+           drivers/media/i2c/gc08a3.c gc05a2.c og0ve1b.c ov6211.c,
+           drivers/media/i2c/ccs/ccs-core.c s5kjn1.c lm3560.c (x2),
+           drivers/media/i2c/s5k3m5.c thp7312.c imx283.c ov64a40.c,
+           drivers/media/pci/intel/ipu6/ipu6-buttress.c,
+           sound/hda/core/device.c
 
-This commit removes status = "disabled" from the mmu600_php node in
-rk3588-base.dtsi. That enables the arm-smmu-v3 instance in front of the
-PHP masters (GMAC, SATA, USB3 host2) on all RK3588 boards. The commit
-message notes that PD_PHP loses power in deep suspend and that arm-smmu-v3
-system sleep support is needed.
+Pattern B: if (!ret) after get -- no impact
+  Both -EINVAL and 1 are non-zero, !ret is false in both cases.
+  drivers/gpu/drm/amd/pm/amdgpu_pm.c (comment says "allow access"
+    in kernels without CONFIG_PM), drivers/pci/pci.c
 
-Link: https://lore.kernel.org/r/20260929034510.2023173-1-praan@google.com
+Pattern C: ret > 0 / ret <= 0 / ret != 1 checks -- FIXED
+  drivers/usb/core/offload.c: checks (!= 1), old -EINVAL caused
+    -EBUSY even with !CONFIG_PM. Fixed: now returns 1, proceeds.
+  drivers/accel/ivpu/ivpu_job.c: drm_WARN_ON(<= 0), old -EINVAL
+    spuriously triggered WARN. Fixed: 1 > 0, no warn.
+  drivers/gpu/drm/i915/intel_runtime_pm.c: checks (<= 0), old
+    -EINVAL triggered error path. Fixed: 1 > 0, correct path.
+  drivers/accel/ivpu/ivpu_sysfs.c: (> 0), old skipped freq read.
+    Fixed: proceeds correctly without CONFIG_PM.
+  drivers/gpu/drm/xe/xe_pm.c: wraps (> 0), all xe callers
+    (xe_bo.c, xe_shrinker.c, xe_vsec.c, xe_ggtt.c, xe_guc_ct.c,
+    xe_pxp.c) now correctly treat !CONFIG_PM as active.
+  drivers/net/ipa/ipa_smp2p.c: power_on = (> 0), now correctly true.
+  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c: (> 0), now correctly
+    executes stall register update.
+  drivers/staging/media/ipu7/ipu7-buttress.c: active (<= 0) early
+    return now skipped, correctly proceeds.
 
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-> index cb0a39f637887..0c3d59a391826 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
-> @@ -574,7 +574,6 @@ mmu600_php: iommu@fcb00000 {
->  		clocks = <&cru ACLK_MMU_PHP>;
->  		resets = <&cru SRST_A_MMU_PHP>;
+Pattern D: explicit -EINVAL check
+  drivers/hwmon/prom21-xhci.c: checks (> 0) then (== -EINVAL).
+    Old: took -EINVAL fallback. New: takes (> 0) fast path.
+    Both succeed when CONFIG_PM is disabled; functionally equivalent.
+  drivers/hwmon/eic7700-pvt.c: call is guarded by IS_ENABLED(CONFIG_PM),
+    stub is never reached. No impact.
 
-[Severity: High]
+Fixes: c0ef3df8dbaef ("PM: runtime: Simplify pm_runtime_get_if_active() usage")
+Fixes: bd3d245b0fef5 ("usb: core: use dedicated spinlock for offload state")
+Fixes: 7806bad76ac39 ("accel/ivpu: Prevent runtime suspend during context abort work")
+Fixes: 1524c28b99527 ("accel/ivpu: Show NPU frequency in sysfs")
+Fixes: 46edb0a3eb16c ("drm/xe: Fix xe_pm_runtime_get_if_active return")
+Fixes: a71aeff3dd0a7 ("net: ipa: kill IPA clock reference count")
+Fixes: 70892277ca2db ("iommu/arm-smmu-qcom: Make set_stall work when the device is on")
+Fixes: 9ad65684b9285 ("media: staging/ipu7: Ignore interrupts when device is suspended")
+Acked-by: Alex Elder <elder@riscstar.com>
+Signed-off-by: Frank Li <Frank.Li@nxp.com>
+---
+Change in v3
+- fix drm/xe fixes tag hash (sashiko)
+- drop i915 fix tag because guard by CONFIG_PM (sashiko)
+- fix net ipa fixes tag hash (sashiko)
+- Add c0ef3df8dbae ("PM: runtime: Simplify pm_runtime_get_if_active() usage" (sashiko)
 
-The commit message says "the SMMU has its clock". Does anything actually
-enable ACLK_MMU_PHP for the SMMU?
+Change in v2
+- add fixes tag for patten C.
+- add Alex Elder ack tags
+- change subject to fix stub pm_runtime_get_if_active()
 
-The arm-smmu-v3 driver has no clk_get()/clk_prepare_enable(), reset_control
-or pm_runtime handling. The node has no power-domains, so genpd pm_clk
-does not apply. The platform core does not enable DT clocks by itself
-either.
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andrzej Kacprowski <andrzej.kacprowski@linux.intel.com>
+Cc: Karol Wachowski <karol.wachowski@linux.intel.com>
+Cc: Oded Gabbay <ogabbay@kernel.org>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: Tvrtko Ursulin <tursulin@ursulin.net>
+Cc: Matthew Brost <matthew.brost@intel.com>
+Cc: "Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>
+Cc: David Airlie <airlied@gmail.com>
+Cc: Simona Vetter <simona@ffwll.ch>
+Cc: Alex Elder <elder@kernel.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: "Joerg Roedel" <joro@8bytes.org>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>
+Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Guan-Yu Lin <guanyulin@google.com>
+Cc: Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc: linux-pm@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: intel-gfx@lists.freedesktop.org
+Cc: intel-xe@lists.freedesktop.org
+Cc: linux-hwmon@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: linux-staging@lists.linux.dev
+Cc: netdev@vger.kernel.org
+Cc: imx@lists.linux.dev
+---
+ include/linux/pm_runtime.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-In drivers/clk/rockchip/clk-rk3588.c the clock is a plain gate with no
-flags:
-
-	GATE(ACLK_MMU_PHP, "aclk_mmu_php", "aclk_php_root", 0,
-			RK3588_CLKGATE_CON(34), 8, GFLAGS),
-
-Its only enable references come from its children ACLK_GMAC0/1,
-ACLK_SATA0/1/2 and ACLK_USB3OTG2. Two things can turn it off:
-
-- clk_disable_unused at late_initcall_sync, when no master is bound
-  (modular drivers, or a board that enables only some PHP masters).
-- The last master disabling its ACLK on runtime suspend or remove.
-
-The SMMU driver still touches the hardware after that. It issues CMDQ
-TLBI/CFGI plus CMD_SYNC on unmap and on flush-queue timeouts, it runs the
-eventq/gerror handlers, and at reboot it runs:
-
-arm_smmu_device_shutdown()
-    arm_smmu_disable_action()
-
-That usually happens after the consumer masters have already shut down.
-
-Could this cause CMD_SYNC timeouts or a stalled bus access? The "Add the
-PHP GRF clock on RK3588" commit in this series describes a similar hang
-for pclk_php_root.
-
-The earlier commit "arm64: dts: rockchip: Add the clock and reset of the
-RK3588 PHP SMMU" says the clock was added "so the SMMU keeps its clock
-while its masters are idle". Does that need clock handling in the driver
-(plus a binding update), or the gate marked as critical or
-ignore-unused, rather than only the DT property?
-
-[Severity: Low]
-
-Will this node pass dtbs_check now that it is enabled? The binding in
-Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml does not define
-clocks, resets or power-domains, and it has:
-
-additionalProperties: false
-
-No patch in the series updates this binding, although the dwmac, ahci and
-grf bindings are updated.
-
-Also, the "Add the clock and reset..." commit says the reset is added "as
-for the PCIe SMMU". The sibling mmu600_pcie node, which uses the same
-compatible, has neither clocks nor resets.
-
->  		#iommu-cells = <1>;
-> -		status = "disabled";
-
-[Severity: Critical]
-
-The commit message says:
-
-  PD_PHP is powered off in deep suspend and the SMMU resumes from reset
-  in bypass, so this needs arm-smmu-v3 system sleep support [1].
-
-Is that support in the tree this patch applies to? No earlier patch in
-the series seems to add it.
-
-In drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c, arm_smmu_driver has no
-.pm:
-
-static struct platform_driver arm_smmu_driver = {
-	.driver	= { ... },
-	.probe	= arm_smmu_device_probe,
-	.remove = arm_smmu_device_remove,
-	.shutdown = arm_smmu_device_shutdown,
-};
-
-The only code that programs the stream table, the queues and SMMUEN is
-arm_smmu_device_reset(), and only arm_smmu_device_probe() calls it. The
-syscore op added to drivers/soc/rockchip/grf.c earlier in the series
-restores only the PHP GRF StreamID registers.
-
-With this node enabled, the PHP masters get IOMMU DMA domains and their
-drivers program IOVAs. Those masters are usb_host2_xhci, gmac1, sata0 and
-sata2, plus gmac0 and sata1 from rk3588-extra.dtsi.
-
-After a deep suspend cycle, does the SMMU stay in its reset bypass state
-while stmmac, ahci and xhci keep using descriptor rings and buffers at
-their old IOVAs?
-
-If so, the IOVAs would be treated as physical addresses. On gmac RX the
-frame contents come from the network and would be written to whatever RAM
-or MMIO sits at that address. TX and SATA/USB reads could leak arbitrary
-memory.
-
-PD_PHP is also defined only in drivers/pmdomain/rockchip/pm-domains.c and
-the dt-bindings header. No DTS references it, and mmu600_php has no
-power-domains property, so genpd cannot order an SMMU save and restore
-either.
-
-Before this patch the node was disabled and these masters used direct
-DMA, so suspend did not hit this problem. Should enabling this node wait
-until the arm-smmu-v3 sleep support in [1] is merged?
-
->  	};
-
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index 64921b10ac74f..de9e7518ecef2 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -280,7 +280,7 @@ static inline int pm_runtime_get_if_in_use(struct device *dev)
+ }
+ static inline int pm_runtime_get_if_active(struct device *dev)
+ {
+-	return -EINVAL;
++	return 1;
+ }
+ static inline int __pm_runtime_set_status(struct device *dev,
+ 					    unsigned int status) { return 0; }
 -- 
-Sashiko AI review · https://netdev-ai.bots.linux.dev/sashiko/#/patchset/20261113-mmu600-php-v1-0-231196049a3b%40gmail.com
+2.43.0
+
