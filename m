@@ -1,85 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794919690;
-	b=Z84WDz/I0WmWVd8GRrRGhvydDCRgSi1hxkPMR7S5nCuwLalpVzovY+TLj98roxo6OoAJ
-	 020zRL0fqeMb6Tx56r4RLmCzhMfG7cRHumL+SKDPVOpVJvFdDGB/K1SvGtW/lMLrxqEN1
-	 wHGaR4BmDcWbdTBMgvFmN0DTvMv2bpsB5GZDLzpZA0w+BdkWDmo0P8sVErCoROM+1BKdc
-	 irFEsEJbxoTswUrkZ+1ewxl65kCKsPLU+xCSeaJxpFtNnCbvXRu2MqZxigmSPAFYGJ0K1
-	 bCrGkU2FhQZqBVw+2hHOwJXmQAifja6jNn+pJ8JvSIf9JyFYUheqtVXhdmwD0XsHWdQ==
+	t=1794920411;
+	b=S77W54F2BTenJYLfiGmD3gi/aNzyfOjzldp9bDAtUpQkN0LJQWiN1qV+0DA/S13gMFRa
+	 2vPKsLouR5q0b6ayHxkpt4agEAY6TixbAAi1V2u6ufXbt+t+5K2lot/PCSFYWM5GspBxm
+	 MYvFymLWsYM/LXSmFWTPOn1pPEd7Txc4t5x7VEbSTMCd/cihVqg6IwtEg5s71ebSEfEO7
+	 J9aSJXDl3rA9cX/rE/wnHJ0nmLEQ8tVFSzWg8gjkdOuF3D2nJg8dqYu5apaJD012ArutA
+	 9U4GIxZd+4G6FNiVxTigONODypO+O8EzG2mQVAwu41FKn0OhxSFzpMRwoABZF1JKpEg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794919690;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=sHHP4lrQVbjQV4OnOd6y3l0XQnPgN/Sz+31TccHLwkc=;
-	b=KvHXVeQPTJQBa9B9wfnBi8qMv7hvEB7Zk8cZ6FXQGzpxfdxNfgpFqQUH2MavPjhM9Iqw
-	 X5q1h/AAHfv7bTmhialJbce+Sk4U5itOkWI+4GtmIqYyxa6gUBWP6QbEphoTmQT/6PX9B
-	 8LonSaxbR/dnrLJfak9O+BRSdqy5+TFoP3u8eL+nSx7FM1fxCzaM5NbnNCYRN43RxLElg
-	 eTg7nYRpna+XwRMsfji79/wUbw5e62fpVsSGeAWvzOQTriibEXB0sYrHKKGsV7/TpaXxe
-	 ioD+1b241WKvHdbxaMIUnwDkkHzvdeK40kUnUB88ytXhy8t15eoSsKMiK3LU518ZaCw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794920411;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=QHFqCnsPAP40ABSi/lHx2qUxkasVh8VfNqtA5qQ6pG8=;
+	b=psC3kGFlvJrV776baa3rCtf6JS6AeAXJvkD2ZQrm3T/+VdQljhszid7bx4BlPd87Y4EO
+	 3q+6z6egipenaqhidQzFqmv5ysPIH/vEo6gBUFXZRHKCdlOGMkaVk6Ozv7FvBrcPtAVto
+	 m8PAKepgGQLpS4dcu7SUAo5hlxq/3DPdsRZvyLynpCs0Oc9/PhUvkf5HVcIlRXTgzj1kn
+	 ucJxNNrIv5kzeuizDDAgQqWgvaUWh8neKBS3Bi6s9re48QugkjynGYve95Z7wQKkYqiU6
+	 seInBPYqdQtDWRZVyCOv7YisTuz/Bb6iyNENPwVIdTnFRucQOfN+eTHSWpABfyLgHfg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YHKbFcMn;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=b2YFLXbH;
+	arc=none smtp.remote-ip=209.85.219.44
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5C4C606A331;
-	Tue, 17 Nov 2026 12:48:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECB36606A8AF
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 13:00:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ECB36606A8AF
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=YHKbFcMn
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F9751F000C5;
-	Tue, 17 Nov 2026 12:48:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1794919690;
-	bh=sHHP4lrQVbjQV4OnOd6y3l0XQnPgN/Sz+31TccHLwkc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=YHKbFcMnmmbORQCbLlMN/d6gVnT4XJqvrtWRg+cUmoX1WTtse7Nw3HxwLvSDXopIL
-	 k6zEjl08Eyhhx7lJFNyZwg8DqTaaNM/Y37vvyOiW0NubvkUdOV/YP3b/AbLVDSpYvw
-	 ow64ZOBeqGWrf73HjBfqPMB5aBpCr86DfSZGxtaMgPLJkAfLgXhfepmkTzgR/ecQ6N
-	 wxxJkfTTQz6irDAkfCGqoDQzLVw7JbgD6irSR8EqiMnWDqi+F3m6YaDtk+SmZzD0TS
-	 JhcPaIdcyi6jB/KTuJHjRIHgT2gOL+MtmGW9IwqRQr2PD2rpJ5Bk/lnMk61Yt1RU1N
-	 s3VTQfBntVZ5A==
-Date: Tue, 17 Nov 2026 14:48:01 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Andrew Lunn <andrew@lunn.ch>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=b2YFLXbH
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-91f11161831so29933946d6.1
+        for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:00:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1794920409; x=1795525209; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=QHFqCnsPAP40ABSi/lHx2qUxkasVh8VfNqtA5qQ6pG8=;
+        b=b2YFLXbHZxblEetdGwqZ5iSDT1YoFcKjYGOKJJy5u7qsJIBbCx0MYywsMpj2imTpMw
+         hB+ccsrh32tsGLPP4+qmvZSvgjHVKXuiP2gQeazDwsNFsq/appf1u8J5OMFpYk/XkZxd
+         z3x4mPDl1zEz4j2aUMwofcSPp3am92+F+rnQoWwEjGu8Ms6rXu+p+xS/EUcrKbeqeGWJ
+         RC9tTzCbyFPBRWUoTc4tR5v1CtXD4X1F5mAlRxaktF7GWeVrkiCykYoJP5KRwoHohffO
+         mfBRhIkTNEOYR8tsmFla40vh/B1swzaJXT0u6LallXDgkhg4KC/GXTj17m0CCM1odHDD
+         WWQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794920409; x=1795525209;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=QHFqCnsPAP40ABSi/lHx2qUxkasVh8VfNqtA5qQ6pG8=;
+        b=dwvT9kCkthlR+jXCq/lZsIu42yGan8HDG5CYdfu10OBT3utfuQFpyD12ZS5b1wyKsg
+         dx7G5yVRnpBb/A9wB347ZSrsYFPDc2lrG4f1rwbwDGyHvwz3h0OTR0eJwRr1o9pF4BWP
+         GgzXiV4P0yQX2L0b42dAiZr+kN5RbPm4UxQJMetloYIwNXrkX4AGfkG1uSRC03kvTO4j
+         OdGnBl/jPcDHxIgFKd6W05tRLAkXl9yDJfz67z15ITRVMJEXjSMR0MWqaBTvhPqqnJJr
+         +l9N37ZIQeRkjVqRKSWQmWNhDL8jNy6pnVPchL8ix+BMUO8I1Hb8YuaDhU1Sa6oALoLH
+         G6YA==
+X-Forwarded-Encrypted: i=1; AL+hErHzciw1Ci+mJqse9ky+ROjhcabCE3BpYgQNy0H7Jb4LH1rURjoSL1KWDWRqBo/3KMltxLfmmg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/kFUty7SxCCsr4Wi+liMabhY3ExCbqgCSslOfQVtgpPWAQAcog
+	FwpTsypk35+IDQZuYvYKMQ/SWANYj7qpzl6SmrUYM6MfIjkHY0jDfY1B66gm3jb71Ds=
+X-Gm-Gg: AYBFou3gDFJSRPE1nLRT9UiZu7YS2GuiL8uHhxi2OeixVwtvIMFXm7aFVa0gznTAh7f
+	8JFrhAvdtsBxHvgPI2UF7KF5FpwrhwcI4gLwmNdt7yQ2RZttVTD4T0YY0eXZlhiYQfOHZsCt5cH
+	QsulZ5Eo5KZtSpvfSjg/MDhJnIylxh0Tytm+wwOYeP31nLkYBj9aMV6oqVNd8n3a6tgi9oSr0rD
+	oyQmYCgAUOUtx+j+HXT7/GKSQy9Np4pSnMCnN6y5WtJbDqQTfy0g5LJ6gCTWr/8p5jR/+HFwLfl
+	KOzC1rhyEfxyKTQRfH2W01wdfFqIm9+iKuowMDbJtYYzRLXSHHDvhVP28tOLx/MUQNgwqPzTsq2
+	eBDvqTHkWsKW7wmzyuRKIInbiTNEUdbFwrtEk1yXVAjmLsSQ7scHPtRxiKvkdBmhlTtI5kctjdl
+	qp09w7vxbP6zaqt0Ul5IxxpcYKrXhLPEnRhU2nKia+DUOhjNPf9f6lA1OxFLyjLq0X366ARdQGf
+	nDzqPERZQ/jQcQ6lIVcTspdaVKwiExjduJLgIGsYP0mpg8lYgqcoVQD7uWEAKxudVXjSuZsNq90
+	m7VGg2ud0lAyBh9IsrXjBFMlDfg=
+X-Received: by 2002:a05:620a:a208:b0:949:5c62:e775 with SMTP id af79cd13be357-9495c62ea7emr1501690585a.15.1794920408653;
+        Tue, 17 Nov 2026 05:00:08 -0800 (PST)
+Received: from ziepe.ca ([142.166.156.71])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9494c803abbsm1067907885a.7.2026.11.17.05.00.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2026 05:00:07 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xTIn7-0000000CJGS-3fNi;
+	Tue, 17 Nov 2026 09:00:05 -0400
+Date: Tue, 17 Nov 2026 09:00:05 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Peng Fan <peng.fan@linux.dev>
+Cc: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Frank Li <Frank.Li@nxp.com>,
+	Vinod Koul <vkoul@kernel.org>,
 	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 18/19] PCI: Replace untrusted state with device trust
-Message-ID: <20261117124801.GD124972@unreal>
-References: <20261109-device-trust-core-v2-0-3b12d9a9f861@nvidia.com>
- <20261109-device-trust-core-v2-18-3b12d9a9f861@nvidia.com>
- <d0999161-3b27-4c3b-9d66-1d117c4836fd@arm.com>
- <20261110122237.GG8635@unreal>
- <b4c2538f-8021-4abc-be2e-fcd1596f84ca@arm.com>
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
+	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
+	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH v6 0/9] dmaengine: add DMA channel bus and fsl-edma
+ per-channel IOMMU support
+Message-ID: <20261117130005.GC2606445@ziepe.ca>
+References: <20261112-edma-iommu-v3-v6-0-b038edb8ce6f@nxp.com>
+ <20261116193021.GB2452510@ziepe.ca>
+ <avwQl18smAW4R6ec@fedora>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -91,182 +121,62 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b4c2538f-8021-4abc-be2e-fcd1596f84ca@arm.com>
+In-Reply-To: <avwQl18smAW4R6ec@fedora>
 
-On Mon, Nov 16, 2026 at 05:13:59PM +0000, Robin Murphy wrote:
-> On 10/11/2026 12:22 pm, Leon Romanovsky wrote:
-> > On Mon, Nov 09, 2026 at 01:53:02PM +0000, Robin Murphy wrote:
-> > > On 09/11/2026 7:33 am, Leon Romanovsky wrote:
-> > > [...]
-> > > > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > > > index b486b8bbd1fcd..8be2a246d4903 100644
-> > > > --- a/drivers/iommu/iommu.c
-> > > > +++ b/drivers/iommu/iommu.c
-> > > > @@ -1879,7 +1879,7 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
-> > > >    static int iommu_get_default_domain_type(struct iommu_group *group,
-> > > >    					 int target_type)
-> > > >    {
-> > > > -	struct device *untrusted = NULL;
-> > > > +	struct device *restricted = NULL;
-> > > >    	struct group_device *gdev;
-> > > >    	int driver_type = 0;
-> > > > @@ -1901,14 +1901,15 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
-> > > >    		driver_type = iommu_get_def_domain_type(group, gdev->dev,
-> > > >    							driver_type);
-> > > > -		if (dev_is_pci(gdev->dev) && to_pci_dev(gdev->dev)->untrusted) {
-> > > > +		if (dev_is_pci(gdev->dev) &&
-> > > > +		    pci_dev_default_is_restricted(to_pci_dev(gdev->dev))) {
-> > > 
-> > > I think this should be the generic device_is_adversarial(gdev->dev) now - in
-> > > fact probably all the dev_is_pci()/to_pci_dev() stanzas aren't conceptually
-> > > PCI-specific, just an artefact of the current "untrusted" flag being so.
-> > 
-> > I wanted to do the same, but iommu_get_default_domain_type() may be called
-> > before the PCI device's trust level has been set. At that point, we are
-> > still in "disabled" mode, whereas device_is_adversarial() checks for
-> > "adversarial" mode.
-> > 
-> > The below is from AI, I asked to present me the path for that:
-> > --------------------------------------------------------------------------------
-> > For a newly discovered PCI device with an available IOMMU and a new IOMMU group:
-> > pci_scan_single_device()
-> >    pci_device_add()
-> >      device_add()
-> >        bus_notify(dev, BUS_NOTIFY_ADD_DEVICE)
-> >          blocking_notifier_call_chain()
-> >            notifier_call_chain()
-> >              iommu_bus_notifier()
-> >                iommu_probe_device(dev)
-> >                  __iommu_probe_device(dev, NULL)
-> >                    iommu_setup_default_domain(group, 0)
-> >                      iommu_get_default_domain_type(group, 0)
-> > 
-> > For a device whose initial policy is adversary, its state during that call is:
-> > dev->trust_policy          = DEVICE_TRUST_POLICY_ADVERSARY
-> > dev->trust_level           = DEVICE_TRUST_DISABLED
-> > dev->trust_committed_level = DEVICE_TRUST_DISABLED
-> > dev->driver               = NULL
-> > 
-> > device_is_adversarial(dev) = false
-> > 
-> > The active level changes later, during binding:
-> > really_probe()
-> >    device_trust_prepare()
-> >      __device_trust_prepare()
-> >        WRITE_ONCE(dev->trust_level, DEVICE_TRUST_ADVERSARY)
-> >    dev->bus->dma_configure()
-> >    call_driver_probe()
+On Tue, Nov 17, 2026 at 04:30:15PM +0800, Peng Fan wrote:
+> On Mon, Nov 16, 2026 at 03:30:21PM -0400, Jason Gunthorpe wrote:
+> >On Thu, Nov 12, 2026 at 03:53:03PM +0800, Peng Fan (OSS) wrote:
+> >> I used iommu-map for eDMA, but iommu experts rejected it:
+> >> "Using iommu-map to describe synthetic dma_chan_dev devices that the
+> >> kernel creates is the same kind of DT abuse from over here:"
+> >> More info: https://lore.kernel.org/all/20260917144804.GI3196566@ziepe.ca/
+> >> 
+> >> So I followed here [2] as Krzysztof wrote for QCOM VPU:
+> >> "Thanks Jason for context and detailed arguments. Robin did not chime in
+> >> yet, but from what I understood the DT-child-node approach will be the
+> >> way we should go here.
+> >> 
+> >> I accept above point of view and I am fine with this, thus Vishnu and
+> >> Vikash - please go ahead with DT-child-node solution we had some time ago."
+> >> [2] https://lore.kernel.org/linux-iommu/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
+> >> 
+> >> This series adds per-channel DT child node support to fsl-edma and, as a
+> >> prerequisite, introduces a proper bus for DMA channel devices.
+> >
+> >To be fair this is discouraged too, now that I've seen 3-4 people
+> >trying to do exactly the same thing I'm not as positive about the
+> >DT-child-node hack.
 > 
-> OK, that seems less than ideal. Feels like it would be better if bus code
-> set the initial device state prior to device_add, so then it only ever
-> changes later as a result of an explicit attestation/acceptance process. If
-> the initial IOMMU probe still has to poke into bus-specific code to avoid
-> always making a worst-case assumption, doesn't that rather defeat the point
-> of having a generic abstraction?
-
-As Jason said, this is part of a very large series. Each series is an
-adventure in itself. Even Greg's seemingly simple request to convert the
-USB authorization knob to this new scheme has been extremely painful
-because of AI reviews. They keep pointing out bugs and gaps that are
-automatically attributed to me simply because I'm touching that part of
-the code.
-
+> I may not describe it clear in cover-letter.
 > 
-> Even with the slightly dubious argument that this series only intends to
-> shuffle the existing PCI code around rather than fully introduce the generic
-> abstraction that it claims to, if the PCI behaviour is still just based on
-> propagating the internal "untrusted" flag plus the new global override, both
-> of which *are* known at add_device time into the common trust state, then
-> there seems little excuse for not doing that up-front so that the new API
-> *can* just work as expected.
-
-I would prefer to keep both PCI and USB out of this series on device trust
-levels. Let's see what people say if I drop them in v3.
-
+> I understand the concern. Let me explain why I believe it is justified here
+> rather than a hack.
 > 
-> > > 
-> > > >    			/*
-> > > > -			 * No ARM32 using systems will set untrusted, it cannot
-> > > > -			 * work.
-> > > > +			 * No ARM32 using systems select a restricted trust
-> > > > +			 * policy; it cannot work.
-> > > >    			 */
-> > > >    			if (WARN_ON(IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)))
-> > > >    				return -1;
-> > > > -			untrusted = gdev->dev;
-> > > > +			restricted = gdev->dev;
-> > > >    		}
-> > > >    	}
-> > > [...]
-> > > > @@ -616,6 +608,28 @@ static inline struct pci_dev *to_pci_dev(const struct device *dev)
-> > > >    {
-> > > >    	return container_of(dev, struct pci_dev, dev);
-> > > >    }
-> > > > +
-> > > > +static inline bool
-> > > > +pci_dev_default_is_restricted(const struct pci_dev *pdev)
-> > > > +{
-> > > > +	enum device_trust_policy policy = READ_ONCE(pdev->dev.trust_policy);
-> > > > +
-> > > > +	return policy == DEVICE_TRUST_POLICY_DISABLED ||
-> > > > +	       policy == DEVICE_TRUST_POLICY_ADVERSARY;
-> > > > +}
-> > > 
-> > > Unless I've wildly misunderstood, I'm not sure this is right - if the user
-> > > has set DEVICE_TRUST_POLICY_DISABLED to explicitly override the bus-default
-> > > behaviour, but that leads to the IOMMU layer special-casing all PCI devices
-> > > as adversarial and thus force-*enabling* all their trust-model restrictions,
-> > > isn't that pretty much the complete opposite of what was asked for?
-> > 
-> > We have two levels: policy - that describes the default of all devices
-> > for that bus. level - actual decision on how that device is going to be
-> > operated.
-> > 
-> > "Disabled" prevents driver probing until the device is authorized,
-> > "Adversary" permits probing and requests the available protections
-> > for operating an untrusted device.
-> > 
-> > Both need conservative initial IOMMU setup: a disabled device may later
-> > be authorized as adversary, and authorization does not rebuild its IOMMU
-> > domain.
+> On i.MX eDMA each channel has its own interrupt, its own register region,
+> and on i.MX8QM even its own power domain. Each channel may also have its
+> own Stream ID, or share one when SIDs are scarce. These are genuine
+> per-channel hardware resources, not software fiction.
 > 
-> Urgh, I can be absolutely certain I'm not the only one who is going to be
-> confused this way... I see "disabled" and instinctively take it to mean
-> disabling the device_trust *mechanism*, as the logical thing that people
-> will reach for in terms of "I don't care what this new thing is, just get it
-> out of my way and let my drivers work like they always used to; I want to
-> disable the new thing."
+> In dmaengine each channel is already modeled as a channel device (see
+> dmaengine_chan_dev()), and this series puts those devices on a real bus
+> (dmaengine_chan_bus_type) as a prerequisite. The DT child node simply
+> describes that existing device, so its reg/interrupts/power-domains/iommus
+> are attached per channel instead of as index-matched flat lists on the
+> controller.
 
-I completely agree. I was under the impression that these names had already
-been decided, since I picked up where Dan left off.
+If they are real devices then why can't they come out as platform
+devices?
 
-> 
-> From there it then also makes perfect self-consistent sense that
-> "device_trust=full" would be the opposite end of the scale as in "Apply the
-> explicit trust model 'fully', to all devices regardless of their bus-level
-> default."
-> 
-> Now I guess you could name it something like "device.default_trust_level" to
-> attempt to make it clearer that it represents a value the value represents
-> the "trust" *of* each individual device itself, but TBH it's still liable to
-> look backwards to many users - similarly it's hard to guess that
-> FOO_POLICY_DISABLED might mean something entirely different from "don't
-> enforce the policy for FOO.", thus rather than try to contort the naming of
-> everything, I'd still be much more inclined to just flip the meanings to be
-> more intuitive from the outsider perspective.
-> 
-> Say you upgrade your kernel and find your boot is broken because it now
-> flibbles, but at least there is a "flibble" parameter whose values are
-> "disabled", "wibble" and "frobble". Are you really going to spend time
-> straight off reading up on what flibbling is to understand what wibbles and
-> frobbles mean? Or is your instinct just going to be to try the seemingly
-> obvious way of disabling flibbling, and then getting positively annoyed if
-> that only makes it flibble harder?
+I think you are overstating how independent they are. Many single
+devices have per "channel" resources like MMIO and IRQs. That's
+totally normal. It doesn't make the sub resources independent devices.
 
-What about: blocked, adversarial and unrestricted
-instead of: disabled, adversarial and full
+AFAICT what you have here is some HW designer used SID where they
+should have used SSID and you are trying to hack DT to make that
+usable because Linux does not support a SID as SSID model today.
 
-Thanks
+Again, since this is the 3rd - 4th case like this, it seems like a
+popular hardware choice and we should try to do better to make Linux
+support if we can.
 
-> 
-> Robin.
+Jason
