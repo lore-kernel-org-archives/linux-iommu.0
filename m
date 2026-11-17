@@ -1,77 +1,72 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.179
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=51.159.188.251
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794904241;
-	b=FtHKb2H27nS65SoL3FI3T7XDvZWNknZrvdThMAdDtCDSICR404VJZMm+ewBV1mGBXGjq
-	 As6xz+jJPQecR7zHOJ/vM+MJjE1/mtMHQq+rgmKm5SvJcr/V8L/cOWUgHyKv8ZYm7OEI8
-	 oq4y3OyADdAu+NmEv8RD72gkm7y76FWzseU0drew4XOa38MM0NeyQTEItGrYuKzF2bsbl
-	 k7Qb/F5UOvV3Zkd3nVd/FWf7Ybvsn/O9C5N73Ag8KBjFsWmrj4k6cm8G3T+8ysANKjNrL
-	 nNGdMnWzqrbiGn98vci2ZHPMcRVAXUMqhdTbLJLFmbNHibKi9/V7CqQrTfntDxhqCrQ==
+	t=1794905403;
+	b=4cTMC3nFt17m7sAcCIK/e8Q8z/VKClJX48tMIAO8+g0mO0TnlSNxGfeUPmcV178jYKnm
+	 4BfCjT+vzNd5U/zq1TzZ5BfUaiVmSy8Ar2JQhhTsSLtc+JAytIejlvK1j83/Q8yurmBdE
+	 Xow04YG0sZX6cCijrtUGwnl/HTqV5vJyb1VJxVsFKjhL0RRySfHJHRKaAZyY2g+sRCAbe
+	 IBAQW4iiprTEl1CqQ0qkG2BxutKCCIQIHx6FDgQJ+g2goddC878TjLvZM3SPyhg3LTGaJ
+	 wytAm5zkwtg9g7MmGTUoAbqnVjdLFR2oD9JYsktMLzXF70E52mb8fT+h4VMOh7UxB3Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794904241;
-	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
-	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=zheIQktVmbZG4c834zKCy7evdo7oC0W6fMu1Q7CHhCE=;
-	b=0QqI4FPUPceOLtK/t4q4rDTsvxopiG0TFmIL973rIM5BjDo80M55agJVC8sRc7Z5fT8c
-	 Dr9Zx3h73ScGvUg2XSWD3B6WaUlzuVQTnPDdAaJhMjbtmM4dY3EKuTqL+hADBDyQG+TJQ
-	 ZBAUf8MSQo7xUuxmFE/3/rNrPWqqZyglRNW4LU+VAZbWVuhR5bhLoOT7SlQ/bkyUuRgXW
-	 NFE9egroPz4wtRfIySPGn1lph9ohbKruOEmluBHlC0LhLjcNKNUHSFdDxrtyQYK0H4/Ld
-	 FMMal3EM1tCgMLO5DcjzIdTHq/L3Uy0srl+0iFxq8jVH5E99OxHBv2hfx8kqFPOHMJw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794905403;
+	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
+	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
+	 In-Reply-To:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
+	 X-AntiAbuse:X-Get-Message-Sender-Via:X-Authenticated-Sender:X-Source:
+	 X-Source-Args:X-Source-Dir;
+	bh=4Jaothk9pIoXzn6khKlhOzHzJccnvdvTdTICicAJwj4=;
+	b=mAmazDsqu9jNfUDghrlGlosjS2GdM8tJQT8K6QEGM10ZmZrxSCsgvJvd0DyAPL4mHhm2
+	 IymQ2HRpOQvtLw+v3uGzIYcZDGOQYRUTrQER0FoQLWS8xPHCuZRrLX72RxRJRgvhZvtRU
+	 IckFbVp/8n6MZMt96GvNNhHKlh+0PJOET2zVUJjLP2TyCcCNs26tYgfTeqAHx8CF+dbnT
+	 2KgaEOtu/81/Era2DgRIfSfMnr8y+Shlt/xGTb9VTCR7EdQvfo0PX3uT86aB4/O6OZ5ER
+	 jKvdgJh9ZL0IrwZ6z4lr/inSl1qCluhJV0gm5PGtTyoE1aCYYa98boAKo71F2Hds8Hg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.dev;
-	spf=pass smtp.mailfrom=linux.dev;
-	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=AqABhpm3;
-	arc=none smtp.remote-ip=91.218.175.179
-Received: from mta0.migadu.com (out-179.mta0.migadu.com [91.218.175.179])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=oss.cyber.gouv.fr;
+	spf=pass smtp.mailfrom=oss.cyber.gouv.fr;
+	dkim=pass header.d=oss.cyber.gouv.fr header.i=@oss.cyber.gouv.fr header.a=rsa-sha256 header.s=default header.b="Q/JBmfvY";
+	arc=none smtp.remote-ip=51.159.188.251
+Received: from oss.cyber.gouv.fr (oss.cyber.gouv.fr [51.159.188.251])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6D3E606A8A1
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 08:30:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E6D3E606A8A1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86BD0606A882
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 08:50:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 86BD0606A882
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.cyber.gouv.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.cyber.gouv.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=AqABhpm3
-X-Envelope-To: iommu@lists.linux.dev
-DKIM-Signature: a=rsa-sha256; bh=pyWTIi2y6JoIJ6IOmHBgjnTL/Q73eud7KJwC8hfFNgY=;
- c=simple/simple; d=linux.dev;
- h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
- t=1794904239; v=1; x=1795509039;
- b=AqABhpm3NiDW2u51rSlCew3nKj/O5rKF9XyNeS2Wd+I3pWwpWLJJx9V75Bs3D697t8fZDjpr
- DN5VoTfPu1d8qxDkgOwiKg0rDUkXd2Bwedu96VqZ0VXyo+CeeekOuk8G0w75Ebi/P41KTrtSZSf
- s200mf5lcIomdgDsM3MGzbhE=
-X-Envelope-To: iommu@lists.linux.dev
-Received: by smtp.migadu.com with ESMTPS id 072b8882c51a40c5;
-	Tue, 17 Nov 2026 08:30:29 +0000
-X-Mizu-Trace-ID: 072b8882c51a40c5
-X-Migadu-Flow: FLOW_OUT
-Date: Tue, 17 Nov 2026 16:30:15 +0800
-From: Peng Fan <peng.fan@linux.dev>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Frank Li <Frank.Li@nxp.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Jon Hunter <jonathanh@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
-	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
-	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH v6 0/9] dmaengine: add DMA channel bus and fsl-edma
- per-channel IOMMU support
-Message-ID: <avwQl18smAW4R6ec@fedora>
-References: <20261112-edma-iommu-v3-v6-0-b038edb8ce6f@nxp.com>
- <20261116193021.GB2452510@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=oss.cyber.gouv.fr header.i=@oss.cyber.gouv.fr header.a=rsa-sha256 header.s=default header.b=Q/JBmfvY
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=oss.cyber.gouv.fr; s=default; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Reply-To:Sender:
+	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=4Jaothk9pIoXzn6khKlhOzHzJccnvdvTdTICicAJwj4=; b=Q/JBmfvYble2Erof+KIjVlEQWH
+	WHx8qahHtJKFGLW174pzXsTqwioJXsbLwyC0H6/8PobJk2DS0aev1PKga/utBNayesJO0eY+YGU1c
+	G4rqVHkcqG+C0lTCf5RQ022GBESPwRUlVyCvRDuB40AeB7d09d4jlp/DqpjLacnmWjXXvudfgxLKV
+	Yvs2o5mCFHK7wBsIRN7hcbvrjaLA3dYUATZ32R2RLuGYZA19ORDc/7fJkw4MEg1Nrjw4xPUnWi4kG
+	cWUt6bFOQmR22B132HAx5LVG2aaMbWzPieLknw/wwk2aX05gRCymrrJmsSeVCUBkl+yK5dgXuFtQS
+	YqZ83Gdg==;
+Received: from laubervilliers-658-1-215-187.w90-63.abo.wanadoo.fr ([90.63.246.187]:31494 helo=archlinux)
+	by pf-012.whm.fr-par.scw.cloud with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.100.1)
+	(envelope-from <nicolas.bouchinet@oss.cyber.gouv.fr>)
+	id 1xTEt2-00000002fyt-1LRX;
+	Tue, 17 Nov 2026 09:49:54 +0100
+Date: Tue, 17 Nov 2026 09:49:49 +0100
+From: Nicolas Bouchinet <nicolas.bouchinet@oss.cyber.gouv.fr>
+To: Mario Limonciello <superm1@kernel.org>
+Cc: Xiu Jianfeng <xiujianfeng@huawei.com>, 
+	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Moore <paul@paul-moore.com>, 
+	James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 0/2] lockdown: Prevent booting with lockdown enabled but
+ IOMMU disabled
+Message-ID: <avwUNw2if5GIPA11@archlinux>
+References: <20261102-lockdown-iommu-v1-0-00f3c2be4c9f@kernel.org>
+ <44ac3423-0a51-4562-816a-fea881511afa@huawei.com>
+ <a444421f-178b-49be-98b7-d34dfb147604@kernel.org>
+ <avr31i6M5PqKk_Vf@archlinux>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -83,57 +78,52 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261116193021.GB2452510@ziepe.ca>
+In-Reply-To: <avr31i6M5PqKk_Vf@archlinux>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - pf-012.whm.fr-par.scw.cloud
+X-AntiAbuse: Original Domain - lists.linux.dev
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - oss.cyber.gouv.fr
+X-Get-Message-Sender-Via: pf-012.whm.fr-par.scw.cloud: authenticated_id: nicolas.bouchinet@oss.cyber.gouv.fr
+X-Authenticated-Sender: pf-012.whm.fr-par.scw.cloud: nicolas.bouchinet@oss.cyber.gouv.fr
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-On Mon, Nov 16, 2026 at 03:30:21PM -0400, Jason Gunthorpe wrote:
->On Thu, Nov 12, 2026 at 03:53:03PM +0800, Peng Fan (OSS) wrote:
->> I used iommu-map for eDMA, but iommu experts rejected it:
->> "Using iommu-map to describe synthetic dma_chan_dev devices that the
->> kernel creates is the same kind of DT abuse from over here:"
->> More info: https://lore.kernel.org/all/20260917144804.GI3196566@ziepe.ca/
->> 
->> So I followed here [2] as Krzysztof wrote for QCOM VPU:
->> "Thanks Jason for context and detailed arguments. Robin did not chime in
->> yet, but from what I understood the DT-child-node approach will be the
->> way we should go here.
->> 
->> I accept above point of view and I am fine with this, thus Vishnu and
->> Vikash - please go ahead with DT-child-node solution we had some time ago."
->> [2] https://lore.kernel.org/linux-iommu/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
->> 
->> This series adds per-channel DT child node support to fsl-edma and, as a
->> prerequisite, introduces a proper bus for DMA channel devices.
->
->To be fair this is discouraged too, now that I've seen 3-4 people
->trying to do exactly the same thing I'm not as positive about the
->DT-child-node hack.
+On Mon, Nov 16, 2026 at 02:29:01PM +0100, Nicolas Bouchinet wrote:
+> > 
+> > How would you feel about at least blocking the user from turning off IOMMU
+> > (if it's present on the system) via the kernel command line while lockdown
+> > was enabled?
+> > 
+> > Thinking about the case where most distros enable lockdown by default, this
+> > will strenghten it's use without much downside that I can see.
+> > 
+> > At least on a properly configured system that contains an IOMMU it would
+> > prevent a user from subverting lockdown with a malicious device during the
+> > boot sequence.
+> 
+> I do agree with you, it could be a great addition. With Lockdown enabled
+> as an early LSM (CONFIG_SECURITY_LOCKDOWN_LSM_EARLY), this might be
+> feasible before boot parameter parsing. Lockdown already locks unsafe
+> module parameters.
+> 
+> If I remember correctly on distro's that have a Lockdown patch that
+> enables it if secure boot is enabled, it should also be called before
+> early param parsing.
+> 
+> But taking this threat into account also brings other questions.
+> i.e, a physical attacker with root access on a system where Lockdown is
+> enabled and with a bootchain configured with shim+MOK is able to change
+> kernel cmdline, generate a MOK and sign a compromised kernel
+> binary. Thus defeating lockdown purpose.
+> 
+> In order to take the physical attacker into account, a securely
+> configured bootchain where the kernel image can't be tampered with and
+> where an attacker is not able to inject it owns certificates/hash in
+> db/MOK is mandatory so that Lockdown makes sense.
 
-I may not describe it clear in cover-letter.
-
-I understand the concern. Let me explain why I believe it is justified here
-rather than a hack.
-
-On i.MX eDMA each channel has its own interrupt, its own register region,
-and on i.MX8QM even its own power domain. Each channel may also have its
-own Stream ID, or share one when SIDs are scarce. These are genuine
-per-channel hardware resources, not software fiction.
-
-In dmaengine each channel is already modeled as a channel device (see
-dmaengine_chan_dev()), and this series puts those devices on a real bus
-(dmaengine_chan_bus_type) as a prerequisite. The DT child node simply
-describes that existing device, so its reg/interrupts/power-domains/iommus
-are attached per channel instead of as index-matched flat lists on the
-controller.
-
-Given that context, do you agree that a child node per channel is the
-right description here?
-
-Thanks,
-Peng
-
->
->Can all of you come up with a proposal that doesn't involve hacking up
->DT just to unbundle the SIDs?
->
->Jason
->
+To be perfectly clear, my intention was not to suggest including a
+physical attacker in the Lockdown threat model, but rather to provide
+examples of how such an attacker could bypass Lockdown through other
+exploitation paths.
