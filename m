@@ -1,74 +1,74 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.72
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.69
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794943961;
-	b=I9qqKHg2bZ5QFng86PkG6ElqPdbbAtZ64uUMbst6eBiFwfwd1VA1x9DVam5LCyZH/zqm
-	 2U1OTyUI6YyL9hVQ+bTP5fCWTR0lvyR2JDOcQOiibt+oYOy6ijTn14sNpenmWlzsZHTf8
-	 k4ggMKO7nt8XICPdJPcO51BSZvpvL8rhufQJDxZwgBpbDL5WMY/Z7exYWNXOvSMP/74SL
-	 J/Lp+hzTHvvedxmDiTGxQCg716km2bamyM4bM+2S+Q6IjUxuYKys2VgIQbjkcu2BuNHDZ
-	 Av9TsxP1M0y0/0I9vRrfAdIERCCyCgMMyA4X5QngRo5U1F32gGYdnAmEuPS0SjgXugw==
+	t=1794943962;
+	b=FOuLRO/gPBKXwiQOWf97xmxvbA/pAofg9Zg68tCsDn9ZZgdgdkHoRv6Ny4hJRlC7dNAs
+	 Fell44AdnjuF25UwL2MIxm/JqqyIoK0UAjJyfI5jURIUKJAasXYMCn/1A4ocpLph9gx4m
+	 Deu6Iaj7R5y5VJ0IXSZynWXwRB9WPDlt75fk3xMjQN6bi5XGwGHoIVSmyO/xmP/8znJ0g
+	 p/Qx0Z9tmuXUvW6HSEx+mQM6/IaDv3ewaknuM6WH4QXiAh2NAgw67tSplVhY3dUcdo/i3
+	 yg0ransS+pjPHRxsda5e11ssUuAGaL7PVZVdDudmVzM2aNEJQfWYy/GdPPUaDyPah+g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794943961;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794943962;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Received:Date:In-Reply-To:
 	 Mime-Version:References:X-Developer-Key:X-Developer-Signature:
 	 X-Mailer:Message-ID:Subject:From:To:Cc:Content-Type;
-	bh=KKe7nWmRzfcozsR9XT3++1825BIwj0YyjVNcnU/xYxg=;
-	b=OnbQ6XY550Hl/c6KsCjBz00BHzJGM2JbQd0p0OY2dMW4YGg0fjFUT6iCtPUWYayUS+jc
-	 Z+ol3GDCYbQxFqgItBdiWQOGphehngslw212SSOnqvOQU91ZHnoHWuKj8uBuQxpFU8tKZ
-	 7V9sJqsjeDASCh684QX6ER1CY6AGUCsKYnY74Bk9mpsBXA7OYAwWl2kq3wcR+q86vxC5U
-	 27Ull56TI6cmotMyHmHM+z7nbjsQliu8y4tYRaDDRmOpikK7jPQSiMHK5vdSC9UEA398b
-	 h6xuAXKk23Ruv/3lRwXDknzj26acALWPHhMd5hxsF2umlfzQEWLIwyXPRwyh2mhooeA==
+	bh=sEdsgEuo8ODT+rI1rQ1WVM7pBhVs1i3Hp1pw+AHwR1c=;
+	b=MarSYhW2P3N/f7zDOZ0aHDfQzAcQ5xmSS/+Q+S6zTWlRAHAVuA/0NKpWaR2mBd7F660t
+	 kC9cDpO6/7yXV9VBSgJtnH4cQ+uGNxrbujARMolfsQeovTgco72UumpAmDGw6iBKWY2Zy
+	 Wi8CiMm+VlgklQ4Yn6VSb6+7zMLX8hjZeyitVVyc0kYwW8wf9a3bNw8uOFd4oPFkkIoJ/
+	 9fosep5j095a7ei3QwVsx7/8+KF4kkp8G40Qj4ff1lMh5+4XKEVnyVkmJV8FAt6iio0Mw
+	 /550TCzctIGBfvlwyT2yYxWejYSVQOSzXTbjapk7A63gYm7uhECtSffDNhmGjMWQjgA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=google.com;
 	spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=P6h9EFbF;
-	arc=none smtp.remote-ip=209.85.221.72
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com [209.85.221.72])
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=iQoLjJS9;
+	arc=none smtp.remote-ip=209.85.218.69
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ADAE60A3834
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 19:32:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9ADAE60A3834
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D68D606A8BF
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 19:32:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2D68D606A8BF
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--aliceryhl.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=P6h9EFbF
-Received: by mail-wr1-f72.google.com with SMTP id ffacd0b85a97d-4916bd6e3baso87002f8f.0
-        for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 11:32:40 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=iQoLjJS9
+Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-c50b170ec5aso4127366b.2
+        for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 11:32:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794943959; x=1795548759; darn=lists.linux.dev;
+        d=google.com; s=20260707; t=1794943960; x=1795548760; darn=lists.linux.dev;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=KKe7nWmRzfcozsR9XT3++1825BIwj0YyjVNcnU/xYxg=;
-        b=P6h9EFbFaot5nfWET4Q/Ov7S8fBeNHVUGP/c3Cu90y2RTBh0+gM2aVV2ilmLapPjgz
-         r7JjRJRZ2HPvtbsQ0t124fRpWEnPCSR7CoX+6jwsPCzoYsgvhdO8XBQnCcrgA9FIiSqO
-         ohm/+hq07aC1f1Cr6xencefAscfhdPj9Hd02ngawJYLkxp/v9eWDrzfBo1kBfN79gYvC
-         lNUyIfnl33l64NdM1Wg6wPZTzmw/0Q8XBQpz9kQJiYRp3FCml04JPihktulMzFqLp/l+
-         6pldU1btRGvNsJn0CF1SsWquaNIggiicyJuZGNMOHVDa1SokSnGBCinyxubpD7OTLdAn
-         Datg==
+        bh=sEdsgEuo8ODT+rI1rQ1WVM7pBhVs1i3Hp1pw+AHwR1c=;
+        b=iQoLjJS9i2f4Uj8sVHhhKUaMhuDP2skNA3xeAwsisMDmhIN49DfIa2jNOvvYwY1Lad
+         P0kdhYXYB2uc2LreH4MTswfLG/YW2ItV4RfY4Bwbkq273dG2j85FtFBdMPFeCUEajuJW
+         PT5MZ7My0kE9J9P8VyV7H1a4GkMHPzqh2kGQ002s1c+QhmVIfVdiUCCueLf+3daEVGeL
+         5xBq/OasDq4HCOqW4zyIbW6rjHKDBFTgeubf1ZjsCc7NBPvuahJI3LmKTVUOWBwpy8zI
+         Muh7R8R50G8qgjbk3YC3t0yjFUJHXt3Ax6vGnq0cDrb5b7Vz8mKAMEZnU6UBI7Ko1P0a
+         ykrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794943959; x=1795548759;
+        d=1e100.net; s=20260707; t=1794943960; x=1795548760;
         h=content-type:cc:to:from:subject:message-id:references:mime-version
          :in-reply-to:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=KKe7nWmRzfcozsR9XT3++1825BIwj0YyjVNcnU/xYxg=;
-        b=VruPfoG09o1Vvq0xBwZ1k1PVMACiH+7fkdQw2xGayS/Ei2RI0wJkZBvDJdmK47SaDZ
-         ki7NGZ5JX1004KF223+a3RRiM+PwfG5VmTpclv2NOnL9tf/3wR7tkZeXhTTFb5T0dwA3
-         QawJvBh26MYeyH9yGj9oEQfi1O6izTGF8Xmsu7YkT55nxrztbHjUEPKzxOCYSIvFyRnB
-         oYk8332eXaU4gW1q3Nj6YyNKOW6UnarUzGb3hZcec5DC8WnWjXsWeWmSoL/0S3xd7Zs4
-         ALDTaHY73AAtLdO1crJbrzqHf+oMkK8m6SRdH30oIwGIaDe/COSOCzlF8rrRMHzMDJJQ
-         kciQ==
-X-Forwarded-Encrypted: i=1; AL+hErElJ/cg51154xRhDdTv1c+sffb8bGcu3oUn8PSWR0/611FtdBbjmoCX8INkuFTNSEApOFphoA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/mt+ANhiMcfpMbp+HSVQ6/UJrNGPFE2DTq1AJVAUItOzE/jlqd
-	hvLJiYw9EcoYyPducCpN2yGo4RSZFFGmXywbsMfw+v8Ae8JFiLTfWflDRGJ2Noy0RbUpTYkdPCJ
-	rgQCrhcWPDvAOoWLJRg==
-X-Received: from wrqi7.prod.google.com ([2002:a5d:4387:0:b0:491:154e:cc94])
+        bh=sEdsgEuo8ODT+rI1rQ1WVM7pBhVs1i3Hp1pw+AHwR1c=;
+        b=sKGqlAF5qatRO1p9VYO5aZm52QCLL7ADmyY6nxsVsRUsHor9/gBig6DpCThPnTI76g
+         c4alrm3J4U0u6tcXTTC20P/CnloBkKdLqmlfgATnxziKk6KAkLAMQ3IRBlIjJ4Y4oWq+
+         VDaVyShGj7oqBzWThwPuF66u4GPDeB8A5gjYx9XSJn7LU9Qum+6Jhy0MOF3wls/mgPZL
+         SuoKNvWyzqr2GP+Y2pxp4i5fl1y3uDordJuXEPFSYZQQ4BWvj3TpbNUOr20K64JBfTz8
+         E+4JYWGWVMwZkz65a+Cuz7nxjZKdTCzCjh59FPrwb3u8bVGvyWFUXOaXATA9MiiFlBRN
+         jaZA==
+X-Forwarded-Encrypted: i=1; AL+hErG+b3UwnKmxTvVOweSLAOitkSiPFcSny5dilQdwttAvk6IULsz+DoD/geshLLdl/rjv8+2Cjg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z/sAeeTrYqRbXrKO3SYoGByWa+TeHddfcKNL3+JdyGIP8vRK+3E
+	eGJdkaHQo1Z618LNAkAGsawsCzF3yuYfXgZmZwBIVHiXyPMx8OuVU4U689OtqVWtXdQOIAIePAb
+	9mNran39U2OXzro0u7g==
+X-Received: from ejeck9-n1.prod.google.com ([2002:a17:907:e1c9:10b0:c46:aa24:8716])
  (user=aliceryhl job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:454a:b0:48e:6092:dea1 with SMTP id ffacd0b85a97d-4a63b50ebfemr598864f8f.47.1794943958801;
- Tue, 17 Nov 2026 11:32:38 -0800 (PST)
-Date: Tue, 17 Nov 2026 19:32:20 +0000
+ 2002:a17:907:72cf:b0:c2e:2252:6ddb with SMTP id a640c23a62f3a-c510e19b51dmr22046066b.10.1794943960151;
+ Tue, 17 Nov 2026 11:32:40 -0800 (PST)
+Date: Tue, 17 Nov 2026 19:32:21 +0000
 In-Reply-To: <20261117-tyr-remap-2mb-v1-0-2a8efd4c8180@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,22 +81,22 @@ Precedence: list
 Mime-Version: 1.0
 References: <20261117-tyr-remap-2mb-v1-0-2a8efd4c8180@google.com>
 X-Developer-Key: i=aliceryhl@google.com; a=openpgp; fpr=49F6C1FAA74960F43A5B86A1EE7A392FDE96209F
-X-Developer-Signature: v=1; a=openpgp-sha256; l=11225; i=aliceryhl@google.com;
- h=from:subject:message-id; bh=bL5SPtkc6ERMxg0Q2bjGArvHr684lqk9kP62BPoKlsM=;
- b=owEBbQKS/ZANAwAKAQRYvu5YxjlGAcsmYgBq/KvQJqb8lvIvRovwW/WkvKX15QHDvNQQrW5O2
- 2Z88AZ6teqJAjMEAAEKAB0WIQSDkqKUTWQHCvFIvbIEWL7uWMY5RgUCavyr0AAKCRAEWL7uWMY5
- RmfBD/4jJSqj2I3Y5OB8w/L+Mc9koMgha4XMVc7n76FuGXcNp5FdKq549ByV9dsUgARAMWDVgA7
- uyyZyitWN7gNgeud9eluwrpWhQi8r0sFaeqmVLQSg60Cz3easlMGD7lTkkfmJjLtqkVUGYRRwvU
- M15QAXQCkjC0PBGJ43CUrSw3HgKP1KduH4nDPTEF9qEKnTVVBxrENSucbcoH2REJg7pLVROOKal
- YdukvKkZRypt/NywbYiKtRRF4vQPbmFmcDKPYpyZcdcjJgJrIIqsvP2x63HYHFmIhLbcF72NdAa
- ZcxDAy4ivhPZI8y+qg7bsXBSrFw1NtVnfyLo3n09RNqiB61TfhyomxLR/t3iT8XnmG9NmI+4fm7
- Q3FDGIpcSA9cdxadnQX1UyX6WyTx8x08Fz7PCexelHmoXgUGqyNUGy3C/1RwouTeqvsx8kQ4+mY
- 7L1j6Ti9r01KXE/Utv2P3FZM0XNu6Yucza49wBhixMizp4IsHfUXjuahYMSscrOIMti8WvC5N4K
- Rn6TDubrXWriguLBMb6shVwBluCXtKQs5nvWi/zHndurEcAzSTXi5L6U8xyLz8pa/rsBFtkemtS
- uJbA5zwsAduSYDBh6Dn5Nxo8J4r1E33GCCnYlQnEtsJO81cfgz8RdbB0bbbyjTtmpL0lPjkgIdb ourhb1wKXY/tsiw==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1251; i=aliceryhl@google.com;
+ h=from:subject:message-id; bh=fHxqvSNi6j+mg7W4SOrkydkocL0Pw6SV4czczy3ta6w=;
+ b=owEBbQKS/ZANAwAKAQRYvu5YxjlGAcsmYgBq/KvQUDExEsHiZ6Cbk1w6CzxYFmFSS4BSPnhEk
+ MSLEGspzROJAjMEAAEKAB0WIQSDkqKUTWQHCvFIvbIEWL7uWMY5RgUCavyr0AAKCRAEWL7uWMY5
+ Ro49EACB0ftf0GHD6NVKJk8qoRRSAA8NtLcQxD9TKYzGe5l1VQ2v/ZRDvNthAokzdRvaDp8M5PW
+ 1IvhSetFJ1EPRT9FlJXK2lAOTgNOjbV31SMgyfAeog3PyR/AAEA3mJegzv0uA8x2BFW2ftoq9ez
+ ftvL5TL/kRzHs/YDi6niQqRXc3GlcM1r3KgpKlj0pw1CgsDeZsfeW4DA8zi20tZ0dVQy8k6SN74
+ rnpMamiABEsq9czO0k0TAIo2PdqLkksEo7LJrATWxZZbSw91E7qLnu7xVAqb6VQqH8KVjDyFQ4L
+ 3D90Xoq/m9Rzqv9GUeIsTH+oGkRb3rFkj5NdcdOybMq8+orYHWW+qHORyYvOBdGdzy8ICUh66XI
+ 2O+Mez/FxA2cxniGl8lj6y0zYwl9OSQE+6w7sOXqEYHamldd+54o0hcZQIXUFNk3WaA8PnqKRFp
+ agH5mLLhUCQo0e1DL5UHQxBjwRtmyqQZ44vAMgM8d4wFArAd38y2VLOKLic+hHzm7WcRo1p27P7
+ gq6FHPM27S4LPzaN3Kl94tyFAKa4gt1bju+FU6AXnvDVFK+fY+Gs3Hf2GAH8Kyv5Xpmh0pFcwiV
+ O4rKaY4DkUE50L1H+Gl6XcUjAkTinnrj9ZXxVMj4eaxEwyvrozh91m1ow3Ep9bEm3FNtth4J59R iniBlvdTGiEmd5A==
 X-Mailer: b4 0.14.3
-Message-ID: <20261117-tyr-remap-2mb-v1-3-2a8efd4c8180@google.com>
-Subject: [PATCH 3/4] drm/tyr: vm: expand sub-block unmaps to 2MB boundaries on remap
+Message-ID: <20261117-tyr-remap-2mb-v1-4-2a8efd4c8180@google.com>
+Subject: [PATCH 4/4] drm/tyr: vm: check the remaining length in pt_unmap()
 From: Alice Ryhl <aliceryhl@google.com>
 To: Daniel Almeida <daniel.almeida@collabora.com>, 
 	Deborah Brouwer <deborah.brouwer@collabora.com>, Sami Tolvanen <samitolvanen@google.com>
@@ -115,297 +115,42 @@ Content-Type: text/plain; charset="utf-8"
 
 From: Sami Tolvanen <samitolvanen@google.com>
 
-Backing GEM shmem with transparent huge pages lets Tyr install 2MB block
-entries. arm-lpae refuses to unmap part of a block, so a sparse partial
-rebind that splits one in sm_step_remap fails the VM_BIND and poisons
-the VM.
+pt_unmap() subtracts each unmapped chunk from the remaining length and
+relies on unmap_pages() never unmapping more than it was asked to.
 
-Grow such an unmap to the block boundary and rebuild the surviving
-fragment, expanding only when contiguous.
+Check this subtraction and fail with EINVAL on underflow.
 
-Fixes: f2dc32d5a133 ("drm/tyr: add GPU virtual memory (VM) support")
 Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
-[aliceryhl: tweaks for drm-rust-next and use safe casts instead of 'as']
+[aliceryhl: use safe casts instead of 'as']
 Signed-off-by: Alice Ryhl <aliceryhl@google.com>
 ---
- drivers/gpu/drm/tyr/mmu.rs               |  13 +++
- drivers/gpu/drm/tyr/mmu/address_space.rs |  29 ++++++
- drivers/gpu/drm/tyr/vm.rs                | 146 ++++++++++++++++++++++++++++---
- 3 files changed, 176 insertions(+), 12 deletions(-)
+ drivers/gpu/drm/tyr/vm.rs | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/tyr/mmu.rs b/drivers/gpu/drm/tyr/mmu.rs
-index 5e88c9e6a4cd..99739a3a8aa1 100644
---- a/drivers/gpu/drm/tyr/mmu.rs
-+++ b/drivers/gpu/drm/tyr/mmu.rs
-@@ -109,6 +109,19 @@ pub(crate) fn start_vm_update(
-         self.as_manager.lock().start_vm_update(vm_as_data, region)
-     }
- 
-+    /// Widens the active lock to cover a larger region.
-+    ///
-+    /// `region` must contain the currently locked range so the GPU stays
-+    /// stalled over it while the update completes. If the region is empty or
-+    /// the VM is not resident, this is a NOP.
-+    pub(crate) fn extend_vm_update(
-+        &self,
-+        vm_as_data: &VmAsData<'drm>,
-+        region: &Range<u64>,
-+    ) -> Result {
-+        self.as_manager.lock().extend_vm_update(vm_as_data, region)
-+    }
-+
-     /// Flags the end of a VM update.
-     ///
-     /// If the VM is resident, this will let GPU accesses on the updated
-diff --git a/drivers/gpu/drm/tyr/mmu/address_space.rs b/drivers/gpu/drm/tyr/mmu/address_space.rs
-index 76e3d2df6afd..666af82a37b7 100644
---- a/drivers/gpu/drm/tyr/mmu/address_space.rs
-+++ b/drivers/gpu/drm/tyr/mmu/address_space.rs
-@@ -475,6 +475,35 @@ pub(super) fn start_vm_update(
-         }
-     }
- 
-+    /// Widens the active lock to cover a larger region.
-+    ///
-+    /// Re-issues the LOCKADDR and Lock command over `region`, which the
-+    /// caller has computed as the union of the currently locked region and
-+    /// the wider range it is about to rebuild. The hardware lock is replaced
-+    /// in place, so `region` must contain the previously locked range to keep
-+    /// the GPU stalled over it.
-+    ///
-+    /// If the region is empty or the VM is not resident in a hardware slot,
-+    /// this is a no-op.
-+    pub(super) fn extend_vm_update(
-+        &mut self,
-+        vm_as_data: &VmAsData<'drm>,
-+        region: &Range<u64>,
-+    ) -> Result {
-+        if region.is_empty() {
-+            return Ok(());
-+        }
-+
-+        let seat = vm_as_data.as_seat.access(self);
-+        match seat.slot() {
-+            Some(slot) => {
-+                let as_nr = usize::from(slot);
-+                self.as_start_update(as_nr, region)
-+            }
-+            _ => Ok(()),
-+        }
-+    }
-+
-     /// Completes translation table updates and unlocks the region.
-     pub(super) fn end_vm_update(&mut self, vm_as_data: &VmAsData<'drm>) -> Result {
-         let seat = vm_as_data.as_seat.access(self);
 diff --git a/drivers/gpu/drm/tyr/vm.rs b/drivers/gpu/drm/tyr/vm.rs
-index 1dd11b2b1253..bcc864b17428 100644
+index bcc864b17428..acbca552d133 100644
 --- a/drivers/gpu/drm/tyr/vm.rs
 +++ b/drivers/gpu/drm/tyr/vm.rs
-@@ -42,7 +42,12 @@
+@@ -41,6 +41,7 @@
+         ARM64LPAES1, //
      },
      new_mutex,
++    num::casts::FromSafeCast,
      prelude::*,
-+    ptr::{
-+        Alignable,
-+        Alignment, //
-+    },
-     sizes::{
-+        SizeConstants,
-         SZ_1G,
-         SZ_2M,
-         SZ_4K, //
-@@ -290,6 +295,22 @@ fn return_preallocated_gpuva(&mut self, gpuva: GpuVaAlloc<GpuVmData<'drm>>) {
-             *slot = Some(gpuva);
-         }
-     }
-+
-+    /// Widens the AS lock to also cover `region`.
-+    ///
-+    /// A remap can rebuild fragments beyond the originally locked request,
-+    /// so the lock is grown to the union of the two before those fragments
-+    /// are torn down. The locked region only ever grows, so several remaps
-+    /// in one unmap union onto a single widening lock.
-+    fn extend_lock(&mut self, region: Range<u64>) -> Result {
-+        let union =
-+            u64::min(self.region.start, region.start)..u64::max(self.region.end, region.end);
-+        if union != self.region {
-+            self.mmu.extend_vm_update(self.as_data, &union)?;
-+            self.region = union;
-+        }
-+        Ok(())
-+    }
- }
- 
- impl Drop for PtUpdateContext<'_, '_> {
-@@ -312,6 +333,16 @@ pub(crate) struct GpuVmData<'drm> {
-     _phantom: PhantomData<&'drm ()>,
- }
- 
-+/// Per-mapping private data stored on each `GpuVa`.
-+///
-+/// A remap splits an existing mapping and may have to rebuild page-table
-+/// entries for the surviving fragments. Those fragments keep the protection
-+/// of the original mapping, so the protection flags are recorded here.
-+pub(crate) struct GpuVaData {
-+    /// Memory protection flags of this mapping, as passed to `pt_map`.
-+    prot: u32,
-+}
-+
- /// GPU virtual address space.
- ///
- /// Each VM can be mapped into a hardware address space slot.
-@@ -599,7 +630,7 @@ impl<'drm> DriverGpuVm for GpuVmData<'drm> {
-     type Driver = TyrDrmDriver;
-     type Object = Bo;
-     type VmBoData = ();
--    type VaData = ();
-+    type VaData = GpuVaData;
-     type SmContext<'ctx>
-         = PtUpdateContext<'ctx, 'drm>
-     where
-@@ -701,7 +732,7 @@ fn sm_step_map<'op>(
+     ptr::{
+         Alignable,
+@@ -1063,8 +1064,9 @@ fn pt_unmap(dev: &Device, pt: &IoPageTable<'_, ARM64LPAES1>, range: Range<u64>)
+             return Err(EINVAL);
          }
  
-         let gpuva = context.preallocated_gpuva()?;
--        let op = op.insert(gpuva, pin_init::init_zeroed());
-+        let op = op.insert(gpuva, GpuVaData { prot });
- 
-         Ok(op)
+-        bytes_left_to_unmap -= unmapped as u64;
+-        iova += unmapped as u64;
++        let unmapped = u64::from_safe_cast(unmapped);
++        bytes_left_to_unmap = bytes_left_to_unmap.checked_sub(unmapped).ok_or(EINVAL)?;
++        iova += unmapped;
      }
-@@ -749,10 +780,50 @@ fn sm_step_remap<'op>(
-             op.va_to_unmap().addr() + op.va_to_unmap().length()
-         };
  
--        let unmap_length = unmap_end - unmap_start;
-+        // The surviving fragments inherit the protection of the mapping being
-+        // split.
-+        let prot = op.va_to_unmap().data_ref().prot;
-+
-+        let block = Alignment::SZ_2M;
-+        let aligned_start = unmap_start.align_down(block);
-+        let aligned_end = unmap_end.align_up(block).ok_or(EINVAL)?;
-+
-+        // An end may only be expanded if the fragment the expansion sweeps and
-+        // rebuilds is fully mapped and physically contiguous, because the
-+        // rebuild maps it linearly from a single recovered address. A genuine
-+        // 2MB block is always contiguous, so this never misses one and the
-+        // partial-block unmap can never reach arm-lpae. A fragmented region is
-+        // never expanded, so its sub-range unmap stays correct.
-+        let head_paddr = match op.prev() {
-+            Some(prev) if aligned_start < unmap_start && prev.addr() <= aligned_start => {
-+                contiguous_phys(context.pt, aligned_start..unmap_start)
-+            }
-+            _ => None,
-+        };
-+        let tail_paddr = match op.next() {
-+            Some(next) if aligned_end > unmap_end && next.addr() + next.length() >= aligned_end => {
-+                contiguous_phys(context.pt, unmap_end..aligned_end)
-+            }
-+            _ => None,
-+        };
-+
-+        let region_start = if head_paddr.is_some() {
-+            aligned_start
-+        } else {
-+            unmap_start
-+        };
-+        let region_end = if tail_paddr.is_some() {
-+            aligned_end
-+        } else {
-+            unmap_end
-+        };
-+
-+        let prev_va = context.preallocated_gpuva()?;
-+        let next_va = context.preallocated_gpuva()?;
- 
--        if unmap_length > 0 {
--            let region = unmap_start..(unmap_start + unmap_length);
-+        if region_end > region_start {
-+            let region = region_start..region_end;
-+            context.extend_lock(region.clone())?;
-             pt_unmap(context.dev, context.pt, region.clone()).inspect_err(|e| {
-                 dev_err!(
-                     context.dev,
-@@ -764,14 +835,29 @@ fn sm_step_remap<'op>(
-             })?;
-         }
- 
--        let prev_va = context.preallocated_gpuva()?;
--        let next_va = context.preallocated_gpuva()?;
-+        if let Some(head_paddr) = head_paddr {
-+            pt_map(
-+                context.dev,
-+                context.pt,
-+                aligned_start,
-+                head_paddr,
-+                unmap_start - aligned_start,
-+                prot,
-+            )?;
-+        }
-+        if let Some(tail_paddr) = tail_paddr {
-+            pt_map(
-+                context.dev,
-+                context.pt,
-+                unmap_end,
-+                tail_paddr,
-+                aligned_end - unmap_end,
-+                prot,
-+            )?;
-+        }
- 
--        let (op_remapped, remap_ret) = op.remap(
--            [prev_va, next_va],
--            pin_init::init_zeroed(),
--            pin_init::init_zeroed(),
--        );
-+        let (op_remapped, remap_ret) =
-+            op.remap([prev_va, next_va], GpuVaData { prot }, GpuVaData { prot });
- 
-         if let Some(unused_va) = remap_ret.unused_va {
-             context.return_preallocated_gpuva(unused_va);
-@@ -781,6 +867,42 @@ fn sm_step_remap<'op>(
-     }
- }
- 
-+/// Returns the base physical address of `range` if every 4KB page in it is
-+/// mapped and the whole range is physically contiguous, otherwise `None`.
-+///
-+/// `range` is a sub-block fragment, so its length is below 2MB and the walk
-+/// visits at most 511 pages.
-+fn contiguous_phys(pt: &IoPageTable<'_, ARM64LPAES1>, range: Range<u64>) -> Option<u64> {
-+    let start_usize = usize::try_from(range.start).ok()?;
-+
-+    // SAFETY: The page table is exclusively accessed through the
-+    // `&mut UniqueRefGpuVm` held under the `gpuvm_unique` mutex for the duration of
-+    // the VM update, so no other io-pgtable operation runs concurrently.
-+    let base = unsafe { pt.iova_to_phys(start_usize) }?;
-+    // Expressly convert to u64 to work with arm 32-bit builds.
-+    #[allow(clippy::useless_conversion)]
-+    let base = u64::from(base);
-+
-+    let mut iova = range.start + u64::SZ_4K;
-+    while iova < range.end {
-+        let offset = iova - range.start;
-+        let iova_usize = usize::try_from(iova).ok()?;
-+        // SAFETY: The page table is exclusively accessed through the
-+        // `&mut UniqueRefGpuVm` held under the `gpuvm_unique` mutex, so no
-+        // concurrent io-pgtable operation runs.
-+        let paddr = unsafe { pt.iova_to_phys(iova_usize) }?;
-+        // Expressly convert to u64 to work with arm 32-bit builds.
-+        #[allow(clippy::useless_conversion)]
-+        let paddr = u64::from(paddr);
-+        if paddr != base + offset {
-+            return None;
-+        }
-+        iova += u64::SZ_4K;
-+    }
-+
-+    Some(base)
-+}
-+
- /// This function selects the largest supported block size (currently 4KB or 2MB)
- /// that can be used for a mapping at the given address and size, respecting alignment constraints.
- ///
+     Ok(())
 
 -- 
 2.56.1.703.gf848ed807c-goog
