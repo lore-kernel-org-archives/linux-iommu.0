@@ -1,151 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.24
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794937085;
-	b=AJxnQU/UWUE+nRuQ0Yf/SZbqwAIXCCRI3EwZgFCm+nJOTVEZ+Bcd0BJiK22o4tqvWBqm
-	 tKOq0KSagXyolkXwLBWzQMJ39n4mB4yVE4g2We8Z/Z3r4Cz8rReePRXJ5qb1UUkh+Q7OB
-	 O7F0kow0V6mtPCVVmPHEgoPktyzlLCvLmWgvsg8/e00zBJm8ovXOrkuKTIEF0zhaiygzE
-	 CQmPw+Kw2Lh4b+ognJ/wvCUH+a+Yg9+Ej/IemXkAaLGfGRY9r+J3gsYqYrxnb6m7SJSGg
-	 sLAO8/dyl+sz2q7neSF15lGqSUJ/3RZKUv9x46m6gUk892iKkKCReirFFjcOkx+EySA==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794937085;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
-	 Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=qEIEbjesTAOD1nbI62CqLO0IIeJJxpM0OwDRh/bA1WU=;
-	b=i5xJ75xBeeYA0OsySaGaKrIUArMnFLHp4KnLgnIFyC+zZ9j+GuTqOzQJN+uSHQpkBdpE
-	 h7hxstLe8YHJgkOBD6MvAxYL/w9qy6acnS9lJSUB66SM9ToIDI6W9ksbWc0/rZZUh/4Oo
-	 CVRcmnNwXWWWmuVQ2fsgsjnzmj4qy+C3cwpZSKoz5KbAeByW1hKkb9Xb+mEMlgJs6jIWZ
-	 81zgrqwRCN2rneavLCn10z08BqR5xY0ZpOETFVjvrMNzFMhouPSQp9Utis8FWkBdpjmm4
-	 U5u0Hv3KRloUdra06LSFfIlWwwhODqFdPcE8FTqO/ckyDkZkA6S3SNilUpmj4pLQjVg==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.nxp.com;
-	spf=pass smtp.mailfrom=oss.nxp.com;
-	dkim=pass header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=NWoRQixK;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.24
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013024.outbound.protection.outlook.com [40.107.159.24])
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1794938484;
+	b=0mErttGCZAa5qKhzZGrNysWKmnnBQP9l0vrkbSlXKmHgXcWMZ9iHYPVBp1z+OU5bTyrq
+	 92YOzIAxPZSx+SJRUgrVGde3Mn4qZt6ggIL9UMgFiSM6ipcUowwfeDOkhAqrD+duWodhW
+	 EFKPRunm0liD1IJcelxdSAzGbG+Bsij2QlWp5jX8rKexTkS0Oeo6adDucYrOVjjfx+N8N
+	 rAJvf3CcgED57FpPVjrKZOpmeocNsdkUK9fRiwVEqew8BkRdbIUC1edA78g4aCj/qgXz2
+	 vclFaue3sHiDsrKLyompshcL6q3YNxd7BgEyzlTCXDiwguS/Z7+2OsUIaTTYcX7/nuA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794938484;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=u0yBsR2j+byO1XQSHA/npmzmeYHqJ0uWC0jlof706e0=;
+	b=xfE1EMHQxMeOPQ2YGesMA23fgJKVPoU/ALPQJABdYg6HfLcVSe/QsZYY+qN7vyTzBo9E
+	 B50q6/5J3QRrDop8uGWmfXJq1at5fCxkJrNWocvQ0hgfQeX+Z6NcgAyiKZgM4e2sxHK/G
+	 TaNoVy1S5N1ydKfQmFRLRFrdu6XcpsX/ZtIa9SeqHIbnAtdxrAczj+Ni9DhT3jLxkMre7
+	 v8WTebTPmlS5JgHr2gXVgx7qxYEVZ2E1axy8gIHZ3wVpnQ41nORdbZ9xzxowuPgFpEw9H
+	 3ysAiNfZYmosDBdpbHARBwgrA27S2IhQ7hiprsn8o/0WEJ2f+evazb/frLpAlIndqvQ==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="gt/AS8jm";
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D8FC606A335;
-	Tue, 17 Nov 2026 17:38:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8D8FC606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D17D606A331;
+	Tue, 17 Nov 2026 18:01:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.a=rsa-sha256 header.s=selector1-NXP1-onmicrosoft-com header.b=NWoRQixK
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tyi+eGsTsaD4j9NJ6dD02Onw0+IJXwJKvXWXo7EN7PHR8TZWig5JqOVMGx88V1UawuXlqC5zq+mjTkq2OAlSJ9foh+eDICvbzx637+3Uncdp5CqZoY+0YF2CgWeMLroiSEvO3MkRh0D9QCp8c4XHjXqhGOqri2YSQyNOZjJr/FmadFt6h+XkcQCnMkrwETpcj7sW5V0igegzfrg0E5qKXGLWLCG2/FYM+rTKEezFh0Ol79fey7Hf182SxXz0ScATlTlCipip2dL9elidz+Qf5qbMwTZln+sl8+4O+enW9SGc1bW24G2GmJzIzov4ddXBWOrNHnlI7hCmwTum+mw2lA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qEIEbjesTAOD1nbI62CqLO0IIeJJxpM0OwDRh/bA1WU=;
- b=tXJM/0eGAxORdvox5+DfRYEU6M8DaWVF4wFbhXPel+LHoJybHTivj+qF52kiMBjVy9PJUHqDpZVpWvdljGfteweYucNFakMFnVoAfjWXzH55M7LuUt6YTwIj0h2BWWWU1NWgUnRU9ReYJLSTz27La/OfEAvVqbFB6ApOkhjOHny7mF04QE35Ujtouoa+dy9fqdmypdN5UHWR28AwK9FKQkcgNqOQLGM3B7uh+tNC5nBlBv58u05zj9zjNj6Alw8BTuwxKm5MlssypjXmVg5uuZ0dRp8SsobofMsBtImcXDOWfeT7O5fS2CR/byeR4s/vNnCDRq88u04Prln8SBRUKA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector1-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qEIEbjesTAOD1nbI62CqLO0IIeJJxpM0OwDRh/bA1WU=;
- b=NWoRQixKJTPLtqDyOH3Rrr+VZXca784i/05OYFYnTRxPTfDAxBj3NPdyIlcgfAIeH3ES3VgeQkDDiNyr8osahqjBhWpt9qQ9mXxV9t9l6KMI1jSHDRdEIx+/Ofw2NMXrmngU/t07SU52s9GwVDV+MnU+obUlVfYrbVNuozDZNARh3mq/fUvKO5dxLEtb6pYrDtbYWL9OUvpTMAHq1yAFaabxjoFVbAUZnow7KfvKl7TMQtWu6LN/pnxhU65ixELfYVxcWpolSlptvY4anPqHK9am3FBCTqfNNfrzrweZTROF6Dd2i0vDN/47oFqdjpIbVVsEJr8ZQ2NApZRruXF87g==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=oss.nxp.com;
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com (2603:10a6:290:76::14)
- by GV2PR04MB12582.eurprd04.prod.outlook.com (2603:10a6:150:36f::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 17 Nov
- 2026 17:37:59 +0000
-Received: from MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b]) by MI3PR04MB12438.eurprd04.prod.outlook.com
- ([fe80::c715:c32:8bb1:b70b%4]) with mapi id 15.21.0615.013; Tue, 17 Nov 2026
- 17:37:59 +0000
-From: Frank.Li@oss.nxp.com
-To: "Rafael J. Wysocki" <rafael@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Ulf Hansson <ulfh@kernel.org>,
-	Rodrigo Vivi <rodrigo.vivi@intel.com>,
-	Matthew Auld <matthew.auld@intel.com>,
-	Hans de Goede <hansg@kernel.org>,
-	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-	Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-	Mark Brown <broonie@kernel.org>,
-	Pierre-Louis Bossart <pierre-louis.bossart@linux.dev>,
-	Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Will Deacon <will@kernel.org>,
-	Tomasz Figa <tfiga@chromium.org>,
-	Marek Vasut <marex@denx.de>,
-	Michael Tretter <m.tretter@pengutronix.de>,
-	Sakari Ailus <sakari.ailus@linux.intel.com>,
-	Hans Verkuil <hverkuil@kernel.org>,
-	linux-pm@vger.kernel.org (open list:POWER MANAGEMENT CORE),
-	linux-kernel@vger.kernel.org (open list),
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM/Mediatek SoC support:Keyword:mediatek),
-	linux-mediatek@lists.infradead.org (moderated list:ARM/Mediatek SoC support:Keyword:mediatek),
-	linux-rockchip@lists.infradead.org (open list:ARM/Rockchip SoC support:Keyword:\b[Rr]ock[Cc]hip\b)
-Cc: imx@lists.linux.dev,
-	Frank Li <Frank.Li@nxp.com>,
-	linux-pm@vger.kernel.org,
-	Jani Nikula <jani.nikula@linux.intel.com>,
-	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-	Tvrtko Ursulin <tursulin@ursulin.net>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	"Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	David Airlie <airlied@gmail.com>,
-	Matthew Brost <matthew.brost@intel.com>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Alessio Belle <alessio.belle@imgtec.com>,
-	Luigi Santivetti <luigi.santivetti@imgtec.com>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Bard Liao <yung-chuan.liao@linux.intel.com>,
-	Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=gt/AS8jm
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A1B1F000C5;
+	Tue, 17 Nov 2026 18:01:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794938484;
+	bh=u0yBsR2j+byO1XQSHA/npmzmeYHqJ0uWC0jlof706e0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To;
+	b=gt/AS8jmyhjrcbnKpMFFZA3bZO8tYcap5Bff7dDzEM40GYkBvaxeBXz0GBotJIN3F
+	 OlEPv/wBnb5tVC5StPRS7uu5K+LyCBD/T3yZZbWqca8nwpBmRfIAGAnp6fPBJ2df8a
+	 A28qUJxnub8XGLJWFueF6CWZSbTOpwfVCSBU+ddUTP0NY9Db7GAOU9D40ApbiKyUq3
+	 z9yjQlDBbn77w1UgNnFYVxx6L4U5E7O7nl05+uElDkRsI2xwdBWAN6V48rOsFXrWnL
+	 iXcOENLlPL2DugxtWDNQBlrBDft91bRwrItxonTVkko/uQcDJrlVuJALCfl1fmAcPM
+	 Gv/NlbVBBVksQ==
+Date: Tue, 17 Nov 2026 12:01:22 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Dafna Hirschfeld <dafna@fastmail.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-	Daniel Baluta <daniel.baluta@nxp.com>,
-	Vijendar Mukunda <Vijendar.Mukunda@amd.com>,
-	dri-devel@lists.freedesktop.org,
-	imagination@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org,
-	linux-media@vger.kernel.org,
-	linux-rockchip@lists.infradead.org,
-	linux-sound@vger.kernel.org,
-	sound-open-firmware@alsa-project.org
-Subject: [PATCH v3 2/2] PM: runtime: fix stub pm_runtime_get_if_in_use() for !CONFIG_PM
-Date: Tue, 17 Nov 2026 12:37:36 -0500
-Message-ID: <20261117173738.1073856-2-Frank.Li@oss.nxp.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20261117173738.1073856-1-Frank.Li@oss.nxp.com>
-References: <20261117173738.1073856-1-Frank.Li@oss.nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: PH0PR07CA0115.namprd07.prod.outlook.com
- (2603:10b6:510:4::30) To MI3PR04MB12438.eurprd04.prod.outlook.com
- (2603:10a6:290:76::14)
+	Danny Gonzalez <digonzal@google.com>,
+	David Decotigny <decot@google.com>,
+	Sheena Mohan <sheenamo@google.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, linux-pci@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix WARN_ON in iommu probe path
+Message-ID: <20261117180122.GA427856@bhelgaas>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -155,204 +63,76 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MI3PR04MB12438:EE_|GV2PR04MB12582:EE_
-X-MS-Office365-Filtering-Correlation-Id: f388b5f8-7a45-4bd7-f30a-08df44d185fd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|366016|19092799006|7416014|376014|1800799024|22082099003|18002099003|6133799003|921020|11063799006|56012099006|261026140227099003|261028144727099003|261021123027099003|261021121427099003|10067099003|261026121527099003|261102123227099003|261022115727099003|261009223027099003|261022105027099003|261022075727099003;
-X-Microsoft-Antispam-Message-Info:
-	Jj2sg7l5PFXw+H4AOG9zak2KGj1d+ODAhuCpyyuTvVynNI12AyrNGkVRDG9O0BiiXAX58Buyb9A1oQbFiXzCxnxC0Q7P4dOhlH2N3knmCZw3gO+/66T1Y1SMbZLPMULPLH+HM6l4xa5V+ZmS/+iXhrbaCGZ3vamV6PvDNHHnTA7UcY5yjJ2DoiZvzGd9zpXsKTg+W7TggFzty7yHd2wUFZJze7RZwYMVjDvNmeueleZA0i1NdNPu7sWR05Z8eToxWBtBNiSj4aoSGBbjgbM53KMt4i2iHLaue3YNoWn3CDFlw0sDvJCY8+FfULLahbj+8lVdfXw5/VYkLu3IeHk0m1k7E+4x+Fk/wrPsiWRUoSlio7w2UuM78MsoeATUlKSHmZ//IHu7zz33DcUq2dcOxS4zBefHRMKswBcyBICouIQfSmQTtNbXcFSUb52kccUF94jQH6V5H/9c3xQhUCQrZa05caJndIMSEsEvWazvtxdEqTsNux4I3dCPAFHN+mNAo0hrtdhPaNMv0/E4L9VsQvKR82+nKRmZ9mDXEwbQzoLLyDFJR0BAQ3lSZ53VobAC8HPY7NQk8mORmzNTgChA+GKj89PAkCLBISOlj+Dw725szq9aWec+cLwB+o/ZPkLdpToOlgvrOhZV8Jl1s5A0KhAh6MRXl7bp5QnrENqhyHOy/W4Iv4yZZtHEEbliGuq8i3OakGQd+T9uB3rxTvoi6w==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MI3PR04MB12438.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(19092799006)(7416014)(376014)(1800799024)(22082099003)(18002099003)(6133799003)(921020)(11063799006)(56012099006)(261026140227099003)(261028144727099003)(261021123027099003)(261021121427099003)(10067099003)(261026121527099003)(261102123227099003)(261022115727099003)(261009223027099003)(261022105027099003)(261022075727099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?BzhnqsgxvfcKxhSHph9G4PC2oJg6GXYAqAfdurnIjDUbyIOY2MKptd+XshMD?=
- =?us-ascii?Q?KgYvPJNern9edV2PCM/Bkz4nj1aEGWTSS3lrQTcUJM74NhixH9jwjA2OFDqD?=
- =?us-ascii?Q?XhxuZg+KPGb9nDh6+Zi/2LBwVPuc5uq4U3aYYVOYZWkKhw+qFl3AmWFHwI9O?=
- =?us-ascii?Q?hngcGn8nYBeHf0hjm7xjepqReR1DkNTn19D6I9iC9fZSpmYgpqMeqWxJPKLe?=
- =?us-ascii?Q?tmz0O6MTuKgppHJSS5fd65lR5O4RIDHxU4tINhoMOvQ45GiQrVfdejKb52EO?=
- =?us-ascii?Q?VcT5M/A2n5If/ol4W/5KyvdNVWF+N3sLEq5zOVHoAFStSjZDF7MBPlISU7nQ?=
- =?us-ascii?Q?6pb6iIawLyO9wCSinN7LBqmk4rTKwryaGf+3SQwP0rCKYXVFupEQ/3FWXlW3?=
- =?us-ascii?Q?Y3QGmWE23AkiRDiBKfINQaSCH5gzZuRaU+Q3fcGRJL1/+aC+5S9eWpTSXP4M?=
- =?us-ascii?Q?fnCwVqk+Hk3RLr6a4d9B3irEof21dqggGD2vfGrON9b1Goy3l/czG2txV1yk?=
- =?us-ascii?Q?HvBDEEgFTt/HNS+3746NkARuHpIpnXa17d1bh3EdDCmbNqSXo24Sayox6lbR?=
- =?us-ascii?Q?3xGqeG67WAL3eAOOq5FiJfG691ez0JqIFyRF8+RC2C8uouOGE8uaI9eH7XBl?=
- =?us-ascii?Q?hgvDuLXYULwJdSxwpzgA9W6h987wJOInTTUalgoWYbVw5+NaNdI5b0kWoUBI?=
- =?us-ascii?Q?2n/9FHNIRCbMMsbovyGZm3MhsN6Y+Z/kb1MVWPZ/6jdSVZ4NctTYDfy6AnGW?=
- =?us-ascii?Q?8MX8Scx8/0n838CC9D+8kv9luGzPc40z5FXNO4Zow1r52AYlnupziFn9d7Yg?=
- =?us-ascii?Q?glT3Tzs8UHxYY/hh31py2GEma4oa2o37tYOTHmKdra6XPmtZemxKhbWVwkY0?=
- =?us-ascii?Q?7Ift2/DBjZZdeOnGUiTOrhJiCwskgVcKyybvYwPhc1skcsHN9FTFlx7/DNvv?=
- =?us-ascii?Q?9Y2q5Pu/vzjk14CAcfEUKh8P+GaMtwvCzlrjWbbQQ3FX9bZyQhdxHripsyHD?=
- =?us-ascii?Q?aLgwppAaX+kENdq2D+WooSKm5yTSDnlSRV9Zc3bkC/N9NOZ2N1p33DSGAR0l?=
- =?us-ascii?Q?3t8QUA37QKdrcvDXjkXNP+/OCath8+xmyyJ65HjynA3vqz9DAsTeSbs9Qlcp?=
- =?us-ascii?Q?T9RbyfxCx1w0EpJiFIFnJUo8zYTHFeJh1rkgAgVSO+tkZngLM0E3450nDqJ5?=
- =?us-ascii?Q?cRFbAuN6Y0uEWFHzQ5KpnhnrReF/EF9hP6Ma+rRNyx63uniLzFQ6OOAtXiyo?=
- =?us-ascii?Q?dKjT7hgAVTt3sA+HZB7c+E8pZsjoujwaTtcBiax9S8wbAuC5aPTEvIdRizvD?=
- =?us-ascii?Q?s9gJb1ga2YSaVCw8eqU/W8TA6RDLfTevgQW/4oAgte9rhBhHDTyIOEgNMw9t?=
- =?us-ascii?Q?ltpLtP8WwlnXvdC8cp4BJH4byffBm4U3XnbjXZRED+vkKXFHAsv2wAoLZsgn?=
- =?us-ascii?Q?WxIVZwZJUQREyXIBdFAwatoW3bdhe7Fi7rGEMXnqaPyUzwEfqWgRm4wHw5lj?=
- =?us-ascii?Q?on4WWXvB5d9QcA3cFQWvdWGYwjgEpEb7MBP1j+lt5do1Qg57lF/X6ZDFOU/w?=
- =?us-ascii?Q?3ZNvwIJnCdKY66QE46TRUDiF3FzdNjLQHEfg2iNupMXPWa37z2aU5LSEpBm9?=
- =?us-ascii?Q?1VSBk8nsAjloCLmtHnmvqEHQ9FnZJFTp2AyVXkmLN13OWnenKJjw9UzEfN+P?=
- =?us-ascii?Q?E4BaVgnv0m/2xXxSHofgFj3KfcdTTFgojz8qQEBC25lyHK/WPFwoU/yHvlJ/?=
- =?us-ascii?Q?8OfqMXmKcubyEqGfd6b0rGZ4NRW07Z0Nhke1TJd0CwBkQJJ0X2Cl?=
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f388b5f8-7a45-4bd7-f30a-08df44d185fd
-X-MS-Exchange-CrossTenant-AuthSource: MI3PR04MB12438.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 17:37:59.7453
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: sgIbX0QllbpVHh5CBK3uQR4gfDILGUBrlWOlvh71oaviY0NpvVLk368OZVogwC5pDC7A494j0lDv35OICEayUpJRI9Nb8Rw8/f5PTdB9aCVOvYod81DVcxzff0G5IJMh
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR04MB12582
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240407011429.136282-1-baolu.lu@linux.intel.com>
 
-From: Frank Li <Frank.Li@nxp.com>
+[+cc Danny and others because this is related to ongoing work at
+https://lore.kernel.org/all/20261020181053.2646782-1-digonzal@google.com/]
 
-The stub for pm_runtime_get_if_in_use() under !CONFIG_PM currently
-returns -EINVAL.  The real implementation returns:
-  1  - device is active and its usage counter is non-zero (bumped)
-  0  - device is not in use or not active (counter not bumped)
- -EINVAL - runtime PM disabled for this device
+On Sun, Apr 07, 2024 at 09:14:29AM +0800, Lu Baolu wrote:
+> Commit 1a75cc710b95 ("iommu/vt-d: Use rbtree to track iommu probed
+> devices") adds all devices probed by the iommu driver in a rbtree
+> indexed by the source ID of each device. It assumes that each device
+> has a unique source ID. This assumption is incorrect and the VT-d
+> spec doesn't state this requirement either.
+> ...
 
-When CONFIG_PM is not set every device is permanently "active" and
-always considered "in use", so the stub must return 1, mirroring
-__pm_runtime_resume() which already returns 1 in the same build.
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4299,9 +4299,11 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+>       }
+>  
+>       dev_iommu_priv_set(dev, info);
+> -     ret = device_rbtree_insert(iommu, info);
+> -     if (ret)
+> -             goto free;
+> +     if (pdev && pci_ats_supported(pdev)) {
+> +             ret = device_rbtree_insert(iommu, info);
+> +             if (ret)
+> +                     goto free;
+> +     }
 
-Returning -EINVAL breaks callers that test the return value with
-comparisons other than "!= 0 / == 0":
+This change is upstream as 89436f4f5412 ("iommu/vt-d: Fix WARN_ON in
+iommu probe path"), but I think there's a problem here.  Previously
+the rbtree insertion was unconditional, so the unconditional remove in
+the error path was correct.
 
-drivers/gpu/drm/i915/intel_runtime_pm.c:
-  if (intel_runtime_pm_get_if_in_use(rpm))
-  which wraps to: ret = pm_runtime_get_if_in_use(); return ret > 0;
-  With -EINVAL the wrapper returns false, causing an incorrect error
-  path in the GT fence revocation code.
+After 89436f4f5412, the rbtree insertion is conditional.  If
+intel_pasid_alloc_table() fails, we try to remove it even though it
+may never have been inserted:
 
-drivers/gpu/drm/xe/xe_pm.c:
-  if (pm_runtime_get_if_in_use(xe->drm.dev) > 0)
-  With -EINVAL the condition is false; xe_pm_runtime_get_if_in_use()
-  returns false, so callers believe the device is not usable.
+>       if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+>               ret = intel_pasid_alloc_table(dev);
+                if (ret) {
+                        dev_err(dev, "PASID table allocation failed\n");
+                        goto clear_rbtree;
+                }
+    ...
+    clear_rbtree:
+        device_rbtree_remove(info);
+    free:
+        kfree(info);
 
-drivers/gpu/drm/gma500/power.c:
-  return pm_runtime_get_if_in_use(dev) == 1;
-  -EINVAL != 1, so the helper always returns false when !CONFIG_PM.
+> @@ -4336,7 +4338,8 @@ static void intel_iommu_release_device(struct device *dev)
+>       struct intel_iommu *iommu = info->iommu;
+>  
+>       mutex_lock(&iommu->iopf_lock);
+> -     device_rbtree_remove(info);
+> +     if (dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev)))
+> +             device_rbtree_remove(info);
 
-drivers/gpu/drm/imagination/pvr_power.c:
-  if (pm_runtime_get_if_in_use(...) <= 0)
-  -EINVAL <= 0 is true, so the driver always takes the "requeue" error
-  path instead of proceeding with the active device.
+This is also somewhat problematic because it relies on the assumption
+that pci_ats_supported(X) always returns the same value it returned in
+intel_iommu_probe_device().  That may be true today, but I don't think
+you should rely on it.
 
-sound/soc/sof/debug.c:
-  if (pm_runtime_get_if_in_use(sdev->dev) == 1)
-  -EINVAL != 1, so d3_prevented is never set, corrupting exception
-  debug accounting.
+I think both issues could be solved if intel/iommu.c kept track of the
+rbtree insertion itself, e.g., with a bit in struct
+device_domain_info.
 
-drivers/iommu/mtk_iommu.c:
-  if (pm_runtime_get_if_in_use(dom->plat_dev->dev) <= 0)
-  -EINVAL <= 0 skips the TLB flush, leaving stale IOMMU mappings.
-
-drivers/iommu/rockchip-iommu.c:
-  Three call sites use WARN_ON_ONCE(err < 0) or similar patterns.
-  -EINVAL < 0 triggers a spurious WARNING on every call.
-
-drivers/media/i2c/isl7998x.c:
-  if (pm_runtime_get_if_in_use(dev) <= 0)  (two call sites)
-  -EINVAL <= 0 causes the driver to always skip register programming
-  when !CONFIG_PM.
-
-drivers/media/platform/rockchip/rkisp1/rkisp1-debug.c:
-  if (pm_runtime_get_if_in_use(dev) <= 0)  (two call sites)
-  -EINVAL <= 0 prevents any debug statistics from being collected.
-
-Fixes: a436b6a19f57 ("PM / runtime: Add new helper for conditional usage count incrementation")
-Fixes: 3b85b7bcccf4 ("drm/xe: Fix display runtime_pm handling")
-Fixes: 672c473576ca ("drm/gma500: Rewrite power management code")
-Fixes: b30289e7fa92 ("ASoC: SOF: Fix runtime pm usage counter balance after fw exception")
-Fixes: c0b57581b73b ("iommu/mediatek: Add power-domain operation")
-Fixes: 51ef2be546e2 ("media: i2c: isl7998x: Add driver for Intersil ISL7998x")
-Signed-off-by: Frank Li <Frank.Li@nxp.com>
----
-Change in v3
-- drop tag: cbb819c363c5 ("media: rkisp1: debug: Collect input status by sampling ISP_FLAGS_SHD")
-selected PM at arch config
-- drop tag: 0f181d3cf7d9 ("iommu/rockchip: Add runtime PM support")
-selected PM at arch config
-- drop tag: 9d58aa46291d ("drm/i915: Fix the GT fence revocation runtime PM logic")
-guard by CONFIG_PM
-- drop tag 727538a4bbff ("drm/imagination: Implement power management")
-depend on PM
-`
-Change in v2
-- new patches.
-
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: linux-pm@vger.kernel.org
-Cc: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
-Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
-Cc: Tvrtko Ursulin <tursulin@ursulin.net>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Maxime Ripard <mripard@kernel.org>
-Cc: "Thomas Hellstrom" <thomas.hellstrom@linux.intel.com>
-Cc: Simona Vetter <simona@ffwll.ch>
-Cc: David Airlie <airlied@gmail.com>
-Cc: Matthew Brost <matthew.brost@intel.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
-Cc: Alessio Belle <alessio.belle@imgtec.com>
-Cc: Luigi Santivetti <luigi.santivetti@imgtec.com>
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Jaroslav Kysela <perex@perex.cz>
-Cc: Takashi Iwai <tiwai@suse.com>
-Cc: Bard Liao <yung-chuan.liao@linux.intel.com>
-Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.dev>
-Cc: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Cc: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Yong Wu <yong.wu@mediatek.com>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: Dafna Hirschfeld <dafna@fastmail.com>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc: Michael Tretter <m.tretter@pengutronix.de>
-Cc: Daniel Baluta <daniel.baluta@nxp.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-Cc: dri-devel@lists.freedesktop.org
-Cc: imagination@lists.freedesktop.org
-Cc: intel-gfx@lists.freedesktop.org
-Cc: intel-xe@lists.freedesktop.org
-Cc: iommu@lists.linux.dev
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-mediatek@lists.infradead.org
-Cc: linux-media@vger.kernel.org
-Cc: linux-rockchip@lists.infradead.org
-Cc: linux-sound@vger.kernel.org
-Cc: sound-open-firmware@alsa-project.org
-Cc: imx@lists.linux.dev
----
- include/linux/pm_runtime.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-index de9e7518ecef2..1d983fe55a16a 100644
---- a/include/linux/pm_runtime.h
-+++ b/include/linux/pm_runtime.h
-@@ -276,7 +276,7 @@ static inline int pm_schedule_suspend(struct device *dev, unsigned int delay)
- }
- static inline int pm_runtime_get_if_in_use(struct device *dev)
- {
--	return -EINVAL;
-+	return 1;
- }
- static inline int pm_runtime_get_if_active(struct device *dev)
- {
--- 
-2.43.0
-
+>       mutex_unlock(&iommu->iopf_lock);
+>  
+>       if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
+> -- 
+> 2.34.1
+> 
