@@ -1,60 +1,77 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=91.218.175.179
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794899979;
-	b=OmBUWsiSvQHksbk/ajSZHyKzZ/Na9z4lY7/MX0VWE6wpI5PnWPrJa/nFlB9UhE0FpBSL
-	 BtJ1SIrp0+hkhtXReAyF9wXIWpV9bwTITr4lP2HT1wvWVAH3TNuYxg7OtUZLvwW1oP5Qy
-	 B/PWT4TbZdAV7yd3V+kDoMsznrJRevxFVlCqzGK9CNDgAC8OQZB4zhwas4kawYee/AU4j
-	 QE7nH9y+LXxBKOvfDrriL98/+Dg7C4eoWvxgQ8l/wMpy+qCzGqsg09DQyOlwrv1JseSCY
-	 9cIKzpgHVCNFAi4+UCwFbu7Nap+OQ+ETduPRH3AjWF4/i9x0D1IQKwZikB5gMji1vyA==
+	t=1794904241;
+	b=FtHKb2H27nS65SoL3FI3T7XDvZWNknZrvdThMAdDtCDSICR404VJZMm+ewBV1mGBXGjq
+	 As6xz+jJPQecR7zHOJ/vM+MJjE1/mtMHQq+rgmKm5SvJcr/V8L/cOWUgHyKv8ZYm7OEI8
+	 oq4y3OyADdAu+NmEv8RD72gkm7y76FWzseU0drew4XOa38MM0NeyQTEItGrYuKzF2bsbl
+	 k7Qb/F5UOvV3Zkd3nVd/FWf7Ybvsn/O9C5N73Ag8KBjFsWmrj4k6cm8G3T+8ysANKjNrL
+	 nNGdMnWzqrbiGn98vci2ZHPMcRVAXUMqhdTbLJLFmbNHibKi9/V7CqQrTfntDxhqCrQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794899979;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=Q//SZLRFFaAyCG3qB5iY50cbLTFHcXgC8CYVEp5D8Q4=;
-	b=rq00PYY+kSlwhcQjhsTn0BUwSRrS8ttOYYpahJHJtlztLu+BgJHdYZ8lH9L9lwo79sQ7
-	 dTmCjueRnKxhtrvMkM7bULze3cJNszLCl4ySJ1RrExJHEbjjTqosDB39Rj+UG24RF5Vgn
-	 0v7zTB294oCrvTu/JhUYdRWVZ6YJXhWmjUhy99wKvEuc2oZcElZwxUT4IdiTtg2OpAkHb
-	 WLt7kmgsgoIR/yLjG6UNPvCTvhBI+mjKnKscxOz8Zgo3a5H3Z35MZ1nwTMu1KfVQi3Nca
-	 nQZnqXepZHcZGFoFbJ19/K6OCSwcvNmK3LaXxU3EQhbtlS8zhIrEhtuxaYnWdibjdgA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794904241;
+	h=DMARC-Filter:X-Envelope-To:DKIM-Signature:X-Envelope-To:Received:
+	 X-Mizu-Trace-ID:X-Migadu-Flow:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=zheIQktVmbZG4c834zKCy7evdo7oC0W6fMu1Q7CHhCE=;
+	b=0QqI4FPUPceOLtK/t4q4rDTsvxopiG0TFmIL973rIM5BjDo80M55agJVC8sRc7Z5fT8c
+	 Dr9Zx3h73ScGvUg2XSWD3B6WaUlzuVQTnPDdAaJhMjbtmM4dY3EKuTqL+hADBDyQG+TJQ
+	 ZBAUf8MSQo7xUuxmFE/3/rNrPWqqZyglRNW4LU+VAZbWVuhR5bhLoOT7SlQ/bkyUuRgXW
+	 NFE9egroPz4wtRfIySPGn1lph9ohbKruOEmluBHlC0LhLjcNKNUHSFdDxrtyQYK0H4/Ld
+	 FMMal3EM1tCgMLO5DcjzIdTHq/L3Uy0srl+0iFxq8jVH5E99OxHBv2hfx8kqFPOHMJw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=qqARvYpf;
-	arc=none smtp.remote-ip=210.118.77.11
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=linux.dev;
+	spf=pass smtp.mailfrom=linux.dev;
+	dkim=pass header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=AqABhpm3;
+	arc=none smtp.remote-ip=91.218.175.179
+Received: from mta0.migadu.com (out-179.mta0.migadu.com [91.218.175.179])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE3D2606A323
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 07:19:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BE3D2606A323
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6D3E606A8A1
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 08:30:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E6D3E606A8A1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=qqARvYpf
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20261117071935euoutp018cf980ed298a62c6db4a1e5caae3b616~oxASSILPM2410424104euoutp01M
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 07:19:35 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20261117071935euoutp018cf980ed298a62c6db4a1e5caae3b616~oxASSILPM2410424104euoutp01M
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1794899975;
-	bh=Q//SZLRFFaAyCG3qB5iY50cbLTFHcXgC8CYVEp5D8Q4=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=qqARvYpfEWjHpZTSRB8oTQOxU9660cMVU10zFd1CfAaqN5iNwZeg6ZqviU0WxlGcC
-	 Zgz25VQYyMenrgZARMvj9KWt7qv+b4+9kvmyRp6033xXgBR7RuW34XQJvg8vS8Jw3V
-	 1NyQ/46lRqDO13yFrmxwKMGhnbg9NWLflQy+wRuY=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20261117071934eucas1p1c2b3463f652c0dc4aa8cab83fb0cedac~oxAR2_SL60133201332eucas1p1I;
-	Tue, 17 Nov 2026 07:19:34 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261117071934eusmtip289126959c34c6d307007c4129949eb75~oxARN50Ay0656606566eusmtip2W;
-	Tue, 17 Nov 2026 07:19:34 +0000 (GMT)
-Message-ID: <e69146b1-74cf-451a-9598-cc85ea992263@samsung.com>
-Date: Tue, 17 Nov 2026 08:19:33 +0100
+	dkim=pass (1024-bit key, unprotected) header.d=linux.dev header.i=@linux.dev header.a=rsa-sha256 header.s=key1 header.b=AqABhpm3
+X-Envelope-To: iommu@lists.linux.dev
+DKIM-Signature: a=rsa-sha256; bh=pyWTIi2y6JoIJ6IOmHBgjnTL/Q73eud7KJwC8hfFNgY=;
+ c=simple/simple; d=linux.dev;
+ h=from:to:subject:date:message-id:mime-version:content-type; s=key1;
+ t=1794904239; v=1; x=1795509039;
+ b=AqABhpm3NiDW2u51rSlCew3nKj/O5rKF9XyNeS2Wd+I3pWwpWLJJx9V75Bs3D697t8fZDjpr
+ DN5VoTfPu1d8qxDkgOwiKg0rDUkXd2Bwedu96VqZ0VXyo+CeeekOuk8G0w75Ebi/P41KTrtSZSf
+ s200mf5lcIomdgDsM3MGzbhE=
+X-Envelope-To: iommu@lists.linux.dev
+Received: by smtp.migadu.com with ESMTPS id 072b8882c51a40c5;
+	Tue, 17 Nov 2026 08:30:29 +0000
+X-Mizu-Trace-ID: 072b8882c51a40c5
+X-Migadu-Flow: FLOW_OUT
+Date: Tue, 17 Nov 2026 16:30:15 +0800
+From: Peng Fan <peng.fan@linux.dev>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Frank Li <Frank.Li@nxp.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Jon Hunter <jonathanh@nvidia.com>,
+	Thierry Reding <thierry.reding@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
+	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
+	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH v6 0/9] dmaengine: add DMA channel bus and fsl-edma
+ per-channel IOMMU support
+Message-ID: <avwQl18smAW4R6ec@fedora>
+References: <20261112-edma-iommu-v3-v6-0-b038edb8ce6f@nxp.com>
+ <20261116193021.GB2452510@ziepe.ca>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,49 +81,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH 00/11] dma-mapping: add dma_alloc_attrs_node() and
- dma_alloc_coherent_node()
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: robin.murphy@arm.com, netdev@vger.kernel.org, iommu@lists.linux.dev,
-	joro@8bytes.org, will@kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261116145420.2b533196@kernel.org>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261117071934eucas1p1c2b3463f652c0dc4aa8cab83fb0cedac
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261112161622eucas1p131619576b0d4e6d201197007f3d7c951
-X-EPHeader: CA
-X-CMS-RootMailID: 20261112161622eucas1p131619576b0d4e6d201197007f3d7c951
-References: <20261106184433.761422-1-kuba@kernel.org>
-	<CGME20261112161622eucas1p131619576b0d4e6d201197007f3d7c951@eucas1p1.samsung.com>
-	<20261112081616.13b81fab@kernel.org>
-	<17fd14e7-41e3-4658-a62c-1206fd2b5e0d@samsung.com>
-	<20261116145420.2b533196@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20261116193021.GB2452510@ziepe.ca>
 
-On 16.11.2026 23:54, Jakub Kicinski wrote:
-> On Mon, 16 Nov 2026 10:57:06 +0100 Marek Szyprowski wrote:
->> On 12.11.2026 17:16, Jakub Kicinski wrote:
->>> On Fri,  6 Nov 2026 10:44:22 -0800 Jakub Kicinski wrote:  
->>>> Stable tag on top of v7.4-rc1, so that we can also pull this into
->>>> the networking tree:
->>>>
->>>>   git://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git tags/dma_alloc_coherent_node  
->>> Marek, Robin, would you be willing to pull?
->>> Or should I respin the tag to include the latest Ack/Review tags from
->>> the list?  
->> If possible, respin the tag with latest acks/reviews, then I will pull it to
->> my dma-mapping-for-next branch.
-> SG, added the tags and re-pushed:
+On Mon, Nov 16, 2026 at 03:30:21PM -0400, Jason Gunthorpe wrote:
+>On Thu, Nov 12, 2026 at 03:53:03PM +0800, Peng Fan (OSS) wrote:
+>> I used iommu-map for eDMA, but iommu experts rejected it:
+>> "Using iommu-map to describe synthetic dma_chan_dev devices that the
+>> kernel creates is the same kind of DT abuse from over here:"
+>> More info: https://lore.kernel.org/all/20260917144804.GI3196566@ziepe.ca/
+>> 
+>> So I followed here [2] as Krzysztof wrote for QCOM VPU:
+>> "Thanks Jason for context and detailed arguments. Robin did not chime in
+>> yet, but from what I understood the DT-child-node approach will be the
+>> way we should go here.
+>> 
+>> I accept above point of view and I am fine with this, thus Vishnu and
+>> Vikash - please go ahead with DT-child-node solution we had some time ago."
+>> [2] https://lore.kernel.org/linux-iommu/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
+>> 
+>> This series adds per-channel DT child node support to fsl-edma and, as a
+>> prerequisite, introduces a proper bus for DMA channel devices.
 >
->   git://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git tags/dma_alloc_coherent_node
+>To be fair this is discouraged too, now that I've seen 3-4 people
+>trying to do exactly the same thing I'm not as positive about the
+>DT-child-node hack.
 
-Pulled into dma-mapping-for-next, thanks!
+I may not describe it clear in cover-letter.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+I understand the concern. Let me explain why I believe it is justified here
+rather than a hack.
 
+On i.MX eDMA each channel has its own interrupt, its own register region,
+and on i.MX8QM even its own power domain. Each channel may also have its
+own Stream ID, or share one when SIDs are scarce. These are genuine
+per-channel hardware resources, not software fiction.
+
+In dmaengine each channel is already modeled as a channel device (see
+dmaengine_chan_dev()), and this series puts those devices on a real bus
+(dmaengine_chan_bus_type) as a prerequisite. The DT child node simply
+describes that existing device, so its reg/interrupts/power-domains/iommus
+are attached per channel instead of as index-matched flat lists on the
+controller.
+
+Given that context, do you agree that a child node per channel is the
+right description here?
+
+Thanks,
+Peng
+
+>
+>Can all of you come up with a proposal that doesn't involve hacking up
+>DT just to unbundle the SIDs?
+>
+>Jason
+>
