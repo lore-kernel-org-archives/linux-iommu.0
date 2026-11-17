@@ -1,103 +1,110 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794887751;
-	b=wCtIwSL3Sd5ae5Ef+DRQjF/FdScwCnzW0DI9kL0BbU1TkGJvL/IaGE67qG+uYT3YvZBj
-	 opnA4Ag8arWBcTavkrCJU94f+XLfQj3wldmBAWp5KeKUzz8v6GOwOdn3ILbq89LtLj9zF
-	 uUkH9kzwBvglbkgRK2V3X5LwjuH5Y00Py0J814+JDSU2VpgZrlWZI6OBBz6ZZWJ3RU/B9
-	 X2SNDwFaP+MCJ7heDRj8AKn+OdKFThKlNBLEQ1E1vW10SN/UqK0PcN+2CJBewYXvXvcRK
-	 39lrN8bea0pMoFBgQfrjdkE1bKv9plP4VK4PQAdya42zkVurI2WCiT3fXWuNP1VqNeQ==
+	t=1794893328;
+	b=dyqlZSLCzoRNl2HSeCATAwtvphKRFlPVDGZ67txzCEkYp6Q7Ec2PWz3g0IfrobLyP4GJ
+	 S62cFGSI0FcaQe1t2nNbf41kVtOLhMQ9Co8C4zx1OZ3Q6EuWak/1LCaYUqTYMzD3WyZOw
+	 JWpJGDYFm07OuHH4Xkj9pI1wHGN+EiMp1UhVHkUwxLv57e3MjCqiZDCF4UI76UBLRhYLN
+	 Qfz59uNayn5b4Fi7uIETvD23aLs9jPB7NaQrSvRCg1Y/sjCZTnHAlItsy9DV7r9rrvYAz
+	 oYMUJNKBo1TPxgAzDvtqsx7OILnfjwMWjxSpO6n37CN0cZ9dQaMmdHsUrAVPnJXm6GA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794887751;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=mygYInQxR58p7J21QOwq1w85iqa2FjsjKi0zK68sH8M=;
-	b=MxusjhI9b4pliP3fmnSOy00eh2NOtHPZ0TKdYPXD1pnaYd3iUmEqFDpyujektoiqMhD+
-	 HBNxFuohAHHGzsNrHDFTT2jSh1JSHaXSDtIyuA+G2m4KzkE0b9E9ta1c938U7GPPpmecE
-	 FpdoXUH4wdI85AjIGcNn4JjrdlzRTt1qitCzg9ouDRuqMytPJP8HPhQxi//Z9UyphybMS
-	 0pxw14vBZ3MGLkw78P9lYRW6jj41d90pyTe4Y83m8WMFpJrYxZnn1UVrZ0jSpJSCqDJ9N
-	 w9DXGgvKGSqDCc1MdPSfy5VlNDBmhxxSYz/eEuiHV0xk8pjG+e3plT2qbk5lCYIlQYA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794893328;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
+	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
+	 X-Received:X-Received:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-Spam-Info:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=;
+	b=BS9m++zt2AL9X8LDPZyQh/SiSwddgy3HnQAleCkMg0eK74FkQuwmi/TooXh6vxmKh6b3
+	 xCJoqs0Cdu0n3iFwL/K1GM0L2tybNOL0Gj8PTw5QQ5+GI8ZWeTI0tgT4mNRJUHz3gVW6E
+	 Tf3YdYQXPY7rb/kmDT618dmAQjuXf3cjhc3z6L0aNzK5tSAQxedsVJiQuvtKuW5PhDkX3
+	 5+HE7oA0cljvou4OC1mCrKW/AtP/YIoCBrR2Baj3txYyYjt0GRL3Zj2Do6R6p0fsTWFb3
+	 uTi+3bZTMqbjGhJ7Cn3itNEtFgGMKxAe9DJlBbZPH2gmg/JavOCMKo9T7QgrAgUug2w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=google.com;
-	spf=pass smtp.mailfrom=google.com;
-	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=NoxsTvFq;
-	arc=none smtp.remote-ip=209.85.214.175
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=oss.qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=KhJTRozP;
+	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Z59x0Vji;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89FCA606A31C
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 03:55:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 89FCA606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74743606A339
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:28:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 74743606A339
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=NoxsTvFq
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2ee254f6eefso44845ad.0
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 19:55:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=KhJTRozP;
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Z59x0Vji
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AH2a95V3407593
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:28:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=; b=KhJTRozPBc4IBPM2
+	xyFbzyZv+g6Ct5m0PsZrjvzdeh/5BbvBjaSzY96u5i7LRgboZjdKxlCJ0DhL2tHl
+	Xa8Ju6FVHXkNoInFuySKgqk2xypJCAJHtfaQ/vrKRhpOVLRVYlTLGU5IRJEf9iLn
+	3i+bfoM9u82eYCCXjdLwh09J57DGKQ1SYLPGTof3pKqpJ4LU8Kip/kX0uTfRcF84
+	Ztra8h0BY3EuVv65FwTJWtMhMaccd1o6XxakEXgZC1qa3GRVCjZubotTP209MVsU
+	rqto+KACEhN2DYPMayazdMMw5U5L4e5kL65Af3zzRR1UW8RMV/A3XEVBrkX5fkOj
+	PGwTAQ==
+Received: from mail-dl1-f72.google.com (mail-dl1-f72.google.com [74.125.82.72])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j09hthg2e-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:28:46 +0000 (GMT)
+Received: by mail-dl1-f72.google.com with SMTP id a92af1059eb24-1b3b45597c7so3129184c88.1
+        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 21:28:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20260707; t=1794887750; x=1795492550; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=mygYInQxR58p7J21QOwq1w85iqa2FjsjKi0zK68sH8M=;
-        b=NoxsTvFq21AKveyy2RkEBhFwC2wfz1sAqOlqDz0NwQ4VJIhxla5AAOx9GaPHJNemM4
-         WK6egHqVrZs8u3ZJAUpT2+a2iyyKQwZkj0LFMmN6vqzJk/MwAyzcEKLRZP5njrNtZLXy
-         yq/bGPCkVDJqXXSmamP0oPnSGjaMWa5BJVkodsV2BkC2cGtAjwrDtNo0Yob86c+FsFAb
-         7QCIr+Gxk0ZhEN5e4TuDT3xyURxAEycYIPqtFol/llbEgE9e2VEBeOgSVoo74Cq09jov
-         ErNQY/WVRDbbbGd5ZSplkcmEigxdExIAqHkV2mVzKTJvVYNb+FnnuJZXJqcc5TG0+LBW
-         NatQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794887750; x=1795492550;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+        d=oss.qualcomm.com; s=google; t=1794893326; x=1795498126; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=mygYInQxR58p7J21QOwq1w85iqa2FjsjKi0zK68sH8M=;
-        b=iemGo7zzhQe6kSPzFRuzmRNkXVawHO+51F6I6nIYXlQosZf4kX2DhiXDtMiKz++wRg
-         g0eITv3dftyxSNgPtlccej7j89caU7xZvDFe9y5t/fziBgie0FZiaBPWbSQFWOQyX3pj
-         RNnvO/sUJu1fG2icq3k6agM3jwSIbz83IlseLwR4QvU/YwoxLEONvBeyVRIQyXfjgufP
-         8PXoaXKhJ975W/KaDY4DqiADBc8h9Zbm+aHqzg4pfBUKZ2DM8wkqzkUPiEPvrgS94DV/
-         h8FuPgvCr1hqni+x3ECCc+4cM57NLCmkCtzX1UBGiYkVWk2wogR1mFn3o7vGJe40VJ5H
-         IYkQ==
-X-Forwarded-Encrypted: i=1; AL+hErEd/w/iUBf6ggvH3tL5BKjyl6XszCQxshbGLh53sADl63KHHYnE9JRp3lIZ1C5LgkmkIcRBpA==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+3CXXrQzL6ZBTRQgjT4mdT0PIzG/3l2ruL7IkdZ+k+BdtJUA/X
-	LXYqpgui7GhgkvgXRo/ZIZHv7szHmdS6dhmrOC2Dg8V1Ju+dFT6JeR+8cU2tWC7FUQ==
-X-Gm-Gg: AZFdTZcojyJikJCgWTX4BTWuzofPce6uDuVz2OwDvrbME3TxjKPHvq9zvPyAUe/D6VQ
-	1tNZtRmds80QVmNplNUw3PUbNan4FhjV+R6xUCGRV0QEM1hRTLcK1fKXwKfUBtuSQDNAtFOo+YV
-	DwPnmu6rz7ddpTtCaU6HgxM/gfE4kdffQo9PGbHJI8h6jup+okrv1ayBj4K663uPedmjxNpgj6Y
-	WQe784/KzD33J90czlrtUcHh156Gjl50EuqPKT1Alo1mDbfljhr0Fi3czjEMIZZkiEp5XEPu7r1
-	2Oxm5jnh/Pugzkqf3AEQu/F0iae5+PRsE3lSVYvYxQBM6gdM+UW3mPnRTEB6aS5gQKrA5fNYl7E
-	yPqv75QMdy9wTgp3NGfZoT88jFo+aoUnU5Fxf01V01L1r/rtad/JEwCWxE5uq+hlyGLT2dyyqIk
-	bQGKf/06LAgkyQEwObzeKF7+qhOTr2GQ7rIqFPwrMOfiFHKq+zzogC49Rxh+lBk9BVTAr+CYOaw
-	OWYZIzPogUZlEfZjRBCQTJGATfv38R2gPrTFtQ9x5PnxrSVXk7fUFjM5feeR3go2C8XItPiH3WH
-	HrJ8niQIT28D6GgMBDHZDEau3Bx0sEG2l7zcQCSwrEvHjAlK77lCFnsABDV3VMbsGUp//csXU9A
-	9SC2gp29u3dF1O8fmw97FwA==
-X-Received: by 2002:a17:902:ce04:b0:2ec:f228:764d with SMTP id d9443c01a7336-2efdc8db07amr2084325ad.18.1794887749194;
-        Mon, 16 Nov 2026 19:55:49 -0800 (PST)
-Received: from google.com (25.75.145.34.bc.googleusercontent.com. [34.145.75.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8bed12a818asm4348658b3a.17.2026.11.16.19.55.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Nov 2026 19:55:48 -0800 (PST)
-Date: Tue, 17 Nov 2026 03:55:45 +0000
-From: Samiullah Khawaja <skhawaja@google.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, David Woodhouse <dwmw2@infradead.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Alex Williamson <alex@shazbot.org>, Shuah Khan <shuah@kernel.org>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, kvm@vger.kernel.org, Pratyush Yadav <pratyush@kernel.org>, 
-	Pasha Tatashin <pasha.tatashin@soleen.com>, David Matlack <dmatlack@google.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Pranjal Shrivastava <praan@google.com>, 
-	Vipin Sharma <vipinsh@google.com>, Ankit Soni <Ankit.Soni@amd.com>, 
-	Nicolin Chen <nicolinc@nvidia.com>, John Starks <dev@jstarks.net>
-Subject: Re: [PATCH v7 12/18] iommu: Restore and reattach preserved domains
- to devices
-Message-ID: <avvK73lUs9RXdl0-@google.com>
-References: <20261110040828.1774343-1-skhawaja@google.com>
- <20261110040828.1774343-13-skhawaja@google.com>
- <0a38ae25-3eac-42f6-862e-3dc1d644ab97@linux.intel.com>
+        bh=Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=;
+        b=Z59x0Vjib58dWV6NTmo43f0293IyLEuqc3reop80c4jt0zDtCP1/RU9T6KWUlgMzzg
+         GAzXyRJIBikXGF2NT9kT4L2hZGHPojWGG/9EqQO274JxQbwzOpa/PGqWe4CvEMuOmbPy
+         EivrX0W24m7eW7S19kX6D5epCntgBhfFI6Rg2lXaEBbLlHaAIINuL3Jd9b8GfujvwLeB
+         hWNJLv6fYURRJ4N81R5M2PEtsLZGgwrsn1mTAEy6ZOmIsdJfq79UtTGIa+SWh/xryaGJ
+         QTKb3lck8Co7faCDhGQM49rFyUGyTzgH/1fARUCDJczSXC+YZHc0+VpA+NtihKNzGrT8
+         D7Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1794893326; x=1795498126;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=;
+        b=zCvKkH5czdvbmTFYoduhoEV0UyWgnf7fLrgb+WolvI1LpmSo67+vx3q76YjXY0Vmes
+         OIsKvpL7Zb7k4V43BErfo7bw3pjzjQc4vzcPpFMuaSLiEUsFZiJBt4bux3fpbW4Sn1BI
+         ncuNuxEMRNQomTviypszjEjzagIQ8pLWts4V03ttDNgHJY51gXbrwkG6OX3pr+E3f0xl
+         yZ6bI402vp3N6y7Lb/PibVJh/f0cEqYwM1C8eABud9JWJlGri8Otv2qU+HfwuclDIVZ1
+         QUXdlEPQAkvF++Fv5TOprAzEIcq9EfJh6i/3JMlYGUfiySs/+1TJTaBYq1Fx0PM1i2n4
+         NXhg==
+X-Gm-Message-State: APuU4Z8bBBqcSTtt0WsGpLxCZ99HdMCLgddD5LTIxWXNd7uqTNf/pV+w
+	uNtdMYAaZcth0NTMU19TXoq4cM/w6n09HsjJw2+V89HjyBKbxhi+t9w7AtkBCA7L38c/XBdegAp
+	AD3QSAJ6q9hFtVwNihIWl+eJj/6PIZJbkwROgygGNDbYKgQiT5FPtcTZXxQ==
+X-Gm-Gg: AYBFou2nmtGZ/czgxU7rv0st8VCHhQiNK/AegTnjxkOkZFmd1eIoxcWGfRc/N18XGFL
+	XKPcx4iWAVKsMqKwJGipkHsC5vIJd8qL2pcTwBkRO3CR3MPFOqalrFzrvtIaKltrw46wTkdE1Cp
+	58psVNmJ4A63uIZhrq0QLwBoQB4aWVhbJFKQD8Y1wzyadz5XpL8WXnldzndTOt55eZ+Bwxu5+a/
+	6kUDj5Ty4V9P6mhUvD5Stzozh8i1uIYZMhN2oAKI45f5edlNIPChf1AYpwX2ZUvdVhEIMQHpeaU
+	ihB7knzrjxBeTZ5y2wVOo7iHsQ9UGzmaQOLn3/rxTaKGN5yoMojoTCh/OuFUvliJRZLgSBjfM0Q
+	p+8jVQzFVHwAArGyFTG+EN4EBegcPbwyk+VNQsJEoZXJGdT3shBOg7Pw8APhKts+pxYUnEq17h3
+	Swf8YolA==
+X-Received: by 2002:a05:7022:7e83:b0:1b3:bdd9:cc6d with SMTP id a92af1059eb24-1b503121791mr14054658c88.32.1794893325837;
+        Mon, 16 Nov 2026 21:28:45 -0800 (PST)
+X-Received: by 2002:a05:7022:7e83:b0:1b3:bdd9:cc6d with SMTP id a92af1059eb24-1b503121791mr14054635c88.32.1794893325242;
+        Mon, 16 Nov 2026 21:28:45 -0800 (PST)
+Received: from [10.206.101.140] ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b50316e008sm37476107c88.6.2026.11.16.21.28.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Nov 2026 21:28:44 -0800 (PST)
+Message-ID: <0a4efa52-f05a-cbf2-52da-6835343efc4d@oss.qualcomm.com>
+Date: Tue, 17 Nov 2026 10:58:34 +0530
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -107,117 +114,235 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <0a38ae25-3eac-42f6-862e-3dc1d644ab97@linux.intel.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.8.0
+Subject: Re: [PATCH v7 5/5] iommu/of: Add support for "iommu-ranges" on a
+ device node
+To: Yijie Yang <yijie.yang@oss.qualcomm.com>,
+        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
+        "Joerg Roedel (AMD)" <joro@8bytes.org>,
+        Vasant Hegde <vasant.hegde@amd.com>,
+        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
+        Saravana Kannan <saravanak@kernel.org>,
+        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+        Joerg Roedel
+ <jroedel@suse.de>,
+        Srinath Mannam <srinath.mannam@broadcom.com>,
+        Oza Pawandeep <quic_poza@quicinc.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Alex Williamson <alex@shazbot.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux.dev, devicetree@vger.kernel.org,
+        kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-media@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
+ <20261106-add_iommu_ranges-v7-5-5c0f72083e52@oss.qualcomm.com>
+ <68bb5fe0-9005-4517-aec0-c39021a5b24f@oss.qualcomm.com>
+Content-Language: en-US
+From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+In-Reply-To: <68bb5fe0-9005-4517-aec0-c39021a5b24f@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTE3MDAyMSBTYWx0ZWRfXx1/GnZlz7YRj
+ BPgdRu0rNCpNaAnEz7nohRfjJyMBCrd+0VP2VxY+/NsUoBw8H08/YicUcX7wXyPzeW/Dd+hJ8qF
+ hCjlsNlsADICqBJtXKovT4NSNowBCz8=
+X-Proofpoint-ORIG-GUID: WlHeKLT0Cy8j36Y1SI53Iemg06WLxlH-
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTE3MDAyMSBTYWx0ZWRfX1MRv3GvaV3ea
+ yO9GU37igLJIFvRTTrXlLX0bZaXL0v1DrCi1iyPqAjSwSk6tjXcrxmPELPpMRdWscfSaeHaspFU
+ Ew4TIn9zBVZIl0S0cliPetx4TbNPmisznXXyYD1SBkznlLehlitmlVSq+RbMVLTMi6JqrJN1fsV
+ Q1NMg5iLvo+T5I4zCp0ukcT0qMGP+dgh/E+eQLJwBSdZhGEoqdwNzuveVJBfTNFMNk3YhVK+nSU
+ WkPjhEK+mDU8nElBC5PrQmR0Gaed1fCjS/BSuj84QZQY4rLcre1Kpds3Dc4ErwwZ0QTBbpwFFMJ
+ 62yTPrCcVH2H0OmqgV0E3C2HhJbUpOnFrwdO5kj3h9go6eSs/kVcA3OflQRRrD4hVVZiuth66xi
+ RLZjL9ibt11CqbLgvlzrc90pCXQ44rKPhCZII1dPkkywZL3n4jWuIiRyCgm7bTutO9K6TFWnJV0
+ x2KZ8AIDsU44KUoPd3g==
+X-Authority-Analysis: v=2.4 cv=K963jCWI c=1 sm=1 tr=0 ts=6afbe60e cx=c_pps
+ a=bS7HVuBVfinNPG3f6cIo3Q==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
+ a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
+ a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=A3swKraddPjxjnE1leEA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=vBUdepa8ALXHeOFLBtFW:22
+X-Proofpoint-GUID: WlHeKLT0Cy8j36Y1SI53Iemg06WLxlH-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-17_01,2026-11-16_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 suspectscore=0 clxscore=1015 priorityscore=1501 phishscore=0
+ lowpriorityscore=0 bulkscore=0 spamscore=0 malwarescore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611170021
 
-On Tue, Nov 17, 2026 at 10:29:37AM +0800, Baolu Lu wrote:
->On 11/10/2026 12:08 PM, Samiullah Khawaja wrote:
->>During default domain setup, restore the preserved domains by restoring
->>the page tables using restore() iommupt op. Associated the restored
->>domain with the iommu group of the preserved device, and reattach the
->>domain to the device.
+
+On 11/13/2026 3:06 PM, Yijie Yang wrote:
+>
+>
+> On 11/7/2026 1:14 AM, Vikash Garodia wrote:
+>> Reserving an IOVA address using "iommu-addresses" requires it to be
+>> placed in the reserved-memory node. But when "iommu-addresses" is the
+>> only property being described and there is no backing "reg" (i.e. no
+>> actual reserved system memory), it does not really belong under
+>> /reserved-memory. A device IOVA range is specific to its own address
+>> space, and does not describe the system physical memory to make it
+>> qualify under reserved-memory. Given this, place "iommu-addresses"
+>> inside reserved-memory only when it is paired with a "reg", otherwise,
+>> define it within the device own node. It was discussed here:
+>> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
 >>
->>Signed-off-by: Samiullah Khawaja <skhawaja@google.com>
->>---
->>  drivers/iommu/iommu.c            | 115 +++++++++++++++++++++++++++++--
->>  drivers/iommu/liveupdate.c       | 106 ++++++++++++++++++++++++++++
->>  include/linux/iommu-liveupdate.h |  39 +++++++++++
->>  3 files changed, 253 insertions(+), 7 deletions(-)
+>> Existing "iommu-addresses" property expects a phandle, which does
+>> not make sense when the property is defined within the device node.
+>> "iommu-ranges" was introduced to specify the device specific IOVA ranges
+>> when there is no backing "reg".
+>>
+>> Suggested-by: Rob Herring <robh@kernel.org>
+>> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+>> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+>> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
+>> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
+>> ---
+>>   drivers/iommu/of_iommu.c | 107 +++++++++++++++++++++++++++++++++++++++++++++++
+>>   1 file changed, 107 insertions(+)
+>>
+>> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+>> index
+>> 00b02c19f27e195fc36c4bc1d91253255147c9ab..e133d3b346feecac7e2bfaec44e4882060ee89ec
+>> 100644
+>> --- a/drivers/iommu/of_iommu.c
+>> +++ b/drivers/iommu/of_iommu.c
+>> @@ -183,6 +183,111 @@ iommu_resv_region_get_type(struct device *dev,
+>>       return IOMMU_RESV_RESERVED;
+>>   }
+>>   +/**
+>> + * of_iommu_derive_resv_regions - derive reserved regions which
+>> + *                                are outside of iommu-ranges
+>> + * @dev: device for which to get reserved regions
+>> + * @list: reserved region list
+>> + *
+>> + * A device can describe its own usable IOVA ranges directly on its node
+>> + * via "iommu-ranges". Everything not under those ranges is derived
+>> + * as a reserved region so the IOMMU allocator won't use it. Entries may
+>> + * appear in any order in the property.
+>> + */
+>> +static void of_iommu_derive_resv_regions(struct device *dev, struct
+>> list_head *list)
+>> +{
+>> +    struct of_iommu_range {
+>> +        struct list_head node;
+>> +        phys_addr_t start;
+>> +        phys_addr_t end;
+>> +    } *pos, *new, *next_range;
+>> +    int size, prot = IOMMU_READ | IOMMU_WRITE;
+>> +    struct iommu_resv_region *region;
+>> +    const __be32 *maps, *end;
+>> +    struct list_head *prev;
+>> +    phys_addr_t next = 0;
+>> +    LIST_HEAD(ranges);
+>> +
+>> +    maps = of_get_property(dev->of_node, "iommu-ranges", &size);
+>> +    if (!maps)
+>> +        return;
+>> +
+>> +    end = maps + size / sizeof(__be32);
+>> +
+>> +    while (maps < end) {
+>> +        phys_addr_t iova, iova_end;
+>> +        resource_size_t length;
+>> +
+>> +        maps = of_translate_dma_region(dev->of_node, maps, &iova, &length);
+>> +        if (!maps) {
+>> +            dev_err(dev, "%pOF: failed to parse iommu-ranges\n",
+>> +                dev->of_node);
+>> +            goto exit;
+>> +        }
+>> +
+>> +        if (!length)
+>> +            continue;
+>> +
+>> +        iova_end = iova + length - 1;
+>> +
+>> +        if (iova_end < iova) {
+>> +            dev_err(dev, "%pOF: iommu-ranges overflows address space\n",
+>> +                dev->of_node);
+>> +            goto exit;
+>> +        }
+>> +
+>> +        prev = &ranges;
+>> +        list_for_each_entry(pos, &ranges, node) {
+>> +            if (pos->start > iova)
+>> +                break;
+>> +            prev = &pos->node;
+>> +        }
+>> +
+>> +        new = kmalloc_obj(*new);
+>> +        if (!new)
+>> +            goto exit;
+>> +
+>> +        new->start = iova;
+>> +        new->end = iova_end;
+>> +        list_add(&new->node, prev);
+>> +    }
+>> +
+>> +    if (list_empty(&ranges))
+>> +        return;
+>> +
+>> +    if (of_dma_is_coherent(dev->of_node))
+>> +        prot |= IOMMU_CACHE;
+>> +
+>> +    list_for_each_entry_safe(pos, next_range, &ranges, node) {
+>> +        if (pos->start > next) {
+>> +            region = iommu_alloc_resv_region(next, pos->start - next, prot,
+>> +                             IOMMU_RESV_RESERVED, GFP_KERNEL);
+>> +            if (region)
+>> +                list_add_tail(&region->list, list);
 >
->[...]
->
->>+
->>+/**
->>+ * iommu_restore_domain() - Restore a preserved domain for a device
->>+ * @dev: Target device
->>+ * @ser: Serialized device state
->>+ *
->>+ * Restores or reuses a restored preserved domain for @dev from serialized state
->>+ * @ser.
->>+ *
->>+ * Return: Restored iommu_domain pointer, or ERR_PTR.
->>+ */
->>+struct iommu_domain *iommu_restore_domain(struct device *dev,
->>+					  struct iommu_device_ser *ser)
->>+{
->>+	struct iommu_domain_ser *domain_ser;
->>+	struct iommu_flb_obj *flb_obj;
->>+	struct iommu_domain *domain;
->>+	struct pt_iommu *pt;
->>+	int ret;
->>+
->>+	ret = iommu_liveupdate_flb_get_incoming(&flb_obj);
->>+	if (ret)
->>+		return ERR_PTR(ret);
->>+
->>+	mutex_lock(&flb_obj->lock);
->>+
->>+	/* Preserved device should have a preserved domain */
->>+	if (!ser->attachment.domain_phys) {
->>+		domain = ERR_PTR(-EINVAL);
->>+		goto out;
->>+	}
->>+
->>+	domain_ser = phys_to_virt(ser->attachment.domain_phys);
->>+	if (domain_ser->restored_domain) {
->>+		domain = domain_ser->restored_domain;
->>+		goto out;
->>+	}
->>+
->>+	domain_ser->hdr.flags |= IOMMU_SER_FLAG_INCOMING;
->>+	domain = iommu_paging_domain_alloc(dev);
->
->Ah, here it is.
->
->This allocation uses the driver's default. For VT-d, it prefers first-
->stage translation when supported. But the preserved domain may be
->second-stage, for example if it was allocated for dirty tracking or
->nested parent. Would the restore callback then walk the preserved page
->table using the wrong format-specific operations?
+> Why keep looping here after allocation failure?
 
-Yes, that is a valid case. We can store the allocation flags in the
-serialized state of the domain so it picks the right domain format
-during restore. Note that in case of dirty tracking, we do not
-preserve/restore the dirty tracking state, as the restored domain is
-immutable and will be replaced with a new one.
+This matches the existing "iommu-addresses" handling. We continue after an
+allocation failure since later allocations may still succeed, preserving as
+many DT-specified restrictions as possible.
 
 >
->>+	if (IS_ERR(domain))
->>+		goto out;
->>+
->>+	pt = iommupt_from_domain(domain);
->>+	if (!pt) {
->>+		iommu_domain_free(domain);
->>+		domain = ERR_PTR(-EOPNOTSUPP);
->>+		goto out;
->>+	}
->>+
->>+	ret = pt->ops->restore(pt, domain_ser);
->>+	if (ret) {
->>+		iommu_domain_free(domain);
->>+		domain = ERR_PTR(ret);
->>+		goto out;
->>+	}
->>+
->>+	domain->domain_ser = domain_ser;
->>+	domain_ser->restored_domain = domain;
->>+
->>+out:
->>+	mutex_unlock(&flb_obj->lock);
->>+	liveupdate_flb_put_incoming(&iommu_flb);
->>+	return domain;
->>+}
->>diff --git a/include/linux/iommu-liveupdate.h b/include/linux/iommu-liveupdate.h
->>index fb1e8efac8ec..68c7ebca25f6 100644
->>--- a/include/linux/iommu-liveupdate.h
->>+++ b/include/linux/iommu-liveupdate.h
->>@@ -99,8 +99,31 @@ static inline void *dev_iommu_restored_state(struct device *dev)
->>  	return NULL;
->>  }
->Thanks,
->baolu
+>> +        }
+>> +
+>> +        if (pos->end >= PHYS_ADDR_MAX - 1)
+>> +            goto exit;
+>> +
+>> +        if (pos->end >= next)
+>> +            next = pos->end + 1;
+>> +
+>> +        list_del(&pos->node);
+>> +        kfree(pos);
+>> +    }
+>> +
+>> +    region = iommu_alloc_resv_region(next, PHYS_ADDR_MAX - next,
+>> +                     prot, IOMMU_RESV_RESERVED, GFP_KERNEL);
+>> +    if (region)
+>> +        list_add_tail(&region->list, list);
+>> +
+>> +exit:
+>> +    list_for_each_entry_safe(pos, next_range, &ranges, node) {
+>> +        list_del(&pos->node);
+>> +        kfree(pos);
+>> +    }
+>> +}
+>> +
+>>   /**
+>>    * of_iommu_get_resv_regions - reserved region driver helper for device tree
+>>    * @dev: device for which to get reserved regions
+>> @@ -262,5 +367,7 @@ void of_iommu_get_resv_regions(struct device *dev, struct
+>> list_head *list)
+>>               }
+>>           }
+>>       }
+>> +
+>> +    of_iommu_derive_resv_regions(dev, list);
+>>   }
+>>   EXPORT_SYMBOL(of_iommu_get_resv_regions);
+>>
 >
-
-Thanks,
-Sami
