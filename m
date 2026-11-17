@@ -1,17 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.2
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.48
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794899242;
-	b=sBZEhIuWdzIdqJIqsOQwqprDrsOH8B/5TxFCDZvgA7usoYED9/j5jvDg1v7bKMEdAdY/
-	 t/BkLC2nDQF0T8pD43Uz0Ypj1XixRyNgT1+UT7EfYoVBSUh5MZbXC4890xjVpPFA9MeKu
-	 J6yyHcPPYQUMU2N9p5s2ihDpOahexCeTu+caaeVEmSI/YcYm5tGXmkYGk912Jz3uyiHUl
-	 1mk7joTe9+JuWDyEO5nrf5AdI2Czyc2PE0nYMEu1neJo3ciKkc5dh86cqBHCEndRzUSTS
-	 0m1+6vQEZ+GbhaiVD4rVHEgE3bcCK8zDzAdPHfIlFLA6YPVobt6qTx7RXA0q+Z4RzQA==
+	t=1794899259;
+	b=q4EZOJNgzng9K4WJvUrQSJUUepxXRG/e1DbmrXLaGBdooEvUmriOfMSm/pbezjImBcgZ
+	 2dVrEpHWXWwYgzVH+drkPAWy9McqxK3FPqJcf/rl3PI99KBWKPkVLYSK2S9z60ejORLuj
+	 AZhN5gQDhdDUdSMRHol2BAjql6XTGiOItI7q597ul3SSbhsUrpE8KXIVqkSXG24aM2nr7
+	 83Y9hlWoJ5Ap0A/FvfdCPZv6kAW096BYFa5A8Tykp51VAebKL3Jq8Et9acvyMPVyvO0yC
+	 RNdhaGXVllpOXbFv9tJUqa/i/DoUvK8c2sxID7tIJAqNfTL9s2E8GydgD8iNz3wiLCg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794899242;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794899259;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:
 	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
-	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
-	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding:Content-Type:X-Originating-IP:
 	 X-ClientProxiedBy:X-EOPAttributedMessage:X-MS-PublicTrafficType:
 	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
@@ -26,53 +26,53 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
 	 X-MS-Exchange-CrossTenant-FromEntityHeader:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=24F6tuFMiPcOFy76Y/yFbwHuDW8u65Y2paniWuWNiwA=;
-	b=Oqa8OgaxRpj7P0nrpEDP+w34A4o1LVpDjh4sqURaQ5fuInwleWtSSeFYFWz0ySKIFmz8
-	 z4oXhBW4Pk9Ma5k49CzB/P0KnUM8/jTHi53a5upm1LgCQtwUOKZHir8UNHhji/R47uQiI
-	 qsem0jzdX11C0WDRLLepEM/vRWrf9oSSgx9W1najLqFXEX19tAfxbNbmUlRD4SnGgcH/0
-	 4Gv1SXR6g7Rl+zJeieBKP1g/7Yw2UfnCLQZpe8SpdLxmr6JhxPrigjhXWMX3dq5Zsbx6H
-	 0p3b2hjBZ+BawhtOJWq1bikByZYUB3XGJdRSE2oF3T2xF/lu0qaUNq1p4xTzU+laNyQ==
+	bh=0BRl855Ng0MZ5d4+lc7Q4hAra7Vp29jOq6ZHebroW9w=;
+	b=vWCozODQHCbnkvqaRevCkqGhuKX5NL1/Cm+1pdXd0AY5H6JBMIqaZJc7lJ53p2Nwdooi
+	 LvXtZrzngRsJ8dWPQkmnOiVUlpLbouTMbRxa98ygRKDc0a4IPNkv1dfUhLRrREMf2sMWo
+	 ahWd3KiY1saK9rLPLgai+1Ykew5y/hgphtoJ1hAye10aHbRkHuvB+6ZMCWZ2+B1qKhR9i
+	 Hxb4vu551IS0O9+9Vksl2D+R0rUx2FV5fgYOiqQFNXRWh4RriqEpGnWn+Jx4+7LcPIJJT
+	 2VuziuwYJ3YB2QJsBKKmuPpGkhDm8J1VhRGCP2d7J1BD6xt4S2O2sT+rlLqdknoRcjg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=amd.com;
 	spf=fail smtp.mailfrom=amd.com;
-	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="mV/hVOun";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.2
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012002.outbound.protection.outlook.com [40.107.200.2])
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=KPyhtuY1;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.93.194.48
+Received: from SN4PR0501CU005.outbound.protection.outlook.com (mail-southcentralusazon11011048.outbound.protection.outlook.com [40.93.194.48])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA270606A329
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 07:07:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA270606A329
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BC1C606A330
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 07:07:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2BC1C606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=mV/hVOun
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=KPyhtuY1
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=snFrZZmDC8fBWQYDb9susjX20Ow23ZAm7m84BMOAQDPSgDmvawzJRmXiR7YsBB5ClYNaDWuebre/4U7/0uMEpR0prY56/w7QY4/jFOPeyQ9neHjYx2EbSA1F+Nr4VRY+fkVxR07brc1By6eI6r5KktI4LnX+Rda1vpxkK3OKtckKlbn2nMU7Ir2nj2Evf3oGDPrM3AU3YytZ/QQ/nt97eYeHswaUe5b+X9Hnm95YF/5eRUeAWXugEGqZdw+6kyWQ2IFyXAG5XnXZQVJSvRhSsk3q6R34PV2j0jRbr4qP+GUaGFJkUmLDHp/8hguxnQPVdFlbq3DueCEwQGh25lMghw==
+ b=fDTd3PLnxrW0+AWvDdl1vAoJEpjNZOT9lOSBFg310IVTWUD6U6r/90Lvmr5unNugbTDkkCHyO5s30xlxG+gLr1GUfHbVfPOHWae+PBqDUniXQRNo9xzoHktNrw3nJ4oIBp4O7glrykmLEEWNo29CuxFb4gLw2PLQJbEXq9SWm9/koth1K11Helkp1TE3UTKeVg0vAd3JvwSWpDR0Okl8sV2hxh+Ipc2h8wzCe3vlGo7oxz/ayM3REt5m3qXX6ZTzYYUIZZecYd5OqGy7BfTxBIGJn9tTiNwbYZqzP4dI9RksrbMXL+RW+NXnE7u2GfAYilaIhFkIIE/YBEZd7vEKcQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=24F6tuFMiPcOFy76Y/yFbwHuDW8u65Y2paniWuWNiwA=;
- b=Z8htYcR/OSEkvMkBYF7F0+Bb3gnAlyv/OJMov5VBMvbe78srN43/2EWFunueKnw+pnDNdCIl2qeMFa0fWooGXg3/oEirUbSJzdgjs/BoOSMmVpTrazQ4jP4IfOsRXc7pKb1Svf8uWp2QVvSM+d1nxOAgZInBcocPtUFHkfez4N2d91tSbk5XLcMoa4lFQ4SLcTANNTWmnOzgU7fpt/Ujf792Gps8hl36FPiKCQNX6uPTlkJG+ZfOFgB3Te27iLbKz2Rfg1mec9u2iRU1V8rRHoseIcz14h2MqRdEIjXD38ATa+41vLFFTGSd5UmrJWAY+/ONNfMYK9C9lgTfwXjBBw==
+ bh=0BRl855Ng0MZ5d4+lc7Q4hAra7Vp29jOq6ZHebroW9w=;
+ b=fjkMRnJx9ofpw4KTlj11cfdeaOUrhsoFB+PB4NVcRVwWmI95jtrgYVcMuH1k6ghk/EWUO/cD9Bj5bZ3+UxmY/38lEczk6CwBKyoymCi9ibvNH9cvC3kj/sOVYpwAfyksVDLQ11SaZbhUPD5lxLE96ZHHtPWkmpsNndEogi9PGfBW/nybJ5JTrtSyrTs4U9d8XRNtcVK+DbdCopvUIvdBB5I9TqFW5y7SDU29q3bciYfwTR7BeTisl7SDpBreJLM+xjsxvaQ2XeaQ+ZO/EbpX2zfjKNVnP5TSmc79sXNTgBRdPbMS0na+w2HNtTVQxy0nLMONyzNwF6e/nDjlro7IZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=24F6tuFMiPcOFy76Y/yFbwHuDW8u65Y2paniWuWNiwA=;
- b=mV/hVOunZpbqSN0IcfgnQjlYnZHxM5DnIJbWywMtIYNOSeCpdH9B0/keqQCB0yo7LLLZpx9MH6rnQha09AZXkbqKk+SptGN+PG3iXq+fejXLxi30mVnBbBEG4XwE+SbzDjLzxKVYbNno4BVXz0kklbgW7KNBRW7tqDS4nLib99g=
-Received: from BN9PR03CA0568.namprd03.prod.outlook.com (2603:10b6:408:138::33)
- by IA1PR12MB6556.namprd12.prod.outlook.com (2603:10b6:208:3a0::14) with
+ bh=0BRl855Ng0MZ5d4+lc7Q4hAra7Vp29jOq6ZHebroW9w=;
+ b=KPyhtuY11NtSM5BSsK/EZX2F+t0US5GOtIxZgZl86rk94xKpaMNhYV+/v0MO1fWeNtY2RTv/eDAhiIWJfH9aWE/t/r1MBJz6gqcCngNa4bumCApYcWu4ClqKS+D3Od4bNa6Er6OtelmFTQmSTgT771aEHMspzR65XHgU3elCSRM=
+Received: from CH0PR04CA0109.namprd04.prod.outlook.com (2603:10b6:610:75::24)
+ by BY5PR12MB4258.namprd12.prod.outlook.com (2603:10b6:a03:20d::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 17 Nov
- 2026 07:07:14 +0000
-Received: from BL6PEPF0006C3DF.namprd02.prod.outlook.com
- (2603:10b6:408:138:cafe::a8) by BN9PR03CA0568.outlook.office365.com
- (2603:10b6:408:138::33) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.11 via Frontend Transport; Tue,
- 17 Nov 2026 07:07:14 +0000
+ 2026 07:07:32 +0000
+Received: from BL6PEPF0006C3DE.namprd02.prod.outlook.com
+ (2603:10b6:610:75:cafe::91) by CH0PR04CA0109.outlook.office365.com
+ (2603:10b6:610:75::24) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.615.10 via Frontend Transport; Tue,
+ 17 Nov 2026 07:07:31 +0000
 X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
  is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -80,13 +80,13 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
 Received: from satlexmb07.amd.com (165.204.84.17) by
- BL6PEPF0006C3DF.mail.protection.outlook.com (10.167.249.234) with Microsoft
+ BL6PEPF0006C3DE.mail.protection.outlook.com (10.167.249.233) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.21.615.4 via Frontend Transport; Tue, 17 Nov 2026 07:07:14 +0000
+ 15.21.615.4 via Frontend Transport; Tue, 17 Nov 2026 07:07:31 +0000
 Received: from BLR-L1-SARUNKOD.amd.com (10.180.168.240) by satlexmb07.amd.com
  (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Tue, 17 Nov
- 2026 01:07:10 -0600
+ 2026 01:07:27 -0600
 From: Sairaj Kodilkar <sarunkod@amd.com>
 To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Adrian Huang
 	<ahuang12@lenovo.com>, Joerg Roedel <jroedel@suse.de>, Robin Murphy
@@ -94,11 +94,13 @@ To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Adrian Huang
 	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, "Will
  Deacon" <will@kernel.org>, <iommu@lists.linux.dev>,
 	<linux-kernel@vger.kernel.org>
-CC: Sairaj Kodilkar <sarunkod@amd.com>
-Subject: [PATCH v4 0/3] iommu/amd: IVMD handling cleanup and ivmd= boot override
-Date: Tue, 17 Nov 2026 12:36:51 +0530
-Message-ID: <20261117070654.3699-1-sarunkod@amd.com>
+CC: Sairaj Kodilkar <sarunkod@amd.com>, Akshay Jindal <Akshay.Jindal@amd.com>
+Subject: [PATCH v4 1/3] iommu/amd: Drop unused global exclusion range fields and init
+Date: Tue, 17 Nov 2026 12:36:52 +0530
+Message-ID: <20261117070654.3699-2-sarunkod@amd.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261117070654.3699-1-sarunkod@amd.com>
+References: <20261117070654.3699-1-sarunkod@amd.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -114,102 +116,95 @@ X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
  (10.181.42.216)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0006C3DF:EE_|IA1PR12MB6556:EE_
-X-MS-Office365-Filtering-Correlation-Id: aee74a87-9a45-41e3-e6bf-08df4479687b
+X-MS-TrafficTypeDiagnostic: BL6PEPF0006C3DE:EE_|BY5PR12MB4258:EE_
+X-MS-Office365-Filtering-Correlation-Id: 108aa8dd-0c83-41f5-6ca7-08df447972be
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|1800799024|82310400026|36860700016|10067099003|56012099006|11063799006|261026121527099003|261026140227099003|261028144727099003|261022075727099003|261021123027099003|261021121427099003|261022105027099003|261102123227099003|261009223027099003|261009221227099003|18002099003|13003099007;
+	BCL:0;ARA:13230040|376014|23010399003|1800799024|36860700016|82310400026|11063799006|56012099006|261026121527099003|261026135527099003|261026140227099003|261028144727099003|10067099003|261022115727099003|261021130227099003|261021135927099003|261021133027099003|261022075727099003|261021123027099003|261022113327099003|261021121427099003|261022105027099003|261026130827099003|261102123227099003|261009223027099003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	N1/RbtoQ7zlnB9oz1gme7V00Y5+5NJTtz4rWR/WH765qCv3973GFx0nhY5wCbJXE5E4c1XuqxCy41v3s6Ubv/OphamtYK5QWOy9BbozIl0SLTv4jBskXpLcy8nLEyBC1uC1vnuctwqdtd9lJpnmZibOq0zh/CoYiBwFp7P+FkYzrxfKthrDUhIwJBP8m2bmaZyLkqslSwLGFurfekiYZkoHHnZ/h32urZOxOnZR+p36yl5GKHy5/Y5GAQb1YvxP6jiIjMnYuCFXSWTd5upYK5zvyBDumLvpJ9qsTN3+2T7PbrAuxFXd5/NgZgt0L+6DO8H1jfSOFCsyWCwj7X3mEVvDhrlEo8V4cc2qdd0pj7QslHnuitEUx9d0milJ+TOZe7rreR+bkVLCV+Hd3sMqlGLrubgpf1Dr1ePWVBYZdALvsbmjFvRbZFQcbfZ9IBb7D2QH5POnujxOOeufNAOyj/ZpGhTCQopOULcE8jmZqeZlEih2roOwkKQdFAgc14GKOjZOwARh9MF1lZgjhIXGewxM4ZWZqDdxqO0LmvzTglJZRnev/5IVO4wzh3iHgCgmmjcquy4vyL2vTb+KFoQyD0wlF7QexIITt/mkgrRVgkjndeJxFuq4Bf+J15S0kEtt32ZQgtm4OEjtncxWDgLU9kA==
+	DrB+DuBWnMj4GqMS+ow4YFOXOwJBpkDJvnyuZcYBGz361kd4eNJ6wo8qTM5R3nvQHn7G9/p6OrOHv9HFhIGUXt6zWq1c6o3TZ0Kaqzjefwsgw9nv4e/XHnRJL16VbOQurlsEg9j42CxW0bjo/FHlqMUEZZunXLY5+TQt7IwHFQRGi7Ysuf5x623wzS1M9cCyNlMDrFr18DB86sx5zeN1aJkHjrsNBTmRJBteORshWq4DZ0Ug28IfAAfJK6DA9rFw5WrZyNXRcHS9LS3ZE2+/yIYDqqtZGK/H8TE7SdXDH+ITzTHbKcT/6LFt9RBRszoRiPB0bQJm6iRd40j12rS5AftgaURBsfDfxDY0iML0lzXEJoRFGIeVxpIIxhZ7lPCm/swJ3lD+ARZ6svXnS62pST8o0j5nxoATdoPXqbPuhl8LzWu98VYcT3Fhoi9qG5mNJizEoJnYoKbeVU9c6i/BWZ9RaeQgOoXj+6l4j4+f2Uzc/cwouJh3DsoEXnG6bjfccFzGEtvjv7BckMDr/9eXtqrJRNak7TrcRQDwzf9bPxaO1BNEBgMwwNBTK+zRqe1pJHz6UR/65Ked9R+WOEbhhrmrhoifIXiYbpEzngLsk11PLDsaE9s7EsEPQu2HmzidJpHlPnOigeghColkcznT6jxcgfL7trF4nsEPax97I+jDfRWsOa3z+S66qN9dgtQR1W8QxXlJ7sZNfZtHkfWlMw==
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(82310400026)(36860700016)(10067099003)(56012099006)(11063799006)(261026121527099003)(261026140227099003)(261028144727099003)(261022075727099003)(261021123027099003)(261021121427099003)(261022105027099003)(261102123227099003)(261009223027099003)(261009221227099003)(18002099003)(13003099007);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(23010399003)(1800799024)(36860700016)(82310400026)(11063799006)(56012099006)(261026121527099003)(261026135527099003)(261026140227099003)(261028144727099003)(10067099003)(261022115727099003)(261021130227099003)(261021135927099003)(261021133027099003)(261022075727099003)(261021123027099003)(261022113327099003)(261021121427099003)(261022105027099003)(261026130827099003)(261102123227099003)(261009223027099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	L5RS77RKtv2GNymmcxCtQsImKehspESSse6ZLznasBA4k6nDHFdUCTrINGsSqkpsHwGihKMAs1Lh23vqAET3VEJnj+VDvQgedD3giTzQKi/BjbGhCGskCPzcbPSdMewhAjR01eZ69ivIjKOYgHhRFGDDGfS2yHKA8inqYGzvEWPy2I+GC1czW9pk1dWVkK+1VMDptVD+Hzfuw7+5QN5gYJET22eNWUm76jQKOySKqnvnvsq/7mGTMau4m3nH7gga8h8AdgFS0QtC4mqRyiJn2Muc8X/HOgV+H3qsmYDYGyhSvSUlLgjQkH3IZfUNI+AfnzbXRa6EpvaRYu2ntyMpjdA6ihjNESIzJsSSIf4BnhPSn19LkXdNpByKKCcNja6Sms5SXOycr8CcYpIh8p1y9FSZyduODsUEiwQWd75SGP2bh0qp17xgCRNThhXzwT/X
+	m+6AKYwcQ7A6/anoJIlXak34Qi4QnpnFl7A8+rjS8+h8hDbNBeSK+nPOqFYIG4jWLRvM3F+rAn+0mFFuyGvf3ndAF2AsM4KDEVXwiBe30TPiH5XTMuruzS5/m3udYW9KqUymgJ0kKtQgW+1rH5EmMJib38R6Af1TFv5MAvmkqtCcUI55gY4lyVCVaBIUQ+SaRJtzvcvrzELfa0MdfmIwzu2YjYR4HY2dGKr/EORl/ajWYqw0Y9CDp7EK5InxZrP3fsEx5ubMgMh1aql8JZcJyUCgLd8eF7KkkRiWZlSjL0YyGjbaZqRjqgpE7ovB4eHX1sR7pNTLf29Nb0dB7qbql0oNe3nqNNpveuUhPbG4mQh4NvpZHEBCgZIxRBJ1XBr6zcQ01IFgJsK59oaqgeOuDLuzT5Y3WNGE9Y1TOpVjul1hOl4BWW8fOBXPzcrm617c
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 07:07:14.4148
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 07:07:31.6387
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aee74a87-9a45-41e3-e6bf-08df4479687b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 108aa8dd-0c83-41f5-6ca7-08df447972be
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0006C3DF.namprd02.prod.outlook.com
+	BL6PEPF0006C3DE.namprd02.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6556
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4258
 
-This series refreshes how the AMD IOMMU driver models IVRS IVMD entries
-after the hardware exclusion range registers were repurposed.
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-The first patch renames the associated MMIO offsets to reflect completion-wait
-store base/limit.
+Remove unused struct amd_iommu.exclusion_start/exclusion_length, the
+MMIO_EXCL_* flag masks, and iommu_set_exclusion_range(). These struct
+amd_iommu fields were never assigned, so early_enable_iommu() never
+programmed the hardware exclusion registers through this path.
 
-The second patch drops the workaround that forced IVMD exclusion ranges to
-r/w unity mappings; the driver no longer programs exclusion range
-registers, so that the workaround is obsolete.
+Please note that the exclusion range registers have been repurposed
+to SNP completion-wait store base / limit registers. So, rename
+MMIO_EXCL_BASE/LIMIT via to MMIO_COMPL_STORE_BASE/LIMIT instead.
 
-The third patch centralizes IVMD flag definitions, renames the unity-map
-structures to ivmd_entry, stores the raw IVMD flags byte from ACPI, and
-derives IOMMU reserved regions (including exclusion as IOMMU_RESV_RESERVED)
-from those flags.
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Signed-off-by: Sairaj Kodilkar <sarunkod@amd.com>
+Reviewed-by: Akshay Jindal <Akshay.Jindal@amd.com>
+---
+ drivers/iommu/amd/amd_iommu_types.h | 4 ++--
+ drivers/iommu/amd/init.c            | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-
-Changes from v3:
-https://lore.kernel.org/all/20261106041650.24076-1-sarunkod@amd.com/
-
-* Patch 2: rectify the flag checks and move it under init_unity_map_range(). [Akshay]
-
-* Patch 3: Rename ivmd_entry_map to ivmd_entry_to. [Akshay]
-
-Changes from v2:
-https://lore.kernel.org/all/20260424092213.16976-1-suravee.suthikulpanit@amd.com/#t
-
-*Patch 2: Report an IVMD exclusion range as IOMMU_RESV_RESERVED in this
-	  patch, instead of leaving that for patch 3. This patch stops
-	  forcing the exclusion to read/write unity, the range has no read
-	  or write permission. iommu_map() rejects that, so a tree checked
-	  out at patch 2 does not boot. Reserving the range in the same
-	  patch keeps the series bisectable.
-
-* Patch 4: Drop this patch, ivmd= command line does not have any real use and
-	   complicates driver.
-
-
-Change from v1:
-(https://lore.kernel.org/linux-iommu/20260420170033.6780-1-suravee.suthikulpanit@amd.com/)
-
-* Rebase on top of patch "[PATCH] iommu/amd: Remove dead code for exclusion ranges in IVMD"
-  that was submitted by Yu Zhang <zhangyu1@linux.microsoft.com>.
-  (https://lore.kernel.org/all/20260331152550.479841-1-zhangyu1@linux.microsoft.com/)
-
-* Patch 1: Modified to only rename the marco.
-
-* Patch 3: Reintroduce logic to parse IVMD exclusion flag to allow
-  reserve region of type IOMMU_RESV_RESERVED.
-
-* Patch 4: 
-  - Update the sscan function to scan start, length, flags in hex format only.
-  - Fix apply_ivmd_cmdline_entries() to not free the cmd, which points to
-    the early_ivmd_cmdline_map[]  on failure path.
-
-
-Sairaj Kodilkar (1):
-  iommu/amd: Rename unity_map_entry and unit_map to ivmd_entry and
-    ivhd_entry_list
-
-Suravee Suthikulpanit (2):
-  iommu/amd: Drop unused global exclusion range fields and init
-  iommu/amd: Do not convert IVMD exclusion range to unity range
-
- drivers/iommu/amd/amd_iommu_types.h | 22 ++++++-----
- drivers/iommu/amd/init.c            | 59 ++++++++++++++---------------
- drivers/iommu/amd/iommu.c           | 19 +++++++---
- 3 files changed, 55 insertions(+), 45 deletions(-)
-
-
-base-commit: 666539eecdf4db623f5e3c3e55cf9f2dfad24aa4
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 8241ef922519..678ceddd711c 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -44,8 +44,8 @@
+ #define MMIO_CMD_BUF_OFFSET     0x0008
+ #define MMIO_EVT_BUF_OFFSET     0x0010
+ #define MMIO_CONTROL_OFFSET     0x0018
+-#define MMIO_EXCL_BASE_OFFSET   0x0020
+-#define MMIO_EXCL_LIMIT_OFFSET  0x0028
++#define MMIO_COMPL_STORE_BASE_OFFSET   0x0020
++#define MMIO_COMPL_STORE_LIMIT_OFFSET  0x0028
+ #define MMIO_EXT_FEATURES	0x0030
+ #define MMIO_PPR_LOG_OFFSET	0x0038
+ #define MMIO_GA_LOG_BASE_OFFSET	0x00e0
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 8a410d4aa370..13c96feed64f 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -370,14 +370,14 @@ static void iommu_set_cwwb_range(struct amd_iommu *iommu)
+ 	 * Re-purpose Exclusion base/limit registers for Completion wait
+ 	 * write-back base/limit.
+ 	 */
+-	memcpy_toio(iommu->mmio_base + MMIO_EXCL_BASE_OFFSET,
++	memcpy_toio(iommu->mmio_base + MMIO_COMPL_STORE_BASE_OFFSET,
+ 		    &entry, sizeof(entry));
+ 
+ 	/* Note:
+ 	 * Default to 4 Kbytes, which can be specified by setting base
+ 	 * address equal to the limit address.
+ 	 */
+-	memcpy_toio(iommu->mmio_base + MMIO_EXCL_LIMIT_OFFSET,
++	memcpy_toio(iommu->mmio_base + MMIO_COMPL_STORE_LIMIT_OFFSET,
+ 		    &entry, sizeof(entry));
+ }
+ 
+@@ -1022,7 +1022,7 @@ static int __init remap_or_alloc_cwwb_sem(struct amd_iommu *iommu)
+ 		 * completion wait buffer (CWB) address. Read and re-use it.
+ 		 */
+ 		pr_info_once("Re-using CWB buffers from the previous kernel\n");
+-		paddr = readq(iommu->mmio_base + MMIO_EXCL_BASE_OFFSET) & PM_ADDR_MASK;
++		paddr = readq(iommu->mmio_base + MMIO_COMPL_STORE_BASE_OFFSET) & PM_ADDR_MASK;
+ 		iommu->cmd_sem = iommu_memremap(paddr, PAGE_SIZE);
+ 		if (!iommu->cmd_sem)
+ 			return -ENOMEM;
 -- 
 2.34.1
-
 
