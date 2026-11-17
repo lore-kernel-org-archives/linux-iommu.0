@@ -1,110 +1,104 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794893328;
-	b=dyqlZSLCzoRNl2HSeCATAwtvphKRFlPVDGZ67txzCEkYp6Q7Ec2PWz3g0IfrobLyP4GJ
-	 S62cFGSI0FcaQe1t2nNbf41kVtOLhMQ9Co8C4zx1OZ3Q6EuWak/1LCaYUqTYMzD3WyZOw
-	 JWpJGDYFm07OuHH4Xkj9pI1wHGN+EiMp1UhVHkUwxLv57e3MjCqiZDCF4UI76UBLRhYLN
-	 Qfz59uNayn5b4Fi7uIETvD23aLs9jPB7NaQrSvRCg1Y/sjCZTnHAlItsy9DV7r9rrvYAz
-	 oYMUJNKBo1TPxgAzDvtqsx7OILnfjwMWjxSpO6n37CN0cZ9dQaMmdHsUrAVPnJXm6GA==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794893328;
-	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:
-	 DKIM-Signature:X-Google-DKIM-Signature:X-Gm-Message-State:X-Gm-Gg:
-	 X-Received:X-Received:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-Proofpoint-Spam-Info:
-	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
-	 X-Authority-Analysis:X-Proofpoint-GUID:X-Proofpoint-Virus-Version:
-	 X-Proofpoint-Spam-Details;
-	bh=Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=;
-	b=BS9m++zt2AL9X8LDPZyQh/SiSwddgy3HnQAleCkMg0eK74FkQuwmi/TooXh6vxmKh6b3
-	 xCJoqs0Cdu0n3iFwL/K1GM0L2tybNOL0Gj8PTw5QQ5+GI8ZWeTI0tgT4mNRJUHz3gVW6E
-	 Tf3YdYQXPY7rb/kmDT618dmAQjuXf3cjhc3z6L0aNzK5tSAQxedsVJiQuvtKuW5PhDkX3
-	 5+HE7oA0cljvou4OC1mCrKW/AtP/YIoCBrR2Baj3txYyYjt0GRL3Zj2Do6R6p0fsTWFb3
-	 uTi+3bZTMqbjGhJ7Cn3itNEtFgGMKxAe9DJlBbZPH2gmg/JavOCMKo9T7QgrAgUug2w==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.qualcomm.com;
-	spf=pass smtp.mailfrom=oss.qualcomm.com;
-	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=KhJTRozP;
-	dkim=pass header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Z59x0Vji;
-	arc=none smtp.remote-ip=205.220.168.131
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.2
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794899242;
+	b=sBZEhIuWdzIdqJIqsOQwqprDrsOH8B/5TxFCDZvgA7usoYED9/j5jvDg1v7bKMEdAdY/
+	 t/BkLC2nDQF0T8pD43Uz0Ypj1XixRyNgT1+UT7EfYoVBSUh5MZbXC4890xjVpPFA9MeKu
+	 J6yyHcPPYQUMU2N9p5s2ihDpOahexCeTu+caaeVEmSI/YcYm5tGXmkYGk912Jz3uyiHUl
+	 1mk7joTe9+JuWDyEO5nrf5AdI2Czyc2PE0nYMEu1neJo3ciKkc5dh86cqBHCEndRzUSTS
+	 0m1+6vQEZ+GbhaiVD4rVHEgE3bcCK8zDzAdPHfIlFLA6YPVobt6qTx7RXA0q+Z4RzQA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794899242;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:
+	 X-MS-Exchange-Authentication-Results:Received-SPF:Received:Received:
+	 From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+	 X-ClientProxiedBy:X-EOPAttributedMessage:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
+	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
+	 X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-Id:
+	 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=24F6tuFMiPcOFy76Y/yFbwHuDW8u65Y2paniWuWNiwA=;
+	b=Oqa8OgaxRpj7P0nrpEDP+w34A4o1LVpDjh4sqURaQ5fuInwleWtSSeFYFWz0ySKIFmz8
+	 z4oXhBW4Pk9Ma5k49CzB/P0KnUM8/jTHi53a5upm1LgCQtwUOKZHir8UNHhji/R47uQiI
+	 qsem0jzdX11C0WDRLLepEM/vRWrf9oSSgx9W1najLqFXEX19tAfxbNbmUlRD4SnGgcH/0
+	 4Gv1SXR6g7Rl+zJeieBKP1g/7Yw2UfnCLQZpe8SpdLxmr6JhxPrigjhXWMX3dq5Zsbx6H
+	 0p3b2hjBZ+BawhtOJWq1bikByZYUB3XGJdRSE2oF3T2xF/lu0qaUNq1p4xTzU+laNyQ==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=amd.com;
+	spf=fail smtp.mailfrom=amd.com;
+	dkim=pass header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b="mV/hVOun";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.2
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012002.outbound.protection.outlook.com [40.107.200.2])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74743606A339
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:28:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 74743606A339
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA270606A329
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 07:07:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BA270606A329
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=KhJTRozP;
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.a=rsa-sha256 header.s=google header.b=Z59x0Vji
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AH2a95V3407593
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:28:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=; b=KhJTRozPBc4IBPM2
-	xyFbzyZv+g6Ct5m0PsZrjvzdeh/5BbvBjaSzY96u5i7LRgboZjdKxlCJ0DhL2tHl
-	Xa8Ju6FVHXkNoInFuySKgqk2xypJCAJHtfaQ/vrKRhpOVLRVYlTLGU5IRJEf9iLn
-	3i+bfoM9u82eYCCXjdLwh09J57DGKQ1SYLPGTof3pKqpJ4LU8Kip/kX0uTfRcF84
-	Ztra8h0BY3EuVv65FwTJWtMhMaccd1o6XxakEXgZC1qa3GRVCjZubotTP209MVsU
-	rqto+KACEhN2DYPMayazdMMw5U5L4e5kL65Af3zzRR1UW8RMV/A3XEVBrkX5fkOj
-	PGwTAQ==
-Received: from mail-dl1-f72.google.com (mail-dl1-f72.google.com [74.125.82.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j09hthg2e-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:28:46 +0000 (GMT)
-Received: by mail-dl1-f72.google.com with SMTP id a92af1059eb24-1b3b45597c7so3129184c88.1
-        for <iommu@lists.linux.dev>; Mon, 16 Nov 2026 21:28:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1794893326; x=1795498126; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=;
-        b=Z59x0Vjib58dWV6NTmo43f0293IyLEuqc3reop80c4jt0zDtCP1/RU9T6KWUlgMzzg
-         GAzXyRJIBikXGF2NT9kT4L2hZGHPojWGG/9EqQO274JxQbwzOpa/PGqWe4CvEMuOmbPy
-         EivrX0W24m7eW7S19kX6D5epCntgBhfFI6Rg2lXaEBbLlHaAIINuL3Jd9b8GfujvwLeB
-         hWNJLv6fYURRJ4N81R5M2PEtsLZGgwrsn1mTAEy6ZOmIsdJfq79UtTGIa+SWh/xryaGJ
-         QTKb3lck8Co7faCDhGQM49rFyUGyTzgH/1fARUCDJczSXC+YZHc0+VpA+NtihKNzGrT8
-         D7Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794893326; x=1795498126;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=Tiq/52RpumbLroLNo8L52jaj4Ii9SWDDyhDE5SXLdGY=;
-        b=zCvKkH5czdvbmTFYoduhoEV0UyWgnf7fLrgb+WolvI1LpmSo67+vx3q76YjXY0Vmes
-         OIsKvpL7Zb7k4V43BErfo7bw3pjzjQc4vzcPpFMuaSLiEUsFZiJBt4bux3fpbW4Sn1BI
-         ncuNuxEMRNQomTviypszjEjzagIQ8pLWts4V03ttDNgHJY51gXbrwkG6OX3pr+E3f0xl
-         yZ6bI402vp3N6y7Lb/PibVJh/f0cEqYwM1C8eABud9JWJlGri8Otv2qU+HfwuclDIVZ1
-         QUXdlEPQAkvF++Fv5TOprAzEIcq9EfJh6i/3JMlYGUfiySs/+1TJTaBYq1Fx0PM1i2n4
-         NXhg==
-X-Gm-Message-State: APuU4Z8bBBqcSTtt0WsGpLxCZ99HdMCLgddD5LTIxWXNd7uqTNf/pV+w
-	uNtdMYAaZcth0NTMU19TXoq4cM/w6n09HsjJw2+V89HjyBKbxhi+t9w7AtkBCA7L38c/XBdegAp
-	AD3QSAJ6q9hFtVwNihIWl+eJj/6PIZJbkwROgygGNDbYKgQiT5FPtcTZXxQ==
-X-Gm-Gg: AYBFou2nmtGZ/czgxU7rv0st8VCHhQiNK/AegTnjxkOkZFmd1eIoxcWGfRc/N18XGFL
-	XKPcx4iWAVKsMqKwJGipkHsC5vIJd8qL2pcTwBkRO3CR3MPFOqalrFzrvtIaKltrw46wTkdE1Cp
-	58psVNmJ4A63uIZhrq0QLwBoQB4aWVhbJFKQD8Y1wzyadz5XpL8WXnldzndTOt55eZ+Bwxu5+a/
-	6kUDj5Ty4V9P6mhUvD5Stzozh8i1uIYZMhN2oAKI45f5edlNIPChf1AYpwX2ZUvdVhEIMQHpeaU
-	ihB7knzrjxBeTZ5y2wVOo7iHsQ9UGzmaQOLn3/rxTaKGN5yoMojoTCh/OuFUvliJRZLgSBjfM0Q
-	p+8jVQzFVHwAArGyFTG+EN4EBegcPbwyk+VNQsJEoZXJGdT3shBOg7Pw8APhKts+pxYUnEq17h3
-	Swf8YolA==
-X-Received: by 2002:a05:7022:7e83:b0:1b3:bdd9:cc6d with SMTP id a92af1059eb24-1b503121791mr14054658c88.32.1794893325837;
-        Mon, 16 Nov 2026 21:28:45 -0800 (PST)
-X-Received: by 2002:a05:7022:7e83:b0:1b3:bdd9:cc6d with SMTP id a92af1059eb24-1b503121791mr14054635c88.32.1794893325242;
-        Mon, 16 Nov 2026 21:28:45 -0800 (PST)
-Received: from [10.206.101.140] ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1b50316e008sm37476107c88.6.2026.11.16.21.28.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Nov 2026 21:28:44 -0800 (PST)
-Message-ID: <0a4efa52-f05a-cbf2-52da-6835343efc4d@oss.qualcomm.com>
-Date: Tue, 17 Nov 2026 10:58:34 +0530
+	dkim=pass (1024-bit key, unprotected) header.d=amd.com header.i=@amd.com header.a=rsa-sha256 header.s=selector1 header.b=mV/hVOun
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=snFrZZmDC8fBWQYDb9susjX20Ow23ZAm7m84BMOAQDPSgDmvawzJRmXiR7YsBB5ClYNaDWuebre/4U7/0uMEpR0prY56/w7QY4/jFOPeyQ9neHjYx2EbSA1F+Nr4VRY+fkVxR07brc1By6eI6r5KktI4LnX+Rda1vpxkK3OKtckKlbn2nMU7Ir2nj2Evf3oGDPrM3AU3YytZ/QQ/nt97eYeHswaUe5b+X9Hnm95YF/5eRUeAWXugEGqZdw+6kyWQ2IFyXAG5XnXZQVJSvRhSsk3q6R34PV2j0jRbr4qP+GUaGFJkUmLDHp/8hguxnQPVdFlbq3DueCEwQGh25lMghw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=24F6tuFMiPcOFy76Y/yFbwHuDW8u65Y2paniWuWNiwA=;
+ b=Z8htYcR/OSEkvMkBYF7F0+Bb3gnAlyv/OJMov5VBMvbe78srN43/2EWFunueKnw+pnDNdCIl2qeMFa0fWooGXg3/oEirUbSJzdgjs/BoOSMmVpTrazQ4jP4IfOsRXc7pKb1Svf8uWp2QVvSM+d1nxOAgZInBcocPtUFHkfez4N2d91tSbk5XLcMoa4lFQ4SLcTANNTWmnOzgU7fpt/Ujf792Gps8hl36FPiKCQNX6uPTlkJG+ZfOFgB3Te27iLbKz2Rfg1mec9u2iRU1V8rRHoseIcz14h2MqRdEIjXD38ATa+41vLFFTGSd5UmrJWAY+/ONNfMYK9C9lgTfwXjBBw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=24F6tuFMiPcOFy76Y/yFbwHuDW8u65Y2paniWuWNiwA=;
+ b=mV/hVOunZpbqSN0IcfgnQjlYnZHxM5DnIJbWywMtIYNOSeCpdH9B0/keqQCB0yo7LLLZpx9MH6rnQha09AZXkbqKk+SptGN+PG3iXq+fejXLxi30mVnBbBEG4XwE+SbzDjLzxKVYbNno4BVXz0kklbgW7KNBRW7tqDS4nLib99g=
+Received: from BN9PR03CA0568.namprd03.prod.outlook.com (2603:10b6:408:138::33)
+ by IA1PR12MB6556.namprd12.prod.outlook.com (2603:10b6:208:3a0::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Tue, 17 Nov
+ 2026 07:07:14 +0000
+Received: from BL6PEPF0006C3DF.namprd02.prod.outlook.com
+ (2603:10b6:408:138:cafe::a8) by BN9PR03CA0568.outlook.office365.com
+ (2603:10b6:408:138::33) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.21.592.11 via Frontend Transport; Tue,
+ 17 Nov 2026 07:07:14 +0000
+X-MS-Exchange-Authentication-Results: mx.microsoft.com 1; spf=pass (sender IP
+ is 165.204.84.17) smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
+Received: from satlexmb07.amd.com (165.204.84.17) by
+ BL6PEPF0006C3DF.mail.protection.outlook.com (10.167.249.234) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.21.615.4 via Frontend Transport; Tue, 17 Nov 2026 07:07:14 +0000
+Received: from BLR-L1-SARUNKOD.amd.com (10.180.168.240) by satlexmb07.amd.com
+ (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.57; Tue, 17 Nov
+ 2026 01:07:10 -0600
+From: Sairaj Kodilkar <sarunkod@amd.com>
+To: "Joerg Roedel (AMD)" <joro@8bytes.org>, Adrian Huang
+	<ahuang12@lenovo.com>, Joerg Roedel <jroedel@suse.de>, Robin Murphy
+	<robin.murphy@arm.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, "Will
+ Deacon" <will@kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+CC: Sairaj Kodilkar <sarunkod@amd.com>
+Subject: [PATCH v4 0/3] iommu/amd: IVMD handling cleanup and ivmd= boot override
+Date: Tue, 17 Nov 2026 12:36:51 +0530
+Message-ID: <20261117070654.3699-1-sarunkod@amd.com>
+X-Mailer: git-send-email 2.34.1
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -114,235 +108,108 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.8.0
-Subject: Re: [PATCH v7 5/5] iommu/of: Add support for "iommu-ranges" on a
- device node
-To: Yijie Yang <yijie.yang@oss.qualcomm.com>,
-        Vikash Garodia <vikash.garodia@oss.qualcomm.com>,
-        "Joerg Roedel (AMD)" <joro@8bytes.org>,
-        Vasant Hegde <vasant.hegde@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Jean-Philippe Brucker <jpb@kernel.org>, Rob Herring <robh@kernel.org>,
-        Saravana Kannan <saravanak@kernel.org>,
-        Tomasz Nowicki <tomasz.nowicki@caviumnetworks.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
-        Joerg Roedel
- <jroedel@suse.de>,
-        Srinath Mannam <srinath.mannam@broadcom.com>,
-        Oza Pawandeep <quic_poza@quicinc.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Alex Williamson <alex@shazbot.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux.dev, devicetree@vger.kernel.org,
-        kvm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-media@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-References: <20261106-add_iommu_ranges-v7-0-5c0f72083e52@oss.qualcomm.com>
- <20261106-add_iommu_ranges-v7-5-5c0f72083e52@oss.qualcomm.com>
- <68bb5fe0-9005-4517-aec0-c39021a5b24f@oss.qualcomm.com>
-Content-Language: en-US
-From: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
-In-Reply-To: <68bb5fe0-9005-4517-aec0-c39021a5b24f@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Info: AW1haW4tMjYxMTE3MDAyMSBTYWx0ZWRfXx1/GnZlz7YRj
- BPgdRu0rNCpNaAnEz7nohRfjJyMBCrd+0VP2VxY+/NsUoBw8H08/YicUcX7wXyPzeW/Dd+hJ8qF
- hCjlsNlsADICqBJtXKovT4NSNowBCz8=
-X-Proofpoint-ORIG-GUID: WlHeKLT0Cy8j36Y1SI53Iemg06WLxlH-
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTE3MDAyMSBTYWx0ZWRfX1MRv3GvaV3ea
- yO9GU37igLJIFvRTTrXlLX0bZaXL0v1DrCi1iyPqAjSwSk6tjXcrxmPELPpMRdWscfSaeHaspFU
- Ew4TIn9zBVZIl0S0cliPetx4TbNPmisznXXyYD1SBkznlLehlitmlVSq+RbMVLTMi6JqrJN1fsV
- Q1NMg5iLvo+T5I4zCp0ukcT0qMGP+dgh/E+eQLJwBSdZhGEoqdwNzuveVJBfTNFMNk3YhVK+nSU
- WkPjhEK+mDU8nElBC5PrQmR0Gaed1fCjS/BSuj84QZQY4rLcre1Kpds3Dc4ErwwZ0QTBbpwFFMJ
- 62yTPrCcVH2H0OmqgV0E3C2HhJbUpOnFrwdO5kj3h9go6eSs/kVcA3OflQRRrD4hVVZiuth66xi
- RLZjL9ibt11CqbLgvlzrc90pCXQ44rKPhCZII1dPkkywZL3n4jWuIiRyCgm7bTutO9K6TFWnJV0
- x2KZ8AIDsU44KUoPd3g==
-X-Authority-Analysis: v=2.4 cv=K963jCWI c=1 sm=1 tr=0 ts=6afbe60e cx=c_pps
- a=bS7HVuBVfinNPG3f6cIo3Q==:117 a=ZePRamnt/+rB5gQjfz0u9A==:17
- a=IkcTkHD0fZMA:10 a=zJRp6_cAMcgA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22 a=yOCtJkima9RkubShWh1s:22
- a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=A3swKraddPjxjnE1leEA:9 a=3ZKOabzyN94A:10
- a=QEXdDO2ut3YA:10 a=vBUdepa8ALXHeOFLBtFW:22
-X-Proofpoint-GUID: WlHeKLT0Cy8j36Y1SI53Iemg06WLxlH-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
- definitions=2026-11-17_01,2026-11-16_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 suspectscore=0 clxscore=1015 priorityscore=1501 phishscore=0
- lowpriorityscore=0 bulkscore=0 spamscore=0 malwarescore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611170021
+Content-Type: text/plain
+X-ClientProxiedBy: satlexmb07.amd.com (10.181.42.216) To satlexmb07.amd.com
+ (10.181.42.216)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0006C3DF:EE_|IA1PR12MB6556:EE_
+X-MS-Office365-Filtering-Correlation-Id: aee74a87-9a45-41e3-e6bf-08df4479687b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|1800799024|82310400026|36860700016|10067099003|56012099006|11063799006|261026121527099003|261026140227099003|261028144727099003|261022075727099003|261021123027099003|261021121427099003|261022105027099003|261102123227099003|261009223027099003|261009221227099003|18002099003|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	N1/RbtoQ7zlnB9oz1gme7V00Y5+5NJTtz4rWR/WH765qCv3973GFx0nhY5wCbJXE5E4c1XuqxCy41v3s6Ubv/OphamtYK5QWOy9BbozIl0SLTv4jBskXpLcy8nLEyBC1uC1vnuctwqdtd9lJpnmZibOq0zh/CoYiBwFp7P+FkYzrxfKthrDUhIwJBP8m2bmaZyLkqslSwLGFurfekiYZkoHHnZ/h32urZOxOnZR+p36yl5GKHy5/Y5GAQb1YvxP6jiIjMnYuCFXSWTd5upYK5zvyBDumLvpJ9qsTN3+2T7PbrAuxFXd5/NgZgt0L+6DO8H1jfSOFCsyWCwj7X3mEVvDhrlEo8V4cc2qdd0pj7QslHnuitEUx9d0milJ+TOZe7rreR+bkVLCV+Hd3sMqlGLrubgpf1Dr1ePWVBYZdALvsbmjFvRbZFQcbfZ9IBb7D2QH5POnujxOOeufNAOyj/ZpGhTCQopOULcE8jmZqeZlEih2roOwkKQdFAgc14GKOjZOwARh9MF1lZgjhIXGewxM4ZWZqDdxqO0LmvzTglJZRnev/5IVO4wzh3iHgCgmmjcquy4vyL2vTb+KFoQyD0wlF7QexIITt/mkgrRVgkjndeJxFuq4Bf+J15S0kEtt32ZQgtm4OEjtncxWDgLU9kA==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(82310400026)(36860700016)(10067099003)(56012099006)(11063799006)(261026121527099003)(261026140227099003)(261028144727099003)(261022075727099003)(261021123027099003)(261021121427099003)(261022105027099003)(261102123227099003)(261009223027099003)(261009221227099003)(18002099003)(13003099007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	L5RS77RKtv2GNymmcxCtQsImKehspESSse6ZLznasBA4k6nDHFdUCTrINGsSqkpsHwGihKMAs1Lh23vqAET3VEJnj+VDvQgedD3giTzQKi/BjbGhCGskCPzcbPSdMewhAjR01eZ69ivIjKOYgHhRFGDDGfS2yHKA8inqYGzvEWPy2I+GC1czW9pk1dWVkK+1VMDptVD+Hzfuw7+5QN5gYJET22eNWUm76jQKOySKqnvnvsq/7mGTMau4m3nH7gga8h8AdgFS0QtC4mqRyiJn2Muc8X/HOgV+H3qsmYDYGyhSvSUlLgjQkH3IZfUNI+AfnzbXRa6EpvaRYu2ntyMpjdA6ihjNESIzJsSSIf4BnhPSn19LkXdNpByKKCcNja6Sms5SXOycr8CcYpIh8p1y9FSZyduODsUEiwQWd75SGP2bh0qp17xgCRNThhXzwT/X
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 07:07:14.4148
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: aee74a87-9a45-41e3-e6bf-08df4479687b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0006C3DF.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6556
+
+This series refreshes how the AMD IOMMU driver models IVRS IVMD entries
+after the hardware exclusion range registers were repurposed.
+
+The first patch renames the associated MMIO offsets to reflect completion-wait
+store base/limit.
+
+The second patch drops the workaround that forced IVMD exclusion ranges to
+r/w unity mappings; the driver no longer programs exclusion range
+registers, so that the workaround is obsolete.
+
+The third patch centralizes IVMD flag definitions, renames the unity-map
+structures to ivmd_entry, stores the raw IVMD flags byte from ACPI, and
+derives IOMMU reserved regions (including exclusion as IOMMU_RESV_RESERVED)
+from those flags.
 
 
-On 11/13/2026 3:06 PM, Yijie Yang wrote:
->
->
-> On 11/7/2026 1:14 AM, Vikash Garodia wrote:
->> Reserving an IOVA address using "iommu-addresses" requires it to be
->> placed in the reserved-memory node. But when "iommu-addresses" is the
->> only property being described and there is no backing "reg" (i.e. no
->> actual reserved system memory), it does not really belong under
->> /reserved-memory. A device IOVA range is specific to its own address
->> space, and does not describe the system physical memory to make it
->> qualify under reserved-memory. Given this, place "iommu-addresses"
->> inside reserved-memory only when it is paired with a "reg", otherwise,
->> define it within the device own node. It was discussed here:
->> https://lore.kernel.org/all/662f7093-fb0a-4564-9ca0-98e03e68ba9a@kernel.org
->>
->> Existing "iommu-addresses" property expects a phandle, which does
->> not make sense when the property is defined within the device node.
->> "iommu-ranges" was introduced to specify the device specific IOVA ranges
->> when there is no backing "reg".
->>
->> Suggested-by: Rob Herring <robh@kernel.org>
->> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
->> Co-developed-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> Signed-off-by: Vishnu Reddy <busanna.reddy@oss.qualcomm.com>
->> Signed-off-by: Vikash Garodia <vikash.garodia@oss.qualcomm.com>
->> ---
->>   drivers/iommu/of_iommu.c | 107 +++++++++++++++++++++++++++++++++++++++++++++++
->>   1 file changed, 107 insertions(+)
->>
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index
->> 00b02c19f27e195fc36c4bc1d91253255147c9ab..e133d3b346feecac7e2bfaec44e4882060ee89ec
->> 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -183,6 +183,111 @@ iommu_resv_region_get_type(struct device *dev,
->>       return IOMMU_RESV_RESERVED;
->>   }
->>   +/**
->> + * of_iommu_derive_resv_regions - derive reserved regions which
->> + *                                are outside of iommu-ranges
->> + * @dev: device for which to get reserved regions
->> + * @list: reserved region list
->> + *
->> + * A device can describe its own usable IOVA ranges directly on its node
->> + * via "iommu-ranges". Everything not under those ranges is derived
->> + * as a reserved region so the IOMMU allocator won't use it. Entries may
->> + * appear in any order in the property.
->> + */
->> +static void of_iommu_derive_resv_regions(struct device *dev, struct
->> list_head *list)
->> +{
->> +    struct of_iommu_range {
->> +        struct list_head node;
->> +        phys_addr_t start;
->> +        phys_addr_t end;
->> +    } *pos, *new, *next_range;
->> +    int size, prot = IOMMU_READ | IOMMU_WRITE;
->> +    struct iommu_resv_region *region;
->> +    const __be32 *maps, *end;
->> +    struct list_head *prev;
->> +    phys_addr_t next = 0;
->> +    LIST_HEAD(ranges);
->> +
->> +    maps = of_get_property(dev->of_node, "iommu-ranges", &size);
->> +    if (!maps)
->> +        return;
->> +
->> +    end = maps + size / sizeof(__be32);
->> +
->> +    while (maps < end) {
->> +        phys_addr_t iova, iova_end;
->> +        resource_size_t length;
->> +
->> +        maps = of_translate_dma_region(dev->of_node, maps, &iova, &length);
->> +        if (!maps) {
->> +            dev_err(dev, "%pOF: failed to parse iommu-ranges\n",
->> +                dev->of_node);
->> +            goto exit;
->> +        }
->> +
->> +        if (!length)
->> +            continue;
->> +
->> +        iova_end = iova + length - 1;
->> +
->> +        if (iova_end < iova) {
->> +            dev_err(dev, "%pOF: iommu-ranges overflows address space\n",
->> +                dev->of_node);
->> +            goto exit;
->> +        }
->> +
->> +        prev = &ranges;
->> +        list_for_each_entry(pos, &ranges, node) {
->> +            if (pos->start > iova)
->> +                break;
->> +            prev = &pos->node;
->> +        }
->> +
->> +        new = kmalloc_obj(*new);
->> +        if (!new)
->> +            goto exit;
->> +
->> +        new->start = iova;
->> +        new->end = iova_end;
->> +        list_add(&new->node, prev);
->> +    }
->> +
->> +    if (list_empty(&ranges))
->> +        return;
->> +
->> +    if (of_dma_is_coherent(dev->of_node))
->> +        prot |= IOMMU_CACHE;
->> +
->> +    list_for_each_entry_safe(pos, next_range, &ranges, node) {
->> +        if (pos->start > next) {
->> +            region = iommu_alloc_resv_region(next, pos->start - next, prot,
->> +                             IOMMU_RESV_RESERVED, GFP_KERNEL);
->> +            if (region)
->> +                list_add_tail(&region->list, list);
->
-> Why keep looping here after allocation failure?
+Changes from v3:
+https://lore.kernel.org/all/20261106041650.24076-1-sarunkod@amd.com/
 
-This matches the existing "iommu-addresses" handling. We continue after an
-allocation failure since later allocations may still succeed, preserving as
-many DT-specified restrictions as possible.
+* Patch 2: rectify the flag checks and move it under init_unity_map_range(). [Akshay]
 
->
->> +        }
->> +
->> +        if (pos->end >= PHYS_ADDR_MAX - 1)
->> +            goto exit;
->> +
->> +        if (pos->end >= next)
->> +            next = pos->end + 1;
->> +
->> +        list_del(&pos->node);
->> +        kfree(pos);
->> +    }
->> +
->> +    region = iommu_alloc_resv_region(next, PHYS_ADDR_MAX - next,
->> +                     prot, IOMMU_RESV_RESERVED, GFP_KERNEL);
->> +    if (region)
->> +        list_add_tail(&region->list, list);
->> +
->> +exit:
->> +    list_for_each_entry_safe(pos, next_range, &ranges, node) {
->> +        list_del(&pos->node);
->> +        kfree(pos);
->> +    }
->> +}
->> +
->>   /**
->>    * of_iommu_get_resv_regions - reserved region driver helper for device tree
->>    * @dev: device for which to get reserved regions
->> @@ -262,5 +367,7 @@ void of_iommu_get_resv_regions(struct device *dev, struct
->> list_head *list)
->>               }
->>           }
->>       }
->> +
->> +    of_iommu_derive_resv_regions(dev, list);
->>   }
->>   EXPORT_SYMBOL(of_iommu_get_resv_regions);
->>
->
+* Patch 3: Rename ivmd_entry_map to ivmd_entry_to. [Akshay]
+
+Changes from v2:
+https://lore.kernel.org/all/20260424092213.16976-1-suravee.suthikulpanit@amd.com/#t
+
+*Patch 2: Report an IVMD exclusion range as IOMMU_RESV_RESERVED in this
+	  patch, instead of leaving that for patch 3. This patch stops
+	  forcing the exclusion to read/write unity, the range has no read
+	  or write permission. iommu_map() rejects that, so a tree checked
+	  out at patch 2 does not boot. Reserving the range in the same
+	  patch keeps the series bisectable.
+
+* Patch 4: Drop this patch, ivmd= command line does not have any real use and
+	   complicates driver.
+
+
+Change from v1:
+(https://lore.kernel.org/linux-iommu/20260420170033.6780-1-suravee.suthikulpanit@amd.com/)
+
+* Rebase on top of patch "[PATCH] iommu/amd: Remove dead code for exclusion ranges in IVMD"
+  that was submitted by Yu Zhang <zhangyu1@linux.microsoft.com>.
+  (https://lore.kernel.org/all/20260331152550.479841-1-zhangyu1@linux.microsoft.com/)
+
+* Patch 1: Modified to only rename the marco.
+
+* Patch 3: Reintroduce logic to parse IVMD exclusion flag to allow
+  reserve region of type IOMMU_RESV_RESERVED.
+
+* Patch 4: 
+  - Update the sscan function to scan start, length, flags in hex format only.
+  - Fix apply_ivmd_cmdline_entries() to not free the cmd, which points to
+    the early_ivmd_cmdline_map[]  on failure path.
+
+
+Sairaj Kodilkar (1):
+  iommu/amd: Rename unity_map_entry and unit_map to ivmd_entry and
+    ivhd_entry_list
+
+Suravee Suthikulpanit (2):
+  iommu/amd: Drop unused global exclusion range fields and init
+  iommu/amd: Do not convert IVMD exclusion range to unity range
+
+ drivers/iommu/amd/amd_iommu_types.h | 22 ++++++-----
+ drivers/iommu/amd/init.c            | 59 ++++++++++++++---------------
+ drivers/iommu/amd/iommu.c           | 19 +++++++---
+ 3 files changed, 55 insertions(+), 45 deletions(-)
+
+
+base-commit: 666539eecdf4db623f5e3c3e55cf9f2dfad24aa4
+-- 
+2.34.1
+
+
