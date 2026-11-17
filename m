@@ -1,115 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.44
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794920411;
-	b=S77W54F2BTenJYLfiGmD3gi/aNzyfOjzldp9bDAtUpQkN0LJQWiN1qV+0DA/S13gMFRa
-	 2vPKsLouR5q0b6ayHxkpt4agEAY6TixbAAi1V2u6ufXbt+t+5K2lot/PCSFYWM5GspBxm
-	 MYvFymLWsYM/LXSmFWTPOn1pPEd7Txc4t5x7VEbSTMCd/cihVqg6IwtEg5s71ebSEfEO7
-	 J9aSJXDl3rA9cX/rE/wnHJ0nmLEQ8tVFSzWg8gjkdOuF3D2nJg8dqYu5apaJD012ArutA
-	 9U4GIxZd+4G6FNiVxTigONODypO+O8EzG2mQVAwu41FKn0OhxSFzpMRwoABZF1JKpEg==
+	t=1794922516;
+	b=0ZVhYMMv7DxQ9bX+JGtc38ox+1p7bZ6s3LhDEODtYhPcW/g/h9MqUplyA+3mGadp3S06
+	 29MJB3i3ieZ2l3aAb3RpbGRaVLOQTUMSrfzgfXE26VCTTPVgW6BFj51077NWRZkzRkp7P
+	 vCxlw0Amwj8JXlzcgahzeEBwiTVKv6BQSA9HbaSIgIxUMbAsKrOks0VguqW9IupPSfO82
+	 QbA12EqNuj/o0a9ptsfQK2ZzIrC4p7dTlAMEAZuEJKaPDTfv1fHX63+yIwFeXvyf5QoA6
+	 vYSo9NGuqm8uxDOYFgps0N22KmJGtP2oP1UBjUia2vJekGQqK1/TP6IDs3cxa+YWyew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794920411;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=QHFqCnsPAP40ABSi/lHx2qUxkasVh8VfNqtA5qQ6pG8=;
-	b=psC3kGFlvJrV776baa3rCtf6JS6AeAXJvkD2ZQrm3T/+VdQljhszid7bx4BlPd87Y4EO
-	 3q+6z6egipenaqhidQzFqmv5ysPIH/vEo6gBUFXZRHKCdlOGMkaVk6Ozv7FvBrcPtAVto
-	 m8PAKepgGQLpS4dcu7SUAo5hlxq/3DPdsRZvyLynpCs0Oc9/PhUvkf5HVcIlRXTgzj1kn
-	 ucJxNNrIv5kzeuizDDAgQqWgvaUWh8neKBS3Bi6s9re48QugkjynGYve95Z7wQKkYqiU6
-	 seInBPYqdQtDWRZVyCOv7YisTuz/Bb6iyNENPwVIdTnFRucQOfN+eTHSWpABfyLgHfg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794922516;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=EFX2yIyrHAd/8VFoISAI9yJxJbG4dUZg6w3jxNvGRko=;
+	b=Beq6JzUKXHxqmX4+1/WblZWX8K8c+bLZ2DwNFtfd0Sw+qyspUI1iZiBeiw10GTL8WudS
+	 ryiLk7RRpWg56509X2THVwrVCsGyFWiVQyumw/Bz9bjFmCJFFBMvw1P7oMYIH4qz7f09z
+	 0IiaFVBSdlQYinhVRtIqdK893pe8nh9hfLO0S7yY7DYNb0HIfZEo5T6dV9rmZ5MtCfKlB
+	 236M3h6oB/4MWIK9QPbwpM4zeLVXSgLK0r1B9b8rIebQZcLDX2ZqsknyWIxQfAHInFdXu
+	 hzx6+5TPdUQYrdvQ/QRWsMhz9VeVKDK0UBDIT8Ld0mH/rbgr5AxJyrcKVrGUXDNp+Tg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=b2YFLXbH;
-	arc=none smtp.remote-ip=209.85.219.44
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=II1s7i5t;
+	arc=none smtp.remote-ip=210.118.77.12
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECB36606A8AF
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 13:00:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org ECB36606A8AF
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1BC606A331
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 13:35:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9E1BC606A331
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=b2YFLXbH
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-91f11161831so29933946d6.1
-        for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 05:00:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1794920409; x=1795525209; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=QHFqCnsPAP40ABSi/lHx2qUxkasVh8VfNqtA5qQ6pG8=;
-        b=b2YFLXbHZxblEetdGwqZ5iSDT1YoFcKjYGOKJJy5u7qsJIBbCx0MYywsMpj2imTpMw
-         hB+ccsrh32tsGLPP4+qmvZSvgjHVKXuiP2gQeazDwsNFsq/appf1u8J5OMFpYk/XkZxd
-         z3x4mPDl1zEz4j2aUMwofcSPp3am92+F+rnQoWwEjGu8Ms6rXu+p+xS/EUcrKbeqeGWJ
-         RC9tTzCbyFPBRWUoTc4tR5v1CtXD4X1F5mAlRxaktF7GWeVrkiCykYoJP5KRwoHohffO
-         mfBRhIkTNEOYR8tsmFla40vh/B1swzaJXT0u6LallXDgkhg4KC/GXTj17m0CCM1odHDD
-         WWQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794920409; x=1795525209;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=QHFqCnsPAP40ABSi/lHx2qUxkasVh8VfNqtA5qQ6pG8=;
-        b=dwvT9kCkthlR+jXCq/lZsIu42yGan8HDG5CYdfu10OBT3utfuQFpyD12ZS5b1wyKsg
-         dx7G5yVRnpBb/A9wB347ZSrsYFPDc2lrG4f1rwbwDGyHvwz3h0OTR0eJwRr1o9pF4BWP
-         GgzXiV4P0yQX2L0b42dAiZr+kN5RbPm4UxQJMetloYIwNXrkX4AGfkG1uSRC03kvTO4j
-         OdGnBl/jPcDHxIgFKd6W05tRLAkXl9yDJfz67z15ITRVMJEXjSMR0MWqaBTvhPqqnJJr
-         +l9N37ZIQeRkjVqRKSWQmWNhDL8jNy6pnVPchL8ix+BMUO8I1Hb8YuaDhU1Sa6oALoLH
-         G6YA==
-X-Forwarded-Encrypted: i=1; AL+hErHzciw1Ci+mJqse9ky+ROjhcabCE3BpYgQNy0H7Jb4LH1rURjoSL1KWDWRqBo/3KMltxLfmmg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/kFUty7SxCCsr4Wi+liMabhY3ExCbqgCSslOfQVtgpPWAQAcog
-	FwpTsypk35+IDQZuYvYKMQ/SWANYj7qpzl6SmrUYM6MfIjkHY0jDfY1B66gm3jb71Ds=
-X-Gm-Gg: AYBFou3gDFJSRPE1nLRT9UiZu7YS2GuiL8uHhxi2OeixVwtvIMFXm7aFVa0gznTAh7f
-	8JFrhAvdtsBxHvgPI2UF7KF5FpwrhwcI4gLwmNdt7yQ2RZttVTD4T0YY0eXZlhiYQfOHZsCt5cH
-	QsulZ5Eo5KZtSpvfSjg/MDhJnIylxh0Tytm+wwOYeP31nLkYBj9aMV6oqVNd8n3a6tgi9oSr0rD
-	oyQmYCgAUOUtx+j+HXT7/GKSQy9Np4pSnMCnN6y5WtJbDqQTfy0g5LJ6gCTWr/8p5jR/+HFwLfl
-	KOzC1rhyEfxyKTQRfH2W01wdfFqIm9+iKuowMDbJtYYzRLXSHHDvhVP28tOLx/MUQNgwqPzTsq2
-	eBDvqTHkWsKW7wmzyuRKIInbiTNEUdbFwrtEk1yXVAjmLsSQ7scHPtRxiKvkdBmhlTtI5kctjdl
-	qp09w7vxbP6zaqt0Ul5IxxpcYKrXhLPEnRhU2nKia+DUOhjNPf9f6lA1OxFLyjLq0X366ARdQGf
-	nDzqPERZQ/jQcQ6lIVcTspdaVKwiExjduJLgIGsYP0mpg8lYgqcoVQD7uWEAKxudVXjSuZsNq90
-	m7VGg2ud0lAyBh9IsrXjBFMlDfg=
-X-Received: by 2002:a05:620a:a208:b0:949:5c62:e775 with SMTP id af79cd13be357-9495c62ea7emr1501690585a.15.1794920408653;
-        Tue, 17 Nov 2026 05:00:08 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-9494c803abbsm1067907885a.7.2026.11.17.05.00.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 05:00:07 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xTIn7-0000000CJGS-3fNi;
-	Tue, 17 Nov 2026 09:00:05 -0400
-Date: Tue, 17 Nov 2026 09:00:05 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Peng Fan <peng.fan@linux.dev>
-Cc: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Frank Li <Frank.Li@nxp.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Jon Hunter <jonathanh@nvidia.com>,
-	Thierry Reding <thierry.reding@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>, Frank Li <Frank.Li@kernel.org>,
-	Larisa IIeana Grigore <larisa.grigore@nxp.com>, imx@lists.linux.dev,
-	dmaengine@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Peng Fan <peng.fan@nxp.com>
-Subject: Re: [PATCH v6 0/9] dmaengine: add DMA channel bus and fsl-edma
- per-channel IOMMU support
-Message-ID: <20261117130005.GC2606445@ziepe.ca>
-References: <20261112-edma-iommu-v3-v6-0-b038edb8ce6f@nxp.com>
- <20261116193021.GB2452510@ziepe.ca>
- <avwQl18smAW4R6ec@fedora>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=II1s7i5t
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261117133507euoutp0213001ebbee6afb44a017f794bced0f0e~o2IKzavue0882308823euoutp02X
+	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 13:35:07 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261117133507euoutp0213001ebbee6afb44a017f794bced0f0e~o2IKzavue0882308823euoutp02X
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1794922507;
+	bh=EFX2yIyrHAd/8VFoISAI9yJxJbG4dUZg6w3jxNvGRko=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=II1s7i5t7SASuJOymU5Cv0mPRU23QdOzGTVMsq+hjxyw1vzCUCcRSo+WPwMwEKc56
+	 /7HEh1fepPaUR2KVfJWACHOD91PuImEcEjD2NJPLHIQ9MiREtAmxI1O3wkD1Z32Gmx
+	 Goiti5wvEEH883ohY9hO7gTE3ADwVpn3OCmobOOE=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261117133504eucas1p14aee6e1d3b716ecd4eac84c21058c78d~o2IIkbNDp2647226472eucas1p1D;
+	Tue, 17 Nov 2026 13:35:04 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20261117133504eusmtip2249a3600a4be2a7cefdbb1bd4ce187e4~o2IILas3v1494014940eusmtip2T;
+	Tue, 17 Nov 2026 13:35:04 +0000 (GMT)
+Message-ID: <05c05ec4-b321-49d4-acf7-b9fa4223dba9@samsung.com>
+Date: Tue, 17 Nov 2026 14:35:04 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -119,64 +64,90 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <avwQl18smAW4R6ec@fedora>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH] dma-debug: Avoid uninitialized hash traversal in
+ mapping dumps
+To: Robin Murphy <robin.murphy@arm.com>, Anthony Iliopoulos
+	<ailiop@suse.com>, Avi Weiss <thnkslprpt@gmail.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <609175e0-4e1c-4130-a9f1-0cfc7815c134@arm.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261117133504eucas1p14aee6e1d3b716ecd4eac84c21058c78d
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261116134536eucas1p1b30ea07e1a1e3be753ff25a653be59a6
+X-EPHeader: CA
+X-CMS-RootMailID: 20261116134536eucas1p1b30ea07e1a1e3be753ff25a653be59a6
+References: <20261115082505.2012573-2-thnkslprpt@gmail.com>
+	<E9412813-7A76-46D0-94E5-0537E9FF5DB8@suse.com>
+	<CGME20261116134536eucas1p1b30ea07e1a1e3be753ff25a653be59a6@eucas1p1.samsung.com>
+	<609175e0-4e1c-4130-a9f1-0cfc7815c134@arm.com>
 
-On Tue, Nov 17, 2026 at 04:30:15PM +0800, Peng Fan wrote:
-> On Mon, Nov 16, 2026 at 03:30:21PM -0400, Jason Gunthorpe wrote:
-> >On Thu, Nov 12, 2026 at 03:53:03PM +0800, Peng Fan (OSS) wrote:
-> >> I used iommu-map for eDMA, but iommu experts rejected it:
-> >> "Using iommu-map to describe synthetic dma_chan_dev devices that the
-> >> kernel creates is the same kind of DT abuse from over here:"
-> >> More info: https://lore.kernel.org/all/20260917144804.GI3196566@ziepe.ca/
-> >> 
-> >> So I followed here [2] as Krzysztof wrote for QCOM VPU:
-> >> "Thanks Jason for context and detailed arguments. Robin did not chime in
-> >> yet, but from what I understood the DT-child-node approach will be the
-> >> way we should go here.
-> >> 
-> >> I accept above point of view and I am fine with this, thus Vishnu and
-> >> Vikash - please go ahead with DT-child-node solution we had some time ago."
-> >> [2] https://lore.kernel.org/linux-iommu/c7b956a9-d3e8-4e18-b780-5d08f5cd2ca1@kernel.org/
-> >> 
-> >> This series adds per-channel DT child node support to fsl-edma and, as a
-> >> prerequisite, introduces a proper bus for DMA channel devices.
-> >
-> >To be fair this is discouraged too, now that I've seen 3-4 people
-> >trying to do exactly the same thing I'm not as positive about the
-> >DT-child-node hack.
-> 
-> I may not describe it clear in cover-letter.
-> 
-> I understand the concern. Let me explain why I believe it is justified here
-> rather than a hack.
-> 
-> On i.MX eDMA each channel has its own interrupt, its own register region,
-> and on i.MX8QM even its own power domain. Each channel may also have its
-> own Stream ID, or share one when SIDs are scarce. These are genuine
-> per-channel hardware resources, not software fiction.
-> 
-> In dmaengine each channel is already modeled as a channel device (see
-> dmaengine_chan_dev()), and this series puts those devices on a real bus
-> (dmaengine_chan_bus_type) as a prerequisite. The DT child node simply
-> describes that existing device, so its reg/interrupts/power-domains/iommus
-> are attached per channel instead of as index-matched flat lists on the
-> controller.
+On 16.11.2026 14:45, Robin Murphy wrote:
+> On 16/11/2026 12:09 am, Anthony Iliopoulos wrote:
+>> On Sun, Nov 15, 2026 at 10:25:06AM +0200, Avi Weiss wrote:
+>>> Booting with dma_debug=off causes dma_debug_init() to return before
+>>> initializing the hash buckets. The debugfs dump file is registered
+>>> independently, so reading it traverses an uninitialized list and
+>>> triggers a NULL pointer dereference in dump_show(). The
+>>> debug_dma_dump_mappings() helper has the same unchecked traversal.
+>>
+>> So the debug_dma_dump_mappings() issue seems preexisting (the risk was
+>> there since its introduction in commit ac26c18bd35d, given that it
+>> doesn't check if dma_debug has been initialized), and it is not related
+>> to decoupling the debugfs init.
+>>
+>>> Skip both dump paths until dma_debug_initialized is set. Check the
+>>> initialization state rather than global_disable so that mappings
+>>> recorded before DMA debugging disables itself at runtime remain
+>>> available.
+>>
+>> I suppose this makes sense for debug_dma_dump_mappings, but I am not
+>> sure we need this for dump_show. See my next comment.
+>>
+>>> With CONFIG_DMA_API_DEBUG=y and CONFIG_DEBUG_FS=y, reading the dump
+>>> with dma_debug=off triggers an oops in the unpatched kernel. The
+>>> patched kernel returns an empty dump, while dumping with DMA debugging
+>>> enabled still returns mapping information.
+>>>
+>>> Fixes: 173735c346c4 ("dma-debug: fix debugfs initialization order")
+>>> Signed-off-by: Avi Weiss <thnkslprpt@gmail.com>
+>>> ---
+>>>   kernel/dma/debug.c | 6 ++++++
+>>>   1 file changed, 6 insertions(+)
+>>>
+>>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+>>> index 36c1f7cbb2ae..2f487246d8ce 100644
+>>> --- a/kernel/dma/debug.c
+>>> +++ b/kernel/dma/debug.c
+>>> @@ -543,6 +543,9 @@ void debug_dma_dump_mappings(struct device *dev)
+>>>       int idx;
+>>>       phys_addr_t cln;
+>>>   +    if (!dma_debug_initialized)
+>>> +        return;
+>>> +
+>>>       for (idx = 0; idx < HASH_SIZE; idx++) {
+>>>           struct hash_bucket *bucket = &dma_entry_hash[idx];
+>>>           struct dma_debug_entry *entry;
+>>> @@ -576,6 +579,9 @@ static int dump_show(struct seq_file *seq, void *v)
+>>>       int idx;
+>>>       phys_addr_t cln;
+>>>   +    if (!dma_debug_initialized)
+>>> +        return 0;
+>>> +
+>>
+>> I think it makes better sense to skip creating debugfs files altogether
+>> when debugging is disabled, which was also the case before 15b28bbcd567.
+>
+> TBH there's probably an argument for just getting rid of debug_dma_dump_mappings() now too...
 
-If they are real devices then why can't they come out as platform
-devices?
+Agreed, remove it completely and register the debugfs entries only if (dma_debug_initialized).
 
-I think you are overstating how independent they are. Many single
-devices have per "channel" resources like MMIO and IRQs. That's
-totally normal. It doesn't make the sub resources independent devices.
 
-AFAICT what you have here is some HW designer used SID where they
-should have used SSID and you are trying to hack DT to make that
-usable because Linux does not support a SID as SSID model today.
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Again, since this is the 3rd - 4th case like this, it seems like a
-popular hardware choice and we should try to do better to make Linux
-support if we can.
-
-Jason
