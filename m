@@ -1,72 +1,113 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=51.159.188.251
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794905403;
-	b=4cTMC3nFt17m7sAcCIK/e8Q8z/VKClJX48tMIAO8+g0mO0TnlSNxGfeUPmcV178jYKnm
-	 4BfCjT+vzNd5U/zq1TzZ5BfUaiVmSy8Ar2JQhhTsSLtc+JAytIejlvK1j83/Q8yurmBdE
-	 Xow04YG0sZX6cCijrtUGwnl/HTqV5vJyb1VJxVsFKjhL0RRySfHJHRKaAZyY2g+sRCAbe
-	 IBAQW4iiprTEl1CqQ0qkG2BxutKCCIQIHx6FDgQJ+g2goddC878TjLvZM3SPyhg3LTGaJ
-	 wytAm5zkwtg9g7MmGTUoAbqnVjdLFR2oD9JYsktMLzXF70E52mb8fT+h4VMOh7UxB3Q==
+	t=1794917275;
+	b=E2k5uxFRXYGiBZVg6pLUmoSbloSjgcIW5WTeOaQn8dQH3EoIeF9UoFf6aJy741OSAe7k
+	 O6Jl+n9KEcfC9DKV22OY1hLwx1W3ZorwueLiXRRZK/gY4VWEJHIQAWrYYmWs2cXAW+QSs
+	 gavs7PrFnD8E8L+oeYktd0UwS5KQDsS1UApn3hNU+qzF9jDFqQMLusSxPlsHU31IrPImw
+	 34kJ3ETFG/kShpio3v2NWQWwfRWFljRS4C41sXnB5ZToG1O9FCAIHUVrN4madbh7dEtGE
+	 +RUJkhwNKiQNgaOVv1O1Zgw5ZFvfuh3rEdFAKiZwuy5g8RjTtA74x3MEC3FJQOiKrFA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794905403;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:X-AntiAbuse:
-	 X-AntiAbuse:X-Get-Message-Sender-Via:X-Authenticated-Sender:X-Source:
-	 X-Source-Args:X-Source-Dir;
-	bh=4Jaothk9pIoXzn6khKlhOzHzJccnvdvTdTICicAJwj4=;
-	b=mAmazDsqu9jNfUDghrlGlosjS2GdM8tJQT8K6QEGM10ZmZrxSCsgvJvd0DyAPL4mHhm2
-	 IymQ2HRpOQvtLw+v3uGzIYcZDGOQYRUTrQER0FoQLWS8xPHCuZRrLX72RxRJRgvhZvtRU
-	 IckFbVp/8n6MZMt96GvNNhHKlh+0PJOET2zVUJjLP2TyCcCNs26tYgfTeqAHx8CF+dbnT
-	 2KgaEOtu/81/Era2DgRIfSfMnr8y+Shlt/xGTb9VTCR7EdQvfo0PX3uT86aB4/O6OZ5ER
-	 jKvdgJh9ZL0IrwZ6z4lr/inSl1qCluhJV0gm5PGtTyoE1aCYYa98boAKo71F2Hds8Hg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794917275;
+	h=Received:DKIM-Signature:X-Mailer:From:To:Cc:Subject:In-Reply-To:
+	 References:Date:Message-ID:MIME-Version:Content-Type;
+	bh=s/GxyM3xQ3jHfxh/01l7Pa4ILI1xRNFU3MUIalnJ/Ic=;
+	b=t/wdNSO/0dn13vmTEsOevq5Og5fixQLbqT2kWVcze7dsAQA3Tt3YWbeq8G79UIZYk83e
+	 BAaj/qLloPem+q/1+x0Xu44ucCJkKtDq+pwJhRou+F20KAffOCD5EGTzjpbHoCrNVd8Kn
+	 VAwFnqHya4NtoJsIE74Uf38nOho5//saZZ8QZ3ZiqFW4XH1W8JiJTDprrb4wGK1HvgZyA
+	 Onm+UMXMUugq8lGGJBrJbJsqVehaA9gZv/wodG9O5ocYLiaZHQ6x4ZplS9ta98qNY6tF7
+	 C2mDHq3MpT3N1weDUy1k3ffo0dUU1NFQx2nJZCMlZ/XjCo9b2At6esfPOeb4btBrerg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=oss.cyber.gouv.fr;
-	spf=pass smtp.mailfrom=oss.cyber.gouv.fr;
-	dkim=pass header.d=oss.cyber.gouv.fr header.i=@oss.cyber.gouv.fr header.a=rsa-sha256 header.s=default header.b="Q/JBmfvY";
-	arc=none smtp.remote-ip=51.159.188.251
-Received: from oss.cyber.gouv.fr (oss.cyber.gouv.fr [51.159.188.251])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TYjgvtoN;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86BD0606A882
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 08:50:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 86BD0606A882
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.cyber.gouv.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.cyber.gouv.fr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA192606A33D;
+	Tue, 17 Nov 2026 12:07:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oss.cyber.gouv.fr header.i=@oss.cyber.gouv.fr header.a=rsa-sha256 header.s=default header.b=Q/JBmfvY
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=oss.cyber.gouv.fr; s=default; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Reply-To:Sender:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=4Jaothk9pIoXzn6khKlhOzHzJccnvdvTdTICicAJwj4=; b=Q/JBmfvYble2Erof+KIjVlEQWH
-	WHx8qahHtJKFGLW174pzXsTqwioJXsbLwyC0H6/8PobJk2DS0aev1PKga/utBNayesJO0eY+YGU1c
-	G4rqVHkcqG+C0lTCf5RQ022GBESPwRUlVyCvRDuB40AeB7d09d4jlp/DqpjLacnmWjXXvudfgxLKV
-	Yvs2o5mCFHK7wBsIRN7hcbvrjaLA3dYUATZ32R2RLuGYZA19ORDc/7fJkw4MEg1Nrjw4xPUnWi4kG
-	cWUt6bFOQmR22B132HAx5LVG2aaMbWzPieLknw/wwk2aX05gRCymrrJmsSeVCUBkl+yK5dgXuFtQS
-	YqZ83Gdg==;
-Received: from laubervilliers-658-1-215-187.w90-63.abo.wanadoo.fr ([90.63.246.187]:31494 helo=archlinux)
-	by pf-012.whm.fr-par.scw.cloud with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.100.1)
-	(envelope-from <nicolas.bouchinet@oss.cyber.gouv.fr>)
-	id 1xTEt2-00000002fyt-1LRX;
-	Tue, 17 Nov 2026 09:49:54 +0100
-Date: Tue, 17 Nov 2026 09:49:49 +0100
-From: Nicolas Bouchinet <nicolas.bouchinet@oss.cyber.gouv.fr>
-To: Mario Limonciello <superm1@kernel.org>
-Cc: Xiu Jianfeng <xiujianfeng@huawei.com>, 
-	"Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Moore <paul@paul-moore.com>, 
-	James Morris <jmorris@namei.org>, "Serge E. Hallyn" <serge@hallyn.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-security-module@vger.kernel.org
-Subject: Re: [PATCH 0/2] lockdown: Prevent booting with lockdown enabled but
- IOMMU disabled
-Message-ID: <avwUNw2if5GIPA11@archlinux>
-References: <20261102-lockdown-iommu-v1-0-00f3c2be4c9f@kernel.org>
- <44ac3423-0a51-4562-816a-fea881511afa@huawei.com>
- <a444421f-178b-49be-98b7-d34dfb147604@kernel.org>
- <avr31i6M5PqKk_Vf@archlinux>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=TYjgvtoN
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 568641F00934;
+	Tue, 17 Nov 2026 12:07:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1794917275;
+	bh=s/GxyM3xQ3jHfxh/01l7Pa4ILI1xRNFU3MUIalnJ/Ic=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date;
+	b=TYjgvtoNuQZfGkR/SgqLaJ5HoTzQ3ZEBdzd/+euHF+gqzHqfw9aoVgzXdgQ+dIJuk
+	 uGrTDvInZqzbx0XvBdevqb/w0aOKtbE/d1/S1Hufvhq+QeUVQcQlTiRvVGlr1EfA3h
+	 e+IQj9nh2dI/1foUD7Ho193uxD7s3+11q3hcayoip/FuKx4ODfCsC/lOw6CbyzuApi
+	 OPk/igYER2aoVVLOL5wduIqtTcSVxEfCBxVygpdtTbz/6YB4P8ZWXbqDTvoZdukb8h
+	 ebah/4xrrgRrreD/h9x3OsMl2NuftMm7xJgS+TXAeEowpt+h3psMuf2GiMNxLfdVPQ
+	 A2CmscMuHGmnA==
+X-Mailer: emacs 31.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Fuad Tabba <fuad.tabba@linux.dev>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-coco@lists.linux.dev,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Baoquan He <baoquan.he@linux.dev>,
+	Mike Rapoport <rppt@kernel.org>,
+	Pasha Tatashin <pasha.tatashin@soleen.com>,
+	Pratyush Yadav <pratyush@kernel.org>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Marc Zyngier <maz@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Will Deacon <will@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Radu Rendec <radu@rendec.net>,
+	"T.J. Mercier" <tjmercier@google.com>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <chleroy@kernel.org>,
+	Ritesh Harjani <ritesh.list@gmail.com>,
+	Shrikanth Hegde <sshegde@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Ingo Molnar <mingo@redhat.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+	"H . Peter Anvin" <hpa@zytor.com>,
+	Kiryl Shutsemau <kas@kernel.org>,
+	Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	"K . Y . Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>,
+	Dexuan Cui <decui@microsoft.com>,
+	Long Li <longli@microsoft.com>,
+	Paolo Bonzini <pbonzini@redhat.com>,
+	Vitaly Kuznetsov <vkuznets@redhat.com>,
+	Andy Lutomirski <luto@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-media@vger.kernel.org, linux-mm@kvack.org,
+	kvmarm@lists.linux.dev, patches@lists.linux.dev,
+	Vincent Donnefort <vdonnefort@google.com>
+Subject: Re: [PATCH v10 02/13] mm: Zero memory during shared memory transitions
+In-Reply-To: <CA+EHjTywWTaKLtM6OPF_0ETv29-m8JsHdvF3BeW9Xa=h713eEg@mail.gmail.com>
+References: <20261116091137.94252-1-aneesh.kumar@kernel.org>
+ <20261116091137.94252-3-aneesh.kumar@kernel.org>
+ <CA+EHjTw7QzzkQYKV3jyvW5mqZQMenTfm=kus9i87tYqACDOv0Q@mail.gmail.com>
+ <yq5ah5hgyj1p.fsf@kernel.org> <20261116140259.GL2532299@ziepe.ca>
+ <CA+EHjTywWTaKLtM6OPF_0ETv29-m8JsHdvF3BeW9Xa=h713eEg@mail.gmail.com>
+Date: Tue, 17 Nov 2026 17:37:07 +0530
+Message-ID: <yq5a7biby844.fsf@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -76,54 +117,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <avr31i6M5PqKk_Vf@archlinux>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - pf-012.whm.fr-par.scw.cloud
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - oss.cyber.gouv.fr
-X-Get-Message-Sender-Via: pf-012.whm.fr-par.scw.cloud: authenticated_id: nicolas.bouchinet@oss.cyber.gouv.fr
-X-Authenticated-Sender: pf-012.whm.fr-par.scw.cloud: nicolas.bouchinet@oss.cyber.gouv.fr
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+Content-Type: text/plain
 
-On Mon, Nov 16, 2026 at 02:29:01PM +0100, Nicolas Bouchinet wrote:
-> > 
-> > How would you feel about at least blocking the user from turning off IOMMU
-> > (if it's present on the system) via the kernel command line while lockdown
-> > was enabled?
-> > 
-> > Thinking about the case where most distros enable lockdown by default, this
-> > will strenghten it's use without much downside that I can see.
-> > 
-> > At least on a properly configured system that contains an IOMMU it would
-> > prevent a user from subverting lockdown with a malicious device during the
-> > boot sequence.
-> 
-> I do agree with you, it could be a great addition. With Lockdown enabled
-> as an early LSM (CONFIG_SECURITY_LOCKDOWN_LSM_EARLY), this might be
-> feasible before boot parameter parsing. Lockdown already locks unsafe
-> module parameters.
-> 
-> If I remember correctly on distro's that have a Lockdown patch that
-> enables it if secure boot is enabled, it should also be called before
-> early param parsing.
-> 
-> But taking this threat into account also brings other questions.
-> i.e, a physical attacker with root access on a system where Lockdown is
-> enabled and with a bootchain configured with shim+MOK is able to change
-> kernel cmdline, generate a MOK and sign a compromised kernel
-> binary. Thus defeating lockdown purpose.
-> 
-> In order to take the physical attacker into account, a securely
-> configured bootchain where the kernel image can't be tampered with and
-> where an attacker is not able to inject it owns certificates/hash in
-> db/MOK is mandatory so that Lockdown makes sense.
+Fuad Tabba <fuad.tabba@linux.dev> writes:
 
-To be perfectly clear, my intention was not to suggest including a
-physical attacker in the Lockdown threat model, but rather to provide
-examples of how such an attacker could bypass Lockdown through other
-exploitation paths.
+> Hi Jason, Aneesh,
+>
+> On Mon, 16 Nov 2026 14:02:59 +0000, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> [...]
+>> Just like you are wrapping set_memory_decrypted() in an allocator API
+>> the user that wants to have the no-change sharing needs its own
+>> special API too.
+>
+> That works. A separate API can cover no-change sharing when a user
+> needs it, so I'm fine with set_memory_decrypted() zeroing.
+>
+> Aneesh, the pKVM hunk does need cache maintenance after the memset(),
+> which I have in the Cc: stable patch I posted earlier today [1].
+>
+
+I will add that, along with the relevant comments.
+
+Thanks,
+-aneesh
