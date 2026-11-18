@@ -1,71 +1,118 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795035659;
-	b=H/LOzQI+G4TyLSNvHkJjblrS4DRLuGQQjyoBTSLOPtnF/aofuxy9nPwPgjP3D2yhTLxJ
-	 aXno1aN2we6t3yowSThWcJ9IAa7DZEfAmJFl1bde5t5oQ217K5hNwAL37TJpeW90I/mLS
-	 J99GlZq+3g3JD0esPcqjuX+xxsD1UXLwz3zJLWrUy9ffGqTplnv/dpK6VHvAZhovpDcL2
-	 IsSESDGEewpydza2+QT1Ef1XVfaTDRdRNVsZB3ZUPepub/p8JilSOGIOQlFDIcnkEJ4Qi
-	 MSt6oI3rS3rEWz2gKlHCdWvX92z+DgVL50yLipNxC4R5deF/aKyDpOh6wZAWU+ppinw==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795035659;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Date:From:To:Cc:
-	 Subject:Message-ID:References:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:X-Zoho-Virus-Status:X-Zoho-AV-Stamp:
-	 X-ZohoMailClient;
-	bh=1Q0LYYslC9SLGX+vLFPasi395lu1/6g9K3WwZGH1f8g=;
-	b=d4ogVLxeO+w//mCb+G9KZOkxI5JlfL1FIFuH8DJOfGYEm+PrHnMTkxhrWNa7mDPKJME7
-	 t3/4inbwgdKG8m9EPwPEgpMIMsNYwaL7Xdn5qKZYK8pxgw6I1ltsv0acB1zMMYC4kQHKD
-	 XaKjKSjRgJdq0mrsodANaoN9lWruHGKUOKw4Xi+gyHdaUFEyRKfEAIc8rczhg3QZtqY7n
-	 s6aW0MELDnTV8SNi/uda/Bwd0aLkQj6zfdB2XjlOSALZmSBUEJJHQftOkteh1zKUMVHdB
-	 q22Ow4JlD0VS9LSnTeIWfhNRYhFG1YLdUzFIC66+dVvbszcajw1gbGujsHh6BKSJDDA==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=FHmnU7By;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
-Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.222.181
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1795035989;
+	b=kjU/oacthnVrDmYQ73cuXE592a2v/7TqH1pGlzK8WwL1xwXJZ+yndb4Ea1aSewwiUYWt
+	 et0n44hiAI2pIVZ+vo+GUeefl2SGpGCjEBssesaofZ6C5iLj8znfhayah2rsVDkwbcBG1
+	 poWTUjv7UNQY9SLpnNZZ9ktaqwK2Pi3iUZH4r6R9/VN+CuvcF3U07g/3010ZdRfqpgq2a
+	 zfKzqdJ2dn23hbzbSbCSvw5Mdtchc3SnLKfXeslcazVzeJSK7V38dVo/v9hx9DbZ4U9FD
+	 rb34G96Ipy/GB4mhutgSPGSk7neCwmWZsQxe67IZcyEAplrjY/9/ADGMo359HvUiFzw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795035989;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
+	 In-Reply-To;
+	bh=pZ3JtacZcjsrcECbYipQCJ4gvP+CBNK95VHZ3UWM6ww=;
+	b=Nk6m8tEFIx5UmAZDSo+2/YB7cdTWgzmUyJL+UcOReg5uTe/wAt1+1E6nxbNdyrr++vvM
+	 Yk9fFXEPcBz8vQbMaf2tY7nwed0UrhH7tndIPxJ+ogVZL/lRjdAFV5E1DNW5uimjLYG4G
+	 R2Zcn/oElpvHQ4c5bAJNd7sGZphi4snqKFofpxERsTw5GPPRoMYkxAFAe8ur7eJFwuYOd
+	 Si35CS491zRCirKQzIl9NZgBASJMwtXCgbLGBM3JCiBUZk/35LVQXU3WWaavfBLSTrPKu
+	 LM6Qkd9mdqaj1dfOgbLUEANBcfQgJPwECZm4/M5epu5gpN0xHo0GzRox6oTUTHhAz7A==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=SDeNQrCR;
+	arc=none smtp.remote-ip=209.85.222.181
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35BDC606A320
-	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 21:00:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 35BDC606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 564BC606A32F
+	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 21:06:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 564BC606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=FHmnU7By
-ARC-Seal: i=1; a=rsa-sha256; t=1795035652; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=Httsw4pR7dDdbppwdsQxr3rUc79b3jduysU0djA8OLqDzBWGbDyy69ShVu2KbwElSZW0NXMa6K4FRkc5FY4CMR9f/ym/9v38QOuxCa7t4nAtRI/fjfNThYG1drNt0QaP4UCulr8YJ/ARkhI3LBAQgw1QVORX06AEm9/HE0n1/LI=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1795035652; h=Content-Type:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=1Q0LYYslC9SLGX+vLFPasi395lu1/6g9K3WwZGH1f8g=; 
-	b=crAMmfhFvuID4uKP6zbCqY4rXZvYx4s2j8UScMlCeX5WwsgRonq0wv2el7qjYb8dUxlPKU0wZspPTcoAtFNSS0rpVCO/cJgIaAYJH7LJsvcbtI92gaDzt1K/Kry2LYxLDyYcMAQkvqJ9pyTeffDmMoTigKlSnugATVaiuvezeHs=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=sebastian.reichel@collabora.com;
-	dmarc=pass header.from=<sebastian.reichel@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=FHmnU7ByIKPhVZaba8+HYqebSTQp/Kb0y9IpIo30em87v4uTuPrIQ+Y7XUbvhkEMBKkLf+E3Y2CrtLUoecslLfe3s36nvpJtnPr85aF3mNGTE8X6oaOm7w88tyQs2szzS0wfDq6BzL4947m90+6LU7k/r4ERY5Gtm0yWvVcoeJs=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=1Q0LYYslC9SLGX+vLFPasi395lu1/6g9K3WwZGH1f8g=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 1795035649369461.9687927612447;
-	Wed, 18 Nov 2026 13:00:49 -0800 (PST)
-Received: by venus (Postfix, from userid 1000)
-	id 1937618044A; Wed, 18 Nov 2026 22:00:44 +0100 (CET)
-Date: Wed, 18 Nov 2026 22:00:44 +0100
-From: Sebastian Reichel <sebastian.reichel@collabora.com>
-To: Rob Herring <robh@kernel.org>
-Cc: Arun Iyengar <aiyengar1990@gmail.com>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Heiko Stuebner <heiko@sntech.de>, Niklas Cassel <cassel@kernel.org>, 
-	Pranjal Shrivastava <praan@google.com>, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org, 
-	Shawn Lin <shawn.lin@rock-chips.com>, Simon Xue <xxm@rock-chips.com>, 
-	Finley Xiao <finley.xiao@rock-chips.com>
-Subject: Re: [PATCH v3 2/3] iommu/arm-smmu-v3: Enable an optional clock
-Message-ID: <av4PT0Xu8yd6ygN9@venus>
-References: <20261113-smmu-v3-pcie-pd-v3-0-39eb4f919529@gmail.com>
- <20261113-smmu-v3-pcie-pd-v3-2-39eb4f919529@gmail.com>
- <20261118203236.GA823624-robh@kernel.org>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=SDeNQrCR
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-949680e6d83so151719385a.3
+        for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 13:06:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1795035988; x=1795640788; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=pZ3JtacZcjsrcECbYipQCJ4gvP+CBNK95VHZ3UWM6ww=;
+        b=SDeNQrCRna9AR1VBjeQJYkkWxa+pmn5iKdupNKJHm6DdWeUW4FXqvbJalHujSMUyZU
+         6IMVdXy6NG5y9qpdchzEefMWcV98Ctmt8oXVFiR38kNdwKvChW0C8I70q12DvXZ36rEB
+         PkECHjemMww104SXFvX2M3E5gPb4548Kr80xxAWW6dwwIjzEk3bEqIZ9Uwx2F1UWYNpU
+         nwtgCnuGMv3ovXe881UvLxEjKWJcAgxQ0L9NCtOtw7VyUZMsB6kBAceftR3dBTZ4KIYB
+         eqYudpF5GcuqehBXRRrKJ41a68ocKT7EDmM43eSd0vzfKc8WnWBdpwcUdFooxo+KyBi7
+         bPfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795035988; x=1795640788;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :content-type:mime-version:references:message-id:subject:cc:to:from
+         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to:content-type;
+        bh=pZ3JtacZcjsrcECbYipQCJ4gvP+CBNK95VHZ3UWM6ww=;
+        b=0R2saKOGIv/dCN4XALdvw0vpSLgXIHvaw02VpTxQmghhOSlHqU8+8WreWkXjfwWZSp
+         a1KX1lStpdFtrWOlxBFuSkALOUIXlPBk1J8HUbU1O74G0tJP11w7+0IiA+e/lW3KSNSE
+         VQuGKgFiCfSM8dc/eQ+n21t+mOuDrQyWZFtPf8sI3m/aTJxwT3B4NZYHoQlTZgFM//tN
+         kYZWjLQTQoRYGenA5+83b3YntH0fe83SJI7fNE9w9xnMEIeGznJpklPNP7Oo/CJmPjQt
+         lVFzalwwCez4zS5OUs7GTgz7TUAv0GysEVxt0FHxaTYaBrGjLV1HldTuxdnwLeg1d28w
+         x/FA==
+X-Forwarded-Encrypted: i=1; AL+hErGnUyGOpbYLbCc2v9VWMZzfrMKebYT8JVb2ySW/d3xK6jP48UzRiO6Uu0bS1DS1SXsnfR0D1Q==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+/ua8wnOECrCjxL6V5QppODXaF0kC68H/ep/3SUdu4YZ6FcH0o
+	PHrL6wq44FMwKaqxCtUNioTuly0nFeQ62J86LUxSFUPWLScZtRW9yWNibH86RV23YL0=
+X-Gm-Gg: AYBFou1iJZRZHxK5yKkOTzsGwFEnJFQH2LX3AMBywhaA+tam2u0ucc2evYMro5ESfoV
+	0PD+BWRLQ1oBGKM8vkugBX5q2GQ33JOwhADE7zP9VHpojqfShPv4UJ70mKQ/ExL6OHPapVgKWWR
+	zizRd6U7zo8VAmvX70VLhwa01V7iwfYdMymisWRrhqey2n2nsxZEj2qUaJWChZ9vLMRVFfAE3Qq
+	3l3Mkls4vayKCo2HSdrgchdlYwXfLjxTlh4qYQAZt0+xVJvRgeDDsTotqIo5FmBuc74HBmIifnZ
+	Jq+9K+sYe9/UiRmuudJC8WCQqynI1GT1Kh3qM3c9KxfJ1PQ9GwD2C1r9zuqxrlpTKYSeUIB7FYc
+	KYWyrULW7LjrNEeMFRJfBcxIKV+dXSwkepx890cj4KiqwMWK5OfXlClOJy6vtpWvg5Q43U+KoyX
+	nEci/JNTozHPPxQpvu+Q1gDYFl21tdYEQrO6h287sGZgr28B4wVGVJwYbJnEu0BKEwLc/9cJQk8
+	4aVxjwQiIoPn6xw/rx4LH4iUoCmfxIsoCiNg8sXOcPps4Wa2hoAVfrXHy2gV0K7s4u8RKdFTXuL
+	UA6UrMrIDr0hrlDYGyQdjfJ+MAU=
+X-Received: by 2002:a05:620a:4556:b0:93e:c12c:f121 with SMTP id af79cd13be357-9499964526bmr691694185a.77.1795035988208;
+        Wed, 18 Nov 2026 13:06:28 -0800 (PST)
+Received: from ziepe.ca ([142.166.156.71])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-9499b8182dbsm271138185a.41.2026.11.18.13.06.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2026 13:06:27 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xTmrK-0000000GRJU-0IJL;
+	Wed, 18 Nov 2026 17:06:26 -0400
+Date: Wed, 18 Nov 2026 17:06:26 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Cc: Daniel Almeida <daniel.almeida@collabora.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	Detlev Casanova <detlev.casanova@collabora.com>
+Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
+Message-ID: <20261118210626.GF3115493@ziepe.ca>
+References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
+ <20261116193821.GC2452510@ziepe.ca>
+ <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
+ <20261117202055.GA3115493@ziepe.ca>
+ <615C3DA2-4C02-4A8B-AEC4-70D498672559@collabora.com>
+ <20261118193521.GD3115493@ziepe.ca>
+ <457fe01cc1fbc5b6e2d7b5c9c167012b56fe86b2.camel@collabora.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -75,113 +122,55 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="n5rhigbbwwyg4zlt"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20261118203236.GA823624-robh@kernel.org>
-X-Zoho-Virus-Status: 1
-X-Zoho-AV-Stamp: zmail-av-0.2.13.1.5.4/295.17.74
-X-ZohoMailClient: External
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <457fe01cc1fbc5b6e2d7b5c9c167012b56fe86b2.camel@collabora.com>
 
+On Wed, Nov 18, 2026 at 02:41:32PM -0500, Nicolas Dufresne wrote:
+> Jason,
+> 
+> Le mercredi 18 novembre 2026 à 15:35 -0400, Jason Gunthorpe a écrit :
+> > > No, not OK :/ We want to use GEM shmem, which calls into the DMA API internally
+> > > through drm_gem_shmem_get_pages_sgt() -> dma_map_sgtable().
+> > 
+> > You cannot continue to use DMA API once you start touching a paging
+> > domain directly. It is why driver_managed exist.
+> 
+> You are building a strong argument around something that is not what we intent
+> this binding to be used for. If you had cared about the context you'd know we
+> don't want to touch paging from userspace in this type of drivers. 
 
---n5rhigbbwwyg4zlt
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v3 2/3] iommu/arm-smmu-v3: Enable an optional clock
-MIME-Version: 1.0
+Go re-read Daniel's answer and perhaps you can understand my confusion:
 
-Hi,
+https://lore.kernel.org/all/3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com/
 
-On Wed, Nov 18, 2026 at 02:32:36PM -0600, Rob Herring wrote:
-> On Fri, Nov 13, 2026 at 08:45:06AM +0000, Arun Iyengar wrote:
-> > On the RK3588 the PCIe SMMU's clock is gated as unused when no PCIe
-> > controller holds it, and the next register access (the CR0 write at
-> > shutdown) hangs. Enable the clock from the firmware node, if there is
-> > one, while the driver is bound.
-> >=20
-> > Do it first in probe, as the firmware probe may take a Tegra CMDQV
-> > reference that only arm_smmu_impl_probe() releases.
-> >=20
-> > Signed-off-by: Arun Iyengar <aiyengar1990@gmail.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> >=20
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iomm=
-u/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index 6d4520c47308..d3f42316b0d6 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -12,6 +12,7 @@
-> >  #include <linux/acpi.h>
-> >  #include <linux/acpi_iort.h>
-> >  #include <linux/bitops.h>
-> > +#include <linux/clk.h>
-> >  #include <linux/crash_dump.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/err.h>
-> > @@ -5786,12 +5787,22 @@ static int arm_smmu_device_probe(struct platfor=
-m_device *pdev)
-> >  	resource_size_t ioaddr;
-> >  	struct arm_smmu_device *smmu;
-> >  	struct device *dev =3D &pdev->dev;
-> > +	struct clk *clk;
-> > =20
-> >  	smmu =3D devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
-> >  	if (!smmu)
-> >  		return -ENOMEM;
-> >  	smmu->dev =3D dev;
-> > =20
-> > +	/*
-> > +	 * Before the firmware probe: it may take a reference on the Tegra
-> > +	 * CMDQV device that only arm_smmu_impl_probe() releases.
-> > +	 */
-> > +	clk =3D devm_clk_get_optional_enabled(dev, NULL);
-> > +	if (IS_ERR(clk))
-> > +		return dev_err_probe(dev, PTR_ERR(clk),
-> > +				     "failed to enable clock\n");
->=20
-> The primary point of the "optional" flavor of get functions is so the=20
-> get function itself can print an error rather than every driver doing=20
-> it. So drop the error print here.
+If you want to
 
-For clocks no errors are printed for any flavor so far. The primary
-point is simplifying the case of a clock not being described in the
-firmware:
+   "We plan to alloc a paging domain when a video encoder session is created. Then
+    we call iommu_attach_device() before a job runs"
+ 
+You cannot use the DMA API.
 
-clk_get -> -ENOENT
+You absolutely CANNOT attach a brand new driver controlled domain, use
+the DMA API to populate it, and then detach it.
 
-clk_get_optional -> NULL (valid dummy clk handle, which may be used
-in clk_prepare/clk_enable/clk_set_rate/...; also not covered by
-IS_ERR() and thus not considered an error)
+Then we have the issue that the rust bindings expose iommu_map, which
+cannot even be used on any non-coherent arch due to lack of cache
+flushing.
 
-I think it is sensible to have a proper error in
-/sys/kernel/debug/devices_deferred when getting the clock return
--EPROBE_DEFER, so I consider the error message sensible.
+Further, from a Rust binding perspective all these unsafe things I
+talked about have to be blocked by the Rust compiler:
+ 1) You cannot attach a domain to a driver_managed_dma=false device
+ 2) You cannot call DMA API functions on a driver_managed_dma=true device
+ 3) I object to exposing iommu_get_domain_for_dev()/etc to Rust
+    due to how unsafe it is, but if you were to do it then the
+    returned pointer must never be used with attach or iommu_map/unmap
+    functions.
+ 4) Since there is no cache flushing a non-coherent arch must never be
+    allowed to call iommu_map(), since it is unsafe to create memory
+    incoherence.
 
-Greetings,
+Thus, what exactly is the plan here? Do you see my concern?
 
--- Sebastian
-
---n5rhigbbwwyg4zlt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmr+EfgACgkQ2O7X88g7
-+pqAZw//TekznrpEVhxaX/atWMdDNYcX48509vLVMXmPg0jrqdTaBHoIkmXN7Rfj
-VPJVEjCzuwW/Cdpzt1bEaHgtySqvErR05QdAK4heSrScM8eSpyyczs7/ONQTkOUb
-ewAisBTV8Fp4Hnt+DzuXR1Z43JEaH433Z8eoHMp7wUksKPUpE6AXsJwQ8C1GrXCG
-1ce+UIsrMBwe/aFmlIgbx8G05FvXQ+JifcLIqM7uWqfgHpmB3XJ86jkXvLe5YPYg
-3A5qAvV05ilAxRQKer3xnTu8v+l6bMgYIZSGj6TnUQNCfQRz2yNgvMShD+baqsLj
-kLAcPd9ytULKlD0XH4A/vpYFcZvjSPskKRnCMRNNqOOAXl6nWmZYW/cktqT/M22y
-InVtBhprpj/+4NUlQC0Ji0nvQsa+YuGYOc3LMCIJDNtEM1DmqcxCvwnEH7zF9/7S
-Zmwa+pCm8XIO0g3yyKtEVVoWRzQWf9IDMVJuvsqKl/nPH6IANCJ2SEt5ZnsYye2a
-21mPuP40QeCBMc+F8inZUmiahnURrIcYFuDPFc3ufsFIQXDyZUImpL5Ei3ydzGzc
-bNhy79nUI79XQ2+En2HVWbakyoz42Mu1eoOGCsm061fn0GamtKuiZWErxcq8C/f3
-0qQeAd40nrhMIqZN1oGUSRkLDIfapqN8jUQ2qJGOVavEzbYaWyM=
-=FSvF
------END PGP SIGNATURE-----
-
---n5rhigbbwwyg4zlt--
+Jason
