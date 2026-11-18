@@ -1,54 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.40
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795029134;
-	b=gazWrpsr4v88jbYP32Hbgfpvi1RTlQ1n3L6lUHZYMN4HnUqG7rhUpmsWCEgo7eFw8+Of
-	 1Ww3AMmxQf6nlTPNCGAdgDQJWAo10VeE0I9qZFg1VVE7Eep+vFERTYSob/o6nacG+7bT+
-	 W1xMCFRLTBeX2zvFssNq2THF0uCpH3KrtwVFfWsPaeJyMnXoWxb9Nn+nz1uFpJy6zSzuL
-	 HIbHwjGfAKoojDzeWQpfCQA3ob9U/DPd9tUzFTuBO3Rwei79XEe1+r1YpV1gqraQ1uyUp
-	 L9i4JqvCB8OmdzRAj7L1eghjjuzMf9ke3+UgMieBd7iiHXoxpOmwIkq0MP+cycNdoog==
+	t=1795029414;
+	b=TV+tdNwtzBaKT0TYbQjfju+1pO2yGS/74y44QQr8lxbh3diWcZFwofYbC6Y8qB/rSPch
+	 Vn0X+tb2UKjnPUus3KpgnyeYJ0mq9xSQxqHqQZHUqXvxYRDtXknnFZ/yrbtWbg1Yb06N2
+	 fft0hMqGj+/4H9qe+kVrSi4P0seeuduXyhwbdJty4w32sJVutWoQ+XnRTAIi44INe/ZYP
+	 mxtcl5jtWw3SgzrEXvaZ9pIkdcszBthfOZoNnogYj2SDlP5VbTiuVAE4KG8QyxGSbcieF
+	 xlvi2Xrf2jxhA7oUCPRkfPGPEiqpfSzlbOufJx+acFOkrk/T4BzcEvyVMJ8WH/oRACA==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795029134;
-	h=DMARC-Filter:DKIM-Signature:Received:Content-Type:Mime-Version:
-	 Subject:From:In-Reply-To:Date:Cc:Content-Transfer-Encoding:Message-Id:
-	 References:To:X-Mailer:X-ZohoMailClient;
-	bh=ItEIAqfkh9HYjyYLYFlHdsVmiv2JFV6DaAPAUqusY5E=;
-	b=Dd4uohxJBS3CNKDtYFZmrw1NsZ7N0KfiRS0sxlk+fAqp998KvlFosXl/j362xRmxS/xC
-	 Pqu9wk/c1c27FaaLk8kaRgdFv6dZlSRPhuLgm04BBiD3xLl+33CP3ShzhmY9+k9t4+M1R
-	 0LIGMhmKEIZXTtpZQWv/PiWRtLvpOjfLV8FRiJN07sfyhRpID3YuM8TApWIBpT6O/DLvY
-	 nsBWZwc8o9ykfWuXBEeHWN8+sPSu4cSL+2OXnweM8G/MHqVi+1oOWB6oLsY034jC87pcn
-	 /R3X2dkakZN29k7ZgVHMx8P21znvbd1FuudmcwBdHeAG4iybvb100o5D0nN+zvWzE6g==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795029414;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Content-Type:
+	 Content-Transfer-Encoding:Subject:From:To:Cc:In-Reply-To:References:
+	 Date:Message-Id:X-Mailer:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=e+bzItnUwkVFMFtJ4tTysfsMI7UzK01AVp9AomVPTGE=;
+	b=v/1LoFCBoZQQF7dTuwHzWFZC7R5V6ZP9dfuG/VXGx65TOqjaML4fZYBhqRPQp/LPp3xo
+	 wp3uNZqCXELk6kBqlPaftaoIUtk//vdJjRkJzd9hcYUiuyl0gzOHzK75p6zxGH8G6uPIG
+	 fmWsdygOa7SPEcBrsGYrQnKo12mB0pY/KECfiURzWvkBrz7Z0K9hEIwtf/DPrmfMKark4
+	 xY76iIAJKNbLIZXDux9vOo6VnencoL9cLkOXTj9nEVEScMquo4scyI6dIxtzwdIvnR98s
+	 Dwe60E7ZFA1i6XOVzradMkXvSJGZWgN+cXR5Cgjasr6cCdF+ZV6pqfcTntkX+g229Qw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b="CHZhBR/n";
-	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.180.11
-Received: from sender6-op-o11.zoho.com (sender6-op-o11.zoho.com [165.173.180.11])
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=Gww42nbB;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.200.40
+Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012040.outbound.protection.outlook.com [40.107.200.40])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3C66606A31C;
-	Wed, 18 Nov 2026 19:12:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B3C66606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4415606A32F
+	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 19:16:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D4415606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=CHZhBR/n
-ARC-Seal: i=1; a=rsa-sha256; t=1795029121; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=SbUtX7o2tXBdzJcUrHgGFvCZiVPQwSCavGNMjLhqtxToc6mdjCvF+hY/uPLUH2Mx1jfBd/rZkEtEkDX2CHdC+Y933U3oYvzFo930HGLwRY+EdK4HGlq1LtGLCg8gOGKQ2vwnkwbrGN2NANOMos24CInJQgSNNcKYHvkTao3ccqk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1795029121; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=ItEIAqfkh9HYjyYLYFlHdsVmiv2JFV6DaAPAUqusY5E=; 
-	b=SgvkozKZMm+eC8E7ZpbY1jl+DgRg1zV1PC9TvY/pe2RTAzGRnYkiViYXSyY+EYBvC9RWrGDYNdxNXbfap2awXCl9iN3PuSvUH63HW7mvcFT4izNqr8BymTA0mfC4HmXzOABcANtHeBwZ74Pn+Q12a5yUKnjLta8Vs9S06gSZL8A=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
-	dmarc=pass header.from=<daniel.almeida@collabora.com>
-DKIM-Signature: a=rsa-sha256; b=CHZhBR/nRwVGvB1bfY3yg+ACd+YE2U6+4nmCDwab8WHPj96FJoWDV4E3sUxOOTd2TbqWhzEVljBHkJVZEXY9l6BQNBFZSybslFRSBhTuCCXhF4PHiY3cN0pD+xwwIfctvrj+4WZ5f/Qau/rzIXzESI9av3/cRYNGKhskUdXY9eY=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=ItEIAqfkh9HYjyYLYFlHdsVmiv2JFV6DaAPAUqusY5E=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
-Received: by smtp.zohomail.com with SMTPS id 1795029119789199.42815469236405;
-	Wed, 18 Nov 2026 11:11:59 -0800 (PST)
-Content-Type: text/plain;
-	charset=utf-8
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=Gww42nbB
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=gPs9YRkK+5GENbJRUUbOEb9N9dl5AwS2tx1gVBdlA1BdiOE7RfqAKzLAaxYucyxxIP3zMBfRTu4Bq9wjwzEwVvW6sRKZ1V0K8jcZuNY14qHuC1t3aOJqWw9Pjlh3QTzgjC4Nzpp2dxaEuHsN4OqdKDd1jtWK3GoJuoPY19oUfV44sZfwaDiUE55B2oWYrXIDVSw3pZ3+KJ0VJd9KytwMvF1wGe+FTmZ/AInJCscYT15arkldLa/pLx/qnlC38RsuuMXTKUtP+SHu86E4lhYD8QCAGquVfaEnWNlaU5PQ1PqXao4XkTMimiaoGGwQkcY2heJH2M1WKuIhHJEsL5IAoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e+bzItnUwkVFMFtJ4tTysfsMI7UzK01AVp9AomVPTGE=;
+ b=fWsXaV/smCuguYNjNfR6U0jfWG9EVSD+F5hgXXYmUzVdWBU5Ubo+tkMqKFi/s2yWw8fXR3ZpnlCV28AhOp458KzEmH0fgwOk6egh/a1VSTmHURnaVdCTB2mmziQIVhrFiIF+I3Doltp5eh7pAg4Po1iQta7HtJ9lqUEbff9HwTsVte4XZ3cgWw2ZVSF3PHwpr7wJWJ0Zk2jvXWlUCvNFnS9Q8lB0ofeU/OlWUud2paIIqhw9oL4FKDDd7eSVu1LgnIULa7O2mQ727dH1R/sk587YcIeySYdWWtM6FnEhr1uTA+RidjH1KvhIr/npNZitZ+n4AiX4y7hylDlL1gdXJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e+bzItnUwkVFMFtJ4tTysfsMI7UzK01AVp9AomVPTGE=;
+ b=Gww42nbBqM8V/fXX/u6d9X0xjd0fBGY9fyUNcF51RwtCVSOmgGne2i1J/nX+VsITaHLitEOxjR2yXjbg0tpkGydFR7pfIIbfNCwDJQ42PsGc4iYL+A/M5GZD3fDSIumW/ZnlLO8YRV+xND/lr8ZFs6YhKTO1ja0Gd7WE+Y3FNS1xAZuuZn3vLP95rTVrzmdrgb/XCHhZhYwR/Scn5/2EhfsM8N2vYx9bl5CjwwpLqr3G0aIixHqreAq3gzncWtzfY5zU0SBqe++Qla7K9ehq3L/pwnEeEDIq4tTrM7O+J1Oi3I5dbs3CIsXYeWL0CdzZ6s616y9PLAufMF/8kpklzQ==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12) by CH3PR12MB8512.namprd12.prod.outlook.com
+ (2603:10b6:610:158::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Wed, 18 Nov
+ 2026 19:16:45 +0000
+Received: from CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d]) by CHBPR12MB731189.namprd12.prod.outlook.com
+ ([fe80::b0e5:123d:fe06:e10d%6]) with mapi id 15.21.0615.013; Wed, 18 Nov 2026
+ 19:16:45 +0000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v6 3/3] iommufd: Add IOMMU_IOAS_RESERVE_IOVAS ioctl
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Guanghui Feng <guanghuifeng@linux.alibaba.com>
+Cc: jgg@ziepe.ca, alex@shazbot.org, iommu@lists.linux.dev, joro@8bytes.org, 
+ kevin.tian@intel.com, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ robin.murphy@arm.com, will@kernel.org
+In-Reply-To: <20261028090453.2392991-4-guanghuifeng@linux.alibaba.com>
+References: <20261028071906.2325378-1-guanghuifeng@linux.alibaba.com>
+ <20261028090453.2392991-1-guanghuifeng@linux.alibaba.com>
+ <20261028090453.2392991-4-guanghuifeng@linux.alibaba.com>
+Date: Wed, 18 Nov 2026 15:16:41 -0400
+Message-Id: <179502940167.3851267.4719665473088413793.b4-review@b4>
+X-Mailer: b4 0.17-dev
+X-ClientProxiedBy: BN0PR04CA0067.namprd04.prod.outlook.com
+ (2603:10b6:408:ea::12) To CHBPR12MB731189.namprd12.prod.outlook.com
+ (2603:10b6:610:33d::12)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -57,208 +98,141 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3901.200.71.1.16\))
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-From: Daniel Almeida <daniel.almeida@collabora.com>
-In-Reply-To: <20261117202055.GA3115493@ziepe.ca>
-Date: Wed, 18 Nov 2026 16:11:40 -0300
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Miguel Ojeda <ojeda@kernel.org>,
- Boqun Feng <boqun@kernel.org>,
- Gary Guo <gary@garyguo.net>,
- =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <lossin@kernel.org>,
- Andreas Hindborg <a.hindborg@kernel.org>,
- Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>,
- Danilo Krummrich <dakr@kernel.org>,
- Tamir Duberstein <tamird@kernel.org>,
- Alexandre Courbot <acourbot@nvidia.com>,
- =?utf-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>,
- iommu@lists.linux.dev,
- rust-for-linux@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- driver-core@lists.linux.dev,
- Detlev Casanova <detlev.casanova@collabora.com>,
- Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <615C3DA2-4C02-4A8B-AEC4-70D498672559@collabora.com>
-References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
- <20261116193821.GC2452510@ziepe.ca>
- <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
- <20261117202055.GA3115493@ziepe.ca>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-X-Mailer: Apple Mail (2.3901.200.71.1.16)
-X-ZohoMailClient: External
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CHBPR12MB731189:EE_|CH3PR12MB8512:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c90a45c-61ae-42d3-490c-08df45a87bd6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|23010399003|366016|376014|7416014|18002099003|261009223027099003|22082099003|11063799006|56012099006|261028144727099003|4143699003|261022105027099003|261026140227099003|261026121527099003|10067099003;
+X-Microsoft-Antispam-Message-Info:
+	KdNMKzthT7g51kD3H48D31WWQajSQGeqnw//byObUYMyKY491AdFBaa9CzYeljD9yLyBR5cRluIc+5nnBOINvMC9JASw92H8eSRBd4995VpMbWrE/R+52Wf58UvZt3kIApY6iFAPg4T6Qww2VPjfViT3QAcz9aQwQ7x6CDGUwz8rxon2Eosqo5bCp4sJa81VjL6X2xMXqm4g5hH4taQdGtxVfmvQ0dxV7UvSnBRcz2BCfFed9SHO1hYV0fGxUHRqJH51+Q0Sd1KLX2v47LHpzKjWk8D+OMr/qKlgXZdKyVSJ0dEv4gS/OZPkmmZN/GRWomE0MEsQs8zL3k/pSxCDYMJ53LBs7rzmEpXo6sZ6Qxc/V0jnd5+cZ0erTN+YbGN4Te61tm3bmdLnHAgi5o5Y0H34KbEk3UDGFZlh40fFMPd45pJNoZhEbFhs/u69NL+vdEQTQTcv1nrrmDUPpKyfKUw540sdAmnlF4RhDhEFpivKyysuPYpDn2pRds1m85ojfaC/sMg8UkQAKu9Q7ERBEUbHzTsyWYdF72INY4mJuyZObcC0oZsq6zoZLsvAQVCdAfLFNvhFfC8o3+iZwAElsfWFfaNe8s440KpmHcKClmEKkodMrQBjQu9Vc3yHC1RNzQxUI14p9LTs3YpksSbgQFYsxocBwBX1kRwr/tIkVF4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CHBPR12MB731189.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(376014)(7416014)(18002099003)(261009223027099003)(22082099003)(11063799006)(56012099006)(261028144727099003)(4143699003)(261022105027099003)(261026140227099003)(261026121527099003)(10067099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?UDIwZWtoN1pra2ZUMmszcDFSMUd6L21hbythejFYVFNuTVRCeDFObUtiRlZN?=
+ =?utf-8?B?RUlEYUdobVJKUVd0aVY2NmtwQ05ocU43WTBoODlsTDgrWmEvUVpXbUttL0xZ?=
+ =?utf-8?B?WEpmOFVObzJid0cwYzJBU1VkRitvS3YvL2UyRlRUVFpPMFc4anZSNFVsRzFN?=
+ =?utf-8?B?MlllakhwSXF2cUR4Y0VmaVRmNUdBRE05QlVSKzdkb0QxMThkZWIxblMveDdm?=
+ =?utf-8?B?RTZBSVNIbEFmM2pIOUR1UjBiMmVwVkVFa0d1d2xjUUMxZVFOQ3FGcTJpczFI?=
+ =?utf-8?B?bjVSODNHL0c0NExFVDBiOW9hWkdxYlJLYVZkcVVpbnFHdTdtaDBpU3lLVTdT?=
+ =?utf-8?B?UkxVekNyeUdhdHpsQjkxK3NCVGpzWU56Vzl2cWN3REgxc3N0bExHMllqZUVt?=
+ =?utf-8?B?c1dsejlpWlh0MkhTUFBPc3VDUnBBaUl5WmNqaCswQ3c3emZOTGR2Wmd3VmNj?=
+ =?utf-8?B?VWM4dnJuVmJwcmtGK0JXNDFOaHFQUlJjSmhpQm45b2crVDRWZG5hNEQ1RStT?=
+ =?utf-8?B?Q1RpMzVkUFhMNm54ZDNIMEJzZ0IycVh1VGlvNGUrU3BhYUM4RTFYKzlrbDFG?=
+ =?utf-8?B?MEh0anZSMW52Uy81eFNqb3FEUkFMVi8xMUJiTnd5VjNFMGljWXlnemFUUjBB?=
+ =?utf-8?B?NEVKSnVBSzA4anlxQjhDNSt5NS9reWp0RGUyMTdFUjRGd3VGWi80OXg4MHVa?=
+ =?utf-8?B?VnVyVnc3b2U1Q3FabjJOTEV0bDVvQ2UvN3lURHVqWTZrMkZOR0RXUVZRZGxj?=
+ =?utf-8?B?L3o1TkQvMzdiSEFhRkx6ZHBPa0cwWXZqS2tZZWQ5QSswYnhVdVlkekMyWnFn?=
+ =?utf-8?B?dGMwMTNwVlpXRVZPNnExQkdIVEg2Y0JXY0FaOEtTT0NVa0tmb05BMnQzelZl?=
+ =?utf-8?B?ZGs3TXRtSnRBWTd4b2NvRFpYQWRJbFU0WUxOQ1ptNnlTN1hhQlo2c24yQTNK?=
+ =?utf-8?B?V3dkYnB4OXA4NnN1ejMrZU9PYzJRNDRPY2hBVzJpWkVuTzRvOFRlR2JBYUpP?=
+ =?utf-8?B?enRXbCt4bmd0WUhIU0MxVHBVdGhFYW5wV1FwRkM1ODArdy85bmRucXNBWlli?=
+ =?utf-8?B?aGs1WmNBdkZPK0NvRGhITU9pYkIwc0g2amRlZEhHS05lYlhzVDA4bFFiVXNk?=
+ =?utf-8?B?Yld2Z2NlMzNGYW5WL3ZCY1piRUlrRWRQbDA2dEJpMmlDV0x4MVNyTWdQNFM4?=
+ =?utf-8?B?TmZ4WG1rM0RJYTk2OUVIa29wNkVVRnJTdUw2SWk5M3dwdmNVczZXSmpXeVR5?=
+ =?utf-8?B?L2ZyVU9nSjlQVHI0NENYSWJIKzN4NEpjd3JrQmdHNjVucUczb1RPSGw0QUFI?=
+ =?utf-8?B?SGxQc0QxcUJkcndUM3E0cWVzSFpKeTAyK28xUzFsV0p3Rk15dG5mSC9JSm9n?=
+ =?utf-8?B?R21GSXhrNityR2MzM0R2ekJBdEJMWGkrQ0orRDRHSUlIbHpZejYrODJmNFJv?=
+ =?utf-8?B?QXZldFZHSktadDNwYTREOUMwOC9ZRnUyWlpWSVFSZHZqbHZuMFNRNnJJYXFn?=
+ =?utf-8?B?eUducVV0NTlZd0hrZnNpbFVTeHc1TTl0TW5abG55SkhoeEp0UktVMHl1NEh2?=
+ =?utf-8?B?T0hUdFV1bWRpaHNzM1c5b0xrK0ZBWDdIa0ZRa1BXZUNadU0yVEtCNXJBYzJz?=
+ =?utf-8?B?YVpIOWJaRlJBa2N5bUxlek91bUtpYldXbzNpOEFDQk1URkxDVTArK2RSK3ha?=
+ =?utf-8?B?YmlZTEhIc1FwZTBsRU5hOGZFNUNqZ05lL2ZlNXdudHoxR2FUZml4NWZKZjVM?=
+ =?utf-8?B?cjJlR1lCazhuOXRCcG1mUlR3a1NNN1FZR0J3Z1JwTGpTcFE0ckVkeHVGSXhO?=
+ =?utf-8?B?N09jekh4RG80akpzQk02TEM5dDZJQXdBRHViR0hSMnFxY1JWcVcyYXRweWVx?=
+ =?utf-8?B?RGVtNS85OXVvd2VYWWhrTG0yUW9aOGlmZWpTTkk1NzFUMFhpbjJlU0I1NUo1?=
+ =?utf-8?B?RkZSYzJvSG9DZmMxUXRzQ0xmbE1ZckdJdUVaTTl1OHJUNTZJZ0JYWTVXVzBB?=
+ =?utf-8?B?b1hQaHZKcFpmZXc4ajdySVVhQU9uSDJ6UENHMkIyMU5HN0lhT0ZRWVdqWTNk?=
+ =?utf-8?B?eTNLeHRNMGhVN2JCbjQzQnVFQzFYcEgrN1lSU3UyRk5wOElFbmRQeWJ5Rytk?=
+ =?utf-8?B?QVQ4U2MzWlRPdVlybWxNbU12YmdWMDIyQWZaem1SaTFHU1dyQWp0VlRKcWdz?=
+ =?utf-8?B?V1JObksxRWFJNERnQkNMNmtqZzlHRnlpWXlZbndyb3JTSEZwVlFLVHQxaDJs?=
+ =?utf-8?B?R25IUW4wV0RsZnNnd0ZuYnRpS2NHcVFSdUdmcGVYWENDUElNR3dwN0FTMm5v?=
+ =?utf-8?Q?T0n04KMIYd8EJnVsvK?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c90a45c-61ae-42d3-490c-08df45a87bd6
+X-MS-Exchange-CrossTenant-AuthSource: CHBPR12MB731189.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 19:16:44.6957
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6Ste51t8p0rWmsFck9DPOKRQkZ+qtmPxjeND/g11gddRuUE1z6LPHqklnELV4XYp
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8512
 
+> [ ... 56 lines skipped ... ]
+> @@ -183,6 +183,57 @@ int iommufd_ioas_allow_iovas(struct iommufd_ucmd *ucmd)
+>  	return rc;
+>  }
+>  
+> +int iommufd_ioas_reserve_iovas(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_ioas_reserve_iovas *cmd = ucmd->cmd;
+> +	struct iommu_iova_range __user *ranges;
+> +	struct iommufd_ioas *ioas;
+> +	u32 i;
+> +	int rc;
+> +
+> +	if (cmd->flags)
+> +		return -EOPNOTSUPP;
+> +
+> +	ioas = iommufd_get_ioas(ucmd->ictx, cmd->ioas_id);
+> +	if (IS_ERR(ioas))
+> +		return PTR_ERR(ioas);
+> +
+> +	ranges = u64_to_user_ptr(cmd->ranges);
+> +
+> +	down_write(&ioas->iopt.iova_rwsem);
+> +	for (i = 0; i < cmd->num_ranges; i++) {
+> +		struct iommu_iova_range range;
+> +
+> +		rc = copy_from_user(&range, &ranges[i], sizeof(range));
+> +		if (rc) {
+> +			rc = -EFAULT;
+> +			goto out_unlock;
+> +		}
+> +		if (range.last < range.start) {
+> +			rc = -EINVAL;
+> +			goto out_unlock;
+> +		}
+> +		if (range.start >= ULONG_MAX || range.last >= ULONG_MAX) {
+> +			rc = -EOVERFLOW;
+> +			goto out_unlock;
+> +		}
+ [Severity: Medium]
+ Should the check in iommufd_ioas_reserve_iovas() in
+ drivers/iommu/iommufd/ioas.c use > ULONG_MAX instead of >= ULONG_MAX?
 
-> On 17 Nov 2026, at 17:20, Jason Gunthorpe <jgg@ziepe.ca> wrote:
->=20
-> On Tue, Nov 17, 2026 at 05:09:11PM -0300, Daniel Almeida wrote:
->> Hi Jason,
->>=20
->>> On 16 Nov 2026, at 16:38, Jason Gunthorpe <jgg@ziepe.ca> wrote:
->>>=20
->>> On Thu, Nov 12, 2026 at 02:00:07PM -0300, Daniel Almeida wrote:
->>>> This series adds a Rust abstraction for IOMMU paging domains. A =
-driver
->>>> can allocate a domain, attach it to its device, map pages into it, =
-and
->>>> install a handler for its faults.
->>>>=20
->>>> This will be used by the upcoming rkvenc driver that my colleagues
->>>> Detlev Casanova, Nicolas Dufresne and I are working on. More =
-details on
->>>> this driver can be found by watching Nicolas Dufresne's talk at LPC =
-2026
->>>> [0].
->>>>=20
->>>> As part of the security model, each client will have its own IOMMU
->>>> domain. This is needed as the submission model will let userspace =
-set
->>>> most of the encoder's registers directly, so the kernel cannot =
-check
->>>> every memory access that a job makes the encoder do. With a single
->>>> domain, one client could make the encoder read or write the memory =
-of
->>>> another client.
->>>=20
->>> How do you plan to get the paging domain in the first place?
->>=20
->> We plan to alloc a paging domain when a video encoder session is =
-created. Then
->> we call iommu_attach_device() before a job runs, and detach back to =
-the default
->> domain after it finishes so the next job can attach its own session's =
-domain.
->> This is so each session is isolated from each other.
->=20
-> If you do that you can't use the DMA API at all in your driver as you
-> have to set 'driver_managed =3D true'. Is it OK? If it is why not just
-> use VFIO?
+ struct iommu_iova_range represents an inclusive [start, last] interval, and
+ iopt_reserve_iova() supports inclusive bounds up to ULONG_MAX, as seen in
+ drivers/iommu/iommufd/io_pagetable.c:iopt_table_add_domain():
 
-No, not OK :/ We want to use GEM shmem, which calls into the DMA API =
-internally
-through drm_gem_shmem_get_pages_sgt() -> dma_map_sgtable().
+ 	if (geometry->aperture_end != ULONG_MAX) {
+ 		rc = iopt_reserve_iova(iopt, geometry->aperture_end + 1,
+ 				       ULONG_MAX, domain);
 
->=20
-> Or are you planning DT horrors to get yourself a DT created "DMA
-> struct" ?
+ The UAPI comment for struct iommu_ioas_reserve_iovas in
+ include/uapi/linux/iommufd.h also notes:
 
-I wasn't even aware such hacks existed. In any case, I am not proposing =
-more
-hacks, no.
+  * A range with last < start fails with -EINVAL.  On 32-bit kernels
+  * a range exceeding the native address width fails with -EOVERFLOW.
 
->=20
->>> Using paging domains directly is very complicated, I'm not excite d =
-to
->>> see DRM trying to do this at all. IMHO there are many unanswered
->>> questions how it could even do this safely.
->>=20
->> In a very simplified way, this is not unlike how GPU drivers =
-currently work. In
->> fact, from a cursory look, this seems to be how rocket (the NPU =
-driver) works
->> too. Since we are merely porting the same ideas to video codec =
-hardware, I am a bit
->> surprised by your discontentment.
->=20
-> In my experiance any place I see DRM touching the iommu it is
-> immediately suspect. We keep uncovering horrors that people buried in
-> there. Yes, you can point to some DRM places doing something like
-> this, with a convoluted struct device scheme and DT hacks to make it
-> functional, no you should not copy it and certainly not entomb it in
-> rust. :(
+ With >= ULONG_MAX, any range starting or ending at ULONG_MAX (such as a
+ 32-bit PCI host bridge MMIO window ending at 0xffffffff on a 32-bit kernel,
+ or a reservation reaching U64_MAX on a 64-bit kernel) is rejected with
+ -EOVERFLOW.
 
-Sounds reasonable.
+Seems right, it should be > not >=, please send a V2.
 
->=20
->> In any case, we need this isolation due to the submission model used.
->> Most Vulkan drivers know their hardware pretty well, so a level of =
-abstraction
->> on top of it like V4L2 is unnecessary. Therefore, in order to achieve =
-a leaner
->> kernel driver, userspace programs most of the encoder's registers =
-directly, so
->> the kernel cannot validate every address a job makes the encoder =
-access.
->=20
-> Sure, but you haven't explained what the iommu gets attached to (ie
-> where does the SID come from), how cache flushing works, who programs
-> the mappings, who is managing page pinning, etc.
+Also, with this function I think you can remove the overlapping
+selftest function IOMMU_TEST_OP_ADD_RESERVED as another patch. Then
+you will have test coverage for this too.
 
-The SID comes from the platform_device backing the encoder, as far as I =
-am
-aware. Pinning is handled by the GEM shmem layer.
+The rest of the series looks OK to me, so send a v3 and I'll pick it
+up
 
-The CPU mappings are write-combined, so the only cache maintenance is =
-the clean
-of newly allocated pages, which dma_map_sgtable() does in
-drm_gem_shmem_get_pages_sgt(). The mappings themselves are chosen by the =
-kernel
-driver. We don't care about what the actual IOVA is. All we care about =
-is that a
-given GEM object is mapped to a given domain, and that we have some IOVA
-representing the start of the allocation, such that we can pass that to =
-the
-device.
-
->=20
-> Are you sure you shouldn't be using iommufd for this, tied into your
-> driver? It was intended for exactly this use case, to allow drivers to
-> delegate their translation to userspace. Though that doesn't relly
-> solve the questions about what it is even being attached to..
-
-I had a cursory look at iommufd, but it seems like:
-
-a) it requires IOMMU_CAP_CACHE_COHERENCY, which is not offered by the =
-rk_iommu
-backing the RK3588 SoC we are currently targeting. In fact, IIUC, this =
-does not
-seem to be possible, since the encoder is not cache coherent with the =
-CPU?
-I.e., does iommufd expect hardware cache coherency/snooping?
-
-b) there is no way to do what I said above about GEM, i.e.: there is no
-connection between iommufd and GEM.
-
->=20
->> The fault handler is used in the same way it is used in GPU drivers: =
-to kill
->> sessions if they fault. This way the driver can simply refuse further =
-work from
->> a misbehaving client, for example. It is also the natural place to =
-enqueue a
->> reset if the codec hardware is frozen as a result of the fault.
->=20
-> IIRC no GPU driver does that, they hook the obsolete fault handler not
-> supported in new iommu drivers not the new PRI based one... IDK we
-> have even wired this up to work this way.
->=20
-> It is nicer if the HW can tell you it faulted rather than expect the
-> iommu to do it.
-
-See my reply in another part of this thread about how handlers work in =
-Mali,
-just as a comparison point.
-
->=20
-> Jason
-
-You seem to be saying that what I'm proposing here has a few pitfalls =
-that have
-come up over the years. Perhaps we can massage iommufd to make our use =
-case
-work? I can volunteer to do whatever work is needed, of course.
-
-Same caveat as before: feel free to correct me at any point above, as I =
-have no
-previous experience with the iommu internals.
-
-=E2=80=94 Daniel
-
-
-
+-- 
+Jason
