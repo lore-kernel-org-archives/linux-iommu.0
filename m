@@ -1,114 +1,114 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.41
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794946859;
-	b=e527n6SpXuHxHHvivc1Lbc7TOHnb4sDFmSrebUlYqnpug2Yg1MKMV5UjBtQ5qQMLxxm/
-	 uHI/Lzk+Bsnv81tA6tMUQ4Nj5z3PbZX1N5Owc/ErO9hOG3LT8kAFRLnaIQo5F2NH+g0i4
-	 8g848CKcU3UmjebUOoLaX6sYQj97eYLnRtFbsgXBa+07AqUQ3TKKiwci99XugFRVJDwr+
-	 sr4SXqr51m8AqOl8nkDcTa/Gs0OgRZwBhqJPkvwA9hKCUGNg394I/Caal9nTLS4vqzeVJ
-	 YM+uB6btP8wcUHHiQ4nlymptsKKWjrceIE5lPsOg/vbrJHJbbs+j5Rw3BBhvhgKSelw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794946859;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=wJnPRAtsIC+/lFKvaSJITyDCcMmwBTIjrSEQdzWYjus=;
-	b=ISnQs2QHgzTpEmfeAeU/Zs1f2pE2yr3ePqfU3loHuW/kD2qnsmx1/S5M+Occbhsm+iT+
-	 4DWLD45bUqpw2WYWVUejobv9PykKoKnq57/Pwst+Y8VwEqwqejrMluEEUoMX6mTcsXGHs
-	 vo9FmxRkxCewgAMaWFizoGam2GLKPeq8dcbkeJwsevgJja+VEeYVnENscqbwtZ4luGQov
-	 iWyHROQMAJ4uvLYKbfAikY63DDlhpUGp8EpfnPBaqCFscX84htrzaHHFbQhMUbvWA92sq
-	 kTDy7D9k/uWkTccxIhDLXhSIxKNcOY4lZN117DFoW2bNSYjENFzXHZpRXHksOYSDNxw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=iwmZCCph;
-	arc=none smtp.remote-ip=209.85.219.41
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.40
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1794962174;
+	b=UqrKjSMn0o/clvYeEnGGkJ5vpjKXSB3VfNnM5BlE3JdRk38ATjgnl5xzJP91iQMtOlSl
+	 4Lq9818LAMeMIMWQ9wQq8VNvuyL9k/K2FS0MDr9Fe63QSlmPHV8Gt+w7KHiSFnFn70FPv
+	 RgtApX5M8xp/cPjXOY4EDYNuMErfRwmy4tLRKK2TmBbERE4lQh9fOP6Eh4cT12sInE0xI
+	 XwxDkxMklF6rjYjg2//r/0kR81zTmIpBTosF9lqg6p+1QMZQRu6Zii6sOg6nmEi2hl335
+	 /cT/KhDplUZVPX4r7fBRrHd7JVSc3o3iQb1ACqWZQve4dZaKFEjfFka9AUp1AytvOxQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794962174;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:Subject:Date:
+	 Message-Id:Content-Type:Content-Transfer-Encoding:X-B4-Tracking:
+	 X-Change-ID:To:Cc:X-Mailer:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:
+	 X-MS-Exchange-AntiSpam-MessageData-1:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=p0DFVzl7zvYw4+1S7jlw77lepDC7W1GKuqCxL6UVrc0=;
+	b=UM8K/UjbTiHPc5W406iFzq7T27Q3OFZNlsgneVavtTcm5lunlLQ/LkPbUPHjHTBWSyBJ
+	 LsZeanF7U3rtLmQyqUU/9ZvHVceCl4tI+DxWz6I4DN1flr7pqi2ezgXzuNkw+AvVMT/nr
+	 kU2N+3qp1SPuMlW6FVKMhjm64VzShg/SmOkmAKlbrbWxjbPZqyHE2YaAu1Uc/0MM0KdjH
+	 0LGDFgJ1cBQTsuyANqO8vPZtgFI27wCbizoAF6JvtzF9XBq0zy0128IY4tdfn063XGgps
+	 NrGaQn6Rj93pbsRVWGYXvslGdbwkgR+5xWQrbVDAugjURjzueupZGE/OfLE9RBslAgA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=nvidia.com;
+	spf=fail smtp.mailfrom=nvidia.com;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=nW8CcKYQ;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.201.40
+Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010040.outbound.protection.outlook.com [52.101.201.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE8F6606A31C
-	for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 20:20:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AE8F6606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F315F606A32A
+	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 00:36:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F315F606A32A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=iwmZCCph
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-91e8938fd01so976576d6.3
-        for <iommu@lists.linux.dev>; Tue, 17 Nov 2026 12:20:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1794946858; x=1795551658; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=wJnPRAtsIC+/lFKvaSJITyDCcMmwBTIjrSEQdzWYjus=;
-        b=iwmZCCphdPD1x9NpKAGRAkLHGnlZn3QfyJv3qfvp9XPhhRSewqxyZI7v73r3RSgDwH
-         WoCzvgoEyD66b82fUx5PV0mYDGtZsqMB2x08McWwSU0bVPqDCdkvt7gmhwsn2ZkLJcsd
-         JhisddqNJ1wjNCqZR5B3+1OENinsuBPGUZJtwHsfJ3TuNMs/WtwZ/bFXeiOcVEyEAaTF
-         t60LXKwXWB06ooE+0kMS6+Fj9THBJm8GS/SWf4hOryW4k9HUoyjOfltj9X5R7uYCcy6w
-         6vLWNZQ9NufRM7LscjCTN5MzdlmcbwtG6NSy4iFk7XiQscs8jvj99KZFGuuf4mwcq0dS
-         2EqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1794946858; x=1795551658;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=wJnPRAtsIC+/lFKvaSJITyDCcMmwBTIjrSEQdzWYjus=;
-        b=y4wDZWaYH4lvSuIoIMVbNbHEyqXfSUAXPqP0GsLc6dJ3V3bItv7/IYPm6FtiMZHEQi
-         b/M2IAGh6PJzw8xI0cvNzwj73ZTNTQ4JiHtxdimmH1wCHd4V5dPOND+kgmZp4NRBNJKf
-         uBAQfFQfuVqCKfBDc4B3iEyA9RLTqTF6tqt8RH1WCC7FynKC853JYHUe1Av1TrRqfqIl
-         DVj5YQZDiUMDIqPr+wzVjFX4ABeefAoLsAeejsQsgRdznyT6r0cveY7Byksx4mf3ejgH
-         0q/vpt3FcQ7qiktWL5Uc7NGmT90PzIU/gF7BP9GzTpy4JTMz+jDRb/xiWY4vtylRHRgZ
-         DF+w==
-X-Forwarded-Encrypted: i=1; AL+hErENOaIk/hqzReYgHaYOE3LaOx+hwqGMMIPawLRMWrKV4s/MMzW2DY/vmlUWFccEg9LgL+5Spg==@lists.linux.dev
-X-Gm-Message-State: APuU4Z/dVaR+ZI+lXrMyes8xNVBRYLbah0rqi9ikl2hmjkguM585+L6i
-	/qn26XsQiAKIYCoy914ckhXNOiHrkPXq0gybnb0dwAvcdE1VXE/DuAcbS5vKVCDSItW8QdOR+j3
-	M3C3z
-X-Gm-Gg: AZFdTZdSFwvzqQlTPgmN7bwABNfYanOoAEE36Zx+djmKPBgGRL5YBWyyvm/XV6Ewfkx
-	Bm4UAf0Sv0J9GxKw47IhWUdgNlUpgkiBplUUw+0Zq3T5/v/gn5yo83y4Ko2wG58EwApi4Duc066
-	HDfjz/spqDzRKKsQQhGo2wCnzF9QUi9DrmNHkhHapGjM4aeAzyQ6blRmchAGVFJP5smFWC9hIMx
-	cSzLorMvK83diDfzfxBl8AT8IcLLgr2DxsQ0XapmN2pZLNSirfPlKBTF8aT9Gkx1p7nxZmR4k4A
-	/Lb9OugT3I5jvPC37x0taOHL9jXp/O8YnrUD8uvTip7UnqTPO1vRdrImqbXt/06pFyriDF9/urN
-	pmYXDgpsHKRt4szmlJnGCbCulajUk6ZsN8u2ykO/T8UTHo8rvgMRZxOPmQQ5yBbUVNQMgmINT+3
-	fmDHl+AcSpYb6kjRyp+c8DoAJMAWak4JwkNJBceaJV0oaFtCSe4NV68xGbddHcpSPZG1sAuLbbH
-	GUTVzpOqOcl4bEvO8Zqq19SBnLUPnIdmn9HBN7slp+GtyFiQAkCXMX89bgdu4m/okNv8JVVGISD
-	tNNJdA==
-X-Received: by 2002:a05:6214:3018:b0:91e:97a9:cf02 with SMTP id 6a1803df08f44-92114d84a69mr5475416d6.11.1794946857364;
-        Tue, 17 Nov 2026 12:20:57 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-92114d70c72sm2569566d6.33.2026.11.17.12.20.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Nov 2026 12:20:56 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xTPfj-0000000DL2h-3OIS;
-	Tue, 17 Nov 2026 16:20:55 -0400
-Date: Tue, 17 Nov 2026 16:20:55 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Daniel Almeida <daniel.almeida@collabora.com>
-Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
-	Gary Guo <gary@garyguo.net>,
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	Detlev Casanova <detlev.casanova@collabora.com>,
-	Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-Message-ID: <20261117202055.GA3115493@ziepe.ca>
-References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
- <20261116193821.GC2452510@ziepe.ca>
- <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=nW8CcKYQ
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Pz9yVntK0iccZAMQicX/mc5LnQQXOL+6EAamE2Wp39/ei6/cWGtk5I7THaEnQ4coZd2S/Ru36nUyAmTm01JuVnpaUtA38LZVOdlnWRDR/keyn4/xGPZ3UWsdQAkEawPjTRLQ4LHe/mwpX/QU1UFKjJEGxq4itg+EqIOlY+QjoSsvFAblzBQrdiH57TyHvnVPYPAb3u9qoaZAhMT6/SMdoH8DhQtTSAv02/JeDK0XMaVA4Iziocb6mxZYM3BfEyEoQVaFqTEPG2BUbpUYhUFYG3F/4frY3EGrWoGKJA79Bvj6kzELkPrV5a+7oeZrGoVcn/vrIe5dU0xEROdlng+UTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p0DFVzl7zvYw4+1S7jlw77lepDC7W1GKuqCxL6UVrc0=;
+ b=Gg2y0u6o8R8YUbARGv8Z7nOdWorq518hyJwzdRuYTwtQB4ox7nrCmUuIeIRLQ+KwojFqiejOty8DAGk6o4cWoVJESQNnrLXImPFmk62/9XkpGE1Fz9Lb4gJLPbSnPwnmiASVNjmE8I5U0Qx0UseJPrZVw3z7dbqmR0XiVDQ6Ej2zjs9+XA1D5+4qFl4UUHBWJ0OwUd63Y2hNNrskrPBq9MYU17wp9EvtuqkO65rm7BwS0aYAXzltKT54s/zPSM1NkVI3e1vTRlS5kjh0y3bNwSU1RYwC6D4cLkmjfQ+pplm5ZRq1mLg2l0leUtMdH0wEQa6hGbViS4XcLVG4CLl86A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p0DFVzl7zvYw4+1S7jlw77lepDC7W1GKuqCxL6UVrc0=;
+ b=nW8CcKYQl58ErfcRxZRQUz8kIcekjzpNaStzj4FnL0OG90/SJUX892wG/Mteo7uG3Rsc04XoFr+yVZeXI0xDYIqe1Rc4dgyF3CJDjIskHuaT5M1hhpItQ1zOU85lxEcahA5n3R7IB7Kl2CzKNBpGV8/IkoqsDYoKYmFAwRYC9SRnFeAcUWdB7G5aUE3/2xZcTZGQRplQ8LFAgnlRBSb3Hm/rfRiGM8nZD8ssQWUlGrMVFWqR3LvGyVgN2hUlbCAH24VT/xmG6sYRq4wzk11fuX1yBDkFZkWFnlEyqSnqrD/EPJdEpyS+R4MBKQqSoCr3QXrOFtOCV6tnsGeJz/1tZA==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
+ by IA0PPF84D37DD5C.namprd12.prod.outlook.com (2603:10b6:20f:fc04::bd6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.10; Wed, 18 Nov
+ 2026 00:36:09 +0000
+Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
+ ([fe80::d9d1:8c49:a703:b017%5]) with mapi id 15.21.0615.013; Wed, 18 Nov 2026
+ 00:36:08 +0000
+From: Mikko Perttunen <mperttunen@nvidia.com>
+Subject: [PATCH v4 00/12] Make the 32-bit ARM DMA API work with normal
+ IOMMU DMA default domains (+ Tegra PoC)
+Date: Wed, 18 Nov 2026 09:35:09 +0900
+Message-Id: <20261118-b4-arm32-iommu-dma-cookie-v4-0-0c5561288e22@nvidia.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/33NwWoDIRDG8VcJnmtwRrO75pT3KD3oqs20uAZNJ
+ CHsu2dNoLQU9vjBzO9/Z8Vn8oXtN3eWfaVCaVqGetuw8WimT8/JLZuhwE70OHCruMlRIqcU44W
+ 7aPiY0jd5LqEXXvRBA+7Y8n/KPtD1ab9/vHa52C8/nhvYLo5UzinfnvEK7e7V0bBb6VTgglujg
+ nZSGrTDYarkyGzHFFkLVfyhQEC3RmGjRDcoNAK0/E/JXxSuUnKhpBbgemUhBPxDzfP8AFf6AyR
+ rAQAA
+X-Change-ID: 20260728-b4-arm32-iommu-dma-cookie-3170e07f9125
+To: Robin Murphy <robin.murphy@arm.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Russell King <linux@armlinux.org.uk>, Heiko Stuebner <heiko@sntech.de>, 
+ Thierry Reding <thierry.reding@kernel.org>, 
+ Mikko Perttunen <mperttunen@nvidia.com>, David Airlie <airlied@gmail.com>, 
+ Simona Vetter <simona@ffwll.ch>, Jonathan Hunter <jonathanh@nvidia.com>, 
+ Krishna Reddy <vdumpa@nvidia.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
+ Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Peter Griffin <peter.griffin@linaro.org>, 
+ Alim Akhtar <alim.akhtar@samsung.com>, Chen-Yu Tsai <wens@kernel.org>, 
+ Jernej Skrabec <jernej.skrabec@gmail.com>, 
+ Samuel Holland <samuel@sholland.org>, Yong Wu <yong.wu@mediatek.com>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Geert Uytterhoeven <geert+renesas@glider.be>, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
+X-Mailer: b4 0.16-dev
+X-ClientProxiedBy: TY4P286CA0020.JPNP286.PROD.OUTLOOK.COM
+ (2603:1096:405:2b0::13) To SJ2PR12MB9161.namprd12.prod.outlook.com
+ (2603:10b6:a03:566::20)
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -118,87 +118,211 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|IA0PPF84D37DD5C:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1e18f96e-855e-4fad-5a49-08df450bf02b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|10070799003|376014|366016|1800799024|23010399003|7416014|18002099003|6133799003|261009223027099003|921020|11063799006|56012099006|261021135927099003|261102123227099003|261026130827099003|261026140227099003|261028144727099003|10067099003|261022113327099003|261021130227099003|261022105027099003|261021121427099003|261026121527099003|261022115727099003|261022075727099003|261021123027099003;
+X-Microsoft-Antispam-Message-Info:
+	kgju5l7AotANbfl/s0WHb2bM/z8hlXN0w1w9WPxfW40XZkI27DzkMH0nKj20nwaSkvvTLh/3BC13/tTFqiLyLPkxb/pyBsjOgap/fhnYtcZ5teGlGRPJJnBV4aBm37IgmHppcZFdY0kx4TfS6GpmlDtF7UvgK1+cHcBz0fSC9srT9DzZVJJBOtl6RkUMuuJ2QWAEubRki4REcMq5DA6YwCA5aYWV8NXZ8aYeZkKctjwnLW5w3snCTCMn3+GBSssF3/mPj3UldRl+KybbTwcL9cfqc8NoPhd/B5gIvwsWVRRVZQNH+wWrS0PAycVeeZun5pd2CXgdEEDmkLt/W6lANVwH6s6bhJHcJmfYAknQIQkymd1YDS7OdryyTyshAoUmwJZ3v5mCIs7paDFIMv4ktniniXK0U9eUutdqrnyikz6RPQa2UKWKda2TDATEnVgnBmVJsItg/kSAQ7jK0u6zCINGemvGFvv4T3ROBoj1HPGlHkoyISGdNEbpudY80UWhjq7AxmfCu4Mq2WnzPxh2CNG1BIeaedfXZPqNk4w05NQoAzoTx/kgejU6Y8HDsdzYW3j2GsnEYg8gGzIEmvPpaPAda9MYgkEUS2QxDQeiH5NQcpCBQIYt+U+SX0eIG8GB//WjrMphkEPPVfEo2rwrHee3mMIS7hicRRHsgXBUfKIRQ2Ttpqv1CtdOB3Ldo7dPihhZKCdFe5WvA5n/gl226g==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(376014)(366016)(1800799024)(23010399003)(7416014)(18002099003)(6133799003)(261009223027099003)(921020)(11063799006)(56012099006)(261021135927099003)(261102123227099003)(261026130827099003)(261026140227099003)(261028144727099003)(10067099003)(261022113327099003)(261021130227099003)(261022105027099003)(261021121427099003)(261026121527099003)(261022115727099003)(261022075727099003)(261021123027099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ckx6eVhxSTk4aFc5V29pM0szS25Gc0QyMk5QRHlrbWNNbDFta2xBNGlGQ1Ni?=
+ =?utf-8?B?TXc3VnlnOUF0QXk0L3dGcVR5LzNtNVM5cjN0T1R6TU9EZjhvNnp1Nk1kRktv?=
+ =?utf-8?B?Z3ZTWkU0RnJzMkRJWjMwMU5ENkZsU0srNC9lNHRIcUFKVjFUaDZCMlBSYmtT?=
+ =?utf-8?B?N3ZmNmZxYWVzYnVPOERRazA1Zy8xLzB3MnlFeUh0alBxN2Z5QldqYVh6bEVj?=
+ =?utf-8?B?d0dXUUVOY1ViYXhDUjVkbXdnZFNUTEZ6TDZKbE5kSHZ3SEdMUUpRS2tlNjh6?=
+ =?utf-8?B?V0VQMittT1VRTk1CY0ZzZit4UU1iM1hhckxpUWY2QjNJbXlSUkFqMlFidnJp?=
+ =?utf-8?B?NG1sNzJjSm9FdThKNDR4S3hVYndWK0dUZEI4Wmp2UTd6UmRVRnNickI2UkdF?=
+ =?utf-8?B?aS9RTjh2RlJhWTNZTGRPd1pWdVJHbGw0SVhTaFFFanlJTDlVVUxVNXIwOW03?=
+ =?utf-8?B?L1dTaXZuVDgrT29uMXBFZjNpdHU0NHY3RHdTZzhCT3J1eWowNlJ5cXVyT3FH?=
+ =?utf-8?B?WUpQZWdaanNJeHpPWGlrdW8rcEkzRTJYalN3Z3VqSE1LYTBFWm9id292NEYz?=
+ =?utf-8?B?K3o0cU91T1hOV045UTU2eXlJeHEyS21ZQ1pJbzcveWF6NExIVms3d0NDbU1R?=
+ =?utf-8?B?cm5qY1NtSHkyZGFYYnFxdDJNc1JNWmtuY241c3RsZk1CeUh2VlFtVHlLbDFU?=
+ =?utf-8?B?b3NvOE1EMlhMVnArWDM1UjlMWVJDYTZpbFNoWnVoTXhuUDZFL3h2VUdKMUNn?=
+ =?utf-8?B?djJNMUFpTjU0WXBIbi9tbkVvQi9aekJtUG1yRm1tWlQ0ZmF1L2Y1akxvRTRG?=
+ =?utf-8?B?b3F1M2d5bW5zWUp6M3JFNUFBT0FBVHphWXBUci9qWjkvU2VhdXczUWc5U3VP?=
+ =?utf-8?B?R0Q2RldDQjZsTFBaMUx2c2U1QkVXOEFmYWtpL1JDOVMzZUxoVUZ5dWF2RFg0?=
+ =?utf-8?B?bkhkSWJjbzdxbnJobDJIVlZuOW1BQ0ZCVXdqL2poZStaVmNBKy9KOHpPRFYw?=
+ =?utf-8?B?bjFxOFZmVFF2d2lXbUowUUhaYUdxQ0F0M3FKdjdZYUhGU0FDMUVIRlpSQldB?=
+ =?utf-8?B?QTJHTEduN2hoSkQxSTNQNm1kYzdoaTgyczJEc2tSbHM0eWg4aTVzdEIvSllx?=
+ =?utf-8?B?SWdNbVREWE11VVVEQnJpTUNNSDZDYVhEZzRlQVIxS3VyaG9GS0oxbFFldHRR?=
+ =?utf-8?B?Wk8vVHdML3RjZnkydzJkaEtQL2pTQzlzMG1zN2FRdDBhNXgreDM2RmxDdWVs?=
+ =?utf-8?B?ZTV2ZzZyMkVyNUFHb1VUVUtjaWFjcUdMY3BLTzFxQWo0UWlKQ2tOTmg4REti?=
+ =?utf-8?B?RDY4OWpId1lyQnVmSVcyV2pTbmEvQ2p4V2xsL09GRWZRRWtySllMYU5ZWFVU?=
+ =?utf-8?B?V0Z1Zm9KUldDNHBLTU41K3pac3h1N3VrWVVpSmgvekwwTG1jV2V3SHdmV2VM?=
+ =?utf-8?B?am5Ta0Q4eGFpT0FFd2RuODZaL3JHM3F6UENQRG93SDNFaXpqMkZFV0hCdStq?=
+ =?utf-8?B?US9YeEw3Z1JkN0ZZMlpzUCtrUW9JT0FGdkhzTmhsclIvZ2xmamJiWXBBRk05?=
+ =?utf-8?B?TjBqdnRKMXNuMVZsUmluYkE0b09oUFJGajk2SXE2YS9jS0RheGhmeEgvbmJU?=
+ =?utf-8?B?b254MTJFTlZkWjlpcFJNc1NKVkJaaWlrRks4QmdEUHhXaWRXTkJ2Y2tjSzJE?=
+ =?utf-8?B?ZDQrNUhnVEFuN3dPWEMvZ1hhQWNOSjRvR0hkWTFvT3FxRk16cVNLTHdEUm9K?=
+ =?utf-8?B?K2QxbmdJMWhmNGlrVXhXS3NvMTNjK2pIQkZyeWV4UHhXeFFISEFTTlZOYTh3?=
+ =?utf-8?B?RHdXZytzVUFkdVhOTU1vTHpiRDdUbk0wUytOd0lKdGg3SlpyK2t2OXE0cERN?=
+ =?utf-8?B?YmFIaFBwaDlHSmVFemU4RDVsTHRwTFZ6bW9zSFR0SzlGbjlKMGJ3d1pHWU5X?=
+ =?utf-8?B?bm5JejhyWmEwcXljdHB2SkR0eno2Y3lxWWp5ZmdxdDVuVFFkZGVITmlsaitT?=
+ =?utf-8?B?MDNQOUFYajRqWi9wSFdEdGNUeWRHMmJkWTdaM1lydmhqY2F3anlPK2hzSDlK?=
+ =?utf-8?B?V0JPeWwySEVuUHpReGh4NE04VDFSK3BCNUhUYUcrazdSL1ZvU3EzempnYlE0?=
+ =?utf-8?B?bjlhb2cyeVhLWjViaFlzNTU0NnBvR1pWUGdnZWJQL2ZpVmxURDIyNVRFS0sr?=
+ =?utf-8?B?c3NZY0hWTGZuaTJCQm9JSzJnR1J3bE1RZHFsMHlEbEVDbU9rM0VqajNSVWNt?=
+ =?utf-8?B?MS9pSnhyZXo3WE55SHU1TnRtdXlhWkNFaEZpeTZMcHBBQW1JR01FMnJxS2Nl?=
+ =?utf-8?B?ME9xSVVtWURKcGY5RXVId0xPUlVmUHpFbDlsRmduSXNtK3k4V0lkNXhVYkxZ?=
+ =?utf-8?Q?EfhBKzLLwYjmolniHcgKypW2eixrUZk4tnfBgE7coa+Ou?=
+X-MS-Exchange-AntiSpam-MessageData-1: zJSKri3dop3Fng==
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1e18f96e-855e-4fad-5a49-08df450bf02b
+X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 00:36:08.8183
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lzv9mrpqsPntV1k4rq58wQHvSyBhpxLuqzsUJH1RSmfbM4LbvSaG++hZEYBFb1YO4cCdzQkqzAv27PlhHZ42Qw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PPF84D37DD5C
 
-On Tue, Nov 17, 2026 at 05:09:11PM -0300, Daniel Almeida wrote:
-> Hi Jason,
-> 
-> > On 16 Nov 2026, at 16:38, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > 
-> > On Thu, Nov 12, 2026 at 02:00:07PM -0300, Daniel Almeida wrote:
-> >> This series adds a Rust abstraction for IOMMU paging domains. A driver
-> >> can allocate a domain, attach it to its device, map pages into it, and
-> >> install a handler for its faults.
-> >> 
-> >> This will be used by the upcoming rkvenc driver that my colleagues
-> >> Detlev Casanova, Nicolas Dufresne and I are working on. More details on
-> >> this driver can be found by watching Nicolas Dufresne's talk at LPC 2026
-> >> [0].
-> >> 
-> >> As part of the security model, each client will have its own IOMMU
-> >> domain. This is needed as the submission model will let userspace set
-> >> most of the encoder's registers directly, so the kernel cannot check
-> >> every memory access that a job makes the encoder do. With a single
-> >> domain, one client could make the encoder read or write the memory of
-> >> another client.
-> > 
-> > How do you plan to get the paging domain in the first place?
-> 
-> We plan to alloc a paging domain when a video encoder session is created. Then
-> we call iommu_attach_device() before a job runs, and detach back to the default
-> domain after it finishes so the next job can attach its own session's domain.
-> This is so each session is isolated from each other.
+Depending on the probe ordering, TegraDRM does not currently probe on
+kernels with CONFIG_ARM_DMA_USE_IOMMU enabled, such as with
+multi_v7_defconfig. The Tegra SMMU puts several display and 2D/3D
+clients into one IOMMU group, and the legacy 32-bit ARM DMA API path
+creates one UNMANAGED domain per device and attaches it with
+iommu_attach_device(). That only works for one device per group, so
+every client after the first fails to attach,
+iommu_device_use_default_domain() rejects the group with -EBUSY, and the
+driver goes down with it. tegra_defconfig is currently working by virtue
+of not enabling CONFIG_ARM_DMA_USE_IOMMU.
 
-If you do that you can't use the DMA API at all in your driver as you
-have to set 'driver_managed = true'. Is it OK? If it is why not just
-use VFIO?
+Robin suggested [1] that instead of teaching the legacy path about
+groups, we should explore modernizing the 32-bit ARM DMA code a bit by
+making it use domain cookies and have the core code own the domains, as
+is the case on other architectures. Still, ARM's own DMA code is kept to
+support existing drivers and APIs that expect it, and because dma-iommu
+is considered too big and unnecessary for 32-bit ARM.
 
-Or are you planning DT horrors to get yourself a DT created "DMA
-struct" ?
+The series is in four parts:
 
-> > Using paging domains directly is very complicated, I'm not excite d to
-> > see DRM trying to do this at all. IMHO there are many unanswered
-> > questions how it could even do this safely.
-> 
-> In a very simplified way, this is not unlike how GPU drivers currently work. In
-> fact, from a cursory look, this seems to be how rocket (the NPU driver) works
-> too. Since we are merely porting the same ideas to video codec hardware, I am a bit
-> surprised by your discontentment.
+- Patches 1-3 are preparation in the IOMMU core:
+  1. Move default domain policy initialization to core initcall level.
+  2. Add iommu_teardown_dma_ops, counterpart to iommu_setup_dma_ops.
+  3. Add cookie type for ARM's DMA domains.
+- Patches 4-7 implement the DMA API side on 32-bit ARM:
+  4. Split up mapping alloc and init (bitmap alloc) code to separate
+     functions.
+  5. Implement parallel dma_ops / cookie APIs on ARM side.
+  6. Avoid domain allocation when IOMMU core does it.
+  7. Check upper DMA range limit during IOVA allocation.
+- Patch 8 removes the forced IDENTITY default domain in core IOMMU
+  code and adds explicit IDENTITY defaults to a few individual IOMMU
+  drivers.
+- Patches 9-12 convert Tegra:
+  9. Fixes device parameter in calls to dma_get_sgtable.
+  10. Allows deferring translation enable until driver handshake for
+      selected devices.
+  11. Fixes refcounting during switching between two paging domains.
+  12. Switches to DMA default domain for selected Tegra devices.
 
-In my experiance any place I see DRM touching the iommu it is
-immediately suspect. We keep uncovering horrors that people buried in
-there. Yes, you can point to some DRM places doing something like
-this, with a convoluted struct device scheme and DT hacks to make it
-functional, no you should not copy it and certainly not entomb it in
-rust. :(
+This moves 32-bit ARM devices from the unmanaged IOMMU DMA domain to the
+core-owned default DMA domain except for mtk_iommu_v1, ipmmu-vmsa,
+omap-iommu, and msm_iommu. (tegra-smmu also stays on the legacy path
+until the last patch in the series.) See commit 8 for further
+information. Existing drivers are intended to continue working without
+changes.
 
-> In any case, we need this isolation due to the submission model used.
-> Most Vulkan drivers know their hardware pretty well, so a level of abstraction
-> on top of it like V4L2 is unnecessary. Therefore, in order to achieve a leaner
-> kernel driver, userspace programs most of the encoder's registers directly, so
-> the kernel cannot validate every address a job makes the encoder access.
+Patches 9-12 are provided for demonstration; we can deal with them 
+separately if the rest of the series is accepted.
 
-Sure, but you haven't explained what the iommu gets attached to (ie
-where does the SID come from), how cache flushing works, who programs
-the mappings, who is managing page pinning, etc.
+Patches 1,2,3,4,7 are applicable independently.
+Patches 5,6 depend on the previous patches.
+Patch 8 requires the prior patches to be in place.
 
-Are you sure you shouldn't be using iommufd for this, tied into your
-driver? It was intended for exactly this use case, to allow drivers to
-delegate their translation to userspace. Though that doesn't relly
-solve the questions about what it is even being attached to..
+Patches 1-8 only touch drivers/iommu/ and arch/arm/mm/ and associated 
+headers.
 
-> The fault handler is used in the same way it is used in GPU drivers: to kill
-> sessions if they fault. This way the driver can simply refuse further work from
-> a misbehaving client, for example. It is also the natural place to enqueue a
-> reset if the codec hardware is frozen as a result of the fault.
+Best regards,
+Mikko
 
-IIRC no GPU driver does that, they hook the obsolete fault handler not
-supported in new iommu drivers not the new PRI based one... IDK we
-have even wired this up to work this way.
+[1] https://lore.kernel.org/linux-tegra/910d1492-ad3b-4201-93c6-208be1dcde7d@arm.com/
 
-It is nicer if the HW can tell you it faulted rather than expect the
-iommu to do it.
+---
+Changes in v4:
+- Initialize default domain policy at core initcall level.
+  Fixes warning reported by Marek on Exynos in v3.
+- Add tegra-smmu fix to correct refcounting on transition
+  between two paging domains.
+- Rebased.
+- Link to v3: https://patch.msgid.link/20261026-b4-arm32-iommu-dma-cookie-v3-0-3901d74b1ff2@nvidia.com
 
-Jason
+Changes in v3:
+- Removed the forced IDENTITY default domain workaround from IOMMU core.
+  Explicit IDENTITY default kept for a few IOMMU drivers.
+- Keep the arm_iommu_* APIs usable with DMA default domains. Drop
+  related Host1x/TegraDRM cleanup patches. Detaching an explicitly
+  created mapping restores the default domain.
+- Install and clear DMA ops in iommu_setup/teardown_dma_ops for
+  core-owned domains.
+- Use iommu_is_dma_domain instead of custom flag to distinguish between
+  core-owned domains and unmanaged DMA domains.
+- Allocate IOVA bookkeeping in iommu_setup_dma_ops, after attachment
+  has established domain geometry.
+- Add an upper-bound check during IOVA allocation to replace setup-time
+  dma-ranges based check.
+- Remove change to arm_iommu_get_sgtable in favor of correct fix in
+  TegraDRM.
+- Simplify tegra_smmu_def_domain_type.
+- Link to v2: https://patch.msgid.link/20261016-b4-arm32-iommu-dma-cookie-v2-0-b06842a01938@nvidia.com
+
+Changes in v2:
+- Addressed sashiko comments:
+  - We still don't take device tree dma-ranges into account for the allocatable
+    IOVA range. This is closer to arm64 and only some OMAP5 devices currently
+    have dma-ranges where this would matter. A check is added to error out in
+    such cases. As in v1, this code path is only active when enabled by the
+    IOMMU driver so there is no breakage.
+  - Added a check in tegra_smmu_enable_translation to return early if the IOMMU
+    attached to the device is not a tegra-smmu.
+- Added .release_domain in tegra-smmu to handle address space release for DMA
+  domains.
+- Link to v1: https://patch.msgid.link/20260915-b4-arm32-iommu-dma-cookie-v1-0-ba4f9d33a2b8@nvidia.com
+
+---
+Mikko Perttunen (12):
+      iommu: Initialize default domain policy at core initcall level
+      iommu: Add iommu_teardown_dma_ops
+      iommu: Add cookie type for ARM_DMA_USE_IOMMU
+      ARM: dma-mapping: Split mapping initialization from allocation
+      ARM: dma-mapping: Implement and expose DMA setup functions
+      ARM: dma-mapping: Bypass the legacy path for core-owned DMA API domains
+      ARM: dma-mapping: Bound IOVA allocation by device DMA limits
+      iommu: Enable DMA default domains on (most) 32-bit ARM platforms
+      drm/tegra: Fix device parameter to dma_get_sgtable
+      iommu/tegra-smmu: Defer display client translation to driver handover
+      iommu/tegra-smmu: Release previous address space on paging domain switch
+      iommu/tegra-smmu: Use a DMA API default domain per swgroup
+
+ arch/arm/include/asm/dma-iommu.h |   9 ++
+ arch/arm/mm/dma-mapping.c        | 297 +++++++++++++++++++++++++++++----------
+ drivers/gpu/drm/tegra/dc.c       |   8 ++
+ drivers/gpu/drm/tegra/gem.c      |   5 +-
+ drivers/iommu/Kconfig            |   1 +
+ drivers/iommu/dma-iommu.c        |   5 +
+ drivers/iommu/dma-iommu.h        |  49 +++++--
+ drivers/iommu/iommu.c            |  35 ++---
+ drivers/iommu/ipmmu-vmsa.c       |   6 +
+ drivers/iommu/msm_iommu.c        |   6 +
+ drivers/iommu/mtk_iommu_v1.c     |   6 +
+ drivers/iommu/omap-iommu.c       |   6 +
+ drivers/iommu/tegra-smmu.c       | 122 ++++++++++++++--
+ drivers/memory/tegra/tegra114.c  |  15 +-
+ drivers/memory/tegra/tegra124.c  |  12 +-
+ drivers/memory/tegra/tegra210.c  |   6 +-
+ drivers/memory/tegra/tegra30.c   |  18 ++-
+ include/linux/iommu.h            |   3 +
+ include/soc/tegra/mc.h           |  20 +++
+ 19 files changed, 486 insertions(+), 143 deletions(-)
+---
+base-commit: aebb7274476403040d582c61478df8f4a7bf9cd3
+change-id: 20260728-b4-arm32-iommu-dma-cookie-3170e07f9125
+
