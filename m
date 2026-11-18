@@ -1,116 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.54
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795018152;
-	b=xB6qyHLr4T1VjRuSJv7HrQONsCOOtxPDk78RHgsuFA5N8Mu1RUo6hQp59ArYtr70vPOn
-	 hP/L/QQFValScC+qD7mkaypaTd4YqmTMlmZxpW33q1G/mKQg9yUVOd0wbNWnykLMY48S7
-	 8rLUmgvGeb13i0iFTcNarOBoGIuiLG6mFWW1EIRWbey1Cpk3+vSfI7v4ylHJmJ1J0CR1v
-	 4Rgp/nRC8IUqZxRdMo16rmL2YdGcC90xW5B63YRv2PLstSajt41QsH1inRU7f7o27HwoT
-	 dy4RSCDkr9VfV1olWo/5unCFRve16LnKKTLCR9FWzijZbkbLwdDXyANNn4K01qqhjSA==
+	t=1795020036;
+	b=kj2ITWalvUi/Ob2zsIY6Pop+oUPgW6EuQfpdiUmFJzcuB3uSoTJk7r8XxpsuIZSxGrAb
+	 O8KH30eBWkuaeZeNu8KB5XbslxlXjoGG9ikqSI/4z3Cf+MqTYVQPICyP/6ot9ehXDiKx1
+	 hG+QW1ClPyyqCea4Sf2HGGh02ChzPaEN8/8oLNsiPtPK/spT2AoIPtu6Hw0Ehi7Sc/V7V
+	 9GJPnTHMNSDCdXLTpnZjSV9hF82T17/PzIH7q+LVMg2GIDuS+gBS5/2F2c0/HGAIiqZwE
+	 AjSFKeB4dOsiYRkO2imXEkLz5is+VNuE1n3prNQ2xju2ls0/1ioeGebFBTPhDXdEnbw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795018152;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795020036;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=gSW8M0rgpdj9ZidqbA7F4jvYRgDNFzs19pLdYBcG6XI=;
-	b=DTwiZKiBLudH2cr09lt5TbVlYamUwL+tJYAa3TKQLu/9LcxddYP3ai529+RzpRwbf9bo
-	 NcoVV3VieSkNOWxKZnNgBJcFpmBadWehDWcnxzgLEFvklQHfjlfny++69E+BS4pmCF62e
-	 WRXPenyTgg5LDTkArba9PIKT4rNB3zxP6G4n4II62VmG3jOgxoX2feqv7csqnhD6A46FI
-	 oDlQOlOazcZD+6sL3MtP2Hg7c37/msnM3dIbYL1nj4BMPZTGIaomoINo6BjmiCnixDIlb
-	 zULdZ/Y3SZB6ik8AM0lZ79XEOiVdvqV+h555oGUuNsTmJ1qD5n43e7K45uX8FJFLXfQ==
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=U+JDjr70NfmoYuAwDWLUcR7/Nq7waWVnmWm8ckIRrMA=;
+	b=239Zhlz4Y0Seyim8uRtOsZXs2gT6VberW7Nb0DKaPIDUDKUXMbuNMY3HZlpxm7W1UHpE
+	 VftQK6LzisYk3VaZXeG9mVqdS1Xt5yqX3fpwT0PedCFyqROhAX1eN/zPzcUg14hpaQ5U0
+	 BFMrmoQomefdQaMCwBF9NGQ3uIwXJ8T+fM1gZB50v0yUF0qR8zpYdM5HsLMRANfFRFHpd
+	 9HTDkxkNXOgePeUK9wneK9Ubk0PDncH7KOoprwhvoyY4dxHq+syd0+Q5CbCJlwjGm3TdH
+	 HHP8qKVXyNk8KYMKsNOakJ1lknQc3gmTYD0lPNRVJCy6YcJPnED/62ydqYY4A/Rloow==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=XoeDfZCO;
-	arc=none smtp.remote-ip=209.85.219.53
-Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vqd+PyEL;
+	arc=none smtp.remote-ip=209.85.128.54
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BE79606A32F
-	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 16:09:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5BE79606A32F
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F3EE60A2601
+	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 16:40:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3F3EE60A2601
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=XoeDfZCO
-Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-91f2dd5dddaso11154606d6.3
-        for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 08:09:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vqd+PyEL
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4bb609d9bf4so1660945e9.3
+        for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 08:40:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1795018151; x=1795622951; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=gSW8M0rgpdj9ZidqbA7F4jvYRgDNFzs19pLdYBcG6XI=;
-        b=XoeDfZCOgySL+MQJ4yvi4ZYvFsvL3TWb6BI19wJBbVwHCwARgjZt7EhgMqDA16jQZK
-         khU54fJbhkyTYy1I4WTfIdyI/EIt/i5dE7fNd0wAaTMHG9cUgfe2/0fVIg+5s4x6QuuU
-         oIlLEQdRtlXgTmi/ANMvLPlyp/ncRDSU8n77gNdWywkrD+bX4wrjHTv+0y1YmDwp8u+f
-         sdyG6WGmkZjLIEy0RQFZLT0AZNp3nJLpvQtvPF+Cu0ZZ5w8+Cq21Ty1bwFs8tCV+7MPr
-         Y1lDAtv1gow0LuxkgyRMDWxpqiFE60mMeqdePdtu7GK0FnVIn112deXRCGNQRqZVH1oE
-         /Nbg==
+        d=gmail.com; s=20260707; t=1795020034; x=1795624834; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=U+JDjr70NfmoYuAwDWLUcR7/Nq7waWVnmWm8ckIRrMA=;
+        b=vqd+PyELiPT3hAQTDPKfvO9Lh+sFfEBJZqjSuhles6o0Kx0lop6Z2ckFD7sspVzu4O
+         Cqoyhdjm8ATtHBS+GP4hUy6irTPlqA2NMVaNboHntV+CCHTg0unBR5cCQtf+VrkxuklJ
+         n97u9f2aj21VsLvMP56M0ctVcI3C9oAppznQwqIJx3fj24z9bZcaLu99Ph4Sm3eCAyo5
+         KdUi8iU0kWq+8v785AfVWCrRfai5K63DTDX1lP8RxYXh+nDWVZWwHIRGqndpgb4AId64
+         9gxmqspYx1PJsytrrjvIAaPpPfL13BQ3epQmcFlLEPpuezBJnXOwU9T/zG5Uzcx0T3Xy
+         BvAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795018151; x=1795622951;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=gSW8M0rgpdj9ZidqbA7F4jvYRgDNFzs19pLdYBcG6XI=;
-        b=kBhQxd5P2T9g+W97bCGFCW0vL8yUQQ4q/A6hWtDM3lYwcVRzfUA6ETkALgG1PEAmZI
-         J1O86CLcz3DJAz5hwEw9uFYOfXIfFzr7PRPOwSXtfkl+zjHkmHLCMffZ8IUjgfjDICoH
-         xaXYYUo5wQCcNES+K+DQiTJeVlcyiL4rQVSZnrjm0/64j5nLS4EeU0D7TruZa3TEImDj
-         3Wa3SqiQ1EKIuIsc1VrTY69ZuvIVZCTmkPnuDzNCUA+CzfrkoLohqX3RL9hnSIZa1a2i
-         LVQYrdVzFOY4gwa9J40lSMw7NZeJD9Bnn4PmAV/VXjFw6m1GV35fRS+LVoC3+yx2nx/x
-         qAXQ==
-X-Forwarded-Encrypted: i=1; AL+hErGwAVPwfFxHnxLip6fDg67GHchi6Mzs6hNN9n6gpc4H1g/1qVbLIzOtc1U7ovWWt5FxQoVQCw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9olM2E1iXkWmW9eB6bR720npOgARYlKBezWK3dE0zhLWh66GJ2
-	by0U0TgEYjqOpIF6d0wZlqOYnIeWX5b0KXhmuj3ThZ0OU0FjGG+6f3x3UV2RAO9L5XA=
-X-Gm-Gg: AZFdTZdCKtrLfwZnvnYzvRiqtLFVNBlRwKQCiPKK7Tv/7/SdKfXv0ED5gW8hFx7CDmy
-	xxZ63wD3V1+hFHbRyio0Ggb0ILQAoMg6rBI2nTj3I6ak/tbTQ2OgQYldRTSJD0JsS//oyJ7uvBf
-	Wyh4IWjKuy5I4QnpJfdUlGOT+JwE1tu9l0QMtaretJLQjQT8DFyT/737PNAgzeX5JiScOrlXfUJ
-	X/093DOveNNq6YTv4SGTer6ICP93N1/v5v+95YXqgn8EnIXZvew/2L/Qk80kkCSqQydEmMcWCyy
-	fUr9TA9xSzWcFdL6tsjqEQdDpubQ8KRq8GkmSzskszInMWymz1cM9IBf30pYnszErjDIq2wIf4k
-	eiJvysEs5yDujfeMCjQSoIXKL8uVp/yZyrHvMa5ew73vgL4+1YeAiwtf/HA28td+lqx06EQSWP1
-	Gno7+YLccHhbwq/l+zmVkb3C1wg1oFg7TAnAwf8hRoG5Y02xX7P4Bq59o0eOSubPjCQ6/eIAB4T
-	eFHwwycBkoTDUIMyblu5oIbWj7vpIyUahtIIyb91bKS9G/bnnD65Z92F1NJw8SsG70lgcelGD0I
-	MJYKubsWlliNTjjDwEdkszWzcRA=
-X-Received: by 2002:a05:6214:5787:b0:920:fd27:87df with SMTP id 6a1803df08f44-92114f78ab5mr44895066d6.48.1795018151035;
-        Wed, 18 Nov 2026 08:09:11 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-92114db5db5sm24976746d6.43.2026.11.18.08.09.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 08:09:10 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xTiDd-0000000Fn0o-1uSd;
-	Wed, 18 Nov 2026 12:09:09 -0400
-Date: Wed, 18 Nov 2026 12:09:09 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc: Daniel Almeida <daniel.almeida@collabora.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
-	Gary Guo <gary@garyguo.net>,
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	Detlev Casanova <detlev.casanova@collabora.com>
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-Message-ID: <20261118160909.GC3115493@ziepe.ca>
-References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
- <20261116193821.GC2452510@ziepe.ca>
- <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
- <20261117202055.GA3115493@ziepe.ca>
- <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
+        d=1e100.net; s=20260707; t=1795020034; x=1795624834;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=U+JDjr70NfmoYuAwDWLUcR7/Nq7waWVnmWm8ckIRrMA=;
+        b=YuPpJR6FwwoRAzjyAXwIWEBx/xrUTxY6R6uQq8TLrNWU/V37fCVALprKKM0bAFeFDh
+         K44p/rju8K49s0owaQSUcDJCVjYBQ7A2JLROEy7fRxl6BqC8IMk5wtKeKjLw6gS+hCa6
+         IfjpVP/TAC4kHMST1BpcecngCffAJReFp4l7+zVOOc1ec49rb5qe88Y5kF8mnvaVZCE1
+         qveVX76Bn2wu2jtvnYEnXICJchRUEAIxF0kjuteH6adTYXui6Q/MS4Ist2i7LqyPW0RX
+         /dfM2MQU8pLb1rVIMoIHOSqR/er65zQywljXcnelTEBJcmDhDP5Eczjrsos856JndG6I
+         Z+rg==
+X-Forwarded-Encrypted: i=1; AL+hErEAP86rjN8i8/P4VRlif9EJJDOJVIppNoLJUXqTTpfYjRdAUtegjO2eUskCGWH18xQuuiHSzA==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8AAZ2MpvUpbcskSkJjBzWdjiT49mJzVAUqxFFnUQ9FxtgWiXDj
+	qg/J8Vm2iWeAouY1y85FhBo6yM77D7G0+Sh7EzNfOqjJlqeEicseUBuG
+X-Gm-Gg: AYBFou3TLYFEArKGjbHvn2icCfj/vBxu+Zx4kkBRS7yfcjlYYVuTotLZcperiRFZKxP
+	o0hjOfKklnyTMQ+8MKHZMG/JdgHCneb3PJ6jZttXUIHaU3x9iRgRBVLrMKYLtvKIAq0SG/1JrIm
+	jO687fMESrf8v5GeKnZOri6tRAurk0UIXvz3DTKT1EBxIj56jw165l3y6/bk3my9hKqI1P4NlXb
+	DuePMzr6JhXQU3uvBlfkyKGX3493kcpYh1fsemlGtv3DzZthygKNdgqrxd+LINGbWFU8P3k1jcQ
+	qkHeWyn89noAeJ9XBQt3UqsTT4K9Kx3J4RwTDhMTl4R8FcjG8ootKCRhs7iwSt+ugKzEAxZAqxi
+	RqTregtZCJPj47Tt3SfoB5UPUfFaEnZ9NbtzDwsOJgtzn1RXaD6JMirVYshHRZqANTQ7nv/7zG2
+	h1W16vueGFEyM8Bj694ddOxk7rD4erwe1JXGgyy2oBmJMjRJXNOlTA1P+1pmDFtyToUXzNq2sZb
+	ucP0cabIcOu3SNz9vzO+XcK7qAoOKa+rT/hrQTTnnCex5psfHEGPGgFW9Yno/UbFmE7PpTMqVKM
+	4P+v3J8sRbh/qdrN5uMOLXhtGUK3apH0QKzLtsk2XT2POnYU8488YtTSKFuykPxElKvvn61IIXu
+	x0FxgyGU9LUWij61T
+X-Received: by 2002:a05:600c:8012:b0:4ad:5ec2:d3b3 with SMTP id 5b1f17b1804b1-4bb7d7167d1mr54707545e9.1.1795020033418;
+        Wed, 18 Nov 2026 08:40:33 -0800 (PST)
+Received: from localhost.localdomain ([191.40.25.5])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb8325b779sm623115e9.9.2026.11.18.08.40.30
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Wed, 18 Nov 2026 08:40:32 -0800 (PST)
+From: Qihang <q.h.hack.winter@gmail.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommufd: Unmap the failing batch before releasing its pins
+Date: Thu, 19 Nov 2026 00:40:26 +0800
+Message-ID: <20261118164026.54455-1-q.h.hack.winter@gmail.com>
+X-Mailer: git-send-email 2.54.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,97 +99,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
 
-On Wed, Nov 18, 2026 at 10:25:58AM -0500, Nicolas Dufresne wrote:
-> Hi,
-> 
-> Le mardi 17 novembre 2026 à 16:20 -0400, Jason Gunthorpe a écrit :
-> > On Tue, Nov 17, 2026 at 05:09:11PM -0300, Daniel Almeida wrote:
-> > > Hi Jason,
-> > > 
-> > > > On 16 Nov 2026, at 16:38, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > > > 
-> > > > On Thu, Nov 12, 2026 at 02:00:07PM -0300, Daniel Almeida wrote:
-> > > > > This series adds a Rust abstraction for IOMMU paging domains. A driver
-> > > > > can allocate a domain, attach it to its device, map pages into it, and
-> > > > > install a handler for its faults.
-> > > > > 
-> > > > > This will be used by the upcoming rkvenc driver that my colleagues
-> > > > > Detlev Casanova, Nicolas Dufresne and I are working on. More details on
-> > > > > this driver can be found by watching Nicolas Dufresne's talk at LPC 2026
-> > > > > [0].
-> > > > > 
-> > > > > As part of the security model, each client will have its own IOMMU
-> > > > > domain. This is needed as the submission model will let userspace set
-> > > > > most of the encoder's registers directly, so the kernel cannot check
-> > > > > every memory access that a job makes the encoder do. With a single
-> > > > > domain, one client could make the encoder read or write the memory of
-> > > > > another client.
-> > > > 
-> > > > How do you plan to get the paging domain in the first place?
-> > > 
-> > > We plan to alloc a paging domain when a video encoder session is created. Then
-> > > we call iommu_attach_device() before a job runs, and detach back to the default
-> > > domain after it finishes so the next job can attach its own session's domain.
-> > > This is so each session is isolated from each other.
-> > 
-> > If you do that you can't use the DMA API at all in your driver as you
-> > have to set 'driver_managed = true'. Is it OK? If it is why not just
-> > use VFIO?
-> > 
-> > Or are you planning DT horrors to get yourself a DT created "DMA
-> > struct" ?
-> 
-> This seem to digress. All we want to do is use the iommu subsystem as intended
-> for the case the iommu driver is not inside the DRM driver (which seems to have
-> never been the case so far in DRM).
+iopt_area_fill_domains() maps the PFNs of one batch into every domain
+and only then moves on to the next batch. If batch_to_domain() fails
+for one domain after an earlier domain has already installed the batch,
+the unwind path calls pfn_reader_release_pins() at the top of
+out_unmap. That unpins the pages of the failing batch while the
+domains that did install it still translate those IOVAs, and only the
+loop below removes those mappings. For the duration of that loop a
+device can DMA to a page that is no longer pinned, so it can be freed
+and reused while the translation remains live.
 
-"As intended" means you use the DMA API and you do not touch
-the paging domain.
+The release also cannot simply be delayed to pfn_reader_destroy():
+the last domain in the unwind loop is the only one that unpins, and
+the unpin ends in update_unpinned(). When an earlier batch was fully
+installed before the failure, pages->npinned still counts the pins
+the reader holds, while pages->last_npinned still has its pre-fill
+value, so update_unpinned() warns about npinned being above
+last_npinned.
 
-"As intended" means you use iommufd if you want a domain full of user
-controlled mappings.
+Release the pins inside the else branch of the last domain instead,
+right before iopt_area_unfill_partial_domain(). No domain maps the
+failing batch by then: the earlier domains were just unmapped by this
+loop, the failing domain rolled back its partial mapping in
+batch_to_domain(), and the later domains never installed the batch.
+The release also precedes the last domain's unpin and its
+update_unpinned(), so the pin accounting stays consistent. The
+single-domain variant iopt_area_fill_domain() already unwinds in this
+order.
 
-> The existing infra for that (in C) is pretty abstract an simple in
-> my opinion, and built into the DMA API if you manage which domain to
-> attach to your device at the right time.
+Fixes: 8d160cd4d506 ("iommufd: Algorithms for PFN storage")
+Cc: stable@vger.kernel.org
+Signed-off-by: Qihang <q.h.hack.winter@gmail.com>
+---
+ drivers/iommu/iommufd/pages.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-What does this even mean? The DMA API owns the domain, not the
-driver.
-
-All the cases using these APIs in DRM and media are troubled in one
-way or another.
-
-For example the recent revelation they have always been using DMABUF entirely wrong:
-
-https://lore.kernel.org/all/20261009125338.GB13920@nvidia.com/
-
-Tegra desires to undo their abuses.
-
-It was never intended for things to work like this, there is missing
-infrastructure.
-
-> To me, it fits CODEC HW driver which are also simple. The DT horrors
-> you refer to seems totally unfounded, you just describe the iommu
-> and the iommu subsystem will manage it for your device.
-
-"unfounded? You are not following along, I've written about this now
-many times to many different people. Follow the links and discussion
-from here:
-
-https://lore.kernel.org/all/20260917144804.GI3196566@ziepe.ca/
-
-If you use DT correctly there is no place to attach an iommu_domain to
-and you can't even use these APIs. You get DMA API only and that's it.
-
-You have to do something "wrong" in DT to create fake HW devices to
-even give you a struct device to even attach something to.
-
-Or you have to entirely give up DMA API and attach to your only struct
-device.
-
-Jason
+diff --git a/drivers/iommu/iommufd/pages.c b/drivers/iommu/iommufd/pages.c
+index 2f6153108add..a99f4efbffd9 100644
+--- a/drivers/iommu/iommufd/pages.c
++++ b/drivers/iommu/iommufd/pages.c
+@@ -1962,7 +1962,6 @@
+ 	return 0;
+ 
+ out_unmap:
+-	pfn_reader_release_pins(&pfns);
+ 	xa_for_each(&area->iopt->domains, unmap_index, domain) {
+ 		unsigned long end_index;
+ 
+@@ -1982,6 +1981,18 @@
+ 					area, domain, iopt_area_index(area),
+ 					end_index - 1);
+ 		} else {
++			/*
++			 * The last domain is the only one that unpins, so the
++			 * reader's pins must be released before the unpin and
++			 * its update_unpinned(): npinned still counts them
++			 * while last_npinned predates the fill. No domain maps
++			 * the failing batch any more: the earlier domains
++			 * were just unmapped by this loop, the failing domain
++			 * rolled back its partial mapping in
++			 * batch_to_domain(), and the later domains never
++			 * installed it.
++			 */
++			pfn_reader_release_pins(&pfns);
+ 			iopt_area_unfill_partial_domain(area, pages, domain,
+ 							end_index);
+ 		}
+-- 
+2.54.0 (Apple Git-157)
