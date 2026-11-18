@@ -1,59 +1,54 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795016950;
-	b=GdNCPrhMENSmIMwVz5sl8kX0wquox3tqtIYTLduul5rfD6vq/mVyWa8hoZYgsB1soZvp
-	 +InjAmwOBIDbnv8MGmkDHduvI2oU6zG4+4jSOF9qnojODEhwD0dIHN1vTxL6cmAtwDht5
-	 leVw5HdD5dHL9R6oUD0hnmuYwYMHKsauRMhygw93XGeQPjt/Bboyvr8HZHNxWvDKrPypl
-	 sjX9gnKG29WBn/o0JDpMz5cv8NHK7tw8O179PlUdMvl85ZJamLSW4Ns5XEibWhBsjkoKW
-	 9jqTjpLyX2VfPqtqdAEbQZTqbHkEEMzpoQdKo27w++DjZha8WWcVC2TPfWaYmQSNfVw==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795016950;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=FjZOki/PxbChN/kpkS56mEwjlmPMGGtTDbC5dO/f5VE=;
-	b=kGMkL33yg721TVDyPN4oSHtmF1WZ1ShhIdT8aYej3V35EwtcVjVw5SNXx761Rf364vE0
-	 rpMCXt6XpWkcr7Ao5euf/fO2VkEa2wwgBV5bP7am028yKyCdXyehAwREvC6OaaH+BaVh3
-	 V1GXJq+DB6rOzqV/0dKrOeBwe2KRPokE/1CMak9CWuWYKc720x0bejBSAcBzB/8e+FWfY
-	 +CxwYZA4bOTkpO0xxMO3cHdUOsQe9YeLlYE7QarHXslhFlsSSUT5oqJmCKZKqqjOJPnQa
-	 8jt+VuEhxpCTazhFThNHscmuPjgtkSpp4+wCYw0wx5wpSPdC02sk4dLRMhNNn6L/uXw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DelL2Ase;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795017384;
+	b=syg5TGHdA14t2uFr06f32mKfaosL7jUSBWRlGTz3w58eX/dncfGxyTHvaszGjY8tcs6k
+	 NwkP/2liP0mE+ddwPOGumZlVHoU49X+ROuy3EjD229RH5sCa2IcFUV7/o6KhsoEJPlVfi
+	 eWP6DUtnw5R/+yr54LbRA+TflyqMw4cvvRskYNzNo6s5GspPGuljmhzcWXKL4SrtpKMur
+	 xy4FiyCg+qahqpZsYbxJmJtOOxVpOLgwOAC/2m0GH3W+3oUqOgp0SyDhyZm10+wasG58U
+	 4pdLZ9u81ju1toWLJ5SiLPUWFdGXk5BgST0g+6DdnV4hBr6MZxJMQaNlaFyGdjFW/AA==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795017384;
+	h=DMARC-Filter:DKIM-Signature:Received:Content-Type:Mime-Version:
+	 Subject:From:In-Reply-To:Date:Cc:Content-Transfer-Encoding:Message-Id:
+	 References:To:X-Mailer:X-ZohoMailClient;
+	bh=6sJDfIqoJRz6OacN4WC3akT40sE3dP03HyRnaz2zBvw=;
+	b=d+Y7AybsFi/nxIBCnYob/MYcSY7xt6S99Cms47+ev26Ay+Qik53o2Nqdfnoadcg2XENi
+	 W49O8Jes9LvQ+lWJcQnnXPQTDy8hhLsqfbgZ5SbGC2zAluBD+H5+MQzFzASvoHXbjvhvo
+	 KnO3cYzhatNc8IvRYKtnBQwao0lDVQ49J8zDwOmGLfk9eKeT9k5fIDEJFbKcdAqgZB8oy
+	 0sjUfv+dsH+kC8cZTxwp22mlIUqIDWHjTTvfsJkhc9uUZlmj7owRYBgarg0msE/iNhBHa
+	 vMzgHSdL9S+Cf4u70x9b9k6teBu9Bt6GL5mHVOlXHVIOXPzAvrx7qiivgeknYXg2tFw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=collabora.com;
+	spf=pass smtp.mailfrom=collabora.com;
+	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b="khl/W3s1";
+	arc=pass header.oldest-pass=0 smtp.remote-ip=165.173.182.11
+Received: from sender5-op-o11.zoho.com (sender5-op-o11.zoho.com [165.173.182.11])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67F5B606A331;
-	Wed, 18 Nov 2026 15:49:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4EB606A330;
+	Wed, 18 Nov 2026 15:56:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6A4EB606A330
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=DelL2Ase
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 076AD1F000C4;
-	Wed, 18 Nov 2026 15:49:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795016950;
-	bh=FjZOki/PxbChN/kpkS56mEwjlmPMGGtTDbC5dO/f5VE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To;
-	b=DelL2AseCkpI9pEwA1L5gY3UDxZ4DYa78FSdItn2+haIXyHKwqolDF9MxHW0qAI2U
-	 uGaRVw8t2ioh7l/hl7O4t/jnQY9aWtWF0HCkkVr1mXPMCs0PUdw81JezykySJPjEaj
-	 2nP+19nhBrZjLJPR/IYJJy52e53SrC4BjjM8C1FTgt7iIelEn9gZJitVhgpmfHjWjL
-	 l/2srAkF43eDWCRIGaKXQKVrpeGUFw6uTPG1iqhNGa0AplApXrllzYbPz17vmnmehi
-	 YAUHdHNQNA2KkI/iZ9/GXnbJmiprerrF9eoO4A4ELdrlaCE9Pmh8mS4n7OuCd5rYQO
-	 wSCdMKJW26xmA==
-Date: Wed, 18 Nov 2026 09:49:08 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Danny Gonzalez <digonzal@google.com>,
-	David Decotigny <decot@google.com>,
-	Sheena Mohan <sheenamo@google.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, linux-pci@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix WARN_ON in iommu probe path
-Message-ID: <20261118154908.GA501396@bhelgaas>
+	dkim=pass (1024-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=zohomail header.b=khl/W3s1
+ARC-Seal: i=1; a=rsa-sha256; t=1795017370; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=UQD1UEoBXfruoRRSm990gZKrS5pwnqQ8A8t4yEY8TsKbkc84+96yZ4cUPomepB0VpoXwcWIu/UCUAWpa1EUKkT7jzz0cZUUaEAXRNROqEmsj1BQmoyc2Z/zEE4ofYQvkVBoaSt70uVZ/t34ZhGjyevNiat2uHgblAMFoe0F+TZ0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1795017370; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=6sJDfIqoJRz6OacN4WC3akT40sE3dP03HyRnaz2zBvw=; 
+	b=SKVj+FIbaJQ6XFiofW78YiTWFsnKKXChpB5PDRP0ovXgeF0cTUsCGs/x8XgXbDRT52tD3rNb3MUuEXHxXFzKS5j8S0AtyNZkMpnAmKrQMbeULa5Vk/KQ5gDUHUPtlNEvAxzxkiBrGrlKErKIIhXqpaMr8U/brFh7EnE3eG2NB9c=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
+	dmarc=pass header.from=<daniel.almeida@collabora.com>
+DKIM-Signature: a=rsa-sha256; b=khl/W3s11re+hi2jq8M3Vc6y0leCIaABgeHODIXSqfFm5t4YwF4T3gjDnrkOGB/JxPTYEPaidXuZWWeaZVVphTaTOOsD4gDGFhZgqKO9zu3VqBqcprTsZnevPcRGZA9sjm2PgLIk998unDIc1J7VnE3b4euxmxaxJlq7l+Hv/bM=; c=relaxed/relaxed; s=zohomail; d=collabora.com; v=1; bh=6sJDfIqoJRz6OacN4WC3akT40sE3dP03HyRnaz2zBvw=; h=Content-Description:Content-ID:Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:List-Subscribe:List-Post:List-Owner:List-Id:List-Archive:List-Help:List-Unsubscribe:MIME-Version:Message-ID:Resent-Sender:Resent-Cc:Resent-Date:Resent-To:Reply-To:Resent-Message-ID:Resent-From:Sender:Subject:To:Date:From:Message-Id:Reply-To:Subject:To:Cc;
+Received: by smtp.zohomail.com with SMTPS id 1795017368433890.2082940439967;
+	Wed, 18 Nov 2026 07:56:08 -0800 (PST)
+Content-Type: text/plain;
+	charset=utf-8
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -62,90 +57,120 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <19551f22-84cd-4256-a24b-f26c61502368@linux.intel.com>
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3901.200.71.1.16\))
+Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
+From: Daniel Almeida <daniel.almeida@collabora.com>
+In-Reply-To: <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
+Date: Wed, 18 Nov 2026 12:55:49 -0300
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
+ "Joerg Roedel (AMD)" <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Miguel Ojeda <ojeda@kernel.org>,
+ Boqun Feng <boqun@kernel.org>,
+ Gary Guo <gary@garyguo.net>,
+ =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <lossin@kernel.org>,
+ Andreas Hindborg <a.hindborg@kernel.org>,
+ Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>,
+ Danilo Krummrich <dakr@kernel.org>,
+ Tamir Duberstein <tamird@kernel.org>,
+ Alexandre Courbot <acourbot@nvidia.com>,
+ =?utf-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+ iommu@lists.linux.dev,
+ rust-for-linux@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ driver-core@lists.linux.dev,
+ Detlev Casanova <detlev.casanova@collabora.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <42134022-AFBD-49E0-9AE5-0C5885F6C71D@collabora.com>
+References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
+ <20261116193821.GC2452510@ziepe.ca>
+ <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
+ <20261117202055.GA3115493@ziepe.ca>
+ <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
+To: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+X-Mailer: Apple Mail (2.3901.200.71.1.16)
+X-ZohoMailClient: External
 
-On Wed, Nov 18, 2026 at 03:49:30PM +0800, Baolu Lu wrote:
-> On 11/18/2026 2:01 AM, Bjorn Helgaas wrote:
-> > [+cc Danny and others because this is related to ongoing work at
-> > https://lore.kernel.org/all/20261020181053.2646782-1-digonzal@google.com/]
-> > 
-> > On Sun, Apr 07, 2024 at 09:14:29AM +0800, Lu Baolu wrote:
-> > > Commit 1a75cc710b95 ("iommu/vt-d: Use rbtree to track iommu probed
-> > > devices") adds all devices probed by the iommu driver in a rbtree
-> > > indexed by the source ID of each device. It assumes that each device
-> > > has a unique source ID. This assumption is incorrect and the VT-d
-> > > spec doesn't state this requirement either.
-> > > ...
-> > 
-> > > +++ b/drivers/iommu/intel/iommu.c
-> > > @@ -4299,9 +4299,11 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
-> > >        }
-> > >        dev_iommu_priv_set(dev, info);
-> > > -     ret = device_rbtree_insert(iommu, info);
-> > > -     if (ret)
-> > > -             goto free;
-> > > +     if (pdev && pci_ats_supported(pdev)) {
-> > > +             ret = device_rbtree_insert(iommu, info);
-> > > +             if (ret)
-> > > +                     goto free;
-> > > +     }
-> > 
-> > This change is upstream as 89436f4f5412 ("iommu/vt-d: Fix WARN_ON in
-> > iommu probe path"), but I think there's a problem here.  Previously
-> > the rbtree insertion was unconditional, so the unconditional remove in
-> > the error path was correct.
-> > 
-> > After 89436f4f5412, the rbtree insertion is conditional.  If
-> > intel_pasid_alloc_table() fails, we try to remove it even though it
-> > may never have been inserted:
-> 
-> info->node is initialized with RB_CLEAR_NODE() before the insertion, and
-> the remove helper checks RB_EMPTY_NODE() before erasing. If insertion
-> was skipped, removal is a no-op, so this error path does not need
-> another state check.
 
-Seems like RB_CLEAR_NODE() and RB_EMPTY_NODE() are lacking
-documentation: RB_CLEAR_NODE() isn't used at all by lib/rbtree.c and
-Documentation/core-api/rbtree.rst doesn't mention it.
+>=20
+>>=20
+>>> The fault handler is used in the same way it is used in GPU drivers: =
+to kill
+>>> sessions if they fault. This way the driver can simply refuse =
+further work from
+>>> a misbehaving client, for example. It is also the natural place to =
+enqueue a
+>>> reset if the codec hardware is frozen as a result of the fault.
+>>=20
+>> IIRC no GPU driver does that, they hook the obsolete fault handler =
+not
+>> supported in new iommu drivers not the new PRI based one... IDK we
+>> have even wired this up to work this way.
+>>=20
+>> It is nicer if the HW can tell you it faulted rather than expect the
+>> iommu to do it.
+>=20
+> We most likely don't need that, and should drop it from this series. =
+We have
+> never used the fault handler in any linux-media codec in the past, the =
+HW would
+> always endup producing an IRQ with a error or a timeout. Using the =
+fault handler
+> would probably be a bit racy too. Pausing work from a faulty source =
+though isn't
+> a bad idea, but more of a nice future addition, assuming it can work =
+in a non-
+> racy way.
+>=20
+> Nicolas
 
-But I agree, this does look safe as-is, though requiring a little
-inside knowledge of rbtree internals.
+I am still collecting my thoughts to reply to Jason, but I don't see why =
+we
+wouldn't want a fault handler. For example this:
 
-> > >        if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
-> > >                ret = intel_pasid_alloc_table(dev);
-> >                  if (ret) {
-> >                          dev_err(dev, "PASID table allocation failed\n");
-> >                          goto clear_rbtree;
-> >                  }
-> >      ...
-> >      clear_rbtree:
-> >          device_rbtree_remove(info);
-> >      free:
-> >          kfree(info);
-> > 
-> > > @@ -4336,7 +4338,8 @@ static void intel_iommu_release_device(struct device *dev)
-> > >        struct intel_iommu *iommu = info->iommu;
-> > >        mutex_lock(&iommu->iopf_lock);
-> > > -     device_rbtree_remove(info);
-> > > +     if (dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev)))
-> > > +             device_rbtree_remove(info);
-> > 
-> > This is also somewhat problematic because it relies on the assumption
-> > that pci_ats_supported(X) always returns the same value it returned in
-> > intel_iommu_probe_device().  That may be true today, but I don't think
-> > you should rely on it.
-> 
-> Agreed. The release path should not re-evaluate pci_ats_supported().
-> 
-> > I think both issues could be solved if intel/iommu.c kept track of the
-> > rbtree insertion itself, e.g., with a bit in struct
-> > device_domain_info.
-> 
-> Sure. I will address this with a follow-up patch.
+> IIRC no GPU driver does that, they hook the obsolete fault handler not
+> supported in new iommu drivers not the new PRI based one... IDK we =
+have even
+> wired this up to work this way.
 
-Great, thank you!
+Perhaps does not account for the fact that the fault handler in Mali =
+doesn't go
+through the iommu subsystem, but there is a fault handler. Not only did =
+I write
+the handler, I also had to use it constantly as tyr initially faulted =
+all the
+time :/
 
-Bjorn
+Also, saying that a handler was never used in media is not a good =
+argument,
+IMHO. Yes, eventually the decoder reports some error, but this is =
+orthogonal to
+knowing whether someone is trying to access invalid memory. And if you =
+know
+that, you can prevent further invalid accesses before they bring the =
+whole
+thing down. Quite often I had to reboot the whole machine because the =
+hardware
+was perpetually stuck, and if the objective is having all the users of =
+the
+encoder play nice together, then this is not very ideal.
+
+This is not unlike my time reverse engineering the NVIDIA codec =
+hardware:
+nouveau would complain on faults and kill the channel too.
+
+What I am trying to say is: if the argument is "not all iommu drivers =
+properly
+support fault handlers", then perhaps I can vonlunteer to fix this in =
+the C
+code, if they want it and if a "fix" is technically feasible(?). But the =
+overall
+desire to kill a faulting user is something we could definitely use, and =
+the
+remaining question is whether this is possible via the iommu API.
+
+=E2=80=94 Daniel=
