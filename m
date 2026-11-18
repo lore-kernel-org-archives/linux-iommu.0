@@ -1,97 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.172
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795030295;
-	b=laJ/HXC36xx5quMbEJEdVNY2j3UliTeq8ObSNb+BkYIAfmDXozB9bKtBCiHypD9L6Mez
-	 vUXYa5ZPjK8CIhc8tCD24acg5P4ELH70hNZv1EUDI7RkjPULlk+4dWV9SdH986F1oz+MM
-	 QytgPcqvzOcKYUzeAO6iwYxGf0/dRO9l7guBa9Ifx1GInhF8zwhcmyb6u/Q6URSzj5nut
-	 05Cf6aGMt76eQh39/JxEMIjptJxWHHm9O1/Y6bTQjpUtZxmt17p5BQCHbQVXbBLzk/hZD
-	 hsECGmM3CwifSw9INEN+W8ywUkO6y/3mySGr+mk9GagpL+dvF3ZcGvhQPZncTL00DnQ==
+	t=1795030524;
+	b=Tq42BU6bzr4mUWEF/TxLTl2o0F8Hn61NigDOqIfHMBrtYPAcBWNNz+sPLk6q3kDdRYS3
+	 HHD8DFXSIBD/v43cAtaIhoUtd94hoHCWa09GrotNcQCfEMY7QG76dLkGuw9ppxJBEykL8
+	 NBsd9O3hygb/QqeTUAA0GSYs2cXvBg2aWSdiSCDMYaGmRHuSckIFy349q2ZysEZ/kj7Hs
+	 CQPlErztIp6TDSR+wfnxt1pbmUkSkDS7yZ7//nPC3x7yuRgo1L7kIPXkFgzbOvbgAsEmo
+	 gUq1Bvx+ilBTT+Sc15xBEQsuL+YBAJKr/tUHkk8HrCaaSLf9ZVWr3Pge13utxMkeqlA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795030295;
-	h=DMARC-Filter:DKIM-Signature:Received:Message-ID:Subject:From:To:Cc:
-	 Date:In-Reply-To:References:Autocrypt:Organization:Content-Type:
-	 User-Agent:MIME-Version;
-	bh=fLthrjN5WgzhoWxabUT0whfp6slcAS4z3Nr3WCkNqVY=;
-	b=nsCirklAbIo7+psTKALx/hAB3FGx4YPKbjIyCxu+DiWmOl3NYZb4K16o9HFfPHvddLYz
-	 gfIn9okpDHOEXwTSrO1vJ+yP4CAm2ggBEAYWGLOvYvOFl+4sSO7kswMxlQ0pSoTxzbjur
-	 Iw1rFOiRbUXkMBMA1m7YxYU7cPdT1j9c5latqUWfv4Qtaf5oLOJ4q7NuXGEmhtUm4ibmh
-	 /Ud7DmafK6umyAqfnWBiFlmMA1bA1LY+afmh2T9SWYmxIkbbvxyMNKWkkPewDCqoOA4nX
-	 4GqRDQXkVi+7GWMZFhLuVrzElqNz3M10sxYr4JRmhZU/6yAm5fp0AZZEtx2geKbFkRg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795030524;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=svDhZvS2nvuMtlSX/aJAYIzvYs1mM+RCPAdRdKGv9lw=;
+	b=k3TtxnCQScRZSo8CHFZiOMsH2aqFs2dw+wnBPssAxuecUVsRGcCuSxHgJUQIYjqleGaY
+	 CnVOHqt0gacDlqPG6gAUL6I6+3exF2YLzXaovHd/19rXbV3jTpR0vGkc/438e4yOh+o8U
+	 Z/gmmKlUB0+KdgBSO2Ji9BJJTIKV8+wMcEMDbixJpALHCQDjA6VasFMM9TU2QQG3T/mfi
+	 xJ46WGYtSpnulgqyR3uA6FWXoczxE7O32NHJ+N97qb0CzBX/J07HvQlldRdGuHxqokaBM
+	 0b6KiRaT3s4WJNwvkirqwQen1UPaLt5cIs1VIZeXbIChSLAJhJ4JkJYU5GTjf3jZtbw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=collabora.com;
-	spf=pass smtp.mailfrom=collabora.com;
-	dkim=pass header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=KXgDlwr9;
-	arc=none smtp.remote-ip=148.251.105.195
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=HMaPEjds;
+	arc=none smtp.remote-ip=209.85.160.172
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73C38606A7E5;
-	Wed, 18 Nov 2026 19:31:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 73C38606A7E5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B35D606C41A
+	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 19:35:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6B35D606C41A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=collabora.com header.i=@collabora.com header.a=rsa-sha256 header.s=mail header.b=KXgDlwr9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1795030292;
-	bh=fLthrjN5WgzhoWxabUT0whfp6slcAS4z3Nr3WCkNqVY=;
-	h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-	b=KXgDlwr9EYezTyhZH6f113tD9IXvmi78IgDfAdx3BajMOcug+kilIgq1izYqmUL8d
-	 j8vEEjPLk/hzTs6DP7E274OX2N+OjJUcinoIkoN+MqcLe38W9bhTlhupvMQ2NY2yPu
-	 Xl+e6YU8sYpquLVNXRJXhV2eULFoY45/tpYqWV1ugcP3ZDReRGPVZKkn/RFwoWkSND
-	 6y5Jl6d7xbf0O5gz6j5J8ZwLrYuBkJk5fAej5MLEOY4A4oo+X4kGxSx9PU507r0raT
-	 p/vhCtHtDzE9QGVV7v9dpAUYI0Gfhcv0Dl3P6PWrbk6aMiDZLXH9jpq8DWIwMofLcm
-	 KchprO3vAlHTA==
-Received: from [100.64.0.214] (unknown [100.64.0.214])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: nicolas)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id E443117E0480;
-	Wed, 18 Nov 2026 20:31:29 +0100 (CET)
-Message-ID: <ede3b421d419a35c115ed584e60e74bfd6b91dff.camel@collabora.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=HMaPEjds
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-53634b8328eso13301921cf.0
+        for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 11:35:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1795030523; x=1795635323; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=svDhZvS2nvuMtlSX/aJAYIzvYs1mM+RCPAdRdKGv9lw=;
+        b=HMaPEjdst1d34xKSSi9QgwAv2oJbaNL7vefx1tABgF/L1UUjpF6PRbHsei3Uj8i81P
+         rC28CaGajDRnYyuJ1q0+R/4Zwyono1tJUGFBpTmjxBR1HKXQu8NYIY/WSMWAgOCdFaJ/
+         e0054edpsBlS6h9ayTGsQ7SgRB5VYInXAls2hmSCJrswSXReysBg3sZc0Jr+lTTC4dZ7
+         GO4Fh9k+ct3IR7GOANFc1Du2XOjdnTcN/RhtlNW6uGMsXbpfcSDOZbJEoterYgjzPt3a
+         F6b6yu+N4tUFlOdoeG8Kr4Admwo9YcGVj2G6xSuShx75EeR0U/x9atrXmJBXgG8gR72k
+         XBZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795030523; x=1795635323;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=svDhZvS2nvuMtlSX/aJAYIzvYs1mM+RCPAdRdKGv9lw=;
+        b=kB8S5z2rxUhOhpt7rLFlHyAtp3hefoPly0RGCIrDWnene4JEtp8ppHnHkpD+dMbuGP
+         R6oZV1mD2geuaPGMQ0Rbba24gbCrZMk8oIb83dd/v6uPtvFYyI6gN6oXkkK3qP0ryyMM
+         opseqbw5SPJQHYBdaEAlzR8eT4KZXHrT9G6HnIaufPQym2jBvKktO/sPzGN3btGNfH8E
+         BF/6Kee5Q+utbd4KaN0QKdywQIB3ABuBlBDMam7o5Mt5qKRYMCMVM1dB4G1BGNb31LuV
+         DR0jCrfZFIAXBOga8prVSi9DPFlyWIwBizJ2A0iha388NoUDzSAo7m86olwi/Rjh6mWS
+         eEzA==
+X-Forwarded-Encrypted: i=1; AL+hErFnDHjxIWwzlJ5rLcXF3qwxtIQBsPNrckLMBa3RmsxYGZUi2zLdFyEuyK/OO1f4jF+HZ6iRww==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+SjyKzLteDUTJoB82D9kusEU+JP8F2/NyZhUVJO8vEqIqQSWJi
+	L3u8FiCgfKejMsz+0crfQ95nEhK8TVXFGu8G09BOrcLIdZn7tUf0FySwXfdvi+g1FVU=
+X-Gm-Gg: AYBFou1tmTICr2Ej02HGF/rYaBd9N0w+piwaVodnZUpcXdde3xf0wvIlCp3H6X+6G0T
+	npEboCUjbkwWUXAf330u1/EZr5CZnyb/rxvDCf9FqzjytwmtwgExqnj1jrX/LM7Z9EyVIXybrWW
+	+WeDPAy3wmMlfcoaOU4acjLstF9BB9MCnSwx4xvFHN/J1uCQyPMrdthAl73HGg8oHgdaAmYzVkG
+	Xb8Td8R2k+IE5Jzc6LInIprkXyura9yTTfxxsF21H+Uk7Mmeba7rfuKcIlR85zugqbPaFcFxl2f
+	xZjha7AhKkNZcbYTMMN/+cZfdBkuXHgTJFiE4rdTIOJOv0Ov4anxj52ozTgRoh3fGZ1OOd8SyBs
+	SJge6cn71pF/kihPwkLuvwR5Xq9VWjxNRADula76f5M8J4ffUDw2EVPGHY20YTpqEPvGbkThLKp
+	XtvdDnvODMGOUnF6hCi6RbcHLa+ACVM5cPyPw/ExjqGYuZT9OA5Q0BXaqB3xVrnXxZ996U8G2+H
+	kY/v9+2cS2UBxxvRRI46I22JvHsoAK18I49E07DyUsAtm986KNIXCeHlTx6pVhocHBfmmfqskXQ
+	TF9aNQ==
+X-Received: by 2002:a05:622a:4c08:b0:55d:2dd1:48c8 with SMTP id d75a77b69052e-55d5a80a719mr59797531cf.67.1795030523112;
+        Wed, 18 Nov 2026 11:35:23 -0800 (PST)
+Received: from ziepe.ca ([142.166.156.71])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-55d66b24f4dsm7057611cf.5.2026.11.18.11.35.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Nov 2026 11:35:22 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xTlRB-0000000GGIL-2q4J;
+	Wed, 18 Nov 2026 15:35:21 -0400
+Date: Wed, 18 Nov 2026 15:35:21 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Daniel Almeida <daniel.almeida@collabora.com>
+Cc: "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
+	Gary Guo <gary@garyguo.net>,
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	Detlev Casanova <detlev.casanova@collabora.com>,
+	Nicolas Dufresne <nicolas.dufresne@collabora.com>
 Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-From: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Daniel Almeida <daniel.almeida@collabora.com>, "Joerg Roedel (AMD)"	
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy	
- <robin.murphy@arm.com>, Miguel Ojeda <ojeda@kernel.org>, Boqun Feng	
- <boqun@kernel.org>, Gary Guo <gary@garyguo.net>, =?ISO-8859-1?Q?Bj=F6rn?=
- Roy Baron <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>,
- Andreas Hindborg	 <a.hindborg@kernel.org>, Alice Ryhl
- <aliceryhl@google.com>, Trevor Gross	 <tmgross@umich.edu>, Danilo Krummrich
- <dakr@kernel.org>, Tamir Duberstein	 <tamird@kernel.org>, Alexandre Courbot
- <acourbot@nvidia.com>, Onur =?ISO-8859-1?Q?=D6zkan?=	 <work@onurozkan.dev>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, 	iommu@lists.linux.dev,
- rust-for-linux@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- driver-core@lists.linux.dev, Detlev Casanova	
- <detlev.casanova@collabora.com>
-Date: Wed, 18 Nov 2026 14:31:28 -0500
-In-Reply-To: <20261118160909.GC3115493@ziepe.ca>
+Message-ID: <20261118193521.GD3115493@ziepe.ca>
 References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
-	 <20261116193821.GC2452510@ziepe.ca>
-	 <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
-	 <20261117202055.GA3115493@ziepe.ca>
-	 <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
-	 <20261118160909.GC3115493@ziepe.ca>
-Autocrypt: addr=nicolas.dufresne@collabora.com; prefer-encrypt=mutual;
- keydata=mDMEaCN2ixYJKwYBBAHaRw8BAQdAM0EHepTful3JOIzcPv6ekHOenE1u0vDG1gdHFrChD
- /e0J05pY29sYXMgRHVmcmVzbmUgPG5pY29sYXNAbmR1ZnJlc25lLmNhPoicBBMWCgBEAhsDBQsJCA
- cCAiICBhUKCQgLAgQWAgMBAh4HAheABQkJZfd1FiEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrjo
- CGQEACgkQ2UGUUSlgcvQlQwD/RjpU1SZYcKG6pnfnQ8ivgtTkGDRUJ8gP3fK7+XUjRNIA/iXfhXMN
- abIWxO2oCXKf3TdD7aQ4070KO6zSxIcxgNQFtDFOaWNvbGFzIER1ZnJlc25lIDxuaWNvbGFzLmR1Z
- nJlc25lQGNvbGxhYm9yYS5jb20+iJkEExYKAEECGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4
- AWIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCaCyyxgUJCWX3dQAKCRDZQZRRKWBy9ARJAP96pFmLffZ
- smBUpkyVBfFAf+zq6BJt769R0al3kHvUKdgD9G7KAHuioxD2v6SX7idpIazjzx8b8rfzwTWyOQWHC
- AAS0LU5pY29sYXMgRHVmcmVzbmUgPG5pY29sYXMuZHVmcmVzbmVAZ21haWwuY29tPoiZBBMWCgBBF
- iEE7w1SgRXEw8IaBG8S2UGUUSlgcvQFAmibrGYCGwMFCQll93UFCwkIBwICIgIGFQoJCAsCBBYCAw
- ECHgcCF4AACgkQ2UGUUSlgcvRObgD/YnQjfi4+L8f4fI7p1pPMTwRTcaRdy6aqkKEmKsCArzQBAK8
- bRLv9QjuqsE6oQZra/RB4widZPvphs78H0P6NmpIJ
-Organization: Collabora Canada
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-NdLYfQQ4mCwqMscWXOoT"
-User-Agent: Evolution 3.62.1 (3.62.1-1.fc45) 
+ <20261116193821.GC2452510@ziepe.ca>
+ <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
+ <20261117202055.GA3115493@ziepe.ca>
+ <615C3DA2-4C02-4A8B-AEC4-70D498672559@collabora.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -101,173 +119,113 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <615C3DA2-4C02-4A8B-AEC4-70D498672559@collabora.com>
 
---=-NdLYfQQ4mCwqMscWXOoT
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Wed, Nov 18, 2026 at 04:11:40PM -0300, Daniel Almeida wrote:
+> 
+> > On 17 Nov 2026, at 17:20, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > 
+> > On Tue, Nov 17, 2026 at 05:09:11PM -0300, Daniel Almeida wrote:
+> >> Hi Jason,
+> >> 
+> >>> On 16 Nov 2026, at 16:38, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> >>> 
+> >>> On Thu, Nov 12, 2026 at 02:00:07PM -0300, Daniel Almeida wrote:
+> >>>> This series adds a Rust abstraction for IOMMU paging domains. A driver
+> >>>> can allocate a domain, attach it to its device, map pages into it, and
+> >>>> install a handler for its faults.
+> >>>> 
+> >>>> This will be used by the upcoming rkvenc driver that my colleagues
+> >>>> Detlev Casanova, Nicolas Dufresne and I are working on. More details on
+> >>>> this driver can be found by watching Nicolas Dufresne's talk at LPC 2026
+> >>>> [0].
+> >>>> 
+> >>>> As part of the security model, each client will have its own IOMMU
+> >>>> domain. This is needed as the submission model will let userspace set
+> >>>> most of the encoder's registers directly, so the kernel cannot check
+> >>>> every memory access that a job makes the encoder do. With a single
+> >>>> domain, one client could make the encoder read or write the memory of
+> >>>> another client.
+> >>> 
+> >>> How do you plan to get the paging domain in the first place?
+> >> 
+> >> We plan to alloc a paging domain when a video encoder session is created. Then
+> >> we call iommu_attach_device() before a job runs, and detach back to the default
+> >> domain after it finishes so the next job can attach its own session's domain.
+> >> This is so each session is isolated from each other.
+> > 
+> > If you do that you can't use the DMA API at all in your driver as you
+> > have to set 'driver_managed = true'. Is it OK? If it is why not just
+> > use VFIO?
+> 
+> No, not OK :/ We want to use GEM shmem, which calls into the DMA API internally
+> through drm_gem_shmem_get_pages_sgt() -> dma_map_sgtable().
 
-Hi,
+You cannot continue to use DMA API once you start touching a paging
+domain directly. It is why driver_managed exist.
 
-Le mercredi 18 novembre 2026 =C3=A0 12:09 -0400, Jason Gunthorpe a =C3=A9cr=
-it=C2=A0:
-> On Wed, Nov 18, 2026 at 10:25:58AM -0500, Nicolas Dufresne wrote:
-> > Hi,
-> >=20
-> > Le mardi 17 novembre 2026 =C3=A0 16:20 -0400, Jason Gunthorpe a =C3=A9c=
-rit=C2=A0:
-> > > On Tue, Nov 17, 2026 at 05:09:11PM -0300, Daniel Almeida wrote:
-> > > > Hi Jason,
-> > > >=20
-> > > > > On 16 Nov 2026, at 16:38, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > > > >=20
-> > > > > On Thu, Nov 12, 2026 at 02:00:07PM -0300, Daniel Almeida wrote:
-> > > > > > This series adds a Rust abstraction for IOMMU paging domains. A=
- driver
-> > > > > > can allocate a domain, attach it to its device, map pages into =
-it, and
-> > > > > > install a handler for its faults.
-> > > > > >=20
-> > > > > > This will be used by the upcoming rkvenc driver that my colleag=
-ues
-> > > > > > Detlev Casanova, Nicolas Dufresne and I are working on. More de=
-tails on
-> > > > > > this driver can be found by watching Nicolas Dufresne's talk at=
- LPC 2026
-> > > > > > [0].
-> > > > > >=20
-> > > > > > As part of the security model, each client will have its own IO=
-MMU
-> > > > > > domain. This is needed as the submission model will let userspa=
-ce set
-> > > > > > most of the encoder's registers directly, so the kernel cannot =
-check
-> > > > > > every memory access that a job makes the encoder do. With a sin=
-gle
-> > > > > > domain, one client could make the encoder read or write the mem=
-ory of
-> > > > > > another client.
-> > > > >=20
-> > > > > How do you plan to get the paging domain in the first place?
-> > > >=20
-> > > > We plan to alloc a paging domain when a video encoder session is cr=
-eated. Then
-> > > > we call iommu_attach_device() before a job runs, and detach back to=
- the default
-> > > > domain after it finishes so the next job can attach its own session=
-'s domain.
-> > > > This is so each session is isolated from each other.
-> > >=20
-> > > If you do that you can't use the DMA API at all in your driver as you
-> > > have to set 'driver_managed =3D true'. Is it OK? If it is why not jus=
-t
-> > > use VFIO?
-> > >=20
-> > > Or are you planning DT horrors to get yourself a DT created "DMA
-> > > struct" ?
-> >=20
-> > This seem to digress. All we want to do is use the iommu subsystem as i=
-ntended
-> > for the case the iommu driver is not inside the DRM driver (which seems=
- to have
-> > never been the case so far in DRM).
->=20
-> "As intended" means you use the DMA API and you do not touch
-> the paging domain.
->=20
-> "As intended" means you use iommufd if you want a domain full of user
-> controlled mappings.
+If you want to use the DMA API you need two struct devices and now you
+are into DT abuse land.
 
-As discussed at LPC, we believe its pointless for this type of device to gi=
-ve
-any direct page choices to userspace. Can you explain why you believe
-differently?
+So what exactly are you planning on doing
 
->=20
-> > The existing infra for that (in C) is pretty abstract an simple in
-> > my opinion, and built into the DMA API if you manage which domain to
-> > attach to your device at the right time.
->=20
-> What does this even mean? The DMA API owns the domain, not the
-> driver.
->=20
-> All the cases using these APIs in DRM and media are troubled in one
-> way or another.
->=20
-> For example the recent revelation they have always been using DMABUF enti=
-rely wrong:
->=20
-> https://lore.kernel.org/all/20261009125338.GB13920@nvidia.com/
->=20
-> Tegra desires to undo their abuses.
->=20
-> It was never intended for things to work like this, there is missing
-> infrastructure.
->=20
-> > To me, it fits CODEC HW driver which are also simple. The DT horrors
-> > you refer to seems totally unfounded, you just describe the iommu
-> > and the iommu subsystem will manage it for your device.
->=20
-> "unfounded? You are not following along, I've written about this now
-> many times to many different people. Follow the links and discussion
-> from here:
->=20
-> https://lore.kernel.org/all/20260917144804.GI3196566@ziepe.ca/
->=20
-> If you use DT correctly there is no place to attach an iommu_domain to
-> and you can't even use these APIs. You get DMA API only and that's it.
->=20
-> You have to do something "wrong" in DT to create fake HW devices to
-> even give you a struct device to even attach something to.
->=20
-> Or you have to entirely give up DMA API and attach to your only struct
-> device.
+And why do you need the paging domain at all if you are using the DMA
+API?
 
-I'm not sure how this applies to our work. But since they are all broken
-according to you, let me give example of cores/iommu mapping we are using, =
-and
-perhaps you'll be able to explain us correctly? I've picked the Rockchip vi=
-deo
-decoder, which is upstream but expose through V4L2 stateless API, but from =
-a
-hardware point of view is pretty much identical:
+> The CPU mappings are write-combined, so the only cache maintenance is the clean
+> of newly allocated pages, which dma_map_sgtable() does in
+> drm_gem_shmem_get_pages_sgt(). 
 
-The DT (which I read you must be broken and in violation of everything, yet=
- all
-reviewed by DT maintainers):
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arc=
-h/arm64/boot/dts/rockchip/rk3588-base.dtsi#n1400
+Yes, this is why you should be using the DMA API, that doesn't explain
+how any direct use of a paging domain will work.
 
-The multi-core support proposal, its not doing process isolation, its not
-strictly needed in higher level abstraction (though could be better), but i=
-ts
-using domains so that each core can actually see the same memory:
-https://lore.kernel.org/all/20260810-rkvdec-multicore-v2-0-986f89d22cdc@col=
-labora.com/
+> The mappings themselves are chosen by the kernel driver. We don't
+> care about what the actual IOVA is. All we care about is that a
+> given GEM object is mapped to a given domain, and that we have some
+> IOVA representing the start of the allocation, such that we can pass
+> that to the device.
 
-The DMA abstraction that is used by the above driver:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/dri=
-vers/media/common/videobuf2/videobuf2-dma-contig.c
+Wonderful, what is the paging domain for?
 
-GEM kind of offer similar high level abstraction to DMA (with important
-behaviour changes in of course, specially for write combine delivery), so t=
-his
-is what we have for now in the WIP driver. Check the LPC presentation for t=
-he
-rest of the context.
+> > Are you sure you shouldn't be using iommufd for this, tied into your
+> > driver? It was intended for exactly this use case, to allow drivers to
+> > delegate their translation to userspace. Though that doesn't relly
+> > solve the questions about what it is even being attached to..
+> 
+> I had a cursory look at iommufd, but it seems like:
+> 
+> a) it requires IOMMU_CAP_CACHE_COHERENCY, which is not offered by the rk_iommu
+> backing the RK3588 SoC we are currently targeting. In fact, IIUC, this does not
+> seem to be possible, since the encoder is not cache coherent with the CPU?
+> I.e., does iommufd expect hardware cache coherency/snooping?
 
-Nicolas
+*Linux* expects coherency, if you are DMAing direcly to user cachable
+memory and you aren't coherent there are issues, and minimally your
+driver would have to do the cache flushing.
 
---=-NdLYfQQ4mCwqMscWXOoT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+Which we have deliberately made it so drivers cannot do to force them
+to use the DMA API.
 
------BEGIN PGP SIGNATURE-----
+This is one of the unresolved problems if a driver tries to use a
+paging domain directly.
 
-iHUEABYKAB0WIQTvDVKBFcTDwhoEbxLZQZRRKWBy9AUCav39EAAKCRDZQZRRKWBy
-9IV1AP9AxkflEeZ/bPaxvQmt8nZyMjXbjyeIHJu034CF7vtj+wD9H6GjJpenIQM8
-yOiR+zj1r9H/KSkGDS6RmpGOgH1UNA0=
-=UPaF
------END PGP SIGNATURE-----
+> b) there is no way to do what I said above about GEM, i.e.: there is no
+> connection between iommufd and GEM.
 
---=-NdLYfQQ4mCwqMscWXOoT--
+Right, because you started out saying you wanted userspace to control
+the mapping and put user memory into it. Kernel controlled GEM
+mappings is something entirely different.
+
+> You seem to be saying that what I'm proposing here has a few pitfalls that have
+> come up over the years. Perhaps we can massage iommufd to make our use case
+> work? I can volunteer to do whatever work is needed, of course.
+
+I am very confused about what you are even doing. Can you explain more
+clearly please? What does you DT look like? What do your attach calls
+do? How many struct devices do you have? Who is calling the DMA API?
+Who is mapping the paging domain? And who handles cache flushing
+issues for your incoherent architecture?
+
+Jason
