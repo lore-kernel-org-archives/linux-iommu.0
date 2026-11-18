@@ -1,13 +1,13 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.43
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794962304;
-	b=1GNjA0cUG2ah/nASfs2jtS3g0wq/fVYyadp7fXIgBgft/DWmdUTT5kQEVCbFcftlbGxc
-	 aQOP3PsXAzh2Ltk3DPQjxXIEqcZFHXGeh2OoU/GzrQJSP5VzN/m0YdLqFYKPR2gqTm5vT
-	 E+SZ79s2Bk4etO6+YvstOlhGoYWc7hSB2aLP45kOoV1Nj9g8N3v3+4p7dziVdLRxpC06k
-	 J0zrL3nNo2UXEvQPPuapkx4j6CXoLkwCun30XBqCLnOPck2Iwni/6nzOsaSjTWTS1yjtO
-	 jPx03UPn5hof7gIm3Gis4Bm2KfWptmwcrAZbX6O/04wKpwE0XS4AQBFc9O8vjLGKrUw==
+	t=1794962305;
+	b=eaGi9BCBvuDLk/v8M7x8MYCbw/wnp/94Y2r5+rQX/U2XjJD+KQxsBg+MMcggvA2fMuls
+	 eYS/PlSFVC1+E0S7JnziIQd7+ElROoWmgxRZLfcWaeR2KQb7sV2q2IoYy9tt7Bgordi/0
+	 ibAR0mMag2k1nS37uHu7djutKIht6fJN0JF/P+6Y3OfOvq+V44+b75SrJF1xBUNqcwnmy
+	 YX3f5CKFNyDIC9MgAtuVpbVhApWcFmx0o/zz1kAdfi1D5gD6THLeRYpCcknz/1GZR1A1c
+	 N97UftCLPVn5OxYSkS+BsZVCDPFol7nJWJSmqKSHeMJn5WQB9wZaYTagFo5EXKRLquw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794962304;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794962305;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:From:Date:Subject:
 	 Content-Type:Content-Transfer-Encoding:Message-Id:References:
 	 In-Reply-To:To:Cc:X-Mailer:X-ClientProxiedBy:MIME-Version:
@@ -25,61 +25,61 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=CPzZYjkqEkpeyLz3RbE9NX2cP0Fs/KowOfQ+b/NsuRo=;
-	b=2Zt+840kC3+6+0ex6Q/OeBpKGvSu8iyHSJ/CM2Nb5a1uLTx1omnCmBf6uwBMwIohmZBZ
-	 r7qF61g/6sX+7nRjv5nRj25XLjje69U+E+Kl98IEI83q6Cr8uTmxI0W/tcdziapW0lsso
-	 ZttGtnRbI6+yviT3/UlFFvDi2z1pXRl6+d3liUxI+mfrcDmCeTZfLM8RgrXb4/HNwAlZ1
-	 HagslRMxJ2J2As7jP74ipZ3plTgKR0a5/d5P5GRJAkEBFD925IVcKPooG7k0xPlbffa1M
-	 VZXyCitjEi3ohWxbrY70aXEkc4Sy/D4HnihfeN/zFF79GuTI13/tdT1NM8w9lWw0W1Q==
+	bh=FKyLJg1LBY/j9ckAJ+2IwfM6IFU4eIbBlJ7QNvZOIqo=;
+	b=b8Q9N+MxSgs9b0kqqF1YmAjewUCbq6fphOhXqPP4OegEYuH/7/gvSGHQx76SRr/eaqhC
+	 akap+ZX8KStt7RzOmLBw8HU8GIDu7eKGp7lZY7eTHj/MoEC5M0zPJKMGu4RtMHNCtbdek
+	 TSWl3S9ZZZAuaGm1nX57mQMnEuzFFj5Iz6XR7uY/GVTQsw34g5oKKHDJAPzxxKphnx78t
+	 ER6v7TJNUigXP9mImJWh+o6Q16YZrcciwaS1hvpl4b6kVhmxLTPfrOQiBnvngP729d4Ms
+	 y6uCdJbbPDdjq2anRwn5PLpODoRUXr5zaNViTVJfknTbW0gEhKbytMrW5t1mB/N0Keg==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=nvidia.com;
 	spf=fail smtp.mailfrom=nvidia.com;
-	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=t4xbOQVf;
+	dkim=pass header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=qFPU1PM9;
 	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.62.43
 Received: from DM5PR21CU001.outbound.protection.outlook.com (mail-centralusazon11011043.outbound.protection.outlook.com [52.101.62.43])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84A14606A88E
-	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 00:38:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 84A14606A88E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43460606A336
+	for <iommu@lists.linux.dev>; Wed, 18 Nov 2026 00:38:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 43460606A336
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=t4xbOQVf
+	dkim=pass (2048-bit key, unprotected) header.d=Nvidia.com header.i=@Nvidia.com header.a=rsa-sha256 header.s=selector2 header.b=qFPU1PM9
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sRxUEHZEcwe6NLyAK+uXgexKpXPwC3HfX0hmCJ9ugQdJaD5xp+/SJdObAmxNRM7nAl2NCDGVx8W1Ox4u+PxhPhS0KJmYVhY4q+ZtKAt3JA7sT7zCUphsIJySy7/IAHbiyd2uG1oi0LAkN6kGSWr28sGPLtPwthYy2icfZLPlBOpueNeRPgB2TKFUe4sdZsn9i09OMCqdFBREa4R0b8/JCzKJYLELIQ1ccB6IY+P3vUzhh3sHodSdCU+tepDaEYK7IxFQLQWtVK9DmyP/veUdvUUrpN7aCtEpnshGrE/DnA3PP1/oll9vy0CtEgiCAwNbcoZ+R/GSKLJR7ANJm5m5jA==
+ b=hCGhKowu7BTC6NCszBgqJ130P5M8JrQeGY21oXOVBGxzbHXis4N3sIxmA7Cyc5aUq2CLvV5cHPytx3Eh/h3bG2VqnqTXaZTQV8Z+c313bxKxSL7rJADQTUcwPpPwsx0gMMQGdS70ECBje8iYIThyuKzv8HhJfbeMgskxPwC817pNpIXoLW/uqAZWhEn+qzFfHnBQXz0Gl5tj1j5jqta0eFKymTFPsM5nqlVl8lkI1fMwYtwbtEoWGSyQ46hM8o5qFRRWFnVKbDWf3VIuglWM/esRGGQXw7Qp9c+tmYzvthpE1MXsP77UJDT9Dstb13R5fDxrS1ZZ/MnU4QGQuADljg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CPzZYjkqEkpeyLz3RbE9NX2cP0Fs/KowOfQ+b/NsuRo=;
- b=p7ui5rWM/NQXD/ZI/VwqD2WaX4VvngMb1lc7GInLsSmOI+0wsnWoNRG0uP4jMJtWmbf7aQNLJ2PwSw6TYzEO3WIZJDMtTAHIyC0W3bepGblu397bJcRgWDtZvTXfkDvsPjuc84OtA98ce2KM9yKvFFi8+mNvQtFzu07nai0+osTYDxOyuaeyTmz9N2VWpvoe1Oh1oKE9BEsv8YRulDiv5hx01+1Q+mJMHgpN0Fwpw9aSHAHvcMgHKHiV+528vbKGjGlbYYIlqhnOuYDGtiKzqLm7Mqmmq01BpjJ4XTLLYt32fxw6NgJqFqjM8kIxH8SjyQ0mFJdozFo+sm769HJlyw==
+ bh=FKyLJg1LBY/j9ckAJ+2IwfM6IFU4eIbBlJ7QNvZOIqo=;
+ b=Gydkca0LnboLfY/MJr81pxYR1LchKolZTd+JaxCGXVNnipc46wwIvcjvnMGrwg83YcriWZkXMwG+/Pzj/t/exfQTU/HINjbHX3mqGmp0AvcJp2rzNR65tUwnmuL94K5/wNvy7QLsl/K6zLR4te8XEMV1/1EOPk0AqofvIgld2wLGqYehePyTTKIvUdccOpaWvIjskfLUMgSP7QvX8sd7LOXDQz8d7hArixKZ07mfOYN/FfsuMSmjab3mzVZlLBl27wSQerWYR4t0UolEHSAYoe3PJCgdwMJJG0qHlqtxutMKB/JB9xi1Ecd4yLTfKFCkS48aNoWZPBLO+jpE6ZxD+w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CPzZYjkqEkpeyLz3RbE9NX2cP0Fs/KowOfQ+b/NsuRo=;
- b=t4xbOQVfLfFEaXFpH1NJWqBaBIBn71La6yELXiZzKk5pGHEIqFIKxPSN69/SyspG4734ZX+UupZxLghJK8MBRq1RJnZ+MKMKMRHFGU6z6yyU8a2iCldq654dI6234WdrHsrFlaXeYNhF37hETJhCAoVvgK08wlvuo39KT5oFxJ02e6mpOOuTM5Zsy14PAMxWX88HEAIguGUDX2xyLeYh3qsKXpSXO+39BRTx7OHaA4tVU/gvzUDg1K6WPSadA7COeUZjVb0yPkctxFmnf6MsWrJn8Wir3rJ5W00aJqlB5irygII5wN4OuFWsOMtcea+xI1ovX2vPNUvFZg43hN2+Zg==
+ bh=FKyLJg1LBY/j9ckAJ+2IwfM6IFU4eIbBlJ7QNvZOIqo=;
+ b=qFPU1PM9xFqoti3wq19rSTe1CtIN8KR5/qXI1c7o+yoBnCyj4RQ3BMC9uQU1WCwxSQu8HmjcqD09eIysa3Oufcs9UkvSKKNJtqh+cgg+TJkrPZvSSMqrmV/1ghrwkeRRg82nCjA8kuJvhEr0qXE6Hfyf2FWdt7RzYHFTUD50Ao37iThaGeix6QTbY7S17Crb3V5Dsa1+KXFodtZz9uYuEW5dcy0vVk28Vj8uvJrxPNAR6lBL5j5oR77RpEtSMI+qG3NydoM84Z4oyzAlEcbZvWy3yvht9dr9oQLLMEwyVexoas2LK3CaMR30L3vSvPcwxcXuP2XrOHdAaEK+H5RoAg==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from SJ2PR12MB9161.namprd12.prod.outlook.com (2603:10b6:a03:566::20)
  by SJ1PR12MB6289.namprd12.prod.outlook.com (2603:10b6:a03:458::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.14; Wed, 18 Nov
- 2026 00:36:51 +0000
+ 2026 00:36:54 +0000
 Received: from SJ2PR12MB9161.namprd12.prod.outlook.com
  ([fe80::d9d1:8c49:a703:b017]) by SJ2PR12MB9161.namprd12.prod.outlook.com
  ([fe80::d9d1:8c49:a703:b017%5]) with mapi id 15.21.0615.013; Wed, 18 Nov 2026
- 00:36:51 +0000
+ 00:36:54 +0000
 From: Mikko Perttunen <mperttunen@nvidia.com>
-Date: Wed, 18 Nov 2026 09:35:20 +0900
-Subject: [PATCH v4 11/12] iommu/tegra-smmu: Release previous address space
- on paging domain switch
+Date: Wed, 18 Nov 2026 09:35:21 +0900
+Subject: [PATCH v4 12/12] iommu/tegra-smmu: Use a DMA API default domain
+ per swgroup
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20261118-b4-arm32-iommu-dma-cookie-v4-11-0c5561288e22@nvidia.com>
+Message-Id: <20261118-b4-arm32-iommu-dma-cookie-v4-12-0c5561288e22@nvidia.com>
 References: <20261118-b4-arm32-iommu-dma-cookie-v4-0-0c5561288e22@nvidia.com>
 In-Reply-To: <20261118-b4-arm32-iommu-dma-cookie-v4-0-0c5561288e22@nvidia.com>
 To: Robin Murphy <robin.murphy@arm.com>, 
@@ -116,129 +116,307 @@ Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: SJ2PR12MB9161:EE_|SJ1PR12MB6289:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7175a530-ccf6-43b5-8f1f-08df450c0984
+X-MS-Office365-Filtering-Correlation-Id: 047ba444-38ae-43cd-eca1-08df450c0b30
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|7416014|23010399003|10070799003|366016|18002099003|22082099003|261009223027099003|921020|11063799006|56012099006|261102123227099003|261028144727099003|10067099003|261026140227099003|261026121527099003|261021121427099003|261022105027099003|261021123027099003;
+	BCL:0;ARA:13230040|1800799024|376014|7416014|23010399003|10070799003|366016|18002099003|22082099003|261009223027099003|921020|11063799006|56012099006|261102123227099003|261028144727099003|10067099003|261026140227099003|261026121527099003|261021121427099003|261022105027099003|261022075727099003|261021123027099003;
 X-Microsoft-Antispam-Message-Info:
-	IuK8WZUHDs+8giG+M6i3OIqDHf1GuqK2YeglLAoMsh/DcolW9QUqJPL1+Gjsmud4wJVBk8jRwHxI9aoilzXu3kY9KZs2IIDSHJTeerlCJCi6nu817s1HKEqyxd9s3HIEuO+exhG1623FkVb0cunfqbMzr07CfRaAk9YHI1XAk9lJSoPE0PziJS8oK6segOSH/aTbfdJ37nMGZXI+XqRtssGxAFk/rn5VGEIBbM9Fa5h6y/VRaWu5GtXywK3rSssQVDatAt72QukCEvfB7uoOMfdAIe4rE/p+byoyJnim2HQ7m+QSTAcStASKB89Ohyq1nLyG215kIOmYarO26NeXhishmFLLN/5jUnv1CJZUn6Ax3PXjiJ/5ikXI2EDyee/ckV6vJxfeg9ZZbtskxEP2HnbRrLHrTCahkOlCHWgPiRxr3exVihY1BecqnlFGR4p0Py939sIpcstiI/z2l/5D4+79NUpw0I2IwXMCLBZa1ZH5k0BMAgj4kD9+9mdyK+oMjJJng/C5PJeMKn1yb8AqNK5s3j6P4YhwsLlIxXYrR4SdLevL2apzSQKaROoyp5u4IR91tV1gh9Z3bK0lic97/oUR9NB+SvpJ3JQ1n18j3Wj0/oKOMhF7qE6Spwd3a4eE3j1HoYLM9xTXb311b/Ggtu4h+mjcmJAOWT05MzOtyiVy05wfZ9osEZ6B689oOU0DGm3qYP6f32a5MpQVWpmq3A==
+	qHa9oYvXeMuArpP8dxOfgvFVuTk7IXoYlkd7Ke9srkWZ/QMcurzHZehoLuG4ML+eQs/24O+DIwMs+KWpJ756deKzRc39SykLx4ecAVgc4L5X7x0xKo0o7WzOlLzIul2jCMQnjs2iEPJ+m583NdMqrEpJEwobS/eJTp89VPUFyiPiM4/44RuMqU/FVCuk9IKQ5tSezxmxuW31X0xkp7KkYRkORcuiAW1sWaA1VzdYoJUdRKoPQH6mnb8QX/U3jHbFLRzlwlcTNQl38aGGsdRmjevDcJlRLCU4nquCmOzOvR/BmhuWWhcJCHMgLIvKCeGJw161Jen2CKHuREFzR3jLtRy2huLjTu/GQbHQ26pOSjFOlDC2vQdhY1U5HlAi3Dyd+1rficZCzblx29MZlsXhuMSJ5mq8ibab6euyHKjQZ07YSNYp9rBpOD8iFg0Bcup4d/9F8I8bZNmcUC3RrNwi+UhygGyLZgUqalltVzogxRivh52VN3zsk+fLa7VjCNrptunD+TCGora4zZlu89DXklR1tC7mpVDQYXOdzBrsD/h8ZoGgIxZC+nDdNLMK/5ZraC8Z/KZHdKONo/ds5S1L1Yk7y1O+AXjBPAmniLZ09XSR5ZZ8mP2Q8+7xMiXvUvSR78384D5RxcjHTlZ+uRganVP1p+xcCuUXqcaN1ILseNJQ30Y4oV+VSYm6WRfpw9LwUQFh/w9qtuKC/avqDoeC4Q==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(23010399003)(10070799003)(366016)(18002099003)(22082099003)(261009223027099003)(921020)(11063799006)(56012099006)(261102123227099003)(261028144727099003)(10067099003)(261026140227099003)(261026121527099003)(261021121427099003)(261022105027099003)(261021123027099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB9161.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(23010399003)(10070799003)(366016)(18002099003)(22082099003)(261009223027099003)(921020)(11063799006)(56012099006)(261102123227099003)(261028144727099003)(10067099003)(261026140227099003)(261026121527099003)(261021121427099003)(261022105027099003)(261022075727099003)(261021123027099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZWNtMWJmVzBaR1FGWGxXY25IK25CNVRLd1liL3hMdXRxdlRoSXV4Y1d4R1Ux?=
- =?utf-8?B?TUhFVCtFdURYMnZ1WHl6TWZTbkhXL1gwbEZtTlRZZUJ0cmhMRWM3bFpuSXc5?=
- =?utf-8?B?MUk0ajFHUWp6QXRuNU9VQXhuRGNBV1BQckk0ekdERHFWMG9GeC9DSGcwYmd1?=
- =?utf-8?B?Mjg3RXQ2K1g5bU9qd3ExRkFVTFRTckp6YW1UMC9JbmIyUDVLbU1PUzlYOGdK?=
- =?utf-8?B?R3R2VEpkOWsrSFBsUHlwcUdGOG5IR0dmNUZkZHJZRFBwaU5pVHY2a0dKRmdh?=
- =?utf-8?B?WEF0c1ZPUXhtK1NYZDFENlJOYWlpOGV4ZXZyNTJLanhkV29COUtHbHB0QlI4?=
- =?utf-8?B?b2Rjamk4dHdid3lwYjQ4dDBLOTNFZ3BLQTVQYnc2bVNuL0FUSysybGJaL2dT?=
- =?utf-8?B?WUtMcDd6cmgzczdWdnNnNmRkdU03MHZvU0tOQmNVVE9ZdzFEQ0Vvc0Z4Slg1?=
- =?utf-8?B?NmJoWis1akY3clZ4MXVtTWpsT0t3WHlpZjdxdkcrQWhYNFUwVWFGcUErcW05?=
- =?utf-8?B?OXhGTktwd1I3bXUrUTErbzFLZStxendCWEo2cms1NnlIMmRyQXdBUER1dVVv?=
- =?utf-8?B?QlRNakZJRjlXbDE1OU5wc1hWLzVaVDRleWViS3lIdTJQc2hYWkFoYjFqMUNT?=
- =?utf-8?B?WFdVbzBwNHRRbEREWW0rTDluelhiajduR0FPTEhnbnlqd2l2dVFxc3FDWDBK?=
- =?utf-8?B?ZERTbzhjZ1NpQldPbGlyOFpYdHl2K2dPYjNzbGpnTFpvbVhLWmgyYTNOSHhx?=
- =?utf-8?B?Tk5tOXhZSFpYbkw1V1BnRkl4WS9qNlNEMEk4NU1kaXcrRGlSOXVtdUUrQlJl?=
- =?utf-8?B?bXVlRm9Xak13MC9UZU1xcjZ3VzRWYnBDODRXZ1hleDJkRU50S0NvUW1PMThW?=
- =?utf-8?B?amRFaVFlS1h4bStlemN5bW5WVzl6U1BPUXV2MWkzKytJdU5RNEVFTWxQdC8v?=
- =?utf-8?B?akRxOVAyYTU4R0NoaHpDM3VaREVJSUxteDllMWFDb0E5Q2xDZWRFd3hRMFJR?=
- =?utf-8?B?RTlCOG1oYzhwYWRWUWVYeW9odnNLbzRKN1l5TURDMEMvckkzbmJET1RFNkNH?=
- =?utf-8?B?UjdCNDVVT2hkTVRQTzhRMXk4b21QYmVqU052a2xpc3BPVTRpNGIybVB5Z1pu?=
- =?utf-8?B?M0hVeTlvSzVTRHVDOFdRZVRIdWNoL3Z5N2RMeUgzR3d6bXZtb3IrQ1BEdU1Q?=
- =?utf-8?B?OGFMSHBFWmxrSlpFbTZ0bWZpdGtZczFLNVFtaU9TTG1kRytFWnArOUtMb0pI?=
- =?utf-8?B?NFNtTWdTT3dub2M1N2gvWmhaNDJtelEzTVRzci9ueGpranRwa2VUK0kvQ29h?=
- =?utf-8?B?U2FuWG51UmdTWlVYS2l2VTZkak5xb0Rrdjl4RktobXdLQ2g1TXg4L1kraS8z?=
- =?utf-8?B?V1NJamJ2aUNUUGZkZ256MldvTlF0VXRrWERGREdLWG15cDR4dDdNd2h1WHV6?=
- =?utf-8?B?SnROVE1xQXU4WUdyTHVGVVJLR3VEMmVXQzlxOHNxU1V6VkQ1WmZIM05HYWVw?=
- =?utf-8?B?ZlErNm95akVGYjZNRU9HZm40Mi9rWkdaN0pJYlVpODdLYXRmZVFKbC9rdFpD?=
- =?utf-8?B?ZExLRUFtNDMrYUl4c2dPYjFkWVpSakFaQ0RWSU40bDdPZSs0d0U4dFpJc0JG?=
- =?utf-8?B?NW9NRGgwalJMd2ljTUU4TC9EQlIrU3ZVcFU1bWVlblFrdVRXampscDNLd3VK?=
- =?utf-8?B?MFBHNkgxMDNwRkhCQnloWGJDUjEydkVrMERRRkQrTDI3ZzdmeU1la3JjaXk4?=
- =?utf-8?B?NGJrcTVSWWlhdXJBM0FJKzJqMmQ4dTdNQkRBaXRXc2N5OXFTL1c0S0NnWmsw?=
- =?utf-8?B?QUdlWW41U0FsVTJqZGdTYy9wbnlhNjFhQkVyUjR5NzhGN3M4OUQrZURMTHda?=
- =?utf-8?B?a0gxY3hoMDVpeXdKcHpxNHpvckFIcVRMeGc4dXZObU50UE1adXJKRDR4elU5?=
- =?utf-8?B?bGt6eSs2U0tjUUhNUXFpRnBNR3NMOXpFc01IcWtWVThqd0YvUmVta1gvTUc5?=
- =?utf-8?B?T1pYUGxKQmw3czJnc01xeUZ4bVFZQlI0TEluYXhSYXh4VUpoWno1a1RlMXF1?=
- =?utf-8?B?MW9CbnJhenNFV29IaVFHT2hOU2ZBakxGTi93WVhPQ3BDWTYzOW9sdVVUcTQ1?=
- =?utf-8?B?UFBFR3FDdHpET1d4bXF5c0JDeVVQdkpOU096amZ2Tmo4RFRQenZtWXRmV2RQ?=
- =?utf-8?B?cG5ERjNLQXpUS2VZdEpTVk1rWW9RQTRrcW9mQlhNQkIrUXlpSno4UzRQTnZR?=
- =?utf-8?B?YVYwOW84Y3hkcDdXdVRaK29rUjg3YmdHTUpCMm5lNG1MbkpOSkJvbHpzSFVG?=
- =?utf-8?B?QXJtc1lCbGo3c3RTc2M3VUNRV29idGFDam1TcTBZbHgvZlF4dnFJMVdHNDQ2?=
- =?utf-8?Q?7/H1P9VdxvndSupfY52CtcSlAgeOzgGP3HUHS+ezCPpMD?=
-X-MS-Exchange-AntiSpam-MessageData-1: w6Bm4g22A+cjTA==
+	=?utf-8?B?NFp5TkQ0ZjY5V2tuTmJuRHdPUXI4ZjFxWjdNYzNCL3BFczFyNGtYMU5GTHov?=
+ =?utf-8?B?b0k1Q1Jud2ZLMlZkVFZKekJMelB1bkVmcG8rZDJEV1dBS2hneHhkdEl6cXpT?=
+ =?utf-8?B?UVFsNXVwTytySGUyb2dSbkp6empTY3VQSGhKMHVIeUhrUnIrK3QrUTQxelVO?=
+ =?utf-8?B?YWtXOHhoNWFpTENGRUZDSzVWSzU1VmloVXBXamZBMW9KYlV1aVdGY3diUkU1?=
+ =?utf-8?B?cDJpVGtMZnYzSi9Dd283T1FscGl4VkNYbURacmVUNzdVYnhIQ25HcXFreWRK?=
+ =?utf-8?B?d0VHTlBLRmxERS9Na001b2xjd2NJc1dHODVHaGpGVWFIc2Yxb0htZG9vTU1X?=
+ =?utf-8?B?bzlENUFISUpiQlYxZUVBZzBVVjhmUFhvaUdXdFFXZ2ZXRGs0bmZtSTFpQ2NP?=
+ =?utf-8?B?dVAwSW1CK2VsRjlmYVpUMzBuYXF2UCtpMUI3M0hxS0IybDNpVGNlWGk1MGQ5?=
+ =?utf-8?B?UzV3N3MwRU1IQkR6c1Z2dlJZWlpzZ2FzQml1T2RjMG40cVU2U2hFWEUwbFFO?=
+ =?utf-8?B?bG1QNGE3NXNWeGY1R3dxRmdVcXA2R2tYa3IyWEcwQkcreG1aU2VxbGJJS1hw?=
+ =?utf-8?B?cU9qSjNvZ0ZHRkZwRnpsTjlzMittdWZJcVlvZlU1Vk10STBVT0RBRXNqZzF4?=
+ =?utf-8?B?aHY0bHFqOXVQa2EvVzZ1Zm1DV29QcTJzam9KemNyRmx2RlZBbHFyQklOSU5o?=
+ =?utf-8?B?WlpMWU9DdjlzcnVvVks5YXFKbklYNHJWNEhCY0lVQVVVMEpYNzRia1V6bkEx?=
+ =?utf-8?B?SG1EamNBQkFDU1ZLclJFNVhsMFo2cG1DdEVpMmRMY0Q0bDArL2Zya0VzNWkw?=
+ =?utf-8?B?MDBaWDJRU3JpR0h1Ui9sS1JUdExBMUdWd0t0YjdFSVBNaVFKSkE3M1h0TFZX?=
+ =?utf-8?B?bURJTGtOR1lpN2JSSmY2YkJiYW9aZG13akxpMU0yQ2QyQzNubTBKM1Jna1l3?=
+ =?utf-8?B?VWxGM1FFQXNQVTFRbHZxRnE5OXZncHFuV1dBcnBhU05nYzZGTXkvSzRhMHp0?=
+ =?utf-8?B?QkF0MCt0ZnpTOTJCa2xheG5PUHpNeTdxUSs1UzRSL1pMUE14Y09xejlza1BW?=
+ =?utf-8?B?L3RRc0greEhqUElXV1VJd1F6VXh3TFl3YTAvZGZpd2RQMVd6Z3dqS3dOdURG?=
+ =?utf-8?B?UHRtMnE0UHk2NUVQT3hwUksyNlNKN1cvU1Q4b2dJRTlPZEozcEc4UFl0OGFV?=
+ =?utf-8?B?Rld2TFRtcHBCV3pZNEZDOGVTUGJlOEZCRCtVR3dMY3F3TVl0cDVXNEdCN3Uz?=
+ =?utf-8?B?VzlOZzJUZSt6T1JyQlVJZ0VYT25DbkhuK0NqRVJCL2dIdi9FcjROZjA2TnFY?=
+ =?utf-8?B?bEtuM1h0K0o2eEgxUWE1RW54WjNTM0luVStvM3FncTZ2QS9zNlN0OXphMFlY?=
+ =?utf-8?B?cVJWeWM4eXpYTjNlcXBrdDdQL21GSVJYQjRSMVBmQTl6QWFHRFFwVGVKNmNQ?=
+ =?utf-8?B?ampJTFNCQ3ZPQzRkUVliUmtncTVhRzUzYldoa21iMXpudHRYd2J4Nk14RDNZ?=
+ =?utf-8?B?Znc3VkJubkZWMkYxVEFMUG1kdjlpaEIra2t3Ry9MOTdrbHlUY0o4WmZMNStD?=
+ =?utf-8?B?dTRseGlpRWNyRnNuZUN0VlF5aW5mb0NRNGx0YUt0WG9TTnk2MVdra0NhdVR1?=
+ =?utf-8?B?dHJJaGxNaHBHa2hYUExtNDZ4R2tGd0JVZ0ZOS3BJNTdXcGFTNTd5alF6UWIr?=
+ =?utf-8?B?TjZ2c0lkVGdqbEZBNkN0UzlmYWNuV2o5eDhEZ0t1Y2k3NGcvMGtSRXJiZ0J4?=
+ =?utf-8?B?MUdkSk5BdDAzRWg2dDZ0eGhUVDllZHNOZXNTN0NPKzRCVTEzWFZFOEI4TUpC?=
+ =?utf-8?B?aDlQbG41YXVqdVdockExWXJ3b3grNmQwTzFsVjdld3lrTE9aYXcxc2h3alF1?=
+ =?utf-8?B?WWs1UEtySzd2Wm9nZTB0Q0tZN2VscEgvMjA5U0lWZFRnUG9ZTkxUZmM5U3Y1?=
+ =?utf-8?B?elFLUHJPZEN3K0JuQnFvME1tM0d0aktoT0ZmVlExVHlzbFpOa3g2RXhrc2U4?=
+ =?utf-8?B?OXlaYXA2K2pJVmJ4SHIrcVM2RjV6OTFQWnVMNzR5bmwwOWxJRjJvOWF6OS9w?=
+ =?utf-8?B?UHlkenZHL2x4YU9XT1NQY3Yyc2R3MHdYdzRYMGpSWERwK0NrSHUzckg5bXlT?=
+ =?utf-8?B?UE0wcUROZ0gxK2xiRkJyRkE4Mi9Wd3VsaWJIN28ya2pQcFgyYnIvRlhiakoz?=
+ =?utf-8?B?OTlhUTR3Q2hUZlZYUE1DOWVDZHJIVVR4cmIxQnN2cWdleUt4ZmswajVjamI0?=
+ =?utf-8?B?aERFR24zVXNUY09vK2FLTjkxR2ZFLzlUMVFreXNkMUZmYzRiY0hEMS9LYmJE?=
+ =?utf-8?B?T0grVE1GWHNhZTVzSXpsMU90UG9yMU9mR1lqbDZmWXAyMFJHMzlzWnBsVWpt?=
+ =?utf-8?Q?GSlKATuvs9eOpzosCm9unJiuBpcfvbhAjQrI+Ngm5TC3Z?=
+X-MS-Exchange-AntiSpam-MessageData-1: emFJJw0OiM+Sfg==
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7175a530-ccf6-43b5-8f1f-08df450c0984
+X-MS-Exchange-CrossTenant-Network-Message-Id: 047ba444-38ae-43cd-eca1-08df450c0b30
 X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB9161.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 00:36:51.2378
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Nov 2026 00:36:54.2039
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gti4TisPG1w+0/7ZLiIdCmbSFiyrfJqHOuX6qXA2dwLa+ZgdS2sNbNApn16fjwvoVlcOGb2KzJe5dJmz3w6cPQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pu6W6X3b98bTyKZjWl/EdQYUB41Z8N8JybmFUldXp4aYH204Zv8f80UYicdfrhGiEM+Zt3rcTChkJPxHjSCzzQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6289
 
-The tegra-smmu driver currently prepares an address space for each
-SWGROUP when attaching a paging domain, but only unprepares it when
-attaching the identity domain. In the present world without DMA default
-(paging) domains, this broadly works, since drivers attaching a paging
-domain will go from identity to paging and then back to identity when
-detaching.
+Everything is now in place for the Tegra SMMU to give devices a real
+IOMMU_DOMAIN_DMA default domain.
 
-Once DMA default domains are enabled, attachments can go directly from
-one paging domain to another. This leaks references to the previous
-address space, keeping its ASID and page directory DMA mapping alive.
+Some device drivers still rely on explicit domains (and being able to
+detach a legacy ARM DMA domain if any), so DMA default domains are
+enabled on a per-swgroup basis via a use_dma_api flag. As drivers are
+converted to DMA API usage we can eventually get rid of this. Initially
+the flag is enabled for TegraDRM and Host1x devices.
 
-Fix this by having tegra_smmu_attach_dev also unprepare any previously
-attached address spaces.
+On multi_v7_defconfig (where CONFIG_ARM_DMA_USE_IOMMU was always
+enabled), this will fix TegraDRM probing with certain probe orderings
+where the legacy implementation's lack of support for multiple devices
+in one IOMMU group would cause breakage.
+
+On tegra_defconfig, as this now enables CONFIG_ARM_DMA_USE_IOMMU, all
+devices move to either the legacy ARM DMA path or the new one. This
+should in principle not cause issues as the drivers would already have
+been verified on multi_v7_defconfig.
+
+Also set .release_domain to the identity domain to ensure the AS is
+released appropriately now that the domain can be non-static.
 
 Signed-off-by: Mikko Perttunen <mperttunen@nvidia.com>
 ---
- drivers/iommu/tegra-smmu.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/iommu/Kconfig           |  1 +
+ drivers/iommu/tegra-smmu.c      | 52 ++++++++++++++++++++++++++++++++++++-----
+ drivers/memory/tegra/tegra114.c | 13 +++++++----
+ drivers/memory/tegra/tegra124.c | 10 ++++----
+ drivers/memory/tegra/tegra30.c  | 16 ++++++++-----
+ include/soc/tegra/mc.h          |  7 ++++++
+ 6 files changed, 78 insertions(+), 21 deletions(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 85a8d7fdfa30..e3515feecaa2 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -253,6 +253,7 @@ config TEGRA_IOMMU_SMMU
+ 	depends on TEGRA_AHB
+ 	depends on TEGRA_MC
+ 	select IOMMU_API
++	select ARM_DMA_USE_IOMMU if ARM
+ 	help
+ 	  This driver supports the IOMMU hardware (SMMU) found on NVIDIA Tegra
+ 	  SoCs (Tegra30 up to Tegra210).
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index d0d23435d5b7..0e8414d8a504 100644
+index 0e8414d8a504..3f938ae4cffc 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -507,24 +507,27 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 	if (!fwspec)
- 		return -ENOENT;
+@@ -997,16 +997,20 @@ static int tegra_smmu_of_xlate(struct device *dev,
  
-+	if (!fwspec->num_ids)
-+		return -ENODEV;
+ static int tegra_smmu_def_domain_type(struct device *dev)
+ {
+-	/*
+-	 * FIXME: For now we want to run all translation in IDENTITY mode, due
+-	 * to some device quirks. Better would be to just quirk the troubled
+-	 * devices.
+-	 */
+-	return IOMMU_DOMAIN_IDENTITY;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct tegra_smmu *smmu = dev_iommu_priv_get(dev);
++	const struct tegra_smmu_swgroup *swgroup;
 +
- 	for (index = 0; index < fwspec->num_ids; index++) {
- 		err = tegra_smmu_as_prepare(smmu, as);
- 		if (err)
--			goto disable;
-+			goto unprepare;
-+	}
- 
-+	for (index = 0; index < fwspec->num_ids; index++)
- 		tegra_smmu_enable(smmu, fwspec->ids[index], as->id);
--	}
- 
--	if (index == 0)
--		return -ENODEV;
-+	if (old && (old->type & __IOMMU_DOMAIN_PAGING))
-+		for (index = 0; index < fwspec->num_ids; index++)
-+			tegra_smmu_as_unprepare(smmu, to_smmu_as(old));
- 
- 	return 0;
- 
--disable:
--	while (index--) {
--		tegra_smmu_disable(smmu, fwspec->ids[index], as->id);
-+unprepare:
-+	while (index--)
- 		tegra_smmu_as_unprepare(smmu, as);
--	}
- 
- 	return err;
++	swgroup = tegra_smmu_find_swgroup(smmu, fwspec->ids[0]);
++	if (WARN_ON(!swgroup) || !swgroup->use_dma_api)
++		return IOMMU_DOMAIN_IDENTITY;
++
++	return IOMMU_DOMAIN_DMA;
  }
+ 
+ static const struct iommu_ops tegra_smmu_ops = {
+ 	.identity_domain = &tegra_smmu_identity_domain,
++	.release_domain = &tegra_smmu_identity_domain,
+ 	.def_domain_type = &tegra_smmu_def_domain_type,
+ 	.domain_alloc_paging = tegra_smmu_domain_alloc_paging,
+ 	.probe_device = tegra_smmu_probe_device,
+@@ -1111,6 +1115,40 @@ static void tegra_smmu_debugfs_exit(struct tegra_smmu *smmu)
+ 	debugfs_remove_recursive(smmu->debugfs);
+ }
+ 
++/*
++ * The default domain type is a property of the IOMMU group, so all swgroups in
++ * one group must agree on use_dma_api. Otherwise the core sees conflicting
++ * def_domain_type and falls back to identity for the whole group.
++ */
++static void tegra_smmu_check_groups(struct tegra_smmu *smmu)
++{
++	const struct tegra_smmu_soc *soc = smmu->soc;
++	unsigned int i, j;
++
++	for (i = 0; i < soc->num_groups; i++) {
++		const struct tegra_smmu_group_soc *group = &soc->groups[i];
++		int dma_api = -1;
++
++		for (j = 0; j < group->num_swgroups; j++) {
++			const struct tegra_smmu_swgroup *swgrp;
++
++			swgrp = tegra_smmu_find_swgroup(smmu,
++							group->swgroups[j]);
++			if (!swgrp)
++				continue;
++
++			if (dma_api < 0)
++				dma_api = swgrp->use_dma_api;
++			else if (swgrp->use_dma_api != !!dma_api)
++				break;
++		}
++
++		WARN(j < group->num_swgroups,
++		     "SMMU group %s mixes DMA API and identity swgroups\n",
++		     group->name);
++	}
++}
++
+ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 				    const struct tegra_smmu_soc *soc,
+ 				    struct tegra_mc *mc)
+@@ -1145,6 +1183,8 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
+ 	smmu->dev = dev;
+ 	smmu->mc = mc;
+ 
++	tegra_smmu_check_groups(smmu);
++
+ 	smmu->pfn_mask =
+ 		BIT_MASK(mc->soc->num_address_bits - SMMU_PTE_SHIFT) - 1;
+ 	dev_dbg(dev, "address bits: %u, PFN mask: %#lx\n",
+diff --git a/drivers/memory/tegra/tegra114.c b/drivers/memory/tegra/tegra114.c
+index 2883c4f91144..024c63bdd480 100644
+--- a/drivers/memory/tegra/tegra114.c
++++ b/drivers/memory/tegra/tegra114.c
+@@ -1029,15 +1029,18 @@ static const struct tegra_mc_client tegra114_mc_clients[] = {
+ 
+ static const struct tegra_smmu_swgroup tegra114_swgroups[] = {
+ 	{ .name = "dc",        .swgroup = TEGRA_SWGROUP_DC,        .reg = 0x240,
+-	  .defer_enable = true },
++	  .defer_enable = true, .use_dma_api = true },
+ 	{ .name = "dcb",       .swgroup = TEGRA_SWGROUP_DCB,       .reg = 0x244,
+-	  .defer_enable = true },
++	  .defer_enable = true, .use_dma_api = true },
+ 	{ .name = "epp",       .swgroup = TEGRA_SWGROUP_EPP,       .reg = 0x248 },
+-	{ .name = "g2",        .swgroup = TEGRA_SWGROUP_G2,        .reg = 0x24c },
++	{ .name = "g2",        .swgroup = TEGRA_SWGROUP_G2,        .reg = 0x24c,
++	  .use_dma_api = true },
+ 	{ .name = "avpc",      .swgroup = TEGRA_SWGROUP_AVPC,      .reg = 0x23c },
+-	{ .name = "nv",        .swgroup = TEGRA_SWGROUP_NV,        .reg = 0x268 },
++	{ .name = "nv",        .swgroup = TEGRA_SWGROUP_NV,        .reg = 0x268,
++	  .use_dma_api = true },
+ 	{ .name = "hda",       .swgroup = TEGRA_SWGROUP_HDA,       .reg = 0x254 },
+-	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250 },
++	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250,
++	  .use_dma_api = true },
+ 	{ .name = "msenc",     .swgroup = TEGRA_SWGROUP_MSENC,     .reg = 0x264 },
+ 	{ .name = "ppcs",      .swgroup = TEGRA_SWGROUP_PPCS,      .reg = 0x270 },
+ 	{ .name = "vde",       .swgroup = TEGRA_SWGROUP_VDE,       .reg = 0x27c },
+diff --git a/drivers/memory/tegra/tegra124.c b/drivers/memory/tegra/tegra124.c
+index a38fbf2baf6c..17068aaf163f 100644
+--- a/drivers/memory/tegra/tegra124.c
++++ b/drivers/memory/tegra/tegra124.c
+@@ -1071,13 +1071,14 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
+ 
+ static const struct tegra_smmu_swgroup tegra124_swgroups[] = {
+ 	{ .name = "dc",        .swgroup = TEGRA_SWGROUP_DC,        .reg = 0x240,
+-	  .defer_enable = true },
++	  .defer_enable = true, .use_dma_api = true },
+ 	{ .name = "dcb",       .swgroup = TEGRA_SWGROUP_DCB,       .reg = 0x244,
+-	  .defer_enable = true },
++	  .defer_enable = true, .use_dma_api = true },
+ 	{ .name = "afi",       .swgroup = TEGRA_SWGROUP_AFI,       .reg = 0x238 },
+ 	{ .name = "avpc",      .swgroup = TEGRA_SWGROUP_AVPC,      .reg = 0x23c },
+ 	{ .name = "hda",       .swgroup = TEGRA_SWGROUP_HDA,       .reg = 0x254 },
+-	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250 },
++	{ .name = "hc",        .swgroup = TEGRA_SWGROUP_HC,        .reg = 0x250,
++	  .use_dma_api = true },
+ 	{ .name = "msenc",     .swgroup = TEGRA_SWGROUP_MSENC,     .reg = 0x264 },
+ 	{ .name = "ppcs",      .swgroup = TEGRA_SWGROUP_PPCS,      .reg = 0x270 },
+ 	{ .name = "sata",      .swgroup = TEGRA_SWGROUP_SATA,      .reg = 0x274 },
+@@ -1093,7 +1094,8 @@ static const struct tegra_smmu_swgroup tegra124_swgroups[] = {
+ 	{ .name = "sdmmc2a",   .swgroup = TEGRA_SWGROUP_SDMMC2A,   .reg = 0xa98 },
+ 	{ .name = "sdmmc3a",   .swgroup = TEGRA_SWGROUP_SDMMC3A,   .reg = 0xa9c },
+ 	{ .name = "sdmmc4a",   .swgroup = TEGRA_SWGROUP_SDMMC4A,   .reg = 0xaa0 },
+-	{ .name = "vic",       .swgroup = TEGRA_SWGROUP_VIC,       .reg = 0x284 },
++	{ .name = "vic",       .swgroup = TEGRA_SWGROUP_VIC,       .reg = 0x284,
++	  .use_dma_api = true },
+ 	{ .name = "vi",        .swgroup = TEGRA_SWGROUP_VI,        .reg = 0x280 },
+ };
+ 
+diff --git a/drivers/memory/tegra/tegra30.c b/drivers/memory/tegra/tegra30.c
+index 0ee4715413ba..df6b5a499ccc 100644
+--- a/drivers/memory/tegra/tegra30.c
++++ b/drivers/memory/tegra/tegra30.c
+@@ -1140,19 +1140,23 @@ static const struct tegra_mc_client tegra30_mc_clients[] = {
+ 
+ static const struct tegra_smmu_swgroup tegra30_swgroups[] = {
+ 	{ .name = "dc",   .swgroup = TEGRA_SWGROUP_DC,   .reg = 0x240,
+-	  .defer_enable = true },
++	  .defer_enable = true, .use_dma_api = true },
+ 	{ .name = "dcb",  .swgroup = TEGRA_SWGROUP_DCB,  .reg = 0x244,
+-	  .defer_enable = true },
++	  .defer_enable = true, .use_dma_api = true },
+ 	{ .name = "epp",  .swgroup = TEGRA_SWGROUP_EPP,  .reg = 0x248 },
+-	{ .name = "g2",   .swgroup = TEGRA_SWGROUP_G2,   .reg = 0x24c },
++	{ .name = "g2",   .swgroup = TEGRA_SWGROUP_G2,   .reg = 0x24c,
++	  .use_dma_api = true },
+ 	{ .name = "mpe",  .swgroup = TEGRA_SWGROUP_MPE,  .reg = 0x264 },
+ 	{ .name = "vi",   .swgroup = TEGRA_SWGROUP_VI,   .reg = 0x280 },
+ 	{ .name = "afi",  .swgroup = TEGRA_SWGROUP_AFI,  .reg = 0x238 },
+ 	{ .name = "avpc", .swgroup = TEGRA_SWGROUP_AVPC, .reg = 0x23c },
+-	{ .name = "nv",   .swgroup = TEGRA_SWGROUP_NV,   .reg = 0x268 },
+-	{ .name = "nv2",  .swgroup = TEGRA_SWGROUP_NV2,  .reg = 0x26c },
++	{ .name = "nv",   .swgroup = TEGRA_SWGROUP_NV,   .reg = 0x268,
++	  .use_dma_api = true },
++	{ .name = "nv2",  .swgroup = TEGRA_SWGROUP_NV2,  .reg = 0x26c,
++	  .use_dma_api = true },
+ 	{ .name = "hda",  .swgroup = TEGRA_SWGROUP_HDA,  .reg = 0x254 },
+-	{ .name = "hc",   .swgroup = TEGRA_SWGROUP_HC,   .reg = 0x250 },
++	{ .name = "hc",   .swgroup = TEGRA_SWGROUP_HC,   .reg = 0x250,
++	  .use_dma_api = true },
+ 	{ .name = "ppcs", .swgroup = TEGRA_SWGROUP_PPCS, .reg = 0x270 },
+ 	{ .name = "sata", .swgroup = TEGRA_SWGROUP_SATA, .reg = 0x278 },
+ 	{ .name = "vde",  .swgroup = TEGRA_SWGROUP_VDE,  .reg = 0x27c },
+diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+index ea67972fd585..1cbd990fc0f4 100644
+--- a/include/soc/tegra/mc.h
++++ b/include/soc/tegra/mc.h
+@@ -78,6 +78,13 @@ struct tegra_smmu_swgroup {
+ 	 * tegra_smmu_enable_translation().
+ 	 */
+ 	bool defer_enable;
++
++	/*
++	 * Set once the clients behind this swgroup are known to work with an
++	 * IOMMU_DOMAIN_DMA default domain. All swgroups of a
++	 * tegra_smmu_group_soc must agree.
++	 */
++	bool use_dma_api;
+ };
+ 
+ struct tegra_smmu_group_soc {
 
 -- 
 2.56.1
