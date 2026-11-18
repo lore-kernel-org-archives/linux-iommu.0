@@ -1,98 +1,62 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=156.67.10.101
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795033360;
-	b=mZlSlaww0QcPTFEv0D57H59aVHpgj3PPnVFMudMQZvfeP+KD6ZGkagSM8OCopWmWEu/6
-	 QFP9ezCUCUof7aI1GqrbRjkgG+TH/mJkCqJ/wEvtlYANyb6B1hypFbkYBeOnpjCOOyhZo
-	 wrdwwXPjXU9qke02DziOtzUOzhbGYUCAvNZHQA/ZGLekMSULm9vloNrAMft4sbpFhcrnF
-	 tlL5lVCShA0ZOzUbP5XrQwmGlXPJqlkpYoiJWUaIAxVmzLmbeg5Mze71ouznUVnqTZBXV
-	 9/Q5vgeEQgYppjmPC/Pr2jGcjDQZ+E4jHDTDEHh908CnB0u6n9+cFyOXFx6XZm9ccqg==
+	t=1795033472;
+	b=3R2GsO7BXaU82hN62QDzkOYnneAtnPmem3nPepePy916vOt8iehaHq4rts4kGkS9JvN9
+	 3TGLKxcdJZmPruELDzALXRykcAToeae1VNy8nY0Jz5q78adyT/PfGPD39hwRAsofRjIJg
+	 XYNsm06F+Av/pej93tSX3/YVBAAxkFdLgYxptCuhI0HyjtKZc88QG7MRft8kOargjEEeR
+	 pJkPS/qPIlbvgYEfHGFMXkChcezC0y02Bk+aG0K5fvgsMb8Tqio5olF1pKrrVVZ3diQ6C
+	 t9fFdEmXHcyd2vxAqLRhhaihi8N7kp7xLRZFMXtmE+zqqP7paeLpwDBu+Ltfz4b76Vg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795033360;
-	h=DMARC-Filter:DKIM-Signature:Received:Date:From:To:Cc:Subject:
-	 Message-ID:References:MIME-Version:Content-Type:Content-Disposition:
-	 In-Reply-To;
-	bh=83WZjXw0m9X3Ou7HW+EzfUQVbMPBRYNOgGwn1hvvtI4=;
-	b=h+LwGdqoCMwaQVDZ45kdQSCBT6jz7n2m6Y4WRlF5U7gA0MGGVHMDVTnKCfHnIoEPyzo5
-	 kbc+Hd5Kdw7b4K2FbQQJMVigT1aP84DOy0A16vIyj2SBFiNtSoOZRMVXfOn0H0C13QtRD
-	 JFoorYSTXrG019wYdFBErcuOzqOKP6ibnMxQOfO1wN7TPcjh/6S1Bccx940oRBttPCR6o
-	 kgN5CxT6R8g8IGShx2xZJJPLq5rmMIsZ1plhNI1Y7qy3mhjenNcd0JBlBSagXL7fhpLrl
-	 JqLgvJyBg7LtDT05asLI/snmvk+mvQyqAHCYGg6wM8fP/1kUiuNMV+FQSrzHHURH+Cw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795033472;
+	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
+	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
+	bh=FxLntHqNI1+h3sJPoaAEyO+/hQb8YRhU4FckPwMqXOY=;
+	b=SDris7DYKzPh5ZhOy9H/8VdNlcpY73lMfcvBdRKkLEXhKyS/0b6TtNEY6iSXm5BR/cgF
+	 T2Qxinio60Dsd/LMEPwyzqwES07sofssrIbKf6g1+EMq1feUgRSl38O48RHlfxSzRPQ/R
+	 tMaYmsKRlW4ALHA2wTge7f6NVWJ5D2VFtCxfITU11WziiBJORM5iMGeR522csmiuZZebt
+	 od2ATt/RHXfIJKire/Q53qxTrPovz/Gy1POopX1yO5C9cqWXGJuhb5CVHUL1zTFKm+If+
+	 9Lb3cZ4AJgDUECe1GLxZ3/8CR9gBaq2XZnLaQAe9io2nOO/Eh0hnU0D1sgmG8m3uibw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=lunn.ch;
-	spf=pass smtp.mailfrom=lunn.ch;
-	dkim=pass header.d=lunn.ch header.i=@lunn.ch header.a=rsa-sha256 header.s=20171124 header.b=PDzvVA0d;
-	arc=none smtp.remote-ip=156.67.10.101
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y44GakXv;
+	arc=none smtp.remote-ip=100.103.45.18
+Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627FC606A31C;
-	Wed, 18 Nov 2026 20:22:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 627FC606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A369606A325;
+	Wed, 18 Nov 2026 20:24:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.a=rsa-sha256 header.s=20171124 header.b=PDzvVA0d
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=83WZjXw0m9X3Ou7HW+EzfUQVbMPBRYNOgGwn1hvvtI4=; b=PDzvVA0dUL6X8a07m7W3FtiHvq
-	LePg1RVFpWzznF0js/ikqR1IzilBKVSOUmy8h9aKRnAwxpYoxqprli7vjNifq9IrxVN+EUiCgaPNG
-	4rQZEsMDX0Xmbd6Ah6hLNSO3HY0lLWTY1/+eE0gbxcfsyM8B16K+idR7+paawH6C6Uiw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1xTmA5-00HVa7-0i; Wed, 18 Nov 2026 21:21:45 +0100
-Date: Wed, 18 Nov 2026 21:21:45 +0100
-From: Andrew Lunn <andrew@lunn.ch>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Heiner Kallweit <hkallweit1@gmail.com>,
-	Russell King <linux@armlinux.org.uk>,
-	"David S. Miller" <davem@davemloft.net>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Johan Hovold <johan@kernel.org>, Eric Dumazet <edumazet@kernel.org>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Pieter Jansen van Vuuren <pieter.jansen-van-vuuren@amd.com>,
-	Chris Lu <chris.lu@mediatek.com>, Mans Rullgard <mans@mansr.com>,
-	Alan Stern <stern@rowland.harvard.edu>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Cornelia Huck <cornelia.huck@de.ibm.com>,
-	Andrew Morton <akpm@osdl.org>, Jeff Garzik <jeff@garzik.org>,
-	linux-kernel@vger.kernel.org, driver-core@lists.linux.dev,
-	linux-input@vger.kernel.org, netdev@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-usb@vger.kernel.org,
-	linux-bluetooth@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Alexey Kardashevskiy <aik@amd.com>,
-	Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-	Greg Kroah-Hartman <gregkh@suse.de>, linux-sound@vger.kernel.org,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v3 18/31] net: phy: Use the compatibility driver
- attachment API
-Message-ID: <71c1b931-c553-46e3-b49a-51167f168ac4@lunn.ch>
-References: <20261118-device-trust-core-v3-0-d655875c4bfb@nvidia.com>
- <20261118-device-trust-core-v3-18-d655875c4bfb@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=Y44GakXv
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9B7B1F000C5;
+	Wed, 18 Nov 2026 20:24:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
+	s=k20260515; t=1795033472;
+	bh=FxLntHqNI1+h3sJPoaAEyO+/hQb8YRhU4FckPwMqXOY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To;
+	b=Y44GakXvG5GHKA31JnnJ8TOHTL4DJuDPzANJjJWG60MjNDOfyRHhJIm8vJ9IDSIev
+	 kJKebboMkeglmR/Z3kWmpAzBb/AQDqIH9Izq2L/2oEbS6SEXi6ZsaYaQUkJZjqCiEE
+	 /cEFzHQ3SGAkusbdtG1G+mq2iETbisKSIMwmFp2X1YKr62QeB8t2Omdt7o8wYE65tf
+	 74JyKMlIkz2XlLsmuBGfkZAol4hWxO6LXScQh90VN9uTyIGALwX/totrf6ZkzLWXcR
+	 OAC91HP6t82IYLn0SO6X1Zc4Z9eHlbMjrylVDrjpOpZr9CRq/RJ7Wgclipi8eTEcKP
+	 JLUuYHqvl39TQ==
+Date: Wed, 18 Nov 2026 14:24:26 -0600
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Vincent Donnefort <vdonnefort@google.com>
+Cc: krzk+dt@kernel.org, rppt@kernel.org, jenswi@kernel.org,
+	danielmentz@google.com, akpm@linux-foundation.org,
+	sudeep.holla@kernel.org, linux-mm@kvack.org, ryan.roberts@arm.com,
+	ardb@kernel.org, catalin.marinas@arm.com, sumit.garg@kernel.org,
+	op-tee@lists.trustedfirmware.org, will@kernel.org,
+	robin.murphy@arm.com, mark.rutland@arm.com, conor+dt@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	david@kernel.org, devicetree@vger.kernel.org, hch@lst.de,
+	thierry.reding@kernel.org, linux-arm-kernel@lists.infradead.org,
+	m.szyprowski@samsung.com
+Subject: Re: [PATCH v3 4/8] dt-bindings: reserved-memory: Add
+ lendable-dma-pool
+Message-ID: <179503346493.801350.7313588345506554121.robh@kernel.org>
+References: <20261111110738.872947-1-vdonnefort@google.com>
+ <20261111110738.872947-5-vdonnefort@google.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -104,20 +68,20 @@ Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20261118-device-trust-core-v3-18-d655875c4bfb@nvidia.com>
+In-Reply-To: <20261111110738.872947-5-vdonnefort@google.com>
 
-> @@ -3813,6 +3809,8 @@ static int phy_probe(struct device *dev)
->  	int err = 0;
->  
->  	phydev->drv = phydrv;
-> +	phydev->is_genphy_driven = phydrv == &genphy_driver ||
-> +				 phydrv == &genphy_c45_driver;
->  
 
-Why do this here?
+On Wed, 11 Nov 2026 11:07:34 +0000, Vincent Donnefort wrote:
+> Add bindings for the "lendable-dma-pool" reserved-memory CMA pool, used
+> to dynamically unmap pages from the kernel direct map before lending
+> them to a secure world.
+> 
+> Signed-off-by: Vincent Donnefort <vdonnefort@google.com>
+> ---
+>  .../reserved-memory/lendable-dma-pool.yaml    | 58 +++++++++++++++++++
+>  1 file changed, 58 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/reserved-memory/lendable-dma-pool.yaml
+> 
 
-It also makes the code asymmetric. If you set it in phy_probe, you
-should unset it in phy_remove. At the moment, it is symmetric,
-phy_attach_direct sets it, phy_detach clears it.
+Reviewed-by: Rob Herring (Arm) <robh@kernel.org>
 
-	Andrew
