@@ -1,45 +1,45 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795030082;
-	b=vg9jpTUuGLP9BFou0Dni1r7OETSzUak/4tmUQbdyRHHbXrLqgD1Sulc85oJQXECGcjWU
-	 l1ppExuM6uNKKvkuH8AUM3mjj9btA3nmfRKkhCtPWKpELOTJKAEmPfomE1sP5EX5CHWwi
-	 UiiPGjv73VQJ1dV6IPLDTfRVs73qNHHOHl/ifc5WoJ3PxwXFhD+jaUlr2EIqB4tXWrBqN
-	 IctNdZe3xN2Tytei1SYq9E7pWeDLnG8L+0cVgZIkGJbVncBhQ5Z3I3Fwf04cOOsyl7tO1
-	 6/qvpXxFYJJAGtjw6g6NNPmaK9mk80zXsEIWs8IWYC++mEuOnis1fKl/dvZCSGhGlRg==
+	t=1795030090;
+	b=w3NA+cUGbcVB3xOVkdhvlqD0fHOjAF8I89o/dZIqXrvBD8rEN7By+gOnxxaWdjCAGviJ
+	 TxeecqA/QpujB8RUz2KqXxn8Q7m+i4IYRgM94aTpPz5Xo4RNLVl2K5zg52O9aAoOaq8TQ
+	 3UrRf6I6SsA89srGt+QaYButSjx7KnX+E3lcyP1Df8efmhGHgwXgh5hOTH+8VTa/V9zu5
+	 Ym747gX07PHoYesmHwu7735/JxCnuydpXKfYzjyN9rtOLu+aECbwkFmHvjhe70mK4QFZg
+	 wxlcd+CYh9zKfrSgNe97zKDzQT9HaUpI8w0+dal1LTp57RfZJVYje47Emhbrz6DPgbw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795030082;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795030090;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Type:X-Mailer:
 	 Content-Transfer-Encoding;
-	bh=YIoF29/HLGxivKo9y9Umvo7WdoqaNvqRS3anqksW2+E=;
-	b=zotAHFrzw+FPfxQFGbfzyZHPaXJVIVLpLPN1TkdXHf4CsuAt2ije5m9FeTasOea6TpXm
-	 yQGtTjkh/tKZGlJHmoS3AnLWaCmpPPLdVesZspynOzDhdg7QxjXCfu0vuHKsTofeWpYMD
-	 pGiSCjuC49IRhPwbToxPbotgD8FWC+3zaGzJuvVEXv5SdT558I9+qCjtOHJMHHFjeHDmy
-	 Ykv/yfIguuhyll0XHln1NVJItQMXflC5ANwa+TCPoyrwXDLfLQLEFPK815uNAYHb08mwC
-	 gkS5F5IPtD33+Zr0COHareh/Y//LApXMTa8xPE49/kMRMm0k7SiKllmoBDfAKUR4i+g==
+	bh=AI23EedCHOkVt2bUFVxVq0Tw4jV6qHaXsCMKfKtBCb8=;
+	b=BhIzPldRCabPCIZrILnz6zgQ349jaWvrV8d8R/BFnlDWM/p4Q4WEz5IBaIzkqZZ5rUCP
+	 iDFXPpq+niCX2fTfVqPXPR3+qsNcD/I7Rd1nnU7708Lgt7Gj9+jG4eMS+oS4tdJdffsz+
+	 2cGF50eCaLsBTVfoQzkBZPnzVJNQSbO2ppvqoUUAgRoPxtuTTBM0ZIb01c5agGOPkDe0n
+	 ynjGpbW18f2+aWvS+3BnhpaSHGsVYtzXEe3mIt8ViBwxWkb3C3xX12soUbCrU3YU0bW6k
+	 IvljjIsKPSGsdWnSovcbKLf2N6Cgm/Mm9EQi8L6VjgLIx360R3du8pORMuEK9XSp3iQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GRZV72CP;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bO3NjK55;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30CEC606A7E4;
-	Wed, 18 Nov 2026 19:28:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0671606DD12;
+	Wed, 18 Nov 2026 19:28:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=GRZV72CP
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBEA81F000CD;
-	Wed, 18 Nov 2026 19:28:00 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=bO3NjK55
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE2941F000C7;
+	Wed, 18 Nov 2026 19:28:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795030081;
-	bh=YIoF29/HLGxivKo9y9Umvo7WdoqaNvqRS3anqksW2+E=;
+	s=k20260515; t=1795030089;
+	bh=AI23EedCHOkVt2bUFVxVq0Tw4jV6qHaXsCMKfKtBCb8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=GRZV72CPjqMFDz8QVvFaDzm4LVKAGO1cB/qlcrZnlS+aSNN6dyhiAHzc7/Iuazi1G
-	 E0+HoqJ35Lv7sBXo/FIcUJd2exYCi2hqwuURJZBJBZldug/vwUmFY3kO+fAcQ4wg+q
-	 /j0H4tydBClBdMwpvshpct6bF3mbB2fVgJbBRIXWSFAEL1kw+U1Fjoohcmu1dgOk0w
-	 mk5tarzoqyQbkocZUsOikIW25i//qizQMtr19cD/8MJiauMsTWUJQFr9y7yKWVNyiz
-	 t259FRj7GvUVWH/K2dML1UyuCkdGAgufckIztJb7hXSUUALe+sxnopyvIi1cbG5YQr
-	 jJhaay2TAN8kg==
+	b=bO3NjK55ns1629VdRftCmyGPsBjYPnXV9gEkr7QhP0WpECrtF8MvO+YnVRWnLKSUW
+	 k2u/T6Om4T5qkH0FSnf3Qx8NzMmaqQWaZc+npQXX/lL55XMUHIO5WvPa8HTfZWdXqs
+	 j/LCriv/5ZRyf45K6cbbNSa/gw/SF9WefYSM0SQMUO0y2Zzs8GLVHFIn0L+9HwPMpx
+	 rdZA40+5IR0evh1jHt4zg4KdLd7aTY31voXbpMNHnK28RSUy61C+mAtKkcwmleyD0P
+	 YZndbAHvGDEd3meMwDosu/rVkioU/iyBqSjb0NNdIlRJ4KKG2hZWm/yNsqRWFb8So3
+	 Mv6BN5sRIMTvA==
 From: Leon Romanovsky <leon@kernel.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
@@ -96,9 +96,9 @@ Cc: linux-kernel@vger.kernel.org,
 	Greg Kroah-Hartman <gregkh@suse.de>,
 	linux-sound@vger.kernel.org,
 	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v3 12/31] PNP: Attach card devices through the driver core
-Date: Wed, 18 Nov 2026 21:26:42 +0200
-Message-ID: <20261118-device-trust-core-v3-12-d655875c4bfb@nvidia.com>
+Subject: [PATCH v3 14/31] driver core: Report deferred probes through sysfs drivers_probe
+Date: Wed, 18 Nov 2026 21:26:44 +0200
+Message-ID: <20261118-device-trust-core-v3-14-d655875c4bfb@nvidia.com>
 X-Mailer: git-send-email 2.56.1
 In-Reply-To: <20261118-device-trust-core-v3-0-d655875c4bfb@nvidia.com>
 References: <20261118-device-trust-core-v3-0-d655875c4bfb@nvidia.com>
@@ -117,63 +117,83 @@ Content-Transfer-Encoding: 8bit
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-pnp_request_card_device() calls the PnP bus probe directly, bypassing
-the driver core's supplier checks and power management setup. If
-device_bind_driver() then fails to create the sysfs links, the device
-remains attached and may stay active, but the caller receives NULL and
-cannot release it.
+commit b8c5cec23d5c ("Driver core: udev triggered device-<>driver
+binding") introduced the concept of "Systems who want to control the
+driver binding with udev" can use the drivers_probe sysfs to trigger a
+driver bind based on the kernel's match list.
 
-Use device_driver_attach() for synchronous probing with the driver
-core's setup and error handling. Preserve the card link until binding
-completes, so probe cleanup and CONFIG_DEBUG_TEST_DRIVER_REMOVE cannot
-clear or free a link still owned by the enclosing card probe.
+If attaching the driver is deferred before its probe callback runs,
+userspace sees EINVAL and cannot tell it should try again, maybe after
+loading other drivers.
 
-Fixes: bfc7ee207078 ("[PATCH] PNP: handle sysfs errors")
+Map that deferral to EAGAIN and add missed documentation for the
+drivers_probe sysfs. A deferral requested by the probe callback itself
+is still not reported.
+
+Fixes: b8c5cec23d5c ("Driver core: udev triggered device-<>driver binding")
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/pnp/card.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-drivers-probe | 14 ++++++++++++++
+ MAINTAINERS                                       |  1 +
+ drivers/base/bus.c                                |  9 +++++++--
+ 3 files changed, 22 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pnp/card.c b/drivers/pnp/card.c
-index df5e3d3cbf6c0..9aaaa03d5ffa9 100644
---- a/drivers/pnp/card.c
-+++ b/drivers/pnp/card.c
-@@ -52,13 +52,17 @@ static const struct pnp_card_device_id *match_card(struct pnp_card_driver *drv,
- 
- static void card_remove(struct pnp_dev *dev)
+diff --git a/Documentation/ABI/testing/sysfs-bus-drivers-probe b/Documentation/ABI/testing/sysfs-bus-drivers-probe
+new file mode 100644
+index 0000000000000..ed8828e55d6bf
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-drivers-probe
+@@ -0,0 +1,14 @@
++What:		/sys/bus/.../drivers_probe
++Date:		February 2007
++Contact:	driver-core@lists.linux.dev
++Description:
++		(WO) Writing a device name requests driver attachment on this
++		bus, even when drivers_autoprobe is disabled. A successful
++		write does not guarantee that a driver bound. The driver link
++		can appear before probe completes; a bind uevent signals
++		successful binding.
++
++		EAGAIN means attachment was deferred before the driver's probe
++		callback, for example while a supplier or the device itself
++		is not ready. ENODEV means the device was not found. Other
++		attachment errors return EINVAL.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 93abbb315065d..b726344362b41 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8149,6 +8149,7 @@ M:	Johan Hovold <johan@kernel.org>
+ L:	driver-core@lists.linux.dev
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/driver-core/driver-core.git
++F:	Documentation/ABI/testing/sysfs-bus-drivers-probe
+ F:	Documentation/core-api/kobject.rst
+ F:	Documentation/driver-api/driver-model/
+ F:	drivers/base/
+diff --git a/drivers/base/bus.c b/drivers/base/bus.c
+index 396097fdb3162..ecff32c3704b5 100644
+--- a/drivers/base/bus.c
++++ b/drivers/base/bus.c
+@@ -310,13 +310,18 @@ static ssize_t drivers_probe_store(const struct bus_type *bus,
+ 				   const char *buf, size_t count)
  {
--	dev->card_link = NULL;
-+	if (device_is_bound(&dev->dev))
-+		dev->card_link = NULL;
- }
+ 	struct device *dev;
+-	int err = -EINVAL;
++	int err;
  
- static void card_remove_first(struct pnp_dev *dev)
- {
- 	struct pnp_card_driver *drv = to_pnp_card_driver(dev->driver);
- 
-+	/* The card probe still owns its link until this device is bound. */
-+	if (!device_is_bound(&dev->dev))
-+		return;
- 	if (!dev->card || !drv)
- 		return;
- 	if (drv->remove)
-@@ -331,16 +335,12 @@ struct pnp_dev *pnp_request_card_device(struct pnp_card_link *clink,
- 
- found:
- 	dev->card_link = clink;
--	dev->dev.driver = &drv->link.driver;
--	if (pnp_bus_type.probe(&dev->dev))
--		goto err_out;
--	if (device_bind_driver(&dev->dev))
-+	if (device_driver_attach(&drv->link.driver, &dev->dev))
- 		goto err_out;
- 
- 	return dev;
- 
- err_out:
--	dev->dev.driver = NULL;
- 	dev->card_link = NULL;
- 	return NULL;
+ 	dev = bus_find_device_by_name(bus, NULL, buf);
+ 	if (!dev)
+ 		return -ENODEV;
+-	if (bus_rescan_devices_helper(dev, NULL) == 0)
++	err = bus_rescan_devices_helper(dev, NULL);
++	if (!err)
+ 		err = count;
++	else if (err == -EPROBE_DEFER)
++		err = -EAGAIN;
++	else
++		err = -EINVAL;
+ 	put_device(dev);
+ 	return err;
  }
 
 -- 
