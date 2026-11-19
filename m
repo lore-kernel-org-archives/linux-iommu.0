@@ -1,121 +1,90 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=205.220.168.131
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795106208;
-	b=gUu9G6Z/A/yc6dTWEkK6ykk+lACL2BSuNg/IWvRrzDz7uqvPLgf28Q1V1zLtEDTrEzIb
-	 rL7ghYOV8MtpE95AA7LhCJQWvtwDJdW09kXu2Vy1hLnjafIG2mXVwNAgIsVn/amkKEouy
-	 Fq02+E5NU8pdAY0M642FU41pptV9yaiuOcXlLcVt2p/734FLXNdD3mpEEuXxfOepttWIH
-	 HNvhIt95ohWgpdEUt5J0mAJJUvvb0hwlxDL1dFiqe7OMLoQBPebcB+fS41ezjp7xKnVFU
-	 v92/hwottmFfgUCIRCcFqk5rMgpDHa2uL67T2U01toDZJXdfKwAY4IvfF2yI/SqQq5A==
+	t=1795106841;
+	b=Aolu2JO3vf0FozKs0kyrXGoa37R6z0SpFPr+wfnHXag9o5SqsH5ylUgcwELLfBwHS2um
+	 uWybmvNBdmAZRK9iNh5VbWYagXenfQ/bzBtBricX96qDbglOLxY6kdB78jejjRXYKsA6l
+	 Fa5ZIen0xfYMmv3bgjDncUZhJ2KV1B/iddPTxoNgUkZEYbgRGw8qhVmrn9vP9vsQwH3T7
+	 fl/VknIv2FG5x9OK0//kuvIOwRIqJ6BS5Met+zE6KJlqOOAp8HHNNL5ypwbxU2Iuxz1H8
+	 R3vLPwhb5rAsbUG2sm2qd6KGL+SuFsWD83mb2CSEC9QbmpUk5vv07Bv8B0x8NcbvwVg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795106208;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=Upj9ElOF+MkYEJ4cOgUjnMJxMqLP7rtbsy3TKzTJtFk=;
-	b=UZ8qk31koZP38SbDf0s4ljGyqV579wxpsL/AzEIM5lvq48WRSGwMR8ltdu7eUJFkzJ//
-	 BCwg2FzEotVaTh2GQHrAnG1/lcON6A9/Ebp47oTD+jLeTLcZEV4DYumP3DWtUqya2F0ad
-	 UZihemaIvsmA8F9ttNq3+4jPToiy8db6/QxdAix0Rzkkc0GYiOEwCAohHocuLRriOM508
-	 WvPof8D8SXYoGRDbbA4b7E4YtqSiR2Q34ntx66+y81mAoSvwsMyvvOjHoUpWGQorchqV0
-	 GjW0Jj2INauWObAGpmt9W3q9hjBoNdLWk9SuS0EcL7jnooyIrda2MVgkdJ3aYUs/eyg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795106841;
+	h=DMARC-Filter:Received:DKIM-Signature:Received:Received:Received:
+	 Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
+	 References:MIME-Version:Content-Transfer-Encoding:
+	 X-Proofpoint-Reinject:X-QCInternal:X-QCInternal:X-Authority-Analysis:
+	 X-Proofpoint-ORIG-GUID:X-Proofpoint-Spam-Details-Enc:
+	 X-Proofpoint-GUID:X-Proofpoint-Spam-Info:X-Proofpoint-Virus-Version:
+	 X-Proofpoint-Spam-Details;
+	bh=S0pBS0SqdAVHAnZfsUxZv+nLG9+suSfmjHczuL66frI=;
+	b=yqKelwuXMwBmW2+/HyfUD2i44segohtlkalPGmTmDD8hnzjDNQ8QMqnGCa48JEFjNML9
+	 qwqOLyRf4k6+0zkzFJwcn4U5ALzfJv9bHO9+1k214iQAtBgstn+IOimZHvZT/7MZZiSfW
+	 91tlP+dTODVWVBPuwCUIuDDqz7rPLRFnYVlwvXNNtRFzKhiNv8xAmVR5Sc2wbpl/uQ5nX
+	 afKf4mYdVRYR2rQRvJyGfnU3pK2wisccGad04qa12V7muAFcHYGvXvRzp9BFRNP9fmC65
+	 NA6UPky7l6Z9jWvBMe5lDk+b7tgWG1hZci5ePrkEIqErgpJXpGUYGOV8Wllj96CnBeA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b="ee0vMFY/";
-	arc=none smtp.remote-ip=209.85.160.169
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=oss.qualcomm.com;
+	spf=pass smtp.mailfrom=qualcomm.com;
+	dkim=pass header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=mY5gtW+f;
+	arc=none smtp.remote-ip=205.220.168.131
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3BEF606A331
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 16:36:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F3BEF606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D04D60A2609
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 16:47:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1D04D60A2609
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=ee0vMFY/
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-55d3563e50eso32102101cf.0
-        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 08:36:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1795106207; x=1795711007; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=Upj9ElOF+MkYEJ4cOgUjnMJxMqLP7rtbsy3TKzTJtFk=;
-        b=ee0vMFY/lHFOPnkS5Lew2i4ol2is42BGif9BdComERN3a7LhFXEfy6T/SKbP3jnWid
-         tfgQSFZ4CsNorGGXUw0VV7aKAssg1uhVh+1lg3ZmSfOwVieQzmoBe73n8aTTrrdhUIBr
-         JOVrZGjNhx2d0GtxuJraKUYFBRY02wZCWOI/WK0TUHpsuCZyKw0Y2eiLpwpDxEhoJp3H
-         hD3gU9zNJgvLrvjRwAFUfzUlcAoKPcYTHNtDoqIPmNRzB5S/P1/rLjAD48ZloxmE6IpE
-         kYzuRjttuID09ybq4OiQm5/d2lcz3hrXUQ77ODNEiWG8V9dmDa18sfdAyv9WKRoUyRCS
-         UNKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795106207; x=1795711007;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=Upj9ElOF+MkYEJ4cOgUjnMJxMqLP7rtbsy3TKzTJtFk=;
-        b=CMSADNQ+rGquZYTb7j5A2fikB2k4SoG/POxzLKnzW05KWFCA0Uzbd1+MsrtDlzk94M
-         PwyaAXTDBqg/GTKO7KGb8hAFVLWtbpZmYsZBQO/MmADxsyugpb3ZmARNsmwZavCdqpm1
-         vWAhuD363PGkouR8U/tqn4YSfv0FmZo2evZ45X1DV8NspVLrWHydCB9MTl1MklMMhQP6
-         dqUwJu9tU7ceIY46iamEJaQuWo/vAY2Ke8abk3cmY0U0RQ6n0+5NfrcO7ALNYVX57kHK
-         /sm2Goy6eRgj1llPjV7K3OCSgch11lVjTDj0e/tpr88mB46W/wSHh08jNyHTmqlUzEZL
-         6ceQ==
-X-Forwarded-Encrypted: i=1; AL+hErEcfXTu+BOoo36Mvl/xXZpmrl4RXydoYsoAkOGarpo2hKvMj1yJMNedi6zFgIfkGoLngOgQeQ==@lists.linux.dev
-X-Gm-Message-State: APuU4Z++SPkEoBC8MGAIklnNc6O3nn91pvh5pXaQGavZTZnqAlNodQsM
-	piBRSUG92aTAp+rXoniveDm6bYLS8UCoePV29EBn9Gvxa861BRORKUcsIa7qmVSMxXE=
-X-Gm-Gg: AYBFou2rfnH6zu15mO8/ycrZ2qc0nyxinGjyDZPRm4668cS8wjPl+sirybpn+2i3Q8m
-	iHM8zf1XmJmEDZeaDxjvYjXFXhruW7P9bUXSLSxnA2utsNlUVTRQmDIHB2kQnOKM0Vkjgy1ufvs
-	HkJ1UvjW+3KxvngsKWYV3pEp0LxTxHQYudzE1H8OHvoXDbddRSC7sQx5ACQD07J+xw4BRirt7Pn
-	9ZuXPN4p4MRPt//3cv6iU0Ri1RGPyO6BBvEdMd4wyEbYE9hKaG9lVEyvqopvOkv+AToG5bB/IAo
-	u+vFcGMGeQ9vpRJO7/2B32YBgrzIJUXw1FwrVT+GUc0lwhJU5IbKNKdFT0SNhzCm/0tqmMRPFYr
-	thHT+Qd8wHFsKvgf06iU9ZTBfY8mrP2+m/YEczCiIU7k945JOm5CDFMYSSBWuKQPLRiZsPaZutp
-	Qe+UHBIdZ942748d0xe9sFjDAvlUVH1oWt1f/ojBp7NYeufV61gstdJd09dO+Wurf8pgr1eb3Bu
-	IlHZ22pyZ1CWCvd7qX/APTlQj8Nfa/TNPyHosKAmcf+krlosqNwW5OJ61CS6MAu0R5ZKMvtqrN3
-	hC70Jw==
-X-Received: by 2002:a05:622a:988:b0:55d:5ba6:bf25 with SMTP id d75a77b69052e-55d767ab475mr9697321cf.0.1795106206697;
-        Thu, 19 Nov 2026 08:36:46 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-55d66c52318sm27455131cf.29.2026.11.19.08.36.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2026 08:36:46 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xU57t-00000001A8R-0Ufm;
-	Thu, 19 Nov 2026 12:36:45 -0400
-Date: Thu, 19 Nov 2026 12:36:45 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc: Daniel Almeida <daniel.almeida@collabora.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	Detlev Casanova <detlev.casanova@collabora.com>
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-Message-ID: <20261119163645.GL3115493@ziepe.ca>
-References: <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
- <20261117202055.GA3115493@ziepe.ca>
- <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
- <20261118160909.GC3115493@ziepe.ca>
- <fe60c0bd-1ee2-4b33-8ca3-564ee08e6db5@arm.com>
- <CF2BE3BB-4F16-49FC-8421-B2B823BB7BB4@collabora.com>
- <20261119143151.GH3115493@ziepe.ca>
- <32a64e144c11bec72908ce143044773808be5115.camel@collabora.com>
- <20261119150857.GK3115493@ziepe.ca>
- <da198506005be5c69d61105a5519121fe7bcdd36.camel@collabora.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.a=rsa-sha256 header.s=qcppdkim1 header.b=mY5gtW+f
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6AJF6Fvg3048024;
+	Thu, 19 Nov 2026 16:47:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=qcppdkim1; bh=S0pBS0SqdAV
+	HAnZfsUxZv+nLG9+suSfmjHczuL66frI=; b=mY5gtW+fVonGIXqlrLO0zQRsQbj
+	3dOmqPRLkO+/ba9r/SPHZQfppSjBKiAiY78+7M3HoQpKT/OqWK0GynO7r1A4/u8+
+	KrNt0Ry7j3Jt5NBWYckVBvBb42NOIzDEk2DsE1PXLx4l5VijdZq74DOkqk33nXHq
+	BRFy6oPDVkB+3O4OaIpv2wVVAepRLTzGheSRGGuMd/SVlQqLbIPkImoM6PxWjvQd
+	ln1YxNlbVvGKPL+uv6xCollu7r8XVR+tVnMLwSyYpUZlaamtupCiZUdmVzVgDcVy
+	I/dgr2WS1m52/mZVmJ8CYQC4mxIFaCwJFfZsC8C2B3sn9ikVk11JJDfA7QA==
+Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4j1gxcwf1x-1
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Thu, 19 Nov 2026 16:47:10 +0000 (GMT)
+Received: from pps.filterd (apblrppmta02.qualcomm.com [127.0.0.1])
+	by APBLRPPMTA02.qualcomm.com (8.18.1.11/8.18.1.11) with ESMTP id 6AJGl7di3118418;
+	Thu, 19 Nov 2026 16:47:07 GMT
+Received: from hu-devc-hyd-u22-c.qualcomm.com (hu-mohis-hyd.qualcomm.com [10.147.253.64])
+	by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 6AJGl7KM3118397
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Thu, 19 Nov 2026 16:47:07 +0000 (GMT)
+Received: by hu-devc-hyd-u22-c.qualcomm.com (Postfix, from userid 4840500)
+	id 06E436AB; Thu, 19 Nov 2026 22:17:06 +0530 (+0530)
+From: Mohit Sharma <mohit.sharma@oss.qualcomm.com>
+To: Srinivas Kandagatla <srini@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Mark Brown <broonie@kernel.org>
+Cc: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>,
+        Liam Girdwood <lgirdwood@gmail.com>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Rob Clark <robin.clark@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>,
+        Abel Vesa <abelvesa@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-sound@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Mohit Sharma <mohit.sharma@oss.qualcomm.com>
+Subject: [PATCH 4/4] ASoC: qcom: q6apm-dai: allow the mDSP IOMMU path
+Date: Thu, 19 Nov 2026 22:17:05 +0530
+Message-Id: <20261119164705.1594066-5-mohit.sharma@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261119164705.1594066-1-mohit.sharma@oss.qualcomm.com>
+References: <20261119164705.1594066-1-mohit.sharma@oss.qualcomm.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -125,67 +94,74 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <da198506005be5c69d61105a5519121fe7bcdd36.camel@collabora.com>
+X-Proofpoint-Reinject: loops=2 maxloops=12
+X-QCInternal: smtphost
+X-QCInternal: smtphost
+X-Authority-Analysis: v=2.4 cv=LZapeTfi c=1 sm=1 tr=0 ts=6aff280e cx=c_pps
+ a=Ou0eQOY4+eZoSc0qltEV5Q==:117 a=Ou0eQOY4+eZoSc0qltEV5Q==:17
+ a=zJRp6_cAMcgA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u7WPNUs3qKkmUXheDGA7:22
+ a=yOCtJkima9RkubShWh1s:22 a=EUspDBNiAAAA:8 a=2pjKgLFfhSI-GXVsdeUA:9
+X-Proofpoint-ORIG-GUID: 5d5OSiqAc5WBOxXiI2XB2wzN-xfwXaib
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYxMTE5MDA2NiBTYWx0ZWRfXxJ4dgXSYadyP
+ YVmWxPufumT6rrwbzkzdqQ4qdi+QPk8kdBZi5umtejVM7s88u/ixzcCw7q0iRr+OFI+f6fyjDbh
+ 15mujC4oYqaX0xl2jz+4cRrIEg8dP44c6X0P2CIgFyMhk4RL+eAvDX66sSVWjZlIIWjKICtJx8c
+ LhqReCpDUOp31nvSLWAuzAhxsEhg4ovVx4TSaVNaPvKssCMJS9nyc7nr/vRE/N686Wd+LJrvzw/
+ +7FDIdooSeZgOjf6vFXBSLrIg4Glt9+2Z1w73t8MFM/KyYaVwfhgc5lhH+iiyDfwIMg5R1eyMQh
+ M7nH4ZJbsYg5Qvt430rVaopEIdsDE71334OHXlreG/dpyTrgIiUm/UKV3I8SJ6Z1mYHm3HLKKQ5
+ Ilo6PfvLdvUV1n2Ys7aexpD6ZWeIB1ua9v+ujzU5Lva/sBTzXV9dNNvQhDhY+dcXJLytYNUrZLl
+ FSxo6mRfsLZRH2moL+g==
+X-Proofpoint-GUID: 5d5OSiqAc5WBOxXiI2XB2wzN-xfwXaib
+X-Proofpoint-Spam-Info: AW1haW4tMjYxMTE5MDA2NiBTYWx0ZWRfX6gVH1GCBdsU2
+ kvJ7DKIKNb0en98VLXGiDFW8Jg1G2ADIwoOApJmtdH78EqCvHHIZlhXSCyYd8qzZYrCbf8oYzvI
+ Ylc8Sh5t5LPdc1tb1eoJwdrezXnlQxk=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1176,Hydra:6.1.138,FMLib:17.12.100.49
+ definitions=2026-11-19_04,2026-11-19_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 spamscore=0 phishscore=0 priorityscore=1501 suspectscore=0
+ bulkscore=0 adultscore=0 impostorscore=0 lowpriorityscore=0 clxscore=1015
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2611040001 definitions=main-2611190066
 
-On Thu, Nov 19, 2026 at 10:47:01AM -0500, Nicolas Dufresne wrote:
-> Le jeudi 19 novembre 2026 à 11:08 -0400, Jason Gunthorpe a écrit :
-> > On Thu, Nov 19, 2026 at 09:52:59AM -0500, Nicolas Dufresne wrote:
-> > > Le jeudi 19 novembre 2026 à 10:31 -0400, Jason Gunthorpe a écrit :
-> > > > With the additional twist that alot of embedded HW has apparently
-> > > > choosen to not implement SSID but instead has a pool of SIDs that one
-> > > > device can use, functionally similar to SSID.
-> > > > 
-> > > > We'd need also API support for unbundling the DT iommus=[] SID list
-> > > > into something that the SIDs can be attached more like a PASID.  That
-> > > > need, I think, has become clear with all the DT tricks and fake busses
-> > > > to try to work around this issue. :|
-> > > 
-> > > The word "fake" never flies with the DT maintainers. On that subject, I still
-> > > don't know what you mean with iommus=[].
-> > 
-> > When you write your DT you can list all the iommu streams in one
-> > iommus property. Like this randomly picked out of the DT files:
-> > 
-> >         iommus = <&sysmmu_decon0x>, <&sysmmu_decon1x>;
-> > 
-> > If you do that then Linux sets the struct device containing it to
-> > put the same paging domain on all of those iommus.
-> > 
-> > It doesn't make any sense to open code this in drivers when you can
-> > just have the core code do it by writing your DT to match how the
-> > driver wants to work...
-> 
-> The will be rejected, as it does not map the hardware. If you check multi-core
-> codecs, each pair of core+iommu are independent from each other, at least enough
-> that they could be driven by different device drivers. And so they have been
-> described separately in the DTs. I don't see a fault here.
+The q6apm DAI currently selects SCM buffer assignment solely from the GPR
+domain.  This prevents an mDSP-backed DAI from using an IOMMU, even when
+the device tree provides an iommus property for environments where the
+mDSP stream is routed through the apps SMMU.
 
-All these multi-stream things have a choice how you model them in DT,
-both ways are "describing the HW". Fully seperate HW blocks with
-multiple struct devices or a single struct device with a list of
-sub-engines. IMHO neither is obviously more correctly "describing the
-HW" than the other.
+Use the parsed stream ID to distinguish the two memory access models.  An
+mDSP DAI without an IOMMU continues to use SCM-assigned buffers, while an
+mDSP DAI with an IOMMU follows the existing DMA/IOMMU path.  This also
+avoids requiring SCM availability for the IOMMU configuration.
 
-However, the DT choice strongly influences how Linux works and drives
-certain behaviors inside the kernel. So it is not just describing the
-HW, it is very strongly describing the SW model too :(
+Fixes: bb8afd437d79 ("ASoC: qcom: q6apm-dai: add SCM buffer assignment for mDSP platforms")
+Co-developed-by: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>
+Signed-off-by: Ajay Kumar Nandam <ajay.nandam@oss.qualcomm.com>
+Signed-off-by: Mohit Sharma <mohit.sharma@oss.qualcomm.com>
 
-Choosing the opposite DT model to what the kernel driver wants and
-then undoing it with a bunch of code in Linux is not nice. We have run
-into trouble when people go down this path and start asking for new
-APIs we don't want to give them. :(
+diff --git a/sound/soc/qcom/qdsp6/q6apm-dai.c b/sound/soc/qcom/qdsp6/q6apm-dai.c
+index c1f0af93e808..a29fe4241776 100644
+--- a/sound/soc/qcom/qdsp6/q6apm-dai.c
++++ b/sound/soc/qcom/qdsp6/q6apm-dai.c
+@@ -1218,16 +1218,11 @@ static int q6apm_dai_probe(struct platform_device *pdev)
+ 		pdata->sid = args.args[0] & SID_MASK_DEFAULT;
+ 
+ 	if (apm && apm->gdev &&
+-	    apm->gdev->domain_id == GPR_DOMAIN_ID_MODEM) {
++	    apm->gdev->domain_id == GPR_DOMAIN_ID_MODEM &&
++	    pdata->sid < 0) {
+ 		if (!qcom_scm_is_available())
+ 			return -EPROBE_DEFER;
+ 
+-		if (pdata->sid >= 0) {
+-			dev_err(dev,
+-				"iommus and mDSP SCM path are mutually exclusive\n");
+-			return -EINVAL;
+-		}
+-
+ 		pdata->use_scm_assign = true;
+ 
+ 		rc = devm_add_action_or_reset(dev, q6apm_dai_scm_cleanup,
+-- 
+2.34.1
 
-We had this chat with the DT maintiners too, I think everyone agrees
-things are imperfect here. So far the direction has been to change the
-DT to match the desired kernel SW model rather than hack the kernel to
-accomodate the DT.
-
-If you truely have HW with frozen DT in firmware then maybe that is a
-strong argument to push back in this case.
-
-I recognize this is all imperfect/problematic :|
-
-Jason
