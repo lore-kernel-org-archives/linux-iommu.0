@@ -1,11 +1,11 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.34
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=160.30.148.35
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1795094887;
-	b=HoQKkVKg/rUm7uISxlJSg+55j3is3ArR6d04h2nO4zAVjFn4B5zXdd52MXBMkeX0Lw2V
-	 aqXpgKs3NxugigvqG1kTeLNR+1pC6AeuK57OsL1Gp+Zv2Jjh00E6TEyQBxFrPl5mErXVN
-	 +W88QAGdNGJH7W/9tA6pF4kTb+x7yS5SIwq1UmlQMetRHktEUPHWl6HkRHTtE6bFLFiou
-	 PEEKlnY2+CEHsKlBBS/FYsoz/CsPgHB3mBwviHw/NKMhZfEhtQrLXopdSbuiVAzoEV+Pk
-	 m0/fHuV41se3Duidiua4Q5ALWCjnIQGxRud633gJ53LqnTnFafewfJXGTUo0smP2PFQ==
+	b=IFBz7t2MZnvVkFUuWkp3ZiLtjzMeiswj0/uXW7m0sxbRRLB4iPQKv/RLoqXXo7dfW1ht
+	 E1eit4Xs3RL/7SMGZ2qqWGWTA51wnqUp4ml3OuaKtV/H81VtCVVSZeF/fY4gPQhRxQ9EL
+	 TrD1g87UHLtuEm6DaZDxyTut6fZI8h81GAUPvNb11sNFJVVa21gH49CvK1eks/XG1AYwE
+	 Zr34c76T6E3PwptM+joHDkRJ63QcUo3Jd/6C8q0gFiOdzMQoHaA/r2aeN7pu0x0Amkn5F
+	 qVT9VTi9ds0pEcFgNAEYqqN8/DiyrRx/9KAYUuyz0j9wMW6WUmIQ0zpg+v9dg57Uu1g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1795094887;
 	h=DMARC-Filter:Received:Received:Received:X-Zmail-TransId:
@@ -14,39 +14,39 @@ ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	 X-ZMAIL-USEORIGINALEMLTOOUTBOUND:Content-Transfer-Encoding:X-MAIL:
 	 X-TLS:X-ENVELOPE-SENDER:X-SOURCE-IP:X-CLEAN:
 	 X-Fangmail-Anti-Spam-Filtered:X-Fangmail-MID-QID;
-	bh=rQWvdNMaFe34tXuTWuwUVChXD/O05AF/rQwJk6Yds3Q=;
-	b=bI+4Ss3ZPHeHADVzv2Bc25Cg4tAvPpV038oclZCBVm3uxbQ5Dusg48e3MHVhY+HzOhbQ
-	 1ndXGTmaqK6Zo0L1Z/n2RCpCqh9xBXz7WI1MjIcCFPNXCAHD42alnTD1OEoSEOA2xMZgl
-	 fsTr7e04+hIkT2ZuAeHOPcDAdqBgu4pM+/wMEVfi4Q2AiFJPAAn2G1mwwROKBDABy/llx
-	 fWjr7YtHx1yMaFKCECchXuQu/WsC2AIvlpkmjhwJlHZ/5ZC7qO+uEryVTxuWNdt197Jxf
-	 mgWJ9dMBlb5egOUUruLBTTInu5/9CIZ5NLiLHh1i3nk+7Yq8hxfHmpfVeXBKsh5IRgg==
+	bh=6DpinBGst6OfRU+Sci9rwMfyIExP4zydaXJmwKfWdOE=;
+	b=42fFw6VzWwuImb6OBLCPA02O75ngOWJdse0cU6LQsAbQzaFb/VB8Rdo86bWIey4612e0
+	 4AFZ9iaSg2X0174yGsVOrvrV8FuZRqmmvLlJvQOqXxoWB4hJCemn+d0ipksCFtRbayaUe
+	 7u4w+atj0o/aLiDvI9N4hgDoNOz2BTNhp6ZCMr6Tt5CTwpY6s2cUBxXYrFohsQ0+lugtH
+	 HX0CwvwTwRAG5MUXwqsGv5RDhICooQ/n4kCnlS2BbF1exfPKhMl4nCiBays2D2BPV/Dq/
+	 vjyIeoKR46ljbLkgp0JTb7q3+xDNEptyalWrqdzz7wm/RxEbc3bgUAZj3gyzivvuJaw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=none header.from=sanechips.com.cn;
 	spf=pass smtp.mailfrom=sanechips.com.cn;
-	arc=none smtp.remote-ip=160.30.148.34
-Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.34])
+	arc=none smtp.remote-ip=160.30.148.35
+Received: from mxhk.zte.com.cn (mxhk.zte.com.cn [160.30.148.35])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 182C860A2600
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:28:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 182C860A2600
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC95760A2629
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:28:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EC95760A2629
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sanechips.com.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sanechips.com.cn
 Received: from mse-fl1.zte.com.cn (unknown [10.5.228.132])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jVfRT6Tyxz4yjjC;
-	Thu, 19 Nov 2026 21:28:05 +0800 (CST)
-Received: from szxl2zmapp06.zte.com.cn ([10.1.32.108])
-	by mse-fl1.zte.com.cn with SMTP id 6AJDRueG086425;
-	Thu, 19 Nov 2026 21:27:56 +0800 (+08)
+	by mxhk.zte.com.cn (FangMail) with ESMTPS id 4jVfRN2K35z8Xrrb;
+	Thu, 19 Nov 2026 21:28:00 +0800 (CST)
+Received: from szxlzmapp02.zte.com.cn ([10.5.231.79])
+	by mse-fl1.zte.com.cn with SMTP id 6AJDRqkO086401;
+	Thu, 19 Nov 2026 21:27:52 +0800 (+08)
 	(envelope-from gong.shuai@sanechips.com.cn)
 Received: from ubuntu-35-gs (unknown [10.230.214.35])
 	by smtp (Zmail) with SMTP;
-	Thu, 19 Nov 2026 21:27:59 +0800
-X-Zmail-TransId: 3e816afef95e02f-5654a
+	Thu, 19 Nov 2026 21:27:55 +0800
+X-Zmail-TransId: 3e816afef95a02f-564b4
 X-Zmail-LocalSMTP: 1
 X-Zmail-RealSender: gong.shuai@sanechips.com.cn
 From: Gong Shuai <gong.shuai@sanechips.com.cn>
@@ -67,9 +67,9 @@ Cc: Anup Patel <anup@brainfault.org>, Atish Patra <atish.patra@linux.dev>,
         Tan Chi <tanchi25@mails.ucas.ac.cn>, Wu Fei <wu.fei9@sanechips.com.cn>,
         Zhao Qingye <zhao.qingye@sanechips.com.cn>,
         Gong Shuai <gong.shuai@sanechips.com.cn>
-Subject: [RFC PATCH v3 09/10] iommu/riscv: Add riscv_iommu_attach_dev_nested
-Date: Thu, 19 Nov 2026 21:27:43 +0800
-Message-ID: <20261119132744.396426-10-gong.shuai@sanechips.com.cn>
+Subject: [RFC PATCH v3 04/10] iommu/riscv: Add vIOMMU object support
+Date: Thu, 19 Nov 2026 21:27:38 +0800
+Message-ID: <20261119132744.396426-5-gong.shuai@sanechips.com.cn>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20261119132744.396426-1-gong.shuai@sanechips.com.cn>
 References: <20261119132744.396426-1-gong.shuai@sanechips.com.cn>
@@ -84,191 +84,154 @@ Precedence: list
 MIME-Version: 1.0
 X-ZMAIL-USEORIGINALEMLTOOUTBOUND: 1
 Content-Transfer-Encoding: 8bit
-X-MAIL:mse-fl1.zte.com.cn 6AJDRueG086425
+X-MAIL:mse-fl1.zte.com.cn 6AJDRqkO086401
 X-TLS: YES
 X-ENVELOPE-SENDER: gong.shuai@sanechips.com.cn
-X-SOURCE-IP: 10.5.228.132 unknown Thu, 19 Nov 2026 21:28:05 +0800
+X-SOURCE-IP: 10.5.228.132 unknown Thu, 19 Nov 2026 21:28:00 +0800
 X-CLEAN: YES
 X-Fangmail-Anti-Spam-Filtered: true
-X-Fangmail-MID-QID: 6AFEF965.001/4jVfRT6Tyxz4yjjC
+X-Fangmail-MID-QID: 6AFEF960.000/4jVfRN2K35z8Xrrb
 
 From: Wu Fei <wu.fei9@sanechips.com.cn>
 
-Attach a device to a nested domain by combining the guest provided
-stage 1 context with the host-owned stage 2 context in the device
-directory entry. This allows the physical IOMMU to translate device
-DMA through both stages.
+Allow iommufd to allocate a RISC-V vIOMMU when the physical IOMMU
+supports both translation stages.
 
-The device is bonded to the stage 2 parent domain so that it shares
-the parent's invalidation state.
+Nested translation needs to associate guest-owned stage 1 contexts
+with a host-owned stage 2 parent domain. A vIOMMU provides this
+association and owns a dedicated GSCID so that guest PSCIDs cannot
+alias address spaces belonging to another vIOMMU.
 
 Signed-off-by: Wu Fei <wu.fei9@sanechips.com.cn>
 Co-developed-by: Gong Shuai <gong.shuai@sanechips.com.cn>
 Signed-off-by: Gong Shuai <gong.shuai@sanechips.com.cn>
 ---
- drivers/iommu/riscv/iommu.c | 83 +++++++++++++++++++++++++++++--------
- 1 file changed, 66 insertions(+), 17 deletions(-)
+ drivers/iommu/riscv/iommu.c | 77 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 77 insertions(+)
 
 diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 97d360318fe2..e8d894f3e760 100644
+index f6e92b086c12..f2305b953f71 100644
 --- a/drivers/iommu/riscv/iommu.c
 +++ b/drivers/iommu/riscv/iommu.c
-@@ -889,29 +889,36 @@ struct riscv_iommu_bond {
- 	struct list_head list;
- 	struct rcu_head rcu;
- 	struct device *dev;
-+	int gscid;
+@@ -19,6 +19,7 @@
+ #include <linux/dma-map-ops.h>
+ #include <linux/init.h>
+ #include <linux/iommu.h>
++#include <linux/iommufd.h>
+ #include <linux/iopoll.h>
+ #include <linux/kernel.h>
+ #include <linux/pci.h>
+@@ -856,6 +857,7 @@ struct riscv_iommu_domain {
+ 	spinlock_t lock;		/* protect bonds list updates. */
+ 	int pscid;
+ 	int gscid;
++	bool nest_parent;
  };
+ PT_IOMMU_CHECK_DOMAIN(struct riscv_iommu_domain, riscvpt.iommu, domain);
  
- static int riscv_iommu_bond_link(struct riscv_iommu_domain *domain,
--				 struct device *dev)
-+				 struct device *dev, int gscid)
- {
- 	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
--	struct riscv_iommu_bond *bond;
--	struct list_head *bonds;
-+	struct riscv_iommu_bond *bond, *pos;
-+	struct list_head *bonds = &domain->bonds;
+@@ -1342,6 +1344,20 @@ static bool riscv_iommu_iohgatp_supported(struct riscv_iommu_device *iommu,
+ 	return false;
+ }
  
- 	bond = kzalloc_obj(*bond);
- 	if (!bond)
- 		return -ENOMEM;
- 	bond->dev = dev;
-+	bond->gscid = gscid;
- 
- 	/*
- 	 * List of devices attached to the domain is arranged based on
--	 * managed IOMMU device.
-+	 * managed IOMMU device and GSCID.
- 	 */
- 
- 	spin_lock(&domain->lock);
--	list_for_each(bonds, &domain->bonds)
--		if (dev_to_iommu(list_entry(bonds, struct riscv_iommu_bond, list)->dev) == iommu)
-+	list_for_each_entry(pos, &domain->bonds, list) {
-+		if (dev_to_iommu(pos->dev) != iommu)
-+			continue;
-+
-+		bonds = &pos->list;
-+		if (pos->gscid == bond->gscid)
- 			break;
-+	}
- 	list_add_rcu(&bond->list, bonds);
- 	spin_unlock(&domain->lock);
- 
-@@ -1076,12 +1083,13 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
- 	struct riscv_iommu_device *iommu, *prev;
- 	struct riscv_iommu_bond *bond;
- 	struct riscv_iommu_tlbi tlbi;
-+	int prev_gscid = -1;
- 
- 	riscv_iommu_tlbi_calc(&tlbi, gather);
- 
- 	/*
--	 * For each IOMMU linked with this protection domain (via bonds->dev),
--	 * an IOTLB invaliation command will be submitted and executed.
-+	 * For each IOMMU and GSCID linked with this protection domain through
-+	 * its bonds, an IOTLB invalidation command will be submitted and executed.
- 	 *
- 	 * Possbile race with domain attach flow is handled by sequencing
- 	 * bond creation - riscv_iommu_bond_link(), and device directory
-@@ -1091,9 +1099,9 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
- 	 * --------------------------         --------------------------
- 	 * update page table entries          add dev to the bond list
- 	 * FENCE RW,RW                        FENCE RW,RW
--	 * For all IOMMUs: (can be empty)     Update FSC/PSCID
--	 *   FENCE IOW,IOW                      FENCE IOW,IOW
--	 *   IOTLB.INVAL                        IODIR.INVAL
-+	 * For all IOMMU/GSCID pairs:         Update FSC/PSCID
-+	 *   FENCE IOW,IOW                    FENCE IOW,IOW
-+	 *   IOTLB.INVAL                      IODIR.INVAL
- 	 *   IOFENCE.C
- 	 *
- 	 * If bond list is not updated with new device, directory context will
-@@ -1111,15 +1119,16 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
- 
- 		/*
- 		 * IOTLB invalidation request can be safely omitted if already sent
--		 * to the IOMMU for the same PSCID, and with domain->bonds list
--		 * arranged based on the device's IOMMU, it's sufficient to check
--		 * last device the invalidation was sent to.
-+		 * to the IOMMU for the same GSCID. Since bonds are arranged by
-+		 * IOMMU and GSCID, it is sufficient to check the previous bond.
- 		 */
--		if (iommu == prev)
-+		if (iommu == prev && bond->gscid == prev_gscid)
- 			continue;
- 
--		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, domain->gscid, &tlbi);
-+		riscv_iommu_iotlb_inval_iommu(iommu, domain->pscid, bond->gscid,
-+					      &tlbi);
- 		prev = iommu;
-+		prev_gscid = bond->gscid;
- 	}
- 
- 	prev = NULL;
-@@ -1394,7 +1403,7 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
- 	dc.ta = FIELD_PREP(RISCV_IOMMU_DC_TA_PSCID, domain->pscid);
- 	dc.tc |= RISCV_IOMMU_DC_TC_V;
- 
--	if (riscv_iommu_bond_link(domain, dev))
-+	if (riscv_iommu_bond_link(domain, dev, domain->gscid))
- 		return -ENOMEM;
- 
- 	riscv_iommu_iodir_update(iommu, dev, &dc);
-@@ -1710,12 +1719,52 @@ struct riscv_iommu_nested_domain {
- #define to_riscv_iommu_nested_domain(domain) \
- 	container_of(domain, struct riscv_iommu_nested_domain, domain)
- 
-+static int riscv_iommu_attach_dev_nested(struct iommu_domain *domain,
-+					 struct device *dev,
-+					 struct iommu_domain *old_domain)
++static bool riscv_iommu_supports_s1(struct riscv_iommu_device *iommu)
 +{
-+	struct riscv_iommu_nested_domain *nested_domain =
-+		to_riscv_iommu_nested_domain(domain);
++	return (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57) ||
++		(iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48) ||
++		(iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39);
++}
++
++static bool riscv_iommu_supports_s2(struct riscv_iommu_device *iommu)
++{
++	return (iommu->caps & RISCV_IOMMU_CAPABILITIES_SV57X4) ||
++		(iommu->caps & RISCV_IOMMU_CAPABILITIES_SV48X4) ||
++		(iommu->caps & RISCV_IOMMU_CAPABILITIES_SV39X4);
++}
++
+ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
+ 					    struct device *dev,
+ 					    struct iommu_domain *old)
+@@ -1466,6 +1482,8 @@ static int riscv_iommu_init_domain_s2(struct device *dev,
+ 	if (domain->gscid < 0)
+ 		return -ENOMEM;
+ 
++	domain->nest_parent = !!(flags & IOMMU_HWPT_ALLOC_NEST_PARENT);
++
+ 	/* AMO_HWAD is checked by iommufd via IOMMU_CAP_DIRTY_TRACKING */
+ 	if (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING)
+ 		domain->domain.dirty_ops = &riscv_iommu_dirty_ops;
+@@ -1662,6 +1680,63 @@ static void riscv_iommu_release_device(struct device *dev)
+ 	kfree_rcu_mightsleep(info);
+ }
+ 
++struct riscv_viommu {
++	struct iommufd_viommu core;
++	struct riscv_iommu_device *iommu;
++	struct riscv_iommu_domain *s2_parent;
++	int gscid;
++};
++
++static void riscv_viommu_destroy(struct iommufd_viommu *viommu)
++{
++	struct riscv_viommu *rv_viommu =
++		container_of(viommu, struct riscv_viommu, core);
++	/*
++	 * All devices are detached and iodir_update() has flushed this
++	 * GSCID, so the ID can be recycled here.
++	 */
++	ida_free(&riscv_iommu_gscids, rv_viommu->gscid);
++}
++
++static const struct iommufd_viommu_ops riscv_viommu_ops = {
++	.destroy = riscv_viommu_destroy,
++};
++
++static size_t riscv_iommu_get_viommu_size(struct device *dev,
++					  enum iommu_viommu_type viommu_type)
++{
 +	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_domain *s2_parent = nested_domain->viommu->s2_parent;
-+	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
-+	struct pt_iommu_riscv_64_hw_info pt_info;
-+	struct riscv_iommu_dc dc = {0};
 +
-+	if (nested_domain->viommu->iommu != iommu)
-+		return -EINVAL;
++	if (viommu_type != IOMMU_VIOMMU_TYPE_RISCV)
++		return 0;
 +
-+	if (!s2_parent->nest_parent)
-+		return -EINVAL;
++	if (!riscv_iommu_supports_s1(iommu) || !riscv_iommu_supports_s2(iommu))
++		return 0;
 +
-+	pt_iommu_riscv_64_hw_info(&s2_parent->riscvpt, &pt_info);
++	return VIOMMU_STRUCT_SIZE(struct riscv_viommu, core);
++}
 +
-+	dc.tc = nested_domain->tc;
-+	dc.fsc = nested_domain->iosatp;
++static int riscv_viommu_init(struct iommufd_viommu *viommu,
++			     struct iommu_domain *parent_domain,
++			     const struct iommu_user_data *user_data)
++{
++	struct riscv_viommu *rv_viommu = container_of(viommu, struct riscv_viommu, core);
++	struct riscv_iommu_device *iommu =
++		container_of(viommu->iommu_dev, struct riscv_iommu_device, iommu);
++	struct riscv_iommu_domain *s2_parent = iommu_domain_to_riscv(parent_domain);
 +
-+	dc.iohgatp = FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_MODE, pt_info.iohgatp_mode) |
-+		     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_PPN, pt_info.ppn) |
-+		     FIELD_PREP(RISCV_IOMMU_DC_IOHGATP_GSCID,
-+				nested_domain->viommu->gscid);
-+	dc.ta = nested_domain->ta;
++	rv_viommu->gscid = ida_alloc_range(&riscv_iommu_gscids, 1,
++					   RISCV_IOMMU_MAX_GSCID, GFP_KERNEL);
++	if (rv_viommu->gscid < 0)
++		return rv_viommu->gscid;
 +
-+	if (riscv_iommu_bond_link(s2_parent, dev, nested_domain->viommu->gscid))
-+		return -ENOMEM;
-+
-+	riscv_iommu_iodir_update(iommu, dev, &dc);
-+	riscv_iommu_bond_unlink(info->domain, dev);
-+	info->domain = s2_parent;
++	rv_viommu->iommu = iommu;
++	rv_viommu->s2_parent = s2_parent;
++	viommu->ops = &riscv_viommu_ops;
 +
 +	return 0;
 +}
 +
- static void riscv_iommu_domain_nested_free(struct iommu_domain *domain)
- {
- 	kfree(to_riscv_iommu_nested_domain(domain));
- }
- 
- static const struct iommu_domain_ops riscv_iommu_nested_ops = {
-+	.attach_dev = riscv_iommu_attach_dev_nested,
- 	.free = riscv_iommu_domain_nested_free,
- };
- 
+ static const struct iommu_ops riscv_iommu_ops = {
+ 	.of_xlate = riscv_iommu_of_xlate,
+ 	.capable = riscv_iommu_capable,
+@@ -1669,6 +1744,8 @@ static const struct iommu_ops riscv_iommu_ops = {
+ 	.blocked_domain = &riscv_iommu_blocking_domain,
+ 	.release_domain = &riscv_iommu_blocking_domain,
+ 	.domain_alloc_paging_flags = riscv_iommu_domain_alloc_paging_flags,
++	.get_viommu_size = riscv_iommu_get_viommu_size,
++	.viommu_init = riscv_viommu_init,
+ 	.device_group = riscv_iommu_device_group,
+ 	.probe_device = riscv_iommu_probe_device,
+ 	.release_device	= riscv_iommu_release_device,
 -- 
 2.53.0
 
