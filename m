@@ -1,117 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.215.178
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795098878;
-	b=QsIeYI43E3J5K5kA8FfADuIQZ36XP5LnhS3K0p94pEzCtyEKX5uemGvcSyQqLkzqrDsO
-	 HgFFcJDduud+R2G2xLjoV1j9/mWkk0JCEXVojEQZuL/nGW5bP3bPHNG6lXD/Tg/uYdpDi
-	 kKsg1vv9NpVAHFEZU7Q2HTwc6rg96YcXxfkctUYJiXsm2YDPGxzOa9mI5zCaJj65eX/Jy
-	 2XK2bW7YpHpx0vt8zp02zuuALF9GEwl5nGHGzhkTjJ0LDeVA6fFisvsWdhpq/T2+UiR1K
-	 0posvanib94J0MhG/ifHSPt3Ar9D6PHSwb34wDVpqjCqarN2ZR7zYHFqRTERT/oKm+A==
+	t=1795098978;
+	b=fdOCVuJYyIA/CdvTfaYqztAgnPGEKQRqKNvX0d5lDDoZQlmYiV15nRPobQDULXbK6paY
+	 aqxhTD7468FBTG10GUpU5uGui0XXDA1ehKJQLJ27R+3zS7VcrjkSh1Kqfh4kq/waS48jv
+	 BSseR7FnZ6WB/0M7wJ4Uoa+Gox9GZF6aNmIUykdczBWSLkxTCLVwzqSvBJjVBpT0+YuTJ
+	 RPXL3JkmyepIVTeUP73YrvDyy0H0mRD4/c5E8378XwYzLPkL4AaoKJbTaL3AoMMxe145t
+	 Ma/i4rz2wC7//JKJypqV7Y8ZBd9n3OkHpk1DkChYdV3xPVRTMyVkOZFar2l31ks1anw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795098878;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795098978;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To;
-	bh=D76bRl0iXWEy5tiDkPamZVFcHdRNx6r1Nq+m1WWa9kE=;
-	b=fDqIRoWCus3sGd+PafwtYqp2zebFPXQPzIHMp/Yo0yOv4bc5MLFckfTuYbtM5f3gOCCS
-	 Go9Y6rS5KPjGnAus42mm+GwkQadhzYxBzaH1brBB/QVag1ergR2GmUMcJgyVKqqp3CJ0B
-	 JAb6leueF+lGIM39tZrEuothoWpmx+0dEF9N2Lm4wC7mvkBz+8es2Mxdvg2NJb1ZJW1LW
-	 p/lBayVIzLyLd556283aY9Zlu8x/0TohTTb/OsdrWe4VD8EYFEun70BaP46GhrKMV1Ifq
-	 93YxdsIgSpgKPGKvBpLtTzI7cF9yMraqMTYvVHlYGDeXlKlPWuuJ8bUltV4Uu/gHCLg==
+	 From:To:Cc:Subject:In-Reply-To:Date:Message-ID:References:
+	 MIME-version:Content-type:Content-Transfer-Encoding;
+	bh=VnF6ja6VhKpFTfNVvE3jU57UL6Hk22nBfY4kDDWDjbs=;
+	b=OieGYNaL1GgFNF8qs5JGrPweImrCsP6yY2zCAyCZ8W6YmYOAnE9P/Q6TTOLLf/7ihkKS
+	 onRlbB+TZedY9sT/yf6AWYIP4vPzl2bVC6bxQck7aAFPNFYJfsmvySnZwZFtn9mZUpxT2
+	 +M+g6Jsn0fiR5BMx0c8xydOhWbH1UuZsuQOzozhy30MavunK4I19D1Vlt9IHCNYvWDh1Z
+	 pzm+aIM3QavUKyjcehICL1SxQaA4tW6kAsLXWY2WyvopMKhBSMGNEzZmkCvmbLE1YF/N0
+	 kiKB3MRtlCMi9Wo/C9pgOElf1XjA+uOlGCNSAbpHq2+I1XpF2rAvnelNtDORfd8IwJQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=K3MXkWKH;
-	arc=none smtp.remote-ip=209.85.219.47
-Received: from mail-qv1-f47.google.com (mail-qv1-f47.google.com [209.85.219.47])
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=oAgxDnXj;
+	arc=none smtp.remote-ip=209.85.215.178
+Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6084D606A335
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 14:34:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6084D606A335
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12B52606A320
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 14:36:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 12B52606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=K3MXkWKH
-Received: by mail-qv1-f47.google.com with SMTP id 6a1803df08f44-91f0274f88cso29274576d6.0
-        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 06:34:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=oAgxDnXj
+Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-cd6028ff33fso1612845a12.0
+        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 06:36:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1795098877; x=1795703677; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+        d=gmail.com; s=20260707; t=1795098976; x=1795703776; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :message-id:date:in-reply-to:subject:cc:to:from:from:to:cc:subject
          :date:message-id:reply-to:content-type;
-        bh=D76bRl0iXWEy5tiDkPamZVFcHdRNx6r1Nq+m1WWa9kE=;
-        b=K3MXkWKHlr21Q2aDnKybn3E/5hxrJuWc0RHue9G5BaoSXMyfiMxNP11P7Cfc3tjf1q
-         HvyKVHGH43VIFjx0bSOaUG1k7NNQ6k3v4nb0MpNtZUCuIZkW82awpgb+qmmVWrxiu+F1
-         MCi9XCKSOyUEGCW1KNYRXkbe6rL2BBAXw5TT2UKQMGU/pUeNTEmDCJCgYFXVktc3HOMw
-         eP+n5J3KkB+sZmOVDTEkygq8mm7zNShmRM/xIvsdmWSsD+uOyzUtMJiPVSNzgCc5r0Nr
-         90P6rlRNm8Vst6hXW98JaZdjPGRGwF3Tj3MYFmFBRMuXTZNjnzCmmJ0F3eN0KDiCg27i
-         3rOw==
+        bh=VnF6ja6VhKpFTfNVvE3jU57UL6Hk22nBfY4kDDWDjbs=;
+        b=oAgxDnXjHBoOAoKUncUk+yMvuZJ3JinqAwBBLrP231HzJI3fhxxq2FfAxdOua1xBCy
+         6beVMOoz7RueQCAOgEl3DZkd6QP5knaiRRVO/fHECypa1RzTHf6bPUdCm4F526geEPyj
+         l+YhhzHQ3wFZt1Z7qoU7njjumO3f3NYeAbqLMXsudm4cOfavhTlHuwZR5Se83l932odc
+         0bhdZIDrze20QKvDPfUlyHHMvPmLhEFGiV2xmAe70dYVfKF0d8GosRfPUqtqzEiXiyDj
+         E4nCyTQ5xp0EgcaJFM7sv7IhXZnr/zn9j4gEyrtav4v3yunD+mCwQEDDHNfCguwmYmQE
+         MSBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795098877; x=1795703677;
-        h=in-reply-to:content-disposition:content-type:mime-version
-         :references:message-id:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20260707; t=1795098976; x=1795703776;
+        h=content-transfer-encoding:content-type:mime-version:references
+         :message-id:date:in-reply-to:subject:cc:to:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
          :content-type;
-        bh=D76bRl0iXWEy5tiDkPamZVFcHdRNx6r1Nq+m1WWa9kE=;
-        b=aswZr+j7hXmB3g4lN08tBjDGiNQ287shTMFugHHvd5iaQob4+2qbd8mMkOuBLkWMqX
-         e2nNA0ySnIKCMUT4EjS4+ZSeo2DBgoWKdFMblbNGIOtj921hWiD1LKO1ZVRWrLWG2NRW
-         NfaGM33ekxMbsuYHMVSJMnIE6FhW2TAWpgMhIe/lBXIrwnBj4Cvo4wXhSvlwXSnIdqgN
-         /Mqyg/62naJEbqIzTHgAtoAqjzyX5qlLnU6nPuY9RN/fzP7pJ4WzNpUP/r0qC+26ZX3p
-         P+P7jlhUi8jVPMLp4xO9Z5CU1GQYp/T4BOII7Qct15zf2EbVljZFH70qxKsztuXn9OHw
-         txOw==
-X-Forwarded-Encrypted: i=1; AL+hErGRx8OGhs+EHpep8dzEHoL4wqzEtDMGDWVVpDyjqATbLDZLPjBz/Xhxpj1dKtWjK6zxC3t7Mw==@lists.linux.dev
-X-Gm-Message-State: APuU4Z+syOGUeen7OssT1sNfl6a5u3+ZnERgjuWHYJHHBwkkK1seWexK
-	ZerI8Or7kwMstiuXCgE9XzJpXwJP7GK91fBFkWIh7y8cEXGQWHWa896J8jgevBU1AVY=
-X-Gm-Gg: AZFdTZdOJy84dICEnoWVb/yAFIJqPYL2qqrzRoTpBAPefIzVNQBXpMjWbjOA3L0K5ph
-	irJCGUzcl8iepXgjVblDT02rIKbE/mjsU/6YoBJ/OWL7OPuD8mlBb0lun27/wcwrfWFyDdfh6mU
-	B9LfqXMXfLpae2YXu1iP6daQBvxjvygE2/J2j5mw6x54CRJxWobSCkjMpJ1JYcj+kaMtvqRVOqX
-	QcMyiyyP1ycSbM5zR5raljBmJK6paVA00DMB+Q0b/tN9RQ05jf/g1YOyCpfLnuOxAqagSj4bQSC
-	Olnt4gTATxl8oBqiuUIDulYCuVcKkVmsWTiv/js4EwhI4CANLeCdJovR0fyNJ3cQ8LDtd9e7noH
-	5+NwI0Y7IDE07nefvsEti6hh8nTmDSBFFABbuuDIe6msWSE7NYTvEPyKegPyO+XZ2LBsvOf7fda
-	uKg1W95YQTLhtxH0bWWl1TthtAOt6NibjHstDRFuyeLPfgV3h2mGZSr+UppsS8qUp5hC+Adu2vk
-	0D43KZPODjJ33LwPcWWmToTB2J12c146lflVx1FWeimIiWJjUmHsJQQ40WqdKAucAUuKK/LigAA
-	IWvcjA==
-X-Received: by 2002:a05:6214:5e02:b0:921:16d1:7cb9 with SMTP id 6a1803df08f44-92116d17de5mr70719896d6.40.1795098877201;
-        Thu, 19 Nov 2026 06:34:37 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-92133fe4670sm339426d6.17.2026.11.19.06.34.36
+        bh=VnF6ja6VhKpFTfNVvE3jU57UL6Hk22nBfY4kDDWDjbs=;
+        b=ppuMl42h5SGPMQvfs6Uq4TPkGAccWQu3xuPmx2Tjb/REqwKipndJrvDVluC7pfhU3O
+         xFp+1xUbTYa6k7xvS8FiNyIrujIJPm56L+ppKht9cj/xeXAjpsWA9cJ8LWAb5bPI6n1D
+         fIwTanMItEuPLEkIG6qkeV9iNB/ftHT+XdXiwLN4XarxL/vUKrHAaDepSdUdhihP/c/P
+         1k0ke4x6GKuBpMrApXyd2eSggFaZInCTdr8Am63VDEs/mcX2YARdiV4BAK/bzhT+jWm6
+         3Htth8Qy3tP00weVPjQEW/RMQJYO8b3wV4HgulNnNZs/ZZy6ahtqC1GqUpBYDmwgb5Y6
+         hfuQ==
+X-Forwarded-Encrypted: i=1; AL+hErEGjCE2XHtgiLgOhO+XOFwcmUiAwoPoS7tqoQ8iD7ucQFRLSOv/jTmxg6fBEeyPM4nPcFiZng==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+ubxVnCk0siWfnO2/mb5M17t2turkjmeIhXN3tWxq+bZrOhmLM
+	o00iW6w6dhcf6MW/hLreV1+uYqzwUeJTRykrL5JDztNJGG4vdcwP7CkK
+X-Gm-Gg: AZFdTZeuoIAg+QsyQOJ8LWrqkyEYlnbsXRmhHZQX2+0UJDg3JWziKPPQvi1fjWhuv1g
+	JxsozUSbz7dgRaxZYTel21mgfRZXc9TOhEulHnN+0+Z79LjcpRykN7ygneXPsYDhJdshPmydnrA
+	w+8nQp7eU1jwoHzIK4AxDPpycQyGgvm0MGhqDrfMA1LnUcKK6Hx30QHgVBRbg3IrqPpEfXFx5Kr
+	PG1PrmxIAaQzB+Tvo6552RJkIV5cYB3X7ew+Y0xjxYe6rLf5vVKPxlNIGh402Q061kL8lkaJ2Sp
+	Akg4vjXPEH8DYUUTujE4Ywkh7f0lt+ivGLdgu1jMu2lOWVwSg5q8Wu/A0EXUgd71i838D1Pb2gW
+	9SgMAI1Y33LxJELyRrdhDZs3M9oNUE41cqndbKJKqu1TbJE0rjd7lNole/xJ2tVqITTAJOBE5p0
+	W8rtkJOZMXQXFsWM1+bmLC7RMThcIDnbMibeFHu/BroHt9SyUvHcSz1Ntg/Ljk1I8CY5bZ7IDm0
+	D9x9xLRkEO9Lng9wpBqPeeCXQkk5pRapqKXDRyszWenIWj/kHvb/q033iD4ptdUhgnkyoQLg2gY
+	5r2ffezsWnTpEQtKLmhHSfHkiTc9NXb1ervyhqtq3VWQujFq
+X-Received: by 2002:a05:7300:bc19:b0:36a:18e2:64c with SMTP id 5a478bee46e88-3827f98ff0cmr7469514eec.11.1795098976262;
+        Thu, 19 Nov 2026 06:36:16 -0800 (PST)
+Received: from pve-server ([49.205.216.49])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-382a7fbceffsm19156884eec.28.2026.11.19.06.36.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2026 06:34:36 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xU3Df-00000000tJC-0ytS;
-	Thu, 19 Nov 2026 10:34:35 -0400
-Date: Thu, 19 Nov 2026 10:34:35 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	Detlev Casanova <detlev.casanova@collabora.com>
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-Message-ID: <20261119143435.GI3115493@ziepe.ca>
-References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
- <20261116193821.GC2452510@ziepe.ca>
- <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
- <20261117202055.GA3115493@ziepe.ca>
- <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
- <20261118160909.GC3115493@ziepe.ca>
- <fe60c0bd-1ee2-4b33-8ca3-564ee08e6db5@arm.com>
+        Thu, 19 Nov 2026 06:36:15 -0800 (PST)
+From: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, "Christophe Leroy (CS
+ GROUP)" <chleroy@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@infradead.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Shrikanth Hegde <sshegde@linux.ibm.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>
+Subject: Re: [PATCH v2 4/7] powerpc/mm: handle highmem pages in arch_dma_prep_coherent()
+In-Reply-To: <2b64e853-89a7-4fa5-a4f8-2c6b0b62bf74@samsung.com>
+Date: Thu, 19 Nov 2026 19:59:02 +0530
+Message-ID: <5wxslwsx.ritesh.list@gmail.com>
+References: <20261110094830.2081847-1-m.szyprowski@samsung.com> <CGME20261110094850eucas1p1f10fa1473aca341473077f60a088b490@eucas1p1.samsung.com> <20261110094830.2081847-5-m.szyprowski@samsung.com> <jym96n4p.ritesh.list@gmail.com> <2b64e853-89a7-4fa5-a4f8-2c6b0b62bf74@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -120,19 +96,82 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fe60c0bd-1ee2-4b33-8ca3-564ee08e6db5@arm.com>
+MIME-version: 1.0
+Content-type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Nov 19, 2026 at 12:24:50PM +0000, Robin Murphy wrote:
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
 
-> There is a middle ground, where a kernel driver wants pages to appear at
-> specific IOVAs under its own control. This is entirely legitimate to do by
-> using the public IOMMU API "as intended" 
+> On 19.11.2026 13:07, Ritesh Harjani (IBM) wrote:
+>> Marek Szyprowski <m.szyprowski@samsung.com> writes:
+>>
+>>> arch_dma_prep_coherent() performs the cache maintenance on the address
+>>> returned by page_address(). On 32-bit powerpc with CONFIG_HIGHMEM that
+>>> is NULL for a highmem page which is not kmapped, so the flush would
+>>> operate on the wrong virtual range and leave the dirty lines of the
+>>> buffer in place.
+>>>
+>>> The generic DMA code may pass highmem pages to this hook:
+>>> dma_direct_alloc() handles a highmem page returned by
+>>> dma_alloc_contiguous() by forcing the remap path, which calls
+>>> arch_dma_prep_coherent() on that page before creating the uncached
+>>> mapping. This cannot happen on powerpc today only because it does not
+>>> select HAVE_DMA_CONTIGUOUS, so dma-direct never gets a highmem page
+>>> there, but nothing in the hook's contract rules it out.
+>>>
+>>> Use __dma_sync_page() with DMA_BIDIRECTIONAL, which the
+>>> arch_sync_dma_for_*() hooks already use and which kmaps highmem pages
+>>> one at a time. Without CONFIG_HIGHMEM it does the same
+>>> flush_dcache_range() on the linear mapping as before.
+>>>
+>> Does that mean, this change can add additional overhead for
+>> CONFIG_HIGHMEM=y kernels, where the buffer received still belongs to
+>> lowmem? (Because of extra per-page book keeping like
+>> local_irq_save/restore, kmap_xxx). Thoughts?
+>>
+>> Although functionally the change looks correct to me. But maybe
+>> __dma_sync_page() on powerpc side could use some cleanups (outside of
+>> this patch series perhaps).
+> Indeed, __dma_sync_page() could be improved by calling __dma_sync_page_highmem()
+> only for highmem pages. Something like:
+>
+>
+> diff --git a/arch/powerpc/mm/dma-noncoherent.c b/arch/powerpc/mm/dma-noncoherent.c
+> index e646256365d5..199ce0467b58 100644
+> --- a/arch/powerpc/mm/dma-noncoherent.c
+> +++ b/arch/powerpc/mm/dma-noncoherent.c
+> @@ -97,11 +97,12 @@ static void __dma_sync_page(phys_addr_t paddr, size_t size, int dir)
+>         unsigned offset = paddr & ~PAGE_MASK;
+>
 
-Yes, but, we never fully implemented this because we never gave a
-cache flushing solution for these users. Which is a problem for safe
-rust to expose an API without any way to do the mandatory flushing..
+Should we return early if size=0 is passed. Although I couldn't find any
+caller where this could happen, but since we are doing "paddr + size - 1",
+hence wanted to flag it.
 
-Jason
+
+>  #ifdef CONFIG_HIGHMEM
+> -       __dma_sync_page_highmem(page, offset, size, dir);
+> -#else
+> -       unsigned long start = (unsigned long)page_address(page) + offset;
+> -       __dma_sync((void *)start, size, dir);
+> +       if (PageHighMem(pfn_to_page(PHYS_PFN(paddr + size - 1)))) {
+> +               __dma_sync_page_highmem(page, offset, size, dir);
+> +               return;
+> +       }
+>  #endif
+> +       __dma_sync(page_address(page) + offset, size, dir);
+>  }
+>
+>  void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+>
+>
+> Do You want me to add it as another patch for this series?
+
+I think this should work. I guess we should add this patch first and
+then patch-4 on top of it.
+
+Thanks for taking care of it. This at least will avoid the extra work
+which we would have done otherwise for highmem kernels, where the buffer
+passed to this still comes from lowmem.
+
+-ritesh
