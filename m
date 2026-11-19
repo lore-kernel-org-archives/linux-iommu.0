@@ -1,121 +1,115 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.160.171
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=170.10.133.124
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795100940;
-	b=yfYZCOJFdPSnbYoplZ2jLVqlY3G3WH6heD/HfY5pBA2oqBMT+eYrAVQQcGxP5cW9piL5
-	 iVxVQtX4AC9hB4C5DKzmME5S74dfwHLv7mqijSAaIFYEQM/W5nnCfybTWwa26lqfZ6GJc
-	 IqAN7bXTeYvEQmYMCA5NDSMqWTshwmpGVn5PWDRHh+OTSK1KkGYLqdiHrKANjn37wrcAw
-	 wCAgcFN7ANI2eupaxvyVDNZYbx9BJjNFSHO9CjcOaxIFl3dlgcCwYtxd7127CY6zMiD8Y
-	 6RA+bmsSChcV3QZAQ+p0M0Va5/O6rC/DYzDjCiWcNAT6zxyD5JJ2o4nj5fxLfRvkGpQ==
+	t=1795101192;
+	b=XlkLROQ9c43iC03+OVbx8op0SVA5Gol43GpVZguhZtboMUul4ICtbKKAfkH8VSy2fPgA
+	 sd6HAkCAuHKzSvb9TFuX9PAZPQdupdG5ENcPZkbP+cvCAfrtOfyWvw7Zocj1iHUWOEE0X
+	 vpM47hBk61aHUmOCt6a6jTIrV8/FZaFziAh0JoULTskQRexWT9lU4tR/Qg/JLSCPkDM7Z
+	 wYO1NV27/uG5KU4wmsTRCYGXPGgEHCdBTHM7s1VvKgwyeL0TyPZ1XnNKBwtP0jLyoz7TW
+	 zSg1K7vgkNqWs0fsolkoQd0sbtK/6hJAVUJn0WKdDnxuhxagDkIMFzGKMV5AuISrzew==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795100940;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:Content-Transfer-Encoding:
-	 In-Reply-To;
-	bh=UfEaEG1JfkCAIJnh2gYW2V6ds/usdTdH+yyNEqHOfA4=;
-	b=PQpxRBiBjol+RdRf7G8KuzjOk+8orTlevw5BiYenlP3e8ixwP99Qf2x/Q0YrpC5C2rU0
-	 9k9rIdq89aph2Przu/c5ax1fl8OU3zb5hNFDdg6372CgZoRv+Ee5/8gd/gOSsbJffaxZr
-	 9urBhCq/LhuK7GdUvfRgVKQGb9ZGvEkFZlCZ/nmcXsExueVdwDGeJJCoLw4pv0nj01jiz
-	 PJl60mNmMa/XAohYwP72ey6xFxJasnBN9o4Pq7vctF+dmFjJfcJh/egWJxHmLfP55FbhC
-	 3MJDJIeA/IdONZyZvwK1QoH7HqCia7tZZEVKPyACrQzcv3NKRzwza59k42g3DPFBAlQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795101192;
+	h=DMARC-Filter:DKIM-Signature:Received:X-MC-Unique:
+	 X-Mimecast-MFC-AGG-ID:Received:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:
+	 X-Received:Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:In-Reply-To:X-Mimecast-Spam-Score:X-Mimecast-MFC-PROC-ID:
+	 X-Mimecast-Originator:Content-Type:Content-Disposition;
+	bh=aUaUnGVOD0AnB0qQi2tHlDtmvMhT+a6tdGKKo0EDxDI=;
+	b=rLPOOD9LHl2CAUtqR3kb3I/DYZ0siCX4WjjdPJRVUgstD2Wn61barjoSqPGiWGsN5qDa
+	 cw7lZSUW/D/71xRaB2zwM0GcSfd2nc3xG+YV97UQuF1XfrLR5QaknxLvH/CWKgub3hRsj
+	 bNzySYunqRidrppg08wHDEczpnk7Ix+hBwpwv0CvRrmXmQgWqWjCAq2dxz9T5GEeldbDr
+	 qBV+N14eMwwDwZzGY+7w8xVQZ9HGZK7ia+zcR82kDr1E7DF4m1uRs4VZVkQPqKBDFUz+y
+	 LhLpFTd83zpZf9txJxy7SK+8QU0DVfC3IWv3XzsQp6/20hAQ7MThc3gw16ouP5r/6Ig==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=ziepe.ca;
-	spf=pass smtp.mailfrom=ziepe.ca;
-	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=U8cfhezj;
-	arc=none smtp.remote-ip=209.85.160.171
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=redhat.com;
+	spf=pass smtp.mailfrom=redhat.com;
+	dkim=pass header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=b7pFSSAx;
+	arc=none smtp.remote-ip=170.10.133.124
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B058606A7C6
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 15:08:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 1B058606A7C6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D34860A2602
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 15:13:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2D34860A2602
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=U8cfhezj
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-55ade1de0b4so24638011cf.3
-        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 07:08:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1795100939; x=1795705739; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=UfEaEG1JfkCAIJnh2gYW2V6ds/usdTdH+yyNEqHOfA4=;
-        b=U8cfhezjT+1CmbBB/7rELBh+mJ1Pui7egbmv3itDklbCODE579efZR7oVB19Uf/QA6
-         4JI1KAm6qySqXaaT+R25zCQfxP3z1ocnK6ZFa9DEVqsolxhBU6+5BDg7vuThMthe77iX
-         zzvFqXGA2xNVNKZ83oZsuU2dAFRZVvGulLZ5FPXd3FsRwnsTxvPn446dCE4caRfHrE3Z
-         9VPi8Jv8+RtzWbeKCS0sv8Le1aAs6djk86hyDvteVx5O5+06rA7p0D3WpenYUdIFIZIa
-         fbnBGmbYbthMyZj5JCAjhijl1snRRNymgNriWFtrmjxjVEwfc1s/NWxsUQ/yezgo+OVl
-         juRg==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.a=rsa-sha256 header.s=mimecast20190719 header.b=b7pFSSAx
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1795101191;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=aUaUnGVOD0AnB0qQi2tHlDtmvMhT+a6tdGKKo0EDxDI=;
+	b=b7pFSSAxI+E9EaZtsEfbolehGk2Tu+XE3olI4Vs/ypKruP6HT5txdO/AAW6Kw6DOBoGuQD
+	KjM+SJ9zqBvEX0Tf2YD1b2Ppz8GrMZzCjINvDF5x6gQW6ncfqjiD7zXGFlsYZrAVw3vo4j
+	GJuplVbUUZPlYyzsJRv6NkbPDFHGjvI=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-76-UUBrjqt_MoaGUKYM-mmXkA-1; Thu, 19 Nov 2026 10:13:07 -0500
+X-MC-Unique: UUBrjqt_MoaGUKYM-mmXkA-1
+X-Mimecast-MFC-AGG-ID: UUBrjqt_MoaGUKYM-mmXkA_1795101186
+Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-4bb6bac1e84so16612755e9.0
+        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 07:13:07 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795100939; x=1795705739;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :content-type:mime-version:references:message-id:subject:cc:to:from
-         :date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to:content-type;
-        bh=UfEaEG1JfkCAIJnh2gYW2V6ds/usdTdH+yyNEqHOfA4=;
-        b=Sm+cF5QWb840/gHiRBy8GkZOjNqy3Y+UZ/xU2+j6uTZfUi+UG008YUTwK5Q0npNEB6
-         XmBZFBcGXaEfRCyc48TZswNiSu1Q7Qohw489A0KHsL/okiQoSBFAHZoo8K8GXLAIMkuu
-         eOd2SdMCKh2dRXsfLqOJ43+4SMLdphGIYdVcqEF+I/vpMrznlxqdFD6eZxeG8KsAum0c
-         +O4H2VCBAwlwTauywn7JiMGbS9d/28/arWlgTyN0pMJ68xVYHtgE26S4vJj7u8dUbD13
-         rMoJXUGE74KTQfuhClIEj6AlFF6oe4abfDPL5K9Jo7+GFCBdwwzziWBbKCF6TVqFLz7t
-         HfjQ==
-X-Forwarded-Encrypted: i=1; AL+hErFzeaRgS18nY+zORuymdp0+BkQnZslL8jO2L3G8q4FtzOeCJUPJjVgTHjzaK2+V4ng5KaGo+g==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9bA70Z9juv6jWv2pxBsnExE0CgmU7V6SJvYkTf3n4RyuNK/Wiy
-	LoaCDavu6Gz7OiIe6YKGrB1E7XziEOxH44+bFKihvNf3Q/75X/WEB2Q1vYflR4Sf1v8=
-X-Gm-Gg: AYBFou2xhfN9xtna2U2zrPgtouZl646DKLhpkh9gSTRt0I+TLjYI4OLH8CdagIAg+lr
-	DPHowIFYTXc6hOKF90gl3mMQH7sQAOvUpvE45ECsouhgj8wDulj/YaPG0/jGolPqI6l810vaRT3
-	xYBWSq2Y7dvDE5HyY/dyIqIBGbaZa5qxJnq2uztdt+9KQU7YrCIi1td3B8rexZEqrraTz3kfbzc
-	hOxp2AsT//JihdjZ76wVM35aGC6m3M9eEcmtQlQyJ20A1dfTPUA/LamxWYJ16/0VS6tlCcr4jdr
-	Va8rkxlwP3EBaFUG32CUpVHVdwRVUfr9THp67kiyOZg4hs94wp6fHLe7MQvdFN+zx2/F7eoLpk2
-	ZYng32fcCroGLaH2mZbhoV9qEDKOC9Wc+bDgxpc4UCopXV3p2yY59Ur/L8Lrbt8QuOnkGIyiPhe
-	9MuWpEQq1rSRE71BNB+sCuqFshkql5vKoY6RjAxvXjXWb+Q2mXv7k/vPBhvArYZzXR/uyJIR4cw
-	lAQCum2mBgcI6mTSXiO2ll0vfg3FFpZNpKfRgn43o7Fro8D7foQycGC2fi5ngnwULQngBQEHACj
-	jfYUrg==
-X-Received: by 2002:a05:622a:4e06:b0:535:2e9:e474 with SMTP id d75a77b69052e-55d76993c6amr3007681cf.4.1795100938908;
-        Thu, 19 Nov 2026 07:08:58 -0800 (PST)
-Received: from ziepe.ca ([142.166.156.71])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-55d669bb8d4sm25325301cf.3.2026.11.19.07.08.58
+        d=1e100.net; s=20260707; t=1795101186; x=1795705986;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=aUaUnGVOD0AnB0qQi2tHlDtmvMhT+a6tdGKKo0EDxDI=;
+        b=QUdA0j2wjw0jy8DmEmTmJQzBAFGkjaZAKUijfBFHK5XQtMY3cTs+3rY7eLTZa6XakM
+         3QFE5sxJqQryonNmy1UqCnx/enSraOerXDozRHVRTE7J2ScB0EDIp8NUsOMmI+zCOApH
+         VhQgy9cWSfh8AUNmJsEPI/zKi8UNLfhEm0MvLGt74Qi+rcJnbtjcbL1U+XyxQGv2Bv8H
+         S2Z+C4+gJv+UtbDrbw4rJ6n5W4viz046m/5WaLlYHlU43COv4qXepWMjW6oHwUpXEcRr
+         VZ1sw4SOJGKUZSHOBvzP01HZPoAEk3apdRZwxrhz/7p8N2vrD4R9akhawir3ifxg59xC
+         5jBw==
+X-Forwarded-Encrypted: i=1; AL+hErFEPDADM07k+oq+Xe3BBg3LxtDv1FuzXPfRkNN5/N0m7zUaCsS6nYSEwpfOJNKdP43hbIhMDw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+esUeNp3xH+HCzeT2jrWETjjAFDXVVf05LCf902NLDfDKrrx3p
+	435fCxq28AUP1cxsw25S/U06w/6QiLeNN0SwWUbXZA5gDOcX2Iwr4TYqtn1EAQ3gYzsb7wZxlYw
+	asu2Pz8ttlz2/eTvKvYwv6U202scaapan+8ruerloG9bfj95Vg08kmRfq
+X-Gm-Gg: AYBFou1Uorwg2HX5zCS3Yj6HX0GaHT7PkTJrq3UaQ8F2gLXVjrrJiR7e4CyveBrQypb
+	MuA0piZsD7JgmRsOHgmVbZ5N2fhPVo+q7JCi6JWetUtkoyNYIVHeUpUSUatuIWYIs3DUbptjlZ4
+	X5U3SGoR72WROwSbp9U0Bm4qtDiVmqq8TGU8ZbQ1h5pBqE/MeT3FN5tiOKAl8qKhd40fukxxkua
+	ldw39EJnHghUYajHXlY32DB9DslE9AywG1Je5A86/KYInA6QABSLfx1RAM6XkUXGWwEKaBTmp/G
+	FGFa+d3uqksWnmN3HgoFhgqJwi+45e5PfzWbvLsn7SupxJCw4zvGVWzynRI585ijptAOzP6dJ1O
+	KcmX3BEgCze3RhOHS28X8aEgsb+5clzkuxq85/xMFZQ==
+X-Received: by 2002:a05:600c:3107:b0:4ba:eb:eb9b with SMTP id 5b1f17b1804b1-4bb7da1272cmr124141825e9.8.1795101185741;
+        Thu, 19 Nov 2026 07:13:05 -0800 (PST)
+X-Received: by 2002:a05:600c:3107:b0:4ba:eb:eb9b with SMTP id 5b1f17b1804b1-4bb7da1272cmr124141275e9.8.1795101185168;
+        Thu, 19 Nov 2026 07:13:05 -0800 (PST)
+Received: from redhat.com ([2a0d:6fc0:1522:6500:ac93:c62:f076:48c6])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb884a3a3dsm3221365e9.10.2026.11.19.07.13.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2026 07:08:58 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1xU3kv-00000000xbi-0Yi3;
-	Thu, 19 Nov 2026 11:08:57 -0400
-Date: Thu, 19 Nov 2026 11:08:57 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc: Daniel Almeida <daniel.almeida@collabora.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	"Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
-	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <lossin@kernel.org>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Tamir Duberstein <tamird@kernel.org>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
-	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	Detlev Casanova <detlev.casanova@collabora.com>
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-Message-ID: <20261119150857.GK3115493@ziepe.ca>
-References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
- <20261116193821.GC2452510@ziepe.ca>
- <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
- <20261117202055.GA3115493@ziepe.ca>
- <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
- <20261118160909.GC3115493@ziepe.ca>
- <fe60c0bd-1ee2-4b33-8ca3-564ee08e6db5@arm.com>
- <CF2BE3BB-4F16-49FC-8421-B2B823BB7BB4@collabora.com>
- <20261119143151.GH3115493@ziepe.ca>
- <32a64e144c11bec72908ce143044773808be5115.camel@collabora.com>
+        Thu, 19 Nov 2026 07:13:04 -0800 (PST)
+Date: Thu, 19 Nov 2026 10:12:58 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Tao Cui <cui.tao@linux.dev>
+Cc: akpm@linux-foundation.org, dgilbert@interlog.com, mkp@kernel.org,
+	loberman@redhat.com, jmeneghi@redhat.com, kraxel@redhat.com,
+	vivek.kasireddy@intel.com, jasowangio@gmail.com,
+	eperezma@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+	rostedt@goodmis.org, vdonnefort@google.com, mhiramat@kernel.org,
+	jgg@ziepe.ca, kevin.tian@intel.com, axboe@kernel.dk,
+	linux-mm@kvack.org, James.Bottomley@hansenpartnership.com,
+	sumit.semwal@linaro.org, christian.koenig@amd.com,
+	phasta@kernel.org, joro@8bytes.org, will@kernel.org,
+	linux-scsi@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	kvm@vger.kernel.org, virtualization@lists.linux.dev,
+	linux-trace-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	io-uring@vger.kernel.org, linux-kernel@vger.kernel.org,
+	bobbyeshleman@meta.com, mathieu.desnoyers@efficios.com,
+	robin.murphy@arm.com, mason@kernel.org, aesteve@redhat.com,
+	tjmercier@google.com, harry@kernel.org, vbabka@suse.cz,
+	cuitao@kylinos.cn
+Subject: Re: [PATCH 3/7] vhost: account the per-device kernel allocations to
+ memcg
+Message-ID: <20261119101239-mutt-send-email-mst@kernel.org>
+References: <20261106131829.3228926-1-cui.tao@linux.dev>
+ <20261106131829.3228926-4-cui.tao@linux.dev>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -125,35 +119,157 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20261106131829.3228926-4-cui.tao@linux.dev>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: MMMssY2v6Ph_f9E9LQpWh9VxAaOSXm7uXWYoVcFKDvk_1795101186
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <32a64e144c11bec72908ce143044773808be5115.camel@collabora.com>
 
-On Thu, Nov 19, 2026 at 09:52:59AM -0500, Nicolas Dufresne wrote:
-> Le jeudi 19 novembre 2026 à 10:31 -0400, Jason Gunthorpe a écrit :
-> > With the additional twist that alot of embedded HW has apparently
-> > choosen to not implement SSID but instead has a pool of SIDs that one
-> > device can use, functionally similar to SSID.
-> > 
-> > We'd need also API support for unbundling the DT iommus=[] SID list
-> > into something that the SIDs can be attached more like a PASID.  That
-> > need, I think, has become clear with all the DT tricks and fake busses
-> > to try to work around this issue. :|
+On Fri, Nov 06, 2026 at 09:18:25PM +0800, Tao Cui wrote:
+> From: Tao Cui <cuitao@kylinos.cn>
 > 
-> The word "fake" never flies with the DT maintainers. On that subject, I still
-> don't know what you mean with iommus=[].
+> Everything except the worker struct is allocated with plain GFP_KERNEL:
+> the per-vq iovec and log arrays at VHOST_SET_OWNER, the memory table at
+> VHOST_SET_MEM_TABLE whose size follows the user supplied region count,
+> the pending message nodes, and the vhost_net/vhost_vsock device structs
+> with their fallback to vmalloc.  The worker has been accounted since the
+> vhost_task conversion.
+> 
+> A container that can open /dev/vhost-net or /dev/vhost-vsock, which
+> device plugins hand out with passthrough, holds roughly 150KB of
+> resident kernel memory per device after SET_OWNER.  Charge the rest the
+> same way the worker already is.
+> 
+> Signed-off-by: Tao Cui <cuitao@kylinos.cn>
 
-When you write your DT you can list all the iommu streams in one
-iommus property. Like this randomly picked out of the DT files:
 
-        iommus = <&sysmmu_decon0x>, <&sysmmu_decon1x>;
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
-If you do that then Linux sets the struct device containing it to
-put the same paging domain on all of those iommus.
+should each patch be merged individually?
 
-It doesn't make any sense to open code this in drivers when you can
-just have the core code do it by writing your DT to match how the
-driver wants to work...
 
-Jason
+> ---
+>  drivers/vhost/net.c   | 14 ++++++++------
+>  drivers/vhost/vhost.c | 16 ++++++++++------
+>  drivers/vhost/vsock.c |  5 +++--
+>  3 files changed, 21 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index 4570a4ffbab2..bab6597c696d 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -249,7 +249,7 @@ vhost_net_ubuf_alloc(struct vhost_virtqueue *vq, bool zcopy)
+>  	/* No zero copy backend? Nothing to count. */
+>  	if (!zcopy)
+>  		return NULL;
+> -	ubufs = kmalloc_obj(*ubufs);
+> +	ubufs = kmalloc_obj(*ubufs, GFP_KERNEL_ACCOUNT);
+>  	if (!ubufs)
+>  		return ERR_PTR(-ENOMEM);
+>  	atomic_set(&ubufs->refcount, 1);
+> @@ -302,7 +302,8 @@ static int vhost_net_set_ubuf_info(struct vhost_net *n)
+>  		if (!zcopy)
+>  			continue;
+>  		n->vqs[i].ubuf_info =
+> -			kmalloc_objs(*n->vqs[i].ubuf_info, UIO_MAXIOV);
+> +			kmalloc_objs(*n->vqs[i].ubuf_info, UIO_MAXIOV,
+> +				     GFP_KERNEL_ACCOUNT);
+>  		if  (!n->vqs[i].ubuf_info)
+>  			goto err;
+>  	}
+> @@ -1344,17 +1345,18 @@ static int vhost_net_open(struct inode *inode, struct file *f)
+>  	struct xdp_buff *xdp;
+>  	int i;
+>  
+> -	n = kvmalloc_obj(*n, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
+> +	n = kvmalloc_obj(*n, GFP_KERNEL | __GFP_RETRY_MAYFAIL |
+> +			 __GFP_ACCOUNT);
+>  	if (!n)
+>  		return -ENOMEM;
+> -	vqs = kmalloc_objs(*vqs, VHOST_NET_VQ_MAX);
+> +	vqs = kmalloc_objs(*vqs, VHOST_NET_VQ_MAX, GFP_KERNEL_ACCOUNT);
+>  	if (!vqs) {
+>  		kvfree(n);
+>  		return -ENOMEM;
+>  	}
+>  
+>  	queue = kmalloc_array(VHOST_NET_BATCH, sizeof(void *),
+> -			      GFP_KERNEL);
+> +			      GFP_KERNEL_ACCOUNT);
+>  	if (!queue) {
+>  		kfree(vqs);
+>  		kvfree(n);
+> @@ -1362,7 +1364,7 @@ static int vhost_net_open(struct inode *inode, struct file *f)
+>  	}
+>  	n->vqs[VHOST_NET_VQ_RX].rxq.queue = queue;
+>  
+> -	xdp = kmalloc_objs(*xdp, VHOST_NET_BATCH);
+> +	xdp = kmalloc_objs(*xdp, VHOST_NET_BATCH, GFP_KERNEL_ACCOUNT);
+>  	if (!xdp) {
+>  		kfree(vqs);
+>  		kvfree(n);
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index ea127af58ada..d1274106ad5d 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -526,11 +526,14 @@ static long vhost_dev_alloc_iovecs(struct vhost_dev *dev)
+>  
+>  	for (i = 0; i < dev->nvqs; ++i) {
+>  		vq = dev->vqs[i];
+> -		vq->indirect = kmalloc_objs(*vq->indirect, UIO_MAXIOV);
+> -		vq->log = kmalloc_objs(*vq->log, dev->iov_limit);
+> -		vq->heads = kmalloc_objs(*vq->heads, dev->iov_limit);
+> +		vq->indirect = kmalloc_objs(*vq->indirect, UIO_MAXIOV,
+> +					    GFP_KERNEL_ACCOUNT);
+> +		vq->log = kmalloc_objs(*vq->log, dev->iov_limit,
+> +				       GFP_KERNEL_ACCOUNT);
+> +		vq->heads = kmalloc_objs(*vq->heads, dev->iov_limit,
+> +					 GFP_KERNEL_ACCOUNT);
+>  		vq->nheads = kmalloc_array(dev->iov_limit, sizeof(*vq->nheads),
+> -					   GFP_KERNEL);
+> +					   GFP_KERNEL_ACCOUNT);
+>  		if (!vq->indirect || !vq->log || !vq->heads || !vq->nheads)
+>  			goto err_nomem;
+>  	}
+> @@ -2053,7 +2056,8 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
+>  		return -E2BIG;
+>  	if (max_iotlb_entries <= 0)
+>  		return -EINVAL;
+> -	newmem = kvzalloc_flex(*newmem, regions, mem.nregions);
+> +	newmem = kvzalloc_flex(*newmem, regions, mem.nregions,
+> +			       GFP_KERNEL_ACCOUNT);
+>  	if (!newmem)
+>  		return -ENOMEM;
+>  
+> @@ -3405,7 +3409,7 @@ EXPORT_SYMBOL_GPL(vhost_disable_notify);
+>  struct vhost_msg_node *vhost_new_msg(struct vhost_virtqueue *vq, int type)
+>  {
+>  	/* Make sure all padding within the structure is initialized. */
+> -	struct vhost_msg_node *node = kzalloc_obj(*node);
+> +	struct vhost_msg_node *node = kzalloc_obj(*node, GFP_KERNEL_ACCOUNT);
+>  	if (!node)
+>  		return NULL;
+>  
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index 0cb87971d749..600daeb05e7b 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -721,11 +721,12 @@ static int vhost_vsock_dev_open(struct inode *inode, struct file *file)
+>  	/* This struct is large and allocation could fail, fall back to vmalloc
+>  	 * if there is no other way.
+>  	 */
+> -	vsock = kvmalloc_obj(*vsock, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
+> +	vsock = kvmalloc_obj(*vsock, GFP_KERNEL | __GFP_RETRY_MAYFAIL |
+> +			     __GFP_ACCOUNT);
+>  	if (!vsock)
+>  		return -ENOMEM;
+>  
+> -	vqs = kmalloc_objs(*vqs, ARRAY_SIZE(vsock->vqs));
+> +	vqs = kmalloc_objs(*vqs, ARRAY_SIZE(vsock->vqs), GFP_KERNEL_ACCOUNT);
+>  	if (!vqs) {
+>  		ret = -ENOMEM;
+>  		goto out;
+> -- 
+> 2.43.0
+
