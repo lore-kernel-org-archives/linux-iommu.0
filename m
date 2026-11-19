@@ -1,97 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795094016;
-	b=kDRydl8YArn3rHhjyR+nbORlMgEJGkzv0FlfnBYf3AKMzo8qoS4qjFjb6SzXiW9W/DTT
-	 lzCdil2EsjUgaAlYKSeJ/YUM4fC+MEOB+EYRkJKSukhm98Odcan36xf37ArB1OV9Q+e9E
-	 SEegfLI3GDumfTd68Z+JjHZhMA0nQ7PN4AdPTg8D1q6KT6w5UFoNem7hDpWbzzaHNzPSI
-	 7JvVRXyDI5fvL0Z+J4I/U16clD47HnREsDF/9uq0Ai6UX0pVDJQ0ZH3f6gJmpCRlSSxKi
-	 nPSFFUIoOxfgZFoItlStGpl7KrOqai8RWOe49HXhNDK3WnCA/C1IuYW2ImuAyteqGiQ==
+	t=1795094274;
+	b=svD1NF9R2C/fIDKMkxY9nXPmSkov+Ce8vQPoit61DyPrnAldiBGtENhwQDmFyS6Qn+Lm
+	 /YlfW9fT+wS/DIboI0kllq9RH5osP3lWADWMo9BOWwv0uOrc8Caqi+Vo99zDvhaIisasW
+	 JzsgbMwJ2mdATGsGj/25g41W6uS3DG09VLbbNyI4AWuaa0o44xOCEvH5cliTAnxseaTb1
+	 L/PbRNJwHUEx/ng7mZ5g6VBNZqjT2zfVfRVbN90IK1PE2UjX7XiOZkwq3lbEgwkA3Z5Ug
+	 QuzmGKaQTSEQLM7EsG9S0pTsqBkMxTXiKBssLl186RIDe4nAjGHMQh9p9pRS5wucN4g==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795094016;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=UhOenxHkXTJXohukC1vI//PmlFbZZlOM6f8rclEtEAw=;
-	b=mJO1wJiB0IyxBnh3a/kxdr+qi866+1c8QsOYXY7BGwGKaliJ5yX2nQ4WqFky8TmjT3sp
-	 fRAKgw+Hb0V07D5R1i4jYOk7YOR2WlK3yH9X+Xx57/xiu9P8icgE57zqjadcbMjhwbEnU
-	 MB7V8eraT72UUlC+/X5uP1KPG9Aff69/XFwz1bo/3mLjXRmjZCPXrWtjnO0hMdgtznWxj
-	 uNbaA1IBrUycmLSkvGSxjui+GBMm26zGTbeSPdvXpzD1Oo4qB4BLIl9qm4aozh5NNzzd7
-	 FGyYMx+OZJo2u6KaVEY4EaWYfUPrcgduMeYpyCqBPs+Q3S2FZkue1mOxiLrQ4t1Yvug==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795094274;
+	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
+	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
+	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
+	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
+	 X-CMS-RootMailID:References;
+	bh=c4JodCXFJYsFjKsG9M4trE9wchuTecCsKm5CSZLC4hc=;
+	b=4rG/UTnJ5KFPfAUpZ+EbXXKmzKeiv8syot87RrSmSWCGJDMvZXM2JNn4T9g284obTifP
+	 V4YKeQDb180ZLqJ4Wbg5cR4mtoGq9rNuRJevEy8hAebW7C3wsB49Jm1jbsnWbT/3mi540
+	 77NP+9gFFOZ3k+6HwCs5gQyEJH0imlTciYo9trCcnsIzeVEyjMx/UmlzZZo6D2ttyHCgK
+	 nCQHfCUScaye8tRONVaf0+mUeQ0VTeCkojosgsqejXCUpX/RE0u4EZKxTd8VhiWh/oaEi
+	 lLWuZqC5gTDiq6jX7h5SXKwfyU+0adbm0wo2cUTfDCfSKCAK3LFr+l4Q3JbVFqHVhcA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=gmail.com;
-	spf=pass smtp.mailfrom=gmail.com;
-	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dCIOZtnw;
-	arc=none smtp.remote-ip=209.85.128.47
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=samsung.com;
+	spf=pass smtp.mailfrom=samsung.com;
+	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=tCKrdnen;
+	arc=none smtp.remote-ip=210.118.77.12
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCDCD60A2610
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:13:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CCDCD60A2610
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E0EE606A338
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:17:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6E0EE606A338
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=dCIOZtnw
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4a140e7405dso21673965e9.3
-        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 05:13:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20260707; t=1795094014; x=1795698814; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=UhOenxHkXTJXohukC1vI//PmlFbZZlOM6f8rclEtEAw=;
-        b=dCIOZtnwl+z6q/CYOI4t2pkU0nI98xCo5Zi/3WnVKo6pC8o/R0J/3dS+nXJqcqJp2/
-         0AtEXFo3uV5Bpz2eI/HtsgyonEBvrEkt6o2KWqlnWhOA6IOnT+fmZKnlShkgtzoadupX
-         RCxP9kgkMqigdkeSFJPrAOK4pioHKfUhW4QVNs9+M20aXLTxOqQv1mqMlFMNwe2R9j15
-         D6qmnW0NftoyzaGkHSiGii6qnIa2uC16iqa4e4lYXlHahzK3QNe/7B/LgIxeoaEp165s
-         Otx1e6U5HdAMn50jMmq0bqDqOJyKZDskl8O8ZSm+KCQ0lSDt9+DbMEWRcCCgNIlkg8WY
-         byNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795094014; x=1795698814;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=UhOenxHkXTJXohukC1vI//PmlFbZZlOM6f8rclEtEAw=;
-        b=CPYq5YRS0aq9Rz4GIsmRg7Lt/wt7PnPhwsaduRpf+QIEDBNSdG7Lp27MBAezHzZ8bt
-         tMRxdkvvapV23AoM28H1RR0WJ8vLFwMc4xx4qf9dkFDX/Xd7V0Lt2PnPkO4FNOYVcNAg
-         Rt2YiwLcxqsvQ0Pxbt3veJlqwmRt1LJAshE0DuLtUkVOVTBhQryY3MTVH1AvKNQhlX1L
-         Xh1qbUoOa8k00wiU0SV0YtzIV+w96DHnqmvMwqRuCEOg9/PEvrWhV/vQedVlr/j8k+tV
-         jZswLDblgNG+rO4VNiEV1WdArXzx/dDH9nZnbjUqD6tfD69xMftAyS5tkmIe5xhKRV9A
-         ym1A==
-X-Forwarded-Encrypted: i=1; AL+hErHVys4ouCCznRlBS9o0STEwuBvwwoEM9MWNCR8C8+MO7XnKxgCFGwsj+0HwOf9vV/SKKDR8Ug==@lists.linux.dev
-X-Gm-Message-State: APuU4Z9Gtdt5iT41lBbGuxhSeIFfu3wSp7THlsYR0hCUfqeEwc/bycB1
-	y6eYr2/6uY28mscPek4gxv3ySsF90FLqVomnLb1h+skAw0CT8LxLPjDX
-X-Gm-Gg: AYBFou3HDQp/sohWaQyu9ydqDxLP65eSvVGhTNwJZhg+Vu+c9q5IefUVx91eMqNSez3
-	xkTDKyPK2jPKkfsBkIFFk+sIRpt/gsiiUOD6/QDppQdkLrzciZc63swIt+2p48P6sA6tDhPjQ+0
-	KxcF8LWcMNwXOB6dnswqPnNiUgiV54pugQU1TQ65xQlIrVq6W+WqfW0xJ+BlMmr/56fjFVNDagM
-	3dcADIumPfhwY6dPA7p7FR14KGvlO7FeK/dOoLAISx1T2yrFvGKWKnHzdK5P3I9LHb61AXXBn/b
-	3ci0f0Ot5tONlCt/jBMTOO8Mhk6St1SjWyrHfFfVwXKqs+/MMytqk0KCkG94bTKpJWXNWlJiuhh
-	qrEnF4iHlv0EjQgIvv6MptaJNWF6HVyeMEJobvk+B8e99o8ImZFciSHu42MDYMpNoxqIzSFOKuk
-	pAFpyf6wxTfqKcqFcUAoqkHLcZo/hMdaQezLFJBiMwihk2Ov8Y/5ZyRuE68EHOQLQtV8uQYqKQl
-	ifgkoYZXIz+H9rAf7e4h2h91Ed2tPlLMkQeMFZkiTJBPLhL+xGLqw+yZQgJwMZ3iHIR5GpcBXGo
-	+DPXsNY3AfGaUOsm/F48pGG6MAxVDp5sDu+t
-X-Received: by 2002:a05:600c:1395:b0:4bb:5de1:e92c with SMTP id 5b1f17b1804b1-4bb7da3947emr122657995e9.26.1795094014044;
-        Thu, 19 Nov 2026 05:13:34 -0800 (PST)
-Received: from LAPTOP-AVI.lan ([2a06:c701:477f:ff00:c2fd:f9b8:4971:d270])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb84e5edf5sm18258045e9.4.2026.11.19.05.13.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Nov 2026 05:13:33 -0800 (PST)
-From: Avi Weiss <thnkslprpt@gmail.com>
-To: m.szyprowski@samsung.com,
-	robin.murphy@arm.com
-Cc: ailiop@suse.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	x86@kernel.org,
-	Avi Weiss <thnkslprpt@gmail.com>
-Subject: [PATCH v2 2/2] dma-debug: Remove obsolete mapping dump helper
-Date: Thu, 19 Nov 2026 15:13:25 +0200
-Message-ID: <8d79f918823590770607279958d16fdd750d5829.1795093513.git.thnkslprpt@gmail.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1795093513.git.thnkslprpt@gmail.com>
-References: <cover.1795093513.git.thnkslprpt@gmail.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=tCKrdnen
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261119131751euoutp02ff7e1b747a048d880a5b5d27521596d3~pdLqeepuH1514615146euoutp02I
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:17:51 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261119131751euoutp02ff7e1b747a048d880a5b5d27521596d3~pdLqeepuH1514615146euoutp02I
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1795094271;
+	bh=c4JodCXFJYsFjKsG9M4trE9wchuTecCsKm5CSZLC4hc=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=tCKrdnenBcm3IgpjF1SGdlm8gc80Rzy8MOKtLvZHDbZ4DzfnsSTC/cJYb64iIQeE0
+	 hKy5i/cFoAD0ok+eLMz/0ElmTyA/dK0x6TappCbdLTAe7isXOWreRT5TypImh4S6th
+	 9TGQZMmpSxkATQ+cLpVdE6FVbrBWriGKEhdwNoO4=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20261119131751eucas1p188066757e9cd9eb57dbdceb523c9b7ec~pdLqNmLTa2917429174eucas1p1w;
+	Thu, 19 Nov 2026 13:17:51 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20261119131750eusmtip1b09a8063fcb8f57bec92422ad0c4bde6~pdLpUEplc1427414274eusmtip1n;
+	Thu, 19 Nov 2026 13:17:50 +0000 (GMT)
+Message-ID: <2b64e853-89a7-4fa5-a4f8-2c6b0b62bf74@samsung.com>
+Date: Thu, 19 Nov 2026 14:17:49 +0100
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -101,97 +64,95 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v2 4/7] powerpc/mm: handle highmem pages in
+ arch_dma_prep_coherent()
+To: "Ritesh Harjani (IBM)" <ritesh.list@gmail.com>,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, "Christophe Leroy (CS
+ GROUP)" <chleroy@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig
+	<hch@infradead.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman
+	<mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Shrikanth Hegde
+	<sshegde@linux.ibm.com>, Chris Zankel <chris@zankel.net>, Max Filippov
+	<jcmvbkbc@gmail.com>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <jym96n4p.ritesh.list@gmail.com>
 Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20261119131751eucas1p188066757e9cd9eb57dbdceb523c9b7ec
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20261110094850eucas1p1f10fa1473aca341473077f60a088b490
+X-EPHeader: CA
+X-CMS-RootMailID: 20261110094850eucas1p1f10fa1473aca341473077f60a088b490
+References: <20261110094830.2081847-1-m.szyprowski@samsung.com>
+	<CGME20261110094850eucas1p1f10fa1473aca341473077f60a088b490@eucas1p1.samsung.com>
+	<20261110094830.2081847-5-m.szyprowski@samsung.com>
+	<jym96n4p.ritesh.list@gmail.com>
 
-debug_dma_dump_mappings() is only called by the legacy AMD GART IOMMU
-leak diagnostic. The helper traverses DMA-debug hash buckets even when
-DMA debugging was never initialized.
+On 19.11.2026 13:07, Ritesh Harjani (IBM) wrote:
+> Marek Szyprowski <m.szyprowski@samsung.com> writes:
+>
+>> arch_dma_prep_coherent() performs the cache maintenance on the address
+>> returned by page_address(). On 32-bit powerpc with CONFIG_HIGHMEM that
+>> is NULL for a highmem page which is not kmapped, so the flush would
+>> operate on the wrong virtual range and leave the dirty lines of the
+>> buffer in place.
+>>
+>> The generic DMA code may pass highmem pages to this hook:
+>> dma_direct_alloc() handles a highmem page returned by
+>> dma_alloc_contiguous() by forcing the remap path, which calls
+>> arch_dma_prep_coherent() on that page before creating the uncached
+>> mapping. This cannot happen on powerpc today only because it does not
+>> select HAVE_DMA_CONTIGUOUS, so dma-direct never gets a highmem page
+>> there, but nothing in the hook's contract rules it out.
+>>
+>> Use __dma_sync_page() with DMA_BIDIRECTIONAL, which the
+>> arch_sync_dma_for_*() hooks already use and which kmaps highmem pages
+>> one at a time. Without CONFIG_HIGHMEM it does the same
+>> flush_dcache_range() on the linear mapping as before.
+>>
+> Does that mean, this change can add additional overhead for
+> CONFIG_HIGHMEM=y kernels, where the buffer received still belongs to
+> lowmem? (Because of extra per-page book keeping like
+> local_irq_save/restore, kmap_xxx). Thoughts?
+>
+> Although functionally the change looks correct to me. But maybe
+> __dma_sync_page() on powerpc side could use some cleanups (outside of
+> this patch series perhaps).
+Indeed, __dma_sync_page() could be improved by calling __dma_sync_page_highmem()
+only for highmem pages. Something like:
 
-Remove the helper, its declarations and the GART call. Keep the GART
-stack trace for diagnosing IOMMU exhaustion.
 
-Signed-off-by: Avi Weiss <thnkslprpt@gmail.com>
----
- arch/x86/kernel/amd_gart_64.c |  1 -
- include/linux/dma-map-ops.h   |  4 ----
- kernel/dma/debug.c            | 33 ---------------------------------
- 3 files changed, 38 deletions(-)
+diff --git a/arch/powerpc/mm/dma-noncoherent.c b/arch/powerpc/mm/dma-noncoherent.c
+index e646256365d5..199ce0467b58 100644
+--- a/arch/powerpc/mm/dma-noncoherent.c
++++ b/arch/powerpc/mm/dma-noncoherent.c
+@@ -97,11 +97,12 @@ static void __dma_sync_page(phys_addr_t paddr, size_t size, int dir)
+        unsigned offset = paddr & ~PAGE_MASK;
 
-diff --git a/arch/x86/kernel/amd_gart_64.c b/arch/x86/kernel/amd_gart_64.c
-index b5f1f031d45b..965844299a1b 100644
---- a/arch/x86/kernel/amd_gart_64.c
-+++ b/arch/x86/kernel/amd_gart_64.c
-@@ -157,7 +157,6 @@ static void dump_leak(void)
- 	dump = 1;
- 
- 	show_stack(NULL, NULL, KERN_ERR);
--	debug_dma_dump_mappings(NULL);
- }
- #endif
- 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index afaf2c12189b..eb32ed923455 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -418,14 +418,10 @@ static inline void arch_teardown_dma_ops(struct device *dev)
- 
- #ifdef CONFIG_DMA_API_DEBUG
- void dma_debug_add_bus(const struct bus_type *bus);
--void debug_dma_dump_mappings(struct device *dev);
- #else
- static inline void dma_debug_add_bus(const struct bus_type *bus)
- {
- }
--static inline void debug_dma_dump_mappings(struct device *dev)
--{
--}
- #endif /* CONFIG_DMA_API_DEBUG */
- 
- extern const struct dma_map_ops dma_dummy_ops;
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 6e554dcfc9b9..f1b6f7b9aa14 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -535,39 +535,6 @@ static void active_cacheline_remove(struct dma_debug_entry *entry)
- 	spin_unlock_irqrestore(&radix_lock, flags);
- }
- 
--/*
-- * Dump mappings entries on kernel space for debugging purposes
-- */
--void debug_dma_dump_mappings(struct device *dev)
--{
--	int idx;
--	phys_addr_t cln;
--
--	for (idx = 0; idx < HASH_SIZE; idx++) {
--		struct hash_bucket *bucket = &dma_entry_hash[idx];
--		struct dma_debug_entry *entry;
--		unsigned long flags;
--
--		spin_lock_irqsave(&bucket->lock, flags);
--		list_for_each_entry(entry, &bucket->list, list) {
--			if (!dev || dev == entry->dev) {
--				cln = to_cacheline_number(entry);
--				dev_info(entry->dev,
--					 "%s idx %d P=%pa D=%llx L=%llx cln=%pa %s %s attrs=0x%lx\n",
--					 type2name[entry->type], idx,
--					 &entry->paddr, entry->dev_addr,
--					 entry->size, &cln,
--					 dir2name[entry->direction],
--					 maperr2str[entry->map_err_type],
--					 entry->attrs);
--			}
--		}
--		spin_unlock_irqrestore(&bucket->lock, flags);
--
--		cond_resched();
--	}
--}
--
- /*
-  * Dump mappings entries on user space via debugfs
-  */
+ #ifdef CONFIG_HIGHMEM
+-       __dma_sync_page_highmem(page, offset, size, dir);
+-#else
+-       unsigned long start = (unsigned long)page_address(page) + offset;
+-       __dma_sync((void *)start, size, dir);
++       if (PageHighMem(pfn_to_page(PHYS_PFN(paddr + size - 1)))) {
++               __dma_sync_page_highmem(page, offset, size, dir);
++               return;
++       }
+ #endif
++       __dma_sync(page_address(page) + offset, size, dir);
+ }
+
+ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+
+
+Do You want me to add it as another patch for this series?
+
+Best regards
 -- 
-2.43.0
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
