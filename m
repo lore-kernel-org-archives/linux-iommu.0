@@ -1,69 +1,68 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=111.22.67.137
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=198.175.65.17
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795056735;
-	b=SqApMW3IbNHP0wSit+YfE/woqG3bgZm7WIkXz9WHfIqqdLDbn8B71RNYcRCP8n7OXine
-	 kEBhd5lfkiyHiGeey9nf59Jud+Spx9HGp5TDmu8Q8YsqRs8Ea/2Esfq8QZxVC/uAe7BeY
-	 2+w1zZYLVz9JfVhhPGShvlXOelEAO8qTdKZR4zUgHR6TbPDDa8324VkM0+eIDiZYtRE7M
-	 eTw+iOiVIqPi6k3dcg8vLTOQvCHtek24RA+Bj6OSXPYVOKJY4TlAHR+/V2sVec75PNnte
-	 CbUAY3sjHKwNbKY+FjmVJiZPfHHZS85QM1RY0JTz4QVahdJ0pMV57qONrtXXMTubyZQ==
+	t=1795056750;
+	b=HeqSTAw1j3+KQ2KLkobuijp6dfvCwTasMxVkBJS3lXSBEMeUW08NXWztCnTPhV6olX57
+	 /h4q7fWz2kHD5b1iijiN5v56F3RwwxTSLiXn1wE37G4jep0dBzbmERAJSdXpa4t4zgD3k
+	 TXdVxjxNrnBHwxiEIAraueacQE8NAatDVFj8gh9wNqEmVxgs2QgtPjddwXtzvEbwASYz+
+	 m9D7FuWdWntYdj6NrIUvCSaoM91+zhJstceMWnBke0zLui0W78tcZAQJmyHZ3v+9vPChc
+	 i8RRq1tmwJkbslZLCht6TR3n8BErC+J1Yk1A3e9gJAHCewtHIlpdrVGuBrkjLE5eSzw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795056735;
-	h=DMARC-Filter:DKIM-Signature:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:
-	 X-RM-TRANSID:X-RM-TagInfo:X-RM-SPAM-FLAG:Received:X-RM-TRANSID:From:
-	 To:Cc:Subject:Date:Message-ID:In-Reply-To:References:X-Mailer:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=4NdHmfe8yI77qDKx7cyN5pAzKdZzXmgNff3sue1UTXU=;
-	b=d4IgizBRHujey+mOijZU4ObvNkWewuGdqkTUhtVThsq21EhRwoWwDi06Bafgq+RN3TPo
-	 p63d+MbIcNQX0APpKnZ86lG3Vo9nghW3OpymsjnrgElSrIoASb/HvP/OikUkNG/T0UP90
-	 KdtM7xK0aF0wVWYhTuKqMzh/SpY52LngaUwJn4XZewkE6G9r8HtaJEJz1tY/gsSctrRd9
-	 twX3IfIsFGg78eGsDdBPhUWCqukbKTWj3XheOqhpG8xRkhl+Hk7QcHETIu3obNEhBbj23
-	 zPY/8P6+LzT4ux04FVWM1LFfEiZ337XViA6mQnKUrVrPr+7TUV2I/OcZhvFq6m3d+XQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795056750;
+	h=DMARC-Filter:DKIM-Signature:X-CSE-ConnectionGUID:X-CSE-MsgGUID:
+	 X-IronPort-AV:X-IronPort-AV:Received:X-CSE-ConnectionGUID:
+	 X-CSE-MsgGUID:X-ExtLoop1:X-IronPort-AV:Received:Message-ID:Date:
+	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
+	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
+	bh=hqaJ3AKKV5UoAnmGdJpR51q3f45RxukokiAmVcUo/ns=;
+	b=S67wHydEDX4hO1TOutDfuEdTCWnYkhSk93Ih/VTlUjjO8LuyTzgqTUuSJRnpZN4+oSAY
+	 RUcwcUKmzCuCVD4LRbFddhpuK+w8vSvJm5esWyJ8oLR5NtdNCn3gAzQK0IfQ6zqWkCmvn
+	 eNWNHDGp4faRYvqzw99IWKyL53jq+5bKK+7g6doVQjYRfc/aUjRMoRfKUuVRL5MIWlQuT
+	 uYwwzy/cs5xCjiguCnU0xaBjAMsZkrgjNHU4JuUvGnfqVVKXHzaMWseeisHYdo+tHZqi/
+	 wTuADN5RPgilcrDgyCNd3JQSSRG+4npCR7E8c69NW67m7Ngc/XgrJKKZ5jo9Okx/4Xw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=cmss.chinamobile.com;
-	spf=pass smtp.mailfrom=cmss.chinamobile.com;
-	dkim=pass header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=rItD+Bs3;
-	arc=none smtp.remote-ip=111.22.67.137
-Received: from cmccmta4.chinamobile.com (cmccmta4.chinamobile.com [111.22.67.137])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 730CF606A330
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 02:52:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 730CF606A330
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=cmss.chinamobile.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cmss.chinamobile.com
+	dmarc=pass header.from=linux.intel.com;
+	spf=pass smtp.mailfrom=linux.intel.com;
+	dkim=pass header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CVtbOSvm;
+	arc=none smtp.remote-ip=198.175.65.17
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF691606A325;
+	Thu, 19 Nov 2026 02:52:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AF691606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=cmss.chinamobile.com header.i=@cmss.chinamobile.com header.a=rsa-sha256 header.s=default header.b=rItD+Bs3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=cmss.chinamobile.com; s=default; l=0;
-	h=from:subject:message-id:to:cc:mime-version;
-	bh=47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=;
-	b=rItD+Bs3Ba485YEI+up8kA+1rzBWyGIGyh7av54OD1yf4np/gZgO8lHGsArvngO1h/9auzoXJRdbi
-	 Iu1JWt2xFX/JfKKKmlibolX65qaTWfE4PWXAaXSj/eHoddKssemRmiC4tG8Jna3HvkSKL30v6jlTGP
-	 lhQs/8LJIBZKwnPQ=
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from spf.mail.chinamobile.com (unknown[10.188.0.87])
-	by rmmx-syy-dmz-app08-12008 (RichMail) with SMTP id 2ee86afe64434ca-b8b77;
-	Thu, 19 Nov 2026 10:51:47 +0800 (CST)
-X-RM-TRANSID:2ee86afe64434ca-b8b77
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG:00000000
-Received:from [25.255.2.225] (unknown[10.55.1.70])
-	by rmsmtp-syy-appsvr03-12003 (RichMail) with SMTP id 2ee36afe6441bb2-05c83;
-	Thu, 19 Nov 2026 10:51:47 +0800 (CST)
-X-RM-TRANSID:2ee36afe6441bb2-05c83
-From: Jiahao Xu <xujiahao@cmss.chinamobile.com>
-To: Andrew Morton <akpm@linux-foundation.org>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-mm@kvack.org, David Hildenbrand <david@kernel.org>, John Hubbard <jhubbard@nvidia.com>,
-	Peter Xu <peterx@redhat.com>, Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Kevin Tian <kevin.tian@intel.com>, "Joerg Roedel (AMD)" <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Samiullah Khawaja <skhawaja@google.com>,
-	syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com, Jiahao Xu <xujiahao@cmss.chinamobile.com>
-Subject: [PATCH 2/2] iommufd: only hold references to files memfd_pin_folios() can pin
-Date: Thu, 19 Nov 2026 10:44:17 +0800
-Message-ID: <20261119104417.459962-1-xujiahao@cmss.chinamobile.com>
-In-Reply-To: <20261119104417.312237-1-xujiahao@cmss.chinamobile.com>
-References: <20261119104417.312237-1-xujiahao@cmss.chinamobile.com> <20261119104417.312237-1-xujiahao@cmss.chinamobile.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.a=rsa-sha256 header.s=Intel header.b=CVtbOSvm
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1795056749; x=1826592749;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=l8yCQ1ySx0XtQMlmK6BwZg43oQMUFeCh0WIqFay6wAg=;
+  b=CVtbOSvms1Grx1Nk2ulxag0EOge+OP8by6gHVhrzb/aqL82rTgN9c8nI
+   fwAxE3Xhvs1gc1CsLClRvyGT1jxDgsdaj8V0nneJEw0ragCvm3CYWtVu2
+   DgkPoDxqIKcGcS6z0z8RmvOmcxwF1DZWVXCDmDy3cdJ4N3AVv40q5IeLj
+   FG+GAdLhil0K9RLDibkzicgiYevALn6ogbbudPppm2ym7e1bVH7fJiov0
+   7pu2maQ0G52uRtsuRQlXT8qOdt3MK6i0EF+GLKVxU92bHHWNvC/F6v7/V
+   7Q7ZRnAihuknW+wTt8LMzjOIpi5v7kJJG2Qest84ycQUzFXqOC3dbuSU0
+   Q==;
+X-CSE-ConnectionGUID: gLi02E2ITSSDYttPJcPXjg==
+X-CSE-MsgGUID: 1rJhHlL2Tru1dKWd7+c9+Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11970"; a="3902042"
+X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
+   d="scan'208";a="3902042"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2026 18:52:28 -0800
+X-CSE-ConnectionGUID: UBmr5AoKQZ6XNpdnwx8bYg==
+X-CSE-MsgGUID: HKAlHNiISz+5v4TblkfH9w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.27,220,1787036400"; 
+   d="scan'208";a="10555744"
+Received: from unknown (HELO [10.238.2.135]) ([10.238.2.135])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Nov 2026 18:52:26 -0800
+Message-ID: <de1011bc-1cc0-4409-af76-4e90dcef6cf4@linux.intel.com>
+Date: Thu, 19 Nov 2026 10:52:22 +0800
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -73,74 +72,70 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 7/9] coco/tdx-host: Add skeleton to support PCI link
+ encryption
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, x86@kernel.org, linux-coco@lists.linux.dev,
+ kvm@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Kiryl Shutsemau <kas@kernel.org>,
+ Rick Edgecombe <rick.p.edgecombe@intel.com>, yilun.xu@linux.intel.com,
+ xiaoyao.li@intel.com, Chao Gao <chao.gao@intel.com>,
+ linux-kernel@vger.kernel.org
+References: <20261112043054.2664857-1-baolu.lu@linux.intel.com>
+ <20261112043054.2664857-8-baolu.lu@linux.intel.com>
+From: Binbin Wu <binbin.wu@linux.intel.com>
+Content-Language: en-US
+In-Reply-To: <20261112043054.2664857-8-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-iopt_map_file_pages() stores a reference to the file passed to
-IOMMU_IOAS_MAP_FILE in the iopt_pages of the new mapping:
+On 11/12/2026 12:30 PM, Lu Baolu wrote:
+> Register a Link TSM instance to support host side TSM operations for
+> TDISP, when the TDX Connect support bit is set by TDX Module in
+> tdx_feature0.
+> 
+> This is the main purpose of an independent tdx-host module out of TDX
+> core. Recall that a TEE Security Manager (TSM) is a platform agent that
+> speaks the TEE Device Interface Security Protocol (TDISP) to PCIe
+> devices and manages private memory resources for the platform. An
+> independent tdx-host module allows for device-security enumeration and
+> initialization flows to be deferred from other TDX Module initialization
+> requirements. Crucially, when / if TDX Module init moves earlier in x86
+> initialization flow this driver is still guaranteed to run after IOMMU
+> and PCI init (i.e. subsys_initcall() vs device_initcall()).
+> 
+> The ability to unload the module, or unbind the driver is also useful
+> for debug and coarse grained transitioning between PCI TSM operation and
+> PCI CMA operation (native kernel PCI device authentication).
+> 
+> For now only check for TDX Connect support in the TDX Module and
+> register the Link TSM. The TSM support is basic boilerplate with
+> operation flows to be added later.
+> 
+> Based on work by Yilun and Dan.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-	iopt_map_file_pages()
-	  iopt_alloc_file_pages()
-	    pages->file = get_file(file)
+[...]
 
-iopt_release_pages() drops that reference only when the iopt_pages is
-destroyed, which for a file mapping happens while the iommufd file is
-being torn down.  Nothing restricts which file can be passed, so
-userspace can map the iommufd file itself, or a vfio device fd bound to
-the same iommufd, both of which own an iommufd_ctx reference.  The
-reference graph then contains a cycle and the file, the iopt_pages, the
-IOAS and the iommufd_ctx are all leaked; kmemleak reports it as
-"memory leak in path_openat" with the holder taken through
-iopt_map_file_pages().
+>  
+>  static int tdx_host_probe(struct faux_device *fdev)
+>  {
+> -	return seamldr_init(&fdev->dev);
+> +	int ret;
+> +
+> +	ret = seamldr_init(&fdev->dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return tdx_tdisp_init(&fdev->dev);
 
-Reverse the test instead of trying to enumerate the files that own an
-iommufd_ctx: accept only the files that memfd_pin_folios() is able to
-pin, which is exactly the set of files the mapping can be built from.
-memfd_pin_folios_supported() reports that set, so the same test can run
-here before the reference is handed to iopt_pages.  dma-bufs are
-unaffected: they are taken by the dma_buf_get() branch above and never
-reach the file branch, and iopt_pages holds the dma_buf there, not a
-struct file.
+If tdx_tdisp_init() fails, it will also disable TDX module update and the
+version sysfs attributes.  If this is intended, could you add some description
+in the change log about it?
 
-Fixes: f4986a72d6e4 ("iommufd: Add IOMMU_IOAS_MAP_FILE")
-Reported-by: syzbot+7666ed2c3d42196bf7e3@syzkaller.appspotmail.com
-Closes: https://syzkaller.appspot.com/bug?extid=7666ed2c3d42196bf7e3
-Signed-off-by: Jiahao Xu <xujiahao@cmss.chinamobile.com>
----
-v3:
- - Call the new memfd_pin_folios_supported() helper instead of shmem_file().
-   shmem_file() became an out-of-line function in mm/shmem.c that is not
-   exported, so calling it from iommufd.ko failed at modpost with
-   "symbol 'shmem_file' undefined!".  Reported by Jason Gunthorpe.
-v2: https://lore.kernel.org/all/20261117093244.652569-1-xujiahao@cmss.chinamobile.com/
-v1: https://lore.kernel.org/all/20261112105945.285526-1-xujiahao@cmss.chinamobile.com/
----
- drivers/iommu/iommufd/io_pagetable.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/drivers/iommu/iommufd/io_pagetable.c b/drivers/iommu/iommufd/io_pagetable.c
-index 5ac736cf5..ab43e656d 100644
---- a/drivers/iommu/iommufd/io_pagetable.c
-+++ b/drivers/iommu/iommufd/io_pagetable.c
-@@ -515,6 +515,18 @@ int iopt_map_file_pages(struct iommufd_ctx *ictx, struct io_pagetable *iopt,
- 		if (!file)
- 			return -EBADF;
- 
-+		/*
-+		 * iopt_pages keeps a reference to the file until the mapping is
-+		 * destroyed, so only accept the files memfd_pin_folios() is able
-+		 * to pin.  Any other fd, in particular one that itself owns an
-+		 * iommufd_ctx (iommufd, vfio, ...), would put the file into a
-+		 * reference cycle with this iommufd and never be released.
-+		 */
-+		if (!memfd_pin_folios_supported(file)) {
-+			fput(file);
-+			return -EINVAL;
-+		}
-+
- 		pages = iopt_alloc_file_pages(file, start_byte, start, length,
- 					      iommu_prot & IOMMU_WRITE);
- 		fput(file);
--- 
-2.43.0
-
+>  }
+>  
+>  static const struct faux_device_ops tdx_host_ops = {
 
