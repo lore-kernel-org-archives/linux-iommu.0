@@ -1,60 +1,89 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=74.125.82.178
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795087203;
-	b=xBREeRVqZdhttgsECSxdJ84SxnHBseYAQvU754otQtlNy1FH0IUAyiLLNRt/i9NcxeJG
-	 t0rN0XQJvJa1kdrS7i2KVOzS8d4Fik8fnnUoTl2kORvnSSSyHINF4mv30JyUfsaZujdjG
-	 t1BHw4PPLr2SrxlfC8eO9QNxjiZJEbXYt/d/NKZwC7Yy6olOc1TYnu4ehwQqeU6/x0j1u
-	 44+1XkEgrbOlgt/3tTJ6tJZbIEvt2tGfPHN75+oLHypmQAeJcnNUEZy8bedJQivlxyzT6
-	 3UR0wnzP8DC5dWhuN/JCgbbAtfp9vIHkk7rGbiiM8gkCBHFK2i60pACtT9rXLkvpI1w==
+	t=1795090677;
+	b=CAW8E61C1FY18BJvQ60gXsAf+r3h/Ybk7ZX3p0QW1v/KJQzVBibCDK8qyKexu2kE56Hx
+	 TJK9V+vM5wDG/+kSarqeIxtLd8GlWCKeGBBRXDbCpUY3XQZUITq4fPhPwGwSwNM9nZ0BP
+	 ecLMpdo3cxPLPOxX18Ds/PIaA7y7QzHOWQ2y1ooIzeEnR3mJ4I6LIMwlotme0lvmoeB7Z
+	 ZEr23Nq+CvEJFULIaBcsjzHHBjvgua1cy3+42FVxl981gw5RRDSGEBGIwl8dmo6e5KOMY
+	 gmrGC+GXZF8q4y+v2FrKOGqfTuRmZvEz766kIn0zZwCVO0KBVgl02kZT+NKC+wep/Zg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795087203;
-	h=DMARC-Filter:Received:DKIM-Filter:DKIM-Signature:Received:Received:
-	 Message-ID:Date:MIME-Version:User-Agent:Subject:To:Cc:
-	 Content-Language:From:In-Reply-To:Content-Transfer-Encoding:
-	 X-CMS-MailID:X-Msg-Generator:Content-Type:X-RootMTR:X-EPHeader:
-	 X-CMS-RootMailID:References;
-	bh=QjhX4svqgENH27PAAoOn+DesXkt70aYnU/WTBMxaRlI=;
-	b=rBU44v445PPBhj4TavZCTZR+NdC2rpd9XoRua2SPwWaM16km4LYArReYhJp7HBH9drnW
-	 SNbpATGlfX4rWus2i1/10w5i7G7Dqt54a9flckghlVu9n1OHyVUJ0a8yY7XL3DLFw7Hni
-	 Tc7PUybozF+kXG8TwpsUu6OqPZsvBkAr0SI2FV3sfQsCZfCvwjdvUfNfiZpMyQouuKUbx
-	 qrVepjUfy7eMhcDcDxBUz4L0JL11PPLF8h6NfFyoSO0PGd+jXpmNr5BW7W5PHHQy8r23n
-	 TXBosjcJ07nYk14KKIOHuBZJLPyJlqgVfMvVwSZOgdf2x7f7m4pu8HKBHEg0GMs16GA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795090677;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:In-Reply-To:Date:Message-ID:References;
+	bh=SsWTDqy6U/s3LdSWkLHVQ7n4MxNSxrVjauJtJeDqFQI=;
+	b=cDRB1pW8iWEbn3cLUqBjxTvkO6WBO6oJBLRtudUx29TkVqEqVDLVgU1KqPdDnCFpK+ia
+	 U7IWzJjAQeNoGai4YRRHC6wk5imj1Bpv3kaHVl4akMqCvF5DeED1VAvWby/8qpyk6HmhX
+	 bmfI386/Emwj7/SW3fWJ3Zuf9hzQyYvkoj2oUXKhljG4bHOdPJjJpQ3VoiMv3tWKtUXh3
+	 9E7gp/EKGAn1FEaVYW7FxgkH3a/Wk95gIvNx11xyQ/6tHeOwTasAZo1uaqC5DhM16LdEc
+	 EKg2xtv3W21ljGh2itKF5uFvaZpeQGEx4pHrjgnh136B3FHIohtHU/tSLk2/OkSxfaw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=samsung.com;
-	spf=pass smtp.mailfrom=samsung.com;
-	dkim=pass header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=qPqvot4d;
-	arc=none smtp.remote-ip=210.118.77.12
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vjOVArT2;
+	arc=none smtp.remote-ip=74.125.82.178
+Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E111606A324
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 11:20:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8E111606A324
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7B1E606A326
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 12:17:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E7B1E606A326
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=samsung.com header.i=@samsung.com header.a=rsa-sha256 header.s=mail20170921 header.b=qPqvot4d
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20261119112000euoutp02f7ea4dcb26b944641800becca96ef04e~pbkw_cV8o1233212332euoutp02O
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 11:20:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20261119112000euoutp02f7ea4dcb26b944641800becca96ef04e~pbkw_cV8o1233212332euoutp02O
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1795087200;
-	bh=QjhX4svqgENH27PAAoOn+DesXkt70aYnU/WTBMxaRlI=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=qPqvot4d9oG/iUwx+maS5xSX5X6XoywUKZkobSFZ98vTznvDeQMcEYOwy0iWW8oWm
-	 /Gy9af7GwuNK0BXMNEWESJdOLJAtysBA3piqxHZOIWBPykY8Aye2lYL6YUzUmJLAhb
-	 IkRymHot4ISztBj69JwR4JvLdW7dhTwgmmqIM/Ro=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20261119111959eucas1p2bd4a85981864901886c2f6e9681855f3~pbkwmyhTr0716707167eucas1p2y;
-	Thu, 19 Nov 2026 11:19:59 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20261119111959eusmtip2279ca40ca3a7bf37097daea13deb112f~pbkv7OMEZ1620516205eusmtip2I;
-	Thu, 19 Nov 2026 11:19:59 +0000 (GMT)
-Message-ID: <fa38a878-1735-4682-b208-5de1616f7e4f@samsung.com>
-Date: Thu, 19 Nov 2026 12:19:58 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=vjOVArT2
+Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-3712b6d9843so2334242eec.1
+        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 04:17:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795090676; x=1795695476; darn=lists.linux.dev;
+        h=references:message-id:date:in-reply-to:subject:cc:to:from:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=SsWTDqy6U/s3LdSWkLHVQ7n4MxNSxrVjauJtJeDqFQI=;
+        b=vjOVArT2Z8t3vjArDCY2JGmGTOPB7Ht1p4CYo6KQZYJwdrXBCedLCxgHnebeTXBhDo
+         1k+w0gm4Vt9IIsa4nRg86AR6v7VgXpXHqra09T8RBhVb5vkU1BUwmnyTYPF1HU1cuI67
+         iDQrp7YuMhN5svWfJoAvddmkVkmTGk6Oq75aWhVoRWuUAwIhrYspN9W743AMbR1+AtYt
+         UKOsUuajazYWKB4GgCfnShAC7IGQDhDGVIp+d1emE16ampQsgmjL7C6XU0sN73fjDJe/
+         rKZqKl8PDV1ZQ/EIdc8I0wrTvYS9ruUYs6qGhfpPbx7TUwRSfUE3lIelzdrXcmxeSro4
+         QCww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795090676; x=1795695476;
+        h=references:message-id:date:in-reply-to:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=SsWTDqy6U/s3LdSWkLHVQ7n4MxNSxrVjauJtJeDqFQI=;
+        b=bGsoCtVp2p664AUHVXVLnxTcI5vmjEl++8Qttx14Cfvi+aFYSzG48gETEVAae7doJM
+         iwQYbVS2dQgg6yCg61koCMj9+RmDc65yuqRUmUKenLTHvqOOJd7OIEMuFWGxRNrYgdOf
+         QuNa7SethNsa8JqQ/tjZ6Q/gtV83G0QDwuQYUcDVRyRQJvA/q/UplwjhKxprQ1J/0mmu
+         VR7im3TymhNkbQ5ezfFIFUcShDF2FkJQ4r+Sd5EJG/I9Ow+voP6+lEyCpxBu6MlKnB0U
+         JwFCu52NTl1M+97S/NAOZ+iw4+hH8BAd0ps1RBrHtzddWQJL84NnO9xO+dkBfLyvFdGL
+         MkVw==
+X-Forwarded-Encrypted: i=1; AL+hErGoVBMkmbdqWIvJ9k+8ID8pVZQfPldG2XAlDjQX4IUVR3M6qb4J1wLV5/tRHuq01EDEUuvkfw==@lists.linux.dev
+X-Gm-Message-State: APuU4Z82owPt9/YmiwddWo9FglEvx/DTAHZs7CqlI2eCg+oz/YJVE1xk
+	DEt6hyCfSqjX5czZPkpBWKe/K/9gZWsoX6QQ/+Vcj0+gry/moInuhn3P
+X-Gm-Gg: AZFdTZdVhxc15dacKTvidswT8ndD55jPWSFy3rKEnIiGattvM3tSMmIFAE+kfLBual5
+	wU22eauH1vuv6xyCSIq+UKYS28fuGvJxFJNfRFHDc5TBptZb0dV93nUzKikxFd01Cell617kruF
+	fMWiukaVaq+oZgI7bjKZ3j3qYjuK18G6ba1n65QJGqyig3eMoVGs8g0EdEB4vApQVV/hwKbj9DK
+	kYvMltLdP1xYTxZox83zk23rCqUEf1Ax+D9fZkeF+V89kt9PwKuCajnjM7c594/MM0G6lCAd9TS
+	48zUz/BrII1O5LO36jzPX5OOVPyMlutKL6sYICLF7IiJZXSbYr659uE+fbPwmKDTGRkxh0IbIqY
+	oU9lF+M057qLi6don2zmBzVcINcvRT7FD+dM2H/kdRtMVfVlgEOjWHxUQjmYA6GgcxIwwD9rA3O
+	F+nDIo7GnassqOMN/BwNr8atQDm4i5r4aTr1reDxES9eGCoTmGrIiW+sd8XPVx4OSP7GyRbByfg
+	AgJRsE7OLBqXCx0PLnFHvXIoWMzihVhs+Ny24zD/85Xygs/4hbgSiZaUbwzonwIMfyWh49cUY3n
+	XNPPbnWKgwrcHmIGlDSISaCYfkuOeHPDiptlWI35aQ7eF6G9xw==
+X-Received: by 2002:a05:7300:1c9c:b0:361:1dd6:531b with SMTP id 5a478bee46e88-38281025c89mr5440546eec.26.1795090675937;
+        Thu, 19 Nov 2026 04:17:55 -0800 (PST)
+Received: from pve-server ([49.205.216.49])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-382a80bc19bsm17656695eec.29.2026.11.19.04.17.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2026 04:17:54 -0800 (PST)
+From: Ritesh Harjani (IBM) <ritesh.list@gmail.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>, linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Christophe Leroy (CS GROUP) <chleroy@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@infradead.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Shrikanth Hegde <sshegde@linux.ibm.com>, Chris Zankel <chris@zankel.net>, Max Filippov <jcmvbkbc@gmail.com>
+Subject: Re: [PATCH v2 4/7] powerpc/mm: handle highmem pages in arch_dma_prep_coherent()
+In-Reply-To: <20261110094830.2081847-5-m.szyprowski@samsung.com>
+Date: Thu, 19 Nov 2026 17:37:02 +0530
+Message-ID: <jym96n4p.ritesh.list@gmail.com>
+References: <20261110094830.2081847-1-m.szyprowski@samsung.com> <CGME20261110094850eucas1p1f10fa1473aca341473077f60a088b490@eucas1p1.samsung.com> <20261110094830.2081847-5-m.szyprowski@samsung.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -63,71 +92,58 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH v2] dma-contiguous: support percentage sizes in
- cma_pernuma= and numa_cma=
-To: Alexander Graf <graf@amazon.com>, linux-kernel@vger.kernel.org
-Cc: Jonathan Corbet <corbet@lwn.net>, Shuah Khan
-	<skhan@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>, Robin
-	Murphy <robin.murphy@arm.com>, linux-doc@vger.kernel.org,
-	iommu@lists.linux.dev, Andrew Morton <akpm@linux-foundation.org>, David
-	Hildenbrand <david@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-	nh-open-source@amazon.com, linux-mm@kvack.org, The AWS Nitro Enclaves Team
-	<aws-nitro-enclaves-devel@amazon.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20261114145328.1307-1-graf@amazon.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20261119111959eucas1p2bd4a85981864901886c2f6e9681855f3
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20261114145340eucas1p2f7699b88eae34f7904cf68109dc3eb4f
-X-EPHeader: CA
-X-CMS-RootMailID: 20261114145340eucas1p2f7699b88eae34f7904cf68109dc3eb4f
-References: <CGME20261114145340eucas1p2f7699b88eae34f7904cf68109dc3eb4f@eucas1p2.samsung.com>
-	<20261114145328.1307-1-graf@amazon.com>
 
-On 14.11.2026 15:53, Alexander Graf wrote:
-> While CMA_SIZE_PERCENTAGE supports percentages for built-in defaults, the
-> CMA allocation kernel parameters currently only take a fixed size argument.
-> That makes it difficult to have a single system image that sizes its CMA
-> allocation based on the available memory. To use CMA as backing pool for
-> large, physically contiguous guest memory, I want to be able to say
-> "allocate 90% of system RAM minus 1 GiB for CMA". Per NUMA node.
+Marek Szyprowski <m.szyprowski@samsung.com> writes:
+
+> arch_dma_prep_coherent() performs the cache maintenance on the address
+> returned by page_address(). On 32-bit powerpc with CONFIG_HIGHMEM that
+> is NULL for a highmem page which is not kmapped, so the flush would
+> operate on the wrong virtual range and leave the dirty lines of the
+> buffer in place.
 >
-> Extend the CMA parser logic to accept command line options like this:
+> The generic DMA code may pass highmem pages to this hook:
+> dma_direct_alloc() handles a highmem page returned by
+> dma_alloc_contiguous() by forcing the remap path, which calls
+> arch_dma_prep_coherent() on that page before creating the uncached
+> mapping. This cannot happen on powerpc today only because it does not
+> select HAVE_DMA_CONTIGUOUS, so dma-direct never gets a highmem page
+> there, but nothing in the hook's contract rules it out.
 >
->   cma_pernuma=80% numa_cma=0:95%-1G,1:4G
+> Use __dma_sync_page() with DMA_BIDIRECTIONAL, which the
+> arch_sync_dma_for_*() hooks already use and which kmaps highmem pages
+> one at a time. Without CONFIG_HIGHMEM it does the same
+> flush_dcache_range() on the linear mapping as before.
 >
-> To avoid incomplete allocations on parsing errors, check for them
-> before actually allocating.
+
+Does that mean, this change can add additional overhead for
+CONFIG_HIGHMEM=y kernels, where the buffer received still belongs to
+lowmem? (Because of extra per-page book keeping like
+local_irq_save/restore, kmap_xxx). Thoughts?
+
+Although functionally the change looks correct to me. But maybe
+__dma_sync_page() on powerpc side could use some cleanups (outside of
+this patch series perhaps).
 
 
-This looks like an over-engineered feature. I doubt that kernel is the right
-place to implement such advanced sizing. If You need to explicitly control
-the amount of CMA on the target machines, maybe You could do it in some
-scripts deploying the kernel configuration? Calculating it there should be
-much more flexible imho...
+-ritesh
 
-
-> Signed-off-by: Alexander Graf <graf@amazon.com>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 > ---
-> v1 -> v2:
+>  arch/powerpc/mm/dma-noncoherent.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 >
->   - Reject an empty numa_cma= and a trailing comma (Sashiko)
->   - Keep the last valid size for each option or node, so an explicit 0
->     now overrides a percentage (Sashiko)
->   - Parse percentages as plain decimal, and reject sizes that a 32-bit
->     phys_addr_t cannot hold
->   - Reject a bare cma_pernuma or numa_cma without "=", which mainline
->     dereferences as NULL
->   - Rework the kernel-parameters.txt text accordingly
->
-> v1: https://lore.kernel.org/all/20261111140440.43024-1-graf@amazon.com/
->
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+> diff --git a/arch/powerpc/mm/dma-noncoherent.c b/arch/powerpc/mm/dma-noncoherent.c
+> index 30260b5d146d..e646256365d5 100644
+> --- a/arch/powerpc/mm/dma-noncoherent.c
+> +++ b/arch/powerpc/mm/dma-noncoherent.c
+> @@ -118,7 +118,5 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+>  
+>  void arch_dma_prep_coherent(struct page *page, size_t size)
+>  {
+> -	unsigned long kaddr = (unsigned long)page_address(page);
+> -
+> -	flush_dcache_range(kaddr, kaddr + size);
+> +	__dma_sync_page(page_to_phys(page), size, DMA_BIDIRECTIONAL);
+>  }
+> -- 
+> 2.43.0
