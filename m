@@ -1,60 +1,105 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795122045;
-	b=eNyDHEc18rWc55RqOsbR1yTBmdS+d8s2EUItLKhh4CbSGIKOENN2808WBJrgcFmVxJCv
-	 eJ16qwb7OMtnqSwWm7cZvzHHoag0lXw73UZKrpx+JKHVylJdHgtsSpUo+gZk60SbYkrkZ
-	 ztFDPYYRJQKkII4dKbUsrdzBiQaYpzlKwFJjT5/Gzfl9eezEn0t+rGenwPzm0lDDb5EXB
-	 /CHIEZaY+92OEkd8f94+T6Hmz5iuwNyp4gwFSgnCKIQRGhq85cVbqbfdj2+rk0h7aqcCp
-	 wjRiTKjnq2+xLh0P0P6NX21cxbplSJBH8sQzmLdFCz9GpWrB9C8+0V0+qPRCqXKlhbQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795122045;
-	h=Received:DKIM-Signature:Date:From:To:Cc:Subject:Message-ID:
-	 References:MIME-Version:Content-Type:Content-Disposition:In-Reply-To;
-	bh=jRzgudTO1qkSGuzOPfaR+Ba0Lwqyafb02x6YrJau0gQ=;
-	b=O88lby62fcb/0aEMgfr5yD95UJpdBGDzqwRR88o6Xn/OeQcYToxNvnLEdvT75HYx+ySX
-	 osBg/vAXQ0X4elAQilDd32Lugf/rTLVgqcKd8Bh2sprW7iKBgUVa2TAjKICDaIRtEauNM
-	 o3Duhfhy/8kuvZXp1gH2hViSWMXWM6y8awbQHzKtCVjuyafxTCUlNvm/B3kw1E1gyHV8h
-	 vdTciy/D21Qq0wXqsEjypJ4W/tJ5Swfz4wsDwCe80c9TYs9gx9L2qmuMQYlR8dA7dsj7P
-	 e2i5/jLV3k1An8HNgFHTNX6DkCOrYhvGaI2quhTn6lP5CEoSw5kjpbX5uOooPEFEZFQ==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=orn6ElUm;
-	arc=none smtp.remote-ip=100.103.45.18
-Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.49
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795125290;
+	b=3t9O4L57jm2a1Hf/MfwrBVC5Wk9fBpe+NcjbBknNQqeRvqn9Eo+KjTCddyS9OJ5kUfzu
+	 mgIisGJr+L96LJe2Loxsu9gY0j7ml/v2/mTOmqoSpwlQcCWT4uNrYkSWJhg/WmtPx4lPA
+	 S96Mi7RhPHI3TS/TqBFOph0blAdhM3AzUhF4S4v1cT9fK3SVLTq4UeO4Zo0IK3x2xVZ5I
+	 6NllsRtAHIViK+fYDBSaVk0AfO4nLL9oQJQSzTKo5Ca1/EUC6JMju/hC98drJ/SY2AfqB
+	 g+p59+iMKFim6vZR6SyQVEukgg5mfdnPKIgvzW4Sj8TJkpwWEWfwmccXbUN4KGtvKjQ==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795125290;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:In-Reply-To:References:MIME-Version:Date:X-Gm-Features:
+	 Message-ID:Subject:To:Cc:Content-Type;
+	bh=9oWwO0cY+zSAmEBywqcvt5EowD1mRhhhpuanmPj0nj4=;
+	b=V+b03SdgyWOFNcHN4n0upygXA9POAnsAWRFTy6ouGeAXXZ2BsQUTEnnau3WCV8AbIQBi
+	 kkrZxhlZsqUwhLpqco630BXigGd0X8is7LVYODBwspbiUFtqYJNjue/sgOzG3wF+40vDW
+	 htMkFt494Kiu1bJaN0xqicCHQVwTmxnqVvzGMOPI0/VbS35b2wP/yoNCMwroxbmZk5D5I
+	 WPz9WhM8Q3/XXYce3dQptHvOl5PPp4VL+wKKtXI9PeCkuJktID8pfaa4SgqjmUr8H4Y4X
+	 XSBpsuR+llXj5iS8sUpPaRHmQ3wOIsN3l9akPRzWpnmeEtGROyFPbeWc5IzERvJkjYA==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=google.com;
+	spf=pass smtp.mailfrom=google.com;
+	dkim=pass header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=fpAsY1N3;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=209.85.219.49
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEFF6606A324;
-	Thu, 19 Nov 2026 21:00:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBB71606A325
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 21:54:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org EBB71606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=orn6ElUm
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88A7F1F000C6;
-	Thu, 19 Nov 2026 21:00:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795122045;
-	bh=jRzgudTO1qkSGuzOPfaR+Ba0Lwqyafb02x6YrJau0gQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To;
-	b=orn6ElUmwk+wOC3TWMCK1D63fKBmQ66tvx/fNy/R1n50ZqHw1OpgnTw5sSOZkyaJG
-	 f9qQu/IDo5aUE4eEs5j0qIIiK9CO727Ltm4ttNMYWC7BR8WTmLDhNjl6EjjRG7gADl
-	 MMq9ZKC5M6XMbPTNjxCelZpzuwUG1uW0mRbrRpHm5GgDNYl4s/J+YfRjMRKk7uN1/o
-	 Af9WF86DUIRObuR/qpoNARO65+rd318lrMb1OP5tbT25DR1rYP+FxCALKxN2tXCkHp
-	 ZX0eaBUzRlkedL6sFRSqNvtScDw+qMyXF3wdCGDCOgep6jJ6Cyi9FQPJCCGeoOP6CD
-	 Djtx2LjVYD2xw==
-Date: Thu, 19 Nov 2026 15:00:43 -0600
-From: Rob Herring <robh@kernel.org>
-To: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-Cc: saravanak@kernel.org, akpm@linux-foundation.org, david@kernel.org,
-	ljs@kernel.org, liam@infradead.org, vbabka@kernel.org,
-	rppt@kernel.org, surenb@google.com, mhocko@suse.com,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	baoquan.he@linux.dev, pasha.tatashin@soleen.com,
-	pratyush@kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	iommu@lists.linux.dev, kexec@lists.infradead.org
-Subject: Re: [PATCH 2/4] of: reserved_mem: keep the reservation when
- node_init returns -EBUSY
-Message-ID: <20261119210043.GA532410-robh@kernel.org>
-References: <20261103162429.2053989-1-radhey.shyam.pandey@amd.com>
- <20261103162429.2053989-3-radhey.shyam.pandey@amd.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.a=rsa-sha256 header.s=20260707 header.b=fpAsY1N3
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-91f2dd5dddaso2698196d6.3
+        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:54:49 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1795125289; cv=none;
+        d=google.com; s=arc-20260327;
+        b=hpHlW2zuBmY2yxmyvAzfMspBvJupCAeibuwUrsKXa9KfbM6oLQhrxlVMsvRUgPh5bM
+         GGq+yzkMJGLWr+ANNQ6zMscaiG4BNcZTSygVpotxhFer8TkdFn7Uu6+BARBUUJ7Yb/0I
+         VhT/8QXfaAoEm2DYKURD2mqRjOstMyXUs00r8IKsL55mUxhgUJeQHAgdOHnWUDY4LNGQ
+         QQVg001bQD2t4ODNgBt6Lw7cBHQeyN27eycKH4pZS21RXIvC77Cc4FJy2AS+uolBqi1l
+         YkncR+sfDNyTbBYmI6LRW2fBlihYhOi704qRsYfu2PtLsJQxmcR0UBfamtsXGcrqsMwt
+         fq5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:mime-version:references:in-reply-to
+         :from:dkim-signature;
+        bh=9oWwO0cY+zSAmEBywqcvt5EowD1mRhhhpuanmPj0nj4=;
+        fh=fXyl1/isPJ62p1t1AhIwBeX+lBwmji8KB1To5sNjwR8=;
+        b=Bc7/mYr11H2Y7UVgSTu1waQNzpONFJ5GwPd3V9/SMDHaHynb1jWvs9X0IDJUPW5k53
+         daEwEsQOm+iIuaUxt/FyxXELcAzlO0/YHamHI9fUWX1rXWfwhqMJMTZQMvsErFsEJnq0
+         YF6etWB0w+7ckqJS9c/qjTcFLI55Eg/uTBPZkByTbFjtNFBatQY2pRf7S7t+SrOlc0gX
+         BaOrLINkC/Ml7AuulZXWmin72xlV+D5lTMlR0XWw1+QJ9fUSN02RZ4iw5qytP5ZUMtOY
+         GNkylnu76l7LO57kVAz97m4w0gK3yAoMji+HkxHzd5Kga1rO1Bd28EgsMn4zQrG9Tsyp
+         pddQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20260707; t=1795125289; x=1795730089; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:mime-version:references
+         :in-reply-to:from:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=9oWwO0cY+zSAmEBywqcvt5EowD1mRhhhpuanmPj0nj4=;
+        b=fpAsY1N3FV2Of70tXyWKQWKTu6xYGYAI33A/Ihax+6lWHI/OrFOXK6YEt+6vWaOHMn
+         XJm96u7gYJ0v0KdIjABIehFX608zd5QRZhyEzbWQpaEI3xG8gEIpJsda5CQQz3hAIkj1
+         iFn2uGcvQFOrWsuYLJo3tcD/DmUYbRumimCuf5OZtkgjIT9yCWzGfxx9hCr6/Y/HZI6s
+         S1srAQDWFGdxnjZfmulXjJeasuEyAg1fkIfUI8xazQV5JhEffhAR6RDnenCVsf9Xc3fX
+         OiuspCGQDVCUEOCq77UKTbnJGc355J2QsYxzOCfEc4hrfGojM4G+Xvc3FXQLOkYq+Siw
+         6hSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795125289; x=1795730089;
+        h=content-type:cc:to:subject:message-id:date:mime-version:references
+         :in-reply-to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=9oWwO0cY+zSAmEBywqcvt5EowD1mRhhhpuanmPj0nj4=;
+        b=Zg0buIcVusD8iTXxiuM0Gn1u9PFwhTdPreNgOm9HHuT1724HfpkZlOwQmrBECuPe8T
+         YCUovbnEFj1B6lDAyitORX1UlgR0lrZ6nHVZ8bmem/ac1f91MSiNBtWID4RLjwHlOf2t
+         IvXdZzvvWxTFFwcwWl3UqjmIVdYRVv0H4y1EclHCISPL8ZqeZhLVS2rTnV/iyvawa0vF
+         5CtYyFAKpEM8F08npi7HwQHMkowXb4zDW5GWB6Nj+XppnLd1naW/MUq7QpZSnk29Z7JI
+         C6JAzRWiIT0NR1rUB6abgM8YnNnnMDFjOvE7H/8wtrik2IOo0eTLeTHFElmGALJ5rY9x
+         xH9A==
+X-Forwarded-Encrypted: i=1; AL+hErH9Y5p0UEnwGQtQL7F4tK6snCLuvr/44jUWvy750g3MQqVs17egROJ/wRVccQysUn8ZLmXghg==@lists.linux.dev
+X-Gm-Message-State: APuU4Z9nl8xcOduOuJ20OcWe/fYEvGboYg1FBFdgX5vEoGIKsrUaqyFj
+	tLOrvsZrnWZVaV7Yx54TA3RE2oKvUcd42G0wvV5JGPlBS1q7iOhDnp2rznkEBB7U7Bu1VYOdOFV
+	oglZHFSA21n0fdVHdwb0SXYPcJt77fDUicDAyO3Pz
+X-Gm-Gg: AZFdTZeSj5OPe2NVvy6/xWBUqZx3hGbc+rJJbLqDUK+WhpwMzHmL4Q3GFmrrFpOxqPq
+	w1Sqlo19wgcCXlDf1dCuky/LO5Am9KTa/i+xRWoDvPP2BaUyrwP/W5frL/wUZkrpisBhmLev+qI
+	MJiI0Oc/ozQ2QohsIfc5mX5GdYIGr+AYS3WufLThbL3fBoVlZBTp2bi1yrI5fLx/EH0qlg1DP+H
+	cuRb2Xlsx6IlP3vK98X65fDmGgR+WjzAdDQfPKbAGzwQXO2dGcTh+fUa+yOfqkCvgehp1+XcOS0
+	aJ92cZLYdD5b4EhrcZn29199y2veeHOlV1GyKhMOZFmR+NzSPLRag9nV1Fb/hQsAV4g03qKuBkm
+	Bu3kwQFcGZ4hWSehBLnEvTRFvrMJ5sJ1aPykwXlF78OKF5DtwUBZ31f1eqORngfGDETP5XCCIY4
+	OGQDNoypZI3ydFJ0oTvtSd3A==
+X-Received: by 2002:a05:6214:4018:b0:921:3369:a766 with SMTP id
+ 6a1803df08f44-92134a90270mr18304526d6.37.1795125287959; Thu, 19 Nov 2026
+ 13:54:47 -0800 (PST)
+Received: from 176938342045 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 19 Nov 2026 13:54:46 -0800
+From: Ackerley Tng <ackerleytng@google.com>
+In-Reply-To: <20261112074120.1570072-1-aneesh.kumar@kernel.org>
+References: <20261112074120.1570072-1-aneesh.kumar@kernel.org>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -64,53 +109,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20261103162429.2053989-3-radhey.shyam.pandey@amd.com>
+Date: Thu, 19 Nov 2026 13:54:46 -0800
+X-Gm-Features: Aa3M54oXacZEF20KAAo0a9xrzHva6i-aYhx3GSm4FZG9y6dnhRg5XpywqLRfWns
+Message-ID: <CAEvNRgFKfGEzMzAHCqGv4T3YdkjFbLKjuHW-CR9V0OzYRzTu-Q@mail.gmail.com>
+Subject: Re: [RFC PATCH v5 00/16] KVM: guest_memfd: Add a common framework for
+ device memory providers
+To: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>, linux-coco@lists.linux.dev
+Cc: David Woodhouse <dwmw2@infradead.org>, David Hildenbrand <david@kernel.org>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Paolo Bonzini <pbonzini@redhat.com>, 
+	Sean Christopherson <seanjc@google.com>, Alexey Kardashevskiy <aik@amd.com>, Xu Yilun <yilun.xu@linux.intel.com>, 
+	Catalin Marinas <catalin.marinas@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>, 
+	Steven Price <steven.price@arm.com>, Fred Griffoul <griffoul@gmail.com>, iommu@lists.linux.dev, 
+	kvm@vger.kernel.org, patches@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Nov 03, 2026 at 09:54:27PM +0530, Radhey Shyam Pandey wrote:
-> fdt_init_reserved_mem_node() treats any error from a region's init function
-> as "this node is unusable" and calls memblock_phys_free() on the whole
-> range, although the range was reserved earlier during the FDT scan by code
-> unrelated to that init function. Give -EBUSY the meaning "cannot be used as
-> described, but must stay reserved" and skip the release for it. Nothing
-> returns -EBUSY from node_init today. The next patch does, to refuse a CMA
-> pool overlapping the kernel image, which without this would free
-> [_text, _end) rather than protect it.
-> 
-> Suggested-by: Pratyush Yadav (Google) <pratyush@kernel.org>
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@amd.com>
-> ---
-> Changes since RFC:
-> - New patch
-> ---
->  drivers/of/of_reserved_mem.c    | 14 ++++++++++++++
->  include/linux/of_reserved_mem.h |  5 +++++
->  2 files changed, 19 insertions(+)
-> 
-> diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-> index 0fd1683cba01..d67a2b3a4d44 100644
-> --- a/drivers/of/of_reserved_mem.c
-> +++ b/drivers/of/of_reserved_mem.c
-> @@ -621,6 +621,20 @@ static void __init fdt_init_reserved_mem_node(unsigned long node, const char *un
->  
->  	err = __reserved_mem_init_node(rmem, node);
->  	if (err != 0 && err != -ENODEV) {
-> +		/*
-> +		 * The region was reserved before its init function ran, so it
-> +		 * is not ours to release. -EBUSY says the init function is
-> +		 * declining it for a reason that outlives this node; freeing
-> +		 * it would hand the range to the page allocator even though
-> +		 * something else still owns it.
-> +		 */
-> +		if (err == -EBUSY) {
-> +			pr_info("node %s init failed, keeping reservation\n",
-> +				rmem->name);
-> +			rmem->name = NULL;
-> +			return;
-> +		}
+"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org> writes:
 
-I would move this out of the outer 'if' and and make the outer if an 
-'else if'.
+> Confidential device assignment needs guest_memfd to manage device MMIO as
+> well as RAM. Device resources such as PCI BARs supply PFNs directly, and
+> their protected mappings need architecture-specific map and unmap
+> operations.
+>
+> This series adds the common guest_memfd support needed by device memory
+> providers. It builds on the resource-provider API [1] and the existing support
+> for folios and RAM PFNs.
+>
+> The VFIO provider, IOMMUFD integration and Arm CCA implementation are
+> available together at:
+>
+>   https://git.gitlab.arm.com/linux-arm/linux-cca.git cca/topics/cca-da-gmem-backend-v5
+>
+> This series depends on the resource-provider groundwork from:
+> [1] https://lore.kernel.org/all/20261022-gmem-alternative-providers-v2-0-5dd1dc6c660a@google.com
+>
 
-Rob
+Just a quick update. I'm still interested, just tied up with internal
+work. I'll get to this as soon as I can.
+
+>
+> [...snip...]
+>
