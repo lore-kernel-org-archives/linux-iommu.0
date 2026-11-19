@@ -1,49 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.221.44
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795093442;
-	b=edA80SV5DxE9U4tlQS6EIz0IUiP6V1x9hynSFtELI4u5OuPoBaXWRrhsIPyCzudNhtMZ
-	 QBnPAPPy5ZDn5do3P9rRk+XYj/zgnGs3I13Dpk+BMewQR9LPiX6ZbosCXz3ak5KVRMVWT
-	 9LurY6kdzrn8XrgE5LP/gXCHMfzxd1AQCydvBPfD3X988+TXYiwCgWDR7IhvPLEl7CrXd
-	 ucx9fCDryBGxc60GipsUxRlg+t4G3nHlqIUB5pPJSWmp/pymJ3zWV9sg25DwH1bU+74zR
-	 36IJCyeIdm7JMQ34AuvOp5Kf+bRlJgidrvZTqkg90j4AZ4lw42/T4AR6lXlt3JmeG9g==
+	t=1795094011;
+	b=15w6UReEqgvHC+ADYwMZHtcVk5vGw/fNCTiQIrvZ0gdPDtRMt/am4GD2CKneuIxK28Ii
+	 RQ0XHNqHpt32HdPL9+FdqWFKvYzNH8ThUHHxjWKQmgtpbnd7E5Nqc++Axs4PTfLLb5r57
+	 +4sxLjsflQrzvmNtTiRlc25XtK5GJ8EZDf17lIpS3Sj6VxcLWM6NphiDsS1uYuXiYPwVp
+	 AljLOIOG+FhUaEIqSmWYWf/7s+M8HoTugtsdbyteVmw29c3NH+aKyf+8SG3A6p+LFqTH4
+	 jvHH/1jQq08TVwRe317jhz8ZWVBuXVKTXFczm+PRhPy0mm45K7X6LxvXFIPc1sRUSeg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795093442;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:Message-ID:Date:
-	 MIME-Version:User-Agent:Subject:To:Cc:References:From:
-	 Content-Language:In-Reply-To:Content-Type:Content-Transfer-Encoding;
-	bh=t0uM0NBtYS/5IoagvFIL2DymKazUe4CV4ZOcwY0JkuA=;
-	b=XxLz39o/0jMO+pCpmUritFjTgEIQUgSsch+KyiKlHxLOKdPKCDyj5NyBWSoD9qwxs/LB
-	 3F8R3puL9c3etrXNALoadeyLCN2F9dDpxsaPbA3lYGpzKyTrInnxg5zojNcwhnlSrVSon
-	 y9DWqduBhJMYnvBIG+TehKLzAADMugjMl1mvoHNNQRYzk0ceMC9xildyWKiBt02ybHW6l
-	 OLul+T3RKBSNAYX0qLtifZdHbdC8NZeB73FxYptWvs1HA9W3s1V0qsVifB5Lzdqjnv9s2
-	 ZnSm+LScO2httGYCR/HHbxsabzUKldVaYOrlUEyy+wzq4HwDLr1Bt1Rvpp5AH5M5rTA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795094011;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=p/gxGOGIabTvhDzdnoS76sqroBvMTDVJ3mpZsoNp2Vw=;
+	b=pr9q3grUHNWBQmtyknY5mbCDWle8VhDwOKxy2XKf0K2qjkh4Wu/lSzQCKOlnYoB59R8f
+	 6leWzcAhuH6tbZ3MTN49+QK9FmSL07L6QyhXu2+BHLXZ+z04Hu87oyXkpgLDJL4892jFD
+	 VWwLmHE0OgX/FA61qTt9qhVvA9IcMFULTYx4bFV9E+7ZKSvL2awmzBK+46aQidGP6YaBE
+	 lLFXbYUEjOSbJES3WV0JpjXoooSIXpsfzo+OiKCSxSLamKRJ04KDN+g6weFTD56fd/1xl
+	 mnP10PHe85F9ZkpsL90GqOvcn9q4eI1qfAMlA7rKPMRP3Ua/Q8GzgtC29kVzykrIFfA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=arm.com;
-	spf=pass smtp.mailfrom=arm.com;
-	dkim=pass header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b="bV/ldCjM";
-	arc=none smtp.remote-ip=217.140.110.172
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1FCE606B1AB;
-	Thu, 19 Nov 2026 13:04:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F1FCE606B1AB
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+	dmarc=pass header.from=gmail.com;
+	spf=pass smtp.mailfrom=gmail.com;
+	dkim=pass header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RHLiv7Yy;
+	arc=none smtp.remote-ip=209.85.221.44
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C36C3606A32C
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 13:13:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C36C3606A32C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=arm.com header.i=@arm.com header.a=rsa-sha256 header.s=foss header.b=bV/ldCjM
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 907E51575;
-	Thu, 19 Nov 2026 05:03:57 -0800 (PST)
-Received: from [10.2.212.23] (e121345-lin.cambridge.arm.com [10.2.212.23])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AAC0D3F882;
-	Thu, 19 Nov 2026 05:03:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=arm.com; s=foss;
-	t=1795093440; bh=iIlEwi6pkHXBxZ9dNFNoka7f10xmdTnGjWHOLxEkjcs=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=bV/ldCjMlEqMWyMzf+Y7IfkjNzUnjf+GmzrPVIPfw52FGzyFL6OVRLmhJZc3IxwEi
-	 o4tFSyJEz/j36VmQl/u33QtPNmHxdMtbLrSoFjoGL62q6f+Co8ZvjhTFFeqzsfUKmH
-	 nIh2jMWxjx53idxjvRQnHDIJ17tWuUi22CHT5CkI=
-Message-ID: <06d4eead-b765-44b9-94a8-6ec2d71d172a@arm.com>
-Date: Thu, 19 Nov 2026 13:03:52 +0000
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.a=rsa-sha256 header.s=20260707 header.b=RHLiv7Yy
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-4a7b8abe209so1250752f8f.0
+        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 05:13:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20260707; t=1795094009; x=1795698809; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=p/gxGOGIabTvhDzdnoS76sqroBvMTDVJ3mpZsoNp2Vw=;
+        b=RHLiv7Yyma8Se1fDu7Ht8X1SMZNXwbG+UVOV15vME4OlokgQHfVGMvnQsrIlfm+56f
+         B7p5aG/JpYJjcWd/vATkqW/50QUAj77ugmRJ9FAzAE54kWFs2sgBTwziL5FfkEcnxluU
+         a1TVwwGAyoWXBaI5foF2Gaaul/VtocrPLNIzxCmGDv32AJShvT5pctURzFTazzIRzOuo
+         4YXr8CQv8GXJY/S6q5sZJrUJF4TZJu/7xCS6qoQ+KcAkmql/aOz5/AyArNNoVYVpw2lo
+         s7x3EXYQs4WbyaPIEPghVESYQ/Ch9PzaKfRG2mrFLfRSKYWqMzEq+h8R+QH8GX+mXFeG
+         YAnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795094009; x=1795698809;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=p/gxGOGIabTvhDzdnoS76sqroBvMTDVJ3mpZsoNp2Vw=;
+        b=a4bWIy3CBdHjLbJDjHXm1E0iGMmo0ZyIPxCzap2PqNeQEJj5wwMU2wpF6l4dcNjYdl
+         orJsMwycw8JfabAL9aiZLaeXY1yV38o3Fie21EXtC6PskVbEWISAy1eiHnXqoGpU/yB8
+         IE8LZzO2KJ46G6c/Twzl/apJvvWG8H3XF+Y79mYZXaQgxcc9Ujd8TqJIt2QZJTP+SGJ9
+         XAZOkvILsAdnNYw2WACBcYLg0qj0Qh4mKMVu9py73oMxD201NjZystHmpn4o1AkhZ4pV
+         Z4h6yrByanseNqMXOW6gCIpvUwpF7lujy4XxtJwCwbHTqHps4Zuu+hddEqCEm+8qolYc
+         qpRA==
+X-Forwarded-Encrypted: i=1; AL+hErELcXlc2jmi8hfI6DfUatcqodFZYu5vRiBQrTruu9KjNQNYYZXjig6DEQDKLgEVgFLF7Gs4dQ==@lists.linux.dev
+X-Gm-Message-State: APuU4Z+ABmTp/TekhPiDrOJHnH0iggCQiUj/O//ufX85fmtgY+atSTnt
+	jbGBUNnbZemShig48LM4pfYOQLh8HzS7HP0+QA28U/ECfvevVvgrDm1d
+X-Gm-Gg: AYBFou3CT82ocMOganeC6KTgGkNln33voB8SQzIxikKh9Mbf/eb6osdaueTZaDSopIs
+	4B69p2giQpwrMK0axL9vMq3Qdohcd/4bdUCAokOg6Eq4898YQLOTUPBhEtzPhWT1MXJoPIdeXma
+	hcNKonquUtGG7ZBtXM91HzmWojN5typ5+ng93fx1L5gBW9GmBYpwBAY7mIpTKRLiCfaSWVjXElx
+	nMq84e/2GOsovcoII2yOZnHErFrUphYe9yJg4fUGTKrNpN4iNtSfRh1wxvMbdiN4n5H39EzKY6v
+	0lkTN5avNfgytUyu9fQV0mPtE6j+SNoRJD3zJGY9SvBLhLVfabL5dG7M2VYC//1PHdGCcF5Zf57
+	f+ldigqxHSndSJRF/qP9Kro2unqSPNrcywQkPaZK0eFrbbvquAeYXnzix9XNJciup81SA0iHY4L
+	PaYS2takcyq985RP7J3l8c03uXnRjv0WpeXCjRS7dC4GQpZre8JQx8j4pV+5jeSWjE5azDt5lWV
+	cil1Ld9S55U7wY3Eo1xHsu3JyfXVx3Cl4s4Zdvedvvy1VRTb8wkYuSrpKkf59FqQobpkjoFsfHL
+	z59gYSVu15XL/CzpPgdWzQ+gru6EwiCCoroy
+X-Received: by 2002:a05:600c:3556:b0:4a1:dda8:eb73 with SMTP id 5b1f17b1804b1-4bb7da26d70mr121120125e9.27.1795094008771;
+        Thu, 19 Nov 2026 05:13:28 -0800 (PST)
+Received: from LAPTOP-AVI.lan ([2a06:c701:477f:ff00:c2fd:f9b8:4971:d270])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4bb84e5edf5sm18258045e9.4.2026.11.19.05.13.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2026 05:13:28 -0800 (PST)
+From: Avi Weiss <thnkslprpt@gmail.com>
+To: m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Cc: ailiop@suse.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	x86@kernel.org,
+	Avi Weiss <thnkslprpt@gmail.com>
+Subject: [PATCH v2 0/2] dma-debug: Avoid uninitialized mapping dumps
+Date: Thu, 19 Nov 2026 15:13:23 +0200
+Message-ID: <cover.1795093513.git.thnkslprpt@gmail.com>
+X-Mailer: git-send-email 2.43.0
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -53,98 +98,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
-To: Jason Gunthorpe <jgg@ziepe.ca>,
- Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc: Daniel Almeida <daniel.almeida@collabora.com>,
- "Joerg Roedel (AMD)" <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Miguel Ojeda <ojeda@kernel.org>, Boqun Feng <boqun@kernel.org>,
- Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>,
- Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>, Danilo Krummrich <dakr@kernel.org>,
- Tamir Duberstein <tamird@kernel.org>, Alexandre Courbot
- <acourbot@nvidia.com>, =?UTF-8?Q?Onur_=C3=96zkan?= <work@onurozkan.dev>,
- Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
- rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
- driver-core@lists.linux.dev, Detlev Casanova <detlev.casanova@collabora.com>
-References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
- <20261116193821.GC2452510@ziepe.ca>
- <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
- <20261117202055.GA3115493@ziepe.ca>
- <615C3DA2-4C02-4A8B-AEC4-70D498672559@collabora.com>
- <20261118193521.GD3115493@ziepe.ca>
- <457fe01cc1fbc5b6e2d7b5c9c167012b56fe86b2.camel@collabora.com>
- <20261118210626.GF3115493@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20261118210626.GF3115493@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 18/11/2026 9:06 pm, Jason Gunthorpe wrote:
-> On Wed, Nov 18, 2026 at 02:41:32PM -0500, Nicolas Dufresne wrote:
->> Jason,
->>
->> Le mercredi 18 novembre 2026 à 15:35 -0400, Jason Gunthorpe a écrit :
->>>> No, not OK :/ We want to use GEM shmem, which calls into the DMA API internally
->>>> through drm_gem_shmem_get_pages_sgt() -> dma_map_sgtable().
->>>
->>> You cannot continue to use DMA API once you start touching a paging
->>> domain directly. It is why driver_managed exist.
->>
->> You are building a strong argument around something that is not what we intent
->> this binding to be used for. If you had cared about the context you'd know we
->> don't want to touch paging from userspace in this type of drivers.
-> 
-> Go re-read Daniel's answer and perhaps you can understand my confusion:
-> 
-> https://lore.kernel.org/all/3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com/
-> 
-> If you want to
-> 
->     "We plan to alloc a paging domain when a video encoder session is created. Then
->      we call iommu_attach_device() before a job runs"
->   
-> You cannot use the DMA API.
-> 
-> You absolutely CANNOT attach a brand new driver controlled domain, use
-> the DMA API to populate it, and then detach it.
-> 
-> Then we have the issue that the rust bindings expose iommu_map, which
-> cannot even be used on any non-coherent arch due to lack of cache
-> flushing.
-> 
-> Further, from a Rust binding perspective all these unsafe things I
-> talked about have to be blocked by the Rust compiler:
->   1) You cannot attach a domain to a driver_managed_dma=false device
->   2) You cannot call DMA API functions on a driver_managed_dma=true device
->   3) I object to exposing iommu_get_domain_for_dev()/etc to Rust
->      due to how unsafe it is, but if you were to do it then the
->      returned pointer must never be used with attach or iommu_map/unmap
->      functions.
->   4) Since there is no cache flushing a non-coherent arch must never be
->      allowed to call iommu_map(), since it is unsafe to create memory
->      incoherence.
-> 
-> Thus, what exactly is the plan here? Do you see my concern?
+Booting with dma_debug=off leaves the DMA-debug hash buckets
+uninitialized, but the debugfs mapping dump is still registered.
+Reading dma-api/dump then traverses an uninitialized list and
+causes a NULL pointer dereference in dump_show().
 
-Yes, your concern is a restriction that you largely made up :)
+Patch 1 skips debugfs registration when DMA debugging was not
+initialized. Patch 2 removes the obsolete debug_dma_dump_mappings()
+helper and its only caller in the legacy AMD GART IOMMU code.
 
-This is very much *not* driver_managed_dma, which TBH is poorly named 
-since it really means either "no DMA at all and thus fine to nominally 
-hotplug into live domains" or "userspace-managed DMA with no chance of 
-ever inserting DMA API calls at the right points". The model here is 
-basically just dma_link except you run your own explicit IOVA allocator, 
-and you have to make the IOMMU and DMA API calls separately because 
-there are no bundled helpers. Sure it's a relatively specialist use-case 
-that's not for any old driver, and isn't without its own caveats, mostly 
-that extra care would be needed if the device also had reserved regions 
-and/or IOMMU-translated MSIs, but for the typical embedded media devices 
-(in which I firmly include embedded NPUs, since from this perspective 
-the way they work is still about the same) which do want to operate this 
-way, those do not apply so it's fine and pretty straightforward.
+Validation on x86-64 QEMU:
+- baseline with dma_debug=off - NULL dereference in dump_show()
+- patched with dma_debug=off - dma-api debugfs directory absent
+- patched with DMA debugging enabled - mapping dump readable
+- both objects compiled successfully with W=1
 
-Thanks,
-Robin.
+Changes since v1:
+- guard debugfs registration instead of the dump paths, as
+  suggested by Anthony Iliopoulos
+- remove the obsolete mapping dump helper and its AMD GART
+  caller (due to feedback from Robin Murphy and Marek Szyprowski)
+
+v1 discussion:
+https://lore-kernel.gnuweeb.org/linux-iommu/05c05ec4-b321-49d4-acf7-b9fa4223dba9%40samsung.com/T/
+
+
+Avi Weiss (2):
+  dma-debug: Skip debugfs registration when uninitialized
+  dma-debug: Remove obsolete mapping dump helper
+
+ arch/x86/kernel/amd_gart_64.c |  1 -
+ include/linux/dma-map-ops.h   |  4 ----
+ kernel/dma/debug.c            | 40 ++++++-----------------------------
+ 3 files changed, 6 insertions(+), 39 deletions(-)
+
+
+base-commit: 97d73c8251226cf27cc6656b4c542869bb8c69fa
+-- 
+2.43.0
+
