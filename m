@@ -1,63 +1,118 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=115.124.30.113
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.219.41
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795097647;
-	b=cVmX5fRMlLv9GtalL2qFNOwM6pULqjZb31bvs9dRmnH1fSk4zHUBP3nFsQOwkUFdn97H
-	 +PGllk3lOtrA/HPfYccz7ieUBVlZydovRxBr0VSl10gkLpeGH9lBtCVxsp4i2Isqx0oGB
-	 YyMxI7CXrc2ILfQaDmBQ6K4I0Nt61RYvmZMsvqypOfJKYfFdNi8V8npRMSLLrFHYAeS9J
-	 t5l7A6oSeaMcpJImcN1pFuP2qx841CSUaHFrXEFiFer/dSzRvm26DvzDrge5djlJlL0f3
-	 vBLjtl8zuBxoR6j+/WktQ5pUIFUDQZnizwyUyH7u/pvT99HZkL5pS+SAw4Wb7AEfUHg==
+	t=1795098715;
+	b=zXMZU3jmR1s71y+pHp7Q1sNEIQ3NkttN4JeSlFJgdNroe1KEwAgcdNjX7gvtgNCWN5qx
+	 JpzFCwYqoN4PuLKGKCT2MPsoPLaZIRdf5fNdsfMs3Kojk0RAhNySyfeUufPYUrd1duEti
+	 4Z7ZSOdJCGNFKOZ7zFju8paiTEajKxkqS4sNNej3ymI4hh9HkJ/eHwnxt9Z7xVXhvLrRf
+	 i8plPB5gLcfo7msdMfxLSxmgtMGtxyt56mEPI7SMC0Oym4eHbTdtG27m+4Dz8GeHE903V
+	 QMLOqLBSrsbI1MZjzAGc9xbJZgktuPnQ3nbj2F56VRW9lmktDnfvRVIfaZZVsKZ3FPw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795097647;
-	h=DMARC-Filter:DKIM-Signature:X-Alimail-AntiSpam:Received:From:To:Cc:
-	 Subject:Date:Message-ID:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=ZogT7/MGl2KEIH3Xo7jtAzMWnJh61ng1b7MVoKSyfzE=;
-	b=yiQ/vbKUOtxlTDMakdoBe+0U0Pe+qHehQ4hNj9/PA6dIdMQ4mSZIBBgwfL1ZFdwYcS1s
-	 BLmRr0DhTIDAEwjk9KJ2WH+jUHmSIUENMrGlgDALQVFYIN2mUmVwlVbuMQ1ZsYjl8wvMh
-	 xhILolFT1irIcN2LoY6XuPg3QqR8+JPUMYDTxMwCweotrHB88raEZ7z/q2AMOdOrfzGpP
-	 a3Z6Le5hX/Kw/NUNPFd/yLZ/cWLbQsh/+g9dOyQCxfVQdrjjC83KFMJsmIWwiztlH/G/C
-	 POrqieY02vpwy0vd2TFNIjtnXwomgZC5cyUgQJgrQ/8m2b6wTgdVi3KkBAxNLQf+UqA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795098715;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To;
+	bh=hL7cJlK2xvTgQa7LLQ9HzeCYEg5UwEM/V8Y7DTV8aIk=;
+	b=cBRikJFr3dNzBtEOi74hHVyXMdSMS6D4UeMvUofut6e57hfPv5v141ajgoEluzRnCevB
+	 tfKDJMTUSBewcNCeC0IOKwL9jVwXAWq9nkve1h2uIRCdsT4NB4BTtAVo3ocb3Cq+yNUJA
+	 En4RlUi+7mCxD+jBru4YfFbsWzxOcLIo+mImFuxxAyx+xSuT6tpgDt93EC8kYEdGYPQeA
+	 Om886zc8qs3/PwAypsws4hEXUzEpKNRR19BC8YeOTf9pfd5vvV9K4lBy9jQaRWnUOa4PH
+	 M8CSR2oZ3v7+5XjW7sNERjwfidvHS6s+fkgY5U2ghmdohIrDPBKN+BVcDRI1p93Z0KQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=linux.alibaba.com;
-	spf=pass smtp.mailfrom=linux.alibaba.com;
-	dkim=pass header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b="ZpL+Nk/D";
-	arc=none smtp.remote-ip=115.124.30.113
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=none header.from=ziepe.ca;
+	spf=pass smtp.mailfrom=ziepe.ca;
+	dkim=pass header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=nznQCtVR;
+	arc=none smtp.remote-ip=209.85.219.41
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83516606A33B
-	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 14:14:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 83516606A33B
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC34A606A32F
+	for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 14:31:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AC34A606A32F
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key, unprotected) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.a=rsa-sha256 header.s=default header.b=ZpL+Nk/D
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1795097642; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=ZogT7/MGl2KEIH3Xo7jtAzMWnJh61ng1b7MVoKSyfzE=;
-	b=ZpL+Nk/DnEmeacXOc6QxB0mp4wu8slMgfOfnWYFzbZdLc6HitbO9aPTBO7eDlNcJzjSzd/zHB8Djr8zYKEOdNQjS+TWGiq8mKhXrm2/7eTE9Pl5PxbIkiIHVX+ka6kPkaZnCgvZzhe5vtBFXmDBxSp2l38qDSmrOEIA4SzAplpE=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=maildocker-contentspam011083073210;MF=guanghuifeng@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0XF3i-zK_1795097628;
-Received: from VM20241011-104.tbsite.net(mailfrom:guanghuifeng@linux.alibaba.com fp:SMTPD_---0XF3i-zK_1795097628 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Thu, 19 Nov 2026 22:14:02 +0800
-From: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-To: ankit.soni@amd.com
-Cc: guanghuifeng@linux.alibaba.com,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com,
-	suravee.suthikulpanit@amd.com,
-	vasant.hegde@amd.com,
-	will@kernel.org
-Subject: [PATCH v2] iommu/amd: Do not clear unobserved log overflow status bits
-Date: Thu, 19 Nov 2026 22:13:48 +0800
-Message-ID: <20261119141348.1601037-1-guanghuifeng@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.7
-In-Reply-To: <4nnekry6a3q52hsibm7cqrwbtrkr5vp6yuhwucreaz3pckt2a7@rh36fx2u5i3o>
-References: <4nnekry6a3q52hsibm7cqrwbtrkr5vp6yuhwucreaz3pckt2a7@rh36fx2u5i3o>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.a=rsa-sha256 header.s=google header.b=nznQCtVR
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-91e8938fd01so21346976d6.3
+        for <iommu@lists.linux.dev>; Thu, 19 Nov 2026 06:31:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1795098713; x=1795703513; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=hL7cJlK2xvTgQa7LLQ9HzeCYEg5UwEM/V8Y7DTV8aIk=;
+        b=nznQCtVRMoFh1Pj3c8VAcXUpJXJVN6KLWqbiwGDYsJe2q6x+BivkM7PCa1f7UwkLJS
+         PjYMFLRKEwRmn5c3Vat34GJlLJby1/2TgDU9r7IF7Tj8pcpYThD1LEWIU3jrXS94xN8v
+         e54lkdkOWOaOqh8spt6Us9VhoWiAFj903eu3nyc8o98BYLetGKpOveoaufSMPGN0NHin
+         oJGIGoskZjfnrFqdkIEOT3x4lNCsJnDWu8OHYrysFHhgUlFB3sHRbS66kDUpHZ1MlhTk
+         JryRvA9kV6IEvZg10aSIEALXi2WsTCXWZ8nDyztVxp1ZTIfYndpc4mxMPU8MVALbNEAl
+         v9iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795098713; x=1795703513;
+        h=in-reply-to:content-disposition:content-type:mime-version
+         :references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=hL7cJlK2xvTgQa7LLQ9HzeCYEg5UwEM/V8Y7DTV8aIk=;
+        b=xPrzShKojowvKMHf/UYFUtwQU+WgtJe6m7Q2RBf3gxeKLajbE9IJYajfFpYXBn6BkD
+         ec41RVI7eb38L98CO2Ymo5NW+MVoG5+dHwtCdV5lBVCrgfyG+bxPq1c0Rf6bYhbSWkd7
+         0S97YJuSzfgGo5/z1F37b3n9O20TcfNfQylkQGzK72B138rFCSGB+ggzlZJri4rnIEl+
+         375ENTxQBV9an0cwMnGvr8QKOugy3f2nSRHTAp6/TjPP2yrHHe5Ln93+xcrls2OL0hn/
+         mDNBSWuc1K1T9BSFCqbsgrrGbP1ppxr/CbsFyAJAWo6Z54Njx6ERIjK7NTQDS2FmfErd
+         0Now==
+X-Forwarded-Encrypted: i=1; AL+hErGK5q8NU63rYsvNgnY+0IE4+OuG4kOAd3mz24ygVNhSFVnrOFHQIVx5gx8I7JWSdAVeZOnl+A==@lists.linux.dev
+X-Gm-Message-State: APuU4Z8/NTDBD5ElRnOGkyRHitULY/eKgnjnO9SH3FjZM0nd9WhR+A2X
+	HnsTzmPR/xIo8OWiaODA1z9OKA/WwWAxepraLNUVPPo3A5UCgKpkVdGFgx5un/bDIKE=
+X-Gm-Gg: AZFdTZfmGO3oshfvgA2jmUj69lI9oqAnn+W9RCSqDppHWem6GRTmDjtUUSEW4YALoib
+	tuIMFwkBws3YzrFU9Ev2TLHiqs/9bxEg7udYzlT64jcDtFW5oo7qLwYk93q4Y/TwczTl1K1N27W
+	PdQnEniy6ubExlSfBDR03jzA+OHN8Qssz6sT85qKSRAPowaYFNzQvGvUgTPbcJ2jEhH3+pSvbwP
+	lNPEuJPrzcFHG95DXQt6LJSxMYSk1Y1Th0eGxKHrFYeX7t/oFEnNMQIabFbGMrWZ17R2iYY8MPW
+	T4Jsy1qC/a4AxVce+OhOhe5if8vuQXbFiyoF8yyKwzhZ+et+4yRKTDUutQBsDUxzy5y6a+o0OcV
+	yUzZRi+rBA0LxpoiK2SWw8NFs/eX5Qk55aBHRLTH/uSuYA78NUaDcg7i1AcvZwARUk/eZSoCbWI
+	JiNDEHOF3W7/5qYb/OcxfK4mZmKdg3aIfGG0/oYsmORo9UzhWvPVCQmwvGVWK44jp4VPStKb9YT
+	jbeiuGQxiYFOLeOJ7jUZCvKE9E9ypIhOV5FJJg39rqKpEY78Kne0DZ5TEyVcFYchGOqhs+IjLwn
+	NN7oRw==
+X-Received: by 2002:a05:6214:2482:b0:921:2e91:eb51 with SMTP id 6a1803df08f44-9212e91ebc4mr18407586d6.57.1795098713268;
+        Thu, 19 Nov 2026 06:31:53 -0800 (PST)
+Received: from ziepe.ca ([142.166.156.71])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-92134042c21sm194846d6.35.2026.11.19.06.31.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Nov 2026 06:31:52 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1xU3B1-00000000ssw-0FAP;
+	Thu, 19 Nov 2026 10:31:51 -0400
+Date: Thu, 19 Nov 2026 10:31:51 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Daniel Almeida <daniel.almeida@collabora.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+	"Joerg Roedel (AMD)" <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Gary Guo <gary@garyguo.net>,
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Tamir Duberstein <tamird@kernel.org>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Onur =?utf-8?B?w5Z6a2Fu?= <work@onurozkan.dev>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>, iommu@lists.linux.dev,
+	rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+	driver-core@lists.linux.dev,
+	Detlev Casanova <detlev.casanova@collabora.com>
+Subject: Re: [PATCH 0/6] rust: iommu: add a paging domain abstraction
+Message-ID: <20261119143151.GH3115493@ziepe.ca>
+References: <20261112-b4-iommu-domain-v1-0-c29e86788dda@collabora.com>
+ <20261116193821.GC2452510@ziepe.ca>
+ <3EB4C2ED-B699-4532-A562-68B78F6E29C6@collabora.com>
+ <20261117202055.GA3115493@ziepe.ca>
+ <b145b2ceb92c73a4fa0477d7b3895a6e3b4adf99.camel@collabora.com>
+ <20261118160909.GC3115493@ziepe.ca>
+ <fe60c0bd-1ee2-4b33-8ca3-564ee08e6db5@arm.com>
+ <CF2BE3BB-4F16-49FC-8421-B2B823BB7BB4@collabora.com>
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Post: <mailto:iommu@lists.linux.dev>
@@ -67,78 +122,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:iommu+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CF2BE3BB-4F16-49FC-8421-B2B823BB7BB4@collabora.com>
 
-amd_iommu_handle_irq() clears the interrupt status with an unconditional
-writel(mask, MMIO_STATUS_OFFSET), where mask is int_mask | overflow_mask.
-If hardware sets a log overflow bit after the status register is sampled
-at the top of the loop but before that write, the write clears the
-freshly-set bit while the stale sampled status does not contain it, so
-overflow_handler() is skipped for an overflow that really happened.
+On Thu, Nov 19, 2026 at 10:25:24AM -0300, Daniel Almeida wrote:
+> > 
+> > I can't speak for the actual intent of the Rust drivers, but
+> > giving them the benefit of the doubt, none of that fearmongering
+> > should apply: the valid use-case is just simple time-division
+> > multiplexing.
 
-This is fatal for the GA log: GALOverflow generates no interrupt of its
-own (MMIO Offset 2020h bit 9), amd_iommu_restart_ga_log() is the only
-recovery path, and per spec section 2.7.4 logging stays halted until
-GALogEn is toggled -- a bare W1C of GALOverflow is not part of that
-recovery.  The GA log then stays halted, GAInt never re-asserts and the
-GA log interrupt line goes permanently silent, losing all AVIC
-non-running vCPU wakeups on that IOMMU.
+To be clear, I think the use case is a reasonable thing to ask for,
+but since when is this flow valid? Does something already do this???
 
-Clear only the bits observed this round by writing status & mask.  An
-overflow bit set concurrently is then left asserted and is re-observed by
-the existing ERBT1312 status read-back at the bottom of the loop, which
-re-enters the loop and runs overflow_handler().
+And why didn't you disclose this immediately after my first question
+"how do you intend to use this"? It would have saved alot of time.
 
-The unconditional write has cleared an overflow bit since commit
-5ce97f4ec5e0 ("iommu/amd: Recover from event log overflow"); commit
-af47b0a24058 ("iommu/amd: Handle GALog overflows") and commit
-274c2218b8b2 ("iommu/amd: Handle PPR log overflow") later added the GA
-and PPR overflow bits to the same write.
-
-Fixes: 5ce97f4ec5e0 ("iommu/amd: Recover from event log overflow")
-Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-Reviewed-by: Ankit Soni <Ankit.Soni@amd.com>
----
-v2:
- - Correct the Fixes tag: 2379f3485239 only moved the existing clear into
-   amd_iommu_handle_irq(); the unconditional write started clearing an
-   overflow bit in 5ce97f4ec5e0.  Record the GA/PPR follow-up commits.
-   (Ankit Soni)
- - Tighten the commit message and the in-code comment: scope the "no
-   interrupt of its own" statement to GALOverflow, since EventOverflow
-   and PprOverflow do have their own interrupt source.  The functional
-   change (writel(status & mask)) is unchanged from v1, so Ankit's
-   Reviewed-by still applies.
- - Collect Ankit's Reviewed-by.
-
- drivers/iommu/amd/iommu.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index d0d55c93a480..530f97729d68 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1168,8 +1168,18 @@ static void amd_iommu_handle_irq(void *data, const char *evt_type,
- 	u32 mask = int_mask | overflow_mask;
+Below is exactly something I think drivers should not be doing:
  
- 	while (status & mask) {
--		/* Enable interrupt sources again */
--		writel(mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
-+		/*
-+		 * Clear only the status bits observed in this round.  The log
-+		 * overflow bits are RW1C; clearing one unconditionally here
-+		 * would drop an overflow that hardware set between the readl()
-+		 * above and this write, without ever running overflow_handler().
-+		 * Leaving such a bit asserted lets the existing ERBT1312
-+		 * read-back below re-observe it and re-enter the loop so
-+		 * overflow_handler() runs.  This matters most for the GA log,
-+		 * whose GALOverflow bit generates no interrupt of its own, so a
-+		 * dropped overflow can otherwise halt GA logging permanently.
-+		 */
-+		writel(status & mask, iommu->mmio_base + MMIO_STATUS_OFFSET);
- 
- 		if (int_handler) {
- 			pr_devel("Processing IOMMU (ivhd%d) %s Log\n",
--- 
-2.43.7
+> > A = iommu_paging_domain_alloc(dev);
+> > B = iommu_paging_domain_alloc(dev);
+> > iommu_attach(dev, A);
+> > iommu_map(A, iova_x, virt_to_phys(X));
+> > dma_map(dev, X) //still needed for the underlying memory
+> > ... //tell dev to do the work for context A using iova_x
+> > dma_unmap(dev, X);
+> > dma_map(dev, Y);
+> > iommu_map(B, iova_y, virt_to_phys(Y));
+> > iommu_detach(dev, A);
+> > iommu_attach(dev, B);
+> > ... //do some work in context B
+> 
+> Yeah, this is basically exactly what we want to do..yet Jason has been
+> repeateadly saying you cannot call the dma api at all once you allocate paging
+> domains. So now, I am confused.
 
+Especially from Rust where we are supposed to be enforcing strong
+safety invariants. This is not safe, and it is not following the
+meaning of driver_managed_dma, it is not good if there are multi
+device groups, cannot work DMABUF, and is exactly the sort of weird
+stuff we keep breaking down the road :\
+
+Sure with a lot of care this doesn't immediately explode today, but I
+don't think we should be setting this as an API direction, especially
+for safe rust.
+
+All of this is very related to the PASID discussions from a while
+back. The goal there was to allow the kernel to DMA map to a PASID
+paging domain. IIRC the direction was to wrap the PASID in a struct
+device, maybe a "fake/limited" struct device, so that the DMA API can
+be used, dma-iommu.c manages the paging domain directly, and things
+have a sensible driver API.
+
+More like this:
+
+ dma_dev = iommu_alloc_paging_dma_dev(dev)
+ iommu_attach_pasid_paging_dma_dev(dev, dma_dev, pasid);
+ dma_map(dma_dev, X)
+ dma_umap(dma_dev)
+
+With the additional twist that alot of embedded HW has apparently
+choosen to not implement SSID but instead has a pool of SIDs that one
+device can use, functionally similar to SSID.
+
+We'd need also API support for unbundling the DT iommus=[] SID list
+into something that the SIDs can be attached more like a PASID.  That
+need, I think, has become clear with all the DT tricks and fake busses
+to try to work around this issue. :|
+
+Jason
